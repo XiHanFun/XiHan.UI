@@ -67,6 +67,7 @@ const HEADLESS = 'packages/engine/headless/src'
 const TOKENS = 'packages/design/tokens/tokens.css'
 const TONE_FILE = 'packages/design/styles/css/tone.css'
 const REGISTRY = 'tooling/scripts/focus-ring-surface-registry.json'
+const FIELD_FAMILY = 'packages/design/styles/family/field-chrome.css'
 
 /** WCAG 2.2 SC 1.4.11 非文本对比阈值。 */
 const MIN_RATIO = 3
@@ -902,6 +903,17 @@ const ringOverrides = []
 /** 属性名带转义的声明：声明拆解读不出它，等于这一条从扫描面里消失，逐条判红。 */
 const escapedProps = []
 
+const fieldFamilyCss = await readFile(FIELD_FAMILY, 'utf8')
+
+/** Family Recipe 用命名空间角色而非组件 anatomy。分析时按 Headless 已声明的角色映回首批消费部件。 */
+function materializeFieldFamily(comp, componentCss) {
+  if (!/@import\s+['"]\.\.\/family\/field-chrome\.css['"]/.test(componentCss))
+    return componentCss
+  return `${fieldFamilyCss
+    .replaceAll('[data-xh-field-chrome]', `[data-scope='${comp}'][data-part='control']`)
+    .replaceAll('[data-xh-field-input]', `[data-scope='${comp}'][data-part='input']`)}\n${componentCss}`
+}
+
 function markSkin(map, comp, parts) {
   if (!map.has(comp))
     map.set(comp, new Set())
@@ -910,7 +922,8 @@ function markSkin(map, comp, parts) {
 
 for (const file of files) {
   const comp = file.replace(/\.css$/, '')
-  const css = stripComments(await readFile(join(SKINS, file), 'utf8'))
+  const componentCss = await readFile(join(SKINS, file), 'utf8')
+  const css = stripComments(materializeFieldFamily(comp, componentCss))
   const lineAt = lineCounter(css)
   // 声明拆解只认字母、数字、连字符组成的属性名，带转义的整条静默跳过：先把这些点出来
   for (const body of css.matchAll(/\{([^{}]*)\}/g)) {

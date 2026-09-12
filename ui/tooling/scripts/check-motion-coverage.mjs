@@ -29,6 +29,7 @@ import { join } from 'node:path'
 import process from 'node:process'
 
 const STYLES_DIR = 'packages/design/styles/css'
+const FAMILY_STYLES_DIR = 'packages/design/styles/family'
 const HEADLESS = 'packages/engine/headless/src'
 const TABLE = 'tooling/scripts/motion-exempt.json'
 
@@ -117,7 +118,11 @@ const skins = new Map()
 for (const file of files) {
   if (!scopes.has(file.replace(/\.css$/, '')))
     continue
-  const css = stripExcluded(stripComments(await readFile(join(STYLES_DIR, file), 'utf8')))
+  const componentCss = await readFile(join(STYLES_DIR, file), 'utf8')
+  const familyCss = []
+  for (const match of componentCss.matchAll(/@import\s+['"]\.\.\/family\/([\w-]+\.css)['"]/g))
+    familyCss.push(await readFile(join(FAMILY_STYLES_DIR, match[1]), 'utf8'))
+  const css = stripExcluded(stripComments(`${familyCss.join('\n')}\n${componentCss}`))
   skins.set(file, motionDecls(css))
 }
 

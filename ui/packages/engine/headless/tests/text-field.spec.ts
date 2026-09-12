@@ -162,6 +162,25 @@ describe('connectTextField 结构与标注', () => {
     expect(root['data-readonly']).toBeUndefined()
     expect(root['data-invalid']).toBeUndefined()
     expect(root['data-at-max']).toBeUndefined()
+    expect(root['data-xh-action-owner']).toBe('')
+  })
+
+  it('只投影 Field Chrome 稳定角色、布局与尺寸，皮肤不反查组件 anatomy', () => {
+    const single = makeService({ size: 'sm' }).api()
+    expect(single.getControlProps()).toMatchObject({
+      'data-xh-field-chrome': '',
+      'data-xh-field-size': 'sm',
+    })
+    expect(single.getInputProps()).toMatchObject({
+      'data-xh-field-input': '',
+      'data-xh-field-layout': 'single-line',
+    })
+    expect(single.getPrefixProps()).toMatchObject({ 'data-xh-field-affix': 'prefix' })
+    expect(single.getSuffixProps()).toMatchObject({ 'data-xh-field-affix': 'suffix' })
+
+    const textarea = makeService({ autoSize: true }).api().getInputProps({ as: 'textarea' }) as Dict
+    expect(textarea['data-xh-field-layout']).toBe('textarea')
+    expect(textarea['data-xh-field-auto-size']).toBe('')
   })
 
   it('label 的 for 指向 input 自己的 id，input 反手 aria-labelledby 指回 label', () => {
@@ -269,6 +288,11 @@ describe('connectTextField 输入与清空', () => {
     expect(trigger['aria-hidden']).toBeUndefined()
     expect(trigger['aria-label']).toBe('Clear')
     expect(trigger.tabindex).toBe(-1)
+    expect(trigger['data-xh-action-control']).toBe('')
+    expect(trigger['data-xh-action-profile']).toBe('field-inset')
+    expect(trigger['data-xh-action-display']).toBe('has-value')
+    expect(trigger['data-xh-action-size']).toBe('md')
+    expect(trigger['data-xh-action-has-value']).toBe('')
   })
 
   it('clear-trigger：aria-label 取 translations.clearTrigger', () => {
@@ -289,6 +313,7 @@ describe('connectTextField 输入与清空', () => {
     expect(trigger.hidden).toBeUndefined()
     expect(trigger.disabled).toBeUndefined()
     expect(trigger['data-disabled']).toBeUndefined()
+    expect(trigger['data-xh-action-has-value']).toBe('')
   })
 
   it('点 clear-trigger 清空；不可用时同一个处理器直接调也清不掉', () => {

@@ -27,6 +27,12 @@
   分别按自己的声明盒计算内距和边框。量高要求 textarea 已连接到带 Window 的 Document，且当前只接受
   `writing-mode: horizontal-tb`；其他书写模式会明确失败，不会把物理纵向滚动尺寸误当成逻辑块尺寸。
 - `prefix` / `suffix` 在框内摆货币符、单位或图标，两段对读屏隐藏。
+- 默认皮肤把控件接入 Field Chrome：Headless 在真实视觉盒、输入、装饰段上分别投影
+  `data-xh-field-chrome`、`data-xh-field-input`、`data-xh-field-affix`，单行与 textarea 由
+  `data-xh-field-layout` 明确区分。旧 `data-multiline` / `data-auto-resize` 视觉钩子已删除，
+  自定义皮肤应读取新的家族角色，不提供双写兼容。
+- 清空按钮复用 Action Control 的 `field-inset` profile 和 `has-value` 显示策略；粗指针命中区、
+  pressed/focus/forced-colors 均由家族配方提供，适配器不另算尺寸或可见性。
 - `showCount` 显出字数部件，数字取 `count` 与 `maxLength`，顶到上限时换色。
 - 放在 FormFieldGroup 里时，未声明的 `disabled` / `readOnly` / `required` / `invalid` 会从最近的
   Field 或 Form 继承；实例显式写 `false` 仍以实例为准。Field 的标签、说明和错误描述链保持挂到 input。

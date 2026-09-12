@@ -8,6 +8,7 @@ import { join } from 'node:path'
 import { declarations, stripComments } from './lib/css-declarations.mjs'
 
 const STYLES_DIR = 'packages/design/styles/css'
+const FAMILY_STYLES_DIR = 'packages/design/styles/family'
 
 /** 受管辖的部件：组件自己那层可交互控件，所有组件通用的部件名。 */
 const CONTROL_PARTS = new Set(['control', 'input', 'trigger', 'preview', 'segment'])
@@ -161,6 +162,22 @@ for (const file of files) {
     if (!HEIGHT_PROPS.has(decl[1]))
       continue
     for (const ref of decl[2].matchAll(/var\(\s*(--xh-[\w-]+)/g))
+      consumed.add(ref[1])
+  }
+}
+
+/* Family Recipe 的最终高度声明与组件桥接槽分居两份文件。把家族声明并进依赖图，
+   但不把它伪装成某个组件皮肤重复跑 anatomy 判据。 */
+for (const file of (await readdir(FAMILY_STYLES_DIR).catch(() => [])).filter(f => f.endsWith('.css'))) {
+  const src = stripComments(await readFile(join(FAMILY_STYLES_DIR, file), 'utf8'))
+  const slots = new Map()
+  for (const match of src.matchAll(/(--xh-[\w-]+)\s*:\s*([^;}]+)/g))
+    slots.set(match[1], [...(slots.get(match[1]) ?? []), match[2].trim()])
+  slotsByFile.set(`family/${file}`, slots)
+  for (const declaration of src.matchAll(/(?:^|;|\{)\s*([a-z-]+)\s*:\s*([^;}]+)/g)) {
+    if (!HEIGHT_PROPS.has(declaration[1]))
+      continue
+    for (const ref of declaration[2].matchAll(/var\(\s*(--xh-[\w-]+)/g))
       consumed.add(ref[1])
   }
 }

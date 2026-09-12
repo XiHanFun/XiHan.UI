@@ -64,6 +64,7 @@
       "./editable.css",
       "./empty-state.css",
       "./field-array.css",
+      "./field-chrome.css",
       "./field.css",
       "./fieldset.css",
       "./file-upload.css",
@@ -10820,7 +10821,19 @@
     "data-week-day",
     "data-weight",
     "data-window-state",
-    "data-wrap"
+    "data-wrap",
+    "data-xh-action-control",
+    "data-xh-action-display",
+    "data-xh-action-has-value",
+    "data-xh-action-owner",
+    "data-xh-action-profile",
+    "data-xh-action-size",
+    "data-xh-field-affix",
+    "data-xh-field-auto-size",
+    "data-xh-field-chrome",
+    "data-xh-field-input",
+    "data-xh-field-layout",
+    "data-xh-field-size"
   ],
   "dataStateValues": [
     "active",

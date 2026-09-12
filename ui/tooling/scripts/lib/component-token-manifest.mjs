@@ -16,7 +16,8 @@ const FAMILY_STYLES_DIR = join(UI_ROOT, 'packages/design/styles/family')
 const HEADLESS_DIR = join(UI_ROOT, 'packages/engine/headless/src')
 
 const PRIVATE_PREFIX = '--xh-_'
-const FAMILY_BRIDGE_PREFIX = '--xh-action-'
+const FAMILY_BRIDGE_PREFIXES = ['--xh-action-', '--xh-field-']
+const isFamilyBridge = name => FAMILY_BRIDGE_PREFIXES.some(prefix => name.startsWith(prefix))
 const TOKEN_VERSION = 1
 
 const compareText = (a, b) => (a < b ? -1 : a > b ? 1 : 0)
@@ -267,7 +268,7 @@ function mergeFacet(inherited, current, neutral) {
 function projectedUsages(declaration, consumers, inheritedParts = [], inheritedStates = [], trail = new Set()) {
   const parts = mergeFacet(inheritedParts, partsOf(declaration.selector), '*')
   const states = mergeFacet(inheritedStates, statesOf(declaration.selector, declaration.atRules), 'default')
-  const bridge = declaration.property.startsWith(PRIVATE_PREFIX) || declaration.property.startsWith(FAMILY_BRIDGE_PREFIX)
+  const bridge = declaration.property.startsWith(PRIVATE_PREFIX) || isFamilyBridge(declaration.property)
   if (!bridge || trail.has(declaration))
     return [{ parts, property: declaration.property, states }]
   const next = consumers.get(declaration.property) ?? []
@@ -334,7 +335,7 @@ export async function buildComponentTokenManifest(options = {}) {
     const consumers = new Map()
     for (const declaration of [...declarations, ...applicableFamilyDeclarations]) {
       for (const call of declaration.calls) {
-        if (!call.name.startsWith(PRIVATE_PREFIX) && !call.name.startsWith(FAMILY_BRIDGE_PREFIX))
+        if (!call.name.startsWith(PRIVATE_PREFIX) && !isFamilyBridge(call.name))
           continue
         const list = consumers.get(call.name) ?? []
         if (!list.includes(declaration))
