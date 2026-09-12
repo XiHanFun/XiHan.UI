@@ -38,7 +38,7 @@ const TRIGGER_SELECTOR = '[data-xh-part="trigger"]'
  * @attr {'ltr'|'rtl'} dir - 文字方向，只影响水平轴上 ArrowLeft/ArrowRight 的前后语义，默认 ltr
  * @attr {'automatic'|'manual'} activation-mode - 方向键移动焦点是否顺带切换选中，默认 automatic
  * @attr {boolean} loop - 方向键走到尽头回绕，默认开启
- * @attr {'line'|'card'|'segment'} variant - 形态，默认 line
+ * @attr {'line'|'card'|'segment'} variant - 视觉变体，默认 segment
  * @attr {'brand'|'neutral'|'success'|'warning'|'danger'|'info'} tone - 语气
  * @attr {'sm'|'md'|'lg'} size - 尺寸
  * @attr {boolean} reorderable - 标签可以拖着换位，默认关

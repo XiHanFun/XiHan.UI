@@ -46643,7 +46643,7 @@
               "type": {
                 "text": "TabsVariant | undefined"
               },
-              "description": "形态，默认 line",
+              "description": "视觉变体，默认 segment",
               "name": "variant",
               "fieldName": "variant"
             },

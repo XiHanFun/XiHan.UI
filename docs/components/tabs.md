@@ -1,6 +1,6 @@
 # Tabs 标签页
 
-在同一块区域里切换几组并列的内容，同时只显示一组。
+用于在同一区域内切换并列内容。
 
 <div class="xh-resource-links">
   <a href="https://github.com/XiHanFun/XiHan.UI/tree/dev/ui/packages/engine/headless/src/tabs" target="_blank" rel="noreferrer">Headless</a>
@@ -12,7 +12,7 @@
 
 ## 用法
 
-default-value 指定初始选中项，禁用的标签方向键会跳过；面板常挂，靠 hidden 显隐
+在并列内容之间切换
 
 <XhDemo src="tabs/01-basic" />
 
@@ -24,118 +24,71 @@ default-value 指定初始选中项，禁用的标签方向键会跳过；面板
 
 ## 示例
 
-### 受控
+### 垂直布局
 
-传了 value 就由宿主说了算，组件自己不再改选中值；切换意图从 value-change 出来，写回才真的切
-
-<XhDemo src="tabs/02-controlled" />
-
-### 手动激活
-
-activation-mode="manual" 时方向键只搬焦点，按 Enter 或空格才真的切面板
-
-<XhDemo src="tabs/03-manual" />
-
-### 竖排
-
-orientation 换掉方向键收哪一对键：竖排认上下键，左右键原样放行给页面
+用于侧栏式内容导航
 
 <XhDemo src="tabs/04-vertical" />
 
 ### 变体
 
-variant 只改选中态怎么画，切换行为与键盘操作三档一致；不写 variant 即 line 档
+区分主要、次级与卡片式导航
 
 <XhDemo src="tabs/05-variant" />
 
-### 颜色
+### 图标标签
 
-tone 决定选中态用哪族颜色，与 variant 正交；这里固定 card 形态只看语气的差别
-
-<XhDemo src="tabs/06-tone" />
-
-### 尺寸
-
-size 换标签的高度、内边距与字号，不传 size 即默认档
-
-<XhDemo src="tabs/07-size" />
-
-### 标签栏前后缀
-
-list 里只收 trigger；要在标签栏两侧摆东西，把它们与 list 排进同一行
+图标辅助识别内容类别
 
 <XhDemo src="tabs/08-prefix-suffix" />
 
-### 拦截切换
+### 禁用标签
 
-受控下 value-change 只是意图，宿主校验不过就不写回 value，标签页原地不动
+保留暂不可用的内容入口
 
 <XhDemo src="tabs/09-guard" />
 
-### 动态增删
+### 分隔线
 
-标签清单归宿主维护；关掉当前这页时把选中值挪到相邻一项，全关完选中值是 null
+在相邻标签之间增加视觉分组
 
 <XhDemo src="tabs/10-dynamic" />
-
-### 可滚动的标签栏
-
-标签多到一行放不下时，把 list 装进作者自建的横滚容器，两端各摆一个滚动按钮
-
-<XhDemo src="tabs/11-scrollable" />
-
-### 切换后滚进视野
-
-每个标签都带 data-value 身份标记，选中值一变就按它取到那个标签，滚到视口正中
-
-<XhDemo src="tabs/12-active-into-view" />
-
-### 标签栏摆在哪一边
-
-root 按书写顺序渲染子节点：把面板写在 list 前面，标签栏就落到内容之后，基线换到另一边
-
-<XhDemo src="tabs/13-placement" />
-
-### 拖拽换位
-
-整个标签都是拖动源：按住往旁边拖，落点画成一条线、被拖的标签原地不动；也可以聚焦标签带后按 Alt + 左右键挪一位（竖排是 Alt + 上下键），到首末就不动。库不拥有标签序，只报一次重排好的新顺序连同读屏播报，照它写回数组归使用者
-
-<XhDemo src="tabs/14-reorder" />
 
 ## 设计指引
 
 ### 何时使用
 
-- 内容属于同一个对象的不同侧面（详情 / 权限 / 日志），用户会来回看。
-- 各组内容量相当，且不需要同时对照。
+- 内容属于同一对象的不同类别。
+- 用户需要在少量内容面板之间切换。
 
 ### 何时不用
 
-- 各组需要同时看见或互相对照：并排摆，别切换。
-- 有先后顺序、必须走完：用[步骤条](./steps)。
-- 只是切换一个显示开关：用[切换按钮组](./toggle-group)。
+- 内容需要同时比较时并排展示。
+- 存在先后顺序时使用[步骤条](./steps)。
+- 切换单个状态时使用[切换按钮组](./toggle-group)。
 
 ### 特性
 
-- `activationMode` 决定方向键移动焦点时是否顺带切换：内容加载昂贵时改 `manual`，方向键只搬焦点、按 Enter 才切。
-- `variant` 三档（`line` / `card` / `segment`）只改选中态怎么画，切换行为与键盘操作三档一致。
-- 面板常挂，靠 `hidden` 显隐。
-- `root` 按书写顺序渲染子节点：把面板写在标签栏前面，标签栏就落到内容之后。
-- `reorderable` 打开后标签可以拖着换位，键盘走 Alt + 主轴方向键。**只给 `collection` 时代铺的那套标记里没有播报区与拖动把手**：要读屏播报与触屏拖动，得写默认插槽并自己渲 `live-region` 与 `tab-drag-trigger`。
+- 默认 `segment` 变体使用浅色标签带与浮起选中项。
+- `line` 用于次级导航，`card` 用于文档式标签。
+- 支持水平、垂直、禁用与手动激活模式。
+- 面板常驻并通过 `hidden` 切换，内部状态不会丢失。
+- `reorderable` 支持指针拖动与 Alt + 方向键换位。
 
 ### 组合
 
-- 与[卡片](./card)配合；标签多到一行放不下时把标签栏装进自建的横滚容器。
+- `indicator` 为 `line` 变体提供滑动指示条。
+- `separator` 在相邻标签之间增加分隔线。
 
 ### 最佳实践
 
-- 标签数控制在七个以内，超过就该换成[侧栏导航](./side-nav)。
-- 把当前标签写进地址，刷新后才回得到原处。
+- 标签数量控制在七个以内。
+- 需要保留选择时，将当前标签同步到地址。
 
 ### 反模式
 
-- 标签页里再套标签页：用户分不清哪一层在切。
-- 面板高度随内容剧烈变化，切换时整页跳动。
+- 不要嵌套标签页。
+- 避免面板高度差异过大造成布局跳动。
 
 ## API 参考
 
@@ -160,7 +113,7 @@ root 按书写顺序渲染子节点：把面板写在 list 前面，标签栏就
 | `dir` | `Direction` |  | 文字方向，默认 ltr；只影响水平轴上 ArrowLeft/ArrowRight 的前后语义。 |
 | `activationMode` | `TabsActivationMode` |  | 方向键移动焦点时是否顺带切换选中，默认 automatic。 |
 | `loop` | `boolean` |  | 方向键走到尽头是否回绕，默认 true。 |
-| `variant` | `TabsVariant` |  | 形态：line / card / segment，决定选中态怎么画。缺省是 line。 |
+| `variant` | `TabsVariant` |  | 变体：line / card / segment，决定选中态怎么画。缺省是 segment。 |
 | `tone` | `Tone` |  | 语气：brand / neutral / success / warning / danger / info，决定用哪族颜色。 |
 | `size` | `Size` |  | 尺寸：sm / md / lg。 |
 | `reorderable` | `boolean` |  | 标签可以拖着换位。整个标签都是拖动源，不另出把手。 顺序不进机器：collection 是 prop，库没有一份自己的标签序可写，只发 onTabMove。 |

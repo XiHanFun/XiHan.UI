@@ -160,10 +160,10 @@ describe('折行不改单行时的几何', () => {
       .toBeGreaterThan(trackHeight)
   })
 
-  it('tabs 排得下时列表高度与标签行位不变', () => {
+  it('tabs 排得下时主标签带保持单行与完整内距', () => {
     const wide = mount(1280, TABS)
     const list = wide.querySelector('[data-scope="tabs"][data-part="list"]') as HTMLElement
-    expect(list.offsetHeight).toBe(33)
+    expect(list.offsetHeight).toBe(44)
     expect(rowsOf(wide, 'trigger')).toBe(1)
   })
 })

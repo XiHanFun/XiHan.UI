@@ -1,7 +1,8 @@
-<!-- 标签栏前后缀 | list 里只收 trigger；要在标签栏两侧摆东西，把它们与 list 排进同一行 -->
+<!-- 图标标签 | 图标辅助识别内容类别 -->
 <script setup lang="ts">
+import { ActivityIcon, ChartBarIcon, FileTextIcon } from "@xihan-ui/icons";
 import {
-  XhButton,
+  XhIcon,
   XhTabsContent,
   XhTabsList,
   XhTabsRoot,
@@ -10,22 +11,15 @@ import {
 </script>
 
 <template>
-  <XhTabsRoot default-value="all" variant="segment" style="inline-size: 100%">
-    <!-- 前后缀是这一行的兄弟节点，不进 list：list 里只放标签 -->
-    <div style="display: flex; align-items: center; gap: 12px">
-      <span style="font-size: 12px">收件箱</span>
-      <XhTabsList>
-        <XhTabsTrigger value="all">全部</XhTabsTrigger>
-        <XhTabsTrigger value="unread">未读</XhTabsTrigger>
-        <XhTabsTrigger value="flagged">已标记</XhTabsTrigger>
-      </XhTabsList>
-      <XhButton size="sm" variant="outline" style="margin-inline-start: auto">
-        写邮件
-      </XhButton>
-    </div>
+  <XhTabsRoot default-value="activity">
+    <XhTabsList aria-label="项目数据">
+      <XhTabsTrigger value="activity"><XhIcon :icon="ActivityIcon" />活动</XhTabsTrigger>
+      <XhTabsTrigger value="analytics"><XhIcon :icon="ChartBarIcon" />分析</XhTabsTrigger>
+      <XhTabsTrigger value="reports"><XhIcon :icon="FileTextIcon" />报告</XhTabsTrigger>
+    </XhTabsList>
 
-    <XhTabsContent value="all">全部邮件。</XhTabsContent>
-    <XhTabsContent value="unread">未读邮件。</XhTabsContent>
-    <XhTabsContent value="flagged">已标记邮件。</XhTabsContent>
+    <XhTabsContent value="activity">查看项目近期活动。</XhTabsContent>
+    <XhTabsContent value="analytics">查看项目分析数据。</XhTabsContent>
+    <XhTabsContent value="reports">查看项目报告。</XhTabsContent>
   </XhTabsRoot>
 </template>

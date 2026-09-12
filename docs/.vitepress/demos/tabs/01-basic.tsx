@@ -1,31 +1,24 @@
-// 基础用法 | default-value 指定初始选中项，禁用的标签方向键会跳过；面板常挂，靠 hidden 显隐
+// 基础用法 | 在并列内容之间切换
 import type { ReactNode } from "react";
-import { XhTabsRoot } from "@xihan-ui/react";
-
-const tabs = [
-  { value: "overview", label: "概览" },
-  { value: "usage", label: "用法" },
-  // 禁用写在数据里，方向键会跳过它
-  { value: "api", label: "API（禁用）", disabled: true },
-];
-
-// 面板正文按条目取
-const panels: Record<string, string> = {
-  overview: "概览面板：默认 automatic，方向键移动焦点时顺带切换选中。",
-  usage: "用法面板：面板不做懒挂载，切走再切回来，里面的滚动位置与表单态都还在。",
-  api: "API 面板。",
-};
+import {
+  XhTabsContent,
+  XhTabsList,
+  XhTabsRoot,
+  XhTabsTrigger,
+} from "@xihan-ui/react";
 
 export default function Demo(): ReactNode {
   return (
-    // 根不收透传属性，撑满宽度写在外面这层上
-    <div style={{ inlineSize: "100%" }}>
-      <XhTabsRoot
-        collection={tabs}
-        defaultValue="overview"
-        // 面板内容归作者，走 renderPanel 渲染 prop
-        renderPanel={node => panels[node.value]}
-      />
-    </div>
+    <XhTabsRoot defaultValue="overview">
+      <XhTabsList aria-label="项目视图">
+        <XhTabsTrigger value="overview">概览</XhTabsTrigger>
+        <XhTabsTrigger value="analytics">分析</XhTabsTrigger>
+        <XhTabsTrigger value="reports">报告</XhTabsTrigger>
+      </XhTabsList>
+
+      <XhTabsContent value="overview">查看项目概览与近期活动。</XhTabsContent>
+      <XhTabsContent value="analytics">分析访问趋势与关键指标。</XhTabsContent>
+      <XhTabsContent value="reports">浏览已生成的项目报告。</XhTabsContent>
+    </XhTabsRoot>
   );
 }
