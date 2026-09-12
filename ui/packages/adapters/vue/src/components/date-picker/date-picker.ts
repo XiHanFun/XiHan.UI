@@ -290,20 +290,24 @@ export const XhDatePickerTrigger = defineComponent({
 
 export const XhDatePickerPositioner = defineComponent({
   name: 'XhDatePickerPositioner',
+  props: {
+    /** 本实例的 Portal 容器；优先于应用级配置。 */
+    container: { type: Object as PropType<Element>, default: undefined },
+  },
   // 根是 Teleport，Vue 不会把直通属性合上去，作者写的 class 与 style 得自己接住落到 positioner 上
   inheritAttrs: false,
-  setup(_, { slots, attrs }) {
+  setup(props, { slots, attrs }) {
     const ctx = useDatePickerContext()
     // 浮层面板的自绘条：与 content 同级、绝对定位不占布局，壳是这层已经 fixed 的 positioner
     const bars = useScrollbars({ scrollable: () => ctx.contentRef.value, scope: ctx.services.root.scope })
     // 搬到 portal 落点：留在原地的话，宿主祖先只要建了层叠上下文就能盖住浮层
     return () => {
-      const target = ctx.portalTarget.value
+      const target = props.container ?? ctx.portalTarget.value
       return h(XhPortal, {
         to: target,
         source: ctx.controlRef,
         // SSR 与客户端首帧都还没有真实 root：保持同一原地结构，绑定 Scope 后再搬运。
-        disabled: typeof target === 'string',
+        disabled: props.container == null && typeof target === 'string',
       }, () => [
         h('div', {
           ...mergeProps(ctx.api.value.getPositionerProps() as Record<string, unknown>, attrs),
