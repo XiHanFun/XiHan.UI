@@ -1,4 +1,4 @@
-// 尺寸 | size 一档换掉页码格子的高度、内边距与字号，上一页 / 下一页与省略号一并跟着变
+// 尺寸 | 适配不同的界面密度
 import type { ReactNode } from "react";
 import {
   XhPaginationEllipsisTrigger,
@@ -9,17 +9,17 @@ import {
 } from "@xihan-ui/react";
 
 const sizes = [
-  { value: "sm", label: "sm" },
-  { value: undefined, label: "缺省" },
-  { value: "lg", label: "lg" },
+  { value: "sm", label: "小" },
+  { value: undefined, label: "中" },
+  { value: "lg", label: "大" },
 ] as const;
 
 export default function Demo(): ReactNode {
   return (
-    <div style={{ inlineSize: "100%", display: "grid", gap: "16px" }}>
+    <div style={{ inlineSize: "min(720px, 100%)", display: "grid", gap: "16px" }}>
       {sizes.map(s => (
         <div key={s.label} style={{ display: "flex", alignItems: "center", gap: "12px" }}>
-          <span style={{ inlineSize: "60px", flex: "none" }}>{s.label}</span>
+          <span style={{ inlineSize: "40px", flex: "none", color: "var(--xh-fg-muted)" }}>{s.label}</span>
           <XhPaginationRoot count={200} pageSize={10} defaultPage={4} size={s.value}>
             {({ pages }) => (
               <>

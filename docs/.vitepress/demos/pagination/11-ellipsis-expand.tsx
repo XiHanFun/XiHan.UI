@@ -1,4 +1,4 @@
-// 摊开省略号 | 折进去的那几页悬停即摊开，点一下也摊开——纯悬停会把键盘用户挡在外面，而这几页除了这里没有别的入口；Escape 或点外面收起
+// 展开省略位 | 查看被折叠的页码
 import type { ReactNode } from "react";
 import {
   XhPaginationContent,
@@ -16,9 +16,8 @@ export default function Demo(): ReactNode {
       count={2000}
       pageSize={10}
       defaultPage={100}
-      style={{ inlineSize: "100%" }}
     >
-      {({ pageItems, page }) => (
+      {({ pageItems }) => (
         <>
           <XhPaginationPrevTrigger />
           {pageItems.map((item, i) => (item.type === "ellipsis"
@@ -33,8 +32,6 @@ export default function Demo(): ReactNode {
               ))}
             </XhPaginationContent>
           </XhPaginationPositioner>
-
-          <span style={{ flexBasis: "100%" }}>{`当前第 ${page} 页，共 200 页`}</span>
         </>
       )}
     </XhPaginationRoot>

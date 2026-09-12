@@ -1,4 +1,4 @@
-<!-- 尺寸 | size 一档换掉页码格子的高度、内边距与字号，上一页 / 下一页与省略号一并跟着变 -->
+<!-- 尺寸 | 适配不同的界面密度 -->
 <script setup lang="ts">
 import {
   XhPaginationEllipsisTrigger,
@@ -9,20 +9,20 @@ import {
 } from "@xihan-ui/vue";
 
 const sizes = [
-  { value: "sm", label: "sm" },
-  { value: undefined, label: "缺省" },
-  { value: "lg", label: "lg" },
+  { value: "sm", label: "小" },
+  { value: undefined, label: "中" },
+  { value: "lg", label: "大" },
 ];
 </script>
 
 <template>
-  <div style="inline-size: 100%; display: grid; gap: 16px">
+  <div style="inline-size: min(720px, 100%); display: grid; gap: 16px">
     <div
       v-for="s in sizes"
       :key="s.label"
       style="display: flex; align-items: center; gap: 12px"
     >
-      <span style="inline-size: 60px; flex: none">{{ s.label }}</span>
+      <span style="inline-size: 40px; flex: none; color: var(--xh-fg-muted)">{{ s.label }}</span>
       <XhPaginationRoot
         v-slot="{ pages }"
         :count="200"
