@@ -8,11 +8,11 @@
 //   withToastSound   给命令式反馈服务配上声音，调用点一行都不用改
 //   getSoundPlayer   自己拿播放器，接偏好开关或调音面板
 
-import type { DialogSoundServiceOptions, SoundPlayer, ToastSoundServiceOptions } from '@xihan-ui/sound'
+import type { DialogSoundServiceOptions, SoundPressOptions as SharedSoundPressOptions, SoundPlayer, ToastSoundServiceOptions } from '@xihan-ui/sound'
 import type { RefCallback } from 'react'
 import type { DialogService } from './services/dialog-service'
 import type { ToastService } from './services/toast-service'
-import { createSharedSoundPlayerController, withDialogSoundService, withToastSoundService } from '@xihan-ui/sound'
+import { attachDocumentSoundUnlock, createSharedSoundPlayerController, isSoundTargetDisabled, resolveSoundPressOptions, withDialogSoundService, withToastSoundService } from '@xihan-ui/sound'
 import { useCallback, useRef } from 'react'
 
 export type { DialogSoundKey, SoundChoice } from '@xihan-ui/sound'
@@ -30,23 +30,6 @@ export function getSoundPlayer(): SoundPlayer {
 /** 换成自己配置的播放器（换主题、接用户偏好）。自动建的那个会被销毁。 */
 export function setSoundPlayer(player: SoundPlayer): void {
   shared.setPlayer(player)
-}
-
-/** 首次用户手势时解锁音频上下文，返回撤销函数。 */
-function attachUnlock(unlock: () => void): () => void {
-  if (typeof document === 'undefined')
-    return () => undefined
-  const listener = (): void => {
-    unlock()
-    document.removeEventListener('pointerdown', listener)
-    document.removeEventListener('keydown', listener)
-  }
-  document.addEventListener('pointerdown', listener)
-  document.addEventListener('keydown', listener)
-  return () => {
-    document.removeEventListener('pointerdown', listener)
-    document.removeEventListener('keydown', listener)
-  }
 }
 
 export interface ToastSoundOptions extends Omit<ToastSoundServiceOptions, 'player' | 'attachUnlock'> {
@@ -69,7 +52,7 @@ export function withToastSound(service: ToastService, options: ToastSoundOptions
   return withToastSoundService(service, {
     ...options,
     player: options.player ?? getSoundPlayer(),
-    attachUnlock,
+    attachUnlock: attachDocumentSoundUnlock,
   })
 }
 
@@ -85,33 +68,13 @@ export function withDialogSound(service: DialogService, options: DialogSoundOpti
   return withDialogSoundService(service, {
     ...options,
     player: options.player ?? getSoundPlayer(),
-    attachUnlock,
+    attachUnlock: attachDocumentSoundUnlock,
   })
 }
 
-export interface SoundPressOptions {
-  /** 语义名或配方名，默认 'click'。 */
-  sound?: string
-  /** 本次播放的音量系数（0..1）。 */
-  volume?: number
-  /** 用哪个播放器，默认共享播放器。 */
-  player?: SoundPlayer
-}
+export interface SoundPressOptions extends SharedSoundPressOptions {}
 
 export type SoundPressValue = string | SoundPressOptions | undefined
-
-function toOptions(value: SoundPressValue): SoundPressOptions & { sound: string } {
-  if (typeof value === 'string')
-    return { sound: value }
-  return { sound: 'click', ...value }
-}
-
-/** 禁用态的元素不发声：原生 disabled 不触发 click，aria/data 标注的会。 */
-function isDisabled(el: HTMLElement): boolean {
-  return el.hasAttribute('disabled')
-    || el.getAttribute('aria-disabled') === 'true'
-    || el.hasAttribute('data-disabled')
-}
 
 /**
  * `useSoundOnPress` —— 给任意元素按下时配一声，返回值挂到该元素的 `ref` 上。
@@ -129,8 +92,8 @@ function isDisabled(el: HTMLElement): boolean {
  */
 export function useSoundOnPress(value?: SoundPressValue): RefCallback<HTMLElement> {
   // 每渲染现读一份：换语义名、换音量、换播放器都不必解绑重绑，按下那一刻取当前值
-  const latest = useRef(toOptions(value))
-  latest.current = toOptions(value)
+  const latest = useRef(resolveSoundPressOptions(value))
+  latest.current = resolveSoundPressOptions(value)
   const bound = useRef<{ el: HTMLElement, handler: () => void } | null>(null)
 
   // 回调常驻：跟着渲染换新的会让 React 每次提交都解绑重绑一遍
@@ -145,7 +108,7 @@ export function useSoundOnPress(value?: SoundPressValue): RefCallback<HTMLElemen
     if (!el)
       return
     const handler = (): void => {
-      if (isDisabled(el))
+      if (isSoundTargetDisabled(el))
         return
       const { sound, volume, player } = latest.current
       ;(player ?? getSoundPlayer()).play(sound, volume === undefined ? undefined : { volume })
