@@ -1,13 +1,11 @@
-<!-- 基础用法 | 下载文本文件 -->
+<!-- 禁用 | 禁止触发下载 -->
 <script setup lang="ts">
 import { DownloadIcon } from "@xihan-ui/icons";
 import { XhDownloadTrigger, XhIcon } from "@xihan-ui/vue";
-
-const content = "XiHan.UI";
 </script>
 
 <template>
-  <XhDownloadTrigger :data="content" file-name="xihan-ui.txt">
+  <XhDownloadTrigger disabled data="XiHan.UI" file-name="xihan-ui.txt">
     <XhIcon :icon="DownloadIcon" /> 下载文件
   </XhDownloadTrigger>
 </template>

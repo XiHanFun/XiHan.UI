@@ -1,9 +1,10 @@
 <script setup lang="ts">
-import { XhDownloadTrigger } from "@xihan-ui/vue";
+import { DownloadIcon } from "@xihan-ui/icons";
+import { XhDownloadTrigger, XhIcon } from "@xihan-ui/vue";
 </script>
 
 <template>
   <XhDownloadTrigger data="XiHan.UI" file-name="xihan-ui.txt">
-    下载文件
+    <XhIcon :icon="DownloadIcon" /> 下载文件
   </XhDownloadTrigger>
 </template>

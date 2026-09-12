@@ -388,10 +388,15 @@ describe('connectClipboard 结构与标注', () => {
     const trigger = c.api().getCopyTriggerProps() as Dict
     // 漏了 type，按钮落在 form 里会变成 submit，Enter 直接提交表单
     expect(trigger.type).toBe('button')
+    expect(trigger['data-xh-action-control']).toBe('')
+    expect(trigger['data-xh-action-profile']).toBe('text')
+    expect(trigger['data-xh-action-size']).toBe('md')
 
     fire(trigger, 'onClick', {})
     expect(c.state()).toBe('copying')
     expect((c.api().getCopyTriggerProps() as Dict)['aria-busy']).toBe('true')
+    expect((c.api().getCopyTriggerProps() as Dict)['aria-disabled']).toBe('true')
+    expect((c.api().getCopyTriggerProps() as Dict)['data-loading']).toBe('')
   })
 
   it('只在写入途中报告 aria-busy', async () => {

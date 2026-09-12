@@ -1,6 +1,6 @@
 # DownloadTrigger 下载触发器
 
-把一段数据交给浏览器下载，并把取数这段过程如实报出来。
+用于将文本或 Blob 保存为本地文件。
 
 <div class="xh-resource-links">
   <a href="https://github.com/XiHanFun/XiHan.UI/tree/dev/ui/packages/engine/headless/src/download-trigger" target="_blank" rel="noreferrer">Headless</a>
@@ -12,7 +12,7 @@
 
 ## 用法
 
-内容已经在手里就直接给字符串，点一下即交给浏览器；文件名连同扩展名都由 file-name 说了算
+下载文本文件
 
 <XhDemo src="download-trigger/01-basic" />
 
@@ -24,74 +24,71 @@
 
 ## 示例
 
-### 按需取数
+### 异步内容
 
-data 给函数就是点了才算：它可以返回 Promise，这段时间状态是 preparing，再点也不会重复取一遍
+点击后获取下载内容
 
 <XhDemo src="download-trigger/02-lazy" />
 
-### Blob 内容
+### Blob
 
-结构化与二进制内容交 Blob，它自带的类型就是写出去的类型；显式写了 mime-type 则以 mime-type 为准
+下载 JSON 文件
 
 <XhDemo src="download-trigger/03-blob" />
 
-### 失败要说出来
+### 变体
 
-取数抛出或拒绝都会退回 idle 并派 download-error，按钮不会一直停在"下载中"
+设置触发器外观
 
-<XhDemo src="download-trigger/04-error" />
+<XhDemo src="download-trigger/04-variant" />
+
+### 尺寸
+
+使用小、中、大三档尺寸
+
+<XhDemo src="download-trigger/05-size" />
 
 ### 禁用
 
-禁用的触发器不可聚焦也点不动，连取数函数都不会被调用
+禁止触发下载
 
-<XhDemo src="download-trigger/05-disabled" />
-
-### 形态、语气与尺寸
-
-三轴只改按钮外观，取数与落盘那条链一个字都不动
-
-<XhDemo src="download-trigger/06-variant-tone-size" />
+<XhDemo src="download-trigger/06-disabled" />
 
 ## 设计指引
 
 ### 何时使用
 
-- 内容已经在前端手里：当前表格导出成 CSV、编辑器里的草稿存成文件、生成好的配置文本。
-- 数据要点了才算：交一个取数函数，点下去才发请求或才开始序列化。
+- 导出 CSV、JSON、日志或配置文件。
+- 点击后才获取或生成下载内容。
 
 ### 何时不用
 
-- 文件在服务端且有稳定地址：直接写一个 `<a href download>` 指过去，让服务端决定文件名与类型，别在前端造一份副本。
-- 内容只是要带走一小段文字：用[剪贴板](./clipboard)，用户不必再去下载目录里翻。
-- 方向反过来是把文件交进来：用[文件上传](./file-upload)。
+- 文件已有稳定地址时，使用原生 `<a download>`。
+- 复制少量文字时，使用[剪贴板](./clipboard)。
+- 接收用户文件时，使用[文件上传](./file-upload)。
 
 ### 特性
 
-- 数据可以是文本、Blob，或点了才调用的取数函数（可返回 Promise）。
-- 取数在途时状态是 `preparing`，此时再点不会重复发起；无论成败都回到 `idle`，界面上不留"下载中"的假象。
-- 失败会说出来：取数抛出、拒绝，或环境造不出下载，都走 `onDownloadError` 并带上原始原因。
-- 文件名与类型在发起那一刻定死，取数途中宿主改了 prop 也不影响这一次写出的那份。
-- Vue 侧默认插槽拿得到 `{ status, preparing, disabled, fileName, download }`，可据 `preparing` 换掉按钮上的文字；Web Components 侧按钮内容由作者自己写，要跟着状态换文字得自己盯 `data-state`。
+- 接受字符串、Blob 与异步数据函数。
+- `preparing` 期间保留焦点并阻止重复触发。
+- 通过完成与失败事件返回本次文件名和错误。
+- 默认使用 Button 家族的中性工具样式。
 
 ### 组合
 
-- 与[按钮](./button)是两件事：按钮带形态/语气/尺寸三轴，下载触发器只管行为，自带的是一份中性按钮外观（高度、描边、底色、字号都走令牌）。要品牌语气就把按钮的类名写到触发器上，或改 `--xh-download-trigger-*` 这一族槽位。
-- 与[进度条](./progress)搭配：取数要跑很久时，自己在旁边放一条进度，本组件只报"在途 / 结束"两档。
+- 与[进度条](./progress)组合展示可量化的长任务。
+- 通过变体与颜色调整操作层级。
 
 ### 最佳实践
 
-- 大文件走服务端直链，别在前端拼 Blob：整份内容会先住进内存，几十兆的导出足以让标签页卡住。
-- 取数函数里自己兜住失败并给出可见提示，`onDownloadError` 只通知你，用户看到的还是那颗没反应的按钮。
-- 文件名带扩展名。浏览器不会替你猜，`report` 与 `report.csv` 打开的方式完全不同。
-- 换外观改 `--xh-download-trigger-*` 槽位，别只覆盖前景色：禁用态的底色也在这一族里，只改一半会把禁用前后压成同一个样子。
+- 文件名应包含正确扩展名。
+- 大文件优先使用服务端下载地址。
+- 失败事件应连接可见反馈。
 
 ### 反模式
 
-- 认为回调触发就等于文件已经存好：组件只能知道下载已经发起，用户取消保存、磁盘写失败都在浏览器那一侧。
-- 页面一加载就把整份数据备在内存里等着点：改成取数函数，点了再算。
-- 用它下载跨域地址上的文件：浏览器发起的下载受同源与下载策略约束，跨域内容取不回来也就造不出 Blob。
+- 不要将“下载已发起”等同于“文件已写入磁盘”。
+- 不要在页面加载时预先生成大文件。
 
 ## API 参考
 
@@ -113,8 +110,8 @@ data 给函数就是点了才算：它可以返回 Promise，这段时间状态�
 | `fileName` | `string` |  | 写出的文件名；缺省或空串退回内建默认名。 |
 | `mimeType` | `string` |  | 内容类型；给了它就以它为准，连 Blob 自带的类型也照它重包一次。缺省时文本按纯文本处理。 |
 | `disabled` | `boolean` |  | 禁用：按钮不可聚焦、点不动。 |
-| `variant` | `ActionVariant` |  | 形态：solid / subtle / outline / ghost，决定颜色怎么用。 |
-| `tone` | `Tone` |  | 语气：brand / neutral / success / warning / danger / info，决定用哪族颜色。 |
+| `variant` | `ActionVariant` |  | 变体：solid / subtle / outline / ghost。 |
+| `tone` | `Tone` |  | 颜色：brand / neutral / success / warning / danger / info。 |
 | `size` | `Size` |  | 尺寸：sm / md / lg。 |
 | `translations` | `Partial<DownloadTriggerTranslations>` |  |  |
 | `onDownloadComplete` | `(details: DownloadTriggerCompleteDetails) => void` |  | 数据已交给浏览器时通知一次。到这里只说明下载已经发起，浏览器把文件写没写到盘上组件看不见。 |
@@ -183,11 +180,12 @@ data 给函数就是点了才算：它可以返回 Promise，这段时间状态�
 | 部件 | 属性 | 值 |
 | --- | --- | --- |
 | `root` | `aria-busy` | 'true' \| undefined |
+| `root` | `aria-disabled` | 'true' \| undefined |
 | `root` | `aria-label` | props.translations.trigger |
 
-- 触发器是原生 `<button type="button">`，Enter 与 Space 的激活由平台负责。
-- 取数在途时按钮不变成禁用，只挂 `aria-busy="true"`：禁用会把焦点从按钮上弹走，键盘用户等回来时不知道自己在哪。
-- 按钮上的文字要说清楚下的是什么（"导出 CSV"而不是"下载"），读屏一次只念一个按钮，光有图标听不出区别。
+- 触发器使用原生 `<button type="button">`。
+- 准备数据时使用 `aria-busy` 与 `aria-disabled`，但不移除焦点。
+- 仅显示图标时必须提供可访问名称。
 
 ## 样式参考
 
@@ -202,10 +200,15 @@ data 给函数就是点了才算：它可以返回 Promise，这段时间状态�
 | 部件 | 属性 | 值 |
 | --- | --- | --- |
 | `root` | `data-disabled` | ''（条件成立时才出现） |
+| `root` | `data-loading` | ''（条件成立时才出现） |
 | `root` | `data-size` | props.size |
 | `root` | `data-state` | 'idle' \| 'preparing' |
 | `root` | `data-tone` | props.tone |
 | `root` | `data-variant` | props.variant |
+| `root` | `data-xh-action-control` | '' |
+| `root` | `data-xh-action-display` | 'always' |
+| `root` | `data-xh-action-profile` | 'text' |
+| `root` | `data-xh-action-size` | props.size |
 
 <!-- xh-component-tokens:start -->
 ### CSS 变量
@@ -215,27 +218,28 @@ data 给函数就是点了才算：它可以返回 Promise，这段时间状态�
 | 变量 | 部件 | CSS 属性 | 状态 | 缺省来源 | 说明 |
 | --- | --- | --- | --- | --- | --- |
 | `--xh-download-trigger-bg` | `root` | `background` | `default` | `--xh-_download-trigger-bg` | download-trigger 的 root 部件 background 覆盖槽。 |
-| `--xh-download-trigger-bg-active` | `root` | `background` | `active` | `--xh-_download-trigger-bg-active` | download-trigger 的 root 部件 background 覆盖槽。 |
+| `--xh-download-trigger-bg-active` | `root` | `background` | `active`<br>`loading`<br>`not([data-loading])` | `--xh-_download-trigger-bg-active` | download-trigger 的 root 部件 background 覆盖槽。 |
 | `--xh-download-trigger-bg-disabled` | `root` | `background` | `disabled` | `--xh-bg-muted` | download-trigger 的 root 部件 background 覆盖槽。 |
-| `--xh-download-trigger-bg-hover` | `root` | `background` | `hover` | `--xh-_download-trigger-bg-hover` | download-trigger 的 root 部件 background 覆盖槽。 |
+| `--xh-download-trigger-bg-hover` | `root` | `background` | `hover`<br>`loading`<br>`not([data-loading])` | `--xh-_download-trigger-bg-hover` | download-trigger 的 root 部件 background 覆盖槽。 |
 | `--xh-download-trigger-border` | `root` | `border` | `default` | `--xh-_download-trigger-border` | download-trigger 的 root 部件 border 覆盖槽。 |
 | `--xh-download-trigger-border-disabled` | `root` | `border-color` | `disabled` | `--xh-border-control` | download-trigger 的 root 部件 border-color 覆盖槽。 |
-| `--xh-download-trigger-border-hover` | `root` | `border-color` | `hover` | `--xh-_download-trigger-border-hover` | download-trigger 的 root 部件 border-color 覆盖槽。 |
+| `--xh-download-trigger-border-hover` | `root` | `border-color` | `hover`<br>`loading`<br>`not([data-loading])` | `--xh-_download-trigger-border-hover` | download-trigger 的 root 部件 border-color 覆盖槽。 |
 | `--xh-download-trigger-fg` | `root` | `color` | `default` | `--xh-_download-trigger-fg` | download-trigger 的 root 部件 color 覆盖槽。 |
-| `--xh-download-trigger-font-size` | `root` | `font-size` | `default`<br>`size=lg`<br>`size=sm` | `--xh-control-font-lg`<br>`--xh-control-font-sm`<br>`--xh-text-label-size` | download-trigger 的 root 部件 font-size 覆盖槽。 |
+| `--xh-download-trigger-font-size` | `root` | `font-size` | `default`<br>`size=lg`<br>`size=sm` | `--xh-control-font-lg`<br>`--xh-control-font-md`<br>`--xh-control-font-sm` | download-trigger 的 root 部件 font-size 覆盖槽。 |
 | `--xh-download-trigger-font-weight` | `root` | `font-weight` | `default` | `--xh-text-label-weight` | download-trigger 的 root 部件 font-weight 覆盖槽。 |
 | `--xh-download-trigger-gap` | `root` | `gap` | `default`<br>`size=lg`<br>`size=sm` | `--xh-control-gap-lg`<br>`--xh-control-gap-md`<br>`--xh-control-gap-sm` | download-trigger 的 root 部件 gap 覆盖槽。 |
 | `--xh-download-trigger-h` | `root` | `block-size` | `default`<br>`size=lg`<br>`size=sm` | `--xh-control-h-lg`<br>`--xh-control-h-md`<br>`--xh-control-h-sm` | download-trigger 的 root 部件 block-size 覆盖槽。 |
 | `--xh-download-trigger-icon-size` | `root` | `--xh-icon-size` | `default`<br>`size=lg`<br>`size=sm` | `--xh-glyph-size-lg`<br>`--xh-glyph-size-md`<br>`--xh-glyph-size-sm` | download-trigger 的 root 部件 --xh-icon-size 覆盖槽。 |
-| `--xh-download-trigger-loading-duration` | `root` | `animation` | `state=preparing` | `--xh-spin-duration` | download-trigger 的 root 部件 animation 覆盖槽。 |
+| `--xh-download-trigger-loading-duration` | `root` | `animation` | `default` | `--xh-spin-duration` | download-trigger 的 root 部件 animation 覆盖槽。 |
+| `--xh-download-trigger-loading-fg` | `root` | `border-block-start-color`<br>`border-color` | `@media (prefers-reduced-motion: reduce)`<br>`default`<br>`motion=reduce`<br>`where([data-motion='reduce'])` | `--xh-_download-trigger-fg` | download-trigger 的 root 部件 border-block-start-color、border-color 覆盖槽。 |
 | `--xh-download-trigger-px` | `root` | `padding-inline` | `default`<br>`size=lg`<br>`size=sm` | `--xh-control-px-lg`<br>`--xh-control-px-md`<br>`--xh-control-px-sm` | download-trigger 的 root 部件 padding-inline 覆盖槽。 |
-| `--xh-download-trigger-radius` | `root` | `border-radius` | `default` | `--xh-shape-control` | download-trigger 的 root 部件 border-radius 覆盖槽。 |
-| `--xh-download-trigger-shadow-hover` | `root` | `box-shadow` | `hover` | `--xh-elevation-raised` | download-trigger 的 root 部件 box-shadow 覆盖槽。 |
+| `--xh-download-trigger-radius` | `root` | `border-radius` | `default` | `--xh-shape-pill` | download-trigger 的 root 部件 border-radius 覆盖槽。 |
+| `--xh-download-trigger-shadow-hover` | `root` | `box-shadow` | `hover`<br>`loading`<br>`not([data-loading])` | `--xh-_download-trigger-shadow-hover` | download-trigger 的 root 部件 box-shadow 覆盖槽。 |
 <!-- xh-component-tokens:end -->
 
 ### 动效
 
-关键帧 `xh-download-trigger-rotate` 随皮肤自带，不引用别处文件里的名字；`background` · `border-color` · `box-shadow` · `scale` 走 `transition` 过渡。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
+关键帧 `xh-download-trigger-content-hide` · `xh-download-trigger-loading-reveal` · `xh-download-trigger-rotate` 随皮肤自带，不引用别处文件里的名字；`background` · `border-color` · `box-shadow` · `scale` 走 `transition` 过渡。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
 
 `prefers-reduced-motion: reduce` 下本组件另有降级规则。
 

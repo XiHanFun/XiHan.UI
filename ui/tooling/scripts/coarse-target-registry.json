@@ -136,16 +136,16 @@
       "why": "勾选框本体，手指直接落上去"
     },
     "clipboard:copy-trigger": {
-      "px": 36,
-      "why": "复制钮，手指直接落上去"
+      "px": 24,
+      "why": "复制钮，手指直接落上去；24px 是 Action Control 的内部 xs 视觉地板，公开 sm/md/lg 更高"
     },
     "dialog:close-trigger": {
       "px": 32,
       "why": "对话框右上角的叉，手指直接落上去"
     },
     "download-trigger:root": {
-      "px": 32,
-      "why": "下载钮本体，手指直接落上去；28px 是 sm 档，md 与 lg 档更高"
+      "px": 24,
+      "why": "下载钮本体，手指直接落上去；24px 是 Action Control 的内部 xs 视觉地板，公开 sm/md/lg 更高"
     },
     "drawer:close-trigger": {
       "px": 32,

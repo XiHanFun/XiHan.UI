@@ -1,3 +1,5 @@
+@import '../family/action-control.css';
+
 @layer xihan.motion {
   @keyframes xh-clipboard-rotate {
     to {
@@ -39,6 +41,7 @@
     /* 输入框与按钮同取一档高度，换尺寸只改这一个私有槽 */
     --xh-_clipboard-h: var(--xh-control-h-md);
     --xh-_clipboard-px: var(--xh-control-px-md);
+    --xh-_clipboard-font-size: var(--xh-control-font-md);
 
     display: inline-flex;
     flex-direction: column;
@@ -54,11 +57,13 @@
   [data-scope='clipboard'][data-part='root'][data-size='sm'] {
     --xh-_clipboard-h: var(--xh-control-h-sm);
     --xh-_clipboard-px: var(--xh-control-px-sm);
+    --xh-_clipboard-font-size: var(--xh-control-font-sm);
   }
 
   [data-scope='clipboard'][data-part='root'][data-size='lg'] {
     --xh-_clipboard-h: var(--xh-control-h-lg);
     --xh-_clipboard-px: var(--xh-control-px-lg);
+    --xh-_clipboard-font-size: var(--xh-control-font-lg);
   }
 
   /* —— 形态 ——
@@ -202,12 +207,13 @@
     padding-inline: var(--xh-clipboard-copy-trigger-px, var(--xh-_clipboard-px));
     padding-block: 0;
     border: var(--xh-stroke-thin) solid var(--xh-clipboard-copy-trigger-border, var(--xh-_clipboard-copy-trigger-border));
-    border-radius: var(--xh-clipboard-copy-trigger-radius, var(--xh-shape-control));
+    border-radius: var(--xh-clipboard-copy-trigger-radius, var(--xh-shape-pill));
     /* 使用者令牌排在变体之前：写了覆盖钩子就以它为准，没写才按 data-variant 那一档取值 */
     background: var(--xh-clipboard-copy-trigger-bg, var(--xh-_clipboard-copy-trigger-bg));
     color: var(--xh-clipboard-copy-trigger-fg, var(--xh-_clipboard-copy-trigger-fg));
     font-family: inherit;
-    font-size: var(--xh-clipboard-copy-trigger-font-size, var(--xh-text-body-size));
+    font-size: var(--xh-clipboard-copy-trigger-font-size, var(--xh-_clipboard-font-size));
+    font-weight: var(--xh-clipboard-copy-trigger-font-weight, var(--xh-text-label-weight));
     line-height: var(--xh-leading-none);
     white-space: nowrap;
     cursor: pointer;
@@ -226,6 +232,14 @@
     margin-inline-start: calc(-1 * var(--xh-stroke-thin));
     border-start-start-radius: 0;
     border-end-start-radius: 0;
+    border-start-end-radius: var(
+      --xh-clipboard-copy-trigger-attached-radius,
+      var(--xh-clipboard-input-radius, var(--xh-shape-control))
+    );
+    border-end-end-radius: var(
+      --xh-clipboard-copy-trigger-attached-radius,
+      var(--xh-clipboard-input-radius, var(--xh-shape-control))
+    );
   }
 
   [data-scope='clipboard'][data-part='control'] > [data-scope='clipboard'][data-part='input']:focus-visible,
@@ -241,14 +255,14 @@
   }
 
   /* 换底、换描边之外再抬起一档：这是一块实心的可点面，指针停上去它从输入框那一行浮出来 */
-  [data-scope='clipboard'][data-part='copy-trigger']:hover {
+  [data-scope='clipboard'][data-part='copy-trigger']:not([data-loading]):hover {
     border-color: var(--xh-clipboard-copy-trigger-border-hover, var(--xh-_clipboard-copy-trigger-border-hover));
     background: var(--xh-clipboard-copy-trigger-bg-hover, var(--xh-_clipboard-copy-trigger-bg-hover));
     box-shadow: var(--xh-clipboard-copy-trigger-shadow-hover, var(--xh-_clipboard-copy-trigger-shadow-hover));
   }
 
   /* 换底之外再压一档：复制钮按下时缩放 */
-  [data-scope='clipboard'][data-part='copy-trigger']:active {
+  [data-scope='clipboard'][data-part='copy-trigger']:not([data-loading]):active {
     background: var(--xh-clipboard-copy-trigger-bg-active, var(--xh-_clipboard-copy-trigger-bg-active));
     scale: var(--xh-motion-scale-press);
   }
@@ -259,7 +273,8 @@
   }
 
   /* 快速写入不显示瞬时圆环；超过一个 micro 周期后才平滑换成加载状态。 */
-  [data-scope='clipboard'][data-part='copy-trigger'][aria-busy='true'] {
+  [data-scope='clipboard'][data-part='root'][data-state='copying']
+    [data-scope='clipboard'][data-part='copy-trigger'][aria-busy='true'] {
     cursor: progress;
   }
 

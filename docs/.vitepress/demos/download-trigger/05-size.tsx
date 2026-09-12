@@ -1,16 +1,17 @@
-// 基础用法 | 下载文本文件
+// 尺寸 | 使用小、中、大三档尺寸
+import type { Size } from "@xihan-ui/core";
 import type { ReactNode } from "react";
 import { DownloadIcon } from "@xihan-ui/icons";
 import { XhDownloadTrigger, XhIcon } from "@xihan-ui/react";
 
-const content = "XiHan.UI";
+const sizes: Size[] = ["sm", "md", "lg"];
 
 export default function Demo(): ReactNode {
-  return (
-    <XhDownloadTrigger data={content} fileName="xihan-ui.txt">
+  return sizes.map(size => (
+    <XhDownloadTrigger key={size} data="XiHan.UI" fileName="xihan-ui.txt" size={size}>
       <XhIcon icon={DownloadIcon} />
       {" "}
       下载文件
     </XhDownloadTrigger>
-  );
+  ));
 }

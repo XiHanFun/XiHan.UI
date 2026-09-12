@@ -129,6 +129,24 @@
         "diff-view"
       ]
     },
+    "xh-download-trigger-content-hide": {
+      "content": "to{color:transparent}",
+      "definedIn": [
+        "download-trigger.css"
+      ],
+      "consumers": [
+        "download-trigger"
+      ]
+    },
+    "xh-download-trigger-loading-reveal": {
+      "content": "to{opacity:1}",
+      "definedIn": [
+        "download-trigger.css"
+      ],
+      "consumers": [
+        "download-trigger"
+      ]
+    },
     "xh-download-trigger-rotate": {
       "content": "to{rotate:360deg}",
       "definedIn": [
@@ -735,6 +753,13 @@
       "names": [
         "xh-fade-in",
         "xh-reasoning-fade-in"
+      ]
+    },
+    "xh-clipboard-loading-reveal": {
+      "$description": "2 个名字是同一段动画，收敛前登记在案",
+      "names": [
+        "xh-clipboard-loading-reveal",
+        "xh-download-trigger-loading-reveal"
       ]
     },
     "xh-dialog-in": {

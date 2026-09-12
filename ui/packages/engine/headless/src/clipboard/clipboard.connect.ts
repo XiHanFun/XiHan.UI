@@ -13,6 +13,7 @@ export function connectClipboard<T extends PropTypes>(
   const ids = scope.ids('clipboard', 'label', 'input')
 
   const status = state.get()
+  const copying = status === 'copying'
   const copied = status === 'copied'
   const value = prop('value') ?? ''
   const disabled = !!prop('disabled')
@@ -73,7 +74,8 @@ export function connectClipboard<T extends PropTypes>(
       ...parts['copy-trigger'].attrs,
       // 不给 type 会在 form 里变成 submit，Enter 直接提交表单
       'type': 'button',
-      'aria-busy': status === 'copying' ? 'true' : undefined,
+      'aria-disabled': copying ? 'true' : undefined,
+      'aria-busy': copying ? 'true' : undefined,
       // 单体原生控件用原生 disabled：它本就不该被聚焦，也不该派 click
       'disabled': disabled || undefined,
       // 按钮里只放一个图标时没有可见文字，可及名字只能由这里给。
@@ -82,6 +84,11 @@ export function connectClipboard<T extends PropTypes>(
       'data-state': status,
       'data-copied': dataAttr(copied),
       'data-disabled': dataAttr(disabled),
+      'data-loading': dataAttr(copying),
+      'data-xh-action-control': '',
+      'data-xh-action-profile': 'text',
+      'data-xh-action-display': 'always',
+      'data-xh-action-size': prop('size') ?? 'md',
       'onClick': () => send({ type: 'COPY.TRIGGER' }),
     }),
 
