@@ -1,4 +1,4 @@
-<!-- 语气与尺寸 | tone 换选中行与展开枝用哪族颜色，size 换行高与缩进档；两轴都打在 root 上，逐层继承 -->
+<!-- 尺寸 | 适配不同密度的应用侧栏 -->
 <script setup lang="ts">
 import type { SideNavNode } from "@xihan-ui/headless";
 import {
@@ -27,50 +27,48 @@ const collection: SideNavNode[] = [
 ];
 
 const rows = [
-  { tone: "success", size: "md", label: "success" },
-  { tone: "danger", size: "md", label: "danger" },
-  { tone: "brand", size: "sm", label: "sm" },
-  { tone: "brand", size: "lg", label: "lg" },
+  { size: "sm", label: "小" },
+  { size: undefined, label: "中" },
+  { size: "lg", label: "大" },
 ];
 </script>
 
 <template>
   <div style="display: grid; gap: 16px; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr))">
-    <XhSideNavRoot
-      v-for="row in rows"
-      :key="row.label"
-      :collection="collection"
-      :tone="row.tone"
-      :size="row.size"
-      default-value="user-list"
-      :default-expanded-value="['user']"
-      style="border: 1px solid var(--xh-border-default); border-radius: 8px"
-    >
-      <XhSideNavList>
-        <XhSideNavItem>
-          <XhSideNavLink value="dashboard">
-            <XhSideNavLinkText>工作台 · {{ row.label }}</XhSideNavLinkText>
-          </XhSideNavLink>
-        </XhSideNavItem>
-        <XhSideNavBranch value="user">
-          <XhSideNavBranchTrigger>
-            <XhSideNavBranchText>用户管理</XhSideNavBranchText>
-            <XhSideNavBranchIndicator />
-          </XhSideNavBranchTrigger>
-          <XhSideNavBranchContent>
-            <XhSideNavItem>
-              <XhSideNavLink value="user-list">
-                <XhSideNavLinkText>用户列表</XhSideNavLinkText>
-              </XhSideNavLink>
-            </XhSideNavItem>
-            <XhSideNavItem>
-              <XhSideNavLink value="user-role">
-                <XhSideNavLinkText>角色权限</XhSideNavLinkText>
-              </XhSideNavLink>
-            </XhSideNavItem>
-          </XhSideNavBranchContent>
-        </XhSideNavBranch>
-      </XhSideNavList>
-    </XhSideNavRoot>
+    <div v-for="row in rows" :key="row.label" style="display: grid; gap: 6px">
+      <span style="color: var(--xh-fg-muted)">{{ row.label }}</span>
+      <XhSideNavRoot
+        :collection="collection"
+        :size="row.size"
+        default-value="user-list"
+        :default-expanded-value="['user']"
+      >
+        <XhSideNavList>
+          <XhSideNavItem>
+            <XhSideNavLink value="dashboard">
+              <XhSideNavLinkText>工作台</XhSideNavLinkText>
+            </XhSideNavLink>
+          </XhSideNavItem>
+          <XhSideNavBranch value="user">
+            <XhSideNavBranchTrigger>
+              <XhSideNavBranchText>用户管理</XhSideNavBranchText>
+              <XhSideNavBranchIndicator />
+            </XhSideNavBranchTrigger>
+            <XhSideNavBranchContent>
+              <XhSideNavItem>
+                <XhSideNavLink value="user-list">
+                  <XhSideNavLinkText>用户列表</XhSideNavLinkText>
+                </XhSideNavLink>
+              </XhSideNavItem>
+              <XhSideNavItem>
+                <XhSideNavLink value="user-role">
+                  <XhSideNavLinkText>角色权限</XhSideNavLinkText>
+                </XhSideNavLink>
+              </XhSideNavItem>
+            </XhSideNavBranchContent>
+          </XhSideNavBranch>
+        </XhSideNavList>
+      </XhSideNavRoot>
+    </div>
   </div>
 </template>
