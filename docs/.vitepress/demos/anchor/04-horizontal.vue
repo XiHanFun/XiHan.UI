@@ -1,4 +1,4 @@
-<!-- 横排目录 | orientation="horizontal" 只改样式：条目排成一行，轨道与指示条从起始缘挪到底边 -->
+<!-- 横向排列 | 在内容上方显示章节导航 -->
 <script setup lang="ts">
 import {
   XhAnchorIndicator,
@@ -20,7 +20,7 @@ const scrollEl = ref<HTMLElement | null>(null);
 </script>
 
 <template>
-  <div style="display: flex; flex-direction: column; gap: 12px; inline-size: 100%">
+  <div style="display: flex; flex-direction: column; gap: 12px; inline-size: min(640px, 100%)">
     <XhAnchorRoot
       :scroll-element="scrollEl"
       orientation="horizontal"
@@ -39,19 +39,19 @@ const scrollEl = ref<HTMLElement | null>(null);
       style="
         block-size: 220px;
         overflow: auto;
-        padding: 12px;
-        border: 1px solid var(--xh-border-default);
-        border-radius: 8px;
+        padding-inline: 12px;
+        border-radius: var(--xh-shape-surface);
+        background: var(--xh-bg-subtle);
       "
     >
       <div
         v-for="s in sections"
         :id="s.value"
         :key="s.value"
-        style="block-size: 170px"
+        style="block-size: 170px; padding-block: 12px"
       >
         <strong>{{ s.label }}</strong>
-        <p>这一节的正文。</p>
+        <p style="color: var(--xh-fg-muted)">{{ s.label }}相关内容</p>
       </div>
     </div>
   </div>

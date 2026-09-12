@@ -1,4 +1,4 @@
-// 判定线偏移 | offset 是判定线距容器视口顶边的距离，有吸顶栏就把栏高填进去，越过它的最后一节才算当前节
+// 判定线偏移 | 为吸顶内容预留空间
 import type { CSSProperties, ReactNode } from "react";
 import {
   XhAnchorIndicator,
@@ -7,7 +7,7 @@ import {
   XhAnchorList,
   XhAnchorRoot,
 } from "@xihan-ui/react";
-import { useState } from "react";
+import { useRef } from "react";
 
 const sections = [
   { value: "anchor-offset-a", label: "第一节" },
@@ -17,9 +17,9 @@ const sections = [
 
 const layout: CSSProperties = {
   display: "grid",
-  gridTemplateColumns: "140px 1fr",
+  gridTemplateColumns: "minmax(112px, 140px) minmax(0, 1fr)",
   gap: "20px",
-  inlineSize: "100%",
+  inlineSize: "min(640px, 100%)",
   alignItems: "start",
 };
 
@@ -27,11 +27,10 @@ const scroller: CSSProperties = {
   position: "relative",
   blockSize: "240px",
   overflow: "auto",
-  border: "1px solid var(--xh-border-default)",
-  borderRadius: "8px",
+  borderRadius: "var(--xh-shape-surface)",
+  background: "var(--xh-bg-subtle)",
 };
 
-// 44px 高的吸顶栏，判定线正好压在它下沿
 const stickyBar: CSSProperties = {
   position: "sticky",
   insetBlockStart: 0,
@@ -45,11 +44,11 @@ const stickyBar: CSSProperties = {
 };
 
 export default function Demo(): ReactNode {
-  const [scrollEl, setScrollEl] = useState<HTMLElement | null>(null);
+  const scrollEl = useRef<HTMLDivElement>(null);
 
   return (
     <div style={layout}>
-      <XhAnchorRoot scrollElement={scrollEl} offset={44} smooth>
+      <XhAnchorRoot scrollElement={() => scrollEl.current} offset={44} smooth>
         <XhAnchorList>
           {sections.map(s => (
             <XhAnchorItem key={s.value}>
@@ -60,13 +59,13 @@ export default function Demo(): ReactNode {
         </XhAnchorList>
       </XhAnchorRoot>
 
-      <div ref={setScrollEl} style={scroller}>
-        <div style={stickyBar}>吸顶栏（44px）</div>
+      <div ref={scrollEl} style={scroller}>
+        <div style={stickyBar}>章节导航</div>
 
         {sections.map(s => (
           <div key={s.value} id={s.value} style={{ blockSize: "180px", padding: "12px" }}>
             <strong>{s.label}</strong>
-            <p>这一节被吸顶栏挡住时不算当前节。</p>
+            <p style={{ color: "var(--xh-fg-muted)" }}>{`${s.label}相关内容`}</p>
           </div>
         ))}
       </div>

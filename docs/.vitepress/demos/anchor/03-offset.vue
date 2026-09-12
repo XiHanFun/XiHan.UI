@@ -1,4 +1,4 @@
-<!-- 判定线偏移 | offset 是判定线距容器视口顶边的距离，有吸顶栏就把栏高填进去，越过它的最后一节才算当前节 -->
+<!-- 判定线偏移 | 为吸顶内容预留空间 -->
 <script setup lang="ts">
 import {
   XhAnchorIndicator,
@@ -22,9 +22,9 @@ const scrollEl = ref<HTMLElement | null>(null);
   <div
     style="
       display: grid;
-      grid-template-columns: 140px 1fr;
+      grid-template-columns: minmax(112px, 140px) minmax(0, 1fr);
       gap: 20px;
-      inline-size: 100%;
+      inline-size: min(640px, 100%);
       align-items: start;
     "
   >
@@ -43,11 +43,10 @@ const scrollEl = ref<HTMLElement | null>(null);
         position: relative;
         block-size: 240px;
         overflow: auto;
-        border: 1px solid var(--xh-border-default);
-        border-radius: 8px;
+        border-radius: var(--xh-shape-surface);
+        background: var(--xh-bg-subtle);
       "
     >
-      <!-- 44px 高的吸顶栏，判定线正好压在它下沿 -->
       <div
         style="
           position: sticky;
@@ -61,7 +60,7 @@ const scrollEl = ref<HTMLElement | null>(null);
           border-block-end: 1px solid var(--xh-border-default);
         "
       >
-        吸顶栏（44px）
+        章节导航
       </div>
 
       <div
@@ -71,7 +70,7 @@ const scrollEl = ref<HTMLElement | null>(null);
         style="block-size: 180px; padding: 12px"
       >
         <strong>{{ s.label }}</strong>
-        <p>这一节被吸顶栏挡住时不算当前节。</p>
+        <p style="color: var(--xh-fg-muted)">{{ s.label }}相关内容</p>
       </div>
     </div>
   </div>

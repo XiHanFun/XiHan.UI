@@ -1,7 +1,6 @@
 import type { Direction, Orientation, Size, Tone } from '@xihan-ui/core'
 import type { AnchorSchema, AnchorTranslations } from '@xihan-ui/headless'
 import type { ComponentPropsWithRef, ReactNode } from 'react'
-import { useCallback, useRef } from 'react'
 import { withXhConfig } from '../../config/config'
 import { mergeReactProps } from '../../runtime/merge-props'
 import { AnchorProvider, useAnchorContext } from './context'
@@ -24,8 +23,8 @@ export interface XhAnchorRootProps extends RootElementProps {
   translations?: Partial<AnchorTranslations>
   tone?: Tone
   size?: Size
-  /** 判定线所依附的滚动容器，缺省挂在窗口上；经 refs 交给观察器。 */
-  scrollElement?: HTMLElement | null
+  /** 判定线所依附的滚动容器取值器，缺省挂在窗口上；挂载效应执行时求值。 */
+  scrollElement?: () => HTMLElement | null
   onValueChange?: AnchorProps['onValueChange']
   children?: ReactNode
 }
@@ -48,10 +47,6 @@ export function XhAnchorRoot({
   children,
   ...rest
 }: XhAnchorRootProps): ReactNode {
-  // 取值器每帧换、接线只建一次：现读这一帧的 scrollElement，别让它成为重建的理由
-  const latest = useRef(scrollElement)
-  latest.current = scrollElement
-  const getScrollEl = useCallback(() => latest.current ?? null, [])
   const ctx = useAnchor(withXhConfig('anchor', {
     value,
     defaultValue,
@@ -65,7 +60,7 @@ export function XhAnchorRoot({
     tone,
     size,
     onValueChange,
-  }) as AnchorProps, getScrollEl)
+  }) as AnchorProps, scrollElement)
   return (
     <AnchorProvider value={ctx}>
       <nav {...mergeReactProps(ctx.api.getRootProps() as Record<string, unknown>, rest as Record<string, unknown>)}>
