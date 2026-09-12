@@ -2,9 +2,9 @@ import type { PositionResult, PropFn, Service } from '@xihan-ui/core'
 import type { SelectSchema } from '../select'
 import type { PaginationEllipsisSide } from './pagination.range'
 import type { PaginationSchema, PaginationTranslations } from './pagination.types'
-import { createDismissLayer, setup } from '@xihan-ui/core'
+import { setup } from '@xihan-ui/core'
 import { OVERLAY_OFFSET, OVERLAY_PLACEMENT_LIST } from '../shared/overlay'
-import { setupLayerTransaction } from '../shared/overlay-shell'
+import { trackOverlayLayer, trackPresenceResources } from '../shared/overlay-shell'
 import { clampPage, normalizePageSize, pageForResize, pageSizeOptionsOf, totalPagesOf } from './pagination.range'
 
 const { createMachine } = setup<PaginationSchema>()
@@ -98,6 +98,8 @@ export const paginationMachine = createMachine({
     }
   },
   initialState: () => 'closed',
+  // 省略位的 Layer 与消解资源由根效应持有，逻辑关闭后等 Presence 真实退场再归还。
+  effects: ['trackLayer'],
   // 翻页与省略位的浮层是两件正交的事：翻页在哪个态下都该生效，挂根上不逐态复制
   on: {
     'PAGE.SET': { actions: ['setPage'] },
@@ -128,7 +130,7 @@ export const paginationMachine = createMachine({
     // 复合态：两个子态下浮层都可见，定位与消解层挂在这一层
     visible: {
       initial: 'open',
-      effects: ['trackPosition', 'trackLayer'],
+      effects: ['trackPosition'],
       states: {
         open: {
           on: {
@@ -216,21 +218,18 @@ export const paginationMachine = createMachine({
         }
       },
       /** 摊开期间把层压入消解栈：Escape 与点外面都能收起。不建焦点域、不锁滚动。 */
-      trackLayer: ({ refs, send, flush }) => {
-        const config = refs.get('config')
-        const registerLayer = refs.get('registerLayer')
-        if (!config || !registerLayer)
-          return undefined
-
-        return setupLayerTransaction(registerLayer, (layer, defer) => {
-          const dismiss = createDismissLayer({
-            config,
-            layer,
-            onDismiss: () => send({ type: 'ELLIPSIS.CLOSE' }),
-          })
-          defer(() => dismiss.dispose())
-        }, { registry: config.layerRegistry, flush })
-      },
+      trackLayer: ({ refs, send, flush, state, track }) => trackPresenceResources({
+        presence: () => refs.get('presence'),
+        open: () => state.matches('visible'),
+        track,
+        acquire: () => trackOverlayLayer({
+          config: refs.get('config'),
+          registerLayer: refs.get('registerLayer'),
+          flush,
+          active: () => state.matches('visible'),
+          onDismiss: () => send({ type: 'ELLIPSIS.CLOSE' }),
+        }),
+      }),
     },
     actions: {
       openEllipsis: ({ context, event }) => {

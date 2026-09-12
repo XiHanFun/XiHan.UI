@@ -1,18 +1,27 @@
 import type { Cleanup, Direction, Layer, MachineSchema, PositionEnginePort, PositionResult, PropTypes, RuntimeConfig, Size, Tone } from '@xihan-ui/core'
+import type { PresenceHandle } from '@xihan-ui/core/presence'
 
 // 适配器在挂载前填入 DOM 环境、定位引擎与元素 getter，缺省时弹出层相关副作用短路。
 export interface SideNavRefs {
   config: RuntimeConfig | null
   /** 注册弹出层并返回撤销句柄；只在弹出期间调用，层不常驻栈。 */
-  registerLayer: (() => { layer: Layer, dispose: Cleanup }) | null
+  registerLayer: ((value: string) => { layer: Layer, dispose: Cleanup }) | null
   /** 浮层定位引擎；缺省即不产出位置结果。 */
   position: PositionEnginePort | null
   /** 当前弹出分支的触发按钮（定位锚点）。 */
-  getPopoutAnchorEl: () => HTMLElement | null
+  getPopoutAnchorEl: (value: string) => HTMLElement | null
   /** 当前弹出分支的定位层（引擎写坐标的那一层，作者已把它搬到浮层落点）。 */
-  getPopoutPositionerEl: () => HTMLElement | null
+  getPopoutPositionerEl: (value: string) => HTMLElement | null
   /** 当前弹出分支的子层容器（消解层节点与焦点域容器）。 */
-  getPopoutContentEl: () => HTMLElement | null
+  getPopoutContentEl: (value: string) => HTMLElement | null
+  /** 每个顶层分支自己的视觉 Presence，切枝与并行退场按身份精确配对。 */
+  presences: Map<string, PresenceHandle>
+  /** 根级资源管理器交给 popout 状态效应的会话入口。 */
+  openPopoutLayer: (value: string, intent: 'first' | 'none') => void
+  /** 逻辑关闭只标记会话退场；真实释放由对应 Presence 完成。 */
+  closePopoutLayer: (value: string) => void
+  /** Presence 注册/注销变化通知资源管理器重绑或立即结清。 */
+  syncPopoutPresence: (value: string, presence: PresenceHandle, connected: boolean) => void
 }
 
 /** 读屏用的文案，默认英文。 */
@@ -114,6 +123,8 @@ export interface SideNavSchema extends MachineSchema {
     /** 弹出某顶层分支的子级面板；已开着别的分支时先关再开。 */
     | { type: 'POPOUT.OPEN', value: string, focus?: 'first' | 'none' }
     | { type: 'POPOUT.CLOSE', src?: 'esc' | 'interact-outside' | 'hover' | 'select' | 'keyboard' }
+    /** 适配器按顶层分支 value 注册或精确注销视觉 Presence。 */
+    | { type: 'PRESENCE.SET', value: string, presence: PresenceHandle, connected: boolean }
   tag: never
   guard: 'canChange' | 'canPopout'
   action:
@@ -129,7 +140,8 @@ export interface SideNavSchema extends MachineSchema {
     | 'clearPopout'
     | 'setPopoutReturnFocus'
     | 'syncCollapsed'
-  effect: 'trackPopoutPosition' | 'trackPopoutLayer' | 'trackPopoutHover'
+    | 'setPresence'
+  effect: 'trackPopoutSessions' | 'trackPopoutPosition' | 'trackPopoutLayer' | 'trackPopoutHover'
 }
 
 /** 分支与叶子共用的身份声明。 */

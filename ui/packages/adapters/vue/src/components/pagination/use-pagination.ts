@@ -112,6 +112,7 @@ export function usePagination(
     config,
     isOpen: () => api.value.openEllipsis != null,
     contentRef,
+    onPresence: presence => service.refs.set('presence', presence),
   })
   const pageSizeVisible = useOverlayExit({
     config,

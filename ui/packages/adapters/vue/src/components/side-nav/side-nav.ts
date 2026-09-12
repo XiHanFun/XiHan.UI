@@ -1,8 +1,9 @@
 import type { Size, Tone } from '@xihan-ui/core'
+import type { PresenceHandle } from '@xihan-ui/core/presence'
 import type { SideNavApi, SideNavNode, SideNavSchema } from '@xihan-ui/headless'
 import type { PropType, SlotsType, VNode } from 'vue'
 import type { PayloadOf } from '../../runtime/payload'
-import { defineComponent, h, ref } from 'vue'
+import { defineComponent, h, nextTick, onMounted, ref } from 'vue'
 import { withXhConfig } from '../../config/config'
 import { XhPortal } from '../../runtime/portal'
 import { useOverlayExit } from '../../runtime/use-overlay-exit'
@@ -177,10 +178,27 @@ export const XhSideNavBranchContent = defineComponent({
     // 一个弹出面板一份退场闸门：退场动画挂在面板上，从它身上探测。
     // 开合判据直接取 connect 这一帧的产出，不另起一套
     const panelRef = ref<HTMLElement | null>(null)
+    let presence: PresenceHandle | null = null
     const visible = useOverlayExit({
       config: ctx.config,
       isOpen: () => (ctx.api.value.getPopoutPositionerProps({ value: node.value }) as Record<string, unknown>).hidden !== true,
       contentRef: panelRef,
+      onPresence: (next) => {
+        const previous = presence
+        presence = next
+        if (ctx.service.getStatus() !== 'Started')
+          return
+        if (next)
+          ctx.service.send({ type: 'PRESENCE.SET', value: node.value, presence: next, connected: true })
+        else if (previous)
+          ctx.service.send({ type: 'PRESENCE.SET', value: node.value, presence: previous, connected: false })
+      },
+    })
+    onMounted(() => {
+      void nextTick(() => {
+        if (presence && ctx.service.getStatus() === 'Started')
+          ctx.service.send({ type: 'PRESENCE.SET', value: node.value, presence, connected: true })
+      })
     })
     return () => {
       if (!ctx.api.value.isPopoutPanel(node.value)) {

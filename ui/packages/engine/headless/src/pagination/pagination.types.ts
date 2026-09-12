@@ -1,4 +1,5 @@
 import type { Cleanup, Direction, Layer, MachineSchema, Placement, PositionEnginePort, PositionResult, PropTypes, RuntimeConfig, Service, Size, Tone } from '@xihan-ui/core'
+import type { PresenceHandle } from '@xihan-ui/core/presence'
 import type { SelectApi, SelectSchema } from '../select'
 import type { PaginationEllipsisSide, PaginationEntryRange, PaginationPage, PaginationPageItem } from './pagination.range'
 
@@ -96,6 +97,8 @@ export interface PaginationSchema extends MachineSchema {
   refs: {
     config: RuntimeConfig | null
     registerLayer: (() => { layer: Layer, dispose: Cleanup }) | null
+    /** 省略位共享面板的视觉 Presence；行为资源与它一同完成退场。 */
+    presence: PresenceHandle | null
     position: PositionEnginePort | null
     getAnchorEl: () => HTMLElement | null
     getFloatingEl: () => HTMLElement | null

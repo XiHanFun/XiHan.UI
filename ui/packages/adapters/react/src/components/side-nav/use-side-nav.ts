@@ -35,17 +35,15 @@ export function useSideNav(props: SideNavSchema['props']): SideNavContext {
     if (!config)
       return
     // 弹出面板与触发按钮按当前弹出分支现查：配对 id 由 connect 派生，同一 scope 算得出来
-    const popoutEl = (kind: 'trigger' | 'content' | 'positioner'): HTMLElement | null => {
-      const v = service.context.get('popoutValue')
-      return v == null ? null : document.getElementById(scope.partId('side-nav', `${kind}-${v}`))
-    }
+    const popoutEl = (kind: 'trigger' | 'content' | 'positioner', value: string): HTMLElement | null =>
+      document.getElementById(scope.partId('side-nav', `${kind}-${value}`))
 
     // 只提供注册函数，入栈出栈由机器的 trackPopoutLayer 效应按弹出态驱动
-    const registerLayer = (): { layer: Layer, dispose: Cleanup } => config.layerRegistry.register({
+    const registerLayer = (value: string): { layer: Layer, dispose: Cleanup } => config.layerRegistry.register({
       kind: 'popover',
-      node: () => popoutEl('content'),
+      node: () => popoutEl('content', value),
       // 触发按钮记为本层分支，点它算层内交互
-      branches: () => [popoutEl('trigger')].filter(Boolean) as Element[],
+      branches: () => [popoutEl('trigger', value)].filter(Boolean) as Element[],
       isModal: () => false,
       surfaces: () => [],
     })
@@ -54,9 +52,9 @@ export function useSideNav(props: SideNavSchema['props']): SideNavContext {
     service.refs.set('config', config)
     service.refs.set('registerLayer', registerLayer)
     service.refs.set('position', createPositionEngine())
-    service.refs.set('getPopoutAnchorEl', () => popoutEl('trigger'))
-    service.refs.set('getPopoutPositionerEl', () => popoutEl('positioner'))
-    service.refs.set('getPopoutContentEl', () => popoutEl('content'))
+    service.refs.set('getPopoutAnchorEl', value => popoutEl('trigger', value))
+    service.refs.set('getPopoutPositionerEl', value => popoutEl('positioner', value))
+    service.refs.set('getPopoutContentEl', value => popoutEl('content', value))
   }, [config, scope])
 
   const service = useMachine(sideNavMachine, () => props, { scope, onCreate })

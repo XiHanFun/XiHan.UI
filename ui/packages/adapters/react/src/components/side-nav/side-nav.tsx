@@ -1,8 +1,9 @@
 import type { Direction, Size, Tone } from '@xihan-ui/core'
+import type { PresenceHandle } from '@xihan-ui/core/presence'
 import type { SideNavApi, SideNavNode, SideNavSchema, SideNavTranslations } from '@xihan-ui/headless'
 import type { ComponentPropsWithRef, ReactNode } from 'react'
 import type { SlotChildren } from '../../runtime/slot-content'
-import { useMemo, useRef } from 'react'
+import { useEffect, useMemo, useRef } from 'react'
 import { withXhConfig } from '../../config/config'
 import { mergeReactProps } from '../../runtime/merge-props'
 import { useNativeEvents } from '../../runtime/native-events'
@@ -204,11 +205,32 @@ export function XhSideNavBranchContent({ children, ...rest }: XhSideNavBranchCon
   // 一个弹出面板一份退场闸门：退场动画挂在面板上，从它身上探测。
   // 开合判据直接取 connect 这一帧的产出，不另起一套
   const panelRef = useRef<HTMLElement | null>(null)
+  const presenceRef = useRef<PresenceHandle | null>(null)
   const visible = useOverlayExit({
     config: ctx.config,
     isOpen: () => (ctx.api.getPopoutPositionerProps({ value }) as Record<string, unknown>).hidden !== true,
     contentRef: panelRef,
+    onPresence: (next) => {
+      const previous = presenceRef.current
+      presenceRef.current = next
+      if (ctx.service.getStatus() !== 'Started')
+        return
+      if (next)
+        ctx.service.send({ type: 'PRESENCE.SET', value, presence: next, connected: true })
+      else if (previous)
+        ctx.service.send({ type: 'PRESENCE.SET', value, presence: previous, connected: false })
+    },
   })
+  useEffect(() => {
+    const presence = presenceRef.current
+    if (!presence || ctx.service.getStatus() !== 'Started')
+      return
+    ctx.service.send({ type: 'PRESENCE.SET', value, presence, connected: true })
+    return () => {
+      if (ctx.service.getStatus() === 'Started')
+        ctx.service.send({ type: 'PRESENCE.SET', value, presence, connected: false })
+    }
+  }, [ctx.service, value])
 
   const contentProps = ctx.api.getBranchContentProps({ value }) as Record<string, unknown>
   if (!ctx.api.isPopoutPanel(value)) {
