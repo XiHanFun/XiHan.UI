@@ -6509,6 +6509,15 @@
             },
             {
               "kind": "field",
+              "name": "variant",
+              "privacy": "public",
+              "type": {
+                "text": "CheckboxVariant | undefined"
+              },
+              "attribute": "variant"
+            },
+            {
+              "kind": "field",
               "name": "size",
               "privacy": "public",
               "type": {
@@ -6641,6 +6650,14 @@
               "description": "语气",
               "name": "tone",
               "fieldName": "tone"
+            },
+            {
+              "type": {
+                "text": "CheckboxVariant | undefined"
+              },
+              "description": "视觉变体；secondary 不绘制控制盒阴影",
+              "name": "variant",
+              "fieldName": "variant"
             },
             {
               "type": {

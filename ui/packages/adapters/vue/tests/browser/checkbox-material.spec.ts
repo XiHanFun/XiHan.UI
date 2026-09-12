@@ -119,6 +119,21 @@ afterEach(async () => {
 })
 
 describe('checkbox M1 控制盒与三态', () => {
+  it('primary 保留实体海拔，secondary 在表面中使用低强调控制盒', async () => {
+    await mount([
+      h(XhCheckbox, { 'data-testid': 'primary', 'defaultChecked': true }, () => '主要'),
+      h(XhCheckbox, { 'data-testid': 'secondary', 'defaultChecked': true, 'variant': 'secondary' }, () => '次级'),
+    ])
+
+    const primary = getComputedStyle(labelledBox('primary'))
+    const secondary = getComputedStyle(labelledBox('secondary'))
+    expect(primary.boxShadow).not.toBe('none')
+    expect(secondary.boxShadow).toBe('none')
+    expect(secondary.backgroundColor).toBe(primary.backgroundColor)
+    expect(secondary.borderColor).toBe(primary.borderColor)
+    expect(labelledBox('secondary').getAttribute('data-variant')).toBe('secondary')
+  })
+
   it.each(THEMES)('%s：六种 tone 的实体选中面、勾与半选横杠都保持 3:1', async (theme) => {
     document.documentElement.dataset.theme = theme
     document.body.style.backgroundColor = 'var(--xh-bg-canvas)'

@@ -1,21 +1,12 @@
-<!-- 尺寸 | size 同时缩放方框与勾选标记，不写就是缺省档 -->
+<!-- 尺寸 | 适配不同的界面密度 -->
 <script setup lang="ts">
 import { XhCheckbox } from "@xihan-ui/vue";
 </script>
 
 <template>
   <div style="display: flex; align-items: center; gap: 16px">
-    <span style="display: inline-flex; align-items: center; gap: 6px">
-      <XhCheckbox size="sm" default-checked />
-      <span>小</span>
-    </span>
-    <span style="display: inline-flex; align-items: center; gap: 6px">
-      <XhCheckbox default-checked />
-      <span>缺省</span>
-    </span>
-    <span style="display: inline-flex; align-items: center; gap: 6px">
-      <XhCheckbox size="lg" default-checked />
-      <span>大</span>
-    </span>
+    <XhCheckbox size="sm" default-checked>小</XhCheckbox>
+    <XhCheckbox default-checked>中</XhCheckbox>
+    <XhCheckbox size="lg" default-checked>大</XhCheckbox>
   </div>
 </template>

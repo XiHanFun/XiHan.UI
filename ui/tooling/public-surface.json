@@ -4905,6 +4905,7 @@
       "CheckboxGroupValueChangeDetails",
       "CheckboxSchema",
       "CheckboxTranslations",
+      "CheckboxVariant",
       "ClipboardApi",
       "ClipboardCopyErrorDetails",
       "ClipboardIndicatorProps",
@@ -9100,7 +9101,8 @@
       "required",
       "size",
       "tone",
-      "value"
+      "value",
+      "variant"
     ],
     "checkbox-group": [
       "collection",
@@ -15312,7 +15314,8 @@
         "required",
         "size",
         "tone",
-        "value"
+        "value",
+        "variant"
       ],
       "events": [
         "checked-change"

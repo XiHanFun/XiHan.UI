@@ -48,6 +48,7 @@
     "size"
   ],
   "checkbox": [
+    "variant",
     "size"
   ],
   "checkbox-group": [

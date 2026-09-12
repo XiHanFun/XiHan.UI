@@ -1,6 +1,6 @@
 # Checkbox 复选框
 
-一个可以选中、不选中、也可以处于半选的独立开关。
+用于选择一个或多个独立选项。
 
 <div class="xh-resource-links">
   <a href="https://github.com/XiHanFun/XiHan.UI/tree/dev/ui/packages/engine/headless/src/checkbox" target="_blank" rel="noreferrer">Headless</a>
@@ -12,7 +12,7 @@
 
 ## 用法
 
-不传 checked 即为非受控
+标记一个独立选项
 
 <XhDemo src="checkbox/01-basic" />
 
@@ -24,94 +24,71 @@
 
 ## 示例
 
-### 三态
+### 不确定状态
 
-checked 传 "indeterminate" 表示部分选中，它不是第三个稳定态：点一下就落到 true
+表示部分选中
 
 <XhDemo src="checkbox/02-indeterminate" />
 
-### 颜色
+### 变体
 
-tone 决定选中态的底与描边用哪族颜色，所以这里都置为选中
+根据所在表面选择强调层级
 
 <XhDemo src="checkbox/03-tone" />
 
 ### 尺寸
 
-size 同时缩放方框与勾选标记，不写就是缺省档
+适配不同的界面密度
 
 <XhDemo src="checkbox/04-size" />
 
-### 事件
+### 禁用与只读
 
-checked-change 带一份 { checked }，非受控时内部翻转也照发一次
+区分不可用与不可修改状态
 
 <XhDemo src="checkbox/05-event" />
 
-### 业务取值
+### 校验状态
 
-checked 只认布尔，在中间换一道，进出两头拿到的都是业务值
+标记必须处理的选项
 
 <XhDemo src="checkbox/06-value-mapping" />
-
-### 命令式聚焦
-
-节点由作者自己写，DOM 引用因此拿得到：聚焦、失焦与翻转都走命令式
-
-<XhDemo src="checkbox/07-focus" />
-
-### 随表单提交
-
-给了 name 才生出表单影子：勾上才提交，半选按未勾处理，与原生复选框一致
-
-<XhDemo src="checkbox/08-form" />
 
 ## 设计指引
 
 ### 何时使用
 
-- 表单里的单项同意、单项开关，且要随表单提交。
-- 需要表达"部分选中"（全选框对应下面几项只勾了一部分）。
+- 表单中的同意、订阅或启用选项。
+- 需要表达部分选中的汇总状态。
 
 ### 何时不用
 
-- 开关立即生效、且是一项设置：用[开关](./switch)。
-- 几个互斥项里选一个：用[单选组](./radio-group)。
-- 一组多选项：用[复选框组](./checkbox-group)，它管值的汇总。
+- 立即生效的设置使用[开关](./switch)。
+- 互斥选择使用[单选组](./radio-group)。
+- 管理一组值时使用[复选框组](./checkbox-group)。
 
 ### 特性
 
-- 三态：选中、未选中、半选（`indeterminate`）。
-- `hidden-input` 承担表单参与，`name` / `value` 照常提交。
-- `readOnly` 与 `disabled` 不同：只读仍能聚焦、仍被提交。
-- 控制盒保持实体：未选中使用 M1 实体底、明确控制边界、顶部高光和接触影；选中与半选使用满足
-  控件边界对比的实心语气色，不使用玻璃或 backdrop。
-- 勾与半选横杠共用随盒尺寸缩放的光学盒；indicator 常驻，以 120ms 的 opacity / scale 切换，
-  不靠增删节点造成布局抖动。自定义 indicator 插槽走同一状态动画。
-- 悬停方框或可见标签都会让控制盒响应；按下撤掉海拔并轻压，readOnly / disabled 不产生可操作假反馈。
-- 三尺寸和 compact 密度同时调整控制盒、勾形、标签字号与间距；RTL 下方框仍在行内起点，长标签不会压扁方框。
-- 明暗、增强对比和 forced-colors 都保留未选中边界、三态字形与键盘焦点；forced-colors 下 disabled
-  交给系统 `GrayText`，不再叠加半透明。
+- 支持选中、未选中与 `indeterminate` 状态。
+- `primary` 为默认实体控制盒，`secondary` 用于已有表面的低强调场景。
+- `readOnly` 仍可聚焦并参与提交，`disabled` 不参与提交。
+- 标签、三档尺寸、校验状态和自定义指示器均使用同一状态动画。
+- `name` 与 `value` 通过隐藏字段参与原生表单。
 
 ### 组合
 
-- 外面套[表单字段](./field)；成组时用[复选框组](./checkbox-group)；在[表格](./table)里做行选择。
+- 将文字直接放入默认插槽，整行即可点击。
+- 成组选择使用[复选框组](./checkbox-group)。
 
 ### 最佳实践
 
-- 标签点得动——把文字放进 `label` 部件，别只让方框可点。
-- 半选只用来表达"下级部分选中"，不要拿它当第三种业务状态。
-- 自定义选中底时要同时验证勾形与底、控制盒与页面、聚焦环与控制盒三组对比，六种 tone 都不能只靠色相区分。
-
-### 当前边界
-
-- Checkbox 当前没有 `loading` 状态、`aria-busy` 或在途 indicator 合同。异步提交需要由业务保留受控值并在旁边
-  显式呈现进度；后续若增加 loading，必须连同是否允许取消、错误暴露和三端事件一起设计，不能只补一枚 spinner。
+- 始终提供可见标签或 `aria-label`。
+- 半选只用于表示下级选项的汇总状态。
 
 ### 反模式
 
-- 用单个复选框表达二选一（是 / 否）：用[单选组](./radio-group)，两个选项都要能被读出来。
-- 勾上就立刻发请求却不给反馈。
+- 不要用复选框表达互斥选项。
+- 不要将半选状态作为第三个业务值。
 
 ## API 参考
 
@@ -138,6 +115,7 @@ checked 只认布尔，在中间换一道，进出两头拿到的都是业务值
 | `name` | `string` |  | 表单字段名；给了 hidden-input 才带 name 并参与提交。 |
 | `value` | `string` |  | 提交出去的值，缺省 'on'，与原生复选框一致。 |
 | `tone` | `Tone` |  | 语气：brand / neutral / success / warning / danger / info，决定选中态用哪族颜色。 |
+| `variant` | `CheckboxVariant` |  | 视觉变体：primary / secondary。缺省 primary。 |
 | `size` | `Size` |  | 尺寸：sm / md / lg，决定方框边长与勾的字号档位。 |
 | `onCheckedChange` | `(details: CheckboxCheckedChangeDetails) => void` |  | checked 变化意图回调；受控时是唯一出口，非受控随内部转移一并通知。 |
 
@@ -235,6 +213,7 @@ checked 只认布尔，在中间换一道，进出两头拿到的都是业务值
 | `root` | `data-size` | props.size |
 | `root` | `data-state` | 'indeterminate' \| 'checked' \| 'unchecked' |
 | `root` | `data-tone` | props.tone |
+| `root` | `data-variant` | props.variant |
 | `indicator` | `data-state` | 'indeterminate' \| 'checked' \| 'unchecked' |
 | `label` | `data-disabled` | ''（条件成立时才出现） |
 | `label` | `data-invalid` | ''（条件成立时才出现） |

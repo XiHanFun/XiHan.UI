@@ -39,6 +39,7 @@ export function connectCheckbox<T extends PropTypes>(
       'aria-invalid': invalid ? 'true' : 'false',
       'aria-required': required ? 'true' : 'false',
       'data-state': stateAttr,
+      'data-variant': prop('variant'),
       'data-tone': prop('tone'),
       'data-size': prop('size'),
       'data-disabled': dataAttr(disabled),
