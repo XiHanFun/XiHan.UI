@@ -157,8 +157,9 @@
   },
   "ring": {
     "focus": {
+      "$description": "浅色面上的公共键盘焦点环。取 brand.600，确保压在 canvas、surface 与 neutral.200 高亮面上都达到 3:1 非文本对比。",
       "$type": "color",
-      "$value": "{color.brand.500}"
+      "$value": "{color.brand.600}"
     },
     "invalid": {
       "$type": "color",

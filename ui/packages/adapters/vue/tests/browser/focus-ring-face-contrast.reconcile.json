@@ -1,56 +1,41 @@
 {
-  "static": {},
+  "static": {
+    "floating-panel [data-part='window-state-trigger'][data-scope='floating-panel'][data-state='on']": {
+      "found": "静态算 2.89:1，本侧量到 5.09:1（light · 无语气）",
+      "why": "静态门禁按 OKLab 令牌代数求值，浏览器按最终级联与八位 sRGB 合成；两侧指向同一实心面且都继续受 3:1 断言，本条只登记数值路径差异。"
+    },
+    "toggle [data-part='root'][data-scope='toggle'][data-state='on'][data-variant='ghost']": {
+      "found": "静态算 2.89:1，本侧（归到 toggle [data-part='root'][data-scope='toggle'][data-state='on'][data-variant='subtle']）量到 3.14:1（light · neutral）",
+      "why": "静态门禁按 OKLab 令牌代数求值，浏览器按最终级联与八位 sRGB 合成；两侧指向同一实心面且都继续受 3:1 断言，本条只登记数值路径差异。"
+    },
+    "toggle [data-part='root'][data-scope='toggle'][data-state='on'][data-variant='outline']": {
+      "found": "静态算 2.89:1，本侧（归到 toggle [data-part='root'][data-scope='toggle'][data-state='on'][data-variant='subtle']）量到 3.14:1（light · neutral）",
+      "why": "静态门禁按 OKLab 令牌代数求值，浏览器按最终级联与八位 sRGB 合成；两侧指向同一实心面且都继续受 3:1 断言，本条只登记数值路径差异。"
+    },
+    "toggle [data-part='root'][data-scope='toggle'][data-state='on'][data-variant='subtle']": {
+      "found": "静态算 2.89:1，本侧量到 3.14:1（light · neutral）",
+      "why": "静态门禁按 OKLab 令牌代数求值，浏览器按最终级联与八位 sRGB 合成；两侧指向同一实心面且都继续受 3:1 断言，本条只登记数值路径差异。"
+    },
+    "toggle-group [data-part='root'][data-scope='toggle-group'][data-variant='ghost'] [data-part='item'][data-scope='toggle-group'][data-state='on']": {
+      "found": "静态算 2.89:1，本侧（归到 toggle-group [data-part='root'][data-scope='toggle-group'][data-variant='subtle'] [data-part='item'][data-scope='toggle-group'][data-state='on']）量到 3.14:1（light · neutral）",
+      "why": "静态门禁按 OKLab 令牌代数求值，浏览器按最终级联与八位 sRGB 合成；两侧指向同一实心面且都继续受 3:1 断言，本条只登记数值路径差异。"
+    },
+    "toggle-group [data-part='root'][data-scope='toggle-group'][data-variant='outline'] [data-part='item'][data-scope='toggle-group'][data-state='on']": {
+      "found": "静态算 2.89:1，本侧（归到 toggle-group [data-part='root'][data-scope='toggle-group'][data-variant='subtle'] [data-part='item'][data-scope='toggle-group'][data-state='on']）量到 3.14:1（light · neutral）",
+      "why": "静态门禁按 OKLab 令牌代数求值，浏览器按最终级联与八位 sRGB 合成；两侧指向同一实心面且都继续受 3:1 断言，本条只登记数值路径差异。"
+    },
+    "toggle-group [data-part='root'][data-scope='toggle-group'][data-variant='subtle'] [data-part='item'][data-scope='toggle-group'][data-state='on']": {
+      "found": "静态算 2.89:1，本侧量到 3.14:1（light · neutral）",
+      "why": "静态门禁按 OKLab 令牌代数求值，浏览器按最终级联与八位 sRGB 合成；两侧指向同一实心面且都继续受 3:1 断言，本条只登记数值路径差异。"
+    }
+  },
   "browser": {
-    "tag [data-part='list'][data-scope='tag-group'] [data-highlighted][data-part='root'][data-scope='tag']:not([data-disabled]):not([data-variant='solid'])": {
-      "found": "静态没算出这一档，本侧量到 2.95:1（light · 无语气）",
-      "why": "这块面是键盘锚点轻档的 --xh-bg-subtle-hover 灰底，由 tag-group.css 里 [list] > [tag root]:not([data-disabled]):not([data-variant='solid']):is(:hover, [data-highlighted]) 这条规则铺在 tag 的 root 上；静态门禁按分支文本里的 :hover 把整支当悬停档丢掉，[data-highlighted] 那一支它看不见。本侧展开 :is() 之后单独挂得出来，这一族按档位标签登在本份的 KNOWN 里"
-    },
-    "tag [data-part='list'][data-scope='tag-group'] [data-highlighted][data-part='root'][data-scope='tag']:not([data-disabled]):not([data-variant='solid']) [data-part='close-trigger'][data-scope='tag']": {
-      "found": "静态没算出这一档，本侧量到 2.95:1（light · 无语气）",
-      "why": "这块面是键盘锚点轻档的 --xh-bg-subtle-hover 灰底，由 tag-group.css 里 [list] > [tag root]:not([data-disabled]):not([data-variant='solid']):is(:hover, [data-highlighted]) 这条规则铺在 tag 的 root 上；静态门禁按分支文本里的 :hover 把整支当悬停档丢掉，[data-highlighted] 那一支它看不见。本侧展开 :is() 之后单独挂得出来，这一族按档位标签登在本份的 KNOWN 里"
-    },
-    "tag [data-part='list'][data-scope='tag-group'] [data-highlighted][data-part='root'][data-scope='tag'][data-selected]:not([data-disabled]):not([data-variant='solid'])": {
-      "found": "静态没算出这一档，本侧量到 2.95:1（light · brand）",
-      "why": "这块面是键盘锚点轻档的 --xh-bg-subtle-hover 灰底，由 tag-group.css 里 [list] > [tag root]:not([data-disabled]):not([data-variant='solid']):is(:hover, [data-highlighted]) 这条规则铺在 tag 的 root 上；静态门禁按分支文本里的 :hover 把整支当悬停档丢掉，[data-highlighted] 那一支它看不见。本侧展开 :is() 之后单独挂得出来，这一族按档位标签登在本份的 KNOWN 里"
-    },
-    "tag [data-part='list'][data-scope='tag-group'] [data-highlighted][data-part='root'][data-scope='tag'][data-selected]:not([data-disabled]):not([data-variant='solid']) [data-part='close-trigger'][data-scope='tag']": {
-      "found": "静态没算出这一档，本侧量到 2.95:1（light · brand）",
-      "why": "这块面是键盘锚点轻档的 --xh-bg-subtle-hover 灰底，由 tag-group.css 里 [list] > [tag root]:not([data-disabled]):not([data-variant='solid']):is(:hover, [data-highlighted]) 这条规则铺在 tag 的 root 上；静态门禁按分支文本里的 :hover 把整支当悬停档丢掉，[data-highlighted] 那一支它看不见。本侧展开 :is() 之后单独挂得出来，这一族按档位标签登在本份的 KNOWN 里"
-    },
-    "tag [data-part='list'][data-scope='tag-group'] [data-highlighted][data-part='root'][data-scope='tag'][data-selected][data-variant='outline']:not([data-disabled]):not([data-variant='solid'])": {
-      "found": "静态没算出这一档，本侧量到 2.95:1（light · brand）",
-      "why": "这块面是键盘锚点轻档的 --xh-bg-subtle-hover 灰底，由 tag-group.css 里 [list] > [tag root]:not([data-disabled]):not([data-variant='solid']):is(:hover, [data-highlighted]) 这条规则铺在 tag 的 root 上；静态门禁按分支文本里的 :hover 把整支当悬停档丢掉，[data-highlighted] 那一支它看不见。本侧展开 :is() 之后单独挂得出来，这一族按档位标签登在本份的 KNOWN 里"
-    },
-    "tag [data-part='list'][data-scope='tag-group'] [data-highlighted][data-part='root'][data-scope='tag'][data-selected][data-variant='subtle']:not([data-disabled]):not([data-variant='solid'])": {
-      "found": "静态没算出这一档，本侧量到 2.95:1（light · brand）",
-      "why": "这块面是键盘锚点轻档的 --xh-bg-subtle-hover 灰底，由 tag-group.css 里 [list] > [tag root]:not([data-disabled]):not([data-variant='solid']):is(:hover, [data-highlighted]) 这条规则铺在 tag 的 root 上；静态门禁按分支文本里的 :hover 把整支当悬停档丢掉，[data-highlighted] 那一支它看不见。本侧展开 :is() 之后单独挂得出来，这一族按档位标签登在本份的 KNOWN 里"
-    },
-    "tag [data-part='list'][data-scope='tag-group'] [data-highlighted][data-part='root'][data-scope='tag'][data-tone][data-variant='outline']:not([data-disabled]):not([data-variant='solid'])": {
-      "found": "静态没算出这一档，本侧量到 2.95:1（light · brand）",
-      "why": "这块面是键盘锚点轻档的 --xh-bg-subtle-hover 灰底，由 tag-group.css 里 [list] > [tag root]:not([data-disabled]):not([data-variant='solid']):is(:hover, [data-highlighted]) 这条规则铺在 tag 的 root 上；静态门禁按分支文本里的 :hover 把整支当悬停档丢掉，[data-highlighted] 那一支它看不见。本侧展开 :is() 之后单独挂得出来，这一族按档位标签登在本份的 KNOWN 里"
-    },
-    "tag [data-part='list'][data-scope='tag-group'] [data-highlighted][data-part='root'][data-scope='tag'][data-tone][data-variant='subtle']:not([data-disabled]):not([data-variant='solid'])": {
-      "found": "静态没算出这一档，本侧量到 2.95:1（light · brand）",
-      "why": "这块面是键盘锚点轻档的 --xh-bg-subtle-hover 灰底，由 tag-group.css 里 [list] > [tag root]:not([data-disabled]):not([data-variant='solid']):is(:hover, [data-highlighted]) 这条规则铺在 tag 的 root 上；静态门禁按分支文本里的 :hover 把整支当悬停档丢掉，[data-highlighted] 那一支它看不见。本侧展开 :is() 之后单独挂得出来，这一族按档位标签登在本份的 KNOWN 里"
-    },
-    "tag [data-part='list'][data-scope='tag-group'] [data-highlighted][data-part='root'][data-scope='tag'][data-tone][data-variant='subtle']:not([data-disabled]):not([data-variant='solid']) [data-part='close-trigger'][data-scope='tag']": {
-      "found": "静态没算出这一档，本侧量到 2.95:1（light · brand）",
-      "why": "这块面是键盘锚点轻档的 --xh-bg-subtle-hover 灰底，由 tag-group.css 里 [list] > [tag root]:not([data-disabled]):not([data-variant='solid']):is(:hover, [data-highlighted]) 这条规则铺在 tag 的 root 上；静态门禁按分支文本里的 :hover 把整支当悬停档丢掉，[data-highlighted] 那一支它看不见。本侧展开 :is() 之后单独挂得出来，这一族按档位标签登在本份的 KNOWN 里"
-    },
-    "tag [data-part='list'][data-scope='tag-group'] [data-highlighted][data-part='root'][data-scope='tag'][data-variant='outline']:not([data-disabled]):not([data-variant='solid'])": {
-      "found": "静态没算出这一档，本侧量到 2.95:1（light · 无语气）",
-      "why": "这块面是键盘锚点轻档的 --xh-bg-subtle-hover 灰底，由 tag-group.css 里 [list] > [tag root]:not([data-disabled]):not([data-variant='solid']):is(:hover, [data-highlighted]) 这条规则铺在 tag 的 root 上；静态门禁按分支文本里的 :hover 把整支当悬停档丢掉，[data-highlighted] 那一支它看不见。本侧展开 :is() 之后单独挂得出来，这一族按档位标签登在本份的 KNOWN 里"
-    },
-    "tag [data-part='list'][data-scope='tag-group'] [data-highlighted][data-part='root'][data-scope='tag'][data-variant='subtle']:not([data-disabled]):not([data-variant='solid'])": {
-      "found": "静态没算出这一档，本侧量到 2.95:1（light · 无语气）",
-      "why": "这块面是键盘锚点轻档的 --xh-bg-subtle-hover 灰底，由 tag-group.css 里 [list] > [tag root]:not([data-disabled]):not([data-variant='solid']):is(:hover, [data-highlighted]) 这条规则铺在 tag 的 root 上；静态门禁按分支文本里的 :hover 把整支当悬停档丢掉，[data-highlighted] 那一支它看不见。本侧展开 :is() 之后单独挂得出来，这一族按档位标签登在本份的 KNOWN 里"
+    "heatmap [data-palette='gray'][data-part='root'][data-scope='heatmap'][data-theme='dark'] [data-part='cell'][data-scope='heatmap']": {
+      "found": "静态没算出这一档，本侧量到 2.98:1（light · 无语气）",
+      "why": "热力图颜色由主题、调色板与运行时等级共同决定，静态门禁不能展开最终内联值；浏览器仍直接量最终面与公共焦点环。"
     },
     "toggle-group [data-disabled][data-part='item'][data-scope='toggle-group'][data-state='on']": {
-      "found": "静态算到覆盖它的档 toggle-group [data-part='item'][data-scope='toggle-group'][data-state='on']（1:1），本侧量到 1.41:1（light · neutral）",
-      "why": "禁用且按下那一档的面是 color-mix(in oklab, var(--xh-_toggle-group-item-bg-on) 50%, var(--xh-bg-muted))，私有槽掺在函数实参里，静态只解整条 var() 链、不进函数实参，这块面登在它的 opaque 分区；覆盖它的那几档算的是没禁用的底"
-    },
-    "toggle-group [data-part='root'][data-scope='toggle-group'][data-variant='subtle'] [data-disabled][data-part='item'][data-scope='toggle-group'][data-state='on']": {
-      "found": "静态算到覆盖它的档 toggle-group [data-part='item'][data-scope='toggle-group'][data-state='on']（1:1）、toggle-group [data-part='root'][data-scope='toggle-group'][data-variant='subtle'] [data-part='item'][data-scope='toggle-group'][data-state='on']（2.31:1），本侧量到 2.82:1（light · neutral）",
+      "found": "静态算到覆盖它的档 toggle-group [data-part='item'][data-scope='toggle-group'][data-state='on']（1:1），本侧量到 1.92:1（light · neutral）",
       "why": "禁用且按下那一档的面是 color-mix(in oklab, var(--xh-_toggle-group-item-bg-on) 50%, var(--xh-bg-muted))，私有槽掺在函数实参里，静态只解整条 var() 链、不进函数实参，这块面登在它的 opaque 分区；覆盖它的那几档算的是没禁用的底"
     }
   },

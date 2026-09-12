@@ -1,401 +1,291 @@
 {
   "approval [data-loading][data-part='approve-trigger'][data-scope='approval']": {
-    "ratio": 1.01,
-    "theme": "dark",
-    "tone": "warning"
+    "ratio": 1,
+    "theme": "light",
+    "tone": "brand"
   },
   "approval [data-part='approve-trigger'][data-scope='approval']": {
-    "ratio": 1.01,
-    "theme": "dark",
-    "tone": "warning"
+    "ratio": 1,
+    "theme": "light",
+    "tone": "brand"
   },
   "back-top [data-part='root'][data-scope='back-top'][data-variant='solid'] [data-part='trigger'][data-scope='back-top']": {
-    "ratio": 1.01,
-    "theme": "dark",
-    "tone": "warning"
-  },
-  "button [data-part='root'][data-scope='button-group'][data-variant='solid'] [data-part='root'][data-scope='button']": {
-    "ratio": 1.01,
-    "theme": "dark",
-    "tone": "warning"
-  },
-  "button [data-part='root'][data-scope='button'][data-variant='solid']": {
-    "ratio": 1.01,
-    "theme": "dark",
-    "tone": "warning"
+    "ratio": 1,
+    "theme": "light",
+    "tone": "brand"
   },
   "calendar [data-part='cell-trigger'][data-scope='calendar'][data-selected]": {
-    "ratio": 1.37,
+    "ratio": 1,
     "theme": "light",
     "tone": null
   },
   "carousel [data-current][data-part='indicator'][data-scope='carousel']": {
-    "ratio": 1.37,
+    "ratio": 1,
     "theme": "light",
     "tone": null
   },
   "carousel [data-part='indicator'][data-scope='carousel']": {
-    "ratio": 1.15,
+    "ratio": 1.57,
     "theme": "light",
     "tone": null
   },
   "checkbox [data-part='root'][data-scope='checkbox'][data-state='checked']": {
-    "ratio": 1.01,
-    "theme": "dark",
-    "tone": "warning"
+    "ratio": 1,
+    "theme": "light",
+    "tone": "brand"
   },
   "checkbox [data-part='root'][data-scope='checkbox'][data-state='indeterminate']": {
-    "ratio": 1.01,
-    "theme": "dark",
-    "tone": "warning"
+    "ratio": 1,
+    "theme": "light",
+    "tone": "brand"
   },
   "clipboard [data-part='root'][data-scope='clipboard'][data-variant='solid'] [data-copied][data-part='copy-trigger'][data-scope='clipboard']": {
-    "ratio": 1.01,
-    "theme": "dark",
-    "tone": "warning"
+    "ratio": 1,
+    "theme": "light",
+    "tone": "brand"
   },
   "clipboard [data-part='root'][data-scope='clipboard'][data-variant='solid'] [data-part='copy-trigger'][data-scope='clipboard']": {
-    "ratio": 1.01,
-    "theme": "dark",
-    "tone": "warning"
+    "ratio": 1,
+    "theme": "light",
+    "tone": "brand"
   },
   "color-picker [data-part='eye-dropper-trigger'][data-scope='color-picker'][data-state='picking']": {
-    "ratio": 2.51,
-    "theme": "light",
+    "ratio": 2.89,
+    "theme": "dark",
     "tone": null
   },
   "date-picker [data-part='confirm-trigger'][data-scope='date-picker']": {
-    "ratio": 1.01,
-    "theme": "dark",
-    "tone": "warning"
+    "ratio": 1,
+    "theme": "light",
+    "tone": "brand"
   },
   "date-picker [data-part='trigger'][data-scope='date-picker'][data-state='open']": {
-    "ratio": 2.51,
-    "theme": "light",
+    "ratio": 2.89,
+    "theme": "dark",
     "tone": null
   },
   "download-trigger [data-part='root'][data-scope='download-trigger'][data-variant='solid']": {
-    "ratio": 1.01,
-    "theme": "dark",
-    "tone": "warning"
+    "ratio": 1,
+    "theme": "light",
+    "tone": "brand"
   },
   "drawer [data-part='trigger'][data-scope='drawer'][data-state='open']": {
-    "ratio": 2.51,
-    "theme": "light",
+    "ratio": 2.89,
+    "theme": "dark",
     "tone": null
   },
   "editable [data-part='submit-trigger'][data-scope='editable']": {
-    "ratio": 1.01,
-    "theme": "dark",
-    "tone": "warning"
+    "ratio": 1,
+    "theme": "light",
+    "tone": "brand"
   },
   "float-button [data-part='root'][data-scope='float-button'][data-variant='solid'] [data-disabled][data-part='trigger'][data-scope='float-button']": {
-    "ratio": 1.01,
-    "theme": "dark",
-    "tone": "warning"
+    "ratio": 1,
+    "theme": "light",
+    "tone": "brand"
   },
   "float-button [data-part='root'][data-scope='float-button'][data-variant='solid'] [data-part='trigger'][data-scope='float-button']": {
-    "ratio": 1.01,
-    "theme": "dark",
-    "tone": "warning"
+    "ratio": 1,
+    "theme": "light",
+    "tone": "brand"
   },
-  "floating-panel [data-part='window-state-trigger'][data-scope='floating-panel'][data-state='on']": {
-    "ratio": 2.51,
+  "form [data-part='submit-trigger'][data-scope='form']": {
+    "ratio": 1,
     "theme": "light",
     "tone": null
   },
-  "form [data-part='submit-trigger'][data-scope='form']": {
-    "ratio": 1.37,
+  "heatmap [data-palette='gray'][data-part='root'][data-scope='heatmap'][data-theme='dark'] [data-part='cell'][data-scope='heatmap']": {
+    "ratio": 2.98,
     "theme": "light",
     "tone": null
   },
   "image-cropper [data-part='crop-handle'][data-resizing][data-scope='image-cropper']": {
-    "ratio": 1.37,
+    "ratio": 1,
     "theme": "light",
     "tone": null
   },
   "image-viewer [data-part='close-trigger'][data-scope='image-viewer']": {
-    "ratio": 1.18,
+    "ratio": 1.15,
     "theme": "light",
     "tone": null
   },
   "image-viewer [data-part='next-trigger'][data-scope='image-viewer']": {
-    "ratio": 1.18,
+    "ratio": 1.15,
     "theme": "light",
     "tone": null
   },
   "image-viewer [data-part='prev-trigger'][data-scope='image-viewer']": {
-    "ratio": 1.18,
+    "ratio": 1.15,
     "theme": "light",
     "tone": null
   },
   "pagination [data-current][data-part='item'][data-scope='pagination']": {
-    "ratio": 1.01,
-    "theme": "dark",
-    "tone": "warning"
+    "ratio": 1,
+    "theme": "light",
+    "tone": "brand"
   },
   "popconfirm [data-part='confirm-trigger'][data-scope='popconfirm']": {
-    "ratio": 1.01,
-    "theme": "dark",
-    "tone": "warning"
+    "ratio": 1,
+    "theme": "light",
+    "tone": "brand"
   },
   "prompt-input [data-part='submit-trigger'][data-scope='prompt-input']": {
-    "ratio": 1.01,
-    "theme": "dark",
-    "tone": "warning"
+    "ratio": 1,
+    "theme": "light",
+    "tone": "brand"
   },
   "question-flow [data-part='submit-trigger'][data-scope='question-flow']": {
-    "ratio": 1.01,
-    "theme": "dark",
-    "tone": "warning"
+    "ratio": 1,
+    "theme": "light",
+    "tone": "brand"
   },
   "resizable [data-part='handle'][data-resizing][data-scope='resizable']": {
-    "ratio": 1.37,
+    "ratio": 1,
     "theme": "light",
     "tone": null
   },
   "scrollbar [data-dragging][data-part='thumb'][data-scope='scrollbar']": {
-    "ratio": 1.82,
-    "theme": "dark",
-    "tone": null
-  },
-  "scrollbar [data-part='thumb'][data-scope='scrollbar']": {
-    "ratio": 1.44,
+    "ratio": 1.54,
     "theme": "light",
     "tone": null
   },
+  "scrollbar [data-part='thumb'][data-scope='scrollbar']": {
+    "ratio": 1.76,
+    "theme": "dark",
+    "tone": null
+  },
   "slider [data-invalid][data-part='thumb'][data-scope='slider']": {
-    "ratio": 1.3,
+    "ratio": 1.05,
     "theme": "light",
     "tone": "brand"
   },
   "slider [data-part='thumb'][data-scope='slider']": {
-    "ratio": 1.01,
-    "theme": "dark",
-    "tone": "warning"
+    "ratio": 1,
+    "theme": "light",
+    "tone": "brand"
   },
   "splitter [data-dragging][data-part='resize-trigger'][data-scope='splitter']": {
-    "ratio": 1.37,
-    "theme": "light",
-    "tone": null
-  },
-  "splitter [data-part='resize-trigger'][data-scope='splitter']": {
-    "ratio": 2.95,
+    "ratio": 1,
     "theme": "light",
     "tone": null
   },
   "switch [data-part='root'][data-scope='switch']": {
-    "ratio": 2.51,
-    "theme": "light",
+    "ratio": 2.89,
+    "theme": "dark",
     "tone": null
   },
   "switch [data-part='root'][data-scope='switch'][data-state='checked']": {
-    "ratio": 1.01,
-    "theme": "dark",
-    "tone": "warning"
+    "ratio": 1,
+    "theme": "light",
+    "tone": "brand"
   },
   "table [data-disabled][data-part='row'][data-scope='table'][data-selected]": {
-    "ratio": 2.51,
-    "theme": "light",
+    "ratio": 2.89,
+    "theme": "dark",
     "tone": null
   },
   "table [data-part='column-visibility-trigger'][data-scope='table'][data-state='checked']": {
-    "ratio": 1.37,
+    "ratio": 1,
     "theme": "light",
     "tone": null
   },
   "table [data-part='row'][data-scope='table'][data-selected]": {
-    "ratio": 2.51,
-    "theme": "light",
+    "ratio": 2.89,
+    "theme": "dark",
     "tone": null
   },
   "table [data-part='select-all-trigger'][data-scope='table'][data-state='checked']": {
-    "ratio": 1.37,
+    "ratio": 1,
     "theme": "light",
     "tone": null
   },
   "table [data-part='select-all-trigger'][data-scope='table'][data-state='indeterminate']": {
-    "ratio": 1.37,
+    "ratio": 1,
     "theme": "light",
     "tone": null
   },
   "tag [data-highlighted][data-part='item'][data-scope='tags-input']:not([data-disabled]) [data-part='close-trigger'][data-scope='tag']": {
-    "ratio": 1.01,
-    "theme": "dark",
-    "tone": "warning"
+    "ratio": 1,
+    "theme": "light",
+    "tone": "brand"
   },
   "tag [data-highlighted][data-part='item'][data-scope='tags-input']:not([data-disabled]) [data-part='root'][data-scope='tag'][data-variant='solid']:not([data-disabled]) [data-part='close-trigger'][data-scope='tag']": {
-    "ratio": 1.01,
-    "theme": "dark",
-    "tone": "warning"
-  },
-  "tag [data-part='list'][data-scope='tag-group'] [data-highlighted][data-part='root'][data-scope='tag']:not([data-disabled]):not([data-variant='solid'])": {
-    "ratio": 2.95,
-    "theme": "light",
-    "tone": null
-  },
-  "tag [data-part='list'][data-scope='tag-group'] [data-highlighted][data-part='root'][data-scope='tag']:not([data-disabled]):not([data-variant='solid']) [data-part='close-trigger'][data-scope='tag']": {
-    "ratio": 2.95,
-    "theme": "light",
-    "tone": null
-  },
-  "tag [data-part='list'][data-scope='tag-group'] [data-highlighted][data-part='root'][data-scope='tag'][data-selected]:not([data-disabled]):not([data-variant='solid'])": {
-    "ratio": 2.95,
+    "ratio": 1,
     "theme": "light",
     "tone": "brand"
-  },
-  "tag [data-part='list'][data-scope='tag-group'] [data-highlighted][data-part='root'][data-scope='tag'][data-selected]:not([data-disabled]):not([data-variant='solid']) [data-part='close-trigger'][data-scope='tag']": {
-    "ratio": 2.95,
-    "theme": "light",
-    "tone": "brand"
-  },
-  "tag [data-part='list'][data-scope='tag-group'] [data-highlighted][data-part='root'][data-scope='tag'][data-selected][data-variant='outline']:not([data-disabled]):not([data-variant='solid'])": {
-    "ratio": 2.95,
-    "theme": "light",
-    "tone": "brand"
-  },
-  "tag [data-part='list'][data-scope='tag-group'] [data-highlighted][data-part='root'][data-scope='tag'][data-selected][data-variant='subtle']:not([data-disabled]):not([data-variant='solid'])": {
-    "ratio": 2.95,
-    "theme": "light",
-    "tone": "brand"
-  },
-  "tag [data-part='list'][data-scope='tag-group'] [data-highlighted][data-part='root'][data-scope='tag'][data-tone][data-variant='outline']:not([data-disabled]):not([data-variant='solid'])": {
-    "ratio": 2.95,
-    "theme": "light",
-    "tone": "brand"
-  },
-  "tag [data-part='list'][data-scope='tag-group'] [data-highlighted][data-part='root'][data-scope='tag'][data-tone][data-variant='subtle']:not([data-disabled]):not([data-variant='solid'])": {
-    "ratio": 2.95,
-    "theme": "light",
-    "tone": "brand"
-  },
-  "tag [data-part='list'][data-scope='tag-group'] [data-highlighted][data-part='root'][data-scope='tag'][data-tone][data-variant='subtle']:not([data-disabled]):not([data-variant='solid']) [data-part='close-trigger'][data-scope='tag']": {
-    "ratio": 2.95,
-    "theme": "light",
-    "tone": "brand"
-  },
-  "tag [data-part='list'][data-scope='tag-group'] [data-highlighted][data-part='root'][data-scope='tag'][data-variant='outline']:not([data-disabled]):not([data-variant='solid'])": {
-    "ratio": 2.95,
-    "theme": "light",
-    "tone": null
-  },
-  "tag [data-part='list'][data-scope='tag-group'] [data-highlighted][data-part='root'][data-scope='tag'][data-variant='subtle']:not([data-disabled]):not([data-variant='solid'])": {
-    "ratio": 2.95,
-    "theme": "light",
-    "tone": null
   },
   "tag [data-part='root'][data-scope='tag'][data-tone][data-variant='solid']": {
-    "ratio": 1.01,
-    "theme": "dark",
-    "tone": "warning"
+    "ratio": 1,
+    "theme": "light",
+    "tone": "brand"
   },
   "tag [data-part='root'][data-scope='tag'][data-tone][data-variant='solid'] [data-part='close-trigger'][data-scope='tag']": {
-    "ratio": 1.01,
-    "theme": "dark",
-    "tone": "warning"
+    "ratio": 1,
+    "theme": "light",
+    "tone": "brand"
   },
   "tag [data-part='root'][data-scope='tag'][data-tone][data-variant='solid']:not([data-disabled]) [data-part='close-trigger'][data-scope='tag']": {
-    "ratio": 1.01,
-    "theme": "dark",
-    "tone": "warning"
+    "ratio": 1,
+    "theme": "light",
+    "tone": "brand"
   },
   "tag [data-part='root'][data-scope='tag'][data-variant='solid']": {
-    "ratio": 1.37,
+    "ratio": 1,
     "theme": "light",
     "tone": null
   },
   "tag [data-part='root'][data-scope='tag'][data-variant='solid'] [data-part='close-trigger'][data-scope='tag']": {
-    "ratio": 1.37,
+    "ratio": 1,
     "theme": "light",
     "tone": null
   },
-  "time-picker [data-disabled][data-part='item'][data-scope='time-picker'][data-state='checked']": {
-    "ratio": 1.01,
-    "theme": "dark",
-    "tone": "warning"
-  },
-  "time-picker [data-disabled][data-part='preset'][data-scope='time-picker'][data-state='checked']": {
-    "ratio": 1.01,
-    "theme": "dark",
-    "tone": "warning"
-  },
-  "time-picker [data-highlighted][data-part='item'][data-scope='time-picker'][data-state='checked']:not([data-disabled])": {
-    "ratio": 1.04,
-    "theme": "dark",
-    "tone": "success"
-  },
-  "time-picker [data-part='item'][data-scope='time-picker'][data-state='checked']": {
-    "ratio": 1.01,
-    "theme": "dark",
-    "tone": "warning"
-  },
-  "time-picker [data-part='preset'][data-scope='time-picker'][data-state='checked']": {
-    "ratio": 1.01,
-    "theme": "dark",
-    "tone": "warning"
-  },
   "toggle [data-part='root'][data-scope='toggle'][data-state='on']": {
-    "ratio": 2.51,
-    "theme": "light",
+    "ratio": 2.89,
+    "theme": "dark",
     "tone": null
   },
   "toggle [data-part='root'][data-scope='toggle'][data-state='on'][data-variant='solid']:not([data-disabled])": {
-    "ratio": 1.01,
-    "theme": "dark",
-    "tone": "warning"
-  },
-  "toggle [data-part='root'][data-scope='toggle'][data-state='on'][data-variant='subtle']": {
-    "ratio": 2.3,
+    "ratio": 1,
     "theme": "light",
-    "tone": "neutral"
+    "tone": "brand"
   },
   "toggle-group [data-disabled][data-part='item'][data-scope='toggle-group'][data-state='on']": {
-    "ratio": 1.41,
+    "ratio": 1.92,
     "theme": "light",
     "tone": "neutral"
   },
   "toggle-group [data-part='item'][data-scope='toggle-group'][data-state='on']": {
-    "ratio": 1.01,
-    "theme": "dark",
-    "tone": "warning"
-  },
-  "toggle-group [data-part='root'][data-scope='toggle-group'][data-variant='subtle'] [data-disabled][data-part='item'][data-scope='toggle-group'][data-state='on']": {
-    "ratio": 2.82,
+    "ratio": 1,
     "theme": "light",
-    "tone": "neutral"
-  },
-  "toggle-group [data-part='root'][data-scope='toggle-group'][data-variant='subtle'] [data-part='item'][data-scope='toggle-group'][data-state='on']": {
-    "ratio": 2.3,
-    "theme": "light",
-    "tone": "neutral"
+    "tone": "brand"
   },
   "tour [data-part='next-trigger'][data-scope='tour']": {
-    "ratio": 1.37,
+    "ratio": 1,
     "theme": "light",
     "tone": null
   },
   "transfer [data-part='item-checkbox'][data-scope='transfer'][data-state='checked']": {
-    "ratio": 1.01,
-    "theme": "dark",
-    "tone": "warning"
+    "ratio": 1,
+    "theme": "light",
+    "tone": "brand"
   },
   "tree [data-indeterminate][data-part='branch-checkbox'][data-scope='tree']:not([data-selected])": {
-    "ratio": 1.37,
+    "ratio": 1,
     "theme": "light",
     "tone": null
   },
   "tree [data-indeterminate][data-part='item-checkbox'][data-scope='tree']:not([data-selected])": {
-    "ratio": 1.37,
+    "ratio": 1,
     "theme": "light",
     "tone": null
   },
   "tree [data-part='branch-checkbox'][data-scope='tree'][data-selected]": {
-    "ratio": 1.37,
+    "ratio": 1,
     "theme": "light",
     "tone": null
   },
   "tree [data-part='item-checkbox'][data-scope='tree'][data-selected]": {
-    "ratio": 1.37,
+    "ratio": 1,
     "theme": "light",
     "tone": null
   }

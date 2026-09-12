@@ -24,7 +24,7 @@
 --xh-bg-surface-raised: oklch(1 0 0)  ← var(--xh-color-neutral-0)
 --xh-border-at-limit: oklch(0.55 0.14 70)  ← var(--xh-_contrast-use-default, var(--xh-_contrast-default-border-at-limit)) var(--xh-_contrast-use-more, var(--xh-_contrast-more-border-at-limit))
 --xh-border-control: oklch(0.439 0.006 258)  ← var(--xh-_contrast-use-default, var(--xh-_contrast-default-border-control)) var(--xh-_contrast-use-more, var(--xh-_contrast-more-border-control))
---xh-border-control-focus: oklch(0.623 0.214 258)  ← var(--xh-ring-focus)
+--xh-border-control-focus: oklch(0.546 0.216 258)  ← var(--xh-ring-focus)
 --xh-border-control-hover: oklch(0.371 0.006 258)  ← var(--xh-_contrast-use-default, var(--xh-color-neutral-500)) var(--xh-_contrast-use-more, var(--xh-_contrast-more-border-control-hover))
 --xh-border-default: oklch(0.52 0.006 258)  ← var(--xh-_contrast-use-default, var(--xh-_contrast-default-border-default)) var(--xh-_contrast-use-more, var(--xh-_contrast-more-border-default))
 --xh-border-invalid: oklch(0.5 0.2 25)  ← var(--xh-_contrast-use-default, var(--xh-_contrast-default-border-invalid)) var(--xh-_contrast-use-more, var(--xh-_contrast-more-border-invalid))
@@ -190,7 +190,7 @@
 --xh-overlay-sheet-w-lg: 48rem
 --xh-overlay-sheet-w-md: 32rem
 --xh-overlay-sheet-w-sm: 24rem
---xh-ring-focus: oklch(0.623 0.214 258)  ← var(--xh-color-brand-500)
+--xh-ring-focus: oklch(0.546 0.216 258)  ← var(--xh-color-brand-600)
 --xh-ring-invalid: oklch(0.637 0.208 25)  ← var(--xh-color-danger-500)
 --xh-ring-offset: calc(-1 * 2px)  ← calc(-1 * var(--xh-ring-width))
 --xh-ring-width: 2px  ← var(--xh-stroke-thick)

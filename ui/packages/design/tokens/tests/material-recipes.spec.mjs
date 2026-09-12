@@ -150,7 +150,7 @@ describe('material Recipe 生成', () => {
     expect(fullEntry.match(/@import '@xihan-ui\/tokens\/tokens\.css';/g)).toHaveLength(1)
 
     const representatives = {
-      soft: 'card.css',
+      soft: 'switch.css',
       frosted: 'popover.css',
       glass: 'prompt-input.css',
       elevated: 'dialog.css',

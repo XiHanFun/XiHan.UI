@@ -920,68 +920,8 @@ function settle(): void {
   }
 }
 
-/** 键盘锚点轻档的底是 --xh-bg-subtle-hover（浅色 neutral-200），默认环 brand-500 压上去 2.95。 */
-const 轻档的灰底 = '键盘锚点轻档的底是 --xh-bg-subtle-hover（浅色 neutral-200），默认环 brand-500 压上去 2.95；这块面由 tag-group.css 铺在组里的 tag 根上（实心档不进轻档）。静态门禁把 :is(:hover, [data-highlighted]) 整支当悬停档，看不见这块面，给它灌 currentColor 会多出一条算不出实心档的规则。过线要换这一档的面或给它一支专用环色'
-
-/**
- * 明知不达标、且换环色那一行救不回来的档。键是档位标签，值写一句差在哪、过线要动什么。
- * 两侧反查：登记的档必须仍挂得出来、仍在画环、也仍然不达标，三条有一条不成立即判登记过期。
- */
-const KNOWN = new Map<string, string>([
-  ['tag/close-trigger · 基础档 · 上下文 tag/root highlighted + tag/root selected · brand · light', 轻档的灰底],
-  ['tag/close-trigger · 基础档 · 上下文 tag/root highlighted + tag/root selected · danger · light', 轻档的灰底],
-  ['tag/close-trigger · 基础档 · 上下文 tag/root highlighted + tag/root selected · info · light', 轻档的灰底],
-  ['tag/close-trigger · 基础档 · 上下文 tag/root highlighted + tag/root selected · neutral · light', 轻档的灰底],
-  ['tag/close-trigger · 基础档 · 上下文 tag/root highlighted + tag/root selected · success · light', 轻档的灰底],
-  ['tag/close-trigger · 基础档 · 上下文 tag/root highlighted + tag/root selected · warning · light', 轻档的灰底],
-  ['tag/close-trigger · 基础档 · 上下文 tag/root highlighted · 无语气 · light', 轻档的灰底],
-  ['tag/close-trigger · 基础档 · 上下文 tag/root variant=subtle tone + tag/root highlighted · brand · light', 轻档的灰底],
-  ['tag/close-trigger · 基础档 · 上下文 tag/root variant=subtle tone + tag/root highlighted · danger · light', 轻档的灰底],
-  ['tag/close-trigger · 基础档 · 上下文 tag/root variant=subtle tone + tag/root highlighted · info · light', 轻档的灰底],
-  ['tag/close-trigger · 基础档 · 上下文 tag/root variant=subtle tone + tag/root highlighted · neutral · light', 轻档的灰底],
-  ['tag/close-trigger · 基础档 · 上下文 tag/root variant=subtle tone + tag/root highlighted · success · light', 轻档的灰底],
-  ['tag/close-trigger · 基础档 · 上下文 tag/root variant=subtle tone + tag/root highlighted · warning · light', 轻档的灰底],
-  ['tag/root · variant=outline · 上下文 tag/root highlighted + tag/root selected · brand · light', 轻档的灰底],
-  ['tag/root · variant=outline · 上下文 tag/root highlighted + tag/root selected · danger · light', 轻档的灰底],
-  ['tag/root · variant=outline · 上下文 tag/root highlighted + tag/root selected · info · light', 轻档的灰底],
-  ['tag/root · variant=outline · 上下文 tag/root highlighted + tag/root selected · neutral · light', 轻档的灰底],
-  ['tag/root · variant=outline · 上下文 tag/root highlighted + tag/root selected · success · light', 轻档的灰底],
-  ['tag/root · variant=outline · 上下文 tag/root highlighted + tag/root selected · warning · light', 轻档的灰底],
-  ['tag/root · variant=outline · 上下文 tag/root highlighted · 无语气 · light', 轻档的灰底],
-  ['tag/root · variant=outline · 上下文 tag/root variant=outline tone + tag/root highlighted · brand · light', 轻档的灰底],
-  ['tag/root · variant=outline · 上下文 tag/root variant=outline tone + tag/root highlighted · danger · light', 轻档的灰底],
-  ['tag/root · variant=outline · 上下文 tag/root variant=outline tone + tag/root highlighted · info · light', 轻档的灰底],
-  ['tag/root · variant=outline · 上下文 tag/root variant=outline tone + tag/root highlighted · neutral · light', 轻档的灰底],
-  ['tag/root · variant=outline · 上下文 tag/root variant=outline tone + tag/root highlighted · success · light', 轻档的灰底],
-  ['tag/root · variant=outline · 上下文 tag/root variant=outline tone + tag/root highlighted · warning · light', 轻档的灰底],
-  ['tag/root · variant=subtle · 上下文 tag/root highlighted + tag/root selected · brand · light', 轻档的灰底],
-  ['tag/root · variant=subtle · 上下文 tag/root highlighted + tag/root selected · danger · light', 轻档的灰底],
-  ['tag/root · variant=subtle · 上下文 tag/root highlighted + tag/root selected · info · light', 轻档的灰底],
-  ['tag/root · variant=subtle · 上下文 tag/root highlighted + tag/root selected · neutral · light', 轻档的灰底],
-  ['tag/root · variant=subtle · 上下文 tag/root highlighted + tag/root selected · success · light', 轻档的灰底],
-  ['tag/root · variant=subtle · 上下文 tag/root highlighted + tag/root selected · warning · light', 轻档的灰底],
-  ['tag/root · variant=subtle · 上下文 tag/root highlighted · 无语气 · light', 轻档的灰底],
-  ['tag/root · variant=subtle · 上下文 tag/root variant=subtle tone + tag/root highlighted · brand · light', 轻档的灰底],
-  ['tag/root · variant=subtle · 上下文 tag/root variant=subtle tone + tag/root highlighted · danger · light', 轻档的灰底],
-  ['tag/root · variant=subtle · 上下文 tag/root variant=subtle tone + tag/root highlighted · info · light', 轻档的灰底],
-  ['tag/root · variant=subtle · 上下文 tag/root variant=subtle tone + tag/root highlighted · neutral · light', 轻档的灰底],
-  ['tag/root · variant=subtle · 上下文 tag/root variant=subtle tone + tag/root highlighted · success · light', 轻档的灰底],
-  ['tag/root · variant=subtle · 上下文 tag/root variant=subtle tone + tag/root highlighted · warning · light', 轻档的灰底],
-  ['tag/root · 基础档 · 上下文 tag/root highlighted + tag/root selected · brand · light', 轻档的灰底],
-  ['tag/root · 基础档 · 上下文 tag/root highlighted + tag/root selected · danger · light', 轻档的灰底],
-  ['tag/root · 基础档 · 上下文 tag/root highlighted + tag/root selected · info · light', 轻档的灰底],
-  ['tag/root · 基础档 · 上下文 tag/root highlighted + tag/root selected · neutral · light', 轻档的灰底],
-  ['tag/root · 基础档 · 上下文 tag/root highlighted + tag/root selected · success · light', 轻档的灰底],
-  ['tag/root · 基础档 · 上下文 tag/root highlighted + tag/root selected · warning · light', 轻档的灰底],
-  ['tag/root · 基础档 · 上下文 tag/root highlighted · 无语气 · light', 轻档的灰底],
-  ['tag/root · 基础档 · 上下文 tag/root variant=subtle tone + tag/root highlighted · brand · light', 轻档的灰底],
-  ['tag/root · 基础档 · 上下文 tag/root variant=subtle tone + tag/root highlighted · danger · light', 轻档的灰底],
-  ['tag/root · 基础档 · 上下文 tag/root variant=subtle tone + tag/root highlighted · info · light', 轻档的灰底],
-  ['tag/root · 基础档 · 上下文 tag/root variant=subtle tone + tag/root highlighted · neutral · light', 轻档的灰底],
-  ['tag/root · 基础档 · 上下文 tag/root variant=subtle tone + tag/root highlighted · success · light', 轻档的灰底],
-  ['tag/root · 基础档 · 上下文 tag/root variant=subtle tone + tag/root highlighted · warning · light', 轻档的灰底],
-])
-
+/** 当前没有已知不达标档；新增项必须先修实现，不能用登记绕过 3:1。 */
+const KNOWN = new Map<string, string>()
 /** 静态门禁登记表里撤了环的那些档；分区还没建时是空表，撤环的档一律判红。 */
 const ringless: Record<string, unknown> = (surfaceRegistry as { ringless?: Record<string, unknown> }).ringless ?? {}
 
