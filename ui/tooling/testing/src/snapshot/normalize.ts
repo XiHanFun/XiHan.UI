@@ -15,15 +15,22 @@ const IDREF_ATTRS = new Set([
   'for',
 ])
 
-/** 适配器噪音与结构标记（含 WC 的 data-xh-*）：不进快照。 */
+/** 适配器噪音与内部结构标记：不进快照。 */
 const ADAPTER_NOISE = /^data-(?:v-[0-9a-f]{6,8}|server-rendered|defer-hydration|lit-|reactroot$|scope$|part$|xh-)/
+
+/** 三端共同消费的 family recipe 语义，不是适配器内部标记，必须参与跨端对拍。 */
+const PUBLIC_XH_FAMILY = /^data-xh-(?:action|field|collection)-/
+
+function isAdapterNoise(name: string): boolean {
+  return ADAPTER_NOISE.test(name) && !PUBLIC_XH_FAMILY.test(name)
+}
 
 function collectedNames(el: Element): string[] {
   const names = new Set<string>(BASE_ATTRS)
   for (const n of el.getAttributeNames()) {
     if (n === 'id' || n.startsWith('aria-'))
       names.add(n)
-    else if (n.startsWith('data-') && !ADAPTER_NOISE.test(n))
+    else if (n.startsWith('data-') && !isAdapterNoise(n))
       names.add(n)
   }
   return [...names].sort()
