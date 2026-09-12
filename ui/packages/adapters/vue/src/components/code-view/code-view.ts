@@ -2,33 +2,13 @@ import type { HighlighterPort, Size } from '@xihan-ui/core'
 import type { CodeLine, CodeViewApi, CodeViewProps, CodeViewTranslations } from '@xihan-ui/headless'
 import type { PropType, SlotsType, VNode } from 'vue'
 import type { PayloadOf } from '../../runtime/payload'
+import { createCodeViewHighlighterResource } from '@xihan-ui/headless'
 import { defineComponent, h, onBeforeUnmount, onMounted, shallowRef } from 'vue'
 import { withXhConfig } from '../../config/config'
 import { provideCodeView, useCodeViewContext } from './context'
 import { useCodeView } from './use-code-view'
 
-/**
- * 默认着色实现全组件共用一份：它无状态，没必要每块代码建一个。
- *
- * `@xihan-ui/code-highlight` 是可选 peer：装了它，模块到达后这个 ref 落成它的实现，
- * 在场的代码视图重渲一次并着色；没装则一直是 null，代码按纯文本渲染。
- */
-const defaultHighlighter = shallowRef<HighlighterPort | null>(null)
-
-/** 模块只载一次。 */
-let requested = false
-
-/** 首次用到时才去载默认着色实现；载不到就保持 null。 */
-function requestDefaultHighlighter(): void {
-  if (requested)
-    return
-  requested = true
-  void import('@xihan-ui/code-highlight')
-    .then((module) => {
-      defaultHighlighter.value = module.createHighlighter()
-    })
-    .catch(() => {})
-}
+const defaultHighlighter = createCodeViewHighlighterResource(() => import('@xihan-ui/code-highlight'))
 
 /** 默认插槽的载荷：语言、行数与折叠状态，以及翻面折叠的句柄。 */
 export type CodeViewRootSlotProps = Pick<CodeViewApi, 'lang' | 'lineCount' | 'lines' | 'foldable' | 'clamped' | 'setClamped'>
@@ -73,7 +53,9 @@ export const XhCodeViewRoot = defineComponent({
   }>,
   setup(props, { slots, emit }) {
     const configured = withXhConfig('code-view', props)
-    requestDefaultHighlighter()
+    const highlighterRevision = shallowRef(0)
+    const unsubscribe = defaultHighlighter.subscribe(() => highlighterRevision.value++)
+    onBeforeUnmount(unsubscribe)
     // getter 透传保住响应性：props 变了带动 connect 重算
     const forward: CodeViewProps = {
       get code() {
@@ -107,7 +89,13 @@ export const XhCodeViewRoot = defineComponent({
         return props.clamped
       },
       get highlighter() {
-        return props.highlighter === null ? undefined : props.highlighter ?? defaultHighlighter.value ?? undefined
+        if (props.highlighter === null)
+          return undefined
+        if (props.highlighter !== undefined)
+          return props.highlighter
+        void highlighterRevision.value
+        defaultHighlighter.request()
+        return defaultHighlighter.read() ?? undefined
       },
       get highlightWhileStreaming() {
         return props.highlightWhileStreaming

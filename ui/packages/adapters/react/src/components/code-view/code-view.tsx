@@ -91,7 +91,7 @@ export function XhCodeViewRoot({
     translations,
     onClampToggle,
   })
-  const fallback = useDefaultHighlighter()
+  const fallback = useDefaultHighlighter(highlighter === undefined)
   const ctx = useCodeView({
     ...configured,
     code: configured.code ?? '',
