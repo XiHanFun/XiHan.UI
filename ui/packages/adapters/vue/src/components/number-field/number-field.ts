@@ -4,6 +4,7 @@ import type { PropType, SlotsType, VNode } from 'vue'
 import type { PayloadOf } from '../../runtime/payload'
 import { defineComponent, h } from 'vue'
 import { useFieldLabelWiring, useFieldStateWiring } from '../field/use-field-control'
+import { useFormControlProps } from '../form/use-form-control'
 import { provideNumberField, useNumberFieldContext } from './context'
 import { useNumberField } from './use-number-field'
 
@@ -25,10 +26,10 @@ export const XhNumberFieldRoot = defineComponent({
     max: { type: Number, default: undefined },
     step: { type: Number, default: undefined },
     largeStep: { type: Number, default: undefined },
-    disabled: Boolean,
-    readOnly: Boolean,
-    required: Boolean,
-    invalid: Boolean,
+    disabled: { type: Boolean, default: undefined },
+    readOnly: { type: Boolean, default: undefined },
+    required: { type: Boolean, default: undefined },
+    invalid: { type: Boolean, default: undefined },
     name: { type: String, default: undefined },
     changeDelay: { type: Number, default: undefined },
     changeInterval: { type: Number, default: undefined },
@@ -51,7 +52,7 @@ export const XhNumberFieldRoot = defineComponent({
       emit('value-change', details)
       emit('update:value', details.value)
     }
-    const ctx = useNumberField(props as NumberFieldProps, notify)
+    const ctx = useNumberField(useFormControlProps(props) as NumberFieldProps, notify)
     provideNumberField(ctx)
     return () => h('div', ctx.api.value.getRootProps() as Record<string, unknown>, slots.default?.({
       value: ctx.api.value.value,
@@ -107,7 +108,7 @@ export const XhNumberFieldInput = defineComponent({
     // 字段的标签也得并进名字链：控件自带的那条指的是它自己那个没渲染的 label 部件
     const fieldLabel = useFieldLabelWiring()
     const ctx = useNumberFieldContext()
-    return () => h('input', fieldLabel.value({ ...ctx.api.value.getInputProps() as Record<string, unknown>, ...fieldWiring.value }))
+    return () => h('input', fieldLabel.value({ ...fieldWiring.value, ...ctx.api.value.getInputProps() as Record<string, unknown> }))
   },
 })
 

@@ -1,6 +1,6 @@
 import type { ControlVariant, Size, Tone } from '@xihan-ui/core'
-import type { NumberFieldSchema, NumberFieldValueChangeDetails } from '@xihan-ui/headless'
-import { connectNumberField, numberFieldAnatomy, numberFieldMachine, numberFieldMeta } from '@xihan-ui/headless'
+import type { FormControlState, NumberFieldSchema, NumberFieldValueChangeDetails } from '@xihan-ui/headless'
+import { connectNumberField, numberFieldAnatomy, numberFieldMachine, numberFieldMeta, resolveFormControlState } from '@xihan-ui/headless'
 import { wcNormalize } from '../dom/normalize'
 import { XhElement } from '../element-base'
 import { MachineController } from '../runtime/machine-controller'
@@ -8,6 +8,7 @@ import { MachineController } from '../runtime/machine-controller'
 // 属性缺席翻成 undefined，以此区分受控与非受控。
 const STRING_CONVERTER = { fromAttribute: (v: string | null) => v ?? undefined }
 const NUMBER_CONVERTER = { fromAttribute: (v: string | null) => (v == null || v === '' ? undefined : Number(v)) }
+const BOOLEAN_CONVERTER = { fromAttribute: (v: string | null) => (v === null ? undefined : v !== 'false') }
 
 /**
  * `<xh-number-field>` —— Light-DOM 行为宿主：作者写 root/label/input/加减按钮四类角色节点，
@@ -56,10 +57,10 @@ export class XhNumberFieldElement extends XhElement {
     max: { converter: NUMBER_CONVERTER },
     step: { converter: NUMBER_CONVERTER },
     largeStep: { converter: NUMBER_CONVERTER, attribute: 'large-step' },
-    disabled: { type: Boolean },
-    readOnly: { type: Boolean, attribute: 'read-only' },
-    required: { type: Boolean },
-    invalid: { type: Boolean },
+    disabled: { converter: BOOLEAN_CONVERTER },
+    readOnly: { converter: BOOLEAN_CONVERTER, attribute: 'read-only' },
+    required: { converter: BOOLEAN_CONVERTER },
+    invalid: { converter: BOOLEAN_CONVERTER },
     name: { converter: STRING_CONVERTER },
     changeDelay: { converter: NUMBER_CONVERTER, attribute: 'change-delay' },
     changeInterval: { converter: NUMBER_CONVERTER, attribute: 'change-interval' },
@@ -95,8 +96,21 @@ export class XhNumberFieldElement extends XhElement {
   }
 
   private readonly ctrl = new MachineController<NumberFieldSchema>(this, numberFieldMachine, () => this.machineProps())
+  private inheritedControl: FormControlState | undefined
+
+  /** 最近的 Field 或 Form 只交状态；四轴优先级由 Headless 真源结算。 */
+  setFormControlState(state: FormControlState | undefined): void {
+    this.inheritedControl = state
+    this.requestUpdate()
+  }
 
   private machineProps(): Partial<NumberFieldSchema['props']> {
+    const control = resolveFormControlState({
+      disabled: this.disabled,
+      readOnly: this.readOnly,
+      required: this.required,
+      invalid: this.invalid,
+    }, this.inheritedControl)
     return {
       value: this.value,
       defaultValue: this.defaultValue,
@@ -104,10 +118,10 @@ export class XhNumberFieldElement extends XhElement {
       max: this.max,
       step: this.step,
       largeStep: this.largeStep,
-      disabled: this.disabled ?? false,
-      readOnly: this.readOnly ?? false,
-      required: this.required ?? false,
-      invalid: this.invalid ?? false,
+      disabled: control.disabled,
+      readOnly: control.readOnly,
+      required: control.required,
+      invalid: control.invalid,
       name: this.name,
       changeDelay: this.changeDelay,
       changeInterval: this.changeInterval,

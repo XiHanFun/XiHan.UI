@@ -1,9 +1,11 @@
 import type { Size, Tone } from '@xihan-ui/core'
-import type { SwitchCheckedChangeDetails, SwitchSchema } from '@xihan-ui/headless'
-import { connectSwitch, switchAnatomy, switchMachine, switchMeta } from '@xihan-ui/headless'
+import type { FormControlState, SwitchCheckedChangeDetails, SwitchSchema } from '@xihan-ui/headless'
+import { connectSwitch, resolveFormControlState, switchAnatomy, switchMachine, switchMeta } from '@xihan-ui/headless'
 import { wcNormalize } from '../dom/normalize'
 import { XhElement } from '../element-base'
 import { MachineController } from '../runtime/machine-controller'
+
+const BOOLEAN_CONVERTER = { fromAttribute: (v: string | null) => (v === null ? undefined : v !== 'false') }
 
 /**
  * `<xh-switch>` —— Light-DOM 行为宿主，跑 switch 机器并把 connect 产出打到 root/thumb 角色节点。
@@ -32,10 +34,10 @@ export class XhSwitchElement extends XhElement {
   static override properties = {
     checked: { converter: { fromAttribute: (v: string | null) => (v === null ? undefined : v !== 'false') } },
     defaultChecked: { type: Boolean, attribute: 'default-checked' },
-    disabled: { type: Boolean },
-    readOnly: { type: Boolean, attribute: 'read-only' },
-    invalid: { type: Boolean },
-    required: { type: Boolean },
+    disabled: { converter: BOOLEAN_CONVERTER },
+    readOnly: { converter: BOOLEAN_CONVERTER, attribute: 'read-only' },
+    invalid: { converter: BOOLEAN_CONVERTER },
+    required: { converter: BOOLEAN_CONVERTER },
     loading: { type: Boolean },
     name: { converter: { fromAttribute: (v: string | null) => v ?? undefined } },
     value: { converter: { fromAttribute: (v: string | null) => v ?? undefined } },
@@ -60,15 +62,28 @@ export class XhSwitchElement extends XhElement {
   }
 
   private readonly ctrl = new MachineController<SwitchSchema>(this, switchMachine, () => this.machineProps())
+  private inheritedControl: FormControlState | undefined
+
+  /** 最近的 Field 或 Form 只交状态；四轴优先级由 Headless 真源结算。 */
+  setFormControlState(state: FormControlState | undefined): void {
+    this.inheritedControl = state
+    this.requestUpdate()
+  }
 
   private machineProps(): Partial<SwitchSchema['props']> {
+    const control = resolveFormControlState({
+      disabled: this.disabled,
+      readOnly: this.readOnly,
+      invalid: this.invalid,
+      required: this.required,
+    }, this.inheritedControl)
     return {
       checked: this.checked,
       defaultChecked: this.defaultChecked ?? false,
-      disabled: this.disabled ?? false,
-      readOnly: this.readOnly ?? false,
-      invalid: this.invalid ?? false,
-      required: this.required ?? false,
+      disabled: control.disabled,
+      readOnly: control.readOnly,
+      invalid: control.invalid,
+      required: control.required,
       loading: this.loading ?? false,
       tone: this.tone,
       size: this.size,

@@ -17,10 +17,12 @@ import type {
   FormValues,
   FormValuesChangeDetails,
 } from '@xihan-ui/headless'
+import type { FormControlHost } from './form-control-host'
 import { connectForm, formAnatomy, formMachine, formMeta } from '@xihan-ui/headless'
 import { wcNormalize } from '../dom/normalize'
 import { XhElement } from '../element-base'
 import { MachineController } from '../runtime/machine-controller'
+import { FORM_CONTROL_HOST_SELECTOR } from './form-control-host'
 
 // 属性缺席翻成 undefined，缺省值由机器与 connect 决定。
 const STRING_CONVERTER = { fromAttribute: (v: string | null) => v ?? undefined }
@@ -83,10 +85,6 @@ function fieldPathOf(el: HTMLElement): FormPath {
     throw new TypeError('[xh] <xh-form> 的 data-path 必须是非空 string/number 数组 JSON')
   }
   return el.getAttribute('name') ?? ''
-}
-
-interface FormControlHost extends HTMLElement {
-  setFormControlState: (state: FormControlState | undefined) => void
 }
 
 /**
@@ -323,9 +321,9 @@ export class XhFormElement extends XhElement {
         invalid: api.isFieldInvalid(name),
       }
       // 表单只发现 Light-DOM 控件并交出最近状态；实例优先级与实际交互都由控件机器处理。
-      for (const control of el.querySelectorAll<FormControlHost>('xh-field, xh-text-field')) {
-        // Field 自己会再把已合并状态交给其内的 TextField，避免 Form 越过 Field 覆盖最近继承源。
-        if (control.tagName === 'XH-TEXT-FIELD' && control.closest('xh-field'))
+      for (const control of el.querySelectorAll<FormControlHost>(`xh-field, ${FORM_CONTROL_HOST_SELECTOR}`)) {
+        // Field 自己会再把已合并状态交给其内的控件，避免 Form 越过 Field 覆盖最近继承源。
+        if (control.tagName !== 'XH-FIELD' && control.closest('xh-field'))
           continue
         control.setFormControlState(state)
       }

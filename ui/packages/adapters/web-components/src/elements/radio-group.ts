@@ -1,11 +1,13 @@
 import type { Direction, Orientation, Size, Tone } from '@xihan-ui/core'
-import type { RadioGroupItemProps, RadioGroupNode, RadioGroupSchema, RadioGroupValueChangeDetails } from '@xihan-ui/headless'
+import type { FormControlState, RadioGroupItemProps, RadioGroupNode, RadioGroupSchema, RadioGroupValueChangeDetails, ResolvedFormControlState } from '@xihan-ui/headless'
 import { isItemDisabled, ITEM_VALUE_ATTR } from '@xihan-ui/core'
-import { connectRadioGroup, radioGroupAnatomy, radioGroupMachine, radioGroupMeta } from '@xihan-ui/headless'
+import { connectRadioGroup, radioGroupAnatomy, radioGroupMachine, radioGroupMeta, resolveFormControlState } from '@xihan-ui/headless'
 import { createDeclaredDisabled } from '../dom/declared-disabled'
 import { wcNormalize } from '../dom/normalize'
 import { XhElement } from '../element-base'
 import { MachineController } from '../runtime/machine-controller'
+
+const BOOLEAN_CONVERTER = { fromAttribute: (v: string | null) => (v === null ? undefined : v !== 'false') }
 
 /**
  * `<xh-radio-group>` —— Light-DOM 行为宿主：用户写 root/label 与若干 item 角色节点，
@@ -42,10 +44,10 @@ export class XhRadioGroupElement extends XhElement {
     collection: { attribute: false },
     value: { converter: { fromAttribute: (v: string | null) => v ?? undefined } },
     defaultValue: { attribute: 'default-value' },
-    disabled: { type: Boolean },
-    readOnly: { type: Boolean, attribute: 'read-only' },
-    invalid: { type: Boolean },
-    required: { type: Boolean },
+    disabled: { converter: BOOLEAN_CONVERTER },
+    readOnly: { converter: BOOLEAN_CONVERTER, attribute: 'read-only' },
+    invalid: { converter: BOOLEAN_CONVERTER },
+    required: { converter: BOOLEAN_CONVERTER },
     orientation: {},
     direction: { attribute: 'dir' },
     name: {},
@@ -76,16 +78,33 @@ export class XhRadioGroupElement extends XhElement {
   }
 
   private readonly ctrl = new MachineController<RadioGroupSchema>(this, radioGroupMachine, () => this.machineProps())
+  private inheritedControl: FormControlState | undefined
+
+  /** 最近的 Field 或 Form 只交状态；四轴优先级由 Headless 真源结算。 */
+  setFormControlState(state: FormControlState | undefined): void {
+    this.inheritedControl = state
+    this.requestUpdate()
+  }
+
+  private controlState(): ResolvedFormControlState {
+    return resolveFormControlState({
+      disabled: this.disabled,
+      readOnly: this.readOnly,
+      invalid: this.invalid,
+      required: this.required,
+    }, this.inheritedControl)
+  }
 
   private machineProps(): Partial<RadioGroupSchema['props']> {
+    const control = this.controlState()
     return {
       collection: this.collection,
       value: this.value,
       defaultValue: this.defaultValue ?? null,
-      disabled: this.disabled ?? false,
-      readOnly: this.readOnly ?? false,
-      invalid: this.invalid ?? false,
-      required: this.required ?? false,
+      disabled: control.disabled,
+      readOnly: control.readOnly,
+      invalid: control.invalid,
+      required: control.required,
       orientation: this.orientation,
       dir: this.direction,
       name: this.name,
@@ -118,7 +137,7 @@ export class XhRadioGroupElement extends XhElement {
     // 「作者没写」表达不出 undefined，数据里的禁用就永远轮不到生效。
     if (this.collection)
       return { value, disabled: this.declaredItemDisabled(el) }
-    const groupDisabled = !!this.disabled
+    const groupDisabled = this.controlState().disabled
     // 头一回见到这个条目：本帧的写回尚未发生，DOM 上还只有作者声明，此刻无论禁没禁用都要记下快照
     if (!this.declaredDisabled.has(el)) {
       const own = isItemDisabled(el)
@@ -171,6 +190,6 @@ export class XhRadioGroupElement extends XhElement {
     }
 
     // 本帧的写回已落地，下一帧才知道 DOM 上的 aria-disabled 可不可信
-    this.wasGroupDisabled = !!this.disabled
+    this.wasGroupDisabled = this.controlState().disabled
   }
 }

@@ -14,7 +14,7 @@ export function useFormControlProps<T extends FormControlState>(props: T): T {
   const handle = useOptionalFormField()
   const field = useOptionalFieldContext()
 
-  const inherited = (): FormControlState | undefined => {
+  const fieldState = (): FormControlState | undefined => {
     if (field) {
       const api = field.api.value
       return {
@@ -24,6 +24,9 @@ export function useFormControlProps<T extends FormControlState>(props: T): T {
         invalid: api.invalid,
       }
     }
+    return undefined
+  }
+  const formState = (): FormControlState | undefined => {
     if (!form || !handle)
       return undefined
     const api = form.api.value
@@ -39,7 +42,7 @@ export function useFormControlProps<T extends FormControlState>(props: T): T {
   return new Proxy(props, {
     get(target, key, receiver) {
       if (typeof key === 'string' && CONTROL_KEYS.has(key as keyof FormControlState))
-        return resolveFormControlState(target, inherited())[key as keyof FormControlState]
+        return resolveFormControlState(target, fieldState(), formState())[key as keyof FormControlState]
       return Reflect.get(target, key, receiver)
     },
   })

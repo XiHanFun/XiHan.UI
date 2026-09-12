@@ -5,6 +5,7 @@ import { useEffect, useMemo, useRef } from 'react'
 import { useIsomorphicLayoutEffect } from '../../runtime/layout-effect'
 import { mergeReactProps } from '../../runtime/merge-props'
 import { useNativeEvents } from '../../runtime/native-events'
+import { useFormControlProps } from '../form/use-form-control'
 import { RadioGroupItemProvider, RadioGroupProvider, useRadioGroupContext, useRadioGroupItemContext } from './context'
 import { useRadioGroup } from './use-radio-group'
 
@@ -53,7 +54,7 @@ export function XhRadioGroupRoot({
   children,
   ...rest
 }: XhRadioGroupRootProps): ReactNode {
-  const ctx = useRadioGroup({
+  const ctx = useRadioGroup(useFormControlProps({
     collection,
     value,
     defaultValue,
@@ -67,7 +68,7 @@ export function XhRadioGroupRoot({
     tone,
     size,
     onValueChange,
-  } as RadioGroupProps)
+  } as RadioGroupProps))
   const api = ctx.api
 
   // 容器的 onFocus 是 DOM 的 focus（不冒泡，只在容器自己得焦时接管）。React 的同名合成事件

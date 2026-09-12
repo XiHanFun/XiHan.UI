@@ -1,17 +1,15 @@
 import type { Scope } from '@xihan-ui/core'
 import type { FieldProps, FormControlState } from '@xihan-ui/headless'
+import type { FormControlHost } from './form-control-host'
 import { createCounterIdGenerator, createScope } from '@xihan-ui/core'
 import { connectField, fieldAnatomy, fieldMeta, resolveFormControlState } from '@xihan-ui/headless'
 import { wcNormalize } from '../dom/normalize'
 import { XhElement } from '../element-base'
+import { FORM_CONTROL_HOST_SELECTOR } from './form-control-host'
 
 // 属性缺席翻成 undefined，控件 id 的缺省由 connect 派生。
 const STRING_CONVERTER = { fromAttribute: (v: string | null) => v ?? undefined }
 const BOOLEAN_CONVERTER = { fromAttribute: (v: string | null) => (v === null ? undefined : v !== 'false') }
-
-interface FormControlHost extends HTMLElement {
-  setFormControlState: (state: FormControlState | undefined) => void
-}
 
 /**
  * `<xh-field>` —— Light-DOM 行为宿主，无状态机，把 connectField 产出的 id 与 aria-* 打到
@@ -96,7 +94,10 @@ export class XhFieldElement extends XhElement {
     put('error-text', api.getErrorTextProps() as Record<string, unknown>)
 
     // Field 套库内控件时，状态必须进那台控件机器；只把 ARIA 铺在包装根上不足以挡住输入。
-    for (const control of this.querySelectorAll<FormControlHost>('xh-text-field')) {
+    for (const control of this.querySelectorAll<FormControlHost>(FORM_CONTROL_HOST_SELECTOR)) {
+      // 嵌套 Field 的控件归更近的那一层，当前 Field 不跨过去覆盖。
+      if (control.closest('xh-field') !== this)
+        continue
       control.setFormControlState({
         disabled: api.disabled,
         readOnly: api.readOnly,

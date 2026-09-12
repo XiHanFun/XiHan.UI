@@ -6,6 +6,7 @@ import { useFormReset } from '../../runtime/attach-form-reset'
 import { mergeReactProps } from '../../runtime/merge-props'
 import { slotPaints } from '../../runtime/slot-content'
 import { useFieldLabelWiring, useFieldStateWiring } from '../field/use-field-control'
+import { useFormControlProps } from '../form/use-form-control'
 import { useCheckbox } from './use-checkbox'
 
 type CheckboxProps = CheckboxSchema['props']
@@ -49,7 +50,7 @@ export function XhCheckbox({
   children,
   ...rest
 }: XhCheckboxProps): ReactNode {
-  const { api, service } = useCheckbox({
+  const { api, service } = useCheckbox(useFormControlProps({
     checked,
     defaultChecked,
     disabled,
@@ -61,7 +62,7 @@ export function XhCheckbox({
     tone,
     size,
     onCheckedChange,
-  } as CheckboxProps)
+  } as CheckboxProps))
 
   // 字段的说明与校验状态要落在焦点所在的那颗按钮上：给了文字时封装根是外面那个 <label>，
   // 而读屏只念焦点所在节点的描述
@@ -83,10 +84,10 @@ export function XhCheckbox({
     <button
       {...mergeReactProps(
         fieldLabel({
+          ...fieldWiring,
           ...api.getRootProps() as Record<string, unknown>,
           // 有文字时名字改由它承担；没文字时不写，作者写在组件上的 aria-label 照旧生效
           ...(labelled ? { 'aria-labelledby': textId } : null),
-          ...fieldWiring,
         }),
         rest as Record<string, unknown>,
         labelled ? {} : { ref: rootRef },
