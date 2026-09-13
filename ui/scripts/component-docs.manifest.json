@@ -23,7 +23,8 @@
     "tabs",
     "time-field",
     "time-picker",
-    "number-field"
+    "number-field",
+    "alert"
   ],
   "categories": [
     {

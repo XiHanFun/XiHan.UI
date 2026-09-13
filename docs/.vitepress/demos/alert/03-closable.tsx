@@ -7,6 +7,7 @@
 import type { ReactNode } from "react";
 import {
   XhAlertCloseTrigger,
+  XhAlertContent,
   XhAlertRoot,
   XhAlertTitle,
   XhButton,
@@ -19,7 +20,7 @@ export default function Demo(): ReactNode {
   return (
     <div style={{ width: "100%", display: "grid", gap: "12px" }}>
       <XhAlertRoot open={open} onOpenChange={details => setOpen(details.open)} closable>
-        <XhAlertTitle>点右侧关闭</XhAlertTitle>
+        <XhAlertContent><XhAlertTitle>点右侧关闭</XhAlertTitle></XhAlertContent>
         <XhAlertCloseTrigger />
       </XhAlertRoot>
       {!open && <XhButton size="sm" onClick={() => setOpen(true)}>再显示一次</XhButton>}

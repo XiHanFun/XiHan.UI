@@ -7,8 +7,8 @@
 
 import type { ComponentMeta } from '../spec/types'
 
-// 只有 root 必备：图标、标题、说明、关闭按钮都由作者按需要放。
+// content 是标题与说明的统一文本列；图标、标题、说明、操作和关闭按钮按需要放。
 export const alertMeta: ComponentMeta = {
   component: 'alert',
-  requiredParts: ['root'],
+  requiredParts: ['root', 'content'],
 }

@@ -10,7 +10,7 @@ import { createAnatomy } from '@xihan-ui/core'
 export const alertAnatomy = createAnatomy('alert', [
   'root',
   'indicator',
-  // 文本列：标题与说明摞成一列。不写它时两段文字直接坐在 root 的那一行上。
+  // 必需的文本列：标题与说明摞成一列。
   'content',
   'title',
   'description',

@@ -801,10 +801,10 @@
               "name": "--xh-alert-icon-size"
             },
             {
-              "name": "--xh-alert-indicator-box"
+              "name": "--xh-alert-indicator-fg"
             },
             {
-              "name": "--xh-alert-indicator-fg"
+              "name": "--xh-alert-indicator-p"
             },
             {
               "name": "--xh-alert-leading"
@@ -817,6 +817,9 @@
             },
             {
               "name": "--xh-alert-radius"
+            },
+            {
+              "name": "--xh-alert-shadow"
             },
             {
               "name": "--xh-alert-title-fg"
