@@ -12,7 +12,7 @@
 
     display: flex;
     flex-direction: column;
-    gap: var(--xh-calendar-gap, var(--xh-space-3));
+    gap: var(--xh-calendar-gap, var(--xh-space-2));
     /* 数字等宽：1 与 7 的字形宽度在比例字体里并不相同，不定住会让整张网格随月份抖动 */
     font-variant-numeric: tabular-nums;
   }
@@ -97,7 +97,7 @@
     border: var(--xh-stroke-thin) solid transparent;
     border-radius: var(--xh-calendar-nav-radius, var(--xh-shape-control));
     background: var(--xh-calendar-nav-bg, transparent);
-    color: var(--xh-calendar-nav-fg, var(--xh-fg-brand));
+    color: var(--xh-calendar-nav-fg, var(--xh-fg-muted));
     cursor: pointer;
     transition:
       background var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
@@ -116,7 +116,7 @@
   [data-scope='calendar'][data-part='next-year-trigger']:hover:not(:disabled),
   [data-scope='calendar'][data-part='next-trigger']:hover:not(:disabled) {
     background: var(--xh-calendar-nav-bg-hover, var(--xh-bg-subtle-hover));
-    color: var(--xh-calendar-nav-fg-hover, var(--xh-fg-brand));
+    color: var(--xh-calendar-nav-fg-hover, var(--xh-fg-default));
   }
 
   /* 换底之外再压一档：方向钮按下时缩放 */
@@ -172,15 +172,18 @@
 
   /* 周期格沿横轴铺开，但始终保持控制件高度；选中面只换颜色，不改变几何尺寸。 */
   [data-scope='calendar'][data-part='grid']:is([data-view='week'], [data-view='month'], [data-view='quarter'], [data-view='year']) [data-part='cell-trigger'] {
+    flex: 0 0 auto;
     aspect-ratio: auto;
     min-inline-size: 0;
-    inline-size: 100%;
-    block-size: var(--xh-control-h-sm);
+    inline-size: min(3.5rem, 100%);
     padding-block: var(--xh-calendar-period-py, var(--xh-space-2));
+    border-radius: var(--xh-calendar-period-radius, var(--xh-shape-control));
   }
 
   [data-scope='calendar'][data-part='grid'][data-view='week'] [data-part='cell-trigger'] {
+    flex: 1 1 auto;
     justify-content: flex-start;
+    inline-size: 100%;
     padding-inline: var(--xh-calendar-week-cell-px, var(--xh-space-3));
   }
 

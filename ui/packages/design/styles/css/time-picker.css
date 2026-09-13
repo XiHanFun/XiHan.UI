@@ -51,7 +51,6 @@
     --xh-_time-picker-gap: var(--xh-control-gap-md);
     --xh-_time-picker-font-size: var(--xh-control-font-md);
     --xh-_time-picker-label-font-size: var(--xh-control-font-md);
-    --xh-_time-picker-item-px: var(--xh-control-px-md);
 
     /* 形态档只换这五个私有槽：两档底色、两档描边与落影 */
     --xh-_time-picker-control-bg: var(--xh-bg-canvas);
@@ -95,7 +94,6 @@
     --xh-_time-picker-gap: var(--xh-control-gap-sm);
     --xh-_time-picker-font-size: var(--xh-control-font-sm);
     --xh-_time-picker-label-font-size: var(--xh-control-font-sm);
-    --xh-_time-picker-item-px: var(--xh-control-px-sm);
   }
 
   [data-scope='time-picker']:is([data-part='root'], [data-part='positioner'])[data-size='lg'] {
@@ -105,7 +103,6 @@
     --xh-_time-picker-gap: var(--xh-control-gap-lg);
     --xh-_time-picker-font-size: var(--xh-control-font-lg);
     --xh-_time-picker-label-font-size: var(--xh-control-font-lg);
-    --xh-_time-picker-item-px: var(--xh-control-px-lg);
   }
 
   /* —— 形态 —— */
@@ -392,12 +389,12 @@
     position: relative;
     display: flex;
     align-items: stretch;
-    padding-block: var(--xh-time-picker-content-py, var(--xh-space-2));
-    padding-inline: var(--xh-time-picker-content-px, var(--xh-space-2));
+    padding-block: var(--xh-time-picker-content-py, var(--xh-space-1));
+    padding-inline: var(--xh-time-picker-content-px, var(--xh-space-1));
     /* 列自己定高，面板整体不该再长过页内滚动面那一档 */
     max-block-size: var(--xh-time-picker-content-max-h, var(--xh-viewport-h-lg));
-    border: var(--xh-stroke-thin) solid var(--xh-time-picker-content-border, transparent);
-    border-radius: var(--xh-time-picker-content-radius, var(--xh-shape-overlay));
+    border: var(--xh-stroke-thin) solid var(--xh-time-picker-content-border, var(--xh-border-subtle));
+    border-radius: var(--xh-time-picker-content-radius, var(--xh-shape-surface));
     background: var(--xh-time-picker-content-bg, var(--xh-bg-surface));
     color: var(--xh-time-picker-content-fg, var(--xh-fg-default));
     font-variant-numeric: tabular-nums;
@@ -537,11 +534,11 @@
     display: flex;
     flex: none;
     flex-direction: column;
-    gap: var(--xh-time-picker-column-gap, var(--xh-list-option-gap));
+    gap: var(--xh-time-picker-column-gap, 0);
     min-inline-size: var(--xh-time-picker-column-min-w, 3.5rem);
     /* 几列并排：定高而不是随内容收，否则时列与分列的可选值一多一少就错位 */
     block-size: var(--xh-time-picker-column-h, var(--xh-viewport-h-sm));
-    padding-inline: var(--xh-time-picker-column-px, var(--xh-space-1));
+    padding-inline: var(--xh-time-picker-column-px, 0);
     overflow-y: auto;
     /* 滚动容器在某些浏览器里会被自动塞进 Tab 序列，是否画环见下方按 tabindex 分档的两条 */
     scrollbar-width: thin;
@@ -568,18 +565,20 @@
   }
 
   [data-scope='time-picker'][data-part='item'] {
+    --xh-_time-picker-item-rail: max(
+      var(--xh-time-picker-item-px, var(--xh-space-0_5)),
+      calc(var(--xh-time-picker-item-check-size, var(--xh-glyph-size-sm)) + var(--xh-space-0_5))
+    );
+
     position: relative;
     display: flex;
     flex: none;
     align-items: center;
     justify-content: center;
-    padding-block: var(--xh-time-picker-item-py, var(--xh-list-option-py-md));
+    block-size: var(--xh-time-picker-item-h, calc(var(--xh-control-h-sm) - var(--xh-space-1)));
+    padding-block: var(--xh-time-picker-item-py, 0);
     /* 两侧留同宽轨：对号绝对落在末端，数字仍在整格的数学中心。 */
-    padding-inline: calc(
-      var(--xh-time-picker-item-px, var(--xh-_time-picker-item-px))
-      + var(--xh-time-picker-item-check-size, var(--xh-glyph-size-sm))
-      + var(--xh-space-1)
-    );
+    padding-inline: var(--xh-_time-picker-item-rail);
     border-radius: var(--xh-time-picker-item-radius, var(--xh-shape-control));
     color: var(--xh-time-picker-item-fg, var(--xh-fg-default));
     font-size: var(--xh-time-picker-item-font-size, var(--xh-_time-picker-font-size));
@@ -602,7 +601,7 @@
     content: '';
     position: absolute;
     inset-block-start: 50%;
-    inset-inline-end: var(--xh-time-picker-item-px, var(--xh-_time-picker-item-px));
+    inset-inline-end: var(--xh-space-0_5);
     inline-size: var(--xh-time-picker-item-check-size, var(--xh-glyph-size-sm));
     block-size: var(--xh-time-picker-item-check-size, var(--xh-glyph-size-sm));
     background-color: var(--xh-time-picker-item-check-fg, var(--xh-_time-picker-check-fg));

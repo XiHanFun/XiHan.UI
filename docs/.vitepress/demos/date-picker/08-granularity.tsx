@@ -49,8 +49,7 @@ const modes: { value: Extract<CalendarSelectionMode, "single" | "range">; label:
 ];
 
 const yearCells: CalendarPeriod[] = Array.from({ length: 200 }, (_, index) =>
-  calendarPeriodOf(`${1900 + index}-01-01`, "year", { locale: "zh-CN" })!,
-);
+  calendarPeriodOf(`${1900 + index}-01-01`, "year", { locale: "zh-CN" })!);
 
 export default function Demo(): ReactNode {
   const [granularity, setGranularity] = useState<CalendarGranularity>("day");
@@ -95,7 +94,7 @@ export default function Demo(): ReactNode {
 
           <XhDatePickerPositioner>
             <XhDatePickerContent>
-              <div style={{ display: "flex", justifyContent: "space-between", gap: "var(--xh-space-3)", padding: "var(--xh-space-3)" }}>
+              <div style={{ display: "flex", justifyContent: "space-between", gap: "var(--xh-space-3)", paddingBlockEnd: "var(--xh-space-2)" }}>
                 <XhToggleGroupRoot
                   value={granularity}
                   disallowEmpty
@@ -164,7 +163,7 @@ export default function Demo(): ReactNode {
                 </XhDatePickerCalendar>
               ))}
 
-              <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: "var(--xh-space-3)", padding: "var(--xh-space-3)" }}>
+              <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: "var(--xh-space-3)", marginBlockStart: "var(--xh-space-2)", paddingBlockStart: "var(--xh-space-2)", borderBlockStart: "var(--xh-stroke-thin) solid var(--xh-border-subtle)" }}>
                 <span>{summary}</span>
                 <div style={{ display: "flex", gap: "var(--xh-space-2)" }}>
                   <XhButton variant="ghost" size="sm" disabled={value.length === 0} onClick={clear}>清空</XhButton>
