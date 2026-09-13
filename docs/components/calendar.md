@@ -1,6 +1,6 @@
 # Calendar 日历
 
-一整月（或周 / 月 / 季 / 年）的网格，格子里可以放内容。
+以月、周、季度或年份浏览并选择日期，也可以在日期格中展示日程内容。
 
 <div class="xh-resource-links">
   <a href="https://github.com/XiHanFun/XiHan.UI/tree/dev/ui/packages/engine/headless/src/calendar" target="_blank" rel="noreferrer">Headless</a>
@@ -12,7 +12,7 @@
 
 ## 用法
 
-网格由作者照 weeks / weekDays 自己渲染，组件一个节点都不替你生成
+选择日期
 
 <XhDemo src="calendar/01-basic" />
 
@@ -55,9 +55,9 @@ cell-trigger 的内容全由作者写，日号之外还能塞自己的标记
 
 ### 特性
 
-- 星期名由作者自己渲染，组件一个节点都不替你生成。
+- 标准结构由标题栏、前后翻页按钮、星期表头和日期网格组成；网格数据通过插槽作用域交给作者渲染。
 - `isDateUnavailable` 与 `min` / `max` 都只挡落值不挡聚焦——键盘用户仍能走到不可选的日子上，读屏会念出它不可选。
-- 支持区间选择、整周选择、固定六行与多月并排。
+- 支持单选、多选、区间选择、整周选择、固定六行与多月并排。
 - 周首日、月份名与星期名跟着 `locale` 走：`en-US` 周日起、`zh-CN` 周一起。不给 `locale` 就跟宿主浏览器语言，读不到才落 `en-US`——要固定成一种排法就把 `locale` 显式传上去。
 
 ### 组合
@@ -66,7 +66,7 @@ cell-trigger 的内容全由作者写，日号之外还能塞自己的标记
 
 ### 最佳实践
 
-- 今天要有明显标记，且与"选中"区分开。
+- 今天使用淡强调面，选中使用实心强调面，两种状态必须能同时辨认。
 - 格子里的内容超出时收起来，别让某一行比别的行高很多。
 
 ### 反模式
@@ -244,6 +244,8 @@ cell-trigger 的内容全由作者写，日号之外还能塞自己的标记
 
 `@xihan-ui/styles/calendar.css` 使用 `[data-scope="calendar"][data-part="root"]` 部件选择器，位于 `xihan.components` 层。覆盖样式使用 `xihan.overrides`。
 
+`forced-colors: active` 下另有一套规则：颜色交给系统，边框与状态标记改用系统色关键字。
+
 ### 数据属性
 
 由 `connect` 生成；条件不成立时不输出无值属性。
@@ -304,7 +306,10 @@ cell-trigger 的内容全由作者写，日号之外还能塞自己的标记
 | `--xh-calendar-period-py` | `cell-trigger`<br>`grid` | `padding-block` | `is([data-view='month'], [data-view='quarter'], [data-view='year'])`<br>`view=month`<br>`view=quarter`<br>`view=year` | `--xh-space-2` | calendar 的 cell-trigger、grid 部件 padding-block 覆盖槽。 |
 | `--xh-calendar-range-bg` | `cell` | `background` | `in-range` | `--xh-bg-brand-subtle` | calendar 的 cell 部件 background 覆盖槽。 |
 | `--xh-calendar-row-gap` | `grid-body`<br>`grid-head` | `gap` | `default` | `--xh-space-0` | calendar 的 grid-body、grid-head 部件 gap 覆盖槽。 |
-| `--xh-calendar-today-border` | `cell-trigger` | `border-color` | `today` | `--xh-border-control` | calendar 的 cell-trigger 部件 border-color 覆盖槽。 |
+| `--xh-calendar-today-bg` | `cell-trigger` | `background` | `today` | `--xh-bg-brand-subtle` | calendar 的 cell-trigger 部件 background 覆盖槽。 |
+| `--xh-calendar-today-bg-hover` | `cell-trigger` | `background` | `disabled`<br>`hover`<br>`not([data-selected], [data-disabled])`<br>`selected`<br>`today` | `--xh-bg-brand-subtle-hover` | calendar 的 cell-trigger 部件 background 覆盖槽。 |
+| `--xh-calendar-today-border` | `cell-trigger` | `border-color` | `today` | `transparent` | calendar 的 cell-trigger 部件 border-color 覆盖槽。 |
+| `--xh-calendar-today-fg` | `cell-trigger` | `color` | `today` | `--xh-fg-brand` | calendar 的 cell-trigger 部件 color 覆盖槽。 |
 | `--xh-calendar-week-day-fg` | `week-day` | `color` | `default` | `--xh-fg-subtle` | calendar 的 week-day 部件 color 覆盖槽。 |
 | `--xh-calendar-week-day-font-size` | `week-day` | `font-size` | `default` | `--xh-text-caption-size` | calendar 的 week-day 部件 font-size 覆盖槽。 |
 | `--xh-calendar-week-day-font-weight` | `week-day` | `font-weight` | `default` | `--xh-font-weight-medium` | calendar 的 week-day 部件 font-weight 覆盖槽。 |

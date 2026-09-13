@@ -14292,9 +14292,15 @@
   scale: var(--xh-motion-scale-press);
 }
 
-/* 今天：只描一圈边，不占用选中色——今天与被选中是两件事，得能同时看得出来 */
+/* 今天用淡强调面，选中仍用后面的实心强调面；两个状态叠加时不会混成同一种反馈。 */
 [data-scope='calendar'][data-part='cell-trigger'][data-today] {
-  border-color: var(--xh-calendar-today-border, var(--xh-border-control));
+  border-color: var(--xh-calendar-today-border, transparent);
+  background: var(--xh-calendar-today-bg, var(--xh-bg-brand-subtle));
+  color: var(--xh-calendar-today-fg, var(--xh-fg-brand));
+}
+
+[data-scope='calendar'][data-part='cell-trigger'][data-today]:not([data-selected], [data-disabled]):hover {
+  background: var(--xh-calendar-today-bg-hover, var(--xh-bg-brand-subtle-hover));
 }
 
 [data-scope='calendar'][data-part='cell-trigger'][data-selected] {
@@ -14302,6 +14308,12 @@
   background: var(--xh-calendar-cell-bg-selected, var(--xh-bg-brand));
   color: var(--xh-calendar-cell-fg-selected, var(--xh-fg-on-brand));
   font-weight: var(--xh-font-weight-medium);
+}
+
+@media (forced-colors: active) {
+  [data-scope='calendar'][data-part='cell-trigger'][data-today] {
+    border-color: Highlight;
+  }
 }
 
 /* 面是实心的，环色与面同族，画在面里就看不出来；环改取面自己的前景色——
