@@ -166,11 +166,11 @@ function subjectPart(branch) {
   return hits.length ? hits[hits.length - 1][1] : null
 }
 
-/** 不带状态、尺寸或祖先条件的部件主选择器；只有它能证明每个状态都有真实触摸地板。 */
-function isUnconditionalPartSelector(branch, part) {
+/** 不带状态或尺寸条件的部件主选择器；结构祖先不改变真实触摸地板。 */
+function isUnconditionalPartSelector(branch) {
   const withoutSubject = branch
     .replace(/\[data-scope='[a-z0-9-]+'\]/g, '')
-    .replace(new RegExp(`\\[data-part='${part}'\\]`, 'g'), '')
+    .replace(/\[data-part='[a-z0-9-]+'\]/g, '')
     .trim()
   return withoutSubject === ''
 }
@@ -230,7 +230,7 @@ function scanSkin(css, parts, actionParts) {
           }
           if (
             !pseudo
-            && isUnconditionalPartSelector(branch, part)
+            && isUnconditionalPartSelector(branch)
             && REAL_TOUCH_MIN_PROPS.has(decl.prop)
             && px != null
             && px > 0
