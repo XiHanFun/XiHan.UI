@@ -54,9 +54,9 @@
 
 <XhDemo src="date-picker/07-datetime" />
 
-### 选择粒度
+### 周期选择
 
-按周、月、季度或年选择
+粒度与单选/区间彼此独立
 
 <XhDemo src="date-picker/08-granularity" />
 
@@ -74,13 +74,15 @@
 
 ### 特性
 
-- 支持单选、区间和按周、月、季度、年选择。
+- `granularity` 支持 day / week / month / quarter / year，`selectionMode` 独立控制单选、多选或区间。
+- 周选择直接渲染整周周期格；不再需要 `weekSelection` 特殊开关。
 - `min`、`max` 与 `isDateUnavailable` 限制可选日期。
 - `presets` 提供常用日期快捷项。
-- `showTime` 让输入行直接显示完整日期时间，并在日历旁加入时、分或秒选择列；两处写回同一份值。
+- `showTime` 在 `granularity=day + selectionMode=single` 时让输入行显示完整日期时间，并加入时、分或秒选择列。
 - 输入值、展开状态和聚焦日期均可受控。
 - 点击输入行可以继续逐段键入，点击日历图标则把焦点送入日历；展开期间输入框保持激活边界。
 - 区间模式在同一个组件内组合起止分段输入、范围分隔符和范围日历，不另设第二套选择器。
+- 切换粒度会清空旧选择，输入段、网格和周期边界随后一起切换，不做隐式转换。
 - 空值时显示日历入口；有值且渲染了清空按钮时，由清空按钮原位接替日历图标。
 - 聚焦边界、段位强调与日期格按压都使用短过渡；减弱动效仍由全局动效轴收敛。
 
@@ -90,6 +92,7 @@
 - 标准输入行应同时包含清空按钮与日历图标触发器；二者按值互斥显示。参与表单时同时渲染隐藏输入。
 - 区间输入必须在起止段组之间渲染 `range-separator`，不要依赖空白区分两端。
 - 单选与区间默认都只展开一个日历面板；需要多面板时显式传 `visibleCount`。
+- 需要统一查询值时，使用 `calendarPeriodValue(granularity, selectionMode, value)` 得到周期首尾与回显键。
 - 快速选年可在 `year` 网格中渲染受范围约束的年份集合；网格使用三列紧凑布局与内部滚动，不再靠十年翻页堆叠大块空白。
 - 区间选择应说明开始与结束日期。
 - 不可用日期应同时提供原因。
@@ -132,10 +135,9 @@
 | `required` | `boolean` |  | 必填标注，落到每一段的 aria-required 上。 |
 | `name` | `string` |  | 表单字段名；给了隐藏输入才带 name，ISO 串随表单一并提交。区间模式下是起点那一份。 |
 | `endName` | `string` |  | 区间终点那份隐藏输入的表单字段名；不给即终点不参与提交。 |
-| `view` | `CalendarView` |  | 挑的粒度：天（默认）、月、季度、年。格子的值仍是 ISO 日期串 （那段时间的第一天），min/max 与区间逻辑因此原样复用。 输入行铺哪几段也跟着它走（按季度挑就出「2026-Q2」），要另铺见 segments。 |
-| `activeView` | `CalendarView` |  | 面板此刻钻到了哪一层。给定即受控；缺省跟着 view，每次展开都回到 view 那一档。 点标题里的年 / 月会改它。 没有配套的 defaultActiveView：面板每次展开都会重置这一档，非受控初值没有生效的时刻， 发出去也观察不到任何效果。要改初始层级请用 view。 |
-| `segments` | `DateSegmentSet` |  | 输入行铺哪几段。不给就按 view 推：按月挑出「2026-05」、按季度出「2026-Q2」、 按年出「2026」、周选出「2026-33」，按天挑则按 locale 排年月日。 |
-| `weekSelection` | `boolean` |  | 周选：点任意一天选中它所在的整周。只在 view=day 且区间模式下生效。 |
+| `granularity` | `CalendarGranularity` |  | 选择粒度；与 selectionMode 正交。输入行与周期网格都由它决定。 |
+| `activeView` | `CalendarView` |  | 面板此刻钻到了哪一层。给定即受控；缺省跟着 granularity，每次展开都回到目标粒度。 点标题里的年 / 月会改它。 没有配套的 defaultActiveView：面板每次展开都会重置这一档，非受控初值没有生效的时刻， 发出去也观察不到任何效果。要改初始层级请用 granularity。 |
+| `segments` | `DateSegmentSet` |  | 输入行铺哪几段。不给就按 granularity 推：按周出「2026-33」、按月出「2026-05」、 按季度出「2026-Q2」、按年出「2026」，按天则按 locale 排年月日。 |
 | `presets` | `DatePickerPreset[]` |  | 快捷选项（「今天」「近 7 天」这类）。给了就在浮层里多出一列，点一下整份写进选中值。 日子要算好再传：连接层每帧求值，把 `today()` 放进渲染期会跨零点算出两个答案。 与 selectionMode 不配（单选给了区间）、落在 min/max 之外或被 isDateUnavailable 判掉的那条 自动按不下去；showTime 下写进去的日期带上此刻已挑的时间。 |
 | `visibleCount` | `number` |  | 展示几个连续日历面板；默认 1。区间选择同样保持单栏，需要并排时由作者显式增加。 |
 | `fixedWeeks` | `boolean` |  | 日历恒渲染六行，默认开。关掉后网格按当月实际周数收，翻页时浮层高度会跟着变。 |
@@ -148,7 +150,7 @@
 | `offset` | `number` |  |  |
 | `translations` | `Partial<DatePickerTranslations>` |  |  |
 | `closeOnSelect` | `boolean` |  | 选完即收起，默认 true。区间模式下要两端都落定才算选完。 |
-| `showTime` | `boolean` |  | 一体化时间：值升格为 'YYYY-MM-DDTHH:mm[:ss]'，面板里多出时间列， 选完日子不收起、由确认按钮收口。只在单选模式下生效。 |
+| `showTime` | `boolean` |  | 一体化时间：值升格为 'YYYY-MM-DDTHH:mm[:ss]'，面板里多出时间列， 选完日子不收起、由确认按钮收口。只在 day + single 下生效。 |
 | `timeGranularity` | `DatePickerTimeGranularity` |  | showTime 的时间段精度，默认 minute。 |
 | `onValueChange` | `(details: DatePickerValueChangeDetails) => void` |  | value 变化意图回调；受控时是唯一出口，非受控随内部写入一并通知。 |
 | `onOpenChange` | `(details: DatePickerOpenChangeDetails) => void` |  | open 变化意图回调；受控时是唯一出口，非受控时随内部转移一并通知。 |
@@ -164,7 +166,7 @@
 | `value-change` | `DatePickerValueChangeDetails` | 选中集合变化；detail 为 `{ value: string[] }` |
 | `open-change` | `DatePickerOpenChangeDetails` | open 状态变化；detail 为 `{ open: boolean }` |
 | `focused-value-change` | `DatePickerFocusChangeDetails` | 聚焦日变化（意味着展示月可能换了）；detail 为 `{ focusedValue: string }`，作者据此重画网格 |
-| `active-view-change` | `CalendarViewChangeDetails` | 钻到了另一层（点标题钻上、点格子钻下）；detail 为 `{ activeView: 'day'\|'month'\|'quarter'\|'year' }`，作者据此重画网格 |
+| `active-view-change` | `CalendarViewChangeDetails` | 钻到了另一层（点标题钻上、点格子钻下）；detail 为 `{ activeView: 'day'\|'week'\|'month'\|'quarter'\|'year' }`，作者据此重画网格 |
 
 ### 插槽
 
@@ -210,8 +212,9 @@
 | `value` | `string[]` | 选中集合，ISO 串；形状不随模式变。 区间模式下按位存放，空缺的那一端是空串。 |
 | `valueAsString` | `string \| null` | 首个选中值（跳过空缺的那一端）；无选中时为 null。 |
 | `selectionMode` | `CalendarSelectionMode` |  |
+| `periodValue` | `CalendarPeriodValue \| null` | single / range 的规范化周期值；multiple 没有连续区间语义，返回 null。 |
 | `focusedValue` | `string` | 生效聚焦日（三路收口后的结果），恒非空。日历展示哪个月由它决定。 |
-| `view` | `CalendarView` | 作者要挑的粒度。 |
+| `granularity` | `CalendarGranularity` | 作者要挑的粒度。 |
 | `activeView` | `CalendarView` | 面板此刻钻到了哪一层。 |
 | `disabled` | `boolean` |  |
 | `readOnly` | `boolean` |  |

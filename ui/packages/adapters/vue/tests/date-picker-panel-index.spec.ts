@@ -51,6 +51,7 @@ async function mountPicker(props: Record<string, unknown> = {}): Promise<void> {
         locale: 'zh-CN',
         timeZone: 'UTC',
         selectionMode: 'range',
+        visibleCount: 2,
         defaultOpen: true,
         defaultValue: ['2026-07-01', '2026-08-05'],
         ...props,
@@ -65,8 +66,8 @@ async function mountPicker(props: Record<string, unknown> = {}): Promise<void> {
                 h(XhDatePickerHeading),
                 h(XhDatePickerGrid, null, () => [
                   h(XhDatePickerGridBody, null, () => panel.weeks.map(week =>
-                    h(XhDatePickerWeekRow, { key: week[0]!.value }, () => week.map(day =>
-                      h(XhDatePickerCell, { key: day.value, value: day.value }, () =>
+                    h(XhDatePickerWeekRow, { key: week[0]!.start }, () => week.map(day =>
+                      h(XhDatePickerCell, { key: day.start, value: day.start }, () =>
                         h(XhDatePickerCellTrigger, null, () => String(day.day))),
                     )),
                   )),
@@ -127,6 +128,7 @@ describe('双面板的面板号写在日历上', () => {
           locale: 'zh-CN',
           timeZone: 'UTC',
           selectionMode: 'range',
+          visibleCount: 2,
           defaultOpen: true,
           defaultValue: ['2026-07-01', '2026-08-05'],
         }, {

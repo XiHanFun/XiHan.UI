@@ -4041,9 +4041,10 @@
       "state": [
         "default",
         "in-range",
-        "is([data-view='month'], [data-view='quarter'], [data-view='year'])",
+        "is([data-view='week'], [data-view='month'], [data-view='quarter'], [data-view='year'])",
         "view=month",
         "view=quarter",
+        "view=week",
         "view=year"
       ],
       "defaultToken": [
@@ -4404,6 +4405,7 @@
       "state": [
         "view=month",
         "view=quarter",
+        "view=week",
         "view=year"
       ],
       "defaultToken": [
@@ -4423,9 +4425,10 @@
         "padding-block"
       ],
       "state": [
-        "is([data-view='month'], [data-view='quarter'], [data-view='year'])",
+        "is([data-view='week'], [data-view='month'], [data-view='quarter'], [data-view='year'])",
         "view=month",
         "view=quarter",
+        "view=week",
         "view=year"
       ],
       "defaultToken": [
@@ -4663,6 +4666,25 @@
       ],
       "visibility": "public",
       "description": "calendar 的 cell-trigger 部件 color 覆盖槽。"
+    },
+    {
+      "name": "--xh-calendar-week-cell-px",
+      "component": "calendar",
+      "part": [
+        "cell-trigger",
+        "grid"
+      ],
+      "property": [
+        "padding-inline"
+      ],
+      "state": [
+        "view=week"
+      ],
+      "defaultToken": [
+        "--xh-space-3"
+      ],
+      "visibility": "public",
+      "description": "calendar 的 cell-trigger、grid 部件 padding-inline 覆盖槽。"
     },
     {
       "name": "--xh-calendar-week-day-fg",

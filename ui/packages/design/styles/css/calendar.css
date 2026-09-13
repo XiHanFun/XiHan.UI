@@ -141,8 +141,14 @@
     gap: var(--xh-calendar-grid-gap, var(--xh-space-1));
   }
 
-  /* 粗粒度视图：格子直接铺进网格，不再有周行那一层。
-     月 3 列 × 4 行、季度 4 列一行、年 3 列——与常见日期控件同一套排布 */
+  /* 周期视图：格子直接铺进网格，不再有周行那一层。 */
+  [data-scope='calendar'][data-part='grid'][data-view='week'] {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: var(--xh-calendar-period-gap, var(--xh-space-1));
+  }
+
+  /* 月 3 列 × 4 行、季度 4 列一行、年 3 列。 */
   [data-scope='calendar'][data-part='grid'][data-view='month'],
   [data-scope='calendar'][data-part='grid'][data-view='year'] {
     display: grid;
@@ -165,9 +171,15 @@
   }
 
   /* 粗粒度的格子比日子宽，文字居中、留出上下气口 */
-  [data-scope='calendar'][data-part='grid']:is([data-view='month'], [data-view='quarter'], [data-view='year']) [data-part='cell-trigger'] {
+  [data-scope='calendar'][data-part='grid']:is([data-view='week'], [data-view='month'], [data-view='quarter'], [data-view='year']) [data-part='cell-trigger'] {
     padding-block: var(--xh-calendar-period-py, var(--xh-space-2));
     inline-size: 100%;
+  }
+
+  [data-scope='calendar'][data-part='grid'][data-view='week'] [data-part='cell-trigger'] {
+    aspect-ratio: auto;
+    justify-content: flex-start;
+    padding-inline: var(--xh-calendar-week-cell-px, var(--xh-space-3));
   }
 
   [data-scope='calendar'][data-part='grid'][hidden] {
@@ -292,7 +304,7 @@
   }
 
   /* 粗粒度的格子之间有间隙，底色本就接不成一条，每一格各自收圆 */
-  [data-scope='calendar'][data-part='grid']:is([data-view='month'], [data-view='quarter'], [data-view='year']) > [data-part='cell'][data-in-range]::before {
+  [data-scope='calendar'][data-part='grid']:is([data-view='week'], [data-view='month'], [data-view='quarter'], [data-view='year']) > [data-part='cell'][data-in-range]::before {
     border-radius: var(--xh-calendar-cell-radius, var(--xh-shape-pill));
   }
 

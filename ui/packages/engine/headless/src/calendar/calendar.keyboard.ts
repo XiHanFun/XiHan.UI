@@ -19,6 +19,6 @@ export const calendarKeyboard: KeyboardTable = {
     { id: 'calendar.kbd.next-month', keys: ['PageDown'], when: 'focus in grid', does: '进一个月，日号不变。粗粒度视图里进一整页' },
     { id: 'calendar.kbd.prev-year', keys: ['Shift+PageUp'], when: 'focus in grid', does: '退一年；粗粒度视图里退十页' },
     { id: 'calendar.kbd.next-year', keys: ['Shift+PageDown'], when: 'focus in grid', does: '进一年；粗粒度视图里进十页' },
-    { id: 'calendar.kbd.select', keys: ['Enter', 'Space'], when: 'focus in grid, 聚焦日可用且非只读', does: '选中聚焦日：单选替换、多选切换、区间先落起点再落终点。还没钻到 view 那一档时这一下是往下钻一层' },
+    { id: 'calendar.kbd.select', keys: ['Enter', 'Space'], when: 'focus in grid, 聚焦周期可用且非只读', does: '选中聚焦周期：单选替换、多选切换、区间先落起点再落终点。还没钻到 granularity 那一档时这一下是往下钻一层' },
   ],
 }

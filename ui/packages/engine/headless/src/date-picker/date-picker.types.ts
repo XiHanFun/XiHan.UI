@@ -1,6 +1,6 @@
 import type { Cleanup, ControlVariant, Direction, Layer, MachineSchema, Placement, PositionEnginePort, PositionResult, PropTypes, RuntimeConfig, Service, Size, Tone } from '@xihan-ui/core'
 import type { PresenceHandle } from '@xihan-ui/core/presence'
-import type { CalendarApi, CalendarSchema, CalendarSelectionMode, CalendarView, CalendarViewChangeDetails } from '../calendar'
+import type { CalendarApi, CalendarGranularity, CalendarPeriodValue, CalendarSchema, CalendarSelectionMode, CalendarView, CalendarViewChangeDetails } from '../calendar'
 import type { DateFieldSchema, DateFieldSegmentProps, DateFieldSegmentState, DateSegmentSet } from '../date-field'
 import type { TimePickerColumn, TimePickerColumnUnit } from '../time-picker'
 import type { DatePickerTimeGranularity } from './date-picker.time'
@@ -154,28 +154,21 @@ export interface DatePickerSchema extends MachineSchema {
     name?: string
     /** 区间终点那份隐藏输入的表单字段名；不给即终点不参与提交。 */
     endName?: string
+    /** 选择粒度；与 selectionMode 正交。输入行与周期网格都由它决定。 */
+    granularity?: CalendarGranularity
     /**
-     * 挑的粒度：天（默认）、月、季度、年。格子的值仍是 ISO 日期串
-     * （那段时间的第一天），min/max 与区间逻辑因此原样复用。
-     *
-     * 输入行铺哪几段也跟着它走（按季度挑就出「2026-Q2」），要另铺见 segments。
-     */
-    view?: CalendarView
-    /**
-     * 面板此刻钻到了哪一层。给定即受控；缺省跟着 view，每次展开都回到 view 那一档。
+     * 面板此刻钻到了哪一层。给定即受控；缺省跟着 granularity，每次展开都回到目标粒度。
      * 点标题里的年 / 月会改它。
      *
      * 没有配套的 defaultActiveView：面板每次展开都会重置这一档，非受控初值没有生效的时刻，
-     * 发出去也观察不到任何效果。要改初始层级请用 view。
+     * 发出去也观察不到任何效果。要改初始层级请用 granularity。
      */
     activeView?: CalendarView
     /**
-     * 输入行铺哪几段。不给就按 view 推：按月挑出「2026-05」、按季度出「2026-Q2」、
-     * 按年出「2026」、周选出「2026-33」，按天挑则按 locale 排年月日。
+     * 输入行铺哪几段。不给就按 granularity 推：按周出「2026-33」、按月出「2026-05」、
+     * 按季度出「2026-Q2」、按年出「2026」，按天则按 locale 排年月日。
      */
     segments?: DateSegmentSet
-    /** 周选：点任意一天选中它所在的整周。只在 view=day 且区间模式下生效。 */
-    weekSelection?: boolean
     /**
      * 快捷选项（「今天」「近 7 天」这类）。给了就在浮层里多出一列，点一下整份写进选中值。
      * 日子要算好再传：连接层每帧求值，把 `today()` 放进渲染期会跨零点算出两个答案。
@@ -207,7 +200,7 @@ export interface DatePickerSchema extends MachineSchema {
     closeOnSelect?: boolean
     /**
      * 一体化时间：值升格为 'YYYY-MM-DDTHH:mm[:ss]'，面板里多出时间列，
-     * 选完日子不收起、由确认按钮收口。只在单选模式下生效。
+     * 选完日子不收起、由确认按钮收口。只在 day + single 下生效。
      */
     showTime?: boolean
     /** showTime 的时间段精度，默认 minute。 */
@@ -332,10 +325,12 @@ export interface DatePickerApi<T extends PropTypes = PropTypes> {
   /** 首个选中值（跳过空缺的那一端）；无选中时为 null。 */
   valueAsString: string | null
   selectionMode: CalendarSelectionMode
+  /** single / range 的规范化周期值；multiple 没有连续区间语义，返回 null。 */
+  periodValue: CalendarPeriodValue | null
   /** 生效聚焦日（三路收口后的结果），恒非空。日历展示哪个月由它决定。 */
   focusedValue: string
   /** 作者要挑的粒度。 */
-  view: CalendarView
+  granularity: CalendarGranularity
   /** 面板此刻钻到了哪一层。 */
   activeView: CalendarView
   disabled: boolean

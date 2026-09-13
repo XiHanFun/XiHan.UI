@@ -1,5 +1,5 @@
 // 区间选择 | 选择开始和结束日期
-import type { CalendarView } from "@xihan-ui/headless";
+import type { CalendarGranularity } from "@xihan-ui/headless";
 import type { CSSProperties, ReactNode } from "react";
 import {
   XhDatePickerCalendar,
@@ -23,13 +23,12 @@ import {
   XhDatePickerSegmentGroup,
   XhDatePickerTrigger,
   XhDatePickerWeekDay,
-  XhDatePickerWeekNumber,
   XhDatePickerWeekRow,
 } from "@xihan-ui/react";
 import { Fragment } from "react";
 
 const kinds = [
-  { key: "day", label: "旅行日期", view: "day" as CalendarView, week: false },
+  { key: "day", label: "旅行日期", granularity: "day" as CalendarGranularity },
 ];
 
 const translations = { startDate: "开始", endDate: "结束" };
@@ -41,8 +40,7 @@ export default function Demo(): ReactNode {
         <XhDatePickerRoot
           key={k.key}
           translations={translations}
-          view={k.view}
-          weekSelection={k.week}
+          granularity={k.granularity}
           selectionMode="range"
           locale="zh-CN"
           style={{ "--xh-date-picker-control-min-w": "20rem" } as CSSProperties}
@@ -56,7 +54,7 @@ export default function Demo(): ReactNode {
                   <Fragment key={group}>
                     {group === 1 && <XhDatePickerRangeSeparator />}
                     <XhDatePickerSegmentGroup index={group}>
-                      {/* 铺哪几块由 view 推；「-」与「周」是普通节点，作者写在段位旁边 */}
+                      {/* 铺哪几块由 granularity 推；分隔符是普通节点，作者写在段位旁边 */}
                       {(group === 0 ? segments : endSegments).map((seg, i) => (
                         <Fragment key={seg.type}>
                           {i > 0 && <span>/</span>}
@@ -87,8 +85,6 @@ export default function Demo(): ReactNode {
                               <>
                                 <XhDatePickerGridHead>
                                   <XhDatePickerWeekRow>
-                                    {/* 周选时行首多一列周序号，表头也得空出这一格 */}
-                                    {k.week && <XhDatePickerWeekNumber value="" />}
                                     {weekDays.map(d => (
                                       <XhDatePickerWeekDay key={d.value} value={d.value} />
                                     ))}
@@ -96,12 +92,10 @@ export default function Demo(): ReactNode {
                                 </XhDatePickerGridHead>
                                 <XhDatePickerGridBody>
                                   {panel.weeks.map(week => (
-                                    <XhDatePickerWeekRow key={week[0]!.value}>
-                                      {/* 周序号：挑的是第几周，光看日期看不出来。列宽与文字归皮肤管 */}
-                                      {k.week && <XhDatePickerWeekNumber value={week[0]!.value} />}
+                                    <XhDatePickerWeekRow key={week[0]!.start}>
                                       {/* 面板号跟着所在的日历走 */}
                                       {week.map(day => (
-                                        <XhDatePickerCell key={day.value} value={day.value}>
+                                        <XhDatePickerCell key={day.start} value={day.start}>
                                           <XhDatePickerCellTrigger>{day.day}</XhDatePickerCellTrigger>
                                         </XhDatePickerCell>
                                       ))}
@@ -111,7 +105,7 @@ export default function Demo(): ReactNode {
                               </>
                             )
                           : panel.cells.map(cell => (
-                              <XhDatePickerCell key={cell.value} value={cell.value}>
+                              <XhDatePickerCell key={cell.start} value={cell.start}>
                                 <XhDatePickerCellTrigger>{cell.label}</XhDatePickerCellTrigger>
                               </XhDatePickerCell>
                             ))}

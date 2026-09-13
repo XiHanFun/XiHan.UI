@@ -70,6 +70,7 @@ const BASE: XhDatePickerRootProps = {
   locale: 'zh-CN',
   timeZone: 'UTC',
   selectionMode: 'range',
+  visibleCount: 2,
   defaultOpen: true,
   defaultValue: ['2026-07-01', '2026-08-05'],
 }
@@ -82,9 +83,9 @@ function twoPanels(panels: readonly CalendarPanel[]): ReactNode {
       <XhDatePickerGrid>
         <XhDatePickerGridBody>
           {panel.weeks.map(week => (
-            <XhDatePickerWeekRow key={week[0]!.value}>
+            <XhDatePickerWeekRow key={week[0]!.start}>
               {week.map(d => (
-                <XhDatePickerCell key={d.value} value={d.value}>
+                <XhDatePickerCell key={d.start} value={d.start}>
                   <XhDatePickerCellTrigger>{d.day}</XhDatePickerCellTrigger>
                 </XhDatePickerCell>
               ))}

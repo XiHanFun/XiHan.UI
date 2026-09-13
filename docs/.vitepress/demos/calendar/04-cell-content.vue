@@ -45,8 +45,8 @@ function hasPlan(iso: string) {
         </XhCalendarWeekRow>
       </XhCalendarGridHead>
       <XhCalendarGridBody>
-        <XhCalendarWeekRow v-for="week in weeks" :key="week[0].value">
-          <XhCalendarCell v-for="day in week" :key="day.value" :value="day.value">
+        <XhCalendarWeekRow v-for="week in weeks" :key="week[0].start">
+          <XhCalendarCell v-for="day in week" :key="day.start" :value="day.start">
             <XhCalendarCellTrigger>
               <span style="display: grid; justify-items: center; gap: 2px">
                 <span>{{ day.day }}</span>
@@ -55,7 +55,7 @@ function hasPlan(iso: string) {
                   :style="{
                     fontSize: '10px',
                     lineHeight: '1',
-                    visibility: hasPlan(day.value) ? 'visible' : 'hidden',
+                    visibility: hasPlan(day.start) ? 'visible' : 'hidden',
                   }"
                 >
                   •

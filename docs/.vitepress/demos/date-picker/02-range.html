@@ -9,7 +9,7 @@
     <div data-xh-part="root" style="--xh-date-picker-control-min-w: 20rem">
       <span data-xh-part="label"></span>
       <div data-xh-part="control">
-        <!-- 文档序在前的这组认领起点，在后的认领终点；里面铺几段由 view 推 -->
+        <!-- 文档序在前的这组认领起点，在后的认领终点；里面铺几段由 granularity 推 -->
         <div data-xh-part="segment-group"></div>
         <span data-xh-part="range-separator">-</span>
         <div data-xh-part="segment-group"></div>
@@ -25,7 +25,7 @@
 
 <script type="module">
   const kinds = [
-    { label: "旅行日期", view: "day", week: false },
+    { label: "旅行日期", granularity: "day" },
   ];
 
   const translations = { startDate: "开始", endDate: "结束" };
@@ -50,13 +50,6 @@
     return el;
   }
 
-  // 周序号：挑的是第几周，光看日期看不出来。身份取行首那天，文字由元素填
-  function weekNumber(value) {
-    const el = node("span", "week-number");
-    el.setAttribute("value", value);
-    return el;
-  }
-
   function dayCell(value, text) {
     const cell = node("div", "cell");
     cell.setAttribute("value", value);
@@ -65,7 +58,7 @@
   }
 
   // 一页一张日历：面板号写在标题与网格上，格子跟着所在网格走
-  function panelOf(panel, last, kind, weekDays) {
+  function panelOf(panel, last, weekDays) {
     const calendar = node("div", "calendar");
     const header = node("div", "header");
     // 往前只在最左那张、往后只在最右那张：翻页整窗一起走
@@ -85,10 +78,6 @@
     if (panel.weeks.length > 0) {
       const head = node("div", "grid-head");
       const headRow = node("div", "week-row");
-      // 周选时行首多一列周序号，表头也得空出这一格
-      if (kind.week) {
-        headRow.append(weekNumber(""));
-      }
       for (const day of weekDays) {
         const column = node("span", "week-day", day.label);
         column.setAttribute("value", day.value);
@@ -99,18 +88,15 @@
       const body = node("div", "grid-body");
       for (const week of panel.weeks) {
         const row = node("div", "week-row");
-        if (kind.week) {
-          row.append(weekNumber(week[0].value));
-        }
         for (const day of week) {
-          row.append(dayCell(day.value, day.day));
+          row.append(dayCell(day.start, day.day));
         }
         body.append(row);
       }
       grid.append(head, body);
     } else {
       for (const cell of panel.cells) {
-        grid.append(dayCell(cell.value, cell.label));
+        grid.append(dayCell(cell.start, cell.label));
       }
     }
 
@@ -121,10 +107,7 @@
   for (const kind of kinds) {
     const fragment = template.content.cloneNode(true);
     const picker = fragment.querySelector("xh-date-picker");
-    picker.setAttribute("view", kind.view);
-    if (kind.week) {
-      picker.setAttribute("week-selection", "");
-    }
+    picker.setAttribute("granularity", kind.granularity);
     picker.querySelector('[data-xh-part="label"]').textContent = kind.label;
     picker.translations = translations;
 
@@ -147,7 +130,7 @@
       const weekDays = picker.weekDays;
       content.replaceChildren(
         ...panels.map((panel, index) =>
-          panelOf(panel, index === panels.length - 1, kind, weekDays),
+          panelOf(panel, index === panels.length - 1, weekDays),
         ),
       );
     }

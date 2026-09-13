@@ -66,7 +66,7 @@
   }
 
   function paintBody() {
-    const first = picker.weeks[0][0].value;
+    const first = picker.weeks[0][0].start;
     if (first === month) {
       return;
     }
@@ -79,7 +79,7 @@
         for (const day of week) {
           const cell = document.createElement("div");
           cell.dataset.xhPart = "cell";
-          cell.setAttribute("value", day.value);
+          cell.setAttribute("value", day.start);
           const trigger = document.createElement("div");
           trigger.dataset.xhPart = "cell-trigger";
           trigger.textContent = day.day;

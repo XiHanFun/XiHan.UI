@@ -1,4 +1,4 @@
-import type { CalendarApi, CalendarSchema, CalendarSelectionMode, CalendarView, CalendarWeekdayFormat } from '@xihan-ui/headless'
+import type { CalendarApi, CalendarGranularity, CalendarSchema, CalendarSelectionMode, CalendarView, CalendarWeekdayFormat } from '@xihan-ui/headless'
 import type { ComponentPropsWithRef, ReactNode } from 'react'
 import type { SlotChildren } from '../../runtime/slot-content'
 import { useMemo } from 'react'
@@ -18,6 +18,7 @@ export type CalendarRootSlotProps = Pick<
   | 'focusedValue'
   | 'visibleMonth'
   | 'panels'
+  | 'periods'
   | 'weeks'
   | 'weekDays'
   | 'headingLabel'
@@ -47,14 +48,12 @@ export interface XhCalendarRootProps extends Omit<ComponentPropsWithRef<'div'>, 
   readOnly?: boolean
   weekdayFormat?: CalendarWeekdayFormat
   fixedWeeks?: boolean
-  /** 挑的粒度：天（默认）/ 月 / 季度 / 年。这一档也是「点一格即选中」的那一档。 */
-  view?: CalendarView
-  /** 面板此刻钻到了哪一层；给定即受控，缺省跟着 view。 */
+  /** 选择粒度；与 selectionMode 正交。 */
+  granularity?: CalendarGranularity
+  /** 面板此刻钻到了哪一层；给定即受控，缺省跟着 granularity。 */
   activeView?: CalendarView
-  /** 非受控初值，缺省同 view。 */
+  /** 非受控初值，缺省同 granularity。 */
   defaultActiveView?: CalendarView
-  /** 周选：点任意一天选中它所在的整周。只在 view=day 且区间模式下生效。 */
-  weekSelection?: boolean
   /** 并排展示几页，默认 1。 */
   visibleCount?: number
   onValueChange?: CalendarProps['onValueChange']
@@ -79,10 +78,9 @@ export function XhCalendarRoot({
   readOnly,
   weekdayFormat,
   fixedWeeks,
-  view,
+  granularity,
   activeView,
   defaultActiveView,
-  weekSelection,
   visibleCount,
   onValueChange,
   onFocusedValueChange,
@@ -105,10 +103,9 @@ export function XhCalendarRoot({
     readOnly,
     weekdayFormat,
     fixedWeeks,
-    view,
+    granularity,
     activeView,
     defaultActiveView,
-    weekSelection,
     visibleCount,
     onValueChange,
     onFocusedValueChange,
@@ -125,6 +122,7 @@ export function XhCalendarRoot({
               focusedValue: api.focusedValue,
               visibleMonth: api.visibleMonth,
               panels: api.panels,
+              periods: api.periods,
               weeks: api.weeks,
               weekDays: api.weekDays,
               headingLabel: api.headingLabel,

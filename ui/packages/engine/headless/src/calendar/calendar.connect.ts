@@ -1,6 +1,6 @@
 import type { CalendarDate } from '@internationalized/date'
 import type { NormalizeProps, PropTypes, Service } from '@xihan-ui/core'
-import type { CalendarView } from './calendar.grid'
+import type { CalendarPeriod, CalendarView } from './calendar.grid'
 import type { CalendarApi, CalendarCellProps, CalendarPanel, CalendarSchema } from './calendar.types'
 import { DateFormatter, endOfMonth, getLocalTimeZone, startOfMonth, today } from '@internationalized/date'
 import { dataAttr, ITEM_VALUE_ATTR, resolveLocale } from '@xihan-ui/core'
@@ -16,7 +16,6 @@ import {
   calendarPageMonths,
   calendarPeriodOf,
   calendarPeriodStart,
-  calendarWeekRange,
   calendarZoomIn,
   isoWeekNumber,
   parseCalendarDate,
@@ -64,13 +63,11 @@ export function connectCalendar<T extends PropTypes>(
   const focusedValue = anchor.toString()
   const todayValue = today(timeZone).toString()
 
-  // 两件事：base 是作者要挑的粒度（点一格即选中的那一档），view 是人此刻钻到了哪一层
-  const base = prop('view') ?? 'day'
+  // 两件事：granularity 是作者要挑的周期，view 是人此刻钻到了哪一层
+  const granularity = prop('granularity') ?? 'day'
   const view = context.get('activeView')
-  // 钻回 base 的下一站；非空即「点一格是往下钻，不是选中」
-  const zoomIn = calendarZoomIn(view, base)
-  // 周选只在日视图 + 区间下讲得通：它落的是两端
-  const weekSelection = !!prop('weekSelection') && view === 'day' && mode === 'range'
+  // 钻回选择粒度的下一站；非空即「点一格是往下钻，不是选中」
+  const zoomIn = calendarZoomIn(view, granularity)
   // 翻一页走多少个月：日视图一个月，月/季度一年，年视图十年
   const pageMonths = calendarPageMonths(view)
   // 大步翻：日视图走一年，粗粒度视图走十页——月/季度即十年，年视图即一百年
@@ -114,7 +111,8 @@ export function connectCalendar<T extends PropTypes>(
         startValue: g.monthStart,
         weeks: g.weeks,
         // 每行取行中那天算周序号：行首日随 locale 变（周日或周一），行中那天恒落在这一行覆盖的那个 ISO 周里
-        weekNumbers: g.weeks.map(row => isoWeekNumber(row[3]!.value)),
+        weekNumbers: g.weeks.map(row => isoWeekNumber(row[3]!.start)),
+        periods: g.weeks.flat(),
         cells: [],
         headingLabel: headingFormatter.format(start.toDate(timeZone)),
         headingYear: pieces.year,
@@ -130,12 +128,13 @@ export function connectCalendar<T extends PropTypes>(
       startValue: g.startValue,
       weeks: [],
       weekNumbers: [],
+      periods: g.cells,
       cells: g.cells,
       headingLabel: g.headingLabel,
       // 年视图的标题是整个十年跨度（2020年-2029年），钻不上去了，那一截就是它
       headingYear: view === 'year' ? g.headingLabel : pieces.year,
-      // 月与季度这两层没有「月」那一截可点
-      headingMonth: '',
+      // 周视图仍以月为容器；月、季度、年三层没有这一截
+      headingMonth: view === 'week' ? pieces.month : '',
     }
   })
   const grid = panels[0]!
@@ -154,54 +153,52 @@ export function connectCalendar<T extends PropTypes>(
     timeZone,
   })
 
-  /** 生效区间的两端。挑到一半时用「起点 + 悬停落点」预览，悬停为空就跟着聚焦日走。 */
+  /** 生效区间的两端。五种粒度都先归一成 Period，再共用同一套预览算法。 */
   const rangeAnchor = parseCalendarDate(context.get('rangeAnchor'))
   const hovered = parseCalendarDate(context.get('hoveredValue'))
   const rangeEnds = ((): [CalendarDate, CalendarDate] | null => {
     if (mode !== 'range')
       return null
-    // 周选：一格一格拉出来的区间在这里讲不通——两端恒落在整周的外缘。
-    // 挑到一半时从起点周铺到悬停那一周，都整周整周地亮，与点下去的结果对得上
-    if (weekSelection) {
-      const week = (d: CalendarDate): [string, string] => calendarWeekRange(d.toString(), locale)
-      if (rangeAnchor) {
-        const [aFrom, aTo] = week(rangeAnchor)
-        const [hFrom, hTo] = week(hovered ?? anchor)
-        return [
-          parseCalendarDate(aFrom <= hFrom ? aFrom : hFrom)!,
-          parseCalendarDate(aTo >= hTo ? aTo : hTo)!,
-        ]
-      }
-      // 还没落起点：指针扫过哪一周就整周预览那一周
-      if (hovered) {
-        const [from, to] = week(hovered)
-        return [parseCalendarDate(from)!, parseCalendarDate(to)!]
-      }
+    const bounds = (from: CalendarDate, to: CalendarDate): [CalendarDate, CalendarDate] | null => {
+      const a = calendarPeriodOf(from.toString(), granularity, { locale, timeZone })
+      const b = calendarPeriodOf(to.toString(), granularity, { locale, timeZone })
+      if (!a || !b)
+        return null
+      return a.start <= b.start
+        ? [parseCalendarDate(a.start)!, parseCalendarDate(b.end)!]
+        : [parseCalendarDate(b.start)!, parseCalendarDate(a.end)!]
     }
-    if (rangeAnchor) {
-      const end = hovered ?? anchor
-      return rangeAnchor.compare(end) <= 0 ? [rangeAnchor, end] : [end, rangeAnchor]
-    }
+    if (rangeAnchor)
+      return bounds(rangeAnchor, hovered ?? anchor)
     const [a, b] = [parseCalendarDate(value[0]), parseCalendarDate(value[1])]
-    return a && b ? [a, b] : null
+    return a && b ? bounds(a, b) : null
   })()
 
-  const isSelected = (v: string): boolean => value.includes(v)
-  const previewingRange = mode === 'range'
-    && (rangeAnchor != null || (weekSelection && hovered != null && value.length < 2))
+  const periodAt = (v: string, unit: CalendarView = granularity): CalendarPeriod | null =>
+    calendarPeriodOf(v, unit, { locale, timeZone })
+  const selectedStarts = value
+    .map(v => periodAt(v)?.start)
+    .filter((v): v is string => v != null)
+  const isSelected = (v: string): boolean => {
+    const period = periodAt(v)
+    return period != null && selectedStarts.includes(period.start)
+  }
+  const previewingRange = mode === 'range' && rangeAnchor != null
 
   const isUnavailable = (v: string): boolean => {
     if (calendarDisabled)
       return true
-    const date = parseCalendarDate(v)
-    // 解析不了的格子一律当不可用
-    if (!date)
+    const period = periodAt(v)
+    if (!period)
       return true
-    if (min && date.compare(min) < 0)
+    const start = parseCalendarDate(period.start)!
+    const end = parseCalendarDate(period.end)!
+    // 周期只要越过任一边界就不可选，避免最终查询范围跑出 min/max。
+    if (min && start.compare(min) < 0)
       return true
-    if (max && date.compare(max) > 0)
+    if (max && end.compare(max) > 0)
       return true
-    return !!isDateUnavailable?.(v)
+    return !!isDateUnavailable?.(period.start)
   }
 
   /** 这一格挂在哪个面板上。作者没声明就按首个面板算，单面板时与从前一致。 */
@@ -214,7 +211,7 @@ export function connectCalendar<T extends PropTypes>(
    * 粗粒度视图里格子的值是「那段时间的第一天」，而聚焦日是具体某一天，两者一般不等；
    * 直接比会让一页里一格都对不上，于是整张网格连一个 Tab 位都不剩、键盘进不去。
    */
-  const focusedCell = calendarPeriodOf(focusedValue, view)
+  const focusedCell = periodAt(focusedValue, view)?.start ?? focusedValue
 
   /**
    * 每一天归哪张面板：各面板只认领落在自己那一页里的格子。
@@ -227,41 +224,44 @@ export function connectCalendar<T extends PropTypes>(
     if (panel.weeks.length > 0) {
       for (const row of panel.weeks) {
         for (const day of row) {
-          if (day.inMonth)
-            ownerOf.set(day.value, panel.index)
+          if (!day.outside)
+            ownerOf.set(day.start, panel.index)
         }
       }
       continue
     }
     for (const cell of panel.cells) {
-      if (cell.inView)
-        ownerOf.set(cell.value, panel.index)
+      if (!cell.outside)
+        ownerOf.set(cell.start, panel.index)
     }
   }
 
   const cellState = (item: CalendarCellProps): CellState => {
     const date = parseCalendarDate(item.value)
+    const period = periodAt(item.value, view)
     const panel = panelOf(item)
     // 认领这一天的是并排的另一张面板：这一张只显示日号
     const ownedElsewhere = (ownerOf.get(item.value) ?? panel.index) !== panel.index
-    const inRange = !ownedElsewhere && !!(rangeEnds && date
-      && date.compare(rangeEnds[0]) >= 0 && date.compare(rangeEnds[1]) <= 0)
+    const periodStart = parseCalendarDate(period?.start)
+    const periodEnd = parseCalendarDate(period?.end)
+    const inRange = !ownedElsewhere && !!(rangeEnds && periodStart && periodEnd
+      && periodStart.compare(rangeEnds[0]) >= 0 && periodEnd.compare(rangeEnds[1]) <= 0)
     return {
       date,
-      selected: !ownedElsewhere && isSelected(item.value),
+      selected: !ownedElsewhere && !!period && selectedStarts.includes(period.start),
       disabled: isUnavailable(item.value),
       // 页外的格子照样可点可聚焦，标出来供皮肤区分。日视图按「是不是本月」判；
       // 粗粒度视图的格子值是那一段的第一天，与面板起点比月份恒不相等，改用网格自报的 inView
       outsideMonth: view === 'day'
         ? (!date || date.year !== panel.year || date.month !== panel.month)
-        : panel.cells.some(cell => cell.value === item.value && !cell.inView),
-      isToday: item.value === todayValue,
-      focused: item.value === focusedCell,
+        : !!panel.cells.find(cell => cell.start === item.value)?.outside,
+      isToday: !!period && period.start <= todayValue && period.end >= todayValue,
+      focused: period?.start === focusedCell,
       inRange,
       rangePreview: inRange && previewingRange,
       // 两端也算 in-range
-      rangeStart: !ownedElsewhere && !!(rangeEnds && date && date.compare(rangeEnds[0]) === 0),
-      rangeEnd: !ownedElsewhere && !!(rangeEnds && date && date.compare(rangeEnds[1]) === 0),
+      rangeStart: !ownedElsewhere && !!(rangeEnds && periodStart && periodStart.compare(rangeEnds[0]) === 0),
+      rangeEnd: !ownedElsewhere && !!(rangeEnds && periodEnd && periodEnd.compare(rangeEnds[1]) === 0),
     }
   }
 
@@ -298,7 +298,7 @@ export function connectCalendar<T extends PropTypes>(
    * 月这一截只有日视图才有——月/季度/年那三层里压根没有「某个月」这个位。
    */
   const canZoomOutYear = !calendarDisabled && view !== 'year'
-  const canZoomOutMonth = !calendarDisabled && view === 'day'
+  const canZoomOutMonth = !calendarDisabled && (view === 'day' || view === 'week')
 
   /** 面板各自的标题 id。首个面板沿用原来那一份，旧标记不受影响。 */
   const headingId = (index?: number): string => {
@@ -350,28 +350,11 @@ export function connectCalendar<T extends PropTypes>(
     zoomTo(next)
   }
 
-  /**
-   * 选中一格。周选打开时点任意一天落的是整整一周（两端一起给），
-   * 其余情形照旧只落这一天。
-   */
+  /** 选中一格：五种粒度都只把周期首日交给同一台选择状态机。 */
   const selectAt = (value: string): void => {
-    if (!weekSelection) {
-      send({ type: 'CELL.SELECT', value })
-      return
-    }
-    const [from, to] = calendarWeekRange(value, locale)
-    // 还没落起点：把这一周的首日交给区间那套，rangeAnchor 就位后悬停预览才接得上
-    if (!rangeAnchor) {
-      send({ type: 'CELL.SELECT', value: from })
-      return
-    }
-    // 已有起点：区间的两端是「起点周与终点周」各自朝外那一头，
-    // 于是选出来的恒是整周的整数倍——第 33 周到第 37 周，而不是某天到某天
-    const [anchorFrom, anchorTo] = calendarWeekRange(rangeAnchor.toString(), locale)
-    send({
-      type: 'VALUE.SET',
-      value: [anchorFrom <= from ? anchorFrom : from, anchorTo >= to ? anchorTo : to],
-    })
+    const period = periodAt(value)
+    if (period)
+      send({ type: 'CELL.SELECT', value: period.start })
   }
 
   /** 确认键：选中聚焦日。只读与不可用的日子不认，禁用的日历整条不进来。 */
@@ -393,9 +376,10 @@ export function connectCalendar<T extends PropTypes>(
     panels,
     visibleMonth: { year: grid.year, month: grid.month, startValue: grid.startValue },
     weeks: grid.weeks,
+    periods: grid.periods,
     weekDays,
     headingLabel,
-    view: base,
+    granularity,
     activeView: view,
     headingOrder: calendarHeadingPieces(visibleStart, locale, timeZone).order,
     canZoomOutYear,
@@ -491,7 +475,7 @@ export function connectCalendar<T extends PropTypes>(
       'type': 'button',
       'data-index': panelOf(panel).index,
       'data-view': view,
-      // 只有日视图有月这一截；其余层收起而不是卸载，钻回来时要原地复现
+      // 日与周视图以月为容器；其余层收起而不是卸载，钻回来时要原地复现
       'hidden': !canZoomOutMonth || undefined,
       'disabled': !canZoomOutMonth || undefined,
       'data-disabled': dataAttr(!canZoomOutMonth),
@@ -507,7 +491,7 @@ export function connectCalendar<T extends PropTypes>(
       'role': 'grid',
       'aria-labelledby': headingId(panel.index),
       'data-index': panelOf(panel).index,
-      // 皮肤按它换排布：日视图铺周行，粗粒度视图把格子直接铺进网格
+      // 皮肤按它换排布：日视图铺周行，其余周期直接铺进网格
       'data-view': view,
       // 三条状态都显式给，不省略
       'aria-multiselectable': mode === 'single' ? 'false' : 'true',
@@ -591,6 +575,7 @@ export function connectCalendar<T extends PropTypes>(
 
     getCellTriggerProps: (item) => {
       const state = cellState(item)
+      const period = periodAt(item.value, view)
       return normalize.element({
         ...parts['cell-trigger'].attrs,
         ...stateAttrs(state),
@@ -601,7 +586,9 @@ export function connectCalendar<T extends PropTypes>(
         // 一律 aria-disabled 不用原生 disabled：不可用的日子仍要能当方向键起点
         'aria-disabled': state.disabled ? 'true' : 'false',
         // 补一句完整日期给读屏；解析不出日期时不写
-        'aria-label': state.date ? cellLabelFormatter.format(state.date.toDate(timeZone)) : undefined,
+        'aria-label': view === 'day' && state.date
+          ? cellLabelFormatter.format(state.date.toDate(timeZone))
+          : period?.label,
         // roving tabindex：整张网格只有聚焦日那一格留在 Tab 序列内
         'tabindex': state.focused ? 0 : -1,
         'onClick': () => {

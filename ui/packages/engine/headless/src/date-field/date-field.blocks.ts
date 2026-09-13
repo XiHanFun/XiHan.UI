@@ -83,26 +83,28 @@ export function monthToQuarter(month: number): number {
  * ISO 周序号 → 那一周的周首日。
  *
  * 锚点取「1 月 4 日」：ISO 规定第 1 周必定含 1 月 4 日，于是它所在那一周的周首日
- * 就是第 1 周的起点，往后每周加七天。locale 决定周首日是周一还是周日。
+ * 就是第 1 周的起点，往后每周加七天。ISO 周固定周一开始，不随显示语言改变。
  */
-export function isoWeekStart(year: number, week: number, locale: string): CalendarDate {
-  const firstWeek = startOfWeek(new CalendarDate(year, 1, 4), locale)
+export function isoWeekStart(year: number, week: number): CalendarDate {
+  const firstWeek = startOfWeek(new CalendarDate(year, 1, 4), 'en-GB')
   return firstWeek.add({ weeks: week - 1 })
 }
 
+/** ISO 周序年；跨年周看这一周的周四落在哪一年。 */
+function isoWeekYearOf(date: CalendarDate): number {
+  const day = date.toDate('UTC').getUTCDay()
+  return date.add({ days: ((day === 0 ? 7 : day) * -1) + 4 }).year
+}
+
 /** 某一天落在 ISO 的第几周。与周首日的换算互为逆运算。 */
-export function isoWeekOf(date: CalendarDate, locale: string): number {
+export function isoWeekOf(date: CalendarDate): number {
   // 归到本周周首日再比，免得同一周里不同的日子算出不同的周号
-  const start = startOfWeek(date, locale)
-  const firstWeek = startOfWeek(new CalendarDate(date.year, 1, 4), locale)
+  const start = startOfWeek(date, 'en-GB')
+  const weekYear = isoWeekYearOf(date)
+  const firstWeek = startOfWeek(new CalendarDate(weekYear, 1, 4), 'en-GB')
   const diff = Math.round(
     (start.toDate('UTC').getTime() - firstWeek.toDate('UTC').getTime()) / 604800000,
   )
-  // 落在上一年末周时 diff 为负，改按上一年的第 1 周起算
-  if (diff < 0) {
-    const prev = startOfWeek(new CalendarDate(date.year - 1, 1, 4), locale)
-    return Math.round((start.toDate('UTC').getTime() - prev.toDate('UTC').getTime()) / 604800000) + 1
-  }
   return diff + 1
 }
 
@@ -125,7 +127,7 @@ export function blockRange(
   if (type === 'quarter')
     return { min: 1, max: QUARTERS_IN_YEAR }
   if (type === 'week')
-    return { min: 1, max: isoWeeksInYear(segments.year, options.locale) }
+    return { min: 1, max: isoWeeksInYear(segments.year) }
   if (type === 'dayPeriod')
     return { min: 0, max: 1 }
   // 段集里带上下午时，小时段上写的是 12 时制的那个数
@@ -137,14 +139,13 @@ export function blockRange(
 /**
  * 某一年有 52 周还是 53 周：拿 12 月 28 日算——ISO 规定它必定落在该年最后一周。
  *
- * 周数随 locale 变，不能用一个写死的周首日：同一个 2026 年，周一起算是 53 周、周日起算是 52 周。
- * 拿错口径算出的上界会让最后一周翻到下一年去。
+ * 周数由 ISO 周历决定，不随显示语言改变。
  */
-export function isoWeeksInYear(year: number | undefined, locale: string): number {
+export function isoWeeksInYear(year: number | undefined): number {
   // 年还没填时给上界，免得把可选值先限死
   if (year == null)
     return ISO_WEEKS_MAX
-  return isoWeekOf(new CalendarDate(year, 12, 28), locale)
+  return isoWeekOf(new CalendarDate(year, 12, 28))
 }
 
 /**
@@ -160,7 +161,7 @@ export function blocksFilled(segments: DateSegments, set: DateSegmentSet): boole
  * 缺的粗段按「那一段的头」补：没有月就按 1 月，没有日就按 1 号。
  * 于是「只有年」得到 1 月 1 日、「年 + 季度」得到那一季的头一天，与面板那边落的值一致。
  */
-export function blocksToDate(segments: DateSegments, set: DateSegmentSet, locale: string): CalendarDate | null {
+export function blocksToDate(segments: DateSegments, set: DateSegmentSet, _locale: string): CalendarDate | null {
   const normalized = normalizeSegmentSet(set)
   const year = segments.year
   if (year == null)
@@ -168,7 +169,7 @@ export function blocksToDate(segments: DateSegments, set: DateSegmentSet, locale
   // 周单独走一路：它自己就定死了年月日三者
   if (normalized.includes('week')) {
     const week = segments.week
-    return week == null ? null : isoWeekStart(year, week, locale)
+    return week == null ? null : isoWeekStart(year, week)
   }
   const month = normalized.includes('month')
     ? segments.month
@@ -237,7 +238,7 @@ export function blocksToIso(segments: DateSegments, set: DateSegmentSet, locale:
  * 带上下午时小时落的是 12 时制的那个数，与 blocksToIso 收的是同一个口径；
  * 否则界面会一边显示 21 一边显示「下午」。
  */
-export function isoToBlocks(iso: string | null | undefined, set: DateSegmentSet, locale: string): DateSegments {
+export function isoToBlocks(iso: string | null | undefined, set: DateSegmentSet, _locale: string): DateSegments {
   if (!iso)
     return {}
   let dt
@@ -255,7 +256,7 @@ export function isoToBlocks(iso: string | null | undefined, set: DateSegmentSet,
   for (const type of normalized) {
     switch (type) {
       case 'year':
-        out.year = dt.year
+        out.year = normalized.includes('week') ? isoWeekYearOf(date) : dt.year
         break
       case 'quarter':
         out.quarter = monthToQuarter(dt.month)
@@ -264,7 +265,7 @@ export function isoToBlocks(iso: string | null | undefined, set: DateSegmentSet,
         out.month = dt.month
         break
       case 'week':
-        out.week = isoWeekOf(date, locale)
+        out.week = isoWeekOf(date)
         break
       case 'day':
         out.day = dt.day
@@ -308,7 +309,7 @@ export function pickBlocks(segments: DateSegments, set: DateSegmentSet): DateSeg
  * 空段上按上下键落到「今天的对应位」，而参照日只有年月日时分秒。段集里没有新块时原样返回，
  * granularity 那条老路因此一步不差。
  */
-export function blocksReference(reference: DateSegments, set: DateSegmentSet, locale: string): DateSegments {
+export function blocksReference(reference: DateSegments, set: DateSegmentSet, _locale: string): DateSegments {
   const normalized = normalizeSegmentSet(set)
   const { year, month, day, hour } = reference
   const out: Record<string, number | undefined> = { ...reference }
@@ -318,7 +319,9 @@ export function blocksReference(reference: DateSegments, set: DateSegmentSet, lo
     touched = true
   }
   if (normalized.includes('week') && year != null && month != null && day != null) {
-    out.week = isoWeekOf(new CalendarDate(year, month, day), locale)
+    const date = new CalendarDate(year, month, day)
+    out.year = isoWeekYearOf(date)
+    out.week = isoWeekOf(date)
     touched = true
   }
   if (normalized.includes('dayPeriod') && hour != null) {
@@ -336,11 +339,11 @@ export function blocksReference(reference: DateSegments, set: DateSegmentSet, lo
  * 只在拼 ISO 串时夹不够——段位里留着 53 会让界面显示第 53 周而值落在下一年的第 1 周。
  * 年月日的收敛不在这里，交给 constrainSegments。
  */
-export function constrainBlocks(segments: DateSegments, set: DateSegmentSet, locale: string): DateSegments {
+export function constrainBlocks(segments: DateSegments, set: DateSegmentSet, _locale: string): DateSegments {
   const { year, week } = segments
   if (week == null || year == null || !normalizeSegmentSet(set).includes('week'))
     return segments
-  const max = isoWeeksInYear(year, locale)
+  const max = isoWeeksInYear(year)
   return week <= max ? segments : { ...segments, week: max }
 }
 

@@ -1,5 +1,5 @@
 import type { MachineSchema, PropTypes } from '@xihan-ui/core'
-import type { CalendarDay, CalendarPeriodCell, CalendarView, CalendarWeekDay } from './calendar.grid'
+import type { CalendarDay, CalendarGranularity, CalendarPeriod, CalendarView, CalendarWeekDay } from './calendar.grid'
 
 /**
  * 焦点模型：roving tabindex，不做 aria-activedescendant 变体。
@@ -75,15 +75,17 @@ export interface CalendarPanel {
   month: number
   /** 这一页跨度首日的 ISO 串。 */
   startValue: string
-  /** 日期矩阵；view 不是 day 时为空数组。 */
+  /** 日期矩阵；activeView 不是 day 时为空数组。 */
   weeks: CalendarDay[][]
   /**
-   * 与 weeks 逐行对应的 ISO 周序号（周一起算）。view 不是 day 时为空数组。
+   * 与 weeks 逐行对应的 ISO 周序号（周一起算）。activeView 不是 day 时为空数组。
    * 周选时把它渲染成行首那一列，人才看得出挑的是第几周。
    */
   weekNumbers: number[]
-  /** 月 / 季度 / 年的格子；view 是 day 时为空数组。 */
-  cells: CalendarPeriodCell[]
+  /** 当前面板内的全部周期；五种粒度统一读取这一份。 */
+  periods: CalendarPeriod[]
+  /** 周 / 月 / 季度 / 年的格子；activeView 是 day 时为空数组。 */
+  cells: CalendarPeriod[]
   /** 这个面板的标题文案（2024年2月 / 2024年 / 2020-2029）。 */
   headingLabel: string
   /**
@@ -135,28 +137,18 @@ export interface CalendarSchema extends MachineSchema {
     weekdayFormat?: CalendarWeekdayFormat
     /** 恒渲染六行，默认按当月实际周数。开着能让翻月时网格高度不跳。 */
     fixedWeeks?: boolean
-    /**
-     * 挑的粒度：天（默认）、月、季度、年。这一档也是「点一格就是选中」的那一档。
-     *
-     * 格子的值一律是「那段时间的第一天」的 ISO 串，不另立一套值形态——
-     * min/max 比较、区间逻辑、不可用判定、表单出口于是全都原样复用。
-     */
-    view?: CalendarView
+    /** 选择粒度；与 selectionMode 正交。格子值一律是周期首日的 ISO 串。 */
+    granularity?: CalendarGranularity
     /**
      * 面板此刻铺的是哪一档格子。给定即受控（date-picker 就是这么持有它的）。
      *
-     * 它与 view 是两件事：view 是作者要挑的粒度，这个是人钻到了哪一层。
-     * 点标题里的年会把它抬到 year，再点一格就往 view 那一档钻回去；到了 view 那一档，
-     * 点一格才是选中。缺省即等于 view。
+     * 它与 granularity 是两件事：granularity 是作者要挑的粒度，这个是人钻到了哪一层。
+     * 点标题里的年会把它抬到 year，再点一格就往 granularity 那一档钻回去；到了目标粒度，
+     * 点一格才是选中。缺省即等于 granularity。
      */
     activeView?: CalendarView
-    /** 非受控初值，缺省同 view。 */
+    /** 非受控初值，缺省同 granularity。 */
     defaultActiveView?: CalendarView
-    /**
-     * 周选：点任意一天选中它所在的整周，值落成 [周首日, 周末日]。
-     * 只在 view=day 且 selectionMode=range 下生效。
-     */
-    weekSelection?: boolean
     /**
      * 并排展示几个连续月，默认 1。区间选择给 2 才好挑——起止常跨月，
      * 一个面板要来回翻页。翻页时整窗一起走一个月，不是各翻各的。
@@ -212,7 +204,7 @@ export interface CalendarSchema extends MachineSchema {
     | { type: 'HOVER.CLEAR' }
   tag: never
   guard: never
-  action: 'setValue' | 'selectCell' | 'setFocusedValue' | 'setActiveView' | 'syncActiveView' | 'dropStaleRangeAnchor' | 'pageVisibleStart' | 'setHoveredValue' | 'clearHoveredValue' | 'focusVisibleCell'
+  action: 'setValue' | 'selectCell' | 'setFocusedValue' | 'setActiveView' | 'syncGranularity' | 'syncSelectionMode' | 'dropStaleRangeAnchor' | 'pageVisibleStart' | 'setHoveredValue' | 'clearHoveredValue' | 'focusVisibleCell'
   effect: 'trackLiveness'
 }
 
@@ -233,8 +225,10 @@ export interface CalendarApi<T extends PropTypes = PropTypes> {
   /** 首个面板的标题文案（如 2024年2月）。多面板请改用 panels。 */
   headingLabel: string
   /** 作者要挑的粒度。 */
-  view: CalendarView
-  /** 面板此刻铺的是哪一档格子。等于 view 时点一格就是选中，粗过 view 时点一格是往下钻。 */
+  granularity: CalendarGranularity
+  /** 首个面板内的全部周期。 */
+  periods: CalendarPeriod[]
+  /** 面板此刻铺的是哪一档格子。等于 granularity 时点一格就是选中，否则是往下钻。 */
   activeView: CalendarView
   /**
    * 标题里年与月在这个语言里的先后（zh-CN 是年在前，en-US 是月在前）。

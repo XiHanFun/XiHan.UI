@@ -16,6 +16,7 @@ import {
   granularitySegments,
   hasSegmentSet,
   isoToSegments,
+  isoWeekStart,
   localeDateOrder,
   parseBoundary,
   parseIsoSegments,
@@ -1048,6 +1049,14 @@ describe('段集在机器里', () => {
     s.send({ type: 'SEGMENT.TYPE', segment: 'week', digit: '3' })
     s.send({ type: 'SEGMENT.TYPE', segment: 'week', digit: '3' })
     expect(s.context.get('value')).toBe('2026-08-10')
+  })
+
+  it('周字段固定使用 ISO 周历，不随显示语言改变', () => {
+    const zh = service({ locale: 'zh-CN', segments: ['year', 'week'], defaultValue: '2027-01-01' })
+    const en = service({ locale: 'en-US', segments: ['year', 'week'], defaultValue: '2027-01-01' })
+    expect(zh.context.get('segments')).toEqual({ year: 2026, week: 53 })
+    expect(en.context.get('segments')).toEqual({ year: 2026, week: 53 })
+    expect(isoWeekStart(2026, 53).toString()).toBe('2026-12-28')
   })
 
   it('周序号在换年后夹回当年的周数，不许翻到下一年', () => {

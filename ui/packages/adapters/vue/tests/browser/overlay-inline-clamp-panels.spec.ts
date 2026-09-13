@@ -151,8 +151,8 @@ function datePickerRange(): VNode {
                   )),
                 ]),
                 h(XhDatePickerGridBody, null, () => (panel.weeks ?? []).map((week: any) =>
-                  h(XhDatePickerWeekRow, { key: week[0].value }, () => week.map((day: any) =>
-                    h(XhDatePickerCell, { key: day.value, value: day.value }, () => [
+                  h(XhDatePickerWeekRow, { key: week[0].start }, () => week.map((day: any) =>
+                    h(XhDatePickerCell, { key: day.start, value: day.start }, () => [
                       h(XhDatePickerCellTrigger, null, () => String(day.day)),
                     ]),
                   )),

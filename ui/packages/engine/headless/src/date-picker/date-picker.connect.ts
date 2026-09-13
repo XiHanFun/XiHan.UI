@@ -10,7 +10,7 @@ import type {
   DatePickerTranslations,
 } from './date-picker.types'
 import { dataAttr, focusSafely, navIntentFromKey, normalizeProps, readDirection, stepIndex } from '@xihan-ui/core'
-import { connectCalendar } from '../calendar'
+import { calendarPeriodValue, connectCalendar } from '../calendar'
 import {
   applySegmentDigit,
   connectDateField,
@@ -78,6 +78,14 @@ export function connectDatePicker<T extends PropTypes>(
 
   // 内嵌日历：整份 api 原样转发
   const calendar = connectCalendar(services.calendar, normalize)
+  const periodValue = selectionMode === 'multiple'
+    ? null
+    : calendarPeriodValue(
+        calendar.granularity,
+        selectionMode,
+        filled.map(datePickerDatePart),
+        { locale: prop('locale'), timeZone: prop('timeZone') },
+      )
 
   // —— showTime：值升格为 datetime，面板里多出时间列，收口交给确认按钮 ——
   const showTime = !!prop('showTime') && selectionMode === 'single'
@@ -314,9 +322,10 @@ export function connectDatePicker<T extends PropTypes>(
     value,
     valueAsString: filled[0] ?? null,
     selectionMode,
+    periodValue,
     // 取日历已收口的结果（宿主设过的 → 首个选中值 → 今天），不在这里重算
     focusedValue: calendar.focusedValue,
-    view: calendar.view,
+    granularity: calendar.granularity,
     activeView: calendar.activeView,
     disabled,
     readOnly,

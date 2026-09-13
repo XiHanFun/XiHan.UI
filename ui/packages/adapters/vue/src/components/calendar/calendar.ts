@@ -1,4 +1,4 @@
-import type { CalendarApi, CalendarCellProps, CalendarSchema, CalendarSelectionMode, CalendarView, CalendarWeekdayFormat } from '@xihan-ui/headless'
+import type { CalendarApi, CalendarCellProps, CalendarGranularity, CalendarSchema, CalendarSelectionMode, CalendarView, CalendarWeekdayFormat } from '@xihan-ui/headless'
 import type { PropType, SlotsType, VNode } from 'vue'
 import type { PayloadOf } from '../../runtime/payload'
 import { computed, defineComponent, h } from 'vue'
@@ -15,6 +15,7 @@ export type CalendarRootSlotProps = Pick<
   | 'focusedValue'
   | 'visibleMonth'
   | 'panels'
+  | 'periods'
   | 'weeks'
   | 'weekDays'
   | 'headingLabel'
@@ -47,14 +48,12 @@ export const XhCalendarRoot = defineComponent({
     readOnly: Boolean,
     weekdayFormat: { type: String as PropType<CalendarWeekdayFormat> },
     fixedWeeks: Boolean,
-    /** 挑的粒度：天（默认）/ 月 / 季度 / 年。这一档也是「点一格即选中」的那一档。 */
-    view: { type: String as PropType<CalendarView> },
-    /** 面板此刻钻到了哪一层；给定即受控，缺省跟着 view。 */
+    /** 选择粒度；与 selectionMode 正交。 */
+    granularity: { type: String as PropType<CalendarGranularity> },
+    /** 面板此刻钻到了哪一层；给定即受控，缺省跟着 granularity。 */
     activeView: { type: String as PropType<CalendarView> },
-    /** 非受控初值，缺省同 view。 */
+    /** 非受控初值，缺省同 granularity。 */
     defaultActiveView: { type: String as PropType<CalendarView> },
-    /** 周选：点任意一天选中它所在的整周。只在 view=day 且区间模式下生效。 */
-    weekSelection: { type: Boolean, default: undefined },
     /** 并排展示几页，默认 1。 */
     visibleCount: { type: Number },
   },
@@ -91,6 +90,7 @@ export const XhCalendarRoot = defineComponent({
       focusedValue: ctx.api.value.focusedValue,
       visibleMonth: ctx.api.value.visibleMonth,
       panels: ctx.api.value.panels,
+      periods: ctx.api.value.periods,
       weeks: ctx.api.value.weeks,
       weekDays: ctx.api.value.weekDays,
       headingLabel: ctx.api.value.headingLabel,

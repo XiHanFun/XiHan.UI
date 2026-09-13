@@ -63,8 +63,8 @@ function literalBefore(type: string, index: number): string {
                 </XhDatePickerWeekRow>
               </XhDatePickerGridHead>
               <XhDatePickerGridBody>
-                <XhDatePickerWeekRow v-for="week in weeks" :key="week[0].value">
-                  <XhDatePickerCell v-for="day in week" :key="day.value" :value="day.value">
+                <XhDatePickerWeekRow v-for="week in weeks" :key="week[0].start">
+                  <XhDatePickerCell v-for="day in week" :key="day.start" :value="day.start">
                     <XhDatePickerCellTrigger>{{ day.day }}</XhDatePickerCellTrigger>
                   </XhDatePickerCell>
                 </XhDatePickerWeekRow>

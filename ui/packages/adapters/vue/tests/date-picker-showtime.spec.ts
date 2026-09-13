@@ -58,7 +58,7 @@ function mountPicker(props: Record<string, unknown> = {}): { change: ReturnType<
                 h(XhDatePickerGrid, null, () => [
                   h(XhDatePickerGridBody, null, () => weeks.map((week, i) =>
                     h(XhDatePickerWeekRow, { key: i }, () => week.map(day =>
-                      h(XhDatePickerCell, { key: day.value, value: day.value }, () => [
+                      h(XhDatePickerCell, { key: day.start, value: day.start }, () => [
                         h(XhDatePickerCellTrigger, () => String(day.day)),
                       ]),
                     )),

@@ -108,7 +108,7 @@ describe('calendar 的只读手势', () => {
           h(XhCalendarGrid, null, () => [
             h(XhCalendarGridBody, null, () => weeks.map(week =>
               h(XhCalendarWeekRow, null, () => week.map(day =>
-                h(XhCalendarCell, { value: day.value, key: day.value }, () => [h(XhCalendarCellTrigger)]),
+                h(XhCalendarCell, { value: day.start, key: day.start }, () => [h(XhCalendarCellTrigger)]),
               )),
             )),
           ]),
