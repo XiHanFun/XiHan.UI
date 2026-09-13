@@ -1,6 +1,6 @@
 来源：https://ui.docs.xihanfun.com/components/time-field
 
-# TimeField 时间字段 `alpha`
+# TimeField 时间字段
 
 按时、分、秒逐段输入时间，适合已经知道目标时间、无需打开选择面板的场景。
 
@@ -14,11 +14,17 @@
 
 ## 用法
 
-输入时间
+逐段输入并实时获得标准时间值；有值时可以一键清空
 
 ```vue
+<!--
+  Copyright (c) 2021-Present XiHanFun and contributors.
+  Licensed under the MIT License. See LICENSE in the project root for license information.
+-->
+
 <script setup lang="ts">
 import {
+  XhTimeFieldClearTrigger,
   XhTimeFieldControl,
   XhTimeFieldHiddenInput,
   XhTimeFieldLabel,
@@ -26,13 +32,13 @@ import {
   XhTimeFieldSegment,
   XhTimeFieldSegmentGroup,
 } from "@xihan-ui/vue";
+import { ref } from "vue";
+
+const value = ref("09:30");
 </script>
 
 <template>
-  <XhTimeFieldRoot
-    name="start-time"
-    style="--xh-time-field-control-min-w: calc(var(--xh-control-min-w) + var(--xh-control-h-md) + var(--xh-space-6))"
-  >
+  <XhTimeFieldRoot v-model:value="value" name="start-time">
     <XhTimeFieldLabel>开始时间</XhTimeFieldLabel>
     <XhTimeFieldControl>
       <XhTimeFieldSegmentGroup>
@@ -40,18 +46,20 @@ import {
         <span>:</span>
         <XhTimeFieldSegment segment="minute" />
       </XhTimeFieldSegmentGroup>
+      <XhTimeFieldClearTrigger />
     </XhTimeFieldControl>
     <XhTimeFieldHiddenInput />
   </XhTimeFieldRoot>
+
+  <span aria-live="polite" style="font-size: 13px">
+    当前值：{{ value || "（未填齐）" }}
+  </span>
 </template>
 ```
 
 ```html
-<xh-time-field name="start-time">
-  <div
-    data-xh-part="root"
-    style="--xh-time-field-control-min-w: calc(var(--xh-control-min-w) + var(--xh-control-h-md) + var(--xh-space-6))"
-  >
+<xh-time-field id="time-field-basic" name="start-time" value="09:30">
+  <div data-xh-part="root">
     <label data-xh-part="label">开始时间</label>
     <div data-xh-part="control">
       <div data-xh-part="segment-group">
@@ -59,10 +67,26 @@ import {
         <span>:</span>
         <span data-xh-part="segment" segment="minute"></span>
       </div>
+      <button data-xh-part="clear-trigger"></button>
     </div>
     <input data-xh-part="hidden-input" />
   </div>
 </xh-time-field>
+
+<span aria-live="polite" style="font-size: 13px">
+  当前值：<span id="time-field-basic-value">09:30</span>
+</span>
+
+<script type="module">
+  const field = document.getElementById("time-field-basic");
+  const readout = document.getElementById("time-field-basic-value");
+
+  field.addEventListener("value-change", (event) => {
+    const next = event.detail.value;
+    field.value = next;
+    readout.textContent = next || "（未填齐）";
+  });
+</script>
 ```
 
 ## 组件结构
@@ -78,6 +102,11 @@ import {
 hour-cycle=12 多出一个上午/下午段，值本身仍是 24 小时的串
 
 ```vue
+<!--
+  Copyright (c) 2021-Present XiHanFun and contributors.
+  Licensed under the MIT License. See LICENSE in the project root for license information.
+-->
+
 <script setup lang="ts">
 import {
   XhTimeFieldControl,
@@ -146,6 +175,11 @@ const value = ref("13:45");
 granularity=second 让秒段显出来并参与值，空段按上下键从该段边界起步
 
 ```vue
+<!--
+  Copyright (c) 2021-Present XiHanFun and contributors.
+  Licensed under the MIT License. See LICENSE in the project root for license information.
+-->
+
 <script setup lang="ts">
 import {
   XhTimeFieldControl,
@@ -212,6 +246,11 @@ const value = ref("");
 禁用整组退出 Tab 序；越界只做标注，08:00 原样留着不被改写
 
 ```vue
+<!--
+  Copyright (c) 2021-Present XiHanFun and contributors.
+  Licensed under the MIT License. See LICENSE in the project root for license information.
+-->
+
 <script setup lang="ts">
 import {
   XhTimeFieldControl,
@@ -284,6 +323,11 @@ import {
 variant 只改分段框的底色与描边用法，分段结构与键盘行为都不变
 
 ```vue
+<!--
+  Copyright (c) 2021-Present XiHanFun and contributors.
+  Licensed under the MIT License. See LICENSE in the project root for license information.
+-->
+
 <script setup lang="ts">
 import {
   XhTimeFieldControl,
@@ -360,6 +404,11 @@ const variants = ["outline", "subtle", "ghost"] as const;
 tone 决定用哪族颜色，与 variant 正交；这里固定 subtle 形态，只看语气这一轴
 
 ```vue
+<!--
+  Copyright (c) 2021-Present XiHanFun and contributors.
+  Licensed under the MIT License. See LICENSE in the project root for license information.
+-->
+
 <script setup lang="ts">
 import {
   XhTimeFieldControl,
@@ -475,6 +524,11 @@ const tones = ["brand", "neutral", "success", "warning", "danger", "info"] as co
 不传 size 即默认档；行高、内边距与字号一起换档，标题也跟着变
 
 ```vue
+<!--
+  Copyright (c) 2021-Present XiHanFun and contributors.
+  Licensed under the MIT License. See LICENSE in the project root for license information.
+-->
+
 <script setup lang="ts">
 import {
   XhTimeFieldControl,
@@ -555,6 +609,11 @@ const sizes = [
 值由宿主持有，按钮直接写值；框内自带清空钮，有值才显形，点完焦点回到第一段
 
 ```vue
+<!--
+  Copyright (c) 2021-Present XiHanFun and contributors.
+  Licensed under the MIT License. See LICENSE in the project root for license information.
+-->
+
 <script setup lang="ts">
 import {
   XhButton,
@@ -676,6 +735,11 @@ function now() {
 值交给宿主持有，写回来的时间被吸附到清单里的一格，上下键与数字键因此都落在清单上
 
 ```vue
+<!--
+  Copyright (c) 2021-Present XiHanFun and contributors.
+  Licensed under the MIT License. See LICENSE in the project root for license information.
+-->
+
 <script setup lang="ts">
 import {
   XhTimeFieldControl,
@@ -785,6 +849,7 @@ function snap(next: string) {
 - `min` / `max` 越界时只标注不改写。
 - 标准组合包含标签、输入框、时间段和隐藏表单输入；聚焦只强调正在编辑的时间段。
 - 框内自带清空钮（`clear-trigger`）：有值才显形，点完焦点回到第一段。
+- 聚焦环、边框和当前段位使用同一段短过渡，焦点进入与离开不会瞬时跳变。
 
 ### 组合
 
@@ -1017,7 +1082,7 @@ function snap(next: string) {
 
 ### 动效
 
-`background` · `border-color` · `color` · `scale` 走 `transition` 过渡。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
+`background` · `border-color` · `color` · `outline-color` · `scale` 走 `transition` 过渡。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
 
 系统开启减弱动效时由令牌层统一收敛，皮肤不另作判断。
 

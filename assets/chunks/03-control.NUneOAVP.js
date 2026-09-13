@@ -1,0 +1,27 @@
+const n=`<!--
+  Copyright (c) 2021-Present XiHanFun and contributors.
+  Licensed under the MIT License. See LICENSE in the project root for license information.
+-->
+
+<!-- 起停与归零 | 自己写部件：control 是一个原生按钮，按一下就按当前状态走一步（开始 / 暂停 / 继续 / 重来） -->
+<script setup lang="ts">
+import {
+  XhTimerControl,
+  XhTimerDisplay,
+  XhTimerItem,
+  XhTimerRoot,
+  XhTimerSeparator,
+} from "@xihan-ui/vue";
+<\/script>
+
+<template>
+  <XhTimerRoot>
+    <XhTimerDisplay>
+      <XhTimerItem unit="minutes" />
+      <XhTimerSeparator>:</XhTimerSeparator>
+      <XhTimerItem unit="seconds" />
+    </XhTimerDisplay>
+    <XhTimerControl>起停</XhTimerControl>
+  </XhTimerRoot>
+</template>
+`;export{n as default};

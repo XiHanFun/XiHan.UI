@@ -17,6 +17,11 @@
 调整侧栏和编辑区域的比例
 
 ```vue
+<!--
+  Copyright (c) 2021-Present XiHanFun and contributors.
+  Licensed under the MIT License. See LICENSE in the project root for license information.
+-->
+
 <script setup lang="ts">
 import {
   XhSplitterPanel,
@@ -65,6 +70,11 @@ const panels = [
 垂直调整并折叠面板
 
 ```vue
+<!--
+  Copyright (c) 2021-Present XiHanFun and contributors.
+  Licensed under the MIT License. See LICENSE in the project root for license information.
+-->
+
 <script setup lang="ts">
 import {
   XhSplitterPanel,
@@ -127,6 +137,11 @@ const panels = [
 禁止调整面板比例
 
 ```vue
+<!--
+  Copyright (c) 2021-Present XiHanFun and contributors.
+  Licensed under the MIT License. See LICENSE in the project root for license information.
+-->
+
 <script setup lang="ts">
 import {
   XhSplitterPanel,
@@ -177,6 +192,11 @@ const panels = [{ id: "aside" }, { id: "main" }];
 组合水平和垂直面板
 
 ```vue
+<!--
+  Copyright (c) 2021-Present XiHanFun and contributors.
+  Licensed under the MIT License. See LICENSE in the project root for license information.
+-->
+
 <script setup lang="ts">
 import {
   XhSplitterPanel,

@@ -21,6 +21,11 @@
 一排可摘标签，每一枚都是库里的 tag：整组只占一个 Tab 位，方向键走标签，Delete 或 Backspace 摘掉，那颗叉就是 tag 的 close-trigger
 
 ```vue
+<!--
+  Copyright (c) 2021-Present XiHanFun and contributors.
+  Licensed under the MIT License. See LICENSE in the project root for license information.
+-->
+
 <script setup lang="ts">
 import { XhTagGroupRoot } from "@xihan-ui/vue";
 import { ref } from "vue";
@@ -108,6 +113,11 @@ function remove({ value }: { value: string }) {
 selectionMode 决定点一枚是替换还是加选；Ctrl/Cmd + A 全选
 
 ```vue
+<!--
+  Copyright (c) 2021-Present XiHanFun and contributors.
+  Licensed under the MIT License. See LICENSE in the project root for license information.
+-->
+
 <script setup lang="ts">
 import { XhTagGroupRoot } from "@xihan-ui/vue";
 import { ref } from "vue";
@@ -186,6 +196,11 @@ const topics = [
 size 打在组上逐枚落到每一枚标签上，走 tag 的三档，标签自己不写档位
 
 ```vue
+<!--
+  Copyright (c) 2021-Present XiHanFun and contributors.
+  Licensed under the MIT License. See LICENSE in the project root for license information.
+-->
+
 <script setup lang="ts">
 import { XhTagGroupRoot } from "@xihan-ui/vue";
 
@@ -265,6 +280,11 @@ const tags = [
 逐部件自己写，标签里就能塞头像、计数这类自带内容，摘除钮照旧归 cell 管；条目渲出来是 tag 的 root、文字是 tag 的 label，产出的结构与只交数据那一份完全一致，Tab 位与键盘也一样
 
 ```vue
+<!--
+  Copyright (c) 2021-Present XiHanFun and contributors.
+  Licensed under the MIT License. See LICENSE in the project root for license information.
+-->
+
 <script setup lang="ts">
 import {
   XhTagGroupCell,

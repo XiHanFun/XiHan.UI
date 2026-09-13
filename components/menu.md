@@ -17,6 +17,11 @@
 从按钮打开一组操作
 
 ```vue
+<!--
+  Copyright (c) 2021-Present XiHanFun and contributors.
+  Licensed under the MIT License. See LICENSE in the project root for license information.
+-->
+
 <script setup lang="ts">
 import { ChevronDownIcon } from "@xihan-ui/icons";
 import { XhButton, XhIcon, XhMenuRoot } from "@xihan-ui/vue";
@@ -75,6 +80,11 @@ const actions = [
 为常用命令补充识别信息
 
 ```vue
+<!--
+  Copyright (c) 2021-Present XiHanFun and contributors.
+  Licensed under the MIT License. See LICENSE in the project root for license information.
+-->
+
 <script setup lang="ts">
 import { CopyIcon, PencilIcon, TrashIcon } from "@xihan-ui/icons";
 import {
@@ -147,6 +157,11 @@ import {
 使用标题与分隔线组织命令
 
 ```vue
+<!--
+  Copyright (c) 2021-Present XiHanFun and contributors.
+  Licensed under the MIT License. See LICENSE in the project root for license information.
+-->
+
 <script setup lang="ts">
 import { XhButton, XhMenuRoot } from "@xihan-ui/vue";
 
@@ -191,6 +206,11 @@ const actions = [
 将相关操作收进下一层
 
 ```vue
+<!--
+  Copyright (c) 2021-Present XiHanFun and contributors.
+  Licensed under the MIT License. See LICENSE in the project root for license information.
+-->
+
 <script setup lang="ts">
 import {
   XhButton,

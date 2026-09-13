@@ -21,6 +21,11 @@
 图标、标题、说明、操作四个槽都可选，只有 root 是必须的
 
 ```vue
+<!--
+  Copyright (c) 2021-Present XiHanFun and contributors.
+  Licensed under the MIT License. See LICENSE in the project root for license information.
+-->
+
 <script setup lang="ts">
 import {
   XhButton,
@@ -80,6 +85,11 @@ import {
 size 只换留白与字号，语义一点不动；不传即 md
 
 ```vue
+<!--
+  Copyright (c) 2021-Present XiHanFun and contributors.
+  Licensed under the MIT License. See LICENSE in the project root for license information.
+-->
+
 <script setup lang="ts">
 import {
   XhEmptyStateDescription,
@@ -141,6 +151,11 @@ import {
 缺省 polite 让 root 成为活区，筛完就地播报；off 让它只是个普通容器
 
 ```vue
+<!--
+  Copyright (c) 2021-Present XiHanFun and contributors.
+  Licensed under the MIT License. See LICENSE in the project root for license information.
+-->
+
 <script setup lang="ts">
 import {
   XhEmptyStateDescription,
@@ -216,6 +231,11 @@ function search(): void {
 同一套部件也承载 404、403 这类结果：status 给图标区上语气色，操作槽里放回退出口
 
 ```vue
+<!--
+  Copyright (c) 2021-Present XiHanFun and contributors.
+  Licensed under the MIT License. See LICENSE in the project root for license information.
+-->
+
 <script setup lang="ts">
 import {
   XhButton,
@@ -318,6 +338,11 @@ const results = [
 图标槽里放一枚带 tone 的图标，着色落在图标自己身上，不经过 status
 
 ```vue
+<!--
+  Copyright (c) 2021-Present XiHanFun and contributors.
+  Licensed under the MIT License. See LICENSE in the project root for license information.
+-->
+
 <script setup lang="ts">
 import {
   XhButton,
@@ -524,6 +549,11 @@ const results = [
 status 只落成 data-status，皮肤据它给图标区上语气色；画什么图标仍由作者塞
 
 ```vue
+<!--
+  Copyright (c) 2021-Present XiHanFun and contributors.
+  Licensed under the MIT License. See LICENSE in the project root for license information.
+-->
+
 <script setup lang="ts">
 import { CheckIcon, InfoIcon, TriangleAlertIcon, XIcon } from "@xihan-ui/icons";
 import {

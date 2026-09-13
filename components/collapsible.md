@@ -17,6 +17,11 @@
 不传 open 即为非受控，defaultOpen 只给初始值，之后由组件自己维护开合
 
 ```vue
+<!--
+  Copyright (c) 2021-Present XiHanFun and contributors.
+  Licensed under the MIT License. See LICENSE in the project root for license information.
+-->
+
 <script setup lang="ts">
 import {
   XhCollapsibleContent,
@@ -90,6 +95,11 @@ import {
 传了 open 就由宿主说了算，组件自己不再改状态，只发 open-change 报告意图
 
 ```vue
+<!--
+  Copyright (c) 2021-Present XiHanFun and contributors.
+  Licensed under the MIT License. See LICENSE in the project root for license information.
+-->
+
 <script setup lang="ts">
 import {
   XhButton,
@@ -161,6 +171,11 @@ const open = ref(false);
 disabled 把触发器整个关停，点击与键盘都不再改开合，已展开的内容维持原样
 
 ```vue
+<!--
+  Copyright (c) 2021-Present XiHanFun and contributors.
+  Licensed under the MIT License. See LICENSE in the project root for license information.
+-->
+
 <script setup lang="ts">
 import {
   XhCollapsibleContent,
@@ -207,6 +222,11 @@ import {
 size 换的是触发按钮的高度、内边距与字号，三档并排对照
 
 ```vue
+<!--
+  Copyright (c) 2021-Present XiHanFun and contributors.
+  Licensed under the MIT License. See LICENSE in the project root for license information.
+-->
+
 <script setup lang="ts">
 import {
   XhCollapsibleContent,
@@ -279,6 +299,11 @@ import {
 往指示符部件里塞自己的图形，转向仍由皮肤按 open 接管
 
 ```vue
+<!--
+  Copyright (c) 2021-Present XiHanFun and contributors.
+  Licensed under the MIT License. See LICENSE in the project root for license information.
+-->
+
 <script setup lang="ts">
 import { ChevronDownIcon } from "@xihan-ui/icons";
 import {
@@ -348,6 +373,11 @@ const open = ref(false);
 收起时节点不卸载，作者接管内容区的 display，用一条行高过渡就能平滑展开
 
 ```vue
+<!--
+  Copyright (c) 2021-Present XiHanFun and contributors.
+  Licensed under the MIT License. See LICENSE in the project root for license information.
+-->
+
 <script setup lang="ts">
 import {
   XhCollapsibleContent,
@@ -432,6 +462,11 @@ const open = ref(false);
 tone 落在触发按钮的展开态上，六种颜色各展开一份做对照
 
 ```vue
+<!--
+  Copyright (c) 2021-Present XiHanFun and contributors.
+  Licensed under the MIT License. See LICENSE in the project root for license information.
+-->
+
 <script setup lang="ts">
 import { XhCollapsibleContent, XhCollapsibleRoot, XhCollapsibleTrigger } from "@xihan-ui/vue";
 

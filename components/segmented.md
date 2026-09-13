@@ -17,6 +17,11 @@
 一排互斥选项：root 是 radiogroup、每段是 radio；整组只占一个 Tab 位，进组后四个方向键都能走
 
 ```vue
+<!--
+  Copyright (c) 2021-Present XiHanFun and contributors.
+  Licensed under the MIT License. See LICENSE in the project root for license information.
+-->
+
 <script setup lang="ts">
 import { XhSegmentedRoot } from "@xihan-ui/vue";
 
@@ -70,6 +75,11 @@ const ranges = [
 传了 value 就由宿主说了算；值可以是 null，表示一段都没选中
 
 ```vue
+<!--
+  Copyright (c) 2021-Present XiHanFun and contributors.
+  Licensed under the MIT License. See LICENSE in the project root for license information.
+-->
+
 <script setup lang="ts">
 import { XhSegmentedRoot } from "@xihan-ui/vue";
 import { ref } from "vue";
@@ -134,6 +144,11 @@ const views = [
 block 让整组占满一行，各段等分剩余空间，长短不一的文字也排得齐
 
 ```vue
+<!--
+  Copyright (c) 2021-Present XiHanFun and contributors.
+  Licensed under the MIT License. See LICENSE in the project root for license information.
+-->
+
 <script setup lang="ts">
 import { XhSegmentedRoot } from "@xihan-ui/vue";
 
@@ -181,6 +196,11 @@ const modes = [
 orientation 只改视觉排布，四个方向键与 Home/End 照样都能走
 
 ```vue
+<!--
+  Copyright (c) 2021-Present XiHanFun and contributors.
+  Licensed under the MIT License. See LICENSE in the project root for license information.
+-->
+
 <script setup lang="ts">
 import { XhSegmentedRoot } from "@xihan-ui/vue";
 
@@ -224,6 +244,11 @@ const densities = [
 单段禁用仍可聚焦、仍是方向键的起点，只是走不到它上面；整组禁用则谁都改不动
 
 ```vue
+<!--
+  Copyright (c) 2021-Present XiHanFun and contributors.
+  Licensed under the MIT License. See LICENSE in the project root for license information.
+-->
+
 <script setup lang="ts">
 import { XhSegmentedRoot } from "@xihan-ui/vue";
 
@@ -293,6 +318,11 @@ const plans = [
 tone 决定指示器与选中段文字用哪族颜色，六种语气各一组
 
 ```vue
+<!--
+  Copyright (c) 2021-Present XiHanFun and contributors.
+  Licensed under the MIT License. See LICENSE in the project root for license information.
+-->
+
 <script setup lang="ts">
 import { XhSegmentedRoot } from "@xihan-ui/vue";
 
@@ -406,6 +436,11 @@ const answers = [
 size 换的是段的高度、内边距与字号，指示器跟着量出来的段走
 
 ```vue
+<!--
+  Copyright (c) 2021-Present XiHanFun and contributors.
+  Licensed under the MIT License. See LICENSE in the project root for license information.
+-->
+
 <script setup lang="ts">
 import { XhSegmentedRoot } from "@xihan-ui/vue";
 
@@ -486,6 +521,11 @@ const aligns = [
 给了 name 才带上隐藏输入参与提交；宿主表单点重置，选中值回落到 default-value
 
 ```vue
+<!--
+  Copyright (c) 2021-Present XiHanFun and contributors.
+  Licensed under the MIT License. See LICENSE in the project root for license information.
+-->
+
 <script setup lang="ts">
 import { XhSegmentedRoot } from "@xihan-ui/vue";
 import { ref } from "vue";

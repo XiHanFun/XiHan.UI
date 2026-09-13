@@ -17,6 +17,11 @@
 在一条菜单栏中组织应用命令
 
 ```vue
+<!--
+  Copyright (c) 2021-Present XiHanFun and contributors.
+  Licensed under the MIT License. See LICENSE in the project root for license information.
+-->
+
 <script setup lang="ts">
 import { XhMenubarRoot } from "@xihan-ui/vue";
 
@@ -59,6 +64,11 @@ const menus = [
 在菜单内组织相关命令
 
 ```vue
+<!--
+  Copyright (c) 2021-Present XiHanFun and contributors.
+  Licensed under the MIT License. See LICENSE in the project root for license information.
+-->
+
 <script setup lang="ts">
 import {
   XhMenubarContent,
@@ -124,6 +134,11 @@ import {
 补充常用命令的识别信息
 
 ```vue
+<!--
+  Copyright (c) 2021-Present XiHanFun and contributors.
+  Licensed under the MIT License. See LICENSE in the project root for license information.
+-->
+
 <script setup lang="ts">
 import { FileIcon, FolderIcon, PencilIcon, PlusIcon, SaveIcon } from "@xihan-ui/icons";
 import {
@@ -183,6 +198,11 @@ import {
 在菜单栏命令中打开下一层
 
 ```vue
+<!--
+  Copyright (c) 2021-Present XiHanFun and contributors.
+  Licensed under the MIT License. See LICENSE in the project root for license information.
+-->
+
 <script setup lang="ts">
 import {
   XhMenubarContent,

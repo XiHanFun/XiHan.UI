@@ -1,1 +1,0 @@
-import{s as e}from"./theme.Dk_9lYjD.js";import{d as o,o as r,b as s,k as a}from"./framework.DkvuVDKz.js";const m=o({__name:"01-basic",setup(t){return(n,c)=>(r(),s(a(e),{keys:["Mod","K"]}))}});export{m as default};

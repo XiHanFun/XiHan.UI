@@ -17,6 +17,11 @@
 切换点赞状态
 
 ```vue
+<!--
+  Copyright (c) 2021-Present XiHanFun and contributors.
+  Licensed under the MIT License. See LICENSE in the project root for license information.
+-->
+
 <script setup lang="ts">
 import { HeartIcon } from "@xihan-ui/icons";
 import { XhIcon, XhToggle } from "@xihan-ui/vue";
@@ -54,6 +59,11 @@ import { XhIcon, XhToggle } from "@xihan-ui/vue";
 默认与幽灵外观
 
 ```vue
+<!--
+  Copyright (c) 2021-Present XiHanFun and contributors.
+  Licensed under the MIT License. See LICENSE in the project root for license information.
+-->
+
 <script setup lang="ts">
 import { HeartIcon } from "@xihan-ui/icons";
 import { XhIcon, XhToggle } from "@xihan-ui/vue";
@@ -85,6 +95,11 @@ import { XhIcon, XhToggle } from "@xihan-ui/vue";
 为每个图标按钮提供可访问名称
 
 ```vue
+<!--
+  Copyright (c) 2021-Present XiHanFun and contributors.
+  Licensed under the MIT License. See LICENSE in the project root for license information.
+-->
+
 <script setup lang="ts">
 import { BookmarkIcon, HeartIcon } from "@xihan-ui/icons";
 import { XhIcon, XhToggle } from "@xihan-ui/vue";
@@ -122,6 +137,11 @@ import { XhIcon, XhToggle } from "@xihan-ui/vue";
 提供三种尺寸
 
 ```vue
+<!--
+  Copyright (c) 2021-Present XiHanFun and contributors.
+  Licensed under the MIT License. See LICENSE in the project root for license information.
+-->
+
 <script setup lang="ts">
 import { HeartIcon } from "@xihan-ui/icons";
 import { XhIcon, XhToggle } from "@xihan-ui/vue";
@@ -163,6 +183,11 @@ import { XhIcon, XhToggle } from "@xihan-ui/vue";
 保留禁用前的状态
 
 ```vue
+<!--
+  Copyright (c) 2021-Present XiHanFun and contributors.
+  Licensed under the MIT License. See LICENSE in the project root for license information.
+-->
+
 <script setup lang="ts">
 import { HeartIcon } from "@xihan-ui/icons";
 import { XhIcon, XhToggle } from "@xihan-ui/vue";
@@ -189,6 +214,11 @@ import { XhIcon, XhToggle } from "@xihan-ui/vue";
 由外部状态控制按下值
 
 ```vue
+<!--
+  Copyright (c) 2021-Present XiHanFun and contributors.
+  Licensed under the MIT License. See LICENSE in the project root for license information.
+-->
+
 <script setup lang="ts">
 import { HeartIcon } from "@xihan-ui/icons";
 import { XhIcon, XhToggle } from "@xihan-ui/vue";

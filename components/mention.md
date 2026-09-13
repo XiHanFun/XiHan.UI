@@ -17,6 +17,11 @@
 在正文里敲 @ 才开候选，选中的那条被插到光标处，前后文一字不动
 
 ```vue
+<!--
+  Copyright (c) 2021-Present XiHanFun and contributors.
+  Licensed under the MIT License. See LICENSE in the project root for license information.
+-->
+
 <script setup lang="ts">
 import { XhMentionRoot } from "@xihan-ui/vue";
 import { computed, ref } from "vue";
@@ -121,6 +126,11 @@ const filtered = computed(() => {
 @ 提人、# 打标签共用一个输入框，query-change 会报回是哪个前缀触发的
 
 ```vue
+<!--
+  Copyright (c) 2021-Present XiHanFun and contributors.
+  Licensed under the MIT License. See LICENSE in the project root for license information.
+-->
+
 <script setup lang="ts">
 import { XhMentionRoot } from "@xihan-ui/vue";
 import { computed, ref } from "vue";
@@ -236,6 +246,11 @@ function onQuery(details: { query: string | null; prefix: string | null }): void
 手写各部件即可在候选行里放头像与职位；插回正文的那段字取自 item-text
 
 ```vue
+<!--
+  Copyright (c) 2021-Present XiHanFun and contributors.
+  Licensed under the MIT License. See LICENSE in the project root for license information.
+-->
+
 <script setup lang="ts">
 import {
   XhAvatarFallback,
@@ -356,6 +371,11 @@ const filtered = computed(() => {
 正文由宿主持有，select 事件报回插进去的是哪一条，用来攒收件人名单
 
 ```vue
+<!--
+  Copyright (c) 2021-Present XiHanFun and contributors.
+  Licensed under the MIT License. See LICENSE in the project root for license information.
+-->
+
 <script setup lang="ts">
 import { XhMentionRoot } from "@xihan-ui/vue";
 import { computed, ref } from "vue";
@@ -481,6 +501,11 @@ function reset(): void {
 查询串每变一次就重新去远端查一遍，加载、空结果和候选共用一张浮层表面
 
 ```vue
+<!--
+  Copyright (c) 2021-Present XiHanFun and contributors.
+  Licensed under the MIT License. See LICENSE in the project root for license information.
+-->
+
 <script setup lang="ts">
 import {
   XhMentionContent,
@@ -625,6 +650,11 @@ function onQuery(details: { query: string | null }): void {
 variant 换正文框的描边与底色，候选面板不受影响
 
 ```vue
+<!--
+  Copyright (c) 2021-Present XiHanFun and contributors.
+  Licensed under the MIT License. See LICENSE in the project root for license information.
+-->
+
 <script setup lang="ts">
 import { XhMentionRoot } from "@xihan-ui/vue";
 import { computed, ref } from "vue";

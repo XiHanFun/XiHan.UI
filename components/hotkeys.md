@@ -16,6 +16,11 @@
 注册全局快捷键
 
 ```vue
+<!--
+  Copyright (c) 2021-Present XiHanFun and contributors.
+  Licensed under the MIT License. See LICENSE in the project root for license information.
+-->
+
 <script setup lang="ts">
 import { XhHotkeys } from "@xihan-ui/vue";
 import { ref } from "vue";
@@ -49,6 +54,11 @@ const count = ref(0);
 仅在指定区域内响应
 
 ```vue
+<!--
+  Copyright (c) 2021-Present XiHanFun and contributors.
+  Licensed under the MIT License. See LICENSE in the project root for license information.
+-->
+
 <script setup lang="ts">
 import { XhHotkeys } from "@xihan-ui/vue";
 import { ref } from "vue";
@@ -92,6 +102,11 @@ const scope = ref<HTMLElement | null>(null);
 动态启用或暂停监听
 
 ```vue
+<!--
+  Copyright (c) 2021-Present XiHanFun and contributors.
+  Licensed under the MIT License. See LICENSE in the project root for license information.
+-->
+
 <script setup lang="ts">
 import { XhHotkeys } from "@xihan-ui/vue";
 import { ref } from "vue";
@@ -138,6 +153,11 @@ const count = ref(0);
 不渲染组件实例
 
 ```vue
+<!--
+  Copyright (c) 2021-Present XiHanFun and contributors.
+  Licensed under the MIT License. See LICENSE in the project root for license information.
+-->
+
 <script setup lang="ts">
 import { useHotkeys } from "@xihan-ui/vue";
 import { ref } from "vue";

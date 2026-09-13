@@ -17,6 +17,11 @@
 命中关键词的片段渲染成 `&lt;mark>`，其余是纯文本；整段文本原样拼得回来
 
 ```vue
+<!--
+  Copyright (c) 2021-Present XiHanFun and contributors.
+  Licensed under the MIT License. See LICENSE in the project root for license information.
+-->
+
 <script setup lang="ts">
 import { XhHighlight } from "@xihan-ui/vue";
 
@@ -51,6 +56,11 @@ const text = "曦寒 UI 是一套框架无关的设计系统运行时，组件�
 传数组即可；同一处多个关键词都命中时取最长的那个，重叠只切出一段
 
 ```vue
+<!--
+  Copyright (c) 2021-Present XiHanFun and contributors.
+  Licensed under the MIT License. See LICENSE in the project root for license information.
+-->
+
 <script setup lang="ts">
 import { XhHighlight } from "@xihan-ui/vue";
 
@@ -102,6 +112,11 @@ const overlapping = ["设计", "设计系统"];
 缺省不区分，开了 case-sensitive 就按写法比
 
 ```vue
+<!--
+  Copyright (c) 2021-Present XiHanFun and contributors.
+  Licensed under the MIT License. See LICENSE in the project root for license information.
+-->
+
 <script setup lang="ts">
 import { XhHighlight } from "@xihan-ui/vue";
 
@@ -137,6 +152,11 @@ const text = "XiHan UI 与 xihan ui 是同一个名字的两种写法。";
 关键词逐字符比对、不拼进正则，敲进 . * ( 这些字符也只当普通字符找
 
 ```vue
+<!--
+  Copyright (c) 2021-Present XiHanFun and contributors.
+  Licensed under the MIT License. See LICENSE in the project root for license information.
+-->
+
 <script setup lang="ts">
 import { XhHighlight } from "@xihan-ui/vue";
 import { ref } from "vue";
@@ -195,6 +215,11 @@ const rows = [
 tone 决定命中片段用哪族颜色，没命中的文本不受影响
 
 ```vue
+<!--
+  Copyright (c) 2021-Present XiHanFun and contributors.
+  Licensed under the MIT License. See LICENSE in the project root for license information.
+-->
+
 <script setup lang="ts">
 import { XhHighlight } from "@xihan-ui/vue";
 

@@ -17,6 +17,11 @@
 一整年铺成周列 × 星期行的方格阵，颜色深浅表示当天数值落在第几档
 
 ```vue
+<!--
+  Copyright (c) 2021-Present XiHanFun and contributors.
+  Licensed under the MIT License. See LICENSE in the project root for license information.
+-->
+
 <script setup lang="ts">
 import type { HeatmapDatum } from "@xihan-ui/headless";
 import { formatHeatmapDate } from "@xihan-ui/headless";
@@ -155,6 +160,11 @@ const activity = buildYear(2024);
 tone 决定用哪族颜色，色阶两端跟着换，格子的分档不变
 
 ```vue
+<!--
+  Copyright (c) 2021-Present XiHanFun and contributors.
+  Licensed under the MIT License. See LICENSE in the project root for license information.
+-->
+
 <script setup lang="ts">
 import { XhHeatmapRoot } from "@xihan-ui/vue";
 
@@ -273,6 +283,11 @@ const activity = [
 palette 直接按颜色点名，六个色板只换色阶满档那一端，分档与空格底都不动
 
 ```vue
+<!--
+  Copyright (c) 2021-Present XiHanFun and contributors.
+  Licensed under the MIT License. See LICENSE in the project root for license information.
+-->
+
 <script setup lang="ts">
 import type { HeatmapPalette } from "@xihan-ui/headless";
 import { XhHeatmapRoot } from "@xihan-ui/vue";
@@ -400,6 +415,11 @@ const palettes: HeatmapPalette[] = ["green", "blue", "orange", "purple", "red", 
 size 换格子边长与行首星期名的留白，一屏能放下的周数跟着变
 
 ```vue
+<!--
+  Copyright (c) 2021-Present XiHanFun and contributors.
+  Licensed under the MIT License. See LICENSE in the project root for license information.
+-->
+
 <script setup lang="ts">
 import type { HeatmapDatum } from "@xihan-ui/headless";
 import { formatHeatmapDate } from "@xihan-ui/headless";
@@ -543,6 +563,11 @@ const activity = buildYear(2024);
 levels 决定分几档，图例与格子共用同一条色阶
 
 ```vue
+<!--
+  Copyright (c) 2021-Present XiHanFun and contributors.
+  Licensed under the MIT License. See LICENSE in the project root for license information.
+-->
+
 <script setup lang="ts">
 import { XhHeatmapRoot } from "@xihan-ui/vue";
 
@@ -660,6 +685,11 @@ const activity = [
 焦点落到某一天时报出日期与计数，键盘用户与鼠标用户看到同一份明细
 
 ```vue
+<!--
+  Copyright (c) 2021-Present XiHanFun and contributors.
+  Licensed under the MIT License. See LICENSE in the project root for license information.
+-->
+
 <script setup lang="ts">
 import { XhHeatmapRoot } from "@xihan-ui/vue";
 import { ref } from "vue";
@@ -794,6 +824,11 @@ const readout = ref("（把焦点移到某一格）");
 按自然月分块，每块是一张真月历，1 号落在它真实的星期几上
 
 ```vue
+<!--
+  Copyright (c) 2021-Present XiHanFun and contributors.
+  Licensed under the MIT License. See LICENSE in the project root for license information.
+-->
+
 <script setup lang="ts">
 import { XhHeatmapRoot } from "@xihan-ui/vue";
 
@@ -922,6 +957,11 @@ const activity = [
 行列都由作者给，数据按行列定位而不按日期：星期 × 时段的活跃度
 
 ```vue
+<!--
+  Copyright (c) 2021-Present XiHanFun and contributors.
+  Licensed under the MIT License. See LICENSE in the project root for license information.
+-->
+
 <script setup lang="ts">
 import { XhHeatmapRoot } from "@xihan-ui/vue";
 
@@ -1048,6 +1088,11 @@ const traffic = [
 指针悬停与键盘聚焦走同一条路：详情条跟着那一格走，Escape 收起
 
 ```vue
+<!--
+  Copyright (c) 2021-Present XiHanFun and contributors.
+  Licensed under the MIT License. See LICENSE in the project root for license information.
+-->
+
 <script setup lang="ts">
 import type { HeatmapCellDetails, HeatmapDatum } from "@xihan-ui/headless";
 import { formatHeatmapDate } from "@xihan-ui/headless";
@@ -1197,6 +1242,11 @@ const translations = { cellLabel: readout };
 一排按钮换的是区间，网格、月份段、色阶与锚点全按新区间从头算
 
 ```vue
+<!--
+  Copyright (c) 2021-Present XiHanFun and contributors.
+  Licensed under the MIT License. See LICENSE in the project root for license information.
+-->
+
 <script setup lang="ts">
 import type { HeatmapDatum } from "@xihan-ui/headless";
 import { formatHeatmapDate } from "@xihan-ui/headless";
@@ -1391,6 +1441,11 @@ const activity = computed(() => buildRange(active.value.start, active.value.end)
 总天数、空白天数与占比、最大值、平均值都从网格模型直接读，不必自己再遍历一遍数据
 
 ```vue
+<!--
+  Copyright (c) 2021-Present XiHanFun and contributors.
+  Licensed under the MIT License. See LICENSE in the project root for license information.
+-->
+
 <script setup lang="ts">
 import type { HeatmapDatum } from "@xihan-ui/headless";
 import { buildHeatmapGrid, formatHeatmapDate } from "@xihan-ui/headless";

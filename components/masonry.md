@@ -17,6 +17,11 @@
 按最短列排列卡片
 
 ```vue
+<!--
+  Copyright (c) 2021-Present XiHanFun and contributors.
+  Licensed under the MIT License. See LICENSE in the project root for license information.
+-->
+
 <script setup lang="ts">
 import { XhMasonry } from "@xihan-ui/vue";
 
@@ -75,6 +80,11 @@ const cards = [
 根据容器宽度调整列数
 
 ```vue
+<!--
+  Copyright (c) 2021-Present XiHanFun and contributors.
+  Licensed under the MIT License. See LICENSE in the project root for license information.
+-->
+
 <script setup lang="ts">
 import { XhMasonry } from "@xihan-ui/vue";
 
@@ -111,6 +121,11 @@ const items = ["概览", "组件", "主题", "发布"];
 设置列与项目之间的间距
 
 ```vue
+<!--
+  Copyright (c) 2021-Present XiHanFun and contributors.
+  Licensed under the MIT License. See LICENSE in the project root for license information.
+-->
+
 <script setup lang="ts">
 import { XhMasonry } from "@xihan-ui/vue";
 
@@ -151,6 +166,11 @@ const gaps = ["sm", "lg"] as const;
 按文档顺序逐列填充
 
 ```vue
+<!--
+  Copyright (c) 2021-Present XiHanFun and contributors.
+  Licensed under the MIT License. See LICENSE in the project root for license information.
+-->
+
 <script setup lang="ts">
 import { XhMasonry } from "@xihan-ui/vue";
 

@@ -17,6 +17,11 @@
 触发一次操作
 
 ```vue
+<!--
+  Copyright (c) 2021-Present XiHanFun and contributors.
+  Licensed under the MIT License. See LICENSE in the project root for license information.
+-->
+
 <script setup lang="ts">
 import { XhButton } from "@xihan-ui/vue";
 </script>
@@ -45,6 +50,11 @@ import { XhButton } from "@xihan-ui/vue";
 设置按钮外观
 
 ```vue
+<!--
+  Copyright (c) 2021-Present XiHanFun and contributors.
+  Licensed under the MIT License. See LICENSE in the project root for license information.
+-->
+
 <script setup lang="ts">
 import { XhButton } from "@xihan-ui/vue";
 </script>
@@ -77,6 +87,11 @@ import { XhButton } from "@xihan-ui/vue";
 小、中、大三档
 
 ```vue
+<!--
+  Copyright (c) 2021-Present XiHanFun and contributors.
+  Licensed under the MIT License. See LICENSE in the project root for license information.
+-->
+
 <script setup lang="ts">
 import { XhButton } from "@xihan-ui/vue";
 </script>
@@ -105,6 +120,11 @@ import { XhButton } from "@xihan-ui/vue";
 在文字前后放置图标
 
 ```vue
+<!--
+  Copyright (c) 2021-Present XiHanFun and contributors.
+  Licensed under the MIT License. See LICENSE in the project root for license information.
+-->
+
 <script setup lang="ts">
 import { ArrowRightIcon, PlusIcon } from "@xihan-ui/icons";
 import { XhButton, XhButtonLabel, XhButtonPrefix, XhButtonSuffix, XhIcon } from "@xihan-ui/vue";
@@ -150,6 +170,11 @@ import { XhButton, XhButtonLabel, XhButtonPrefix, XhButtonSuffix, XhIcon } from 
 紧凑的图标操作
 
 ```vue
+<!--
+  Copyright (c) 2021-Present XiHanFun and contributors.
+  Licensed under the MIT License. See LICENSE in the project root for license information.
+-->
+
 <script setup lang="ts">
 import { HeartIcon, SearchIcon } from "@xihan-ui/icons";
 import { XhButton, XhIcon } from "@xihan-ui/vue";
@@ -199,6 +224,11 @@ import { XhButton, XhIcon } from "@xihan-ui/vue";
 保留按钮标签并阻止重复操作
 
 ```vue
+<!--
+  Copyright (c) 2021-Present XiHanFun and contributors.
+  Licensed under the MIT License. See LICENSE in the project root for license information.
+-->
+
 <script setup lang="ts">
 import { LoaderIcon } from "@xihan-ui/icons";
 import { XhButton, XhButtonIndicator, XhButtonLabel, XhIcon } from "@xihan-ui/vue";
@@ -240,6 +270,11 @@ import { XhButton, XhButtonIndicator, XhButtonLabel, XhIcon } from "@xihan-ui/vu
 点击后显示加载状态
 
 ```vue
+<!--
+  Copyright (c) 2021-Present XiHanFun and contributors.
+  Licensed under the MIT License. See LICENSE in the project root for license information.
+-->
+
 <script setup lang="ts">
 import { LoaderIcon } from "@xihan-ui/icons";
 import { XhButton, XhButtonIndicator, XhButtonLabel, XhIcon } from "@xihan-ui/vue";
@@ -287,6 +322,11 @@ async function save() {
 占满容器宽度
 
 ```vue
+<!--
+  Copyright (c) 2021-Present XiHanFun and contributors.
+  Licensed under the MIT License. See LICENSE in the project root for license information.
+-->
+
 <script setup lang="ts">
 import { XhButton } from "@xihan-ui/vue";
 </script>
@@ -307,6 +347,11 @@ import { XhButton } from "@xihan-ui/vue";
 暂时不可执行的操作
 
 ```vue
+<!--
+  Copyright (c) 2021-Present XiHanFun and contributors.
+  Licensed under the MIT License. See LICENSE in the project root for license information.
+-->
+
 <script setup lang="ts">
 import { XhButton } from "@xihan-ui/vue";
 </script>
@@ -331,6 +376,11 @@ import { XhButton } from "@xihan-ui/vue";
 保留原生导航能力
 
 ```vue
+<!--
+  Copyright (c) 2021-Present XiHanFun and contributors.
+  Licensed under the MIT License. See LICENSE in the project root for license information.
+-->
+
 <script setup lang="ts">
 import { XhButton } from "@xihan-ui/vue";
 </script>

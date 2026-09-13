@@ -17,6 +17,11 @@
 默认单开：展开一项即收起其余，defaultValue 只给初始值，之后由组件自己维护
 
 ```vue
+<!--
+  Copyright (c) 2021-Present XiHanFun and contributors.
+  Licensed under the MIT License. See LICENSE in the project root for license information.
+-->
+
 <script setup lang="ts">
 import { XhAccordionRoot } from "@xihan-ui/vue";
 
@@ -110,6 +115,11 @@ const items = [
 multiple 允许多项并存，展开集合恒为 string[]，受控绑定即可拿到它
 
 ```vue
+<!--
+  Copyright (c) 2021-Present XiHanFun and contributors.
+  Licensed under the MIT License. See LICENSE in the project root for license information.
+-->
+
 <script setup lang="ts">
 import { XhAccordionRoot } from "@xihan-ui/vue";
 import { ref } from "vue";
@@ -194,6 +204,11 @@ const panels = ref<string[]>(["basic", "size"]);
 单开模式下最后一项默认收不起来，加 collapsible 才能把它也收上
 
 ```vue
+<!--
+  Copyright (c) 2021-Present XiHanFun and contributors.
+  Licensed under the MIT License. See LICENSE in the project root for license information.
+-->
+
 <script setup lang="ts">
 import { XhAccordionRoot } from "@xihan-ui/vue";
 
@@ -263,6 +278,11 @@ const items = [
 indicator 的朝向由 data-state 驱动，禁用项点不动、方向键也跳过它
 
 ```vue
+<!--
+  Copyright (c) 2021-Present XiHanFun and contributors.
+  Licensed under the MIT License. See LICENSE in the project root for license information.
+-->
+
 <script setup lang="ts">
 import { XhAccordionRoot } from "@xihan-ui/vue";
 
@@ -346,6 +366,11 @@ const items = [
 tone 落在展开态的标题上，六种颜色各预置一项展开做对照
 
 ```vue
+<!--
+  Copyright (c) 2021-Present XiHanFun and contributors.
+  Licensed under the MIT License. See LICENSE in the project root for license information.
+-->
+
 <script setup lang="ts">
 import { XhAccordionRoot } from "@xihan-ui/vue";
 
@@ -552,6 +577,11 @@ const tones = [
 size 换的是标题栏的高度、内边距与字号，三档并排对照
 
 ```vue
+<!--
+  Copyright (c) 2021-Present XiHanFun and contributors.
+  Licensed under the MIT License. See LICENSE in the project root for license information.
+-->
+
 <script setup lang="ts">
 import { XhAccordionRoot } from "@xihan-ui/vue";
 
@@ -708,6 +738,11 @@ const groups = [
 content 里再放一组手风琴，内外两组各自维护展开集合，方向键也各管各的
 
 ```vue
+<!--
+  Copyright (c) 2021-Present XiHanFun and contributors.
+  Licensed under the MIT License. See LICENSE in the project root for license information.
+-->
+
 <script setup lang="ts">
 import {
   XhAccordionContent,
@@ -840,6 +875,11 @@ import {
 标题栏里的节点全归作者，把计数与指示器包成一组排在末尾
 
 ```vue
+<!--
+  Copyright (c) 2021-Present XiHanFun and contributors.
+  Licensed under the MIT License. See LICENSE in the project root for license information.
+-->
+
 <script setup lang="ts">
 import {
   XhAccordionContent,
@@ -944,6 +984,11 @@ const groups = [
 指示器写在标题之前就落到起始缘，标题拿 auto 外边距吃掉余量
 
 ```vue
+<!--
+  Copyright (c) 2021-Present XiHanFun and contributors.
+  Licensed under the MIT License. See LICENSE in the project root for license information.
+-->
+
 <script setup lang="ts">
 import {
   XhAccordionContent,
@@ -1028,6 +1073,11 @@ const items = [
 trigger 只包住指示器，标题文字留在 header 里，点标题不再展开
 
 ```vue
+<!--
+  Copyright (c) 2021-Present XiHanFun and contributors.
+  Licensed under the MIT License. See LICENSE in the project root for license information.
+-->
+
 <script setup lang="ts">
 import {
   XhAccordionContent,
@@ -1133,6 +1183,11 @@ const items = [
 indicator 是可选部件，不渲染它就没有默认字形；标记由作者按展开集合自己画
 
 ```vue
+<!--
+  Copyright (c) 2021-Present XiHanFun and contributors.
+  Licensed under the MIT License. See LICENSE in the project root for license information.
+-->
+
 <script setup lang="ts">
 import { MinusIcon, PlusIcon } from "@xihan-ui/icons";
 import {
@@ -1236,6 +1291,11 @@ const panels = ref<string[]>(["shipping"]);
 plain 不画壳，surface 连成单一表面，bordered 逐条画边；三档只改怎么与页面分开
 
 ```vue
+<!--
+  Copyright (c) 2021-Present XiHanFun and contributors.
+  Licensed under the MIT License. See LICENSE in the project root for license information.
+-->
+
 <script setup lang="ts">
 import { XhAccordionRoot } from "@xihan-ui/vue";
 

@@ -17,6 +17,11 @@
 不传 open 即为非受控；Escape 关闭、Tab 在面板里循环，展开期间页面滚不动
 
 ```vue
+<!--
+  Copyright (c) 2021-Present XiHanFun and contributors.
+  Licensed under the MIT License. See LICENSE in the project root for license information.
+-->
+
 <script setup lang="ts">
 import {
   XhButton,
@@ -88,6 +93,11 @@ import {
 side 只落成 data-side，面板压在哪条边由皮肤按这个值决定；root 与 content 报的是同一条边
 
 ```vue
+<!--
+  Copyright (c) 2021-Present XiHanFun and contributors.
+  Licensed under the MIT License. See LICENSE in the project root for license information.
+-->
+
 <script setup lang="ts">
 import {
   XhDrawerCloseTrigger,
@@ -200,6 +210,11 @@ const sides = [
 传了 open 就由宿主说了算；Escape、点面板外、按叉都只回写 open，不自己改状态
 
 ```vue
+<!--
+  Copyright (c) 2021-Present XiHanFun and contributors.
+  Licensed under the MIT License. See LICENSE in the project root for license information.
+-->
+
 <script setup lang="ts">
 import {
   XhButton,
@@ -276,6 +291,11 @@ const open = ref(false);
 size 落成 content 的 data-size，只改面板贴边方向上的厚度；三档各自一个抽屉，点开才看得出厚薄
 
 ```vue
+<!--
+  Copyright (c) 2021-Present XiHanFun and contributors.
+  Licensed under the MIT License. See LICENSE in the project root for license information.
+-->
+
 <script setup lang="ts">
 import {
   XhButton,
@@ -391,6 +411,11 @@ const sizes = [
 header / body / footer 把面板切成三段：头与尾定在原处，只有正文那一段在滚
 
 ```vue
+<!--
+  Copyright (c) 2021-Present XiHanFun and contributors.
+  Licensed under the MIT License. See LICENSE in the project root for license information.
+-->
+
 <script setup lang="ts">
 import {
   XhButton,
@@ -493,6 +518,11 @@ const records = Array.from({ length: 24 }, (_, i) => ({
 受控时组件不自改状态：Escape、点面板外、按叉都只发一次收起意图，写不写由宿主定
 
 ```vue
+<!--
+  Copyright (c) 2021-Present XiHanFun and contributors.
+  Licensed under the MIT License. See LICENSE in the project root for license information.
+-->
+
 <script setup lang="ts">
 import {
   XhButton,
@@ -607,6 +637,11 @@ function discard() {
 面板里放一根把手，拖动时把新厚度写进 content 的 --xh-drawer-size；这个槽压过 size 三档，滑入滑出仍按面板自身宽度算
 
 ```vue
+<!--
+  Copyright (c) 2021-Present XiHanFun and contributors.
+  Licensed under the MIT License. See LICENSE in the project root for license information.
+-->
+
 <script setup lang="ts">
 import {
   XhButton,
@@ -773,6 +808,11 @@ function end(event: PointerEvent): void {
 把抽屉收进某块区域：遮罩与定位层从 fixed 换成 absolute，只罩住那块区域而不是盖满整屏
 
 ```vue
+<!--
+  Copyright (c) 2021-Present XiHanFun and contributors.
+  Licensed under the MIT License. See LICENSE in the project root for license information.
+-->
+
 <script setup lang="ts">
 import {
   XhDrawerCloseTrigger,

@@ -17,6 +17,11 @@
 挂载即从 from 走到 to，三个尺寸档只改字号；不写 size 就跟着上下文的字号走
 
 ```vue
+<!--
+  Copyright (c) 2021-Present XiHanFun and contributors.
+  Licensed under the MIT License. See LICENSE in the project root for license information.
+-->
+
 <script setup lang="ts">
 import { XhNumberAnimation } from "@xihan-ui/vue";
 </script>
@@ -55,6 +60,11 @@ import { XhNumberAnimation } from "@xihan-ui/vue";
 precision 定小数位，separator 定分隔符；不给分隔符就不分隔，插什么符号是地区习惯
 
 ```vue
+<!--
+  Copyright (c) 2021-Present XiHanFun and contributors.
+  Licensed under the MIT License. See LICENSE in the project root for license information.
+-->
+
 <script setup lang="ts">
 import { XhNumberAnimation } from "@xihan-ui/vue";
 </script>
@@ -104,6 +114,11 @@ import { XhNumberAnimation } from "@xihan-ui/vue";
 duration 定跑多久，easing 定快慢怎么分配；同一段距离四档并排跑，差别一眼可见
 
 ```vue
+<!--
+  Copyright (c) 2021-Present XiHanFun and contributors.
+  Licensed under the MIT License. See LICENSE in the project root for license information.
+-->
+
 <script setup lang="ts">
 import { XhButton, XhNumberAnimation } from "@xihan-ui/vue";
 import { ref } from "vue";
@@ -182,6 +197,11 @@ function toggle(): void {
 改 to 就从当前数字接着走向新终点，跑完停下之后再改也照样重新跑；active 翻假即停在当前值
 
 ```vue
+<!--
+  Copyright (c) 2021-Present XiHanFun and contributors.
+  Licensed under the MIT License. See LICENSE in the project root for license information.
+-->
+
 <script setup lang="ts">
 import { XhButton, XhNumberAnimation } from "@xihan-ui/vue";
 import { ref } from "vue";

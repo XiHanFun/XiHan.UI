@@ -17,6 +17,11 @@
 显示一组快捷键
 
 ```vue
+<!--
+  Copyright (c) 2021-Present XiHanFun and contributors.
+  Licensed under the MIT License. See LICENSE in the project root for license information.
+-->
+
 <script setup lang="ts">
 import { XhKbdGroup } from "@xihan-ui/vue";
 </script>
@@ -45,6 +50,11 @@ import { XhKbdGroup } from "@xihan-ui/vue";
 使用对应平台的修饰键格式
 
 ```vue
+<!--
+  Copyright (c) 2021-Present XiHanFun and contributors.
+  Licensed under the MIT License. See LICENSE in the project root for license information.
+-->
+
 <script setup lang="ts">
 import { XhKbdGroup } from "@xihan-ui/vue";
 </script>
@@ -65,6 +75,11 @@ import { XhKbdGroup } from "@xihan-ui/vue";
 小、中、大三档
 
 ```vue
+<!--
+  Copyright (c) 2021-Present XiHanFun and contributors.
+  Licensed under the MIT License. See LICENSE in the project root for license information.
+-->
+
 <script setup lang="ts">
 import { XhKbdGroup } from "@xihan-ui/vue";
 </script>
@@ -97,6 +112,11 @@ import { XhKbdGroup } from "@xihan-ui/vue";
 表示对应动作不可用
 
 ```vue
+<!--
+  Copyright (c) 2021-Present XiHanFun and contributors.
+  Licensed under the MIT License. See LICENSE in the project root for license information.
+-->
+
 <script setup lang="ts">
 import { XhKbdGroup } from "@xihan-ui/vue";
 </script>
@@ -117,6 +137,11 @@ import { XhKbdGroup } from "@xihan-ui/vue";
 每组内部保持为一个单元
 
 ```vue
+<!--
+  Copyright (c) 2021-Present XiHanFun and contributors.
+  Licensed under the MIT License. See LICENSE in the project root for license information.
+-->
+
 <script setup lang="ts">
 import { XhKbdGroup } from "@xihan-ui/vue";
 </script>

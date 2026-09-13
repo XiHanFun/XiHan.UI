@@ -1,0 +1,1 @@
+import{t as e}from"./theme.C7zwwLoT.js";import{d as a,b as o,k as r,o as t}from"./framework.DkvuVDKz.js";const m=a({__name:"kbd",setup(s){return(n,c)=>(t(),o(r(e),{value:"Escape"}))}});export{m as default};

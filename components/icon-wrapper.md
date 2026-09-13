@@ -17,6 +17,11 @@
 显示带背景的图标
 
 ```vue
+<!--
+  Copyright (c) 2021-Present XiHanFun and contributors.
+  Licensed under the MIT License. See LICENSE in the project root for license information.
+-->
+
 <script setup lang="ts">
 import { BellIcon } from "@xihan-ui/icons";
 import { XhIcon, XhIconWrapper } from "@xihan-ui/vue";
@@ -55,6 +60,11 @@ import { XhIcon, XhIconWrapper } from "@xihan-ui/vue";
 设置背景和边框样式
 
 ```vue
+<!--
+  Copyright (c) 2021-Present XiHanFun and contributors.
+  Licensed under the MIT License. See LICENSE in the project root for license information.
+-->
+
 <script setup lang="ts">
 import { CheckIcon } from "@xihan-ui/icons";
 import { XhIcon, XhIconWrapper } from "@xihan-ui/vue";
@@ -85,6 +95,11 @@ const variants = ["solid", "subtle", "outline", "ghost"] as const;
 使用语义颜色
 
 ```vue
+<!--
+  Copyright (c) 2021-Present XiHanFun and contributors.
+  Licensed under the MIT License. See LICENSE in the project root for license information.
+-->
+
 <script setup lang="ts">
 import { StarIcon } from "@xihan-ui/icons";
 import { XhIcon, XhIconWrapper } from "@xihan-ui/vue";
@@ -116,6 +131,11 @@ const tones = ["brand", "success", "warning", "danger", "info"] as const;
 设置图标块大小
 
 ```vue
+<!--
+  Copyright (c) 2021-Present XiHanFun and contributors.
+  Licensed under the MIT License. See LICENSE in the project root for license information.
+-->
+
 <script setup lang="ts">
 import { FolderIcon } from "@xihan-ui/icons";
 import { XhIcon, XhIconWrapper } from "@xihan-ui/vue";

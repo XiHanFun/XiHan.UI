@@ -1,0 +1,1 @@
+import{bd as a}from"./theme.C7zwwLoT.js";import{d as o,o as l,b as t,k as s}from"./framework.DkvuVDKz.js";const u=o({__name:"01-basic",setup(n){const e=[{value:"email",label:"邮件"},{value:"sms",label:"短信"},{value:"push",label:"推送通知"}];return(c,r)=>(l(),t(s(a),{collection:e,"default-value":["email"],label:"通知方式",name:"notification"}))}});export{u as default};

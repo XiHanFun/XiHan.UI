@@ -1,0 +1,11 @@
+const t=`<!-- 基础用法 | root 持有状态，label 与 control 里的 input 各自向它取属性；不传 value 即为非受控，组件自己维护值 -->
+<xh-text-field name="email" type="email" placeholder="输入你的邮箱" clearable>
+  <div data-xh-part="root">
+    <label data-xh-part="label">邮箱</label>
+    <div data-xh-part="control" style="inline-size: 16rem">
+      <input data-xh-part="input" />
+      <button data-xh-part="clear-trigger"></button>
+    </div>
+  </div>
+</xh-text-field>
+`;export{t as default};

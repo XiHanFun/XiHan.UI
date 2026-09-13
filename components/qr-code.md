@@ -17,6 +17,11 @@
 给 value 就画码，版本按内容长度自动选；缺省 M 级纠错、4 个模块的静区
 
 ```vue
+<!--
+  Copyright (c) 2021-Present XiHanFun and contributors.
+  Licensed under the MIT License. See LICENSE in the project root for license information.
+-->
+
 <script setup lang="ts">
 import { XhQrCode } from "@xihan-ui/vue";
 </script>
@@ -45,6 +50,11 @@ import { XhQrCode } from "@xihan-ui/vue";
 L / M / Q / H 依次能容忍更多污损，同样的内容也因此占更多模块
 
 ```vue
+<!--
+  Copyright (c) 2021-Present XiHanFun and contributors.
+  Licensed under the MIT License. See LICENSE in the project root for license information.
+-->
+
 <script setup lang="ts">
 import { XhQrCode } from "@xihan-ui/vue";
 
@@ -96,6 +106,11 @@ const text = "https://ui.xihanfun.com/components/qr-code";
 pixelSize 是整块的像素边长；margin 的单位是模块数，静区含在里面不额外占地方
 
 ```vue
+<!--
+  Copyright (c) 2021-Present XiHanFun and contributors.
+  Licensed under the MIT License. See LICENSE in the project root for license information.
+-->
+
 <script setup lang="ts">
 import { XhQrCode } from "@xihan-ui/vue";
 
@@ -150,6 +165,11 @@ const text = "https://ui.xihanfun.com";
 缺省拿 value 当 aria-label；内容不是给人念的时候用 label 换一句人话
 
 ```vue
+<!--
+  Copyright (c) 2021-Present XiHanFun and contributors.
+  Licensed under the MIT License. See LICENSE in the project root for license information.
+-->
+
 <script setup lang="ts">
 import { XhQrCode } from "@xihan-ui/vue";
 import { ref } from "vue";
@@ -206,6 +226,11 @@ const text = ref("https://ui.xihanfun.com");
 square / dot / rounded；三种形状的墨都盖住每个模块的格心，读码器按格心取样
 
 ```vue
+<!--
+  Copyright (c) 2021-Present XiHanFun and contributors.
+  Licensed under the MIT License. See LICENSE in the project root for license information.
+-->
+
 <script setup lang="ts">
 import { XhQrCode } from "@xihan-ui/vue";
 
@@ -257,6 +282,11 @@ const text = "https://ui.xihanfun.com/components/qr-code";
 只作用于三个定位图形，7×7 的外环加内心结构保持不变，读码器靠它找码
 
 ```vue
+<!--
+  Copyright (c) 2021-Present XiHanFun and contributors.
+  Licensed under the MIT License. See LICENSE in the project root for license information.
+-->
+
 <script setup lang="ts">
 import { XhQrCode } from "@xihan-ui/vue";
 
@@ -317,6 +347,11 @@ const text = "https://ui.xihanfun.com/components/qr-code";
 落位与尺寸由组件给出，那片模块先被底色挖空；放 logo 就把 level 提到 Q 或 H
 
 ```vue
+<!--
+  Copyright (c) 2021-Present XiHanFun and contributors.
+  Licensed under the MIT License. See LICENSE in the project root for license information.
+-->
+
 <script setup lang="ts">
 import { XhQrCode, XhQrCodeLogo } from "@xihan-ui/vue";
 
@@ -394,6 +429,11 @@ const text = "https://ui.xihanfun.com";
 颜色不是 props，写三个 CSS 变量即可：码点必须比底色深且对比要足，反相码一部分读码器不认
 
 ```vue
+<!--
+  Copyright (c) 2021-Present XiHanFun and contributors.
+  Licensed under the MIT License. See LICENSE in the project root for license information.
+-->
+
 <script setup lang="ts">
 import { XhQrCode } from "@xihan-ui/vue";
 

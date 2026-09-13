@@ -17,6 +17,11 @@
 容器竖着码放骨架条，形状缺省是一行文字
 
 ```vue
+<!--
+  Copyright (c) 2021-Present XiHanFun and contributors.
+  Licensed under the MIT License. See LICENSE in the project root for license information.
+-->
+
 <script setup lang="ts">
 import { XhSkeletonItem, XhSkeletonRoot } from "@xihan-ui/vue";
 </script>
@@ -53,6 +58,11 @@ import { XhSkeletonItem, XhSkeletonRoot } from "@xihan-ui/vue";
 容器的 shape 是这一组的默认形状，单根骨架条自带 shape 就按自己的来
 
 ```vue
+<!--
+  Copyright (c) 2021-Present XiHanFun and contributors.
+  Licensed under the MIT License. See LICENSE in the project root for license information.
+-->
+
 <script setup lang="ts">
 import { XhSkeletonItem, XhSkeletonRoot } from "@xihan-ui/vue";
 </script>
@@ -98,6 +108,11 @@ import { XhSkeletonItem, XhSkeletonRoot } from "@xihan-ui/vue";
 loading 期间容器报 aria-busy，翻成 false 后整块收起，位置让给真内容
 
 ```vue
+<!--
+  Copyright (c) 2021-Present XiHanFun and contributors.
+  Licensed under the MIT License. See LICENSE in the project root for license information.
+-->
+
 <script setup lang="ts">
 import { XhSkeletonItem, XhSkeletonRoot } from "@xihan-ui/vue";
 import { ref } from "vue";
@@ -156,6 +171,11 @@ const loading = ref(true);
 骨架条的宽高由内联样式与组件令牌定，占位形状贴着真内容将来的样子
 
 ```vue
+<!--
+  Copyright (c) 2021-Present XiHanFun and contributors.
+  Licensed under the MIT License. See LICENSE in the project root for license information.
+-->
+
 <script setup lang="ts">
 import { XhSkeletonItem, XhSkeletonRoot } from "@xihan-ui/vue";
 </script>

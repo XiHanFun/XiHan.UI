@@ -17,6 +17,11 @@
 展示流程进度与当前步骤内容
 
 ```vue
+<!--
+  Copyright (c) 2021-Present XiHanFun and contributors.
+  Licensed under the MIT License. See LICENSE in the project root for license information.
+-->
+
 <script setup lang="ts">
 import {
   XhStepsContent,
@@ -123,6 +128,11 @@ const steps = [
 只能返回已完成的步骤
 
 ```vue
+<!--
+  Copyright (c) 2021-Present XiHanFun and contributors.
+  Licensed under the MIT License. See LICENSE in the project root for license information.
+-->
+
 <script setup lang="ts">
 import {
   XhStepsContent,
@@ -218,6 +228,11 @@ const steps = [
 展示纵向流程与步骤内容
 
 ```vue
+<!--
+  Copyright (c) 2021-Present XiHanFun and contributors.
+  Licensed under the MIT License. See LICENSE in the project root for license information.
+-->
+
 <script setup lang="ts">
 import {
   XhStepsContent,
@@ -318,6 +333,11 @@ const steps = [
 标记需要用户处理的步骤
 
 ```vue
+<!--
+  Copyright (c) 2021-Present XiHanFun and contributors.
+  Licensed under the MIT License. See LICENSE in the project root for license information.
+-->
+
 <script setup lang="ts">
 import { XIcon } from "@xihan-ui/icons";
 import {

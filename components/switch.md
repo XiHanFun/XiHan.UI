@@ -17,6 +17,11 @@
 不传 checked 即为非受控，开关自己维护状态
 
 ```vue
+<!--
+  Copyright (c) 2021-Present XiHanFun and contributors.
+  Licensed under the MIT License. See LICENSE in the project root for license information.
+-->
+
 <script setup lang="ts">
 import { XhSwitch } from "@xihan-ui/vue";
 </script>
@@ -54,6 +59,11 @@ import { XhSwitch } from "@xihan-ui/vue";
 传了 checked 就由宿主说了算，组件自己不再改状态；变化意图从 checked-change 出来，写回才落位
 
 ```vue
+<!--
+  Copyright (c) 2021-Present XiHanFun and contributors.
+  Licensed under the MIT License. See LICENSE in the project root for license information.
+-->
+
 <script setup lang="ts">
 import { XhSwitch } from "@xihan-ui/vue";
 import { ref } from "vue";
@@ -91,6 +101,11 @@ const checked = ref(true);
 disabled 同时挡住指针与键盘，状态机收不到 TOGGLE
 
 ```vue
+<!--
+  Copyright (c) 2021-Present XiHanFun and contributors.
+  Licensed under the MIT License. See LICENSE in the project root for license information.
+-->
+
 <script setup lang="ts">
 import { XhSwitch } from "@xihan-ui/vue";
 </script>
@@ -120,6 +135,11 @@ import { XhSwitch } from "@xihan-ui/vue";
 tone 决定选中态轨道用哪族颜色，所以这里都置为开
 
 ```vue
+<!--
+  Copyright (c) 2021-Present XiHanFun and contributors.
+  Licensed under the MIT License. See LICENSE in the project root for license information.
+-->
+
 <script setup lang="ts">
 import { XhSwitch } from "@xihan-ui/vue";
 
@@ -194,6 +214,11 @@ const tones = ["brand", "neutral", "success", "warning", "danger", "info"] as co
 size 同时缩放轨道与滑块，不写就是缺省档
 
 ```vue
+<!--
+  Copyright (c) 2021-Present XiHanFun and contributors.
+  Licensed under the MIT License. See LICENSE in the project root for license information.
+-->
+
 <script setup lang="ts">
 import { XhSwitch } from "@xihan-ui/vue";
 </script>
@@ -250,6 +275,11 @@ import { XhSwitch } from "@xihan-ui/vue";
 checked-change 带一份 { checked }，非受控时内部转移也照发一次
 
 ```vue
+<!--
+  Copyright (c) 2021-Present XiHanFun and contributors.
+  Licensed under the MIT License. See LICENSE in the project root for license information.
+-->
+
 <script setup lang="ts">
 import { XhSwitch } from "@xihan-ui/vue";
 import { ref } from "vue";
@@ -294,6 +324,11 @@ function onCheckedChange(details: { checked: boolean }) {
 开态轨道、关态轨道与滑块各是一个组件令牌，语气档之外的配色写在行内
 
 ```vue
+<!--
+  Copyright (c) 2021-Present XiHanFun and contributors.
+  Licensed under the MIT License. See LICENSE in the project root for license information.
+-->
+
 <script setup lang="ts">
 import { XhSwitch } from "@xihan-ui/vue";
 </script>
@@ -348,6 +383,11 @@ import { XhSwitch } from "@xihan-ui/vue";
 轨道的子节点全由作者决定，data-state 同时打在轨道与滑块上
 
 ```vue
+<!--
+  Copyright (c) 2021-Present XiHanFun and contributors.
+  Licensed under the MIT License. See LICENSE in the project root for license information.
+-->
+
 <script setup lang="ts">
 import { CheckIcon, XIcon } from "@xihan-ui/icons";
 import { useSwitch, XhIcon } from "@xihan-ui/vue";
@@ -450,6 +490,11 @@ const { api: markApi } = useSwitch({});
 受控开关在回执到达前不落位；loading 让提交期呈现为「处理中」而非禁用——交互挂起、滑块转圈、仍可聚焦
 
 ```vue
+<!--
+  Copyright (c) 2021-Present XiHanFun and contributors.
+  Licensed under the MIT License. See LICENSE in the project root for license information.
+-->
+
 <script setup lang="ts">
 import { XhSwitch } from "@xihan-ui/vue";
 import { ref } from "vue";
@@ -506,6 +551,11 @@ function onCheckedChange(details: { checked: boolean }) {
 轨道与滑块共用同一个形状令牌，在实例上覆盖一次两者一起变方
 
 ```vue
+<!--
+  Copyright (c) 2021-Present XiHanFun and contributors.
+  Licensed under the MIT License. See LICENSE in the project root for license information.
+-->
+
 <script setup lang="ts">
 import { XhSwitch } from "@xihan-ui/vue";
 </script>
@@ -562,6 +612,11 @@ import { XhSwitch } from "@xihan-ui/vue";
 给了 name 才生出表单影子：开着才提交，值缺省是 on，与原生复选框一致
 
 ```vue
+<!--
+  Copyright (c) 2021-Present XiHanFun and contributors.
+  Licensed under the MIT License. See LICENSE in the project root for license information.
+-->
+
 <script setup lang="ts">
 import { XhButton, XhSwitch } from "@xihan-ui/vue";
 import { ref } from "vue";

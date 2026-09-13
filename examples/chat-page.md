@@ -5,6 +5,11 @@
 一条助手回复里同时摆着思考过程、工具调用、流式正文、代码块与批准闸门，外面是消息流与提示输入框。
 
 ```vue
+<!--
+  Copyright (c) 2021-Present XiHanFun and contributors.
+  Licensed under the MIT License. See LICENSE in the project root for license information.
+-->
+
 <script setup lang="ts">
 import type { ApprovalScope, MarkdownBlock } from "@xihan-ui/headless";
 import { createStreamRenderer } from "@xihan-ui/markdown";

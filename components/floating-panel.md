@@ -17,6 +17,11 @@
 点触发器打开面板：标题栏那条把手可以拖，右下角可以改大小，Esc 关闭
 
 ```vue
+<!--
+  Copyright (c) 2021-Present XiHanFun and contributors.
+  Licensed under the MIT License. See LICENSE in the project root for license information.
+-->
+
 <script setup lang="ts">
 import {
   XhFloatingPanelBody,
@@ -90,6 +95,11 @@ import {
 收拢只留标题栏、铺满占满视口；按着的那个钮再按一次回到常规
 
 ```vue
+<!--
+  Copyright (c) 2021-Present XiHanFun and contributors.
+  Licensed under the MIT License. See LICENSE in the project root for license information.
+-->
+
 <script setup lang="ts">
 import {
   XhFloatingPanelBody,
@@ -162,6 +172,11 @@ import {
 四条边加四个角；min-size 与 max-size 在拖、推、setDimensions 三处同时生效
 
 ```vue
+<!--
+  Copyright (c) 2021-Present XiHanFun and contributors.
+  Licensed under the MIT License. See LICENSE in the project root for license information.
+-->
+
 <script setup lang="ts">
 import type { FloatingPanelResizeEdge } from "@xihan-ui/headless";
 import {
@@ -265,6 +280,11 @@ const edges: FloatingPanelResizeEdge[] = [
 open 与 position 都交给外面握着：面板只报意图，值写回来才动
 
 ```vue
+<!--
+  Copyright (c) 2021-Present XiHanFun and contributors.
+  Licensed under the MIT License. See LICENSE in the project root for license information.
+-->
+
 <script setup lang="ts">
 import type { FloatingPanelPosition } from "@xihan-ui/headless";
 import {
@@ -356,6 +376,11 @@ const position = ref<FloatingPanelPosition>({ x: 280, y: 260 });
 搬不动、改不了尺寸、切不了形态；关闭与开合照常，面板不会被锁死在屏幕上
 
 ```vue
+<!--
+  Copyright (c) 2021-Present XiHanFun and contributors.
+  Licensed under the MIT License. See LICENSE in the project root for license information.
+-->
+
 <script setup lang="ts">
 import {
   XhFloatingPanelBody,
@@ -430,6 +455,11 @@ import {
 把手与几个按钮只有图标，可及名一律走 translations
 
 ```vue
+<!--
+  Copyright (c) 2021-Present XiHanFun and contributors.
+  Licensed under the MIT License. See LICENSE in the project root for license information.
+-->
+
 <script setup lang="ts">
 import type { FloatingPanelSchema } from "@xihan-ui/headless";
 import {

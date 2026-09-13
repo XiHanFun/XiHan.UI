@@ -17,6 +17,11 @@
 跟随滚动高亮当前章节
 
 ```vue
+<!--
+  Copyright (c) 2021-Present XiHanFun and contributors.
+  Licensed under the MIT License. See LICENSE in the project root for license information.
+-->
+
 <script setup lang="ts">
 import {
   XhAnchorIndicator,
@@ -162,6 +167,11 @@ const scrollEl = ref<HTMLElement | null>(null);
 为吸顶内容预留空间
 
 ```vue
+<!--
+  Copyright (c) 2021-Present XiHanFun and contributors.
+  Licensed under the MIT License. See LICENSE in the project root for license information.
+-->
+
 <script setup lang="ts">
 import {
   XhAnchorIndicator,
@@ -323,6 +333,11 @@ const scrollEl = ref<HTMLElement | null>(null);
 在内容上方显示章节导航
 
 ```vue
+<!--
+  Copyright (c) 2021-Present XiHanFun and contributors.
+  Licensed under the MIT License. See LICENSE in the project root for license information.
+-->
+
 <script setup lang="ts">
 import {
   XhAnchorIndicator,
@@ -448,6 +463,11 @@ const scrollEl = ref<HTMLElement | null>(null);
 展示父级与子级章节
 
 ```vue
+<!--
+  Copyright (c) 2021-Present XiHanFun and contributors.
+  Licensed under the MIT License. See LICENSE in the project root for license information.
+-->
+
 <script setup lang="ts">
 import {
   XhAnchorIndicator,

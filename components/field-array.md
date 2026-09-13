@@ -17,6 +17,11 @@
 添加和删除重复字段
 
 ```vue
+<!--
+  Copyright (c) 2021-Present XiHanFun and contributors.
+  Licensed under the MIT License. See LICENSE in the project root for license information.
+-->
+
 <script setup lang="ts">
 import {
   XhFieldArrayAddTrigger,
@@ -130,6 +135,11 @@ function setAt(index: number, next: string) {
 设置最少和最多行数
 
 ```vue
+<!--
+  Copyright (c) 2021-Present XiHanFun and contributors.
+  Licensed under the MIT License. See LICENSE in the project root for license information.
+-->
+
 <script setup lang="ts">
 import {
   XhFieldArrayAddTrigger,
@@ -232,6 +242,11 @@ function setAt(index: number, next: string) {
 上移或下移字段
 
 ```vue
+<!--
+  Copyright (c) 2021-Present XiHanFun and contributors.
+  Licensed under the MIT License. See LICENSE in the project root for license information.
+-->
+
 <script setup lang="ts">
 import {
   XhFieldArrayAddTrigger,
@@ -343,6 +358,11 @@ function setAt(index: number, next: string) {
 每行包含多个输入框
 
 ```vue
+<!--
+  Copyright (c) 2021-Present XiHanFun and contributors.
+  Licensed under the MIT License. See LICENSE in the project root for license information.
+-->
+
 <script setup lang="ts">
 import {
   XhFieldArrayAddTrigger,

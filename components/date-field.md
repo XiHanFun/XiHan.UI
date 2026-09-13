@@ -17,9 +17,15 @@
 输入日期
 
 ```vue
+<!--
+  Copyright (c) 2021-Present XiHanFun and contributors.
+  Licensed under the MIT License. See LICENSE in the project root for license information.
+-->
+
 <script setup lang="ts">
 import {
   XhDateFieldControl,
+  XhDateFieldClearTrigger,
   XhDateFieldHiddenInput,
   XhDateFieldLabel,
   XhDateFieldRoot,
@@ -43,6 +49,7 @@ import {
         <span>/</span>
         <XhDateFieldSegment :index="2" />
       </XhDateFieldSegmentGroup>
+      <XhDateFieldClearTrigger />
     </XhDateFieldControl>
     <XhDateFieldHiddenInput />
   </XhDateFieldRoot>
@@ -64,6 +71,7 @@ import {
         <span>/</span>
         <span data-xh-part="segment" index="2"></span>
       </div>
+      <button data-xh-part="clear-trigger"></button>
     </div>
     <input data-xh-part="hidden-input" />
   </div>
@@ -83,6 +91,11 @@ import {
 根据 locale 调整日期顺序
 
 ```vue
+<!--
+  Copyright (c) 2021-Present XiHanFun and contributors.
+  Licensed under the MIT License. See LICENSE in the project root for license information.
+-->
+
 <script setup lang="ts">
 import {
   XhDateFieldControl,
@@ -165,6 +178,11 @@ import {
 限制可输入日期
 
 ```vue
+<!--
+  Copyright (c) 2021-Present XiHanFun and contributors.
+  Licensed under the MIT License. See LICENSE in the project root for license information.
+-->
+
 <script setup lang="ts">
 import {
   XhDateFieldControl,
@@ -254,6 +272,11 @@ import {
 禁用、只读与校验失败
 
 ```vue
+<!--
+  Copyright (c) 2021-Present XiHanFun and contributors.
+  Licensed under the MIT License. See LICENSE in the project root for license information.
+-->
+
 <script setup lang="ts">
 import {
   XhDateFieldControl,
@@ -368,6 +391,11 @@ import {
 设置输入框外观
 
 ```vue
+<!--
+  Copyright (c) 2021-Present XiHanFun and contributors.
+  Licensed under the MIT License. See LICENSE in the project root for license information.
+-->
+
 <script setup lang="ts">
 import {
   XhDateFieldControl,
@@ -462,6 +490,11 @@ const variants = ["outline", "subtle", "ghost"] as const;
 输入精确到分钟的日期
 
 ```vue
+<!--
+  Copyright (c) 2021-Present XiHanFun and contributors.
+  Licensed under the MIT License. See LICENSE in the project root for license information.
+-->
+
 <script setup lang="ts">
 import {
   XhDateFieldControl,
@@ -532,8 +565,10 @@ import {
 - `locale` 决定日期段的顺序和分隔方式。
 - `min` 与 `max` 限制可输入范围。
 - `granularity` 支持日期或精确到分钟的日期时间。
+- `year + week` 段集使用 ISO 周历，固定周一到周日，不随显示语言改变。
 - 标准组合包含标签、输入框、日期段和隐藏表单输入；支持受控值与原生表单提交。
 - 聚焦只强调正在编辑的日期段，错误段使用独立的危险色反馈。
+- 清空按钮默认收起，输入任一段后出现；点按后回到第一段，聚焦边界平滑过渡。
 
 ### 最佳实践
 
@@ -767,7 +802,7 @@ import {
 
 ### 动效
 
-`background` · `border-color` · `scale` 走 `transition` 过渡。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
+`background` · `border-color` · `outline-color` · `scale` 走 `transition` 过渡。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
 
 系统开启减弱动效时由令牌层统一收敛，皮肤不另作判断。
 

@@ -7,6 +7,11 @@
 它建在 [动效原语](/guide/motion) 之上——减弱动效的降级由那一层统一兜住，这一层不另开通道。
 
 ```vue
+<!--
+  Copyright (c) 2021-Present XiHanFun and contributors.
+  Licensed under the MIT License. See LICENSE in the project root for license information.
+-->
+
 <script setup lang="ts">
 import { BUILTIN_MOTION_NAMES, createMotionPlayer } from "@xihan-ui/animations";
 import { XhButton } from "@xihan-ui/vue";
@@ -158,6 +163,11 @@ motion.cancel(); // 全撤
 ## 错开起播
 
 ```vue
+<!--
+  Copyright (c) 2021-Present XiHanFun and contributors.
+  Licensed under the MIT License. See LICENSE in the project root for license information.
+-->
+
 <script setup lang="ts">
 import type { StaggerFrom } from "@xihan-ui/animations";
 import { createMotionPlayer, splitText } from "@xihan-ui/animations";

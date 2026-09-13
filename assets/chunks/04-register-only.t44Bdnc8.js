@@ -1,0 +1,1 @@
+import{g9 as o}from"./theme.C7zwwLoT.js";import{d as t,o as s,c as a,t as n,p as r}from"./framework.DkvuVDKz.js";const _=t({__name:"04-register-only",setup(u){const e=r(0);return o(()=>({keys:["Mod","K"],onHotKey:()=>{e.value+=1}})),(c,l)=>(s(),a("output",null,"按下 Mod + K · "+n(e.value?`已触发 ${e.value} 次`:"等待输入"),1))}});export{_ as default};

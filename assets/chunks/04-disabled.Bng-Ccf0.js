@@ -1,1 +1,0 @@
-import{y as a}from"./theme.Dk_9lYjD.js";import{d as l,o,b as t,k as n}from"./framework.DkvuVDKz.js";const d=l({__name:"04-disabled",setup(r){const e=[{value:"apple",label:"苹果"},{value:"banana",label:"香蕉"}];return(s,c)=>(o(),t(n(a),{collection:e,"default-value":["apple"],disabled:"",label:"水果",placeholder:"请选择"}))}});export{d as default};

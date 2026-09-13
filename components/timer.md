@@ -17,6 +17,11 @@
 一个自己往上走的秒表：不写内容时组件铺开时、分、秒三段，auto-start 让它挂载即开跑
 
 ```vue
+<!--
+  Copyright (c) 2021-Present XiHanFun and contributors.
+  Licensed under the MIT License. See LICENSE in the project root for license information.
+-->
+
 <script setup lang="ts">
 import { XhTimerRoot } from "@xihan-ui/vue";
 </script>
@@ -53,6 +58,11 @@ import { XhTimerRoot } from "@xihan-ui/vue";
 countdown 让它从起始值往下走，终点缺省是 0；走到终点就停在那里不再往下
 
 ```vue
+<!--
+  Copyright (c) 2021-Present XiHanFun and contributors.
+  Licensed under the MIT License. See LICENSE in the project root for license information.
+-->
+
 <script setup lang="ts">
 import { XhTimerRoot } from "@xihan-ui/vue";
 
@@ -83,6 +93,11 @@ const twoMinutes = 2 * 60 * 1000;
 自己写部件：control 是一个原生按钮，按一下就按当前状态走一步（开始 / 暂停 / 继续 / 重来）
 
 ```vue
+<!--
+  Copyright (c) 2021-Present XiHanFun and contributors.
+  Licensed under the MIT License. See LICENSE in the project root for license information.
+-->
+
 <script setup lang="ts">
 import {
   XhTimerControl,
@@ -123,6 +138,11 @@ import {
 时满 24 会进位到天，超过一天的计时要自己写一段 days，只写时分秒会把整天数丢掉
 
 ```vue
+<!--
+  Copyright (c) 2021-Present XiHanFun and contributors.
+  Licensed under the MIT License. See LICENSE in the project root for license information.
+-->
+
 <script setup lang="ts">
 import {
   XhTimerDisplay,
@@ -170,6 +190,11 @@ const threeDays = 3 * 24 * 60 * 60 * 1000;
 size 只写在 root 上，数字大小与起停按钮的高度一起换档，子部件不重复标注
 
 ```vue
+<!--
+  Copyright (c) 2021-Present XiHanFun and contributors.
+  Licensed under the MIT License. See LICENSE in the project root for license information.
+-->
+
 <script setup lang="ts">
 import {
   XhTimerControl,
@@ -243,6 +268,11 @@ const oneMinute = 60 * 1000;
 tick 每过一个 interval 发一次，complete 只在走到终点那一刻发一次；到点那一拍不再发 tick
 
 ```vue
+<!--
+  Copyright (c) 2021-Present XiHanFun and contributors.
+  Licensed under the MIT License. See LICENSE in the project root for license information.
+-->
+
 <script setup lang="ts">
 import {
   XhTimerControl,
@@ -331,6 +361,11 @@ function restart(): void {
 给了 value 与 active 就走受控分支：value 改写即重新计时，active 翻假停在当前剩余量、翻真接着走
 
 ```vue
+<!--
+  Copyright (c) 2021-Present XiHanFun and contributors.
+  Licensed under the MIT License. See LICENSE in the project root for license information.
+-->
+
 <script setup lang="ts">
 import { XhButton, XhTimerDisplay, XhTimerRoot } from "@xihan-ui/vue";
 import { ref } from "vue";

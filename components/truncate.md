@@ -17,6 +17,11 @@
 单行文本溢出时显示省略号
 
 ```vue
+<!--
+  Copyright (c) 2021-Present XiHanFun and contributors.
+  Licensed under the MIT License. See LICENSE in the project root for license information.
+-->
+
 <script setup lang="ts">
 import { XhTruncate } from "@xihan-ui/vue";
 </script>
@@ -49,6 +54,11 @@ import { XhTruncate } from "@xihan-ui/vue";
 限制文本显示两行
 
 ```vue
+<!--
+  Copyright (c) 2021-Present XiHanFun and contributors.
+  Licensed under the MIT License. See LICENSE in the project root for license information.
+-->
+
 <script setup lang="ts">
 import { XhTruncate } from "@xihan-ui/vue";
 </script>
@@ -77,6 +87,11 @@ import { XhTruncate } from "@xihan-ui/vue";
 点击文本展开或收起
 
 ```vue
+<!--
+  Copyright (c) 2021-Present XiHanFun and contributors.
+  Licensed under the MIT License. See LICENSE in the project root for license information.
+-->
+
 <script setup lang="ts">
 import { XhTruncate } from "@xihan-ui/vue";
 </script>
@@ -105,6 +120,11 @@ import { XhTruncate } from "@xihan-ui/vue";
 仅在内容溢出时显示完整文本
 
 ```vue
+<!--
+  Copyright (c) 2021-Present XiHanFun and contributors.
+  Licensed under the MIT License. See LICENSE in the project root for license information.
+-->
+
 <script setup lang="ts">
 import { XhTruncate } from "@xihan-ui/vue";
 </script>

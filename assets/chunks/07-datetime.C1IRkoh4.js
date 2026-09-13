@@ -1,0 +1,146 @@
+const t=`<!-- 日期与时间 | 同时选择日期和时间 -->
+<div id="date-picker-datetime-mount"></div>
+
+<template id="date-picker-datetime-template">
+  <xh-date-picker locale="zh-CN" show-time>
+    <div data-xh-part="root">
+      <span data-xh-part="label">会议开始</span>
+      <div data-xh-part="control">
+        <div data-xh-part="segment-group"></div>
+        <button data-xh-part="clear-trigger"></button>
+        <button data-xh-part="trigger"></button>
+      </div>
+      <div data-xh-part="positioner">
+        <div data-xh-part="content">
+          <div style="display: flex; align-items: stretch">
+            <div data-xh-part="calendar">
+              <div data-xh-part="header">
+                <button data-xh-part="prev-year-trigger" aria-label="上一年"></button>
+                <button data-xh-part="prev-trigger" aria-label="上个月"></button>
+                <div data-xh-part="heading"></div>
+                <button data-xh-part="next-trigger" aria-label="下个月"></button>
+                <button data-xh-part="next-year-trigger" aria-label="下一年"></button>
+              </div>
+              <div data-xh-part="grid">
+                <div data-xh-part="grid-head">
+                  <div data-xh-part="week-row"></div>
+                </div>
+                <div data-xh-part="grid-body"></div>
+              </div>
+            </div>
+            <!-- 时间列由作者铺：列自报 unit，选项自报两位补零的 value -->
+            <div data-xh-part="time-column" unit="hour"></div>
+            <div data-xh-part="time-column" unit="minute"></div>
+          </div>
+          <div style="display: flex; align-items: center; justify-content: flex-end; margin-block-start: var(--xh-space-2); margin-inline: calc(-1 * var(--xh-space-2)); margin-block-end: calc(-1 * var(--xh-space-2)); padding-block: var(--xh-space-1); padding-inline: var(--xh-space-2); border-block-start: var(--xh-stroke-thin) solid var(--xh-border-subtle)">
+            <button data-xh-part="confirm-trigger">确定</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </xh-date-picker>
+</template>
+
+<script type="module">
+  const fragment = document
+    .getElementById("date-picker-datetime-template")
+    .content.cloneNode(true);
+  const picker = fragment.querySelector("xh-date-picker");
+  const heading = fragment.querySelector('[data-xh-part="heading"]');
+  const head = fragment.querySelector(
+    '[data-xh-part="grid-head"] [data-xh-part="week-row"]',
+  );
+  const body = fragment.querySelector('[data-xh-part="grid-body"]');
+  const segmentGroup = fragment.querySelector('[data-xh-part="segment-group"]');
+
+  let month = "";
+
+  function paintHead() {
+    head.replaceChildren(
+      ...picker.weekDays.map((day) => {
+        const cell = document.createElement("span");
+        cell.dataset.xhPart = "week-day";
+        cell.setAttribute("value", day.value);
+        cell.textContent = day.label;
+        return cell;
+      }),
+    );
+  }
+
+  function paintBody() {
+    const first = picker.weeks[0][0].start;
+    if (first === month) {
+      return;
+    }
+    month = first;
+    heading.textContent = picker.headingLabel;
+    body.replaceChildren(
+      ...picker.weeks.map((week) => {
+        const row = document.createElement("div");
+        row.dataset.xhPart = "week-row";
+        for (const day of week) {
+          const cell = document.createElement("div");
+          cell.dataset.xhPart = "cell";
+          cell.setAttribute("value", day.start);
+          const trigger = document.createElement("div");
+          trigger.dataset.xhPart = "cell-trigger";
+          trigger.textContent = day.day;
+          cell.append(trigger);
+          row.append(cell);
+        }
+        return row;
+      }),
+    );
+  }
+
+  function literalBefore(type, index) {
+    if (index === 0) return "";
+    if (type === "hour") return " ";
+    if (type === "minute" || type === "second") return ":";
+    return "/";
+  }
+
+  function paintSegments() {
+    const out = [];
+    picker.fieldSegments.forEach((segment, index) => {
+      if (index > 0) {
+        const literal = document.createElement("span");
+        literal.textContent = literalBefore(segment.type, index);
+        out.push(literal);
+      }
+      const item = document.createElement("span");
+      item.dataset.xhPart = "segment";
+      out.push(item);
+    });
+    segmentGroup.replaceChildren(...out);
+  }
+
+  // 时列 24 项、分列 60 项，缺省精度到分
+  function paintTimeColumn(unit, count) {
+    const column = fragment.querySelector(
+      \`[data-xh-part="time-column"][unit="\${unit}"]\`,
+    );
+    const options = [];
+    for (let i = 0; i < count; i++) {
+      const value = \`\${i}\`.padStart(2, "0");
+      const item = document.createElement("div");
+      item.dataset.xhPart = "time-item";
+      item.setAttribute("value", value);
+      item.textContent = value;
+      options.push(item);
+    }
+    column.replaceChildren(...options);
+  }
+
+  // 时间列先填好再入页，接线那一刻选项已经在了
+  paintTimeColumn("hour", 24);
+  paintTimeColumn("minute", 60);
+
+  document.getElementById("date-picker-datetime-mount").append(fragment);
+  paintSegments();
+  paintHead();
+  paintBody();
+
+  picker.addEventListener("focused-value-change", paintBody);
+<\/script>
+`;export{t as default};

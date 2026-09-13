@@ -17,6 +17,11 @@
 单选
 
 ```vue
+<!--
+  Copyright (c) 2021-Present XiHanFun and contributors.
+  Licensed under the MIT License. See LICENSE in the project root for license information.
+-->
+
 <script setup lang="ts">
 import { XhSelectRoot } from "@xihan-ui/vue";
 
@@ -87,6 +92,11 @@ const fruits = [
 选择多个值
 
 ```vue
+<!--
+  Copyright (c) 2021-Present XiHanFun and contributors.
+  Licensed under the MIT License. See LICENSE in the project root for license information.
+-->
+
 <script setup lang="ts">
 import { XhSelectRoot } from "@xihan-ui/vue";
 import { ref } from "vue";
@@ -168,6 +178,11 @@ const fruits = [
 由 value 和 value-change 控制
 
 ```vue
+<!--
+  Copyright (c) 2021-Present XiHanFun and contributors.
+  Licensed under the MIT License. See LICENSE in the project root for license information.
+-->
+
 <script setup lang="ts">
 import {
   XhSelectContent,
@@ -279,6 +294,11 @@ function onValueChange(details: { value: string[] }) {
 禁止展开和聚焦
 
 ```vue
+<!--
+  Copyright (c) 2021-Present XiHanFun and contributors.
+  Licensed under the MIT License. See LICENSE in the project root for license information.
+-->
+
 <script setup lang="ts">
 import { XhSelectRoot } from "@xihan-ui/vue";
 
@@ -332,6 +352,11 @@ const fruits = [
 outline、subtle 和 ghost
 
 ```vue
+<!--
+  Copyright (c) 2021-Present XiHanFun and contributors.
+  Licensed under the MIT License. See LICENSE in the project root for license information.
+-->
+
 <script setup lang="ts">
 import { XhSelectRoot } from "@xihan-ui/vue";
 
@@ -457,6 +482,11 @@ const fruits = [
 六种语气
 
 ```vue
+<!--
+  Copyright (c) 2021-Present XiHanFun and contributors.
+  Licensed under the MIT License. See LICENSE in the project root for license information.
+-->
+
 <script setup lang="ts">
 import { XhSelectRoot } from "@xihan-ui/vue";
 
@@ -673,6 +703,11 @@ const fruits = [
 小、中、大三档
 
 ```vue
+<!--
+  Copyright (c) 2021-Present XiHanFun and contributors.
+  Licensed under the MIT License. See LICENSE in the project root for license information.
+-->
+
 <script setup lang="ts">
 import { XhSelectRoot } from "@xihan-ui/vue";
 
@@ -803,6 +838,11 @@ const fruits = [
 展开时加载选项
 
 ```vue
+<!--
+  Copyright (c) 2021-Present XiHanFun and contributors.
+  Licensed under the MIT License. See LICENSE in the project root for license information.
+-->
+
 <script setup lang="ts">
 import {
   XhSelectContent,
@@ -941,6 +981,11 @@ function onOpenChange(details: { open: boolean }): void {
 分别设置控件和浮层宽度
 
 ```vue
+<!--
+  Copyright (c) 2021-Present XiHanFun and contributors.
+  Licensed under the MIT License. See LICENSE in the project root for license information.
+-->
+
 <script setup lang="ts">
 import {
   XhSelectContent,
@@ -1089,6 +1134,11 @@ const plans = [
 自定义选项和当前值
 
 ```vue
+<!--
+  Copyright (c) 2021-Present XiHanFun and contributors.
+  Licensed under the MIT License. See LICENSE in the project root for license information.
+-->
+
 <script setup lang="ts">
 import {
   XhAvatarFallback,
@@ -1254,6 +1304,11 @@ const current = computed(() => members.find(m => m.value === picked.value[0]) ??
 通过插槽状态控制开合和值
 
 ```vue
+<!--
+  Copyright (c) 2021-Present XiHanFun and contributors.
+  Licensed under the MIT License. See LICENSE in the project root for license information.
+-->
+
 <script setup lang="ts">
 import {
   XhButton,
@@ -1394,6 +1449,11 @@ const fruits = [
 列表内部滚动并支持连打检索
 
 ```vue
+<!--
+  Copyright (c) 2021-Present XiHanFun and contributors.
+  Licensed under the MIT License. See LICENSE in the project root for license information.
+-->
+
 <script setup lang="ts">
 import { XhSelectRoot } from "@xihan-ui/vue";
 
@@ -1539,6 +1599,11 @@ const options = Array.from(letters, letter => ({ value: letter, label: `${letter
 跨分组保持键盘导航
 
 ```vue
+<!--
+  Copyright (c) 2021-Present XiHanFun and contributors.
+  Licensed under the MIT License. See LICENSE in the project root for license information.
+-->
+
 <script setup lang="ts">
 import {
   XhSelectContent,
@@ -1666,6 +1731,11 @@ const picked = ref<string[]>([]);
 超出数量合并为 +N
 
 ```vue
+<!--
+  Copyright (c) 2021-Present XiHanFun and contributors.
+  Licensed under the MIT License. See LICENSE in the project root for license information.
+-->
+
 <script setup lang="ts">
 import {
   XhSelectContent,
@@ -1854,6 +1924,11 @@ const picked = ref<string[]>(["vue", "svelte", "solid"]);
 显示无效状态和错误说明
 
 ```vue
+<!--
+  Copyright (c) 2021-Present XiHanFun and contributors.
+  Licensed under the MIT License. See LICENSE in the project root for license information.
+-->
+
 <script setup lang="ts">
 import {
   XhSelectContent,
@@ -1958,6 +2033,11 @@ const invalid = computed(() => picked.value.length === 0);
 到达列表底部加载下一页
 
 ```vue
+<!--
+  Copyright (c) 2021-Present XiHanFun and contributors.
+  Licensed under the MIT License. See LICENSE in the project root for license information.
+-->
+
 <script setup lang="ts">
 import {
   XhSelectContent,
@@ -2182,6 +2262,11 @@ function onScroll(event: Event): void {
 聚焦触发器
 
 ```vue
+<!--
+  Copyright (c) 2021-Present XiHanFun and contributors.
+  Licensed under the MIT License. See LICENSE in the project root for license information.
+-->
+
 <script setup lang="ts">
 import {
   XhButton,
@@ -2313,6 +2398,11 @@ function submit(): void {
 有值时显示清空按钮
 
 ```vue
+<!--
+  Copyright (c) 2021-Present XiHanFun and contributors.
+  Licensed under the MIT License. See LICENSE in the project root for license information.
+-->
+
 <script setup lang="ts">
 import { XhSelectRoot } from "@xihan-ui/vue";
 
@@ -2375,6 +2465,11 @@ const teams = [
 固定在滚动列表下方
 
 ```vue
+<!--
+  Copyright (c) 2021-Present XiHanFun and contributors.
+  Licensed under the MIT License. See LICENSE in the project root for license information.
+-->
+
 <script setup lang="ts">
 import { PlusIcon } from "@xihan-ui/icons";
 import {
@@ -2515,6 +2610,11 @@ function addOne() {
 不参与表单的选择
 
 ```vue
+<!--
+  Copyright (c) 2021-Present XiHanFun and contributors.
+  Licensed under the MIT License. See LICENSE in the project root for license information.
+-->
+
 <script setup lang="ts">
 import {
   XhListboxRoot,

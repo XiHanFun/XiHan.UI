@@ -17,6 +17,11 @@
 消息内容全由作者写；组件管的是集合语义、粘底与那一个播报区
 
 ```vue
+<!--
+  Copyright (c) 2021-Present XiHanFun and contributors.
+  Licensed under the MIT License. See LICENSE in the project root for license information.
+-->
+
 <script setup lang="ts">
 import {
   XhMessageFeedItem,
@@ -99,6 +104,11 @@ const messages = [
 新消息长出来时自动到底，往上翻就解除；一轮结束在播报区念一句
 
 ```vue
+<!--
+  Copyright (c) 2021-Present XiHanFun and contributors.
+  Licensed under the MIT License. See LICENSE in the project root for license information.
+-->
+
 <script setup lang="ts">
 import {
   XhMessageFeedItem,
@@ -204,6 +214,11 @@ onBeforeUnmount(() => window.clearTimeout(timer));
 条目上带 data-role，左右分侧与气泡在使用者这一侧写，组件不预设这层外观
 
 ```vue
+<!--
+  Copyright (c) 2021-Present XiHanFun and contributors.
+  Licensed under the MIT License. See LICENSE in the project root for license information.
+-->
+
 <script setup lang="ts">
 import {
   XhMessageFeedItem,
@@ -297,6 +312,11 @@ const bubble = {
 status 由宿主持有，组件只把它透出成 root 上的 data-state；播报只发生在 live-region 里，一轮结束才写一句
 
 ```vue
+<!--
+  Copyright (c) 2021-Present XiHanFun and contributors.
+  Licensed under the MIT License. See LICENSE in the project root for license information.
+-->
+
 <script setup lang="ts">
 import {
   XhButton,
@@ -465,6 +485,11 @@ onBeforeUnmount(() => window.clearTimeout(timer));
 stick-change 报到底，宿主据此去取下一页；先往上翻一段再滚回底部，取回来的消息接在后面
 
 ```vue
+<!--
+  Copyright (c) 2021-Present XiHanFun and contributors.
+  Licensed under the MIT License. See LICENSE in the project root for license information.
+-->
+
 <script setup lang="ts">
 import {
   XhMessageFeedItem,
@@ -605,6 +630,11 @@ function onStickChange(details: { atBottom: boolean; sticking: boolean }): void 
 视口的滚动事件直接监听：滚到接近顶部就去取上一页，取回来的插在最前面，读到一半的位置不会被顶走
 
 ```vue
+<!--
+  Copyright (c) 2021-Present XiHanFun and contributors.
+  Licensed under the MIT License. See LICENSE in the project root for license information.
+-->
+
 <script setup lang="ts">
 import {
   XhMessageFeedItem,
@@ -749,6 +779,11 @@ function onScroll(event: Event): void {
 消息 id 就是锚点：Vue 侧用 root 插槽给的 scrollToItem / focusItem，自定义元素侧按同一个 id 取节点自己滚
 
 ```vue
+<!--
+  Copyright (c) 2021-Present XiHanFun and contributors.
+  Licensed under the MIT License. See LICENSE in the project root for license information.
+-->
+
 <script setup lang="ts">
 import {
   XhButton,

@@ -17,6 +17,11 @@
 组合标题和正文
 
 ```vue
+<!--
+  Copyright (c) 2021-Present XiHanFun and contributors.
+  Licensed under the MIT License. See LICENSE in the project root for license information.
+-->
+
 <script setup lang="ts">
 import { XhTypographyHeading, XhTypographyLink, XhTypographyParagraph, XhTypographyRoot } from "@xihan-ui/vue";
 </script>
@@ -55,6 +60,11 @@ import { XhTypographyHeading, XhTypographyLink, XhTypographyParagraph, XhTypogra
 设置标题的视觉层级
 
 ```vue
+<!--
+  Copyright (c) 2021-Present XiHanFun and contributors.
+  Licensed under the MIT License. See LICENSE in the project root for license information.
+-->
+
 <script setup lang="ts">
 import { XhTypographyHeading, XhTypographyRoot } from "@xihan-ui/vue";
 
@@ -95,6 +105,11 @@ const headings = [
 设置正文、辅助、强调、代码和链接样式
 
 ```vue
+<!--
+  Copyright (c) 2021-Present XiHanFun and contributors.
+  Licensed under the MIT License. See LICENSE in the project root for license information.
+-->
+
 <script setup lang="ts">
 import {
   XhTypographyLink,
@@ -132,6 +147,11 @@ import {
 使用语义颜色
 
 ```vue
+<!--
+  Copyright (c) 2021-Present XiHanFun and contributors.
+  Licensed under the MIT License. See LICENSE in the project root for license information.
+-->
+
 <script setup lang="ts">
 import { XhTypographyParagraph, XhTypographyRoot, XhTypographyText } from "@xihan-ui/vue";
 
@@ -180,6 +200,11 @@ const tones = [
 设置正文大小
 
 ```vue
+<!--
+  Copyright (c) 2021-Present XiHanFun and contributors.
+  Licensed under the MIT License. See LICENSE in the project root for license information.
+-->
+
 <script setup lang="ts">
 import { XhTypographyParagraph, XhTypographyRoot } from "@xihan-ui/vue";
 
@@ -226,6 +251,11 @@ const sizes = [
 排版外部 HTML 内容
 
 ```vue
+<!--
+  Copyright (c) 2021-Present XiHanFun and contributors.
+  Licensed under the MIT License. See LICENSE in the project root for license information.
+-->
+
 <script setup lang="ts">
 import { XhTypographyProse, XhTypographyRoot } from "@xihan-ui/vue";
 

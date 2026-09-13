@@ -40,6 +40,11 @@ toLinearEasing(t => t ** 2, 5); // 'linear(0, 0.0625, 0.25, 0.5625, 1)'
 弹簧走解析解，不是逐帧数值积分。给定质量、刚度、阻尼，任意时刻的位移可以 O(1) 直接算出来——所以它能被任意采样、能离线烘焙成 `linear()` 串交给 CSS，而不必每帧回主线程写样式。
 
 ```vue
+<!--
+  Copyright (c) 2021-Present XiHanFun and contributors.
+  Licensed under the MIT License. See LICENSE in the project root for license information.
+-->
+
 <script setup lang="ts">
 import { animate, createSpring, springToLinearEasing } from "@xihan-ui/motion";
 import { computed, onBeforeUnmount, ref, useTemplateRef } from "vue";

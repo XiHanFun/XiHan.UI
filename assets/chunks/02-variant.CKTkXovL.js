@@ -1,0 +1,23 @@
+const n=`/*
+ * Copyright (c) 2021-Present XiHanFun and contributors.
+ * Licensed under the MIT License. See LICENSE in the project root for license information.
+ */
+
+// 形态 | variant 决定颜色怎么用：实心填底、淡色填底、只描边
+import type { ReactNode } from "react";
+import { XhTagLabel, XhTagRoot } from "@xihan-ui/react";
+
+const variants = ["solid", "subtle", "outline"] as const;
+
+export default function Demo(): ReactNode {
+  return (
+    <div style={{ display: "flex", flexWrap: "wrap", alignItems: "center", gap: "8px" }}>
+      {variants.map(v => (
+        <XhTagRoot key={v} variant={v} tone="brand">
+          <XhTagLabel>{v}</XhTagLabel>
+        </XhTagRoot>
+      ))}
+    </div>
+  );
+}
+`;export{n as default};

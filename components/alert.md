@@ -17,6 +17,11 @@
 各部件按需摆放，标题与描述都是可选的
 
 ```vue
+<!--
+  Copyright (c) 2021-Present XiHanFun and contributors.
+  Licensed under the MIT License. See LICENSE in the project root for license information.
+-->
+
 <script setup lang="ts">
 import { XhAlertDescription, XhAlertRoot, XhAlertTitle } from "@xihan-ui/vue";
 </script>
@@ -55,6 +60,11 @@ import { XhAlertDescription, XhAlertRoot, XhAlertTitle } from "@xihan-ui/vue";
 tone 只改配色，语义仍由内容与 role 决定
 
 ```vue
+<!--
+  Copyright (c) 2021-Present XiHanFun and contributors.
+  Licensed under the MIT License. See LICENSE in the project root for license information.
+-->
+
 <script setup lang="ts">
 import { XhAlertRoot, XhAlertTitle } from "@xihan-ui/vue";
 </script>
@@ -93,6 +103,11 @@ import { XhAlertRoot, XhAlertTitle } from "@xihan-ui/vue";
 closable 开启后才渲染关闭按钮；open 受控时由宿主决定去留
 
 ```vue
+<!--
+  Copyright (c) 2021-Present XiHanFun and contributors.
+  Licensed under the MIT License. See LICENSE in the project root for license information.
+-->
+
 <script setup lang="ts">
 import {
   XhAlertCloseTrigger,
@@ -149,6 +164,11 @@ const open = ref(true);
 icon 部件排在标题前面，颜色取当前语气的强调色；内容由作者塞，字形与内联 svg 都行
 
 ```vue
+<!--
+  Copyright (c) 2021-Present XiHanFun and contributors.
+  Licensed under the MIT License. See LICENSE in the project root for license information.
+-->
+
 <script setup lang="ts">
 import { CheckIcon } from "@xihan-ui/icons";
 import {
@@ -236,6 +256,11 @@ import {
 描边、底色、标题色、圆角各是一个组件令牌；描边槽位换成透明就只剩淡底，尺寸不变
 
 ```vue
+<!--
+  Copyright (c) 2021-Present XiHanFun and contributors.
+  Licensed under the MIT License. See LICENSE in the project root for license information.
+-->
+
 <script setup lang="ts">
 import { XhAlertDescription, XhAlertRoot, XhAlertTitle } from "@xihan-ui/vue";
 </script>

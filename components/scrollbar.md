@@ -17,6 +17,11 @@
 为滚动容器添加滚动条
 
 ```vue
+<!--
+  Copyright (c) 2021-Present XiHanFun and contributors.
+  Licensed under the MIT License. See LICENSE in the project root for license information.
+-->
+
 <script setup lang="ts">
 import { XhScrollbarRoot, XhScrollbarThumb, XhScrollbarTrack } from "@xihan-ui/vue";
 import { ref } from "vue";
@@ -88,6 +93,11 @@ const items = ["项目概览", "组件规范", "设计令牌", "无障碍", "交
 让滑块可聚焦
 
 ```vue
+<!--
+  Copyright (c) 2021-Present XiHanFun and contributors.
+  Licensed under the MIT License. See LICENSE in the project root for license information.
+-->
+
 <script setup lang="ts">
 import { XhScrollbarRoot, XhScrollbarThumb, XhScrollbarTrack } from "@xihan-ui/vue";
 import { ref } from "vue";
@@ -194,6 +204,11 @@ const cells = Array.from({ length: 24 }, (_, i) => `第 ${i + 1} 列`);
 同时显示横向和纵向滚动条
 
 ```vue
+<!--
+  Copyright (c) 2021-Present XiHanFun and contributors.
+  Licensed under the MIT License. See LICENSE in the project root for license information.
+-->
+
 <script setup lang="ts">
 import { XhScrollbarCorner, XhScrollbarRoot, XhScrollbarThumb, XhScrollbarTrack } from "@xihan-ui/vue";
 import { ref } from "vue";
@@ -305,6 +320,11 @@ const rows = Array.from({ length: 30 }, (_, r) => Array.from({ length: 12 }, (_,
 设置滚动条的显示时机
 
 ```vue
+<!--
+  Copyright (c) 2021-Present XiHanFun and contributors.
+  Licensed under the MIT License. See LICENSE in the project root for license information.
+-->
+
 <script setup lang="ts">
 import type { ScrollbarType } from "@xihan-ui/headless";
 import { XhScrollbarRoot, XhScrollbarThumb, XhScrollbarTrack } from "@xihan-ui/vue";
@@ -407,6 +427,7 @@ const lines = Array.from({ length: 30 }, (_, i) => `第 ${i + 1} 行`);
 
 - 支持五种显示时机，默认在滚动或悬停时显示。
 - 默认使用透明轨道与半透明中性滑块，悬停和拖动时逐级增强。
+- 三档厚度为 4 / 6 / 8px；组件内部保留原生滚动时也复用相同的透明轨道与低对比滑块色阶。
 - 支持拖动、点击轨道、键盘操作与 RTL。
 - 支持横向、纵向和双轴滚动。
 - 触屏设备默认保留原生滚动体验。
@@ -414,6 +435,7 @@ const lines = Array.from({ length: 30 }, (_, i) => `第 ${i + 1} 行`);
 ### 组合
 
 - 可与[表格](./table)、[虚拟滚动](./virtualizer)和[日志](./log)组合使用。
+- 日期、时间和年份网格等组件内部滚动面复用本组件的透明轨道、厚度和滑块色阶；需要完整自绘交互时组合 `root`、`track` 与 `thumb`。
 - 双轴滚动时使用 `gutter` 和 `corner` 处理交叉区域。
 
 ### 最佳实践
@@ -593,12 +615,12 @@ const lines = Array.from({ length: 30 }, (_, i) => `第 ${i + 1} 行`);
 | 变量 | 部件 | CSS 属性 | 状态 | 缺省来源 | 说明 |
 | --- | --- | --- | --- | --- | --- |
 | `--xh-scrollbar-corner-bg` | `corner` | `background` | `default` | `--xh-scrollbar-track-bg` | scrollbar 的 corner 部件 background 覆盖槽。 |
-| `--xh-scrollbar-thumb-bg` | `thumb` | `background` | `default` | `--xh-fg-default` | scrollbar 的 thumb 部件 background 覆盖槽。 |
-| `--xh-scrollbar-thumb-bg-active` | `thumb` | `background` | `dragging` | `--xh-fg-default` | scrollbar 的 thumb 部件 background 覆盖槽。 |
+| `--xh-scrollbar-thumb-bg` | `thumb` | `background` | `default` | `--xh-fg-scrollbar-thumb` | scrollbar 的 thumb 部件 background 覆盖槽。 |
+| `--xh-scrollbar-thumb-bg-active` | `thumb` | `background` | `dragging` | `--xh-fg-scrollbar-thumb-active` | scrollbar 的 thumb 部件 background 覆盖槽。 |
 | `--xh-scrollbar-thumb-bg-disabled` | `thumb` | `background` | `disabled` | `--xh-border-subtle` | scrollbar 的 thumb 部件 background 覆盖槽。 |
-| `--xh-scrollbar-thumb-bg-hover` | `thumb` | `background` | `hover` | `--xh-fg-default` | scrollbar 的 thumb 部件 background 覆盖槽。 |
+| `--xh-scrollbar-thumb-bg-hover` | `thumb` | `background` | `hover` | `--xh-fg-scrollbar-thumb-hover` | scrollbar 的 thumb 部件 background 覆盖槽。 |
 | `--xh-scrollbar-thumb-radius` | `thumb` | `border-radius` | `default` | `--xh-shape-pill` | scrollbar 的 thumb 部件 border-radius 覆盖槽。 |
-| `--xh-scrollbar-track-bg` | `corner`<br>`track` | `background` | `default` | `transparent` | scrollbar 的 corner、track 部件 background 覆盖槽。 |
+| `--xh-scrollbar-track-bg` | `corner`<br>`track` | `background` | `default` | `--xh-bg-scrollbar-track`<br>`transparent` | scrollbar 的 corner、track 部件 background 覆盖槽。 |
 <!-- xh-component-tokens:end -->
 
 ### 动效

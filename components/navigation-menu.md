@@ -17,6 +17,11 @@
 从顶部入口展开站点导航
 
 ```vue
+<!--
+  Copyright (c) 2021-Present XiHanFun and contributors.
+  Licensed under the MIT License. See LICENSE in the project root for license information.
+-->
+
 <script setup lang="ts">
 import { XhNavigationMenuLink, XhNavigationMenuRoot } from "@xihan-ui/vue";
 
@@ -90,6 +95,11 @@ const panels: Record<string, Array<{ href: string; title: string; description: s
 在侧栏旁展开子级导航
 
 ```vue
+<!--
+  Copyright (c) 2021-Present XiHanFun and contributors.
+  Licensed under the MIT License. See LICENSE in the project root for license information.
+-->
+
 <script setup lang="ts">
 import { XhNavigationMenuLink, XhNavigationMenuRoot } from "@xihan-ui/vue";
 
@@ -170,6 +180,11 @@ const panels: Record<string, Array<{ href: string; label: string }>> = {
 混合下拉入口与普通链接
 
 ```vue
+<!--
+  Copyright (c) 2021-Present XiHanFun and contributors.
+  Licensed under the MIT License. See LICENSE in the project root for license information.
+-->
+
 <script setup lang="ts">
 import { XhNavigationMenuLink, XhNavigationMenuRoot } from "@xihan-ui/vue";
 
@@ -242,6 +257,11 @@ const panels: Record<string, Array<{ href: string; label: string }>> = {
 在固定位置切换不同导航内容
 
 ```vue
+<!--
+  Copyright (c) 2021-Present XiHanFun and contributors.
+  Licensed under the MIT License. See LICENSE in the project root for license information.
+-->
+
 <script setup lang="ts">
 import {
   XhNavigationMenuContent,

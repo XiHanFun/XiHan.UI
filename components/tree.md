@@ -17,6 +17,11 @@
 collection 是层级元信息的唯一事实源，标记只管长相；缩进由子层容器自己顶着
 
 ```vue
+<!--
+  Copyright (c) 2021-Present XiHanFun and contributors.
+  Licensed under the MIT License. See LICENSE in the project root for license information.
+-->
+
 <script setup lang="ts">
 import {
   XhTreeBranch,
@@ -234,6 +239,11 @@ const collection = [
 multiple 关着是单选，打开后点击与确认键都变成切换，选中集合形状不变仍是数组
 
 ```vue
+<!--
+  Copyright (c) 2021-Present XiHanFun and contributors.
+  Licensed under the MIT License. See LICENSE in the project root for license information.
+-->
+
 <script setup lang="ts">
 import {
   XhTreeBranch,
@@ -420,6 +430,11 @@ const selected = ref<string[]>(["hz"]);
 传了 expandedValue / selection 就由宿主说了算，组件只发事件不落内部值，宿主写回它才动
 
 ```vue
+<!--
+  Copyright (c) 2021-Present XiHanFun and contributors.
+  Licensed under the MIT License. See LICENSE in the project root for license information.
+-->
+
 <script setup lang="ts">
 import {
   XhButton,
@@ -626,6 +641,11 @@ function onSelectionChange(details: { value: string[] }) {
 expandOnClick 关掉后只有箭头与左右方向键能改展开态；禁用节点仍可聚焦，只是确认键不认它
 
 ```vue
+<!--
+  Copyright (c) 2021-Present XiHanFun and contributors.
+  Licensed under the MIT License. See LICENSE in the project root for license information.
+-->
+
 <script setup lang="ts">
 import {
   XhTreeBranch,
@@ -766,6 +786,11 @@ const collection = [
 collection 换一份树就换一棵：标记跟着数据重铺，过滤剩下的分支顺手全展开
 
 ```vue
+<!--
+  Copyright (c) 2021-Present XiHanFun and contributors.
+  Licensed under the MIT License. See LICENSE in the project root for license information.
+-->
+
 <script setup lang="ts">
 import {
   XhTreeBranch,
@@ -1045,6 +1070,11 @@ watch(keyword, () => {
 展开那一刻才去要数据：先摆一行禁用的占位，取回来就地换掉，收起再展开不重复请求
 
 ```vue
+<!--
+  Copyright (c) 2021-Present XiHanFun and contributors.
+  Licensed under the MIT License. See LICENSE in the project root for license information.
+-->
+
 <script setup lang="ts">
 import {
   XhTreeBranch,
@@ -1252,6 +1282,11 @@ function onExpandedValueChange(details: { value: string[] }): void {
 行里放什么由标记说了算：文字前塞图标、文字后塞操作，方向指示也可以挪到行尾去
 
 ```vue
+<!--
+  Copyright (c) 2021-Present XiHanFun and contributors.
+  Licensed under the MIT License. See LICENSE in the project root for license information.
+-->
+
 <script setup lang="ts">
 import { FileIcon, FolderIcon } from "@xihan-ui/icons";
 import {
@@ -1408,6 +1443,11 @@ function rename(label: string): void {
 选中受控就由宿主定夺：分支的值直接不写回，点目录只剩展开收起这一个效果
 
 ```vue
+<!--
+  Copyright (c) 2021-Present XiHanFun and contributors.
+  Licensed under the MIT License. See LICENSE in the project root for license information.
+-->
+
 <script setup lang="ts">
 import {
   XhTreeBranch,
@@ -1576,6 +1616,11 @@ function onSelectionChange(details: { value: string[] }): void {
 multiple 加 cascade 内建父子传导：点分支整枝勾上、子全勾父勾、部分勾中半选；勾选框是行里的一段标记，勾选态与半选态都由组件报出
 
 ```vue
+<!--
+  Copyright (c) 2021-Present XiHanFun and contributors.
+  Licensed under the MIT License. See LICENSE in the project root for license information.
+-->
+
 <script setup lang="ts">
 import {
   XhTreeBranch,
@@ -1741,6 +1786,11 @@ const selected = ref<string[]>(["hz"]);
 整个节点都是拖动源：按住拖到别处松手，也可以 Tab 进树里用 Alt + 上下键在同层挪、Alt + 左右键改层级。三档落点（插在前 / 插在后 / 放进目录里）连同指示线、自我后代守卫与读屏播报都归库；树仍不拥有数据，宿主只管按库报的 value、parent、index 把数组搬一下，外加一条 allowDrop 说这次许不许
 
 ```vue
+<!--
+  Copyright (c) 2021-Present XiHanFun and contributors.
+  Licensed under the MIT License. See LICENSE in the project root for license information.
+-->
+
 <script setup lang="ts">
 import { FileIcon } from "@xihan-ui/icons";
 import {
@@ -1994,6 +2044,11 @@ function onNodeMove(move: Move): void {
 leaf-orientation 按结构判据横排「子节点全是叶子」的那层；要指定哪一层横排就在节点上标 childrenOrientation，它比树级值优先，标 vertical 也压得住
 
 ```vue
+<!--
+  Copyright (c) 2021-Present XiHanFun and contributors.
+  Licensed under the MIT License. See LICENSE in the project root for license information.
+-->
+
 <script setup lang="ts">
 import {
   XhTreeBranch,
@@ -2259,6 +2314,11 @@ const selection = ref<string[]>(["user:add"]);
 按住 Shift 点某一项，选中锚点到它那一段；按可见序取，折叠起来的子节点选不进去
 
 ```vue
+<!--
+  Copyright (c) 2021-Present XiHanFun and contributors.
+  Licensed under the MIT License. See LICENSE in the project root for license information.
+-->
+
 <script setup lang="ts">
 import {
   XhTreeBranch,
@@ -2453,6 +2513,11 @@ const selected = ref<string[]>([]);
 variant="plain" 去掉外框与底色，树直接落在页面上；缺省 surface 保持带框的样子
 
 ```vue
+<!--
+  Copyright (c) 2021-Present XiHanFun and contributors.
+  Licensed under the MIT License. See LICENSE in the project root for license information.
+-->
+
 <script setup lang="ts">
 import {
   XhTreeBranch,

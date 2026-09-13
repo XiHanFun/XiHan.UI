@@ -17,6 +17,11 @@
 组内只有一个 Tab 停靠点，进组后四个方向键都能切换
 
 ```vue
+<!--
+  Copyright (c) 2021-Present XiHanFun and contributors.
+  Licensed under the MIT License. See LICENSE in the project root for license information.
+-->
+
 <script setup lang="ts">
 import { XhRadioGroupRoot } from "@xihan-ui/vue";
 
@@ -73,6 +78,11 @@ const plans = [
 传了 value 就由宿主说了算；值可以是 null，表示一项都没选中
 
 ```vue
+<!--
+  Copyright (c) 2021-Present XiHanFun and contributors.
+  Licensed under the MIT License. See LICENSE in the project root for license information.
+-->
+
 <script setup lang="ts">
 import {
   XhRadioGroupItem,
@@ -145,6 +155,11 @@ const plan = ref<string | null>("free");
 orientation 只影响排版与 aria-orientation，方向键四个方向照样都能切换
 
 ```vue
+<!--
+  Copyright (c) 2021-Present XiHanFun and contributors.
+  Licensed under the MIT License. See LICENSE in the project root for license information.
+-->
+
 <script setup lang="ts">
 import { XhRadioGroupRoot } from "@xihan-ui/vue";
 
@@ -193,6 +208,11 @@ const sizes = [
 单项禁用后点不动，方向键也跳过它；整组禁用则每一项都跟着禁用
 
 ```vue
+<!--
+  Copyright (c) 2021-Present XiHanFun and contributors.
+  Licensed under the MIT License. See LICENSE in the project root for license information.
+-->
+
 <script setup lang="ts">
 import { XhRadioGroupRoot } from "@xihan-ui/vue";
 
@@ -257,6 +277,11 @@ const openPlans = [
 tone 决定选中圆点用哪族颜色，六种语气各一组
 
 ```vue
+<!--
+  Copyright (c) 2021-Present XiHanFun and contributors.
+  Licensed under the MIT License. See LICENSE in the project root for license information.
+-->
+
 <script setup lang="ts">
 import { XhRadioGroupRoot } from "@xihan-ui/vue";
 
@@ -381,6 +406,11 @@ const answers = [
 size 改条目间距与字号，不写即缺省中档
 
 ```vue
+<!--
+  Copyright (c) 2021-Present XiHanFun and contributors.
+  Licensed under the MIT License. See LICENSE in the project root for license information.
+-->
+
 <script setup lang="ts">
 import { XhRadioGroupRoot } from "@xihan-ui/vue";
 
@@ -468,6 +498,11 @@ const plans = [
 自家字段叫什么由数据定，映射成条目的值、文本与禁用即可
 
 ```vue
+<!--
+  Copyright (c) 2021-Present XiHanFun and contributors.
+  Licensed under the MIT License. See LICENSE in the project root for license information.
+-->
+
 <script setup lang="ts">
 import { XhRadioGroupRoot } from "@xihan-ui/vue";
 import { computed, ref } from "vue";

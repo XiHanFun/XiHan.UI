@@ -1,1 +1,0 @@
-import{bj as a}from"./theme.Dk_9lYjD.js";import{d as t,o,b as s,w as r,a as n,k as c}from"./framework.DkvuVDKz.js";const u=t({__name:"01-basic",setup(p){return(d,e)=>(o(),s(c(a),{name:"updates","default-checked":""},{default:r(()=>[...e[0]||(e[0]=[n("接收产品更新",-1)])]),_:1}))}});export{u as default};

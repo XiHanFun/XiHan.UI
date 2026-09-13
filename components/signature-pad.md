@@ -17,6 +17,11 @@
 一块画布加一条笔迹路径就够了：按下落笔、移动成迹、抬笔收一笔
 
 ```vue
+<!--
+  Copyright (c) 2021-Present XiHanFun and contributors.
+  Licensed under the MIT License. See LICENSE in the project root for license information.
+-->
+
 <script setup lang="ts">
 import { XhSignaturePadControl, XhSignaturePadPath, XhSignaturePadRoot } from "@xihan-ui/vue";
 </script>
@@ -55,6 +60,11 @@ import { XhSignaturePadControl, XhSignaturePadPath, XhSignaturePadRoot } from "@
 基准线是纯画面（带 aria-hidden），清空按钮是原生 button，读屏念的是 translations 里那句
 
 ```vue
+<!--
+  Copyright (c) 2021-Present XiHanFun and contributors.
+  Licensed under the MIT License. See LICENSE in the project root for license information.
+-->
+
 <script setup lang="ts">
 import {
   XhSignaturePadClearTrigger,
@@ -107,6 +117,11 @@ import {
 给了 name 就带上表单影子，提交的是一份独立 SVG；表单重置会把画布清回空
 
 ```vue
+<!--
+  Copyright (c) 2021-Present XiHanFun and contributors.
+  Licensed under the MIT License. See LICENSE in the project root for license information.
+-->
+
 <script setup lang="ts">
 import {
   XhSignaturePadClearTrigger,
@@ -187,6 +202,11 @@ import {
 drawing 调笔宽与压感：thinning 越大，划得越快笔画越细，simulatePressure 决定压感取设备值还是按速度算
 
 ```vue
+<!--
+  Copyright (c) 2021-Present XiHanFun and contributors.
+  Licensed under the MIT License. See LICENSE in the project root for license information.
+-->
+
 <script setup lang="ts">
 import { XhSignaturePadControl, XhSignaturePadGuide, XhSignaturePadPath, XhSignaturePadRoot } from "@xihan-ui/vue";
 </script>
@@ -244,6 +264,11 @@ import { XhSignaturePadControl, XhSignaturePadGuide, XhSignaturePadPath, XhSigna
 只读画好的还看得见但改不动，禁用连清空按钮都按不动；两者都走原生 disabled，不是灰一层了事
 
 ```vue
+<!--
+  Copyright (c) 2021-Present XiHanFun and contributors.
+  Licensed under the MIT License. See LICENSE in the project root for license information.
+-->
+
 <script setup lang="ts">
 import {
   XhSignaturePadClearTrigger,
@@ -307,6 +332,11 @@ import {
 签名定稿时 draw-end 带上一份可直接落库的 SVG；提交前用 empty 拦一道，空签名不该走出客户端
 
 ```vue
+<!--
+  Copyright (c) 2021-Present XiHanFun and contributors.
+  Licensed under the MIT License. See LICENSE in the project root for license information.
+-->
+
 <script setup lang="ts">
 import {
   XhSignaturePadClearTrigger,

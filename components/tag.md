@@ -18,6 +18,11 @@
 一个标签就是 root 加一段 label 文字；不写 closable 就没有关闭钮
 
 ```vue
+<!--
+  Copyright (c) 2021-Present XiHanFun and contributors.
+  Licensed under the MIT License. See LICENSE in the project root for license information.
+-->
+
 <script setup lang="ts">
 import { XhTagLabel, XhTagRoot } from "@xihan-ui/vue";
 
@@ -68,6 +73,11 @@ const topics = ["前端", "无头内核", "可访问性"];
 variant 决定颜色怎么用：实心填底、淡色填底、只描边
 
 ```vue
+<!--
+  Copyright (c) 2021-Present XiHanFun and contributors.
+  Licensed under the MIT License. See LICENSE in the project root for license information.
+-->
+
 <script setup lang="ts">
 import { XhTagLabel, XhTagRoot } from "@xihan-ui/vue";
 
@@ -110,6 +120,11 @@ const variants = ["solid", "subtle", "outline"] as const;
 tone 决定用哪族颜色；语气只换色相，形态与尺寸不受影响
 
 ```vue
+<!--
+  Copyright (c) 2021-Present XiHanFun and contributors.
+  Licensed under the MIT License. See LICENSE in the project root for license information.
+-->
+
 <script setup lang="ts">
 import { XhTagLabel, XhTagRoot } from "@xihan-ui/vue";
 
@@ -182,6 +197,11 @@ const tones = [
 closable 给出关闭钮；open 受控时去留由宿主决定，可访问名逐枚带上标签文字，摘掉一枚后焦点交给下一枚
 
 ```vue
+<!--
+  Copyright (c) 2021-Present XiHanFun and contributors.
+  Licensed under the MIT License. See LICENSE in the project root for license information.
+-->
+
 <script setup lang="ts">
 import {
   XhButton,
@@ -329,6 +349,11 @@ async function remove(tag: string) {
 disabled 让标签留在原地却摘不掉：关闭钮仍占着位置，标签宽度不因禁用跳变
 
 ```vue
+<!--
+  Copyright (c) 2021-Present XiHanFun and contributors.
+  Licensed under the MIT License. See LICENSE in the project root for license information.
+-->
+
 <script setup lang="ts">
 import { XhTagCloseTrigger, XhTagLabel, XhTagRoot } from "@xihan-ui/vue";
 </script>
@@ -381,6 +406,11 @@ import { XhTagCloseTrigger, XhTagLabel, XhTagRoot } from "@xihan-ui/vue";
 size 换内边距、间距、字号与行框，不写就是缺省档；同一档有没有关闭钮都一样高，关闭钮三档同一个尺寸
 
 ```vue
+<!--
+  Copyright (c) 2021-Present XiHanFun and contributors.
+  Licensed under the MIT License. See LICENSE in the project root for license information.
+-->
+
 <script setup lang="ts">
 import { XhTagCloseTrigger, XhTagLabel, XhTagRoot } from "@xihan-ui/vue";
 
@@ -451,6 +481,11 @@ const sizes = [
 readOnly 只锁关闭钮：叉留在原地但按不动，标签本身不置灰；与 disabled 的区别只在标签本体的颜色
 
 ```vue
+<!--
+  Copyright (c) 2021-Present XiHanFun and contributors.
+  Licensed under the MIT License. See LICENSE in the project root for license information.
+-->
+
 <script setup lang="ts">
 import { XhTagCloseTrigger, XhTagLabel, XhTagRoot } from "@xihan-ui/vue";
 </script>

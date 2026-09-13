@@ -17,6 +17,11 @@
 root 持有状态，control 是那个视觉盒；不传 value 与 visible 即为非受控，明暗由组件自己管，钮里的图标跟着明暗换
 
 ```vue
+<!--
+  Copyright (c) 2021-Present XiHanFun and contributors.
+  Licensed under the MIT License. See LICENSE in the project root for license information.
+-->
+
 <script setup lang="ts">
 import {
   XhPasswordInputCapsLockIndicator,
@@ -90,6 +95,11 @@ import {
 值与明暗都能受控：传了就由宿主说了算，组件只把意图报出来，写不写回由宿主定
 
 ```vue
+<!--
+  Copyright (c) 2021-Present XiHanFun and contributors.
+  Licensed under the MIT License. See LICENSE in the project root for license information.
+-->
+
 <script setup lang="ts">
 import {
   XhPasswordInputControl,
@@ -156,6 +166,11 @@ const visible = ref(false);
 打开大写锁定再往框里敲一个字：提示显出来，读屏也会念一次；焦点离开输入框即熄灭
 
 ```vue
+<!--
+  Copyright (c) 2021-Present XiHanFun and contributors.
+  Licensed under the MIT License. See LICENSE in the project root for license information.
+-->
+
 <script setup lang="ts">
 import {
   XhPasswordInputCapsLockIndicator,
@@ -207,6 +222,11 @@ import {
 disabled 连明暗一起停掉，read-only 只锁值、明暗照切，invalid 只标注不拦输入
 
 ```vue
+<!--
+  Copyright (c) 2021-Present XiHanFun and contributors.
+  Licensed under the MIT License. See LICENSE in the project root for license information.
+-->
+
 <script setup lang="ts">
 import {
   XhPasswordInputControl,
@@ -281,6 +301,11 @@ import {
 variant 决定底与描边怎么画：描边、淡色填底、无框；密码框没有实心档
 
 ```vue
+<!--
+  Copyright (c) 2021-Present XiHanFun and contributors.
+  Licensed under the MIT License. See LICENSE in the project root for license information.
+-->
+
 <script setup lang="ts">
 import {
   XhPasswordInputControl,
@@ -341,6 +366,11 @@ const variants = ["outline", "subtle", "ghost"] as const;
 tone 决定用哪族颜色，与 variant 正交；这里固定 subtle 形态，语气的底色差别不必聚焦就看得见
 
 ```vue
+<!--
+  Copyright (c) 2021-Present XiHanFun and contributors.
+  Licensed under the MIT License. See LICENSE in the project root for license information.
+-->
+
 <script setup lang="ts">
 import {
   XhPasswordInputControl,
@@ -439,6 +469,11 @@ const tones = ["brand", "neutral", "success", "warning", "danger", "info"] as co
 size 只改高度、内边距与字号，标签、切换钮与大写锁定提示一起跟着换档；不写就是缺省档
 
 ```vue
+<!--
+  Copyright (c) 2021-Present XiHanFun and contributors.
+  Licensed under the MIT License. See LICENSE in the project root for license information.
+-->
+
 <script setup lang="ts">
 import {
   XhPasswordInputControl,
@@ -513,6 +548,11 @@ import {
 name 才让它参与提交，auto-complete 写成 new-password 密码管理器才去存新密码而不是填旧的
 
 ```vue
+<!--
+  Copyright (c) 2021-Present XiHanFun and contributors.
+  Licensed under the MIT License. See LICENSE in the project root for license information.
+-->
+
 <script setup lang="ts">
 import {
   XhPasswordInputControl,

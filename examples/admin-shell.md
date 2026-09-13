@@ -5,6 +5,11 @@
 一副控制台外壳：头、侧栏、正文、脚四段各就各位，导航、面包屑、页头、工具条、通知角标与账户菜单在同一屏里。
 
 ```vue
+<!--
+  Copyright (c) 2021-Present XiHanFun and contributors.
+  Licensed under the MIT License. See LICENSE in the project root for license information.
+-->
+
 <script setup lang="ts">
 import type { MenuNode, SideNavNode } from "@xihan-ui/headless";
 import {

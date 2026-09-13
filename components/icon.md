@@ -17,6 +17,11 @@
 显示一个图标
 
 ```vue
+<!--
+  Copyright (c) 2021-Present XiHanFun and contributors.
+  Licensed under the MIT License. See LICENSE in the project root for license information.
+-->
+
 <script setup lang="ts">
 import { CheckIcon } from "@xihan-ui/icons";
 import { XhIcon } from "@xihan-ui/vue";
@@ -48,6 +53,11 @@ import { XhIcon } from "@xihan-ui/vue";
 设置图标大小和描边粗细
 
 ```vue
+<!--
+  Copyright (c) 2021-Present XiHanFun and contributors.
+  Licensed under the MIT License. See LICENSE in the project root for license information.
+-->
+
 <script setup lang="ts">
 import { StarIcon } from "@xihan-ui/icons";
 import { XhIcon } from "@xihan-ui/vue";
@@ -89,6 +99,11 @@ import { XhIcon } from "@xihan-ui/vue";
 为独立图标提供名称
 
 ```vue
+<!--
+  Copyright (c) 2021-Present XiHanFun and contributors.
+  Licensed under the MIT License. See LICENSE in the project root for license information.
+-->
+
 <script setup lang="ts">
 import { XIcon } from "@xihan-ui/icons";
 import { XhIcon } from "@xihan-ui/vue";
@@ -113,6 +128,11 @@ import { XhIcon } from "@xihan-ui/vue";
 直接提供 SVG 图形
 
 ```vue
+<!--
+  Copyright (c) 2021-Present XiHanFun and contributors.
+  Licensed under the MIT License. See LICENSE in the project root for license information.
+-->
+
 <script setup lang="ts">
 import { XhIcon } from "@xihan-ui/vue";
 </script>
@@ -139,6 +159,11 @@ import { XhIcon } from "@xihan-ui/vue";
 使用语义颜色
 
 ```vue
+<!--
+  Copyright (c) 2021-Present XiHanFun and contributors.
+  Licensed under the MIT License. See LICENSE in the project root for license information.
+-->
+
 <script setup lang="ts">
 import { StarIcon } from "@xihan-ui/icons";
 import { XhIcon } from "@xihan-ui/vue";
@@ -164,6 +189,11 @@ const tones = ["brand", "success", "warning", "danger", "info"] as const;
 改变图标方向
 
 ```vue
+<!--
+  Copyright (c) 2021-Present XiHanFun and contributors.
+  Licensed under the MIT License. See LICENSE in the project root for license information.
+-->
+
 <script setup lang="ts">
 import { ArrowRightIcon } from "@xihan-ui/icons";
 import { XhIcon } from "@xihan-ui/vue";

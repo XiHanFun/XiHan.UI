@@ -17,6 +17,11 @@
 在目标区域右键打开命令菜单
 
 ```vue
+<!--
+  Copyright (c) 2021-Present XiHanFun and contributors.
+  Licensed under the MIT License. See LICENSE in the project root for license information.
+-->
+
 <script setup lang="ts">
 import { XhContextMenuRoot } from "@xihan-ui/vue";
 
@@ -87,6 +92,11 @@ const commands = [
 使用标题与分隔线组织命令
 
 ```vue
+<!--
+  Copyright (c) 2021-Present XiHanFun and contributors.
+  Licensed under the MIT License. See LICENSE in the project root for license information.
+-->
+
 <script setup lang="ts">
 import { XhContextMenuRoot } from "@xihan-ui/vue";
 
@@ -144,6 +154,11 @@ const commands = [
 在命令两侧补充识别信息
 
 ```vue
+<!--
+  Copyright (c) 2021-Present XiHanFun and contributors.
+  Licensed under the MIT License. See LICENSE in the project root for license information.
+-->
+
 <script setup lang="ts">
 import { CopyIcon, PencilIcon, TrashIcon } from "@xihan-ui/icons";
 import {
@@ -221,6 +236,11 @@ import {
 将相关命令收进下一层
 
 ```vue
+<!--
+  Copyright (c) 2021-Present XiHanFun and contributors.
+  Licensed under the MIT License. See LICENSE in the project root for license information.
+-->
+
 <script setup lang="ts">
 import {
   XhContextMenuContent,

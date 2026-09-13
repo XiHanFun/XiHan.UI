@@ -2,7 +2,7 @@
 
 # Calendar 日历 `alpha`
 
-以月、周、季度或年份浏览并选择日期，也可以在日期格中展示日程内容。
+以天、周、月、季度或年为周期浏览并选择，也可以在日期格中展示日程内容。
 
 <div class="xh-resource-links">
   <a href="https://github.com/XiHanFun/XiHan.UI/tree/dev/ui/packages/engine/headless/src/calendar" target="_blank" rel="noreferrer">Headless</a>
@@ -17,6 +17,11 @@
 选择日期
 
 ```vue
+<!--
+  Copyright (c) 2021-Present XiHanFun and contributors.
+  Licensed under the MIT License. See LICENSE in the project root for license information.
+-->
+
 <script setup lang="ts">
 import {
   XhCalendarCell,
@@ -54,8 +59,8 @@ import {
         </XhCalendarWeekRow>
       </XhCalendarGridHead>
       <XhCalendarGridBody>
-        <XhCalendarWeekRow v-for="week in weeks" :key="week[0].value">
-          <XhCalendarCell v-for="day in week" :key="day.value" :value="day.value">
+        <XhCalendarWeekRow v-for="week in weeks" :key="week[0].start">
+          <XhCalendarCell v-for="day in week" :key="day.start" :value="day.start">
             <XhCalendarCellTrigger>{{ day.day }}</XhCalendarCellTrigger>
           </XhCalendarCell>
         </XhCalendarWeekRow>
@@ -116,7 +121,7 @@ import {
 
   // 换了月才重画格子：同月内移动焦点时格子原样留着，选中态与焦点态由元素自己写
   function paintBody() {
-    const first = calendar.weeks[0][0].value;
+    const first = calendar.weeks[0][0].start;
     if (first === month) {
       return;
     }
@@ -129,7 +134,7 @@ import {
         for (const day of week) {
           const cell = document.createElement("div");
           cell.dataset.xhPart = "cell";
-          cell.setAttribute("value", day.value);
+          cell.setAttribute("value", day.start);
           const trigger = document.createElement("div");
           trigger.dataset.xhPart = "cell-trigger";
           trigger.textContent = day.day;
@@ -163,6 +168,11 @@ import {
 selection-mode=range：第一下落起点、第二下落终点，中间铺一条连续底色
 
 ```vue
+<!--
+  Copyright (c) 2021-Present XiHanFun and contributors.
+  Licensed under the MIT License. See LICENSE in the project root for license information.
+-->
+
 <script setup lang="ts">
 import {
   XhCalendarCell,
@@ -213,8 +223,8 @@ const text = computed(() => {
         </XhCalendarWeekRow>
       </XhCalendarGridHead>
       <XhCalendarGridBody>
-        <XhCalendarWeekRow v-for="week in weeks" :key="week[0].value">
-          <XhCalendarCell v-for="day in week" :key="day.value" :value="day.value">
+        <XhCalendarWeekRow v-for="week in weeks" :key="week[0].start">
+          <XhCalendarCell v-for="day in week" :key="day.start" :value="day.start">
             <XhCalendarCellTrigger>{{ day.day }}</XhCalendarCellTrigger>
           </XhCalendarCell>
         </XhCalendarWeekRow>
@@ -277,7 +287,7 @@ const text = computed(() => {
 
   // 换了月才重画格子：同月内移动焦点时格子原样留着，区间底色由元素自己写
   function paintBody() {
-    const first = calendar.weeks[0][0].value;
+    const first = calendar.weeks[0][0].start;
     if (first === month) {
       return;
     }
@@ -290,7 +300,7 @@ const text = computed(() => {
         for (const day of week) {
           const cell = document.createElement("div");
           cell.dataset.xhPart = "cell";
-          cell.setAttribute("value", day.value);
+          cell.setAttribute("value", day.start);
           const trigger = document.createElement("div");
           trigger.dataset.xhPart = "cell-trigger";
           trigger.textContent = day.day;
@@ -320,6 +330,11 @@ const text = computed(() => {
 isDateUnavailable 与 min / max 都只挡落值不挡聚焦：方向键照样走得过去
 
 ```vue
+<!--
+  Copyright (c) 2021-Present XiHanFun and contributors.
+  Licensed under the MIT License. See LICENSE in the project root for license information.
+-->
+
 <script setup lang="ts">
 import {
   XhCalendarCell,
@@ -383,8 +398,8 @@ function isWeekend(iso: string) {
         </XhCalendarWeekRow>
       </XhCalendarGridHead>
       <XhCalendarGridBody>
-        <XhCalendarWeekRow v-for="week in weeks" :key="week[0].value">
-          <XhCalendarCell v-for="day in week" :key="day.value" :value="day.value">
+        <XhCalendarWeekRow v-for="week in weeks" :key="week[0].start">
+          <XhCalendarCell v-for="day in week" :key="day.start" :value="day.start">
             <XhCalendarCellTrigger>{{ day.day }}</XhCalendarCellTrigger>
           </XhCalendarCell>
         </XhCalendarWeekRow>
@@ -469,7 +484,7 @@ function isWeekend(iso: string) {
 
   // 换了月才重画格子：同月内移动焦点时格子原样留着，可用与否由元素自己写
   function paintBody() {
-    const first = calendar.weeks[0][0].value;
+    const first = calendar.weeks[0][0].start;
     if (first === month) {
       return;
     }
@@ -482,7 +497,7 @@ function isWeekend(iso: string) {
         for (const day of week) {
           const cell = document.createElement("div");
           cell.dataset.xhPart = "cell";
-          cell.setAttribute("value", day.value);
+          cell.setAttribute("value", day.start);
           const trigger = document.createElement("div");
           trigger.dataset.xhPart = "cell-trigger";
           trigger.textContent = day.day;
@@ -521,6 +536,11 @@ function isWeekend(iso: string) {
 cell-trigger 的内容全由作者写，日号之外还能塞自己的标记
 
 ```vue
+<!--
+  Copyright (c) 2021-Present XiHanFun and contributors.
+  Licensed under the MIT License. See LICENSE in the project root for license information.
+-->
+
 <script setup lang="ts">
 import {
   XhCalendarCell,
@@ -567,8 +587,8 @@ function hasPlan(iso: string) {
         </XhCalendarWeekRow>
       </XhCalendarGridHead>
       <XhCalendarGridBody>
-        <XhCalendarWeekRow v-for="week in weeks" :key="week[0].value">
-          <XhCalendarCell v-for="day in week" :key="day.value" :value="day.value">
+        <XhCalendarWeekRow v-for="week in weeks" :key="week[0].start">
+          <XhCalendarCell v-for="day in week" :key="day.start" :value="day.start">
             <XhCalendarCellTrigger>
               <span style="display: grid; justify-items: center; gap: 2px">
                 <span>{{ day.day }}</span>
@@ -577,7 +597,7 @@ function hasPlan(iso: string) {
                   :style="{
                     fontSize: '10px',
                     lineHeight: '1',
-                    visibility: hasPlan(day.value) ? 'visible' : 'hidden',
+                    visibility: hasPlan(day.start) ? 'visible' : 'hidden',
                   }"
                 >
                   •
@@ -653,7 +673,7 @@ function hasPlan(iso: string) {
 
   // 换了月才重画格子：同月内移动焦点时格子原样留着，选中态与焦点态由元素自己写
   function paintBody() {
-    const first = calendar.weeks[0][0].value;
+    const first = calendar.weeks[0][0].start;
     if (first === month) {
       return;
     }
@@ -666,7 +686,7 @@ function hasPlan(iso: string) {
         for (const day of week) {
           const cell = document.createElement("div");
           cell.dataset.xhPart = "cell";
-          cell.setAttribute("value", day.value);
+          cell.setAttribute("value", day.start);
 
           const trigger = document.createElement("div");
           trigger.dataset.xhPart = "cell-trigger";
@@ -674,7 +694,7 @@ function hasPlan(iso: string) {
             <span style="display: grid; justify-items: center; gap: 2px">
               <span>${day.day}</span>
               <span style="font-size: 10px; line-height: 1; visibility: ${
-                hasPlan(day.value) ? "visible" : "hidden"
+                hasPlan(day.start) ? "visible" : "hidden"
               }">•</span>
             </span>`;
 
@@ -711,9 +731,16 @@ function hasPlan(iso: string) {
 ### 特性
 
 - 标准结构由标题栏、前后翻页按钮、星期表头和日期网格组成；网格数据通过插槽作用域交给作者渲染。
-- `isDateUnavailable` 与 `min` / `max` 都只挡落值不挡聚焦——键盘用户仍能走到不可选的日子上，读屏会念出它不可选。
-- 支持单选、多选、区间选择、整周选择、固定六行与多月并排。
+- `granularity` 决定周期格的生成方式，`selectionMode` 独立决定单选、多选或区间；两个维度互不绑定。
+- 五种粒度统一产出 `CalendarPeriod`：稳定键、周期首尾、标签与相邻容器标记都来自同一份数据。
+- `week` 是一级粒度，使用一行一个整周的网格；不再通过日格高亮模拟整周选择。
+- `isDateUnavailable` 与 `min` / `max` 都只挡落值不挡聚焦；粗粒度周期越过任一边界时整格不可选。
+- 支持固定六行与显式多面板；单选和区间默认都保持单栏。
 - 区间模式将起止日期、已选轨道与 hover 预览分别标记；同一组件同时承载范围日历。
+- 日期、月份与年份格按下时轻微缩放，松开后复原；减弱动效下自动收敛。
+- 年份网格采用三列紧凑滚动面，可由作者按业务上下界铺入连续年份，复用日历格的选中与键盘语义。
+- `calendarPeriodValue` 将单选或区间锚点转换为 `{ granularity, start, end, keys }`，可直接用于查询参数。
+- 切换粒度会清空旧选择并保留浏览锚点，避免不同周期键之间发生隐式转换。
 - 周首日、月份名与星期名跟着 `locale` 走：`en-US` 周日起、`zh-CN` 周一起。不给 `locale` 就跟宿主浏览器语言，读不到才落 `en-US`——要固定成一种排法就把 `locale` 显式传上去。
 
 ### 组合
@@ -724,6 +751,7 @@ function hasPlan(iso: string) {
 
 - 今天使用淡强调面，选中使用实心强调面，两种状态必须能同时辨认。
 - 区间中段应保持连续淡色带，起止使用实心圆帽，hover 预览不能盖出独立的普通悬停圆点。
+- 周区间按整周格连续预览，月份、季度和年份区间共用同一套 Period 边界判断。
 - 格子里的内容超出时收起来，别让某一行比别的行高很多。
 
 ### 反模式
@@ -761,10 +789,9 @@ function hasPlan(iso: string) {
 | `readOnly` | `boolean` |  | 只读：翻月与移动焦点照常，只是选不动值。 |
 | `weekdayFormat` | `CalendarWeekdayFormat` |  | 表头缩写粒度，默认 short。 |
 | `fixedWeeks` | `boolean` |  | 恒渲染六行，默认按当月实际周数。开着能让翻月时网格高度不跳。 |
-| `view` | `CalendarView` |  | 挑的粒度：天（默认）、月、季度、年。这一档也是「点一格就是选中」的那一档。 格子的值一律是「那段时间的第一天」的 ISO 串，不另立一套值形态—— min/max 比较、区间逻辑、不可用判定、表单出口于是全都原样复用。 |
-| `activeView` | `CalendarView` |  | 面板此刻铺的是哪一档格子。给定即受控（date-picker 就是这么持有它的）。 它与 view 是两件事：view 是作者要挑的粒度，这个是人钻到了哪一层。 点标题里的年会把它抬到 year，再点一格就往 view 那一档钻回去；到了 view 那一档， 点一格才是选中。缺省即等于 view。 |
-| `defaultActiveView` | `CalendarView` |  | 非受控初值，缺省同 view。 |
-| `weekSelection` | `boolean` |  | 周选：点任意一天选中它所在的整周，值落成 [周首日, 周末日]。 只在 view=day 且 selectionMode=range 下生效。 |
+| `granularity` | `CalendarGranularity` |  | 选择粒度；与 selectionMode 正交。格子值一律是周期首日的 ISO 串。 |
+| `activeView` | `CalendarView` |  | 面板此刻铺的是哪一档格子。给定即受控（date-picker 就是这么持有它的）。 它与 granularity 是两件事：granularity 是作者要挑的粒度，这个是人钻到了哪一层。 点标题里的年会把它抬到 year，再点一格就往 granularity 那一档钻回去；到了目标粒度， 点一格才是选中。缺省即等于 granularity。 |
+| `defaultActiveView` | `CalendarView` |  | 非受控初值，缺省同 granularity。 |
 | `visibleCount` | `number` |  | 并排展示几个连续月，默认 1。区间选择给 2 才好挑——起止常跨月， 一个面板要来回翻页。翻页时整窗一起走一个月，不是各翻各的。 小于 1 的写法回落到 1。 |
 | `onValueChange` | `(details: CalendarValueChangeDetails) => void` |  | value 变化意图回调；受控时是唯一出口，非受控随内部写入一并通知。 |
 | `onFocusedValueChange` | `(details: CalendarFocusChangeDetails) => void` |  | 聚焦日变化（方向键、翻页、点了邻月的日子都会发）；受控时是唯一出口。 |
@@ -778,7 +805,7 @@ function hasPlan(iso: string) {
 | --- | --- | --- |
 | `value-change` | `CalendarValueChangeDetails` | 选中集合变化；detail 为 `{ value: string[] }` |
 | `focused-value-change` | `CalendarFocusChangeDetails` | 聚焦日变化；detail 为 `{ focusedValue: string }` |
-| `active-view-change` | `CalendarViewChangeDetails` | 钻到了另一层；detail 为 `{ activeView: 'day'\|'month'\|'quarter'\|'year' }` |
+| `active-view-change` | `CalendarViewChangeDetails` | 钻到了另一层；detail 为 `{ activeView: 'day'\|'week'\|'month'\|'quarter'\|'year' }` |
 
 ### 插槽
 
@@ -810,8 +837,9 @@ function hasPlan(iso: string) {
 | `weeks` | `CalendarDay[][]` | 首个面板的日期矩阵。多面板请改用 panels。 |
 | `weekDays` | `CalendarWeekDay[]` | 七列表头，作者照它渲染 week-day。 |
 | `headingLabel` | `string` | 首个面板的标题文案（如 2024年2月）。多面板请改用 panels。 |
-| `view` | `CalendarView` | 作者要挑的粒度。 |
-| `activeView` | `CalendarView` | 面板此刻铺的是哪一档格子。等于 view 时点一格就是选中，粗过 view 时点一格是往下钻。 |
+| `granularity` | `CalendarGranularity` | 作者要挑的粒度。 |
+| `periods` | `CalendarPeriod[]` | 首个面板内的全部周期。 |
+| `activeView` | `CalendarView` | 面板此刻铺的是哪一档格子。等于 granularity 时点一格就是选中，否则是往下钻。 |
 | `headingOrder` | `readonly ('year' \| 'month')[]` | 标题里年与月在这个语言里的先后（zh-CN 是年在前，en-US 是月在前）。 手写标记时照它摆两个钮的顺序，标题读起来才顺。 |
 | `canZoomOutYear` | `boolean` | 点标题里的年钻不钻得上去：年视图已到顶，钻不上去。 |
 | `canZoomOutMonth` | `boolean` | 点标题里的月钻不钻得上去：只有日视图有月这一截。 |
@@ -869,7 +897,7 @@ function hasPlan(iso: string) {
 | `PageDown` | focus in grid | 进一个月，日号不变。粗粒度视图里进一整页 |
 | `Shift+PageUp` | focus in grid | 退一年；粗粒度视图里退十页 |
 | `Shift+PageDown` | focus in grid | 进一年；粗粒度视图里进十页 |
-| `Enter` / `Space` | focus in grid, 聚焦日可用且非只读 | 选中聚焦日：单选替换、多选切换、区间先落起点再落终点。还没钻到 view 那一档时这一下是往下钻一层 |
+| `Enter` / `Space` | focus in grid, 聚焦周期可用且非只读 | 选中聚焦周期：单选替换、多选切换、区间先落起点再落终点。还没钻到 granularity 那一档时这一下是往下钻一层 |
 
 ### ARIA
 
@@ -892,7 +920,7 @@ function hasPlan(iso: string) {
 | `cell` | `aria-selected` | 'true' \| 'false' |
 | `cell` | `role` | 'gridcell' |
 | `cell-trigger` | `aria-disabled` | 'true' \| 'false' |
-| `cell-trigger` | `aria-label` | cellLabelFormatter.format(state.date.toDate(timeZone)) \| undefined |
+| `cell-trigger` | `aria-label` | cellLabelFormatter.format(state.date.toDate(timeZone)) \| period?.label |
 | `cell-trigger` | `role` | 'button' |
 
 ## 样式参考
@@ -942,9 +970,9 @@ function hasPlan(iso: string) {
 | `--xh-calendar-cell-fg-selected` | `cell-trigger` | `color` | `selected` | `--xh-fg-on-brand` | calendar 的 cell-trigger 部件 color 覆盖槽。 |
 | `--xh-calendar-cell-font-size` | `cell-trigger` | `font-size` | `default` | `--xh-text-body-size` | calendar 的 cell-trigger 部件 font-size 覆盖槽。 |
 | `--xh-calendar-cell-gap` | `cell` | `inset-block`<br>`padding` | `default`<br>`in-range` | `--xh-space-0_5` | calendar 的 cell 部件 inset-block、padding 覆盖槽。 |
-| `--xh-calendar-cell-radius` | `cell`<br>`cell-trigger`<br>`grid` | `border-radius` | `default`<br>`in-range`<br>`is([data-view='month'], [data-view='quarter'], [data-view='year'])`<br>`view=month`<br>`view=quarter`<br>`view=year` | `--xh-shape-pill` | calendar 的 cell、cell-trigger、grid 部件 border-radius 覆盖槽。 |
+| `--xh-calendar-cell-radius` | `cell`<br>`cell-trigger`<br>`grid` | `border-radius` | `default`<br>`in-range`<br>`is([data-view='week'], [data-view='month'], [data-view='quarter'], [data-view='year'])`<br>`view=month`<br>`view=quarter`<br>`view=week`<br>`view=year` | `--xh-shape-pill` | calendar 的 cell、cell-trigger、grid 部件 border-radius 覆盖槽。 |
 | `--xh-calendar-cell-size` | `cell-trigger` | `min-inline-size` | `default` | `--xh-control-h-sm` | calendar 的 cell-trigger 部件 min-inline-size 覆盖槽。 |
-| `--xh-calendar-gap` | `root` | `gap` | `default` | `--xh-space-3` | calendar 的 root 部件 gap 覆盖槽。 |
+| `--xh-calendar-gap` | `root` | `gap` | `default` | `--xh-space-2` | calendar 的 root 部件 gap 覆盖槽。 |
 | `--xh-calendar-grid-gap` | `grid` | `gap` | `default` | `--xh-space-1` | calendar 的 grid 部件 gap 覆盖槽。 |
 | `--xh-calendar-header-gap` | `header` | `gap` | `default` | `--xh-space-2` | calendar 的 header 部件 gap 覆盖槽。 |
 | `--xh-calendar-heading-fg` | `heading`<br>`heading-month-trigger`<br>`heading-year-trigger` | `color` | `default`<br>`not([hidden])` | `--xh-fg-default` | calendar 的 heading、heading-month-trigger、heading-year-trigger 部件 color 覆盖槽。 |
@@ -956,12 +984,13 @@ function hasPlan(iso: string) {
 | `--xh-calendar-icon-size` | `root` | `--xh-icon-size` | `default` | `--xh-glyph-size-text` | calendar 的 root 部件 --xh-icon-size 覆盖槽。 |
 | `--xh-calendar-nav-bg` | `next-trigger`<br>`next-year-trigger`<br>`prev-trigger`<br>`prev-year-trigger` | `background` | `default` | `transparent` | calendar 的 next-trigger、next-year-trigger、prev-trigger、prev-year-trigger 部件 background 覆盖槽。 |
 | `--xh-calendar-nav-bg-hover` | `next-trigger`<br>`next-year-trigger`<br>`prev-trigger`<br>`prev-year-trigger` | `background` | `hover`<br>`not(:disabled)` | `--xh-bg-subtle-hover` | calendar 的 next-trigger、next-year-trigger、prev-trigger、prev-year-trigger 部件 background 覆盖槽。 |
-| `--xh-calendar-nav-fg` | `next-trigger`<br>`next-year-trigger`<br>`prev-trigger`<br>`prev-year-trigger` | `color` | `default` | `--xh-fg-brand` | calendar 的 next-trigger、next-year-trigger、prev-trigger、prev-year-trigger 部件 color 覆盖槽。 |
-| `--xh-calendar-nav-fg-hover` | `next-trigger`<br>`next-year-trigger`<br>`prev-trigger`<br>`prev-year-trigger` | `color` | `hover`<br>`not(:disabled)` | `--xh-fg-brand` | calendar 的 next-trigger、next-year-trigger、prev-trigger、prev-year-trigger 部件 color 覆盖槽。 |
+| `--xh-calendar-nav-fg` | `next-trigger`<br>`next-year-trigger`<br>`prev-trigger`<br>`prev-year-trigger` | `color` | `default` | `--xh-fg-muted` | calendar 的 next-trigger、next-year-trigger、prev-trigger、prev-year-trigger 部件 color 覆盖槽。 |
+| `--xh-calendar-nav-fg-hover` | `next-trigger`<br>`next-year-trigger`<br>`prev-trigger`<br>`prev-year-trigger` | `color` | `hover`<br>`not(:disabled)` | `--xh-fg-default` | calendar 的 next-trigger、next-year-trigger、prev-trigger、prev-year-trigger 部件 color 覆盖槽。 |
 | `--xh-calendar-nav-radius` | `next-trigger`<br>`next-year-trigger`<br>`prev-trigger`<br>`prev-year-trigger` | `border-radius` | `default` | `--xh-shape-control` | calendar 的 next-trigger、next-year-trigger、prev-trigger、prev-year-trigger 部件 border-radius 覆盖槽。 |
 | `--xh-calendar-nav-size` | `next-trigger`<br>`next-year-trigger`<br>`prev-trigger`<br>`prev-year-trigger` | `block-size`<br>`inline-size` | `default` | `--xh-control-h-sm` | calendar 的 next-trigger、next-year-trigger、prev-trigger、prev-year-trigger 部件 block-size、inline-size 覆盖槽。 |
-| `--xh-calendar-period-gap` | `grid` | `gap` | `view=month`<br>`view=quarter`<br>`view=year` | `--xh-space-1` | calendar 的 grid 部件 gap 覆盖槽。 |
-| `--xh-calendar-period-py` | `cell-trigger`<br>`grid` | `padding-block` | `is([data-view='month'], [data-view='quarter'], [data-view='year'])`<br>`view=month`<br>`view=quarter`<br>`view=year` | `--xh-space-2` | calendar 的 cell-trigger、grid 部件 padding-block 覆盖槽。 |
+| `--xh-calendar-period-gap` | `grid` | `gap` | `view=month`<br>`view=quarter`<br>`view=week`<br>`view=year` | `--xh-space-1` | calendar 的 grid 部件 gap 覆盖槽。 |
+| `--xh-calendar-period-py` | `cell-trigger`<br>`grid` | `padding-block` | `is([data-view='week'], [data-view='month'], [data-view='quarter'], [data-view='year'])`<br>`view=month`<br>`view=quarter`<br>`view=week`<br>`view=year` | `--xh-space-2` | calendar 的 cell-trigger、grid 部件 padding-block 覆盖槽。 |
+| `--xh-calendar-period-radius` | `cell-trigger`<br>`grid` | `border-radius` | `is([data-view='week'], [data-view='month'], [data-view='quarter'], [data-view='year'])`<br>`view=month`<br>`view=quarter`<br>`view=week`<br>`view=year` | `--xh-shape-control` | calendar 的 cell-trigger、grid 部件 border-radius 覆盖槽。 |
 | `--xh-calendar-range-bg` | `cell` | `background` | `in-range` | `--xh-bg-brand-subtle` | calendar 的 cell 部件 background 覆盖槽。 |
 | `--xh-calendar-range-cap-radius` | `cell` | `border-end-end-radius`<br>`border-end-start-radius`<br>`border-start-end-radius`<br>`border-start-start-radius` | `in-range`<br>`range-end`<br>`range-start` | `--xh-shape-pill` | calendar 的 cell 部件 border-end-end-radius、border-end-start-radius、border-start-end-radius、border-start-start-radius 覆盖槽。 |
 | `--xh-calendar-range-preview-bg` | `cell` | `background` | `range-preview` | `--xh-bg-brand-subtle` | calendar 的 cell 部件 background 覆盖槽。 |
@@ -973,6 +1002,7 @@ function hasPlan(iso: string) {
 | `--xh-calendar-today-bg-hover` | `cell-trigger` | `background` | `disabled`<br>`hover`<br>`in-range`<br>`not([data-selected], [data-disabled], [data-in-range])`<br>`selected`<br>`today` | `--xh-bg-brand-subtle-hover` | calendar 的 cell-trigger 部件 background 覆盖槽。 |
 | `--xh-calendar-today-border` | `cell-trigger` | `border-color` | `today` | `transparent` | calendar 的 cell-trigger 部件 border-color 覆盖槽。 |
 | `--xh-calendar-today-fg` | `cell-trigger` | `color` | `today` | `--xh-fg-brand` | calendar 的 cell-trigger 部件 color 覆盖槽。 |
+| `--xh-calendar-week-cell-px` | `cell-trigger`<br>`grid` | `padding-inline` | `view=week` | `--xh-space-3` | calendar 的 cell-trigger、grid 部件 padding-inline 覆盖槽。 |
 | `--xh-calendar-week-day-fg` | `week-day` | `color` | `default` | `--xh-fg-subtle` | calendar 的 week-day 部件 color 覆盖槽。 |
 | `--xh-calendar-week-day-font-size` | `week-day` | `font-size` | `default` | `--xh-text-caption-size` | calendar 的 week-day 部件 font-size 覆盖槽。 |
 | `--xh-calendar-week-day-font-weight` | `week-day` | `font-weight` | `default` | `--xh-font-weight-medium` | calendar 的 week-day 部件 font-weight 覆盖槽。 |
@@ -980,6 +1010,8 @@ function hasPlan(iso: string) {
 | `--xh-calendar-week-number-fg` | `week-number` | `color` | `default` | `--xh-fg-subtle` | calendar 的 week-number 部件 color 覆盖槽。 |
 | `--xh-calendar-week-number-font-size` | `week-number` | `font-size` | `default` | `--xh-text-caption-size` | calendar 的 week-number 部件 font-size 覆盖槽。 |
 | `--xh-calendar-week-number-w` | `week-number`<br>`week-row` | `grid-template-columns` | `has(> [data-part='week-number'])`<br>`not([hidden])` | `2.25rem` | calendar 的 week-number、week-row 部件 grid-template-columns 覆盖槽。 |
+| `--xh-calendar-year-grid-max-h` | `grid` | `max-block-size` | `view=year` | `--xh-viewport-h-sm` | calendar 的 grid 部件 max-block-size 覆盖槽。 |
+| `--xh-calendar-year-grid-pe` | `grid` | `padding-inline-end` | `view=year` | `--xh-space-1` | calendar 的 grid 部件 padding-inline-end 覆盖槽。 |
 <!-- xh-component-tokens:end -->
 
 ### 动效

@@ -17,6 +17,11 @@
 一份 JSON 摊成可展开的树：键名与值各自成块，六种类型各自上色，默认只展开根行
 
 ```vue
+<!--
+  Copyright (c) 2021-Present XiHanFun and contributors.
+  Licensed under the MIT License. See LICENSE in the project root for license information.
+-->
+
 <script setup lang="ts">
 import { XhJsonViewerRoot } from "@xihan-ui/vue";
 
@@ -61,6 +66,11 @@ const payload = {
 defaultExpandedDepth 决定初次摊到第几层：1 只展开根行，3 连孙层一起铺开
 
 ```vue
+<!--
+  Copyright (c) 2021-Present XiHanFun and contributors.
+  Licensed under the MIT License. See LICENSE in the project root for license information.
+-->
+
 <script setup lang="ts">
 import { XhJsonViewerRoot } from "@xihan-ui/vue";
 
@@ -115,6 +125,11 @@ const payload = {
 传了 expandedValue 就由宿主说了算，组件只发 expanded-value-change 不落内部值，写回它才动
 
 ```vue
+<!--
+  Copyright (c) 2021-Present XiHanFun and contributors.
+  Licensed under the MIT License. See LICENSE in the project root for license information.
+-->
+
 <script setup lang="ts">
 import { JSON_VIEWER_ROOT_PATH, jsonExpandedPathsToDepth } from "@xihan-ui/headless";
 import { XhButton, XhJsonViewerRoot } from "@xihan-ui/vue";
@@ -213,6 +228,11 @@ function onExpandedValueChange(details: { value: string[] }) {
 maxItems 把超长数组折成一行占位，maxStringLength 截掉过长的字符串，一份大 JSON 不会把页面压住
 
 ```vue
+<!--
+  Copyright (c) 2021-Present XiHanFun and contributors.
+  Licensed under the MIT License. See LICENSE in the project root for license information.
+-->
+
 <script setup lang="ts">
 import { XhJsonViewerRoot } from "@xihan-ui/vue";
 
@@ -261,6 +281,11 @@ const payload = {
 sortKeys 让对象键按字典序排，数组顺序不动；接口返回的字段顺序不稳定时用它
 
 ```vue
+<!--
+  Copyright (c) 2021-Present XiHanFun and contributors.
+  Licensed under the MIT License. See LICENSE in the project root for license information.
+-->
+
 <script setup lang="ts">
 import { XhJsonViewerRoot } from "@xihan-ui/vue";
 
@@ -302,6 +327,11 @@ const payload = {
 值出现在自己的祖先链上就停下并标成 [Circular]，不会无限递归；共享引用不算环，照样摊开
 
 ```vue
+<!--
+  Copyright (c) 2021-Present XiHanFun and contributors.
+  Licensed under the MIT License. See LICENSE in the project root for license information.
+-->
+
 <script setup lang="ts">
 import { XhJsonViewerRoot } from "@xihan-ui/vue";
 
@@ -340,6 +370,11 @@ node.parent = node;
 size 三档只换字号与层级缩进，行的结构与配色都不变
 
 ```vue
+<!--
+  Copyright (c) 2021-Present XiHanFun and contributors.
+  Licensed under the MIT License. See LICENSE in the project root for license information.
+-->
+
 <script setup lang="ts">
 import { XhJsonViewerRoot } from "@xihan-ui/vue";
 
@@ -383,6 +418,11 @@ const payload = { id: 7, label: "曦寒", nested: { ok: true } };
 view="text" 直接出缩进过的 JSON 原文：整块可框选可复制，且不受 maxStringLength / maxItems 折减
 
 ```vue
+<!--
+  Copyright (c) 2021-Present XiHanFun and contributors.
+  Licensed under the MIT License. See LICENSE in the project root for license information.
+-->
+
 <script setup lang="ts">
 import { XhJsonViewerRoot } from "@xihan-ui/vue";
 import { ref } from "vue";
@@ -434,6 +474,11 @@ const view = ref<"tree" | "text">("text");
 一行也摊不出来时空态那一格站出来说话；variant="plain" 去掉外框与底色
 
 ```vue
+<!--
+  Copyright (c) 2021-Present XiHanFun and contributors.
+  Licensed under the MIT License. See LICENSE in the project root for license information.
+-->
+
 <script setup lang="ts">
 import { XhButton, XhJsonViewerRoot } from "@xihan-ui/vue";
 import { ref } from "vue";

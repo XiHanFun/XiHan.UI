@@ -17,6 +17,11 @@
 点触发器就地问一句，确认与取消都收起浮层；展开时焦点先落在取消上
 
 ```vue
+<!--
+  Copyright (c) 2021-Present XiHanFun and contributors.
+  Licensed under the MIT License. See LICENSE in the project root for license information.
+-->
+
 <script setup lang="ts">
 import {
   XhPopconfirmArrow,
@@ -100,6 +105,11 @@ const answer = ref("还没答复");
 placement 是首选位，位置不够时引擎自己避让，实际落点写在 data-placement 上
 
 ```vue
+<!--
+  Copyright (c) 2021-Present XiHanFun and contributors.
+  Licensed under the MIT License. See LICENSE in the project root for license information.
+-->
+
 <script setup lang="ts">
 import {
   XhPopconfirmCancelTrigger,
@@ -197,6 +207,11 @@ const placements = ["top", "bottom", "left", "right"] as const;
 size 换的是面板的内边距与最大宽度，三个档位落在 content 上
 
 ```vue
+<!--
+  Copyright (c) 2021-Present XiHanFun and contributors.
+  Licensed under the MIT License. See LICENSE in the project root for license information.
+-->
+
 <script setup lang="ts">
 import {
   XhPopconfirmCancelTrigger,
@@ -288,6 +303,11 @@ const sizes = ["sm", "md", "lg"] as const;
 在 content 上写 data-tone，确认按钮跟着换色；语气是共享的一层，不是本组件的 prop
 
 ```vue
+<!--
+  Copyright (c) 2021-Present XiHanFun and contributors.
+  Licensed under the MIT License. See LICENSE in the project root for license information.
+-->
+
 <script setup lang="ts">
 import {
   XhPopconfirmCancelTrigger,
@@ -366,6 +386,11 @@ const tones = ["brand", "danger", "warning"] as const;
 确认回调返回 Promise 即挂起确认门：浮层等兑现才收起、确认按钮转圈且再点无效，落空（reject）留在原地；不必再手动受控拦收起
 
 ```vue
+<!--
+  Copyright (c) 2021-Present XiHanFun and contributors.
+  Licensed under the MIT License. See LICENSE in the project root for license information.
+-->
+
 <script setup lang="ts">
 import {
   XhPopconfirmCancelTrigger,

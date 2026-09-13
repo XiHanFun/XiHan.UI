@@ -1,1 +1,0 @@
-import{E as l}from"./theme.Dk_9lYjD.js";import{d as o,o as a,b as t,k as r}from"./framework.DkvuVDKz.js";const i=o({__name:"03-multiple",setup(n){const e=[{value:"bold",label:"B"},{value:"italic",label:"I"},{value:"underline",label:"U"}];return(u,c)=>(a(),t(r(l),{collection:e,"default-value":["bold"],multiple:""}))}});export{i as default};

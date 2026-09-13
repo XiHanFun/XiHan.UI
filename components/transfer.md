@@ -17,6 +17,11 @@
 collection 是条目全集的唯一事实源，value 只装落在右侧的那批
 
 ```vue
+<!--
+  Copyright (c) 2021-Present XiHanFun and contributors.
+  Licensed under the MIT License. See LICENSE in the project root for license information.
+-->
+
 <script setup lang="ts">
 import {
   XhTransferItem,
@@ -214,6 +219,11 @@ const value = ref<string[]>(["read"]);
 searchable 给每侧配一个搜索框，筛剩下的才参与方向键、全选与搬运
 
 ```vue
+<!--
+  Copyright (c) 2021-Present XiHanFun and contributors.
+  Licensed under the MIT License. See LICENSE in the project root for license information.
+-->
+
 <script setup lang="ts">
 import {
   XhTransferItem,
@@ -435,6 +445,11 @@ function filter(item: { value: string; label: string }, query: string) {
 禁用写在 items 上：勾不动也搬不动，但仍可聚焦、仍是方向键的起点
 
 ```vue
+<!--
+  Copyright (c) 2021-Present XiHanFun and contributors.
+  Licensed under the MIT License. See LICENSE in the project root for license information.
+-->
+
 <script setup lang="ts">
 import {
   XhTransferItem,
@@ -591,6 +606,11 @@ const value = ref<string[]>(["owner"]);
 oneWay 把往回搬那条路整个封死，右侧不再接受勾选，往回的按钮也就不必写
 
 ```vue
+<!--
+  Copyright (c) 2021-Present XiHanFun and contributors.
+  Licensed under the MIT License. See LICENSE in the project root for license information.
+-->
+
 <script setup lang="ts">
 import {
   XhTransferItem,
@@ -754,6 +774,11 @@ const value = ref<string[]>([]);
 条目里长什么样归作者：勾选格与文本各就各位，前后再各加一段自己的标记
 
 ```vue
+<!--
+  Copyright (c) 2021-Present XiHanFun and contributors.
+  Licensed under the MIT License. See LICENSE in the project root for license information.
+-->
+
 <script setup lang="ts">
 import {
   XhTransferItem,
@@ -990,6 +1015,11 @@ const value = ref<string[]>(["he"]);
 本侧此刻看得见的条目由组件给出，据此分组渲染；group 是 role=group 的段落壳，段标题不入方向键也不入搬运
 
 ```vue
+<!--
+  Copyright (c) 2021-Present XiHanFun and contributors.
+  Licensed under the MIT License. See LICENSE in the project root for license information.
+-->
+
 <script setup lang="ts">
 import {
   XhTransferGroup,
@@ -1212,6 +1242,11 @@ const value = ref<string[]>(["list"]);
 面板插槽给的是本侧此刻看得见的全集，作者按滚动位置切一段挂出来，上下各留一个撑高块；全选、计数与搬运不读 DOM，照样管到窗口外
 
 ```vue
+<!--
+  Copyright (c) 2021-Present XiHanFun and contributors.
+  Licensed under the MIT License. See LICENSE in the project root for license information.
+-->
+
 <script setup lang="ts">
 import {
   XhTransferItem,
@@ -1480,6 +1515,11 @@ const value = ref<string[]>(["sku-3"]);
 按住 Shift 点某一项，选中锚点到它那一段；锚点跨到另一侧时退化成普通勾选
 
 ```vue
+<!--
+  Copyright (c) 2021-Present XiHanFun and contributors.
+  Licensed under the MIT License. See LICENSE in the project root for license information.
+-->
+
 <script setup lang="ts">
 import {
   XhTransferItem,
@@ -1674,6 +1714,11 @@ const value = ref<string[]>(["read"]);
 面板高度、表头、条目行、勾选格与搬运按钮各是一个令牌，写在根上整块一起换档
 
 ```vue
+<!--
+  Copyright (c) 2021-Present XiHanFun and contributors.
+  Licensed under the MIT License. See LICENSE in the project root for license information.
+-->
+
 <script setup lang="ts">
 import {
   XhTransferItem,
@@ -2008,6 +2053,11 @@ const loose = ref<string[]>(["read"]);
 tone 换勾选标记的色族，size 换条目行与勾选格的几何档；两轴打在根上，两侧面板一起走
 
 ```vue
+<!--
+  Copyright (c) 2021-Present XiHanFun and contributors.
+  Licensed under the MIT License. See LICENSE in the project root for license information.
+-->
+
 <script setup lang="ts">
 import {
   XhTransferItem,

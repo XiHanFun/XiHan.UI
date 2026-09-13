@@ -17,6 +17,11 @@
 一条一句话：title 部件留空时由属性上的文案填入；duration 给 0 即不自动消失
 
 ```vue
+<!--
+  Copyright (c) 2021-Present XiHanFun and contributors.
+  Licensed under the MIT License. See LICENSE in the project root for license information.
+-->
+
 <script setup lang="ts">
 import {
   XhButton,
@@ -93,6 +98,11 @@ const seq = ref(0);
 type 落成 data-severity，淡底、描边与字形一起换族，正文留中性；error 走 alert + assertive，loading 表示事情还没完、不自动消失
 
 ```vue
+<!--
+  Copyright (c) 2021-Present XiHanFun and contributors.
+  Licensed under the MIT License. See LICENSE in the project root for license information.
+-->
+
 <script setup lang="ts">
 import {
   CheckIcon,
@@ -264,6 +274,11 @@ const glyphStyle = {
 duration 走完自动退场；指针停在条子上或焦点进到条子里都会把计时按住，离开才接着走剩下那一段
 
 ```vue
+<!--
+  Copyright (c) 2021-Present XiHanFun and contributors.
+  Licensed under the MIT License. See LICENSE in the project root for license information.
+-->
+
 <script setup lang="ts">
 import {
   XhButton,
@@ -356,6 +371,11 @@ const seq = ref(0);
 action-trigger 按下时先发 action 事件，再让这条进入退场；closable 决定还要不要那颗叉
 
 ```vue
+<!--
+  Copyright (c) 2021-Present XiHanFun and contributors.
+  Licensed under the MIT License. See LICENSE in the project root for license information.
+-->
+
 <script setup lang="ts">
 import {
   XhButton,
@@ -451,6 +471,11 @@ function onAction(details: { id: string }): void {
 条子本身就是一行 flex，摆什么、摆在哪一侧都归作者；组件只管盒子、计时与退场
 
 ```vue
+<!--
+  Copyright (c) 2021-Present XiHanFun and contributors.
+  Licensed under the MIT License. See LICENSE in the project root for license information.
+-->
+
 <script setup lang="ts">
 import { CopyIcon, RocketIcon } from "@xihan-ui/icons";
 import { XhIcon, XhToastRoot, XhToastTitle } from "@xihan-ui/vue";
@@ -542,6 +567,11 @@ const glyphStyle = {
 轻提示没有容器组件，那一摞由 createToastService 渲染；模块作用域随处可调（请求拦截器、store）
 
 ```vue
+<!--
+  Copyright (c) 2021-Present XiHanFun and contributors.
+  Licensed under the MIT License. See LICENSE in the project root for license information.
+-->
+
 <script setup lang="ts">
 import type { ToastService } from "@xihan-ui/vue";
 import { createToastService, XhButton } from "@xihan-ui/vue";

@@ -17,6 +17,11 @@
 root 是 role=status 的活区，转圈图形由皮肤画在伪元素上；label 给出这一处在等什么
 
 ```vue
+<!--
+  Copyright (c) 2021-Present XiHanFun and contributors.
+  Licensed under the MIT License. See LICENSE in the project root for license information.
+-->
+
 <script setup lang="ts">
 import { XhSpinner } from "@xihan-ui/vue";
 </script>
@@ -45,6 +50,11 @@ import { XhSpinner } from "@xihan-ui/vue";
 size 只换直径，缺省档 md 不输出 data-size
 
 ```vue
+<!--
+  Copyright (c) 2021-Present XiHanFun and contributors.
+  Licensed under the MIT License. See LICENSE in the project root for license information.
+-->
+
 <script setup lang="ts">
 import { XhSpinner } from "@xihan-ui/vue";
 </script>
@@ -73,6 +83,11 @@ import { XhSpinner } from "@xihan-ui/vue";
 label 部件不写内容时显示解析后的 label，屏幕上看到的与读屏念的因此是同一段字
 
 ```vue
+<!--
+  Copyright (c) 2021-Present XiHanFun and contributors.
+  Licensed under the MIT License. See LICENSE in the project root for license information.
+-->
+
 <script setup lang="ts">
 import { XhSpinner, XhSpinnerLabel } from "@xihan-ui/vue";
 </script>
@@ -128,6 +143,11 @@ import { XhSpinner, XhSpinnerLabel } from "@xihan-ui/vue";
 tone 只换圆环起始边那一段颜色，轨道留在中性描边上，转到哪儿才看得出来
 
 ```vue
+<!--
+  Copyright (c) 2021-Present XiHanFun and contributors.
+  Licensed under the MIT License. See LICENSE in the project root for license information.
+-->
+
 <script setup lang="ts">
 import { XhSpinner } from "@xihan-ui/vue";
 
@@ -192,6 +212,11 @@ const tones = ["brand", "neutral", "success", "warning", "danger", "info"] as co
 转圈浮在内容上方，容器同时报 aria-busy，看得见的与念得出的是同一件事
 
 ```vue
+<!--
+  Copyright (c) 2021-Present XiHanFun and contributors.
+  Licensed under the MIT License. See LICENSE in the project root for license information.
+-->
+
 <script setup lang="ts">
 import { XhSpinner } from "@xihan-ui/vue";
 import { ref } from "vue";
@@ -293,6 +318,11 @@ const overlayStyle = [
 内置圆环画在伪元素上，把直径与描边归零它就不占位；自绘的图形写进 root 里
 
 ```vue
+<!--
+  Copyright (c) 2021-Present XiHanFun and contributors.
+  Licensed under the MIT License. See LICENSE in the project root for license information.
+-->
+
 <script setup lang="ts">
 import { XhIcon, XhSpinner, XhSpinnerLabel } from "@xihan-ui/vue";
 
@@ -429,6 +459,11 @@ function dotStyle(step: number): string {
 ring 整圈、arc 一段弧、dots 三点；缺省档 ring 不输出 data-variant
 
 ```vue
+<!--
+  Copyright (c) 2021-Present XiHanFun and contributors.
+  Licensed under the MIT License. See LICENSE in the project root for license information.
+-->
+
 <script setup lang="ts">
 import { XhSpinner } from "@xihan-ui/vue";
 </script>

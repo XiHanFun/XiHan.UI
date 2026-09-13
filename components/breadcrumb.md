@@ -17,6 +17,11 @@
 显示当前页面的层级路径
 
 ```vue
+<!--
+  Copyright (c) 2021-Present XiHanFun and contributors.
+  Licensed under the MIT License. See LICENSE in the project root for license information.
+-->
+
 <script setup lang="ts">
 import { XhBreadcrumbRoot } from "@xihan-ui/vue";
 
@@ -62,6 +67,11 @@ const items = [
 收起过长路径的中间部分
 
 ```vue
+<!--
+  Copyright (c) 2021-Present XiHanFun and contributors.
+  Licensed under the MIT License. See LICENSE in the project root for license information.
+-->
+
 <script setup lang="ts">
 import { XhBreadcrumbRoot } from "@xihan-ui/vue";
 
@@ -98,6 +108,11 @@ const items = [
 替换层级之间的视觉标记
 
 ```vue
+<!--
+  Copyright (c) 2021-Present XiHanFun and contributors.
+  Licensed under the MIT License. See LICENSE in the project root for license information.
+-->
+
 <script setup lang="ts">
 import { XhBreadcrumbRoot } from "@xihan-ui/vue";
 
@@ -134,6 +149,11 @@ const items = [
 适配不同的信息密度
 
 ```vue
+<!--
+  Copyright (c) 2021-Present XiHanFun and contributors.
+  Licensed under the MIT License. See LICENSE in the project root for license information.
+-->
+
 <script setup lang="ts">
 import { XhBreadcrumbRoot } from "@xihan-ui/vue";
 

@@ -17,6 +17,11 @@
 显示单个键名
 
 ```vue
+<!--
+  Copyright (c) 2021-Present XiHanFun and contributors.
+  Licensed under the MIT License. See LICENSE in the project root for license information.
+-->
+
 <script setup lang="ts">
 import { XhKbd } from "@xihan-ui/vue";
 </script>
@@ -45,6 +50,11 @@ import { XhKbd } from "@xihan-ui/vue";
 小、中、大三档
 
 ```vue
+<!--
+  Copyright (c) 2021-Present XiHanFun and contributors.
+  Licensed under the MIT License. See LICENSE in the project root for license information.
+-->
+
 <script setup lang="ts">
 import { XhKbd } from "@xihan-ui/vue";
 </script>
@@ -71,6 +81,11 @@ import { XhKbd } from "@xihan-ui/vue";
 表示对应动作不可用
 
 ```vue
+<!--
+  Copyright (c) 2021-Present XiHanFun and contributors.
+  Licensed under the MIT License. See LICENSE in the project root for license information.
+-->
+
 <script setup lang="ts">
 import { XhKbd } from "@xihan-ui/vue";
 </script>
@@ -89,6 +104,11 @@ import { XhKbd } from "@xihan-ui/vue";
 展示动作激活时的键帽状态
 
 ```vue
+<!--
+  Copyright (c) 2021-Present XiHanFun and contributors.
+  Licensed under the MIT License. See LICENSE in the project root for license information.
+-->
+
 <script setup lang="ts">
 import { XhKbd } from "@xihan-ui/vue";
 </script>

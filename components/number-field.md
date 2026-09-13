@@ -17,6 +17,11 @@
 加减按钮与输入框共用一份状态；值是原始输入串，不传 value 即为非受控
 
 ```vue
+<!--
+  Copyright (c) 2021-Present XiHanFun and contributors.
+  Licensed under the MIT License. See LICENSE in the project root for license information.
+-->
+
 <script setup lang="ts">
 import {
   XhNumberFieldControl,
@@ -66,6 +71,11 @@ import {
 方向键走 step，PageUp 与 PageDown 走 largeStep，Home 与 End 取端点；贴到边界时对应按钮转灰
 
 ```vue
+<!--
+  Copyright (c) 2021-Present XiHanFun and contributors.
+  Licensed under the MIT License. See LICENSE in the project root for license information.
+-->
+
 <script setup lang="ts">
 import {
   XhNumberFieldControl,
@@ -148,6 +158,11 @@ import {
 传了 value 就由宿主说了算；value-change 除了原始串还带一份 valueAsNumber
 
 ```vue
+<!--
+  Copyright (c) 2021-Present XiHanFun and contributors.
+  Licensed under the MIT License. See LICENSE in the project root for license information.
+-->
+
 <script setup lang="ts">
 import {
   XhNumberFieldControl,
@@ -216,6 +231,11 @@ const asNumber = ref(3);
 两者都改不动值，禁用还会把加减按钮一并关掉、值也不再随表单提交
 
 ```vue
+<!--
+  Copyright (c) 2021-Present XiHanFun and contributors.
+  Licensed under the MIT License. See LICENSE in the project root for license information.
+-->
+
 <script setup lang="ts">
 import {
   XhNumberFieldControl,
@@ -277,6 +297,11 @@ import {
 variant 只改皮肤怎么用颜色，加减与键盘行为三档完全一致
 
 ```vue
+<!--
+  Copyright (c) 2021-Present XiHanFun and contributors.
+  Licensed under the MIT License. See LICENSE in the project root for license information.
+-->
+
 <script setup lang="ts">
 import {
   XhNumberFieldControl,
@@ -346,6 +371,11 @@ const variants = ["outline", "subtle", "ghost"] as const;
 tone 决定用哪族颜色，与 variant 正交；这里固定 outline 只看语气的差别
 
 ```vue
+<!--
+  Copyright (c) 2021-Present XiHanFun and contributors.
+  Licensed under the MIT License. See LICENSE in the project root for license information.
+-->
+
 <script setup lang="ts">
 import {
   XhNumberFieldControl,
@@ -448,6 +478,11 @@ const tones = ["brand", "neutral", "success", "warning", "danger", "info"] as co
 输入框高度与加减按钮一起换档，不传 size 即默认档
 
 ```vue
+<!--
+  Copyright (c) 2021-Present XiHanFun and contributors.
+  Licensed under the MIT License. See LICENSE in the project root for license information.
+-->
+
 <script setup lang="ts">
 import {
   XhNumberFieldControl,
@@ -523,6 +558,11 @@ const sizes = [
 加减钮是可选部件，不渲染它照样能改值：方向键走 step，PageUp 与 PageDown 走 largeStep
 
 ```vue
+<!--
+  Copyright (c) 2021-Present XiHanFun and contributors.
+  Licensed under the MIT License. See LICENSE in the project root for license information.
+-->
+
 <script setup lang="ts">
 import { XhNumberFieldInput, XhNumberFieldLabel, XhNumberFieldRoot } from "@xihan-ui/vue";
 </script>
@@ -575,6 +615,11 @@ import { XhNumberFieldInput, XhNumberFieldLabel, XhNumberFieldRoot } from "@xiha
 触发器位置由作者写模板决定：放进 control 即减在左、加在右、输入框居中的一体式，不写 control 则照旧三件并排
 
 ```vue
+<!--
+  Copyright (c) 2021-Present XiHanFun and contributors.
+  Licensed under the MIT License. See LICENSE in the project root for license information.
+-->
+
 <script setup lang="ts">
 import {
   XhNumberFieldControl,
@@ -636,6 +681,11 @@ import {
 invalid 由宿主自己判定，不必挂在表单上；标出来之后值照样能改、加减钮照样能按
 
 ```vue
+<!--
+  Copyright (c) 2021-Present XiHanFun and contributors.
+  Licensed under the MIT License. See LICENSE in the project root for license information.
+-->
+
 <script setup lang="ts">
 import {
   XhNumberFieldControl,
@@ -706,6 +756,11 @@ function onValueChange(details: { valueAsNumber: number }) {
 前后缀图标/文字直接流式插进 control：减在左、加在右、输入框居中，前后缀排在输入框两侧
 
 ```vue
+<!--
+  Copyright (c) 2021-Present XiHanFun and contributors.
+  Licensed under the MIT License. See LICENSE in the project root for license information.
+-->
+
 <script setup lang="ts">
 import {
   XhNumberFieldControl,
@@ -773,6 +828,11 @@ import {
 步进本身带定点规整，宿主在离开输入框与松开加减钮时把值补齐到两位小数
 
 ```vue
+<!--
+  Copyright (c) 2021-Present XiHanFun and contributors.
+  Licensed under the MIT License. See LICENSE in the project root for license information.
+-->
+
 <script setup lang="ts">
 import {
   XhNumberFieldControl,
@@ -852,6 +912,11 @@ function pad() {
 输入途中只动草稿，失焦或回车才把值交给业务模型；不合法就退回上一次提交的值
 
 ```vue
+<!--
+  Copyright (c) 2021-Present XiHanFun and contributors.
+  Licensed under the MIT License. See LICENSE in the project root for license information.
+-->
+
 <script setup lang="ts">
 import {
   XhNumberFieldControl,
@@ -948,6 +1013,11 @@ function commit() {
 parse 把显示串读成数、format 把数写回显示串；两个方向必须互逆，否则按一下加号值就会漂
 
 ```vue
+<!--
+  Copyright (c) 2021-Present XiHanFun and contributors.
+  Licensed under the MIT License. See LICENSE in the project root for license information.
+-->
+
 <script setup lang="ts">
 import {
   XhNumberFieldControl,
@@ -1336,7 +1406,7 @@ const formatWeight = (value: number) => `${value} kg`;
 
 ### 动效
 
-`background` · `border-color` · `scale` 走 `transition` 过渡。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
+`background` · `border-color` · `outline-color` · `scale` 走 `transition` 过渡。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
 
 系统开启减弱动效时由令牌层统一收敛，皮肤不另作判断。
 

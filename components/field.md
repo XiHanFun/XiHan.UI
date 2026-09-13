@@ -17,6 +17,11 @@
 为控件添加标签与说明
 
 ```vue
+<!--
+  Copyright (c) 2021-Present XiHanFun and contributors.
+  Licensed under the MIT License. See LICENSE in the project root for license information.
+-->
+
 <script setup lang="ts">
 import { XhFieldControl, XhFieldDescription, XhFieldLabel, XhFieldRoot } from "@xihan-ui/vue";
 </script>
@@ -55,6 +60,11 @@ import { XhFieldControl, XhFieldDescription, XhFieldLabel, XhFieldRoot } from "@
 显示字段错误
 
 ```vue
+<!--
+  Copyright (c) 2021-Present XiHanFun and contributors.
+  Licensed under the MIT License. See LICENSE in the project root for license information.
+-->
+
 <script setup lang="ts">
 import {
   XhFieldControl,
@@ -116,6 +126,11 @@ const invalid = computed(() => email.value !== "" && !email.value.includes("@"))
 禁止编辑字段
 
 ```vue
+<!--
+  Copyright (c) 2021-Present XiHanFun and contributors.
+  Licensed under the MIT License. See LICENSE in the project root for license information.
+-->
+
 <script setup lang="ts">
 import { XhFieldControl, XhFieldDescription, XhFieldLabel, XhFieldRoot } from "@xihan-ui/vue";
 </script>
@@ -146,6 +161,11 @@ import { XhFieldControl, XhFieldDescription, XhFieldLabel, XhFieldRoot } from "@
 将标签放在控件左侧
 
 ```vue
+<!--
+  Copyright (c) 2021-Present XiHanFun and contributors.
+  Licensed under the MIT License. See LICENSE in the project root for license information.
+-->
+
 <script setup lang="ts">
 import {
   XhFieldControl,
@@ -360,7 +380,7 @@ import {
 
 ### 动效
 
-`background` · `border-color` · `box-shadow` · `color` 走 `transition` 过渡。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
+`background` · `border-color` · `box-shadow` · `color` · `outline-color` 走 `transition` 过渡。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
 
 系统开启减弱动效时由令牌层统一收敛，皮肤不另作判断。
 

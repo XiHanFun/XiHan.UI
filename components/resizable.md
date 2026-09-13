@@ -17,6 +17,11 @@
 从右侧、底部或右下角调整尺寸
 
 ```vue
+<!--
+  Copyright (c) 2021-Present XiHanFun and contributors.
+  Licensed under the MIT License. See LICENSE in the project root for license information.
+-->
+
 <script setup lang="ts">
 import { XhResizableHandle, XhResizableRoot } from "@xihan-ui/vue";
 import { ref } from "vue";
@@ -69,6 +74,11 @@ const EDGES = ["e", "s", "se"] as const;
 从任意边缘或角点调整尺寸
 
 ```vue
+<!--
+  Copyright (c) 2021-Present XiHanFun and contributors.
+  Licensed under the MIT License. See LICENSE in the project root for license information.
+-->
+
 <script setup lang="ts">
 import { XhResizableHandle, XhResizableRoot } from "@xihan-ui/vue";
 import { ref } from "vue";
@@ -108,6 +118,11 @@ const EDGES = ["n", "ne", "e", "se", "s", "sw", "w", "nw"] as const;
 设置宽高比和步进
 
 ```vue
+<!--
+  Copyright (c) 2021-Present XiHanFun and contributors.
+  Licensed under the MIT License. See LICENSE in the project root for license information.
+-->
+
 <script setup lang="ts">
 import { XhResizableHandle, XhResizableRoot } from "@xihan-ui/vue";
 import { ref } from "vue";
@@ -214,6 +229,11 @@ const snapped = ref({ width: 240, height: 120 });
 禁止调整尺寸
 
 ```vue
+<!--
+  Copyright (c) 2021-Present XiHanFun and contributors.
+  Licensed under the MIT License. See LICENSE in the project root for license information.
+-->
+
 <script setup lang="ts">
 import { XhResizableHandle, XhResizableRoot } from "@xihan-ui/vue";
 </script>

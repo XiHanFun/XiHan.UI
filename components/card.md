@@ -17,6 +17,11 @@
 除了 root，封面、头、身、脚都可选；只写用得上的那几段
 
 ```vue
+<!--
+  Copyright (c) 2021-Present XiHanFun and contributors.
+  Licensed under the MIT License. See LICENSE in the project root for license information.
+-->
+
 <script setup lang="ts">
 import { XhCardBody, XhCardDescription, XhCardHeader, XhCardRoot, XhCardTitle } from "@xihan-ui/vue";
 </script>
@@ -57,6 +62,11 @@ import { XhCardBody, XhCardDescription, XhCardHeader, XhCardRoot, XhCardTitle } 
 variant 只改描边、底色与投影怎么用，各段的排版三档一致
 
 ```vue
+<!--
+  Copyright (c) 2021-Present XiHanFun and contributors.
+  Licensed under the MIT License. See LICENSE in the project root for license information.
+-->
+
 <script setup lang="ts">
 import { XhCardBody, XhCardHeader, XhCardRoot, XhCardTitle } from "@xihan-ui/vue";
 
@@ -120,6 +130,11 @@ const variants = ["outline", "subtle", "elevated", "ghost"] as const;
 size 换的是各段的内边距与标题字号，不写 size 即默认档
 
 ```vue
+<!--
+  Copyright (c) 2021-Present XiHanFun and contributors.
+  Licensed under the MIT License. See LICENSE in the project root for license information.
+-->
+
 <script setup lang="ts">
 import { XhCardBody, XhCardHeader, XhCardRoot, XhCardTitle } from "@xihan-ui/vue";
 
@@ -186,6 +201,11 @@ const sizes = [
 split 在段与段之间画一条分隔线；hoverable 只在能用指针的设备上抬起
 
 ```vue
+<!--
+  Copyright (c) 2021-Present XiHanFun and contributors.
+  Licensed under the MIT License. See LICENSE in the project root for license information.
+-->
+
 <script setup lang="ts">
 import { XhCardBody, XhCardFooter, XhCardHeader, XhCardRoot, XhCardTitle } from "@xihan-ui/vue";
 </script>
@@ -238,6 +258,11 @@ import { XhCardBody, XhCardFooter, XhCardHeader, XhCardRoot, XhCardTitle } from 
 封面顶到根的边上、不吃内边距，圆角由根统一裁
 
 ```vue
+<!--
+  Copyright (c) 2021-Present XiHanFun and contributors.
+  Licensed under the MIT License. See LICENSE in the project root for license information.
+-->
+
 <script setup lang="ts">
 import { XhCardBody, XhCardDescription, XhCardHeader, XhCardMedia, XhCardRoot, XhCardTitle } from "@xihan-ui/vue";
 </script>

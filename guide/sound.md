@@ -9,6 +9,11 @@
 下面的示例都会真的出声，先把音量调小一点。
 
 ```vue
+<!--
+  Copyright (c) 2021-Present XiHanFun and contributors.
+  Licensed under the MIT License. See LICENSE in the project root for license information.
+-->
+
 <script setup lang="ts">
 import type { SoundTheme } from "@xihan-ui/sound";
 import {
@@ -107,6 +112,11 @@ const ding: SoundSpec = {
 配方是纯数据，这带来三件事：主题可以整套替换、用户配置可以持久化再回放、调音界面可以直接编辑它——比如下面这个：
 
 ```vue
+<!--
+  Copyright (c) 2021-Present XiHanFun and contributors.
+  Licensed under the MIT License. See LICENSE in the project root for license information.
+-->
+
 <script setup lang="ts">
 import type { OscillatorLayer, SoundSpec } from "@xihan-ui/sound";
 import { createSoundPlayer, glide, strike } from "@xihan-ui/sound";
@@ -289,6 +299,11 @@ await dialog.confirm({ title: "删除这条记录？" });
 ```
 
 ```vue
+<!--
+  Copyright (c) 2021-Present XiHanFun and contributors.
+  Licensed under the MIT License. See LICENSE in the project root for license information.
+-->
+
 <script setup lang="ts">
 import type { ToastService } from "@xihan-ui/vue";
 import { createToastService, XhButton } from "@xihan-ui/vue";
@@ -347,6 +362,11 @@ withToastSound(createToastService(), {
 ### 给单个元素配声
 
 ```vue
+<!--
+  Copyright (c) 2021-Present XiHanFun and contributors.
+  Licensed under the MIT License. See LICENSE in the project root for license information.
+-->
+
 <script setup lang="ts">
 import { XhButton } from "@xihan-ui/vue";
 import { vSound } from "@xihan-ui/vue/sound";

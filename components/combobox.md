@@ -17,6 +17,11 @@
 搜索并选择城市
 
 ```vue
+<!--
+  Copyright (c) 2021-Present XiHanFun and contributors.
+  Licensed under the MIT License. See LICENSE in the project root for license information.
+-->
+
 <script setup lang="ts">
 import { XhComboboxRoot } from "@xihan-ui/vue";
 import { computed, ref } from "vue";
@@ -113,6 +118,11 @@ const filtered = computed(() => {
 选择多个城市
 
 ```vue
+<!--
+  Copyright (c) 2021-Present XiHanFun and contributors.
+  Licensed under the MIT License. See LICENSE in the project root for license information.
+-->
+
 <script setup lang="ts">
 import { XhComboboxRoot } from "@xihan-ui/vue";
 import { computed, ref } from "vue";
@@ -196,6 +206,11 @@ const filtered = computed(() => {
 选择候选项或输入新值
 
 ```vue
+<!--
+  Copyright (c) 2021-Present XiHanFun and contributors.
+  Licensed under the MIT License. See LICENSE in the project root for license information.
+-->
+
 <script setup lang="ts">
 import { XhComboboxRoot } from "@xihan-ui/vue";
 import { computed, ref } from "vue";
@@ -274,6 +289,11 @@ const filtered = computed(() => {
 按分类组织候选项
 
 ```vue
+<!--
+  Copyright (c) 2021-Present XiHanFun and contributors.
+  Licensed under the MIT License. See LICENSE in the project root for license information.
+-->
+
 <script setup lang="ts">
 import {
   XhComboboxClearTrigger,
@@ -422,6 +442,11 @@ const filtered = computed(() => {
 设置输入框外观
 
 ```vue
+<!--
+  Copyright (c) 2021-Present XiHanFun and contributors.
+  Licensed under the MIT License. See LICENSE in the project root for license information.
+-->
+
 <script setup lang="ts">
 import { XhComboboxRoot } from "@xihan-ui/vue";
 
@@ -541,6 +566,11 @@ const fruits = [
 标记无效输入
 
 ```vue
+<!--
+  Copyright (c) 2021-Present XiHanFun and contributors.
+  Licensed under the MIT License. See LICENSE in the project root for license information.
+-->
+
 <script setup lang="ts">
 import { XhComboboxRoot } from "@xihan-ui/vue";
 
@@ -586,6 +616,11 @@ const cities = [
 查询远程数据
 
 ```vue
+<!--
+  Copyright (c) 2021-Present XiHanFun and contributors.
+  Licensed under the MIT License. See LICENSE in the project root for license information.
+-->
+
 <script setup lang="ts">
 import {
   XhComboboxClearTrigger,
@@ -729,6 +764,11 @@ function onSearch(details: { inputValue: string }): void {
 在候选项中显示辅助信息
 
 ```vue
+<!--
+  Copyright (c) 2021-Present XiHanFun and contributors.
+  Licensed under the MIT License. See LICENSE in the project root for license information.
+-->
+
 <script setup lang="ts">
 import {
   XhComboboxClearTrigger,

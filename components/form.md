@@ -17,6 +17,11 @@
 提交并校验表单
 
 ```vue
+<!--
+  Copyright (c) 2021-Present XiHanFun and contributors.
+  Licensed under the MIT License. See LICENSE in the project root for license information.
+-->
+
 <script setup lang="ts">
 import {
   XhFieldControl,
@@ -188,6 +193,11 @@ function validate(values: Record<string, unknown>) {
 在失焦或输入时校验
 
 ```vue
+<!--
+  Copyright (c) 2021-Present XiHanFun and contributors.
+  Licensed under the MIT License. See LICENSE in the project root for license information.
+-->
+
 <script setup lang="ts">
 import {
   XhFieldControl,
@@ -323,6 +333,11 @@ function validate(values: Record<string, unknown>) {
 禁用与只读表单
 
 ```vue
+<!--
+  Copyright (c) 2021-Present XiHanFun and contributors.
+  Licensed under the MIT License. See LICENSE in the project root for license information.
+-->
+
 <script setup lang="ts">
 import {
   XhFieldControl,
@@ -457,6 +472,11 @@ import {
 提交前检查用户名
 
 ```vue
+<!--
+  Copyright (c) 2021-Present XiHanFun and contributors.
+  Licensed under the MIT License. See LICENSE in the project root for license information.
+-->
+
 <script setup lang="ts">
 import type { FormRules } from "@xihan-ui/headless";
 import {
@@ -593,6 +613,11 @@ const rules: FormRules = {
 配置字段校验规则
 
 ```vue
+<!--
+  Copyright (c) 2021-Present XiHanFun and contributors.
+  Licensed under the MIT License. See LICENSE in the project root for license information.
+-->
+
 <script setup lang="ts">
 import type { FormRules, FormValidateMessages } from "@xihan-ui/headless";
 import {
@@ -767,6 +792,11 @@ const fields = [
 设置纵向、横向、行内或网格布局
 
 ```vue
+<!--
+  Copyright (c) 2021-Present XiHanFun and contributors.
+  Licensed under the MIT License. See LICENSE in the project root for license information.
+-->
+
 <script setup lang="ts">
 import type { FormLayout } from "@xihan-ui/headless";
 import {

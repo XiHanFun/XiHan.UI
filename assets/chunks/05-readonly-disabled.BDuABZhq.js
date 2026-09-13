@@ -1,0 +1,38 @@
+const n=`<!--
+  Copyright (c) 2021-Present XiHanFun and contributors.
+  Licensed under the MIT License. See LICENSE in the project root for license information.
+-->
+
+<!-- 只读与禁用 | 只读画好的还看得见但改不动，禁用连清空按钮都按不动；两者都走原生 disabled，不是灰一层了事 -->
+<script setup lang="ts">
+import {
+  XhSignaturePadClearTrigger,
+  XhSignaturePadControl,
+  XhSignaturePadGuide,
+  XhSignaturePadLabel,
+  XhSignaturePadPath,
+  XhSignaturePadRoot,
+} from "@xihan-ui/vue";
+<\/script>
+
+<template>
+  <div style="display: flex; flex-direction: column; gap: 16px; max-inline-size: 22rem">
+    <XhSignaturePadRoot read-only>
+      <XhSignaturePadLabel>只读</XhSignaturePadLabel>
+      <XhSignaturePadControl>
+        <XhSignaturePadGuide />
+        <XhSignaturePadPath />
+      </XhSignaturePadControl>
+      <XhSignaturePadClearTrigger>清空</XhSignaturePadClearTrigger>
+    </XhSignaturePadRoot>
+    <XhSignaturePadRoot disabled>
+      <XhSignaturePadLabel>禁用</XhSignaturePadLabel>
+      <XhSignaturePadControl>
+        <XhSignaturePadGuide />
+        <XhSignaturePadPath />
+      </XhSignaturePadControl>
+      <XhSignaturePadClearTrigger>清空</XhSignaturePadClearTrigger>
+    </XhSignaturePadRoot>
+  </div>
+</template>
+`;export{n as default};

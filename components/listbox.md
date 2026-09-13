@@ -17,6 +17,11 @@
 从成员列表中选择一项
 
 ```vue
+<!--
+  Copyright (c) 2021-Present XiHanFun and contributors.
+  Licensed under the MIT License. See LICENSE in the project root for license information.
+-->
+
 <script setup lang="ts">
 import {
   XhListboxContent,
@@ -111,6 +116,11 @@ const members = [
 允许选择多个选项
 
 ```vue
+<!--
+  Copyright (c) 2021-Present XiHanFun and contributors.
+  Licensed under the MIT License. See LICENSE in the project root for license information.
+-->
+
 <script setup lang="ts">
 import { XhListboxRoot } from "@xihan-ui/vue";
 
@@ -164,6 +174,11 @@ const options = [
 按类别组织选项
 
 ```vue
+<!--
+  Copyright (c) 2021-Present XiHanFun and contributors.
+  Licensed under the MIT License. See LICENSE in the project root for license information.
+-->
+
 <script setup lang="ts">
 import {
   XhListboxContent,
@@ -254,6 +269,11 @@ const groups = [
 固定高度显示长列表
 
 ```vue
+<!--
+  Copyright (c) 2021-Present XiHanFun and contributors.
+  Licensed under the MIT License. See LICENSE in the project root for license information.
+-->
+
 <script setup lang="ts">
 import { XhListboxRoot } from "@xihan-ui/vue";
 
@@ -303,6 +323,11 @@ const tracks = Array.from({ length: 12 }, (_, index) => ({
 没有选项时显示简洁提示
 
 ```vue
+<!--
+  Copyright (c) 2021-Present XiHanFun and contributors.
+  Licensed under the MIT License. See LICENSE in the project root for license information.
+-->
+
 <script setup lang="ts">
 import {
   XhListboxContent,

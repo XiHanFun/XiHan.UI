@@ -17,6 +17,11 @@
 根与条目的标签由使用者定，这里写成 ul 与 li；条目里只写用得上的那几个位
 
 ```vue
+<!--
+  Copyright (c) 2021-Present XiHanFun and contributors.
+  Licensed under the MIT License. See LICENSE in the project root for license information.
+-->
+
 <script setup lang="ts">
 import {
   XhListItem,
@@ -84,6 +89,11 @@ const people = [
 split 在条目之间画一条线，第一条上面不画
 
 ```vue
+<!--
+  Copyright (c) 2021-Present XiHanFun and contributors.
+  Licensed under the MIT License. See LICENSE in the project root for license information.
+-->
+
 <script setup lang="ts">
 import { XhListItem, XhListItemContent, XhListItemTitle, XhListRoot } from "@xihan-ui/vue";
 
@@ -129,6 +139,11 @@ const logs = ["提交了一次构建", "合并了一个分支", "关闭了一个
 bordered 给整份列表画一圈描边，hoverable 让条目在指针悬停时换底色
 
 ```vue
+<!--
+  Copyright (c) 2021-Present XiHanFun and contributors.
+  Licensed under the MIT License. See LICENSE in the project root for license information.
+-->
+
 <script setup lang="ts">
 import { XhListItem, XhListItemContent, XhListItemTitle, XhListRoot } from "@xihan-ui/vue";
 
@@ -174,6 +189,11 @@ const files = ["设计稿.fig", "接口文档.md", "会议纪要.docx"];
 一条条目最全的形态：媒体、标题、说明、操作四个位都摆上
 
 ```vue
+<!--
+  Copyright (c) 2021-Present XiHanFun and contributors.
+  Licensed under the MIT License. See LICENSE in the project root for license information.
+-->
+
 <script setup lang="ts">
 import {
   XhListItem,
@@ -260,6 +280,11 @@ const members = [
 size 换的是条目的内边距、图文间距与两行文字的字号，不传 size 即默认档
 
 ```vue
+<!--
+  Copyright (c) 2021-Present XiHanFun and contributors.
+  Licensed under the MIT License. See LICENSE in the project root for license information.
+-->
+
 <script setup lang="ts">
 import {
   XhListItem,

@@ -17,6 +17,11 @@
 标记一个独立选项
 
 ```vue
+<!--
+  Copyright (c) 2021-Present XiHanFun and contributors.
+  Licensed under the MIT License. See LICENSE in the project root for license information.
+-->
+
 <script setup lang="ts">
 import { XhCheckbox } from "@xihan-ui/vue";
 </script>
@@ -51,6 +56,11 @@ import { XhCheckbox } from "@xihan-ui/vue";
 表示部分选中
 
 ```vue
+<!--
+  Copyright (c) 2021-Present XiHanFun and contributors.
+  Licensed under the MIT License. See LICENSE in the project root for license information.
+-->
+
 <script setup lang="ts">
 import { XhCheckbox } from "@xihan-ui/vue";
 import { ref } from "vue";
@@ -86,6 +96,11 @@ const checked = ref<boolean | "indeterminate">("indeterminate");
 根据所在表面选择强调层级
 
 ```vue
+<!--
+  Copyright (c) 2021-Present XiHanFun and contributors.
+  Licensed under the MIT License. See LICENSE in the project root for license information.
+-->
+
 <script setup lang="ts">
 import { XhCheckbox } from "@xihan-ui/vue";
 </script>
@@ -120,6 +135,11 @@ import { XhCheckbox } from "@xihan-ui/vue";
 适配不同的界面密度
 
 ```vue
+<!--
+  Copyright (c) 2021-Present XiHanFun and contributors.
+  Licensed under the MIT License. See LICENSE in the project root for license information.
+-->
+
 <script setup lang="ts">
 import { XhCheckbox } from "@xihan-ui/vue";
 </script>
@@ -161,6 +181,11 @@ import { XhCheckbox } from "@xihan-ui/vue";
 区分不可用与不可修改状态
 
 ```vue
+<!--
+  Copyright (c) 2021-Present XiHanFun and contributors.
+  Licensed under the MIT License. See LICENSE in the project root for license information.
+-->
+
 <script setup lang="ts">
 import { XhCheckbox } from "@xihan-ui/vue";
 </script>
@@ -193,6 +218,11 @@ import { XhCheckbox } from "@xihan-ui/vue";
 标记必须处理的选项
 
 ```vue
+<!--
+  Copyright (c) 2021-Present XiHanFun and contributors.
+  Licensed under the MIT License. See LICENSE in the project root for license information.
+-->
+
 <script setup lang="ts">
 import { XhCheckbox } from "@xihan-ui/vue";
 </script>

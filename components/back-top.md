@@ -17,6 +17,11 @@
 滚动后显示回到顶部按钮
 
 ```vue
+<!--
+  Copyright (c) 2021-Present XiHanFun and contributors.
+  Licensed under the MIT License. See LICENSE in the project root for license information.
+-->
+
 <script setup lang="ts">
 import { XhBackTopRoot, XhBackTopTrigger } from "@xihan-ui/vue";
 import { ref } from "vue";
@@ -105,6 +110,11 @@ const scrollEl = ref<HTMLElement | null>(null);
 提前显示回到顶部按钮
 
 ```vue
+<!--
+  Copyright (c) 2021-Present XiHanFun and contributors.
+  Licensed under the MIT License. See LICENSE in the project root for license information.
+-->
+
 <script setup lang="ts">
 import { XhBackTopRoot, XhBackTopTrigger } from "@xihan-ui/vue";
 import { ref } from "vue";
@@ -185,6 +195,11 @@ const scrollEl = ref<HTMLElement | null>(null);
 平滑返回或立即返回
 
 ```vue
+<!--
+  Copyright (c) 2021-Present XiHanFun and contributors.
+  Licensed under the MIT License. See LICENSE in the project root for license information.
+-->
+
 <script setup lang="ts">
 import { XhBackTopRoot, XhBackTopTrigger } from "@xihan-ui/vue";
 import { ref } from "vue";
@@ -271,6 +286,11 @@ const autoEl = ref<HTMLElement | null>(null);
 选择与所在表面匹配的样式
 
 ```vue
+<!--
+  Copyright (c) 2021-Present XiHanFun and contributors.
+  Licensed under the MIT License. See LICENSE in the project root for license information.
+-->
+
 <script setup lang="ts">
 import { XhBackTopRoot, XhBackTopTrigger } from "@xihan-ui/vue";
 

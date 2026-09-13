@@ -17,6 +17,11 @@
 等人批准不是在跑：闸门常驻在开关与详情之间，不会被折叠藏起来
 
 ```vue
+<!--
+  Copyright (c) 2021-Present XiHanFun and contributors.
+  Licensed under the MIT License. See LICENSE in the project root for license information.
+-->
+
 <script setup lang="ts">
 import type { ToolCallPhase } from "@xihan-ui/headless";
 import {
@@ -139,6 +144,11 @@ const phases: ToolCallPhase[] = [
 跑起来自动展开、结束自动收起；你手动开合过一次之后，阶段怎么变都不再自动
 
 ```vue
+<!--
+  Copyright (c) 2021-Present XiHanFun and contributors.
+  Licensed under the MIT License. See LICENSE in the project root for license information.
+-->
+
 <script setup lang="ts">
 import type { ToolCallPhase } from "@xihan-ui/headless";
 import {
@@ -250,6 +260,11 @@ onBeforeUnmount(() => window.clearTimeout(timer));
 详情收起时也看得见查了什么、跑了多久；两个时刻由宿主给，组件自己不读时钟
 
 ```vue
+<!--
+  Copyright (c) 2021-Present XiHanFun and contributors.
+  Licensed under the MIT License. See LICENSE in the project root for license information.
+-->
+
 <script setup lang="ts">
 import {
   XhToolCallContent,
@@ -351,6 +366,11 @@ const calls = [
 外面套一层手风琴当分组头：计数用等宽数位，整组开合归手风琴，卡片各管各的
 
 ```vue
+<!--
+  Copyright (c) 2021-Present XiHanFun and contributors.
+  Licensed under the MIT License. See LICENSE in the project root for license information.
+-->
+
 <script setup lang="ts">
 import {
   XhAccordionContent,
@@ -491,6 +511,11 @@ const calls = [
 三轴只改这块壳怎么与正文分开，阶段与展开逻辑不受影响
 
 ```vue
+<!--
+  Copyright (c) 2021-Present XiHanFun and contributors.
+  Licensed under the MIT License. See LICENSE in the project root for license information.
+-->
+
 <script setup lang="ts">
 import {
   XhToolCallContent,

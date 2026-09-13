@@ -1,0 +1,1 @@
+import{j as t}from"./jsx-runtime.BjG_zV1W.js";import{X as r}from"./kbd.Dvrv5T3j.js";import"./jsx-runtime.WmPRW3nq.js";import"./theme.C7zwwLoT.js";import"./framework.DkvuVDKz.js";import"./config.zjQNv5ZK.js";import"./index.CVfUds7h.js";import"./use-kbd-platform.DFd-cr4I.js";function d(){return t.jsx(r,{value:"Delete",disabled:!0})}export{d as default};

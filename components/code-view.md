@@ -17,6 +17,11 @@
 代码原文由宿主给，组件切出逐行结构并铺记号；渲了文件名它就成为代码块的可访问名
 
 ```vue
+<!--
+  Copyright (c) 2021-Present XiHanFun and contributors.
+  Licensed under the MIT License. See LICENSE in the project root for license information.
+-->
+
 <script setup lang="ts">
 import {
   XhCodeViewCode,
@@ -113,6 +118,11 @@ const sample = `export function createTicker(intervalTime: number) {
 行号由皮肤画上去，复制代码不会带上它；高亮行按行号写，与 startLine 对齐
 
 ```vue
+<!--
+  Copyright (c) 2021-Present XiHanFun and contributors.
+  Licensed under the MIT License. See LICENSE in the project root for license information.
+-->
+
 <script setup lang="ts">
 import { XhCodeViewCode, XhCodeViewPre, XhCodeViewRoot } from "@xihan-ui/vue";
 
@@ -177,6 +187,11 @@ const sample = `function resolve(input: string) {
 clamped 是纯受控的：组件只发意图，落不落由宿主决定，好让「全部展开」这类操作统一持有
 
 ```vue
+<!--
+  Copyright (c) 2021-Present XiHanFun and contributors.
+  Licensed under the MIT License. See LICENSE in the project root for license information.
+-->
+
 <script setup lang="ts">
 import { XhCodeViewCode, XhCodeViewFoldTrigger, XhCodeViewPre, XhCodeViewRoot } from "@xihan-ui/vue";
 import { ref } from "vue";
@@ -290,6 +305,11 @@ const step24 = pipeline.at(23)</code></pre>
 代码还在写的时候默认不着色：半截代码的词法本来就不稳，每来一个字符整块变色比不着色更糟
 
 ```vue
+<!--
+  Copyright (c) 2021-Present XiHanFun and contributors.
+  Licensed under the MIT License. See LICENSE in the project root for license information.
+-->
+
 <script setup lang="ts">
 import { XhCodeViewCode, XhCodeViewPre, XhCodeViewRoot } from "@xihan-ui/vue";
 import { onBeforeUnmount, onMounted, ref } from "vue";
@@ -369,6 +389,11 @@ onBeforeUnmount(() => window.clearTimeout(timer));
 复制交给剪贴板：把它放进头部条，用几个槽把描边按钮压成安静形态，1500 毫秒后自己回落
 
 ```vue
+<!--
+  Copyright (c) 2021-Present XiHanFun and contributors.
+  Licensed under the MIT License. See LICENSE in the project root for license information.
+-->
+
 <script setup lang="ts">
 import { CheckIcon, CopyIcon } from "@xihan-ui/icons";
 import {
@@ -500,6 +525,11 @@ const sample = `export function createStore(reduce: Reducer, initial: State) {
 着色是可换的端口：认不出的语言退回纯文本，接自己的实现组件侧一行不用改，传 null 则整个关掉
 
 ```vue
+<!--
+  Copyright (c) 2021-Present XiHanFun and contributors.
+  Licensed under the MIT License. See LICENSE in the project root for license information.
+-->
+
 <script setup lang="ts">
 import { XhCodeViewCode, XhCodeViewPre, XhCodeViewRoot } from "@xihan-ui/vue";
 
@@ -648,6 +678,11 @@ env:
 未闭合默认不着色；真要看着色就打开 highlight-while-streaming，同一段半截代码的两种呈现摆在一起
 
 ```vue
+<!--
+  Copyright (c) 2021-Present XiHanFun and contributors.
+  Licensed under the MIT License. See LICENSE in the project root for license information.
+-->
+
 <script setup lang="ts">
 import { XhCodeViewCode, XhCodeViewPre, XhCodeViewRoot } from "@xihan-ui/vue";
 
@@ -733,6 +768,11 @@ const partial = `const stream = await client.chat({
 size 换字号、行高与内边距三档，行号槽与折叠钮跟着一起走
 
 ```vue
+<!--
+  Copyright (c) 2021-Present XiHanFun and contributors.
+  Licensed under the MIT License. See LICENSE in the project root for license information.
+-->
+
 <script setup lang="ts">
 import {
   XhCodeViewCode,

@@ -17,6 +17,11 @@
 交一份命令清单，过滤、归组与空态都由组件包办
 
 ```vue
+<!--
+  Copyright (c) 2021-Present XiHanFun and contributors.
+  Licensed under the MIT License. See LICENSE in the project root for license information.
+-->
+
 <script setup lang="ts">
 import type { CommandNode, CommandSelectDetails } from "@xihan-ui/headless";
 import { XhCommandRoot } from "@xihan-ui/vue";
@@ -142,6 +147,11 @@ function run(details: CommandSelectDetails) {
 Mod+K 打开，命中的字由文本高亮标出来，行尾挂各命令自己的快捷键
 
 ```vue
+<!--
+  Copyright (c) 2021-Present XiHanFun and contributors.
+  Licensed under the MIT License. See LICENSE in the project root for license information.
+-->
+
 <script setup lang="ts">
 import type { CommandNode } from "@xihan-ui/headless";
 import {
@@ -311,6 +321,11 @@ const groups = [
 variant 只落在 backdrop 那一层：opaque 压一层底、blur 糊掉背后、transparent 只挡点击
 
 ```vue
+<!--
+  Copyright (c) 2021-Present XiHanFun and contributors.
+  Licensed under the MIT License. See LICENSE in the project root for license information.
+-->
+
 <script setup lang="ts">
 import type { CommandNode } from "@xihan-ui/headless";
 import { XhCommandRoot } from "@xihan-ui/vue";
@@ -423,6 +438,11 @@ const commands: CommandNode[] = [
 filter 关掉：交进来的 collection 就是此刻该显示的那几条，筛选归服务端；取数期间 loading 让在途占位顶上来、列表压暗一档，空态让位
 
 ```vue
+<!--
+  Copyright (c) 2021-Present XiHanFun and contributors.
+  Licensed under the MIT License. See LICENSE in the project root for license information.
+-->
+
 <script setup lang="ts">
 import type { CommandNode } from "@xihan-ui/headless";
 import {
