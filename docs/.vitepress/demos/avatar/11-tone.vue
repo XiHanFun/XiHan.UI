@@ -1,4 +1,4 @@
-<!-- 语气 | tone 换淡底与回退字的配色族；不写 tone 就是中性缺省，直径与字号都不受影响 -->
+<!-- 颜色 | tone 换淡底与回退字的配色组；不写 tone 就是中性缺省，直径与字号都不受影响 -->
 <script setup lang="ts">
 import { XhAvatarFallback, XhAvatarImage, XhAvatarRoot } from "@xihan-ui/vue";
 

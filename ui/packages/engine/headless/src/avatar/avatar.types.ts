@@ -13,7 +13,7 @@ export interface AvatarSchema extends MachineSchema {
     alt?: string
     /** 尺寸：sm / md / lg，缺省 md；缺省档不输出 data-size */
     size?: Size
-    /** 语气：决定底色与回退字用哪一族颜色；缺席即不输出 data-tone，走皮肤的中性缺省 */
+    /** 颜色：决定底色与回退字使用哪组状态色；缺席即不输出 data-tone，走皮肤的中性缺省 */
     tone?: Tone
     /** 状态落位时通知，过渡态 idle 不通知。 */
     onStatusChange?: (details: AvatarStatusChangeDetails) => void

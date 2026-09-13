@@ -30,12 +30,6 @@
 
 <XhDemo src="avatar/02-fallback" />
 
-### 排成一列
-
-头像本身不管布局，叠放与间距由外层容器决定
-
-<XhDemo src="avatar/03-group" />
-
 ### 尺寸
 
 size 三档只换直径，回退字的字号跟着一起缩放；缺省档不输出 data-size
@@ -66,21 +60,9 @@ status-change 在状态落位时通知，过渡态 idle 不通知；没给地址
 
 <XhDemo src="avatar/08-status" />
 
-### 成组与溢出计数
-
-组内共用的直径、字号、形状在容器上写一次，自定义属性沿继承流给每一枚；超出上限的收成一枚「+N」，它只是又一枚落回退态的头像
-
-<XhDemo src="avatar/09-group-overflow" />
-
-### 挂状态点与角标
-
-状态点自己绝对定位在根里；计数角标反过来——把头像写进角标的默认插槽，贴角与偏移都归角标算
-
-<XhDemo src="avatar/10-badge" />
-
 ### 颜色
 
-tone 换淡底与回退字的配色族；不写 tone 就是中性缺省，直径与字号都不受影响
+tone 换淡底与回退字的配色组；不写 tone 就是中性缺省，直径与字号都不受影响
 
 <XhDemo src="avatar/11-tone" />
 
@@ -135,7 +117,7 @@ tone 换淡底与回退字的配色族；不写 tone 就是中性缺省，直径
 | `src` | `string` |  |  |
 | `alt` | `string` |  |  |
 | `size` | `Size` |  | 尺寸：sm / md / lg，缺省 md；缺省档不输出 data-size |
-| `tone` | `Tone` |  | 语气：决定底色与回退字用哪一族颜色；缺席即不输出 data-tone，走皮肤的中性缺省 |
+| `tone` | `Tone` |  | 颜色：决定底色与回退字使用哪组状态色；缺席即不输出 data-tone，走皮肤的中性缺省 |
 | `onStatusChange` | `(details: AvatarStatusChangeDetails) => void` |  | 状态落位时通知，过渡态 idle 不通知。 |
 
 ### 事件
