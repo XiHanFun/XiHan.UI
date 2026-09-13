@@ -142,7 +142,7 @@
       scale var(--xh-motion-duration-micro) var(--xh-motion-ease-enter-strong);
   }
 
-  /* 主标签带与 HeroUI 一样按可用宽度等分；窄到放不下文字时仍按原合同折行。 */
+  /* 主标签带按可用宽度等分；窄到放不下文字时仍按原合同折行。 */
   [data-scope='tabs'][data-part='root'][data-orientation='horizontal']
     [data-scope='tabs'][data-part='trigger'] {
     flex: 1 1 0;

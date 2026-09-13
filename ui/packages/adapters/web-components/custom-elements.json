@@ -53597,7 +53597,19 @@
               "name": "--xh-toolbar-gap"
             },
             {
+              "name": "--xh-toolbar-group-bg"
+            },
+            {
               "name": "--xh-toolbar-group-gap"
+            },
+            {
+              "name": "--xh-toolbar-group-p"
+            },
+            {
+              "name": "--xh-toolbar-group-radius"
+            },
+            {
+              "name": "--xh-toolbar-group-separator-gap"
             },
             {
               "name": "--xh-toolbar-icon-size"

@@ -60664,6 +60664,24 @@
       "description": "toolbar 的 root 部件 gap 覆盖槽。"
     },
     {
+      "name": "--xh-toolbar-group-bg",
+      "component": "toolbar",
+      "part": [
+        "group"
+      ],
+      "property": [
+        "background"
+      ],
+      "state": [
+        "default"
+      ],
+      "defaultToken": [
+        "--xh-bg-subtle"
+      ],
+      "visibility": "public",
+      "description": "toolbar 的 group 部件 background 覆盖槽。"
+    },
+    {
       "name": "--xh-toolbar-group-gap",
       "component": "toolbar",
       "part": [
@@ -60676,10 +60694,69 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-space-0_5"
+        "--xh-space-0"
       ],
       "visibility": "public",
       "description": "toolbar 的 group 部件 gap 覆盖槽。"
+    },
+    {
+      "name": "--xh-toolbar-group-p",
+      "component": "toolbar",
+      "part": [
+        "group"
+      ],
+      "property": [
+        "padding"
+      ],
+      "state": [
+        "default"
+      ],
+      "defaultToken": [
+        "--xh-space-0_5"
+      ],
+      "visibility": "public",
+      "description": "toolbar 的 group 部件 padding 覆盖槽。"
+    },
+    {
+      "name": "--xh-toolbar-group-radius",
+      "component": "toolbar",
+      "part": [
+        "group"
+      ],
+      "property": [
+        "border-radius"
+      ],
+      "state": [
+        "default",
+        "orientation=vertical"
+      ],
+      "defaultToken": [
+        "--xh-shape-pill",
+        "--xh-shape-surface"
+      ],
+      "visibility": "public",
+      "description": "toolbar 的 group 部件 border-radius 覆盖槽。"
+    },
+    {
+      "name": "--xh-toolbar-group-separator-gap",
+      "component": "toolbar",
+      "part": [
+        "group",
+        "separator"
+      ],
+      "property": [
+        "margin-block",
+        "margin-inline"
+      ],
+      "state": [
+        "orientation=horizontal",
+        "orientation=vertical"
+      ],
+      "defaultToken": [
+        "--xh-space-0_5"
+      ],
+      "visibility": "public",
+      "description": "toolbar 的 group、separator 部件 margin-block、margin-inline 覆盖槽。"
     },
     {
       "name": "--xh-toolbar-icon-size",

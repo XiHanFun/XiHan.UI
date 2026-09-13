@@ -145,7 +145,7 @@ input 部件写成 textarea 即多行宿主；autoSize 让高度跟内容走，�
   `data-xh-field-chrome`、`data-xh-field-input`、`data-xh-field-affix`，单行与 textarea 由
   `data-xh-field-layout` 明确区分。旧 `data-multiline` / `data-auto-resize` 视觉钩子已删除，
   自定义皮肤应读取新的家族角色，不提供双写兼容。
-- 默认字段使用 HeroUI 式无边框实体面、轻阴影与表面圆角；需要显式边界时使用 `outline`，
+- 默认字段使用无边框实体面、轻阴影与表面圆角；需要显式边界时使用 `outline`，
   需要中性填充或透明底时分别使用 `subtle` / `ghost`。
 - 清空按钮复用 Action Control 的 `field-inset` profile 和 `has-value` 显示策略；粗指针命中区、
   pressed/focus/forced-colors 均由家族配方提供，适配器不另算尺寸或可见性。

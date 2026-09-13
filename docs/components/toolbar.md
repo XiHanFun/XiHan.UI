@@ -58,6 +58,7 @@
 
 - 默认 `plain` 变体不绘制工具条外框。
 - `surface` 变体提供带内距、描边和背景的附着式工具面。
+- `group` 使用浅色胶囊表面收纳相关操作。
 - 默认条目使用无描边工具按钮样式，`aria-pressed` 表示选中状态。
 - 支持水平、垂直、分组、分隔线与整体禁用。
 - 方向键在条目间移动，禁用项会被跳过。
@@ -195,7 +196,11 @@
 | `--xh-toolbar-border` | `root` | `border` | `default` | `--xh-_toolbar-root-border` | toolbar 的 root 部件 border 覆盖槽。 |
 | `--xh-toolbar-fg` | `root` | `color` | `default` | `--xh-fg-default` | toolbar 的 root 部件 color 覆盖槽。 |
 | `--xh-toolbar-gap` | `root` | `gap` | `default` | `--xh-_toolbar-gap` | toolbar 的 root 部件 gap 覆盖槽。 |
-| `--xh-toolbar-group-gap` | `group` | `gap` | `default` | `--xh-space-0_5` | toolbar 的 group 部件 gap 覆盖槽。 |
+| `--xh-toolbar-group-bg` | `group` | `background` | `default` | `--xh-bg-subtle` | toolbar 的 group 部件 background 覆盖槽。 |
+| `--xh-toolbar-group-gap` | `group` | `gap` | `default` | `--xh-space-0` | toolbar 的 group 部件 gap 覆盖槽。 |
+| `--xh-toolbar-group-p` | `group` | `padding` | `default` | `--xh-space-0_5` | toolbar 的 group 部件 padding 覆盖槽。 |
+| `--xh-toolbar-group-radius` | `group` | `border-radius` | `default`<br>`orientation=vertical` | `--xh-shape-pill`<br>`--xh-shape-surface` | toolbar 的 group 部件 border-radius 覆盖槽。 |
+| `--xh-toolbar-group-separator-gap` | `group`<br>`separator` | `margin-block`<br>`margin-inline` | `orientation=horizontal`<br>`orientation=vertical` | `--xh-space-0_5` | toolbar 的 group、separator 部件 margin-block、margin-inline 覆盖槽。 |
 | `--xh-toolbar-icon-size` | `root` | `--xh-icon-size` | `default`<br>`size=lg`<br>`size=sm` | `--xh-glyph-size-lg`<br>`--xh-glyph-size-md`<br>`--xh-glyph-size-sm` | toolbar 的 root 部件 --xh-icon-size 覆盖槽。 |
 | `--xh-toolbar-item-bg` | `item` | `background` | `default` | `transparent` | toolbar 的 item 部件 background 覆盖槽。 |
 | `--xh-toolbar-item-bg-active` | `item` | `background` | `active`<br>`disabled`<br>`not([data-disabled])` | `--xh-bg-subtle-active` | toolbar 的 item 部件 background 覆盖槽。 |

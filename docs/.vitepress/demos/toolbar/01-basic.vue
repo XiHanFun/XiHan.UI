@@ -1,8 +1,9 @@
 <!-- 基础用法 | 集中常用编辑操作 -->
 <script setup lang="ts">
-import { BoldIcon, ItalicIcon, RotateLeftIcon, RotateRightIcon, UnderlineIcon } from "@xihan-ui/icons";
+import { BoldIcon, ClipboardIcon, CopyIcon, ItalicIcon, UnderlineIcon } from "@xihan-ui/icons";
 import {
   XhIcon,
+  XhToolbarGroup,
   XhToolbarItem,
   XhToolbarRoot,
   XhToolbarSeparator,
@@ -25,23 +26,28 @@ function toggle(value: string) {
 
 <template>
   <XhToolbarRoot aria-label="文本编辑">
-    <XhToolbarItem value="undo" type="button" aria-label="撤销">
-      <XhIcon :icon="RotateLeftIcon" />
-    </XhToolbarItem>
-    <XhToolbarItem value="redo" type="button" aria-label="重做">
-      <XhIcon :icon="RotateRightIcon" />
-    </XhToolbarItem>
-    <XhToolbarSeparator />
-    <XhToolbarItem
-      v-for="format in formats"
-      :key="format.value"
-      :value="format.value"
-      type="button"
-      :aria-label="format.label"
-      :aria-pressed="selected.has(format.value)"
-      @click="toggle(format.value)"
-    >
-      <XhIcon :icon="format.icon" />
-    </XhToolbarItem>
+    <XhToolbarGroup>
+      <template v-for="(format, index) in formats" :key="format.value">
+        <XhToolbarSeparator v-if="index > 0" />
+        <XhToolbarItem
+          :value="format.value"
+          type="button"
+          :aria-label="format.label"
+          :aria-pressed="selected.has(format.value)"
+          @click="toggle(format.value)"
+        >
+          <XhIcon :icon="format.icon" />
+        </XhToolbarItem>
+      </template>
+    </XhToolbarGroup>
+    <XhToolbarGroup>
+      <XhToolbarItem value="copy" type="button" aria-label="复制">
+        <XhIcon :icon="CopyIcon" />
+      </XhToolbarItem>
+      <XhToolbarSeparator />
+      <XhToolbarItem value="paste" type="button" aria-label="粘贴">
+        <XhIcon :icon="ClipboardIcon" />
+      </XhToolbarItem>
+    </XhToolbarGroup>
   </XhToolbarRoot>
 </template>

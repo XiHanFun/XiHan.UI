@@ -13,11 +13,14 @@ function mount(options: { pressed?: boolean, size?: 'lg' | 'md' | 'sm', variant?
   host = document.createElement('div')
   host.innerHTML = `
     <div data-scope="toolbar" data-part="root" data-orientation="horizontal"${options.variant ? ` data-variant="${options.variant}"` : ''}${options.size ? ` data-size="${options.size}"` : ''}>
-      <button data-scope="toolbar" data-part="item"${options.pressed ? ' aria-pressed="true"' : ''}>加粗</button>
+      <div data-scope="toolbar" data-part="group" data-orientation="horizontal">
+        <button data-scope="toolbar" data-part="item"${options.pressed ? ' aria-pressed="true"' : ''}>加粗</button>
+      </div>
     </div>`
   document.body.append(host)
   return {
     root: host.querySelector<HTMLElement>('[data-part="root"]')!,
+    group: host.querySelector<HTMLElement>('[data-part="group"]')!,
     item: host.querySelector<HTMLElement>('[data-part="item"]')!,
   }
 }
@@ -53,6 +56,16 @@ describe('toolbar 默认视觉', () => {
     expect(style.borderTopColor).not.toBe('rgba(0, 0, 0, 0)')
     expect(Number.parseFloat(style.borderTopWidth)).toBeGreaterThan(0)
     expect(Number.parseFloat(style.paddingInlineStart)).toBeGreaterThan(0)
+  })
+
+  it('默认分组使用浅色胶囊工具面', () => {
+    const toolbar = mount()
+    const style = getComputedStyle(toolbar.group)
+
+    expect(style.backgroundColor).not.toBe('rgba(0, 0, 0, 0)')
+    expect(Number.parseFloat(style.paddingInlineStart)).toBeGreaterThan(0)
+    expect(Number.parseFloat(style.columnGap)).toBe(0)
+    expect(Number.parseFloat(style.borderRadius)).toBeGreaterThanOrEqual(toolbar.group.offsetHeight / 2)
   })
 
   it('默认条目有控件尺寸，选中态使用强调面', () => {
