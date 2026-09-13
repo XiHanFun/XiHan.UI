@@ -7,7 +7,7 @@
 
 import type { Cleanup, ControlVariant, Direction, Layer, MachineSchema, Placement, PositionEnginePort, PositionResult, PropTypes, RuntimeConfig, Service, Size, Tone } from '@xihan-ui/core'
 import type { PresenceHandle } from '@xihan-ui/core/presence'
-import type { CalendarApi, CalendarGranularity, CalendarPeriodValue, CalendarSchema, CalendarSelectionMode, CalendarView, CalendarViewChangeDetails } from '../calendar'
+import type { CalendarApi, CalendarGranularity, CalendarPeriodValue, CalendarSchema, CalendarSelectionMode, CalendarTranslations, CalendarView, CalendarViewChangeDetails } from '../calendar'
 import type { DateFieldSchema, DateFieldSegmentProps, DateFieldSegmentState, DateSegmentSet } from '../date-field'
 import type { TimePickerColumn, TimePickerColumnUnit } from '../time-picker'
 import type { DatePickerTimeGranularity } from './date-picker.time'
@@ -18,8 +18,11 @@ import type { DatePickerTimeGranularity } from './date-picker.time'
  */
 export type DatePickerValueSource = 'calendar' | 'preset' | 'field' | 'field-end' | 'api'
 
-/** 读屏用的文案，默认英文。区间模式下两组段位各是一个 role=group，各要一个名字。 */
-export interface DatePickerTranslations {
+/**
+ * 读屏用的文案，默认英文。区间模式下两组段位各是一个 role=group，各要一个名字；
+ * 内嵌日历那几句（挑区间的提示、区间两端的名字、今天）原样转交给日历。
+ */
+export interface DatePickerTranslations extends CalendarTranslations {
   /** 起点那组段位的名字。 */
   startDate: string
   /** 终点那组段位的名字。 */
@@ -147,13 +150,21 @@ export interface DatePickerSchema extends MachineSchema {
     timeZone?: string
     /** 选择模式，默认 single；区间模式下两端都落定才算选完。 */
     selectionMode?: CalendarSelectionMode
-    /** 不可用判定，收 ISO 串。界外与它判真的日子同等对待。 */
-    isDateUnavailable?: (value: string) => boolean
+    /**
+     * 不可用判定，收 ISO 串。界外与它判真的日子同等对待。
+     * 第二个参数是区间挑到一半时的起点，其余时候为 null。
+     */
+    isDateUnavailable?: (value: string, anchor: string | null) => boolean
+    /** 区间允许跨过不可用的日子，默认关；关着时落了起点之后只能挑到两侧最近的不可用日为止。 */
+    allowsNonContiguousRanges?: boolean
     /** 整个控件禁用：trigger 转原生 disabled，段位退出 Tab 序，日历格子全转 aria-disabled。 */
     disabled?: boolean
     /** 只读：浮层照常展开、日历照常翻月浏览，但选中值改不动。 */
     readOnly?: boolean
-    /** 校验失败：段位报 aria-invalid，各角色节点带 data-invalid。 */
+    /**
+     * 校验失败：段位报 aria-invalid，各角色节点带 data-invalid。
+     * 不给也会自己判：任一端越界、或区间的终点早于起点。
+     */
     invalid?: boolean
     /** 必填标注，落到每一段的 aria-required 上。 */
     required?: boolean
@@ -342,6 +353,7 @@ export interface DatePickerApi<T extends PropTypes = PropTypes> {
   activeView: CalendarView
   disabled: boolean
   readOnly: boolean
+  /** 校验失败：作者标的、任一端越界、或区间终点早于起点。 */
   invalid: boolean
   /** 清空按钮此刻可不可按。 */
   canClear: boolean

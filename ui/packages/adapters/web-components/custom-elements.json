@@ -3632,6 +3632,24 @@
             },
             {
               "kind": "field",
+              "name": "invalid",
+              "privacy": "public",
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "attribute": "invalid"
+            },
+            {
+              "kind": "field",
+              "name": "allowsNonContiguousRanges",
+              "privacy": "public",
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "attribute": "allows-non-contiguous-ranges"
+            },
+            {
+              "kind": "field",
               "name": "granularity",
               "privacy": "public",
               "type": {
@@ -3671,8 +3689,17 @@
               "name": "isDateUnavailable",
               "privacy": "public",
               "type": {
-                "text": "(value: string) => boolean | undefined"
+                "text": "(value: string, anchor: string | null) => boolean | undefined"
               }
+            },
+            {
+              "kind": "field",
+              "name": "translations",
+              "privacy": "public",
+              "type": {
+                "text": "Partial<CalendarTranslations>"
+              },
+              "description": "读屏文案（挑区间的提示、区间两端的名字、今天），只走 property"
             },
             {
               "kind": "field",
@@ -3697,7 +3724,7 @@
               "name": "ctrl",
               "privacy": "private",
               "readonly": true,
-              "default": "new MachineController<CalendarSchema>( this, calendarMachine, () => this.machineProps(), { // 机器跨月后靠它把焦点送进重画出来的格子 onBuilt: (service) => { service.refs.set('getGridEl', () => this.getPart('grid')) }, }, )"
+              "default": "new MachineController<CalendarSchema>( this, calendarMachine, () => this.machineProps(), { // 机器跨月后靠它把焦点送进重画出来的格子 onBuilt: (service) => { service.refs.set('getGridEl', () => this.getPart('grid')) // 区间挑到一半时，指针在根节点之外松开就地收口 service.refs.set('getBoundaryEls', () => [this.getPart('root')]) }, }, )"
             },
             {
               "kind": "method",
@@ -3743,6 +3770,15 @@
                 "text": "string"
               },
               "description": "展示月标题文案，作者写进 heading 节点。",
+              "readonly": true
+            },
+            {
+              "kind": "field",
+              "name": "rangeAnchor",
+              "type": {
+                "text": "string | null"
+              },
+              "description": "区间挑到一半时的起点（周期首日的 ISO 串）；其余时候为 null。",
               "readonly": true
             },
             {
@@ -3895,6 +3931,22 @@
             },
             {
               "type": {
+                "text": "boolean | undefined"
+              },
+              "description": "校验失败：根带 data-invalid，区间里的格子报 aria-invalid；已选区间某一端越界或不可用时也会自己判",
+              "name": "invalid",
+              "fieldName": "invalid"
+            },
+            {
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "description": "区间允许跨过不可用的日子；默认关，落了起点后只能挑到两侧最近的不可用日为止",
+              "name": "allows-non-contiguous-ranges",
+              "fieldName": "allowsNonContiguousRanges"
+            },
+            {
+              "type": {
                 "text": "CalendarWeekdayFormat | undefined"
               },
               "description": "表头缩写粒度，默认 short",
@@ -3956,6 +4008,9 @@
               "name": "--xh-calendar-cell-bg-selected"
             },
             {
+              "name": "--xh-calendar-cell-bg-selected-active"
+            },
+            {
               "name": "--xh-calendar-cell-fg"
             },
             {
@@ -3966,6 +4021,9 @@
             },
             {
               "name": "--xh-calendar-cell-font-size"
+            },
+            {
+              "name": "--xh-calendar-cell-font-weight"
             },
             {
               "name": "--xh-calendar-cell-gap"
@@ -4038,15 +4096,6 @@
             },
             {
               "name": "--xh-calendar-range-cap-radius"
-            },
-            {
-              "name": "--xh-calendar-range-preview-bg"
-            },
-            {
-              "name": "--xh-calendar-range-preview-cap-bg"
-            },
-            {
-              "name": "--xh-calendar-range-preview-cap-fg"
             },
             {
               "name": "--xh-calendar-range-row-radius"
@@ -12704,6 +12753,15 @@
             },
             {
               "kind": "field",
+              "name": "allowsNonContiguousRanges",
+              "privacy": "public",
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "attribute": "allows-non-contiguous-ranges"
+            },
+            {
+              "kind": "field",
               "name": "required",
               "privacy": "public",
               "type": {
@@ -12823,7 +12881,7 @@
               "name": "isDateUnavailable",
               "privacy": "public",
               "type": {
-                "text": "(value: string) => boolean | undefined"
+                "text": "(value: string, anchor: string | null) => boolean | undefined"
               }
             },
             {
@@ -12911,7 +12969,7 @@
               "name": "calendarCtrl",
               "privacy": "private",
               "readonly": true,
-              "default": "new MachineController<CalendarSchema>( this, calendarMachine, () => datePickerCalendarProps(this.rootCtrl.service), { scope: this.pickerScope, // 机器跨月后靠它把焦点送进重画出来的格子 onBuilt: (service) => { service.refs.set('getGridEl', () => this.getPart('grid')) }, }, )"
+              "default": "new MachineController<CalendarSchema>( this, calendarMachine, () => datePickerCalendarProps(this.rootCtrl.service), { scope: this.pickerScope, // 机器跨月后靠它把焦点送进重画出来的格子 onBuilt: (service) => { service.refs.set('getGridEl', () => this.getPart('grid')) // 区间挑到一半时，指针在浮层与输入行之外松开就地收口 service.refs.set('getBoundaryEls', () => [this.getPart('content'), this.getPart('control')]) }, }, )"
             },
             {
               "kind": "field",
@@ -13350,9 +13408,17 @@
               "type": {
                 "text": "boolean | undefined"
               },
-              "description": "校验失败标注",
+              "description": "校验失败标注；不给也会自己判：任一端越界、或区间终点早于起点",
               "name": "invalid",
               "fieldName": "invalid"
+            },
+            {
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "description": "区间允许跨过不可用的日子；默认关，落了起点后只能挑到两侧最近的不可用日为止",
+              "name": "allows-non-contiguous-ranges",
+              "fieldName": "allowsNonContiguousRanges"
             },
             {
               "type": {
@@ -13653,6 +13719,9 @@
             },
             {
               "name": "--xh-date-picker-range-separator-fg"
+            },
+            {
+              "name": "--xh-date-picker-range-separator-mx"
             },
             {
               "name": "--xh-date-picker-range-separator-px"

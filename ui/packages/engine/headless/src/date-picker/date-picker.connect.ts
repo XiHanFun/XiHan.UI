@@ -6,6 +6,7 @@
 // 提供 date picker 相关实现。
 
 import type { Dict, NavIntent, NormalizeProps, PropTypes, Service } from '@xihan-ui/core'
+import type { CalendarTranslations } from '../calendar'
 import type { DateFieldApi, DateFieldSchema, DateSegmentType } from '../date-field'
 import type { TimePickerColumn } from '../time-picker'
 import type {
@@ -44,7 +45,10 @@ function hasModifier(event: KeyboardEvent): boolean {
   return event.ctrlKey || event.metaKey || event.altKey
 }
 
-function resolveTranslations(input: Partial<DatePickerTranslations> | undefined): DatePickerTranslations {
+/** 只收本组件自己那几句；内嵌日历的文案由日历自己兜底。 */
+type OwnTranslations = Omit<DatePickerTranslations, keyof CalendarTranslations>
+
+function resolveTranslations(input: Partial<DatePickerTranslations> | undefined): OwnTranslations {
   return {
     startDate: input?.startDate ?? 'Start date',
     endDate: input?.endDate ?? 'End date',
@@ -208,8 +212,10 @@ export function connectDatePicker<T extends PropTypes>(
   const bounds = { min: parseBoundary(prop('min')), max: parseBoundary(prop('max')) }
   // 越界与显式 invalid 在读屏那里是同一件事：这份输入现在不合法。
   // 整份控件的不合法态照它发，只标出错的那一组段位等于把反馈藏在输入行里的一小块。
-  // 区间两端各是一份分段输入，任一端越界整份就都算越界；终点那组只在区间模式下算数
-  const flagged = invalid || !!fieldRaw.outOfRange || (range && !!fieldEndRaw?.outOfRange)
+  // 区间两端各是一份分段输入，任一端越界整份就都算越界；终点那组只在区间模式下算数。
+  // 两端都填了却终点早于起点，同样不合法：两组段位各写各的，顺序只能在这里把关
+  const reversed = range && !!value[0] && !!value[1] && datePickerDatePart(value[1]!) < datePickerDatePart(value[0]!)
+  const flagged = invalid || !!fieldRaw.outOfRange || (range && !!fieldEndRaw?.outOfRange) || reversed
 
   /**
    * 同一份分段输入里的全部段位，文档序。事件那一刻现查，不缓存节点数组。
@@ -336,7 +342,8 @@ export function connectDatePicker<T extends PropTypes>(
     activeView: calendar.activeView,
     disabled,
     readOnly,
-    invalid,
+    // 与根节点的 data-invalid 同一口径：作者标的、越界的、终点早于起点的都算
+    invalid: flagged,
     canClear,
     presets,
     showTime,

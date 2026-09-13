@@ -5,7 +5,7 @@
 
 // 提供 calendar 相关实现。
 
-import type { CalendarApi, CalendarGranularity, CalendarSchema, CalendarSelectionMode, CalendarView, CalendarWeekdayFormat } from '@xihan-ui/headless'
+import type { CalendarApi, CalendarGranularity, CalendarSchema, CalendarSelectionMode, CalendarTranslations, CalendarView, CalendarWeekdayFormat } from '@xihan-ui/headless'
 import type { ComponentPropsWithRef, ReactNode } from 'react'
 import type { SlotChildren } from '../../runtime/slot-content'
 import { useMemo } from 'react'
@@ -33,6 +33,7 @@ export type CalendarRootSlotProps = Pick<
   | 'canGoNext'
   | 'isSelected'
   | 'isUnavailable'
+  | 'rangeAnchor'
   | 'setValue'
   | 'select'
   | 'focus'
@@ -48,7 +49,11 @@ export interface XhCalendarRootProps extends Omit<ComponentPropsWithRef<'div'>, 
   defaultFocusedValue?: string
   min?: string
   max?: string
-  isDateUnavailable?: (value: string) => boolean
+  isDateUnavailable?: (value: string, anchor: string | null) => boolean
+  /** 区间允许跨过不可用的日子；默认关，落了起点后只能挑到两侧最近的不可用日为止。 */
+  allowsNonContiguousRanges?: boolean
+  /** 校验失败：根带 data-invalid，区间里的格子报 aria-invalid。 */
+  invalid?: boolean
   locale?: string
   timeZone?: string
   disabled?: boolean
@@ -63,6 +68,7 @@ export interface XhCalendarRootProps extends Omit<ComponentPropsWithRef<'div'>, 
   defaultActiveView?: CalendarView
   /** 并排展示几页，默认 1。 */
   visibleCount?: number
+  translations?: Partial<CalendarTranslations>
   onValueChange?: CalendarProps['onValueChange']
   onFocusedValueChange?: CalendarProps['onFocusedValueChange']
   onActiveViewChange?: CalendarProps['onActiveViewChange']
@@ -79,6 +85,8 @@ export function XhCalendarRoot({
   min,
   max,
   isDateUnavailable,
+  allowsNonContiguousRanges,
+  invalid,
   locale,
   timeZone,
   disabled,
@@ -89,6 +97,7 @@ export function XhCalendarRoot({
   activeView,
   defaultActiveView,
   visibleCount,
+  translations,
   onValueChange,
   onFocusedValueChange,
   onActiveViewChange,
@@ -104,6 +113,8 @@ export function XhCalendarRoot({
     min,
     max,
     isDateUnavailable,
+    allowsNonContiguousRanges,
+    invalid,
     locale,
     timeZone,
     disabled,
@@ -114,6 +125,7 @@ export function XhCalendarRoot({
     activeView,
     defaultActiveView,
     visibleCount,
+    translations,
     onValueChange,
     onFocusedValueChange,
     onActiveViewChange,
@@ -121,7 +133,13 @@ export function XhCalendarRoot({
   const api = ctx.api
   return (
     <CalendarProvider value={ctx}>
-      <div {...mergeReactProps(api.getRootProps() as Record<string, unknown>, rest as Record<string, unknown>)}>
+      <div
+        {...mergeReactProps(
+          api.getRootProps() as Record<string, unknown>,
+          rest as Record<string, unknown>,
+          { ref: (el: HTMLDivElement | null) => { ctx.rootRef.current = el } },
+        )}
+      >
         {children == null
           ? null
           : renderSlot(children, {
@@ -137,6 +155,7 @@ export function XhCalendarRoot({
               canGoNext: api.canGoNext,
               isSelected: api.isSelected,
               isUnavailable: api.isUnavailable,
+              rangeAnchor: api.rangeAnchor,
               setValue: api.setValue,
               select: api.select,
               focus: api.focus,

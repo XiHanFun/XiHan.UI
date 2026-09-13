@@ -663,7 +663,9 @@ describe('closeOnSelect', () => {
     const h = mount({ defaultOpen: true, selectionMode: 'range' })
     const days = h.rendered()
     click(h.cell(days[10]!))
-    expect(h.value()).toEqual([days[10]])
+    // 起点只记在日历里，选择器的值要等终点落下才写
+    expect(h.value()).toEqual([])
+    expect(h.api().calendar.rangeAnchor).toBe(days[10])
     expect(h.state()).toBe('open')
 
     click(h.cell(days[14]!))
@@ -934,6 +936,45 @@ describe('defaultFocusedValue 决定先落在哪一页', () => {
   })
 })
 
+describe('区间的校验与可选范围', () => {
+  it('终点早于起点即不合法：根与输入行带 data-invalid，api.invalid 同一口径', () => {
+    const h = mount({ selectionMode: 'range', defaultValue: ['2026-08-20', '2026-08-10'] })
+    expect(h.api().invalid).toBe(true)
+    expect(h.root.getAttribute('data-invalid')).toBe('')
+    expect(h.control.getAttribute('data-invalid')).toBe('')
+    h.api().setValue(['2026-08-10', '2026-08-20'])
+    expect(h.api().invalid).toBe(false)
+    expect(h.root.hasAttribute('data-invalid')).toBe(false)
+  })
+
+  it('只填了一端不算不合法', () => {
+    expect(mount({ selectionMode: 'range', defaultValue: ['', '2026-08-10'] }).api().invalid).toBe(false)
+    expect(mount({ selectionMode: 'range', defaultValue: ['2026-08-10'] }).api().invalid).toBe(false)
+  })
+
+  it('allowsNonContiguousRanges 与 isDateUnavailable 的起点参数原样交给内嵌日历', () => {
+    const anchors: (string | null)[] = []
+    const h = mount({
+      defaultOpen: true,
+      selectionMode: 'range',
+      visibleCount: 2,
+      defaultFocusedValue: '2026-08-10',
+      allowsNonContiguousRanges: true,
+      isDateUnavailable: (value, anchor) => {
+        anchors.push(anchor)
+        return value === '2026-08-12'
+      },
+    })
+    click(h.cell('2026-08-10'))
+    expect(anchors).toContain('2026-08-10')
+    // 允许跨过不可用日：终点落在它之后照样收成区间，中间那一天不铺轨道
+    click(h.cell('2026-08-14'))
+    expect(h.api().value).toEqual(['2026-08-10', '2026-08-14'])
+    expect(h.gridcell('2026-08-12').hasAttribute('data-in-range')).toBe(false)
+    expect(h.gridcell('2026-08-13').getAttribute('data-in-range')).toBe('')
+  })
+})
+
 describe('值被整份改写后区间不再跟着鼠标走', () => {
   it('点了起点再整份写值（快捷选项 / 清空 / setValue）：那个起点作废，指针扫过不再铺预览带', () => {
     // 钉住铺开的那一页：不给就落到「今天」那一页，用例里写死的八月格子会随日历时钟消失
@@ -946,11 +987,13 @@ describe('值被整份改写后区间不再跟着鼠标走', () => {
     })
     // 先落一个起点，区间进入「挑到一半」
     click(h.cell('2026-08-10'))
-    expect(h.api().value).toEqual(['2026-08-10'])
+    expect(h.api().value).toEqual([])
+    expect(h.api().calendar.rangeAnchor).toBe('2026-08-10')
 
-    // 整份写进去，与点快捷选项同一条路
+    // 整份写进去，与点快捷选项同一条路：起点作废
     h.api().setValue(['2026-08-01', '2026-08-31'])
     expect(h.api().value).toEqual(['2026-08-01', '2026-08-31'])
+    expect(h.api().calendar.rangeAnchor).toBeNull()
 
     // 指针扫过 7/20：区间仍是 7/01–7/31，不是从 7/15 铺到 7/20
     h.cell('2026-08-20').dispatchEvent(new Event('pointerenter'))
@@ -965,7 +1008,19 @@ describe('值被整份改写后区间不再跟着鼠标走', () => {
     click(h.cell('2026-08-10'))
     h.api().setValue([])
     click(h.cell('2026-08-20'))
-    expect(h.api().value).toEqual(['2026-08-20'])
+    expect(h.api().value).toEqual([])
+    expect(h.api().calendar.rangeAnchor).toBe('2026-08-20')
+    click(h.cell('2026-08-22'))
+    expect(h.api().value).toEqual(['2026-08-20', '2026-08-22'])
+  })
+
+  it('escape 撤掉起点后浮层照常收起，原来的区间原样还在', () => {
+    const h = mount({ defaultOpen: true, selectionMode: 'range', visibleCount: 2, defaultFocusedValue: '2026-08-10', defaultValue: ['2026-08-03', '2026-08-05'] })
+    click(h.cell('2026-08-10'))
+    expect(h.api().calendar.rangeAnchor).toBe('2026-08-10')
+    h.grid.dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape', bubbles: true, cancelable: true }))
+    expect(h.api().calendar.rangeAnchor).toBeNull()
+    expect(h.api().value).toEqual(['2026-08-03', '2026-08-05'])
   })
 })
 

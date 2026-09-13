@@ -88,6 +88,8 @@ export function useDatePicker(props: DatePickerSchema['props']): DatePickerConte
     // 跨月后的焦点落点要等重渲，日历机器推迟一拍再从这里取网格现查
     onCreate: (svc) => {
       svc.refs.set('getGridEl', () => gridRef.current)
+      // 区间挑到一半时，指针在浮层与输入行之外松开就地收口
+      svc.refs.set('getBoundaryEls', () => [contentRef.current, controlRef.current])
     },
   })
   const field = useMachine<DateFieldSchema>(dateFieldMachine, () => datePickerFieldProps(root), { scope })

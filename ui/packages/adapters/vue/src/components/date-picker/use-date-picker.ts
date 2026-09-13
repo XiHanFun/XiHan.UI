@@ -141,6 +141,8 @@ function createDatePickerContext(
 
   // 跨月后的焦点落点要等重渲，日历机器推迟一拍再从这里取网格现查
   calendar.refs.set('getGridEl', () => gridRef.value)
+  // 区间挑到一半时，指针在浮层与输入行之外松开就地收口
+  calendar.refs.set('getBoundaryEls', () => [contentRef.value, controlRef.value])
 
   const api = computed(() => connectDatePicker(services, vueNormalize))
   // 退场闸门：收起从跟着 open 走，改成跟着 presence 走

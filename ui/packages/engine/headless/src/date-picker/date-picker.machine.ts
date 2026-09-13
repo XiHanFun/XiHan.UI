@@ -163,8 +163,11 @@ export function datePickerCalendarProps(service: Service<DatePickerSchema>): Cal
     locale: prop('locale'),
     timeZone: prop('timeZone'),
     isDateUnavailable: prop('isDateUnavailable'),
+    allowsNonContiguousRanges: prop('allowsNonContiguousRanges'),
     disabled: prop('disabled'),
     readOnly: prop('readOnly'),
+    // 日历那几句读屏文案从同一份文案桶里取
+    translations: prop('translations'),
     onValueChange: ({ value }) => {
       if (!withTime) {
         send({ type: 'VALUE.SET', value, src: 'calendar' })

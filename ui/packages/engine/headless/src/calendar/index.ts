@@ -51,4 +51,4 @@ export type {
 export { calendarKeyboard } from './calendar.keyboard'
 export { calendarMachine } from './calendar.machine'
 export { calendarMeta } from './calendar.meta'
-export type { CalendarApi, CalendarCellProps, CalendarFocusChangeDetails, CalendarFocusModel, CalendarPanel, CalendarPanelProps, CalendarRefs, CalendarSchema, CalendarSelectionMode, CalendarTranslations, CalendarValueChangeDetails, CalendarViewChangeDetails, CalendarWeekdayFormat, CalendarWeekDayProps, CalendarWeekNumberProps } from './calendar.types'
+export type { CalendarApi, CalendarCellProps, CalendarFocusChangeDetails, CalendarFocusModel, CalendarPanel, CalendarPanelProps, CalendarPress, CalendarRefs, CalendarSchema, CalendarSelectionMode, CalendarTranslations, CalendarValueChangeDetails, CalendarViewChangeDetails, CalendarWeekdayFormat, CalendarWeekDayProps, CalendarWeekNumberProps } from './calendar.types'

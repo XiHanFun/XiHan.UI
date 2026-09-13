@@ -20,19 +20,23 @@ export interface CalendarContext {
   api: CalendarApi
   /** 首个网格的节点：跨月重渲后机器按它现查焦点该落在哪一格。 */
   gridRef: RefObject<HTMLElement | null>
+  /** 根节点：区间挑到一半时，指针在它之外松开就地收口。 */
+  rootRef: RefObject<HTMLElement | null>
 }
 
 export function useCalendar(props: CalendarSchema['props']): CalendarContext {
   const scope = useReactScope()
   const gridRef = useRef<HTMLElement | null>(null)
+  const rootRef = useRef<HTMLElement | null>(null)
 
   const service = useMachine(calendarMachine, () => props, {
     scope,
     // 机器的挂载效应会立刻读 refs，交在 onCreate 里才赶得上
     onCreate: (svc) => {
       svc.refs.set('getGridEl', () => gridRef.current)
+      svc.refs.set('getBoundaryEls', () => [rootRef.current])
     },
   })
 
-  return { service, api: connectCalendar(service, reactNormalize), gridRef }
+  return { service, api: connectCalendar(service, reactNormalize), gridRef, rootRef }
 }
