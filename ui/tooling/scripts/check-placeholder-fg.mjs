@@ -92,7 +92,8 @@ for (const file of fs.readdirSync(cssDir).filter(f => f.endsWith('.css')).sort()
       // 去掉通道自身的选择器成分，剩下的就是状态限定：剩空的是基础规则，剩东西的是覆写
       const rest = sel
         .replaceAll(`[data-scope='${scope}']`, '')
-        .replaceAll(`[data-part='${part}']`, '')
+        // 祖先部件只限定结构，不是状态；例如必需 control 里的 input 仍是基础占位规则。
+        .replaceAll(/\[data-part='[a-z-]+'\]/g, '')
         .replaceAll('[data-placeholder]', '')
         .replaceAll('::placeholder', '')
         .trim()
