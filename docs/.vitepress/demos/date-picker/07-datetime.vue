@@ -1,4 +1,4 @@
-<!-- 日期加时间 | show-time 让值升格为一体化 datetime：日历右侧多出时/分两列，选完日子不收起、时间列点选写值、确认钮收口 -->
+<!-- 日期与时间 | 同时选择日期和时间 -->
 <script setup lang="ts">
 import {
   XhDatePickerCalendar,
@@ -23,13 +23,10 @@ import {
   XhDatePickerWeekDay,
   XhDatePickerWeekRow,
 } from "@xihan-ui/vue";
-import { ref } from "vue";
-
-const stamp = ref<string[]>([]);
 </script>
 
 <template>
-  <XhDatePickerRoot v-slot="{ weeks, weekDays }" v-model:value="stamp" show-time locale="zh-CN">
+  <XhDatePickerRoot v-slot="{ weeks, weekDays }" show-time locale="zh-CN">
     <XhDatePickerLabel>会议开始</XhDatePickerLabel>
     <XhDatePickerControl>
       <XhDatePickerSegmentGroup>
@@ -72,5 +69,4 @@ const stamp = ref<string[]>([]);
       </XhDatePickerContent>
     </XhDatePickerPositioner>
   </XhDatePickerRoot>
-  <p>已选：{{ stamp[0] ?? "（未选）" }}</p>
 </template>

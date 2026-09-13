@@ -1,6 +1,5 @@
-<!-- 日期加时间 | show-time 让值升格为一体化 datetime：日历右侧多出时/分两列，选完日子不收起、时间列点选写值、确认钮收口 -->
+<!-- 日期与时间 | 同时选择日期和时间 -->
 <div id="date-picker-datetime-mount"></div>
-<p>已选：<span id="date-picker-datetime-value">（未选）</span></p>
 
 <template id="date-picker-datetime-template">
   <xh-date-picker locale="zh-CN" show-time>
@@ -54,7 +53,6 @@
     '[data-xh-part="grid-head"] [data-xh-part="week-row"]',
   );
   const body = fragment.querySelector('[data-xh-part="grid-body"]');
-  const readout = document.getElementById("date-picker-datetime-value");
 
   let month = "";
 
@@ -122,7 +120,4 @@
   paintBody();
 
   picker.addEventListener("focused-value-change", paintBody);
-  picker.addEventListener("value-change", (event) => {
-    readout.textContent = event.detail.value[0] ?? "（未选）";
-  });
 </script>

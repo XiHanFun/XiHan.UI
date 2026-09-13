@@ -1,11 +1,9 @@
-<!-- 五种粒度 | 天 / 周 / 月 / 季度 / 年一套结构走完：输入行铺哪几段跟着 view 走，标题里的年与月可点，逐级钻上去 -->
+<!-- 选择粒度 | 按周、月、季度或年选择 -->
 <div
   id="date-picker-granularity-mount"
   style="display: flex; flex-wrap: wrap; gap: 24px"
 ></div>
-<p id="date-picker-granularity-readout" style="font-size: 13px"></p>
 
-<!-- 壳先收在模板里：段位与网格都由作者照取数口铺，铺好了才入页 -->
 <template id="date-picker-granularity-template">
   <xh-date-picker locale="zh-CN">
     <div data-xh-part="root">
@@ -49,21 +47,6 @@
 
   const mount = document.getElementById("date-picker-granularity-mount");
   const template = document.getElementById("date-picker-granularity-template");
-  const readout = document.getElementById("date-picker-granularity-readout");
-
-  // 各粒度各自挑到了什么，一起印在下面
-  const values = new Map(kinds.map((kind) => [kind.key, []]));
-
-  function paintReadout() {
-    readout.replaceChildren(
-      ...kinds.map((kind) => {
-        const item = document.createElement("span");
-        item.style.marginInlineEnd = "12px";
-        item.textContent = `${kind.label}：${values.get(kind.key).join(" → ") || "—"}`;
-        return item;
-      }),
-    );
-  }
 
   function node(tag, part, text) {
     const el = document.createElement(tag);
@@ -177,11 +160,5 @@
 
     picker.addEventListener("focused-value-change", paintGrid);
     picker.addEventListener("active-view-change", paintGrid);
-    picker.addEventListener("value-change", (event) => {
-      values.set(kind.key, event.detail.value);
-      paintReadout();
-    });
   }
-
-  paintReadout();
 </script>

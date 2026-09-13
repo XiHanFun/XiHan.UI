@@ -1,4 +1,4 @@
-// 区间选择 | 五种粒度都能挑区间：两端跨页才并排两页，同一页放得下就一页；翻页整窗一起走，大步翻那对钮一次跨一年或十页
+// 区间选择 | 选择开始和结束日期
 import type { CalendarView } from "@xihan-ui/headless";
 import type { ReactNode } from "react";
 import {
@@ -26,43 +26,20 @@ import {
   XhDatePickerWeekNumber,
   XhDatePickerWeekRow,
 } from "@xihan-ui/react";
-import { Fragment, useState } from "react";
+import { Fragment } from "react";
 
 const kinds = [
-  { key: "day", label: "按天", view: "day" as CalendarView, week: false },
-  { key: "week", label: "按周", view: "day" as CalendarView, week: true },
-  { key: "month", label: "按月", view: "month" as CalendarView, week: false },
-  { key: "quarter", label: "按季度", view: "quarter" as CalendarView, week: false },
-  { key: "year", label: "按年", view: "year" as CalendarView, week: false },
+  { key: "day", label: "旅行日期", view: "day" as CalendarView, week: false },
 ];
 
-// 两组段位各自的读屏名字，区间模式下替掉指向 label 的那份
 const translations = { startDate: "开始", endDate: "结束" };
 
-function text(v: string[]): string {
-  if (v.length === 0)
-    return "（未选）";
-  if (v.length === 1)
-    return `${v[0]}（另一端待定）`;
-  return `${v[0]} → ${v[1]}`;
-}
-
 export default function Demo(): ReactNode {
-  const [values, setValues] = useState<Record<string, string[]>>({
-    day: [],
-    week: [],
-    month: [],
-    quarter: [],
-    year: [],
-  });
-
   return (
     <div style={{ display: "flex", flexDirection: "column", gap: "20px" }}>
       {kinds.map(k => (
         <XhDatePickerRoot
           key={k.key}
-          value={values[k.key] ?? []}
-          onValueChange={details => setValues(prev => ({ ...prev, [k.key]: details.value }))}
           translations={translations}
           view={k.view}
           weekSelection={k.week}
@@ -141,7 +118,6 @@ export default function Demo(): ReactNode {
                 </XhDatePickerContent>
               </XhDatePickerPositioner>
 
-              <span style={{ fontSize: "13px" }}>{text(values[k.key] ?? [])}</span>
             </>
           )}
         </XhDatePickerRoot>

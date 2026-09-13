@@ -1,4 +1,4 @@
-<!-- 五种粒度 | 天 / 周 / 月 / 季度 / 年一套结构走完：输入行铺哪几段跟着 view 走，标题里的年与月可点，逐级钻上去 -->
+<!-- 选择粒度 | 按周、月、季度或年选择 -->
 <script setup lang="ts">
 import type { CalendarView } from "@xihan-ui/headless";
 import {
@@ -28,9 +28,7 @@ import {
   XhDatePickerWeekNumber,
   XhDatePickerWeekRow,
 } from "@xihan-ui/vue";
-import { ref } from "vue";
 
-// 段位不必再手数几段：铺哪几块由 view 推出来，作者照 segments 铺就是
 const kinds = [
   { key: "day", label: "按天", view: "day" as CalendarView, week: false },
   { key: "week", label: "按周", view: "day" as CalendarView, week: true },
@@ -38,14 +36,6 @@ const kinds = [
   { key: "quarter", label: "按季度", view: "quarter" as CalendarView, week: false },
   { key: "year", label: "按年", view: "year" as CalendarView, week: false },
 ];
-
-const values = ref<Record<string, string[]>>({
-  day: [],
-  week: [],
-  month: [],
-  quarter: [],
-  year: [],
-});
 </script>
 
 <template>
@@ -54,7 +44,6 @@ const values = ref<Record<string, string[]>>({
       v-for="k in kinds"
       :key="k.key"
       v-slot="{ panels, weekDays, segments }"
-      v-model:value="values[k.key]"
       :view="k.view"
       :week-selection="k.week"
       :selection-mode="k.week ? 'range' : 'single'"
@@ -129,10 +118,4 @@ const values = ref<Record<string, string[]>>({
       </XhDatePickerPositioner>
     </XhDatePickerRoot>
   </div>
-
-  <p style="font-size: 13px">
-    <span v-for="k in kinds" :key="k.key" style="margin-inline-end: 12px">
-      {{ k.label }}：{{ values[k.key].join(" → ") || "—" }}
-    </span>
-  </p>
 </template>

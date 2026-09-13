@@ -1,14 +1,12 @@
-<!-- 基础用法 | 点输入行任意处即展开，不必再去点小箭头；段位与日历写的是同一个值，改哪边另一边当场跟着改口 -->
+<!-- 基础用法 | 输入或选择日期 -->
 <div id="date-picker-basic-mount"></div>
 
-<!-- 结构先收在模板里：网格由作者渲染，格子填好了才入页 -->
 <template id="date-picker-basic-template">
-  <xh-date-picker locale="zh-CN" name="due">
+  <xh-date-picker locale="zh-CN">
     <div data-xh-part="root">
       <span data-xh-part="label">交付日期</span>
       <div data-xh-part="control">
         <div data-xh-part="segment-group">
-          <!-- 段位不写内容：显示什么由组件按当前值填 -->
           <span data-xh-part="segment"></span>
           <span>-</span>
           <span data-xh-part="segment"></span>
@@ -17,8 +15,6 @@
         </div>
         <button data-xh-part="clear-trigger"></button>
       </div>
-      <!-- 表单出口：随表单提交的是 ISO 串 -->
-      <input data-xh-part="hidden-input" />
       <div data-xh-part="positioner">
         <div data-xh-part="content">
           <div data-xh-part="calendar">
