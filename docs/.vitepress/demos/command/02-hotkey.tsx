@@ -73,7 +73,7 @@ export default function Demo(): ReactNode {
                           {/* 检索串就是高亮的关键词，用户看得见这条为什么被选出来 */}
                           <XhHighlight text={command.label} keyword={inputValue} />
                         </XhCommandItemText>
-                        {command.hotkey && <XhKbdGroup keys={command.hotkey} size="sm" />}
+                        {command.hotkey && <XhKbdGroup keys={command.hotkey} />}
                       </XhCommandItem>
                     ))}
                 </XhCommandGroup>

@@ -20,21 +20,19 @@ export const kbdGroupSuite: ConformanceSuite = {
       spec: { apg: 'https://www.w3.org/WAI/ARIA/apg/practices/names-and-descriptions/' },
       props: { keys: ['Mod', 'S'], platform: 'other' },
       initial: {
-        order: ['root', 'key[0]', 'separator', 'key[1]'],
-        counts: { root: 1, key: 2, separator: 1 },
+        order: ['root', 'key[0]', 'key[1]'],
+        counts: { root: 1, key: 2 },
         parts: {
           root: {
             'role': 'img',
             'aria-label': 'Control + S',
             'data-platform': 'other',
-            'data-disabled': null,
-            'data-pressed': null,
+            'data-variant': 'default',
           },
           key: [
-            { 'aria-hidden': 'true', 'data-modifier': '' },
-            { 'aria-hidden': 'true', 'data-modifier': null },
+            { 'aria-hidden': 'true' },
+            { 'aria-hidden': 'true' },
           ],
-          separator: { 'aria-hidden': 'true', 'hidden': null },
         },
       },
       steps: [{
@@ -48,28 +46,23 @@ export const kbdGroupSuite: ConformanceSuite = {
       }],
     },
     {
-      name: 'Mac 符号连排时连接符节点明确收起',
+      name: 'Mac 符号连排时只生成键名节点',
       spec: { apg: 'https://www.w3.org/WAI/ARIA/apg/practices/names-and-descriptions/' },
       props: { keys: ['Mod', 'Shift', 'P'], platform: 'mac' },
       initial: {
-        counts: { root: 1, key: 3, separator: 2 },
+        counts: { root: 1, key: 3 },
         parts: {
           root: { 'aria-label': 'Command + Shift + P', 'data-platform': 'mac' },
-          separator: [
-            { 'aria-hidden': 'true', 'hidden': '' },
-            { 'aria-hidden': 'true', 'hidden': '' },
-          ],
         },
       },
     },
     {
-      name: '展示状态不暗中改变行为，只落到组根',
+      name: 'light 外观如实落到组根',
       spec: { apg: 'https://www.w3.org/WAI/ARIA/apg/practices/names-and-descriptions/' },
-      props: { keys: ['S'], size: 'sm', disabled: true, pressed: true },
+      props: { keys: ['S'], variant: 'light' },
       initial: {
         parts: {
-          root: { 'data-size': 'sm', 'data-disabled': '', 'data-pressed': '' },
-          key: { 'data-disabled': null, 'data-pressed': null },
+          root: { 'data-variant': 'light' },
         },
       },
     },
