@@ -39037,7 +39037,31 @@
               "name": "--xh-resizable-corner"
             },
             {
+              "name": "--xh-resizable-corner-inset"
+            },
+            {
               "name": "--xh-resizable-grip"
+            },
+            {
+              "name": "--xh-resizable-handle-bg"
+            },
+            {
+              "name": "--xh-resizable-handle-bg-active"
+            },
+            {
+              "name": "--xh-resizable-handle-bg-hover"
+            },
+            {
+              "name": "--xh-resizable-handle-radius"
+            },
+            {
+              "name": "--xh-resizable-indicator-inset"
+            },
+            {
+              "name": "--xh-resizable-indicator-length"
+            },
+            {
+              "name": "--xh-resizable-indicator-thickness"
             }
           ]
         }
