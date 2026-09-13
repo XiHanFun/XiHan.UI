@@ -560,6 +560,17 @@ describe('选中值的三个入口', () => {
     expect(active()).toBe(h.segments()[0])
   })
 
+  it('范围分隔符只在区间模式出现，并退出可访问树', () => {
+    const single = mount().api().getRangeSeparatorProps() as Record<string, unknown>
+    expect(single.hidden).toBe(true)
+    expect(single['aria-hidden']).toBe(true)
+
+    const range = mount({ selectionMode: 'range' }).api().getRangeSeparatorProps() as Record<string, unknown>
+    expect(range.hidden).toBeUndefined()
+    expect(range['aria-hidden']).toBe(true)
+    expect(range['data-part']).toBe('range-separator')
+  })
+
   it('受控 value：宿主不写回则两侧都纹丝不动，回调照发；写回才跟着走', () => {
     const onValueChange = vi.fn()
     const h = mount({ value: '2026-07-28', defaultOpen: true, onValueChange })

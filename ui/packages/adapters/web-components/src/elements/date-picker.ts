@@ -68,7 +68,7 @@ function declaredIndex(el: HTMLElement, position: number): number {
 }
 
 /**
- * `<xh-date-picker>` —— Light-DOM 行为宿主：作者写 root/label/control/segment-group/segment/trigger/
+ * `<xh-date-picker>` —— Light-DOM 行为宿主：作者写 root/label/control/segment-group/range-separator/segment/trigger/
  * clear-trigger/positioner/content/calendar 角色节点，calendar 之内再照日历那套写
  * header/prev-trigger/next-trigger/heading/grid/grid-head/week-day/grid-body/week-row/cell/cell-trigger。
  *
@@ -126,6 +126,7 @@ function declaredIndex(el: HTMLElement, position: number): number {
  * @csspart label - 标题；点它把焦点送进首段。刻意不是原生 label（段位是 div，标不了）
  * @csspart control - 输入行容器，同时是浮层的定位锚点
  * @csspart segment-group - role=group 的分段容器，段位挂在它里面；区间模式下有起止两个，data-index 区分
+ * @csspart range-separator - 区间起止输入之间的视觉分隔；非区间模式自动隐藏
  * @csspart segment - 一段一个的 spinbutton 节点（data-scope="date-field"）。可自带 segment 属性按段名认领
  *   （segment="quarter"），或自带 index 属性声明下标（在所属 segment-group 组内数），两者都没写按文档序
  * @csspart trigger - 展开日历的按钮，须是原生 button
@@ -527,6 +528,7 @@ export class XhDatePickerElement extends XhPortalHostElement {
     put('root', api.getRootProps() as Record<string, unknown>)
     put('label', api.getLabelProps() as Record<string, unknown>)
     put('control', api.getControlProps() as Record<string, unknown>)
+    put('range-separator', api.getRangeSeparatorProps() as Record<string, unknown>)
     put('clear-trigger', api.getClearTriggerProps() as Record<string, unknown>)
     put('trigger', api.getTriggerProps() as Record<string, unknown>)
     // positioner 的 style 是对象，spreader 会逐条写成内联样式

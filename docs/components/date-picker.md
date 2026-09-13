@@ -20,7 +20,7 @@
 
 加粗的是必需部件。
 
-`data-scope="date-picker"`：`root` · `label` · **`control`** · `segment-group` · `trigger` · `clear-trigger` · `positioner` · **`content`** · `preset-group` · `preset` · **`calendar`** · `time-column` · `time-item` · `confirm-trigger`
+`data-scope="date-picker"`：`root` · `label` · **`control`** · `segment-group` · `range-separator` · `trigger` · `clear-trigger` · `positioner` · **`content`** · `preset-group` · `preset` · **`calendar`** · `time-column` · `time-item` · `confirm-trigger`
 
 ## 示例
 
@@ -80,11 +80,13 @@
 - `showTime` 在日历旁加入时间选择。
 - 输入值、展开状态和聚焦日期均可受控。
 - 点击输入行可以继续逐段键入，点击日历图标则把焦点送入日历；展开期间输入框保持激活边界。
+- 区间模式在同一个组件内组合起止分段输入、范围分隔符和范围日历，不另设第二套选择器。
 
 ### 最佳实践
 
 - 使用明确的字段标签。
 - 标准输入行应包含可见的日历图标触发器，参与表单时同时渲染隐藏输入。
+- 区间输入必须在起止段组之间渲染 `range-separator`，不要依赖空白区分两端。
 - 区间选择应说明开始与结束日期。
 - 不可用日期应同时提供原因。
 - 常用日期优先提供快捷项。
@@ -101,7 +103,7 @@
 | 层 | 值 |
 | --- | --- |
 | 自定义元素 | `<xh-date-picker>` |
-| Vue 组件 | `XhDatePickerCalendar` `XhDatePickerCell` `XhDatePickerCellTrigger` `XhDatePickerClearTrigger` `XhDatePickerConfirmTrigger` `XhDatePickerContent` `XhDatePickerControl` `XhDatePickerGrid` `XhDatePickerGridBody` `XhDatePickerGridHead` `XhDatePickerHeader` `XhDatePickerHeading` `XhDatePickerHeadingMonthTrigger` `XhDatePickerHeadingYearTrigger` `XhDatePickerHiddenInput` `XhDatePickerLabel` `XhDatePickerNextTrigger` `XhDatePickerNextYearTrigger` `XhDatePickerPositioner` `XhDatePickerPreset` `XhDatePickerPresetGroup` `XhDatePickerPrevTrigger` `XhDatePickerPrevYearTrigger` `XhDatePickerRoot` `XhDatePickerSegment` `XhDatePickerSegmentGroup` `XhDatePickerTimePanel` `XhDatePickerTrigger` `XhDatePickerWeekDay` `XhDatePickerWeekNumber` `XhDatePickerWeekRow` |
+| Vue 组件 | `XhDatePickerCalendar` `XhDatePickerCell` `XhDatePickerCellTrigger` `XhDatePickerClearTrigger` `XhDatePickerConfirmTrigger` `XhDatePickerContent` `XhDatePickerControl` `XhDatePickerGrid` `XhDatePickerGridBody` `XhDatePickerGridHead` `XhDatePickerHeader` `XhDatePickerHeading` `XhDatePickerHeadingMonthTrigger` `XhDatePickerHeadingYearTrigger` `XhDatePickerHiddenInput` `XhDatePickerLabel` `XhDatePickerNextTrigger` `XhDatePickerNextYearTrigger` `XhDatePickerPositioner` `XhDatePickerPreset` `XhDatePickerPresetGroup` `XhDatePickerPrevTrigger` `XhDatePickerPrevYearTrigger` `XhDatePickerRangeSeparator` `XhDatePickerRoot` `XhDatePickerSegment` `XhDatePickerSegmentGroup` `XhDatePickerTimePanel` `XhDatePickerTrigger` `XhDatePickerWeekDay` `XhDatePickerWeekNumber` `XhDatePickerWeekRow` |
 | 组合式函数 | `useDatePicker` |
 | 状态机 | `datePickerMachine` |
 | 皮肤 | `@xihan-ui/styles/date-picker.css` |
@@ -226,6 +228,7 @@
 | `getLabelProps` | `() => T['element']` |  |
 | `getControlProps` | `() => T['element']` |  |
 | `getSegmentGroupProps` | `(props?: DatePickerSegmentGroupProps) => T['element']` | role=group 的分段容器，段位挂在它里面。区间模式下 index 选起止两组，不传即起点。 |
+| `getRangeSeparatorProps` | `() => T['element']` | 起止输入之间的视觉分隔；非区间模式自动隐藏。 |
 | `getTriggerProps` | `() => T['button']` |  |
 | `getClearTriggerProps` | `() => T['button']` |  |
 | `getPositionerProps` | `() => T['element']` |  |
@@ -265,6 +268,7 @@
 | `segment-group` | `aria-label` | label.endDate \| label.startDate \| undefined |
 | `segment-group` | `aria-labelledby` | undefined \| `label` 部件的 id |
 | `segment-group` | `role` | 'group' |
+| `range-separator` | `aria-hidden` | 'true' |
 | `trigger` | `aria-controls` | `content` 部件的 id |
 | `trigger` | `aria-expanded` | 'true' \| 'false' |
 | `trigger` | `aria-haspopup` | 'dialog' |
@@ -417,6 +421,8 @@
 | `--xh-date-picker-preset-px` | `preset` | `inset-inline-end`<br>`padding-inline`<br>`padding-inline-end` | `default` | `--xh-space-3` | date-picker 的 preset 部件 inset-inline-end、padding-inline、padding-inline-end 覆盖槽。 |
 | `--xh-date-picker-preset-py` | `preset` | `padding-block` | `default` | `--xh-space-1` | date-picker 的 preset 部件 padding-block 覆盖槽。 |
 | `--xh-date-picker-preset-radius` | `preset` | `border-radius` | `default` | `--xh-shape-control` | date-picker 的 preset 部件 border-radius 覆盖槽。 |
+| `--xh-date-picker-range-separator-fg` | `range-separator` | `color` | `default` | `--xh-fg-subtle` | date-picker 的 range-separator 部件 color 覆盖槽。 |
+| `--xh-date-picker-range-separator-px` | `range-separator` | `padding-inline` | `default` | `--xh-space-1` | date-picker 的 range-separator 部件 padding-inline 覆盖槽。 |
 | `--xh-date-picker-time-column-gap` | `time-column` | `gap` | `default` | `--xh-list-option-gap` | date-picker 的 time-column 部件 gap 覆盖槽。 |
 | `--xh-date-picker-time-column-h` | `time-column` | `block-size` | `default` | `--xh-viewport-h-sm` | date-picker 的 time-column 部件 block-size 覆盖槽。 |
 | `--xh-date-picker-time-column-padding` | `time-column` | `padding` | `default` | `--xh-space-1` | date-picker 的 time-column 部件 padding 覆盖槽。 |

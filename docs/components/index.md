@@ -74,7 +74,7 @@
 <XhComponentCard src="checkbox-group" name="CheckboxGroup" label="复选框组" href="/components/checkbox-group" status="alpha" />
 <XhComponentCard src="color-picker" name="ColorPicker" label="颜色选择器" href="/components/color-picker" status="alpha" />
 <XhComponentCard src="combobox" name="Combobox" label="组合框" href="/components/combobox" status="alpha" />
-<XhComponentCard src="date-field" name="DateField" label="日期输入" href="/components/date-field" status="alpha" />
+<XhComponentCard src="date-field" name="DateField" label="日期字段" href="/components/date-field" status="alpha" />
 <XhComponentCard src="date-picker" name="DatePicker" label="日期选择器" href="/components/date-picker" status="alpha" />
 <XhComponentCard src="editable" name="Editable" label="就地编辑" href="/components/editable" status="alpha" />
 <XhComponentCard src="field" name="Field" label="表单字段" href="/components/field" status="alpha" />
@@ -98,7 +98,7 @@
 <XhComponentCard src="tag-group" name="TagGroup" label="标签组" href="/components/tag-group" status="alpha" />
 <XhComponentCard src="tags-input" name="TagsInput" label="标签输入" href="/components/tags-input" status="alpha" />
 <XhComponentCard src="text-field" name="TextField" label="文本输入" href="/components/text-field" status="alpha" />
-<XhComponentCard src="time-field" name="TimeField" label="时间输入" href="/components/time-field" status="alpha" />
+<XhComponentCard src="time-field" name="TimeField" label="时间字段" href="/components/time-field" status="alpha" />
 <XhComponentCard src="time-picker" name="TimePicker" label="时间选择器" href="/components/time-picker" status="alpha" />
 <XhComponentCard src="transfer" name="Transfer" label="穿梭框" href="/components/transfer" status="alpha" />
 <XhComponentCard src="tree-select" name="TreeSelect" label="树选择" href="/components/tree-select" status="alpha" />

@@ -262,6 +262,23 @@
     display: none;
   }
 
+  [data-scope='date-picker'][data-part='range-separator'] {
+    display: inline-flex;
+    flex: none;
+    align-items: center;
+    justify-content: center;
+    padding-inline: var(--xh-date-picker-range-separator-px, var(--xh-space-1));
+    color: var(--xh-date-picker-range-separator-fg, var(--xh-fg-subtle));
+    font: inherit;
+    line-height: var(--xh-leading-none);
+    pointer-events: none;
+    user-select: none;
+  }
+
+  [data-scope='date-picker'][data-part='range-separator'][hidden] {
+    display: none;
+  }
+
   [data-scope='date-picker'][data-part='segment-group'] > :not([data-scope]) {
     color: var(--xh-date-picker-literal-fg, var(--xh-fg-subtle));
   }

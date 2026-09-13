@@ -293,6 +293,7 @@ export {
   XhDatePickerPrevTrigger,
   XhDatePickerPrevYearTrigger,
   XhDatePickerRoot,
+  XhDatePickerRangeSeparator,
   XhDatePickerSegment,
   XhDatePickerSegmentGroup,
   XhDatePickerTimePanel,

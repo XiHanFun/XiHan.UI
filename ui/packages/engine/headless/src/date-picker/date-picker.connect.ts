@@ -429,6 +429,12 @@ export function connectDatePicker<T extends PropTypes>(
       })
     },
 
+    getRangeSeparatorProps: () => normalize.element({
+      ...parts['range-separator'].attrs,
+      'aria-hidden': true,
+      'hidden': !range || undefined,
+    }),
+
     getTriggerProps: () => normalize.button({
       ...parts.trigger.attrs,
       'id': ids.trigger,

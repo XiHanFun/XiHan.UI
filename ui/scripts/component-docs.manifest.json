@@ -242,7 +242,7 @@
         },
         {
           "id": "date-field",
-          "name": "日期输入"
+          "name": "日期字段"
         },
         {
           "id": "date-picker",
@@ -338,7 +338,7 @@
         },
         {
           "id": "time-field",
-          "name": "时间输入"
+          "name": "时间字段"
         },
         {
           "id": "time-picker",

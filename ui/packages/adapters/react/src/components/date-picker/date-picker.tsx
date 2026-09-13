@@ -334,6 +334,16 @@ export function XhDatePickerSegment({ index, segment, children, ...rest }: XhDat
   )
 }
 
+export interface XhDatePickerRangeSeparatorProps extends ComponentPropsWithRef<'span'> {}
+export function XhDatePickerRangeSeparator({ children, ...rest }: XhDatePickerRangeSeparatorProps): ReactNode {
+  const ctx = useDatePickerContext()
+  return (
+    <span {...mergeReactProps(ctx.api.getRangeSeparatorProps() as Record<string, unknown>, rest as Record<string, unknown>)}>
+      {children ?? '–'}
+    </span>
+  )
+}
+
 export interface XhDatePickerClearTriggerProps extends ComponentPropsWithRef<'button'> {}
 export function XhDatePickerClearTrigger({ children, ...rest }: XhDatePickerClearTriggerProps): ReactNode {
   const ctx = useDatePickerContext()

@@ -248,29 +248,37 @@
     inset-block: var(--xh-calendar-cell-gap, var(--xh-space-0_5));
     inset-inline: 0;
     background: var(--xh-calendar-range-bg, var(--xh-bg-brand-subtle));
+    transition: background var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
   }
 
-  /* 两端那一格只铺半格，另外半格由选中片占满：区间收在圆点上而不是收在格子边上。
-     起止落在同一格时两条一起生效，底色宽度归零，只剩那枚圆点 */
-  [data-scope='calendar'][data-part='cell'][data-in-range][data-range-start]::before {
-    inset-inline-start: 50%;
-  }
-
-  [data-scope='calendar'][data-part='cell'][data-in-range][data-range-end]::before {
-    inset-inline-end: 50%;
+  [data-scope='calendar'][data-part='cell'][data-range-preview]::before {
+    background: var(
+      --xh-calendar-range-preview-bg,
+      color-mix(in oklab, var(--xh-bg-brand-subtle) 72%, transparent)
+    );
   }
 
   /* 行首与行尾收圆：区间跨周时每一行各是一条两头圆的横杠。
      摆了周序号格的行里，行首那一格排在它后面 */
   [data-scope='calendar'][data-part='week-row'] > [data-part='cell'][data-in-range]:first-child::before,
   [data-scope='calendar'][data-part='week-row'] > [data-part='week-number'] + [data-part='cell'][data-in-range]::before {
-    border-start-start-radius: var(--xh-calendar-cell-radius, var(--xh-shape-pill));
-    border-end-start-radius: var(--xh-calendar-cell-radius, var(--xh-shape-pill));
+    border-start-start-radius: var(--xh-calendar-range-row-radius, var(--xh-shape-inset));
+    border-end-start-radius: var(--xh-calendar-range-row-radius, var(--xh-shape-inset));
   }
 
   [data-scope='calendar'][data-part='week-row'] > [data-part='cell'][data-in-range]:last-child::before {
-    border-start-end-radius: var(--xh-calendar-cell-radius, var(--xh-shape-pill));
-    border-end-end-radius: var(--xh-calendar-cell-radius, var(--xh-shape-pill));
+    border-start-end-radius: var(--xh-calendar-range-row-radius, var(--xh-shape-inset));
+    border-end-end-radius: var(--xh-calendar-range-row-radius, var(--xh-shape-inset));
+  }
+
+  [data-scope='calendar'][data-part='cell'][data-in-range][data-range-start]::before {
+    border-start-start-radius: var(--xh-calendar-range-cap-radius, var(--xh-shape-pill));
+    border-end-start-radius: var(--xh-calendar-range-cap-radius, var(--xh-shape-pill));
+  }
+
+  [data-scope='calendar'][data-part='cell'][data-in-range][data-range-end]::before {
+    border-start-end-radius: var(--xh-calendar-range-cap-radius, var(--xh-shape-pill));
+    border-end-end-radius: var(--xh-calendar-range-cap-radius, var(--xh-shape-pill));
   }
 
   /* 粗粒度的格子之间有间隙，底色本就接不成一条，每一格各自收圆 */
@@ -310,7 +318,7 @@
     color: var(--xh-calendar-cell-fg-outside, var(--xh-fg-subtle));
   }
 
-  [data-scope='calendar'][data-part='cell-trigger']:not([data-disabled]):not([data-selected]):hover {
+  [data-scope='calendar'][data-part='cell-trigger']:not([data-disabled], [data-selected], [data-in-range]):hover {
     background: var(--xh-calendar-cell-bg-hover, var(--xh-bg-subtle-hover));
   }
 
@@ -326,8 +334,14 @@
     color: var(--xh-calendar-today-fg, var(--xh-fg-brand));
   }
 
-  [data-scope='calendar'][data-part='cell-trigger'][data-today]:not([data-selected], [data-disabled]):hover {
+  [data-scope='calendar'][data-part='cell-trigger'][data-today]:not([data-selected], [data-disabled], [data-in-range]):hover {
     background: var(--xh-calendar-today-bg-hover, var(--xh-bg-brand-subtle-hover));
+  }
+
+  [data-scope='calendar'][data-part='cell'][data-range-preview]:is([data-range-start], [data-range-end])
+    > [data-part='cell-trigger']:not([data-selected], [data-disabled]) {
+    background: var(--xh-calendar-range-preview-cap-bg, var(--xh-bg-brand-subtle-hover));
+    color: var(--xh-calendar-range-preview-cap-fg, var(--xh-fg-brand));
   }
 
   [data-scope='calendar'][data-part='cell-trigger'][data-selected] {
@@ -339,6 +353,11 @@
 
   @media (forced-colors: active) {
     [data-scope='calendar'][data-part='cell-trigger'][data-today] {
+      border-color: Highlight;
+    }
+
+    [data-scope='calendar'][data-part='cell'][data-range-preview]:is([data-range-start], [data-range-end])
+      > [data-part='cell-trigger']:not([data-selected], [data-disabled]) {
       border-color: Highlight;
     }
   }
