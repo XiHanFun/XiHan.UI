@@ -18,7 +18,8 @@ export type CalendarFocusModel = 'roving-tabindex'
  * 选择模式：
  * - single：一次只中一天，点击与确认键都是「替换」；
  * - multiple：多天复选，点击与确认键都是「切换」，选中集合按日期升序；
- * - range：先点起点再点终点，中间态只有起点一个值，落终点时收成两端。
+ * - range：先落起点再落终点。起点只记在机器里、不写进值，落终点那一下才把两端一并写出；
+ *   Escape 撤掉起点，原来的区间原样留着。
  */
 export type CalendarSelectionMode = 'single' | 'multiple' | 'range'
 
@@ -28,7 +29,7 @@ export type CalendarWeekdayFormat = 'narrow' | 'short'
 export interface CalendarValueChangeDetails {
   /**
    * 选中日期集合，ISO 串。单选模式下也是数组（长度 ≤ 1），形状不随模式变；
-   * range 挑到一半时长度为 1（只有起点）。
+   * range 只在两端都落定时通知，长度恒为 2。
    */
   value: string[]
 }
@@ -107,8 +108,45 @@ export interface CalendarPanel {
 export interface CalendarRefs {
   /** 网格容器，由适配器注入；无 DOM 环境返回 null，机器照常跑、只是不搬焦点。 */
   getGridEl: () => HTMLElement | null
+  /**
+   * 区间挑选的边界节点：指针在这些节点之外松开，挑到一半的区间就地收口。
+   * 单独使用时是日历根节点；内嵌进日期选择器时是浮层与输入行。
+   * 缺省时退回网格所在的日历根节点，再退回网格自身。
+   */
+  getBoundaryEls: () => (HTMLElement | null)[]
+  /** 正按在格子上的那一下指针；松手与随后的 click 据此分辨这一下该做什么。 */
+  press: CalendarPress | null
   /** 机器是否还活着：搬焦点的延迟回调撤不回，卸载后仍会跑，据此认账。 */
   alive: boolean
+}
+
+/** 一次按在格子上的指针，从按下记到松手。 */
+export interface CalendarPress {
+  /** 按下的那一格。 */
+  value: string
+  /**
+   * 这一下按下时做了什么：anchor 是落了起点（触屏等满延时才落），
+   * boundary 是按在已选区间的一端上要拖它，end 是起点已在、松手即收尾。
+   */
+  role: 'anchor' | 'boundary' | 'end'
+  /** 触屏的延时句柄：抬手抢在它前面就是轻点。 */
+  timer: number | null
+  /** 起点还没落、等同一格松手再落：按的是邻月的日子，按下就翻页，不从这里起拖。 */
+  pending?: boolean
+  /** 松手那一下已经落定，随后冒上来的 click 不再处理。 */
+  handled?: boolean
+}
+
+/** 读屏用的文案，默认英文。 */
+export interface CalendarTranslations {
+  /** 聚焦格上的提示：还没落起点时，告诉读屏用户这一下是开始挑区间。 */
+  startRangeSelectionPrompt: string
+  /** 起点已落下时的提示：这一下是收尾。 */
+  finishRangeSelectionPrompt: string
+  /** 区间两端格子的可及名字前缀，带上完整的起止日期。 */
+  selectedRange: (start: string, end: string) => string
+  /** 今天那一格的可及名字：把日期包成「今天，……」。 */
+  todayDate: (date: string) => string
 }
 
 export interface CalendarSchema extends MachineSchema {
@@ -130,8 +168,20 @@ export interface CalendarSchema extends MachineSchema {
     min?: string
     /** 可选范围上界（含当天），ISO 串。 */
     max?: string
-    /** 作者给的不可用判定，收 ISO 串。返回真的日子与界外日子同等对待。 */
-    isDateUnavailable?: (value: string) => boolean
+    /**
+     * 作者给的不可用判定，收 ISO 串。返回真的日子与界外日子同等对待。
+     * 第二个参数是区间挑到一半时的起点（周期首日的 ISO 串），其余时候为 null：
+     * 据此能做「落了起点之后只许挑 7 天内」这类判定。
+     */
+    isDateUnavailable?: (value: string, anchor: string | null) => boolean
+    /**
+     * 区间允许跨过不可用的日子，默认关。
+     * 关着时落了起点之后，可挑的范围被夹在起点两侧最近的不可用日之间——
+     * 一段区间里不会夹着挑不了的日子；开着时不夹，只是那些日子不铺轨道。
+     */
+    allowsNonContiguousRanges?: boolean
+    /** 校验失败：根节点带 data-invalid，区间两端与中段的格子报 aria-invalid。 */
+    invalid?: boolean
     /** 决定周首日与月份/星期几的文案，不给按宿主语言，宿主也没有时按 en-US。 */
     locale?: string
     /** 判定「今天」与格式化文案用的时区，默认取宿主本地时区。 */
@@ -162,6 +212,7 @@ export interface CalendarSchema extends MachineSchema {
      * 小于 1 的写法回落到 1。
      */
     visibleCount?: number
+    translations?: Partial<CalendarTranslations>
     /** value 变化意图回调；受控时是唯一出口，非受控随内部写入一并通知。 */
     onValueChange?: (details: CalendarValueChangeDetails) => void
     /** 聚焦日变化（方向键、翻页、点了邻月的日子都会发）；受控时是唯一出口。 */
@@ -184,20 +235,33 @@ export interface CalendarSchema extends MachineSchema {
     visibleStart: string | null
     /** 面板此刻铺哪一档格子。受控（activeView 给定）时 cell 直读 prop。 */
     activeView: CalendarView
-    /** 区间挑选的起点：已落下起点、还没落终点时非空。 */
+    /**
+     * 区间挑选的起点：已落下起点、还没落终点时非空。它不写进 value——
+     * 落终点那一下才把两端一并写出，撤掉它时原来的区间原样还在。
+     */
     rangeAnchor: string | null
     /** 指针悬停的那天，只在挑区间时用来预览；不受控、不对外通知。 */
     hoveredValue: string | null
+    /** 指针正按在格子上拖：按下即落起点，松开在另一格上即落终点。 */
+    dragging: boolean
   }
   computed: Record<string, never>
   refs: CalendarRefs
-  /** 选中值与聚焦日不编码进状态，机器只有一个状态，逻辑全在 context 与 actions。 */
-  state: 'idle'
+  /**
+   * 选中值与聚焦日不编码进状态。anchored 是区间落了起点、还没落终点那一段：
+   * 它挂着文档级的松手监听，其余逻辑全在 context 与 actions。
+   */
+  state: 'idle' | 'anchored'
   event:
     /** 整体改写选中集合（外部 setValue 走它），不动区间起点。 */
     | { type: 'VALUE.SET', value: string[] }
-    /** 选中某一天：单选替换、多选切换、区间落点。 */
+    /** 选中某一天：单选替换、多选切换、区间先落起点、再落终点。 */
     | { type: 'CELL.SELECT', value: string }
+    /** 直接改写区间起点：null 即撤掉（Escape）；拖动已选区间的一端时换成另一端。 */
+    | { type: 'RANGE.ANCHOR', value: string | null }
+    /** 把挑到一半的区间就地收口：终点取悬停日，没有悬停就取聚焦日。 */
+    | { type: 'RANGE.COMMIT' }
+    | { type: 'DRAG.SET', dragging: boolean }
     /**
      * 聚焦日改写（方向键、翻页、点格子、格子获得焦点都会发）。
      * restoreFocus 表示这一下是网格内的键盘操作，机器据此把 DOM 焦点搬到落点那一格。
@@ -210,9 +274,9 @@ export interface CalendarSchema extends MachineSchema {
     | { type: 'HOVER.SET', value: string }
     | { type: 'HOVER.CLEAR' }
   tag: never
-  guard: never
-  action: 'setValue' | 'selectCell' | 'setFocusedValue' | 'setActiveView' | 'syncGranularity' | 'syncSelectionMode' | 'dropStaleRangeAnchor' | 'pageVisibleStart' | 'setHoveredValue' | 'clearHoveredValue' | 'focusVisibleCell'
-  effect: 'trackLiveness'
+  guard: 'startsRange' | 'anchorsRange'
+  action: 'setValue' | 'selectCell' | 'setRangeAnchor' | 'commitRange' | 'setDragging' | 'setFocusedValue' | 'setActiveView' | 'syncGranularity' | 'syncSelectionMode' | 'dropRangeAnchor' | 'pageVisibleStart' | 'setHoveredValue' | 'clearHoveredValue' | 'focusVisibleCell'
+  effect: 'trackLiveness' | 'trackRangeRelease'
 }
 
 export interface CalendarApi<T extends PropTypes = PropTypes> {
@@ -248,8 +312,18 @@ export interface CalendarApi<T extends PropTypes = PropTypes> {
   canZoomOutMonth: boolean
   disabled: boolean
   readOnly: boolean
+  /** 校验失败：作者标了 invalid，或已选区间的某一端落在界外 / 被判为不可用。 */
+  invalid: boolean
+  /** 区间挑到一半时的起点（周期首日的 ISO 串）；其余时候为 null。 */
+  rangeAnchor: string | null
+  /** 指针正按在格子上拖着挑区间。 */
+  dragging: boolean
+  /** 单选与多选看选中集合；区间看两端之间（挑到一半时是起点到悬停 / 聚焦那一段）。 */
   isSelected: (value: string) => boolean
-  /** 界外或作者判定不可用。禁用的日历下恒为真。 */
+  /**
+   * 界外或作者判定不可用。禁用的日历下恒为真。
+   * 区间挑到一半且不许跨过不可用日时，起点两侧最近的不可用日之外也算不可用。
+   */
   isUnavailable: (value: string) => boolean
   /** 上一页是否还有可看的日子（整张禁用或整页都在 min 之前即为假）。 */
   canGoPrev: boolean
@@ -259,6 +333,8 @@ export interface CalendarApi<T extends PropTypes = PropTypes> {
   canGoNextYear: boolean
   setValue: (next: string[]) => void
   select: (value: string) => void
+  /** 直接改写区间起点；传 null 撤掉挑到一半的区间。非区间模式下不起作用。 */
+  setRangeAnchor: (next: string | null) => void
   /** 改写聚焦日；跨月会连带换掉展示月。 */
   focus: (value: string) => void
   /** 直接钻到某一层。 */
@@ -292,5 +368,3 @@ export interface CalendarApi<T extends PropTypes = PropTypes> {
   getCellTriggerProps: (props: CalendarCellProps) => T['element']
 }
 
-/** 读屏用的文案。本组件目前没有需要外露的文案，位先留着。 */
-export interface CalendarTranslations {}

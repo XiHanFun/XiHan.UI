@@ -5,7 +5,7 @@
 
 // 提供 calendar 相关实现。
 
-import type { CalendarApi, CalendarCellProps, CalendarGranularity, CalendarSchema, CalendarSelectionMode, CalendarView, CalendarWeekdayFormat } from '@xihan-ui/headless'
+import type { CalendarApi, CalendarCellProps, CalendarGranularity, CalendarSchema, CalendarSelectionMode, CalendarTranslations, CalendarView, CalendarWeekdayFormat } from '@xihan-ui/headless'
 import type { PropType, SlotsType, VNode } from 'vue'
 import type { PayloadOf } from '../../runtime/payload'
 import { computed, defineComponent, h } from 'vue'
@@ -30,6 +30,7 @@ export type CalendarRootSlotProps = Pick<
   | 'canGoNext'
   | 'isSelected'
   | 'isUnavailable'
+  | 'rangeAnchor'
   | 'setValue'
   | 'select'
   | 'focus'
@@ -48,7 +49,11 @@ export const XhCalendarRoot = defineComponent({
     defaultFocusedValue: { type: String },
     min: { type: String },
     max: { type: String },
-    isDateUnavailable: { type: Function as PropType<(value: string) => boolean> },
+    isDateUnavailable: { type: Function as PropType<(value: string, anchor: string | null) => boolean> },
+    /** 区间允许跨过不可用的日子；默认关，落了起点后只能挑到两侧最近的不可用日为止。 */
+    allowsNonContiguousRanges: Boolean,
+    /** 校验失败：根带 data-invalid，区间里的格子报 aria-invalid。 */
+    invalid: Boolean,
     locale: { type: String },
     timeZone: { type: String },
     disabled: Boolean,
@@ -63,6 +68,7 @@ export const XhCalendarRoot = defineComponent({
     defaultActiveView: { type: String as PropType<CalendarView> },
     /** 并排展示几页，默认 1。 */
     visibleCount: { type: Number },
+    translations: { type: Object as PropType<Partial<CalendarTranslations>> },
   },
   // *-change 携带 details 对象，update:* 携带裸值；选中值恒为数组，单选时长度 ≤ 1
   emits: {
@@ -92,7 +98,7 @@ export const XhCalendarRoot = defineComponent({
     const ctx = useCalendar(withXhConfig('calendar', props) as CalendarProps, notifyValue, notifyFocus, notifyActiveView)
     provideCalendar(ctx)
     // 网格与表头由作者照插槽里的 weeks / weekDays 自行渲染
-    return () => h('div', ctx.api.value.getRootProps() as Record<string, unknown>, slots.default?.({
+    return () => h('div', { ...ctx.api.value.getRootProps() as Record<string, unknown>, ref: ctx.rootRef }, slots.default?.({
       value: ctx.api.value.value,
       focusedValue: ctx.api.value.focusedValue,
       visibleMonth: ctx.api.value.visibleMonth,
@@ -105,6 +111,7 @@ export const XhCalendarRoot = defineComponent({
       canGoNext: ctx.api.value.canGoNext,
       isSelected: ctx.api.value.isSelected,
       isUnavailable: ctx.api.value.isUnavailable,
+      rangeAnchor: ctx.api.value.rangeAnchor,
       setValue: ctx.api.value.setValue,
       select: ctx.api.value.select,
       focus: ctx.api.value.focus,

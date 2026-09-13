@@ -20,6 +20,8 @@ export interface CalendarContext {
   /** 机器实例，供部件上报 DOM 侧的事实。 */
   service: Service<CalendarSchema>
   gridRef: Ref<HTMLElement | null>
+  /** 根节点：区间挑到一半时，指针在它之外松开就地收口。 */
+  rootRef: Ref<HTMLElement | null>
 }
 
 export function useCalendar(
@@ -29,13 +31,15 @@ export function useCalendar(
   onActiveViewChange?: CalendarSchema['props']['onActiveViewChange'],
 ): CalendarContext {
   const gridRef = ref<HTMLElement | null>(null)
+  const rootRef = ref<HTMLElement | null>(null)
   const idGen = createVueIdGenerator()
   const scope = createScope(null, idGen)
   const service = useMachine(calendarMachine, () => ({ ...props, onValueChange, onFocusedValueChange, onActiveViewChange }), scope)
 
   // 跨月后的焦点落点要等重渲，机器推迟一拍再从这里取网格现查
   service.refs.set('getGridEl', () => gridRef.value)
+  service.refs.set('getBoundaryEls', () => [rootRef.value])
 
   const api = computed(() => connectCalendar(service, vueNormalize))
-  return { api, service, gridRef }
+  return { api, service, gridRef, rootRef }
 }

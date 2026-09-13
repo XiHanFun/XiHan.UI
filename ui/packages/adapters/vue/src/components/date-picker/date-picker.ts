@@ -121,7 +121,9 @@ export const XhDatePickerRoot = defineComponent({
     defaultFocusedValue: { type: String },
     /** 快捷选项；给了就在浮层里多出一列，日子要在自己的 computed 里算好再传。 */
     presets: { type: Array as PropType<DatePickerPreset[]> },
-    isDateUnavailable: { type: Function as PropType<(value: string) => boolean> },
+    isDateUnavailable: { type: Function as PropType<(value: string, anchor: string | null) => boolean> },
+    /** 区间允许跨过不可用的日子；默认关，落了起点后只能挑到两侧最近的不可用日为止。 */
+    allowsNonContiguousRanges: { type: Boolean, default: undefined },
     disabled: { type: Boolean, default: undefined },
     readOnly: { type: Boolean, default: undefined },
     invalid: { type: Boolean, default: undefined },

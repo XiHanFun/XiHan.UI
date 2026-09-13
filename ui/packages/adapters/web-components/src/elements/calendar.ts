@@ -12,6 +12,7 @@ import type {
   CalendarPeriod,
   CalendarSchema,
   CalendarSelectionMode,
+  CalendarTranslations,
   CalendarValueChangeDetails,
   CalendarView,
   CalendarViewChangeDetails,
@@ -54,6 +55,9 @@ function declaredIndex(el: Element | null | undefined, fallback = 0): number {
  * @attr {string} time-zone - 判定今天与格式化用的时区，默认宿主本地时区
  * @attr {boolean} disabled - 整张禁用：翻月按钮转原生 disabled，格子全转 aria-disabled
  * @attr {boolean} read-only - 只读：翻月与移动焦点照常，只是选不动值
+ * @attr {boolean} invalid - 校验失败：根带 data-invalid，区间里的格子报 aria-invalid；已选区间某一端越界或不可用时也会自己判
+ * @attr {boolean} allows-non-contiguous-ranges - 区间允许跨过不可用的日子；默认关，落了起点后只能挑到两侧最近的不可用日为止
+ * @prop {Partial<CalendarTranslations>} translations - 读屏文案（挑区间的提示、区间两端的名字、今天），只走 property
  * @attr {'narrow'|'short'} weekday-format - 表头缩写粒度，默认 short
  * @attr {boolean} fixed-weeks - 恒渲染六行
  * @attr {'day'|'week'|'month'|'quarter'|'year'} granularity - 选择粒度，默认 day；与 selection-mode 正交
@@ -100,12 +104,15 @@ export class XhCalendarElement extends XhElement {
     disabled: { type: Boolean },
     readOnly: { type: Boolean, attribute: 'read-only' },
     fixedWeeks: { type: Boolean, attribute: 'fixed-weeks' },
+    invalid: { type: Boolean },
+    allowsNonContiguousRanges: { type: Boolean, attribute: 'allows-non-contiguous-ranges' },
     granularity: { converter: STRING_CONVERTER },
     activeView: { converter: STRING_CONVERTER, attribute: 'active-view' },
     defaultActiveView: { converter: STRING_CONVERTER, attribute: 'default-active-view' },
     visibleCount: { converter: NUMBER_CONVERTER, attribute: 'visible-count' },
-    // 判定函数只走 property
+    // 判定函数与文案对象只走 property
     isDateUnavailable: { attribute: false },
+    translations: { attribute: false },
   }
 
   declare value?: string | string[]
@@ -121,11 +128,14 @@ export class XhCalendarElement extends XhElement {
   declare disabled?: boolean
   declare readOnly?: boolean
   declare fixedWeeks?: boolean
+  declare invalid?: boolean
+  declare allowsNonContiguousRanges?: boolean
   declare granularity?: CalendarGranularity
   declare activeView?: CalendarView
   declare defaultActiveView?: CalendarView
   declare visibleCount?: number
-  declare isDateUnavailable?: (value: string) => boolean
+  declare isDateUnavailable?: (value: string, anchor: string | null) => boolean
+  declare translations?: Partial<CalendarTranslations>
 
   private readonly notifyValue = (details: CalendarValueChangeDetails): void => {
     this.dispatchEvent(new CustomEvent('value-change', { detail: details, bubbles: true, composed: true }))
@@ -147,6 +157,8 @@ export class XhCalendarElement extends XhElement {
       // 机器跨月后靠它把焦点送进重画出来的格子
       onBuilt: (service) => {
         service.refs.set('getGridEl', () => this.getPart('grid'))
+        // 区间挑到一半时，指针在根节点之外松开就地收口
+        service.refs.set('getBoundaryEls', () => [this.getPart('root')])
       },
     },
   )
@@ -161,12 +173,15 @@ export class XhCalendarElement extends XhElement {
       min: this.min,
       max: this.max,
       isDateUnavailable: this.isDateUnavailable,
+      allowsNonContiguousRanges: this.allowsNonContiguousRanges ?? false,
+      invalid: this.invalid ?? false,
       locale: this.locale,
       timeZone: this.timeZone,
       disabled: this.disabled ?? false,
       readOnly: this.readOnly ?? false,
       weekdayFormat: this.weekdayFormat,
       fixedWeeks: this.fixedWeeks ?? false,
+      translations: this.translations,
       granularity: this.granularity,
       activeView: this.activeView,
       defaultActiveView: this.defaultActiveView,
@@ -195,6 +210,11 @@ export class XhCalendarElement extends XhElement {
   /** 展示月标题文案，作者写进 heading 节点。 */
   get headingLabel(): string {
     return this.ctrl.service ? connectCalendar(this.ctrl.service, wcNormalize).headingLabel : ''
+  }
+
+  /** 区间挑到一半时的起点（周期首日的 ISO 串）；其余时候为 null。 */
+  get rangeAnchor(): string | null {
+    return this.ctrl.service ? connectCalendar(this.ctrl.service, wcNormalize).rangeAnchor : null
   }
 
   /** 取指定角色节点在 owner 子树内的实例。 */

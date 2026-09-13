@@ -188,7 +188,7 @@ const FIXTURE: FixtureNode = {
                     part: 'week-row',
                     children: week.map(day => ({
                       part: 'cell',
-                      attrs: { value: day.value },
+                      attrs: { value: day.start },
                       children: [{ part: 'cell-trigger', text: String(day.day) }],
                     })),
                   })),
@@ -653,13 +653,14 @@ export const datePickerSuite: ConformanceSuite = {
           why: '格子是内嵌日历的部件，段位是内嵌分段输入的部件',
           run: async (ctx) => {
             await pickDay(ctx, '2024-02-10')
-            expectTexts(ctx.doc, ['2024', '02', '10'], '日历落的起点进第一组', 0)
+            // 起点只记在日历里，两组段位都还是占位串
+            expectTexts(ctx.doc, ['yyyy', 'mm', 'dd'], '起点还没写进值，第一组留占位串', 0)
             expectTexts(ctx.doc, ['yyyy', 'mm', 'dd'], '终点还没落定，第二组留占位串', 1)
           },
           expect: {
             parts: { content: { hidden: null } },
-            // 区间只落了起点，closeOnSelect 不起跳，没有 open-change
-            events: [{ type: 'value-change', detail: { value: ['2024-02-10'] } }],
+            // 区间只落了起点：值不动，closeOnSelect 不起跳，没有 open-change
+            events: [],
           },
         },
         {

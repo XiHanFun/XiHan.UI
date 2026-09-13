@@ -24,7 +24,7 @@ const BASE_PROPS = { defaultFocusedValue: ANCHOR, locale: LOCALE, timeZone: 'UTC
 const GRID = buildMonthGrid(ANCHOR, { locale: LOCALE })
 const WEEK_DAYS = buildWeekDays({ reference: GRID.monthStart, locale: LOCALE, timeZone: 'UTC' })
 /** 网格里全部日期，文档序；下标即 cell/cell-trigger 的 part 下标。 */
-const DAYS = GRID.weeks.flat().map(d => d.value)
+const DAYS = GRID.weeks.flat().map(d => d.start)
 
 /** 某个角色节点的可见文字。段位与标题那几截的文字是文本节点，进不了归一化快照。 */
 function expectText(doc: Document, part: string, want: string, why: string): void {
@@ -108,7 +108,7 @@ function buildFixture(fixedWeeks = false): FixtureNode {
               part: 'week-row',
               children: week.map(day => ({
                 part: 'cell',
-                attrs: { value: day.value },
+                attrs: { value: day.start },
                 children: [{ part: 'cell-trigger', text: String(day.day) }],
               })),
             })),
@@ -455,12 +455,12 @@ export const calendarSuite: ConformanceSuite = {
           part: `cell-trigger[${at(ANCHOR)}]`,
           expect: {
             parts: {
-              // 只落了起点，两端重合：起点自己既是首也是尾
-              [`cell-trigger[${at(ANCHOR)}]`]: { 'data-range-start': '', 'data-range-end': '', 'data-in-range': '' },
+              // 只落了起点，两端重合：起点自己既是首也是尾；起点只记在机器里，值不动
+              [`cell-trigger[${at(ANCHOR)}]`]: { 'data-range-start': '', 'data-range-end': '', 'data-in-range': '', 'data-selected': '' },
+              [`cell[${at(ANCHOR)}]`]: { 'aria-selected': 'true' },
               [`cell-trigger[${at('2024-02-16')}]`]: { 'data-in-range': null },
             },
-            // 半成品也如实通知：宿主要能显示"起 2 月 15 日"
-            events: [{ type: 'value-change', detail: { value: [ANCHOR] } }],
+            events: [],
           },
         },
         {
@@ -469,7 +469,9 @@ export const calendarSuite: ConformanceSuite = {
           expect: {
             parts: {
               [`cell-trigger[${at(ANCHOR)}]`]: { 'data-range-start': '', 'data-range-end': null, 'data-in-range': '' },
-              [`cell-trigger[${at('2024-02-16')}]`]: { 'data-in-range': '', 'data-range-start': null },
+              // 两端之间的每一格都算选中
+              [`cell-trigger[${at('2024-02-16')}]`]: { 'data-in-range': '', 'data-range-start': null, 'data-selected': '' },
+              [`cell[${at('2024-02-16')}]`]: { 'aria-selected': 'true' },
               [`cell-trigger[${at('2024-02-18')}]`]: { 'data-range-end': '', 'data-in-range': '' },
               [`cell-trigger[${at('2024-02-19')}]`]: { 'data-in-range': null },
             },
@@ -477,10 +479,72 @@ export const calendarSuite: ConformanceSuite = {
           },
         },
         {
-          // 区间已完成，再点一下重新开一段
+          // 区间已完成，再点一下重新开一段：旧区间的值先留着，亮的换成新起点
           kind: 'click',
           part: `cell-trigger[${at('2024-02-12')}]`,
-          expect: { events: [{ type: 'value-change', detail: { value: ['2024-02-12'] } }] },
+          expect: {
+            parts: {
+              [`cell-trigger[${at('2024-02-12')}]`]: { 'data-range-start': '', 'data-range-end': '' },
+              [`cell-trigger[${at('2024-02-16')}]`]: { 'data-in-range': null },
+            },
+            events: [],
+          },
+        },
+      ],
+    },
+    {
+      name: '区间：Escape 撤掉起点，原来的区间原样还在',
+      spec: { apg: `${APG}#kbd_label` },
+      props: { ...BASE_PROPS, selectionMode: 'range', defaultValue: ['2024-02-05', '2024-02-07'] },
+      covers: ['calendar.kbd.cancel-range'],
+      steps: [
+        {
+          kind: 'click',
+          part: `cell-trigger[${at(ANCHOR)}]`,
+          expect: {
+            parts: {
+              [`cell-trigger[${at(ANCHOR)}]`]: { 'data-range-start': '' },
+              [`cell-trigger[${at('2024-02-06')}]`]: { 'data-in-range': null },
+            },
+            events: [],
+          },
+        },
+        {
+          kind: 'key',
+          key: 'Escape',
+          expect: {
+            parts: {
+              [`cell-trigger[${at(ANCHOR)}]`]: { 'data-range-start': null, 'data-in-range': null },
+              [`cell-trigger[${at('2024-02-06')}]`]: { 'data-in-range': '' },
+            },
+            events: [],
+          },
+        },
+      ],
+    },
+    {
+      name: '区间：Tab 要离开网格时把区间收在起点到聚焦日',
+      spec: { apg: `${APG}#kbd_label` },
+      props: { ...BASE_PROPS, selectionMode: 'range' },
+      covers: ['calendar.kbd.commit-range'],
+      steps: [
+        { kind: 'focus', part: `cell-trigger[${at(ANCHOR)}]` },
+        // 确认键落起点后焦点自动前进一格
+        {
+          kind: 'key',
+          key: 'Enter',
+          expect: {
+            parts: {
+              [`cell-trigger[${at(ANCHOR)}]`]: { 'data-range-start': '' },
+              [`cell-trigger[${at('2024-02-16')}]`]: { 'data-focus': '', 'tabindex': '0', 'data-range-end': '' },
+            },
+            events: [],
+          },
+        },
+        {
+          kind: 'key',
+          key: 'Tab',
+          expect: { events: [{ type: 'value-change', detail: { value: [ANCHOR, '2024-02-16'] } }] },
         },
       ],
     },
@@ -674,7 +738,7 @@ export const calendarSuite: ConformanceSuite = {
     {
       name: '按月挑：月那一截没有可点的位，年那一截照旧钻得上去',
       spec: { apg: APG },
-      props: { ...BASE_PROPS, view: 'month' },
+      props: { ...BASE_PROPS, granularity: 'month' },
       fixture: withHeadingTriggers,
       initial: {
         parts: {

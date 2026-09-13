@@ -116,7 +116,8 @@ function declaredIndex(el: HTMLElement, position: number): number {
  * @attr {string} default-focused-value - 初始聚焦日，同时决定展开时先落在哪一页
  * @attr {boolean} disabled - 整个控件禁用：trigger 转原生 disabled，段位退出 Tab 序
  * @attr {boolean} read-only - 只读：浮层照常展开、日历照常浏览，但选中值改不动
- * @attr {boolean} invalid - 校验失败标注
+ * @attr {boolean} invalid - 校验失败标注；不给也会自己判：任一端越界、或区间终点早于起点
+ * @attr {boolean} allows-non-contiguous-ranges - 区间允许跨过不可用的日子；默认关，落了起点后只能挑到两侧最近的不可用日为止
  * @attr {boolean} required - 必填标注，落到每段的 aria-required 上
  * @attr {string} name - 表单字段名；给了隐藏输入才带 name。区间模式下是起点那一份
  * @attr {string} end-name - 区间终点那份隐藏输入的表单字段名；不给即终点不参与提交
@@ -199,6 +200,7 @@ export class XhDatePickerElement extends XhPortalHostElement {
     disabled: { converter: BOOLEAN_CONVERTER },
     readOnly: { converter: BOOLEAN_CONVERTER, attribute: 'read-only' },
     invalid: { converter: BOOLEAN_CONVERTER },
+    allowsNonContiguousRanges: { converter: BOOLEAN_CONVERTER, attribute: 'allows-non-contiguous-ranges' },
     required: { converter: BOOLEAN_CONVERTER },
     name: { converter: STRING_CONVERTER },
     endName: { converter: STRING_CONVERTER, attribute: 'end-name' },
@@ -238,6 +240,7 @@ export class XhDatePickerElement extends XhPortalHostElement {
   declare disabled?: boolean
   declare readOnly?: boolean
   declare invalid?: boolean
+  declare allowsNonContiguousRanges?: boolean
   declare required?: boolean
   declare name?: string
   declare endName?: string
@@ -251,7 +254,7 @@ export class XhDatePickerElement extends XhPortalHostElement {
   declare closeOnSelect?: boolean
   declare showTime?: boolean
   declare timeGranularity?: DatePickerSchema['props']['timeGranularity']
-  declare isDateUnavailable?: (value: string) => boolean
+  declare isDateUnavailable?: (value: string, anchor: string | null) => boolean
 
   private readonly idGen: IdGenerator = createCounterIdGenerator()
   // 四台机器共用一份 scope，part id 里带组件名故不相撞
@@ -302,6 +305,8 @@ export class XhDatePickerElement extends XhPortalHostElement {
       // 机器跨月后靠它把焦点送进重画出来的格子
       onBuilt: (service) => {
         service.refs.set('getGridEl', () => this.getPart('grid'))
+        // 区间挑到一半时，指针在浮层与输入行之外松开就地收口
+        service.refs.set('getBoundaryEls', () => [this.getPart('content'), this.getPart('control')])
       },
     },
   )
@@ -369,6 +374,7 @@ export class XhDatePickerElement extends XhPortalHostElement {
       fixedWeeks: this.fixedWeeks,
       defaultFocusedValue: this.defaultFocusedValue,
       isDateUnavailable: this.isDateUnavailable,
+      allowsNonContiguousRanges: this.allowsNonContiguousRanges,
       disabled: control.disabled,
       readOnly: control.readOnly,
       invalid: control.invalid,

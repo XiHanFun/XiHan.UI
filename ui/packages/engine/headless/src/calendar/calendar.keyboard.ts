@@ -26,6 +26,8 @@ export const calendarKeyboard: KeyboardTable = {
     { id: 'calendar.kbd.next-month', keys: ['PageDown'], when: 'focus in grid', does: '进一个月，日号不变。粗粒度视图里进一整页' },
     { id: 'calendar.kbd.prev-year', keys: ['Shift+PageUp'], when: 'focus in grid', does: '退一年；粗粒度视图里退十页' },
     { id: 'calendar.kbd.next-year', keys: ['Shift+PageDown'], when: 'focus in grid', does: '进一年；粗粒度视图里进十页' },
-    { id: 'calendar.kbd.select', keys: ['Enter', 'Space'], when: 'focus in grid, 聚焦周期可用且非只读', does: '选中聚焦周期：单选替换、多选切换、区间先落起点再落终点。还没钻到 granularity 那一档时这一下是往下钻一层' },
+    { id: 'calendar.kbd.select', keys: ['Enter', 'Space'], when: 'focus in grid, 聚焦周期可用且非只读', does: '选中聚焦周期：单选替换、多选切换、区间先落起点再落终点。落起点后焦点自动前进一格（挑不了就退一格），方向键走到哪儿预览就铺到哪儿。还没钻到 granularity 那一档时这一下是往下钻一层' },
+    { id: 'calendar.kbd.cancel-range', keys: ['Escape'], when: 'focus in grid, 区间已落起点', does: '撤掉起点，原来的区间原样还在；不拦默认行为，外层浮层照常收起' },
+    { id: 'calendar.kbd.commit-range', keys: ['Tab', 'Shift+Tab'], when: 'focus in grid, 区间已落起点', does: '焦点离开前把区间收在起点到聚焦日之间；不拦默认行为，焦点照常离开' },
   ],
 }

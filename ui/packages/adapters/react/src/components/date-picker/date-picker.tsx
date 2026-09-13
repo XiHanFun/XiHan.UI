@@ -122,7 +122,9 @@ export interface XhDatePickerRootProps extends Omit<ComponentPropsWithRef<'div'>
   defaultFocusedValue?: string
   /** 快捷选项；给了就在浮层里多出一列，日子要在自己那儿算好再传。 */
   presets?: DatePickerPreset[]
-  isDateUnavailable?: (value: string) => boolean
+  isDateUnavailable?: (value: string, anchor: string | null) => boolean
+  /** 区间允许跨过不可用的日子；默认关，落了起点后只能挑到两侧最近的不可用日为止。 */
+  allowsNonContiguousRanges?: boolean
   disabled?: boolean
   readOnly?: boolean
   invalid?: boolean
@@ -168,6 +170,7 @@ export function XhDatePickerRoot({
   defaultFocusedValue,
   presets,
   isDateUnavailable,
+  allowsNonContiguousRanges,
   disabled,
   readOnly,
   invalid,
@@ -209,6 +212,7 @@ export function XhDatePickerRoot({
     defaultFocusedValue,
     presets,
     isDateUnavailable,
+    allowsNonContiguousRanges,
     disabled,
     readOnly,
     invalid,
