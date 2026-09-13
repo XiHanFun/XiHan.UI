@@ -11,7 +11,7 @@ import {
 
 export default function Demo(): ReactNode {
   return (
-    <XhTabsRoot defaultValue="activity">
+    <XhTabsRoot defaultValue="activity" style={{ inlineSize: "360px", maxInlineSize: "100%" }}>
       <XhTabsList aria-label="项目数据">
         <XhTabsTrigger value="activity">
           <XhIcon icon={ActivityIcon} />

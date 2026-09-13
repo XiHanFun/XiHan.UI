@@ -10,7 +10,7 @@ import {
 
 export default function Demo(): ReactNode {
   return (
-    <XhTabsRoot defaultValue="monthly">
+    <XhTabsRoot defaultValue="monthly" style={{ inlineSize: "360px", maxInlineSize: "100%" }}>
       <XhTabsList aria-label="账单周期">
         <XhTabsTrigger value="monthly">按月</XhTabsTrigger>
         <XhTabsSeparator />

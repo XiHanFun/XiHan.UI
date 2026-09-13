@@ -52413,9 +52413,7 @@
       ],
       "property": [
         "block-size",
-        "inline-size",
-        "inset-block-end",
-        "inset-inline-end"
+        "inline-size"
       ],
       "state": [
         "default",
@@ -52425,7 +52423,7 @@
         "--xh-stroke-thick"
       ],
       "visibility": "public",
-      "description": "tabs 的 indicator 部件 block-size、inline-size、inset-block-end、inset-inline-end 覆盖槽。"
+      "description": "tabs 的 indicator 部件 block-size、inline-size 覆盖槽。"
     },
     {
       "name": "--xh-tabs-list-bg",
@@ -52844,7 +52842,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-shape-control"
+        "--xh-_tabs-trigger-radius"
       ],
       "visibility": "public",
       "description": "tabs 的 trigger 部件 border-radius 覆盖槽。"

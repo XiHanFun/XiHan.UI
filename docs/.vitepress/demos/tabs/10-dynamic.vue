@@ -10,7 +10,7 @@ import {
 </script>
 
 <template>
-  <XhTabsRoot default-value="monthly">
+  <XhTabsRoot default-value="monthly" style="inline-size: 360px; max-inline-size: 100%">
     <XhTabsList aria-label="账单周期">
       <XhTabsTrigger value="monthly">按月</XhTabsTrigger>
       <XhTabsSeparator />

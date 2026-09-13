@@ -9,7 +9,7 @@ import {
 </script>
 
 <template>
-  <XhTabsRoot default-value="active">
+  <XhTabsRoot default-value="active" style="inline-size: 360px; max-inline-size: 100%">
     <XhTabsList aria-label="标签状态">
       <XhTabsTrigger value="active">当前</XhTabsTrigger>
       <XhTabsTrigger value="disabled" disabled>不可用</XhTabsTrigger>

@@ -11,7 +11,7 @@ import {
 </script>
 
 <template>
-  <XhTabsRoot default-value="activity">
+  <XhTabsRoot default-value="activity" style="inline-size: 360px; max-inline-size: 100%">
     <XhTabsList aria-label="项目数据">
       <XhTabsTrigger value="activity"><XhIcon :icon="ActivityIcon" />活动</XhTabsTrigger>
       <XhTabsTrigger value="analytics"><XhIcon :icon="ChartBarIcon" />分析</XhTabsTrigger>

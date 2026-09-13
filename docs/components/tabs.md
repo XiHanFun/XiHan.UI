@@ -30,9 +30,9 @@
 
 <XhDemo src="tabs/04-vertical" />
 
-### 变体
+### 次级变体
 
-区分主要、次级与卡片式导航
+使用下划线表示当前标签
 
 <XhDemo src="tabs/05-variant" />
 
@@ -261,7 +261,7 @@
 | `--xh-tabs-gap` | `root` | `gap` | `default` | `--xh-stack-gap-md` | tabs 的 root 部件 gap 覆盖槽。 |
 | `--xh-tabs-indicator-color` | `indicator` | `background` | `default` | `--xh-_tabs-accent` | tabs 的 indicator 部件 background 覆盖槽。 |
 | `--xh-tabs-indicator-radius` | `indicator` | `border-radius` | `default` | `--xh-shape-pill` | tabs 的 indicator 部件 border-radius 覆盖槽。 |
-| `--xh-tabs-indicator-thickness` | `indicator` | `block-size`<br>`inline-size`<br>`inset-block-end`<br>`inset-inline-end` | `default`<br>`orientation=vertical` | `--xh-stroke-thick` | tabs 的 indicator 部件 block-size、inline-size、inset-block-end、inset-inline-end 覆盖槽。 |
+| `--xh-tabs-indicator-thickness` | `indicator` | `block-size`<br>`inline-size` | `default`<br>`orientation=vertical` | `--xh-stroke-thick` | tabs 的 indicator 部件 block-size、inline-size 覆盖槽。 |
 | `--xh-tabs-list-bg` | `list` | `background` | `default` | `--xh-_tabs-list-bg` | tabs 的 list 部件 background 覆盖槽。 |
 | `--xh-tabs-list-border` | `list` | `border-block-end`<br>`border-inline-end` | `default` | `--xh-border-default` | tabs 的 list 部件 border-block-end、border-inline-end 覆盖槽。 |
 | `--xh-tabs-list-gap` | `list` | `gap` | `default` | `--xh-_tabs-list-gap` | tabs 的 list 部件 gap 覆盖槽。 |
@@ -284,7 +284,7 @@
 | `--xh-tabs-trigger-gap` | `trigger` | `gap` | `default` | `--xh-control-gap-md` | tabs 的 trigger 部件 gap 覆盖槽。 |
 | `--xh-tabs-trigger-h` | `trigger` | `block-size` | `default` | `--xh-_tabs-trigger-h` | tabs 的 trigger 部件 block-size 覆盖槽。 |
 | `--xh-tabs-trigger-px` | `trigger` | `padding-inline` | `default` | `--xh-_tabs-trigger-px` | tabs 的 trigger 部件 padding-inline 覆盖槽。 |
-| `--xh-tabs-trigger-radius` | `trigger` | `border-radius` | `default` | `--xh-shape-control` | tabs 的 trigger 部件 border-radius 覆盖槽。 |
+| `--xh-tabs-trigger-radius` | `trigger` | `border-radius` | `default` | `--xh-_tabs-trigger-radius` | tabs 的 trigger 部件 border-radius 覆盖槽。 |
 | `--xh-tabs-trigger-shadow-active` | `trigger` | `box-shadow` | `state=active` | `--xh-_tabs-trigger-shadow-active` | tabs 的 trigger 部件 box-shadow 覆盖槽。 |
 <!-- xh-component-tokens:end -->
 

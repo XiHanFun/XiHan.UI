@@ -10,7 +10,7 @@ import {
 </script>
 
 <template>
-  <XhTabsRoot default-value="account" orientation="vertical" variant="line">
+  <XhTabsRoot default-value="account" orientation="vertical" variant="line" style="inline-size: 420px; max-inline-size: 100%">
     <XhTabsList aria-label="账户设置">
       <XhTabsTrigger value="account">账户</XhTabsTrigger>
       <XhTabsTrigger value="security">安全</XhTabsTrigger>
