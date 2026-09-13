@@ -11,37 +11,42 @@ import {
   XhCarouselViewport,
 } from "@xihan-ui/react";
 
-const slides = ["09:00 晨会", "11:00 客户沟通", "15:00 联调"];
+const slides = [
+  { time: "09:00", title: "晨会", description: "同步今天的目标与阻塞项。" },
+  { time: "11:00", title: "客户沟通", description: "确认需求范围与交付节奏。" },
+  { time: "15:00", title: "联调", description: "核对三端行为与视觉结果。" },
+];
 
 export default function Demo(): ReactNode {
   return (
     <XhCarouselRoot
       orientation="vertical"
       slideCount={slides.length}
-      style={{ inlineSize: "240px" }}
+      style={{ inlineSize: "min(360px, 100%)" }}
     >
-      {({ page, totalPages }) => (
+      {({ totalPages }) => (
         <>
-          <XhCarouselPrevTrigger>∧</XhCarouselPrevTrigger>
+          <XhCarouselPrevTrigger />
           {/* 纵轨的裁切窗口靠高度定，宽度交给根节点 */}
-          <XhCarouselViewport style={{ blockSize: "96px", inlineSize: "100%" }}>
+          <XhCarouselViewport style={{ blockSize: "200px", inlineSize: "100%" }}>
             <XhCarouselList>
-              {slides.map((text, i) => (
-                <XhCarouselItem key={text} index={i}>
-                  <div style={{ display: "grid", placeItems: "center", blockSize: "100%" }}>
-                    {text}
-                  </div>
+              {slides.map((slide, i) => (
+                <XhCarouselItem key={slide.time} index={i}>
+                  <article style={{ display: "grid", alignContent: "center", gap: "6px", blockSize: "100%", padding: "32px", background: "var(--xh-bg-subtle)", color: "var(--xh-fg-default)" }}>
+                    <span style={{ color: "var(--xh-fg-brand)", fontSize: "var(--xh-text-caption-size)" }}>{slide.time}</span>
+                    <strong style={{ color: "var(--xh-fg-default)", fontSize: "var(--xh-text-heading-3-size)" }}>{slide.title}</strong>
+                    <span style={{ color: "var(--xh-fg-muted)" }}>{slide.description}</span>
+                  </article>
                 </XhCarouselItem>
               ))}
             </XhCarouselList>
           </XhCarouselViewport>
-          <XhCarouselNextTrigger>∨</XhCarouselNextTrigger>
+          <XhCarouselNextTrigger />
           <XhCarouselIndicatorGroup>
             {Array.from({ length: totalPages }, (_, p) => (
               <XhCarouselIndicator key={p} index={p} />
             ))}
           </XhCarouselIndicatorGroup>
-          <span>{`第 ${page + 1} / ${totalPages} 条`}</span>
         </>
       )}
     </XhCarouselRoot>

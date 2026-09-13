@@ -52,12 +52,13 @@ const slides = [
               blockSize: '100%',
               padding: '24px',
               background: slide.background,
+              color: 'var(--xh-fg-default)',
             }"
           >
             <span style="color: var(--xh-fg-muted); font-size: var(--xh-text-caption-size)">
               {{ slide.eyebrow }}
             </span>
-            <strong style="font-size: var(--xh-text-heading-3-size)">{{ slide.title }}</strong>
+            <strong style="color: var(--xh-fg-default); font-size: var(--xh-text-heading-3-size)">{{ slide.title }}</strong>
             <span style="color: var(--xh-fg-muted)">{{ slide.description }}</span>
           </article>
         </XhCarouselItem>

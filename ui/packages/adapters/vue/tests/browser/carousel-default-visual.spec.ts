@@ -9,22 +9,23 @@ afterEach(() => {
   host = null
 })
 
-function mount() {
+function mount(orientation: 'horizontal' | 'vertical' = 'horizontal', autoplay = false) {
   host = document.createElement('div')
-  host.style.inlineSize = '560px'
+  host.style.inlineSize = orientation === 'horizontal' ? '560px' : '360px'
   host.innerHTML = `
-    <div data-scope="carousel" data-part="root" data-orientation="horizontal">
-      <button data-scope="carousel" data-part="prev-trigger"></button>
-      <div data-scope="carousel" data-part="viewport" style="block-size:176px">
-        <div data-scope="carousel" data-part="list">
-          <div data-scope="carousel" data-part="item" style="flex-basis:100%">
+    <div data-scope="carousel" data-part="root" data-orientation="${orientation}"${autoplay ? ' data-autoplay style="--xh-_carousel-autoplay-duration:2500ms"' : ''}>
+      <button data-scope="carousel" data-part="prev-trigger" data-orientation="${orientation}"></button>
+      <div data-scope="carousel" data-part="viewport" data-orientation="${orientation}" style="block-size:176px">
+        <div data-scope="carousel" data-part="list" data-orientation="${orientation}">
+          <div data-scope="carousel" data-part="item" data-orientation="${orientation}" style="flex-basis:100%">
             <article>Vue、React 与 Web Components 共享同一份行为契约</article>
           </div>
         </div>
       </div>
-      <button data-scope="carousel" data-part="next-trigger"></button>
-      <div data-scope="carousel" data-part="indicator-group" data-orientation="horizontal">
+      <button data-scope="carousel" data-part="next-trigger" data-orientation="${orientation}"></button>
+      <div data-scope="carousel" data-part="indicator-group" data-orientation="${orientation}">
         <button data-scope="carousel" data-part="indicator" data-current></button>
+        <button data-scope="carousel" data-part="indicator"></button>
       </div>
     </div>`
   document.body.append(host)
@@ -34,6 +35,7 @@ function mount() {
     viewport: host.querySelector<HTMLElement>('[data-part="viewport"]')!,
     next: host.querySelector<HTMLElement>('[data-part="next-trigger"]')!,
     indicators: host.querySelector<HTMLElement>('[data-part="indicator-group"]')!,
+    current: host.querySelector<HTMLElement>('[data-part="indicator"][data-current]')!,
   }
 }
 
@@ -56,5 +58,38 @@ describe('carousel 默认视觉', () => {
     expect(root.height).toBe(viewport.height)
     expect(getComputedStyle(carousel.viewport).overflow).toBe('hidden')
     expect(getComputedStyle(carousel.indicators).position).toBe('absolute')
+  })
+
+  it('纵向轨道的箭头落在上下两端，分页沿右侧竖排', () => {
+    const carousel = mount('vertical')
+    const viewport = carousel.viewport.getBoundingClientRect()
+    const prev = carousel.prev.getBoundingClientRect()
+    const next = carousel.next.getBoundingClientRect()
+    const indicators = carousel.indicators.getBoundingClientRect()
+    const current = carousel.current.getBoundingClientRect()
+
+    expect(prev.left + prev.width / 2).toBe(viewport.left + viewport.width / 2)
+    expect(next.left + next.width / 2).toBe(viewport.left + viewport.width / 2)
+    expect(prev.top).toBeGreaterThanOrEqual(viewport.top)
+    expect(next.bottom).toBeLessThanOrEqual(viewport.bottom)
+    expect(prev.bottom).toBeLessThan(next.top)
+    expect(indicators.right).toBeLessThanOrEqual(viewport.right)
+    expect(indicators.top + indicators.height / 2).toBe(viewport.top + viewport.height / 2)
+    expect([current.width, current.height]).toEqual([16, 24])
+    expect(getComputedStyle(carousel.current, '::after').backgroundSize).toBe('2px calc(100% - 8px)')
+    expect(getComputedStyle(carousel.prev).rotate).toBe('90deg')
+  })
+
+  it('自动播放时当前分页按间隔显示进度，暂停时冻结', () => {
+    const carousel = mount('horizontal', true)
+    const running = getComputedStyle(carousel.current, '::before')
+
+    expect(running.animationName).toBe('xh-carousel-indicator-progress')
+    expect(running.animationDuration).toBe('2.5s')
+    expect(running.animationPlayState).toBe('running')
+
+    carousel.root.removeAttribute('data-autoplay')
+    carousel.root.setAttribute('data-paused', '')
+    expect(getComputedStyle(carousel.current, '::before').animationPlayState).toBe('paused')
   })
 })

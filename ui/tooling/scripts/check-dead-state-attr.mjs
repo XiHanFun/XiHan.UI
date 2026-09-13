@@ -123,11 +123,8 @@ const HOOKS = {
   'form:data-readonly': '整份表单置只读时由逐个控件自己表出',
   // 忙：锁住的观感由提交钮的身份切换承载
   'prompt-input:data-loading': '在途时提交钮切成 data-mode=stop，观感挂在那一位上',
-  // 暂停：自动播放钮自己有 running / paused 两档
-  'carousel:data-paused': '暂停的视觉在自动播放钮的 data-state=paused 上（carousel.css:248）',
   // 其余逐条
   'calendar:data-focus': '漫游焦点的锚点位。看得见的聚焦环走 :focus-visible',
-  'carousel:data-autoplay': '自动播放开没开，视觉在自动播放钮的 data-state 上',
   'carousel:data-inview': '这一帧在不在视口里，作者拿它做懒加载与埋点',
   'code-view:data-foldable': '折不折得动。真正裁切的是根上的 data-clamped',
   'diff-view:data-expanded': '折叠段展开后整条 gap 置 hidden，显隐由它承载',

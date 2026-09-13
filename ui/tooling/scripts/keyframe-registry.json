@@ -46,6 +46,15 @@
         "approval"
       ]
     },
+    "xh-carousel-indicator-progress": {
+      "content": "from{scale:var(--xh-_carousel-progress-from)}to{scale:var(--xh-_carousel-progress-to)}",
+      "definedIn": [
+        "carousel.css"
+      ],
+      "consumers": [
+        "carousel"
+      ]
+    },
     "xh-clipboard-loading-hide": {
       "content": "to{opacity:0}",
       "definedIn": [

@@ -23,36 +23,10 @@
     </div>
     <button data-xh-part="next-trigger"></button>
     <button data-xh-part="autoplay-trigger"></button>
-    <!-- root 自己就是会换行的横排 flex，回显想独占一行得自己占满 -->
-    <span id="carousel-autoplay-readout" style="flex-basis: 100%"></span>
+    <div data-xh-part="indicator-group">
+      <button data-xh-part="indicator" index="0"></button>
+      <button data-xh-part="indicator" index="1"></button>
+      <button data-xh-part="indicator" index="2"></button>
+    </div>
   </div>
 </xh-carousel>
-
-<script type="module">
-  // 播放与按住两个状态写在 root 上，页码跟着 page-change 走
-  const carousel = document.getElementById("carousel-autoplay");
-  const root = carousel.querySelector('[data-xh-part="root"]');
-  const readout = document.getElementById("carousel-autoplay-readout");
-  let page = 0;
-
-  function render() {
-    const state = root.hasAttribute("data-autoplay")
-      ? "自动播放中"
-      : root.hasAttribute("data-paused")
-        ? "被按住"
-        : "已停";
-    readout.textContent = `第 ${page + 1} / 3 页 · ${state}`;
-  }
-
-  carousel.addEventListener("page-change", (event) => {
-    page = event.detail.page;
-    render();
-  });
-
-  new MutationObserver(render).observe(root, {
-    attributes: true,
-    attributeFilter: ["data-autoplay", "data-paused"],
-  });
-
-  render();
-</script>
