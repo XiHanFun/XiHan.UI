@@ -124,10 +124,14 @@
      这就是"洞"。不吃指针：它盖在目标上面，吃了的话目标就再也点不动了 */
   [data-scope='tour'][data-part='spotlight'] {
     --xh-_tour-spotlight-shroud: transparent;
+    --xh-_tour-spotlight-radius: var(--xh-shape-surface);
 
     z-index: var(--xh-tour-spotlight-layer, var(--xh-_layer, var(--xh-layer-modal)));
     pointer-events: none;
-    border-radius: var(--xh-tour-spotlight-radius, var(--xh-shape-surface));
+    border-radius: var(
+      --xh-tour-spotlight-radius,
+      var(--xh-_tour-spotlight-radius, var(--xh-shape-surface))
+    );
     box-shadow:
       0 0 0 var(--xh-stroke-thick) var(--xh-tour-spotlight-ring, var(--xh-ring-focus)),
       0 0 0 100vmax var(--xh-_tour-spotlight-shroud);
@@ -136,7 +140,8 @@
       inset-inline-start var(--xh-motion-duration-enter) var(--xh-motion-ease-continuous),
       inset-block-start var(--xh-motion-duration-enter) var(--xh-motion-ease-continuous),
       inline-size var(--xh-motion-duration-enter) var(--xh-motion-ease-continuous),
-      block-size var(--xh-motion-duration-enter) var(--xh-motion-ease-continuous);
+      block-size var(--xh-motion-duration-enter) var(--xh-motion-ease-continuous),
+      border-radius var(--xh-motion-duration-enter) var(--xh-motion-ease-continuous);
   }
 
   [data-scope='tour'][data-part='spotlight'][data-dimmed] {

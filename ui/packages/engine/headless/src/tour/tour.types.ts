@@ -38,6 +38,8 @@ export interface TourSpotlightRect {
   y: number
   width: number
   height: number
+  /** 目标节点的四角计算值，按 CSS border-radius 简写原样保留。 */
+  borderRadius?: string
 }
 
 // 适配器挂载前填入；保持缺省时副作用短路，机器状态照常转移但不定位、不量高亮框、不挂消解层与焦点域。

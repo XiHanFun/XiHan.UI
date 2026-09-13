@@ -49,7 +49,12 @@ function spread(el: HTMLElement, props: Dict): void {
       continue
     }
     if (key === 'style' && raw !== null && typeof raw === 'object') {
-      Object.assign(el.style, raw as Record<string, string>)
+      for (const [styleKey, styleValue] of Object.entries(raw as Record<string, string>)) {
+        if (styleKey.startsWith('--'))
+          el.style.setProperty(styleKey, styleValue)
+        else
+          (el.style as unknown as Record<string, string>)[styleKey] = styleValue
+      }
       continue
     }
     if (raw === undefined || raw === null || raw === false) {
@@ -257,12 +262,20 @@ describe('tour 纯函数', () => {
       height: 30 + TOUR_DEFAULT_SPOTLIGHT_PADDING * 2,
     })
     expect(tourSpotlightBox(rect, Number.NaN).width).toBe(200 + TOUR_DEFAULT_SPOTLIGHT_PADDING * 2)
+    expect(tourSpotlightBox(rect, 0, '12px 8px')).toEqual({
+      x: 100,
+      y: 40,
+      width: 200,
+      height: 30,
+      borderRadius: '12px 8px',
+    })
   })
 
   it('sameTourSpotlight 按值比，null 与 null 相等', () => {
     const box = { x: 1, y: 2, width: 3, height: 4 }
     expect(sameTourSpotlight(box, { ...box })).toBe(true)
     expect(sameTourSpotlight(box, { ...box, width: 5 })).toBe(false)
+    expect(sameTourSpotlight({ ...box, borderRadius: '8px' }, { ...box, borderRadius: '0px' })).toBe(false)
     expect(sameTourSpotlight(null, null)).toBe(true)
     expect(sameTourSpotlight(box, null)).toBe(false)
     // 旧值为 undefined = 还没写过，与"没有高亮框"是同一件事
@@ -502,13 +515,28 @@ describe('connectTour 输出', () => {
 describe('tour 活 DOM：高亮框与键盘', () => {
   it('展开即按目标矩形算出高亮框写进内联 style', async () => {
     const t = mount({ defaultOpen: true })
+    t.targets.a.style.borderRadius = '9999px'
     await settle()
     // 目标 rect 是 (100,40,200,30)，缺省留白 8
     expect(t.spotlight.style.left).toBe('92px')
     expect(t.spotlight.style.top).toBe('32px')
     expect(t.spotlight.style.inlineSize).toBe('216px')
     expect(t.spotlight.style.blockSize).toBe('46px')
+    expect(t.spotlight.style.getPropertyValue('--xh-_tour-spotlight-radius')).toBe('9999px')
     expect(t.spotlight.hasAttribute('hidden')).toBe(false)
+    t.stop()
+  })
+
+  it('目标圆角变化后重量高亮框形状', async () => {
+    const t = mount({ defaultOpen: true })
+    t.targets.a.style.borderRadius = '12px 4px 0px 8px'
+    await settle()
+    expect(t.spotlight.style.getPropertyValue('--xh-_tour-spotlight-radius')).toBe('12px 4px 0px 8px')
+
+    t.targets.a.style.borderRadius = '0px'
+    t.api().remeasure()
+    await settle()
+    expect(t.spotlight.style.getPropertyValue('--xh-_tour-spotlight-radius')).toBe('0px')
     t.stop()
   })
 

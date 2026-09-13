@@ -204,7 +204,16 @@ export const tourMachine = createMachine({
             context.set('spotlight', null)
             return
           }
-          context.set('spotlight', tourSpotlightBox(target.getBoundingClientRect(), prop('spotlightPadding')))
+          const view = target.ownerDocument.defaultView
+          if (!view) {
+            context.set('spotlight', null)
+            return
+          }
+          context.set('spotlight', tourSpotlightBox(
+            target.getBoundingClientRect(),
+            prop('spotlightPadding'),
+            view.getComputedStyle(target).borderRadius,
+          ))
         }
         run()
         flush(run)

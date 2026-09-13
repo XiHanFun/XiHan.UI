@@ -98,11 +98,12 @@ export function connectTour<T extends PropTypes>(
       // 收起态与居中步都不画；判据用作者声明的 target 而不是量到的框，与量测时机无关
       'hidden': !open || !anchored || undefined,
       'style': {
-        position: 'fixed',
-        left: `${spotlight?.x ?? 0}px`,
-        top: `${spotlight?.y ?? 0}px`,
-        inlineSize: `${spotlight?.width ?? 0}px`,
-        blockSize: `${spotlight?.height ?? 0}px`,
+        'position': 'fixed',
+        'left': `${spotlight?.x ?? 0}px`,
+        'top': `${spotlight?.y ?? 0}px`,
+        'inlineSize': `${spotlight?.width ?? 0}px`,
+        'blockSize': `${spotlight?.height ?? 0}px`,
+        '--xh-_tour-spotlight-radius': spotlight?.borderRadius ?? '',
       },
     }),
 

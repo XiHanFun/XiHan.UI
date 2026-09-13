@@ -62558,7 +62558,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-shape-surface"
+        "--xh-_tour-spotlight-radius"
       ],
       "visibility": "public",
       "description": "tour 的 spotlight 部件 border-radius 覆盖槽。"
