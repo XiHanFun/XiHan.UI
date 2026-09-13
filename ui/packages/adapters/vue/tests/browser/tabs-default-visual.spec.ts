@@ -1,3 +1,4 @@
+import { userEvent } from '@vitest/browser/context'
 import { afterEach, describe, expect, it } from 'vitest'
 import '@xihan-ui/tokens/tokens.css'
 import '@xihan-ui/styles'
@@ -58,15 +59,21 @@ describe('tabs 默认视觉', () => {
     expect(plain.active.offsetWidth).toBe(plain.inactive.offsetWidth)
   })
 
-  it('line 保持透明标签带，仅用内侧指示条表达选中', () => {
+  it('line 保持透明标签带，仅用文字与内侧指示条表达交互', async () => {
     const line = mount('line')
     const style = getComputedStyle(line.list)
+    const restColor = getComputedStyle(line.inactive).color
 
     expect(style.backgroundColor).toBe('rgba(0, 0, 0, 0)')
     expect(Number.parseFloat(style.paddingInlineStart)).toBe(0)
     expect(Number.parseFloat(style.borderBottomWidth)).toBe(0)
     expect(getComputedStyle(line.active).boxShadow).toBe('none')
+    expect(getComputedStyle(line.active).color).not.toBe(restColor)
     expect(getComputedStyle(line.indicator).bottom).toBe('0px')
+
+    await userEvent.hover(line.inactive)
+    expect(getComputedStyle(line.inactive).backgroundColor).toBe('rgba(0, 0, 0, 0)')
+    expect(getComputedStyle(line.inactive).color).not.toBe(restColor)
   })
 
   it('card 只保留选中标签的卡片面', () => {

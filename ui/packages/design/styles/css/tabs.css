@@ -64,7 +64,8 @@
     --xh-_tabs-list-border-width: 0;
     --xh-_tabs-trigger-radius: var(--xh-shape-control);
     --xh-_tabs-trigger-bg-active: transparent;
-    --xh-_tabs-trigger-bg-active-hover: var(--xh-bg-subtle-hover);
+    --xh-_tabs-trigger-bg-active-hover: transparent;
+    --xh-_tabs-accent-text: var(--xh-_tone-fg, var(--xh-fg-brand-strong));
     --xh-_tabs-trigger-shadow-active: none;
   }
 
@@ -152,6 +153,13 @@
      不挡掉的话置灰的那一页悬停仍会换底，看着还能点 */
   [data-scope='tabs'][data-part='trigger']:not([data-disabled]):hover {
     background: var(--xh-tabs-trigger-bg-hover, var(--xh-bg-subtle-hover));
+  }
+
+  /* 次级标签只通过文字与指示条反馈交互，不出现按钮式悬停色块。 */
+  [data-scope='tabs'][data-part='root'][data-variant='line']
+    [data-scope='tabs'][data-part='trigger']:not([data-disabled]):hover {
+    background: transparent;
+    color: var(--xh-tabs-trigger-fg-hover, var(--xh-_tabs-accent-text));
   }
 
   /* 按下去要有回应：页签整块轻微下压，松手即弹回。选中页也压 */

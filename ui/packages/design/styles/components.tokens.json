@@ -52740,6 +52740,28 @@
       "description": "tabs 的 trigger 部件 color 覆盖槽。"
     },
     {
+      "name": "--xh-tabs-trigger-fg-hover",
+      "component": "tabs",
+      "part": [
+        "root",
+        "trigger"
+      ],
+      "property": [
+        "color"
+      ],
+      "state": [
+        "disabled",
+        "hover",
+        "not([data-disabled])",
+        "variant=line"
+      ],
+      "defaultToken": [
+        "--xh-_tabs-accent-text"
+      ],
+      "visibility": "public",
+      "description": "tabs 的 root、trigger 部件 color 覆盖槽。"
+    },
+    {
       "name": "--xh-tabs-trigger-font-size",
       "component": "tabs",
       "part": [
