@@ -1,6 +1,6 @@
 # CheckboxGroup 复选框组
 
-一组多选项共一个值数组，附带全选与半选。
+从一组选项中选择任意多项。
 
 <div class="xh-resource-links">
   <a href="https://github.com/XiHanFun/XiHan.UI/tree/dev/ui/packages/engine/headless/src/checkbox-group" target="_blank" rel="noreferrer">Headless</a>
@@ -12,7 +12,7 @@
 
 ## 用法
 
-值是字符串数组，各选各的，再点一次即取消；组内有几项就有几个 Tab 停靠点
+从一组选项中选择任意多项
 
 <XhDemo src="checkbox-group/01-basic" />
 
@@ -26,49 +26,25 @@
 
 ### 全选与半选
 
-select-all-trigger 是第三态复选框，只有把全部条目的值交给 itemValues 才分得清 checked 与 indeterminate
+使用 itemValues 计算全选和半选状态
 
 <XhDemo src="checkbox-group/02-select-all" />
 
 ### 横向排布
 
-orientation 只出 data-orientation 交给皮肤排版，role=group 不接受 aria-orientation
+使用 orientation 设置排列方向
 
 <XhDemo src="checkbox-group/03-horizontal" />
 
 ### 禁用与只读
 
-整组禁用连隐藏输入一起退出提交，只读则仍能聚焦与朗读、只是改不动
+禁用项不可操作，只读项仍可聚焦
 
 <XhDemo src="checkbox-group/04-disabled" />
 
-### 栅格排布
+### 变体
 
-组容器的行列只是缺省排布，行内把 display 改成 grid 就能摆成多列
-
-<XhDemo src="checkbox-group/05-grid" />
-
-### 受控与拦截
-
-传了 value 就由宿主说了算，value-change 只报意图；这里最多留两项
-
-<XhDemo src="checkbox-group/06-event" />
-
-### 整组换档
-
-方框边长、字号、间距与选中色都是组件令牌，写在组容器上整组一起生效
-
-<XhDemo src="checkbox-group/07-scale" />
-
-### 数字主键
-
-条目身份存在 DOM 属性上，值一律是字符串；数字主键在进出两侧各转一次
-
-<XhDemo src="checkbox-group/08-numeric-value" />
-
-### 语气与尺寸
-
-tone 换勾选方框的色族，size 换方框边长与文字档；两轴打在组容器上，条目自己不写
+primary 用于页面背景，secondary 用于卡片等已有表面
 
 <XhDemo src="checkbox-group/09-tone-size" />
 
@@ -76,33 +52,29 @@ tone 换勾选方框的色族，size 换方框边长与文字档；两轴打在�
 
 ### 何时使用
 
-- 从若干项里选任意多项，且要随表单提交。
+- 用于偏好设置、筛选条件和批量选择。
 
 ### 何时不用
 
-- 选项很多、需要搜索：用[选择器](./select)的多选或[穿梭框](./transfer)。
+- 选项较多或需要搜索：使用[选择器](./select)的多选或[穿梭框](./transfer)。
 - 选项互斥：用[单选组](./radio-group)。
 
 ### 特性
 
-- `collection` 是文本与禁用的事实源；也可以逐项自己写。
-- 全选触发器自动算半选态。
-- `orientation` 换排布；也可以直接把条目放进[栅格](./grid)。
-- 值可以是数字主键，不必强转字符串。
-
-### 组合
-
-- 外面套[表单字段](./field)。
+- `collection` 提供选项文本与禁用状态。
+- 全选触发器自动计算全选与半选状态。
+- `orientation` 设置横向或纵向排列。
+- `variant="secondary"` 适合已有表面中的低强调选项。
 
 ### 最佳实践
 
-- 超过约十项就换成带搜索的控件。
-- 选项顺序稳定，别按选中状态重排——用户会跟丢。
+- 使用简短、互不重叠的选项标签。
+- 保持选项顺序稳定。
 
 ### 反模式
 
-- 用它表达一组互斥的筛选条件。
-- 全选框放在列表最下面。
+- 用复选框组表达互斥选项。
+- 将全选项放在列表末尾。
 
 ## API 参考
 
@@ -130,6 +102,7 @@ tone 换勾选方框的色族，size 换方框边长与文字档；两轴打在�
 | `name` | `string` |  | 表单字段名；给定后每个条目的隐藏输入才带 name，同名多值一并提交。 |
 | `orientation` | `Orientation` |  | 视觉排布，默认 vertical。只出 data-orientation，不出 aria-orientation。 |
 | `tone` | `Tone` |  | 语气：brand / neutral / success / warning / danger / info，决定勾选方框用哪族颜色。 |
+| `variant` | `CheckboxVariant` |  | 视觉变体：primary / secondary。缺省 primary。 |
 | `size` | `Size` |  | 尺寸：sm / md / lg，决定方框与文字的几何档位。 |
 | `onValueChange` | `(details: CheckboxGroupValueChangeDetails) => void` |  | value 变化意图回调；受控时是唯一出口，非受控随内部写入一并通知。 |
 
@@ -241,6 +214,7 @@ tone 换勾选方框的色族，size 换方框边长与文字档；两轴打在�
 | `root` | `data-readonly` | ''（条件成立时才出现） |
 | `root` | `data-size` | props.size |
 | `root` | `data-tone` | props.tone |
+| `root` | `data-variant` | props.variant |
 | `select-all-trigger` | `data-disabled` | ''（条件成立时才出现） |
 | `select-all-trigger` | `data-readonly` | ''（条件成立时才出现） |
 | `select-all-trigger` | `data-state` | resolveCheckedState(value, prop('itemValues') ?? []) |
@@ -254,15 +228,24 @@ tone 换勾选方框的色族，size 换方框边长与文字档；两轴打在�
 | --- | --- | --- | --- | --- | --- |
 | `--xh-checkbox-group-gap` | `root` | `gap` | `default` | `--xh-stack-gap-md` | checkbox-group 的 root 部件 gap 覆盖槽。 |
 | `--xh-checkbox-group-icon-size` | `root` | `--xh-icon-size` | `default` | `--xh-glyph-size-text` | checkbox-group 的 root 部件 --xh-icon-size 覆盖槽。 |
-| `--xh-checkbox-group-indicator-bg` | `indicator`<br>`select-all-trigger` | `background` | `default` | `--xh-bg-canvas` | checkbox-group 的 indicator、select-all-trigger 部件 background 覆盖槽。 |
-| `--xh-checkbox-group-indicator-bg-checked` | `indicator`<br>`select-all-trigger` | `background` | `is([data-state='checked'], [data-state='indeterminate'])`<br>`state=checked`<br>`state=indeterminate` | `--xh-_checkbox-group-accent` | checkbox-group 的 indicator、select-all-trigger 部件 background 覆盖槽。 |
+| `--xh-checkbox-group-indicator-bg` | `indicator`<br>`root`<br>`select-all-trigger` | `background-color` | `default` | `--xh-material-soft-bg` | checkbox-group 的 indicator、root、select-all-trigger 部件 background-color 覆盖槽。 |
+| `--xh-checkbox-group-indicator-bg-checked` | `indicator`<br>`select-all-trigger` | `background-color` | `is([data-state='checked'], [data-state='indeterminate'])`<br>`state=checked`<br>`state=indeterminate` | `--xh-_checkbox-group-accent` | checkbox-group 的 indicator、select-all-trigger 部件 background-color 覆盖槽。 |
+| `--xh-checkbox-group-indicator-bg-disabled` | `indicator`<br>`item`<br>`root`<br>`select-all-trigger` | `background-color` | `disabled` | `--xh-bg-muted` | checkbox-group 的 indicator、item、root、select-all-trigger 部件 background-color 覆盖槽。 |
 | `--xh-checkbox-group-indicator-border` | `indicator`<br>`select-all-trigger` | `border` | `default` | `--xh-border-control` | checkbox-group 的 indicator、select-all-trigger 部件 border 覆盖槽。 |
 | `--xh-checkbox-group-indicator-border-checked` | `indicator`<br>`select-all-trigger` | `border-color` | `is([data-state='checked'], [data-state='indeterminate'])`<br>`state=checked`<br>`state=indeterminate` | `--xh-_checkbox-group-accent` | checkbox-group 的 indicator、select-all-trigger 部件 border-color 覆盖槽。 |
-| `--xh-checkbox-group-indicator-border-hover` | `indicator`<br>`item` | `border-color` | `disabled`<br>`hover`<br>`not([data-disabled])`<br>`not([data-state='checked'])`<br>`state=checked` | `--xh-border-control-hover` | checkbox-group 的 indicator、item 部件 border-color 覆盖槽。 |
+| `--xh-checkbox-group-indicator-border-disabled` | `indicator`<br>`item`<br>`root`<br>`select-all-trigger` | `border-color` | `disabled` | `--xh-border-control` | checkbox-group 的 indicator、item、root、select-all-trigger 部件 border-color 覆盖槽。 |
+| `--xh-checkbox-group-indicator-border-hover` | `indicator`<br>`item`<br>`root`<br>`select-all-trigger` | `border-color` | `@media (hover: hover)`<br>`disabled`<br>`hover`<br>`invalid`<br>`not([data-disabled])`<br>`not([data-invalid])`<br>`not([data-readonly])`<br>`readonly` | `--xh-_checkbox-group-accent` | checkbox-group 的 indicator、item、root、select-all-trigger 部件 border-color 覆盖槽。 |
 | `--xh-checkbox-group-indicator-border-invalid` | `indicator`<br>`root` | `border-color` | `invalid` | `--xh-border-invalid` | checkbox-group 的 indicator、root 部件 border-color 覆盖槽。 |
 | `--xh-checkbox-group-indicator-fg` | `indicator`<br>`select-all-trigger` | `background-color`<br>`color` | `default`<br>`state=checked`<br>`state=indeterminate` | `--xh-_checkbox-group-on-accent` | checkbox-group 的 indicator、select-all-trigger 部件 background-color、color 覆盖槽。 |
+| `--xh-checkbox-group-indicator-fg-disabled` | `indicator`<br>`item`<br>`root`<br>`select-all-trigger` | `color` | `disabled` | `--xh-fg-disabled` | checkbox-group 的 indicator、item、root、select-all-trigger 部件 color 覆盖槽。 |
 | `--xh-checkbox-group-indicator-font-size` | `indicator`<br>`select-all-trigger` | `font-size` | `default`<br>`state=checked`<br>`state=indeterminate` | `--xh-_checkbox-group-glyph` | checkbox-group 的 indicator、select-all-trigger 部件 font-size 覆盖槽。 |
+| `--xh-checkbox-group-indicator-highlight` | `indicator`<br>`root`<br>`select-all-trigger` | `background-image` | `default` | `--xh-material-soft-highlight` | checkbox-group 的 indicator、root、select-all-trigger 部件 background-image 覆盖槽。 |
 | `--xh-checkbox-group-indicator-radius` | `indicator`<br>`select-all-trigger` | `border-radius` | `default` | `--xh-shape-inset` | checkbox-group 的 indicator、select-all-trigger 部件 border-radius 覆盖槽。 |
+| `--xh-checkbox-group-indicator-shadow` | `indicator`<br>`select-all-trigger` | `box-shadow` | `default` | `--xh-_checkbox-group-shadow-rest` | checkbox-group 的 indicator、select-all-trigger 部件 box-shadow 覆盖槽。 |
+| `--xh-checkbox-group-indicator-shadow-disabled` | `indicator`<br>`item`<br>`root`<br>`select-all-trigger` | `box-shadow` | `disabled` | `none` | checkbox-group 的 indicator、item、root、select-all-trigger 部件 box-shadow 覆盖槽。 |
+| `--xh-checkbox-group-indicator-shadow-hover` | `indicator`<br>`item`<br>`root`<br>`select-all-trigger` | `box-shadow` | `@media (hover: hover)`<br>`disabled`<br>`hover`<br>`invalid`<br>`not([data-disabled])`<br>`not([data-invalid])`<br>`not([data-readonly])`<br>`readonly` | `--xh-_checkbox-group-shadow-hover` | checkbox-group 的 indicator、item、root、select-all-trigger 部件 box-shadow 覆盖槽。 |
+| `--xh-checkbox-group-indicator-shadow-pressed` | `indicator`<br>`item`<br>`root`<br>`select-all-trigger` | `box-shadow` | `active`<br>`disabled`<br>`not([data-disabled])`<br>`not([data-readonly])`<br>`readonly` | `none` | checkbox-group 的 indicator、item、root、select-all-trigger 部件 box-shadow 覆盖槽。 |
+| `--xh-checkbox-group-indicator-shadow-readonly` | `indicator`<br>`root`<br>`select-all-trigger` | `box-shadow` | `disabled`<br>`not([data-disabled])`<br>`readonly` | `none` | checkbox-group 的 indicator、root、select-all-trigger 部件 box-shadow 覆盖槽。 |
 | `--xh-checkbox-group-indicator-size` | `indicator`<br>`select-all-trigger` | `block-size`<br>`inline-size`<br>`margin-inline-start` | `default`<br>`state=checked`<br>`state=indeterminate` | `--xh-_checkbox-group-box` | checkbox-group 的 indicator、select-all-trigger 部件 block-size、inline-size、margin-inline-start 覆盖槽。 |
 | `--xh-checkbox-group-item-fg` | `item` | `color` | `default` | `--xh-fg-default` | checkbox-group 的 item 部件 color 覆盖槽。 |
 | `--xh-checkbox-group-item-fg-disabled` | `item` | `color` | `disabled` | `--xh-fg-disabled` | checkbox-group 的 item 部件 color 覆盖槽。 |
@@ -283,9 +266,13 @@ tone 换勾选方框的色族，size 换方框边长与文字档；两轴打在�
 
 ### 动效
 
-`background` · `border-color` 走 `transition` 过渡。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
+`background-color` · `border-color` · `box-shadow` · `scale` 走 `transition` 过渡。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
 
 系统开启减弱动效时由令牌层统一收敛，皮肤不另作判断。
+
+### 响应式
+
+皮肤另按输入能力分档：`hover: hover`——同一份皮肤在触屏与带指针的设备上不一样，与视口宽度无关。
 
 ### RTL
 

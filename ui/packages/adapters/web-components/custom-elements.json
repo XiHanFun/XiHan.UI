@@ -6015,6 +6015,15 @@
             },
             {
               "kind": "field",
+              "name": "variant",
+              "privacy": "public",
+              "type": {
+                "text": "CheckboxVariant | undefined"
+              },
+              "attribute": "variant"
+            },
+            {
+              "kind": "field",
               "name": "size",
               "privacy": "public",
               "type": {
@@ -6269,6 +6278,14 @@
             },
             {
               "type": {
+                "text": "CheckboxVariant | undefined"
+              },
+              "description": "视觉变体；secondary 不绘制控制盒阴影",
+              "name": "variant",
+              "fieldName": "variant"
+            },
+            {
+              "type": {
                 "text": "Size | undefined"
               },
               "description": "尺寸",
@@ -6304,10 +6321,16 @@
               "name": "--xh-checkbox-group-indicator-bg-checked"
             },
             {
+              "name": "--xh-checkbox-group-indicator-bg-disabled"
+            },
+            {
               "name": "--xh-checkbox-group-indicator-border"
             },
             {
               "name": "--xh-checkbox-group-indicator-border-checked"
+            },
+            {
+              "name": "--xh-checkbox-group-indicator-border-disabled"
             },
             {
               "name": "--xh-checkbox-group-indicator-border-hover"
@@ -6319,10 +6342,31 @@
               "name": "--xh-checkbox-group-indicator-fg"
             },
             {
+              "name": "--xh-checkbox-group-indicator-fg-disabled"
+            },
+            {
               "name": "--xh-checkbox-group-indicator-font-size"
             },
             {
+              "name": "--xh-checkbox-group-indicator-highlight"
+            },
+            {
               "name": "--xh-checkbox-group-indicator-radius"
+            },
+            {
+              "name": "--xh-checkbox-group-indicator-shadow"
+            },
+            {
+              "name": "--xh-checkbox-group-indicator-shadow-disabled"
+            },
+            {
+              "name": "--xh-checkbox-group-indicator-shadow-hover"
+            },
+            {
+              "name": "--xh-checkbox-group-indicator-shadow-pressed"
+            },
+            {
+              "name": "--xh-checkbox-group-indicator-shadow-readonly"
             },
             {
               "name": "--xh-checkbox-group-indicator-size"

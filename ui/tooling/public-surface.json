@@ -9116,7 +9116,8 @@
       "readOnly",
       "size",
       "tone",
-      "value"
+      "value",
+      "variant"
     ],
     "clipboard": [
       "disabled",
@@ -11801,13 +11802,22 @@
     "--xh-checkbox-group-icon-size",
     "--xh-checkbox-group-indicator-bg",
     "--xh-checkbox-group-indicator-bg-checked",
+    "--xh-checkbox-group-indicator-bg-disabled",
     "--xh-checkbox-group-indicator-border",
     "--xh-checkbox-group-indicator-border-checked",
+    "--xh-checkbox-group-indicator-border-disabled",
     "--xh-checkbox-group-indicator-border-hover",
     "--xh-checkbox-group-indicator-border-invalid",
     "--xh-checkbox-group-indicator-fg",
+    "--xh-checkbox-group-indicator-fg-disabled",
     "--xh-checkbox-group-indicator-font-size",
+    "--xh-checkbox-group-indicator-highlight",
     "--xh-checkbox-group-indicator-radius",
+    "--xh-checkbox-group-indicator-shadow",
+    "--xh-checkbox-group-indicator-shadow-disabled",
+    "--xh-checkbox-group-indicator-shadow-hover",
+    "--xh-checkbox-group-indicator-shadow-pressed",
+    "--xh-checkbox-group-indicator-shadow-readonly",
     "--xh-checkbox-group-indicator-size",
     "--xh-checkbox-group-item-fg",
     "--xh-checkbox-group-item-fg-disabled",
@@ -15297,7 +15307,8 @@
         "read-only",
         "size",
         "tone",
-        "value"
+        "value",
+        "variant"
       ],
       "events": [
         "value-change"

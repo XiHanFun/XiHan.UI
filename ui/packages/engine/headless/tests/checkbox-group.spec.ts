@@ -154,14 +154,20 @@ describe('connectCheckboxGroup：容器与标题', () => {
     expect('aria-orientation' in root).toBe(false)
   })
 
-  it('orientation / disabled / readOnly / invalid 落成 data 标记', () => {
+  it('orientation / variant / tone / size 与状态落成 data 标记', () => {
     const root = api(makeService({
       orientation: 'horizontal',
+      variant: 'secondary',
+      tone: 'success',
+      size: 'lg',
       disabled: true,
       readOnly: true,
       invalid: true,
     })).getRootProps() as Record<string, unknown>
     expect(root['data-orientation']).toBe('horizontal')
+    expect(root['data-variant']).toBe('secondary')
+    expect(root['data-tone']).toBe('success')
+    expect(root['data-size']).toBe('lg')
     expect(root['data-disabled']).toBe('')
     expect(root['data-readonly']).toBe('')
     expect(root['data-invalid']).toBe('')

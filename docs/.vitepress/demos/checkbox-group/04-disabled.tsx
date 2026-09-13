@@ -1,4 +1,4 @@
-// 禁用与只读 | 整组禁用连隐藏输入一起退出提交，只读则仍能聚焦与朗读、只是改不动
+// 禁用与只读 | 禁用项不可操作，只读项仍可聚焦
 import type { ReactNode } from "react";
 import { XhCheckboxGroupRoot } from "@xihan-ui/react";
 

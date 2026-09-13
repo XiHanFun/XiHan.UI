@@ -98,6 +98,8 @@ const PRESSABLE = {
   'transfer': ['to-target-trigger', 'to-source-trigger'],
   // 勾选形的控件本体：方框、轨道、星星都是自己能被按下的一颗
   'checkbox': ['root'],
+  // 组条目的命中区包含文字，按压缩放只落在其中的方框与全选伪元素上
+  'checkbox-group': ['item', 'select-all-trigger'],
   'switch': ['root'],
   'rating': ['item'],
   // 色板格子的底色就是它要展示的那个颜色，换底会盖掉展示物，按压回执只能落在缩放上
@@ -173,8 +175,6 @@ const NO_PRESS = {
   'editable:label': '标题是「点它等于进编辑态」的扩大命中区，反馈该落在预览区与输入框本体上，标签自己不动',
   'slider:tick-label': '刻度文案是点它跳到该刻度的扩大命中区，回执落在拇指上，文案自己不动',
   // 方框圆圈连着文字的整行条目：回执落在方框与圆点的填色上
-  'checkbox-group:item': '条目是「方框 + 文字」的整行命中区，缩放整行会把文字一起抖起来，按下的回执落在方框的填色上',
-  'checkbox-group:select-all-trigger': '全选格与条目同形，也是「方框 + 文字」的整行，缩放会带着整列条目一起抖',
   'radio-group:item': '条目是「圆圈 + 文字」的整行命中区，缩放整行会把文字一起抖起来，按下的回执落在圆圈的圆点上',
   'transfer:select-all-trigger': '勾选方框与标签连成的一行，缩放会带着标签文字一起抖，回执落在方框的勾选态上',
   // 字段外壳与壳里铺满宽度的值显示体：缩放会把回显文字一起挤
@@ -343,7 +343,7 @@ function partSelector(part) {
 
 function checkPart(name, part, css, familyCss = '') {
   // :active 规则要落在该部件上，且缩放量走令牌
-  const active = new RegExp(`${partSelector(part)}[^{]*:active(?::not\\([^)]*\\))?\\s*\\{([^}]*)\\}`)
+  const active = new RegExp(`${partSelector(part)}[^{]*:active(?::not\\([^)]*\\))?(?:::[a-z-]+)?\\s*\\{([^}]*)\\}`)
   const match = css.match(active) ?? familyCss.match(/\[data-xh-action-control\][^{]*:active\s*\{([^}]*)\}/)
   if (!match) {
     problems.push(`${name} 的 ${part} 没有 :active 规则——按下去到松手之间没有任何变化`)
