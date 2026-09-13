@@ -11,7 +11,7 @@ export default function Demo(): ReactNode {
             <XhRatingLabel>sm</XhRatingLabel>
             <XhRatingControl>
               {items.map(i => (
-                <XhRatingItem key={i} value={i}>★</XhRatingItem>
+                <XhRatingItem key={i} value={i}></XhRatingItem>
               ))}
             </XhRatingControl>
           </>
@@ -24,7 +24,7 @@ export default function Demo(): ReactNode {
             <XhRatingLabel>缺省</XhRatingLabel>
             <XhRatingControl>
               {items.map(i => (
-                <XhRatingItem key={i} value={i}>★</XhRatingItem>
+                <XhRatingItem key={i} value={i}></XhRatingItem>
               ))}
             </XhRatingControl>
           </>
@@ -37,7 +37,7 @@ export default function Demo(): ReactNode {
             <XhRatingLabel>lg</XhRatingLabel>
             <XhRatingControl>
               {items.map(i => (
-                <XhRatingItem key={i} value={i}>★</XhRatingItem>
+                <XhRatingItem key={i} value={i}></XhRatingItem>
               ))}
             </XhRatingControl>
           </>

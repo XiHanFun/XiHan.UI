@@ -10,7 +10,7 @@ const tones = ["brand", "neutral", "success", "warning", "danger", "info"] as co
     <XhRatingRoot v-for="t in tones" :key="t" v-slot="{ items }" :tone="t" :default-value="4" read-only>
       <XhRatingLabel>{{ t }}</XhRatingLabel>
       <XhRatingControl>
-        <XhRatingItem v-for="i in items" :key="i" :value="i">★</XhRatingItem>
+        <XhRatingItem v-for="i in items" :key="i" :value="i" />
       </XhRatingControl>
     </XhRatingRoot>
   </div>

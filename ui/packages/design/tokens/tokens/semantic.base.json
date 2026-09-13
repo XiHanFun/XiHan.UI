@@ -249,6 +249,11 @@
       "$type": "icon",
       "$value": "triangle-alert"
     },
+    "mark-star": {
+      "$description": "评分条目的默认星形。",
+      "$type": "icon",
+      "$value": "star"
+    },
     "mark-eye": {
       "$type": "icon",
       "$value": "eye"

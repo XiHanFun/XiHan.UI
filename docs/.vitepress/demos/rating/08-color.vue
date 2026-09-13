@@ -13,7 +13,7 @@ import { XhRatingControl, XhRatingItem, XhRatingLabel, XhRatingRoot } from "@xih
     >
       <XhRatingLabel>只换点亮色</XhRatingLabel>
       <XhRatingControl>
-        <XhRatingItem v-for="i in items" :key="i" :value="i">★</XhRatingItem>
+        <XhRatingItem v-for="i in items" :key="i" :value="i" />
       </XhRatingControl>
     </XhRatingRoot>
 
@@ -25,7 +25,7 @@ import { XhRatingControl, XhRatingItem, XhRatingLabel, XhRatingRoot } from "@xih
     >
       <XhRatingLabel>点亮与未点亮各给一色</XhRatingLabel>
       <XhRatingControl>
-        <XhRatingItem v-for="i in items" :key="i" :value="i">★</XhRatingItem>
+        <XhRatingItem v-for="i in items" :key="i" :value="i" />
       </XhRatingControl>
     </XhRatingRoot>
   </div>

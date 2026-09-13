@@ -13,7 +13,7 @@ const sticky = ref(3);
       <XhRatingRoot v-slot="{ items }" v-model:value="score">
         <XhRatingLabel>整体满意度（可清空）</XhRatingLabel>
         <XhRatingControl>
-          <XhRatingItem v-for="i in items" :key="i" :value="i">★</XhRatingItem>
+          <XhRatingItem v-for="i in items" :key="i" :value="i" />
         </XhRatingControl>
       </XhRatingRoot>
       <p style="margin: 4px 0 0; font-size: 13px">当前：{{ score === 0 ? "还没评" : score }}</p>
@@ -22,7 +22,7 @@ const sticky = ref(3);
       <XhRatingRoot v-slot="{ items }" v-model:value="sticky" :allow-clear="false">
         <XhRatingLabel>关掉清空（再点不清）</XhRatingLabel>
         <XhRatingControl>
-          <XhRatingItem v-for="i in items" :key="i" :value="i">★</XhRatingItem>
+          <XhRatingItem v-for="i in items" :key="i" :value="i" />
         </XhRatingControl>
       </XhRatingRoot>
       <p style="margin: 4px 0 0; font-size: 13px">当前：{{ sticky }}</p>

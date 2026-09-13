@@ -16,7 +16,7 @@ export default function Demo(): ReactNode {
               <XhRatingLabel>整体满意度（可清空）</XhRatingLabel>
               <XhRatingControl>
                 {items.map(i => (
-                  <XhRatingItem key={i} value={i}>★</XhRatingItem>
+                  <XhRatingItem key={i} value={i}></XhRatingItem>
                 ))}
               </XhRatingControl>
             </>
@@ -35,7 +35,7 @@ export default function Demo(): ReactNode {
               <XhRatingLabel>关掉清空（再点不清）</XhRatingLabel>
               <XhRatingControl>
                 {items.map(i => (
-                  <XhRatingItem key={i} value={i}>★</XhRatingItem>
+                  <XhRatingItem key={i} value={i}></XhRatingItem>
                 ))}
               </XhRatingControl>
             </>

@@ -8,14 +8,14 @@ import { XhRatingControl, XhRatingItem, XhRatingLabel, XhRatingRoot } from "@xih
     <XhRatingRoot v-slot="{ items }" :default-value="4" read-only>
       <XhRatingLabel>只读（4 星）</XhRatingLabel>
       <XhRatingControl>
-        <XhRatingItem v-for="i in items" :key="i" :value="i">★</XhRatingItem>
+        <XhRatingItem v-for="i in items" :key="i" :value="i" />
       </XhRatingControl>
     </XhRatingRoot>
 
     <XhRatingRoot v-slot="{ items }" :default-value="2" disabled>
       <XhRatingLabel>禁用（2 星）</XhRatingLabel>
       <XhRatingControl>
-        <XhRatingItem v-for="i in items" :key="i" :value="i">★</XhRatingItem>
+        <XhRatingItem v-for="i in items" :key="i" :value="i" />
       </XhRatingControl>
     </XhRatingRoot>
   </div>

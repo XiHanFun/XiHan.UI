@@ -1,6 +1,7 @@
-// 自定义图案 | 星形由作者写，条目自带这颗的点亮状态，点亮与未点亮可以画成两个字形
+// 自定义图标 | 条目可使用首方图标，也可留空使用皮肤默认星形
 import type { ReactNode } from "react";
-import { XhRatingControl, XhRatingItem, XhRatingLabel, XhRatingRoot } from "@xihan-ui/react";
+import { HeartIcon } from "@xihan-ui/icons";
+import { XhIcon, XhRatingControl, XhRatingItem, XhRatingLabel, XhRatingRoot } from "@xihan-ui/react";
 
 export default function Demo(): ReactNode {
   return (
@@ -11,7 +12,7 @@ export default function Demo(): ReactNode {
             <XhRatingLabel>换个字形</XhRatingLabel>
             <XhRatingControl>
               {items.map(i => (
-                <XhRatingItem key={i} value={i}>♥</XhRatingItem>
+                <XhRatingItem key={i} value={i}><XhIcon icon={HeartIcon} /></XhRatingItem>
               ))}
             </XhRatingControl>
           </>
@@ -21,12 +22,10 @@ export default function Demo(): ReactNode {
       <XhRatingRoot defaultValue={2} allowHalf>
         {({ items }) => (
           <>
-            <XhRatingLabel>空心与实心（半颗仍由皮肤裁）</XhRatingLabel>
+            <XhRatingLabel>内置星形与半档</XhRatingLabel>
             <XhRatingControl>
               {items.map(i => (
-                <XhRatingItem key={i} value={i}>
-                  {({ highlighted }) => (highlighted ? "★" : "☆")}
-                </XhRatingItem>
+                <XhRatingItem key={i} value={i} />
               ))}
             </XhRatingControl>
           </>

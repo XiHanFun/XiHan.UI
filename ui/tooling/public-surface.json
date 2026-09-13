@@ -11187,6 +11187,7 @@
     "--xh-glyph-mark-sort",
     "--xh-glyph-mark-sort-asc",
     "--xh-glyph-mark-sort-desc",
+    "--xh-glyph-mark-star",
     "--xh-glyph-mark-warning",
     "--xh-glyph-mark-zoom-in",
     "--xh-glyph-mark-zoom-out",

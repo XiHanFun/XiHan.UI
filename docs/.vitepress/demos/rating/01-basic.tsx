@@ -10,7 +10,7 @@ export default function Demo(): ReactNode {
           <XhRatingLabel>整体满意度</XhRatingLabel>
           <XhRatingControl>
             {items.map(i => (
-              <XhRatingItem key={i} value={i}>★</XhRatingItem>
+              <XhRatingItem key={i} value={i}></XhRatingItem>
             ))}
           </XhRatingControl>
         </>
