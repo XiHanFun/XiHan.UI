@@ -1,3 +1,8 @@
+/*
+ * Copyright (c) 2021-Present XiHanFun and contributors.
+ * Licensed under the MIT License. See LICENSE in the project root for license information.
+ */
+
 // 视觉画面：负责画布、上下文、两个绘制通道、点云缓冲与整套生命周期。
 //
 // 两个通道：流场通道跑效果的片元着色器，粒子通道画 gl.POINTS。

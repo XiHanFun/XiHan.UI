@@ -1,3 +1,8 @@
+/*
+ * Copyright (c) 2021-Present XiHanFun and contributors.
+ * Licensed under the MIT License. See LICENSE in the project root for license information.
+ */
+
 /** 至少含一个条目的连续分段。 */
 export type AdjacentRun<T> = [T, ...T[]]
 

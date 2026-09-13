@@ -1,3 +1,10 @@
+/*
+ * Copyright (c) 2021-Present XiHanFun and contributors.
+ * Licensed under the MIT License. See LICENSE in the project root for license information.
+ */
+
+// 定义 skeleton 类型契约。
+
 import type { PropTypes } from '@xihan-ui/core'
 
 /** 骨架条的形状：一行文字、一个圆、一块矩形。 */

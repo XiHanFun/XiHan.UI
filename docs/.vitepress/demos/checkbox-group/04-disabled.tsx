@@ -1,3 +1,8 @@
+/*
+ * Copyright (c) 2021-Present XiHanFun and contributors.
+ * Licensed under the MIT License. See LICENSE in the project root for license information.
+ */
+
 // 禁用与只读 | 禁用项不可操作，只读项仍可聚焦
 import type { ReactNode } from "react";
 import { XhCheckboxGroupRoot } from "@xihan-ui/react";

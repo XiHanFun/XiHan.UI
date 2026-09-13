@@ -1,3 +1,8 @@
+/*
+ * Copyright (c) 2021-Present XiHanFun and contributors.
+ * Licensed under the MIT License. See LICENSE in the project root for license information.
+ */
+
 // 自定义量程 | max 不是 100 时按 value/max 折算，用于「已完成 3/8 步」这类场景
 import type { ReactNode } from "react";
 import { XhProgress } from "@xihan-ui/react";

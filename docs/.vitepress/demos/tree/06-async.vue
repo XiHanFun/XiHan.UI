@@ -1,3 +1,8 @@
+<!--
+  Copyright (c) 2021-Present XiHanFun and contributors.
+  Licensed under the MIT License. See LICENSE in the project root for license information.
+-->
+
 <!-- 异步加载子节点 | 展开那一刻才去要数据：先摆一行禁用的占位，取回来就地换掉，收起再展开不重复请求 -->
 <script setup lang="ts">
 import {

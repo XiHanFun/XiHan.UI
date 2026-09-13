@@ -1,3 +1,10 @@
+/*
+ * Copyright (c) 2021-Present XiHanFun and contributors.
+ * Licensed under the MIT License. See LICENSE in the project root for license information.
+ */
+
+// 提供 icon wrapper 相关实现。
+
 import type { NormalizeProps, PropTypes } from '@xihan-ui/core'
 import type { IconWrapperApi, IconWrapperProps } from './icon-wrapper.types'
 import { iconWrapperAnatomy } from './icon-wrapper.anatomy'

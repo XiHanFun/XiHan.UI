@@ -1,3 +1,10 @@
+/*
+ * Copyright (c) 2021-Present XiHanFun and contributors.
+ * Licensed under the MIT License. See LICENSE in the project root for license information.
+ */
+
+// 提供 text field 相关实现。
+
 import type { NormalizeProps, PropTypes, Service } from '@xihan-ui/core'
 import type { TextFieldApi, TextFieldSchema, TextFieldTranslations } from './text-field.types'
 import { dataAttr, isComposingEvent } from '@xihan-ui/core'

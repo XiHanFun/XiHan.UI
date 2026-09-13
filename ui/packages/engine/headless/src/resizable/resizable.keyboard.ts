@@ -1,3 +1,10 @@
+/*
+ * Copyright (c) 2021-Present XiHanFun and contributors.
+ * Licensed under the MIT License. See LICENSE in the project root for license information.
+ */
+
+// 提供 resizable 相关实现。
+
 import type { KeyboardTable } from '../spec/types'
 
 // APG 的窗口分隔条模式讲的是「用键盘推动一条边」，与这里同构。

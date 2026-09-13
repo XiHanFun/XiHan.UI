@@ -1,3 +1,8 @@
+/*
+ * Copyright (c) 2021-Present XiHanFun and contributors.
+ * Licensed under the MIT License. See LICENSE in the project root for license information.
+ */
+
 // 定时副作用工具，用在 implementations.effects 里，返回值即 cleanup。
 // 由定时器发出的事件命名为 after.<delayName>，delayName 与 prop 名一致。
 import { raiseMachineError } from './errors'

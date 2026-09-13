@@ -1,3 +1,10 @@
+/*
+ * Copyright (c) 2021-Present XiHanFun and contributors.
+ * Licensed under the MIT License. See LICENSE in the project root for license information.
+ */
+
+// 提供 json viewer.projection 相关实现。
+
 import type { JsonViewerNode } from './json-viewer.types'
 
 /** 可见行按父路径分组后的渲染投影。Map 与各组数组均由每次调用独立创建。 */

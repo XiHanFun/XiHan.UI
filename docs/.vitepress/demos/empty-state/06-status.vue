@@ -1,3 +1,8 @@
+<!--
+  Copyright (c) 2021-Present XiHanFun and contributors.
+  Licensed under the MIT License. See LICENSE in the project root for license information.
+-->
+
 <!-- 结果类型 | status 只落成 data-status，皮肤据它给图标区上语气色；画什么图标仍由作者塞 -->
 <script setup lang="ts">
 import { CheckIcon, InfoIcon, TriangleAlertIcon, XIcon } from "@xihan-ui/icons";

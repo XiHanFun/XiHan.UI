@@ -1,3 +1,10 @@
+/*
+ * Copyright (c) 2021-Present XiHanFun and contributors.
+ * Licensed under the MIT License. See LICENSE in the project root for license information.
+ */
+
+// 验证 rtl 相关行为。
+
 import { attachProbe, createStage, expectClose } from '@xihan-ui/testing/position'
 import { describe, expect, it } from 'vitest'
 import { createPositionEngine } from '../../src/index'

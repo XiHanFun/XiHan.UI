@@ -1,3 +1,8 @@
+/*
+ * Copyright (c) 2021-Present XiHanFun and contributors.
+ * Licensed under the MIT License. See LICENSE in the project root for license information.
+ */
+
 // 表格的树形子行、大纲编号与前缀列。
 //
 // 最要紧的一条：收起某一枝时，仍在场的行编号一个都不变。

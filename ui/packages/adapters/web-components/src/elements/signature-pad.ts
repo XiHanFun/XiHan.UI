@@ -1,3 +1,10 @@
+/*
+ * Copyright (c) 2021-Present XiHanFun and contributors.
+ * Licensed under the MIT License. See LICENSE in the project root for license information.
+ */
+
+// 提供 signature pad 相关实现。
+
 import type { Service } from '@xihan-ui/core'
 import type { FormControlState, SignaturePadApi, SignaturePadDrawDetails, SignaturePadDrawEndDetails, SignaturePadDrawingOptions, SignaturePadSchema, SignaturePadTranslations } from '@xihan-ui/headless'
 import { connectSignaturePad, resolveFormControlState, signaturePadAnatomy, signaturePadMachine, signaturePadMeta } from '@xihan-ui/headless'

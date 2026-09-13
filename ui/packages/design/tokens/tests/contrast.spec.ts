@@ -1,3 +1,8 @@
+/*
+ * Copyright (c) 2021-Present XiHanFun and contributors.
+ * Licensed under the MIT License. See LICENSE in the project root for license information.
+ */
+
 // 令牌层的对比度判据：直接读令牌源算，不依赖渲染。
 // axe 的 color-contrast 只管文字，非文本对比度（SC 1.4.11，控件边界）它一条都看不到，
 // 那一类只能在这里守。

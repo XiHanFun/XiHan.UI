@@ -1,3 +1,8 @@
+/*
+ * Copyright (c) 2021-Present XiHanFun and contributors.
+ * Licensed under the MIT License. See LICENSE in the project root for license information.
+ */
+
 // 配方钳制：把不可信的数值收进安全域。配方常来自调音界面或持久化配置，
 // 一个坏值不该炸掉播放、也不该产出刺耳或超长的声音——越界钳住、类型不对回落，不抛错。
 

@@ -1,3 +1,10 @@
+/*
+ * Copyright (c) 2021-Present XiHanFun and contributors.
+ * Licensed under the MIT License. See LICENSE in the project root for license information.
+ */
+
+// 导出 focus scope 模块的公共接口。
+
 import type { Disposable, FocusableElement, Layer, RuntimeConfig } from '../../kernel'
 import {
   contains,

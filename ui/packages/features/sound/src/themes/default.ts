@@ -1,3 +1,8 @@
+/*
+ * Copyright (c) 2021-Present XiHanFun and contributors.
+ * Licensed under the MIT License. See LICENSE in the project root for license information.
+ */
+
 // 默认主题：清亮乐音系。音符取自 C 大调——成功与完成是琶音上行，
 // 错误是低音区下行，交互声是高频短敲；反馈类带少量混响撑出空间感。
 

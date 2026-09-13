@@ -1,3 +1,8 @@
+<!--
+  Copyright (c) 2021-Present XiHanFun and contributors.
+  Licensed under the MIT License. See LICENSE in the project root for license information.
+-->
+
 <!-- 框内单位与货币符号 | 前后缀图标/文字直接流式插进 control：减在左、加在右、输入框居中，前后缀排在输入框两侧 -->
 <script setup lang="ts">
 import {

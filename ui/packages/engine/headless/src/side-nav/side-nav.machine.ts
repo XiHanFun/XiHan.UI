@@ -1,3 +1,10 @@
+/*
+ * Copyright (c) 2021-Present XiHanFun and contributors.
+ * Licensed under the MIT License. See LICENSE in the project root for license information.
+ */
+
+// 提供 side nav 相关实现。
+
 import type { Cleanup, Layer, PositionResult } from '@xihan-ui/core'
 import type { SideNavNode, SideNavSchema } from './side-nav.types'
 import { focusItem, navigateItems, setup, trackHoverIntent } from '@xihan-ui/core'

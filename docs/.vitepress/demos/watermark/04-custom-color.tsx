@@ -1,3 +1,8 @@
+/*
+ * Copyright (c) 2021-Present XiHanFun and contributors.
+ * Licensed under the MIT License. See LICENSE in the project root for license information.
+ */
+
 // 自定义颜色 | 设置水印前景色
 import type { CSSProperties, ReactNode } from "react";
 import { XhWatermarkContent, XhWatermarkRoot } from "@xihan-ui/react";

@@ -1,3 +1,8 @@
+<!--
+  Copyright (c) 2021-Present XiHanFun and contributors.
+  Licensed under the MIT License. See LICENSE in the project root for license information.
+-->
+
 <!-- 语气 | tone 只改配色，语义仍由内容与 role 决定 -->
 <script setup lang="ts">
 import { XhAlertRoot, XhAlertTitle } from "@xihan-ui/vue";

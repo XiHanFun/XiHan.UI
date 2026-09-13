@@ -1,3 +1,8 @@
+/*
+ * Copyright (c) 2021-Present XiHanFun and contributors.
+ * Licensed under the MIT License. See LICENSE in the project root for license information.
+ */
+
 // 全局帧调度：所有 surface 共用一条 requestAnimationFrame。
 // 一张页面上放十几张效果卡时，十几条各自的 rAF 会被浏览器排成十几个回调，
 // 合成一条既省调度开销，也保证同一帧里各卡拿到同一个 dt。

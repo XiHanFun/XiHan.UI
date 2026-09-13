@@ -1,3 +1,10 @@
+/*
+ * Copyright (c) 2021-Present XiHanFun and contributors.
+ * Licensed under the MIT License. See LICENSE in the project root for license information.
+ */
+
+// 验证 wc drawer.suite 相关行为。
+
 import type { ConformanceSuite } from '@xihan-ui/testing'
 import { drawerAnatomy, drawerKeyboard } from '@xihan-ui/headless'
 import { nativeActivation } from '@xihan-ui/testing'

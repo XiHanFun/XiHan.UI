@@ -1,3 +1,8 @@
+/*
+ * Copyright (c) 2021-Present XiHanFun and contributors.
+ * Licensed under the MIT License. See LICENSE in the project root for license information.
+ */
+
 // 换成自绘滚动条 | 视口给个 id，用滚动条的 controls 挂上去；条子浮在内容之上，不占宽度也不留空道
 import type { ReactNode } from "react";
 import {

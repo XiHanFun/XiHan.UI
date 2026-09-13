@@ -1,3 +1,8 @@
+/*
+ * Copyright (c) 2021-Present XiHanFun and contributors.
+ * Licensed under the MIT License. See LICENSE in the project root for license information.
+ */
+
 // setup<T>()：类型锚工厂。一次绑定 schema，后续全部推断。
 import type { GuardCombinators } from './guards'
 import type { MachineConfig, MachineSchema } from './types'

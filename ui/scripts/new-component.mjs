@@ -22,6 +22,7 @@ import { mkdir, readFile, writeFile } from 'node:fs/promises'
 import { dirname, join, resolve } from 'node:path'
 import process from 'node:process'
 import { fileURLToPath } from 'node:url'
+import { applyFileHeader } from '../tooling/file-header.mjs'
 
 const here = dirname(fileURLToPath(import.meta.url))
 const uiRoot = resolve(here, '..')
@@ -695,6 +696,24 @@ const on = ref(false);
 骨架由 \`node scripts/new-component.mjs\` 生成，正文待补：这里写清它解决什么、与既有组件如何分工、
 哪些行为是承诺、哪些是实现细节。
 `
+
+  const codePaths = {
+    'headless-anatomy': `${n.c}.anatomy.ts`,
+    'headless-types': `${n.c}.types.ts`,
+    'headless-machine': `${n.c}.machine.ts`,
+    'headless-connect': `${n.c}.connect.ts`,
+    'headless-keyboard': `${n.c}.keyboard.ts`,
+    'headless-meta': `${n.c}.meta.ts`,
+    'headless-entry': 'index.ts',
+    'vue-composable': `use-${n.c}.ts`,
+    'vue-component': `${n.c}.ts`,
+    'wc-element': `${n.c}.ts`,
+    'skin': `${n.c}.css`,
+    'suite': `${n.c}.suite.ts`,
+    'demo-vue': `${n.c}.vue`,
+  }
+  for (const [id, path] of Object.entries(codePaths))
+    t[id] = applyFileHeader(path, t[id])
 
   return t
 }

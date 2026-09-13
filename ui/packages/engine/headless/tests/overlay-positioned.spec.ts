@@ -1,3 +1,10 @@
+/*
+ * Copyright (c) 2021-Present XiHanFun and contributors.
+ * Licensed under the MIT License. See LICENSE in the project root for license information.
+ */
+
+// 验证 overlay positioned 相关行为。
+
 // @vitest-environment jsdom
 // 浮层定位层的生命周期契约：渲染 → 量 → 定位 → 才露。
 // 皮肤基线把定位层默认藏着，只有连接层打了 data-positioned 才显示。四个状态各自分明：

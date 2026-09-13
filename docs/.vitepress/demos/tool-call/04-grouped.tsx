@@ -1,3 +1,8 @@
+/*
+ * Copyright (c) 2021-Present XiHanFun and contributors.
+ * Licensed under the MIT License. See LICENSE in the project root for license information.
+ */
+
 // 多次调用分组 | 外面套一层手风琴当分组头：计数用等宽数位，整组开合归手风琴，卡片各管各的
 import type { ReactNode } from "react";
 import {

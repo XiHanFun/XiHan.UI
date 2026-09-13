@@ -1,3 +1,8 @@
+/*
+ * Copyright (c) 2021-Present XiHanFun and contributors.
+ * Licensed under the MIT License. See LICENSE in the project root for license information.
+ */
+
 // 横向控件带排不下时不许顶出容器。
 //
 // tabs / toolbar / menubar / navigation-menu / toggle-group / segmented 六条带子都是一行 flex，

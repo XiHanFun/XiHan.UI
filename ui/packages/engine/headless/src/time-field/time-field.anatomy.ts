@@ -1,3 +1,10 @@
+/*
+ * Copyright (c) 2021-Present XiHanFun and contributors.
+ * Licensed under the MIT License. See LICENSE in the project root for license information.
+ */
+
+// 提供 time field 相关实现。
+
 import { createAnatomy } from '@xihan-ui/core'
 
 // segment 是多实例 part（时/分/秒/上下午各一个），身份由作者写在节点上；

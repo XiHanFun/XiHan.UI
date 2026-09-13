@@ -1,3 +1,8 @@
+<!--
+  Copyright (c) 2021-Present XiHanFun and contributors.
+  Licensed under the MIT License. See LICENSE in the project root for license information.
+-->
+
 <!-- 搜索过滤 | searchable 给每侧配一个搜索框，筛剩下的才参与方向键、全选与搬运 -->
 <script setup lang="ts">
 import {

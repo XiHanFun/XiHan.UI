@@ -1,3 +1,10 @@
+/*
+ * Copyright (c) 2021-Present XiHanFun and contributors.
+ * Licensed under the MIT License. See LICENSE in the project root for license information.
+ */
+
+// 导出 src 模块的公共接口。
+
 export { accordionAnatomy, accordionKeyboard, accordionMachine, accordionMeta, connectAccordion } from './accordion'
 // @xihan-ui/headless —— 无头组件（anatomy + machine + connect，无样式）。
 

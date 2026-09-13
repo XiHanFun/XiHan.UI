@@ -1,3 +1,8 @@
+/*
+ * Copyright (c) 2021-Present XiHanFun and contributors.
+ * Licensed under the MIT License. See LICENSE in the project root for license information.
+ */
+
 // 使用者令牌 | 直径、叠放量、分隔那圈底色都留了槽位，写在组上就整组换掉
 import type { CSSProperties, ReactNode } from "react";
 import { XhAvatarFallback, XhAvatarGroupOverflowItem, XhAvatarGroupRoot, XhAvatarRoot } from "@xihan-ui/react";

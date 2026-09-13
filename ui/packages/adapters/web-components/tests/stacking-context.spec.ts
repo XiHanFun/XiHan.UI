@@ -1,3 +1,10 @@
+/*
+ * Copyright (c) 2021-Present XiHanFun and contributors.
+ * Licensed under the MIT License. See LICENSE in the project root for license information.
+ */
+
+// 验证 stacking context 相关行为。
+
 // @vitest-environment jsdom
 //
 // Light DOM 搬不动浮层，只能在展开时把「祖先建了层叠上下文」这件事报出来。

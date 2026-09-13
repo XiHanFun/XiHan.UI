@@ -1,3 +1,10 @@
+/*
+ * Copyright (c) 2021-Present XiHanFun and contributors.
+ * Licensed under the MIT License. See LICENSE in the project root for license information.
+ */
+
+// 提供 brand 相关实现。
+
 import { formatOklch, parseColorToOklch } from './color'
 
 // 品牌轴的取值来源：把一枚种子色派生成整套 brand 原语（--xh-color-brand-50…950），

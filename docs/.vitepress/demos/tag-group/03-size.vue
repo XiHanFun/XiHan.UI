@@ -1,3 +1,8 @@
+<!--
+  Copyright (c) 2021-Present XiHanFun and contributors.
+  Licensed under the MIT License. See LICENSE in the project root for license information.
+-->
+
 <!-- 尺寸 | size 打在组上逐枚落到每一枚标签上，走 tag 的三档，标签自己不写档位 -->
 <script setup lang="ts">
 import { XhTagGroupRoot } from "@xihan-ui/vue";

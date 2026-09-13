@@ -1,3 +1,10 @@
+/*
+ * Copyright (c) 2021-Present XiHanFun and contributors.
+ * Licensed under the MIT License. See LICENSE in the project root for license information.
+ */
+
+// 提供 clipboard 相关实现。
+
 import type { KeyboardTable } from '../spec/types'
 
 // 键盘全归平台：复制按钮与只读展示框都是原生元素，本组件不接任何键，表为空。

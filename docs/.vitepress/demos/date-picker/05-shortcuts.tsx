@@ -1,3 +1,8 @@
+/*
+ * Copyright (c) 2021-Present XiHanFun and contributors.
+ * Licensed under the MIT License. See LICENSE in the project root for license information.
+ */
+
 // 快捷选项 | 提供常用日期
 import type { ReactNode } from "react";
 import { datePickerPresetDay } from "@xihan-ui/headless";

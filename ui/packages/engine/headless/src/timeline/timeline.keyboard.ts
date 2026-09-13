@@ -1,3 +1,10 @@
+/*
+ * Copyright (c) 2021-Present XiHanFun and contributors.
+ * Licensed under the MIT License. See LICENSE in the project root for license information.
+ */
+
+// 提供 timeline 相关实现。
+
 import type { KeyboardTable } from '../spec/types'
 
 // 时间线是一份已经发生的事件清单，自身不可聚焦、不接管按键；

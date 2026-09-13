@@ -1,3 +1,10 @@
+/*
+ * Copyright (c) 2021-Present XiHanFun and contributors.
+ * Licensed under the MIT License. See LICENSE in the project root for license information.
+ */
+
+// 验证 tree drag 相关行为。
+
 // @vitest-environment jsdom
 // 节点拖拽：纯算法（落点合法性、折算、命令）与机器/连接层（激活、三档落点、播报）。
 import type { TreeNode, TreeNodeMeta, TreeSchema } from '../src/tree'

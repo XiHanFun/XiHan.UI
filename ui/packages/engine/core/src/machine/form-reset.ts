@@ -1,3 +1,10 @@
+/*
+ * Copyright (c) 2021-Present XiHanFun and contributors.
+ * Licensed under the MIT License. See LICENSE in the project root for license information.
+ */
+
+// 提供 form reset 相关实现。
+
 import type { MachineConfig, MachineSchema, Params, Slice } from './types'
 
 /** 表单重置事件名。适配器把宿主 form 的 reset 翻成这条事件送进机器。 */

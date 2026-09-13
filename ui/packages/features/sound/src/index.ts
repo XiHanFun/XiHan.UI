@@ -1,3 +1,8 @@
+/*
+ * Copyright (c) 2021-Present XiHanFun and contributors.
+ * Licensed under the MIT License. See LICENSE in the project root for license information.
+ */
+
 // @xihan-ui/sound —— 声音层：纯 Web Audio 程序化 UI 音效，框架无关，零音频文件。
 //
 // 一段声音是一份可序列化的声明式配方（SoundSpec）：振荡器与噪声分层、

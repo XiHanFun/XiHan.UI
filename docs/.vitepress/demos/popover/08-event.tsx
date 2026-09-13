@@ -1,3 +1,8 @@
+/*
+ * Copyright (c) 2021-Present XiHanFun and contributors.
+ * Licensed under the MIT License. See LICENSE in the project root for license information.
+ */
+
 // 事件 | open-change 带一份 { open }，报的是这次要落到的状态；非受控时内部开合也照发一次
 import type { ReactNode } from "react";
 import {

@@ -1,3 +1,8 @@
+/*
+ * Copyright (c) 2021-Present XiHanFun and contributors.
+ * Licensed under the MIT License. See LICENSE in the project root for license information.
+ */
+
 // 限制与拒收 | accept / maxFiles / maxFileSize 越界的当场被拒，file-reject 逐个报出理由
 import type { FileUploadFile } from "@xihan-ui/headless";
 import type { ReactNode } from "react";

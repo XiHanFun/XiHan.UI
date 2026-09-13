@@ -1,3 +1,8 @@
+/*
+ * Copyright (c) 2021-Present XiHanFun and contributors.
+ * Licensed under the MIT License. See LICENSE in the project root for license information.
+ */
+
 // 参数方程形状。不依赖 DOM，纯数学，所以能在服务端预生成，也能直接测。
 // 与图片采样出的点云是同一种表示，两者之间可以直接形变。
 

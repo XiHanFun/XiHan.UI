@@ -1,3 +1,8 @@
+/*
+ * Copyright (c) 2021-Present XiHanFun and contributors.
+ * Licensed under the MIT License. See LICENSE in the project root for license information.
+ */
+
 // 受控 | 传了 files 就由宿主说了算，组件自己不再落值，只发 files-change 报告意图
 import type { ReactNode } from "react";
 import {

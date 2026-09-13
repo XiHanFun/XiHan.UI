@@ -1,3 +1,8 @@
+/*
+ * Copyright (c) 2021-Present XiHanFun and contributors.
+ * Licensed under the MIT License. See LICENSE in the project root for license information.
+ */
+
 // 尺寸调整的类型契约。这一层只算几何，不碰 DOM。
 import type { DndRect } from '../dnd/types'
 

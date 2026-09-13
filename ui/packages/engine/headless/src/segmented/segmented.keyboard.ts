@@ -1,3 +1,10 @@
+/*
+ * Copyright (c) 2021-Present XiHanFun and contributors.
+ * Licensed under the MIT License. See LICENSE in the project root for license information.
+ */
+
+// 提供 segmented 相关实现。
+
 import type { KeyboardTable } from '../spec/types'
 
 // 一排互斥选项就是一个单选组，键盘约定取自 APG 的 radiogroup：

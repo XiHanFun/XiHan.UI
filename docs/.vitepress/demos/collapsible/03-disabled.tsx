@@ -1,3 +1,8 @@
+/*
+ * Copyright (c) 2021-Present XiHanFun and contributors.
+ * Licensed under the MIT License. See LICENSE in the project root for license information.
+ */
+
 // 禁用 | disabled 把触发器整个关停，点击与键盘都不再改开合，已展开的内容维持原样
 import type { ReactNode } from "react";
 import {

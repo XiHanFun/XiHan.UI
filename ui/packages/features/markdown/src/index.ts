@@ -1,3 +1,8 @@
+/*
+ * Copyright (c) 2021-Present XiHanFun and contributors.
+ * Licensed under the MIT License. See LICENSE in the project root for license information.
+ */
+
 // @xihan-ui/markdown —— 流式 Markdown 渲染内核。
 //
 // 对外只有一个工厂：喂截至当前的全文，拿回一组带稳定 key 的已渲染块。

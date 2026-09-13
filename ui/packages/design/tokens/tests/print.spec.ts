@@ -1,3 +1,8 @@
+/*
+ * Copyright (c) 2021-Present XiHanFun and contributors.
+ * Licensed under the MIT License. See LICENSE in the project root for license information.
+ */
+
 // print 档是打印时取消海拔投影与材质光效的唯一通道：皮肤只消费语义角色，取消会自动穿透，
 // 不必逐组件写 @media，也不必去跟皮肤里那条 box-shadow 比特指度——拆层版本里两者按特指度
 // 重新竞争，皮肤选择器最深到六个属性，靠层序取胜的写法会静默失效。

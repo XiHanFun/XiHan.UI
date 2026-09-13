@@ -1,3 +1,8 @@
+/*
+ * Copyright (c) 2021-Present XiHanFun and contributors.
+ * Licensed under the MIT License. See LICENSE in the project root for license information.
+ */
+
 // 自定义图标 | 条目可使用首方图标，也可留空使用皮肤默认星形
 import type { ReactNode } from "react";
 import { HeartIcon } from "@xihan-ui/icons";

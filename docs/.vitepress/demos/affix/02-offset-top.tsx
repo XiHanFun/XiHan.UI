@@ -1,3 +1,8 @@
+/*
+ * Copyright (c) 2021-Present XiHanFun and contributors.
+ * Licensed under the MIT License. See LICENSE in the project root for license information.
+ */
+
 // 顶部偏移 | 避让固定页头
 import type { ReactNode } from "react";
 import { XhAffixContent, XhAffixRoot } from "@xihan-ui/react";

@@ -1,3 +1,8 @@
+/*
+ * Copyright (c) 2021-Present XiHanFun and contributors.
+ * Licensed under the MIT License. See LICENSE in the project root for license information.
+ */
+
 // @xihan-ui/vue/backgrounds —— 视觉层的 Vue 适配。
 //
 // 与主入口分开：@xihan-ui/backgrounds 是可选 peer，不用视觉效果的应用不会因为装了本包

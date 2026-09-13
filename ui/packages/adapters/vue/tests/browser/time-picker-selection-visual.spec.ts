@@ -1,3 +1,8 @@
+/*
+ * Copyright (c) 2021-Present XiHanFun and contributors.
+ * Licensed under the MIT License. See LICENSE in the project root for license information.
+ */
+
 // TimePicker 的 preset 与各数字列都会从当前值恢复持久选中；焦点/hover 是独立的临时高亮。
 // 对号伪元素、数字几何和 forced-colors 只能在真实 Chromium 中验证。
 import type { App } from 'vue'

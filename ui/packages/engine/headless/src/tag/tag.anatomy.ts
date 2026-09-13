@@ -1,3 +1,10 @@
+/*
+ * Copyright (c) 2021-Present XiHanFun and contributors.
+ * Licensed under the MIT License. See LICENSE in the project root for license information.
+ */
+
+// 提供 tag 相关实现。
+
 import { createAnatomy } from '@xihan-ui/core'
 
 // root 是标签本体，label 收住标签文字，close-trigger 是那颗移除钮。

@@ -1,3 +1,8 @@
+<!--
+  Copyright (c) 2021-Present XiHanFun and contributors.
+  Licensed under the MIT License. See LICENSE in the project root for license information.
+-->
+
 <!-- 基础用法 | 图标、标题、说明、操作四个槽都可选，只有 root 是必须的 -->
 <script setup lang="ts">
 import {

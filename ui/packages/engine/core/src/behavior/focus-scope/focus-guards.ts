@@ -1,3 +1,10 @@
+/*
+ * Copyright (c) 2021-Present XiHanFun and contributors.
+ * Licensed under the MIT License. See LICENSE in the project root for license information.
+ */
+
+// 提供 focus guards 相关实现。
+
 import type { Cleanup } from '../../kernel'
 import { createPerDocumentRegistry, DATA_FOCUS_GUARD } from '../../kernel'
 

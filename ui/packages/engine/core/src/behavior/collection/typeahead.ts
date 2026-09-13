@@ -1,3 +1,8 @@
+/*
+ * Copyright (c) 2021-Present XiHanFun and contributors.
+ * Licensed under the MIT License. See LICENSE in the project root for license information.
+ */
+
 // 首字母/连打检索：把连续敲入的字符攒成查询串，用它在条目里找落点；停顿超时后重开一轮。
 
 /** 两次按键间隔超过它就重开一轮。 */

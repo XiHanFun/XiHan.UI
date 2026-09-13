@@ -1,3 +1,10 @@
+/*
+ * Copyright (c) 2021-Present XiHanFun and contributors.
+ * Licensed under the MIT License. See LICENSE in the project root for license information.
+ */
+
+// 提供 list.suite 相关实现。
+
 import type { ConformanceSuite, FixtureNode } from '../conformance/types'
 import { listAnatomy, listKeyboard } from '@xihan-ui/headless'
 

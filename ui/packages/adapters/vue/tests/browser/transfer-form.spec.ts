@@ -1,3 +1,10 @@
+/*
+ * Copyright (c) 2021-Present XiHanFun and contributors.
+ * Licensed under the MIT License. See LICENSE in the project root for license information.
+ */
+
+// 验证 transfer form 相关行为。
+
 import type { App } from 'vue'
 import type { TransferRootSlotProps } from '../../src/components/transfer/transfer'
 import { afterEach, describe, expect, it } from 'vitest'

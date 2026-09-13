@@ -1,3 +1,10 @@
+/*
+ * Copyright (c) 2021-Present XiHanFun and contributors.
+ * Licensed under the MIT License. See LICENSE in the project root for license information.
+ */
+
+// 提供 tree 相关实现。
+
 import type { DragAnnounceKind, DropTarget } from '../shared/drag'
 import type { TreeMove, TreeNode, TreeNodeMeta, TreeSchema, TreeVisibleNode } from './tree.types'
 import { applySelection, cascadeToggle, collapseChecked, createTypeahead, setup } from '@xihan-ui/core'

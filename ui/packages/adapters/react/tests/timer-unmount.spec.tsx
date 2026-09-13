@@ -1,3 +1,10 @@
+/*
+ * Copyright (c) 2021-Present XiHanFun and contributors.
+ * Licensed under the MIT License. See LICENSE in the project root for license information.
+ */
+
+// 验证 timer unmount 相关行为。
+
 // @vitest-environment jsdom
 //
 // timer 起跑后在宿主里挂着两个定时器（跳数字的那一个与精确落在终点上的那一个）。

@@ -1,3 +1,8 @@
+/*
+ * Copyright (c) 2021-Present XiHanFun and contributors.
+ * Licensed under the MIT License. See LICENSE in the project root for license information.
+ */
+
 // 快捷键共享纯函数：Kbd/KbdGroup 用它格式化，Hotkeys 用它判定，三端适配器不复制规则。
 //
 // 翻写与判定全程不读 navigator：服务端渲染时没有它，读了会炸；平台由适配器挂载后

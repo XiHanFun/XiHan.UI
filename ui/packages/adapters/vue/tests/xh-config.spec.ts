@@ -1,3 +1,10 @@
+/*
+ * Copyright (c) 2021-Present XiHanFun and contributors.
+ * Licensed under the MIT License. See LICENSE in the project root for license information.
+ */
+
+// 验证 xh config 相关行为。
+
 // @vitest-environment jsdom
 // 全局配置注入的取值优先级：实例 props > provideXhConfig > 组件内建默认。
 import type { XhConfig } from '../src'

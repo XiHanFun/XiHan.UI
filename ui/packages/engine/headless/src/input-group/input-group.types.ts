@@ -1,3 +1,10 @@
+/*
+ * Copyright (c) 2021-Present XiHanFun and contributors.
+ * Licensed under the MIT License. See LICENSE in the project root for license information.
+ */
+
+// 定义 input group 类型契约。
+
 import type { PropTypes, Size } from '@xihan-ui/core'
 
 /** 视觉变体：primary 是带阴影的默认输入面，secondary 用于已有表面的低强调场景。 */

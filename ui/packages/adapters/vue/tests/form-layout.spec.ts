@@ -1,3 +1,10 @@
+/*
+ * Copyright (c) 2021-Present XiHanFun and contributors.
+ * Licensed under the MIT License. See LICENSE in the project root for license information.
+ */
+
+// 验证 form layout 相关行为。
+
 // @vitest-environment jsdom
 // 表单排布：layout 落 data-layout、labelAlign 落 data-label-align、
 // labelWidth 写成根上的 --xh-form-label-w 变量（number 视作 px）、

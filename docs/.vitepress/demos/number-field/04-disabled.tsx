@@ -1,3 +1,8 @@
+/*
+ * Copyright (c) 2021-Present XiHanFun and contributors.
+ * Licensed under the MIT License. See LICENSE in the project root for license information.
+ */
+
 // 禁用与只读 | 两者都改不动值，禁用还会把加减按钮一并关掉、值也不再随表单提交
 import type { ReactNode } from "react";
 import {

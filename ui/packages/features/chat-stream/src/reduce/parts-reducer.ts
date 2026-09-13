@@ -1,3 +1,8 @@
+/*
+ * Copyright (c) 2021-Present XiHanFun and contributors.
+ * Licensed under the MIT License. See LICENSE in the project root for license information.
+ */
+
 // 把归一事件归约成一条消息：parts 只追加不改序，异常事件走警告并丢弃。
 import type { Role, UIMessage } from '../model/message'
 import type { ReasoningPart, TextPart, ToolPart, UIMessagePart } from '../model/part-kinds'

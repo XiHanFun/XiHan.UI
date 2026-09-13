@@ -1,3 +1,10 @@
+/*
+ * Copyright (c) 2021-Present XiHanFun and contributors.
+ * Licensed under the MIT License. See LICENSE in the project root for license information.
+ */
+
+// 定义 image 类型契约。
+
 import type { MachineSchema, PropTypes } from '@xihan-ui/core'
 
 /** 图片加载状态。idle 是来源决议前的过渡态，其余三态对外稳定。 */

@@ -1,3 +1,8 @@
+/*
+ * Copyright (c) 2021-Present XiHanFun and contributors.
+ * Licensed under the MIT License. See LICENSE in the project root for license information.
+ */
+
 // 错误表的纯运算，不碰 DOM、不看状态机。
 // 不变量：在表里 = 这个字段此刻有错。空串与 undefined 不是一条错误，而是"把这条清掉"。
 

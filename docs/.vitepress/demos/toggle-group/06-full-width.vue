@@ -1,3 +1,8 @@
+<!--
+  Copyright (c) 2021-Present XiHanFun and contributors.
+  Licensed under the MIT License. See LICENSE in the project root for license information.
+-->
+
 <!-- 宽度充满 | 选项等分可用宽度 -->
 <script setup lang="ts">
 import { XhToggleGroupRoot } from "@xihan-ui/vue";

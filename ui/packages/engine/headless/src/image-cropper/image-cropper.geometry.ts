@@ -1,3 +1,8 @@
+/*
+ * Copyright (c) 2021-Present XiHanFun and contributors.
+ * Licensed under the MIT License. See LICENSE in the project root for license information.
+ */
+
 // 裁切矩形的纯几何：不碰 DOM、不认识状态机。单位一律是源图的自然像素。
 
 import type { ImageCropperHandlePosition, ImageCropperRect, ImageCropperSize } from './image-cropper.types'

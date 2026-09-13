@@ -1,3 +1,10 @@
+/*
+ * Copyright (c) 2021-Present XiHanFun and contributors.
+ * Licensed under the MIT License. See LICENSE in the project root for license information.
+ */
+
+// 提供 watermark 相关实现。
+
 import type { WatermarkImageSize, WatermarkProps } from '@xihan-ui/headless'
 import { connectWatermark, watermarkAnatomy, watermarkMeta } from '@xihan-ui/headless'
 import { wcNormalize } from '../dom/normalize'

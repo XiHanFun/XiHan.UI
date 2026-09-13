@@ -1,3 +1,10 @@
+/*
+ * Copyright (c) 2021-Present XiHanFun and contributors.
+ * Licensed under the MIT License. See LICENSE in the project root for license information.
+ */
+
+// 验证 form rules 相关行为。
+
 // @vitest-environment jsdom
 // 声明式校验规则：required/min/max/pattern/type 首败即停、文案走 rule.message → validateMessages 模板 → 内置模板；
 // validator 与 validate 都可异步（validating 置真、批次号防竞态），change 模式逐字段跑规则。

@@ -1,3 +1,8 @@
+/*
+ * Copyright (c) 2021-Present XiHanFun and contributors.
+ * Licensed under the MIT License. See LICENSE in the project root for license information.
+ */
+
 // 声音层公共类型。一段声音是一份可序列化的声明式配方（SoundSpec）：
 // 若干并行发声层，每层一条增益包络，可带音高包络、滤波与混响送出。
 // 配方既是播放引擎的输入，也是主题系统与调音界面共用的数据模型。

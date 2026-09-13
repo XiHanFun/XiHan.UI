@@ -1,3 +1,10 @@
+/*
+ * Copyright (c) 2021-Present XiHanFun and contributors.
+ * Licensed under the MIT License. See LICENSE in the project root for license information.
+ */
+
+// 提供 use color picker 相关实现。
+
 import type { Layer, MachineSchema, Service } from '@xihan-ui/core'
 import type { ColorPickerApi, ColorPickerChannel, ColorPickerSchema, ColorPickerServices, SliderSchema } from '@xihan-ui/headless'
 import type { RefObject } from 'react'

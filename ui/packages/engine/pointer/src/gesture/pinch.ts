@@ -1,3 +1,8 @@
+/*
+ * Copyright (c) 2021-Present XiHanFun and contributors.
+ * Licensed under the MIT License. See LICENSE in the project root for license information.
+ */
+
 // 双指手势的几何：两个触点之间的距离、中点，以及相对起始那一刻的缩放与位移。
 import type { DndDelta } from '../dnd/types'
 

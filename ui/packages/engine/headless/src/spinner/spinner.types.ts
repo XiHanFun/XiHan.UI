@@ -1,3 +1,10 @@
+/*
+ * Copyright (c) 2021-Present XiHanFun and contributors.
+ * Licensed under the MIT License. See LICENSE in the project root for license information.
+ */
+
+// 定义 spinner 类型契约。
+
 import type { PropTypes, Size, Tone } from '@xihan-ui/core'
 
 /** 转圈的形态：整圈轨道加一段起始边、渐隐弧、三点。 */

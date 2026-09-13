@@ -1,3 +1,10 @@
+/*
+ * Copyright (c) 2021-Present XiHanFun and contributors.
+ * Licensed under the MIT License. See LICENSE in the project root for license information.
+ */
+
+// 提供 descriptions 相关实现。
+
 import type { KeyboardTable } from '../spec/types'
 
 // 描述列表是只读排版，不接收焦点；取值里放了链接还是按钮，键盘响应归那些控件自己。

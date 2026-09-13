@@ -1,3 +1,10 @@
+/*
+ * Copyright (c) 2021-Present XiHanFun and contributors.
+ * Licensed under the MIT License. See LICENSE in the project root for license information.
+ */
+
+// 提供 metadata 相关实现。
+
 import { version } from '../../package.json'
 // 框架元数据:名称、版本、版权与运行时信息的单一事实源。
 //

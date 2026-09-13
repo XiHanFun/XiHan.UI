@@ -1,4 +1,9 @@
 /*
+ * Copyright (c) 2021-Present XiHanFun and contributors.
+ * Licensed under the MIT License. See LICENSE in the project root for license information.
+ */
+
+/*
  * 示例舞台隔离：把 VitePress .vp-doc 写在这些标签上的正文排版退回浏览器默认，
  * 示例里的外观只由组件皮肤决定。
  *

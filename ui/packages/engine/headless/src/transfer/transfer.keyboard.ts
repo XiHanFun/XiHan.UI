@@ -1,3 +1,10 @@
+/*
+ * Copyright (c) 2021-Present XiHanFun and contributors.
+ * Licensed under the MIT License. See LICENSE in the project root for license information.
+ */
+
+// 提供 transfer 相关实现。
+
 import type { KeyboardTable } from '../spec/types'
 
 // Transfer 不是 APG 的一个模式，它是两个多选 listbox 加中间的搬运按钮。

@@ -1,3 +1,10 @@
+/*
+ * Copyright (c) 2021-Present XiHanFun and contributors.
+ * Licensed under the MIT License. See LICENSE in the project root for license information.
+ */
+
+// 验证 menu submenu 相关行为。
+
 // @vitest-environment jsdom
 // menu 子菜单组合：双重身份触发条目、子层选中汇根、键盘进出、Escape 只收顶层、父关级联。
 import { afterEach, describe, expect, it, vi } from 'vitest'

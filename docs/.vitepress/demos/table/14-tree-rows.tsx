@@ -1,3 +1,8 @@
+/*
+ * Copyright (c) 2021-Present XiHanFun and contributors.
+ * Licensed under the MIT License. See LICENSE in the project root for license information.
+ */
+
 // 树形表格 | rows 按契约就是一条已摊平的可见行序列：层级三件套逐行自报，缩进落在首格的内边距上
 import type { CSSProperties, KeyboardEvent, ReactNode } from "react";
 import { ChevronRightIcon } from "@xihan-ui/icons";

@@ -1,3 +1,10 @@
+/*
+ * Copyright (c) 2021-Present XiHanFun and contributors.
+ * Licensed under the MIT License. See LICENSE in the project root for license information.
+ */
+
+// 提供 use reasoning 相关实现。
+
 import type { RuntimeConfig } from '@xihan-ui/core'
 import type { ReasoningApi, ReasoningProps, ToolCallSchema } from '@xihan-ui/headless'
 import type { ComputedRef, Ref } from 'vue'

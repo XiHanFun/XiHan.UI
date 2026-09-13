@@ -1,3 +1,8 @@
+/*
+ * Copyright (c) 2021-Present XiHanFun and contributors.
+ * Licensed under the MIT License. See LICENSE in the project root for license information.
+ */
+
 // 缩小触发区域 | trigger 只包住指示器，标题文字留在 header 里，点标题不再展开
 import type { ReactNode } from "react";
 import {

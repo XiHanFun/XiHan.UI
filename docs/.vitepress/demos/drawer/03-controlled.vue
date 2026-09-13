@@ -1,3 +1,8 @@
+<!--
+  Copyright (c) 2021-Present XiHanFun and contributors.
+  Licensed under the MIT License. See LICENSE in the project root for license information.
+-->
+
 <!-- 受控 | 传了 open 就由宿主说了算；Escape、点面板外、按叉都只回写 open，不自己改状态 -->
 <script setup lang="ts">
 import {

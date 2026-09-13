@@ -1,3 +1,10 @@
+/*
+ * Copyright (c) 2021-Present XiHanFun and contributors.
+ * Licensed under the MIT License. See LICENSE in the project root for license information.
+ */
+
+// 提供 hotkeys 相关实现。
+
 import type { HotkeysApi, HotkeysPlatform, HotkeysProps, HotkeysTarget, HotkeysTriggerDetails } from '@xihan-ui/headless'
 import { connectHotkeys, detectHotkeysPlatform } from '@xihan-ui/headless'
 import { XhElement } from '../element-base'

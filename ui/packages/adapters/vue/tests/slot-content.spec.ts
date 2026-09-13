@@ -1,3 +1,10 @@
+/*
+ * Copyright (c) 2021-Present XiHanFun and contributors.
+ * Licensed under the MIT License. See LICENSE in the project root for license information.
+ */
+
+// 验证 slot content 相关行为。
+
 // @vitest-environment jsdom
 // 「插槽里有没有内容」是四个组件共用的判据：有内容才用作者的，没有才走默认字形 / 按数据铺开 / 不挖空。
 // 这里盯的是判错的那一档——`v-if` 为假时假分支留下的注释节点占着数组的位置，只看长度就会当成有内容。

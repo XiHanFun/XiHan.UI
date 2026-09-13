@@ -1,3 +1,8 @@
+/*
+ * Copyright (c) 2021-Present XiHanFun and contributors.
+ * Licensed under the MIT License. See LICENSE in the project root for license information.
+ */
+
 // Select 的 item 插槽归作者：头像可住在 item-text 内，图标与尾部节点也可作为直属兄弟。
 import type { App } from 'vue'
 import { afterEach, describe, expect, it } from 'vitest'

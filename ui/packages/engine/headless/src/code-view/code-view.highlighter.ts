@@ -1,3 +1,10 @@
+/*
+ * Copyright (c) 2021-Present XiHanFun and contributors.
+ * Licensed under the MIT License. See LICENSE in the project root for license information.
+ */
+
+// 提供 code view.highlighter 相关实现。
+
 import type { HighlighterPort } from '@xihan-ui/core'
 
 const DEFAULT_HIGHLIGHTER_MODULE = '@xihan-ui/code-highlight'

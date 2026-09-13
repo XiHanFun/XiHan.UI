@@ -1,3 +1,8 @@
+/*
+ * Copyright (c) 2021-Present XiHanFun and contributors.
+ * Licensed under the MIT License. See LICENSE in the project root for license information.
+ */
+
 // 缩放与旋转 | 使用内置滑块调整视图
 import type { ReactNode } from "react";
 import {

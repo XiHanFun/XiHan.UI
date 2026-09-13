@@ -1,3 +1,10 @@
+/*
+ * Copyright (c) 2021-Present XiHanFun and contributors.
+ * Licensed under the MIT License. See LICENSE in the project root for license information.
+ */
+
+// 定义 alert 类型契约。
+
 import type { MachineSchema, PropTypes, Tone } from '@xihan-ui/core'
 
 export interface AlertOpenChangeDetails {

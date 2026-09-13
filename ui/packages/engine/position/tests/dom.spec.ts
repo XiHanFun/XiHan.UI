@@ -1,3 +1,10 @@
+/*
+ * Copyright (c) 2021-Present XiHanFun and contributors.
+ * Licensed under the MIT License. See LICENSE in the project root for license information.
+ */
+
+// 验证 dom 相关行为。
+
 // @vitest-environment jsdom
 
 // 包含块解析与裁剪链是纯 DOM 遍历，不需要真实布局，放 jsdom 这层验。

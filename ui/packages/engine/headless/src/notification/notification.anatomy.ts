@@ -1,3 +1,10 @@
+/*
+ * Copyright (c) 2021-Present XiHanFun and contributors.
+ * Licensed under the MIT License. See LICENSE in the project root for license information.
+ */
+
+// 提供 notification 相关实现。
+
 import { createAnatomy } from '@xihan-ui/core'
 
 // root 是作用域包装（它不占布局），group 是某一个位置上的那一摞、也是地标

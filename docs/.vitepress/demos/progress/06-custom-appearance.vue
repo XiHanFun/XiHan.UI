@@ -1,3 +1,8 @@
+<!--
+  Copyright (c) 2021-Present XiHanFun and contributors.
+  Licensed under the MIT License. See LICENSE in the project root for license information.
+-->
+
 <!-- 自定义外观 | 轨道色、进度段色与轨道厚度各是一个组件令牌，纯色与渐变都塞得进去 -->
 <script setup lang="ts">
 import { XhProgress } from "@xihan-ui/vue";

@@ -1,3 +1,10 @@
+/*
+ * Copyright (c) 2021-Present XiHanFun and contributors.
+ * Licensed under the MIT License. See LICENSE in the project root for license information.
+ */
+
+// 提供 marquee 相关实现。
+
 import type { KeyboardTable } from '../spec/types'
 
 // 跑马灯是容器，不接收焦点、不接管按键；轨道里放的控件自己响应键盘。

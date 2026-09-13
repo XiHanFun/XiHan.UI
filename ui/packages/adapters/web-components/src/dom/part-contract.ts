@@ -1,3 +1,8 @@
+/*
+ * Copyright (c) 2021-Present XiHanFun and contributors.
+ * Licensed under the MIT License. See LICENSE in the project root for license information.
+ */
+
 // 角色节点契约校验：作者写的 Light DOM 与组件解剖对不上时投递诊断。
 import type { ComponentMeta } from '@xihan-ui/headless'
 import { DIAGNOSTIC_CODES, getDiagnostics, reportDiagnostic } from '@xihan-ui/core'

@@ -1,3 +1,10 @@
+/*
+ * Copyright (c) 2021-Present XiHanFun and contributors.
+ * Licensed under the MIT License. See LICENSE in the project root for license information.
+ */
+
+// 提供 time field 相关实现。
+
 import type { KeyboardTable } from '../spec/types'
 
 // 分段时间输入在 APG 里最贴近的模式是 spinbutton：每一段都是一个可加减的数，

@@ -1,3 +1,10 @@
+/*
+ * Copyright (c) 2021-Present XiHanFun and contributors.
+ * Licensed under the MIT License. See LICENSE in the project root for license information.
+ */
+
+// 提供 sortable 相关实现。
+
 import type { DndRect } from '@xihan-ui/pointer'
 import type { SortableSchema } from './sortable.types'
 import { ITEM_VALUE_ATTR, queryItems, setup } from '@xihan-ui/core'

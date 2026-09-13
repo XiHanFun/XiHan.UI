@@ -1,3 +1,8 @@
+/*
+ * Copyright (c) 2021-Present XiHanFun and contributors.
+ * Licensed under the MIT License. See LICENSE in the project root for license information.
+ */
+
 // 空态与形态 | 一行也摊不出来时空态那一格站出来说话；variant="plain" 去掉外框与底色
 import type { ReactNode } from "react";
 import { XhButton, XhJsonViewerRoot } from "@xihan-ui/react";

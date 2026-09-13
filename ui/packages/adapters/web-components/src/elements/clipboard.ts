@@ -1,3 +1,10 @@
+/*
+ * Copyright (c) 2021-Present XiHanFun and contributors.
+ * Licensed under the MIT License. See LICENSE in the project root for license information.
+ */
+
+// 提供 clipboard 相关实现。
+
 import type { ActionVariant, Size, Tone } from '@xihan-ui/core'
 import type { ClipboardCopyErrorDetails, ClipboardSchema, ClipboardStatusChangeDetails, ClipboardTranslations } from '@xihan-ui/headless'
 import { clipboardAnatomy, clipboardMachine, clipboardMeta, connectClipboard } from '@xihan-ui/headless'

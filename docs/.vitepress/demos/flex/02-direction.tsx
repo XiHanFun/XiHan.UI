@@ -1,3 +1,8 @@
+/*
+ * Copyright (c) 2021-Present XiHanFun and contributors.
+ * Licensed under the MIT License. See LICENSE in the project root for license information.
+ */
+
 // 方向 | 设置水平或垂直排列
 import type { CSSProperties, ReactNode } from "react";
 import { XhFlex } from "@xihan-ui/react";

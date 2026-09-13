@@ -1,3 +1,10 @@
+/*
+ * Copyright (c) 2021-Present XiHanFun and contributors.
+ * Licensed under the MIT License. See LICENSE in the project root for license information.
+ */
+
+// 验证 tabs drag 相关行为。
+
 // @vitest-environment jsdom
 // 标签拖拽：激活阈值、轴向跟随、键盘命令与播报。
 // 一维重排的算术归 shared/drag 的 reorderFlat / flatMoveCommand，那边另有单测。

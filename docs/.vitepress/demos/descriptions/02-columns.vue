@@ -1,3 +1,8 @@
+<!--
+  Copyright (c) 2021-Present XiHanFun and contributors.
+  Licensed under the MIT License. See LICENSE in the project root for license information.
+-->
+
 <!-- 列数 | columns 决定每行摆几组，一到六列；排版走 CSS Grid，不用表格 -->
 <script setup lang="ts">
 import {

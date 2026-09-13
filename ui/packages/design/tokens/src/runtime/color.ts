@@ -1,3 +1,8 @@
+/*
+ * Copyright (c) 2021-Present XiHanFun and contributors.
+ * Licensed under the MIT License. See LICENSE in the project root for license information.
+ */
+
 // 颜色能力：解析、亮度、对比度、择前景、择反向、混色与深浅。
 //
 // 皮肤那侧有一份等价的 CSS 配方（styles/css/color.css），用相对颜色语法在浏览器里现算。

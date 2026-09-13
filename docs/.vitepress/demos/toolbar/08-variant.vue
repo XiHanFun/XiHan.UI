@@ -1,3 +1,8 @@
+<!--
+  Copyright (c) 2021-Present XiHanFun and contributors.
+  Licensed under the MIT License. See LICENSE in the project root for license information.
+-->
+
 <!-- 附着工具面 | 为悬浮工具条提供完整表面 -->
 <script setup lang="ts">
 import {

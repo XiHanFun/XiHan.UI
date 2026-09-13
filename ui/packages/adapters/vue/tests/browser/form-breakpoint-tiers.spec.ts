@@ -1,3 +1,8 @@
+/*
+ * Copyright (c) 2021-Present XiHanFun and contributors.
+ * Licensed under the MIT License. See LICENSE in the project root for license information.
+ */
+
 // 表单网格的逐档列数：视口每宽到一档就换成那一档的列数。
 //
 // 换档由 @media (min-width) 决定，测试宿主的视口固定在一个宽度上，四档一个都不会命中。

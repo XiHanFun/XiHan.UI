@@ -1,3 +1,8 @@
+/*
+ * Copyright (c) 2021-Present XiHanFun and contributors.
+ * Licensed under the MIT License. See LICENSE in the project root for license information.
+ */
+
 // 消息与请求模型。
 import type { UIMessagePart } from './part-kinds'
 import type { MessageMetadata } from './usage'

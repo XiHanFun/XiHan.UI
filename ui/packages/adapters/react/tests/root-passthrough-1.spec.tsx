@@ -1,3 +1,10 @@
+/*
+ * Copyright (c) 2021-Present XiHanFun and contributors.
+ * Licensed under the MIT License. See LICENSE in the project root for license information.
+ */
+
+// 验证 root passthrough 1 相关行为。
+
 // @vitest-environment jsdom
 //
 // Root 上的透传：作者写在根部件上的 style / className 落到 root 元素，schema props 一个都不进 DOM。

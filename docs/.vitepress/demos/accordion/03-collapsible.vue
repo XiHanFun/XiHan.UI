@@ -1,3 +1,8 @@
+<!--
+  Copyright (c) 2021-Present XiHanFun and contributors.
+  Licensed under the MIT License. See LICENSE in the project root for license information.
+-->
+
 <!-- 允许全收 | 单开模式下最后一项默认收不起来，加 collapsible 才能把它也收上 -->
 <script setup lang="ts">
 import { XhAccordionRoot } from "@xihan-ui/vue";

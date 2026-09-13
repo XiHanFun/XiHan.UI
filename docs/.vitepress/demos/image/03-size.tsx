@@ -1,3 +1,8 @@
+/*
+ * Copyright (c) 2021-Present XiHanFun and contributors.
+ * Licensed under the MIT License. See LICENSE in the project root for license information.
+ */
+
 // 尺寸与裁切 | 同一个组件既当封面图也当缩略图：宽高比由 --xh-image-ratio 定，画面怎么填由 --xh-image-fit 定
 import type { CSSProperties, ReactNode } from "react";
 import { XhImageFallback, XhImageImage, XhImageRoot } from "@xihan-ui/react";

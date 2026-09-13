@@ -1,3 +1,10 @@
+/*
+ * Copyright (c) 2021-Present XiHanFun and contributors.
+ * Licensed under the MIT License. See LICENSE in the project root for license information.
+ */
+
+// 提供 steps 相关实现。
+
 import type { Direction, Orientation, Size, Tone } from '@xihan-ui/core'
 import type { StepNode, StepsApi, StepsSchema, StepStatus, StepsTranslations } from '@xihan-ui/headless'
 import type { ComponentPropsWithRef, ReactNode } from 'react'

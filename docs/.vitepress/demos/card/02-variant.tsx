@@ -1,3 +1,8 @@
+/*
+ * Copyright (c) 2021-Present XiHanFun and contributors.
+ * Licensed under the MIT License. See LICENSE in the project root for license information.
+ */
+
 // 形态 | variant 只改描边、底色与投影怎么用，各段的排版三档一致
 import type { ReactNode } from "react";
 import { XhCardBody, XhCardHeader, XhCardRoot, XhCardTitle } from "@xihan-ui/react";

@@ -1,3 +1,10 @@
+/*
+ * Copyright (c) 2021-Present XiHanFun and contributors.
+ * Licensed under the MIT License. See LICENSE in the project root for license information.
+ */
+
+// 验证 heatmap native events 相关行为。
+
 // @vitest-environment jsdom
 //
 // heatmap 的 connect 派了三个不冒泡的事件：网格自己得焦时的 focus、格子上的 focus 与

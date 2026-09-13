@@ -1,3 +1,10 @@
+/*
+ * Copyright (c) 2021-Present XiHanFun and contributors.
+ * Licensed under the MIT License. See LICENSE in the project root for license information.
+ */
+
+// 验证 cascader loading ssr 相关行为。
+
 // @vitest-environment node
 // 作者 Loading 即使隔着业务组件，服务端直出也只能有一枚状态节点。
 import type { VNode } from 'vue'

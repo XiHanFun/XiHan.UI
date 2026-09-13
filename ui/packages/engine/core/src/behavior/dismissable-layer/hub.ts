@@ -1,3 +1,10 @@
+/*
+ * Copyright (c) 2021-Present XiHanFun and contributors.
+ * Licensed under the MIT License. See LICENSE in the project root for license information.
+ */
+
+// 提供 hub 相关实现。
+
 import type { Cleanup, Disposable, Layer, LayerRegistry } from '../../kernel'
 import type { DismissPathHit, DismissRouteEntry, DismissRouteReadiness } from './route'
 import type { DismissLayerOptions, DismissReason, EscapeFallbackOptions } from './types'

@@ -1,3 +1,8 @@
+/*
+ * Copyright (c) 2021-Present XiHanFun and contributors.
+ * Licensed under the MIT License. See LICENSE in the project root for license information.
+ */
+
 // REQ-039：在真实 Chromium 中给既有 Dialog 视觉样板施加固定的逐帧背景重绘，
 // 同时量默认透明与 data-transparency=reduce。预算来自 tooling/scripts 下唯一的 JSON 真源，
 // record 模式只落真实报告、不判预算，用于先采样再定红线。

@@ -1,3 +1,8 @@
+<!--
+  Copyright (c) 2021-Present XiHanFun and contributors.
+  Licensed under the MIT License. See LICENSE in the project root for license information.
+-->
+
 <!-- 分段与悬停 | split 在段与段之间画一条分隔线；hoverable 只在能用指针的设备上抬起 -->
 <script setup lang="ts">
 import { XhCardBody, XhCardFooter, XhCardHeader, XhCardRoot, XhCardTitle } from "@xihan-ui/vue";

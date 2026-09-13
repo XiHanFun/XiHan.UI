@@ -1,3 +1,8 @@
+/*
+ * Copyright (c) 2021-Present XiHanFun and contributors.
+ * Licensed under the MIT License. See LICENSE in the project root for license information.
+ */
+
 // 聚焦环由公共层统一画：键盘焦点落在任何一个库节点上都出环，组件只在需要时改环色或撤掉环。
 // 三档各查一个代表：默认档（环画在元素自己那一圈）、换环色档（面是实心的，环改取面自己的前景色）、
 // 撤掉档（组件自己写 outline: none）。

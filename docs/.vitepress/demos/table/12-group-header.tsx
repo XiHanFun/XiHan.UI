@@ -1,3 +1,8 @@
+/*
+ * Copyright (c) 2021-Present XiHanFun and contributors.
+ * Licensed under the MIT License. See LICENSE in the project root for license information.
+ */
+
 // 多行表头与表头分组 | 表头写几行就是几行；分组格的跨列数与两行表头的行号由标记自报，columns 仍只登记叶子列
 import type { CSSProperties, ReactNode } from "react";
 import {

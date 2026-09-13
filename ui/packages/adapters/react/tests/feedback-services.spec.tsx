@@ -1,3 +1,10 @@
+/*
+ * Copyright (c) 2021-Present XiHanFun and contributors.
+ * Licensed under the MIT License. See LICENSE in the project root for license information.
+ */
+
+// 验证 feedback services 相关行为。
+
 // @vitest-environment jsdom
 //
 // 三个反馈类命令式服务：从组件树之外调起，自带宿主树。

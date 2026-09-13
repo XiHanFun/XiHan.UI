@@ -1,3 +1,8 @@
+/*
+ * Copyright (c) 2021-Present XiHanFun and contributors.
+ * Licensed under the MIT License. See LICENSE in the project root for license information.
+ */
+
 // SSE 行协议解析：只把字节流切成帧，不涉及任何上层协议语义。
 import { warn } from '@xihan-ui/core'
 

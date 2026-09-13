@@ -1,3 +1,8 @@
+/*
+ * Copyright (c) 2021-Present XiHanFun and contributors.
+ * Licensed under the MIT License. See LICENSE in the project root for license information.
+ */
+
 // 受控正文与选中回调 | 正文由宿主持有，select 事件报回插进去的是哪一条，用来攒收件人名单
 import type { ReactNode } from "react";
 import { XhMentionRoot } from "@xihan-ui/react";

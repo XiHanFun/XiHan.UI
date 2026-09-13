@@ -1,3 +1,8 @@
+/*
+ * Copyright (c) 2021-Present XiHanFun and contributors.
+ * Licensed under the MIT License. See LICENSE in the project root for license information.
+ */
+
 // 大写锁定提示 | 打开大写锁定再往框里敲一个字：提示显出来，读屏也会念一次；焦点离开输入框即熄灭
 import type { ReactNode } from "react";
 import {

@@ -1,3 +1,10 @@
+/*
+ * Copyright (c) 2021-Present XiHanFun and contributors.
+ * Licensed under the MIT License. See LICENSE in the project root for license information.
+ */
+
+// 验证 tags input item tag 相关行为。
+
 // @vitest-environment jsdom
 // tags-input 的标签：XhTagsInputItemPreview 渲的是库里 tag 的 root（data-scope="tag"），
 // XhTagsInputItemText 是 tag 的 label，XhTagsInputItemDeleteTrigger 是所在标签那份 tag 的 close-trigger。

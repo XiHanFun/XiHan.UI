@@ -1,3 +1,8 @@
+/*
+ * Copyright (c) 2021-Present XiHanFun and contributors.
+ * Licensed under the MIT License. See LICENSE in the project root for license information.
+ */
+
 // 守卫布尔组合子。产物带 COMBINATOR 标记，createMachine 的自检据此放行。
 import type { GuardExpr, GuardFn, MachineSchema } from './types'
 

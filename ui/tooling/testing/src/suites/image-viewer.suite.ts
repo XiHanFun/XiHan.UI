@@ -1,3 +1,10 @@
+/*
+ * Copyright (c) 2021-Present XiHanFun and contributors.
+ * Licensed under the MIT License. See LICENSE in the project root for license information.
+ */
+
+// 提供 image viewer.suite 相关实现。
+
 import type { ImageViewerItem } from '@xihan-ui/headless'
 import type { ConformanceSuite, FixtureNode, RawStepContext, StepWithExpect } from '../conformance/types'
 import { imageViewerAnatomy, imageViewerKeyboard } from '@xihan-ui/headless'

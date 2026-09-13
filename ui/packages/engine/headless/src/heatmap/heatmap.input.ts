@@ -1,3 +1,8 @@
+/*
+ * Copyright (c) 2021-Present XiHanFun and contributors.
+ * Licensed under the MIT License. See LICENSE in the project root for license information.
+ */
+
 /** 作者声明的数字身份：缺省、空串或非有限值都视为未声明。 */
 export function normalizeHeatmapNumber(value: number | string | null | undefined): number | undefined {
   if (value == null || value === '')

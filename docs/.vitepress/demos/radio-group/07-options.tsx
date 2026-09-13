@@ -1,3 +1,8 @@
+/*
+ * Copyright (c) 2021-Present XiHanFun and contributors.
+ * Licensed under the MIT License. See LICENSE in the project root for license information.
+ */
+
 // 数据驱动 | 自家字段叫什么由数据定，映射成条目的值、文本与禁用即可
 import type { ReactNode } from "react";
 import { XhRadioGroupRoot } from "@xihan-ui/react";

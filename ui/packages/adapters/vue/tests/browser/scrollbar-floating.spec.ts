@@ -1,3 +1,8 @@
+/*
+ * Copyright (c) 2021-Present XiHanFun and contributors.
+ * Licensed under the MIT License. See LICENSE in the project root for license information.
+ */
+
 // 缺省档的滚动条浮在内容之上：不占视口宽度（横条不占高度），滚动时与指针进来时露出，都停下后收起。
 //
 // 这四件只有真实浏览器量得出来：jsdom 不排版，clientWidth / getBoundingClientRect 恒是 0，

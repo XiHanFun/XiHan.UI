@@ -1,3 +1,10 @@
+/*
+ * Copyright (c) 2021-Present XiHanFun and contributors.
+ * Licensed under the MIT License. See LICENSE in the project root for license information.
+ */
+
+// 验证 collection native events 相关行为。
+
 // @vitest-environment jsdom
 //
 // 集合与检索这一族的 connect 派了三个不冒泡的事件：focus、pointerenter、pointerleave。

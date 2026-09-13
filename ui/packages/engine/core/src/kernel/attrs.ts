@@ -1,3 +1,8 @@
+/*
+ * Copyright (c) 2021-Present XiHanFun and contributors.
+ * Licensed under the MIT License. See LICENSE in the project root for license information.
+ */
+
 // data-* 值归一化。假值一律省略属性，避免 data-disabled="false" 这类输出。
 //
 // 不要照这个样子给 aria-* 的布尔状态（aria-checked / expanded / pressed / selected / modal 等）

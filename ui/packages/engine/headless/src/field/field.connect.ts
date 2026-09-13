@@ -1,3 +1,10 @@
+/*
+ * Copyright (c) 2021-Present XiHanFun and contributors.
+ * Licensed under the MIT License. See LICENSE in the project root for license information.
+ */
+
+// 提供 field 相关实现。
+
 import type { NormalizeProps, PropTypes, Scope } from '@xihan-ui/core'
 import type { FieldApi, FieldProps } from './field.types'
 import { dataAttr, getTabbables } from '@xihan-ui/core'

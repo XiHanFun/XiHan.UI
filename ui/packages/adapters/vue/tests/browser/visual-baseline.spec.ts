@@ -1,3 +1,8 @@
+/*
+ * Copyright (c) 2021-Present XiHanFun and contributors.
+ * Licensed under the MIT License. See LICENSE in the project root for license information.
+ */
+
 // 八件组件 × 五个视觉组合 = 40 张像素基线。
 //
 // 只有真实浏览器出得来位图：jsdom 不排版也不栅格化，截图断言在那里无从谈起。

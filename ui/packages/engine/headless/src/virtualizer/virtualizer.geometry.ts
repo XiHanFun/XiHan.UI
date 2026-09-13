@@ -1,3 +1,8 @@
+/*
+ * Copyright (c) 2021-Present XiHanFun and contributors.
+ * Licensed under the MIT License. See LICENSE in the project root for license information.
+ */
+
 /**
  * 虚拟滚动的几何计算：每条落在哪儿、整份多长、此刻该渲哪一段、滚到某条要把滚动量放到几。
  * 纯函数层，不碰 DOM、不认识状态机，输入全部由调用方给全。

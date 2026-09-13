@@ -1,3 +1,10 @@
+/*
+ * Copyright (c) 2021-Present XiHanFun and contributors.
+ * Licensed under the MIT License. See LICENSE in the project root for license information.
+ */
+
+// 提供 code view 相关实现。
+
 import type { HighlighterPort, IdGenerator } from '@xihan-ui/core'
 import type { CodeViewApi, CodeViewClampToggleDetails, CodeViewProps, CodeViewTranslations } from '@xihan-ui/headless'
 import { createCounterIdGenerator, createScope } from '@xihan-ui/core'

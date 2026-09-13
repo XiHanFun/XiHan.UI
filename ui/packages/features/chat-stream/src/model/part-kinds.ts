@@ -1,3 +1,8 @@
+/*
+ * Copyright (c) 2021-Present XiHanFun and contributors.
+ * Licensed under the MIT License. See LICENSE in the project root for license information.
+ */
+
 // 消息内容块的各种形态及其判别守卫，判别键统一为 `type`。
 import type { SourceDocumentPart, SourceUrlPart } from './source'
 

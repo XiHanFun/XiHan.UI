@@ -1,3 +1,8 @@
+/*
+ * Copyright (c) 2021-Present XiHanFun and contributors.
+ * Licensed under the MIT License. See LICENSE in the project root for license information.
+ */
+
 // 关键词切段的纯函数：不碰 DOM、不认识解剖，把一段文本切成命中与未命中交替的片段。
 //
 // 全程逐字符比对，不把关键词拼进正则：关键词是用户敲进搜索框的东西，

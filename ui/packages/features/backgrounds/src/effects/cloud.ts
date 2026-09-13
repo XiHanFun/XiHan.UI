@@ -1,3 +1,8 @@
+/*
+ * Copyright (c) 2021-Present XiHanFun and contributors.
+ * Licensed under the MIT License. See LICENSE in the project root for license information.
+ */
+
 // 数据驱动粒子：形态来自点云缓冲，图片、文字、SVG、参数方程都走这一个效果。
 // 换形态就是换一份点云，两份点云之间由 u_morph 插值，所以「图片 A 化成图片 B」是免费的。
 

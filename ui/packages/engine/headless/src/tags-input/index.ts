@@ -1,3 +1,10 @@
+/*
+ * Copyright (c) 2021-Present XiHanFun and contributors.
+ * Licensed under the MIT License. See LICENSE in the project root for license information.
+ */
+
+// 导出 tags input 模块的公共接口。
+
 export { tagsInputAnatomy, tagsInputEditInputId } from './tags-input.anatomy'
 export { connectTagsInput } from './tags-input.connect'
 export { tagsInputKeyboard } from './tags-input.keyboard'

@@ -1,3 +1,8 @@
+/*
+ * Copyright (c) 2021-Present XiHanFun and contributors.
+ * Licensed under the MIT License. See LICENSE in the project root for license information.
+ */
+
 // Cascader 首次加载由 Content 自动装配一枚状态区；已有候选刷新时状态区让位，列保持可用。
 import type { CascaderLevel, CascaderNode } from '@xihan-ui/headless'
 import type { App, Ref } from 'vue'

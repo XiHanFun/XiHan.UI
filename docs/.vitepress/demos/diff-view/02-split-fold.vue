@@ -1,3 +1,8 @@
+<!--
+  Copyright (c) 2021-Present XiHanFun and contributors.
+  Licensed under the MIT License. See LICENSE in the project root for license information.
+-->
+
 <!-- 并排与折叠 | 并排两列都发格子，空的那一侧照发；远离变更的连续上下文折成一格，点开即展开 -->
 <script setup lang="ts">
 import { computeTextDiff } from "@xihan-ui/headless";

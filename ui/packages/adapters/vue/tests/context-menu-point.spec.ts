@@ -1,3 +1,10 @@
+/*
+ * Copyright (c) 2021-Present XiHanFun and contributors.
+ * Licensed under the MIT License. See LICENSE in the project root for license information.
+ */
+
+// 验证 context menu point 相关行为。
+
 // @vitest-environment jsdom
 // 右键菜单钉在坐标上：受控 open 打开时锚点仍是 (0,0)，坐标要经 openAt 交进去。
 // collection 代铺那条路没有默认插槽，所以命令由根 expose 出来。

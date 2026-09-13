@@ -1,3 +1,8 @@
+/*
+ * Copyright (c) 2021-Present XiHanFun and contributors.
+ * Licensed under the MIT License. See LICENSE in the project root for license information.
+ */
+
 // 尺寸约束：夹取、宽高比、吸附步进。
 import type { ResizeConstraints } from './types'
 

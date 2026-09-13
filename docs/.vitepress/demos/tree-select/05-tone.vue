@@ -1,3 +1,8 @@
+<!--
+  Copyright (c) 2021-Present XiHanFun and contributors.
+  Licensed under the MIT License. See LICENSE in the project root for license information.
+-->
+
 <!-- 语气 | tone 决定用哪族颜色，与 variant 正交，这里统一用 subtle 形态 -->
 <script setup lang="ts">
 import {

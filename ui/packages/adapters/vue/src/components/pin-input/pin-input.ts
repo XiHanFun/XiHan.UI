@@ -1,3 +1,10 @@
+/*
+ * Copyright (c) 2021-Present XiHanFun and contributors.
+ * Licensed under the MIT License. See LICENSE in the project root for license information.
+ */
+
+// 提供 pin input 相关实现。
+
 import type { ControlVariant, Size, Tone } from '@xihan-ui/core'
 import type { PinInputApi, PinInputSchema, PinInputTranslations, PinInputType } from '@xihan-ui/headless'
 import type { PropType, SlotsType, VNode } from 'vue'

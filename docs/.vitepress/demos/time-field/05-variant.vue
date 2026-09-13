@@ -1,3 +1,8 @@
+<!--
+  Copyright (c) 2021-Present XiHanFun and contributors.
+  Licensed under the MIT License. See LICENSE in the project root for license information.
+-->
+
 <!-- 形态 | variant 只改分段框的底色与描边用法，分段结构与键盘行为都不变 -->
 <script setup lang="ts">
 import {

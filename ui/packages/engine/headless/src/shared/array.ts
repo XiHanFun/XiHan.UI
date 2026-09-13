@@ -1,3 +1,8 @@
+/*
+ * Copyright (c) 2021-Present XiHanFun and contributors.
+ * Licensed under the MIT License. See LICENSE in the project root for license information.
+ */
+
 /** 数组按元素严格逐位比较；受控值每次归一成新数组时避免引用误判。 */
 export function sameArray<T>(a: readonly T[], b: readonly T[] | undefined): boolean {
   return b !== undefined && a.length === b.length && a.every((value, index) => value === b[index])

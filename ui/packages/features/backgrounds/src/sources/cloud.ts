@@ -1,3 +1,8 @@
+/*
+ * Copyright (c) 2021-Present XiHanFun and contributors.
+ * Licensed under the MIT License. See LICENSE in the project root for license information.
+ */
+
 // 点云的构造与变换。图片、文字、SVG、参数方程最终都归一到 PointCloud 这一种表示，
 // 于是「换形态」永远只是换一份点云，形变动画不必关心它从哪来。
 

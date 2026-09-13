@@ -1,3 +1,8 @@
+<!--
+  Copyright (c) 2021-Present XiHanFun and contributors.
+  Licensed under the MIT License. See LICENSE in the project root for license information.
+-->
+
 <!-- 数据页 | 搜索、筛选、分段、表格、状态标签、分页与空态同框：一份数据经四道筛选后落进表体，筛没了就换空态 -->
 <script setup lang="ts">
 import type { SelectNode } from "@xihan-ui/headless";

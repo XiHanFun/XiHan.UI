@@ -1,3 +1,8 @@
+/*
+ * Copyright (c) 2021-Present XiHanFun and contributors.
+ * Licensed under the MIT License. See LICENSE in the project root for license information.
+ */
+
 // 内容本身撑破行：六个组件里，长串与宽块由内容自己带，任何宽度下都会顶出容器。
 // 判据是无条件的——同一份标记在 375 / 768 / 1280 三档都不许把外面的盒撑开，
 // 撑不开靠的是断行与横滚兜底，不是任何宽度查询。

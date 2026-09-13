@@ -1,3 +1,8 @@
+/*
+ * Copyright (c) 2021-Present XiHanFun and contributors.
+ * Licensed under the MIT License. See LICENSE in the project root for license information.
+ */
+
 // 弹簧：质量-刚度-阻尼模型的解析解。按时间直接求值，不逐帧积分，
 // 因此可以任意采样、可离线烘焙成 CSS linear() 缓动串。
 

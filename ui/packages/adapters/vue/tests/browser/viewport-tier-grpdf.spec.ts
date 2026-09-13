@@ -1,3 +1,8 @@
+/*
+ * Copyright (c) 2021-Present XiHanFun and contributors.
+ * Licensed under the MIT License. See LICENSE in the project root for license information.
+ */
+
 // descriptions 的视口档与 field 横排标签的收窄。
 //
 // descriptions 的换档由 @media (min-width) 决定，量它要把视口做出来：宿主视口固定改不动，

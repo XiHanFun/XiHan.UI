@@ -1,3 +1,8 @@
+/*
+ * Copyright (c) 2021-Present XiHanFun and contributors.
+ * Licensed under the MIT License. See LICENSE in the project root for license information.
+ */
+
 /**
  * 语言表：只描述词法层面的四件事——关键字、行注释、块注释、字符串括法。
  * 覆盖面按「AI 聊天里真会吐出来的语言」取，不求全。认不出的语言一律不着色。

@@ -1,3 +1,8 @@
+/*
+ * Copyright (c) 2021-Present XiHanFun and contributors.
+ * Licensed under the MIT License. See LICENSE in the project root for license information.
+ */
+
 // 使用者槽是改样式的唯一口子，这一组逐处证明覆盖真的落到屏幕上。
 // 常态与状态各有各的槽的那几处，还要反过来证明「调常态不牵连状态」：
 // 两档共用一个槽时，作者一改常态，状态那一档就跟着被抹平，从此再也调不开。

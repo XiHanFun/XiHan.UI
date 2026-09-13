@@ -1,3 +1,10 @@
+/*
+ * Copyright (c) 2021-Present XiHanFun and contributors.
+ * Licensed under the MIT License. See LICENSE in the project root for license information.
+ */
+
+// 验证 hover follow highlight 相关行为。
+
 // @vitest-environment jsdom
 // 浮层选单族的活动项唯一性：指针划过即把高亮/焦点搬到所在条目，指针离开即收掉，
 // 不会出现「键盘锚点亮一条、hover 又亮一条」的双高亮，也不会离开后残留高亮。

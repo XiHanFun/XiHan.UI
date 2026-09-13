@@ -1,3 +1,8 @@
+/*
+ * Copyright (c) 2021-Present XiHanFun and contributors.
+ * Licensed under the MIT License. See LICENSE in the project root for license information.
+ */
+
 // 诊断码。订阅方按码分流，文案可改，码不可改。
 
 /** 通用告警码单项入口；窄消费者无需为它保留整张码表。 */

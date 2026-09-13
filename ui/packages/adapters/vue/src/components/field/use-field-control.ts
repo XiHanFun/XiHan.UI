@@ -1,3 +1,10 @@
+/*
+ * Copyright (c) 2021-Present XiHanFun and contributors.
+ * Licensed under the MIT License. See LICENSE in the project root for license information.
+ */
+
+// 提供 use field control 相关实现。
+
 import type { ComputedRef } from 'vue'
 import { computed } from 'vue'
 import { useOptionalFieldContext } from './context'

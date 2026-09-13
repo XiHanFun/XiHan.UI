@@ -1,3 +1,8 @@
+/*
+ * Copyright (c) 2021-Present XiHanFun and contributors.
+ * Licensed under the MIT License. See LICENSE in the project root for license information.
+ */
+
 // 操作按钮 | action-trigger 按下时先发 action 事件，再让这条进入退场；closable 决定还要不要那颗叉
 import type { ReactNode } from "react";
 import {

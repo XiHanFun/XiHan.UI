@@ -1,3 +1,8 @@
+/*
+ * Copyright (c) 2021-Present XiHanFun and contributors.
+ * Licensed under the MIT License. See LICENSE in the project root for license information.
+ */
+
 // 基础用法 | 一块画布加一条笔迹路径就够了：按下落笔、移动成迹、抬笔收一笔
 import type { ReactNode } from "react";
 import { XhSignaturePadControl, XhSignaturePadPath, XhSignaturePadRoot } from "@xihan-ui/react";

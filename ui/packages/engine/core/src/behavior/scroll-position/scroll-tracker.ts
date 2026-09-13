@@ -1,3 +1,10 @@
+/*
+ * Copyright (c) 2021-Present XiHanFun and contributors.
+ * Licensed under the MIT License. See LICENSE in the project root for license information.
+ */
+
+// 提供 scroll tracker 相关实现。
+
 import type { Disposable, Scope } from '../../kernel'
 import type { ScrollMetrics } from './scroll-source'
 import { EMPTY_SCROLL_METRICS, readScrollMetrics, sameScrollMetrics, scrollEventTarget } from './scroll-source'

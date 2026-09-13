@@ -1,3 +1,10 @@
+/*
+ * Copyright (c) 2021-Present XiHanFun and contributors.
+ * Licensed under the MIT License. See LICENSE in the project root for license information.
+ */
+
+/* 定义 tree select 样式。 */
+
 @layer xihan.motion {
   /* 与选择器共用短位移动作；独立引入本皮肤时也提供完整关键帧。 */
   @keyframes xh-overlay-slide-in {

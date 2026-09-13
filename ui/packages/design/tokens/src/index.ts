@@ -1,3 +1,8 @@
+/*
+ * Copyright (c) 2021-Present XiHanFun and contributors.
+ * Licensed under the MIT License. See LICENSE in the project root for license information.
+ */
+
 // @xihan-ui/tokens —— 设计令牌 + 主题运行时。
 // 令牌 CSS 产物经子路径 @xihan-ui/tokens/tokens.css 引入。
 

@@ -1,3 +1,8 @@
+/*
+ * Copyright (c) 2021-Present XiHanFun and contributors.
+ * Licensed under the MIT License. See LICENSE in the project root for license information.
+ */
+
 // locale 解析：把「作者没给 locale」这件事收敛成一条链，日期时间系组件共用。
 import type { Scope } from './scope'
 import { isSSR } from './guards'

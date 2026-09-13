@@ -1,3 +1,10 @@
+/*
+ * Copyright (c) 2021-Present XiHanFun and contributors.
+ * Licensed under the MIT License. See LICENSE in the project root for license information.
+ */
+
+// 提供 use switch 相关实现。
+
 import type { Service } from '@xihan-ui/core'
 import type { SwitchApi, SwitchSchema } from '@xihan-ui/headless'
 import { connectSwitch, switchMachine } from '@xihan-ui/headless'

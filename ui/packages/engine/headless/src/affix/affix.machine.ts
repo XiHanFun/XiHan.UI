@@ -1,3 +1,10 @@
+/*
+ * Copyright (c) 2021-Present XiHanFun and contributors.
+ * Licensed under the MIT License. See LICENSE in the project root for license information.
+ */
+
+// 提供 affix 相关实现。
+
 import type { ScrollTrackerHandle } from '@xihan-ui/core'
 import type { AffixPin, AffixSchema, AffixSide, AffixSize } from './affix.types'
 import { createScrollTracker, readViewportRect, setup } from '@xihan-ui/core'

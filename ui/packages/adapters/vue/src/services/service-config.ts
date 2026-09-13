@@ -1,3 +1,8 @@
+/*
+ * Copyright (c) 2021-Present XiHanFun and contributors.
+ * Licensed under the MIT License. See LICENSE in the project root for license information.
+ */
+
 // 命令式服务共用的配置源。三个服务各自 createApp 到自建容器，接不到组件树里的
 // provideXhConfig，只能自己往宿主里 provide 一份；这里把那段收在一处。
 // 源收成 shallowRef 是为了运行期能换：传 ref/getter 的跟着应用切语言，

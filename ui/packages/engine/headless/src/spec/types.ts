@@ -1,3 +1,8 @@
+/*
+ * Copyright (c) 2021-Present XiHanFun and contributors.
+ * Licensed under the MIT License. See LICENSE in the project root for license information.
+ */
+
 // 组件规格的纯类型（零运行时）：键盘交互表与组件元数据。
 
 /** 键盘交互表的一行：一组按键在某条件下的可达性与副作用。 */

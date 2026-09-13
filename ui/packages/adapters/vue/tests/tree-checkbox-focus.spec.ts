@@ -1,3 +1,10 @@
+/*
+ * Copyright (c) 2021-Present XiHanFun and contributors.
+ * Licensed under the MIT License. See LICENSE in the project root for license information.
+ */
+
+// 验证 tree checkbox focus 相关行为。
+
 // @vitest-environment jsdom
 // 树上三个对读屏隐藏的把手（箭头与两个勾选框）：指针不得把焦点落在它们身上，
 // 否则焦点停在 aria-hidden 的节点里；勾选把手还要把焦点交给所在的那一行。

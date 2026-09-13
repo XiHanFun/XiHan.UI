@@ -1,3 +1,8 @@
+/*
+ * Copyright (c) 2021-Present XiHanFun and contributors.
+ * Licensed under the MIT License. See LICENSE in the project root for license information.
+ */
+
 // 播放器：动画层的对外门面。预设解析、打断、错开起播、开关与速度收在这里。
 // 减弱动效的降级不在这一层——它由 @xihan-ui/motion 的 animate 统一兜住。
 

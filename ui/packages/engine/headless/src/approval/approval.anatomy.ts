@@ -1,3 +1,10 @@
+/*
+ * Copyright (c) 2021-Present XiHanFun and contributors.
+ * Licensed under the MIT License. See LICENSE in the project root for license information.
+ */
+
+// 提供 approval 相关实现。
+
 import { createAnatomy } from '@xihan-ui/core'
 
 // root 是 role=group 的闸门本体；title 与 description 给它命名与描述；

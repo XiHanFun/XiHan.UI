@@ -1,3 +1,8 @@
+<!--
+  Copyright (c) 2021-Present XiHanFun and contributors.
+  Licensed under the MIT License. See LICENSE in the project root for license information.
+-->
+
 <!-- 滚动方式 | 平滑返回或立即返回 -->
 <script setup lang="ts">
 import { XhBackTopRoot, XhBackTopTrigger } from "@xihan-ui/vue";

@@ -1,3 +1,8 @@
+/*
+ * Copyright (c) 2021-Present XiHanFun and contributors.
+ * Licensed under the MIT License. See LICENSE in the project root for license information.
+ */
+
 // 只读与禁用 | read-only 仍进 Tab 序列、读屏念得出但改不动；disabled 整条退出 Tab 序列
 import type { ReactNode } from "react";
 import { XhRatingControl, XhRatingItem, XhRatingLabel, XhRatingRoot } from "@xihan-ui/react";

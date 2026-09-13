@@ -1,3 +1,8 @@
+/*
+ * Copyright (c) 2021-Present XiHanFun and contributors.
+ * Licensed under the MIT License. See LICENSE in the project root for license information.
+ */
+
 // @xihan-ui/animations —— 动画层：现成的进场与注意动效，框架无关。
 //
 // 一段动画是一份可序列化的配方（MotionSpec）：若干视觉帧加一组时序参数。

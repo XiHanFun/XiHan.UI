@@ -1,3 +1,10 @@
+/*
+ * Copyright (c) 2021-Present XiHanFun and contributors.
+ * Licensed under the MIT License. See LICENSE in the project root for license information.
+ */
+
+// 提供 field array 相关实现。
+
 import type { Service } from '@xihan-ui/core'
 import type { FieldArrayItemProps, FieldArraySchema, FieldArrayTranslations, FieldArrayValueChangeDetails, FormControlState, FormPath, FormSchema } from '@xihan-ui/headless'
 import { connectFieldArray, fieldArrayAnatomy, fieldArrayMachine, fieldArrayMeta, resolveFormControlState } from '@xihan-ui/headless'

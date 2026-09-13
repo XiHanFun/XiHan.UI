@@ -1,3 +1,8 @@
+/*
+ * Copyright (c) 2021-Present XiHanFun and contributors.
+ * Licensed under the MIT License. See LICENSE in the project root for license information.
+ */
+
 // 多指会话：同时跟住落在同一块区域上的几根指针，任意一根动都回送当前全部触点。
 import type { PointerEndReason } from '../session/types'
 import type { PinchPoint } from './pinch'

@@ -1,3 +1,10 @@
+/*
+ * Copyright (c) 2021-Present XiHanFun and contributors.
+ * Licensed under the MIT License. See LICENSE in the project root for license information.
+ */
+
+// 验证 table root attrs 相关行为。
+
 // @vitest-environment jsdom
 // XhTableRoot 渲的是 Fragment（表格本体 + 播报区），而 Vue 只在**单个元素根**上
 // 自动透传 attrs。作者写在 <XhTableRoot> 上的 class / aria-* / 监听器必须自己合到

@@ -1,3 +1,10 @@
+/*
+ * Copyright (c) 2021-Present XiHanFun and contributors.
+ * Licensed under the MIT License. See LICENSE in the project root for license information.
+ */
+
+// 提供 code view 相关实现。
+
 import type { CodeToken, NormalizeProps, PropTypes, Scope } from '@xihan-ui/core'
 import type { CodeViewApi, CodeViewLineProps, CodeViewProps } from './code-view.types'
 import { dataAttr, resolveLabelling } from '@xihan-ui/core'

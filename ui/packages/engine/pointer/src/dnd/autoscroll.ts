@@ -1,3 +1,8 @@
+/*
+ * Copyright (c) 2021-Present XiHanFun and contributors.
+ * Licensed under the MIT License. See LICENSE in the project root for license information.
+ */
+
 // 边缘自动滚动：拖到容器边上时把容器滚起来，让视口外的落点够得着。
 import type { DndDelta, DndRect } from './types'
 

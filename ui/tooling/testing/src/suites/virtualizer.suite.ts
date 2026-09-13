@@ -1,3 +1,10 @@
+/*
+ * Copyright (c) 2021-Present XiHanFun and contributors.
+ * Licensed under the MIT License. See LICENSE in the project root for license information.
+ */
+
+// 提供 virtualizer.suite 相关实现。
+
 import type { ConformanceSuite, FixtureNode, StepWithExpect } from '../conformance/types'
 import { virtualizerAnatomy, virtualizerKeyboard } from '@xihan-ui/headless'
 

@@ -1,3 +1,10 @@
+/*
+ * Copyright (c) 2021-Present XiHanFun and contributors.
+ * Licensed under the MIT License. See LICENSE in the project root for license information.
+ */
+
+// 提供 side nav 相关实现。
+
 import type { NavIntent, NormalizeProps, PropTypes, Service } from '@xihan-ui/core'
 import type { SideNavApi, SideNavNode, SideNavSchema } from './side-nav.types'
 import { dataAttr, focusItem, itemValue, navigateItems, navIntentFromKey, queryItems } from '@xihan-ui/core'

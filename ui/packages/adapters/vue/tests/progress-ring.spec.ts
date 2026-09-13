@@ -1,3 +1,10 @@
+/*
+ * Copyright (c) 2021-Present XiHanFun and contributors.
+ * Licensed under the MIT License. See LICENSE in the project root for license information.
+ */
+
+// 验证 progress ring 相关行为。
+
 // @vitest-environment jsdom
 // 环形进度的几何走 DOM：圆心、半径、起笔角与两条弧的长度都由连接层算好写进标记，
 // 皮肤只上色。判据按「画出来是什么样」写，不按实现写。

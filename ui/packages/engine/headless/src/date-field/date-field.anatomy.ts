@@ -1,3 +1,10 @@
+/*
+ * Copyright (c) 2021-Present XiHanFun and contributors.
+ * Licensed under the MIT License. See LICENSE in the project root for license information.
+ */
+
+// 提供 date field 相关实现。
+
 import { createAnatomy } from '@xihan-ui/core'
 
 // segment 是多实例 part：一段一个节点，文档序即段序，段序随 locale 变。

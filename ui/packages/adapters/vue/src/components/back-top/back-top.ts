@@ -1,3 +1,10 @@
+/*
+ * Copyright (c) 2021-Present XiHanFun and contributors.
+ * Licensed under the MIT License. See LICENSE in the project root for license information.
+ */
+
+// 提供 back top 相关实现。
+
 import type { ActionVariant, Size, Tone } from '@xihan-ui/core'
 import type { BackTopApi, BackTopBehavior, BackTopSchema, BackTopTranslations } from '@xihan-ui/headless'
 import type { PropType, SlotsType, VNode } from 'vue'

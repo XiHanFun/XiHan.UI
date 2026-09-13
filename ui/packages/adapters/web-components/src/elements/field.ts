@@ -1,3 +1,10 @@
+/*
+ * Copyright (c) 2021-Present XiHanFun and contributors.
+ * Licensed under the MIT License. See LICENSE in the project root for license information.
+ */
+
+// 提供 field 相关实现。
+
 import type { Scope } from '@xihan-ui/core'
 import type { FieldProps, FormControlState } from '@xihan-ui/headless'
 import type { FormControlHost } from '../runtime/form-control-host'

@@ -1,3 +1,8 @@
+/*
+ * Copyright (c) 2021-Present XiHanFun and contributors.
+ * Licensed under the MIT License. See LICENSE in the project root for license information.
+ */
+
 /**
  * 判据按「调度到参数上的曲线必须安全」写：指数 ramp 永不碰非正值、
  * 增益不出 0..1、频率不出可听域、每个源恰好 start 一次且如期 stop、

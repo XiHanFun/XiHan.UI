@@ -1,3 +1,8 @@
+/*
+ * Copyright (c) 2021-Present XiHanFun and contributors.
+ * Licensed under the MIT License. See LICENSE in the project root for license information.
+ */
+
 // 入库前统一改写 | 给了 value 就由宿主说了算：组件只发变更意图，写回什么形状在这里定
 import type { ReactNode } from "react";
 import {

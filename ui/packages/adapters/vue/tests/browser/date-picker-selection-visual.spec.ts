@@ -1,3 +1,8 @@
+/*
+ * Copyright (c) 2021-Present XiHanFun and contributors.
+ * Licensed under the MIT License. See LICENSE in the project root for license information.
+ */
+
 // DatePicker 的 preset 与内嵌时间项统一以末端对号表示持久选值；日期格仍由 Calendar 自己负责。
 import type { DatePickerPresetState } from '@xihan-ui/headless'
 import type { App } from 'vue'

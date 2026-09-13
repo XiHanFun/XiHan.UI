@@ -1,3 +1,8 @@
+/*
+ * Copyright (c) 2021-Present XiHanFun and contributors.
+ * Licensed under the MIT License. See LICENSE in the project root for license information.
+ */
+
 // 拖动中版面整体挪了多远。
 //
 // 与 drag.ts 分开放只是为了不和别人同时改同一个文件，两者是一件事，

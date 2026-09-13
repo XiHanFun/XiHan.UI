@@ -1,3 +1,10 @@
+/*
+ * Copyright (c) 2021-Present XiHanFun and contributors.
+ * Licensed under the MIT License. See LICENSE in the project root for license information.
+ */
+
+// 验证 form field bridge 相关行为。
+
 // @vitest-environment jsdom
 // Form-Field 打通：XhFormFieldGroup 里的 XhFieldRoot 不写 props 也能从表单上下文
 // 自取 invalid/required/disabled，错误文案插槽空着时自取该字段的错误；显式 props 仍然赢。

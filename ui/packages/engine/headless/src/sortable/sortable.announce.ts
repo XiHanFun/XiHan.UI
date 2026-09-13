@@ -1,3 +1,8 @@
+/*
+ * Copyright (c) 2021-Present XiHanFun and contributors.
+ * Licensed under the MIT License. See LICENSE in the project root for license information.
+ */
+
 // 拖动过程的读屏播报。拆出来是因为它是纯文本拼装，可以脱开状态机单独验。
 import type { SortableTranslations } from './sortable.types'
 

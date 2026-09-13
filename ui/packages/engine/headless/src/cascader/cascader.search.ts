@@ -1,3 +1,8 @@
+/*
+ * Copyright (c) 2021-Present XiHanFun and contributors.
+ * Licensed under the MIT License. See LICENSE in the project root for license information.
+ */
+
 // 搜索候选的纯运算：把树摊平成整条路径，按连缀文本过滤。不碰 DOM、不看状态机。
 import type { CascaderNode } from './cascader.types'
 

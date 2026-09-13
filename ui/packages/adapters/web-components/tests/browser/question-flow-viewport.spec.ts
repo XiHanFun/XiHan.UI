@@ -1,3 +1,8 @@
+/*
+ * Copyright (c) 2021-Present XiHanFun and contributors.
+ * Licensed under the MIT License. See LICENSE in the project root for license information.
+ */
+
 // 视口高度与轨道位移是量出来的，只有真实浏览器验得了。
 //
 // jsdom 里所有盒子都是 0×0：机器照样跑、连接层照样产出两个私有槽，断言也照样绿，

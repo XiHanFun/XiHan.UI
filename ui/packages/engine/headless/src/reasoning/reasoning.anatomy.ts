@@ -1,3 +1,10 @@
+/*
+ * Copyright (c) 2021-Present XiHanFun and contributors.
+ * Licensed under the MIT License. See LICENSE in the project root for license information.
+ */
+
+// 提供 reasoning 相关实现。
+
 import { createAnatomy } from '@xihan-ui/core'
 
 // root 是外壳；trigger 是折叠开关，icon/indicator/label/duration 是它里面的排版位；

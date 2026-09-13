@@ -1,3 +1,8 @@
+/*
+ * Copyright (c) 2021-Present XiHanFun and contributors.
+ * Licensed under the MIT License. See LICENSE in the project root for license information.
+ */
+
 // 输入法组合态探测。
 
 /** 组合期间的按键属于候选词框，组件一律不接。 */

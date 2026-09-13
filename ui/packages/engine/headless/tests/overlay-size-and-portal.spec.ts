@@ -1,3 +1,10 @@
+/*
+ * Copyright (c) 2021-Present XiHanFun and contributors.
+ * Licensed under the MIT License. See LICENSE in the project root for license information.
+ */
+
+// 验证 overlay size and portal 相关行为。
+
 // @vitest-environment jsdom
 // 锚定浮层的三件事：落定那一侧的可用高度要交到皮肤手上；条目集合类浮层还要拿到锚点宽度；
 // side-nav 的弹出面板有独立定位层，坐标不再写在面板身上。

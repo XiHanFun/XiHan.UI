@@ -1,3 +1,10 @@
+/*
+ * Copyright (c) 2021-Present XiHanFun and contributors.
+ * Licensed under the MIT License. See LICENSE in the project root for license information.
+ */
+
+// 定义 masonry 类型契约。
+
 import type { PropTypes } from '@xihan-ui/core'
 
 /** 间距档位，逐档对应一个间距令牌；档位名与 Grid 同一套。 */

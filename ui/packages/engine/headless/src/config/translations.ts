@@ -1,3 +1,8 @@
+/*
+ * Copyright (c) 2021-Present XiHanFun and contributors.
+ * Licensed under the MIT License. See LICENSE in the project root for license information.
+ */
+
 // 各组件内建文案的覆盖表。两个适配器共用它做全局配置的形状，放在这里避免各写一份而漂移。
 //
 // 每个组件都在表里占一行，包括眼下还没有任何文案的那些——它们的 Translations 是空接口。

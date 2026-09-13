@@ -1,3 +1,10 @@
+/*
+ * Copyright (c) 2021-Present XiHanFun and contributors.
+ * Licensed under the MIT License. See LICENSE in the project root for license information.
+ */
+
+// 提供 timeline 相关实现。
+
 import type { Orientation, Size, Tone } from '@xihan-ui/core'
 import type { TimelinePlacement, TimelineProps } from '@xihan-ui/headless'
 import type { PropType } from 'vue'

@@ -1,3 +1,10 @@
+/*
+ * Copyright (c) 2021-Present XiHanFun and contributors.
+ * Licensed under the MIT License. See LICENSE in the project root for license information.
+ */
+
+// 验证 a11y 相关行为。
+
 import { runA11y, wcA11yBaseline } from '@xihan-ui/testing/a11y'
 import { describe, it } from 'vitest'
 import { createWcHarness } from '../harness'

@@ -1,3 +1,8 @@
+/*
+ * Copyright (c) 2021-Present XiHanFun and contributors.
+ * Licensed under the MIT License. See LICENSE in the project root for license information.
+ */
+
 // approval 的动作行：一行排不下就折行。
 //
 // 这一行靠右排，排不下时溢出的是行首那一侧——scrollWidth 量不到它，页面也不会长出横滚，

@@ -1,3 +1,10 @@
+/*
+ * Copyright (c) 2021-Present XiHanFun and contributors.
+ * Licensed under the MIT License. See LICENSE in the project root for license information.
+ */
+
+// 配置 runtime config。
+
 import type { IdGenerator } from './id-generator'
 import type { Scope } from './scope'
 import type { LayerRegistry } from './structure/layer-registry'

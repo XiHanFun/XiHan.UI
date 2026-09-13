@@ -1,3 +1,8 @@
+/*
+ * Copyright (c) 2021-Present XiHanFun and contributors.
+ * Licensed under the MIT License. See LICENSE in the project root for license information.
+ */
+
 // 一段错误文字不该改变字段的外框尺寸。
 //
 // 错误文案是流内的一块，出现时把字段撑高一行：整表跟着重排，限高的父级里控件被挤出去。

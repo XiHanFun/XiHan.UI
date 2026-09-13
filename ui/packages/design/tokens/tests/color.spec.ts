@@ -1,3 +1,8 @@
+/*
+ * Copyright (c) 2021-Present XiHanFun and contributors.
+ * Licensed under the MIT License. See LICENSE in the project root for license information.
+ */
+
 // 颜色能力：亮度、对比度、择色、混色与深浅。
 // 最后一组把皮肤那份 CSS 配方的判据读出来与本模块对账——两处算的必须是同一件事。
 import { readFileSync } from 'node:fs'

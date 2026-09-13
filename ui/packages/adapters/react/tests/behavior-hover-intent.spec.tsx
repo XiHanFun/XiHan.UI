@@ -1,3 +1,10 @@
+/*
+ * Copyright (c) 2021-Present XiHanFun and contributors.
+ * Licensed under the MIT License. See LICENSE in the project root for license information.
+ */
+
+// 验证 behavior hover intent 相关行为。
+
 // @vitest-environment jsdom
 // React 包装在 layout 提交期绑定，并只在 trigger/计时参数真正变化时重建。
 import type { ReactElement } from 'react'

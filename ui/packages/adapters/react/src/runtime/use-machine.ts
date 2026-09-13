@@ -1,3 +1,10 @@
+/*
+ * Copyright (c) 2021-Present XiHanFun and contributors.
+ * Licensed under the MIT License. See LICENSE in the project root for license information.
+ */
+
+// 提供 use machine 相关实现。
+
 import type { MachineConfig, MachineSchema, Scope, Service, ServiceOptions } from '@xihan-ui/core'
 import type { ReactRuntime } from './create-react-runtime'
 import { VERSION as CORE_VERSION, createService, isDev } from '@xihan-ui/core'

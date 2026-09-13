@@ -1,3 +1,10 @@
+/*
+ * Copyright (c) 2021-Present XiHanFun and contributors.
+ * Licensed under the MIT License. See LICENSE in the project root for license information.
+ */
+
+// 提供 avatar group 相关实现。
+
 import type { Size } from '@xihan-ui/core'
 import type { AvatarGroupProps } from '@xihan-ui/headless'
 import { avatarGroupAnatomy, avatarGroupMeta, connectAvatarGroup } from '@xihan-ui/headless'

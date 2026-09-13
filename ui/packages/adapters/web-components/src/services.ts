@@ -1,3 +1,8 @@
+/*
+ * Copyright (c) 2021-Present XiHanFun and contributors.
+ * Licensed under the MIT License. See LICENSE in the project root for license information.
+ */
+
 // @xihan-ui/web-components/services —— 命令式反馈服务。
 //
 // 与 Vue 侧同名同形：四个 create*Service 工厂，句柄上的命令在任意模块作用域可调

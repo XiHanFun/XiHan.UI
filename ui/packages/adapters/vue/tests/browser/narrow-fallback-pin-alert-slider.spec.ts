@@ -1,3 +1,8 @@
+/*
+ * Copyright (c) 2021-Present XiHanFun and contributors.
+ * Licensed under the MIT License. See LICENSE in the project root for license information.
+ */
+
 // 窄处的无条件兜底：pin-input / question-flow / radio-group / alert / slider / image-cropper / dialog。
 //
 // 这几条判据都不接断点：换行、可收缩、封顶、归零外边距在窄视口与窄容器两种情形下同时成立，

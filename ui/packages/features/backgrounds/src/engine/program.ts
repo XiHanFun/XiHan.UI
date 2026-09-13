@@ -1,3 +1,8 @@
+/*
+ * Copyright (c) 2021-Present XiHanFun and contributors.
+ * Licensed under the MIT License. See LICENSE in the project root for license information.
+ */
+
 // 着色器程序：编译、链接、uniform 与 attribute 位置缓存。
 // 编译失败不抛异常——一张背景画不出来不该把宿主组件带崩，走诊断通道报出来再降级。
 

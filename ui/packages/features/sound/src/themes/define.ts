@@ -1,3 +1,8 @@
+/*
+ * Copyright (c) 2021-Present XiHanFun and contributors.
+ * Licensed under the MIT License. See LICENSE in the project root for license information.
+ */
+
 // 主题定义帮助器：恒等函数只做类型收窄，外加几条把常用包络写短的工厂。
 
 import type { EnvelopePoint, OscillatorLayer, SoundSpec, SoundTheme } from '../types'

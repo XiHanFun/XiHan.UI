@@ -1,3 +1,8 @@
+/*
+ * Copyright (c) 2021-Present XiHanFun and contributors.
+ * Licensed under the MIT License. See LICENSE in the project root for license information.
+ */
+
 // 未结束块与进行中工具的寻址表，值为 parts 数组下标。
 import type { BlockKey } from './events'
 

@@ -1,3 +1,10 @@
+/*
+ * Copyright (c) 2021-Present XiHanFun and contributors.
+ * Licensed under the MIT License. See LICENSE in the project root for license information.
+ */
+
+// 验证 ssr harness 相关行为。
+
 import type { Fixture } from '@xihan-ui/testing'
 import type { SsrHarness } from '@xihan-ui/testing/ssr'
 import { createElement } from 'react'

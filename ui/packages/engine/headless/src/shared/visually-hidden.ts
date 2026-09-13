@@ -1,3 +1,8 @@
+/*
+ * Copyright (c) 2021-Present XiHanFun and contributors.
+ * Licensed under the MIT License. See LICENSE in the project root for license information.
+ */
+
 // 视觉隐藏但保留在布局与表单里的内联样式，与皮肤 .xh-visually-hidden 的声明逐条同值。
 // 不用 display:none：原生校验提示需要一个可定位的框。
 

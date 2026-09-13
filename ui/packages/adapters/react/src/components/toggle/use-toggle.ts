@@ -1,3 +1,10 @@
+/*
+ * Copyright (c) 2021-Present XiHanFun and contributors.
+ * Licensed under the MIT License. See LICENSE in the project root for license information.
+ */
+
+// 提供 use toggle 相关实现。
+
 import type { Service } from '@xihan-ui/core'
 import type { ToggleApi, ToggleSchema } from '@xihan-ui/headless'
 import { connectToggle, toggleMachine } from '@xihan-ui/headless'

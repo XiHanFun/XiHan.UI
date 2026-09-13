@@ -1,3 +1,8 @@
+/*
+ * Copyright (c) 2021-Present XiHanFun and contributors.
+ * Licensed under the MIT License. See LICENSE in the project root for license information.
+ */
+
 // 选中的类型契约。这一层只算集合，不碰 DOM，也不认识状态机。
 
 export type SelectionMode = 'none' | 'single' | 'multiple'

@@ -1,3 +1,10 @@
+/*
+ * Copyright (c) 2021-Present XiHanFun and contributors.
+ * Licensed under the MIT License. See LICENSE in the project root for license information.
+ */
+
+// 提供 as child 相关实现。
+
 import type { ReactElement, ReactNode } from 'react'
 import { isEventHandlerKey } from '@xihan-ui/core'
 import { Children, cloneElement, Fragment, isValidElement } from 'react'

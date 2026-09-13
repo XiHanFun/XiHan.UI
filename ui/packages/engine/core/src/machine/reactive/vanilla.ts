@@ -1,3 +1,8 @@
+/*
+ * Copyright (c) 2021-Present XiHanFun and contributors.
+ * Licensed under the MIT License. See LICENSE in the project root for license information.
+ */
+
 // 内置参考运行时：同步 dirty 循环的微 signal，叠加受控语义。
 // set → 通知局部订阅者 → flushGlobal 全局同步冲刷，直到没有新的脏标记。
 import type { Bindable, CellParams, MachineSchema, ReactiveRuntime, Service } from '../types'

@@ -1,3 +1,10 @@
+/*
+ * Copyright (c) 2021-Present XiHanFun and contributors.
+ * Licensed under the MIT License. See LICENSE in the project root for license information.
+ */
+
+// 提供 spinner 相关实现。
+
 import type { NormalizeProps, PropTypes } from '@xihan-ui/core'
 import type { SpinnerApi, SpinnerProps } from './spinner.types'
 import { spinnerAnatomy } from './spinner.anatomy'

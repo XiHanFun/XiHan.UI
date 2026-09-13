@@ -1,3 +1,10 @@
+/*
+ * Copyright (c) 2021-Present XiHanFun and contributors.
+ * Licensed under the MIT License. See LICENSE in the project root for license information.
+ */
+
+// 提供 steps 相关实现。
+
 import type { KeyboardTable } from '../spec/types'
 
 // APG 没有 steps 模式，键盘约定照 tabs 模式来（roving tabindex + 方向键 + Home/End），

@@ -1,3 +1,8 @@
+/*
+ * Copyright (c) 2021-Present XiHanFun and contributors.
+ * Licensed under the MIT License. See LICENSE in the project root for license information.
+ */
+
 // 噪声缓冲：白噪直接均匀随机，粉噪用 Paul Kellet 滤波近似。
 // 一秒时长循环播放足以覆盖 UI 音效；每个上下文各缓存一份。
 

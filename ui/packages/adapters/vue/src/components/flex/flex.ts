@@ -1,3 +1,10 @@
+/*
+ * Copyright (c) 2021-Present XiHanFun and contributors.
+ * Licensed under the MIT License. See LICENSE in the project root for license information.
+ */
+
+// 提供 flex 相关实现。
+
 import type { FlexProps } from '@xihan-ui/headless'
 import type { PropType, Slot, SlotsType, VNode } from 'vue'
 import { connectFlex } from '@xihan-ui/headless'

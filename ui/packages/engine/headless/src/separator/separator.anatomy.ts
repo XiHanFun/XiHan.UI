@@ -1,3 +1,10 @@
+/*
+ * Copyright (c) 2021-Present XiHanFun and contributors.
+ * Licensed under the MIT License. See LICENSE in the project root for license information.
+ */
+
+// 提供 separator 相关实现。
+
 import { createAnatomy } from '@xihan-ui/core'
 
 // 三个角色节点：root 是分隔本身，只有它一个时它就是那条线；

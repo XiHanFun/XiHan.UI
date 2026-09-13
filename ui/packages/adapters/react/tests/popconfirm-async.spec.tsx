@@ -1,3 +1,10 @@
+/*
+ * Copyright (c) 2021-Present XiHanFun and contributors.
+ * Licensed under the MIT License. See LICENSE in the project root for license information.
+ */
+
+// 验证 popconfirm async 相关行为。
+
 // @vitest-environment jsdom
 //
 // 气泡确认的异步确认门：onConfirm 返回 thenable 即挂起——浮层等兑现才收、确认按钮转圈

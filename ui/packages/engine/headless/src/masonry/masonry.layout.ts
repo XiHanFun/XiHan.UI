@@ -1,3 +1,10 @@
+/*
+ * Copyright (c) 2021-Present XiHanFun and contributors.
+ * Licensed under the MIT License. See LICENSE in the project root for license information.
+ */
+
+// 提供 masonry.layout 相关实现。
+
 import type { MasonryBreakpoint, MasonryColumns } from './masonry.types'
 
 /** 不写列数时分几列。 */

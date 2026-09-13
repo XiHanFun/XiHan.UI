@@ -1,4 +1,9 @@
 /*
+ * Copyright (c) 2021-Present XiHanFun and contributors.
+ * Licensed under the MIT License. See LICENSE in the project root for license information.
+ */
+
+/*
  * 高对比档（forced-colors: active）的公共补救层。
  *
  * 这一档里系统接管配色：作者写的每一个颜色取值都被换成系统调色板里的对应角色，

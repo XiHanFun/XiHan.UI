@@ -1,3 +1,8 @@
+/*
+ * Copyright (c) 2021-Present XiHanFun and contributors.
+ * Licensed under the MIT License. See LICENSE in the project root for license information.
+ */
+
 // 范围选 | 按住 Shift 点某一项，选中锚点到它那一段；锚点跨到另一侧时退化成普通勾选
 import type { ReactNode } from "react";
 import {

@@ -1,3 +1,8 @@
+/*
+ * Copyright (c) 2021-Present XiHanFun and contributors.
+ * Licensed under the MIT License. See LICENSE in the project root for license information.
+ */
+
 // 遮罩让位只能在真实浏览器里验：判据是计算后的背景色与 Spotlight 阴影槽。
 import type { App } from 'vue'
 import { afterEach, describe, expect, it } from 'vitest'

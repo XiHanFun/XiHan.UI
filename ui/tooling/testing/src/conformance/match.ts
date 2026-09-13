@@ -1,3 +1,10 @@
+/*
+ * Copyright (c) 2021-Present XiHanFun and contributors.
+ * Licensed under the MIT License. See LICENSE in the project root for license information.
+ */
+
+// 提供 match 相关实现。
+
 import type { ActiveElementExpectation, ActiveElementRef, AttrExpectation, DomSnapshot, SnapshotExpectation } from './types'
 
 function parseRef(ref: string): { part: string, index: number, hasIndex: boolean } {

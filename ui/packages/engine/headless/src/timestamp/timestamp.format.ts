@@ -1,3 +1,8 @@
+/*
+ * Copyright (c) 2021-Present XiHanFun and contributors.
+ * Licensed under the MIT License. See LICENSE in the project root for license information.
+ */
+
 // 时间格式化的纯函数：不碰 DOM、不认识解剖，把一个时刻翻成给人看的文本与给机器读的戳。
 //
 // 不做时区换算。取的是运行时自己的年月日时分秒（Date 的本地取值器），

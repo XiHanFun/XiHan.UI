@@ -1,3 +1,8 @@
+/*
+ * Copyright (c) 2021-Present XiHanFun and contributors.
+ * Licensed under the MIT License. See LICENSE in the project root for license information.
+ */
+
 // 悬停意图的几何判据：指针从触发器斜穿到浮层的路上会短暂离开两者，
 // 用「出发点 + 浮层近侧两角」围出的安全三角判定它是不是在赶路，是就不收浮层。
 

@@ -1,3 +1,8 @@
+/*
+ * Copyright (c) 2021-Present XiHanFun and contributors.
+ * Licensed under the MIT License. See LICENSE in the project root for license information.
+ */
+
 // 全部边缘 | 从任意边缘或角点调整尺寸
 import type { ReactNode } from "react";
 import { XhResizableHandle, XhResizableRoot } from "@xihan-ui/react";

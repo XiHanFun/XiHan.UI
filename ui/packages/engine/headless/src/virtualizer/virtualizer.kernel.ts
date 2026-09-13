@@ -1,3 +1,8 @@
+/*
+ * Copyright (c) 2021-Present XiHanFun and contributors.
+ * Licensed under the MIT License. See LICENSE in the project root for license information.
+ */
+
 /**
  * 虚拟滚动内核：把几何计算接到一个真实的滚动容器上。
  * 它持有实测尺寸账本、视口尺寸与滚动量，挂视口的 scroll 监听与两处 ResizeObserver，

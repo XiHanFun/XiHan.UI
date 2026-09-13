@@ -1,3 +1,8 @@
+/*
+ * Copyright (c) 2021-Present XiHanFun and contributors.
+ * Licensed under the MIT License. See LICENSE in the project root for license information.
+ */
+
 // 内置效果集合。注册表只在按名字取效果时才需要，
 // 直接传效果对象的用法完全不经过它，没引到的效果会被打包器摇掉。
 

@@ -1,3 +1,8 @@
+/*
+ * Copyright (c) 2021-Present XiHanFun and contributors.
+ * Licensed under the MIT License. See LICENSE in the project root for license information.
+ */
+
 // 流体族：连续色域在画面里缓慢翻涌。
 // 三者共用同一套域扭曲流场，区别只在最后怎么上色与是否透明。
 

@@ -1,3 +1,10 @@
+/*
+ * Copyright (c) 2021-Present XiHanFun and contributors.
+ * Licensed under the MIT License. See LICENSE in the project root for license information.
+ */
+
+// 导出 navigation menu 模块的公共接口。
+
 export { navigationMenuAnatomy, navigationMenuTriggerQuery } from './navigation-menu.anatomy'
 export { connectNavigationMenu } from './navigation-menu.connect'
 export { navigationMenuKeyboard } from './navigation-menu.keyboard'

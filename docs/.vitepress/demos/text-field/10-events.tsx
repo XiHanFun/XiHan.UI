@@ -1,3 +1,8 @@
+/*
+ * Copyright (c) 2021-Present XiHanFun and contributors.
+ * Licensed under the MIT License. See LICENSE in the project root for license information.
+ */
+
 // 事件 | 值的变化走组件的 value-change，聚焦失焦这类原生事件直接写在 input 部件上
 import type { ReactNode } from "react";
 import {

@@ -1,3 +1,10 @@
+/*
+ * Copyright (c) 2021-Present XiHanFun and contributors.
+ * Licensed under the MIT License. See LICENSE in the project root for license information.
+ */
+
+// 提供 tree 相关实现。
+
 import type { CascadeStrategy, Direction, Orientation, Service } from '@xihan-ui/core'
 import type { TreeApi, TreeNode, TreeSchema, TreeVariant } from '@xihan-ui/headless'
 import type { ComponentPropsWithRef, ReactNode, RefObject } from 'react'

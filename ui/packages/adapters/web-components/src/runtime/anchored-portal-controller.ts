@@ -1,3 +1,10 @@
+/*
+ * Copyright (c) 2021-Present XiHanFun and contributors.
+ * Licensed under the MIT License. See LICENSE in the project root for license information.
+ */
+
+// 提供 anchored portal controller 相关实现。
+
 import type { Cleanup, RuntimeConfig } from '@xihan-ui/core'
 import { PortalLeaseController } from './portal-lease-controller'
 

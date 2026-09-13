@@ -1,3 +1,8 @@
+<!--
+  Copyright (c) 2021-Present XiHanFun and contributors.
+  Licensed under the MIT License. See LICENSE in the project root for license information.
+-->
+
 <!-- 候选词一键添加 | 根插槽给出 addValue 与 atMax：输入框之外再开一条加标签的路，上限一样管得住 -->
 <script setup lang="ts">
 import {

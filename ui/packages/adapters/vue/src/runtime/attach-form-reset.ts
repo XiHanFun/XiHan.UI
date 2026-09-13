@@ -1,3 +1,10 @@
+/*
+ * Copyright (c) 2021-Present XiHanFun and contributors.
+ * Licensed under the MIT License. See LICENSE in the project root for license information.
+ */
+
+// 提供 attach form reset 相关实现。
+
 import type { Disposable, MachineSchema, Service } from '@xihan-ui/core'
 import { createFormResetBridge, declaresFormReset, FORM_RESET_EVENT } from '@xihan-ui/core'
 import { getCurrentInstance, onBeforeUnmount, onMounted } from 'vue'

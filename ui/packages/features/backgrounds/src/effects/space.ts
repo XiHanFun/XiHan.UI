@@ -1,3 +1,8 @@
+/*
+ * Copyright (c) 2021-Present XiHanFun and contributors.
+ * Licensed under the MIT License. See LICENSE in the project root for license information.
+ */
+
 // 粒子族：画面主体由成千上万个程序化粒子构成，底纹只作陪衬。
 
 import type { EffectContext, UniformMap } from '../types'

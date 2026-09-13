@@ -1,3 +1,8 @@
+/*
+ * Copyright (c) 2021-Present XiHanFun and contributors.
+ * Licensed under the MIT License. See LICENSE in the project root for license information.
+ */
+
 // 数值处理的纯函数：不碰 DOM、不认识状态机。
 
 /** 空串与纯空白视为"没有值"，返回 NaN；不合法的输入同样是 NaN。 */

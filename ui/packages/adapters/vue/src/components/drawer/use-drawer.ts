@@ -1,3 +1,10 @@
+/*
+ * Copyright (c) 2021-Present XiHanFun and contributors.
+ * Licensed under the MIT License. See LICENSE in the project root for license information.
+ */
+
+// 提供 use drawer 相关实现。
+
 import type { Cleanup, Layer, RuntimeConfig, Service } from '@xihan-ui/core'
 import type { PresenceHandle } from '@xihan-ui/core/presence'
 import type { DrawerApi, DrawerSchema } from '@xihan-ui/headless'

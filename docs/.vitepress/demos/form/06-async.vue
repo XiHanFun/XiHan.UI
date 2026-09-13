@@ -1,3 +1,8 @@
+<!--
+  Copyright (c) 2021-Present XiHanFun and contributors.
+  Licensed under the MIT License. See LICENSE in the project root for license information.
+-->
+
 <!-- 异步校验 | 提交前检查用户名 -->
 <script setup lang="ts">
 import type { FormRules } from "@xihan-ui/headless";

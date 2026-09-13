@@ -1,3 +1,10 @@
+/*
+ * Copyright (c) 2021-Present XiHanFun and contributors.
+ * Licensed under the MIT License. See LICENSE in the project root for license information.
+ */
+
+// 提供 use pin input 相关实现。
+
 import type { PinInputApi, PinInputSchema } from '@xihan-ui/headless'
 import type { ComputedRef } from 'vue'
 import { createScope } from '@xihan-ui/core'

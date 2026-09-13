@@ -1,3 +1,10 @@
+/*
+ * Copyright (c) 2021-Present XiHanFun and contributors.
+ * Licensed under the MIT License. See LICENSE in the project root for license information.
+ */
+
+// 提供 field array 相关实现。
+
 import type { Params, RefsFacade } from '@xihan-ui/core'
 import type { FieldArrayFocusTarget, FieldArrayPendingKeys, FieldArraySchema } from './field-array.types'
 import { focusSafely, resetDeclaredValue, setup } from '@xihan-ui/core'

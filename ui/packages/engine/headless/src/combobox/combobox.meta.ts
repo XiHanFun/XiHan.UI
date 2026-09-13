@@ -1,3 +1,10 @@
+/*
+ * Copyright (c) 2021-Present XiHanFun and contributors.
+ * Licensed under the MIT License. See LICENSE in the project root for license information.
+ */
+
+// 提供 combobox 相关实现。
+
 import type { ComponentMeta } from '../spec/types'
 
 // item 不列为必备：候选是调用方过滤后的结果，空结果是正常态（此时显形的是 empty）。

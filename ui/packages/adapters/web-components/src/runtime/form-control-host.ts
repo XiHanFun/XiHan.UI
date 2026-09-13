@@ -1,3 +1,10 @@
+/*
+ * Copyright (c) 2021-Present XiHanFun and contributors.
+ * Licensed under the MIT License. See LICENSE in the project root for license information.
+ */
+
+// 提供 form control host 相关实现。
+
 import type { FormControlState } from '@xihan-ui/headless'
 
 /** 能接收最近 Form/Field 状态的非 Portal 表单控件宿主。 */

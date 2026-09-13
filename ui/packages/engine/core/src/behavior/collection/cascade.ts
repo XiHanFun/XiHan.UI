@@ -1,3 +1,8 @@
+/*
+ * Copyright (c) 2021-Present XiHanFun and contributors.
+ * Licensed under the MIT License. See LICENSE in the project root for license information.
+ */
+
 // 树形勾选的级联算法：向下传导、向上聚合（含半选）、回显收敛。
 // 纯函数，节点结构上只认 value/disabled/children 三个键，tree / tree-select /
 // cascader 的集合都可直接喂。值须全树唯一，重复值以先出现的那个为准。

@@ -1,3 +1,10 @@
+/*
+ * Copyright (c) 2021-Present XiHanFun and contributors.
+ * Licensed under the MIT License. See LICENSE in the project root for license information.
+ */
+
+// 验证 select focus report 相关行为。
+
 // @vitest-environment jsdom
 //
 // 高亮所在的条目被移出 DOM 时，浏览器不派 focusout——焦点无声地掉到 body 上，

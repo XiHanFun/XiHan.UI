@@ -1,3 +1,10 @@
+/*
+ * Copyright (c) 2021-Present XiHanFun and contributors.
+ * Licensed under the MIT License. See LICENSE in the project root for license information.
+ */
+
+// 验证 dismissable layer realm 相关行为。
+
 // @vitest-environment jsdom
 // DismissableLayer 的监听、表决事件与帧调度必须全部属于 Scope Window。
 import type { Disposable, Layer, LayerRegistry, RuntimeConfig } from '../src/kernel'

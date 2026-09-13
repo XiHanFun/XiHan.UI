@@ -1,3 +1,10 @@
+/*
+ * Copyright (c) 2021-Present XiHanFun and contributors.
+ * Licensed under the MIT License. See LICENSE in the project root for license information.
+ */
+
+// 提供 pin input 相关实现。
+
 import type { KeyboardTable } from '../spec/types'
 
 // 每格都是原生 text input，本表只定义格与格之间的移动。

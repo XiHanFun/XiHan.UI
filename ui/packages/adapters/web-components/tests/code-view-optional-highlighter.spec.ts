@@ -1,3 +1,10 @@
+/*
+ * Copyright (c) 2021-Present XiHanFun and contributors.
+ * Licensed under the MIT License. See LICENSE in the project root for license information.
+ */
+
+// 验证 code view optional highlighter 相关行为。
+
 // @vitest-environment jsdom
 // @xihan-ui/code-highlight 是可选 peer：没装它，代码视图要渲成纯文本，不能报错。
 import { describe, expect, it, vi } from 'vitest'

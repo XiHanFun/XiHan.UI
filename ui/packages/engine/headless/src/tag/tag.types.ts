@@ -1,3 +1,10 @@
+/*
+ * Copyright (c) 2021-Present XiHanFun and contributors.
+ * Licensed under the MIT License. See LICENSE in the project root for license information.
+ */
+
+// 定义 tag 类型契约。
+
 import type { MachineSchema, PropTypes, Size, Tone } from '@xihan-ui/core'
 
 /** 形态。取值与 tag.css 的选择器一一对应。 */

@@ -1,3 +1,10 @@
+/*
+ * Copyright (c) 2021-Present XiHanFun and contributors.
+ * Licensed under the MIT License. See LICENSE in the project root for license information.
+ */
+
+// 验证 select tags 相关行为。
+
 // @vitest-environment jsdom
 // select 多选标签形态：api 的 tags 受 maxTagCount 截断（缺省 3）、余数进 overflowCount，
 // XhSelectOverflowTag 把余数显示成 +N；XhSelectItemDeleteTrigger 渲的是所在标签那份 tag 的 close-trigger，

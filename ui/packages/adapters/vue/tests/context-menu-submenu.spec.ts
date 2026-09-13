@@ -1,3 +1,10 @@
+/*
+ * Copyright (c) 2021-Present XiHanFun and contributors.
+ * Licensed under the MIT License. See LICENSE in the project root for license information.
+ */
+
+// 验证 context menu submenu 相关行为。
+
 // @vitest-environment jsdom
 // context-menu 嵌套子菜单：跨 scope 双重身份（父层 item 身份胜出）、子层选中汇根整链关闭。
 import { afterEach, describe, expect, it, vi } from 'vitest'

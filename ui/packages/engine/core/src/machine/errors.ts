@@ -1,3 +1,8 @@
+/*
+ * Copyright (c) 2021-Present XiHanFun and contributors.
+ * Licensed under the MIT License. See LICENSE in the project root for license information.
+ */
+
 // 机器错误类型与错误码，以及投递进诊断通道的入口。
 import { DIAGNOSTIC_CODES, isDev, reportDiagnostic } from '../kernel'
 

@@ -1,3 +1,8 @@
+/*
+ * Copyright (c) 2021-Present XiHanFun and contributors.
+ * Licensed under the MIT License. See LICENSE in the project root for license information.
+ */
+
 // 分隔线 | split 在条目之间画一条线，第一条上面不画
 import type { ReactNode } from "react";
 import { XhListItem, XhListItemContent, XhListItemTitle, XhListRoot } from "@xihan-ui/react";

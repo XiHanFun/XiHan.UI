@@ -1,3 +1,10 @@
+/*
+ * Copyright (c) 2021-Present XiHanFun and contributors.
+ * Licensed under the MIT License. See LICENSE in the project root for license information.
+ */
+
+// 提供 pin input 相关实现。
+
 import type { ItemQuery, NormalizeProps, PropTypes, Service } from '@xihan-ui/core'
 import type { PinInputApi, PinInputSchema } from './pin-input.types'
 import { dataAttr, focusSafely, isComposingEvent, navIntentFromKey, queryItems, readDirection, stepIndex } from '@xihan-ui/core'

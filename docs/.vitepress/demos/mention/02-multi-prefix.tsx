@@ -1,3 +1,8 @@
+/*
+ * Copyright (c) 2021-Present XiHanFun and contributors.
+ * Licensed under the MIT License. See LICENSE in the project root for license information.
+ */
+
 // 多种前缀 | @ 提人、# 打标签共用一个输入框，query-change 会报回是哪个前缀触发的
 import type { ReactNode } from "react";
 import { XhMentionRoot } from "@xihan-ui/react";

@@ -1,3 +1,10 @@
+/*
+ * Copyright (c) 2021-Present XiHanFun and contributors.
+ * Licensed under the MIT License. See LICENSE in the project root for license information.
+ */
+
+// 定义 descriptions 类型契约。
+
 import type { PropTypes, Size } from '@xihan-ui/core'
 
 /** 每行摆几组「标签 + 取值」。皮肤逐档给出列数，一到六列。 */

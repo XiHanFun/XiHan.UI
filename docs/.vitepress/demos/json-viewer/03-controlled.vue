@@ -1,3 +1,8 @@
+<!--
+  Copyright (c) 2021-Present XiHanFun and contributors.
+  Licensed under the MIT License. See LICENSE in the project root for license information.
+-->
+
 <!-- 受控展开 | 传了 expandedValue 就由宿主说了算，组件只发 expanded-value-change 不落内部值，写回它才动 -->
 <script setup lang="ts">
 import { JSON_VIEWER_ROOT_PATH, jsonExpandedPathsToDepth } from "@xihan-ui/headless";

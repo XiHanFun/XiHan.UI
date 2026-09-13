@@ -1,3 +1,8 @@
+/*
+ * Copyright (c) 2021-Present XiHanFun and contributors.
+ * Licensed under the MIT License. See LICENSE in the project root for license information.
+ */
+
 // 全局命令式确认框服务：confirm/info/success/warning/error 一次调用弹出，
 // 自带标题徽记、正文与按钮行。同一时刻只挂一个对话框，后来的排队顺次弹出，
 // 避开多层模态叠加。onOk 返回 Promise 时确认钮自动进入 pending 并拦住关闭，

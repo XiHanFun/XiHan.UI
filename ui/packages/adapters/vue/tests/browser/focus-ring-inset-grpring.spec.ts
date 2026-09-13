@@ -1,3 +1,8 @@
+/*
+ * Copyright (c) 2021-Present XiHanFun and contributors.
+ * Licensed under the MIT License. See LICENSE in the project root for license information.
+ */
+
 // 聚焦环画在元素自己那一圈：聚焦前后元素占的地方一样大，环仍然看得见。
 //
 // 三件事各查一遍：

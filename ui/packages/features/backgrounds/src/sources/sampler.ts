@@ -1,3 +1,8 @@
+/*
+ * Copyright (c) 2021-Present XiHanFun and contributors.
+ * Licensed under the MIT License. See LICENSE in the project root for license information.
+ */
+
 // 像素 → 点云。这是「任意图片转粒子」的通用核心：
 // 图片、文字、SVG、乃至任何画到 canvas 上的东西，都先变成一份 RGBA 像素，再走这里。
 // 采样按权重带放回抽取，所以目标点数可以大于也可以小于有效像素数，密度都是均匀的。

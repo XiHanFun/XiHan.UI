@@ -1,3 +1,10 @@
+/*
+ * Copyright (c) 2021-Present XiHanFun and contributors.
+ * Licensed under the MIT License. See LICENSE in the project root for license information.
+ */
+
+// 提供 icon wrapper 相关实现。
+
 import type { ActionVariant, Size, Tone } from '@xihan-ui/core'
 import type { IconWrapperProps } from '@xihan-ui/headless'
 import { connectIconWrapper, iconWrapperAnatomy, iconWrapperMeta } from '@xihan-ui/headless'

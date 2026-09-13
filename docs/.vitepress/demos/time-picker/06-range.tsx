@@ -1,3 +1,8 @@
+/*
+ * Copyright (c) 2021-Present XiHanFun and contributors.
+ * Licensed under the MIT License. See LICENSE in the project root for license information.
+ */
+
 // 可选时段 | min / max 直接把界外的格从列里裁掉；分列还会随已选的时再裁一遍
 import type { ReactNode } from "react";
 import {

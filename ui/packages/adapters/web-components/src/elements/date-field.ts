@@ -1,3 +1,10 @@
+/*
+ * Copyright (c) 2021-Present XiHanFun and contributors.
+ * Licensed under the MIT License. See LICENSE in the project root for license information.
+ */
+
+// 提供 date field 相关实现。
+
 import type { ControlVariant, Size, Tone } from '@xihan-ui/core'
 import type { DateFieldSchema, DateFieldSegmentProps, DateFieldTranslations, DateFieldValueChangeDetails, DateGranularity, DateSegmentSet, DateSegmentType, FormControlState } from '@xihan-ui/headless'
 import { connectDateField, dateFieldAnatomy, dateFieldMachine, dateFieldMeta, resolveFormControlState } from '@xihan-ui/headless'

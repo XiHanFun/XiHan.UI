@@ -1,3 +1,10 @@
+/*
+ * Copyright (c) 2021-Present XiHanFun and contributors.
+ * Licensed under the MIT License. See LICENSE in the project root for license information.
+ */
+
+// 提供 diff view 相关实现。
+
 import type { DiffViewSchema } from './diff-view.types'
 import { setup } from '@xihan-ui/core'
 import { toggleItemValue } from '../checkbox-group'

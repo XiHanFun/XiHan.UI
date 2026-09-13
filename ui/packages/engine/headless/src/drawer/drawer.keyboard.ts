@@ -1,3 +1,10 @@
+/*
+ * Copyright (c) 2021-Present XiHanFun and contributors.
+ * Licensed under the MIT License. See LICENSE in the project root for license information.
+ */
+
+// 提供 drawer 相关实现。
+
 import type { KeyboardTable } from '../spec/types'
 
 // 抽屉的键盘契约与模态对话框逐条相同：它就是贴边渲染的对话框，

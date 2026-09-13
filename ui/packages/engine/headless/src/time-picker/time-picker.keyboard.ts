@@ -1,3 +1,10 @@
+/*
+ * Copyright (c) 2021-Present XiHanFun and contributors.
+ * Licensed under the MIT License. See LICENSE in the project root for license information.
+ */
+
+// 提供 time picker 相关实现。
+
 import type { KeyboardTable } from '../spec/types'
 
 // 浮层里几列并排的 listbox 按 listbox 那一套，输入行里的分段按 spinbutton 那一套；

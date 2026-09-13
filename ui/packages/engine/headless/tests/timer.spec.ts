@@ -1,3 +1,8 @@
+/*
+ * Copyright (c) 2021-Present XiHanFun and contributors.
+ * Licensed under the MIT License. See LICENSE in the project root for license information.
+ */
+
 /**
  * 计时靠单调时钟取时刻，定时器与 performance 都要能拨，所以用假时钟；
  * scope.getWin() 要有一个真窗口对象才拿得到 performance。

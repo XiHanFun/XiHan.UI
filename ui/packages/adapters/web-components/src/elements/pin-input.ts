@@ -1,3 +1,10 @@
+/*
+ * Copyright (c) 2021-Present XiHanFun and contributors.
+ * Licensed under the MIT License. See LICENSE in the project root for license information.
+ */
+
+// 提供 pin input 相关实现。
+
 import type { ControlVariant, Size, Tone } from '@xihan-ui/core'
 import type { FormControlState, PinInputSchema, PinInputTranslations, PinInputType, PinInputValueChangeDetails } from '@xihan-ui/headless'
 import { connectPinInput, pinInputAnatomy, pinInputMachine, pinInputMeta, resolveFormControlState } from '@xihan-ui/headless'

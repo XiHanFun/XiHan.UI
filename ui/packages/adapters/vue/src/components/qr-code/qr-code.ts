@@ -1,3 +1,10 @@
+/*
+ * Copyright (c) 2021-Present XiHanFun and contributors.
+ * Licensed under the MIT License. See LICENSE in the project root for license information.
+ */
+
+// 提供 qr code 相关实现。
+
 import type { QrCodeProps, QrLevel } from '@xihan-ui/headless'
 import type { PropType, VNode } from 'vue'
 import { connectQrCode } from '@xihan-ui/headless'

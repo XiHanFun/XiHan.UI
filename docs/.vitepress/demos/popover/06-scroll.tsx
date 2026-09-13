@@ -1,3 +1,8 @@
+/*
+ * Copyright (c) 2021-Present XiHanFun and contributors.
+ * Licensed under the MIT License. See LICENSE in the project root for license information.
+ */
+
 // 长内容滚动 | 浮层自己不限高，给里面的容器设上限并开滚动，标题与关闭按钮就不跟着滚
 import type { ReactNode } from "react";
 import {

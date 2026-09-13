@@ -1,3 +1,8 @@
+/*
+ * Copyright (c) 2021-Present XiHanFun and contributors.
+ * Licensed under the MIT License. See LICENSE in the project root for license information.
+ */
+
 // 全局配置：locale、尺寸档与各组件内建文案的应用级默认值。
 // 取值优先级：元素上的 property > 最近一个 <xh-config> > 外层 <xh-config> > setXhConfig 的全局值 > 组件内建默认。
 //

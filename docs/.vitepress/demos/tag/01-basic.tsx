@@ -1,3 +1,8 @@
+/*
+ * Copyright (c) 2021-Present XiHanFun and contributors.
+ * Licensed under the MIT License. See LICENSE in the project root for license information.
+ */
+
 // 基础用法 | 一个标签就是 root 加一段 label 文字；不写 closable 就没有关闭钮
 import type { ReactNode } from "react";
 import { XhTagLabel, XhTagRoot } from "@xihan-ui/react";

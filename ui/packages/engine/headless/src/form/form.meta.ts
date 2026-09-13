@@ -1,3 +1,10 @@
+/*
+ * Copyright (c) 2021-Present XiHanFun and contributors.
+ * Licensed under the MIT License. See LICENSE in the project root for license information.
+ */
+
+// 提供 form 相关实现。
+
 import type { ComponentMeta } from '../spec/types'
 
 // 只有 root 缺不得：它就是那个 `<form>`，提交事件与整表状态都长在它身上。

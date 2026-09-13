@@ -1,3 +1,10 @@
+/*
+ * Copyright (c) 2021-Present XiHanFun and contributors.
+ * Licensed under the MIT License. See LICENSE in the project root for license information.
+ */
+
+// 提供 timer 相关实现。
+
 import { createAnatomy } from '@xihan-ui/core'
 
 // root 是外壳，承载尺寸档与整组状态；display 收口计时语义与读屏名字；

@@ -1,3 +1,8 @@
+<!--
+  Copyright (c) 2021-Present XiHanFun and contributors.
+  Licensed under the MIT License. See LICENSE in the project root for license information.
+-->
+
 <!-- 提交时机 | 输入途中只动草稿，失焦或回车才把值交给业务模型；不合法就退回上一次提交的值 -->
 <script setup lang="ts">
 import {

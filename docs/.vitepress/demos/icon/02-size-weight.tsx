@@ -1,3 +1,8 @@
+/*
+ * Copyright (c) 2021-Present XiHanFun and contributors.
+ * Licensed under the MIT License. See LICENSE in the project root for license information.
+ */
+
 // 尺寸与描边 | 设置图标大小和描边粗细
 import type { ReactNode } from "react";
 import { StarIcon } from "@xihan-ui/icons";

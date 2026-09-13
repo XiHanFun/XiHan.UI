@@ -1,3 +1,8 @@
+/*
+ * Copyright (c) 2021-Present XiHanFun and contributors.
+ * Licensed under the MIT License. See LICENSE in the project root for license information.
+ */
+
 // @xihan-ui/vue/behavior —— 行为原语的 Vue 包装。
 //
 // @xihan-ui/core 里的原语都是框架无关的：收一份配置与 DOM 输入，返回一个要自己

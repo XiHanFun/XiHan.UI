@@ -1,3 +1,10 @@
+/*
+ * Copyright (c) 2021-Present XiHanFun and contributors.
+ * Licensed under the MIT License. See LICENSE in the project root for license information.
+ */
+
+// 提供 color picker.suite 相关实现。
+
 import type { ConformanceSuite, FixtureNode, RawStepContext } from '../conformance/types'
 import { colorPickerAnatomy, colorPickerKeyboard } from '@xihan-ui/headless'
 import { dispatchClickOnDisabled } from './shared/disabled-press'

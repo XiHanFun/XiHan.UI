@@ -1,3 +1,10 @@
+/*
+ * Copyright (c) 2021-Present XiHanFun and contributors.
+ * Licensed under the MIT License. See LICENSE in the project root for license information.
+ */
+
+// 定义 list 类型契约。
+
 import type { PropTypes, Size } from '@xihan-ui/core'
 
 /** 尺寸档位，只改条目的内边距、图文间距与两行文字的字号。 */

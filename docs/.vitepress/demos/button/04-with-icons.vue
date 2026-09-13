@@ -1,3 +1,8 @@
+<!--
+  Copyright (c) 2021-Present XiHanFun and contributors.
+  Licensed under the MIT License. See LICENSE in the project root for license information.
+-->
+
 <!-- 图标 | 在文字前后放置图标 -->
 <script setup lang="ts">
 import { ArrowRightIcon, PlusIcon } from "@xihan-ui/icons";

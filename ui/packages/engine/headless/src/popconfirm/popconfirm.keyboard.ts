@@ -1,3 +1,10 @@
+/*
+ * Copyright (c) 2021-Present XiHanFun and contributors.
+ * Licensed under the MIT License. See LICENSE in the project root for license information.
+ */
+
+// 提供 popconfirm 相关实现。
+
 import type { KeyboardTable } from '../spec/types'
 
 const ARIA_DIALOG = 'https://www.w3.org/TR/wai-aria-1.2/#dialog'

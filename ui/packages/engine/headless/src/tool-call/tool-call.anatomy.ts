@@ -1,3 +1,10 @@
+/*
+ * Copyright (c) 2021-Present XiHanFun and contributors.
+ * Licensed under the MIT License. See LICENSE in the project root for license information.
+ */
+
+// 提供 tool call 相关实现。
+
 import { createAnatomy } from '@xihan-ui/core'
 
 // root 是外壳并承载阶段与三视觉轴；trigger 是折叠开关，indicator/label/summary/status/duration

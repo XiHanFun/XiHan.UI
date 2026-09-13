@@ -1,3 +1,8 @@
+/*
+ * Copyright (c) 2021-Present XiHanFun and contributors.
+ * Licensed under the MIT License. See LICENSE in the project root for license information.
+ */
+
 // 禁用 | disabled 只关掉卡片本身，触发器照样可点、可聚焦，也照样进不了展开等待
 import type { ReactNode } from "react";
 import {

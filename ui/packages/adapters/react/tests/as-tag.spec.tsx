@@ -1,3 +1,10 @@
+/*
+ * Copyright (c) 2021-Present XiHanFun and contributors.
+ * Licensed under the MIT License. See LICENSE in the project root for license information.
+ */
+
+// 验证 as tag 相关行为。
+
 // @vitest-environment jsdom
 //
 // 三族排版件的 as 与描述列表的 span，共享一致性套件都咬不到：

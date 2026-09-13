@@ -1,3 +1,8 @@
+/*
+ * Copyright (c) 2021-Present XiHanFun and contributors.
+ * Licensed under the MIT License. See LICENSE in the project root for license information.
+ */
+
 // 极简主题：短促、干净、无混响。单层衰减都在 0.15 秒内，整段不超过 0.3 秒。
 // 适合信息密度高、提示频繁的界面——声音只标记事件发生，不渲染情绪。
 

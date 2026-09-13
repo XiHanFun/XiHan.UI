@@ -1,3 +1,8 @@
+/*
+ * Copyright (c) 2021-Present XiHanFun and contributors.
+ * Licensed under the MIT License. See LICENSE in the project root for license information.
+ */
+
 /**
  * 行是按数据摊出来的，键盘导航又要在事件那一刻现查活 DOM，纯逻辑环境里演不出来。
  *

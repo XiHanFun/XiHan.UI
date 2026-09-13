@@ -1,3 +1,10 @@
+/*
+ * Copyright (c) 2021-Present XiHanFun and contributors.
+ * Licensed under the MIT License. See LICENSE in the project root for license information.
+ */
+
+// 验证 menu family submenu owner 相关行为。
+
 // @vitest-environment jsdom
 // ContextMenu / Menubar 通过内部 owner 接住 xh-menu 子层，不依赖 Portal 后的 DOM 冒泡祖先。
 import { afterEach, describe, expect, it, vi } from 'vitest'

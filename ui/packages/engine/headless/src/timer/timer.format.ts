@@ -1,3 +1,8 @@
+/*
+ * Copyright (c) 2021-Present XiHanFun and contributors.
+ * Licensed under the MIT License. See LICENSE in the project root for license information.
+ */
+
 // 计时的纯算术：间隔与起止值的归一、按已走时长求当前值、拆成五段并补零。
 // 这里不认识时钟，也不持有任何定时器——时间由调用方在事件那一刻取好交进来。
 import type { TimerSegments, TimerUnit } from './timer.types'

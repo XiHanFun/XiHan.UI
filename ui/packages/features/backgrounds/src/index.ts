@@ -1,3 +1,8 @@
+/*
+ * Copyright (c) 2021-Present XiHanFun and contributors.
+ * Licensed under the MIT License. See LICENSE in the project root for license information.
+ */
+
 // @xihan-ui/backgrounds —— 背景层：WebGL2 背景效果与数据驱动粒子点云，框架无关。
 //
 // 两条主线：

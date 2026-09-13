@@ -1,3 +1,8 @@
+/*
+ * Copyright (c) 2021-Present XiHanFun and contributors.
+ * Licensed under the MIT License. See LICENSE in the project root for license information.
+ */
+
 // 面包屑折叠的纯函数：把一串层级按上限折成「首段 + 省略位 + 末段」。不碰 DOM。
 
 import type { BreadcrumbItem, BreadcrumbNode, BreadcrumbNodeMeta } from './breadcrumb.types'

@@ -1,3 +1,8 @@
+/*
+ * Copyright (c) 2021-Present XiHanFun and contributors.
+ * Licensed under the MIT License. See LICENSE in the project root for license information.
+ */
+
 /**
  * 拖动与改尺要真实的活 DOM：跟手期间的监听挂在 document 上，
  * 而按键处理器只有拿到真事件才判得出"这一下拦没拦"。

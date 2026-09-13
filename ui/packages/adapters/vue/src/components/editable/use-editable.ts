@@ -1,3 +1,10 @@
+/*
+ * Copyright (c) 2021-Present XiHanFun and contributors.
+ * Licensed under the MIT License. See LICENSE in the project root for license information.
+ */
+
+// 提供 use editable 相关实现。
+
 import type { Service } from '@xihan-ui/core'
 import type { EditableApi, EditableSchema } from '@xihan-ui/headless'
 import type { ComputedRef, Ref } from 'vue'

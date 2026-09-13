@@ -1,3 +1,10 @@
+/*
+ * Copyright (c) 2021-Present XiHanFun and contributors.
+ * Licensed under the MIT License. See LICENSE in the project root for license information.
+ */
+
+// 验证 parity react 相关行为。
+
 // @vitest-environment jsdom
 //
 // Vue 与 React 的逐帧对拍。

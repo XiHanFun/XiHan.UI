@@ -1,3 +1,8 @@
+/*
+ * Copyright (c) 2021-Present XiHanFun and contributors.
+ * Licensed under the MIT License. See LICENSE in the project root for license information.
+ */
+
 // 轮播的分页算术：纯函数，不碰 DOM、不认识状态机。
 // 覆盖 slidesPerPage 与 slidesPerMove 组合出的总页数、末页落点、回绕收口。
 // 页码与条目下标一律 0 基。

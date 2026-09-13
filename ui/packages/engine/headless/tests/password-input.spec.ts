@@ -1,3 +1,8 @@
+/*
+ * Copyright (c) 2021-Present XiHanFun and contributors.
+ * Licensed under the MIT License. See LICENSE in the project root for license information.
+ */
+
 /**
  * 大写锁定与明暗切换都要真实的活 DOM：前者只有按键事件报得出来，
  * 后者要在切换之后把光标放回输入框，纯逻辑环境里两件都演不出来。

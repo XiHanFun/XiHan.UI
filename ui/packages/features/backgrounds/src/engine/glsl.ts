@@ -1,3 +1,8 @@
+/*
+ * Copyright (c) 2021-Present XiHanFun and contributors.
+ * Licensed under the MIT License. See LICENSE in the project root for license information.
+ */
+
 // 着色器公共片段。两个绘制通道共用同一份 uniform 声明与噪声工具，
 // 效果因此可以在流场里和粒子里引用同一个函数，粒子才能精确落在流场的特征位置上。
 

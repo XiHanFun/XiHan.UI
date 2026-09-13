@@ -1,3 +1,8 @@
+/*
+ * Copyright (c) 2021-Present XiHanFun and contributors.
+ * Licensed under the MIT License. See LICENSE in the project root for license information.
+ */
+
 // 已解析的色彩模式：值域封闭，不含 'system'。
 export type ColorMode = 'light' | 'dark'
 // 密度档位。comfortable 是基线。

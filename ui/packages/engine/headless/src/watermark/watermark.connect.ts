@@ -1,3 +1,10 @@
+/*
+ * Copyright (c) 2021-Present XiHanFun and contributors.
+ * Licensed under the MIT License. See LICENSE in the project root for license information.
+ */
+
+// 提供 watermark 相关实现。
+
 import type { NormalizeProps, PropTypes } from '@xihan-ui/core'
 import type { WatermarkApi, WatermarkProps, WatermarkState, WatermarkTile } from './watermark.types'
 import { DIAGNOSTIC_CODES, reportDiagnostic } from '@xihan-ui/core'

@@ -1,3 +1,10 @@
+/*
+ * Copyright (c) 2021-Present XiHanFun and contributors.
+ * Licensed under the MIT License. See LICENSE in the project root for license information.
+ */
+
+// 验证 field control anatomy 相关行为。
+
 // @vitest-environment jsdom
 // XhFieldControl 合并属性时的角色标记归属：子节点是裸控件就把 field/control 标上去，
 // 子节点自带角色标记（组件根、或写了 data-scope 的元素）则只落 id 与 aria-*。

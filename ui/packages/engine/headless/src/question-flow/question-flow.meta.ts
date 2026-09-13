@@ -1,3 +1,10 @@
+/*
+ * Copyright (c) 2021-Present XiHanFun and contributors.
+ * Licensed under the MIT License. See LICENSE in the project root for license information.
+ */
+
+// 提供 question flow 相关实现。
+
 import type { ComponentMeta } from '../spec/types'
 
 // track 与 question 缺一，题目栈就无处安放，量测也没有参照系；

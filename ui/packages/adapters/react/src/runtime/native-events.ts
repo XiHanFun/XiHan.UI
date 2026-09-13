@@ -1,3 +1,10 @@
+/*
+ * Copyright (c) 2021-Present XiHanFun and contributors.
+ * Licensed under the MIT License. See LICENSE in the project root for license information.
+ */
+
+// 提供 native events 相关实现。
+
 import type { RefCallback } from 'react'
 import { useCallback, useEffect, useLayoutEffect, useRef } from 'react'
 

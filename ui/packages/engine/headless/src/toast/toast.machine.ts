@@ -1,3 +1,10 @@
+/*
+ * Copyright (c) 2021-Present XiHanFun and contributors.
+ * Licensed under the MIT License. See LICENSE in the project root for license information.
+ */
+
+// 提供 toast 相关实现。
+
 import type { Scope } from '@xihan-ui/core'
 import type { ToastPauseSource, ToastPlacement, ToastSchema, ToastType } from './toast.types'
 import { setTimeoutEffect, setup } from '@xihan-ui/core'

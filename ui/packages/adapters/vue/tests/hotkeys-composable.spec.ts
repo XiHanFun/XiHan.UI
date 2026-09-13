@@ -1,3 +1,10 @@
+/*
+ * Copyright (c) 2021-Present XiHanFun and contributors.
+ * Licensed under the MIT License. See LICENSE in the project root for license information.
+ */
+
+// 验证 hotkeys composable 相关行为。
+
 // @vitest-environment jsdom
 // useHotkeys 的三条：不渲染任何节点也能注册、监听挂在指定节点上且换节点会重绑、
 // 作用域销毁后不再响应。三条锁的都是不报错的失败模式。

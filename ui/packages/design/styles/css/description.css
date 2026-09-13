@@ -1,4 +1,9 @@
 /*
+ * Copyright (c) 2021-Present XiHanFun and contributors.
+ * Licensed under the MIT License. See LICENSE in the project root for license information.
+ */
+
+/*
  * 字段族说明文字的公共层，按 [data-part='description'] 匹配下面逐个列出的 scope。
  *
  * 说明与错误文案落在控件下方的同一处：无效时收起说明，那一行只剩错误。两段同时在场

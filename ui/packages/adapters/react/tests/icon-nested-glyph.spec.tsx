@@ -1,3 +1,10 @@
+/*
+ * Copyright (c) 2021-Present XiHanFun and contributors.
+ * Licensed under the MIT License. See LICENSE in the project root for license information.
+ */
+
+// 验证 icon nested glyph 相关行为。
+
 // @vitest-environment jsdom
 //
 // 图元树逐层铺进 glyph 时，标签与属性名要逐字保留。共享的一致性套件核到了连字符

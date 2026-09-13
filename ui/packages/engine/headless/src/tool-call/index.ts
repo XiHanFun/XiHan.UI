@@ -1,3 +1,10 @@
+/*
+ * Copyright (c) 2021-Present XiHanFun and contributors.
+ * Licensed under the MIT License. See LICENSE in the project root for license information.
+ */
+
+// 导出 tool call 模块的公共接口。
+
 export { toolCallAnatomy } from './tool-call.anatomy'
 export { connectToolCall } from './tool-call.connect'
 export { toolCallKeyboard } from './tool-call.keyboard'

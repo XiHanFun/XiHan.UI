@@ -1,3 +1,8 @@
+/*
+ * Copyright (c) 2021-Present XiHanFun and contributors.
+ * Licensed under the MIT License. See LICENSE in the project root for license information.
+ */
+
 // @xihan-ui/react/sound —— 声音层的 React 适配。
 //
 // 与主入口分开：@xihan-ui/sound 是可选 peer，不用音效的应用不会因为装了本包

@@ -1,3 +1,10 @@
+/*
+ * Copyright (c) 2021-Present XiHanFun and contributors.
+ * Licensed under the MIT License. See LICENSE in the project root for license information.
+ */
+
+// 验证 ssr exempt 相关行为。
+
 import type { SsrExemptions } from '@xihan-ui/testing/ssr'
 
 const SLOT_ONLY = '根组件只渲插槽，不产出自己的元素'

@@ -1,3 +1,10 @@
+/*
+ * Copyright (c) 2021-Present XiHanFun and contributors.
+ * Licensed under the MIT License. See LICENSE in the project root for license information.
+ */
+
+// 提供 splitter 相关实现。
+
 import type { PanelConstraint } from './splitter.sizing'
 import type { SplitterSchema } from './splitter.types'
 import { setup } from '@xihan-ui/core'

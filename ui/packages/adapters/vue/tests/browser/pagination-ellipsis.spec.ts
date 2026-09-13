@@ -1,3 +1,8 @@
+/*
+ * Copyright (c) 2021-Present XiHanFun and contributors.
+ * Licensed under the MIT License. See LICENSE in the project root for license information.
+ */
+
 // 省略位摊开被折叠的页码。
 //
 // 这条必须在真实浏览器里验：浮层被 Teleport 搬到 portal 落点，坐标由定位引擎实测，

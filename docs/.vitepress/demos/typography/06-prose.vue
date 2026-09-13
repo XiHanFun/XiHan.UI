@@ -1,3 +1,8 @@
+<!--
+  Copyright (c) 2021-Present XiHanFun and contributors.
+  Licensed under the MIT License. See LICENSE in the project root for license information.
+-->
+
 <!-- 富文本 | 排版外部 HTML 内容 -->
 <script setup lang="ts">
 import { XhTypographyProse, XhTypographyRoot } from "@xihan-ui/vue";

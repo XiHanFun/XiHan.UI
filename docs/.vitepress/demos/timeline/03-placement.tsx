@@ -1,3 +1,8 @@
+/*
+ * Copyright (c) 2021-Present XiHanFun and contributors.
+ * Licensed under the MIT License. See LICENSE in the project root for license information.
+ */
+
 // 内容在哪一侧 | placement 决定内容落在线的哪一侧；alternate 是逐条交替，线走中间
 import type { ReactNode } from "react";
 import {

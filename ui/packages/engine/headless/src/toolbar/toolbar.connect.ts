@@ -1,3 +1,10 @@
+/*
+ * Copyright (c) 2021-Present XiHanFun and contributors.
+ * Licensed under the MIT License. See LICENSE in the project root for license information.
+ */
+
+// 提供 toolbar 相关实现。
+
 import type { NormalizeProps, Orientation, PropTypes, Service } from '@xihan-ui/core'
 import type { ToolbarApi, ToolbarItemProps, ToolbarSchema } from './toolbar.types'
 import { contains, dataAttr, focusItem, isItemDisabled, ITEM_VALUE_ATTR, itemValue, navigateItems, navIntentFromKey, queryItems } from '@xihan-ui/core'

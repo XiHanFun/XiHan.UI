@@ -1,3 +1,8 @@
+/*
+ * Copyright (c) 2021-Present XiHanFun and contributors.
+ * Licensed under the MIT License. See LICENSE in the project root for license information.
+ */
+
 // 播放器：声音层的对外门面。开关、音量、主题、同名节流与自动播放策略收在这里。
 // 上下文被浏览器挂起时最多保留最近一次待发声——恢复后只补那一声，
 // 绝不把积压的提示音一口气倒出来。

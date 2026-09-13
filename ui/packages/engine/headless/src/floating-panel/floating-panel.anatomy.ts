@@ -1,3 +1,10 @@
+/*
+ * Copyright (c) 2021-Present XiHanFun and contributors.
+ * Licensed under the MIT License. See LICENSE in the project root for license information.
+ */
+
+// 提供 floating panel 相关实现。
+
 import { createAnatomy } from '@xihan-ui/core'
 
 // root 是作者自己那棵树里的容器（触发器与面板都在它底下），positioner 摆位置与尺寸，

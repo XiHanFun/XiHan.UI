@@ -1,3 +1,8 @@
+/*
+ * Copyright (c) 2021-Present XiHanFun and contributors.
+ * Licensed under the MIT License. See LICENSE in the project root for license information.
+ */
+
 // 环的外观 | 直径、颜色与端点走令牌，线宽走 strokeWidth：它改的是几何，半径跟着往里收
 import type { CSSProperties, ReactNode } from "react";
 import { XhProgress } from "@xihan-ui/react";

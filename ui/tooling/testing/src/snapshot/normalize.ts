@@ -1,3 +1,8 @@
+/*
+ * Copyright (c) 2021-Present XiHanFun and contributors.
+ * Licensed under the MIT License. See LICENSE in the project root for license information.
+ */
+
 // 属性采集与归一化：抹掉适配器痕迹，把 IDREF 翻译成 part 引用。
 
 /** 恒采集的结构/状态属性；元素上没写也记为 null。 */

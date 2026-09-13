@@ -1,3 +1,8 @@
+/*
+ * Copyright (c) 2021-Present XiHanFun and contributors.
+ * Licensed under the MIT License. See LICENSE in the project root for license information.
+ */
+
 // 分页算术的纯函数：页码夹取、条目区间、页码序列折叠。不碰 DOM、不认识状态机。
 
 /** 页码序列里的一项：页码本身，或一段被折叠掉的页。 */

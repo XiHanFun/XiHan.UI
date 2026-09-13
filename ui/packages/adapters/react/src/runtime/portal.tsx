@@ -1,3 +1,10 @@
+/*
+ * Copyright (c) 2021-Present XiHanFun and contributors.
+ * Licensed under the MIT License. See LICENSE in the project root for license information.
+ */
+
+// 提供 portal 相关实现。
+
 import type { ReactNode } from 'react'
 import { createPortalVisualBridge } from '@xihan-ui/core'
 import { Fragment, useEffect, useLayoutEffect, useRef, useState } from 'react'

@@ -1,3 +1,8 @@
+/*
+ * Copyright (c) 2021-Present XiHanFun and contributors.
+ * Licensed under the MIT License. See LICENSE in the project root for license information.
+ */
+
 // 动画层公共类型。一段动画是一份可序列化的配方（MotionSpec）：
 // 若干视觉帧加一组时序参数。配方既是播放器的输入，也是预设库与调参界面共用的数据模型。
 

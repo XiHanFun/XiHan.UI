@@ -1,3 +1,8 @@
+/*
+ * Copyright (c) 2021-Present XiHanFun and contributors.
+ * Licensed under the MIT License. See LICENSE in the project root for license information.
+ */
+
 // 基础用法 | 在一条菜单栏中组织应用命令
 import type { ReactNode } from "react";
 import { XhMenubarRoot } from "@xihan-ui/react";

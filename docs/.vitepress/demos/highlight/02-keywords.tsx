@@ -1,3 +1,8 @@
+/*
+ * Copyright (c) 2021-Present XiHanFun and contributors.
+ * Licensed under the MIT License. See LICENSE in the project root for license information.
+ */
+
 // 一组关键词 | 传数组即可；同一处多个关键词都命中时取最长的那个，重叠只切出一段
 import type { ReactNode } from "react";
 import { XhHighlight } from "@xihan-ui/react";

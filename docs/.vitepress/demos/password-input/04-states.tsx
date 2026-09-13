@@ -1,3 +1,8 @@
+/*
+ * Copyright (c) 2021-Present XiHanFun and contributors.
+ * Licensed under the MIT License. See LICENSE in the project root for license information.
+ */
+
 // 禁用与校验态 | disabled 连明暗一起停掉，read-only 只锁值、明暗照切，invalid 只标注不拦输入
 import type { ReactNode } from "react";
 import {

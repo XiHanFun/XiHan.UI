@@ -1,3 +1,8 @@
+/*
+ * Copyright (c) 2021-Present XiHanFun and contributors.
+ * Licensed under the MIT License. See LICENSE in the project root for license information.
+ */
+
 // 图标当回退 | fallback 是普通插槽，放图标和放缩写字一样；没有名字可写时用图标表示「某位用户」
 import type { ReactNode } from "react";
 import { XhAvatarFallback, XhAvatarImage, XhAvatarRoot, XhIcon } from "@xihan-ui/react";

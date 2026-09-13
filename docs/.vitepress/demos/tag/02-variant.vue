@@ -1,3 +1,8 @@
+<!--
+  Copyright (c) 2021-Present XiHanFun and contributors.
+  Licensed under the MIT License. See LICENSE in the project root for license information.
+-->
+
 <!-- 形态 | variant 决定颜色怎么用：实心填底、淡色填底、只描边 -->
 <script setup lang="ts">
 import { XhTagLabel, XhTagRoot } from "@xihan-ui/vue";

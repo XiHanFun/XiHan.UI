@@ -1,3 +1,8 @@
+/*
+ * Copyright (c) 2021-Present XiHanFun and contributors.
+ * Licensed under the MIT License. See LICENSE in the project root for license information.
+ */
+
 /**
  * 表单字段身份。字符串永远是一整个字段名；只有作者显式传数组时才表示层级路径。
  * 因此 `user.email` 与 `['user', 'email']` 从不互相解释或碰撞。

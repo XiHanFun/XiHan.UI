@@ -1,3 +1,8 @@
+/*
+ * Copyright (c) 2021-Present XiHanFun and contributors.
+ * Licensed under the MIT License. See LICENSE in the project root for license information.
+ */
+
 // 尺寸档与使用者槽的先后：档位声明不许挡在使用者槽前面。
 // 组件把档值直接写进公开槽、或直接写成终值时，作者在祖先上设的覆盖会被 root 自己那条声明打败，
 // 改了没反应也不报错。每条都量两侧——该跟着覆盖走的走了，同组件里不相干的那一项没被牵连。

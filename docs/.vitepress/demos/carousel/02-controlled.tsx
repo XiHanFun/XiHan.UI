@@ -1,3 +1,8 @@
+/*
+ * Copyright (c) 2021-Present XiHanFun and contributors.
+ * Licensed under the MIT License. See LICENSE in the project root for license information.
+ */
+
 // 受控 | 传了 page 就由宿主说了算，组件只发 page-change 不自己改页码，宿主写回它才动
 import type { ReactNode } from "react";
 import {

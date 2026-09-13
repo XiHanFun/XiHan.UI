@@ -1,3 +1,10 @@
+/*
+ * Copyright (c) 2021-Present XiHanFun and contributors.
+ * Licensed under the MIT License. See LICENSE in the project root for license information.
+ */
+
+// 提供 navigate 相关实现。
+
 import type { Direction, Orientation } from '../../kernel'
 
 // 集合导航的纯计算：把按键翻译成意图，把意图翻译成下标；不碰 DOM。

@@ -1,3 +1,8 @@
+<!--
+  Copyright (c) 2021-Present XiHanFun and contributors.
+  Licensed under the MIT License. See LICENSE in the project root for license information.
+-->
+
 <!-- 组合式函数 | 不渲染组件实例 -->
 <script setup lang="ts">
 import { useHotkeys } from "@xihan-ui/vue";

@@ -1,3 +1,8 @@
+/*
+ * Copyright (c) 2021-Present XiHanFun and contributors.
+ * Licensed under the MIT License. See LICENSE in the project root for license information.
+ */
+
 /**
  * 转义 HTML 文本内容里的 & < > " 四个字符。
  * 单引号不在其列：文本节点里它闭合不了任何东西，转了反而与规范的产出对不上。

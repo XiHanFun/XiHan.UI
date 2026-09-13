@@ -1,3 +1,10 @@
+/*
+ * Copyright (c) 2021-Present XiHanFun and contributors.
+ * Licensed under the MIT License. See LICENSE in the project root for license information.
+ */
+
+// 提供 message feed 相关实现。
+
 import type { StickToBottomHandle } from '@xihan-ui/core'
 import type { MessageFeedSchema } from './message-feed.types'
 import { createStickToBottom, setup } from '@xihan-ui/core'

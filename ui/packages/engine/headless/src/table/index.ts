@@ -1,3 +1,10 @@
+/*
+ * Copyright (c) 2021-Present XiHanFun and contributors.
+ * Licensed under the MIT License. See LICENSE in the project root for license information.
+ */
+
+// 导出 table 模块的公共接口。
+
 export { tableAnatomy, tableRowQuery } from './table.anatomy'
 export { orderColumnIds, PREFIX_COLUMN_ID, resolveTableColumns } from './table.columns'
 export { connectTable } from './table.connect'

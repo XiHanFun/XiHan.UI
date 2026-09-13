@@ -1,3 +1,8 @@
+/*
+ * Copyright (c) 2021-Present XiHanFun and contributors.
+ * Licensed under the MIT License. See LICENSE in the project root for license information.
+ */
+
 // 自定义外观 | 描边、底色、标题色、圆角各是一个组件令牌；描边槽位换成透明就只剩淡底，尺寸不变
 import type { CSSProperties, ReactNode } from "react";
 import { XhAlertDescription, XhAlertRoot, XhAlertTitle } from "@xihan-ui/react";

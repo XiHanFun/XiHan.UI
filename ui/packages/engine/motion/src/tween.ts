@@ -1,3 +1,8 @@
+/*
+ * Copyright (c) 2021-Present XiHanFun and contributors.
+ * Licensed under the MIT License. See LICENSE in the project root for license information.
+ */
+
 // 数值补间的纯函数：给起点、终点、时长与缓动，算出"走了这么多毫秒之后是多少"。
 // 不碰 DOM、不持有计时器——推进由调用方逐帧喂 elapsed。
 // 曲线不自带一份，一律经 resolveEasing 取，与 CSS 侧同名同值。

@@ -1,3 +1,10 @@
+/*
+ * Copyright (c) 2021-Present XiHanFun and contributors.
+ * Licensed under the MIT License. See LICENSE in the project root for license information.
+ */
+
+// 提供 resizable 相关实现。
+
 import type { ResizeConstraints, ResizeEdge } from '@xihan-ui/pointer'
 import type { ResizableDimensions, ResizableSchema } from './resizable.types'
 import { setup } from '@xihan-ui/core'

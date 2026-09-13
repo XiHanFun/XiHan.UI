@@ -1,3 +1,10 @@
+/*
+ * Copyright (c) 2021-Present XiHanFun and contributors.
+ * Licensed under the MIT License. See LICENSE in the project root for license information.
+ */
+
+// 提供 file upload 相关实现。
+
 import type { KeyboardTable } from '../spec/types'
 
 // 上传控件在 APG 里没有独立模式：投放区是一个自定义按钮（role=button），

@@ -1,3 +1,8 @@
+/*
+ * Copyright (c) 2021-Present XiHanFun and contributors.
+ * Licensed under the MIT License. See LICENSE in the project root for license information.
+ */
+
 // 行底色的先后：基础底 < 斑马纹 < 选中 < 悬停 / 键盘锚点 < 换父落点。
 //
 // 这几档写在同一层里，谁盖过谁由特指度与源码先后共同决定，而不是由声明的先后决定。

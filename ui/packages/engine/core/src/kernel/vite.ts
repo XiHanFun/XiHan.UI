@@ -1,3 +1,8 @@
+/*
+ * Copyright (c) 2021-Present XiHanFun and contributors.
+ * Licensed under the MIT License. See LICENSE in the project root for license information.
+ */
+
 // 启动横幅：打在开发者跑项目的那个终端里。
 //
 // 浏览器里的代码够不着开发服务器进程的标准输出，只有跑在 Node 里的构建插件够得着，

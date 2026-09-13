@@ -1,3 +1,10 @@
+/*
+ * Copyright (c) 2021-Present XiHanFun and contributors.
+ * Licensed under the MIT License. See LICENSE in the project root for license information.
+ */
+
+// 提供 editable 相关实现。
+
 import type { KeyboardTable } from '../spec/types'
 
 // APG 无就地编辑模式，光标/选区/撤销均由浏览器原生处理，

@@ -1,3 +1,10 @@
+/*
+ * Copyright (c) 2021-Present XiHanFun and contributors.
+ * Licensed under the MIT License. See LICENSE in the project root for license information.
+ */
+
+// 提供 scroll area 相关实现。
+
 import type { NormalizeProps, Orientation, PropTypes } from '@xihan-ui/core'
 import type { ScrollbarApi, ScrollbarSchema } from '../scrollbar/scrollbar.types'
 import type { ScrollAreaApi, ScrollAreaAxisState, ScrollAreaProps, ScrollAreaServices } from './scroll-area.types'

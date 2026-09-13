@@ -1,3 +1,8 @@
+/*
+ * Copyright (c) 2021-Present XiHanFun and contributors.
+ * Licensed under the MIT License. See LICENSE in the project root for license information.
+ */
+
 // 一次交互之后的选中集。输入是「当前选中集 + 这一下点了什么、按着什么键」，输出是新的集合。
 import type { SelectionInput, SelectionOrder, SelectionState } from './types'
 

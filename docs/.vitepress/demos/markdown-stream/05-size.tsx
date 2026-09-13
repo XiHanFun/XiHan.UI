@@ -1,3 +1,8 @@
+/*
+ * Copyright (c) 2021-Present XiHanFun and contributors.
+ * Licensed under the MIT License. See LICENSE in the project root for license information.
+ */
+
 // 尺寸 | size 换正文字号与块间距，三档共用同一份块列表
 import type { MarkdownBlock } from "@xihan-ui/headless";
 import type { ReactNode } from "react";

@@ -1,3 +1,10 @@
+/*
+ * Copyright (c) 2021-Present XiHanFun and contributors.
+ * Licensed under the MIT License. See LICENSE in the project root for license information.
+ */
+
+// 提供 field array 相关实现。
+
 import type { KeyboardTable } from '../spec/types'
 
 // 三类把手都是原生 button，敲 Enter / Space 由浏览器翻成 click，组件不另接键盘；

@@ -1,3 +1,8 @@
+/*
+ * Copyright (c) 2021-Present XiHanFun and contributors.
+ * Licensed under the MIT License. See LICENSE in the project root for license information.
+ */
+
 // 每页条数控制器：装的是库里的 select，长相与全库其它下拉是同一个。
 //
 // 只有真实浏览器量得出来：皮肤在场与否、控件量出来多高、浮层落没落位，

@@ -1,3 +1,8 @@
+/*
+ * Copyright (c) 2021-Present XiHanFun and contributors.
+ * Licensed under the MIT License. See LICENSE in the project root for license information.
+ */
+
 // 命令式服务共用的配置源。三个服务各自把宿主树渲到自建容器里，接不到组件树里的
 // XhConfigProvider，只能自己在宿主里套一层；这里把那段收在一处。
 // 源可以是取值函数，运行期跟着应用切语言；没有响应式源的用句柄上的 setConfig 命令式推。

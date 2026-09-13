@@ -1,3 +1,8 @@
+/*
+ * Copyright (c) 2021-Present XiHanFun and contributors.
+ * Licensed under the MIT License. See LICENSE in the project root for license information.
+ */
+
 // 基础用法 | collection 是条目全集的唯一事实源，value 只装落在右侧的那批
 import type { ReactNode } from "react";
 import {

@@ -1,3 +1,10 @@
+/*
+ * Copyright (c) 2021-Present XiHanFun and contributors.
+ * Licensed under the MIT License. See LICENSE in the project root for license information.
+ */
+
+// 验证 hover intent lifecycle 相关行为。
+
 // @vitest-environment jsdom
 // Vue 包装必须等模板 ref 提交后绑定，并在节点或计时参数变化时原子重建。
 import type { App } from 'vue'
