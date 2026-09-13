@@ -33,6 +33,7 @@ export function connectSpinner<T extends PropTypes>(
   normalize: NormalizeProps<T>,
 ): SpinnerApi<T> {
   const label = resolveLabel(props)
+  const variant = props.variant ?? 'arc'
 
   return {
     label,
@@ -45,9 +46,9 @@ export function connectSpinner<T extends PropTypes>(
       // 转圈是纯图形，读屏在这个活区里读不到任何东西；名字只能由这里给，
       // 缺了它读屏只报出"有个 status 区域"，念不出在等什么
       'aria-label': label,
-      // 缺省档不写属性：皮肤的基础规则就是缺省档
+      // 尺寸缺省档不写属性；形态显式写出，默认就是渐隐弧。
       'data-size': props.size,
-      'data-variant': props.variant,
+      'data-variant': variant,
       'data-tone': props.tone,
     }),
 

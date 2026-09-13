@@ -33,7 +33,7 @@ export const spinnerSuite: ConformanceSuite = {
             'aria-live': 'polite',
             'aria-label': 'Loading',
             'data-size': null,
-            'data-variant': null,
+            'data-variant': 'arc',
           },
           // 文案节点只是内容，不该自带角色
           label: { 'role': null, 'aria-live': null },
@@ -73,7 +73,7 @@ export const spinnerSuite: ConformanceSuite = {
       },
     },
     {
-      name: 'variant：接线到 data-variant，缺省档不写属性',
+      name: 'variant：接线到 data-variant，默认形态是 arc',
       spec: { apg: APG },
       props: { variant: 'dots' },
       initial: {
