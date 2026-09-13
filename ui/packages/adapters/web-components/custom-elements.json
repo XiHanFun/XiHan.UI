@@ -4165,16 +4165,12 @@
       "declarations": [
         {
           "kind": "class",
-          "description": "`<xh-card>` —— Light-DOM 行为宿主，无状态机，把 connectCard 产出打到各角色节点。\n除 root 外的部件全部可缺省：封面、头、身、脚按需摆，一个不写也是一张合法的卡片。\n\n根上不写 role：卡片是不是地标、要不要可及名字，由里面放了什么内容决定，作者自己声明。",
+          "description": "`<xh-card>` —— Light-DOM 行为宿主，无状态机，把 connectCard 产出打到各角色节点。\n除 root 外的部件全部可缺省：头、内容、脚按需摆，一个不写也是一张合法的卡片。\n\n根上不写 role：卡片是不是地标、要不要可及名字，由里面放了什么内容决定，作者自己声明。",
           "name": "XhCardElement",
           "cssParts": [
             {
-              "description": "卡片根容器，承载 data-variant / data-size / data-hoverable / data-split",
+              "description": "卡片根容器，承载 data-variant",
               "name": "root"
-            },
-            {
-              "description": "封面位，通常放图片，压在头部之上",
-              "name": "media"
             },
             {
               "description": "头部，装标题与描述",
@@ -4190,7 +4186,7 @@
             },
             {
               "description": "主体内容",
-              "name": "body"
+              "name": "content"
             },
             {
               "description": "底部，通常放操作",
@@ -4217,33 +4213,6 @@
               "attribute": "variant"
             },
             {
-              "kind": "field",
-              "name": "size",
-              "privacy": "public",
-              "type": {
-                "text": "Size | undefined"
-              },
-              "attribute": "size"
-            },
-            {
-              "kind": "field",
-              "name": "hoverable",
-              "privacy": "public",
-              "type": {
-                "text": "boolean | undefined"
-              },
-              "attribute": "hoverable"
-            },
-            {
-              "kind": "field",
-              "name": "split",
-              "privacy": "public",
-              "type": {
-                "text": "boolean | undefined"
-              },
-              "attribute": "split"
-            },
-            {
               "kind": "method",
               "name": "wire",
               "privacy": "protected",
@@ -4259,33 +4228,9 @@
               "type": {
                 "text": "CardVariant | undefined"
               },
-              "description": "形态，决定描边、底色与投影怎么用",
+              "description": "语义层级，默认 default",
               "name": "variant",
               "fieldName": "variant"
-            },
-            {
-              "type": {
-                "text": "Size | undefined"
-              },
-              "description": "尺寸，决定各段的内边距与标题字号",
-              "name": "size",
-              "fieldName": "size"
-            },
-            {
-              "type": {
-                "text": "boolean | undefined"
-              },
-              "description": "指针悬停时抬起",
-              "name": "hoverable",
-              "fieldName": "hoverable"
-            },
-            {
-              "type": {
-                "text": "boolean | undefined"
-              },
-              "description": "在头、身、脚之间画分隔线",
-              "name": "split",
-              "fieldName": "split"
             }
           ],
           "superclass": {
@@ -4299,25 +4244,10 @@
               "name": "--xh-card-bg"
             },
             {
-              "name": "--xh-card-bg-hover"
-            },
-            {
-              "name": "--xh-card-body-font-size"
-            },
-            {
-              "name": "--xh-card-body-line-height"
-            },
-            {
-              "name": "--xh-card-body-pb"
-            },
-            {
-              "name": "--xh-card-body-pt"
-            },
-            {
               "name": "--xh-card-border"
             },
             {
-              "name": "--xh-card-border-hover"
+              "name": "--xh-card-content-gap"
             },
             {
               "name": "--xh-card-description-fg"
@@ -4326,22 +4256,25 @@
               "name": "--xh-card-description-font-size"
             },
             {
-              "name": "--xh-card-divider"
+              "name": "--xh-card-description-leading"
             },
             {
               "name": "--xh-card-fg"
             },
             {
+              "name": "--xh-card-font-size"
+            },
+            {
               "name": "--xh-card-footer-gap"
             },
             {
-              "name": "--xh-card-footer-pt"
+              "name": "--xh-card-gap"
             },
             {
-              "name": "--xh-card-header-gap"
+              "name": "--xh-card-leading"
             },
             {
-              "name": "--xh-card-header-pb"
+              "name": "--xh-card-p"
             },
             {
               "name": "--xh-card-radius"
@@ -4350,10 +4283,16 @@
               "name": "--xh-card-shadow"
             },
             {
-              "name": "--xh-card-shadow-hover"
+              "name": "--xh-card-title-fg"
             },
             {
               "name": "--xh-card-title-font-size"
+            },
+            {
+              "name": "--xh-card-title-font-weight"
+            },
+            {
+              "name": "--xh-card-title-leading"
             }
           ]
         }

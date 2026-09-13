@@ -139,10 +139,10 @@ async function hover(el: HTMLElement): Promise<void> {
   await new Promise(r => setTimeout(r, 300))
 }
 
-// —— 卡片：常态与悬停各自的描边、投影，以及说明那一段的色与字号 ——
+// —— 卡片：内容面、投影、节奏与说明文字 ——
 
 function CARD(): unknown {
-  return h(XhCardRoot, { variant: 'outline', hoverable: true }, () => [
+  return h(XhCardRoot, { variant: 'secondary' }, () => [
     h(XhCardHeader, null, () => [
       h(XhCardTitle, null, () => '标题'),
       h(XhCardDescription, null, () => '说明文字'),
@@ -150,45 +150,33 @@ function CARD(): unknown {
   ])
 }
 
-describe('card 的常态与悬停各有各的槽', () => {
-  it('设悬停槽：指针停上去就换成它', async () => {
-    setSlot('--xh-card-border-hover', RED)
-    await mount(CARD)
-    const root = part('card', 'root')
-
-    expect(styleOf(root, 'border-top-color'), '没停上去时不该是悬停色').not.toBe(RED)
-    await hover(root)
-    expect(styleOf(root, 'border-top-color')).toBe(RED)
-  })
-
-  it('设常态槽：只改常态，悬停那一档照旧', async () => {
-    // 先量一遍没有任何覆盖时悬停档的缺省
-    await mount(CARD)
-    await hover(part('card', 'root'))
-    const fallback = styleOf(part('card', 'root'), 'border-top-color')
-    app?.unmount()
-    host?.remove()
-    await park()
-
+describe('card 的中性内容面槽', () => {
+  it('背景与描边都可覆盖', async () => {
+    setSlot('--xh-card-bg', RED)
     setSlot('--xh-card-border', LIME)
     await mount(CARD)
     const root = part('card', 'root')
-    expect(styleOf(root, 'border-top-color'), '常态该跟着改').toBe(LIME)
 
-    await hover(root)
-    expect(styleOf(root, 'border-top-color'), '悬停档被常态槽抹平了').not.toBe(LIME)
-    expect(styleOf(root, 'border-top-color')).toBe(fallback)
+    expect(styleOf(root, 'background-color')).toBe(RED)
+    expect(styleOf(root, 'border-top-color')).toBe(LIME)
   })
 
-  it('投影同理：常态槽改不动悬停档', async () => {
+  it('投影槽可覆盖', async () => {
     setSlot('--xh-card-shadow', `0 0 0 3px ${LIME}`)
-    setSlot('--xh-card-shadow-hover', `0 0 0 3px ${RED}`)
     await mount(CARD)
     const root = part('card', 'root')
 
-    await hover(root)
-    expect(styleOf(root, 'box-shadow')).toContain(RED)
-    expect(styleOf(root, 'box-shadow')).not.toContain(LIME)
+    expect(styleOf(root, 'box-shadow')).toContain(LIME)
+  })
+
+  it('统一内边距与段间距都可覆盖', async () => {
+    setSlot('--xh-card-p', '29px')
+    setSlot('--xh-card-gap', '31px')
+    await mount(CARD)
+    const root = part('card', 'root')
+
+    expect(styleOf(root, 'padding-top')).toBe('29px')
+    expect(styleOf(root, 'row-gap')).toBe('31px')
   })
 
   it('说明那一段的色与字号都改得动', async () => {

@@ -3,18 +3,18 @@
  * Licensed under the MIT License. See LICENSE in the project root for license information.
  */
 
-// 基础用法 | 除了 root，封面、头、身、脚都可选；只写用得上的那几段
+// 基础用法 | Header 放标题与说明，Content 放主体
 import type { ReactNode } from "react";
-import { XhCardBody, XhCardDescription, XhCardHeader, XhCardRoot, XhCardTitle } from "@xihan-ui/react";
+import { XhCardContent, XhCardDescription, XhCardHeader, XhCardRoot, XhCardTitle } from "@xihan-ui/react";
 
 export default function Demo(): ReactNode {
   return (
-    <XhCardRoot style={{ maxInlineSize: "360px" }}>
+    <XhCardRoot style={{ inlineSize: "360px", maxInlineSize: "100%" }}>
       <XhCardHeader>
         <XhCardTitle>本月账单</XhCardTitle>
         <XhCardDescription>账期 7 月 1 日至 7 月 31 日</XhCardDescription>
       </XhCardHeader>
-      <XhCardBody>共 128 笔支出，合计 3,240.00 元。</XhCardBody>
+      <XhCardContent>共 128 笔支出，合计 3,240.00 元。</XhCardContent>
     </XhCardRoot>
   );
 }

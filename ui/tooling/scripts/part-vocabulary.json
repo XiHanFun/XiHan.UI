@@ -50,7 +50,6 @@
       "markdown-stream"
     ],
     "body": [
-      "card",
       "dialog",
       "diff-view",
       "drawer",
@@ -212,6 +211,7 @@
       "accordion",
       "affix",
       "alert",
+      "card",
       "cascader",
       "collapsible",
       "color-picker",
@@ -869,7 +869,6 @@
       "highlight"
     ],
     "media": [
-      "card",
       "empty-state",
       "page-header"
     ],

@@ -1,38 +1,38 @@
-<!-- 形态 | variant 只改描边、底色与投影怎么用，各段的排版三档一致 -->
+<!-- 层级 | default、secondary、tertiary 逐级增强表面，transparent 用于嵌套内容 -->
 <div style="display: flex; flex-wrap: wrap; gap: 16px">
-  <xh-card variant="outline">
+  <xh-card variant="default">
     <div data-xh-part="root" style="inline-size: 200px">
       <div data-xh-part="header">
-        <div data-xh-part="title">outline</div>
+        <div data-xh-part="title">default</div>
       </div>
-      <div data-xh-part="body">一段用来看底色与描边的正文。</div>
+      <div data-xh-part="content">一段用来看表面层级的正文。</div>
     </div>
   </xh-card>
 
-  <xh-card variant="subtle">
+  <xh-card variant="secondary">
     <div data-xh-part="root" style="inline-size: 200px">
       <div data-xh-part="header">
-        <div data-xh-part="title">subtle</div>
+        <div data-xh-part="title">secondary</div>
       </div>
-      <div data-xh-part="body">一段用来看底色与描边的正文。</div>
+      <div data-xh-part="content">一段用来看表面层级的正文。</div>
     </div>
   </xh-card>
 
-  <xh-card variant="elevated">
+  <xh-card variant="tertiary">
     <div data-xh-part="root" style="inline-size: 200px">
       <div data-xh-part="header">
-        <div data-xh-part="title">elevated</div>
+        <div data-xh-part="title">tertiary</div>
       </div>
-      <div data-xh-part="body">一段用来看底色与描边的正文。</div>
+      <div data-xh-part="content">一段用来看表面层级的正文。</div>
     </div>
   </xh-card>
 
-  <xh-card variant="ghost">
+  <xh-card variant="transparent">
     <div data-xh-part="root" style="inline-size: 200px">
       <div data-xh-part="header">
-        <div data-xh-part="title">ghost</div>
+        <div data-xh-part="title">transparent</div>
       </div>
-      <div data-xh-part="body">一段用来看底色与描边的正文。</div>
+      <div data-xh-part="content">一段用来看表面层级的正文。</div>
     </div>
   </xh-card>
 </div>

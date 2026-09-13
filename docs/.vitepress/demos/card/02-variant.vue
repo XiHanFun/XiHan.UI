@@ -3,11 +3,11 @@
   Licensed under the MIT License. See LICENSE in the project root for license information.
 -->
 
-<!-- 形态 | variant 只改描边、底色与投影怎么用，各段的排版三档一致 -->
+<!-- 层级 | default、secondary、tertiary 逐级增强表面，transparent 用于嵌套内容 -->
 <script setup lang="ts">
-import { XhCardBody, XhCardHeader, XhCardRoot, XhCardTitle } from "@xihan-ui/vue";
+import { XhCardContent, XhCardHeader, XhCardRoot, XhCardTitle } from "@xihan-ui/vue";
 
-const variants = ["outline", "subtle", "elevated", "ghost"] as const;
+const variants = ["default", "secondary", "tertiary", "transparent"] as const;
 </script>
 
 <template>
@@ -16,7 +16,7 @@ const variants = ["outline", "subtle", "elevated", "ghost"] as const;
       <XhCardHeader>
         <XhCardTitle>{{ v }}</XhCardTitle>
       </XhCardHeader>
-      <XhCardBody>一段用来看底色与描边的正文。</XhCardBody>
+      <XhCardContent>一段用来看表面层级的正文。</XhCardContent>
     </XhCardRoot>
   </div>
 </template>

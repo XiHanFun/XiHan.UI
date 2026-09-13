@@ -17,7 +17,7 @@ import {
   XhBreadcrumbRoot,
   XhBreadcrumbSeparator,
   XhButton,
-  XhCardBody,
+  XhCardContent,
   XhCardHeader,
   XhCardRoot,
   XhCardTitle,
@@ -193,28 +193,28 @@ const lastCommand = ref("（无）");
       </XhToolbarRoot>
 
       <div class="shell__cards">
-        <XhCardRoot variant="outline">
+        <XhCardRoot variant="secondary">
           <XhCardHeader>
             <XhCardTitle>待发货</XhCardTitle>
           </XhCardHeader>
-          <XhCardBody>
+          <XhCardContent>
             <XhStatisticRoot>
               <XhStatisticLabel>较昨日 +12</XhStatisticLabel>
               <XhStatisticValue>128</XhStatisticValue>
             </XhStatisticRoot>
-          </XhCardBody>
+          </XhCardContent>
         </XhCardRoot>
 
-        <XhCardRoot variant="outline">
+        <XhCardRoot variant="secondary">
           <XhCardHeader>
             <XhCardTitle>待退款</XhCardTitle>
           </XhCardHeader>
-          <XhCardBody>
+          <XhCardContent>
             <XhStatisticRoot>
               <XhStatisticLabel>需人工复核</XhStatisticLabel>
               <XhStatisticValue>6</XhStatisticValue>
             </XhStatisticRoot>
-          </XhCardBody>
+          </XhCardContent>
         </XhCardRoot>
       </div>
 
