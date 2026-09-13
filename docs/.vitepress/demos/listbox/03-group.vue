@@ -1,4 +1,4 @@
-<!-- 分组 | group 把条目分段，group-label 是这一段的可及名字，不参与选中也不接方向键 -->
+<!-- 分组 | 按类别组织选项 -->
 <script setup lang="ts">
 import {
   XhListboxContent,
@@ -10,9 +10,7 @@ import {
   XhListboxLabel,
   XhListboxRoot,
 } from "@xihan-ui/vue";
-import { ref } from "vue";
 
-const city = ref<string[]>([]);
 const groups = [
   {
     value: "asia",
@@ -35,7 +33,7 @@ const groups = [
 </script>
 
 <template>
-  <XhListboxRoot v-model:value="city" style="max-inline-size: 320px">
+  <XhListboxRoot :default-value="['beijing']" style="inline-size: min(100%, 300px)">
     <XhListboxLabel>城市</XhListboxLabel>
     <XhListboxContent>
       <XhListboxGroup v-for="g in groups" :key="g.value" :value="g.value">
@@ -47,5 +45,4 @@ const groups = [
       </XhListboxGroup>
     </XhListboxContent>
   </XhListboxRoot>
-  <p>已选：{{ city.length ? city.join("、") : "（无）" }}</p>
 </template>

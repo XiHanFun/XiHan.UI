@@ -1,4 +1,4 @@
-// 分组 | group 把条目分段，group-label 是这一段的可及名字，不参与选中也不接方向键
+// 分组 | 按类别组织选项
 import type { ReactNode } from "react";
 import {
   XhListboxContent,
@@ -10,7 +10,6 @@ import {
   XhListboxLabel,
   XhListboxRoot,
 } from "@xihan-ui/react";
-import { useState } from "react";
 
 const groups = [
   {
@@ -33,31 +32,22 @@ const groups = [
 ];
 
 export default function Demo(): ReactNode {
-  const [city, setCity] = useState<string[]>([]);
-
   return (
-    <>
-      <XhListboxRoot
-        value={city}
-        onValueChange={details => setCity(details.value)}
-        style={{ maxInlineSize: "320px" }}
-      >
-        <XhListboxLabel>城市</XhListboxLabel>
-        <XhListboxContent>
-          {groups.map(g => (
-            <XhListboxGroup key={g.value} value={g.value}>
-              <XhListboxGroupLabel>{g.label}</XhListboxGroupLabel>
-              {g.items.map(c => (
-                <XhListboxItem key={c.value} value={c.value}>
-                  <XhListboxItemText>{c.label}</XhListboxItemText>
-                  <XhListboxItemIndicator />
-                </XhListboxItem>
-              ))}
-            </XhListboxGroup>
-          ))}
-        </XhListboxContent>
-      </XhListboxRoot>
-      <p>{`已选：${city.length ? city.join("、") : "（无）"}`}</p>
-    </>
+    <XhListboxRoot defaultValue={["beijing"]} style={{ inlineSize: "min(100%, 300px)" }}>
+      <XhListboxLabel>城市</XhListboxLabel>
+      <XhListboxContent>
+        {groups.map(g => (
+          <XhListboxGroup key={g.value} value={g.value}>
+            <XhListboxGroupLabel>{g.label}</XhListboxGroupLabel>
+            {g.items.map(c => (
+              <XhListboxItem key={c.value} value={c.value}>
+                <XhListboxItemText>{c.label}</XhListboxItemText>
+                <XhListboxItemIndicator />
+              </XhListboxItem>
+            ))}
+          </XhListboxGroup>
+        ))}
+      </XhListboxContent>
+    </XhListboxRoot>
   );
 }
