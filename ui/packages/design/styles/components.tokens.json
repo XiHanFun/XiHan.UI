@@ -4458,6 +4458,46 @@
       "description": "calendar 的 grid-body、grid-head 部件 gap 覆盖槽。"
     },
     {
+      "name": "--xh-calendar-today-bg",
+      "component": "calendar",
+      "part": [
+        "cell-trigger"
+      ],
+      "property": [
+        "background"
+      ],
+      "state": [
+        "today"
+      ],
+      "defaultToken": [
+        "--xh-bg-brand-subtle"
+      ],
+      "visibility": "public",
+      "description": "calendar 的 cell-trigger 部件 background 覆盖槽。"
+    },
+    {
+      "name": "--xh-calendar-today-bg-hover",
+      "component": "calendar",
+      "part": [
+        "cell-trigger"
+      ],
+      "property": [
+        "background"
+      ],
+      "state": [
+        "disabled",
+        "hover",
+        "not([data-selected], [data-disabled])",
+        "selected",
+        "today"
+      ],
+      "defaultToken": [
+        "--xh-bg-brand-subtle-hover"
+      ],
+      "visibility": "public",
+      "description": "calendar 的 cell-trigger 部件 background 覆盖槽。"
+    },
+    {
       "name": "--xh-calendar-today-border",
       "component": "calendar",
       "part": [
@@ -4470,10 +4510,28 @@
         "today"
       ],
       "defaultToken": [
-        "--xh-border-control"
+        "transparent"
       ],
       "visibility": "public",
       "description": "calendar 的 cell-trigger 部件 border-color 覆盖槽。"
+    },
+    {
+      "name": "--xh-calendar-today-fg",
+      "component": "calendar",
+      "part": [
+        "cell-trigger"
+      ],
+      "property": [
+        "color"
+      ],
+      "state": [
+        "today"
+      ],
+      "defaultToken": [
+        "--xh-fg-brand"
+      ],
+      "visibility": "public",
+      "description": "calendar 的 cell-trigger 部件 color 覆盖槽。"
     },
     {
       "name": "--xh-calendar-week-day-fg",

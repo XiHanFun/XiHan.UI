@@ -4042,7 +4042,16 @@
               "name": "--xh-calendar-row-gap"
             },
             {
+              "name": "--xh-calendar-today-bg"
+            },
+            {
+              "name": "--xh-calendar-today-bg-hover"
+            },
+            {
               "name": "--xh-calendar-today-border"
+            },
+            {
+              "name": "--xh-calendar-today-fg"
             },
             {
               "name": "--xh-calendar-week-day-fg"
