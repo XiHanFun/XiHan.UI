@@ -147,7 +147,7 @@
 <XhComponentCard src="badge" name="Badge" label="徽标" href="/components/badge" />
 <XhComponentCard src="loading-bar" name="LoadingBar" label="加载条" href="/components/loading-bar" status="alpha" />
 <XhComponentCard src="progress" name="Progress" label="进度条" href="/components/progress" status="alpha" />
-<XhComponentCard src="skeleton" name="Skeleton" label="骨架屏" href="/components/skeleton" status="alpha" />
+<XhComponentCard src="skeleton" name="Skeleton" label="骨架屏" href="/components/skeleton" />
 <XhComponentCard src="spinner" name="Spinner" label="加载指示器" href="/components/spinner" status="alpha" />
 <XhComponentCard src="notification" name="Notification" label="通知" href="/components/notification" status="alpha" />
 <XhComponentCard src="toast" name="Toast" label="轻提示" href="/components/toast" status="alpha" />
