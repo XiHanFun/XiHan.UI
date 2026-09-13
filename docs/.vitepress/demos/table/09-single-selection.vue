@@ -47,7 +47,7 @@ const selection = ref<string[]>(["p2"]);
       <XhTableBody>
         <XhTableRow v-for="p in plans" :key="p.id" :value="p.id">
           <XhTableCell value="select">
-            <XhTableRowSelectTrigger>●</XhTableRowSelectTrigger>
+            <XhTableRowSelectTrigger />
           </XhTableCell>
           <XhTableCell value="plan">{{ p.plan }}</XhTableCell>
           <XhTableCell value="price">{{ p.price }}</XhTableCell>
