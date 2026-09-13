@@ -1,5 +1,5 @@
-<!-- 异步候选 | 输入串每变一次就重新去远端查一遍，等结果的这段时间候选为空、由空态节点顶上 -->
-<xh-combobox id="combobox-async" placeholder="输入城市名查询">
+<!-- 异步候选 | 查询远程数据 -->
+<xh-combobox id="combobox-async" placeholder="搜索城市">
   <div data-xh-part="root">
     <label data-xh-part="label">城市</label>
     <div data-xh-part="control">
@@ -9,17 +9,15 @@
     </div>
     <div data-xh-part="positioner">
       <div data-xh-part="content"></div>
-      <div data-xh-part="empty" id="combobox-async-empty">无匹配城市</div>
+      <div data-xh-part="loading">查询中…</div>
+      <div data-xh-part="empty">无匹配城市</div>
     </div>
   </div>
 </xh-combobox>
-<p>当前值：<span id="combobox-async-value">（未选）</span></p>
 
 <script type="module">
   const combobox = document.getElementById("combobox-async");
   const content = combobox.querySelector('[data-xh-part="content"]');
-  const empty = document.getElementById("combobox-async-empty");
-  const readout = document.getElementById("combobox-async-value");
   const pool = [
     { value: "beijing", label: "Beijing 北京" },
     { value: "berlin", label: "Berlin 柏林" },
@@ -42,26 +40,20 @@
     return item;
   }
 
-  // 每次输入都重开一轮查询，上一轮未落地的先撤掉
   combobox.addEventListener("input-value-change", (event) => {
     window.clearTimeout(timer);
     const q = event.detail.inputValue.trim().toLowerCase();
     content.replaceChildren();
     if (q === "") {
-      empty.textContent = "无匹配城市";
+      combobox.loading = false;
       return;
     }
-    empty.textContent = "查询中…";
+    combobox.loading = true;
     timer = window.setTimeout(() => {
       content.replaceChildren(
         ...pool.filter((c) => c.label.toLowerCase().includes(q)).map(makeItem),
       );
-      empty.textContent = "无匹配城市";
+      combobox.loading = false;
     }, 600);
-  });
-
-  combobox.addEventListener("value-change", (event) => {
-    combobox.value = event.detail.value;
-    readout.textContent = event.detail.value[0] ?? "（未选）";
   });
 </script>

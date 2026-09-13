@@ -1,4 +1,4 @@
-// 基础用法 | 过滤由宿主自己算：组件把输入串交出来，此刻显示哪几条候选由调用方定
+// 基础用法 | 搜索并选择城市
 import type { ReactNode } from "react";
 import { XhComboboxRoot } from "@xihan-ui/react";
 import { useState } from "react";
@@ -12,27 +12,21 @@ const cities = [
 ];
 
 export default function Demo(): ReactNode {
-  const [value, setValue] = useState<string[]>([]);
   const [query, setQuery] = useState("");
 
   const q = query.trim().toLowerCase();
   const filtered = q === "" ? cities : cities.filter(c => c.label.toLowerCase().includes(q));
 
   return (
-    <>
-      <XhComboboxRoot
-        value={value}
-        onValueChange={details => setValue(details.value)}
-        inputValue={query}
-        onInputValueChange={details => setQuery(details.inputValue)}
-        collection={filtered}
-        clearable
-        label="城市"
-        empty="无匹配城市"
-        openOnClick
-        placeholder="输入城市名筛选"
-      />
-      <p>{`当前值：${value[0] ?? "（未选）"}`}</p>
-    </>
+    <XhComboboxRoot
+      inputValue={query}
+      onInputValueChange={details => setQuery(details.inputValue)}
+      collection={filtered}
+      clearable
+      label="城市"
+      empty="无匹配城市"
+      openOnClick
+      placeholder="搜索城市"
+    />
   );
 }

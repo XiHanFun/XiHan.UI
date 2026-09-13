@@ -1,4 +1,4 @@
-// 形态 | variant 只改输入行的底色与描边用法，取值、过滤与键盘行为都不变
+// 变体 | 设置输入框外观
 import type { ReactNode } from "react";
 import { XhComboboxRoot } from "@xihan-ui/react";
 

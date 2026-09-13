@@ -1,5 +1,5 @@
-<!-- 分组 | 候选分段展示；整段被筛空时连同段标题一起不渲染，列表里不留空壳 -->
-<xh-combobox id="combobox-group" open-on-click placeholder="按大洲分组">
+<!-- 分组 | 按分类组织候选项 -->
+<xh-combobox id="combobox-group" open-on-click placeholder="搜索城市">
   <div data-xh-part="root">
     <label data-xh-part="label">城市</label>
     <div data-xh-part="control">
@@ -36,12 +36,10 @@
     </div>
   </div>
 </xh-combobox>
-<p>当前值：<span id="combobox-group-value">（未选）</span></p>
 
 <script type="module">
   const combobox = document.getElementById("combobox-group");
   const content = combobox.querySelector('[data-xh-part="content"]');
-  const readout = document.getElementById("combobox-group-value");
   // 分段与段内候选整份留在手上，输入串一变就按它重铺
   const labelOf = (item) => item.querySelector('[data-xh-part="item-text"]').textContent.toLowerCase();
   const groups = [...content.children].map((node) => ({
@@ -63,8 +61,4 @@
     content.replaceChildren(...shown);
   });
 
-  combobox.addEventListener("value-change", (event) => {
-    combobox.value = event.detail.value;
-    readout.textContent = event.detail.value[0] ?? "（未选）";
-  });
 </script>

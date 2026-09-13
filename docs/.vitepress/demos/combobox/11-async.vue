@@ -1,6 +1,20 @@
-<!-- 异步候选 | 输入串每变一次就重新去远端查一遍，等结果的这段时间候选为空、由空态节点顶上 -->
+<!-- 异步候选 | 查询远程数据 -->
 <script setup lang="ts">
-import { XhComboboxRoot } from "@xihan-ui/vue";
+import {
+  XhComboboxClearTrigger,
+  XhComboboxContent,
+  XhComboboxControl,
+  XhComboboxEmpty,
+  XhComboboxInput,
+  XhComboboxItem,
+  XhComboboxItemIndicator,
+  XhComboboxItemText,
+  XhComboboxLabel,
+  XhComboboxLoading,
+  XhComboboxPositioner,
+  XhComboboxRoot,
+  XhComboboxTrigger,
+} from "@xihan-ui/vue";
 import { ref } from "vue";
 
 interface City {
@@ -16,12 +30,10 @@ const pool: City[] = [
   { value: "london", label: "London 伦敦" },
 ];
 
-const value = ref<string[]>([]);
 const options = ref<City[]>([]);
 const loading = ref(false);
 let timer = 0;
 
-// 每次输入都重开一轮查询，上一轮未落地的先撤掉
 function onSearch(details: { inputValue: string }): void {
   window.clearTimeout(timer);
   const q = details.inputValue.trim().toLowerCase();
@@ -40,13 +52,25 @@ function onSearch(details: { inputValue: string }): void {
 
 <template>
   <XhComboboxRoot
-    v-model:value="value"
     :collection="options"
-    clearable
-    label="城市"
-    :empty="loading ? '查询中…' : '无匹配城市'"
-    placeholder="输入城市名查询"
+    :loading="loading"
     @input-value-change="onSearch"
-  />
-  <p>当前值：{{ value[0] ?? "（未选）" }}</p>
+  >
+    <XhComboboxLabel>城市</XhComboboxLabel>
+    <XhComboboxControl>
+      <XhComboboxInput placeholder="搜索城市" />
+      <XhComboboxClearTrigger />
+      <XhComboboxTrigger />
+    </XhComboboxControl>
+    <XhComboboxPositioner>
+      <XhComboboxContent>
+        <XhComboboxItem v-for="city in options" :key="city.value" :value="city.value">
+          <XhComboboxItemText>{{ city.label }}</XhComboboxItemText>
+          <XhComboboxItemIndicator />
+        </XhComboboxItem>
+      </XhComboboxContent>
+      <XhComboboxLoading>查询中…</XhComboboxLoading>
+      <XhComboboxEmpty>无匹配城市</XhComboboxEmpty>
+    </XhComboboxPositioner>
+  </XhComboboxRoot>
 </template>

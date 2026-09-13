@@ -1,4 +1,4 @@
-// 分组 | 候选分段展示；整段被筛空时连同段标题一起不渲染，列表里不留空壳
+// 分组 | 按分类组织候选项
 import type { ReactNode } from "react";
 import {
   XhComboboxClearTrigger,
@@ -38,7 +38,6 @@ const groups = [
 ];
 
 export default function Demo(): ReactNode {
-  const [value, setValue] = useState<string[]>([]);
   const [query, setQuery] = useState("");
 
   const q = query.trim().toLowerCase();
@@ -49,39 +48,34 @@ export default function Demo(): ReactNode {
         .filter(g => g.items.length > 0);
 
   return (
-    <>
-      <XhComboboxRoot
-        value={value}
-        onValueChange={details => setValue(details.value)}
-        inputValue={query}
-        onInputValueChange={details => setQuery(details.inputValue)}
-        openOnClick
-        placeholder="按大洲分组"
-      >
-        <XhComboboxLabel>城市</XhComboboxLabel>
-        <XhComboboxControl>
-          <XhComboboxInput />
-          <XhComboboxTrigger />
-          <XhComboboxClearTrigger />
-        </XhComboboxControl>
-        <XhComboboxPositioner>
-          <XhComboboxContent>
-            {filtered.map(g => (
-              <XhComboboxGroup key={g.value} value={g.value}>
-                <XhComboboxGroupLabel>{g.label}</XhComboboxGroupLabel>
-                {g.items.map(c => (
-                  <XhComboboxItem key={c.value} value={c.value}>
-                    <XhComboboxItemText>{c.label}</XhComboboxItemText>
-                    <XhComboboxItemIndicator />
-                  </XhComboboxItem>
-                ))}
-              </XhComboboxGroup>
-            ))}
-          </XhComboboxContent>
-          <XhComboboxEmpty>无匹配城市</XhComboboxEmpty>
-        </XhComboboxPositioner>
-      </XhComboboxRoot>
-      <p>{`当前值：${value[0] ?? "（未选）"}`}</p>
-    </>
+    <XhComboboxRoot
+      inputValue={query}
+      onInputValueChange={details => setQuery(details.inputValue)}
+      openOnClick
+      placeholder="搜索城市"
+    >
+      <XhComboboxLabel>城市</XhComboboxLabel>
+      <XhComboboxControl>
+        <XhComboboxInput />
+        <XhComboboxTrigger />
+        <XhComboboxClearTrigger />
+      </XhComboboxControl>
+      <XhComboboxPositioner>
+        <XhComboboxContent>
+          {filtered.map(g => (
+            <XhComboboxGroup key={g.value} value={g.value}>
+              <XhComboboxGroupLabel>{g.label}</XhComboboxGroupLabel>
+              {g.items.map(c => (
+                <XhComboboxItem key={c.value} value={c.value}>
+                  <XhComboboxItemText>{c.label}</XhComboboxItemText>
+                  <XhComboboxItemIndicator />
+                </XhComboboxItem>
+              ))}
+            </XhComboboxGroup>
+          ))}
+        </XhComboboxContent>
+        <XhComboboxEmpty>无匹配城市</XhComboboxEmpty>
+      </XhComboboxPositioner>
+    </XhComboboxRoot>
   );
 }
