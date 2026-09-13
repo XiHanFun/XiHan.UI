@@ -1,7 +1,9 @@
 // 底部操作区 | 固定在滚动列表下方
 import type { ReactNode } from "react";
+import { PlusIcon } from "@xihan-ui/icons";
 import {
   XhButton,
+  XhIcon,
   XhSelectContent,
   XhSelectControl,
   XhSelectFooter,
@@ -59,7 +61,10 @@ export default function Demo(): ReactNode {
             </XhSelectList>
             {/* 按钮放这里才不违反 listbox 的子节点约束；条目多到要滚时它也贴在下沿不动 */}
             <XhSelectFooter>
-              <XhButton variant="ghost" size="sm" onClick={addOne}>＋ 新建</XhButton>
+              <XhButton variant="ghost" size="sm" onClick={addOne}>
+                <XhIcon icon={PlusIcon} />
+                新建
+              </XhButton>
             </XhSelectFooter>
           </XhSelectContent>
         </XhSelectPositioner>
