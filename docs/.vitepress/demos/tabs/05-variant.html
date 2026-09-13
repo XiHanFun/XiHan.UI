@@ -1,53 +1,14 @@
-<!-- 变体 | 区分主要、次级与卡片式导航 -->
-<div style="display: grid; gap: 16px; inline-size: min(560px, 100%)">
-  <div style="display: grid; gap: 6px">
-    <span style="color: var(--xh-fg-muted)">主要</span>
-    <xh-tabs default-value="overview">
-      <div data-xh-part="root">
-        <div data-xh-part="list" aria-label="主要标签页">
-          <button data-xh-part="trigger" value="overview">概览</button>
-          <button data-xh-part="trigger" value="analytics">分析</button>
-          <button data-xh-part="trigger" value="reports">报告</button>
-          <div data-xh-part="indicator"></div>
-        </div>
-        <div data-xh-part="content" value="overview">查看项目概览。</div>
-        <div data-xh-part="content" value="analytics">查看项目分析。</div>
-        <div data-xh-part="content" value="reports">查看项目报告。</div>
-      </div>
-    </xh-tabs>
+<!-- 次级变体 | 使用下划线表示当前标签 -->
+<xh-tabs default-value="overview" variant="line">
+  <div data-xh-part="root" style="inline-size: 360px; max-inline-size: 100%">
+    <div data-xh-part="list" aria-label="数据视图">
+      <button data-xh-part="trigger" value="overview">概览</button>
+      <button data-xh-part="trigger" value="analytics">分析</button>
+      <button data-xh-part="trigger" value="reports">报告</button>
+      <div data-xh-part="indicator"></div>
+    </div>
+    <div data-xh-part="content" value="overview">查看项目概览。</div>
+    <div data-xh-part="content" value="analytics">查看项目分析。</div>
+    <div data-xh-part="content" value="reports">查看项目报告。</div>
   </div>
-
-  <div style="display: grid; gap: 6px">
-    <span style="color: var(--xh-fg-muted)">次级</span>
-    <xh-tabs default-value="overview" variant="line">
-      <div data-xh-part="root">
-        <div data-xh-part="list" aria-label="次级标签页">
-          <button data-xh-part="trigger" value="overview">概览</button>
-          <button data-xh-part="trigger" value="analytics">分析</button>
-          <button data-xh-part="trigger" value="reports">报告</button>
-          <div data-xh-part="indicator"></div>
-        </div>
-        <div data-xh-part="content" value="overview">查看项目概览。</div>
-        <div data-xh-part="content" value="analytics">查看项目分析。</div>
-        <div data-xh-part="content" value="reports">查看项目报告。</div>
-      </div>
-    </xh-tabs>
-  </div>
-
-  <div style="display: grid; gap: 6px">
-    <span style="color: var(--xh-fg-muted)">卡片</span>
-    <xh-tabs default-value="overview" variant="card">
-      <div data-xh-part="root">
-        <div data-xh-part="list" aria-label="卡片标签页">
-          <button data-xh-part="trigger" value="overview">概览</button>
-          <button data-xh-part="trigger" value="analytics">分析</button>
-          <button data-xh-part="trigger" value="reports">报告</button>
-          <div data-xh-part="indicator"></div>
-        </div>
-        <div data-xh-part="content" value="overview">查看项目概览。</div>
-        <div data-xh-part="content" value="analytics">查看项目分析。</div>
-        <div data-xh-part="content" value="reports">查看项目报告。</div>
-      </div>
-    </xh-tabs>
-  </div>
-</div>
+</xh-tabs>

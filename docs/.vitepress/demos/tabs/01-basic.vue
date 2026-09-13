@@ -9,7 +9,7 @@ import {
 </script>
 
 <template>
-  <XhTabsRoot default-value="overview">
+  <XhTabsRoot default-value="overview" style="inline-size: 360px; max-inline-size: 100%">
     <XhTabsList aria-label="项目视图">
       <XhTabsTrigger value="overview">概览</XhTabsTrigger>
       <XhTabsTrigger value="analytics">分析</XhTabsTrigger>

@@ -32252,10 +32252,11 @@
   --xh-_tabs-list-gap: var(--xh-space-0_5);
   --xh-_tabs-list-bg: var(--xh-bg-subtle);
   --xh-_tabs-list-p: var(--xh-space-1);
-  --xh-_tabs-list-radius: var(--xh-shape-control);
+  --xh-_tabs-list-radius: var(--xh-shape-pill);
   --xh-_tabs-list-border-width: 0;
   --xh-_tabs-trigger-border-width: 0;
   --xh-_tabs-trigger-border: transparent;
+  --xh-_tabs-trigger-radius: var(--xh-shape-pill);
   --xh-_tabs-trigger-bg-active: var(--xh-_tone-subtle, var(--xh-bg-surface));
   --xh-_tabs-trigger-bg-active-hover: var(--xh-_tone-subtle-hover, var(--xh-bg-surface));
   --xh-_tabs-trigger-border-active: transparent;
@@ -32293,11 +32294,12 @@
 /* —— 变体 —— */
 /* 次级导航：透明标签带与底部基线，选中项由文字和滑动指示条强调。 */
 [data-scope='tabs'][data-part='root'][data-variant='line'] {
-  --xh-_tabs-list-gap: var(--xh-control-gap-md);
+  --xh-_tabs-list-gap: var(--xh-space-0);
   --xh-_tabs-list-bg: transparent;
   --xh-_tabs-list-p: var(--xh-space-0);
   --xh-_tabs-list-radius: 0;
-  --xh-_tabs-list-border-width: var(--xh-stroke-thin);
+  --xh-_tabs-list-border-width: 0;
+  --xh-_tabs-trigger-radius: var(--xh-shape-control);
   --xh-_tabs-trigger-bg-active: transparent;
   --xh-_tabs-trigger-bg-active-hover: var(--xh-bg-subtle-hover);
   --xh-_tabs-trigger-shadow-active: none;
@@ -32311,6 +32313,7 @@
   --xh-_tabs-list-radius: 0;
   --xh-_tabs-list-border-width: 0;
   --xh-_tabs-trigger-border-width: var(--xh-stroke-thin);
+  --xh-_tabs-trigger-radius: var(--xh-shape-control);
   --xh-_tabs-trigger-bg-active: var(--xh-_tone-subtle, var(--xh-bg-surface));
   --xh-_tabs-trigger-bg-active-hover: var(--xh-_tone-subtle-hover, var(--xh-bg-surface));
   --xh-_tabs-trigger-border-active: var(--xh-_tone-border, var(--xh-border-default));
@@ -32322,8 +32325,9 @@
   --xh-_tabs-list-gap: var(--xh-space-0_5);
   --xh-_tabs-list-bg: var(--xh-bg-subtle);
   --xh-_tabs-list-p: var(--xh-space-1);
-  --xh-_tabs-list-radius: var(--xh-shape-control);
+  --xh-_tabs-list-radius: var(--xh-shape-pill);
   --xh-_tabs-list-border-width: 0;
+  --xh-_tabs-trigger-radius: var(--xh-shape-pill);
   --xh-_tabs-trigger-bg-active: var(--xh-_tone-subtle, var(--xh-bg-surface));
   --xh-_tabs-trigger-bg-active-hover: var(--xh-_tone-subtle-hover, var(--xh-bg-surface));
   --xh-_tabs-trigger-shadow-active: var(--xh-elevation-raised);
@@ -32361,7 +32365,7 @@
   block-size: var(--xh-tabs-trigger-h, var(--xh-_tabs-trigger-h));
   padding-inline: var(--xh-tabs-trigger-px, var(--xh-_tabs-trigger-px));
   border: var(--xh-_tabs-trigger-border-width) solid var(--xh-tabs-trigger-border, var(--xh-_tabs-trigger-border));
-  border-radius: var(--xh-tabs-trigger-radius, var(--xh-shape-control));
+  border-radius: var(--xh-tabs-trigger-radius, var(--xh-_tabs-trigger-radius));
   background: var(--xh-tabs-trigger-bg, transparent);
   color: var(--xh-tabs-trigger-fg, var(--xh-fg-muted));
   font-size: var(--xh-tabs-trigger-font-size, var(--xh-_tabs-trigger-font-size));
@@ -32373,6 +32377,12 @@
     color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
     box-shadow var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
     scale var(--xh-motion-duration-micro) var(--xh-motion-ease-enter-strong);
+}
+
+/* 主标签带与 HeroUI 一样按可用宽度等分；窄到放不下文字时仍按原合同折行。 */
+[data-scope='tabs'][data-part='root'][data-orientation='horizontal']
+  [data-scope='tabs'][data-part='trigger'] {
+  flex: 1 1 0;
 }
 
 /* 禁用项带的是 aria-disabled 而非原生 disabled，:hover 照样命中；
@@ -32545,7 +32555,7 @@
    选中态仍由标签自己的底色与字色表达 */
 [data-scope='tabs'][data-part='indicator'] {
   position: absolute;
-  inset-block-end: calc(var(--xh-tabs-indicator-thickness, var(--xh-stroke-thick)) * -1);
+  inset-block-end: 0;
   block-size: var(--xh-tabs-indicator-thickness, var(--xh-stroke-thick));
   border-radius: var(--xh-tabs-indicator-radius, var(--xh-shape-pill));
   background: var(--xh-tabs-indicator-color, var(--xh-_tabs-accent));
@@ -32564,7 +32574,7 @@
 /* 竖排：滑条从基线挪到结束缘那条轨道上，交叉轴换成行内轴 */
 [data-scope='tabs'][data-part='indicator'][data-orientation='vertical'] {
   inset-block-end: auto;
-  inset-inline-end: calc(var(--xh-tabs-indicator-thickness, var(--xh-stroke-thick)) * -1);
+  inset-inline-end: 0;
   block-size: auto;
   inline-size: var(--xh-tabs-indicator-thickness, var(--xh-stroke-thick));
   transition:

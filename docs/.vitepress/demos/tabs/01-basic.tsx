@@ -9,7 +9,7 @@ import {
 
 export default function Demo(): ReactNode {
   return (
-    <XhTabsRoot defaultValue="overview">
+    <XhTabsRoot defaultValue="overview" style={{ inlineSize: "360px", maxInlineSize: "100%" }}>
       <XhTabsList aria-label="项目视图">
         <XhTabsTrigger value="overview">概览</XhTabsTrigger>
         <XhTabsTrigger value="analytics">分析</XhTabsTrigger>

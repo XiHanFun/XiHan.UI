@@ -9,19 +9,22 @@ afterEach(() => {
   host = null
 })
 
-function mount(variant?: 'card' | 'line' | 'segment'): { list: HTMLElement, active: HTMLElement } {
+function mount(variant?: 'card' | 'line' | 'segment'): { list: HTMLElement, active: HTMLElement, inactive: HTMLElement, indicator: HTMLElement } {
   host = document.createElement('div')
   host.innerHTML = `
     <div data-scope="tabs" data-part="root" data-orientation="horizontal"${variant ? ` data-variant="${variant}"` : ''}>
       <div data-scope="tabs" data-part="list">
         <button data-scope="tabs" data-part="trigger" data-state="active">概览</button>
         <button data-scope="tabs" data-part="trigger" data-state="inactive">分析</button>
+        <span data-scope="tabs" data-part="indicator" data-orientation="horizontal" style="inset-inline-start:0;inline-size:40px"></span>
       </div>
     </div>`
   document.body.append(host)
   return {
     list: host.querySelector<HTMLElement>('[data-part="list"]')!,
     active: host.querySelector<HTMLElement>('[data-part="trigger"][data-state="active"]')!,
+    inactive: host.querySelector<HTMLElement>('[data-part="trigger"][data-state="inactive"]')!,
+    indicator: host.querySelector<HTMLElement>('[data-part="indicator"]')!,
   }
 }
 
@@ -50,16 +53,20 @@ describe('tabs 默认视觉', () => {
     expect(Number.parseFloat(plainPaint.listPadding)).toBeGreaterThan(0)
     expect(plainPaint.activeBackground).not.toBe('rgba(0, 0, 0, 0)')
     expect(plainPaint.activeShadow).not.toBe('none')
+    expect(Number.parseFloat(getComputedStyle(plain.list).borderRadius)).toBeGreaterThanOrEqual(plain.list.offsetHeight / 2)
+    expect(Number.parseFloat(getComputedStyle(plain.active).borderRadius)).toBeGreaterThanOrEqual(plain.active.offsetHeight / 2)
+    expect(plain.active.offsetWidth).toBe(plain.inactive.offsetWidth)
   })
 
-  it('line 保持透明标签带与底部基线', () => {
+  it('line 保持透明标签带，仅用内侧指示条表达选中', () => {
     const line = mount('line')
     const style = getComputedStyle(line.list)
 
     expect(style.backgroundColor).toBe('rgba(0, 0, 0, 0)')
     expect(Number.parseFloat(style.paddingInlineStart)).toBe(0)
-    expect(Number.parseFloat(style.borderBottomWidth)).toBeGreaterThan(0)
+    expect(Number.parseFloat(style.borderBottomWidth)).toBe(0)
     expect(getComputedStyle(line.active).boxShadow).toBe('none')
+    expect(getComputedStyle(line.indicator).bottom).toBe('0px')
   })
 
   it('card 只保留选中标签的卡片面', () => {

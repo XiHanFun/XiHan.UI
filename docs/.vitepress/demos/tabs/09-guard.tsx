@@ -9,7 +9,7 @@ import {
 
 export default function Demo(): ReactNode {
   return (
-    <XhTabsRoot defaultValue="active">
+    <XhTabsRoot defaultValue="active" style={{ inlineSize: "360px", maxInlineSize: "100%" }}>
       <XhTabsList aria-label="标签状态">
         <XhTabsTrigger value="active">当前</XhTabsTrigger>
         <XhTabsTrigger value="disabled" disabled>不可用</XhTabsTrigger>
