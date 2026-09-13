@@ -535,6 +535,7 @@ import {
 | `--xh-tabs-trigger-border-active` | `trigger` | `border-color` | `state=active` | `--xh-_tabs-trigger-border-active` | tabs 的 trigger 部件 border-color 覆盖槽。 |
 | `--xh-tabs-trigger-fg` | `trigger` | `color` | `default` | `--xh-fg-muted` | tabs 的 trigger 部件 color 覆盖槽。 |
 | `--xh-tabs-trigger-fg-active` | `trigger` | `color` | `state=active` | `--xh-_tabs-accent-text` | tabs 的 trigger 部件 color 覆盖槽。 |
+| `--xh-tabs-trigger-fg-hover` | `root`<br>`trigger` | `color` | `disabled`<br>`hover`<br>`not([data-disabled])`<br>`variant=line` | `--xh-_tabs-accent-text` | tabs 的 root、trigger 部件 color 覆盖槽。 |
 | `--xh-tabs-trigger-font-size` | `trigger` | `font-size` | `default` | `--xh-_tabs-trigger-font-size` | tabs 的 trigger 部件 font-size 覆盖槽。 |
 | `--xh-tabs-trigger-font-weight` | `trigger` | `font-weight` | `default` | `--xh-text-label-weight` | tabs 的 trigger 部件 font-weight 覆盖槽。 |
 | `--xh-tabs-trigger-gap` | `trigger` | `gap` | `default` | `--xh-control-gap-md` | tabs 的 trigger 部件 gap 覆盖槽。 |

@@ -350,7 +350,7 @@ const items = [
 
 ### 颜色
 
-tone 落在展开态的标题上，六种语气各预置一项展开做对照
+tone 落在展开态的标题上，六种颜色各预置一项展开做对照
 
 ```vue
 <script setup lang="ts">
@@ -374,7 +374,7 @@ const tones = [
     {
       value: "closed",
       label: `${tone.label}（收起）`,
-      content: "收起态的标题不吃语气色。",
+      content: "收起态标题保持默认颜色。",
     },
   ],
 }));
@@ -426,7 +426,7 @@ const tones = [
             <span data-xh-part="indicator"></span>
           </button>
         </h3>
-        <div data-xh-part="content">收起态的标题不吃语气色。</div>
+        <div data-xh-part="content">收起态标题保持默认颜色。</div>
       </div>
     </div>
   </xh-accordion>
@@ -448,7 +448,7 @@ const tones = [
             <span data-xh-part="indicator"></span>
           </button>
         </h3>
-        <div data-xh-part="content">收起态的标题不吃语气色。</div>
+        <div data-xh-part="content">收起态标题保持默认颜色。</div>
       </div>
     </div>
   </xh-accordion>
@@ -470,7 +470,7 @@ const tones = [
             <span data-xh-part="indicator"></span>
           </button>
         </h3>
-        <div data-xh-part="content">收起态的标题不吃语气色。</div>
+        <div data-xh-part="content">收起态标题保持默认颜色。</div>
       </div>
     </div>
   </xh-accordion>
@@ -492,7 +492,7 @@ const tones = [
             <span data-xh-part="indicator"></span>
           </button>
         </h3>
-        <div data-xh-part="content">收起态的标题不吃语气色。</div>
+        <div data-xh-part="content">收起态标题保持默认颜色。</div>
       </div>
     </div>
   </xh-accordion>
@@ -514,7 +514,7 @@ const tones = [
             <span data-xh-part="indicator"></span>
           </button>
         </h3>
-        <div data-xh-part="content">收起态的标题不吃语气色。</div>
+        <div data-xh-part="content">收起态标题保持默认颜色。</div>
       </div>
     </div>
   </xh-accordion>
@@ -536,7 +536,7 @@ const tones = [
             <span data-xh-part="indicator"></span>
           </button>
         </h3>
-        <div data-xh-part="content">收起态的标题不吃语气色。</div>
+        <div data-xh-part="content">收起态标题保持默认颜色。</div>
       </div>
     </div>
   </xh-accordion>
@@ -1141,12 +1141,14 @@ indicator 是可选部件，不渲染它就没有默认字形；标记由作者�
 
 ```vue
 <script setup lang="ts">
+import { MinusIcon, PlusIcon } from "@xihan-ui/icons";
 import {
   XhAccordionContent,
   XhAccordionHeader,
   XhAccordionItem,
   XhAccordionRoot,
   XhAccordionTrigger,
+  XhIcon,
 } from "@xihan-ui/vue";
 import { ref } from "vue";
 
@@ -1166,10 +1168,12 @@ const panels = ref<string[]>(["shipping"]);
         <XhAccordionHeader>
           <XhAccordionTrigger>
             <span>{{ item.label }}</span>
-            <!-- 标记按这一项在不在展开集合里换字形 -->
-            <span style="font-size: 12px; color: var(--xh-fg-muted)">
-              {{ panels.includes(item.value) ? "－" : "＋" }}
-            </span>
+            <!-- 标记按这一项在不在展开集合里切换图标 -->
+            <XhIcon
+              :icon="panels.includes(item.value) ? MinusIcon : PlusIcon"
+              size="sm"
+              style="color: var(--xh-fg-muted)"
+            />
           </XhAccordionTrigger>
         </XhAccordionHeader>
         <XhAccordionContent>{{ item.body }}</XhAccordionContent>
@@ -1187,7 +1191,7 @@ const panels = ref<string[]>(["shipping"]);
         <h3 data-xh-part="header">
           <button data-xh-part="trigger">
             <span>配送方式</span>
-            <span data-mark style="font-size: 12px; color: var(--xh-fg-muted)">＋</span>
+            <svg data-mark aria-hidden="true" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color: var(--xh-fg-muted)"><path d="M12 5V19"/><path data-cross d="M5 12H19"/></svg>
           </button>
         </h3>
         <div data-xh-part="content">同城次日达，跨省三日达。</div>
@@ -1196,7 +1200,7 @@ const panels = ref<string[]>(["shipping"]);
         <h3 data-xh-part="header">
           <button data-xh-part="trigger">
             <span>发票</span>
-            <span data-mark style="font-size: 12px; color: var(--xh-fg-muted)">＋</span>
+            <svg data-mark aria-hidden="true" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color: var(--xh-fg-muted)"><path d="M12 5V19"/><path data-cross d="M5 12H19"/></svg>
           </button>
         </h3>
         <div data-xh-part="content">支持电子普票与专票。</div>
@@ -1205,7 +1209,7 @@ const panels = ref<string[]>(["shipping"]);
         <h3 data-xh-part="header">
           <button data-xh-part="trigger">
             <span>退换货</span>
-            <span data-mark style="font-size: 12px; color: var(--xh-fg-muted)">＋</span>
+            <svg data-mark aria-hidden="true" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color: var(--xh-fg-muted)"><path d="M12 5V19"/><path data-cross d="M5 12H19"/></svg>
           </button>
         </h3>
         <div data-xh-part="content">签收七日内无理由退换。</div>
@@ -1215,12 +1219,14 @@ const panels = ref<string[]>(["shipping"]);
 </div>
 
 <script type="module">
-  // 标记按这一项在不在展开集合里换字形
+  // 标记按这一项在不在展开集合里切换图形
   const accordion = document.getElementById("accordion-custom-icon");
   const paint = (value) => {
     for (const item of accordion.querySelectorAll('[data-xh-part="item"]')) {
       const mark = item.querySelector("[data-mark]");
-      mark.textContent = value.includes(item.getAttribute("value")) ? "－" : "＋";
+      const expanded = value.includes(item.getAttribute("value"));
+      mark.querySelector("path").setAttribute("d", expanded ? "M5 12H19" : "M12 5V19");
+      mark.querySelector("[data-cross]").style.display = expanded ? "none" : "";
     }
   };
   accordion.value = ["shipping"];
@@ -1234,7 +1240,7 @@ const panels = ref<string[]>(["shipping"]);
 
 ### 变体
 
-plain 不画壳，surface 给整块一层面，bordered 逐条画边；三档只改怎么与页面分开
+plain 不画壳，surface 连成单一表面，bordered 逐条画边；三档只改怎么与页面分开
 
 ```vue
 <script setup lang="ts">
@@ -1402,10 +1408,10 @@ const panels = [
 | `collapsible` | `boolean` |  | 允许把最后一个展开项收起，默认 false。 |
 | `loop` | `boolean` |  | 方向键走到尽头是否回绕，默认 false。 |
 | `disabled` | `boolean` |  | 整组禁用：所有条目都不可切换，条目上写的 disabled 只能更严不能放宽。 |
-| `variant` | `AccordionVariant` |  | 形态：plain / surface / bordered，决定条目怎么与页面分开。缺省 plain。 |
+| `variant` | `AccordionVariant` |  | 变体：plain / surface / bordered，决定条目怎么与页面分开。缺省 plain。 |
 | `orientation` | `Orientation` |  | 方向键轴向，默认 vertical。 |
 | `dir` | `Direction` |  | 文字方向，默认 ltr；影响水平轴上 ArrowLeft/ArrowRight 的语义。 |
-| `tone` | `Tone` |  | 语气：brand / neutral / success / warning / danger / info，决定用哪族颜色。 |
+| `tone` | `Tone` |  | 颜色：brand / neutral / success / warning / danger / info，决定使用哪组状态色。 |
 | `size` | `Size` |  | 尺寸：sm / md / lg。 |
 | `onValueChange` | `(details: AccordionValueChangeDetails) => void` |  | 展开集合变化回调。 |
 
@@ -1518,30 +1524,33 @@ const panels = [
 
 | 变量 | 部件 | CSS 属性 | 状态 | 缺省来源 | 说明 |
 | --- | --- | --- | --- | --- | --- |
-| `--xh-accordion-content-fg` | `content` | `color` | `default` | `--xh-fg-default` | accordion 的 content 部件 color 覆盖槽。 |
-| `--xh-accordion-content-px` | `content` | `padding-inline` | `default` | `--xh-control-px-md` | accordion 的 content 部件 padding-inline 覆盖槽。 |
-| `--xh-accordion-content-py` | `*`<br>`content` | `padding-block` | `@keyframes xh-accordion-collapse`<br>`@keyframes xh-accordion-expand`<br>`default` | `--xh-stack-gap-md` | accordion 的 *、content 部件 padding-block 覆盖槽。 |
+| `--xh-accordion-content-fg` | `content` | `color` | `default` | `--xh-fg-muted` | accordion 的 content 部件 color 覆盖槽。 |
+| `--xh-accordion-content-font-size` | `content` | `font-size` | `default` | `--xh-text-secondary-size` | accordion 的 content 部件 font-size 覆盖槽。 |
+| `--xh-accordion-content-pb` | `*`<br>`content` | `padding-block-end` | `@keyframes xh-accordion-collapse`<br>`@keyframes xh-accordion-expand`<br>`default` | `--xh-_accordion-content-pb` | accordion 的 *、content 部件 padding-block-end 覆盖槽。 |
+| `--xh-accordion-content-px` | `content` | `padding-inline` | `default` | `--xh-_accordion-content-px` | accordion 的 content 部件 padding-inline 覆盖槽。 |
 | `--xh-accordion-icon-size` | `root` | `--xh-icon-size` | `default` | `--xh-glyph-size-text` | accordion 的 root 部件 --xh-icon-size 覆盖槽。 |
-| `--xh-accordion-item-bg` | `item`<br>`root` | `background` | `variant=surface` | `--xh-bg-surface` | accordion 的 item、root 部件 background 覆盖槽。 |
-| `--xh-accordion-item-border` | `item`<br>`item-separator`<br>`root` | `background`<br>`border`<br>`border-block-start`<br>`border-inline-start` | `default`<br>`orientation=horizontal`<br>`variant=bordered` | `--xh-border-subtle` | accordion 的 item、item-separator、root 部件 background、border、border-block-start、border-inline-start 覆盖槽。 |
-| `--xh-accordion-item-gap` | `root` | `gap` | `is([data-variant='surface'], [data-variant='bordered'])`<br>`variant=bordered`<br>`variant=surface` | `--xh-space-2` | accordion 的 root 部件 gap 覆盖槽。 |
+| `--xh-accordion-indicator-fg` | `indicator` | `color` | `default` | `--xh-fg-muted` | accordion 的 indicator 部件 color 覆盖槽。 |
+| `--xh-accordion-item-bg` | `root` | `background` | `variant=surface` | `--xh-bg-surface` | accordion 的 root 部件 background 覆盖槽。 |
+| `--xh-accordion-item-border` | `item`<br>`item-separator`<br>`root` | `background`<br>`border`<br>`border-block-start`<br>`border-inline-start` | `default`<br>`not(:last-child)`<br>`orientation=horizontal`<br>`variant=bordered`<br>`variant=surface` | `--xh-border-subtle` | accordion 的 item、item-separator、root 部件 background、border、border-block-start、border-inline-start 覆盖槽。 |
+| `--xh-accordion-item-gap` | `root` | `gap` | `variant=bordered` | `--xh-space-2` | accordion 的 root 部件 gap 覆盖槽。 |
 | `--xh-accordion-item-radius` | `item`<br>`root` | `border-radius` | `variant=bordered`<br>`variant=surface` | `--xh-shape-surface` | accordion 的 item、root 部件 border-radius 覆盖槽。 |
-| `--xh-accordion-item-shadow` | `item`<br>`root` | `box-shadow` | `variant=surface` | `--xh-elevation-raised` | accordion 的 item、root 部件 box-shadow 覆盖槽。 |
+| `--xh-accordion-item-shadow` | `root` | `box-shadow` | `variant=surface` | `none` | accordion 的 root 部件 box-shadow 覆盖槽。 |
 | `--xh-accordion-trigger-bg` | `trigger` | `background` | `default` | `transparent` | accordion 的 trigger 部件 background 覆盖槽。 |
-| `--xh-accordion-trigger-bg-hover` | `trigger` | `background` | `disabled`<br>`hover`<br>`not([data-disabled])` | `--xh-bg-subtle` | accordion 的 trigger 部件 background 覆盖槽。 |
+| `--xh-accordion-trigger-bg-hover` | `trigger` | `background` | `disabled`<br>`hover`<br>`not([data-disabled])`<br>`not([data-state='open'])`<br>`state=open` | `--xh-bg-subtle-hover` | accordion 的 trigger 部件 background 覆盖槽。 |
 | `--xh-accordion-trigger-fg` | `trigger` | `color` | `default` | `--xh-fg-default` | accordion 的 trigger 部件 color 覆盖槽。 |
 | `--xh-accordion-trigger-fg-open` | `trigger` | `color` | `state=open` | `--xh-_accordion-open-fg` | accordion 的 trigger 部件 color 覆盖槽。 |
 | `--xh-accordion-trigger-font-size` | `trigger` | `font-size` | `default` | `--xh-_accordion-trigger-font-size` | accordion 的 trigger 部件 font-size 覆盖槽。 |
 | `--xh-accordion-trigger-font-weight` | `trigger` | `font-weight` | `default` | `--xh-text-label-weight` | accordion 的 trigger 部件 font-weight 覆盖槽。 |
 | `--xh-accordion-trigger-gap` | `trigger` | `gap` | `default` | `--xh-_accordion-trigger-gap` | accordion 的 trigger 部件 gap 覆盖槽。 |
-| `--xh-accordion-trigger-h` | `trigger` | `block-size` | `default` | `--xh-_accordion-trigger-h` | accordion 的 trigger 部件 block-size 覆盖槽。 |
+| `--xh-accordion-trigger-h` | `trigger` | `min-block-size` | `default` | `--xh-_accordion-trigger-h` | accordion 的 trigger 部件 min-block-size 覆盖槽。 |
 | `--xh-accordion-trigger-px` | `trigger` | `padding-inline` | `default` | `--xh-_accordion-trigger-px` | accordion 的 trigger 部件 padding-inline 覆盖槽。 |
+| `--xh-accordion-trigger-py` | `trigger` | `padding-block` | `default` | `--xh-_accordion-trigger-py` | accordion 的 trigger 部件 padding-block 覆盖槽。 |
 | `--xh-accordion-trigger-radius` | `trigger` | `border-radius` | `default` | `--xh-shape-control` | accordion 的 trigger 部件 border-radius 覆盖槽。 |
 <!-- xh-component-tokens:end -->
 
 ### 动效
 
-关键帧 `xh-accordion-collapse` · `xh-accordion-expand` 随皮肤自带，不引用别处文件里的名字；`rotate` · `scale` 走 `transition` 过渡。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
+关键帧 `xh-accordion-collapse` · `xh-accordion-expand` 随皮肤自带，不引用别处文件里的名字；`background` · `rotate` · `scale` 走 `transition` 过渡。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
 
 皮肤之外还有一段：退场由适配器的退场闸门把关，动画播完才真收起。
 
@@ -4226,16 +4235,20 @@ const rows = [
 
 ```vue
 <script setup lang="ts">
-import { XhAvatarFallback, XhAvatarGroupRoot, XhAvatarImage, XhAvatarRoot } from "@xihan-ui/vue";
+import { XhAvatarFallback, XhAvatarGroupRoot, XhAvatarRoot } from "@xihan-ui/vue";
 
-const members = ["曦", "寒", "懿", "承"];
+const members = [
+  { label: "曦", tone: "brand" },
+  { label: "寒", tone: "success" },
+  { label: "懿", tone: "warning" },
+  { label: "承", tone: "info" },
+] as const;
 </script>
 
 <template>
   <XhAvatarGroupRoot>
-    <XhAvatarRoot v-for="m in members" :key="m">
-      <XhAvatarImage />
-      <XhAvatarFallback>{{ m }}</XhAvatarFallback>
+    <XhAvatarRoot v-for="member in members" :key="member.label" :tone="member.tone">
+      <XhAvatarFallback>{{ member.label }}</XhAvatarFallback>
     </XhAvatarRoot>
   </XhAvatarGroupRoot>
 </template>
@@ -4244,27 +4257,23 @@ const members = ["曦", "寒", "懿", "承"];
 ```html
 <xh-avatar-group>
   <div data-xh-part="root">
-    <xh-avatar>
+    <xh-avatar tone="brand">
       <span data-xh-part="root">
-        <img data-xh-part="image" />
         <span data-xh-part="fallback">曦</span>
       </span>
     </xh-avatar>
-    <xh-avatar>
+    <xh-avatar tone="success">
       <span data-xh-part="root">
-        <img data-xh-part="image" />
         <span data-xh-part="fallback">寒</span>
       </span>
     </xh-avatar>
-    <xh-avatar>
+    <xh-avatar tone="warning">
       <span data-xh-part="root">
-        <img data-xh-part="image" />
         <span data-xh-part="fallback">懿</span>
       </span>
     </xh-avatar>
-    <xh-avatar>
+    <xh-avatar tone="info">
       <span data-xh-part="root">
-        <img data-xh-part="image" />
         <span data-xh-part="fallback">承</span>
       </span>
     </xh-avatar>
@@ -4286,7 +4295,7 @@ const members = ["曦", "寒", "懿", "承"];
 
 ```vue
 <script setup lang="ts">
-import { XhAvatarFallback, XhAvatarGroupOverflowItem, XhAvatarGroupRoot, XhAvatarImage, XhAvatarRoot } from "@xihan-ui/vue";
+import { XhAvatarFallback, XhAvatarGroupOverflowItem, XhAvatarGroupRoot, XhAvatarRoot } from "@xihan-ui/vue";
 
 const members = ["曦", "寒", "懿", "承", "临", "旭"];
 const max = 4;
@@ -4298,7 +4307,6 @@ const rest = members.length - shown.length;
 <template>
   <XhAvatarGroupRoot :max="max">
     <XhAvatarRoot v-for="m in shown" :key="m">
-      <XhAvatarImage />
       <XhAvatarFallback>{{ m }}</XhAvatarFallback>
     </XhAvatarRoot>
 
@@ -4313,25 +4321,21 @@ const rest = members.length - shown.length;
   <div data-xh-part="root">
     <xh-avatar>
       <span data-xh-part="root">
-        <img data-xh-part="image" />
         <span data-xh-part="fallback">曦</span>
       </span>
     </xh-avatar>
     <xh-avatar>
       <span data-xh-part="root">
-        <img data-xh-part="image" />
         <span data-xh-part="fallback">寒</span>
       </span>
     </xh-avatar>
     <xh-avatar>
       <span data-xh-part="root">
-        <img data-xh-part="image" />
         <span data-xh-part="fallback">懿</span>
       </span>
     </xh-avatar>
     <xh-avatar>
       <span data-xh-part="root">
-        <img data-xh-part="image" />
         <span data-xh-part="fallback">承</span>
       </span>
     </xh-avatar>
@@ -4348,7 +4352,7 @@ const rest = members.length - shown.length;
 
 ```vue
 <script setup lang="ts">
-import { XhAvatarFallback, XhAvatarGroupOverflowItem, XhAvatarGroupRoot, XhAvatarImage, XhAvatarRoot } from "@xihan-ui/vue";
+import { XhAvatarFallback, XhAvatarGroupOverflowItem, XhAvatarGroupRoot, XhAvatarRoot } from "@xihan-ui/vue";
 
 const sizes = ["sm", "md", "lg"];
 const shown = ["曦", "寒", "懿"];
@@ -4358,7 +4362,6 @@ const shown = ["曦", "寒", "懿"];
   <div style="display: grid; gap: 16px; justify-items: start">
     <XhAvatarGroupRoot v-for="s in sizes" :key="s" :size="s" :max="3">
       <XhAvatarRoot v-for="m in shown" :key="m">
-        <XhAvatarImage />
         <XhAvatarFallback>{{ m }}</XhAvatarFallback>
       </XhAvatarRoot>
       <XhAvatarGroupOverflowItem>+3</XhAvatarGroupOverflowItem>
@@ -4373,19 +4376,16 @@ const shown = ["曦", "寒", "懿"];
     <div data-xh-part="root">
       <xh-avatar>
         <span data-xh-part="root">
-          <img data-xh-part="image" />
           <span data-xh-part="fallback">曦</span>
         </span>
       </xh-avatar>
       <xh-avatar>
         <span data-xh-part="root">
-          <img data-xh-part="image" />
           <span data-xh-part="fallback">寒</span>
         </span>
       </xh-avatar>
       <xh-avatar>
         <span data-xh-part="root">
-          <img data-xh-part="image" />
           <span data-xh-part="fallback">懿</span>
         </span>
       </xh-avatar>
@@ -4397,19 +4397,16 @@ const shown = ["曦", "寒", "懿"];
     <div data-xh-part="root">
       <xh-avatar>
         <span data-xh-part="root">
-          <img data-xh-part="image" />
           <span data-xh-part="fallback">曦</span>
         </span>
       </xh-avatar>
       <xh-avatar>
         <span data-xh-part="root">
-          <img data-xh-part="image" />
           <span data-xh-part="fallback">寒</span>
         </span>
       </xh-avatar>
       <xh-avatar>
         <span data-xh-part="root">
-          <img data-xh-part="image" />
           <span data-xh-part="fallback">懿</span>
         </span>
       </xh-avatar>
@@ -4421,19 +4418,16 @@ const shown = ["曦", "寒", "懿"];
     <div data-xh-part="root">
       <xh-avatar>
         <span data-xh-part="root">
-          <img data-xh-part="image" />
           <span data-xh-part="fallback">曦</span>
         </span>
       </xh-avatar>
       <xh-avatar>
         <span data-xh-part="root">
-          <img data-xh-part="image" />
           <span data-xh-part="fallback">寒</span>
         </span>
       </xh-avatar>
       <xh-avatar>
         <span data-xh-part="root">
-          <img data-xh-part="image" />
           <span data-xh-part="fallback">懿</span>
         </span>
       </xh-avatar>
@@ -4449,7 +4443,7 @@ const shown = ["曦", "寒", "懿"];
 
 ```vue
 <script setup lang="ts">
-import { XhAvatarFallback, XhAvatarGroupOverflowItem, XhAvatarGroupRoot, XhAvatarImage, XhAvatarRoot } from "@xihan-ui/vue";
+import { XhAvatarFallback, XhAvatarGroupOverflowItem, XhAvatarGroupRoot, XhAvatarRoot } from "@xihan-ui/vue";
 
 const shown = ["曦", "寒", "懿", "承"];
 
@@ -4465,7 +4459,6 @@ const tokens = {
 <template>
   <XhAvatarGroupRoot :max="4" :style="tokens">
     <XhAvatarRoot v-for="m in shown" :key="m">
-      <XhAvatarImage />
       <XhAvatarFallback>{{ m }}</XhAvatarFallback>
     </XhAvatarRoot>
     <XhAvatarGroupOverflowItem>+2</XhAvatarGroupOverflowItem>
@@ -4487,25 +4480,21 @@ const tokens = {
   >
     <xh-avatar>
       <span data-xh-part="root">
-        <img data-xh-part="image" />
         <span data-xh-part="fallback">曦</span>
       </span>
     </xh-avatar>
     <xh-avatar>
       <span data-xh-part="root">
-        <img data-xh-part="image" />
         <span data-xh-part="fallback">寒</span>
       </span>
     </xh-avatar>
     <xh-avatar>
       <span data-xh-part="root">
-        <img data-xh-part="image" />
         <span data-xh-part="fallback">懿</span>
       </span>
     </xh-avatar>
     <xh-avatar>
       <span data-xh-part="root">
-        <img data-xh-part="image" />
         <span data-xh-part="fallback">承</span>
       </span>
     </xh-avatar>
@@ -4708,69 +4697,6 @@ import { XhAvatarFallback, XhAvatarImage, XhAvatarRoot } from "@xihan-ui/vue";
     <span data-xh-part="fallback">无图</span>
   </span>
 </xh-avatar>
-```
-
-### 排成一列
-
-头像本身不管布局，叠放与间距由外层容器决定
-
-```vue
-<script setup lang="ts">
-import { XhAvatarFallback, XhAvatarImage, XhAvatarRoot } from "@xihan-ui/vue";
-
-const members = ["曦", "寒", "懿", "XH"];
-</script>
-
-<template>
-  <div style="display: flex">
-    <XhAvatarRoot
-      v-for="(m, i) in members"
-      :key="m"
-      :style="{ marginLeft: i ? '-8px' : '0', outline: '2px solid var(--vp-c-bg)', borderRadius: '999px' }"
-    >
-      <XhAvatarImage />
-      <XhAvatarFallback>{{ m }}</XhAvatarFallback>
-    </XhAvatarRoot>
-  </div>
-</template>
-```
-
-```html
-<div style="display: flex">
-  <xh-avatar>
-    <span data-xh-part="root" style="outline: 2px solid var(--vp-c-bg); border-radius: 999px">
-      <img data-xh-part="image" />
-      <span data-xh-part="fallback">曦</span>
-    </span>
-  </xh-avatar>
-  <xh-avatar>
-    <span
-      data-xh-part="root"
-      style="margin-left: -8px; outline: 2px solid var(--vp-c-bg); border-radius: 999px"
-    >
-      <img data-xh-part="image" />
-      <span data-xh-part="fallback">寒</span>
-    </span>
-  </xh-avatar>
-  <xh-avatar>
-    <span
-      data-xh-part="root"
-      style="margin-left: -8px; outline: 2px solid var(--vp-c-bg); border-radius: 999px"
-    >
-      <img data-xh-part="image" />
-      <span data-xh-part="fallback">懿</span>
-    </span>
-  </xh-avatar>
-  <xh-avatar>
-    <span
-      data-xh-part="root"
-      style="margin-left: -8px; outline: 2px solid var(--vp-c-bg); border-radius: 999px"
-    >
-      <img data-xh-part="image" />
-      <span data-xh-part="fallback">XH</span>
-    </span>
-  </xh-avatar>
-</div>
 ```
 
 ### 尺寸
@@ -5282,314 +5208,9 @@ function record(key: string, details: { status: string }) {
 </script>
 ```
 
-### 成组与溢出计数
-
-组内共用的直径、字号、形状在容器上写一次，自定义属性沿继承流给每一枚；超出上限的收成一枚「+N」，它只是又一枚落回退态的头像
-
-```vue
-<script setup lang="ts">
-import { XhAvatarFallback, XhAvatarImage, XhAvatarRoot } from "@xihan-ui/vue";
-
-const members = ["曦", "寒", "懿", "承", "临", "旭"];
-const max = 4;
-
-const shown = members.slice(0, max);
-const rest = members.length - shown.length;
-
-// 两组只差容器上的这几个槽位，组内的写法完全一样
-const groups: { key: string; tokens: Record<string, string> }[] = [
-  {
-    key: "圆",
-    tokens: { "--xh-avatar-size": "36px", "--xh-avatar-font-size": "14px" },
-  },
-  {
-    key: "方",
-    tokens: {
-      "--xh-avatar-size": "26px",
-      "--xh-avatar-font-size": "11px",
-      "--xh-avatar-radius": "var(--xh-radius-md)",
-    },
-  },
-];
-</script>
-
-<template>
-  <div style="display: grid; gap: 16px">
-    <div
-      v-for="g in groups"
-      :key="g.key"
-      :style="{ display: 'flex', alignItems: 'center', ...g.tokens }"
-    >
-      <!-- 叠放是外层的事：后一枚往回挪一段，再描一圈底色把压住的边分开 -->
-      <XhAvatarRoot
-        v-for="(m, i) in shown"
-        :key="m"
-        :style="{ marginInlineStart: i ? '-10px' : '0', outline: '2px solid var(--vp-c-bg)' }"
-      >
-        <XhAvatarImage />
-        <XhAvatarFallback>{{ m }}</XhAvatarFallback>
-      </XhAvatarRoot>
-
-      <!-- 计数格没有图，只写回退内容 -->
-      <XhAvatarRoot
-        v-if="rest > 0"
-        style="
-          margin-inline-start: -10px;
-          outline: 2px solid var(--vp-c-bg);
-          --xh-avatar-bg: var(--xh-bg-muted);
-          --xh-avatar-fg: var(--xh-fg-muted);
-        "
-      >
-        <XhAvatarFallback>+{{ rest }}</XhAvatarFallback>
-      </XhAvatarRoot>
-    </div>
-  </div>
-</template>
-```
-
-```html
-<div style="display: grid; gap: 16px">
-  <!-- 叠放是外层的事：后一枚往回挪一段，再描一圈底色把压住的边分开 -->
-  <div
-    style="
-      display: flex;
-      align-items: center;
-      --xh-avatar-size: 36px;
-      --xh-avatar-font-size: 14px;
-    "
-  >
-    <xh-avatar>
-      <span data-xh-part="root" style="outline: 2px solid var(--vp-c-bg)">
-        <img data-xh-part="image" />
-        <span data-xh-part="fallback">曦</span>
-      </span>
-    </xh-avatar>
-    <xh-avatar>
-      <span
-        data-xh-part="root"
-        style="margin-inline-start: -10px; outline: 2px solid var(--vp-c-bg)"
-      >
-        <img data-xh-part="image" />
-        <span data-xh-part="fallback">寒</span>
-      </span>
-    </xh-avatar>
-    <xh-avatar>
-      <span
-        data-xh-part="root"
-        style="margin-inline-start: -10px; outline: 2px solid var(--vp-c-bg)"
-      >
-        <img data-xh-part="image" />
-        <span data-xh-part="fallback">懿</span>
-      </span>
-    </xh-avatar>
-    <xh-avatar>
-      <span
-        data-xh-part="root"
-        style="margin-inline-start: -10px; outline: 2px solid var(--vp-c-bg)"
-      >
-        <img data-xh-part="image" />
-        <span data-xh-part="fallback">承</span>
-      </span>
-    </xh-avatar>
-    <!-- 计数格没有图，只写回退内容 -->
-    <xh-avatar>
-      <span
-        data-xh-part="root"
-        style="
-          margin-inline-start: -10px;
-          outline: 2px solid var(--vp-c-bg);
-          --xh-avatar-bg: var(--xh-bg-muted);
-          --xh-avatar-fg: var(--xh-fg-muted);
-        "
-      >
-        <span data-xh-part="fallback">+2</span>
-      </span>
-    </xh-avatar>
-  </div>
-
-  <div
-    style="
-      display: flex;
-      align-items: center;
-      --xh-avatar-size: 26px;
-      --xh-avatar-font-size: 11px;
-      --xh-avatar-radius: var(--xh-radius-md);
-    "
-  >
-    <xh-avatar>
-      <span data-xh-part="root" style="outline: 2px solid var(--vp-c-bg)">
-        <img data-xh-part="image" />
-        <span data-xh-part="fallback">曦</span>
-      </span>
-    </xh-avatar>
-    <xh-avatar>
-      <span
-        data-xh-part="root"
-        style="margin-inline-start: -10px; outline: 2px solid var(--vp-c-bg)"
-      >
-        <img data-xh-part="image" />
-        <span data-xh-part="fallback">寒</span>
-      </span>
-    </xh-avatar>
-    <xh-avatar>
-      <span
-        data-xh-part="root"
-        style="margin-inline-start: -10px; outline: 2px solid var(--vp-c-bg)"
-      >
-        <img data-xh-part="image" />
-        <span data-xh-part="fallback">懿</span>
-      </span>
-    </xh-avatar>
-    <xh-avatar>
-      <span
-        data-xh-part="root"
-        style="margin-inline-start: -10px; outline: 2px solid var(--vp-c-bg)"
-      >
-        <img data-xh-part="image" />
-        <span data-xh-part="fallback">承</span>
-      </span>
-    </xh-avatar>
-    <xh-avatar>
-      <span
-        data-xh-part="root"
-        style="
-          margin-inline-start: -10px;
-          outline: 2px solid var(--vp-c-bg);
-          --xh-avatar-bg: var(--xh-bg-muted);
-          --xh-avatar-fg: var(--xh-fg-muted);
-        "
-      >
-        <span data-xh-part="fallback">+2</span>
-      </span>
-    </xh-avatar>
-  </div>
-</div>
-```
-
-### 挂状态点与角标
-
-状态点自己绝对定位在根里；计数角标反过来——把头像写进角标的默认插槽，贴角与偏移都归角标算
-
-```vue
-<script setup lang="ts">
-import { XhAvatarFallback, XhAvatarImage, XhAvatarRoot, XhBadge } from "@xihan-ui/vue";
-</script>
-
-<template>
-  <div style="display: flex; align-items: center; gap: 24px">
-    <!-- 状态点落在圆内，裁剪不用动 -->
-    <XhAvatarRoot size="lg" src="/images/logo.png" alt="曦寒">
-      <XhAvatarImage />
-      <XhAvatarFallback>曦</XhAvatarFallback>
-      <span
-        role="img"
-        aria-label="在线"
-        style="
-          position: absolute;
-          inset-block-end: 2px;
-          inset-inline-end: 2px;
-          inline-size: 10px;
-          block-size: 10px;
-          border-radius: var(--xh-shape-pill);
-          background: var(--xh-fg-success);
-        "
-      />
-    </XhAvatarRoot>
-
-    <!-- 计数角标：被标记的头像写进默认插槽，贴哪个角、偏多少都归角标 -->
-    <XhBadge :count="12" tone="danger" size="sm" label="12 条未读">
-      <XhAvatarRoot size="lg" src="/images/logo.png" alt="曦寒">
-        <XhAvatarImage />
-        <XhAvatarFallback>曦</XhAvatarFallback>
-      </XhAvatarRoot>
-    </XhBadge>
-
-    <!-- 落回退态时一样成立；点描一圈底色，压在头像边上也分得开 -->
-    <XhAvatarRoot size="lg" style="overflow: visible">
-      <XhAvatarImage />
-      <XhAvatarFallback>XH</XhAvatarFallback>
-      <span
-        role="img"
-        aria-label="离线"
-        style="
-          position: absolute;
-          inset-block-end: 0;
-          inset-inline-end: 0;
-          inline-size: 12px;
-          block-size: 12px;
-          border: 2px solid var(--vp-c-bg);
-          border-radius: var(--xh-shape-pill);
-          background: var(--xh-fg-disabled);
-        "
-      />
-    </XhAvatarRoot>
-  </div>
-</template>
-```
-
-```html
-<div style="display: flex; align-items: center; gap: 24px">
-  <!-- 状态点落在圆内，裁剪不用动 -->
-  <xh-avatar size="lg" src="/images/logo.png" alt="曦寒">
-    <span data-xh-part="root">
-      <img data-xh-part="image" />
-      <span data-xh-part="fallback">曦</span>
-      <span
-        role="img"
-        aria-label="在线"
-        style="
-          position: absolute;
-          inset-block-end: 2px;
-          inset-inline-end: 2px;
-          inline-size: 10px;
-          block-size: 10px;
-          border-radius: var(--xh-shape-pill);
-          background: var(--xh-fg-success);
-        "
-      ></span>
-    </span>
-  </xh-avatar>
-
-  <!-- 计数角标：被标记的头像写进默认插槽，贴哪个角、偏多少都归角标 -->
-  <xh-badge count="12" tone="danger" size="sm" label="12 条未读">
-    <span data-xh-part="root">
-      <xh-avatar size="lg" src="/images/logo.png" alt="曦寒">
-        <span data-xh-part="root">
-          <img data-xh-part="image" />
-          <span data-xh-part="fallback">曦</span>
-        </span>
-      </xh-avatar>
-      <span data-xh-part="indicator"></span>
-    </span>
-  </xh-badge>
-
-  <!-- 落回退态时一样成立；点描一圈底色，压在头像边上也分得开 -->
-  <xh-avatar size="lg">
-    <span data-xh-part="root" style="overflow: visible">
-      <img data-xh-part="image" />
-      <span data-xh-part="fallback">XH</span>
-      <span
-        role="img"
-        aria-label="离线"
-        style="
-          position: absolute;
-          inset-block-end: 0;
-          inset-inline-end: 0;
-          inline-size: 12px;
-          block-size: 12px;
-          border: 2px solid var(--vp-c-bg);
-          border-radius: var(--xh-shape-pill);
-          background: var(--xh-fg-disabled);
-        "
-      ></span>
-    </span>
-  </xh-avatar>
-</div>
-```
-
 ### 颜色
 
-tone 换淡底与回退字的配色族；不写 tone 就是中性缺省，直径与字号都不受影响
+tone 换淡底与回退字的配色组；不写 tone 就是中性缺省，直径与字号都不受影响
 
 ```vue
 <script setup lang="ts">
@@ -5726,7 +5347,7 @@ const tones = [
 | `src` | `string` |  |  |
 | `alt` | `string` |  |  |
 | `size` | `Size` |  | 尺寸：sm / md / lg，缺省 md；缺省档不输出 data-size |
-| `tone` | `Tone` |  | 语气：决定底色与回退字用哪一族颜色；缺席即不输出 data-tone，走皮肤的中性缺省 |
+| `tone` | `Tone` |  | 颜色：决定底色与回退字使用哪组状态色；缺席即不输出 data-tone，走皮肤的中性缺省 |
 | `onStatusChange` | `(details: AvatarStatusChangeDetails) => void` |  | 状态落位时通知，过渡态 idle 不通知。 |
 
 ### 事件
@@ -8291,22 +7912,19 @@ import {
   XhCalendarWeekDay,
   XhCalendarWeekRow,
 } from "@xihan-ui/vue";
-import { ref } from "vue";
-
-// 选中值恒为数组，单选时长度不超过 1
-const value = ref<string[]>([]);
 </script>
 
 <template>
   <XhCalendarRoot
     v-slot="{ weeks, weekDays }"
-    v-model:value="value"
+    :default-value="['2026-09-13']"
+    default-focused-value="2026-09-13"
     locale="zh-CN"
     fixed-weeks
     style="max-inline-size: 280px"
   >
     <XhCalendarHeader>
-      <!-- 箭头字符念不出「上个月」，可及名字得自己给 -->
+      <!-- 翻月按钮需要明确可及名称 -->
       <XhCalendarPrevTrigger aria-label="上个月" />
       <XhCalendarHeading />
       <XhCalendarNextTrigger aria-label="下个月" />
@@ -8327,21 +7945,18 @@ const value = ref<string[]>([]);
       </XhCalendarGridBody>
     </XhCalendarGrid>
   </XhCalendarRoot>
-
-  <span style="font-size: 13px">选中：{{ value[0] ?? "（未选）" }}</span>
 </template>
 ```
 
 ```html
 <div id="calendar-basic-mount"></div>
-<span style="font-size: 13px">选中：<span id="calendar-basic-value">（未选）</span></span>
 
 <!-- 结构先收在模板里：必需的格子要在元素接线前就位，所以网格填好了才入页 -->
 <template id="calendar-basic-template">
   <xh-calendar locale="zh-CN" fixed-weeks>
     <div data-xh-part="root" style="max-inline-size: 280px">
       <div data-xh-part="header">
-        <!-- 箭头字符念不出「上个月」，可及名字得自己给 -->
+        <!-- 翻月按钮需要明确可及名称 -->
         <button data-xh-part="prev-trigger" aria-label="上个月"></button>
         <div data-xh-part="heading"></div>
         <button data-xh-part="next-trigger" aria-label="下个月"></button>
@@ -8364,7 +7979,8 @@ const value = ref<string[]>([]);
   const heading = fragment.querySelector('[data-xh-part="heading"]');
   const head = fragment.querySelector('[data-xh-part="grid-head"] [data-xh-part="week-row"]');
   const body = fragment.querySelector('[data-xh-part="grid-body"]');
-  const readout = document.getElementById("calendar-basic-value");
+  calendar.defaultValue = ["2026-09-13"];
+  calendar.defaultFocusedValue = "2026-09-13";
 
   // 已经画出来的是哪个月
   let month = "";
@@ -8415,9 +8031,6 @@ const value = ref<string[]>([]);
   paintBody();
 
   calendar.addEventListener("focused-value-change", paintBody);
-  calendar.addEventListener("value-change", (event) => {
-    readout.textContent = event.detail.value[0] ?? "（未选）";
-  });
 </script>
 ```
 
@@ -9693,7 +9306,26 @@ import {
   XhCarouselViewport,
 } from "@xihan-ui/vue";
 
-const slides = ["第一张", "第二张", "第三张"];
+const slides = [
+  {
+    eyebrow: "设计系统",
+    title: "一套视觉语言",
+    description: "令牌、皮肤与组件共享同一组设计决策。",
+    background: "var(--xh-bg-brand-subtle)",
+  },
+  {
+    eyebrow: "无障碍",
+    title: "键盘与读屏一致",
+    description: "交互状态由无头内核统一维护。",
+    background: "color-mix(in oklab, var(--xh-fg-success) 12%, var(--xh-bg-surface))",
+  },
+  {
+    eyebrow: "跨框架",
+    title: "Vue、React 与 Web Components",
+    description: "同一份行为契约，对齐三种渲染方式。",
+    background: "color-mix(in oklab, var(--xh-fg-warning) 12%, var(--xh-bg-surface))",
+  },
+];
 </script>
 
 <template>
@@ -9704,12 +9336,26 @@ const slides = ["第一张", "第二张", "第三张"];
   >
     <XhCarouselPrevTrigger />
     <!-- 视口只负责裁切，高度由页面给：不给高度就没有可裁的窗口 -->
-    <XhCarouselViewport style="block-size: 140px">
+    <XhCarouselViewport style="block-size: 176px">
       <XhCarouselList>
-        <XhCarouselItem v-for="(text, i) in slides" :key="text" :index="i">
-          <div style="display: grid; place-items: center; block-size: 100%">
-            {{ text }}
-          </div>
+        <XhCarouselItem v-for="(slide, i) in slides" :key="slide.title" :index="i">
+          <article
+            :style="{
+              display: 'grid',
+              alignContent: 'end',
+              gap: '6px',
+              blockSize: '100%',
+              padding: '24px',
+              background: slide.background,
+              color: 'var(--xh-fg-default)',
+            }"
+          >
+            <span style="color: var(--xh-fg-muted); font-size: var(--xh-text-caption-size)">
+              {{ slide.eyebrow }}
+            </span>
+            <strong style="color: var(--xh-fg-default); font-size: var(--xh-text-heading-3-size)">{{ slide.title }}</strong>
+            <span style="color: var(--xh-fg-muted)">{{ slide.description }}</span>
+          </article>
         </XhCarouselItem>
       </XhCarouselList>
     </XhCarouselViewport>
@@ -9727,22 +9373,28 @@ const slides = ["第一张", "第二张", "第三张"];
   <div data-xh-part="root" style="inline-size: 100%">
     <button data-xh-part="prev-trigger"></button>
     <!-- 视口只负责裁切，高度由页面给：不给高度就没有可裁的窗口 -->
-    <div data-xh-part="viewport" style="block-size: 140px">
+    <div data-xh-part="viewport" style="block-size: 176px">
       <div data-xh-part="list">
         <div data-xh-part="item" index="0">
-          <div style="display: grid; place-items: center; block-size: 100%">
-            第一张
-          </div>
+          <article style="display: grid; align-content: end; gap: 6px; block-size: 100%; padding: 24px; background: var(--xh-bg-brand-subtle); color: var(--xh-fg-default)">
+            <span style="color: var(--xh-fg-muted); font-size: var(--xh-text-caption-size)">设计系统</span>
+            <strong style="color: var(--xh-fg-default); font-size: var(--xh-text-heading-3-size)">一套视觉语言</strong>
+            <span style="color: var(--xh-fg-muted)">令牌、皮肤与组件共享同一组设计决策。</span>
+          </article>
         </div>
         <div data-xh-part="item" index="1">
-          <div style="display: grid; place-items: center; block-size: 100%">
-            第二张
-          </div>
+          <article style="display: grid; align-content: end; gap: 6px; block-size: 100%; padding: 24px; background: color-mix(in oklab, var(--xh-fg-success) 12%, var(--xh-bg-surface)); color: var(--xh-fg-default)">
+            <span style="color: var(--xh-fg-muted); font-size: var(--xh-text-caption-size)">无障碍</span>
+            <strong style="color: var(--xh-fg-default); font-size: var(--xh-text-heading-3-size)">键盘与读屏一致</strong>
+            <span style="color: var(--xh-fg-muted)">交互状态由无头内核统一维护。</span>
+          </article>
         </div>
         <div data-xh-part="item" index="2">
-          <div style="display: grid; place-items: center; block-size: 100%">
-            第三张
-          </div>
+          <article style="display: grid; align-content: end; gap: 6px; block-size: 100%; padding: 24px; background: color-mix(in oklab, var(--xh-fg-warning) 12%, var(--xh-bg-surface)); color: var(--xh-fg-default)">
+            <span style="color: var(--xh-fg-muted); font-size: var(--xh-text-caption-size)">跨框架</span>
+            <strong style="color: var(--xh-fg-default); font-size: var(--xh-text-heading-3-size)">Vue、React 与 Web Components</strong>
+            <span style="color: var(--xh-fg-muted)">同一份行为契约，对齐三种渲染方式。</span>
+          </article>
         </div>
       </div>
     </div>
@@ -9978,6 +9630,8 @@ autoplay 给毫秒即间隔；开了它就得渲播放开关，自动翻页必�
 <script setup lang="ts">
 import {
   XhCarouselAutoplayTrigger,
+  XhCarouselIndicator,
+  XhCarouselIndicatorGroup,
   XhCarouselItem,
   XhCarouselList,
   XhCarouselNextTrigger,
@@ -9991,7 +9645,7 @@ const slides = ["公告一", "公告二", "公告三"];
 
 <template>
   <XhCarouselRoot
-    v-slot="{ page, totalPages, autoplaying, paused }"
+    v-slot="{ totalPages }"
     :slide-count="slides.length"
     :autoplay="2500"
     loop
@@ -10009,11 +9663,9 @@ const slides = ["公告一", "公告二", "公告三"];
     </XhCarouselViewport>
     <XhCarouselNextTrigger />
     <XhCarouselAutoplayTrigger />
-    <!-- root 自己就是会换行的横排 flex，回显想独占一行得自己占满 -->
-    <span style="flex-basis: 100%">
-      第 {{ page + 1 }} / {{ totalPages }} 页 ·
-      {{ autoplaying ? "自动播放中" : paused ? "被按住" : "已停" }}
-    </span>
+    <XhCarouselIndicatorGroup>
+      <XhCarouselIndicator v-for="p in totalPages" :key="p" :index="p - 1" />
+    </XhCarouselIndicatorGroup>
   </XhCarouselRoot>
 </template>
 ```
@@ -10043,39 +9695,13 @@ const slides = ["公告一", "公告二", "公告三"];
     </div>
     <button data-xh-part="next-trigger"></button>
     <button data-xh-part="autoplay-trigger"></button>
-    <!-- root 自己就是会换行的横排 flex，回显想独占一行得自己占满 -->
-    <span id="carousel-autoplay-readout" style="flex-basis: 100%"></span>
+    <div data-xh-part="indicator-group">
+      <button data-xh-part="indicator" index="0"></button>
+      <button data-xh-part="indicator" index="1"></button>
+      <button data-xh-part="indicator" index="2"></button>
+    </div>
   </div>
 </xh-carousel>
-
-<script type="module">
-  // 播放与按住两个状态写在 root 上，页码跟着 page-change 走
-  const carousel = document.getElementById("carousel-autoplay");
-  const root = carousel.querySelector('[data-xh-part="root"]');
-  const readout = document.getElementById("carousel-autoplay-readout");
-  let page = 0;
-
-  function render() {
-    const state = root.hasAttribute("data-autoplay")
-      ? "自动播放中"
-      : root.hasAttribute("data-paused")
-        ? "被按住"
-        : "已停";
-    readout.textContent = `第 ${page + 1} / 3 页 · ${state}`;
-  }
-
-  carousel.addEventListener("page-change", (event) => {
-    page = event.detail.page;
-    render();
-  });
-
-  new MutationObserver(render).observe(root, {
-    attributes: true,
-    attributeFilter: ["data-autoplay", "data-paused"],
-  });
-
-  render();
-</script>
 ```
 
 ### 纵向轨道
@@ -10095,78 +9721,79 @@ import {
   XhCarouselViewport,
 } from "@xihan-ui/vue";
 
-const slides = ["09:00 晨会", "11:00 客户沟通", "15:00 联调"];
+const slides = [
+  { time: "09:00", title: "晨会", description: "同步今天的目标与阻塞项。" },
+  { time: "11:00", title: "客户沟通", description: "确认需求范围与交付节奏。" },
+  { time: "15:00", title: "联调", description: "核对三端行为与视觉结果。" },
+];
 </script>
 
 <template>
   <XhCarouselRoot
-    v-slot="{ page, totalPages }"
+    v-slot="{ totalPages }"
     orientation="vertical"
     :slide-count="slides.length"
-    style="inline-size: 240px"
+    style="inline-size: min(360px, 100%)"
   >
-    <XhCarouselPrevTrigger>∧</XhCarouselPrevTrigger>
+    <XhCarouselPrevTrigger />
     <!-- 纵轨的裁切窗口靠高度定，宽度交给根节点 -->
-    <XhCarouselViewport style="block-size: 96px; inline-size: 100%">
+    <XhCarouselViewport style="block-size: 200px; inline-size: 100%">
       <XhCarouselList>
-        <XhCarouselItem v-for="(text, i) in slides" :key="text" :index="i">
-          <div style="display: grid; place-items: center; block-size: 100%">
-            {{ text }}
-          </div>
+        <XhCarouselItem v-for="(slide, i) in slides" :key="slide.time" :index="i">
+          <article style="display: grid; align-content: center; gap: 6px; block-size: 100%; padding: 32px; background: var(--xh-bg-subtle); color: var(--xh-fg-default)">
+            <span style="color: var(--xh-fg-brand); font-size: var(--xh-text-caption-size)">{{ slide.time }}</span>
+            <strong style="color: var(--xh-fg-default); font-size: var(--xh-text-heading-3-size)">{{ slide.title }}</strong>
+            <span style="color: var(--xh-fg-muted)">{{ slide.description }}</span>
+          </article>
         </XhCarouselItem>
       </XhCarouselList>
     </XhCarouselViewport>
-    <XhCarouselNextTrigger>∨</XhCarouselNextTrigger>
+    <XhCarouselNextTrigger />
     <XhCarouselIndicatorGroup>
       <XhCarouselIndicator v-for="p in totalPages" :key="p" :index="p - 1" />
     </XhCarouselIndicatorGroup>
-    <span>第 {{ page + 1 }} / {{ totalPages }} 条</span>
   </XhCarouselRoot>
 </template>
 ```
 
 ```html
 <xh-carousel id="carousel-vertical" orientation="vertical" slide-count="3">
-  <div data-xh-part="root" style="inline-size: 240px">
-    <button data-xh-part="prev-trigger">∧</button>
+  <div data-xh-part="root" style="inline-size: min(360px, 100%)">
+    <button data-xh-part="prev-trigger"></button>
     <!-- 纵轨的裁切窗口靠高度定，宽度交给根节点 -->
-    <div data-xh-part="viewport" style="block-size: 96px; inline-size: 100%">
+    <div data-xh-part="viewport" style="block-size: 200px; inline-size: 100%">
       <div data-xh-part="list">
         <div data-xh-part="item" index="0">
-          <div style="display: grid; place-items: center; block-size: 100%">
-            09:00 晨会
-          </div>
+          <article style="display: grid; align-content: center; gap: 6px; block-size: 100%; padding: 32px; background: var(--xh-bg-subtle); color: var(--xh-fg-default)">
+            <span style="color: var(--xh-fg-brand); font-size: var(--xh-text-caption-size)">09:00</span>
+            <strong style="color: var(--xh-fg-default); font-size: var(--xh-text-heading-3-size)">晨会</strong>
+            <span style="color: var(--xh-fg-muted)">同步今天的目标与阻塞项。</span>
+          </article>
         </div>
         <div data-xh-part="item" index="1">
-          <div style="display: grid; place-items: center; block-size: 100%">
-            11:00 客户沟通
-          </div>
+          <article style="display: grid; align-content: center; gap: 6px; block-size: 100%; padding: 32px; background: var(--xh-bg-subtle); color: var(--xh-fg-default)">
+            <span style="color: var(--xh-fg-brand); font-size: var(--xh-text-caption-size)">11:00</span>
+            <strong style="color: var(--xh-fg-default); font-size: var(--xh-text-heading-3-size)">客户沟通</strong>
+            <span style="color: var(--xh-fg-muted)">确认需求范围与交付节奏。</span>
+          </article>
         </div>
         <div data-xh-part="item" index="2">
-          <div style="display: grid; place-items: center; block-size: 100%">
-            15:00 联调
-          </div>
+          <article style="display: grid; align-content: center; gap: 6px; block-size: 100%; padding: 32px; background: var(--xh-bg-subtle); color: var(--xh-fg-default)">
+            <span style="color: var(--xh-fg-brand); font-size: var(--xh-text-caption-size)">15:00</span>
+            <strong style="color: var(--xh-fg-default); font-size: var(--xh-text-heading-3-size)">联调</strong>
+            <span style="color: var(--xh-fg-muted)">核对三端行为与视觉结果。</span>
+          </article>
         </div>
       </div>
     </div>
-    <button data-xh-part="next-trigger">∨</button>
+    <button data-xh-part="next-trigger"></button>
     <div data-xh-part="indicator-group">
       <button data-xh-part="indicator" index="0"></button>
       <button data-xh-part="indicator" index="1"></button>
       <button data-xh-part="indicator" index="2"></button>
     </div>
-    <span id="carousel-vertical-readout">第 1 / 3 条</span>
   </div>
 </xh-carousel>
-
-<script type="module">
-  // 页码回显跟着 page-change 走
-  const carousel = document.getElementById("carousel-vertical");
-  const readout = document.getElementById("carousel-vertical-readout");
-  carousel.addEventListener("page-change", (event) => {
-    readout.textContent = `第 ${event.detail.page + 1} / 3 条`;
-  });
-</script>
 ```
 
 ### 指针拖拽
@@ -10710,6 +10337,7 @@ function itemStyle(index: number, page: number): Record<string, string> | undefi
 
 - `slidesPerPage` 与 `slidesPerMove` 分开：可以一屏三张、一次挪一张。
 - 支持纵向轨道、指针拖拽、回绕与自动播放。
+- 自动播放时当前分页短线按停留间隔显示进度，临时暂停时同步冻结。
 - 指示点可以做成悬停即切页。
 
 ### 组合
@@ -10721,7 +10349,7 @@ function itemStyle(index: number, page: number): Record<string, string> | undefi
 - 开了自动播放就把 `autoplay-trigger` 渲出来：它是唯一能把自动翻页停住、且停住之后不会被别的交互重新点着的入口。
 - 自动播放在指针悬停或焦点进入时自动暂停，离开后从头计满一整个间隔再翻。
 - 减弱动效档下自动播放不会自己起播，此时播放开关是用户唯一的起播入口。
-- 指示点要能看出总共几屏、当前第几屏。
+- 分页短线要能看出总共几屏、当前第几屏；自动播放时还应反馈本页剩余时间。
 
 ### 反模式
 
@@ -10876,7 +10504,7 @@ function itemStyle(index: number, page: number): Record<string, string> | undefi
 
 ### 皮肤
 
-`@xihan-ui/styles/carousel.css` 使用 `[data-scope="carousel"][data-part="root"]` 部件选择器，位于 `xihan.components` 层。覆盖样式使用 `xihan.overrides`。
+`@xihan-ui/styles/carousel.css` 使用 `[data-scope="carousel"][data-part="root"]` 部件选择器，位于 `xihan.components` 与 `xihan.motion` 层。覆盖样式使用 `xihan.overrides`。
 
 ### 数据属性
 
@@ -10912,30 +10540,32 @@ function itemStyle(index: number, page: number): Record<string, string> | undefi
 
 | 变量 | 部件 | CSS 属性 | 状态 | 缺省来源 | 说明 |
 | --- | --- | --- | --- | --- | --- |
+| `--xh-carousel-control-inset` | `autoplay-trigger`<br>`indicator-group`<br>`next-trigger`<br>`prev-trigger`<br>`root` | `inset-block-end`<br>`inset-block-start`<br>`inset-inline-end`<br>`inset-inline-start` | `default`<br>`orientation=vertical` | `--xh-space-3` | carousel 的 autoplay-trigger、indicator-group、next-trigger、prev-trigger、root 部件 inset-block-end、inset-block-start、inset-inline-end、inset-inline-start 覆盖槽。 |
 | `--xh-carousel-duration` | `list` | `transition` | `default` | `--xh-motion-duration-slide` | carousel 的 list 部件 transition 覆盖槽。 |
 | `--xh-carousel-ease` | `list` | `transition` | `default` | `--xh-motion-ease-slide` | carousel 的 list 部件 transition 覆盖槽。 |
-| `--xh-carousel-gap` | `root` | `gap` | `default` | `--xh-space-2` | carousel 的 root 部件 gap 覆盖槽。 |
 | `--xh-carousel-icon-size` | `root` | `--xh-icon-size` | `default` | `--xh-glyph-size-text` | carousel 的 root 部件 --xh-icon-size 覆盖槽。 |
 | `--xh-carousel-indicator-bg` | `indicator` | `background` | `default` | `--xh-border-control` | carousel 的 indicator 部件 background 覆盖槽。 |
-| `--xh-carousel-indicator-bg-hover` | `indicator` | `background` | `current`<br>`hover`<br>`not([data-current])` | `--xh-fg-subtle` | carousel 的 indicator 部件 background 覆盖槽。 |
-| `--xh-carousel-indicator-bg-selected` | `indicator` | `background` | `current` | `--xh-bg-brand` | carousel 的 indicator 部件 background 覆盖槽。 |
+| `--xh-carousel-indicator-bg-hover` | `indicator` | `--xh-carousel-indicator-bg` | `current`<br>`hover`<br>`not([data-current])` | `--xh-fg-subtle` | carousel 的 indicator 部件 --xh-carousel-indicator-bg 覆盖槽。 |
+| `--xh-carousel-indicator-bg-selected` | `indicator` | `background` | `default` | `--xh-bg-brand` | carousel 的 indicator 部件 background 覆盖槽。 |
 | `--xh-carousel-indicator-gap` | `indicator-group` | `gap` | `default` | `--xh-space-1` | carousel 的 indicator-group 部件 gap 覆盖槽。 |
+| `--xh-carousel-indicator-inset` | `indicator-group` | `inset-block-end` | `orientation=horizontal` | `--xh-space-3` | carousel 的 indicator-group 部件 inset-block-end 覆盖槽。 |
 | `--xh-carousel-indicator-radius` | `indicator` | `border-radius` | `default` | `--xh-shape-pill` | carousel 的 indicator 部件 border-radius 覆盖槽。 |
-| `--xh-carousel-indicator-size` | `indicator` | `block-size`<br>`inline-size` | `default` | `--xh-space-2` | carousel 的 indicator 部件 block-size、inline-size 覆盖槽。 |
-| `--xh-carousel-trigger-bg` | `autoplay-trigger`<br>`next-trigger`<br>`prev-trigger` | `background` | `default` | `--xh-bg-surface` | carousel 的 autoplay-trigger、next-trigger、prev-trigger 部件 background 覆盖槽。 |
+| `--xh-carousel-indicator-size` | `indicator`<br>`indicator-group` | `block-size`<br>`inline-size` | `current`<br>`default`<br>`orientation=vertical` | `--xh-space-4` | carousel 的 indicator、indicator-group 部件 block-size、inline-size 覆盖槽。 |
+| `--xh-carousel-indicator-size-current` | `indicator`<br>`indicator-group` | `block-size`<br>`inline-size` | `current`<br>`orientation=vertical` | `--xh-space-6` | carousel 的 indicator、indicator-group 部件 block-size、inline-size 覆盖槽。 |
+| `--xh-carousel-trigger-bg` | `autoplay-trigger`<br>`next-trigger`<br>`prev-trigger` | `background` | `default` | `--xh-bg-surface-raised` | carousel 的 autoplay-trigger、next-trigger、prev-trigger 部件 background 覆盖槽。 |
 | `--xh-carousel-trigger-bg-active` | `autoplay-trigger`<br>`next-trigger`<br>`prev-trigger` | `background` | `active`<br>`not(:disabled)` | `--xh-bg-subtle-active` | carousel 的 autoplay-trigger、next-trigger、prev-trigger 部件 background 覆盖槽。 |
 | `--xh-carousel-trigger-bg-hover` | `autoplay-trigger`<br>`next-trigger`<br>`prev-trigger` | `background` | `hover`<br>`not(:disabled)` | `--xh-bg-subtle-hover` | carousel 的 autoplay-trigger、next-trigger、prev-trigger 部件 background 覆盖槽。 |
-| `--xh-carousel-trigger-border` | `autoplay-trigger`<br>`next-trigger`<br>`prev-trigger` | `border` | `default` | `--xh-border-control` | carousel 的 autoplay-trigger、next-trigger、prev-trigger 部件 border 覆盖槽。 |
+| `--xh-carousel-trigger-border` | `autoplay-trigger`<br>`next-trigger`<br>`prev-trigger` | `border` | `default` | `transparent` | carousel 的 autoplay-trigger、next-trigger、prev-trigger 部件 border 覆盖槽。 |
 | `--xh-carousel-trigger-fg` | `autoplay-trigger`<br>`next-trigger`<br>`prev-trigger` | `color` | `default` | `--xh-fg-default` | carousel 的 autoplay-trigger、next-trigger、prev-trigger 部件 color 覆盖槽。 |
 | `--xh-carousel-trigger-radius` | `autoplay-trigger`<br>`next-trigger`<br>`prev-trigger` | `border-radius` | `default` | `--xh-shape-pill` | carousel 的 autoplay-trigger、next-trigger、prev-trigger 部件 border-radius 覆盖槽。 |
-| `--xh-carousel-trigger-shadow-hover` | `autoplay-trigger`<br>`next-trigger`<br>`prev-trigger` | `box-shadow` | `hover`<br>`not(:disabled)` | `--xh-elevation-raised` | carousel 的 autoplay-trigger、next-trigger、prev-trigger 部件 box-shadow 覆盖槽。 |
+| `--xh-carousel-trigger-shadow-hover` | `autoplay-trigger`<br>`next-trigger`<br>`prev-trigger` | `box-shadow` | `hover`<br>`not(:disabled)` | `none` | carousel 的 autoplay-trigger、next-trigger、prev-trigger 部件 box-shadow 覆盖槽。 |
 | `--xh-carousel-trigger-size` | `autoplay-trigger`<br>`next-trigger`<br>`prev-trigger` | `block-size`<br>`inline-size` | `default` | `--xh-control-h-md` | carousel 的 autoplay-trigger、next-trigger、prev-trigger 部件 block-size、inline-size 覆盖槽。 |
 | `--xh-carousel-viewport-radius` | `viewport` | `border-radius` | `default` | `--xh-shape-surface` | carousel 的 viewport 部件 border-radius 覆盖槽。 |
 <!-- xh-component-tokens:end -->
 
 ### 动效
 
-`background` · `border-color` · `box-shadow` · `scale` · `transform` 走 `transition` 过渡。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
+关键帧 `xh-carousel-indicator-progress` 随皮肤自带，不引用别处文件里的名字；`background` · `block-size` · `border-color` · `box-shadow` · `inline-size` · `opacity` · `scale` · `transform` 走 `transition` 过渡。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
 
 皮肤之外还有一段：内核读系统的减弱动效偏好，据此决定要不要动。
 
@@ -10944,6 +10574,10 @@ function itemStyle(index: number, page: number): Record<string, string> | undefi
 ### 响应式
 
 皮肤另按输入能力分档：`pointer: coarse`——同一份皮肤在触屏与带指针的设备上不一样，与视口宽度无关。
+
+### RTL
+
+皮肤用逻辑属性排布（`inline-start` 一族），`dir="rtl"` 下自动镜像；另有按 `dir` 分支的规则。
 
 ---
 
@@ -15244,7 +14878,7 @@ const open = ref(false);
 
 ### 颜色
 
-tone 落在触发按钮的展开态上，六种语气各展开一份做对照
+tone 落在触发按钮的展开态上，六种颜色各展开一份做对照
 
 ```vue
 <script setup lang="ts">
@@ -15264,7 +14898,7 @@ const tones = ["brand", "neutral", "success", "warning", "danger", "info"];
   >
     <XhCollapsibleRoot v-for="tone in tones" :key="tone" :tone="tone" default-open>
       <XhCollapsibleTrigger>{{ tone }}</XhCollapsibleTrigger>
-      <XhCollapsibleContent>收起后触发按钮不吃语气色。</XhCollapsibleContent>
+      <XhCollapsibleContent>收起后触发按钮保持默认颜色。</XhCollapsibleContent>
     </XhCollapsibleRoot>
   </div>
 </template>
@@ -15282,42 +14916,42 @@ const tones = ["brand", "neutral", "success", "warning", "danger", "info"];
   <xh-collapsible tone="brand" default-open>
     <div data-xh-part="root">
       <button data-xh-part="trigger">brand</button>
-      <div data-xh-part="content">收起后触发按钮不吃语气色。</div>
+      <div data-xh-part="content">收起后触发按钮保持默认颜色。</div>
     </div>
   </xh-collapsible>
 
   <xh-collapsible tone="neutral" default-open>
     <div data-xh-part="root">
       <button data-xh-part="trigger">neutral</button>
-      <div data-xh-part="content">收起后触发按钮不吃语气色。</div>
+      <div data-xh-part="content">收起后触发按钮保持默认颜色。</div>
     </div>
   </xh-collapsible>
 
   <xh-collapsible tone="success" default-open>
     <div data-xh-part="root">
       <button data-xh-part="trigger">success</button>
-      <div data-xh-part="content">收起后触发按钮不吃语气色。</div>
+      <div data-xh-part="content">收起后触发按钮保持默认颜色。</div>
     </div>
   </xh-collapsible>
 
   <xh-collapsible tone="warning" default-open>
     <div data-xh-part="root">
       <button data-xh-part="trigger">warning</button>
-      <div data-xh-part="content">收起后触发按钮不吃语气色。</div>
+      <div data-xh-part="content">收起后触发按钮保持默认颜色。</div>
     </div>
   </xh-collapsible>
 
   <xh-collapsible tone="danger" default-open>
     <div data-xh-part="root">
       <button data-xh-part="trigger">danger</button>
-      <div data-xh-part="content">收起后触发按钮不吃语气色。</div>
+      <div data-xh-part="content">收起后触发按钮保持默认颜色。</div>
     </div>
   </xh-collapsible>
 
   <xh-collapsible tone="info" default-open>
     <div data-xh-part="root">
       <button data-xh-part="trigger">info</button>
-      <div data-xh-part="content">收起后触发按钮不吃语气色。</div>
+      <div data-xh-part="content">收起后触发按钮保持默认颜色。</div>
     </div>
   </xh-collapsible>
 </div>
@@ -15372,7 +15006,7 @@ const tones = ["brand", "neutral", "success", "warning", "danger", "info"];
 | `open` | `boolean` |  |  |
 | `defaultOpen` | `boolean` |  |  |
 | `disabled` | `boolean` |  |  |
-| `tone` | `Tone` |  | 语气：brand / neutral / success / warning / danger / info，决定用哪族颜色。 |
+| `tone` | `Tone` |  | 颜色：brand / neutral / success / warning / danger / info，决定使用哪组状态色。 |
 | `size` | `Size` |  | 尺寸：sm / md / lg。 |
 | `dir` | `Direction` |  | 文字方向，只作用于排版；作者没给就不写。 |
 | `onOpenChange` | `(details: CollapsibleOpenChangeDetails) => void` |  | open 变化意图回调；受控时是唯一出口，非受控随内部转移一并通知。 |
@@ -15470,25 +15104,29 @@ const tones = ["brand", "neutral", "success", "warning", "danger", "info"];
 
 | 变量 | 部件 | CSS 属性 | 状态 | 缺省来源 | 说明 |
 | --- | --- | --- | --- | --- | --- |
-| `--xh-collapsible-content-fg` | `content` | `color` | `default` | `--xh-fg-default` | collapsible 的 content 部件 color 覆盖槽。 |
-| `--xh-collapsible-content-py` | `*`<br>`content` | `padding-block` | `@keyframes xh-collapsible-collapse`<br>`@keyframes xh-collapsible-expand`<br>`default` | `--xh-stack-gap-md` | collapsible 的 *、content 部件 padding-block 覆盖槽。 |
+| `--xh-collapsible-content-fg` | `content` | `color` | `default` | `--xh-fg-muted` | collapsible 的 content 部件 color 覆盖槽。 |
+| `--xh-collapsible-content-font-size` | `content` | `font-size` | `default` | `--xh-text-secondary-size` | collapsible 的 content 部件 font-size 覆盖槽。 |
+| `--xh-collapsible-content-pb` | `*`<br>`content` | `padding-block-end` | `@keyframes xh-collapsible-collapse`<br>`@keyframes xh-collapsible-expand`<br>`default` | `--xh-_collapsible-content-pb` | collapsible 的 *、content 部件 padding-block-end 覆盖槽。 |
+| `--xh-collapsible-content-px` | `content` | `padding-inline` | `default` | `--xh-_collapsible-content-px` | collapsible 的 content 部件 padding-inline 覆盖槽。 |
 | `--xh-collapsible-header-gap` | `header` | `gap` | `default` | `--xh-_collapsible-trigger-gap` | collapsible 的 header 部件 gap 覆盖槽。 |
 | `--xh-collapsible-icon-size` | `root` | `--xh-icon-size` | `default` | `--xh-glyph-size-text` | collapsible 的 root 部件 --xh-icon-size 覆盖槽。 |
+| `--xh-collapsible-indicator-fg` | `indicator` | `color` | `default` | `--xh-fg-muted` | collapsible 的 indicator 部件 color 覆盖槽。 |
 | `--xh-collapsible-trigger-bg` | `trigger` | `background` | `default` | `transparent` | collapsible 的 trigger 部件 background 覆盖槽。 |
-| `--xh-collapsible-trigger-bg-hover` | `trigger` | `background` | `hover` | `--xh-bg-subtle` | collapsible 的 trigger 部件 background 覆盖槽。 |
+| `--xh-collapsible-trigger-bg-hover` | `trigger` | `background` | `disabled`<br>`hover`<br>`not([data-disabled])`<br>`not([data-state='open'])`<br>`state=open` | `--xh-bg-subtle-hover` | collapsible 的 trigger 部件 background 覆盖槽。 |
 | `--xh-collapsible-trigger-fg` | `trigger` | `color` | `default` | `--xh-fg-default` | collapsible 的 trigger 部件 color 覆盖槽。 |
 | `--xh-collapsible-trigger-fg-open` | `trigger` | `color` | `state=open` | `--xh-_collapsible-open-fg` | collapsible 的 trigger 部件 color 覆盖槽。 |
 | `--xh-collapsible-trigger-font-size` | `trigger` | `font-size` | `default` | `--xh-_collapsible-trigger-font-size` | collapsible 的 trigger 部件 font-size 覆盖槽。 |
 | `--xh-collapsible-trigger-font-weight` | `trigger` | `font-weight` | `default` | `--xh-text-label-weight` | collapsible 的 trigger 部件 font-weight 覆盖槽。 |
 | `--xh-collapsible-trigger-gap` | `trigger` | `gap` | `default` | `--xh-_collapsible-trigger-gap` | collapsible 的 trigger 部件 gap 覆盖槽。 |
-| `--xh-collapsible-trigger-h` | `trigger` | `block-size` | `default` | `--xh-_collapsible-trigger-h` | collapsible 的 trigger 部件 block-size 覆盖槽。 |
+| `--xh-collapsible-trigger-h` | `trigger` | `min-block-size` | `default` | `--xh-_collapsible-trigger-h` | collapsible 的 trigger 部件 min-block-size 覆盖槽。 |
 | `--xh-collapsible-trigger-px` | `trigger` | `padding-inline` | `default` | `--xh-_collapsible-trigger-px` | collapsible 的 trigger 部件 padding-inline 覆盖槽。 |
+| `--xh-collapsible-trigger-py` | `trigger` | `padding-block` | `default` | `--xh-_collapsible-trigger-py` | collapsible 的 trigger 部件 padding-block 覆盖槽。 |
 | `--xh-collapsible-trigger-radius` | `trigger` | `border-radius` | `default` | `--xh-shape-control` | collapsible 的 trigger 部件 border-radius 覆盖槽。 |
 <!-- xh-component-tokens:end -->
 
 ### 动效
 
-关键帧 `xh-collapsible-collapse` · `xh-collapsible-expand` 随皮肤自带，不引用别处文件里的名字；`rotate` · `scale` 走 `transition` 过渡。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
+关键帧 `xh-collapsible-collapse` · `xh-collapsible-expand` 随皮肤自带，不引用别处文件里的名字；`background` · `rotate` · `scale` 走 `transition` 过渡。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
 
 皮肤之外还有一段：退场由适配器的退场闸门把关，动画播完才真收起。
 
@@ -17526,7 +17164,7 @@ function run(details: CommandSelectDetails) {
       @select="run"
     >
       <template #trigger>打开命令面板</template>
-      <template #footer>↑↓ 选择 · ↵ 执行 · Esc 关闭</template>
+      <template #footer>方向键选择 · Enter 执行 · Esc 关闭</template>
     </XhCommandRoot>
     <span>{{ last }}</span>
   </div>
@@ -17571,7 +17209,7 @@ function run(details: CommandSelectDetails) {
       </div>
       <div data-xh-part="empty">没有匹配的命令</div>
       <div data-xh-part="loading">正在取命令…</div>
-      <footer data-xh-part="footer">↑↓ 选择 · ↵ 执行 · Esc 关闭</footer>
+      <footer data-xh-part="footer">方向键选择 · Enter 执行 · Esc 关闭</footer>
     </div>
   </div>
 </xh-command>
@@ -17684,7 +17322,7 @@ const groups = [
           </XhCommandGroup>
         </XhCommandList>
         <XhCommandEmpty>没有匹配的命令</XhCommandEmpty>
-        <XhCommandFooter>↑↓ 选择 · ↵ 执行 · Esc 关闭</XhCommandFooter>
+        <XhCommandFooter>方向键选择 · Enter 执行 · Esc 关闭</XhCommandFooter>
       </XhCommandContent>
     </template>
   </XhCommandRoot>
@@ -17746,7 +17384,7 @@ const groups = [
         </div>
       </div>
       <div data-xh-part="empty">没有匹配的命令</div>
-      <footer data-xh-part="footer">↑↓ 选择 · ↵ 执行 · Esc 关闭</footer>
+      <footer data-xh-part="footer">方向键选择 · Enter 执行 · Esc 关闭</footer>
     </div>
   </div>
 </xh-command>
@@ -31026,8 +30664,8 @@ import { XhFloatButtonList, XhFloatButtonRoot, XhFloatButtonTrigger, XhIcon } fr
   <div data-xh-part="root" style="position: static">
     <button data-xh-part="trigger"></button>
     <div data-xh-part="list">
-      <button type="button" aria-label="消息">✉</button>
-      <button type="button" aria-label="分享">↗</button>
+      <button type="button" aria-label="消息"><svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8.91 19.2A8.5 8.5 0 1 0 4.51 14.41L3 20.5Z"/></svg></button>
+      <button type="button" aria-label="分享"><svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="17.5" cy="5.5" r="2.75"/><circle cx="6.5" cy="12" r="2.75"/><circle cx="17.5" cy="18.5" r="2.75"/><line x1="8.87" y1="10.6" x2="15.13" y2="6.9"/><line x1="8.87" y1="13.4" x2="15.13" y2="17.1"/></svg></button>
     </div>
   </div>
 </xh-float-button>
@@ -38149,6 +37787,7 @@ const handles = ["nw", "ne", "se", "sw"] as const;
 
 - 使用源图自然像素记录裁切矩形。
 - 支持拖动、八方向调整和键盘微调。
+- 边缘把手显示为框内短条，角部把手随裁切框形状变化。
 - 支持固定宽高比、圆形遮罩、缩放和旋转。
 - 支持受控裁切区域和原生表单提交。
 - `onValueChangeEnd` 在一次调整结束时触发。
@@ -38331,11 +37970,14 @@ const handles = ["nw", "ne", "se", "sw"] as const;
 | `--xh-image-cropper-bg` | `viewport` | `background` | `default` | `--xh-bg-muted` | image-cropper 的 viewport 部件 background 覆盖槽。 |
 | `--xh-image-cropper-crop-border` | `crop-area` | `border-color` | `default` | `--xh-bg-surface` | image-cropper 的 crop-area 部件 border-color 覆盖槽。 |
 | `--xh-image-cropper-grid-line` | `grid` | `background-image` | `default` | `--xh-border-subtle` | image-cropper 的 grid 部件 background-image 覆盖槽。 |
-| `--xh-image-cropper-handle-bg` | `crop-handle` | `background` | `default` | `--xh-bg-surface` | image-cropper 的 crop-handle 部件 background 覆盖槽。 |
-| `--xh-image-cropper-handle-bg-resizing` | `crop-handle` | `background` | `resizing` | `--xh-bg-brand` | image-cropper 的 crop-handle 部件 background 覆盖槽。 |
-| `--xh-image-cropper-handle-border` | `crop-handle` | `border-color` | `default` | `--xh-border-strong` | image-cropper 的 crop-handle 部件 border-color 覆盖槽。 |
-| `--xh-image-cropper-handle-radius` | `crop-handle` | `border-radius` | `default` | `--xh-shape-inset` | image-cropper 的 crop-handle 部件 border-radius 覆盖槽。 |
-| `--xh-image-cropper-handle-size` | `crop-handle`<br>`root` | `block-size`<br>`inline-size`<br>`inset` | `default` | `--xh-control-indicator-size` | image-cropper 的 crop-handle、root 部件 block-size、inline-size、inset 覆盖槽。 |
+| `--xh-image-cropper-handle-bg` | `crop-handle` | `background`<br>`border`<br>`outline` | `default`<br>`is([data-position='nw'], [data-position='ne'], [data-position='sw'], [data-position='se'])`<br>`position=ne`<br>`position=nw`<br>`position=se`<br>`position=sw` | `--xh-bg-surface` | image-cropper 的 crop-handle 部件 background、border、outline 覆盖槽。 |
+| `--xh-image-cropper-handle-bg-hover` | `crop-handle` | `background`<br>`border`<br>`outline` | `disabled`<br>`hover`<br>`is([data-position='nw'], [data-position='ne'], [data-position='sw'], [data-position='se'])`<br>`not([data-disabled], [data-readonly])`<br>`position=ne`<br>`position=nw`<br>`position=se`<br>`position=sw`<br>`readonly` | `--xh-bg-brand-subtle-hover` | image-cropper 的 crop-handle 部件 background、border、outline 覆盖槽。 |
+| `--xh-image-cropper-handle-bg-resizing` | `crop-handle` | `background`<br>`border`<br>`outline` | `is([data-position='nw'], [data-position='ne'], [data-position='sw'], [data-position='se'])`<br>`position=ne`<br>`position=nw`<br>`position=se`<br>`position=sw`<br>`resizing` | `--xh-bg-brand` | image-cropper 的 crop-handle 部件 background、border、outline 覆盖槽。 |
+| `--xh-image-cropper-handle-border` | `crop-handle` | `border`<br>`outline` | `default`<br>`is([data-position='nw'], [data-position='ne'], [data-position='sw'], [data-position='se'])`<br>`position=ne`<br>`position=nw`<br>`position=se`<br>`position=sw` | `--xh-_image-cropper-handle-color` | image-cropper 的 crop-handle 部件 border、outline 覆盖槽。 |
+| `--xh-image-cropper-handle-length` | `crop-handle` | `block-size`<br>`inline-size` | `is([data-position='e'], [data-position='w'])`<br>`is([data-position='n'], [data-position='s'])`<br>`position=e`<br>`position=n`<br>`position=s`<br>`position=w` | `--xh-space-8` | image-cropper 的 crop-handle 部件 block-size、inline-size 覆盖槽。 |
+| `--xh-image-cropper-handle-radius` | `crop-handle` | `border-radius` | `default` | `--xh-shape-pill` | image-cropper 的 crop-handle 部件 border-radius 覆盖槽。 |
+| `--xh-image-cropper-handle-size` | `crop-handle`<br>`root` | `block-size`<br>`inline-size`<br>`inset` | `default`<br>`is([data-position='nw'], [data-position='ne'], [data-position='sw'], [data-position='se'])`<br>`position=ne`<br>`position=nw`<br>`position=se`<br>`position=sw` | `--xh-control-indicator-size` | image-cropper 的 crop-handle、root 部件 block-size、inline-size、inset 覆盖槽。 |
+| `--xh-image-cropper-handle-thickness` | `crop-handle` | `block-size`<br>`border-block-end-width`<br>`border-block-start-width`<br>`border-inline-end-width`<br>`border-inline-start-width`<br>`inline-size` | `is([data-position='e'], [data-position='w'])`<br>`is([data-position='n'], [data-position='s'])`<br>`position=e`<br>`position=n`<br>`position=ne`<br>`position=nw`<br>`position=s`<br>`position=se`<br>`position=sw`<br>`position=w` | `--xh-stroke-thick` | image-cropper 的 crop-handle 部件 block-size、border-block-end-width、border-block-start-width、border-inline-end-width、border-inline-start-width、inline-size 覆盖槽。 |
 | `--xh-image-cropper-mask` | `crop-area` | `box-shadow` | `default` | `--xh-bg-overlay` | image-cropper 的 crop-area 部件 box-shadow 覆盖槽。 |
 | `--xh-image-cropper-slider-accent` | `rotate-slider`<br>`zoom-slider` | `accent-color` | `default` | `--xh-bg-brand` | image-cropper 的 rotate-slider、zoom-slider 部件 accent-color 覆盖槽。 |
 | `--xh-image-cropper-slider-w` | `rotate-slider`<br>`zoom-slider` | `inline-size` | `default` | `100%` | image-cropper 的 rotate-slider、zoom-slider 部件 inline-size 覆盖槽。 |
@@ -38345,7 +37987,7 @@ const handles = ["nw", "ne", "se", "sw"] as const;
 
 ### 动效
 
-`background` 走 `transition` 过渡。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
+`background` · `border-color` 走 `transition` 过渡。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
 
 系统开启减弱动效时由令牌层统一收敛，皮肤不另作判断。
 
@@ -54275,8 +53917,10 @@ const formatWeight = (value: number) => `${value} kg`;
 
 ```vue
 <script setup lang="ts">
+import { ArrowLeftIcon } from "@xihan-ui/icons";
 import {
   XhButton,
+  XhIcon,
   XhPageHeaderBackTrigger,
   XhPageHeaderDescription,
   XhPageHeaderExtra,
@@ -54292,7 +53936,7 @@ import {
       aria-label="返回订单列表"
       style="inline-size: 36px; block-size: 36px; border: 0; border-radius: var(--xh-shape-control); background: transparent; color: inherit; font: inherit; cursor: pointer"
     >
-      ←
+      <XhIcon :icon="ArrowLeftIcon" />
     </XhPageHeaderBackTrigger>
     <XhPageHeaderTitle>订单 SO-20260731-004</XhPageHeaderTitle>
     <XhPageHeaderDescription>由赵一创建 · 今天 14:32 更新</XhPageHeaderDescription>
@@ -54307,7 +53951,7 @@ import {
 ```html
 <xh-page-header variant="surface">
   <div data-xh-part="root" style="inline-size: min(720px, 100%)">
-    <button data-xh-part="back-trigger" type="button" aria-label="返回订单列表" style="inline-size: 36px; block-size: 36px; border: 0; border-radius: var(--xh-shape-control); background: transparent; color: inherit; font: inherit; cursor: pointer">←</button>
+    <button data-xh-part="back-trigger" type="button" aria-label="返回订单列表" style="inline-size: 36px; block-size: 36px; border: 0; border-radius: var(--xh-shape-control); background: transparent; color: inherit; font: inherit; cursor: pointer"><svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 12H4"/><path d="M10 6L4 12L10 18"/></svg></button>
     <div data-xh-part="title">订单 SO-20260731-004</div>
     <div data-xh-part="description">由赵一创建 · 今天 14:32 更新</div>
     <div data-xh-part="extra">
@@ -55471,33 +55115,21 @@ import {
 
 <template>
   <XhPasswordInputRoot
-    v-slot="{ visible }"
     placeholder="请输入密码"
-    :translations="{ capsLockOn: '大写锁定已打开' }"
+    :translations="{
+      visibilityTriggerShow: '显示密码',
+      visibilityTriggerHide: '隐藏密码',
+      capsLockOn: '大写锁定已打开',
+      strengthMeter: '密码强度',
+    }"
   >
     <XhPasswordInputLabel>密码</XhPasswordInputLabel>
     <XhPasswordInputControl>
       <XhPasswordInputInput style="inline-size: 200px" />
       <!-- 节点留空，大写锁定开着时组件把文字写进来，读屏念的就是这一段 -->
       <XhPasswordInputCapsLockIndicator />
-      <!-- 名字由组件按明暗写好；图标只管好看，读屏不念它，遮着时划一道斜杠 -->
-      <XhPasswordInputVisibilityTrigger>
-        <svg
-          viewBox="0 0 24 24"
-          width="16"
-          height="16"
-          fill="none"
-          stroke="currentColor"
-          stroke-width="2"
-          stroke-linecap="round"
-          stroke-linejoin="round"
-          aria-hidden="true"
-        >
-          <path d="M2 12s3.5-6 10-6 10 6 10 6-3.5 6-10 6-10-6-10-6Z" />
-          <circle cx="12" cy="12" r="3" />
-          <path :d="visible ? '' : 'M4 4 20 20'" />
-        </svg>
-      </XhPasswordInputVisibilityTrigger>
+      <!-- 留空即使用皮肤内置的显示/隐藏图标，名字也由组件按状态切换 -->
+      <XhPasswordInputVisibilityTrigger />
     </XhPasswordInputControl>
   </XhPasswordInputRoot>
 </template>
@@ -55511,37 +55143,22 @@ import {
       <input data-xh-part="input" style="inline-size: 200px" />
       <!-- 节点留空，大写锁定开着时元素把文字写进来，读屏念的就是这一段 -->
       <span data-xh-part="caps-lock-indicator"></span>
-      <!-- 名字由组件按明暗写好；图标只管好看，读屏不念它，遮着时划一道斜杠 -->
-      <button data-xh-part="visibility-trigger">
-        <svg
-          viewBox="0 0 24 24"
-          width="16"
-          height="16"
-          fill="none"
-          stroke="currentColor"
-          stroke-width="2"
-          stroke-linecap="round"
-          stroke-linejoin="round"
-          aria-hidden="true"
-        >
-          <path d="M2 12s3.5-6 10-6 10 6 10 6-3.5 6-10 6-10-6-10-6Z" />
-          <circle cx="12" cy="12" r="3" />
-          <path id="password-input-basic-slash" d="M4 4 20 20" />
-        </svg>
-      </button>
+      <!-- 留空即使用皮肤内置的显示/隐藏图标，名字也由组件按状态切换 -->
+      <button data-xh-part="visibility-trigger"></button>
     </div>
   </div>
 </xh-password-input>
 
 <script type="module">
-  // 文案与图标：文案给组件，图标是作者自己的事，跟着组件报上来的明暗换
+  // 大写锁定提示文案由组件写入对应状态区
   const field = document.getElementById("password-input-basic");
-  const slash = document.getElementById("password-input-basic-slash");
 
-  field.translations = { capsLockOn: "大写锁定已打开" };
-  field.addEventListener("visibility-change", (event) => {
-    slash.setAttribute("d", event.detail.visible ? "" : "M4 4 20 20");
-  });
+  field.translations = {
+    visibilityTriggerShow: "显示密码",
+    visibilityTriggerHide: "隐藏密码",
+    capsLockOn: "大写锁定已打开",
+    strengthMeter: "密码强度",
+  };
 </script>
 ```
 
@@ -55577,8 +55194,7 @@ const visible = ref(false);
     <XhPasswordInputLabel>密码</XhPasswordInputLabel>
     <XhPasswordInputControl>
       <XhPasswordInputInput style="inline-size: 200px" />
-      <!-- 图标随宿主那份状态换，切换钮自己的名字由组件管 -->
-      <XhPasswordInputVisibilityTrigger>{{ visible ? "◉" : "○" }}</XhPasswordInputVisibilityTrigger>
+      <XhPasswordInputVisibilityTrigger />
     </XhPasswordInputControl>
   </XhPasswordInputRoot>
   <span>当前：{{ visible ? password : "•".repeat(password.length) }}</span>
@@ -55592,8 +55208,7 @@ const visible = ref(false);
     <label data-xh-part="label">密码</label>
     <div data-xh-part="control">
       <input data-xh-part="input" style="inline-size: 200px" />
-      <!-- 图标随宿主那份状态换，切换钮自己的名字由组件管 -->
-      <button data-xh-part="visibility-trigger" id="password-input-controlled-icon">○</button>
+      <button data-xh-part="visibility-trigger"></button>
     </div>
   </div>
 </xh-password-input>
@@ -55603,7 +55218,6 @@ const visible = ref(false);
 <script type="module">
   // 值与明暗都由外面这份状态持有，组件报上来才写回去
   const field = document.getElementById("password-input-controlled");
-  const icon = document.getElementById("password-input-controlled-icon");
   const readout = document.getElementById("password-input-controlled-value");
   const hide = document.getElementById("password-input-controlled-hide");
 
@@ -55613,7 +55227,6 @@ const visible = ref(false);
     Object.assign(state, next);
     field.value = state.value;
     field.visible = state.visible;
-    icon.textContent = state.visible ? "◉" : "○";
     readout.textContent = state.visible ? state.value : "•".repeat(state.value.length);
   }
 
@@ -55649,7 +55262,7 @@ import {
       <XhPasswordInputInput style="inline-size: 220px" />
       <!-- 节点留空：区里的文字由组件写，写的就是 translations.capsLockOn -->
       <XhPasswordInputCapsLockIndicator />
-      <XhPasswordInputVisibilityTrigger>○</XhPasswordInputVisibilityTrigger>
+      <XhPasswordInputVisibilityTrigger />
     </XhPasswordInputControl>
   </XhPasswordInputRoot>
 </template>
@@ -55663,7 +55276,7 @@ import {
       <input data-xh-part="input" style="inline-size: 220px" />
       <!-- 节点留空：区里的文字由元素写，写的就是 translations.capsLockOn -->
       <span data-xh-part="caps-lock-indicator"></span>
-      <button data-xh-part="visibility-trigger">○</button>
+      <button data-xh-part="visibility-trigger"></button>
     </div>
   </div>
 </xh-password-input>
@@ -55694,7 +55307,7 @@ import {
     <XhPasswordInputLabel>禁用</XhPasswordInputLabel>
     <XhPasswordInputControl>
       <XhPasswordInputInput style="inline-size: 160px" />
-      <XhPasswordInputVisibilityTrigger>○</XhPasswordInputVisibilityTrigger>
+      <XhPasswordInputVisibilityTrigger />
     </XhPasswordInputControl>
   </XhPasswordInputRoot>
 
@@ -55702,7 +55315,7 @@ import {
     <XhPasswordInputLabel>只读</XhPasswordInputLabel>
     <XhPasswordInputControl>
       <XhPasswordInputInput style="inline-size: 160px" />
-      <XhPasswordInputVisibilityTrigger>○</XhPasswordInputVisibilityTrigger>
+      <XhPasswordInputVisibilityTrigger />
     </XhPasswordInputControl>
   </XhPasswordInputRoot>
 
@@ -55710,7 +55323,7 @@ import {
     <XhPasswordInputLabel>校验失败</XhPasswordInputLabel>
     <XhPasswordInputControl>
       <XhPasswordInputInput style="inline-size: 160px" />
-      <XhPasswordInputVisibilityTrigger>○</XhPasswordInputVisibilityTrigger>
+      <XhPasswordInputVisibilityTrigger />
     </XhPasswordInputControl>
   </XhPasswordInputRoot>
 </template>
@@ -55722,7 +55335,7 @@ import {
     <label data-xh-part="label">禁用</label>
     <div data-xh-part="control">
       <input data-xh-part="input" style="inline-size: 160px" />
-      <button data-xh-part="visibility-trigger">○</button>
+      <button data-xh-part="visibility-trigger"></button>
     </div>
   </div>
 </xh-password-input>
@@ -55732,7 +55345,7 @@ import {
     <label data-xh-part="label">只读</label>
     <div data-xh-part="control">
       <input data-xh-part="input" style="inline-size: 160px" />
-      <button data-xh-part="visibility-trigger">○</button>
+      <button data-xh-part="visibility-trigger"></button>
     </div>
   </div>
 </xh-password-input>
@@ -55742,7 +55355,7 @@ import {
     <label data-xh-part="label">校验失败</label>
     <div data-xh-part="control">
       <input data-xh-part="input" style="inline-size: 160px" />
-      <button data-xh-part="visibility-trigger">○</button>
+      <button data-xh-part="visibility-trigger"></button>
     </div>
   </div>
 </xh-password-input>
@@ -55770,7 +55383,7 @@ const variants = ["outline", "subtle", "ghost"] as const;
     <XhPasswordInputLabel>{{ v }}</XhPasswordInputLabel>
     <XhPasswordInputControl>
       <XhPasswordInputInput style="inline-size: 160px" />
-      <XhPasswordInputVisibilityTrigger>○</XhPasswordInputVisibilityTrigger>
+      <XhPasswordInputVisibilityTrigger />
     </XhPasswordInputControl>
   </XhPasswordInputRoot>
 </template>
@@ -55782,7 +55395,7 @@ const variants = ["outline", "subtle", "ghost"] as const;
     <label data-xh-part="label">outline</label>
     <div data-xh-part="control">
       <input data-xh-part="input" style="inline-size: 160px" />
-      <button data-xh-part="visibility-trigger">○</button>
+      <button data-xh-part="visibility-trigger"></button>
     </div>
   </div>
 </xh-password-input>
@@ -55792,7 +55405,7 @@ const variants = ["outline", "subtle", "ghost"] as const;
     <label data-xh-part="label">subtle</label>
     <div data-xh-part="control">
       <input data-xh-part="input" style="inline-size: 160px" />
-      <button data-xh-part="visibility-trigger">○</button>
+      <button data-xh-part="visibility-trigger"></button>
     </div>
   </div>
 </xh-password-input>
@@ -55802,7 +55415,7 @@ const variants = ["outline", "subtle", "ghost"] as const;
     <label data-xh-part="label">ghost</label>
     <div data-xh-part="control">
       <input data-xh-part="input" style="inline-size: 160px" />
-      <button data-xh-part="visibility-trigger">○</button>
+      <button data-xh-part="visibility-trigger"></button>
     </div>
   </div>
 </xh-password-input>
@@ -55837,7 +55450,7 @@ const tones = ["brand", "neutral", "success", "warning", "danger", "info"] as co
     <XhPasswordInputLabel>{{ t }}</XhPasswordInputLabel>
     <XhPasswordInputControl>
       <XhPasswordInputInput style="inline-size: 160px" />
-      <XhPasswordInputVisibilityTrigger>○</XhPasswordInputVisibilityTrigger>
+      <XhPasswordInputVisibilityTrigger />
     </XhPasswordInputControl>
   </XhPasswordInputRoot>
 </template>
@@ -55850,7 +55463,7 @@ const tones = ["brand", "neutral", "success", "warning", "danger", "info"] as co
     <label data-xh-part="label">brand</label>
     <div data-xh-part="control">
       <input data-xh-part="input" style="inline-size: 160px" />
-      <button data-xh-part="visibility-trigger">○</button>
+      <button data-xh-part="visibility-trigger"></button>
     </div>
   </div>
 </xh-password-input>
@@ -55860,7 +55473,7 @@ const tones = ["brand", "neutral", "success", "warning", "danger", "info"] as co
     <label data-xh-part="label">neutral</label>
     <div data-xh-part="control">
       <input data-xh-part="input" style="inline-size: 160px" />
-      <button data-xh-part="visibility-trigger">○</button>
+      <button data-xh-part="visibility-trigger"></button>
     </div>
   </div>
 </xh-password-input>
@@ -55870,7 +55483,7 @@ const tones = ["brand", "neutral", "success", "warning", "danger", "info"] as co
     <label data-xh-part="label">success</label>
     <div data-xh-part="control">
       <input data-xh-part="input" style="inline-size: 160px" />
-      <button data-xh-part="visibility-trigger">○</button>
+      <button data-xh-part="visibility-trigger"></button>
     </div>
   </div>
 </xh-password-input>
@@ -55880,7 +55493,7 @@ const tones = ["brand", "neutral", "success", "warning", "danger", "info"] as co
     <label data-xh-part="label">warning</label>
     <div data-xh-part="control">
       <input data-xh-part="input" style="inline-size: 160px" />
-      <button data-xh-part="visibility-trigger">○</button>
+      <button data-xh-part="visibility-trigger"></button>
     </div>
   </div>
 </xh-password-input>
@@ -55890,7 +55503,7 @@ const tones = ["brand", "neutral", "success", "warning", "danger", "info"] as co
     <label data-xh-part="label">danger</label>
     <div data-xh-part="control">
       <input data-xh-part="input" style="inline-size: 160px" />
-      <button data-xh-part="visibility-trigger">○</button>
+      <button data-xh-part="visibility-trigger"></button>
     </div>
   </div>
 </xh-password-input>
@@ -55900,7 +55513,7 @@ const tones = ["brand", "neutral", "success", "warning", "danger", "info"] as co
     <label data-xh-part="label">info</label>
     <div data-xh-part="control">
       <input data-xh-part="input" style="inline-size: 160px" />
-      <button data-xh-part="visibility-trigger">○</button>
+      <button data-xh-part="visibility-trigger"></button>
     </div>
   </div>
 </xh-password-input>
@@ -55926,7 +55539,7 @@ import {
     <XhPasswordInputLabel>sm</XhPasswordInputLabel>
     <XhPasswordInputControl>
       <XhPasswordInputInput style="inline-size: 160px" />
-      <XhPasswordInputVisibilityTrigger>○</XhPasswordInputVisibilityTrigger>
+      <XhPasswordInputVisibilityTrigger />
     </XhPasswordInputControl>
   </XhPasswordInputRoot>
 
@@ -55934,7 +55547,7 @@ import {
     <XhPasswordInputLabel>缺省</XhPasswordInputLabel>
     <XhPasswordInputControl>
       <XhPasswordInputInput style="inline-size: 160px" />
-      <XhPasswordInputVisibilityTrigger>○</XhPasswordInputVisibilityTrigger>
+      <XhPasswordInputVisibilityTrigger />
     </XhPasswordInputControl>
   </XhPasswordInputRoot>
 
@@ -55942,7 +55555,7 @@ import {
     <XhPasswordInputLabel>lg</XhPasswordInputLabel>
     <XhPasswordInputControl>
       <XhPasswordInputInput style="inline-size: 160px" />
-      <XhPasswordInputVisibilityTrigger>○</XhPasswordInputVisibilityTrigger>
+      <XhPasswordInputVisibilityTrigger />
     </XhPasswordInputControl>
   </XhPasswordInputRoot>
 </template>
@@ -55954,7 +55567,7 @@ import {
     <label data-xh-part="label">sm</label>
     <div data-xh-part="control">
       <input data-xh-part="input" style="inline-size: 160px" />
-      <button data-xh-part="visibility-trigger">○</button>
+      <button data-xh-part="visibility-trigger"></button>
     </div>
   </div>
 </xh-password-input>
@@ -55964,7 +55577,7 @@ import {
     <label data-xh-part="label">缺省</label>
     <div data-xh-part="control">
       <input data-xh-part="input" style="inline-size: 160px" />
-      <button data-xh-part="visibility-trigger">○</button>
+      <button data-xh-part="visibility-trigger"></button>
     </div>
   </div>
 </xh-password-input>
@@ -55974,7 +55587,7 @@ import {
     <label data-xh-part="label">lg</label>
     <div data-xh-part="control">
       <input data-xh-part="input" style="inline-size: 160px" />
-      <button data-xh-part="visibility-trigger">○</button>
+      <button data-xh-part="visibility-trigger"></button>
     </div>
   </div>
 </xh-password-input>
@@ -56002,7 +55615,7 @@ import {
       <XhPasswordInputLabel>设置新密码</XhPasswordInputLabel>
       <XhPasswordInputControl>
         <XhPasswordInputInput style="inline-size: 200px" />
-        <XhPasswordInputVisibilityTrigger>○</XhPasswordInputVisibilityTrigger>
+        <XhPasswordInputVisibilityTrigger />
       </XhPasswordInputControl>
     </XhPasswordInputRoot>
     <button type="reset">重置</button>
@@ -56018,7 +55631,7 @@ import {
       <label data-xh-part="label">设置新密码</label>
       <div data-xh-part="control">
         <input data-xh-part="input" style="inline-size: 200px" />
-        <button data-xh-part="visibility-trigger">○</button>
+        <button data-xh-part="visibility-trigger"></button>
       </div>
     </div>
   </xh-password-input>
@@ -56053,7 +55666,7 @@ import {
 ### 组合
 
 - 外面套[表单字段](./field)拿标签、说明与错误文本。
-- 切换钮里放[图标](./icon)，随明暗换一只眼睛。钮上带 `data-state`（`visible` / `hidden`），作者用自己的 CSS 按它切两枚图标即可；也可以从 root 的默认插槽拿 `visible`（Vue）或听 `visibility-change`（Web Components）自己换。皮肤不替作者切图标——库里不知道那两枚图标长什么样。
+- 切换钮留空时由皮肤按 `data-state` 绘制显示或隐藏图标。需要品牌图标时可放入[图标](./icon)替换内置字形，组件仍负责切换钮的可访问名称。
 
 ### 最佳实践
 
@@ -60163,7 +59776,7 @@ onBeforeUnmount(() => window.clearTimeout(timer));
           </XhMessageFeedItem>
         </XhMessageFeedList>
       </XhMessageFeedViewport>
-      <XhMessageFeedScrollToEndTrigger>↓</XhMessageFeedScrollToEndTrigger>
+      <XhMessageFeedScrollToEndTrigger />
     </XhMessageFeedRoot>
 
     <!-- loading 期间按钮换成停止，输入框仍可编辑：用户还要能改下一句 -->
@@ -60192,7 +59805,7 @@ onBeforeUnmount(() => window.clearTimeout(timer));
           </article>
         </div>
       </div>
-      <button data-xh-part="scroll-to-end-trigger">↓</button>
+      <button data-xh-part="scroll-to-end-trigger"></button>
     </div>
   </xh-message-feed>
 
@@ -63727,7 +63340,7 @@ import { XhRatingControl, XhRatingItem, XhRatingLabel, XhRatingRoot } from "@xih
   <XhRatingRoot v-slot="{ items }" :default-value="3">
     <XhRatingLabel>整体满意度</XhRatingLabel>
     <XhRatingControl>
-      <XhRatingItem v-for="i in items" :key="i" :value="i">★</XhRatingItem>
+      <XhRatingItem v-for="i in items" :key="i" :value="i" />
     </XhRatingControl>
   </XhRatingRoot>
 </template>
@@ -63738,11 +63351,11 @@ import { XhRatingControl, XhRatingItem, XhRatingLabel, XhRatingRoot } from "@xih
   <div data-xh-part="root">
     <span data-xh-part="label">整体满意度</span>
     <div data-xh-part="control">
-      <span data-xh-part="item" value="1">★</span>
-      <span data-xh-part="item" value="2">★</span>
-      <span data-xh-part="item" value="3">★</span>
-      <span data-xh-part="item" value="4">★</span>
-      <span data-xh-part="item" value="5">★</span>
+      <span data-xh-part="item" value="1"></span>
+      <span data-xh-part="item" value="2"></span>
+      <span data-xh-part="item" value="3"></span>
+      <span data-xh-part="item" value="4"></span>
+      <span data-xh-part="item" value="5"></span>
     </div>
   </div>
 </xh-rating>
@@ -63777,7 +63390,7 @@ function onHoverChange(details: { value: number | null }) {
   <XhRatingRoot v-slot="{ items }" v-model:value="score" allow-half @hover-change="onHoverChange">
     <XhRatingLabel>服务评分</XhRatingLabel>
     <XhRatingControl>
-      <XhRatingItem v-for="i in items" :key="i" :value="i">★</XhRatingItem>
+      <XhRatingItem v-for="i in items" :key="i" :value="i" />
     </XhRatingControl>
   </XhRatingRoot>
   <p>评分：{{ score }} · 悬停预览：{{ preview ?? "（无）" }}</p>
@@ -63789,11 +63402,11 @@ function onHoverChange(details: { value: number | null }) {
   <div data-xh-part="root">
     <span data-xh-part="label">服务评分</span>
     <div data-xh-part="control">
-      <span data-xh-part="item" value="1">★</span>
-      <span data-xh-part="item" value="2">★</span>
-      <span data-xh-part="item" value="3">★</span>
-      <span data-xh-part="item" value="4">★</span>
-      <span data-xh-part="item" value="5">★</span>
+      <span data-xh-part="item" value="1"></span>
+      <span data-xh-part="item" value="2"></span>
+      <span data-xh-part="item" value="3"></span>
+      <span data-xh-part="item" value="4"></span>
+      <span data-xh-part="item" value="5"></span>
     </div>
   </div>
 </xh-rating>
@@ -63831,7 +63444,7 @@ const level = ref(7);
   <XhRatingRoot v-slot="{ items }" v-model:value="level" :count="10">
     <XhRatingLabel>推荐指数（10 档）</XhRatingLabel>
     <XhRatingControl>
-      <XhRatingItem v-for="i in items" :key="i" :value="i">★</XhRatingItem>
+      <XhRatingItem v-for="i in items" :key="i" :value="i" />
     </XhRatingControl>
   </XhRatingRoot>
   <p>当前：{{ level }} / 10</p>
@@ -63843,16 +63456,16 @@ const level = ref(7);
   <div data-xh-part="root">
     <span data-xh-part="label">推荐指数（10 档）</span>
     <div data-xh-part="control">
-      <span data-xh-part="item" value="1">★</span>
-      <span data-xh-part="item" value="2">★</span>
-      <span data-xh-part="item" value="3">★</span>
-      <span data-xh-part="item" value="4">★</span>
-      <span data-xh-part="item" value="5">★</span>
-      <span data-xh-part="item" value="6">★</span>
-      <span data-xh-part="item" value="7">★</span>
-      <span data-xh-part="item" value="8">★</span>
-      <span data-xh-part="item" value="9">★</span>
-      <span data-xh-part="item" value="10">★</span>
+      <span data-xh-part="item" value="1"></span>
+      <span data-xh-part="item" value="2"></span>
+      <span data-xh-part="item" value="3"></span>
+      <span data-xh-part="item" value="4"></span>
+      <span data-xh-part="item" value="5"></span>
+      <span data-xh-part="item" value="6"></span>
+      <span data-xh-part="item" value="7"></span>
+      <span data-xh-part="item" value="8"></span>
+      <span data-xh-part="item" value="9"></span>
+      <span data-xh-part="item" value="10"></span>
     </div>
   </div>
 </xh-rating>
@@ -63883,14 +63496,14 @@ import { XhRatingControl, XhRatingItem, XhRatingLabel, XhRatingRoot } from "@xih
     <XhRatingRoot v-slot="{ items }" :default-value="4" read-only>
       <XhRatingLabel>只读（4 星）</XhRatingLabel>
       <XhRatingControl>
-        <XhRatingItem v-for="i in items" :key="i" :value="i">★</XhRatingItem>
+        <XhRatingItem v-for="i in items" :key="i" :value="i" />
       </XhRatingControl>
     </XhRatingRoot>
 
     <XhRatingRoot v-slot="{ items }" :default-value="2" disabled>
       <XhRatingLabel>禁用（2 星）</XhRatingLabel>
       <XhRatingControl>
-        <XhRatingItem v-for="i in items" :key="i" :value="i">★</XhRatingItem>
+        <XhRatingItem v-for="i in items" :key="i" :value="i" />
       </XhRatingControl>
     </XhRatingRoot>
   </div>
@@ -63903,11 +63516,11 @@ import { XhRatingControl, XhRatingItem, XhRatingLabel, XhRatingRoot } from "@xih
     <div data-xh-part="root">
       <span data-xh-part="label">只读（4 星）</span>
       <div data-xh-part="control">
-        <span data-xh-part="item" value="1">★</span>
-        <span data-xh-part="item" value="2">★</span>
-        <span data-xh-part="item" value="3">★</span>
-        <span data-xh-part="item" value="4">★</span>
-        <span data-xh-part="item" value="5">★</span>
+        <span data-xh-part="item" value="1"></span>
+        <span data-xh-part="item" value="2"></span>
+        <span data-xh-part="item" value="3"></span>
+        <span data-xh-part="item" value="4"></span>
+        <span data-xh-part="item" value="5"></span>
       </div>
     </div>
   </xh-rating>
@@ -63916,11 +63529,11 @@ import { XhRatingControl, XhRatingItem, XhRatingLabel, XhRatingRoot } from "@xih
     <div data-xh-part="root">
       <span data-xh-part="label">禁用（2 星）</span>
       <div data-xh-part="control">
-        <span data-xh-part="item" value="1">★</span>
-        <span data-xh-part="item" value="2">★</span>
-        <span data-xh-part="item" value="3">★</span>
-        <span data-xh-part="item" value="4">★</span>
-        <span data-xh-part="item" value="5">★</span>
+        <span data-xh-part="item" value="1"></span>
+        <span data-xh-part="item" value="2"></span>
+        <span data-xh-part="item" value="3"></span>
+        <span data-xh-part="item" value="4"></span>
+        <span data-xh-part="item" value="5"></span>
       </div>
     </div>
   </xh-rating>
@@ -63943,7 +63556,7 @@ const tones = ["brand", "neutral", "success", "warning", "danger", "info"] as co
     <XhRatingRoot v-for="t in tones" :key="t" v-slot="{ items }" :tone="t" :default-value="4" read-only>
       <XhRatingLabel>{{ t }}</XhRatingLabel>
       <XhRatingControl>
-        <XhRatingItem v-for="i in items" :key="i" :value="i">★</XhRatingItem>
+        <XhRatingItem v-for="i in items" :key="i" :value="i" />
       </XhRatingControl>
     </XhRatingRoot>
   </div>
@@ -63956,11 +63569,11 @@ const tones = ["brand", "neutral", "success", "warning", "danger", "info"] as co
     <div data-xh-part="root">
       <span data-xh-part="label">brand</span>
       <div data-xh-part="control">
-        <span data-xh-part="item" value="1">★</span>
-        <span data-xh-part="item" value="2">★</span>
-        <span data-xh-part="item" value="3">★</span>
-        <span data-xh-part="item" value="4">★</span>
-        <span data-xh-part="item" value="5">★</span>
+        <span data-xh-part="item" value="1"></span>
+        <span data-xh-part="item" value="2"></span>
+        <span data-xh-part="item" value="3"></span>
+        <span data-xh-part="item" value="4"></span>
+        <span data-xh-part="item" value="5"></span>
       </div>
     </div>
   </xh-rating>
@@ -63969,11 +63582,11 @@ const tones = ["brand", "neutral", "success", "warning", "danger", "info"] as co
     <div data-xh-part="root">
       <span data-xh-part="label">neutral</span>
       <div data-xh-part="control">
-        <span data-xh-part="item" value="1">★</span>
-        <span data-xh-part="item" value="2">★</span>
-        <span data-xh-part="item" value="3">★</span>
-        <span data-xh-part="item" value="4">★</span>
-        <span data-xh-part="item" value="5">★</span>
+        <span data-xh-part="item" value="1"></span>
+        <span data-xh-part="item" value="2"></span>
+        <span data-xh-part="item" value="3"></span>
+        <span data-xh-part="item" value="4"></span>
+        <span data-xh-part="item" value="5"></span>
       </div>
     </div>
   </xh-rating>
@@ -63982,11 +63595,11 @@ const tones = ["brand", "neutral", "success", "warning", "danger", "info"] as co
     <div data-xh-part="root">
       <span data-xh-part="label">success</span>
       <div data-xh-part="control">
-        <span data-xh-part="item" value="1">★</span>
-        <span data-xh-part="item" value="2">★</span>
-        <span data-xh-part="item" value="3">★</span>
-        <span data-xh-part="item" value="4">★</span>
-        <span data-xh-part="item" value="5">★</span>
+        <span data-xh-part="item" value="1"></span>
+        <span data-xh-part="item" value="2"></span>
+        <span data-xh-part="item" value="3"></span>
+        <span data-xh-part="item" value="4"></span>
+        <span data-xh-part="item" value="5"></span>
       </div>
     </div>
   </xh-rating>
@@ -63995,11 +63608,11 @@ const tones = ["brand", "neutral", "success", "warning", "danger", "info"] as co
     <div data-xh-part="root">
       <span data-xh-part="label">warning</span>
       <div data-xh-part="control">
-        <span data-xh-part="item" value="1">★</span>
-        <span data-xh-part="item" value="2">★</span>
-        <span data-xh-part="item" value="3">★</span>
-        <span data-xh-part="item" value="4">★</span>
-        <span data-xh-part="item" value="5">★</span>
+        <span data-xh-part="item" value="1"></span>
+        <span data-xh-part="item" value="2"></span>
+        <span data-xh-part="item" value="3"></span>
+        <span data-xh-part="item" value="4"></span>
+        <span data-xh-part="item" value="5"></span>
       </div>
     </div>
   </xh-rating>
@@ -64008,11 +63621,11 @@ const tones = ["brand", "neutral", "success", "warning", "danger", "info"] as co
     <div data-xh-part="root">
       <span data-xh-part="label">danger</span>
       <div data-xh-part="control">
-        <span data-xh-part="item" value="1">★</span>
-        <span data-xh-part="item" value="2">★</span>
-        <span data-xh-part="item" value="3">★</span>
-        <span data-xh-part="item" value="4">★</span>
-        <span data-xh-part="item" value="5">★</span>
+        <span data-xh-part="item" value="1"></span>
+        <span data-xh-part="item" value="2"></span>
+        <span data-xh-part="item" value="3"></span>
+        <span data-xh-part="item" value="4"></span>
+        <span data-xh-part="item" value="5"></span>
       </div>
     </div>
   </xh-rating>
@@ -64021,11 +63634,11 @@ const tones = ["brand", "neutral", "success", "warning", "danger", "info"] as co
     <div data-xh-part="root">
       <span data-xh-part="label">info</span>
       <div data-xh-part="control">
-        <span data-xh-part="item" value="1">★</span>
-        <span data-xh-part="item" value="2">★</span>
-        <span data-xh-part="item" value="3">★</span>
-        <span data-xh-part="item" value="4">★</span>
-        <span data-xh-part="item" value="5">★</span>
+        <span data-xh-part="item" value="1"></span>
+        <span data-xh-part="item" value="2"></span>
+        <span data-xh-part="item" value="3"></span>
+        <span data-xh-part="item" value="4"></span>
+        <span data-xh-part="item" value="5"></span>
       </div>
     </div>
   </xh-rating>
@@ -64046,21 +63659,21 @@ import { XhRatingControl, XhRatingItem, XhRatingLabel, XhRatingRoot } from "@xih
     <XhRatingRoot v-slot="{ items }" :default-value="3" size="sm">
       <XhRatingLabel>sm</XhRatingLabel>
       <XhRatingControl>
-        <XhRatingItem v-for="i in items" :key="i" :value="i">★</XhRatingItem>
+        <XhRatingItem v-for="i in items" :key="i" :value="i" />
       </XhRatingControl>
     </XhRatingRoot>
 
     <XhRatingRoot v-slot="{ items }" :default-value="3">
       <XhRatingLabel>缺省</XhRatingLabel>
       <XhRatingControl>
-        <XhRatingItem v-for="i in items" :key="i" :value="i">★</XhRatingItem>
+        <XhRatingItem v-for="i in items" :key="i" :value="i" />
       </XhRatingControl>
     </XhRatingRoot>
 
     <XhRatingRoot v-slot="{ items }" :default-value="3" size="lg">
       <XhRatingLabel>lg</XhRatingLabel>
       <XhRatingControl>
-        <XhRatingItem v-for="i in items" :key="i" :value="i">★</XhRatingItem>
+        <XhRatingItem v-for="i in items" :key="i" :value="i" />
       </XhRatingControl>
     </XhRatingRoot>
   </div>
@@ -64073,11 +63686,11 @@ import { XhRatingControl, XhRatingItem, XhRatingLabel, XhRatingRoot } from "@xih
     <div data-xh-part="root">
       <span data-xh-part="label">sm</span>
       <div data-xh-part="control">
-        <span data-xh-part="item" value="1">★</span>
-        <span data-xh-part="item" value="2">★</span>
-        <span data-xh-part="item" value="3">★</span>
-        <span data-xh-part="item" value="4">★</span>
-        <span data-xh-part="item" value="5">★</span>
+        <span data-xh-part="item" value="1"></span>
+        <span data-xh-part="item" value="2"></span>
+        <span data-xh-part="item" value="3"></span>
+        <span data-xh-part="item" value="4"></span>
+        <span data-xh-part="item" value="5"></span>
       </div>
     </div>
   </xh-rating>
@@ -64086,11 +63699,11 @@ import { XhRatingControl, XhRatingItem, XhRatingLabel, XhRatingRoot } from "@xih
     <div data-xh-part="root">
       <span data-xh-part="label">缺省</span>
       <div data-xh-part="control">
-        <span data-xh-part="item" value="1">★</span>
-        <span data-xh-part="item" value="2">★</span>
-        <span data-xh-part="item" value="3">★</span>
-        <span data-xh-part="item" value="4">★</span>
-        <span data-xh-part="item" value="5">★</span>
+        <span data-xh-part="item" value="1"></span>
+        <span data-xh-part="item" value="2"></span>
+        <span data-xh-part="item" value="3"></span>
+        <span data-xh-part="item" value="4"></span>
+        <span data-xh-part="item" value="5"></span>
       </div>
     </div>
   </xh-rating>
@@ -64099,24 +63712,25 @@ import { XhRatingControl, XhRatingItem, XhRatingLabel, XhRatingRoot } from "@xih
     <div data-xh-part="root">
       <span data-xh-part="label">lg</span>
       <div data-xh-part="control">
-        <span data-xh-part="item" value="1">★</span>
-        <span data-xh-part="item" value="2">★</span>
-        <span data-xh-part="item" value="3">★</span>
-        <span data-xh-part="item" value="4">★</span>
-        <span data-xh-part="item" value="5">★</span>
+        <span data-xh-part="item" value="1"></span>
+        <span data-xh-part="item" value="2"></span>
+        <span data-xh-part="item" value="3"></span>
+        <span data-xh-part="item" value="4"></span>
+        <span data-xh-part="item" value="5"></span>
       </div>
     </div>
   </xh-rating>
 </div>
 ```
 
-### 自定义图案
+### 自定义图标
 
-星形由作者写，条目自带这颗的点亮状态，点亮与未点亮可以画成两个字形
+条目可使用首方图标，也可留空使用皮肤默认星形
 
 ```vue
 <script setup lang="ts">
-import { XhRatingControl, XhRatingItem, XhRatingLabel, XhRatingRoot } from "@xihan-ui/vue";
+import { HeartIcon } from "@xihan-ui/icons";
+import { XhIcon, XhRatingControl, XhRatingItem, XhRatingLabel, XhRatingRoot } from "@xihan-ui/vue";
 </script>
 
 <template>
@@ -64124,21 +63738,14 @@ import { XhRatingControl, XhRatingItem, XhRatingLabel, XhRatingRoot } from "@xih
     <XhRatingRoot v-slot="{ items }" :default-value="3">
       <XhRatingLabel>换个字形</XhRatingLabel>
       <XhRatingControl>
-        <XhRatingItem v-for="i in items" :key="i" :value="i">♥</XhRatingItem>
+        <XhRatingItem v-for="i in items" :key="i" :value="i"><XhIcon :icon="HeartIcon" /></XhRatingItem>
       </XhRatingControl>
     </XhRatingRoot>
 
     <XhRatingRoot v-slot="{ items }" :default-value="2" allow-half>
-      <XhRatingLabel>空心与实心（半颗仍由皮肤裁）</XhRatingLabel>
+      <XhRatingLabel>内置星形与半档</XhRatingLabel>
       <XhRatingControl>
-        <XhRatingItem
-          v-for="i in items"
-          :key="i"
-          v-slot="{ highlighted }"
-          :value="i"
-        >
-          {{ highlighted ? "★" : "☆" }}
-        </XhRatingItem>
+        <XhRatingItem v-for="i in items" :key="i" :value="i" />
       </XhRatingControl>
     </XhRatingRoot>
   </div>
@@ -64151,48 +63758,28 @@ import { XhRatingControl, XhRatingItem, XhRatingLabel, XhRatingRoot } from "@xih
     <div data-xh-part="root">
       <span data-xh-part="label">换个字形</span>
       <div data-xh-part="control">
-        <span data-xh-part="item" value="1">♥</span>
-        <span data-xh-part="item" value="2">♥</span>
-        <span data-xh-part="item" value="3">♥</span>
-        <span data-xh-part="item" value="4">♥</span>
-        <span data-xh-part="item" value="5">♥</span>
+        <span data-xh-part="item" value="1"><svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20.5C10.5 18.5 3 13.5 3 8.5C3 5.46 5.46 3 8.5 3C10.6 3 11.4 4.2 12 6.2C12.6 4.2 13.4 3 15.5 3C18.54 3 21 5.46 21 8.5C21 13.5 13.5 18.5 12 20.5Z"/></svg></span>
+        <span data-xh-part="item" value="2"><svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20.5C10.5 18.5 3 13.5 3 8.5C3 5.46 5.46 3 8.5 3C10.6 3 11.4 4.2 12 6.2C12.6 4.2 13.4 3 15.5 3C18.54 3 21 5.46 21 8.5C21 13.5 13.5 18.5 12 20.5Z"/></svg></span>
+        <span data-xh-part="item" value="3"><svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20.5C10.5 18.5 3 13.5 3 8.5C3 5.46 5.46 3 8.5 3C10.6 3 11.4 4.2 12 6.2C12.6 4.2 13.4 3 15.5 3C18.54 3 21 5.46 21 8.5C21 13.5 13.5 18.5 12 20.5Z"/></svg></span>
+        <span data-xh-part="item" value="4"><svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20.5C10.5 18.5 3 13.5 3 8.5C3 5.46 5.46 3 8.5 3C10.6 3 11.4 4.2 12 6.2C12.6 4.2 13.4 3 15.5 3C18.54 3 21 5.46 21 8.5C21 13.5 13.5 18.5 12 20.5Z"/></svg></span>
+        <span data-xh-part="item" value="5"><svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20.5C10.5 18.5 3 13.5 3 8.5C3 5.46 5.46 3 8.5 3C10.6 3 11.4 4.2 12 6.2C12.6 4.2 13.4 3 15.5 3C18.54 3 21 5.46 21 8.5C21 13.5 13.5 18.5 12 20.5Z"/></svg></span>
       </div>
     </div>
   </xh-rating>
 
-  <xh-rating id="rating-outline" default-value="2" allow-half>
+  <xh-rating default-value="2" allow-half>
     <div data-xh-part="root">
-      <span data-xh-part="label">空心与实心（半颗仍由皮肤裁）</span>
+      <span data-xh-part="label">内置星形与半档</span>
       <div data-xh-part="control">
-        <span data-xh-part="item" value="1">★</span>
-        <span data-xh-part="item" value="2">★</span>
-        <span data-xh-part="item" value="3">☆</span>
-        <span data-xh-part="item" value="4">☆</span>
-        <span data-xh-part="item" value="5">☆</span>
+        <span data-xh-part="item" value="1"></span>
+        <span data-xh-part="item" value="2"></span>
+        <span data-xh-part="item" value="3"></span>
+        <span data-xh-part="item" value="4"></span>
+        <span data-xh-part="item" value="5"></span>
       </div>
     </div>
   </xh-rating>
 </div>
-
-<script type="module">
-  // 点亮状态由组件写在条目上，照它换字形
-  const rating = document.getElementById("rating-outline");
-  const items = [...rating.querySelectorAll('[data-xh-part="item"]')];
-
-  function paint() {
-    for (const item of items) {
-      const glyph = item.hasAttribute("data-highlighted") ? "★" : "☆";
-      if (item.textContent !== glyph) item.textContent = glyph;
-    }
-  }
-
-  new MutationObserver(paint).observe(rating, {
-    subtree: true,
-    attributes: true,
-    attributeFilter: ["data-highlighted"],
-  });
-  paint();
-</script>
 ```
 
 ### 自定义颜色
@@ -64214,7 +63801,7 @@ import { XhRatingControl, XhRatingItem, XhRatingLabel, XhRatingRoot } from "@xih
     >
       <XhRatingLabel>只换点亮色</XhRatingLabel>
       <XhRatingControl>
-        <XhRatingItem v-for="i in items" :key="i" :value="i">★</XhRatingItem>
+        <XhRatingItem v-for="i in items" :key="i" :value="i" />
       </XhRatingControl>
     </XhRatingRoot>
 
@@ -64226,7 +63813,7 @@ import { XhRatingControl, XhRatingItem, XhRatingLabel, XhRatingRoot } from "@xih
     >
       <XhRatingLabel>点亮与未点亮各给一色</XhRatingLabel>
       <XhRatingControl>
-        <XhRatingItem v-for="i in items" :key="i" :value="i">★</XhRatingItem>
+        <XhRatingItem v-for="i in items" :key="i" :value="i" />
       </XhRatingControl>
     </XhRatingRoot>
   </div>
@@ -64239,11 +63826,11 @@ import { XhRatingControl, XhRatingItem, XhRatingLabel, XhRatingRoot } from "@xih
     <div data-xh-part="root" style="--xh-rating-item-fg-highlighted: #4fb233">
       <span data-xh-part="label">只换点亮色</span>
       <div data-xh-part="control">
-        <span data-xh-part="item" value="1">★</span>
-        <span data-xh-part="item" value="2">★</span>
-        <span data-xh-part="item" value="3">★</span>
-        <span data-xh-part="item" value="4">★</span>
-        <span data-xh-part="item" value="5">★</span>
+        <span data-xh-part="item" value="1"></span>
+        <span data-xh-part="item" value="2"></span>
+        <span data-xh-part="item" value="3"></span>
+        <span data-xh-part="item" value="4"></span>
+        <span data-xh-part="item" value="5"></span>
       </div>
     </div>
   </xh-rating>
@@ -64255,11 +63842,11 @@ import { XhRatingControl, XhRatingItem, XhRatingLabel, XhRatingRoot } from "@xih
     >
       <span data-xh-part="label">点亮与未点亮各给一色</span>
       <div data-xh-part="control">
-        <span data-xh-part="item" value="1">★</span>
-        <span data-xh-part="item" value="2">★</span>
-        <span data-xh-part="item" value="3">★</span>
-        <span data-xh-part="item" value="4">★</span>
-        <span data-xh-part="item" value="5">★</span>
+        <span data-xh-part="item" value="1"></span>
+        <span data-xh-part="item" value="2"></span>
+        <span data-xh-part="item" value="3"></span>
+        <span data-xh-part="item" value="4"></span>
+        <span data-xh-part="item" value="5"></span>
       </div>
     </div>
   </xh-rating>
@@ -64285,7 +63872,7 @@ const sticky = ref(3);
       <XhRatingRoot v-slot="{ items }" v-model:value="score">
         <XhRatingLabel>整体满意度（可清空）</XhRatingLabel>
         <XhRatingControl>
-          <XhRatingItem v-for="i in items" :key="i" :value="i">★</XhRatingItem>
+          <XhRatingItem v-for="i in items" :key="i" :value="i" />
         </XhRatingControl>
       </XhRatingRoot>
       <p style="margin: 4px 0 0; font-size: 13px">当前：{{ score === 0 ? "还没评" : score }}</p>
@@ -64294,7 +63881,7 @@ const sticky = ref(3);
       <XhRatingRoot v-slot="{ items }" v-model:value="sticky" :allow-clear="false">
         <XhRatingLabel>关掉清空（再点不清）</XhRatingLabel>
         <XhRatingControl>
-          <XhRatingItem v-for="i in items" :key="i" :value="i">★</XhRatingItem>
+          <XhRatingItem v-for="i in items" :key="i" :value="i" />
         </XhRatingControl>
       </XhRatingRoot>
       <p style="margin: 4px 0 0; font-size: 13px">当前：{{ sticky }}</p>
@@ -64310,11 +63897,11 @@ const sticky = ref(3);
       <div data-xh-part="root">
         <span data-xh-part="label">整体满意度（可清空）</span>
         <div data-xh-part="control">
-          <span data-xh-part="item" value="1">★</span>
-          <span data-xh-part="item" value="2">★</span>
-          <span data-xh-part="item" value="3">★</span>
-          <span data-xh-part="item" value="4">★</span>
-          <span data-xh-part="item" value="5">★</span>
+          <span data-xh-part="item" value="1"></span>
+          <span data-xh-part="item" value="2"></span>
+          <span data-xh-part="item" value="3"></span>
+          <span data-xh-part="item" value="4"></span>
+          <span data-xh-part="item" value="5"></span>
         </div>
       </div>
     </xh-rating>
@@ -64325,11 +63912,11 @@ const sticky = ref(3);
       <div data-xh-part="root">
         <span data-xh-part="label">关掉清空（再点不清）</span>
         <div data-xh-part="control">
-          <span data-xh-part="item" value="1">★</span>
-          <span data-xh-part="item" value="2">★</span>
-          <span data-xh-part="item" value="3">★</span>
-          <span data-xh-part="item" value="4">★</span>
-          <span data-xh-part="item" value="5">★</span>
+          <span data-xh-part="item" value="1"></span>
+          <span data-xh-part="item" value="2"></span>
+          <span data-xh-part="item" value="3"></span>
+          <span data-xh-part="item" value="4"></span>
+          <span data-xh-part="item" value="5"></span>
         </div>
       </div>
     </xh-rating>
@@ -64370,7 +63957,7 @@ const sticky = ref(3);
 
 - `allowHalf` 支持半档，`allowClear` 允许再点一次清空。
 - 悬停预览与实际值分开，`onHoverChange` 单独回调。
-- 图案与颜色都可以换。
+- 条目留空时使用首方星形图标；也可传入自己的图标与颜色。
 
 ### 组合
 
@@ -64551,9 +64138,9 @@ const sticky = ref(3);
 | 变量 | 部件 | CSS 属性 | 状态 | 缺省来源 | 说明 |
 | --- | --- | --- | --- | --- | --- |
 | `--xh-rating-gap` | `root` | `gap` | `default` | `--xh-stack-gap-md` | rating 的 root 部件 gap 覆盖槽。 |
-| `--xh-rating-item-fg` | `item` | `background-image`<br>`color` | `default`<br>`dir(rtl)`<br>`half` | `--xh-fg-subtle` | rating 的 item 部件 background-image、color 覆盖槽。 |
-| `--xh-rating-item-fg-highlighted` | `item` | `background-image`<br>`color` | `@media print`<br>`dir(rtl)`<br>`half`<br>`highlighted` | `--xh-_rating-accent` | rating 的 item 部件 background-image、color 覆盖槽。 |
-| `--xh-rating-item-font-size` | `item` | `font-size` | `default` | `--xh-_rating-item-size` | rating 的 item 部件 font-size 覆盖槽。 |
+| `--xh-rating-item-fg` | `item` | `background-color`<br>`background-image`<br>`color` | `default`<br>`dir(rtl)`<br>`empty`<br>`half`<br>`not(:empty)` | `--xh-fg-subtle` | rating 的 item 部件 background-color、background-image、color 覆盖槽。 |
+| `--xh-rating-item-fg-highlighted` | `item` | `background-color`<br>`background-image`<br>`color` | `@media print`<br>`dir(rtl)`<br>`empty`<br>`half`<br>`highlighted`<br>`not(:empty)` | `--xh-_rating-accent` | rating 的 item 部件 background-color、background-image、color 覆盖槽。 |
+| `--xh-rating-item-font-size` | `item`<br>`root` | `--xh-icon-size`<br>`font-size` | `default` | `--xh-_rating-item-size` | rating 的 item、root 部件 --xh-icon-size、font-size 覆盖槽。 |
 | `--xh-rating-item-gap` | `control` | `gap` | `default` | `--xh-_rating-item-gap` | rating 的 control 部件 gap 覆盖槽。 |
 | `--xh-rating-item-radius` | `item` | `border-radius` | `default` | `--xh-shape-control` | rating 的 item 部件 border-radius 覆盖槽。 |
 | `--xh-rating-label-fg` | `label` | `color` | `default` | `--xh-fg-muted` | rating 的 label 部件 color 覆盖槽。 |
@@ -64565,13 +64152,13 @@ const sticky = ref(3);
 
 ### 动效
 
-`color` · `scale` 走 `transition` 过渡。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
+`clip-path` · `color` · `scale` 走 `transition` 过渡。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
 
 系统开启减弱动效时由令牌层统一收敛，皮肤不另作判断。
 
 ### RTL
 
-另有按 `dir` 分支的规则。
+皮肤用逻辑属性排布（`inline-start` 一族），`dir="rtl"` 下自动镜像；另有按 `dir` 分支的规则。
 
 ---
 
@@ -65587,6 +65174,7 @@ import { XhResizableHandle, XhResizableRoot } from "@xihan-ui/vue";
 ### 特性
 
 - 支持八个方向的调整把手。
+- 把手附着在容器内部，边缘显示为短条，角部形状继承容器圆角。
 - 支持最小/最大尺寸、宽高比和步进约束。
 - 支持方向键、Home、End 和 Escape。
 - 调整中和调整结束分别提供回调。
@@ -65729,13 +65317,21 @@ import { XhResizableHandle, XhResizableRoot } from "@xihan-ui/vue";
 
 | 变量 | 部件 | CSS 属性 | 状态 | 缺省来源 | 说明 |
 | --- | --- | --- | --- | --- | --- |
-| `--xh-resizable-corner` | `handle` | `block-size`<br>`inline-size`<br>`inset-block-end`<br>`inset-block-start`<br>`inset-inline-end`<br>`inset-inline-start` | `edge=ne`<br>`edge=nw`<br>`edge=se`<br>`edge=sw` | `--xh-space-3` | resizable 的 handle 部件 block-size、inline-size、inset-block-end、inset-block-start、inset-inline-end、inset-inline-start 覆盖槽。 |
-| `--xh-resizable-grip` | `handle` | `block-size`<br>`inline-size`<br>`inset-block`<br>`inset-block-end`<br>`inset-block-start`<br>`inset-inline`<br>`inset-inline-end`<br>`inset-inline-start` | `edge=e`<br>`edge=n`<br>`edge=s`<br>`edge=w` | `--xh-space-2` | resizable 的 handle 部件 block-size、inline-size、inset-block、inset-block-end、inset-block-start、inset-inline、inset-inline-end、inset-inline-start 覆盖槽。 |
+| `--xh-resizable-corner` | `handle` | `block-size`<br>`inline-size` | `edge=ne`<br>`edge=nw`<br>`edge=se`<br>`edge=sw` | `--xh-space-4` | resizable 的 handle 部件 block-size、inline-size 覆盖槽。 |
+| `--xh-resizable-corner-inset` | `handle` | `inset` | `edge=ne`<br>`edge=nw`<br>`edge=se`<br>`edge=sw`<br>`is([data-edge='ne'], [data-edge='nw'], [data-edge='se'], [data-edge='sw'])` | `--xh-space-1` | resizable 的 handle 部件 inset 覆盖槽。 |
+| `--xh-resizable-grip` | `handle` | `block-size`<br>`inline-size`<br>`inset-block`<br>`inset-inline` | `edge=e`<br>`edge=n`<br>`edge=s`<br>`edge=w` | `--xh-space-2` | resizable 的 handle 部件 block-size、inline-size、inset-block、inset-inline 覆盖槽。 |
+| `--xh-resizable-handle-bg` | `handle` | `background`<br>`border` | `default`<br>`edge=ne`<br>`edge=nw`<br>`edge=se`<br>`edge=sw`<br>`is([data-edge='ne'], [data-edge='nw'], [data-edge='se'], [data-edge='sw'])` | `--xh-fg-default` | resizable 的 handle 部件 background、border 覆盖槽。 |
+| `--xh-resizable-handle-bg-active` | `handle` | `background`<br>`border` | `edge=ne`<br>`edge=nw`<br>`edge=se`<br>`edge=sw`<br>`is([data-edge='ne'], [data-edge='nw'], [data-edge='se'], [data-edge='sw'])`<br>`resizing` | `--xh-bg-brand` | resizable 的 handle 部件 background、border 覆盖槽。 |
+| `--xh-resizable-handle-bg-hover` | `handle` | `background`<br>`border` | `edge=ne`<br>`edge=nw`<br>`edge=se`<br>`edge=sw`<br>`hover`<br>`is([data-edge='ne'], [data-edge='nw'], [data-edge='se'], [data-edge='sw'])` | `--xh-fg-default` | resizable 的 handle 部件 background、border 覆盖槽。 |
+| `--xh-resizable-handle-radius` | `handle` | `border-radius` | `default` | `--xh-shape-pill` | resizable 的 handle 部件 border-radius 覆盖槽。 |
+| `--xh-resizable-indicator-inset` | `handle` | `inset-block-end`<br>`inset-block-start`<br>`inset-inline-end`<br>`inset-inline-start` | `edge=e`<br>`edge=n`<br>`edge=s`<br>`edge=w` | `--xh-space-0_5` | resizable 的 handle 部件 inset-block-end、inset-block-start、inset-inline-end、inset-inline-start 覆盖槽。 |
+| `--xh-resizable-indicator-length` | `handle` | `block-size`<br>`inline-size` | `edge=e`<br>`edge=n`<br>`edge=s`<br>`edge=w`<br>`is([data-edge='e'], [data-edge='w'])`<br>`is([data-edge='n'], [data-edge='s'])` | `--xh-space-8` | resizable 的 handle 部件 block-size、inline-size 覆盖槽。 |
+| `--xh-resizable-indicator-thickness` | `handle` | `block-size`<br>`border-block-end-width`<br>`border-block-start-width`<br>`border-inline-end-width`<br>`border-inline-start-width`<br>`inline-size` | `edge=e`<br>`edge=n`<br>`edge=ne`<br>`edge=nw`<br>`edge=s`<br>`edge=se`<br>`edge=sw`<br>`edge=w`<br>`is([data-edge='e'], [data-edge='w'])`<br>`is([data-edge='n'], [data-edge='s'])` | `--xh-stroke-thick` | resizable 的 handle 部件 block-size、border-block-end-width、border-block-start-width、border-inline-end-width、border-inline-start-width、inline-size 覆盖槽。 |
 <!-- xh-component-tokens:end -->
 
 ### 动效
 
-`background` 走 `transition` 过渡。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
+`background` · `border-color` 走 `transition` 过渡。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
 
 系统开启减弱动效时由令牌层统一收敛，皮肤不另作判断。
 
@@ -66594,6 +66190,7 @@ const lines = Array.from({ length: 30 }, (_, i) => `第 ${i + 1} 行`);
 ### 特性
 
 - 支持五种显示时机，默认在滚动或悬停时显示。
+- 默认使用透明轨道与半透明中性滑块，悬停和拖动时逐级增强。
 - 支持拖动、点击轨道、键盘操作与 RTL。
 - 支持横向、纵向和双轴滚动。
 - 触屏设备默认保留原生滚动体验。
@@ -66780,12 +66377,12 @@ const lines = Array.from({ length: 30 }, (_, i) => `第 ${i + 1} 行`);
 | 变量 | 部件 | CSS 属性 | 状态 | 缺省来源 | 说明 |
 | --- | --- | --- | --- | --- | --- |
 | `--xh-scrollbar-corner-bg` | `corner` | `background` | `default` | `--xh-scrollbar-track-bg` | scrollbar 的 corner 部件 background 覆盖槽。 |
-| `--xh-scrollbar-thumb-bg` | `thumb` | `background` | `default` | `--xh-fg-scrollbar-thumb` | scrollbar 的 thumb 部件 background 覆盖槽。 |
-| `--xh-scrollbar-thumb-bg-active` | `thumb` | `background` | `dragging` | `--xh-fg-scrollbar-thumb-active` | scrollbar 的 thumb 部件 background 覆盖槽。 |
+| `--xh-scrollbar-thumb-bg` | `thumb` | `background` | `default` | `--xh-fg-default` | scrollbar 的 thumb 部件 background 覆盖槽。 |
+| `--xh-scrollbar-thumb-bg-active` | `thumb` | `background` | `dragging` | `--xh-fg-default` | scrollbar 的 thumb 部件 background 覆盖槽。 |
 | `--xh-scrollbar-thumb-bg-disabled` | `thumb` | `background` | `disabled` | `--xh-border-subtle` | scrollbar 的 thumb 部件 background 覆盖槽。 |
-| `--xh-scrollbar-thumb-bg-hover` | `thumb` | `background` | `hover` | `--xh-fg-scrollbar-thumb-hover` | scrollbar 的 thumb 部件 background 覆盖槽。 |
+| `--xh-scrollbar-thumb-bg-hover` | `thumb` | `background` | `hover` | `--xh-fg-default` | scrollbar 的 thumb 部件 background 覆盖槽。 |
 | `--xh-scrollbar-thumb-radius` | `thumb` | `border-radius` | `default` | `--xh-shape-pill` | scrollbar 的 thumb 部件 border-radius 覆盖槽。 |
-| `--xh-scrollbar-track-bg` | `corner`<br>`track` | `background` | `default` | `--xh-bg-scrollbar-track` | scrollbar 的 corner、track 部件 background 覆盖槽。 |
+| `--xh-scrollbar-track-bg` | `corner`<br>`track` | `background` | `default` | `transparent` | scrollbar 的 corner、track 部件 background 覆盖槽。 |
 <!-- xh-component-tokens:end -->
 
 ### 动效
@@ -69965,8 +69562,10 @@ const teams = [
 
 ```vue
 <script setup lang="ts">
+import { PlusIcon } from "@xihan-ui/icons";
 import {
   XhButton,
+  XhIcon,
   XhSelectContent,
   XhSelectControl,
   XhSelectFooter,
@@ -70017,7 +69616,10 @@ function addOne() {
         </XhSelectList>
         <!-- 按钮放这里才不违反 listbox 的子节点约束；条目多到要滚时它也贴在下沿不动 -->
         <XhSelectFooter>
-          <XhButton variant="ghost" size="sm" @click="addOne">＋ 新建</XhButton>
+          <XhButton variant="ghost" size="sm" @click="addOne">
+            <XhIcon :icon="PlusIcon" />
+            新建
+          </XhButton>
         </XhSelectFooter>
       </XhSelectContent>
     </XhSelectPositioner>
@@ -70057,7 +69659,7 @@ function addOne() {
         <!-- 按钮放这里才不违反 listbox 的子节点约束 -->
         <div data-xh-part="footer">
           <xh-button variant="ghost" size="sm">
-            <button data-xh-part="root" id="select-footer-add">＋ 新建</button>
+            <button data-xh-part="root" id="select-footer-add"><svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5V19"/><path d="M5 12H19"/></svg>新建</button>
           </xh-button>
         </div>
       </div>
@@ -76359,7 +75961,9 @@ const steps = [
 
 ```vue
 <script setup lang="ts">
+import { XIcon } from "@xihan-ui/icons";
 import {
+  XhIcon,
   XhStepsContent,
   XhStepsDescription,
   XhStepsIndicator,
@@ -76386,7 +75990,8 @@ const errorAt = 1;
       <XhStepsItem v-for="(s, i) in steps" :key="s.title" :value="i">
         <XhStepsTrigger>
           <XhStepsIndicator>
-            {{ i === errorAt ? "!" : value > i ? "" : i + 1 }}
+            <XhIcon v-if="i === errorAt" :icon="XIcon" />
+            <template v-else>{{ value > i ? "" : i + 1 }}</template>
           </XhStepsIndicator>
           <XhStepsTitle>{{ s.title }}</XhStepsTitle>
           <XhStepsDescription>{{ s.description }}</XhStepsDescription>
@@ -76417,7 +76022,9 @@ const errorAt = 1;
       </div>
       <div data-xh-part="item" value="1">
         <button data-xh-part="trigger">
-          <span data-xh-part="indicator">!</span>
+          <span data-xh-part="indicator">
+            <svg aria-hidden="true" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M18 6 6 18M6 6l12 12"/></svg>
+          </span>
           <span data-xh-part="title">资质审核</span>
           <span data-xh-part="description">材料不齐，被打回</span>
         </button>
@@ -76448,9 +76055,9 @@ const errorAt = 1;
   host.statuses = { [errorAt]: "error" };
   host.addEventListener("value-change", (event) => {
     indicators.forEach((indicator, index) => {
-      indicator.textContent = index === errorAt
-        ? "!"
-        : event.detail.value > index ? "" : String(index + 1);
+      if (index !== errorAt) {
+        indicator.textContent = event.detail.value > index ? "" : String(index + 1);
+      }
     });
   });
 </script>
@@ -76472,6 +76079,7 @@ const errorAt = 1;
 
 - 支持水平与垂直布局。
 - 已完成、当前、未完成、错误与警告状态清晰区分。
+- 当前步骤使用实心强调标记，已完成步骤使用柔和强调标记。
 - `linear` 限制用户跳到尚未完成的步骤。
 - 方向键移动焦点，Enter 或空格切换步骤。
 
@@ -76666,39 +76274,46 @@ const errorAt = 1;
 | `--xh-steps-description-font-size` | `description` | `font-size` | `default` | `--xh-_steps-caption-font-size` | steps 的 description 部件 font-size 覆盖槽。 |
 | `--xh-steps-gap` | `root` | `gap` | `default` | `--xh-stack-gap-md` | steps 的 root 部件 gap 覆盖槽。 |
 | `--xh-steps-icon-size` | `root` | `--xh-icon-size` | `default` | `--xh-glyph-size-text` | steps 的 root 部件 --xh-icon-size 覆盖槽。 |
-| `--xh-steps-indicator-bg` | `indicator` | `background` | `default` | `transparent` | steps 的 indicator 部件 background 覆盖槽。 |
-| `--xh-steps-indicator-bg-completed` | `indicator` | `background` | `state=completed` | `--xh-_steps-accent` | steps 的 indicator 部件 background 覆盖槽。 |
-| `--xh-steps-indicator-border` | `indicator` | `border` | `default` | `--xh-border-control` | steps 的 indicator 部件 border 覆盖槽。 |
-| `--xh-steps-indicator-border-completed` | `indicator` | `border-color` | `state=completed` | `--xh-_steps-accent` | steps 的 indicator 部件 border-color 覆盖槽。 |
+| `--xh-steps-indicator-bg` | `indicator` | `background` | `default` | `--xh-bg-subtle` | steps 的 indicator 部件 background 覆盖槽。 |
+| `--xh-steps-indicator-bg-completed` | `indicator` | `background` | `state=completed` | `--xh-_steps-accent-soft` | steps 的 indicator 部件 background 覆盖槽。 |
+| `--xh-steps-indicator-bg-completed-hover` | `indicator`<br>`trigger` | `background` | `disabled`<br>`hover`<br>`not([data-disabled])`<br>`state=completed` | `--xh-_steps-accent-soft-hover` | steps 的 indicator、trigger 部件 background 覆盖槽。 |
+| `--xh-steps-indicator-bg-current` | `indicator` | `background` | `state=current` | `--xh-_steps-accent` | steps 的 indicator 部件 background 覆盖槽。 |
+| `--xh-steps-indicator-bg-disabled` | `indicator`<br>`item` | `background` | `disabled` | `--xh-bg-muted` | steps 的 indicator、item 部件 background 覆盖槽。 |
+| `--xh-steps-indicator-bg-error` | `indicator` | `background` | `state=error` | `--xh-fg-danger` | steps 的 indicator 部件 background 覆盖槽。 |
+| `--xh-steps-indicator-bg-hover` | `indicator`<br>`trigger` | `background` | `disabled`<br>`hover`<br>`not([data-disabled])`<br>`state=incomplete` | `--xh-bg-subtle-hover` | steps 的 indicator、trigger 部件 background 覆盖槽。 |
+| `--xh-steps-indicator-bg-warning` | `indicator` | `background` | `state=warning` | `--xh-fg-warning` | steps 的 indicator 部件 background 覆盖槽。 |
+| `--xh-steps-indicator-border` | `indicator` | `border` | `default` | `transparent` | steps 的 indicator 部件 border 覆盖槽。 |
+| `--xh-steps-indicator-border-completed` | `indicator` | `border-color` | `state=completed` | `--xh-_steps-accent-soft` | steps 的 indicator 部件 border-color 覆盖槽。 |
 | `--xh-steps-indicator-border-current` | `indicator` | `border-color` | `state=current` | `--xh-_steps-accent` | steps 的 indicator 部件 border-color 覆盖槽。 |
 | `--xh-steps-indicator-border-disabled` | `indicator`<br>`item` | `border-color` | `disabled` | `--xh-border-subtle` | steps 的 indicator、item 部件 border-color 覆盖槽。 |
 | `--xh-steps-indicator-border-error` | `indicator` | `border-color` | `state=error` | `--xh-fg-danger` | steps 的 indicator 部件 border-color 覆盖槽。 |
 | `--xh-steps-indicator-border-warning` | `indicator` | `border-color` | `state=warning` | `--xh-fg-warning` | steps 的 indicator 部件 border-color 覆盖槽。 |
 | `--xh-steps-indicator-fg` | `indicator` | `color` | `default` | `--xh-fg-muted` | steps 的 indicator 部件 color 覆盖槽。 |
-| `--xh-steps-indicator-fg-completed` | `indicator` | `color` | `state=completed` | `--xh-_steps-on-accent` | steps 的 indicator 部件 color 覆盖槽。 |
-| `--xh-steps-indicator-fg-current` | `indicator` | `color` | `state=current` | `--xh-_steps-accent-text` | steps 的 indicator 部件 color 覆盖槽。 |
+| `--xh-steps-indicator-fg-completed` | `indicator` | `color` | `state=completed` | `--xh-_steps-accent-text` | steps 的 indicator 部件 color 覆盖槽。 |
+| `--xh-steps-indicator-fg-current` | `indicator` | `color` | `state=current` | `--xh-_steps-on-accent` | steps 的 indicator 部件 color 覆盖槽。 |
 | `--xh-steps-indicator-fg-disabled` | `indicator`<br>`item` | `color` | `disabled` | `--xh-fg-disabled` | steps 的 indicator、item 部件 color 覆盖槽。 |
 | `--xh-steps-indicator-fg-error` | `indicator` | `color` | `state=error` | `--xh-fg-danger` | steps 的 indicator 部件 color 覆盖槽。 |
+| `--xh-steps-indicator-fg-hover` | `indicator`<br>`trigger` | `color` | `disabled`<br>`hover`<br>`not([data-disabled])`<br>`state=incomplete` | `--xh-fg-default` | steps 的 indicator、trigger 部件 color 覆盖槽。 |
 | `--xh-steps-indicator-fg-warning` | `indicator` | `color` | `state=warning` | `--xh-fg-warning` | steps 的 indicator 部件 color 覆盖槽。 |
 | `--xh-steps-indicator-font-size` | `indicator` | `font-size` | `default` | `--xh-_steps-caption-font-size` | steps 的 indicator 部件 font-size 覆盖槽。 |
 | `--xh-steps-indicator-radius` | `indicator` | `border-radius` | `default` | `--xh-shape-pill` | steps 的 indicator 部件 border-radius 覆盖槽。 |
-| `--xh-steps-indicator-shadow` | `indicator` | `box-shadow` | `state=completed` | `--xh-_steps-highlight` | steps 的 indicator 部件 box-shadow 覆盖槽。 |
+| `--xh-steps-indicator-shadow` | `indicator` | `box-shadow` | `state=current` | `--xh-_steps-highlight` | steps 的 indicator 部件 box-shadow 覆盖槽。 |
 | `--xh-steps-indicator-size` | `indicator`<br>`separator` | `block-size`<br>`inline-size`<br>`margin-inline-start` | `default`<br>`orientation=vertical` | `--xh-_steps-indicator-size` | steps 的 indicator、separator 部件 block-size、inline-size、margin-inline-start 覆盖槽。 |
 | `--xh-steps-item-gap` | `item` | `gap` | `default` | `--xh-space-2` | steps 的 item 部件 gap 覆盖槽。 |
-| `--xh-steps-item-min-inline-size` | `item` | `min-inline-size` | `not(:last-child)`<br>`orientation=horizontal` | `--xh-layout-col-min-xs` | steps 的 item 部件 min-inline-size 覆盖槽。 |
-| `--xh-steps-list-gap` | `list` | `gap` | `default` | `--xh-space-2` | steps 的 list 部件 gap 覆盖槽。 |
+| `--xh-steps-item-min-inline-size` | `item` | `min-inline-size` | `not(:last-child)`<br>`orientation=horizontal` | `--xh-space-0` | steps 的 item 部件 min-inline-size 覆盖槽。 |
+| `--xh-steps-list-gap` | `list` | `gap` | `default` | `--xh-space-0` | steps 的 list 部件 gap 覆盖槽。 |
 | `--xh-steps-separator-bg` | `separator` | `background` | `default` | `--xh-border-default` | steps 的 separator 部件 background 覆盖槽。 |
 | `--xh-steps-separator-bg-completed` | `separator` | `background` | `state=completed` | `--xh-_steps-accent` | steps 的 separator 部件 background 覆盖槽。 |
-| `--xh-steps-separator-min-length` | `separator` | `block-size`<br>`min-inline-size` | `default`<br>`orientation=vertical` | `--xh-space-4` | steps 的 separator 部件 block-size、min-inline-size 覆盖槽。 |
+| `--xh-steps-separator-min-length` | `separator` | `block-size`<br>`min-inline-size` | `default`<br>`orientation=vertical` | `--xh-space-4`<br>`--xh-space-7` | steps 的 separator 部件 block-size、min-inline-size 覆盖槽。 |
 | `--xh-steps-separator-radius` | `separator` | `border-radius` | `default` | `--xh-shape-pill` | steps 的 separator 部件 border-radius 覆盖槽。 |
-| `--xh-steps-separator-thickness` | `separator` | `block-size`<br>`inline-size`<br>`margin-inline-start` | `default`<br>`orientation=vertical` | `--xh-stroke-thick` | steps 的 separator 部件 block-size、inline-size、margin-inline-start 覆盖槽。 |
+| `--xh-steps-separator-thickness` | `separator` | `block-size`<br>`inline-size`<br>`margin-inline-start`<br>`min-inline-size` | `default`<br>`orientation=vertical` | `--xh-stroke-thick` | steps 的 separator 部件 block-size、inline-size、margin-inline-start、min-inline-size 覆盖槽。 |
 | `--xh-steps-title-fg` | `title` | `color` | `default` | `--xh-fg-muted` | steps 的 title 部件 color 覆盖槽。 |
-| `--xh-steps-title-fg-active` | `title` | `color` | `is([data-state='current'], [data-state='completed'])`<br>`state=completed`<br>`state=current` | `--xh-fg-default` | steps 的 title 部件 color 覆盖槽。 |
+| `--xh-steps-title-fg-active` | `title` | `color` | `is([data-state='current'], [data-state='completed'])`<br>`state=completed`<br>`state=current` | `--xh-_steps-accent-text` | steps 的 title 部件 color 覆盖槽。 |
 | `--xh-steps-title-fg-error` | `title` | `color` | `state=error` | `--xh-fg-danger` | steps 的 title 部件 color 覆盖槽。 |
 | `--xh-steps-title-fg-warning` | `title` | `color` | `state=warning` | `--xh-fg-warning` | steps 的 title 部件 color 覆盖槽。 |
 | `--xh-steps-title-font-size` | `title` | `font-size` | `default` | `--xh-_steps-title-font-size` | steps 的 title 部件 font-size 覆盖槽。 |
 | `--xh-steps-title-font-weight` | `title` | `font-weight` | `default` | `--xh-text-label-weight` | steps 的 title 部件 font-weight 覆盖槽。 |
-| `--xh-steps-trigger-bg-hover` | `trigger` | `background` | `disabled`<br>`hover`<br>`not([data-disabled])` | `--xh-bg-subtle-hover` | steps 的 trigger 部件 background 覆盖槽。 |
+| `--xh-steps-trigger-bg-hover` | `trigger` | `background` | `disabled`<br>`hover`<br>`not([data-disabled])` | `transparent` | steps 的 trigger 部件 background 覆盖槽。 |
 | `--xh-steps-trigger-gap` | `trigger` | `column-gap` | `default` | `--xh-control-gap-md` | steps 的 trigger 部件 column-gap 覆盖槽。 |
 | `--xh-steps-trigger-p` | `separator`<br>`trigger` | `margin-inline-start`<br>`padding-block`<br>`padding-inline` | `default`<br>`orientation=vertical` | `--xh-control-px-sm`<br>`--xh-space-1` | steps 的 separator、trigger 部件 margin-inline-start、padding-block、padding-inline 覆盖槽。 |
 | `--xh-steps-trigger-radius` | `trigger` | `border-radius` | `default` | `--xh-shape-control` | steps 的 trigger 部件 border-radius 覆盖槽。 |
@@ -78883,7 +78498,7 @@ const selection = ref<string[]>(["p2"]);
       <XhTableBody>
         <XhTableRow v-for="p in plans" :key="p.id" :value="p.id">
           <XhTableCell value="select">
-            <XhTableRowSelectTrigger>●</XhTableRowSelectTrigger>
+            <XhTableRowSelectTrigger />
           </XhTableCell>
           <XhTableCell value="plan">{{ p.plan }}</XhTableCell>
           <XhTableCell value="price">{{ p.price }}</XhTableCell>
@@ -78910,21 +78525,21 @@ const selection = ref<string[]>(["p2"]);
       <div data-xh-part="body">
         <div data-xh-part="row" value="p1">
           <div data-xh-part="cell" value="select">
-            <span data-xh-part="row-select-trigger">●</span>
+            <span data-xh-part="row-select-trigger"></span>
           </div>
           <div data-xh-part="cell" value="plan">入门版</div>
           <div data-xh-part="cell" value="price">¥ 0 / 月</div>
         </div>
         <div data-xh-part="row" value="p2">
           <div data-xh-part="cell" value="select">
-            <span data-xh-part="row-select-trigger">●</span>
+            <span data-xh-part="row-select-trigger"></span>
           </div>
           <div data-xh-part="cell" value="plan">团队版</div>
           <div data-xh-part="cell" value="price">¥ 99 / 月</div>
         </div>
         <div data-xh-part="row" value="p3">
           <div data-xh-part="cell" value="select">
-            <span data-xh-part="row-select-trigger">●</span>
+            <span data-xh-part="row-select-trigger"></span>
           </div>
           <div data-xh-part="cell" value="plan">企业版</div>
           <div data-xh-part="cell" value="price">¥ 399 / 月</div>
@@ -79430,7 +79045,7 @@ const groupStyle = { inlineSize: "10rem", flexGrow: 2 };
 
 ```vue
 <script setup lang="ts">
-import { ChevronDownIcon } from "@xihan-ui/icons";
+import { FilterIcon } from "@xihan-ui/icons";
 import {
   XhIcon,
   XhPopoverContent,
@@ -79494,8 +79109,11 @@ const optionStyle = { display: "flex", alignItems: "center", gap: "6px" };
           <XhTableColumnHeader value="dept">
             部门
             <XhPopoverRoot placement="bottom-start" size="sm">
-              <XhPopoverTrigger aria-label="按部门过滤">
-                <XhIcon :icon="ChevronDownIcon" />{{ deptFilter.length ? "●" : "" }}
+              <XhPopoverTrigger
+                aria-label="按部门过滤"
+                :style="deptFilter.length ? { color: 'var(--xh-fg-brand)' } : undefined"
+              >
+                <XhIcon :icon="FilterIcon" />
               </XhPopoverTrigger>
               <XhPopoverPositioner>
                 <XhPopoverContent>
@@ -79514,8 +79132,11 @@ const optionStyle = { display: "flex", alignItems: "center", gap: "6px" };
           <XhTableColumnHeader value="city">
             城市
             <XhPopoverRoot placement="bottom-start" size="sm">
-              <XhPopoverTrigger aria-label="按城市过滤">
-                <XhIcon :icon="ChevronDownIcon" />{{ cityFilter.length ? "●" : "" }}
+              <XhPopoverTrigger
+                aria-label="按城市过滤"
+                :style="cityFilter.length ? { color: 'var(--xh-fg-brand)' } : undefined"
+              >
+                <XhIcon :icon="FilterIcon" />
               </XhPopoverTrigger>
               <XhPopoverPositioner>
                 <XhPopoverContent>
@@ -79562,7 +79183,7 @@ const optionStyle = { display: "flex", alignItems: "center", gap: "6px" };
           <div data-xh-part="column-header" value="dept">
             部门
             <xh-popover placement="bottom-start" size="sm">
-              <button data-xh-part="trigger" aria-label="按部门过滤" data-mark><svg viewBox="0 0 24 24" width="1em" height="1em" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 9L12 15L18 9"/></svg></button>
+              <button data-xh-part="trigger" aria-label="按部门过滤" data-mark><svg viewBox="0 0 24 24" width="1em" height="1em" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3.5 5h17L14 12.5V19l-4 2v-8.5L3.5 5Z"/></svg></button>
               <div data-xh-part="positioner">
                 <div data-xh-part="content">
                   <h2 data-xh-part="title">按部门过滤</h2>
@@ -79592,7 +79213,7 @@ const optionStyle = { display: "flex", alignItems: "center", gap: "6px" };
           <div data-xh-part="column-header" value="city">
             城市
             <xh-popover placement="bottom-start" size="sm">
-              <button data-xh-part="trigger" aria-label="按城市过滤" data-mark></button>
+              <button data-xh-part="trigger" aria-label="按城市过滤" data-mark><svg viewBox="0 0 24 24" width="1em" height="1em" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3.5 5h17L14 12.5V19l-4 2v-8.5L3.5 5Z"/></svg></button>
               <div data-xh-part="positioner">
                 <div data-xh-part="content">
                   <h2 data-xh-part="title">按城市过滤</h2>
@@ -79688,7 +79309,8 @@ const optionStyle = { display: "flex", alignItems: "center", gap: "6px" };
 
     for (const mark of stage.querySelectorAll("[data-mark]")) {
       const field = mark.closest('[data-xh-part="column-header"]').getAttribute("value");
-      mark.innerHTML = `<svg viewBox="0 0 24 24" width="1em" height="1em" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 9L12 15L18 9"/></svg>${picked(field).length ? "●" : ""}`;
+      mark.innerHTML = `<svg viewBox="0 0 24 24" width="1em" height="1em" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3.5 5h17L14 12.5V19l-4 2v-8.5L3.5 5Z"/></svg>`;
+      mark.style.color = picked(field).length ? "var(--xh-fg-brand)" : "";
     }
 
     readout.textContent = `命中 ${visible.length} / ${members.length} 人 · 部门：${
@@ -82920,6 +82542,7 @@ import {
 | `--xh-tabs-trigger-border-active` | `trigger` | `border-color` | `state=active` | `--xh-_tabs-trigger-border-active` | tabs 的 trigger 部件 border-color 覆盖槽。 |
 | `--xh-tabs-trigger-fg` | `trigger` | `color` | `default` | `--xh-fg-muted` | tabs 的 trigger 部件 color 覆盖槽。 |
 | `--xh-tabs-trigger-fg-active` | `trigger` | `color` | `state=active` | `--xh-_tabs-accent-text` | tabs 的 trigger 部件 color 覆盖槽。 |
+| `--xh-tabs-trigger-fg-hover` | `root`<br>`trigger` | `color` | `disabled`<br>`hover`<br>`not([data-disabled])`<br>`variant=line` | `--xh-_tabs-accent-text` | tabs 的 root、trigger 部件 color 覆盖槽。 |
 | `--xh-tabs-trigger-font-size` | `trigger` | `font-size` | `default` | `--xh-_tabs-trigger-font-size` | tabs 的 trigger 部件 font-size 覆盖槽。 |
 | `--xh-tabs-trigger-font-weight` | `trigger` | `font-weight` | `default` | `--xh-text-label-weight` | tabs 的 trigger 部件 font-weight 覆盖槽。 |
 | `--xh-tabs-trigger-gap` | `trigger` | `gap` | `default` | `--xh-control-gap-md` | tabs 的 trigger 部件 gap 覆盖槽。 |
@@ -85640,8 +85263,10 @@ const tags = ref<string[]>(["文档"]);
 
 ```vue
 <script setup lang="ts">
+import { PlusIcon } from "@xihan-ui/icons";
 import {
   XhButton,
+  XhIcon,
   XhTagsInputControl,
   XhTagsInputInput,
   XhTagsInputItem,
@@ -85699,7 +85324,8 @@ function options(text: string): string[] {
         :disabled="atMax"
         @click="start"
       >
-        ＋ 添加
+        <XhIcon :icon="PlusIcon" />
+        添加
       </XhButton>
     </XhTagsInputControl>
 
@@ -85762,7 +85388,7 @@ function options(text: string): string[] {
       <!-- 输入框常驻文档，平时用内联 display 收起 -->
       <input data-xh-part="input" style="display: none" />
       <xh-button id="tags-input-custom-start" size="sm" variant="outline">
-        <button data-xh-part="root">＋ 添加</button>
+        <button data-xh-part="root"><svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5V19"/><path d="M5 12H19"/></svg>添加</button>
       </xh-button>
     </div>
 
@@ -94421,14 +94047,14 @@ import { XhIcon, XhToggle } from "@xihan-ui/vue";
 ```html
 <div style="display: grid; gap: 16px">
   <div style="display: flex; align-items: center; gap: 12px">
-    <xh-toggle size="sm"><button data-xh-part="root">♡ 小</button></xh-toggle>
-    <xh-toggle><button data-xh-part="root">♡ 中</button></xh-toggle>
-    <xh-toggle size="lg"><button data-xh-part="root">♡ 大</button></xh-toggle>
+    <xh-toggle size="sm"><button data-xh-part="root"><svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20.5C10.5 18.5 3 13.5 3 8.5C3 5.46 5.46 3 8.5 3C10.6 3 11.4 4.2 12 6.2C12.6 4.2 13.4 3 15.5 3C18.54 3 21 5.46 21 8.5C21 13.5 13.5 18.5 12 20.5Z"/></svg>小</button></xh-toggle>
+    <xh-toggle><button data-xh-part="root"><svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20.5C10.5 18.5 3 13.5 3 8.5C3 5.46 5.46 3 8.5 3C10.6 3 11.4 4.2 12 6.2C12.6 4.2 13.4 3 15.5 3C18.54 3 21 5.46 21 8.5C21 13.5 13.5 18.5 12 20.5Z"/></svg>中</button></xh-toggle>
+    <xh-toggle size="lg"><button data-xh-part="root"><svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20.5C10.5 18.5 3 13.5 3 8.5C3 5.46 5.46 3 8.5 3C10.6 3 11.4 4.2 12 6.2C12.6 4.2 13.4 3 15.5 3C18.54 3 21 5.46 21 8.5C21 13.5 13.5 18.5 12 20.5Z"/></svg>大</button></xh-toggle>
   </div>
   <div style="display: flex; align-items: center; gap: 12px">
-    <xh-toggle icon-only size="sm"><button data-xh-part="root" aria-label="小号点赞">♡</button></xh-toggle>
-    <xh-toggle icon-only><button data-xh-part="root" aria-label="中号点赞">♡</button></xh-toggle>
-    <xh-toggle icon-only size="lg"><button data-xh-part="root" aria-label="大号点赞">♡</button></xh-toggle>
+    <xh-toggle icon-only size="sm"><button data-xh-part="root" aria-label="小号点赞"><svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20.5C10.5 18.5 3 13.5 3 8.5C3 5.46 5.46 3 8.5 3C10.6 3 11.4 4.2 12 6.2C12.6 4.2 13.4 3 15.5 3C18.54 3 21 5.46 21 8.5C21 13.5 13.5 18.5 12 20.5Z"/></svg></button></xh-toggle>
+    <xh-toggle icon-only><button data-xh-part="root" aria-label="中号点赞"><svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20.5C10.5 18.5 3 13.5 3 8.5C3 5.46 5.46 3 8.5 3C10.6 3 11.4 4.2 12 6.2C12.6 4.2 13.4 3 15.5 3C18.54 3 21 5.46 21 8.5C21 13.5 13.5 18.5 12 20.5Z"/></svg></button></xh-toggle>
+    <xh-toggle icon-only size="lg"><button data-xh-part="root" aria-label="大号点赞"><svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20.5C10.5 18.5 3 13.5 3 8.5C3 5.46 5.46 3 8.5 3C10.6 3 11.4 4.2 12 6.2C12.6 4.2 13.4 3 15.5 3C18.54 3 21 5.46 21 8.5C21 13.5 13.5 18.5 12 20.5Z"/></svg></button></xh-toggle>
   </div>
 </div>
 ```
@@ -94451,11 +94077,11 @@ import { XhIcon, XhToggle } from "@xihan-ui/vue";
 
 ```html
 <xh-toggle disabled>
-  <button data-xh-part="root">♡ 点赞</button>
+  <button data-xh-part="root"><svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20.5C10.5 18.5 3 13.5 3 8.5C3 5.46 5.46 3 8.5 3C10.6 3 11.4 4.2 12 6.2C12.6 4.2 13.4 3 15.5 3C18.54 3 21 5.46 21 8.5C21 13.5 13.5 18.5 12 20.5Z"/></svg>点赞</button>
 </xh-toggle>
 
 <xh-toggle disabled default-pressed>
-  <button data-xh-part="root">♡ 点赞</button>
+  <button data-xh-part="root"><svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20.5C10.5 18.5 3 13.5 3 8.5C3 5.46 5.46 3 8.5 3C10.6 3 11.4 4.2 12 6.2C12.6 4.2 13.4 3 15.5 3C18.54 3 21 5.46 21 8.5C21 13.5 13.5 18.5 12 20.5Z"/></svg>点赞</button>
 </xh-toggle>
 ```
 
@@ -94482,7 +94108,7 @@ const pressed = ref(false);
 
 ```html
 <xh-toggle id="toggle-controlled" pressed="false">
-  <button data-xh-part="root">♡ <span>点赞</span></button>
+  <button data-xh-part="root"><svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20.5C10.5 18.5 3 13.5 3 8.5C3 5.46 5.46 3 8.5 3C10.6 3 11.4 4.2 12 6.2C12.6 4.2 13.4 3 15.5 3C18.54 3 21 5.46 21 8.5C21 13.5 13.5 18.5 12 20.5Z"/></svg><span>点赞</span></button>
 </xh-toggle>
 
 <script type="module">
@@ -95632,6 +95258,7 @@ function toggle(value: string) {
         </XhToolbarItem>
       </template>
     </XhToolbarGroup>
+    <XhToolbarSeparator />
     <XhToolbarGroup>
       <XhToolbarItem value="copy" type="button" aria-label="复制">
         <XhIcon :icon="CopyIcon" />
@@ -95661,6 +95288,7 @@ function toggle(value: string) {
         <svg aria-hidden="true" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 4V11A6 6 0 0 0 18 11V4"/><line x1="4" y1="21" x2="20" y2="21"/></svg>
       </button>
     </div>
+    <div data-xh-part="separator"></div>
     <div data-xh-part="group">
       <button data-xh-part="item" type="button" value="copy" aria-label="复制">
         <svg aria-hidden="true" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
@@ -95713,6 +95341,7 @@ import {
       <XhToolbarSeparator />
       <XhToolbarItem value="paste" type="button">粘贴</XhToolbarItem>
     </XhToolbarGroup>
+    <XhToolbarSeparator />
     <XhToolbarGroup>
       <XhToolbarItem value="undo" type="button">撤销</XhToolbarItem>
       <XhToolbarSeparator />
@@ -95732,6 +95361,7 @@ import {
       <div data-xh-part="separator"></div>
       <button data-xh-part="item" type="button" value="paste">粘贴</button>
     </div>
+    <div data-xh-part="separator"></div>
     <div data-xh-part="group">
       <button data-xh-part="item" type="button" value="undo">撤销</button>
       <div data-xh-part="separator"></div>
@@ -95842,9 +95472,9 @@ import {
 ### 特性
 
 - 默认 `plain` 变体不绘制工具条外框。
-- `surface` 变体提供带内距、描边和背景的附着式工具面。
-- `group` 使用浅色胶囊表面收纳相关操作。
-- 默认条目使用无描边工具按钮样式，`aria-pressed` 表示选中状态。
+- `surface` 变体提供带内距、背景和阴影的附着式工具面。
+- `group` 将相关操作连接成连续分段，并以低对比度分隔线区分。
+- 独立条目使用无描边样式，组内条目使用中性操作面；`aria-pressed` 表示选中状态。
 - 支持水平、垂直、分组、分隔线与整体禁用。
 - 方向键在条目间移动，禁用项会被跳过。
 
@@ -95981,34 +95611,32 @@ import {
 | `--xh-toolbar-border` | `root` | `border` | `default` | `--xh-_toolbar-root-border` | toolbar 的 root 部件 border 覆盖槽。 |
 | `--xh-toolbar-fg` | `root` | `color` | `default` | `--xh-fg-default` | toolbar 的 root 部件 color 覆盖槽。 |
 | `--xh-toolbar-gap` | `root` | `gap` | `default` | `--xh-_toolbar-gap` | toolbar 的 root 部件 gap 覆盖槽。 |
-| `--xh-toolbar-group-bg` | `group` | `background` | `default` | `--xh-bg-subtle` | toolbar 的 group 部件 background 覆盖槽。 |
 | `--xh-toolbar-group-gap` | `group` | `gap` | `default` | `--xh-space-0` | toolbar 的 group 部件 gap 覆盖槽。 |
-| `--xh-toolbar-group-p` | `group` | `padding` | `default` | `--xh-space-0_5` | toolbar 的 group 部件 padding 覆盖槽。 |
-| `--xh-toolbar-group-radius` | `group` | `border-radius` | `default`<br>`orientation=vertical` | `--xh-shape-pill`<br>`--xh-shape-surface` | toolbar 的 group 部件 border-radius 覆盖槽。 |
-| `--xh-toolbar-group-separator-gap` | `group`<br>`separator` | `margin-block`<br>`margin-inline` | `orientation=horizontal`<br>`orientation=vertical` | `--xh-space-0_5` | toolbar 的 group、separator 部件 margin-block、margin-inline 覆盖槽。 |
 | `--xh-toolbar-icon-size` | `root` | `--xh-icon-size` | `default`<br>`size=lg`<br>`size=sm` | `--xh-glyph-size-lg`<br>`--xh-glyph-size-md`<br>`--xh-glyph-size-sm` | toolbar 的 root 部件 --xh-icon-size 覆盖槽。 |
-| `--xh-toolbar-item-bg` | `item` | `background` | `default` | `transparent` | toolbar 的 item 部件 background 覆盖槽。 |
-| `--xh-toolbar-item-bg-active` | `item` | `background` | `active`<br>`disabled`<br>`not([data-disabled])` | `--xh-bg-subtle-active` | toolbar 的 item 部件 background 覆盖槽。 |
-| `--xh-toolbar-item-bg-disabled` | `item` | `background` | `disabled` | `transparent` | toolbar 的 item 部件 background 覆盖槽。 |
-| `--xh-toolbar-item-bg-hover` | `item` | `background` | `disabled`<br>`hover`<br>`not([data-disabled])` | `--xh-bg-subtle-hover` | toolbar 的 item 部件 background 覆盖槽。 |
-| `--xh-toolbar-item-bg-pressed` | `item` | `background` | `default` | `--xh-bg-brand-subtle` | toolbar 的 item 部件 background 覆盖槽。 |
-| `--xh-toolbar-item-bg-pressed-hover` | `item` | `background` | `disabled`<br>`hover`<br>`not([data-disabled])` | `--xh-bg-brand-subtle-hover` | toolbar 的 item 部件 background 覆盖槽。 |
+| `--xh-toolbar-item-bg` | `group`<br>`item` | `background` | `default` | `--xh-bg-subtle`<br>`transparent` | toolbar 的 group、item 部件 background 覆盖槽。 |
+| `--xh-toolbar-item-bg-active` | `group`<br>`item` | `background` | `active`<br>`disabled`<br>`not([data-disabled])` | `--xh-bg-subtle-active` | toolbar 的 group、item 部件 background 覆盖槽。 |
+| `--xh-toolbar-item-bg-disabled` | `group`<br>`item` | `background` | `disabled` | `--xh-bg-subtle`<br>`transparent` | toolbar 的 group、item 部件 background 覆盖槽。 |
+| `--xh-toolbar-item-bg-hover` | `group`<br>`item` | `background` | `disabled`<br>`hover`<br>`not([data-disabled])` | `--xh-bg-subtle-hover` | toolbar 的 group、item 部件 background 覆盖槽。 |
+| `--xh-toolbar-item-bg-pressed` | `group`<br>`item` | `background` | `default` | `--xh-bg-brand-subtle` | toolbar 的 group、item 部件 background 覆盖槽。 |
+| `--xh-toolbar-item-bg-pressed-hover` | `group`<br>`item` | `background` | `disabled`<br>`hover`<br>`not([data-disabled])` | `--xh-bg-brand-subtle-hover` | toolbar 的 group、item 部件 background 覆盖槽。 |
 | `--xh-toolbar-item-fg` | `item` | `color` | `default` | `inherit` | toolbar 的 item 部件 color 覆盖槽。 |
-| `--xh-toolbar-item-fg-pressed` | `item` | `color` | `default` | `--xh-fg-brand-strong` | toolbar 的 item 部件 color 覆盖槽。 |
+| `--xh-toolbar-item-fg-pressed` | `group`<br>`item` | `color` | `default` | `--xh-fg-brand-strong` | toolbar 的 group、item 部件 color 覆盖槽。 |
 | `--xh-toolbar-item-font-size` | `item` | `font-size` | `default` | `--xh-_toolbar-item-font-size` | toolbar 的 item 部件 font-size 覆盖槽。 |
 | `--xh-toolbar-item-font-weight` | `item` | `font-weight` | `default` | `--xh-text-label-weight` | toolbar 的 item 部件 font-weight 覆盖槽。 |
 | `--xh-toolbar-item-gap` | `item` | `gap` | `default` | `--xh-control-gap-sm` | toolbar 的 item 部件 gap 覆盖槽。 |
 | `--xh-toolbar-item-h` | `item` | `min-block-size` | `default` | `--xh-_toolbar-item-h` | toolbar 的 item 部件 min-block-size 覆盖槽。 |
 | `--xh-toolbar-item-px` | `item` | `padding-inline` | `default` | `--xh-_toolbar-item-px` | toolbar 的 item 部件 padding-inline 覆盖槽。 |
-| `--xh-toolbar-item-radius` | `item` | `border-radius` | `default` | `--xh-shape-control` | toolbar 的 item 部件 border-radius 覆盖槽。 |
+| `--xh-toolbar-item-radius` | `group`<br>`item` | `border-end-end-radius`<br>`border-end-start-radius`<br>`border-radius`<br>`border-start-end-radius`<br>`border-start-start-radius` | `default`<br>`first-of-type`<br>`last-of-type`<br>`orientation=horizontal`<br>`orientation=vertical` | `--xh-shape-control`<br>`--xh-shape-pill` | toolbar 的 group、item 部件 border-end-end-radius、border-end-start-radius、border-radius、border-start-end-radius、border-start-start-radius 覆盖槽。 |
 | `--xh-toolbar-px` | `root` | `padding-inline` | `default` | `--xh-_toolbar-root-p` | toolbar 的 root 部件 padding-inline 覆盖槽。 |
 | `--xh-toolbar-py` | `root` | `padding-block` | `default` | `--xh-_toolbar-root-p` | toolbar 的 root 部件 padding-block 覆盖槽。 |
-| `--xh-toolbar-radius` | `root` | `border-radius` | `default` | `--xh-shape-surface` | toolbar 的 root 部件 border-radius 覆盖槽。 |
-| `--xh-toolbar-separator-color` | `separator` | `background` | `default` | `--xh-border-default` | toolbar 的 separator 部件 background 覆盖槽。 |
-| `--xh-toolbar-separator-gap` | `separator` | `margin-block`<br>`margin-inline` | `orientation=horizontal`<br>`orientation=vertical` | `--xh-space-1` | toolbar 的 separator 部件 margin-block、margin-inline 覆盖槽。 |
-| `--xh-toolbar-separator-inset` | `separator` | `margin-block`<br>`margin-inline` | `orientation=horizontal`<br>`orientation=vertical` | `--xh-space-1` | toolbar 的 separator 部件 margin-block、margin-inline 覆盖槽。 |
+| `--xh-toolbar-radius` | `root` | `border-radius` | `default`<br>`variant=surface` | `--xh-shape-pill`<br>`--xh-shape-surface` | toolbar 的 root 部件 border-radius 覆盖槽。 |
+| `--xh-toolbar-separator-color` | `group`<br>`separator` | `background` | `default` | `--xh-border-default`<br>`--xh-fg-default` | toolbar 的 group、separator 部件 background 覆盖槽。 |
+| `--xh-toolbar-separator-gap` | `separator` | `margin-block`<br>`margin-inline` | `orientation=horizontal`<br>`orientation=vertical` | `--xh-space-0` | toolbar 的 separator 部件 margin-block、margin-inline 覆盖槽。 |
+| `--xh-toolbar-separator-inset` | `separator` | `margin-block`<br>`margin-inline` | `orientation=horizontal`<br>`orientation=vertical` | `--xh-space-0` | toolbar 的 separator 部件 margin-block、margin-inline 覆盖槽。 |
+| `--xh-toolbar-separator-opacity` | `group`<br>`separator` | `opacity` | `default` | `--xh-control-separator-opacity` | toolbar 的 group、separator 部件 opacity 覆盖槽。 |
 | `--xh-toolbar-separator-radius` | `separator` | `border-radius` | `default` | `--xh-shape-pill` | toolbar 的 separator 部件 border-radius 覆盖槽。 |
-| `--xh-toolbar-separator-thickness` | `separator` | `block-size`<br>`inline-size` | `orientation=horizontal`<br>`orientation=vertical` | `--xh-stroke-thin` | toolbar 的 separator 部件 block-size、inline-size 覆盖槽。 |
+| `--xh-toolbar-separator-thickness` | `group`<br>`separator` | `block-size`<br>`inline-size`<br>`margin-block-start`<br>`margin-inline-start` | `orientation=horizontal`<br>`orientation=vertical` | `--xh-stroke-thin` | toolbar 的 group、separator 部件 block-size、inline-size、margin-block-start、margin-inline-start 覆盖槽。 |
+| `--xh-toolbar-shadow` | `root` | `box-shadow` | `variant=surface` | `--xh-elevation-raised` | toolbar 的 root 部件 box-shadow 覆盖槽。 |
 <!-- xh-component-tokens:end -->
 
 ### 动效
@@ -97419,6 +97047,7 @@ const translations = {
 ### 特性
 
 - 聚光灯突出目标，`spotlightPadding` 控制留白。
+- 高亮框同步目标节点的实际圆角，直角与圆角目标保持各自轮廓。
 - `autoScroll` 自动将目标滚动到可见区域。
 - 无目标步骤在视口中居中，适合开场与结束。
 - `showBackdrop=false` 关闭背景暗幕，但保留目标高亮环。
@@ -97668,7 +97297,7 @@ const translations = {
 | `--xh-tour-shadow` | `content` | `box-shadow` | `default` | `--xh-elevation-sheet` | tour 的 content 部件 box-shadow 覆盖槽。 |
 | `--xh-tour-skip-trigger-px` | `next-trigger`<br>`prev-trigger`<br>`skip-trigger` | `padding-inline` | `default` | `--xh-control-px-md` | tour 的 next-trigger、prev-trigger、skip-trigger 部件 padding-inline 覆盖槽。 |
 | `--xh-tour-spotlight-layer` | `spotlight` | `z-index` | `default` | `--xh-_layer` | tour 的 spotlight 部件 z-index 覆盖槽。 |
-| `--xh-tour-spotlight-radius` | `spotlight` | `border-radius` | `default` | `--xh-shape-surface` | tour 的 spotlight 部件 border-radius 覆盖槽。 |
+| `--xh-tour-spotlight-radius` | `spotlight` | `border-radius` | `default` | `--xh-_tour-spotlight-radius` | tour 的 spotlight 部件 border-radius 覆盖槽。 |
 | `--xh-tour-spotlight-ring` | `spotlight` | `box-shadow` | `default` | `--xh-ring-focus` | tour 的 spotlight 部件 box-shadow 覆盖槽。 |
 | `--xh-tour-spotlight-shroud` | `spotlight` | `box-shadow` | `dimmed` | `--xh-bg-overlay` | tour 的 spotlight 部件 box-shadow 覆盖槽。 |
 | `--xh-tour-title-fg` | `title` | `color` | `default` | `--xh-fg-default` | tour 的 title 部件 color 覆盖槽。 |
@@ -97678,7 +97307,7 @@ const translations = {
 
 ### 动效
 
-关键帧 `xh-fade-in` · `xh-fade-out` · `xh-overlay-pop-in` · `xh-pop-out` · `xh-tour-spotlight-in` · `xh-tour-spotlight-out` 随皮肤自带，不引用别处文件里的名字；`background` · `background-color` · `block-size` · `color` · `inline-size` · `inset-block-start` · `inset-inline-start` · `scale` 走 `transition` 过渡。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
+关键帧 `xh-fade-in` · `xh-fade-out` · `xh-overlay-pop-in` · `xh-pop-out` · `xh-tour-spotlight-in` · `xh-tour-spotlight-out` 随皮肤自带，不引用别处文件里的名字；`background` · `background-color` · `block-size` · `border-radius` · `color` · `inline-size` · `inset-block-start` · `inset-inline-start` · `scale` 走 `transition` 过渡。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
 
 皮肤之外还有一段：退场由适配器的退场闸门把关，动画播完才真收起。
 
@@ -105113,7 +104742,9 @@ function onExpandedValueChange(details: { value: string[] }): void {
 
 ```vue
 <script setup lang="ts">
+import { FileIcon, FolderIcon } from "@xihan-ui/icons";
 import {
+  XhIcon,
   XhTreeBranch,
   XhTreeBranchContent,
   XhTreeBranchControl,
@@ -105157,14 +104788,14 @@ function rename(label: string): void {
       <XhTreeTree>
         <XhTreeBranch v-for="dir in collection" :key="dir.value" :value="dir.value">
           <XhTreeBranchControl>
-            <span aria-hidden="true">📁</span>
+            <XhIcon :icon="FolderIcon" />
             <XhTreeBranchText>{{ dir.label }}</XhTreeBranchText>
             <!-- 指示器不带点击语义，展开态转 90° 全靠皮肤读 data-state -->
             <XhTreeBranchIndicator />
           </XhTreeBranchControl>
           <XhTreeBranchContent>
             <XhTreeItem v-for="file in dir.children" :key="file.value" :value="file.value">
-              <span aria-hidden="true">📄</span>
+              <XhIcon :icon="FileIcon" />
               <XhTreeItemText>{{ file.label }}</XhTreeItemText>
               <!-- 掐断冒泡，否则点按钮连带把这一行也选上 -->
               <button type="button" @click.stop="rename(file.label)">重命名</button>
@@ -105186,19 +104817,19 @@ function rename(label: string): void {
       <div data-xh-part="tree">
         <div data-xh-part="branch" value="src">
           <div data-xh-part="branch-control">
-            <span aria-hidden="true">📁</span>
+            <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="inline-size: var(--xh-icon-size); block-size: var(--xh-icon-size)"><path d="M21.5 18.5a2 2 0 0 1-2 2h-15a2 2 0 0 1-2-2v-13a2 2 0 0 1 2-2h4.5l2 3h8.5a2 2 0 0 1 2 2Z"/></svg>
             <span data-xh-part="branch-text">src</span>
             <!-- 指示器不带点击语义，展开态转 90° 全靠皮肤读 data-state -->
             <span data-xh-part="branch-indicator"></span>
           </div>
           <div data-xh-part="branch-content">
             <div data-xh-part="item" value="index">
-              <span aria-hidden="true">📄</span>
+              <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="inline-size: var(--xh-icon-size); block-size: var(--xh-icon-size)"><path d="M14 2.5H6.5a2 2 0 0 0-2 2v15a2 2 0 0 0 2 2h11a2 2 0 0 0 2-2V8Z"/><path d="M14 2.5V6a2 2 0 0 0 2 2h3.5"/></svg>
               <span data-xh-part="item-text">index.ts</span>
               <button type="button" data-rename="index.ts">重命名</button>
             </div>
             <div data-xh-part="item" value="app">
-              <span aria-hidden="true">📄</span>
+              <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="inline-size: var(--xh-icon-size); block-size: var(--xh-icon-size)"><path d="M14 2.5H6.5a2 2 0 0 0-2 2v15a2 2 0 0 0 2 2h11a2 2 0 0 0 2-2V8Z"/><path d="M14 2.5V6a2 2 0 0 0 2 2h3.5"/></svg>
               <span data-xh-part="item-text">app.vue</span>
               <button type="button" data-rename="app.vue">重命名</button>
             </div>
@@ -105207,13 +104838,13 @@ function rename(label: string): void {
 
         <div data-xh-part="branch" value="docs">
           <div data-xh-part="branch-control">
-            <span aria-hidden="true">📁</span>
+            <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="inline-size: var(--xh-icon-size); block-size: var(--xh-icon-size)"><path d="M21.5 18.5a2 2 0 0 1-2 2h-15a2 2 0 0 1-2-2v-13a2 2 0 0 1 2-2h4.5l2 3h8.5a2 2 0 0 1 2 2Z"/></svg>
             <span data-xh-part="branch-text">docs</span>
             <span data-xh-part="branch-indicator"></span>
           </div>
           <div data-xh-part="branch-content">
             <div data-xh-part="item" value="guide">
-              <span aria-hidden="true">📄</span>
+              <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="inline-size: var(--xh-icon-size); block-size: var(--xh-icon-size)"><path d="M14 2.5H6.5a2 2 0 0 0-2 2v15a2 2 0 0 0 2 2h11a2 2 0 0 0 2-2V8Z"/><path d="M14 2.5V6a2 2 0 0 0 2 2h3.5"/></svg>
               <span data-xh-part="item-text">guide.md</span>
               <button type="button" data-rename="guide.md">重命名</button>
             </div>
@@ -105600,7 +105231,9 @@ const selected = ref<string[]>(["hz"]);
 
 ```vue
 <script setup lang="ts">
+import { FileIcon } from "@xihan-ui/icons";
 import {
+  XhIcon,
   XhTreeBranch,
   XhTreeBranchContent,
   XhTreeBranchControl,
@@ -105719,14 +105352,14 @@ function onNodeMove(move: Move): void {
             </XhTreeBranchControl>
             <XhTreeBranchContent>
               <XhTreeItem v-for="file in entry.children" :key="file.value" :value="file.value">
-                <span aria-hidden="true">📄</span>
+                <XhIcon :icon="FileIcon" />
                 <XhTreeItemText>{{ file.label }}</XhTreeItemText>
               </XhTreeItem>
             </XhTreeBranchContent>
           </XhTreeBranch>
           <!-- 文件退到根层就不在任何目录里了，那一层直接是它自己 -->
           <XhTreeItem v-else :value="entry.value">
-            <span aria-hidden="true">📄</span>
+            <XhIcon :icon="FileIcon" />
             <XhTreeItemText>{{ entry.label }}</XhTreeItemText>
           </XhTreeItem>
         </template>
@@ -105752,15 +105385,15 @@ function onNodeMove(move: Move): void {
         </div>
         <div data-xh-part="branch-content">
           <div data-xh-part="item" value="f1">
-            <span aria-hidden="true">📄</span>
+            <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="inline-size: var(--xh-icon-size); block-size: var(--xh-icon-size)"><path d="M14 2.5H6.5a2 2 0 0 0-2 2v15a2 2 0 0 0 2 2h11a2 2 0 0 0 2-2V8Z"/><path d="M14 2.5V6a2 2 0 0 0 2 2h3.5"/></svg>
             <span data-xh-part="item-text">报价单.pdf</span>
           </div>
           <div data-xh-part="item" value="f2">
-            <span aria-hidden="true">📄</span>
+            <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="inline-size: var(--xh-icon-size); block-size: var(--xh-icon-size)"><path d="M14 2.5H6.5a2 2 0 0 0-2 2v15a2 2 0 0 0 2 2h11a2 2 0 0 0 2-2V8Z"/><path d="M14 2.5V6a2 2 0 0 0 2 2h3.5"/></svg>
             <span data-xh-part="item-text">周报.md</span>
           </div>
           <div data-xh-part="item" value="f3">
-            <span aria-hidden="true">📄</span>
+            <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="inline-size: var(--xh-icon-size); block-size: var(--xh-icon-size)"><path d="M14 2.5H6.5a2 2 0 0 0-2 2v15a2 2 0 0 0 2 2h11a2 2 0 0 0 2-2V8Z"/><path d="M14 2.5V6a2 2 0 0 0 2 2h3.5"/></svg>
             <span data-xh-part="item-text">会议纪要.md</span>
           </div>
         </div>
@@ -105772,7 +105405,7 @@ function onNodeMove(move: Move): void {
         </div>
         <div data-xh-part="branch-content">
           <div data-xh-part="item" value="f4">
-            <span aria-hidden="true">📄</span>
+            <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="inline-size: var(--xh-icon-size); block-size: var(--xh-icon-size)"><path d="M14 2.5H6.5a2 2 0 0 0-2 2v15a2 2 0 0 0 2 2h11a2 2 0 0 0 2-2V8Z"/><path d="M14 2.5V6a2 2 0 0 0 2 2h3.5"/></svg>
             <span data-xh-part="item-text">去年总结.docx</span>
           </div>
         </div>

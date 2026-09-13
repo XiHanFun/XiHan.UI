@@ -1253,7 +1253,9 @@ function onExpandedValueChange(details: { value: string[] }): void {
 
 ```vue
 <script setup lang="ts">
+import { FileIcon, FolderIcon } from "@xihan-ui/icons";
 import {
+  XhIcon,
   XhTreeBranch,
   XhTreeBranchContent,
   XhTreeBranchControl,
@@ -1297,14 +1299,14 @@ function rename(label: string): void {
       <XhTreeTree>
         <XhTreeBranch v-for="dir in collection" :key="dir.value" :value="dir.value">
           <XhTreeBranchControl>
-            <span aria-hidden="true">📁</span>
+            <XhIcon :icon="FolderIcon" />
             <XhTreeBranchText>{{ dir.label }}</XhTreeBranchText>
             <!-- 指示器不带点击语义，展开态转 90° 全靠皮肤读 data-state -->
             <XhTreeBranchIndicator />
           </XhTreeBranchControl>
           <XhTreeBranchContent>
             <XhTreeItem v-for="file in dir.children" :key="file.value" :value="file.value">
-              <span aria-hidden="true">📄</span>
+              <XhIcon :icon="FileIcon" />
               <XhTreeItemText>{{ file.label }}</XhTreeItemText>
               <!-- 掐断冒泡，否则点按钮连带把这一行也选上 -->
               <button type="button" @click.stop="rename(file.label)">重命名</button>
@@ -1326,19 +1328,19 @@ function rename(label: string): void {
       <div data-xh-part="tree">
         <div data-xh-part="branch" value="src">
           <div data-xh-part="branch-control">
-            <span aria-hidden="true">📁</span>
+            <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="inline-size: var(--xh-icon-size); block-size: var(--xh-icon-size)"><path d="M21.5 18.5a2 2 0 0 1-2 2h-15a2 2 0 0 1-2-2v-13a2 2 0 0 1 2-2h4.5l2 3h8.5a2 2 0 0 1 2 2Z"/></svg>
             <span data-xh-part="branch-text">src</span>
             <!-- 指示器不带点击语义，展开态转 90° 全靠皮肤读 data-state -->
             <span data-xh-part="branch-indicator"></span>
           </div>
           <div data-xh-part="branch-content">
             <div data-xh-part="item" value="index">
-              <span aria-hidden="true">📄</span>
+              <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="inline-size: var(--xh-icon-size); block-size: var(--xh-icon-size)"><path d="M14 2.5H6.5a2 2 0 0 0-2 2v15a2 2 0 0 0 2 2h11a2 2 0 0 0 2-2V8Z"/><path d="M14 2.5V6a2 2 0 0 0 2 2h3.5"/></svg>
               <span data-xh-part="item-text">index.ts</span>
               <button type="button" data-rename="index.ts">重命名</button>
             </div>
             <div data-xh-part="item" value="app">
-              <span aria-hidden="true">📄</span>
+              <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="inline-size: var(--xh-icon-size); block-size: var(--xh-icon-size)"><path d="M14 2.5H6.5a2 2 0 0 0-2 2v15a2 2 0 0 0 2 2h11a2 2 0 0 0 2-2V8Z"/><path d="M14 2.5V6a2 2 0 0 0 2 2h3.5"/></svg>
               <span data-xh-part="item-text">app.vue</span>
               <button type="button" data-rename="app.vue">重命名</button>
             </div>
@@ -1347,13 +1349,13 @@ function rename(label: string): void {
 
         <div data-xh-part="branch" value="docs">
           <div data-xh-part="branch-control">
-            <span aria-hidden="true">📁</span>
+            <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="inline-size: var(--xh-icon-size); block-size: var(--xh-icon-size)"><path d="M21.5 18.5a2 2 0 0 1-2 2h-15a2 2 0 0 1-2-2v-13a2 2 0 0 1 2-2h4.5l2 3h8.5a2 2 0 0 1 2 2Z"/></svg>
             <span data-xh-part="branch-text">docs</span>
             <span data-xh-part="branch-indicator"></span>
           </div>
           <div data-xh-part="branch-content">
             <div data-xh-part="item" value="guide">
-              <span aria-hidden="true">📄</span>
+              <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="inline-size: var(--xh-icon-size); block-size: var(--xh-icon-size)"><path d="M14 2.5H6.5a2 2 0 0 0-2 2v15a2 2 0 0 0 2 2h11a2 2 0 0 0 2-2V8Z"/><path d="M14 2.5V6a2 2 0 0 0 2 2h3.5"/></svg>
               <span data-xh-part="item-text">guide.md</span>
               <button type="button" data-rename="guide.md">重命名</button>
             </div>
@@ -1740,7 +1742,9 @@ const selected = ref<string[]>(["hz"]);
 
 ```vue
 <script setup lang="ts">
+import { FileIcon } from "@xihan-ui/icons";
 import {
+  XhIcon,
   XhTreeBranch,
   XhTreeBranchContent,
   XhTreeBranchControl,
@@ -1859,14 +1863,14 @@ function onNodeMove(move: Move): void {
             </XhTreeBranchControl>
             <XhTreeBranchContent>
               <XhTreeItem v-for="file in entry.children" :key="file.value" :value="file.value">
-                <span aria-hidden="true">📄</span>
+                <XhIcon :icon="FileIcon" />
                 <XhTreeItemText>{{ file.label }}</XhTreeItemText>
               </XhTreeItem>
             </XhTreeBranchContent>
           </XhTreeBranch>
           <!-- 文件退到根层就不在任何目录里了，那一层直接是它自己 -->
           <XhTreeItem v-else :value="entry.value">
-            <span aria-hidden="true">📄</span>
+            <XhIcon :icon="FileIcon" />
             <XhTreeItemText>{{ entry.label }}</XhTreeItemText>
           </XhTreeItem>
         </template>
@@ -1892,15 +1896,15 @@ function onNodeMove(move: Move): void {
         </div>
         <div data-xh-part="branch-content">
           <div data-xh-part="item" value="f1">
-            <span aria-hidden="true">📄</span>
+            <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="inline-size: var(--xh-icon-size); block-size: var(--xh-icon-size)"><path d="M14 2.5H6.5a2 2 0 0 0-2 2v15a2 2 0 0 0 2 2h11a2 2 0 0 0 2-2V8Z"/><path d="M14 2.5V6a2 2 0 0 0 2 2h3.5"/></svg>
             <span data-xh-part="item-text">报价单.pdf</span>
           </div>
           <div data-xh-part="item" value="f2">
-            <span aria-hidden="true">📄</span>
+            <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="inline-size: var(--xh-icon-size); block-size: var(--xh-icon-size)"><path d="M14 2.5H6.5a2 2 0 0 0-2 2v15a2 2 0 0 0 2 2h11a2 2 0 0 0 2-2V8Z"/><path d="M14 2.5V6a2 2 0 0 0 2 2h3.5"/></svg>
             <span data-xh-part="item-text">周报.md</span>
           </div>
           <div data-xh-part="item" value="f3">
-            <span aria-hidden="true">📄</span>
+            <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="inline-size: var(--xh-icon-size); block-size: var(--xh-icon-size)"><path d="M14 2.5H6.5a2 2 0 0 0-2 2v15a2 2 0 0 0 2 2h11a2 2 0 0 0 2-2V8Z"/><path d="M14 2.5V6a2 2 0 0 0 2 2h3.5"/></svg>
             <span data-xh-part="item-text">会议纪要.md</span>
           </div>
         </div>
@@ -1912,7 +1916,7 @@ function onNodeMove(move: Move): void {
         </div>
         <div data-xh-part="branch-content">
           <div data-xh-part="item" value="f4">
-            <span aria-hidden="true">📄</span>
+            <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="inline-size: var(--xh-icon-size); block-size: var(--xh-icon-size)"><path d="M14 2.5H6.5a2 2 0 0 0-2 2v15a2 2 0 0 0 2 2h11a2 2 0 0 0 2-2V8Z"/><path d="M14 2.5V6a2 2 0 0 0 2 2h3.5"/></svg>
             <span data-xh-part="item-text">去年总结.docx</span>
           </div>
         </div>

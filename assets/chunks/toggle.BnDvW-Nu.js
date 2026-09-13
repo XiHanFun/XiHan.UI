@@ -1,0 +1,1 @@
+import{H as t}from"./index.Hc5X0IOq.js";import{l as a,F as r}from"./theme.o20Ye0K_.js";import{d as n,b as s,w as l,k as e,o as c,E as m,a as p}from"./framework.DkvuVDKz.js";const g=n({__name:"toggle",setup(f){return(i,o)=>(c(),s(e(r),null,{default:l(()=>[m(e(a),{icon:e(t)},null,8,["icon"]),o[0]||(o[0]=p("点赞",-1))]),_:1}))}});export{g as default};

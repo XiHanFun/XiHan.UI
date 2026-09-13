@@ -32,22 +32,19 @@ import {
   XhCalendarWeekDay,
   XhCalendarWeekRow,
 } from "@xihan-ui/vue";
-import { ref } from "vue";
-
-// 选中值恒为数组，单选时长度不超过 1
-const value = ref<string[]>([]);
 </script>
 
 <template>
   <XhCalendarRoot
     v-slot="{ weeks, weekDays }"
-    v-model:value="value"
+    :default-value="['2026-09-13']"
+    default-focused-value="2026-09-13"
     locale="zh-CN"
     fixed-weeks
     style="max-inline-size: 280px"
   >
     <XhCalendarHeader>
-      <!-- 箭头字符念不出「上个月」，可及名字得自己给 -->
+      <!-- 翻月按钮需要明确可及名称 -->
       <XhCalendarPrevTrigger aria-label="上个月" />
       <XhCalendarHeading />
       <XhCalendarNextTrigger aria-label="下个月" />
@@ -68,21 +65,18 @@ const value = ref<string[]>([]);
       </XhCalendarGridBody>
     </XhCalendarGrid>
   </XhCalendarRoot>
-
-  <span style="font-size: 13px">选中：{{ value[0] ?? "（未选）" }}</span>
 </template>
 ```
 
 ```html
 <div id="calendar-basic-mount"></div>
-<span style="font-size: 13px">选中：<span id="calendar-basic-value">（未选）</span></span>
 
 <!-- 结构先收在模板里：必需的格子要在元素接线前就位，所以网格填好了才入页 -->
 <template id="calendar-basic-template">
   <xh-calendar locale="zh-CN" fixed-weeks>
     <div data-xh-part="root" style="max-inline-size: 280px">
       <div data-xh-part="header">
-        <!-- 箭头字符念不出「上个月」，可及名字得自己给 -->
+        <!-- 翻月按钮需要明确可及名称 -->
         <button data-xh-part="prev-trigger" aria-label="上个月"></button>
         <div data-xh-part="heading"></div>
         <button data-xh-part="next-trigger" aria-label="下个月"></button>
@@ -105,7 +99,8 @@ const value = ref<string[]>([]);
   const heading = fragment.querySelector('[data-xh-part="heading"]');
   const head = fragment.querySelector('[data-xh-part="grid-head"] [data-xh-part="week-row"]');
   const body = fragment.querySelector('[data-xh-part="grid-body"]');
-  const readout = document.getElementById("calendar-basic-value");
+  calendar.defaultValue = ["2026-09-13"];
+  calendar.defaultFocusedValue = "2026-09-13";
 
   // 已经画出来的是哪个月
   let month = "";
@@ -156,9 +151,6 @@ const value = ref<string[]>([]);
   paintBody();
 
   calendar.addEventListener("focused-value-change", paintBody);
-  calendar.addEventListener("value-change", (event) => {
-    readout.textContent = event.detail.value[0] ?? "（未选）";
-  });
 </script>
 ```
 

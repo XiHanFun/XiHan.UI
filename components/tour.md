@@ -586,6 +586,7 @@ const translations = {
 ### 特性
 
 - 聚光灯突出目标，`spotlightPadding` 控制留白。
+- 高亮框同步目标节点的实际圆角，直角与圆角目标保持各自轮廓。
 - `autoScroll` 自动将目标滚动到可见区域。
 - 无目标步骤在视口中居中，适合开场与结束。
 - `showBackdrop=false` 关闭背景暗幕，但保留目标高亮环。
@@ -835,7 +836,7 @@ const translations = {
 | `--xh-tour-shadow` | `content` | `box-shadow` | `default` | `--xh-elevation-sheet` | tour 的 content 部件 box-shadow 覆盖槽。 |
 | `--xh-tour-skip-trigger-px` | `next-trigger`<br>`prev-trigger`<br>`skip-trigger` | `padding-inline` | `default` | `--xh-control-px-md` | tour 的 next-trigger、prev-trigger、skip-trigger 部件 padding-inline 覆盖槽。 |
 | `--xh-tour-spotlight-layer` | `spotlight` | `z-index` | `default` | `--xh-_layer` | tour 的 spotlight 部件 z-index 覆盖槽。 |
-| `--xh-tour-spotlight-radius` | `spotlight` | `border-radius` | `default` | `--xh-shape-surface` | tour 的 spotlight 部件 border-radius 覆盖槽。 |
+| `--xh-tour-spotlight-radius` | `spotlight` | `border-radius` | `default` | `--xh-_tour-spotlight-radius` | tour 的 spotlight 部件 border-radius 覆盖槽。 |
 | `--xh-tour-spotlight-ring` | `spotlight` | `box-shadow` | `default` | `--xh-ring-focus` | tour 的 spotlight 部件 box-shadow 覆盖槽。 |
 | `--xh-tour-spotlight-shroud` | `spotlight` | `box-shadow` | `dimmed` | `--xh-bg-overlay` | tour 的 spotlight 部件 box-shadow 覆盖槽。 |
 | `--xh-tour-title-fg` | `title` | `color` | `default` | `--xh-fg-default` | tour 的 title 部件 color 覆盖槽。 |
@@ -845,7 +846,7 @@ const translations = {
 
 ### 动效
 
-关键帧 `xh-fade-in` · `xh-fade-out` · `xh-overlay-pop-in` · `xh-pop-out` · `xh-tour-spotlight-in` · `xh-tour-spotlight-out` 随皮肤自带，不引用别处文件里的名字；`background` · `background-color` · `block-size` · `color` · `inline-size` · `inset-block-start` · `inset-inline-start` · `scale` 走 `transition` 过渡。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
+关键帧 `xh-fade-in` · `xh-fade-out` · `xh-overlay-pop-in` · `xh-pop-out` · `xh-tour-spotlight-in` · `xh-tour-spotlight-out` 随皮肤自带，不引用别处文件里的名字；`background` · `background-color` · `block-size` · `border-radius` · `color` · `inline-size` · `inset-block-start` · `inset-inline-start` · `scale` 走 `transition` 过渡。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
 
 皮肤之外还有一段：退场由适配器的退场闸门把关，动画播完才真收起。
 

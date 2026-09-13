@@ -54,7 +54,7 @@ function run(details: CommandSelectDetails) {
       @select="run"
     >
       <template #trigger>打开命令面板</template>
-      <template #footer>↑↓ 选择 · ↵ 执行 · Esc 关闭</template>
+      <template #footer>方向键选择 · Enter 执行 · Esc 关闭</template>
     </XhCommandRoot>
     <span>{{ last }}</span>
   </div>
@@ -99,7 +99,7 @@ function run(details: CommandSelectDetails) {
       </div>
       <div data-xh-part="empty">没有匹配的命令</div>
       <div data-xh-part="loading">正在取命令…</div>
-      <footer data-xh-part="footer">↑↓ 选择 · ↵ 执行 · Esc 关闭</footer>
+      <footer data-xh-part="footer">方向键选择 · Enter 执行 · Esc 关闭</footer>
     </div>
   </div>
 </xh-command>
@@ -212,7 +212,7 @@ const groups = [
           </XhCommandGroup>
         </XhCommandList>
         <XhCommandEmpty>没有匹配的命令</XhCommandEmpty>
-        <XhCommandFooter>↑↓ 选择 · ↵ 执行 · Esc 关闭</XhCommandFooter>
+        <XhCommandFooter>方向键选择 · Enter 执行 · Esc 关闭</XhCommandFooter>
       </XhCommandContent>
     </template>
   </XhCommandRoot>
@@ -274,7 +274,7 @@ const groups = [
         </div>
       </div>
       <div data-xh-part="empty">没有匹配的命令</div>
-      <footer data-xh-part="footer">↑↓ 选择 · ↵ 执行 · Esc 关闭</footer>
+      <footer data-xh-part="footer">方向键选择 · Enter 执行 · Esc 关闭</footer>
     </div>
   </div>
 </xh-command>

@@ -1,0 +1,66 @@
+const t=`<!-- 底部操作区 | 固定在滚动列表下方 -->
+<xh-select id="select-footer" placeholder="请选择">
+  <div data-xh-part="root">
+    <span data-xh-part="label">水果</span>
+    <div data-xh-part="control">
+      <button data-xh-part="trigger">
+        <span data-xh-part="value-text"></span>
+        <span data-xh-part="indicator"></span>
+      </button>
+    </div>
+    <div data-xh-part="positioner">
+      <div data-xh-part="content">
+        <!-- 条目住在 list 里：role=listbox 只许拥有 option -->
+        <div data-xh-part="list">
+          <div data-xh-part="item" value="apple">
+            <span data-xh-part="item-text">苹果</span>
+            <span data-xh-part="item-indicator"></span>
+          </div>
+          <div data-xh-part="item" value="banana">
+            <span data-xh-part="item-text">香蕉</span>
+            <span data-xh-part="item-indicator"></span>
+          </div>
+          <div data-xh-part="item" value="cherry">
+            <span data-xh-part="item-text">樱桃</span>
+            <span data-xh-part="item-indicator"></span>
+          </div>
+        </div>
+        <!-- 按钮放这里才不违反 listbox 的子节点约束 -->
+        <div data-xh-part="footer">
+          <xh-button variant="ghost" size="sm">
+            <button data-xh-part="root" id="select-footer-add"><svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5V19"/><path d="M5 12H19"/></svg>新建</button>
+          </xh-button>
+        </div>
+      </div>
+    </div>
+  </div>
+</xh-select>
+
+<p>当前值：<span id="select-footer-value">（未选）</span></p>
+
+<script type="module">
+  const select = document.getElementById("select-footer");
+  const list = select.querySelector('[data-xh-part="list"]');
+  const readout = document.getElementById("select-footer-value");
+  let seq = 0;
+
+  // 底部按钮往列表末尾添一条新条目
+  document.getElementById("select-footer-add").addEventListener("click", () => {
+    seq += 1;
+    const item = document.createElement("div");
+    item.dataset.xhPart = "item";
+    item.setAttribute("value", \`new-\${seq}\`);
+    const text = document.createElement("span");
+    text.dataset.xhPart = "item-text";
+    text.textContent = \`新水果 \${seq}\`;
+    const indicator = document.createElement("span");
+    indicator.dataset.xhPart = "item-indicator";
+    item.append(text, indicator);
+    list.append(item);
+  });
+
+  select.addEventListener("value-change", (event) => {
+    readout.textContent = event.detail.value[0] ?? "（未选）";
+  });
+<\/script>
+`;export{t as default};

@@ -1,1 +1,0 @@
-import{l as r}from"./index.BLJDbOBY.js";import{l as a}from"./theme.BeqczABU.js";import{d as s,o as t,c,B as i,E as l,k as n,F as m}from"./framework.DkvuVDKz.js";const k=s({__name:"05-tone",setup(p){const o=["brand","success","warning","danger","info"];return(u,f)=>(t(),c(m,null,i(o,e=>l(n(a),{key:e,icon:n(r),tone:e,size:"lg"},null,8,["icon","tone"])),64))}});export{k as default};

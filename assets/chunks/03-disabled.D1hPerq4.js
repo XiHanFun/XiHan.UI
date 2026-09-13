@@ -1,0 +1,1 @@
+import{eJ as e}from"./theme.o20Ye0K_.js";import{d as s,o,c as r,E as a,k as t,F as c}from"./framework.DkvuVDKz.js";const p=s({__name:"03-disabled",setup(n){return(d,l)=>(o(),r(c,null,[a(t(e),{disabled:""}),a(t(e),{disabled:"","default-checked":""})],64))}});export{p as default};

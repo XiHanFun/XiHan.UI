@@ -30,33 +30,21 @@ import {
 
 <template>
   <XhPasswordInputRoot
-    v-slot="{ visible }"
     placeholder="请输入密码"
-    :translations="{ capsLockOn: '大写锁定已打开' }"
+    :translations="{
+      visibilityTriggerShow: '显示密码',
+      visibilityTriggerHide: '隐藏密码',
+      capsLockOn: '大写锁定已打开',
+      strengthMeter: '密码强度',
+    }"
   >
     <XhPasswordInputLabel>密码</XhPasswordInputLabel>
     <XhPasswordInputControl>
       <XhPasswordInputInput style="inline-size: 200px" />
       <!-- 节点留空，大写锁定开着时组件把文字写进来，读屏念的就是这一段 -->
       <XhPasswordInputCapsLockIndicator />
-      <!-- 名字由组件按明暗写好；图标只管好看，读屏不念它，遮着时划一道斜杠 -->
-      <XhPasswordInputVisibilityTrigger>
-        <svg
-          viewBox="0 0 24 24"
-          width="16"
-          height="16"
-          fill="none"
-          stroke="currentColor"
-          stroke-width="2"
-          stroke-linecap="round"
-          stroke-linejoin="round"
-          aria-hidden="true"
-        >
-          <path d="M2 12s3.5-6 10-6 10 6 10 6-3.5 6-10 6-10-6-10-6Z" />
-          <circle cx="12" cy="12" r="3" />
-          <path :d="visible ? '' : 'M4 4 20 20'" />
-        </svg>
-      </XhPasswordInputVisibilityTrigger>
+      <!-- 留空即使用皮肤内置的显示/隐藏图标，名字也由组件按状态切换 -->
+      <XhPasswordInputVisibilityTrigger />
     </XhPasswordInputControl>
   </XhPasswordInputRoot>
 </template>
@@ -70,37 +58,22 @@ import {
       <input data-xh-part="input" style="inline-size: 200px" />
       <!-- 节点留空，大写锁定开着时元素把文字写进来，读屏念的就是这一段 -->
       <span data-xh-part="caps-lock-indicator"></span>
-      <!-- 名字由组件按明暗写好；图标只管好看，读屏不念它，遮着时划一道斜杠 -->
-      <button data-xh-part="visibility-trigger">
-        <svg
-          viewBox="0 0 24 24"
-          width="16"
-          height="16"
-          fill="none"
-          stroke="currentColor"
-          stroke-width="2"
-          stroke-linecap="round"
-          stroke-linejoin="round"
-          aria-hidden="true"
-        >
-          <path d="M2 12s3.5-6 10-6 10 6 10 6-3.5 6-10 6-10-6-10-6Z" />
-          <circle cx="12" cy="12" r="3" />
-          <path id="password-input-basic-slash" d="M4 4 20 20" />
-        </svg>
-      </button>
+      <!-- 留空即使用皮肤内置的显示/隐藏图标，名字也由组件按状态切换 -->
+      <button data-xh-part="visibility-trigger"></button>
     </div>
   </div>
 </xh-password-input>
 
 <script type="module">
-  // 文案与图标：文案给组件，图标是作者自己的事，跟着组件报上来的明暗换
+  // 大写锁定提示文案由组件写入对应状态区
   const field = document.getElementById("password-input-basic");
-  const slash = document.getElementById("password-input-basic-slash");
 
-  field.translations = { capsLockOn: "大写锁定已打开" };
-  field.addEventListener("visibility-change", (event) => {
-    slash.setAttribute("d", event.detail.visible ? "" : "M4 4 20 20");
-  });
+  field.translations = {
+    visibilityTriggerShow: "显示密码",
+    visibilityTriggerHide: "隐藏密码",
+    capsLockOn: "大写锁定已打开",
+    strengthMeter: "密码强度",
+  };
 </script>
 ```
 
@@ -136,8 +109,7 @@ const visible = ref(false);
     <XhPasswordInputLabel>密码</XhPasswordInputLabel>
     <XhPasswordInputControl>
       <XhPasswordInputInput style="inline-size: 200px" />
-      <!-- 图标随宿主那份状态换，切换钮自己的名字由组件管 -->
-      <XhPasswordInputVisibilityTrigger>{{ visible ? "◉" : "○" }}</XhPasswordInputVisibilityTrigger>
+      <XhPasswordInputVisibilityTrigger />
     </XhPasswordInputControl>
   </XhPasswordInputRoot>
   <span>当前：{{ visible ? password : "•".repeat(password.length) }}</span>
@@ -151,8 +123,7 @@ const visible = ref(false);
     <label data-xh-part="label">密码</label>
     <div data-xh-part="control">
       <input data-xh-part="input" style="inline-size: 200px" />
-      <!-- 图标随宿主那份状态换，切换钮自己的名字由组件管 -->
-      <button data-xh-part="visibility-trigger" id="password-input-controlled-icon">○</button>
+      <button data-xh-part="visibility-trigger"></button>
     </div>
   </div>
 </xh-password-input>
@@ -162,7 +133,6 @@ const visible = ref(false);
 <script type="module">
   // 值与明暗都由外面这份状态持有，组件报上来才写回去
   const field = document.getElementById("password-input-controlled");
-  const icon = document.getElementById("password-input-controlled-icon");
   const readout = document.getElementById("password-input-controlled-value");
   const hide = document.getElementById("password-input-controlled-hide");
 
@@ -172,7 +142,6 @@ const visible = ref(false);
     Object.assign(state, next);
     field.value = state.value;
     field.visible = state.visible;
-    icon.textContent = state.visible ? "◉" : "○";
     readout.textContent = state.visible ? state.value : "•".repeat(state.value.length);
   }
 
@@ -208,7 +177,7 @@ import {
       <XhPasswordInputInput style="inline-size: 220px" />
       <!-- 节点留空：区里的文字由组件写，写的就是 translations.capsLockOn -->
       <XhPasswordInputCapsLockIndicator />
-      <XhPasswordInputVisibilityTrigger>○</XhPasswordInputVisibilityTrigger>
+      <XhPasswordInputVisibilityTrigger />
     </XhPasswordInputControl>
   </XhPasswordInputRoot>
 </template>
@@ -222,7 +191,7 @@ import {
       <input data-xh-part="input" style="inline-size: 220px" />
       <!-- 节点留空：区里的文字由元素写，写的就是 translations.capsLockOn -->
       <span data-xh-part="caps-lock-indicator"></span>
-      <button data-xh-part="visibility-trigger">○</button>
+      <button data-xh-part="visibility-trigger"></button>
     </div>
   </div>
 </xh-password-input>
@@ -253,7 +222,7 @@ import {
     <XhPasswordInputLabel>禁用</XhPasswordInputLabel>
     <XhPasswordInputControl>
       <XhPasswordInputInput style="inline-size: 160px" />
-      <XhPasswordInputVisibilityTrigger>○</XhPasswordInputVisibilityTrigger>
+      <XhPasswordInputVisibilityTrigger />
     </XhPasswordInputControl>
   </XhPasswordInputRoot>
 
@@ -261,7 +230,7 @@ import {
     <XhPasswordInputLabel>只读</XhPasswordInputLabel>
     <XhPasswordInputControl>
       <XhPasswordInputInput style="inline-size: 160px" />
-      <XhPasswordInputVisibilityTrigger>○</XhPasswordInputVisibilityTrigger>
+      <XhPasswordInputVisibilityTrigger />
     </XhPasswordInputControl>
   </XhPasswordInputRoot>
 
@@ -269,7 +238,7 @@ import {
     <XhPasswordInputLabel>校验失败</XhPasswordInputLabel>
     <XhPasswordInputControl>
       <XhPasswordInputInput style="inline-size: 160px" />
-      <XhPasswordInputVisibilityTrigger>○</XhPasswordInputVisibilityTrigger>
+      <XhPasswordInputVisibilityTrigger />
     </XhPasswordInputControl>
   </XhPasswordInputRoot>
 </template>
@@ -281,7 +250,7 @@ import {
     <label data-xh-part="label">禁用</label>
     <div data-xh-part="control">
       <input data-xh-part="input" style="inline-size: 160px" />
-      <button data-xh-part="visibility-trigger">○</button>
+      <button data-xh-part="visibility-trigger"></button>
     </div>
   </div>
 </xh-password-input>
@@ -291,7 +260,7 @@ import {
     <label data-xh-part="label">只读</label>
     <div data-xh-part="control">
       <input data-xh-part="input" style="inline-size: 160px" />
-      <button data-xh-part="visibility-trigger">○</button>
+      <button data-xh-part="visibility-trigger"></button>
     </div>
   </div>
 </xh-password-input>
@@ -301,7 +270,7 @@ import {
     <label data-xh-part="label">校验失败</label>
     <div data-xh-part="control">
       <input data-xh-part="input" style="inline-size: 160px" />
-      <button data-xh-part="visibility-trigger">○</button>
+      <button data-xh-part="visibility-trigger"></button>
     </div>
   </div>
 </xh-password-input>
@@ -329,7 +298,7 @@ const variants = ["outline", "subtle", "ghost"] as const;
     <XhPasswordInputLabel>{{ v }}</XhPasswordInputLabel>
     <XhPasswordInputControl>
       <XhPasswordInputInput style="inline-size: 160px" />
-      <XhPasswordInputVisibilityTrigger>○</XhPasswordInputVisibilityTrigger>
+      <XhPasswordInputVisibilityTrigger />
     </XhPasswordInputControl>
   </XhPasswordInputRoot>
 </template>
@@ -341,7 +310,7 @@ const variants = ["outline", "subtle", "ghost"] as const;
     <label data-xh-part="label">outline</label>
     <div data-xh-part="control">
       <input data-xh-part="input" style="inline-size: 160px" />
-      <button data-xh-part="visibility-trigger">○</button>
+      <button data-xh-part="visibility-trigger"></button>
     </div>
   </div>
 </xh-password-input>
@@ -351,7 +320,7 @@ const variants = ["outline", "subtle", "ghost"] as const;
     <label data-xh-part="label">subtle</label>
     <div data-xh-part="control">
       <input data-xh-part="input" style="inline-size: 160px" />
-      <button data-xh-part="visibility-trigger">○</button>
+      <button data-xh-part="visibility-trigger"></button>
     </div>
   </div>
 </xh-password-input>
@@ -361,7 +330,7 @@ const variants = ["outline", "subtle", "ghost"] as const;
     <label data-xh-part="label">ghost</label>
     <div data-xh-part="control">
       <input data-xh-part="input" style="inline-size: 160px" />
-      <button data-xh-part="visibility-trigger">○</button>
+      <button data-xh-part="visibility-trigger"></button>
     </div>
   </div>
 </xh-password-input>
@@ -396,7 +365,7 @@ const tones = ["brand", "neutral", "success", "warning", "danger", "info"] as co
     <XhPasswordInputLabel>{{ t }}</XhPasswordInputLabel>
     <XhPasswordInputControl>
       <XhPasswordInputInput style="inline-size: 160px" />
-      <XhPasswordInputVisibilityTrigger>○</XhPasswordInputVisibilityTrigger>
+      <XhPasswordInputVisibilityTrigger />
     </XhPasswordInputControl>
   </XhPasswordInputRoot>
 </template>
@@ -409,7 +378,7 @@ const tones = ["brand", "neutral", "success", "warning", "danger", "info"] as co
     <label data-xh-part="label">brand</label>
     <div data-xh-part="control">
       <input data-xh-part="input" style="inline-size: 160px" />
-      <button data-xh-part="visibility-trigger">○</button>
+      <button data-xh-part="visibility-trigger"></button>
     </div>
   </div>
 </xh-password-input>
@@ -419,7 +388,7 @@ const tones = ["brand", "neutral", "success", "warning", "danger", "info"] as co
     <label data-xh-part="label">neutral</label>
     <div data-xh-part="control">
       <input data-xh-part="input" style="inline-size: 160px" />
-      <button data-xh-part="visibility-trigger">○</button>
+      <button data-xh-part="visibility-trigger"></button>
     </div>
   </div>
 </xh-password-input>
@@ -429,7 +398,7 @@ const tones = ["brand", "neutral", "success", "warning", "danger", "info"] as co
     <label data-xh-part="label">success</label>
     <div data-xh-part="control">
       <input data-xh-part="input" style="inline-size: 160px" />
-      <button data-xh-part="visibility-trigger">○</button>
+      <button data-xh-part="visibility-trigger"></button>
     </div>
   </div>
 </xh-password-input>
@@ -439,7 +408,7 @@ const tones = ["brand", "neutral", "success", "warning", "danger", "info"] as co
     <label data-xh-part="label">warning</label>
     <div data-xh-part="control">
       <input data-xh-part="input" style="inline-size: 160px" />
-      <button data-xh-part="visibility-trigger">○</button>
+      <button data-xh-part="visibility-trigger"></button>
     </div>
   </div>
 </xh-password-input>
@@ -449,7 +418,7 @@ const tones = ["brand", "neutral", "success", "warning", "danger", "info"] as co
     <label data-xh-part="label">danger</label>
     <div data-xh-part="control">
       <input data-xh-part="input" style="inline-size: 160px" />
-      <button data-xh-part="visibility-trigger">○</button>
+      <button data-xh-part="visibility-trigger"></button>
     </div>
   </div>
 </xh-password-input>
@@ -459,7 +428,7 @@ const tones = ["brand", "neutral", "success", "warning", "danger", "info"] as co
     <label data-xh-part="label">info</label>
     <div data-xh-part="control">
       <input data-xh-part="input" style="inline-size: 160px" />
-      <button data-xh-part="visibility-trigger">○</button>
+      <button data-xh-part="visibility-trigger"></button>
     </div>
   </div>
 </xh-password-input>
@@ -485,7 +454,7 @@ import {
     <XhPasswordInputLabel>sm</XhPasswordInputLabel>
     <XhPasswordInputControl>
       <XhPasswordInputInput style="inline-size: 160px" />
-      <XhPasswordInputVisibilityTrigger>○</XhPasswordInputVisibilityTrigger>
+      <XhPasswordInputVisibilityTrigger />
     </XhPasswordInputControl>
   </XhPasswordInputRoot>
 
@@ -493,7 +462,7 @@ import {
     <XhPasswordInputLabel>缺省</XhPasswordInputLabel>
     <XhPasswordInputControl>
       <XhPasswordInputInput style="inline-size: 160px" />
-      <XhPasswordInputVisibilityTrigger>○</XhPasswordInputVisibilityTrigger>
+      <XhPasswordInputVisibilityTrigger />
     </XhPasswordInputControl>
   </XhPasswordInputRoot>
 
@@ -501,7 +470,7 @@ import {
     <XhPasswordInputLabel>lg</XhPasswordInputLabel>
     <XhPasswordInputControl>
       <XhPasswordInputInput style="inline-size: 160px" />
-      <XhPasswordInputVisibilityTrigger>○</XhPasswordInputVisibilityTrigger>
+      <XhPasswordInputVisibilityTrigger />
     </XhPasswordInputControl>
   </XhPasswordInputRoot>
 </template>
@@ -513,7 +482,7 @@ import {
     <label data-xh-part="label">sm</label>
     <div data-xh-part="control">
       <input data-xh-part="input" style="inline-size: 160px" />
-      <button data-xh-part="visibility-trigger">○</button>
+      <button data-xh-part="visibility-trigger"></button>
     </div>
   </div>
 </xh-password-input>
@@ -523,7 +492,7 @@ import {
     <label data-xh-part="label">缺省</label>
     <div data-xh-part="control">
       <input data-xh-part="input" style="inline-size: 160px" />
-      <button data-xh-part="visibility-trigger">○</button>
+      <button data-xh-part="visibility-trigger"></button>
     </div>
   </div>
 </xh-password-input>
@@ -533,7 +502,7 @@ import {
     <label data-xh-part="label">lg</label>
     <div data-xh-part="control">
       <input data-xh-part="input" style="inline-size: 160px" />
-      <button data-xh-part="visibility-trigger">○</button>
+      <button data-xh-part="visibility-trigger"></button>
     </div>
   </div>
 </xh-password-input>
@@ -561,7 +530,7 @@ import {
       <XhPasswordInputLabel>设置新密码</XhPasswordInputLabel>
       <XhPasswordInputControl>
         <XhPasswordInputInput style="inline-size: 200px" />
-        <XhPasswordInputVisibilityTrigger>○</XhPasswordInputVisibilityTrigger>
+        <XhPasswordInputVisibilityTrigger />
       </XhPasswordInputControl>
     </XhPasswordInputRoot>
     <button type="reset">重置</button>
@@ -577,7 +546,7 @@ import {
       <label data-xh-part="label">设置新密码</label>
       <div data-xh-part="control">
         <input data-xh-part="input" style="inline-size: 200px" />
-        <button data-xh-part="visibility-trigger">○</button>
+        <button data-xh-part="visibility-trigger"></button>
       </div>
     </div>
   </xh-password-input>
@@ -612,7 +581,7 @@ import {
 ### 组合
 
 - 外面套[表单字段](./field)拿标签、说明与错误文本。
-- 切换钮里放[图标](./icon)，随明暗换一只眼睛。钮上带 `data-state`（`visible` / `hidden`），作者用自己的 CSS 按它切两枚图标即可；也可以从 root 的默认插槽拿 `visible`（Vue）或听 `visibility-change`（Web Components）自己换。皮肤不替作者切图标——库里不知道那两枚图标长什么样。
+- 切换钮留空时由皮肤按 `data-state` 绘制显示或隐藏图标。需要品牌图标时可放入[图标](./icon)替换内置字形，组件仍负责切换钮的可访问名称。
 
 ### 最佳实践
 

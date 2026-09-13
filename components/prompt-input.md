@@ -156,7 +156,7 @@ onBeforeUnmount(() => window.clearTimeout(timer));
           </XhMessageFeedItem>
         </XhMessageFeedList>
       </XhMessageFeedViewport>
-      <XhMessageFeedScrollToEndTrigger>↓</XhMessageFeedScrollToEndTrigger>
+      <XhMessageFeedScrollToEndTrigger />
     </XhMessageFeedRoot>
 
     <!-- loading 期间按钮换成停止，输入框仍可编辑：用户还要能改下一句 -->
@@ -185,7 +185,7 @@ onBeforeUnmount(() => window.clearTimeout(timer));
           </article>
         </div>
       </div>
-      <button data-xh-part="scroll-to-end-trigger">↓</button>
+      <button data-xh-part="scroll-to-end-trigger"></button>
     </div>
   </xh-message-feed>
 

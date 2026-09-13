@@ -1,0 +1,9 @@
+const t=`<!-- 禁用 | 保留禁用前的状态 -->
+<xh-toggle disabled>
+  <button data-xh-part="root"><svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20.5C10.5 18.5 3 13.5 3 8.5C3 5.46 5.46 3 8.5 3C10.6 3 11.4 4.2 12 6.2C12.6 4.2 13.4 3 15.5 3C18.54 3 21 5.46 21 8.5C21 13.5 13.5 18.5 12 20.5Z"/></svg>点赞</button>
+</xh-toggle>
+
+<xh-toggle disabled default-pressed>
+  <button data-xh-part="root"><svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20.5C10.5 18.5 3 13.5 3 8.5C3 5.46 5.46 3 8.5 3C10.6 3 11.4 4.2 12 6.2C12.6 4.2 13.4 3 15.5 3C18.54 3 21 5.46 21 8.5C21 13.5 13.5 18.5 12 20.5Z"/></svg>点赞</button>
+</xh-toggle>
+`;export{t as default};

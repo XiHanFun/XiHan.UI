@@ -9,7 +9,7 @@
 - [llms-full.txt](https://ui.docs.xihanfun.com/llms-full.txt): 全部 171 页正文，示例已内联为代码块
 - [llms-components.txt](https://ui.docs.xihanfun.com/llms-components.txt): 129 页组件参考
 - [llms-guide.txt](https://ui.docs.xihanfun.com/llms-guide.txt): 29 页核心概念、适配器与运行时
-- [llms-tokens.txt](https://ui.docs.xihanfun.com/llms-tokens.txt): 414 支设计令牌的名字、类型与缺省取值
+- [llms-tokens.txt](https://ui.docs.xihanfun.com/llms-tokens.txt): 415 支设计令牌的名字、类型与缺省取值
 - 每页 Markdown：把站点地址后缀成 `.md`，如 https://ui.docs.xihanfun.com/components/button.md
 
 ## 开始

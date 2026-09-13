@@ -1358,8 +1358,10 @@ const tags = ref<string[]>(["文档"]);
 
 ```vue
 <script setup lang="ts">
+import { PlusIcon } from "@xihan-ui/icons";
 import {
   XhButton,
+  XhIcon,
   XhTagsInputControl,
   XhTagsInputInput,
   XhTagsInputItem,
@@ -1417,7 +1419,8 @@ function options(text: string): string[] {
         :disabled="atMax"
         @click="start"
       >
-        ＋ 添加
+        <XhIcon :icon="PlusIcon" />
+        添加
       </XhButton>
     </XhTagsInputControl>
 
@@ -1480,7 +1483,7 @@ function options(text: string): string[] {
       <!-- 输入框常驻文档，平时用内联 display 收起 -->
       <input data-xh-part="input" style="display: none" />
       <xh-button id="tags-input-custom-start" size="sm" variant="outline">
-        <button data-xh-part="root">＋ 添加</button>
+        <button data-xh-part="root"><svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5V19"/><path d="M5 12H19"/></svg>添加</button>
       </xh-button>
     </div>
 

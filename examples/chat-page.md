@@ -396,7 +396,7 @@ function onSubmit({ value }: { value: string }): void {
           </article>
         </div>
       </div>
-      <button data-xh-part="scroll-to-end-trigger">↓</button>
+      <button data-xh-part="scroll-to-end-trigger"></button>
     </div>
   </xh-message-feed>
 

@@ -260,6 +260,7 @@ import { XhResizableHandle, XhResizableRoot } from "@xihan-ui/vue";
 ### 特性
 
 - 支持八个方向的调整把手。
+- 把手附着在容器内部，边缘显示为短条，角部形状继承容器圆角。
 - 支持最小/最大尺寸、宽高比和步进约束。
 - 支持方向键、Home、End 和 Escape。
 - 调整中和调整结束分别提供回调。
@@ -402,13 +403,21 @@ import { XhResizableHandle, XhResizableRoot } from "@xihan-ui/vue";
 
 | 变量 | 部件 | CSS 属性 | 状态 | 缺省来源 | 说明 |
 | --- | --- | --- | --- | --- | --- |
-| `--xh-resizable-corner` | `handle` | `block-size`<br>`inline-size`<br>`inset-block-end`<br>`inset-block-start`<br>`inset-inline-end`<br>`inset-inline-start` | `edge=ne`<br>`edge=nw`<br>`edge=se`<br>`edge=sw` | `--xh-space-3` | resizable 的 handle 部件 block-size、inline-size、inset-block-end、inset-block-start、inset-inline-end、inset-inline-start 覆盖槽。 |
-| `--xh-resizable-grip` | `handle` | `block-size`<br>`inline-size`<br>`inset-block`<br>`inset-block-end`<br>`inset-block-start`<br>`inset-inline`<br>`inset-inline-end`<br>`inset-inline-start` | `edge=e`<br>`edge=n`<br>`edge=s`<br>`edge=w` | `--xh-space-2` | resizable 的 handle 部件 block-size、inline-size、inset-block、inset-block-end、inset-block-start、inset-inline、inset-inline-end、inset-inline-start 覆盖槽。 |
+| `--xh-resizable-corner` | `handle` | `block-size`<br>`inline-size` | `edge=ne`<br>`edge=nw`<br>`edge=se`<br>`edge=sw` | `--xh-space-4` | resizable 的 handle 部件 block-size、inline-size 覆盖槽。 |
+| `--xh-resizable-corner-inset` | `handle` | `inset` | `edge=ne`<br>`edge=nw`<br>`edge=se`<br>`edge=sw`<br>`is([data-edge='ne'], [data-edge='nw'], [data-edge='se'], [data-edge='sw'])` | `--xh-space-1` | resizable 的 handle 部件 inset 覆盖槽。 |
+| `--xh-resizable-grip` | `handle` | `block-size`<br>`inline-size`<br>`inset-block`<br>`inset-inline` | `edge=e`<br>`edge=n`<br>`edge=s`<br>`edge=w` | `--xh-space-2` | resizable 的 handle 部件 block-size、inline-size、inset-block、inset-inline 覆盖槽。 |
+| `--xh-resizable-handle-bg` | `handle` | `background`<br>`border` | `default`<br>`edge=ne`<br>`edge=nw`<br>`edge=se`<br>`edge=sw`<br>`is([data-edge='ne'], [data-edge='nw'], [data-edge='se'], [data-edge='sw'])` | `--xh-fg-default` | resizable 的 handle 部件 background、border 覆盖槽。 |
+| `--xh-resizable-handle-bg-active` | `handle` | `background`<br>`border` | `edge=ne`<br>`edge=nw`<br>`edge=se`<br>`edge=sw`<br>`is([data-edge='ne'], [data-edge='nw'], [data-edge='se'], [data-edge='sw'])`<br>`resizing` | `--xh-bg-brand` | resizable 的 handle 部件 background、border 覆盖槽。 |
+| `--xh-resizable-handle-bg-hover` | `handle` | `background`<br>`border` | `edge=ne`<br>`edge=nw`<br>`edge=se`<br>`edge=sw`<br>`hover`<br>`is([data-edge='ne'], [data-edge='nw'], [data-edge='se'], [data-edge='sw'])` | `--xh-fg-default` | resizable 的 handle 部件 background、border 覆盖槽。 |
+| `--xh-resizable-handle-radius` | `handle` | `border-radius` | `default` | `--xh-shape-pill` | resizable 的 handle 部件 border-radius 覆盖槽。 |
+| `--xh-resizable-indicator-inset` | `handle` | `inset-block-end`<br>`inset-block-start`<br>`inset-inline-end`<br>`inset-inline-start` | `edge=e`<br>`edge=n`<br>`edge=s`<br>`edge=w` | `--xh-space-0_5` | resizable 的 handle 部件 inset-block-end、inset-block-start、inset-inline-end、inset-inline-start 覆盖槽。 |
+| `--xh-resizable-indicator-length` | `handle` | `block-size`<br>`inline-size` | `edge=e`<br>`edge=n`<br>`edge=s`<br>`edge=w`<br>`is([data-edge='e'], [data-edge='w'])`<br>`is([data-edge='n'], [data-edge='s'])` | `--xh-space-8` | resizable 的 handle 部件 block-size、inline-size 覆盖槽。 |
+| `--xh-resizable-indicator-thickness` | `handle` | `block-size`<br>`border-block-end-width`<br>`border-block-start-width`<br>`border-inline-end-width`<br>`border-inline-start-width`<br>`inline-size` | `edge=e`<br>`edge=n`<br>`edge=ne`<br>`edge=nw`<br>`edge=s`<br>`edge=se`<br>`edge=sw`<br>`edge=w`<br>`is([data-edge='e'], [data-edge='w'])`<br>`is([data-edge='n'], [data-edge='s'])` | `--xh-stroke-thick` | resizable 的 handle 部件 block-size、border-block-end-width、border-block-start-width、border-inline-end-width、border-inline-start-width、inline-size 覆盖槽。 |
 <!-- xh-component-tokens:end -->
 
 ### 动效
 
-`background` 走 `transition` 过渡。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
+`background` · `border-color` 走 `transition` 过渡。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
 
 系统开启减弱动效时由令牌层统一收敛，皮肤不另作判断。
 

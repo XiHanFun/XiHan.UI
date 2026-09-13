@@ -406,6 +406,7 @@ const lines = Array.from({ length: 30 }, (_, i) => `第 ${i + 1} 行`);
 ### 特性
 
 - 支持五种显示时机，默认在滚动或悬停时显示。
+- 默认使用透明轨道与半透明中性滑块，悬停和拖动时逐级增强。
 - 支持拖动、点击轨道、键盘操作与 RTL。
 - 支持横向、纵向和双轴滚动。
 - 触屏设备默认保留原生滚动体验。
@@ -592,12 +593,12 @@ const lines = Array.from({ length: 30 }, (_, i) => `第 ${i + 1} 行`);
 | 变量 | 部件 | CSS 属性 | 状态 | 缺省来源 | 说明 |
 | --- | --- | --- | --- | --- | --- |
 | `--xh-scrollbar-corner-bg` | `corner` | `background` | `default` | `--xh-scrollbar-track-bg` | scrollbar 的 corner 部件 background 覆盖槽。 |
-| `--xh-scrollbar-thumb-bg` | `thumb` | `background` | `default` | `--xh-fg-scrollbar-thumb` | scrollbar 的 thumb 部件 background 覆盖槽。 |
-| `--xh-scrollbar-thumb-bg-active` | `thumb` | `background` | `dragging` | `--xh-fg-scrollbar-thumb-active` | scrollbar 的 thumb 部件 background 覆盖槽。 |
+| `--xh-scrollbar-thumb-bg` | `thumb` | `background` | `default` | `--xh-fg-default` | scrollbar 的 thumb 部件 background 覆盖槽。 |
+| `--xh-scrollbar-thumb-bg-active` | `thumb` | `background` | `dragging` | `--xh-fg-default` | scrollbar 的 thumb 部件 background 覆盖槽。 |
 | `--xh-scrollbar-thumb-bg-disabled` | `thumb` | `background` | `disabled` | `--xh-border-subtle` | scrollbar 的 thumb 部件 background 覆盖槽。 |
-| `--xh-scrollbar-thumb-bg-hover` | `thumb` | `background` | `hover` | `--xh-fg-scrollbar-thumb-hover` | scrollbar 的 thumb 部件 background 覆盖槽。 |
+| `--xh-scrollbar-thumb-bg-hover` | `thumb` | `background` | `hover` | `--xh-fg-default` | scrollbar 的 thumb 部件 background 覆盖槽。 |
 | `--xh-scrollbar-thumb-radius` | `thumb` | `border-radius` | `default` | `--xh-shape-pill` | scrollbar 的 thumb 部件 border-radius 覆盖槽。 |
-| `--xh-scrollbar-track-bg` | `corner`<br>`track` | `background` | `default` | `--xh-bg-scrollbar-track` | scrollbar 的 corner、track 部件 background 覆盖槽。 |
+| `--xh-scrollbar-track-bg` | `corner`<br>`track` | `background` | `default` | `transparent` | scrollbar 的 corner、track 部件 background 覆盖槽。 |
 <!-- xh-component-tokens:end -->
 
 ### 动效

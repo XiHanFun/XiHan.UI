@@ -1,0 +1,1 @@
+import{j as t}from"./jsx-runtime.BjG_zV1W.js";import{X as e,a as o}from"./skeleton.B4oG0Xw7.js";import"./jsx-runtime.PWAf6Kuf.js";import"./theme.o20Ye0K_.js";import"./framework.DkvuVDKz.js";import"./index.CVfUds7h.js";function x(){return t.jsxs(e,{style:{inlineSize:"260px"},children:[t.jsx(o,{}),t.jsx(o,{}),t.jsx(o,{})]})}export{x as default};

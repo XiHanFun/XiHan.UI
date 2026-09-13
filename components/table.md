@@ -1297,7 +1297,7 @@ const selection = ref<string[]>(["p2"]);
       <XhTableBody>
         <XhTableRow v-for="p in plans" :key="p.id" :value="p.id">
           <XhTableCell value="select">
-            <XhTableRowSelectTrigger>●</XhTableRowSelectTrigger>
+            <XhTableRowSelectTrigger />
           </XhTableCell>
           <XhTableCell value="plan">{{ p.plan }}</XhTableCell>
           <XhTableCell value="price">{{ p.price }}</XhTableCell>
@@ -1324,21 +1324,21 @@ const selection = ref<string[]>(["p2"]);
       <div data-xh-part="body">
         <div data-xh-part="row" value="p1">
           <div data-xh-part="cell" value="select">
-            <span data-xh-part="row-select-trigger">●</span>
+            <span data-xh-part="row-select-trigger"></span>
           </div>
           <div data-xh-part="cell" value="plan">入门版</div>
           <div data-xh-part="cell" value="price">¥ 0 / 月</div>
         </div>
         <div data-xh-part="row" value="p2">
           <div data-xh-part="cell" value="select">
-            <span data-xh-part="row-select-trigger">●</span>
+            <span data-xh-part="row-select-trigger"></span>
           </div>
           <div data-xh-part="cell" value="plan">团队版</div>
           <div data-xh-part="cell" value="price">¥ 99 / 月</div>
         </div>
         <div data-xh-part="row" value="p3">
           <div data-xh-part="cell" value="select">
-            <span data-xh-part="row-select-trigger">●</span>
+            <span data-xh-part="row-select-trigger"></span>
           </div>
           <div data-xh-part="cell" value="plan">企业版</div>
           <div data-xh-part="cell" value="price">¥ 399 / 月</div>
@@ -1844,7 +1844,7 @@ const groupStyle = { inlineSize: "10rem", flexGrow: 2 };
 
 ```vue
 <script setup lang="ts">
-import { ChevronDownIcon } from "@xihan-ui/icons";
+import { FilterIcon } from "@xihan-ui/icons";
 import {
   XhIcon,
   XhPopoverContent,
@@ -1908,8 +1908,11 @@ const optionStyle = { display: "flex", alignItems: "center", gap: "6px" };
           <XhTableColumnHeader value="dept">
             部门
             <XhPopoverRoot placement="bottom-start" size="sm">
-              <XhPopoverTrigger aria-label="按部门过滤">
-                <XhIcon :icon="ChevronDownIcon" />{{ deptFilter.length ? "●" : "" }}
+              <XhPopoverTrigger
+                aria-label="按部门过滤"
+                :style="deptFilter.length ? { color: 'var(--xh-fg-brand)' } : undefined"
+              >
+                <XhIcon :icon="FilterIcon" />
               </XhPopoverTrigger>
               <XhPopoverPositioner>
                 <XhPopoverContent>
@@ -1928,8 +1931,11 @@ const optionStyle = { display: "flex", alignItems: "center", gap: "6px" };
           <XhTableColumnHeader value="city">
             城市
             <XhPopoverRoot placement="bottom-start" size="sm">
-              <XhPopoverTrigger aria-label="按城市过滤">
-                <XhIcon :icon="ChevronDownIcon" />{{ cityFilter.length ? "●" : "" }}
+              <XhPopoverTrigger
+                aria-label="按城市过滤"
+                :style="cityFilter.length ? { color: 'var(--xh-fg-brand)' } : undefined"
+              >
+                <XhIcon :icon="FilterIcon" />
               </XhPopoverTrigger>
               <XhPopoverPositioner>
                 <XhPopoverContent>
@@ -1976,7 +1982,7 @@ const optionStyle = { display: "flex", alignItems: "center", gap: "6px" };
           <div data-xh-part="column-header" value="dept">
             部门
             <xh-popover placement="bottom-start" size="sm">
-              <button data-xh-part="trigger" aria-label="按部门过滤" data-mark><svg viewBox="0 0 24 24" width="1em" height="1em" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 9L12 15L18 9"/></svg></button>
+              <button data-xh-part="trigger" aria-label="按部门过滤" data-mark><svg viewBox="0 0 24 24" width="1em" height="1em" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3.5 5h17L14 12.5V19l-4 2v-8.5L3.5 5Z"/></svg></button>
               <div data-xh-part="positioner">
                 <div data-xh-part="content">
                   <h2 data-xh-part="title">按部门过滤</h2>
@@ -2006,7 +2012,7 @@ const optionStyle = { display: "flex", alignItems: "center", gap: "6px" };
           <div data-xh-part="column-header" value="city">
             城市
             <xh-popover placement="bottom-start" size="sm">
-              <button data-xh-part="trigger" aria-label="按城市过滤" data-mark></button>
+              <button data-xh-part="trigger" aria-label="按城市过滤" data-mark><svg viewBox="0 0 24 24" width="1em" height="1em" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3.5 5h17L14 12.5V19l-4 2v-8.5L3.5 5Z"/></svg></button>
               <div data-xh-part="positioner">
                 <div data-xh-part="content">
                   <h2 data-xh-part="title">按城市过滤</h2>
@@ -2102,7 +2108,8 @@ const optionStyle = { display: "flex", alignItems: "center", gap: "6px" };
 
     for (const mark of stage.querySelectorAll("[data-mark]")) {
       const field = mark.closest('[data-xh-part="column-header"]').getAttribute("value");
-      mark.innerHTML = `<svg viewBox="0 0 24 24" width="1em" height="1em" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 9L12 15L18 9"/></svg>${picked(field).length ? "●" : ""}`;
+      mark.innerHTML = `<svg viewBox="0 0 24 24" width="1em" height="1em" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3.5 5h17L14 12.5V19l-4 2v-8.5L3.5 5Z"/></svg>`;
+      mark.style.color = picked(field).length ? "var(--xh-fg-brand)" : "";
     }
 
     readout.textContent = `命中 ${visible.length} / ${members.length} 人 · 部门：${

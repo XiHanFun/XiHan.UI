@@ -1,1 +1,0 @@
-import{j as t}from"./jsx-runtime.BjG_zV1W.js";import{X as o}from"./button.BzyMHVva.js";import"./jsx-runtime.CE-UFHoq.js";import"./theme.BeqczABU.js";import"./framework.DkvuVDKz.js";import"./config.DH7Rok6X.js";import"./index.CVfUds7h.js";import"./native-events.29TdJGw2.js";function u(){return t.jsx(o,{as:"a",href:"/introduction",children:"了解更多"})}export{u as default};

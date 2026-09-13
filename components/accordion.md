@@ -343,7 +343,7 @@ const items = [
 
 ### 颜色
 
-tone 落在展开态的标题上，六种语气各预置一项展开做对照
+tone 落在展开态的标题上，六种颜色各预置一项展开做对照
 
 ```vue
 <script setup lang="ts">
@@ -367,7 +367,7 @@ const tones = [
     {
       value: "closed",
       label: `${tone.label}（收起）`,
-      content: "收起态的标题不吃语气色。",
+      content: "收起态标题保持默认颜色。",
     },
   ],
 }));
@@ -419,7 +419,7 @@ const tones = [
             <span data-xh-part="indicator"></span>
           </button>
         </h3>
-        <div data-xh-part="content">收起态的标题不吃语气色。</div>
+        <div data-xh-part="content">收起态标题保持默认颜色。</div>
       </div>
     </div>
   </xh-accordion>
@@ -441,7 +441,7 @@ const tones = [
             <span data-xh-part="indicator"></span>
           </button>
         </h3>
-        <div data-xh-part="content">收起态的标题不吃语气色。</div>
+        <div data-xh-part="content">收起态标题保持默认颜色。</div>
       </div>
     </div>
   </xh-accordion>
@@ -463,7 +463,7 @@ const tones = [
             <span data-xh-part="indicator"></span>
           </button>
         </h3>
-        <div data-xh-part="content">收起态的标题不吃语气色。</div>
+        <div data-xh-part="content">收起态标题保持默认颜色。</div>
       </div>
     </div>
   </xh-accordion>
@@ -485,7 +485,7 @@ const tones = [
             <span data-xh-part="indicator"></span>
           </button>
         </h3>
-        <div data-xh-part="content">收起态的标题不吃语气色。</div>
+        <div data-xh-part="content">收起态标题保持默认颜色。</div>
       </div>
     </div>
   </xh-accordion>
@@ -507,7 +507,7 @@ const tones = [
             <span data-xh-part="indicator"></span>
           </button>
         </h3>
-        <div data-xh-part="content">收起态的标题不吃语气色。</div>
+        <div data-xh-part="content">收起态标题保持默认颜色。</div>
       </div>
     </div>
   </xh-accordion>
@@ -529,7 +529,7 @@ const tones = [
             <span data-xh-part="indicator"></span>
           </button>
         </h3>
-        <div data-xh-part="content">收起态的标题不吃语气色。</div>
+        <div data-xh-part="content">收起态标题保持默认颜色。</div>
       </div>
     </div>
   </xh-accordion>
@@ -1134,12 +1134,14 @@ indicator 是可选部件，不渲染它就没有默认字形；标记由作者�
 
 ```vue
 <script setup lang="ts">
+import { MinusIcon, PlusIcon } from "@xihan-ui/icons";
 import {
   XhAccordionContent,
   XhAccordionHeader,
   XhAccordionItem,
   XhAccordionRoot,
   XhAccordionTrigger,
+  XhIcon,
 } from "@xihan-ui/vue";
 import { ref } from "vue";
 
@@ -1159,10 +1161,12 @@ const panels = ref<string[]>(["shipping"]);
         <XhAccordionHeader>
           <XhAccordionTrigger>
             <span>{{ item.label }}</span>
-            <!-- 标记按这一项在不在展开集合里换字形 -->
-            <span style="font-size: 12px; color: var(--xh-fg-muted)">
-              {{ panels.includes(item.value) ? "－" : "＋" }}
-            </span>
+            <!-- 标记按这一项在不在展开集合里切换图标 -->
+            <XhIcon
+              :icon="panels.includes(item.value) ? MinusIcon : PlusIcon"
+              size="sm"
+              style="color: var(--xh-fg-muted)"
+            />
           </XhAccordionTrigger>
         </XhAccordionHeader>
         <XhAccordionContent>{{ item.body }}</XhAccordionContent>
@@ -1180,7 +1184,7 @@ const panels = ref<string[]>(["shipping"]);
         <h3 data-xh-part="header">
           <button data-xh-part="trigger">
             <span>配送方式</span>
-            <span data-mark style="font-size: 12px; color: var(--xh-fg-muted)">＋</span>
+            <svg data-mark aria-hidden="true" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color: var(--xh-fg-muted)"><path d="M12 5V19"/><path data-cross d="M5 12H19"/></svg>
           </button>
         </h3>
         <div data-xh-part="content">同城次日达，跨省三日达。</div>
@@ -1189,7 +1193,7 @@ const panels = ref<string[]>(["shipping"]);
         <h3 data-xh-part="header">
           <button data-xh-part="trigger">
             <span>发票</span>
-            <span data-mark style="font-size: 12px; color: var(--xh-fg-muted)">＋</span>
+            <svg data-mark aria-hidden="true" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color: var(--xh-fg-muted)"><path d="M12 5V19"/><path data-cross d="M5 12H19"/></svg>
           </button>
         </h3>
         <div data-xh-part="content">支持电子普票与专票。</div>
@@ -1198,7 +1202,7 @@ const panels = ref<string[]>(["shipping"]);
         <h3 data-xh-part="header">
           <button data-xh-part="trigger">
             <span>退换货</span>
-            <span data-mark style="font-size: 12px; color: var(--xh-fg-muted)">＋</span>
+            <svg data-mark aria-hidden="true" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color: var(--xh-fg-muted)"><path d="M12 5V19"/><path data-cross d="M5 12H19"/></svg>
           </button>
         </h3>
         <div data-xh-part="content">签收七日内无理由退换。</div>
@@ -1208,12 +1212,14 @@ const panels = ref<string[]>(["shipping"]);
 </div>
 
 <script type="module">
-  // 标记按这一项在不在展开集合里换字形
+  // 标记按这一项在不在展开集合里切换图形
   const accordion = document.getElementById("accordion-custom-icon");
   const paint = (value) => {
     for (const item of accordion.querySelectorAll('[data-xh-part="item"]')) {
       const mark = item.querySelector("[data-mark]");
-      mark.textContent = value.includes(item.getAttribute("value")) ? "－" : "＋";
+      const expanded = value.includes(item.getAttribute("value"));
+      mark.querySelector("path").setAttribute("d", expanded ? "M5 12H19" : "M12 5V19");
+      mark.querySelector("[data-cross]").style.display = expanded ? "none" : "";
     }
   };
   accordion.value = ["shipping"];
@@ -1227,7 +1233,7 @@ const panels = ref<string[]>(["shipping"]);
 
 ### 变体
 
-plain 不画壳，surface 给整块一层面，bordered 逐条画边；三档只改怎么与页面分开
+plain 不画壳，surface 连成单一表面，bordered 逐条画边；三档只改怎么与页面分开
 
 ```vue
 <script setup lang="ts">
@@ -1395,10 +1401,10 @@ const panels = [
 | `collapsible` | `boolean` |  | 允许把最后一个展开项收起，默认 false。 |
 | `loop` | `boolean` |  | 方向键走到尽头是否回绕，默认 false。 |
 | `disabled` | `boolean` |  | 整组禁用：所有条目都不可切换，条目上写的 disabled 只能更严不能放宽。 |
-| `variant` | `AccordionVariant` |  | 形态：plain / surface / bordered，决定条目怎么与页面分开。缺省 plain。 |
+| `variant` | `AccordionVariant` |  | 变体：plain / surface / bordered，决定条目怎么与页面分开。缺省 plain。 |
 | `orientation` | `Orientation` |  | 方向键轴向，默认 vertical。 |
 | `dir` | `Direction` |  | 文字方向，默认 ltr；影响水平轴上 ArrowLeft/ArrowRight 的语义。 |
-| `tone` | `Tone` |  | 语气：brand / neutral / success / warning / danger / info，决定用哪族颜色。 |
+| `tone` | `Tone` |  | 颜色：brand / neutral / success / warning / danger / info，决定使用哪组状态色。 |
 | `size` | `Size` |  | 尺寸：sm / md / lg。 |
 | `onValueChange` | `(details: AccordionValueChangeDetails) => void` |  | 展开集合变化回调。 |
 
@@ -1511,30 +1517,33 @@ const panels = [
 
 | 变量 | 部件 | CSS 属性 | 状态 | 缺省来源 | 说明 |
 | --- | --- | --- | --- | --- | --- |
-| `--xh-accordion-content-fg` | `content` | `color` | `default` | `--xh-fg-default` | accordion 的 content 部件 color 覆盖槽。 |
-| `--xh-accordion-content-px` | `content` | `padding-inline` | `default` | `--xh-control-px-md` | accordion 的 content 部件 padding-inline 覆盖槽。 |
-| `--xh-accordion-content-py` | `*`<br>`content` | `padding-block` | `@keyframes xh-accordion-collapse`<br>`@keyframes xh-accordion-expand`<br>`default` | `--xh-stack-gap-md` | accordion 的 *、content 部件 padding-block 覆盖槽。 |
+| `--xh-accordion-content-fg` | `content` | `color` | `default` | `--xh-fg-muted` | accordion 的 content 部件 color 覆盖槽。 |
+| `--xh-accordion-content-font-size` | `content` | `font-size` | `default` | `--xh-text-secondary-size` | accordion 的 content 部件 font-size 覆盖槽。 |
+| `--xh-accordion-content-pb` | `*`<br>`content` | `padding-block-end` | `@keyframes xh-accordion-collapse`<br>`@keyframes xh-accordion-expand`<br>`default` | `--xh-_accordion-content-pb` | accordion 的 *、content 部件 padding-block-end 覆盖槽。 |
+| `--xh-accordion-content-px` | `content` | `padding-inline` | `default` | `--xh-_accordion-content-px` | accordion 的 content 部件 padding-inline 覆盖槽。 |
 | `--xh-accordion-icon-size` | `root` | `--xh-icon-size` | `default` | `--xh-glyph-size-text` | accordion 的 root 部件 --xh-icon-size 覆盖槽。 |
-| `--xh-accordion-item-bg` | `item`<br>`root` | `background` | `variant=surface` | `--xh-bg-surface` | accordion 的 item、root 部件 background 覆盖槽。 |
-| `--xh-accordion-item-border` | `item`<br>`item-separator`<br>`root` | `background`<br>`border`<br>`border-block-start`<br>`border-inline-start` | `default`<br>`orientation=horizontal`<br>`variant=bordered` | `--xh-border-subtle` | accordion 的 item、item-separator、root 部件 background、border、border-block-start、border-inline-start 覆盖槽。 |
-| `--xh-accordion-item-gap` | `root` | `gap` | `is([data-variant='surface'], [data-variant='bordered'])`<br>`variant=bordered`<br>`variant=surface` | `--xh-space-2` | accordion 的 root 部件 gap 覆盖槽。 |
+| `--xh-accordion-indicator-fg` | `indicator` | `color` | `default` | `--xh-fg-muted` | accordion 的 indicator 部件 color 覆盖槽。 |
+| `--xh-accordion-item-bg` | `root` | `background` | `variant=surface` | `--xh-bg-surface` | accordion 的 root 部件 background 覆盖槽。 |
+| `--xh-accordion-item-border` | `item`<br>`item-separator`<br>`root` | `background`<br>`border`<br>`border-block-start`<br>`border-inline-start` | `default`<br>`not(:last-child)`<br>`orientation=horizontal`<br>`variant=bordered`<br>`variant=surface` | `--xh-border-subtle` | accordion 的 item、item-separator、root 部件 background、border、border-block-start、border-inline-start 覆盖槽。 |
+| `--xh-accordion-item-gap` | `root` | `gap` | `variant=bordered` | `--xh-space-2` | accordion 的 root 部件 gap 覆盖槽。 |
 | `--xh-accordion-item-radius` | `item`<br>`root` | `border-radius` | `variant=bordered`<br>`variant=surface` | `--xh-shape-surface` | accordion 的 item、root 部件 border-radius 覆盖槽。 |
-| `--xh-accordion-item-shadow` | `item`<br>`root` | `box-shadow` | `variant=surface` | `--xh-elevation-raised` | accordion 的 item、root 部件 box-shadow 覆盖槽。 |
+| `--xh-accordion-item-shadow` | `root` | `box-shadow` | `variant=surface` | `none` | accordion 的 root 部件 box-shadow 覆盖槽。 |
 | `--xh-accordion-trigger-bg` | `trigger` | `background` | `default` | `transparent` | accordion 的 trigger 部件 background 覆盖槽。 |
-| `--xh-accordion-trigger-bg-hover` | `trigger` | `background` | `disabled`<br>`hover`<br>`not([data-disabled])` | `--xh-bg-subtle` | accordion 的 trigger 部件 background 覆盖槽。 |
+| `--xh-accordion-trigger-bg-hover` | `trigger` | `background` | `disabled`<br>`hover`<br>`not([data-disabled])`<br>`not([data-state='open'])`<br>`state=open` | `--xh-bg-subtle-hover` | accordion 的 trigger 部件 background 覆盖槽。 |
 | `--xh-accordion-trigger-fg` | `trigger` | `color` | `default` | `--xh-fg-default` | accordion 的 trigger 部件 color 覆盖槽。 |
 | `--xh-accordion-trigger-fg-open` | `trigger` | `color` | `state=open` | `--xh-_accordion-open-fg` | accordion 的 trigger 部件 color 覆盖槽。 |
 | `--xh-accordion-trigger-font-size` | `trigger` | `font-size` | `default` | `--xh-_accordion-trigger-font-size` | accordion 的 trigger 部件 font-size 覆盖槽。 |
 | `--xh-accordion-trigger-font-weight` | `trigger` | `font-weight` | `default` | `--xh-text-label-weight` | accordion 的 trigger 部件 font-weight 覆盖槽。 |
 | `--xh-accordion-trigger-gap` | `trigger` | `gap` | `default` | `--xh-_accordion-trigger-gap` | accordion 的 trigger 部件 gap 覆盖槽。 |
-| `--xh-accordion-trigger-h` | `trigger` | `block-size` | `default` | `--xh-_accordion-trigger-h` | accordion 的 trigger 部件 block-size 覆盖槽。 |
+| `--xh-accordion-trigger-h` | `trigger` | `min-block-size` | `default` | `--xh-_accordion-trigger-h` | accordion 的 trigger 部件 min-block-size 覆盖槽。 |
 | `--xh-accordion-trigger-px` | `trigger` | `padding-inline` | `default` | `--xh-_accordion-trigger-px` | accordion 的 trigger 部件 padding-inline 覆盖槽。 |
+| `--xh-accordion-trigger-py` | `trigger` | `padding-block` | `default` | `--xh-_accordion-trigger-py` | accordion 的 trigger 部件 padding-block 覆盖槽。 |
 | `--xh-accordion-trigger-radius` | `trigger` | `border-radius` | `default` | `--xh-shape-control` | accordion 的 trigger 部件 border-radius 覆盖槽。 |
 <!-- xh-component-tokens:end -->
 
 ### 动效
 
-关键帧 `xh-accordion-collapse` · `xh-accordion-expand` 随皮肤自带，不引用别处文件里的名字；`rotate` · `scale` 走 `transition` 过渡。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
+关键帧 `xh-accordion-collapse` · `xh-accordion-expand` 随皮肤自带，不引用别处文件里的名字；`background` · `rotate` · `scale` 走 `transition` 过渡。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
 
 皮肤之外还有一段：退场由适配器的退场闸门把关，动画播完才真收起。
 

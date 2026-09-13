@@ -1,0 +1,1 @@
+import{G as t}from"./theme.o20Ye0K_.js";import{d as a,c as n,E as o,w as s,k as r,o as c,a as i}from"./framework.DkvuVDKz.js";const l={style:{"inline-size":"180px"}},m=a({__name:"truncate",setup(p){return(u,e)=>(c(),n("div",l,[o(r(t),null,{default:s(()=>[...e[0]||(e[0]=[i("这是一段超出容器宽度后自动截断的文本。",-1)])]),_:1})]))}});export{m as default};

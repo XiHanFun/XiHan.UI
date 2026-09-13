@@ -29,7 +29,26 @@ import {
   XhCarouselViewport,
 } from "@xihan-ui/vue";
 
-const slides = ["第一张", "第二张", "第三张"];
+const slides = [
+  {
+    eyebrow: "设计系统",
+    title: "一套视觉语言",
+    description: "令牌、皮肤与组件共享同一组设计决策。",
+    background: "var(--xh-bg-brand-subtle)",
+  },
+  {
+    eyebrow: "无障碍",
+    title: "键盘与读屏一致",
+    description: "交互状态由无头内核统一维护。",
+    background: "color-mix(in oklab, var(--xh-fg-success) 12%, var(--xh-bg-surface))",
+  },
+  {
+    eyebrow: "跨框架",
+    title: "Vue、React 与 Web Components",
+    description: "同一份行为契约，对齐三种渲染方式。",
+    background: "color-mix(in oklab, var(--xh-fg-warning) 12%, var(--xh-bg-surface))",
+  },
+];
 </script>
 
 <template>
@@ -40,12 +59,26 @@ const slides = ["第一张", "第二张", "第三张"];
   >
     <XhCarouselPrevTrigger />
     <!-- 视口只负责裁切，高度由页面给：不给高度就没有可裁的窗口 -->
-    <XhCarouselViewport style="block-size: 140px">
+    <XhCarouselViewport style="block-size: 176px">
       <XhCarouselList>
-        <XhCarouselItem v-for="(text, i) in slides" :key="text" :index="i">
-          <div style="display: grid; place-items: center; block-size: 100%">
-            {{ text }}
-          </div>
+        <XhCarouselItem v-for="(slide, i) in slides" :key="slide.title" :index="i">
+          <article
+            :style="{
+              display: 'grid',
+              alignContent: 'end',
+              gap: '6px',
+              blockSize: '100%',
+              padding: '24px',
+              background: slide.background,
+              color: 'var(--xh-fg-default)',
+            }"
+          >
+            <span style="color: var(--xh-fg-muted); font-size: var(--xh-text-caption-size)">
+              {{ slide.eyebrow }}
+            </span>
+            <strong style="color: var(--xh-fg-default); font-size: var(--xh-text-heading-3-size)">{{ slide.title }}</strong>
+            <span style="color: var(--xh-fg-muted)">{{ slide.description }}</span>
+          </article>
         </XhCarouselItem>
       </XhCarouselList>
     </XhCarouselViewport>
@@ -63,22 +96,28 @@ const slides = ["第一张", "第二张", "第三张"];
   <div data-xh-part="root" style="inline-size: 100%">
     <button data-xh-part="prev-trigger"></button>
     <!-- 视口只负责裁切，高度由页面给：不给高度就没有可裁的窗口 -->
-    <div data-xh-part="viewport" style="block-size: 140px">
+    <div data-xh-part="viewport" style="block-size: 176px">
       <div data-xh-part="list">
         <div data-xh-part="item" index="0">
-          <div style="display: grid; place-items: center; block-size: 100%">
-            第一张
-          </div>
+          <article style="display: grid; align-content: end; gap: 6px; block-size: 100%; padding: 24px; background: var(--xh-bg-brand-subtle); color: var(--xh-fg-default)">
+            <span style="color: var(--xh-fg-muted); font-size: var(--xh-text-caption-size)">设计系统</span>
+            <strong style="color: var(--xh-fg-default); font-size: var(--xh-text-heading-3-size)">一套视觉语言</strong>
+            <span style="color: var(--xh-fg-muted)">令牌、皮肤与组件共享同一组设计决策。</span>
+          </article>
         </div>
         <div data-xh-part="item" index="1">
-          <div style="display: grid; place-items: center; block-size: 100%">
-            第二张
-          </div>
+          <article style="display: grid; align-content: end; gap: 6px; block-size: 100%; padding: 24px; background: color-mix(in oklab, var(--xh-fg-success) 12%, var(--xh-bg-surface)); color: var(--xh-fg-default)">
+            <span style="color: var(--xh-fg-muted); font-size: var(--xh-text-caption-size)">无障碍</span>
+            <strong style="color: var(--xh-fg-default); font-size: var(--xh-text-heading-3-size)">键盘与读屏一致</strong>
+            <span style="color: var(--xh-fg-muted)">交互状态由无头内核统一维护。</span>
+          </article>
         </div>
         <div data-xh-part="item" index="2">
-          <div style="display: grid; place-items: center; block-size: 100%">
-            第三张
-          </div>
+          <article style="display: grid; align-content: end; gap: 6px; block-size: 100%; padding: 24px; background: color-mix(in oklab, var(--xh-fg-warning) 12%, var(--xh-bg-surface)); color: var(--xh-fg-default)">
+            <span style="color: var(--xh-fg-muted); font-size: var(--xh-text-caption-size)">跨框架</span>
+            <strong style="color: var(--xh-fg-default); font-size: var(--xh-text-heading-3-size)">Vue、React 与 Web Components</strong>
+            <span style="color: var(--xh-fg-muted)">同一份行为契约，对齐三种渲染方式。</span>
+          </article>
         </div>
       </div>
     </div>
@@ -314,6 +353,8 @@ autoplay 给毫秒即间隔；开了它就得渲播放开关，自动翻页必�
 <script setup lang="ts">
 import {
   XhCarouselAutoplayTrigger,
+  XhCarouselIndicator,
+  XhCarouselIndicatorGroup,
   XhCarouselItem,
   XhCarouselList,
   XhCarouselNextTrigger,
@@ -327,7 +368,7 @@ const slides = ["公告一", "公告二", "公告三"];
 
 <template>
   <XhCarouselRoot
-    v-slot="{ page, totalPages, autoplaying, paused }"
+    v-slot="{ totalPages }"
     :slide-count="slides.length"
     :autoplay="2500"
     loop
@@ -345,11 +386,9 @@ const slides = ["公告一", "公告二", "公告三"];
     </XhCarouselViewport>
     <XhCarouselNextTrigger />
     <XhCarouselAutoplayTrigger />
-    <!-- root 自己就是会换行的横排 flex，回显想独占一行得自己占满 -->
-    <span style="flex-basis: 100%">
-      第 {{ page + 1 }} / {{ totalPages }} 页 ·
-      {{ autoplaying ? "自动播放中" : paused ? "被按住" : "已停" }}
-    </span>
+    <XhCarouselIndicatorGroup>
+      <XhCarouselIndicator v-for="p in totalPages" :key="p" :index="p - 1" />
+    </XhCarouselIndicatorGroup>
   </XhCarouselRoot>
 </template>
 ```
@@ -379,39 +418,13 @@ const slides = ["公告一", "公告二", "公告三"];
     </div>
     <button data-xh-part="next-trigger"></button>
     <button data-xh-part="autoplay-trigger"></button>
-    <!-- root 自己就是会换行的横排 flex，回显想独占一行得自己占满 -->
-    <span id="carousel-autoplay-readout" style="flex-basis: 100%"></span>
+    <div data-xh-part="indicator-group">
+      <button data-xh-part="indicator" index="0"></button>
+      <button data-xh-part="indicator" index="1"></button>
+      <button data-xh-part="indicator" index="2"></button>
+    </div>
   </div>
 </xh-carousel>
-
-<script type="module">
-  // 播放与按住两个状态写在 root 上，页码跟着 page-change 走
-  const carousel = document.getElementById("carousel-autoplay");
-  const root = carousel.querySelector('[data-xh-part="root"]');
-  const readout = document.getElementById("carousel-autoplay-readout");
-  let page = 0;
-
-  function render() {
-    const state = root.hasAttribute("data-autoplay")
-      ? "自动播放中"
-      : root.hasAttribute("data-paused")
-        ? "被按住"
-        : "已停";
-    readout.textContent = `第 ${page + 1} / 3 页 · ${state}`;
-  }
-
-  carousel.addEventListener("page-change", (event) => {
-    page = event.detail.page;
-    render();
-  });
-
-  new MutationObserver(render).observe(root, {
-    attributes: true,
-    attributeFilter: ["data-autoplay", "data-paused"],
-  });
-
-  render();
-</script>
 ```
 
 ### 纵向轨道
@@ -431,78 +444,79 @@ import {
   XhCarouselViewport,
 } from "@xihan-ui/vue";
 
-const slides = ["09:00 晨会", "11:00 客户沟通", "15:00 联调"];
+const slides = [
+  { time: "09:00", title: "晨会", description: "同步今天的目标与阻塞项。" },
+  { time: "11:00", title: "客户沟通", description: "确认需求范围与交付节奏。" },
+  { time: "15:00", title: "联调", description: "核对三端行为与视觉结果。" },
+];
 </script>
 
 <template>
   <XhCarouselRoot
-    v-slot="{ page, totalPages }"
+    v-slot="{ totalPages }"
     orientation="vertical"
     :slide-count="slides.length"
-    style="inline-size: 240px"
+    style="inline-size: min(360px, 100%)"
   >
-    <XhCarouselPrevTrigger>∧</XhCarouselPrevTrigger>
+    <XhCarouselPrevTrigger />
     <!-- 纵轨的裁切窗口靠高度定，宽度交给根节点 -->
-    <XhCarouselViewport style="block-size: 96px; inline-size: 100%">
+    <XhCarouselViewport style="block-size: 200px; inline-size: 100%">
       <XhCarouselList>
-        <XhCarouselItem v-for="(text, i) in slides" :key="text" :index="i">
-          <div style="display: grid; place-items: center; block-size: 100%">
-            {{ text }}
-          </div>
+        <XhCarouselItem v-for="(slide, i) in slides" :key="slide.time" :index="i">
+          <article style="display: grid; align-content: center; gap: 6px; block-size: 100%; padding: 32px; background: var(--xh-bg-subtle); color: var(--xh-fg-default)">
+            <span style="color: var(--xh-fg-brand); font-size: var(--xh-text-caption-size)">{{ slide.time }}</span>
+            <strong style="color: var(--xh-fg-default); font-size: var(--xh-text-heading-3-size)">{{ slide.title }}</strong>
+            <span style="color: var(--xh-fg-muted)">{{ slide.description }}</span>
+          </article>
         </XhCarouselItem>
       </XhCarouselList>
     </XhCarouselViewport>
-    <XhCarouselNextTrigger>∨</XhCarouselNextTrigger>
+    <XhCarouselNextTrigger />
     <XhCarouselIndicatorGroup>
       <XhCarouselIndicator v-for="p in totalPages" :key="p" :index="p - 1" />
     </XhCarouselIndicatorGroup>
-    <span>第 {{ page + 1 }} / {{ totalPages }} 条</span>
   </XhCarouselRoot>
 </template>
 ```
 
 ```html
 <xh-carousel id="carousel-vertical" orientation="vertical" slide-count="3">
-  <div data-xh-part="root" style="inline-size: 240px">
-    <button data-xh-part="prev-trigger">∧</button>
+  <div data-xh-part="root" style="inline-size: min(360px, 100%)">
+    <button data-xh-part="prev-trigger"></button>
     <!-- 纵轨的裁切窗口靠高度定，宽度交给根节点 -->
-    <div data-xh-part="viewport" style="block-size: 96px; inline-size: 100%">
+    <div data-xh-part="viewport" style="block-size: 200px; inline-size: 100%">
       <div data-xh-part="list">
         <div data-xh-part="item" index="0">
-          <div style="display: grid; place-items: center; block-size: 100%">
-            09:00 晨会
-          </div>
+          <article style="display: grid; align-content: center; gap: 6px; block-size: 100%; padding: 32px; background: var(--xh-bg-subtle); color: var(--xh-fg-default)">
+            <span style="color: var(--xh-fg-brand); font-size: var(--xh-text-caption-size)">09:00</span>
+            <strong style="color: var(--xh-fg-default); font-size: var(--xh-text-heading-3-size)">晨会</strong>
+            <span style="color: var(--xh-fg-muted)">同步今天的目标与阻塞项。</span>
+          </article>
         </div>
         <div data-xh-part="item" index="1">
-          <div style="display: grid; place-items: center; block-size: 100%">
-            11:00 客户沟通
-          </div>
+          <article style="display: grid; align-content: center; gap: 6px; block-size: 100%; padding: 32px; background: var(--xh-bg-subtle); color: var(--xh-fg-default)">
+            <span style="color: var(--xh-fg-brand); font-size: var(--xh-text-caption-size)">11:00</span>
+            <strong style="color: var(--xh-fg-default); font-size: var(--xh-text-heading-3-size)">客户沟通</strong>
+            <span style="color: var(--xh-fg-muted)">确认需求范围与交付节奏。</span>
+          </article>
         </div>
         <div data-xh-part="item" index="2">
-          <div style="display: grid; place-items: center; block-size: 100%">
-            15:00 联调
-          </div>
+          <article style="display: grid; align-content: center; gap: 6px; block-size: 100%; padding: 32px; background: var(--xh-bg-subtle); color: var(--xh-fg-default)">
+            <span style="color: var(--xh-fg-brand); font-size: var(--xh-text-caption-size)">15:00</span>
+            <strong style="color: var(--xh-fg-default); font-size: var(--xh-text-heading-3-size)">联调</strong>
+            <span style="color: var(--xh-fg-muted)">核对三端行为与视觉结果。</span>
+          </article>
         </div>
       </div>
     </div>
-    <button data-xh-part="next-trigger">∨</button>
+    <button data-xh-part="next-trigger"></button>
     <div data-xh-part="indicator-group">
       <button data-xh-part="indicator" index="0"></button>
       <button data-xh-part="indicator" index="1"></button>
       <button data-xh-part="indicator" index="2"></button>
     </div>
-    <span id="carousel-vertical-readout">第 1 / 3 条</span>
   </div>
 </xh-carousel>
-
-<script type="module">
-  // 页码回显跟着 page-change 走
-  const carousel = document.getElementById("carousel-vertical");
-  const readout = document.getElementById("carousel-vertical-readout");
-  carousel.addEventListener("page-change", (event) => {
-    readout.textContent = `第 ${event.detail.page + 1} / 3 条`;
-  });
-</script>
 ```
 
 ### 指针拖拽
@@ -1046,6 +1060,7 @@ function itemStyle(index: number, page: number): Record<string, string> | undefi
 
 - `slidesPerPage` 与 `slidesPerMove` 分开：可以一屏三张、一次挪一张。
 - 支持纵向轨道、指针拖拽、回绕与自动播放。
+- 自动播放时当前分页短线按停留间隔显示进度，临时暂停时同步冻结。
 - 指示点可以做成悬停即切页。
 
 ### 组合
@@ -1057,7 +1072,7 @@ function itemStyle(index: number, page: number): Record<string, string> | undefi
 - 开了自动播放就把 `autoplay-trigger` 渲出来：它是唯一能把自动翻页停住、且停住之后不会被别的交互重新点着的入口。
 - 自动播放在指针悬停或焦点进入时自动暂停，离开后从头计满一整个间隔再翻。
 - 减弱动效档下自动播放不会自己起播，此时播放开关是用户唯一的起播入口。
-- 指示点要能看出总共几屏、当前第几屏。
+- 分页短线要能看出总共几屏、当前第几屏；自动播放时还应反馈本页剩余时间。
 
 ### 反模式
 
@@ -1212,7 +1227,7 @@ function itemStyle(index: number, page: number): Record<string, string> | undefi
 
 ### 皮肤
 
-`@xihan-ui/styles/carousel.css` 使用 `[data-scope="carousel"][data-part="root"]` 部件选择器，位于 `xihan.components` 层。覆盖样式使用 `xihan.overrides`。
+`@xihan-ui/styles/carousel.css` 使用 `[data-scope="carousel"][data-part="root"]` 部件选择器，位于 `xihan.components` 与 `xihan.motion` 层。覆盖样式使用 `xihan.overrides`。
 
 ### 数据属性
 
@@ -1248,30 +1263,32 @@ function itemStyle(index: number, page: number): Record<string, string> | undefi
 
 | 变量 | 部件 | CSS 属性 | 状态 | 缺省来源 | 说明 |
 | --- | --- | --- | --- | --- | --- |
+| `--xh-carousel-control-inset` | `autoplay-trigger`<br>`indicator-group`<br>`next-trigger`<br>`prev-trigger`<br>`root` | `inset-block-end`<br>`inset-block-start`<br>`inset-inline-end`<br>`inset-inline-start` | `default`<br>`orientation=vertical` | `--xh-space-3` | carousel 的 autoplay-trigger、indicator-group、next-trigger、prev-trigger、root 部件 inset-block-end、inset-block-start、inset-inline-end、inset-inline-start 覆盖槽。 |
 | `--xh-carousel-duration` | `list` | `transition` | `default` | `--xh-motion-duration-slide` | carousel 的 list 部件 transition 覆盖槽。 |
 | `--xh-carousel-ease` | `list` | `transition` | `default` | `--xh-motion-ease-slide` | carousel 的 list 部件 transition 覆盖槽。 |
-| `--xh-carousel-gap` | `root` | `gap` | `default` | `--xh-space-2` | carousel 的 root 部件 gap 覆盖槽。 |
 | `--xh-carousel-icon-size` | `root` | `--xh-icon-size` | `default` | `--xh-glyph-size-text` | carousel 的 root 部件 --xh-icon-size 覆盖槽。 |
 | `--xh-carousel-indicator-bg` | `indicator` | `background` | `default` | `--xh-border-control` | carousel 的 indicator 部件 background 覆盖槽。 |
-| `--xh-carousel-indicator-bg-hover` | `indicator` | `background` | `current`<br>`hover`<br>`not([data-current])` | `--xh-fg-subtle` | carousel 的 indicator 部件 background 覆盖槽。 |
-| `--xh-carousel-indicator-bg-selected` | `indicator` | `background` | `current` | `--xh-bg-brand` | carousel 的 indicator 部件 background 覆盖槽。 |
+| `--xh-carousel-indicator-bg-hover` | `indicator` | `--xh-carousel-indicator-bg` | `current`<br>`hover`<br>`not([data-current])` | `--xh-fg-subtle` | carousel 的 indicator 部件 --xh-carousel-indicator-bg 覆盖槽。 |
+| `--xh-carousel-indicator-bg-selected` | `indicator` | `background` | `default` | `--xh-bg-brand` | carousel 的 indicator 部件 background 覆盖槽。 |
 | `--xh-carousel-indicator-gap` | `indicator-group` | `gap` | `default` | `--xh-space-1` | carousel 的 indicator-group 部件 gap 覆盖槽。 |
+| `--xh-carousel-indicator-inset` | `indicator-group` | `inset-block-end` | `orientation=horizontal` | `--xh-space-3` | carousel 的 indicator-group 部件 inset-block-end 覆盖槽。 |
 | `--xh-carousel-indicator-radius` | `indicator` | `border-radius` | `default` | `--xh-shape-pill` | carousel 的 indicator 部件 border-radius 覆盖槽。 |
-| `--xh-carousel-indicator-size` | `indicator` | `block-size`<br>`inline-size` | `default` | `--xh-space-2` | carousel 的 indicator 部件 block-size、inline-size 覆盖槽。 |
-| `--xh-carousel-trigger-bg` | `autoplay-trigger`<br>`next-trigger`<br>`prev-trigger` | `background` | `default` | `--xh-bg-surface` | carousel 的 autoplay-trigger、next-trigger、prev-trigger 部件 background 覆盖槽。 |
+| `--xh-carousel-indicator-size` | `indicator`<br>`indicator-group` | `block-size`<br>`inline-size` | `current`<br>`default`<br>`orientation=vertical` | `--xh-space-4` | carousel 的 indicator、indicator-group 部件 block-size、inline-size 覆盖槽。 |
+| `--xh-carousel-indicator-size-current` | `indicator`<br>`indicator-group` | `block-size`<br>`inline-size` | `current`<br>`orientation=vertical` | `--xh-space-6` | carousel 的 indicator、indicator-group 部件 block-size、inline-size 覆盖槽。 |
+| `--xh-carousel-trigger-bg` | `autoplay-trigger`<br>`next-trigger`<br>`prev-trigger` | `background` | `default` | `--xh-bg-surface-raised` | carousel 的 autoplay-trigger、next-trigger、prev-trigger 部件 background 覆盖槽。 |
 | `--xh-carousel-trigger-bg-active` | `autoplay-trigger`<br>`next-trigger`<br>`prev-trigger` | `background` | `active`<br>`not(:disabled)` | `--xh-bg-subtle-active` | carousel 的 autoplay-trigger、next-trigger、prev-trigger 部件 background 覆盖槽。 |
 | `--xh-carousel-trigger-bg-hover` | `autoplay-trigger`<br>`next-trigger`<br>`prev-trigger` | `background` | `hover`<br>`not(:disabled)` | `--xh-bg-subtle-hover` | carousel 的 autoplay-trigger、next-trigger、prev-trigger 部件 background 覆盖槽。 |
-| `--xh-carousel-trigger-border` | `autoplay-trigger`<br>`next-trigger`<br>`prev-trigger` | `border` | `default` | `--xh-border-control` | carousel 的 autoplay-trigger、next-trigger、prev-trigger 部件 border 覆盖槽。 |
+| `--xh-carousel-trigger-border` | `autoplay-trigger`<br>`next-trigger`<br>`prev-trigger` | `border` | `default` | `transparent` | carousel 的 autoplay-trigger、next-trigger、prev-trigger 部件 border 覆盖槽。 |
 | `--xh-carousel-trigger-fg` | `autoplay-trigger`<br>`next-trigger`<br>`prev-trigger` | `color` | `default` | `--xh-fg-default` | carousel 的 autoplay-trigger、next-trigger、prev-trigger 部件 color 覆盖槽。 |
 | `--xh-carousel-trigger-radius` | `autoplay-trigger`<br>`next-trigger`<br>`prev-trigger` | `border-radius` | `default` | `--xh-shape-pill` | carousel 的 autoplay-trigger、next-trigger、prev-trigger 部件 border-radius 覆盖槽。 |
-| `--xh-carousel-trigger-shadow-hover` | `autoplay-trigger`<br>`next-trigger`<br>`prev-trigger` | `box-shadow` | `hover`<br>`not(:disabled)` | `--xh-elevation-raised` | carousel 的 autoplay-trigger、next-trigger、prev-trigger 部件 box-shadow 覆盖槽。 |
+| `--xh-carousel-trigger-shadow-hover` | `autoplay-trigger`<br>`next-trigger`<br>`prev-trigger` | `box-shadow` | `hover`<br>`not(:disabled)` | `none` | carousel 的 autoplay-trigger、next-trigger、prev-trigger 部件 box-shadow 覆盖槽。 |
 | `--xh-carousel-trigger-size` | `autoplay-trigger`<br>`next-trigger`<br>`prev-trigger` | `block-size`<br>`inline-size` | `default` | `--xh-control-h-md` | carousel 的 autoplay-trigger、next-trigger、prev-trigger 部件 block-size、inline-size 覆盖槽。 |
 | `--xh-carousel-viewport-radius` | `viewport` | `border-radius` | `default` | `--xh-shape-surface` | carousel 的 viewport 部件 border-radius 覆盖槽。 |
 <!-- xh-component-tokens:end -->
 
 ### 动效
 
-`background` · `border-color` · `box-shadow` · `scale` · `transform` 走 `transition` 过渡。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
+关键帧 `xh-carousel-indicator-progress` 随皮肤自带，不引用别处文件里的名字；`background` · `block-size` · `border-color` · `box-shadow` · `inline-size` · `opacity` · `scale` · `transform` 走 `transition` 过渡。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
 
 皮肤之外还有一段：内核读系统的减弱动效偏好，据此决定要不要动。
 
@@ -1280,3 +1297,7 @@ function itemStyle(index: number, page: number): Record<string, string> | undefi
 ### 响应式
 
 皮肤另按输入能力分档：`pointer: coarse`——同一份皮肤在触屏与带指针的设备上不一样，与视口宽度无关。
+
+### RTL
+
+皮肤用逻辑属性排布（`inline-start` 一族），`dir="rtl"` 下自动镜像；另有按 `dir` 分支的规则。

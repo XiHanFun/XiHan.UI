@@ -25,7 +25,7 @@ import { XhRatingControl, XhRatingItem, XhRatingLabel, XhRatingRoot } from "@xih
   <XhRatingRoot v-slot="{ items }" :default-value="3">
     <XhRatingLabel>整体满意度</XhRatingLabel>
     <XhRatingControl>
-      <XhRatingItem v-for="i in items" :key="i" :value="i">★</XhRatingItem>
+      <XhRatingItem v-for="i in items" :key="i" :value="i" />
     </XhRatingControl>
   </XhRatingRoot>
 </template>
@@ -36,11 +36,11 @@ import { XhRatingControl, XhRatingItem, XhRatingLabel, XhRatingRoot } from "@xih
   <div data-xh-part="root">
     <span data-xh-part="label">整体满意度</span>
     <div data-xh-part="control">
-      <span data-xh-part="item" value="1">★</span>
-      <span data-xh-part="item" value="2">★</span>
-      <span data-xh-part="item" value="3">★</span>
-      <span data-xh-part="item" value="4">★</span>
-      <span data-xh-part="item" value="5">★</span>
+      <span data-xh-part="item" value="1"></span>
+      <span data-xh-part="item" value="2"></span>
+      <span data-xh-part="item" value="3"></span>
+      <span data-xh-part="item" value="4"></span>
+      <span data-xh-part="item" value="5"></span>
     </div>
   </div>
 </xh-rating>
@@ -75,7 +75,7 @@ function onHoverChange(details: { value: number | null }) {
   <XhRatingRoot v-slot="{ items }" v-model:value="score" allow-half @hover-change="onHoverChange">
     <XhRatingLabel>服务评分</XhRatingLabel>
     <XhRatingControl>
-      <XhRatingItem v-for="i in items" :key="i" :value="i">★</XhRatingItem>
+      <XhRatingItem v-for="i in items" :key="i" :value="i" />
     </XhRatingControl>
   </XhRatingRoot>
   <p>评分：{{ score }} · 悬停预览：{{ preview ?? "（无）" }}</p>
@@ -87,11 +87,11 @@ function onHoverChange(details: { value: number | null }) {
   <div data-xh-part="root">
     <span data-xh-part="label">服务评分</span>
     <div data-xh-part="control">
-      <span data-xh-part="item" value="1">★</span>
-      <span data-xh-part="item" value="2">★</span>
-      <span data-xh-part="item" value="3">★</span>
-      <span data-xh-part="item" value="4">★</span>
-      <span data-xh-part="item" value="5">★</span>
+      <span data-xh-part="item" value="1"></span>
+      <span data-xh-part="item" value="2"></span>
+      <span data-xh-part="item" value="3"></span>
+      <span data-xh-part="item" value="4"></span>
+      <span data-xh-part="item" value="5"></span>
     </div>
   </div>
 </xh-rating>
@@ -129,7 +129,7 @@ const level = ref(7);
   <XhRatingRoot v-slot="{ items }" v-model:value="level" :count="10">
     <XhRatingLabel>推荐指数（10 档）</XhRatingLabel>
     <XhRatingControl>
-      <XhRatingItem v-for="i in items" :key="i" :value="i">★</XhRatingItem>
+      <XhRatingItem v-for="i in items" :key="i" :value="i" />
     </XhRatingControl>
   </XhRatingRoot>
   <p>当前：{{ level }} / 10</p>
@@ -141,16 +141,16 @@ const level = ref(7);
   <div data-xh-part="root">
     <span data-xh-part="label">推荐指数（10 档）</span>
     <div data-xh-part="control">
-      <span data-xh-part="item" value="1">★</span>
-      <span data-xh-part="item" value="2">★</span>
-      <span data-xh-part="item" value="3">★</span>
-      <span data-xh-part="item" value="4">★</span>
-      <span data-xh-part="item" value="5">★</span>
-      <span data-xh-part="item" value="6">★</span>
-      <span data-xh-part="item" value="7">★</span>
-      <span data-xh-part="item" value="8">★</span>
-      <span data-xh-part="item" value="9">★</span>
-      <span data-xh-part="item" value="10">★</span>
+      <span data-xh-part="item" value="1"></span>
+      <span data-xh-part="item" value="2"></span>
+      <span data-xh-part="item" value="3"></span>
+      <span data-xh-part="item" value="4"></span>
+      <span data-xh-part="item" value="5"></span>
+      <span data-xh-part="item" value="6"></span>
+      <span data-xh-part="item" value="7"></span>
+      <span data-xh-part="item" value="8"></span>
+      <span data-xh-part="item" value="9"></span>
+      <span data-xh-part="item" value="10"></span>
     </div>
   </div>
 </xh-rating>
@@ -181,14 +181,14 @@ import { XhRatingControl, XhRatingItem, XhRatingLabel, XhRatingRoot } from "@xih
     <XhRatingRoot v-slot="{ items }" :default-value="4" read-only>
       <XhRatingLabel>只读（4 星）</XhRatingLabel>
       <XhRatingControl>
-        <XhRatingItem v-for="i in items" :key="i" :value="i">★</XhRatingItem>
+        <XhRatingItem v-for="i in items" :key="i" :value="i" />
       </XhRatingControl>
     </XhRatingRoot>
 
     <XhRatingRoot v-slot="{ items }" :default-value="2" disabled>
       <XhRatingLabel>禁用（2 星）</XhRatingLabel>
       <XhRatingControl>
-        <XhRatingItem v-for="i in items" :key="i" :value="i">★</XhRatingItem>
+        <XhRatingItem v-for="i in items" :key="i" :value="i" />
       </XhRatingControl>
     </XhRatingRoot>
   </div>
@@ -201,11 +201,11 @@ import { XhRatingControl, XhRatingItem, XhRatingLabel, XhRatingRoot } from "@xih
     <div data-xh-part="root">
       <span data-xh-part="label">只读（4 星）</span>
       <div data-xh-part="control">
-        <span data-xh-part="item" value="1">★</span>
-        <span data-xh-part="item" value="2">★</span>
-        <span data-xh-part="item" value="3">★</span>
-        <span data-xh-part="item" value="4">★</span>
-        <span data-xh-part="item" value="5">★</span>
+        <span data-xh-part="item" value="1"></span>
+        <span data-xh-part="item" value="2"></span>
+        <span data-xh-part="item" value="3"></span>
+        <span data-xh-part="item" value="4"></span>
+        <span data-xh-part="item" value="5"></span>
       </div>
     </div>
   </xh-rating>
@@ -214,11 +214,11 @@ import { XhRatingControl, XhRatingItem, XhRatingLabel, XhRatingRoot } from "@xih
     <div data-xh-part="root">
       <span data-xh-part="label">禁用（2 星）</span>
       <div data-xh-part="control">
-        <span data-xh-part="item" value="1">★</span>
-        <span data-xh-part="item" value="2">★</span>
-        <span data-xh-part="item" value="3">★</span>
-        <span data-xh-part="item" value="4">★</span>
-        <span data-xh-part="item" value="5">★</span>
+        <span data-xh-part="item" value="1"></span>
+        <span data-xh-part="item" value="2"></span>
+        <span data-xh-part="item" value="3"></span>
+        <span data-xh-part="item" value="4"></span>
+        <span data-xh-part="item" value="5"></span>
       </div>
     </div>
   </xh-rating>
@@ -241,7 +241,7 @@ const tones = ["brand", "neutral", "success", "warning", "danger", "info"] as co
     <XhRatingRoot v-for="t in tones" :key="t" v-slot="{ items }" :tone="t" :default-value="4" read-only>
       <XhRatingLabel>{{ t }}</XhRatingLabel>
       <XhRatingControl>
-        <XhRatingItem v-for="i in items" :key="i" :value="i">★</XhRatingItem>
+        <XhRatingItem v-for="i in items" :key="i" :value="i" />
       </XhRatingControl>
     </XhRatingRoot>
   </div>
@@ -254,11 +254,11 @@ const tones = ["brand", "neutral", "success", "warning", "danger", "info"] as co
     <div data-xh-part="root">
       <span data-xh-part="label">brand</span>
       <div data-xh-part="control">
-        <span data-xh-part="item" value="1">★</span>
-        <span data-xh-part="item" value="2">★</span>
-        <span data-xh-part="item" value="3">★</span>
-        <span data-xh-part="item" value="4">★</span>
-        <span data-xh-part="item" value="5">★</span>
+        <span data-xh-part="item" value="1"></span>
+        <span data-xh-part="item" value="2"></span>
+        <span data-xh-part="item" value="3"></span>
+        <span data-xh-part="item" value="4"></span>
+        <span data-xh-part="item" value="5"></span>
       </div>
     </div>
   </xh-rating>
@@ -267,11 +267,11 @@ const tones = ["brand", "neutral", "success", "warning", "danger", "info"] as co
     <div data-xh-part="root">
       <span data-xh-part="label">neutral</span>
       <div data-xh-part="control">
-        <span data-xh-part="item" value="1">★</span>
-        <span data-xh-part="item" value="2">★</span>
-        <span data-xh-part="item" value="3">★</span>
-        <span data-xh-part="item" value="4">★</span>
-        <span data-xh-part="item" value="5">★</span>
+        <span data-xh-part="item" value="1"></span>
+        <span data-xh-part="item" value="2"></span>
+        <span data-xh-part="item" value="3"></span>
+        <span data-xh-part="item" value="4"></span>
+        <span data-xh-part="item" value="5"></span>
       </div>
     </div>
   </xh-rating>
@@ -280,11 +280,11 @@ const tones = ["brand", "neutral", "success", "warning", "danger", "info"] as co
     <div data-xh-part="root">
       <span data-xh-part="label">success</span>
       <div data-xh-part="control">
-        <span data-xh-part="item" value="1">★</span>
-        <span data-xh-part="item" value="2">★</span>
-        <span data-xh-part="item" value="3">★</span>
-        <span data-xh-part="item" value="4">★</span>
-        <span data-xh-part="item" value="5">★</span>
+        <span data-xh-part="item" value="1"></span>
+        <span data-xh-part="item" value="2"></span>
+        <span data-xh-part="item" value="3"></span>
+        <span data-xh-part="item" value="4"></span>
+        <span data-xh-part="item" value="5"></span>
       </div>
     </div>
   </xh-rating>
@@ -293,11 +293,11 @@ const tones = ["brand", "neutral", "success", "warning", "danger", "info"] as co
     <div data-xh-part="root">
       <span data-xh-part="label">warning</span>
       <div data-xh-part="control">
-        <span data-xh-part="item" value="1">★</span>
-        <span data-xh-part="item" value="2">★</span>
-        <span data-xh-part="item" value="3">★</span>
-        <span data-xh-part="item" value="4">★</span>
-        <span data-xh-part="item" value="5">★</span>
+        <span data-xh-part="item" value="1"></span>
+        <span data-xh-part="item" value="2"></span>
+        <span data-xh-part="item" value="3"></span>
+        <span data-xh-part="item" value="4"></span>
+        <span data-xh-part="item" value="5"></span>
       </div>
     </div>
   </xh-rating>
@@ -306,11 +306,11 @@ const tones = ["brand", "neutral", "success", "warning", "danger", "info"] as co
     <div data-xh-part="root">
       <span data-xh-part="label">danger</span>
       <div data-xh-part="control">
-        <span data-xh-part="item" value="1">★</span>
-        <span data-xh-part="item" value="2">★</span>
-        <span data-xh-part="item" value="3">★</span>
-        <span data-xh-part="item" value="4">★</span>
-        <span data-xh-part="item" value="5">★</span>
+        <span data-xh-part="item" value="1"></span>
+        <span data-xh-part="item" value="2"></span>
+        <span data-xh-part="item" value="3"></span>
+        <span data-xh-part="item" value="4"></span>
+        <span data-xh-part="item" value="5"></span>
       </div>
     </div>
   </xh-rating>
@@ -319,11 +319,11 @@ const tones = ["brand", "neutral", "success", "warning", "danger", "info"] as co
     <div data-xh-part="root">
       <span data-xh-part="label">info</span>
       <div data-xh-part="control">
-        <span data-xh-part="item" value="1">★</span>
-        <span data-xh-part="item" value="2">★</span>
-        <span data-xh-part="item" value="3">★</span>
-        <span data-xh-part="item" value="4">★</span>
-        <span data-xh-part="item" value="5">★</span>
+        <span data-xh-part="item" value="1"></span>
+        <span data-xh-part="item" value="2"></span>
+        <span data-xh-part="item" value="3"></span>
+        <span data-xh-part="item" value="4"></span>
+        <span data-xh-part="item" value="5"></span>
       </div>
     </div>
   </xh-rating>
@@ -344,21 +344,21 @@ import { XhRatingControl, XhRatingItem, XhRatingLabel, XhRatingRoot } from "@xih
     <XhRatingRoot v-slot="{ items }" :default-value="3" size="sm">
       <XhRatingLabel>sm</XhRatingLabel>
       <XhRatingControl>
-        <XhRatingItem v-for="i in items" :key="i" :value="i">★</XhRatingItem>
+        <XhRatingItem v-for="i in items" :key="i" :value="i" />
       </XhRatingControl>
     </XhRatingRoot>
 
     <XhRatingRoot v-slot="{ items }" :default-value="3">
       <XhRatingLabel>缺省</XhRatingLabel>
       <XhRatingControl>
-        <XhRatingItem v-for="i in items" :key="i" :value="i">★</XhRatingItem>
+        <XhRatingItem v-for="i in items" :key="i" :value="i" />
       </XhRatingControl>
     </XhRatingRoot>
 
     <XhRatingRoot v-slot="{ items }" :default-value="3" size="lg">
       <XhRatingLabel>lg</XhRatingLabel>
       <XhRatingControl>
-        <XhRatingItem v-for="i in items" :key="i" :value="i">★</XhRatingItem>
+        <XhRatingItem v-for="i in items" :key="i" :value="i" />
       </XhRatingControl>
     </XhRatingRoot>
   </div>
@@ -371,11 +371,11 @@ import { XhRatingControl, XhRatingItem, XhRatingLabel, XhRatingRoot } from "@xih
     <div data-xh-part="root">
       <span data-xh-part="label">sm</span>
       <div data-xh-part="control">
-        <span data-xh-part="item" value="1">★</span>
-        <span data-xh-part="item" value="2">★</span>
-        <span data-xh-part="item" value="3">★</span>
-        <span data-xh-part="item" value="4">★</span>
-        <span data-xh-part="item" value="5">★</span>
+        <span data-xh-part="item" value="1"></span>
+        <span data-xh-part="item" value="2"></span>
+        <span data-xh-part="item" value="3"></span>
+        <span data-xh-part="item" value="4"></span>
+        <span data-xh-part="item" value="5"></span>
       </div>
     </div>
   </xh-rating>
@@ -384,11 +384,11 @@ import { XhRatingControl, XhRatingItem, XhRatingLabel, XhRatingRoot } from "@xih
     <div data-xh-part="root">
       <span data-xh-part="label">缺省</span>
       <div data-xh-part="control">
-        <span data-xh-part="item" value="1">★</span>
-        <span data-xh-part="item" value="2">★</span>
-        <span data-xh-part="item" value="3">★</span>
-        <span data-xh-part="item" value="4">★</span>
-        <span data-xh-part="item" value="5">★</span>
+        <span data-xh-part="item" value="1"></span>
+        <span data-xh-part="item" value="2"></span>
+        <span data-xh-part="item" value="3"></span>
+        <span data-xh-part="item" value="4"></span>
+        <span data-xh-part="item" value="5"></span>
       </div>
     </div>
   </xh-rating>
@@ -397,24 +397,25 @@ import { XhRatingControl, XhRatingItem, XhRatingLabel, XhRatingRoot } from "@xih
     <div data-xh-part="root">
       <span data-xh-part="label">lg</span>
       <div data-xh-part="control">
-        <span data-xh-part="item" value="1">★</span>
-        <span data-xh-part="item" value="2">★</span>
-        <span data-xh-part="item" value="3">★</span>
-        <span data-xh-part="item" value="4">★</span>
-        <span data-xh-part="item" value="5">★</span>
+        <span data-xh-part="item" value="1"></span>
+        <span data-xh-part="item" value="2"></span>
+        <span data-xh-part="item" value="3"></span>
+        <span data-xh-part="item" value="4"></span>
+        <span data-xh-part="item" value="5"></span>
       </div>
     </div>
   </xh-rating>
 </div>
 ```
 
-### 自定义图案
+### 自定义图标
 
-星形由作者写，条目自带这颗的点亮状态，点亮与未点亮可以画成两个字形
+条目可使用首方图标，也可留空使用皮肤默认星形
 
 ```vue
 <script setup lang="ts">
-import { XhRatingControl, XhRatingItem, XhRatingLabel, XhRatingRoot } from "@xihan-ui/vue";
+import { HeartIcon } from "@xihan-ui/icons";
+import { XhIcon, XhRatingControl, XhRatingItem, XhRatingLabel, XhRatingRoot } from "@xihan-ui/vue";
 </script>
 
 <template>
@@ -422,21 +423,14 @@ import { XhRatingControl, XhRatingItem, XhRatingLabel, XhRatingRoot } from "@xih
     <XhRatingRoot v-slot="{ items }" :default-value="3">
       <XhRatingLabel>换个字形</XhRatingLabel>
       <XhRatingControl>
-        <XhRatingItem v-for="i in items" :key="i" :value="i">♥</XhRatingItem>
+        <XhRatingItem v-for="i in items" :key="i" :value="i"><XhIcon :icon="HeartIcon" /></XhRatingItem>
       </XhRatingControl>
     </XhRatingRoot>
 
     <XhRatingRoot v-slot="{ items }" :default-value="2" allow-half>
-      <XhRatingLabel>空心与实心（半颗仍由皮肤裁）</XhRatingLabel>
+      <XhRatingLabel>内置星形与半档</XhRatingLabel>
       <XhRatingControl>
-        <XhRatingItem
-          v-for="i in items"
-          :key="i"
-          v-slot="{ highlighted }"
-          :value="i"
-        >
-          {{ highlighted ? "★" : "☆" }}
-        </XhRatingItem>
+        <XhRatingItem v-for="i in items" :key="i" :value="i" />
       </XhRatingControl>
     </XhRatingRoot>
   </div>
@@ -449,48 +443,28 @@ import { XhRatingControl, XhRatingItem, XhRatingLabel, XhRatingRoot } from "@xih
     <div data-xh-part="root">
       <span data-xh-part="label">换个字形</span>
       <div data-xh-part="control">
-        <span data-xh-part="item" value="1">♥</span>
-        <span data-xh-part="item" value="2">♥</span>
-        <span data-xh-part="item" value="3">♥</span>
-        <span data-xh-part="item" value="4">♥</span>
-        <span data-xh-part="item" value="5">♥</span>
+        <span data-xh-part="item" value="1"><svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20.5C10.5 18.5 3 13.5 3 8.5C3 5.46 5.46 3 8.5 3C10.6 3 11.4 4.2 12 6.2C12.6 4.2 13.4 3 15.5 3C18.54 3 21 5.46 21 8.5C21 13.5 13.5 18.5 12 20.5Z"/></svg></span>
+        <span data-xh-part="item" value="2"><svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20.5C10.5 18.5 3 13.5 3 8.5C3 5.46 5.46 3 8.5 3C10.6 3 11.4 4.2 12 6.2C12.6 4.2 13.4 3 15.5 3C18.54 3 21 5.46 21 8.5C21 13.5 13.5 18.5 12 20.5Z"/></svg></span>
+        <span data-xh-part="item" value="3"><svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20.5C10.5 18.5 3 13.5 3 8.5C3 5.46 5.46 3 8.5 3C10.6 3 11.4 4.2 12 6.2C12.6 4.2 13.4 3 15.5 3C18.54 3 21 5.46 21 8.5C21 13.5 13.5 18.5 12 20.5Z"/></svg></span>
+        <span data-xh-part="item" value="4"><svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20.5C10.5 18.5 3 13.5 3 8.5C3 5.46 5.46 3 8.5 3C10.6 3 11.4 4.2 12 6.2C12.6 4.2 13.4 3 15.5 3C18.54 3 21 5.46 21 8.5C21 13.5 13.5 18.5 12 20.5Z"/></svg></span>
+        <span data-xh-part="item" value="5"><svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20.5C10.5 18.5 3 13.5 3 8.5C3 5.46 5.46 3 8.5 3C10.6 3 11.4 4.2 12 6.2C12.6 4.2 13.4 3 15.5 3C18.54 3 21 5.46 21 8.5C21 13.5 13.5 18.5 12 20.5Z"/></svg></span>
       </div>
     </div>
   </xh-rating>
 
-  <xh-rating id="rating-outline" default-value="2" allow-half>
+  <xh-rating default-value="2" allow-half>
     <div data-xh-part="root">
-      <span data-xh-part="label">空心与实心（半颗仍由皮肤裁）</span>
+      <span data-xh-part="label">内置星形与半档</span>
       <div data-xh-part="control">
-        <span data-xh-part="item" value="1">★</span>
-        <span data-xh-part="item" value="2">★</span>
-        <span data-xh-part="item" value="3">☆</span>
-        <span data-xh-part="item" value="4">☆</span>
-        <span data-xh-part="item" value="5">☆</span>
+        <span data-xh-part="item" value="1"></span>
+        <span data-xh-part="item" value="2"></span>
+        <span data-xh-part="item" value="3"></span>
+        <span data-xh-part="item" value="4"></span>
+        <span data-xh-part="item" value="5"></span>
       </div>
     </div>
   </xh-rating>
 </div>
-
-<script type="module">
-  // 点亮状态由组件写在条目上，照它换字形
-  const rating = document.getElementById("rating-outline");
-  const items = [...rating.querySelectorAll('[data-xh-part="item"]')];
-
-  function paint() {
-    for (const item of items) {
-      const glyph = item.hasAttribute("data-highlighted") ? "★" : "☆";
-      if (item.textContent !== glyph) item.textContent = glyph;
-    }
-  }
-
-  new MutationObserver(paint).observe(rating, {
-    subtree: true,
-    attributes: true,
-    attributeFilter: ["data-highlighted"],
-  });
-  paint();
-</script>
 ```
 
 ### 自定义颜色
@@ -512,7 +486,7 @@ import { XhRatingControl, XhRatingItem, XhRatingLabel, XhRatingRoot } from "@xih
     >
       <XhRatingLabel>只换点亮色</XhRatingLabel>
       <XhRatingControl>
-        <XhRatingItem v-for="i in items" :key="i" :value="i">★</XhRatingItem>
+        <XhRatingItem v-for="i in items" :key="i" :value="i" />
       </XhRatingControl>
     </XhRatingRoot>
 
@@ -524,7 +498,7 @@ import { XhRatingControl, XhRatingItem, XhRatingLabel, XhRatingRoot } from "@xih
     >
       <XhRatingLabel>点亮与未点亮各给一色</XhRatingLabel>
       <XhRatingControl>
-        <XhRatingItem v-for="i in items" :key="i" :value="i">★</XhRatingItem>
+        <XhRatingItem v-for="i in items" :key="i" :value="i" />
       </XhRatingControl>
     </XhRatingRoot>
   </div>
@@ -537,11 +511,11 @@ import { XhRatingControl, XhRatingItem, XhRatingLabel, XhRatingRoot } from "@xih
     <div data-xh-part="root" style="--xh-rating-item-fg-highlighted: #4fb233">
       <span data-xh-part="label">只换点亮色</span>
       <div data-xh-part="control">
-        <span data-xh-part="item" value="1">★</span>
-        <span data-xh-part="item" value="2">★</span>
-        <span data-xh-part="item" value="3">★</span>
-        <span data-xh-part="item" value="4">★</span>
-        <span data-xh-part="item" value="5">★</span>
+        <span data-xh-part="item" value="1"></span>
+        <span data-xh-part="item" value="2"></span>
+        <span data-xh-part="item" value="3"></span>
+        <span data-xh-part="item" value="4"></span>
+        <span data-xh-part="item" value="5"></span>
       </div>
     </div>
   </xh-rating>
@@ -553,11 +527,11 @@ import { XhRatingControl, XhRatingItem, XhRatingLabel, XhRatingRoot } from "@xih
     >
       <span data-xh-part="label">点亮与未点亮各给一色</span>
       <div data-xh-part="control">
-        <span data-xh-part="item" value="1">★</span>
-        <span data-xh-part="item" value="2">★</span>
-        <span data-xh-part="item" value="3">★</span>
-        <span data-xh-part="item" value="4">★</span>
-        <span data-xh-part="item" value="5">★</span>
+        <span data-xh-part="item" value="1"></span>
+        <span data-xh-part="item" value="2"></span>
+        <span data-xh-part="item" value="3"></span>
+        <span data-xh-part="item" value="4"></span>
+        <span data-xh-part="item" value="5"></span>
       </div>
     </div>
   </xh-rating>
@@ -583,7 +557,7 @@ const sticky = ref(3);
       <XhRatingRoot v-slot="{ items }" v-model:value="score">
         <XhRatingLabel>整体满意度（可清空）</XhRatingLabel>
         <XhRatingControl>
-          <XhRatingItem v-for="i in items" :key="i" :value="i">★</XhRatingItem>
+          <XhRatingItem v-for="i in items" :key="i" :value="i" />
         </XhRatingControl>
       </XhRatingRoot>
       <p style="margin: 4px 0 0; font-size: 13px">当前：{{ score === 0 ? "还没评" : score }}</p>
@@ -592,7 +566,7 @@ const sticky = ref(3);
       <XhRatingRoot v-slot="{ items }" v-model:value="sticky" :allow-clear="false">
         <XhRatingLabel>关掉清空（再点不清）</XhRatingLabel>
         <XhRatingControl>
-          <XhRatingItem v-for="i in items" :key="i" :value="i">★</XhRatingItem>
+          <XhRatingItem v-for="i in items" :key="i" :value="i" />
         </XhRatingControl>
       </XhRatingRoot>
       <p style="margin: 4px 0 0; font-size: 13px">当前：{{ sticky }}</p>
@@ -608,11 +582,11 @@ const sticky = ref(3);
       <div data-xh-part="root">
         <span data-xh-part="label">整体满意度（可清空）</span>
         <div data-xh-part="control">
-          <span data-xh-part="item" value="1">★</span>
-          <span data-xh-part="item" value="2">★</span>
-          <span data-xh-part="item" value="3">★</span>
-          <span data-xh-part="item" value="4">★</span>
-          <span data-xh-part="item" value="5">★</span>
+          <span data-xh-part="item" value="1"></span>
+          <span data-xh-part="item" value="2"></span>
+          <span data-xh-part="item" value="3"></span>
+          <span data-xh-part="item" value="4"></span>
+          <span data-xh-part="item" value="5"></span>
         </div>
       </div>
     </xh-rating>
@@ -623,11 +597,11 @@ const sticky = ref(3);
       <div data-xh-part="root">
         <span data-xh-part="label">关掉清空（再点不清）</span>
         <div data-xh-part="control">
-          <span data-xh-part="item" value="1">★</span>
-          <span data-xh-part="item" value="2">★</span>
-          <span data-xh-part="item" value="3">★</span>
-          <span data-xh-part="item" value="4">★</span>
-          <span data-xh-part="item" value="5">★</span>
+          <span data-xh-part="item" value="1"></span>
+          <span data-xh-part="item" value="2"></span>
+          <span data-xh-part="item" value="3"></span>
+          <span data-xh-part="item" value="4"></span>
+          <span data-xh-part="item" value="5"></span>
         </div>
       </div>
     </xh-rating>
@@ -668,7 +642,7 @@ const sticky = ref(3);
 
 - `allowHalf` 支持半档，`allowClear` 允许再点一次清空。
 - 悬停预览与实际值分开，`onHoverChange` 单独回调。
-- 图案与颜色都可以换。
+- 条目留空时使用首方星形图标；也可传入自己的图标与颜色。
 
 ### 组合
 
@@ -849,9 +823,9 @@ const sticky = ref(3);
 | 变量 | 部件 | CSS 属性 | 状态 | 缺省来源 | 说明 |
 | --- | --- | --- | --- | --- | --- |
 | `--xh-rating-gap` | `root` | `gap` | `default` | `--xh-stack-gap-md` | rating 的 root 部件 gap 覆盖槽。 |
-| `--xh-rating-item-fg` | `item` | `background-image`<br>`color` | `default`<br>`dir(rtl)`<br>`half` | `--xh-fg-subtle` | rating 的 item 部件 background-image、color 覆盖槽。 |
-| `--xh-rating-item-fg-highlighted` | `item` | `background-image`<br>`color` | `@media print`<br>`dir(rtl)`<br>`half`<br>`highlighted` | `--xh-_rating-accent` | rating 的 item 部件 background-image、color 覆盖槽。 |
-| `--xh-rating-item-font-size` | `item` | `font-size` | `default` | `--xh-_rating-item-size` | rating 的 item 部件 font-size 覆盖槽。 |
+| `--xh-rating-item-fg` | `item` | `background-color`<br>`background-image`<br>`color` | `default`<br>`dir(rtl)`<br>`empty`<br>`half`<br>`not(:empty)` | `--xh-fg-subtle` | rating 的 item 部件 background-color、background-image、color 覆盖槽。 |
+| `--xh-rating-item-fg-highlighted` | `item` | `background-color`<br>`background-image`<br>`color` | `@media print`<br>`dir(rtl)`<br>`empty`<br>`half`<br>`highlighted`<br>`not(:empty)` | `--xh-_rating-accent` | rating 的 item 部件 background-color、background-image、color 覆盖槽。 |
+| `--xh-rating-item-font-size` | `item`<br>`root` | `--xh-icon-size`<br>`font-size` | `default` | `--xh-_rating-item-size` | rating 的 item、root 部件 --xh-icon-size、font-size 覆盖槽。 |
 | `--xh-rating-item-gap` | `control` | `gap` | `default` | `--xh-_rating-item-gap` | rating 的 control 部件 gap 覆盖槽。 |
 | `--xh-rating-item-radius` | `item` | `border-radius` | `default` | `--xh-shape-control` | rating 的 item 部件 border-radius 覆盖槽。 |
 | `--xh-rating-label-fg` | `label` | `color` | `default` | `--xh-fg-muted` | rating 的 label 部件 color 覆盖槽。 |
@@ -863,10 +837,10 @@ const sticky = ref(3);
 
 ### 动效
 
-`color` · `scale` 走 `transition` 过渡。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
+`clip-path` · `color` · `scale` 走 `transition` 过渡。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
 
 系统开启减弱动效时由令牌层统一收敛，皮肤不另作判断。
 
 ### RTL
 
-另有按 `dir` 分支的规则。
+皮肤用逻辑属性排布（`inline-start` 一族），`dir="rtl"` 下自动镜像；另有按 `dir` 分支的规则。

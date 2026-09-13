@@ -18,16 +18,20 @@
 
 ```vue
 <script setup lang="ts">
-import { XhAvatarFallback, XhAvatarGroupRoot, XhAvatarImage, XhAvatarRoot } from "@xihan-ui/vue";
+import { XhAvatarFallback, XhAvatarGroupRoot, XhAvatarRoot } from "@xihan-ui/vue";
 
-const members = ["曦", "寒", "懿", "承"];
+const members = [
+  { label: "曦", tone: "brand" },
+  { label: "寒", tone: "success" },
+  { label: "懿", tone: "warning" },
+  { label: "承", tone: "info" },
+] as const;
 </script>
 
 <template>
   <XhAvatarGroupRoot>
-    <XhAvatarRoot v-for="m in members" :key="m">
-      <XhAvatarImage />
-      <XhAvatarFallback>{{ m }}</XhAvatarFallback>
+    <XhAvatarRoot v-for="member in members" :key="member.label" :tone="member.tone">
+      <XhAvatarFallback>{{ member.label }}</XhAvatarFallback>
     </XhAvatarRoot>
   </XhAvatarGroupRoot>
 </template>
@@ -36,27 +40,23 @@ const members = ["曦", "寒", "懿", "承"];
 ```html
 <xh-avatar-group>
   <div data-xh-part="root">
-    <xh-avatar>
+    <xh-avatar tone="brand">
       <span data-xh-part="root">
-        <img data-xh-part="image" />
         <span data-xh-part="fallback">曦</span>
       </span>
     </xh-avatar>
-    <xh-avatar>
+    <xh-avatar tone="success">
       <span data-xh-part="root">
-        <img data-xh-part="image" />
         <span data-xh-part="fallback">寒</span>
       </span>
     </xh-avatar>
-    <xh-avatar>
+    <xh-avatar tone="warning">
       <span data-xh-part="root">
-        <img data-xh-part="image" />
         <span data-xh-part="fallback">懿</span>
       </span>
     </xh-avatar>
-    <xh-avatar>
+    <xh-avatar tone="info">
       <span data-xh-part="root">
-        <img data-xh-part="image" />
         <span data-xh-part="fallback">承</span>
       </span>
     </xh-avatar>
@@ -78,7 +78,7 @@ const members = ["曦", "寒", "懿", "承"];
 
 ```vue
 <script setup lang="ts">
-import { XhAvatarFallback, XhAvatarGroupOverflowItem, XhAvatarGroupRoot, XhAvatarImage, XhAvatarRoot } from "@xihan-ui/vue";
+import { XhAvatarFallback, XhAvatarGroupOverflowItem, XhAvatarGroupRoot, XhAvatarRoot } from "@xihan-ui/vue";
 
 const members = ["曦", "寒", "懿", "承", "临", "旭"];
 const max = 4;
@@ -90,7 +90,6 @@ const rest = members.length - shown.length;
 <template>
   <XhAvatarGroupRoot :max="max">
     <XhAvatarRoot v-for="m in shown" :key="m">
-      <XhAvatarImage />
       <XhAvatarFallback>{{ m }}</XhAvatarFallback>
     </XhAvatarRoot>
 
@@ -105,25 +104,21 @@ const rest = members.length - shown.length;
   <div data-xh-part="root">
     <xh-avatar>
       <span data-xh-part="root">
-        <img data-xh-part="image" />
         <span data-xh-part="fallback">曦</span>
       </span>
     </xh-avatar>
     <xh-avatar>
       <span data-xh-part="root">
-        <img data-xh-part="image" />
         <span data-xh-part="fallback">寒</span>
       </span>
     </xh-avatar>
     <xh-avatar>
       <span data-xh-part="root">
-        <img data-xh-part="image" />
         <span data-xh-part="fallback">懿</span>
       </span>
     </xh-avatar>
     <xh-avatar>
       <span data-xh-part="root">
-        <img data-xh-part="image" />
         <span data-xh-part="fallback">承</span>
       </span>
     </xh-avatar>
@@ -140,7 +135,7 @@ const rest = members.length - shown.length;
 
 ```vue
 <script setup lang="ts">
-import { XhAvatarFallback, XhAvatarGroupOverflowItem, XhAvatarGroupRoot, XhAvatarImage, XhAvatarRoot } from "@xihan-ui/vue";
+import { XhAvatarFallback, XhAvatarGroupOverflowItem, XhAvatarGroupRoot, XhAvatarRoot } from "@xihan-ui/vue";
 
 const sizes = ["sm", "md", "lg"];
 const shown = ["曦", "寒", "懿"];
@@ -150,7 +145,6 @@ const shown = ["曦", "寒", "懿"];
   <div style="display: grid; gap: 16px; justify-items: start">
     <XhAvatarGroupRoot v-for="s in sizes" :key="s" :size="s" :max="3">
       <XhAvatarRoot v-for="m in shown" :key="m">
-        <XhAvatarImage />
         <XhAvatarFallback>{{ m }}</XhAvatarFallback>
       </XhAvatarRoot>
       <XhAvatarGroupOverflowItem>+3</XhAvatarGroupOverflowItem>
@@ -165,19 +159,16 @@ const shown = ["曦", "寒", "懿"];
     <div data-xh-part="root">
       <xh-avatar>
         <span data-xh-part="root">
-          <img data-xh-part="image" />
           <span data-xh-part="fallback">曦</span>
         </span>
       </xh-avatar>
       <xh-avatar>
         <span data-xh-part="root">
-          <img data-xh-part="image" />
           <span data-xh-part="fallback">寒</span>
         </span>
       </xh-avatar>
       <xh-avatar>
         <span data-xh-part="root">
-          <img data-xh-part="image" />
           <span data-xh-part="fallback">懿</span>
         </span>
       </xh-avatar>
@@ -189,19 +180,16 @@ const shown = ["曦", "寒", "懿"];
     <div data-xh-part="root">
       <xh-avatar>
         <span data-xh-part="root">
-          <img data-xh-part="image" />
           <span data-xh-part="fallback">曦</span>
         </span>
       </xh-avatar>
       <xh-avatar>
         <span data-xh-part="root">
-          <img data-xh-part="image" />
           <span data-xh-part="fallback">寒</span>
         </span>
       </xh-avatar>
       <xh-avatar>
         <span data-xh-part="root">
-          <img data-xh-part="image" />
           <span data-xh-part="fallback">懿</span>
         </span>
       </xh-avatar>
@@ -213,19 +201,16 @@ const shown = ["曦", "寒", "懿"];
     <div data-xh-part="root">
       <xh-avatar>
         <span data-xh-part="root">
-          <img data-xh-part="image" />
           <span data-xh-part="fallback">曦</span>
         </span>
       </xh-avatar>
       <xh-avatar>
         <span data-xh-part="root">
-          <img data-xh-part="image" />
           <span data-xh-part="fallback">寒</span>
         </span>
       </xh-avatar>
       <xh-avatar>
         <span data-xh-part="root">
-          <img data-xh-part="image" />
           <span data-xh-part="fallback">懿</span>
         </span>
       </xh-avatar>
@@ -241,7 +226,7 @@ const shown = ["曦", "寒", "懿"];
 
 ```vue
 <script setup lang="ts">
-import { XhAvatarFallback, XhAvatarGroupOverflowItem, XhAvatarGroupRoot, XhAvatarImage, XhAvatarRoot } from "@xihan-ui/vue";
+import { XhAvatarFallback, XhAvatarGroupOverflowItem, XhAvatarGroupRoot, XhAvatarRoot } from "@xihan-ui/vue";
 
 const shown = ["曦", "寒", "懿", "承"];
 
@@ -257,7 +242,6 @@ const tokens = {
 <template>
   <XhAvatarGroupRoot :max="4" :style="tokens">
     <XhAvatarRoot v-for="m in shown" :key="m">
-      <XhAvatarImage />
       <XhAvatarFallback>{{ m }}</XhAvatarFallback>
     </XhAvatarRoot>
     <XhAvatarGroupOverflowItem>+2</XhAvatarGroupOverflowItem>
@@ -279,25 +263,21 @@ const tokens = {
   >
     <xh-avatar>
       <span data-xh-part="root">
-        <img data-xh-part="image" />
         <span data-xh-part="fallback">曦</span>
       </span>
     </xh-avatar>
     <xh-avatar>
       <span data-xh-part="root">
-        <img data-xh-part="image" />
         <span data-xh-part="fallback">寒</span>
       </span>
     </xh-avatar>
     <xh-avatar>
       <span data-xh-part="root">
-        <img data-xh-part="image" />
         <span data-xh-part="fallback">懿</span>
       </span>
     </xh-avatar>
     <xh-avatar>
       <span data-xh-part="root">
-        <img data-xh-part="image" />
         <span data-xh-part="fallback">承</span>
       </span>
     </xh-avatar>

@@ -58,6 +58,7 @@ function toggle(value: string) {
         </XhToolbarItem>
       </template>
     </XhToolbarGroup>
+    <XhToolbarSeparator />
     <XhToolbarGroup>
       <XhToolbarItem value="copy" type="button" aria-label="复制">
         <XhIcon :icon="CopyIcon" />
@@ -87,6 +88,7 @@ function toggle(value: string) {
         <svg aria-hidden="true" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 4V11A6 6 0 0 0 18 11V4"/><line x1="4" y1="21" x2="20" y2="21"/></svg>
       </button>
     </div>
+    <div data-xh-part="separator"></div>
     <div data-xh-part="group">
       <button data-xh-part="item" type="button" value="copy" aria-label="复制">
         <svg aria-hidden="true" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
@@ -139,6 +141,7 @@ import {
       <XhToolbarSeparator />
       <XhToolbarItem value="paste" type="button">粘贴</XhToolbarItem>
     </XhToolbarGroup>
+    <XhToolbarSeparator />
     <XhToolbarGroup>
       <XhToolbarItem value="undo" type="button">撤销</XhToolbarItem>
       <XhToolbarSeparator />
@@ -158,6 +161,7 @@ import {
       <div data-xh-part="separator"></div>
       <button data-xh-part="item" type="button" value="paste">粘贴</button>
     </div>
+    <div data-xh-part="separator"></div>
     <div data-xh-part="group">
       <button data-xh-part="item" type="button" value="undo">撤销</button>
       <div data-xh-part="separator"></div>
@@ -268,9 +272,9 @@ import {
 ### 特性
 
 - 默认 `plain` 变体不绘制工具条外框。
-- `surface` 变体提供带内距、描边和背景的附着式工具面。
-- `group` 使用浅色胶囊表面收纳相关操作。
-- 默认条目使用无描边工具按钮样式，`aria-pressed` 表示选中状态。
+- `surface` 变体提供带内距、背景和阴影的附着式工具面。
+- `group` 将相关操作连接成连续分段，并以低对比度分隔线区分。
+- 独立条目使用无描边样式，组内条目使用中性操作面；`aria-pressed` 表示选中状态。
 - 支持水平、垂直、分组、分隔线与整体禁用。
 - 方向键在条目间移动，禁用项会被跳过。
 
@@ -407,34 +411,32 @@ import {
 | `--xh-toolbar-border` | `root` | `border` | `default` | `--xh-_toolbar-root-border` | toolbar 的 root 部件 border 覆盖槽。 |
 | `--xh-toolbar-fg` | `root` | `color` | `default` | `--xh-fg-default` | toolbar 的 root 部件 color 覆盖槽。 |
 | `--xh-toolbar-gap` | `root` | `gap` | `default` | `--xh-_toolbar-gap` | toolbar 的 root 部件 gap 覆盖槽。 |
-| `--xh-toolbar-group-bg` | `group` | `background` | `default` | `--xh-bg-subtle` | toolbar 的 group 部件 background 覆盖槽。 |
 | `--xh-toolbar-group-gap` | `group` | `gap` | `default` | `--xh-space-0` | toolbar 的 group 部件 gap 覆盖槽。 |
-| `--xh-toolbar-group-p` | `group` | `padding` | `default` | `--xh-space-0_5` | toolbar 的 group 部件 padding 覆盖槽。 |
-| `--xh-toolbar-group-radius` | `group` | `border-radius` | `default`<br>`orientation=vertical` | `--xh-shape-pill`<br>`--xh-shape-surface` | toolbar 的 group 部件 border-radius 覆盖槽。 |
-| `--xh-toolbar-group-separator-gap` | `group`<br>`separator` | `margin-block`<br>`margin-inline` | `orientation=horizontal`<br>`orientation=vertical` | `--xh-space-0_5` | toolbar 的 group、separator 部件 margin-block、margin-inline 覆盖槽。 |
 | `--xh-toolbar-icon-size` | `root` | `--xh-icon-size` | `default`<br>`size=lg`<br>`size=sm` | `--xh-glyph-size-lg`<br>`--xh-glyph-size-md`<br>`--xh-glyph-size-sm` | toolbar 的 root 部件 --xh-icon-size 覆盖槽。 |
-| `--xh-toolbar-item-bg` | `item` | `background` | `default` | `transparent` | toolbar 的 item 部件 background 覆盖槽。 |
-| `--xh-toolbar-item-bg-active` | `item` | `background` | `active`<br>`disabled`<br>`not([data-disabled])` | `--xh-bg-subtle-active` | toolbar 的 item 部件 background 覆盖槽。 |
-| `--xh-toolbar-item-bg-disabled` | `item` | `background` | `disabled` | `transparent` | toolbar 的 item 部件 background 覆盖槽。 |
-| `--xh-toolbar-item-bg-hover` | `item` | `background` | `disabled`<br>`hover`<br>`not([data-disabled])` | `--xh-bg-subtle-hover` | toolbar 的 item 部件 background 覆盖槽。 |
-| `--xh-toolbar-item-bg-pressed` | `item` | `background` | `default` | `--xh-bg-brand-subtle` | toolbar 的 item 部件 background 覆盖槽。 |
-| `--xh-toolbar-item-bg-pressed-hover` | `item` | `background` | `disabled`<br>`hover`<br>`not([data-disabled])` | `--xh-bg-brand-subtle-hover` | toolbar 的 item 部件 background 覆盖槽。 |
+| `--xh-toolbar-item-bg` | `group`<br>`item` | `background` | `default` | `--xh-bg-subtle`<br>`transparent` | toolbar 的 group、item 部件 background 覆盖槽。 |
+| `--xh-toolbar-item-bg-active` | `group`<br>`item` | `background` | `active`<br>`disabled`<br>`not([data-disabled])` | `--xh-bg-subtle-active` | toolbar 的 group、item 部件 background 覆盖槽。 |
+| `--xh-toolbar-item-bg-disabled` | `group`<br>`item` | `background` | `disabled` | `--xh-bg-subtle`<br>`transparent` | toolbar 的 group、item 部件 background 覆盖槽。 |
+| `--xh-toolbar-item-bg-hover` | `group`<br>`item` | `background` | `disabled`<br>`hover`<br>`not([data-disabled])` | `--xh-bg-subtle-hover` | toolbar 的 group、item 部件 background 覆盖槽。 |
+| `--xh-toolbar-item-bg-pressed` | `group`<br>`item` | `background` | `default` | `--xh-bg-brand-subtle` | toolbar 的 group、item 部件 background 覆盖槽。 |
+| `--xh-toolbar-item-bg-pressed-hover` | `group`<br>`item` | `background` | `disabled`<br>`hover`<br>`not([data-disabled])` | `--xh-bg-brand-subtle-hover` | toolbar 的 group、item 部件 background 覆盖槽。 |
 | `--xh-toolbar-item-fg` | `item` | `color` | `default` | `inherit` | toolbar 的 item 部件 color 覆盖槽。 |
-| `--xh-toolbar-item-fg-pressed` | `item` | `color` | `default` | `--xh-fg-brand-strong` | toolbar 的 item 部件 color 覆盖槽。 |
+| `--xh-toolbar-item-fg-pressed` | `group`<br>`item` | `color` | `default` | `--xh-fg-brand-strong` | toolbar 的 group、item 部件 color 覆盖槽。 |
 | `--xh-toolbar-item-font-size` | `item` | `font-size` | `default` | `--xh-_toolbar-item-font-size` | toolbar 的 item 部件 font-size 覆盖槽。 |
 | `--xh-toolbar-item-font-weight` | `item` | `font-weight` | `default` | `--xh-text-label-weight` | toolbar 的 item 部件 font-weight 覆盖槽。 |
 | `--xh-toolbar-item-gap` | `item` | `gap` | `default` | `--xh-control-gap-sm` | toolbar 的 item 部件 gap 覆盖槽。 |
 | `--xh-toolbar-item-h` | `item` | `min-block-size` | `default` | `--xh-_toolbar-item-h` | toolbar 的 item 部件 min-block-size 覆盖槽。 |
 | `--xh-toolbar-item-px` | `item` | `padding-inline` | `default` | `--xh-_toolbar-item-px` | toolbar 的 item 部件 padding-inline 覆盖槽。 |
-| `--xh-toolbar-item-radius` | `item` | `border-radius` | `default` | `--xh-shape-control` | toolbar 的 item 部件 border-radius 覆盖槽。 |
+| `--xh-toolbar-item-radius` | `group`<br>`item` | `border-end-end-radius`<br>`border-end-start-radius`<br>`border-radius`<br>`border-start-end-radius`<br>`border-start-start-radius` | `default`<br>`first-of-type`<br>`last-of-type`<br>`orientation=horizontal`<br>`orientation=vertical` | `--xh-shape-control`<br>`--xh-shape-pill` | toolbar 的 group、item 部件 border-end-end-radius、border-end-start-radius、border-radius、border-start-end-radius、border-start-start-radius 覆盖槽。 |
 | `--xh-toolbar-px` | `root` | `padding-inline` | `default` | `--xh-_toolbar-root-p` | toolbar 的 root 部件 padding-inline 覆盖槽。 |
 | `--xh-toolbar-py` | `root` | `padding-block` | `default` | `--xh-_toolbar-root-p` | toolbar 的 root 部件 padding-block 覆盖槽。 |
-| `--xh-toolbar-radius` | `root` | `border-radius` | `default` | `--xh-shape-surface` | toolbar 的 root 部件 border-radius 覆盖槽。 |
-| `--xh-toolbar-separator-color` | `separator` | `background` | `default` | `--xh-border-default` | toolbar 的 separator 部件 background 覆盖槽。 |
-| `--xh-toolbar-separator-gap` | `separator` | `margin-block`<br>`margin-inline` | `orientation=horizontal`<br>`orientation=vertical` | `--xh-space-1` | toolbar 的 separator 部件 margin-block、margin-inline 覆盖槽。 |
-| `--xh-toolbar-separator-inset` | `separator` | `margin-block`<br>`margin-inline` | `orientation=horizontal`<br>`orientation=vertical` | `--xh-space-1` | toolbar 的 separator 部件 margin-block、margin-inline 覆盖槽。 |
+| `--xh-toolbar-radius` | `root` | `border-radius` | `default`<br>`variant=surface` | `--xh-shape-pill`<br>`--xh-shape-surface` | toolbar 的 root 部件 border-radius 覆盖槽。 |
+| `--xh-toolbar-separator-color` | `group`<br>`separator` | `background` | `default` | `--xh-border-default`<br>`--xh-fg-default` | toolbar 的 group、separator 部件 background 覆盖槽。 |
+| `--xh-toolbar-separator-gap` | `separator` | `margin-block`<br>`margin-inline` | `orientation=horizontal`<br>`orientation=vertical` | `--xh-space-0` | toolbar 的 separator 部件 margin-block、margin-inline 覆盖槽。 |
+| `--xh-toolbar-separator-inset` | `separator` | `margin-block`<br>`margin-inline` | `orientation=horizontal`<br>`orientation=vertical` | `--xh-space-0` | toolbar 的 separator 部件 margin-block、margin-inline 覆盖槽。 |
+| `--xh-toolbar-separator-opacity` | `group`<br>`separator` | `opacity` | `default` | `--xh-control-separator-opacity` | toolbar 的 group、separator 部件 opacity 覆盖槽。 |
 | `--xh-toolbar-separator-radius` | `separator` | `border-radius` | `default` | `--xh-shape-pill` | toolbar 的 separator 部件 border-radius 覆盖槽。 |
-| `--xh-toolbar-separator-thickness` | `separator` | `block-size`<br>`inline-size` | `orientation=horizontal`<br>`orientation=vertical` | `--xh-stroke-thin` | toolbar 的 separator 部件 block-size、inline-size 覆盖槽。 |
+| `--xh-toolbar-separator-thickness` | `group`<br>`separator` | `block-size`<br>`inline-size`<br>`margin-block-start`<br>`margin-inline-start` | `orientation=horizontal`<br>`orientation=vertical` | `--xh-stroke-thin` | toolbar 的 group、separator 部件 block-size、inline-size、margin-block-start、margin-inline-start 覆盖槽。 |
+| `--xh-toolbar-shadow` | `root` | `box-shadow` | `variant=surface` | `--xh-elevation-raised` | toolbar 的 root 部件 box-shadow 覆盖槽。 |
 <!-- xh-component-tokens:end -->
 
 ### 动效

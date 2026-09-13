@@ -1,1 +1,0 @@
-import{E as a}from"./theme.BeqczABU.js";import{d as l,o,b as t,k as r}from"./framework.DkvuVDKz.js";const p=l({__name:"04-disabled",setup(n){const e=[{value:"left",label:"左对齐"},{value:"center",label:"居中",disabled:!0},{value:"right",label:"右对齐"}];return(s,c)=>(o(),t(r(a),{collection:e,"default-value":"center"}))}});export{p as default};
