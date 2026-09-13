@@ -12,7 +12,7 @@ export type BadgePlacement = 'top-end' | 'top-start' | 'bottom-end' | 'bottom-st
 
 export interface BadgeProps {
   /**
-   * 语气：brand / neutral / success / warning / danger / info，决定用哪族颜色。
+   * 语气：brand / neutral / success / warning / danger / info，决定用哪族颜色，默认 neutral。
    * 角标现实里主要用 danger（未读小红点）与 success / neutral（在线 / 离线点）。
    */
   tone?: Tone

@@ -144,7 +144,7 @@
 <div class="xh-component-grid">
 
 <XhComponentCard src="alert" name="Alert" label="警告提示" href="/components/alert" />
-<XhComponentCard src="badge" name="Badge" label="徽标" href="/components/badge" status="alpha" />
+<XhComponentCard src="badge" name="Badge" label="徽标" href="/components/badge" />
 <XhComponentCard src="loading-bar" name="LoadingBar" label="加载条" href="/components/loading-bar" status="alpha" />
 <XhComponentCard src="progress" name="Progress" label="进度条" href="/components/progress" status="alpha" />
 <XhComponentCard src="skeleton" name="Skeleton" label="骨架屏" href="/components/skeleton" status="alpha" />

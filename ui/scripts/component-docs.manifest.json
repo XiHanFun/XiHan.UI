@@ -24,7 +24,8 @@
     "time-field",
     "time-picker",
     "number-field",
-    "alert"
+    "alert",
+    "badge"
   ],
   "categories": [
     {

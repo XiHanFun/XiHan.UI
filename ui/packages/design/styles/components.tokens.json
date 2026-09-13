@@ -3115,24 +3115,6 @@
       "description": "badge 的 indicator 部件 border 覆盖槽。"
     },
     {
-      "name": "--xh-badge-shadow",
-      "component": "badge",
-      "part": [
-        "indicator"
-      ],
-      "property": [
-        "box-shadow"
-      ],
-      "state": [
-        "default"
-      ],
-      "defaultToken": [
-        "--xh-_badge-highlight"
-      ],
-      "visibility": "public",
-      "description": "badge 的 indicator 部件 box-shadow 覆盖槽。"
-    },
-    {
       "name": "--xh-breadcrumb-ellipsis-size",
       "component": "breadcrumb",
       "part": [

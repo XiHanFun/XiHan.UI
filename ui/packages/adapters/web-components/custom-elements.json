@@ -2620,9 +2620,6 @@
             },
             {
               "name": "--xh-badge-ring"
-            },
-            {
-              "name": "--xh-badge-shadow"
             }
           ]
         }
