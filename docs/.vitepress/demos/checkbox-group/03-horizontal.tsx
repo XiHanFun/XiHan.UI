@@ -1,4 +1,4 @@
-// 横向排布 | orientation 只出 data-orientation 交给皮肤排版，role=group 不接受 aria-orientation
+// 横向排布 | 使用 orientation 设置排列方向
 import type { ReactNode } from "react";
 import { XhCheckboxGroupRoot } from "@xihan-ui/react";
 import { useState } from "react";

@@ -15813,6 +15813,11 @@
   /* 勾中的填色随语气走；没写 data-tone 时退回品牌色 */
   --xh-_checkbox-group-accent: var(--xh-_tone, var(--xh-bg-brand));
   --xh-_checkbox-group-on-accent: var(--xh-_tone-on, var(--xh-fg-on-brand));
+  /* 与独立 Checkbox 共用 M1 控制盒材质；secondary 只收掉海拔，不改变边界和状态色。 */
+  --xh-_checkbox-group-bg: var(--xh-checkbox-group-indicator-bg, var(--xh-material-soft-bg));
+  --xh-_checkbox-group-edge: var(--xh-checkbox-group-indicator-highlight, var(--xh-material-soft-highlight));
+  --xh-_checkbox-group-shadow-rest: var(--xh-material-soft-shadow);
+  --xh-_checkbox-group-shadow-hover: var(--xh-elevation-raised);
 
   display: flex;
   gap: var(--xh-checkbox-group-gap, var(--xh-stack-gap-md));
@@ -15896,13 +15901,21 @@
   block-size: var(--xh-checkbox-group-indicator-size, var(--xh-_checkbox-group-box));
   border: var(--xh-stroke-thin) solid var(--xh-checkbox-group-indicator-border, var(--xh-border-control));
   border-radius: var(--xh-checkbox-group-indicator-radius, var(--xh-shape-inset));
-  background: var(--xh-checkbox-group-indicator-bg, var(--xh-bg-canvas));
+  background-color: var(--xh-_checkbox-group-bg);
+  background-image: linear-gradient(
+    to bottom,
+    var(--xh-_checkbox-group-edge) 0 var(--xh-stroke-thin),
+    transparent var(--xh-stroke-thin)
+  );
   color: var(--xh-checkbox-group-indicator-fg, var(--xh-_checkbox-group-on-accent));
+  box-shadow: var(--xh-checkbox-group-indicator-shadow, var(--xh-_checkbox-group-shadow-rest));
   font-size: var(--xh-checkbox-group-indicator-font-size, var(--xh-_checkbox-group-glyph));
   line-height: var(--xh-leading-none);
   transition:
-    background var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
-    border-color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
+    background-color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
+    border-color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
+    box-shadow var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
+    scale var(--xh-motion-duration-micro) var(--xh-motion-ease-enter-strong);
 }
 
 /* content 只能给伪元素，绝不能并进上面那条：content 落在普通元素上会顶掉它的全部子节点，
@@ -15911,18 +15924,46 @@
   content: '';
 }
 
-/* 悬停只加深空方框的描边。已选中的那一格必须排除：这条选择器的权重高过下面那条填色规则，
-   不排除就会在悬停时把 brand 描边换回灰色，方框看起来"缺了一圈" */
-[data-scope='checkbox-group'][data-part='item']:not([data-disabled]):hover
-  [data-scope='checkbox-group'][data-part='indicator']:not([data-state='checked']) {
-  border-color: var(--xh-checkbox-group-indicator-border-hover, var(--xh-border-control-hover));
+/* 悬停整行时控制盒回应；选中与未选中都使用当前语气的可操作边界。 */
+@media (hover: hover) {
+  [data-scope='checkbox-group'][data-part='root']:not([data-disabled]):not([data-readonly]):not([data-invalid])
+    [data-scope='checkbox-group'][data-part='item']:not([data-disabled]):hover
+    [data-scope='checkbox-group'][data-part='indicator'],
+  [data-scope='checkbox-group'][data-part='root']:not([data-disabled]):not([data-readonly]):not([data-invalid])
+    [data-scope='checkbox-group'][data-part='select-all-trigger']:not([data-disabled]):hover::before {
+    border-color: var(--xh-checkbox-group-indicator-border-hover, var(--xh-_checkbox-group-accent));
+    box-shadow: var(--xh-checkbox-group-indicator-shadow-hover, var(--xh-_checkbox-group-shadow-hover));
+  }
 }
 
 /* 选中即填色：条目是二态，全选格三态里 checked 与 indeterminate 都算"有值"，共用同一副填色 */
 [data-scope='checkbox-group'][data-part='indicator'][data-state='checked'],
 [data-scope='checkbox-group'][data-part='select-all-trigger']:is([data-state='checked'], [data-state='indeterminate'])::before {
+  --xh-_checkbox-group-bg: var(--xh-checkbox-group-indicator-bg-checked, var(--xh-_checkbox-group-accent));
+  --xh-_checkbox-group-edge: transparent;
+  --xh-_checkbox-group-shadow-rest: var(--xh-_highlight-tone), var(--xh-material-soft-shadow);
+  --xh-_checkbox-group-shadow-hover: var(--xh-_highlight-tone), var(--xh-elevation-raised);
+
   border-color: var(--xh-checkbox-group-indicator-border-checked, var(--xh-_checkbox-group-accent));
-  background: var(--xh-checkbox-group-indicator-bg-checked, var(--xh-_checkbox-group-accent));
+}
+
+/* 低强调变体用于已有表面：保留实体边界与三态填充，只移除控制盒海拔。 */
+[data-scope='checkbox-group'][data-part='root'][data-variant='secondary']
+  [data-scope='checkbox-group'][data-part='indicator'],
+[data-scope='checkbox-group'][data-part='root'][data-variant='secondary']
+  [data-scope='checkbox-group'][data-part='select-all-trigger']::before {
+  --xh-_checkbox-group-shadow-rest: none;
+  --xh-_checkbox-group-shadow-hover: none;
+}
+
+[data-scope='checkbox-group'][data-part='root']:not([data-readonly])
+  [data-scope='checkbox-group'][data-part='item']:not([data-disabled]):active
+  [data-scope='checkbox-group'][data-part='indicator'],
+[data-scope='checkbox-group'][data-part='select-all-trigger']:not([data-disabled]):not([data-readonly]):active::before {
+  --xh-_checkbox-group-edge: transparent;
+
+  box-shadow: var(--xh-checkbox-group-indicator-shadow-pressed, none);
+  scale: var(--xh-motion-scale-press);
 }
 
 /* 勾号由皮肤补，作者不必自己往 indicator 里塞字符 */
@@ -15993,6 +16034,25 @@
   border-color: var(--xh-checkbox-group-indicator-border-invalid, var(--xh-border-invalid));
 }
 
+[data-scope='checkbox-group'][data-part='root'][data-disabled]
+  [data-scope='checkbox-group'][data-part='indicator'],
+[data-scope='checkbox-group'][data-part='item'][data-disabled]
+  [data-scope='checkbox-group'][data-part='indicator'],
+[data-scope='checkbox-group'][data-part='select-all-trigger'][data-disabled]::before {
+  --xh-_checkbox-group-edge: transparent;
+  --xh-_checkbox-group-bg: var(--xh-checkbox-group-indicator-bg-disabled, var(--xh-bg-muted));
+
+  border-color: var(--xh-checkbox-group-indicator-border-disabled, var(--xh-border-control));
+  color: var(--xh-checkbox-group-indicator-fg-disabled, var(--xh-fg-disabled));
+  box-shadow: var(--xh-checkbox-group-indicator-shadow-disabled, none);
+}
+
+[data-scope='checkbox-group'][data-part='root'][data-readonly]:not([data-disabled])
+  [data-scope='checkbox-group'][data-part='indicator'],
+[data-scope='checkbox-group'][data-part='select-all-trigger'][data-readonly]:not([data-disabled])::before {
+  box-shadow: var(--xh-checkbox-group-indicator-shadow-readonly, none);
+}
+
 [data-scope='checkbox-group'][data-part='item-text'] {
   color: inherit;
   user-select: none;
@@ -16039,6 +16099,47 @@
 [data-scope='checkbox-group'][data-part='indicator'][hidden],
 [data-scope='checkbox-group'][data-part='select-all-trigger'][hidden] {
   display: none;
+}
+
+@media (forced-colors: active) {
+  /* 系统会丢弃背景图与阴影；真实描边保留方框，系统前景重绘状态字形。 */
+  [data-scope='checkbox-group'][data-part='indicator'],
+  [data-scope='checkbox-group'][data-part='select-all-trigger']::before {
+    background-image: none;
+    box-shadow: none;
+  }
+
+  [data-scope='checkbox-group'][data-part='indicator'][data-state='checked']:empty::before,
+  [data-scope='checkbox-group'][data-part='select-all-trigger']:is([data-state='checked'], [data-state='indeterminate'])::after {
+    background-color: CanvasText;
+  }
+
+  [data-scope='checkbox-group'][data-part='item'][data-disabled]
+    [data-scope='checkbox-group'][data-part='indicator'][data-state='checked']:empty::before,
+  [data-scope='checkbox-group'][data-part='select-all-trigger'][data-disabled]:is(
+    [data-state='checked'],
+    [data-state='indeterminate']
+  )::after {
+    background-color: GrayText;
+  }
+}
+
+@media print {
+  [data-scope='checkbox-group'][data-part='indicator'][data-state='checked'],
+  [data-scope='checkbox-group'][data-part='select-all-trigger'][data-state='checked']::before {
+    border-width: var(--xh-stroke-thick);
+  }
+
+  [data-scope='checkbox-group'][data-part='select-all-trigger'][data-state='indeterminate']::before {
+    border-width: var(--xh-stroke-thick);
+    border-style: dashed;
+  }
+
+  [data-scope='checkbox-group'][data-part='indicator'],
+  [data-scope='checkbox-group'][data-part='select-all-trigger']::before {
+    background-image: none;
+    box-shadow: none;
+  }
 }
 
 /* styles/clipboard.css */

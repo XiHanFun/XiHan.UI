@@ -1,4 +1,4 @@
-<!-- 横向排布 | orientation 只出 data-orientation 交给皮肤排版，role=group 不接受 aria-orientation -->
+<!-- 横向排布 | 使用 orientation 设置排列方向 -->
 <script setup lang="ts">
 import { XhCheckboxGroupRoot } from "@xihan-ui/vue";
 import { ref } from "vue";

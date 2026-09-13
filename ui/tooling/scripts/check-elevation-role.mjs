@@ -47,6 +47,7 @@ const EXPECTED = {
   'button': { root: ['soft', 'raised'] },
   'card': { root: ['raised', 'lifted'] },
   'checkbox': { root: ['soft', 'raised'] },
+  'checkbox-group': { 'root': ['soft', 'raised'], 'select-all-trigger': ['soft', 'raised'] },
   'cascader': { content: ['frosted'] },
   'color-picker': { content: ['frosted'] },
   'combobox': { content: ['frosted'] },

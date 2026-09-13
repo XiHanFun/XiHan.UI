@@ -1,4 +1,4 @@
-<!-- 全选与半选 | select-all-trigger 是第三态复选框，只有把全部条目的值交给 itemValues 才分得清 checked 与 indeterminate -->
+<!-- 全选与半选 | 使用 itemValues 计算全选和半选状态 -->
 <script setup lang="ts">
 import {
   XhCheckboxGroupIndicator,
@@ -8,38 +8,26 @@ import {
   XhCheckboxGroupRoot,
   XhCheckboxGroupSelectAllTrigger,
 } from "@xihan-ui/vue";
-import { ref } from "vue";
 
 const items = [
-  { value: "cheese", label: "芝士" },
-  { value: "bacon", label: "培根" },
-  { value: "corn", label: "玉米" },
-  { value: "truffle", label: "松露（禁用）", disabled: true },
+  { value: "email", label: "邮件" },
+  { value: "sms", label: "短信" },
+  { value: "push", label: "推送通知" },
 ];
 const itemValues = items.map(t => t.value);
-const toppings = ref<string[]>(["cheese"]);
 </script>
 
 <template>
-  <XhCheckboxGroupRoot
-    v-slot="{ checkedState }"
-    v-model:value="toppings"
-    :item-values="itemValues"
-  >
-    <XhCheckboxGroupLabel>配料</XhCheckboxGroupLabel>
-    <!-- 方框与勾号／横杠由皮肤画，这里只写文案 -->
-    <XhCheckboxGroupSelectAllTrigger>
-      <span>全选（{{ checkedState }}）</span>
-    </XhCheckboxGroupSelectAllTrigger>
+  <XhCheckboxGroupRoot :default-value="['email']" :item-values="itemValues">
+    <XhCheckboxGroupLabel>通知方式</XhCheckboxGroupLabel>
+    <XhCheckboxGroupSelectAllTrigger>全选</XhCheckboxGroupSelectAllTrigger>
     <XhCheckboxGroupItem
-      v-for="t in items"
-      :key="t.value"
-      :value="t.value"
-      :disabled="t.disabled"
+      v-for="item in items"
+      :key="item.value"
+      :value="item.value"
     >
       <XhCheckboxGroupIndicator />
-      <XhCheckboxGroupItemText>{{ t.label }}</XhCheckboxGroupItemText>
+      <XhCheckboxGroupItemText>{{ item.label }}</XhCheckboxGroupItemText>
     </XhCheckboxGroupItem>
   </XhCheckboxGroupRoot>
-  <span>当前：{{ toppings.join("、") || "（无）" }}</span>
 </template>
