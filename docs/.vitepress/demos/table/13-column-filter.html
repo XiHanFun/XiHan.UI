@@ -8,7 +8,7 @@
           <div data-xh-part="column-header" value="dept">
             部门
             <xh-popover placement="bottom-start" size="sm">
-              <button data-xh-part="trigger" aria-label="按部门过滤" data-mark><svg viewBox="0 0 24 24" width="1em" height="1em" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 9L12 15L18 9"/></svg></button>
+              <button data-xh-part="trigger" aria-label="按部门过滤" data-mark><svg viewBox="0 0 24 24" width="1em" height="1em" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3.5 5h17L14 12.5V19l-4 2v-8.5L3.5 5Z"/></svg></button>
               <div data-xh-part="positioner">
                 <div data-xh-part="content">
                   <h2 data-xh-part="title">按部门过滤</h2>
@@ -38,7 +38,7 @@
           <div data-xh-part="column-header" value="city">
             城市
             <xh-popover placement="bottom-start" size="sm">
-              <button data-xh-part="trigger" aria-label="按城市过滤" data-mark></button>
+              <button data-xh-part="trigger" aria-label="按城市过滤" data-mark><svg viewBox="0 0 24 24" width="1em" height="1em" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3.5 5h17L14 12.5V19l-4 2v-8.5L3.5 5Z"/></svg></button>
               <div data-xh-part="positioner">
                 <div data-xh-part="content">
                   <h2 data-xh-part="title">按城市过滤</h2>
@@ -134,7 +134,8 @@
 
     for (const mark of stage.querySelectorAll("[data-mark]")) {
       const field = mark.closest('[data-xh-part="column-header"]').getAttribute("value");
-      mark.innerHTML = `<svg viewBox="0 0 24 24" width="1em" height="1em" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 9L12 15L18 9"/></svg>${picked(field).length ? "●" : ""}`;
+      mark.innerHTML = `<svg viewBox="0 0 24 24" width="1em" height="1em" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3.5 5h17L14 12.5V19l-4 2v-8.5L3.5 5Z"/></svg>`;
+      mark.style.color = picked(field).length ? "var(--xh-fg-brand)" : "";
     }
 
     readout.textContent = `命中 ${visible.length} / ${members.length} 人 · 部门：${

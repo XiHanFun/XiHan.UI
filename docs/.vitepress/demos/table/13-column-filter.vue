@@ -1,6 +1,6 @@
 <!-- 列过滤 | 过滤把手是列标题里的一段内容，过滤结果就是宿主算好后传进来的那份 rows；表头是表体的兄弟，把手上的按键不会被表体收走 -->
 <script setup lang="ts">
-import { ChevronDownIcon } from "@xihan-ui/icons";
+import { FilterIcon } from "@xihan-ui/icons";
 import {
   XhIcon,
   XhPopoverContent,
@@ -64,8 +64,11 @@ const optionStyle = { display: "flex", alignItems: "center", gap: "6px" };
           <XhTableColumnHeader value="dept">
             部门
             <XhPopoverRoot placement="bottom-start" size="sm">
-              <XhPopoverTrigger aria-label="按部门过滤">
-                <XhIcon :icon="ChevronDownIcon" />{{ deptFilter.length ? "●" : "" }}
+              <XhPopoverTrigger
+                aria-label="按部门过滤"
+                :style="deptFilter.length ? { color: 'var(--xh-fg-brand)' } : undefined"
+              >
+                <XhIcon :icon="FilterIcon" />
               </XhPopoverTrigger>
               <XhPopoverPositioner>
                 <XhPopoverContent>
@@ -84,8 +87,11 @@ const optionStyle = { display: "flex", alignItems: "center", gap: "6px" };
           <XhTableColumnHeader value="city">
             城市
             <XhPopoverRoot placement="bottom-start" size="sm">
-              <XhPopoverTrigger aria-label="按城市过滤">
-                <XhIcon :icon="ChevronDownIcon" />{{ cityFilter.length ? "●" : "" }}
+              <XhPopoverTrigger
+                aria-label="按城市过滤"
+                :style="cityFilter.length ? { color: 'var(--xh-fg-brand)' } : undefined"
+              >
+                <XhIcon :icon="FilterIcon" />
               </XhPopoverTrigger>
               <XhPopoverPositioner>
                 <XhPopoverContent>
