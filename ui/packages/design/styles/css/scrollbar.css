@@ -91,7 +91,7 @@
     inline-size: 100%;
     block-size: 100%;
     padding: var(--xh-scrollbar-gutter);
-    background: var(--xh-scrollbar-track-bg, var(--xh-bg-scrollbar-track));
+    background: var(--xh-scrollbar-track-bg, transparent);
   }
 
   /* 滑块。主轴（起点 + 长度）来自内联样式，这里只给定位模式、交叉轴与配色。
@@ -101,9 +101,11 @@
   [data-scope='scrollbar'][data-part='thumb'] {
     position: absolute;
     border-radius: var(--xh-scrollbar-thumb-radius, var(--xh-shape-pill));
-    background: var(--xh-scrollbar-thumb-bg, var(--xh-fg-scrollbar-thumb));
-    /* 滑块里没有字，这支墨色只给聚焦环用：环取 currentColor 时读的就是它。
-       静息这一档的面是浅一侧的中性灰，配正文墨；下面换面的两档各自换成配得上的另一支 */
+    background: var(
+      --xh-scrollbar-thumb-bg,
+      color-mix(in oklab, var(--xh-fg-default) 18%, transparent)
+    );
+    /* 滑块里没有字，这支墨色只给聚焦环用。 */
     color: var(--xh-fg-default);
     cursor: default;
     transition:
@@ -125,13 +127,17 @@
 
   /* 这两档的面往另一头走（浅色主题更深、深色主题更亮），配对的墨色跟着翻到反色那一支 */
   [data-scope='scrollbar'][data-part='thumb']:hover {
-    background: var(--xh-scrollbar-thumb-bg-hover, var(--xh-fg-scrollbar-thumb-hover));
-    color: var(--xh-fg-on-brand);
+    background: var(
+      --xh-scrollbar-thumb-bg-hover,
+      color-mix(in oklab, var(--xh-fg-default) 28%, transparent)
+    );
   }
 
   [data-scope='scrollbar'][data-part='thumb'][data-dragging] {
-    background: var(--xh-scrollbar-thumb-bg-active, var(--xh-fg-scrollbar-thumb-active));
-    color: var(--xh-fg-on-brand);
+    background: var(
+      --xh-scrollbar-thumb-bg-active,
+      color-mix(in oklab, var(--xh-fg-default) 40%, transparent)
+    );
   }
 
   /* 面是实心的中性色，环色与面同族，画在面里就看不出来；环改取这一档配对的墨色 */
@@ -155,7 +161,7 @@
     position: absolute;
     inline-size: var(--xh-_scrollbar-thickness);
     block-size: var(--xh-_scrollbar-thickness);
-    background: var(--xh-scrollbar-corner-bg, var(--xh-scrollbar-track-bg, var(--xh-bg-scrollbar-track)));
+    background: var(--xh-scrollbar-corner-bg, var(--xh-scrollbar-track-bg, transparent));
   }
 
   [data-scope='scrollbar'][data-part='corner'][data-orientation='vertical'] {

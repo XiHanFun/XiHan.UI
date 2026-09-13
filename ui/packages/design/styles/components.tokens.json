@@ -44266,7 +44266,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-fg-scrollbar-thumb"
+        "--xh-fg-default"
       ],
       "visibility": "public",
       "description": "scrollbar 的 thumb 部件 background 覆盖槽。"
@@ -44284,7 +44284,7 @@
         "dragging"
       ],
       "defaultToken": [
-        "--xh-fg-scrollbar-thumb-active"
+        "--xh-fg-default"
       ],
       "visibility": "public",
       "description": "scrollbar 的 thumb 部件 background 覆盖槽。"
@@ -44320,7 +44320,7 @@
         "hover"
       ],
       "defaultToken": [
-        "--xh-fg-scrollbar-thumb-hover"
+        "--xh-fg-default"
       ],
       "visibility": "public",
       "description": "scrollbar 的 thumb 部件 background 覆盖槽。"
@@ -44357,7 +44357,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-bg-scrollbar-track"
+        "transparent"
       ],
       "visibility": "public",
       "description": "scrollbar 的 corner、track 部件 background 覆盖槽。"
