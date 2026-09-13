@@ -1,8 +1,8 @@
-<!-- 段序随 locale | 同一份标记，locale 换成 en-US 后段序自动排成月日年 -->
+<!-- 地区格式 | 根据 locale 调整日期顺序 -->
 <div style="display: grid; gap: 16px">
-  <xh-date-field id="date-field-locale-zh" locale="zh-CN" default-value="2026-07-28">
+  <xh-date-field locale="zh-CN" default-value="2026-07-28">
     <div data-xh-part="root">
-      <label data-xh-part="label">zh-CN</label>
+      <label data-xh-part="label">中文格式</label>
       <div data-xh-part="control">
         <div data-xh-part="segment-group">
           <span data-xh-part="segment" index="0"></span>
@@ -16,9 +16,9 @@
     </div>
   </xh-date-field>
 
-  <xh-date-field id="date-field-locale-us" locale="en-US" default-value="2026-07-28">
+  <xh-date-field locale="en-US" default-value="2026-07-28">
     <div data-xh-part="root">
-      <label data-xh-part="label">en-US</label>
+      <label data-xh-part="label">美国格式</label>
       <div data-xh-part="control">
         <div data-xh-part="segment-group">
           <span data-xh-part="segment" index="0"></span>
@@ -30,19 +30,4 @@
       </div>
     </div>
   </xh-date-field>
-
-  <p style="margin: 0; font-size: 13px">
-    两份值都是 ISO 串：<span id="date-field-locale-zh-readout">2026-07-28</span> ·
-    <span id="date-field-locale-us-readout">2026-07-28</span>
-  </p>
 </div>
-
-<script type="module">
-  // 两份各自回显自己的值
-  for (const id of ["date-field-locale-zh", "date-field-locale-us"]) {
-    const readout = document.getElementById(`${id}-readout`);
-    document.getElementById(id).addEventListener("value-change", (event) => {
-      readout.textContent = event.detail.value ?? "（空）";
-    });
-  }
-</script>
