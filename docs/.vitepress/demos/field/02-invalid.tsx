@@ -1,4 +1,4 @@
-// 无效与必填 | invalid 一翻，错误文案接入描述链并显出，控件上同时落 aria-invalid；required 只落 aria-required，校验仍归宿主
+// 必填与校验 | 显示字段错误
 import type { ReactNode } from "react";
 import {
   XhFieldControl,

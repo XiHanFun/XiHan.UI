@@ -1,6 +1,6 @@
 # Field 表单字段
 
-把标签、控件、说明与错误文本绑成一组，并把 `id` 与 ARIA 关联接好。
+为表单控件提供标签、说明、错误信息和状态关联。
 
 <div class="xh-resource-links">
   <a href="https://github.com/XiHanFun/XiHan.UI/tree/dev/ui/packages/engine/headless/src/field" target="_blank" rel="noreferrer">Headless</a>
@@ -12,7 +12,7 @@
 
 ## 用法
 
-控件由自己写，Field 只把属性并上去：标题的 for、控件的 id 与描述链（aria-describedby）自动对齐
+为控件添加标签与说明
 
 <XhDemo src="field/01-basic" />
 
@@ -24,77 +24,53 @@
 
 ## 示例
 
-### 无效与必填
+### 必填与校验
 
-invalid 一翻，错误文案接入描述链并显出，控件上同时落 aria-invalid；required 只落 aria-required，校验仍归宿主
+显示字段错误
 
 <XhDemo src="field/02-invalid" />
 
 ### 禁用
 
-Field 的 disabled 只把 data-disabled 铺到各部件上；真正改不动还得在自己的控件上落原生 disabled
+禁止编辑字段
 
 <XhDemo src="field/03-disabled" />
 
 ### 标签左置
 
-各部件都是独立节点，把根节点改成两列网格就能把标题挪到控件左边，说明与错误文案跟着对齐到控件那一列
+将标签放在控件左侧
 
 <XhDemo src="field/04-label-left" />
-
-### 字段横排
-
-一行里摆多个字段：每个字段自成一块，谁跟谁排一行是外层容器的事
-
-<XhDemo src="field/05-inline" />
-
-### 提示、警告与错误
-
-三档语气各归各的部件：提示与警告都写在描述里，控件的 aria-invalid 保持 false；只有真出错才翻 invalid、错误文案才接进描述链
-
-<XhDemo src="field/06-warning" />
-
-### 控件在薄封装里
-
-封装的根不是可聚焦元素时，关掉 asChild、让封装内部用 useFieldControl 自取
-
-<XhDemo src="field/07-wrapper" />
 
 ## 设计指引
 
 ### 何时使用
 
-- 任何一个需要标签的表单控件——这是所有录入组件的外壳。
-- 需要说明文字或错误提示与控件正确关联时。
+- 表单控件需要可见标签、说明或错误信息。
+- 需要统一管理必填、禁用、只读和无效状态。
 
 ### 何时不用
 
-- 控件在工具栏或表格里、没有可见标签：给控件本身写 `aria-label`。
-- 需要整表的值管理与校验：外面再套[表单](./form)，字段只管一格。
+- 无需可见标签的紧凑控件：直接提供 `aria-label`。
+- 需要管理整张表单的值和提交：使用[表单](./form)。
 
 ### 特性
 
-- 标签的 `for`、说明与错误文本的 `aria-describedby`、无效态的 `aria-invalid` 全部自动接上，作者不写 `id`。
-- `disabled` / `readOnly` / `invalid` / `required` 沿字段流给里面的控件。控件实例没写才继承；
-  显式 `false` 顶掉最近的 Field/Form 状态。TextField 收到后会把行为与 ARIA 写到真正的 input，
-  不只停在包装根。
-- 有错误文本时说明文字不会被顶掉，两者可以同时在。
-- 默认把接线属性合到控件槽里唯一的子节点上，这条只适用于「子节点的根就是可聚焦控件」。控件藏在薄封装里时关掉 asChild，由封装内部自取——标签的 for 只对可标注元素生效，指到封装的根上会静默失效。
-- `FieldControl` 的默认 `asChild` 必须提供唯一可挂载子节点，允许包在 Fragment 中；零节点、多个节点或并列非空文本明确报错，不再静默丢失标签和 ARIA 接线。需要手工组织多个节点时显式设置 `asChild=false`，并通过插槽载荷或 `useFieldControl` 绑定真控件。
-
-### 组合
-
-- 里面放任何一个录入组件；外面用[栅格](./grid)排成两列。
+- 自动关联标签、说明、错误信息与控件。
+- `disabled`、`readOnly`、`invalid` 和 `required` 可传递给内部控件。
+- 说明和错误信息可以同时显示。
+- `FieldControl` 默认将属性合并到唯一子节点。
 
 ### 最佳实践
 
-- 标签写完整的名词短语，别写占位符当标签——占位符一输入就消失。
-- 错误文本说清楚怎么改，不只说"格式不对"。
+- 使用持续可见的明确标签。
+- 说明文字简短且补充必要信息。
+- 错误信息应说明如何修正。
 
 ### 反模式
 
 - 用占位符代替标签。
-- 自己手写 `aria-describedby`，与组件生成的那份互相覆盖。
+- 同时手写并覆盖组件生成的 ARIA 关联。
 
 ## API 参考
 
