@@ -1,6 +1,6 @@
 // 使用者令牌 | 直径、叠放量、分隔那圈底色都留了槽位，写在组上就整组换掉
 import type { CSSProperties, ReactNode } from "react";
-import { XhAvatarFallback, XhAvatarGroupOverflowItem, XhAvatarGroupRoot, XhAvatarImage, XhAvatarRoot } from "@xihan-ui/react";
+import { XhAvatarFallback, XhAvatarGroupOverflowItem, XhAvatarGroupRoot, XhAvatarRoot } from "@xihan-ui/react";
 
 const shown = ["曦", "寒", "懿", "承"];
 
@@ -17,7 +17,6 @@ export default function Demo(): ReactNode {
     <XhAvatarGroupRoot max={4} style={tokens}>
       {shown.map(m => (
         <XhAvatarRoot key={m}>
-          <XhAvatarImage />
           <XhAvatarFallback>{m}</XhAvatarFallback>
         </XhAvatarRoot>
       ))}

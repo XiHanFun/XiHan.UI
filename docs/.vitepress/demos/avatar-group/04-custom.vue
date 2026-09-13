@@ -1,6 +1,6 @@
 <!-- 使用者令牌 | 直径、叠放量、分隔那圈底色都留了槽位，写在组上就整组换掉 -->
 <script setup lang="ts">
-import { XhAvatarFallback, XhAvatarGroupOverflowItem, XhAvatarGroupRoot, XhAvatarImage, XhAvatarRoot } from "@xihan-ui/vue";
+import { XhAvatarFallback, XhAvatarGroupOverflowItem, XhAvatarGroupRoot, XhAvatarRoot } from "@xihan-ui/vue";
 
 const shown = ["曦", "寒", "懿", "承"];
 
@@ -16,7 +16,6 @@ const tokens = {
 <template>
   <XhAvatarGroupRoot :max="4" :style="tokens">
     <XhAvatarRoot v-for="m in shown" :key="m">
-      <XhAvatarImage />
       <XhAvatarFallback>{{ m }}</XhAvatarFallback>
     </XhAvatarRoot>
     <XhAvatarGroupOverflowItem>+2</XhAvatarGroupOverflowItem>
