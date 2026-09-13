@@ -1,5 +1,5 @@
-<!-- 基础用法 | 过滤由宿主自己算：组件把输入串交出来，此刻显示哪几条候选由调用方定 -->
-<xh-combobox id="combobox-basic" open-on-click placeholder="输入城市名筛选">
+<!-- 基础用法 | 搜索并选择城市 -->
+<xh-combobox id="combobox-basic" open-on-click placeholder="搜索城市">
   <div data-xh-part="root">
     <label data-xh-part="label">城市</label>
     <div data-xh-part="control">
@@ -34,13 +34,10 @@
     </div>
   </div>
 </xh-combobox>
-<p>当前值：<span id="combobox-basic-value">（未选）</span></p>
 
 <script type="module">
   const combobox = document.getElementById("combobox-basic");
   const content = combobox.querySelector('[data-xh-part="content"]');
-  const readout = document.getElementById("combobox-basic-value");
-  // 候选整份留在手上，输入串一变就按它重铺
   const all = [...content.children];
   const labelOf = (item) => item.querySelector('[data-xh-part="item-text"]').textContent.toLowerCase();
 
@@ -49,8 +46,4 @@
     content.replaceChildren(...all.filter((item) => labelOf(item).includes(q)));
   });
 
-  combobox.addEventListener("value-change", (event) => {
-    combobox.value = event.detail.value;
-    readout.textContent = event.detail.value[0] ?? "（未选）";
-  });
 </script>

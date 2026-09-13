@@ -1,6 +1,20 @@
-// 异步候选 | 输入串每变一次就重新去远端查一遍，等结果的这段时间候选为空、由空态节点顶上
+// 异步候选 | 查询远程数据
 import type { ReactNode } from "react";
-import { XhComboboxRoot } from "@xihan-ui/react";
+import {
+  XhComboboxClearTrigger,
+  XhComboboxContent,
+  XhComboboxControl,
+  XhComboboxEmpty,
+  XhComboboxInput,
+  XhComboboxItem,
+  XhComboboxItemIndicator,
+  XhComboboxItemText,
+  XhComboboxLabel,
+  XhComboboxLoading,
+  XhComboboxPositioner,
+  XhComboboxRoot,
+  XhComboboxTrigger,
+} from "@xihan-ui/react";
 import { useRef, useState } from "react";
 
 interface City {
@@ -17,12 +31,10 @@ const pool: City[] = [
 ];
 
 export default function Demo(): ReactNode {
-  const [value, setValue] = useState<string[]>([]);
   const [options, setOptions] = useState<City[]>([]);
   const [loading, setLoading] = useState(false);
   const timer = useRef(0);
 
-  // 每次输入都重开一轮查询，上一轮未落地的先撤掉
   function onSearch(details: { inputValue: string }): void {
     window.clearTimeout(timer.current);
     const q = details.inputValue.trim().toLowerCase();
@@ -39,18 +51,25 @@ export default function Demo(): ReactNode {
   }
 
   return (
-    <>
-      <XhComboboxRoot
-        value={value}
-        onValueChange={details => setValue(details.value)}
-        collection={options}
-        clearable
-        label="城市"
-        empty={loading ? "查询中…" : "无匹配城市"}
-        placeholder="输入城市名查询"
-        onInputValueChange={onSearch}
-      />
-      <p>{`当前值：${value[0] ?? "（未选）"}`}</p>
-    </>
+    <XhComboboxRoot collection={options} loading={loading} onInputValueChange={onSearch}>
+      <XhComboboxLabel>城市</XhComboboxLabel>
+      <XhComboboxControl>
+        <XhComboboxInput placeholder="搜索城市" />
+        <XhComboboxClearTrigger />
+        <XhComboboxTrigger />
+      </XhComboboxControl>
+      <XhComboboxPositioner>
+        <XhComboboxContent>
+          {options.map(city => (
+            <XhComboboxItem key={city.value} value={city.value}>
+              <XhComboboxItemText>{city.label}</XhComboboxItemText>
+              <XhComboboxItemIndicator />
+            </XhComboboxItem>
+          ))}
+        </XhComboboxContent>
+        <XhComboboxLoading>查询中…</XhComboboxLoading>
+        <XhComboboxEmpty>无匹配城市</XhComboboxEmpty>
+      </XhComboboxPositioner>
+    </XhComboboxRoot>
   );
 }

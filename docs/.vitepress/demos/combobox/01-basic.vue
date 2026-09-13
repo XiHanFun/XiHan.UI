@@ -1,4 +1,4 @@
-<!-- 基础用法 | 过滤由宿主自己算：组件把输入串交出来，此刻显示哪几条候选由调用方定 -->
+<!-- 基础用法 | 搜索并选择城市 -->
 <script setup lang="ts">
 import { XhComboboxRoot } from "@xihan-ui/vue";
 import { computed, ref } from "vue";
@@ -11,7 +11,6 @@ const cities = [
   { value: "london", label: "London 伦敦" },
 ];
 
-const value = ref<string[]>([]);
 const query = ref("");
 const filtered = computed(() => {
   const q = query.value.trim().toLowerCase();
@@ -21,14 +20,12 @@ const filtered = computed(() => {
 
 <template>
   <XhComboboxRoot
-    v-model:value="value"
     v-model:input-value="query"
     :collection="filtered"
     clearable
     label="城市"
     empty="无匹配城市"
     open-on-click
-    placeholder="输入城市名筛选"
+    placeholder="搜索城市"
   />
-  <p>当前值：{{ value[0] ?? "（未选）" }}</p>
 </template>

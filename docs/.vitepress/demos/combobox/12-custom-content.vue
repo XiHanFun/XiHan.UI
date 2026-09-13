@@ -1,4 +1,4 @@
-<!-- 候选里的自定义内容 | 条目内容由你写：主文本之外还能带副标题与标记，过滤与键盘行为一点不变 -->
+<!-- 自定义内容 | 在候选项中显示辅助信息 -->
 <script setup lang="ts">
 import {
   XhComboboxClearTrigger,
@@ -13,18 +13,15 @@ import {
   XhComboboxPositioner,
   XhComboboxRoot,
   XhComboboxTrigger,
-  XhTagLabel,
-  XhTagRoot,
 } from "@xihan-ui/vue";
 import { computed, ref } from "vue";
 
 const mailboxes = [
-  { value: "gmail", label: "name@gmail.com", note: "国际", tone: "info" },
-  { value: "qq", label: "name@qq.com", note: "国内", tone: "success" },
-  { value: "163", label: "name@163.com", note: "国内", tone: "success" },
+  { value: "gmail", label: "name@gmail.com", note: "Google 邮箱" },
+  { value: "qq", label: "name@qq.com", note: "QQ 邮箱" },
+  { value: "163", label: "name@163.com", note: "网易邮箱" },
 ];
 
-const value = ref<string[]>([]);
 const query = ref("");
 const filtered = computed(() => {
   const q = query.value.trim().toLowerCase();
@@ -34,10 +31,9 @@ const filtered = computed(() => {
 
 <template>
   <XhComboboxRoot
-    v-model:value="value"
     v-model:input-value="query"
     open-on-click
-    placeholder="输入邮箱前缀"
+    placeholder="搜索邮箱"
   >
     <XhComboboxLabel>邮箱</XhComboboxLabel>
     <XhComboboxControl>
@@ -49,11 +45,9 @@ const filtered = computed(() => {
       <XhComboboxContent>
         <XhComboboxItem v-for="m in filtered" :key="m.value" :value="m.value">
           <XhComboboxItemText>
-            <span style="display: inline-flex; align-items: center; gap: 8px">
-              {{ m.label }}
-              <XhTagRoot variant="subtle" :tone="m.tone" size="sm">
-                <XhTagLabel>{{ m.note }}</XhTagLabel>
-              </XhTagRoot>
+            <span style="display: flex; flex-direction: column; gap: 2px">
+              <span>{{ m.label }}</span>
+              <small style="color: var(--xh-fg-muted)">{{ m.note }}</small>
             </span>
           </XhComboboxItemText>
           <XhComboboxItemIndicator />
@@ -62,5 +56,4 @@ const filtered = computed(() => {
       <XhComboboxEmpty>没有匹配的邮箱</XhComboboxEmpty>
     </XhComboboxPositioner>
   </XhComboboxRoot>
-  <p>当前值：{{ value[0] ?? "（未选）" }}</p>
 </template>

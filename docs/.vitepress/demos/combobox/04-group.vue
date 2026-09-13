@@ -1,4 +1,4 @@
-<!-- 分组 | 候选分段展示；整段被筛空时连同段标题一起不渲染，列表里不留空壳 -->
+<!-- 分组 | 按分类组织候选项 -->
 <script setup lang="ts">
 import {
   XhComboboxClearTrigger,
@@ -37,7 +37,6 @@ const groups = [
   },
 ];
 
-const value = ref<string[]>([]);
 const query = ref("");
 const filtered = computed(() => {
   const q = query.value.trim().toLowerCase();
@@ -51,10 +50,9 @@ const filtered = computed(() => {
 
 <template>
   <XhComboboxRoot
-    v-model:value="value"
     v-model:input-value="query"
     open-on-click
-    placeholder="按大洲分组"
+    placeholder="搜索城市"
   >
     <XhComboboxLabel>城市</XhComboboxLabel>
     <XhComboboxControl>
@@ -75,5 +73,4 @@ const filtered = computed(() => {
       <XhComboboxEmpty>无匹配城市</XhComboboxEmpty>
     </XhComboboxPositioner>
   </XhComboboxRoot>
-  <p>当前值：{{ value[0] ?? "（未选）" }}</p>
 </template>

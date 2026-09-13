@@ -1,4 +1,4 @@
-<!-- 多选 | 选完不收起、输入串自动清空，候选立刻回到全集；框里空着时退格删掉最后一个已选项 -->
+<!-- 多选 | 选择多个城市 -->
 <script setup lang="ts">
 import { XhComboboxRoot } from "@xihan-ui/vue";
 import { computed, ref } from "vue";
@@ -10,7 +10,6 @@ const cities = [
   { value: "london", label: "London 伦敦" },
 ];
 
-const value = ref<string[]>([]);
 const query = ref("");
 const filtered = computed(() => {
   const q = query.value.trim().toLowerCase();
@@ -20,14 +19,12 @@ const filtered = computed(() => {
 
 <template>
   <XhComboboxRoot
-    v-model:value="value"
     v-model:input-value="query"
     :collection="filtered"
     clearable
     label="常去城市"
     empty="无匹配城市"
     multiple
-    placeholder="挑几个城市"
+    placeholder="搜索城市"
   />
-  <p>已选：{{ value.length ? value.join("、") : "（无）" }}</p>
 </template>
