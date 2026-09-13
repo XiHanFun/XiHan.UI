@@ -3,7 +3,7 @@
 import { XhContextMenuRoot } from "@xihan-ui/vue";
 
 const commands = [
-  { value: "name", label: "按名称", indicator: "✓", group: "sort", groupLabel: "排序方式" },
+  { value: "name", label: "按名称", indicator: "", group: "sort", groupLabel: "排序方式" },
   { value: "time", label: "按修改时间", group: "sort" },
   { value: "list", label: "列表", group: "view", groupLabel: "视图", separatorBefore: true },
   { value: "grid", label: "网格", group: "view" },
