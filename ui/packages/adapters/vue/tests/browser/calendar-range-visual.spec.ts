@@ -197,6 +197,7 @@ describe('范围日历轨道', () => {
     expect(getComputedStyle(idle).aspectRatio).toBe('auto')
     expect(after.width).toBeCloseTo(before.width, 1)
     expect(after.height).toBeCloseTo(before.height, 1)
+    expect(after.width).toBeLessThanOrEqual(56)
     expect(after.height).toBeLessThanOrEqual(40)
   })
 

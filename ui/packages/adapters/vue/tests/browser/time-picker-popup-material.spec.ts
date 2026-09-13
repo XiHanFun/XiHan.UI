@@ -89,7 +89,8 @@ describe('时间选择浮层', () => {
     expect(content.backdropFilter).toBe('none')
     expect(alpha(content.backgroundColor)).toBe(255)
     expect(content.boxShadow).not.toBe('none')
-    expect(content.borderRadius).toBe('24px')
+    expect(content.borderRadius).toBe('12px')
+    expect(content.padding).toBe('4px')
     const highlight = getComputedStyle(part('content'), '::before')
     expect(alpha(highlight.backgroundColor)).toBe(0)
     expect(highlight.pointerEvents).toBe('none')
@@ -174,6 +175,8 @@ describe('时间选择浮层', () => {
     const columns = document.querySelectorAll<HTMLElement>(`[data-scope='time-picker'][data-part='column']`)
     const hours = columns[0]!
     const minutes = columns[1]!
+    expect(hours.getBoundingClientRect().width).toBeLessThanOrEqual(64)
+    expect(part('item').getBoundingClientRect().height).toBe(28)
     expect(hours.scrollHeight).toBeGreaterThan(hours.clientHeight)
     const minuteScroll = minutes.scrollTop
     hours.scrollTop = 80

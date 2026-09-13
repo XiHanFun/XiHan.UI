@@ -124,7 +124,7 @@ afterEach(async () => {
 })
 
 describe('日期选择器快捷项与时间项的统一选中反馈', () => {
-  it('preset 与 time-item 只用对号表示持久选值，正文和静止底保持普通态', async () => {
+  it('preset 使用对号，time-item 使用淡强调面、强调文字与对号表示持久选值', async () => {
     await mountDatePicker()
     const selectedPreset = byTestId('selected-preset')
     const plainPreset = byTestId('plain-preset')
@@ -136,19 +136,21 @@ describe('日期选择器快捷项与时间项的统一选中反馈', () => {
     timeItem('minute', '15').focus()
     await nextTick()
 
-    const pairs: Array<[HTMLElement, HTMLElement]> = [[selectedPreset, plainPreset], [selectedTime, plainTime]]
-    for (const [selected, plain] of pairs) {
-      expect(selected.getAttribute('data-state')).toBe('checked')
-      expect(alpha(getComputedStyle(selected).backgroundColor)).toBe(0)
-      expect(getComputedStyle(selected).color).toBe(getComputedStyle(plain).color)
-      expect(getComputedStyle(selected).fontWeight).toBe(getComputedStyle(plain).fontWeight)
-      expect(checkStyle(selected).opacity).toBe('1')
-      expect(checkStyle(selected).maskImage).not.toBe('none')
-      expect(checkStyle(plain).opacity).toBe('0')
-    }
+    expect(selectedPreset.getAttribute('data-state')).toBe('checked')
+    expect(alpha(getComputedStyle(selectedPreset).backgroundColor)).toBe(0)
+    expect(getComputedStyle(selectedPreset).color).toBe(getComputedStyle(plainPreset).color)
+    expect(checkStyle(selectedPreset).opacity).toBe('1')
+    expect(checkStyle(plainPreset).opacity).toBe('0')
+
+    expect(selectedTime.getAttribute('data-state')).toBe('checked')
+    expect(alpha(getComputedStyle(selectedTime).backgroundColor)).toBe(255)
+    expect(getComputedStyle(selectedTime).color).not.toBe(getComputedStyle(plainTime).color)
+    expect(getComputedStyle(selectedTime).fontWeight).not.toBe(getComputedStyle(plainTime).fontWeight)
+    expect(checkStyle(selectedTime).opacity).toBe('1')
+    expect(checkStyle(selectedTime).maskImage).not.toBe('none')
   })
 
-  it('hover 与键盘焦点只增加中性底，对号继续可见且焦点底不渐变', async () => {
+  it('hover 与键盘焦点增加状态底，对号继续可见且焦点底不渐变', async () => {
     await mountDatePicker()
     const plainTime = timeItem('hour', '08')
     plainTime.style.transition = 'none'
@@ -159,7 +161,8 @@ describe('日期选择器快捷项与时间项的统一选中反馈', () => {
     const selectedTime = timeItem('hour', '09')
     selectedTime.style.transition = 'none'
     await userEvent.hover(selectedTime)
-    expect(getComputedStyle(selectedTime).backgroundColor).toBe(neutral)
+    expect(getComputedStyle(selectedTime).backgroundColor).not.toBe(neutral)
+    expect(alpha(getComputedStyle(selectedTime).backgroundColor)).toBe(255)
     expect(checkStyle(selectedTime).opacity).toBe('1')
 
     await userEvent.tab()

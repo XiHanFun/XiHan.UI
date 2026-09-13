@@ -53,8 +53,7 @@ const selectionMode = ref<"single" | "range">("single");
 const value = ref<string[]>([]);
 
 const yearCells: CalendarPeriod[] = Array.from({ length: 200 }, (_, index) =>
-  calendarPeriodOf(`${1900 + index}-01-01`, "year", { locale: "zh-CN" })!,
-);
+  calendarPeriodOf(`${1900 + index}-01-01`, "year", { locale: "zh-CN" })!);
 
 const summary = computed(() => {
   const period = calendarPeriodValue(granularity.value, selectionMode.value, value.value, { locale: "zh-CN" });
@@ -62,11 +61,13 @@ const summary = computed(() => {
 });
 
 function changeGranularity(details: { value: string | string[] | null }) {
-  if (typeof details.value === "string") granularity.value = details.value as CalendarGranularity;
+  if (typeof details.value === "string")
+    granularity.value = details.value as CalendarGranularity;
 }
 
 function changeMode(details: { value: string | string[] | null }) {
-  if (details.value === "single" || details.value === "range") selectionMode.value = details.value;
+  if (details.value === "single" || details.value === "range")
+    selectionMode.value = details.value;
 }
 </script>
 
@@ -98,7 +99,7 @@ function changeMode(details: { value: string | string[] | null }) {
 
     <XhDatePickerPositioner>
       <XhDatePickerContent>
-        <div style="display: flex; justify-content: space-between; gap: var(--xh-space-3); padding: var(--xh-space-3)">
+        <div style="display: flex; justify-content: space-between; gap: var(--xh-space-3); padding-block-end: var(--xh-space-2)">
           <XhToggleGroupRoot :value="granularity" disallow-empty size="sm" @value-change="changeGranularity">
             <XhToggleGroupItem v-for="item in granularities" :key="item.value" :value="item.value">
               {{ item.label }}
@@ -154,7 +155,7 @@ function changeMode(details: { value: string | string[] | null }) {
           </XhDatePickerGrid>
         </XhDatePickerCalendar>
 
-        <div style="display: flex; align-items: center; justify-content: space-between; gap: var(--xh-space-3); padding: var(--xh-space-3)">
+        <div style="display: flex; align-items: center; justify-content: space-between; gap: var(--xh-space-3); margin-block-start: var(--xh-space-2); padding-block-start: var(--xh-space-2); border-block-start: var(--xh-stroke-thin) solid var(--xh-border-subtle)">
           <span>{{ summary }}</span>
           <div style="display: flex; gap: var(--xh-space-2)">
             <XhButton variant="ghost" size="sm" :disabled="value.length === 0" @click="clear">清空</XhButton>

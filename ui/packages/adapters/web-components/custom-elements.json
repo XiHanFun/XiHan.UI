@@ -4031,6 +4031,9 @@
               "name": "--xh-calendar-period-py"
             },
             {
+              "name": "--xh-calendar-period-radius"
+            },
+            {
               "name": "--xh-calendar-range-bg"
             },
             {
@@ -13661,7 +13664,16 @@
               "name": "--xh-date-picker-time-column-h"
             },
             {
+              "name": "--xh-date-picker-time-column-min-w"
+            },
+            {
+              "name": "--xh-date-picker-time-column-min-w-mobile"
+            },
+            {
               "name": "--xh-date-picker-time-column-padding"
+            },
+            {
+              "name": "--xh-date-picker-time-column-px"
             },
             {
               "name": "--xh-date-picker-time-column-px-mobile"
@@ -13677,6 +13689,9 @@
             },
             {
               "name": "--xh-date-picker-time-item-fg-selected"
+            },
+            {
+              "name": "--xh-date-picker-time-item-h"
             },
             {
               "name": "--xh-date-picker-time-item-px"
@@ -50841,6 +50856,9 @@
             },
             {
               "name": "--xh-time-picker-item-font-size"
+            },
+            {
+              "name": "--xh-time-picker-item-h"
             },
             {
               "name": "--xh-time-picker-item-px"
