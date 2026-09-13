@@ -16484,7 +16484,10 @@
   );
   opacity: 0;
   visibility: hidden;
-  transition: opacity var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
+  /* 视觉退出完成后才隐藏旧内容，避免旧侧先消失、新侧仍为透明时出现空白闪帧。 */
+  transition:
+    opacity var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
+    visibility 0s var(--xh-motion-ease-exit) var(--xh-motion-duration-micro);
 }
 
 /* 作者仍可用原生 hidden 收起整个指示器。 */
@@ -16496,10 +16499,17 @@
 [data-scope='clipboard'][data-part='root'][data-state='copied'] [data-scope='clipboard'][data-part='indicator'][data-copied] {
   opacity: 1;
   visibility: visible;
+  transition:
+    opacity var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
+    visibility 0s var(--xh-motion-ease-enter) 0s;
 }
 
 [data-scope='clipboard'][data-part='root'][data-state='copied'] [data-scope='clipboard'][data-part='indicator']:not([data-copied]) {
+  opacity: 0;
   visibility: hidden;
+  transition:
+    opacity var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
+    visibility 0s var(--xh-motion-ease-exit) var(--xh-motion-duration-micro);
 }
 
 /* 成功那一侧的图标用成功色；平时那侧跟着按钮的文字色走 */
