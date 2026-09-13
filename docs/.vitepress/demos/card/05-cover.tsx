@@ -3,26 +3,26 @@
  * Licensed under the MIT License. See LICENSE in the project root for license information.
  */
 
-// 带封面 | 封面顶到根的边上、不吃内边距，圆角由根统一裁
+// 带媒体 | 图片或自绘媒体作为普通子节点放入，由内容自己决定比例与圆角
 import type { ReactNode } from "react";
-import { XhCardBody, XhCardDescription, XhCardHeader, XhCardMedia, XhCardRoot, XhCardTitle } from "@xihan-ui/react";
+import { XhCardContent, XhCardDescription, XhCardHeader, XhCardRoot, XhCardTitle } from "@xihan-ui/react";
 
 export default function Demo(): ReactNode {
   return (
-    <XhCardRoot variant="elevated" style={{ maxInlineSize: "300px" }}>
-      <XhCardMedia>
-        <div
-          style={{
-            blockSize: "120px",
-            background: "linear-gradient(135deg, var(--xh-bg-brand), var(--xh-bg-subtle))",
-          }}
-        />
-      </XhCardMedia>
+    <XhCardRoot variant="secondary" style={{ maxInlineSize: "300px" }}>
+      <div
+        aria-hidden="true"
+        style={{
+          blockSize: "120px",
+          borderRadius: "var(--xh-shape-surface)",
+          background: "linear-gradient(135deg, var(--xh-bg-brand), var(--xh-bg-surface))",
+        }}
+      />
       <XhCardHeader>
         <XhCardTitle>七月总结</XhCardTitle>
-        <XhCardDescription>封面是任意内容，放图片或自绘都行</XhCardDescription>
+        <XhCardDescription>媒体与文字共享卡片的统一节奏</XhCardDescription>
       </XhCardHeader>
-      <XhCardBody>正文。</XhCardBody>
+      <XhCardContent>本月共完成 18 个里程碑。</XhCardContent>
     </XhCardRoot>
   );
 }

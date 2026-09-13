@@ -7,7 +7,6 @@
 
 import type { NormalizeProps, PropTypes } from '@xihan-ui/core'
 import type { CardApi, CardProps } from './card.types'
-import { dataAttr } from '@xihan-ui/core'
 import { cardAnatomy } from './card.anatomy'
 
 const parts = cardAnatomy.build()
@@ -18,22 +17,18 @@ export function connectCard<T extends PropTypes>(
   props: CardProps,
   normalize: NormalizeProps<T>,
 ): CardApi<T> {
-  // 三个视觉轴与两个开关只落在根上，各段从这里继承私有槽，子部件不重复标注
+  const variant = props.variant ?? 'default'
   const rootAttrs = {
     ...parts.root.attrs,
-    'data-variant': props.variant,
-    'data-size': props.size,
-    'data-hoverable': dataAttr(props.hoverable),
-    'data-split': dataAttr(props.split),
+    'data-variant': variant,
   }
 
   return {
     getRootProps: () => normalize.element(rootAttrs),
-    getMediaProps: () => normalize.element(parts.media.attrs),
     getHeaderProps: () => normalize.element(parts.header.attrs),
     getTitleProps: () => normalize.element(parts.title.attrs),
     getDescriptionProps: () => normalize.element(parts.description.attrs),
-    getBodyProps: () => normalize.element(parts.body.attrs),
+    getContentProps: () => normalize.element(parts.content.attrs),
     getFooterProps: () => normalize.element(parts.footer.attrs),
   }
 }

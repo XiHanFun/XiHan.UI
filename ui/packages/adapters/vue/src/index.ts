@@ -85,11 +85,10 @@ export type { CalendarRootSlotProps } from './components/calendar/calendar'
 export { useCalendar } from './components/calendar/use-calendar'
 export type { CalendarContext } from './components/calendar/use-calendar'
 export {
-  XhCardBody,
+  XhCardContent,
   XhCardDescription,
   XhCardFooter,
   XhCardHeader,
-  XhCardMedia,
   XhCardRoot,
   XhCardTitle,
 } from './components/card/card'

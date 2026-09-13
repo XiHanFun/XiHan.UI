@@ -13,7 +13,7 @@ import { createApp, h, nextTick } from 'vue'
 import {
   XhAlertRoot,
   XhAlertTitle,
-  XhCardBody,
+  XhCardContent,
   XhCardRoot,
   XhFieldLabel,
   XhFieldRoot,
@@ -46,11 +46,11 @@ function all(selector: string): HTMLElement[] {
 }
 
 describe('部件规则不越过 scope', () => {
-  it('大号卡片里的告警标题，字号与卡片外的那条一样', async () => {
-    // 两条告警内容相同，一条装进 lg 卡片、一条摆在外面：字号该只由 alert 自己的皮肤决定
+  it('卡片里的告警标题，字号与卡片外的那条一样', async () => {
+    // 两条告警内容相同，一条装进卡片、一条摆在外面：字号该只由 alert 自己的皮肤决定
     await mount(() => [
-      h(XhCardRoot, { size: 'lg' }, () => [
-        h(XhCardBody, null, () => [
+      h(XhCardRoot, { variant: 'tertiary' }, () => [
+        h(XhCardContent, null, () => [
           h(XhAlertRoot, null, () => [h(XhAlertTitle, null, () => '标题')]),
         ]),
       ]),

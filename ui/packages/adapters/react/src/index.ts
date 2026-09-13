@@ -217,20 +217,18 @@ export { useCalendarCellContext, useCalendarContext } from './components/calenda
 export { useCalendar } from './components/calendar/use-calendar'
 export type { CalendarContext } from './components/calendar/use-calendar'
 export {
-  XhCardBody,
+  XhCardContent,
   XhCardDescription,
   XhCardFooter,
   XhCardHeader,
-  XhCardMedia,
   XhCardRoot,
   XhCardTitle,
 } from './components/card/card'
 export type {
-  XhCardBodyProps,
+  XhCardContentProps,
   XhCardDescriptionProps,
   XhCardFooterProps,
   XhCardHeaderProps,
-  XhCardMediaProps,
   XhCardRootProps,
   XhCardTitleProps,
 } from './components/card/card'

@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 // 门禁：阴影只走海拔角色令牌，且角色与部件对得上。
 //
-// 四档角色：raised = 静态抬起面（卡片的 elevated 变体、分段控制器的滑块、静止的滑杆拇指）；
+// 四档角色：raised = 静态抬起面（卡片、分段控制器的滑块、静止的滑杆拇指）；
 // lifted = 被指针拎起、正跟着手走的东西（拖动中的滑杆拇指），比 raised 高一档、不到 floating；
 // floating = 锚定浮层（下拉、菜单、popover、hover-card、tooltip，它们 portal 到同一落点，投影同深）；
 // sheet = 遮罩式与通知（dialog / drawer / toast / tour / floating-panel / float-button / back-top）。
@@ -45,7 +45,7 @@ const SLOTTED = /^var\((?:--xh-[a-z][a-z0-9-]*,\s*var\()+--xh-elevation-(?:raise
 const EXPECTED = {
   'back-top': { root: ['glass'] },
   'button': { root: ['soft', 'raised'] },
-  'card': { root: ['raised', 'lifted'] },
+  'card': { root: ['raised'] },
   'checkbox': { root: ['soft', 'raised'] },
   'checkbox-group': { 'root': ['soft', 'raised'], 'select-all-trigger': ['soft', 'raised'] },
   'cascader': { content: ['frosted'] },

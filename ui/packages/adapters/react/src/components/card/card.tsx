@@ -5,7 +5,6 @@
 
 // 提供 card 相关实现。
 
-import type { Size } from '@xihan-ui/core'
 import type { CardProps, CardVariant } from '@xihan-ui/headless'
 import type { ComponentPropsWithRef, ReactNode } from 'react'
 import { connectCard } from '@xihan-ui/headless'
@@ -15,37 +14,19 @@ import { reactNormalize } from '../../runtime/normalize-props'
 import { CardProvider, useCardContext } from './context'
 
 export interface XhCardRootProps extends ComponentPropsWithRef<'div'> {
-  /** 形态：outline / subtle / elevated / ghost，决定描边、底色与投影怎么用。 */
+  /** 语义层级：default / secondary / tertiary / transparent，默认 default。 */
   variant?: CardVariant
-  /** 尺寸：sm / md / lg，决定各段的内边距与标题字号。 */
-  size?: Size
-  /** 指针悬停时抬起。 */
-  hoverable?: boolean
-  /** 在头、身、脚之间画分隔线。 */
-  split?: boolean
 }
 
-/** 卡片外壳。三个视觉轴与两个开关只落在这一层，各段从这里继承。 */
-export function XhCardRoot({ variant, size, hoverable, split, children, ...rest }: XhCardRootProps): ReactNode {
-  const api = connectCard(withXhConfig('card', { variant, size, hoverable, split }) as CardProps, reactNormalize)
+/** 卡片外壳。语义层级只落在这一层。 */
+export function XhCardRoot({ variant, children, ...rest }: XhCardRootProps): ReactNode {
+  const api = connectCard(withXhConfig('card', { variant }) as CardProps, reactNormalize)
   return (
     <CardProvider value={{ api }}>
       <div {...mergeReactProps(api.getRootProps() as Record<string, unknown>, rest as Record<string, unknown>)}>
         {children}
       </div>
     </CardProvider>
-  )
-}
-
-export interface XhCardMediaProps extends ComponentPropsWithRef<'div'> {}
-
-/** 封面槽：图片、视频由作者塞进来。 */
-export function XhCardMedia({ children, ...rest }: XhCardMediaProps): ReactNode {
-  const ctx = useCardContext()
-  return (
-    <div {...mergeReactProps(ctx.api.getMediaProps() as Record<string, unknown>, rest as Record<string, unknown>)}>
-      {children}
-    </div>
   )
 }
 
@@ -60,34 +41,34 @@ export function XhCardHeader({ children, ...rest }: XhCardHeaderProps): ReactNod
   )
 }
 
-export interface XhCardTitleProps extends ComponentPropsWithRef<'div'> {}
+export interface XhCardTitleProps extends ComponentPropsWithRef<'h3'> {}
 
 export function XhCardTitle({ children, ...rest }: XhCardTitleProps): ReactNode {
   const ctx = useCardContext()
   return (
-    <div {...mergeReactProps(ctx.api.getTitleProps() as Record<string, unknown>, rest as Record<string, unknown>)}>
+    <h3 {...mergeReactProps(ctx.api.getTitleProps() as Record<string, unknown>, rest as Record<string, unknown>)}>
       {children}
-    </div>
+    </h3>
   )
 }
 
-export interface XhCardDescriptionProps extends ComponentPropsWithRef<'div'> {}
+export interface XhCardDescriptionProps extends ComponentPropsWithRef<'p'> {}
 
 export function XhCardDescription({ children, ...rest }: XhCardDescriptionProps): ReactNode {
   const ctx = useCardContext()
   return (
-    <div {...mergeReactProps(ctx.api.getDescriptionProps() as Record<string, unknown>, rest as Record<string, unknown>)}>
+    <p {...mergeReactProps(ctx.api.getDescriptionProps() as Record<string, unknown>, rest as Record<string, unknown>)}>
       {children}
-    </div>
+    </p>
   )
 }
 
-export interface XhCardBodyProps extends ComponentPropsWithRef<'div'> {}
+export interface XhCardContentProps extends ComponentPropsWithRef<'div'> {}
 
-export function XhCardBody({ children, ...rest }: XhCardBodyProps): ReactNode {
+export function XhCardContent({ children, ...rest }: XhCardContentProps): ReactNode {
   const ctx = useCardContext()
   return (
-    <div {...mergeReactProps(ctx.api.getBodyProps() as Record<string, unknown>, rest as Record<string, unknown>)}>
+    <div {...mergeReactProps(ctx.api.getContentProps() as Record<string, unknown>, rest as Record<string, unknown>)}>
       {children}
     </div>
   )

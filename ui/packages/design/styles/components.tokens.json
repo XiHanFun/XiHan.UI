@@ -4873,120 +4873,20 @@
         "root"
       ],
       "property": [
-        "background",
-        "background-color"
+        "background"
       ],
       "state": [
         "default",
-        "variant=elevated",
-        "variant=subtle"
-      ],
-      "defaultToken": [
-        "--xh-bg-subtle",
-        "--xh-bg-surface",
-        "--xh-bg-surface-raised"
-      ],
-      "visibility": "public",
-      "description": "card 的 root 部件 background、background-color 覆盖槽。"
-    },
-    {
-      "name": "--xh-card-bg-hover",
-      "component": "card",
-      "part": [
-        "root"
-      ],
-      "property": [
-        "background-color"
-      ],
-      "state": [
-        "@media (hover: hover)",
-        "hover",
-        "hoverable",
-        "variant=elevated",
-        "variant=ghost",
-        "variant=subtle"
+        "variant=secondary",
+        "variant=tertiary"
       ],
       "defaultToken": [
         "--xh-bg-subtle",
         "--xh-bg-subtle-hover",
-        "--xh-bg-surface",
-        "--xh-bg-surface-raised"
+        "--xh-bg-surface"
       ],
       "visibility": "public",
-      "description": "card 的 root 部件 background-color 覆盖槽。"
-    },
-    {
-      "name": "--xh-card-body-font-size",
-      "component": "card",
-      "part": [
-        "root"
-      ],
-      "property": [
-        "font-size"
-      ],
-      "state": [
-        "default"
-      ],
-      "defaultToken": [
-        "--xh-text-body-size"
-      ],
-      "visibility": "public",
-      "description": "card 的 root 部件 font-size 覆盖槽。"
-    },
-    {
-      "name": "--xh-card-body-line-height",
-      "component": "card",
-      "part": [
-        "root"
-      ],
-      "property": [
-        "line-height"
-      ],
-      "state": [
-        "default"
-      ],
-      "defaultToken": [
-        "--xh-text-body-leading"
-      ],
-      "visibility": "public",
-      "description": "card 的 root 部件 line-height 覆盖槽。"
-    },
-    {
-      "name": "--xh-card-body-pb",
-      "component": "card",
-      "part": [
-        "body"
-      ],
-      "property": [
-        "padding-block-end"
-      ],
-      "state": [
-        "not(:last-child)"
-      ],
-      "defaultToken": [
-        "--xh-space-0"
-      ],
-      "visibility": "public",
-      "description": "card 的 body 部件 padding-block-end 覆盖槽。"
-    },
-    {
-      "name": "--xh-card-body-pt",
-      "component": "card",
-      "part": [
-        "body",
-        "header"
-      ],
-      "property": [
-        "padding-block-start"
-      ],
-      "state": [
-        "default"
-      ],
-      "defaultToken": [
-        "--xh-_card-section-gap"
-      ],
-      "visibility": "public",
-      "description": "card 的 body、header 部件 padding-block-start 覆盖槽。"
+      "description": "card 的 root 部件 background 覆盖槽。"
     },
     {
       "name": "--xh-card-border",
@@ -4995,47 +4895,34 @@
         "root"
       ],
       "property": [
-        "border",
-        "border-color"
+        "border"
       ],
       "state": [
-        "default",
-        "variant=elevated",
-        "variant=ghost",
-        "variant=outline",
-        "variant=subtle"
+        "default"
       ],
       "defaultToken": [
-        "--xh-border-default",
         "transparent"
       ],
       "visibility": "public",
-      "description": "card 的 root 部件 border、border-color 覆盖槽。"
+      "description": "card 的 root 部件 border 覆盖槽。"
     },
     {
-      "name": "--xh-card-border-hover",
+      "name": "--xh-card-content-gap",
       "component": "card",
       "part": [
-        "root"
+        "content"
       ],
       "property": [
-        "border-color"
+        "gap"
       ],
       "state": [
-        "@media (hover: hover)",
-        "hover",
-        "hoverable",
-        "variant=ghost",
-        "variant=outline",
-        "variant=subtle"
+        "default"
       ],
       "defaultToken": [
-        "--xh-border-default",
-        "--xh-border-strong",
-        "transparent"
+        "--xh-space-1"
       ],
       "visibility": "public",
-      "description": "card 的 root 部件 border-color 覆盖槽。"
+      "description": "card 的 content 部件 gap 覆盖槽。"
     },
     {
       "name": "--xh-card-description-fg",
@@ -5050,7 +4937,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-material-soft-fg-muted"
+        "--xh-fg-muted"
       ],
       "visibility": "public",
       "description": "card 的 description 部件 color 覆盖槽。"
@@ -5068,30 +4955,28 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-text-secondary-size"
+        "--xh-text-label-size"
       ],
       "visibility": "public",
       "description": "card 的 description 部件 font-size 覆盖槽。"
     },
     {
-      "name": "--xh-card-divider",
+      "name": "--xh-card-description-leading",
       "component": "card",
       "part": [
-        "body",
-        "footer",
-        "root"
+        "description"
       ],
       "property": [
-        "border-block-start"
+        "line-height"
       ],
       "state": [
-        "split"
+        "default"
       ],
       "defaultToken": [
-        "--xh-border-subtle"
+        "--xh-text-body-leading"
       ],
       "visibility": "public",
-      "description": "card 的 body、footer、root 部件 border-block-start 覆盖槽。"
+      "description": "card 的 description 部件 line-height 覆盖槽。"
     },
     {
       "name": "--xh-card-fg",
@@ -5112,6 +4997,24 @@
       "description": "card 的 root 部件 color 覆盖槽。"
     },
     {
+      "name": "--xh-card-font-size",
+      "component": "card",
+      "part": [
+        "root"
+      ],
+      "property": [
+        "font-size"
+      ],
+      "state": [
+        "default"
+      ],
+      "defaultToken": [
+        "--xh-text-label-size"
+      ],
+      "visibility": "public",
+      "description": "card 的 root 部件 font-size 覆盖槽。"
+    },
+    {
       "name": "--xh-card-footer-gap",
       "component": "card",
       "part": [
@@ -5130,30 +5033,10 @@
       "description": "card 的 footer 部件 gap 覆盖槽。"
     },
     {
-      "name": "--xh-card-footer-pt",
+      "name": "--xh-card-gap",
       "component": "card",
       "part": [
-        "body",
-        "footer",
-        "header"
-      ],
-      "property": [
-        "padding-block-start"
-      ],
-      "state": [
-        "default"
-      ],
-      "defaultToken": [
-        "--xh-_card-section-gap"
-      ],
-      "visibility": "public",
-      "description": "card 的 body、footer、header 部件 padding-block-start 覆盖槽。"
-    },
-    {
-      "name": "--xh-card-header-gap",
-      "component": "card",
-      "part": [
-        "header"
+        "root"
       ],
       "property": [
         "gap"
@@ -5162,28 +5045,46 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-space-1"
+        "--xh-space-3"
       ],
       "visibility": "public",
-      "description": "card 的 header 部件 gap 覆盖槽。"
+      "description": "card 的 root 部件 gap 覆盖槽。"
     },
     {
-      "name": "--xh-card-header-pb",
+      "name": "--xh-card-leading",
       "component": "card",
       "part": [
-        "header"
+        "root"
       ],
       "property": [
-        "padding-block-end"
+        "line-height"
       ],
       "state": [
-        "not(:last-child)"
+        "default"
       ],
       "defaultToken": [
-        "--xh-space-0"
+        "--xh-text-body-leading"
       ],
       "visibility": "public",
-      "description": "card 的 header 部件 padding-block-end 覆盖槽。"
+      "description": "card 的 root 部件 line-height 覆盖槽。"
+    },
+    {
+      "name": "--xh-card-p",
+      "component": "card",
+      "part": [
+        "root"
+      ],
+      "property": [
+        "padding"
+      ],
+      "state": [
+        "default"
+      ],
+      "defaultToken": [
+        "--xh-space-4"
+      ],
+      "visibility": "public",
+      "description": "card 的 root 部件 padding 覆盖槽。"
     },
     {
       "name": "--xh-card-radius",
@@ -5198,7 +5099,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-shape-surface"
+        "--xh-shape-overlay"
       ],
       "visibility": "public",
       "description": "card 的 root 部件 border-radius 覆盖槽。"
@@ -5214,13 +5115,9 @@
       ],
       "state": [
         "default",
-        "variant=elevated",
-        "variant=ghost",
-        "variant=outline",
-        "variant=subtle"
+        "variant=transparent"
       ],
       "defaultToken": [
-        "--xh-elevation-lifted",
         "--xh-elevation-raised",
         "none"
       ],
@@ -5228,49 +5125,76 @@
       "description": "card 的 root 部件 box-shadow 覆盖槽。"
     },
     {
-      "name": "--xh-card-shadow-hover",
+      "name": "--xh-card-title-fg",
       "component": "card",
       "part": [
-        "root"
+        "title"
       ],
       "property": [
-        "box-shadow"
+        "color"
       ],
       "state": [
-        "@media (hover: hover)",
-        "hover",
-        "hoverable",
-        "variant=elevated",
-        "variant=ghost",
-        "variant=subtle"
+        "default"
       ],
       "defaultToken": [
-        "--xh-elevation-lifted",
-        "none"
+        "--xh-fg-default"
       ],
       "visibility": "public",
-      "description": "card 的 root 部件 box-shadow 覆盖槽。"
+      "description": "card 的 title 部件 color 覆盖槽。"
     },
     {
       "name": "--xh-card-title-font-size",
       "component": "card",
       "part": [
-        "root",
         "title"
       ],
       "property": [
         "font-size"
       ],
       "state": [
-        "default",
-        "size=lg"
+        "default"
       ],
       "defaultToken": [
-        "--xh-control-font-lg",
         "--xh-text-label-size"
       ],
       "visibility": "public",
-      "description": "card 的 root、title 部件 font-size 覆盖槽。"
+      "description": "card 的 title 部件 font-size 覆盖槽。"
+    },
+    {
+      "name": "--xh-card-title-font-weight",
+      "component": "card",
+      "part": [
+        "title"
+      ],
+      "property": [
+        "font-weight"
+      ],
+      "state": [
+        "default"
+      ],
+      "defaultToken": [
+        "--xh-font-weight-medium"
+      ],
+      "visibility": "public",
+      "description": "card 的 title 部件 font-weight 覆盖槽。"
+    },
+    {
+      "name": "--xh-card-title-leading",
+      "component": "card",
+      "part": [
+        "title"
+      ],
+      "property": [
+        "line-height"
+      ],
+      "state": [
+        "default"
+      ],
+      "defaultToken": [
+        "--xh-leading-relaxed"
+      ],
+      "visibility": "public",
+      "description": "card 的 title 部件 line-height 覆盖槽。"
     },
     {
       "name": "--xh-carousel-control-inset",

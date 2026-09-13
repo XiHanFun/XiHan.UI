@@ -9,6 +9,6 @@ import type { ComponentMeta } from '../spec/types'
 
 export const cardMeta: ComponentMeta = {
   component: 'card',
-  // 只有根是必备的：封面、头、身、脚按需摆，一个不写也是一张合法的卡片
+  // 只有根是必备的：头、内容、脚按需组合，图片等媒体直接作为普通子节点放入。
   requiredParts: ['root'],
 }
