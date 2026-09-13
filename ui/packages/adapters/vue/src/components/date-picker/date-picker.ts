@@ -275,7 +275,7 @@ export const XhDatePickerRangeSeparator = defineComponent({
     return () => h(
       'span',
       ctx.api.value.getRangeSeparatorProps() as Record<string, unknown>,
-      slots.default?.() ?? '–',
+      slots.default?.() ?? '-',
     )
   },
 })

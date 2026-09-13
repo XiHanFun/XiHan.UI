@@ -138,7 +138,7 @@ describe('范围日历轨道', () => {
   it('日期范围字段使用正式分隔部件，默认字符不进入可访问树', async () => {
     const separator = await mountRangeField()
     const style = getComputedStyle(separator)
-    expect(separator.textContent).toBe('–')
+    expect(separator.textContent).toBe('-')
     expect(separator.getAttribute('aria-hidden')).toBe('true')
     expect(style.display).toBe('flex')
     expect(Number.parseFloat(style.paddingInlineStart)).toBeGreaterThan(0)

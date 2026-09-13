@@ -14068,7 +14068,7 @@
   border: var(--xh-stroke-thin) solid transparent;
   border-radius: var(--xh-calendar-nav-radius, var(--xh-shape-control));
   background: var(--xh-calendar-nav-bg, transparent);
-  color: var(--xh-calendar-nav-fg, var(--xh-fg-muted));
+  color: var(--xh-calendar-nav-fg, var(--xh-fg-brand));
   cursor: pointer;
   transition:
     background var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
@@ -14087,7 +14087,7 @@
 [data-scope='calendar'][data-part='next-year-trigger']:hover:not(:disabled),
 [data-scope='calendar'][data-part='next-trigger']:hover:not(:disabled) {
   background: var(--xh-calendar-nav-bg-hover, var(--xh-bg-subtle-hover));
-  color: var(--xh-fg-default);
+  color: var(--xh-calendar-nav-fg-hover, var(--xh-fg-brand));
 }
 
 /* 换底之外再压一档：方向钮按下时缩放 */
@@ -19713,9 +19713,9 @@
   /* 形态档只换这五个私有槽：两档底色、两档描边与落影 */
   --xh-_date-field-control-bg: var(--xh-bg-canvas);
   /* 悬停那一档底：描边之外再换一次填充，语气在场时兑同族的淡底 */
-  --xh-_date-field-control-bg-hover: var(--xh-_tone-subtle, var(--xh-bg-subtle));
-  --xh-_date-field-control-border: var(--xh-border-control);
-  --xh-_date-field-control-border-hover: var(--xh-border-control-hover);
+  --xh-_date-field-control-bg-hover: color-mix(in oklab, var(--xh-bg-subtle) 45%, var(--xh-_date-field-control-bg));
+  --xh-_date-field-control-border: transparent;
+  --xh-_date-field-control-border-hover: var(--xh-border-default);
   /* 一档静态落影把分段框从页面里抬起一层，与描边一起画出框的边界 */
   --xh-_date-field-control-shadow: var(--xh-elevation-raised);
   /* 聚焦环与段位反白随语气走。没写 data-tone 时这几个 --xh-_tone* 没被声明，退回原来的焦点色与品牌色 */
@@ -19807,7 +19807,7 @@
   padding-inline: var(--xh-date-field-control-px, var(--xh-_date-field-control-px));
   padding-block: 0;
   border: var(--xh-stroke-thin) solid var(--xh-date-field-control-border, var(--xh-_date-field-control-border));
-  border-radius: var(--xh-date-field-control-radius, var(--xh-shape-control));
+  border-radius: var(--xh-date-field-control-radius, var(--xh-shape-surface));
   background: var(--xh-date-field-control-bg, var(--xh-_date-field-control-bg));
   box-shadow: var(--xh-date-field-control-shadow, var(--xh-_date-field-control-shadow));
   color: var(--xh-date-field-control-fg, var(--xh-fg-default));
@@ -20081,9 +20081,9 @@
   /* 形态档只换这五个私有槽：两档底色、两档描边与落影 */
   --xh-_date-picker-control-bg: var(--xh-bg-canvas);
   /* 悬停那一档底：描边之外再换一次填充，语气在场时兑同族的淡底 */
-  --xh-_date-picker-control-bg-hover: var(--xh-_tone-subtle, var(--xh-bg-subtle));
-  --xh-_date-picker-control-border: var(--xh-border-control);
-  --xh-_date-picker-control-border-hover: var(--xh-border-control-hover);
+  --xh-_date-picker-control-bg-hover: color-mix(in oklab, var(--xh-bg-subtle) 45%, var(--xh-_date-picker-control-bg));
+  --xh-_date-picker-control-border: transparent;
+  --xh-_date-picker-control-border-hover: var(--xh-border-default);
   /* 一档静态落影把盒从页面里抬起一层，与描边一起画出盒的边界 */
   --xh-_date-picker-control-shadow: var(--xh-elevation-raised);
 
@@ -20206,7 +20206,7 @@
   padding-inline: var(--xh-date-picker-control-px, var(--xh-_date-picker-control-px));
   padding-block: 0;
   border: var(--xh-stroke-thin) solid var(--xh-date-picker-control-border, var(--xh-_date-picker-control-border));
-  border-radius: var(--xh-date-picker-control-radius, var(--xh-shape-control));
+  border-radius: var(--xh-date-picker-control-radius, var(--xh-shape-surface));
   background: var(--xh-date-picker-control-bg, var(--xh-_date-picker-control-bg));
   box-shadow: var(--xh-date-picker-control-shadow, var(--xh-_date-picker-control-shadow));
   color: var(--xh-date-picker-control-fg, var(--xh-fg-default));
@@ -20381,10 +20381,10 @@
   max-inline-size: var(--xh-_date-picker-available-w);
   padding-block: var(--xh-date-picker-content-py, var(--xh-space-3));
   padding-inline: var(--xh-date-picker-content-px, var(--xh-space-3));
-  border: var(--xh-stroke-thin) solid var(--xh-date-picker-content-border, var(--xh-material-frosted-border));
-  border-radius: var(--xh-date-picker-content-radius, var(--xh-shape-surface));
-  background: var(--xh-date-picker-content-bg, var(--xh-material-frosted-bg));
-  color: var(--xh-date-picker-content-fg, var(--xh-material-frosted-fg));
+  border: var(--xh-stroke-thin) solid var(--xh-date-picker-content-border, transparent);
+  border-radius: var(--xh-date-picker-content-radius, var(--xh-shape-overlay));
+  background: var(--xh-date-picker-content-bg, var(--xh-bg-surface));
+  color: var(--xh-date-picker-content-fg, var(--xh-fg-default));
   /* 日历是定高结构：六行日期加表头本来就有固定高度，上限走页内滚动面那一档；
      可用高度是定位引擎算出的视口余量，视口真放不下时再收一截 */
   max-block-size: min(var(--xh-date-picker-max-h, var(--xh-viewport-h-lg)), var(--xh-_date-picker-available-h));
@@ -20392,8 +20392,8 @@
      日历那几块保持各自的天然宽度，不被压 */
   overflow: auto;
   box-shadow: var(--xh-date-picker-content-shadow, var(--xh-material-frosted-shadow));
-  -webkit-backdrop-filter: var(--xh-date-picker-content-backdrop, var(--xh-material-frosted-backdrop));
-  backdrop-filter: var(--xh-date-picker-content-backdrop, var(--xh-material-frosted-backdrop));
+  -webkit-backdrop-filter: var(--xh-date-picker-content-backdrop, none);
+  backdrop-filter: var(--xh-date-picker-content-backdrop, none);
   pointer-events: auto;
 }
 
@@ -20405,7 +20405,7 @@
   inset-inline: 0;
   block-size: var(--xh-stroke-thin);
   border-radius: inherit;
-  background: var(--xh-date-picker-content-highlight, var(--xh-material-frosted-highlight));
+  background: var(--xh-date-picker-content-highlight, transparent);
   pointer-events: none;
 }
 
@@ -22195,20 +22195,32 @@
   inline-size: 100%;
   block-size: var(--xh-field-control-h, var(--xh-control-h-md));
   padding-inline: var(--xh-field-control-px, var(--xh-control-px-md));
-  border: var(--xh-stroke-thin) solid var(--xh-field-control-border, var(--xh-border-control));
-  border-radius: var(--xh-field-control-radius, var(--xh-shape-control));
+  border: var(--xh-stroke-thin) solid var(--xh-field-control-border, transparent);
+  border-radius: var(--xh-field-control-radius, var(--xh-shape-surface));
   background: var(--xh-field-control-bg, var(--xh-bg-canvas));
   color: var(--xh-field-control-fg, var(--xh-fg-default));
   font-size: var(--xh-field-control-font-size, var(--xh-text-body-size));
+  box-shadow: var(--xh-field-control-shadow, var(--xh-elevation-raised));
   /* 聚焦、无效与禁用三档换的都是颜色，各态之间接一段过渡 */
   transition:
     border-color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
     background var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
-    color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
+    color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
+    box-shadow var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
+}
+
+[data-scope='field'][data-part='control']:hover:not([data-disabled], [data-readonly], [data-invalid]) {
+  border-color: var(--xh-field-control-border-hover, var(--xh-border-default));
+  background: var(
+    --xh-field-control-bg-hover,
+    color-mix(in oklab, var(--xh-bg-subtle) 45%, var(--xh-field-control-bg, var(--xh-bg-canvas)))
+  );
 }
 
 [data-scope='field'][data-part='control']:focus-visible {
   border-color: var(--xh-field-control-border-focus, var(--xh-_tone, var(--xh-border-control-focus)));
+  outline: var(--xh-ring-width) solid var(--xh-field-control-ring, var(--xh-ring-focus));
+  outline-offset: var(--xh-ring-offset);
 }
 
 [data-scope='field'][data-part='control'][data-invalid] {
@@ -22219,6 +22231,11 @@
 [data-scope='field'][data-part='control'][data-disabled] {
   background: var(--xh-field-control-bg-disabled, var(--xh-bg-subtle));
   color: var(--xh-fg-disabled);
+  box-shadow: none;
+}
+
+[data-scope='field'][data-part='root'][data-invalid] > [data-scope='field'][data-part='label'] {
+  color: var(--xh-field-label-fg-invalid, var(--xh-fg-danger));
 }
 
 [data-scope='field'][data-part='description'] {
@@ -34175,9 +34192,9 @@
   /* 形态档只换这五个私有槽：两档底色、两档描边与落影 */
   --xh-_time-field-control-bg: var(--xh-bg-canvas);
   /* 悬停那一档底：描边之外再换一次填充，语气在场时兑同族的淡底 */
-  --xh-_time-field-control-bg-hover: var(--xh-_tone-subtle, var(--xh-bg-subtle));
-  --xh-_time-field-control-border: var(--xh-border-control);
-  --xh-_time-field-control-border-hover: var(--xh-border-control-hover);
+  --xh-_time-field-control-bg-hover: color-mix(in oklab, var(--xh-bg-subtle) 45%, var(--xh-_time-field-control-bg));
+  --xh-_time-field-control-border: transparent;
+  --xh-_time-field-control-border-hover: var(--xh-border-default);
   /* 一档静态落影把控件从页面里抬起一层，与描边一起画出框的边界 */
   --xh-_time-field-control-shadow: var(--xh-elevation-raised);
   /* 聚焦描边与段位反白随语气走。没写 data-tone 时这几个 --xh-_tone* 没被声明，退回原来的焦点色与品牌色 */
@@ -34266,7 +34283,7 @@
   padding-inline: var(--xh-time-field-control-px, var(--xh-_time-field-control-px));
   padding-block: 0;
   border: var(--xh-stroke-thin) solid var(--xh-time-field-control-border, var(--xh-_time-field-control-border));
-  border-radius: var(--xh-time-field-control-radius, var(--xh-shape-control));
+  border-radius: var(--xh-time-field-control-radius, var(--xh-shape-surface));
   background: var(--xh-time-field-control-bg, var(--xh-_time-field-control-bg));
   box-shadow: var(--xh-time-field-control-shadow, var(--xh-_time-field-control-shadow));
   color: var(--xh-time-field-control-fg, var(--xh-fg-default));
@@ -34540,9 +34557,9 @@
   /* 形态档只换这五个私有槽：两档底色、两档描边与落影 */
   --xh-_time-picker-control-bg: var(--xh-bg-canvas);
   /* 悬停那一档底：描边之外再换一次填充，语气在场时兑同族的淡底 */
-  --xh-_time-picker-control-bg-hover: var(--xh-_tone-subtle, var(--xh-bg-subtle));
-  --xh-_time-picker-control-border: var(--xh-border-control);
-  --xh-_time-picker-control-border-hover: var(--xh-border-control-hover);
+  --xh-_time-picker-control-bg-hover: color-mix(in oklab, var(--xh-bg-subtle) 45%, var(--xh-_time-picker-control-bg));
+  --xh-_time-picker-control-border: transparent;
+  --xh-_time-picker-control-border-hover: var(--xh-border-default);
   /* 一档静态落影把盒从页面里抬起一层，与描边一起画出盒的边界 */
   --xh-_time-picker-control-shadow: var(--xh-elevation-raised);
 
@@ -34648,7 +34665,7 @@
   padding-inline: var(--xh-time-picker-control-px, var(--xh-_time-picker-control-px));
   padding-block: 0;
   border: var(--xh-stroke-thin) solid var(--xh-time-picker-control-border, var(--xh-_time-picker-control-border));
-  border-radius: var(--xh-time-picker-control-radius, var(--xh-shape-control));
+  border-radius: var(--xh-time-picker-control-radius, var(--xh-shape-surface));
   background: var(--xh-time-picker-control-bg, var(--xh-_time-picker-control-bg));
   box-shadow: var(--xh-time-picker-control-shadow, var(--xh-_time-picker-control-shadow));
   color: var(--xh-time-picker-control-fg, var(--xh-fg-default));
@@ -34869,14 +34886,14 @@
   padding-inline: var(--xh-time-picker-content-px, var(--xh-space-2));
   /* 列自己定高，面板整体不该再长过页内滚动面那一档 */
   max-block-size: var(--xh-time-picker-content-max-h, var(--xh-viewport-h-lg));
-  border: var(--xh-stroke-thin) solid var(--xh-time-picker-content-border, var(--xh-material-frosted-border));
-  border-radius: var(--xh-time-picker-content-radius, var(--xh-shape-surface));
-  background: var(--xh-time-picker-content-bg, var(--xh-material-frosted-bg));
-  color: var(--xh-time-picker-content-fg, var(--xh-material-frosted-fg));
+  border: var(--xh-stroke-thin) solid var(--xh-time-picker-content-border, transparent);
+  border-radius: var(--xh-time-picker-content-radius, var(--xh-shape-overlay));
+  background: var(--xh-time-picker-content-bg, var(--xh-bg-surface));
+  color: var(--xh-time-picker-content-fg, var(--xh-fg-default));
   font-variant-numeric: tabular-nums;
   box-shadow: var(--xh-time-picker-content-shadow, var(--xh-material-frosted-shadow));
-  -webkit-backdrop-filter: var(--xh-time-picker-content-backdrop, var(--xh-material-frosted-backdrop));
-  backdrop-filter: var(--xh-time-picker-content-backdrop, var(--xh-material-frosted-backdrop));
+  -webkit-backdrop-filter: var(--xh-time-picker-content-backdrop, none);
+  backdrop-filter: var(--xh-time-picker-content-backdrop, none);
   pointer-events: auto;
 }
 
@@ -34888,7 +34905,7 @@
   inset-inline: 0;
   block-size: var(--xh-stroke-thin);
   border-radius: inherit;
-  background: var(--xh-time-picker-content-highlight, var(--xh-material-frosted-highlight));
+  background: var(--xh-time-picker-content-highlight, transparent);
   pointer-events: none;
 }
 

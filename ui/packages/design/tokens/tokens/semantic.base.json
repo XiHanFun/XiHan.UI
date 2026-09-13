@@ -421,6 +421,10 @@
       "$type": "dimension",
       "$value": "{radius.lg}"
     },
+    "overlay": {
+      "$type": "dimension",
+      "$value": "calc({radius.lg} * 2)"
+    },
     "pill": {
       "$type": "dimension",
       "$value": "{radius.full}"

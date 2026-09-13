@@ -77,8 +77,8 @@ afterEach(() => {
   host = null
 })
 
-describe('时间选择 M2 浮层', () => {
-  it.each(['light', 'dark'] as const)('%s：实体输入与单一磨砂浮层分层，局部主题跨 Portal 生效', async (theme) => {
+describe('时间选择浮层', () => {
+  it.each(['light', 'dark'] as const)('%s：输入与时间面板均使用实体表面，局部主题跨 Portal 生效', async (theme) => {
     await mount(theme)
     const control = getComputedStyle(part('control'))
     const content = getComputedStyle(part('content'))
@@ -86,12 +86,12 @@ describe('时间选择 M2 浮层', () => {
     expect(alpha(control.backgroundColor)).toBe(255)
     expect(control.outlineStyle).toBe('solid')
     expect(part('positioner').closest<HTMLElement>('[data-theme]')?.dataset.theme).toBe(theme)
-    expect(content.backdropFilter).toContain('blur(16px)')
-    expect(alpha(content.backgroundColor)).toBeLessThan(255)
-    expect(alpha(content.backgroundColor)).toBeGreaterThan(220)
+    expect(content.backdropFilter).toBe('none')
+    expect(alpha(content.backgroundColor)).toBe(255)
     expect(content.boxShadow).not.toBe('none')
+    expect(content.borderRadius).toBe('24px')
     const highlight = getComputedStyle(part('content'), '::before')
-    expect(alpha(highlight.backgroundColor)).toBeGreaterThan(0)
+    expect(alpha(highlight.backgroundColor)).toBe(0)
     expect(highlight.pointerEvents).toBe('none')
     for (const name of ['column', 'preset-group']) {
       const style = getComputedStyle(part(name))

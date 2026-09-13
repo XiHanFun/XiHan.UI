@@ -9,20 +9,11 @@ import {
 
 export default function Demo(): ReactNode {
   return (
-    <>
-      <XhTextFieldRoot placeholder="请输入昵称">
-        <XhTextFieldLabel>昵称</XhTextFieldLabel>
-        <XhTextFieldControl style={{ inlineSize: "200px" }}>
-          <XhTextFieldInput />
-        </XhTextFieldControl>
-      </XhTextFieldRoot>
-
-      <XhTextFieldRoot defaultValue="曦寒">
-        <XhTextFieldLabel>带初值</XhTextFieldLabel>
-        <XhTextFieldControl style={{ inlineSize: "200px" }}>
-          <XhTextFieldInput />
-        </XhTextFieldControl>
-      </XhTextFieldRoot>
-    </>
+    <XhTextFieldRoot name="email" type="email" placeholder="输入你的邮箱">
+      <XhTextFieldLabel>邮箱</XhTextFieldLabel>
+      <XhTextFieldControl style={{ inlineSize: "16rem" }}>
+        <XhTextFieldInput />
+      </XhTextFieldControl>
+    </XhTextFieldRoot>
   );
 }

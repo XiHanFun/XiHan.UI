@@ -299,7 +299,7 @@ tone 决定用哪族颜色，与 variant 正交；这里固定 subtle 形态，�
 | `--xh-time-field-control-h` | `control` | `block-size` | `default` | `--xh-_time-field-control-h` | time-field 的 control 部件 block-size 覆盖槽。 |
 | `--xh-time-field-control-min-w` | `control`<br>`root` | `min-inline-size` | `default` | `--xh-control-min-w` | time-field 的 control、root 部件 min-inline-size 覆盖槽。 |
 | `--xh-time-field-control-px` | `control` | `padding-inline` | `default` | `--xh-_time-field-control-px` | time-field 的 control 部件 padding-inline 覆盖槽。 |
-| `--xh-time-field-control-radius` | `control` | `border-radius` | `default` | `--xh-shape-control` | time-field 的 control 部件 border-radius 覆盖槽。 |
+| `--xh-time-field-control-radius` | `control` | `border-radius` | `default` | `--xh-shape-surface` | time-field 的 control 部件 border-radius 覆盖槽。 |
 | `--xh-time-field-control-shadow` | `control` | `box-shadow` | `default` | `--xh-_time-field-control-shadow` | time-field 的 control 部件 box-shadow 覆盖槽。 |
 | `--xh-time-field-font-size` | `control` | `font-size` | `default` | `--xh-_time-field-font-size` | time-field 的 control 部件 font-size 覆盖槽。 |
 | `--xh-time-field-gap` | `root` | `gap` | `default` | `--xh-space-1` | time-field 的 root 部件 gap 覆盖槽。 |

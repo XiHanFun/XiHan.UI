@@ -54,9 +54,9 @@
     /* 形态档只换这五个私有槽：两档底色、两档描边与落影 */
     --xh-_time-picker-control-bg: var(--xh-bg-canvas);
     /* 悬停那一档底：描边之外再换一次填充，语气在场时兑同族的淡底 */
-    --xh-_time-picker-control-bg-hover: var(--xh-_tone-subtle, var(--xh-bg-subtle));
-    --xh-_time-picker-control-border: var(--xh-border-control);
-    --xh-_time-picker-control-border-hover: var(--xh-border-control-hover);
+    --xh-_time-picker-control-bg-hover: color-mix(in oklab, var(--xh-bg-subtle) 45%, var(--xh-_time-picker-control-bg));
+    --xh-_time-picker-control-border: transparent;
+    --xh-_time-picker-control-border-hover: var(--xh-border-default);
     /* 一档静态落影把盒从页面里抬起一层，与描边一起画出盒的边界 */
     --xh-_time-picker-control-shadow: var(--xh-elevation-raised);
 
@@ -162,7 +162,7 @@
     padding-inline: var(--xh-time-picker-control-px, var(--xh-_time-picker-control-px));
     padding-block: 0;
     border: var(--xh-stroke-thin) solid var(--xh-time-picker-control-border, var(--xh-_time-picker-control-border));
-    border-radius: var(--xh-time-picker-control-radius, var(--xh-shape-control));
+    border-radius: var(--xh-time-picker-control-radius, var(--xh-shape-surface));
     background: var(--xh-time-picker-control-bg, var(--xh-_time-picker-control-bg));
     box-shadow: var(--xh-time-picker-control-shadow, var(--xh-_time-picker-control-shadow));
     color: var(--xh-time-picker-control-fg, var(--xh-fg-default));
@@ -384,14 +384,14 @@
     padding-inline: var(--xh-time-picker-content-px, var(--xh-space-2));
     /* 列自己定高，面板整体不该再长过页内滚动面那一档 */
     max-block-size: var(--xh-time-picker-content-max-h, var(--xh-viewport-h-lg));
-    border: var(--xh-stroke-thin) solid var(--xh-time-picker-content-border, var(--xh-material-frosted-border));
-    border-radius: var(--xh-time-picker-content-radius, var(--xh-shape-surface));
-    background: var(--xh-time-picker-content-bg, var(--xh-material-frosted-bg));
-    color: var(--xh-time-picker-content-fg, var(--xh-material-frosted-fg));
+    border: var(--xh-stroke-thin) solid var(--xh-time-picker-content-border, transparent);
+    border-radius: var(--xh-time-picker-content-radius, var(--xh-shape-overlay));
+    background: var(--xh-time-picker-content-bg, var(--xh-bg-surface));
+    color: var(--xh-time-picker-content-fg, var(--xh-fg-default));
     font-variant-numeric: tabular-nums;
     box-shadow: var(--xh-time-picker-content-shadow, var(--xh-material-frosted-shadow));
-    -webkit-backdrop-filter: var(--xh-time-picker-content-backdrop, var(--xh-material-frosted-backdrop));
-    backdrop-filter: var(--xh-time-picker-content-backdrop, var(--xh-material-frosted-backdrop));
+    -webkit-backdrop-filter: var(--xh-time-picker-content-backdrop, none);
+    backdrop-filter: var(--xh-time-picker-content-backdrop, none);
     pointer-events: auto;
   }
 
@@ -403,7 +403,7 @@
     inset-inline: 0;
     block-size: var(--xh-stroke-thin);
     border-radius: inherit;
-    background: var(--xh-time-picker-content-highlight, var(--xh-material-frosted-highlight));
+    background: var(--xh-time-picker-content-highlight, transparent);
     pointer-events: none;
   }
 

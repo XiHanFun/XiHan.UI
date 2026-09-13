@@ -63,9 +63,9 @@
     /* 形态档只换这五个私有槽：两档底色、两档描边与落影 */
     --xh-_date-picker-control-bg: var(--xh-bg-canvas);
     /* 悬停那一档底：描边之外再换一次填充，语气在场时兑同族的淡底 */
-    --xh-_date-picker-control-bg-hover: var(--xh-_tone-subtle, var(--xh-bg-subtle));
-    --xh-_date-picker-control-border: var(--xh-border-control);
-    --xh-_date-picker-control-border-hover: var(--xh-border-control-hover);
+    --xh-_date-picker-control-bg-hover: color-mix(in oklab, var(--xh-bg-subtle) 45%, var(--xh-_date-picker-control-bg));
+    --xh-_date-picker-control-border: transparent;
+    --xh-_date-picker-control-border-hover: var(--xh-border-default);
     /* 一档静态落影把盒从页面里抬起一层，与描边一起画出盒的边界 */
     --xh-_date-picker-control-shadow: var(--xh-elevation-raised);
 
@@ -188,7 +188,7 @@
     padding-inline: var(--xh-date-picker-control-px, var(--xh-_date-picker-control-px));
     padding-block: 0;
     border: var(--xh-stroke-thin) solid var(--xh-date-picker-control-border, var(--xh-_date-picker-control-border));
-    border-radius: var(--xh-date-picker-control-radius, var(--xh-shape-control));
+    border-radius: var(--xh-date-picker-control-radius, var(--xh-shape-surface));
     background: var(--xh-date-picker-control-bg, var(--xh-_date-picker-control-bg));
     box-shadow: var(--xh-date-picker-control-shadow, var(--xh-_date-picker-control-shadow));
     color: var(--xh-date-picker-control-fg, var(--xh-fg-default));
@@ -364,10 +364,10 @@
     max-inline-size: var(--xh-_date-picker-available-w);
     padding-block: var(--xh-date-picker-content-py, var(--xh-space-3));
     padding-inline: var(--xh-date-picker-content-px, var(--xh-space-3));
-    border: var(--xh-stroke-thin) solid var(--xh-date-picker-content-border, var(--xh-material-frosted-border));
-    border-radius: var(--xh-date-picker-content-radius, var(--xh-shape-surface));
-    background: var(--xh-date-picker-content-bg, var(--xh-material-frosted-bg));
-    color: var(--xh-date-picker-content-fg, var(--xh-material-frosted-fg));
+    border: var(--xh-stroke-thin) solid var(--xh-date-picker-content-border, transparent);
+    border-radius: var(--xh-date-picker-content-radius, var(--xh-shape-overlay));
+    background: var(--xh-date-picker-content-bg, var(--xh-bg-surface));
+    color: var(--xh-date-picker-content-fg, var(--xh-fg-default));
     /* 日历是定高结构：六行日期加表头本来就有固定高度，上限走页内滚动面那一档；
        可用高度是定位引擎算出的视口余量，视口真放不下时再收一截 */
     max-block-size: min(var(--xh-date-picker-max-h, var(--xh-viewport-h-lg)), var(--xh-_date-picker-available-h));
@@ -375,8 +375,8 @@
        日历那几块保持各自的天然宽度，不被压 */
     overflow: auto;
     box-shadow: var(--xh-date-picker-content-shadow, var(--xh-material-frosted-shadow));
-    -webkit-backdrop-filter: var(--xh-date-picker-content-backdrop, var(--xh-material-frosted-backdrop));
-    backdrop-filter: var(--xh-date-picker-content-backdrop, var(--xh-material-frosted-backdrop));
+    -webkit-backdrop-filter: var(--xh-date-picker-content-backdrop, none);
+    backdrop-filter: var(--xh-date-picker-content-backdrop, none);
     pointer-events: auto;
   }
 
@@ -388,7 +388,7 @@
     inset-inline: 0;
     block-size: var(--xh-stroke-thin);
     border-radius: inherit;
-    background: var(--xh-date-picker-content-highlight, var(--xh-material-frosted-highlight));
+    background: var(--xh-date-picker-content-highlight, transparent);
     pointer-events: none;
   }
 

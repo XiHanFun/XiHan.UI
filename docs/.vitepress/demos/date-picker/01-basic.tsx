@@ -39,9 +39,9 @@ export default function Demo(): ReactNode {
           <XhDatePickerControl>
             <XhDatePickerSegmentGroup>
               <XhDatePickerSegment index={0} />
-              <span>-</span>
+              <span>/</span>
               <XhDatePickerSegment index={1} />
-              <span>-</span>
+              <span>/</span>
               <XhDatePickerSegment index={2} />
             </XhDatePickerSegmentGroup>
             <XhDatePickerTrigger />

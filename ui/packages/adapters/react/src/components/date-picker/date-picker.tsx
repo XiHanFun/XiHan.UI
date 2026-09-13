@@ -339,7 +339,7 @@ export function XhDatePickerRangeSeparator({ children, ...rest }: XhDatePickerRa
   const ctx = useDatePickerContext()
   return (
     <span {...mergeReactProps(ctx.api.getRangeSeparatorProps() as Record<string, unknown>, rest as Record<string, unknown>)}>
-      {children ?? '–'}
+      {children ?? '-'}
     </span>
   )
 }

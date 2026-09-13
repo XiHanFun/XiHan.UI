@@ -154,9 +154,9 @@ function control(): VNode {
   ])
 }
 
-/** 区间选择：两端跨月时并排两张月历。 */
+/** 显式要求两张月历时，验证窄视口排布。 */
 function rangeShape(): VNode {
-  return h(XhDatePickerRoot, { open: true, selectionMode: 'range', locale: 'zh-CN' } as any, {
+  return h(XhDatePickerRoot, { open: true, selectionMode: 'range', visibleCount: 2, locale: 'zh-CN' } as any, {
     default: ({ panels, weekDays }: any) => [
       control(),
       h(XhDatePickerPositioner, null, () => [
@@ -230,7 +230,7 @@ describe('iframe 运行时 realm', () => {
   })
 })
 
-describe('区间两张月历', () => {
+describe('显式双面板的响应式排布', () => {
   it(`${PHONE}px 下第二张落到第一张下面`, async () => {
     const doc = mountAt(PHONE, rangeShape)
     const content = await contentAt(doc)
