@@ -3,7 +3,7 @@
  * Licensed under the MIT License. See LICENSE in the project root for license information.
  */
 
-// 区间选择 | selection-mode=range：第一下落起点、第二下落终点，中间铺一条连续底色
+// 区间选择 | selection-mode=range：先落起点再落终点，也可以按住拖过去；两端都落定才写值，Escape 撤掉起点
 import type { ReactNode } from "react";
 import {
   XhCalendarCell,
@@ -24,12 +24,8 @@ import { useState } from "react";
 export default function Demo(): ReactNode {
   const [value, setValue] = useState<string[]>([]);
 
-  // 挑到一半时集合里只有起点一个值
-  const text = value.length === 0
-    ? "（未选）"
-    : value.length === 1
-      ? `${value[0]} → 待定`
-      : `${value[0]} → ${value[1]}`;
+  // 值只在两端都落定时更新；挑到一半的起点记在组件里
+  const text = value.length === 2 ? `${value[0]} → ${value[1]}` : "（未选）";
 
   return (
     <>

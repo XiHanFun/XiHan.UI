@@ -1,4 +1,4 @@
-<!-- 区间选择 | selection-mode=range：第一下落起点、第二下落终点，中间铺一条连续底色 -->
+<!-- 区间选择 | selection-mode=range：先落起点再落终点，也可以按住拖过去；两端都落定才写值，Escape 撤掉起点 -->
 <div id="calendar-range-mount"></div>
 <span style="font-size: 13px">区间：<span id="calendar-range-value">（未选）</span></span>
 
@@ -80,8 +80,8 @@
 
   calendar.addEventListener("focused-value-change", paintBody);
   calendar.addEventListener("value-change", (event) => {
-    // 挑到一半时集合里只有起点一个值
+    // 值只在两端都落定时更新；挑到一半的起点记在元素里
     const [start, end] = event.detail.value;
-    readout.textContent = start ? `${start} → ${end ?? "待定"}` : "（未选）";
+    readout.textContent = start && end ? `${start} → ${end}` : "（未选）";
   });
 </script>
