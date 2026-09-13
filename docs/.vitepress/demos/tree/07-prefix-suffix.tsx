@@ -1,6 +1,8 @@
 // 前缀与行尾 | 行里放什么由标记说了算：文字前塞图标、文字后塞操作，方向指示也可以挪到行尾去
 import type { ReactNode } from "react";
+import { FileIcon, FolderIcon } from "@xihan-ui/icons";
 import {
+  XhIcon,
   XhTreeBranch,
   XhTreeBranchContent,
   XhTreeBranchControl,
@@ -45,7 +47,7 @@ export default function Demo(): ReactNode {
           {collection.map(dir => (
             <XhTreeBranch key={dir.value} value={dir.value}>
               <XhTreeBranchControl>
-                <span aria-hidden="true">📁</span>
+                <XhIcon icon={FolderIcon} />
                 <XhTreeBranchText>{dir.label}</XhTreeBranchText>
                 {/* 指示器不带点击语义，展开态转 90° 全靠皮肤读 data-state */}
                 <XhTreeBranchIndicator />
@@ -53,7 +55,7 @@ export default function Demo(): ReactNode {
               <XhTreeBranchContent>
                 {dir.children.map(file => (
                   <XhTreeItem key={file.value} value={file.value}>
-                    <span aria-hidden="true">📄</span>
+                    <XhIcon icon={FileIcon} />
                     <XhTreeItemText>{file.label}</XhTreeItemText>
                     {/* 掐断冒泡，否则点按钮连带把这一行也选上 */}
                     <button
