@@ -50195,7 +50195,8 @@
       "property": [
         "block-size",
         "inline-size",
-        "margin-inline-start"
+        "margin-inline-start",
+        "min-inline-size"
       ],
       "state": [
         "default",
@@ -50205,7 +50206,7 @@
         "--xh-stroke-thick"
       ],
       "visibility": "public",
-      "description": "steps 的 separator 部件 block-size、inline-size、margin-inline-start 覆盖槽。"
+      "description": "steps 的 separator 部件 block-size、inline-size、margin-inline-start、min-inline-size 覆盖槽。"
     },
     {
       "name": "--xh-steps-title-fg",

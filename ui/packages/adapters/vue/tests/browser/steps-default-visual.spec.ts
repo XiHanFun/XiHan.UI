@@ -67,7 +67,8 @@ describe('steps 默认视觉', () => {
 
     expect(listStyle.flexDirection).toBe('column')
     expect(itemStyle.flexDirection).toBe('column')
-    expect(Number.parseFloat(separatorStyle.inlineSize)).toBeGreaterThan(0)
+    expect(Number.parseFloat(separatorStyle.inlineSize)).toBe(2)
+    expect(Number.parseFloat(separatorStyle.minInlineSize)).toBe(2)
     expect(Number.parseFloat(separatorStyle.blockSize)).toBeGreaterThanOrEqual(28)
     expect(Number.parseFloat(separatorStyle.marginInlineStart)).toBeGreaterThan(0)
   })
