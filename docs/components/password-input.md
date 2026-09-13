@@ -93,7 +93,7 @@ name 才让它参与提交，auto-complete 写成 new-password 密码管理器�
 ### 组合
 
 - 外面套[表单字段](./field)拿标签、说明与错误文本。
-- 切换钮里放[图标](./icon)，随明暗换一只眼睛。钮上带 `data-state`（`visible` / `hidden`），作者用自己的 CSS 按它切两枚图标即可；也可以从 root 的默认插槽拿 `visible`（Vue）或听 `visibility-change`（Web Components）自己换。皮肤不替作者切图标——库里不知道那两枚图标长什么样。
+- 切换钮留空时由皮肤按 `data-state` 绘制显示或隐藏图标。需要品牌图标时可放入[图标](./icon)替换内置字形，组件仍负责切换钮的可访问名称。
 
 ### 最佳实践
 

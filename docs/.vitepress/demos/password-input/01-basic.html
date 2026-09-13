@@ -6,35 +6,20 @@
       <input data-xh-part="input" style="inline-size: 200px" />
       <!-- 节点留空，大写锁定开着时元素把文字写进来，读屏念的就是这一段 -->
       <span data-xh-part="caps-lock-indicator"></span>
-      <!-- 名字由组件按明暗写好；图标只管好看，读屏不念它，遮着时划一道斜杠 -->
-      <button data-xh-part="visibility-trigger">
-        <svg
-          viewBox="0 0 24 24"
-          width="16"
-          height="16"
-          fill="none"
-          stroke="currentColor"
-          stroke-width="2"
-          stroke-linecap="round"
-          stroke-linejoin="round"
-          aria-hidden="true"
-        >
-          <path d="M2 12s3.5-6 10-6 10 6 10 6-3.5 6-10 6-10-6-10-6Z" />
-          <circle cx="12" cy="12" r="3" />
-          <path id="password-input-basic-slash" d="M4 4 20 20" />
-        </svg>
-      </button>
+      <!-- 留空即使用皮肤内置的显示/隐藏图标，名字也由组件按状态切换 -->
+      <button data-xh-part="visibility-trigger"></button>
     </div>
   </div>
 </xh-password-input>
 
 <script type="module">
-  // 文案与图标：文案给组件，图标是作者自己的事，跟着组件报上来的明暗换
+  // 大写锁定提示文案由组件写入对应状态区
   const field = document.getElementById("password-input-basic");
-  const slash = document.getElementById("password-input-basic-slash");
 
-  field.translations = { capsLockOn: "大写锁定已打开" };
-  field.addEventListener("visibility-change", (event) => {
-    slash.setAttribute("d", event.detail.visible ? "" : "M4 4 20 20");
-  });
+  field.translations = {
+    visibilityTriggerShow: "显示密码",
+    visibilityTriggerHide: "隐藏密码",
+    capsLockOn: "大写锁定已打开",
+    strengthMeter: "密码强度",
+  };
 </script>

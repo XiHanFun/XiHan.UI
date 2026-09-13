@@ -12,33 +12,21 @@ import {
 
 <template>
   <XhPasswordInputRoot
-    v-slot="{ visible }"
     placeholder="请输入密码"
-    :translations="{ capsLockOn: '大写锁定已打开' }"
+    :translations="{
+      visibilityTriggerShow: '显示密码',
+      visibilityTriggerHide: '隐藏密码',
+      capsLockOn: '大写锁定已打开',
+      strengthMeter: '密码强度',
+    }"
   >
     <XhPasswordInputLabel>密码</XhPasswordInputLabel>
     <XhPasswordInputControl>
       <XhPasswordInputInput style="inline-size: 200px" />
       <!-- 节点留空，大写锁定开着时组件把文字写进来，读屏念的就是这一段 -->
       <XhPasswordInputCapsLockIndicator />
-      <!-- 名字由组件按明暗写好；图标只管好看，读屏不念它，遮着时划一道斜杠 -->
-      <XhPasswordInputVisibilityTrigger>
-        <svg
-          viewBox="0 0 24 24"
-          width="16"
-          height="16"
-          fill="none"
-          stroke="currentColor"
-          stroke-width="2"
-          stroke-linecap="round"
-          stroke-linejoin="round"
-          aria-hidden="true"
-        >
-          <path d="M2 12s3.5-6 10-6 10 6 10 6-3.5 6-10 6-10-6-10-6Z" />
-          <circle cx="12" cy="12" r="3" />
-          <path :d="visible ? '' : 'M4 4 20 20'" />
-        </svg>
-      </XhPasswordInputVisibilityTrigger>
+      <!-- 留空即使用皮肤内置的显示/隐藏图标，名字也由组件按状态切换 -->
+      <XhPasswordInputVisibilityTrigger />
     </XhPasswordInputControl>
   </XhPasswordInputRoot>
 </template>

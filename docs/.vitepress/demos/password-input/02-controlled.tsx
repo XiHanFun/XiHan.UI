@@ -24,8 +24,7 @@ export default function Demo(): ReactNode {
         <XhPasswordInputLabel>密码</XhPasswordInputLabel>
         <XhPasswordInputControl>
           <XhPasswordInputInput style={{ inlineSize: "200px" }} />
-          {/* 图标随宿主那份状态换，切换钮自己的名字由组件管 */}
-          <XhPasswordInputVisibilityTrigger>{visible ? "◉" : "○"}</XhPasswordInputVisibilityTrigger>
+          <XhPasswordInputVisibilityTrigger />
         </XhPasswordInputControl>
       </XhPasswordInputRoot>
       <span>{`当前：${visible ? password : "•".repeat(password.length)}`}</span>

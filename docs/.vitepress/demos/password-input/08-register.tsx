@@ -16,7 +16,7 @@ export default function Demo(): ReactNode {
         <XhPasswordInputLabel>设置新密码</XhPasswordInputLabel>
         <XhPasswordInputControl>
           <XhPasswordInputInput style={{ inlineSize: "200px" }} />
-          <XhPasswordInputVisibilityTrigger>○</XhPasswordInputVisibilityTrigger>
+          <XhPasswordInputVisibilityTrigger />
         </XhPasswordInputControl>
       </XhPasswordInputRoot>
       <button type="reset">重置</button>
