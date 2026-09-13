@@ -91,6 +91,7 @@ tone 决定用哪族颜色，与 variant 正交；这里固定 subtle 形态，�
 - `min` / `max` 越界时只标注不改写。
 - 标准组合包含标签、输入框、时间段和隐藏表单输入；聚焦只强调正在编辑的时间段。
 - 框内自带清空钮（`clear-trigger`）：有值才显形，点完焦点回到第一段。
+- 聚焦环、边框和当前段位使用同一段短过渡，焦点进入与离开不会瞬时跳变。
 
 ### 组合
 
@@ -323,7 +324,7 @@ tone 决定用哪族颜色，与 variant 正交；这里固定 subtle 形态，�
 
 ### 动效
 
-`background` · `border-color` · `color` · `scale` 走 `transition` 过渡。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
+`background` · `border-color` · `color` · `outline-color` · `scale` 走 `transition` 过渡。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
 
 系统开启减弱动效时由令牌层统一收敛，皮肤不另作判断。
 

@@ -44,8 +44,8 @@
     "popover [close-trigger] var(--xh-material-frosted-focus-surface)": "关闭钮聚焦时切到不透明 M2 focus-surface，公共环不与模糊背景直接比较。",
     "popover [content] linear-gradient(\n        to bottom,\n        var(--xh-material-frosted-highlight) 0 var(--xh-stroke-thin),\n        transparent var(--xh-stroke-thin)\n      ),\n      var(--xh-popover-bg, var(--xh-material-frosted-bg))": "M2 内容面含半透明 tint 与装饰顶光，最终底色随页面背景变化；content 自身的程序化焦点环已关闭，内建关闭钮聚焦时实际铺不透明 focus-surface，任意作者控件由各自皮肤保证焦点面。",
     "prompt-input [input] var(--xh-material-glass-focus-surface)": "输入段自身明确关闭 outline，焦点环画在 root；该不透明底只负责文字与自动填充的可读性。",
-    "scrollbar [thumb] color-mix(in oklab, var(--xh-fg-default) 18%, transparent)": "滑块静息面叠在作者内容上，最终颜色随宿主背景变化；可聚焦滑块另以不透明 currentColor 绘制焦点环",
-    "scrollbar [thumb] color-mix(in oklab, var(--xh-fg-default) 40%, transparent)": "滑块拖动态仍叠在作者内容上，最终颜色随宿主背景变化；可聚焦滑块另以不透明 currentColor 绘制焦点环",
+    "scrollbar [thumb] var(--xh-fg-scrollbar-thumb-active)": "滑块拖动态仍叠在作者内容上，最终颜色随宿主背景变化；可聚焦滑块另以不透明 currentColor 绘制焦点环",
+    "scrollbar [thumb] var(--xh-fg-scrollbar-thumb)": "滑块静息面叠在作者内容上，最终颜色随宿主背景变化；可聚焦滑块另以不透明 currentColor 绘制焦点环",
     "toggle-group [item] color-mix(in oklab, var(--xh-_toggle-group-item-bg-on) 50%, var(--xh-bg-muted))": "禁用且按下那一档，色由私有槽掺进 color-mix 里，本脚本只解整条 var() 链、不进函数实参；失效控件本就在 SC 1.4.11 的豁免里",
     "tree-select [content] var(--xh-material-frosted-bg)": "M2 外壳的透明底随背后内容变化，不能按单一实体色判定；此 content 已由同表 ringless 逐条登记并在皮肤明确关闭程序化焦点环。内部真实控件仍按各自部件独立检查，不能由本条放行。"
   },

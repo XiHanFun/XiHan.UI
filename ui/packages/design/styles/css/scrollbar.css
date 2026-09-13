@@ -4,6 +4,36 @@
     --xh-scrollbar-skin: 1;
   }
 
+  /* 组件内部的原生滚动面复用本组件的厚度与色阶；宿主页面不受影响。
+     挂载完整 Scrollbar 时，后面的 data-xh-scrollbar 规则会隐藏原生外观并改用自绘轨道。 */
+  :where([data-scope][data-part]) {
+    scrollbar-width: thin;
+    scrollbar-color: var(--xh-fg-scrollbar-thumb) var(--xh-bg-scrollbar-track);
+    scrollbar-gutter: auto;
+  }
+
+  :where([data-scope][data-part])::-webkit-scrollbar {
+    width: var(--xh-scrollbar-thickness-md);
+    height: var(--xh-scrollbar-thickness-md);
+  }
+
+  :where([data-scope][data-part])::-webkit-scrollbar-track {
+    background: var(--xh-bg-scrollbar-track);
+  }
+
+  :where([data-scope][data-part])::-webkit-scrollbar-thumb {
+    border-radius: calc(var(--xh-scrollbar-thickness-md) / 2);
+    background: var(--xh-fg-scrollbar-thumb);
+  }
+
+  :where([data-scope][data-part])::-webkit-scrollbar-thumb:hover {
+    background: var(--xh-fg-scrollbar-thumb-hover);
+  }
+
+  :where([data-scope][data-part])::-webkit-scrollbar-thumb:active {
+    background: var(--xh-fg-scrollbar-thumb-active);
+  }
+
   /* 挂了自绘滚动条的容器：原生滚动条只藏外观，滚动能力一点不动。
      标记由机器挂监听时打上，最后一条滚动条拆走才撤。下面那条 ::-webkit-scrollbar 兜住还没实现 scrollbar-width 的引擎 */
   [data-xh-scrollbar] {
@@ -91,7 +121,7 @@
     inline-size: 100%;
     block-size: 100%;
     padding: var(--xh-scrollbar-gutter);
-    background: var(--xh-scrollbar-track-bg, transparent);
+    background: var(--xh-scrollbar-track-bg, var(--xh-bg-scrollbar-track));
   }
 
   /* 滑块。主轴（起点 + 长度）来自内联样式，这里只给定位模式、交叉轴与配色。
@@ -103,7 +133,7 @@
     border-radius: var(--xh-scrollbar-thumb-radius, var(--xh-shape-pill));
     background: var(
       --xh-scrollbar-thumb-bg,
-      color-mix(in oklab, var(--xh-fg-default) 18%, transparent)
+      var(--xh-fg-scrollbar-thumb)
     );
     /* 滑块里没有字，这支墨色只给聚焦环用。 */
     color: var(--xh-fg-default);
@@ -129,14 +159,14 @@
   [data-scope='scrollbar'][data-part='thumb']:hover {
     background: var(
       --xh-scrollbar-thumb-bg-hover,
-      color-mix(in oklab, var(--xh-fg-default) 28%, transparent)
+      var(--xh-fg-scrollbar-thumb-hover)
     );
   }
 
   [data-scope='scrollbar'][data-part='thumb'][data-dragging] {
     background: var(
       --xh-scrollbar-thumb-bg-active,
-      color-mix(in oklab, var(--xh-fg-default) 40%, transparent)
+      var(--xh-fg-scrollbar-thumb-active)
     );
   }
 

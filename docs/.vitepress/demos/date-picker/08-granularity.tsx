@@ -38,6 +38,11 @@ const kinds = [
   { key: "year", label: "按年", view: "year" as CalendarView, week: false },
 ];
 
+const yearCells = Array.from({ length: 200 }, (_, index) => {
+  const year = 1900 + index;
+  return { value: `${year}-01-01`, label: `${year}年` };
+});
+
 export default function Demo(): ReactNode {
   return (
     <div style={{ display: "flex", flexWrap: "wrap", gap: "24px" }}>
@@ -47,6 +52,7 @@ export default function Demo(): ReactNode {
           view={k.view}
           weekSelection={k.week}
           selectionMode={k.week ? "range" : "single"}
+          defaultFocusedValue={k.key === "year" ? "2026-01-01" : undefined}
           locale="zh-CN"
         >
           {({ panels, weekDays, segments }) => (
@@ -70,17 +76,21 @@ export default function Demo(): ReactNode {
                   {panels.map(panel => (
                     <XhDatePickerCalendar key={panel.index}>
                       <XhDatePickerHeader>
-                        {/* 大步翻那对钮：日视图一年，粗粒度视图十页 */}
-                        <XhDatePickerPrevYearTrigger aria-label="快退" />
-                        <XhDatePickerPrevTrigger aria-label="上一页" />
-                        <XhDatePickerHeading index={panel.index}>
-                          {/* 年与月各是一个钮：点年进十年格、点月进月格；到顶那一截自动按不动，
-                                没有的那一截自动收起 */}
-                          <XhDatePickerHeadingYearTrigger index={panel.index} />
-                          <XhDatePickerHeadingMonthTrigger index={panel.index} />
-                        </XhDatePickerHeading>
-                        <XhDatePickerNextTrigger aria-label="下一页" />
-                        <XhDatePickerNextYearTrigger aria-label="快进" />
+                        {k.key === "year"
+                          ? <XhDatePickerHeading>选择年份</XhDatePickerHeading>
+                          : (
+                              <>
+                                {/* 大步翻那对钮：日视图一年，粗粒度视图十页 */}
+                                <XhDatePickerPrevYearTrigger aria-label="快退" />
+                                <XhDatePickerPrevTrigger aria-label="上一页" />
+                                <XhDatePickerHeading index={panel.index}>
+                                  <XhDatePickerHeadingYearTrigger index={panel.index} />
+                                  <XhDatePickerHeadingMonthTrigger index={panel.index} />
+                                </XhDatePickerHeading>
+                                <XhDatePickerNextTrigger aria-label="下一页" />
+                                <XhDatePickerNextYearTrigger aria-label="快进" />
+                              </>
+                            )}
                       </XhDatePickerHeader>
                       <XhDatePickerGrid index={panel.index}>
                         {/* 日视图铺周行，粗粒度视图把格子直接铺进网格。钻上去之后铺的也是格子，
@@ -116,7 +126,7 @@ export default function Demo(): ReactNode {
                                 </XhDatePickerGridBody>
                               </>
                             )
-                          : panel.cells.map(cell => (
+                          : (k.key === "year" ? yearCells : panel.cells).map(cell => (
                               <XhDatePickerCell
                                 key={cell.value}
                                 value={cell.value}

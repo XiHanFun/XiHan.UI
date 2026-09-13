@@ -13972,6 +13972,226 @@
 }
 
 /* styles/calendar.css */
+/* css/scrollbar.css */
+
+/* 皮肤在场的标记：开发模式下按 scope 探一次，取不到就说明这份皮肤没被引入。 */
+[data-scope='scrollbar'] {
+  --xh-scrollbar-skin: 1;
+}
+
+/* 组件内部的原生滚动面复用本组件的厚度与色阶；宿主页面不受影响。
+   挂载完整 Scrollbar 时，后面的 data-xh-scrollbar 规则会隐藏原生外观并改用自绘轨道。 */
+:where([data-scope][data-part]) {
+  scrollbar-width: thin;
+  scrollbar-color: var(--xh-fg-scrollbar-thumb) var(--xh-bg-scrollbar-track);
+  scrollbar-gutter: auto;
+}
+
+:where([data-scope][data-part])::-webkit-scrollbar {
+  width: var(--xh-scrollbar-thickness-md);
+  height: var(--xh-scrollbar-thickness-md);
+}
+
+:where([data-scope][data-part])::-webkit-scrollbar-track {
+  background: var(--xh-bg-scrollbar-track);
+}
+
+:where([data-scope][data-part])::-webkit-scrollbar-thumb {
+  border-radius: calc(var(--xh-scrollbar-thickness-md) / 2);
+  background: var(--xh-fg-scrollbar-thumb);
+}
+
+:where([data-scope][data-part])::-webkit-scrollbar-thumb:hover {
+  background: var(--xh-fg-scrollbar-thumb-hover);
+}
+
+:where([data-scope][data-part])::-webkit-scrollbar-thumb:active {
+  background: var(--xh-fg-scrollbar-thumb-active);
+}
+
+/* 挂了自绘滚动条的容器：原生滚动条只藏外观，滚动能力一点不动。
+   标记由机器挂监听时打上，最后一条滚动条拆走才撤。下面那条 ::-webkit-scrollbar 兜住还没实现 scrollbar-width 的引擎 */
+[data-xh-scrollbar] {
+  scrollbar-width: none;
+}
+
+[data-xh-scrollbar]::-webkit-scrollbar {
+  display: none;
+}
+
+/* 定位分工：滑块在**主轴**上的起点与长度由连接层每帧写进内联样式——
+   竖向是 inset-block-start / block-size，横向是 inset-inline-start / inline-size。
+   这份皮肤一个都不碰：内联优先级高于样式表，写了不但是死声明，
+   换轴的那一帧还会跟连接层清空另一轴的动作抢位置，把滑块钉在两轴都被约束的地方。
+   皮肤只管另一条轴（交叉轴）的尺寸、颜色、圆角与状态表现。
+
+   根用绝对定位、贴容器的对应边：滚动容器归作者，本组件只要求它自己的定位祖先建了上下文。
+   作者要把它放在别处（比如浮在内容之上、或摆到框外），改这一条即可。 */
+[data-scope='scrollbar'][data-part='root'] {
+  /* 厚度只算一次：尺寸档换的就是它，交叉口的让位与补丁都按同一个数 */
+  --xh-_scrollbar-thickness: var(--xh-scrollbar-thickness-md);
+
+  position: absolute;
+  /* 浮层的 positioner 一律 pointer-events: none，条子作为它的子节点会继承到，拖不动也点不着；
+     收起态那条规则优先级更高，仍旧穿透 */
+  pointer-events: auto;
+  /* touch-action 关掉浏览器自己的手势：不关的话手指一按滑块页面就跟着滚，
+     指针随即被系统收走（pointercancel），拖到一半的滑块停在原地。
+     user-select 同理——拖动时选中页面文字会让滑块"粘"住。 */
+  touch-action: none;
+  user-select: none;
+  /* 露出与收起都淡变；收起态连 visibility 一起收，退场播完才真正摸不到、也进不了 Tab 序 */
+  transition:
+    opacity var(--xh-motion-duration-enter) var(--xh-motion-ease-enter),
+    visibility 0s linear 0s;
+}
+
+[data-scope='scrollbar'][data-part='root'][data-size='sm'] {
+  --xh-_scrollbar-thickness: var(--xh-scrollbar-thickness-sm);
+}
+
+[data-scope='scrollbar'][data-part='root'][data-size='lg'] {
+  --xh-_scrollbar-thickness: var(--xh-scrollbar-thickness-lg);
+}
+
+[data-scope='scrollbar'][data-part='root'][data-orientation='vertical'] {
+  inset-block: 0;
+  inset-inline-end: 0;
+  inline-size: var(--xh-_scrollbar-thickness);
+}
+
+[data-scope='scrollbar'][data-part='root'][data-orientation='horizontal'] {
+  inset-inline: 0;
+  inset-block-end: 0;
+  block-size: var(--xh-_scrollbar-thickness);
+}
+
+/* 横竖两条同时摆着：各自在末端让出交叉口那一格，交叉口由 corner 补 */
+[data-scope='scrollbar'][data-part='root'][data-orientation='vertical'][data-gutter] {
+  inset-block-end: var(--xh-_scrollbar-thickness);
+}
+
+[data-scope='scrollbar'][data-part='root'][data-orientation='horizontal'][data-gutter] {
+  inset-inline-end: var(--xh-_scrollbar-thickness);
+}
+
+[data-scope='scrollbar'][data-part='root'][data-state='hidden'] {
+  visibility: hidden;
+  opacity: 0;
+  pointer-events: none;
+  transition:
+    opacity var(--xh-motion-duration-exit) var(--xh-motion-ease-exit),
+    visibility 0s linear var(--xh-motion-duration-exit);
+}
+
+/* 触屏上交给原生滚动：整条不占位也不画 */
+[data-scope='scrollbar'][data-part='root'][data-native] {
+  display: none;
+}
+
+/* 轨道铺满根，滑块的行程按它量。内边距把滑块从两侧收进来一点，
+   与 scroll-area 那份共用同一个间隙令牌 */
+[data-scope='scrollbar'][data-part='track'] {
+  position: relative;
+  inline-size: 100%;
+  block-size: 100%;
+  padding: var(--xh-scrollbar-gutter);
+  background: var(--xh-scrollbar-track-bg, var(--xh-bg-scrollbar-track));
+}
+
+/* 滑块。主轴（起点 + 长度）来自内联样式，这里只给定位模式、交叉轴与配色。
+   绝不给 inset / size 加过渡：滚动时这两个值每帧都在变，一加过渡滑块就永远追在内容后面。
+   也刻意不写 min-block-size / min-inline-size：滑块的最短长度由几何层折进内联尺寸里，
+   样式表再给一个下限就成了两个事实源，两者一旦不一致，滑块的实际长度与它能走的距离就对不上。 */
+[data-scope='scrollbar'][data-part='thumb'] {
+  position: absolute;
+  border-radius: var(--xh-scrollbar-thumb-radius, var(--xh-shape-pill));
+  background: var(
+    --xh-scrollbar-thumb-bg,
+    var(--xh-fg-scrollbar-thumb)
+  );
+  /* 滑块里没有字，这支墨色只给聚焦环用。 */
+  color: var(--xh-fg-default);
+  cursor: default;
+  transition:
+    background var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
+    color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
+}
+
+/* 交叉轴在轨道内两侧各收进一个间隙，与轨道那条 padding 共用同一个旋钮。
+   这一侧的 inset 连接层每帧写成空串（即不设），样式表接手才有确定值；
+   不写的话绝对定位会退回"静态位置"。
+   主轴那一侧一律不写：几何层量的轨道是 padding box，滑块长度也解析在同一个盒子上。 */
+[data-scope='scrollbar'][data-part='thumb'][data-orientation='vertical'] {
+  inset-inline: var(--xh-scrollbar-gutter);
+}
+
+[data-scope='scrollbar'][data-part='thumb'][data-orientation='horizontal'] {
+  inset-block: var(--xh-scrollbar-gutter);
+}
+
+/* 这两档的面往另一头走（浅色主题更深、深色主题更亮），配对的墨色跟着翻到反色那一支 */
+[data-scope='scrollbar'][data-part='thumb']:hover {
+  background: var(
+    --xh-scrollbar-thumb-bg-hover,
+    var(--xh-fg-scrollbar-thumb-hover)
+  );
+}
+
+[data-scope='scrollbar'][data-part='thumb'][data-dragging] {
+  background: var(
+    --xh-scrollbar-thumb-bg-active,
+    var(--xh-fg-scrollbar-thumb-active)
+  );
+}
+
+/* 面是实心的中性色，环色与面同族，画在面里就看不出来；环改取这一档配对的墨色 */
+[data-scope='scrollbar'][data-part='thumb']:not([data-disabled]):focus-visible {
+  --xh-_ring-color: currentColor;
+}
+
+/* 根与轨道都是纯容器，不承载焦点；作者若给它们加了 tabindex，也不该在这儿多画一圈 */
+[data-scope='scrollbar'][data-part='root']:focus-visible,
+[data-scope='scrollbar'][data-part='track']:focus-visible {
+  outline: none;
+}
+
+/* 禁用：整条不显形，这里只兜住作者硬把它显出来的那一路 */
+[data-scope='scrollbar'][data-part='thumb'][data-disabled] {
+  background: var(--xh-scrollbar-thumb-bg-disabled, var(--xh-border-subtle));
+}
+
+/* 交叉口补丁：贴在本条末端之外的那一格，与轨道同色，跟着本条淡入淡出 */
+[data-scope='scrollbar'][data-part='corner'] {
+  position: absolute;
+  inline-size: var(--xh-_scrollbar-thickness);
+  block-size: var(--xh-_scrollbar-thickness);
+  background: var(--xh-scrollbar-corner-bg, var(--xh-scrollbar-track-bg, transparent));
+}
+
+[data-scope='scrollbar'][data-part='corner'][data-orientation='vertical'] {
+  inset-inline-start: 0;
+  inset-block-end: calc(-1 * var(--xh-_scrollbar-thickness));
+}
+
+[data-scope='scrollbar'][data-part='corner'][data-orientation='horizontal'] {
+  inset-block-start: 0;
+  inset-inline-end: calc(-1 * var(--xh-_scrollbar-thickness));
+}
+
+[data-scope='scrollbar'][data-part='root'][hidden],
+[data-scope='scrollbar'][data-part='corner'][hidden] {
+  display: none;
+}
+
+@media print {
+  /* 打印：滚动条画的是「还能往下看多少」，纸上没有这回事，它只会在版心边上留一条灰带。 */
+  [data-scope='scrollbar'][data-part='root'],
+  [data-scope='scrollbar'][data-part='corner'] {
+    display: none;
+  }
+}
+
 /* 皮肤在场的标记：开发模式下按 scope 探一次，取不到就说明这份皮肤没被引入。 */
 [data-scope='calendar'] {
   --xh-calendar-skin: 1;
@@ -14125,6 +14345,14 @@
   display: grid;
   grid-template-columns: repeat(4, minmax(0, 1fr));
   gap: var(--xh-calendar-period-gap, var(--xh-space-1));
+}
+
+[data-scope='calendar'][data-part='grid'][data-view='year'] {
+  align-content: start;
+  max-block-size: var(--xh-calendar-year-grid-max-h, var(--xh-viewport-h-sm));
+  padding-inline-end: var(--xh-calendar-year-grid-pe, var(--xh-space-1));
+  overflow-y: auto;
+  overscroll-behavior: contain;
 }
 
 /* 粗粒度的格子比日子宽，文字居中、留出上下气口 */
@@ -19808,6 +20036,8 @@
   padding-block: 0;
   border: var(--xh-stroke-thin) solid var(--xh-date-field-control-border, var(--xh-_date-field-control-border));
   border-radius: var(--xh-date-field-control-radius, var(--xh-shape-surface));
+  outline: var(--xh-ring-width) solid transparent;
+  outline-offset: var(--xh-ring-offset);
   background: var(--xh-date-field-control-bg, var(--xh-_date-field-control-bg));
   box-shadow: var(--xh-date-field-control-shadow, var(--xh-_date-field-control-shadow));
   color: var(--xh-date-field-control-fg, var(--xh-fg-default));
@@ -19817,7 +20047,8 @@
   line-height: var(--xh-leading-none);
   transition:
     background var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
-    border-color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
+    border-color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
+    outline-color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
 }
 
 [data-scope='date-field'][data-part='control'][hidden] {
@@ -20017,6 +20248,8 @@
 }
 
 /* styles/date-picker.css */
+/* css/scrollbar.css */
+
 /* 皮肤在场的标记：开发模式下按 scope 探一次，取不到就说明这份皮肤没被引入。 */
 [data-scope='date-picker'] {
   --xh-date-picker-skin: 1;
@@ -20207,12 +20440,15 @@
   padding-block: 0;
   border: var(--xh-stroke-thin) solid var(--xh-date-picker-control-border, var(--xh-_date-picker-control-border));
   border-radius: var(--xh-date-picker-control-radius, var(--xh-shape-surface));
+  outline: var(--xh-ring-width) solid transparent;
+  outline-offset: var(--xh-ring-offset);
   background: var(--xh-date-picker-control-bg, var(--xh-_date-picker-control-bg));
   box-shadow: var(--xh-date-picker-control-shadow, var(--xh-_date-picker-control-shadow));
   color: var(--xh-date-picker-control-fg, var(--xh-fg-default));
   transition:
     background var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
-    border-color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
+    border-color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
+    outline-color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
 }
 
 [data-scope='date-picker'][data-part='control'][hidden] {
@@ -20330,6 +20566,13 @@
 
 [data-scope='date-picker'][data-part='trigger'][hidden],
 [data-scope='date-picker'][data-part='clear-trigger'][hidden] {
+  display: none;
+}
+
+[data-scope='date-picker'][data-part='control']:has(
+    > [data-scope='date-picker'][data-part='clear-trigger']:not([hidden])
+  )
+  > [data-scope='date-picker'][data-part='trigger'] {
   display: none;
 }
 
@@ -22197,6 +22440,8 @@
   padding-inline: var(--xh-field-control-px, var(--xh-control-px-md));
   border: var(--xh-stroke-thin) solid var(--xh-field-control-border, transparent);
   border-radius: var(--xh-field-control-radius, var(--xh-shape-surface));
+  outline: var(--xh-ring-width) solid transparent;
+  outline-offset: var(--xh-ring-offset);
   background: var(--xh-field-control-bg, var(--xh-bg-canvas));
   color: var(--xh-field-control-fg, var(--xh-fg-default));
   font-size: var(--xh-field-control-font-size, var(--xh-text-body-size));
@@ -22206,7 +22451,8 @@
     border-color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
     background var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
     color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
-    box-shadow var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
+    box-shadow var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
+    outline-color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
 }
 
 [data-scope='field'][data-part='control']:hover:not([data-disabled], [data-readonly], [data-invalid]) {
@@ -26353,12 +26599,15 @@
   padding-inline: var(--xh-number-field-control-px, 0);
   border: var(--xh-stroke-thin) solid var(--xh-number-field-control-border, var(--xh-_number-field-border));
   border-radius: var(--xh-number-field-control-radius, var(--xh-_number-field-radius));
+  outline: var(--xh-ring-width) solid transparent;
+  outline-offset: var(--xh-ring-offset);
   background: var(--xh-number-field-control-bg, var(--xh-_number-field-bg));
   box-shadow: var(--xh-number-field-control-shadow, var(--xh-_number-field-shadow));
   overflow: hidden;
   transition:
     background var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
-    border-color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
+    border-color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
+    outline-color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
 }
 
 /* hover 换描边与填充两条通道。只在中性态换：invalid 正拿边框颜色说事，被 hover 盖掉那条
@@ -28975,193 +29224,6 @@
 }
 
 /* styles/scrollbar.css */
-/* 皮肤在场的标记：开发模式下按 scope 探一次，取不到就说明这份皮肤没被引入。 */
-[data-scope='scrollbar'] {
-  --xh-scrollbar-skin: 1;
-}
-
-/* 挂了自绘滚动条的容器：原生滚动条只藏外观，滚动能力一点不动。
-   标记由机器挂监听时打上，最后一条滚动条拆走才撤。下面那条 ::-webkit-scrollbar 兜住还没实现 scrollbar-width 的引擎 */
-[data-xh-scrollbar] {
-  scrollbar-width: none;
-}
-
-[data-xh-scrollbar]::-webkit-scrollbar {
-  display: none;
-}
-
-/* 定位分工：滑块在**主轴**上的起点与长度由连接层每帧写进内联样式——
-   竖向是 inset-block-start / block-size，横向是 inset-inline-start / inline-size。
-   这份皮肤一个都不碰：内联优先级高于样式表，写了不但是死声明，
-   换轴的那一帧还会跟连接层清空另一轴的动作抢位置，把滑块钉在两轴都被约束的地方。
-   皮肤只管另一条轴（交叉轴）的尺寸、颜色、圆角与状态表现。
-
-   根用绝对定位、贴容器的对应边：滚动容器归作者，本组件只要求它自己的定位祖先建了上下文。
-   作者要把它放在别处（比如浮在内容之上、或摆到框外），改这一条即可。 */
-[data-scope='scrollbar'][data-part='root'] {
-  /* 厚度只算一次：尺寸档换的就是它，交叉口的让位与补丁都按同一个数 */
-  --xh-_scrollbar-thickness: var(--xh-scrollbar-thickness-md);
-
-  position: absolute;
-  /* 浮层的 positioner 一律 pointer-events: none，条子作为它的子节点会继承到，拖不动也点不着；
-     收起态那条规则优先级更高，仍旧穿透 */
-  pointer-events: auto;
-  /* touch-action 关掉浏览器自己的手势：不关的话手指一按滑块页面就跟着滚，
-     指针随即被系统收走（pointercancel），拖到一半的滑块停在原地。
-     user-select 同理——拖动时选中页面文字会让滑块"粘"住。 */
-  touch-action: none;
-  user-select: none;
-  /* 露出与收起都淡变；收起态连 visibility 一起收，退场播完才真正摸不到、也进不了 Tab 序 */
-  transition:
-    opacity var(--xh-motion-duration-enter) var(--xh-motion-ease-enter),
-    visibility 0s linear 0s;
-}
-
-[data-scope='scrollbar'][data-part='root'][data-size='sm'] {
-  --xh-_scrollbar-thickness: var(--xh-scrollbar-thickness-sm);
-}
-
-[data-scope='scrollbar'][data-part='root'][data-size='lg'] {
-  --xh-_scrollbar-thickness: var(--xh-scrollbar-thickness-lg);
-}
-
-[data-scope='scrollbar'][data-part='root'][data-orientation='vertical'] {
-  inset-block: 0;
-  inset-inline-end: 0;
-  inline-size: var(--xh-_scrollbar-thickness);
-}
-
-[data-scope='scrollbar'][data-part='root'][data-orientation='horizontal'] {
-  inset-inline: 0;
-  inset-block-end: 0;
-  block-size: var(--xh-_scrollbar-thickness);
-}
-
-/* 横竖两条同时摆着：各自在末端让出交叉口那一格，交叉口由 corner 补 */
-[data-scope='scrollbar'][data-part='root'][data-orientation='vertical'][data-gutter] {
-  inset-block-end: var(--xh-_scrollbar-thickness);
-}
-
-[data-scope='scrollbar'][data-part='root'][data-orientation='horizontal'][data-gutter] {
-  inset-inline-end: var(--xh-_scrollbar-thickness);
-}
-
-[data-scope='scrollbar'][data-part='root'][data-state='hidden'] {
-  visibility: hidden;
-  opacity: 0;
-  pointer-events: none;
-  transition:
-    opacity var(--xh-motion-duration-exit) var(--xh-motion-ease-exit),
-    visibility 0s linear var(--xh-motion-duration-exit);
-}
-
-/* 触屏上交给原生滚动：整条不占位也不画 */
-[data-scope='scrollbar'][data-part='root'][data-native] {
-  display: none;
-}
-
-/* 轨道铺满根，滑块的行程按它量。内边距把滑块从两侧收进来一点，
-   与 scroll-area 那份共用同一个间隙令牌 */
-[data-scope='scrollbar'][data-part='track'] {
-  position: relative;
-  inline-size: 100%;
-  block-size: 100%;
-  padding: var(--xh-scrollbar-gutter);
-  background: var(--xh-scrollbar-track-bg, transparent);
-}
-
-/* 滑块。主轴（起点 + 长度）来自内联样式，这里只给定位模式、交叉轴与配色。
-   绝不给 inset / size 加过渡：滚动时这两个值每帧都在变，一加过渡滑块就永远追在内容后面。
-   也刻意不写 min-block-size / min-inline-size：滑块的最短长度由几何层折进内联尺寸里，
-   样式表再给一个下限就成了两个事实源，两者一旦不一致，滑块的实际长度与它能走的距离就对不上。 */
-[data-scope='scrollbar'][data-part='thumb'] {
-  position: absolute;
-  border-radius: var(--xh-scrollbar-thumb-radius, var(--xh-shape-pill));
-  background: var(
-    --xh-scrollbar-thumb-bg,
-    color-mix(in oklab, var(--xh-fg-default) 18%, transparent)
-  );
-  /* 滑块里没有字，这支墨色只给聚焦环用。 */
-  color: var(--xh-fg-default);
-  cursor: default;
-  transition:
-    background var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
-    color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
-}
-
-/* 交叉轴在轨道内两侧各收进一个间隙，与轨道那条 padding 共用同一个旋钮。
-   这一侧的 inset 连接层每帧写成空串（即不设），样式表接手才有确定值；
-   不写的话绝对定位会退回"静态位置"。
-   主轴那一侧一律不写：几何层量的轨道是 padding box，滑块长度也解析在同一个盒子上。 */
-[data-scope='scrollbar'][data-part='thumb'][data-orientation='vertical'] {
-  inset-inline: var(--xh-scrollbar-gutter);
-}
-
-[data-scope='scrollbar'][data-part='thumb'][data-orientation='horizontal'] {
-  inset-block: var(--xh-scrollbar-gutter);
-}
-
-/* 这两档的面往另一头走（浅色主题更深、深色主题更亮），配对的墨色跟着翻到反色那一支 */
-[data-scope='scrollbar'][data-part='thumb']:hover {
-  background: var(
-    --xh-scrollbar-thumb-bg-hover,
-    color-mix(in oklab, var(--xh-fg-default) 28%, transparent)
-  );
-}
-
-[data-scope='scrollbar'][data-part='thumb'][data-dragging] {
-  background: var(
-    --xh-scrollbar-thumb-bg-active,
-    color-mix(in oklab, var(--xh-fg-default) 40%, transparent)
-  );
-}
-
-/* 面是实心的中性色，环色与面同族，画在面里就看不出来；环改取这一档配对的墨色 */
-[data-scope='scrollbar'][data-part='thumb']:not([data-disabled]):focus-visible {
-  --xh-_ring-color: currentColor;
-}
-
-/* 根与轨道都是纯容器，不承载焦点；作者若给它们加了 tabindex，也不该在这儿多画一圈 */
-[data-scope='scrollbar'][data-part='root']:focus-visible,
-[data-scope='scrollbar'][data-part='track']:focus-visible {
-  outline: none;
-}
-
-/* 禁用：整条不显形，这里只兜住作者硬把它显出来的那一路 */
-[data-scope='scrollbar'][data-part='thumb'][data-disabled] {
-  background: var(--xh-scrollbar-thumb-bg-disabled, var(--xh-border-subtle));
-}
-
-/* 交叉口补丁：贴在本条末端之外的那一格，与轨道同色，跟着本条淡入淡出 */
-[data-scope='scrollbar'][data-part='corner'] {
-  position: absolute;
-  inline-size: var(--xh-_scrollbar-thickness);
-  block-size: var(--xh-_scrollbar-thickness);
-  background: var(--xh-scrollbar-corner-bg, var(--xh-scrollbar-track-bg, transparent));
-}
-
-[data-scope='scrollbar'][data-part='corner'][data-orientation='vertical'] {
-  inset-inline-start: 0;
-  inset-block-end: calc(-1 * var(--xh-_scrollbar-thickness));
-}
-
-[data-scope='scrollbar'][data-part='corner'][data-orientation='horizontal'] {
-  inset-block-start: 0;
-  inset-inline-end: calc(-1 * var(--xh-_scrollbar-thickness));
-}
-
-[data-scope='scrollbar'][data-part='root'][hidden],
-[data-scope='scrollbar'][data-part='corner'][hidden] {
-  display: none;
-}
-
-@media print {
-  /* 打印：滚动条画的是「还能往下看多少」，纸上没有这回事，它只会在版心边上留一条灰带。 */
-  [data-scope='scrollbar'][data-part='root'],
-  [data-scope='scrollbar'][data-part='corner'] {
-    display: none;
-  }
-}
 
 /* styles/select.css */
 /* Select 条目与按需皮肤都从同一份 Collection Item Recipe 取得布局、状态和列节奏。 */
@@ -33751,6 +33813,8 @@
   --xh-icon-size: var(--xh-field-glyph-size, var(--xh-_field-size-glyph-size));
   border: var(--xh-stroke-thin) solid var(--xh-field-border-rest, transparent);
   border-radius: var(--xh-field-control-radius, var(--xh-shape-control));
+  outline: var(--xh-ring-width) solid transparent;
+  outline-offset: var(--xh-ring-offset);
   background-color: var(--xh-field-bg-rest, var(--xh-bg-canvas));
   color: var(--xh-field-fg-rest, var(--xh-fg-default));
   box-shadow: var(--xh-field-shadow-rest, var(--xh-elevation-raised));
@@ -33758,7 +33822,8 @@
   transition:
     background-color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
     border-color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
-    box-shadow var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
+    box-shadow var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
+    outline-color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
 }
 
 [data-xh-field-chrome][data-xh-field-size='sm'] {
@@ -34284,6 +34349,8 @@
   padding-block: 0;
   border: var(--xh-stroke-thin) solid var(--xh-time-field-control-border, var(--xh-_time-field-control-border));
   border-radius: var(--xh-time-field-control-radius, var(--xh-shape-surface));
+  outline: var(--xh-ring-width) solid transparent;
+  outline-offset: var(--xh-ring-offset);
   background: var(--xh-time-field-control-bg, var(--xh-_time-field-control-bg));
   box-shadow: var(--xh-time-field-control-shadow, var(--xh-_time-field-control-shadow));
   color: var(--xh-time-field-control-fg, var(--xh-fg-default));
@@ -34295,7 +34362,8 @@
   line-height: var(--xh-leading-normal);
   transition:
     background var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
-    border-color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
+    border-color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
+    outline-color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
 }
 
 [data-scope='time-field'][data-part='control'][hidden] {
@@ -34502,6 +34570,8 @@
 }
 
 /* styles/time-picker.css */
+/* css/scrollbar.css */
+
 /* 皮肤在场的标记：开发模式下按 scope 探一次，取不到就说明这份皮肤没被引入。 */
 [data-scope='time-picker'] {
   --xh-time-picker-skin: 1;
@@ -34666,6 +34736,8 @@
   padding-block: 0;
   border: var(--xh-stroke-thin) solid var(--xh-time-picker-control-border, var(--xh-_time-picker-control-border));
   border-radius: var(--xh-time-picker-control-radius, var(--xh-shape-surface));
+  outline: var(--xh-ring-width) solid transparent;
+  outline-offset: var(--xh-ring-offset);
   background: var(--xh-time-picker-control-bg, var(--xh-_time-picker-control-bg));
   box-shadow: var(--xh-time-picker-control-shadow, var(--xh-_time-picker-control-shadow));
   color: var(--xh-time-picker-control-fg, var(--xh-fg-default));
@@ -34677,7 +34749,8 @@
   line-height: var(--xh-leading-normal);
   transition:
     background var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
-    border-color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
+    border-color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
+    outline-color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
 }
 
 [data-scope='time-picker'][data-part='control'][hidden] {
@@ -34832,6 +34905,13 @@
 
 [data-scope='time-picker'][data-part='trigger'][hidden],
 [data-scope='time-picker'][data-part='clear-trigger'][hidden] {
+  display: none;
+}
+
+[data-scope='time-picker'][data-part='control']:has(
+    > [data-scope='time-picker'][data-part='clear-trigger']:not([hidden])
+  )
+  > [data-scope='time-picker'][data-part='trigger'] {
   display: none;
 }
 

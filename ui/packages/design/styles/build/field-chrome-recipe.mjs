@@ -184,6 +184,8 @@ export function compileFieldChromeRecipe(source) {
     '    --xh-icon-size: var(--xh-field-glyph-size, var(--xh-_field-size-glyph-size));',
     `    border: var(--xh-stroke-thin) solid ${stateValue(source, 'rest', 'borderColor')};`,
     '    border-radius: var(--xh-field-control-radius, var(--xh-shape-control));',
+    '    outline: var(--xh-ring-width) solid transparent;',
+    '    outline-offset: var(--xh-ring-offset);',
     `    background-color: ${stateValue(source, 'rest', 'backgroundColor')};`,
     `    color: ${stateValue(source, 'rest', 'color')};`,
     `    box-shadow: ${stateValue(source, 'rest', 'shadow')};`,
@@ -191,7 +193,8 @@ export function compileFieldChromeRecipe(source) {
     '    transition:',
     `      background-color ${source.motion.duration} ${source.motion.easing},`,
     `      border-color ${source.motion.duration} ${source.motion.easing},`,
-    `      box-shadow ${source.motion.duration} ${source.motion.easing};`,
+    `      box-shadow ${source.motion.duration} ${source.motion.easing},`,
+    `      outline-color ${source.motion.duration} ${source.motion.easing};`,
   ].join('\n'))
 
   for (const size of SIZES) {

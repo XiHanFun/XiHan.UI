@@ -2,6 +2,7 @@
 import type { CSSProperties, ReactNode } from "react";
 import {
   XhDateFieldControl,
+  XhDateFieldClearTrigger,
   XhDateFieldHiddenInput,
   XhDateFieldLabel,
   XhDateFieldRoot,
@@ -27,6 +28,7 @@ export default function Demo(): ReactNode {
           <span>/</span>
           <XhDateFieldSegment index={2} />
         </XhDateFieldSegmentGroup>
+        <XhDateFieldClearTrigger />
       </XhDateFieldControl>
       <XhDateFieldHiddenInput />
     </XhDateFieldRoot>

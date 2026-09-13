@@ -113,6 +113,8 @@
     padding-block: 0;
     border: var(--xh-stroke-thin) solid var(--xh-date-field-control-border, var(--xh-_date-field-control-border));
     border-radius: var(--xh-date-field-control-radius, var(--xh-shape-surface));
+    outline: var(--xh-ring-width) solid transparent;
+    outline-offset: var(--xh-ring-offset);
     background: var(--xh-date-field-control-bg, var(--xh-_date-field-control-bg));
     box-shadow: var(--xh-date-field-control-shadow, var(--xh-_date-field-control-shadow));
     color: var(--xh-date-field-control-fg, var(--xh-fg-default));
@@ -122,7 +124,8 @@
     line-height: var(--xh-leading-none);
     transition:
       background var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
-      border-color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
+      border-color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
+      outline-color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
   }
 
   [data-scope='date-field'][data-part='control'][hidden] {

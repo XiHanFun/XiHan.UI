@@ -15,7 +15,7 @@
     "brand-subtle-hover": { "$type": "color", "$value": "color-mix(in oklab, {bg.brand} 20%, {bg.surface})" },
     "brand-subtle-active": { "$type": "color", "$value": "color-mix(in oklab, {bg.brand} 28%, {bg.surface})" },
     "overlay": { "$type": "color", "$value": "oklch(0 0 0 / 0.6)" },
-    "scrollbar-track": { "$type": "color", "$value": "{color.neutral.900}" }
+    "scrollbar-track": { "$type": "color", "$value": "oklch(0 0 0 / 0)" }
   },
   "fg": {
     "default": { "$type": "color", "$value": "{color.neutral.50}" },
@@ -30,9 +30,9 @@
     "info": { "$type": "color", "$value": "{color.info.500}" },
     "danger": { "$type": "color", "$value": "{color.danger.500}" },
     "danger-hover": { "$type": "color", "$value": "{color.danger.400}" },
-    "scrollbar-thumb": { "$type": "color", "$value": "{color.neutral.500}" },
-    "scrollbar-thumb-hover": { "$type": "color", "$value": "{color.neutral.400}" },
-    "scrollbar-thumb-active": { "$type": "color", "$value": "{color.neutral.300}" }
+    "scrollbar-thumb": { "$type": "color", "$value": "color-mix(in oklab, {fg.default} 15%, transparent)" },
+    "scrollbar-thumb-hover": { "$type": "color", "$value": "color-mix(in oklab, {fg.default} 25%, transparent)" },
+    "scrollbar-thumb-active": { "$type": "color", "$value": "color-mix(in oklab, {fg.default} 35%, transparent)" }
   },
   "border": {
     "default": { "$description": "装饰性边界。深色档留在 700：往下的半档 750 与 {bg.subtle} 只差 1.04，热力图格子的描边落到那一档就与空格的底连成一片。", "$type": "color", "$value": "{color.neutral.700}" },

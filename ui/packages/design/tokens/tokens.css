@@ -150,10 +150,10 @@
     --xh-control-indicator-sm: 12px;
     --xh-control-indicator-md: 16px;
     --xh-control-indicator-lg: 20px;
-    --xh-scrollbar-thickness-sm: 6px;
-    --xh-scrollbar-thickness-md: 10px;
-    --xh-scrollbar-thickness-lg: 14px;
-    --xh-scrollbar-gutter: 2px;
+    --xh-scrollbar-thickness-sm: 4px;
+    --xh-scrollbar-thickness-md: 6px;
+    --xh-scrollbar-thickness-lg: 8px;
+    --xh-scrollbar-gutter: 1px;
     --xh-glyph-size-text: 1em;
     --xh-glyph-size-sm: 16px;
     --xh-glyph-size-md: 20px;
@@ -430,7 +430,7 @@
     --xh-bg-brand-subtle-hover: color-mix(in oklab, var(--xh-bg-brand) 20%, var(--xh-bg-surface));
     --xh-bg-brand-subtle-active: color-mix(in oklab, var(--xh-bg-brand) 28%, var(--xh-bg-surface));
     --xh-bg-overlay: oklch(0 0 0 / 0.45);
-    --xh-bg-scrollbar-track: var(--xh-color-neutral-100);
+    --xh-bg-scrollbar-track: oklch(0 0 0 / 0);
     --xh-fg-default: var(--xh-color-neutral-950);
     --xh-fg-muted: var(--xh-color-neutral-600);
     --xh-fg-subtle: var(--xh-color-neutral-550);
@@ -443,9 +443,9 @@
     --xh-fg-info: var(--xh-color-info-700);
     --xh-fg-danger: var(--xh-color-danger-600);
     --xh-fg-danger-hover: var(--xh-color-danger-700);
-    --xh-fg-scrollbar-thumb: var(--xh-color-neutral-400);
-    --xh-fg-scrollbar-thumb-hover: var(--xh-color-neutral-500);
-    --xh-fg-scrollbar-thumb-active: var(--xh-color-neutral-600);
+    --xh-fg-scrollbar-thumb: color-mix(in oklab, var(--xh-fg-default) 15%, transparent);
+    --xh-fg-scrollbar-thumb-hover: color-mix(in oklab, var(--xh-fg-default) 25%, transparent);
+    --xh-fg-scrollbar-thumb-active: color-mix(in oklab, var(--xh-fg-default) 35%, transparent);
     --xh-border-control-focus: var(--xh-ring-focus);
     --xh-ring-focus: var(--xh-color-brand-600);
     --xh-ring-invalid: var(--xh-color-danger-500);
@@ -541,7 +541,7 @@
     --xh-bg-brand-subtle-hover: color-mix(in oklab, var(--xh-bg-brand) 20%, var(--xh-bg-surface));
     --xh-bg-brand-subtle-active: color-mix(in oklab, var(--xh-bg-brand) 28%, var(--xh-bg-surface));
     --xh-bg-overlay: oklch(0 0 0 / 0.6);
-    --xh-bg-scrollbar-track: var(--xh-color-neutral-900);
+    --xh-bg-scrollbar-track: oklch(0 0 0 / 0);
     --xh-fg-default: var(--xh-color-neutral-50);
     --xh-fg-muted: var(--xh-color-neutral-400);
     --xh-fg-subtle: var(--xh-color-neutral-450);
@@ -554,9 +554,9 @@
     --xh-fg-info: var(--xh-color-info-500);
     --xh-fg-danger: var(--xh-color-danger-500);
     --xh-fg-danger-hover: var(--xh-color-danger-400);
-    --xh-fg-scrollbar-thumb: var(--xh-color-neutral-500);
-    --xh-fg-scrollbar-thumb-hover: var(--xh-color-neutral-400);
-    --xh-fg-scrollbar-thumb-active: var(--xh-color-neutral-300);
+    --xh-fg-scrollbar-thumb: color-mix(in oklab, var(--xh-fg-default) 15%, transparent);
+    --xh-fg-scrollbar-thumb-hover: color-mix(in oklab, var(--xh-fg-default) 25%, transparent);
+    --xh-fg-scrollbar-thumb-active: color-mix(in oklab, var(--xh-fg-default) 35%, transparent);
     --xh-border-control-focus: var(--xh-ring-focus);
     --xh-ring-focus: var(--xh-color-brand-400);
     --xh-ring-invalid: var(--xh-color-danger-400);

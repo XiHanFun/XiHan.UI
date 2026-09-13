@@ -1223,6 +1223,28 @@ describe('浮层里的标题钻取', () => {
 describe('showTime 的时间列：键盘走得进去', () => {
   const AT = { showTime: true, defaultValue: '2026-08-17T09:30', timeGranularity: 'minute' as const }
 
+  it('输入行显示完整日期时间，编辑时间段直接回写同一份值', () => {
+    const h = mount(AT)
+    expect(h.api().field.segments.map(segment => [segment.type, segment.text])).toEqual([
+      ['year', '2026'],
+      ['month', '08'],
+      ['day', '17'],
+      ['hour', '09'],
+      ['minute', '30'],
+    ])
+    const hourIndex = h.api().field.segments.findIndex(segment => segment.type === 'hour')
+    const hour = h.segments()[hourIndex]!
+    hour.focus()
+    press(hour, 'ArrowUp')
+    expect(h.value()).toEqual(['2026-08-17T10:30'])
+    expect(h.hiddenInput.value).toBe('2026-08-17T10:30')
+  })
+
+  it('秒精度在输入行补上秒段', () => {
+    const h = mount({ showTime: true, timeGranularity: 'second', defaultValue: '2026-08-17T09:30:45' })
+    expect(h.api().field.segments.map(segment => segment.type)).toEqual(['year', 'month', 'day', 'hour', 'minute', 'second'])
+  })
+
   it('每列只有一个 Tab 位，落在选中那一格上', async () => {
     const h = await open(AT)
     const hour = h.timeColumn('hour')

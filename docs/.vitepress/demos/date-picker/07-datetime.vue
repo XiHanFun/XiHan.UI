@@ -4,6 +4,7 @@ import {
   XhDatePickerCalendar,
   XhDatePickerCell,
   XhDatePickerCellTrigger,
+  XhDatePickerClearTrigger,
   XhDatePickerConfirmTrigger,
   XhDatePickerContent,
   XhDatePickerControl,
@@ -20,22 +21,31 @@ import {
   XhDatePickerSegment,
   XhDatePickerSegmentGroup,
   XhDatePickerTimePanel,
+  XhDatePickerTrigger,
   XhDatePickerWeekDay,
   XhDatePickerWeekRow,
 } from "@xihan-ui/vue";
+
+function literalBefore(type: string, index: number): string {
+  if (index === 0) return "";
+  if (type === "hour") return " ";
+  if (type === "minute" || type === "second") return ":";
+  return "/";
+}
 </script>
 
 <template>
-  <XhDatePickerRoot v-slot="{ weeks, weekDays }" show-time locale="zh-CN">
+  <XhDatePickerRoot v-slot="{ weeks, weekDays, segments }" show-time locale="zh-CN">
     <XhDatePickerLabel>会议开始</XhDatePickerLabel>
     <XhDatePickerControl>
       <XhDatePickerSegmentGroup>
-        <XhDatePickerSegment :index="0" />
-        <span>-</span>
-        <XhDatePickerSegment :index="1" />
-        <span>-</span>
-        <XhDatePickerSegment :index="2" />
+        <template v-for="(segment, index) in segments" :key="segment.type">
+          <span v-if="index > 0">{{ literalBefore(segment.type, index) }}</span>
+          <XhDatePickerSegment :index="index" />
+        </template>
       </XhDatePickerSegmentGroup>
+      <XhDatePickerClearTrigger />
+      <XhDatePickerTrigger />
     </XhDatePickerControl>
     <XhDatePickerPositioner>
       <XhDatePickerContent>

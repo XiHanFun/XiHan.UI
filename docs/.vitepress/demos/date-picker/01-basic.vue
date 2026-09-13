@@ -4,6 +4,7 @@ import {
   XhDatePickerCalendar,
   XhDatePickerCell,
   XhDatePickerCellTrigger,
+  XhDatePickerClearTrigger,
   XhDatePickerContent,
   XhDatePickerControl,
   XhDatePickerGrid,
@@ -41,6 +42,7 @@ import {
         <span>/</span>
         <XhDatePickerSegment :index="2" />
       </XhDatePickerSegmentGroup>
+      <XhDatePickerClearTrigger />
       <XhDatePickerTrigger />
     </XhDatePickerControl>
     <XhDatePickerHiddenInput />

@@ -81,6 +81,8 @@
     padding-inline: var(--xh-field-control-px, var(--xh-control-px-md));
     border: var(--xh-stroke-thin) solid var(--xh-field-control-border, transparent);
     border-radius: var(--xh-field-control-radius, var(--xh-shape-surface));
+    outline: var(--xh-ring-width) solid transparent;
+    outline-offset: var(--xh-ring-offset);
     background: var(--xh-field-control-bg, var(--xh-bg-canvas));
     color: var(--xh-field-control-fg, var(--xh-fg-default));
     font-size: var(--xh-field-control-font-size, var(--xh-text-body-size));
@@ -90,7 +92,8 @@
       border-color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
       background var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
       color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
-      box-shadow var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
+      box-shadow var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
+      outline-color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
   }
 
   [data-scope='field'][data-part='control']:hover:not([data-disabled], [data-readonly], [data-invalid]) {

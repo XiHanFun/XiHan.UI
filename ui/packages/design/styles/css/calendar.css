@@ -1,3 +1,5 @@
+@import './scrollbar.css';
+
 @layer xihan.components {
   /* 皮肤在场的标记：开发模式下按 scope 探一次，取不到就说明这份皮肤没被引入。 */
   [data-scope='calendar'] {
@@ -152,6 +154,14 @@
     display: grid;
     grid-template-columns: repeat(4, minmax(0, 1fr));
     gap: var(--xh-calendar-period-gap, var(--xh-space-1));
+  }
+
+  [data-scope='calendar'][data-part='grid'][data-view='year'] {
+    align-content: start;
+    max-block-size: var(--xh-calendar-year-grid-max-h, var(--xh-viewport-h-sm));
+    padding-inline-end: var(--xh-calendar-year-grid-pe, var(--xh-space-1));
+    overflow-y: auto;
+    overscroll-behavior: contain;
   }
 
   /* 粗粒度的格子比日子宽，文字居中、留出上下气口 */

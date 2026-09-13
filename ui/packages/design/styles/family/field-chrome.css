@@ -15,6 +15,8 @@
     --xh-icon-size: var(--xh-field-glyph-size, var(--xh-_field-size-glyph-size));
     border: var(--xh-stroke-thin) solid var(--xh-field-border-rest, transparent);
     border-radius: var(--xh-field-control-radius, var(--xh-shape-control));
+    outline: var(--xh-ring-width) solid transparent;
+    outline-offset: var(--xh-ring-offset);
     background-color: var(--xh-field-bg-rest, var(--xh-bg-canvas));
     color: var(--xh-field-fg-rest, var(--xh-fg-default));
     box-shadow: var(--xh-field-shadow-rest, var(--xh-elevation-raised));
@@ -22,7 +24,8 @@
     transition:
       background-color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
       border-color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
-      box-shadow var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
+      box-shadow var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
+      outline-color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
   }
 
   [data-xh-field-chrome][data-xh-field-size='sm'] {

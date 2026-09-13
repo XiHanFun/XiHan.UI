@@ -110,6 +110,8 @@
     padding-block: 0;
     border: var(--xh-stroke-thin) solid var(--xh-time-field-control-border, var(--xh-_time-field-control-border));
     border-radius: var(--xh-time-field-control-radius, var(--xh-shape-surface));
+    outline: var(--xh-ring-width) solid transparent;
+    outline-offset: var(--xh-ring-offset);
     background: var(--xh-time-field-control-bg, var(--xh-_time-field-control-bg));
     box-shadow: var(--xh-time-field-control-shadow, var(--xh-_time-field-control-shadow));
     color: var(--xh-time-field-control-fg, var(--xh-fg-default));
@@ -121,7 +123,8 @@
     line-height: var(--xh-leading-normal);
     transition:
       background var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
-      border-color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
+      border-color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
+      outline-color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
   }
 
   [data-scope='time-field'][data-part='control'][hidden] {

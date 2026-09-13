@@ -2,6 +2,7 @@
 <script setup lang="ts">
 import {
   XhDateFieldControl,
+  XhDateFieldClearTrigger,
   XhDateFieldHiddenInput,
   XhDateFieldLabel,
   XhDateFieldRoot,
@@ -25,6 +26,7 @@ import {
         <span>/</span>
         <XhDateFieldSegment :index="2" />
       </XhDateFieldSegmentGroup>
+      <XhDateFieldClearTrigger />
     </XhDateFieldControl>
     <XhDateFieldHiddenInput />
   </XhDateFieldRoot>

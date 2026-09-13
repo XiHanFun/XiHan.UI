@@ -4091,6 +4091,12 @@
             },
             {
               "name": "--xh-calendar-week-number-w"
+            },
+            {
+              "name": "--xh-calendar-year-grid-max-h"
+            },
+            {
+              "name": "--xh-calendar-year-grid-pe"
             }
           ]
         }
