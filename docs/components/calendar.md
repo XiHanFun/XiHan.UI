@@ -59,6 +59,8 @@ cell-trigger 的内容全由作者写，日号之外还能塞自己的标记
 - `isDateUnavailable` 与 `min` / `max` 都只挡落值不挡聚焦——键盘用户仍能走到不可选的日子上，读屏会念出它不可选。
 - 支持单选、多选、区间选择、整周选择、固定六行与多月并排。
 - 区间模式将起止日期、已选轨道与 hover 预览分别标记；同一组件同时承载范围日历。
+- 日期、月份与年份格按下时轻微缩放，松开后复原；减弱动效下自动收敛。
+- 年份网格采用三列紧凑滚动面，可由作者按业务上下界铺入连续年份，复用日历格的选中与键盘语义。
 - 周首日、月份名与星期名跟着 `locale` 走：`en-US` 周日起、`zh-CN` 周一起。不给 `locale` 就跟宿主浏览器语言，读不到才落 `en-US`——要固定成一种排法就把 `locale` 显式传上去。
 
 ### 组合
@@ -325,6 +327,8 @@ cell-trigger 的内容全由作者写，日号之外还能塞自己的标记
 | `--xh-calendar-week-number-fg` | `week-number` | `color` | `default` | `--xh-fg-subtle` | calendar 的 week-number 部件 color 覆盖槽。 |
 | `--xh-calendar-week-number-font-size` | `week-number` | `font-size` | `default` | `--xh-text-caption-size` | calendar 的 week-number 部件 font-size 覆盖槽。 |
 | `--xh-calendar-week-number-w` | `week-number`<br>`week-row` | `grid-template-columns` | `has(> [data-part='week-number'])`<br>`not([hidden])` | `2.25rem` | calendar 的 week-number、week-row 部件 grid-template-columns 覆盖槽。 |
+| `--xh-calendar-year-grid-max-h` | `grid` | `max-block-size` | `view=year` | `--xh-viewport-h-sm` | calendar 的 grid 部件 max-block-size 覆盖槽。 |
+| `--xh-calendar-year-grid-pe` | `grid` | `padding-inline-end` | `view=year` | `--xh-space-1` | calendar 的 grid 部件 padding-inline-end 覆盖槽。 |
 <!-- xh-component-tokens:end -->
 
 ### 动效

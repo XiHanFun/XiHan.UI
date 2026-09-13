@@ -162,12 +162,15 @@
     padding-inline: var(--xh-number-field-control-px, 0);
     border: var(--xh-stroke-thin) solid var(--xh-number-field-control-border, var(--xh-_number-field-border));
     border-radius: var(--xh-number-field-control-radius, var(--xh-_number-field-radius));
+    outline: var(--xh-ring-width) solid transparent;
+    outline-offset: var(--xh-ring-offset);
     background: var(--xh-number-field-control-bg, var(--xh-_number-field-bg));
     box-shadow: var(--xh-number-field-control-shadow, var(--xh-_number-field-shadow));
     overflow: hidden;
     transition:
       background var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
-      border-color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
+      border-color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
+      outline-color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
   }
 
   /* hover 换描边与填充两条通道。只在中性态换：invalid 正拿边框颜色说事，被 hover 盖掉那条

@@ -112,19 +112,19 @@
   "scrollbar": {
     "thickness-sm": {
       "$type": "dimension",
-      "$value": "6px"
+      "$value": "4px"
     },
     "thickness-md": {
       "$type": "dimension",
-      "$value": "10px"
+      "$value": "6px"
     },
     "thickness-lg": {
       "$type": "dimension",
-      "$value": "14px"
+      "$value": "8px"
     },
     "gutter": {
       "$type": "dimension",
-      "$value": "2px"
+      "$value": "1px"
     }
   },
   "glyph": {

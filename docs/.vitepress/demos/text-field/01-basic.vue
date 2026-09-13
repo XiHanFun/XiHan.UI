@@ -2,6 +2,7 @@
 <script setup lang="ts">
 import {
   XhTextFieldControl,
+  XhTextFieldClearTrigger,
   XhTextFieldInput,
   XhTextFieldLabel,
   XhTextFieldRoot,
@@ -9,10 +10,11 @@ import {
 </script>
 
 <template>
-  <XhTextFieldRoot name="email" type="email" placeholder="输入你的邮箱">
+  <XhTextFieldRoot name="email" type="email" placeholder="输入你的邮箱" clearable>
     <XhTextFieldLabel>邮箱</XhTextFieldLabel>
     <XhTextFieldControl style="inline-size: 16rem">
       <XhTextFieldInput />
+      <XhTextFieldClearTrigger />
     </XhTextFieldControl>
   </XhTextFieldRoot>
 </template>

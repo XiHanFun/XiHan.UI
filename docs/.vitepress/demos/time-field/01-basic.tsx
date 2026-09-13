@@ -2,6 +2,7 @@
 import type { CSSProperties, ReactNode } from "react";
 import {
   XhTimeFieldControl,
+  XhTimeFieldClearTrigger,
   XhTimeFieldHiddenInput,
   XhTimeFieldLabel,
   XhTimeFieldRoot,
@@ -24,6 +25,7 @@ export default function Demo(): ReactNode {
           <span>:</span>
           <XhTimeFieldSegment segment="minute" />
         </XhTimeFieldSegmentGroup>
+        <XhTimeFieldClearTrigger />
       </XhTimeFieldControl>
       <XhTimeFieldHiddenInput />
     </XhTimeFieldRoot>

@@ -63,7 +63,7 @@
     },
     "scrollbar-track": {
       "$type": "color",
-      "$value": "{color.neutral.100}"
+      "$value": "oklch(0 0 0 / 0)"
     }
   },
   "fg": {
@@ -117,15 +117,15 @@
     },
     "scrollbar-thumb": {
       "$type": "color",
-      "$value": "{color.neutral.400}"
+      "$value": "color-mix(in oklab, {fg.default} 15%, transparent)"
     },
     "scrollbar-thumb-hover": {
       "$type": "color",
-      "$value": "{color.neutral.500}"
+      "$value": "color-mix(in oklab, {fg.default} 25%, transparent)"
     },
     "scrollbar-thumb-active": {
       "$type": "color",
-      "$value": "{color.neutral.600}"
+      "$value": "color-mix(in oklab, {fg.default} 35%, transparent)"
     }
   },
   "border": {

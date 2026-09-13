@@ -2,6 +2,7 @@
 <script setup lang="ts">
 import {
   XhTimePickerColumn,
+  XhTimePickerClearTrigger,
   XhTimePickerContent,
   XhTimePickerControl,
   XhTimePickerHiddenInput,
@@ -27,6 +28,7 @@ import {
         <span>:</span>
         <XhTimePickerSegment segment="minute" />
       </XhTimePickerSegmentGroup>
+      <XhTimePickerClearTrigger />
       <XhTimePickerTrigger />
     </XhTimePickerControl>
     <XhTimePickerHiddenInput />

@@ -47,7 +47,7 @@ function alpha(color: string): number {
   return context.getImageData(0, 0, 1, 1).data[3]!
 }
 
-async function mountCalendar(defaultValue?: string[]): Promise<void> {
+async function mountCalendar(defaultValue?: string[], keepMotion = false): Promise<void> {
   host = document.createElement('div')
   document.body.append(host)
   app = createApp({
@@ -71,8 +71,10 @@ async function mountCalendar(defaultValue?: string[]): Promise<void> {
   })
   app.mount(host)
   await nextTick()
-  document.querySelectorAll<HTMLElement>(`[data-scope='calendar'][data-part='cell-trigger']`)
-    .forEach(element => element.style.transition = 'none')
+  if (!keepMotion) {
+    document.querySelectorAll<HTMLElement>(`[data-scope='calendar'][data-part='cell-trigger']`)
+      .forEach(element => element.style.transition = 'none')
+  }
 }
 
 async function mountRangeField(): Promise<HTMLElement> {
@@ -133,6 +135,14 @@ describe('范围日历轨道', () => {
     expect(alpha(preview.backgroundColor)).toBeLessThan(255)
     expect(alpha(getComputedStyle(trigger('2026-09-09')).backgroundColor)).toBeLessThan(8)
     expect(alpha(getComputedStyle(trigger('2026-09-11')).backgroundColor)).toBe(255)
+  })
+
+  it('区间端点具备按压缩放的过渡通道', async () => {
+    await mountCalendar(['2026-09-07', '2026-09-11'], true)
+    const element = trigger('2026-09-07')
+    const style = getComputedStyle(element)
+    expect(style.transitionProperty).toContain('scale')
+    expect(Number.parseFloat(style.transitionDuration)).toBeGreaterThan(0)
   })
 
   it('日期范围字段使用正式分隔部件，默认字符不进入可访问树', async () => {

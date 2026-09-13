@@ -22,7 +22,7 @@
 --xh-bg-muted: oklch(0.967 0.001 258)  ← var(--xh-color-neutral-100)
 --xh-bg-overlay: oklch(0 0 0 / 0.45)
 --xh-bg-page: oklch(0.985 0 0)  ← var(--xh-color-neutral-50)
---xh-bg-scrollbar-track: oklch(0.967 0.001 258)  ← var(--xh-color-neutral-100)
+--xh-bg-scrollbar-track: oklch(0 0 0 / 0)
 --xh-bg-subtle: oklch(0.967 0.001 258)  ← var(--xh-color-neutral-100)
 --xh-bg-subtle-active: oklch(0.87 0.003 258)  ← var(--xh-color-neutral-300)
 --xh-bg-subtle-hover: oklch(0.922 0.002 258)  ← var(--xh-color-neutral-200)
@@ -80,9 +80,9 @@
 --xh-fg-info: oklch(0.53 0.15 237)  ← var(--xh-color-info-700)
 --xh-fg-muted: oklch(0.439 0.006 258)  ← var(--xh-color-neutral-600)
 --xh-fg-on-brand: oklch(1 0 0)  ← var(--xh-color-neutral-0)
---xh-fg-scrollbar-thumb: oklch(0.708 0.005 258)  ← var(--xh-color-neutral-400)
---xh-fg-scrollbar-thumb-active: oklch(0.439 0.006 258)  ← var(--xh-color-neutral-600)
---xh-fg-scrollbar-thumb-hover: oklch(0.556 0.006 258)  ← var(--xh-color-neutral-500)
+--xh-fg-scrollbar-thumb: color-mix(in oklab, oklch(0.145 0.005 258) 15%, transparent)  ← color-mix(in oklab, var(--xh-fg-default) 15%, transparent)
+--xh-fg-scrollbar-thumb-active: color-mix(in oklab, oklch(0.145 0.005 258) 35%, transparent)  ← color-mix(in oklab, var(--xh-fg-default) 35%, transparent)
+--xh-fg-scrollbar-thumb-hover: color-mix(in oklab, oklch(0.145 0.005 258) 25%, transparent)  ← color-mix(in oklab, var(--xh-fg-default) 25%, transparent)
 --xh-fg-subtle: oklch(0.52 0.006 258)  ← var(--xh-color-neutral-550)
 --xh-fg-success: oklch(0.51 0.15 149)  ← var(--xh-color-success-700)
 --xh-fg-warning: oklch(0.62 0.15 70)  ← var(--xh-color-warning-700)
@@ -203,10 +203,10 @@
 --xh-ring-invalid: oklch(0.637 0.208 25)  ← var(--xh-color-danger-500)
 --xh-ring-offset: calc(-1 * 2px)  ← calc(-1 * var(--xh-ring-width))
 --xh-ring-width: 2px  ← var(--xh-stroke-thick)
---xh-scrollbar-gutter: 2px
---xh-scrollbar-thickness-lg: 14px
---xh-scrollbar-thickness-md: 10px
---xh-scrollbar-thickness-sm: 6px
+--xh-scrollbar-gutter: 1px
+--xh-scrollbar-thickness-lg: 8px
+--xh-scrollbar-thickness-md: 6px
+--xh-scrollbar-thickness-sm: 4px
 --xh-section-py: 20px  ← var(--xh-section-py-md)
 --xh-section-py-lg: 32px  ← var(--xh-space-8)
 --xh-section-py-md: 20px  ← var(--xh-space-5)

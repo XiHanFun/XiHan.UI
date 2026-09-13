@@ -2,6 +2,7 @@
 import type { ReactNode } from "react";
 import {
   XhTextFieldControl,
+  XhTextFieldClearTrigger,
   XhTextFieldInput,
   XhTextFieldLabel,
   XhTextFieldRoot,
@@ -9,10 +10,11 @@ import {
 
 export default function Demo(): ReactNode {
   return (
-    <XhTextFieldRoot name="email" type="email" placeholder="输入你的邮箱">
+    <XhTextFieldRoot name="email" type="email" placeholder="输入你的邮箱" clearable>
       <XhTextFieldLabel>邮箱</XhTextFieldLabel>
       <XhTextFieldControl style={{ inlineSize: "16rem" }}>
         <XhTextFieldInput />
+        <XhTextFieldClearTrigger />
       </XhTextFieldControl>
     </XhTextFieldRoot>
   );

@@ -2,6 +2,7 @@
 <script setup lang="ts">
 import {
   XhTimeFieldControl,
+  XhTimeFieldClearTrigger,
   XhTimeFieldHiddenInput,
   XhTimeFieldLabel,
   XhTimeFieldRoot,
@@ -22,6 +23,7 @@ import {
         <span>:</span>
         <XhTimeFieldSegment segment="minute" />
       </XhTimeFieldSegmentGroup>
+      <XhTimeFieldClearTrigger />
     </XhTimeFieldControl>
     <XhTimeFieldHiddenInput />
   </XhTimeFieldRoot>

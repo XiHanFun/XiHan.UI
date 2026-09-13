@@ -198,11 +198,11 @@ function datePickerFieldPropsAt(
    */
   const weekStart = (iso: string): string => calendarWeekRange(iso, datePickerLocale(service))[0]
   return {
-    // showTime 下值带时间段，段位只认日期段
+    // showTime 下由同一台分段输入承载完整日期时间；日历仍只读取日期段。
     value: rawValue == null
       ? rawValue
-      : weekSelection ? weekStart(rawValue) : (withTime ? datePickerDatePart(rawValue) : rawValue),
-    granularity: DATE_PICKER_GRANULARITY,
+      : weekSelection ? weekStart(rawValue) : rawValue,
+    granularity: withTime ? datePickerTimeGranularity(service) : DATE_PICKER_GRANULARITY,
     // 段集在场时 granularity 让路；不给就走老路，年月日按 locale 排
     segments: prop('segments') ?? datePickerSegmentSet(prop('view'), prop('weekSelection')),
     min: prop('min'),
@@ -223,14 +223,7 @@ function datePickerFieldPropsAt(
       const byWeek = value != null && weekSelection
         ? calendarWeekRange(value, datePickerLocale(service))[index]
         : value
-      // 改日保时：段位敲的是日期段，原来的时间段接回去
-      const merged = byWeek != null && withTime
-        ? datePickerJoinDateTime(
-            byWeek,
-            datePickerTimePart(firstValue(context.get('value')) ?? ''),
-            datePickerTimeGranularity(service),
-          )
-        : byWeek
+      const merged = byWeek
       const current = context.get('value')
       const next = range
         ? writeRangeAt(current, index, merged)

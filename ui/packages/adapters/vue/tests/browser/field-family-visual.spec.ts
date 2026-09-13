@@ -146,10 +146,13 @@ describe('字段族默认视觉盒', () => {
   it('七个字段聚焦时由同一外壳绘制描边与焦点环', async () => {
     mount()
     const states: Array<Record<string, string>> = []
+    const animated: boolean[] = []
     for (const family of FAMILIES) {
       focusTarget(family).focus()
+      animated.push(control(family).getAnimations().some(animation => animation.playState === 'running'))
       await settle()
       const style = getComputedStyle(control(family))
+      expect(style.transitionProperty).toContain('outline-color')
       states.push({
         borderColor: style.borderTopColor,
         outlineColor: style.outlineColor,
@@ -157,6 +160,7 @@ describe('字段族默认视觉盒', () => {
         outlineWidth: style.outlineWidth,
       })
     }
+    expect(animated.every(Boolean)).toBe(true)
     expect(states[0]?.outlineStyle).toBe('solid')
     for (const state of states.slice(1))
       expect(state).toEqual(states[0])

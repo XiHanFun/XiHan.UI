@@ -4,6 +4,7 @@ import {
   XhDatePickerCalendar,
   XhDatePickerCell,
   XhDatePickerCellTrigger,
+  XhDatePickerClearTrigger,
   XhDatePickerContent,
   XhDatePickerControl,
   XhDatePickerGrid,
@@ -44,6 +45,7 @@ export default function Demo(): ReactNode {
               <span>/</span>
               <XhDatePickerSegment index={2} />
             </XhDatePickerSegmentGroup>
+            <XhDatePickerClearTrigger />
             <XhDatePickerTrigger />
           </XhDatePickerControl>
           <XhDatePickerHiddenInput />

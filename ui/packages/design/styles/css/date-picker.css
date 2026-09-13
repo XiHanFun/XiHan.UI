@@ -1,3 +1,5 @@
+@import './scrollbar.css';
+
 @layer xihan.components {
   /* 皮肤在场的标记：开发模式下按 scope 探一次，取不到就说明这份皮肤没被引入。 */
   [data-scope='date-picker'] {
@@ -189,12 +191,15 @@
     padding-block: 0;
     border: var(--xh-stroke-thin) solid var(--xh-date-picker-control-border, var(--xh-_date-picker-control-border));
     border-radius: var(--xh-date-picker-control-radius, var(--xh-shape-surface));
+    outline: var(--xh-ring-width) solid transparent;
+    outline-offset: var(--xh-ring-offset);
     background: var(--xh-date-picker-control-bg, var(--xh-_date-picker-control-bg));
     box-shadow: var(--xh-date-picker-control-shadow, var(--xh-_date-picker-control-shadow));
     color: var(--xh-date-picker-control-fg, var(--xh-fg-default));
     transition:
       background var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
-      border-color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
+      border-color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
+      outline-color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
   }
 
   [data-scope='date-picker'][data-part='control'][hidden] {
@@ -313,6 +318,13 @@
 
   [data-scope='date-picker'][data-part='trigger'][hidden],
   [data-scope='date-picker'][data-part='clear-trigger'][hidden] {
+    display: none;
+  }
+
+  [data-scope='date-picker'][data-part='control']:has(
+      > [data-scope='date-picker'][data-part='clear-trigger']:not([hidden])
+    )
+    > [data-scope='date-picker'][data-part='trigger'] {
     display: none;
   }
 

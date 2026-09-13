@@ -149,6 +149,7 @@ input 部件写成 textarea 即多行宿主；autoSize 让高度跟内容走，�
   需要中性填充或透明底时分别使用 `subtle` / `ghost`。
 - 清空按钮复用 Action Control 的 `field-inset` profile 和 `has-value` 显示策略；粗指针命中区、
   pressed/focus/forced-colors 均由家族配方提供，适配器不另算尺寸或可见性。
+- 开启 `clearable` 后，清空按钮仍在空值时收起，只在有值且可编辑时出现；字段聚焦边界平滑过渡。
 - `showCount` 显出字数部件，数字取 `count` 与 `maxLength`，顶到上限时换色。
 - 放在 FormFieldGroup 里时，未声明的 `disabled` / `readOnly` / `required` / `invalid` 会从最近的
   Field 或 Form 继承；实例显式写 `false` 仍以实例为准。Field 的标签、说明和错误描述链保持挂到 input。

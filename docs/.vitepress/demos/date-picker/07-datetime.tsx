@@ -1,9 +1,11 @@
 // 日期与时间 | 同时选择日期和时间
 import type { ReactNode } from "react";
+import { Fragment } from "react";
 import {
   XhDatePickerCalendar,
   XhDatePickerCell,
   XhDatePickerCellTrigger,
+  XhDatePickerClearTrigger,
   XhDatePickerConfirmTrigger,
   XhDatePickerContent,
   XhDatePickerControl,
@@ -20,24 +22,35 @@ import {
   XhDatePickerSegment,
   XhDatePickerSegmentGroup,
   XhDatePickerTimePanel,
+  XhDatePickerTrigger,
   XhDatePickerWeekDay,
   XhDatePickerWeekRow,
 } from "@xihan-ui/react";
 
+function literalBefore(type: string, index: number): string {
+  if (index === 0) return "";
+  if (type === "hour") return " ";
+  if (type === "minute" || type === "second") return ":";
+  return "/";
+}
+
 export default function Demo(): ReactNode {
   return (
     <XhDatePickerRoot showTime locale="zh-CN">
-      {({ weeks, weekDays }) => (
+      {({ weeks, weekDays, segments }) => (
         <>
           <XhDatePickerLabel>会议开始</XhDatePickerLabel>
           <XhDatePickerControl>
             <XhDatePickerSegmentGroup>
-              <XhDatePickerSegment index={0} />
-              <span>-</span>
-              <XhDatePickerSegment index={1} />
-              <span>-</span>
-              <XhDatePickerSegment index={2} />
+              {segments.map((segment, index) => (
+                <Fragment key={segment.type}>
+                  {index > 0 && <span>{literalBefore(segment.type, index)}</span>}
+                  <XhDatePickerSegment index={index} />
+                </Fragment>
+              ))}
             </XhDatePickerSegmentGroup>
+            <XhDatePickerClearTrigger />
+            <XhDatePickerTrigger />
           </XhDatePickerControl>
           <XhDatePickerPositioner>
             <XhDatePickerContent>

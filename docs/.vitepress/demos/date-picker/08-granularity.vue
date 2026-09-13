@@ -36,6 +36,11 @@ const kinds = [
   { key: "quarter", label: "按季度", view: "quarter" as CalendarView, week: false },
   { key: "year", label: "按年", view: "year" as CalendarView, week: false },
 ];
+
+const yearCells = Array.from({ length: 200 }, (_, index) => {
+  const year = 1900 + index;
+  return { value: `${year}-01-01`, label: `${year}年` };
+});
 </script>
 
 <template>
@@ -47,6 +52,7 @@ const kinds = [
       :view="k.view"
       :week-selection="k.week"
       :selection-mode="k.week ? 'range' : 'single'"
+      :default-focused-value="k.key === 'year' ? '2026-01-01' : undefined"
       locale="zh-CN"
     >
       <XhDatePickerLabel>{{ k.label }}</XhDatePickerLabel>
@@ -65,6 +71,10 @@ const kinds = [
         <XhDatePickerContent>
           <XhDatePickerCalendar v-for="panel in panels" :key="panel.index">
             <XhDatePickerHeader>
+              <template v-if="k.key === 'year'">
+                <XhDatePickerHeading>选择年份</XhDatePickerHeading>
+              </template>
+              <template v-else>
               <!-- 大步翻那对钮：日视图一年，粗粒度视图十页 -->
               <XhDatePickerPrevYearTrigger aria-label="快退" />
               <XhDatePickerPrevTrigger aria-label="上一页" />
@@ -76,6 +86,7 @@ const kinds = [
               </XhDatePickerHeading>
               <XhDatePickerNextTrigger aria-label="下一页" />
               <XhDatePickerNextYearTrigger aria-label="快进" />
+              </template>
             </XhDatePickerHeader>
             <XhDatePickerGrid :index="panel.index">
               <!-- 日视图铺周行，粗粒度视图把格子直接铺进网格。钻上去之后铺的也是格子，
@@ -104,7 +115,7 @@ const kinds = [
                 </XhDatePickerGridBody>
               </template>
               <XhDatePickerCell
-                v-for="cell in panel.cells"
+                v-for="cell in k.key === 'year' ? yearCells : panel.cells"
                 v-else
                 :key="cell.value"
                 :value="cell.value"

@@ -4793,6 +4793,42 @@
       "description": "calendar 的 week-number、week-row 部件 grid-template-columns 覆盖槽。"
     },
     {
+      "name": "--xh-calendar-year-grid-max-h",
+      "component": "calendar",
+      "part": [
+        "grid"
+      ],
+      "property": [
+        "max-block-size"
+      ],
+      "state": [
+        "view=year"
+      ],
+      "defaultToken": [
+        "--xh-viewport-h-sm"
+      ],
+      "visibility": "public",
+      "description": "calendar 的 grid 部件 max-block-size 覆盖槽。"
+    },
+    {
+      "name": "--xh-calendar-year-grid-pe",
+      "component": "calendar",
+      "part": [
+        "grid"
+      ],
+      "property": [
+        "padding-inline-end"
+      ],
+      "state": [
+        "view=year"
+      ],
+      "defaultToken": [
+        "--xh-space-1"
+      ],
+      "visibility": "public",
+      "description": "calendar 的 grid 部件 padding-inline-end 覆盖槽。"
+    },
+    {
       "name": "--xh-card-bg",
       "component": "card",
       "part": [
@@ -45221,7 +45257,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-fg-default"
+        "--xh-fg-scrollbar-thumb"
       ],
       "visibility": "public",
       "description": "scrollbar 的 thumb 部件 background 覆盖槽。"
@@ -45239,7 +45275,7 @@
         "dragging"
       ],
       "defaultToken": [
-        "--xh-fg-default"
+        "--xh-fg-scrollbar-thumb-active"
       ],
       "visibility": "public",
       "description": "scrollbar 的 thumb 部件 background 覆盖槽。"
@@ -45275,7 +45311,7 @@
         "hover"
       ],
       "defaultToken": [
-        "--xh-fg-default"
+        "--xh-fg-scrollbar-thumb-hover"
       ],
       "visibility": "public",
       "description": "scrollbar 的 thumb 部件 background 覆盖槽。"
@@ -45312,6 +45348,7 @@
         "default"
       ],
       "defaultToken": [
+        "--xh-bg-scrollbar-track",
         "transparent"
       ],
       "visibility": "public",

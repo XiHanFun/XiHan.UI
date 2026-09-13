@@ -254,6 +254,8 @@ export type ComponentTokenName =
   | '--xh-calendar-week-number-fg'
   | '--xh-calendar-week-number-font-size'
   | '--xh-calendar-week-number-w'
+  | '--xh-calendar-year-grid-max-h'
+  | '--xh-calendar-year-grid-pe'
   | '--xh-card-bg'
   | '--xh-card-bg-hover'
   | '--xh-card-body-font-size'

@@ -6,13 +6,9 @@
     <div data-xh-part="root">
       <span data-xh-part="label">会议开始</span>
       <div data-xh-part="control">
-        <div data-xh-part="segment-group">
-          <span data-xh-part="segment"></span>
-          <span>-</span>
-          <span data-xh-part="segment"></span>
-          <span>-</span>
-          <span data-xh-part="segment"></span>
-        </div>
+        <div data-xh-part="segment-group"></div>
+        <button data-xh-part="clear-trigger"></button>
+        <button data-xh-part="trigger"></button>
       </div>
       <div data-xh-part="positioner">
         <div data-xh-part="content">
@@ -53,6 +49,7 @@
     '[data-xh-part="grid-head"] [data-xh-part="week-row"]',
   );
   const body = fragment.querySelector('[data-xh-part="grid-body"]');
+  const segmentGroup = fragment.querySelector('[data-xh-part="segment-group"]');
 
   let month = "";
 
@@ -94,6 +91,28 @@
     );
   }
 
+  function literalBefore(type, index) {
+    if (index === 0) return "";
+    if (type === "hour") return " ";
+    if (type === "minute" || type === "second") return ":";
+    return "/";
+  }
+
+  function paintSegments() {
+    const out = [];
+    picker.fieldSegments.forEach((segment, index) => {
+      if (index > 0) {
+        const literal = document.createElement("span");
+        literal.textContent = literalBefore(segment.type, index);
+        out.push(literal);
+      }
+      const item = document.createElement("span");
+      item.dataset.xhPart = "segment";
+      out.push(item);
+    });
+    segmentGroup.replaceChildren(...out);
+  }
+
   // 时列 24 项、分列 60 项，缺省精度到分
   function paintTimeColumn(unit, count) {
     const column = fragment.querySelector(
@@ -116,6 +135,7 @@
   paintTimeColumn("minute", 60);
 
   document.getElementById("date-picker-datetime-mount").append(fragment);
+  paintSegments();
   paintHead();
   paintBody();
 

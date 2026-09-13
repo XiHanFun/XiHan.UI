@@ -45,6 +45,11 @@
     { key: "year", label: "按年", view: "year", week: false },
   ];
 
+  const yearCells = Array.from({ length: 200 }, (_, index) => {
+    const year = 1900 + index;
+    return { value: `${year}-01-01`, label: `${year}年` };
+  });
+
   const mount = document.getElementById("date-picker-granularity-mount");
   const template = document.getElementById("date-picker-granularity-template");
 
@@ -78,6 +83,11 @@
     const picker = fragment.querySelector("xh-date-picker");
     picker.setAttribute("view", kind.view);
     picker.setAttribute("selection-mode", kind.week ? "range" : "single");
+    if (kind.key === "year") {
+      picker.setAttribute("default-focused-value", "2026-01-01");
+      const header = picker.querySelector('[data-xh-part="header"]');
+      header.replaceChildren(node("div", "heading", "选择年份"));
+    }
     if (kind.week) {
       picker.setAttribute("week-selection", "");
     }
@@ -105,7 +115,8 @@
       // 所以这里看 panel.weeks 有没有东西，不看 view
       if (panel.weeks.length === 0) {
         grid.replaceChildren(
-          ...panel.cells.map((cell) => dayCell(cell.value, cell.label)),
+          ...(kind.key === "year" ? yearCells : panel.cells)
+            .map((cell) => dayCell(cell.value, cell.label)),
         );
         return;
       }

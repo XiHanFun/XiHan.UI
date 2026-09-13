@@ -2,6 +2,7 @@
 import type { CSSProperties, ReactNode } from "react";
 import {
   XhTimePickerColumn,
+  XhTimePickerClearTrigger,
   XhTimePickerContent,
   XhTimePickerControl,
   XhTimePickerHiddenInput,
@@ -29,6 +30,7 @@ export default function Demo(): ReactNode {
           <span>:</span>
           <XhTimePickerSegment segment="minute" />
         </XhTimePickerSegmentGroup>
+        <XhTimePickerClearTrigger />
         <XhTimePickerTrigger />
       </XhTimePickerControl>
       <XhTimePickerHiddenInput />
