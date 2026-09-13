@@ -44917,6 +44917,24 @@
               "name": "--xh-steps-indicator-bg-completed"
             },
             {
+              "name": "--xh-steps-indicator-bg-completed-hover"
+            },
+            {
+              "name": "--xh-steps-indicator-bg-current"
+            },
+            {
+              "name": "--xh-steps-indicator-bg-disabled"
+            },
+            {
+              "name": "--xh-steps-indicator-bg-error"
+            },
+            {
+              "name": "--xh-steps-indicator-bg-hover"
+            },
+            {
+              "name": "--xh-steps-indicator-bg-warning"
+            },
+            {
               "name": "--xh-steps-indicator-border"
             },
             {
@@ -44948,6 +44966,9 @@
             },
             {
               "name": "--xh-steps-indicator-fg-error"
+            },
+            {
+              "name": "--xh-steps-indicator-fg-hover"
             },
             {
               "name": "--xh-steps-indicator-fg-warning"

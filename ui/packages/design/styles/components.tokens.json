@@ -49307,7 +49307,7 @@
         "default"
       ],
       "defaultToken": [
-        "transparent"
+        "--xh-bg-subtle"
       ],
       "visibility": "public",
       "description": "steps 的 indicator 部件 background 覆盖槽。"
@@ -49325,7 +49325,124 @@
         "state=completed"
       ],
       "defaultToken": [
+        "--xh-_steps-accent-soft"
+      ],
+      "visibility": "public",
+      "description": "steps 的 indicator 部件 background 覆盖槽。"
+    },
+    {
+      "name": "--xh-steps-indicator-bg-completed-hover",
+      "component": "steps",
+      "part": [
+        "indicator",
+        "trigger"
+      ],
+      "property": [
+        "background"
+      ],
+      "state": [
+        "disabled",
+        "hover",
+        "not([data-disabled])",
+        "state=completed"
+      ],
+      "defaultToken": [
+        "--xh-_steps-accent-soft-hover"
+      ],
+      "visibility": "public",
+      "description": "steps 的 indicator、trigger 部件 background 覆盖槽。"
+    },
+    {
+      "name": "--xh-steps-indicator-bg-current",
+      "component": "steps",
+      "part": [
+        "indicator"
+      ],
+      "property": [
+        "background"
+      ],
+      "state": [
+        "state=current"
+      ],
+      "defaultToken": [
         "--xh-_steps-accent"
+      ],
+      "visibility": "public",
+      "description": "steps 的 indicator 部件 background 覆盖槽。"
+    },
+    {
+      "name": "--xh-steps-indicator-bg-disabled",
+      "component": "steps",
+      "part": [
+        "indicator",
+        "item"
+      ],
+      "property": [
+        "background"
+      ],
+      "state": [
+        "disabled"
+      ],
+      "defaultToken": [
+        "--xh-bg-muted"
+      ],
+      "visibility": "public",
+      "description": "steps 的 indicator、item 部件 background 覆盖槽。"
+    },
+    {
+      "name": "--xh-steps-indicator-bg-error",
+      "component": "steps",
+      "part": [
+        "indicator"
+      ],
+      "property": [
+        "background"
+      ],
+      "state": [
+        "state=error"
+      ],
+      "defaultToken": [
+        "--xh-fg-danger"
+      ],
+      "visibility": "public",
+      "description": "steps 的 indicator 部件 background 覆盖槽。"
+    },
+    {
+      "name": "--xh-steps-indicator-bg-hover",
+      "component": "steps",
+      "part": [
+        "indicator",
+        "trigger"
+      ],
+      "property": [
+        "background"
+      ],
+      "state": [
+        "disabled",
+        "hover",
+        "not([data-disabled])",
+        "state=incomplete"
+      ],
+      "defaultToken": [
+        "--xh-bg-subtle-hover"
+      ],
+      "visibility": "public",
+      "description": "steps 的 indicator、trigger 部件 background 覆盖槽。"
+    },
+    {
+      "name": "--xh-steps-indicator-bg-warning",
+      "component": "steps",
+      "part": [
+        "indicator"
+      ],
+      "property": [
+        "background"
+      ],
+      "state": [
+        "state=warning"
+      ],
+      "defaultToken": [
+        "--xh-fg-warning"
       ],
       "visibility": "public",
       "description": "steps 的 indicator 部件 background 覆盖槽。"
@@ -49343,7 +49460,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-border-control"
+        "transparent"
       ],
       "visibility": "public",
       "description": "steps 的 indicator 部件 border 覆盖槽。"
@@ -49361,7 +49478,7 @@
         "state=completed"
       ],
       "defaultToken": [
-        "--xh-_steps-accent"
+        "--xh-_steps-accent-soft"
       ],
       "visibility": "public",
       "description": "steps 的 indicator 部件 border-color 覆盖槽。"
@@ -49470,7 +49587,7 @@
         "state=completed"
       ],
       "defaultToken": [
-        "--xh-_steps-on-accent"
+        "--xh-_steps-accent-text"
       ],
       "visibility": "public",
       "description": "steps 的 indicator 部件 color 覆盖槽。"
@@ -49488,7 +49605,7 @@
         "state=current"
       ],
       "defaultToken": [
-        "--xh-_steps-accent-text"
+        "--xh-_steps-on-accent"
       ],
       "visibility": "public",
       "description": "steps 的 indicator 部件 color 覆盖槽。"
@@ -49529,6 +49646,28 @@
       ],
       "visibility": "public",
       "description": "steps 的 indicator 部件 color 覆盖槽。"
+    },
+    {
+      "name": "--xh-steps-indicator-fg-hover",
+      "component": "steps",
+      "part": [
+        "indicator",
+        "trigger"
+      ],
+      "property": [
+        "color"
+      ],
+      "state": [
+        "disabled",
+        "hover",
+        "not([data-disabled])",
+        "state=incomplete"
+      ],
+      "defaultToken": [
+        "--xh-fg-default"
+      ],
+      "visibility": "public",
+      "description": "steps 的 indicator、trigger 部件 color 覆盖槽。"
     },
     {
       "name": "--xh-steps-indicator-fg-warning",
@@ -49594,7 +49733,7 @@
         "box-shadow"
       ],
       "state": [
-        "state=completed"
+        "state=current"
       ],
       "defaultToken": [
         "--xh-_steps-highlight"
@@ -49656,7 +49795,7 @@
         "orientation=horizontal"
       ],
       "defaultToken": [
-        "--xh-layout-col-min-xs"
+        "--xh-space-0"
       ],
       "visibility": "public",
       "description": "steps 的 item 部件 min-inline-size 覆盖槽。"
@@ -49674,7 +49813,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-space-2"
+        "--xh-space-0"
       ],
       "visibility": "public",
       "description": "steps 的 list 部件 gap 覆盖槽。"
@@ -49730,7 +49869,8 @@
         "orientation=vertical"
       ],
       "defaultToken": [
-        "--xh-space-4"
+        "--xh-space-4",
+        "--xh-space-7"
       ],
       "visibility": "public",
       "description": "steps 的 separator 部件 block-size、min-inline-size 覆盖槽。"
@@ -49807,7 +49947,7 @@
         "state=current"
       ],
       "defaultToken": [
-        "--xh-fg-default"
+        "--xh-_steps-accent-text"
       ],
       "visibility": "public",
       "description": "steps 的 title 部件 color 覆盖槽。"
@@ -49899,7 +50039,7 @@
         "not([data-disabled])"
       ],
       "defaultToken": [
-        "--xh-bg-subtle-hover"
+        "transparent"
       ],
       "visibility": "public",
       "description": "steps 的 trigger 部件 background 覆盖槽。"

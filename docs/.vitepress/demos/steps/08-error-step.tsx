@@ -1,6 +1,8 @@
 // 错误状态 | 标记需要用户处理的步骤
 import type { ReactNode } from "react";
+import { XIcon } from "@xihan-ui/icons";
 import {
+  XhIcon,
   XhStepsContent,
   XhStepsDescription,
   XhStepsIndicator,
@@ -30,7 +32,7 @@ export default function Demo(): ReactNode {
               <XhStepsItem key={s.title} value={i}>
                 <XhStepsTrigger>
                   <XhStepsIndicator>
-                    {i === errorAt ? "!" : value > i ? "" : i + 1}
+                    {i === errorAt ? <XhIcon icon={XIcon} /> : value > i ? "" : i + 1}
                   </XhStepsIndicator>
                   <XhStepsTitle>{s.title}</XhStepsTitle>
                   <XhStepsDescription>{s.description}</XhStepsDescription>
