@@ -10,80 +10,30 @@
     --xh-kbd-skin: 1;
   }
 
-  /* 单枚键帽保留轻微压感，不使用浮层海拔。 */
+  /* 单枚键帽只展示键名，不模拟按钮的按下、禁用或尺寸状态。 */
   [data-scope='kbd'][data-part='root'] {
-    --xh-_kbd-h: var(--xh-space-6);
-    --xh-_kbd-font-size: var(--xh-control-caption-md);
-    --xh-_kbd-px: var(--xh-space-2);
-    --xh-_kbd-shadow-rest: inset 0 calc(-1 * var(--xh-stroke-thick)) 0 var(--xh-border-strong);
-    --xh-_kbd-shadow-pressed: inset 0 calc(-1 * var(--xh-stroke-thin)) 0 var(--xh-border-strong);
-
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    block-size: var(--xh-kbd-h, var(--xh-_kbd-h));
-    min-inline-size: var(--xh-kbd-min-w, var(--xh-_kbd-h));
-    padding-block: var(--xh-kbd-py, var(--xh-space-0));
-    padding-inline: var(--xh-kbd-px, var(--xh-_kbd-px));
-    border: var(--xh-stroke-thin) solid var(--xh-kbd-border, var(--xh-border-default));
+    box-sizing: border-box;
+    block-size: var(--xh-kbd-h, var(--xh-space-6));
+    min-inline-size: var(--xh-kbd-min-w, var(--xh-space-6));
+    padding-inline: var(--xh-kbd-px, var(--xh-space-2));
+    border: var(--xh-stroke-thin) solid var(--xh-kbd-border, transparent);
     border-radius: var(--xh-kbd-radius, var(--xh-shape-control));
-    background-color: var(--xh-kbd-bg, var(--xh-bg-subtle));
-    box-shadow: var(--xh-kbd-shadow, var(--xh-_kbd-shadow-rest));
-    color: var(--xh-kbd-fg, var(--xh-fg-default));
-    font-family: var(--xh-kbd-font, var(--xh-font-family-mono));
-    font-size: var(--xh-kbd-font-size, var(--xh-_kbd-font-size));
+    background: var(--xh-kbd-bg, var(--xh-bg-subtle));
+    color: var(--xh-kbd-fg, var(--xh-fg-muted));
+    font-family: var(--xh-kbd-font, inherit);
+    font-size: var(--xh-kbd-font-size, var(--xh-text-label-size));
     font-weight: var(--xh-kbd-font-weight, var(--xh-font-weight-medium));
     line-height: var(--xh-leading-none);
+    text-align: center;
+    text-decoration: none;
     white-space: nowrap;
-    translate: 0 0;
-    transition:
-      background-color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
-      border-color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
-      box-shadow var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
-      color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
-      translate var(--xh-motion-duration-micro) var(--xh-motion-ease-continuous);
   }
 
-  [data-scope='kbd'][data-part='root'][data-modifier] {
-    color: var(--xh-kbd-fg-modifier, var(--xh-fg-muted));
-  }
-
-  [data-scope='kbd'][data-part='root'][data-disabled] {
-    background: var(--xh-kbd-bg-disabled, var(--xh-bg-muted));
-    box-shadow: none;
-    color: var(--xh-kbd-fg-disabled, var(--xh-fg-disabled));
-  }
-
-  /* pressed 只能来自显式事实，或来自真实可交互 owner 的原生 :active。 */
-  [data-scope='kbd'][data-part='root'][data-pressed]:not([data-disabled]),
-  :is(button, a[href], [role='button'], [role='menuitem'], [role='option']):not([disabled], [aria-disabled='true']):active
-    [data-scope='kbd'][data-part='root']:not([data-disabled]) {
-    box-shadow: var(--xh-kbd-shadow-pressed, var(--xh-_kbd-shadow-pressed));
-    translate: 0 var(--xh-stroke-thin);
-  }
-
-  [data-scope='kbd'][data-part='root'][data-size='sm'] {
-    --xh-_kbd-h: var(--xh-space-5);
-    --xh-_kbd-font-size: var(--xh-control-caption-sm);
-    --xh-_kbd-px: var(--xh-space-1_5);
-  }
-
-  [data-scope='kbd'][data-part='root'][data-size='md'] {
-    --xh-_kbd-h: var(--xh-space-6);
-    --xh-_kbd-font-size: var(--xh-control-caption-md);
-    --xh-_kbd-px: var(--xh-space-2);
-  }
-
-  [data-scope='kbd'][data-part='root'][data-size='lg'] {
-    --xh-_kbd-h: var(--xh-space-7);
-    --xh-_kbd-font-size: var(--xh-control-caption-lg);
-    --xh-_kbd-px: var(--xh-space-2_5);
-  }
-
-  :where([data-density='compact']) [data-scope='kbd'][data-part='root']:not([data-size]) {
-    --xh-kbd-h: var(--xh-space-5);
-    --xh-kbd-font-size: var(--xh-control-caption-sm);
-    --xh-kbd-px: var(--xh-space-1_5);
+  [data-scope='kbd'][data-part='root'][data-variant='light'] {
+    background: transparent;
   }
 
   [data-scope='kbd'][data-part='root'][hidden] {
@@ -91,16 +41,10 @@
   }
 
   @media (forced-colors: active) {
-    [data-scope='kbd'][data-part='root'] {
+    [data-scope='kbd'][data-part='root']:not([data-variant='light']) {
       border-color: ButtonText;
       background: Canvas;
-      box-shadow: none;
       color: CanvasText;
-    }
-
-    [data-scope='kbd'][data-part='root'][data-disabled] {
-      border-color: GrayText;
-      color: GrayText;
     }
   }
 }

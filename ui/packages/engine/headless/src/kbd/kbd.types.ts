@@ -5,20 +5,18 @@
 
 // 定义 kbd 类型契约。
 
-import type { PropTypes, Size } from '@xihan-ui/core'
+import type { PropTypes } from '@xihan-ui/core'
 import type { HotkeySegment, HotkeysPlatform, HotkeysResolvedPlatform } from '../shared/hotkey'
+
+export type KbdVariant = 'default' | 'light'
 
 export interface KbdProps {
   /** 一枚键的声明，例如 Mod、Shift、Esc 或 S。 */
   value: string
   /** 平台写法；auto 在适配器测出平台前按 other。 */
   platform?: HotkeysPlatform
-  /** 尺寸：sm / md / lg。 */
-  size?: Size
-  /** 这枚键是否正在被真实动作激活；纯展示默认静止。 */
-  pressed?: boolean
-  /** 这枚键所提示的动作是否不可用。 */
-  disabled?: boolean
+  /** 外观：default 使用中性底，light 保持透明。 */
+  variant?: KbdVariant
   /** 读屏键名覆盖。 */
   translations?: Partial<KbdTranslations>
 }

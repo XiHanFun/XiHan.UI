@@ -5,8 +5,7 @@
 
 // 提供 kbd 相关实现。
 
-import type { Size } from '@xihan-ui/core'
-import type { HotkeysPlatform, KbdProps, KbdTranslations } from '@xihan-ui/headless'
+import type { HotkeysPlatform, KbdProps, KbdTranslations, KbdVariant } from '@xihan-ui/headless'
 import type { PropType } from 'vue'
 import { connectKbd } from '@xihan-ui/headless'
 import { computed, defineComponent, h } from 'vue'
@@ -20,9 +19,7 @@ export const XhKbd = defineComponent({
   props: {
     value: { type: String, required: true },
     platform: { type: String as PropType<HotkeysPlatform> },
-    size: { type: String as PropType<Size> },
-    pressed: { type: Boolean, default: undefined },
-    disabled: { type: Boolean, default: undefined },
+    variant: { type: String as PropType<KbdVariant> },
     translations: { type: Object as PropType<Partial<KbdTranslations>> },
   },
   setup(props) {

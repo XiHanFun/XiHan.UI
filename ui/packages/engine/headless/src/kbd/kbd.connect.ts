@@ -7,7 +7,6 @@
 
 import type { NormalizeProps, PropTypes } from '@xihan-ui/core'
 import type { KbdApi, KbdProps } from './kbd.types'
-import { dataAttr } from '@xihan-ui/core'
 import { formatHotkey, resolveHotkeysPlatform } from '../shared/hotkey'
 import { kbdAnatomy } from './kbd.anatomy'
 
@@ -25,6 +24,7 @@ export function connectKbd<T extends PropTypes>(
   const accessibleName = props.translations?.keyName?.(segment.key) ?? segment.name
   if (accessibleName.trim() === '')
     throw new TypeError('[xh] Kbd 的可读键名不能为空')
+  const variant = props.variant ?? 'default'
 
   return {
     segment,
@@ -34,10 +34,7 @@ export function connectKbd<T extends PropTypes>(
       ...parts.root.attrs,
       'aria-label': accessibleName,
       'data-platform': platform,
-      'data-modifier': dataAttr(segment.modifier),
-      'data-size': props.size,
-      'data-pressed': dataAttr(props.pressed),
-      'data-disabled': dataAttr(props.disabled),
+      'data-variant': variant,
     }),
   }
 }

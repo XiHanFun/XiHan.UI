@@ -125,7 +125,7 @@ export type { InputGroupApi, InputGroupProps, InputGroupTranslations, InputGroup
 export { connectJsonViewer, flattenJson, groupJsonViewerNodesByParent, JSON_VIEWER_ROOT_PATH, jsonChildPath, jsonExpandedPathsToDepth, jsonText, jsonValueText, jsonValueType, jsonViewerAnatomy, jsonViewerBranchQuery, jsonViewerItemQuery, jsonViewerKeyboard, jsonViewerMachine, jsonViewerMeta } from './json-viewer'
 export type { JsonViewerApi, JsonViewerExpandedValueChangeDetails, JsonViewerFlattenOptions, JsonViewerNode, JsonViewerNodeProps, JsonViewerNodesByParent, JsonViewerSchema, JsonViewerTranslations, JsonViewerValueType, JsonViewerVariant, JsonViewerView, JsonViewerWalkOptions } from './json-viewer'
 export { connectKbd, kbdAnatomy, kbdKeyboard, kbdMeta } from './kbd'
-export type { KbdApi, KbdProps, KbdTranslations } from './kbd'
+export type { KbdApi, KbdProps, KbdTranslations, KbdVariant } from './kbd'
 export { connectKbdGroup, kbdGroupAnatomy, kbdGroupKeyboard, kbdGroupMeta } from './kbd-group'
 export type { KbdGroupApi, KbdGroupKeyProps, KbdGroupProps, KbdGroupTranslations } from './kbd-group'
 export { connectLayout, layoutAnatomy, layoutKeyboard, layoutMachine, layoutMeta } from './layout'

@@ -29189,31 +29189,13 @@
         "root"
       ],
       "property": [
-        "background-color"
+        "background"
       ],
       "state": [
         "default"
       ],
       "defaultToken": [
         "--xh-bg-subtle"
-      ],
-      "visibility": "public",
-      "description": "kbd 的 root 部件 background-color 覆盖槽。"
-    },
-    {
-      "name": "--xh-kbd-bg-disabled",
-      "component": "kbd",
-      "part": [
-        "root"
-      ],
-      "property": [
-        "background"
-      ],
-      "state": [
-        "disabled"
-      ],
-      "defaultToken": [
-        "--xh-bg-muted"
       ],
       "visibility": "public",
       "description": "kbd 的 root 部件 background 覆盖槽。"
@@ -29231,7 +29213,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-border-default"
+        "transparent"
       ],
       "visibility": "public",
       "description": "kbd 的 root 部件 border 覆盖槽。"
@@ -29247,42 +29229,6 @@
       ],
       "state": [
         "default"
-      ],
-      "defaultToken": [
-        "--xh-fg-default"
-      ],
-      "visibility": "public",
-      "description": "kbd 的 root 部件 color 覆盖槽。"
-    },
-    {
-      "name": "--xh-kbd-fg-disabled",
-      "component": "kbd",
-      "part": [
-        "root"
-      ],
-      "property": [
-        "color"
-      ],
-      "state": [
-        "disabled"
-      ],
-      "defaultToken": [
-        "--xh-fg-disabled"
-      ],
-      "visibility": "public",
-      "description": "kbd 的 root 部件 color 覆盖槽。"
-    },
-    {
-      "name": "--xh-kbd-fg-modifier",
-      "component": "kbd",
-      "part": [
-        "root"
-      ],
-      "property": [
-        "color"
-      ],
-      "state": [
-        "modifier"
       ],
       "defaultToken": [
         "--xh-fg-muted"
@@ -29303,7 +29249,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-font-family-mono"
+        "inherit"
       ],
       "visibility": "public",
       "description": "kbd 的 root 部件 font-family 覆盖槽。"
@@ -29321,7 +29267,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-_kbd-font-size"
+        "--xh-text-label-size"
       ],
       "visibility": "public",
       "description": "kbd 的 root 部件 font-size 覆盖槽。"
@@ -29357,7 +29303,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-_kbd-h"
+        "--xh-space-6"
       ],
       "visibility": "public",
       "description": "kbd 的 root 部件 block-size 覆盖槽。"
@@ -29375,7 +29321,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-_kbd-h"
+        "--xh-space-6"
       ],
       "visibility": "public",
       "description": "kbd 的 root 部件 min-inline-size 覆盖槽。"
@@ -29393,28 +29339,10 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-_kbd-px"
+        "--xh-space-2"
       ],
       "visibility": "public",
       "description": "kbd 的 root 部件 padding-inline 覆盖槽。"
-    },
-    {
-      "name": "--xh-kbd-py",
-      "component": "kbd",
-      "part": [
-        "root"
-      ],
-      "property": [
-        "padding-block"
-      ],
-      "state": [
-        "default"
-      ],
-      "defaultToken": [
-        "--xh-space-0"
-      ],
-      "visibility": "public",
-      "description": "kbd 的 root 部件 padding-block 覆盖槽。"
     },
     {
       "name": "--xh-kbd-radius",
@@ -29433,47 +29361,6 @@
       ],
       "visibility": "public",
       "description": "kbd 的 root 部件 border-radius 覆盖槽。"
-    },
-    {
-      "name": "--xh-kbd-shadow",
-      "component": "kbd",
-      "part": [
-        "root"
-      ],
-      "property": [
-        "box-shadow"
-      ],
-      "state": [
-        "default"
-      ],
-      "defaultToken": [
-        "--xh-_kbd-shadow-rest"
-      ],
-      "visibility": "public",
-      "description": "kbd 的 root 部件 box-shadow 覆盖槽。"
-    },
-    {
-      "name": "--xh-kbd-shadow-pressed",
-      "component": "kbd",
-      "part": [
-        "root"
-      ],
-      "property": [
-        "box-shadow"
-      ],
-      "state": [
-        "active",
-        "disabled",
-        "is(button, a[href], [role='button'], [role='menuitem'], [role='option'])",
-        "not([data-disabled])",
-        "not([disabled], [aria-disabled='true'])",
-        "pressed"
-      ],
-      "defaultToken": [
-        "--xh-_kbd-shadow-pressed"
-      ],
-      "visibility": "public",
-      "description": "kbd 的 root 部件 box-shadow 覆盖槽。"
     },
     {
       "name": "--xh-kbd-group-fg",
