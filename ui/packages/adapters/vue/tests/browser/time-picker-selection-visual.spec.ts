@@ -119,7 +119,7 @@ afterEach(async () => {
 })
 
 describe('time-picker 统一选中反馈', () => {
-  it('preset 与数字项只用对号表示持久选值，正文和静止底保持普通态', async () => {
+  it('快捷项以对号标记，数字项同时使用淡强调面、强调文字与对号', async () => {
     await mountTimePicker()
     const selectedPreset = byTestId('selected-preset')
     const plainPreset = byTestId('plain-preset')
@@ -130,22 +130,23 @@ describe('time-picker 统一选中反馈', () => {
     byTestId('minute-15').focus()
     await nextTick()
 
-    const pairs: Array<[HTMLElement, HTMLElement]> = [
-      [selectedPreset, plainPreset],
-      [selectedItem, plainItem],
-    ]
-    for (const [selected, plain] of pairs) {
-      expect(selected.getAttribute('data-state')).toBe('checked')
-      expect(alpha(getComputedStyle(selected).backgroundColor)).toBe(0)
-      expect(getComputedStyle(selected).color).toBe(getComputedStyle(plain).color)
-      expect(getComputedStyle(selected).fontWeight).toBe(getComputedStyle(plain).fontWeight)
-      expect(checkStyle(selected).opacity).toBe('1')
-      expect(checkStyle(selected).maskImage).not.toBe('none')
-      expect(checkStyle(plain).opacity).toBe('0')
-    }
+    expect(selectedPreset.getAttribute('data-state')).toBe('checked')
+    expect(alpha(getComputedStyle(selectedPreset).backgroundColor)).toBe(0)
+    expect(getComputedStyle(selectedPreset).color).toBe(getComputedStyle(plainPreset).color)
+    expect(checkStyle(selectedPreset).opacity).toBe('1')
+    expect(checkStyle(plainPreset).opacity).toBe('0')
+
+    expect(selectedItem.getAttribute('data-state')).toBe('checked')
+    expect(alpha(getComputedStyle(selectedItem).backgroundColor)).toBe(255)
+    expect(getComputedStyle(selectedItem).backgroundColor).not.toBe(getComputedStyle(plainItem).backgroundColor)
+    expect(getComputedStyle(selectedItem).color).not.toBe(getComputedStyle(plainItem).color)
+    expect(getComputedStyle(selectedItem).fontWeight).not.toBe(getComputedStyle(plainItem).fontWeight)
+    expect(checkStyle(selectedItem).opacity).toBe('1')
+    expect(checkStyle(selectedItem).maskImage).not.toBe('none')
+    expect(checkStyle(plainItem).opacity).toBe('0')
   })
 
-  it('选中叠加 hover/键盘焦点时只增加中性底，对号继续可见', async () => {
+  it('选中叠加 hover 时提升强调底，普通项仍使用中性底', async () => {
     await mountTimePicker()
     const selected = byTestId('hour-09')
     const plain = byTestId('hour-08')
@@ -155,7 +156,8 @@ describe('time-picker 统一选中反馈', () => {
     expect(alpha(neutral)).toBe(255)
 
     await userEvent.hover(selected)
-    expect(getComputedStyle(selected).backgroundColor).toBe(neutral)
+    expect(getComputedStyle(selected).backgroundColor).not.toBe(neutral)
+    expect(alpha(getComputedStyle(selected).backgroundColor)).toBe(255)
     expect(checkStyle(selected).opacity).toBe('1')
 
     await userEvent.tab()

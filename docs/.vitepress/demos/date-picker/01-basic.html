@@ -2,8 +2,11 @@
 <div id="date-picker-basic-mount"></div>
 
 <template id="date-picker-basic-template">
-  <xh-date-picker locale="zh-CN">
-    <div data-xh-part="root">
+  <xh-date-picker locale="zh-CN" name="delivery-date">
+    <div
+      data-xh-part="root"
+      style="--xh-date-picker-control-min-w: calc(var(--xh-control-min-w) + var(--xh-control-h-md) + var(--xh-control-h-md) + var(--xh-space-6))"
+    >
       <span data-xh-part="label">交付日期</span>
       <div data-xh-part="control">
         <div data-xh-part="segment-group">
@@ -13,8 +16,9 @@
           <span>-</span>
           <span data-xh-part="segment"></span>
         </div>
-        <button data-xh-part="clear-trigger"></button>
+        <button data-xh-part="trigger"></button>
       </div>
+      <input data-xh-part="hidden-input" />
       <div data-xh-part="positioner">
         <div data-xh-part="content">
           <div data-xh-part="calendar">

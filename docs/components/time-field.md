@@ -1,6 +1,6 @@
 # TimeField 时间输入 <Badge type="info" text="alpha" />
 
-分段的时间输入框：时、分、秒各占一段，方向键加减。
+按时、分、秒逐段输入时间，适合已经知道目标时间、无需打开选择面板的场景。
 
 <div class="xh-resource-links">
   <a href="https://github.com/XiHanFun/XiHan.UI/tree/dev/ui/packages/engine/headless/src/time-field" target="_blank" rel="noreferrer">Headless</a>
@@ -12,7 +12,7 @@
 
 ## 用法
 
-默认 24 小时制，上下键在段区间里回绕，缺一段整份值就退回空串
+输入时间
 
 <XhDemo src="time-field/01-basic" />
 
@@ -89,6 +89,7 @@ tone 决定用哪族颜色，与 variant 正交；这里固定 subtle 形态，�
 - `hourCycle` 切 12 / 24 小时制，12 小时制时自动多一个上下午段位。
 - `granularity` 决定精确到分还是到秒。
 - `min` / `max` 越界时只标注不改写。
+- 标准组合包含标签、输入框、时间段和隐藏表单输入；聚焦只强调正在编辑的时间段。
 - 框内自带清空钮（`clear-trigger`）：有值才显形，点完焦点回到第一段。
 
 ### 组合
@@ -98,6 +99,7 @@ tone 决定用哪族颜色，与 variant 正交；这里固定 subtle 形态，�
 ### 最佳实践
 
 - 明确时区归属：组件处理的是墙上时间，时区换算是宿主的事。
+- 给参与表单提交的字段设置 `name`，并渲染隐藏输入部件。
 - 12 小时制下上下午段位不能省，否则用户输入的时间有二义。
 
 ### 反模式
@@ -239,6 +241,8 @@ tone 决定用哪族颜色，与 variant 正交；这里固定 subtle 形态，�
 
 `@xihan-ui/styles/time-field.css` 使用 `[data-scope="time-field"][data-part="root"]` 部件选择器，位于 `xihan.components` 层。覆盖样式使用 `xihan.overrides`。
 
+`forced-colors: active` 下另有一套规则：颜色交给系统，边框与状态标记改用系统色关键字。
+
 ### 数据属性
 
 由 `connect` 生成；条件不成立时不输出无值属性。
@@ -304,11 +308,15 @@ tone 决定用哪族颜色，与 variant 正交；这里固定 subtle 形态，�
 | `--xh-time-field-label-fg-disabled` | `label` | `color` | `disabled` | `--xh-fg-subtle` | time-field 的 label 部件 color 覆盖槽。 |
 | `--xh-time-field-label-font-size` | `label` | `font-size` | `default` | `--xh-_time-field-label-font-size` | time-field 的 label 部件 font-size 覆盖槽。 |
 | `--xh-time-field-label-font-weight` | `label` | `font-weight` | `default` | `--xh-text-label-weight` | time-field 的 label 部件 font-weight 覆盖槽。 |
+| `--xh-time-field-literal-fg` | `segment-group` | `color` | `not([data-scope])` | `--xh-fg-subtle` | time-field 的 segment-group 部件 color 覆盖槽。 |
 | `--xh-time-field-placeholder-fg` | `segment` | `color` | `placeholder` | `--xh-fg-subtle` | time-field 的 segment 部件 color 覆盖槽。 |
 | `--xh-time-field-segment-bg-focus` | `segment` | `background` | `disabled`<br>`focus`<br>`focus-visible`<br>`not([data-disabled])` | `--xh-_time-field-segment-bg` | time-field 的 segment 部件 background 覆盖槽。 |
 | `--xh-time-field-segment-bg-hover` | `segment` | `background` | `disabled`<br>`focus`<br>`hover`<br>`not([data-focus], [data-disabled])` | `--xh-bg-subtle-hover` | time-field 的 segment 部件 background 覆盖槽。 |
+| `--xh-time-field-segment-bg-invalid-focus` | `segment` | `background` | `focus`<br>`invalid`<br>`is([data-focus], :focus-visible)` | `--xh-bg-subtle` | time-field 的 segment 部件 background 覆盖槽。 |
 | `--xh-time-field-segment-fg-focus` | `segment` | `color` | `disabled`<br>`focus`<br>`focus-visible`<br>`not([data-disabled])`<br>`placeholder` | `--xh-_time-field-segment-fg` | time-field 的 segment 部件 color 覆盖槽。 |
-| `--xh-time-field-segment-px` | `segment` | `padding-inline` | `default` | `--xh-space-1` | time-field 的 segment 部件 padding-inline 覆盖槽。 |
+| `--xh-time-field-segment-fg-invalid` | `segment` | `color` | `invalid` | `--xh-fg-danger` | time-field 的 segment 部件 color 覆盖槽。 |
+| `--xh-time-field-segment-fg-invalid-focus` | `segment` | `color` | `focus`<br>`invalid`<br>`is([data-focus], :focus-visible)` | `--xh-fg-danger` | time-field 的 segment 部件 color 覆盖槽。 |
+| `--xh-time-field-segment-px` | `segment` | `padding-inline` | `default` | `--xh-space-0_5` | time-field 的 segment 部件 padding-inline 覆盖槽。 |
 | `--xh-time-field-segment-py` | `segment` | `padding-block` | `default` | `--xh-space-0` | time-field 的 segment 部件 padding-block 覆盖槽。 |
 | `--xh-time-field-segment-radius` | `segment` | `border-radius` | `default` | `--xh-shape-inset` | time-field 的 segment 部件 border-radius 覆盖槽。 |
 <!-- xh-component-tokens:end -->

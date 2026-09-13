@@ -1,7 +1,8 @@
 // 基础用法 | 输入日期
-import type { ReactNode } from "react";
+import type { CSSProperties, ReactNode } from "react";
 import {
   XhDateFieldControl,
+  XhDateFieldHiddenInput,
   XhDateFieldLabel,
   XhDateFieldRoot,
   XhDateFieldSegment,
@@ -10,7 +11,13 @@ import {
 
 export default function Demo(): ReactNode {
   return (
-    <XhDateFieldRoot locale="zh-CN">
+    <XhDateFieldRoot
+      locale="zh-CN"
+      name="deadline"
+      style={{
+        "--xh-date-field-control-min-w": "calc(var(--xh-control-min-w) + var(--xh-control-h-md) + var(--xh-space-6))",
+      } as CSSProperties}
+    >
       <XhDateFieldLabel>截止日期</XhDateFieldLabel>
       <XhDateFieldControl>
         <XhDateFieldSegmentGroup>
@@ -22,6 +29,7 @@ export default function Demo(): ReactNode {
           <span>日</span>
         </XhDateFieldSegmentGroup>
       </XhDateFieldControl>
+      <XhDateFieldHiddenInput />
     </XhDateFieldRoot>
   );
 }

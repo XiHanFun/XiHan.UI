@@ -379,10 +379,10 @@ export const timePickerMachine = createMachine({
           return
         const current = segmentNumber(currentDraft(params), first.unit, currentHourCycle(params))
         const selected = current == null ? null : timePickerItemValue(current)
-        // 指针打开且这一段还空着：不落锚点，焦点由焦点域交给列容器，
-        // 展开这一刻不能有格子看着像被选中；键盘入口要预落锚点得自带 first/last 意图
+        // 从输入段展开时保留段上的编辑焦点；从触发器展开则把空值落到第一项，
+        // 避免焦点停在整列容器上，也让方向键与 Enter 立即有明确起点。
         const intent = params.context.get('focusIntent')
-        if (intent === 'selected' && selected == null)
+        if (!params.context.get('moveFocusIn') && intent === 'selected' && selected == null)
           return
         const edge = intent === 'last' ? first.options.at(-1) : first.options[0]
         params.context.set('focusedColumn', first.unit)

@@ -2,6 +2,7 @@
 <script setup lang="ts">
 import {
   XhDateFieldControl,
+  XhDateFieldHiddenInput,
   XhDateFieldLabel,
   XhDateFieldRoot,
   XhDateFieldSegment,
@@ -10,7 +11,11 @@ import {
 </script>
 
 <template>
-  <XhDateFieldRoot locale="zh-CN">
+  <XhDateFieldRoot
+    locale="zh-CN"
+    name="deadline"
+    style="--xh-date-field-control-min-w: calc(var(--xh-control-min-w) + var(--xh-control-h-md) + var(--xh-space-6))"
+  >
     <XhDateFieldLabel>截止日期</XhDateFieldLabel>
     <XhDateFieldControl>
       <XhDateFieldSegmentGroup>
@@ -22,5 +27,6 @@ import {
         <span>日</span>
       </XhDateFieldSegmentGroup>
     </XhDateFieldControl>
+    <XhDateFieldHiddenInput />
   </XhDateFieldRoot>
 </template>

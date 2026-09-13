@@ -193,20 +193,6 @@
       "ratio": 2.89,
       "ring": "poured"
     },
-    "date-field [data-part='root'][data-scope='date-field'] [data-focus][data-part='segment'][data-scope='date-field']": {
-      "parts": [
-        "segment"
-      ],
-      "ratio": 1,
-      "ring": "off"
-    },
-    "date-field [data-part='root'][data-scope='date-field'] [data-part='segment'][data-scope='date-field']": {
-      "parts": [
-        "segment"
-      ],
-      "ratio": 1,
-      "ring": "off"
-    },
     "date-picker [data-part=:is(positioner,root)][data-scope='date-picker'] [data-part='confirm-trigger'][data-scope='date-picker']": {
       "parts": [
         "confirm-trigger"
@@ -361,33 +347,12 @@
       "ratio": 1,
       "ring": "poured"
     },
-    "time-field [data-part='root'][data-scope='time-field'] [data-focus][data-part='segment'][data-scope='time-field']:not([data-disabled])": {
+    "time-picker [data-part='trigger'][data-scope='time-picker'][data-state='open']": {
       "parts": [
-        "segment"
+        "trigger"
       ],
-      "ratio": 1,
-      "ring": "off"
-    },
-    "time-field [data-part='root'][data-scope='time-field'] [data-part='segment'][data-scope='time-field']": {
-      "parts": [
-        "segment"
-      ],
-      "ratio": 1,
-      "ring": "off"
-    },
-    "time-picker [data-part=:is(positioner,root)][data-scope='time-picker'] [data-focus][data-part='segment'][data-scope='time-picker']:not([data-disabled])": {
-      "parts": [
-        "segment"
-      ],
-      "ratio": 1,
-      "ring": "off"
-    },
-    "time-picker [data-part=:is(positioner,root)][data-scope='time-picker'] [data-part='segment'][data-scope='time-picker']": {
-      "parts": [
-        "segment"
-      ],
-      "ratio": 1,
-      "ring": "off"
+      "ratio": 2.89,
+      "ring": "poured"
     },
     "toggle-group [data-part='root'][data-scope='toggle-group'][data-variant='solid'] [data-part='item'][data-scope='toggle-group'][data-state='on']": {
       "parts": [

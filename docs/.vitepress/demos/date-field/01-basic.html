@@ -1,6 +1,9 @@
 <!-- 基础用法 | 输入日期 -->
-<xh-date-field locale="zh-CN">
-  <div data-xh-part="root">
+<xh-date-field locale="zh-CN" name="deadline">
+    <div
+      data-xh-part="root"
+      style="--xh-date-field-control-min-w: calc(var(--xh-control-min-w) + var(--xh-control-h-md) + var(--xh-space-6))"
+    >
     <label data-xh-part="label">截止日期</label>
     <div data-xh-part="control">
       <div data-xh-part="segment-group">
@@ -12,5 +15,6 @@
         <span>日</span>
       </div>
     </div>
+    <input data-xh-part="hidden-input" />
   </div>
 </xh-date-field>

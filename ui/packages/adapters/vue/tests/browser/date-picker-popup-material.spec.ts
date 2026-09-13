@@ -97,6 +97,7 @@ describe('日期选择 M2 浮层', () => {
     const content = getComputedStyle(part('content'))
     expect(control.backdropFilter).toBe('none')
     expect(alpha(control.backgroundColor)).toBe(255)
+    expect(control.outlineStyle).toBe('solid')
     expect(part('positioner').closest<HTMLElement>('[data-theme]')?.dataset.theme).toBe(theme)
     expect(content.backdropFilter).toContain('blur(16px)')
     expect(alpha(content.backgroundColor)).toBeLessThan(255)
