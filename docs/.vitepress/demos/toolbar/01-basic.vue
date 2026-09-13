@@ -40,6 +40,7 @@ function toggle(value: string) {
         </XhToolbarItem>
       </template>
     </XhToolbarGroup>
+    <XhToolbarSeparator />
     <XhToolbarGroup>
       <XhToolbarItem value="copy" type="button" aria-label="复制">
         <XhIcon :icon="CopyIcon" />

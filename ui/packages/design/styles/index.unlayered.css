@@ -36109,11 +36109,12 @@
    排布只能读 data-orientation——它与 aria-orientation 同源，但样式不该去读 ARIA */
 [data-scope='toolbar'][data-part='root'] {
   /* 尺寸档同时约束工具条排布与默认条目。 */
-  --xh-_toolbar-gap: var(--xh-space-1);
+  --xh-_toolbar-gap: var(--xh-space-2);
   --xh-_toolbar-p: var(--xh-space-1);
   --xh-_toolbar-item-h: var(--xh-control-h-md);
   --xh-_toolbar-item-px: var(--xh-control-px-md);
   --xh-_toolbar-item-font-size: var(--xh-control-font-md);
+  --xh-_toolbar-separator-size: calc(var(--xh-_toolbar-item-h) / 2);
   --xh-icon-size: var(--xh-toolbar-icon-size, var(--xh-glyph-size-md));
 
   /* 缺省 plain：工具条只组织控件，不额外画外框。 */
@@ -36163,10 +36164,13 @@
 /* 附着式工具面：用于悬浮工具条或与内容区域分开的独立操作带。 */
 [data-scope='toolbar'][data-part='root'][data-variant='surface'] {
   --xh-_toolbar-root-p: var(--xh-_toolbar-p);
-  --xh-_toolbar-root-border-width: var(--xh-stroke-thin);
-  --xh-_toolbar-root-border: var(--xh-border-default);
+  --xh-_toolbar-root-border-width: 0;
+  --xh-_toolbar-root-border: transparent;
   --xh-_toolbar-root-bg: var(--xh-bg-surface);
   --xh-_toolbar-root-bg-disabled: var(--xh-bg-muted);
+
+  border-radius: var(--xh-toolbar-radius, var(--xh-shape-pill));
+  box-shadow: var(--xh-toolbar-shadow, var(--xh-elevation-raised));
 }
 
 /* —— 尺寸 —— */
@@ -36182,7 +36186,7 @@
 }
 
 [data-scope='toolbar'][data-part='root'][data-size='lg'] {
-  --xh-_toolbar-gap: var(--xh-space-2);
+  --xh-_toolbar-gap: var(--xh-space-3);
   --xh-_toolbar-p: var(--xh-space-2);
   --xh-_toolbar-item-h: var(--xh-control-h-lg);
   --xh-_toolbar-item-px: var(--xh-control-px-lg);
@@ -36207,22 +36211,19 @@
   display: none;
 }
 
-/* 分组使用浅色工具面：相关控件连成一组，组与组之间仍由 root 的 gap 分开。 */
+/* 分组只负责把相关操作连成一条，表面与交互状态由每个分段自己绘制。 */
 [data-scope='toolbar'][data-part='group'] {
-  display: flex;
+  display: inline-flex;
   flex-wrap: nowrap;
-  align-items: center;
+  align-items: stretch;
   gap: var(--xh-toolbar-group-gap, var(--xh-space-0));
-  padding: var(--xh-toolbar-group-p, var(--xh-space-0_5));
-  border-radius: var(--xh-toolbar-group-radius, var(--xh-shape-pill));
-  background: var(--xh-toolbar-group-bg, var(--xh-bg-subtle));
+  background: transparent;
 }
 
 [data-scope='toolbar'][data-part='group'][data-orientation='vertical'] {
   flex-direction: column;
   align-items: stretch;
   flex-wrap: nowrap;
-  border-radius: var(--xh-toolbar-group-radius, var(--xh-shape-surface));
 }
 
 [data-scope='toolbar'][data-part='group'][hidden] {
@@ -36287,35 +36288,98 @@
   display: none;
 }
 
-/* 分隔线画的是它自己的朝向：横排工具条里它是竖线，连接层给的就是 vertical。
-   粗的那一维写死描边宽度，长的那一维交给 align-self 拉伸，
-   沿长边再内缩一点，线才不会顶到工具条的上下边 */
+/* 组内分段使用同一块中性操作面；中间段保持直角，只给整组两端补回胶囊圆角。 */
+[data-scope='toolbar'][data-part='group'] > [data-scope='toolbar'][data-part='item'] {
+  position: relative;
+  border-radius: 0;
+  background: var(--xh-toolbar-item-bg, var(--xh-bg-subtle));
+}
+
+[data-scope='toolbar'][data-part='group']
+  > [data-scope='toolbar'][data-part='item']:not([data-disabled]):active {
+  background: var(--xh-toolbar-item-bg-active, var(--xh-bg-subtle-active));
+  scale: none;
+}
+
+[data-scope='toolbar'][data-part='group']
+  > [data-scope='toolbar'][data-part='item']:not([data-disabled]):hover {
+  background: var(--xh-toolbar-item-bg-hover, var(--xh-bg-subtle-hover));
+}
+
+[data-scope='toolbar'][data-part='group'] > [data-scope='toolbar'][data-part='item'][aria-pressed='true'] {
+  background: var(--xh-toolbar-item-bg-pressed, var(--xh-bg-brand-subtle));
+  color: var(--xh-toolbar-item-fg-pressed, var(--xh-fg-brand-strong));
+}
+
+[data-scope='toolbar'][data-part='group']
+  > [data-scope='toolbar'][data-part='item'][aria-pressed='true']:not([data-disabled]):hover {
+  background: var(--xh-toolbar-item-bg-pressed-hover, var(--xh-bg-brand-subtle-hover));
+}
+
+[data-scope='toolbar'][data-part='group'] > [data-scope='toolbar'][data-part='item'][data-disabled] {
+  background: var(--xh-toolbar-item-bg-disabled, var(--xh-bg-subtle));
+  color: var(--xh-fg-disabled);
+}
+
+[data-scope='toolbar'][data-part='group'][data-orientation='horizontal']
+  > [data-scope='toolbar'][data-part='item']:first-of-type {
+  border-start-start-radius: var(--xh-toolbar-item-radius, var(--xh-shape-pill));
+  border-end-start-radius: var(--xh-toolbar-item-radius, var(--xh-shape-pill));
+}
+
+[data-scope='toolbar'][data-part='group'][data-orientation='horizontal']
+  > [data-scope='toolbar'][data-part='item']:last-of-type {
+  border-start-end-radius: var(--xh-toolbar-item-radius, var(--xh-shape-pill));
+  border-end-end-radius: var(--xh-toolbar-item-radius, var(--xh-shape-pill));
+}
+
+[data-scope='toolbar'][data-part='group'][data-orientation='vertical']
+  > [data-scope='toolbar'][data-part='item']:first-of-type {
+  border-start-start-radius: var(--xh-toolbar-item-radius, var(--xh-shape-pill));
+  border-start-end-radius: var(--xh-toolbar-item-radius, var(--xh-shape-pill));
+}
+
+[data-scope='toolbar'][data-part='group'][data-orientation='vertical']
+  > [data-scope='toolbar'][data-part='item']:last-of-type {
+  border-end-start-radius: var(--xh-toolbar-item-radius, var(--xh-shape-pill));
+  border-end-end-radius: var(--xh-toolbar-item-radius, var(--xh-shape-pill));
+}
+
+/* 分隔线取控件高度的一半；横排工具条里画竖线，竖排工具条里画横线。 */
 [data-scope='toolbar'][data-part='separator'] {
   flex: none;
-  align-self: stretch;
+  align-self: center;
   border-radius: var(--xh-toolbar-separator-radius, var(--xh-shape-pill));
   background: var(--xh-toolbar-separator-color, var(--xh-border-default));
 }
 
 [data-scope='toolbar'][data-part='separator'][data-orientation='vertical'] {
   inline-size: var(--xh-toolbar-separator-thickness, var(--xh-stroke-thin));
-  margin-block: var(--xh-toolbar-separator-inset, var(--xh-space-1));
-  margin-inline: var(--xh-toolbar-separator-gap, var(--xh-space-1));
+  block-size: var(--xh-_toolbar-separator-size);
+  margin-block: var(--xh-toolbar-separator-inset, var(--xh-space-0));
+  margin-inline: var(--xh-toolbar-separator-gap, var(--xh-space-0));
 }
 
 [data-scope='toolbar'][data-part='separator'][data-orientation='horizontal'] {
   block-size: var(--xh-toolbar-separator-thickness, var(--xh-stroke-thin));
-  margin-block: var(--xh-toolbar-separator-gap, var(--xh-space-1));
-  margin-inline: var(--xh-toolbar-separator-inset, var(--xh-space-1));
+  inline-size: var(--xh-_toolbar-separator-size);
+  margin-block: var(--xh-toolbar-separator-gap, var(--xh-space-0));
+  margin-inline: var(--xh-toolbar-separator-inset, var(--xh-space-0));
 }
 
-/* 组内分隔线贴在同一块工具面里，不再叠加 root 级分隔线的外间距。 */
+/* 组内分隔线覆盖在相邻分段的接缝上，不占额外宽度；半高弱线保留整体连续感。 */
+[data-scope='toolbar'][data-part='group'] > [data-scope='toolbar'][data-part='separator'] {
+  background: var(--xh-toolbar-separator-color, var(--xh-fg-default));
+  opacity: var(--xh-toolbar-separator-opacity, var(--xh-control-separator-opacity));
+  pointer-events: none;
+}
+
 [data-scope='toolbar'][data-part='group'] > [data-scope='toolbar'][data-part='separator'][data-orientation='vertical'] {
-  margin-inline: var(--xh-toolbar-group-separator-gap, var(--xh-space-0_5));
+  margin-inline-start: calc(-1 * var(--xh-toolbar-separator-thickness, var(--xh-stroke-thin)));
 }
 
 [data-scope='toolbar'][data-part='group'] > [data-scope='toolbar'][data-part='separator'][data-orientation='horizontal'] {
-  margin-block: var(--xh-toolbar-group-separator-gap, var(--xh-space-0_5));
+  margin-block-start: calc(-1 * var(--xh-toolbar-separator-thickness, var(--xh-stroke-thin)));
 }
 
 @media (forced-colors: active) {

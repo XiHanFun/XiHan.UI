@@ -17,6 +17,7 @@ export default function Demo(): ReactNode {
         <XhToolbarSeparator />
         <XhToolbarItem value="paste" type="button">粘贴</XhToolbarItem>
       </XhToolbarGroup>
+      <XhToolbarSeparator />
       <XhToolbarGroup>
         <XhToolbarItem value="undo" type="button">撤销</XhToolbarItem>
         <XhToolbarSeparator />
