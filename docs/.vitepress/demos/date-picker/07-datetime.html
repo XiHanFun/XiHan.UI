@@ -15,9 +15,11 @@
           <div style="display: flex; align-items: stretch">
             <div data-xh-part="calendar">
               <div data-xh-part="header">
+                <button data-xh-part="prev-year-trigger" aria-label="上一年"></button>
                 <button data-xh-part="prev-trigger" aria-label="上个月"></button>
                 <div data-xh-part="heading"></div>
                 <button data-xh-part="next-trigger" aria-label="下个月"></button>
+                <button data-xh-part="next-year-trigger" aria-label="下一年"></button>
               </div>
               <div data-xh-part="grid">
                 <div data-xh-part="grid-head">
@@ -30,7 +32,7 @@
             <div data-xh-part="time-column" unit="hour"></div>
             <div data-xh-part="time-column" unit="minute"></div>
           </div>
-          <div style="display: flex; justify-content: flex-end; margin-block-start: 8px">
+          <div style="display: flex; align-items: center; justify-content: flex-end; margin-block-start: var(--xh-space-2); margin-inline: calc(-1 * var(--xh-space-2)); margin-block-end: calc(-1 * var(--xh-space-2)); padding-block: var(--xh-space-1); padding-inline: var(--xh-space-2); border-block-start: var(--xh-stroke-thin) solid var(--xh-border-subtle)">
             <button data-xh-part="confirm-trigger">确定</button>
           </div>
         </div>

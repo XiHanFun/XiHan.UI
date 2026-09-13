@@ -1,6 +1,5 @@
 // 日期与时间 | 同时选择日期和时间
 import type { ReactNode } from "react";
-import { Fragment } from "react";
 import {
   XhDatePickerCalendar,
   XhDatePickerCell,
@@ -16,8 +15,10 @@ import {
   XhDatePickerHeading,
   XhDatePickerLabel,
   XhDatePickerNextTrigger,
+  XhDatePickerNextYearTrigger,
   XhDatePickerPositioner,
   XhDatePickerPrevTrigger,
+  XhDatePickerPrevYearTrigger,
   XhDatePickerRoot,
   XhDatePickerSegment,
   XhDatePickerSegmentGroup,
@@ -26,11 +27,15 @@ import {
   XhDatePickerWeekDay,
   XhDatePickerWeekRow,
 } from "@xihan-ui/react";
+import { Fragment } from "react";
 
 function literalBefore(type: string, index: number): string {
-  if (index === 0) return "";
-  if (type === "hour") return " ";
-  if (type === "minute" || type === "second") return ":";
+  if (index === 0)
+    return "";
+  if (type === "hour")
+    return " ";
+  if (type === "minute" || type === "second")
+    return ":";
   return "/";
 }
 
@@ -57,9 +62,11 @@ export default function Demo(): ReactNode {
               <div style={{ display: "flex", alignItems: "stretch" }}>
                 <XhDatePickerCalendar>
                   <XhDatePickerHeader>
+                    <XhDatePickerPrevYearTrigger aria-label="上一年" />
                     <XhDatePickerPrevTrigger aria-label="上个月" />
                     <XhDatePickerHeading />
                     <XhDatePickerNextTrigger aria-label="下个月" />
+                    <XhDatePickerNextYearTrigger aria-label="下一年" />
                   </XhDatePickerHeader>
                   <XhDatePickerGrid>
                     <XhDatePickerGridHead>
@@ -84,7 +91,7 @@ export default function Demo(): ReactNode {
                 </XhDatePickerCalendar>
                 <XhDatePickerTimePanel />
               </div>
-              <div style={{ display: "flex", justifyContent: "flex-end", marginBlockStart: "8px" }}>
+              <div style={{ display: "flex", alignItems: "center", justifyContent: "flex-end", marginBlockStart: "var(--xh-space-2)", marginInline: "calc(-1 * var(--xh-space-2))", marginBlockEnd: "calc(-1 * var(--xh-space-2))", paddingBlock: "var(--xh-space-1)", paddingInline: "var(--xh-space-2)", borderBlockStart: "var(--xh-stroke-thin) solid var(--xh-border-subtle)" }}>
                 <XhDatePickerConfirmTrigger>确定</XhDatePickerConfirmTrigger>
               </div>
             </XhDatePickerContent>

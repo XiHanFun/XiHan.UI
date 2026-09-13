@@ -15702,10 +15702,12 @@
       "name": "--xh-date-picker-calendar-gap",
       "component": "date-picker",
       "part": [
-        "calendar"
+        "calendar",
+        "time-column"
       ],
       "property": [
-        "gap"
+        "gap",
+        "margin-block-start"
       ],
       "state": [
         "default"
@@ -15714,29 +15716,32 @@
         "--xh-space-2"
       ],
       "visibility": "public",
-      "description": "date-picker 的 calendar 部件 gap 覆盖槽。"
+      "description": "date-picker 的 calendar、time-column 部件 gap、margin-block-start 覆盖槽。"
     },
     {
       "name": "--xh-date-picker-column-divider",
       "component": "date-picker",
       "part": [
+        "calendar",
         "preset-group",
         "time-column"
       ],
       "property": [
+        "background",
         "border-block-end",
         "border-inline-end",
         "border-inline-start"
       ],
       "state": [
         "@media (min-width: 768px)",
-        "default"
+        "default",
+        "has(+ [data-part='time-column'])"
       ],
       "defaultToken": [
         "--xh-material-frosted-separator"
       ],
       "visibility": "public",
-      "description": "date-picker 的 preset-group、time-column 部件 border-block-end、border-inline-end、border-inline-start 覆盖槽。"
+      "description": "date-picker 的 calendar、preset-group、time-column 部件 background、border-block-end、border-inline-end、border-inline-start 覆盖槽。"
     },
     {
       "name": "--xh-date-picker-confirm-trigger-bg",
@@ -16825,7 +16830,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-viewport-h-sm"
+        "--xh-viewport-h-md"
       ],
       "visibility": "public",
       "description": "date-picker 的 time-column 部件 block-size 覆盖槽。"
@@ -16865,6 +16870,24 @@
       ],
       "visibility": "public",
       "description": "date-picker 的 time-column 部件 min-inline-size 覆盖槽。"
+    },
+    {
+      "name": "--xh-date-picker-time-column-offset",
+      "component": "date-picker",
+      "part": [
+        "time-column"
+      ],
+      "property": [
+        "margin-block-start"
+      ],
+      "state": [
+        "default"
+      ],
+      "defaultToken": [
+        "--xh-control-h-sm"
+      ],
+      "visibility": "public",
+      "description": "date-picker 的 time-column 部件 margin-block-start 覆盖槽。"
     },
     {
       "name": "--xh-date-picker-time-column-padding",

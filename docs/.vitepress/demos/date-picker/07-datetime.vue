@@ -15,8 +15,10 @@ import {
   XhDatePickerHeading,
   XhDatePickerLabel,
   XhDatePickerNextTrigger,
+  XhDatePickerNextYearTrigger,
   XhDatePickerPositioner,
   XhDatePickerPrevTrigger,
+  XhDatePickerPrevYearTrigger,
   XhDatePickerRoot,
   XhDatePickerSegment,
   XhDatePickerSegmentGroup,
@@ -27,9 +29,12 @@ import {
 } from "@xihan-ui/vue";
 
 function literalBefore(type: string, index: number): string {
-  if (index === 0) return "";
-  if (type === "hour") return " ";
-  if (type === "minute" || type === "second") return ":";
+  if (index === 0)
+    return "";
+  if (type === "hour")
+    return " ";
+  if (type === "minute" || type === "second")
+    return ":";
   return "/";
 }
 </script>
@@ -52,9 +57,11 @@ function literalBefore(type: string, index: number): string {
         <div style="display: flex; align-items: stretch">
           <XhDatePickerCalendar>
             <XhDatePickerHeader>
+              <XhDatePickerPrevYearTrigger aria-label="上一年" />
               <XhDatePickerPrevTrigger aria-label="上个月" />
               <XhDatePickerHeading />
               <XhDatePickerNextTrigger aria-label="下个月" />
+              <XhDatePickerNextYearTrigger aria-label="下一年" />
             </XhDatePickerHeader>
             <XhDatePickerGrid>
               <XhDatePickerGridHead>
@@ -73,7 +80,7 @@ function literalBefore(type: string, index: number): string {
           </XhDatePickerCalendar>
           <XhDatePickerTimePanel />
         </div>
-        <div style="display: flex; justify-content: flex-end; margin-block-start: 8px">
+        <div style="display: flex; align-items: center; justify-content: flex-end; margin-block-start: var(--xh-space-2); margin-inline: calc(-1 * var(--xh-space-2)); margin-block-end: calc(-1 * var(--xh-space-2)); padding-block: var(--xh-space-1); padding-inline: var(--xh-space-2); border-block-start: var(--xh-stroke-thin) solid var(--xh-border-subtle)">
           <XhDatePickerConfirmTrigger>确定</XhDatePickerConfirmTrigger>
         </div>
       </XhDatePickerContent>

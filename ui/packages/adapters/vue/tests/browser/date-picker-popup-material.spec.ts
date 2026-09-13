@@ -12,6 +12,7 @@ import {
   XhDatePickerControl,
   XhDatePickerGrid,
   XhDatePickerGridBody,
+  XhDatePickerGridHead,
   XhDatePickerHeader,
   XhDatePickerHeading,
   XhDatePickerPositioner,
@@ -19,6 +20,7 @@ import {
   XhDatePickerRoot,
   XhDatePickerTimePanel,
   XhDatePickerTrigger,
+  XhDatePickerWeekDay,
   XhDatePickerWeekRow,
 } from '../../src'
 import '@xihan-ui/tokens/tokens.css'
@@ -57,17 +59,22 @@ async function mount(theme: 'light' | 'dark', shape: Shape = 'single', keyboardO
     showTime: shape === 'show-time',
     presets: shape === 'presets' ? [{ value: '2026-09-12', label: '发布日' }] : undefined,
   }, {
-    default: ({ panels }: DatePickerRootSlotProps) => [
+    default: ({ panels, weekDays }: DatePickerRootSlotProps) => [
       h(XhDatePickerControl, null, () => h(XhDatePickerTrigger, null, () => '选择日期')),
       h(XhDatePickerPositioner, null, () => h(XhDatePickerContent, null, () => [
         ...(shape === 'presets' ? [h(XhDatePickerPresetGroup)] : []),
         ...panels.map(panel => h(XhDatePickerCalendar, { index: panel.index }, () => [
           h(XhDatePickerHeader, null, () => h(XhDatePickerHeading)),
-          h(XhDatePickerGrid, null, () => h(XhDatePickerGridBody, null, () => panel.weeks.map(week =>
-            h(XhDatePickerWeekRow, null, () => week.map(day =>
-              h(XhDatePickerCell, { value: day.start }, () => h(XhDatePickerCellTrigger, null, () => String(day.day))),
+          h(XhDatePickerGrid, null, () => [
+            h(XhDatePickerGridHead, null, () => h(XhDatePickerWeekRow, null, () => weekDays.map(day =>
+              h(XhDatePickerWeekDay, { value: day.value }),
+            ))),
+            h(XhDatePickerGridBody, null, () => panel.weeks.map(week =>
+              h(XhDatePickerWeekRow, null, () => week.map(day =>
+                h(XhDatePickerCell, { value: day.start }, () => h(XhDatePickerCellTrigger, null, () => String(day.day))),
+              )),
             )),
-          ))),
+          ]),
         ])),
         ...(shape === 'show-time' ? [h(XhDatePickerTimePanel), h(XhDatePickerConfirmTrigger, null, () => '确定')] : []),
       ])),
@@ -138,6 +145,25 @@ describe('日期选择浮层', () => {
     for (const side of visibleBorders)
       expect(style.getPropertyValue(`border-${side.toLowerCase()}-color`)).toBe(color)
     expected.remove()
+  })
+
+  it('日期时间组合面板的时间列与日期网格顶部对齐', async () => {
+    await mount('light', 'show-time')
+    const grid = document.querySelector<HTMLElement>(`[data-scope='calendar'][data-part='grid']`)
+    if (!grid)
+      throw new Error('日期时间组合面板缺少日期网格')
+
+    const calendar = part('calendar')
+    const timeColumn = part('time-column')
+    const timeRect = timeColumn.getBoundingClientRect()
+    const gridRect = grid.getBoundingClientRect()
+    expect(timeRect.top).toBeCloseTo(gridRect.top, 1)
+    expect(timeRect.bottom).toBeCloseTo(gridRect.bottom, 1)
+    expect(getComputedStyle(timeColumn).overflowX).toBe('hidden')
+
+    const divider = getComputedStyle(calendar, '::after')
+    expect(alpha(divider.backgroundColor)).toBeGreaterThan(0)
+    expect(Number.parseFloat(divider.height)).toBeCloseTo(calendar.getBoundingClientRect().height, 1)
   })
 
   it('区间选择默认只渲染一张日历', async () => {

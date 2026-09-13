@@ -26,6 +26,7 @@
     align-items: center;
     justify-content: space-between;
     gap: var(--xh-calendar-header-gap, var(--xh-space-2));
+    min-block-size: var(--xh-control-h-sm);
   }
 
   [data-scope='calendar'][data-part='header'][hidden] {

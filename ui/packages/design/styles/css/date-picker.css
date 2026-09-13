@@ -512,6 +512,20 @@
     font-variant-numeric: tabular-nums;
   }
 
+  [data-scope='date-picker'][data-part='calendar']:has(+ [data-part='time-column']) {
+    position: relative;
+  }
+
+  [data-scope='date-picker'][data-part='calendar']:has(+ [data-part='time-column'])::after {
+    content: '';
+    position: absolute;
+    inset-block: 0;
+    inset-inline-end: calc(-1 * var(--xh-stroke-thin));
+    inline-size: var(--xh-stroke-thin);
+    background: var(--xh-date-picker-column-divider, var(--xh-material-frosted-separator));
+    pointer-events: none;
+  }
+
   [data-scope='date-picker'][data-part='calendar'][hidden] {
     display: none;
   }
@@ -624,9 +638,17 @@
     gap: var(--xh-date-picker-time-column-gap, 0);
     min-inline-size: var(--xh-date-picker-time-column-min-w, 3.5rem);
     /* 几列并排：定高而不是随内容收，否则时列与分列的可选值一多一少就错位 */
-    block-size: var(--xh-date-picker-time-column-h, var(--xh-viewport-h-sm));
+    block-size: var(
+      --xh-date-picker-time-column-h,
+      min(var(--xh-viewport-h-md), calc(var(--xh-control-h-sm) * 7 + var(--xh-space-7)))
+    );
+    margin-block-start: var(
+      --xh-date-picker-time-column-offset,
+      calc(var(--xh-control-h-sm) + var(--xh-date-picker-calendar-gap, var(--xh-space-2)))
+    );
     padding-block: var(--xh-date-picker-time-column-padding, var(--xh-space-1));
     padding-inline: var(--xh-date-picker-time-column-px, 0);
+    overflow-x: hidden;
     overflow-y: auto;
     border-inline-start: var(--xh-stroke-thin) solid var(--xh-date-picker-column-divider, var(--xh-material-frosted-separator));
   }
