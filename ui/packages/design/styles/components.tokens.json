@@ -44158,11 +44158,7 @@
       ],
       "property": [
         "block-size",
-        "inline-size",
-        "inset-block-end",
-        "inset-block-start",
-        "inset-inline-end",
-        "inset-inline-start"
+        "inline-size"
       ],
       "state": [
         "edge=ne",
@@ -44171,10 +44167,32 @@
         "edge=sw"
       ],
       "defaultToken": [
-        "--xh-space-3"
+        "--xh-space-4"
       ],
       "visibility": "public",
-      "description": "resizable 的 handle 部件 block-size、inline-size、inset-block-end、inset-block-start、inset-inline-end、inset-inline-start 覆盖槽。"
+      "description": "resizable 的 handle 部件 block-size、inline-size 覆盖槽。"
+    },
+    {
+      "name": "--xh-resizable-corner-inset",
+      "component": "resizable",
+      "part": [
+        "handle"
+      ],
+      "property": [
+        "inset"
+      ],
+      "state": [
+        "edge=ne",
+        "edge=nw",
+        "edge=se",
+        "edge=sw",
+        "is([data-edge='ne'], [data-edge='nw'], [data-edge='se'], [data-edge='sw'])"
+      ],
+      "defaultToken": [
+        "--xh-space-1"
+      ],
+      "visibility": "public",
+      "description": "resizable 的 handle 部件 inset 覆盖槽。"
     },
     {
       "name": "--xh-resizable-grip",
@@ -44186,11 +44204,7 @@
         "block-size",
         "inline-size",
         "inset-block",
-        "inset-block-end",
-        "inset-block-start",
-        "inset-inline",
-        "inset-inline-end",
-        "inset-inline-start"
+        "inset-inline"
       ],
       "state": [
         "edge=e",
@@ -44202,7 +44216,177 @@
         "--xh-space-2"
       ],
       "visibility": "public",
-      "description": "resizable 的 handle 部件 block-size、inline-size、inset-block、inset-block-end、inset-block-start、inset-inline、inset-inline-end、inset-inline-start 覆盖槽。"
+      "description": "resizable 的 handle 部件 block-size、inline-size、inset-block、inset-inline 覆盖槽。"
+    },
+    {
+      "name": "--xh-resizable-handle-bg",
+      "component": "resizable",
+      "part": [
+        "handle"
+      ],
+      "property": [
+        "background",
+        "border"
+      ],
+      "state": [
+        "default",
+        "edge=ne",
+        "edge=nw",
+        "edge=se",
+        "edge=sw",
+        "is([data-edge='ne'], [data-edge='nw'], [data-edge='se'], [data-edge='sw'])"
+      ],
+      "defaultToken": [
+        "--xh-fg-default"
+      ],
+      "visibility": "public",
+      "description": "resizable 的 handle 部件 background、border 覆盖槽。"
+    },
+    {
+      "name": "--xh-resizable-handle-bg-active",
+      "component": "resizable",
+      "part": [
+        "handle"
+      ],
+      "property": [
+        "background",
+        "border"
+      ],
+      "state": [
+        "edge=ne",
+        "edge=nw",
+        "edge=se",
+        "edge=sw",
+        "is([data-edge='ne'], [data-edge='nw'], [data-edge='se'], [data-edge='sw'])",
+        "resizing"
+      ],
+      "defaultToken": [
+        "--xh-bg-brand"
+      ],
+      "visibility": "public",
+      "description": "resizable 的 handle 部件 background、border 覆盖槽。"
+    },
+    {
+      "name": "--xh-resizable-handle-bg-hover",
+      "component": "resizable",
+      "part": [
+        "handle"
+      ],
+      "property": [
+        "background",
+        "border"
+      ],
+      "state": [
+        "edge=ne",
+        "edge=nw",
+        "edge=se",
+        "edge=sw",
+        "hover",
+        "is([data-edge='ne'], [data-edge='nw'], [data-edge='se'], [data-edge='sw'])"
+      ],
+      "defaultToken": [
+        "--xh-fg-default"
+      ],
+      "visibility": "public",
+      "description": "resizable 的 handle 部件 background、border 覆盖槽。"
+    },
+    {
+      "name": "--xh-resizable-handle-radius",
+      "component": "resizable",
+      "part": [
+        "handle"
+      ],
+      "property": [
+        "border-radius"
+      ],
+      "state": [
+        "default"
+      ],
+      "defaultToken": [
+        "--xh-shape-pill"
+      ],
+      "visibility": "public",
+      "description": "resizable 的 handle 部件 border-radius 覆盖槽。"
+    },
+    {
+      "name": "--xh-resizable-indicator-inset",
+      "component": "resizable",
+      "part": [
+        "handle"
+      ],
+      "property": [
+        "inset-block-end",
+        "inset-block-start",
+        "inset-inline-end",
+        "inset-inline-start"
+      ],
+      "state": [
+        "edge=e",
+        "edge=n",
+        "edge=s",
+        "edge=w"
+      ],
+      "defaultToken": [
+        "--xh-space-0_5"
+      ],
+      "visibility": "public",
+      "description": "resizable 的 handle 部件 inset-block-end、inset-block-start、inset-inline-end、inset-inline-start 覆盖槽。"
+    },
+    {
+      "name": "--xh-resizable-indicator-length",
+      "component": "resizable",
+      "part": [
+        "handle"
+      ],
+      "property": [
+        "block-size",
+        "inline-size"
+      ],
+      "state": [
+        "edge=e",
+        "edge=n",
+        "edge=s",
+        "edge=w",
+        "is([data-edge='e'], [data-edge='w'])",
+        "is([data-edge='n'], [data-edge='s'])"
+      ],
+      "defaultToken": [
+        "--xh-space-8"
+      ],
+      "visibility": "public",
+      "description": "resizable 的 handle 部件 block-size、inline-size 覆盖槽。"
+    },
+    {
+      "name": "--xh-resizable-indicator-thickness",
+      "component": "resizable",
+      "part": [
+        "handle"
+      ],
+      "property": [
+        "block-size",
+        "border-block-end-width",
+        "border-block-start-width",
+        "border-inline-end-width",
+        "border-inline-start-width",
+        "inline-size"
+      ],
+      "state": [
+        "edge=e",
+        "edge=n",
+        "edge=ne",
+        "edge=nw",
+        "edge=s",
+        "edge=se",
+        "edge=sw",
+        "edge=w",
+        "is([data-edge='e'], [data-edge='w'])",
+        "is([data-edge='n'], [data-edge='s'])"
+      ],
+      "defaultToken": [
+        "--xh-stroke-thick"
+      ],
+      "visibility": "public",
+      "description": "resizable 的 handle 部件 block-size、border-block-end-width、border-block-start-width、border-inline-end-width、border-inline-start-width、inline-size 覆盖槽。"
     },
     {
       "name": "--xh-scroll-area-fade-size",

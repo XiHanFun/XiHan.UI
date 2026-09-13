@@ -90,6 +90,7 @@
     "popover [data-part='content'][data-scope='popover']": "面板是焦点域的兜底落点（tabindex=-1），环长在里面的可聚焦控件上",
     "prompt-input [data-part='input'][data-scope='prompt-input']": "环由 root 的 :focus-within 画在整个框上",
     "rating [data-part='control'][data-scope='rating']": "焦点域的兜底落点：焦点从带外进来先落在它身上，随即转投给某颗星；高亮永远长在星星上",
+    "resizable [data-part='handle'][data-scope='resizable']": "把手本体是覆盖整条边的透明命中区，焦点环由 ::after 画在内部短条或折角上",
     "scroll-area [data-part='content'][data-scope='scroll-area']": "纯容器，不进 Tab 序列也不承载焦点；作者自己加了 tabindex 也该显形视口那圈环，不在这儿多画一圈",
     "scroll-area [data-part='root'][data-scope='scroll-area']": "纯容器，不进 Tab 序列也不承载焦点；作者自己加了 tabindex 也该显形视口那圈环，不在这儿多画一圈",
     "scroll-area [data-part='scrollbar'][data-scope='scroll-area']": "纯容器，不进 Tab 序列也不承载焦点；作者自己加了 tabindex 也该显形视口那圈环，不在这儿多画一圈",
@@ -306,13 +307,6 @@
     "question-flow [data-part='submit-trigger'][data-scope='question-flow']": {
       "parts": [
         "submit-trigger"
-      ],
-      "ratio": 1,
-      "ring": "poured"
-    },
-    "resizable [data-part='handle'][data-resizing][data-scope='resizable']": {
-      "parts": [
-        "handle"
       ],
       "ratio": 1,
       "ring": "poured"

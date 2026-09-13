@@ -9348,31 +9348,49 @@
   display: none;
 }
 
-/* 把手压在边上，往外挪半个身位，两侧各留出一点可抓的余量——
-   贴着边只有一两个像素能按到。落位按 data-edge 分派。 */
+/* 把手完整落在容器内部，命中区覆盖对应边；真正的视觉指示条由伪元素绘制。 */
 [data-scope='resizable'][data-part='handle'] {
+  --xh-_resizable-indicator-color: var(
+    --xh-resizable-handle-bg,
+    color-mix(in oklab, var(--xh-fg-default) 18%, transparent)
+  );
+
   position: absolute;
   z-index: 1;
   display: block;
   background: transparent;
   touch-action: none;
-  transition: background var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
 }
 
-/* 指针停到可抓的那一条上，那条就显形；正在拖的那一条另换一档。
-   两档都只在把手自己那几像素上着色，容器里的内容不受影响 */
+[data-scope='resizable'][data-part='handle']::after {
+  content: '';
+  position: absolute;
+  border-radius: var(--xh-resizable-handle-radius, var(--xh-shape-pill));
+  background: var(--xh-_resizable-indicator-color);
+  pointer-events: none;
+  transition:
+    background var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
+    border-color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
+}
+
 [data-scope='resizable'][data-part='handle']:hover {
-  background: var(--xh-bg-subtle-active);
+  --xh-_resizable-indicator-color: var(
+    --xh-resizable-handle-bg-hover,
+    color-mix(in oklab, var(--xh-fg-default) 32%, transparent)
+  );
 }
 
 [data-scope='resizable'][data-part='handle'][data-resizing] {
-  background: var(--xh-bg-brand);
+  --xh-_resizable-indicator-color: var(--xh-resizable-handle-bg-active, var(--xh-bg-brand));
 }
 
-/* 面是实心的，环色与面同族，画在面里就看不出来；环改取面自己的前景色——
-   那一族色本来就要在这块面上把字读清楚，与面的对比是按可读性定的 */
-[data-scope='resizable'][data-part='handle'][data-resizing]:focus-visible {
-  --xh-_ring-color: currentColor;
+[data-scope='resizable'][data-part='handle']:focus-visible {
+  outline: none;
+}
+
+[data-scope='resizable'][data-part='handle']:focus-visible::after {
+  outline: var(--xh-ring-width) solid var(--xh-ring-focus);
+  outline-offset: var(--xh-ring-offset);
 }
 
 [data-scope='resizable'][data-part='handle'][hidden] {
@@ -9395,19 +9413,49 @@
 /* 落位用逻辑属性：e 说的是行尾侧，从右往左排版时它就该落在屏幕左边——
    机器那边也是把逻辑边翻成物理边再算几何的，两处同源 */
 [data-scope='resizable'][data-part='handle'][data-edge='n'] {
-  inset-block-start: calc(var(--xh-resizable-grip, var(--xh-space-2)) / -2);
+  inset-block-start: 0;
 }
 
 [data-scope='resizable'][data-part='handle'][data-edge='s'] {
-  inset-block-end: calc(var(--xh-resizable-grip, var(--xh-space-2)) / -2);
+  inset-block-end: 0;
 }
 
 [data-scope='resizable'][data-part='handle'][data-edge='e'] {
-  inset-inline-end: calc(var(--xh-resizable-grip, var(--xh-space-2)) / -2);
+  inset-inline-end: 0;
 }
 
 [data-scope='resizable'][data-part='handle'][data-edge='w'] {
-  inset-inline-start: calc(var(--xh-resizable-grip, var(--xh-space-2)) / -2);
+  inset-inline-start: 0;
+}
+
+[data-scope='resizable'][data-part='handle']:is([data-edge='n'], [data-edge='s'])::after {
+  inset-inline-start: 50%;
+  inline-size: var(--xh-resizable-indicator-length, var(--xh-space-8));
+  block-size: var(--xh-resizable-indicator-thickness, var(--xh-stroke-thick));
+  translate: -50% 0;
+}
+
+[data-scope='resizable'][data-part='handle'][data-edge='n']::after {
+  inset-block-start: var(--xh-resizable-indicator-inset, var(--xh-space-0_5));
+}
+
+[data-scope='resizable'][data-part='handle'][data-edge='s']::after {
+  inset-block-end: var(--xh-resizable-indicator-inset, var(--xh-space-0_5));
+}
+
+[data-scope='resizable'][data-part='handle']:is([data-edge='e'], [data-edge='w'])::after {
+  inset-block-start: 50%;
+  inline-size: var(--xh-resizable-indicator-thickness, var(--xh-stroke-thick));
+  block-size: var(--xh-resizable-indicator-length, var(--xh-space-8));
+  translate: 0 -50%;
+}
+
+[data-scope='resizable'][data-part='handle'][data-edge='e']::after {
+  inset-inline-end: var(--xh-resizable-indicator-inset, var(--xh-space-0_5));
+}
+
+[data-scope='resizable'][data-part='handle'][data-edge='w']::after {
+  inset-inline-start: var(--xh-resizable-indicator-inset, var(--xh-space-0_5));
 }
 
 /* 四个角：压在两条边的交点上，盖过相邻两条边（它们同时动两轴） */
@@ -9416,28 +9464,64 @@
 [data-scope='resizable'][data-part='handle'][data-edge='se'],
 [data-scope='resizable'][data-part='handle'][data-edge='sw'] {
   z-index: 2;
-  inline-size: var(--xh-resizable-corner, var(--xh-space-3));
-  block-size: var(--xh-resizable-corner, var(--xh-space-3));
+  inline-size: var(--xh-resizable-corner, var(--xh-space-4));
+  block-size: var(--xh-resizable-corner, var(--xh-space-4));
 }
 
 [data-scope='resizable'][data-part='handle'][data-edge='nw'] {
-  inset-block-start: calc(var(--xh-resizable-corner, var(--xh-space-3)) / -2);
-  inset-inline-start: calc(var(--xh-resizable-corner, var(--xh-space-3)) / -2);
+  inset-block-start: 0;
+  inset-inline-start: 0;
+  border-start-start-radius: inherit;
 }
 
 [data-scope='resizable'][data-part='handle'][data-edge='ne'] {
-  inset-block-start: calc(var(--xh-resizable-corner, var(--xh-space-3)) / -2);
-  inset-inline-end: calc(var(--xh-resizable-corner, var(--xh-space-3)) / -2);
+  inset-block-start: 0;
+  inset-inline-end: 0;
+  border-start-end-radius: inherit;
 }
 
 [data-scope='resizable'][data-part='handle'][data-edge='sw'] {
-  inset-block-end: calc(var(--xh-resizable-corner, var(--xh-space-3)) / -2);
-  inset-inline-start: calc(var(--xh-resizable-corner, var(--xh-space-3)) / -2);
+  inset-block-end: 0;
+  inset-inline-start: 0;
+  border-end-start-radius: inherit;
 }
 
 [data-scope='resizable'][data-part='handle'][data-edge='se'] {
-  inset-block-end: calc(var(--xh-resizable-corner, var(--xh-space-3)) / -2);
-  inset-inline-end: calc(var(--xh-resizable-corner, var(--xh-space-3)) / -2);
+  inset-block-end: 0;
+  inset-inline-end: 0;
+  border-end-end-radius: inherit;
+}
+
+[data-scope='resizable'][data-part='handle']:is(
+  [data-edge='ne'],
+  [data-edge='nw'],
+  [data-edge='se'],
+  [data-edge='sw']
+)::after {
+  inset: var(--xh-resizable-corner-inset, var(--xh-space-1));
+  border: 0 solid var(--xh-_resizable-indicator-color);
+  border-radius: inherit;
+  background: transparent;
+}
+
+[data-scope='resizable'][data-part='handle'][data-edge='nw']::after {
+  border-block-start-width: var(--xh-resizable-indicator-thickness, var(--xh-stroke-thick));
+  border-inline-start-width: var(--xh-resizable-indicator-thickness, var(--xh-stroke-thick));
+}
+
+[data-scope='resizable'][data-part='handle'][data-edge='ne']::after {
+  border-block-start-width: var(--xh-resizable-indicator-thickness, var(--xh-stroke-thick));
+  border-inline-end-width: var(--xh-resizable-indicator-thickness, var(--xh-stroke-thick));
+}
+
+[data-scope='resizable'][data-part='handle'][data-edge='sw']::after {
+  border-block-end-width: var(--xh-resizable-indicator-thickness, var(--xh-stroke-thick));
+  border-inline-start-width: var(--xh-resizable-indicator-thickness, var(--xh-stroke-thick));
+}
+
+[data-scope='resizable'][data-part='handle'][data-edge='se']::after {
+  border-block-end-width: var(--xh-resizable-indicator-thickness, var(--xh-stroke-thick));
+  border-inline-end-width: var(--xh-resizable-indicator-thickness, var(--xh-stroke-thick));
 }
 
 /* 没开放的边不显示把手：留着一个抓不动的区域只会让人反复去试 */
@@ -9449,7 +9533,7 @@
   /* 把手那两档全是底色画出来的，这一档里底色被统一换成系统底色，两档与静息塌成一个样子。
      改由描边把正在拖的那一条画出来 */
   [data-scope='resizable'][data-part='handle'][data-resizing] {
-    outline: var(--xh-stroke-thick) solid Highlight;
+    --xh-_resizable-indicator-color: Highlight;
   }
 }
 
