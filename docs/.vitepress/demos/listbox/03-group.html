@@ -1,6 +1,6 @@
-<!-- 分组 | group 把条目分段，group-label 是这一段的可及名字，不参与选中也不接方向键 -->
-<xh-listbox id="listbox-group">
-  <div data-xh-part="root" style="max-inline-size: 320px">
+<!-- 分组 | 按类别组织选项 -->
+<xh-listbox default-value="beijing">
+  <div data-xh-part="root" style="inline-size: min(100%, 300px)">
     <span data-xh-part="label">城市</span>
     <div data-xh-part="content">
       <div data-xh-part="group" value="asia">
@@ -32,15 +32,3 @@
     </div>
   </div>
 </xh-listbox>
-<p>已选：<span id="listbox-group-value">（无）</span></p>
-
-<script type="module">
-  // 受控：初值是空集合，只走 property
-  const listbox = document.getElementById("listbox-group");
-  const readout = document.getElementById("listbox-group-value");
-  listbox.value = [];
-  listbox.addEventListener("value-change", (event) => {
-    listbox.value = event.detail.value;
-    readout.textContent = event.detail.value.join("、") || "（无）";
-  });
-</script>

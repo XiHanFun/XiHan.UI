@@ -1,35 +1,38 @@
-<!-- 基础用法 | 方向键只搬焦点，Enter 或空格才落值；整组只占一个 Tab 位 -->
-<xh-listbox id="listbox-basic" value="beijing">
-  <div data-xh-part="root" style="max-inline-size: 320px">
-    <span data-xh-part="label">城市</span>
+<!-- 基础用法 | 从成员列表中选择一项 -->
+<xh-listbox default-value="lin">
+  <div data-xh-part="root" style="inline-size: min(100%, 300px)">
+    <span data-xh-part="label">团队成员</span>
     <div data-xh-part="content">
-      <div data-xh-part="item" value="beijing">
-        <span data-xh-part="item-text">Beijing 北京</span>
+      <div data-xh-part="item" value="lin">
+        <span aria-hidden="true" style="display: grid; flex: none; place-items: center; inline-size: 32px; block-size: 32px; border-radius: 999px; background: var(--xh-bg-brand-subtle); color: var(--xh-fg-brand-strong); font-weight: 600">林</span>
+        <span data-xh-part="item-text">
+          <span style="display: grid; gap: 2px">
+            <span>林知夏</span>
+            <span style="color: var(--xh-fg-subtle); font-size: var(--xh-text-caption-size)">lin@xihan.dev</span>
+          </span>
+        </span>
         <span data-xh-part="item-indicator"></span>
       </div>
-      <div data-xh-part="item" value="berlin">
-        <span data-xh-part="item-text">Berlin 柏林</span>
+      <div data-xh-part="item" value="chen">
+        <span aria-hidden="true" style="display: grid; flex: none; place-items: center; inline-size: 32px; block-size: 32px; border-radius: 999px; background: var(--xh-bg-brand-subtle); color: var(--xh-fg-brand-strong); font-weight: 600">陈</span>
+        <span data-xh-part="item-text">
+          <span style="display: grid; gap: 2px">
+            <span>陈望舒</span>
+            <span style="color: var(--xh-fg-subtle); font-size: var(--xh-text-caption-size)">chen@xihan.dev</span>
+          </span>
+        </span>
         <span data-xh-part="item-indicator"></span>
       </div>
-      <div data-xh-part="item" value="busan" aria-disabled="true">
-        <span data-xh-part="item-text">Busan 釜山（禁用）</span>
-        <span data-xh-part="item-indicator"></span>
-      </div>
-      <div data-xh-part="item" value="london">
-        <span data-xh-part="item-text">London 伦敦</span>
+      <div data-xh-part="item" value="zhou">
+        <span aria-hidden="true" style="display: grid; flex: none; place-items: center; inline-size: 32px; block-size: 32px; border-radius: 999px; background: var(--xh-bg-brand-subtle); color: var(--xh-fg-brand-strong); font-weight: 600">周</span>
+        <span data-xh-part="item-text">
+          <span style="display: grid; gap: 2px">
+            <span>周予安</span>
+            <span style="color: var(--xh-fg-subtle); font-size: var(--xh-text-caption-size)">zhou@xihan.dev</span>
+          </span>
+        </span>
         <span data-xh-part="item-indicator"></span>
       </div>
     </div>
   </div>
 </xh-listbox>
-<p>已选：<span id="listbox-basic-value">beijing</span></p>
-
-<script type="module">
-  // 受控：选中集合写回后再回显
-  const listbox = document.getElementById("listbox-basic");
-  const readout = document.getElementById("listbox-basic-value");
-  listbox.addEventListener("value-change", (event) => {
-    listbox.value = event.detail.value;
-    readout.textContent = event.detail.value.join("、") || "（无）";
-  });
-</script>
