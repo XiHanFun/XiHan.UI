@@ -32379,7 +32379,7 @@
     scale var(--xh-motion-duration-micro) var(--xh-motion-ease-enter-strong);
 }
 
-/* 主标签带与 HeroUI 一样按可用宽度等分；窄到放不下文字时仍按原合同折行。 */
+/* 主标签带按可用宽度等分；窄到放不下文字时仍按原合同折行。 */
 [data-scope='tabs'][data-part='root'][data-orientation='horizontal']
   [data-scope='tabs'][data-part='trigger'] {
   flex: 1 1 0;
@@ -36199,19 +36199,22 @@
   display: none;
 }
 
-/* 分组把一串相关控件收得更紧：组内间距比条上的总间距小，
-   "这几个是一伙的"才看得出来 */
+/* 分组使用浅色工具面：相关控件连成一组，组与组之间仍由 root 的 gap 分开。 */
 [data-scope='toolbar'][data-part='group'] {
   display: flex;
-  flex-wrap: wrap;
+  flex-wrap: nowrap;
   align-items: center;
-  gap: var(--xh-toolbar-group-gap, var(--xh-space-0_5));
+  gap: var(--xh-toolbar-group-gap, var(--xh-space-0));
+  padding: var(--xh-toolbar-group-p, var(--xh-space-0_5));
+  border-radius: var(--xh-toolbar-group-radius, var(--xh-shape-pill));
+  background: var(--xh-toolbar-group-bg, var(--xh-bg-subtle));
 }
 
 [data-scope='toolbar'][data-part='group'][data-orientation='vertical'] {
   flex-direction: column;
   align-items: stretch;
   flex-wrap: nowrap;
+  border-radius: var(--xh-toolbar-group-radius, var(--xh-shape-surface));
 }
 
 [data-scope='toolbar'][data-part='group'][hidden] {
@@ -36296,6 +36299,15 @@
   block-size: var(--xh-toolbar-separator-thickness, var(--xh-stroke-thin));
   margin-block: var(--xh-toolbar-separator-gap, var(--xh-space-1));
   margin-inline: var(--xh-toolbar-separator-inset, var(--xh-space-1));
+}
+
+/* 组内分隔线贴在同一块工具面里，不再叠加 root 级分隔线的外间距。 */
+[data-scope='toolbar'][data-part='group'] > [data-scope='toolbar'][data-part='separator'][data-orientation='vertical'] {
+  margin-inline: var(--xh-toolbar-group-separator-gap, var(--xh-space-0_5));
+}
+
+[data-scope='toolbar'][data-part='group'] > [data-scope='toolbar'][data-part='separator'][data-orientation='horizontal'] {
+  margin-block: var(--xh-toolbar-group-separator-gap, var(--xh-space-0_5));
 }
 
 @media (forced-colors: active) {

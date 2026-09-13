@@ -855,7 +855,7 @@ function renderComponent(entry, category) {
     push(`  <a href="${href}" target="_blank" rel="noreferrer">${label}</a>`)
   push('</div>', '')
 
-  // 与 HeroUI 一样，首个示例就是 Usage：读者进入页面后先看到可运行结果，再看其余变体。
+  // 首个示例就是 Usage：读者进入页面后先看到可运行结果，再看其余变体。
   if (ex.length) {
     const [usage] = ex
     push('## 用法', '')
@@ -864,7 +864,7 @@ function renderComponent(entry, category) {
     push(`<XhDemo src="${usage.src}" />`, '')
   }
 
-  // HeroUI 式组件结构：紧跟用法入口，先让读者看清可组合部件，再进入变体示例。
+  // 组件结构紧跟用法入口：先让读者看清可组合部件，再进入变体示例。
   if (rt.parts.length) {
     push('## 组件结构', '')
     push('加粗的是必需部件。', '')
