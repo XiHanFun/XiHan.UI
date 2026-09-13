@@ -35,7 +35,7 @@ export default function Demo(): ReactNode {
         empty="没有匹配的命令"
         onSelect={run}
         trigger="打开命令面板"
-        footer="↑↓ 选择 · ↵ 执行 · Esc 关闭"
+        footer="方向键选择 · Enter 执行 · Esc 关闭"
       />
       <span>{last}</span>
     </div>

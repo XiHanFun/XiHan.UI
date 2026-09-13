@@ -75,7 +75,7 @@ export default function Demo(): ReactNode {
               ))}
             </XhCommandList>
             <XhCommandEmpty>没有匹配的命令</XhCommandEmpty>
-            <XhCommandFooter>↑↓ 选择 · ↵ 执行 · Esc 关闭</XhCommandFooter>
+            <XhCommandFooter>方向键选择 · Enter 执行 · Esc 关闭</XhCommandFooter>
           </XhCommandContent>
         )}
       </XhCommandRoot>
