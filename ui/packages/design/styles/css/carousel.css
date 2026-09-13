@@ -4,32 +4,27 @@
     --xh-carousel-skin: 1;
   }
 
-  /* 根节点是 region 地标：把上一张 / 视口 / 下一张排成一行，指示点另起一行。
-     两端按钮浮在视口上还是排在两侧由作者定，这里只给最朴素的一版排布 */
+  /* 根节点建立自己的覆盖层：视口占满容器，导航与分页压在内容之上，
+     isolation 把内部层号关在本组件内，不参与页面级层序。 */
   [data-scope='carousel'][data-part='root'] {
     /* 作者塞进指示符槽的图标跟着字号走，与皮肤画的兜底字形同一把尺 */
     --xh-icon-size: var(--xh-carousel-icon-size, var(--xh-glyph-size-text));
 
-    display: flex;
-    flex-wrap: wrap;
-    align-items: center;
-    gap: var(--xh-carousel-gap, var(--xh-space-2));
+    position: relative;
+    display: block;
+    isolation: isolate;
+    inline-size: 100%;
   }
 
   [data-scope='carousel'][data-part='root'][hidden] {
     display: none;
   }
 
-  /* 纵轨时按钮在上下两端，整条竖着排 */
-  [data-scope='carousel'][data-part='root'][data-orientation='vertical'] {
-    flex-direction: column;
-  }
-
   /* 视口是裁切窗口：轨道比它宽（高），露在外面的那些张全靠它切掉。
      min-inline-size: 0 是关键——弹性子项的默认最小尺寸是内容尺寸，
      不压成 0 的话视口会被整条轨道撑开，什么都切不掉 */
   [data-scope='carousel'][data-part='viewport'] {
-    flex: 1 1 auto;
+    inline-size: 100%;
     min-inline-size: 0;
     overflow: hidden;
     border-radius: var(--xh-carousel-viewport-radius, var(--xh-shape-surface));
@@ -93,9 +88,11 @@
     justify-content: center;
     inline-size: var(--xh-carousel-trigger-size, var(--xh-control-h-md));
     block-size: var(--xh-carousel-trigger-size, var(--xh-control-h-md));
-    border: var(--xh-stroke-thin) solid var(--xh-carousel-trigger-border, var(--xh-border-control));
+    position: absolute;
+    z-index: 1;
+    border: var(--xh-stroke-thin) solid var(--xh-carousel-trigger-border, transparent);
     border-radius: var(--xh-carousel-trigger-radius, var(--xh-shape-pill));
-    background: var(--xh-carousel-trigger-bg, var(--xh-bg-surface));
+    background: var(--xh-carousel-trigger-bg, var(--xh-bg-surface-raised));
     color: var(--xh-carousel-trigger-fg, var(--xh-fg-default));
     line-height: var(--xh-leading-none);
     cursor: pointer;
@@ -103,7 +100,27 @@
       background var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
       border-color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
       box-shadow var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
+      opacity var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
       scale var(--xh-motion-duration-micro) var(--xh-motion-ease-enter-strong);
+  }
+
+  [data-scope='carousel'][data-part='prev-trigger'],
+  [data-scope='carousel'][data-part='next-trigger'] {
+    inset-block-start: 50%;
+    translate: 0 -50%;
+  }
+
+  [data-scope='carousel'][data-part='prev-trigger'] {
+    inset-inline-start: var(--xh-carousel-control-inset, var(--xh-space-3));
+  }
+
+  [data-scope='carousel'][data-part='next-trigger'] {
+    inset-inline-end: var(--xh-carousel-control-inset, var(--xh-space-3));
+  }
+
+  [data-scope='carousel'][data-part='autoplay-trigger'] {
+    inset-block-start: var(--xh-carousel-control-inset, var(--xh-space-3));
+    inset-inline-end: var(--xh-carousel-control-inset, var(--xh-space-3));
   }
 
   [data-scope='carousel'][data-part='prev-trigger'][hidden],
@@ -112,12 +129,12 @@
     display: none;
   }
 
-  /* 悬停换底色的同时把这颗钮抬起一档：它压在图上，只换底色的回执几乎看不出来 */
+  /* 覆盖按钮保持低海拔，只用柔和底色反馈悬停。 */
   [data-scope='carousel'][data-part='prev-trigger']:hover:not(:disabled),
   [data-scope='carousel'][data-part='next-trigger']:hover:not(:disabled),
   [data-scope='carousel'][data-part='autoplay-trigger']:hover:not(:disabled) {
     background: var(--xh-carousel-trigger-bg-hover, var(--xh-bg-subtle-hover));
-    box-shadow: var(--xh-carousel-trigger-shadow-hover, var(--xh-elevation-raised));
+    box-shadow: var(--xh-carousel-trigger-shadow-hover, none);
   }
 
   /* 按下：底色换到按压档，抬起的那一档同时落回 */
@@ -134,7 +151,8 @@
   [data-scope='carousel'][data-part='prev-trigger']:disabled,
   [data-scope='carousel'][data-part='next-trigger']:disabled,
   [data-scope='carousel'][data-part='autoplay-trigger']:disabled {
-    color: var(--xh-fg-disabled);
+    opacity: 0;
+    pointer-events: none;
   }
 
   /* 视口与指示点都不是可聚焦节点，落焦只会是浏览器兜底行为，别画焦点环 */
@@ -145,8 +163,10 @@
   }
 
   [data-scope='carousel'][data-part='indicator-group'] {
+    position: absolute;
+    z-index: 1;
     display: flex;
-    flex-wrap: wrap;
+    flex-wrap: nowrap;
     align-items: center;
     justify-content: center;
     gap: var(--xh-carousel-indicator-gap, var(--xh-space-1));
@@ -158,38 +178,54 @@
 
   [data-scope='carousel'][data-part='indicator-group'][data-orientation='vertical'] {
     flex-direction: column;
+    inset-block-start: 50%;
+    inset-inline-end: var(--xh-carousel-control-inset, var(--xh-space-3));
+    translate: 0 -50%;
   }
 
-  /* 横轨时指示点另起一行占满整宽（根节点开了 flex-wrap），不跟两端按钮挤在同一行 */
+  /* 横轨分页覆盖在内容下沿居中。 */
   [data-scope='carousel'][data-part='indicator-group'][data-orientation='horizontal'] {
-    flex-basis: 100%;
+    inset-block-end: var(--xh-carousel-indicator-inset, var(--xh-space-3));
+    inset-inline-start: 50%;
+    translate: -50% 0;
   }
 
-  /* 指示点：一颗小圆点。点得动的东西必须够大才点得中，
-     所以圆点本身小、可点区域靠内边距撑到最小触达尺寸 */
+  /* 分页标记使用短线，当前页沿轨道方向伸长；透明按钮盒保留焦点轮廓，
+     ::after 再把细指针命中区外扩到至少 24px。 */
   [data-scope='carousel'][data-part='indicator'] {
+    position: relative;
     display: inline-flex;
     flex: none;
     align-items: center;
     justify-content: center;
-    inline-size: var(--xh-carousel-indicator-size, var(--xh-space-2));
-    block-size: var(--xh-carousel-indicator-size, var(--xh-space-2));
+    inline-size: var(--xh-carousel-indicator-size, var(--xh-space-4));
+    block-size: var(--xh-carousel-indicator-size, var(--xh-space-4));
     /* 圆点本身没有文字，按钮里的文案（页码）交给作者，默认不显示 */
     padding: 0;
     border: 0;
     border-radius: var(--xh-carousel-indicator-radius, var(--xh-shape-pill));
-    background: var(--xh-carousel-indicator-bg, var(--xh-border-control));
+    background: transparent;
     font-size: 0;
     cursor: pointer;
     transition:
-      background var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
+      inline-size var(--xh-motion-duration-micro) var(--xh-motion-ease-continuous),
+      block-size var(--xh-motion-duration-micro) var(--xh-motion-ease-continuous),
       scale var(--xh-motion-duration-micro) var(--xh-motion-ease-enter-strong);
   }
 
-  /* 面是实心的，环色与面同族，画在面里就看不出来；环改取面自己的前景色——
-     那一族色本来就要在这块面上把字读清楚，与面的对比是按可读性定的 */
-  [data-scope='carousel'][data-part='indicator']:focus-visible {
-    --xh-_ring-color: currentColor;
+  [data-scope='carousel'][data-part='indicator']::before {
+    content: '';
+    inline-size: 100%;
+    block-size: var(--xh-stroke-thick);
+    border-radius: inherit;
+    background: var(--xh-carousel-indicator-bg, var(--xh-border-control));
+    transition: background var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
+  }
+
+  [data-scope='carousel'][data-part='indicator']::after {
+    content: '';
+    position: absolute;
+    inset: calc(-1 * var(--xh-space-1));
   }
 
   [data-scope='carousel'][data-part='indicator'][hidden] {
@@ -197,7 +233,7 @@
   }
 
   [data-scope='carousel'][data-part='indicator']:hover:not([data-current]) {
-    background: var(--xh-carousel-indicator-bg-hover, var(--xh-fg-subtle));
+    --xh-carousel-indicator-bg: var(--xh-carousel-indicator-bg-hover, var(--xh-fg-subtle));
   }
 
   /* 底色被当前页与悬停占着，按下的回执只剩缩放 */
@@ -208,7 +244,42 @@
   /* 当前页：data-current 与 aria-current='true' 由连接层成对给出，
      样式挂在 data 钩子上，无障碍语义留给 aria，两边各司其职 */
   [data-scope='carousel'][data-part='indicator'][data-current] {
+    inline-size: var(--xh-carousel-indicator-size-current, var(--xh-space-6));
+  }
+
+  [data-scope='carousel'][data-part='indicator'][data-current]::before {
     background: var(--xh-carousel-indicator-bg-selected, var(--xh-bg-brand));
+  }
+
+  [data-scope='carousel'][data-part='indicator-group'][data-orientation='vertical']
+    > [data-scope='carousel'][data-part='indicator'][data-current] {
+    inline-size: var(--xh-carousel-indicator-size, var(--xh-space-4));
+    block-size: var(--xh-carousel-indicator-size-current, var(--xh-space-6));
+  }
+
+  [data-scope='carousel'][data-part='indicator-group'][data-orientation='vertical']
+    > [data-scope='carousel'][data-part='indicator']::before {
+    inline-size: var(--xh-stroke-thick);
+    block-size: 100%;
+  }
+
+  [data-scope='carousel'][data-part='root'][data-orientation='vertical']
+    > :is([data-part='prev-trigger'], [data-part='next-trigger']) {
+    inset-inline-start: 50%;
+    inset-inline-end: auto;
+    translate: -50% 0;
+    rotate: 90deg;
+  }
+
+  [data-scope='carousel'][data-part='root'][data-orientation='vertical']
+    > [data-part='prev-trigger'] {
+    inset-block-start: var(--xh-carousel-control-inset, var(--xh-space-3));
+  }
+
+  [data-scope='carousel'][data-part='root'][data-orientation='vertical']
+    > [data-part='next-trigger'] {
+    inset-block-start: auto;
+    inset-block-end: var(--xh-carousel-control-inset, var(--xh-space-3));
   }
 
   /* 减少动效：位移立刻到位。翻页本身照常发生，只是不再有滑动的过程。

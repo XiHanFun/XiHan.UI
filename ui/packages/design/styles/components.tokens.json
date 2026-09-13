@@ -5010,6 +5010,32 @@
       "description": "card 的 root、title 部件 font-size 覆盖槽。"
     },
     {
+      "name": "--xh-carousel-control-inset",
+      "component": "carousel",
+      "part": [
+        "autoplay-trigger",
+        "indicator-group",
+        "next-trigger",
+        "prev-trigger",
+        "root"
+      ],
+      "property": [
+        "inset-block-end",
+        "inset-block-start",
+        "inset-inline-end",
+        "inset-inline-start"
+      ],
+      "state": [
+        "default",
+        "orientation=vertical"
+      ],
+      "defaultToken": [
+        "--xh-space-3"
+      ],
+      "visibility": "public",
+      "description": "carousel 的 autoplay-trigger、indicator-group、next-trigger、prev-trigger、root 部件 inset-block-end、inset-block-start、inset-inline-end、inset-inline-start 覆盖槽。"
+    },
+    {
       "name": "--xh-carousel-duration",
       "component": "carousel",
       "part": [
@@ -5044,24 +5070,6 @@
       ],
       "visibility": "public",
       "description": "carousel 的 list 部件 transition 覆盖槽。"
-    },
-    {
-      "name": "--xh-carousel-gap",
-      "component": "carousel",
-      "part": [
-        "root"
-      ],
-      "property": [
-        "gap"
-      ],
-      "state": [
-        "default"
-      ],
-      "defaultToken": [
-        "--xh-space-2"
-      ],
-      "visibility": "public",
-      "description": "carousel 的 root 部件 gap 覆盖槽。"
     },
     {
       "name": "--xh-carousel-icon-size",
@@ -5106,7 +5114,7 @@
         "indicator"
       ],
       "property": [
-        "background"
+        "--xh-carousel-indicator-bg"
       ],
       "state": [
         "current",
@@ -5117,7 +5125,7 @@
         "--xh-fg-subtle"
       ],
       "visibility": "public",
-      "description": "carousel 的 indicator 部件 background 覆盖槽。"
+      "description": "carousel 的 indicator 部件 --xh-carousel-indicator-bg 覆盖槽。"
     },
     {
       "name": "--xh-carousel-indicator-bg-selected",
@@ -5156,6 +5164,24 @@
       "description": "carousel 的 indicator-group 部件 gap 覆盖槽。"
     },
     {
+      "name": "--xh-carousel-indicator-inset",
+      "component": "carousel",
+      "part": [
+        "indicator-group"
+      ],
+      "property": [
+        "inset-block-end"
+      ],
+      "state": [
+        "orientation=horizontal"
+      ],
+      "defaultToken": [
+        "--xh-space-3"
+      ],
+      "visibility": "public",
+      "description": "carousel 的 indicator-group 部件 inset-block-end 覆盖槽。"
+    },
+    {
       "name": "--xh-carousel-indicator-radius",
       "component": "carousel",
       "part": [
@@ -5177,20 +5203,44 @@
       "name": "--xh-carousel-indicator-size",
       "component": "carousel",
       "part": [
-        "indicator"
+        "indicator",
+        "indicator-group"
       ],
       "property": [
         "block-size",
         "inline-size"
       ],
       "state": [
-        "default"
+        "current",
+        "default",
+        "orientation=vertical"
       ],
       "defaultToken": [
-        "--xh-space-2"
+        "--xh-space-4"
       ],
       "visibility": "public",
-      "description": "carousel 的 indicator 部件 block-size、inline-size 覆盖槽。"
+      "description": "carousel 的 indicator、indicator-group 部件 block-size、inline-size 覆盖槽。"
+    },
+    {
+      "name": "--xh-carousel-indicator-size-current",
+      "component": "carousel",
+      "part": [
+        "indicator",
+        "indicator-group"
+      ],
+      "property": [
+        "block-size",
+        "inline-size"
+      ],
+      "state": [
+        "current",
+        "orientation=vertical"
+      ],
+      "defaultToken": [
+        "--xh-space-6"
+      ],
+      "visibility": "public",
+      "description": "carousel 的 indicator、indicator-group 部件 block-size、inline-size 覆盖槽。"
     },
     {
       "name": "--xh-carousel-trigger-bg",
@@ -5207,7 +5257,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-bg-surface"
+        "--xh-bg-surface-raised"
       ],
       "visibility": "public",
       "description": "carousel 的 autoplay-trigger、next-trigger、prev-trigger 部件 background 覆盖槽。"
@@ -5269,7 +5319,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-border-control"
+        "transparent"
       ],
       "visibility": "public",
       "description": "carousel 的 autoplay-trigger、next-trigger、prev-trigger 部件 border 覆盖槽。"
@@ -5330,7 +5380,7 @@
         "not(:disabled)"
       ],
       "defaultToken": [
-        "--xh-elevation-raised"
+        "none"
       ],
       "visibility": "public",
       "description": "carousel 的 autoplay-trigger、next-trigger、prev-trigger 部件 box-shadow 覆盖槽。"

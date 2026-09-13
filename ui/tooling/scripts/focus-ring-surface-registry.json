@@ -165,20 +165,6 @@
       "ratio": 1,
       "ring": "poured"
     },
-    "carousel [data-current][data-part='indicator'][data-scope='carousel']": {
-      "parts": [
-        "indicator"
-      ],
-      "ratio": 1,
-      "ring": "poured"
-    },
-    "carousel [data-part='indicator'][data-scope='carousel']": {
-      "parts": [
-        "indicator"
-      ],
-      "ratio": 1.57,
-      "ring": "poured"
-    },
     "checkbox [data-part='root'][data-scope='checkbox'][data-state='checked']": {
       "parts": [
         "root"
