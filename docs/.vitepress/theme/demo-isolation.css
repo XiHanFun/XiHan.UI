@@ -38,3 +38,35 @@
 .xh-demo__stage {
   --xh-heatmap-bg: var(--demo-stage-bg, var(--vp-c-bg));
 }
+
+/* 示例中必须由作者提供的原生控件使用这一层，避免重复内联整套字段外观。 */
+.xh-demo__stage .xh-demo-control {
+  box-sizing: border-box;
+  min-inline-size: 0;
+  block-size: var(--xh-control-h-md);
+  padding-inline: var(--xh-control-px-md);
+  border: var(--xh-stroke-thin) solid var(--xh-border-control);
+  border-radius: var(--xh-shape-control);
+  background: var(--xh-bg-canvas);
+  color: var(--xh-fg-default);
+  font: inherit;
+  font-size: var(--xh-control-font-md);
+  transition:
+    background var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
+    border-color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
+}
+
+.xh-demo__stage .xh-demo-control::placeholder {
+  color: var(--xh-fg-subtle);
+}
+
+.xh-demo__stage .xh-demo-control:focus-visible {
+  border-color: var(--xh-border-control-focus);
+  outline: var(--xh-ring-width) solid var(--xh-ring-focus);
+  outline-offset: var(--xh-ring-offset);
+}
+
+.xh-demo__stage .xh-demo-control:disabled {
+  background: var(--xh-bg-muted);
+  color: var(--xh-fg-disabled);
+}

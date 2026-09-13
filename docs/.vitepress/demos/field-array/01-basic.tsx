@@ -1,4 +1,4 @@
-// 基础用法 | 加一行、删一行归组件管；行里放什么控件归作者，写在 item-content 里
+// 基础用法 | 添加和删除重复字段
 import type { ReactNode } from "react";
 import {
   XhFieldArrayAddTrigger,
@@ -25,13 +25,14 @@ export default function Demo(): ReactNode {
       createItem={() => ""}
       style={{ maxInlineSize: "420px" }}
     >
-      {({ items, count }) => (
+      {({ items }) => (
         <>
           {/* key 用 items 给的 row.key：它跟着这一行走，不是下标 */}
           {items.map(row => (
             <XhFieldArrayItem key={row.key} index={row.index}>
               <XhFieldArrayItemContent>
                 <input
+                  className="xh-demo-control"
                   style={{ inlineSize: "100%" }}
                   placeholder="填一个链接"
                   value={row.value as string}
@@ -44,7 +45,6 @@ export default function Demo(): ReactNode {
             </XhFieldArrayItem>
           ))}
           <XhFieldArrayAddTrigger>+ 添加链接</XhFieldArrayAddTrigger>
-          <p>{`共 ${count} 条`}</p>
         </>
       )}
     </XhFieldArrayRoot>

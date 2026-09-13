@@ -1,4 +1,4 @@
-// 行数上下限 | 到 min 删除把手按不动、到 max 新增把手按不动；两者都转 aria-disabled，焦点留得住
+// 数量限制 | 设置最少和最多行数
 import type { ReactNode } from "react";
 import {
   XhFieldArrayAddTrigger,
@@ -26,12 +26,13 @@ export default function Demo(): ReactNode {
       createItem={() => ""}
       style={{ maxInlineSize: "420px" }}
     >
-      {({ items, count, atMin, atMax }) => (
+      {({ items }) => (
         <>
           {items.map(row => (
             <XhFieldArrayItem key={row.key} index={row.index}>
               <XhFieldArrayItemContent>
                 <input
+                  className="xh-demo-control"
                   style={{ inlineSize: "100%" }}
                   placeholder="填一个选项"
                   value={row.value as string}
@@ -44,11 +45,6 @@ export default function Demo(): ReactNode {
             </XhFieldArrayItem>
           ))}
           <XhFieldArrayAddTrigger>+ 添加选项</XhFieldArrayAddTrigger>
-          <p>
-            {`${count} / 4`}
-            {atMin ? <span> · 至少留 2 个</span> : null}
-            {atMax ? <span> · 已到上限</span> : null}
-          </p>
         </>
       )}
     </XhFieldArrayRoot>

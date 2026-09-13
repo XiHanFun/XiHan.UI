@@ -1,6 +1,6 @@
 # FieldArray 字段数组
 
-一组行数可变的录入行：可以加一行、删一行、换顺序。
+用于管理可添加、删除和排序的重复字段。
 
 <div class="xh-resource-links">
   <a href="https://github.com/XiHanFun/XiHan.UI/tree/dev/ui/packages/engine/headless/src/field-array" target="_blank" rel="noreferrer">Headless</a>
@@ -12,7 +12,7 @@
 
 ## 用法
 
-加一行、删一行归组件管；行里放什么控件归作者，写在 item-content 里
+添加和删除重复字段
 
 <XhDemo src="field-array/01-basic" />
 
@@ -24,67 +24,53 @@
 
 ## 示例
 
-### 行数上下限
+### 数量限制
 
-到 min 删除把手按不动、到 max 新增把手按不动；两者都转 aria-disabled，焦点留得住
+设置最少和最多行数
 
 <XhDemo src="field-array/02-min-max" />
 
-### 换序
+### 排序
 
-movable 开了才出上下把手；挪完焦点跟着这一行走，键盘可以连按一路挪到底
+上移或下移字段
 
 <XhDemo src="field-array/03-movable" />
 
-### 一行多个字段
+### 多字段行
 
-行数据是对象，createItem 造一个空项；改字段时整份重建数组，行号不跟着变
+每行包含多个输入框
 
 <XhDemo src="field-array/04-object-rows" />
-
-### 禁用与程序化操作
-
-禁用时三类把手全按不动；从外面加一条走同一条闸门，整份替换值则不受闸门约束
-
-<XhDemo src="field-array/05-disabled-and-api" />
 
 ## 设计指引
 
 ### 何时使用
 
-- 联系方式、规格参数、收件人这类"数量由用户决定"的重复字段。
+- 联系方式、规格参数、收件人等数量可变的字段。
 
 ### 何时不用
 
-- 行数固定：直接写几行。
-- 每一行是一个短词：用[标签输入](./tags-input)。
+- 行数固定时直接使用普通字段。
+- 每项只是短文本时使用[标签输入](./tags-input)。
 
 ### 特性
 
-- `min` / `max` 约束行数，到下限时删除按钮不可用。
-- `movable` 给出上移下移。
-- `createItem` 决定新增一行时的初值。
-- 一行里可以放多个字段。
-- `name` 是 `FormPath`。嵌套在 Form 里时自动读取该路径的数组值，每行经 `item.name`
-  拿到显式数组路径；点号与方括号从不被猜成层级。
-- 在 Form 内新增、删除、换序会一并迁移该数组子字段的 values、rules、errors、异步
-  validation 与已验证错误标记；字符串字段绝不参与数组下标迁移。
-- `readOnly` 让行数改不动，`invalid` 把校验状态传到每一行。
-- `item-label` 承载行前的行号或名目。
-
-### 组合
-
-- 每行里放[表单字段](./field)与各类录入组件；整体放进[表单](./form)。
+- `min` 与 `max` 限制行数。
+- `movable` 启用上移和下移操作。
+- `createItem` 设置新增行的初始值。
+- 每行可以包含一个或多个字段。
+- 在 Form 中会同步迁移数组子字段的值、规则和错误。
 
 ### 最佳实践
 
-- 新增一行后把焦点移到这一行的第一个输入框。
-- 删除按钮要说明删的是哪一行（`aria-label` 带上行号或内容）。
+- 新增后将焦点移到新行的第一个输入框。
+- 删除按钮应说明目标行。
+- 到达数量限制时保持操作按钮可见并禁用。
 
 ### 反模式
 
-- 删除不给撤销，误删只能重填。
-- 行数上限只在提交时才提示。
+- 删除后无法撤销。
+- 只在提交时提示数量限制。
 
 ## API 参考
 

@@ -1,4 +1,4 @@
-<!-- 一行多个字段 | 行数据是对象，createItem 造一个空项；改字段时整份重建数组，行号不跟着变 -->
+<!-- 多字段行 | 每行包含多个输入框 -->
 <script setup lang="ts">
 import {
   XhFieldArrayAddTrigger,
@@ -40,12 +40,14 @@ function patch(index: number, key: keyof Header, next: string) {
     <XhFieldArrayItem v-for="row in items" :key="row.key" :index="row.index">
       <XhFieldArrayItemContent>
         <input
+          class="xh-demo-control"
           style="inline-size: 40%"
           placeholder="字段名"
           :value="row.value.name"
           @input="patch(row.index, 'name', ($event.target as HTMLInputElement).value)"
         >
         <input
+          class="xh-demo-control"
           style="inline-size: 60%"
           placeholder="字段值"
           :value="row.value.value"
@@ -60,5 +62,4 @@ function patch(index: number, key: keyof Header, next: string) {
     </XhFieldArrayItem>
     <XhFieldArrayAddTrigger>+ 添加请求头</XhFieldArrayAddTrigger>
   </XhFieldArrayRoot>
-  <pre>{{ JSON.stringify(headers, null, 2) }}</pre>
 </template>

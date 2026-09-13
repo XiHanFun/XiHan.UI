@@ -1,4 +1,4 @@
-<!-- 基础用法 | 加一行、删一行归组件管；行里放什么控件归作者，写在 item-content 里 -->
+<!-- 基础用法 | 添加和删除重复字段 -->
 <script setup lang="ts">
 import {
   XhFieldArrayAddTrigger,
@@ -20,7 +20,7 @@ function setAt(index: number, next: string) {
 
 <template>
   <XhFieldArrayRoot
-    v-slot="{ items, count }"
+    v-slot="{ items }"
     v-model:value="links"
     :create-item="() => ''"
     style="max-inline-size: 420px"
@@ -29,6 +29,7 @@ function setAt(index: number, next: string) {
     <XhFieldArrayItem v-for="row in items" :key="row.key" :index="row.index">
       <XhFieldArrayItemContent>
         <input
+          class="xh-demo-control"
           style="inline-size: 100%"
           placeholder="填一个链接"
           :value="row.value"
@@ -40,6 +41,5 @@ function setAt(index: number, next: string) {
       </XhFieldArrayItemAction>
     </XhFieldArrayItem>
     <XhFieldArrayAddTrigger>+ 添加链接</XhFieldArrayAddTrigger>
-    <p>共 {{ count }} 条</p>
   </XhFieldArrayRoot>
 </template>
