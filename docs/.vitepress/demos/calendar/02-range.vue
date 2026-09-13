@@ -3,7 +3,7 @@
   Licensed under the MIT License. See LICENSE in the project root for license information.
 -->
 
-<!-- 区间选择 | selection-mode=range：第一下落起点、第二下落终点，中间铺一条连续底色 -->
+<!-- 区间选择 | selection-mode=range：先落起点再落终点，也可以按住拖过去；两端都落定才写值，Escape 撤掉起点 -->
 <script setup lang="ts">
 import {
   XhCalendarCell,
@@ -23,14 +23,8 @@ import { computed, ref } from "vue";
 
 const value = ref<string[]>([]);
 
-// 挑到一半时集合里只有起点一个值
-const text = computed(() => {
-  if (value.value.length === 0)
-    return "（未选）";
-  if (value.value.length === 1)
-    return `${value.value[0]} → 待定`;
-  return `${value.value[0]} → ${value.value[1]}`;
-});
+// 值只在两端都落定时更新；挑到一半的起点记在组件里
+const text = computed(() => (value.value.length === 2 ? `${value.value[0]} → ${value.value[1]}` : "（未选）"));
 </script>
 
 <template>

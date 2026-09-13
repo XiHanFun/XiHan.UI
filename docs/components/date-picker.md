@@ -82,7 +82,8 @@
 - 日期时间组合面板让时间列与日期内容区从同一水平线开始；各时间列只纵向滚动，底部操作独占一行。
 - 输入值、展开状态和聚焦日期均可受控。
 - 点击输入行可以继续逐段键入，点击日历图标则把焦点送入日历；展开期间输入框保持激活边界。
-- 区间模式在同一个组件内组合起止分段输入、范围分隔符和范围日历，不另设第二套选择器。
+- 区间模式在同一个组件内组合起止分段输入、范围分隔符和范围日历，不另设第二套选择器：日历里先落起点再落终点，两端都落定才写值并收起浮层；支持按住拖选与拖动已选区间的一端。
+- 区间里终点早于起点、任一端越界或不可用时整个字段标为不合法；`allowsNonContiguousRanges` 允许区间跨过不可用日。
 - 切换粒度会清空旧选择，输入段、网格和周期边界随后一起切换，不做隐式转换。
 - 空值时显示日历入口；有值且渲染了清空按钮时，由清空按钮原位接替日历图标。
 - 聚焦边界、段位强调与日期格按压都使用短过渡；减弱动效仍由全局动效轴收敛。
@@ -129,10 +130,11 @@
 | `locale` | `string` |  | 决定周首日、月份文案与段位先后（zh-CN 年月日、en-US 月日年）。 不给按宿主语言，宿主也没有时按 en-US。 |
 | `timeZone` | `string` |  | 判定「今天」与格式化文案用的时区，默认取宿主本地时区。 |
 | `selectionMode` | `CalendarSelectionMode` |  | 选择模式，默认 single；区间模式下两端都落定才算选完。 |
-| `isDateUnavailable` | `(value: string) => boolean` |  | 不可用判定，收 ISO 串。界外与它判真的日子同等对待。 |
+| `isDateUnavailable` | `(value: string, anchor: string \| null) => boolean` |  | 不可用判定，收 ISO 串。界外与它判真的日子同等对待。 第二个参数是区间挑到一半时的起点，其余时候为 null。 |
+| `allowsNonContiguousRanges` | `boolean` |  | 区间允许跨过不可用的日子，默认关；关着时落了起点之后只能挑到两侧最近的不可用日为止。 |
 | `disabled` | `boolean` |  | 整个控件禁用：trigger 转原生 disabled，段位退出 Tab 序，日历格子全转 aria-disabled。 |
 | `readOnly` | `boolean` |  | 只读：浮层照常展开、日历照常翻月浏览，但选中值改不动。 |
-| `invalid` | `boolean` |  | 校验失败：段位报 aria-invalid，各角色节点带 data-invalid。 |
+| `invalid` | `boolean` |  | 校验失败：段位报 aria-invalid，各角色节点带 data-invalid。 不给也会自己判：任一端越界、或区间的终点早于起点。 |
 | `required` | `boolean` |  | 必填标注，落到每一段的 aria-required 上。 |
 | `name` | `string` |  | 表单字段名；给了隐藏输入才带 name，ISO 串随表单一并提交。区间模式下是起点那一份。 |
 | `endName` | `string` |  | 区间终点那份隐藏输入的表单字段名；不给即终点不参与提交。 |
@@ -219,7 +221,7 @@
 | `activeView` | `CalendarView` | 面板此刻钻到了哪一层。 |
 | `disabled` | `boolean` |  |
 | `readOnly` | `boolean` |  |
-| `invalid` | `boolean` |  |
+| `invalid` | `boolean` | 校验失败：作者标的、任一端越界、或区间终点早于起点。 |
 | `canClear` | `boolean` | 清空按钮此刻可不可按。 |
 | `setOpen` | `(next: boolean) => void` |  |
 | `setValue` | `(next: string[]) => void` |  |
@@ -258,7 +260,7 @@
 | --- | --- | --- |
 | `Enter` / `Space` | focus in trigger, closed | 展开日历浮层，焦点落到当前聚焦日那一格 |
 | `Enter` / `Space` | focus in trigger, open | 收起浮层，焦点回到 trigger |
-| `Escape` | open | 收起浮层并把焦点还给展开前那个控件（通常是 trigger），选中值不变 |
+| `Escape` | open | 收起浮层并把焦点还给展开前那个控件（通常是 trigger），选中值不变；区间挑到一半时先撤掉起点 |
 | `Tab` / `Shift+Tab` | open | 不拦按键：焦点按 Tab 序列自然离开，浮层随即收起且不抢回焦点 |
 | `Enter` / `Space` | open, focus in grid | 选中聚焦日（由日历完成）；closeOnSelect 时收起浮层——区间要两端都落定才算选完 |
 | `ArrowUp` / `ArrowDown` / `Home` / `End` | open, focus in 快捷选项列 | 在快捷选项之间移动焦点，到头回绕；不写值 |
@@ -400,7 +402,7 @@
 | `--xh-date-picker-control-border-hover` | `control` | `border-color` | `disabled`<br>`hover`<br>`invalid`<br>`not([data-disabled], [data-invalid])` | `--xh-_date-picker-control-border-hover` | date-picker 的 control 部件 border-color 覆盖槽。 |
 | `--xh-date-picker-control-border-invalid` | `control` | `border-color` | `invalid` | `--xh-border-invalid` | date-picker 的 control 部件 border-color 覆盖槽。 |
 | `--xh-date-picker-control-fg` | `control` | `color` | `default` | `--xh-fg-default` | date-picker 的 control 部件 color 覆盖槽。 |
-| `--xh-date-picker-control-gap` | `control` | `gap` | `default` | `--xh-_date-picker-gap` | date-picker 的 control 部件 gap 覆盖槽。 |
+| `--xh-date-picker-control-gap` | `control`<br>`range-separator` | `gap`<br>`margin-inline` | `default` | `--xh-_date-picker-gap` | date-picker 的 control、range-separator 部件 gap、margin-inline 覆盖槽。 |
 | `--xh-date-picker-control-h` | `control` | `block-size` | `default` | `--xh-_date-picker-control-h` | date-picker 的 control 部件 block-size 覆盖槽。 |
 | `--xh-date-picker-control-min-w` | `control`<br>`root` | `min-inline-size` | `default` | `--xh-control-min-w` | date-picker 的 control、root 部件 min-inline-size 覆盖槽。 |
 | `--xh-date-picker-control-px` | `control` | `padding-inline` | `default` | `--xh-_date-picker-control-px` | date-picker 的 control 部件 padding-inline 覆盖槽。 |
@@ -430,7 +432,8 @@
 | `--xh-date-picker-preset-py` | `preset` | `padding-block` | `default` | `--xh-space-1` | date-picker 的 preset 部件 padding-block 覆盖槽。 |
 | `--xh-date-picker-preset-radius` | `preset` | `border-radius` | `default` | `--xh-shape-control` | date-picker 的 preset 部件 border-radius 覆盖槽。 |
 | `--xh-date-picker-range-separator-fg` | `range-separator` | `color` | `default` | `--xh-fg-subtle` | date-picker 的 range-separator 部件 color 覆盖槽。 |
-| `--xh-date-picker-range-separator-px` | `range-separator` | `padding-inline` | `default` | `--xh-space-1` | date-picker 的 range-separator 部件 padding-inline 覆盖槽。 |
+| `--xh-date-picker-range-separator-mx` | `range-separator` | `margin-inline` | `default` | `--xh-date-picker-range-separator-px` | date-picker 的 range-separator 部件 margin-inline 覆盖槽。 |
+| `--xh-date-picker-range-separator-px` | `range-separator` | `margin-inline`<br>`padding-inline` | `default` | `--xh-space-1` | date-picker 的 range-separator 部件 margin-inline、padding-inline 覆盖槽。 |
 | `--xh-date-picker-time-column-gap` | `time-column` | `gap` | `default` | `0` | date-picker 的 time-column 部件 gap 覆盖槽。 |
 | `--xh-date-picker-time-column-h` | `time-column` | `block-size` | `default` | `--xh-viewport-h-md` | date-picker 的 time-column 部件 block-size 覆盖槽。 |
 | `--xh-date-picker-time-column-min-w` | `time-column` | `min-inline-size` | `default` | `3.5rem` | date-picker 的 time-column 部件 min-inline-size 覆盖槽。 |
