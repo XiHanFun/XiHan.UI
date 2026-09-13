@@ -7,7 +7,7 @@ import { XhRatingControl, XhRatingItem, XhRatingLabel, XhRatingRoot } from "@xih
   <XhRatingRoot v-slot="{ items }" :default-value="3">
     <XhRatingLabel>整体满意度</XhRatingLabel>
     <XhRatingControl>
-      <XhRatingItem v-for="i in items" :key="i" :value="i">★</XhRatingItem>
+      <XhRatingItem v-for="i in items" :key="i" :value="i" />
     </XhRatingControl>
   </XhRatingRoot>
 </template>

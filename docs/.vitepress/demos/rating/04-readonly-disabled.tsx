@@ -11,7 +11,7 @@ export default function Demo(): ReactNode {
             <XhRatingLabel>只读（4 星）</XhRatingLabel>
             <XhRatingControl>
               {items.map(i => (
-                <XhRatingItem key={i} value={i}>★</XhRatingItem>
+                <XhRatingItem key={i} value={i}></XhRatingItem>
               ))}
             </XhRatingControl>
           </>
@@ -24,7 +24,7 @@ export default function Demo(): ReactNode {
             <XhRatingLabel>禁用（2 星）</XhRatingLabel>
             <XhRatingControl>
               {items.map(i => (
-                <XhRatingItem key={i} value={i}>★</XhRatingItem>
+                <XhRatingItem key={i} value={i}></XhRatingItem>
               ))}
             </XhRatingControl>
           </>

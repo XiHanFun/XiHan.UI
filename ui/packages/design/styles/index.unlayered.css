@@ -28241,7 +28241,9 @@
   /* 尺寸档只换这三个私有槽，标题与星星都从 root 继承它们，换档不必给每个部件各写一条选择器 */
   --xh-_rating-item-gap: var(--xh-control-gap-md);
   --xh-_rating-item-size: var(--xh-font-size-2xl);
+  --xh-_rating-item-box-size: var(--xh-control-action-size);
   --xh-_rating-font-size: var(--xh-control-font-md);
+  --xh-icon-size: var(--xh-rating-item-font-size, var(--xh-_rating-item-size));
   /* 点亮色随语气走。没写 data-tone 时 --xh-_tone 没被声明，退回原来的警示色 */
   --xh-_rating-accent: var(--xh-_tone, var(--xh-color-warning-500));
 
@@ -28312,11 +28314,16 @@
   cursor: default;
 }
 
-/* 星星字符由作者写，皮肤只负责上色与盒子。
-   inline-block 是判定"点在左半边还是右半边"的前提：连接层拿 offsetX / clientWidth 算比例，
-   行内盒会把字符两侧的换行空白算进宽度，半颗的分界线就偏了。 */
+/* 条目固定成一枚方形图标盒：连接层用 clientWidth 判定指针落在左半还是右半，
+   固定盒能让半档分界与图形中心严格重合。 */
 [data-scope='rating'][data-part='item'] {
-  display: inline-block;
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex: none;
+  inline-size: var(--xh-_rating-item-box-size);
+  block-size: var(--xh-_rating-item-box-size);
   border-radius: var(--xh-rating-item-radius, var(--xh-shape-control));
   color: var(--xh-rating-item-fg, var(--xh-fg-subtle));
   font-size: var(--xh-rating-item-font-size, var(--xh-_rating-item-size));
@@ -28329,6 +28336,28 @@
     scale var(--xh-motion-duration-micro) var(--xh-motion-ease-enter-strong);
 }
 
+/* 空条目使用两层同源星形：底层保持中性轮廓，上层按完整或半档裁出强调色。 */
+[data-scope='rating'][data-part='item']:empty::before,
+[data-scope='rating'][data-part='item']:empty::after {
+  content: '';
+  position: absolute;
+  inset-block-start: 50%;
+  inset-inline-start: 50%;
+  inline-size: var(--xh-icon-size, var(--xh-glyph-size-text));
+  block-size: var(--xh-icon-size, var(--xh-glyph-size-text));
+  translate: -50% -50%;
+  background-color: var(--xh-rating-item-fg, var(--xh-fg-subtle));
+  -webkit-mask: var(--xh-glyph-mark-star) center / contain no-repeat;
+  mask: var(--xh-glyph-mark-star) center / contain no-repeat;
+  pointer-events: none;
+}
+
+[data-scope='rating'][data-part='item']:empty::after {
+  background-color: var(--xh-rating-item-fg-highlighted, var(--xh-_rating-accent));
+  clip-path: inset(0 100% 0 0);
+  transition: clip-path var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
+}
+
 /* 点亮的判据是 data-highlighted，不是 aria-checked：
    aria-checked 只认落定的值，而悬停预览要求手划过去当场就亮。
    两者共用同一档颜色，预览与选中因此看不出差别——这正是"预览"该有的样子。 */
@@ -28336,10 +28365,14 @@
   color: var(--xh-rating-item-fg-highlighted, var(--xh-_rating-accent));
 }
 
+[data-scope='rating'][data-part='item'][data-highlighted]:empty::after {
+  clip-path: inset(0);
+}
+
 /* 半颗：一道 50% 硬边渐变裁到字形上，左半亮右半灰。
    必须排在 data-highlighted 之后：半颗那颗星同时带着 data-highlighted，两条选择器特异度相同，
    顺序一反 color 就把 transparent 覆盖回实色，渐变整个看不见。 */
-[data-scope='rating'][data-part='item'][data-half] {
+[data-scope='rating'][data-part='item'][data-half]:not(:empty) {
   background-image: linear-gradient(
     to right,
     var(--xh-rating-item-fg-highlighted, var(--xh-_rating-accent)) 50%,
@@ -28352,12 +28385,20 @@
 
 /* rtl 下"半颗"落在星的右半边（连接层按 1 - offsetX/width 判），亮的那半得跟着掉头。
    渐变方向没有逻辑关键字可用，只能靠 :dir() 分流，不能指望逻辑属性自动换向。 */
-[data-scope='rating'][data-part='item'][data-half]:dir(rtl) {
+[data-scope='rating'][data-part='item'][data-half]:not(:empty):dir(rtl) {
   background-image: linear-gradient(
     to left,
     var(--xh-rating-item-fg-highlighted, var(--xh-_rating-accent)) 50%,
     var(--xh-rating-item-fg, var(--xh-fg-subtle)) 50%
   );
+}
+
+[data-scope='rating'][data-part='item'][data-half]:empty::after {
+  clip-path: inset(0 50% 0 0);
+}
+
+[data-scope='rating'][data-part='item'][data-half]:empty:dir(rtl)::after {
+  clip-path: inset(0 0 0 50%);
 }
 
 /* 按下去要有回应：被按的那一颗星单独下压，松手即弹回。
@@ -28395,8 +28436,16 @@
     color: GrayText;
   }
 
+  [data-scope='rating'][data-part='item']:empty::before {
+    background-color: GrayText;
+  }
+
+  [data-scope='rating'][data-part='item']:empty::after {
+    background-color: Highlight;
+  }
+
   [data-scope='rating'][data-part='item'][data-highlighted],
-  [data-scope='rating'][data-part='item'][data-half] {
+  [data-scope='rating'][data-part='item'][data-half]:not(:empty) {
     background-image: none;
     -webkit-background-clip: border-box;
     background-clip: border-box;
@@ -28409,7 +28458,7 @@
 @media print {
   /* 打印默认丢底图：半颗那道裁到字形上的渐变整个消失，星上只剩 color: transparent，
      那颗星在纸上什么都不剩。把填充还回去并按点亮那一档画整颗。 */
-  [data-scope='rating'][data-part='item'][data-half] {
+  [data-scope='rating'][data-part='item'][data-half]:not(:empty) {
     background-image: none;
     -webkit-background-clip: border-box;
     background-clip: border-box;

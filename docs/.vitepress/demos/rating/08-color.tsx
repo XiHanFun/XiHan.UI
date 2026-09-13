@@ -17,7 +17,7 @@ export default function Demo(): ReactNode {
             <XhRatingLabel>只换点亮色</XhRatingLabel>
             <XhRatingControl>
               {items.map(i => (
-                <XhRatingItem key={i} value={i}>★</XhRatingItem>
+                <XhRatingItem key={i} value={i}></XhRatingItem>
               ))}
             </XhRatingControl>
           </>
@@ -30,7 +30,7 @@ export default function Demo(): ReactNode {
             <XhRatingLabel>点亮与未点亮各给一色</XhRatingLabel>
             <XhRatingControl>
               {items.map(i => (
-                <XhRatingItem key={i} value={i}>★</XhRatingItem>
+                <XhRatingItem key={i} value={i}></XhRatingItem>
               ))}
             </XhRatingControl>
           </>

@@ -54,9 +54,9 @@ size 改星的大小与间距，不写即缺省中档
 
 <XhDemo src="rating/06-size" />
 
-### 自定义图案
+### 自定义图标
 
-星形由作者写，条目自带这颗的点亮状态，点亮与未点亮可以画成两个字形
+条目可使用首方图标，也可留空使用皮肤默认星形
 
 <XhDemo src="rating/07-icon" />
 
@@ -87,7 +87,7 @@ allowClear 缺省就开：点中当前那一档清回“还没评”，键盘在
 
 - `allowHalf` 支持半档，`allowClear` 允许再点一次清空。
 - 悬停预览与实际值分开，`onHoverChange` 单独回调。
-- 图案与颜色都可以换。
+- 条目留空时使用首方星形图标；也可传入自己的图标与颜色。
 
 ### 组合
 
@@ -268,9 +268,9 @@ allowClear 缺省就开：点中当前那一档清回“还没评”，键盘在
 | 变量 | 部件 | CSS 属性 | 状态 | 缺省来源 | 说明 |
 | --- | --- | --- | --- | --- | --- |
 | `--xh-rating-gap` | `root` | `gap` | `default` | `--xh-stack-gap-md` | rating 的 root 部件 gap 覆盖槽。 |
-| `--xh-rating-item-fg` | `item` | `background-image`<br>`color` | `default`<br>`dir(rtl)`<br>`half` | `--xh-fg-subtle` | rating 的 item 部件 background-image、color 覆盖槽。 |
-| `--xh-rating-item-fg-highlighted` | `item` | `background-image`<br>`color` | `@media print`<br>`dir(rtl)`<br>`half`<br>`highlighted` | `--xh-_rating-accent` | rating 的 item 部件 background-image、color 覆盖槽。 |
-| `--xh-rating-item-font-size` | `item` | `font-size` | `default` | `--xh-_rating-item-size` | rating 的 item 部件 font-size 覆盖槽。 |
+| `--xh-rating-item-fg` | `item` | `background-color`<br>`background-image`<br>`color` | `default`<br>`dir(rtl)`<br>`empty`<br>`half`<br>`not(:empty)` | `--xh-fg-subtle` | rating 的 item 部件 background-color、background-image、color 覆盖槽。 |
+| `--xh-rating-item-fg-highlighted` | `item` | `background-color`<br>`background-image`<br>`color` | `@media print`<br>`dir(rtl)`<br>`empty`<br>`half`<br>`highlighted`<br>`not(:empty)` | `--xh-_rating-accent` | rating 的 item 部件 background-color、background-image、color 覆盖槽。 |
+| `--xh-rating-item-font-size` | `item`<br>`root` | `--xh-icon-size`<br>`font-size` | `default` | `--xh-_rating-item-size` | rating 的 item、root 部件 --xh-icon-size、font-size 覆盖槽。 |
 | `--xh-rating-item-gap` | `control` | `gap` | `default` | `--xh-_rating-item-gap` | rating 的 control 部件 gap 覆盖槽。 |
 | `--xh-rating-item-radius` | `item` | `border-radius` | `default` | `--xh-shape-control` | rating 的 item 部件 border-radius 覆盖槽。 |
 | `--xh-rating-label-fg` | `label` | `color` | `default` | `--xh-fg-muted` | rating 的 label 部件 color 覆盖槽。 |
@@ -282,10 +282,10 @@ allowClear 缺省就开：点中当前那一档清回“还没评”，键盘在
 
 ### 动效
 
-`color` · `scale` 走 `transition` 过渡。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
+`clip-path` · `color` · `scale` 走 `transition` 过渡。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
 
 系统开启减弱动效时由令牌层统一收敛，皮肤不另作判断。
 
 ### RTL
 
-另有按 `dir` 分支的规则。
+皮肤用逻辑属性排布（`inline-start` 一族），`dir="rtl"` 下自动镜像；另有按 `dir` 分支的规则。

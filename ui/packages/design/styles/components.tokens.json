@@ -43486,19 +43486,22 @@
         "item"
       ],
       "property": [
+        "background-color",
         "background-image",
         "color"
       ],
       "state": [
         "default",
         "dir(rtl)",
-        "half"
+        "empty",
+        "half",
+        "not(:empty)"
       ],
       "defaultToken": [
         "--xh-fg-subtle"
       ],
       "visibility": "public",
-      "description": "rating 的 item 部件 background-image、color 覆盖槽。"
+      "description": "rating 的 item 部件 background-color、background-image、color 覆盖槽。"
     },
     {
       "name": "--xh-rating-item-fg-highlighted",
@@ -43507,28 +43510,33 @@
         "item"
       ],
       "property": [
+        "background-color",
         "background-image",
         "color"
       ],
       "state": [
         "@media print",
         "dir(rtl)",
+        "empty",
         "half",
-        "highlighted"
+        "highlighted",
+        "not(:empty)"
       ],
       "defaultToken": [
         "--xh-_rating-accent"
       ],
       "visibility": "public",
-      "description": "rating 的 item 部件 background-image、color 覆盖槽。"
+      "description": "rating 的 item 部件 background-color、background-image、color 覆盖槽。"
     },
     {
       "name": "--xh-rating-item-font-size",
       "component": "rating",
       "part": [
-        "item"
+        "item",
+        "root"
       ],
       "property": [
+        "--xh-icon-size",
         "font-size"
       ],
       "state": [
@@ -43538,7 +43546,7 @@
         "--xh-_rating-item-size"
       ],
       "visibility": "public",
-      "description": "rating 的 item 部件 font-size 覆盖槽。"
+      "description": "rating 的 item、root 部件 --xh-icon-size、font-size 覆盖槽。"
     },
     {
       "name": "--xh-rating-item-gap",

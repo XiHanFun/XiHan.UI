@@ -10,7 +10,7 @@ const level = ref(7);
   <XhRatingRoot v-slot="{ items }" v-model:value="level" :count="10">
     <XhRatingLabel>推荐指数（10 档）</XhRatingLabel>
     <XhRatingControl>
-      <XhRatingItem v-for="i in items" :key="i" :value="i">★</XhRatingItem>
+      <XhRatingItem v-for="i in items" :key="i" :value="i" />
     </XhRatingControl>
   </XhRatingRoot>
   <p>当前：{{ level }} / 10</p>

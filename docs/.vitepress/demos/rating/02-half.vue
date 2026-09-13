@@ -15,7 +15,7 @@ function onHoverChange(details: { value: number | null }) {
   <XhRatingRoot v-slot="{ items }" v-model:value="score" allow-half @hover-change="onHoverChange">
     <XhRatingLabel>服务评分</XhRatingLabel>
     <XhRatingControl>
-      <XhRatingItem v-for="i in items" :key="i" :value="i">★</XhRatingItem>
+      <XhRatingItem v-for="i in items" :key="i" :value="i" />
     </XhRatingControl>
   </XhRatingRoot>
   <p>评分：{{ score }} · 悬停预览：{{ preview ?? "（无）" }}</p>
