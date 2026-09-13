@@ -49477,7 +49477,7 @@
       ],
       "defaultToken": [
         "--xh-_tone",
-        "--xh-bg-brand"
+        "currentColor"
       ],
       "visibility": "public",
       "description": "spinner 的 root 部件 background、border-block-start-color、border-color 覆盖槽。"
@@ -49571,7 +49571,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-glyph-size-md"
+        "--xh-glyph-size-lg"
       ],
       "visibility": "public",
       "description": "spinner 的 root 部件 block-size、inline-size 覆盖槽。"

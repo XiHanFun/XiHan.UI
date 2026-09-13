@@ -26,7 +26,8 @@
     "number-field",
     "alert",
     "badge",
-    "skeleton"
+    "skeleton",
+    "spinner"
   ],
   "categories": [
     {

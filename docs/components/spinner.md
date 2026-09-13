@@ -1,4 +1,4 @@
-# Spinner 加载指示器 <Badge type="info" text="alpha" />
+# Spinner 加载指示器
 
 一个不确定时长的等待标记。
 
@@ -48,15 +48,9 @@ tone 只换圆环起始边那一段颜色，轨道留在中性描边上，转到
 
 <XhDemo src="spinner/05-overlay" />
 
-### 换掉转圈图形
-
-内置圆环画在伪元素上，把直径与描边归零它就不占位；自绘的图形写进 root 里
-
-<XhDemo src="spinner/06-custom-graphic" />
-
 ### 变体
 
-ring 整圈、arc 一段弧、dots 三点；缺省档 ring 不输出 data-variant
+默认渐隐弧，另有 ring 整圈与 dots 三点
 
 <XhDemo src="spinner/07-variant" />
 
@@ -76,8 +70,8 @@ ring 整圈、arc 一段弧、dots 三点；缺省档 ring 不输出 data-varian
 ### 特性
 
 - 可以配可见文案，也可以只靠 `translations` 给读屏用。
-- 可以盖住等待中的内容（遮罩形态）。
-- 转圈图形可换。
+- 可以与宿主遮罩组合，盖住等待中的内容。
+- 默认使用渐隐弧；也可显式选择整圈轨道或三点。
 
 ### 组合
 
@@ -112,7 +106,7 @@ ring 整圈、arc 一段弧、dots 三点；缺省档 ring 不输出 data-varian
 | `size` | `Size` |  | 直径档位，缺省 md；缺省档不输出 data-size。 |
 | `tone` | `Tone` |  | 语气：brand / neutral / success / warning / danger / info，决定用哪族颜色 |
 | `translations` | `Partial<SpinnerTranslations>` |  |  |
-| `variant` | `SpinnerVariant` |  | 形态，缺省 ring；缺省档不输出 data-variant。 |
+| `variant` | `SpinnerVariant` |  | 形态，默认 arc。 |
 
 ### connect API
 
@@ -168,12 +162,12 @@ ring 整圈、arc 一段弧、dots 三点；缺省档 ring 不输出 data-varian
 | 变量 | 部件 | CSS 属性 | 状态 | 缺省来源 | 说明 |
 | --- | --- | --- | --- | --- | --- |
 | `--xh-spinner-duration` | `root` | `animation` | `default`<br>`variant=dots` | `--xh-spin-duration` | spinner 的 root 部件 animation 覆盖槽。 |
-| `--xh-spinner-fg` | `root` | `background`<br>`border-block-start-color`<br>`border-color` | `@media (prefers-reduced-motion: reduce)`<br>`@media print`<br>`default`<br>`motion=reduce`<br>`tone`<br>`variant=arc`<br>`variant=dots`<br>`where([data-motion='reduce'])` | `--xh-_tone`<br>`--xh-bg-brand` | spinner 的 root 部件 background、border-block-start-color、border-color 覆盖槽。 |
+| `--xh-spinner-fg` | `root` | `background`<br>`border-block-start-color`<br>`border-color` | `@media (prefers-reduced-motion: reduce)`<br>`@media print`<br>`default`<br>`motion=reduce`<br>`tone`<br>`variant=arc`<br>`variant=dots`<br>`where([data-motion='reduce'])` | `--xh-_tone`<br>`currentColor` | spinner 的 root 部件 background、border-block-start-color、border-color 覆盖槽。 |
 | `--xh-spinner-gap` | `root` | `gap` | `default` | `--xh-control-gap-md` | spinner 的 root 部件 gap 覆盖槽。 |
 | `--xh-spinner-label-fg` | `label` | `color` | `default` | `--xh-fg-muted` | spinner 的 label 部件 color 覆盖槽。 |
 | `--xh-spinner-label-size` | `label` | `font-size` | `default` | `--xh-text-secondary-size` | spinner 的 label 部件 font-size 覆盖槽。 |
 | `--xh-spinner-radius` | `root` | `border-radius` | `@media (forced-colors: active)`<br>`default`<br>`variant=arc`<br>`variant=dots` | `--xh-shape-pill` | spinner 的 root 部件 border-radius 覆盖槽。 |
-| `--xh-spinner-size` | `root` | `block-size`<br>`inline-size` | `default` | `--xh-glyph-size-md` | spinner 的 root 部件 block-size、inline-size 覆盖槽。 |
+| `--xh-spinner-size` | `root` | `block-size`<br>`inline-size` | `default` | `--xh-glyph-size-lg` | spinner 的 root 部件 block-size、inline-size 覆盖槽。 |
 | `--xh-spinner-thickness` | `root` | `-webkit-mask`<br>`border`<br>`mask` | `@media (forced-colors: active)`<br>`default`<br>`variant=arc`<br>`variant=dots` | `--xh-stroke-thick` | spinner 的 root 部件 -webkit-mask、border、mask 覆盖槽。 |
 | `--xh-spinner-track` | `root` | `border` | `default` | `--xh-border-default` | spinner 的 root 部件 border 覆盖槽。 |
 <!-- xh-component-tokens:end -->

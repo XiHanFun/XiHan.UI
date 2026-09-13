@@ -35,6 +35,7 @@
     align-items: center;
     gap: var(--xh-spinner-gap, var(--xh-control-gap-md));
     line-height: var(--xh-leading-none);
+    pointer-events: none;
     vertical-align: middle;
   }
 
@@ -44,12 +45,12 @@
     /* 边框算进直径，换厚度不会把圆环撑大 */
     box-sizing: border-box;
     flex: none;
-    inline-size: var(--xh-spinner-size, var(--xh-glyph-size-md));
-    block-size: var(--xh-spinner-size, var(--xh-glyph-size-md));
+    inline-size: var(--xh-spinner-size, var(--xh-glyph-size-lg));
+    block-size: var(--xh-spinner-size, var(--xh-glyph-size-lg));
     border: var(--xh-spinner-thickness, var(--xh-stroke-thick)) solid var(--xh-spinner-track, var(--xh-border-default));
 
     /* 一整圈是轨道色，只有起始边换成前景色，转起来才看得出方向 */
-    border-block-start-color: var(--xh-spinner-fg, var(--xh-bg-brand));
+    border-block-start-color: var(--xh-spinner-fg, currentColor);
     border-radius: var(--xh-spinner-radius, var(--xh-shape-pill));
     animation: xh-spinner-rotate var(--xh-spinner-duration, var(--xh-spin-duration)) var(--xh-motion-ease-loop) infinite;
   }
@@ -62,8 +63,8 @@
   }
 
   [data-scope='spinner'][data-part='root'][data-size='lg']::before {
-    inline-size: var(--xh-glyph-size-lg);
-    block-size: var(--xh-glyph-size-lg);
+    inline-size: var(--xh-glyph-size-xl);
+    block-size: var(--xh-glyph-size-xl);
   }
 
   /* 语气只换起始边那一段，轨道留在中性描边上：轨道与起始边的反差就是转向的读法，
@@ -71,7 +72,7 @@
      选择器上带 [data-tone] 是必需的：语气槽会沿继承流下来，不限定在写了语气的
      那个节点上，放在语气容器里的转圈会跟着一起改色 */
   [data-scope='spinner'][data-part='root'][data-tone]::before {
-    border-block-start-color: var(--xh-spinner-fg, var(--xh-_tone, var(--xh-bg-brand)));
+    border-block-start-color: var(--xh-spinner-fg, var(--xh-_tone));
   }
 
   /*
@@ -81,7 +82,7 @@
    */
   [data-scope='spinner'][data-part='root'][data-variant='arc']::before {
     border: 0;
-    background: conic-gradient(transparent, var(--xh-spinner-fg, var(--xh-bg-brand)));
+    background: conic-gradient(transparent, var(--xh-spinner-fg, currentColor));
     -webkit-mask: radial-gradient(
       farthest-side,
       transparent calc(100% - var(--xh-spinner-thickness, var(--xh-stroke-thick))),
@@ -95,7 +96,7 @@
   }
 
   [data-scope='spinner'][data-part='root'][data-variant='arc'][data-tone]::before {
-    background: conic-gradient(transparent, var(--xh-spinner-fg, var(--xh-_tone, var(--xh-bg-brand))));
+    background: conic-gradient(transparent, var(--xh-spinner-fg, var(--xh-_tone)));
   }
 
   /*
@@ -106,17 +107,17 @@
     border: 0;
     border-radius: 0;
     background:
-      radial-gradient(circle closest-side, var(--xh-spinner-fg, var(--xh-bg-brand)) 100%, transparent) 0 50% / 25% 25% no-repeat,
-      radial-gradient(circle closest-side, var(--xh-spinner-fg, var(--xh-bg-brand)) 100%, transparent) 50% 50% / 25% 25% no-repeat,
-      radial-gradient(circle closest-side, var(--xh-spinner-fg, var(--xh-bg-brand)) 100%, transparent) 100% 50% / 25% 25% no-repeat;
+      radial-gradient(circle closest-side, var(--xh-spinner-fg, currentColor) 100%, transparent) 0 50% / 25% 25% no-repeat,
+      radial-gradient(circle closest-side, var(--xh-spinner-fg, currentColor) 100%, transparent) 50% 50% / 25% 25% no-repeat,
+      radial-gradient(circle closest-side, var(--xh-spinner-fg, currentColor) 100%, transparent) 100% 50% / 25% 25% no-repeat;
     animation: xh-spinner-dots var(--xh-spinner-duration, var(--xh-spin-duration)) var(--xh-motion-ease-sweep) infinite;
   }
 
   [data-scope='spinner'][data-part='root'][data-variant='dots'][data-tone]::before {
     background:
-      radial-gradient(circle closest-side, var(--xh-spinner-fg, var(--xh-_tone, var(--xh-bg-brand))) 100%, transparent) 0 50% / 25% 25% no-repeat,
-      radial-gradient(circle closest-side, var(--xh-spinner-fg, var(--xh-_tone, var(--xh-bg-brand))) 100%, transparent) 50% 50% / 25% 25% no-repeat,
-      radial-gradient(circle closest-side, var(--xh-spinner-fg, var(--xh-_tone, var(--xh-bg-brand))) 100%, transparent) 100% 50% / 25% 25% no-repeat;
+      radial-gradient(circle closest-side, var(--xh-spinner-fg, var(--xh-_tone)) 100%, transparent) 0 50% / 25% 25% no-repeat,
+      radial-gradient(circle closest-side, var(--xh-spinner-fg, var(--xh-_tone)) 100%, transparent) 50% 50% / 25% 25% no-repeat,
+      radial-gradient(circle closest-side, var(--xh-spinner-fg, var(--xh-_tone)) 100%, transparent) 100% 50% / 25% 25% no-repeat;
   }
 
   /* 三点档的呼吸自带一条动画，压不住上面那两块基础降级里的 animation: none，
@@ -149,24 +150,24 @@
   @media (prefers-reduced-motion: reduce) {
     [data-scope='spinner'][data-part='root']::before {
       border-style: dotted;
-      border-color: var(--xh-spinner-fg, var(--xh-bg-brand));
+      border-color: var(--xh-spinner-fg, currentColor);
       animation: none;
     }
 
     /* 静止态整圈同色，语气跟着铺满整圈 */
     [data-scope='spinner'][data-part='root'][data-tone]::before {
-      border-color: var(--xh-spinner-fg, var(--xh-_tone, var(--xh-bg-brand)));
+      border-color: var(--xh-spinner-fg, var(--xh-_tone));
     }
   }
 
   :where([data-motion='reduce']) [data-scope='spinner'][data-part='root']::before {
     border-style: dotted;
-    border-color: var(--xh-spinner-fg, var(--xh-bg-brand));
+    border-color: var(--xh-spinner-fg, currentColor);
     animation: none;
   }
 
   :where([data-motion='reduce']) [data-scope='spinner'][data-part='root'][data-tone]::before {
-    border-color: var(--xh-spinner-fg, var(--xh-_tone, var(--xh-bg-brand)));
+    border-color: var(--xh-spinner-fg, var(--xh-_tone));
   }
 
   /* 声明过任何 display 就盖掉了 UA 的 [hidden]{display:none}，收起态得自己还回去。
@@ -182,12 +183,12 @@
        并成一条之后这层配对关系在文本上就断了。 */
     [data-scope='spinner'][data-part='root']::before {
       border-style: dotted;
-      border-color: var(--xh-spinner-fg, var(--xh-bg-brand));
+      border-color: var(--xh-spinner-fg, currentColor);
       animation: none;
     }
 
     [data-scope='spinner'][data-part='root'][data-tone]::before {
-      border-color: var(--xh-spinner-fg, var(--xh-_tone, var(--xh-bg-brand)));
+      border-color: var(--xh-spinner-fg, var(--xh-_tone));
     }
   }
 
