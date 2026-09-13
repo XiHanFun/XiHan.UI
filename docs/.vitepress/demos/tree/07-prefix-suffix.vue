@@ -1,6 +1,8 @@
 <!-- 前缀与行尾 | 行里放什么由标记说了算：文字前塞图标、文字后塞操作，方向指示也可以挪到行尾去 -->
 <script setup lang="ts">
+import { FileIcon, FolderIcon } from "@xihan-ui/icons";
 import {
+  XhIcon,
   XhTreeBranch,
   XhTreeBranchContent,
   XhTreeBranchControl,
@@ -44,14 +46,14 @@ function rename(label: string): void {
       <XhTreeTree>
         <XhTreeBranch v-for="dir in collection" :key="dir.value" :value="dir.value">
           <XhTreeBranchControl>
-            <span aria-hidden="true">📁</span>
+            <XhIcon :icon="FolderIcon" />
             <XhTreeBranchText>{{ dir.label }}</XhTreeBranchText>
             <!-- 指示器不带点击语义，展开态转 90° 全靠皮肤读 data-state -->
             <XhTreeBranchIndicator />
           </XhTreeBranchControl>
           <XhTreeBranchContent>
             <XhTreeItem v-for="file in dir.children" :key="file.value" :value="file.value">
-              <span aria-hidden="true">📄</span>
+              <XhIcon :icon="FileIcon" />
               <XhTreeItemText>{{ file.label }}</XhTreeItemText>
               <!-- 掐断冒泡，否则点按钮连带把这一行也选上 -->
               <button type="button" @click.stop="rename(file.label)">重命名</button>
