@@ -1,4 +1,4 @@
-// 变体与颜色 | variant 换编辑态输入框的底与描边，tone 换聚焦描边与提交钮的色族；预览态不吃这两轴
+// 变体 | 设置编辑框外观
 import type { ReactNode } from "react";
 import {
   XhEditableCancelTrigger,
@@ -12,11 +12,9 @@ import {
 } from "@xihan-ui/react";
 
 const rows = [
-  { variant: "outline", tone: "brand", label: "描边 · 品牌" },
-  { variant: "subtle", tone: "brand", label: "弱底 · 品牌" },
-  { variant: "ghost", tone: "brand", label: "无壳 · 品牌" },
-  { variant: "outline", tone: "success", label: "描边 · 成功" },
-  { variant: "outline", tone: "danger", label: "描边 · 危险" },
+  { variant: "outline", label: "描边" },
+  { variant: "subtle", label: "浅色" },
+  { variant: "ghost", label: "幽灵" },
 ] as const;
 
 export default function Demo(): ReactNode {
@@ -26,7 +24,6 @@ export default function Demo(): ReactNode {
         <XhEditableRoot
           key={row.label}
           variant={row.variant}
-          tone={row.tone}
           defaultValue="曦寒"
           placeholder="未填写"
         >

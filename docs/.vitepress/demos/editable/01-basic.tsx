@@ -1,4 +1,4 @@
-// 基础用法 | 预览与编辑两态轮流上场：点预览区或按「编辑」进编辑态，preview 不写内容、显示什么由组件填
+// 基础用法 | 点击文本就地编辑
 import type { ReactNode } from "react";
 import {
   XhEditableCancelTrigger,

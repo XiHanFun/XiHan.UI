@@ -1,4 +1,4 @@
-// 禁用与只读 | 两者都进不了编辑态；值为空时预览区退回压淡的占位文字
+// 状态 | 禁用、只读与空值
 import type { ReactNode } from "react";
 import {
   XhEditableControl,
