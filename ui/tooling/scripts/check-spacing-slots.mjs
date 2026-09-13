@@ -14,8 +14,7 @@
 // 标签与必填星之间的固定小位移），不是可调的内衬。
 //
 // 第二条判据管名字：一个槽的部件段若正好是本组件另一个真实部件的名字，使用者
-// 按名字找过去改的就是另一处。number-field 的一体式盒画在 control 上，外观槽却全叫
-// --xh-number-field-input-*，而 input 是同一份解剖里另一个真实部件。
+// 按名字找过去改的就是另一处。
 import { readdir, readFile } from 'node:fs/promises'
 import { join } from 'node:path'
 

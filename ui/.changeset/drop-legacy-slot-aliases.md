@@ -52,7 +52,4 @@
 | `--xh-tree-select-indicator-size` | `--xh-tree-select-item-indicator-size` / `--xh-tree-select-branch-indicator-size`（两个部件各一个） |
 | `--xh-typography-text-fg` | `--xh-typography-text-fg-muted` / `--xh-typography-text-fg-tone`（次要档与语气档各一个） |
 
-**另有两组名字没删，但管辖范围收窄了。** 这两个名字自己还有规则，只是不再顺带管另一处：
-
-- `--xh-number-field-input-border` / `-bg` / `-shadow` / `-border-hover` / `-border-focus` / `-border-invalid` / `-bg-readonly` / `-bg-disabled` 此前同时改一体式盒与独立输入框两档，现在只管 `input` 自成一盒的那一档。要改一体式盒写 `--xh-number-field-control-*`。
-- `--xh-navigation-menu-content-p` 此前同时改逐项面板与共享外壳，现在只管 `content`。要改外壳写 `--xh-navigation-menu-viewport-p`。
+**另有一组名字没删，但管辖范围收窄了。** `--xh-navigation-menu-content-p` 此前同时改逐项面板与共享外壳，现在只管 `content`。要改外壳写 `--xh-navigation-menu-viewport-p`。

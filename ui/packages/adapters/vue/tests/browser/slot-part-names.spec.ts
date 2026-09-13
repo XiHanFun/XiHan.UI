@@ -115,68 +115,29 @@ function styleOf(el: HTMLElement, prop: string): string {
   return getComputedStyle(el).getPropertyValue(prop)
 }
 
-// —— number-field：一体式盒画在 control 上，独立输入框是另一档形态 ——
+// —— number-field：control 是唯一视觉盒 ——
 
-/** 两枚并排：前一枚有 control（盒画在它身上），后一枚只有 input（盒画在输入框上）。 */
-function TWO_FORMS(): unknown {
-  return [
-    h(XhNumberFieldRoot, { defaultValue: '1' }, () => [
-      h(XhNumberFieldControl, null, () => [h(XhNumberFieldInput)]),
-    ]),
-    h(XhNumberFieldRoot, { defaultValue: '1' }, () => [h(XhNumberFieldInput)]),
-  ]
+function NUMBER_FIELD(): unknown {
+  return h(XhNumberFieldRoot, { defaultValue: '1' }, () => [
+    h(XhNumberFieldControl, null, () => [h(XhNumberFieldInput)]),
+  ])
 }
 
-describe('number-field 的一体式盒有自己的名字', () => {
-  it('设 control 槽：只改一体式盒，独立输入框那一档不跟着变', async () => {
+describe('number-field 的视觉盒只归 control', () => {
+  it('背景槽只改 control，盒内 input 保持透明', async () => {
     setSlot('--xh-number-field-control-bg', RED)
-    await mount(TWO_FORMS)
+    await mount(NUMBER_FIELD)
 
     expect(styleOf(part('number-field', 'control'), 'background-color')).toBe(RED)
-    // 第二枚的 input 不在 control 里，自己就是那个盒
-    expect(styleOf(part('number-field', 'input', 1), 'background-color')).not.toBe(RED)
+    expect(styleOf(part('number-field', 'input'), 'background-color')).toBe('rgba(0, 0, 0, 0)')
   })
 
-  it('--xh-number-field-input-bg 只管独立输入框那一档，一体式盒不再跟着走', async () => {
-    setSlot('--xh-number-field-input-bg', LIME)
-    await mount(TWO_FORMS)
-
-    expect(styleOf(part('number-field', 'control'), 'background-color')).not.toBe(LIME)
-    expect(styleOf(part('number-field', 'input', 1), 'background-color')).toBe(LIME)
-  })
-
-  it('两档各调各的，互不牵连', async () => {
-    setSlot('--xh-number-field-input-bg', LIME)
-    setSlot('--xh-number-field-control-bg', RED)
-    await mount(TWO_FORMS)
-
-    expect(styleOf(part('number-field', 'control'), 'background-color')).toBe(RED)
-    expect(styleOf(part('number-field', 'input', 1), 'background-color')).toBe(LIME)
-  })
-
-  it('设 --xh-number-field-input-bg 时一体式盒与什么都不写同值', async () => {
-    const read = (): string => styleOf(part('number-field', 'control'), 'background-color')
-    const bare = await measure(TWO_FORMS, read)
-    const legacy = await measure(TWO_FORMS, read, { '--xh-number-field-input-bg': LIME })
-
-    expect(legacy).toBe(bare)
-  })
-
-  it('圆角两档各调各的：input 槽不改一体式盒，control 槽不改独立输入框', async () => {
-    setSlot('--xh-number-field-input-radius', '11px')
+  it('圆角槽只改 control，盒内 input 不再自成一框', async () => {
     setSlot('--xh-number-field-control-radius', '3px')
-    await mount(TWO_FORMS)
+    await mount(NUMBER_FIELD)
 
     expect(styleOf(part('number-field', 'control'), 'border-top-left-radius')).toBe('3px')
-    expect(styleOf(part('number-field', 'input', 1), 'border-top-left-radius')).toBe('11px')
-  })
-
-  it('设 --xh-number-field-input-radius 时一体式盒与什么都不写同值', async () => {
-    const read = (): string => styleOf(part('number-field', 'control'), 'border-top-left-radius')
-    const bare = await measure(TWO_FORMS, read)
-    const legacy = await measure(TWO_FORMS, read, { '--xh-number-field-input-radius': '11px' })
-
-    expect(legacy).toBe(bare)
+    expect(styleOf(part('number-field', 'input'), 'border-top-left-radius')).toBe('0px')
   })
 
   // 聚焦档：一体式盒的描边画在 control 上，由内层 input 拿到焦点触发 :focus-within
@@ -184,23 +145,15 @@ describe('number-field 的一体式盒有自己的名字', () => {
     // 描边色带过渡：聚焦后立刻读到的是插值起点，也就是常态那个色，两边永远同值
     setSlot('--xh-motion-duration-micro', '0s')
     for (const [name, value] of Object.entries(slots)) setSlot(name, value)
-    await mount(TWO_FORMS)
-    part('number-field', 'input', 0).focus()
+    await mount(NUMBER_FIELD)
+    part('number-field', 'input').focus()
     await nextTick()
     const value = styleOf(part('number-field', 'control'), 'border-top-color')
     teardown()
     return value
   }
 
-  it('设 --xh-number-field-input-border 时一体式盒的聚焦描边与什么都不写同值', async () => {
-    const bare = await focusedControlBorder()
-    const legacy = await focusedControlBorder({ '--xh-number-field-input-border': LIME })
-
-    expect(legacy).toBe(bare)
-    expect(legacy).not.toBe(LIME)
-  })
-
-  it('一体式盒的聚焦描边归 --xh-number-field-control-border-focus 管', async () => {
+  it('聚焦描边归 --xh-number-field-control-border-focus 管', async () => {
     const focused = await focusedControlBorder({ '--xh-number-field-control-border-focus': RED })
 
     expect(focused).toBe(RED)

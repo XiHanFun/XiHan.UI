@@ -22,7 +22,8 @@
     "steps",
     "tabs",
     "time-field",
-    "time-picker"
+    "time-picker",
+    "number-field"
   ],
   "categories": [
     {
