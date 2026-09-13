@@ -12,7 +12,9 @@
       </div>
       <div data-xh-part="item" value="1">
         <button data-xh-part="trigger">
-          <span data-xh-part="indicator">!</span>
+          <span data-xh-part="indicator">
+            <svg aria-hidden="true" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M18 6 6 18M6 6l12 12"/></svg>
+          </span>
           <span data-xh-part="title">资质审核</span>
           <span data-xh-part="description">材料不齐，被打回</span>
         </button>
@@ -43,9 +45,9 @@
   host.statuses = { [errorAt]: "error" };
   host.addEventListener("value-change", (event) => {
     indicators.forEach((indicator, index) => {
-      indicator.textContent = index === errorAt
-        ? "!"
-        : event.detail.value > index ? "" : String(index + 1);
+      if (index !== errorAt) {
+        indicator.textContent = event.detail.value > index ? "" : String(index + 1);
+      }
     });
   });
 </script>

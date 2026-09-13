@@ -1,6 +1,8 @@
 <!-- 错误状态 | 标记需要用户处理的步骤 -->
 <script setup lang="ts">
+import { XIcon } from "@xihan-ui/icons";
 import {
+  XhIcon,
   XhStepsContent,
   XhStepsDescription,
   XhStepsIndicator,
@@ -27,7 +29,8 @@ const errorAt = 1;
       <XhStepsItem v-for="(s, i) in steps" :key="s.title" :value="i">
         <XhStepsTrigger>
           <XhStepsIndicator>
-            {{ i === errorAt ? "!" : value > i ? "" : i + 1 }}
+            <XhIcon v-if="i === errorAt" :icon="XIcon" />
+            <template v-else>{{ value > i ? "" : i + 1 }}</template>
           </XhStepsIndicator>
           <XhStepsTitle>{{ s.title }}</XhStepsTitle>
           <XhStepsDescription>{{ s.description }}</XhStepsDescription>
