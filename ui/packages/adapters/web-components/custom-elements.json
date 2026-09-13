@@ -4593,13 +4593,13 @@
           "customElement": true,
           "cssProperties": [
             {
+              "name": "--xh-carousel-control-inset"
+            },
+            {
               "name": "--xh-carousel-duration"
             },
             {
               "name": "--xh-carousel-ease"
-            },
-            {
-              "name": "--xh-carousel-gap"
             },
             {
               "name": "--xh-carousel-icon-size"
@@ -4617,10 +4617,16 @@
               "name": "--xh-carousel-indicator-gap"
             },
             {
+              "name": "--xh-carousel-indicator-inset"
+            },
+            {
               "name": "--xh-carousel-indicator-radius"
             },
             {
               "name": "--xh-carousel-indicator-size"
+            },
+            {
+              "name": "--xh-carousel-indicator-size-current"
             },
             {
               "name": "--xh-carousel-trigger-bg"

@@ -289,30 +289,32 @@ slidesPerMove 与 slidesPerPage 分开给：一屏露三张、一次只挪一张
 
 | 变量 | 部件 | CSS 属性 | 状态 | 缺省来源 | 说明 |
 | --- | --- | --- | --- | --- | --- |
+| `--xh-carousel-control-inset` | `autoplay-trigger`<br>`indicator-group`<br>`next-trigger`<br>`prev-trigger`<br>`root` | `inset-block-end`<br>`inset-block-start`<br>`inset-inline-end`<br>`inset-inline-start` | `default`<br>`orientation=vertical` | `--xh-space-3` | carousel 的 autoplay-trigger、indicator-group、next-trigger、prev-trigger、root 部件 inset-block-end、inset-block-start、inset-inline-end、inset-inline-start 覆盖槽。 |
 | `--xh-carousel-duration` | `list` | `transition` | `default` | `--xh-motion-duration-slide` | carousel 的 list 部件 transition 覆盖槽。 |
 | `--xh-carousel-ease` | `list` | `transition` | `default` | `--xh-motion-ease-slide` | carousel 的 list 部件 transition 覆盖槽。 |
-| `--xh-carousel-gap` | `root` | `gap` | `default` | `--xh-space-2` | carousel 的 root 部件 gap 覆盖槽。 |
 | `--xh-carousel-icon-size` | `root` | `--xh-icon-size` | `default` | `--xh-glyph-size-text` | carousel 的 root 部件 --xh-icon-size 覆盖槽。 |
 | `--xh-carousel-indicator-bg` | `indicator` | `background` | `default` | `--xh-border-control` | carousel 的 indicator 部件 background 覆盖槽。 |
-| `--xh-carousel-indicator-bg-hover` | `indicator` | `background` | `current`<br>`hover`<br>`not([data-current])` | `--xh-fg-subtle` | carousel 的 indicator 部件 background 覆盖槽。 |
+| `--xh-carousel-indicator-bg-hover` | `indicator` | `--xh-carousel-indicator-bg` | `current`<br>`hover`<br>`not([data-current])` | `--xh-fg-subtle` | carousel 的 indicator 部件 --xh-carousel-indicator-bg 覆盖槽。 |
 | `--xh-carousel-indicator-bg-selected` | `indicator` | `background` | `current` | `--xh-bg-brand` | carousel 的 indicator 部件 background 覆盖槽。 |
 | `--xh-carousel-indicator-gap` | `indicator-group` | `gap` | `default` | `--xh-space-1` | carousel 的 indicator-group 部件 gap 覆盖槽。 |
+| `--xh-carousel-indicator-inset` | `indicator-group` | `inset-block-end` | `orientation=horizontal` | `--xh-space-3` | carousel 的 indicator-group 部件 inset-block-end 覆盖槽。 |
 | `--xh-carousel-indicator-radius` | `indicator` | `border-radius` | `default` | `--xh-shape-pill` | carousel 的 indicator 部件 border-radius 覆盖槽。 |
-| `--xh-carousel-indicator-size` | `indicator` | `block-size`<br>`inline-size` | `default` | `--xh-space-2` | carousel 的 indicator 部件 block-size、inline-size 覆盖槽。 |
-| `--xh-carousel-trigger-bg` | `autoplay-trigger`<br>`next-trigger`<br>`prev-trigger` | `background` | `default` | `--xh-bg-surface` | carousel 的 autoplay-trigger、next-trigger、prev-trigger 部件 background 覆盖槽。 |
+| `--xh-carousel-indicator-size` | `indicator`<br>`indicator-group` | `block-size`<br>`inline-size` | `current`<br>`default`<br>`orientation=vertical` | `--xh-space-4` | carousel 的 indicator、indicator-group 部件 block-size、inline-size 覆盖槽。 |
+| `--xh-carousel-indicator-size-current` | `indicator`<br>`indicator-group` | `block-size`<br>`inline-size` | `current`<br>`orientation=vertical` | `--xh-space-6` | carousel 的 indicator、indicator-group 部件 block-size、inline-size 覆盖槽。 |
+| `--xh-carousel-trigger-bg` | `autoplay-trigger`<br>`next-trigger`<br>`prev-trigger` | `background` | `default` | `--xh-bg-surface-raised` | carousel 的 autoplay-trigger、next-trigger、prev-trigger 部件 background 覆盖槽。 |
 | `--xh-carousel-trigger-bg-active` | `autoplay-trigger`<br>`next-trigger`<br>`prev-trigger` | `background` | `active`<br>`not(:disabled)` | `--xh-bg-subtle-active` | carousel 的 autoplay-trigger、next-trigger、prev-trigger 部件 background 覆盖槽。 |
 | `--xh-carousel-trigger-bg-hover` | `autoplay-trigger`<br>`next-trigger`<br>`prev-trigger` | `background` | `hover`<br>`not(:disabled)` | `--xh-bg-subtle-hover` | carousel 的 autoplay-trigger、next-trigger、prev-trigger 部件 background 覆盖槽。 |
-| `--xh-carousel-trigger-border` | `autoplay-trigger`<br>`next-trigger`<br>`prev-trigger` | `border` | `default` | `--xh-border-control` | carousel 的 autoplay-trigger、next-trigger、prev-trigger 部件 border 覆盖槽。 |
+| `--xh-carousel-trigger-border` | `autoplay-trigger`<br>`next-trigger`<br>`prev-trigger` | `border` | `default` | `transparent` | carousel 的 autoplay-trigger、next-trigger、prev-trigger 部件 border 覆盖槽。 |
 | `--xh-carousel-trigger-fg` | `autoplay-trigger`<br>`next-trigger`<br>`prev-trigger` | `color` | `default` | `--xh-fg-default` | carousel 的 autoplay-trigger、next-trigger、prev-trigger 部件 color 覆盖槽。 |
 | `--xh-carousel-trigger-radius` | `autoplay-trigger`<br>`next-trigger`<br>`prev-trigger` | `border-radius` | `default` | `--xh-shape-pill` | carousel 的 autoplay-trigger、next-trigger、prev-trigger 部件 border-radius 覆盖槽。 |
-| `--xh-carousel-trigger-shadow-hover` | `autoplay-trigger`<br>`next-trigger`<br>`prev-trigger` | `box-shadow` | `hover`<br>`not(:disabled)` | `--xh-elevation-raised` | carousel 的 autoplay-trigger、next-trigger、prev-trigger 部件 box-shadow 覆盖槽。 |
+| `--xh-carousel-trigger-shadow-hover` | `autoplay-trigger`<br>`next-trigger`<br>`prev-trigger` | `box-shadow` | `hover`<br>`not(:disabled)` | `none` | carousel 的 autoplay-trigger、next-trigger、prev-trigger 部件 box-shadow 覆盖槽。 |
 | `--xh-carousel-trigger-size` | `autoplay-trigger`<br>`next-trigger`<br>`prev-trigger` | `block-size`<br>`inline-size` | `default` | `--xh-control-h-md` | carousel 的 autoplay-trigger、next-trigger、prev-trigger 部件 block-size、inline-size 覆盖槽。 |
 | `--xh-carousel-viewport-radius` | `viewport` | `border-radius` | `default` | `--xh-shape-surface` | carousel 的 viewport 部件 border-radius 覆盖槽。 |
 <!-- xh-component-tokens:end -->
 
 ### 动效
 
-`background` · `border-color` · `box-shadow` · `scale` · `transform` 走 `transition` 过渡。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
+`background` · `block-size` · `border-color` · `box-shadow` · `inline-size` · `opacity` · `scale` · `transform` 走 `transition` 过渡。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
 
 皮肤之外还有一段：内核读系统的减弱动效偏好，据此决定要不要动。
 
@@ -321,3 +323,7 @@ slidesPerMove 与 slidesPerPage 分开给：一屏露三张、一次只挪一张
 ### 响应式
 
 皮肤另按输入能力分档：`pointer: coarse`——同一份皮肤在触屏与带指针的设备上不一样，与视口宽度无关。
+
+### RTL
+
+皮肤用逻辑属性排布（`inline-start` 一族），`dir="rtl"` 下自动镜像。
