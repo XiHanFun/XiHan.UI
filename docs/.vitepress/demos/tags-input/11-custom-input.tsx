@@ -1,7 +1,9 @@
 // 外部触发的输入会话 | 输入部件平时收起，按「添加」才露面并聚焦；打字时给候选，选中即落标签，失焦按 blur-behavior 收尾
 import type { ReactNode } from "react";
+import { PlusIcon } from "@xihan-ui/icons";
 import {
   XhButton,
+  XhIcon,
   XhTagsInputControl,
   XhTagsInputInput,
   XhTagsInputItem,
@@ -63,7 +65,8 @@ export default function Demo(): ReactNode {
                     disabled={atMax}
                     onClick={() => setTyping(true)}
                   >
-                    ＋ 添加
+                    <XhIcon icon={PlusIcon} />
+                    添加
                   </XhButton>
                 )}
           </XhTagsInputControl>
