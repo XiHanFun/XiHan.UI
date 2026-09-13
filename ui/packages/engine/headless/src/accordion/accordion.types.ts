@@ -1,6 +1,6 @@
 import type { Direction, MachineSchema, Orientation, PropTypes, Size, Tone } from '@xihan-ui/core'
 
-/** 形态：条目怎么与页面分开。缺省 plain 就是条目直接相邻、不画容器。 */
+/** 变体：条目怎么与页面分开。缺省 plain 就是条目直接相邻、不画容器。 */
 export type AccordionVariant = 'plain' | 'surface' | 'bordered'
 
 export interface AccordionValueChangeDetails {
@@ -54,13 +54,13 @@ export interface AccordionSchema extends MachineSchema {
     loop?: boolean
     /** 整组禁用：所有条目都不可切换，条目上写的 disabled 只能更严不能放宽。 */
     disabled?: boolean
-    /** 形态：plain / surface / bordered，决定条目怎么与页面分开。缺省 plain。 */
+    /** 变体：plain / surface / bordered，决定条目怎么与页面分开。缺省 plain。 */
     variant?: AccordionVariant
     /** 方向键轴向，默认 vertical。 */
     orientation?: Orientation
     /** 文字方向，默认 ltr；影响水平轴上 ArrowLeft/ArrowRight 的语义。 */
     dir?: Direction
-    /** 语气：brand / neutral / success / warning / danger / info，决定用哪族颜色。 */
+    /** 颜色：brand / neutral / success / warning / danger / info，决定使用哪组状态色。 */
     tone?: Tone
     /** 尺寸：sm / md / lg。 */
     size?: Size

@@ -9,7 +9,7 @@ export interface CollapsibleSchema extends MachineSchema {
     open?: boolean
     defaultOpen?: boolean
     disabled?: boolean
-    /** 语气：brand / neutral / success / warning / danger / info，决定用哪族颜色。 */
+    /** 颜色：brand / neutral / success / warning / danger / info，决定使用哪组状态色。 */
     tone?: Tone
     /** 尺寸：sm / md / lg。 */
     size?: Size

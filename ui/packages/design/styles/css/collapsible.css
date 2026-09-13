@@ -11,9 +11,12 @@
     --xh-icon-size: var(--xh-collapsible-icon-size, var(--xh-glyph-size-text));
 
     --xh-_collapsible-trigger-h: var(--xh-control-h-md);
-    --xh-_collapsible-trigger-px: var(--xh-control-px-md);
+    --xh-_collapsible-trigger-px: var(--xh-space-4);
+    --xh-_collapsible-trigger-py: var(--xh-space-4);
     --xh-_collapsible-trigger-gap: var(--xh-control-gap-md);
     --xh-_collapsible-trigger-font-size: var(--xh-control-font-md);
+    --xh-_collapsible-content-px: var(--xh-space-4);
+    --xh-_collapsible-content-pb: var(--xh-space-4);
 
     /* 语气落在展开着的触发器上，指示器写在触发器里、跟着继承这个色，不另立规则。
        没写 data-tone 时 --xh-_tone-fg 没被声明，退回原来的前景色。
@@ -37,16 +40,22 @@
   /* 缺省档写在上面那条里 */
   [data-scope='collapsible'][data-part='root'][data-size='sm'] {
     --xh-_collapsible-trigger-h: var(--xh-control-h-sm);
-    --xh-_collapsible-trigger-px: var(--xh-control-px-sm);
+    --xh-_collapsible-trigger-px: var(--xh-space-3);
+    --xh-_collapsible-trigger-py: var(--xh-space-3);
     --xh-_collapsible-trigger-gap: var(--xh-control-gap-sm);
     --xh-_collapsible-trigger-font-size: var(--xh-control-font-sm);
+    --xh-_collapsible-content-px: var(--xh-space-3);
+    --xh-_collapsible-content-pb: var(--xh-space-3);
   }
 
   [data-scope='collapsible'][data-part='root'][data-size='lg'] {
     --xh-_collapsible-trigger-h: var(--xh-control-h-lg);
-    --xh-_collapsible-trigger-px: var(--xh-control-px-lg);
+    --xh-_collapsible-trigger-px: var(--xh-space-5);
+    --xh-_collapsible-trigger-py: var(--xh-space-5);
     --xh-_collapsible-trigger-gap: var(--xh-control-gap-lg);
     --xh-_collapsible-trigger-font-size: var(--xh-control-font-lg);
+    --xh-_collapsible-content-px: var(--xh-space-5);
+    --xh-_collapsible-content-pb: var(--xh-space-5);
   }
 
   [data-scope='collapsible'][data-part='trigger'] {
@@ -55,7 +64,8 @@
     justify-content: space-between;
     inline-size: 100%;
     gap: var(--xh-collapsible-trigger-gap, var(--xh-_collapsible-trigger-gap));
-    block-size: var(--xh-collapsible-trigger-h, var(--xh-_collapsible-trigger-h));
+    min-block-size: var(--xh-collapsible-trigger-h, var(--xh-_collapsible-trigger-h));
+    padding-block: var(--xh-collapsible-trigger-py, var(--xh-_collapsible-trigger-py));
     padding-inline: var(--xh-collapsible-trigger-px, var(--xh-_collapsible-trigger-px));
     border: 0;
     border-radius: var(--xh-collapsible-trigger-radius, var(--xh-shape-control));
@@ -65,11 +75,13 @@
     font-weight: var(--xh-collapsible-trigger-font-weight, var(--xh-text-label-weight));
     line-height: var(--xh-leading-none);
     cursor: pointer;
-    transition: scale var(--xh-motion-duration-micro) var(--xh-motion-ease-enter-strong);
+    transition:
+      background var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
+      scale var(--xh-motion-duration-micro) var(--xh-motion-ease-enter-strong);
   }
 
-  [data-scope='collapsible'][data-part='trigger']:hover {
-    background: var(--xh-collapsible-trigger-bg-hover, var(--xh-bg-subtle));
+  [data-scope='collapsible'][data-part='trigger']:not([data-disabled]):not([data-state='open']):hover {
+    background: var(--xh-collapsible-trigger-bg-hover, var(--xh-bg-subtle-hover));
   }
 
   /* 按下去要有回应：整条按钮轻微下压，松手即弹回 */
@@ -92,6 +104,7 @@
     flex: none;
     align-items: center;
     justify-content: center;
+    color: var(--xh-collapsible-indicator-fg, var(--xh-fg-muted));
     line-height: var(--xh-leading-none);
     transition: rotate var(--xh-motion-duration-micro) var(--xh-motion-ease-enter-strong);
   }
@@ -118,8 +131,12 @@
     display: grid;
     grid-template-rows: 1fr;
     overflow: clip;
-    padding-block: var(--xh-collapsible-content-py, var(--xh-stack-gap-md));
-    color: var(--xh-collapsible-content-fg, var(--xh-fg-default));
+    padding-block-start: 0;
+    padding-block-end: var(--xh-collapsible-content-pb, var(--xh-_collapsible-content-pb));
+    padding-inline: var(--xh-collapsible-content-px, var(--xh-_collapsible-content-px));
+    color: var(--xh-collapsible-content-fg, var(--xh-fg-muted));
+    font-size: var(--xh-collapsible-content-font-size, var(--xh-text-secondary-size));
+    line-height: var(--xh-leading-normal);
   }
 
   /* 展开那一档才提前备好行高这条通道：属性随 data-state 一起消失，收起后不长期占着 */
@@ -138,24 +155,24 @@
   @keyframes xh-collapsible-expand {
     from {
       grid-template-rows: 0fr;
-      padding-block: 0;
+      padding-block-end: 0;
     }
 
     to {
       grid-template-rows: 1fr;
-      padding-block: var(--xh-collapsible-content-py, var(--xh-stack-gap-md));
+      padding-block-end: var(--xh-collapsible-content-pb, var(--xh-_collapsible-content-pb));
     }
   }
 
   @keyframes xh-collapsible-collapse {
     from {
       grid-template-rows: 1fr;
-      padding-block: var(--xh-collapsible-content-py, var(--xh-stack-gap-md));
+      padding-block-end: var(--xh-collapsible-content-pb, var(--xh-_collapsible-content-pb));
     }
 
     to {
       grid-template-rows: 0fr;
-      padding-block: 0;
+      padding-block-end: 0;
     }
   }
 
