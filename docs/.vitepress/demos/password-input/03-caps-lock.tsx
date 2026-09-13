@@ -20,7 +20,7 @@ export default function Demo(): ReactNode {
         <XhPasswordInputInput style={{ inlineSize: "220px" }} />
         {/* 节点留空：区里的文字由组件写，写的就是 translations.capsLockOn */}
         <XhPasswordInputCapsLockIndicator />
-        <XhPasswordInputVisibilityTrigger>○</XhPasswordInputVisibilityTrigger>
+        <XhPasswordInputVisibilityTrigger />
       </XhPasswordInputControl>
     </XhPasswordInputRoot>
   );

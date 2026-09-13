@@ -16,7 +16,7 @@ import {
       <XhPasswordInputLabel>设置新密码</XhPasswordInputLabel>
       <XhPasswordInputControl>
         <XhPasswordInputInput style="inline-size: 200px" />
-        <XhPasswordInputVisibilityTrigger>○</XhPasswordInputVisibilityTrigger>
+        <XhPasswordInputVisibilityTrigger />
       </XhPasswordInputControl>
     </XhPasswordInputRoot>
     <button type="reset">重置</button>

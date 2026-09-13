@@ -14,7 +14,7 @@ import {
     <XhPasswordInputLabel>sm</XhPasswordInputLabel>
     <XhPasswordInputControl>
       <XhPasswordInputInput style="inline-size: 160px" />
-      <XhPasswordInputVisibilityTrigger>○</XhPasswordInputVisibilityTrigger>
+      <XhPasswordInputVisibilityTrigger />
     </XhPasswordInputControl>
   </XhPasswordInputRoot>
 
@@ -22,7 +22,7 @@ import {
     <XhPasswordInputLabel>缺省</XhPasswordInputLabel>
     <XhPasswordInputControl>
       <XhPasswordInputInput style="inline-size: 160px" />
-      <XhPasswordInputVisibilityTrigger>○</XhPasswordInputVisibilityTrigger>
+      <XhPasswordInputVisibilityTrigger />
     </XhPasswordInputControl>
   </XhPasswordInputRoot>
 
@@ -30,7 +30,7 @@ import {
     <XhPasswordInputLabel>lg</XhPasswordInputLabel>
     <XhPasswordInputControl>
       <XhPasswordInputInput style="inline-size: 160px" />
-      <XhPasswordInputVisibilityTrigger>○</XhPasswordInputVisibilityTrigger>
+      <XhPasswordInputVisibilityTrigger />
     </XhPasswordInputControl>
   </XhPasswordInputRoot>
 </template>

@@ -16,7 +16,7 @@ const variants = ["outline", "subtle", "ghost"] as const;
     <XhPasswordInputLabel>{{ v }}</XhPasswordInputLabel>
     <XhPasswordInputControl>
       <XhPasswordInputInput style="inline-size: 160px" />
-      <XhPasswordInputVisibilityTrigger>○</XhPasswordInputVisibilityTrigger>
+      <XhPasswordInputVisibilityTrigger />
     </XhPasswordInputControl>
   </XhPasswordInputRoot>
 </template>

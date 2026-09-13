@@ -96,11 +96,11 @@ afterEach(async () => {
 describe('password-input Field Chrome 细节', () => {
   it('三尺寸与 compact 同步缩放高度、间距、动作盒和半高分隔', async () => {
     const cases = [
-      ['comfortable-sm', 'comfortable', 'sm', 28, 4, 24],
-      ['comfortable-md', 'comfortable', 'md', 32, 8, 24],
+      ['comfortable-sm', 'comfortable', 'sm', 32, 4, 24],
+      ['comfortable-md', 'comfortable', 'md', 36, 8, 24],
       ['comfortable-lg', 'comfortable', 'lg', 40, 12, 24],
-      ['compact-sm', 'compact', 'sm', 24, 4, 20],
-      ['compact-md', 'compact', 'md', 28, 6, 20],
+      ['compact-sm', 'compact', 'sm', 28, 4, 20],
+      ['compact-md', 'compact', 'md', 32, 6, 20],
       ['compact-lg', 'compact', 'lg', 36, 8, 20],
     ] as const
     await mount(cases.map(([id, density, size]) => fieldNode(id, { density, size })))
@@ -173,6 +173,24 @@ describe('password-input Field Chrome 细节', () => {
     expect(resolveColor(disabledInput, '--xh-_password-input-autofill-fg'))
       .toBe(getComputedStyle(disabledInput).color)
     expect(resolveColor(part('ghost', 'input'), '--xh-_password-input-autofill-bg')).not.toBe('rgba(0, 0, 0, 0)')
+  })
+
+  it('空切换钮使用内置眼睛字形并随明暗状态切换', async () => {
+    await mount([fieldNode('glyph')])
+    const trigger = part('glyph', 'visibility-trigger') as HTMLButtonElement
+    const mask = (): string => {
+      const style = getComputedStyle(trigger, '::before')
+      return style.maskImage || style.webkitMaskImage || ''
+    }
+    const hiddenMask = mask()
+
+    expect(trigger.textContent).toBe('')
+    expect(hiddenMask).toContain('data:image/svg')
+    await userEvent.click(trigger)
+    await nextTick()
+    expect(trigger.dataset.state).toBe('visible')
+    expect(mask()).toContain('data:image/svg')
+    expect(mask()).not.toBe(hiddenMask)
   })
 
   it('forced-colors 保留动作分隔，禁用分隔改用系统禁用色', async () => {
