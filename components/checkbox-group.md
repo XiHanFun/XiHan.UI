@@ -1,6 +1,6 @@
 来源：https://ui.docs.xihanfun.com/components/checkbox-group
 
-# CheckboxGroup 复选框组
+# CheckboxGroup 复选框组 `alpha`
 
 从一组选项中选择任意多项。
 

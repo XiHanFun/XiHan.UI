@@ -1,0 +1,1 @@
+import{q as e}from"./theme.Dk_9lYjD.js";import{d as a,b as o,w as r,k as n,o as s,a as f}from"./framework.DkvuVDKz.js";const x=a({__name:"gradient-text",setup(i){return(p,t)=>(s(),o(n(e),{style:{"font-size":"24px","font-weight":"700"}},{default:r(()=>[...t[0]||(t[0]=[f("渐变文字",-1)])]),_:1}))}});export{x as default};

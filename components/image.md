@@ -1,6 +1,6 @@
 来源：https://ui.docs.xihanfun.com/components/image
 
-# Image 图片
+# Image 图片 `alpha`
 
 一张图，带加载状态与失败回退。
 

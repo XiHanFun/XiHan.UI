@@ -1,6 +1,6 @@
 来源：https://ui.docs.xihanfun.com/components/question-flow
 
-# QuestionFlow 澄清问卷
+# QuestionFlow 澄清问卷 `alpha`
 
 动手之前先问几句：一次一题，人逐题作答，答完一起提交。
 

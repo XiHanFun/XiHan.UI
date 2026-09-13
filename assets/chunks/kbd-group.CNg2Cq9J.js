@@ -1,1 +1,0 @@
-import{s as o}from"./theme.o20Ye0K_.js";import{d as e,b as r,k as s,o as a}from"./framework.DkvuVDKz.js";const m=e({__name:"kbd-group",setup(t){return(n,p)=>(a(),r(s(o),{keys:["Mod","K"]}))}});export{m as default};

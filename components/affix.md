@@ -1,6 +1,6 @@
 来源：https://ui.docs.xihanfun.com/components/affix
 
-# Affix 固钉
+# Affix 固钉 `alpha`
 
 在滚动超过指定位置后固定内容。
 

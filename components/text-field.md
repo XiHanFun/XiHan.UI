@@ -1,6 +1,6 @@
 来源：https://ui.docs.xihanfun.com/components/text-field
 
-# TextField 文本输入
+# TextField 文本字段 `alpha`
 
 单行或多行的自由文本输入。
 
@@ -27,16 +27,9 @@ import {
 </script>
 
 <template>
-  <XhTextFieldRoot placeholder="请输入昵称">
-    <XhTextFieldLabel>昵称</XhTextFieldLabel>
-    <XhTextFieldControl style="inline-size: 200px">
-      <XhTextFieldInput />
-    </XhTextFieldControl>
-  </XhTextFieldRoot>
-
-  <XhTextFieldRoot default-value="曦寒">
-    <XhTextFieldLabel>带初值</XhTextFieldLabel>
-    <XhTextFieldControl style="inline-size: 200px">
+  <XhTextFieldRoot name="email" type="email" placeholder="输入你的邮箱">
+    <XhTextFieldLabel>邮箱</XhTextFieldLabel>
+    <XhTextFieldControl style="inline-size: 16rem">
       <XhTextFieldInput />
     </XhTextFieldControl>
   </XhTextFieldRoot>
@@ -44,19 +37,10 @@ import {
 ```
 
 ```html
-<xh-text-field placeholder="请输入昵称">
+<xh-text-field name="email" type="email" placeholder="输入你的邮箱">
   <div data-xh-part="root">
-    <label data-xh-part="label">昵称</label>
-    <div data-xh-part="control" style="inline-size: 200px">
-      <input data-xh-part="input" />
-    </div>
-  </div>
-</xh-text-field>
-
-<xh-text-field default-value="曦寒">
-  <div data-xh-part="root">
-    <label data-xh-part="label">带初值</label>
-    <div data-xh-part="control" style="inline-size: 200px">
+    <label data-xh-part="label">邮箱</label>
+    <div data-xh-part="control" style="inline-size: 16rem">
       <input data-xh-part="input" />
     </div>
   </div>
@@ -1238,7 +1222,7 @@ const note = ref("");
 ### 何时不用
 
 - 值来自一份已知清单：用[选择器](./select)或[组合框](./combobox)。
-- 输入的是数字并需要加减：用[数字输入](./number-field)。
+- 输入的是数字并需要加减：用[数字字段](./number-field)。
 - 输入的是日期或时间：用[日期输入](./date-field)、[时间输入](./time-field)。
 
 ### 特性

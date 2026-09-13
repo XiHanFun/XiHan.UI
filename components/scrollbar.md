@@ -1,6 +1,6 @@
 来源：https://ui.docs.xihanfun.com/components/scrollbar
 
-# Scrollbar 滚动条
+# Scrollbar 滚动条 `alpha`
 
 为现有滚动容器提供一致的滚动条样式。
 

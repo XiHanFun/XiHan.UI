@@ -1,6 +1,6 @@
 来源：https://ui.docs.xihanfun.com/components/tags-input
 
-# TagsInput 标签输入
+# TagsInput 标签输入 `alpha`
 
 在一个输入框里录入一串标签：回车或分隔符成词，每个词是一枚可删的标签。
 

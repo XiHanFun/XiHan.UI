@@ -1,6 +1,6 @@
 来源：https://ui.docs.xihanfun.com/components/tag
 
-# Tag 标签
+# Tag 标签 `alpha`
 
 告诉你这是什么：一个分类、一项技能、一个筛选条件。它承载实体身份，可以被摘掉。
 标签说的是「它是什么」，不是「有事情发生了」——后者是[徽标](./badge)的活。

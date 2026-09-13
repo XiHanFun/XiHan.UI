@@ -1,6 +1,6 @@
 来源：https://ui.docs.xihanfun.com/components/popconfirm
 
-# Popconfirm 弹出确认
+# Popconfirm 弹出确认 `alpha`
 
 贴着触发器的一句确认：比对话框轻，但仍拦住一次误操作。
 

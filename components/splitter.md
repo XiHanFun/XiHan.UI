@@ -1,6 +1,6 @@
 来源：https://ui.docs.xihanfun.com/components/splitter
 
-# Splitter 分栏
+# Splitter 分栏 `alpha`
 
 将内容区域拆分为可调整大小的面板。
 

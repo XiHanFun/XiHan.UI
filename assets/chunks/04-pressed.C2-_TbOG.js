@@ -1,0 +1,1 @@
+import{j as r}from"./jsx-runtime.BjG_zV1W.js";import{X as t}from"./kbd.JfKjOIAY.js";import"./jsx-runtime.Bq2ItkaD.js";import"./theme.Dk_9lYjD.js";import"./framework.DkvuVDKz.js";import"./config.D7JXRkpv.js";import"./index.CVfUds7h.js";import"./use-kbd-platform.DzaOFQ9q.js";function n(){return r.jsx(t,{value:"Enter",pressed:!0})}export{n as default};

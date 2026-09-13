@@ -1,6 +1,6 @@
 来源：https://ui.docs.xihanfun.com/components/switch
 
-# Switch 开关
+# Switch 开关 `alpha`
 
 一项设置的开与关，翻过去立即生效。
 

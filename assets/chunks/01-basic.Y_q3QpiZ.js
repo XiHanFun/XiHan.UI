@@ -1,0 +1,1 @@
+import{j as t}from"./jsx-runtime.BjG_zV1W.js";import{X as o}from"./highlight.BLKOcxV3.js";import"./jsx-runtime.Bq2ItkaD.js";import"./theme.Dk_9lYjD.js";import"./framework.DkvuVDKz.js";const r="曦寒 UI 是一套框架无关的设计系统运行时，组件的行为与皮肤各走各的。";function n(){return t.jsx(o,{text:r,keyword:"组件"})}export{n as default};

@@ -1,1 +1,0 @@
-import{bj as o}from"./theme.o20Ye0K_.js";import{d as n,o as r,b as s,w as d,a as c,k as p,p as i}from"./framework.DkvuVDKz.js";const l=n({__name:"02-indeterminate",setup(m){const t=i("indeterminate");return(f,e)=>(r(),s(p(o),{checked:t.value,"onUpdate:checked":e[0]||(e[0]=a=>t.value=a)},{default:d(()=>[...e[1]||(e[1]=[c("选择全部",-1)])]),_:1},8,["checked"]))}});export{l as default};

@@ -1,6 +1,6 @@
 来源：https://ui.docs.xihanfun.com/components/transfer
 
-# Transfer 穿梭框
+# Transfer 穿梭框 `alpha`
 
 左右两栏，把条目从一边搬到另一边。
 

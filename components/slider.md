@@ -1,6 +1,6 @@
 来源：https://ui.docs.xihanfun.com/components/slider
 
-# Slider 滑块
+# Slider 滑块 `alpha`
 
 在一个连续或离散的区间里拖出一个值或一段范围。
 

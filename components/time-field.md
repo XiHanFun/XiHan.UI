@@ -1,8 +1,8 @@
 来源：https://ui.docs.xihanfun.com/components/time-field
 
-# TimeField 时间输入
+# TimeField 时间字段 `alpha`
 
-分段的时间输入框：时、分、秒各占一段，方向键加减。
+按时、分、秒逐段输入时间，适合已经知道目标时间、无需打开选择面板的场景。
 
 <div class="xh-resource-links">
   <a href="https://github.com/XiHanFun/XiHan.UI/tree/dev/ui/packages/engine/headless/src/time-field" target="_blank" rel="noreferrer">Headless</a>
@@ -14,7 +14,7 @@
 
 ## 用法
 
-默认 24 小时制，上下键在段区间里回绕，缺一段整份值就退回空串
+输入时间
 
 ```vue
 <script setup lang="ts">
@@ -26,59 +26,43 @@ import {
   XhTimeFieldSegment,
   XhTimeFieldSegmentGroup,
 } from "@xihan-ui/vue";
-import { ref } from "vue";
-
-const value = ref("");
 </script>
 
 <template>
-  <XhTimeFieldRoot v-model:value="value" name="start">
+  <XhTimeFieldRoot
+    name="start-time"
+    style="--xh-time-field-control-min-w: calc(var(--xh-control-min-w) + var(--xh-control-h-md) + var(--xh-space-6))"
+  >
     <XhTimeFieldLabel>开始时间</XhTimeFieldLabel>
     <XhTimeFieldControl>
       <XhTimeFieldSegmentGroup>
-        <!-- 段的身份由作者声明；中间的「:」是普通节点，换段时不会被当成一站 -->
         <XhTimeFieldSegment segment="hour" />
         <span>:</span>
         <XhTimeFieldSegment segment="minute" />
       </XhTimeFieldSegmentGroup>
     </XhTimeFieldControl>
-    <!-- 表单出口：缺段时它就是空的 -->
     <XhTimeFieldHiddenInput />
   </XhTimeFieldRoot>
-
-  <span style="font-size: 13px">当前值：{{ value || "（未填齐）" }}</span>
 </template>
 ```
 
 ```html
-<div style="display: grid; gap: 8px; justify-items: start">
-  <xh-time-field id="time-field-basic" name="start">
-    <div data-xh-part="root">
-      <label data-xh-part="label">开始时间</label>
-      <div data-xh-part="control">
-        <div data-xh-part="segment-group">
-          <!-- 段的身份由作者声明；中间的「:」是普通节点，换段时不会被当成一站 -->
-          <span data-xh-part="segment" segment="hour"></span>
-          <span>:</span>
-          <span data-xh-part="segment" segment="minute"></span>
-        </div>
+<xh-time-field name="start-time">
+  <div
+    data-xh-part="root"
+    style="--xh-time-field-control-min-w: calc(var(--xh-control-min-w) + var(--xh-control-h-md) + var(--xh-space-6))"
+  >
+    <label data-xh-part="label">开始时间</label>
+    <div data-xh-part="control">
+      <div data-xh-part="segment-group">
+        <span data-xh-part="segment" segment="hour"></span>
+        <span>:</span>
+        <span data-xh-part="segment" segment="minute"></span>
       </div>
-      <!-- 表单出口：缺段时它就是空的 -->
-      <input data-xh-part="hidden-input" />
     </div>
-  </xh-time-field>
-
-  <span style="font-size: 13px">当前值：<span id="time-field-basic-readout">（未填齐）</span></span>
-</div>
-
-<script type="module">
-  // 值变化回显在下面那行文字里
-  const field = document.getElementById("time-field-basic");
-  const readout = document.getElementById("time-field-basic-readout");
-  field.addEventListener("value-change", (event) => {
-    readout.textContent = event.detail.value || "（未填齐）";
-  });
-</script>
+    <input data-xh-part="hidden-input" />
+  </div>
+</xh-time-field>
 ```
 
 ## 组件结构
@@ -799,6 +783,7 @@ function snap(next: string) {
 - `hourCycle` 切 12 / 24 小时制，12 小时制时自动多一个上下午段位。
 - `granularity` 决定精确到分还是到秒。
 - `min` / `max` 越界时只标注不改写。
+- 标准组合包含标签、输入框、时间段和隐藏表单输入；聚焦只强调正在编辑的时间段。
 - 框内自带清空钮（`clear-trigger`）：有值才显形，点完焦点回到第一段。
 
 ### 组合
@@ -808,6 +793,7 @@ function snap(next: string) {
 ### 最佳实践
 
 - 明确时区归属：组件处理的是墙上时间，时区换算是宿主的事。
+- 给参与表单提交的字段设置 `name`，并渲染隐藏输入部件。
 - 12 小时制下上下午段位不能省，否则用户输入的时间有二义。
 
 ### 反模式
@@ -949,6 +935,8 @@ function snap(next: string) {
 
 `@xihan-ui/styles/time-field.css` 使用 `[data-scope="time-field"][data-part="root"]` 部件选择器，位于 `xihan.components` 层。覆盖样式使用 `xihan.overrides`。
 
+`forced-colors: active` 下另有一套规则：颜色交给系统，边框与状态标记改用系统色关键字。
+
 ### 数据属性
 
 由 `connect` 生成；条件不成立时不输出无值属性。
@@ -1005,7 +993,7 @@ function snap(next: string) {
 | `--xh-time-field-control-h` | `control` | `block-size` | `default` | `--xh-_time-field-control-h` | time-field 的 control 部件 block-size 覆盖槽。 |
 | `--xh-time-field-control-min-w` | `control`<br>`root` | `min-inline-size` | `default` | `--xh-control-min-w` | time-field 的 control、root 部件 min-inline-size 覆盖槽。 |
 | `--xh-time-field-control-px` | `control` | `padding-inline` | `default` | `--xh-_time-field-control-px` | time-field 的 control 部件 padding-inline 覆盖槽。 |
-| `--xh-time-field-control-radius` | `control` | `border-radius` | `default` | `--xh-shape-control` | time-field 的 control 部件 border-radius 覆盖槽。 |
+| `--xh-time-field-control-radius` | `control` | `border-radius` | `default` | `--xh-shape-surface` | time-field 的 control 部件 border-radius 覆盖槽。 |
 | `--xh-time-field-control-shadow` | `control` | `box-shadow` | `default` | `--xh-_time-field-control-shadow` | time-field 的 control 部件 box-shadow 覆盖槽。 |
 | `--xh-time-field-font-size` | `control` | `font-size` | `default` | `--xh-_time-field-font-size` | time-field 的 control 部件 font-size 覆盖槽。 |
 | `--xh-time-field-gap` | `root` | `gap` | `default` | `--xh-space-1` | time-field 的 root 部件 gap 覆盖槽。 |
@@ -1014,11 +1002,15 @@ function snap(next: string) {
 | `--xh-time-field-label-fg-disabled` | `label` | `color` | `disabled` | `--xh-fg-subtle` | time-field 的 label 部件 color 覆盖槽。 |
 | `--xh-time-field-label-font-size` | `label` | `font-size` | `default` | `--xh-_time-field-label-font-size` | time-field 的 label 部件 font-size 覆盖槽。 |
 | `--xh-time-field-label-font-weight` | `label` | `font-weight` | `default` | `--xh-text-label-weight` | time-field 的 label 部件 font-weight 覆盖槽。 |
+| `--xh-time-field-literal-fg` | `segment-group` | `color` | `not([data-scope])` | `--xh-fg-subtle` | time-field 的 segment-group 部件 color 覆盖槽。 |
 | `--xh-time-field-placeholder-fg` | `segment` | `color` | `placeholder` | `--xh-fg-subtle` | time-field 的 segment 部件 color 覆盖槽。 |
 | `--xh-time-field-segment-bg-focus` | `segment` | `background` | `disabled`<br>`focus`<br>`focus-visible`<br>`not([data-disabled])` | `--xh-_time-field-segment-bg` | time-field 的 segment 部件 background 覆盖槽。 |
 | `--xh-time-field-segment-bg-hover` | `segment` | `background` | `disabled`<br>`focus`<br>`hover`<br>`not([data-focus], [data-disabled])` | `--xh-bg-subtle-hover` | time-field 的 segment 部件 background 覆盖槽。 |
+| `--xh-time-field-segment-bg-invalid-focus` | `segment` | `background` | `focus`<br>`invalid`<br>`is([data-focus], :focus-visible)` | `--xh-bg-subtle` | time-field 的 segment 部件 background 覆盖槽。 |
 | `--xh-time-field-segment-fg-focus` | `segment` | `color` | `disabled`<br>`focus`<br>`focus-visible`<br>`not([data-disabled])`<br>`placeholder` | `--xh-_time-field-segment-fg` | time-field 的 segment 部件 color 覆盖槽。 |
-| `--xh-time-field-segment-px` | `segment` | `padding-inline` | `default` | `--xh-space-1` | time-field 的 segment 部件 padding-inline 覆盖槽。 |
+| `--xh-time-field-segment-fg-invalid` | `segment` | `color` | `invalid` | `--xh-fg-danger` | time-field 的 segment 部件 color 覆盖槽。 |
+| `--xh-time-field-segment-fg-invalid-focus` | `segment` | `color` | `focus`<br>`invalid`<br>`is([data-focus], :focus-visible)` | `--xh-fg-danger` | time-field 的 segment 部件 color 覆盖槽。 |
+| `--xh-time-field-segment-px` | `segment` | `padding-inline` | `default` | `--xh-space-0_5` | time-field 的 segment 部件 padding-inline 覆盖槽。 |
 | `--xh-time-field-segment-py` | `segment` | `padding-block` | `default` | `--xh-space-0` | time-field 的 segment 部件 padding-block 覆盖槽。 |
 | `--xh-time-field-segment-radius` | `segment` | `border-radius` | `default` | `--xh-shape-inset` | time-field 的 segment 部件 border-radius 覆盖槽。 |
 <!-- xh-component-tokens:end -->

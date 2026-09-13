@@ -1,1 +1,0 @@
-import{j as r}from"./jsx-runtime.BjG_zV1W.js";import{X as o}from"./spinner.B1bfgVBu.js";import"./jsx-runtime.PWAf6Kuf.js";import"./theme.o20Ye0K_.js";import"./framework.DkvuVDKz.js";import"./config.BUbJZZG1.js";import"./index.CVfUds7h.js";function a(){return r.jsx(o,{label:"加载中"})}export{a as default};

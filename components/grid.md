@@ -1,6 +1,6 @@
 来源：https://ui.docs.xihanfun.com/components/grid
 
-# Grid 栅格
+# Grid 栅格 `alpha`
 
 按行列排列内容。
 

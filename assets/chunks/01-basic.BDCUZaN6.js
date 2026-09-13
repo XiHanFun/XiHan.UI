@@ -1,1 +1,0 @@
-import{j as o}from"./jsx-runtime.BjG_zV1W.js";import{C as r}from"./index.Hc5X0IOq.js";import{X as t}from"./icon.BAAZXH3x.js";import"./jsx-runtime.PWAf6Kuf.js";import"./theme.o20Ye0K_.js";import"./framework.DkvuVDKz.js";import"./config.BUbJZZG1.js";import"./index.CVfUds7h.js";import"./slot-content.DPoKlr88.js";function u(){return o.jsx(t,{icon:r})}export{u as default};

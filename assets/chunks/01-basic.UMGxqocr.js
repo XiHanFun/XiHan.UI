@@ -1,0 +1,18 @@
+const a=`<!-- 基础用法 | 输入时间 -->
+<xh-time-field name="start-time">
+  <div
+    data-xh-part="root"
+    style="--xh-time-field-control-min-w: calc(var(--xh-control-min-w) + var(--xh-control-h-md) + var(--xh-space-6))"
+  >
+    <label data-xh-part="label">开始时间</label>
+    <div data-xh-part="control">
+      <div data-xh-part="segment-group">
+        <span data-xh-part="segment" segment="hour"></span>
+        <span>:</span>
+        <span data-xh-part="segment" segment="minute"></span>
+      </div>
+    </div>
+    <input data-xh-part="hidden-input" />
+  </div>
+</xh-time-field>
+`;export{a as default};

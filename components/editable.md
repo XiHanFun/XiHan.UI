@@ -1,6 +1,6 @@
 来源：https://ui.docs.xihanfun.com/components/editable
 
-# Editable 就地编辑
+# Editable 就地编辑 `alpha`
 
 用于在当前位置查看和编辑短文本。
 

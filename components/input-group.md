@@ -1,6 +1,6 @@
 来源：https://ui.docs.xihanfun.com/components/input-group
 
-# InputGroup 输入组
+# InputGroup 输入组 `alpha`
 
 用于在同一输入表面中组合前缀、输入控件和后缀。
 

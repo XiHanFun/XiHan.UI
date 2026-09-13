@@ -1,6 +1,6 @@
 来源：https://ui.docs.xihanfun.com/components/number-field
 
-# NumberField 数字输入
+# NumberField 数字字段 `alpha`
 
 带加减与区间约束的数值输入。
 
@@ -29,8 +29,8 @@ import {
 </script>
 
 <template>
-  <XhNumberFieldRoot default-value="1">
-    <XhNumberFieldLabel>数量</XhNumberFieldLabel>
+  <XhNumberFieldRoot default-value="1024" :min="0" name="width">
+    <XhNumberFieldLabel>宽度</XhNumberFieldLabel>
     <XhNumberFieldControl>
       <XhNumberFieldDecrementTrigger />
       <XhNumberFieldInput />
@@ -41,9 +41,9 @@ import {
 ```
 
 ```html
-<xh-number-field default-value="1">
+<xh-number-field default-value="1024" min="0" name="width">
   <div data-xh-part="root">
-    <label data-xh-part="label">数量</label>
+    <label data-xh-part="label">宽度</label>
     <div data-xh-part="control">
       <button data-xh-part="decrement-trigger"></button>
       <input data-xh-part="input" />
@@ -1074,7 +1074,7 @@ const formatWeight = (value: number) => `${value} kg`;
 ### 何时不用
 
 - 用户更关心相对位置而非精确值：用[滑块](./slider)。
-- 值实际是编号或电话（不参与运算）：用[文本输入](./text-field)，数字输入的千分位与步进会碍事。
+- 值实际是编号或电话（不参与运算）：用[文本输入框](./text-field)，数字字段的千分位与步进会碍事。
 
 ### 特性
 
@@ -1083,15 +1083,15 @@ const formatWeight = (value: number) => `${value} kg`;
 - `parse` / `format` 一对，用来接固定小数位、千分位、货币符号或自定义换算。
 - 越界的值在失焦规范化时被夹回区间。
 - `prefix` / `suffix` 在框内摆货币符、单位或图标，两段对读屏隐藏。
-- `control` 是输入、前后缀与两颗动作共用的唯一 Field Chrome；内嵌动作保持透明，只用短分隔线、
-  悬停底与按压缩放报告边界和操作状态，不增加侧条或品牌色展开底。
-- comfortable 下 `sm` / `md` / `lg` 控件高为 28 / 32 / 40px，动作盒为 24 / 24 / 32px；compact
-  下分别为 24 / 28 / 36px 与 20 / 20 / 28px。数字使用等宽字形，前缀、数值和后缀共用中线。
+- `control` 是输入、前后缀与两颗动作共用的唯一视觉盒；默认无可见描边、带轻阴影，悬停与聚焦由
+  整体盒统一反馈。两侧动作占满控件高度，常态和悬停保持透明，按下时才显示动作反馈。
+- comfortable 下 `sm` / `md` / `lg` 控件高为 32 / 36 / 40px；compact 下分别为 28 / 32 / 36px。
+  两侧动作区宽度跟随密度档，数字使用等宽字形，前缀、数值和后缀共用中线。
 - 粗指针环境会把真实加减按钮与控件高度扩到 comfortable 48px、compact 44px；命中区由 flex
   子项本身承担，不用伪元素伸进输入区，两颗按钮及输入区互不重叠。
 - Tab 只停在 `spinbutton` 输入框，聚焦环由整个 `control` 统一绘制；加减钮退出 Tab 序列，但仍可由
   指针和公开 API 操作。到达 `min` / `max` 时只禁用对应方向，`disabled` / `readOnly` 才同时锁住两侧。
-- 分隔线长度为控件高度的一半，颜色默认取 M1 柔和分隔色；位置使用逻辑属性，RTL 下自动换边。
+- 两侧动作与输入之间使用全高柔和分隔线；位置使用逻辑属性，RTL 下自动换边。
 
 ### 组合
 
@@ -1278,16 +1278,18 @@ const formatWeight = (value: number) => `${value} kg`;
 | `--xh-number-field-affix-font-size` | `prefix`<br>`suffix` | `font-size` | `default` | `--xh-_number-field-font-size` | number-field 的 prefix、suffix 部件 font-size 覆盖槽。 |
 | `--xh-number-field-control-bg` | `control` | `background` | `default` | `--xh-_number-field-bg` | number-field 的 control 部件 background 覆盖槽。 |
 | `--xh-number-field-control-bg-disabled` | `control` | `background` | `disabled` | `--xh-bg-subtle` | number-field 的 control 部件 background 覆盖槽。 |
+| `--xh-number-field-control-bg-focus` | `control` | `background` | `disabled`<br>`focus-within`<br>`not([data-disabled])` | `--xh-_number-field-bg-focus` | number-field 的 control 部件 background 覆盖槽。 |
 | `--xh-number-field-control-bg-hover` | `control` | `background` | `disabled`<br>`hover`<br>`invalid`<br>`not([data-disabled], [data-readonly], [data-invalid])`<br>`readonly` | `--xh-_number-field-bg-hover` | number-field 的 control 部件 background 覆盖槽。 |
+| `--xh-number-field-control-bg-invalid` | `control` | `background` | `invalid` | `--xh-_number-field-bg-focus` | number-field 的 control 部件 background 覆盖槽。 |
 | `--xh-number-field-control-bg-readonly` | `control` | `background` | `readonly` | `--xh-bg-subtle` | number-field 的 control 部件 background 覆盖槽。 |
 | `--xh-number-field-control-border` | `control` | `border` | `default` | `--xh-_number-field-border` | number-field 的 control 部件 border 覆盖槽。 |
 | `--xh-number-field-control-border-focus` | `control` | `border-color` | `disabled`<br>`focus-within`<br>`not([data-disabled])` | `--xh-_number-field-border-focus` | number-field 的 control 部件 border-color 覆盖槽。 |
 | `--xh-number-field-control-border-hover` | `control` | `border-color` | `disabled`<br>`hover`<br>`invalid`<br>`not([data-disabled], [data-readonly], [data-invalid])`<br>`readonly` | `--xh-_number-field-border-hover` | number-field 的 control 部件 border-color 覆盖槽。 |
 | `--xh-number-field-control-border-invalid` | `control` | `border-color` | `invalid` | `--xh-border-invalid` | number-field 的 control 部件 border-color 覆盖槽。 |
-| `--xh-number-field-control-gap` | `control`<br>`decrement-trigger`<br>`increment-trigger`<br>`input` | `gap`<br>`inset-inline-end`<br>`inset-inline-start` | `default`<br>`has(~ [data-part='input'])`<br>`is([data-part='decrement-trigger'], [data-part='increment-trigger'])` | `--xh-_number-field-gap` | number-field 的 control、decrement-trigger、increment-trigger、input 部件 gap、inset-inline-end、inset-inline-start 覆盖槽。 |
+| `--xh-number-field-control-gap` | `control` | `gap` | `default` | `--xh-_number-field-gap` | number-field 的 control 部件 gap 覆盖槽。 |
 | `--xh-number-field-control-h` | `control` | `block-size` | `default` | `--xh-_number-field-h` | number-field 的 control 部件 block-size 覆盖槽。 |
 | `--xh-number-field-control-min-w` | `control`<br>`root` | `min-inline-size` | `default` | `--xh-control-min-w` | number-field 的 control、root 部件 min-inline-size 覆盖槽。 |
-| `--xh-number-field-control-px` | `control` | `padding-inline` | `default` | `--xh-_number-field-px` | number-field 的 control 部件 padding-inline 覆盖槽。 |
+| `--xh-number-field-control-px` | `control` | `padding-inline` | `default` | `0` | number-field 的 control 部件 padding-inline 覆盖槽。 |
 | `--xh-number-field-control-radius` | `control` | `border-radius` | `default` | `--xh-_number-field-radius` | number-field 的 control 部件 border-radius 覆盖槽。 |
 | `--xh-number-field-control-shadow` | `control` | `box-shadow` | `default` | `--xh-_number-field-shadow` | number-field 的 control 部件 box-shadow 覆盖槽。 |
 | `--xh-number-field-gap` | `root` | `gap` | `default` | `--xh-space-1` | number-field 的 root 部件 gap 覆盖槽。 |
@@ -1306,7 +1308,7 @@ const formatWeight = (value: number) => `${value} kg`;
 | `--xh-number-field-input-fg` | `input` | `color` | `default` | `--xh-fg-default` | number-field 的 input 部件 color 覆盖槽。 |
 | `--xh-number-field-input-font-size` | `input` | `font-size` | `default` | `--xh-_number-field-font-size` | number-field 的 input 部件 font-size 覆盖槽。 |
 | `--xh-number-field-input-h` | `input` | `block-size` | `default` | `--xh-_number-field-h` | number-field 的 input 部件 block-size 覆盖槽。 |
-| `--xh-number-field-input-px` | `input` | `padding-inline` | `default` | `--xh-_number-field-px` | number-field 的 input 部件 padding-inline 覆盖槽。 |
+| `--xh-number-field-input-px` | `control`<br>`input` | `padding-inline` | `default` | `--xh-_number-field-px` | number-field 的 control、input 部件 padding-inline 覆盖槽。 |
 | `--xh-number-field-input-radius` | `input` | `border-radius` | `default` | `--xh-_number-field-radius` | number-field 的 input 部件 border-radius 覆盖槽。 |
 | `--xh-number-field-input-shadow` | `input` | `box-shadow` | `-webkit-autofill`<br>`autofill`<br>`default` | `--xh-_number-field-shadow` | number-field 的 input 部件 box-shadow 覆盖槽。 |
 | `--xh-number-field-input-w` | `control`<br>`input` | `inline-size` | `default` | `5em` | number-field 的 control、input 部件 inline-size 覆盖槽。 |
@@ -1319,17 +1321,17 @@ const formatWeight = (value: number) => `${value} kg`;
 | `--xh-number-field-trigger-bg` | `decrement-trigger`<br>`increment-trigger` | `background` | `default` | `--xh-_number-field-trigger-bg` | number-field 的 decrement-trigger、increment-trigger 部件 background 覆盖槽。 |
 | `--xh-number-field-trigger-bg-active` | `control`<br>`decrement-trigger`<br>`increment-trigger` | `background` | `active`<br>`not(:disabled)` | `--xh-_number-field-trigger-bg-active` | number-field 的 control、decrement-trigger、increment-trigger 部件 background 覆盖槽。 |
 | `--xh-number-field-trigger-bg-disabled` | `decrement-trigger`<br>`increment-trigger` | `background` | `disabled` | `--xh-bg-muted` | number-field 的 decrement-trigger、increment-trigger 部件 background 覆盖槽。 |
-| `--xh-number-field-trigger-bg-hover` | `control`<br>`decrement-trigger`<br>`increment-trigger` | `background` | `hover`<br>`not(:disabled)` | `--xh-_number-field-trigger-bg-hover` | number-field 的 control、decrement-trigger、increment-trigger 部件 background 覆盖槽。 |
+| `--xh-number-field-trigger-bg-hover` | `decrement-trigger`<br>`increment-trigger` | `background` | `hover`<br>`not(:disabled)` | `--xh-_number-field-trigger-bg-hover` | number-field 的 decrement-trigger、increment-trigger 部件 background 覆盖槽。 |
 | `--xh-number-field-trigger-border` | `decrement-trigger`<br>`increment-trigger` | `border` | `default` | `--xh-_number-field-trigger-border` | number-field 的 decrement-trigger、increment-trigger 部件 border 覆盖槽。 |
 | `--xh-number-field-trigger-border-disabled` | `decrement-trigger`<br>`increment-trigger` | `border-color` | `disabled` | `--xh-border-subtle` | number-field 的 decrement-trigger、increment-trigger 部件 border-color 覆盖槽。 |
 | `--xh-number-field-trigger-border-hover` | `decrement-trigger`<br>`increment-trigger` | `border-color` | `hover`<br>`not(:disabled)` | `--xh-_number-field-trigger-border-hover` | number-field 的 decrement-trigger、increment-trigger 部件 border-color 覆盖槽。 |
 | `--xh-number-field-trigger-divider` | `control`<br>`decrement-trigger`<br>`increment-trigger`<br>`input` | `border-inline-start` | `has(~ [data-part='input'])`<br>`is([data-part='decrement-trigger'], [data-part='increment-trigger'])` | `--xh-material-soft-separator` | number-field 的 control、decrement-trigger、increment-trigger、input 部件 border-inline-start 覆盖槽。 |
-| `--xh-number-field-trigger-divider-h` | `control`<br>`decrement-trigger`<br>`increment-trigger`<br>`input` | `block-size`<br>`inset-block-start` | `has(~ [data-part='input'])`<br>`is([data-part='decrement-trigger'], [data-part='increment-trigger'])` | `--xh-_number-field-divider-h` | number-field 的 control、decrement-trigger、increment-trigger、input 部件 block-size、inset-block-start 覆盖槽。 |
-| `--xh-number-field-trigger-fg` | `control`<br>`decrement-trigger`<br>`increment-trigger` | `color` | `default` | `--xh-fg-default`<br>`--xh-fg-muted` | number-field 的 control、decrement-trigger、increment-trigger 部件 color 覆盖槽。 |
+| `--xh-number-field-trigger-divider-h` | `control`<br>`decrement-trigger`<br>`increment-trigger`<br>`input` | `block-size` | `has(~ [data-part='input'])`<br>`is([data-part='decrement-trigger'], [data-part='increment-trigger'])` | `--xh-_number-field-divider-h` | number-field 的 control、decrement-trigger、increment-trigger、input 部件 block-size 覆盖槽。 |
+| `--xh-number-field-trigger-fg` | `control`<br>`decrement-trigger`<br>`increment-trigger` | `color` | `default` | `--xh-fg-default` | number-field 的 control、decrement-trigger、increment-trigger 部件 color 覆盖槽。 |
 | `--xh-number-field-trigger-fg-hover` | `control`<br>`decrement-trigger`<br>`increment-trigger` | `color` | `hover`<br>`not(:disabled)` | `--xh-fg-default` | number-field 的 control、decrement-trigger、increment-trigger 部件 color 覆盖槽。 |
 | `--xh-number-field-trigger-font-size` | `decrement-trigger`<br>`increment-trigger` | `font-size` | `default` | `--xh-_number-field-trigger-font-size` | number-field 的 decrement-trigger、increment-trigger 部件 font-size 覆盖槽。 |
 | `--xh-number-field-trigger-radius` | `decrement-trigger`<br>`increment-trigger` | `border-radius` | `default` | `--xh-shape-control` | number-field 的 decrement-trigger、increment-trigger 部件 border-radius 覆盖槽。 |
-| `--xh-number-field-trigger-size` | `decrement-trigger`<br>`increment-trigger` | `block-size`<br>`inline-size` | `default` | `--xh-_number-field-trigger-size` | number-field 的 decrement-trigger、increment-trigger 部件 block-size、inline-size 覆盖槽。 |
+| `--xh-number-field-trigger-size` | `decrement-trigger`<br>`increment-trigger` | `block-size`<br>`inline-size` | `default` | `--xh-control-action-size` | number-field 的 decrement-trigger、increment-trigger 部件 block-size、inline-size 覆盖槽。 |
 <!-- xh-component-tokens:end -->
 
 ### 动效

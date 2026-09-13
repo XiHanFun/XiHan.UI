@@ -1,6 +1,6 @@
 来源：https://ui.docs.xihanfun.com/components/select
 
-# Select 选择器
+# Select 选择器 `alpha`
 
 从一份已知清单里选一个或多个值，选项收在浮层里。
 

@@ -1,6 +1,6 @@
 来源：https://ui.docs.xihanfun.com/components/spinner
 
-# Spinner 加载指示器
+# Spinner 加载指示器 `alpha`
 
 一个不确定时长的等待标记。
 

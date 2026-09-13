@@ -1,6 +1,6 @@
 来源：https://ui.docs.xihanfun.com/components/side-nav
 
-# SideNav 侧栏导航
+# SideNav 侧栏导航 `alpha`
 
 用于组织应用的主要导航入口。
 

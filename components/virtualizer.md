@@ -1,6 +1,6 @@
 来源：https://ui.docs.xihanfun.com/components/virtualizer
 
-# Virtualizer 虚拟滚动
+# Virtualizer 虚拟滚动 `alpha`
 
 只渲染窗口内的条目，列表再长也只画那几十个。
 

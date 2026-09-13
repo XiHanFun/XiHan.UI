@@ -1,6 +1,6 @@
 来源：https://ui.docs.xihanfun.com/components/dialog
 
-# Dialog 对话框
+# Dialog 对话框 `alpha`
 
 浮在页面之上的一层，通常需要用户处理完才能回到下面。
 

@@ -1,6 +1,6 @@
 来源：https://ui.docs.xihanfun.com/components/descriptions
 
-# Descriptions 描述列表
+# Descriptions 描述列表 `alpha`
 
 成对的标签与值，按列排开。
 

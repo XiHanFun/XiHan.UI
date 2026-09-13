@@ -1,0 +1,1 @@
+import{r}from"./index.CVfUds7h.js";import{mr as a}from"./theme.Dk_9lYjD.js";function c(){const e=r.useId();return r.useMemo(()=>({scopeId:()=>e,partId:(o,t,s)=>`${o}:${t}:${s}`}),[e])}function p(){const e=c();return r.useMemo(()=>a(null,e),[e])}export{p as a,c as u};

@@ -1,1 +1,0 @@
-import{X as e}from"./index.Hc5X0IOq.js";import{l as n}from"./theme.o20Ye0K_.js";import{d as a,o as r,b as c,k as o}from"./framework.DkvuVDKz.js";const f=a({__name:"03-label",setup(t){return(s,l)=>(r(),c(o(n),{icon:o(e),label:"关闭"},null,8,["icon"]))}});export{f as default};

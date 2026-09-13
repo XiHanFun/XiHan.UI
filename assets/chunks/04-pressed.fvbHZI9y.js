@@ -1,0 +1,1 @@
+import{t as e}from"./theme.Dk_9lYjD.js";import{d as r,o as s,b as o,k as t}from"./framework.DkvuVDKz.js";const m=r({__name:"04-pressed",setup(a){return(n,p)=>(s(),o(t(e),{value:"Enter",pressed:""}))}});export{m as default};

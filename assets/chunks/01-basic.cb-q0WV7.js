@@ -1,0 +1,1 @@
+import{j as o}from"./jsx-runtime.BjG_zV1W.js";import{X as r}from"./kbd-group.CTtg70SX.js";import"./jsx-runtime.Bq2ItkaD.js";import"./theme.Dk_9lYjD.js";import"./framework.DkvuVDKz.js";import"./config.D7JXRkpv.js";import"./index.CVfUds7h.js";import"./use-kbd-platform.DzaOFQ9q.js";function f(){return o.jsx(r,{keys:["Mod","K"]})}export{f as default};

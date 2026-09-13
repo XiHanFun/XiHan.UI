@@ -1,6 +1,6 @@
 来源：https://ui.docs.xihanfun.com/components/file-upload
 
-# FileUpload 文件上传
+# FileUpload 文件上传 `alpha`
 
 选择文件、拖放文件，并把已选与已传的文件列出来。
 

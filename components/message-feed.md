@@ -1,6 +1,6 @@
 来源：https://ui.docs.xihanfun.com/components/message-feed
 
-# MessageFeed 消息流
+# MessageFeed 消息流 `alpha`
 
 一段会话的消息序列：粘底跟随、条目集合语义、键盘遍历与一个统一的播报区。
 

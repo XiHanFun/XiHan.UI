@@ -1,6 +1,6 @@
 来源：https://ui.docs.xihanfun.com/components/pin-input
 
-# PinInput 分格输入
+# PinInput 分格输入 `alpha`
 
 把一串短码拆成几个格子，一格一个字符。
 

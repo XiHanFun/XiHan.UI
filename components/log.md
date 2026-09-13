@@ -1,6 +1,6 @@
 来源：https://ui.docs.xihanfun.com/components/log
 
-# Log 日志
+# Log 日志 `alpha`
 
 一块等宽排版的滚动区域，一行一条，可以自动跟到底部。
 

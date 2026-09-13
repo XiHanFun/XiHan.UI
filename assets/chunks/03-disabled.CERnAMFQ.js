@@ -1,1 +1,0 @@
-import{s as e}from"./theme.o20Ye0K_.js";import{d as o,o as s,b as a,k as r}from"./framework.DkvuVDKz.js";const _=o({__name:"03-disabled",setup(t){return(n,d)=>(s(),a(r(e),{keys:["Mod","S"],disabled:""}))}});export{_ as default};

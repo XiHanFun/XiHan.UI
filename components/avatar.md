@@ -1,6 +1,6 @@
 来源：https://ui.docs.xihanfun.com/components/avatar
 
-# Avatar 头像
+# Avatar 头像 `alpha`
 
 一个人或一个组织的圆形标识：优先显示图片，取不到就回退到文字或图标。
 

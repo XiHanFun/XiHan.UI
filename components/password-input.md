@@ -1,6 +1,6 @@
 来源：https://ui.docs.xihanfun.com/components/password-input
 
-# PasswordInput 密码输入
+# PasswordInput 密码输入 `alpha`
 
 一格密码框，带明暗切换钮，并在大写锁定开着时给出提示。
 

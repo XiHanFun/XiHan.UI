@@ -1,6 +1,6 @@
 来源：https://ui.docs.xihanfun.com/components/separator
 
-# Separator 分隔线
+# Separator 分隔线 `alpha`
 
 分隔相关内容或内容分组。
 

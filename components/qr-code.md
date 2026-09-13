@@ -1,6 +1,6 @@
 来源：https://ui.docs.xihanfun.com/components/qr-code
 
-# QrCode 二维码
+# QrCode 二维码 `alpha`
 
 把一段文本画成二维码。
 

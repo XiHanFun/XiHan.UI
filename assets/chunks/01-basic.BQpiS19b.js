@@ -1,1 +1,0 @@
-import{t as e}from"./theme.o20Ye0K_.js";import{d as a,o,b as r,k as s}from"./framework.DkvuVDKz.js";const m=a({__name:"01-basic",setup(t){return(c,n)=>(o(),r(s(e),{value:"Escape"}))}});export{m as default};

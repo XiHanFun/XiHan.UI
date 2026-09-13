@@ -1,6 +1,6 @@
 来源：https://ui.docs.xihanfun.com/components/tool-call
 
-# ToolCall 工具调用
+# ToolCall 工具调用 `alpha`
 
 一次工具调用的卡片：阶段、参数与结果，跑起来自动展开、结束自动收起，用户动手过一次就不再自动。
 

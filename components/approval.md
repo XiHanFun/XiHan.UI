@@ -1,6 +1,6 @@
 来源：https://ui.docs.xihanfun.com/components/approval
 
-# Approval 审批
+# Approval 审批 `alpha`
 
 危险动作执行前的人在环闸门：批准、拒绝，超时按拒绝收口，可带勾选式的授权范围。
 

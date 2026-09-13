@@ -9,7 +9,7 @@
 - [llms-full.txt](https://ui.docs.xihanfun.com/llms-full.txt): 全部 171 页正文，示例已内联为代码块
 - [llms-components.txt](https://ui.docs.xihanfun.com/llms-components.txt): 129 页组件参考
 - [llms-guide.txt](https://ui.docs.xihanfun.com/llms-guide.txt): 29 页核心概念、适配器与运行时
-- [llms-tokens.txt](https://ui.docs.xihanfun.com/llms-tokens.txt): 415 支设计令牌的名字、类型与缺省取值
+- [llms-tokens.txt](https://ui.docs.xihanfun.com/llms-tokens.txt): 416 支设计令牌的名字、类型与缺省取值
 - 每页 Markdown：把站点地址后缀成 `.md`，如 https://ui.docs.xihanfun.com/components/button.md
 
 ## 开始
@@ -83,7 +83,7 @@
 - [Breadcrumb 面包屑](https://ui.docs.xihanfun.com/components/breadcrumb): 显示当前页面在信息层级中的位置。
 - [ButtonGroup 按钮组](https://ui.docs.xihanfun.com/components/button-group): 将一组相关操作组合为连续的按钮控件。
 - [Button 按钮](https://ui.docs.xihanfun.com/components/button): 用于触发即时操作。
-- [Calendar 日历](https://ui.docs.xihanfun.com/components/calendar): 一整月（或周 / 月 / 季 / 年）的网格，格子里可以放内容。
+- [Calendar 日历](https://ui.docs.xihanfun.com/components/calendar): 以月、周、季度或年份浏览并选择日期，也可以在日期格中展示日程内容。
 - [Card 卡片](https://ui.docs.xihanfun.com/components/card): 一块有边界的内容容器：封面、标题、正文与页脚各占一段。
 - [Carousel 走马灯](https://ui.docs.xihanfun.com/components/carousel): 在同一块区域里轮播若干张内容，一次显示一屏。
 - [Cascader 级联选择](https://ui.docs.xihanfun.com/components/cascader): 用于从多层分类中选择完整路径。
@@ -96,8 +96,8 @@
 - [Combobox 组合框](https://ui.docs.xihanfun.com/components/combobox): 将输入框与候选列表结合，用于搜索并选择选项。
 - [Command 命令面板](https://ui.docs.xihanfun.com/components/command): 一块盖在页面上的检索面板：打字筛出命令，方向键选，回车执行。
 - [ContextMenu 右键菜单](https://ui.docs.xihanfun.com/components/context-menu): 通过右键或长按在指针位置打开命令菜单。
-- [DateField 日期输入](https://ui.docs.xihanfun.com/components/date-field): 用于按年、月、日分段输入日期，不打开日历。
-- [DatePicker 日期选择器](https://ui.docs.xihanfun.com/components/date-picker): 将分段日期输入与日历浮层组合在一起。
+- [DateField 日期字段](https://ui.docs.xihanfun.com/components/date-field): 按年、月、日逐段输入日期，适合已经知道目标日期、无需浏览日历的场景。
+- [DatePicker 日期选择器](https://ui.docs.xihanfun.com/components/date-picker): 将可键入的分段日期框、日历触发器和选择浮层组合成一个字段。
 - [Descriptions 描述列表](https://ui.docs.xihanfun.com/components/descriptions): 成对的标签与值，按列排开。
 - [Dialog 对话框](https://ui.docs.xihanfun.com/components/dialog): 浮在页面之上的一层，通常需要用户处理完才能回到下面。
 - [DiffView 差异视图](https://ui.docs.xihanfun.com/components/diff-view): 一份改动的逐行呈现：并排或单栏、双侧行号、变更类型的读屏文字，以及远离变更处的折叠。
@@ -145,7 +145,7 @@
 - [NavigationMenu 导航菜单](https://ui.docs.xihanfun.com/components/navigation-menu): 用于站点顶部的多级导航菜单。
 - [Notification 通知](https://ui.docs.xihanfun.com/components/notification): 主动推给用户的一条消息：有标题、有正文，可以带操作按钮。
 - [NumberAnimation 数值动画](https://ui.docs.xihanfun.com/components/number-animation): 数字从一个值滚动到另一个值。
-- [NumberField 数字输入](https://ui.docs.xihanfun.com/components/number-field): 带加减与区间约束的数值输入。
+- [NumberField 数字字段](https://ui.docs.xihanfun.com/components/number-field): 带加减与区间约束的数值输入。
 - [PageHeader 页头](https://ui.docs.xihanfun.com/components/page-header): 统一呈现页面标题、说明、导航和主要操作。
 - [Pagination 分页](https://ui.docs.xihanfun.com/components/pagination): 用于在分页结果之间导航。
 - [PasswordInput 密码输入](https://ui.docs.xihanfun.com/components/password-input): 一格密码框，带明暗切换钮，并在大写锁定开着时给出提示。
@@ -180,9 +180,9 @@
 - [TagGroup 标签组](https://ui.docs.xihanfun.com/components/tag-group): 一排标签当作一件东西来操作：方向键在标签之间走，整组只占一个 Tab 停靠点， 标签可以选中、也可以被摘掉，摘完焦点有去处。
 - [Tag 标签](https://ui.docs.xihanfun.com/components/tag): 告诉你这是什么：一个分类、一项技能、一个筛选条件。
 - [TagsInput 标签输入](https://ui.docs.xihanfun.com/components/tags-input): 在一个输入框里录入一串标签：回车或分隔符成词，每个词是一枚可删的标签。
-- [TextField 文本输入](https://ui.docs.xihanfun.com/components/text-field): 单行或多行的自由文本输入。
-- [TimeField 时间输入](https://ui.docs.xihanfun.com/components/time-field): 分段的时间输入框：时、分、秒各占一段，方向键加减。
-- [TimePicker 时间选择器](https://ui.docs.xihanfun.com/components/time-picker): 带浮层的时间录入：浮层里按时、分、秒分列滚动挑选。
+- [TextField 文本字段](https://ui.docs.xihanfun.com/components/text-field): 单行或多行的自由文本输入。
+- [TimeField 时间字段](https://ui.docs.xihanfun.com/components/time-field): 按时、分、秒逐段输入时间，适合已经知道目标时间、无需打开选择面板的场景。
+- [TimePicker 时间选择器](https://ui.docs.xihanfun.com/components/time-picker): 将可键入的分段时间框、时钟触发器和分列选择浮层组合成一个字段。
 - [Timeline 时间线](https://ui.docs.xihanfun.com/components/timeline): 按时间顺序排开的一串事件，每条有标记、连接线与内容。
 - [Timer 计时器](https://ui.docs.xihanfun.com/components/timer): 一段可正可倒的计时：能起、能停、能接着走、能归零。
 - [Timestamp 时间戳](https://ui.docs.xihanfun.com/components/timestamp): 把一个时刻渲染成文本，绝对或相对。

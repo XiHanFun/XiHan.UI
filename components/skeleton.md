@@ -1,6 +1,6 @@
 来源：https://ui.docs.xihanfun.com/components/skeleton
 
-# Skeleton 骨架屏
+# Skeleton 骨架屏 `alpha`
 
 内容还没到时，先按最终版面占位。
 

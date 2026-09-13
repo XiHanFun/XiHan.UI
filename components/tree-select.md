@@ -1,6 +1,6 @@
 来源：https://ui.docs.xihanfun.com/components/tree-select
 
-# TreeSelect 树选择
+# TreeSelect 树选择 `alpha`
 
 浮层里放一棵树的选择器：层级不规整、深浅不一时用它。
 

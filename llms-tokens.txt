@@ -1,6 +1,6 @@
 # 曦寒视图组件 · 设计令牌
 
-共 415 支。取值是缺省档（浅色 · 舒适 · 基础对比度）下的值；
+共 416 支。取值是缺省档（浅色 · 舒适 · 基础对比度）下的值；
 「改写档」列出还有哪几份令牌源重新给过它——深色、紧凑、更高对比度、减弱动效、打印各是一档。
 
 覆盖时在 `:root` 上直接设同名令牌即可，这一层是公开面。带下划线前缀的 `--xh-_*` 是私有槽，不要在外面设。
@@ -321,6 +321,7 @@
 | `--xh-shape-inset` | dimension | `var(--xh-radius-sm)` | — |
 | `--xh-shape-control` | dimension | `var(--xh-radius-md)` | — |
 | `--xh-shape-surface` | dimension | `var(--xh-radius-lg)` | — |
+| `--xh-shape-overlay` | dimension | `calc(var(--xh-radius-lg) * 2)` | — |
 | `--xh-shape-pill` | dimension | `var(--xh-radius-full)` | — |
 
 ## ring

@@ -1,0 +1,1 @@
+import{s as e}from"./theme.Dk_9lYjD.js";import{d as t,o as a,c as r,E as s,k as o}from"./framework.DkvuVDKz.js";const n={style:{display:"flex","align-items":"center",gap:"24px"}},_=t({__name:"02-size",setup(i){return(c,d)=>(a(),r("div",n,[s(o(e),{keys:["Mod","1"],size:"sm"}),s(o(e),{keys:["Mod","2"],size:"md"}),s(o(e),{keys:["Mod","3"],size:"lg"})]))}});export{_ as default};

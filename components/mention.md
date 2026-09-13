@@ -1,6 +1,6 @@
 来源：https://ui.docs.xihanfun.com/components/mention
 
-# Mention 提及
+# Mention 提及 `alpha`
 
 在正文里打一个前缀字符就弹出候选，选中后把引用插进文本。
 

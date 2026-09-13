@@ -1,6 +1,6 @@
 来源：https://ui.docs.xihanfun.com/components/checkbox
 
-# Checkbox 复选框
+# Checkbox 复选框 `alpha`
 
 用于选择一个或多个独立选项。
 

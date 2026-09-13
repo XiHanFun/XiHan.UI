@@ -1,6 +1,6 @@
 来源：https://ui.docs.xihanfun.com/components/tree
 
-# Tree 树
+# Tree 树 `alpha`
 
 层级数据的展开与选择：分支可展开，节点可选。
 

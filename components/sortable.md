@@ -1,6 +1,6 @@
 来源：https://ui.docs.xihanfun.com/components/sortable
 
-# Sortable 排序
+# Sortable 排序 `alpha`
 
 通过拖拽或键盘重新排列内容。
 

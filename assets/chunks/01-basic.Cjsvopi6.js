@@ -1,0 +1,1 @@
+import{ix as e}from"./theme.Dk_9lYjD.js";import{d as o,o as a,b as r,k as t}from"./framework.DkvuVDKz.js";const m=o({__name:"01-basic",setup(n){return(s,c)=>(a(),r(t(e),{value:"https://ui.xihanfun.com"}))}});export{m as default};

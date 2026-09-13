@@ -1,6 +1,6 @@
 来源：https://ui.docs.xihanfun.com/components/back-top
 
-# BackTop 回到顶部
+# BackTop 回到顶部 `alpha`
 
 滚动超过指定距离后显示返回入口。
 

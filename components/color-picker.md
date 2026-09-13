@@ -1,6 +1,6 @@
 来源：https://ui.docs.xihanfun.com/components/color-picker
 
-# ColorPicker 颜色选择器
+# ColorPicker 颜色选择器 `alpha`
 
 用于选择并编辑颜色。
 

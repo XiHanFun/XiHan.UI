@@ -1,0 +1,1 @@
+import{e$ as e}from"./theme.Dk_9lYjD.js";import{d as a,o,b as r,k as n}from"./framework.DkvuVDKz.js";const m=a({__name:"01-basic",setup(s){return(t,c)=>(o(),r(n(e),{label:"加载中"}))}});export{m as default};

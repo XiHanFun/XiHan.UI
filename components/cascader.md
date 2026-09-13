@@ -1,6 +1,6 @@
 来源：https://ui.docs.xihanfun.com/components/cascader
 
-# Cascader 级联选择
+# Cascader 级联选择 `alpha`
 
 用于从多层分类中选择完整路径。
 

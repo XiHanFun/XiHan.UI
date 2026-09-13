@@ -1,6 +1,6 @@
 来源：https://ui.docs.xihanfun.com/components/prompt-input
 
-# PromptInput 提示输入框
+# PromptInput 提示输入框 `alpha`
 
 会话界面的输入框：值、输入法、能不能提交，以及发送与停止共用的那一颗按钮。
 

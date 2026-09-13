@@ -1,6 +1,6 @@
 来源：https://ui.docs.xihanfun.com/components/marquee
 
-# Marquee 跑马灯
+# Marquee 跑马灯 `alpha`
 
 内容沿一条轴循环滚动。
 

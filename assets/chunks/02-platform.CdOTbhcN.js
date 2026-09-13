@@ -1,1 +1,0 @@
-import{s as e}from"./theme.o20Ye0K_.js";import{d as r,o as t,c as s,E as o,k as a,F as m}from"./framework.DkvuVDKz.js";const _=r({__name:"02-platform",setup(n){return(p,c)=>(t(),s(m,null,[o(a(e),{keys:["Mod","S"],platform:"mac"}),o(a(e),{keys:["Mod","S"],platform:"other"})],64))}});export{_ as default};

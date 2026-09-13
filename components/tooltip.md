@@ -1,6 +1,6 @@
 来源：https://ui.docs.xihanfun.com/components/tooltip
 
-# Tooltip 文字提示
+# Tooltip 文字提示 `alpha`
 
 悬停或聚焦时出现的一句纯文字说明。
 

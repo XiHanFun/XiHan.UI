@@ -1,6 +1,6 @@
 来源：https://ui.docs.xihanfun.com/components/avatar-group
 
-# AvatarGroup 头像组
+# AvatarGroup 头像组 `alpha`
 
 把若干头像叠成一排，超出上限的收成一个计数。
 
