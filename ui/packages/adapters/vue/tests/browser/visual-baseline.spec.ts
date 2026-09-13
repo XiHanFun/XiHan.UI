@@ -43,6 +43,8 @@ import {
   XhTextFieldLabel,
   XhTextFieldRoot,
   XhToastCloseTrigger,
+  XhToastContent,
+  XhToastIndicator,
   XhToastRoot,
   XhToastTitle,
 } from '../../src'
@@ -244,7 +246,8 @@ const FIXTURES: Record<string, () => VNode[]> = {
       closable: true,
       translations: { close: 'Close' },
     }, () => [
-      h(XhToastTitle),
+      h(XhToastIndicator),
+      h(XhToastContent, null, () => h(XhToastTitle)),
       h(XhToastCloseTrigger),
     ]),
   ],

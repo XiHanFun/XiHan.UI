@@ -33,6 +33,7 @@ import {
   XhNavigationMenuList,
   XhNavigationMenuRoot,
   XhSwitch,
+  XhToastContent,
   XhToastRoot,
   XhToastTitle,
 } from '../../src'
@@ -289,7 +290,9 @@ describe('开关的只读观感', () => {
 
 describe('轻提示的严重度字形', () => {
   const TOAST = (type: string): unknown =>
-    h(XhToastRoot, { type: type as never, duration: 0 }, () => [h(XhToastTitle, null, () => '一句话')])
+    h(XhToastRoot, { type: type as never, duration: 0 }, () => [
+      h(XhToastContent, null, () => h(XhToastTitle, null, () => '一句话')),
+    ])
 
   it('四档各画一枚不同的字形，行首那一格真占了指示符那么大', async () => {
     const marks: string[] = []

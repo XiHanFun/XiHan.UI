@@ -1021,6 +1021,8 @@ export { XhTimestamp } from './components/timestamp/timestamp'
 export {
   XhToastActionTrigger,
   XhToastCloseTrigger,
+  XhToastContent,
+  XhToastDescription,
   XhToastIndicator,
   XhToastProgress,
   XhToastRoot,

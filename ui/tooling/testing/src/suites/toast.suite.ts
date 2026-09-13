@@ -42,7 +42,13 @@ export const toastSuite: ConformanceSuite = {
     part: 'root',
     children: [
       { part: 'indicator', tag: 'span' },
-      { part: 'title', text: '已保存' },
+      {
+        part: 'content',
+        children: [
+          { part: 'title', text: '已保存' },
+          { part: 'description', text: '操作已写入云端' },
+        ],
+      },
       { part: 'action-trigger', tag: 'button', text: '撤销' },
       { part: 'progress' },
       { part: 'close-trigger', tag: 'button', text: '关闭' },
@@ -53,9 +59,10 @@ export const toastSuite: ConformanceSuite = {
       name: '默认：root 是 status + polite，整条一起念，名字接到位',
       spec: { apg: `${APG}#roles_states_properties` },
       // duration=0 即关掉自动消失：这条用例要的是一个不会自己走掉的稳定初始帧
-      props: { duration: 0 },
+      props: { duration: 0, description: '操作已写入云端' },
       initial: {
-        order: ['root', 'indicator', 'title', 'action-trigger', 'progress', 'close-trigger'],
+        order: ['root', 'indicator', 'content', 'title', 'description', 'action-trigger', 'progress', 'close-trigger'],
+        counts: { 'root': 1, 'indicator': 1, 'content': 1, 'title': 1, 'description': 1, 'action-trigger': 1, 'progress': 1, 'close-trigger': 1 },
         parts: {
           'root': {
             'role': 'status',
@@ -63,6 +70,7 @@ export const toastSuite: ConformanceSuite = {
             // 只念变化的那一小块，用户会听到半截话
             'aria-atomic': 'true',
             'aria-labelledby': '@part(title)',
+            'aria-describedby': '@part(description)',
             'data-severity': 'info',
             // 配色走全库共用的语气层，由 type 派生
             'data-tone': 'info',
@@ -71,6 +79,7 @@ export const toastSuite: ConformanceSuite = {
             'hidden': null,
           },
           'title': { id: '@self' },
+          'description': { id: '@self' },
           'action-trigger': { type: 'button' },
           'close-trigger': {
             'type': 'button',
@@ -299,7 +308,7 @@ export const toastSuite: ConformanceSuite = {
       fixture: () => ({
         part: 'root',
         children: [
-          { part: 'title' },
+          { part: 'content', children: [{ part: 'title' }] },
         ],
       }),
       props: { duration: 0, title: '已保存' },

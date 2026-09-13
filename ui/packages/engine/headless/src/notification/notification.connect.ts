@@ -9,7 +9,7 @@ import type { NormalizeProps, PropTypes, Service } from '@xihan-ui/core'
 import type { ToastSchema, ToastStatus, ToastType } from '../toast'
 import type { NotificationApi, NotificationItemApi, NotificationPlacement, NotificationRecord, NotificationSchema, ResolvedNotification } from './notification.types'
 import { DATA_INERT_EXEMPT, dataAttr } from '@xihan-ui/core'
-import { resolveToastDuration, resolveToastId, TOAST_DURATION, TOAST_REMOVE_DELAY } from '../toast'
+import { resolveToastDuration, resolveToastId } from '../toast'
 import { notificationAnatomy } from './notification.anatomy'
 import {
   NOTIFICATION_GAP,
@@ -21,6 +21,9 @@ import {
 } from './notification.machine'
 
 const parts = notificationAnatomy.build()
+// Notification 的既有停留/退场节奏独立于 Toast；两类反馈不再共享默认值。
+const NOTIFICATION_DURATION = 5000
+const NOTIFICATION_REMOVE_DELAY = 200
 
 export function connectNotification<T extends PropTypes>(
   service: Service<NotificationSchema>,
@@ -39,8 +42,8 @@ export function connectNotification<T extends PropTypes>(
     type: item.type ?? 'info',
     // 单条 > notification > 内置默认，逐级兜底后必定是个具体数值。
     // loading 不自动消失那条规则住在 toast 机器里，不经 notification 的单条通知同样守得住
-    duration: item.duration ?? prop('duration') ?? TOAST_DURATION,
-    removeDelay: item.removeDelay ?? prop('removeDelay') ?? TOAST_REMOVE_DELAY,
+    duration: item.duration ?? prop('duration') ?? NOTIFICATION_DURATION,
+    removeDelay: item.removeDelay ?? prop('removeDelay') ?? NOTIFICATION_REMOVE_DELAY,
     closable: item.closable ?? true,
     pauseOnPageIdle,
     count: item.count ?? 1,

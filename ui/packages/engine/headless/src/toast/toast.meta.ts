@@ -7,9 +7,8 @@
 
 import type { ComponentMeta } from '../spec/types'
 
-// 只有 root 必需：它承载 role/aria-live，缺了这一层读屏不会宣读这一条。
-// 其余部件按内容可省。
+// root 承载实时区语义，content 统一标题与说明的排版；其余部件按内容可省。
 export const toastMeta: ComponentMeta = {
   component: 'toast',
-  requiredParts: ['root'],
+  requiredParts: ['root', 'content'],
 }

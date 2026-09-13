@@ -6,11 +6,7 @@
 /* 定义 toast 样式。 */
 
 @layer xihan.motion {
-  /*
-   * 九个位共用同一条进出场，位移不跟着落位走：要按位置分方向就得从摞的
-   * data-placement 反向选到条子上，落位一改名整条动效静默失效。
-   * 竖向一小段位移在九个位上都说得通。
-   */
+  /* 六个边缘落位共用一条短距离进出场，避免位置变化时产生横向跳跃。 */
   @keyframes xh-toast-in {
     from {
       opacity: 0;
@@ -77,17 +73,17 @@
     z-index: var(--xh-toast-layer, var(--xh-layer-toast));
     display: flex;
     flex-direction: column;
-    /* 基线按默认落位 top 写，下面只覆盖跟它不同的那几个位 */
-    justify-content: flex-start;
+    /* 基线按默认落位 bottom 写。 */
+    justify-content: flex-end;
     align-items: center;
     /* 贴边与安全区取大的一头：刘海、圆角与底部横条压住的那一段由系统给出，
        贴边比它窄时条子会被切掉一角。桌面上 env() 恒为 0，取值与贴边槽完全一致。
        两条内联的 env 一起取大值：安全区只有物理方向的四个名字，
        分左右写在 RTL 下会翻错边，两侧同取较宽的那一段。 */
-    padding-block-start: max(var(--xh-toast-inset, var(--xh-space-6)), env(safe-area-inset-top));
-    padding-block-end: max(var(--xh-toast-inset, var(--xh-space-6)), env(safe-area-inset-bottom));
+    padding-block-start: max(var(--xh-toast-inset, var(--xh-space-4)), env(safe-area-inset-top));
+    padding-block-end: max(var(--xh-toast-inset, var(--xh-space-4)), env(safe-area-inset-bottom));
     padding-inline: max(
-      var(--xh-toast-inset, var(--xh-space-6)),
+      var(--xh-toast-inset, var(--xh-space-4)),
       env(safe-area-inset-left),
       env(safe-area-inset-right)
     );
@@ -102,16 +98,12 @@
     display: none;
   }
 
-  /* 块轴落位：^= 一次吃掉某一行的三个位（top / top-start / top-end） */
-  [data-scope='toast'][data-part='group'][data-placement^='middle'] {
-    justify-content: center;
+  /* 块轴落位：^= 一次吃掉顶部一行的三个位。 */
+  [data-scope='toast'][data-part='group'][data-placement^='top'] {
+    justify-content: flex-start;
   }
 
-  [data-scope='toast'][data-part='group'][data-placement^='bottom'] {
-    justify-content: flex-end;
-  }
-
-  /* 行内轴落位：不带后缀的 top / middle / bottom 用基线的居中 */
+  /* 行内轴落位：不带后缀的 top / bottom 用基线的居中。 */
   [data-scope='toast'][data-part='group'][data-placement$='-start'] {
     align-items: flex-start;
   }
@@ -120,39 +112,25 @@
     align-items: flex-end;
   }
 
-  /*
-   * 一条轻提示是「一句话 + 一枚状态字形」，横排一行、贴着文字收缩。
-   * 语气由淡底、描边与字形三者一起承载，正文留中性——正文也跟着兑成语气色的话，
-   * 绿字压在绿底上，对比度是整条里最差的那一处。
-   */
+  /* 中性浮层承载整条反馈，语气只落到状态字形和标题。 */
   [data-scope='toast'][data-part='root'] {
-    /* 状态字形按控件指示符那一档走，与 alert 的图标框同一把尺 */
-    --xh-icon-size: var(--xh-toast-icon-size, var(--xh-control-indicator-size));
+    --xh-icon-size: var(--xh-toast-icon-size, var(--xh-glyph-size-sm));
 
-    /* 底与描边取语气层派生好的槽，不在这儿自己再兑一遍：
-       兑法差一档，字形压上去的对比度就跟着差一档（alert 踩过这个坑） */
-    --xh-_toast-tint: var(--xh-_tone-subtle);
-    --xh-_toast-edge: var(--xh-_tone-border);
-
+    position: relative;
     display: flex;
-    align-items: center;
-    gap: var(--xh-toast-gap, var(--xh-control-gap-md));
-    /* 收缩包裹：一句「已保存」撑成定宽方块，右边那片空白会让它读起来像一张公告卡 */
-    inline-size: var(--xh-toast-w, auto);
-    /* 摞是整面视口宽的定位面且带内边距，取 100% 就等于自动让出两侧留白，
-       窄屏上不必再算一遍 viewport 减法；再叠一道绝对上限，免得一条长文案铺成横幅 */
-    max-inline-size: min(var(--xh-overlay-max-w-xl), 100%);
-    /* 纵内衬取控件档而不是面档：面档（12px）叠上 21px 行盒与两道细边就是 47px 高，
-       那是卡片的体量；控件档（8px）落在 39px，与短消息该有的高度一致
-       （带叉 42px、带操作钮 46px，那两档本就不是默认排版） */
-    padding-block: var(--xh-toast-py, var(--xh-field-py));
-    padding-inline: var(--xh-toast-px, var(--xh-surface-px-sm));
-    border: var(--xh-stroke-thin) solid var(--xh-toast-border, var(--xh-_toast-edge));
-    border-radius: var(--xh-toast-radius, var(--xh-shape-surface));
-    background: var(--xh-toast-bg, var(--xh-_toast-tint));
+    flex: none;
+    align-items: flex-start;
+    gap: var(--xh-toast-gap, var(--xh-space-1_5));
+    inline-size: min(var(--xh-toast-w, var(--xh-overlay-max-w-lg)), 100%);
+    max-inline-size: 100%;
+    padding-block: var(--xh-toast-py, var(--xh-space-3));
+    padding-inline: var(--xh-toast-px, var(--xh-space-4));
+    border: var(--xh-stroke-thin) solid var(--xh-toast-border, transparent);
+    border-radius: var(--xh-toast-radius, var(--xh-shape-overlay));
+    background: var(--xh-toast-bg, var(--xh-bg-surface));
     color: var(--xh-toast-fg, var(--xh-fg-default));
     box-shadow: var(--xh-toast-shadow, var(--xh-elevation-sheet));
-    font-size: var(--xh-toast-font-size, var(--xh-text-body-size));
+    font-size: var(--xh-toast-font-size, var(--xh-text-label-size));
     line-height: var(--xh-toast-leading, var(--xh-text-body-leading));
     /* 摞的定位面整面铺开且不吃指针，条子必须自己吃回来：
        悬停按住计时、按钮可点、焦点进出，全指着这一条 */
@@ -192,19 +170,15 @@
     animation-delay: calc(var(--xh-motion-stagger-step) * 5);
   }
 
-  /* forwards 不能省：退场窗口（removeDelay 默认 200ms）比退场动画长，
+  /* forwards 不能省：退场窗口（removeDelay 默认 300ms）比退场动画长，
      不定住末帧的话动画跑完会弹回全不透明，条子在被收起前先闪一下 */
   [data-scope='toast'][data-part='root'][data-state='dismissing'] {
     animation: xh-toast-out var(--xh-motion-duration-exit) var(--xh-motion-ease-exit) forwards;
   }
 
   /*
-   * 严重度的第二条通道。淡底、描边与正文色给的都是色相，四档在色觉障碍与黑白打印下
-   * 长得一模一样——「已保存」与「保存失败」看不出差别。行首这枚字形按 data-severity
-   * 各画一枚，取的是 notification 那套 --xh-glyph-mark-* 令牌，两家从此同一副读法。
-   * 解剖到 root 为止、没有第二个节点可挂，字形因此画在 root 的伪元素上；它是这一行
-   * flex 的第一个项，与文字之间的间距由 root 自己的 gap 给，不另写外边距。
-   * 颜色走语气层派生好的前景档：主色档兑在同族淡底上够不到图形该有的 3:1。
+   * 严重度的非颜色通道。行首字形按 data-severity 区分信息、成功、警告、失败与加载。
+   * 作者未渲染 indicator 时由 root 的伪元素补上。
    */
   [data-scope='toast'][data-part='root']::before {
     content: '';
@@ -264,8 +238,10 @@
     display: inline-flex;
     align-items: center;
     justify-content: center;
+    box-sizing: content-box;
     inline-size: var(--xh-icon-size, var(--xh-glyph-size-text));
     block-size: var(--xh-icon-size, var(--xh-glyph-size-text));
+    padding: var(--xh-toast-indicator-p, var(--xh-space-1));
     color: var(--xh-toast-icon-fg, var(--xh-_tone-fg));
   }
 
@@ -318,24 +294,40 @@
     display: none;
   }
 
-  [data-scope='toast'][data-part='title'] {
-    /* 作者可能把它写成 h2/p，外边距得先归零，否则条子内的行距对不上 */
-    margin: 0;
-    /* 吃掉剩余宽度，把操作钮与叉推到行尾；min-inline-size 让它在撞上宽度上限时能换行，
-       flex 项的 min-width 默认是 auto，不归零的话长文案会把条子顶出上限 */
+  [data-scope='toast'][data-part='content'] {
     flex: 1 1 auto;
+    display: flex;
+    flex-direction: column;
+    align-self: center;
     min-inline-size: 0;
-    color: var(--xh-toast-title-fg, var(--xh-fg-default));
-    /* 与条子同字号同行高、不加粗：加粗是"这是标题、下面还有正文"的信号，
-       而轻提示没有正文——那一层是 notification 的 */
-    font-size: var(--xh-toast-title-font-size, var(--xh-text-body-size));
-    font-weight: var(--xh-toast-title-font-weight, var(--xh-text-body-weight));
+  }
+
+  [data-scope='toast'][data-part='title'],
+  [data-scope='toast'][data-part='description'] {
+    margin: 0;
+    min-inline-size: 0;
+  }
+
+  [data-scope='toast'][data-part='title'] {
+    color: var(--xh-toast-title-fg, var(--xh-_tone-fg));
+    font-size: var(--xh-toast-title-font-size, var(--xh-text-label-size));
+    font-weight: var(--xh-toast-title-font-weight, var(--xh-font-weight-medium));
     line-height: var(--xh-toast-title-leading, var(--xh-text-body-leading));
+  }
+
+  [data-scope='toast'][data-part='description'] {
+    color: var(--xh-toast-description-fg, var(--xh-fg-muted));
+    font-size: var(--xh-toast-description-font-size, var(--xh-text-label-size));
+    line-height: var(--xh-toast-description-leading, var(--xh-text-body-leading));
   }
 
   /* 没给文案时仍然要留在 DOM 里（aria-labelledby 指着它），
      但空盒子会照吃一份 gap，条子看着就多出一截莫名的留白 */
   [data-scope='toast'][data-part='title']:empty {
+    display: none;
+  }
+
+  [data-scope='toast'][data-part='description']:empty {
     display: none;
   }
 
@@ -346,6 +338,7 @@
   [data-scope='toast'][data-part='action-trigger'] {
     /* 条子是单行 flex，按钮不参与伸缩：文案长了该换行的是文字，不是把按钮压扁 */
     flex: none;
+    align-self: center;
     display: inline-flex;
     align-items: center;
     justify-content: center;
@@ -378,11 +371,6 @@
     scale: var(--xh-motion-scale-press);
   }
 
-  /* 渲染了倒计时条才把条子变成定位面：它贴在卡片下沿，不占那一行的位置 */
-  [data-scope='toast'][data-part='root']:has([data-part='progress']) {
-    position: relative;
-  }
-
   /*
    * 倒计时条。总时长由连接层写进 --xh-toast-progress-duration（不自动消失的那些整条收起），
    * 计时被按住时动画一并停住——停表这件事此前没有任何可画的地方。
@@ -408,19 +396,17 @@
   }
 
   [data-scope='toast'][data-part='close-trigger'] {
-    flex: none;
-    /* 推到行内末侧；和操作按钮同处一行时排在它后面 */
-    margin-inline-start: auto;
+    position: absolute;
+    inset-block-start: calc(-1 * var(--xh-space-1));
+    inset-inline-end: calc(-1 * var(--xh-space-1));
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    /* 行级动作钮那一档（24px），不是浮层角落钮的 28px：
-       后者比一行正文的行盒还高，单它就把整条顶高一截 */
     block-size: var(--xh-toast-close-size, var(--xh-control-action-size));
     inline-size: var(--xh-toast-close-size, var(--xh-control-action-size));
-    border: 0;
+    border: var(--xh-stroke-thin) solid var(--xh-toast-close-border, var(--xh-border-default));
     border-radius: var(--xh-toast-close-radius, var(--xh-shape-control));
-    background: transparent;
+    background: var(--xh-toast-close-bg, var(--xh-bg-subtle));
     color: var(--xh-toast-close-fg, var(--xh-fg-muted));
     font: inherit;
     line-height: var(--xh-leading-none);
@@ -428,7 +414,21 @@
     transition:
       background var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
       color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
+      opacity var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
       scale var(--xh-motion-duration-micro) var(--xh-motion-ease-enter-strong);
+  }
+
+  @media (hover: hover) {
+    [data-scope='toast'][data-part='close-trigger'] {
+      opacity: 0;
+      pointer-events: none;
+    }
+
+    [data-scope='toast'][data-part='root']:hover [data-part='close-trigger'],
+    [data-scope='toast'][data-part='root']:focus-within [data-part='close-trigger'] {
+      opacity: 1;
+      pointer-events: auto;
+    }
   }
 
   /* closable=false 时连接层同时给了 hidden 与 disabled，这条是它真正收起的那一半：
@@ -470,7 +470,7 @@
      用 ::after：::before 已经被兜底字形占着 */
   @media (pointer: coarse) {
     [data-scope='toast'][data-part='close-trigger'] {
-      position: relative;
+      pointer-events: auto;
     }
 
     [data-scope='toast'][data-part='close-trigger']::after {
@@ -491,5 +491,10 @@
     [data-scope='toast'][data-part='root'][data-severity='loading']::before {
       animation: none;
     }
+  }
+
+  [data-scope='toast'][data-part='content'][hidden],
+  [data-scope='toast'][data-part='description'][hidden] {
+    display: none;
   }
 }

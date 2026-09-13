@@ -13,6 +13,7 @@ export {
   resolveToastId,
   TOAST_DURATION,
   TOAST_GAP,
+  TOAST_MAX,
   TOAST_PLACEMENT,
   TOAST_REMOVE_DELAY,
   toastMachine,

@@ -27,6 +27,7 @@ export interface XhToastRootProps extends Omit<ComponentPropsWithRef<'div'>, 'ch
   /** 队列身份，不是 DOM id；不给则回落到实例的 scope id。 */
   id?: string
   title?: string
+  description?: string
   type?: ToastType
   duration?: number
   removeDelay?: number
@@ -43,6 +44,7 @@ export interface XhToastRootProps extends Omit<ComponentPropsWithRef<'div'>, 'ch
 export function XhToastRoot({
   id,
   title,
+  description,
   type,
   duration,
   removeDelay,
@@ -58,6 +60,7 @@ export function XhToastRoot({
   const ctx = useToast(withXhConfig('toast', {
     id,
     title,
+    description,
     type,
     duration,
     removeDelay,
@@ -100,6 +103,13 @@ export function XhToastIndicator({ children, ...rest }: XhToastIndicatorProps): 
   return <span {...mergeReactProps(ctx.api.getIndicatorProps() as Record<string, unknown>, rest as Record<string, unknown>)}>{children}</span>
 }
 
+export interface XhToastContentProps extends ComponentPropsWithRef<'div'> {}
+/** 标题与可选说明的统一文本列。 */
+export function XhToastContent({ children, ...rest }: XhToastContentProps): ReactNode {
+  const ctx = useToastContext()
+  return <div {...mergeReactProps(ctx.api.getContentProps() as Record<string, unknown>, rest as Record<string, unknown>)}>{children}</div>
+}
+
 export interface XhToastTitleProps extends ComponentPropsWithRef<'div'> {}
 export function XhToastTitle({ children, ...rest }: XhToastTitleProps): ReactNode {
   const ctx = useToastContext()
@@ -107,6 +117,16 @@ export function XhToastTitle({ children, ...rest }: XhToastTitleProps): ReactNod
   return (
     <div {...mergeReactProps(ctx.api.getTitleProps() as Record<string, unknown>, rest as Record<string, unknown>)}>
       {slotPaints(children) ? children : ctx.api.title}
+    </div>
+  )
+}
+
+export interface XhToastDescriptionProps extends ComponentPropsWithRef<'div'> {}
+export function XhToastDescription({ children, ...rest }: XhToastDescriptionProps): ReactNode {
+  const ctx = useToastContext()
+  return (
+    <div {...mergeReactProps(ctx.api.getDescriptionProps() as Record<string, unknown>, rest as Record<string, unknown>)}>
+      {slotPaints(children) ? children : ctx.api.description}
     </div>
   )
 }

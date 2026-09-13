@@ -8,6 +8,8 @@
 import {
   XhButton,
   XhToastCloseTrigger,
+  XhToastContent,
+  XhToastIndicator,
   XhToastRoot,
   XhToastTitle,
 } from "@xihan-ui/vue";
@@ -17,7 +19,7 @@ const seq = ref(0);
 </script>
 
 <template>
-  <div style="display: grid; gap: 12px; justify-items: start">
+  <div style="display: grid; width: 100%; gap: 12px; justify-items: center">
     <XhToastRoot
       :key="seq"
       v-slot="{ status, paused }"
@@ -25,10 +27,13 @@ const seq = ref(0);
       :duration="6000"
       :translations="{ close: '关闭' }"
     >
-      <XhToastTitle />
-      <span style="font-size: 12px; opacity: 0.75">
-        状态：{{ status }} · {{ paused ? "计时已按住" : "计时在走" }}
-      </span>
+      <XhToastIndicator />
+      <XhToastContent>
+        <XhToastTitle />
+        <span style="font-size: 12px; opacity: 0.75">
+          状态：{{ status }} · {{ paused ? "计时已按住" : "计时在走" }}
+        </span>
+      </XhToastContent>
       <XhToastCloseTrigger />
     </XhToastRoot>
     <XhButton size="sm" variant="outline" @click="seq++">重新计时</XhButton>

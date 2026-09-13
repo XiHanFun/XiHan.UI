@@ -28,6 +28,7 @@ export const XhToastRoot = /* @__PURE__ */ defineComponent({
     // 队列身份，不是 DOM id；不给则回落到实例的 scope id
     id: { type: String },
     title: { type: String },
+    description: { type: String },
     type: { type: String as PropType<ToastType> },
     duration: { type: Number },
     removeDelay: { type: Number },
@@ -75,6 +76,14 @@ export const XhToastIndicator = /* @__PURE__ */ defineComponent({
   },
 })
 
+export const XhToastContent = /* @__PURE__ */ defineComponent({
+  name: 'XhToastContent',
+  setup(_, { slots }) {
+    const ctx = useToastContext()
+    return () => h('div', ctx.api.value.getContentProps() as Record<string, unknown>, slots.default?.())
+  },
+})
+
 export const XhToastTitle = /* @__PURE__ */ defineComponent({
   name: 'XhToastTitle',
   setup(_, { slots }) {
@@ -84,6 +93,18 @@ export const XhToastTitle = /* @__PURE__ */ defineComponent({
       'div',
       ctx.api.value.getTitleProps() as Record<string, unknown>,
       slots.default ? slots.default() : ctx.api.value.title,
+    )
+  },
+})
+
+export const XhToastDescription = /* @__PURE__ */ defineComponent({
+  name: 'XhToastDescription',
+  setup(_, { slots }) {
+    const ctx = useToastContext()
+    return () => h(
+      'div',
+      ctx.api.value.getDescriptionProps() as Record<string, unknown>,
+      slots.default ? slots.default() : ctx.api.value.description,
     )
   },
 })

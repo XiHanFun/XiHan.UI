@@ -8,6 +8,8 @@ import type { ReactNode } from "react";
 import {
   XhButton,
   XhToastCloseTrigger,
+  XhToastContent,
+  XhToastIndicator,
   XhToastRoot,
   XhToastTitle,
 } from "@xihan-ui/react";
@@ -17,7 +19,7 @@ export default function Demo(): ReactNode {
   const [seq, setSeq] = useState(0);
 
   return (
-    <div style={{ display: "grid", gap: "12px", justifyItems: "start" }}>
+    <div style={{ display: "grid", width: "100%", gap: "12px", justifyItems: "center" }}>
       <XhToastRoot
         key={seq}
         title="6 秒后自动收走"
@@ -26,10 +28,13 @@ export default function Demo(): ReactNode {
       >
         {({ status, paused }) => (
           <>
-            <XhToastTitle />
-            <span style={{ fontSize: "12px", opacity: 0.75 }}>
-              {`状态：${status} · ${paused ? "计时已按住" : "计时在走"}`}
-            </span>
+            <XhToastIndicator />
+            <XhToastContent>
+              <XhToastTitle />
+              <span style={{ fontSize: "12px", opacity: 0.75 }}>
+                {`状态：${status} · ${paused ? "计时已按住" : "计时在走"}`}
+              </span>
+            </XhToastContent>
             <XhToastCloseTrigger />
           </>
         )}

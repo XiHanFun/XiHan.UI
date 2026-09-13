@@ -150,7 +150,7 @@
 <XhComponentCard src="skeleton" name="Skeleton" label="骨架屏" href="/components/skeleton" />
 <XhComponentCard src="spinner" name="Spinner" label="加载指示器" href="/components/spinner" />
 <XhComponentCard src="notification" name="Notification" label="通知" href="/components/notification" status="alpha" />
-<XhComponentCard src="toast" name="Toast" label="轻提示" href="/components/toast" status="alpha" />
+<XhComponentCard src="toast" name="Toast" label="轻提示" href="/components/toast" />
 
 </div>
 

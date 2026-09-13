@@ -32,7 +32,6 @@ const PLACEHOLDERS = new Set(['--xh-x-y'])
  * 每条都要真是语气轴槽——脚本另行复核它在 tone.css 的 [data-tone] 规则里声明过。
  */
 const DEMO_PRIVATE_SLOTS = {
-  '--xh-_tone-fg': '语气轴的文字色：示例把它接到组件槽上，演示同一块配色跟着 data-tone 换族',
 }
 
 const declared = new Set(

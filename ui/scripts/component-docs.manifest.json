@@ -27,7 +27,8 @@
     "alert",
     "badge",
     "skeleton",
-    "spinner"
+    "spinner",
+    "toast"
   ],
   "categories": [
     {

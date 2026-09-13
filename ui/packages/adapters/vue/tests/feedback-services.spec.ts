@@ -87,14 +87,14 @@ describe('createToastService', () => {
     toast.dispose()
   })
 
-  it('不写 max 缺省留 5 条：连发 20 条只剩最新的五条', async () => {
+  it('不写 max 缺省留 3 条：连发 20 条只剩最新的三条', async () => {
     const toast = createToastService()
     for (let i = 1; i <= 20; i++)
       toast.info(`第 ${i} 条`, { duration: 0 })
     await tick()
     const titles = [...document.querySelectorAll('[data-scope="toast"][data-part="title"]')].map(el => el.textContent)
-    expect(titles).toEqual(['第 16 条', '第 17 条', '第 18 条', '第 19 条', '第 20 条'])
-    expect(document.querySelector('[data-scope="toast"][data-part="group"]')?.getAttribute('data-count')).toBe('5')
+    expect(titles).toEqual(['第 18 条', '第 19 条', '第 20 条'])
+    expect(document.querySelector('[data-scope="toast"][data-part="group"]')?.getAttribute('data-count')).toBe('3')
     toast.dispose()
   })
 
@@ -119,24 +119,23 @@ describe('createToastService 的默认模板', () => {
   const closeOf = (): HTMLElement | null =>
     document.querySelector<HTMLElement>('[data-scope="toast"][data-part="close-trigger"]')
 
-  it('到点自己走的不出叉：模板只铺一句话，严重度交给 root 上的那一位', async () => {
+  it('默认模板铺指示符、文本列与关闭按钮', async () => {
     const toast = createToastService()
-    toast.success('已保存')
+    toast.success('已保存', { description: '更改已同步到云端' })
     await tick()
     const root = toastRoot()
-    expect(closeOf()).toBeNull()
-    // 状态字形由皮肤按 data-severity 画在 root 的伪元素上，模板不渲染节点
-    expect(root.children.length).toBe(1)
-    expect(root.children[0]!.getAttribute('data-part')).toBe('title')
+    expect(closeOf()).not.toBeNull()
+    expect([...root.children].map(el => el.getAttribute('data-part'))).toEqual(['indicator', 'content', 'close-trigger'])
+    expect(root.querySelector('[data-part="description"]')?.textContent).toBe('更改已同步到云端')
     expect(root.getAttribute('data-severity')).toBe('success')
     toast.dispose()
   })
 
-  it('走不掉的反过来默认出叉：没有它就一个可点的节点都没有', async () => {
+  it('closable=false 显式去掉关闭入口', async () => {
     const toast = createToastService()
-    toast.error('导出失败', { duration: 0 })
+    toast.error('导出失败', { duration: 0, closable: false })
     await tick()
-    expect(closeOf()).not.toBeNull()
+    expect(closeOf()).toBeNull()
     toast.dispose()
   })
 

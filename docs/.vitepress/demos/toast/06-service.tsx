@@ -13,7 +13,7 @@ export default function Demo(): ReactNode {
   // 惰性建单例：服务要 document，等到第一次调用（必然在客户端）再建
   const toast = useRef<ToastService | undefined>(undefined);
   function use(): ToastService {
-    toast.current ??= createToastService({ placement: "top" });
+    toast.current ??= createToastService();
     return toast.current;
   }
   useEffect(() => () => toast.current?.dispose(), []);

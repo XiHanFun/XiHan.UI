@@ -38,7 +38,7 @@ export function connectToast<T extends PropTypes>(
   normalize: NormalizeProps<T>,
 ): ToastApi<T> {
   const { state, prop, send, context, scope } = service
-  const ids = scope.ids('toast', 'title')
+  const ids = scope.ids('toast', 'title', 'description')
 
   const status = toStatus(state.get())
   const paused = state.matches('visible.paused')
@@ -54,6 +54,7 @@ export function connectToast<T extends PropTypes>(
     status,
     type,
     title: prop('title'),
+    description: prop('description'),
     paused,
     closable,
     duration,
@@ -71,6 +72,7 @@ export function connectToast<T extends PropTypes>(
       // 整条一起念，否则用户会听到半截话
       'aria-atomic': 'true',
       'aria-labelledby': ids.title,
+      'aria-describedby': prop('description') ? ids.description : undefined,
       'data-severity': type,
       // 语气轴只挂在 root 上，子部件靠继承拿到语气槽
       'data-tone': toneOf(type),
@@ -99,9 +101,18 @@ export function connectToast<T extends PropTypes>(
       'data-severity': type,
     }),
 
+    getContentProps: () => normalize.element({
+      ...parts.content.attrs,
+    }),
+
     getTitleProps: () => normalize.element({
       ...parts.title.attrs,
       id: ids.title,
+    }),
+
+    getDescriptionProps: () => normalize.element({
+      ...parts.description.attrs,
+      id: ids.description,
     }),
 
     // 进入退场后机器不再接这两个事件，按钮点了也不会有第二次退场

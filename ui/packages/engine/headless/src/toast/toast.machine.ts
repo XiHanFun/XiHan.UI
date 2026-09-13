@@ -12,13 +12,15 @@ import { setTimeoutEffect, setup } from '@xihan-ui/core'
 const { createMachine } = setup<ToastSchema>()
 
 /** 默认停留毫秒。 */
-export const TOAST_DURATION = 5000
+export const TOAST_DURATION = 4000
 /** 默认退场窗口毫秒：进入 dismissing 后停留这么久再转 unmounted。 */
-export const TOAST_REMOVE_DELAY = 200
-/** 那一摞默认落在哪儿。轻提示习惯在顶部：视线正好在刚才操作的地方上方。 */
-export const TOAST_PLACEMENT: ToastPlacement = 'top'
+export const TOAST_REMOVE_DELAY = 300
+/** 那一摞默认落在哪儿。 */
+export const TOAST_PLACEMENT: ToastPlacement = 'bottom'
 /** 摞内默认间距（px）。 */
-export const TOAST_GAP = 16
+export const TOAST_GAP = 12
+/** 同时最多显示的条数。 */
+export const TOAST_MAX = 3
 
 /**
  * 队列身份：没给 id 就用实例 scope id 兜底。

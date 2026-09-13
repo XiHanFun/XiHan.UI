@@ -9,6 +9,8 @@ import {
   XhButton,
   XhToastActionTrigger,
   XhToastCloseTrigger,
+  XhToastContent,
+  XhToastIndicator,
   XhToastRoot,
   XhToastTitle,
 } from "@xihan-ui/react";
@@ -23,7 +25,7 @@ export default function Demo(): ReactNode {
   }
 
   return (
-    <div style={{ display: "grid", gap: "12px", justifyItems: "start" }}>
+    <div style={{ display: "grid", width: "100%", gap: "12px", justifyItems: "center" }}>
       <XhToastRoot
         id="toast-demo-action"
         key={seq}
@@ -32,11 +34,10 @@ export default function Demo(): ReactNode {
         translations={{ close: "关闭" }}
         onAction={onAction}
       >
-        <XhToastTitle />
-        <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
-          <XhToastActionTrigger>撤销</XhToastActionTrigger>
-          <XhToastCloseTrigger />
-        </div>
+        <XhToastIndicator />
+        <XhToastContent><XhToastTitle /></XhToastContent>
+        <XhToastActionTrigger>撤销</XhToastActionTrigger>
+        <XhToastCloseTrigger />
       </XhToastRoot>
       <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
         <XhButton size="sm" variant="outline" onClick={() => setSeq(seq + 1)}>再挂一条</XhButton>

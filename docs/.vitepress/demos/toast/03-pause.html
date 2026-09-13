@@ -1,5 +1,5 @@
 <!-- 计时与暂停 | duration 走完自动退场；指针停在条子上或焦点进到条子里都会把计时按住，离开才接着走剩下那一段 -->
-<div style="display: grid; gap: 12px; justify-items: start">
+<div style="display: grid; width: 100%; gap: 12px; justify-items: center">
   <div id="toast-pause-slot"></div>
   <xh-button id="toast-pause-again" size="sm" variant="outline">
     <button data-xh-part="root">重新计时</button>
@@ -12,8 +12,11 @@
     duration="6000"
   >
     <div data-xh-part="root">
-      <div data-xh-part="title"></div>
-      <span data-readout style="font-size: 12px; opacity: 0.75"></span>
+      <span data-xh-part="indicator"></span>
+      <div data-xh-part="content">
+        <div data-xh-part="title"></div>
+        <span data-readout style="font-size: 12px; opacity: 0.75"></span>
+      </div>
       <button data-xh-part="close-trigger"></button>
     </div>
   </xh-toast>

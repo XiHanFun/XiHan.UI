@@ -41,7 +41,7 @@ describe('resolveToastDuration', () => {
   it('loading 不自动消失，其余按给定值；<=0 与非有限数一并按不自动消失', () => {
     expect(resolveToastDuration('loading', 100)).toBe(Number.POSITIVE_INFINITY)
     expect(resolveToastDuration('success', 100)).toBe(100)
-    expect(resolveToastDuration(undefined, undefined)).toBe(5000)
+    expect(resolveToastDuration(undefined, undefined)).toBe(4000)
     expect(resolveToastDuration('info', 0)).toBe(Number.POSITIVE_INFINITY)
     expect(resolveToastDuration('info', -1)).toBe(Number.POSITIVE_INFINITY)
     expect(resolveToastDuration('info', Number.NaN)).toBe(Number.POSITIVE_INFINITY)
@@ -221,12 +221,14 @@ describe('connectToast', () => {
     expect(error['aria-live']).toBe('assertive')
   })
 
-  it('aria-labelledby 指向 title 部件；轻提示只有一层文本', () => {
-    // 两层文本是 notification 的活：轻提示把结果用一句话说清楚就够了
-    const api = makeToast({ duration: 0 }).api()
+  it('标题与可选说明分别接到实时区', () => {
+    const api = makeToast({ duration: 0, description: '已同步到云端' }).api()
     const root = api.getRootProps() as Record<string, unknown>
     expect(root['aria-labelledby']).toBe((api.getTitleProps() as Record<string, unknown>).id)
-    expect(root['aria-describedby']).toBeUndefined()
+    expect(root['aria-describedby']).toBe((api.getDescriptionProps() as Record<string, unknown>).id)
+
+    const withoutDescription = makeToast({ duration: 0 }).api().getRootProps() as Record<string, unknown>
+    expect(withoutDescription['aria-describedby']).toBeUndefined()
   })
 
   it('data-paused 随暂停出现与消失；unmounted 时 root 带 hidden', () => {

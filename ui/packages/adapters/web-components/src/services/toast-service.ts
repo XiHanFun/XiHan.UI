@@ -16,10 +16,10 @@ import { createService, DATA_INERT_EXEMPT } from '@xihan-ui/core'
 import {
   connectNotification,
   createFeedbackServiceController,
-  NOTIFICATION_MAX,
   notificationMachine,
   resolveToastServiceItem,
   TOAST_GAP,
+  TOAST_MAX,
   TOAST_PLACEMENT,
   toastAnatomy,
   visibleNotifications,
@@ -42,11 +42,15 @@ export function createToastService(options: ToastServiceOptions = {}): ToastServ
     target,
     placement = TOAST_PLACEMENT,
     gap = TOAST_GAP,
-    max = NOTIFICATION_MAX,
+    max = TOAST_MAX,
     dedupe,
     toastTranslations,
     ...defaults
   } = options
+  const serviceDefaults = {
+    ...defaults,
+    pauseOnPageIdle: defaults.pauseOnPageIdle ?? true,
+  }
   const { holder, release } = createServiceHolder(target)
 
   // 摞没有对应的自定义元素，属性直接从解剖里取
@@ -73,9 +77,9 @@ export function createToastService(options: ToastServiceOptions = {}): ToastServ
     placement,
     max,
     dedupe,
-    duration: defaults.duration,
-    removeDelay: defaults.removeDelay,
-    pauseOnPageIdle: defaults.pauseOnPageIdle,
+    duration: serviceDefaults.duration,
+    removeDelay: serviceDefaults.removeDelay,
+    pauseOnPageIdle: serviceDefaults.pauseOnPageIdle,
   }, holder)
 
   const host = createServiceReactiveHost(() => render())
@@ -102,19 +106,22 @@ export function createToastService(options: ToastServiceOptions = {}): ToastServ
   }
 
   function ensureNode(item: ToastRecord): XhToastElement {
-    const resolved = resolveToastServiceItem(item, defaults)
+    const resolved = resolveToastServiceItem(item, serviceDefaults)
     let node = nodes.get(item.id)
     if (!node) {
       node = document.createElement('xh-toast') as XhToastElement
       nodes.set(item.id, node)
     }
-    const shape = `${resolved.closable ? 'c' : ''}${resolved.actionLabel ? 'a' : ''}`
+    const shape = `${resolved.closable ? 'c' : ''}${resolved.actionLabel ? 'a' : ''}${resolved.description ? 'd' : ''}`
     if (shapes.get(item.id) !== shape) {
       shapes.set(item.id, shape)
       const root = partNode('div', 'root')
-      // 节点平铺，不再套一层行容器：横排是皮肤的事，模板套一层只会与它打架。
-      // 字形不在这儿渲染：它由皮肤按 root 上的 data-severity 画
-      root.appendChild(partNode('div', 'title'))
+      root.appendChild(partNode('span', 'indicator'))
+      const content = partNode('div', 'content')
+      content.appendChild(partNode('div', 'title'))
+      if (resolved.description)
+        content.appendChild(partNode('div', 'description'))
+      root.appendChild(content)
       if (resolved.actionLabel)
         root.appendChild(partNode('button', 'action-trigger'))
       if (resolved.closable)
@@ -127,6 +134,7 @@ export function createToastService(options: ToastServiceOptions = {}): ToastServ
 
     node.toastId = resolved.id
     node.titleText = resolved.title
+    node.descriptionText = resolved.description
     node.type = resolved.type
     node.duration = resolved.duration
     node.removeDelay = resolved.removeDelay
