@@ -1,4 +1,4 @@
-<!-- 快捷选项 | presets 在浮层里排出一列，点一条整份写进去并收起；日子在组件外算好再传 -->
+<!-- 快捷选项 | 提供常用日期 -->
 <script setup lang="ts">
 import { datePickerPresetDay } from "@xihan-ui/headless";
 import {
@@ -24,12 +24,8 @@ import {
   XhDatePickerWeekDay,
   XhDatePickerWeekRow,
 } from "@xihan-ui/vue";
-import { computed, ref } from "vue";
+import { computed } from "vue";
 
-const value = ref<string[]>([]);
-
-// 日子在 computed 里算一次。connect 每帧都会跑一遍，把 today() 放进渲染期会跨零点算出两个答案。
-// 区间用 datePickerPresetRange(-6, 0) 这类算出 '起/止' 一个串，两端一次落定
 const presets = computed(() => [
   { label: "今天", value: datePickerPresetDay(0) },
   { label: "明天", value: datePickerPresetDay(1) },
@@ -40,7 +36,6 @@ const presets = computed(() => [
 <template>
   <XhDatePickerRoot
     v-slot="{ weeks, weekDays }"
-    v-model:value="value"
     :presets="presets"
     locale="zh-CN"
   >
@@ -91,6 +86,4 @@ const presets = computed(() => [
       </XhDatePickerContent>
     </XhDatePickerPositioner>
   </XhDatePickerRoot>
-
-  <span style="font-size: 13px">当前值：{{ value[0] ?? "（未选）" }}</span>
 </template>

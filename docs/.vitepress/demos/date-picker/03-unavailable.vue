@@ -1,4 +1,4 @@
-<!-- 不可选的日子 | 周末由 isDateUnavailable 判不可用：方向键仍走得过去，只是落不了值 -->
+<!-- 不可用日期 | 禁止选择周末 -->
 <script setup lang="ts">
 import {
   XhDatePickerCalendar,
@@ -22,9 +22,6 @@ import {
   XhDatePickerWeekDay,
   XhDatePickerWeekRow,
 } from "@xihan-ui/vue";
-import { ref } from "vue";
-
-const value = ref<string[]>([]);
 
 function isWeekend(iso: string) {
   const [y, m, d] = iso.split("-").map(Number);
@@ -36,7 +33,6 @@ function isWeekend(iso: string) {
 <template>
   <XhDatePickerRoot
     v-slot="{ weeks, weekDays }"
-    v-model:value="value"
     :is-date-unavailable="isWeekend"
     locale="zh-CN"
   >
@@ -85,6 +81,4 @@ function isWeekend(iso: string) {
       </XhDatePickerContent>
     </XhDatePickerPositioner>
   </XhDatePickerRoot>
-
-  <span style="font-size: 13px">当前值：{{ value[0] ?? "（未选）" }}</span>
 </template>

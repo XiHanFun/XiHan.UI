@@ -1,4 +1,4 @@
-<!-- 基础用法 | 点输入行任意处即展开，不必再去点小箭头；段位与日历写的是同一个值，改哪边另一边当场跟着改口 -->
+<!-- 基础用法 | 输入或选择日期 -->
 <script setup lang="ts">
 import {
   XhDatePickerCalendar,
@@ -12,7 +12,6 @@ import {
   XhDatePickerGridHead,
   XhDatePickerHeader,
   XhDatePickerHeading,
-  XhDatePickerHiddenInput,
   XhDatePickerLabel,
   XhDatePickerNextTrigger,
   XhDatePickerPositioner,
@@ -23,22 +22,13 @@ import {
   XhDatePickerWeekDay,
   XhDatePickerWeekRow,
 } from "@xihan-ui/vue";
-import { ref } from "vue";
-
-const value = ref<string[]>([]);
 </script>
 
 <template>
-  <XhDatePickerRoot
-    v-slot="{ weeks, weekDays }"
-    v-model:value="value"
-    locale="zh-CN"
-    name="due"
-  >
+  <XhDatePickerRoot v-slot="{ weeks, weekDays }" locale="zh-CN">
     <XhDatePickerLabel>交付日期</XhDatePickerLabel>
     <XhDatePickerControl>
       <XhDatePickerSegmentGroup>
-        <!-- 段位不写内容：显示什么由组件按当前值填 -->
         <XhDatePickerSegment :index="0" />
         <span>-</span>
         <XhDatePickerSegment :index="1" />
@@ -47,8 +37,6 @@ const value = ref<string[]>([]);
       </XhDatePickerSegmentGroup>
       <XhDatePickerClearTrigger />
     </XhDatePickerControl>
-    <!-- 表单出口：随表单提交的是 ISO 串 -->
-    <XhDatePickerHiddenInput />
     <XhDatePickerPositioner>
       <XhDatePickerContent>
         <XhDatePickerCalendar>
@@ -68,7 +56,6 @@ const value = ref<string[]>([]);
               </XhDatePickerWeekRow>
             </XhDatePickerGridHead>
             <XhDatePickerGridBody>
-              <!-- v-for 必带 key：就地复用会让承载焦点的那一格换了身份 -->
               <XhDatePickerWeekRow v-for="week in weeks" :key="week[0].value">
                 <XhDatePickerCell
                   v-for="day in week"
@@ -84,6 +71,4 @@ const value = ref<string[]>([]);
       </XhDatePickerContent>
     </XhDatePickerPositioner>
   </XhDatePickerRoot>
-
-  <span style="font-size: 13px">当前值：{{ value[0] ?? "（未选）" }}</span>
 </template>

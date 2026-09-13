@@ -1,4 +1,4 @@
-// 禁用 / 只读 / 校验失败 | 禁用整条退出 Tab 序，只读仍能展开翻月只是落不了值，invalid 只改标注
+// 状态 | 禁用、只读与校验失败
 import type { ReactNode } from "react";
 import {
   XhDatePickerCalendar,

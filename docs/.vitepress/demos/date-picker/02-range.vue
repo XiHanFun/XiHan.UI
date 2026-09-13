@@ -1,4 +1,4 @@
-<!-- 区间选择 | 五种粒度都能挑区间：两端跨页才并排两页，同一页放得下就一页；翻页整窗一起走，大步翻那对钮一次跨一年或十页 -->
+<!-- 区间选择 | 选择开始和结束日期 -->
 <script setup lang="ts">
 import type { CalendarView } from "@xihan-ui/headless";
 import {
@@ -26,34 +26,12 @@ import {
   XhDatePickerWeekNumber,
   XhDatePickerWeekRow,
 } from "@xihan-ui/vue";
-import { ref } from "vue";
 
 const kinds = [
-  { key: "day", label: "按天", view: "day" as CalendarView, week: false },
-  { key: "week", label: "按周", view: "day" as CalendarView, week: true },
-  { key: "month", label: "按月", view: "month" as CalendarView, week: false },
-  { key: "quarter", label: "按季度", view: "quarter" as CalendarView, week: false },
-  { key: "year", label: "按年", view: "year" as CalendarView, week: false },
+  { key: "day", label: "旅行日期", view: "day" as CalendarView, week: false },
 ];
 
-const values = ref<Record<string, string[]>>({
-  day: [],
-  week: [],
-  month: [],
-  quarter: [],
-  year: [],
-});
-
-// 两组段位各自的读屏名字，区间模式下替掉指向 label 的那份
 const translations = { startDate: "开始", endDate: "结束" };
-
-function text(v: string[]): string {
-  if (v.length === 0)
-    return "（未选）";
-  if (v.length === 1)
-    return `${v[0]}（另一端待定）`;
-  return `${v[0]} → ${v[1]}`;
-}
 </script>
 
 <template>
@@ -62,7 +40,6 @@ function text(v: string[]): string {
       v-for="k in kinds"
       :key="k.key"
       v-slot="{ panels, weekDays, segments, endSegments }"
-      v-model:value="values[k.key]"
       :translations="translations"
       :view="k.view"
       :week-selection="k.week"
@@ -130,8 +107,6 @@ function text(v: string[]): string {
           </XhDatePickerCalendar>
         </XhDatePickerContent>
       </XhDatePickerPositioner>
-
-      <span style="font-size: 13px">{{ text(values[k.key]) }}</span>
     </XhDatePickerRoot>
   </div>
 </template>

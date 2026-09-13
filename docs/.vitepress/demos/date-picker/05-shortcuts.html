@@ -1,8 +1,5 @@
-<!-- 快捷选项 | presets 在浮层里排出一列，点一条整份写进去并收起；日子在组件外算好再传 -->
+<!-- 快捷选项 | 提供常用日期 -->
 <div id="date-picker-shortcuts-mount"></div>
-<span style="font-size: 13px">
-  当前值：<span id="date-picker-shortcuts-value">（未选）</span>
-</span>
 
 <template id="date-picker-shortcuts-template">
   <xh-date-picker locale="zh-CN">
@@ -51,7 +48,6 @@
   );
   const body = fragment.querySelector('[data-xh-part="grid-body"]');
   const list = fragment.querySelector('[data-xh-part="preset-group"]');
-  const readout = document.getElementById("date-picker-shortcuts-value");
 
   let month = "";
 
@@ -122,10 +118,8 @@
   );
   picker.presets = presets;
 
-  // 值与展开态都由这段脚本持有：组件只发意图，写回才算数
   function setValue(value) {
     picker.value = value;
-    readout.textContent = value[0] ?? "（未选）";
   }
 
   function setOpen(open) {
