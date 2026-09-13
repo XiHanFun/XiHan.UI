@@ -13670,6 +13670,9 @@
               "name": "--xh-date-picker-time-column-min-w-mobile"
             },
             {
+              "name": "--xh-date-picker-time-column-offset"
+            },
+            {
               "name": "--xh-date-picker-time-column-padding"
             },
             {

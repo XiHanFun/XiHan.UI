@@ -79,6 +79,7 @@
 - `min`、`max` 与 `isDateUnavailable` 限制可选日期。
 - `presets` 提供常用日期快捷项。
 - `showTime` 在 `granularity=day + selectionMode=single` 时让输入行显示完整日期时间，并加入时、分或秒选择列。
+- 日期时间组合面板让时间列与日期内容区从同一水平线开始；各时间列只纵向滚动，底部操作独占一行。
 - 输入值、展开状态和聚焦日期均可受控。
 - 点击输入行可以继续逐段键入，点击日历图标则把焦点送入日历；展开期间输入框保持激活边界。
 - 区间模式在同一个组件内组合起止分段输入、范围分隔符和范围日历，不另设第二套选择器。
@@ -371,8 +372,8 @@
 | `--xh-date-picker-action-font-size` | `clear-trigger`<br>`trigger` | `font-size` | `default` | `--xh-text-secondary-size` | date-picker 的 clear-trigger、trigger 部件 font-size 覆盖槽。 |
 | `--xh-date-picker-action-radius` | `clear-trigger`<br>`trigger` | `border-radius` | `default` | `--xh-shape-control` | date-picker 的 clear-trigger、trigger 部件 border-radius 覆盖槽。 |
 | `--xh-date-picker-action-size` | `clear-trigger`<br>`trigger` | `block-size`<br>`inline-size` | `default` | `--xh-control-action-size` | date-picker 的 clear-trigger、trigger 部件 block-size、inline-size 覆盖槽。 |
-| `--xh-date-picker-calendar-gap` | `calendar` | `gap` | `default` | `--xh-space-2` | date-picker 的 calendar 部件 gap 覆盖槽。 |
-| `--xh-date-picker-column-divider` | `preset-group`<br>`time-column` | `border-block-end`<br>`border-inline-end`<br>`border-inline-start` | `@media (min-width: 768px)`<br>`default` | `--xh-material-frosted-separator` | date-picker 的 preset-group、time-column 部件 border-block-end、border-inline-end、border-inline-start 覆盖槽。 |
+| `--xh-date-picker-calendar-gap` | `calendar`<br>`time-column` | `gap`<br>`margin-block-start` | `default` | `--xh-space-2` | date-picker 的 calendar、time-column 部件 gap、margin-block-start 覆盖槽。 |
+| `--xh-date-picker-column-divider` | `calendar`<br>`preset-group`<br>`time-column` | `background`<br>`border-block-end`<br>`border-inline-end`<br>`border-inline-start` | `@media (min-width: 768px)`<br>`default`<br>`has(+ [data-part='time-column'])` | `--xh-material-frosted-separator` | date-picker 的 calendar、preset-group、time-column 部件 background、border-block-end、border-inline-end、border-inline-start 覆盖槽。 |
 | `--xh-date-picker-confirm-trigger-bg` | `confirm-trigger` | `background` | `default` | `--xh-_date-picker-accent` | date-picker 的 confirm-trigger 部件 background 覆盖槽。 |
 | `--xh-date-picker-confirm-trigger-bg-active` | `confirm-trigger` | `background` | `active` | `--xh-_date-picker-accent-active` | date-picker 的 confirm-trigger 部件 background 覆盖槽。 |
 | `--xh-date-picker-confirm-trigger-bg-hover` | `confirm-trigger` | `background` | `hover` | `--xh-_date-picker-accent-hover` | date-picker 的 confirm-trigger 部件 background 覆盖槽。 |
@@ -431,9 +432,10 @@
 | `--xh-date-picker-range-separator-fg` | `range-separator` | `color` | `default` | `--xh-fg-subtle` | date-picker 的 range-separator 部件 color 覆盖槽。 |
 | `--xh-date-picker-range-separator-px` | `range-separator` | `padding-inline` | `default` | `--xh-space-1` | date-picker 的 range-separator 部件 padding-inline 覆盖槽。 |
 | `--xh-date-picker-time-column-gap` | `time-column` | `gap` | `default` | `0` | date-picker 的 time-column 部件 gap 覆盖槽。 |
-| `--xh-date-picker-time-column-h` | `time-column` | `block-size` | `default` | `--xh-viewport-h-sm` | date-picker 的 time-column 部件 block-size 覆盖槽。 |
+| `--xh-date-picker-time-column-h` | `time-column` | `block-size` | `default` | `--xh-viewport-h-md` | date-picker 的 time-column 部件 block-size 覆盖槽。 |
 | `--xh-date-picker-time-column-min-w` | `time-column` | `min-inline-size` | `default` | `3.5rem` | date-picker 的 time-column 部件 min-inline-size 覆盖槽。 |
 | `--xh-date-picker-time-column-min-w-mobile` | `time-column` | `min-inline-size` | `@media (width < 768px)` | `2.75rem` | date-picker 的 time-column 部件 min-inline-size 覆盖槽。 |
+| `--xh-date-picker-time-column-offset` | `time-column` | `margin-block-start` | `default` | `--xh-control-h-sm` | date-picker 的 time-column 部件 margin-block-start 覆盖槽。 |
 | `--xh-date-picker-time-column-padding` | `time-column` | `padding-block` | `default` | `--xh-space-1` | date-picker 的 time-column 部件 padding-block 覆盖槽。 |
 | `--xh-date-picker-time-column-px` | `time-column` | `padding-inline` | `default` | `0` | date-picker 的 time-column 部件 padding-inline 覆盖槽。 |
 | `--xh-date-picker-time-column-px-mobile` | `time-column` | `padding-inline` | `@media (width < 768px)` | `0` | date-picker 的 time-column 部件 padding-inline 覆盖槽。 |

@@ -900,6 +900,7 @@ export type ComponentTokenName =
   | '--xh-date-picker-time-column-h'
   | '--xh-date-picker-time-column-min-w'
   | '--xh-date-picker-time-column-min-w-mobile'
+  | '--xh-date-picker-time-column-offset'
   | '--xh-date-picker-time-column-padding'
   | '--xh-date-picker-time-column-px'
   | '--xh-date-picker-time-column-px-mobile'
