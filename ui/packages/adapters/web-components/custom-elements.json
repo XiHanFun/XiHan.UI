@@ -32290,7 +32290,13 @@
               "name": "--xh-number-field-control-bg-disabled"
             },
             {
+              "name": "--xh-number-field-control-bg-focus"
+            },
+            {
               "name": "--xh-number-field-control-bg-hover"
+            },
+            {
+              "name": "--xh-number-field-control-bg-invalid"
             },
             {
               "name": "--xh-number-field-control-bg-readonly"

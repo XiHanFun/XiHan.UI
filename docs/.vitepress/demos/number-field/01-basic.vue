@@ -11,8 +11,8 @@ import {
 </script>
 
 <template>
-  <XhNumberFieldRoot default-value="1">
-    <XhNumberFieldLabel>数量</XhNumberFieldLabel>
+  <XhNumberFieldRoot default-value="1024" :min="0" name="width">
+    <XhNumberFieldLabel>宽度</XhNumberFieldLabel>
     <XhNumberFieldControl>
       <XhNumberFieldDecrementTrigger />
       <XhNumberFieldInput />

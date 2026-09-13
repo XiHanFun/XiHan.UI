@@ -11,8 +11,8 @@ import {
 
 export default function Demo(): ReactNode {
   return (
-    <XhNumberFieldRoot defaultValue="1">
-      <XhNumberFieldLabel>数量</XhNumberFieldLabel>
+    <XhNumberFieldRoot defaultValue="1024" min={0} name="width">
+      <XhNumberFieldLabel>宽度</XhNumberFieldLabel>
       <XhNumberFieldControl>
         <XhNumberFieldDecrementTrigger />
         <XhNumberFieldInput />
