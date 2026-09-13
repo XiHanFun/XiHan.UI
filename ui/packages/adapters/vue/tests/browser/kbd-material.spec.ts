@@ -34,7 +34,7 @@ afterEach(async () => {
   delete document.documentElement.dataset.density
 })
 
-describe('kbd / KbdGroup 实体键帽', () => {
+describe('kbd / KbdGroup 键帽', () => {
   it('使用原生 kbd，组合在 RTL 文本里仍保持物理键位顺序且整组只命名一次', () => {
     const root = mount(() => h('div', { dir: 'rtl' }, [
       h(XhKbdGroup, { keys: ['Mod', 'S'], platform: 'other' }),
@@ -66,16 +66,19 @@ describe('kbd / KbdGroup 实体键帽', () => {
     expect(getComputedStyle(group).whiteSpace).toBe('nowrap')
   })
 
-  it('只有显式 pressed 才减弱底缘压感并轻压', () => {
+  it('单枚 Kbd 固定一档尺寸，default 有中性底、light 保持透明', () => {
     const root = mount(() => h('div', null, [
-      h(XhKbd, { 'value': 'S', 'data-test-rest': '' }),
-      h(XhKbd, { 'value': 'S', 'pressed': true, 'data-test-pressed': '' }),
+      h(XhKbd, { 'value': 'S', 'data-test-default': '' }),
+      h(XhKbd, { 'value': 'S', 'variant': 'light', 'data-test-light': '' }),
     ]))
-    const rest = root.querySelector<HTMLElement>('[data-test-rest]')!
-    const pressed = root.querySelector<HTMLElement>('[data-test-pressed]')!
-    expect(getComputedStyle(rest).boxShadow).not.toBe('none')
-    expect(getComputedStyle(pressed).boxShadow).not.toBe(getComputedStyle(rest).boxShadow)
-    expect(getComputedStyle(pressed).translate).not.toBe('none')
+    const standard = root.querySelector<HTMLElement>('[data-test-default]')!
+    const light = root.querySelector<HTMLElement>('[data-test-light]')!
+    expect(standard.dataset.variant).toBe('default')
+    expect(light.dataset.variant).toBe('light')
+    expect(getComputedStyle(standard).height).toBe(getComputedStyle(light).height)
+    expect(getComputedStyle(standard).boxShadow).toBe('none')
+    expect(getComputedStyle(standard).backgroundColor).not.toBe('rgba(0, 0, 0, 0)')
+    expect(getComputedStyle(light).backgroundColor).toBe('rgba(0, 0, 0, 0)')
   })
 
   it('禁用后代只命中 kbd-group 自己的 key，其他 scope 的同名 part 不被污染', () => {

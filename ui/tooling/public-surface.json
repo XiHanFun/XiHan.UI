@@ -5419,6 +5419,7 @@
       "KbdGroupTranslations",
       "KbdProps",
       "KbdTranslations",
+      "KbdVariant",
       "KeyboardRow",
       "KeyboardTable",
       "LOADING_BAR_CEILING",
@@ -9683,12 +9684,10 @@
       "view"
     ],
     "kbd": [
-      "disabled",
       "platform",
-      "pressed",
-      "size",
       "translations",
-      "value"
+      "value",
+      "variant"
     ],
     "kbd-group": [
       "disabled",
@@ -12981,11 +12980,8 @@
     "--xh-json-viewer-string-fg",
     "--xh-json-viewer-text-fg",
     "--xh-kbd-bg",
-    "--xh-kbd-bg-disabled",
     "--xh-kbd-border",
     "--xh-kbd-fg",
-    "--xh-kbd-fg-disabled",
-    "--xh-kbd-fg-modifier",
     "--xh-kbd-font",
     "--xh-kbd-font-size",
     "--xh-kbd-font-weight",
@@ -13012,10 +13008,7 @@
     "--xh-kbd-h",
     "--xh-kbd-min-w",
     "--xh-kbd-px",
-    "--xh-kbd-py",
     "--xh-kbd-radius",
-    "--xh-kbd-shadow",
-    "--xh-kbd-shadow-pressed",
     "--xh-layout-bg",
     "--xh-layout-border",
     "--xh-layout-content-padding",
@@ -16074,11 +16067,9 @@
     },
     "xh-kbd": {
       "attributes": [
-        "disabled",
         "platform",
-        "pressed",
-        "size",
-        "value"
+        "value",
+        "variant"
       ],
       "events": []
     },

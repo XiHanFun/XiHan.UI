@@ -24964,30 +24964,12 @@
             },
             {
               "kind": "field",
-              "name": "size",
+              "name": "variant",
               "privacy": "public",
               "type": {
-                "text": "Size | undefined"
+                "text": "KbdVariant | undefined"
               },
-              "attribute": "size"
-            },
-            {
-              "kind": "field",
-              "name": "pressed",
-              "privacy": "public",
-              "type": {
-                "text": "boolean | undefined"
-              },
-              "attribute": "pressed"
-            },
-            {
-              "kind": "field",
-              "name": "disabled",
-              "privacy": "public",
-              "type": {
-                "text": "boolean | undefined"
-              },
-              "attribute": "disabled"
+              "attribute": "variant"
             },
             {
               "kind": "field",
@@ -25036,27 +25018,11 @@
             },
             {
               "type": {
-                "text": "Size | undefined"
+                "text": "KbdVariant | undefined"
               },
-              "description": "尺寸",
-              "name": "size",
-              "fieldName": "size"
-            },
-            {
-              "type": {
-                "text": "boolean | undefined"
-              },
-              "description": "作者确认动作真实激活时的轻压事实",
-              "name": "pressed",
-              "fieldName": "pressed"
-            },
-            {
-              "type": {
-                "text": "boolean | undefined"
-              },
-              "description": "所提示动作是否不可用",
-              "name": "disabled",
-              "fieldName": "disabled"
+              "description": "外观，默认 default",
+              "name": "variant",
+              "fieldName": "variant"
             }
           ],
           "superclass": {
@@ -25070,19 +25036,10 @@
               "name": "--xh-kbd-bg"
             },
             {
-              "name": "--xh-kbd-bg-disabled"
-            },
-            {
               "name": "--xh-kbd-border"
             },
             {
               "name": "--xh-kbd-fg"
-            },
-            {
-              "name": "--xh-kbd-fg-disabled"
-            },
-            {
-              "name": "--xh-kbd-fg-modifier"
             },
             {
               "name": "--xh-kbd-font"
@@ -25103,16 +25060,7 @@
               "name": "--xh-kbd-px"
             },
             {
-              "name": "--xh-kbd-py"
-            },
-            {
               "name": "--xh-kbd-radius"
-            },
-            {
-              "name": "--xh-kbd-shadow"
-            },
-            {
-              "name": "--xh-kbd-shadow-pressed"
             }
           ]
         }

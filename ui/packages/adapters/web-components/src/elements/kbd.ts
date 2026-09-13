@@ -5,14 +5,12 @@
 
 // 提供 kbd 相关实现。
 
-import type { Size } from '@xihan-ui/core'
-import type { HotkeysPlatform, KbdProps, KbdTranslations } from '@xihan-ui/headless'
+import type { HotkeysPlatform, KbdProps, KbdTranslations, KbdVariant } from '@xihan-ui/headless'
 import { connectKbd, detectHotkeysPlatform, kbdAnatomy, kbdMeta } from '@xihan-ui/headless'
 import { wcNormalize } from '../dom/normalize'
 import { XhElement } from '../element-base'
 
 const STRING_CONVERTER = { fromAttribute: (v: string | null) => v ?? undefined }
-const BOOLEAN_CONVERTER = { fromAttribute: (v: string | null) => (v === null ? undefined : v !== 'false') }
 
 /**
  * `<xh-kbd>` —— 单枚纯展示键帽。root 应使用原生 `<kbd>`，元素按 value 写入可见文本与可读名称。
@@ -20,9 +18,7 @@ const BOOLEAN_CONVERTER = { fromAttribute: (v: string | null) => (v === null ? u
  * @customElement xh-kbd
  * @attr {string} value - 一枚键的声明，例如 Mod、Shift、Esc 或 S
  * @attr {'auto'|'mac'|'other'} platform - 平台写法，缺省挂载后实测
- * @attr {'sm'|'md'|'lg'} size - 尺寸
- * @attr {boolean} pressed - 作者确认动作真实激活时的轻压事实
- * @attr {boolean} disabled - 所提示动作是否不可用
+ * @attr {'default'|'light'} variant - 外观，默认 default
  * @csspart root - 原生 kbd 键帽
  */
 export class XhKbdElement extends XhElement {
@@ -30,17 +26,13 @@ export class XhKbdElement extends XhElement {
   static override properties = {
     value: { converter: STRING_CONVERTER },
     platform: { converter: STRING_CONVERTER },
-    size: { converter: STRING_CONVERTER },
-    pressed: { converter: BOOLEAN_CONVERTER },
-    disabled: { converter: BOOLEAN_CONVERTER },
+    variant: { converter: STRING_CONVERTER },
     translations: { attribute: false },
   }
 
   declare value: string
   declare platform?: HotkeysPlatform
-  declare size?: Size
-  declare pressed?: boolean
-  declare disabled?: boolean
+  declare variant?: KbdVariant
   declare translations?: Partial<KbdTranslations>
 
   #detected: HotkeysPlatform = 'auto'
@@ -59,9 +51,7 @@ export class XhKbdElement extends XhElement {
     const api = connectKbd(this.configured('kbd', {
       value: this.value,
       platform: this.platform && this.platform !== 'auto' ? this.platform : this.#detected,
-      size: this.size,
-      pressed: this.pressed,
-      disabled: this.disabled,
+      variant: this.variant,
       translations: this.translations,
     } satisfies KbdProps), wcNormalize)
     this.spreader.spread(root, api.getRootProps() as Record<string, unknown>)

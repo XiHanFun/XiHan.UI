@@ -24,30 +24,30 @@
 
 ## 示例
 
-### 尺寸
+### 外观
 
-小、中、大三档
+default 使用中性底，light 保持透明
 
-<XhDemo src="kbd/02-size" />
+<XhDemo src="kbd/02-variant" />
 
-### 禁用
+### 特殊键
 
-表示对应动作不可用
+常用修饰键、方向键与操作键由 Headless 统一格式化
 
-<XhDemo src="kbd/03-disabled" />
+<XhDemo src="kbd/03-special" />
 
-### 按下
+### 行内提示
 
-展示动作激活时的键帽状态
+键帽可以嵌入说明文字，但不承担按钮或快捷键监听职责
 
-<XhDemo src="kbd/04-pressed" />
+<XhDemo src="kbd/04-inline" />
 
 ## 设计指引
 
 ### 何时使用
 
 - 表示单个键。
-- 展示按下或禁用状态。
+- 在说明文字或操作旁提示键盘输入。
 
 ### 何时不用
 
@@ -59,8 +59,7 @@
 
 - 渲染原生 `kbd` 元素。
 - 平台键名由 Headless 统一格式化。
-- `pressed` 只表示外部传入的按下状态。
-- 提供三档尺寸和 compact 密度。
+- 固定使用 24px 高度；`default` 使用中性底，`light` 保持透明。
 
 ### 组合
 
@@ -70,7 +69,7 @@
 ### 最佳实践
 
 - 跨平台快捷键使用 `Mod`。
-- 仅在动作激活时设置 `pressed`。
+- 组合键使用 KbdGroup，不要手工拼接加号。
 
 ### 反模式
 
@@ -92,12 +91,10 @@
 
 | 属性 | 类型 | 必填 | 说明 |
 | --- | --- | --- | --- |
-| `disabled` | `boolean` |  | 这枚键所提示的动作是否不可用。 |
 | `platform` | `HotkeysPlatform` |  | 平台写法；auto 在适配器测出平台前按 other。 |
-| `pressed` | `boolean` |  | 这枚键是否正在被真实动作激活；纯展示默认静止。 |
-| `size` | `Size` |  | 尺寸：sm / md / lg。 |
 | `translations` | `Partial<KbdTranslations>` |  | 读屏键名覆盖。 |
 | `value` | `string` | 是 | 一枚键的声明，例如 Mod、Shift、Esc 或 S。 |
+| `variant` | `KbdVariant` |  | 外观：default 使用中性底，light 保持透明。 |
 
 ### connect API
 
@@ -143,11 +140,8 @@
 
 | 部件 | 属性 | 值 |
 | --- | --- | --- |
-| `root` | `data-disabled` | ''（条件成立时才出现） |
-| `root` | `data-modifier` | ''（条件成立时才出现） |
 | `root` | `data-platform` | resolveHotkeysPlatform(props.platform) |
-| `root` | `data-pressed` | ''（条件成立时才出现） |
-| `root` | `data-size` | props.size |
+| `root` | `data-variant` | props.variant |
 
 <!-- xh-component-tokens:start -->
 ### CSS 变量
@@ -156,29 +150,21 @@
 
 | 变量 | 部件 | CSS 属性 | 状态 | 缺省来源 | 说明 |
 | --- | --- | --- | --- | --- | --- |
-| `--xh-kbd-bg` | `root` | `background-color` | `default` | `--xh-bg-subtle` | kbd 的 root 部件 background-color 覆盖槽。 |
-| `--xh-kbd-bg-disabled` | `root` | `background` | `disabled` | `--xh-bg-muted` | kbd 的 root 部件 background 覆盖槽。 |
-| `--xh-kbd-border` | `root` | `border` | `default` | `--xh-border-default` | kbd 的 root 部件 border 覆盖槽。 |
-| `--xh-kbd-fg` | `root` | `color` | `default` | `--xh-fg-default` | kbd 的 root 部件 color 覆盖槽。 |
-| `--xh-kbd-fg-disabled` | `root` | `color` | `disabled` | `--xh-fg-disabled` | kbd 的 root 部件 color 覆盖槽。 |
-| `--xh-kbd-fg-modifier` | `root` | `color` | `modifier` | `--xh-fg-muted` | kbd 的 root 部件 color 覆盖槽。 |
-| `--xh-kbd-font` | `root` | `font-family` | `default` | `--xh-font-family-mono` | kbd 的 root 部件 font-family 覆盖槽。 |
-| `--xh-kbd-font-size` | `root` | `font-size` | `default` | `--xh-_kbd-font-size` | kbd 的 root 部件 font-size 覆盖槽。 |
+| `--xh-kbd-bg` | `root` | `background` | `default` | `--xh-bg-subtle` | kbd 的 root 部件 background 覆盖槽。 |
+| `--xh-kbd-border` | `root` | `border` | `default` | `transparent` | kbd 的 root 部件 border 覆盖槽。 |
+| `--xh-kbd-fg` | `root` | `color` | `default` | `--xh-fg-muted` | kbd 的 root 部件 color 覆盖槽。 |
+| `--xh-kbd-font` | `root` | `font-family` | `default` | `inherit` | kbd 的 root 部件 font-family 覆盖槽。 |
+| `--xh-kbd-font-size` | `root` | `font-size` | `default` | `--xh-text-label-size` | kbd 的 root 部件 font-size 覆盖槽。 |
 | `--xh-kbd-font-weight` | `root` | `font-weight` | `default` | `--xh-font-weight-medium` | kbd 的 root 部件 font-weight 覆盖槽。 |
-| `--xh-kbd-h` | `root` | `block-size` | `default` | `--xh-_kbd-h` | kbd 的 root 部件 block-size 覆盖槽。 |
-| `--xh-kbd-min-w` | `root` | `min-inline-size` | `default` | `--xh-_kbd-h` | kbd 的 root 部件 min-inline-size 覆盖槽。 |
-| `--xh-kbd-px` | `root` | `padding-inline` | `default` | `--xh-_kbd-px` | kbd 的 root 部件 padding-inline 覆盖槽。 |
-| `--xh-kbd-py` | `root` | `padding-block` | `default` | `--xh-space-0` | kbd 的 root 部件 padding-block 覆盖槽。 |
+| `--xh-kbd-h` | `root` | `block-size` | `default` | `--xh-space-6` | kbd 的 root 部件 block-size 覆盖槽。 |
+| `--xh-kbd-min-w` | `root` | `min-inline-size` | `default` | `--xh-space-6` | kbd 的 root 部件 min-inline-size 覆盖槽。 |
+| `--xh-kbd-px` | `root` | `padding-inline` | `default` | `--xh-space-2` | kbd 的 root 部件 padding-inline 覆盖槽。 |
 | `--xh-kbd-radius` | `root` | `border-radius` | `default` | `--xh-shape-control` | kbd 的 root 部件 border-radius 覆盖槽。 |
-| `--xh-kbd-shadow` | `root` | `box-shadow` | `default` | `--xh-_kbd-shadow-rest` | kbd 的 root 部件 box-shadow 覆盖槽。 |
-| `--xh-kbd-shadow-pressed` | `root` | `box-shadow` | `active`<br>`disabled`<br>`is(button, a[href], [role='button'], [role='menuitem'], [role='option'])`<br>`not([data-disabled])`<br>`not([disabled], [aria-disabled='true'])`<br>`pressed` | `--xh-_kbd-shadow-pressed` | kbd 的 root 部件 box-shadow 覆盖槽。 |
 <!-- xh-component-tokens:end -->
 
 ### 动效
 
-`background-color` · `border-color` · `box-shadow` · `color` · `translate` 走 `transition` 过渡。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
-
-系统开启减弱动效时由令牌层统一收敛，皮肤不另作判断。
+本组件皮肤不含过渡与关键帧，也没有脚本驱动的动效：状态一变，外观立即到位。
 
 ### RTL
 

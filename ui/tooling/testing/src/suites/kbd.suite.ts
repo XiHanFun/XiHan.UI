@@ -25,10 +25,7 @@ export const kbdSuite: ConformanceSuite = {
           root: {
             'aria-label': 'Command',
             'data-platform': 'mac',
-            'data-modifier': '',
-            'data-size': null,
-            'data-pressed': null,
-            'data-disabled': null,
+            'data-variant': 'default',
           },
         },
       },
@@ -43,16 +40,14 @@ export const kbdSuite: ConformanceSuite = {
       }],
     },
     {
-      name: '尺寸、禁用与真实按下事实分别投影',
+      name: 'light 外观如实投影',
       spec: { apg: 'https://html.spec.whatwg.org/multipage/text-level-semantics.html#the-kbd-element' },
-      props: { value: 'Enter', platform: 'other', size: 'lg', disabled: true, pressed: true },
+      props: { value: 'Enter', platform: 'other', variant: 'light' },
       initial: {
         parts: {
           root: {
             'aria-label': 'Enter',
-            'data-size': 'lg',
-            'data-disabled': '',
-            'data-pressed': '',
+            'data-variant': 'light',
           },
         },
       },
