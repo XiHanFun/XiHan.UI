@@ -57,7 +57,7 @@
 
   // 换了月才重画格子：同月内移动焦点时格子原样留着，选中态与焦点态由元素自己写
   function paintBody() {
-    const first = calendar.weeks[0][0].value;
+    const first = calendar.weeks[0][0].start;
     if (first === month) {
       return;
     }
@@ -70,7 +70,7 @@
         for (const day of week) {
           const cell = document.createElement("div");
           cell.dataset.xhPart = "cell";
-          cell.setAttribute("value", day.value);
+          cell.setAttribute("value", day.start);
 
           const trigger = document.createElement("div");
           trigger.dataset.xhPart = "cell-trigger";
@@ -78,7 +78,7 @@
             <span style="display: grid; justify-items: center; gap: 2px">
               <span>${day.day}</span>
               <span style="font-size: 10px; line-height: 1; visibility: ${
-                hasPlan(day.value) ? "visible" : "hidden"
+                hasPlan(day.start) ? "visible" : "hidden"
               }">•</span>
             </span>`;
 

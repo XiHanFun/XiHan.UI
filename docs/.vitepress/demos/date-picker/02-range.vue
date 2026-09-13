@@ -1,6 +1,6 @@
 <!-- 区间选择 | 选择开始和结束日期 -->
 <script setup lang="ts">
-import type { CalendarView } from "@xihan-ui/headless";
+import type { CalendarGranularity } from "@xihan-ui/headless";
 import {
   XhDatePickerCalendar,
   XhDatePickerCell,
@@ -23,12 +23,11 @@ import {
   XhDatePickerSegmentGroup,
   XhDatePickerTrigger,
   XhDatePickerWeekDay,
-  XhDatePickerWeekNumber,
   XhDatePickerWeekRow,
 } from "@xihan-ui/vue";
 
 const kinds = [
-  { key: "day", label: "旅行日期", view: "day" as CalendarView, week: false },
+  { key: "day", label: "旅行日期", granularity: "day" as CalendarGranularity },
 ];
 
 const translations = { startDate: "开始", endDate: "结束" };
@@ -41,8 +40,7 @@ const translations = { startDate: "开始", endDate: "结束" };
       :key="k.key"
       v-slot="{ panels, weekDays, segments, endSegments }"
       :translations="translations"
-      :view="k.view"
-      :week-selection="k.week"
+      :granularity="k.granularity"
       selection-mode="range"
       locale="zh-CN"
       style="--xh-date-picker-control-min-w: 20rem"
@@ -53,7 +51,7 @@ const translations = { startDate: "开始", endDate: "结束" };
         <template v-for="end in 2" :key="end">
           <XhDatePickerRangeSeparator v-if="end === 2" />
           <XhDatePickerSegmentGroup :index="end - 1">
-            <!-- 铺哪几块由 view 推；「-」与「周」是普通节点，作者写在段位旁边 -->
+            <!-- 铺哪几块由 granularity 推；分隔符是普通节点，作者写在段位旁边 -->
             <template v-for="(seg, i) in end === 1 ? segments : endSegments" :key="seg.type">
               <span v-if="i > 0">/</span>
               <XhDatePickerSegment :index="i" />
@@ -78,20 +76,16 @@ const translations = { startDate: "开始", endDate: "结束" };
               <template v-if="panel.weeks.length > 0">
                 <XhDatePickerGridHead>
                   <XhDatePickerWeekRow>
-                    <!-- 周选时行首多一列周序号，表头也得空出这一格 -->
-                    <XhDatePickerWeekNumber v-if="k.week" value="" />
                     <XhDatePickerWeekDay v-for="d in weekDays" :key="d.value" :value="d.value" />
                   </XhDatePickerWeekRow>
                 </XhDatePickerGridHead>
                 <XhDatePickerGridBody>
-                  <XhDatePickerWeekRow v-for="week in panel.weeks" :key="week[0].value">
-                    <!-- 周序号：挑的是第几周，光看日期看不出来。列宽与文字归皮肤管 -->
-                    <XhDatePickerWeekNumber v-if="k.week" :value="week[0].value" />
+                  <XhDatePickerWeekRow v-for="week in panel.weeks" :key="week[0].start">
                     <!-- index 必须给：同一天会同时出现在两个面板里 -->
                     <XhDatePickerCell
                       v-for="day in week"
-                      :key="day.value"
-                      :value="day.value"
+                      :key="day.start"
+                      :value="day.start"
                     >
                       <XhDatePickerCellTrigger>{{ day.day }}</XhDatePickerCellTrigger>
                     </XhDatePickerCell>
@@ -101,8 +95,8 @@ const translations = { startDate: "开始", endDate: "结束" };
               <XhDatePickerCell
                 v-for="cell in panel.cells"
                 v-else
-                :key="cell.value"
-                :value="cell.value"
+                :key="cell.start"
+                :value="cell.start"
               >
                 <XhDatePickerCellTrigger>{{ cell.label }}</XhDatePickerCellTrigger>
               </XhDatePickerCell>

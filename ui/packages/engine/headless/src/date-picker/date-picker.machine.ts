@@ -1,10 +1,10 @@
 import type { PositionResult, Service } from '@xihan-ui/core'
-import type { CalendarSchema, CalendarSelectionMode, CalendarView } from '../calendar'
+import type { CalendarGranularity, CalendarSchema, CalendarSelectionMode, CalendarView } from '../calendar'
 import type { DateFieldSchema, DateGranularity, DateSegmentSet } from '../date-field'
 import type { DatePickerSchema, DatePickerValueSource } from './date-picker.types'
 import { getLocalTimeZone, today } from '@internationalized/date'
 import { itemValue, resetDeclaredValue, resolveLocale, setup } from '@xihan-ui/core'
-import { calendarAnatomy, calendarWeekRange } from '../calendar'
+import { calendarAnatomy } from '../calendar'
 import { toArray as toValues } from '../shared/array'
 import { OVERLAY_OFFSET, OVERLAY_PLACEMENT_LIST } from '../shared/overlay'
 import { overlayCloseOnDismiss, trackOverlayLayer, trackOverlayPosition, trackPresenceResources } from '../shared/overlay-shell'
@@ -26,16 +26,17 @@ export const DATE_PICKER_GRANULARITY: DateGranularity = 'day'
  * 周选出「年 + 周」——它挑的是整周，日号在输入行里没有意义。
  */
 export function datePickerSegmentSet(
-  view: CalendarView | undefined,
-  weekSelection?: boolean,
+  granularity: CalendarGranularity | undefined,
 ): DateSegmentSet | undefined {
-  if (view === 'month')
+  if (granularity === 'week')
+    return ['year', 'week']
+  if (granularity === 'month')
     return ['year', 'month']
-  if (view === 'quarter')
+  if (granularity === 'quarter')
     return ['year', 'quarter']
-  if (view === 'year')
+  if (granularity === 'year')
     return ['year']
-  return weekSelection ? ['year', 'week'] : undefined
+  return undefined
 }
 
 /** 日期格子的 CSS 选择器，取自日历解剖。 */
@@ -124,7 +125,9 @@ export function datePickerLocale(service: Service<DatePickerSchema>): string {
 
 /** showTime 生效（只支持单选，其余模式维持纯日期值）。 */
 export function datePickerShowTime(service: Service<DatePickerSchema>): boolean {
-  return !!service.prop('showTime') && (service.prop('selectionMode') ?? 'single') === 'single'
+  return !!service.prop('showTime')
+    && (service.prop('selectionMode') ?? 'single') === 'single'
+    && (service.prop('granularity') ?? 'day') === 'day'
 }
 
 /** showTime 的时间段精度，默认分钟。 */
@@ -141,11 +144,10 @@ export function datePickerCalendarProps(service: Service<DatePickerSchema>): Cal
     value: withTime ? context.get('value').map(datePickerDatePart) : context.get('value'),
     focusedValue: datePickerFocusedValue(service),
     selectionMode: prop('selectionMode'),
-    view: prop('view'),
+    granularity: prop('granularity'),
     // 钻到哪一层由编排机持有：日历是内嵌的，收起再展开要回到作者要的那一档
     activeView: context.get('activeView'),
     onActiveViewChange: ({ activeView }) => send({ type: 'VIEW.SET', activeView }),
-    weekSelection: prop('weekSelection'),
     visibleCount: prop('visibleCount') ?? 1,
     // 恒六行：翻页时浮层的高度不跟着月份变
     fixedWeeks: prop('fixedWeeks') ?? true,
@@ -189,22 +191,12 @@ function datePickerFieldPropsAt(
   const spare = index === 1 && !range
   const withTime = datePickerShowTime(service)
   const rawValue = spare ? null : valueAt(context.get('value'), index)
-  const weekSelection = !!prop('weekSelection') && (prop('view') ?? 'day') === 'day' && range
-  /**
-   * 周选时段位两端一律说「那一周的周首日」，编排机这边才存真正的两端（终点是周末日）。
-   *
-   * 不归一的话终点那一组每敲一位都会退回去：段位是受控的，它拿自己算出来的串与宿主写回的
-   * 那一份对账，对不上就判成「这次改动没被接受」而整份回滚——于是第二位数字永远接不上。
-   */
-  const weekStart = (iso: string): string => calendarWeekRange(iso, datePickerLocale(service))[0]
   return {
     // showTime 下由同一台分段输入承载完整日期时间；日历仍只读取日期段。
-    value: rawValue == null
-      ? rawValue
-      : weekSelection ? weekStart(rawValue) : rawValue,
+    value: rawValue,
     granularity: withTime ? datePickerTimeGranularity(service) : DATE_PICKER_GRANULARITY,
     // 段集在场时 granularity 让路；不给就走老路，年月日按 locale 排
-    segments: prop('segments') ?? datePickerSegmentSet(prop('view'), prop('weekSelection')),
+    segments: prop('segments') ?? datePickerSegmentSet(prop('granularity')),
     min: prop('min'),
     max: prop('max'),
     locale: prop('locale'),
@@ -218,12 +210,7 @@ function datePickerFieldPropsAt(
       // 非区间模式下终点那台不参与写值
       if (spare)
         return
-      // 周选：段位交出来的是那一周的周首日，终点这一端要摊到周末日上——
-      // 不摊，选出来的就不是「第 33 周到第 37 周」而是「某天到某天」
-      const byWeek = value != null && weekSelection
-        ? calendarWeekRange(value, datePickerLocale(service))[index]
-        : value
-      const merged = byWeek
+      const merged = value
       const current = context.get('value')
       const next = range
         ? writeRangeAt(current, index, merged)
@@ -279,7 +266,7 @@ export const datePickerMachine = createMachine({
     // 人钻到了哪一层。缺省即作者要挑的那一档，每次展开都拨回去
     activeView: cell<CalendarView>(() => ({
       value: prop('activeView'),
-      defaultValue: prop('view') ?? 'day',
+      defaultValue: prop('granularity') ?? 'day',
       onChange: activeView => prop('onActiveViewChange')?.({ activeView }),
     })),
     returnFocus: cell<boolean>(() => ({ defaultValue: true })),
@@ -454,7 +441,7 @@ export const datePickerMachine = createMachine({
 
       /** 展开那一刻回到作者要的那一档：上次钻上去看年份，这次展开不该还停在十年格上。 */
       resetActiveView: ({ context, prop }) => {
-        context.set('activeView', prop('view') ?? 'day')
+        context.set('activeView', prop('granularity') ?? 'day')
       },
 
       /** 展开那一刻把聚焦日拉回当前选中值；没有选中就落到今天。 */

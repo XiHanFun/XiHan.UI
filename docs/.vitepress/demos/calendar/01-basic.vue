@@ -36,8 +36,8 @@ import {
         </XhCalendarWeekRow>
       </XhCalendarGridHead>
       <XhCalendarGridBody>
-        <XhCalendarWeekRow v-for="week in weeks" :key="week[0].value">
-          <XhCalendarCell v-for="day in week" :key="day.value" :value="day.value">
+        <XhCalendarWeekRow v-for="week in weeks" :key="week[0].start">
+          <XhCalendarCell v-for="day in week" :key="day.start" :value="day.start">
             <XhCalendarCellTrigger>{{ day.day }}</XhCalendarCellTrigger>
           </XhCalendarCell>
         </XhCalendarWeekRow>

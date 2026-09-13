@@ -51,9 +51,9 @@ export default function Demo(): ReactNode {
               </XhCalendarGridHead>
               <XhCalendarGridBody>
                 {weeks.map(week => (
-                  <XhCalendarWeekRow key={week[0]?.value}>
+                  <XhCalendarWeekRow key={week[0]?.start}>
                     {week.map(day => (
-                      <XhCalendarCell key={day.value} value={day.value}>
+                      <XhCalendarCell key={day.start} value={day.start}>
                         <XhCalendarCellTrigger>
                           <span style={{ display: "grid", justifyItems: "center", gap: "2px" }}>
                             <span>{day.day}</span>
@@ -62,7 +62,7 @@ export default function Demo(): ReactNode {
                               style={{
                                 fontSize: "10px",
                                 lineHeight: "1",
-                                visibility: hasPlan(day.value) ? "visible" : "hidden",
+                                visibility: hasPlan(day.start) ? "visible" : "hidden",
                               }}
                             >
                               •

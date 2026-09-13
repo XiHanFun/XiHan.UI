@@ -1,7 +1,10 @@
 import type { Cleanup, ControlVariant, Direction, IdGenerator, Layer, Placement, PositionEnginePort, RuntimeConfig, Service, Size, Tone } from '@xihan-ui/core'
 import type {
   CalendarDay,
+  CalendarGranularity,
   CalendarPanel,
+  CalendarPeriod,
+  CalendarPeriodValue,
   CalendarSchema,
   CalendarSelectionMode,
   CalendarView,
@@ -98,9 +101,8 @@ function declaredIndex(el: HTMLElement, position: number): number {
  * @attr {string} locale - 决定周首日、月份文案与段位先后；不给按宿主语言，宿主也没有时按 en-US
  * @attr {string} time-zone - 判定"今天"与格式化用的时区，默认宿主本地时区
  * @attr {'single'|'multiple'|'range'} selection-mode - 选择模式，默认 single
- * @attr {'day'|'month'|'quarter'|'year'} view - 挑的粒度，默认 day；输入行铺哪几段也跟着它走
- * @attr {'day'|'month'|'quarter'|'year'} active-view - 受控：面板此刻钻到了哪一层；缺省跟着 view，每次展开都拨回去
- * @attr {boolean} week-selection - 周选：点任意一天选中它所在的整周（view=day 且区间模式下生效）
+ * @attr {'day'|'week'|'month'|'quarter'|'year'} granularity - 选择粒度，默认 day；与 selection-mode 正交
+ * @attr {'day'|'week'|'month'|'quarter'|'year'} active-view - 受控：面板此刻钻到了哪一层；缺省跟着 granularity
  * @prop {DatePickerPreset[]} presets - 快捷选项（数组只走 property）：给了就在浮层里多出一列
  * @attr {number} visible-count - 并排展示几页；缺省单选 1，区间按两端定，同一页放得下就 1
  * @attr {boolean} fixed-weeks - 日历恒渲染六行，默认开；写 fixed-weeks="false" 关掉
@@ -121,7 +123,7 @@ function declaredIndex(el: HTMLElement, position: number): number {
  * @fires value-change - 选中集合变化；detail 为 `{ value: string[] }`
  * @fires open-change - open 状态变化；detail 为 `{ open: boolean }`
  * @fires focused-value-change - 聚焦日变化（意味着展示月可能换了）；detail 为 `{ focusedValue: string }`，作者据此重画网格
- * @fires active-view-change - 钻到了另一层（点标题钻上、点格子钻下）；detail 为 `{ activeView: 'day'|'month'|'quarter'|'year' }`，作者据此重画网格
+ * @fires active-view-change - 钻到了另一层（点标题钻上、点格子钻下）；detail 为 `{ activeView: 'day'|'week'|'month'|'quarter'|'year' }`，作者据此重画网格
  * @csspart root - 组件根容器（承载 data-state/data-disabled/data-readonly/data-invalid）
  * @csspart label - 标题；点它把焦点送进首段。刻意不是原生 label（段位是 div，标不了）
  * @csspart control - 输入行容器，同时是浮层的定位锚点
@@ -179,10 +181,9 @@ export class XhDatePickerElement extends XhPortalHostElement {
     locale: { converter: STRING_CONVERTER },
     timeZone: { converter: STRING_CONVERTER, attribute: 'time-zone' },
     selectionMode: { converter: STRING_CONVERTER, attribute: 'selection-mode' },
-    view: { converter: STRING_CONVERTER },
+    granularity: { converter: STRING_CONVERTER },
     activeView: { converter: STRING_CONVERTER, attribute: 'active-view' },
     segments: { attribute: false },
-    weekSelection: { converter: BOOLEAN_CONVERTER, attribute: 'week-selection' },
     // 快捷选项是数组，只能走 property
     presets: { attribute: false },
     visibleCount: { converter: NUMBER_CONVERTER, attribute: 'visible-count' },
@@ -220,10 +221,9 @@ export class XhDatePickerElement extends XhPortalHostElement {
   declare locale?: string
   declare timeZone?: string
   declare selectionMode?: CalendarSelectionMode
-  declare view?: CalendarView
+  declare granularity?: CalendarGranularity
   declare activeView?: CalendarView
   declare segments?: DateSegmentSet
-  declare weekSelection?: boolean
   declare presets?: DatePickerPreset[]
   declare visibleCount?: number
   declare fixedWeeks?: boolean
@@ -354,10 +354,9 @@ export class XhDatePickerElement extends XhPortalHostElement {
       locale: this.locale,
       timeZone: this.timeZone,
       selectionMode: this.selectionMode,
-      view: this.view,
+      granularity: this.granularity,
       activeView: this.activeView,
       segments: this.segments,
-      weekSelection: this.weekSelection,
       presets: this.presets,
       visibleCount: this.visibleCount,
       fixedWeeks: this.fixedWeeks,
@@ -455,6 +454,16 @@ export class XhDatePickerElement extends XhPortalHostElement {
     return this.api()?.calendar.weeks ?? []
   }
 
+  /** 首个面板内的统一周期数据。 */
+  get periods(): CalendarPeriod[] {
+    return this.api()?.calendar.periods ?? []
+  }
+
+  /** single / range 的规范化周期值；multiple 返回 null。 */
+  get periodValue(): CalendarPeriodValue | null {
+    return this.api()?.periodValue ?? null
+  }
+
   /** 七列表头（缩写 + 全称），列序与 weeks 的列序一致。 */
   get weekDays(): CalendarWeekDay[] {
     return this.api()?.calendar.weekDays ?? []
@@ -466,7 +475,7 @@ export class XhDatePickerElement extends XhPortalHostElement {
   }
 
   /**
-   * 输入行此刻该铺哪几段（段名、当前文字与占位），段数与段序按 view 与 locale 推出来。
+   * 输入行此刻该铺哪几段（段名、当前文字与占位），段数与段序按 granularity 与 locale 推出来。
    * 作者照它写 segment 节点，不必自己数几段。区间模式下这是起点那一组。
    */
   get fieldSegments(): DateFieldSegmentState[] {

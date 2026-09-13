@@ -49,7 +49,7 @@
 
   // 换了月才重画格子：同月内移动焦点时格子原样留着，区间底色由元素自己写
   function paintBody() {
-    const first = calendar.weeks[0][0].value;
+    const first = calendar.weeks[0][0].start;
     if (first === month) {
       return;
     }
@@ -62,7 +62,7 @@
         for (const day of week) {
           const cell = document.createElement("div");
           cell.dataset.xhPart = "cell";
-          cell.setAttribute("value", day.value);
+          cell.setAttribute("value", day.start);
           const trigger = document.createElement("div");
           trigger.dataset.xhPart = "cell-trigger";
           trigger.textContent = day.day;

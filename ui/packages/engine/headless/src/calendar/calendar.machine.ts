@@ -1,5 +1,5 @@
 import type { CalendarDate } from '@internationalized/date'
-import type { CalendarView } from './calendar.grid'
+import type { CalendarGranularity, CalendarView } from './calendar.grid'
 import type { CalendarSchema, CalendarSelectionMode } from './calendar.types'
 import { getLocalTimeZone, startOfMonth, today } from '@internationalized/date'
 import { focusItem, itemValue, queryItems, setup } from '@xihan-ui/core'
@@ -91,7 +91,7 @@ export const calendarMachine = createMachine({
     // 人钻到了哪一层。缺省即作者要挑的那一档——没人点标题时两者一直相等
     activeView: cell<CalendarView>(() => ({
       value: prop('activeView'),
-      defaultValue: prop('defaultActiveView') ?? prop('view') ?? 'day',
+      defaultValue: prop('defaultActiveView') ?? prop('granularity') ?? 'day',
       onChange: activeView => prop('onActiveViewChange')?.({ activeView }),
     })),
     // 视窗起点不受控、不对外通知：它是纯粹的浏览位置。
@@ -110,9 +110,10 @@ export const calendarMachine = createMachine({
   }),
   initialState: () => 'idle',
   effects: ['trackLiveness'],
-  // 作者换了要挑的粒度（日历从按天挑改成按月挑），人钻到哪一层就得跟着回到那一档
+  // 作者换了选择粒度，钻层与原选择都失去语义：回到新粒度并清空。
   watch: ({ track, prop, action }) => {
-    track([() => prop('view')], () => action(['syncActiveView']))
+    track([() => prop('granularity')], () => action(['syncGranularity']))
+    track([() => prop('selectionMode')], () => action(['syncSelectionMode']))
     // 值被宿主整份改写（快捷选项、清空、setValue）：挑到一半的那个起点作废
     track([() => prop('value')], () => action(['dropStaleRangeAnchor']))
   },
@@ -230,9 +231,22 @@ export const calendarMachine = createMachine({
         context.set('visibleStart', startOfMonth(start).add({ months: e.months }).toString())
       },
 
-      /** 作者换了 view：钻到哪一层的记录随之作废，回到新的那一档。 */
-      syncActiveView: ({ context, prop }) => {
-        context.set('activeView', prop('view') ?? 'day')
+      /** 作者换了粒度：回到新层级，并清空不能跨粒度解释的选择与预览。 */
+      syncGranularity: ({ context, prop }) => {
+        const granularity = (prop('granularity') ?? 'day') as CalendarGranularity
+        context.set('activeView', granularity)
+        context.set('value', [])
+        context.set('rangeAnchor', null)
+        context.set('hoveredValue', null)
+      },
+
+      /** 切换模式时收口现值；进入区间且只剩一项时，把它续作区间起点。 */
+      syncSelectionMode: ({ context, prop }) => {
+        const mode = prop('selectionMode') ?? 'single'
+        const next = normalizeSelection(context.get('value'), mode)
+        context.set('value', next)
+        context.set('rangeAnchor', mode === 'range' && next.length === 1 ? next[0]! : null)
+        context.set('hoveredValue', null)
       },
 
       // 起点还在挑时选中集合恒只有一个值；不是这个形态就说明值已由别处整份写过，起点跟着作废
@@ -267,7 +281,7 @@ export const calendarMachine = createMachine({
           if (focused == null || !container)
             return
           // 粗粒度视图里格子的值是「那段时间的第一天」，拿聚焦日直接比一格都对不上
-          const next = calendarPeriodOf(focused, context.get('activeView'))
+          const next = calendarPeriodOf(focused, context.get('activeView'))?.start ?? focused
           // 现查节点：缓存下来的数组会是上一个月的
           const cell = queryItems(container, calendarCellTriggerQuery).find(el => itemValue(el) === next)
           focusItem(cell ?? null)

@@ -247,6 +247,7 @@ export type ComponentTokenName =
   | '--xh-calendar-today-bg-hover'
   | '--xh-calendar-today-border'
   | '--xh-calendar-today-fg'
+  | '--xh-calendar-week-cell-px'
   | '--xh-calendar-week-day-fg'
   | '--xh-calendar-week-day-font-size'
   | '--xh-calendar-week-day-font-weight'

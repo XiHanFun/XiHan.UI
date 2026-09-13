@@ -4842,6 +4842,7 @@
       "CalendarDay",
       "CalendarFocusChangeDetails",
       "CalendarFocusModel",
+      "CalendarGranularity",
       "CalendarHeadingPieces",
       "CalendarMonthGrid",
       "CalendarMonthGridOptions",
@@ -4849,9 +4850,10 @@
       "CalendarNavKeyEventLike",
       "CalendarPanel",
       "CalendarPanelProps",
-      "CalendarPeriodCell",
+      "CalendarPeriod",
       "CalendarPeriodGrid",
       "CalendarPeriodGridOptions",
+      "CalendarPeriodValue",
       "CalendarRefs",
       "CalendarSchema",
       "CalendarSelectionMode",
@@ -6230,6 +6232,7 @@
       "calendarPeriodMonths",
       "calendarPeriodOf",
       "calendarPeriodStart",
+      "calendarPeriodValue",
       "calendarWeekRange",
       "calendarZoomIn",
       "canAdvanceQuestion",
@@ -6754,6 +6757,7 @@
       "isoWeekNumber",
       "isoWeekOf",
       "isoWeekStart",
+      "isoWeekYear",
       "isoWeeksInYear",
       "jsonChildPath",
       "jsonExpandedPathsToDepth",
@@ -9027,6 +9031,7 @@
       "disabled",
       "fixedWeeks",
       "focusedValue",
+      "granularity",
       "isDateUnavailable",
       "locale",
       "max",
@@ -9038,9 +9043,7 @@
       "selectionMode",
       "timeZone",
       "value",
-      "view",
       "visibleCount",
-      "weekSelection",
       "weekdayFormat"
     ],
     "card": [
@@ -9285,6 +9288,7 @@
       "disabled",
       "endName",
       "fixedWeeks",
+      "granularity",
       "invalid",
       "isDateUnavailable",
       "locale",
@@ -9311,9 +9315,7 @@
       "translations",
       "value",
       "variant",
-      "view",
-      "visibleCount",
-      "weekSelection"
+      "visibleCount"
     ],
     "descriptions": [
       "bordered",
@@ -11671,6 +11673,7 @@
     "--xh-calendar-today-bg-hover",
     "--xh-calendar-today-border",
     "--xh-calendar-today-fg",
+    "--xh-calendar-week-cell-px",
     "--xh-calendar-week-day-fg",
     "--xh-calendar-week-day-font-size",
     "--xh-calendar-week-day-font-weight",
@@ -15304,6 +15307,7 @@
         "disabled",
         "fixed-weeks",
         "focused-value",
+        "granularity",
         "locale",
         "max",
         "min",
@@ -15311,9 +15315,7 @@
         "selection-mode",
         "time-zone",
         "value",
-        "view",
         "visible-count",
-        "week-selection",
         "weekday-format"
       ],
       "events": [
@@ -15610,6 +15612,7 @@
         "disabled",
         "end-name",
         "fixed-weeks",
+        "granularity",
         "invalid",
         "locale",
         "max",
@@ -15628,9 +15631,7 @@
         "tone",
         "value",
         "variant",
-        "view",
-        "visible-count",
-        "week-selection"
+        "visible-count"
       ],
       "events": [
         "active-view-change",

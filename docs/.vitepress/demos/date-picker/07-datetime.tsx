@@ -71,9 +71,9 @@ export default function Demo(): ReactNode {
                     </XhDatePickerGridHead>
                     <XhDatePickerGridBody>
                       {weeks.map(week => (
-                        <XhDatePickerWeekRow key={week[0]!.value}>
+                        <XhDatePickerWeekRow key={week[0]!.start}>
                           {week.map(day => (
-                            <XhDatePickerCell key={day.value} value={day.value}>
+                            <XhDatePickerCell key={day.start} value={day.start}>
                               <XhDatePickerCellTrigger>{day.day}</XhDatePickerCellTrigger>
                             </XhDatePickerCell>
                           ))}

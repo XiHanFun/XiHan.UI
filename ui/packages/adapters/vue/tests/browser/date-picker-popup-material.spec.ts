@@ -65,7 +65,7 @@ async function mount(theme: 'light' | 'dark', shape: Shape = 'single', keyboardO
           h(XhDatePickerHeader, null, () => h(XhDatePickerHeading)),
           h(XhDatePickerGrid, null, () => h(XhDatePickerGridBody, null, () => panel.weeks.map(week =>
             h(XhDatePickerWeekRow, null, () => week.map(day =>
-              h(XhDatePickerCell, { value: day.value }, () => h(XhDatePickerCellTrigger, null, () => String(day.day))),
+              h(XhDatePickerCell, { value: day.start }, () => h(XhDatePickerCellTrigger, null, () => String(day.day))),
             )),
           ))),
         ])),

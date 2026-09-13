@@ -63,8 +63,8 @@ async function mountCalendar(defaultValue?: string[], keepMotion = false): Promi
         h(XhCalendarGridHead, null, () => h(XhCalendarWeekRow, null, () =>
           weekDays.map((day: any) => h(XhCalendarWeekDay, { key: day.value, value: day.value })))),
         h(XhCalendarGridBody, null, () => weeks.map((week: any[]) =>
-          h(XhCalendarWeekRow, { key: week[0].value }, () => week.map(day =>
-            h(XhCalendarCell, { key: day.value, value: day.value }, () =>
+          h(XhCalendarWeekRow, { key: week[0].start }, () => week.map(day =>
+            h(XhCalendarCell, { key: day.start, value: day.start }, () =>
               h(XhCalendarCellTrigger, null, () => String(day.day))))))),
       ]),
     }),
@@ -96,6 +96,27 @@ async function mountRangeField(): Promise<HTMLElement> {
   if (!separator)
     throw new Error('找不到范围分隔符')
   return separator
+}
+
+async function mountWeekCalendar(): Promise<void> {
+  host = document.createElement('div')
+  document.body.append(host)
+  app = createApp({
+    render: () => h(XhCalendarRoot, {
+      defaultFocusedValue: '2026-09-09',
+      granularity: 'week',
+      locale: 'zh-CN',
+      selectionMode: 'range',
+      timeZone: 'UTC',
+    }, {
+      default: ({ panels }: any) => h(XhCalendarGrid, null, () =>
+        panels[0].cells.map((period: any) =>
+          h(XhCalendarCell, { key: period.key, value: period.start }, () =>
+            h(XhCalendarCellTrigger, null, () => period.label)))),
+    }),
+  })
+  app.mount(host)
+  await nextTick()
 }
 
 afterEach(() => {
@@ -143,6 +164,20 @@ describe('范围日历轨道', () => {
     const style = getComputedStyle(element)
     expect(style.transitionProperty).toContain('scale')
     expect(Number.parseFloat(style.transitionDuration)).toBeGreaterThan(0)
+  })
+
+  it('周粒度是一列整周周期格，区间预览不下沉到七个日格', async () => {
+    await mountWeekCalendar()
+    const grid = document.querySelector<HTMLElement>(`[data-scope='calendar'][data-part='grid']`)!
+    const periods = [...document.querySelectorAll<HTMLElement>(`[data-scope='calendar'][data-part='cell']`)]
+    expect(periods).toHaveLength(5)
+    expect(getComputedStyle(grid).gridTemplateColumns.split(' ')).toHaveLength(1)
+    expect(getComputedStyle(trigger('2026-09-07')).aspectRatio).toBe('auto')
+
+    await userEvent.click(trigger('2026-09-07'))
+    await userEvent.hover(trigger('2026-09-21'))
+    await nextTick()
+    expect(['2026-09-07', '2026-09-14', '2026-09-21'].every(value => cell(value).hasAttribute('data-in-range'))).toBe(true)
   })
 
   it('日期范围字段使用正式分隔部件，默认字符不进入可访问树', async () => {

@@ -70,11 +70,11 @@ const states = [
                 </XhDatePickerWeekRow>
               </XhDatePickerGridHead>
               <XhDatePickerGridBody>
-                <XhDatePickerWeekRow v-for="week in weeks" :key="week[0].value">
+                <XhDatePickerWeekRow v-for="week in weeks" :key="week[0].start">
                   <XhDatePickerCell
                     v-for="day in week"
-                    :key="day.value"
-                    :value="day.value"
+                    :key="day.start"
+                    :value="day.start"
                   >
                     <XhDatePickerCellTrigger>{{ day.day }}</XhDatePickerCellTrigger>
                   </XhDatePickerCell>

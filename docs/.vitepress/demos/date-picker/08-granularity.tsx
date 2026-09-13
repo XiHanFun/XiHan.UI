@@ -1,7 +1,9 @@
-// 选择粒度 | 按周、月、季度或年选择
-import type { CalendarView } from "@xihan-ui/headless";
-import type { ReactNode } from "react";
+// 周期选择 | 粒度与单选/区间彼此独立
+import type { CalendarGranularity, CalendarPeriod, CalendarSelectionMode } from "@xihan-ui/headless";
+import type { CSSProperties, ReactNode } from "react";
+import { calendarPeriodOf, calendarPeriodValue } from "@xihan-ui/headless";
 import {
+  XhButton,
   XhDatePickerCalendar,
   XhDatePickerCell,
   XhDatePickerCellTrigger,
@@ -21,129 +23,158 @@ import {
   XhDatePickerPositioner,
   XhDatePickerPrevTrigger,
   XhDatePickerPrevYearTrigger,
+  XhDatePickerRangeSeparator,
   XhDatePickerRoot,
   XhDatePickerSegment,
   XhDatePickerSegmentGroup,
+  XhDatePickerTrigger,
   XhDatePickerWeekDay,
-  XhDatePickerWeekNumber,
   XhDatePickerWeekRow,
+  XhToggleGroupItem,
+  XhToggleGroupRoot,
 } from "@xihan-ui/react";
-import { Fragment } from "react";
+import { Fragment, useMemo, useState } from "react";
 
-const kinds = [
-  { key: "day", label: "按天", view: "day" as CalendarView, week: false },
-  { key: "week", label: "按周", view: "day" as CalendarView, week: true },
-  { key: "month", label: "按月", view: "month" as CalendarView, week: false },
-  { key: "quarter", label: "按季度", view: "quarter" as CalendarView, week: false },
-  { key: "year", label: "按年", view: "year" as CalendarView, week: false },
+const granularities: { value: CalendarGranularity; label: string }[] = [
+  { value: "day", label: "天" },
+  { value: "week", label: "周" },
+  { value: "month", label: "月" },
+  { value: "quarter", label: "季" },
+  { value: "year", label: "年" },
 ];
 
-const yearCells = Array.from({ length: 200 }, (_, index) => {
-  const year = 1900 + index;
-  return { value: `${year}-01-01`, label: `${year}年` };
-});
+const modes: { value: Extract<CalendarSelectionMode, "single" | "range">; label: string }[] = [
+  { value: "single", label: "单选" },
+  { value: "range", label: "区间" },
+];
+
+const yearCells: CalendarPeriod[] = Array.from({ length: 200 }, (_, index) =>
+  calendarPeriodOf(`${1900 + index}-01-01`, "year", { locale: "zh-CN" })!,
+);
 
 export default function Demo(): ReactNode {
+  const [granularity, setGranularity] = useState<CalendarGranularity>("day");
+  const [selectionMode, setSelectionMode] = useState<"single" | "range">("single");
+  const [value, setValue] = useState<string[]>([]);
+  const summary = useMemo(() => {
+    const period = calendarPeriodValue(granularity, selectionMode, value, { locale: "zh-CN" });
+    return period ? `${period.start} – ${period.end}` : "尚未选择";
+  }, [granularity, selectionMode, value]);
+
   return (
-    <div style={{ display: "flex", flexWrap: "wrap", gap: "24px" }}>
-      {kinds.map(k => (
-        <XhDatePickerRoot
-          key={k.key}
-          view={k.view}
-          weekSelection={k.week}
-          selectionMode={k.week ? "range" : "single"}
-          defaultFocusedValue={k.key === "year" ? "2026-01-01" : undefined}
-          locale="zh-CN"
-        >
-          {({ panels, weekDays, segments }) => (
-            <>
-              <XhDatePickerLabel>{k.label}</XhDatePickerLabel>
-              <XhDatePickerControl>
-                <XhDatePickerSegmentGroup>
-                  {/* 「-」与「周」是普通节点，与「年 / 月 / 日」一样由作者写在段位旁边 */}
-                  {segments.map((seg, i) => (
-                    <Fragment key={seg.type}>
-                      {i > 0 && <span>-</span>}
-                      <XhDatePickerSegment index={i} />
-                      {seg.type === "week" && <span>周</span>}
+    <XhDatePickerRoot
+      value={value}
+      granularity={granularity}
+      selectionMode={selectionMode}
+      closeOnSelect={false}
+      locale="zh-CN"
+      onValueChange={({ value: next }) => setValue(next)}
+      style={{ "--xh-date-picker-control-min-w": "22rem" } as CSSProperties}
+    >
+      {({ panels, weekDays, segments, endSegments, clear, setOpen }) => (
+        <>
+          <XhDatePickerLabel>统计周期</XhDatePickerLabel>
+          <XhDatePickerControl>
+            {Array.from({ length: selectionMode === "range" ? 2 : 1 }, (_, group) => (
+              <Fragment key={group}>
+                {group === 1 && <XhDatePickerRangeSeparator />}
+                <XhDatePickerSegmentGroup index={group as 0 | 1}>
+                  {(group === 0 ? segments : endSegments).map((segment, index) => (
+                    <Fragment key={segment.type}>
+                      {index > 0 && <span>/</span>}
+                      <XhDatePickerSegment index={index} />
+                      {segment.type === "week" && <span>周</span>}
                     </Fragment>
                   ))}
                 </XhDatePickerSegmentGroup>
-                <XhDatePickerClearTrigger />
-              </XhDatePickerControl>
-              <XhDatePickerPositioner>
-                <XhDatePickerContent>
-                  {panels.map(panel => (
-                    <XhDatePickerCalendar key={panel.index}>
-                      <XhDatePickerHeader>
-                        {k.key === "year"
-                          ? <XhDatePickerHeading>选择年份</XhDatePickerHeading>
-                          : (
-                              <>
-                                {/* 大步翻那对钮：日视图一年，粗粒度视图十页 */}
-                                <XhDatePickerPrevYearTrigger aria-label="快退" />
-                                <XhDatePickerPrevTrigger aria-label="上一页" />
-                                <XhDatePickerHeading index={panel.index}>
-                                  <XhDatePickerHeadingYearTrigger index={panel.index} />
-                                  <XhDatePickerHeadingMonthTrigger index={panel.index} />
-                                </XhDatePickerHeading>
-                                <XhDatePickerNextTrigger aria-label="下一页" />
-                                <XhDatePickerNextYearTrigger aria-label="快进" />
-                              </>
-                            )}
-                      </XhDatePickerHeader>
-                      <XhDatePickerGrid index={panel.index}>
-                        {/* 日视图铺周行，粗粒度视图把格子直接铺进网格。钻上去之后铺的也是格子，
-                              所以这里看 panel.weeks 有没有东西，不看 view */}
-                        {panel.weeks.length > 0
-                          ? (
-                              <>
-                                <XhDatePickerGridHead>
-                                  <XhDatePickerWeekRow>
-                                    {/* 周选时行首多一列周序号，表头也得空出这一格 */}
-                                    {k.week && <XhDatePickerWeekNumber value="" />}
-                                    {weekDays.map(d => (
-                                      <XhDatePickerWeekDay key={d.value} value={d.value} />
-                                    ))}
-                                  </XhDatePickerWeekRow>
-                                </XhDatePickerGridHead>
-                                <XhDatePickerGridBody>
-                                  {panel.weeks.map(week => (
-                                    <XhDatePickerWeekRow key={week[0]!.value}>
-                                      {/* 周序号：挑的是第几周，光看日期看不出来。列宽与文字归皮肤管 */}
-                                      {k.week && <XhDatePickerWeekNumber value={week[0]!.value} />}
-                                      {week.map(day => (
-                                        <XhDatePickerCell
-                                          key={day.value}
-                                          value={day.value}
-                                          index={panel.index}
-                                        >
-                                          <XhDatePickerCellTrigger>{day.day}</XhDatePickerCellTrigger>
-                                        </XhDatePickerCell>
-                                      ))}
-                                    </XhDatePickerWeekRow>
+              </Fragment>
+            ))}
+            <XhDatePickerClearTrigger />
+            <XhDatePickerTrigger />
+          </XhDatePickerControl>
+
+          <XhDatePickerPositioner>
+            <XhDatePickerContent>
+              <div style={{ display: "flex", justifyContent: "space-between", gap: "var(--xh-space-3)", padding: "var(--xh-space-3)" }}>
+                <XhToggleGroupRoot
+                  value={granularity}
+                  disallowEmpty
+                  size="sm"
+                  onValueChange={({ value: next }) => typeof next === "string" && setGranularity(next as CalendarGranularity)}
+                >
+                  {granularities.map(item => <XhToggleGroupItem key={item.value} value={item.value}>{item.label}</XhToggleGroupItem>)}
+                </XhToggleGroupRoot>
+                <XhToggleGroupRoot
+                  value={selectionMode}
+                  disallowEmpty
+                  size="sm"
+                  onValueChange={({ value: next }) => (next === "single" || next === "range") && setSelectionMode(next)}
+                >
+                  {modes.map(item => <XhToggleGroupItem key={item.value} value={item.value}>{item.label}</XhToggleGroupItem>)}
+                </XhToggleGroupRoot>
+              </div>
+
+              {panels.map(panel => (
+                <XhDatePickerCalendar key={panel.index} index={panel.index}>
+                  <XhDatePickerHeader>
+                    {granularity === "year"
+                      ? <XhDatePickerHeading>选择年份</XhDatePickerHeading>
+                      : (
+                          <>
+                            <XhDatePickerPrevYearTrigger aria-label="快速向前" />
+                            <XhDatePickerPrevTrigger aria-label="上一页" />
+                            <XhDatePickerHeading>
+                              <XhDatePickerHeadingYearTrigger />
+                              <XhDatePickerHeadingMonthTrigger />
+                            </XhDatePickerHeading>
+                            <XhDatePickerNextTrigger aria-label="下一页" />
+                            <XhDatePickerNextYearTrigger aria-label="快速向后" />
+                          </>
+                        )}
+                  </XhDatePickerHeader>
+
+                  <XhDatePickerGrid>
+                    {panel.weeks.length > 0
+                      ? (
+                          <>
+                            <XhDatePickerGridHead>
+                              <XhDatePickerWeekRow>
+                                {weekDays.map(day => <XhDatePickerWeekDay key={day.value} value={day.value} />)}
+                              </XhDatePickerWeekRow>
+                            </XhDatePickerGridHead>
+                            <XhDatePickerGridBody>
+                              {panel.weeks.map(week => (
+                                <XhDatePickerWeekRow key={week[0]!.start}>
+                                  {week.map(day => (
+                                    <XhDatePickerCell key={day.key} value={day.start}>
+                                      <XhDatePickerCellTrigger>{day.label}</XhDatePickerCellTrigger>
+                                    </XhDatePickerCell>
                                   ))}
-                                </XhDatePickerGridBody>
-                              </>
-                            )
-                          : (k.key === "year" ? yearCells : panel.cells).map(cell => (
-                              <XhDatePickerCell
-                                key={cell.value}
-                                value={cell.value}
-                                index={panel.index}
-                              >
-                                <XhDatePickerCellTrigger>{cell.label}</XhDatePickerCellTrigger>
-                              </XhDatePickerCell>
-                            ))}
-                      </XhDatePickerGrid>
-                    </XhDatePickerCalendar>
-                  ))}
-                </XhDatePickerContent>
-              </XhDatePickerPositioner>
-            </>
-          )}
-        </XhDatePickerRoot>
-      ))}
-    </div>
+                                </XhDatePickerWeekRow>
+                              ))}
+                            </XhDatePickerGridBody>
+                          </>
+                        )
+                      : (granularity === "year" ? yearCells : panel.cells).map(period => (
+                          <XhDatePickerCell key={period.key} value={period.start}>
+                            <XhDatePickerCellTrigger>{period.label}</XhDatePickerCellTrigger>
+                          </XhDatePickerCell>
+                        ))}
+                  </XhDatePickerGrid>
+                </XhDatePickerCalendar>
+              ))}
+
+              <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: "var(--xh-space-3)", padding: "var(--xh-space-3)" }}>
+                <span>{summary}</span>
+                <div style={{ display: "flex", gap: "var(--xh-space-2)" }}>
+                  <XhButton variant="ghost" size="sm" disabled={value.length === 0} onClick={clear}>清空</XhButton>
+                  <XhButton size="sm" disabled={value.length === 0} onClick={() => setOpen(false)}>确定</XhButton>
+                </div>
+              </div>
+            </XhDatePickerContent>
+          </XhDatePickerPositioner>
+        </>
+      )}
+    </XhDatePickerRoot>
   );
 }

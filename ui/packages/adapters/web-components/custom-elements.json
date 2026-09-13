@@ -3632,12 +3632,12 @@
             },
             {
               "kind": "field",
-              "name": "view",
+              "name": "granularity",
               "privacy": "public",
               "type": {
-                "text": "CalendarView | undefined"
+                "text": "CalendarGranularity | undefined"
               },
-              "attribute": "view"
+              "attribute": "granularity"
             },
             {
               "kind": "field",
@@ -3656,15 +3656,6 @@
                 "text": "CalendarView | undefined"
               },
               "attribute": "default-active-view"
-            },
-            {
-              "kind": "field",
-              "name": "weekSelection",
-              "privacy": "public",
-              "type": {
-                "text": "boolean | undefined"
-              },
-              "attribute": "week-selection"
             },
             {
               "kind": "field",
@@ -3725,6 +3716,15 @@
                 "text": "CalendarDay[][]"
               },
               "description": "当前展示月的日期矩阵，作者照它重画网格。机器尚未建起时给空数组。",
+              "readonly": true
+            },
+            {
+              "kind": "field",
+              "name": "periods",
+              "type": {
+                "text": "CalendarPeriod[]"
+              },
+              "description": "当前面板内的统一周期数据。",
               "readonly": true
             },
             {
@@ -3797,7 +3797,7 @@
               }
             },
             {
-              "description": "钻到了另一层；detail 为 `{ activeView: 'day'|'month'|'quarter'|'year' }`",
+              "description": "钻到了另一层；detail 为 `{ activeView: 'day'|'week'|'month'|'quarter'|'year' }`",
               "name": "active-view-change",
               "type": {
                 "text": "CalendarViewChangeDetails"
@@ -3911,17 +3911,17 @@
             },
             {
               "type": {
-                "text": "CalendarView | undefined"
+                "text": "CalendarGranularity | undefined"
               },
-              "description": "挑的粒度，默认 day；这一档也是「点一格即选中」的那一档",
-              "name": "view",
-              "fieldName": "view"
+              "description": "选择粒度，默认 day；与 selection-mode 正交",
+              "name": "granularity",
+              "fieldName": "granularity"
             },
             {
               "type": {
                 "text": "CalendarView | undefined"
               },
-              "description": "受控：面板此刻钻到了哪一层；缺省跟着 view",
+              "description": "受控：面板此刻钻到了哪一层；缺省跟着 granularity",
               "name": "active-view",
               "fieldName": "activeView"
             },
@@ -3929,17 +3929,9 @@
               "type": {
                 "text": "CalendarView | undefined"
               },
-              "description": "非受控初值，缺省同 view",
+              "description": "非受控初值，缺省同 granularity",
               "name": "default-active-view",
               "fieldName": "defaultActiveView"
-            },
-            {
-              "type": {
-                "text": "boolean | undefined"
-              },
-              "description": "周选：点任意一天选中它所在的整周（view=day 且区间模式下生效）",
-              "name": "week-selection",
-              "fieldName": "weekSelection"
             },
             {
               "type": {
@@ -4070,6 +4062,9 @@
             },
             {
               "name": "--xh-calendar-today-fg"
+            },
+            {
+              "name": "--xh-calendar-week-cell-px"
             },
             {
               "name": "--xh-calendar-week-day-fg"
@@ -12617,12 +12612,12 @@
             },
             {
               "kind": "field",
-              "name": "view",
+              "name": "granularity",
               "privacy": "public",
               "type": {
-                "text": "CalendarView | undefined"
+                "text": "CalendarGranularity | undefined"
               },
-              "attribute": "view"
+              "attribute": "granularity"
             },
             {
               "kind": "field",
@@ -12640,15 +12635,6 @@
               "type": {
                 "text": "DateSegmentSet | undefined"
               }
-            },
-            {
-              "kind": "field",
-              "name": "weekSelection",
-              "privacy": "public",
-              "type": {
-                "text": "boolean | undefined"
-              },
-              "attribute": "week-selection"
             },
             {
               "kind": "field",
@@ -13066,6 +13052,24 @@
             },
             {
               "kind": "field",
+              "name": "periods",
+              "type": {
+                "text": "CalendarPeriod[]"
+              },
+              "description": "首个面板内的统一周期数据。",
+              "readonly": true
+            },
+            {
+              "kind": "field",
+              "name": "periodValue",
+              "type": {
+                "text": "CalendarPeriodValue | null"
+              },
+              "description": "single / range 的规范化周期值；multiple 返回 null。",
+              "readonly": true
+            },
+            {
+              "kind": "field",
               "name": "weekDays",
               "type": {
                 "text": "CalendarWeekDay[]"
@@ -13088,7 +13092,7 @@
               "type": {
                 "text": "DateFieldSegmentState[]"
               },
-              "description": "输入行此刻该铺哪几段（段名、当前文字与占位），段数与段序按 view 与 locale 推出来。\n作者照它写 segment 节点，不必自己数几段。区间模式下这是起点那一组。",
+              "description": "输入行此刻该铺哪几段（段名、当前文字与占位），段数与段序按 granularity 与 locale 推出来。\n作者照它写 segment 节点，不必自己数几段。区间模式下这是起点那一组。",
               "readonly": true
             },
             {
@@ -13203,7 +13207,7 @@
               }
             },
             {
-              "description": "钻到了另一层（点标题钻上、点格子钻下）；detail 为 `{ activeView: 'day'|'month'|'quarter'|'year' }`，作者据此重画网格",
+              "description": "钻到了另一层（点标题钻上、点格子钻下）；detail 为 `{ activeView: 'day'|'week'|'month'|'quarter'|'year' }`，作者据此重画网格",
               "name": "active-view-change",
               "type": {
                 "text": "CalendarViewChangeDetails"
@@ -13285,27 +13289,19 @@
             },
             {
               "type": {
-                "text": "CalendarView | undefined"
+                "text": "CalendarGranularity | undefined"
               },
-              "description": "挑的粒度，默认 day；输入行铺哪几段也跟着它走",
-              "name": "view",
-              "fieldName": "view"
+              "description": "选择粒度，默认 day；与 selection-mode 正交",
+              "name": "granularity",
+              "fieldName": "granularity"
             },
             {
               "type": {
                 "text": "CalendarView | undefined"
               },
-              "description": "受控：面板此刻钻到了哪一层；缺省跟着 view，每次展开都拨回去",
+              "description": "受控：面板此刻钻到了哪一层；缺省跟着 granularity",
               "name": "active-view",
               "fieldName": "activeView"
-            },
-            {
-              "type": {
-                "text": "boolean | undefined"
-              },
-              "description": "周选：点任意一天选中它所在的整周（view=day 且区间模式下生效）",
-              "name": "week-selection",
-              "fieldName": "weekSelection"
             },
             {
               "type": {

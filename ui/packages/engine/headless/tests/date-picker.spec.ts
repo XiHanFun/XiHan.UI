@@ -246,7 +246,7 @@ function mount(initial: Partial<Props> = {}, options: MountOptions = {}): Harnes
   const cells = new Map<string, HTMLElement>()
   let painted = ''
 
-  const rebuild = (weeks: readonly (readonly { value: string }[])[]): void => {
+  const rebuild = (weeks: readonly (readonly { start: string }[])[]): void => {
     gridBody.textContent = ''
     triggers.clear()
     cells.clear()
@@ -255,11 +255,11 @@ function mount(initial: Partial<Props> = {}, options: MountOptions = {}): Harnes
       for (const day of week) {
         const cell = doc.createElement('div')
         const cellTrigger = doc.createElement('div')
-        cellTrigger.textContent = day.value.slice(-2)
+        cellTrigger.textContent = day.start.slice(-2)
         cell.appendChild(cellTrigger)
         row.appendChild(cell)
-        cells.set(day.value, cell)
-        triggers.set(day.value, cellTrigger)
+        cells.set(day.start, cell)
+        triggers.set(day.start, cellTrigger)
       }
       gridBody.appendChild(row)
     }
@@ -267,7 +267,7 @@ function mount(initial: Partial<Props> = {}, options: MountOptions = {}): Harnes
 
   const render = (): void => {
     const api = connectDatePicker(services, normalizeProps)
-    const key = api.calendar.weeks.map(w => w.map(d => d.value).join()).join('|')
+    const key = api.calendar.weeks.map(w => w.map(d => d.start).join()).join('|')
     if (key !== painted) {
       painted = key
       rebuild(api.calendar.weeks)
@@ -969,7 +969,7 @@ describe('日历面板数量', () => {
     expect(range.calendar.panels.map(p => [p.year, p.month])).toEqual([[2026, 8]])
     expect(mount({ selectionMode: 'range', defaultValue: ['2026-07-01', '2026-08-05'] }).api().calendar.panels).toHaveLength(1)
     expect(mount({ selectionMode: 'range', defaultValue: ['2026-07-01'] }).api().calendar.panels).toHaveLength(1)
-    expect(mount({ selectionMode: 'range', view: 'month', defaultValue: ['2026-02-01', '2027-03-01'] }).api().calendar.panels).toHaveLength(1)
+    expect(mount({ selectionMode: 'range', granularity: 'month', defaultValue: ['2026-02-01', '2027-03-01'] }).api().calendar.panels).toHaveLength(1)
   })
 
   it('visibleCount 显式给了以它为准，两种模式都听它的', () => {
@@ -1118,69 +1118,90 @@ describe('findDatePickerCellEl', () => {
   })
 })
 
-describe('view 与输入行段集联动', () => {
+describe('granularity 与输入行段集联动', () => {
   it('挑的粒度决定输入行铺哪几块', () => {
     expect(datePickerSegmentSet('month')).toEqual(['year', 'month'])
     expect(datePickerSegmentSet('quarter')).toEqual(['year', 'quarter'])
     expect(datePickerSegmentSet('year')).toEqual(['year'])
+    expect(datePickerSegmentSet('week')).toEqual(['year', 'week'])
     // 按天挑不给段集：留空才走 granularity 那条路，年月日按 locale 排
     expect(datePickerSegmentSet('day')).toBeUndefined()
     expect(datePickerSegmentSet(undefined)).toBeUndefined()
-    // 周选挑的是整周，日号在输入行里没有意义
-    expect(datePickerSegmentSet('day', true)).toEqual(['year', 'week'])
   })
 
   it('按月挑：输入行出「2026-05」，段位只剩两块', () => {
-    const h = mount({ view: 'month', defaultValue: '2026-05-01' })
+    const h = mount({ granularity: 'month', defaultValue: '2026-05-01' })
     const segments = h.api().field.segments
     expect(segments.map(s => s.type)).toEqual(['year', 'month'])
     expect(segments.map(s => s.text)).toEqual(['2026', '05'])
   })
 
   it('按季度挑：输入行出「2026-Q2」', () => {
-    const h = mount({ view: 'quarter', defaultValue: '2026-04-01' })
+    const h = mount({ granularity: 'quarter', defaultValue: '2026-04-01' })
     expect(h.api().field.segments.map(s => s.text)).toEqual(['2026', 'Q2'])
   })
 
   it('按年挑：输入行只剩年那一块', () => {
-    const h = mount({ view: 'year', defaultValue: '2026-01-01' })
+    const h = mount({ granularity: 'year', defaultValue: '2026-01-01' })
     expect(h.api().field.segments.map(s => s.text)).toEqual(['2026'])
   })
 
   it('按天挑照旧走 locale 那条路，段序不变', () => {
-    expect(mount({ view: 'day', defaultValue: '2026-08-17' }).api().field.segments.map(s => s.type))
+    expect(mount({ granularity: 'day', defaultValue: '2026-08-17' }).api().field.segments.map(s => s.type))
       .toEqual(['year', 'month', 'day'])
     expect(mount({ locale: 'en-US', defaultValue: '2026-08-17' }).api().field.segments.map(s => s.type))
       .toEqual(['month', 'day', 'year'])
   })
 
-  it('作者显式给 segments 时压过按 view 推出来的那一份', () => {
-    const h = mount({ view: 'month', segments: ['year'], defaultValue: '2026-05-01' })
+  it('作者显式给 segments 时压过按 granularity 推出来的那一份', () => {
+    const h = mount({ granularity: 'month', segments: ['year'], defaultValue: '2026-05-01' })
     expect(h.api().field.segments.map(s => s.type)).toEqual(['year'])
   })
 
+  it('切换粒度由内嵌 Calendar 清空旧选择并同步输入段', () => {
+    const h = mount({ defaultValue: '2026-05-12' })
+    h.setProps({ granularity: 'month' })
+    expect(h.value()).toEqual([])
+    expect(h.api().granularity).toBe('month')
+    expect(h.api().field.segments.map(s => s.type)).toEqual(['year', 'month'])
+  })
+
   it('段位里改季度，值落到那一季的头一天', () => {
-    const h = mount({ view: 'quarter', defaultValue: '2026-04-01' })
+    const h = mount({ granularity: 'quarter', defaultValue: '2026-04-01' })
     // 段位第 1 格是季度
     h.segments()[1]!.focus()
     press(h.segments()[1]!, '4')
     expect(h.value()).toEqual(['2026-10-01'])
   })
 
-  it('周选：两端各出周序号，改终点那一格落的是那一周的周末日', () => {
+  it('周粒度：两端各出周序号，值统一存周期首日', () => {
     const h = mount({
       selectionMode: 'range',
-      weekSelection: true,
-      defaultValue: ['2026-08-10', '2026-09-13'],
+      granularity: 'week',
+      defaultValue: ['2026-08-10', '2026-09-07'],
     })
-    // 起点是第 33 周，终点是第 37 周（2026-09-13 是周日，第 37 周的末日）
+    // 起点是第 33 周，终点是第 37 周
     expect(h.api().field.segments.map(s => s.text)).toEqual(['2026', '33'])
     expect(h.api().fieldEnd!.segments.map(s => s.text)).toEqual(['2026', '37'])
-    // 把终点改成第 40 周：落的是那一周的周末日，不是周首日
+    // 把终点改成第 40 周：落的是那一周的周首日
     h.segmentsEnd()[1]!.focus()
     press(h.segmentsEnd()[1]!, '4')
     press(h.segmentsEnd()[1]!, '0')
-    expect(h.value()).toEqual(['2026-08-10', '2026-10-04'])
+    expect(h.value()).toEqual(['2026-08-10', '2026-09-28'])
+  })
+
+  it('对外同时提供可直接查询的周期首尾与回显键', () => {
+    expect(mount({
+      granularity: 'quarter',
+      selectionMode: 'range',
+      defaultValue: ['2026-01-01', '2026-07-01'],
+    }).api().periodValue).toEqual({
+      granularity: 'quarter',
+      start: '2026-01-01',
+      end: '2026-09-30',
+      keys: ['2026-Q1', '2026-Q3'],
+    })
+    expect(mount({ selectionMode: 'multiple', defaultValue: ['2026-01-01', '2026-02-01'] }).api().periodValue).toBeNull()
   })
 })
 
@@ -1206,7 +1227,7 @@ describe('浮层里的标题钻取', () => {
   })
 
   it('按月挑时展开就在月那一档', async () => {
-    const h = await open({ view: 'month', defaultValue: '2026-05-01' })
+    const h = await open({ granularity: 'month', defaultValue: '2026-05-01' })
     expect(h.api().activeView).toBe('month')
     expect(h.api().calendar.canZoomOutMonth).toBe(false)
     expect(h.api().calendar.canZoomOutYear).toBe(true)

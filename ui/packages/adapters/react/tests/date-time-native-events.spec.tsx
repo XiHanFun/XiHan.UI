@@ -121,9 +121,9 @@ function calendarTree(selectionMode?: 'single' | 'range'): ReactNode {
         <XhCalendarGrid>
           <XhCalendarGridBody>
             {weeks.map(week => (
-              <XhCalendarWeekRow key={week[0]!.value}>
+              <XhCalendarWeekRow key={week[0]!.start}>
                 {week.map(d => (
-                  <XhCalendarCell key={d.value} value={d.value}>
+                  <XhCalendarCell key={d.start} value={d.start}>
                     <XhCalendarCellTrigger>{d.day}</XhCalendarCellTrigger>
                   </XhCalendarCell>
                 ))}
@@ -199,9 +199,9 @@ const DATE_PICKER_TREE = (
               <XhDatePickerGrid>
                 <XhDatePickerGridBody>
                   {weeks.map(week => (
-                    <XhDatePickerWeekRow key={week[0]!.value}>
+                    <XhDatePickerWeekRow key={week[0]!.start}>
                       {week.map(d => (
-                        <XhDatePickerCell key={d.value} value={d.value}>
+                        <XhDatePickerCell key={d.start} value={d.start}>
                           <XhDatePickerCellTrigger>{d.day}</XhDatePickerCellTrigger>
                         </XhDatePickerCell>
                       ))}

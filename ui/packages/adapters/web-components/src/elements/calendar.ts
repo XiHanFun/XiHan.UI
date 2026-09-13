@@ -1,6 +1,8 @@
 import type {
   CalendarDay,
   CalendarFocusChangeDetails,
+  CalendarGranularity,
+  CalendarPeriod,
   CalendarSchema,
   CalendarSelectionMode,
   CalendarValueChangeDetails,
@@ -16,8 +18,6 @@ import { MachineController } from '../runtime/machine-controller'
 
 // 属性缺席翻成 undefined，缺省值由机器与 connect 决定。
 const STRING_CONVERTER = { fromAttribute: (v: string | null) => v ?? undefined }
-// 三态布尔：缺席=undefined（用默认值）、="false"=false、其余=true
-const BOOLEAN_CONVERTER = { fromAttribute: (v: string | null) => (v === null ? undefined : v !== 'false') }
 const NUMBER_CONVERTER = { fromAttribute: (v: string | null) => (v == null || v === '' ? undefined : Number(v)) }
 
 /** 作者写的面板下标；写坏了或没写按 0 算。 */
@@ -49,14 +49,13 @@ function declaredIndex(el: Element | null | undefined, fallback = 0): number {
  * @attr {boolean} read-only - 只读：翻月与移动焦点照常，只是选不动值
  * @attr {'narrow'|'short'} weekday-format - 表头缩写粒度，默认 short
  * @attr {boolean} fixed-weeks - 恒渲染六行
- * @attr {'day'|'month'|'quarter'|'year'} view - 挑的粒度，默认 day；这一档也是「点一格即选中」的那一档
- * @attr {'day'|'month'|'quarter'|'year'} active-view - 受控：面板此刻钻到了哪一层；缺省跟着 view
- * @attr {'day'|'month'|'quarter'|'year'} default-active-view - 非受控初值，缺省同 view
- * @attr {boolean} week-selection - 周选：点任意一天选中它所在的整周（view=day 且区间模式下生效）
+ * @attr {'day'|'week'|'month'|'quarter'|'year'} granularity - 选择粒度，默认 day；与 selection-mode 正交
+ * @attr {'day'|'week'|'month'|'quarter'|'year'} active-view - 受控：面板此刻钻到了哪一层；缺省跟着 granularity
+ * @attr {'day'|'week'|'month'|'quarter'|'year'} default-active-view - 非受控初值，缺省同 granularity
  * @attr {number} visible-count - 并排展示几页
  * @fires value-change - 选中集合变化；detail 为 `{ value: string[] }`
  * @fires focused-value-change - 聚焦日变化；detail 为 `{ focusedValue: string }`
- * @fires active-view-change - 钻到了另一层；detail 为 `{ activeView: 'day'|'month'|'quarter'|'year' }`
+ * @fires active-view-change - 钻到了另一层；detail 为 `{ activeView: 'day'|'week'|'month'|'quarter'|'year' }`
  * @csspart root - 组件根容器
  * @csspart header - 标题栏外壳
  * @csspart prev-year-trigger - 快速往前翻一大步（日视图一年、粗粒度十页）；可选
@@ -94,10 +93,9 @@ export class XhCalendarElement extends XhElement {
     disabled: { type: Boolean },
     readOnly: { type: Boolean, attribute: 'read-only' },
     fixedWeeks: { type: Boolean, attribute: 'fixed-weeks' },
-    view: { converter: STRING_CONVERTER },
+    granularity: { converter: STRING_CONVERTER },
     activeView: { converter: STRING_CONVERTER, attribute: 'active-view' },
     defaultActiveView: { converter: STRING_CONVERTER, attribute: 'default-active-view' },
-    weekSelection: { converter: BOOLEAN_CONVERTER, attribute: 'week-selection' },
     visibleCount: { converter: NUMBER_CONVERTER, attribute: 'visible-count' },
     // 判定函数只走 property
     isDateUnavailable: { attribute: false },
@@ -116,10 +114,9 @@ export class XhCalendarElement extends XhElement {
   declare disabled?: boolean
   declare readOnly?: boolean
   declare fixedWeeks?: boolean
-  declare view?: CalendarView
+  declare granularity?: CalendarGranularity
   declare activeView?: CalendarView
   declare defaultActiveView?: CalendarView
-  declare weekSelection?: boolean
   declare visibleCount?: number
   declare isDateUnavailable?: (value: string) => boolean
 
@@ -163,10 +160,9 @@ export class XhCalendarElement extends XhElement {
       readOnly: this.readOnly ?? false,
       weekdayFormat: this.weekdayFormat,
       fixedWeeks: this.fixedWeeks ?? false,
-      view: this.view,
+      granularity: this.granularity,
       activeView: this.activeView,
       defaultActiveView: this.defaultActiveView,
-      weekSelection: this.weekSelection,
       visibleCount: this.visibleCount,
       onValueChange: this.notifyValue,
       onFocusedValueChange: this.notifyFocus,
@@ -177,6 +173,11 @@ export class XhCalendarElement extends XhElement {
   /** 当前展示月的日期矩阵，作者照它重画网格。机器尚未建起时给空数组。 */
   get weeks(): CalendarDay[][] {
     return this.ctrl.service ? connectCalendar(this.ctrl.service, wcNormalize).weeks : []
+  }
+
+  /** 当前面板内的统一周期数据。 */
+  get periods(): CalendarPeriod[] {
+    return this.ctrl.service ? connectCalendar(this.ctrl.service, wcNormalize).periods : []
   }
 
   /** 七列表头（缩写 + 全称），列序与 weeks 的列序一致。 */

@@ -1,6 +1,7 @@
 import type { ControlVariant, Direction, Placement, Size, Tone } from '@xihan-ui/core'
 import type {
   CalendarApi,
+  CalendarGranularity,
   CalendarSelectionMode,
   CalendarView,
   DateFieldSegmentState,
@@ -56,6 +57,7 @@ export type DatePickerRootSlotProps
     | 'open'
     | 'value'
     | 'valueAsString'
+    | 'periodValue'
     | 'focusedValue'
     | 'canClear'
     | 'setOpen'
@@ -66,6 +68,7 @@ export type DatePickerRootSlotProps
     CalendarApi,
     | 'visibleMonth'
     | 'panels'
+    | 'periods'
     | 'weeks'
     | 'weekDays'
     | 'headingLabel'
@@ -98,14 +101,12 @@ export interface XhDatePickerRootProps extends Omit<ComponentPropsWithRef<'div'>
   locale?: string
   timeZone?: string
   selectionMode?: CalendarSelectionMode
-  /** 挑的粒度：天（默认）/ 月 / 季度 / 年。输入行铺哪几段也跟着它走。 */
-  view?: CalendarView
-  /** 面板此刻钻到了哪一层；给定即受控，缺省跟着 view。 */
+  /** 选择粒度；与 selectionMode 正交，输入行铺哪几段也跟着它走。 */
+  granularity?: CalendarGranularity
+  /** 面板此刻钻到了哪一层；给定即受控，缺省跟着 granularity。 */
   activeView?: CalendarView
-  /** 输入行铺哪几段；不给就按 view 推。 */
+  /** 输入行铺哪几段；不给就按 granularity 推。 */
   segments?: DateSegmentSet
-  /** 周选：点任意一天选中它所在的整周。只在 view=day 且区间模式下生效。 */
-  weekSelection?: boolean
   /** 并排展示几页；缺省单选 1，区间按两端定：同一页放得下就 1，跨页才 2。 */
   visibleCount?: number
   /** 日历恒渲染六行，默认开。关掉后翻页时浮层高度会跟着月份变。 */
@@ -152,10 +153,9 @@ export function XhDatePickerRoot({
   locale,
   timeZone,
   selectionMode,
-  view,
+  granularity,
   activeView,
   segments,
-  weekSelection,
   visibleCount,
   fixedWeeks,
   defaultFocusedValue,
@@ -194,10 +194,9 @@ export function XhDatePickerRoot({
     locale,
     timeZone,
     selectionMode,
-    view,
+    granularity,
     activeView,
     segments,
-    weekSelection,
     visibleCount,
     fixedWeeks,
     defaultFocusedValue,
@@ -240,9 +239,11 @@ export function XhDatePickerRoot({
               open: api.open,
               value: api.value,
               valueAsString: api.valueAsString,
+              periodValue: api.periodValue,
               focusedValue: api.focusedValue,
               visibleMonth: api.calendar.visibleMonth,
               panels: api.calendar.panels,
+              periods: api.calendar.periods,
               weeks: api.calendar.weeks,
               weekDays: api.calendar.weekDays,
               headingLabel: api.calendar.headingLabel,

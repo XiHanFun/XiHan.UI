@@ -18,6 +18,7 @@ import {
   calendarPeriodMonths,
   calendarPeriodOf,
   calendarPeriodStart,
+  calendarPeriodValue,
   calendarWeekRange,
   calendarZoomIn,
   connectCalendar,
@@ -111,7 +112,7 @@ function mount(initial: Partial<Props> = {}): Harness {
   const cells = new Map<string, HTMLElement>()
   let painted = ''
 
-  const rebuild = (weeks: readonly (readonly { value: string }[])[]): void => {
+  const rebuild = (weeks: readonly (readonly { start: string }[])[]): void => {
     gridBody.textContent = ''
     triggers.clear()
     cells.clear()
@@ -120,11 +121,11 @@ function mount(initial: Partial<Props> = {}): Harness {
       for (const day of week) {
         const cell = doc.createElement('div')
         const trigger = doc.createElement('div')
-        trigger.textContent = day.value.slice(-2)
+        trigger.textContent = day.start.slice(-2)
         cell.appendChild(trigger)
         row.appendChild(cell)
-        cells.set(day.value, cell)
-        triggers.set(day.value, trigger)
+        cells.set(day.start, cell)
+        triggers.set(day.start, trigger)
       }
       gridBody.appendChild(row)
     }
@@ -132,7 +133,7 @@ function mount(initial: Partial<Props> = {}): Harness {
 
   const render = (): void => {
     const api = connectCalendar(service, normalizeProps)
-    const key = api.weeks.map(w => w.map(d => d.value).join()).join('|')
+    const key = api.weeks.map(w => w.map(d => d.start).join()).join('|')
     if (key !== painted) {
       painted = key
       rebuild(api.weeks)
@@ -229,22 +230,22 @@ describe('buildMonthGrid 月份矩阵', () => {
     const zh = buildMonthGrid('2024-02-15', { locale: 'zh-CN' })
     // zh-CN 周一起：2024-02-01 是周四，首行从 1 月 29 日（周一）开始
     expect(zh.weeks.every(w => w.length === 7)).toBe(true)
-    expect(zh.weeks[0]![0]!.value).toBe('2024-01-29')
+    expect(zh.weeks[0]![0]!.start).toBe('2024-01-29')
 
     const en = buildMonthGrid('2024-02-15', { locale: 'en-US' })
     // en-US 周日起：同一个月的首行提前一天，从 1 月 28 日（周日）开始
-    expect(en.weeks[0]![0]!.value).toBe('2024-01-28')
+    expect(en.weeks[0]![0]!.start).toBe('2024-01-28')
   })
 
   it('闰年二月排满 29 天，非闰年只有 28 天', () => {
     const leap = buildMonthGrid('2024-02-10', { locale: 'zh-CN' })
-    const days = leap.weeks.flat().filter(d => d.inMonth)
+    const days = leap.weeks.flat().filter(d => !d.outside)
     expect(days).toHaveLength(29)
-    expect(days.at(-1)!.value).toBe('2024-02-29')
+    expect(days.at(-1)!.start).toBe('2024-02-29')
 
     const common = buildMonthGrid('2023-02-10', { locale: 'zh-CN' })
-    expect(common.weeks.flat().filter(d => d.inMonth)).toHaveLength(28)
-    expect(common.weeks.flat().filter(d => d.inMonth).at(-1)!.value).toBe('2023-02-28')
+    expect(common.weeks.flat().filter(d => !d.outside)).toHaveLength(28)
+    expect(common.weeks.flat().filter(d => !d.outside).at(-1)!.start).toBe('2023-02-28')
   })
 
   it('跨年：十二月的网格尾部接上次年一月', () => {
@@ -252,12 +253,12 @@ describe('buildMonthGrid 月份矩阵', () => {
     const flat = g.weeks.flat()
     expect(g.year).toBe(2026)
     expect(g.month).toBe(12)
-    expect(flat.at(-1)!.value.startsWith('2027-01')).toBe(true)
+    expect(flat.at(-1)!.start.startsWith('2027-01')).toBe(true)
     // 一月的日子不属于展示月
-    expect(flat.filter(d => d.value.startsWith('2027')).every(d => !d.inMonth)).toBe(true)
+    expect(flat.filter(d => d.start.startsWith('2027')).every(d => d.outside)).toBe(true)
     // 反向：一月的网格头部接上一年十二月
     const jan = buildMonthGrid('2027-01-05', { locale: 'zh-CN' })
-    expect(jan.weeks[0]![0]!.value.startsWith('2026-12')).toBe(true)
+    expect(jan.weeks[0]![0]!.start.startsWith('2026-12')).toBe(true)
   })
 
   it('fixedWeeks 恒补满六行；关掉时按当月实际周数（能少到四行）', () => {
@@ -266,7 +267,7 @@ describe('buildMonthGrid 月份矩阵', () => {
     expect(buildMonthGrid('2015-02-10', { locale: 'en-US', fixedWeeks: true }).weeks).toHaveLength(6)
     // 补出来的行是真日子的延续，不是空格
     const fixed = buildMonthGrid('2015-02-10', { locale: 'en-US', fixedWeeks: true })
-    expect(fixed.weeks.at(-1)!.at(-1)!.value).toBe('2015-03-14')
+    expect(fixed.weeks.at(-1)!.at(-1)!.start).toBe('2015-03-14')
     // 五行月不受 fixedWeeks 影响的那一半：默认就是五行
     expect(buildMonthGrid('2024-02-10', { locale: 'zh-CN' }).weeks).toHaveLength(5)
   })
@@ -274,8 +275,8 @@ describe('buildMonthGrid 月份矩阵', () => {
   it('矩阵是连续日期，中间不跳格', () => {
     const flat = buildMonthGrid('2024-02-10', { locale: 'zh-CN' }).weeks.flat()
     for (let i = 1; i < flat.length; i++) {
-      const prev = parseCalendarDate(flat[i - 1]!.value)!
-      expect(prev.add({ days: 1 }).toString()).toBe(flat[i]!.value)
+      const prev = parseCalendarDate(flat[i - 1]!.start)!
+      expect(prev.add({ days: 1 }).toString()).toBe(flat[i]!.start)
     }
   })
 })
@@ -359,11 +360,11 @@ describe('大步翻与周选预览', () => {
     day.api().goToPrevYear()
     expect(day.api().visibleMonth).toMatchObject({ year: 2025, month: 8 })
 
-    const month = mount({ defaultFocusedValue: '2026-08-17', view: 'month' })
+    const month = mount({ defaultFocusedValue: '2026-08-17', granularity: 'month' })
     month.api().goToNextYear()
     expect(month.api().panels[0]!.year).toBe(2036)
 
-    const year = mount({ defaultFocusedValue: '2026-08-17', view: 'year' })
+    const year = mount({ defaultFocusedValue: '2026-08-17', granularity: 'year' })
     year.api().goToNextYear()
     expect(year.api().panels[0]!.headingLabel).toBe('2120-2129')
   })
@@ -382,11 +383,12 @@ describe('大步翻与周选预览', () => {
     expect(h.api().canGoNextYear).toBe(false)
   })
 
-  it('周选悬停：预览的是整整一周，不是从起点拉到悬停点', () => {
-    const h = mount({ defaultFocusedValue: '2026-08-17', selectionMode: 'range', weekSelection: true, locale: 'zh-CN' })
-    hover(h.cell('2026-08-13'))
-    const lit = h.rendered().filter(v => h.gridcell(v).hasAttribute('data-in-range'))
-    expect(lit).toEqual(['2026-08-10', '2026-08-11', '2026-08-12', '2026-08-13', '2026-08-14', '2026-08-15', '2026-08-16'])
+  it('周粒度悬停：预览按整周格延伸，不下沉到日格', () => {
+    const h = mountDrill({ defaultFocusedValue: '2026-08-17', granularity: 'week', selectionMode: 'range', locale: 'zh-CN' })
+    h.api().select('2026-08-13')
+    hover(h.cell('2026-08-17'))
+    const lit = h.rendered().filter(v => h.cell(v).hasAttribute('data-in-range'))
+    expect(lit).toEqual(['2026-08-10', '2026-08-17'])
   })
 
   it('不开周选时，悬停照旧是「起点 → 悬停点」那一段', () => {
@@ -402,19 +404,19 @@ describe('面板粒度：月 / 季度 / 年 / 周', () => {
   it('月面板一年 12 格，值是每个月的头一天', () => {
     const g = buildPeriodGrid('2026-08-17', 'month', { locale: 'zh-CN' })
     expect(g.cells).toHaveLength(12)
-    expect(g.cells[0]!.value).toBe('2026-01-01')
-    expect(g.cells[7]!.value).toBe('2026-08-01')
+    expect(g.cells[0]!.start).toBe('2026-01-01')
+    expect(g.cells[7]!.start).toBe('2026-08-01')
     expect(g.startValue).toBe('2026-01-01')
     expect(g.headingLabel).toContain('2026')
   })
 
   it('季度面板 4 格，值是每季的头一天', () => {
     const g = buildPeriodGrid('2026-08-17', 'quarter', { locale: 'zh-CN' })
-    expect(g.cells.map(c => [c.label, c.value])).toEqual([
-      ['Q1', '2026-01-01'],
-      ['Q2', '2026-04-01'],
-      ['Q3', '2026-07-01'],
-      ['Q4', '2026-10-01'],
+    expect(g.cells.map(c => [c.label, c.start, c.end])).toEqual([
+      ['Q1', '2026-01-01', '2026-03-31'],
+      ['Q2', '2026-04-01', '2026-06-30'],
+      ['Q3', '2026-07-01', '2026-09-30'],
+      ['Q4', '2026-10-01', '2026-12-31'],
     ])
   })
 
@@ -422,17 +424,18 @@ describe('面板粒度：月 / 季度 / 年 / 周', () => {
     const g = buildPeriodGrid('2026-08-17', 'year', { locale: 'zh-CN' })
     expect(g.cells).toHaveLength(12)
     expect(g.cells[0]!.label).toBe('2019')
-    expect(g.cells[0]!.inView).toBe(false)
+    expect(g.cells[0]!.outside).toBe(true)
     expect(g.cells[1]!.label).toBe('2020')
-    expect(g.cells[1]!.inView).toBe(true)
+    expect(g.cells[1]!.outside).toBe(false)
     expect(g.cells[10]!.label).toBe('2029')
-    expect(g.cells[11]!.inView).toBe(false)
+    expect(g.cells[11]!.outside).toBe(true)
     // zh-CN 的年份带「年」字，标题因此是 2020年-2029年
     expect(g.headingLabel).toBe('2020年-2029年')
   })
 
-  it('一页走多少个月：日 1、月与季度 12、年 120', () => {
+  it('一页走多少个月：日与周 1、月与季度 12、年 120', () => {
     expect(calendarPageMonths('day')).toBe(1)
+    expect(calendarPageMonths('week')).toBe(1)
     expect(calendarPageMonths('month')).toBe(12)
     expect(calendarPageMonths('quarter')).toBe(12)
     expect(calendarPageMonths('year')).toBe(120)
@@ -444,15 +447,15 @@ describe('面板粒度：月 / 季度 / 年 / 周', () => {
     expect(calendarPeriodStart(parseCalendarDate('2019-05-02')!, 'year').toString()).toBe('2010-01-01')
   })
 
-  it('周的起止按 locale 的周首日切', () => {
-    // zh-CN 周一起
-    expect(calendarWeekRange('2026-08-13', 'zh-CN')).toEqual(['2026-08-10', '2026-08-16'])
-    // en-US 周日起
-    expect(calendarWeekRange('2026-08-13', 'en-US')).toEqual(['2026-08-09', '2026-08-15'])
+  it('周周期固定使用 ISO 周一到周日，不随文案 locale 改变', () => {
+    expect(calendarWeekRange('2026-08-13')).toEqual(['2026-08-10', '2026-08-16'])
+    const g = buildPeriodGrid('2026-08-13', 'week', { locale: 'zh-CN' })
+    expect(g.cells.map(cell => cell.key)).toEqual(['2026-W31', '2026-W32', '2026-W33', '2026-W34', '2026-W35', '2026-W36'])
+    expect(g.cells.every(cell => cell.start <= cell.end)).toBe(true)
   })
 
-  it('连接层按 view 铺面板：月视图给 cells 不给 weeks，翻页整年走', () => {
-    const h = mount({ defaultFocusedValue: '2026-08-17', view: 'month', visibleCount: 2 })
+  it('连接层按 granularity 铺面板：月视图给 cells 不给 weeks，翻页整年走', () => {
+    const h = mount({ defaultFocusedValue: '2026-08-17', granularity: 'month', visibleCount: 2 })
     const api = h.api()
     expect(api.panels).toHaveLength(2)
     expect(api.panels[0]!.weeks).toEqual([])
@@ -463,29 +466,31 @@ describe('面板粒度：月 / 季度 / 年 / 周', () => {
   })
 
   it('年视图翻一页走十年', () => {
-    const h = mount({ defaultFocusedValue: '2026-08-17', view: 'year' })
+    const h = mount({ defaultFocusedValue: '2026-08-17', granularity: 'year' })
     expect(h.api().panels[0]!.headingLabel).toBe('2020-2029')
     h.api().goToNextMonth()
     expect(h.api().panels[0]!.headingLabel).toBe('2030-2039')
   })
 
-  it('周选：一次点落起点周，两次点落「起点周 → 终点周」的外缘', () => {
-    const h = mount({ defaultFocusedValue: '2026-08-13', selectionMode: 'range', weekSelection: true, locale: 'zh-CN' })
-    // 第一下只落起点：这一周的首日
+  it('周粒度与区间模式正交：选择状态只存两端周期的首日', () => {
+    const h = mountDrill({ defaultFocusedValue: '2026-08-13', granularity: 'week', selectionMode: 'range', locale: 'zh-CN' })
     h.api().select('2026-08-13')
     expect(h.value()).toEqual(['2026-08-10'])
-    // 第二下落到另一周，两端取各自朝外那一头——第 33 周到第 37 周
     h.api().select('2026-09-09')
-    expect(h.value()).toEqual(['2026-08-10', '2026-09-13'])
-    expect(isoWeekNumber('2026-08-10')).toBe(33)
-    expect(isoWeekNumber('2026-09-13')).toBe(37)
+    expect(h.value()).toEqual(['2026-08-10', '2026-09-07'])
+    expect(calendarPeriodValue('week', 'range', h.value())).toEqual({
+      granularity: 'week',
+      start: '2026-08-10',
+      end: '2026-09-13',
+      keys: ['2026-W33', '2026-W37'],
+    })
   })
 
-  it('周选反着挑也对：先点靠后那周，再点靠前的', () => {
-    const h = mount({ defaultFocusedValue: '2026-09-09', selectionMode: 'range', weekSelection: true, locale: 'zh-CN' })
+  it('周区间反着挑也会按周期首日排序', () => {
+    const h = mountDrill({ defaultFocusedValue: '2026-09-09', granularity: 'week', selectionMode: 'range', locale: 'zh-CN' })
     h.api().select('2026-09-09')
     h.api().select('2026-08-13')
-    expect(h.value()).toEqual(['2026-08-10', '2026-09-13'])
+    expect(h.value()).toEqual(['2026-08-10', '2026-09-07'])
   })
 
   it('周序号格是这一行的表头，文字由连接层给；不带值时给空串占住列宽', () => {
@@ -506,10 +511,10 @@ describe('面板粒度：月 / 季度 / 年 / 周', () => {
     expect(isoWeekNumber('2027-01-01')).toBe(53)
   })
 
-  it('周选只在日视图 + 区间下生效，其余照旧只落这一天', () => {
-    const single = mount({ defaultFocusedValue: '2026-08-13', weekSelection: true })
+  it('周粒度也支持单选', () => {
+    const single = mountDrill({ defaultFocusedValue: '2026-08-13', granularity: 'week', selectionMode: 'single' })
     single.api().select('2026-08-13')
-    expect(single.value()).toEqual(['2026-08-13'])
+    expect(single.value()).toEqual(['2026-08-10'])
   })
 })
 
@@ -1072,7 +1077,7 @@ describe('翻月', () => {
 describe('网格结构', () => {
   it('作者照 weeks 渲染出来的格子与矩阵逐格对齐', () => {
     const h = mount({ defaultFocusedValue: '2024-02-15', locale: 'zh-CN' })
-    expect(h.rendered()).toEqual(buildMonthGrid('2024-02-15', { locale: 'zh-CN' }).weeks.flat().map(d => d.value))
+    expect(h.rendered()).toEqual(buildMonthGrid('2024-02-15', { locale: 'zh-CN' }).weeks.flat().map(d => d.start))
     expect(h.rendered()).toHaveLength(35)
   })
 
@@ -1098,13 +1103,13 @@ describe('标题钻取的纯函数', () => {
     expect(calendarZoomIn('year', 'year')).toBeNull()
   })
 
-  it('这一天归哪一格：格子的值是那段时间的第一天', () => {
-    expect(calendarPeriodOf('2026-08-17', 'day')).toBe('2026-08-17')
-    expect(calendarPeriodOf('2026-08-17', 'month')).toBe('2026-08-01')
-    expect(calendarPeriodOf('2026-08-17', 'quarter')).toBe('2026-07-01')
-    expect(calendarPeriodOf('2026-08-17', 'year')).toBe('2026-01-01')
-    // 脏值原样交回，不抛——它在焦点恢复那一路上跑
-    expect(calendarPeriodOf('不是日期', 'month')).toBe('不是日期')
+  it('任意日期都归一成同形 Period', () => {
+    expect(calendarPeriodOf('2026-08-17', 'day')).toMatchObject({ key: '2026-08-17', start: '2026-08-17', end: '2026-08-17' })
+    expect(calendarPeriodOf('2026-08-17', 'week')).toMatchObject({ key: '2026-W34', start: '2026-08-17', end: '2026-08-23' })
+    expect(calendarPeriodOf('2026-08-17', 'month')).toMatchObject({ key: '2026-08', start: '2026-08-01', end: '2026-08-31' })
+    expect(calendarPeriodOf('2026-08-17', 'quarter')).toMatchObject({ key: '2026-Q3', start: '2026-07-01', end: '2026-09-30' })
+    expect(calendarPeriodOf('2026-08-17', 'year')).toMatchObject({ key: '2026', start: '2026-01-01', end: '2026-12-31' })
+    expect(calendarPeriodOf('不是日期', 'month')).toBeNull()
   })
 
   it('这一天在本页第几格', () => {
@@ -1115,7 +1120,6 @@ describe('标题钻取的纯函数', () => {
   })
 
   it('一格跨多少个月', () => {
-    expect(calendarPeriodMonths('day')).toBe(1)
     expect(calendarPeriodMonths('month')).toBe(1)
     expect(calendarPeriodMonths('quarter')).toBe(3)
     expect(calendarPeriodMonths('year')).toBe(12)
@@ -1219,8 +1223,8 @@ function mountDrill(initial: Partial<Props> = {}) {
     const api = connectCalendar(service, normalizeProps)
     // 日视图铺周行，粗粒度视图把格子直接铺进网格
     const items = api.activeView === 'day'
-      ? api.panels[0]!.weeks.flat().map(d => d.value)
-      : api.panels[0]!.cells.map(c => c.value)
+      ? api.panels[0]!.weeks.flat().map(d => d.start)
+      : api.panels[0]!.cells.map(c => c.start)
     const key = `${api.activeView}|${items.join()}`
     if (key !== painted) {
       painted = key
@@ -1267,7 +1271,7 @@ function mountDrill(initial: Partial<Props> = {}) {
 describe('标题钻取', () => {
   it('缺省钻到的层就是作者要挑的那一档', () => {
     expect(mountDrill({ defaultFocusedValue: '2026-02-18' }).api().activeView).toBe('day')
-    expect(mountDrill({ defaultFocusedValue: '2026-02-18', view: 'month' }).api().activeView).toBe('month')
+    expect(mountDrill({ defaultFocusedValue: '2026-02-18', granularity: 'month' }).api().activeView).toBe('month')
   })
 
   it('日视图的标题拆成两截，各自可点', () => {
@@ -1322,7 +1326,7 @@ describe('标题钻取', () => {
   })
 
   it('按月挑的日历点一个月就是选中，不往下钻', () => {
-    const h = mountDrill({ defaultFocusedValue: '2026-02-18', view: 'month', locale: 'zh-CN' })
+    const h = mountDrill({ defaultFocusedValue: '2026-02-18', granularity: 'month', locale: 'zh-CN' })
     expect(h.api().activeView).toBe('month')
     click(h.cell('2026-08-01'))
     expect(h.value()).toEqual(['2026-08-01'])
@@ -1330,7 +1334,7 @@ describe('标题钻取', () => {
   })
 
   it('按月挑时钻上去看年份，点回一年落回月那一档而不是选中', () => {
-    const h = mountDrill({ defaultFocusedValue: '2026-02-18', view: 'month', locale: 'zh-CN' })
+    const h = mountDrill({ defaultFocusedValue: '2026-02-18', granularity: 'month', locale: 'zh-CN' })
     click(h.yearTrigger)
     expect(h.api().activeView).toBe('year')
     click(h.cell('2030-01-01'))
@@ -1342,7 +1346,7 @@ describe('标题钻取', () => {
   })
 
   it('按季度挑时年那一层直接钻回季度，不经月', () => {
-    const h = mountDrill({ defaultFocusedValue: '2026-02-18', view: 'quarter', locale: 'zh-CN' })
+    const h = mountDrill({ defaultFocusedValue: '2026-02-18', granularity: 'quarter', locale: 'zh-CN' })
     click(h.yearTrigger)
     click(h.cell('2026-01-01'))
     expect(h.api().activeView).toBe('quarter')
@@ -1351,7 +1355,7 @@ describe('标题钻取', () => {
   })
 
   it('月/季度那两层没有「月」那一截可点', () => {
-    const h = mountDrill({ defaultFocusedValue: '2026-02-18', view: 'month', locale: 'zh-CN' })
+    const h = mountDrill({ defaultFocusedValue: '2026-02-18', granularity: 'month', locale: 'zh-CN' })
     expect(h.monthTrigger.hasAttribute('hidden')).toBe(true)
     expect(h.yearTrigger.textContent).toBe('2026年')
     expect(h.yearTrigger.hasAttribute('disabled')).toBe(false)
@@ -1416,11 +1420,26 @@ describe('标题钻取', () => {
   })
 
   it('作者换了要挑的粒度，钻到哪一层的记录随之作废', () => {
-    const h = mountDrill({ defaultFocusedValue: '2026-02-18', locale: 'zh-CN' })
+    const h = mountDrill({ defaultFocusedValue: '2026-02-18', defaultValue: '2026-02-18', locale: 'zh-CN' })
     click(h.yearTrigger)
     expect(h.api().activeView).toBe('year')
-    h.setProps({ view: 'month' })
+    h.setProps({ granularity: 'month' })
     expect(h.api().activeView).toBe('month')
+    expect(h.value()).toEqual([])
+  })
+
+  it('选择模式独立切换，并按新模式收口现值', () => {
+    const h = mountDrill({
+      defaultFocusedValue: '2026-02-18',
+      defaultValue: ['2026-02-18', '2026-03-18'],
+      selectionMode: 'range',
+    })
+    h.setProps({ selectionMode: 'single' })
+    expect(h.value()).toEqual(['2026-02-18'])
+
+    h.setProps({ selectionMode: 'range' })
+    h.api().select('2026-03-18')
+    expect(h.value()).toEqual(['2026-02-18', '2026-03-18'])
   })
 
   it('setActiveView 是命令式的同一条路', () => {

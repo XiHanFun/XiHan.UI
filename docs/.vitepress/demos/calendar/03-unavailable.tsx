@@ -68,9 +68,9 @@ export default function Demo(): ReactNode {
               </XhCalendarGridHead>
               <XhCalendarGridBody>
                 {weeks.map(week => (
-                  <XhCalendarWeekRow key={week[0]?.value}>
+                  <XhCalendarWeekRow key={week[0]?.start}>
                     {week.map(day => (
-                      <XhCalendarCell key={day.value} value={day.value}>
+                      <XhCalendarCell key={day.start} value={day.start}>
                         <XhCalendarCellTrigger>{day.day}</XhCalendarCellTrigger>
                       </XhCalendarCell>
                     ))}

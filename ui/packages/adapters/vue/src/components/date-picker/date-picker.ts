@@ -2,6 +2,7 @@ import type { ControlVariant, Direction, Placement, Size, Tone } from '@xihan-ui
 import type {
   CalendarApi,
   CalendarCellProps,
+  CalendarGranularity,
   CalendarSelectionMode,
   CalendarView,
   DateFieldSegmentState,
@@ -52,6 +53,7 @@ export type DatePickerRootSlotProps
     | 'open'
     | 'value'
     | 'valueAsString'
+    | 'periodValue'
     | 'focusedValue'
     | 'canClear'
     | 'setOpen'
@@ -62,6 +64,7 @@ export type DatePickerRootSlotProps
     CalendarApi,
     | 'visibleMonth'
     | 'panels'
+    | 'periods'
     | 'weeks'
     | 'weekDays'
     | 'headingLabel'
@@ -97,14 +100,12 @@ export const XhDatePickerRoot = defineComponent({
     locale: { type: String },
     timeZone: { type: String },
     selectionMode: { type: String as PropType<CalendarSelectionMode> },
-    /** 挑的粒度：天（默认）/ 月 / 季度 / 年。输入行铺哪几段也跟着它走。 */
-    view: { type: String as PropType<CalendarView> },
-    /** 面板此刻钻到了哪一层；给定即受控，缺省跟着 view。 */
+    /** 选择粒度；与 selectionMode 正交，输入行铺哪几段也跟着它走。 */
+    granularity: { type: String as PropType<CalendarGranularity> },
+    /** 面板此刻钻到了哪一层；给定即受控，缺省跟着 granularity。 */
     activeView: { type: String as PropType<CalendarView> },
-    /** 输入行铺哪几段；不给就按 view 推。 */
+    /** 输入行铺哪几段；不给就按 granularity 推。 */
     segments: { type: Array as PropType<DateSegmentSet> },
-    /** 周选：点任意一天选中它所在的整周。只在 view=day 且区间模式下生效。 */
-    weekSelection: { type: Boolean, default: undefined },
     /** 并排展示几页；缺省单选 1，区间按两端定：同一页放得下就 1，跨页才 2。 */
     visibleCount: { type: Number },
     /** 日历恒渲染六行，默认开。关掉后翻页时浮层高度会跟着月份变。 */
@@ -175,9 +176,11 @@ export const XhDatePickerRoot = defineComponent({
       open: ctx.api.value.open,
       value: ctx.api.value.value,
       valueAsString: ctx.api.value.valueAsString,
+      periodValue: ctx.api.value.periodValue,
       focusedValue: ctx.api.value.focusedValue,
       visibleMonth: ctx.api.value.calendar.visibleMonth,
       panels: ctx.api.value.calendar.panels,
+      periods: ctx.api.value.calendar.periods,
       weeks: ctx.api.value.calendar.weeks,
       weekDays: ctx.api.value.calendar.weekDays,
       headingLabel: ctx.api.value.calendar.headingLabel,
