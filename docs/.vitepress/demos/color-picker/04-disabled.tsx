@@ -1,9 +1,10 @@
-// 禁用 | disabled 同时挡住触发器与面板内的所有交互
+// 禁用 | 禁止更改颜色
 import type { ReactNode } from "react";
 import {
   XhColorPickerAreaThumb,
   XhColorPickerContent,
   XhColorPickerControl,
+  XhColorPickerLabel,
   XhColorPickerPositioner,
   XhColorPickerRoot,
   XhColorPickerSaturationArea,
@@ -15,6 +16,7 @@ import {
 export default function Demo(): ReactNode {
   return (
     <XhColorPickerRoot defaultValue="#9ca3af" disabled>
+      <XhColorPickerLabel>主题色</XhColorPickerLabel>
       <XhColorPickerControl>
         <XhColorPickerTrigger>
           <XhColorPickerSwatch />

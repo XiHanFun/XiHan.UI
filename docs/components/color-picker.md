@@ -1,6 +1,6 @@
 # ColorPicker 颜色选择器
 
-选一个颜色：色域面板加通道滑块，另有预设色板与屏幕取色。
+用于选择并编辑颜色。
 
 <div class="xh-resource-links">
   <a href="https://github.com/XiHanFun/XiHan.UI/tree/dev/ui/packages/engine/headless/src/color-picker" target="_blank" rel="noreferrer">Headless</a>
@@ -12,7 +12,7 @@
 
 ## 用法
 
-必备部件是 trigger / content / saturation-area / area-thumb，缺一个组件就不工作
+选择颜色
 
 <XhDemo src="color-picker/01-basic" />
 
@@ -24,99 +24,57 @@
 
 ## 示例
 
-### 受控
-
-传了 value 就由宿主说了算，取色只回写不自改
-
-<XhDemo src="color-picker/02-controlled" />
-
 ### 预设色板
 
-swatches 给出常用色，选中即写回 value
+提供常用颜色
 
 <XhDemo src="color-picker/03-swatches" />
 
 ### 禁用
 
-disabled 同时挡住触发器与面板内的所有交互
+禁止更改颜色
 
 <XhDemo src="color-picker/04-disabled" />
 
 ### 透明度
 
-alpha 打开后多一条透明度滑杆，值串跟着带上透明度；关掉时透明度恒是不透明，那条滑杆整条不可用
+调整颜色透明度
 
 <XhDemo src="color-picker/05-alpha" />
 
-### 值串写法
+### 精确输入
 
-format 只决定对外的序列化，工作色始终是同一套；三种写法各挑一个色，改动后按各自的写法产出
-
-<XhDemo src="color-picker/06-format" />
-
-### 数值输入与屏幕取色
-
-四个数值框各管一路，回车才收下，收不下的留着草稿并标红；宿主环境没有取色接口时那个按钮自己禁用
+输入色值或使用屏幕取色
 
 <XhDemo src="color-picker/07-inputs" />
-
-### 空态与面板按钮
-
-受控时「没有颜色」由宿主表达：值置空，触发器换成占位方框；面板底下的两个按钮是作者自己的，收起浮层同样归宿主
-
-<XhDemo src="color-picker/08-clearable" />
-
-### 随表单提交
-
-值串的表单出口由作者自己挂：把当前值写进一份 input[type=hidden] 就带得走；浮层就地渲染，节点始终留在 form 里
-
-<XhDemo src="color-picker/09-form" />
-
-### 面板里切换写法
-
-format 只管对外的序列化：换过之后把当前值原样写回一次，值串就改按新写法产出，工作色一点不动
-
-<XhDemo src="color-picker/10-format-switch" />
 
 ## 设计指引
 
 ### 何时使用
 
-- 用户要自由指定颜色（主题定制、标注、画布）。
+- 用户需要自定义主题色、标注色或画布颜色。
 
 ### 何时不用
 
-- 可选颜色是固定的几种：用[单选组](./radio-group)配色块，或[选择器](./select)。
+- 只有少量固定颜色时，使用预设色板或[单选组](./radio-group)。
 
 ### 特性
 
-- 必备部件是 `root` · `content` · `saturation-area` · `area-thumb`，缺一个组件就不工作。
-- `format` 决定值串写法；面板里也可以让用户自己切换写法。
-- `alpha` 打开透明度通道。
-- 支持屏幕取色（依赖平台能力）与数值输入。
-- 文本输入严格校验范围：不完整、非法或越界内容保留在输入框，并通过 `errors.input` / `onColorError` 明确报告；不会悄悄复原或夹回合法区间。
-- 运行期未知 `format`、整体颜色解析失败与屏幕取色异常分别保存在 `errors.format`、`errors.parse`、`errors.eyeDropper`。`clearError()` 可显式清理；再次屏幕取色会先清掉上一轮取色相关诊断。
-- 用户取消屏幕取色（`AbortError`）不是失败；接口抛错或拒绝才走 `eye-dropper` 错误。已经关闭或被下一轮替代的旧取色结果不会回写新值。
-- 预设色板当前项由 `isSwatchSelected`、`aria-pressed` 与 `data-state=checked` 持久标识，不依赖悬停反馈。
-- 输入框与通道输入保持实体表面，弹层使用 M2 磨砂背景、细顶光与统一边界阴影；顶光不覆盖取色区域，也不拦截鼠标。
-- 色域、色相轨道和预设色板保留原色，磨砂只作用于浮层背后的内容，不通过整层透明度淡化静止状态下的颜色。
-- 浮层按实际落位方向淡入并短距离移动，不缩放取色区域；收起时完整播放退场，再由适配器隐藏。
-- 局部明暗主题随 Portal 传递。增强对比度和减少透明度沿用材质令牌切为实体表面；减弱动效缩短进出场并归零位移。
-
-### 组合
-
-- 外面套[表单字段](./field)；预设色板走 `swatches`。
+- 支持色域、色相和透明度通道。
+- 支持预设色板、精确数值输入与屏幕取色。
+- `format` 设置输出格式，`alpha` 启用透明度。
+- 支持受控值、表单提交与输入错误回调。
 
 ### 最佳实践
 
-- 提供预设色板：绝大多数用户不需要在色域里精挑。
-- 回显时同时给色块和色值串，色块用来看、值串用来复制。
-- 监听 `onColorError` 给错误配可见说明；错误对象是诊断出口，不会自动替你渲染提示。
+- 优先提供常用颜色。
+- 同时显示色块与颜色值。
+- 需要精确输入时提供颜色通道输入框。
 
 ### 反模式
 
-- 只给色域不给数值输入：用户手上有确切色值时无处可填。
-- 在需要满足对比度的场景里放任意取色而不给对比度提示。
+- 只显示颜色而不显示其数值。
+- 在有对比度要求的场景中不提供校验反馈。
 
 ## API 参考
 

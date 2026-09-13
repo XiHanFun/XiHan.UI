@@ -1,13 +1,14 @@
-<!-- 预设色板 | swatches 给出常用色，选中即写回 value -->
-<!-- 色板写成逗号分隔的一串 -->
+<!-- 预设色板 | 提供常用颜色 -->
 <xh-color-picker
   default-value="#00a98e"
   swatches="#00a98e,#3b82f6,#f59e0b,#ef4444,#8b5cf6"
 >
   <div data-xh-part="root">
+    <label data-xh-part="label">主题色</label>
     <div data-xh-part="control">
       <button data-xh-part="trigger">
         <span data-xh-part="swatch"></span>
+        <span data-xh-part="value-text"></span>
       </button>
     </div>
     <div data-xh-part="positioner">
