@@ -114,7 +114,7 @@ export type { ImageViewerApi, ImageViewerImageStatus, ImageViewerIndexChangeDeta
 export { connectInfiniteScroll, infiniteScrollAnatomy, infiniteScrollKeyboard, infiniteScrollMachine, infiniteScrollMeta, resolveInfiniteScrollPhase } from './infinite-scroll'
 export type { InfiniteScrollApi, InfiniteScrollPhase, InfiniteScrollRefs, InfiniteScrollSchema, InfiniteScrollTranslations } from './infinite-scroll'
 export { connectInputGroup, inputGroupAnatomy, inputGroupKeyboard, inputGroupMeta } from './input-group'
-export type { InputGroupApi, InputGroupProps, InputGroupTranslations } from './input-group'
+export type { InputGroupApi, InputGroupProps, InputGroupTranslations, InputGroupVariant } from './input-group'
 export { connectJsonViewer, flattenJson, groupJsonViewerNodesByParent, JSON_VIEWER_ROOT_PATH, jsonChildPath, jsonExpandedPathsToDepth, jsonText, jsonValueText, jsonValueType, jsonViewerAnatomy, jsonViewerBranchQuery, jsonViewerItemQuery, jsonViewerKeyboard, jsonViewerMachine, jsonViewerMeta } from './json-viewer'
 export type { JsonViewerApi, JsonViewerExpandedValueChangeDetails, JsonViewerFlattenOptions, JsonViewerNode, JsonViewerNodeProps, JsonViewerNodesByParent, JsonViewerSchema, JsonViewerTranslations, JsonViewerValueType, JsonViewerVariant, JsonViewerView, JsonViewerWalkOptions } from './json-viewer'
 export { connectKbd, kbdAnatomy, kbdKeyboard, kbdMeta } from './kbd'

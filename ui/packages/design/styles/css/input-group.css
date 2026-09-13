@@ -4,7 +4,7 @@
     --xh-input-group-skin: 1;
   }
 
-  /* 输入框与它的前后缀、动作钮拼成一个盒：段与段之间不留缝，靠共边接上，所以不设 gap。 */
+  /* 输入框、前后缀和动作共用一个输入表面。组只统一材质与外轮廓，语义仍归各子控件。 */
   [data-scope='input-group'][data-part='root'] {
     /* 段之间那几档层号只在自己人之间排序：建一个层叠上下文把它们关起来，
        既不让页面上的层号插进来，也不让它们漏出去压住别人 */
@@ -14,12 +14,71 @@
     --xh-_input-group-h: var(--xh-control-h-md);
     --xh-_input-group-px: var(--xh-control-px-md);
     --xh-_input-group-font-size: var(--xh-control-font-md);
+    --xh-_input-group-bg: var(--xh-bg-canvas);
+    --xh-_input-group-bg-hover: color-mix(in oklab, var(--xh-bg-subtle) 45%, var(--xh-bg-canvas));
+    --xh-_input-group-border: var(--xh-border-subtle);
+    --xh-_input-group-border-hover: var(--xh-border-default);
+    --xh-_input-group-border-focus: var(--xh-border-control-focus);
+    --xh-_input-group-shadow: var(--xh-elevation-raised);
 
+    position: relative;
     display: inline-flex;
+    box-sizing: border-box;
     align-items: stretch;
+    border-radius: var(--xh-input-group-radius, var(--xh-shape-surface));
+    background: var(--xh-input-group-bg, var(--xh-_input-group-bg));
+    box-shadow: var(--xh-input-group-shadow, var(--xh-_input-group-shadow));
 
     /* 父容器给不出这么宽时整组跟着收，不越出父容器 */
     max-inline-size: 100%;
+    transition:
+      background var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
+      box-shadow var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
+  }
+
+  /* 外轮廓不占盒尺寸，组内控件仍保持与独立使用时相同的高度。 */
+  [data-scope='input-group'][data-part='root']::before {
+    content: '';
+    position: absolute;
+    z-index: 2;
+    inset: 0;
+    border: var(--xh-stroke-thin) solid var(--xh-input-group-border, var(--xh-_input-group-border));
+    border-radius: inherit;
+    pointer-events: none;
+    transition: border-color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
+  }
+
+  [data-scope='input-group'][data-part='root'][data-variant='secondary'] {
+    --xh-_input-group-bg: var(--xh-bg-subtle);
+    --xh-_input-group-bg-hover: var(--xh-bg-subtle-hover);
+    --xh-_input-group-border: transparent;
+    --xh-_input-group-border-hover: var(--xh-border-default);
+    --xh-_input-group-shadow: none;
+  }
+
+  [data-scope='input-group'][data-part='root']:not(:has([data-disabled])):hover {
+    background: var(--xh-input-group-bg-hover, var(--xh-_input-group-bg-hover));
+  }
+
+  [data-scope='input-group'][data-part='root']:not(:has([data-disabled])):hover::before {
+    border-color: var(--xh-input-group-border-hover, var(--xh-_input-group-border-hover));
+  }
+
+  [data-scope='input-group'][data-part='root']:focus-within {
+    outline: var(--xh-ring-width) solid var(--xh-input-group-ring-focus, var(--xh-ring-focus));
+    outline-offset: var(--xh-ring-offset);
+  }
+
+  [data-scope='input-group'][data-part='root']:focus-within::before {
+    border-color: var(--xh-input-group-border-focus, var(--xh-_input-group-border-focus));
+  }
+
+  [data-scope='input-group'][data-part='root']:has([data-invalid], [aria-invalid='true'])::before {
+    border-color: var(--xh-input-group-border-invalid, var(--xh-border-invalid));
+  }
+
+  [data-scope='input-group'][data-part='root']:has([data-invalid], [aria-invalid='true']):focus-within {
+    outline-color: var(--xh-input-group-ring-invalid, var(--xh-ring-invalid));
   }
 
   /* 给了 display 的角色节点必须补这条：display 声明会盖掉 UA 的 [hidden]{display:none}，
@@ -63,23 +122,37 @@
     --xh-_input-group-font-size: var(--xh-control-font-lg);
   }
 
-  /* —— 合边 —— */
-  /* 相邻两段的边重合在同一像素上，谁的描边浮在上面必须能指定，
-     因此每一段都是定位元素——静态元素的 z-index 不生效 */
+  /* 子控件不再各画一层输入表面，悬停与聚焦统一落在组的外轮廓。 */
+  [data-scope='input-group'][data-part='root'] [data-xh-field-chrome] {
+    border-color: transparent;
+    background-color: transparent;
+    box-shadow: none;
+  }
+
+  /* 焦点环由组的外表面绘制，子输入保留焦点语义但不再重复画第二圈。 */
+  [data-scope='input-group'][data-part='root'] [data-xh-field-chrome]:focus-within {
+    outline: none;
+  }
+
+  [data-scope='input-group'][data-part='root'] [data-xh-field-chrome]:hover,
+  [data-scope='input-group'][data-part='root'] [data-xh-field-chrome]:focus-within,
+  [data-scope='input-group'][data-part='root'] [data-xh-field-chrome][data-invalid],
+  [data-scope='input-group'][data-part='root'] [data-xh-field-chrome][data-readonly],
+  [data-scope='input-group'][data-part='root'] [data-xh-field-chrome][data-disabled] {
+    border-color: transparent;
+    background-color: transparent;
+    box-shadow: none;
+  }
+
+  /* 每一段都是定位元素，动作控件的悬停面可以浮到外轮廓之上。 */
   [data-scope='input-group'][data-part='root'] > * {
     position: relative;
   }
 
-  /* 后一段往回挪一个描边宽度，相邻的两条边重合成一条 */
-  [data-scope='input-group'][data-part='root'] > * + * {
-    margin-inline-start: calc(-1 * var(--xh-stroke-thin));
-  }
-
-  /* 悬停或拿到焦点的那一段抬到最上层：聚焦环画在盒外侧，
-     不抬层就会被后一段的底色与描边盖掉一半 */
+  /* 悬停或拿到焦点的动作段抬到外轮廓同层，自己的反馈不会被邻座覆盖。 */
   [data-scope='input-group'][data-part='root'] > *:hover,
   [data-scope='input-group'][data-part='root'] > *:focus-within {
-    z-index: 1;
+    z-index: 2;
   }
 
   /* —— 两端圆角 —— */
@@ -108,29 +181,66 @@
   }
 
   /* —— 前后缀块 —— */
-  /* 与邻座同高、同一条描边、同一档字号：它是框的一部分，不是框旁边的一段文字。
-     不可交互，所以不接按压反馈也不进 Tab 序列。
-     三个色槽换值时按 micro 走一遍：这块的描边与邻座控件那条边是同一根线，
-     控件那侧五态换色是过渡过去的，这一侧硬切就会看见半根线先变 */
+  /* 前后缀是输入表面里的静态内容，不单独绘制底色、描边或焦点状态。 */
   [data-scope='input-group'][data-part='item'] {
     display: inline-flex;
+    box-sizing: border-box;
     flex: none;
     align-items: center;
     block-size: var(--xh-input-group-item-h, var(--xh-_input-group-h));
     padding-inline: var(--xh-input-group-item-px, var(--xh-_input-group-px));
-    border: var(--xh-stroke-thin) solid var(--xh-input-group-item-border, var(--xh-border-control));
-    background: var(--xh-input-group-item-bg, var(--xh-bg-subtle));
     color: var(--xh-input-group-item-fg, var(--xh-fg-muted));
     font-size: var(--xh-input-group-item-font-size, var(--xh-_input-group-font-size));
     line-height: var(--xh-leading-none);
     white-space: nowrap;
-    transition:
-      border-color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
-      background var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
-      color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
+  }
+
+  /* 与输入控件相邻的一侧由控件自己的内距留白，避免前后缀之间出现双份间距。 */
+  [data-scope='input-group'][data-part='root'] > [data-scope='input-group'][data-part='item']:first-child {
+    padding-inline-end: 0;
+  }
+
+  [data-scope='input-group'][data-part='root'] > [data-scope='input-group'][data-part='item']:last-child {
+    padding-inline-start: 0;
   }
 
   [data-scope='input-group'][data-part='item'][hidden] {
     display: none;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    [data-scope='input-group'][data-part='root'],
+    [data-scope='input-group'][data-part='root']::before {
+      transition: none;
+    }
+  }
+
+  :where([data-motion='reduce']) [data-scope='input-group'][data-part='root'],
+  :where([data-motion='reduce']) [data-scope='input-group'][data-part='root']::before {
+    transition: none;
+  }
+
+  @media (forced-colors: active) {
+    [data-scope='input-group'][data-part='root'] {
+      background: Canvas;
+      box-shadow: none;
+    }
+
+    [data-scope='input-group'][data-part='root']::before {
+      border-color: ButtonText;
+    }
+
+    [data-scope='input-group'][data-part='root']:focus-within {
+      outline-color: Highlight;
+    }
+
+    [data-scope='input-group'][data-part='root']:focus-within::before,
+    [data-scope='input-group'][data-part='root']:has([data-invalid], [aria-invalid='true'])::before {
+      border-color: Highlight;
+    }
+
+    [data-scope='input-group'][data-part='item'] {
+      color: CanvasText;
+    }
   }
 }

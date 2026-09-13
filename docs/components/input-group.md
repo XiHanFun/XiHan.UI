@@ -1,6 +1,6 @@
 # InputGroup 输入组
 
-把输入框与它的前后缀、动作按钮拼成一个盒：相邻两段共用一条边，圆角只留在两端。
+用于在同一输入表面中组合前缀、输入控件和后缀。
 
 <div class="xh-resource-links">
   <a href="https://github.com/XiHanFun/XiHan.UI/tree/dev/ui/packages/engine/headless/src/input-group" target="_blank" rel="noreferrer">Headless</a>
@@ -12,7 +12,7 @@
 
 ## 用法
 
-前后缀与输入框拼成一个盒：中缝合成一条，圆角只留在两端
+为输入框添加固定前缀
 
 <XhDemo src="input-group/01-basic" />
 
@@ -24,62 +24,53 @@
 
 ## 示例
 
-### 搭动作钮
+### 动作
 
-按钮作用在紧挨着它的那个输入框上，两段共用中缝那条边
+将关联操作放在输入框末端
 
 <XhDemo src="input-group/02-action" />
 
-### 尺寸档
+### 变体
 
-前后缀块跟着组内控件自己的档走，组上不必把同一档再写一遍
+使用主要或次级输入表面
 
-<XhDemo src="input-group/03-size" />
+<XhDemo src="input-group/03-variant" />
 
-### 区间输入
+### 文本前后缀
 
-组里放两个输入框，中间夹一个前后缀块当连接词：三段共用两条中缝，圆角只留在最外两端；两头各自带 aria-label，读屏分得清哪个是起点
+添加协议和域名后缀
 
-<XhDemo src="input-group/04-range" />
+<XhDemo src="input-group/04-affix" />
 
 ## 设计指引
 
 ### 何时使用
 
-- 一个输入框需要固定的前后缀说明它填什么（`https://` 打头、`.com` 收尾、单位、币种）。
-- 输入框后面紧跟一个作用在它身上的动作（搜索、复制、提交）。
-- 几个控件填的是同一件事的不同部分（区号 + 号码），想让它们看起来是一个控件。
+- 输入框需要图标、单位或固定文本。
+- 输入框需要紧邻的搜索、复制或提交动作。
 
 ### 何时不用
 
-- 组内几段是并列的动作、彼此不围绕同一个输入：那是[按钮组](./button-group)。
-- 前后缀要跟着输入内容变、或者本身可点：把它做成组里的一枚[按钮](./button)或[选择器](./select)，
-  别塞进 `item`——`item` 是不可交互的固定文本。
-- 只是想让两个控件挨着：留间距摆开就行，拼成一体会让人以为它们必须一起填。
+- 组合并列操作：使用[按钮组](./button-group)。
+- 仅用于排列控件：使用布局组件。
 
 ### 特性
 
-- 两个部件：`root` 是组容器，`item` 是前后缀块；组内的控件是作者自己的节点。
-- 中缝合并：后一段回挪一个描边宽度，两条边叠成一条，组里看不到双线。
-- 圆角只留在首尾两端，中间各段收平；用逻辑角属性写，rtl 下自动换边。
-- 悬停或拿到焦点的那一段抬到最上层，聚焦环不会被邻座的底色和描边切掉一半。
-- 档位跟着组内控件走：组里有 `sm` 的控件，`item` 就是 `sm`；也可以在组上写 `size` 直接指定。
-
-### 组合
-
-- 组里放[输入框](./text-field)、[数字输入框](./number-field)、[选择器](./select)、[按钮](./button)。
-- 要带标签与校验提示时，把整个组放进[表单域](./field)，标签与提示由它给。
+- 所有内容共享一个背景、外轮廓和焦点环。
+- 支持 `primary` 与 `secondary` 两种视觉变体。
+- 前后缀不参与交互，控件保留自身语义。
+- 支持 `sm`、`md` 和 `lg` 三种尺寸。
 
 ### 最佳实践
 
-- 一组以三到四段为宜：段越多，哪一段是可填的就越难一眼看出来。
-- 前后缀写成静态文本，别放会变的值——它长在框上，看起来像是已经填好的内容。
-- 组里各控件写同一个尺寸档，或者干脆都不写：混档会让中缝对不齐。
+- 前后缀保持简短，并使用静态内容。
+- 可交互内容使用对应控件，不要放进 `item`。
+- 组内控件使用相同尺寸。
 
 ### 反模式
 
-- 用 `item` 装可点的东西：它不出角色也不接键盘，读屏用户不知道那里能点。
-- 靠负外边距在业务代码里自己拼中缝：改一次描边宽度就得把每一处拼法翻一遍。
+- 使用过多前后缀，让输入区域难以识别。
+- 用 `item` 承载按钮或链接。
 
 ## API 参考
 
@@ -97,6 +88,7 @@
 | 属性 | 类型 | 必填 | 说明 |
 | --- | --- | --- | --- |
 | `size` | `Size` |  | 尺寸：sm / md / lg，落到根上供皮肤写进 item 的高度、内衬与字号槽位。 不写时档位由组内控件自己的 data-size 决定，组里没有带档的控件就走 md。 |
+| `variant` | `InputGroupVariant` |  | 视觉变体：primary / secondary。缺省 primary。 |
 
 ### connect API
 
@@ -121,6 +113,8 @@
 
 `@xihan-ui/styles/input-group.css` 使用 `[data-scope="input-group"][data-part="root"]` 部件选择器，位于 `xihan.components` 层。覆盖样式使用 `xihan.overrides`。
 
+`forced-colors: active` 下另有一套规则：颜色交给系统，边框与状态标记改用系统色关键字。
+
 ### 数据属性
 
 由 `connect` 生成；条件不成立时不输出无值属性。
@@ -128,6 +122,7 @@
 | 部件 | 属性 | 值 |
 | --- | --- | --- |
 | `root` | `data-size` | props.size |
+| `root` | `data-variant` | props.variant |
 
 <!-- xh-component-tokens:start -->
 ### CSS 变量
@@ -136,20 +131,27 @@
 
 | 变量 | 部件 | CSS 属性 | 状态 | 缺省来源 | 说明 |
 | --- | --- | --- | --- | --- | --- |
-| `--xh-input-group-item-bg` | `item` | `background` | `default` | `--xh-bg-subtle` | input-group 的 item 部件 background 覆盖槽。 |
-| `--xh-input-group-item-border` | `item` | `border` | `default` | `--xh-border-control` | input-group 的 item 部件 border 覆盖槽。 |
+| `--xh-input-group-bg` | `root` | `background` | `default` | `--xh-_input-group-bg` | input-group 的 root 部件 background 覆盖槽。 |
+| `--xh-input-group-bg-hover` | `root` | `background` | `disabled`<br>`hover`<br>`not(:has([data-disabled])` | `--xh-_input-group-bg-hover` | input-group 的 root 部件 background 覆盖槽。 |
+| `--xh-input-group-border` | `root` | `border` | `default` | `--xh-_input-group-border` | input-group 的 root 部件 border 覆盖槽。 |
+| `--xh-input-group-border-focus` | `root` | `border-color` | `focus-within` | `--xh-_input-group-border-focus` | input-group 的 root 部件 border-color 覆盖槽。 |
+| `--xh-input-group-border-hover` | `root` | `border-color` | `disabled`<br>`hover`<br>`not(:has([data-disabled])` | `--xh-_input-group-border-hover` | input-group 的 root 部件 border-color 覆盖槽。 |
+| `--xh-input-group-border-invalid` | `root` | `border-color` | `has([data-invalid], [aria-invalid='true'])`<br>`invalid` | `--xh-border-invalid` | input-group 的 root 部件 border-color 覆盖槽。 |
 | `--xh-input-group-item-fg` | `item` | `color` | `default` | `--xh-fg-muted` | input-group 的 item 部件 color 覆盖槽。 |
 | `--xh-input-group-item-font-size` | `item` | `font-size` | `default` | `--xh-_input-group-font-size` | input-group 的 item 部件 font-size 覆盖槽。 |
 | `--xh-input-group-item-h` | `item` | `block-size` | `default` | `--xh-_input-group-h` | input-group 的 item 部件 block-size 覆盖槽。 |
 | `--xh-input-group-item-px` | `item` | `padding-inline` | `default` | `--xh-_input-group-px` | input-group 的 item 部件 padding-inline 覆盖槽。 |
-| `--xh-input-group-radius` | `control`<br>`root` | `border-end-end-radius`<br>`border-end-start-radius`<br>`border-start-end-radius`<br>`border-start-start-radius` | `first-child`<br>`is(*, [data-part='control'], [data-part='root'])`<br>`is([data-part='control'], [data-part='root'])`<br>`last-child` | `--xh-shape-control` | input-group 的 control、root 部件 border-end-end-radius、border-end-start-radius、border-start-end-radius、border-start-start-radius 覆盖槽。 |
+| `--xh-input-group-radius` | `control`<br>`root` | `border-end-end-radius`<br>`border-end-start-radius`<br>`border-radius`<br>`border-start-end-radius`<br>`border-start-start-radius` | `default`<br>`first-child`<br>`is(*, [data-part='control'], [data-part='root'])`<br>`is([data-part='control'], [data-part='root'])`<br>`last-child` | `--xh-shape-control`<br>`--xh-shape-surface` | input-group 的 control、root 部件 border-end-end-radius、border-end-start-radius、border-radius、border-start-end-radius、border-start-start-radius 覆盖槽。 |
+| `--xh-input-group-ring-focus` | `root` | `outline` | `focus-within` | `--xh-ring-focus` | input-group 的 root 部件 outline 覆盖槽。 |
+| `--xh-input-group-ring-invalid` | `root` | `outline-color` | `focus-within`<br>`has([data-invalid], [aria-invalid='true'])`<br>`invalid` | `--xh-ring-invalid` | input-group 的 root 部件 outline-color 覆盖槽。 |
+| `--xh-input-group-shadow` | `root` | `box-shadow` | `default` | `--xh-_input-group-shadow` | input-group 的 root 部件 box-shadow 覆盖槽。 |
 <!-- xh-component-tokens:end -->
 
 ### 动效
 
-`background` · `border-color` · `color` 走 `transition` 过渡。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
+`background` · `border-color` · `box-shadow` 走 `transition` 过渡。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
 
-系统开启减弱动效时由令牌层统一收敛，皮肤不另作判断。
+`prefers-reduced-motion: reduce` 下本组件另有降级规则。
 
 ### RTL
 

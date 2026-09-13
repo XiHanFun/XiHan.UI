@@ -1,7 +1,7 @@
-<!-- 动作 | 将关联操作放在输入框末端 -->
+<!-- 文本前后缀 | 添加协议和域名后缀 -->
 <script setup lang="ts">
 import {
-  XhButton,
+  XhInputGroupItem,
   XhInputGroupRoot,
   XhTextFieldControl,
   XhTextFieldInput,
@@ -11,11 +11,12 @@ import {
 
 <template>
   <XhInputGroupRoot>
-    <XhTextFieldRoot placeholder="搜索文档">
+    <XhInputGroupItem>https://</XhInputGroupItem>
+    <XhTextFieldRoot placeholder="xihan">
       <XhTextFieldControl>
-        <XhTextFieldInput aria-label="搜索文档" />
+        <XhTextFieldInput aria-label="站点地址" />
       </XhTextFieldControl>
     </XhTextFieldRoot>
-    <XhButton variant="solid">搜索</XhButton>
+    <XhInputGroupItem>.dev</XhInputGroupItem>
   </XhInputGroupRoot>
 </template>

@@ -23788,6 +23788,15 @@
             },
             {
               "kind": "field",
+              "name": "variant",
+              "privacy": "public",
+              "type": {
+                "text": "InputGroupVariant | undefined"
+              },
+              "attribute": "variant"
+            },
+            {
+              "kind": "field",
               "name": "size",
               "privacy": "public",
               "type": {
@@ -23809,6 +23818,14 @@
           "attributes": [
             {
               "type": {
+                "text": "InputGroupVariant | undefined"
+              },
+              "description": "视觉变体；secondary 使用低强调表面且不绘制阴影",
+              "name": "variant",
+              "fieldName": "variant"
+            },
+            {
+              "type": {
                 "text": "Size | undefined"
               },
               "description": "尺寸，决定 item 的高度、内衬与字号；不写时跟着组内控件的档走",
@@ -23824,10 +23841,22 @@
           "customElement": true,
           "cssProperties": [
             {
-              "name": "--xh-input-group-item-bg"
+              "name": "--xh-input-group-bg"
             },
             {
-              "name": "--xh-input-group-item-border"
+              "name": "--xh-input-group-bg-hover"
+            },
+            {
+              "name": "--xh-input-group-border"
+            },
+            {
+              "name": "--xh-input-group-border-focus"
+            },
+            {
+              "name": "--xh-input-group-border-hover"
+            },
+            {
+              "name": "--xh-input-group-border-invalid"
             },
             {
               "name": "--xh-input-group-item-fg"
@@ -23843,6 +23872,15 @@
             },
             {
               "name": "--xh-input-group-radius"
+            },
+            {
+              "name": "--xh-input-group-ring-focus"
+            },
+            {
+              "name": "--xh-input-group-ring-invalid"
+            },
+            {
+              "name": "--xh-input-group-shadow"
             }
           ]
         }
