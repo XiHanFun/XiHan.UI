@@ -1,7 +1,9 @@
 <!-- 基础用法 | 显示标题、说明与页面操作 -->
 <script setup lang="ts">
+import { ArrowLeftIcon } from "@xihan-ui/icons";
 import {
   XhButton,
+  XhIcon,
   XhPageHeaderBackTrigger,
   XhPageHeaderDescription,
   XhPageHeaderExtra,
@@ -17,7 +19,7 @@ import {
       aria-label="返回订单列表"
       style="inline-size: 36px; block-size: 36px; border: 0; border-radius: var(--xh-shape-control); background: transparent; color: inherit; font: inherit; cursor: pointer"
     >
-      ←
+      <XhIcon :icon="ArrowLeftIcon" />
     </XhPageHeaderBackTrigger>
     <XhPageHeaderTitle>订单 SO-20260731-004</XhPageHeaderTitle>
     <XhPageHeaderDescription>由赵一创建 · 今天 14:32 更新</XhPageHeaderDescription>
