@@ -1,4 +1,4 @@
-# Alert 警告提示 <Badge type="info" text="alpha" />
+# Alert 警告提示
 
 页面里常驻的一条提示：说明一件与当前上下文有关的事。
 
@@ -12,7 +12,7 @@
 
 ## 用法
 
-各部件按需摆放，标题与描述都是可选的
+在中性抬升表面中说明当前状态与影响
 
 <XhDemo src="alert/01-basic" />
 
@@ -20,7 +20,7 @@
 
 加粗的是必需部件。
 
-`data-scope="alert"`：**`root`** · `indicator` · `content` · `title` · `description` · `action` · `close-trigger`
+`data-scope="alert"`：**`root`** · `indicator` · **`content`** · `title` · `description` · `action` · `close-trigger`
 
 ## 示例
 
@@ -42,11 +42,11 @@ icon 部件排在标题前面，颜色取当前语气的强调色；内容由作
 
 <XhDemo src="alert/04-icon" />
 
-### 自定义外观
+### 操作
 
-描边、底色、标题色、圆角各是一个组件令牌；描边槽位换成透明就只剩淡底，尺寸不变
+将与提示直接相关的短操作放在尾端
 
-<XhDemo src="alert/05-custom" />
+<XhDemo src="alert/05-action" />
 
 ## 设计指引
 
@@ -63,7 +63,8 @@ icon 部件排在标题前面，颜色取当前语气的强调色；内容由作
 
 ### 特性
 
-- 语气决定用哪族颜色，图标由作者放。
+- 默认使用中性抬升表面，语气只强调标题与图标；说明保持次级前景。
+- `content` 是标题与说明共用的必需文本列，操作和关闭入口排在尾端。
 - `closable` 给出关闭按钮，关闭态可受控。
 
 ### 组合
@@ -174,6 +175,8 @@ icon 部件排在标题前面，颜色取当前语气的强调色；内容由作
 
 `@xihan-ui/styles/alert.css` 使用 `[data-scope="alert"][data-part="root"]` 部件选择器，位于 `xihan.components` 层。覆盖样式使用 `xihan.overrides`。
 
+`forced-colors: active` 下另有一套规则：颜色交给系统，边框与状态标记改用系统色关键字。
+
 ### 数据属性
 
 由 `connect` 生成；条件不成立时不输出无值属性。
@@ -192,7 +195,7 @@ icon 部件排在标题前面，颜色取当前语气的强调色；内容由作
 | 变量 | 部件 | CSS 属性 | 状态 | 缺省来源 | 说明 |
 | --- | --- | --- | --- | --- | --- |
 | `--xh-alert-action-gap` | `action` | `gap` | `default` | `--xh-space-2` | alert 的 action 部件 gap 覆盖槽。 |
-| `--xh-alert-bg` | `root` | `background` | `default` | `--xh-_alert-tint` | alert 的 root 部件 background 覆盖槽。 |
+| `--xh-alert-bg` | `root` | `background` | `default` | `--xh-_alert-surface` | alert 的 root 部件 background 覆盖槽。 |
 | `--xh-alert-border` | `root` | `border` | `default` | `--xh-_alert-edge` | alert 的 root 部件 border 覆盖槽。 |
 | `--xh-alert-close-bg-active` | `close-trigger` | `background` | `active` | `--xh-_tone-subtle-active` | alert 的 close-trigger 部件 background 覆盖槽。 |
 | `--xh-alert-close-bg-hover` | `close-trigger` | `background` | `hover`<br>`not(:disabled)` | `--xh-_tone-subtle-hover` | alert 的 close-trigger 部件 background 覆盖槽。 |
@@ -205,15 +208,16 @@ icon 部件排在标题前面，颜色取当前语气的强调色；内容由作
 | `--xh-alert-description-font-size` | `description` | `font-size` | `default` | `--xh-text-secondary-size` | alert 的 description 部件 font-size 覆盖槽。 |
 | `--xh-alert-fg` | `root` | `color` | `default` | `--xh-fg-default` | alert 的 root 部件 color 覆盖槽。 |
 | `--xh-alert-font-size` | `root` | `font-size` | `default` | `--xh-text-body-size` | alert 的 root 部件 font-size 覆盖槽。 |
-| `--xh-alert-gap` | `root` | `gap` | `default` | `--xh-space-3` | alert 的 root 部件 gap 覆盖槽。 |
-| `--xh-alert-icon-size` | `root` | `--xh-icon-size` | `default` | `--xh-glyph-size-text` | alert 的 root 部件 --xh-icon-size 覆盖槽。 |
-| `--xh-alert-indicator-box` | `indicator` | `inline-size` | `default` | `--xh-control-indicator-size` | alert 的 indicator 部件 inline-size 覆盖槽。 |
+| `--xh-alert-gap` | `root` | `gap` | `default` | `--xh-space-4` | alert 的 root 部件 gap 覆盖槽。 |
+| `--xh-alert-icon-size` | `root` | `--xh-icon-size` | `default` | `--xh-glyph-size-sm` | alert 的 root 部件 --xh-icon-size 覆盖槽。 |
 | `--xh-alert-indicator-fg` | `indicator` | `color` | `default` | `--xh-_tone-fg` | alert 的 indicator 部件 color 覆盖槽。 |
+| `--xh-alert-indicator-p` | `indicator` | `padding` | `default` | `--xh-space-1` | alert 的 indicator 部件 padding 覆盖槽。 |
 | `--xh-alert-leading` | `root` | `line-height` | `default` | `--xh-leading-normal` | alert 的 root 部件 line-height 覆盖槽。 |
 | `--xh-alert-px` | `root` | `padding-inline` | `default` | `--xh-surface-px-sm` | alert 的 root 部件 padding-inline 覆盖槽。 |
 | `--xh-alert-py` | `root` | `padding-block` | `default` | `--xh-surface-py-sm` | alert 的 root 部件 padding-block 覆盖槽。 |
 | `--xh-alert-radius` | `root` | `border-radius` | `default` | `--xh-shape-surface` | alert 的 root 部件 border-radius 覆盖槽。 |
-| `--xh-alert-title-fg` | `title` | `color` | `default` | `--xh-fg-default` | alert 的 title 部件 color 覆盖槽。 |
+| `--xh-alert-shadow` | `root` | `box-shadow` | `default` | `--xh-elevation-raised` | alert 的 root 部件 box-shadow 覆盖槽。 |
+| `--xh-alert-title-fg` | `title` | `color` | `default` | `--xh-_tone-fg` | alert 的 title 部件 color 覆盖槽。 |
 | `--xh-alert-title-font-size` | `title` | `font-size` | `default` | `--xh-text-label-size` | alert 的 title 部件 font-size 覆盖槽。 |
 | `--xh-alert-title-font-weight` | `title` | `font-weight` | `default` | `--xh-font-weight-semibold` | alert 的 title 部件 font-weight 覆盖槽。 |
 | `--xh-alert-title-leading` | `title` | `line-height` | `default` | `--xh-leading-tight` | alert 的 title 部件 line-height 覆盖槽。 |

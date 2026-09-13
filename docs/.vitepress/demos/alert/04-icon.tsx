@@ -7,6 +7,7 @@
 import type { ReactNode } from "react";
 import { CheckIcon } from "@xihan-ui/icons";
 import {
+  XhAlertContent,
   XhAlertDescription,
   XhAlertIndicator,
   XhAlertRoot,
@@ -20,8 +21,10 @@ export default function Demo(): ReactNode {
       {/* 一个字形就够：图标是纯装饰，读屏不会念它 */}
       <XhAlertRoot tone="success">
         <XhAlertIndicator><XhIcon icon={CheckIcon} /></XhAlertIndicator>
-        <XhAlertTitle>发布完成</XhAlertTitle>
-        <XhAlertDescription>三个节点都已切到新版本。</XhAlertDescription>
+        <XhAlertContent>
+          <XhAlertTitle>发布完成</XhAlertTitle>
+          <XhAlertDescription>三个节点都已切到新版本。</XhAlertDescription>
+        </XhAlertContent>
       </XhAlertRoot>
 
       {/* 内联 svg 同样能塞进来，描边取 currentColor 就跟着语气走 */}
@@ -42,8 +45,10 @@ export default function Demo(): ReactNode {
             <path d="M12 16.5v.5" />
           </svg>
         </XhAlertIndicator>
-        <XhAlertTitle>发布失败</XhAlertTitle>
-        <XhAlertDescription>第 2 个节点健康检查未通过。</XhAlertDescription>
+        <XhAlertContent>
+          <XhAlertTitle>发布失败</XhAlertTitle>
+          <XhAlertDescription>第 2 个节点健康检查未通过。</XhAlertDescription>
+        </XhAlertContent>
       </XhAlertRoot>
     </div>
   );

@@ -465,7 +465,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-_alert-tint"
+        "--xh-_alert-surface"
       ],
       "visibility": "public",
       "description": "alert 的 root 部件 background 覆盖槽。"
@@ -702,7 +702,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-space-3"
+        "--xh-space-4"
       ],
       "visibility": "public",
       "description": "alert 的 root 部件 gap 覆盖槽。"
@@ -720,28 +720,10 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-glyph-size-text"
+        "--xh-glyph-size-sm"
       ],
       "visibility": "public",
       "description": "alert 的 root 部件 --xh-icon-size 覆盖槽。"
-    },
-    {
-      "name": "--xh-alert-indicator-box",
-      "component": "alert",
-      "part": [
-        "indicator"
-      ],
-      "property": [
-        "inline-size"
-      ],
-      "state": [
-        "default"
-      ],
-      "defaultToken": [
-        "--xh-control-indicator-size"
-      ],
-      "visibility": "public",
-      "description": "alert 的 indicator 部件 inline-size 覆盖槽。"
     },
     {
       "name": "--xh-alert-indicator-fg",
@@ -760,6 +742,24 @@
       ],
       "visibility": "public",
       "description": "alert 的 indicator 部件 color 覆盖槽。"
+    },
+    {
+      "name": "--xh-alert-indicator-p",
+      "component": "alert",
+      "part": [
+        "indicator"
+      ],
+      "property": [
+        "padding"
+      ],
+      "state": [
+        "default"
+      ],
+      "defaultToken": [
+        "--xh-space-1"
+      ],
+      "visibility": "public",
+      "description": "alert 的 indicator 部件 padding 覆盖槽。"
     },
     {
       "name": "--xh-alert-leading",
@@ -834,6 +834,24 @@
       "description": "alert 的 root 部件 border-radius 覆盖槽。"
     },
     {
+      "name": "--xh-alert-shadow",
+      "component": "alert",
+      "part": [
+        "root"
+      ],
+      "property": [
+        "box-shadow"
+      ],
+      "state": [
+        "default"
+      ],
+      "defaultToken": [
+        "--xh-elevation-raised"
+      ],
+      "visibility": "public",
+      "description": "alert 的 root 部件 box-shadow 覆盖槽。"
+    },
+    {
       "name": "--xh-alert-title-fg",
       "component": "alert",
       "part": [
@@ -846,7 +864,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-fg-default"
+        "--xh-_tone-fg"
       ],
       "visibility": "public",
       "description": "alert 的 title 部件 color 覆盖槽。"

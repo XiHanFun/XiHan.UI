@@ -13,24 +13,21 @@
 
   [data-scope='alert'][data-part='root'] {
     /* 作者塞进指示符槽的图标跟着字号走，与皮肤画的兜底字形同一把尺 */
-    --xh-icon-size: var(--xh-alert-icon-size, var(--xh-glyph-size-text));
+    --xh-icon-size: var(--xh-alert-icon-size, var(--xh-glyph-size-sm));
 
-    /* 底色、描边、图标色一律取语气层派生好的槽：连接层给 alert 兜了 tone=info 的缺省，
-       data-tone 恒在，语气层的槽也就恒被声明。此前这里自己又兑了一遍（12% / 32%），
-       与语气层的公式差一档，图标压上去只有 1.79–2.47 */
-    --xh-_alert-tint: var(--xh-_tone-subtle);
-    --xh-_alert-edge: var(--xh-_tone-border);
+    /* 提示本体是一层中性 surface，语气只落到图标与标题；不会用整块彩底抢走正文层级。 */
+    --xh-_alert-surface: var(--xh-bg-surface);
+    --xh-_alert-edge: transparent;
 
     display: flex;
-    /* 说明用 flex: 1 1 100% 独占一行，容器不换行的话它只会挤在标题旁边 */
-    flex-wrap: wrap;
     align-items: flex-start;
-    gap: var(--xh-alert-gap, var(--xh-space-3));
+    gap: var(--xh-alert-gap, var(--xh-space-4));
     padding-block: var(--xh-alert-py, var(--xh-surface-py-sm));
     padding-inline: var(--xh-alert-px, var(--xh-surface-px-sm));
     border: var(--xh-stroke-thin) solid var(--xh-alert-border, var(--xh-_alert-edge));
     border-radius: var(--xh-alert-radius, var(--xh-shape-surface));
-    background: var(--xh-alert-bg, var(--xh-_alert-tint));
+    background: var(--xh-alert-bg, var(--xh-_alert-surface));
+    box-shadow: var(--xh-alert-shadow, var(--xh-elevation-raised));
     color: var(--xh-alert-fg, var(--xh-fg-default));
     font-size: var(--xh-alert-font-size, var(--xh-text-body-size));
     line-height: var(--xh-alert-leading, var(--xh-leading-normal));
@@ -47,14 +44,11 @@
     align-items: center;
     justify-content: center;
     flex: none;
-    /* 与首行文字对齐：图标框高取一行正文的行高 */
-    block-size: calc(var(--xh-text-body-size) * var(--xh-leading-normal));
-    inline-size: var(--xh-alert-indicator-box, var(--xh-control-indicator-size));
+    padding: var(--xh-alert-indicator-p, var(--xh-space-1));
     color: var(--xh-alert-indicator-fg, var(--xh-_tone-fg));
   }
 
-  /* 文本列：作者套上这一层时，标题与说明由它排成一列，不再靠 root 的换行凑。
-     不套这一层时下面那几条照旧生效，两种写法都成立 */
+  /* 必需的文本列：标题与说明在这里排成一列。 */
   [data-scope='alert'][data-part='content'] {
     display: flex;
     /* 伸缩基准取 0 而不是 auto：取 auto 时基准是这一列的 max-content——
@@ -71,12 +65,14 @@
     flex: none;
   }
 
-  /* 操作槽自占一行：它排在说明之后，与标题、叉不在同一条基线上 */
+  /* 操作与关闭入口都留在尾端，不把说明挤到下一行。 */
   [data-scope='alert'][data-part='action'] {
     display: flex;
-    flex: 1 1 100%;
+    flex: none;
     align-items: center;
+    align-self: center;
     gap: var(--xh-alert-action-gap, var(--xh-space-2));
+    margin-inline-start: auto;
   }
 
   /* 标题与说明摞成一列，占满 root 剩下的横向空间，
@@ -88,15 +84,15 @@
   }
 
   [data-scope='alert'][data-part='title'] {
-    flex: 1 1 auto;
-    color: var(--xh-alert-title-fg, var(--xh-fg-default));
+    flex: none;
+    color: var(--xh-alert-title-fg, var(--xh-_tone-fg));
     font-size: var(--xh-alert-title-font-size, var(--xh-text-label-size));
     font-weight: var(--xh-alert-title-font-weight, var(--xh-font-weight-semibold));
     line-height: var(--xh-alert-title-leading, var(--xh-leading-tight));
   }
 
   [data-scope='alert'][data-part='description'] {
-    flex: 1 1 100%;
+    flex: none;
     color: var(--xh-alert-description-fg, var(--xh-fg-muted));
     font-size: var(--xh-alert-description-font-size, var(--xh-text-secondary-size));
   }
@@ -108,8 +104,7 @@
 
   [data-scope='alert'][data-part='close-trigger'] {
     flex: none;
-    /* 前面没有标题时也把叉推到行尾 */
-    margin-inline-start: auto;
+    align-self: center;
     display: inline-flex;
     align-items: center;
     justify-content: center;
@@ -178,6 +173,12 @@
 
     [data-scope='alert'][data-part='close-trigger'] {
       display: none;
+    }
+  }
+
+  @media (forced-colors: active) {
+    [data-scope='alert'][data-part='root'] {
+      border-color: CanvasText;
     }
   }
 
