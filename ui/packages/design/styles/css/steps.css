@@ -288,6 +288,7 @@
   [data-scope='steps'][data-part='separator'][data-orientation='vertical'] {
     flex: none;
     inline-size: var(--xh-steps-separator-thickness, var(--xh-stroke-thick));
+    min-inline-size: var(--xh-steps-separator-thickness, var(--xh-stroke-thick));
     block-size: var(--xh-steps-separator-min-length, var(--xh-space-7));
     /* 圆点半径减去线宽的一半：calc 里的除法要写成乘 0.5，除号在这儿是无效语法 */
     margin-inline-start: calc(

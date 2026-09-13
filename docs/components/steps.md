@@ -285,7 +285,7 @@
 | `--xh-steps-separator-bg-completed` | `separator` | `background` | `state=completed` | `--xh-_steps-accent` | steps 的 separator 部件 background 覆盖槽。 |
 | `--xh-steps-separator-min-length` | `separator` | `block-size`<br>`min-inline-size` | `default`<br>`orientation=vertical` | `--xh-space-4`<br>`--xh-space-7` | steps 的 separator 部件 block-size、min-inline-size 覆盖槽。 |
 | `--xh-steps-separator-radius` | `separator` | `border-radius` | `default` | `--xh-shape-pill` | steps 的 separator 部件 border-radius 覆盖槽。 |
-| `--xh-steps-separator-thickness` | `separator` | `block-size`<br>`inline-size`<br>`margin-inline-start` | `default`<br>`orientation=vertical` | `--xh-stroke-thick` | steps 的 separator 部件 block-size、inline-size、margin-inline-start 覆盖槽。 |
+| `--xh-steps-separator-thickness` | `separator` | `block-size`<br>`inline-size`<br>`margin-inline-start`<br>`min-inline-size` | `default`<br>`orientation=vertical` | `--xh-stroke-thick` | steps 的 separator 部件 block-size、inline-size、margin-inline-start、min-inline-size 覆盖槽。 |
 | `--xh-steps-title-fg` | `title` | `color` | `default` | `--xh-fg-muted` | steps 的 title 部件 color 覆盖槽。 |
 | `--xh-steps-title-fg-active` | `title` | `color` | `is([data-state='current'], [data-state='completed'])`<br>`state=completed`<br>`state=current` | `--xh-_steps-accent-text` | steps 的 title 部件 color 覆盖槽。 |
 | `--xh-steps-title-fg-error` | `title` | `color` | `state=error` | `--xh-fg-danger` | steps 的 title 部件 color 覆盖槽。 |
