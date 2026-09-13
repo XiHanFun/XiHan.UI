@@ -6,7 +6,7 @@
         <h3 data-xh-part="header">
           <button data-xh-part="trigger">
             <span>配送方式</span>
-            <span data-mark style="font-size: 12px; color: var(--xh-fg-muted)">＋</span>
+            <svg data-mark aria-hidden="true" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color: var(--xh-fg-muted)"><path d="M12 5V19"/><path data-cross d="M5 12H19"/></svg>
           </button>
         </h3>
         <div data-xh-part="content">同城次日达，跨省三日达。</div>
@@ -15,7 +15,7 @@
         <h3 data-xh-part="header">
           <button data-xh-part="trigger">
             <span>发票</span>
-            <span data-mark style="font-size: 12px; color: var(--xh-fg-muted)">＋</span>
+            <svg data-mark aria-hidden="true" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color: var(--xh-fg-muted)"><path d="M12 5V19"/><path data-cross d="M5 12H19"/></svg>
           </button>
         </h3>
         <div data-xh-part="content">支持电子普票与专票。</div>
@@ -24,7 +24,7 @@
         <h3 data-xh-part="header">
           <button data-xh-part="trigger">
             <span>退换货</span>
-            <span data-mark style="font-size: 12px; color: var(--xh-fg-muted)">＋</span>
+            <svg data-mark aria-hidden="true" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color: var(--xh-fg-muted)"><path d="M12 5V19"/><path data-cross d="M5 12H19"/></svg>
           </button>
         </h3>
         <div data-xh-part="content">签收七日内无理由退换。</div>
@@ -34,12 +34,14 @@
 </div>
 
 <script type="module">
-  // 标记按这一项在不在展开集合里换字形
+  // 标记按这一项在不在展开集合里切换图形
   const accordion = document.getElementById("accordion-custom-icon");
   const paint = (value) => {
     for (const item of accordion.querySelectorAll('[data-xh-part="item"]')) {
       const mark = item.querySelector("[data-mark]");
-      mark.textContent = value.includes(item.getAttribute("value")) ? "－" : "＋";
+      const expanded = value.includes(item.getAttribute("value"));
+      mark.querySelector("path").setAttribute("d", expanded ? "M5 12H19" : "M12 5V19");
+      mark.querySelector("[data-cross]").style.display = expanded ? "none" : "";
     }
   };
   accordion.value = ["shipping"];
