@@ -268,6 +268,18 @@ export const XhDatePickerSegment = defineComponent({
   },
 })
 
+export const XhDatePickerRangeSeparator = defineComponent({
+  name: 'XhDatePickerRangeSeparator',
+  setup(_, { slots }) {
+    const ctx = useDatePickerContext()
+    return () => h(
+      'span',
+      ctx.api.value.getRangeSeparatorProps() as Record<string, unknown>,
+      slots.default?.() ?? '–',
+    )
+  },
+})
+
 export const XhDatePickerClearTrigger = defineComponent({
   name: 'XhDatePickerClearTrigger',
   setup(_, { slots }) {

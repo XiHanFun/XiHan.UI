@@ -3905,8 +3905,8 @@
       "state": [
         "disabled",
         "hover",
-        "not([data-disabled])",
-        "not([data-selected])",
+        "in-range",
+        "not([data-disabled], [data-selected], [data-in-range])",
         "selected"
       ],
       "defaultToken": [
@@ -4033,23 +4033,15 @@
       "part": [
         "cell",
         "cell-trigger",
-        "grid",
-        "week-number",
-        "week-row"
+        "grid"
       ],
       "property": [
-        "border-end-end-radius",
-        "border-end-start-radius",
-        "border-radius",
-        "border-start-end-radius",
-        "border-start-start-radius"
+        "border-radius"
       ],
       "state": [
         "default",
-        "first-child",
         "in-range",
         "is([data-view='month'], [data-view='quarter'], [data-view='year'])",
-        "last-child",
         "view=month",
         "view=quarter",
         "view=year"
@@ -4058,7 +4050,7 @@
         "--xh-shape-pill"
       ],
       "visibility": "public",
-      "description": "calendar 的 cell、cell-trigger、grid、week-number、week-row 部件 border-end-end-radius、border-end-start-radius、border-radius、border-start-end-radius、border-start-start-radius 覆盖槽。"
+      "description": "calendar 的 cell、cell-trigger、grid 部件 border-radius 覆盖槽。"
     },
     {
       "name": "--xh-calendar-cell-size",
@@ -4439,6 +4431,122 @@
       "description": "calendar 的 cell 部件 background 覆盖槽。"
     },
     {
+      "name": "--xh-calendar-range-cap-radius",
+      "component": "calendar",
+      "part": [
+        "cell"
+      ],
+      "property": [
+        "border-end-end-radius",
+        "border-end-start-radius",
+        "border-start-end-radius",
+        "border-start-start-radius"
+      ],
+      "state": [
+        "in-range",
+        "range-end",
+        "range-start"
+      ],
+      "defaultToken": [
+        "--xh-shape-pill"
+      ],
+      "visibility": "public",
+      "description": "calendar 的 cell 部件 border-end-end-radius、border-end-start-radius、border-start-end-radius、border-start-start-radius 覆盖槽。"
+    },
+    {
+      "name": "--xh-calendar-range-preview-bg",
+      "component": "calendar",
+      "part": [
+        "cell"
+      ],
+      "property": [
+        "background"
+      ],
+      "state": [
+        "range-preview"
+      ],
+      "defaultToken": [
+        "--xh-bg-brand-subtle"
+      ],
+      "visibility": "public",
+      "description": "calendar 的 cell 部件 background 覆盖槽。"
+    },
+    {
+      "name": "--xh-calendar-range-preview-cap-bg",
+      "component": "calendar",
+      "part": [
+        "cell",
+        "cell-trigger"
+      ],
+      "property": [
+        "background"
+      ],
+      "state": [
+        "disabled",
+        "is([data-range-start], [data-range-end])",
+        "not([data-selected], [data-disabled])",
+        "range-end",
+        "range-preview",
+        "range-start",
+        "selected"
+      ],
+      "defaultToken": [
+        "--xh-bg-brand-subtle-hover"
+      ],
+      "visibility": "public",
+      "description": "calendar 的 cell、cell-trigger 部件 background 覆盖槽。"
+    },
+    {
+      "name": "--xh-calendar-range-preview-cap-fg",
+      "component": "calendar",
+      "part": [
+        "cell",
+        "cell-trigger"
+      ],
+      "property": [
+        "color"
+      ],
+      "state": [
+        "disabled",
+        "is([data-range-start], [data-range-end])",
+        "not([data-selected], [data-disabled])",
+        "range-end",
+        "range-preview",
+        "range-start",
+        "selected"
+      ],
+      "defaultToken": [
+        "--xh-fg-brand"
+      ],
+      "visibility": "public",
+      "description": "calendar 的 cell、cell-trigger 部件 color 覆盖槽。"
+    },
+    {
+      "name": "--xh-calendar-range-row-radius",
+      "component": "calendar",
+      "part": [
+        "cell",
+        "week-number",
+        "week-row"
+      ],
+      "property": [
+        "border-end-end-radius",
+        "border-end-start-radius",
+        "border-start-end-radius",
+        "border-start-start-radius"
+      ],
+      "state": [
+        "first-child",
+        "in-range",
+        "last-child"
+      ],
+      "defaultToken": [
+        "--xh-shape-inset"
+      ],
+      "visibility": "public",
+      "description": "calendar 的 cell、week-number、week-row 部件 border-end-end-radius、border-end-start-radius、border-start-end-radius、border-start-start-radius 覆盖槽。"
+    },
+    {
       "name": "--xh-calendar-row-gap",
       "component": "calendar",
       "part": [
@@ -4487,7 +4595,8 @@
       "state": [
         "disabled",
         "hover",
-        "not([data-selected], [data-disabled])",
+        "in-range",
+        "not([data-selected], [data-disabled], [data-in-range])",
         "selected",
         "today"
       ],
@@ -16546,6 +16655,42 @@
       ],
       "visibility": "public",
       "description": "date-picker 的 preset 部件 border-radius 覆盖槽。"
+    },
+    {
+      "name": "--xh-date-picker-range-separator-fg",
+      "component": "date-picker",
+      "part": [
+        "range-separator"
+      ],
+      "property": [
+        "color"
+      ],
+      "state": [
+        "default"
+      ],
+      "defaultToken": [
+        "--xh-fg-subtle"
+      ],
+      "visibility": "public",
+      "description": "date-picker 的 range-separator 部件 color 覆盖槽。"
+    },
+    {
+      "name": "--xh-date-picker-range-separator-px",
+      "component": "date-picker",
+      "part": [
+        "range-separator"
+      ],
+      "property": [
+        "padding-inline"
+      ],
+      "state": [
+        "default"
+      ],
+      "defaultToken": [
+        "--xh-space-1"
+      ],
+      "visibility": "public",
+      "description": "date-picker 的 range-separator 部件 padding-inline 覆盖槽。"
     },
     {
       "name": "--xh-date-picker-time-column-gap",

@@ -1017,6 +1017,9 @@
       "progress",
       "slider"
     ],
+    "range-separator": [
+      "date-picker"
+    ],
     "reset-trigger": [
       "form",
       "image-viewer"

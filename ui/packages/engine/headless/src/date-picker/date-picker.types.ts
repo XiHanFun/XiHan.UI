@@ -370,6 +370,8 @@ export interface DatePickerApi<T extends PropTypes = PropTypes> {
   getControlProps: () => T['element']
   /** role=group 的分段容器，段位挂在它里面。区间模式下 index 选起止两组，不传即起点。 */
   getSegmentGroupProps: (props?: DatePickerSegmentGroupProps) => T['element']
+  /** 起止输入之间的视觉分隔；非区间模式自动隐藏。 */
+  getRangeSeparatorProps: () => T['element']
   getTriggerProps: () => T['button']
   getClearTriggerProps: () => T['button']
   getPositionerProps: () => T['element']

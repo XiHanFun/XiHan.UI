@@ -1,6 +1,6 @@
 // 区间选择 | 选择开始和结束日期
 import type { CalendarView } from "@xihan-ui/headless";
-import type { ReactNode } from "react";
+import type { CSSProperties, ReactNode } from "react";
 import {
   XhDatePickerCalendar,
   XhDatePickerCell,
@@ -20,8 +20,10 @@ import {
   XhDatePickerPrevTrigger,
   XhDatePickerPrevYearTrigger,
   XhDatePickerRoot,
+  XhDatePickerRangeSeparator,
   XhDatePickerSegment,
   XhDatePickerSegmentGroup,
+  XhDatePickerTrigger,
   XhDatePickerWeekDay,
   XhDatePickerWeekNumber,
   XhDatePickerWeekRow,
@@ -45,6 +47,7 @@ export default function Demo(): ReactNode {
           weekSelection={k.week}
           selectionMode="range"
           locale="zh-CN"
+          style={{ "--xh-date-picker-control-min-w": "20rem" } as CSSProperties}
         >
           {({ panels, weekDays, segments, endSegments }) => (
             <>
@@ -52,18 +55,22 @@ export default function Demo(): ReactNode {
               <XhDatePickerControl>
                 {/* 组号定这组段位认领哪一端：0 起点、1 终点 */}
                 {[0, 1].map(group => (
-                  <XhDatePickerSegmentGroup key={group} index={group}>
-                    {/* 铺哪几块由 view 推；「-」与「周」是普通节点，作者写在段位旁边 */}
-                    {(group === 0 ? segments : endSegments).map((seg, i) => (
-                      <Fragment key={seg.type}>
-                        {i > 0 && <span>-</span>}
-                        <XhDatePickerSegment index={i} />
-                        {seg.type === "week" && <span>周</span>}
-                      </Fragment>
-                    ))}
-                  </XhDatePickerSegmentGroup>
+                  <Fragment key={group}>
+                    {group === 1 && <XhDatePickerRangeSeparator />}
+                    <XhDatePickerSegmentGroup index={group}>
+                      {/* 铺哪几块由 view 推；「-」与「周」是普通节点，作者写在段位旁边 */}
+                      {(group === 0 ? segments : endSegments).map((seg, i) => (
+                        <Fragment key={seg.type}>
+                          {i > 0 && <span>-</span>}
+                          <XhDatePickerSegment index={i} />
+                          {seg.type === "week" && <span>周</span>}
+                        </Fragment>
+                      ))}
+                    </XhDatePickerSegmentGroup>
+                  </Fragment>
                 ))}
                 <XhDatePickerClearTrigger />
+                <XhDatePickerTrigger />
               </XhDatePickerControl>
               <XhDatePickerPositioner>
                 <XhDatePickerContent>

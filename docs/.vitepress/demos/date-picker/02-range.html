@@ -6,13 +6,15 @@
 
 <template id="date-picker-range-template">
   <xh-date-picker selection-mode="range" locale="zh-CN">
-    <div data-xh-part="root">
+    <div data-xh-part="root" style="--xh-date-picker-control-min-w: 20rem">
       <span data-xh-part="label"></span>
       <div data-xh-part="control">
         <!-- 文档序在前的这组认领起点，在后的认领终点；里面铺几段由 view 推 -->
         <div data-xh-part="segment-group"></div>
+        <span data-xh-part="range-separator">–</span>
         <div data-xh-part="segment-group"></div>
         <button data-xh-part="clear-trigger"></button>
+        <button data-xh-part="trigger"></button>
       </div>
       <div data-xh-part="positioner">
         <div data-xh-part="content"></div>

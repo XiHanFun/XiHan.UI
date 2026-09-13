@@ -20,8 +20,10 @@ import {
   XhDatePickerPrevTrigger,
   XhDatePickerPrevYearTrigger,
   XhDatePickerRoot,
+  XhDatePickerRangeSeparator,
   XhDatePickerSegment,
   XhDatePickerSegmentGroup,
+  XhDatePickerTrigger,
   XhDatePickerWeekDay,
   XhDatePickerWeekNumber,
   XhDatePickerWeekRow,
@@ -45,19 +47,24 @@ const translations = { startDate: "开始", endDate: "结束" };
       :week-selection="k.week"
       selection-mode="range"
       locale="zh-CN"
+      style="--xh-date-picker-control-min-w: 20rem"
     >
       <XhDatePickerLabel>{{ k.label }}</XhDatePickerLabel>
       <XhDatePickerControl>
         <!-- 组号定这组段位认领哪一端：0 起点、1 终点 -->
-        <XhDatePickerSegmentGroup v-for="end in 2" :key="end" :index="end - 1">
-          <!-- 铺哪几块由 view 推；「-」与「周」是普通节点，作者写在段位旁边 -->
-          <template v-for="(seg, i) in end === 1 ? segments : endSegments" :key="seg.type">
-            <span v-if="i > 0">-</span>
-            <XhDatePickerSegment :index="i" />
-            <span v-if="seg.type === 'week'">周</span>
-          </template>
-        </XhDatePickerSegmentGroup>
+        <template v-for="end in 2" :key="end">
+          <XhDatePickerRangeSeparator v-if="end === 2" />
+          <XhDatePickerSegmentGroup :index="end - 1">
+            <!-- 铺哪几块由 view 推；「-」与「周」是普通节点，作者写在段位旁边 -->
+            <template v-for="(seg, i) in end === 1 ? segments : endSegments" :key="seg.type">
+              <span v-if="i > 0">-</span>
+              <XhDatePickerSegment :index="i" />
+              <span v-if="seg.type === 'week'">周</span>
+            </template>
+          </XhDatePickerSegmentGroup>
+        </template>
         <XhDatePickerClearTrigger />
+        <XhDatePickerTrigger />
       </XhDatePickerControl>
       <XhDatePickerPositioner>
         <XhDatePickerContent>

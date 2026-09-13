@@ -985,8 +985,10 @@ describe('区间模式', () => {
     hover(h.cell('2024-02-13'))
     expect(h.cell('2024-02-10').getAttribute('data-range-start')).toBe('')
     expect(h.cell('2024-02-13').getAttribute('data-range-end')).toBe('')
-    for (const day of ['2024-02-10', '2024-02-11', '2024-02-12', '2024-02-13'])
+    for (const day of ['2024-02-10', '2024-02-11', '2024-02-12', '2024-02-13']) {
       expect(h.cell(day).getAttribute('data-in-range')).toBe('')
+      expect(h.cell(day).getAttribute('data-range-preview')).toBe('')
+    }
     expect(h.cell('2024-02-14').hasAttribute('data-in-range')).toBe(false)
     expect(h.cell('2024-02-09').hasAttribute('data-in-range')).toBe(false)
     // 反向悬停：起点仍钉在 10 号，只是 range-start 落到更早的那一端
@@ -1027,6 +1029,7 @@ describe('区间模式', () => {
     hover(h.cell('2024-02-20'))
     expect(h.cell('2024-02-20').hasAttribute('data-in-range')).toBe(false)
     expect(h.cell('2024-02-12').getAttribute('data-range-end')).toBe('')
+    expect(h.cell('2024-02-11').hasAttribute('data-range-preview')).toBe(false)
   })
 })
 

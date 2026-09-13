@@ -34,6 +34,7 @@ interface CellState {
   isToday: boolean
   focused: boolean
   inRange: boolean
+  rangePreview: boolean
   rangeStart: boolean
   rangeEnd: boolean
 }
@@ -186,6 +187,8 @@ export function connectCalendar<T extends PropTypes>(
   })()
 
   const isSelected = (v: string): boolean => value.includes(v)
+  const previewingRange = mode === 'range'
+    && (rangeAnchor != null || (weekSelection && hovered != null && value.length < 2))
 
   const isUnavailable = (v: string): boolean => {
     if (calendarDisabled)
@@ -255,6 +258,7 @@ export function connectCalendar<T extends PropTypes>(
       isToday: item.value === todayValue,
       focused: item.value === focusedCell,
       inRange,
+      rangePreview: inRange && previewingRange,
       // 两端也算 in-range
       rangeStart: !ownedElsewhere && !!(rangeEnds && date && date.compare(rangeEnds[0]) === 0),
       rangeEnd: !ownedElsewhere && !!(rangeEnds && date && date.compare(rangeEnds[1]) === 0),
@@ -269,6 +273,7 @@ export function connectCalendar<T extends PropTypes>(
     'data-today': dataAttr(state.isToday),
     'data-focus': dataAttr(state.focused),
     'data-in-range': dataAttr(state.inRange),
+    'data-range-preview': dataAttr(state.rangePreview),
     'data-range-start': dataAttr(state.rangeStart),
     'data-range-end': dataAttr(state.rangeEnd),
   })
