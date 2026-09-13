@@ -1,3 +1,8 @@
+/*
+ * Copyright (c) 2021-Present XiHanFun and contributors.
+ * Licensed under the MIT License. See LICENSE in the project root for license information.
+ */
+
 // HighlighterPort：代码着色端口的类型契约，默认实现在 @xihan-ui/code-highlight。
 
 /**

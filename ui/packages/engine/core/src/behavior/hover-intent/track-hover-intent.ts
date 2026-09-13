@@ -1,3 +1,8 @@
+/*
+ * Copyright (c) 2021-Present XiHanFun and contributors.
+ * Licensed under the MIT License. See LICENSE in the project root for license information.
+ */
+
 // 悬停意图跟踪：进触发器延时报开、离开后看指针是否经安全三角赶往浮层，
 // 赶路不收、走岔或停滞才报关。只报意图，开与关由机器决定。
 import type { HoverPoint } from './safe-polygon'

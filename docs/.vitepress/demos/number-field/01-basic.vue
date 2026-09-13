@@ -1,3 +1,8 @@
+<!--
+  Copyright (c) 2021-Present XiHanFun and contributors.
+  Licensed under the MIT License. See LICENSE in the project root for license information.
+-->
+
 <!-- 基础用法 | 加减按钮与输入框共用一份状态；值是原始输入串，不传 value 即为非受控 -->
 <script setup lang="ts">
 import {

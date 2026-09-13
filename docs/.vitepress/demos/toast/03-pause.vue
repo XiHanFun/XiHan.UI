@@ -1,3 +1,8 @@
+<!--
+  Copyright (c) 2021-Present XiHanFun and contributors.
+  Licensed under the MIT License. See LICENSE in the project root for license information.
+-->
+
 <!-- 计时与暂停 | duration 走完自动退场；指针停在条子上或焦点进到条子里都会把计时按住，离开才接着走剩下那一段 -->
 <script setup lang="ts">
 import {

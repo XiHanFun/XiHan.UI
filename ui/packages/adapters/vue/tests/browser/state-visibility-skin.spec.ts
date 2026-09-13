@@ -1,3 +1,8 @@
+/*
+ * Copyright (c) 2021-Present XiHanFun and contributors.
+ * Licensed under the MIT License. See LICENSE in the project root for license information.
+ */
+
 // 「此刻按不按得动」必须看得见。
 // 手势指示要与它对得上：改不动的（只读）与按下去什么都不变的（没被裁的短文本）都不该摆手型；
 // 按不动的实心按钮也得换掉底色，只压暗字会让它变成一块看不出内容的色斑。

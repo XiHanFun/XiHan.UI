@@ -1,3 +1,10 @@
+/*
+ * Copyright (c) 2021-Present XiHanFun and contributors.
+ * Licensed under the MIT License. See LICENSE in the project root for license information.
+ */
+
+// 提供 rating 相关实现。
+
 import type { Direction, ItemQuery, NormalizeProps, PropTypes, Service } from '@xihan-ui/core'
 import type { RatingApi, RatingItemProps, RatingItemState, RatingSchema } from './rating.types'
 import { contains, dataAttr, focusItem, ITEM_VALUE_ATTR, itemValue, queryItems } from '@xihan-ui/core'

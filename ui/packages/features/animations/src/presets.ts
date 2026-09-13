@@ -1,3 +1,8 @@
+/*
+ * Copyright (c) 2021-Present XiHanFun and contributors.
+ * Licensed under the MIT License. See LICENSE in the project root for license information.
+ */
+
 // 内置预设：进场一族把元素从"不在场"带到静息态，注意一族从静息态出发再回到静息态。
 // 两族都不留值，播完元素回到皮肤定义的样子。
 

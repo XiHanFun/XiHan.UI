@@ -1,3 +1,8 @@
+/*
+ * Copyright (c) 2021-Present XiHanFun and contributors.
+ * Licensed under the MIT License. See LICENSE in the project root for license information.
+ */
+
 // 把 connect 产出的 prop 字典打到 Light-DOM 角色节点上；事件每帧移旧加新，不碰 class。
 
 const BOOLEAN_ATTRS = new Set(['disabled', 'hidden', 'inert', 'readonly', 'required', 'checked', 'selected', 'open', 'multiple'])

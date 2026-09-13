@@ -1,3 +1,8 @@
+/*
+ * Copyright (c) 2021-Present XiHanFun and contributors.
+ * Licensed under the MIT License. See LICENSE in the project root for license information.
+ */
+
 // 引用、事件处理器、函数的组合工具（纯计算，不触碰 DOM）。
 import type { Dict } from './types'
 import { isFunction } from './guards'

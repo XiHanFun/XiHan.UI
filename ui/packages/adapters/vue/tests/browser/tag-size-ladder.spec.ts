@@ -1,3 +1,8 @@
+/*
+ * Copyright (c) 2021-Present XiHanFun and contributors.
+ * Licensed under the MIT License. See LICENSE in the project root for license information.
+ */
+
 // 标签三档的阶梯：逐档钉住根的高、字号、内边距与关闭钮的边长。
 // 皮肤里三档只换几个私有槽，槽一改，同一排标签的高矮就换了；这里量的是真实浏览器算出来的盒，
 // 一档一档对数，任何一档悄悄涨缩都在这里露头。jsdom 不排版，getBoundingClientRect 恒零，只能在浏览器里量。

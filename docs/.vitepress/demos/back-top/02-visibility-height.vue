@@ -1,3 +1,8 @@
+<!--
+  Copyright (c) 2021-Present XiHanFun and contributors.
+  Licensed under the MIT License. See LICENSE in the project root for license information.
+-->
+
 <!-- 显示阈值 | 提前显示回到顶部按钮 -->
 <script setup lang="ts">
 import { XhBackTopRoot, XhBackTopTrigger } from "@xihan-ui/vue";

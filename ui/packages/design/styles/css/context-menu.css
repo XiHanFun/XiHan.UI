@@ -1,3 +1,10 @@
+/*
+ * Copyright (c) 2021-Present XiHanFun and contributors.
+ * Licensed under the MIT License. See LICENSE in the project root for license information.
+ */
+
+/* 定义 context menu 样式。 */
+
 @layer xihan.motion {
   /* 各菜单皮肤都自带同一份短位移动作，单独引入 context-menu.css 时也不会丢动画。 */
   @keyframes xh-overlay-slide-in {

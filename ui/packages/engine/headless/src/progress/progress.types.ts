@@ -1,3 +1,10 @@
+/*
+ * Copyright (c) 2021-Present XiHanFun and contributors.
+ * Licensed under the MIT License. See LICENSE in the project root for license information.
+ */
+
+// 定义 progress 类型契约。
+
 import type { PropTypes, Size, Tone } from '@xihan-ui/core'
 
 /** 形态：线形是一条横轨，环形与仪表盘把同一份进度画成一个圆。 */

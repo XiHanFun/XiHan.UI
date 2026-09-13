@@ -1,3 +1,10 @@
+/*
+ * Copyright (c) 2021-Present XiHanFun and contributors.
+ * Licensed under the MIT License. See LICENSE in the project root for license information.
+ */
+
+// 提供 truncate 相关实现。
+
 import type { Service } from '@xihan-ui/core'
 import type { TruncateOpenChangeDetails, TruncateOverflowChangeDetails, TruncateSchema } from '@xihan-ui/headless'
 import { connectTruncate, truncateAnatomy, truncateMachine, truncateMeta } from '@xihan-ui/headless'

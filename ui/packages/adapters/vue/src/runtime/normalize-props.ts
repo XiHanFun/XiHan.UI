@@ -1,3 +1,10 @@
+/*
+ * Copyright (c) 2021-Present XiHanFun and contributors.
+ * Licensed under the MIT License. See LICENSE in the project root for license information.
+ */
+
+// 提供 normalize props 相关实现。
+
 import { createNormalizer } from '@xihan-ui/core'
 
 // 事件名归一为 on + 首字母大写 + 其余小写（onKeyDown → onKeydown），与 WC 适配器对齐

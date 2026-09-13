@@ -1,3 +1,8 @@
+<!--
+  Copyright (c) 2021-Present XiHanFun and contributors.
+  Licensed under the MIT License. See LICENSE in the project root for license information.
+-->
+
 <!-- 标签用对象 | 组件里存的是标识那一份，显示哪一份由作者定：条目文本渲染 label，提交仍按标识拼串 -->
 <script setup lang="ts">
 import {

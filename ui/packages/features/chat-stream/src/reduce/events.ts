@@ -1,3 +1,8 @@
+/*
+ * Copyright (c) 2021-Present XiHanFun and contributors.
+ * Licensed under the MIT License. See LICENSE in the project root for license information.
+ */
+
 // normalize 与 reduce 之间的共享事件契约，各协议方言先归一到这一套事件。
 
 import type { Role } from '../model/message'

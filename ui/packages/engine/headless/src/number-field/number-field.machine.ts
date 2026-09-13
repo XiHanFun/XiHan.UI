@@ -1,3 +1,10 @@
+/*
+ * Copyright (c) 2021-Present XiHanFun and contributors.
+ * Licensed under the MIT License. See LICENSE in the project root for license information.
+ */
+
+// 提供 number field 相关实现。
+
 import type { Params } from '@xihan-ui/core'
 import type { NumberCodec } from '../shared/number'
 import type { NumberFieldSchema } from './number-field.types'

@@ -1,3 +1,10 @@
+/*
+ * Copyright (c) 2021-Present XiHanFun and contributors.
+ * Licensed under the MIT License. See LICENSE in the project root for license information.
+ */
+
+// 验证 sound services 相关行为。
+
 // @vitest-environment jsdom
 //
 // 判据按「配了声音的服务与原服务行为完全一致」写：视觉照旧、返回值照旧，

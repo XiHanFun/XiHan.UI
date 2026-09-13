@@ -1,3 +1,8 @@
+/*
+ * Copyright (c) 2021-Present XiHanFun and contributors.
+ * Licensed under the MIT License. See LICENSE in the project root for license information.
+ */
+
 // 横向排列 | 在内容上方显示章节导航
 import type { CSSProperties, ReactNode } from "react";
 import {

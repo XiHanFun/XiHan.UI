@@ -1,3 +1,10 @@
+/*
+ * Copyright (c) 2021-Present XiHanFun and contributors.
+ * Licensed under the MIT License. See LICENSE in the project root for license information.
+ */
+
+// 验证 navigation native events 相关行为。
+
 // @vitest-environment jsdom
 //
 // 导航与工具条这一族的 connect 派了三个不冒泡的事件：focus、pointerenter、pointerleave。

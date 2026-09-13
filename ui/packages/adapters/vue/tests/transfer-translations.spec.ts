@@ -1,3 +1,10 @@
+/*
+ * Copyright (c) 2021-Present XiHanFun and contributors.
+ * Licensed under the MIT License. See LICENSE in the project root for license information.
+ */
+
+// 验证 transfer translations 相关行为。
+
 // @vitest-environment jsdom
 // transfer 两颗搬运钮的可访问名能不能改：一条走实例 prop，一条走全局配置。
 //

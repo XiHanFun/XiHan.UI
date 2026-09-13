@@ -1,3 +1,8 @@
+/*
+ * Copyright (c) 2021-Present XiHanFun and contributors.
+ * Licensed under the MIT License. See LICENSE in the project root for license information.
+ */
+
 // 命令式服务默认模板用的装饰图形：加载弧线。
 // 纯装饰（aria-hidden），读屏内容由标题与描述承担。
 

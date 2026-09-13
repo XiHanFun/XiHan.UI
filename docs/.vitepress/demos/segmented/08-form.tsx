@@ -1,3 +1,8 @@
+/*
+ * Copyright (c) 2021-Present XiHanFun and contributors.
+ * Licensed under the MIT License. See LICENSE in the project root for license information.
+ */
+
 // 表单 | 给了 name 才带上隐藏输入参与提交；宿主表单点重置，选中值回落到 default-value
 import type { FormEvent, ReactNode } from "react";
 import { XhSegmentedRoot } from "@xihan-ui/react";

@@ -1,3 +1,10 @@
+/*
+ * Copyright (c) 2021-Present XiHanFun and contributors.
+ * Licensed under the MIT License. See LICENSE in the project root for license information.
+ */
+
+// 提供 layer stack 相关实现。
+
 import type { Layer, LayerRegistry } from '../../kernel'
 import { DATA_INERT_EXEMPT } from '../../kernel'
 import { dismissPathIncludes } from './route'

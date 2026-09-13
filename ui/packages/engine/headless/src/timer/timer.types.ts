@@ -1,3 +1,10 @@
+/*
+ * Copyright (c) 2021-Present XiHanFun and contributors.
+ * Licensed under the MIT License. See LICENSE in the project root for license information.
+ */
+
+// 定义 timer 类型契约。
+
 import type { MachineSchema, PropTypes, Size } from '@xihan-ui/core'
 
 /** 一段数字的单位，也是条目上 data-unit 的取值。 */

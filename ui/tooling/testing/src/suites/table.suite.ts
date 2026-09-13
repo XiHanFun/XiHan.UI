@@ -1,3 +1,10 @@
+/*
+ * Copyright (c) 2021-Present XiHanFun and contributors.
+ * Licensed under the MIT License. See LICENSE in the project root for license information.
+ */
+
+// 提供 table.suite 相关实现。
+
 import type { TableColumnDef, TableRowDef } from '@xihan-ui/headless'
 import type { AttrExpectation, ConformanceSuite, FixtureNode, StepWithExpect } from '../conformance/types'
 import { tableAnatomy, tableKeyboard } from '@xihan-ui/headless'

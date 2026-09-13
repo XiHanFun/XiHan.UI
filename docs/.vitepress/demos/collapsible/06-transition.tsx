@@ -1,3 +1,8 @@
+/*
+ * Copyright (c) 2021-Present XiHanFun and contributors.
+ * Licensed under the MIT License. See LICENSE in the project root for license information.
+ */
+
 // 展开动画 | 收起时节点不卸载，作者接管内容区的 display，用一条行高过渡就能平滑展开
 import type { ReactNode } from "react";
 import {

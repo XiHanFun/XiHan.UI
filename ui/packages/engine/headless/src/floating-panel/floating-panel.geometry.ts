@@ -1,3 +1,8 @@
+/*
+ * Copyright (c) 2021-Present XiHanFun and contributors.
+ * Licensed under the MIT License. See LICENSE in the project root for license information.
+ */
+
 // 面板几何的纯函数：只算数，不碰 DOM，也不认识状态机。
 
 import type { ResizeConstraints } from '@xihan-ui/pointer'

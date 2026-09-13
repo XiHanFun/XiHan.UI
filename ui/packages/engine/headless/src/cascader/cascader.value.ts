@@ -1,3 +1,8 @@
+/*
+ * Copyright (c) 2021-Present XiHanFun and contributors.
+ * Licensed under the MIT License. See LICENSE in the project root for license information.
+ */
+
 /** 只校验值结构，不依赖异步候选树是否已经加载。 */
 export function assertCascaderPath(path: unknown): asserts path is readonly string[] {
   if (!Array.isArray(path) || path.length === 0)

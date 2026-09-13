@@ -1,3 +1,8 @@
+/*
+ * Copyright (c) 2021-Present XiHanFun and contributors.
+ * Licensed under the MIT License. See LICENSE in the project root for license information.
+ */
+
 // 图标 | icon 部件排在标题前面，颜色取当前语气的强调色；内容由作者塞，字形与内联 svg 都行
 import type { ReactNode } from "react";
 import { CheckIcon } from "@xihan-ui/icons";

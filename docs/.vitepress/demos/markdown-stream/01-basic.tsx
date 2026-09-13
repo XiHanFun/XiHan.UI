@@ -1,3 +1,8 @@
+/*
+ * Copyright (c) 2021-Present XiHanFun and contributors.
+ * Licensed under the MIT License. See LICENSE in the project root for license information.
+ */
+
 // 基础用法 | 块列表由宿主用流式渲染器得到，组件只按 key 铺开、按种类分流
 import type { MarkdownBlock } from "@xihan-ui/headless";
 import type { ReactNode } from "react";

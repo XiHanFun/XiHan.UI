@@ -1,3 +1,8 @@
+/*
+ * Copyright (c) 2021-Present XiHanFun and contributors.
+ * Licensed under the MIT License. See LICENSE in the project root for license information.
+ */
+
 // 语气换色 | tone 决定用哪族颜色，色阶两端跟着换，格子的分档不变
 import type { ReactNode } from "react";
 import { XhHeatmapRoot } from "@xihan-ui/react";

@@ -1,3 +1,8 @@
+/*
+ * Copyright (c) 2021-Present XiHanFun and contributors.
+ * Licensed under the MIT License. See LICENSE in the project root for license information.
+ */
+
 // 文字 → 点云。先把文字画到离屏画布，再走与图片同一条采样路径。
 
 import type { PointCloud } from '../types'

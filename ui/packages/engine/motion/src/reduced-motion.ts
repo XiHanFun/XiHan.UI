@@ -1,3 +1,8 @@
+/*
+ * Copyright (c) 2021-Present XiHanFun and contributors.
+ * Licensed under the MIT License. See LICENSE in the project root for license information.
+ */
+
 // 减弱动效偏好：系统媒体查询探测，叠一层应用级 override。
 
 /** 解析后的动效偏好。 */

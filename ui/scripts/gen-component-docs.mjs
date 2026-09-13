@@ -16,6 +16,7 @@ import fs from 'node:fs'
 import path from 'node:path'
 import { fileURLToPath } from 'node:url'
 import ts from 'typescript'
+import { stripFileHeader } from '../tooling/file-header.mjs'
 import {
   COMPONENT_TOKEN_MANIFEST_PATH,
   componentTokensByComponent,
@@ -773,7 +774,8 @@ function typeMeta(id) {
 
 /** 取示例首行注释里的 `标题 | 说明`：标记语言写 `<!-- -->`，脚本写 `//`。 */
 function demoHead(text) {
-  return (text.match(/^<!--([\s\S]*?)-->/) ?? text.match(/^\/\/(.*)/))?.[1] ?? ''
+  const source = stripFileHeader(text).trimStart()
+  return (source.match(/^<!--([\s\S]*?)-->/) ?? source.match(/^\/\/(.*)/))?.[1] ?? ''
 }
 
 function demoTitle(title) {

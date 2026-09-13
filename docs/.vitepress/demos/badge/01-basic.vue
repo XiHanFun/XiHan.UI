@@ -1,3 +1,8 @@
+<!--
+  Copyright (c) 2021-Present XiHanFun and contributors.
+  Licensed under the MIT License. See LICENSE in the project root for license information.
+-->
+
 <!-- 计数角标 | 被标记的东西写进默认插槽，角标自己贴到它的角上；计数、上限截断与 0 值收起都归角标算 -->
 <script setup lang="ts">
 import { XhBadge, XhButton } from "@xihan-ui/vue";

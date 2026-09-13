@@ -1,3 +1,8 @@
+<!--
+  Copyright (c) 2021-Present XiHanFun and contributors.
+  Licensed under the MIT License. See LICENSE in the project root for license information.
+-->
+
 <!-- 码眼形状 | 只作用于三个定位图形，7×7 的外环加内心结构保持不变，读码器靠它找码 -->
 <script setup lang="ts">
 import { XhQrCode } from "@xihan-ui/vue";

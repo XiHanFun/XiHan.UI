@@ -1,3 +1,10 @@
+/*
+ * Copyright (c) 2021-Present XiHanFun and contributors.
+ * Licensed under the MIT License. See LICENSE in the project root for license information.
+ */
+
+// 验证 drag native events 相关行为。
+
 // @vitest-environment jsdom
 //
 // 滑块的拇指与分割器的分隔条都在 connect 里派了 DOM 的 focus——它不冒泡。

@@ -1,6 +1,7 @@
 import { readdir, readFile, writeFile } from 'node:fs/promises'
 import { join } from 'node:path'
 import { fileURLToPath } from 'node:url'
+import { applyFileHeader } from '../../file-header.mjs'
 
 const UI_ROOT = fileURLToPath(new URL('../../..', import.meta.url))
 
@@ -416,7 +417,10 @@ export function renderComponentTokenTypes(manifest) {
   const names = sorted(manifest.tokens.map(token => token.name))
   const components = sorted(manifest.tokens.map(token => token.component))
   const union = values => values.map(value => `  | '${value}'`).join('\n')
-  return `// 由 component-token-manifest.mjs 生成，禁止手改。\n\nexport type ComponentTokenName =\n${union(names)}\n\nexport type ComponentTokenComponent =\n${union(components)}\n\nexport interface ComponentTokenDefinition {\n  readonly name: ComponentTokenName\n  readonly component: ComponentTokenComponent\n  readonly part: readonly string[]\n  readonly property: readonly string[]\n  readonly state: readonly string[]\n  readonly defaultToken: readonly string[]\n  readonly visibility: 'public'\n  readonly description: string\n}\n\nexport interface ComponentTokenManifest {\n  readonly version: ${TOKEN_VERSION}\n  readonly tokens: readonly ComponentTokenDefinition[]\n}\n`
+  return applyFileHeader(
+    COMPONENT_TOKEN_TYPES_PATH,
+    `// 由 component-token-manifest.mjs 生成，禁止手改。\n\nexport type ComponentTokenName =\n${union(names)}\n\nexport type ComponentTokenComponent =\n${union(components)}\n\nexport interface ComponentTokenDefinition {\n  readonly name: ComponentTokenName\n  readonly component: ComponentTokenComponent\n  readonly part: readonly string[]\n  readonly property: readonly string[]\n  readonly state: readonly string[]\n  readonly defaultToken: readonly string[]\n  readonly visibility: 'public'\n  readonly description: string\n}\n\nexport interface ComponentTokenManifest {\n  readonly version: ${TOKEN_VERSION}\n  readonly tokens: readonly ComponentTokenDefinition[]\n}\n`,
+  )
 }
 
 function markdownCodeList(values) {

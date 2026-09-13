@@ -1,3 +1,10 @@
+/*
+ * Copyright (c) 2021-Present XiHanFun and contributors.
+ * Licensed under the MIT License. See LICENSE in the project root for license information.
+ */
+
+// 提供 context menu 相关实现。
+
 import type { Layer, PositionResult, VirtualAnchor } from '@xihan-ui/core'
 import type { ContextMenuFocusIntent, ContextMenuPoint, ContextMenuSchema } from './context-menu.types'
 import { createTypeahead, DIAGNOSTIC_CODES, itemValue, navigateItems, queryItems, reportDiagnostic, setTimeoutEffect, setup } from '@xihan-ui/core'

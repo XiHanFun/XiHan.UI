@@ -1,3 +1,8 @@
+/*
+ * Copyright (c) 2021-Present XiHanFun and contributors.
+ * Licensed under the MIT License. See LICENSE in the project root for license information.
+ */
+
 // 柔和主题：低音区正弦、慢起音、长衰减、厚混响。适合阅读器、
 // 冥想类或夜间界面——提示要被听见，但不许惊到人。
 

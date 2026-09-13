@@ -1,3 +1,10 @@
+/*
+ * Copyright (c) 2021-Present XiHanFun and contributors.
+ * Licensed under the MIT License. See LICENSE in the project root for license information.
+ */
+
+// 提供 use scrollbars 相关实现。
+
 import type { Orientation, Scope, Service } from '@xihan-ui/core'
 import type { ScrollbarApi, ScrollbarSchema } from '@xihan-ui/headless'
 import type { ComputedRef, MaybeRefOrGetter, Ref, VNode } from 'vue'

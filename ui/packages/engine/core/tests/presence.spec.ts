@@ -1,3 +1,10 @@
+/*
+ * Copyright (c) 2021-Present XiHanFun and contributors.
+ * Licensed under the MIT License. See LICENSE in the project root for license information.
+ */
+
+// 验证 presence 相关行为。
+
 import type { RuntimeConfig } from '../src/kernel'
 import { describe, expect, it, vi } from 'vitest'
 import { createPresence, nextPresence } from '../src/behavior/presence'

@@ -1,3 +1,8 @@
+<!--
+  Copyright (c) 2021-Present XiHanFun and contributors.
+  Licensed under the MIT License. See LICENSE in the project root for license information.
+-->
+
 <!-- 上限与粘贴拆分 | add-on-paste 让粘进来的一串按分隔符拆成多个标签；顶到 max 后再打再粘都进不去 -->
 <script setup lang="ts">
 import {

@@ -1,3 +1,8 @@
+<!--
+  Copyright (c) 2021-Present XiHanFun and contributors.
+  Licensed under the MIT License. See LICENSE in the project root for license information.
+-->
+
 <!-- 只让叶子进选中集合 | 选中受控就由宿主定夺：分支的值直接不写回，点目录只剩展开收起这一个效果 -->
 <script setup lang="ts">
 import {

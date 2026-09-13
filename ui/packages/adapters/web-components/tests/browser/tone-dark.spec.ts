@@ -1,3 +1,8 @@
+/*
+ * Copyright (c) 2021-Present XiHanFun and contributors.
+ * Licensed under the MIT License. See LICENSE in the project root for license information.
+ */
+
 // 语气层里有两族的控件边界在深色态要换一档（css/tone.css 的 warning 与 neutral）。
 // 那两条规则连同热力图的 gray 都写成 :is([data-theme='dark'] *, [data-theme='dark'])：
 // data-theme 写在语气容器自己身上还是写在祖先上都算。

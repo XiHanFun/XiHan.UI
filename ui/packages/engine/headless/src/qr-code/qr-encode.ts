@@ -1,3 +1,8 @@
+/*
+ * Copyright (c) 2021-Present XiHanFun and contributors.
+ * Licensed under the MIT License. See LICENSE in the project root for license information.
+ */
+
 /**
  * QR 码编码器：把一段文本算成布尔矩阵（ISO/IEC 18004）。
  *

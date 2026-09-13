@@ -1,3 +1,8 @@
+/*
+ * Copyright (c) 2021-Present XiHanFun and contributors.
+ * Licensed under the MIT License. See LICENSE in the project root for license information.
+ */
+
 // 悬停展开 | 指针进入时展开，键盘与触控仍可点击
 import type { ReactNode } from "react";
 import { MessageCircleIcon, ShareIcon } from "@xihan-ui/icons";

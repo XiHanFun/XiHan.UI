@@ -1,3 +1,10 @@
+/*
+ * Copyright (c) 2021-Present XiHanFun and contributors.
+ * Licensed under the MIT License. See LICENSE in the project root for license information.
+ */
+
+// 提供 command 相关实现。
+
 import type { CommandNodeMeta, CommandSchema } from './command.types'
 import { createDismissLayer, createFocusScope, setup } from '@xihan-ui/core'
 import { closeReasonOf } from '../shared/close-reason'

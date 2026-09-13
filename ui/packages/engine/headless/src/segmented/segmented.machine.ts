@@ -1,3 +1,10 @@
+/*
+ * Copyright (c) 2021-Present XiHanFun and contributors.
+ * Licensed under the MIT License. See LICENSE in the project root for license information.
+ */
+
+// 提供 segmented 相关实现。
+
 import type { SegmentedBox, SegmentedIndicatorRect, SegmentedNode, SegmentedSchema } from './segmented.types'
 import { itemValue, queryItems, readDirection, resetDeclaredValue, setup } from '@xihan-ui/core'
 import { segmentedItemQuery } from './segmented.anatomy'

@@ -1,3 +1,8 @@
+/*
+ * Copyright (c) 2021-Present XiHanFun and contributors.
+ * Licensed under the MIT License. See LICENSE in the project root for license information.
+ */
+
 // 窄档两件：file-upload 条目在窄容器里换行、table 根的高度上限由视口收口。
 //
 // 条目那件不写任何查询，挂一个定宽 div 就能量；表格那件量的是视口高度，

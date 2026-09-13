@@ -1,3 +1,8 @@
+/*
+ * Copyright (c) 2021-Present XiHanFun and contributors.
+ * Licensed under the MIT License. See LICENSE in the project root for license information.
+ */
+
 // 挂载 / 退场中 / 已卸载 三态。未定义的转移静默 no-op。
 export type PresenceState = 'mounted' | 'exiting' | 'unmounted'
 export type PresenceEvent = 'EXIT_CLAIMED' | 'CLOSE_NO_LEASE' | 'ALL_LEASES_DONE' | 'OPEN'

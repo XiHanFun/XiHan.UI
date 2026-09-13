@@ -1,3 +1,10 @@
+/*
+ * Copyright (c) 2021-Present XiHanFun and contributors.
+ * Licensed under the MIT License. See LICENSE in the project root for license information.
+ */
+
+// 定义 date field 类型契约。
+
 import type { ControlVariant, MachineSchema, PropTypes, Size, Tone } from '@xihan-ui/core'
 
 /** 一段的身份。日期三段恒在，时间三段由 granularity 决定要不要。 */

@@ -1,3 +1,8 @@
+/*
+ * Copyright (c) 2021-Present XiHanFun and contributors.
+ * Licensed under the MIT License. See LICENSE in the project root for license information.
+ */
+
 // 层叠上下文诊断：浮层在 Light DOM 原地渲染，祖先只要建了层叠上下文，
 // 浮层的层号就退化成那个上下文里的局部序号，会被上层兄弟盖住。
 import { DIAGNOSTIC_CODES, getDiagnostics, reportDiagnostic } from '@xihan-ui/core'

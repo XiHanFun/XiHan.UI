@@ -1,3 +1,8 @@
+/*
+ * Copyright (c) 2021-Present XiHanFun and contributors.
+ * Licensed under the MIT License. See LICENSE in the project root for license information.
+ */
+
 // 指针会话：一根指针从按下到抬起的那一段，监听、过滤、收尾都在这里。
 import type { PointerEndReason, PointerSession, PointerSessionDetails, PointerSessionOptions } from './types'
 

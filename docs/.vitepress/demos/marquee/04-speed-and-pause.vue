@@ -1,3 +1,8 @@
+<!--
+  Copyright (c) 2021-Present XiHanFun and contributors.
+  Licensed under the MIT License. See LICENSE in the project root for license information.
+-->
+
 <!-- 速度与暂停 | speed 是每秒像素；pauseOnHover 在指针停下或焦点落进窗口时停住 -->
 <script setup lang="ts">
 import { XhMarqueeContent, XhMarqueeRoot } from "@xihan-ui/vue";

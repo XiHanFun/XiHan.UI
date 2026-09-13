@@ -1,3 +1,8 @@
+/*
+ * Copyright (c) 2021-Present XiHanFun and contributors.
+ * Licensed under the MIT License. See LICENSE in the project root for license information.
+ */
+
 // 会话状态容器：把事件流收敛成一组消息与一个运行状态，对外提供订阅。
 import type { Cleanup } from '@xihan-ui/core'
 import type { ChatRequest, UIMessage } from '../model/message'

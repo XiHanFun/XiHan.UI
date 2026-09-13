@@ -1,3 +1,8 @@
+<!--
+  Copyright (c) 2021-Present XiHanFun and contributors.
+  Licensed under the MIT License. See LICENSE in the project root for license information.
+-->
+
 <!-- 懒加载 | 展开分支时加载下一层数据 -->
 <script setup lang="ts">
 import {

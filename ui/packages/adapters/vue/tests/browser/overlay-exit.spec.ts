@@ -1,3 +1,8 @@
+/*
+ * Copyright (c) 2021-Present XiHanFun and contributors.
+ * Licensed under the MIT License. See LICENSE in the project root for license information.
+ */
+
 // 退场动画只能在真实浏览器里验：jsdom 不把样式表里的 animation 简写算进
 // getComputedStyle（animationName 恒为空串），退场探测那条路在 jsdom 里天然走不到。
 import type { App, Ref } from 'vue'

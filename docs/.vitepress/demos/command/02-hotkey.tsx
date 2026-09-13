@@ -1,3 +1,8 @@
+/*
+ * Copyright (c) 2021-Present XiHanFun and contributors.
+ * Licensed under the MIT License. See LICENSE in the project root for license information.
+ */
+
 // 快捷键唤起 + 手写部件 | Mod+K 打开，命中的字由文本高亮标出来，行尾挂各命令自己的快捷键
 import type { CommandNode } from "@xihan-ui/headless";
 import type { ReactNode } from "react";

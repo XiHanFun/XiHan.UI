@@ -1,3 +1,8 @@
+/*
+ * Copyright (c) 2021-Present XiHanFun and contributors.
+ * Licensed under the MIT License. See LICENSE in the project root for license information.
+ */
+
 // 垂直分隔线 | 分隔行内内容
 import type { ReactNode } from "react";
 import { XhSeparator } from "@xihan-ui/react";

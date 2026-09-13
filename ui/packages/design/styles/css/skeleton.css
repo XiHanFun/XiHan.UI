@@ -1,3 +1,10 @@
+/*
+ * Copyright (c) 2021-Present XiHanFun and contributors.
+ * Licensed under the MIT License. See LICENSE in the project root for license information.
+ */
+
+/* 定义 skeleton 样式。 */
+
 @layer xihan.motion {
   /* 一条比底色略亮的窄带从头扫到尾。背景图比自身宽一倍，靠移动背景位置扫过去，
      不动 transform 也不动布局，整段动画只在合成层上跑 */

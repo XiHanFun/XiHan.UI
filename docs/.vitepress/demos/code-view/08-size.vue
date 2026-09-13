@@ -1,3 +1,8 @@
+<!--
+  Copyright (c) 2021-Present XiHanFun and contributors.
+  Licensed under the MIT License. See LICENSE in the project root for license information.
+-->
+
 <!-- 尺寸 | size 换字号、行高与内边距三档，行号槽与折叠钮跟着一起走 -->
 <script setup lang="ts">
 import {

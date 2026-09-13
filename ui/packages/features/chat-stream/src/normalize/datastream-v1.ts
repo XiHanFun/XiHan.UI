@@ -1,3 +1,8 @@
+/*
+ * Copyright (c) 2021-Present XiHanFun and contributors.
+ * Licensed under the MIT License. See LICENSE in the project root for license information.
+ */
+
 // 把 Data Stream v1 线格式的帧归一成内部事件：坏 JSON 与缺 type 产出 error 事件，
 // 不认识的 type 返回 null。
 import type { FilePart } from '../model/part-kinds'

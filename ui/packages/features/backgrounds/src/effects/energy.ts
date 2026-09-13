@@ -1,3 +1,8 @@
+/*
+ * Copyright (c) 2021-Present XiHanFun and contributors.
+ * Licensed under the MIT License. See LICENSE in the project root for license information.
+ */
+
 // 发光族：靠一条会呼吸的亮边或亮带撑起画面。
 
 import type { EffectContext, UniformMap } from '../types'

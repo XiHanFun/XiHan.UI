@@ -1,3 +1,8 @@
+/*
+ * Copyright (c) 2021-Present XiHanFun and contributors.
+ * Licensed under the MIT License. See LICENSE in the project root for license information.
+ */
+
 // @xihan-ui/chat-stream 的公开出口：消息模型、Data Stream v1 归一、parts 归约、会话容器与 SSE 传输。
 
 export type { ChatRequest, Role, UIMessage } from './model/message'

@@ -1,3 +1,10 @@
+/*
+ * Copyright (c) 2021-Present XiHanFun and contributors.
+ * Licensed under the MIT License. See LICENSE in the project root for license information.
+ */
+
+// 提供 tags input.suite 相关实现。
+
 import type { ConformanceSuite, FixtureNode, RawStepContext, StepWithExpect } from '../conformance/types'
 import { tagsInputAnatomy, tagsInputKeyboard } from '@xihan-ui/headless'
 import { dispatchClickOnDisabled } from './shared/disabled-press'

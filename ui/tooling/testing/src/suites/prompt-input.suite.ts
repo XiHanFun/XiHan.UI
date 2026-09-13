@@ -1,3 +1,10 @@
+/*
+ * Copyright (c) 2021-Present XiHanFun and contributors.
+ * Licensed under the MIT License. See LICENSE in the project root for license information.
+ */
+
+// 提供 prompt input.suite 相关实现。
+
 import type { ConformanceSuite, RawStepContext } from '../conformance/types'
 import { promptInputAnatomy, promptInputKeyboard } from '@xihan-ui/headless'
 

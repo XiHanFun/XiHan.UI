@@ -1,3 +1,10 @@
+/*
+ * Copyright (c) 2021-Present XiHanFun and contributors.
+ * Licensed under the MIT License. See LICENSE in the project root for license information.
+ */
+
+// 验证 tag static path 相关行为。
+
 // @vitest-environment jsdom
 // 不可关闭的标签走不建机器的快路。这条验的是「快了但没变味」：
 // 受控/非受控、setOpen、以及中途打开关闭钮，四件事都要与机器路逐条一致。

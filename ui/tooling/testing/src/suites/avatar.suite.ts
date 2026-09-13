@@ -1,3 +1,10 @@
+/*
+ * Copyright (c) 2021-Present XiHanFun and contributors.
+ * Licensed under the MIT License. See LICENSE in the project root for license information.
+ */
+
+// 提供 avatar.suite 相关实现。
+
 import type { ConformanceSuite, RawStepContext } from '../conformance/types'
 import { avatarAnatomy, avatarKeyboard } from '@xihan-ui/headless'
 

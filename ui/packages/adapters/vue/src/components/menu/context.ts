@@ -1,3 +1,10 @@
+/*
+ * Copyright (c) 2021-Present XiHanFun and contributors.
+ * Licensed under the MIT License. See LICENSE in the project root for license information.
+ */
+
+// 提供 context 相关实现。
+
 import type { MenuGroupProps, MenuItemProps } from '@xihan-ui/headless'
 import type { ComputedRef, InjectionKey } from 'vue'
 import type { MenuContext } from './use-menu'

@@ -1,3 +1,10 @@
+/*
+ * Copyright (c) 2021-Present XiHanFun and contributors.
+ * Licensed under the MIT License. See LICENSE in the project root for license information.
+ */
+
+// 验证 trigger as child 相关行为。
+
 import { resetDiagnostics } from '@xihan-ui/core'
 // @vitest-environment jsdom
 // 触发器的 asChild：借用作者的节点当触发器，不再自己渲染 <button> 包裹。

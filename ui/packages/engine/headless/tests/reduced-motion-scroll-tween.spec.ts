@@ -1,3 +1,10 @@
+/*
+ * Copyright (c) 2021-Present XiHanFun and contributors.
+ * Licensed under the MIT License. See LICENSE in the project root for license information.
+ */
+
+// 验证 reduced motion scroll tween 相关行为。
+
 // @vitest-environment jsdom
 // JS 驱动的两类动效（整页平滑滚动、数值逐帧补间）要自己查减弱动效偏好：
 // 皮肤那条 reduce 通道只关得掉 CSS 动画与过渡，压不到 scrollTo 与 requestAnimationFrame。

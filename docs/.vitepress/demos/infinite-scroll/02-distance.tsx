@@ -1,3 +1,8 @@
+/*
+ * Copyright (c) 2021-Present XiHanFun and contributors.
+ * Licensed under the MIT License. See LICENSE in the project root for license information.
+ */
+
 // 提前量 | distance 把可视区沿块轴向外扩，哨兵还没露头就先取下一页
 import type { ReactNode } from "react";
 import { XhInfiniteScrollRoot, XhInfiniteScrollSentinel } from "@xihan-ui/react";

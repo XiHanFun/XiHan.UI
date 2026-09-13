@@ -1,3 +1,10 @@
+/*
+ * Copyright (c) 2021-Present XiHanFun and contributors.
+ * Licensed under the MIT License. See LICENSE in the project root for license information.
+ */
+
+// 提供 portal host 相关实现。
+
 import type { PropertyDeclarations } from '../reactive'
 import type { AnchoredPortalControllerOptions } from './anchored-portal-controller'
 import type { PortalLeaseControllerOptions } from './portal-lease-controller'

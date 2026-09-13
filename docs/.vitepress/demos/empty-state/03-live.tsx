@@ -1,3 +1,8 @@
+/*
+ * Copyright (c) 2021-Present XiHanFun and contributors.
+ * Licensed under the MIT License. See LICENSE in the project root for license information.
+ */
+
 // 播报方式 | 缺省 polite 让 root 成为活区，筛完就地播报；off 让它只是个普通容器
 import type { ReactNode } from "react";
 import {

@@ -1,3 +1,8 @@
+/*
+ * Copyright (c) 2021-Present XiHanFun and contributors.
+ * Licensed under the MIT License. See LICENSE in the project root for license information.
+ */
+
 // ButtonGroup 的段靠一像素共边连成一体：组内按压不能缩开接缝，组形态也不能盖过子段显式形态。
 // 两条都依赖真实 :active、逻辑方向与完整 CSS 级联，只在 Chromium 中验证。
 import type { App, VNode } from 'vue'

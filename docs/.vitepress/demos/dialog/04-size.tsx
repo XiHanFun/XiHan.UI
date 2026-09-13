@@ -1,3 +1,8 @@
+/*
+ * Copyright (c) 2021-Present XiHanFun and contributors.
+ * Licensed under the MIT License. See LICENSE in the project root for license information.
+ */
+
 // 尺寸 | size 落成 content 的 data-size，只改面板的最大宽度；三档各自一个对话框，点开才看得出宽窄
 import type { ReactNode } from "react";
 import {

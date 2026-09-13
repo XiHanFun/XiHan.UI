@@ -1,3 +1,10 @@
+/*
+ * Copyright (c) 2021-Present XiHanFun and contributors.
+ * Licensed under the MIT License. See LICENSE in the project root for license information.
+ */
+
+// 定义 separator 类型契约。
+
 import type { PropTypes } from '@xihan-ui/core'
 
 /** 线怎么画：材质自适应默认线 / 低对比弱线 / 高对比强线。与业务语气无关。 */

@@ -1,3 +1,10 @@
+/*
+ * Copyright (c) 2021-Present XiHanFun and contributors.
+ * Licensed under the MIT License. See LICENSE in the project root for license information.
+ */
+
+// 提供 image cropper 相关实现。
+
 import type { Params } from '@xihan-ui/core'
 import type { CropConstraints } from './image-cropper.geometry'
 import type { ImageCropperRect, ImageCropperSchema, ImageCropperSize } from './image-cropper.types'

@@ -1,3 +1,8 @@
+/*
+ * Copyright (c) 2021-Present XiHanFun and contributors.
+ * Licensed under the MIT License. See LICENSE in the project root for license information.
+ */
+
 // 结构原语：解剖、属性归一、作用域、诊断通道与端口类型契约。
 
 // 版本号:适配器做运行期锁步检查用(全部库包同版本是硬承诺,混装会静默失效)

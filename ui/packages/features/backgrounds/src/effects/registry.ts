@@ -1,3 +1,8 @@
+/*
+ * Copyright (c) 2021-Present XiHanFun and contributors.
+ * Licensed under the MIT License. See LICENSE in the project root for license information.
+ */
+
 // 效果注册表。按名字取效果是给配置化场景用的（参数存在数据库里、由界面下拉切换），
 // 直接传效果对象则完全不经过它——注册表不参与打包决策，没注册的效果会被摇掉。
 

@@ -1,3 +1,8 @@
+/*
+ * Copyright (c) 2021-Present XiHanFun and contributors.
+ * Licensed under the MIT License. See LICENSE in the project root for license information.
+ */
+
 // 逐帧推进的宿主胶水：机器的效应用它把时间喂给纯补间。补间自己不认识帧、也不持有计时器。
 
 /** 当前时间戳毫秒。宿主没有 performance 时退回 Date。 */

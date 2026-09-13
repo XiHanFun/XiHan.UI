@@ -1,3 +1,8 @@
+/*
+ * Copyright (c) 2021-Present XiHanFun and contributors.
+ * Licensed under the MIT License. See LICENSE in the project root for license information.
+ */
+
 // 定位引擎算出的可用空间，有没有真的下发成浮层上的私有槽。
 //
 // 宿主视口是固定的，改不动，所以换宽度只能靠内嵌 iframe：浮层挂在 iframe 文档里，

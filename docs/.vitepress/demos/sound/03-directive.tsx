@@ -1,3 +1,8 @@
+/*
+ * Copyright (c) 2021-Present XiHanFun and contributors.
+ * Licensed under the MIT License. See LICENSE in the project root for license information.
+ */
+
 // 元素配声 | v-sound 默认放 click，给字符串即指名；键盘敲 Enter 一样响，禁用态不响
 import type { ReactNode } from "react";
 import { XhButton } from "@xihan-ui/react";

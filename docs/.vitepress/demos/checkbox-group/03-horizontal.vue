@@ -1,3 +1,8 @@
+<!--
+  Copyright (c) 2021-Present XiHanFun and contributors.
+  Licensed under the MIT License. See LICENSE in the project root for license information.
+-->
+
 <!-- 横向排布 | 使用 orientation 设置排列方向 -->
 <script setup lang="ts">
 import { XhCheckboxGroupRoot } from "@xihan-ui/vue";

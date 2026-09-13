@@ -1,3 +1,10 @@
+/*
+ * Copyright (c) 2021-Present XiHanFun and contributors.
+ * Licensed under the MIT License. See LICENSE in the project root for license information.
+ */
+
+// 提供 tag group 相关实现。
+
 import type { NavIntent, NormalizeProps, PropTypes, SelectionOrder, Service } from '@xihan-ui/core'
 import type { TagApi } from '../tag'
 import type { TagGroupApi, TagGroupItemProps, TagGroupNodeMeta, TagGroupSchema } from './tag-group.types'

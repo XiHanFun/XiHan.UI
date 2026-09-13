@@ -1,3 +1,8 @@
+/*
+ * Copyright (c) 2021-Present XiHanFun and contributors.
+ * Licensed under the MIT License. See LICENSE in the project root for license information.
+ */
+
 // 粘底跟随与播报 | 新消息长出来时自动到底，往上翻就解除；一轮结束在播报区念一句
 import type { ReactNode } from "react";
 import {

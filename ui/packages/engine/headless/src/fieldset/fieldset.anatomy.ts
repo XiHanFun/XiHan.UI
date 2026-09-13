@@ -1,3 +1,10 @@
+/*
+ * Copyright (c) 2021-Present XiHanFun and contributors.
+ * Licensed under the MIT License. See LICENSE in the project root for license information.
+ */
+
+// 提供 fieldset 相关实现。
+
 import { createAnatomy } from '@xihan-ui/core'
 
 // root 是原生 <fieldset>、legend 是原生 <legend>；说明与错误文案各占一个部件，

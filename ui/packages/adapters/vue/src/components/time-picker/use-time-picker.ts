@@ -1,3 +1,10 @@
+/*
+ * Copyright (c) 2021-Present XiHanFun and contributors.
+ * Licensed under the MIT License. See LICENSE in the project root for license information.
+ */
+
+// 提供 use time picker 相关实现。
+
 import type { Cleanup, Layer, RuntimeConfig } from '@xihan-ui/core'
 import type { TimePickerApi, TimePickerSchema } from '@xihan-ui/headless'
 import type { ComputedRef, Ref } from 'vue'

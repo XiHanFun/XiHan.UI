@@ -1,3 +1,10 @@
+/*
+ * Copyright (c) 2021-Present XiHanFun and contributors.
+ * Licensed under the MIT License. See LICENSE in the project root for license information.
+ */
+
+// 验证 player 相关行为。
+
 // @vitest-environment jsdom
 import { onDiagnostic, resetDiagnostics, setDiagnosticsConsoleOutput } from '@xihan-ui/core'
 import { setMotionOverride } from '@xihan-ui/motion'

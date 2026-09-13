@@ -1,3 +1,10 @@
+/*
+ * Copyright (c) 2021-Present XiHanFun and contributors.
+ * Licensed under the MIT License. See LICENSE in the project root for license information.
+ */
+
+// 提供 stick tracker 相关实现。
+
 import type { Disposable, RuntimeConfig } from '../../kernel'
 
 /** 距底多少 px 起算「在底」的默认阈值。 */

@@ -1,3 +1,10 @@
+/*
+ * Copyright (c) 2021-Present XiHanFun and contributors.
+ * Licensed under the MIT License. See LICENSE in the project root for license information.
+ */
+
+// 提供 accordion 相关实现。
+
 import type { Direction, IdGenerator, Orientation, RuntimeConfig, Size, Tone } from '@xihan-ui/core'
 import type { AccordionItemProps, AccordionNode, AccordionSchema, AccordionValueChangeDetails, AccordionVariant } from '@xihan-ui/headless'
 import type { OverlayExit } from '../overlay-exit'

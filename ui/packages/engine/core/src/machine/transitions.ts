@@ -1,3 +1,10 @@
+/*
+ * Copyright (c) 2021-Present XiHanFun and contributors.
+ * Licensed under the MIT License. See LICENSE in the project root for license information.
+ */
+
+// 提供 transitions 相关实现。
+
 import type { MachineConfig, MachineSchema, StateChainItem, Transition } from './types'
 // 转移解析：把一个事件解析为一条命中的 transition，并算出退出/进入的状态集合。
 import { MachineError } from './errors'

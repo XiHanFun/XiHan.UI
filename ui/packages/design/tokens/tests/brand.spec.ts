@@ -1,3 +1,10 @@
+/*
+ * Copyright (c) 2021-Present XiHanFun and contributors.
+ * Licensed under the MIT License. See LICENSE in the project root for license information.
+ */
+
+// 验证 brand 相关行为。
+
 // @vitest-environment jsdom
 // 品牌派生的判据用独立实现核对：oklch → 线性 sRGB 的换算照 CSS Color 4 公式另写一份，
 // 不复用被测代码。

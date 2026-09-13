@@ -1,3 +1,8 @@
+/*
+ * Copyright (c) 2021-Present XiHanFun and contributors.
+ * Licensed under the MIT License. See LICENSE in the project root for license information.
+ */
+
 // 上午/下午的文字。时间输入与日期输入都要它，放在共用层：
 // 从组件目录里拿会把那个组件的状态机一并拖进产物，摇树摇不掉一个顶层 createMachine。
 

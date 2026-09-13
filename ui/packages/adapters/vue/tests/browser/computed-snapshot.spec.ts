@@ -1,3 +1,10 @@
+/*
+ * Copyright (c) 2021-Present XiHanFun and contributors.
+ * Licensed under the MIT License. See LICENSE in the project root for license information.
+ */
+
+// 验证 computed snapshot 相关行为。
+
 import { allSuites, runComputedSnapshot } from '@xihan-ui/testing'
 import { describe, expect, it } from 'vitest'
 import { createVueHarness } from '../harness'

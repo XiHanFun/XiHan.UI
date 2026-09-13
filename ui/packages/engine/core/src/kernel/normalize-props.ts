@@ -1,3 +1,8 @@
+/*
+ * Copyright (c) 2021-Present XiHanFun and contributors.
+ * Licensed under the MIT License. See LICENSE in the project root for license information.
+ */
+
 // props-getter 归一化协议：把框架无关的 prop 字典映射为目标框架的 props。
 import type { Dict } from './types'
 

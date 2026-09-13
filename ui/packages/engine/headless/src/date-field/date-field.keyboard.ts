@@ -1,3 +1,10 @@
+/*
+ * Copyright (c) 2021-Present XiHanFun and contributors.
+ * Licensed under the MIT License. See LICENSE in the project root for license information.
+ */
+
+// 提供 date field 相关实现。
+
 import type { KeyboardTable } from '../spec/types'
 
 // APG 无分段日期模式，最接近的是 spinbutton：每一段都是 role=spinbutton，

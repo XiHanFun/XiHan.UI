@@ -1,3 +1,8 @@
+/*
+ * Copyright (c) 2021-Present XiHanFun and contributors.
+ * Licensed under the MIT License. See LICENSE in the project root for license information.
+ */
+
 // 组件解剖（Anatomy）：把组件拆成具名 part，产出 data-scope/data-part 属性与选择器。
 import { DATA_PART, DATA_SCOPE } from './constants'
 

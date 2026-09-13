@@ -1,3 +1,10 @@
+/*
+ * Copyright (c) 2021-Present XiHanFun and contributors.
+ * Licensed under the MIT License. See LICENSE in the project root for license information.
+ */
+
+// 验证 date picker projection 相关行为。
+
 import type { DatePickerApi } from '../src'
 import { describe, expect, it } from 'vitest'
 import { datePickerFieldAt, resolveDatePickerFieldIndex, resolveDatePickerPanelIndex } from '../src'

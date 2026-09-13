@@ -1,3 +1,10 @@
+/*
+ * Copyright (c) 2021-Present XiHanFun and contributors.
+ * Licensed under the MIT License. See LICENSE in the project root for license information.
+ */
+
+// 提供 back top 相关实现。
+
 import type { ScrollTrackerHandle } from '@xihan-ui/core'
 import type { BackTopSchema } from './back-top.types'
 import { createScrollTracker, scrollBlockTo, setup } from '@xihan-ui/core'

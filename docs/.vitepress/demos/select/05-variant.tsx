@@ -1,3 +1,8 @@
+/*
+ * Copyright (c) 2021-Present XiHanFun and contributors.
+ * Licensed under the MIT License. See LICENSE in the project root for license information.
+ */
+
 // 形态 | outline、subtle 和 ghost
 import type { ReactNode } from "react";
 import { XhSelectRoot } from "@xihan-ui/react";

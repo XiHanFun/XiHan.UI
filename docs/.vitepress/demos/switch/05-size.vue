@@ -1,3 +1,8 @@
+<!--
+  Copyright (c) 2021-Present XiHanFun and contributors.
+  Licensed under the MIT License. See LICENSE in the project root for license information.
+-->
+
 <!-- 尺寸 | size 同时缩放轨道与滑块，不写就是缺省档 -->
 <script setup lang="ts">
 import { XhSwitch } from "@xihan-ui/vue";

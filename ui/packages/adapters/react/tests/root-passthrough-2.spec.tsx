@@ -1,3 +1,10 @@
+/*
+ * Copyright (c) 2021-Present XiHanFun and contributors.
+ * Licensed under the MIT License. See LICENSE in the project root for license information.
+ */
+
+// 验证 root passthrough 2 相关行为。
+
 // @vitest-environment jsdom
 //
 // Root 部件接住作者写在它上面的其余属性。

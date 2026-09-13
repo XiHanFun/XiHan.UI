@@ -1,3 +1,8 @@
+/*
+ * Copyright (c) 2021-Present XiHanFun and contributors.
+ * Licensed under the MIT License. See LICENSE in the project root for license information.
+ */
+
 // 树选择器面板里，叶子行与同级分支行的层级缩进：叶子的文字要比所在分支的文字正好右移一格。
 //
 // 只有真实浏览器量得出来：这条靠的是 flex 行盒的实际排布与 :has() 的匹配结果，

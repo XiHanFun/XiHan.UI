@@ -1,3 +1,8 @@
+/*
+ * Copyright (c) 2021-Present XiHanFun and contributors.
+ * Licensed under the MIT License. See LICENSE in the project root for license information.
+ */
+
 // 大写锁定提示不许改变控件尺寸。
 //
 // 控件根是 inline-flex（收缩包裹），提示区从前是流内文本：一开大写锁定，区内多出一整句话，

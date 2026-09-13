@@ -1,3 +1,10 @@
+/*
+ * Copyright (c) 2021-Present XiHanFun and contributors.
+ * Licensed under the MIT License. See LICENSE in the project root for license information.
+ */
+
+// 提供 date field.blocks 相关实现。
+
 import type { DateSegments, DateSegmentSet, DateSegmentType } from './date-field.types'
 import { CalendarDate, parseDateTime, startOfWeek } from '@internationalized/date'
 

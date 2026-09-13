@@ -1,3 +1,8 @@
+/*
+ * Copyright (c) 2021-Present XiHanFun and contributors.
+ * Licensed under the MIT License. See LICENSE in the project root for license information.
+ */
+
 // 看片浮层底部那条控件带：它对读屏报什么角色，与键盘上真正拿得到的走位必须是同一件事。
 //
 // 判据要的是真实焦点与真实按键：Tab 序列、方向键落在谁身上，两样 jsdom 都演不出来

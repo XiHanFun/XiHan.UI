@@ -1,3 +1,8 @@
+/*
+ * Copyright (c) 2021-Present XiHanFun and contributors.
+ * Licensed under the MIT License. See LICENSE in the project root for license information.
+ */
+
 // 五档阶段 | 等人批准不是在跑：闸门常驻在开关与详情之间，不会被折叠藏起来
 import type { ToolCallPhase } from "@xihan-ui/headless";
 import type { ReactNode } from "react";

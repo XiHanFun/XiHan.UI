@@ -1,3 +1,10 @@
+/*
+ * Copyright (c) 2021-Present XiHanFun and contributors.
+ * Licensed under the MIT License. See LICENSE in the project root for license information.
+ */
+
+// 提供 close reason 相关实现。
+
 import type { OverlayCloseReason } from '@xihan-ui/core'
 
 /** 关闭事件的最小形状：类型加一个可选的来源标记。 */

@@ -1,3 +1,8 @@
+/*
+ * Copyright (c) 2021-Present XiHanFun and contributors.
+ * Licensed under the MIT License. See LICENSE in the project root for license information.
+ */
+
 /**
  * 快照形状与把快照翻成内联样式的纯函数层，不碰 DOM、不认识状态机。
  * 区间与尺寸由 virtualizer.geometry 算，这里只做三件事：

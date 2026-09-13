@@ -1,3 +1,10 @@
+/*
+ * Copyright (c) 2021-Present XiHanFun and contributors.
+ * Licensed under the MIT License. See LICENSE in the project root for license information.
+ */
+
+// 提供 use tag 相关实现。
+
 import type { TagApi, TagSchema } from '@xihan-ui/headless'
 import { connectStaticTag, connectTag, tagMachine } from '@xihan-ui/headless'
 import { useState } from 'react'

@@ -1,3 +1,10 @@
+/*
+ * Copyright (c) 2021-Present XiHanFun and contributors.
+ * Licensed under the MIT License. See LICENSE in the project root for license information.
+ */
+
+// 提供 time picker.presets 相关实现。
+
 import type { TimeGranularity } from '../time-field'
 import { getLocalTimeZone, now } from '@internationalized/date'
 import { formatTimeValue } from '../time-field'

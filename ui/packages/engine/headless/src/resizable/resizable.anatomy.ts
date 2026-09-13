@@ -1,3 +1,10 @@
+/*
+ * Copyright (c) 2021-Present XiHanFun and contributors.
+ * Licensed under the MIT License. See LICENSE in the project root for license information.
+ */
+
+// 提供 resizable 相关实现。
+
 import { createAnatomy } from '@xihan-ui/core'
 
 // 八个方向共用一个 handle 部件，方向写在 data-edge 上：

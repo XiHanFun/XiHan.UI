@@ -1,3 +1,8 @@
+/*
+ * Copyright (c) 2021-Present XiHanFun and contributors.
+ * Licensed under the MIT License. See LICENSE in the project root for license information.
+ */
+
 // 指示器与禁用 | indicator 的朝向由 data-state 驱动，禁用项点不动、方向键也跳过它
 import type { ReactNode } from "react";
 import { XhAccordionRoot } from "@xihan-ui/react";

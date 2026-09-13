@@ -1,3 +1,8 @@
+/*
+ * Copyright (c) 2021-Present XiHanFun and contributors.
+ * Licensed under the MIT License. See LICENSE in the project root for license information.
+ */
+
 // 取到没有了 | 最后一页取完把 disabled 打开，哨兵不再被观察，load 也不再派
 import type { ReactNode } from "react";
 import { XhInfiniteScrollRoot, XhInfiniteScrollSentinel } from "@xihan-ui/react";

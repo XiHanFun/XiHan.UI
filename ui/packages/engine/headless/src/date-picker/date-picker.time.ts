@@ -1,3 +1,8 @@
+/*
+ * Copyright (c) 2021-Present XiHanFun and contributors.
+ * Licensed under the MIT License. See LICENSE in the project root for license information.
+ */
+
 // showTime 的日期与时间拆并：值升格为 'YYYY-MM-DDTHH:mm[:ss]'，
 // 日历与段位只认日期段、时间列只认时间段，拆并全在编排边界完成。纯运算，不碰 DOM。
 import type { TimeGranularity } from '../time-field'

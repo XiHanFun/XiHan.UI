@@ -1,3 +1,8 @@
+/*
+ * Copyright (c) 2021-Present XiHanFun and contributors.
+ * Licensed under the MIT License. See LICENSE in the project root for license information.
+ */
+
 // 节点拖拽的纯算法：落点合不合法、落点折算成「搬到哪个父的第几位」。
 // 不碰 DOM、不认识状态机——连接层在 render 期就要用到它们，此时 DOM 尚不存在。
 import type { DropTarget } from '../shared/drag'

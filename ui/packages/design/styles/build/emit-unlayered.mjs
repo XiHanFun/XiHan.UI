@@ -17,12 +17,13 @@
 import fs from 'node:fs'
 import path from 'node:path'
 import { fileURLToPath } from 'node:url'
+import { applyFileHeader, stripFileHeader } from '../../../../tooling/file-header.mjs'
 
 const pkgRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..')
 const entry = path.join(pkgRoot, 'index.css')
 const outFile = path.join(pkgRoot, 'index.unlayered.css')
 
-const source = fs.readFileSync(entry, 'utf8')
+const source = stripFileHeader(fs.readFileSync(entry, 'utf8'))
 
 const head = [
   '/* 本文件由 build/emit-unlayered.mjs 生成，不要手改。改皮肤请改 styles/ 下的源文件。',
@@ -56,7 +57,10 @@ for (const line of source.split('\n')) {
   out.push(unwrapLayerBlocks(expandRelativeImports(file, [])).trim())
 }
 
-fs.writeFileSync(outFile, `${out.join('\n').replace(/\n{3,}/g, '\n\n').trim()}\n`)
+fs.writeFileSync(
+  outFile,
+  applyFileHeader(outFile, `${out.join('\n').replace(/\n{3,}/g, '\n\n').trim()}\n`),
+)
 console.log(`已生成 ${path.relative(pkgRoot, outFile)}`)
 
 /**
@@ -72,7 +76,7 @@ function expandRelativeImports(file, stack) {
     return ''
   inlined.add(resolved)
 
-  const source = fs.readFileSync(resolved, 'utf8')
+  const source = stripFileHeader(fs.readFileSync(resolved, 'utf8'))
   const lines = []
   for (const line of source.split('\n')) {
     const imported = line.match(/^\s*@import\s+['"]([^'"]+)['"];/)

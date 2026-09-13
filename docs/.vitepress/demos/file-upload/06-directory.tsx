@@ -1,3 +1,8 @@
+/*
+ * Copyright (c) 2021-Present XiHanFun and contributors.
+ * Licensed under the MIT License. See LICENSE in the project root for license information.
+ */
+
 // 选整个目录 | directory 让隐藏输入改收目录，选中目录下的文件一次性全进来，数量上限要跟着放开
 import type { ReactNode } from "react";
 import {

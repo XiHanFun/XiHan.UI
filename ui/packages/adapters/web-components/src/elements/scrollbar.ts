@@ -1,3 +1,10 @@
+/*
+ * Copyright (c) 2021-Present XiHanFun and contributors.
+ * Licensed under the MIT License. See LICENSE in the project root for license information.
+ */
+
+// 提供 scrollbar 相关实现。
+
 import type { Direction, Orientation, Service, Size } from '@xihan-ui/core'
 import type { ScrollbarSchema, ScrollbarType } from '@xihan-ui/headless'
 import { connectScrollbar, scrollbarAnatomy, scrollbarMachine, scrollbarMeta } from '@xihan-ui/headless'

@@ -1,3 +1,8 @@
+/*
+ * Copyright (c) 2021-Present XiHanFun and contributors.
+ * Licensed under the MIT License. See LICENSE in the project root for license information.
+ */
+
 // 基础用法 | 各部件按需摆放，标题与描述都是可选的
 import type { ReactNode } from "react";
 import { XhAlertDescription, XhAlertRoot, XhAlertTitle } from "@xihan-ui/react";

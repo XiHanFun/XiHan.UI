@@ -1,3 +1,8 @@
+<!--
+  Copyright (c) 2021-Present XiHanFun and contributors.
+  Licensed under the MIT License. See LICENSE in the project root for license information.
+-->
+
 <!-- 语气 | 在 content 上写 data-tone，确认按钮跟着换色；语气是共享的一层，不是本组件的 prop -->
 <script setup lang="ts">
 import {

@@ -1,3 +1,8 @@
+/*
+ * Copyright (c) 2021-Present XiHanFun and contributors.
+ * Licensed under the MIT License. See LICENSE in the project root for license information.
+ */
+
 // 全局命令式顶部进度条：自带一个挂到浮层落点的 `<xh-loading-bar>`，
 // start/finish 在任意模块作用域可调（路由守卫、请求拦截器），不要求调用点在文档树的某一处。
 // 页面结构里的组合用法仍直接写 `<xh-loading-bar>`。

@@ -1,3 +1,10 @@
+/*
+ * Copyright (c) 2021-Present XiHanFun and contributors.
+ * Licensed under the MIT License. See LICENSE in the project root for license information.
+ */
+
+// 导出 question flow 模块的公共接口。
+
 export { questionFlowAnatomy, questionFlowItemQuery, questionFlowQuestionQuery } from './question-flow.anatomy'
 export { connectQuestionFlow } from './question-flow.connect'
 export { questionFlowKeyboard } from './question-flow.keyboard'

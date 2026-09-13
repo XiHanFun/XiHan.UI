@@ -1,3 +1,8 @@
+/*
+ * Copyright (c) 2021-Present XiHanFun and contributors.
+ * Licensed under the MIT License. See LICENSE in the project root for license information.
+ */
+
 // Web Audio 测试替身：把节点图与参数调度记录成纯数据，供各判据检查。
 // 只实现引擎用到的最小表面；浏览器会抛异常的调用（指数 ramp 到非正值、
 // 未 start 就 stop、start 两次）在替身里同样抛，违规当场暴露。

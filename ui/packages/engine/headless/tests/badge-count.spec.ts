@@ -1,3 +1,10 @@
+/*
+ * Copyright (c) 2021-Present XiHanFun and contributors.
+ * Licensed under the MIT License. See LICENSE in the project root for license information.
+ */
+
+// 验证 badge count 相关行为。
+
 // @vitest-environment jsdom
 // 角标说的是「有事情发生了」：计数、上限截断、0 值收起、小红点都归它算，
 // 不该由每个宿主各拼一遍——上限口径散在各处迟早不一致。

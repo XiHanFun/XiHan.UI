@@ -1,3 +1,10 @@
+/*
+ * Copyright (c) 2021-Present XiHanFun and contributors.
+ * Licensed under the MIT License. See LICENSE in the project root for license information.
+ */
+
+// 提供 password input 相关实现。
+
 import type { ComponentMeta } from '../spec/types'
 
 // root 缺省则三个视觉轴与整体状态无处安放；没有 input 就没有要输入的东西；

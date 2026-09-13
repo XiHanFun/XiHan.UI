@@ -1,3 +1,8 @@
+/*
+ * Copyright (c) 2021-Present XiHanFun and contributors.
+ * Licensed under the MIT License. See LICENSE in the project root for license information.
+ */
+
 // 激活约束：按下之后要走多远才算「开始拖」。
 import type { DndDelta } from '../dnd/types'
 

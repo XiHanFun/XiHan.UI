@@ -1,3 +1,8 @@
+<!--
+  Copyright (c) 2021-Present XiHanFun and contributors.
+  Licensed under the MIT License. See LICENSE in the project root for license information.
+-->
+
 <!-- 加载 | 保留按钮标签并阻止重复操作 -->
 <script setup lang="ts">
 import { LoaderIcon } from "@xihan-ui/icons";

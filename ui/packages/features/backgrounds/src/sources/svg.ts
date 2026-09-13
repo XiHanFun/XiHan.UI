@@ -1,3 +1,8 @@
+/*
+ * Copyright (c) 2021-Present XiHanFun and contributors.
+ * Licensed under the MIT License. See LICENSE in the project root for license information.
+ */
+
 // SVG → 点云。
 // 单条路径走 Path2D 填充；整段 SVG 交给浏览器自己渲染成图片再采样，
 // 这样描边、渐变、嵌套分组这些自己解析要写很久的东西全都免费拿到。

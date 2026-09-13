@@ -1,3 +1,10 @@
+/*
+ * Copyright (c) 2021-Present XiHanFun and contributors.
+ * Licensed under the MIT License. See LICENSE in the project root for license information.
+ */
+
+// 提供 element base 相关实现。
+
 import type { PartContract } from './dom/part-contract'
 import type { Spreader } from './dom/spread'
 import { onXhConfigChange, withXhConfig } from './config'

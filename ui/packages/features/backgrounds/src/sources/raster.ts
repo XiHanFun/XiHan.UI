@@ -1,3 +1,8 @@
+/*
+ * Copyright (c) 2021-Present XiHanFun and contributors.
+ * Licensed under the MIT License. See LICENSE in the project root for license information.
+ */
+
 // 光栅化：把任何能画到 2D 画布上的东西变成一份 RGBA 像素。
 // 图片、文字、SVG 走的都是这一条路，所以它们的采样行为完全一致。
 

@@ -1,3 +1,10 @@
+/*
+ * Copyright (c) 2021-Present XiHanFun and contributors.
+ * Licensed under the MIT License. See LICENSE in the project root for license information.
+ */
+
+// 验证 host teardown 相关行为。
+
 // @vitest-environment jsdom
 // 宿主离场（被移除 / 被移动）时角色节点的交还，以及已断开的宿主不得再动别人接管的节点。
 

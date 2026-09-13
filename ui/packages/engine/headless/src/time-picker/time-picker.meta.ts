@@ -1,3 +1,10 @@
+/*
+ * Copyright (c) 2021-Present XiHanFun and contributors.
+ * Licensed under the MIT License. See LICENSE in the project root for license information.
+ */
+
+// 提供 time picker 相关实现。
+
 import type { ComponentMeta } from '../spec/types'
 
 // control 是浮层定位锚点与段的读屏归属，input 是可编辑的段，trigger 是浮层的指针入口，

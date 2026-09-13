@@ -1,3 +1,8 @@
+/*
+ * Copyright (c) 2021-Present XiHanFun and contributors.
+ * Licensed under the MIT License. See LICENSE in the project root for license information.
+ */
+
 // @xihan-ui/motion —— 动效原语（依赖 kernel）。
 //
 // 缓动曲线与时长常量、不持有计时器的纯补间、逐帧循环、减弱动效偏好与应用级 override、

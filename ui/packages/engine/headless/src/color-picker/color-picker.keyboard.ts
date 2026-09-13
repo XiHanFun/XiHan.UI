@@ -1,3 +1,10 @@
+/*
+ * Copyright (c) 2021-Present XiHanFun and contributors.
+ * Licensed under the MIT License. See LICENSE in the project root for license information.
+ */
+
+// 提供 color picker 相关实现。
+
 import type { KeyboardTable } from '../spec/types'
 
 // APG 无取色器模式：两条可交互的轴按滑杆模式办，浮层部分按对话框模式办。

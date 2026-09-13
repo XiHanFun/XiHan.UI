@@ -2,7 +2,7 @@
 // 门禁：文档站示例的多框架文件不许各说各话。
 //
 // 同一个示例的各框架版本同名不同扩展名放在同一个目录里（01-basic.vue / 01-basic.html），
-// 每份都在首行写「标题 | 说明」。首行是生成器落成 h3 与段落的唯一来源，也是读者切换框架时
+// 每份都在版权头之后写「标题 | 说明」。这行是生成器落成 h3 与段落的唯一来源，也是读者切换框架时
 // 唯一不变的那句话——两边一旦漂开，同一个示例就成了两份文档。
 //
 // 三条硬判据：首行逐字一致、每个示例都有规范来源框架的那份、目录里不出现未登记的扩展名。
@@ -24,6 +24,7 @@
 // symbol 不许写成组件名（Xh 开头）——组件都有元素形态，拿它当理由是搪塞。
 import { readdir, readFile } from 'node:fs/promises'
 import { join } from 'node:path'
+import { stripFileHeader } from '../file-header.mjs'
 
 const DEMOS_DIR = '../docs/.vitepress/demos'
 const TABLE = 'scripts/demo-frameworks.json'
@@ -39,9 +40,10 @@ if (!spec) {
   process.exit(1)
 }
 
-/** 取首行注释里的「标题 | 说明」，没写返回 null。 */
+/** 取版权头之后第一条注释里的「标题 | 说明」，没写返回 null。 */
 function head(text) {
-  const matched = text.match(/^<!--([\s\S]*?)-->/) ?? text.match(/^\/\/(.*)/)
+  const source = stripFileHeader(text).trimStart()
+  const matched = source.match(/^<!--([\s\S]*?)-->/) ?? source.match(/^\/\/(.*)/)
   return matched ? matched[1].trim() : null
 }
 

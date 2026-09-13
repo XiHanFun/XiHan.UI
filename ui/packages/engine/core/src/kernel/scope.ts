@@ -1,3 +1,8 @@
+/*
+ * Copyright (c) 2021-Present XiHanFun and contributors.
+ * Licensed under the MIT License. See LICENSE in the project root for license information.
+ */
+
 // Scope：宿主 DOM 环境抽象，core 对 document/window 的访问统一经此。
 import type { IdGenerator } from './id-generator'
 import type { FocusableElement } from './types'

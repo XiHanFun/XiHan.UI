@@ -1,3 +1,8 @@
+/*
+ * Copyright (c) 2021-Present XiHanFun and contributors.
+ * Licensed under the MIT License. See LICENSE in the project root for license information.
+ */
+
 // 基础用法 | 想的时候自动展开、想完自动收起；状态文案由组件按在不在想与时长给出
 import type { ReactNode } from "react";
 import {

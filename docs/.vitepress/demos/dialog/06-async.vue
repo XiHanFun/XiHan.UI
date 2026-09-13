@@ -1,3 +1,8 @@
+<!--
+  Copyright (c) 2021-Present XiHanFun and contributors.
+  Licensed under the MIT License. See LICENSE in the project root for license information.
+-->
+
 <!-- 异步确认 | 提交期间按钮转圈，Esc 与点遮罩这两条出口一并封住，落定之后才把 open 写回 false -->
 <script setup lang="ts">
 import {

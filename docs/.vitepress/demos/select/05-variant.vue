@@ -1,3 +1,8 @@
+<!--
+  Copyright (c) 2021-Present XiHanFun and contributors.
+  Licensed under the MIT License. See LICENSE in the project root for license information.
+-->
+
 <!-- 形态 | outline、subtle 和 ghost -->
 <script setup lang="ts">
 import { XhSelectRoot } from "@xihan-ui/vue";

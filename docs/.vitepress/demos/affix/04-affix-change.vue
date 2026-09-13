@@ -1,3 +1,8 @@
+<!--
+  Copyright (c) 2021-Present XiHanFun and contributors.
+  Licensed under the MIT License. See LICENSE in the project root for license information.
+-->
+
 <!-- 吸附状态 | 根据当前状态更新内容 -->
 <script setup lang="ts">
 import { XhAffixContent, XhAffixRoot } from "@xihan-ui/vue";

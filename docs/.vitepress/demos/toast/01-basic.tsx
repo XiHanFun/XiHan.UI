@@ -1,3 +1,8 @@
+/*
+ * Copyright (c) 2021-Present XiHanFun and contributors.
+ * Licensed under the MIT License. See LICENSE in the project root for license information.
+ */
+
 // 基础用法 | 一条一句话：title 部件留空时由属性上的文案填入；duration 给 0 即不自动消失
 import type { ReactNode } from "react";
 import {

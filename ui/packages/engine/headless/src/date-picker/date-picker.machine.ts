@@ -1,3 +1,10 @@
+/*
+ * Copyright (c) 2021-Present XiHanFun and contributors.
+ * Licensed under the MIT License. See LICENSE in the project root for license information.
+ */
+
+// 提供 date picker 相关实现。
+
 import type { PositionResult, Service } from '@xihan-ui/core'
 import type { CalendarGranularity, CalendarSchema, CalendarSelectionMode, CalendarView } from '../calendar'
 import type { DateFieldSchema, DateGranularity, DateSegmentSet } from '../date-field'

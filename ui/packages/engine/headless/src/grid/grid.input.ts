@@ -1,3 +1,8 @@
+/*
+ * Copyright (c) 2021-Present XiHanFun and contributors.
+ * Licensed under the MIT License. See LICENSE in the project root for license information.
+ */
+
 /** Grid 逐档声明允许出现的固定键。 */
 export const GRID_TIER_NAMES = ['base', 'sm', 'md', 'lg', 'xl'] as const
 

@@ -1,3 +1,8 @@
+<!--
+  Copyright (c) 2021-Present XiHanFun and contributors.
+  Licensed under the MIT License. See LICENSE in the project root for license information.
+-->
+
 <!-- 基础用法 | 默认单开：展开一项即收起其余，defaultValue 只给初始值，之后由组件自己维护 -->
 <script setup lang="ts">
 import { XhAccordionRoot } from "@xihan-ui/vue";

@@ -1,3 +1,10 @@
+/*
+ * Copyright (c) 2021-Present XiHanFun and contributors.
+ * Licensed under the MIT License. See LICENSE in the project root for license information.
+ */
+
+// 导出 color picker 模块的公共接口。
+
 export { colorPickerAnatomy } from './color-picker.anatomy'
 export {
   COLOR_PICKER_FALLBACK,

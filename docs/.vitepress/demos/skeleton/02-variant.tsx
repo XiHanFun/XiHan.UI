@@ -1,3 +1,8 @@
+/*
+ * Copyright (c) 2021-Present XiHanFun and contributors.
+ * Licensed under the MIT License. See LICENSE in the project root for license information.
+ */
+
 // 形状 | 容器的 shape 是这一组的默认形状，单根骨架条自带 shape 就按自己的来
 import type { ReactNode } from "react";
 import { XhSkeletonItem, XhSkeletonRoot } from "@xihan-ui/react";

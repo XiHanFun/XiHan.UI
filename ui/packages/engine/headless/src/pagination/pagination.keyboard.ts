@@ -1,3 +1,10 @@
+/*
+ * Copyright (c) 2021-Present XiHanFun and contributors.
+ * Licensed under the MIT License. See LICENSE in the project root for license information.
+ */
+
+// 提供 pagination 相关实现。
+
 import type { KeyboardTable } from '../spec/types'
 
 // APG 没有 pagination 模式，键盘行为全部由原生按钮与 Tab 序列提供，源头指向 button 模式。

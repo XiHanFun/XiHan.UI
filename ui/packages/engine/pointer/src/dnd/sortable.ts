@@ -1,3 +1,8 @@
+/*
+ * Copyright (c) 2021-Present XiHanFun and contributors.
+ * Licensed under the MIT License. See LICENSE in the project root for license information.
+ */
+
 // 排序投影：拖动过程中算出「此刻放手会落到第几位」，以及每一项该让到哪儿。
 import type { DndDelta, DndRect, SortableOffsetsInput, SortableProjection, SortableProjectionInput } from './types'
 

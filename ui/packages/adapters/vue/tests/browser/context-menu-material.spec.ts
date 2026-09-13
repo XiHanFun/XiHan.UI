@@ -1,3 +1,8 @@
+/*
+ * Copyright (c) 2021-Present XiHanFun and contributors.
+ * Licensed under the MIT License. See LICENSE in the project root for license information.
+ */
+
 // ContextMenu 的 M2 表面、作者任意 slot 行与四向短位移动效依赖完整 CSS 级联，只在真实 Chromium 验证。
 import type { App } from 'vue'
 import { userEvent } from '@vitest/browser/context'

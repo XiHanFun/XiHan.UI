@@ -1,3 +1,8 @@
+/*
+ * Copyright (c) 2021-Present XiHanFun and contributors.
+ * Licensed under the MIT License. See LICENSE in the project root for license information.
+ */
+
 // 标签位置 | placement 决定标签在上还是在左，不传即在上
 import type { ReactNode } from "react";
 import {

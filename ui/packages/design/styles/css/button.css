@@ -1,3 +1,8 @@
+/*
+ * Copyright (c) 2021-Present XiHanFun and contributors.
+ * Licensed under the MIT License. See LICENSE in the project root for license information.
+ */
+
 /* 独立 Button 皮肤与 full bundle 都从同一份 Family Recipe 取得布局、状态和命中区。 */
 @import '../family/action-control.css';
 

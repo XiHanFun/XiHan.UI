@@ -1,3 +1,8 @@
+/*
+ * Copyright (c) 2021-Present XiHanFun and contributors.
+ * Licensed under the MIT License. See LICENSE in the project root for license information.
+ */
+
 // VirtualizerPort：虚拟滚动端口的类型契约，实现由各适配器提供。
 
 export interface VirtualItem {

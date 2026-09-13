@@ -1,3 +1,10 @@
+/*
+ * Copyright (c) 2021-Present XiHanFun and contributors.
+ * Licensed under the MIT License. See LICENSE in the project root for license information.
+ */
+
+// 验证 table column settings 相关行为。
+
 // @vitest-environment jsdom
 // 列设置区与工具条：把表格早就有的排序、列宽、显隐三样接出来的两个部件。
 //

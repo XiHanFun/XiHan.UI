@@ -1,3 +1,10 @@
+/*
+ * Copyright (c) 2021-Present XiHanFun and contributors.
+ * Licensed under the MIT License. See LICENSE in the project root for license information.
+ */
+
+// 验证 scrollbars shared 相关行为。
+
 // @vitest-environment jsdom
 //
 // 自绘条的共享层：节点由库建、挂在作者写的壳上，作者一个字不用写。

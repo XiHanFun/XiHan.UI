@@ -1,3 +1,10 @@
+/*
+ * Copyright (c) 2021-Present XiHanFun and contributors.
+ * Licensed under the MIT License. See LICENSE in the project root for license information.
+ */
+
+// 定义 empty state 类型契约。
+
 import type { PropTypes, Size, Tone } from '@xihan-ui/core'
 
 /** 播报方式：polite 让 root 成为 role=status 活区，off 让它只是个普通容器。 */

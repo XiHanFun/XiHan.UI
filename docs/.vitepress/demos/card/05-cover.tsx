@@ -1,3 +1,8 @@
+/*
+ * Copyright (c) 2021-Present XiHanFun and contributors.
+ * Licensed under the MIT License. See LICENSE in the project root for license information.
+ */
+
 // 带封面 | 封面顶到根的边上、不吃内边距，圆角由根统一裁
 import type { ReactNode } from "react";
 import { XhCardBody, XhCardDescription, XhCardHeader, XhCardMedia, XhCardRoot, XhCardTitle } from "@xihan-ui/react";

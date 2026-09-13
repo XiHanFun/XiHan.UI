@@ -1,3 +1,10 @@
+/*
+ * Copyright (c) 2021-Present XiHanFun and contributors.
+ * Licensed under the MIT License. See LICENSE in the project root for license information.
+ */
+
+// 提供 rating 相关实现。
+
 import type { KeyboardTable } from '../spec/types'
 
 // 键盘契约对齐 radio 模式；allowHalf 打开时一档是半颗星。

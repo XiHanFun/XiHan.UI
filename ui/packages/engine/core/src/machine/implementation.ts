@@ -1,3 +1,10 @@
+/*
+ * Copyright (c) 2021-Present XiHanFun and contributors.
+ * Licensed under the MIT License. See LICENSE in the project root for license information.
+ */
+
+// 提供 implementation 相关实现。
+
 type CallableImplementation = (...args: never[]) => unknown
 
 /** 只接受对象自身的数据属性函数；不触发 getter，也不借用原型链实现。 */

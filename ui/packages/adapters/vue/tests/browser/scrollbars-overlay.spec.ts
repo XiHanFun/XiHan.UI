@@ -1,3 +1,8 @@
+/*
+ * Copyright (c) 2021-Present XiHanFun and contributors.
+ * Licensed under the MIT License. See LICENSE in the project root for license information.
+ */
+
 // 浮层族的自绘条：贴着 positioner 的盒、不占宽度、露出后拖得动、轨道不上底色。
 //
 // 这四件只有真实浏览器量得出来：jsdom 不排版，getBoundingClientRect 恒是 0；

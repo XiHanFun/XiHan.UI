@@ -1,3 +1,10 @@
+/*
+ * Copyright (c) 2021-Present XiHanFun and contributors.
+ * Licensed under the MIT License. See LICENSE in the project root for license information.
+ */
+
+// 定义 image cropper 类型契约。
+
 import type { MachineSchema, PropTypes } from '@xihan-ui/core'
 
 /** 裁切框的外形：方框，或圆形（圆形只改遮罩与描边，矩形数据不变）。 */

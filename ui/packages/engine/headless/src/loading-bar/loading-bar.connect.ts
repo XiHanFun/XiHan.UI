@@ -1,3 +1,10 @@
+/*
+ * Copyright (c) 2021-Present XiHanFun and contributors.
+ * Licensed under the MIT License. See LICENSE in the project root for license information.
+ */
+
+// 提供 loading bar 相关实现。
+
 import type { NormalizeProps, PropTypes, Service } from '@xihan-ui/core'
 import type { LoadingBarApi, LoadingBarSchema } from './loading-bar.types'
 import { DATA_INERT_EXEMPT, dataAttr } from '@xihan-ui/core'

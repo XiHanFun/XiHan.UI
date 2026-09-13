@@ -1,3 +1,8 @@
+/*
+ * Copyright (c) 2021-Present XiHanFun and contributors.
+ * Licensed under the MIT License. See LICENSE in the project root for license information.
+ */
+
 // 全局命令式通知服务：自带一个挂到浮层落点的 `<xh-notification>` 与默认模板。
 //
 // 通知常常不是从某个组件里发出来的——推送连接的回调、后台任务的收尾、拦截器里的

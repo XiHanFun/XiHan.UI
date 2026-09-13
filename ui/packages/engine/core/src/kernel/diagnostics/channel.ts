@@ -1,3 +1,8 @@
+/*
+ * Copyright (c) 2021-Present XiHanFun and contributors.
+ * Licensed under the MIT License. See LICENSE in the project root for license information.
+ */
+
 // 全局诊断通道：组件把「这里不对」投递进来，宿主订阅后自行决定打印、收集还是上报。
 import type { Cleanup } from '../types'
 import type { DiagnosticHandler, DiagnosticRecord, Diagnostics, DiagnosticThreshold } from './types'

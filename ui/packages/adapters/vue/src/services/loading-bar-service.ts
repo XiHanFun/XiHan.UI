@@ -1,3 +1,10 @@
+/*
+ * Copyright (c) 2021-Present XiHanFun and contributors.
+ * Licensed under the MIT License. See LICENSE in the project root for license information.
+ */
+
+// 提供 loading bar service 相关实现。
+
 import type { Tone } from '@xihan-ui/core'
 // 全局命令式顶部进度条：自带一个挂到 body 的宿主应用，
 // start/finish 在任意模块作用域可调（路由守卫、请求拦截器），不要求调用点在组件树内。

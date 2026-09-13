@@ -1,3 +1,8 @@
+/*
+ * Copyright (c) 2021-Present XiHanFun and contributors.
+ * Licensed under the MIT License. See LICENSE in the project root for license information.
+ */
+
 // 传输端口：协议内核对接后端的唯一接口。
 import type { ChatRequest } from '../model/message'
 import type { NormalizedEvent } from '../reduce/events'

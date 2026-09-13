@@ -1,3 +1,8 @@
+/*
+ * Copyright (c) 2021-Present XiHanFun and contributors.
+ * Licensed under the MIT License. See LICENSE in the project root for license information.
+ */
+
 // 发声：把一份钳制过的配方调度成一次真实发声。
 // 每层建「源 → 滤波 → 层增益」链，汇入本次发声的总增益，再分干/湿两路送出；
 // 全部时间点在启动前一次性排好，最后结束的源负责把整条链拆掉。

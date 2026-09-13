@@ -1,3 +1,10 @@
+/*
+ * Copyright (c) 2021-Present XiHanFun and contributors.
+ * Licensed under the MIT License. See LICENSE in the project root for license information.
+ */
+
+// 验证 stick to bottom handle 相关行为。
+
 // @vitest-environment jsdom
 // useStickToBottom 在 Vue 里的两件事：句柄要交出去，节点到位后要真的绑上。
 //

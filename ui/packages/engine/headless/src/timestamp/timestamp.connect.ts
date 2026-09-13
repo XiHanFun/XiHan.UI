@@ -1,3 +1,10 @@
+/*
+ * Copyright (c) 2021-Present XiHanFun and contributors.
+ * Licensed under the MIT License. See LICENSE in the project root for license information.
+ */
+
+// 提供 timestamp 相关实现。
+
 import type { NormalizeProps, PropTypes } from '@xihan-ui/core'
 import type { TimestampType } from './timestamp.format'
 import type { TimestampApi, TimestampProps, TimestampState } from './timestamp.types'

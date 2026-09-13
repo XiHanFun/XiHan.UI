@@ -1,4 +1,9 @@
 /*
+ * Copyright (c) 2021-Present XiHanFun and contributors.
+ * Licensed under the MIT License. See LICENSE in the project root for license information.
+ */
+
+/*
  * 字段族标签的公共层，按 [data-part='label'] 匹配下面逐个列出的 scope。
  *
  * 收在这里的是逐值相同的两条：行距取 --xh-leading-none，禁用档字色取 --xh-fg-subtle。

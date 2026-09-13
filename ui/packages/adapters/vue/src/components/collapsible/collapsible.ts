@@ -1,3 +1,10 @@
+/*
+ * Copyright (c) 2021-Present XiHanFun and contributors.
+ * Licensed under the MIT License. See LICENSE in the project root for license information.
+ */
+
+// 提供 collapsible 相关实现。
+
 import type { Direction, Size, Tone } from '@xihan-ui/core'
 import type { CollapsibleSchema } from '@xihan-ui/headless'
 import type { PropType } from 'vue'

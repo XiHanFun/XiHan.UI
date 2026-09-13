@@ -1,3 +1,8 @@
+/*
+ * Copyright (c) 2021-Present XiHanFun and contributors.
+ * Licensed under the MIT License. See LICENSE in the project root for license information.
+ */
+
 // 效果定义帮助器。参数规格写起来很啰嗦，这几个工厂把它压成一行，
 // 顺带保证 min/max/step/default 一个都不会漏。
 

@@ -1,3 +1,8 @@
+/*
+ * Copyright (c) 2021-Present XiHanFun and contributors.
+ * Licensed under the MIT License. See LICENSE in the project root for license information.
+ */
+
 // 自研响应式自定义元素的公开类型：属性声明、更新载荷、控制器协议。
 
 /** 属性字符串 → 字段值。本运行时不做属性回写，故没有 toAttribute。 */

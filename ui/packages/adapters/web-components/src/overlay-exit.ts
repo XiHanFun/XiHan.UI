@@ -1,3 +1,8 @@
+/*
+ * Copyright (c) 2021-Present XiHanFun and contributors.
+ * Licensed under the MIT License. See LICENSE in the project root for license information.
+ */
+
 // 退场闸门：把「几时真的收起浮层子树」从展开态挪到 presence 上。
 //
 // Light DOM 下元素无权增删作者的节点，所以这里被 presence 拉长的不是「节点存在的时间」

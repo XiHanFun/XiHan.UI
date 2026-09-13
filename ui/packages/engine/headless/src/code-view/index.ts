@@ -1,3 +1,10 @@
+/*
+ * Copyright (c) 2021-Present XiHanFun and contributors.
+ * Licensed under the MIT License. See LICENSE in the project root for license information.
+ */
+
+// 导出 code view 模块的公共接口。
+
 export { codeViewAnatomy } from './code-view.anatomy'
 export { connectCodeView } from './code-view.connect'
 export { createCodeViewHighlighterResource, isCodeViewHighlighterUnavailable } from './code-view.highlighter'

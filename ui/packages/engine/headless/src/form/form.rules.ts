@@ -1,3 +1,8 @@
+/*
+ * Copyright (c) 2021-Present XiHanFun and contributors.
+ * Licensed under the MIT License. See LICENSE in the project root for license information.
+ */
+
 // 声明式校验规则的纯运算：不碰 DOM、不看状态机。
 // 语义：非 required 规则对空值放行（空值只由 required 拦）；一个字段按规则声明序首败即停；
 // 文案取 rule.message → 表单 validateMessages 模板 → 内置模板，模板里 {name}/{min}/{max} 现场代入。

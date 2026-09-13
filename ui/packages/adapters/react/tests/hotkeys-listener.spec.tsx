@@ -1,3 +1,10 @@
+/*
+ * Copyright (c) 2021-Present XiHanFun and contributors.
+ * Licensed under the MIT License. See LICENSE in the project root for license information.
+ */
+
+// 验证 hotkeys listener 相关行为。
+
 // @vitest-environment jsdom
 //
 // hotkeys 的监听装在组件之外的节点上（缺省是整篇文档）：组件卸载时 React 只摘自己那棵子树，

@@ -1,3 +1,10 @@
+/*
+ * Copyright (c) 2021-Present XiHanFun and contributors.
+ * Licensed under the MIT License. See LICENSE in the project root for license information.
+ */
+
+// 提供 react id 相关实现。
+
 import type { IdGenerator, Scope } from '@xihan-ui/core'
 import { createScope } from '@xihan-ui/core'
 import { useId, useMemo } from 'react'

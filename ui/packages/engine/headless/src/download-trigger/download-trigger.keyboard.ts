@@ -1,3 +1,10 @@
+/*
+ * Copyright (c) 2021-Present XiHanFun and contributors.
+ * Licensed under the MIT License. See LICENSE in the project root for license information.
+ */
+
+// 提供 download trigger 相关实现。
+
 import type { KeyboardTable } from '../spec/types'
 
 // 触发器就是一个原生按钮，键盘约定照按钮模式：两个激活键由平台翻成 click，组件不自己接键。

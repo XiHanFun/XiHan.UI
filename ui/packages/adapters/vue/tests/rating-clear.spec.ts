@@ -1,3 +1,10 @@
+/*
+ * Copyright (c) 2021-Present XiHanFun and contributors.
+ * Licensed under the MIT License. See LICENSE in the project root for license information.
+ */
+
+// 验证 rating clear 相关行为。
+
 // @vitest-environment jsdom
 // rating allowClear（默认开）：再点当前档位清零，键盘在最低档再往下走一步同样清零；
 // 设为 false 回到「再点不清」，命令式 setValue 不受影响。

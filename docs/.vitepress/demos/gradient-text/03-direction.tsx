@@ -1,3 +1,8 @@
+/*
+ * Copyright (c) 2021-Present XiHanFun and contributors.
+ * Licensed under the MIT License. See LICENSE in the project root for license information.
+ */
+
 // 方向 | 设置渐变方向
 import type { GradientTextDirection } from "@xihan-ui/headless";
 import type { ReactNode } from "react";

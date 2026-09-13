@@ -1,3 +1,8 @@
+/*
+ * Copyright (c) 2021-Present XiHanFun and contributors.
+ * Licensed under the MIT License. See LICENSE in the project root for license information.
+ */
+
 // 尺寸 | size 换字号、行高与行号槽的宽度，三档并列对照
 import type { ReactNode } from "react";
 import { computeTextDiff } from "@xihan-ui/headless";

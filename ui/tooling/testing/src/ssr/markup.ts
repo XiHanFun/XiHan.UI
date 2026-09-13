@@ -1,3 +1,8 @@
+/*
+ * Copyright (c) 2021-Present XiHanFun and contributors.
+ * Licensed under the MIT License. See LICENSE in the project root for license information.
+ */
+
 // 从服务端直出的 HTML 串里扫出带 data-scope / data-part 的标签。
 // 服务端这一层没有 DOM，解析不走 DOMParser，只按开标签逐个取属性。
 

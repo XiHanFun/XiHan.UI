@@ -1,3 +1,8 @@
+/*
+ * Copyright (c) 2021-Present XiHanFun and contributors.
+ * Licensed under the MIT License. See LICENSE in the project root for license information.
+ */
+
 // 自定义排版 | 条子本身就是一行 flex，摆什么、摆在哪一侧都归作者；组件只管盒子、计时与退场
 import type { CSSProperties, ReactNode } from "react";
 import { CopyIcon, RocketIcon } from "@xihan-ui/icons";

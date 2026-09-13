@@ -1,3 +1,8 @@
+/*
+ * Copyright (c) 2021-Present XiHanFun and contributors.
+ * Licensed under the MIT License. See LICENSE in the project root for license information.
+ */
+
 /**
  * 判据按「门面在任何环境都不许炸」写：禁用不建上下文、环境缺 AudioContext
  * 静默退出、未知名只出一条诊断、节流按名生效、挂起态只保最近一声、

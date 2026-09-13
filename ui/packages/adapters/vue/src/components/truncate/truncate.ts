@@ -1,3 +1,10 @@
+/*
+ * Copyright (c) 2021-Present XiHanFun and contributors.
+ * Licensed under the MIT License. See LICENSE in the project root for license information.
+ */
+
+// 提供 truncate 相关实现。
+
 import type { TruncateApi, TruncateSchema } from '@xihan-ui/headless'
 import type { SlotsType, VNode } from 'vue'
 import type { PayloadOf } from '../../runtime/payload'

@@ -1,3 +1,8 @@
+/*
+ * Copyright (c) 2021-Present XiHanFun and contributors.
+ * Licensed under the MIT License. See LICENSE in the project root for license information.
+ */
+
 /**
  * 打字落点的判定要真实的活 DOM：输入框是不是正在打字的地方，只有节点在场时才答得出来。
  *

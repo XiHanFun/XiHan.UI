@@ -1,3 +1,8 @@
+/*
+ * Copyright (c) 2021-Present XiHanFun and contributors.
+ * Licensed under the MIT License. See LICENSE in the project root for license information.
+ */
+
 // 拖拽重排的共用纯函数：沿轴的落点判定与读屏播报。
 // 不碰 DOM、不认识状态机——矩形由连接层在事件处理器里量好交进来。
 //

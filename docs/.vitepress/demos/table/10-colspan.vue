@@ -1,3 +1,8 @@
+<!--
+  Copyright (c) 2021-Present XiHanFun and contributors.
+  Licensed under the MIT License. See LICENSE in the project root for license information.
+-->
+
 <!-- 跨列单元格 | colspan 从它自己那一列往后算，报成 aria-colspan；1 与省略同义，所以只在真跨了列时写 -->
 <script setup lang="ts">
 import {

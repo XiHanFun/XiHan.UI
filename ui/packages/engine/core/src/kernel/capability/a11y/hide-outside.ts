@@ -1,3 +1,8 @@
+/*
+ * Copyright (c) 2021-Present XiHanFun and contributors.
+ * Licensed under the MIT License. See LICENSE in the project root for license information.
+ */
+
 // hideOutside：沿每个 target 到 body 的祖先链逐层把其余兄弟设 inert，使背景失活。
 import type { RuntimeConfig } from '../../runtime-config'
 import type { Cleanup } from '../../types'

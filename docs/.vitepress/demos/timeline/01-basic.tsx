@@ -1,3 +1,8 @@
+/*
+ * Copyright (c) 2021-Present XiHanFun and contributors.
+ * Licensed under the MIT License. See LICENSE in the project root for license information.
+ */
+
 // 基础用法 | 一条竖向的事件流：每条一个圆点，圆点之间连一截线，末条的线自动收掉
 import type { ReactNode } from "react";
 import {

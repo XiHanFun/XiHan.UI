@@ -1,3 +1,8 @@
+/*
+ * Copyright (c) 2021-Present XiHanFun and contributors.
+ * Licensed under the MIT License. See LICENSE in the project root for license information.
+ */
+
 // 色板轴定的是色阶满档那一端，中间各档由皮肤里一条 color-mix 在 oklab 里兑出来。
 // 兑出来的那几档只有真浏览器算得出：jsdom 不解析 color-mix，计算值原样返回，那边永远是绿的。
 //

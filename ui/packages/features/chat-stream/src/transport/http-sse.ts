@@ -1,3 +1,8 @@
+/*
+ * Copyright (c) 2021-Present XiHanFun and contributors.
+ * Licensed under the MIT License. See LICENSE in the project root for license information.
+ */
+
 // HTTP + SSE 传输实现：stream() 不抛异常，错误路径一律先产一条事件再结束。
 import type { ChatRequest } from '../model/message'
 import type { NormalizedEvent } from '../reduce/events'

@@ -1,3 +1,10 @@
+/*
+ * Copyright (c) 2021-Present XiHanFun and contributors.
+ * Licensed under the MIT License. See LICENSE in the project root for license information.
+ */
+
+// 验证 form reset 相关行为。
+
 // @vitest-environment jsdom
 //
 // 值攥在机器里，原生 reset 只还原原生控件——不接这条线，点重置什么都不会发生。

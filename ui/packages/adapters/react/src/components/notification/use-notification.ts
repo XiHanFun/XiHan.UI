@@ -1,3 +1,10 @@
+/*
+ * Copyright (c) 2021-Present XiHanFun and contributors.
+ * Licensed under the MIT License. See LICENSE in the project root for license information.
+ */
+
+// 提供 use notification 相关实现。
+
 import type { NotificationOptions, NotificationSchema, ToastSchema } from '@xihan-ui/headless'
 import type { NotificationContext, NotificationItemContext } from './context'
 import { connectNotification, connectNotificationItem, notificationMachine, toastMachine } from '@xihan-ui/headless'

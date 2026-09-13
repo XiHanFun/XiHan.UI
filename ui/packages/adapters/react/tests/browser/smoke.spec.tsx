@@ -1,3 +1,8 @@
+/*
+ * Copyright (c) 2021-Present XiHanFun and contributors.
+ * Licensed under the MIT License. See LICENSE in the project root for license information.
+ */
+
 // 浏览器态的地基自检：证明 React 宿主在真实 Chromium 里挂得起来，且皮肤与令牌真的被加载进了文档。
 // 断言全部取自级联算完的最终值——jsdom 不解析 var()/calc()，也不做布局，这几条在那边一条都给不出。
 // 后面的皮肤、退场、定位、无障碍判据都以「样式在场」为前提，这一条不绿，那些判据的绿没有意义。

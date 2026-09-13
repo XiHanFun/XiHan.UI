@@ -1,3 +1,8 @@
+/*
+ * Copyright (c) 2021-Present XiHanFun and contributors.
+ * Licensed under the MIT License. See LICENSE in the project root for license information.
+ */
+
 // 垂直布局 | 展示纵向流程与步骤内容
 import type { ReactNode } from "react";
 import {

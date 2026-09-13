@@ -1,3 +1,10 @@
+/*
+ * Copyright (c) 2021-Present XiHanFun and contributors.
+ * Licensed under the MIT License. See LICENSE in the project root for license information.
+ */
+
+// 验证 tour overlay 相关行为。
+
 // @vitest-environment jsdom
 // Tour 的视觉节点由适配器留在 DOM，Headless 只负责把 Layer、消解与焦点域留到 Presence 真正退出。
 import type { Service } from '@xihan-ui/core'

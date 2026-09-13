@@ -1,3 +1,10 @@
+/*
+ * Copyright (c) 2021-Present XiHanFun and contributors.
+ * Licensed under the MIT License. See LICENSE in the project root for license information.
+ */
+
+// 提供 diff view 相关实现。
+
 import { createAnatomy } from '@xihan-ui/core'
 
 // root 是外壳；header 放文件名与增删统计，summary 是统计位（增删各一个）；

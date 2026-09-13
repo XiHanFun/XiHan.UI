@@ -1,3 +1,8 @@
+<!--
+  Copyright (c) 2021-Present XiHanFun and contributors.
+  Licensed under the MIT License. See LICENSE in the project root for license information.
+-->
+
 <!-- 分隔符 | 在相邻内容之间添加分隔符 -->
 <script setup lang="ts">
 import { XhFlex } from "@xihan-ui/vue";

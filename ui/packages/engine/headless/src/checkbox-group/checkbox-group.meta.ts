@@ -1,3 +1,10 @@
+/*
+ * Copyright (c) 2021-Present XiHanFun and contributors.
+ * Licensed under the MIT License. See LICENSE in the project root for license information.
+ */
+
+// 提供 checkbox group 相关实现。
+
 import type { ComponentMeta } from '../spec/types'
 
 // root 承载 role=group 与组标题的指向，缺了它这堆复选框对读屏就是一盘散沙；

@@ -1,3 +1,10 @@
+/*
+ * Copyright (c) 2021-Present XiHanFun and contributors.
+ * Licensed under the MIT License. See LICENSE in the project root for license information.
+ */
+
+// 定义 types 类型契约。
+
 import type { Layer, RuntimeConfig } from '../../kernel'
 
 export type DismissReason = 'escape-key' | 'pointer-down-outside' | 'focus-outside' | 'programmatic'

@@ -1,3 +1,10 @@
+/*
+ * Copyright (c) 2021-Present XiHanFun and contributors.
+ * Licensed under the MIT License. See LICENSE in the project root for license information.
+ */
+
+// 提供 tour 相关实现。
+
 import type { PositionResult, PropFn, Scope } from '@xihan-ui/core'
 import type { TourSchema, TourSpotlightRect, TourStep } from './tour.types'
 import { canTakeFocus, createDismissLayer, createFocusScope, setup } from '@xihan-ui/core'

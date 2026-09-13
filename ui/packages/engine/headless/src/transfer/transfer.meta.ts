@@ -1,3 +1,10 @@
+/*
+ * Copyright (c) 2021-Present XiHanFun and contributors.
+ * Licensed under the MIT License. See LICENSE in the project root for license information.
+ */
+
+// 提供 transfer 相关实现。
+
 import type { ComponentMeta } from '../spec/types'
 
 // 两侧面板与两侧的 list 必需：role=listbox、可及名字与键盘入口全在 list 上，

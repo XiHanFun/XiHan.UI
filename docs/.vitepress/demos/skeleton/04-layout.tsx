@@ -1,3 +1,8 @@
+/*
+ * Copyright (c) 2021-Present XiHanFun and contributors.
+ * Licensed under the MIT License. See LICENSE in the project root for license information.
+ */
+
 // 按版面占位 | 骨架条的宽高由内联样式与组件令牌定，占位形状贴着真内容将来的样子
 import type { CSSProperties, ReactNode } from "react";
 import { XhSkeletonItem, XhSkeletonRoot } from "@xihan-ui/react";

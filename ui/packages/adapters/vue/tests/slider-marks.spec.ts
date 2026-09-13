@@ -1,3 +1,10 @@
+/*
+ * Copyright (c) 2021-Present XiHanFun and contributors.
+ * Licensed under the MIT License. See LICENSE in the project root for license information.
+ */
+
+// 验证 slider marks 相关行为。
+
 // @vitest-environment jsdom
 // slider 刻度：marks 呈现数据（百分比定位、分段上色）、点文案跳值；
 // snapToMarks 让命令式赋值与键盘都只认刻度落点，方向键走「下一档刻度」。

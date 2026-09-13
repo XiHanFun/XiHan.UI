@@ -1,3 +1,8 @@
+/*
+ * Copyright (c) 2021-Present XiHanFun and contributors.
+ * Licensed under the MIT License. See LICENSE in the project root for license information.
+ */
+
 // 换掉转圈图形 | 内置圆环画在伪元素上，把直径与描边归零它就不占位；自绘的图形写进 root 里
 import type { CSSProperties, ReactNode } from "react";
 import { XhIcon, XhSpinner, XhSpinnerLabel } from "@xihan-ui/react";

@@ -1,3 +1,8 @@
+/*
+ * Copyright (c) 2021-Present XiHanFun and contributors.
+ * Licensed under the MIT License. See LICENSE in the project root for license information.
+ */
+
 // 分组排布 | 格子由作者逐个写出，中间插什么都行；下标接着排，跳格与整串粘贴仍按文档序走
 import type { ReactNode } from "react";
 import { XhPinInputInput, XhPinInputLabel, XhPinInputRoot } from "@xihan-ui/react";

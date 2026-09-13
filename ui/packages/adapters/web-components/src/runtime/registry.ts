@@ -1,3 +1,8 @@
+/*
+ * Copyright (c) 2021-Present XiHanFun and contributors.
+ * Licensed under the MIT License. See LICENSE in the project root for license information.
+ */
+
 // 自定义元素注册表：幂等注册，重复标签或版本冲突时抛错，无 DOM 环境跳过。
 const REGISTRY_KEY = '__XIHAN_UI_WC__'
 

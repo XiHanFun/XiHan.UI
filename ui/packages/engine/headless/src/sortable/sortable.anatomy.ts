@@ -1,3 +1,10 @@
+/*
+ * Copyright (c) 2021-Present XiHanFun and contributors.
+ * Licensed under the MIT License. See LICENSE in the project root for license information.
+ */
+
+// 提供 sortable 相关实现。
+
 import { createAnatomy } from '@xihan-ui/core'
 
 // root 是排序容器，item 是一项；item-drag-trigger 是那一项的拖拽手柄，

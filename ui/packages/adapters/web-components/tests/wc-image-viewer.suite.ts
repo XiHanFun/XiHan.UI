@@ -1,3 +1,10 @@
+/*
+ * Copyright (c) 2021-Present XiHanFun and contributors.
+ * Licensed under the MIT License. See LICENSE in the project root for license information.
+ */
+
+// 验证 wc image viewer.suite 相关行为。
+
 import type { ConformanceSuite, RawStepContext } from '@xihan-ui/testing'
 import { imageViewerAnatomy, imageViewerKeyboard } from '@xihan-ui/headless'
 import { IMAGE_VIEWER_CONTENT_CHILDREN, IMAGE_VIEWER_PENDING_ITEMS, imageViewerAtIndex, imageViewerProps, nativeActivation, openImageViewer } from '@xihan-ui/testing'

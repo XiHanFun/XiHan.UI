@@ -1,3 +1,10 @@
+/*
+ * Copyright (c) 2021-Present XiHanFun and contributors.
+ * Licensed under the MIT License. See LICENSE in the project root for license information.
+ */
+
+// 提供 mount host 相关实现。
+
 import type { ReactNode } from 'react'
 import type { Root } from 'react-dom/client'
 import { DIAGNOSTIC_CODES, reportDiagnostic } from '@xihan-ui/core'

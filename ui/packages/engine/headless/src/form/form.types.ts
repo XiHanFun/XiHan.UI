@@ -1,3 +1,10 @@
+/*
+ * Copyright (c) 2021-Present XiHanFun and contributors.
+ * Licensed under the MIT License. See LICENSE in the project root for license information.
+ */
+
+// 定义 form 类型契约。
+
 import type { MachineSchema, PropTypes } from '@xihan-ui/core'
 import type { FormErrorPatch, FormErrors } from './form.errors'
 import type { FormArrayMutation, FormPath, FormPathRecord } from './form.path'

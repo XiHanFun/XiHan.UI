@@ -1,3 +1,10 @@
+/*
+ * Copyright (c) 2021-Present XiHanFun and contributors.
+ * Licensed under the MIT License. See LICENSE in the project root for license information.
+ */
+
+// 提供 qr code 相关实现。
+
 import type { NormalizeProps, PropTypes } from '@xihan-ui/core'
 import type { QrCodeApi, QrCodeLogoArea, QrCodeLogoDamage, QrCodeProps, QrCodeState, QrEyeShape, QrModuleShape } from './qr-code.types'
 import type { QrLevel } from './qr-encode'

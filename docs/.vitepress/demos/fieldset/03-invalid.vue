@@ -1,3 +1,8 @@
+<!--
+  Copyright (c) 2021-Present XiHanFun and contributors.
+  Licensed under the MIT License. See LICENSE in the project root for license information.
+-->
+
 <!-- 无效态 | invalid 一翻，错误文案接进描述链并显出；它带 role=alert，翻转那一刻读屏立即播报 -->
 <script setup lang="ts">
 import {

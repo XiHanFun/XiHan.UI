@@ -1,3 +1,8 @@
+<!--
+  Copyright (c) 2021-Present XiHanFun and contributors.
+  Licensed under the MIT License. See LICENSE in the project root for license information.
+-->
+
 <!-- 点开看大图 | 缩略图的点击与键盘自己接，放大层是一个对话框，里面再放一份独立的图片实例 -->
 <script setup lang="ts">
 import {

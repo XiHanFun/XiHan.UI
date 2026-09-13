@@ -1,3 +1,10 @@
+/*
+ * Copyright (c) 2021-Present XiHanFun and contributors.
+ * Licensed under the MIT License. See LICENSE in the project root for license information.
+ */
+
+// 验证 menu native events 相关行为。
+
 // @vitest-environment jsdom
 //
 // 菜单族的条目与 content 上，connect 派的是 pointerenter / pointerleave / focus 三个

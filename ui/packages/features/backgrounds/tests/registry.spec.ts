@@ -1,3 +1,10 @@
+/*
+ * Copyright (c) 2021-Present XiHanFun and contributors.
+ * Licensed under the MIT License. See LICENSE in the project root for license information.
+ */
+
+// 验证 registry 相关行为。
+
 import { beforeEach, describe, expect, it } from 'vitest'
 import { BUILTIN_EFFECT_NAMES } from '../src/effects/builtin-names'
 import { defineEffect, numberSpec } from '../src/effects/define'

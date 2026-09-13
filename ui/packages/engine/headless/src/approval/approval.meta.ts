@@ -1,3 +1,10 @@
+/*
+ * Copyright (c) 2021-Present XiHanFun and contributors.
+ * Licensed under the MIT License. See LICENSE in the project root for license information.
+ */
+
+// 提供 approval 相关实现。
+
 import type { ComponentMeta } from '../spec/types'
 
 // 两颗按钮缺一就只剩一半出口，故与 root 一并必需；其余按用法取舍。

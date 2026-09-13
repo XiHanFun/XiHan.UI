@@ -1,3 +1,10 @@
+/*
+ * Copyright (c) 2021-Present XiHanFun and contributors.
+ * Licensed under the MIT License. See LICENSE in the project root for license information.
+ */
+
+// 提供 toast 相关实现。
+
 import { createAnatomy } from '@xihan-ui/core'
 
 // 轻提示只做一件事：把刚才那个操作的结果用一句话说清楚，然后自己消失。

@@ -1,3 +1,8 @@
+<!--
+  Copyright (c) 2021-Present XiHanFun and contributors.
+  Licensed under the MIT License. See LICENSE in the project root for license information.
+-->
+
 <!-- 跨列 | 一格写 span 横跨几列，上限是当前列数；长文本字段因此不必另开一份描述列表 -->
 <script setup lang="ts">
 import {

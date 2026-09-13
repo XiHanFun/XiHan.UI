@@ -1,3 +1,8 @@
+/*
+ * Copyright (c) 2021-Present XiHanFun and contributors.
+ * Licensed under the MIT License. See LICENSE in the project root for license information.
+ */
+
 // 配方的归一化与换算：钳制越界值、把视觉帧摊成 Web Animations 的关键帧。
 
 import type { MotionFrame, MotionSpec } from './types'

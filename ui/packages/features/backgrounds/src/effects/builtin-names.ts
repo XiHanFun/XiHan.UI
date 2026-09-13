@@ -1,3 +1,8 @@
+/*
+ * Copyright (c) 2021-Present XiHanFun and contributors.
+ * Licensed under the MIT License. See LICENSE in the project root for license information.
+ */
+
 // 内置效果的名字。只有字符串、不引效果对象，注册表引它不会把 14 个效果打进包。
 
 export type BuiltinEffectName

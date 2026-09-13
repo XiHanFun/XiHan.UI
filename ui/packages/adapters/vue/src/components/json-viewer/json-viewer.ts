@@ -1,3 +1,10 @@
+/*
+ * Copyright (c) 2021-Present XiHanFun and contributors.
+ * Licensed under the MIT License. See LICENSE in the project root for license information.
+ */
+
+// 提供 json viewer 相关实现。
+
 import type { Direction, Size } from '@xihan-ui/core'
 import type { JsonViewerApi, JsonViewerNode, JsonViewerSchema, JsonViewerTranslations, JsonViewerVariant, JsonViewerView } from '@xihan-ui/headless'
 import type { PropType, SlotsType, VNode } from 'vue'

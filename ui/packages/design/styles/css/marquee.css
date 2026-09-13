@@ -1,3 +1,10 @@
+/*
+ * Copyright (c) 2021-Present XiHanFun and contributors.
+ * Licensed under the MIT License. See LICENSE in the project root for license information.
+ */
+
+/* 定义 marquee 样式。 */
+
 @layer xihan.motion {
   /*
    * 横轴一条、纵轴一条。四个方向乘两种铺法共八组起止点，若不外提就要写八份几乎一样的关键帧。

@@ -1,3 +1,8 @@
+<!--
+  Copyright (c) 2021-Present XiHanFun and contributors.
+  Licensed under the MIT License. See LICENSE in the project root for license information.
+-->
+
 <!-- 竖向排列 | 在侧栏旁展开子级导航 -->
 <script setup lang="ts">
 import { XhNavigationMenuLink, XhNavigationMenuRoot } from "@xihan-ui/vue";

@@ -1,3 +1,10 @@
+/*
+ * Copyright (c) 2021-Present XiHanFun and contributors.
+ * Licensed under the MIT License. See LICENSE in the project root for license information.
+ */
+
+// 提供 context menu 相关实现。
+
 import type { KeyboardTable } from '../spec/types'
 
 // APG 无右键菜单模式：展开后的键盘行为对齐 menu，差别只在入口。

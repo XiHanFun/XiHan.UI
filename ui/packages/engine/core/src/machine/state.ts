@@ -1,3 +1,8 @@
+/*
+ * Copyright (c) 2021-Present XiHanFun and contributors.
+ * Licensed under the MIT License. See LICENSE in the project root for license information.
+ */
+
 // 状态索引构建与静态校验。四条校验全部 throw、不 warn（fail-closed）。
 import type { MachineConfig, MachineSchema, StateIndex, StateNode } from './types'
 import { MachineError } from './errors'

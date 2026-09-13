@@ -1,3 +1,10 @@
+/*
+ * Copyright (c) 2021-Present XiHanFun and contributors.
+ * Licensed under the MIT License. See LICENSE in the project root for license information.
+ */
+
+// 提供 progress.geometry 相关实现。
+
 import type { ProgressGapPosition } from './progress.types'
 
 // 环形进度的几何：全部在一个 100×100 的 viewBox 里算，作者改直径只改 CSS 尺寸，数不用重算。

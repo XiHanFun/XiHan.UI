@@ -1,3 +1,8 @@
+<!--
+  Copyright (c) 2021-Present XiHanFun and contributors.
+  Licensed under the MIT License. See LICENSE in the project root for license information.
+-->
+
 <!-- 带天数的长计时 | 时满 24 会进位到天，超过一天的计时要自己写一段 days，只写时分秒会把整天数丢掉 -->
 <script setup lang="ts">
 import {

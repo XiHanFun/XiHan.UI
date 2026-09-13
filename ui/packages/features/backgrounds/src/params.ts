@@ -1,3 +1,8 @@
+/*
+ * Copyright (c) 2021-Present XiHanFun and contributors.
+ * Licensed under the MIT License. See LICENSE in the project root for license information.
+ */
+
 // 参数解析：默认值、类型校验、越界钳制。
 // 效果只声明一次 ParamSpecMap，这里把它变成可用的值——非法输入一律回落到默认值而不是抛错，
 // 因为参数常来自用户界面或持久化配置，为一个越界的滑块把整张卡片打黑不划算。

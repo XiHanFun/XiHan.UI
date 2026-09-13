@@ -1,3 +1,8 @@
+/*
+ * Copyright (c) 2021-Present XiHanFun and contributors.
+ * Licensed under the MIT License. See LICENSE in the project root for license information.
+ */
+
 // reduce 档是动效降级的唯一通道：皮肤只要把时长与幅度引到这几个语义令牌上，
 // 降级就自动穿透，不必逐组件写 @media。这里盯住三件事：覆盖面不漏、取值真的不动、
 // 以及它没有顺手把 primitive 一起改掉——duration.* 与 space.* 还被非动效场景共用。

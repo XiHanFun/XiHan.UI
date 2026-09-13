@@ -1,3 +1,10 @@
+/*
+ * Copyright (c) 2021-Present XiHanFun and contributors.
+ * Licensed under the MIT License. See LICENSE in the project root for license information.
+ */
+
+// 定义 diff view 类型契约。
+
 import type { CodeToken, MachineSchema, PropTypes, Size } from '@xihan-ui/core'
 import type { DiffChange, DiffLine, DiffModel } from './diff-view.model'
 

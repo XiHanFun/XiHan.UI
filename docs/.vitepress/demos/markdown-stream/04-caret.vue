@@ -1,3 +1,8 @@
+<!--
+  Copyright (c) 2021-Present XiHanFun and contributors.
+  Licensed under the MIT License. See LICENSE in the project root for license information.
+-->
+
 <!-- 流式光标 | 一块都还没来的时候光标就已经在了，caret 设成 false 可以整个关掉 -->
 <script setup lang="ts">
 import type { MarkdownBlock } from "@xihan-ui/headless";

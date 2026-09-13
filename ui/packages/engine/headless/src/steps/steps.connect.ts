@@ -1,3 +1,10 @@
+/*
+ * Copyright (c) 2021-Present XiHanFun and contributors.
+ * Licensed under the MIT License. See LICENSE in the project root for license information.
+ */
+
+// 提供 steps 相关实现。
+
 import type { ItemQuery, NavIntent, NormalizeProps, PropTypes, Service } from '@xihan-ui/core'
 import type { StepNodeMeta, StepsApi, StepsItemProps, StepsItemState, StepsSchema } from './steps.types'
 import { contains, dataAttr, focusItem, isItemDisabled, ITEM_VALUE_ATTR, itemValue, navigateItems, navIntentFromKey, queryItems } from '@xihan-ui/core'

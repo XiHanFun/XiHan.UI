@@ -1,3 +1,8 @@
+/*
+ * Copyright (c) 2021-Present XiHanFun and contributors.
+ * Licensed under the MIT License. See LICENSE in the project root for license information.
+ */
+
 // 聚焦与选区 | input 部件就是一个原生 input，拿到它的节点就能聚焦、全选、把光标挪到末尾
 import type { ReactNode } from "react";
 import {

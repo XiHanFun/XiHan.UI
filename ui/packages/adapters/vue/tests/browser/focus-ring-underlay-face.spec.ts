@@ -1,3 +1,8 @@
+/*
+ * Copyright (c) 2021-Present XiHanFun and contributors.
+ * Licensed under the MIT License. See LICENSE in the project root for license information.
+ */
+
 // 环内侧那块面不长在部件自己身上的那几档。
 //
 // 聚焦环往内收一个环宽（--xh-ring-offset = 负一个环宽），外沿与元素边框外沿重合，

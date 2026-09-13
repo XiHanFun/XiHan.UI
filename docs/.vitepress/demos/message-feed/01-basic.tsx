@@ -1,3 +1,8 @@
+/*
+ * Copyright (c) 2021-Present XiHanFun and contributors.
+ * Licensed under the MIT License. See LICENSE in the project root for license information.
+ */
+
 // 基础用法 | 消息内容全由作者写；组件管的是集合语义、粘底与那一个播报区
 import type { ReactNode } from "react";
 import {

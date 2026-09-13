@@ -1,3 +1,8 @@
+/*
+ * Copyright (c) 2021-Present XiHanFun and contributors.
+ * Licensed under the MIT License. See LICENSE in the project root for license information.
+ */
+
 // 双轴宿主与非浮层宿主的自绘条：贴壳的盒、两轴各让一格、不占宽高、静止后收起。
 //
 // 这几件只有真实浏览器量得出来：jsdom 不排版，clientWidth 与 getBoundingClientRect 恒是 0，

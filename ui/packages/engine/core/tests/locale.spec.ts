@@ -1,3 +1,10 @@
+/*
+ * Copyright (c) 2021-Present XiHanFun and contributors.
+ * Licensed under the MIT License. See LICENSE in the project root for license information.
+ */
+
+// 验证 locale 相关行为。
+
 // @vitest-environment jsdom
 // locale 是纯格式化输入；读不到宿主语言时必须回到公开的 en-US，而不是要求 SSR 伪造 DOM。
 import type { Scope } from '../src/kernel/scope'

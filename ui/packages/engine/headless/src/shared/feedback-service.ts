@@ -1,3 +1,8 @@
+/*
+ * Copyright (c) 2021-Present XiHanFun and contributors.
+ * Licensed under the MIT License. See LICENSE in the project root for license information.
+ */
+
 /** 带合并计数的反馈标题；Toast 与 Notification 使用同一条显示规则。 */
 export interface FeedbackServiceTitleRecord {
   title?: string

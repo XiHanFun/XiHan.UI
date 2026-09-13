@@ -1,3 +1,10 @@
+/*
+ * Copyright (c) 2021-Present XiHanFun and contributors.
+ * Licensed under the MIT License. See LICENSE in the project root for license information.
+ */
+
+// 提供 virtualizer 相关实现。
+
 import type { ComponentMeta } from '../spec/types'
 
 // viewport 承载内核的尺寸观察与滚动监听，content 承载总长与条目的定位上下文，

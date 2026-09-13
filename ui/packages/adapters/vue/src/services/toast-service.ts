@@ -1,3 +1,8 @@
+/*
+ * Copyright (c) 2021-Present XiHanFun and contributors.
+ * Licensed under the MIT License. See LICENSE in the project root for license information.
+ */
+
 // 全局命令式轻提示服务：自带一个挂到 body 的宿主应用与默认渲染模板，
 // info/success 等命令在任意模块作用域可调（请求拦截器、store），
 // 不要求调用点在组件树内。

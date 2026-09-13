@@ -1,3 +1,10 @@
+/*
+ * Copyright (c) 2021-Present XiHanFun and contributors.
+ * Licensed under the MIT License. See LICENSE in the project root for license information.
+ */
+
+// 验证 prop default runtime 相关行为。
+
 // @vitest-environment jsdom
 // 非 Boolean 的 default: undefined 清理必须是运行时等价变换；这里不调用原组件 setup，
 // 只让 Vue 用每个组件的真实 props 表解析「缺席」与「显式 undefined」，并输出稳定摘要供 A/B 对拍。

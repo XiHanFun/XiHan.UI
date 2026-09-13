@@ -1,3 +1,8 @@
+/*
+ * Copyright (c) 2021-Present XiHanFun and contributors.
+ * Licensed under the MIT License. See LICENSE in the project root for license information.
+ */
+
 // 省略位不写内容时由皮肤画三点：折进去那几页的入口，空着就是一格看不出能点的空白。
 //
 // 只有真实浏览器量得出来：字形画在伪元素上，jsdom 的 getComputedStyle 不解析

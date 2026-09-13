@@ -1,3 +1,8 @@
+/*
+ * Copyright (c) 2021-Present XiHanFun and contributors.
+ * Licensed under the MIT License. See LICENSE in the project root for license information.
+ */
+
 // 皮肤在场探测：页面上出现了某个组件、而它那份皮肤没被引入时报一条诊断。
 //
 // 按需引皮肤时漏掉一行是静默的——组件的 data-scope / data-part 照常都在、别的皮肤也确实加载了，

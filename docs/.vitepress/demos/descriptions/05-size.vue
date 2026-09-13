@@ -1,3 +1,8 @@
+<!--
+  Copyright (c) 2021-Present XiHanFun and contributors.
+  Licensed under the MIT License. See LICENSE in the project root for license information.
+-->
+
 <!-- 尺寸 | size 换的是每格的内边距、组与组的间距与整体字号，不传 size 即默认档 -->
 <script setup lang="ts">
 import {

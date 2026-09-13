@@ -1,3 +1,10 @@
+/*
+ * Copyright (c) 2021-Present XiHanFun and contributors.
+ * Licensed under the MIT License. See LICENSE in the project root for license information.
+ */
+
+// 提供 segmented 相关实现。
+
 import type { ComponentMeta } from '../spec/types'
 
 // root 缺省则单选组语义与键盘收口都无处安放；一段都没有的分段控件无从操作。

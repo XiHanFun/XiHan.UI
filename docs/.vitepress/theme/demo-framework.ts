@@ -1,3 +1,10 @@
+/*
+ * Copyright (c) 2021-Present XiHanFun and contributors.
+ * Licensed under the MIT License. See LICENSE in the project root for license information.
+ */
+
+// 提供 demo framework 相关实现。
+
 import { ref } from "vue";
 // 框架清单与生成器、门禁读同一份：id / 显示名 / 扩展名 / 语法高亮语言
 import table from "../../../ui/scripts/demo-frameworks.json";

@@ -1,3 +1,10 @@
+/*
+ * Copyright (c) 2021-Present XiHanFun and contributors.
+ * Licensed under the MIT License. See LICENSE in the project root for license information.
+ */
+
+// 提供 command 相关实现。
+
 import type { ComponentMeta } from '../spec/types'
 
 // content / input / list 三件缺一即违约：没有它们就不是一块能检索的面板。

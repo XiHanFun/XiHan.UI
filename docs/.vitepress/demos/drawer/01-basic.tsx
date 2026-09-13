@@ -1,3 +1,8 @@
+/*
+ * Copyright (c) 2021-Present XiHanFun and contributors.
+ * Licensed under the MIT License. See LICENSE in the project root for license information.
+ */
+
 // 基础用法 | 不传 open 即为非受控；Escape 关闭、Tab 在面板里循环，展开期间页面滚不动
 import type { ReactNode } from "react";
 import {

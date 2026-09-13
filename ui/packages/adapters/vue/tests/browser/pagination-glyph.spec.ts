@@ -1,3 +1,8 @@
+/*
+ * Copyright (c) 2021-Present XiHanFun and contributors.
+ * Licensed under the MIT License. See LICENSE in the project root for license information.
+ */
+
 // 上一页 / 下一页默认就是两枚箭头：不写内容时由皮肤画兜底字形。
 //
 // 只有真实浏览器量得出来：字形画在伪元素上，jsdom 的 getComputedStyle 不解析

@@ -1,3 +1,10 @@
+/*
+ * Copyright (c) 2021-Present XiHanFun and contributors.
+ * Licensed under the MIT License. See LICENSE in the project root for license information.
+ */
+
+// 导出 signature pad 模块的公共接口。
+
 export { signaturePadAnatomy } from './signature-pad.anatomy'
 export { connectSignaturePad } from './signature-pad.connect'
 export {

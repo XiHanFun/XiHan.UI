@@ -1,3 +1,8 @@
+/*
+ * Copyright (c) 2021-Present XiHanFun and contributors.
+ * Licensed under the MIT License. See LICENSE in the project root for license information.
+ */
+
 // Select 的 trigger 保持实体，popup 使用 M2；作者内容布局、选中面与四向动效依赖真实 CSS 级联。
 import type { App } from 'vue'
 import { userEvent } from '@vitest/browser/context'

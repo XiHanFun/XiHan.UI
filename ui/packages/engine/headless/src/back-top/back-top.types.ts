@@ -1,3 +1,10 @@
+/*
+ * Copyright (c) 2021-Present XiHanFun and contributors.
+ * Licensed under the MIT License. See LICENSE in the project root for license information.
+ */
+
+// 定义 back top 类型契约。
+
 import type { ActionVariant, MachineSchema, PropTypes, Size, Tone } from '@xihan-ui/core'
 
 /** 滚回顶部的方式：auto 一步到位，smooth 平滑滚过去。 */

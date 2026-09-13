@@ -1,3 +1,8 @@
+/*
+ * Copyright (c) 2021-Present XiHanFun and contributors.
+ * Licensed under the MIT License. See LICENSE in the project root for license information.
+ */
+
 // 图标记录：框架无关的纯数据，渲染端逐节点建元素，运行期不经任何解析。
 
 /**

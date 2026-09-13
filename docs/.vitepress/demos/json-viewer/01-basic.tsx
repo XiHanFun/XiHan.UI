@@ -1,3 +1,8 @@
+/*
+ * Copyright (c) 2021-Present XiHanFun and contributors.
+ * Licensed under the MIT License. See LICENSE in the project root for license information.
+ */
+
 // 基础用法 | 一份 JSON 摊成可展开的树：键名与值各自成块，六种类型各自上色，默认只展开根行
 import type { ReactNode } from "react";
 import { XhJsonViewerRoot } from "@xihan-ui/react";

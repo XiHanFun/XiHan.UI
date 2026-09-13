@@ -1,3 +1,8 @@
+<!--
+  Copyright (c) 2021-Present XiHanFun and contributors.
+  Licensed under the MIT License. See LICENSE in the project root for license information.
+-->
+
 <!-- 形态 | variant 只改皮肤怎么用颜色，加减与键盘行为三档完全一致 -->
 <script setup lang="ts">
 import {

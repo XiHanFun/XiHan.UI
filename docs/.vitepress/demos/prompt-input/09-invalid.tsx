@@ -1,3 +1,8 @@
+/*
+ * Copyright (c) 2021-Present XiHanFun and contributors.
+ * Licensed under the MIT License. See LICENSE in the project root for license information.
+ */
+
 // 发送失败的错误态 | 判定谁算出错是宿主的事：属性直接落到真元素上，整框换色靠覆盖公开变量，原因由活区播报
 import type { PromptInputSubmitDetails } from "@xihan-ui/headless";
 import type { CSSProperties, ReactNode } from "react";

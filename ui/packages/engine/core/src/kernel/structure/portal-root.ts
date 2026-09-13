@@ -1,3 +1,8 @@
+/*
+ * Copyright (c) 2021-Present XiHanFun and contributors.
+ * Licensed under the MIT License. See LICENSE in the project root for license information.
+ */
+
 // Portal 落点：body 末尾的单一浮层容器，自身不写样式，不建层叠上下文与包含块。
 import { PORTAL_ROOT_ID } from '../constants'
 import { createPerDocumentRegistry } from './per-document-registry'

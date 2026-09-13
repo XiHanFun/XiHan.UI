@@ -1,3 +1,10 @@
+/*
+ * Copyright (c) 2021-Present XiHanFun and contributors.
+ * Licensed under the MIT License. See LICENSE in the project root for license information.
+ */
+
+// 提供 file upload 相关实现。
+
 import type { ComponentMeta } from '../spec/types'
 
 // hidden-input 必须在场：打开系统文件选择框只有 input.click() 一条路，缺了它所有入口都是空操作。

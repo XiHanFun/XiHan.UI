@@ -1,3 +1,10 @@
+/*
+ * Copyright (c) 2021-Present XiHanFun and contributors.
+ * Licensed under the MIT License. See LICENSE in the project root for license information.
+ */
+
+// 验证 datastream v1 相关行为。
+
 import type { RawFrame } from '../src/transport/sse-reader'
 import { afterEach, describe, expect, it, vi } from 'vitest'
 import { DATA_STREAM_DONE, normalizeDataStreamV1 } from '../src/normalize/datastream-v1'

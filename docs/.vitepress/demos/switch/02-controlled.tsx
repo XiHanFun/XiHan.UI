@@ -1,3 +1,8 @@
+/*
+ * Copyright (c) 2021-Present XiHanFun and contributors.
+ * Licensed under the MIT License. See LICENSE in the project root for license information.
+ */
+
 // 受控 | 传了 checked 就由宿主说了算，组件自己不再改状态；变化意图从 checked-change 出来，写回才落位
 import type { ReactNode } from "react";
 import { XhSwitch } from "@xihan-ui/react";

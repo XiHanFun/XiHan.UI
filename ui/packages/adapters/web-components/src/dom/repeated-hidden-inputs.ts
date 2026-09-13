@@ -1,3 +1,10 @@
+/*
+ * Copyright (c) 2021-Present XiHanFun and contributors.
+ * Licensed under the MIT License. See LICENSE in the project root for license information.
+ */
+
+// 提供 repeated hidden inputs 相关实现。
+
 import type { Spreader } from './spread'
 
 /** 作者声明一个出口；首值使用该节点，其余值由宿主管理同级原生输入。 */

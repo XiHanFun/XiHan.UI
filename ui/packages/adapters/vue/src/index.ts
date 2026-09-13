@@ -1,3 +1,8 @@
+/*
+ * Copyright (c) 2021-Present XiHanFun and contributors.
+ * Licensed under the MIT License. See LICENSE in the project root for license information.
+ */
+
 // @xihan-ui/vue —— Vue 适配器（组件 + 组合式函数 + machine 运行时）。
 
 export {

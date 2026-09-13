@@ -1,3 +1,10 @@
+/*
+ * Copyright (c) 2021-Present XiHanFun and contributors.
+ * Licensed under the MIT License. See LICENSE in the project root for license information.
+ */
+
+// 提供 run 相关实现。
+
 import type { ApplyContext } from '../conformance/apply-step'
 import type { AdapterHarness, ConformanceSuite, TestHooks } from '../conformance/types'
 import type { AxeCheckOptions } from './axe'

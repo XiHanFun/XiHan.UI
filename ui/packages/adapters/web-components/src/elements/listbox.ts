@@ -1,3 +1,10 @@
+/*
+ * Copyright (c) 2021-Present XiHanFun and contributors.
+ * Licensed under the MIT License. See LICENSE in the project root for license information.
+ */
+
+// 提供 listbox 相关实现。
+
 import type { Direction, Orientation, Size, Tone } from '@xihan-ui/core'
 import type { FormControlState, ListboxItemProps, ListboxNode, ListboxSchema, ListboxSelectionMode, ListboxValueChangeDetails } from '@xihan-ui/headless'
 import { isItemDisabled, ITEM_VALUE_ATTR } from '@xihan-ui/core'

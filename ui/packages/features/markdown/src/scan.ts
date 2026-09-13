@@ -1,3 +1,8 @@
+/*
+ * Copyright (c) 2021-Present XiHanFun and contributors.
+ * Licensed under the MIT License. See LICENSE in the project root for license information.
+ */
+
 /** 一个顶层块在源文本里占的行区间，左闭右开。 */
 export interface BlockRange {
   readonly startLine: number

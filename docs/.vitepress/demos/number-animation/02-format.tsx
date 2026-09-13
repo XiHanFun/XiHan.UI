@@ -1,3 +1,8 @@
+/*
+ * Copyright (c) 2021-Present XiHanFun and contributors.
+ * Licensed under the MIT License. See LICENSE in the project root for license information.
+ */
+
 // 小数位与千位分隔 | precision 定小数位，separator 定分隔符；不给分隔符就不分隔，插什么符号是地区习惯
 import type { ReactNode } from "react";
 import { XhNumberAnimation } from "@xihan-ui/react";

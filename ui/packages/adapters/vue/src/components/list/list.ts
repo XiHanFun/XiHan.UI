@@ -1,3 +1,10 @@
+/*
+ * Copyright (c) 2021-Present XiHanFun and contributors.
+ * Licensed under the MIT License. See LICENSE in the project root for license information.
+ */
+
+// 提供 list 相关实现。
+
 import type { Size } from '@xihan-ui/core'
 import type { PropType } from 'vue'
 import { connectList } from '@xihan-ui/headless'

@@ -1,3 +1,8 @@
+/*
+ * Copyright (c) 2021-Present XiHanFun and contributors.
+ * Licensed under the MIT License. See LICENSE in the project root for license information.
+ */
+
 /** 一个已渲染的顶层块。html 一律已消毒，可直接交给宿主插进 DOM。 */
 export interface RenderedBlock {
   /**

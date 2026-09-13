@@ -1,3 +1,10 @@
+/*
+ * Copyright (c) 2021-Present XiHanFun and contributors.
+ * Licensed under the MIT License. See LICENSE in the project root for license information.
+ */
+
+// 提供 masonry 相关实现。
+
 import type { MasonryColumns, MasonryMeasurement, MasonryProps } from '@xihan-ui/headless'
 import type { PropType, VNode } from 'vue'
 import { connectMasonry, distributeMasonry, measureMasonry, resolveMasonryColumns, sameMasonryHeights } from '@xihan-ui/headless'

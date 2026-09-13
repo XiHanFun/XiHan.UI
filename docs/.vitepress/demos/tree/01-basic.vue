@@ -1,3 +1,8 @@
+<!--
+  Copyright (c) 2021-Present XiHanFun and contributors.
+  Licensed under the MIT License. See LICENSE in the project root for license information.
+-->
+
 <!-- 基础用法 | collection 是层级元信息的唯一事实源，标记只管长相；缩进由子层容器自己顶着 -->
 <script setup lang="ts">
 import {

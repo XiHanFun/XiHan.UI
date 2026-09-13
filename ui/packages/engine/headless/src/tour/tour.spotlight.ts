@@ -1,3 +1,10 @@
+/*
+ * Copyright (c) 2021-Present XiHanFun and contributors.
+ * Licensed under the MIT License. See LICENSE in the project root for license information.
+ */
+
+// 提供 tour.spotlight 相关实现。
+
 import type { PositionRect } from '@xihan-ui/core'
 import type { TourSpotlightRect } from './tour.types'
 

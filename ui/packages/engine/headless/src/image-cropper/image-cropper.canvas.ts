@@ -1,3 +1,8 @@
+/*
+ * Copyright (c) 2021-Present XiHanFun and contributors.
+ * Licensed under the MIT License. See LICENSE in the project root for license information.
+ */
+
 // 出图的那一步。连接层不碰它：什么时候出图、出成什么、拿去做什么，全归使用者。
 
 import type { ImageCropperRect } from './image-cropper.types'

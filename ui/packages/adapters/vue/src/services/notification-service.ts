@@ -1,3 +1,8 @@
+/*
+ * Copyright (c) 2021-Present XiHanFun and contributors.
+ * Licensed under the MIT License. See LICENSE in the project root for license information.
+ */
+
 // 全局命令式通知服务：自带一个挂到 body 的宿主应用与默认渲染模板。
 //
 // 通知常常不是从组件树里发出来的——推送连接的回调、后台任务的收尾、拦截器里的

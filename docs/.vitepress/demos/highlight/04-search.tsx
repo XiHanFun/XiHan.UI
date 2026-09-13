@@ -1,3 +1,8 @@
+/*
+ * Copyright (c) 2021-Present XiHanFun and contributors.
+ * Licensed under the MIT License. See LICENSE in the project root for license information.
+ */
+
 // 跟着输入高亮 | 关键词逐字符比对、不拼进正则，敲进 . * ( 这些字符也只当普通字符找
 import type { ReactNode } from "react";
 import { XhHighlight } from "@xihan-ui/react";

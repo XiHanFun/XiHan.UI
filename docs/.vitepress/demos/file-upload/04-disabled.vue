@@ -1,3 +1,8 @@
+<!--
+  Copyright (c) 2021-Present XiHanFun and contributors.
+  Licensed under the MIT License. See LICENSE in the project root for license information.
+-->
+
 <!-- 禁用 | disabled 把投放区、触发器与隐藏输入一并关停，拖拽进来也不再收 -->
 <script setup lang="ts">
 import {

@@ -1,3 +1,10 @@
+/*
+ * Copyright (c) 2021-Present XiHanFun and contributors.
+ * Licensed under the MIT License. See LICENSE in the project root for license information.
+ */
+
+// 提供 listbox 相关实现。
+
 import type { NavIntent, NormalizeProps, PropTypes, SelectionOrder, Service } from '@xihan-ui/core'
 import type { ListboxApi, ListboxItemProps, ListboxNodeMeta, ListboxSchema } from './listbox.types'
 import { applySelection, contains, dataAttr, focusItem, indexOfValue, isItemDisabled, ITEM_VALUE_ATTR, itemValue, matchTypeahead, navigateItems, navIntentFromKey, queryItems, toggleSelectAll } from '@xihan-ui/core'

@@ -1,3 +1,10 @@
+/*
+ * Copyright (c) 2021-Present XiHanFun and contributors.
+ * Licensed under the MIT License. See LICENSE in the project root for license information.
+ */
+
+// 导出 src 模块的公共接口。
+
 export { DEFAULT_EDGE_SPEED, DEFAULT_EDGE_THRESHOLD, edgeScrollDelta } from './dnd/autoscroll'
 export type { EdgeScrollInput } from './dnd/autoscroll'
 export { moveItem } from './dnd/move-item'

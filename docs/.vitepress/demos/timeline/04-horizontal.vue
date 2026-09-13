@@ -1,3 +1,8 @@
+<!--
+  Copyright (c) 2021-Present XiHanFun and contributors.
+  Licensed under the MIT License. See LICENSE in the project root for license information.
+-->
+
 <!-- 横排 | orientation="horizontal" 把事件从左往右摆，连线随之转成横的一条 -->
 <script setup lang="ts">
 import {

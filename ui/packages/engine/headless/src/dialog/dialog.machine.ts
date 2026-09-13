@@ -1,3 +1,10 @@
+/*
+ * Copyright (c) 2021-Present XiHanFun and contributors.
+ * Licensed under the MIT License. See LICENSE in the project root for license information.
+ */
+
+// 提供 dialog 相关实现。
+
 import type { DialogSchema } from './dialog.types'
 import { createDismissLayer, createFocusScope, setup, warn } from '@xihan-ui/core'
 import { closeReasonOf } from '../shared/close-reason'

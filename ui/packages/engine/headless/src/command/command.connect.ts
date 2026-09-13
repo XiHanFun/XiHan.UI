@@ -1,3 +1,10 @@
+/*
+ * Copyright (c) 2021-Present XiHanFun and contributors.
+ * Licensed under the MIT License. See LICENSE in the project root for license information.
+ */
+
+// 提供 command 相关实现。
+
 import type { NavIntent, NormalizeProps, PropTypes, Service } from '@xihan-ui/core'
 import type { CommandApi, CommandGroupMeta, CommandItemProps, CommandNodeMeta, CommandSchema } from './command.types'
 import { contains, dataAttr, isComposingEvent, ITEM_VALUE_ATTR, itemValue, queryItems } from '@xihan-ui/core'

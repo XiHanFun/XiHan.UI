@@ -1,3 +1,8 @@
+<!--
+  Copyright (c) 2021-Present XiHanFun and contributors.
+  Licensed under the MIT License. See LICENSE in the project root for license information.
+-->
+
 <!-- 12 小时制 | hour-cycle=12 多出一个上午/下午段，值本身仍是 24 小时的串 -->
 <script setup lang="ts">
 import {

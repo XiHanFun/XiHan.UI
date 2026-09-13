@@ -1,3 +1,8 @@
+/*
+ * Copyright (c) 2021-Present XiHanFun and contributors.
+ * Licensed under the MIT License. See LICENSE in the project root for license information.
+ */
+
 // 图标标签 | 图标辅助识别内容类别
 import type { ReactNode } from "react";
 import { ActivityIcon, ChartBarIcon, FileTextIcon } from "@xihan-ui/icons";

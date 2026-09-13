@@ -1,3 +1,8 @@
+<!--
+  Copyright (c) 2021-Present XiHanFun and contributors.
+  Licensed under the MIT License. See LICENSE in the project root for license information.
+-->
+
 <!-- 区间选择 | selection-mode=range：第一下落起点、第二下落终点，中间铺一条连续底色 -->
 <script setup lang="ts">
 import {

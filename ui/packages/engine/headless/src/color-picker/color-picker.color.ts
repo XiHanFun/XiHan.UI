@@ -1,3 +1,8 @@
+/*
+ * Copyright (c) 2021-Present XiHanFun and contributors.
+ * Licensed under the MIT License. See LICENSE in the project root for license information.
+ */
+
 // 颜色换算的纯函数层：不碰 DOM、不认识状态机。
 // 内部工作色一律用 HSVA，取色区的两条轴就是饱和度与明度。
 import { clamp } from '../shared/number'

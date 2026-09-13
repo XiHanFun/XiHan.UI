@@ -1,3 +1,8 @@
+/*
+ * Copyright (c) 2021-Present XiHanFun and contributors.
+ * Licensed under the MIT License. See LICENSE in the project root for license information.
+ */
+
 // 用作结果页 | 同一套部件也承载 404、403 这类结果：status 给图标区上语气色，操作槽里放回退出口
 import type { ReactNode } from "react";
 import {

@@ -1,3 +1,10 @@
+/*
+ * Copyright (c) 2021-Present XiHanFun and contributors.
+ * Licensed under the MIT License. See LICENSE in the project root for license information.
+ */
+
+// 提供 inline 相关实现。
+
 import type { LinkDefs } from './refs'
 import { encodeHref, escapeAttr, escapeText, safeUrl, unescapeBackslash } from './escape'
 import { NO_DEFS, normalizeLabel } from './refs'

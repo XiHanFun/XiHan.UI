@@ -1,3 +1,8 @@
+/*
+ * Copyright (c) 2021-Present XiHanFun and contributors.
+ * Licensed under the MIT License. See LICENSE in the project root for license information.
+ */
+
 // 取色器的两块纯算法：颜色换算与坐标换算。
 // 都不碰 DOM、不认识状态机，因此不需要 jsdom 环境，逐个函数直接钉。
 import { describe, expect, it } from 'vitest'

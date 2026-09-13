@@ -1,3 +1,8 @@
+/*
+ * Copyright (c) 2021-Present XiHanFun and contributors.
+ * Licensed under the MIT License. See LICENSE in the project root for license information.
+ */
+
 // 指针会话的类型契约。
 
 /** 一次指针位置，只带会话用得上的两个坐标。 */

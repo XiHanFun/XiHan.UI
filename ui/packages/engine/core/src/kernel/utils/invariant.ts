@@ -1,3 +1,8 @@
+/*
+ * Copyright (c) 2021-Present XiHanFun and contributors.
+ * Licensed under the MIT License. See LICENSE in the project root for license information.
+ */
+
 // 不变式断言。两者都投递进诊断通道；invariant 在 dev 下额外抛错。
 import { reportDiagnostic } from '../diagnostics/channel'
 import { DIAGNOSTIC_CODES } from '../diagnostics/codes'

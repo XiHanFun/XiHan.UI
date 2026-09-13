@@ -1,3 +1,10 @@
+/*
+ * Copyright (c) 2021-Present XiHanFun and contributors.
+ * Licensed under the MIT License. See LICENSE in the project root for license information.
+ */
+
+// 提供 accordion 相关实现。
+
 import type { ItemQuery, NormalizeProps, PropTypes, Service } from '@xihan-ui/core'
 import type { AccordionApi, AccordionItemProps, AccordionNodeMeta, AccordionSchema } from './accordion.types'
 import { dataAttr, focusItem, ITEM_VALUE_ATTR, navigateItems, navIntentFromKey, queryItems } from '@xihan-ui/core'

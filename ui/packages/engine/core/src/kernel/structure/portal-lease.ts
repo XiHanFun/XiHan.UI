@@ -1,3 +1,10 @@
+/*
+ * Copyright (c) 2021-Present XiHanFun and contributors.
+ * Licensed under the MIT License. See LICENSE in the project root for license information.
+ */
+
+// 提供 portal lease 相关实现。
+
 import type { Cleanup } from '../types'
 import type { PortalVisualBridge } from './portal-visual-bridge'
 import { createPortalVisualBridge } from './portal-visual-bridge'

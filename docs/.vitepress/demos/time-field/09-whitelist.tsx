@@ -1,3 +1,8 @@
+/*
+ * Copyright (c) 2021-Present XiHanFun and contributors.
+ * Licensed under the MIT License. See LICENSE in the project root for license information.
+ */
+
 // 可选值白名单 | 值交给宿主持有，写回来的时间被吸附到清单里的一格，上下键与数字键因此都落在清单上
 import type { ReactNode } from "react";
 import {

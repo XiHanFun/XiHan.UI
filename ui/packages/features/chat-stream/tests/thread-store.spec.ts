@@ -1,3 +1,10 @@
+/*
+ * Copyright (c) 2021-Present XiHanFun and contributors.
+ * Licensed under the MIT License. See LICENSE in the project root for license information.
+ */
+
+// 验证 thread store 相关行为。
+
 import type { TextPart } from '../src/model/part-kinds'
 import type { NormalizedEvent } from '../src/reduce/events'
 import type { ThreadSnapshot } from '../src/store/thread-store'

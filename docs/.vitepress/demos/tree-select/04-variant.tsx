@@ -1,3 +1,8 @@
+/*
+ * Copyright (c) 2021-Present XiHanFun and contributors.
+ * Licensed under the MIT License. See LICENSE in the project root for license information.
+ */
+
 // 形态 | variant 只换触发框的描边与底色，浮层与树的长相不跟着变
 import type { ReactNode } from "react";
 import {

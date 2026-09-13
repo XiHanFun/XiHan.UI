@@ -1,3 +1,8 @@
+/*
+ * Copyright (c) 2021-Present XiHanFun and contributors.
+ * Licensed under the MIT License. See LICENSE in the project root for license information.
+ */
+
 // 对话页 | 一条回复里同时摆着思考过程、工具调用、流式正文、代码块与批准闸门，外面是消息流与提示输入框
 import type { ApprovalScope, MarkdownBlock, PromptInputSubmitDetails } from "@xihan-ui/headless";
 import type { CSSProperties, ReactNode } from "react";

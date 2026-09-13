@@ -1,3 +1,10 @@
+/*
+ * Copyright (c) 2021-Present XiHanFun and contributors.
+ * Licensed under the MIT License. See LICENSE in the project root for license information.
+ */
+
+// 提供 body lock 相关实现。
+
 import type { Cleanup, Disposable, RuntimeConfig } from '../../kernel'
 import { createPerDocumentRegistry, isDocument, isHTMLElement, isWindow } from '../../kernel'
 

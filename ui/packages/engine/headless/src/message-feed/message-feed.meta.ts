@@ -1,3 +1,10 @@
+/*
+ * Copyright (c) 2021-Present XiHanFun and contributors.
+ * Licensed under the MIT License. See LICENSE in the project root for license information.
+ */
+
+// 提供 message feed 相关实现。
+
 import type { ComponentMeta } from '../spec/types'
 
 // root / viewport / list 三者必需；item 不进必需表——新建会话一条消息都没有，那是真实首帧。

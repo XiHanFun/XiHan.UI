@@ -1,3 +1,8 @@
+/*
+ * Copyright (c) 2021-Present XiHanFun and contributors.
+ * Licensed under the MIT License. See LICENSE in the project root for license information.
+ */
+
 // @xihan-ui/web-components/backgrounds —— 背景层的 Web Components 适配。
 //
 // 与主入口和 /define 都分开：@xihan-ui/backgrounds 是可选 peer，不用视觉效果的应用不会

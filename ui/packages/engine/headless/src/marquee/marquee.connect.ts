@@ -1,3 +1,10 @@
+/*
+ * Copyright (c) 2021-Present XiHanFun and contributors.
+ * Licensed under the MIT License. See LICENSE in the project root for license information.
+ */
+
+// 提供 marquee 相关实现。
+
 import type { NormalizeProps, PropTypes } from '@xihan-ui/core'
 import type { MarqueeApi, MarqueeDirection, MarqueeProps } from './marquee.types'
 import { dataAttr } from '@xihan-ui/core'

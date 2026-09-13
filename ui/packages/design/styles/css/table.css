@@ -1,3 +1,10 @@
+/*
+ * Copyright (c) 2021-Present XiHanFun and contributors.
+ * Licensed under the MIT License. See LICENSE in the project root for license information.
+ */
+
+/* 定义 table 样式。 */
+
 @layer xihan.motion {
   /* 加载态自己冒出来，用户没按任何键：一段极轻的呼吸就够，别抢走正在读表的注意力 */
   /* 一次呼吸自带来回：起止两端与中点各写一帧，声明的周期就是一次完整的明暗往返 */

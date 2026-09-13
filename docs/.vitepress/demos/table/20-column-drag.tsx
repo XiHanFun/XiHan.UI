@@ -1,3 +1,8 @@
+/*
+ * Copyright (c) 2021-Present XiHanFun and contributors.
+ * Licensed under the MIT License. See LICENSE in the project root for license information.
+ */
+
 // 拖拽换列位 | 列上标了 reorderable 才认拖拽把手；也可以 Tab 到它用方向键挪，Home / End 到两头
 import type { TableColumnPreference } from "@xihan-ui/headless";
 import type { ReactNode } from "react";

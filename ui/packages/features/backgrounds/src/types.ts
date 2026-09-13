@@ -1,3 +1,8 @@
+/*
+ * Copyright (c) 2021-Present XiHanFun and contributors.
+ * Licensed under the MIT License. See LICENSE in the project root for license information.
+ */
+
 // 背景层公共类型。参数规格既是默认值的来源，也是校验与调参界面的元数据，
 // 所以效果只声明一次 params，取默认值、钳制越界、生成调参控件三件事都从它推出来。
 

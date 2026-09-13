@@ -1,3 +1,8 @@
+/*
+ * Copyright (c) 2021-Present XiHanFun and contributors.
+ * Licensed under the MIT License. See LICENSE in the project root for license information.
+ */
+
 /* TextField 独立皮肤同时传递引入字段视觉盒与字段内动作；full bundle 递归去重。 */
 @import '../family/field-chrome.css';
 @import '../family/action-control.css';

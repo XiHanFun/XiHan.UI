@@ -1,3 +1,10 @@
+/*
+ * Copyright (c) 2021-Present XiHanFun and contributors.
+ * Licensed under the MIT License. See LICENSE in the project root for license information.
+ */
+
+// 提供 cascader 相关实现。
+
 import type { NavIntent, NormalizeProps, PropTypes, Service } from '@xihan-ui/core'
 import type { CascaderApi, CascaderNodeMeta, CascaderSchema, CascaderSearchResult, CascaderTranslations } from './cascader.types'
 import { cascadeState, dataAttr, focusItem, isComposingEvent, ITEM_VALUE_ATTR, navIntentFromKey } from '@xihan-ui/core'

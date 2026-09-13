@@ -1,3 +1,8 @@
+<!--
+  Copyright (c) 2021-Present XiHanFun and contributors.
+  Licensed under the MIT License. See LICENSE in the project root for license information.
+-->
+
 <!-- 原生属性 | 写在 input 部件上的属性直接落到真正的输入框，自动填充与移动端键盘类型由它们决定 -->
 <script setup lang="ts">
 import {

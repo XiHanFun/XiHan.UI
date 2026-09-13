@@ -1,3 +1,10 @@
+/*
+ * Copyright (c) 2021-Present XiHanFun and contributors.
+ * Licensed under the MIT License. See LICENSE in the project root for license information.
+ */
+
+// 提供 editable 相关实现。
+
 import { createAnatomy } from '@xihan-ui/core'
 
 // control：preview、input 与三颗按钮的容器。preview 与 input 同时挂载，非当前形态的那个带 hidden；

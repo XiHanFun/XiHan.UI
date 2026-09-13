@@ -1,3 +1,8 @@
+<!--
+  Copyright (c) 2021-Present XiHanFun and contributors.
+  Licensed under the MIT License. See LICENSE in the project root for license information.
+-->
+
 <!-- 间距 | 设置列与项目之间的间距 -->
 <script setup lang="ts">
 import { XhMasonry } from "@xihan-ui/vue";

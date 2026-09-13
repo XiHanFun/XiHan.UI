@@ -1,3 +1,10 @@
+/*
+ * Copyright (c) 2021-Present XiHanFun and contributors.
+ * Licensed under the MIT License. See LICENSE in the project root for license information.
+ */
+
+/* 定义 menubar 样式。 */
+
 @layer xihan.motion {
   /* 每份浮层皮肤独立携带同名关键帧，单独引入 menubar.css 时动画也完整。 */
   @keyframes xh-overlay-slide-in {

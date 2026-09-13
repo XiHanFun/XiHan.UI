@@ -1,3 +1,8 @@
+/*
+ * Copyright (c) 2021-Present XiHanFun and contributors.
+ * Licensed under the MIT License. See LICENSE in the project root for license information.
+ */
+
 // inert 引用计数表：同一元素可被多方同时要求 inert，计数归零才写回原始值。
 import { createPerDocumentRegistry } from '../../structure/per-document-registry'
 

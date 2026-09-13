@@ -1,3 +1,10 @@
+/*
+ * Copyright (c) 2021-Present XiHanFun and contributors.
+ * Licensed under the MIT License. See LICENSE in the project root for license information.
+ */
+
+// 提供 time field 相关实现。
+
 import type { ItemQuery, NavIntent, NormalizeProps, PropTypes, Service } from '@xihan-ui/core'
 import type { TimeFieldApi, TimeFieldSchema, TimeSegmentType } from './time-field.types'
 import { dataAttr, focusSafely, ITEM_VALUE_ATTR, navigateItems, navIntentFromKey, queryItems, readDirection } from '@xihan-ui/core'

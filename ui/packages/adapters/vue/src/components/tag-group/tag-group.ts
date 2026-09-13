@@ -1,3 +1,10 @@
+/*
+ * Copyright (c) 2021-Present XiHanFun and contributors.
+ * Licensed under the MIT License. See LICENSE in the project root for license information.
+ */
+
+// 提供 tag group 相关实现。
+
 import type { Direction, Orientation, Size, Tone } from '@xihan-ui/core'
 import type { TagGroupApi, TagGroupItemProps, TagGroupNode, TagGroupNodeMeta, TagGroupSchema, TagGroupSelectionMode, TagGroupTranslations, TagVariant } from '@xihan-ui/headless'
 import type { PropType, SlotsType, VNode } from 'vue'

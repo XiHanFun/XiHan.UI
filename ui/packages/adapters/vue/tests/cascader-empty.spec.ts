@@ -1,3 +1,10 @@
+/*
+ * Copyright (c) 2021-Present XiHanFun and contributors.
+ * Licensed under the MIT License. See LICENSE in the project root for license information.
+ */
+
+// 验证 cascader empty 相关行为。
+
 // @vitest-environment jsdom
 // cascader 空态：collection 为空时 content 标 data-empty、空态占位露面；
 // 文案默认英文，可被实例 translations 或全局注入覆盖，empty 插槽整个换内容。

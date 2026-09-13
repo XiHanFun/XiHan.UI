@@ -1,3 +1,10 @@
+/*
+ * Copyright (c) 2021-Present XiHanFun and contributors.
+ * Licensed under the MIT License. See LICENSE in the project root for license information.
+ */
+
+// 定义 icon wrapper 类型契约。
+
 import type { ActionVariant, PropTypes, Size, Tone } from '@xihan-ui/core'
 
 export interface IconWrapperProps {

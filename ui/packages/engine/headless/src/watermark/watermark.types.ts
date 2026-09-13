@@ -1,3 +1,10 @@
+/*
+ * Copyright (c) 2021-Present XiHanFun and contributors.
+ * Licensed under the MIT License. See LICENSE in the project root for license information.
+ */
+
+// 定义 watermark 类型契约。
+
 import type { PropTypes } from '@xihan-ui/core'
 
 /** 两态：算出了图样 / 没有可印的文字。empty 时皮肤整层不画。 */

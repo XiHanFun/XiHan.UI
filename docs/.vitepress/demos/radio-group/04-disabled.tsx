@@ -1,3 +1,8 @@
+/*
+ * Copyright (c) 2021-Present XiHanFun and contributors.
+ * Licensed under the MIT License. See LICENSE in the project root for license information.
+ */
+
 // 禁用 | 单项禁用后点不动，方向键也跳过它；整组禁用则每一项都跟着禁用
 import type { ReactNode } from "react";
 import { XhRadioGroupRoot } from "@xihan-ui/react";

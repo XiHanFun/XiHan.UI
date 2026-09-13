@@ -1,3 +1,10 @@
+/*
+ * Copyright (c) 2021-Present XiHanFun and contributors.
+ * Licensed under the MIT License. See LICENSE in the project root for license information.
+ */
+
+// 导出 json viewer 模块的公共接口。
+
 export { jsonViewerAnatomy, jsonViewerBranchQuery, jsonViewerItemQuery } from './json-viewer.anatomy'
 export { connectJsonViewer } from './json-viewer.connect'
 export { jsonViewerKeyboard } from './json-viewer.keyboard'

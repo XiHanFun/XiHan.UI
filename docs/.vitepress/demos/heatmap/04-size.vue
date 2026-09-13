@@ -1,3 +1,8 @@
+<!--
+  Copyright (c) 2021-Present XiHanFun and contributors.
+  Licensed under the MIT License. See LICENSE in the project root for license information.
+-->
+
 <!-- 尺寸 | size 换格子边长与行首星期名的留白，一屏能放下的周数跟着变 -->
 <script setup lang="ts">
 import type { HeatmapDatum } from "@xihan-ui/headless";

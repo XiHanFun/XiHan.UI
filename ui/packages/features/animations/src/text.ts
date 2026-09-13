@@ -1,3 +1,8 @@
+/*
+ * Copyright (c) 2021-Present XiHanFun and contributors.
+ * Licensed under the MIT License. See LICENSE in the project root for license information.
+ */
+
 // 文字拆分：把一段文字拆成逐字或逐词的行内块，供 playAll 错开起播。
 //
 // 拆出来的每一段都是 aria-hidden，原文挂回容器的 aria-label——逐字的 span

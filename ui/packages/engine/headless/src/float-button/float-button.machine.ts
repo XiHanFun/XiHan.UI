@@ -1,3 +1,10 @@
+/*
+ * Copyright (c) 2021-Present XiHanFun and contributors.
+ * Licensed under the MIT License. See LICENSE in the project root for license information.
+ */
+
+// 提供 float button 相关实现。
+
 import type { FloatButtonSchema } from './float-button.types'
 import { setup } from '@xihan-ui/core'
 import { trackOverlayLayer, trackPresenceResources } from '../shared/overlay-shell'

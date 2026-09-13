@@ -1,3 +1,10 @@
+/*
+ * Copyright (c) 2021-Present XiHanFun and contributors.
+ * Licensed under the MIT License. See LICENSE in the project root for license information.
+ */
+
+// 导出 splitter 模块的公共接口。
+
 export { splitterAnatomy } from './splitter.anatomy'
 export { connectSplitter } from './splitter.connect'
 export { splitterKeyboard } from './splitter.keyboard'

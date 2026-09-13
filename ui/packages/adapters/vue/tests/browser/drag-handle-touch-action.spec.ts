@@ -1,3 +1,8 @@
+/*
+ * Copyright (c) 2021-Present XiHanFun and contributors.
+ * Licensed under the MIT License. See LICENSE in the project root for license information.
+ */
+
 // 三个拖动把手让不让出触屏手势，只有真实浏览器答得出来。
 //
 // 整块起手（整行 / 整个节点 / 整个标签）在触屏上做不到：纵向手势在按下那一刻就归了

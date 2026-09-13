@@ -1,3 +1,8 @@
+/*
+ * Copyright (c) 2021-Present XiHanFun and contributors.
+ * Licensed under the MIT License. See LICENSE in the project root for license information.
+ */
+
 // 悬停详情 | 指针悬停与键盘聚焦走同一条路：详情条跟着那一格走，Escape 收起
 import type { HeatmapCellDetails, HeatmapDatum } from "@xihan-ui/headless";
 import type { ReactNode } from "react";

@@ -1,5 +1,4 @@
 #!/usr/bin/env node
-
 import { emitActionControlRecipe } from '../../packages/design/styles/build/action-control-recipe.mjs'
 
 try {

@@ -1,3 +1,10 @@
+/*
+ * Copyright (c) 2021-Present XiHanFun and contributors.
+ * Licensed under the MIT License. See LICENSE in the project root for license information.
+ */
+
+// 提供 command 相关实现。
+
 import type { Direction, OverlayBackdropVariant, Size } from '@xihan-ui/core'
 import type { CommandApi, CommandGroup, CommandGroupMeta, CommandGroupProps, CommandItemProps, CommandNode, CommandNodeMeta, CommandSchema } from '@xihan-ui/headless'
 import type { PropType, SlotsType, VNode } from 'vue'

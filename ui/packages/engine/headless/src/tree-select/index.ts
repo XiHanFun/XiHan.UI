@@ -1,3 +1,10 @@
+/*
+ * Copyright (c) 2021-Present XiHanFun and contributors.
+ * Licensed under the MIT License. See LICENSE in the project root for license information.
+ */
+
+// 导出 tree select 模块的公共接口。
+
 export { treeSelectAnatomy, treeSelectBranchQuery, treeSelectItemQuery } from './tree-select.anatomy'
 export { connectTreeSelect } from './tree-select.connect'
 export { treeSelectKeyboard } from './tree-select.keyboard'

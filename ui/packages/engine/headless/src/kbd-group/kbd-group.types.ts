@@ -1,3 +1,10 @@
+/*
+ * Copyright (c) 2021-Present XiHanFun and contributors.
+ * Licensed under the MIT License. See LICENSE in the project root for license information.
+ */
+
+// 定义 kbd group 类型契约。
+
 import type { PropTypes, Size } from '@xihan-ui/core'
 import type { KbdTranslations } from '../kbd/kbd.types'
 import type { HotkeySegment, HotkeysPlatform, HotkeysResolvedPlatform } from '../shared/hotkey'

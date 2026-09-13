@@ -1,5 +1,4 @@
 #!/usr/bin/env node
-
 import { writeComponentTokenArtifacts } from '../../../../tooling/scripts/lib/component-token-manifest.mjs'
 
 async function main() {

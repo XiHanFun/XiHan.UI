@@ -1,3 +1,10 @@
+/*
+ * Copyright (c) 2021-Present XiHanFun and contributors.
+ * Licensed under the MIT License. See LICENSE in the project root for license information.
+ */
+
+// 验证 rating native events 相关行为。
+
 // @vitest-environment jsdom
 //
 // 评分带的 control 上，connect 派的是不冒泡的 DOM focus：只在容器**自己**被聚焦时才接管，

@@ -1,3 +1,10 @@
+/*
+ * Copyright (c) 2021-Present XiHanFun and contributors.
+ * Licensed under the MIT License. See LICENSE in the project root for license information.
+ */
+
+// 验证 json viewer text view 相关行为。
+
 // @vitest-environment jsdom
 // json-viewer 原文档：view="text" 不铺行，改出一整块 pre；
 // 内容与树档同源（同一套键序与环路记号），且不吃 maxStringLength / maxItems 的折减。

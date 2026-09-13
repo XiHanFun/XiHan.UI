@@ -1,3 +1,8 @@
+<!--
+  Copyright (c) 2021-Present XiHanFun and contributors.
+  Licensed under the MIT License. See LICENSE in the project root for license information.
+-->
+
 <!-- 条目自定义内容 | 条目里长什么样归作者：勾选格与文本各就各位，前后再各加一段自己的标记 -->
 <script setup lang="ts">
 import {

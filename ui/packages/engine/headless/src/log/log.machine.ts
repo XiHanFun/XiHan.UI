@@ -1,3 +1,10 @@
+/*
+ * Copyright (c) 2021-Present XiHanFun and contributors.
+ * Licensed under the MIT License. See LICENSE in the project root for license information.
+ */
+
+// 提供 log 相关实现。
+
 import type { StickToBottomHandle } from '@xihan-ui/core'
 import type { LogSchema } from './log.types'
 import { createStickToBottom, setup } from '@xihan-ui/core'

@@ -1,3 +1,8 @@
+/*
+ * Copyright (c) 2021-Present XiHanFun and contributors.
+ * Licensed under the MIT License. See LICENSE in the project root for license information.
+ */
+
 // per-document 注册表工厂：实例按 Document 隔离。
 
 export interface PerDocumentRegistry<T> {

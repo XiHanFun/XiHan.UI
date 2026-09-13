@@ -1,3 +1,10 @@
+/*
+ * Copyright (c) 2021-Present XiHanFun and contributors.
+ * Licensed under the MIT License. See LICENSE in the project root for license information.
+ */
+
+/* 定义 gradient text 样式。 */
+
 @layer xihan.components {
   /* 轴边界只路由简单前景值，渐变本身仍在组件根用本地 direction/from/to 计算。
      这样内层 default/more 能双向重置，也不会把未解析的组件变量冻结在祖先上。 */

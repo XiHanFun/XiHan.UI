@@ -1,3 +1,8 @@
+/*
+ * Copyright (c) 2021-Present XiHanFun and contributors.
+ * Licensed under the MIT License. See LICENSE in the project root for license information.
+ */
+
 // 格子里放内容 | cell-trigger 的内容全由作者写，日号之外还能塞自己的标记
 import type { ReactNode } from "react";
 import {

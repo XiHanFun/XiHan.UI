@@ -1,3 +1,8 @@
+<!--
+  Copyright (c) 2021-Present XiHanFun and contributors.
+  Licensed under the MIT License. See LICENSE in the project root for license information.
+-->
+
 <!-- 语气 | tone 决定用哪族颜色；语气只换色相，形态与尺寸不受影响 -->
 <script setup lang="ts">
 import { XhTagLabel, XhTagRoot } from "@xihan-ui/vue";

@@ -3,6 +3,7 @@
 import { mkdir, readFile, writeFile } from 'node:fs/promises'
 import { dirname, join } from 'node:path'
 import { fileURLToPath } from 'node:url'
+import { applyFileHeader } from '../../../../tooling/file-header.mjs'
 import { attachMaterialRecipes, emitMaterialRecipes } from './material-recipes.mjs'
 
 const ROOT = dirname(dirname(fileURLToPath(import.meta.url)))
@@ -254,10 +255,13 @@ export const tokens = ${JSON.stringify(flatMap, null, 2)} as const
 export type TokenName = keyof typeof tokens
 `
 
-  await writeFile(join(ROOT, 'tokens.css'), css)
+  await writeFile(join(ROOT, 'tokens.css'), applyFileHeader(join(ROOT, 'tokens.css'), css))
   await writeFile(join(ROOT, 'tokens.json'), `${JSON.stringify(flatMap, null, 2)}\n`)
   await mkdir(join(ROOT, 'src', 'generated'), { recursive: true })
-  await writeFile(join(ROOT, 'src', 'generated', 'tokens.ts'), generatedTs)
+  await writeFile(
+    join(ROOT, 'src', 'generated', 'tokens.ts'),
+    applyFileHeader(join(ROOT, 'src', 'generated', 'tokens.ts'), generatedTs),
+  )
 
   console.log(`[emit-tokens] material recipes ${materials.recipes} × ${materials.targets} modes · shared ${sharedMaterial.length} · primitive ${primitive.length} · base ${base.length} · compact ${compact.length} · light ${light.length} · dark ${dark.length} · transparency ${transparencyReduce.length} · forced-colors ${forcedColors.length} · reduce ${reduce.length} · print ${print.length} → tokens.css / tokens.json / src/generated/tokens.ts`)
 }

@@ -1,3 +1,8 @@
+<!--
+  Copyright (c) 2021-Present XiHanFun and contributors.
+  Licensed under the MIT License. See LICENSE in the project root for license information.
+-->
+
 <!-- 前后缀 | prefix 与 suffix 和数值排在同一行、按基线对齐，比数值小一档 -->
 <script setup lang="ts">
 import { ArrowUpIcon } from "@xihan-ui/icons";

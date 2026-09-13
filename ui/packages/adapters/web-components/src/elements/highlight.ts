@@ -1,3 +1,10 @@
+/*
+ * Copyright (c) 2021-Present XiHanFun and contributors.
+ * Licensed under the MIT License. See LICENSE in the project root for license information.
+ */
+
+// 提供 highlight 相关实现。
+
 import type { Tone } from '@xihan-ui/core'
 import type { HighlightApi, HighlightProps } from '@xihan-ui/headless'
 import { connectHighlight, highlightAnatomy, highlightMeta } from '@xihan-ui/headless'

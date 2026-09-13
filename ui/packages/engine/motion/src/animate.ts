@@ -1,3 +1,8 @@
+/*
+ * Copyright (c) 2021-Present XiHanFun and contributors.
+ * Licensed under the MIT License. See LICENSE in the project root for license information.
+ */
+
 // Web Animations 的薄封装：统一收口减弱动效降级、宿主缺失降级与结束时的结算方式。
 
 import type { EasingName } from './easing'

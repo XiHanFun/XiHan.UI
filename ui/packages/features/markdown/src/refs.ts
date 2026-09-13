@@ -1,3 +1,10 @@
+/*
+ * Copyright (c) 2021-Present XiHanFun and contributors.
+ * Licensed under the MIT License. See LICENSE in the project root for license information.
+ */
+
+// 提供 refs 相关实现。
+
 import { unescapeBackslash } from './escape'
 import { blockType } from './scan'
 

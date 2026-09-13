@@ -1,4 +1,9 @@
 /*
+ * Copyright (c) 2021-Present XiHanFun and contributors.
+ * Licensed under the MIT License. See LICENSE in the project root for license information.
+ */
+
+/*
  * 浮层箭头的几何，八类浮层共用一份，只匹配这些组件自身的 arrow 部件。
  *
  * 箭头是正方形转 45°，构成尖角的是哪两条物理边，所以贴边与摘边框都写物理属性。

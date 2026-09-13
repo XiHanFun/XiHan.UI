@@ -1,3 +1,10 @@
+/*
+ * Copyright (c) 2021-Present XiHanFun and contributors.
+ * Licensed under the MIT License. See LICENSE in the project root for license information.
+ */
+
+// 提供 tree select 相关实现。
+
 import type { NavIntent, NormalizeProps, PropTypes, Service } from '@xihan-ui/core'
 import type { TreeNodeMeta, TreeVisibleNode } from '../tree'
 import type { TreeSelectApi, TreeSelectBranchLoadSnapshot, TreeSelectSchema, TreeSelectTranslations } from './tree-select.types'

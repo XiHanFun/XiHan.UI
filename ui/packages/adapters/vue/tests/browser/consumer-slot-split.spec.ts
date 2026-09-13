@@ -1,3 +1,8 @@
+/*
+ * Copyright (c) 2021-Present XiHanFun and contributors.
+ * Licensed under the MIT License. See LICENSE in the project root for license information.
+ */
+
 // 使用者槽的分工：一个槽只管一件事，调它不牵连别处；组件自己的声明也不许把使用者的入口写死。
 // 每条都量两侧——该跟着变的变了，不该被牵连的一点没动。
 // 只有真实浏览器算得出来：jsdom 不解析样式表里的 var() 与继承，getComputedStyle 恒是空串。

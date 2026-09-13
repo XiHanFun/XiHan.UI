@@ -1,3 +1,8 @@
+/*
+ * Copyright (c) 2021-Present XiHanFun and contributors.
+ * Licensed under the MIT License. See LICENSE in the project root for license information.
+ */
+
 // 音频上下文管理：惰性创建、主链（音量 → 压限器 → 扬声器）与共享混响。
 // 上下文等到第一次真正发声才创建——多数页面从头到尾不出声，不为它们付任何代价。
 

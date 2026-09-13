@@ -1,3 +1,8 @@
+/*
+ * Copyright (c) 2021-Present XiHanFun and contributors.
+ * Licensed under the MIT License. See LICENSE in the project root for license information.
+ */
+
 // resolveLabelling：按 title/description 的渲染计数决定是否输出对应 id。
 
 export interface LabellingInput {

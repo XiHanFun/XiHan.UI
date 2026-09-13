@@ -1,3 +1,8 @@
+/*
+ * Copyright (c) 2021-Present XiHanFun and contributors.
+ * Licensed under the MIT License. See LICENSE in the project root for license information.
+ */
+
 // 缓动曲线：CSS 侧的 cubic-bezier 字符串，与 JS 侧同名的采样函数。
 // standard / easeIn / easeOut / outStrong 四条与 tokens primitive 的 ease.standard / in / out / out-strong 同值，真源是令牌，由门禁比对。
 

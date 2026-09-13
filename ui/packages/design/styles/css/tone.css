@@ -1,4 +1,9 @@
 /*
+ * Copyright (c) 2021-Present XiHanFun and contributors.
+ * Licensed under the MIT License. See LICENSE in the project root for license information.
+ */
+
+/*
  * 语气层：与组件无关，全库共用一份。
  *
  * 三个视觉轴各管一件事，互不干涉：

@@ -1,3 +1,8 @@
+/*
+ * Copyright (c) 2021-Present XiHanFun and contributors.
+ * Licensed under the MIT License. See LICENSE in the project root for license information.
+ */
+
 // 控件下方那一行辅助文字同时只留一段：无效时显示错误，不无效时显示说明。
 // 判据是级联算出来的 display——收起写在公共层里，逐份皮肤都没有这条规则，
 // 只有把两个部件一起渲出来、按真实的引入顺序算一遍才看得出它有没有生效。

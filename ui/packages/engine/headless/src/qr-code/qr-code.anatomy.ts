@@ -1,3 +1,10 @@
+/*
+ * Copyright (c) 2021-Present XiHanFun and contributors.
+ * Licensed under the MIT License. See LICENSE in the project root for license information.
+ */
+
+// 提供 qr code 相关实现。
+
 import { createAnatomy } from '@xihan-ui/core'
 
 // 两个角色节点：承载整张码的 <svg> 是 root，摆在码面正中、由作者放自己图形的那块是 logo。

@@ -1,3 +1,10 @@
+/*
+ * Copyright (c) 2021-Present XiHanFun and contributors.
+ * Licensed under the MIT License. See LICENSE in the project root for license information.
+ */
+
+// 提供 tag 相关实现。
+
 import type { KeyboardTable } from '../spec/types'
 
 // 标签本身不接收焦点；键盘可达的只有那颗关闭钮，激活由平台负责，

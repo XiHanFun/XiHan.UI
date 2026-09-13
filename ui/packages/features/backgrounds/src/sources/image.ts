@@ -1,3 +1,8 @@
+/*
+ * Copyright (c) 2021-Present XiHanFun and contributors.
+ * Licensed under the MIT License. See LICENSE in the project root for license information.
+ */
+
 // 图片 → 点云。任何 CanvasImageSource（img / canvas / video / ImageBitmap）都能进来，
 // 传 URL 时负责加载并按需处理跨源。
 

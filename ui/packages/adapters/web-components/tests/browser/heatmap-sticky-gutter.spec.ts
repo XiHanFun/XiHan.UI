@@ -1,3 +1,8 @@
+/*
+ * Copyright (c) 2021-Present XiHanFun and contributors.
+ * Licensed under the MIT License. See LICENSE in the project root for license information.
+ */
+
 // 一整年五十几列放不下时网格自己横着滚，行首那一列星期名要钉在原地。
 // 钉不钉得住、格子会不会从它下面透出来，都要真布局才量得到；jsdom 不做布局，那边永远是绿的。
 //

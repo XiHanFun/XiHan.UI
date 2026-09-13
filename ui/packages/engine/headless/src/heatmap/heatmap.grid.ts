@@ -1,3 +1,10 @@
+/*
+ * Copyright (c) 2021-Present XiHanFun and contributors.
+ * Licensed under the MIT License. See LICENSE in the project root for license information.
+ */
+
+// 提供 heatmap.grid 相关实现。
+
 import type { Direction } from '@xihan-ui/core'
 
 // 热力图的纯数学与纯格式化：把一段日期区间摊成「周列 × 星期行」的网格，把计数分成档位，

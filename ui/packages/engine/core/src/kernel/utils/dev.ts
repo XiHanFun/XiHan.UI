@@ -1,3 +1,8 @@
+/*
+ * Copyright (c) 2021-Present XiHanFun and contributors.
+ * Licensed under the MIT License. See LICENSE in the project root for license information.
+ */
+
 // dev 构建标志：读 import.meta.env.DEV，读不到即视为 false。
 
 export function isDev(): boolean {

@@ -1,3 +1,10 @@
+/*
+ * Copyright (c) 2021-Present XiHanFun and contributors.
+ * Licensed under the MIT License. See LICENSE in the project root for license information.
+ */
+
+// 提供 splitter 相关实现。
+
 import type { Direction, Orientation } from '@xihan-ui/core'
 import type { SplitterApi, SplitterPanelProps, SplitterPanelState, SplitterSchema, SplitterTranslations } from '@xihan-ui/headless'
 import type { ComponentPropsWithRef, ReactNode } from 'react'

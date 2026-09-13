@@ -1,3 +1,10 @@
+/*
+ * Copyright (c) 2021-Present XiHanFun and contributors.
+ * Licensed under the MIT License. See LICENSE in the project root for license information.
+ */
+
+// 提供 text field 相关实现。
+
 import type { KeyboardTable } from '../spec/types'
 
 // 单行文本框的键盘交互归浏览器管，组件只额外接一个 Escape 清空。

@@ -1,3 +1,10 @@
+/*
+ * Copyright (c) 2021-Present XiHanFun and contributors.
+ * Licensed under the MIT License. See LICENSE in the project root for license information.
+ */
+
+// 提供 use code view 相关实现。
+
 import type { HighlighterPort } from '@xihan-ui/core'
 import type { CodeViewApi, CodeViewProps } from '@xihan-ui/headless'
 import { connectCodeView, createCodeViewHighlighterResource } from '@xihan-ui/headless'

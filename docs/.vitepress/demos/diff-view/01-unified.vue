@@ -1,3 +1,8 @@
+<!--
+  Copyright (c) 2021-Present XiHanFun and contributors.
+  Licensed under the MIT License. See LICENSE in the project root for license information.
+-->
+
 <!-- 单栏差异 | 两个入口归一到同一个模型：这里用新旧两版全文算，着色在建模时一次算好 -->
 <script setup lang="ts">
 import { createHighlighter } from "@xihan-ui/code-highlight";

@@ -1,3 +1,8 @@
+/*
+ * Copyright (c) 2021-Present XiHanFun and contributors.
+ * Licensed under the MIT License. See LICENSE in the project root for license information.
+ */
+
 // 拖放的类型契约。这一层只算几何，不碰 DOM。
 
 /** 一块矩形，字段与 `DOMRect` 的同名字段一致，但不依赖 DOM 类型。 */

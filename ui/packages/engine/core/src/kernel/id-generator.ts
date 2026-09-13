@@ -1,3 +1,8 @@
+/*
+ * Copyright (c) 2021-Present XiHanFun and contributors.
+ * Licensed under the MIT License. See LICENSE in the project root for license information.
+ */
+
 // id 生成端口 + 计数器回退实现。SSR 安全的实现（如 Vue 的 useId）由适配器注入。
 
 export interface IdGenerator {

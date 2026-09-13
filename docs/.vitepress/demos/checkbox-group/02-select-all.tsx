@@ -1,3 +1,8 @@
+/*
+ * Copyright (c) 2021-Present XiHanFun and contributors.
+ * Licensed under the MIT License. See LICENSE in the project root for license information.
+ */
+
 // 全选与半选 | 使用 itemValues 计算全选和半选状态
 import type { ReactNode } from "react";
 import {

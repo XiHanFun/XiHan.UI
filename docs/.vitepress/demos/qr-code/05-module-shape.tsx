@@ -1,3 +1,8 @@
+/*
+ * Copyright (c) 2021-Present XiHanFun and contributors.
+ * Licensed under the MIT License. See LICENSE in the project root for license information.
+ */
+
 // 码点形状 | square / dot / rounded；三种形状的墨都盖住每个模块的格心，读码器按格心取样
 import type { ReactNode } from "react";
 import { XhQrCode } from "@xihan-ui/react";

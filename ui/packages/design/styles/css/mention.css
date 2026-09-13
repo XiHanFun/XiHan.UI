@@ -1,3 +1,10 @@
+/*
+ * Copyright (c) 2021-Present XiHanFun and contributors.
+ * Licensed under the MIT License. See LICENSE in the project root for license information.
+ */
+
+/* 定义 mention 样式。 */
+
 @layer xihan.motion {
   /* 短位移关键帧随皮肤自带，单独引入也能完成进退场。 */
   @keyframes xh-overlay-slide-in {
