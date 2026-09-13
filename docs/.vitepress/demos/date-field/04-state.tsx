@@ -1,4 +1,4 @@
-// 禁用与非法 | 禁用整组退出 Tab 序、隐藏输入不再提交；invalid 只改观感与 aria，不动值
+// 状态 | 禁用、只读与校验失败
 import type { ReactNode } from "react";
 import {
   XhDateFieldControl,
@@ -40,7 +40,7 @@ export default function Demo(): ReactNode {
       </XhDateFieldRoot>
 
       <XhDateFieldRoot defaultValue="2026-07-28" locale="zh-CN" invalid>
-        <XhDateFieldLabel>invalid</XhDateFieldLabel>
+        <XhDateFieldLabel>校验失败</XhDateFieldLabel>
         <XhDateFieldControl>
           <XhDateFieldSegmentGroup>
             <XhDateFieldSegment index={0} />

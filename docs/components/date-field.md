@@ -1,6 +1,6 @@
 # DateField 日期输入
 
-分段的日期输入框：年、月、日各占一段，方向键加减，不弹日历。
+用于按年、月、日分段输入日期，不打开日历。
 
 <div class="xh-resource-links">
   <a href="https://github.com/XiHanFun/XiHan.UI/tree/dev/ui/packages/engine/headless/src/date-field" target="_blank" rel="noreferrer">Headless</a>
@@ -12,7 +12,7 @@
 
 ## 用法
 
-三段各是一个可加减的数，整组只占一个 Tab 位，三段填齐才第一次报出值
+输入日期
 
 <XhDemo src="date-field/01-basic" />
 
@@ -24,109 +24,64 @@
 
 ## 示例
 
-### 段序随 locale
+### 地区格式
 
-同一份标记，locale 换成 en-US 后段序自动排成月日年
+根据 locale 调整日期顺序
 
 <XhDemo src="date-field/02-locale" />
 
-### 可填区间
+### 日期范围
 
-min / max 收窄各段的加减范围，越界的初值只做标注、不被改写
+限制可输入日期
 
 <XhDemo src="date-field/03-range" />
 
-### 禁用与非法
+### 状态
 
-禁用整组退出 Tab 序、隐藏输入不再提交；invalid 只改观感与 aria，不动值
+禁用、只读与校验失败
 
 <XhDemo src="date-field/04-state" />
 
 ### 变体
 
-variant 只改分段框的底色与描边用法，分段结构与键盘行为都不变
+设置输入框外观
 
 <XhDemo src="date-field/05-variant" />
 
-### 颜色
+### 日期与时间
 
-tone 决定用哪族颜色，与 variant 正交；这里固定 subtle 形态，只看语气这一轴
-
-<XhDemo src="date-field/06-tone" />
-
-### 尺寸
-
-不传 size 即默认档；行高、内边距与字号一起换档，标题也跟着变
-
-<XhDemo src="date-field/07-size" />
-
-### 精确到分
-
-granularity=minute 在年月日后面接出时、分两段，值随之带上 T 与时间位
+输入精确到分钟的日期
 
 <XhDemo src="date-field/08-datetime" />
-
-### 外部写值与清空
-
-值由宿主持有，按钮直接写值；清空交给组件自带的清空钮，有值才出现；填齐与越界两个判据由组件给出
-
-<XhDemo src="date-field/09-actions" />
-
-### 值变化事件
-
-value-change 每次带上整份 ISO 串，段位被清掉时它是 null
-
-<XhDemo src="date-field/10-events" />
-
-### 段位自定义文本
-
-段位插槽给出这一段的类型、取值与焦点状态，离焦后年份只留两位、月份换成中文名
-
-<XhDemo src="date-field/11-segment-format" />
-
-### 对外值换个写法
-
-组件读写的恒是 ISO 串，宿主在读写两头各转一次换成自己的格式，表单也提交这一份
-
-<XhDemo src="date-field/12-value-format" />
-
-### 段位可拼装
-
-segments 决定这份控件由哪几块组成；段位可按段名认领，不必数下标
-
-<XhDemo src="date-field/13-segments" />
 
 ## 设计指引
 
 ### 何时使用
 
-- 用户已经知道确切日期（生日、证件有效期），打字比翻日历快。
-- 需要键盘全程可用。
+- 用户已知确切日期，例如生日或证件有效期。
+- 需要使用键盘快速逐段输入。
 
 ### 何时不用
 
-- 用户需要看着日历挑（选会议时间、看星期几）：用[日期选择器](./date-picker)。
+- 需要查看月份或星期信息：使用[日期选择器](./date-picker)。
 - 只要时间不要日期：用[时间输入](./time-field)。
 
 ### 特性
 
-- 段序随 `locale` 变，不是写死的年月日。不给 `locale` 就跟宿主浏览器语言，读不到才落 `en-US`（月日年）。
-- `min` / `max` 收窄各段的加减范围；越界的初值只做标注、不被改写。
-- `granularity` 决定精确到日还是到分。
-- 段位文本、对外值的写法与段位的拼装都可以换。
-
-### 组合
-
-- 外面套[表单字段](./field)；与[日期选择器](./date-picker)共用同一套段位部件。
+- `locale` 决定日期段的顺序和分隔方式。
+- `min` 与 `max` 限制可输入范围。
+- `granularity` 支持日期或精确到分钟的日期时间。
+- 支持受控值、原生表单提交和三种视觉变体。
 
 ### 最佳实践
 
-- 给出 `min` / `max`，方向键才有边界。
-- 明确对外值的写法（ISO 串还是别的），并与后端对齐。
+- 使用清晰的字段标签。
+- 有业务范围限制时设置 `min` 与 `max`。
+- 对外统一使用 ISO 日期字符串。
 
 ### 反模式
 
-- 用一个[文本输入](./text-field)收日期再自己解析：各地区的写法互不相同，解析出来的结果不可控。
+- 使用普通文本输入接收日期并自行解析。
 
 ## API 参考
 

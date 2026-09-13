@@ -1,4 +1,4 @@
-// 段序随 locale | 同一份标记，locale 换成 en-US 后段序自动排成月日年
+// 地区格式 | 根据 locale 调整日期顺序
 import type { ReactNode } from "react";
 import {
   XhDateFieldControl,
@@ -7,20 +7,12 @@ import {
   XhDateFieldSegment,
   XhDateFieldSegmentGroup,
 } from "@xihan-ui/react";
-import { useState } from "react";
 
 export default function Demo(): ReactNode {
-  const [zh, setZh] = useState<string | null>("2026-07-28");
-  const [us, setUs] = useState<string | null>("2026-07-28");
-
   return (
     <div style={{ display: "grid", gap: "16px" }}>
-      <XhDateFieldRoot
-        value={zh}
-        onValueChange={details => setZh(details.value)}
-        locale="zh-CN"
-      >
-        <XhDateFieldLabel>zh-CN</XhDateFieldLabel>
+      <XhDateFieldRoot defaultValue="2026-07-28" locale="zh-CN">
+        <XhDateFieldLabel>中文格式</XhDateFieldLabel>
         <XhDateFieldControl>
           <XhDateFieldSegmentGroup>
             <XhDateFieldSegment index={0} />
@@ -33,12 +25,8 @@ export default function Demo(): ReactNode {
         </XhDateFieldControl>
       </XhDateFieldRoot>
 
-      <XhDateFieldRoot
-        value={us}
-        onValueChange={details => setUs(details.value)}
-        locale="en-US"
-      >
-        <XhDateFieldLabel>en-US</XhDateFieldLabel>
+      <XhDateFieldRoot defaultValue="2026-07-28" locale="en-US">
+        <XhDateFieldLabel>美国格式</XhDateFieldLabel>
         <XhDateFieldControl>
           <XhDateFieldSegmentGroup>
             <XhDateFieldSegment index={0} />
@@ -49,10 +37,6 @@ export default function Demo(): ReactNode {
           </XhDateFieldSegmentGroup>
         </XhDateFieldControl>
       </XhDateFieldRoot>
-
-      <p style={{ margin: 0, fontSize: "13px" }}>
-        {`两份值都是 ISO 串：${zh ?? "（空）"} · ${us ?? "（空）"}`}
-      </p>
     </div>
   );
 }

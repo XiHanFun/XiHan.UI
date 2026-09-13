@@ -1,4 +1,4 @@
-<!-- 段序随 locale | 同一份标记，locale 换成 en-US 后段序自动排成月日年 -->
+<!-- 地区格式 | 根据 locale 调整日期顺序 -->
 <script setup lang="ts">
 import {
   XhDateFieldControl,
@@ -7,16 +7,12 @@ import {
   XhDateFieldSegment,
   XhDateFieldSegmentGroup,
 } from "@xihan-ui/vue";
-import { ref } from "vue";
-
-const zh = ref<string | null>("2026-07-28");
-const us = ref<string | null>("2026-07-28");
 </script>
 
 <template>
   <div style="display: grid; gap: 16px">
-    <XhDateFieldRoot v-model:value="zh" locale="zh-CN">
-      <XhDateFieldLabel>zh-CN</XhDateFieldLabel>
+    <XhDateFieldRoot default-value="2026-07-28" locale="zh-CN">
+      <XhDateFieldLabel>中文格式</XhDateFieldLabel>
       <XhDateFieldControl>
         <XhDateFieldSegmentGroup>
           <XhDateFieldSegment :index="0" />
@@ -29,8 +25,8 @@ const us = ref<string | null>("2026-07-28");
       </XhDateFieldControl>
     </XhDateFieldRoot>
 
-    <XhDateFieldRoot v-model:value="us" locale="en-US">
-      <XhDateFieldLabel>en-US</XhDateFieldLabel>
+    <XhDateFieldRoot default-value="2026-07-28" locale="en-US">
+      <XhDateFieldLabel>美国格式</XhDateFieldLabel>
       <XhDateFieldControl>
         <XhDateFieldSegmentGroup>
           <XhDateFieldSegment :index="0" />
@@ -41,9 +37,5 @@ const us = ref<string | null>("2026-07-28");
         </XhDateFieldSegmentGroup>
       </XhDateFieldControl>
     </XhDateFieldRoot>
-
-    <p style="margin: 0; font-size: 13px">
-      两份值都是 ISO 串：{{ zh ?? "（空）" }} · {{ us ?? "（空）" }}
-    </p>
   </div>
 </template>

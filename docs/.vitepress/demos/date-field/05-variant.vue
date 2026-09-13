@@ -1,4 +1,4 @@
-<!-- 形态 | variant 只改分段框的底色与描边用法，分段结构与键盘行为都不变 -->
+<!-- 变体 | 设置输入框外观 -->
 <script setup lang="ts">
 import {
   XhDateFieldControl,

@@ -1,4 +1,4 @@
-<!-- 可填区间 | min / max 收窄各段的加减范围，越界的初值只做标注、不被改写 -->
+<!-- 日期范围 | 限制可输入日期 -->
 <script setup lang="ts">
 import {
   XhDateFieldControl,
@@ -17,7 +17,7 @@ import {
       min="2020-01-01"
       max="2030-12-31"
     >
-      <XhDateFieldLabel>在区间内（2020 – 2030）</XhDateFieldLabel>
+      <XhDateFieldLabel>有效日期（2020—2030）</XhDateFieldLabel>
       <XhDateFieldControl>
         <XhDateFieldSegmentGroup>
           <XhDateFieldSegment :index="0" />
@@ -30,9 +30,8 @@ import {
       </XhDateFieldControl>
     </XhDateFieldRoot>
 
-    <!-- 初值早于 min：root 挂上 data-out-of-range，值本身原样留着 -->
     <XhDateFieldRoot default-value="2019-05-01" locale="zh-CN" min="2020-01-01">
-      <XhDateFieldLabel>越界（min 2020-01-01）</XhDateFieldLabel>
+      <XhDateFieldLabel>早于最小日期</XhDateFieldLabel>
       <XhDateFieldControl>
         <XhDateFieldSegmentGroup>
           <XhDateFieldSegment :index="0" />
