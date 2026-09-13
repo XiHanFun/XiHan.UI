@@ -1,7 +1,9 @@
 <!-- 外部触发的输入会话 | 输入部件平时收起，按「添加」才露面并聚焦；打字时给候选，选中即落标签，失焦按 blur-behavior 收尾 -->
 <script setup lang="ts">
+import { PlusIcon } from "@xihan-ui/icons";
 import {
   XhButton,
+  XhIcon,
   XhTagsInputControl,
   XhTagsInputInput,
   XhTagsInputItem,
@@ -59,7 +61,8 @@ function options(text: string): string[] {
         :disabled="atMax"
         @click="start"
       >
-        ＋ 添加
+        <XhIcon :icon="PlusIcon" />
+        添加
       </XhButton>
     </XhTagsInputControl>
 
