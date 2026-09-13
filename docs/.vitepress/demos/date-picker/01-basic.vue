@@ -4,7 +4,6 @@ import {
   XhDatePickerCalendar,
   XhDatePickerCell,
   XhDatePickerCellTrigger,
-  XhDatePickerClearTrigger,
   XhDatePickerContent,
   XhDatePickerControl,
   XhDatePickerGrid,
@@ -12,6 +11,7 @@ import {
   XhDatePickerGridHead,
   XhDatePickerHeader,
   XhDatePickerHeading,
+  XhDatePickerHiddenInput,
   XhDatePickerLabel,
   XhDatePickerNextTrigger,
   XhDatePickerPositioner,
@@ -19,13 +19,19 @@ import {
   XhDatePickerRoot,
   XhDatePickerSegment,
   XhDatePickerSegmentGroup,
+  XhDatePickerTrigger,
   XhDatePickerWeekDay,
   XhDatePickerWeekRow,
 } from "@xihan-ui/vue";
 </script>
 
 <template>
-  <XhDatePickerRoot v-slot="{ weeks, weekDays }" locale="zh-CN">
+  <XhDatePickerRoot
+    v-slot="{ weeks, weekDays }"
+    locale="zh-CN"
+    name="delivery-date"
+    style="--xh-date-picker-control-min-w: calc(var(--xh-control-min-w) + var(--xh-control-h-md) + var(--xh-control-h-md) + var(--xh-space-6))"
+  >
     <XhDatePickerLabel>交付日期</XhDatePickerLabel>
     <XhDatePickerControl>
       <XhDatePickerSegmentGroup>
@@ -35,8 +41,9 @@ import {
         <span>-</span>
         <XhDatePickerSegment :index="2" />
       </XhDatePickerSegmentGroup>
-      <XhDatePickerClearTrigger />
+      <XhDatePickerTrigger />
     </XhDatePickerControl>
+    <XhDatePickerHiddenInput />
     <XhDatePickerPositioner>
       <XhDatePickerContent>
         <XhDatePickerCalendar>

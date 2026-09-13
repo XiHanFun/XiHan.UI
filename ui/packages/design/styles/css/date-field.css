@@ -25,8 +25,8 @@
     --xh-_date-field-control-shadow: var(--xh-elevation-raised);
     /* 聚焦环与段位反白随语气走。没写 data-tone 时这几个 --xh-_tone* 没被声明，退回原来的焦点色与品牌色 */
     --xh-_date-field-ring: var(--xh-ring-focus);
-    --xh-_date-field-segment-bg: var(--xh-_tone, var(--xh-bg-brand));
-    --xh-_date-field-segment-fg: var(--xh-_tone-on, var(--xh-fg-on-brand));
+    --xh-_date-field-segment-bg: var(--xh-_tone-subtle, var(--xh-bg-brand-subtle));
+    --xh-_date-field-segment-fg: var(--xh-_tone-fg, var(--xh-fg-brand));
 
     display: inline-flex;
     flex-direction: column;
@@ -179,10 +179,14 @@
     display: none;
   }
 
+  [data-scope='date-field'][data-part='segment-group'] > :not([data-scope]) {
+    color: var(--xh-date-field-literal-fg, var(--xh-fg-subtle));
+  }
+
   /* 每一段是一块可聚焦的文字：宽度随内容走，两侧留一点让选中底色不贴着数字 */
   [data-scope='date-field'][data-part='segment'] {
     display: inline-block;
-    padding-inline: var(--xh-date-field-segment-px, var(--xh-space-1));
+    padding-inline: var(--xh-date-field-segment-px, var(--xh-space-0_5));
     padding-block: var(--xh-date-field-segment-py, var(--xh-space-0));
     border-radius: var(--xh-date-field-segment-radius, var(--xh-shape-inset));
     color: inherit;
@@ -226,6 +230,18 @@
   /* 反白之后占位串那条弱色规则会被盖掉，专门再压一遍才看得清 */
   [data-scope='date-field'][data-part='segment'][data-focus][data-placeholder] {
     color: var(--xh-date-field-segment-fg-focus, var(--xh-_date-field-segment-fg));
+  }
+
+  [data-scope='date-field'][data-part='segment'][data-invalid] {
+    color: var(--xh-date-field-segment-fg-invalid, var(--xh-fg-danger));
+  }
+
+  [data-scope='date-field'][data-part='segment'][data-invalid]:is([data-focus], :focus-visible) {
+    background: var(
+      --xh-date-field-segment-bg-invalid-focus,
+      var(--xh-bg-subtle)
+    );
+    color: var(--xh-date-field-segment-fg-invalid-focus, var(--xh-fg-danger));
   }
 
   /* 清空钮排在段位之后、与框等高的一颗小方钮：没值或不可编辑时连接层给 hidden 收起 */
@@ -280,6 +296,13 @@
     background-color: currentColor;
     -webkit-mask: var(--xh-glyph-mark-close) center / contain no-repeat;
     mask: var(--xh-glyph-mark-close) center / contain no-repeat;
+  }
+
+  @media (forced-colors: active) {
+    [data-scope='date-field'][data-part='segment'][data-invalid]:is([data-focus], :focus-visible) {
+      outline: var(--xh-ring-width) solid Highlight;
+      outline-offset: var(--xh-ring-offset);
+    }
   }
 
   /* 连接层把它写成 type=hidden，UA 自己就不渲染；这里的视觉隐藏是给元素升级前那一瞬兜底

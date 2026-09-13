@@ -15141,6 +15141,24 @@
       "description": "date-field 的 label 部件 font-weight 覆盖槽。"
     },
     {
+      "name": "--xh-date-field-literal-fg",
+      "component": "date-field",
+      "part": [
+        "segment-group"
+      ],
+      "property": [
+        "color"
+      ],
+      "state": [
+        "not([data-scope])"
+      ],
+      "defaultToken": [
+        "--xh-fg-subtle"
+      ],
+      "visibility": "public",
+      "description": "date-field 的 segment-group 部件 color 覆盖槽。"
+    },
+    {
       "name": "--xh-date-field-placeholder-fg",
       "component": "date-field",
       "part": [
@@ -15178,6 +15196,26 @@
       "description": "date-field 的 segment 部件 background 覆盖槽。"
     },
     {
+      "name": "--xh-date-field-segment-bg-invalid-focus",
+      "component": "date-field",
+      "part": [
+        "segment"
+      ],
+      "property": [
+        "background"
+      ],
+      "state": [
+        "focus",
+        "invalid",
+        "is([data-focus], :focus-visible)"
+      ],
+      "defaultToken": [
+        "--xh-bg-subtle"
+      ],
+      "visibility": "public",
+      "description": "date-field 的 segment 部件 background 覆盖槽。"
+    },
+    {
       "name": "--xh-date-field-segment-fg-focus",
       "component": "date-field",
       "part": [
@@ -15198,6 +15236,44 @@
       "description": "date-field 的 segment 部件 color 覆盖槽。"
     },
     {
+      "name": "--xh-date-field-segment-fg-invalid",
+      "component": "date-field",
+      "part": [
+        "segment"
+      ],
+      "property": [
+        "color"
+      ],
+      "state": [
+        "invalid"
+      ],
+      "defaultToken": [
+        "--xh-fg-danger"
+      ],
+      "visibility": "public",
+      "description": "date-field 的 segment 部件 color 覆盖槽。"
+    },
+    {
+      "name": "--xh-date-field-segment-fg-invalid-focus",
+      "component": "date-field",
+      "part": [
+        "segment"
+      ],
+      "property": [
+        "color"
+      ],
+      "state": [
+        "focus",
+        "invalid",
+        "is([data-focus], :focus-visible)"
+      ],
+      "defaultToken": [
+        "--xh-fg-danger"
+      ],
+      "visibility": "public",
+      "description": "date-field 的 segment 部件 color 覆盖槽。"
+    },
+    {
       "name": "--xh-date-field-segment-px",
       "component": "date-field",
       "part": [
@@ -15210,7 +15286,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-space-1"
+        "--xh-space-0_5"
       ],
       "visibility": "public",
       "description": "date-field 的 segment 部件 padding-inline 覆盖槽。"
@@ -15695,9 +15771,11 @@
         "padding-inline"
       ],
       "state": [
+        "@media (width < 768px)",
         "default"
       ],
       "defaultToken": [
+        "--xh-space-2",
         "--xh-space-3"
       ],
       "visibility": "public",
@@ -15862,7 +15940,8 @@
       "state": [
         "disabled",
         "focus-within",
-        "not([data-disabled])"
+        "not([data-disabled])",
+        "state=open"
       ],
       "defaultToken": [
         "--xh-_tone"
@@ -16187,6 +16266,24 @@
       "description": "date-picker 的 positioner 部件 z-index 覆盖槽。"
     },
     {
+      "name": "--xh-date-picker-literal-fg",
+      "component": "date-picker",
+      "part": [
+        "segment-group"
+      ],
+      "property": [
+        "color"
+      ],
+      "state": [
+        "not([data-scope])"
+      ],
+      "defaultToken": [
+        "--xh-fg-subtle"
+      ],
+      "visibility": "public",
+      "description": "date-picker 的 segment-group 部件 color 覆盖槽。"
+    },
+    {
       "name": "--xh-date-picker-max-h",
       "component": "date-picker",
       "part": [
@@ -16505,6 +16602,24 @@
       "description": "date-picker 的 time-column 部件 padding 覆盖槽。"
     },
     {
+      "name": "--xh-date-picker-time-column-px-mobile",
+      "component": "date-picker",
+      "part": [
+        "time-column"
+      ],
+      "property": [
+        "padding-inline"
+      ],
+      "state": [
+        "@media (width < 768px)"
+      ],
+      "defaultToken": [
+        "--xh-space-0_5"
+      ],
+      "visibility": "public",
+      "description": "date-picker 的 time-column 部件 padding-inline 覆盖槽。"
+    },
+    {
       "name": "--xh-date-picker-time-item-bg-hover",
       "component": "date-picker",
       "part": [
@@ -16555,6 +16670,7 @@
         "padding-inline"
       ],
       "state": [
+        "@media (width < 768px)",
         "default"
       ],
       "defaultToken": [
@@ -56441,6 +56557,24 @@
       "description": "time-field 的 label 部件 font-weight 覆盖槽。"
     },
     {
+      "name": "--xh-time-field-literal-fg",
+      "component": "time-field",
+      "part": [
+        "segment-group"
+      ],
+      "property": [
+        "color"
+      ],
+      "state": [
+        "not([data-scope])"
+      ],
+      "defaultToken": [
+        "--xh-fg-subtle"
+      ],
+      "visibility": "public",
+      "description": "time-field 的 segment-group 部件 color 覆盖槽。"
+    },
+    {
       "name": "--xh-time-field-placeholder-fg",
       "component": "time-field",
       "part": [
@@ -56501,6 +56635,26 @@
       "description": "time-field 的 segment 部件 background 覆盖槽。"
     },
     {
+      "name": "--xh-time-field-segment-bg-invalid-focus",
+      "component": "time-field",
+      "part": [
+        "segment"
+      ],
+      "property": [
+        "background"
+      ],
+      "state": [
+        "focus",
+        "invalid",
+        "is([data-focus], :focus-visible)"
+      ],
+      "defaultToken": [
+        "--xh-bg-subtle"
+      ],
+      "visibility": "public",
+      "description": "time-field 的 segment 部件 background 覆盖槽。"
+    },
+    {
       "name": "--xh-time-field-segment-fg-focus",
       "component": "time-field",
       "part": [
@@ -56523,6 +56677,44 @@
       "description": "time-field 的 segment 部件 color 覆盖槽。"
     },
     {
+      "name": "--xh-time-field-segment-fg-invalid",
+      "component": "time-field",
+      "part": [
+        "segment"
+      ],
+      "property": [
+        "color"
+      ],
+      "state": [
+        "invalid"
+      ],
+      "defaultToken": [
+        "--xh-fg-danger"
+      ],
+      "visibility": "public",
+      "description": "time-field 的 segment 部件 color 覆盖槽。"
+    },
+    {
+      "name": "--xh-time-field-segment-fg-invalid-focus",
+      "component": "time-field",
+      "part": [
+        "segment"
+      ],
+      "property": [
+        "color"
+      ],
+      "state": [
+        "focus",
+        "invalid",
+        "is([data-focus], :focus-visible)"
+      ],
+      "defaultToken": [
+        "--xh-fg-danger"
+      ],
+      "visibility": "public",
+      "description": "time-field 的 segment 部件 color 覆盖槽。"
+    },
+    {
       "name": "--xh-time-field-segment-px",
       "component": "time-field",
       "part": [
@@ -56535,7 +56727,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-space-1"
+        "--xh-space-0_5"
       ],
       "visibility": "public",
       "description": "time-field 的 segment 部件 padding-inline 覆盖槽。"
@@ -56608,7 +56800,8 @@
       ],
       "state": [
         "active",
-        "not(:disabled)"
+        "not(:disabled)",
+        "state=open"
       ],
       "defaultToken": [
         "--xh-bg-subtle-active"
@@ -56667,7 +56860,8 @@
       ],
       "state": [
         "hover",
-        "not(:disabled)"
+        "not(:disabled)",
+        "state=open"
       ],
       "defaultToken": [
         "--xh-fg-default"
@@ -56947,7 +57141,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-space-1"
+        "--xh-space-2"
       ],
       "visibility": "public",
       "description": "time-picker 的 content 部件 padding-inline 覆盖槽。"
@@ -56965,7 +57159,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-space-1"
+        "--xh-space-2"
       ],
       "visibility": "public",
       "description": "time-picker 的 content 部件 padding-block 覆盖槽。"
@@ -57111,7 +57305,8 @@
       "state": [
         "disabled",
         "focus-within",
-        "not([data-disabled])"
+        "not([data-disabled])",
+        "state=open"
       ],
       "defaultToken": [
         "--xh-_tone"
@@ -57346,6 +57541,46 @@
       "description": "time-picker 的 positioner、root 部件 --xh-icon-size 覆盖槽。"
     },
     {
+      "name": "--xh-time-picker-item-bg-checked",
+      "component": "time-picker",
+      "part": [
+        "item"
+      ],
+      "property": [
+        "background"
+      ],
+      "state": [
+        "state=checked"
+      ],
+      "defaultToken": [
+        "--xh-_time-picker-option-bg-selected"
+      ],
+      "visibility": "public",
+      "description": "time-picker 的 item 部件 background 覆盖槽。"
+    },
+    {
+      "name": "--xh-time-picker-item-bg-checked-hover",
+      "component": "time-picker",
+      "part": [
+        "item"
+      ],
+      "property": [
+        "background"
+      ],
+      "state": [
+        "disabled",
+        "highlighted",
+        "is(:hover, :focus-visible, [data-highlighted])",
+        "not([data-disabled])",
+        "state=checked"
+      ],
+      "defaultToken": [
+        "--xh-_time-picker-option-bg-selected-hover"
+      ],
+      "visibility": "public",
+      "description": "time-picker 的 item 部件 background 覆盖槽。"
+    },
+    {
       "name": "--xh-time-picker-item-bg-hover",
       "component": "time-picker",
       "part": [
@@ -57414,8 +57649,7 @@
         "color"
       ],
       "state": [
-        "default",
-        "state=checked"
+        "default"
       ],
       "defaultToken": [
         "--xh-fg-default"
@@ -57436,7 +57670,7 @@
         "state=checked"
       ],
       "defaultToken": [
-        "--xh-time-picker-item-fg"
+        "--xh-_time-picker-option-fg-selected"
       ],
       "visibility": "public",
       "description": "time-picker 的 item 部件 color 覆盖槽。"
@@ -57527,7 +57761,7 @@
         "state=checked"
       ],
       "defaultToken": [
-        "--xh-font-weight-regular"
+        "--xh-font-weight-medium"
       ],
       "visibility": "public",
       "description": "time-picker 的 item 部件 font-weight 覆盖槽。"
@@ -57621,6 +57855,24 @@
       ],
       "visibility": "public",
       "description": "time-picker 的 positioner 部件 z-index 覆盖槽。"
+    },
+    {
+      "name": "--xh-time-picker-literal-fg",
+      "component": "time-picker",
+      "part": [
+        "segment-group"
+      ],
+      "property": [
+        "color"
+      ],
+      "state": [
+        "not([data-scope])"
+      ],
+      "defaultToken": [
+        "--xh-fg-subtle"
+      ],
+      "visibility": "public",
+      "description": "time-picker 的 segment-group 部件 color 覆盖槽。"
     },
     {
       "name": "--xh-time-picker-placeholder-fg",
@@ -57879,7 +58131,7 @@
         "not([data-disabled])"
       ],
       "defaultToken": [
-        "--xh-_time-picker-accent"
+        "--xh-_time-picker-segment-bg"
       ],
       "visibility": "public",
       "description": "time-picker 的 segment 部件 background 覆盖槽。"
@@ -57906,6 +58158,26 @@
       "description": "time-picker 的 segment 部件 background 覆盖槽。"
     },
     {
+      "name": "--xh-time-picker-segment-bg-invalid-focus",
+      "component": "time-picker",
+      "part": [
+        "segment"
+      ],
+      "property": [
+        "background"
+      ],
+      "state": [
+        "focus",
+        "invalid",
+        "is([data-focus], :focus-visible)"
+      ],
+      "defaultToken": [
+        "--xh-bg-subtle"
+      ],
+      "visibility": "public",
+      "description": "time-picker 的 segment 部件 background 覆盖槽。"
+    },
+    {
       "name": "--xh-time-picker-segment-fg-focus",
       "component": "time-picker",
       "part": [
@@ -57922,7 +58194,45 @@
         "placeholder"
       ],
       "defaultToken": [
-        "--xh-_time-picker-accent-fg"
+        "--xh-_time-picker-segment-fg"
+      ],
+      "visibility": "public",
+      "description": "time-picker 的 segment 部件 color 覆盖槽。"
+    },
+    {
+      "name": "--xh-time-picker-segment-fg-invalid",
+      "component": "time-picker",
+      "part": [
+        "segment"
+      ],
+      "property": [
+        "color"
+      ],
+      "state": [
+        "invalid"
+      ],
+      "defaultToken": [
+        "--xh-fg-danger"
+      ],
+      "visibility": "public",
+      "description": "time-picker 的 segment 部件 color 覆盖槽。"
+    },
+    {
+      "name": "--xh-time-picker-segment-fg-invalid-focus",
+      "component": "time-picker",
+      "part": [
+        "segment"
+      ],
+      "property": [
+        "color"
+      ],
+      "state": [
+        "focus",
+        "invalid",
+        "is([data-focus], :focus-visible)"
+      ],
+      "defaultToken": [
+        "--xh-fg-danger"
       ],
       "visibility": "public",
       "description": "time-picker 的 segment 部件 color 覆盖槽。"
@@ -57940,7 +58250,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-space-1"
+        "--xh-space-0_5"
       ],
       "visibility": "public",
       "description": "time-picker 的 segment 部件 padding-inline 覆盖槽。"

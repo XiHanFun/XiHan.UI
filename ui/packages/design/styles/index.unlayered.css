@@ -19701,8 +19701,8 @@
   --xh-_date-field-control-shadow: var(--xh-elevation-raised);
   /* 聚焦环与段位反白随语气走。没写 data-tone 时这几个 --xh-_tone* 没被声明，退回原来的焦点色与品牌色 */
   --xh-_date-field-ring: var(--xh-ring-focus);
-  --xh-_date-field-segment-bg: var(--xh-_tone, var(--xh-bg-brand));
-  --xh-_date-field-segment-fg: var(--xh-_tone-on, var(--xh-fg-on-brand));
+  --xh-_date-field-segment-bg: var(--xh-_tone-subtle, var(--xh-bg-brand-subtle));
+  --xh-_date-field-segment-fg: var(--xh-_tone-fg, var(--xh-fg-brand));
 
   display: inline-flex;
   flex-direction: column;
@@ -19855,10 +19855,14 @@
   display: none;
 }
 
+[data-scope='date-field'][data-part='segment-group'] > :not([data-scope]) {
+  color: var(--xh-date-field-literal-fg, var(--xh-fg-subtle));
+}
+
 /* 每一段是一块可聚焦的文字：宽度随内容走，两侧留一点让选中底色不贴着数字 */
 [data-scope='date-field'][data-part='segment'] {
   display: inline-block;
-  padding-inline: var(--xh-date-field-segment-px, var(--xh-space-1));
+  padding-inline: var(--xh-date-field-segment-px, var(--xh-space-0_5));
   padding-block: var(--xh-date-field-segment-py, var(--xh-space-0));
   border-radius: var(--xh-date-field-segment-radius, var(--xh-shape-inset));
   color: inherit;
@@ -19902,6 +19906,18 @@
 /* 反白之后占位串那条弱色规则会被盖掉，专门再压一遍才看得清 */
 [data-scope='date-field'][data-part='segment'][data-focus][data-placeholder] {
   color: var(--xh-date-field-segment-fg-focus, var(--xh-_date-field-segment-fg));
+}
+
+[data-scope='date-field'][data-part='segment'][data-invalid] {
+  color: var(--xh-date-field-segment-fg-invalid, var(--xh-fg-danger));
+}
+
+[data-scope='date-field'][data-part='segment'][data-invalid]:is([data-focus], :focus-visible) {
+  background: var(
+    --xh-date-field-segment-bg-invalid-focus,
+    var(--xh-bg-subtle)
+  );
+  color: var(--xh-date-field-segment-fg-invalid-focus, var(--xh-fg-danger));
 }
 
 /* 清空钮排在段位之后、与框等高的一颗小方钮：没值或不可编辑时连接层给 hidden 收起 */
@@ -19956,6 +19972,13 @@
   background-color: currentColor;
   -webkit-mask: var(--xh-glyph-mark-close) center / contain no-repeat;
   mask: var(--xh-glyph-mark-close) center / contain no-repeat;
+}
+
+@media (forced-colors: active) {
+  [data-scope='date-field'][data-part='segment'][data-invalid]:is([data-focus], :focus-visible) {
+    outline: var(--xh-ring-width) solid Highlight;
+    outline-offset: var(--xh-ring-offset);
+  }
 }
 
 /* 连接层把它写成 type=hidden，UA 自己就不渲染；这里的视觉隐藏是给元素升级前那一瞬兜底
@@ -20052,6 +20075,9 @@
   --xh-_date-picker-accent-hover: var(--xh-_tone-hover, var(--xh-bg-brand-hover));
   --xh-_date-picker-accent-active: var(--xh-_tone-active, var(--xh-bg-brand-active));
   --xh-_date-picker-accent-fg: var(--xh-_tone-on, var(--xh-fg-on-brand));
+  /* 内嵌日期段沿用日期输入的轻强调焦点，不另画一套实心选择态。 */
+  --xh-_date-field-segment-bg: var(--xh-_tone-subtle, var(--xh-bg-brand-subtle));
+  --xh-_date-field-segment-fg: var(--xh-_tone-fg, var(--xh-fg-brand));
   /* 对号画在普通面上，取语气前景角色，不能拿确认按钮的实心背景色充当前景。 */
   --xh-_date-picker-check-fg: var(--xh-_tone, var(--xh-fg-brand));
   --xh-_date-picker-time-item-check-size: var(--xh-glyph-size-sm);
@@ -20193,6 +20219,12 @@
   outline-offset: var(--xh-ring-offset);
 }
 
+[data-scope='date-picker'][data-part='control'][data-state='open']:not([data-disabled]) {
+  border-color: var(--xh-date-picker-control-border-focus, var(--xh-_tone, var(--xh-border-control-focus)));
+  outline: var(--xh-ring-width) solid var(--xh-_date-picker-ring);
+  outline-offset: var(--xh-ring-offset);
+}
+
 [data-scope='date-picker'][data-part='control'][data-invalid] {
   border-color: var(--xh-date-picker-control-border-invalid, var(--xh-border-invalid));
 
@@ -20227,6 +20259,10 @@
 
 [data-scope='date-picker'][data-part='segment-group'][hidden] {
   display: none;
+}
+
+[data-scope='date-picker'][data-part='segment-group'] > :not([data-scope]) {
+  color: var(--xh-date-picker-literal-fg, var(--xh-fg-subtle));
 }
 
 /* 容器自己不占 Tab 位、也不承载焦点，环由 control 画，这里不再套一圈 */
@@ -20623,6 +20659,27 @@
 
 [data-scope='date-picker'][data-part='time-item'][data-state='checked']::after {
   opacity: 1;
+}
+
+@media (width < 768px) {
+  [data-scope='date-picker'][data-part='content'] {
+    padding-inline: var(--xh-date-picker-content-px, var(--xh-space-2));
+  }
+
+  [data-scope='date-picker'][data-part='time-column'] {
+    padding-inline: var(--xh-date-picker-time-column-px-mobile, var(--xh-space-0_5));
+  }
+
+  [data-scope='date-picker'][data-part='time-item'] {
+    --xh-_date-picker-time-item-rail: var(
+      --xh-date-picker-time-item-check-size,
+      var(--xh-_date-picker-time-item-check-size)
+    );
+  }
+
+  [data-scope='date-picker'][data-part='time-item']::after {
+    inset-inline-end: 0;
+  }
 }
 
 [data-scope='date-picker'][data-part='time-column'][aria-disabled='true'] [data-part='time-item'] {
@@ -34093,8 +34150,8 @@
   --xh-_time-field-control-shadow: var(--xh-elevation-raised);
   /* 聚焦描边与段位反白随语气走。没写 data-tone 时这几个 --xh-_tone* 没被声明，退回原来的焦点色与品牌色 */
   --xh-_time-field-ring: var(--xh-ring-focus);
-  --xh-_time-field-segment-bg: var(--xh-_tone, var(--xh-bg-brand));
-  --xh-_time-field-segment-fg: var(--xh-_tone-on, var(--xh-fg-on-brand));
+  --xh-_time-field-segment-bg: var(--xh-_tone-subtle, var(--xh-bg-brand-subtle));
+  --xh-_time-field-segment-fg: var(--xh-_tone-fg, var(--xh-fg-brand));
 
   display: inline-flex;
   flex-direction: column;
@@ -34187,7 +34244,9 @@
   /* 等宽数字：各位字宽不一时逐段填入会让整行左右跳 */
   font-variant-numeric: tabular-nums;
   line-height: var(--xh-leading-normal);
-  transition: border-color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
+  transition:
+    background var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
+    border-color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
 }
 
 [data-scope='time-field'][data-part='control'][hidden] {
@@ -34244,10 +34303,14 @@
   display: none;
 }
 
+[data-scope='time-field'][data-part='segment-group'] > :not([data-scope]) {
+  color: var(--xh-time-field-literal-fg, var(--xh-fg-subtle));
+}
+
 /* 段是一小块可聚焦区，紧挨着排；间距长在段自己身上 */
 [data-scope='time-field'][data-part='segment'] {
   display: inline-block;
-  padding-inline: var(--xh-time-field-segment-px, var(--xh-space-1));
+  padding-inline: var(--xh-time-field-segment-px, var(--xh-space-0_5));
   padding-block: var(--xh-time-field-segment-py, var(--xh-space-0));
   border-radius: var(--xh-time-field-segment-radius, var(--xh-shape-inset));
   color: inherit;
@@ -34286,6 +34349,18 @@
 /* 选中态用了品牌底色之后，占位符那条弱色会被它盖住，这里明确让位给焦点态 */
 [data-scope='time-field'][data-part='segment'][data-focus][data-placeholder]:not([data-disabled]) {
   color: var(--xh-time-field-segment-fg-focus, var(--xh-_time-field-segment-fg));
+}
+
+[data-scope='time-field'][data-part='segment'][data-invalid] {
+  color: var(--xh-time-field-segment-fg-invalid, var(--xh-fg-danger));
+}
+
+[data-scope='time-field'][data-part='segment'][data-invalid]:is([data-focus], :focus-visible) {
+  background: var(
+    --xh-time-field-segment-bg-invalid-focus,
+    var(--xh-bg-subtle)
+  );
+  color: var(--xh-time-field-segment-fg-invalid-focus, var(--xh-fg-danger));
 }
 
 [data-scope='time-field'][data-part='segment']:hover:not([data-focus], [data-disabled]) {
@@ -34352,6 +34427,13 @@
   background-color: currentColor;
   -webkit-mask: var(--xh-glyph-mark-close) center / contain no-repeat;
   mask: var(--xh-glyph-mark-close) center / contain no-repeat;
+}
+
+@media (forced-colors: active) {
+  [data-scope='time-field'][data-part='segment'][data-invalid]:is([data-focus], :focus-visible) {
+    outline: var(--xh-ring-width) solid Highlight;
+    outline-offset: var(--xh-ring-offset);
+  }
 }
 
 /* 连接层把它写成 type=hidden，UA 自己就不渲染；这里的视觉隐藏是给元素升级前那一瞬兜底
@@ -34432,11 +34514,13 @@
   /* 一档静态落影把盒从页面里抬起一层，与描边一起画出盒的边界 */
   --xh-_time-picker-control-shadow: var(--xh-elevation-raised);
 
-  /* 聚焦环、段位反白与选中对号随语气走。段位需要实底与反白两支；
-     对号是画在普通表面上的前景色，不借用背景色角色。 */
+  /* 聚焦环、段位强调与选中反馈随语气走；对号使用普通表面上的前景色。 */
   --xh-_time-picker-ring: var(--xh-ring-focus);
-  --xh-_time-picker-accent: var(--xh-_tone, var(--xh-bg-brand));
-  --xh-_time-picker-accent-fg: var(--xh-_tone-on, var(--xh-fg-on-brand));
+  --xh-_time-picker-segment-bg: var(--xh-_tone-subtle, var(--xh-bg-brand-subtle));
+  --xh-_time-picker-segment-fg: var(--xh-_tone-fg, var(--xh-fg-brand));
+  --xh-_time-picker-option-bg-selected: var(--xh-_tone-subtle, var(--xh-bg-brand-subtle));
+  --xh-_time-picker-option-bg-selected-hover: var(--xh-_tone-subtle-hover, var(--xh-bg-brand-subtle-hover));
+  --xh-_time-picker-option-fg-selected: var(--xh-_tone-fg, var(--xh-fg-brand));
   --xh-_time-picker-check-fg: var(--xh-_tone, var(--xh-fg-brand));
 }
 
@@ -34570,6 +34654,12 @@
   outline-offset: var(--xh-ring-offset);
 }
 
+[data-scope='time-picker'][data-part='control'][data-state='open']:not([data-disabled]) {
+  border-color: var(--xh-time-picker-control-border-focus, var(--xh-_tone, var(--xh-border-control-focus)));
+  outline: var(--xh-ring-width) solid var(--xh-_time-picker-ring);
+  outline-offset: var(--xh-ring-offset);
+}
+
 [data-scope='time-picker'][data-part='control'][data-invalid] {
   border-color: var(--xh-time-picker-control-border-invalid, var(--xh-border-invalid));
 
@@ -34601,10 +34691,14 @@
   display: none;
 }
 
+[data-scope='time-picker'][data-part='segment-group'] > :not([data-scope]) {
+  color: var(--xh-time-picker-literal-fg, var(--xh-fg-subtle));
+}
+
 /* 每一段是一小块可聚焦区，紧挨着排；间距长在段自己身上 */
 [data-scope='time-picker'][data-part='segment'] {
   display: inline-block;
-  padding-inline: var(--xh-time-picker-segment-px, var(--xh-space-1));
+  padding-inline: var(--xh-time-picker-segment-px, var(--xh-space-0_5));
   padding-block: 0;
   border-radius: var(--xh-time-picker-segment-radius, var(--xh-shape-inset));
   color: inherit;
@@ -34632,14 +34726,26 @@
    data-focus 由机器给（它知道谁是当前段），:focus-visible 兜住机器状态还没回流的那一帧 */
 [data-scope='time-picker'][data-part='segment'][data-focus]:not([data-disabled]),
 [data-scope='time-picker'][data-part='segment']:focus-visible {
-  background: var(--xh-time-picker-segment-bg-focus, var(--xh-_time-picker-accent));
-  color: var(--xh-time-picker-segment-fg-focus, var(--xh-_time-picker-accent-fg));
+  background: var(--xh-time-picker-segment-bg-focus, var(--xh-_time-picker-segment-bg));
+  color: var(--xh-time-picker-segment-fg-focus, var(--xh-_time-picker-segment-fg));
   outline: none;
 }
 
 /* 焦点态用了品牌底色之后，占位符那条弱色会被它盖住，这里明确让位给焦点态 */
 [data-scope='time-picker'][data-part='segment'][data-focus][data-placeholder]:not([data-disabled]) {
-  color: var(--xh-time-picker-segment-fg-focus, var(--xh-_time-picker-accent-fg));
+  color: var(--xh-time-picker-segment-fg-focus, var(--xh-_time-picker-segment-fg));
+}
+
+[data-scope='time-picker'][data-part='segment'][data-invalid] {
+  color: var(--xh-time-picker-segment-fg-invalid, var(--xh-fg-danger));
+}
+
+[data-scope='time-picker'][data-part='segment'][data-invalid]:is([data-focus], :focus-visible) {
+  background: var(
+    --xh-time-picker-segment-bg-invalid-focus,
+    var(--xh-bg-subtle)
+  );
+  color: var(--xh-time-picker-segment-fg-invalid-focus, var(--xh-fg-danger));
 }
 
 [data-scope='time-picker'][data-part='segment']:hover:not([data-focus], [data-disabled]) {
@@ -34692,6 +34798,15 @@
   scale: var(--xh-motion-scale-press);
 }
 
+[data-scope='time-picker'][data-part='trigger'][data-state='open'] {
+  background: var(--xh-time-picker-action-bg-active, var(--xh-bg-subtle-active));
+  color: var(--xh-time-picker-action-fg-hover, var(--xh-fg-default));
+}
+
+[data-scope='time-picker'][data-part='trigger'][data-state='open']:focus-visible {
+  --xh-_ring-color: currentColor;
+}
+
 /* 清空钮按下时换底并微缩，给指针一个按到了的反馈 */
 [data-scope='time-picker'][data-part='clear-trigger']:active {
   background: var(--xh-time-picker-action-bg-active, var(--xh-bg-subtle-active));
@@ -34718,8 +34833,8 @@
   position: relative;
   display: flex;
   align-items: stretch;
-  padding-block: var(--xh-time-picker-content-py, var(--xh-space-1));
-  padding-inline: var(--xh-time-picker-content-px, var(--xh-space-1));
+  padding-block: var(--xh-time-picker-content-py, var(--xh-space-2));
+  padding-inline: var(--xh-time-picker-content-px, var(--xh-space-2));
   /* 列自己定高，面板整体不该再长过页内滚动面那一档 */
   max-block-size: var(--xh-time-picker-content-max-h, var(--xh-viewport-h-lg));
   border: var(--xh-stroke-thin) solid var(--xh-time-picker-content-border, var(--xh-material-frosted-border));
@@ -34948,8 +35063,17 @@
 
 /* 选中只画对号，正文与静止底保持普通态。 */
 [data-scope='time-picker'][data-part='item'][data-state='checked'] {
-  color: var(--xh-time-picker-item-fg-checked, var(--xh-time-picker-item-fg, var(--xh-fg-default)));
-  font-weight: var(--xh-time-picker-item-weight-checked, var(--xh-font-weight-regular));
+  background: var(--xh-time-picker-item-bg-checked, var(--xh-_time-picker-option-bg-selected));
+  color: var(--xh-time-picker-item-fg-checked, var(--xh-_time-picker-option-fg-selected));
+  font-weight: var(--xh-time-picker-item-weight-checked, var(--xh-font-weight-medium));
+}
+
+[data-scope='time-picker'][data-part='item'][data-state='checked']:not([data-disabled]):is(
+    :hover,
+    :focus-visible,
+    [data-highlighted]
+  ) {
+  background: var(--xh-time-picker-item-bg-checked-hover, var(--xh-_time-picker-option-bg-selected-hover));
 }
 
 [data-scope='time-picker'][data-part='item'][data-state='checked']::after {
@@ -34972,6 +35096,11 @@
 }
 
 @media (forced-colors: active) {
+  [data-scope='time-picker'][data-part='segment'][data-invalid]:is([data-focus], :focus-visible) {
+    outline: var(--xh-ring-width) solid Highlight;
+    outline-offset: var(--xh-ring-offset);
+  }
+
   /* mask 保留对号轮廓，系统色接管墨色；关闭自动调整避免伪元素底被系统抹成透明。 */
   [data-scope='time-picker'][data-part='preset']::after,
   [data-scope='time-picker'][data-part='item']::after {

@@ -1,6 +1,6 @@
 # DateField 日期输入 <Badge type="info" text="alpha" />
 
-用于按年、月、日分段输入日期，不打开日历。
+按年、月、日逐段输入日期，适合已经知道目标日期、无需浏览日历的场景。
 
 <div class="xh-resource-links">
   <a href="https://github.com/XiHanFun/XiHan.UI/tree/dev/ui/packages/engine/headless/src/date-field" target="_blank" rel="noreferrer">Headless</a>
@@ -71,11 +71,13 @@
 - `locale` 决定日期段的顺序和分隔方式。
 - `min` 与 `max` 限制可输入范围。
 - `granularity` 支持日期或精确到分钟的日期时间。
-- 支持受控值、原生表单提交和三种视觉变体。
+- 标准组合包含标签、输入框、日期段和隐藏表单输入；支持受控值与原生表单提交。
+- 聚焦只强调正在编辑的日期段，错误段使用独立的危险色反馈。
 
 ### 最佳实践
 
 - 使用清晰的字段标签。
+- 给参与表单提交的字段设置 `name`，并渲染隐藏输入部件。
 - 有业务范围限制时设置 `min` 与 `max`。
 - 对外统一使用 ISO 日期字符串。
 
@@ -221,6 +223,8 @@
 
 `@xihan-ui/styles/date-field.css` 使用 `[data-scope="date-field"][data-part="root"]` 部件选择器，位于 `xihan.components` 层。覆盖样式使用 `xihan.overrides`。
 
+`forced-colors: active` 下另有一套规则：颜色交给系统，边框与状态标记改用系统色关键字。
+
 ### 数据属性
 
 由 `connect` 生成；条件不成立时不输出无值属性。
@@ -288,10 +292,14 @@
 | `--xh-date-field-label-fg-disabled` | `label` | `color` | `disabled` | `--xh-fg-subtle` | date-field 的 label 部件 color 覆盖槽。 |
 | `--xh-date-field-label-font-size` | `label` | `font-size` | `default` | `--xh-_date-field-label-font-size` | date-field 的 label 部件 font-size 覆盖槽。 |
 | `--xh-date-field-label-font-weight` | `label` | `font-weight` | `default` | `--xh-text-label-weight` | date-field 的 label 部件 font-weight 覆盖槽。 |
+| `--xh-date-field-literal-fg` | `segment-group` | `color` | `not([data-scope])` | `--xh-fg-subtle` | date-field 的 segment-group 部件 color 覆盖槽。 |
 | `--xh-date-field-placeholder-fg` | `segment` | `color` | `placeholder` | `--xh-fg-subtle` | date-field 的 segment 部件 color 覆盖槽。 |
 | `--xh-date-field-segment-bg-focus` | `segment` | `background` | `focus`<br>`focus-visible` | `--xh-_date-field-segment-bg` | date-field 的 segment 部件 background 覆盖槽。 |
+| `--xh-date-field-segment-bg-invalid-focus` | `segment` | `background` | `focus`<br>`invalid`<br>`is([data-focus], :focus-visible)` | `--xh-bg-subtle` | date-field 的 segment 部件 background 覆盖槽。 |
 | `--xh-date-field-segment-fg-focus` | `segment` | `color` | `focus`<br>`focus-visible`<br>`placeholder` | `--xh-_date-field-segment-fg` | date-field 的 segment 部件 color 覆盖槽。 |
-| `--xh-date-field-segment-px` | `segment` | `padding-inline` | `default` | `--xh-space-1` | date-field 的 segment 部件 padding-inline 覆盖槽。 |
+| `--xh-date-field-segment-fg-invalid` | `segment` | `color` | `invalid` | `--xh-fg-danger` | date-field 的 segment 部件 color 覆盖槽。 |
+| `--xh-date-field-segment-fg-invalid-focus` | `segment` | `color` | `focus`<br>`invalid`<br>`is([data-focus], :focus-visible)` | `--xh-fg-danger` | date-field 的 segment 部件 color 覆盖槽。 |
+| `--xh-date-field-segment-px` | `segment` | `padding-inline` | `default` | `--xh-space-0_5` | date-field 的 segment 部件 padding-inline 覆盖槽。 |
 | `--xh-date-field-segment-py` | `segment` | `padding-block` | `default` | `--xh-space-0` | date-field 的 segment 部件 padding-block 覆盖槽。 |
 | `--xh-date-field-segment-radius` | `segment` | `border-radius` | `default` | `--xh-shape-inset` | date-field 的 segment 部件 border-radius 覆盖槽。 |
 <!-- xh-component-tokens:end -->

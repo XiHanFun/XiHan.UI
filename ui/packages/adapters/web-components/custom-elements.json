@@ -12307,13 +12307,25 @@
               "name": "--xh-date-field-label-font-weight"
             },
             {
+              "name": "--xh-date-field-literal-fg"
+            },
+            {
               "name": "--xh-date-field-placeholder-fg"
             },
             {
               "name": "--xh-date-field-segment-bg-focus"
             },
             {
+              "name": "--xh-date-field-segment-bg-invalid-focus"
+            },
+            {
               "name": "--xh-date-field-segment-fg-focus"
+            },
+            {
+              "name": "--xh-date-field-segment-fg-invalid"
+            },
+            {
+              "name": "--xh-date-field-segment-fg-invalid-focus"
             },
             {
               "name": "--xh-date-field-segment-px"
@@ -13568,6 +13580,9 @@
               "name": "--xh-date-picker-layer"
             },
             {
+              "name": "--xh-date-picker-literal-fg"
+            },
+            {
               "name": "--xh-date-picker-max-h"
             },
             {
@@ -13617,6 +13632,9 @@
             },
             {
               "name": "--xh-date-picker-time-column-padding"
+            },
+            {
+              "name": "--xh-date-picker-time-column-px-mobile"
             },
             {
               "name": "--xh-date-picker-time-item-bg-hover"
@@ -49889,6 +49907,9 @@
               "name": "--xh-time-field-label-font-weight"
             },
             {
+              "name": "--xh-time-field-literal-fg"
+            },
+            {
               "name": "--xh-time-field-placeholder-fg"
             },
             {
@@ -49898,7 +49919,16 @@
               "name": "--xh-time-field-segment-bg-hover"
             },
             {
+              "name": "--xh-time-field-segment-bg-invalid-focus"
+            },
+            {
               "name": "--xh-time-field-segment-fg-focus"
+            },
+            {
+              "name": "--xh-time-field-segment-fg-invalid"
+            },
+            {
+              "name": "--xh-time-field-segment-fg-invalid-focus"
             },
             {
               "name": "--xh-time-field-segment-px"
@@ -50738,6 +50768,12 @@
               "name": "--xh-time-picker-icon-size"
             },
             {
+              "name": "--xh-time-picker-item-bg-checked"
+            },
+            {
+              "name": "--xh-time-picker-item-bg-checked-hover"
+            },
+            {
               "name": "--xh-time-picker-item-bg-hover"
             },
             {
@@ -50781,6 +50817,9 @@
             },
             {
               "name": "--xh-time-picker-layer"
+            },
+            {
+              "name": "--xh-time-picker-literal-fg"
             },
             {
               "name": "--xh-time-picker-placeholder-fg"
@@ -50828,7 +50867,16 @@
               "name": "--xh-time-picker-segment-bg-hover"
             },
             {
+              "name": "--xh-time-picker-segment-bg-invalid-focus"
+            },
+            {
               "name": "--xh-time-picker-segment-fg-focus"
+            },
+            {
+              "name": "--xh-time-picker-segment-fg-invalid"
+            },
+            {
+              "name": "--xh-time-picker-segment-fg-invalid-focus"
             },
             {
               "name": "--xh-time-picker-segment-px"

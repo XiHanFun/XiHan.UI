@@ -1,10 +1,9 @@
 // 基础用法 | 输入或选择日期
-import type { ReactNode } from "react";
+import type { CSSProperties, ReactNode } from "react";
 import {
   XhDatePickerCalendar,
   XhDatePickerCell,
   XhDatePickerCellTrigger,
-  XhDatePickerClearTrigger,
   XhDatePickerContent,
   XhDatePickerControl,
   XhDatePickerGrid,
@@ -12,6 +11,7 @@ import {
   XhDatePickerGridHead,
   XhDatePickerHeader,
   XhDatePickerHeading,
+  XhDatePickerHiddenInput,
   XhDatePickerLabel,
   XhDatePickerNextTrigger,
   XhDatePickerPositioner,
@@ -19,13 +19,20 @@ import {
   XhDatePickerRoot,
   XhDatePickerSegment,
   XhDatePickerSegmentGroup,
+  XhDatePickerTrigger,
   XhDatePickerWeekDay,
   XhDatePickerWeekRow,
 } from "@xihan-ui/react";
 
 export default function Demo(): ReactNode {
   return (
-    <XhDatePickerRoot locale="zh-CN">
+    <XhDatePickerRoot
+      locale="zh-CN"
+      name="delivery-date"
+      style={{
+        "--xh-date-picker-control-min-w": "calc(var(--xh-control-min-w) + var(--xh-control-h-md) + var(--xh-control-h-md) + var(--xh-space-6))",
+      } as CSSProperties}
+    >
       {({ weeks, weekDays }) => (
         <>
           <XhDatePickerLabel>交付日期</XhDatePickerLabel>
@@ -37,8 +44,9 @@ export default function Demo(): ReactNode {
               <span>-</span>
               <XhDatePickerSegment index={2} />
             </XhDatePickerSegmentGroup>
-            <XhDatePickerClearTrigger />
+            <XhDatePickerTrigger />
           </XhDatePickerControl>
+          <XhDatePickerHiddenInput />
           <XhDatePickerPositioner>
             <XhDatePickerContent>
               <XhDatePickerCalendar>

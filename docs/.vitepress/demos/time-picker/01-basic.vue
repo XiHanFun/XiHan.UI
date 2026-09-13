@@ -1,7 +1,6 @@
-<!-- 基础用法 | 点输入行任意处即展开，不必再去点小箭头；段位与列写的是同一个值，段上敲、列里挑，另一边当场跟着改口 -->
+<!-- 基础用法 | 输入或选择时间 -->
 <script setup lang="ts">
 import {
-  XhTimePickerClearTrigger,
   XhTimePickerColumn,
   XhTimePickerContent,
   XhTimePickerControl,
@@ -12,29 +11,27 @@ import {
   XhTimePickerRoot,
   XhTimePickerSegment,
   XhTimePickerSegmentGroup,
+  XhTimePickerTrigger,
 } from "@xihan-ui/vue";
-import { ref } from "vue";
-
-const value = ref("");
 </script>
 
 <template>
-  <XhTimePickerRoot v-model:value="value" name="start">
+  <XhTimePickerRoot
+    name="meeting-time"
+    style="--xh-time-picker-control-min-w: calc(var(--xh-control-min-w) + var(--xh-control-h-md) + var(--xh-space-6))"
+  >
     <XhTimePickerLabel>会议开始</XhTimePickerLabel>
     <XhTimePickerControl>
       <XhTimePickerSegmentGroup>
-        <!-- 段不写内容：显示什么由组件按当前值填，空段是占位串 -->
         <XhTimePickerSegment segment="hour" />
         <span>:</span>
         <XhTimePickerSegment segment="minute" />
       </XhTimePickerSegmentGroup>
-      <XhTimePickerClearTrigger />
+      <XhTimePickerTrigger />
     </XhTimePickerControl>
-    <!-- 表单出口：随表单提交的是完整 ISO 串 -->
     <XhTimePickerHiddenInput />
     <XhTimePickerPositioner>
       <XhTimePickerContent>
-        <!-- 可选值由 step 与小时制算出来，作者照它渲染 -->
         <XhTimePickerColumn v-slot="{ options }" unit="hour">
           <XhTimePickerItem v-for="o in options" :key="o" :value="o" />
         </XhTimePickerColumn>
@@ -44,6 +41,4 @@ const value = ref("");
       </XhTimePickerContent>
     </XhTimePickerPositioner>
   </XhTimePickerRoot>
-
-  <span style="font-size: 13px">当前值：{{ value || "（空）" }}</span>
 </template>

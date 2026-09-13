@@ -427,14 +427,14 @@ describe('开合', () => {
     expect(enter.defaultPrevented).toBe(false)
   })
 
-  it('指针点开且这一段还空着：不预落锚点，Tab 位归时列容器', () => {
+  it('指针点触发器打开空值：焦点锚点落到时列第一项', () => {
     const h = open()
     h.trigger.click()
-    expect(h.api().focusedColumn).toBeNull()
-    expect(h.api().focusedItem).toBeNull()
-    expect(h.option('hour', '00').getAttribute('data-highlighted')).toBeNull()
-    expect(h.option('hour', '00').getAttribute('tabindex')).toBe('-1')
-    expect(h.column('hour').getAttribute('tabindex')).toBe('0')
+    expect(h.api().focusedColumn).toBe('hour')
+    expect(h.api().focusedItem).toBe('00')
+    expect(h.option('hour', '00').getAttribute('data-highlighted')).toBe('')
+    expect(h.option('hour', '00').getAttribute('tabindex')).toBe('0')
+    expect(h.column('hour').getAttribute('tabindex')).toBe('-1')
   })
 
   it('键盘打开：下键落首格、上键落末格', () => {
@@ -447,7 +447,7 @@ describe('开合', () => {
     expect(up.api().focusedItem).toBe('23')
   })
 
-  it('enter 翻出来的那次 click 认得出自己是键盘入口，照样落首格；指针点的不落', () => {
+  it('enter 翻出来的 click 与指针点击都落到首格', () => {
     const byKey = open()
     // 平台的按钮激活：keydown 先到，紧接着才是那次 click
     pressKey(byKey.trigger, 'Enter')
@@ -457,7 +457,7 @@ describe('开合', () => {
     const byPointer = open()
     byPointer.trigger.dispatchEvent(new PointerEvent('pointerdown', { bubbles: true }))
     byPointer.trigger.click()
-    expect(byPointer.api().focusedItem).toBeNull()
+    expect(byPointer.api().focusedItem).toBe('00')
   })
 
   it('展开时把焦点锚点落到时列：已选的时仍可选就停在它上面', () => {
@@ -518,11 +518,11 @@ describe('开合', () => {
     expect(h.state()).toBe('closed')
   })
 
-  it('指针点开且无锚点时，焦点域把焦点交给时列容器而不是首格', async () => {
+  it('指针点开且无选值时，焦点域把焦点交给时列首格', async () => {
     const h = open()
     h.trigger.click()
     await flushFrames(3)
-    expect(document.activeElement).toBe(h.column('hour'))
+    expect(document.activeElement).toBe(h.option('hour', '00'))
   })
 
   it('焦点域把焦点交给锚点那一格，而不是落在容器上', async () => {
@@ -693,8 +693,6 @@ describe('浮层键盘', () => {
   it('enter 选中焦点所在的格，浮层不收起', () => {
     const h = open()
     h.trigger.click()
-    // 指针打开不预落锚点：第一按落到首格，它才是这次要选的那一格
-    pressKey(h.content, 'ArrowDown')
     expect(h.api().focusedItem).toBe('00')
     pressKey(h.content, 'Enter')
     expect(h.api().isItemSelected({ unit: 'hour', value: '00' })).toBe(true)

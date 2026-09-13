@@ -76,6 +76,9 @@
     --xh-_date-picker-accent-hover: var(--xh-_tone-hover, var(--xh-bg-brand-hover));
     --xh-_date-picker-accent-active: var(--xh-_tone-active, var(--xh-bg-brand-active));
     --xh-_date-picker-accent-fg: var(--xh-_tone-on, var(--xh-fg-on-brand));
+    /* 内嵌日期段沿用日期输入的轻强调焦点，不另画一套实心选择态。 */
+    --xh-_date-field-segment-bg: var(--xh-_tone-subtle, var(--xh-bg-brand-subtle));
+    --xh-_date-field-segment-fg: var(--xh-_tone-fg, var(--xh-fg-brand));
     /* 对号画在普通面上，取语气前景角色，不能拿确认按钮的实心背景色充当前景。 */
     --xh-_date-picker-check-fg: var(--xh-_tone, var(--xh-fg-brand));
     --xh-_date-picker-time-item-check-size: var(--xh-glyph-size-sm);
@@ -217,6 +220,12 @@
     outline-offset: var(--xh-ring-offset);
   }
 
+  [data-scope='date-picker'][data-part='control'][data-state='open']:not([data-disabled]) {
+    border-color: var(--xh-date-picker-control-border-focus, var(--xh-_tone, var(--xh-border-control-focus)));
+    outline: var(--xh-ring-width) solid var(--xh-_date-picker-ring);
+    outline-offset: var(--xh-ring-offset);
+  }
+
   [data-scope='date-picker'][data-part='control'][data-invalid] {
     border-color: var(--xh-date-picker-control-border-invalid, var(--xh-border-invalid));
 
@@ -251,6 +260,10 @@
 
   [data-scope='date-picker'][data-part='segment-group'][hidden] {
     display: none;
+  }
+
+  [data-scope='date-picker'][data-part='segment-group'] > :not([data-scope]) {
+    color: var(--xh-date-picker-literal-fg, var(--xh-fg-subtle));
   }
 
   /* 容器自己不占 Tab 位、也不承载焦点，环由 control 画，这里不再套一圈 */
@@ -648,6 +661,27 @@
 
   [data-scope='date-picker'][data-part='time-item'][data-state='checked']::after {
     opacity: 1;
+  }
+
+  @media (width < 768px) {
+    [data-scope='date-picker'][data-part='content'] {
+      padding-inline: var(--xh-date-picker-content-px, var(--xh-space-2));
+    }
+
+    [data-scope='date-picker'][data-part='time-column'] {
+      padding-inline: var(--xh-date-picker-time-column-px-mobile, var(--xh-space-0_5));
+    }
+
+    [data-scope='date-picker'][data-part='time-item'] {
+      --xh-_date-picker-time-item-rail: var(
+        --xh-date-picker-time-item-check-size,
+        var(--xh-_date-picker-time-item-check-size)
+      );
+    }
+
+    [data-scope='date-picker'][data-part='time-item']::after {
+      inset-inline-end: 0;
+    }
   }
 
   [data-scope='date-picker'][data-part='time-column'][aria-disabled='true'] [data-part='time-item'] {
