@@ -22,6 +22,7 @@ import process from 'node:process'
 
 const MANIFEST = 'scripts/component-docs.manifest.json'
 const DEMOS = '../docs/.vitepress/demos'
+const CATALOG = '../docs/.vitepress/catalog'
 const TABLE = 'tooling/scripts/demo-count-exempt.json'
 
 /** 每个组件至少几份示例。 */
@@ -37,7 +38,7 @@ async function manifestComponents() {
     for (const component of category.components ?? []) {
       const needle = `"id": "${component.id}"`
       const at = lines.findIndex(line => line.includes(needle))
-      out.push({ id: component.id, name: component.name, line: at === -1 ? 1 : at + 1 })
+      out.push({ id: component.id, name: component.name, line: at === -1 ? 1 : at + 1, renderless: component.renderless === true })
     }
   }
   return out
@@ -53,7 +54,18 @@ async function demoCount(id) {
   }
 }
 
+async function hasCatalogPreview(id) {
+  try {
+    return (await readdir(CATALOG)).includes(`${id}.vue`)
+  }
+  catch {
+    return false
+  }
+}
+
 const components = await manifestComponents()
+const { stableComponents = [] } = JSON.parse(await readFile(MANIFEST, 'utf8'))
+const stable = new Set(stableComponents)
 const counts = new Map()
 for (const component of components)
   counts.set(component.id, await demoCount(component.id))
@@ -120,13 +132,24 @@ for (const { id, name, line } of components) {
   )
 }
 
+for (const { id, name, line, renderless } of components) {
+  if (!stable.has(id) || renderless)
+    continue
+  if (!await hasCatalogPreview(id)) {
+    problems.push(
+      `${MANIFEST}:${line} —— 正式组件 ${name}（${id}）缺少总览独立预览：`
+      + `在 ${CATALOG}/${id}.vue 只保留识别该组件所需的最小结构`,
+    )
+  }
+}
+
 for (const id of Object.keys(exempt)) {
   if (!counts.has(id))
     problems.push(`${TABLE}:${exemptLine(id)} —— ${id} 登记着豁免，但它不在 ${MANIFEST} 里：组件改名或退役了就一起改登记表`)
 }
 
 if (problems.length) {
-  console.error('[check-demo-count] ✗ 有组件的示例不够四份：')
+  console.error('[check-demo-count] ✗ 组件示例登记不完整：')
   for (const problem of problems)
     console.error(`  ${problem}`)
   console.error('\n三份示例讲得完基础用法与两条轴，讲不完使用者接进项目时真正要查的那几件事。')
@@ -135,5 +158,6 @@ if (problems.length) {
 
 console.log(
   `[check-demo-count] 通过：${components.length} 个组件、合计 ${total} 份示例，`
-  + `除登记豁免的 ${short} 个之外各不少于 ${FLOOR} 份`,
+  + `除登记豁免的 ${short} 个之外各不少于 ${FLOOR} 份；`
+  + `${stable.size} 个正式组件都有总览独立预览`,
 )

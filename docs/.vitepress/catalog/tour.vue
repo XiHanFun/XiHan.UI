@@ -1,0 +1,30 @@
+<!--
+  Copyright (c) 2021-Present XiHanFun and contributors.
+  Licensed under the MIT License. See LICENSE in the project root for license information.
+-->
+
+<!-- 提供 tour 相关实现。 -->
+
+<script setup lang="ts">
+import {
+  XhTourContent,
+  XhTourDescription,
+  XhTourNextTrigger,
+  XhTourProgressText,
+  XhTourRoot,
+  XhTourTitle,
+} from "@xihan-ui/vue";
+
+const steps = [{ id: "welcome", title: "快速上手", description: "从这里开始了解主要功能。" }];
+</script>
+
+<template>
+  <XhTourRoot :steps="steps" default-open>
+    <XhTourContent style="position: static; inline-size: 220px">
+      <XhTourTitle />
+      <XhTourDescription />
+      <XhTourProgressText />
+      <XhTourNextTrigger>完成</XhTourNextTrigger>
+    </XhTourContent>
+  </XhTourRoot>
+</template>
