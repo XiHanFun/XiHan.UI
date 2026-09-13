@@ -1,4 +1,4 @@
-<!-- 排布 | layout 四档：vertical 竖排（默认）、horizontal 标签左置两列（labelWidth 统一列宽、labelAlign 换对齐缘）、inline 横排一行流、grid 等宽列的网格（columns 给列数）；整表排布一个开关搞定，不必逐字段写栅格 -->
+<!-- 布局 | 设置纵向、横向、行内或网格布局 -->
 <script setup lang="ts">
 import type { FormLayout } from "@xihan-ui/headless";
 import {

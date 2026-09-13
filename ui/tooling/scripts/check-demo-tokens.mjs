@@ -33,7 +33,6 @@ const PLACEHOLDERS = new Set(['--xh-x-y'])
  */
 const DEMO_PRIVATE_SLOTS = {
   '--xh-_tone-fg': '语气轴的文字色：示例把它接到组件槽上，演示同一块配色跟着 data-tone 换族',
-  '--xh-_tone-soft': '语气轴的装饰强调色：同上，用在描边与色条这类非文字图形上',
 }
 
 const declared = new Set(

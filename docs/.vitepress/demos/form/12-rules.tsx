@@ -1,4 +1,4 @@
-// 声明式规则 | rules 按字段声明 required/min/max/pattern/type，一个字段多条规则首败即停；文案取 rule.message，再退 validateMessages 模板（{name}/{min}/{max} 现场代入）。组里的字段自取校验态：invalid 与必填星号都不用手接
+// 声明式规则 | 配置字段校验规则
 import type { FormRules, FormValidateMessages } from "@xihan-ui/headless";
 import type { ReactNode } from "react";
 import {
@@ -10,7 +10,6 @@ import {
   XhFormRoot,
   XhFormSubmitTrigger,
 } from "@xihan-ui/react";
-import { useState } from "react";
 
 const rules: FormRules = {
   username: [
@@ -41,19 +40,12 @@ const fields = [
 ];
 
 export default function Demo(): ReactNode {
-  const [submitted, setSubmitted] = useState("（还没提交过）");
-
-  function onSubmit(details: { values: Record<string, unknown> }): void {
-    setSubmitted(JSON.stringify(details.values));
-  }
-
   return (
     <XhFormRoot
       defaultValues={{ username: "", email: "", age: "" }}
       rules={rules}
       validateMessages={validateMessages}
       style={{ inlineSize: "320px", display: "grid", gap: "12px" }}
-      onSubmit={onSubmit}
     >
       {fields.map(f => (
         <XhFormFieldGroup key={f.name} name={f.name}>
@@ -75,7 +67,6 @@ export default function Demo(): ReactNode {
       ))}
 
       <XhFormSubmitTrigger>提交</XhFormSubmitTrigger>
-      <p style={{ margin: 0, fontSize: "13px" }}>{`已提交：${submitted}`}</p>
     </XhFormRoot>
   );
 }

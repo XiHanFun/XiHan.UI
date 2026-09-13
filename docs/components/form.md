@@ -1,6 +1,6 @@
 # Form 表单
 
-一整张表的值、校验与提交：字段各自录入，表单负责汇总、校验和拦下不合格的提交。
+管理一组字段的值、校验、提交和重置。
 
 <div class="xh-resource-links">
   <a href="https://github.com/XiHanFun/XiHan.UI/tree/dev/ui/packages/engine/headless/src/form" target="_blank" rel="noreferrer">Headless</a>
@@ -12,7 +12,7 @@
 
 ## 用法
 
-默认只在提交时整表校验：过了发 submit，没过发 invalid、摘要显形并把焦点送到第一个出错的字段
+提交并校验表单
 
 <XhDemo src="form/01-basic" />
 
@@ -26,122 +26,65 @@
 
 ### 校验时机
 
-blur 与 change 两种模式下 validate 仍整表跑（校验可能带跨字段规则），但只把当事字段那一条写回错误表
+在失焦或输入时校验
 
 <XhDemo src="form/02-validate-on" />
 
-### 受控值表
+### 状态
 
-传了 values 就由宿主说了算：组件内部不再落值，只发变更通知；页面别处也能直接改这张表
-
-<XhDemo src="form/03-controlled" />
-
-### 禁用与只读
-
-disabled 把提交、重置、写值三条路一起封死；read-only 只封写值与重置，提交照发
+禁用与只读表单
 
 <XhDemo src="form/04-disabled" />
 
-### 动态字段
-
-字段容器随数组增删，值表的键跟着字段名走；校验只遍历当下这几行，删掉的行不再参与
-
-<XhDemo src="form/05-dynamic" />
-
 ### 异步校验
 
-规则里的 validator 直接返回 Promise：提交时机器等它回来再放行或拦下，期间 validating 置真可用来标忙
+提交前检查用户名
 
 <XhDemo src="form/06-async" />
 
-### 跨字段规则与手动入口
-
-validate 拿到的是整张值表，可以写两个字段互相约束的规则；setFieldError 与 clearErrors 随时能单独动一条
-
-<XhDemo src="form/07-manual" />
-
-### 提醒但不拦下
-
-可疑的值只在描述里提醒一句，不写进错误表：控件的 aria-invalid 仍是 false，提交照样放行
-
-<XhDemo src="form/08-warning" />
-
-### 分步校验
-
-校验函数每次提交现读一次：闭住当前这一步，提交就只校验这一步的字段；存草稿走的是普通按钮，一条规则都不跑
-
-<XhDemo src="form/09-steps" />
-
-### 嵌套模型与路径字段名
-
-字段名直接写成路径，值仍住在宿主自己的嵌套对象里：表单只管错误、id 与摘要跳转，提交时不用把扁平表折回去
-
-<XhDemo src="form/10-nested" />
-
-### 重置回默认值
-
-复合控件的值攥在组件里，原生重置只还原原生控件——它们各自认这条事件，一起回到 defaultValue
-
-<XhDemo src="form/11-reset" />
-
 ### 声明式规则
 
-rules 按字段声明 required/min/max/pattern/type，一个字段多条规则首败即停；文案取 rule.message，再退 validateMessages 模板（{name}/{min}/{max} 现场代入）。组里的字段自取校验态：invalid 与必填星号都不用手接
+配置字段校验规则
 
 <XhDemo src="form/12-rules" />
 
-### 排布
+### 布局
 
-layout 四档：vertical 竖排（默认）、horizontal 标签左置两列（labelWidth 统一列宽、labelAlign 换对齐缘）、inline 横排一行流、grid 等宽列的网格（columns 给列数）；整表排布一个开关搞定，不必逐字段写栅格
+设置纵向、横向、行内或网格布局
 
 <XhDemo src="form/13-layout" />
-
-### 网格排布
-
-columns 给列数、窄视口自动收成一列；字段自报 span 跨列，span="full" 占满整行且跟着当下列数走
-
-<XhDemo src="form/14-grid" />
 
 ## 设计指引
 
 ### 何时使用
 
-- 多个字段需要一起提交，且存在跨字段规则。
-- 需要统一的校验时机与错误汇总。
+- 多个字段需要一起提交或校验。
+- 需要统一管理错误信息和校验时机。
 
 ### 何时不用
 
-- 只有一两个立即生效的开关：直接改，别包表单。
-- 只是要一格标签加控件：用[表单字段](./field)。
+- 只有一个立即生效的控件时直接处理其值。
+- 只需要标签、说明和错误信息时使用[表单字段](./field)。
 
 ### 特性
 
-- `validateOn` 决定何时校验：输入时、失焦时还是提交时。
-- 支持异步校验、跨字段规则与手动触发入口。
-- `validating` 表示仍有有效异步校验；任何字段变值、受控值更新、重置或卸载都会撤销旧快照的写回与提交资格，不自动重提。
-- 校验器抛错或拒绝 Promise 时，`validationError` 保存 `{ cause, values, field }`，并发出 `validation-error` 事件（React/内核为 `onValidationError`）；`field=null` 表示整表提交。执行异常不会转换成字段错误或触发成功提交。
-- 新校验、变值或重置会清除旧异常；重试由业务显式调用 `submit()`，不自动重试。Vue 默认插槽、React 函数式 children、Web Components 的 `validationError` 只读属性都能读取该状态。
-- 字段身份是 `FormPath`：字符串（包括 `user.email`）永远是一整个键；只有显式数组（如 `['users', 0, 'email']`）才表示路径。数组路径由 `getFormPathValue` / `setFormPathValue` 读写，绝不经数组的逗号字符串落进 `Record`；`formPathKey` 用于稳定 DOM 身份，`formPathDisplay` 用于诊断文案。
-- 嵌套的 `FieldArray` 以自身 `name` 作为根路径；追加、删除或换序时，Form 在 Headless 层同时迁移其子字段的 values、rules、errors、进行中的 validation 与已验证错误标记。字符串字段没有隐式下标，绝不会被这条迁移改写。
-- `FormFieldGroup` 里的 TextField 会继承本字段的 `invalid` / `required` 以及整表的
-  `disabled` / `readOnly`；没有写这四个实例属性才继承，显式写 `false` 可以顶掉最近状态。
-  Field 再包一层时，状态继续落到 TextField 真正可聚焦的 input，而不是只停在包装节点。
-- 错误汇总（`error-summary`）把所有错误列在一处，每条都能点回对应字段。
-- "提醒但不拦下"是一档独立行为：警告级的问题不阻断提交。
-
-### 组合
-
-- 每格用[表单字段](./field)；分步表单与[步骤条](./steps)配合；行数可变的段落用[字段数组](./field-array)。
+- `validateOn` 设置输入、失焦或提交时校验。
+- 支持声明式规则、自定义校验和异步校验。
+- 字段值、错误和校验状态均可受控。
+- 错误汇总可跳转到对应字段。
+- 支持纵向、横向、行内和网格布局。
+- 嵌套字段与字段数组使用显式 `FormPath`。
 
 ### 最佳实践
 
-- 首次校验放在失焦而不是输入时：边打字边报红会让用户觉得自己一直在犯错。
-- 提交失败后把焦点移到错误汇总或第一个出错字段。
+- 首次校验优先放在失焦或提交时。
+- 提交失败后聚焦第一个错误字段。
+- 异步校验期间显示明确的加载状态。
 
 ### 反模式
 
-- 提交按钮长期禁用直到全部合法：用户不知道还差什么。让他按下去，然后告诉他哪里不对。
-- 校验规则只写在前端。
+- 在用户尚未尝试提交时持续显示全部错误。
+- 只在前端执行关键业务校验。
 
 ## API 参考
 

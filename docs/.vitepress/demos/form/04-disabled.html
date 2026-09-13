@@ -1,5 +1,4 @@
-<!-- 禁用与只读 | disabled 把提交、重置、写值三条路一起封死；read-only 只封写值与重置，提交照发 -->
-<!-- 整表禁用：两颗按钮自带原生 disabled，控件那一侧的 disabled 由自己落 -->
+<!-- 状态 | 禁用与只读表单 -->
 <xh-form id="form-disabled" disabled>
   <form data-xh-part="root" style="inline-size: 260px">
     <div data-xh-part="field-group" name="token">
@@ -19,7 +18,6 @@
   </form>
 </xh-form>
 
-<!-- 只读：重置键置灰、写值不发生，提交仍旧把当下这份值交出去 -->
 <xh-form id="form-readonly" read-only>
   <form data-xh-part="root" style="inline-size: 260px">
     <div data-xh-part="field-group" name="token">
@@ -39,10 +37,8 @@
   </form>
 </xh-form>
 
-<p id="form-disabled-submitted" style="margin: 0; font-size: 13px">已提交：（还没提交过）</p>
 
 <script type="module">
-  const submitted = document.getElementById("form-disabled-submitted");
 
   function wire(id) {
     const host = document.getElementById(id);
@@ -59,9 +55,6 @@
       host.values = values;
       const next = String(values.token ?? "");
       if (input.value !== next) input.value = next;
-    });
-    host.addEventListener("submit", (event) => {
-      submitted.textContent = `已提交：${JSON.stringify(event.detail.values)}`;
     });
 
     input.value = String(values.token ?? "");

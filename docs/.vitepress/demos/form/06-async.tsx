@@ -1,4 +1,4 @@
-// 异步校验 | 规则里的 validator 直接返回 Promise：提交时机器等它回来再放行或拦下，期间 validating 置真可用来标忙
+// 异步校验 | 提交前检查用户名
 import type { FormRules } from "@xihan-ui/headless";
 import type { ReactNode } from "react";
 import {
@@ -11,7 +11,6 @@ import {
   XhFormRoot,
   XhFormSubmitTrigger,
 } from "@xihan-ui/react";
-import { useState } from "react";
 
 const taken = ["admin", "root", "xihan"];
 
@@ -29,18 +28,11 @@ const rules: FormRules = {
 };
 
 export default function Demo(): ReactNode {
-  const [submitted, setSubmitted] = useState("（还没提交过）");
-
-  function onSubmit(details: { values: Record<string, unknown> }): void {
-    setSubmitted(String(details.values.username ?? ""));
-  }
-
   return (
     <XhFormRoot
       defaultValues={{ username: "" }}
       rules={rules}
       style={{ inlineSize: "320px" }}
-      onSubmit={onSubmit}
     >
       {({ validating }) => (
         <>
@@ -62,7 +54,6 @@ export default function Demo(): ReactNode {
           </XhFormFieldGroup>
 
           <XhFormSubmitTrigger>{validating ? "核验中…" : "提交"}</XhFormSubmitTrigger>
-          <p style={{ margin: 0, fontSize: "13px" }}>{`已提交：${submitted}`}</p>
         </>
       )}
     </XhFormRoot>

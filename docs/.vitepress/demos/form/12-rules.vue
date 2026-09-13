@@ -1,4 +1,4 @@
-<!-- 声明式规则 | rules 按字段声明 required/min/max/pattern/type，一个字段多条规则首败即停；文案取 rule.message，再退 validateMessages 模板（{name}/{min}/{max} 现场代入）。组里的字段自取校验态：invalid 与必填星号都不用手接 -->
+<!-- 声明式规则 | 配置字段校验规则 -->
 <script setup lang="ts">
 import type { FormRules, FormValidateMessages } from "@xihan-ui/headless";
 import {
@@ -10,7 +10,6 @@ import {
   XhFormRoot,
   XhFormSubmitTrigger,
 } from "@xihan-ui/vue";
-import { ref } from "vue";
 
 const rules: FormRules = {
   username: [
@@ -39,12 +38,6 @@ const fields = [
   { name: "email", label: "邮箱", placeholder: "you@example.com" },
   { name: "age", label: "年龄", placeholder: "选填" },
 ];
-
-const submitted = ref("（还没提交过）");
-
-function onSubmit(details: { values: Record<string, unknown> }) {
-  submitted.value = JSON.stringify(details.values);
-}
 </script>
 
 <template>
@@ -53,7 +46,6 @@ function onSubmit(details: { values: Record<string, unknown> }) {
     :rules="rules"
     :validate-messages="validateMessages"
     style="inline-size: 320px; display: grid; gap: 12px"
-    @submit="onSubmit"
   >
     <XhFormFieldGroup
       v-for="f in fields"
@@ -76,6 +68,5 @@ function onSubmit(details: { values: Record<string, unknown> }) {
     </XhFormFieldGroup>
 
     <XhFormSubmitTrigger>提交</XhFormSubmitTrigger>
-    <p style="margin: 0; font-size: 13px">已提交：{{ submitted }}</p>
   </XhFormRoot>
 </template>
