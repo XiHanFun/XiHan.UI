@@ -13534,12 +13534,9 @@
   /* 每一档的盒都要大于字号：两位数在等高的盒里会被撑破。
      字号刻度最小就是 12px，所以往上抬盒子而不是往下压字 */
   --xh-_badge-dot: var(--xh-space-2);
-  --xh-_badge-min: var(--xh-space-5);
+  --xh-_badge-min: var(--xh-space-7);
   --xh-_badge-px: var(--xh-space-1);
   --xh-_badge-font: var(--xh-text-secondary-size);
-
-  /* 顶边一条极浅的内高光，把这枚实心块衬出厚度 */
-  --xh-_badge-highlight: var(--xh-_highlight-tone);
 
   /* 不设 z-index：角标在 DOM 序里排在宿主之后，本来就压在上面 */
   position: absolute;
@@ -13553,9 +13550,8 @@
   border: var(--xh-stroke-thin) solid var(--xh-badge-ring, var(--xh-bg-surface));
   border-radius: var(--xh-badge-radius, var(--xh-shape-pill));
   /* 角标默认就是实心的：贴在别的东西上，淡底与描边都看不清 */
-  background: var(--xh-badge-bg, var(--xh-_tone, var(--xh-bg-brand)));
-  color: var(--xh-badge-fg, var(--xh-_tone-on, var(--xh-fg-on-brand)));
-  box-shadow: var(--xh-badge-shadow, var(--xh-_badge-highlight));
+  background: var(--xh-badge-bg, var(--xh-_tone));
+  color: var(--xh-badge-fg, var(--xh-_tone-on));
   font-size: var(--xh-badge-font-size, var(--xh-_badge-font));
   font-weight: var(--xh-badge-font-weight, var(--xh-font-weight-medium));
   line-height: var(--xh-leading-none);
@@ -13587,42 +13583,42 @@
 [data-scope='badge'][data-part='indicator'][data-placement='top-end'] {
   inset-block-start: 0;
   inset-inline-end: 0;
-  translate: 50% -50%;
+  translate: 25% -25%;
 }
 
 [data-scope='badge'][data-part='indicator'][data-placement='top-start'] {
   inset-block-start: 0;
   inset-inline-start: 0;
-  translate: -50% -50%;
+  translate: -25% -25%;
 }
 
 [data-scope='badge'][data-part='indicator'][data-placement='bottom-end'] {
   inset-block-end: 0;
   inset-inline-end: 0;
-  translate: 50% 50%;
+  translate: 25% 25%;
 }
 
 [data-scope='badge'][data-part='indicator'][data-placement='bottom-start'] {
   inset-block-end: 0;
   inset-inline-start: 0;
-  translate: -50% 50%;
+  translate: -25% 25%;
 }
 
 /* rtl 下 translate 的行内轴要跟着翻，否则角标会往宿主外面跑 */
 [dir='rtl'] [data-scope='badge'][data-part='indicator'][data-placement='top-end'] {
-  translate: -50% -50%;
+  translate: -25% -25%;
 }
 
 [dir='rtl'] [data-scope='badge'][data-part='indicator'][data-placement='top-start'] {
-  translate: 50% -50%;
+  translate: 25% -25%;
 }
 
 [dir='rtl'] [data-scope='badge'][data-part='indicator'][data-placement='bottom-end'] {
-  translate: -50% 50%;
+  translate: -25% 25%;
 }
 
 [dir='rtl'] [data-scope='badge'][data-part='indicator'][data-placement='bottom-start'] {
-  translate: 50% 50%;
+  translate: 25% 25%;
 }
 
 /* —— 尺寸 —— */
@@ -13635,7 +13631,7 @@
 
 [data-scope='badge'][data-part='indicator'][data-size='lg'] {
   --xh-_badge-dot: var(--xh-space-2_5);
-  --xh-_badge-min: var(--xh-space-6);
+  --xh-_badge-min: var(--xh-space-8);
   --xh-_badge-px: var(--xh-space-1_5);
   --xh-_badge-font: var(--xh-text-body-size);
 }

@@ -1,4 +1,4 @@
-# Badge 徽标 <Badge type="info" text="alpha" />
+# Badge 徽标
 
 提醒你注意某个东西：它有几条未读、处在什么状态、是不是新的。
 徽标说的是「有事情发生了」，不是「这是什么」——后者是[标签](./tag)的活。
@@ -21,7 +21,7 @@
 
 加粗的是必需部件。
 
-`data-scope="badge"`：**`root`** · `indicator`
+`data-scope="badge"`：**`root`** · **`indicator`**
 
 ## 示例
 
@@ -62,10 +62,12 @@ tone 决定用哪族颜色——角标现实里主要是未读红点与在线/�
 ### 特性
 
 - 语气 · 尺寸两轴与其余组件同源；角标只有一种形态，没有形态轴。
+- 默认使用 neutral；未读、错误等强提醒显式使用 danger。
 - `placement` 决定挂在哪个角，四角可选，跟随文字方向。
 - `count` 自己出数字，超过 `max`（默认 99）写成「99+」。
 - 计数为 0 时整枚收起，要显示 0 就开 `showZero`。
 - `dot` 收成一个圆点：只表示「有」，不表示「有几个」。
+- 计数盒三档最小尺寸为 16 / 28 / 32px，角标只探出宿主四分之一，保持与宿主的视觉连接。
 - `label` 给读屏一整句：光念「3」听不出是什么的 3。
 
 ### 组合
@@ -107,7 +109,7 @@ tone 决定用哪族颜色——角标现实里主要是未读红点与在线/�
 | `placement` | `BadgePlacement` |  | 挂在哪个角上，默认 top-end（右上角；rtl 下自动落到左上）。 |
 | `showZero` | `boolean` |  | 计数为 0 时是否照样显示，默认不显示——没有未读就不该有角标。 |
 | `size` | `Size` |  | 尺寸：sm / md / lg。换的是圆点直径、两位数时的最小宽度与字号。 |
-| `tone` | `Tone` |  | 语气：brand / neutral / success / warning / danger / info，决定用哪族颜色。 角标现实里主要用 danger（未读小红点）与 success / neutral（在线 / 离线点）。 |
+| `tone` | `Tone` |  | 语气：brand / neutral / success / warning / danger / info，决定用哪族颜色，默认 neutral。 角标现实里主要用 danger（未读小红点）与 success / neutral（在线 / 离线点）。 |
 
 ### 插槽
 
@@ -180,7 +182,6 @@ tone 决定用哪族颜色——角标现实里主要是未读红点与在线/�
 | `--xh-badge-px` | `indicator` | `padding-inline` | `default` | `--xh-_badge-px` | badge 的 indicator 部件 padding-inline 覆盖槽。 |
 | `--xh-badge-radius` | `indicator` | `border-radius` | `default` | `--xh-shape-pill` | badge 的 indicator 部件 border-radius 覆盖槽。 |
 | `--xh-badge-ring` | `indicator` | `border` | `default` | `--xh-bg-surface` | badge 的 indicator 部件 border 覆盖槽。 |
-| `--xh-badge-shadow` | `indicator` | `box-shadow` | `default` | `--xh-_badge-highlight` | badge 的 indicator 部件 box-shadow 覆盖槽。 |
 <!-- xh-component-tokens:end -->
 
 ### 动效

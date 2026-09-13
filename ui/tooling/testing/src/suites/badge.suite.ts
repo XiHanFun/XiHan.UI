@@ -33,7 +33,7 @@ export const badgeSuite: ConformanceSuite = {
         parts: {
           root: { 'role': null, 'data-placement': 'top-end' },
           // 角标的标签面已经交回给 tag，这一轴整个删掉了
-          indicator: { 'role': null, 'data-variant': null, 'data-placement': 'top-end' },
+          indicator: { 'role': null, 'data-variant': null, 'data-placement': 'top-end', 'data-tone': 'neutral' },
         },
       },
     },

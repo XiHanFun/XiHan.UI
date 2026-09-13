@@ -174,7 +174,6 @@ export type ComponentTokenName =
   | '--xh-badge-px'
   | '--xh-badge-radius'
   | '--xh-badge-ring'
-  | '--xh-badge-shadow'
   | '--xh-breadcrumb-ellipsis-size'
   | '--xh-breadcrumb-fg'
   | '--xh-breadcrumb-font-size'
