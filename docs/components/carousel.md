@@ -87,6 +87,7 @@ slidesPerMove 与 slidesPerPage 分开给：一屏露三张、一次只挪一张
 
 - `slidesPerPage` 与 `slidesPerMove` 分开：可以一屏三张、一次挪一张。
 - 支持纵向轨道、指针拖拽、回绕与自动播放。
+- 自动播放时当前分页短线按停留间隔显示进度，临时暂停时同步冻结。
 - 指示点可以做成悬停即切页。
 
 ### 组合
@@ -98,7 +99,7 @@ slidesPerMove 与 slidesPerPage 分开给：一屏露三张、一次只挪一张
 - 开了自动播放就把 `autoplay-trigger` 渲出来：它是唯一能把自动翻页停住、且停住之后不会被别的交互重新点着的入口。
 - 自动播放在指针悬停或焦点进入时自动暂停，离开后从头计满一整个间隔再翻。
 - 减弱动效档下自动播放不会自己起播，此时播放开关是用户唯一的起播入口。
-- 指示点要能看出总共几屏、当前第几屏。
+- 分页短线要能看出总共几屏、当前第几屏；自动播放时还应反馈本页剩余时间。
 
 ### 反模式
 
@@ -253,7 +254,7 @@ slidesPerMove 与 slidesPerPage 分开给：一屏露三张、一次只挪一张
 
 ### 皮肤
 
-`@xihan-ui/styles/carousel.css` 使用 `[data-scope="carousel"][data-part="root"]` 部件选择器，位于 `xihan.components` 层。覆盖样式使用 `xihan.overrides`。
+`@xihan-ui/styles/carousel.css` 使用 `[data-scope="carousel"][data-part="root"]` 部件选择器，位于 `xihan.components` 与 `xihan.motion` 层。覆盖样式使用 `xihan.overrides`。
 
 ### 数据属性
 
@@ -295,7 +296,7 @@ slidesPerMove 与 slidesPerPage 分开给：一屏露三张、一次只挪一张
 | `--xh-carousel-icon-size` | `root` | `--xh-icon-size` | `default` | `--xh-glyph-size-text` | carousel 的 root 部件 --xh-icon-size 覆盖槽。 |
 | `--xh-carousel-indicator-bg` | `indicator` | `background` | `default` | `--xh-border-control` | carousel 的 indicator 部件 background 覆盖槽。 |
 | `--xh-carousel-indicator-bg-hover` | `indicator` | `--xh-carousel-indicator-bg` | `current`<br>`hover`<br>`not([data-current])` | `--xh-fg-subtle` | carousel 的 indicator 部件 --xh-carousel-indicator-bg 覆盖槽。 |
-| `--xh-carousel-indicator-bg-selected` | `indicator` | `background` | `current` | `--xh-bg-brand` | carousel 的 indicator 部件 background 覆盖槽。 |
+| `--xh-carousel-indicator-bg-selected` | `indicator` | `background` | `default` | `--xh-bg-brand` | carousel 的 indicator 部件 background 覆盖槽。 |
 | `--xh-carousel-indicator-gap` | `indicator-group` | `gap` | `default` | `--xh-space-1` | carousel 的 indicator-group 部件 gap 覆盖槽。 |
 | `--xh-carousel-indicator-inset` | `indicator-group` | `inset-block-end` | `orientation=horizontal` | `--xh-space-3` | carousel 的 indicator-group 部件 inset-block-end 覆盖槽。 |
 | `--xh-carousel-indicator-radius` | `indicator` | `border-radius` | `default` | `--xh-shape-pill` | carousel 的 indicator 部件 border-radius 覆盖槽。 |
@@ -314,7 +315,7 @@ slidesPerMove 与 slidesPerPage 分开给：一屏露三张、一次只挪一张
 
 ### 动效
 
-`background` · `block-size` · `border-color` · `box-shadow` · `inline-size` · `opacity` · `scale` · `transform` 走 `transition` 过渡。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
+关键帧 `xh-carousel-indicator-progress` 随皮肤自带，不引用别处文件里的名字；`background` · `block-size` · `border-color` · `box-shadow` · `inline-size` · `opacity` · `scale` · `transform` 走 `transition` 过渡。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
 
 皮肤之外还有一段：内核读系统的减弱动效偏好，据此决定要不要动。
 
@@ -326,4 +327,4 @@ slidesPerMove 与 slidesPerPage 分开给：一屏露三张、一次只挪一张
 
 ### RTL
 
-皮肤用逻辑属性排布（`inline-start` 一族），`dir="rtl"` 下自动镜像。
+皮肤用逻辑属性排布（`inline-start` 一族），`dir="rtl"` 下自动镜像；另有按 `dir` 分支的规则。

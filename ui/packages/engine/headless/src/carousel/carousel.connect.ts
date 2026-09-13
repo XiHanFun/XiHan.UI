@@ -131,6 +131,9 @@ export function connectCarousel<T extends PropTypes>(
       'data-dragging': dataAttr(dragging),
       'data-autoplay': dataAttr(autoplaying),
       'data-paused': dataAttr(paused),
+      'style': autoplayInterval > 0
+        ? { '--xh-_carousel-autoplay-duration': `${autoplayInterval}ms` }
+        : undefined,
       // pointerenter / pointerleave 不冒泡，只认这一条轮播
       'onPointerEnter': () => send({ type: 'AUTOPLAY.PAUSE', src: 'pointer' }),
       'onPointerLeave': () => send({ type: 'AUTOPLAY.RESUME', src: 'pointer' }),
@@ -260,12 +263,18 @@ export function connectCarousel<T extends PropTypes>(
       // 正在走的才是 PAUSE。只发 PAUSE / RESUME 的话，reduce 档下那条停在 idle 的
       // 轮播永远也播不起来
       'onClick': () => {
-        if (state.matches('idle'))
+        if (state.matches('idle')) {
           send({ type: 'AUTOPLAY.START' })
-        else if (context.get('pausedBy').includes('api'))
+        }
+        else if (context.get('pausedBy').includes('api')) {
           send({ type: 'AUTOPLAY.RESUME', src: 'api' })
-        else
+          // 播放开关自己仍在焦点与指针之下；用户明确恢复时，本轮临时按住也一起放开。
+          send({ type: 'AUTOPLAY.RESUME', src: 'focus' })
+          send({ type: 'AUTOPLAY.RESUME', src: 'pointer' })
+        }
+        else {
           send({ type: 'AUTOPLAY.PAUSE', src: 'api' })
+        }
       },
     }),
 

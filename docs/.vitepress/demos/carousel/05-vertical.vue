@@ -11,31 +11,36 @@ import {
   XhCarouselViewport,
 } from "@xihan-ui/vue";
 
-const slides = ["09:00 晨会", "11:00 客户沟通", "15:00 联调"];
+const slides = [
+  { time: "09:00", title: "晨会", description: "同步今天的目标与阻塞项。" },
+  { time: "11:00", title: "客户沟通", description: "确认需求范围与交付节奏。" },
+  { time: "15:00", title: "联调", description: "核对三端行为与视觉结果。" },
+];
 </script>
 
 <template>
   <XhCarouselRoot
-    v-slot="{ page, totalPages }"
+    v-slot="{ totalPages }"
     orientation="vertical"
     :slide-count="slides.length"
-    style="inline-size: 240px"
+    style="inline-size: min(360px, 100%)"
   >
-    <XhCarouselPrevTrigger>∧</XhCarouselPrevTrigger>
+    <XhCarouselPrevTrigger />
     <!-- 纵轨的裁切窗口靠高度定，宽度交给根节点 -->
-    <XhCarouselViewport style="block-size: 96px; inline-size: 100%">
+    <XhCarouselViewport style="block-size: 200px; inline-size: 100%">
       <XhCarouselList>
-        <XhCarouselItem v-for="(text, i) in slides" :key="text" :index="i">
-          <div style="display: grid; place-items: center; block-size: 100%">
-            {{ text }}
-          </div>
+        <XhCarouselItem v-for="(slide, i) in slides" :key="slide.time" :index="i">
+          <article style="display: grid; align-content: center; gap: 6px; block-size: 100%; padding: 32px; background: var(--xh-bg-subtle); color: var(--xh-fg-default)">
+            <span style="color: var(--xh-fg-brand); font-size: var(--xh-text-caption-size)">{{ slide.time }}</span>
+            <strong style="color: var(--xh-fg-default); font-size: var(--xh-text-heading-3-size)">{{ slide.title }}</strong>
+            <span style="color: var(--xh-fg-muted)">{{ slide.description }}</span>
+          </article>
         </XhCarouselItem>
       </XhCarouselList>
     </XhCarouselViewport>
-    <XhCarouselNextTrigger>∨</XhCarouselNextTrigger>
+    <XhCarouselNextTrigger />
     <XhCarouselIndicatorGroup>
       <XhCarouselIndicator v-for="p in totalPages" :key="p" :index="p - 1" />
     </XhCarouselIndicatorGroup>
-    <span>第 {{ page + 1 }} / {{ totalPages }} 条</span>
   </XhCarouselRoot>
 </template>

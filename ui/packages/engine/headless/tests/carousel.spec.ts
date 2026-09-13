@@ -352,6 +352,14 @@ describe('carouselMachine 自动播放', () => {
     expect(c.api().page).toBe(2)
   })
 
+  it('根节点把自动播放间隔投影为分页进度时长', () => {
+    const timed = makeCarousel({ ...SIX, autoplay: 2500 }).api().getRootProps() as Dict
+    expect(timed.style).toEqual({ '--xh-_carousel-autoplay-duration': '2500ms' })
+
+    const off = makeCarousel({ ...SIX, autoplay: false }).api().getRootProps() as Dict
+    expect(off.style).toBeUndefined()
+  })
+
   it('autoplay=0 / false 当作没开', () => {
     expect(makeCarousel({ ...SIX, autoplay: 0 }).state()).toBe('idle')
     expect(makeCarousel({ ...SIX, autoplay: false }).state()).toBe('idle')
@@ -961,6 +969,21 @@ describe('connectCarousel 播放开关', () => {
 
     clickAutoplayTrigger(c)
     expect(autoplayTrigger(c)['data-state']).toBe('running')
+    vi.advanceTimersByTime(100)
+    expect(c.api().page).toBe(1)
+  })
+
+  it('播放开关在焦点与指针仍停留时也能明确恢复', () => {
+    const c = makeCarousel({ ...SIX, autoplay: 100 })
+    c.service.send({ type: 'AUTOPLAY.PAUSE', src: 'pointer' })
+    c.service.send({ type: 'AUTOPLAY.PAUSE', src: 'focus' })
+
+    clickAutoplayTrigger(c)
+    expect(c.service.context.get('pausedBy')).toEqual(['pointer', 'focus', 'api'])
+    clickAutoplayTrigger(c)
+
+    expect(c.service.context.get('pausedBy')).toEqual([])
+    expect(c.api().autoplaying).toBe(true)
     vi.advanceTimersByTime(100)
     expect(c.api().page).toBe(1)
   })

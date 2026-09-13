@@ -2,6 +2,8 @@
 import type { ReactNode } from "react";
 import {
   XhCarouselAutoplayTrigger,
+  XhCarouselIndicator,
+  XhCarouselIndicatorGroup,
   XhCarouselItem,
   XhCarouselList,
   XhCarouselNextTrigger,
@@ -12,13 +14,6 @@ import {
 
 const slides = ["公告一", "公告二", "公告三"];
 
-// 自动播放的三种去处：正在播、被临时按住、已停
-function playState(autoplaying: boolean, paused: boolean): string {
-  if (autoplaying)
-    return "自动播放中";
-  return paused ? "被按住" : "已停";
-}
-
 export default function Demo(): ReactNode {
   return (
     <XhCarouselRoot
@@ -27,7 +22,7 @@ export default function Demo(): ReactNode {
       loop
       style={{ inlineSize: "100%" }}
     >
-      {({ page, totalPages, autoplaying, paused }) => (
+      {({ totalPages }) => (
         <>
           <XhCarouselPrevTrigger />
           <XhCarouselViewport style={{ blockSize: "120px" }}>
@@ -43,10 +38,11 @@ export default function Demo(): ReactNode {
           </XhCarouselViewport>
           <XhCarouselNextTrigger />
           <XhCarouselAutoplayTrigger />
-          {/* root 自己就是会换行的横排 flex，回显想独占一行得自己占满 */}
-          <span style={{ flexBasis: "100%" }}>
-            {`第 ${page + 1} / ${totalPages} 页 · ${playState(autoplaying, paused)}`}
-          </span>
+          <XhCarouselIndicatorGroup>
+            {Array.from({ length: totalPages }, (_, p) => (
+              <XhCarouselIndicator key={p} index={p} />
+            ))}
+          </XhCarouselIndicatorGroup>
         </>
       )}
     </XhCarouselRoot>

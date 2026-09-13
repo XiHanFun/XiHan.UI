@@ -9,6 +9,10 @@
   [data-scope='carousel'][data-part='root'] {
     /* 作者塞进指示符槽的图标跟着字号走，与皮肤画的兜底字形同一把尺 */
     --xh-icon-size: var(--xh-carousel-icon-size, var(--xh-glyph-size-text));
+    /* 自动播放开启时由 Headless 写入真实间隔；0ms 只用于未接入运行时的静态标记。 */
+    --xh-_carousel-autoplay-duration: 0ms;
+    --xh-_carousel-progress-from: 0 1;
+    --xh-_carousel-progress-to: 1 1;
 
     position: relative;
     display: block;
@@ -18,6 +22,11 @@
 
   [data-scope='carousel'][data-part='root'][hidden] {
     display: none;
+  }
+
+  [data-scope='carousel'][data-part='root'][data-orientation='vertical'] {
+    --xh-_carousel-progress-from: 1 0;
+    --xh-_carousel-progress-to: 1 1;
   }
 
   /* 视口是裁切窗口：轨道比它宽（高），露在外面的那些张全靠它切掉。
@@ -119,7 +128,8 @@
   }
 
   [data-scope='carousel'][data-part='autoplay-trigger'] {
-    inset-block-start: var(--xh-carousel-control-inset, var(--xh-space-3));
+    inset-block-start: auto;
+    inset-block-end: var(--xh-carousel-control-inset, var(--xh-space-3));
     inset-inline-end: var(--xh-carousel-control-inset, var(--xh-space-3));
   }
 
@@ -215,17 +225,26 @@
 
   [data-scope='carousel'][data-part='indicator']::before {
     content: '';
+    position: relative;
+    z-index: 1;
     inline-size: 100%;
     block-size: var(--xh-stroke-thick);
     border-radius: inherit;
-    background: var(--xh-carousel-indicator-bg, var(--xh-border-control));
-    transition: background var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
+    background: var(--xh-carousel-indicator-bg-selected, var(--xh-bg-brand));
+    opacity: 0;
+    scale: var(--xh-_carousel-progress-to);
+    transform-origin: left center;
+    transition: opacity var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
   }
 
   [data-scope='carousel'][data-part='indicator']::after {
     content: '';
     position: absolute;
     inset: calc(-1 * var(--xh-space-1));
+    background: linear-gradient(
+      var(--xh-carousel-indicator-bg, var(--xh-border-control)),
+      var(--xh-carousel-indicator-bg, var(--xh-border-control))
+    ) center / calc(100% - 2 * var(--xh-space-1)) var(--xh-stroke-thick) no-repeat;
   }
 
   [data-scope='carousel'][data-part='indicator'][hidden] {
@@ -248,7 +267,17 @@
   }
 
   [data-scope='carousel'][data-part='indicator'][data-current]::before {
-    background: var(--xh-carousel-indicator-bg-selected, var(--xh-bg-brand));
+    opacity: 1;
+  }
+
+  [data-scope='carousel'][data-part='root']:is([data-autoplay], [data-paused])
+    [data-scope='carousel'][data-part='indicator'][data-current]::before {
+    animation: xh-carousel-indicator-progress var(--xh-_carousel-autoplay-duration) var(--xh-motion-ease-loop) both;
+  }
+
+  [data-scope='carousel'][data-part='root'][data-paused]
+    [data-scope='carousel'][data-part='indicator'][data-current]::before {
+    animation-play-state: paused;
   }
 
   [data-scope='carousel'][data-part='indicator-group'][data-orientation='vertical']
@@ -258,9 +287,20 @@
   }
 
   [data-scope='carousel'][data-part='indicator-group'][data-orientation='vertical']
+    > [data-scope='carousel'][data-part='indicator']::after {
+    background-size: var(--xh-stroke-thick) calc(100% - 2 * var(--xh-space-1));
+  }
+
+  [data-scope='carousel'][data-part='indicator-group'][data-orientation='vertical']
     > [data-scope='carousel'][data-part='indicator']::before {
     inline-size: var(--xh-stroke-thick);
     block-size: 100%;
+    transform-origin: center top;
+  }
+
+  [dir='rtl'] [data-scope='carousel'][data-part='indicator-group'][data-orientation='horizontal']
+    > [data-scope='carousel'][data-part='indicator']::before {
+    transform-origin: right center;
   }
 
   [data-scope='carousel'][data-part='root'][data-orientation='vertical']
@@ -288,10 +328,32 @@
     [data-scope='carousel'][data-part='list'] {
       transition: none;
     }
+
+    [data-scope='carousel'][data-part='indicator'][data-current]::before {
+      animation: none;
+      scale: var(--xh-_carousel-progress-to);
+    }
   }
 
   :where([data-motion='reduce']) [data-scope='carousel'][data-part='list'] {
     transition: none;
+  }
+
+  :where([data-motion='reduce']) [data-scope='carousel'][data-part='indicator'][data-current]::before {
+    animation: none;
+    scale: var(--xh-_carousel-progress-to);
+  }
+
+  @media (forced-colors: active) {
+    [data-scope='carousel'][data-part='indicator']::after {
+      background-image: linear-gradient(GrayText, GrayText);
+      forced-color-adjust: none;
+    }
+
+    [data-scope='carousel'][data-part='indicator']::before {
+      background: Highlight;
+      forced-color-adjust: none;
+    }
   }
 
   /* 没写内容就由皮肤画兜底字形；作者往部件里塞了自己的图形，这几条即不命中 */
@@ -356,6 +418,18 @@
       content: '';
       position: absolute;
       inset: calc(-1 * var(--xh-space-1_5));
+    }
+  }
+}
+
+@layer xihan.motion {
+  @keyframes xh-carousel-indicator-progress {
+    from {
+      scale: var(--xh-_carousel-progress-from);
+    }
+
+    to {
+      scale: var(--xh-_carousel-progress-to);
     }
   }
 }

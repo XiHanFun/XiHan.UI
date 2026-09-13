@@ -2,6 +2,8 @@
 <script setup lang="ts">
 import {
   XhCarouselAutoplayTrigger,
+  XhCarouselIndicator,
+  XhCarouselIndicatorGroup,
   XhCarouselItem,
   XhCarouselList,
   XhCarouselNextTrigger,
@@ -15,7 +17,7 @@ const slides = ["公告一", "公告二", "公告三"];
 
 <template>
   <XhCarouselRoot
-    v-slot="{ page, totalPages, autoplaying, paused }"
+    v-slot="{ totalPages }"
     :slide-count="slides.length"
     :autoplay="2500"
     loop
@@ -33,10 +35,8 @@ const slides = ["公告一", "公告二", "公告三"];
     </XhCarouselViewport>
     <XhCarouselNextTrigger />
     <XhCarouselAutoplayTrigger />
-    <!-- root 自己就是会换行的横排 flex，回显想独占一行得自己占满 -->
-    <span style="flex-basis: 100%">
-      第 {{ page + 1 }} / {{ totalPages }} 页 ·
-      {{ autoplaying ? "自动播放中" : paused ? "被按住" : "已停" }}
-    </span>
+    <XhCarouselIndicatorGroup>
+      <XhCarouselIndicator v-for="p in totalPages" :key="p" :index="p - 1" />
+    </XhCarouselIndicatorGroup>
   </XhCarouselRoot>
 </template>
