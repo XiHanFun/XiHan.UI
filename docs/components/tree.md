@@ -1,4 +1,4 @@
-# Tree 树
+# Tree 树 <Badge type="info" text="alpha" />
 
 层级数据的展开与选择：分支可展开，节点可选。
 

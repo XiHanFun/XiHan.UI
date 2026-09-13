@@ -1,4 +1,4 @@
-# Highlight 文本高亮
+# Highlight 文本高亮 <Badge type="info" text="alpha" />
 
 把一段文本里命中关键词的片段标出来。
 

@@ -89,12 +89,28 @@ const { version } = require("../../ui/packages/adapters/vue/package.json");
 
 // 组件页由 ui/scripts/gen-component-docs.mjs 生成，侧栏读同一份清单，增删组件不用改这里
 const componentManifest: {
+  stableComponents: string[];
   categories: {
     id: string;
     label: string;
-    components: { id: string; name: string; status?: "new" | "updated" }[];
+    components: { id: string; name: string; status?: "alpha" | "new" | "updated" }[];
   }[];
 } = require("../../ui/scripts/component-docs.manifest.json");
+
+type ComponentStatus = "alpha" | "new" | "updated";
+const stableComponents = new Set(componentManifest.stableComponents);
+
+function componentStatus(component: { id: string; status?: ComponentStatus }): ComponentStatus | undefined {
+  return component.status ?? (stableComponents.has(component.id) ? undefined : "alpha");
+}
+
+function sidebarStatus(component: { id: string; status?: ComponentStatus }): string {
+  const status = componentStatus(component);
+  if (!status)
+    return "";
+  const label = status === "updated" ? "更新" : status;
+  return ` <span class="xh-sidebar-status xh-sidebar-status--${status}">${label}</span>`;
+}
 
 const title: string = "XiHan.UI";
 const description: string = "框架无关的设计系统运行时与组件库";
@@ -238,8 +254,8 @@ const componentsSidebar: DefaultTheme.SidebarItem[] = [
     text: `${category.label}（${category.components.length}）`,
     collapsed: false,
     items: category.components.map(component => ({
-      // 英文名与代码导出一致，中文名作次级识别；两者同排，保持 HeroUI 中文站的扫描方式。
-      text: `${enName(component.id)} <span class="xh-sidebar-cn">${component.name}</span>${component.status === "new" ? ' <span class="xh-sidebar-status">new</span>' : ""}`,
+      // 英文名与代码导出一致，中文名作次级识别；状态由同一份组件清单派生。
+      text: `${enName(component.id)} <span class="xh-sidebar-cn">${component.name}</span>${sidebarStatus(component)}`,
       link: `/components/${component.id}`,
     })),
   })),

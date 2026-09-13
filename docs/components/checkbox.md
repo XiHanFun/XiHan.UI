@@ -1,4 +1,4 @@
-# Checkbox 复选框
+# Checkbox 复选框 <Badge type="info" text="alpha" />
 
 用于选择一个或多个独立选项。
 

@@ -9,6 +9,7 @@ const props = defineProps<{
   name: string;
   renderless?: boolean;
   src: string;
+  status?: "alpha" | "new" | "updated";
 }>();
 
 const previews = import.meta.glob<{ default: Component }>("../catalog/*.vue");
@@ -49,6 +50,11 @@ onBeforeUnmount(() => observer?.disconnect());
     <a class="xh-component-card__link" :href="withBase(href)">
       <strong>{{ name }}</strong>
       <span>{{ label }}</span>
+      <span
+        v-if="status"
+        class="xh-component-card__status"
+        :class="`xh-component-card__status--${status}`"
+      >{{ status === "updated" ? "更新" : status }}</span>
     </a>
   </article>
 </template>
@@ -123,6 +129,24 @@ onBeforeUnmount(() => observer?.disconnect());
 .xh-component-card__link span {
   color: var(--vp-c-text-2);
   font-size: 13px;
+}
+
+.xh-component-card__link .xh-component-card__status {
+  display: inline-flex;
+  align-items: center;
+  padding-inline: 0.5em;
+  border-radius: 999px;
+  background: var(--xh-bg-brand-subtle);
+  color: var(--vp-c-brand-1);
+  font-size: 10px;
+  font-weight: 600;
+  line-height: 1.6;
+}
+
+.xh-component-card__link .xh-component-card__status--alpha {
+  color: var(--vp-c-text-3);
+  background: var(--vp-c-default-soft);
+  font-weight: 500;
 }
 
 @media (max-width: 640px) {

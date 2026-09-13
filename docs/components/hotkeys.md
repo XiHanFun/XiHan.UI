@@ -1,4 +1,4 @@
-# Hotkeys 快捷键
+# Hotkeys 快捷键 <Badge type="info" text="alpha" />
 
 用于注册全局或局部键盘快捷键，不渲染 DOM。
 

@@ -1,4 +1,4 @@
-# CheckboxGroup 复选框组
+# CheckboxGroup 复选框组 <Badge type="info" text="alpha" />
 
 从一组选项中选择任意多项。
 

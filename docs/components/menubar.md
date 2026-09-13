@@ -1,4 +1,4 @@
-# Menubar 菜单栏
+# Menubar 菜单栏 <Badge type="info" text="alpha" />
 
 用于桌面应用的横向命令菜单栏。
 

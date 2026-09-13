@@ -1,4 +1,4 @@
-# NumberField 数字输入
+# NumberField 数字输入 <Badge type="info" text="alpha" />
 
 带加减与区间约束的数值输入。
 

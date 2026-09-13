@@ -1,4 +1,4 @@
-# Descriptions 描述列表
+# Descriptions 描述列表 <Badge type="info" text="alpha" />
 
 成对的标签与值，按列排开。
 

@@ -1,4 +1,4 @@
-# ImageCropper 图片裁切
+# ImageCropper 图片裁切 <Badge type="info" text="alpha" />
 
 用于选择图片中需要保留的区域。
 

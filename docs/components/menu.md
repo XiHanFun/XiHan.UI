@@ -1,4 +1,4 @@
-# Menu 菜单
+# Menu 菜单 <Badge type="info" text="alpha" />
 
 从触发器打开一组操作命令。
 

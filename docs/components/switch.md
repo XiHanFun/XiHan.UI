@@ -1,4 +1,4 @@
-# Switch 开关
+# Switch 开关 <Badge type="info" text="alpha" />
 
 一项设置的开与关，翻过去立即生效。
 

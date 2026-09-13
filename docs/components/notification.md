@@ -1,4 +1,4 @@
-# Notification 通知
+# Notification 通知 <Badge type="info" text="alpha" />
 
 主动推给用户的一条消息：有标题、有正文，可以带操作按钮。
 

@@ -1,4 +1,4 @@
-# SideNav 侧栏导航
+# SideNav 侧栏导航 <Badge type="info" text="alpha" />
 
 用于组织应用的主要导航入口。
 

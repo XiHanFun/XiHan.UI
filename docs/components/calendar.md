@@ -1,4 +1,4 @@
-# Calendar 日历
+# Calendar 日历 <Badge type="info" text="alpha" />
 
 以月、周、季度或年份浏览并选择日期，也可以在日期格中展示日程内容。
 

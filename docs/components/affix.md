@@ -1,4 +1,4 @@
-# Affix 固钉
+# Affix 固钉 <Badge type="info" text="alpha" />
 
 在滚动超过指定位置后固定内容。
 

@@ -1,4 +1,4 @@
-# DatePicker 日期选择器
+# DatePicker 日期选择器 <Badge type="info" text="alpha" />
 
 将分段日期输入与日历浮层组合在一起。
 

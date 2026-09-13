@@ -1,4 +1,4 @@
-# Marquee 跑马灯
+# Marquee 跑马灯 <Badge type="info" text="alpha" />
 
 内容沿一条轴循环滚动。
 

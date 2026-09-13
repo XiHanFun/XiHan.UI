@@ -1,4 +1,4 @@
-# FloatingPanel 浮动面板
+# FloatingPanel 浮动面板 <Badge type="info" text="alpha" />
 
 一块浮在页面上、能搬走、能改大小、能收拢与铺满的非模态面板。页面照常可读可点，面板停在用户放它的地方。
 

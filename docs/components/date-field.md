@@ -1,4 +1,4 @@
-# DateField 日期输入
+# DateField 日期输入 <Badge type="info" text="alpha" />
 
 用于按年、月、日分段输入日期，不打开日历。
 

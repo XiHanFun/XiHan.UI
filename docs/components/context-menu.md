@@ -1,4 +1,4 @@
-# ContextMenu 右键菜单
+# ContextMenu 右键菜单 <Badge type="info" text="alpha" />
 
 通过右键或长按在指针位置打开命令菜单。
 

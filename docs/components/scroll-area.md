@@ -1,4 +1,4 @@
-# ScrollArea 滚动区域
+# ScrollArea 滚动区域 <Badge type="info" text="alpha" />
 
 提供带自定义滚动条的内容区域。
 

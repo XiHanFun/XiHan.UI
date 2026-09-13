@@ -1,4 +1,4 @@
-# Skeleton 骨架屏
+# Skeleton 骨架屏 <Badge type="info" text="alpha" />
 
 内容还没到时，先按最终版面占位。
 

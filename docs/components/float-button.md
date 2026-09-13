@@ -1,4 +1,4 @@
-# FloatButton 浮动按钮
+# FloatButton 浮动按钮 <Badge type="info" text="alpha" />
 
 用于在视口边缘提供持续可见的操作入口。
 
