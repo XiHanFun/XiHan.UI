@@ -156,7 +156,14 @@
       "ratio": 1,
       "ring": "poured"
     },
-    "calendar [data-part='cell-trigger'][data-scope='calendar'][data-selected]": {
+    "calendar [data-in-range][data-part='cell-trigger'][data-scope='calendar']:is([data-range-start], [data-range-end])": {
+      "parts": [
+        "cell-trigger"
+      ],
+      "ratio": 1,
+      "ring": "poured"
+    },
+    "calendar [data-part='cell-trigger'][data-scope='calendar'][data-selected]:not([data-in-range])": {
       "parts": [
         "cell-trigger"
       ],

@@ -204,6 +204,11 @@
     outline: none;
   }
 
+  /* 拖着挑区间时整张网格保持手型：指针滑过格子之间的空隙也不切回箭头 */
+  [data-scope='calendar'][data-part='grid'][data-dragging] {
+    cursor: pointer;
+  }
+
   [data-scope='calendar'][data-part='grid-head'],
   [data-scope='calendar'][data-part='grid-body'] {
     display: flex;
@@ -286,24 +291,17 @@
     transition: background var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
   }
 
-  [data-scope='calendar'][data-part='cell'][data-range-preview]::before {
-    background: var(
-      --xh-calendar-range-preview-bg,
-      color-mix(in oklab, var(--xh-bg-brand-subtle) 72%, transparent)
-    );
-  }
-
   /* 行首与行尾收圆：区间跨周时每一行各是一条两头圆的横杠。
      摆了周序号格的行里，行首那一格排在它后面 */
   [data-scope='calendar'][data-part='week-row'] > [data-part='cell'][data-in-range]:first-child::before,
   [data-scope='calendar'][data-part='week-row'] > [data-part='week-number'] + [data-part='cell'][data-in-range]::before {
-    border-start-start-radius: var(--xh-calendar-range-row-radius, var(--xh-shape-inset));
-    border-end-start-radius: var(--xh-calendar-range-row-radius, var(--xh-shape-inset));
+    border-start-start-radius: var(--xh-calendar-range-row-radius, var(--xh-shape-control));
+    border-end-start-radius: var(--xh-calendar-range-row-radius, var(--xh-shape-control));
   }
 
   [data-scope='calendar'][data-part='week-row'] > [data-part='cell'][data-in-range]:last-child::before {
-    border-start-end-radius: var(--xh-calendar-range-row-radius, var(--xh-shape-inset));
-    border-end-end-radius: var(--xh-calendar-range-row-radius, var(--xh-shape-inset));
+    border-start-end-radius: var(--xh-calendar-range-row-radius, var(--xh-shape-control));
+    border-end-end-radius: var(--xh-calendar-range-row-radius, var(--xh-shape-control));
   }
 
   [data-scope='calendar'][data-part='cell'][data-in-range][data-range-start]::before {
@@ -335,6 +333,7 @@
     border-radius: var(--xh-calendar-cell-radius, var(--xh-shape-pill));
     color: var(--xh-calendar-cell-fg, var(--xh-fg-default));
     font-size: var(--xh-calendar-cell-font-size, var(--xh-text-body-size));
+    font-weight: var(--xh-calendar-cell-font-weight, var(--xh-font-weight-medium));
     line-height: var(--xh-leading-none);
     cursor: pointer;
     user-select: none;
@@ -346,6 +345,13 @@
 
   [data-scope='calendar'][data-part='cell-trigger'][hidden] {
     display: none;
+  }
+
+  /* 命中区铺满整格：格子四周那圈留白也归它，指尖落在两格之间的空隙不会落空 */
+  [data-scope='calendar'][data-part='cell-trigger']::after {
+    content: '';
+    position: absolute;
+    inset: calc(-1 * var(--xh-calendar-cell-gap, var(--xh-space-0_5)));
   }
 
   /* 邻月的日子照样可点，只是压暗——它们不是占位符 */
@@ -373,17 +379,24 @@
     background: var(--xh-calendar-today-bg-hover, var(--xh-bg-brand-subtle-hover));
   }
 
-  [data-scope='calendar'][data-part='cell'][data-range-preview]:is([data-range-start], [data-range-end])
-    > [data-part='cell-trigger']:not([data-selected], [data-disabled]) {
-    background: var(--xh-calendar-range-preview-cap-bg, var(--xh-bg-brand-subtle-hover));
-    color: var(--xh-calendar-range-preview-cap-fg, var(--xh-fg-brand));
-  }
-
-  [data-scope='calendar'][data-part='cell-trigger'][data-selected] {
+  /* 实心强调面只给单选 / 多选的选中格与区间的两端；区间中段的格子由格子上的轨道铺底，
+     自己不换面——不然一整段都是实心圆，就分不出哪两格是端点 */
+  [data-scope='calendar'][data-part='cell-trigger'][data-selected]:not([data-in-range]),
+  [data-scope='calendar'][data-part='cell-trigger'][data-in-range]:is([data-range-start], [data-range-end]) {
     border-color: transparent;
     background: var(--xh-calendar-cell-bg-selected, var(--xh-bg-brand));
     color: var(--xh-calendar-cell-fg-selected, var(--xh-fg-on-brand));
-    font-weight: var(--xh-font-weight-medium);
+  }
+
+  /* 实心面按下时再压深一档：光缩放在深色底上看不出回执 */
+  [data-scope='calendar'][data-part='cell-trigger'][data-selected]:not([data-in-range], [data-disabled]):active,
+  [data-scope='calendar'][data-part='cell-trigger'][data-in-range]:is([data-range-start], [data-range-end]):not([data-disabled]):active {
+    background: var(--xh-calendar-cell-bg-selected-active, var(--xh-bg-brand-hover));
+  }
+
+  /* 区间中段的今天：轨道已经是淡强调面，今天那一格不再单独垫一层 */
+  [data-scope='calendar'][data-part='cell-trigger'][data-in-range][data-today]:not([data-range-start], [data-range-end]) {
+    background: transparent;
   }
 
   @media (forced-colors: active) {
@@ -391,8 +404,8 @@
       border-color: Highlight;
     }
 
-    [data-scope='calendar'][data-part='cell'][data-range-preview]:is([data-range-start], [data-range-end])
-      > [data-part='cell-trigger']:not([data-selected], [data-disabled]) {
+    /* 强制色下底色被抹平，区间两端只剩描边能说明身份 */
+    [data-scope='calendar'][data-part='cell-trigger'][data-in-range]:is([data-range-start], [data-range-end]) {
       border-color: Highlight;
     }
   }
@@ -401,7 +414,8 @@
      那一族色本来就要在这块面上把字读清楚，与面的对比是按可读性定的。
      排掉不可用的格子：那一档的底换成置灰底、字换成置灰色，环取过来就跟底一起糊了，
      它仍要能聚焦（方向键的起点），环由公共层画 */
-  [data-scope='calendar'][data-part='cell-trigger'][data-selected]:not([data-disabled]):focus-visible {
+  [data-scope='calendar'][data-part='cell-trigger'][data-selected]:not([data-in-range], [data-disabled]):focus-visible,
+  [data-scope='calendar'][data-part='cell-trigger'][data-in-range]:is([data-range-start], [data-range-end]):not([data-disabled]):focus-visible {
     --xh-_ring-color: currentColor;
   }
 
@@ -496,7 +510,8 @@
   @media print {
     /* 打印默认丢背景色：选中片与区间底都不画，一整张网格印出来是一模一样的三十来个数字。
        两档各换一条不吃底色的通道——选中走实边加粗体，区间走格底下的一道线。 */
-    [data-scope='calendar'][data-part='cell-trigger'][data-selected] {
+    [data-scope='calendar'][data-part='cell-trigger'][data-selected]:not([data-in-range]),
+    [data-scope='calendar'][data-part='cell-trigger'][data-in-range]:is([data-range-start], [data-range-end]) {
       border-color: currentColor;
       /* 反白那层文字的取值是「压在实心底上的前景」，底一没就印成一片白，退回正文色 */
       color: var(--xh-calendar-cell-fg, var(--xh-fg-default));
