@@ -12,7 +12,7 @@ import { onBeforeUnmount } from "vue";
 // 惰性建单例：服务要 document，等到第一次调用（必然在客户端）再建
 let toast: ToastService | undefined;
 function use(): ToastService {
-  toast ??= createToastService({ placement: "top" });
+  toast ??= createToastService();
   return toast;
 }
 onBeforeUnmount(() => toast?.dispose());

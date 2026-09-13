@@ -248,7 +248,7 @@ export { connectTimer, formatTimerText, isTimerControlled, isTimerUnit, quantize
 export type { TimerApi, TimerCompleteDetails, TimerControlAction, TimerItemProps, TimerLive, TimerPhase, TimerRun, TimerSchema, TimerSegments, TimerTickDetails, TimerTranslations, TimerUnit } from './timer'
 export { connectTimestamp, formatRelativeTime, formatTimePattern, TIMESTAMP_RELATIVE_LIMIT, timestampAnatomy, timestampKeyboard, timestampMachineStamp, timestampMeta, toTimeDate } from './timestamp'
 export type { TimestampApi, TimestampProps, TimestampState, TimestampTranslations, TimestampType, TimestampValue } from './timestamp'
-export { connectToast, resolveToastDuration, resolveToastId, resolveToastServiceItem, TOAST_DURATION, TOAST_GAP, TOAST_PLACEMENT, TOAST_REMOVE_DELAY, toastAnatomy, toastKeyboard, toastMachine, toastMeta } from './toast'
+export { connectToast, resolveToastDuration, resolveToastId, resolveToastServiceItem, TOAST_DURATION, TOAST_GAP, TOAST_MAX, TOAST_PLACEMENT, TOAST_REMOVE_DELAY, toastAnatomy, toastKeyboard, toastMachine, toastMeta } from './toast'
 export type { ResolvedToastServiceItem, ToastActionDetails, ToastApi, ToastOptions, ToastPauseSource, ToastPlacement, ToastRecord, ToastSchema, ToastServiceDefaults, ToastStatus, ToastStatusChangeDetails, ToastTranslations, ToastType } from './toast'
 export { connectToggle, toggleAnatomy, toggleKeyboard, toggleMachine, toggleMeta } from './toggle'
 export type { ToggleApi, TogglePressedChangeDetails, ToggleSchema, ToggleTranslations } from './toggle'

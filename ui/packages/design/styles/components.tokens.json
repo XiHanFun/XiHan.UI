@@ -59546,7 +59546,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-_toast-tint"
+        "--xh-bg-surface"
       ],
       "visibility": "public",
       "description": "toast 的 root 部件 background 覆盖槽。"
@@ -59564,10 +59564,28 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-_toast-edge"
+        "transparent"
       ],
       "visibility": "public",
       "description": "toast 的 root 部件 border 覆盖槽。"
+    },
+    {
+      "name": "--xh-toast-close-bg",
+      "component": "toast",
+      "part": [
+        "close-trigger"
+      ],
+      "property": [
+        "background"
+      ],
+      "state": [
+        "default"
+      ],
+      "defaultToken": [
+        "--xh-bg-subtle"
+      ],
+      "visibility": "public",
+      "description": "toast 的 close-trigger 部件 background 覆盖槽。"
     },
     {
       "name": "--xh-toast-close-bg-active",
@@ -59605,6 +59623,24 @@
       ],
       "visibility": "public",
       "description": "toast 的 close-trigger 部件 background 覆盖槽。"
+    },
+    {
+      "name": "--xh-toast-close-border",
+      "component": "toast",
+      "part": [
+        "close-trigger"
+      ],
+      "property": [
+        "border"
+      ],
+      "state": [
+        "default"
+      ],
+      "defaultToken": [
+        "--xh-border-default"
+      ],
+      "visibility": "public",
+      "description": "toast 的 close-trigger 部件 border 覆盖槽。"
     },
     {
       "name": "--xh-toast-close-fg",
@@ -59681,6 +59717,60 @@
       "description": "toast 的 close-trigger 部件 block-size、inline-size 覆盖槽。"
     },
     {
+      "name": "--xh-toast-description-fg",
+      "component": "toast",
+      "part": [
+        "description"
+      ],
+      "property": [
+        "color"
+      ],
+      "state": [
+        "default"
+      ],
+      "defaultToken": [
+        "--xh-fg-muted"
+      ],
+      "visibility": "public",
+      "description": "toast 的 description 部件 color 覆盖槽。"
+    },
+    {
+      "name": "--xh-toast-description-font-size",
+      "component": "toast",
+      "part": [
+        "description"
+      ],
+      "property": [
+        "font-size"
+      ],
+      "state": [
+        "default"
+      ],
+      "defaultToken": [
+        "--xh-text-label-size"
+      ],
+      "visibility": "public",
+      "description": "toast 的 description 部件 font-size 覆盖槽。"
+    },
+    {
+      "name": "--xh-toast-description-leading",
+      "component": "toast",
+      "part": [
+        "description"
+      ],
+      "property": [
+        "line-height"
+      ],
+      "state": [
+        "default"
+      ],
+      "defaultToken": [
+        "--xh-text-body-leading"
+      ],
+      "visibility": "public",
+      "description": "toast 的 description 部件 line-height 覆盖槽。"
+    },
+    {
       "name": "--xh-toast-fg",
       "component": "toast",
       "part": [
@@ -59711,7 +59801,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-text-body-size"
+        "--xh-text-label-size"
       ],
       "visibility": "public",
       "description": "toast 的 root 部件 font-size 覆盖槽。"
@@ -59729,7 +59819,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-control-gap-md"
+        "--xh-space-1_5"
       ],
       "visibility": "public",
       "description": "toast 的 root 部件 gap 覆盖槽。"
@@ -59767,10 +59857,28 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-control-indicator-size"
+        "--xh-glyph-size-sm"
       ],
       "visibility": "public",
       "description": "toast 的 root 部件 --xh-icon-size 覆盖槽。"
+    },
+    {
+      "name": "--xh-toast-indicator-p",
+      "component": "toast",
+      "part": [
+        "indicator"
+      ],
+      "property": [
+        "padding"
+      ],
+      "state": [
+        "default"
+      ],
+      "defaultToken": [
+        "--xh-space-1"
+      ],
+      "visibility": "public",
+      "description": "toast 的 indicator 部件 padding 覆盖槽。"
     },
     {
       "name": "--xh-toast-inset",
@@ -59787,7 +59895,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-space-6"
+        "--xh-space-4"
       ],
       "visibility": "public",
       "description": "toast 的 group 部件 padding-block-end、padding-block-start、padding-inline 覆盖槽。"
@@ -59895,7 +60003,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-surface-px-sm"
+        "--xh-space-4"
       ],
       "visibility": "public",
       "description": "toast 的 root 部件 padding-inline 覆盖槽。"
@@ -59913,7 +60021,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-field-py"
+        "--xh-space-3"
       ],
       "visibility": "public",
       "description": "toast 的 root 部件 padding-block 覆盖槽。"
@@ -59931,7 +60039,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-shape-surface"
+        "--xh-shape-overlay"
       ],
       "visibility": "public",
       "description": "toast 的 root 部件 border-radius 覆盖槽。"
@@ -59967,7 +60075,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-fg-default"
+        "--xh-_tone-fg"
       ],
       "visibility": "public",
       "description": "toast 的 title 部件 color 覆盖槽。"
@@ -59985,7 +60093,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-text-body-size"
+        "--xh-text-label-size"
       ],
       "visibility": "public",
       "description": "toast 的 title 部件 font-size 覆盖槽。"
@@ -60003,7 +60111,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-text-body-weight"
+        "--xh-font-weight-medium"
       ],
       "visibility": "public",
       "description": "toast 的 title 部件 font-weight 覆盖槽。"
@@ -60039,7 +60147,7 @@
         "default"
       ],
       "defaultToken": [
-        "auto"
+        "--xh-overlay-max-w-lg"
       ],
       "visibility": "public",
       "description": "toast 的 root 部件 inline-size 覆盖槽。"

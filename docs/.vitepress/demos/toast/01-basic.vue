@@ -3,11 +3,13 @@
   Licensed under the MIT License. See LICENSE in the project root for license information.
 -->
 
-<!-- 基础用法 | 一条一句话：title 部件留空时由属性上的文案填入；duration 给 0 即不自动消失 -->
+<!-- 基础用法 | 默认由状态图标、文本列和悬停显示的关闭按钮组成；duration 给 0 即不自动消失 -->
 <script setup lang="ts">
 import {
   XhButton,
   XhToastCloseTrigger,
+  XhToastContent,
+  XhToastIndicator,
   XhToastRoot,
   XhToastTitle,
 } from "@xihan-ui/vue";
@@ -18,14 +20,15 @@ const seq = ref(0);
 </script>
 
 <template>
-  <div style="display: grid; gap: 12px; justify-items: start">
+  <div style="display: grid; width: 100%; gap: 12px; justify-items: center">
     <XhToastRoot
       :key="seq"
       title="草稿已保存"
       :duration="0"
       :translations="{ close: '关闭' }"
     >
-      <XhToastTitle />
+      <XhToastIndicator />
+      <XhToastContent><XhToastTitle /></XhToastContent>
       <XhToastCloseTrigger />
     </XhToastRoot>
     <XhButton size="sm" variant="outline" @click="seq++">再挂一条</XhButton>

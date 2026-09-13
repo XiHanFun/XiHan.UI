@@ -1,6 +1,6 @@
-# Toast 轻提示 <Badge type="info" text="alpha" />
+# Toast 轻提示
 
-一条会自己消失的短反馈：一枚状态字形加一句话，横排一行、贴着文字收缩。
+一条会自己消失的短反馈：状态字形、标题与可选的一行补充说明。
 
 <div class="xh-resource-links">
   <a href="https://github.com/XiHanFun/XiHan.UI/tree/dev/ui/packages/engine/headless/src/toast" target="_blank" rel="noreferrer">Headless</a>
@@ -12,7 +12,7 @@
 
 ## 用法
 
-一条一句话：title 部件留空时由属性上的文案填入；duration 给 0 即不自动消失
+默认由状态图标、文本列和悬停显示的关闭按钮组成；duration 给 0 即不自动消失
 
 <XhDemo src="toast/01-basic" />
 
@@ -20,13 +20,13 @@
 
 加粗的是必需部件。
 
-`data-scope="toast"`：**`root`** · `indicator` · `title` · `action-trigger` · `progress` · `close-trigger` · `group`
+`data-scope="toast"`：**`root`** · `indicator` · **`content`** · `title` · `description` · `action-trigger` · `progress` · `close-trigger` · `group`
 
 ## 示例
 
 ### 颜色
 
-type 落成 data-severity，淡底、描边与字形一起换族，正文留中性；error 走 alert + assertive，loading 表示事情还没完、不自动消失
+卡片保持中性，type 只改变标题与状态图标；error 使用 assertive 实时区，loading 不自动消失
 
 <XhDemo src="toast/02-type" />
 
@@ -42,11 +42,11 @@ action-trigger 按下时先发 action 事件，再让这条进入退场；closab
 
 <XhDemo src="toast/04-action" />
 
-### 自定义排版
+### 补充说明
 
-条子本身就是一行 flex，摆什么、摆在哪一侧都归作者；组件只管盒子、计时与退场
+description 提供一行简短上下文；需要长时间阅读的内容改用 Notification
 
-<XhDemo src="toast/05-icon" />
+<XhDemo src="toast/05-description" />
 
 ### 全局服务
 
@@ -64,19 +64,19 @@ action-trigger 按下时先发 action 事件，再让这条进入退场；closab
 ### 何时不用
 
 - 用户必须知道并处理：用[警告提示](./alert)让它常驻，或用[对话框](./dialog)阻断。
-- 内容较长、分标题与正文两层，或不是用户点出来的：用[通知](./notification)。
+- 内容较长、需要持续阅读，或不是用户点出来的：用[通知](./notification)。
 
 ### 特性
 
-- `duration` 决定停留时长，指针悬停或页面失焦时计时暂停。
+- `duration` 默认 4000ms；指针悬停或焦点进入时暂停计时，全局服务还会在页面转入后台时暂停。
 - 可以带一个操作按钮（撤销、查看详情）。
-- `type` 决定语气：淡底、描边与状态字形一起换族，正文留中性。
-- 组件档 `closable` 缺省为真，叉写不写由作者定；全局服务的默认模板反过来——
-  到点自己走的不出叉，走不掉的（`loading`、`duration` 给 0）才出。
+- `type` 只改变标题与状态字形，卡片始终使用中性浮层。
+- `closable` 默认开启；悬停或焦点进入卡片时显示关闭按钮。
 
 ### 组合
 
-- 没有容器组件：那一摞由全局服务渲染，业务代码 `toast.success('已保存')` 一行调用即可。
+- 没有容器组件：全局服务在底部渲染队列，默认最多显示 3 条、间距 12px。
+- `content` 是必需的文本列，内部组合 `title` 与可选的 `description`。
 
 ### 最佳实践
 
@@ -95,7 +95,7 @@ action-trigger 按下时先发 action 事件，再让这条进入退场；closab
 | 层 | 值 |
 | --- | --- |
 | 自定义元素 | `<xh-toast>` |
-| Vue 组件 | `XhToastActionTrigger` `XhToastCloseTrigger` `XhToastIndicator` `XhToastProgress` `XhToastRoot` `XhToastTitle` |
+| Vue 组件 | `XhToastActionTrigger` `XhToastCloseTrigger` `XhToastContent` `XhToastDescription` `XhToastIndicator` `XhToastProgress` `XhToastRoot` `XhToastTitle` |
 | 组合式函数 | `useToast` |
 | 状态机 | `toastMachine` |
 | 皮肤 | `@xihan-ui/styles/toast.css` |
@@ -106,12 +106,12 @@ action-trigger 按下时先发 action 事件，再让这条进入退场；closab
 | --- | --- | --- | --- |
 | `id` | `string` |  | 队列身份。服务档用它做 create/update/dismiss 的寻址键。 |
 | `title` | `string` |  | 标题文本；作者没在 title 部件里写内容时由适配器填入。 |
-| `description` | `string` |  | 补充说明。轻提示自己不出这一层——两层文本是 notification 的活； 这条 prop 留着是因为 notification 的单条卡片复用同一台机器。 |
+| `description` | `string` |  | 可选的补充说明；应保持简短，需要持续阅读的长内容改用 notification。 |
 | `type` | `ToastType` |  | 语气，默认 info。error 走 alert + assertive，loading 不自动消失。 |
-| `duration` | `number` |  | 停留毫秒，默认 5000。&lt;=0 或非有限数即不自动消失。 |
-| `removeDelay` | `number` |  | 退场窗口毫秒，默认 200：进入 dismissing 后停留这么久再转 unmounted，留给退场动画。 |
+| `duration` | `number` |  | 停留毫秒，默认 4000。&lt;=0 或非有限数即不自动消失。 |
+| `removeDelay` | `number` |  | 退场窗口毫秒，默认 300：进入 dismissing 后停留这么久再转 unmounted，留给退场动画。 |
 | `closable` | `boolean` |  | 是否显示可用的关闭按钮，默认 true。 |
-| `pauseOnPageIdle` | `boolean` |  | 页面切到后台时暂停计时，默认 false。由服务档统一下发。 |
+| `pauseOnPageIdle` | `boolean` |  | 页面切到后台时暂停计时，默认 false；全局服务默认开启。 |
 | `paused` | `boolean` |  | 由宿主按住计时，默认 false。整摞一起暂停走这条： 置真时登记 'service' 这个暂停来源，置假时把它摘掉，与指针、焦点那几路并存。 |
 | `translations` | `Partial<ToastTranslations>` |  |  |
 | `onStatusChange` | `(details: ToastStatusChangeDetails) => void` |  | 生命周期落位时通知：dismissing 与 unmounted 各一次。宿主据此把条目移出队列。 |
@@ -161,6 +161,7 @@ action-trigger 按下时先发 action 事件，再让这条进入退场；closab
 | `status` | `ToastStatus` |  |
 | `type` | `ToastType` |  |
 | `title` | `string \| undefined` |  |
+| `description` | `string \| undefined` |  |
 | `paused` | `boolean` | 计时被按住中。倒计时的可见反馈由使用者自己渲染，这个标记是留给他的钩子——自带皮肤不画。 |
 | `closable` | `boolean` |  |
 | `remaining` | `number` | 剩余毫秒；不自动消失时为 Infinity。 |
@@ -170,7 +171,9 @@ action-trigger 按下时先发 action 事件，再让这条进入退场；closab
 | `duration` | `number` | 停留总时长（毫秒）；不自动消失时为 Infinity。 |
 | `getRootProps` | `() => T['element']` |  |
 | `getIndicatorProps` | `() => T['element']` | 严重度指示符：作者塞自己的图形，不塞则由皮肤画兜底字形。 |
+| `getContentProps` | `() => T['element']` | 标题与说明的文本列。 |
 | `getTitleProps` | `() => T['element']` |  |
+| `getDescriptionProps` | `() => T['element']` |  |
 | `getActionTriggerProps` | `() => T['button']` |  |
 | `getProgressProps` | `() => T['element']` | 倒计时条：不自动消失时收起。 |
 | `getCloseTriggerProps` | `() => T['button']` |  |
@@ -193,6 +196,7 @@ action-trigger 按下时先发 action 事件，再让这条进入退场；closab
 | 部件 | 属性 | 值 |
 | --- | --- | --- |
 | `root` | `aria-atomic` | 'true' |
+| `root` | `aria-describedby` | `description` 部件的 id \| undefined |
 | `root` | `aria-labelledby` | `title` 部件的 id |
 | `root` | `aria-live` | 'assertive' \| 'polite' |
 | `root` | `role` | 'alert' \| 'status' |
@@ -236,45 +240,51 @@ action-trigger 按下时先发 action 事件，再让这条进入退场；closab
 | `--xh-toast-action-h` | `action-trigger` | `block-size` | `default` | `--xh-control-h-sm` | toast 的 action-trigger 部件 block-size 覆盖槽。 |
 | `--xh-toast-action-px` | `action-trigger` | `padding-inline` | `default` | `--xh-control-px-sm` | toast 的 action-trigger 部件 padding-inline 覆盖槽。 |
 | `--xh-toast-action-radius` | `action-trigger` | `border-radius` | `default` | `--xh-shape-control` | toast 的 action-trigger 部件 border-radius 覆盖槽。 |
-| `--xh-toast-bg` | `root` | `background` | `default` | `--xh-_toast-tint` | toast 的 root 部件 background 覆盖槽。 |
-| `--xh-toast-border` | `root` | `border` | `default` | `--xh-_toast-edge` | toast 的 root 部件 border 覆盖槽。 |
+| `--xh-toast-bg` | `root` | `background` | `default` | `--xh-bg-surface` | toast 的 root 部件 background 覆盖槽。 |
+| `--xh-toast-border` | `root` | `border` | `default` | `transparent` | toast 的 root 部件 border 覆盖槽。 |
+| `--xh-toast-close-bg` | `close-trigger` | `background` | `default` | `--xh-bg-subtle` | toast 的 close-trigger 部件 background 覆盖槽。 |
 | `--xh-toast-close-bg-active` | `close-trigger` | `background` | `active` | `--xh-bg-subtle-active` | toast 的 close-trigger 部件 background 覆盖槽。 |
 | `--xh-toast-close-bg-hover` | `close-trigger` | `background` | `hover`<br>`not(:disabled)` | `--xh-bg-subtle-hover` | toast 的 close-trigger 部件 background 覆盖槽。 |
+| `--xh-toast-close-border` | `close-trigger` | `border` | `default` | `--xh-border-default` | toast 的 close-trigger 部件 border 覆盖槽。 |
 | `--xh-toast-close-fg` | `close-trigger` | `color` | `default` | `--xh-fg-muted` | toast 的 close-trigger 部件 color 覆盖槽。 |
 | `--xh-toast-close-fg-hover` | `close-trigger` | `color` | `hover`<br>`not(:disabled)` | `--xh-fg-default` | toast 的 close-trigger 部件 color 覆盖槽。 |
 | `--xh-toast-close-radius` | `close-trigger` | `border-radius` | `default` | `--xh-shape-control` | toast 的 close-trigger 部件 border-radius 覆盖槽。 |
 | `--xh-toast-close-size` | `close-trigger` | `block-size`<br>`inline-size` | `default` | `--xh-control-action-size` | toast 的 close-trigger 部件 block-size、inline-size 覆盖槽。 |
+| `--xh-toast-description-fg` | `description` | `color` | `default` | `--xh-fg-muted` | toast 的 description 部件 color 覆盖槽。 |
+| `--xh-toast-description-font-size` | `description` | `font-size` | `default` | `--xh-text-label-size` | toast 的 description 部件 font-size 覆盖槽。 |
+| `--xh-toast-description-leading` | `description` | `line-height` | `default` | `--xh-text-body-leading` | toast 的 description 部件 line-height 覆盖槽。 |
 | `--xh-toast-fg` | `root` | `color` | `default` | `--xh-fg-default` | toast 的 root 部件 color 覆盖槽。 |
-| `--xh-toast-font-size` | `root` | `font-size` | `default` | `--xh-text-body-size` | toast 的 root 部件 font-size 覆盖槽。 |
-| `--xh-toast-gap` | `root` | `gap` | `default` | `--xh-control-gap-md` | toast 的 root 部件 gap 覆盖槽。 |
+| `--xh-toast-font-size` | `root` | `font-size` | `default` | `--xh-text-label-size` | toast 的 root 部件 font-size 覆盖槽。 |
+| `--xh-toast-gap` | `root` | `gap` | `default` | `--xh-space-1_5` | toast 的 root 部件 gap 覆盖槽。 |
 | `--xh-toast-icon-fg` | `indicator`<br>`root` | `background-color`<br>`color` | `default` | `--xh-_tone-fg` | toast 的 indicator、root 部件 background-color、color 覆盖槽。 |
-| `--xh-toast-icon-size` | `root` | `--xh-icon-size` | `default` | `--xh-control-indicator-size` | toast 的 root 部件 --xh-icon-size 覆盖槽。 |
-| `--xh-toast-inset` | `group` | `padding-block-end`<br>`padding-block-start`<br>`padding-inline` | `default` | `--xh-space-6` | toast 的 group 部件 padding-block-end、padding-block-start、padding-inline 覆盖槽。 |
+| `--xh-toast-icon-size` | `root` | `--xh-icon-size` | `default` | `--xh-glyph-size-sm` | toast 的 root 部件 --xh-icon-size 覆盖槽。 |
+| `--xh-toast-indicator-p` | `indicator` | `padding` | `default` | `--xh-space-1` | toast 的 indicator 部件 padding 覆盖槽。 |
+| `--xh-toast-inset` | `group` | `padding-block-end`<br>`padding-block-start`<br>`padding-inline` | `default` | `--xh-space-4` | toast 的 group 部件 padding-block-end、padding-block-start、padding-inline 覆盖槽。 |
 | `--xh-toast-layer` | `group` | `z-index` | `default` | `--xh-layer-toast` | toast 的 group 部件 z-index 覆盖槽。 |
 | `--xh-toast-leading` | `root` | `line-height` | `default` | `--xh-text-body-leading` | toast 的 root 部件 line-height 覆盖槽。 |
 | `--xh-toast-progress-bg` | `progress` | `background` | `default` | `--xh-_tone-soft` | toast 的 progress 部件 background 覆盖槽。 |
 | `--xh-toast-progress-duration` | `progress` | `animation` | `default` | `--xh-motion-duration-slide` | toast 的 progress 部件 animation 覆盖槽。 |
 | `--xh-toast-progress-thickness` | `progress` | `block-size` | `default` | `--xh-space-0_5` | toast 的 progress 部件 block-size 覆盖槽。 |
-| `--xh-toast-px` | `root` | `padding-inline` | `default` | `--xh-surface-px-sm` | toast 的 root 部件 padding-inline 覆盖槽。 |
-| `--xh-toast-py` | `root` | `padding-block` | `default` | `--xh-field-py` | toast 的 root 部件 padding-block 覆盖槽。 |
-| `--xh-toast-radius` | `root` | `border-radius` | `default` | `--xh-shape-surface` | toast 的 root 部件 border-radius 覆盖槽。 |
+| `--xh-toast-px` | `root` | `padding-inline` | `default` | `--xh-space-4` | toast 的 root 部件 padding-inline 覆盖槽。 |
+| `--xh-toast-py` | `root` | `padding-block` | `default` | `--xh-space-3` | toast 的 root 部件 padding-block 覆盖槽。 |
+| `--xh-toast-radius` | `root` | `border-radius` | `default` | `--xh-shape-overlay` | toast 的 root 部件 border-radius 覆盖槽。 |
 | `--xh-toast-shadow` | `root` | `box-shadow` | `default` | `--xh-elevation-sheet` | toast 的 root 部件 box-shadow 覆盖槽。 |
-| `--xh-toast-title-fg` | `title` | `color` | `default` | `--xh-fg-default` | toast 的 title 部件 color 覆盖槽。 |
-| `--xh-toast-title-font-size` | `title` | `font-size` | `default` | `--xh-text-body-size` | toast 的 title 部件 font-size 覆盖槽。 |
-| `--xh-toast-title-font-weight` | `title` | `font-weight` | `default` | `--xh-text-body-weight` | toast 的 title 部件 font-weight 覆盖槽。 |
+| `--xh-toast-title-fg` | `title` | `color` | `default` | `--xh-_tone-fg` | toast 的 title 部件 color 覆盖槽。 |
+| `--xh-toast-title-font-size` | `title` | `font-size` | `default` | `--xh-text-label-size` | toast 的 title 部件 font-size 覆盖槽。 |
+| `--xh-toast-title-font-weight` | `title` | `font-weight` | `default` | `--xh-font-weight-medium` | toast 的 title 部件 font-weight 覆盖槽。 |
 | `--xh-toast-title-leading` | `title` | `line-height` | `default` | `--xh-text-body-leading` | toast 的 title 部件 line-height 覆盖槽。 |
-| `--xh-toast-w` | `root` | `inline-size` | `default` | `auto` | toast 的 root 部件 inline-size 覆盖槽。 |
+| `--xh-toast-w` | `root` | `inline-size` | `default` | `--xh-overlay-max-w-lg` | toast 的 root 部件 inline-size 覆盖槽。 |
 <!-- xh-component-tokens:end -->
 
 ### 动效
 
-关键帧 `xh-countdown` · `xh-toast-in` · `xh-toast-out` · `xh-toast-spin` 随皮肤自带，不引用别处文件里的名字；`background` · `color` · `scale` 走 `transition` 过渡。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
+关键帧 `xh-countdown` · `xh-toast-in` · `xh-toast-out` · `xh-toast-spin` 随皮肤自带，不引用别处文件里的名字；`background` · `color` · `opacity` · `scale` 走 `transition` 过渡。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
 
 `prefers-reduced-motion: reduce` 下本组件另有降级规则。
 
 ### 响应式
 
-皮肤另按输入能力分档：`pointer: coarse`——同一份皮肤在触屏与带指针的设备上不一样，与视口宽度无关。
+皮肤另按输入能力分档：`hover: hover` · `pointer: coarse`——同一份皮肤在触屏与带指针的设备上不一样，与视口宽度无关。
 
 ### RTL
 

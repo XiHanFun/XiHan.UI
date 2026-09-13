@@ -244,6 +244,7 @@
       "tabs",
       "time-picker",
       "timeline",
+      "toast",
       "tool-call",
       "tooltip",
       "tour",
@@ -315,6 +316,7 @@
       "popover",
       "steps",
       "timeline",
+      "toast",
       "tour"
     ],
     "display": [

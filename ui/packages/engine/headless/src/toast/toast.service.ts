@@ -7,7 +7,6 @@
 
 import type { ResolvedToastServiceItem, ToastRecord, ToastServiceDefaults } from './toast.types'
 import { resolveFeedbackServiceTitle } from '../shared/feedback-service'
-import { resolveToastDuration } from './toast.machine'
 
 /**
  * 把命令式 Toast 队列记录投影成三端默认模板共用的最终输入。
@@ -17,15 +16,14 @@ export function resolveToastServiceItem(
   toast: ToastRecord,
   defaults: ToastServiceDefaults = {},
 ): ResolvedToastServiceItem {
-  const duration = toast.duration ?? defaults.duration
-  const selfDismissing = Number.isFinite(resolveToastDuration(toast.type, duration))
   return {
     id: toast.id,
     title: resolveFeedbackServiceTitle(toast),
+    description: toast.description,
     type: toast.type ?? 'info',
-    duration,
+    duration: toast.duration ?? defaults.duration,
     removeDelay: toast.removeDelay ?? defaults.removeDelay,
-    closable: toast.closable ?? !selfDismissing,
+    closable: toast.closable ?? true,
     pauseOnPageIdle: defaults.pauseOnPageIdle,
     actionLabel: toast.actionLabel,
   }

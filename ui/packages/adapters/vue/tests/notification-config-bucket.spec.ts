@@ -18,6 +18,7 @@ import {
   XhNotificationItemCloseTrigger,
   XhNotificationItemTitle,
   XhToastCloseTrigger,
+  XhToastContent,
   XhToastRoot,
   XhToastTitle,
 } from '../src'
@@ -54,7 +55,7 @@ function mountBoth(): void {
           h(XhNotificationItemCloseTrigger),
         ]),
         h(XhToastRoot, { id: 't', title: '已保存', duration: 0 }, () => [
-          h(XhToastTitle),
+          h(XhToastContent, null, () => h(XhToastTitle)),
           h(XhToastCloseTrigger),
         ]),
       ]

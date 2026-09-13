@@ -25,7 +25,6 @@ export type ToastPauseSource = 'pointer' | 'focus' | 'page-idle' | 'api' | 'serv
 /** 那一摞落在视口的哪一格。第一段是纵向、第二段是横向（start/end 跟随文字方向）。 */
 export type ToastPlacement
   = | 'top-start' | 'top' | 'top-end'
-    | 'middle-start' | 'middle' | 'middle-end'
     | 'bottom-start' | 'bottom' | 'bottom-end'
 
 /**
@@ -35,13 +34,11 @@ export type ToastPlacement
 export interface ToastRecord {
   id: string
   title?: string
+  description?: string
   type?: ToastType
   duration?: number
   removeDelay?: number
-  /**
-   * 出不出关闭按钮。不写时由服务档的默认模板判断：到点自己走的不出，
-   * 走不掉的（loading、duration 给 0）才出——那种条子没有叉就没有出口。
-   */
+  /** 出不出关闭按钮；单组件与全局服务都默认开启。 */
   closable?: boolean
   /**
    * 行内动作钮的文案。给了才渲染 action-trigger 部件。
@@ -66,6 +63,7 @@ export interface ToastServiceDefaults {
 export interface ResolvedToastServiceItem {
   id: string
   title?: string
+  description?: string
   type: ToastType
   duration?: number
   removeDelay?: number
@@ -97,20 +95,17 @@ export interface ToastSchema extends MachineSchema {
     id?: string
     /** 标题文本；作者没在 title 部件里写内容时由适配器填入。 */
     title?: string
-    /**
-     * 补充说明。轻提示自己不出这一层——两层文本是 notification 的活；
-     * 这条 prop 留着是因为 notification 的单条卡片复用同一台机器。
-     */
+    /** 可选的补充说明；应保持简短，需要持续阅读的长内容改用 notification。 */
     description?: string
     /** 语气，默认 info。error 走 alert + assertive，loading 不自动消失。 */
     type?: ToastType
-    /** 停留毫秒，默认 5000。<=0 或非有限数即不自动消失。 */
+    /** 停留毫秒，默认 4000。<=0 或非有限数即不自动消失。 */
     duration?: number
-    /** 退场窗口毫秒，默认 200：进入 dismissing 后停留这么久再转 unmounted，留给退场动画。 */
+    /** 退场窗口毫秒，默认 300：进入 dismissing 后停留这么久再转 unmounted，留给退场动画。 */
     removeDelay?: number
     /** 是否显示可用的关闭按钮，默认 true。 */
     closable?: boolean
-    /** 页面切到后台时暂停计时，默认 false。由服务档统一下发。 */
+    /** 页面切到后台时暂停计时，默认 false；全局服务默认开启。 */
     pauseOnPageIdle?: boolean
     /**
      * 由宿主按住计时，默认 false。整摞一起暂停走这条：
@@ -165,6 +160,7 @@ export interface ToastApi<T extends PropTypes = PropTypes> {
   status: ToastStatus
   type: ToastType
   title: string | undefined
+  description: string | undefined
   /** 计时被按住中。倒计时的可见反馈由使用者自己渲染，这个标记是留给他的钩子——自带皮肤不画。 */
   paused: boolean
   closable: boolean
@@ -178,7 +174,10 @@ export interface ToastApi<T extends PropTypes = PropTypes> {
   getRootProps: () => T['element']
   /** 严重度指示符：作者塞自己的图形，不塞则由皮肤画兜底字形。 */
   getIndicatorProps: () => T['element']
+  /** 标题与说明的文本列。 */
+  getContentProps: () => T['element']
   getTitleProps: () => T['element']
+  getDescriptionProps: () => T['element']
   getActionTriggerProps: () => T['button']
   /** 倒计时条：不自动消失时收起。 */
   getProgressProps: () => T['element']

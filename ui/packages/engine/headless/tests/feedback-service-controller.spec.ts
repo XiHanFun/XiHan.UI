@@ -44,17 +44,18 @@ describe('feedback service controller', () => {
     expect(resolveFeedbackServiceTitle({ count: 3 })).toBeUndefined()
   })
 
-  it('toast 服务默认项只由 Headless 决定标题、语气、时长与关闭出口', () => {
+  it('toast 服务默认项只由 Headless 决定文案、语气、时长与关闭出口', () => {
     expect(resolveToastServiceItem(
-      { id: 'a', title: '处理中', count: 2, actionLabel: '撤销' },
+      { id: 'a', title: '处理中', description: '正在同步云端数据', count: 2, actionLabel: '撤销' },
       { duration: 3000, removeDelay: 180, pauseOnPageIdle: false },
     )).toEqual({
       id: 'a',
       title: '处理中 ×2',
+      description: '正在同步云端数据',
       type: 'info',
       duration: 3000,
       removeDelay: 180,
-      closable: false,
+      closable: true,
       pauseOnPageIdle: false,
       actionLabel: '撤销',
     })

@@ -9,6 +9,8 @@ import {
   XhButton,
   XhToastActionTrigger,
   XhToastCloseTrigger,
+  XhToastContent,
+  XhToastIndicator,
   XhToastRoot,
   XhToastTitle,
 } from "@xihan-ui/vue";
@@ -23,7 +25,7 @@ function onAction(details: { id: string }): void {
 </script>
 
 <template>
-  <div style="display: grid; gap: 12px; justify-items: start">
+  <div style="display: grid; width: 100%; gap: 12px; justify-items: center">
     <XhToastRoot
       id="toast-demo-action"
       :key="seq"
@@ -32,11 +34,10 @@ function onAction(details: { id: string }): void {
       :translations="{ close: '关闭' }"
       @action="onAction"
     >
-      <XhToastTitle />
-      <div style="display: flex; align-items: center; gap: 8px">
-        <XhToastActionTrigger>撤销</XhToastActionTrigger>
-        <XhToastCloseTrigger />
-      </div>
+      <XhToastIndicator />
+      <XhToastContent><XhToastTitle /></XhToastContent>
+      <XhToastActionTrigger>撤销</XhToastActionTrigger>
+      <XhToastCloseTrigger />
     </XhToastRoot>
     <div style="display: flex; align-items: center; gap: 12px">
       <XhButton size="sm" variant="outline" @click="seq++">再挂一条</XhButton>

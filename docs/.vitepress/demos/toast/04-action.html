@@ -1,5 +1,5 @@
 <!-- 操作按钮 | action-trigger 按下时先发 action 事件，再让这条进入退场；closable 决定还要不要那颗叉 -->
-<div style="display: grid; gap: 12px; justify-items: start">
+<div style="display: grid; width: 100%; gap: 12px; justify-items: center">
   <div id="toast-action-slot"></div>
   <div style="display: flex; align-items: center; gap: 12px">
     <xh-button id="toast-action-again" size="sm" variant="outline">
@@ -16,11 +16,10 @@
     duration="0"
   >
     <div data-xh-part="root">
-      <div data-xh-part="title"></div>
-      <div style="display: flex; align-items: center; gap: 8px">
-        <button data-xh-part="action-trigger">撤销</button>
-        <button data-xh-part="close-trigger"></button>
-      </div>
+      <span data-xh-part="indicator"></span>
+      <div data-xh-part="content"><div data-xh-part="title"></div></div>
+      <button data-xh-part="action-trigger">撤销</button>
+      <button data-xh-part="close-trigger"></button>
     </div>
   </xh-toast>
 </template>

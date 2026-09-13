@@ -25,16 +25,24 @@ import { DATA_INERT_EXEMPT, ensurePortalRoot } from '@xihan-ui/core'
 import {
   connectNotification,
   createFeedbackServiceController,
-  NOTIFICATION_MAX,
   notificationMachine,
   resolveToastServiceItem,
   TOAST_GAP,
+  TOAST_MAX,
   TOAST_PLACEMENT,
   toastAnatomy,
   visibleNotifications,
 } from '@xihan-ui/headless'
 import { computed, createApp, defineComponent, Fragment, h, shallowRef, toValue } from 'vue'
-import { XhToastActionTrigger, XhToastCloseTrigger, XhToastRoot, XhToastTitle } from '../components/toast/toast'
+import {
+  XhToastActionTrigger,
+  XhToastCloseTrigger,
+  XhToastContent,
+  XhToastDescription,
+  XhToastIndicator,
+  XhToastRoot,
+  XhToastTitle,
+} from '../components/toast/toast'
 import { vueNormalize } from '../runtime/normalize-props'
 import { useMachine } from '../runtime/use-machine'
 import { mountServiceHost } from './mount-host'
@@ -43,13 +51,13 @@ import { createServiceConfig } from './service-config'
 const parts = toastAnatomy.build()
 
 export interface ToastServiceOptions extends ToastServiceDefaults {
-  /** 那一摞落在哪儿，默认 'top'：视线正好在刚才操作的地方上方。 */
+  /** 那一摞落在哪儿，默认 'bottom'。 */
   placement?: ToastPlacement
-  /** 最多同时留几条，默认 5；超出先挤低优先级的，同级里挤最旧的。 */
+  /** 最多同时留几条，默认 3；超出先挤低优先级的，同级里挤最旧的。 */
   max?: number
   /** 重复怎么算，默认 'id'；给 'content' 则同一句话合并成一条并计数。 */
   dedupe?: NotificationDedupe
-  /** 摞内间距（px），默认 16。 */
+  /** 摞内间距（px），默认 12。 */
   gap?: number
   /** toast 部件的文案（关闭钮的读屏名等）。 */
   toastTranslations?: MaybeRefOrGetter<Partial<ToastTranslations>>
@@ -117,11 +125,10 @@ function defaultToast(
   onAction: (id: string) => void,
 ): VNode {
   const item = resolveToastServiceItem(toast, defaults)
-  // 字形不在这儿渲染：
-  // 它由皮肤按 root 上的 data-severity 画，声明式用法与 Web Components 那侧才拿得到同一枚
   return h(XhToastRoot, {
     id: item.id,
     title: item.title,
+    description: item.description,
     type: item.type,
     duration: item.duration,
     removeDelay: item.removeDelay,
@@ -135,8 +142,11 @@ function defaultToast(
     },
     onAction: ({ id }: { id: string }) => onAction(id),
   }, () => [
-    // 节点平铺，不再套一层行容器：横排是皮肤的事，模板套一层只会与它打架
-    h(XhToastTitle),
+    h(XhToastIndicator),
+    h(XhToastContent, () => [
+      h(XhToastTitle),
+      item.description ? h(XhToastDescription) : null,
+    ]),
     item.actionLabel ? h(XhToastActionTrigger, () => item.actionLabel) : null,
     item.closable ? h(XhToastCloseTrigger) : null,
   ])
@@ -152,10 +162,14 @@ export function createToastService(options: ToastServiceOptions = {}): ToastServ
     config,
     placement = TOAST_PLACEMENT,
     gap = TOAST_GAP,
-    max = NOTIFICATION_MAX,
+    max = TOAST_MAX,
     dedupe,
     ...defaults
   } = options
+  const serviceDefaults: ToastServiceDefaults = {
+    ...defaults,
+    pauseOnPageIdle: defaults.pauseOnPageIdle ?? true,
+  }
   const configSource = createServiceConfig(config)
   const holder = target ?? document.createElement('div')
   if (!target)
@@ -178,13 +192,12 @@ export function createToastService(options: ToastServiceOptions = {}): ToastServ
         placement,
         max,
         dedupe,
-        duration: defaults.duration,
-        removeDelay: defaults.removeDelay,
-        pauseOnPageIdle: defaults.pauseOnPageIdle,
+        duration: serviceDefaults.duration,
+        removeDelay: serviceDefaults.removeDelay,
+        pauseOnPageIdle: serviceDefaults.pauseOnPageIdle,
       }))
       const api = computed(() => connectNotification(service, vueNormalize))
-      // 渲染读原始记录而不是 connect 补齐后的那份：条子的 closable 缺省是
-      // 「到点自己走的不出叉」，与通知卡片的恒出叉不是同一条规则
+      // 渲染读原始记录，保留 Toast 自己的标题计数与可选说明投影。
       const items = computed(() => visibleNotifications(service.context.get('items'), max, placement))
       controller.attach({
         create: opts => api.value.create(opts),
@@ -212,7 +225,7 @@ export function createToastService(options: ToastServiceOptions = {}): ToastServ
           items.value.map(toast => h(Fragment, { key: toast.id }, [
             defaultToast(
               toast,
-              defaults,
+              serviceDefaults,
               toValue(toastTranslations),
               pausedAll.value,
               controller.unmounted,

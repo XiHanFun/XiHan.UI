@@ -2252,6 +2252,8 @@ export { useToastContext } from './components/toast/context'
 export {
   XhToastActionTrigger,
   XhToastCloseTrigger,
+  XhToastContent,
+  XhToastDescription,
   XhToastIndicator,
   XhToastProgress,
   XhToastRoot,
@@ -2261,6 +2263,8 @@ export type {
   ToastRootSlotProps,
   XhToastActionTriggerProps,
   XhToastCloseTriggerProps,
+  XhToastContentProps,
+  XhToastDescriptionProps,
   XhToastIndicatorProps,
   XhToastProgressProps,
   XhToastRootProps,

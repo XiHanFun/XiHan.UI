@@ -50,13 +50,13 @@ export interface ToastPromiseOptions<T> extends Omit<ToastMessageOptions, 'durat
 }
 
 export interface ToastServiceOptions extends ServiceHostOptions {
-  /** 那一摞落在哪儿，默认 'top'：视线正好在刚才操作的地方上方。 */
+  /** 那一摞落在哪儿，默认 'bottom'。 */
   placement?: ToastPlacement
-  /** 最多同时留几条，默认 5；超出先挤低优先级的，同级里挤最旧的。 */
+  /** 最多同时留几条，默认 3；超出先挤低优先级的，同级里挤最旧的。 */
   max?: number
   /** 重复怎么算，默认 'id'；给 'content' 则同一句话合并成一条并计数。 */
   dedupe?: NotificationDedupe
-  /** 摞内间距（px），默认 16。 */
+  /** 摞内间距（px），默认 12。 */
   gap?: number
   duration?: number
   removeDelay?: number
