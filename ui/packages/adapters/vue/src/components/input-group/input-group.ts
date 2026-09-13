@@ -1,5 +1,5 @@
 import type { Size } from '@xihan-ui/core'
-import type { InputGroupProps } from '@xihan-ui/headless'
+import type { InputGroupProps, InputGroupVariant } from '@xihan-ui/headless'
 import type { PropType } from 'vue'
 import { connectInputGroup } from '@xihan-ui/headless'
 import { computed, defineComponent, h } from 'vue'
@@ -11,6 +11,7 @@ export const XhInputGroupRoot = defineComponent({
   name: 'XhInputGroupRoot',
   // 有 connect 兜底的 prop：普通类型省略 default，Boolean 显式保留 undefined
   props: {
+    variant: String as PropType<InputGroupVariant>,
     size: { type: String as PropType<Size> },
   },
   setup(props, { slots }) {

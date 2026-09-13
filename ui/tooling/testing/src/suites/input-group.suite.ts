@@ -25,8 +25,19 @@ export const inputGroupSuite: ConformanceSuite = {
         parts: {
           root: {
             'role': null,
+            'data-variant': null,
             'data-size': null,
           },
+        },
+      },
+    },
+    {
+      name: '次级变体如实落成 data-variant',
+      spec: { apg: APG },
+      props: { variant: 'secondary' },
+      initial: {
+        parts: {
+          root: { 'data-variant': 'secondary' },
         },
       },
     },

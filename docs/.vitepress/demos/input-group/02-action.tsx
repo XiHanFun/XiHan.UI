@@ -1,4 +1,4 @@
-// 搭动作钮 | 按钮作用在紧挨着它的那个输入框上，两段共用中缝那条边
+// 动作 | 将关联操作放在输入框末端
 import type { ReactNode } from "react";
 import {
   XhButton,
@@ -11,9 +11,9 @@ import {
 export default function Demo(): ReactNode {
   return (
     <XhInputGroupRoot>
-      <XhTextFieldRoot placeholder="搜索文档" clearable>
+      <XhTextFieldRoot placeholder="搜索文档">
         <XhTextFieldControl>
-          <XhTextFieldInput />
+          <XhTextFieldInput aria-label="搜索文档" />
         </XhTextFieldControl>
       </XhTextFieldRoot>
       <XhButton variant="solid">搜索</XhButton>

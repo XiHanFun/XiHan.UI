@@ -1,5 +1,5 @@
 import type { Size } from '@xihan-ui/core'
-import type { InputGroupProps } from '@xihan-ui/headless'
+import type { InputGroupProps, InputGroupVariant } from '@xihan-ui/headless'
 import { connectInputGroup, inputGroupAnatomy, inputGroupMeta } from '@xihan-ui/headless'
 import { wcNormalize } from '../dom/normalize'
 import { XhElement } from '../element-base'
@@ -11,6 +11,7 @@ import { XhElement } from '../element-base'
  * 由皮肤按根的身份给。item 可缺省：一组只有控件、没有固定前后缀时就没有它。
  *
  * @customElement xh-input-group
+ * @attr {'primary'|'secondary'} variant - 视觉变体；secondary 使用低强调表面且不绘制阴影
  * @attr {'sm'|'md'|'lg'} size - 尺寸，决定 item 的高度、内衬与字号；不写时跟着组内控件的档走
  * @csspart root - 组容器，承载 data-size
  * @csspart item - 前后缀块，内容由作者写
@@ -20,14 +21,17 @@ export class XhInputGroupElement extends XhElement {
 
   // 属性缺席翻成 undefined，缺省值由 connect 决定
   static override properties = {
+    variant: {},
     size: { converter: { fromAttribute: (v: string | null) => v ?? undefined } },
   }
 
+  declare variant?: InputGroupVariant
   declare size?: Size
 
   protected wire(): void {
     // 读响应式 property，不回读 DOM 特性
     const api = connectInputGroup(this.configured('input-group', {
+      variant: this.variant,
       size: this.size,
     } satisfies InputGroupProps), wcNormalize)
 
