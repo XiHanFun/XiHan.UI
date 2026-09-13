@@ -36,7 +36,7 @@ function run(details: CommandSelectDetails) {
       @select="run"
     >
       <template #trigger>打开命令面板</template>
-      <template #footer>↑↓ 选择 · ↵ 执行 · Esc 关闭</template>
+      <template #footer>方向键选择 · Enter 执行 · Esc 关闭</template>
     </XhCommandRoot>
     <span>{{ last }}</span>
   </div>
