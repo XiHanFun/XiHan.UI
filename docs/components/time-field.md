@@ -1,4 +1,4 @@
-# TimeField 时间字段 <Badge type="info" text="alpha" />
+# TimeField 时间字段
 
 按时、分、秒逐段输入时间，适合已经知道目标时间、无需打开选择面板的场景。
 
@@ -12,7 +12,7 @@
 
 ## 用法
 
-输入时间
+逐段输入并实时获得标准时间值；有值时可以一键清空
 
 <XhDemo src="time-field/01-basic" />
 
