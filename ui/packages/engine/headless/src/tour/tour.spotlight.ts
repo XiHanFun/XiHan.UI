@@ -18,7 +18,11 @@ function normalizePadding(padding: number | undefined): number {
  * 由目标矩形算出高亮框：四周各外扩一圈留白。
  * 纯函数，输入是量好的矩形而不是元素，量 DOM 是效应的事。
  */
-export function tourSpotlightBox(rect: PositionRect, padding: number | undefined): TourSpotlightRect {
+export function tourSpotlightBox(
+  rect: PositionRect,
+  padding: number | undefined,
+  borderRadius?: string,
+): TourSpotlightRect {
   const pad = normalizePadding(padding)
   return {
     x: rect.x - pad,
@@ -26,6 +30,7 @@ export function tourSpotlightBox(rect: PositionRect, padding: number | undefined
     // 矩形可能来自虚拟锚点或退化的布局，兜一次非负
     width: Math.max(0, rect.width) + pad * 2,
     height: Math.max(0, rect.height) + pad * 2,
+    ...(borderRadius === undefined ? {} : { borderRadius }),
   }
 }
 
@@ -36,5 +41,9 @@ export function tourSpotlightBox(rect: PositionRect, padding: number | undefined
 export function sameTourSpotlight(a: TourSpotlightRect | null, b: TourSpotlightRect | null | undefined): boolean {
   if (a == null || b == null)
     return a == null && b == null
-  return a.x === b.x && a.y === b.y && a.width === b.width && a.height === b.height
+  return a.x === b.x
+    && a.y === b.y
+    && a.width === b.width
+    && a.height === b.height
+    && a.borderRadius === b.borderRadius
 }
