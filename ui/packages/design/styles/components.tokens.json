@@ -4322,7 +4322,29 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-fg-muted"
+        "--xh-fg-brand"
+      ],
+      "visibility": "public",
+      "description": "calendar 的 next-trigger、next-year-trigger、prev-trigger、prev-year-trigger 部件 color 覆盖槽。"
+    },
+    {
+      "name": "--xh-calendar-nav-fg-hover",
+      "component": "calendar",
+      "part": [
+        "next-trigger",
+        "next-year-trigger",
+        "prev-trigger",
+        "prev-year-trigger"
+      ],
+      "property": [
+        "color"
+      ],
+      "state": [
+        "hover",
+        "not(:disabled)"
+      ],
+      "defaultToken": [
+        "--xh-fg-brand"
       ],
       "visibility": "public",
       "description": "calendar 的 next-trigger、next-year-trigger、prev-trigger、prev-year-trigger 部件 color 覆盖槽。"
@@ -15096,7 +15118,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-shape-control"
+        "--xh-shape-surface"
       ],
       "visibility": "public",
       "description": "date-field 的 control 部件 border-radius 覆盖槽。"
@@ -15793,7 +15815,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-material-frosted-backdrop"
+        "none"
       ],
       "visibility": "public",
       "description": "date-picker 的 content 部件 -webkit-backdrop-filter、backdrop-filter 覆盖槽。"
@@ -15811,7 +15833,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-material-frosted-bg"
+        "--xh-bg-surface"
       ],
       "visibility": "public",
       "description": "date-picker 的 content 部件 background 覆盖槽。"
@@ -15829,7 +15851,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-material-frosted-border"
+        "transparent"
       ],
       "visibility": "public",
       "description": "date-picker 的 content 部件 border 覆盖槽。"
@@ -15847,7 +15869,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-material-frosted-fg"
+        "--xh-fg-default"
       ],
       "visibility": "public",
       "description": "date-picker 的 content 部件 color 覆盖槽。"
@@ -15865,7 +15887,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-material-frosted-highlight"
+        "transparent"
       ],
       "visibility": "public",
       "description": "date-picker 的 content 部件 background 覆盖槽。"
@@ -15921,7 +15943,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-shape-surface"
+        "--xh-shape-overlay"
       ],
       "visibility": "public",
       "description": "date-picker 的 content 部件 border-radius 覆盖槽。"
@@ -16201,7 +16223,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-shape-control"
+        "--xh-shape-surface"
       ],
       "visibility": "public",
       "description": "date-picker 的 control 部件 border-radius 覆盖槽。"
@@ -21147,7 +21169,12 @@
         "background"
       ],
       "state": [
-        "default"
+        "default",
+        "disabled",
+        "hover",
+        "invalid",
+        "not([data-disabled], [data-readonly], [data-invalid])",
+        "readonly"
       ],
       "defaultToken": [
         "--xh-bg-canvas"
@@ -21174,6 +21201,28 @@
       "description": "field 的 control 部件 background 覆盖槽。"
     },
     {
+      "name": "--xh-field-control-bg-hover",
+      "component": "field",
+      "part": [
+        "control"
+      ],
+      "property": [
+        "background"
+      ],
+      "state": [
+        "disabled",
+        "hover",
+        "invalid",
+        "not([data-disabled], [data-readonly], [data-invalid])",
+        "readonly"
+      ],
+      "defaultToken": [
+        "--xh-bg-subtle"
+      ],
+      "visibility": "public",
+      "description": "field 的 control 部件 background 覆盖槽。"
+    },
+    {
       "name": "--xh-field-control-border",
       "component": "field",
       "part": [
@@ -21186,7 +21235,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-border-control"
+        "transparent"
       ],
       "visibility": "public",
       "description": "field 的 control 部件 border 覆盖槽。"
@@ -21205,6 +21254,28 @@
       ],
       "defaultToken": [
         "--xh-_tone"
+      ],
+      "visibility": "public",
+      "description": "field 的 control 部件 border-color 覆盖槽。"
+    },
+    {
+      "name": "--xh-field-control-border-hover",
+      "component": "field",
+      "part": [
+        "control"
+      ],
+      "property": [
+        "border-color"
+      ],
+      "state": [
+        "disabled",
+        "hover",
+        "invalid",
+        "not([data-disabled], [data-readonly], [data-invalid])",
+        "readonly"
+      ],
+      "defaultToken": [
+        "--xh-border-default"
       ],
       "visibility": "public",
       "description": "field 的 control 部件 border-color 覆盖槽。"
@@ -21316,10 +21387,46 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-shape-control"
+        "--xh-shape-surface"
       ],
       "visibility": "public",
       "description": "field 的 control 部件 border-radius 覆盖槽。"
+    },
+    {
+      "name": "--xh-field-control-ring",
+      "component": "field",
+      "part": [
+        "control"
+      ],
+      "property": [
+        "outline"
+      ],
+      "state": [
+        "focus-visible"
+      ],
+      "defaultToken": [
+        "--xh-ring-focus"
+      ],
+      "visibility": "public",
+      "description": "field 的 control 部件 outline 覆盖槽。"
+    },
+    {
+      "name": "--xh-field-control-shadow",
+      "component": "field",
+      "part": [
+        "control"
+      ],
+      "property": [
+        "box-shadow"
+      ],
+      "state": [
+        "default"
+      ],
+      "defaultToken": [
+        "--xh-elevation-raised"
+      ],
+      "visibility": "public",
+      "description": "field 的 control 部件 box-shadow 覆盖槽。"
     },
     {
       "name": "--xh-field-description-fg",
@@ -21471,6 +21578,25 @@
       ],
       "visibility": "public",
       "description": "field 的 label 部件 color 覆盖槽。"
+    },
+    {
+      "name": "--xh-field-label-fg-invalid",
+      "component": "field",
+      "part": [
+        "label",
+        "root"
+      ],
+      "property": [
+        "color"
+      ],
+      "state": [
+        "invalid"
+      ],
+      "defaultToken": [
+        "--xh-fg-danger"
+      ],
+      "visibility": "public",
+      "description": "field 的 label、root 部件 color 覆盖槽。"
     },
     {
       "name": "--xh-field-label-font-size",
@@ -56577,7 +56703,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-shape-control"
+        "--xh-shape-surface"
       ],
       "visibility": "public",
       "description": "time-field 的 control 部件 border-radius 覆盖槽。"
@@ -57207,7 +57333,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-material-frosted-backdrop"
+        "none"
       ],
       "visibility": "public",
       "description": "time-picker 的 content 部件 -webkit-backdrop-filter、backdrop-filter 覆盖槽。"
@@ -57225,7 +57351,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-material-frosted-bg"
+        "--xh-bg-surface"
       ],
       "visibility": "public",
       "description": "time-picker 的 content 部件 background 覆盖槽。"
@@ -57243,7 +57369,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-material-frosted-border"
+        "transparent"
       ],
       "visibility": "public",
       "description": "time-picker 的 content 部件 border 覆盖槽。"
@@ -57261,7 +57387,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-material-frosted-fg"
+        "--xh-fg-default"
       ],
       "visibility": "public",
       "description": "time-picker 的 content 部件 color 覆盖槽。"
@@ -57279,7 +57405,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-material-frosted-highlight"
+        "transparent"
       ],
       "visibility": "public",
       "description": "time-picker 的 content 部件 background 覆盖槽。"
@@ -57351,7 +57477,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-shape-surface"
+        "--xh-shape-overlay"
       ],
       "visibility": "public",
       "description": "time-picker 的 content 部件 border-radius 覆盖槽。"
@@ -57631,7 +57757,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-shape-control"
+        "--xh-shape-surface"
       ],
       "visibility": "public",
       "description": "time-picker 的 control 部件 border-radius 覆盖槽。"

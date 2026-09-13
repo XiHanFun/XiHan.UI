@@ -97,7 +97,7 @@
 <XhComponentCard src="switch" name="Switch" label="开关" href="/components/switch" status="alpha" />
 <XhComponentCard src="tag-group" name="TagGroup" label="标签组" href="/components/tag-group" status="alpha" />
 <XhComponentCard src="tags-input" name="TagsInput" label="标签输入" href="/components/tags-input" status="alpha" />
-<XhComponentCard src="text-field" name="TextField" label="文本输入" href="/components/text-field" status="alpha" />
+<XhComponentCard src="text-field" name="TextField" label="文本字段" href="/components/text-field" status="alpha" />
 <XhComponentCard src="time-field" name="TimeField" label="时间字段" href="/components/time-field" status="alpha" />
 <XhComponentCard src="time-picker" name="TimePicker" label="时间选择器" href="/components/time-picker" status="alpha" />
 <XhComponentCard src="transfer" name="Transfer" label="穿梭框" href="/components/transfer" status="alpha" />

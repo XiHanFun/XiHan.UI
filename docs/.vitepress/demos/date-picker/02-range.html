@@ -11,7 +11,7 @@
       <div data-xh-part="control">
         <!-- 文档序在前的这组认领起点，在后的认领终点；里面铺几段由 view 推 -->
         <div data-xh-part="segment-group"></div>
-        <span data-xh-part="range-separator">–</span>
+        <span data-xh-part="range-separator">-</span>
         <div data-xh-part="segment-group"></div>
         <button data-xh-part="clear-trigger"></button>
         <button data-xh-part="trigger"></button>
@@ -70,19 +70,13 @@
     const header = node("div", "header");
     // 往前只在最左那张、往后只在最右那张：翻页整窗一起走
     if (panel.index === 0) {
-      header.append(
-        pageTrigger("prev-year-trigger", "快退"),
-        pageTrigger("prev-trigger", "上一页"),
-      );
+      header.append(pageTrigger("prev-trigger", "上一页"));
     }
     const heading = node("div", "heading", panel.headingLabel);
     heading.setAttribute("index", panel.index);
     header.append(heading);
     if (last) {
-      header.append(
-        pageTrigger("next-trigger", "下一页"),
-        pageTrigger("next-year-trigger", "快进"),
-      );
+      header.append(pageTrigger("next-trigger", "下一页"));
     }
 
     const grid = node("div", "grid");
@@ -145,7 +139,7 @@
       const signature = panels
         .map((panel) => `${panel.index}:${panel.startValue}:${panel.weeks.length}`)
         .join("|");
-      // 换了页、钻了层或并排页数变了才重画；同页内移动焦点时格子原样留着
+      // 换了页或钻了层才重画；同页内移动焦点时格子原样留着
       if (signature === painted) {
         return;
       }
@@ -163,7 +157,7 @@
       const out = [];
       segments.forEach((segment, index) => {
         if (index > 0) {
-          out.push(node("span", undefined, "-"));
+          out.push(node("span", undefined, "/"));
         }
         out.push(node("span", "segment"));
         if (segment.type === "week") {
@@ -182,7 +176,6 @@
     picker.addEventListener("focused-value-change", paintPanels);
     picker.addEventListener("active-view-change", paintPanels);
     picker.addEventListener("value-change", () => {
-      // 两端落在不同页时并排两页，页数跟着值走
       paintPanels();
     });
   }

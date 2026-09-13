@@ -213,6 +213,7 @@ export const tokens = {
   "--xh-shape-inset": "var(--xh-radius-sm)",
   "--xh-shape-control": "var(--xh-radius-md)",
   "--xh-shape-surface": "var(--xh-radius-lg)",
+  "--xh-shape-overlay": "calc(var(--xh-radius-lg) * 2)",
   "--xh-shape-pill": "var(--xh-radius-full)",
   "--xh-ring-width": "var(--xh-stroke-thick)",
   "--xh-ring-offset": "calc(-1 * var(--xh-ring-width))",

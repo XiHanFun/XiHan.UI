@@ -15,10 +15,8 @@ import {
   XhDatePickerHeading,
   XhDatePickerLabel,
   XhDatePickerNextTrigger,
-  XhDatePickerNextYearTrigger,
   XhDatePickerPositioner,
   XhDatePickerPrevTrigger,
-  XhDatePickerPrevYearTrigger,
   XhDatePickerRoot,
   XhDatePickerRangeSeparator,
   XhDatePickerSegment,
@@ -57,7 +55,7 @@ const translations = { startDate: "开始", endDate: "结束" };
           <XhDatePickerSegmentGroup :index="end - 1">
             <!-- 铺哪几块由 view 推；「-」与「周」是普通节点，作者写在段位旁边 -->
             <template v-for="(seg, i) in end === 1 ? segments : endSegments" :key="seg.type">
-              <span v-if="i > 0">-</span>
+              <span v-if="i > 0">/</span>
               <XhDatePickerSegment :index="i" />
               <span v-if="seg.type === 'week'">周</span>
             </template>
@@ -72,11 +70,9 @@ const translations = { startDate: "开始", endDate: "结束" };
           <XhDatePickerCalendar v-for="panel in panels" :key="panel.index" :index="panel.index">
             <XhDatePickerHeader>
               <!-- 往前只在最左那张、往后只在最右那张：整窗一起走 -->
-              <XhDatePickerPrevYearTrigger v-if="panel.index === 0" aria-label="快退" />
               <XhDatePickerPrevTrigger v-if="panel.index === 0" aria-label="上一页" />
               <XhDatePickerHeading />
               <XhDatePickerNextTrigger v-if="panel.index === panels.length - 1" aria-label="下一页" />
-              <XhDatePickerNextYearTrigger v-if="panel.index === panels.length - 1" aria-label="快进" />
             </XhDatePickerHeader>
             <XhDatePickerGrid>
               <template v-if="panel.weeks.length > 0">

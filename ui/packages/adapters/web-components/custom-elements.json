@@ -4024,6 +4024,9 @@
               "name": "--xh-calendar-nav-fg"
             },
             {
+              "name": "--xh-calendar-nav-fg-hover"
+            },
+            {
               "name": "--xh-calendar-nav-radius"
             },
             {
@@ -17175,10 +17178,16 @@
               "name": "--xh-field-control-bg-disabled"
             },
             {
+              "name": "--xh-field-control-bg-hover"
+            },
+            {
               "name": "--xh-field-control-border"
             },
             {
               "name": "--xh-field-control-border-focus"
+            },
+            {
+              "name": "--xh-field-control-border-hover"
             },
             {
               "name": "--xh-field-control-border-invalid"
@@ -17197,6 +17206,12 @@
             },
             {
               "name": "--xh-field-control-radius"
+            },
+            {
+              "name": "--xh-field-control-ring"
+            },
+            {
+              "name": "--xh-field-control-shadow"
             },
             {
               "name": "--xh-field-description-fg"
@@ -17221,6 +17236,9 @@
             },
             {
               "name": "--xh-field-label-fg-disabled"
+            },
+            {
+              "name": "--xh-field-label-fg-invalid"
             },
             {
               "name": "--xh-field-label-font-size"

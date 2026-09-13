@@ -22,11 +22,10 @@ export default function Demo(): ReactNode {
       <XhDateFieldControl>
         <XhDateFieldSegmentGroup>
           <XhDateFieldSegment index={0} />
-          <span>年</span>
+          <span>/</span>
           <XhDateFieldSegment index={1} />
-          <span>月</span>
+          <span>/</span>
           <XhDateFieldSegment index={2} />
-          <span>日</span>
         </XhDateFieldSegmentGroup>
       </XhDateFieldControl>
       <XhDateFieldHiddenInput />

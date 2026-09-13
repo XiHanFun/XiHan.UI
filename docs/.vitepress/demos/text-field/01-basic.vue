@@ -9,16 +9,9 @@ import {
 </script>
 
 <template>
-  <XhTextFieldRoot placeholder="请输入昵称">
-    <XhTextFieldLabel>昵称</XhTextFieldLabel>
-    <XhTextFieldControl style="inline-size: 200px">
-      <XhTextFieldInput />
-    </XhTextFieldControl>
-  </XhTextFieldRoot>
-
-  <XhTextFieldRoot default-value="曦寒">
-    <XhTextFieldLabel>带初值</XhTextFieldLabel>
-    <XhTextFieldControl style="inline-size: 200px">
+  <XhTextFieldRoot name="email" type="email" placeholder="输入你的邮箱">
+    <XhTextFieldLabel>邮箱</XhTextFieldLabel>
+    <XhTextFieldControl style="inline-size: 16rem">
       <XhTextFieldInput />
     </XhTextFieldControl>
   </XhTextFieldRoot>

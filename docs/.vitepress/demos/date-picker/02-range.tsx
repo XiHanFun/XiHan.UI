@@ -15,10 +15,8 @@ import {
   XhDatePickerHeading,
   XhDatePickerLabel,
   XhDatePickerNextTrigger,
-  XhDatePickerNextYearTrigger,
   XhDatePickerPositioner,
   XhDatePickerPrevTrigger,
-  XhDatePickerPrevYearTrigger,
   XhDatePickerRoot,
   XhDatePickerRangeSeparator,
   XhDatePickerSegment,
@@ -61,7 +59,7 @@ export default function Demo(): ReactNode {
                       {/* 铺哪几块由 view 推；「-」与「周」是普通节点，作者写在段位旁边 */}
                       {(group === 0 ? segments : endSegments).map((seg, i) => (
                         <Fragment key={seg.type}>
-                          {i > 0 && <span>-</span>}
+                          {i > 0 && <span>/</span>}
                           <XhDatePickerSegment index={i} />
                           {seg.type === "week" && <span>周</span>}
                         </Fragment>
@@ -79,11 +77,9 @@ export default function Demo(): ReactNode {
                     <XhDatePickerCalendar key={panel.index} index={panel.index}>
                       <XhDatePickerHeader>
                         {/* 往前只在最左那张、往后只在最右那张：整窗一起走 */}
-                        {panel.index === 0 && <XhDatePickerPrevYearTrigger aria-label="快退" />}
                         {panel.index === 0 && <XhDatePickerPrevTrigger aria-label="上一页" />}
                         <XhDatePickerHeading />
                         {panel.index === panels.length - 1 && <XhDatePickerNextTrigger aria-label="下一页" />}
-                        {panel.index === panels.length - 1 && <XhDatePickerNextYearTrigger aria-label="快进" />}
                       </XhDatePickerHeader>
                       <XhDatePickerGrid>
                         {panel.weeks.length > 0

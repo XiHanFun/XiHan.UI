@@ -1,4 +1,4 @@
-# TextField 文本输入 <Badge type="info" text="alpha" />
+# TextField 文本字段 <Badge type="info" text="alpha" />
 
 单行或多行的自由文本输入。
 
@@ -123,7 +123,7 @@ input 部件写成 textarea 即多行宿主；autoSize 让高度跟内容走，�
 ### 何时不用
 
 - 值来自一份已知清单：用[选择器](./select)或[组合框](./combobox)。
-- 输入的是数字并需要加减：用[数字输入](./number-field)。
+- 输入的是数字并需要加减：用[数字字段](./number-field)。
 - 输入的是日期或时间：用[日期输入](./date-field)、[时间输入](./time-field)。
 
 ### 特性

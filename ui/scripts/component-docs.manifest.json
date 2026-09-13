@@ -334,7 +334,7 @@
         },
         {
           "id": "text-field",
-          "name": "文本输入"
+          "name": "文本字段"
         },
         {
           "id": "time-field",

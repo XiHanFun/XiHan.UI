@@ -24,7 +24,6 @@
     "combobox [content] var(--xh-material-frosted-bg)": "M2 外壳的透明底随背后内容变化，不能按单一实体色判定；此 content 已由同表 ringless 逐条登记并在皮肤明确关闭程序化焦点环。内部真实控件仍按各自部件独立检查，不能由本条放行。",
     "context-menu [content] var(--xh-material-frosted-bg)": "M2 背景依赖背后内容。tabindex 不为0时已登记关环；空菜单自身以tabindex=0接收键盘焦点时，focus-visible实际铺material-frosted-focus-surface实体底，浏览器浅深主题回归保证边界可见。",
     "context-menu [content] var(--xh-material-frosted-focus-surface)": "只有 tabindex=0 的空菜单接收此焦点面；M2 focus-surface 收敛到不透明 bg.surface，浏览器回归验证公共环。",
-    "date-picker [content] var(--xh-material-frosted-bg)": "M2 外壳的透明底随背后内容变化，不能按单一实体色判定；此 content 已由同表 ringless 逐条登记并在皮肤明确关闭程序化焦点环。内部真实控件仍按各自部件独立检查，不能由本条放行。",
     "dialog [close-trigger] var(--xh-material-elevated-focus-surface)": "关闭钮聚焦时立即铺 M4 不透明 focus-surface，公共环不再与半透明内容面比较；浏览器回归验证浅深主题。",
     "dialog [content] linear-gradient(\n        to bottom,\n        var(--xh-dialog-highlight, var(--xh-material-elevated-highlight)) 0 var(--xh-stroke-thin),\n        transparent var(--xh-stroke-thin)\n      ),\n      linear-gradient(\n        to bottom,\n        var(--xh-dialog-content-lens-bg, var(--xh-dialog-header-bg, var(--xh-material-glass-bg))),\n        var(\n          --xh-dialog-bg,\n          var(--xh-material-elevated-bg)\n        ) var(--xh-dialog-content-lens-depth, var(--xh-dialog-header-lens-depth, calc(var(--xh-dialog-py, var(--xh-surface-py-md)) + var(--xh-control-h-md))))\n      )": "M4 内容面由透明顶光与 M3 lens 到高遮蔽正文的渐变叠合，静态工具无法按单一实体色求环对比；content 已在同表 ringless 登记为焦点陷阱的 tabindex=-1 兜底，真实交互控件各自铺实体焦点面并由浏览器回归覆盖。",
     "float-button [trigger] var(--xh-material-glass-bg)": "缺省触发器是随页面背景透入的 M3 玻璃，静态工具不能按单一实体面判环；键盘聚焦时皮肤将它切到 material-glass-focus-surface，浏览器回归量该实体面与公共焦点环。",
@@ -47,7 +46,6 @@
     "prompt-input [input] var(--xh-material-glass-focus-surface)": "输入段自身明确关闭 outline，焦点环画在 root；该不透明底只负责文字与自动填充的可读性。",
     "scrollbar [thumb] color-mix(in oklab, var(--xh-fg-default) 18%, transparent)": "滑块静息面叠在作者内容上，最终颜色随宿主背景变化；可聚焦滑块另以不透明 currentColor 绘制焦点环",
     "scrollbar [thumb] color-mix(in oklab, var(--xh-fg-default) 40%, transparent)": "滑块拖动态仍叠在作者内容上，最终颜色随宿主背景变化；可聚焦滑块另以不透明 currentColor 绘制焦点环",
-    "time-picker [content] var(--xh-material-frosted-bg)": "M2 外壳的透明底随背后内容变化，不能按单一实体色判定；此 content 已由同表 ringless 逐条登记并在皮肤明确关闭程序化焦点环。内部真实控件仍按各自部件独立检查，不能由本条放行。",
     "toggle-group [item] color-mix(in oklab, var(--xh-_toggle-group-item-bg-on) 50%, var(--xh-bg-muted))": "禁用且按下那一档，色由私有槽掺进 color-mix 里，本脚本只解整条 var() 链、不进函数实参；失效控件本就在 SC 1.4.11 的豁免里",
     "tree-select [content] var(--xh-material-frosted-bg)": "M2 外壳的透明底随背后内容变化，不能按单一实体色判定；此 content 已由同表 ringless 逐条登记并在皮肤明确关闭程序化焦点环。内部真实控件仍按各自部件独立检查，不能由本条放行。"
   },

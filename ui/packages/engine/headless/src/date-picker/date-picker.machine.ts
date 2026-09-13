@@ -4,7 +4,7 @@ import type { DateFieldSchema, DateGranularity, DateSegmentSet } from '../date-f
 import type { DatePickerSchema, DatePickerValueSource } from './date-picker.types'
 import { getLocalTimeZone, today } from '@internationalized/date'
 import { itemValue, resetDeclaredValue, resolveLocale, setup } from '@xihan-ui/core'
-import { calendarAnatomy, calendarPeriodStart, calendarWeekRange, parseCalendarDate } from '../calendar'
+import { calendarAnatomy, calendarWeekRange } from '../calendar'
 import { toArray as toValues } from '../shared/array'
 import { OVERLAY_OFFSET, OVERLAY_PLACEMENT_LIST } from '../shared/overlay'
 import { overlayCloseOnDismiss, trackOverlayLayer, trackOverlayPosition, trackPresenceResources } from '../shared/overlay-shell'
@@ -132,27 +132,6 @@ export function datePickerTimeGranularity(service: Service<DatePickerSchema>): '
   return service.prop('timeGranularity') ?? 'minute'
 }
 
-/**
- * 区间铺几个面板：已选的两端落在同一页里就一张，跨页才并排两张。
- * 只落了一端（还在挑）时按两张算——另一端常在下一页，一张面板得来回翻。
- */
-function datePickerVisibleCount(service: Service<DatePickerSchema>): number {
-  const { prop, context } = service
-  if (prop('selectionMode') !== 'range')
-    return 1
-  const view = prop('view') ?? 'day'
-  const pageOf = (raw: string | undefined): string | null => {
-    const date = parseCalendarDate(raw == null ? null : datePickerDatePart(raw))
-    if (!date)
-      return null
-    // 日视图一页是一个月，粗粒度视图一页是一年或一个十年
-    return (view === 'day' ? date.set({ day: 1 }) : calendarPeriodStart(date, view)).toString()
-  }
-  const value = context.get('value')
-  const from = pageOf(value[0])
-  return from != null && from === pageOf(value[1]) ? 1 : 2
-}
-
 /** 喂给内嵌日历的那份 props：值与聚焦日受控，选中与聚焦经回调送回编排机。 */
 export function datePickerCalendarProps(service: Service<DatePickerSchema>): CalendarSchema['props'] {
   const { prop, context, send } = service
@@ -167,8 +146,8 @@ export function datePickerCalendarProps(service: Service<DatePickerSchema>): Cal
     activeView: context.get('activeView'),
     onActiveViewChange: ({ activeView }) => send({ type: 'VIEW.SET', activeView }),
     weekSelection: prop('weekSelection'),
-    visibleCount: prop('visibleCount') ?? datePickerVisibleCount(service),
-    // 恒六行：并排的两张面板等高，翻页时浮层的高度也不跟着月份变
+    visibleCount: prop('visibleCount') ?? 1,
+    // 恒六行：翻页时浮层的高度不跟着月份变
     fixedWeeks: prop('fixedWeeks') ?? true,
     min: prop('min'),
     max: prop('max'),

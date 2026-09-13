@@ -118,6 +118,7 @@
 --xh-glyph-mark-sort: url("data:image/svg+xml,…")  sha256:77960074f2de
 --xh-glyph-mark-sort-asc: url("data:image/svg+xml,…")  sha256:9ed79f28ca55
 --xh-glyph-mark-sort-desc: url("data:image/svg+xml,…")  sha256:a07f0e76013b
+--xh-glyph-mark-star: url("data:image/svg+xml,…")  sha256:8b6d04fc240d
 --xh-glyph-mark-warning: url("data:image/svg+xml,…")  sha256:d1a7e5bfac39
 --xh-glyph-mark-zoom-in: url("data:image/svg+xml,…")  sha256:f28482f0da28
 --xh-glyph-mark-zoom-out: url("data:image/svg+xml,…")  sha256:6779e03908af
@@ -211,6 +212,7 @@
 --xh-section-py-sm: 12px  ← var(--xh-space-3)
 --xh-shape-control: 8px  ← var(--xh-radius-md)
 --xh-shape-inset: 4px  ← var(--xh-radius-sm)
+--xh-shape-overlay: calc(12px * 2)  ← calc(var(--xh-radius-lg) * 2)
 --xh-shape-pill: 9999px  ← var(--xh-radius-full)
 --xh-shape-surface: 12px  ← var(--xh-radius-lg)
 --xh-shimmer-duration: 1600ms

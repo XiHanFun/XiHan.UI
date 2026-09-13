@@ -183,10 +183,7 @@ export interface DatePickerSchema extends MachineSchema {
      * 自动按不下去；showTime 下写进去的日期带上此刻已挑的时间。
      */
     presets?: DatePickerPreset[]
-    /**
-     * 并排展示几个连续月。单选恒 1；区间按已选的两端定：同一页里放得下就 1，跨页才 2。
-     * 还只落了一端时按 2 算——另一端常在下一页，一张面板得来回翻。
-     */
+    /** 展示几个连续日历面板；默认 1。区间选择同样保持单栏，需要并排时由作者显式增加。 */
     visibleCount?: number
     /** 日历恒渲染六行，默认开。关掉后网格按当月实际周数收，翻页时浮层高度会跟着变。 */
     fixedWeeks?: boolean

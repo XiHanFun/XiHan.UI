@@ -933,6 +933,7 @@ describe('值被整份改写后区间不再跟着鼠标走', () => {
     const h = mount({
       defaultOpen: true,
       selectionMode: 'range',
+      visibleCount: 2,
       defaultFocusedValue: '2026-08-10',
       presets: [{ value: '2026-08-01/2026-08-31', label: '整月' }],
     })
@@ -953,7 +954,7 @@ describe('值被整份改写后区间不再跟着鼠标走', () => {
   })
 
   it('作废之后再点一格，是重新起一段而不是接着旧起点收口', () => {
-    const h = mount({ defaultOpen: true, selectionMode: 'range', defaultFocusedValue: '2026-08-10' })
+    const h = mount({ defaultOpen: true, selectionMode: 'range', visibleCount: 2, defaultFocusedValue: '2026-08-10' })
     click(h.cell('2026-08-10'))
     h.api().setValue([])
     click(h.cell('2026-08-20'))
@@ -961,30 +962,14 @@ describe('值被整份改写后区间不再跟着鼠标走', () => {
   })
 })
 
-describe('区间铺几个面板按两端现算', () => {
-  it('单选一个面板；区间没选完按两个铺——另一端常在下一页', () => {
+describe('日历面板数量', () => {
+  it('单选与区间默认都只铺一个面板', () => {
     expect(mount({ defaultFocusedValue: '2026-08-17' }).api().calendar.panels).toHaveLength(1)
     const range = mount({ selectionMode: 'range', defaultFocusedValue: '2026-08-17' }).api()
-    expect(range.calendar.panels.map(p => [p.year, p.month])).toEqual([[2026, 8], [2026, 9]])
-  })
-
-  it('两端落在同一个月里只铺一页，跨月才铺两页', () => {
-    const sameMonth = mount({ selectionMode: 'range', defaultValue: ['2026-07-01', '2026-07-31'] }).api()
-    expect(sameMonth.calendar.panels.map(p => [p.year, p.month])).toEqual([[2026, 7]])
-
-    const crossMonth = mount({ selectionMode: 'range', defaultValue: ['2026-07-01', '2026-08-05'] }).api()
-    expect(crossMonth.calendar.panels.map(p => [p.year, p.month])).toEqual([[2026, 7], [2026, 8]])
-  })
-
-  it('只落了一端仍按两页铺', () => {
-    expect(mount({ selectionMode: 'range', defaultValue: ['2026-07-01'] }).api().calendar.panels).toHaveLength(2)
-  })
-
-  it('粗粒度的一页是一年：同一年里的两个月只铺一页', () => {
-    const sameYear = mount({ selectionMode: 'range', view: 'month', defaultValue: ['2026-02-01', '2026-11-01'] }).api()
-    expect(sameYear.calendar.panels).toHaveLength(1)
-    const crossYear = mount({ selectionMode: 'range', view: 'month', defaultValue: ['2026-02-01', '2027-03-01'] }).api()
-    expect(crossYear.calendar.panels).toHaveLength(2)
+    expect(range.calendar.panels.map(p => [p.year, p.month])).toEqual([[2026, 8]])
+    expect(mount({ selectionMode: 'range', defaultValue: ['2026-07-01', '2026-08-05'] }).api().calendar.panels).toHaveLength(1)
+    expect(mount({ selectionMode: 'range', defaultValue: ['2026-07-01'] }).api().calendar.panels).toHaveLength(1)
+    expect(mount({ selectionMode: 'range', view: 'month', defaultValue: ['2026-02-01', '2027-03-01'] }).api().calendar.panels).toHaveLength(1)
   })
 
   it('visibleCount 显式给了以它为准，两种模式都听它的', () => {

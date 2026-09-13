@@ -18,9 +18,9 @@
     /* 形态档只换这五个私有槽：两档底色、两档描边与落影 */
     --xh-_time-field-control-bg: var(--xh-bg-canvas);
     /* 悬停那一档底：描边之外再换一次填充，语气在场时兑同族的淡底 */
-    --xh-_time-field-control-bg-hover: var(--xh-_tone-subtle, var(--xh-bg-subtle));
-    --xh-_time-field-control-border: var(--xh-border-control);
-    --xh-_time-field-control-border-hover: var(--xh-border-control-hover);
+    --xh-_time-field-control-bg-hover: color-mix(in oklab, var(--xh-bg-subtle) 45%, var(--xh-_time-field-control-bg));
+    --xh-_time-field-control-border: transparent;
+    --xh-_time-field-control-border-hover: var(--xh-border-default);
     /* 一档静态落影把控件从页面里抬起一层，与描边一起画出框的边界 */
     --xh-_time-field-control-shadow: var(--xh-elevation-raised);
     /* 聚焦描边与段位反白随语气走。没写 data-tone 时这几个 --xh-_tone* 没被声明，退回原来的焦点色与品牌色 */
@@ -109,7 +109,7 @@
     padding-inline: var(--xh-time-field-control-px, var(--xh-_time-field-control-px));
     padding-block: 0;
     border: var(--xh-stroke-thin) solid var(--xh-time-field-control-border, var(--xh-_time-field-control-border));
-    border-radius: var(--xh-time-field-control-radius, var(--xh-shape-control));
+    border-radius: var(--xh-time-field-control-radius, var(--xh-shape-surface));
     background: var(--xh-time-field-control-bg, var(--xh-_time-field-control-bg));
     box-shadow: var(--xh-time-field-control-shadow, var(--xh-_time-field-control-shadow));
     color: var(--xh-time-field-control-fg, var(--xh-fg-default));

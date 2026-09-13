@@ -95,7 +95,7 @@
     border: var(--xh-stroke-thin) solid transparent;
     border-radius: var(--xh-calendar-nav-radius, var(--xh-shape-control));
     background: var(--xh-calendar-nav-bg, transparent);
-    color: var(--xh-calendar-nav-fg, var(--xh-fg-muted));
+    color: var(--xh-calendar-nav-fg, var(--xh-fg-brand));
     cursor: pointer;
     transition:
       background var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
@@ -114,7 +114,7 @@
   [data-scope='calendar'][data-part='next-year-trigger']:hover:not(:disabled),
   [data-scope='calendar'][data-part='next-trigger']:hover:not(:disabled) {
     background: var(--xh-calendar-nav-bg-hover, var(--xh-bg-subtle-hover));
-    color: var(--xh-fg-default);
+    color: var(--xh-calendar-nav-fg-hover, var(--xh-fg-brand));
   }
 
   /* 换底之外再压一档：方向钮按下时缩放 */

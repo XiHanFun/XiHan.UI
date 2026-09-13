@@ -90,8 +90,8 @@ afterEach(() => {
   host = null
 })
 
-describe('日期选择 M2 浮层', () => {
-  it.each(['light', 'dark'] as const)('%s：实体输入与单一磨砂浮层分层，局部主题跨 Portal 生效', async (theme) => {
+describe('日期选择浮层', () => {
+  it.each(['light', 'dark'] as const)('%s：输入与日历均使用实体表面，局部主题跨 Portal 生效', async (theme) => {
     await mount(theme)
     const control = getComputedStyle(part('control'))
     const content = getComputedStyle(part('content'))
@@ -99,12 +99,12 @@ describe('日期选择 M2 浮层', () => {
     expect(alpha(control.backgroundColor)).toBe(255)
     expect(control.outlineStyle).toBe('solid')
     expect(part('positioner').closest<HTMLElement>('[data-theme]')?.dataset.theme).toBe(theme)
-    expect(content.backdropFilter).toContain('blur(16px)')
-    expect(alpha(content.backgroundColor)).toBeLessThan(255)
-    expect(alpha(content.backgroundColor)).toBeGreaterThan(220)
+    expect(content.backdropFilter).toBe('none')
+    expect(alpha(content.backgroundColor)).toBe(255)
     expect(content.boxShadow).not.toBe('none')
+    expect(content.borderRadius).toBe('24px')
     const highlight = getComputedStyle(part('content'), '::before')
-    expect(alpha(highlight.backgroundColor)).toBeGreaterThan(0)
+    expect(alpha(highlight.backgroundColor)).toBe(0)
     expect(highlight.pointerEvents).toBe('none')
     const calendar = getComputedStyle(part('calendar'))
     expect(calendar.backdropFilter).toBe('none')
@@ -122,11 +122,9 @@ describe('日期选择 M2 浮层', () => {
     expect(alpha(getComputedStyle(part('content'), '::before').backgroundColor)).toBe(0)
   })
 
-  it.each(['range', 'presets', 'show-time'] as const)('%s：内部结构使用统一材质分隔线', async (shape) => {
+  it.each(['presets', 'show-time'] as const)('%s：内部结构使用统一分隔线', async (shape) => {
     await mount('dark', shape)
-    const target = shape === 'range'
-      ? document.querySelectorAll<HTMLElement>(`[data-scope='date-picker'][data-part='calendar']`)[1]!
-      : part(shape === 'presets' ? 'preset-group' : 'time-column')
+    const target = part(shape === 'presets' ? 'preset-group' : 'time-column')
     const expected = document.createElement('span')
     expected.style.color = 'var(--xh-material-frosted-separator)'
     part('content').append(expected)
@@ -139,6 +137,11 @@ describe('日期选择 M2 浮层', () => {
     for (const side of visibleBorders)
       expect(style.getPropertyValue(`border-${side.toLowerCase()}-color`)).toBe(color)
     expected.remove()
+  })
+
+  it('区间选择默认只渲染一张日历', async () => {
+    await mount('light', 'range')
+    expect(document.querySelectorAll(`[data-scope='date-picker'][data-part='calendar']`)).toHaveLength(1)
   })
 
   it('四向短位移不缩放，嵌套层不继承父层方向', async () => {
