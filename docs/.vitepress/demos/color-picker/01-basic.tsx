@@ -1,4 +1,4 @@
-// 基础用法 | 必备部件是 trigger / content / saturation-area / area-thumb，缺一个组件就不工作
+// 基础用法 | 选择颜色
 import type { ReactNode } from "react";
 import {
   XhColorPickerAreaThumb,
@@ -7,6 +7,7 @@ import {
   XhColorPickerChannelSliderTrack,
   XhColorPickerContent,
   XhColorPickerControl,
+  XhColorPickerLabel,
   XhColorPickerPositioner,
   XhColorPickerRoot,
   XhColorPickerSaturationArea,
@@ -18,6 +19,7 @@ import {
 export default function Demo(): ReactNode {
   return (
     <XhColorPickerRoot defaultValue="#00a98e">
+      <XhColorPickerLabel>品牌色</XhColorPickerLabel>
       <XhColorPickerControl>
         <XhColorPickerTrigger>
           <XhColorPickerSwatch />

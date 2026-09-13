@@ -1,5 +1,6 @@
-<!-- 数值输入与屏幕取色 | 四个数值框各管一路，回车才收下，收不下的留着草稿并标红；宿主环境没有取色接口时那个按钮自己禁用 -->
+<!-- 精确输入 | 输入色值或使用屏幕取色 -->
 <script setup lang="ts">
+import { PipetteIcon } from "@xihan-ui/icons";
 import {
   XhColorPickerAreaThumb,
   XhColorPickerChannelInput,
@@ -16,6 +17,7 @@ import {
   XhColorPickerSwatch,
   XhColorPickerTrigger,
   XhColorPickerValueText,
+  XhIcon,
 } from "@xihan-ui/vue";
 
 const inputRow = {
@@ -24,7 +26,6 @@ const inputRow = {
   gap: "6px",
 };
 
-// 取色按钮里只有一个符号，读屏念的名字从这里来
 const translations = {
   eyeDropperTrigger: "从屏幕上取色",
 };
@@ -45,7 +46,7 @@ const translations = {
           <XhColorPickerAreaThumb />
         </XhColorPickerSaturationArea>
         <div style="display: flex; align-items: center; gap: 8px">
-          <XhColorPickerEyeDropperTrigger>◎</XhColorPickerEyeDropperTrigger>
+          <XhColorPickerEyeDropperTrigger><XhIcon :icon="PipetteIcon" /></XhColorPickerEyeDropperTrigger>
           <XhColorPickerChannelSlider channel="hue" style="flex: 1">
             <XhColorPickerChannelSliderTrack />
             <XhColorPickerChannelSliderThumb />

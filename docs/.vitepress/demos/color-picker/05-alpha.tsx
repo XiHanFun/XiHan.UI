@@ -1,4 +1,4 @@
-// 透明度 | alpha 打开后多一条透明度滑杆，值串跟着带上透明度；关掉时透明度恒是不透明，那条滑杆整条不可用
+// 透明度 | 调整颜色透明度
 import type { ReactNode } from "react";
 import {
   XhColorPickerAreaThumb,
@@ -15,17 +15,13 @@ import {
   XhColorPickerTrigger,
   XhColorPickerValueText,
 } from "@xihan-ui/react";
-import { useState } from "react";
 
 export default function Demo(): ReactNode {
-  const [overlay, setOverlay] = useState("rgba(0, 169, 142, 0.6)");
-
   return (
     <XhColorPickerRoot
-      value={overlay}
+      defaultValue="rgba(0, 169, 142, 0.6)"
       format="rgba"
       alpha
-      onValueChange={details => setOverlay(details.value)}
     >
       <XhColorPickerLabel>蒙版颜色</XhColorPickerLabel>
       <XhColorPickerControl>
