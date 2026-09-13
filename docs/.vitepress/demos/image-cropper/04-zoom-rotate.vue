@@ -1,30 +1,26 @@
-<!-- 缩放与旋转 | 两者同时作用在图片与裁切框上，看得更清楚；裁切矩形与源图像素的对应关系一点不变 -->
+<!-- 缩放与旋转 | 使用内置滑块调整视图 -->
 <script setup lang="ts">
 import {
   XhImageCropperCropArea,
   XhImageCropperCropHandle,
   XhImageCropperImage,
   XhImageCropperRoot,
+  XhImageCropperRotateSlider,
   XhImageCropperViewport,
+  XhImageCropperZoomSlider,
 } from "@xihan-ui/vue";
-import { ref } from "vue";
 
-const photo
-  = "data:image/svg+xml;utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='480' height='320'%3E%3Crect width='480' height='320' fill='%23c7d2fe'/%3E%3Ccircle cx='150' cy='120' r='72' fill='%23f9a8d4'/%3E%3Crect x='250' y='160' width='180' height='120' rx='16' fill='%2334d399'/%3E%3C/svg%3E";
-
-const zoom = ref(1);
-const rotation = ref(0);
 const handles = ["nw", "ne", "se", "sw"] as const;
 </script>
 
 <template>
   <XhImageCropperRoot
-    v-model:zoom="zoom"
-    :src="photo"
-    alt="示例图片"
-    :rotation="rotation"
+    src="/images/image-cropper-landscape.svg"
+    alt="山谷与湖泊风景图"
+    :default-value="{ x: 96, y: 64, width: 448, height: 280 }"
+    :default-zoom="1.25"
     :min-width="40"
-    style="inline-size: 360px"
+    style="inline-size: min(100%, 420px)"
   >
     <XhImageCropperViewport>
       <XhImageCropperImage />
@@ -36,9 +32,13 @@ const handles = ["nw", "ne", "se", "sw"] as const;
         />
       </XhImageCropperCropArea>
     </XhImageCropperViewport>
+    <div
+      style="display: grid; grid-template-columns: auto minmax(0, 1fr); align-items: center; gap: 8px 12px; padding-block-start: 12px"
+    >
+      <label for="cropper-zoom">缩放</label>
+      <XhImageCropperZoomSlider id="cropper-zoom" />
+      <label for="cropper-rotation">旋转</label>
+      <XhImageCropperRotateSlider id="cropper-rotation" />
+    </div>
   </XhImageCropperRoot>
-  <button type="button" @click="zoom = Math.min(zoom * 1.25, 4)">放大</button>
-  <button type="button" @click="zoom = Math.max(zoom / 1.25, 1)">缩小</button>
-  <button type="button" @click="rotation = (rotation + 90) % 360">旋转 90°</button>
-  <span>倍率 {{ zoom.toFixed(2) }} · 角度 {{ rotation }}°</span>
 </template>
