@@ -5,6 +5,7 @@
     "image-viewer [data-part='next-trigger'][data-scope='image-viewer']": "面是半透明的（neutral-950 兑 transparent 55%），压在使用者的图片上，静态算不出对比度",
     "image-viewer [data-part='prev-trigger'][data-scope='image-viewer']": "面是半透明的（neutral-950 兑 transparent 55%），压在使用者的图片上，静态算不出对比度",
     "popconfirm [data-part='cancel-trigger'][data-scope='popconfirm']:is(:hover, :active)": "规则只罩 :is(:hover, :active) 两档：那两档的面 bg-subtle-hover 2.97、bg-subtle-active 2.52 在线下，本脚本不收 :hover / :active 的面；常态的淡底 3.40 过线，吃默认环",
+    "scrollbar [data-part='thumb'][data-scope='scrollbar']:not([data-disabled])": "滑块面为半透明中性色，聚焦环改取不透明的 currentColor，避免环色随滑块透明度一起变淡",
     "segmented [data-part='root'][data-scope='segmented']:has([data-scope='segmented'][data-part='indicator']:not([hidden])) [data-part='item'][data-scope='segmented'][data-state='checked']": "选中段自己的面是透空的，环内侧是压在它底下、与它同一块矩形的指示器实心底（写了 data-tone 时默认环压上去 1.08-2.89）；本脚本只看部件自己那条 background，看不见被压在下面的兄弟节点",
     "table [data-part='select-all-trigger'][data-scope='table'][data-state='indeterminate']:not([data-disabled])": "半选档的前景是透明的（勾藏起来、横杠由伪元素画），currentColor 会取到透明，这一条改取面配对的前景色；面那条规则把 checked 与 indeterminate 写在同一个 :is() 里，本脚本记成一档 [data-state=:is(checked,indeterminate)]，只写 indeterminate 的这条罩不上它",
     "tag [data-highlighted][data-part='item'][data-scope='tags-input']:not([data-disabled]) [data-part='root'][data-scope='tag'] [data-part='close-trigger'][data-scope='tag']": "叉（tag 的 close-trigger）自己的面是透空的，环内侧是整颗标签（tag 的 root）反白后的实心语气底（默认环压上去 1.00-2.89）；本脚本只看部件自己那条 background，透空的面透出祖先那一层算不出来",
@@ -44,6 +45,8 @@
     "popover [close-trigger] var(--xh-material-frosted-focus-surface)": "关闭钮聚焦时切到不透明 M2 focus-surface，公共环不与模糊背景直接比较。",
     "popover [content] linear-gradient(\n        to bottom,\n        var(--xh-material-frosted-highlight) 0 var(--xh-stroke-thin),\n        transparent var(--xh-stroke-thin)\n      ),\n      var(--xh-popover-bg, var(--xh-material-frosted-bg))": "M2 内容面含半透明 tint 与装饰顶光，最终底色随页面背景变化；content 自身的程序化焦点环已关闭，内建关闭钮聚焦时实际铺不透明 focus-surface，任意作者控件由各自皮肤保证焦点面。",
     "prompt-input [input] var(--xh-material-glass-focus-surface)": "输入段自身明确关闭 outline，焦点环画在 root；该不透明底只负责文字与自动填充的可读性。",
+    "scrollbar [thumb] color-mix(in oklab, var(--xh-fg-default) 18%, transparent)": "滑块静息面叠在作者内容上，最终颜色随宿主背景变化；可聚焦滑块另以不透明 currentColor 绘制焦点环",
+    "scrollbar [thumb] color-mix(in oklab, var(--xh-fg-default) 40%, transparent)": "滑块拖动态仍叠在作者内容上，最终颜色随宿主背景变化；可聚焦滑块另以不透明 currentColor 绘制焦点环",
     "time-picker [content] var(--xh-material-frosted-bg)": "M2 外壳的透明底随背后内容变化，不能按单一实体色判定；此 content 已由同表 ringless 逐条登记并在皮肤明确关闭程序化焦点环。内部真实控件仍按各自部件独立检查，不能由本条放行。",
     "toggle-group [item] color-mix(in oklab, var(--xh-_toggle-group-item-bg-on) 50%, var(--xh-bg-muted))": "禁用且按下那一档，色由私有槽掺进 color-mix 里，本脚本只解整条 var() 链、不进函数实参；失效控件本就在 SC 1.4.11 的豁免里",
     "tree-select [content] var(--xh-material-frosted-bg)": "M2 外壳的透明底随背后内容变化，不能按单一实体色判定；此 content 已由同表 ringless 逐条登记并在皮肤明确关闭程序化焦点环。内部真实控件仍按各自部件独立检查，不能由本条放行。"
@@ -312,20 +315,6 @@
         "handle"
       ],
       "ratio": 1,
-      "ring": "poured"
-    },
-    "scrollbar [data-dragging][data-part='thumb'][data-scope='scrollbar']": {
-      "parts": [
-        "thumb"
-      ],
-      "ratio": 1.54,
-      "ring": "poured"
-    },
-    "scrollbar [data-part='thumb'][data-scope='scrollbar']": {
-      "parts": [
-        "thumb"
-      ],
-      "ratio": 1.75,
       "ring": "poured"
     },
     "slider [data-invalid][data-part='thumb'][data-scope='slider']": {
