@@ -86,7 +86,7 @@
 <XhComponentCard src="input-group" name="InputGroup" label="输入组" href="/components/input-group" status="alpha" />
 <XhComponentCard src="listbox" name="Listbox" label="列表框" href="/components/listbox" status="alpha" />
 <XhComponentCard src="mention" name="Mention" label="提及" href="/components/mention" status="alpha" />
-<XhComponentCard src="number-field" name="NumberField" label="数字字段" href="/components/number-field" status="alpha" />
+<XhComponentCard src="number-field" name="NumberField" label="数字字段" href="/components/number-field" />
 <XhComponentCard src="password-input" name="PasswordInput" label="密码输入" href="/components/password-input" status="alpha" />
 <XhComponentCard src="pin-input" name="PinInput" label="分格输入" href="/components/pin-input" status="alpha" />
 <XhComponentCard src="radio-group" name="RadioGroup" label="单选组" href="/components/radio-group" status="alpha" />

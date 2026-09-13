@@ -3,7 +3,7 @@
  * Licensed under the MIT License. See LICENSE in the project root for license information.
  */
 
-// 数字字段盒内那道分隔线：把加减钮与输入分成两块，线占满控件高度并贴在两段边界。
+// 数字字段盒内那道分隔线：把加减钮与输入分成两块，线取控件半高、居中贴在两段边界。
 // 伪元素的几何、逻辑侧解析成哪一边、以及选择器在别的结构下命不命中，只有真实浏览器量得出。
 import type { App } from 'vue'
 import { afterEach, describe, expect, it } from 'vitest'
@@ -18,11 +18,11 @@ import {
 import '@xihan-ui/tokens/tokens.css'
 import '@xihan-ui/styles'
 
-/** 控件高与线长：线长恒为控件全高，三档各自比一次。 */
+/** 控件高与线长：线长恒为控件半高，三档各自比一次。 */
 const TIERS = [
-  { size: 'sm', controlH: 32 },
-  { size: 'md', controlH: 36 },
-  { size: 'lg', controlH: 40 },
+  { size: 'sm', controlH: 32, dividerH: 16 },
+  { size: 'md', controlH: 36, dividerH: 18 },
+  { size: 'lg', controlH: 40, dividerH: 20 },
 ] as const
 
 let app: App | null = null
@@ -94,7 +94,7 @@ function tokenColor(token: string): string {
 }
 
 describe('数字输入的加减钮分隔线', () => {
-  it.each(TIERS)('$size 档：分隔线占满控件高度', async ({ size, controlH }) => {
+  it.each(TIERS)('$size 档：分隔线取控件半高并垂直居中', async ({ size, controlH, dividerH }) => {
     mountBoxed({ size })
     await settle()
 
@@ -103,8 +103,8 @@ describe('数字输入的加减钮分隔线', () => {
       const line = divider(name)
       // 线在场
       expect(line.content).toBe('""')
-      expect(px(line.height)).toBe(controlH)
-      expect(px(line.top)).toBe(0)
+      expect(px(line.height)).toBe(dividerH)
+      expect(px(line.top)).toBe((controlH - dividerH) / 2)
     }
   })
 
@@ -162,17 +162,6 @@ describe('数字输入的加减钮分隔线', () => {
         h(XhNumberFieldDecrementTrigger),
         h(XhNumberFieldIncrementTrigger),
       ]),
-    ])
-    await settle()
-    expect(divider('decrement-trigger').content).toBe('none')
-    expect(divider('increment-trigger').content).toBe('none')
-  })
-
-  it('不写 control 的三件并排那一档不画线：那时每件各有各的描边', async () => {
-    mount({}, () => [
-      h(XhNumberFieldDecrementTrigger),
-      h(XhNumberFieldInput),
-      h(XhNumberFieldIncrementTrigger),
     ])
     await settle()
     expect(divider('decrement-trigger').content).toBe('none')

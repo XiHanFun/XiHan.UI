@@ -26692,9 +26692,8 @@
 }
 
 /* 与文本框同一套堆叠：标签一行、输入行一行。
-   输入框与加减钮放进 control 部件即得一体式：视觉盒画在 control 上，
-   减在左、加在右、输入框居中，前后缀图标/文字可直接流式插在框内。
-   不写 control 时退回旧式三件并排的观感（下方 input / 按钮的基础规则原样生效） */
+   control 是必需的唯一视觉盒，输入框、加减钮与前后缀都放在里面；
+   减在左、加在右、输入框居中，前后缀图标/文字可直接流式插在框内。 */
 [data-scope='number-field'][data-part='root'] {
   /* 作者塞进来的图标跟着控件的尺寸档走；它自己写了 size 时仍以作者的为准 */
   --xh-icon-size: var(--xh-number-field-icon-size, var(--xh-glyph-size-md));
@@ -26717,7 +26716,7 @@
   /* 盒内那道分隔线的长度：取控件高的一半，线的上下各留一截空白，不与控件等高。
      按控件高算而不是按钮高算：钮三档同宽高，只有控件跟着尺寸档变，
      线跟着控件走才在 sm/md/lg 三档都保持同一个比例 */
-  --xh-_number-field-divider-h: 100%;
+  --xh-_number-field-divider-h: 50%;
 
   /* 形态档只换这几个私有槽：输入框的底、描边与落影，加减钮的底与描边 */
   --xh-_number-field-bg: var(--xh-bg-canvas);
@@ -26730,11 +26729,7 @@
   --xh-_number-field-bg-focus: var(--xh-bg-subtle);
   /* 一档静态落影把盒从页面里抬起一层，与描边一起画出盒的边界 */
   --xh-_number-field-shadow: var(--xh-elevation-raised);
-  --xh-_number-field-trigger-bg: transparent;
-  --xh-_number-field-trigger-bg-hover: transparent;
   --xh-_number-field-trigger-bg-active: var(--xh-bg-subtle-active);
-  --xh-_number-field-trigger-border: var(--xh-border-control);
-  --xh-_number-field-trigger-border-hover: var(--xh-border-control-hover);
 
   /* 语气只落在聚焦这一处：环与聚焦态描边。框里的数字不归它管。
      没写 data-tone 时 --xh-_tone 没被声明，退回原来的聚焦环色与常态描边 */
@@ -26782,27 +26777,21 @@
   --xh-_number-field-bg: var(--xh-bg-canvas);
   --xh-_number-field-border: var(--xh-border-control);
   --xh-_number-field-border-hover: var(--xh-border-control-hover);
-  --xh-_number-field-trigger-bg: var(--xh-bg-subtle);
-  --xh-_number-field-trigger-bg-hover: var(--xh-bg-subtle-hover);
   --xh-_number-field-trigger-bg-active: var(--xh-bg-subtle-active);
-  --xh-_number-field-trigger-border: var(--xh-border-control);
-  --xh-_number-field-trigger-border-hover: var(--xh-border-control-hover);
   --xh-_number-field-border-focus: var(--xh-_tone, var(--xh-border-control-focus));
 }
 
 /* 填充式：底色顶替描边表达边界。描边只退成透明而不去掉，1px 的位置留着，
    与 outline 档并排时基线对得上、聚焦画描边也不引起跳动 */
 [data-scope='number-field'][data-part='root'][data-variant='subtle'] {
+  /* 次级填充面保持扁平；层级由底色表达，不再叠加主面的 raised 投影。 */
+  --xh-_number-field-shadow: none;
   --xh-_number-field-bg: var(--xh-_tone-subtle, var(--xh-bg-subtle));
   /* 这一档的底本来就是 subtle，朝它兑没有位移，改走淡底自己那级悬停档 */
   --xh-_number-field-bg-hover: var(--xh-_tone-subtle-hover, var(--xh-bg-subtle-hover));
   --xh-_number-field-border: transparent;
   --xh-_number-field-border-hover: var(--xh-_tone-border, var(--xh-border-control-hover));
-  --xh-_number-field-trigger-bg: var(--xh-_tone-subtle, var(--xh-bg-subtle));
-  --xh-_number-field-trigger-bg-hover: var(--xh-_tone-subtle-hover, var(--xh-bg-subtle-hover));
   --xh-_number-field-trigger-bg-active: var(--xh-_tone-subtle-active, var(--xh-bg-subtle-active));
-  --xh-_number-field-trigger-border: transparent;
-  --xh-_number-field-trigger-border-hover: var(--xh-_tone-border, var(--xh-border-control-hover));
   --xh-_number-field-border-focus: var(--xh-_tone, var(--xh-border-control-focus));
 }
 
@@ -26813,11 +26802,7 @@
   --xh-_number-field-bg: transparent;
   --xh-_number-field-border: transparent;
   --xh-_number-field-border-hover: var(--xh-_tone-border, var(--xh-border-control-hover));
-  --xh-_number-field-trigger-bg: transparent;
-  --xh-_number-field-trigger-bg-hover: var(--xh-_tone-subtle, var(--xh-bg-subtle-hover));
   --xh-_number-field-trigger-bg-active: var(--xh-_tone-subtle-active, var(--xh-bg-subtle-active));
-  --xh-_number-field-trigger-border: transparent;
-  --xh-_number-field-trigger-border-hover: var(--xh-_tone-border, var(--xh-border-control-hover));
   --xh-_number-field-border-focus: var(--xh-_tone, var(--xh-border-control-focus));
 }
 
@@ -26926,7 +26911,16 @@
   border-radius: 0;
   background: transparent;
   box-shadow: none;
+  color: var(--xh-number-field-input-fg, var(--xh-fg-default));
+  font-family: inherit;
+  font-size: var(--xh-number-field-input-font-size, var(--xh-_number-field-font-size));
+  font-variant-numeric: tabular-nums;
+  line-height: var(--xh-leading-normal);
   text-align: var(--xh-number-field-input-align, center);
+}
+
+[data-scope='number-field'][data-part='control'] [data-part='input']::placeholder {
+  color: var(--xh-number-field-placeholder-fg, var(--xh-fg-subtle));
 }
 
 /* 盒内 input 不再自己画各态，全部交还 control。hover 这条带上与基础规则同样的
@@ -26948,6 +26942,7 @@
 [data-scope='number-field'][data-part='control'] [data-part='input']:disabled,
 [data-scope='number-field'][data-part='control'] [data-part='input'][readonly] {
   background: transparent;
+  color: var(--xh-fg-disabled);
 }
 
 /* 盒内按钮：尺寸与圆角走基础规则那枚行内动作方钮，这里只把底与描边交还 control——
@@ -26955,13 +26950,33 @@
    常态只剩符号，符号取次级前景，悬停与按下才浮出底色 */
 [data-scope='number-field'][data-part='control'] [data-part='increment-trigger'],
 [data-scope='number-field'][data-part='control'] [data-part='decrement-trigger'] {
-  /* 分隔线那枚伪元素按这颗钮的边框盒定位 */
   position: relative;
+  display: inline-flex;
+  flex: none;
+  align-items: center;
+  justify-content: center;
+  inline-size: var(--xh-number-field-trigger-size, var(--xh-control-action-size));
+  block-size: var(--xh-number-field-trigger-size, var(--xh-control-action-size));
   margin: 0;
+  padding: 0;
   border: 0;
   border-radius: 0;
   background: transparent;
   color: var(--xh-number-field-trigger-fg, var(--xh-fg-default));
+  font-family: inherit;
+  font-size: var(--xh-number-field-trigger-font-size, var(--xh-_number-field-trigger-font-size));
+  line-height: var(--xh-leading-none);
+  cursor: pointer;
+  user-select: none;
+  touch-action: manipulation;
+  transition:
+    background var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
+    scale var(--xh-motion-duration-micro) var(--xh-motion-ease-enter-strong);
+}
+
+[data-scope='number-field'][data-part='control'] [data-part='increment-trigger'][hidden],
+[data-scope='number-field'][data-part='control'] [data-part='decrement-trigger'][hidden] {
+  display: none;
 }
 
 /* 加减钮与输入之间的细线：把「按的」与「填的」分成两块。
@@ -26974,7 +26989,7 @@
 [data-scope='number-field'][data-part='control'] [data-part='input'] ~ :is([data-part='decrement-trigger'], [data-part='increment-trigger'])::after {
   content: '';
   position: absolute;
-  inset-block-start: 0;
+  inset-block-start: calc((100% - var(--xh-number-field-trigger-divider-h, var(--xh-_number-field-divider-h))) / 2);
   inline-size: 0;
   block-size: var(--xh-number-field-trigger-divider-h, var(--xh-_number-field-divider-h));
   /* 一道发丝线走 border 而不是底色：高对比档下底色被系统换成面色，线会整条消失，
@@ -27019,158 +27034,23 @@
   color: var(--xh-fg-disabled);
 }
 
-[data-scope='number-field'][data-part='input'] {
-  block-size: var(--xh-number-field-input-h, var(--xh-_number-field-h));
-  padding-inline: var(--xh-number-field-input-px, var(--xh-_number-field-px));
-  padding-block: 0;
-  border: var(--xh-stroke-thin) solid var(--xh-number-field-input-border, var(--xh-_number-field-border));
-  border-radius: var(--xh-number-field-input-radius, var(--xh-_number-field-radius));
-  background: var(--xh-number-field-input-bg, var(--xh-_number-field-bg));
-  box-shadow: var(--xh-number-field-input-shadow, var(--xh-_number-field-shadow));
-  color: var(--xh-number-field-input-fg, var(--xh-fg-default));
-  /* 表单控件不继承页面字体，只给字号会让输入框用 UA 默认字族 */
-  font-family: inherit;
-  font-size: var(--xh-number-field-input-font-size, var(--xh-_number-field-font-size));
-  /* 等宽数字：按住加减钮连发时字宽一变，框里的数字就会左右抖 */
-  font-variant-numeric: tabular-nums;
-  line-height: var(--xh-leading-normal);
-  transition:
-    background var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
-    border-color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
-}
-
-[data-scope='number-field'][data-part='input']::placeholder {
-  color: var(--xh-number-field-placeholder-fg, var(--xh-fg-subtle));
-}
-
-/* hover 换描边与填充两条通道。只在中性态换：invalid 正拿边框颜色说事，被 hover 盖掉那条
-   信息就没了；只读也排掉，它的底色本身就是"改不动"这句话 */
-[data-scope='number-field'][data-part='input']:hover:not(:disabled, [readonly], [data-invalid]) {
-  border-color: var(--xh-number-field-input-border-hover, var(--xh-_number-field-border-hover));
-  background: var(--xh-number-field-input-bg-hover, var(--xh-_number-field-bg-hover));
-}
-
-/* 聚焦态描边与环共用一族语气色。这条特异度低于上面的 hover、也低于下面的 invalid，
-   两者仍按原来的次序赢过它 */
-[data-scope='number-field'][data-part='input']:focus-visible {
-  border-color: var(--xh-number-field-input-border-focus, var(--xh-_number-field-border-focus));
-  outline: var(--xh-ring-width) solid var(--xh-_number-field-ring);
-  outline-offset: var(--xh-ring-offset);
-}
-
-[data-scope='number-field'][data-part='input'][data-invalid] {
-  border-color: var(--xh-number-field-input-border-invalid, var(--xh-border-invalid));
-
-  /* 校验失败时环也跟着变红：两圈等宽相邻却一红一蓝，读的人不知道哪个才是当前状态 */
-  --xh-_number-field-ring: var(--xh-ring-invalid);
-}
-
-/* 只读仍可聚焦、可复制，不置灰，只把底色压下去表示"改不动" */
-[data-scope='number-field'][data-part='input'][readonly] {
-  background: var(--xh-number-field-input-bg-readonly, var(--xh-bg-subtle));
-}
-
-/* input 是单体表单控件，禁用走原生 disabled */
-[data-scope='number-field'][data-part='input']:disabled {
-  background: var(--xh-number-field-input-bg-disabled, var(--xh-bg-subtle));
-  color: var(--xh-fg-disabled);
-}
-
 /* 自动填充：引擎给填过的框强加一套系统色（多数是黄底黑字），盖得过 background 与 color，
    深色档下就剩一个不跟主题走的黄框。底改用 inset 阴影铺回来，扩散量 100vmax 填满内容盒；
    字改用 -webkit-text-fill-color 接回来，那是这个态下唯一还听样式表的前景通道。
-   不去拉长 transition 把系统底推迟显现：那只是把它藏起来，减弱动效通道一关过渡就当场露出。
    两个选择器名分写两条：一条选择器列表里只要有一个名字不被认识，整条规则就被丢弃。
-   底取一支不透明的面令牌而不是 --xh-_number-field-bg：后者在 ghost 档下是透明的，
-   铺一层透明等于没铺。自带的落影列在铺底之后，不然这条会把框的边界连同投影一起抹掉。 */
-[data-scope='number-field'][data-part='input']:autofill {
-  box-shadow:
-    inset 0 0 0 100vmax var(--xh-number-field-input-autofill-bg, var(--xh-bg-canvas)),
-    var(--xh-number-field-input-shadow, var(--xh-_number-field-shadow));
-  -webkit-text-fill-color: var(--xh-number-field-input-autofill-fg, var(--xh-fg-default));
-}
-
-[data-scope='number-field'][data-part='input']:-webkit-autofill {
-  box-shadow:
-    inset 0 0 0 100vmax var(--xh-number-field-input-autofill-bg, var(--xh-bg-canvas)),
-    var(--xh-number-field-input-shadow, var(--xh-_number-field-shadow));
-  -webkit-text-fill-color: var(--xh-number-field-input-autofill-fg, var(--xh-fg-default));
-}
-
-/* 盒内 input 的落影归 control，这里只铺底；特异度高过上面那两条，与源序无关 */
+   input 在唯一的 control 里不自带落影，只用 inset 阴影把系统底接回主题。 */
 [data-scope='number-field'][data-part='control'] [data-part='input']:autofill {
   box-shadow: inset 0 0 0 100vmax var(--xh-number-field-input-autofill-bg, var(--xh-bg-canvas));
+  -webkit-text-fill-color: var(--xh-number-field-input-autofill-fg, var(--xh-fg-default));
 }
 
 [data-scope='number-field'][data-part='control'] [data-part='input']:-webkit-autofill {
   box-shadow: inset 0 0 0 100vmax var(--xh-number-field-input-autofill-bg, var(--xh-bg-canvas));
-}
-
-/* 两个方向共用一份皮肤：加减钮是同一种东西，只是朝向不同，
-   分开写迟早会一边改了另一边忘了 */
-[data-scope='number-field'][data-part='increment-trigger'],
-[data-scope='number-field'][data-part='decrement-trigger'] {
-  display: inline-flex;
-  flex: none;
-  align-items: center;
-  justify-content: center;
-  inline-size: var(--xh-number-field-trigger-size, var(--xh-control-action-size));
-  block-size: var(--xh-number-field-trigger-size, var(--xh-control-action-size));
-  padding: 0;
-  border: var(--xh-stroke-thin) solid var(--xh-number-field-trigger-border, var(--xh-_number-field-trigger-border));
-  border-radius: var(--xh-number-field-trigger-radius, var(--xh-shape-control));
-  background: var(--xh-number-field-trigger-bg, var(--xh-_number-field-trigger-bg));
-  color: var(--xh-number-field-trigger-fg, var(--xh-fg-default));
-  font-family: inherit;
-  font-size: var(--xh-number-field-trigger-font-size, var(--xh-_number-field-trigger-font-size));
-  line-height: var(--xh-leading-none);
-  cursor: pointer;
-  /* 按住不放会连发，长按期间浏览器默认会去选中按钮里的符号、
-     触屏上还会当成双击缩放，两条都得先掐掉 */
-  user-select: none;
-  touch-action: manipulation;
-  transition:
-    background var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
-    scale var(--xh-motion-duration-micro) var(--xh-motion-ease-enter-strong);
-}
-
-/* 上面给了 display，UA 的 [hidden]{display:none} 已被盖掉，这里补回来 */
-[data-scope='number-field'][data-part='increment-trigger'][hidden],
-[data-scope='number-field'][data-part='decrement-trigger'][hidden] {
-  display: none;
-}
-
-[data-scope='number-field'][data-part='increment-trigger']:hover:not(:disabled),
-[data-scope='number-field'][data-part='decrement-trigger']:hover:not(:disabled) {
-  border-color: var(--xh-number-field-trigger-border-hover, var(--xh-_number-field-trigger-border-hover));
-  background: var(--xh-number-field-trigger-bg-hover, var(--xh-_number-field-trigger-bg-hover));
-}
-
-/* 连发期间按钮一直是按下态：:active 在指针没松开时始终成立，正好对上 */
-[data-scope='number-field'][data-part='increment-trigger']:active:not(:disabled),
-[data-scope='number-field'][data-part='decrement-trigger']:active:not(:disabled) {
-  background: var(--xh-number-field-trigger-bg-active, var(--xh-_number-field-trigger-bg-active));
-  scale: var(--xh-motion-scale-press);
-}
-
-/* 按钮不占 Tab 位（tabindex=-1），留这条是给程序化聚焦兜底 */
-[data-scope='number-field'][data-part='increment-trigger']:focus-visible,
-[data-scope='number-field'][data-part='decrement-trigger']:focus-visible {
-  outline: var(--xh-ring-width) solid var(--xh-_number-field-ring);
-  outline-offset: var(--xh-ring-offset);
-}
-
-/* 贴到 min / max 时连接层给对应那一侧落原生 disabled：单体控件用 :disabled，
-   不是集合条目那套 aria-disabled */
-[data-scope='number-field'][data-part='increment-trigger']:disabled,
-[data-scope='number-field'][data-part='decrement-trigger']:disabled {
-  border-color: var(--xh-number-field-trigger-border-disabled, var(--xh-border-subtle));
-  background: var(--xh-number-field-trigger-bg-disabled, var(--xh-bg-muted));
-  color: var(--xh-fg-disabled);
+  -webkit-text-fill-color: var(--xh-number-field-input-autofill-fg, var(--xh-fg-default));
 }
 
 /* 没写内容就由皮肤画兜底字形；作者往部件里塞了自己的图形，这几条即不命中 */
-[data-scope='number-field'][data-part='increment-trigger']:empty::before {
+[data-scope='number-field'][data-part='control'] [data-part='increment-trigger']:empty::before {
   content: '';
   display: inline-block;
   inline-size: var(--xh-icon-size, var(--xh-glyph-size-text));
@@ -27181,7 +27061,7 @@
   mask: var(--xh-glyph-mark-plus) center / contain no-repeat;
 }
 
-[data-scope='number-field'][data-part='decrement-trigger']:empty::before {
+[data-scope='number-field'][data-part='control'] [data-part='decrement-trigger']:empty::before {
   content: '';
   display: inline-block;
   inline-size: var(--xh-icon-size, var(--xh-glyph-size-text));
@@ -27199,8 +27079,8 @@
     min-block-size: var(--xh-number-field-touch-target-size, var(--xh-control-box-lg));
   }
 
-  [data-scope='number-field'][data-part='increment-trigger'],
-  [data-scope='number-field'][data-part='decrement-trigger'] {
+  [data-scope='number-field'][data-part='control'] [data-part='increment-trigger'],
+  [data-scope='number-field'][data-part='control'] [data-part='decrement-trigger'] {
     min-inline-size: var(--xh-number-field-touch-target-size, var(--xh-control-box-lg));
     min-block-size: var(--xh-number-field-touch-target-size, var(--xh-control-box-lg));
   }

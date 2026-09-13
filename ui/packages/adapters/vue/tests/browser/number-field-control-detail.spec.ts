@@ -148,6 +148,17 @@ describe('数字输入的尺寸与内部节奏', () => {
 })
 
 describe('数字输入的边界、只读与焦点', () => {
+  it('主面保留层级投影，subtle 次级填充面保持扁平', async () => {
+    mountField()
+    await settle()
+    expect(getComputedStyle(part('control')).boxShadow).not.toBe('none')
+    teardown()
+
+    mountField({ variant: 'subtle' })
+    await settle()
+    expect(getComputedStyle(part('control')).boxShadow).toBe('none')
+  })
+
   it('到达 min/max 只禁用对应动作；整控件禁用与只读才同时禁用两侧', async () => {
     mountField({ min: 5, max: 10 })
     await settle()
