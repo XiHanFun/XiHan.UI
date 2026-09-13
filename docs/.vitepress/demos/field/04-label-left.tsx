@@ -1,4 +1,4 @@
-// 标签左置 | 各部件都是独立节点，把根节点改成两列网格就能把标题挪到控件左边，说明与错误文案跟着对齐到控件那一列
+// 标签左置 | 将标签放在控件左侧
 import type { ReactNode } from "react";
 import {
   XhFieldControl,

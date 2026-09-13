@@ -1,4 +1,4 @@
-// 禁用 | Field 的 disabled 只把 data-disabled 铺到各部件上；真正改不动还得在自己的控件上落原生 disabled
+// 禁用 | 禁止编辑字段
 import type { ReactNode } from "react";
 import { XhFieldControl, XhFieldDescription, XhFieldLabel, XhFieldRoot } from "@xihan-ui/react";
 
