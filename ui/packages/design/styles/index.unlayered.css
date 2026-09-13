@@ -14361,14 +14361,16 @@
   overscroll-behavior: contain;
 }
 
-/* 粗粒度的格子比日子宽，文字居中、留出上下气口 */
+/* 周期格沿横轴铺开，但始终保持控制件高度；选中面只换颜色，不改变几何尺寸。 */
 [data-scope='calendar'][data-part='grid']:is([data-view='week'], [data-view='month'], [data-view='quarter'], [data-view='year']) [data-part='cell-trigger'] {
-  padding-block: var(--xh-calendar-period-py, var(--xh-space-2));
+  aspect-ratio: auto;
+  min-inline-size: 0;
   inline-size: 100%;
+  block-size: var(--xh-control-h-sm);
+  padding-block: var(--xh-calendar-period-py, var(--xh-space-2));
 }
 
 [data-scope='calendar'][data-part='grid'][data-view='week'] [data-part='cell-trigger'] {
-  aspect-ratio: auto;
   justify-content: flex-start;
   padding-inline: var(--xh-calendar-week-cell-px, var(--xh-space-3));
 }

@@ -98,13 +98,13 @@ async function mountRangeField(): Promise<HTMLElement> {
   return separator
 }
 
-async function mountWeekCalendar(): Promise<void> {
+async function mountPeriodCalendar(granularity: 'week' | 'month' | 'quarter' | 'year'): Promise<void> {
   host = document.createElement('div')
   document.body.append(host)
   app = createApp({
     render: () => h(XhCalendarRoot, {
       defaultFocusedValue: '2026-09-09',
-      granularity: 'week',
+      granularity,
       locale: 'zh-CN',
       selectionMode: 'range',
       timeZone: 'UTC',
@@ -167,7 +167,7 @@ describe('范围日历轨道', () => {
   })
 
   it('周粒度是一列整周周期格，区间预览不下沉到七个日格', async () => {
-    await mountWeekCalendar()
+    await mountPeriodCalendar('week')
     const grid = document.querySelector<HTMLElement>(`[data-scope='calendar'][data-part='grid']`)!
     const periods = [...document.querySelectorAll<HTMLElement>(`[data-scope='calendar'][data-part='cell']`)]
     expect(periods).toHaveLength(5)
@@ -178,6 +178,26 @@ describe('范围日历轨道', () => {
     await userEvent.hover(trigger('2026-09-21'))
     await nextTick()
     expect(['2026-09-07', '2026-09-14', '2026-09-21'].every(value => cell(value).hasAttribute('data-in-range'))).toBe(true)
+  })
+
+  it.each(['month', 'quarter', 'year'] as const)('%s 周期格选中前后保持相同尺寸', async (granularity) => {
+    await mountPeriodCalendar(granularity)
+    const elements = [...document.querySelectorAll<HTMLElement>(
+      `[data-scope='calendar'][data-part='cell-trigger']`,
+    )]
+    const idle = elements[0]
+    if (!idle)
+      throw new Error(`找不到 ${granularity} 周期格`)
+
+    const before = idle.getBoundingClientRect()
+    await userEvent.click(idle)
+    await nextTick()
+    const after = idle.getBoundingClientRect()
+
+    expect(getComputedStyle(idle).aspectRatio).toBe('auto')
+    expect(after.width).toBeCloseTo(before.width, 1)
+    expect(after.height).toBeCloseTo(before.height, 1)
+    expect(after.height).toBeLessThanOrEqual(40)
   })
 
   it('日期范围字段使用正式分隔部件，默认字符不进入可访问树', async () => {
