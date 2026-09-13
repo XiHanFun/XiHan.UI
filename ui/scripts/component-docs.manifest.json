@@ -20,7 +20,9 @@
     "card",
     "carousel",
     "steps",
-    "tabs"
+    "tabs",
+    "time-field",
+    "time-picker"
   ],
   "categories": [
     {

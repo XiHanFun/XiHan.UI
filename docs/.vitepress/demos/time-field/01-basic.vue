@@ -3,24 +3,24 @@
   Licensed under the MIT License. See LICENSE in the project root for license information.
 -->
 
-<!-- 基础用法 | 输入时间 -->
+<!-- 基础用法 | 逐段输入并实时获得标准时间值；有值时可以一键清空 -->
 <script setup lang="ts">
 import {
-  XhTimeFieldControl,
   XhTimeFieldClearTrigger,
+  XhTimeFieldControl,
   XhTimeFieldHiddenInput,
   XhTimeFieldLabel,
   XhTimeFieldRoot,
   XhTimeFieldSegment,
   XhTimeFieldSegmentGroup,
 } from "@xihan-ui/vue";
+import { ref } from "vue";
+
+const value = ref("09:30");
 </script>
 
 <template>
-  <XhTimeFieldRoot
-    name="start-time"
-    style="--xh-time-field-control-min-w: calc(var(--xh-control-min-w) + var(--xh-control-h-md) + var(--xh-space-6))"
-  >
+  <XhTimeFieldRoot v-model:value="value" name="start-time">
     <XhTimeFieldLabel>开始时间</XhTimeFieldLabel>
     <XhTimeFieldControl>
       <XhTimeFieldSegmentGroup>
@@ -32,4 +32,8 @@ import {
     </XhTimeFieldControl>
     <XhTimeFieldHiddenInput />
   </XhTimeFieldRoot>
+
+  <span aria-live="polite" style="font-size: 13px">
+    当前值：{{ value || "（未填齐）" }}
+  </span>
 </template>

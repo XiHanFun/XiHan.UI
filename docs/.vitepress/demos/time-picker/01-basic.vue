@@ -3,11 +3,11 @@
   Licensed under the MIT License. See LICENSE in the project root for license information.
 -->
 
-<!-- 基础用法 | 输入或选择时间 -->
+<!-- 基础用法 | 输入框与选择面板共享同一份值；按 15 分钟列出选项并实时显示结果 -->
 <script setup lang="ts">
 import {
-  XhTimePickerColumn,
   XhTimePickerClearTrigger,
+  XhTimePickerColumn,
   XhTimePickerContent,
   XhTimePickerControl,
   XhTimePickerHiddenInput,
@@ -19,12 +19,16 @@ import {
   XhTimePickerSegmentGroup,
   XhTimePickerTrigger,
 } from "@xihan-ui/vue";
+import { ref } from "vue";
+
+const value = ref("09:30");
 </script>
 
 <template>
   <XhTimePickerRoot
+    v-model:value="value"
     name="meeting-time"
-    style="--xh-time-picker-control-min-w: calc(var(--xh-control-min-w) + var(--xh-control-h-md) + var(--xh-space-6))"
+    :step="15"
   >
     <XhTimePickerLabel>会议开始</XhTimePickerLabel>
     <XhTimePickerControl>
@@ -48,4 +52,8 @@ import {
       </XhTimePickerContent>
     </XhTimePickerPositioner>
   </XhTimePickerRoot>
+
+  <span aria-live="polite" style="font-size: 13px">
+    当前值：{{ value || "（未填齐）" }}
+  </span>
 </template>

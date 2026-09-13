@@ -1,4 +1,4 @@
-# TimePicker 时间选择器 <Badge type="info" text="alpha" />
+# TimePicker 时间选择器
 
 将可键入的分段时间框、时钟触发器和分列选择浮层组合成一个字段。
 
@@ -12,7 +12,7 @@
 
 ## 用法
 
-输入或选择时间
+输入框与选择面板共享同一份值；按 15 分钟列出选项并实时显示结果
 
 <XhDemo src="time-picker/01-basic" />
 
