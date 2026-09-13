@@ -1,4 +1,4 @@
-# ImageViewer 图片预览
+# ImageViewer 图片预览 <Badge type="info" text="alpha" />
 
 点开看大图：全屏浮层里可以缩放、旋转、翻转与翻页。
 

@@ -1,4 +1,4 @@
-# NumberAnimation 数值动画
+# NumberAnimation 数值动画 <Badge type="info" text="alpha" />
 
 数字从一个值滚动到另一个值。
 

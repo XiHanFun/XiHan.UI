@@ -1,4 +1,4 @@
-# Drawer 抽屉
+# Drawer 抽屉 <Badge type="info" text="alpha" />
 
 从屏幕某一边滑出的面板。
 

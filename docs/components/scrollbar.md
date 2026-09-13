@@ -1,4 +1,4 @@
-# Scrollbar 滚动条
+# Scrollbar 滚动条 <Badge type="info" text="alpha" />
 
 为现有滚动容器提供一致的滚动条样式。
 

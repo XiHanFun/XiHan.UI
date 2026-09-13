@@ -1,4 +1,4 @@
-# Separator 分隔线
+# Separator 分隔线 <Badge type="info" text="alpha" />
 
 分隔相关内容或内容分组。
 

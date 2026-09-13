@@ -35,6 +35,11 @@ const checkOnly = process.argv.includes('--check')
 const manifest = JSON.parse(
   fs.readFileSync(path.join(here, 'component-docs.manifest.json'), 'utf8'),
 )
+const stableComponents = new Set(manifest.stableComponents ?? [])
+
+function componentStatus(entry) {
+  return entry.status ?? (stableComponents.has(entry.id) ? undefined : 'alpha')
+}
 
 // 示例的框架清单：id / 显示名 / 扩展名 / 语法高亮语言 / 文档站是否已接入渲染。
 // 本脚本、门禁与文档站读同一份，加一个框架只改那个文件
@@ -837,11 +842,14 @@ function renderComponent(entry, category) {
   /** 人工小节：写了才出，没写这一节整个不出现。 */
   const authored = title => doc?.sections[title]
 
-  const status = entry.status === 'new'
+  const state = componentStatus(entry)
+  const status = state === 'new'
     ? ' <Badge type="tip" text="new" />'
-    : entry.status === 'updated'
+    : state === 'updated'
       ? ' <Badge type="warning" text="更新" />'
-      : ''
+      : state === 'alpha'
+        ? ' <Badge type="info" text="alpha" />'
+        : ''
   push(`# ${pascal(id)} ${name}${status}`, '')
   push(
     doc?.overview
@@ -1143,7 +1151,9 @@ function renderIndex() {
     L.push('<div class="xh-component-grid">', '')
     for (const entry of c.components) {
       const renderless = entry.renderless ? ' renderless' : ''
-      L.push(`<XhComponentCard src="${entry.id}" name="${pascal(entry.id)}" label="${entry.name}" href="/components/${entry.id}"${renderless} />`)
+      const status = componentStatus(entry)
+      const statusAttr = status ? ` status="${status}"` : ''
+      L.push(`<XhComponentCard src="${entry.id}" name="${pascal(entry.id)}" label="${entry.name}" href="/components/${entry.id}"${statusAttr}${renderless} />`)
     }
     L.push('', '</div>', '')
   }
@@ -1155,17 +1165,20 @@ function renderIndex() {
 const registered = new Set(
   manifest.categories.flatMap(c => c.components.map(x => x.id)),
 )
+const unknownStable = [...stableComponents].filter(id => !registered.has(id))
 const inCode = Object.keys(headless)
   .filter(k => k.endsWith('Meta'))
   .map(k => headless[k].component)
 
 const missing = inCode.filter(id => !registered.has(id))
 const extra = [...registered].filter(id => !inCode.includes(id))
-if (missing.length || extra.length) {
+if (missing.length || extra.length || unknownStable.length) {
   if (missing.length)
     console.error(`代码里有但 manifest 未登记：${missing.join(', ')}`)
   if (extra.length)
     console.error(`manifest 登记了但代码里没有：${extra.join(', ')}`)
+  if (unknownStable.length)
+    console.error(`stableComponents 未登记：${unknownStable.join(', ')}`)
   console.error('请更新 ui/scripts/component-docs.manifest.json')
   process.exit(1)
 }

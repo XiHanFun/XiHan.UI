@@ -1,4 +1,4 @@
-# Transfer 穿梭框
+# Transfer 穿梭框 <Badge type="info" text="alpha" />
 
 左右两栏，把条目从一边搬到另一边。
 

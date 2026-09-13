@@ -1,4 +1,4 @@
-# InputGroup 输入组
+# InputGroup 输入组 <Badge type="info" text="alpha" />
 
 用于在同一输入表面中组合前缀、输入控件和后缀。
 

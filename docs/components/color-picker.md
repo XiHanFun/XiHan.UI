@@ -1,4 +1,4 @@
-# ColorPicker 颜色选择器
+# ColorPicker 颜色选择器 <Badge type="info" text="alpha" />
 
 用于选择并编辑颜色。
 

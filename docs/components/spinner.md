@@ -1,4 +1,4 @@
-# Spinner 加载指示器
+# Spinner 加载指示器 <Badge type="info" text="alpha" />
 
 一个不确定时长的等待标记。
 

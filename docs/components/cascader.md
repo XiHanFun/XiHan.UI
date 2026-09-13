@@ -1,4 +1,4 @@
-# Cascader 级联选择
+# Cascader 级联选择 <Badge type="info" text="alpha" />
 
 用于从多层分类中选择完整路径。
 

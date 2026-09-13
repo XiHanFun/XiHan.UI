@@ -1,4 +1,27 @@
 {
+  "stableComponents": [
+    "button",
+    "button-group",
+    "clipboard",
+    "download-trigger",
+    "truncate",
+    "gradient-text",
+    "kbd",
+    "kbd-group",
+    "icon",
+    "icon-wrapper",
+    "toggle",
+    "toggle-group",
+    "typography",
+    "watermark",
+    "resizable",
+    "toolbar",
+    "tour",
+    "card",
+    "carousel",
+    "steps",
+    "tabs"
+  ],
   "categories": [
     {
       "id": "general",

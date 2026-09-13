@@ -1,4 +1,4 @@
-# Editable 就地编辑
+# Editable 就地编辑 <Badge type="info" text="alpha" />
 
 用于在当前位置查看和编辑短文本。
 

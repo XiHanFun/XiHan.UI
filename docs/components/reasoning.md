@@ -1,4 +1,4 @@
-# Reasoning 思考过程
+# Reasoning 思考过程 <Badge type="info" text="alpha" />
 
 模型「想」的那一段：默认跟着写入自动展开，想完自动收起，用户动手过一次就不再自动。
 

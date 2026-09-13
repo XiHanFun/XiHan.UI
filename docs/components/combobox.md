@@ -1,4 +1,4 @@
-# Combobox 组合框
+# Combobox 组合框 <Badge type="info" text="alpha" />
 
 将输入框与候选列表结合，用于搜索并选择选项。
 

@@ -1,4 +1,4 @@
-# PageHeader 页头
+# PageHeader 页头 <Badge type="info" text="alpha" />
 
 统一呈现页面标题、说明、导航和主要操作。
 

@@ -68,6 +68,12 @@ body {
   vertical-align: 0.08em;
 }
 
+.VPSidebarItem .xh-sidebar-status--alpha {
+  color: var(--vp-c-text-3);
+  background: var(--vp-c-default-soft);
+  font-weight: 500;
+}
+
 .VPSidebarItem.level-1.is-active > .item .xh-sidebar-cn {
   color: inherit;
   opacity: 0.66;

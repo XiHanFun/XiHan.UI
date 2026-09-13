@@ -1,4 +1,4 @@
-# AvatarGroup 头像组
+# AvatarGroup 头像组 <Badge type="info" text="alpha" />
 
 把若干头像叠成一排，超出上限的收成一个计数。
 

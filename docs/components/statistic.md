@@ -1,4 +1,4 @@
-# Statistic 统计数值
+# Statistic 统计数值 <Badge type="info" text="alpha" />
 
 一个带标签的关键数字，可以配前后缀。
 

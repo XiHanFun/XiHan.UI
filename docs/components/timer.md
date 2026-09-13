@@ -1,4 +1,4 @@
-# Timer 计时器
+# Timer 计时器 <Badge type="info" text="alpha" />
 
 一段可正可倒的计时：能起、能停、能接着走、能归零。
 

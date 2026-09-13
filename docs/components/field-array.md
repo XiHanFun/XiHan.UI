@@ -1,4 +1,4 @@
-# FieldArray 字段数组
+# FieldArray 字段数组 <Badge type="info" text="alpha" />
 
 用于管理可添加、删除和排序的重复字段。
 

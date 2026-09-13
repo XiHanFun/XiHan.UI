@@ -1,4 +1,4 @@
-# Popconfirm 弹出确认
+# Popconfirm 弹出确认 <Badge type="info" text="alpha" />
 
 贴着触发器的一句确认：比对话框轻，但仍拦住一次误操作。
 

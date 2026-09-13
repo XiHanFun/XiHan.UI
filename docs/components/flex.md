@@ -1,4 +1,4 @@
-# Flex 弹性布局
+# Flex 弹性布局 <Badge type="info" text="alpha" />
 
 沿水平或垂直方向排列内容。
 

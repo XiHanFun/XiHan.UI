@@ -1,4 +1,4 @@
-# Popover 气泡卡片
+# Popover 气泡卡片 <Badge type="info" text="alpha" />
 
 由点击触发、贴着触发器的一小块浮层，里面可以放任意内容与交互。
 

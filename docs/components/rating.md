@@ -1,4 +1,4 @@
-# Rating 评分
+# Rating 评分 <Badge type="info" text="alpha" />
 
 用一排图案表示一个离散的分值。
 
