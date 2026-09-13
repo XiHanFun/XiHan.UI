@@ -1,0 +1,6 @@
+const t=`<!-- 变体 | 设置触发器外观 -->
+<xh-download-trigger data="XiHan.UI" file-name="xihan-ui.txt" variant="solid"><button data-xh-part="root">实心</button></xh-download-trigger>
+<xh-download-trigger data="XiHan.UI" file-name="xihan-ui.txt" variant="subtle"><button data-xh-part="root">浅色</button></xh-download-trigger>
+<xh-download-trigger data="XiHan.UI" file-name="xihan-ui.txt" variant="outline"><button data-xh-part="root">线框</button></xh-download-trigger>
+<xh-download-trigger data="XiHan.UI" file-name="xihan-ui.txt" variant="ghost"><button data-xh-part="root">幽灵</button></xh-download-trigger>
+`;export{t as default};

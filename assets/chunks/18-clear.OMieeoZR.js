@@ -1,0 +1,32 @@
+const a=`<!-- 清空 | 有值时显示清空按钮 -->
+<xh-select default-value="design" placeholder="选一个组">
+  <div data-xh-part="root" style="inline-size: 240px">
+    <span data-xh-part="label">所属小组</span>
+    <div data-xh-part="control">
+      <button data-xh-part="trigger">
+        <span data-xh-part="value-text"></span>
+        <span data-xh-part="indicator"></span>
+      </button>
+      <button data-xh-part="clear-trigger"></button>
+    </div>
+    <div data-xh-part="positioner">
+      <div data-xh-part="content">
+        <div data-xh-part="list">
+          <div data-xh-part="item" value="design">
+            <span data-xh-part="item-text">设计组</span>
+            <span data-xh-part="item-indicator"></span>
+          </div>
+          <div data-xh-part="item" value="frontend">
+            <span data-xh-part="item-text">前端组</span>
+            <span data-xh-part="item-indicator"></span>
+          </div>
+          <div data-xh-part="item" value="server">
+            <span data-xh-part="item-text">服务端组</span>
+            <span data-xh-part="item-indicator"></span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</xh-select>
+`;export{a as default};

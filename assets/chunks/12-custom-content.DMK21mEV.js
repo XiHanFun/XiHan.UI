@@ -1,0 +1,58 @@
+const a=`<!-- 自定义内容 | 在候选项中显示辅助信息 -->
+<xh-combobox id="combobox-custom-content" open-on-click placeholder="搜索邮箱">
+  <div data-xh-part="root">
+    <label data-xh-part="label">邮箱</label>
+    <div data-xh-part="control">
+      <input data-xh-part="input" />
+      <button data-xh-part="trigger"></button>
+      <button data-xh-part="clear-trigger"></button>
+    </div>
+    <div data-xh-part="positioner">
+      <div data-xh-part="content">
+        <div data-xh-part="item" value="gmail" data-label="name@gmail.com">
+          <span data-xh-part="item-text">
+            <span style="display: flex; flex-direction: column; gap: 2px">
+              <span>name@gmail.com</span>
+              <small style="color: var(--xh-fg-muted)">Google 邮箱</small>
+            </span>
+          </span>
+          <span data-xh-part="item-indicator"></span>
+        </div>
+        <div data-xh-part="item" value="qq" data-label="name@qq.com">
+          <span data-xh-part="item-text">
+            <span style="display: flex; flex-direction: column; gap: 2px">
+              <span>name@qq.com</span>
+              <small style="color: var(--xh-fg-muted)">QQ 邮箱</small>
+            </span>
+          </span>
+          <span data-xh-part="item-indicator"></span>
+        </div>
+        <div data-xh-part="item" value="163" data-label="name@163.com">
+          <span data-xh-part="item-text">
+            <span style="display: flex; flex-direction: column; gap: 2px">
+              <span>name@163.com</span>
+              <small style="color: var(--xh-fg-muted)">网易邮箱</small>
+            </span>
+          </span>
+          <span data-xh-part="item-indicator"></span>
+        </div>
+      </div>
+      <div data-xh-part="empty">没有匹配的邮箱</div>
+    </div>
+  </div>
+</xh-combobox>
+
+<script type="module">
+  const combobox = document.getElementById("combobox-custom-content");
+  const content = combobox.querySelector('[data-xh-part="content"]');
+  const all = [...content.children];
+
+  combobox.addEventListener("input-value-change", (event) => {
+    const q = event.detail.inputValue.trim().toLowerCase();
+    content.replaceChildren(
+      ...all.filter((item) => item.dataset.label.toLowerCase().includes(q)),
+    );
+  });
+
+<\/script>
+`;export{a as default};

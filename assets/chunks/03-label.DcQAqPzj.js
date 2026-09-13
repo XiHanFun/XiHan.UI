@@ -1,0 +1,1 @@
+import{j as o}from"./jsx-runtime.BjG_zV1W.js";import{X as r}from"./index.BLJDbOBY.js";import{X as t}from"./icon.CvY11KMJ.js";import"./jsx-runtime.CE-UFHoq.js";import"./theme.BeqczABU.js";import"./framework.DkvuVDKz.js";import"./config.DH7Rok6X.js";import"./index.CVfUds7h.js";import"./slot-content.DPoKlr88.js";function u(){return o.jsx(t,{icon:r,label:"关闭"})}export{u as default};

@@ -1,8 +1,8 @@
 来源：https://ui.docs.xihanfun.com/components/color-picker
 
-# ColorPicker `颜色选择器`
+# ColorPicker 颜色选择器
 
-选一个颜色：色域面板加通道滑块，另有预设色板与屏幕取色。
+用于选择并编辑颜色。
 
 <div class="xh-resource-links">
   <a href="https://github.com/XiHanFun/XiHan.UI/tree/dev/ui/packages/engine/headless/src/color-picker" target="_blank" rel="noreferrer">Headless</a>
@@ -14,7 +14,7 @@
 
 ## 用法
 
-必备部件是 trigger / content / saturation-area / area-thumb，缺一个组件就不工作
+选择颜色
 
 ```vue
 <script setup lang="ts">
@@ -25,6 +25,7 @@ import {
   XhColorPickerChannelSliderTrack,
   XhColorPickerContent,
   XhColorPickerControl,
+  XhColorPickerLabel,
   XhColorPickerPositioner,
   XhColorPickerRoot,
   XhColorPickerSaturationArea,
@@ -36,6 +37,7 @@ import {
 
 <template>
   <XhColorPickerRoot default-value="#00a98e">
+    <XhColorPickerLabel>品牌色</XhColorPickerLabel>
     <XhColorPickerControl>
       <XhColorPickerTrigger>
         <XhColorPickerSwatch />
@@ -60,6 +62,7 @@ import {
 ```html
 <xh-color-picker default-value="#00a98e">
   <div data-xh-part="root">
+    <label data-xh-part="label">品牌色</label>
     <div data-xh-part="control">
       <button data-xh-part="trigger">
         <span data-xh-part="swatch"></span>
@@ -81,93 +84,17 @@ import {
 </xh-color-picker>
 ```
 
+## 组件结构
+
+加粗的是必需部件。
+
+`data-scope="color-picker"`：`root` · `label` · `control` · **`trigger`** · `value-text` · `swatch` · `positioner` · **`content`** · **`saturation-area`** · **`area-thumb`** · `channel-slider` · `channel-slider-track` · `channel-slider-thumb` · `channel-input` · `eye-dropper-trigger` · `swatch-group` · `swatch-item` · `hidden-input`
+
 ## 示例
-
-### 受控
-
-传了 value 就由宿主说了算，取色只回写不自改
-
-```vue
-<script setup lang="ts">
-import {
-  XhColorPickerAreaThumb,
-  XhColorPickerChannelSlider,
-  XhColorPickerChannelSliderThumb,
-  XhColorPickerChannelSliderTrack,
-  XhColorPickerContent,
-  XhColorPickerControl,
-  XhColorPickerPositioner,
-  XhColorPickerRoot,
-  XhColorPickerSaturationArea,
-  XhColorPickerSwatch,
-  XhColorPickerTrigger,
-} from "@xihan-ui/vue";
-import { ref } from "vue";
-
-const color = ref("#3b82f6");
-</script>
-
-<template>
-  <XhColorPickerRoot v-model:value="color">
-    <XhColorPickerControl>
-      <XhColorPickerTrigger>
-        <XhColorPickerSwatch />
-      </XhColorPickerTrigger>
-    </XhColorPickerControl>
-    <XhColorPickerPositioner>
-      <XhColorPickerContent>
-        <XhColorPickerSaturationArea>
-          <XhColorPickerAreaThumb />
-        </XhColorPickerSaturationArea>
-        <XhColorPickerChannelSlider channel="hue">
-          <XhColorPickerChannelSliderTrack />
-          <XhColorPickerChannelSliderThumb />
-        </XhColorPickerChannelSlider>
-      </XhColorPickerContent>
-    </XhColorPickerPositioner>
-  </XhColorPickerRoot>
-  <span>当前：{{ color }}</span>
-</template>
-```
-
-```html
-<xh-color-picker id="color-picker-controlled" value="#3b82f6">
-  <div data-xh-part="root">
-    <div data-xh-part="control">
-      <button data-xh-part="trigger">
-        <span data-xh-part="swatch"></span>
-      </button>
-    </div>
-    <div data-xh-part="positioner">
-      <div data-xh-part="content">
-        <div data-xh-part="saturation-area">
-          <div data-xh-part="area-thumb"></div>
-        </div>
-        <div data-xh-part="channel-slider" channel="hue">
-          <div data-xh-part="channel-slider-track"></div>
-          <div data-xh-part="channel-slider-thumb"></div>
-        </div>
-      </div>
-    </div>
-  </div>
-</xh-color-picker>
-<span>当前：<span id="color-picker-controlled-value">#3b82f6</span></span>
-
-<script type="module">
-  // 值由宿主握着：变更经事件回来，写回去才生效
-  const picker = document.getElementById("color-picker-controlled");
-  const readout = document.getElementById("color-picker-controlled-value");
-
-  picker.addEventListener("value-change", (event) => {
-    picker.value = event.detail.value;
-    readout.textContent = event.detail.value;
-  });
-</script>
-```
 
 ### 预设色板
 
-swatches 给出常用色，选中即写回 value
+提供常用颜色
 
 ```vue
 <script setup lang="ts">
@@ -175,6 +102,7 @@ import {
   XhColorPickerAreaThumb,
   XhColorPickerContent,
   XhColorPickerControl,
+  XhColorPickerLabel,
   XhColorPickerPositioner,
   XhColorPickerRoot,
   XhColorPickerSaturationArea,
@@ -182,6 +110,7 @@ import {
   XhColorPickerSwatchGroup,
   XhColorPickerSwatchItem,
   XhColorPickerTrigger,
+  XhColorPickerValueText,
 } from "@xihan-ui/vue";
 
 const swatches = ["#00a98e", "#3b82f6", "#f59e0b", "#ef4444", "#8b5cf6"];
@@ -189,9 +118,11 @@ const swatches = ["#00a98e", "#3b82f6", "#f59e0b", "#ef4444", "#8b5cf6"];
 
 <template>
   <XhColorPickerRoot default-value="#00a98e" :swatches="swatches">
+    <XhColorPickerLabel>主题色</XhColorPickerLabel>
     <XhColorPickerControl>
       <XhColorPickerTrigger>
         <XhColorPickerSwatch />
+        <XhColorPickerValueText />
       </XhColorPickerTrigger>
     </XhColorPickerControl>
     <XhColorPickerPositioner>
@@ -209,15 +140,16 @@ const swatches = ["#00a98e", "#3b82f6", "#f59e0b", "#ef4444", "#8b5cf6"];
 ```
 
 ```html
-<!-- 色板写成逗号分隔的一串 -->
 <xh-color-picker
   default-value="#00a98e"
   swatches="#00a98e,#3b82f6,#f59e0b,#ef4444,#8b5cf6"
 >
   <div data-xh-part="root">
+    <label data-xh-part="label">主题色</label>
     <div data-xh-part="control">
       <button data-xh-part="trigger">
         <span data-xh-part="swatch"></span>
+        <span data-xh-part="value-text"></span>
       </button>
     </div>
     <div data-xh-part="positioner">
@@ -240,7 +172,7 @@ const swatches = ["#00a98e", "#3b82f6", "#f59e0b", "#ef4444", "#8b5cf6"];
 
 ### 禁用
 
-disabled 同时挡住触发器与面板内的所有交互
+禁止更改颜色
 
 ```vue
 <script setup lang="ts">
@@ -248,6 +180,7 @@ import {
   XhColorPickerAreaThumb,
   XhColorPickerContent,
   XhColorPickerControl,
+  XhColorPickerLabel,
   XhColorPickerPositioner,
   XhColorPickerRoot,
   XhColorPickerSaturationArea,
@@ -259,6 +192,7 @@ import {
 
 <template>
   <XhColorPickerRoot default-value="#9ca3af" disabled>
+    <XhColorPickerLabel>主题色</XhColorPickerLabel>
     <XhColorPickerControl>
       <XhColorPickerTrigger>
         <XhColorPickerSwatch />
@@ -279,6 +213,7 @@ import {
 ```html
 <xh-color-picker default-value="#9ca3af" disabled>
   <div data-xh-part="root">
+    <label data-xh-part="label">主题色</label>
     <div data-xh-part="control">
       <button data-xh-part="trigger">
         <span data-xh-part="swatch"></span>
@@ -298,7 +233,7 @@ import {
 
 ### 透明度
 
-alpha 打开后多一条透明度滑杆，值串跟着带上透明度；关掉时透明度恒是不透明，那条滑杆整条不可用
+调整颜色透明度
 
 ```vue
 <script setup lang="ts">
@@ -317,13 +252,10 @@ import {
   XhColorPickerTrigger,
   XhColorPickerValueText,
 } from "@xihan-ui/vue";
-import { ref } from "vue";
-
-const overlay = ref("rgba(0, 169, 142, 0.6)");
 </script>
 
 <template>
-  <XhColorPickerRoot v-model:value="overlay" format="rgba" alpha>
+  <XhColorPickerRoot default-value="rgba(0, 169, 142, 0.6)" format="rgba" alpha>
     <XhColorPickerLabel>蒙版颜色</XhColorPickerLabel>
     <XhColorPickerControl>
       <XhColorPickerTrigger>
@@ -351,7 +283,7 @@ const overlay = ref("rgba(0, 169, 142, 0.6)");
 ```
 
 ```html
-<xh-color-picker id="color-picker-alpha" format="rgba" alpha>
+<xh-color-picker default-value="rgba(0, 169, 142, 0.6)" format="rgba" alpha>
   <div data-xh-part="root">
     <label data-xh-part="label">蒙版颜色</label>
     <div data-xh-part="control">
@@ -377,157 +309,15 @@ const overlay = ref("rgba(0, 169, 142, 0.6)");
     </div>
   </div>
 </xh-color-picker>
-
-<script type="module">
-  // 值由宿主握着：变更经事件回来，写回去才生效
-  const picker = document.getElementById("color-picker-alpha");
-
-  picker.value = "rgba(0, 169, 142, 0.6)";
-  picker.addEventListener("value-change", (event) => {
-    picker.value = event.detail.value;
-  });
-</script>
 ```
 
-### 值串写法
+### 精确输入
 
-format 只决定对外的序列化，工作色始终是同一套；三种写法各挑一个色，改动后按各自的写法产出
+输入色值或使用屏幕取色
 
 ```vue
 <script setup lang="ts">
-import {
-  XhColorPickerAreaThumb,
-  XhColorPickerChannelSlider,
-  XhColorPickerChannelSliderThumb,
-  XhColorPickerChannelSliderTrack,
-  XhColorPickerContent,
-  XhColorPickerControl,
-  XhColorPickerLabel,
-  XhColorPickerPositioner,
-  XhColorPickerRoot,
-  XhColorPickerSaturationArea,
-  XhColorPickerSwatch,
-  XhColorPickerTrigger,
-  XhColorPickerValueText,
-} from "@xihan-ui/vue";
-
-const cases = [
-  { format: "hex", value: "#00a98e" },
-  { format: "rgba", value: "rgba(59, 130, 246, 1)" },
-  { format: "hsla", value: "hsla(38, 92%, 50%, 1)" },
-] as const;
-</script>
-
-<template>
-  <div style="display: flex; flex-wrap: wrap; gap: 16px">
-    <XhColorPickerRoot
-      v-for="item in cases"
-      :key="item.format"
-      :format="item.format"
-      :default-value="item.value"
-    >
-      <XhColorPickerLabel>{{ item.format }}</XhColorPickerLabel>
-      <XhColorPickerControl>
-        <XhColorPickerTrigger>
-          <XhColorPickerSwatch />
-          <XhColorPickerValueText />
-        </XhColorPickerTrigger>
-      </XhColorPickerControl>
-      <XhColorPickerPositioner>
-        <XhColorPickerContent>
-          <XhColorPickerSaturationArea>
-            <XhColorPickerAreaThumb />
-          </XhColorPickerSaturationArea>
-          <XhColorPickerChannelSlider channel="hue">
-            <XhColorPickerChannelSliderTrack />
-            <XhColorPickerChannelSliderThumb />
-          </XhColorPickerChannelSlider>
-        </XhColorPickerContent>
-      </XhColorPickerPositioner>
-    </XhColorPickerRoot>
-  </div>
-</template>
-```
-
-```html
-<div style="display: flex; flex-wrap: wrap; gap: 16px">
-  <xh-color-picker format="hex" default-value="#00a98e">
-    <div data-xh-part="root">
-      <label data-xh-part="label">hex</label>
-      <div data-xh-part="control">
-        <button data-xh-part="trigger">
-          <span data-xh-part="swatch"></span>
-          <span data-xh-part="value-text"></span>
-        </button>
-      </div>
-      <div data-xh-part="positioner">
-        <div data-xh-part="content">
-          <div data-xh-part="saturation-area">
-            <div data-xh-part="area-thumb"></div>
-          </div>
-          <div data-xh-part="channel-slider" channel="hue">
-            <div data-xh-part="channel-slider-track"></div>
-            <div data-xh-part="channel-slider-thumb"></div>
-          </div>
-        </div>
-      </div>
-    </div>
-  </xh-color-picker>
-
-  <xh-color-picker format="rgba" default-value="rgba(59, 130, 246, 1)">
-    <div data-xh-part="root">
-      <label data-xh-part="label">rgba</label>
-      <div data-xh-part="control">
-        <button data-xh-part="trigger">
-          <span data-xh-part="swatch"></span>
-          <span data-xh-part="value-text"></span>
-        </button>
-      </div>
-      <div data-xh-part="positioner">
-        <div data-xh-part="content">
-          <div data-xh-part="saturation-area">
-            <div data-xh-part="area-thumb"></div>
-          </div>
-          <div data-xh-part="channel-slider" channel="hue">
-            <div data-xh-part="channel-slider-track"></div>
-            <div data-xh-part="channel-slider-thumb"></div>
-          </div>
-        </div>
-      </div>
-    </div>
-  </xh-color-picker>
-
-  <xh-color-picker format="hsla" default-value="hsla(38, 92%, 50%, 1)">
-    <div data-xh-part="root">
-      <label data-xh-part="label">hsla</label>
-      <div data-xh-part="control">
-        <button data-xh-part="trigger">
-          <span data-xh-part="swatch"></span>
-          <span data-xh-part="value-text"></span>
-        </button>
-      </div>
-      <div data-xh-part="positioner">
-        <div data-xh-part="content">
-          <div data-xh-part="saturation-area">
-            <div data-xh-part="area-thumb"></div>
-          </div>
-          <div data-xh-part="channel-slider" channel="hue">
-            <div data-xh-part="channel-slider-track"></div>
-            <div data-xh-part="channel-slider-thumb"></div>
-          </div>
-        </div>
-      </div>
-    </div>
-  </xh-color-picker>
-</div>
-```
-
-### 数值输入与屏幕取色
-
-四个数值框各管一路，回车才收下，收不下的留着草稿并标红；宿主环境没有取色接口时那个按钮自己禁用
-
-```vue
-<script setup lang="ts">
+import { PipetteIcon } from "@xihan-ui/icons";
 import {
   XhColorPickerAreaThumb,
   XhColorPickerChannelInput,
@@ -544,6 +334,7 @@ import {
   XhColorPickerSwatch,
   XhColorPickerTrigger,
   XhColorPickerValueText,
+  XhIcon,
 } from "@xihan-ui/vue";
 
 const inputRow = {
@@ -552,7 +343,6 @@ const inputRow = {
   gap: "6px",
 };
 
-// 取色按钮里只有一个符号，读屏念的名字从这里来
 const translations = {
   eyeDropperTrigger: "从屏幕上取色",
 };
@@ -573,7 +363,7 @@ const translations = {
           <XhColorPickerAreaThumb />
         </XhColorPickerSaturationArea>
         <div style="display: flex; align-items: center; gap: 8px">
-          <XhColorPickerEyeDropperTrigger>◎</XhColorPickerEyeDropperTrigger>
+          <XhColorPickerEyeDropperTrigger><XhIcon :icon="PipetteIcon" /></XhColorPickerEyeDropperTrigger>
           <XhColorPickerChannelSlider channel="hue" style="flex: 1">
             <XhColorPickerChannelSliderTrack />
             <XhColorPickerChannelSliderThumb />
@@ -607,7 +397,9 @@ const translations = {
           <div data-xh-part="area-thumb"></div>
         </div>
         <div style="display: flex; align-items: center; gap: 8px">
-          <button data-xh-part="eye-dropper-trigger">◎</button>
+          <button data-xh-part="eye-dropper-trigger">
+            <svg viewBox="0 0 24 24" width="1em" height="1em" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19.5 4.5a2.4 2.4 0 0 0-3.4 0L12.6 8L16 11.4L19.5 7.9a2.4 2.4 0 0 0 0-3.4Z"/><path d="M11.6 9L15 12.4"/><path d="M3.5 20.5L4.5 19.5H7.5L16 11"/><path d="M4.5 19.5V16.5L12.6 8.4"/></svg>
+          </button>
           <div data-xh-part="channel-slider" channel="hue" style="flex: 1">
             <div data-xh-part="channel-slider-track"></div>
             <div data-xh-part="channel-slider-thumb"></div>
@@ -625,464 +417,9 @@ const translations = {
 </xh-color-picker>
 
 <script type="module">
-  // 取色按钮里只有一个符号，读屏念的名字从这里来
   document.getElementById("color-picker-inputs").translations = {
     eyeDropperTrigger: "从屏幕上取色",
   };
-</script>
-```
-
-### 空态与面板按钮
-
-受控时「没有颜色」由宿主表达：值置空，触发器换成占位方框；面板底下的两个按钮是作者自己的，收起浮层同样归宿主
-
-```vue
-<script setup lang="ts">
-import {
-  XhButton,
-  XhColorPickerAreaThumb,
-  XhColorPickerChannelSlider,
-  XhColorPickerChannelSliderThumb,
-  XhColorPickerChannelSliderTrack,
-  XhColorPickerContent,
-  XhColorPickerControl,
-  XhColorPickerLabel,
-  XhColorPickerPositioner,
-  XhColorPickerRoot,
-  XhColorPickerSaturationArea,
-  XhColorPickerSwatch,
-  XhColorPickerTrigger,
-  XhColorPickerValueText,
-} from "@xihan-ui/vue";
-import { ref } from "vue";
-
-const color = ref("#3b82f6");
-
-function clear(setOpen: (next: boolean) => void) {
-  color.value = "";
-  setOpen(false);
-}
-
-const placeholder = {
-  display: "inline-flex",
-  flex: "none",
-  alignItems: "center",
-  justifyContent: "center",
-  inlineSize: "1.125rem",
-  blockSize: "1.125rem",
-  border: "1px dashed var(--xh-border-strong)",
-  borderRadius: "var(--xh-radius-sm)",
-  fontSize: "10px",
-  color: "var(--xh-fg-muted)",
-};
-
-const actions = {
-  display: "flex",
-  justifyContent: "flex-end",
-  gap: "8px",
-};
-</script>
-
-<template>
-  <div style="display: grid; gap: 12px">
-    <XhColorPickerRoot v-slot="{ setOpen }" v-model:value="color">
-      <XhColorPickerLabel>主题色</XhColorPickerLabel>
-      <XhColorPickerControl>
-        <XhColorPickerTrigger>
-          <XhColorPickerSwatch v-if="color" />
-          <span v-else :style="placeholder">∅</span>
-          <XhColorPickerValueText>{{ color || "未设置" }}</XhColorPickerValueText>
-        </XhColorPickerTrigger>
-      </XhColorPickerControl>
-      <XhColorPickerPositioner>
-        <XhColorPickerContent>
-          <XhColorPickerSaturationArea>
-            <XhColorPickerAreaThumb />
-          </XhColorPickerSaturationArea>
-          <XhColorPickerChannelSlider channel="hue">
-            <XhColorPickerChannelSliderTrack />
-            <XhColorPickerChannelSliderThumb />
-          </XhColorPickerChannelSlider>
-          <div :style="actions">
-            <XhButton size="sm" variant="ghost" @click="clear(setOpen)">
-              清空
-            </XhButton>
-            <XhButton size="sm" @click="setOpen(false)">确定</XhButton>
-          </div>
-        </XhColorPickerContent>
-      </XhColorPickerPositioner>
-    </XhColorPickerRoot>
-
-    <span>当前：{{ color || "未设置" }}</span>
-  </div>
-</template>
-```
-
-```html
-<div style="display: grid; gap: 12px">
-  <xh-color-picker id="color-picker-clearable" value="#3b82f6" open="false">
-    <div data-xh-part="root">
-      <label data-xh-part="label">主题色</label>
-      <div data-xh-part="control">
-        <button data-xh-part="trigger">
-          <span data-xh-part="swatch"></span>
-          <span
-            id="color-picker-clearable-blank"
-            style="
-              display: none;
-              flex: none;
-              align-items: center;
-              justify-content: center;
-              inline-size: 1.125rem;
-              block-size: 1.125rem;
-              border: 1px dashed var(--xh-border-strong);
-              border-radius: var(--xh-radius-sm);
-              font-size: 10px;
-              color: var(--xh-fg-muted);
-            "
-            >∅</span
-          >
-          <span data-xh-part="value-text">#3b82f6</span>
-        </button>
-      </div>
-      <div data-xh-part="positioner">
-        <div data-xh-part="content">
-          <div data-xh-part="saturation-area">
-            <div data-xh-part="area-thumb"></div>
-          </div>
-          <div data-xh-part="channel-slider" channel="hue">
-            <div data-xh-part="channel-slider-track"></div>
-            <div data-xh-part="channel-slider-thumb"></div>
-          </div>
-          <div style="display: flex; justify-content: flex-end; gap: 8px">
-            <xh-button size="sm" variant="ghost">
-              <button data-xh-part="root" id="color-picker-clearable-clear">
-                清空
-              </button>
-            </xh-button>
-            <xh-button size="sm">
-              <button data-xh-part="root" id="color-picker-clearable-ok">
-                确定
-              </button>
-            </xh-button>
-          </div>
-        </div>
-      </div>
-    </div>
-  </xh-color-picker>
-
-  <span>当前：<span id="color-picker-clearable-readout">#3b82f6</span></span>
-</div>
-
-<script type="module">
-  // 值与开合都由宿主握着：变更经事件回来，写回去才生效
-  const picker = document.getElementById("color-picker-clearable");
-  const swatch = picker.querySelector('[data-xh-part="swatch"]');
-  const blank = document.getElementById("color-picker-clearable-blank");
-  const text = picker.querySelector('[data-xh-part="value-text"]');
-  const readout = document.getElementById("color-picker-clearable-readout");
-
-  function paint(color) {
-    swatch.style.display = color ? "" : "none";
-    blank.style.display = color ? "none" : "inline-flex";
-    text.textContent = color || "未设置";
-    readout.textContent = color || "未设置";
-  }
-
-  picker.addEventListener("value-change", (event) => {
-    picker.value = event.detail.value;
-    paint(event.detail.value);
-  });
-
-  picker.addEventListener("open-change", (event) => {
-    picker.open = event.detail.open;
-  });
-
-  document
-    .getElementById("color-picker-clearable-clear")
-    .addEventListener("click", () => {
-      picker.value = "";
-      picker.open = false;
-      paint("");
-    });
-
-  document
-    .getElementById("color-picker-clearable-ok")
-    .addEventListener("click", () => {
-      picker.open = false;
-    });
-</script>
-```
-
-### 随表单提交
-
-值串的表单出口由作者自己挂：把当前值写进一份 input[type=hidden] 就带得走；浮层就地渲染，节点始终留在 form 里
-
-```vue
-<script setup lang="ts">
-import {
-  XhButton,
-  XhColorPickerAreaThumb,
-  XhColorPickerChannelSlider,
-  XhColorPickerChannelSliderThumb,
-  XhColorPickerChannelSliderTrack,
-  XhColorPickerContent,
-  XhColorPickerControl,
-  XhColorPickerLabel,
-  XhColorPickerPositioner,
-  XhColorPickerRoot,
-  XhColorPickerSaturationArea,
-  XhColorPickerSwatch,
-  XhColorPickerTrigger,
-  XhColorPickerValueText,
-} from "@xihan-ui/vue";
-import { ref } from "vue";
-
-const submitted = ref("");
-
-function onSubmit(event: Event) {
-  const data = new FormData(event.target as HTMLFormElement);
-  submitted.value = String(data.get("brandColor") ?? "");
-}
-</script>
-
-<template>
-  <form style="display: grid; gap: 12px" @submit.prevent="onSubmit">
-    <XhColorPickerRoot v-slot="{ value }" default-value="#00a98e">
-      <XhColorPickerLabel>品牌色</XhColorPickerLabel>
-      <XhColorPickerControl>
-        <XhColorPickerTrigger>
-          <XhColorPickerSwatch />
-          <XhColorPickerValueText />
-        </XhColorPickerTrigger>
-      </XhColorPickerControl>
-      <input type="hidden" name="brandColor" :value="value">
-      <XhColorPickerPositioner>
-        <XhColorPickerContent>
-          <XhColorPickerSaturationArea>
-            <XhColorPickerAreaThumb />
-          </XhColorPickerSaturationArea>
-          <XhColorPickerChannelSlider channel="hue">
-            <XhColorPickerChannelSliderTrack />
-            <XhColorPickerChannelSliderThumb />
-          </XhColorPickerChannelSlider>
-        </XhColorPickerContent>
-      </XhColorPickerPositioner>
-    </XhColorPickerRoot>
-
-    <div>
-      <XhButton type="submit" size="sm">提交</XhButton>
-    </div>
-
-    <span v-if="submitted">表单收到：{{ submitted }}</span>
-  </form>
-</template>
-```
-
-```html
-<form id="color-picker-form" style="display: grid; gap: 12px">
-  <xh-color-picker id="color-picker-form-picker" default-value="#00a98e">
-    <div data-xh-part="root">
-      <label data-xh-part="label">品牌色</label>
-      <div data-xh-part="control">
-        <button data-xh-part="trigger">
-          <span data-xh-part="swatch"></span>
-          <span data-xh-part="value-text"></span>
-        </button>
-      </div>
-      <input type="hidden" name="brandColor" value="#00a98e" />
-      <div data-xh-part="positioner">
-        <div data-xh-part="content">
-          <div data-xh-part="saturation-area">
-            <div data-xh-part="area-thumb"></div>
-          </div>
-          <div data-xh-part="channel-slider" channel="hue">
-            <div data-xh-part="channel-slider-track"></div>
-            <div data-xh-part="channel-slider-thumb"></div>
-          </div>
-        </div>
-      </div>
-    </div>
-  </xh-color-picker>
-
-  <div>
-    <xh-button type="submit" size="sm">
-      <button data-xh-part="root">提交</button>
-    </xh-button>
-  </div>
-
-  <span id="color-picker-form-result" style="display: none"></span>
-</form>
-
-<script type="module">
-  // 当前值跟着写进隐藏字段，提交时由 FormData 带走
-  const form = document.getElementById("color-picker-form");
-  const picker = document.getElementById("color-picker-form-picker");
-  const field = form.querySelector('input[name="brandColor"]');
-  const result = document.getElementById("color-picker-form-result");
-
-  picker.addEventListener("value-change", (event) => {
-    field.value = event.detail.value;
-  });
-
-  form.addEventListener("submit", (event) => {
-    event.preventDefault();
-    result.style.display = "";
-    result.textContent = `表单收到：${new FormData(form).get("brandColor") ?? ""}`;
-  });
-</script>
-```
-
-### 面板里切换写法
-
-format 只管对外的序列化：换过之后把当前值原样写回一次，值串就改按新写法产出，工作色一点不动
-
-```vue
-<script setup lang="ts">
-import {
-  XhButton,
-  XhColorPickerAreaThumb,
-  XhColorPickerChannelSlider,
-  XhColorPickerChannelSliderThumb,
-  XhColorPickerChannelSliderTrack,
-  XhColorPickerContent,
-  XhColorPickerControl,
-  XhColorPickerLabel,
-  XhColorPickerPositioner,
-  XhColorPickerRoot,
-  XhColorPickerSaturationArea,
-  XhColorPickerSwatch,
-  XhColorPickerTrigger,
-  XhColorPickerValueText,
-} from "@xihan-ui/vue";
-import { nextTick, ref } from "vue";
-
-type Format = "hex" | "rgba" | "hsla";
-
-const formats: Format[] = ["hex", "rgba", "hsla"];
-
-const format = ref<Format>("hex");
-const color = ref("#3b82f6");
-
-async function applyFormat(next: Format, setValue: (value: string) => void) {
-  format.value = next;
-  // 等新写法落到组件上，再把当前值原样写回一次
-  await nextTick();
-  setValue(color.value);
-}
-
-const modes = {
-  display: "flex",
-  gap: "6px",
-};
-</script>
-
-<template>
-  <div style="display: grid; gap: 12px">
-    <XhColorPickerRoot
-      v-slot="{ setValue }"
-      v-model:value="color"
-      :format="format"
-    >
-      <XhColorPickerLabel>强调色</XhColorPickerLabel>
-      <XhColorPickerControl>
-        <XhColorPickerTrigger>
-          <XhColorPickerSwatch />
-          <XhColorPickerValueText />
-        </XhColorPickerTrigger>
-      </XhColorPickerControl>
-      <XhColorPickerPositioner>
-        <XhColorPickerContent>
-          <XhColorPickerSaturationArea>
-            <XhColorPickerAreaThumb />
-          </XhColorPickerSaturationArea>
-          <XhColorPickerChannelSlider channel="hue">
-            <XhColorPickerChannelSliderTrack />
-            <XhColorPickerChannelSliderThumb />
-          </XhColorPickerChannelSlider>
-          <div :style="modes">
-            <XhButton
-              v-for="item in formats"
-              :key="item"
-              size="sm"
-              :variant="item === format ? 'solid' : 'ghost'"
-              @click="applyFormat(item, setValue)"
-            >
-              {{ item }}
-            </XhButton>
-          </div>
-        </XhColorPickerContent>
-      </XhColorPickerPositioner>
-    </XhColorPickerRoot>
-
-    <span>当前：{{ color }}</span>
-  </div>
-</template>
-```
-
-```html
-<div style="display: grid; gap: 12px">
-  <xh-color-picker id="color-picker-format-switch" format="hex" value="#3b82f6">
-    <div data-xh-part="root">
-      <label data-xh-part="label">强调色</label>
-      <div data-xh-part="control">
-        <button data-xh-part="trigger">
-          <span data-xh-part="swatch"></span>
-          <span data-xh-part="value-text"></span>
-        </button>
-      </div>
-      <div data-xh-part="positioner">
-        <div data-xh-part="content">
-          <div data-xh-part="saturation-area">
-            <div data-xh-part="area-thumb"></div>
-          </div>
-          <div data-xh-part="channel-slider" channel="hue">
-            <div data-xh-part="channel-slider-track"></div>
-            <div data-xh-part="channel-slider-thumb"></div>
-          </div>
-          <!-- 三个写法钮：当前那个实心，其余幽灵 -->
-          <div id="color-picker-format-switch-modes" style="display: flex; gap: 6px">
-            <xh-button size="sm" variant="solid" data-format="hex">
-              <button data-xh-part="root">hex</button>
-            </xh-button>
-            <xh-button size="sm" variant="ghost" data-format="rgba">
-              <button data-xh-part="root">rgba</button>
-            </xh-button>
-            <xh-button size="sm" variant="ghost" data-format="hsla">
-              <button data-xh-part="root">hsla</button>
-            </xh-button>
-          </div>
-        </div>
-      </div>
-    </div>
-  </xh-color-picker>
-
-  <span>当前：<span id="color-picker-format-switch-value">#3b82f6</span></span>
-</div>
-
-<script type="module">
-  const picker = document.getElementById("color-picker-format-switch");
-  const readout = document.getElementById("color-picker-format-switch-value");
-  const modes = document.getElementById("color-picker-format-switch-modes");
-
-  // 值由宿主握着：变更经事件回来，写回去才生效
-  picker.addEventListener("value-change", (event) => {
-    picker.value = event.detail.value;
-    readout.textContent = event.detail.value;
-  });
-
-  modes.addEventListener("click", (event) => {
-    const pressed = event.target.closest("xh-button");
-    if (!pressed) {
-      return;
-    }
-    // 先换写法，再把当前值原样写回一次：落值那一刻才按新写法序列化
-    picker.format = pressed.dataset.format;
-    picker.setValue(picker.value);
-    for (const item of modes.children) {
-      item.variant = item === pressed ? "solid" : "ghost";
-    }
-  });
 </script>
 ```
 
@@ -1090,28 +427,33 @@ const modes = {
 
 ### 何时使用
 
-- 用户要自由指定颜色（主题定制、标注、画布）。
+- 用户需要自定义主题色、标注色或画布颜色。
 
 ### 何时不用
 
-- 可选颜色是固定的几种：用[单选组](./radio-group)配色块，或[选择器](./select)。
+- 只有少量固定颜色时，使用预设色板或[单选组](./radio-group)。
 
 ### 特性
 
-- 必备部件是 `root` · `content` · `saturation-area` · `area-thumb`，缺一个组件就不工作。
-- `format` 决定值串写法；面板里也可以让用户自己切换写法。
-- `alpha` 打开透明度通道。
-- 支持屏幕取色（依赖平台能力）与数值输入。
-- 文本输入严格校验范围：不完整、非法或越界内容保留在输入框，并通过 `errors.input` / `onColorError` 明确报告；不会悄悄复原或夹回合法区间。
-- 运行期未知 `format`、整体颜色解析失败与屏幕取色异常分别保存在 `errors.format`、`errors.parse`、`errors.eyeDropper`。`clearError()` 可显式清理；再次屏幕取色会先清掉上一轮取色相关诊断。
-- 用户取消屏幕取色（`AbortError`）不是失败；接口抛错或拒绝才走 `eye-dropper` 错误。已经关闭或被下一轮替代的旧取色结果不会回写新值。
-- 预设色板当前项由 `isSwatchSelected`、`aria-pressed` 与 `data-state=checked` 持久标识，不依赖悬停反馈。
-- 输入框与通道输入保持实体表面，弹层使用 M2 磨砂背景、细顶光与统一边界阴影；顶光不覆盖取色区域，也不拦截鼠标。
-- 色域、色相轨道和预设色板保留原色，磨砂只作用于浮层背后的内容，不通过整层透明度淡化静止状态下的颜色。
-- 浮层按实际落位方向淡入并短距离移动，不缩放取色区域；收起时完整播放退场，再由适配器隐藏。
-- 局部明暗主题随 Portal 传递。增强对比度和减少透明度沿用材质令牌切为实体表面；减弱动效缩短进出场并归零位移。
+- 支持色域、色相和透明度通道。
+- 支持预设色板、精确数值输入与屏幕取色。
+- `format` 设置输出格式，`alpha` 启用透明度。
+- 支持受控值、表单提交与输入错误回调。
 
-## 产物
+### 最佳实践
+
+- 优先提供常用颜色。
+- 同时显示色块与颜色值。
+- 需要精确输入时提供颜色通道输入框。
+
+### 反模式
+
+- 只显示颜色而不显示其数值。
+- 在有对比度要求的场景中不提供校验反馈。
+
+## API 参考
+
+### 产物
 
 | 层 | 值 |
 | --- | --- |
@@ -1121,13 +463,7 @@ const modes = {
 | 状态机 | `colorPickerMachine` |
 | 皮肤 | `@xihan-ui/styles/color-picker.css` |
 
-## 解剖
-
-部件名即 `data-part` 属性值，也是皮肤的选择器。加粗的是必备部件，不渲染它组件不工作（Web Components 适配器会在诊断通道上报 `wc.missing-part`）。
-
-`data-scope="color-picker"`：`root` · `label` · `control` · **`trigger`** · `value-text` · `swatch` · `positioner` · **`content`** · **`saturation-area`** · **`area-thumb`** · `channel-slider` · `channel-slider-track` · `channel-slider-thumb` · `channel-input` · `eye-dropper-trigger` · `swatch-group` · `swatch-item` · `hidden-input`
-
-## Props
+### Props
 
 | 属性 | 类型 | 必填 | 说明 |
 | --- | --- | --- | --- |
@@ -1150,9 +486,9 @@ const modes = {
 | `onOpenChange` | `(details: ColorPickerOpenChangeDetails) => void` |  | open 变化意图回调；受控时是唯一出口，非受控随内部转移一并通知。 |
 | `onColorError` | `(details: ColorPickerErrorDetails) => void` |  | 格式、文本、颜色解析或屏幕取色失败；与 value/open 事件独立。 |
 
-## 事件
+### 事件
 
-自定义元素派发这些事件，Vue 组件对应同名 emit；载荷都在 `detail` 上。可双向绑定的值另有 `update:xxx`，见 Props。
+自定义元素将载荷放在 `detail`；Vue 使用同名 emit。
 
 | 事件 | 载荷 | 说明 |
 | --- | --- | --- |
@@ -1160,17 +496,17 @@ const modes = {
 | `open-change` | `ColorPickerOpenChangeDetails` | open 状态变化；detail 为 `{ open: boolean }` |
 | `color-error` | `ColorPickerErrorDetails` | 格式、输入、颜色解析或屏幕取色失败；detail 为判别式错误对象 |
 
-## 插槽
+### 插槽
 
-作者能拿到载荷的插槽。只转发内容、不带载荷的默认插槽不在此列——那类直接写子节点即可。
+仅列出带载荷的插槽。
 
 | Vue 组件 | 插槽 | 载荷 | 说明 |
 | --- | --- | --- | --- |
 | `XhColorPickerRoot` | `default` | `ColorPickerRootSlotProps` |  |
 
-## 状态
+### 状态
 
-对外可见的状态落在 `data-state` 上，写样式与断言都读它：
+公开状态写入 `data-state`。
 
 | 部件 | 取值 |
 | --- | --- |
@@ -1178,7 +514,7 @@ const modes = {
 | `eye-dropper-trigger` | 'picking' \| 'open' \| 'closed' |
 | `swatch-item` | 'checked' \| 'unchecked' |
 
-状态机内部转移，写样式与业务都用不到；要监听变化请看上面的「事件」。
+以下名称仅用于内部状态机。
 
 **状态**：`closed` · `open` · `open.idle` · `open.dragging` · `open.picking`
 
@@ -1186,9 +522,9 @@ const modes = {
 
 **判据**：`isOpenControlled` · `canInteract` · `canPick`
 
-## connect API
+### connect API
 
-`useColorPicker` 产出的对象。`getXxxProps()` 铺到对应部件的宿主元素上，其余是可读状态与操作入口。
+`getXxxProps()` 返回对应部件的宿主属性。
 
 | 成员 | 类型 | 说明 |
 | --- | --- | --- |
@@ -1230,7 +566,9 @@ const modes = {
 | `getSwatchItemProps` | `(props: ColorPickerSwatchItemProps) => T['button']` |  |
 | `getHiddenInputProps` | `() => T['input']` | 表单影子：值随表单提交。给了 name 才带 name，不给就不参与提交。 |
 
-## 键盘
+## 无障碍
+
+### 键盘
 
 规格出处：[W3C APG](https://www.w3.org/WAI/ARIA/apg/patterns/slider/#keyboardinteraction)
 
@@ -1247,9 +585,9 @@ const modes = {
 | `Enter` | focus in channel-input | 收下框里的字；收不了就保留草稿并报告输入错误。一并拦住表单提交 |
 | `Escape` | open（本层在层栈顶） | 收起浮层，焦点归还触发器 |
 
-## 无障碍
+### ARIA
 
-下面这些由 `connect` 铺到部件上，作者不必自己写；重复写反而会覆盖掉正确值。
+以下属性由 `connect` 生成。
 
 | 部件 | 属性 | 值 |
 | --- | --- | --- |
@@ -1285,15 +623,17 @@ const modes = {
 | `swatch-item` | `aria-label` | label.swatch(swatch) |
 | `swatch-item` | `aria-pressed` | 'true' \| 'false' |
 
-## 样式
+## 样式参考
 
-默认皮肤 `@xihan-ui/styles/color-picker.css` 按部件选择：`[data-scope="color-picker"][data-part="root"]`。它落在 `xihan.components` 与 `xihan.motion` 层；业务样式不写进 `@layer` 即高于全部库层，要按层压过来就写进 `xihan.overrides`。
+### 皮肤
+
+`@xihan-ui/styles/color-picker.css` 使用 `[data-scope="color-picker"][data-part="root"]` 部件选择器，位于 `xihan.components` 与 `xihan.motion` 层。覆盖样式使用 `xihan.overrides`。
 
 `forced-colors: active` 下另有一套规则：颜色交给系统，边框与状态标记改用系统色关键字。
 
-## 数据属性
+### 数据属性
 
-由 `connect` 产出并铺到部件上，皮肤与测试都据此选择；`data-disabled` 这类无值属性在条件不成立时整个不出现。
+由 `connect` 生成；条件不成立时不输出无值属性。
 
 | 部件 | 属性 | 值 |
 | --- | --- | --- |
@@ -1323,7 +663,7 @@ const modes = {
 | `swatch-item` | `data-state` | 'checked' \| 'unchecked' |
 
 <!-- xh-component-tokens:start -->
-## CSS 变量
+### CSS 变量
 
 本组件公开覆盖槽由独立皮肤的实际消费位生成；缺省来源、作用部件和状态均与 CSS 同源。
 
@@ -1404,7 +744,7 @@ const modes = {
 | `--xh-color-picker-value-font-size` | `value-text` | `font-size` | `default` | `--xh-text-body-size` | color-picker 的 value-text 部件 font-size 覆盖槽。 |
 <!-- xh-component-tokens:end -->
 
-## 动效
+### 动效
 
 关键帧 `xh-overlay-slide-in` · `xh-overlay-slide-out` 随皮肤自带，不引用别处文件里的名字；`background` · `border-color` · `scale` 走 `transition` 过渡。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
 
@@ -1412,21 +752,6 @@ const modes = {
 
 系统开启减弱动效时由令牌层统一收敛，皮肤不另作判断。
 
-## RTL
+### RTL
 
 皮肤用逻辑属性排布（`inline-start` 一族），`dir="rtl"` 下自动镜像；另有按 `dir` 分支的规则。
-
-## 组合
-
-- 外面套[表单字段](./field)；预设色板走 `swatches`。
-
-## 最佳实践
-
-- 提供预设色板：绝大多数用户不需要在色域里精挑。
-- 回显时同时给色块和色值串，色块用来看、值串用来复制。
-- 监听 `onColorError` 给错误配可见说明；错误对象是诊断出口，不会自动替你渲染提示。
-
-## 反模式
-
-- 只给色域不给数值输入：用户手上有确切色值时无处可填。
-- 在需要满足对比度的场景里放任意取色而不给对比度提示。

@@ -1,0 +1,53 @@
+const t=`<!-- 基础用法 | 添加和删除重复字段 -->
+<xh-field-array id="field-array-basic">
+  <div data-xh-part="root" style="max-inline-size: 420px">
+    <button data-xh-part="add-trigger">+ 添加链接</button>
+  </div>
+</xh-field-array>
+
+<template id="field-array-basic-row">
+  <div data-xh-part="item">
+    <div data-xh-part="item-content">
+      <input class="xh-demo-control" style="inline-size: 100%" placeholder="填一个链接" />
+    </div>
+    <div data-xh-part="item-action">
+      <button data-xh-part="item-delete-trigger"></button>
+    </div>
+  </div>
+</template>
+
+<script type="module">
+  const host = document.getElementById("field-array-basic");
+  const root = host.querySelector('[data-xh-part="root"]');
+  const addTrigger = host.querySelector('[data-xh-part="add-trigger"]');
+  const template = document.getElementById("field-array-basic-row");
+
+  let links = ["https://xihan.fun", ""];
+
+  function render() {
+    for (const row of root.querySelectorAll('[data-xh-part="item"]')) row.remove();
+    links.forEach((value, index) => {
+      const row = template.content.firstElementChild.cloneNode(true);
+      const input = row.querySelector("input");
+      input.value = value;
+      // 行里的控件是作者自己的，值也由作者自己写回
+      input.addEventListener("input", () => {
+        links = links.map((item, i) => (i === index ? input.value : item));
+        host.value = links;
+      });
+      root.insertBefore(row, addTrigger);
+    });
+  }
+
+  host.createItem = () => "";
+  host.value = links;
+  // 值给了即受控，增删只发通知，改动由宿主自己写回
+  host.addEventListener("value-change", (event) => {
+    links = event.detail.value;
+    host.value = links;
+    render();
+  });
+
+  render();
+<\/script>
+`;export{t as default};

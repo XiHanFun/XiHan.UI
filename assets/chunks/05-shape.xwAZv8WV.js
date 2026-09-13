@@ -1,0 +1,4 @@
+const t=`<!-- 外形 | 使用圆形或方形触发器 -->
+<xh-float-button shape="circle"><div data-xh-part="root" style="position: static"><button data-xh-part="trigger"></button><div data-xh-part="list"></div></div></xh-float-button>
+<xh-float-button shape="square"><div data-xh-part="root" style="position: static"><button data-xh-part="trigger"></button><div data-xh-part="list"></div></div></xh-float-button>
+`;export{t as default};

@@ -1,0 +1,42 @@
+const t=`<!-- 自定义值 | 选择候选项或输入新值 -->
+<xh-combobox id="combobox-custom-value" allow-custom-value placeholder="选择或输入技术栈">
+  <div data-xh-part="root">
+    <label data-xh-part="label">技术栈</label>
+    <div data-xh-part="control">
+      <input data-xh-part="input" />
+      <button data-xh-part="trigger"></button>
+      <button data-xh-part="clear-trigger"></button>
+    </div>
+    <div data-xh-part="positioner">
+      <div data-xh-part="content">
+        <div data-xh-part="item" value="vue">
+          <span data-xh-part="item-text">Vue</span>
+          <span data-xh-part="item-indicator"></span>
+        </div>
+        <div data-xh-part="item" value="react">
+          <span data-xh-part="item-text">React</span>
+          <span data-xh-part="item-indicator"></span>
+        </div>
+        <div data-xh-part="item" value="svelte">
+          <span data-xh-part="item-text">Svelte</span>
+          <span data-xh-part="item-indicator"></span>
+        </div>
+      </div>
+      <div data-xh-part="empty">按 Enter 使用当前输入</div>
+    </div>
+  </div>
+</xh-combobox>
+
+<script type="module">
+  const combobox = document.getElementById("combobox-custom-value");
+  const content = combobox.querySelector('[data-xh-part="content"]');
+  const all = [...content.children];
+  const labelOf = (item) => item.querySelector('[data-xh-part="item-text"]').textContent.toLowerCase();
+
+  combobox.addEventListener("input-value-change", (event) => {
+    const q = event.detail.inputValue.trim().toLowerCase();
+    content.replaceChildren(...all.filter((item) => labelOf(item).includes(q)));
+  });
+
+<\/script>
+`;export{t as default};

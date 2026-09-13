@@ -1,0 +1,32 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 420" role="img" aria-labelledby="title desc">
+  <title id="title">山谷与湖泊</title>
+  <desc id="desc">清晨的山谷、树林和湖面</desc>
+  <defs>
+    <linearGradient id="sky" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#c7d2fe" />
+      <stop offset="1" stop-color="#e0f2fe" />
+    </linearGradient>
+    <linearGradient id="lake" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#67e8f9" />
+      <stop offset="1" stop-color="#2563eb" />
+    </linearGradient>
+    <linearGradient id="ridge" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#475569" />
+      <stop offset="1" stop-color="#1e293b" />
+    </linearGradient>
+  </defs>
+  <rect width="640" height="420" fill="url(#sky)" />
+  <circle cx="500" cy="88" r="42" fill="#fde68a" opacity=".95" />
+  <path d="M0 250 122 126l79 88 101-142 128 156 76-92 134 132v77H0Z" fill="#94a3b8" />
+  <path d="M0 286 144 166l92 99 92-76 89 92 99-96 124 103v63H0Z" fill="url(#ridge)" />
+  <path d="M0 286c99-31 160-18 229 6 89 31 173 36 411-7v135H0Z" fill="url(#lake)" />
+  <path d="M0 294c91-28 158-16 227 8 95 33 187 34 413-10" fill="none" stroke="#ecfeff" stroke-width="6" opacity=".72" />
+  <path d="M0 321c102-21 188-5 262 16 91 26 194 22 378-15" fill="none" stroke="#bfdbfe" stroke-width="4" opacity=".55" />
+  <path d="M0 272c54-29 112-33 181-13 42 12 72 10 115-2-31 21-67 34-113 34-70 0-125-7-183 16Z" fill="#166534" />
+  <g fill="#14532d">
+    <path d="m48 276 26-66 26 66Z" />
+    <path d="m88 282 31-83 31 83Z" />
+    <path d="m541 278 25-70 25 70Z" />
+    <path d="m578 286 31-88 31 88Z" />
+  </g>
+</svg>

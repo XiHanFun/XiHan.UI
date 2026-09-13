@@ -1,8 +1,8 @@
 来源：https://ui.docs.xihanfun.com/components/navigation-menu
 
-# NavigationMenu `导航菜单`
+# NavigationMenu 导航菜单
 
-站点的主导航：一排入口，展开后是一整块去处面板，面板里是链接不是命令。
+用于站点顶部的多级导航菜单。
 
 <div class="xh-resource-links">
   <a href="https://github.com/XiHanFun/XiHan.UI/tree/dev/ui/packages/engine/headless/src/navigation-menu" target="_blank" rel="noreferrer">Headless</a>
@@ -14,7 +14,7 @@
 
 ## 用法
 
-面板落在同一个 li 里、紧跟 trigger 之后，展开时按 Tab 就走得进去，里面的条目是链接不是命令，点了就跳走
+从顶部入口展开站点导航
 
 ```vue
 <script setup lang="ts">
@@ -23,38 +23,38 @@ import { XhNavigationMenuLink, XhNavigationMenuRoot } from "@xihan-ui/vue";
 const entries = [
   { value: "products", label: "产品" },
   { value: "docs", label: "文档" },
-  { value: "about", label: "关于" },
+  { value: "resources", label: "资源" },
 ];
-
-const panels: Record<string, Array<{ href: string; label: string }>> = {
+const panels: Record<string, Array<{ href: string; title: string; description: string }>> = {
   products: [
-    { href: "#/products/runtime", label: "运行时内核" },
-    { href: "#/products/vue", label: "Vue 适配器" },
-    { href: "#/products/wc", label: "Web Components 适配器" },
+    { href: "#/products/headless", title: "无头内核", description: "框架无关的行为与状态" },
+    { href: "#/products/adapters", title: "多端适配器", description: "Vue、React 与 Web Components" },
   ],
   docs: [
-    { href: "#/docs/guide", label: "上手指南" },
-    { href: "#/docs/anatomy", label: "部件解剖" },
+    { href: "#/docs/guide", title: "快速开始", description: "安装并创建第一个组件" },
+    { href: "#/docs/components", title: "组件文档", description: "浏览组件与 API" },
   ],
-  about: [{ href: "#/about/team", label: "团队" }],
+  resources: [
+    { href: "#/resources/themes", title: "主题", description: "令牌与视觉定制" },
+    { href: "#/resources/examples", title: "示例", description: "常见界面组合" },
+  ],
 };
-
-// 指向当前页面的那一条：拿它比对即可
-const currentHref = "#/docs/guide";
 </script>
 
 <template>
-  <!-- 面板是绝对定位的浮层，这里给下方留出它落位的空间 -->
-  <div style="inline-size: 100%; padding-block-end: 180px">
+  <div style="inline-size: min(720px, 100%); padding-block-end: 180px">
     <XhNavigationMenuRoot :collection="entries">
       <template #panel="node">
         <XhNavigationMenuLink
-          v-for="l in panels[node.value]"
-          :key="l.href"
-          :href="l.href"
-          :current="l.href === currentHref"
+          v-for="item in panels[node.value]"
+          :key="item.href"
+          :href="item.href"
+          style="align-items: flex-start"
         >
-          {{ l.label }}
+          <span style="display: grid; gap: 2px">
+            <strong>{{ item.title }}</strong>
+            <span style="color: var(--xh-fg-muted)">{{ item.description }}</span>
+          </span>
         </XhNavigationMenuLink>
       </template>
     </XhNavigationMenuRoot>
@@ -63,249 +63,31 @@ const currentHref = "#/docs/guide";
 ```
 
 ```html
-<!-- 面板是绝对定位的浮层，这里给下方留出它落位的空间 -->
-<div style="inline-size: 100%; padding-block-end: 180px">
+<div style="inline-size: min(720px, 100%); padding-block-end: 180px">
   <xh-navigation-menu style="display: contents">
     <nav data-xh-part="root">
       <ul data-xh-part="list">
-        <li data-xh-part="item">
-          <button data-xh-part="trigger" value="products">产品</button>
-          <div data-xh-part="content" value="products">
-            <a data-xh-part="link" href="#/products/runtime">运行时内核</a>
-            <a data-xh-part="link" href="#/products/vue">Vue 适配器</a>
-            <a data-xh-part="link" href="#/products/wc">Web Components 适配器</a>
-          </div>
-        </li>
-        <li data-xh-part="item">
-          <button data-xh-part="trigger" value="docs">文档</button>
-          <div data-xh-part="content" value="docs">
-            <!-- 指向当前页面的那一条写 current -->
-            <a data-xh-part="link" href="#/docs/guide" current>上手指南</a>
-            <a data-xh-part="link" href="#/docs/anatomy">部件解剖</a>
-          </div>
-        </li>
-        <li data-xh-part="item">
-          <button data-xh-part="trigger" value="about">关于</button>
-          <div data-xh-part="content" value="about">
-            <a data-xh-part="link" href="#/about/team">团队</a>
-          </div>
-        </li>
+        <li data-xh-part="item"><button data-xh-part="trigger" value="products">产品</button><div data-xh-part="content" value="products"><a data-xh-part="link" href="#/products/headless"><span><strong>无头内核</strong><br><span style="color: var(--xh-fg-muted)">框架无关的行为与状态</span></span></a><a data-xh-part="link" href="#/products/adapters"><span><strong>多端适配器</strong><br><span style="color: var(--xh-fg-muted)">Vue、React 与 Web Components</span></span></a></div></li>
+        <li data-xh-part="item"><button data-xh-part="trigger" value="docs">文档</button><div data-xh-part="content" value="docs"><a data-xh-part="link" href="#/docs/guide"><span><strong>快速开始</strong><br><span style="color: var(--xh-fg-muted)">安装并创建第一个组件</span></span></a><a data-xh-part="link" href="#/docs/components"><span><strong>组件文档</strong><br><span style="color: var(--xh-fg-muted)">浏览组件与 API</span></span></a></div></li>
+        <li data-xh-part="item"><button data-xh-part="trigger" value="resources">资源</button><div data-xh-part="content" value="resources"><a data-xh-part="link" href="#/resources/themes"><span><strong>主题</strong><br><span style="color: var(--xh-fg-muted)">令牌与视觉定制</span></span></a><a data-xh-part="link" href="#/resources/examples"><span><strong>示例</strong><br><span style="color: var(--xh-fg-muted)">常见界面组合</span></span></a></div></li>
         <li data-xh-part="indicator"></li>
       </ul>
     </nav>
   </xh-navigation-menu>
 </div>
 ```
+
+## 组件结构
+
+加粗的是必需部件。
+
+`data-scope="navigation-menu"`：**`root`** · **`list`** · **`item`** · `trigger` · `trigger-indicator` · `content` · **`link`** · `indicator` · `viewport`
 
 ## 示例
 
-### 受控
+### 竖向排列
 
-传了 value 就由宿主说了算，null 表示都收起
-
-```vue
-<script setup lang="ts">
-import {
-  XhButton,
-  XhNavigationMenuContent,
-  XhNavigationMenuItem,
-  XhNavigationMenuLink,
-  XhNavigationMenuList,
-  XhNavigationMenuRoot,
-  XhNavigationMenuTrigger,
-} from "@xihan-ui/vue";
-import { ref } from "vue";
-
-const groups = [
-  {
-    value: "solution",
-    label: "解决方案",
-    links: [
-      { href: "#/solution/saas", label: "多租户 SaaS" },
-      { href: "#/solution/portal", label: "门户站点" },
-    ],
-  },
-  {
-    value: "support",
-    label: "支持",
-    links: [
-      { href: "#/support/faq", label: "常见问题" },
-      { href: "#/support/contact", label: "联系我们" },
-    ],
-  },
-];
-
-const open = ref<string | null>(null);
-</script>
-
-<template>
-  <div style="inline-size: 100%; padding-block-end: 150px">
-    <XhNavigationMenuRoot v-model:value="open">
-      <XhNavigationMenuList>
-        <XhNavigationMenuItem v-for="g in groups" :key="g.value">
-          <XhNavigationMenuTrigger :value="g.value">
-            {{ g.label }}
-          </XhNavigationMenuTrigger>
-          <XhNavigationMenuContent :value="g.value">
-            <XhNavigationMenuLink
-              v-for="l in g.links"
-              :key="l.href"
-              :href="l.href"
-            >
-              {{ l.label }}
-            </XhNavigationMenuLink>
-          </XhNavigationMenuContent>
-        </XhNavigationMenuItem>
-      </XhNavigationMenuList>
-    </XhNavigationMenuRoot>
-
-    <div style="display: flex; align-items: center; gap: 8px; margin-block-start: 12px">
-      <XhButton variant="outline" @click="open = 'support'">展开「支持」</XhButton>
-      <XhButton variant="outline" @click="open = null">全部收起</XhButton>
-      <span>展开的面板：{{ open ?? "（都收着）" }}</span>
-    </div>
-  </div>
-</template>
-```
-
-```html
-<div style="inline-size: 100%; padding-block-end: 150px">
-  <xh-navigation-menu id="navigation-menu-controlled" style="display: contents">
-    <nav data-xh-part="root">
-      <ul data-xh-part="list">
-        <li data-xh-part="item">
-          <button data-xh-part="trigger" value="solution">解决方案</button>
-          <div data-xh-part="content" value="solution">
-            <a data-xh-part="link" href="#/solution/saas">多租户 SaaS</a>
-            <a data-xh-part="link" href="#/solution/portal">门户站点</a>
-          </div>
-        </li>
-        <li data-xh-part="item">
-          <button data-xh-part="trigger" value="support">支持</button>
-          <div data-xh-part="content" value="support">
-            <a data-xh-part="link" href="#/support/faq">常见问题</a>
-            <a data-xh-part="link" href="#/support/contact">联系我们</a>
-          </div>
-        </li>
-      </ul>
-    </nav>
-  </xh-navigation-menu>
-
-  <div style="display: flex; align-items: center; gap: 8px; margin-block-start: 12px">
-    <xh-button variant="outline">
-      <button data-xh-part="root" id="navigation-menu-controlled-open">展开「支持」</button>
-    </xh-button>
-    <xh-button variant="outline">
-      <button data-xh-part="root" id="navigation-menu-controlled-close">全部收起</button>
-    </xh-button>
-    <span>展开的面板：<span id="navigation-menu-controlled-value">（都收着）</span></span>
-  </div>
-</div>
-
-<script type="module">
-  // 展开项由宿主持有：组件只发 value-change，写回元素它才变
-  const menu = document.getElementById("navigation-menu-controlled");
-  const readout = document.getElementById("navigation-menu-controlled-value");
-
-  function apply(next) {
-    menu.value = next;
-    readout.textContent = next ?? "（都收着）";
-  }
-
-  apply(null);
-  menu.addEventListener("value-change", (event) => apply(event.detail.value));
-  document
-    .getElementById("navigation-menu-controlled-open")
-    .addEventListener("click", () => apply("support"));
-  document
-    .getElementById("navigation-menu-controlled-close")
-    .addEventListener("click", () => apply(null));
-</script>
-```
-
-### 展开延时
-
-delay-duration 是悬停多久才展开，防的是指针横穿导航时一路闪出面板；skip-delay-duration 是收起后的静默窗口，窗口内再碰任意入口直接展开
-
-```vue
-<script setup lang="ts">
-import { XhNavigationMenuLink, XhNavigationMenuRoot } from "@xihan-ui/vue";
-
-const entries = [
-  { value: "cloud", label: "云服务" },
-  { value: "data", label: "数据" },
-  { value: "ai", label: "智能" },
-];
-
-const panels: Record<string, Array<{ href: string; label: string }>> = {
-  cloud: [
-    { href: "#/cloud/host", label: "云主机" },
-    { href: "#/cloud/storage", label: "对象存储" },
-  ],
-  data: [
-    { href: "#/data/warehouse", label: "数据仓库" },
-    { href: "#/data/pipeline", label: "数据管道" },
-  ],
-  ai: [{ href: "#/ai/agent", label: "智能体" }],
-};
-</script>
-
-<template>
-  <div style="inline-size: 100%; padding-block-end: 150px">
-    <XhNavigationMenuRoot
-      :collection="entries"
-      :delay-duration="600"
-      :skip-delay-duration="800"
-    >
-      <template #panel="node">
-        <XhNavigationMenuLink
-          v-for="l in panels[node.value]"
-          :key="l.href"
-          :href="l.href"
-        >
-          {{ l.label }}
-        </XhNavigationMenuLink>
-      </template>
-    </XhNavigationMenuRoot>
-  </div>
-</template>
-```
-
-```html
-<div style="inline-size: 100%; padding-block-end: 150px">
-  <xh-navigation-menu delay-duration="600" skip-delay-duration="800" style="display: contents">
-    <nav data-xh-part="root">
-      <ul data-xh-part="list">
-        <li data-xh-part="item">
-          <button data-xh-part="trigger" value="cloud">云服务</button>
-          <div data-xh-part="content" value="cloud">
-            <a data-xh-part="link" href="#/cloud/host">云主机</a>
-            <a data-xh-part="link" href="#/cloud/storage">对象存储</a>
-          </div>
-        </li>
-        <li data-xh-part="item">
-          <button data-xh-part="trigger" value="data">数据</button>
-          <div data-xh-part="content" value="data">
-            <a data-xh-part="link" href="#/data/warehouse">数据仓库</a>
-            <a data-xh-part="link" href="#/data/pipeline">数据管道</a>
-          </div>
-        </li>
-        <li data-xh-part="item">
-          <button data-xh-part="trigger" value="ai">智能</button>
-          <div data-xh-part="content" value="ai">
-            <a data-xh-part="link" href="#/ai/agent">智能体</a>
-          </div>
-        </li>
-        <li data-xh-part="indicator"></li>
-      </ul>
-    </nav>
-  </xh-navigation-menu>
-</div>
-```
-
-### 竖排
-
-orientation="vertical" 把入口排成一列、面板改从侧边长出来，方向键随之改收上下键
+在侧栏旁展开子级导航
 
 ```vue
 <script setup lang="ts">
@@ -331,7 +113,7 @@ const panels: Record<string, Array<{ href: string; label: string }>> = {
 </script>
 
 <template>
-  <div style="inline-size: 100%; padding-block-end: 40px">
+  <div style="inline-size: min(480px, 100%); padding-block-end: 40px">
     <XhNavigationMenuRoot
       :collection="entries"
       orientation="vertical"
@@ -352,7 +134,7 @@ const panels: Record<string, Array<{ href: string; label: string }>> = {
 ```
 
 ```html
-<div style="inline-size: 100%; padding-block-end: 40px">
+<div style="inline-size: min(480px, 100%); padding-block-end: 40px">
   <xh-navigation-menu orientation="vertical" style="display: contents">
     <nav data-xh-part="root" style="inline-size: 180px">
       <ul data-xh-part="list">
@@ -383,288 +165,9 @@ const panels: Record<string, Array<{ href: string; label: string }>> = {
 </div>
 ```
 
-### 语气
+### 直达链接
 
-tone 换的是入口的高亮底与指示条、当前链接的文字色，静止态一样：悬停到入口上、或用方向键把焦点移过去才显现
-
-```vue
-<script setup lang="ts">
-import { XhNavigationMenuLink, XhNavigationMenuRoot } from "@xihan-ui/vue";
-
-// 每档语气一个 root，root 里就一个入口，入口名即语气名
-const tones = ["brand", "neutral", "success", "warning", "danger", "info"].map(
-  tone => ({ tone, entries: [{ value: tone, label: tone }] }),
-);
-</script>
-
-<template>
-  <!-- 面板是绝对定位的浮层，这里给下方留出它落位的空间 -->
-  <div
-    style="inline-size: 100%; display: flex; flex-wrap: wrap; gap: 8px; padding-block-end: 180px"
-  >
-    <XhNavigationMenuRoot
-      v-for="t in tones"
-      :key="t.tone"
-      :collection="t.entries"
-      :tone="t.tone"
-    >
-      <template #panel>
-        <!-- 当前链接的文字色也吃这一档语气 -->
-        <XhNavigationMenuLink href="#/docs/guide" current>
-          上手指南
-        </XhNavigationMenuLink>
-        <XhNavigationMenuLink href="#/docs/anatomy">
-          部件解剖
-        </XhNavigationMenuLink>
-      </template>
-    </XhNavigationMenuRoot>
-  </div>
-</template>
-```
-
-```html
-<!-- 面板是绝对定位的浮层，这里给下方留出它落位的空间 -->
-<div style="inline-size: 100%; display: flex; flex-wrap: wrap; gap: 8px; padding-block-end: 180px">
-  <xh-navigation-menu tone="brand" style="display: contents">
-    <nav data-xh-part="root">
-      <ul data-xh-part="list">
-        <li data-xh-part="item">
-          <button data-xh-part="trigger" value="brand">brand</button>
-          <div data-xh-part="content" value="brand">
-            <!-- 当前链接的文字色也吃这一档语气 -->
-            <a data-xh-part="link" href="#/docs/guide" current>上手指南</a>
-            <a data-xh-part="link" href="#/docs/anatomy">部件解剖</a>
-          </div>
-        </li>
-        <li data-xh-part="indicator"></li>
-      </ul>
-    </nav>
-  </xh-navigation-menu>
-
-  <xh-navigation-menu tone="neutral" style="display: contents">
-    <nav data-xh-part="root">
-      <ul data-xh-part="list">
-        <li data-xh-part="item">
-          <button data-xh-part="trigger" value="neutral">neutral</button>
-          <div data-xh-part="content" value="neutral">
-            <a data-xh-part="link" href="#/docs/guide" current>上手指南</a>
-            <a data-xh-part="link" href="#/docs/anatomy">部件解剖</a>
-          </div>
-        </li>
-        <li data-xh-part="indicator"></li>
-      </ul>
-    </nav>
-  </xh-navigation-menu>
-
-  <xh-navigation-menu tone="success" style="display: contents">
-    <nav data-xh-part="root">
-      <ul data-xh-part="list">
-        <li data-xh-part="item">
-          <button data-xh-part="trigger" value="success">success</button>
-          <div data-xh-part="content" value="success">
-            <a data-xh-part="link" href="#/docs/guide" current>上手指南</a>
-            <a data-xh-part="link" href="#/docs/anatomy">部件解剖</a>
-          </div>
-        </li>
-        <li data-xh-part="indicator"></li>
-      </ul>
-    </nav>
-  </xh-navigation-menu>
-
-  <xh-navigation-menu tone="warning" style="display: contents">
-    <nav data-xh-part="root">
-      <ul data-xh-part="list">
-        <li data-xh-part="item">
-          <button data-xh-part="trigger" value="warning">warning</button>
-          <div data-xh-part="content" value="warning">
-            <a data-xh-part="link" href="#/docs/guide" current>上手指南</a>
-            <a data-xh-part="link" href="#/docs/anatomy">部件解剖</a>
-          </div>
-        </li>
-        <li data-xh-part="indicator"></li>
-      </ul>
-    </nav>
-  </xh-navigation-menu>
-
-  <xh-navigation-menu tone="danger" style="display: contents">
-    <nav data-xh-part="root">
-      <ul data-xh-part="list">
-        <li data-xh-part="item">
-          <button data-xh-part="trigger" value="danger">danger</button>
-          <div data-xh-part="content" value="danger">
-            <a data-xh-part="link" href="#/docs/guide" current>上手指南</a>
-            <a data-xh-part="link" href="#/docs/anatomy">部件解剖</a>
-          </div>
-        </li>
-        <li data-xh-part="indicator"></li>
-      </ul>
-    </nav>
-  </xh-navigation-menu>
-
-  <xh-navigation-menu tone="info" style="display: contents">
-    <nav data-xh-part="root">
-      <ul data-xh-part="list">
-        <li data-xh-part="item">
-          <button data-xh-part="trigger" value="info">info</button>
-          <div data-xh-part="content" value="info">
-            <a data-xh-part="link" href="#/docs/guide" current>上手指南</a>
-            <a data-xh-part="link" href="#/docs/anatomy">部件解剖</a>
-          </div>
-        </li>
-        <li data-xh-part="indicator"></li>
-      </ul>
-    </nav>
-  </xh-navigation-menu>
-</div>
-```
-
-### 尺寸
-
-size 一档换掉入口的高度、内边距与字号，写在 root 上、面板里的链接一并跟着变
-
-```vue
-<script setup lang="ts">
-import { XhNavigationMenuLink, XhNavigationMenuRoot } from "@xihan-ui/vue";
-
-const sizes = [
-  { value: "sm", label: "sm" },
-  { value: undefined, label: "缺省" },
-  { value: "lg", label: "lg" },
-];
-
-const entries = [
-  { value: "products", label: "产品" },
-  { value: "docs", label: "文档" },
-];
-
-const panels: Record<string, Array<{ href: string; label: string }>> = {
-  products: [
-    { href: "#/products/runtime", label: "运行时内核" },
-    { href: "#/products/vue", label: "Vue 适配器" },
-  ],
-  docs: [{ href: "#/docs/guide", label: "上手指南" }],
-};
-</script>
-
-<template>
-  <!-- 面板是绝对定位的浮层，这里给下方留出它落位的空间 -->
-  <div
-    style="
-      inline-size: 100%;
-      display: flex;
-      flex-wrap: wrap;
-      align-items: flex-start;
-      gap: 24px;
-      padding-block-end: 180px;
-    "
-  >
-    <div v-for="s in sizes" :key="s.label" style="display: grid; gap: 6px">
-      <span>{{ s.label }}</span>
-      <XhNavigationMenuRoot :collection="entries" :size="s.value">
-        <template #panel="node">
-          <XhNavigationMenuLink
-            v-for="l in panels[node.value]"
-            :key="l.href"
-            :href="l.href"
-          >
-            {{ l.label }}
-          </XhNavigationMenuLink>
-        </template>
-      </XhNavigationMenuRoot>
-    </div>
-  </div>
-</template>
-```
-
-```html
-<!-- 面板是绝对定位的浮层，这里给下方留出它落位的空间 -->
-<div
-  style="
-    inline-size: 100%;
-    display: flex;
-    flex-wrap: wrap;
-    align-items: flex-start;
-    gap: 24px;
-    padding-block-end: 180px;
-  "
->
-  <div style="display: grid; gap: 6px">
-    <span>sm</span>
-    <xh-navigation-menu size="sm" style="display: contents">
-      <nav data-xh-part="root">
-        <ul data-xh-part="list">
-          <li data-xh-part="item">
-            <button data-xh-part="trigger" value="products">产品</button>
-            <div data-xh-part="content" value="products">
-              <a data-xh-part="link" href="#/products/runtime">运行时内核</a>
-              <a data-xh-part="link" href="#/products/vue">Vue 适配器</a>
-            </div>
-          </li>
-          <li data-xh-part="item">
-            <button data-xh-part="trigger" value="docs">文档</button>
-            <div data-xh-part="content" value="docs">
-              <a data-xh-part="link" href="#/docs/guide">上手指南</a>
-            </div>
-          </li>
-          <li data-xh-part="indicator"></li>
-        </ul>
-      </nav>
-    </xh-navigation-menu>
-  </div>
-
-  <div style="display: grid; gap: 6px">
-    <span>缺省</span>
-    <xh-navigation-menu style="display: contents">
-      <nav data-xh-part="root">
-        <ul data-xh-part="list">
-          <li data-xh-part="item">
-            <button data-xh-part="trigger" value="products">产品</button>
-            <div data-xh-part="content" value="products">
-              <a data-xh-part="link" href="#/products/runtime">运行时内核</a>
-              <a data-xh-part="link" href="#/products/vue">Vue 适配器</a>
-            </div>
-          </li>
-          <li data-xh-part="item">
-            <button data-xh-part="trigger" value="docs">文档</button>
-            <div data-xh-part="content" value="docs">
-              <a data-xh-part="link" href="#/docs/guide">上手指南</a>
-            </div>
-          </li>
-          <li data-xh-part="indicator"></li>
-        </ul>
-      </nav>
-    </xh-navigation-menu>
-  </div>
-
-  <div style="display: grid; gap: 6px">
-    <span>lg</span>
-    <xh-navigation-menu size="lg" style="display: contents">
-      <nav data-xh-part="root">
-        <ul data-xh-part="list">
-          <li data-xh-part="item">
-            <button data-xh-part="trigger" value="products">产品</button>
-            <div data-xh-part="content" value="products">
-              <a data-xh-part="link" href="#/products/runtime">运行时内核</a>
-              <a data-xh-part="link" href="#/products/vue">Vue 适配器</a>
-            </div>
-          </li>
-          <li data-xh-part="item">
-            <button data-xh-part="trigger" value="docs">文档</button>
-            <div data-xh-part="content" value="docs">
-              <a data-xh-part="link" href="#/docs/guide">上手指南</a>
-            </div>
-          </li>
-          <li data-xh-part="indicator"></li>
-        </ul>
-      </nav>
-    </xh-navigation-menu>
-  </div>
-</div>
-```
-
-### 直达入口
-
-没有下级的去处不必套面板：那一项直接铺成一条 link，它不进方向键那一组（那一组只认 trigger），按 Tab 一样到得了
+混合下拉入口与普通链接
 
 ```vue
 <script setup lang="ts">
@@ -673,7 +176,6 @@ import { XhNavigationMenuLink, XhNavigationMenuRoot } from "@xihan-ui/vue";
 const entries = [
   { value: "products", label: "产品" },
   { value: "docs", label: "文档" },
-  // 直达入口：给了 href 就没有 trigger 也没有面板，点了就跳走
   { value: "changelog", label: "更新日志", href: "#/changelog" },
 ];
 
@@ -690,7 +192,7 @@ const panels: Record<string, Array<{ href: string; label: string }>> = {
 </script>
 
 <template>
-  <div style="inline-size: 100%; padding-block-end: 150px">
+  <div style="inline-size: min(640px, 100%); padding-block-end: 150px">
     <XhNavigationMenuRoot :collection="entries">
       <template #panel="node">
         <XhNavigationMenuLink
@@ -707,7 +209,7 @@ const panels: Record<string, Array<{ href: string; label: string }>> = {
 ```
 
 ```html
-<div style="inline-size: 100%; padding-block-end: 150px">
+<div style="inline-size: min(640px, 100%); padding-block-end: 150px">
   <xh-navigation-menu style="display: contents">
     <nav data-xh-part="root">
       <ul data-xh-part="list">
@@ -726,7 +228,6 @@ const panels: Record<string, Array<{ href: string; label: string }>> = {
           </div>
         </li>
         <li data-xh-part="item">
-          <!-- 直达入口：这一项没有 trigger 也没有面板，点了就跳走 -->
           <a data-xh-part="link" href="#/changelog">更新日志</a>
         </li>
         <li data-xh-part="indicator"></li>
@@ -736,9 +237,9 @@ const panels: Record<string, Array<{ href: string; label: string }>> = {
 </div>
 ```
 
-### 共享面板外壳
+### 共享面板
 
-面板整批塞进 viewport 后落位归外壳管：几个入口的面板落在同一处，宽窄不同也不再各贴各的入口
+在固定位置切换不同导航内容
 
 ```vue
 <script setup lang="ts">
@@ -779,7 +280,7 @@ const groups = [
 </script>
 
 <template>
-  <div style="inline-size: 100%; padding-block-end: 180px">
+  <div style="inline-size: min(640px, 100%); padding-block-end: 180px">
     <XhNavigationMenuRoot>
       <XhNavigationMenuList>
         <XhNavigationMenuItem v-for="g in groups" :key="g.value">
@@ -789,8 +290,6 @@ const groups = [
         </XhNavigationMenuItem>
       </XhNavigationMenuList>
 
-      <!-- 外壳放在 root 内、list 之后；里面装哪一份面板由各自的 value 决定。
-           面板不再住在各自那一项里，按 Tab 走进面板要先走完全部入口 -->
       <XhNavigationMenuViewport>
         <XhNavigationMenuContent
           v-for="g in groups"
@@ -812,7 +311,7 @@ const groups = [
 ```
 
 ```html
-<div style="inline-size: 100%; padding-block-end: 180px">
+<div style="inline-size: min(640px, 100%); padding-block-end: 180px">
   <xh-navigation-menu style="display: contents">
     <nav data-xh-part="root">
       <ul data-xh-part="list">
@@ -827,8 +326,6 @@ const groups = [
         </li>
       </ul>
 
-      <!-- 外壳放在 root 内、list 之后；里面装哪一份面板由各自的 value 决定。
-           面板不再住在各自那一项里，按 Tab 走进面板要先走完全部入口 -->
       <div data-xh-part="viewport">
         <div data-xh-part="content" value="products">
           <a data-xh-part="link" href="#/products/runtime">运行时内核</a>
@@ -848,351 +345,41 @@ const groups = [
 </div>
 ```
 
-### 默认展开项
-
-defaultValue 只定首帧展开哪一项，之后照常由交互接管；指针移开、Escape 或点回入口都收得起来
-
-```vue
-<script setup lang="ts">
-import { XhNavigationMenuLink, XhNavigationMenuRoot } from "@xihan-ui/vue";
-
-const entries = [
-  { value: "guide", label: "指南" },
-  { value: "components", label: "组件" },
-];
-
-const panels: Record<string, Array<{ href: string; label: string }>> = {
-  guide: [
-    { href: "#/guide/install", label: "安装" },
-    { href: "#/guide/quick-start", label: "快速开始" },
-  ],
-  components: [
-    { href: "#/components/menu", label: "菜单" },
-    { href: "#/components/toolbar", label: "工具栏" },
-  ],
-};
-</script>
-
-<template>
-  <div style="inline-size: 100%; padding-block-end: 150px">
-    <!-- 首帧就展开「指南」，指示条也一并落在它下面 -->
-    <XhNavigationMenuRoot :collection="entries" default-value="guide">
-      <template #panel="node">
-        <XhNavigationMenuLink
-          v-for="l in panels[node.value]"
-          :key="l.href"
-          :href="l.href"
-        >
-          {{ l.label }}
-        </XhNavigationMenuLink>
-      </template>
-    </XhNavigationMenuRoot>
-  </div>
-</template>
-```
-
-```html
-<div style="inline-size: 100%; padding-block-end: 150px">
-  <!-- 首帧就展开「指南」，指示条也一并落在它下面 -->
-  <xh-navigation-menu default-value="guide" style="display: contents">
-    <nav data-xh-part="root">
-      <ul data-xh-part="list">
-        <li data-xh-part="item">
-          <button data-xh-part="trigger" value="guide">指南</button>
-          <div data-xh-part="content" value="guide">
-            <a data-xh-part="link" href="#/guide/install">安装</a>
-            <a data-xh-part="link" href="#/guide/quick-start">快速开始</a>
-          </div>
-        </li>
-        <li data-xh-part="item">
-          <button data-xh-part="trigger" value="components">组件</button>
-          <div data-xh-part="content" value="components">
-            <a data-xh-part="link" href="#/components/menu">菜单</a>
-            <a data-xh-part="link" href="#/components/toolbar">工具栏</a>
-          </div>
-        </li>
-        <li data-xh-part="indicator"></li>
-      </ul>
-    </nav>
-  </xh-navigation-menu>
-</div>
-```
-
-### 收窄成一列图标
-
-竖排时面板本就从入口侧边长出来；收窄只是把文字从入口里撤掉、把它挪进面板，指针停上去才露出来
-
-```vue
-<script setup lang="ts">
-import {
-  XhButton,
-  XhIcon,
-  XhNavigationMenuContent,
-  XhNavigationMenuIndicator,
-  XhNavigationMenuItem,
-  XhNavigationMenuLink,
-  XhNavigationMenuList,
-  XhNavigationMenuRoot,
-  XhNavigationMenuTrigger,
-} from "@xihan-ui/vue";
-import { ref } from "vue";
-
-// 三个图标共用一套描边呈现属性，stroke 取 currentColor
-const strokeAttrs = {
-  "fill": "none",
-  "stroke": "currentColor",
-  "stroke-width": "2",
-  "stroke-linecap": "round",
-  "stroke-linejoin": "round",
-} as const;
-
-const UsersIcon = {
-  name: "users",
-  viewBox: "0 0 24 24",
-  attrs: strokeAttrs,
-  nodes: [
-    { tag: "circle", attrs: { cx: "9", cy: "8", r: "3" } },
-    { tag: "path", attrs: { d: "M3 20A6 6 0 0 1 15 20" } },
-    { tag: "path", attrs: { d: "M17 11A3 3 0 0 0 17 5" } },
-  ],
-} as const;
-
-const PulseIcon = {
-  name: "pulse",
-  viewBox: "0 0 24 24",
-  attrs: strokeAttrs,
-  nodes: [{ tag: "path", attrs: { d: "M3 12H7L10 5L14 19L17 12H21" } }],
-} as const;
-
-const ToolIcon = {
-  name: "tool",
-  viewBox: "0 0 24 24",
-  attrs: strokeAttrs,
-  nodes: [
-    { tag: "path", attrs: { d: "M14 6A4 4 0 1 0 18 10L20 8V4H16L14 6Z" } },
-    { tag: "path", attrs: { d: "M13 11L5 19L7 21L15 13" } },
-  ],
-} as const;
-
-const groups = [
-  {
-    value: "system",
-    label: "系统管理",
-    icon: UsersIcon,
-    links: [
-      { href: "#/system/user", label: "用户" },
-      { href: "#/system/role", label: "角色" },
-    ],
-  },
-  {
-    value: "monitor",
-    label: "运行监控",
-    icon: PulseIcon,
-    links: [
-      { href: "#/monitor/online", label: "在线用户" },
-      { href: "#/monitor/job", label: "定时任务" },
-    ],
-  },
-  {
-    value: "tool",
-    label: "系统工具",
-    icon: ToolIcon,
-    links: [{ href: "#/tool/codegen", label: "代码生成" }],
-  },
-];
-
-const collapsed = ref(true);
-</script>
-
-<template>
-  <div style="inline-size: 100%; display: flex; gap: 16px; padding-block-end: 40px">
-    <XhNavigationMenuRoot
-      orientation="vertical"
-      :style="{ inlineSize: collapsed ? '56px' : '190px' }"
-    >
-      <XhNavigationMenuList>
-        <XhNavigationMenuItem v-for="g in groups" :key="g.value">
-          <XhNavigationMenuTrigger
-            :value="g.value"
-            :style="{ justifyContent: collapsed ? 'center' : 'flex-start' }"
-          >
-            <XhIcon :icon="g.icon" size="sm" :label="collapsed ? g.label : undefined" />
-            <span v-if="!collapsed">{{ g.label }}</span>
-          </XhNavigationMenuTrigger>
-          <XhNavigationMenuContent :value="g.value">
-            <span
-              v-if="collapsed"
-              style="padding: 2px 8px; color: var(--xh-fg-muted); font-size: 12px"
-            >
-              {{ g.label }}
-            </span>
-            <XhNavigationMenuLink v-for="l in g.links" :key="l.href" :href="l.href">
-              {{ l.label }}
-            </XhNavigationMenuLink>
-          </XhNavigationMenuContent>
-        </XhNavigationMenuItem>
-        <XhNavigationMenuIndicator />
-      </XhNavigationMenuList>
-    </XhNavigationMenuRoot>
-
-    <XhButton size="sm" variant="outline" @click="collapsed = !collapsed">
-      {{ collapsed ? "展开侧栏" : "收窄侧栏" }}
-    </XhButton>
-  </div>
-</template>
-```
-
-```html
-<div
-  id="navigation-menu-collapsed"
-  style="inline-size: 100%; display: flex; gap: 16px; padding-block-end: 40px"
->
-  <xh-navigation-menu orientation="vertical" style="display: contents">
-    <nav data-xh-part="root" style="inline-size: 56px">
-      <ul data-xh-part="list">
-        <li data-xh-part="item">
-          <button data-xh-part="trigger" value="system" style="justify-content: center">
-            <xh-icon size="sm" data-glyph="users" label="系统管理">
-              <svg data-xh-part="root"><g data-xh-part="glyph"></g></svg>
-            </xh-icon>
-            <span data-text hidden>系统管理</span>
-          </button>
-          <div data-xh-part="content" value="system">
-            <span data-caption style="padding: 2px 8px; color: var(--xh-fg-muted); font-size: 12px">
-              系统管理
-            </span>
-            <a data-xh-part="link" href="#/system/user">用户</a>
-            <a data-xh-part="link" href="#/system/role">角色</a>
-          </div>
-        </li>
-        <li data-xh-part="item">
-          <button data-xh-part="trigger" value="monitor" style="justify-content: center">
-            <xh-icon size="sm" data-glyph="pulse" label="运行监控">
-              <svg data-xh-part="root"><g data-xh-part="glyph"></g></svg>
-            </xh-icon>
-            <span data-text hidden>运行监控</span>
-          </button>
-          <div data-xh-part="content" value="monitor">
-            <span data-caption style="padding: 2px 8px; color: var(--xh-fg-muted); font-size: 12px">
-              运行监控
-            </span>
-            <a data-xh-part="link" href="#/monitor/online">在线用户</a>
-            <a data-xh-part="link" href="#/monitor/job">定时任务</a>
-          </div>
-        </li>
-        <li data-xh-part="item">
-          <button data-xh-part="trigger" value="tool" style="justify-content: center">
-            <xh-icon size="sm" data-glyph="tool" label="系统工具">
-              <svg data-xh-part="root"><g data-xh-part="glyph"></g></svg>
-            </xh-icon>
-            <span data-text hidden>系统工具</span>
-          </button>
-          <div data-xh-part="content" value="tool">
-            <span data-caption style="padding: 2px 8px; color: var(--xh-fg-muted); font-size: 12px">
-              系统工具
-            </span>
-            <a data-xh-part="link" href="#/tool/codegen">代码生成</a>
-          </div>
-        </li>
-        <li data-xh-part="indicator"></li>
-      </ul>
-    </nav>
-  </xh-navigation-menu>
-
-  <xh-button size="sm" variant="outline">
-    <button data-xh-part="root" id="navigation-menu-collapsed-toggle">展开侧栏</button>
-  </xh-button>
-</div>
-
-<script type="module">
-  // 三个图标共用一套描边呈现属性，stroke 取 currentColor
-  const strokeAttrs = {
-    "fill": "none",
-    "stroke": "currentColor",
-    "stroke-width": "2",
-    "stroke-linecap": "round",
-    "stroke-linejoin": "round",
-  };
-
-  const icons = {
-    users: {
-      name: "users",
-      viewBox: "0 0 24 24",
-      attrs: strokeAttrs,
-      nodes: [
-        { tag: "circle", attrs: { cx: "9", cy: "8", r: "3" } },
-        { tag: "path", attrs: { d: "M3 20A6 6 0 0 1 15 20" } },
-        { tag: "path", attrs: { d: "M17 11A3 3 0 0 0 17 5" } },
-      ],
-    },
-    pulse: {
-      name: "pulse",
-      viewBox: "0 0 24 24",
-      attrs: strokeAttrs,
-      nodes: [{ tag: "path", attrs: { d: "M3 12H7L10 5L14 19L17 12H21" } }],
-    },
-    tool: {
-      name: "tool",
-      viewBox: "0 0 24 24",
-      attrs: strokeAttrs,
-      nodes: [
-        { tag: "path", attrs: { d: "M14 6A4 4 0 1 0 18 10L20 8V4H16L14 6Z" } },
-        { tag: "path", attrs: { d: "M13 11L5 19L7 21L15 13" } },
-      ],
-    },
-  };
-
-  const scope = document.getElementById("navigation-menu-collapsed");
-  const nav = scope.querySelector('[data-xh-part="root"]');
-  const toggle = document.getElementById("navigation-menu-collapsed-toggle");
-
-  // 图标记录是对象，只走 property
-  for (const el of scope.querySelectorAll("xh-icon")) el.icon = icons[el.dataset.glyph];
-
-  let collapsed = true;
-
-  // 收窄只挪动文字：入口里的撤掉、面板里的补上，图标同时接过可及名字
-  function apply() {
-    nav.style.inlineSize = collapsed ? "56px" : "190px";
-    for (const el of scope.querySelectorAll('[data-xh-part="trigger"]'))
-      el.style.justifyContent = collapsed ? "center" : "flex-start";
-    for (const el of scope.querySelectorAll("[data-text]")) el.hidden = collapsed;
-    for (const el of scope.querySelectorAll("[data-caption]")) el.hidden = !collapsed;
-    for (const el of scope.querySelectorAll("xh-icon")) {
-      const name = el.parentElement.querySelector("[data-text]").textContent.trim();
-      if (collapsed) el.setAttribute("label", name);
-      else el.removeAttribute("label");
-    }
-    toggle.textContent = collapsed ? "展开侧栏" : "收窄侧栏";
-  }
-
-  apply();
-  toggle.addEventListener("click", () => {
-    collapsed = !collapsed;
-    apply();
-  });
-</script>
-```
-
 ## 设计指引
 
 ### 何时使用
 
-- 门户、营销站、文档站的顶部导航，每个板块下还有若干去处。
+- 门户、营销站或文档站具有多组导航链接。
 
 ### 何时不用
 
-- 条目是命令（执行一次动作）：用[菜单](./menu)。
-- 后台的层级导航：用[侧栏导航](./side-nav)。
+- 操作命令使用[菜单](./menu)。
+- 后台层级导航使用[侧栏导航](./side-nav)。
 
 ### 特性
 
-- 面板落在同一个 `li` 里、紧跟入口之后，展开时按 Tab 就走得进去。
-- `delayDuration` 防的是指针横穿导航时一路闪出面板；`skipDelayDuration` 是收起后的静默窗口，窗口内再碰任意入口直接展开。
-- 没有下级的去处不必套面板：那一项直接铺成一条 `link`，它不进方向键那一组，按 Tab 一样到得了。
-- 面板整批塞进 `viewport` 后落位归外壳管：几个入口的面板落在同一处，宽窄不同也不再各贴各的入口。
+- 支持横向和竖向排列、延迟展开与键盘导航。
+- 没有子级的入口可直接渲染为链接。
+- `viewport` 可让所有面板在同一位置切换。
+- 当前链接使用 `aria-current="page"`。
 
-## 产物
+### 组合
+
+- 窄屏时切换为抽屉或侧栏导航，不压缩顶部入口。
+
+### 最佳实践
+
+- 使用短标题和简洁说明组织链接。
+- 保留默认展开延时，避免指针经过时连续闪动。
+
+### 反模式
+
+- 不要在导航面板中放置表单或一次性命令。
+- 不要在窄屏中强行保留完整横向导航。
+
+## API 参考
+
+### 产物
 
 | 层 | 值 |
 | --- | --- |
@@ -1202,13 +389,7 @@ const collapsed = ref(true);
 | 状态机 | `navigationMenuMachine` |
 | 皮肤 | `@xihan-ui/styles/navigation-menu.css` |
 
-## 解剖
-
-部件名即 `data-part` 属性值，也是皮肤的选择器。加粗的是必备部件，不渲染它组件不工作（Web Components 适配器会在诊断通道上报 `wc.missing-part`）。
-
-`data-scope="navigation-menu"`：**`root`** · **`list`** · **`item`** · `trigger` · `trigger-indicator` · `content` · **`link`** · `indicator` · `viewport`
-
-## Props
+### Props
 
 | 属性 | 类型 | 必填 | 说明 |
 | --- | --- | --- | --- |
@@ -1226,17 +407,17 @@ const collapsed = ref(true);
 | `size` | `Size` |  | 尺寸：sm / md / lg。 |
 | `onValueChange` | `(details: NavigationMenuValueChangeDetails) => void` |  | value 变化回调。 |
 
-## 事件
+### 事件
 
-自定义元素派发这些事件，Vue 组件对应同名 emit；载荷都在 `detail` 上。可双向绑定的值另有 `update:xxx`，见 Props。
+自定义元素将载荷放在 `detail`；Vue 使用同名 emit。
 
 | 事件 | 载荷 | 说明 |
 | --- | --- | --- |
 | `value-change` | `NavigationMenuValueChangeDetails` | 展开项变化；detail 为 `{ value: string \| null }` |
 
-## 状态
+### 状态
 
-对外可见的状态落在 `data-state` 上，写样式与断言都读它：
+公开状态写入 `data-state`。
 
 | 部件 | 取值 |
 | --- | --- |
@@ -1247,7 +428,7 @@ const collapsed = ref(true);
 | `indicator` | 'open' \| 'closed' |
 | `viewport` | 'open' \| 'closed' |
 
-状态机内部转移，写样式与业务都用不到；要监听变化请看上面的「事件」。
+以下名称仅用于内部状态机。
 
 **状态**：`idle` · `opening` · `skipping`
 
@@ -1255,9 +436,9 @@ const collapsed = ref(true);
 
 **判据**：`hasValue` · `isCurrent` · `shouldKeepOpen`
 
-## connect API
+### connect API
 
-`useNavigationMenu` 产出的对象。`getXxxProps()` 铺到对应部件的宿主元素上，其余是可读状态与操作入口。
+`getXxxProps()` 返回对应部件的宿主属性。
 
 | 成员 | 类型 | 说明 |
 | --- | --- | --- |
@@ -1276,7 +457,9 @@ const collapsed = ref(true);
 | `getIndicatorProps` | `() => T['element']` |  |
 | `getViewportProps` | `() => T['element']` |  |
 
-## 键盘
+## 无障碍
+
+### 键盘
 
 规格出处：[W3C APG](https://www.w3.org/WAI/ARIA/apg/patterns/disclosure/examples/disclosure-navigation/)
 
@@ -1290,9 +473,9 @@ const collapsed = ref(true);
 | `Escape` | open | 收起面板并把焦点归还对应 trigger；静默窗口内这一次归还不会把面板重新弹出来 |
 | `Tab` / `Shift+Tab` | open, focus in trigger | 走进展开的面板：面板就在 trigger 之后，收起的面板带 hidden 因而被整个跳过 |
 
-## 无障碍
+### ARIA
 
-下面这些由 `connect` 铺到部件上，作者不必自己写；重复写反而会覆盖掉正确值。
+以下属性由 `connect` 生成。
 
 | 部件 | 属性 | 值 |
 | --- | --- | --- |
@@ -1308,13 +491,15 @@ const collapsed = ref(true);
 | `indicator` | `aria-hidden` | 'true' |
 | `viewport` | `aria-hidden` | !open \|\| undefined |
 
-## 样式
+## 样式参考
 
-默认皮肤 `@xihan-ui/styles/navigation-menu.css` 按部件选择：`[data-scope="navigation-menu"][data-part="root"]`。它落在 `xihan.components` 与 `xihan.motion` 层；业务样式不写进 `@layer` 即高于全部库层，要按层压过来就写进 `xihan.overrides`。
+### 皮肤
 
-## 数据属性
+`@xihan-ui/styles/navigation-menu.css` 使用 `[data-scope="navigation-menu"][data-part="root"]` 部件选择器，位于 `xihan.components` 与 `xihan.motion` 层。覆盖样式使用 `xihan.overrides`。
 
-由 `connect` 产出并铺到部件上，皮肤与测试都据此选择；`data-disabled` 这类无值属性在条件不成立时整个不出现。
+### 数据属性
+
+由 `connect` 生成；条件不成立时不输出无值属性。
 
 | 部件 | 属性 | 值 |
 | --- | --- | --- |
@@ -1339,7 +524,7 @@ const collapsed = ref(true);
 | `viewport` | `data-state` | 'open' \| 'closed' |
 
 <!-- xh-component-tokens:start -->
-## CSS 变量
+### CSS 变量
 
 本组件公开覆盖槽由独立皮肤的实际消费位生成；缺省来源、作用部件和状态均与 CSS 同源。
 
@@ -1380,7 +565,7 @@ const collapsed = ref(true);
 | `--xh-navigation-menu-viewport-p` | `viewport` | `padding` | `default` | `--xh-space-2` | navigation-menu 的 viewport 部件 padding 覆盖槽。 |
 <!-- xh-component-tokens:end -->
 
-## 动效
+### 动效
 
 关键帧 `xh-pop-in` · `xh-pop-out` 随皮肤自带，不引用别处文件里的名字；`background` · `block-size` · `inline-size` · `inset-block-start` · `inset-inline-start` · `rotate` · `scale` 走 `transition` 过渡。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
 
@@ -1388,20 +573,6 @@ const collapsed = ref(true);
 
 系统开启减弱动效时由令牌层统一收敛，皮肤不另作判断。
 
-## RTL
+### RTL
 
 皮肤用逻辑属性排布（`inline-start` 一族），`dir="rtl"` 下自动镜像。
-
-## 组合
-
-- 与[布局](./layout)的头部配合；窄屏时整体换成[抽屉](./drawer)里的[侧栏导航](./side-nav)。
-
-## 最佳实践
-
-- 面板里的链接分组并加组标题，一整块无结构的链接墙没人看得下去。
-- 延时保留默认值：调到 0 会让导航在指针路过时不停闪。
-
-## 反模式
-
-- 面板里混进需要提交的表单或命令按钮。
-- 悬停即刻展开且没有静默窗口：指针横穿时面板一路弹出。

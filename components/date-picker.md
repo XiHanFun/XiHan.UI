@@ -1,8 +1,8 @@
 来源：https://ui.docs.xihanfun.com/components/date-picker
 
-# DatePicker `日期选择器`
+# DatePicker 日期选择器
 
-带日历浮层的日期录入：输入框可以打字，浮层里可以挑。
+将分段日期输入与日历浮层组合在一起。
 
 <div class="xh-resource-links">
   <a href="https://github.com/XiHanFun/XiHan.UI/tree/dev/ui/packages/engine/headless/src/date-picker" target="_blank" rel="noreferrer">Headless</a>
@@ -14,7 +14,7 @@
 
 ## 用法
 
-点输入行任意处即展开，不必再去点小箭头；段位与日历写的是同一个值，改哪边另一边当场跟着改口
+输入或选择日期
 
 ```vue
 <script setup lang="ts">
@@ -30,7 +30,6 @@ import {
   XhDatePickerGridHead,
   XhDatePickerHeader,
   XhDatePickerHeading,
-  XhDatePickerHiddenInput,
   XhDatePickerLabel,
   XhDatePickerNextTrigger,
   XhDatePickerPositioner,
@@ -41,22 +40,13 @@ import {
   XhDatePickerWeekDay,
   XhDatePickerWeekRow,
 } from "@xihan-ui/vue";
-import { ref } from "vue";
-
-const value = ref<string[]>([]);
 </script>
 
 <template>
-  <XhDatePickerRoot
-    v-slot="{ weeks, weekDays }"
-    v-model:value="value"
-    locale="zh-CN"
-    name="due"
-  >
+  <XhDatePickerRoot v-slot="{ weeks, weekDays }" locale="zh-CN">
     <XhDatePickerLabel>交付日期</XhDatePickerLabel>
     <XhDatePickerControl>
       <XhDatePickerSegmentGroup>
-        <!-- 段位不写内容：显示什么由组件按当前值填 -->
         <XhDatePickerSegment :index="0" />
         <span>-</span>
         <XhDatePickerSegment :index="1" />
@@ -65,8 +55,6 @@ const value = ref<string[]>([]);
       </XhDatePickerSegmentGroup>
       <XhDatePickerClearTrigger />
     </XhDatePickerControl>
-    <!-- 表单出口：随表单提交的是 ISO 串 -->
-    <XhDatePickerHiddenInput />
     <XhDatePickerPositioner>
       <XhDatePickerContent>
         <XhDatePickerCalendar>
@@ -86,7 +74,6 @@ const value = ref<string[]>([]);
               </XhDatePickerWeekRow>
             </XhDatePickerGridHead>
             <XhDatePickerGridBody>
-              <!-- v-for 必带 key：就地复用会让承载焦点的那一格换了身份 -->
               <XhDatePickerWeekRow v-for="week in weeks" :key="week[0].value">
                 <XhDatePickerCell
                   v-for="day in week"
@@ -102,22 +89,18 @@ const value = ref<string[]>([]);
       </XhDatePickerContent>
     </XhDatePickerPositioner>
   </XhDatePickerRoot>
-
-  <span style="font-size: 13px">当前值：{{ value[0] ?? "（未选）" }}</span>
 </template>
 ```
 
 ```html
 <div id="date-picker-basic-mount"></div>
 
-<!-- 结构先收在模板里：网格由作者渲染，格子填好了才入页 -->
 <template id="date-picker-basic-template">
-  <xh-date-picker locale="zh-CN" name="due">
+  <xh-date-picker locale="zh-CN">
     <div data-xh-part="root">
       <span data-xh-part="label">交付日期</span>
       <div data-xh-part="control">
         <div data-xh-part="segment-group">
-          <!-- 段位不写内容：显示什么由组件按当前值填 -->
           <span data-xh-part="segment"></span>
           <span>-</span>
           <span data-xh-part="segment"></span>
@@ -126,8 +109,6 @@ const value = ref<string[]>([]);
         </div>
         <button data-xh-part="clear-trigger"></button>
       </div>
-      <!-- 表单出口：随表单提交的是 ISO 串 -->
-      <input data-xh-part="hidden-input" />
       <div data-xh-part="positioner">
         <div data-xh-part="content">
           <div data-xh-part="calendar">
@@ -212,11 +193,17 @@ const value = ref<string[]>([]);
 </script>
 ```
 
+## 组件结构
+
+加粗的是必需部件。
+
+`data-scope="date-picker"`：`root` · `label` · **`control`** · `segment-group` · `trigger` · `clear-trigger` · `positioner` · **`content`** · `preset-group` · `preset` · **`calendar`** · `time-column` · `time-item` · `confirm-trigger`
+
 ## 示例
 
 ### 区间选择
 
-五种粒度都能挑区间：两端跨页才并排两页，同一页放得下就一页；翻页整窗一起走，大步翻那对钮一次跨一年或十页
+选择开始和结束日期
 
 ```vue
 <script setup lang="ts">
@@ -246,34 +233,12 @@ import {
   XhDatePickerWeekNumber,
   XhDatePickerWeekRow,
 } from "@xihan-ui/vue";
-import { ref } from "vue";
 
 const kinds = [
-  { key: "day", label: "按天", view: "day" as CalendarView, week: false },
-  { key: "week", label: "按周", view: "day" as CalendarView, week: true },
-  { key: "month", label: "按月", view: "month" as CalendarView, week: false },
-  { key: "quarter", label: "按季度", view: "quarter" as CalendarView, week: false },
-  { key: "year", label: "按年", view: "year" as CalendarView, week: false },
+  { key: "day", label: "旅行日期", view: "day" as CalendarView, week: false },
 ];
 
-const values = ref<Record<string, string[]>>({
-  day: [],
-  week: [],
-  month: [],
-  quarter: [],
-  year: [],
-});
-
-// 两组段位各自的读屏名字，区间模式下替掉指向 label 的那份
 const translations = { startDate: "开始", endDate: "结束" };
-
-function text(v: string[]): string {
-  if (v.length === 0)
-    return "（未选）";
-  if (v.length === 1)
-    return `${v[0]}（另一端待定）`;
-  return `${v[0]} → ${v[1]}`;
-}
 </script>
 
 <template>
@@ -282,7 +247,6 @@ function text(v: string[]): string {
       v-for="k in kinds"
       :key="k.key"
       v-slot="{ panels, weekDays, segments, endSegments }"
-      v-model:value="values[k.key]"
       :translations="translations"
       :view="k.view"
       :week-selection="k.week"
@@ -350,8 +314,6 @@ function text(v: string[]): string {
           </XhDatePickerCalendar>
         </XhDatePickerContent>
       </XhDatePickerPositioner>
-
-      <span style="font-size: 13px">{{ text(values[k.key]) }}</span>
     </XhDatePickerRoot>
   </div>
 </template>
@@ -363,7 +325,6 @@ function text(v: string[]): string {
   style="display: flex; flex-direction: column; gap: 20px"
 ></div>
 
-<!-- 壳先收在模板里：段位与面板都由作者照取数口铺，铺好了才入页 -->
 <template id="date-picker-range-template">
   <xh-date-picker selection-mode="range" locale="zh-CN">
     <div data-xh-part="root">
@@ -377,21 +338,15 @@ function text(v: string[]): string {
       <div data-xh-part="positioner">
         <div data-xh-part="content"></div>
       </div>
-      <span class="date-picker-range-text" style="font-size: 13px">（未选）</span>
     </div>
   </xh-date-picker>
 </template>
 
 <script type="module">
   const kinds = [
-    { label: "按天", view: "day", week: false },
-    { label: "按周", view: "day", week: true },
-    { label: "按月", view: "month", week: false },
-    { label: "按季度", view: "quarter", week: false },
-    { label: "按年", view: "year", week: false },
+    { label: "旅行日期", view: "day", week: false },
   ];
 
-  // 两组段位各自的读屏名字，区间模式下替掉指向 label 的那份
   const translations = { startDate: "开始", endDate: "结束" };
 
   const mount = document.getElementById("date-picker-range-mount");
@@ -488,16 +443,6 @@ function text(v: string[]): string {
     return calendar;
   }
 
-  function readoutText(value) {
-    if (value.length === 0) {
-      return "（未选）";
-    }
-    if (value.length === 1) {
-      return `${value[0]}（另一端待定）`;
-    }
-    return `${value[0]} → ${value[1]}`;
-  }
-
   for (const kind of kinds) {
     const fragment = template.content.cloneNode(true);
     const picker = fragment.querySelector("xh-date-picker");
@@ -510,7 +455,6 @@ function text(v: string[]): string {
 
     const groups = picker.querySelectorAll('[data-xh-part="segment-group"]');
     const content = picker.querySelector('[data-xh-part="content"]');
-    const readout = picker.querySelector(".date-picker-range-text");
 
     // 已经画出来的是哪几页
     let painted = "";
@@ -556,8 +500,7 @@ function text(v: string[]): string {
 
     picker.addEventListener("focused-value-change", paintPanels);
     picker.addEventListener("active-view-change", paintPanels);
-    picker.addEventListener("value-change", (event) => {
-      readout.textContent = readoutText(event.detail.value);
+    picker.addEventListener("value-change", () => {
       // 两端落在不同页时并排两页，页数跟着值走
       paintPanels();
     });
@@ -565,9 +508,9 @@ function text(v: string[]): string {
 </script>
 ```
 
-### 不可选的日子
+### 不可用日期
 
-周末由 isDateUnavailable 判不可用：方向键仍走得过去，只是落不了值
+禁止选择周末
 
 ```vue
 <script setup lang="ts">
@@ -593,9 +536,6 @@ import {
   XhDatePickerWeekDay,
   XhDatePickerWeekRow,
 } from "@xihan-ui/vue";
-import { ref } from "vue";
-
-const value = ref<string[]>([]);
 
 function isWeekend(iso: string) {
   const [y, m, d] = iso.split("-").map(Number);
@@ -607,7 +547,6 @@ function isWeekend(iso: string) {
 <template>
   <XhDatePickerRoot
     v-slot="{ weeks, weekDays }"
-    v-model:value="value"
     :is-date-unavailable="isWeekend"
     locale="zh-CN"
   >
@@ -656,16 +595,11 @@ function isWeekend(iso: string) {
       </XhDatePickerContent>
     </XhDatePickerPositioner>
   </XhDatePickerRoot>
-
-  <span style="font-size: 13px">当前值：{{ value[0] ?? "（未选）" }}</span>
 </template>
 ```
 
 ```html
 <div id="date-picker-unavailable-mount"></div>
-<span style="font-size: 13px">
-  当前值：<span id="date-picker-unavailable-value">（未选）</span>
-</span>
 
 <template id="date-picker-unavailable-template">
   <xh-date-picker locale="zh-CN">
@@ -712,7 +646,6 @@ function isWeekend(iso: string) {
     '[data-xh-part="grid-head"] [data-xh-part="week-row"]',
   );
   const body = fragment.querySelector('[data-xh-part="grid-body"]');
-  const readout = document.getElementById("date-picker-unavailable-value");
 
   let month = "";
 
@@ -761,21 +694,17 @@ function isWeekend(iso: string) {
   }
 
   document.getElementById("date-picker-unavailable-mount").append(fragment);
-  // 判定函数是函数，只走属性
   picker.isDateUnavailable = isWeekend;
   paintHead();
   paintBody();
 
   picker.addEventListener("focused-value-change", paintBody);
-  picker.addEventListener("value-change", (event) => {
-    readout.textContent = event.detail.value[0] ?? "（未选）";
-  });
 </script>
 ```
 
-### 禁用 / 只读 / 校验失败
+### 状态
 
-禁用整条退出 Tab 序，只读仍能展开翻月只是落不了值，invalid 只改标注
+禁用、只读与校验失败
 
 ```vue
 <script setup lang="ts">
@@ -979,7 +908,7 @@ const states = [
 
 ### 快捷选项
 
-presets 在浮层里排出一列，点一条整份写进去并收起；日子在组件外算好再传
+提供常用日期
 
 ```vue
 <script setup lang="ts">
@@ -1007,12 +936,8 @@ import {
   XhDatePickerWeekDay,
   XhDatePickerWeekRow,
 } from "@xihan-ui/vue";
-import { computed, ref } from "vue";
+import { computed } from "vue";
 
-const value = ref<string[]>([]);
-
-// 日子在 computed 里算一次。connect 每帧都会跑一遍，把 today() 放进渲染期会跨零点算出两个答案。
-// 区间用 datePickerPresetRange(-6, 0) 这类算出 '起/止' 一个串，两端一次落定
 const presets = computed(() => [
   { label: "今天", value: datePickerPresetDay(0) },
   { label: "明天", value: datePickerPresetDay(1) },
@@ -1023,7 +948,6 @@ const presets = computed(() => [
 <template>
   <XhDatePickerRoot
     v-slot="{ weeks, weekDays }"
-    v-model:value="value"
     :presets="presets"
     locale="zh-CN"
   >
@@ -1074,16 +998,11 @@ const presets = computed(() => [
       </XhDatePickerContent>
     </XhDatePickerPositioner>
   </XhDatePickerRoot>
-
-  <span style="font-size: 13px">当前值：{{ value[0] ?? "（未选）" }}</span>
 </template>
 ```
 
 ```html
 <div id="date-picker-shortcuts-mount"></div>
-<span style="font-size: 13px">
-  当前值：<span id="date-picker-shortcuts-value">（未选）</span>
-</span>
 
 <template id="date-picker-shortcuts-template">
   <xh-date-picker locale="zh-CN">
@@ -1132,7 +1051,6 @@ const presets = computed(() => [
   );
   const body = fragment.querySelector('[data-xh-part="grid-body"]');
   const list = fragment.querySelector('[data-xh-part="preset-group"]');
-  const readout = document.getElementById("date-picker-shortcuts-value");
 
   let month = "";
 
@@ -1203,10 +1121,8 @@ const presets = computed(() => [
   );
   picker.presets = presets;
 
-  // 值与展开态都由这段脚本持有：组件只发意图，写回才算数
   function setValue(value) {
     picker.value = value;
-    readout.textContent = value[0] ?? "（未选）";
   }
 
   function setOpen(open) {
@@ -1225,241 +1141,9 @@ const presets = computed(() => [
 </script>
 ```
 
-### 受控展开与事件
+### 日期与时间
 
-open 交给宿主持有，值、展开、聚焦日三条变化各自播报
-
-```vue
-<script setup lang="ts">
-import {
-  XhButton,
-  XhDatePickerCalendar,
-  XhDatePickerCell,
-  XhDatePickerCellTrigger,
-  XhDatePickerContent,
-  XhDatePickerControl,
-  XhDatePickerGrid,
-  XhDatePickerGridBody,
-  XhDatePickerGridHead,
-  XhDatePickerHeader,
-  XhDatePickerHeading,
-  XhDatePickerLabel,
-  XhDatePickerNextTrigger,
-  XhDatePickerPositioner,
-  XhDatePickerPrevTrigger,
-  XhDatePickerRoot,
-  XhDatePickerSegment,
-  XhDatePickerSegmentGroup,
-  XhDatePickerWeekDay,
-  XhDatePickerWeekRow,
-} from "@xihan-ui/vue";
-import { ref } from "vue";
-
-const value = ref<string[]>([]);
-const open = ref(false);
-const focused = ref("");
-
-function onFocusedValueChange(details: { focusedValue: string }) {
-  focused.value = details.focusedValue;
-}
-</script>
-
-<template>
-  <XhDatePickerRoot
-    v-slot="{ weeks, weekDays }"
-    v-model:value="value"
-    v-model:open="open"
-    locale="zh-CN"
-    @focused-value-change="onFocusedValueChange"
-  >
-    <XhDatePickerLabel>排期</XhDatePickerLabel>
-    <XhDatePickerControl>
-      <XhDatePickerSegmentGroup>
-        <XhDatePickerSegment :index="0" />
-        <span>-</span>
-        <XhDatePickerSegment :index="1" />
-        <span>-</span>
-        <XhDatePickerSegment :index="2" />
-      </XhDatePickerSegmentGroup>
-    </XhDatePickerControl>
-    <XhDatePickerPositioner>
-      <XhDatePickerContent>
-        <XhDatePickerCalendar>
-          <XhDatePickerHeader>
-            <XhDatePickerPrevTrigger aria-label="上个月" />
-            <XhDatePickerHeading />
-            <XhDatePickerNextTrigger aria-label="下个月" />
-          </XhDatePickerHeader>
-          <XhDatePickerGrid>
-            <XhDatePickerGridHead>
-              <XhDatePickerWeekRow>
-                <XhDatePickerWeekDay
-                  v-for="d in weekDays"
-                  :key="d.value"
-                  :value="d.value"
-                />
-              </XhDatePickerWeekRow>
-            </XhDatePickerGridHead>
-            <XhDatePickerGridBody>
-              <XhDatePickerWeekRow v-for="week in weeks" :key="week[0].value">
-                <XhDatePickerCell
-                  v-for="day in week"
-                  :key="day.value"
-                  :value="day.value"
-                >
-                  <XhDatePickerCellTrigger>{{ day.day }}</XhDatePickerCellTrigger>
-                </XhDatePickerCell>
-              </XhDatePickerWeekRow>
-            </XhDatePickerGridBody>
-          </XhDatePickerGrid>
-        </XhDatePickerCalendar>
-      </XhDatePickerContent>
-    </XhDatePickerPositioner>
-  </XhDatePickerRoot>
-
-  <!-- 展开态由外面这颗按钮也能改 -->
-  <XhButton size="sm" variant="outline" @click="open = !open">
-    {{ open ? "收起" : "展开" }}
-  </XhButton>
-
-  <span style="font-size: 13px">
-    值：{{ value[0] ?? "（未选）" }} · 聚焦日：{{ focused || "（还没动过）" }}
-  </span>
-</template>
-```
-
-```html
-<div id="date-picker-events-mount"></div>
-
-<!-- 展开态由外面这颗按钮也能改 -->
-<xh-button id="date-picker-events-toggle" size="sm" variant="outline">
-  <button data-xh-part="root">展开</button>
-</xh-button>
-
-<span style="font-size: 13px">
-  值：<span id="date-picker-events-value">（未选）</span> · 聚焦日：<span
-    id="date-picker-events-focused"
-    >（还没动过）</span
-  >
-</span>
-
-<template id="date-picker-events-template">
-  <xh-date-picker locale="zh-CN">
-    <div data-xh-part="root">
-      <span data-xh-part="label">排期</span>
-      <div data-xh-part="control">
-        <div data-xh-part="segment-group">
-          <span data-xh-part="segment"></span>
-          <span>-</span>
-          <span data-xh-part="segment"></span>
-          <span>-</span>
-          <span data-xh-part="segment"></span>
-        </div>
-      </div>
-      <div data-xh-part="positioner">
-        <div data-xh-part="content">
-          <div data-xh-part="calendar">
-            <div data-xh-part="header">
-              <button data-xh-part="prev-trigger" aria-label="上个月"></button>
-              <div data-xh-part="heading"></div>
-              <button data-xh-part="next-trigger" aria-label="下个月"></button>
-            </div>
-            <div data-xh-part="grid">
-              <div data-xh-part="grid-head">
-                <div data-xh-part="week-row"></div>
-              </div>
-              <div data-xh-part="grid-body"></div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-  </xh-date-picker>
-</template>
-
-<script type="module">
-  const fragment = document
-    .getElementById("date-picker-events-template")
-    .content.cloneNode(true);
-  const picker = fragment.querySelector("xh-date-picker");
-  const heading = fragment.querySelector('[data-xh-part="heading"]');
-  const head = fragment.querySelector(
-    '[data-xh-part="grid-head"] [data-xh-part="week-row"]',
-  );
-  const body = fragment.querySelector('[data-xh-part="grid-body"]');
-
-  const toggle = document
-    .getElementById("date-picker-events-toggle")
-    .querySelector('[data-xh-part="root"]');
-  const valueOut = document.getElementById("date-picker-events-value");
-  const focusedOut = document.getElementById("date-picker-events-focused");
-
-  let month = "";
-
-  function paintHead() {
-    head.replaceChildren(
-      ...picker.weekDays.map((day) => {
-        const cell = document.createElement("span");
-        cell.dataset.xhPart = "week-day";
-        cell.setAttribute("value", day.value);
-        cell.textContent = day.label;
-        return cell;
-      }),
-    );
-  }
-
-  function paintBody() {
-    const first = picker.weeks[0][0].value;
-    if (first === month) {
-      return;
-    }
-    month = first;
-    heading.textContent = picker.headingLabel;
-    body.replaceChildren(
-      ...picker.weeks.map((week) => {
-        const row = document.createElement("div");
-        row.dataset.xhPart = "week-row";
-        for (const day of week) {
-          const cell = document.createElement("div");
-          cell.dataset.xhPart = "cell";
-          cell.setAttribute("value", day.value);
-          const trigger = document.createElement("div");
-          trigger.dataset.xhPart = "cell-trigger";
-          trigger.textContent = day.day;
-          cell.append(trigger);
-          row.append(cell);
-        }
-        return row;
-      }),
-    );
-  }
-
-  // 展开态由这段脚本持有：组件只发意图，写回它才真的展开
-  function setOpen(open) {
-    picker.open = open;
-    toggle.textContent = open ? "收起" : "展开";
-  }
-
-  document.getElementById("date-picker-events-mount").append(fragment);
-  setOpen(false);
-  paintHead();
-  paintBody();
-
-  toggle.addEventListener("click", () => setOpen(!picker.open));
-  picker.addEventListener("open-change", (event) => setOpen(event.detail.open));
-  picker.addEventListener("value-change", (event) => {
-    valueOut.textContent = event.detail.value[0] ?? "（未选）";
-  });
-  picker.addEventListener("focused-value-change", (event) => {
-    focusedOut.textContent = event.detail.focusedValue;
-    paintBody();
-  });
-</script>
-```
-
-### 日期加时间
-
-show-time 让值升格为一体化 datetime：日历右侧多出时/分两列，选完日子不收起、时间列点选写值、确认钮收口
+同时选择日期和时间
 
 ```vue
 <script setup lang="ts">
@@ -1486,13 +1170,10 @@ import {
   XhDatePickerWeekDay,
   XhDatePickerWeekRow,
 } from "@xihan-ui/vue";
-import { ref } from "vue";
-
-const stamp = ref<string[]>([]);
 </script>
 
 <template>
-  <XhDatePickerRoot v-slot="{ weeks, weekDays }" v-model:value="stamp" show-time locale="zh-CN">
+  <XhDatePickerRoot v-slot="{ weeks, weekDays }" show-time locale="zh-CN">
     <XhDatePickerLabel>会议开始</XhDatePickerLabel>
     <XhDatePickerControl>
       <XhDatePickerSegmentGroup>
@@ -1535,13 +1216,11 @@ const stamp = ref<string[]>([]);
       </XhDatePickerContent>
     </XhDatePickerPositioner>
   </XhDatePickerRoot>
-  <p>已选：{{ stamp[0] ?? "（未选）" }}</p>
 </template>
 ```
 
 ```html
 <div id="date-picker-datetime-mount"></div>
-<p>已选：<span id="date-picker-datetime-value">（未选）</span></p>
 
 <template id="date-picker-datetime-template">
   <xh-date-picker locale="zh-CN" show-time>
@@ -1595,7 +1274,6 @@ const stamp = ref<string[]>([]);
     '[data-xh-part="grid-head"] [data-xh-part="week-row"]',
   );
   const body = fragment.querySelector('[data-xh-part="grid-body"]');
-  const readout = document.getElementById("date-picker-datetime-value");
 
   let month = "";
 
@@ -1663,15 +1341,12 @@ const stamp = ref<string[]>([]);
   paintBody();
 
   picker.addEventListener("focused-value-change", paintBody);
-  picker.addEventListener("value-change", (event) => {
-    readout.textContent = event.detail.value[0] ?? "（未选）";
-  });
 </script>
 ```
 
-### 五种粒度
+### 选择粒度
 
-天 / 周 / 月 / 季度 / 年一套结构走完：输入行铺哪几段跟着 view 走，标题里的年与月可点，逐级钻上去
+按周、月、季度或年选择
 
 ```vue
 <script setup lang="ts">
@@ -1703,9 +1378,7 @@ import {
   XhDatePickerWeekNumber,
   XhDatePickerWeekRow,
 } from "@xihan-ui/vue";
-import { ref } from "vue";
 
-// 段位不必再手数几段：铺哪几块由 view 推出来，作者照 segments 铺就是
 const kinds = [
   { key: "day", label: "按天", view: "day" as CalendarView, week: false },
   { key: "week", label: "按周", view: "day" as CalendarView, week: true },
@@ -1713,14 +1386,6 @@ const kinds = [
   { key: "quarter", label: "按季度", view: "quarter" as CalendarView, week: false },
   { key: "year", label: "按年", view: "year" as CalendarView, week: false },
 ];
-
-const values = ref<Record<string, string[]>>({
-  day: [],
-  week: [],
-  month: [],
-  quarter: [],
-  year: [],
-});
 </script>
 
 <template>
@@ -1729,7 +1394,6 @@ const values = ref<Record<string, string[]>>({
       v-for="k in kinds"
       :key="k.key"
       v-slot="{ panels, weekDays, segments }"
-      v-model:value="values[k.key]"
       :view="k.view"
       :week-selection="k.week"
       :selection-mode="k.week ? 'range' : 'single'"
@@ -1804,12 +1468,6 @@ const values = ref<Record<string, string[]>>({
       </XhDatePickerPositioner>
     </XhDatePickerRoot>
   </div>
-
-  <p style="font-size: 13px">
-    <span v-for="k in kinds" :key="k.key" style="margin-inline-end: 12px">
-      {{ k.label }}：{{ values[k.key].join(" → ") || "—" }}
-    </span>
-  </p>
 </template>
 ```
 
@@ -1818,9 +1476,7 @@ const values = ref<Record<string, string[]>>({
   id="date-picker-granularity-mount"
   style="display: flex; flex-wrap: wrap; gap: 24px"
 ></div>
-<p id="date-picker-granularity-readout" style="font-size: 13px"></p>
 
-<!-- 壳先收在模板里：段位与网格都由作者照取数口铺，铺好了才入页 -->
 <template id="date-picker-granularity-template">
   <xh-date-picker locale="zh-CN">
     <div data-xh-part="root">
@@ -1864,21 +1520,6 @@ const values = ref<Record<string, string[]>>({
 
   const mount = document.getElementById("date-picker-granularity-mount");
   const template = document.getElementById("date-picker-granularity-template");
-  const readout = document.getElementById("date-picker-granularity-readout");
-
-  // 各粒度各自挑到了什么，一起印在下面
-  const values = new Map(kinds.map((kind) => [kind.key, []]));
-
-  function paintReadout() {
-    readout.replaceChildren(
-      ...kinds.map((kind) => {
-        const item = document.createElement("span");
-        item.style.marginInlineEnd = "12px";
-        item.textContent = `${kind.label}：${values.get(kind.key).join(" → ") || "—"}`;
-        return item;
-      }),
-    );
-  }
 
   function node(tag, part, text) {
     const el = document.createElement(tag);
@@ -1992,427 +1633,7 @@ const values = ref<Record<string, string[]>>({
 
     picker.addEventListener("focused-value-change", paintGrid);
     picker.addEventListener("active-view-change", paintGrid);
-    picker.addEventListener("value-change", (event) => {
-      values.set(kind.key, event.detail.value);
-      paintReadout();
-    });
   }
-
-  paintReadout();
-</script>
-```
-
-### 三轴
-
-variant 决定描边与底怎么画、tone 决定用哪族颜色、size 换几何档；三者只落在 root，浮层里的日历一并跟着换
-
-```vue
-<script setup lang="ts">
-import type { ControlVariant, Size, Tone } from "@xihan-ui/core";
-import {
-  XhDatePickerCalendar,
-  XhDatePickerCell,
-  XhDatePickerCellTrigger,
-  XhDatePickerClearTrigger,
-  XhDatePickerContent,
-  XhDatePickerControl,
-  XhDatePickerGrid,
-  XhDatePickerGridBody,
-  XhDatePickerGridHead,
-  XhDatePickerHeader,
-  XhDatePickerHeading,
-  XhDatePickerLabel,
-  XhDatePickerNextTrigger,
-  XhDatePickerPositioner,
-  XhDatePickerPrevTrigger,
-  XhDatePickerRoot,
-  XhDatePickerSegment,
-  XhDatePickerSegmentGroup,
-  XhDatePickerWeekDay,
-  XhDatePickerWeekRow,
-} from "@xihan-ui/vue";
-
-const variants: ControlVariant[] = ["outline", "subtle", "ghost"];
-const tones: Tone[] = ["brand", "success", "danger"];
-const sizes: Size[] = ["sm", "md", "lg"];
-</script>
-
-<template>
-  <div style="display: flex; flex-direction: column; gap: 20px">
-    <div
-      v-for="(row, i) in [variants, tones, sizes]"
-      :key="i"
-      style="display: flex; flex-wrap: wrap; gap: 16px"
-    >
-      <XhDatePickerRoot
-        v-for="v in row"
-        :key="v"
-        v-slot="{ weeks, weekDays }"
-        :variant="i === 0 ? (v as ControlVariant) : undefined"
-        :tone="i === 1 ? (v as Tone) : undefined"
-        :size="i === 2 ? (v as Size) : undefined"
-        locale="zh-CN"
-      >
-        <XhDatePickerLabel>{{ v }}</XhDatePickerLabel>
-        <XhDatePickerControl>
-          <XhDatePickerSegmentGroup>
-            <!-- 段位不写内容：显示什么由组件按当前值填 -->
-            <XhDatePickerSegment :index="0" />
-            <span>-</span>
-            <XhDatePickerSegment :index="1" />
-            <span>-</span>
-            <XhDatePickerSegment :index="2" />
-          </XhDatePickerSegmentGroup>
-          <XhDatePickerClearTrigger />
-        </XhDatePickerControl>
-        <XhDatePickerPositioner>
-          <XhDatePickerContent>
-            <XhDatePickerCalendar>
-              <XhDatePickerHeader>
-                <XhDatePickerPrevTrigger aria-label="上个月" />
-                <XhDatePickerHeading />
-                <XhDatePickerNextTrigger aria-label="下个月" />
-              </XhDatePickerHeader>
-              <XhDatePickerGrid>
-                <XhDatePickerGridHead>
-                  <XhDatePickerWeekRow>
-                    <XhDatePickerWeekDay
-                      v-for="d in weekDays"
-                      :key="d.value"
-                      :value="d.value"
-                    />
-                  </XhDatePickerWeekRow>
-                </XhDatePickerGridHead>
-                <XhDatePickerGridBody>
-                  <!-- v-for 必带 key：就地复用会让承载焦点的那一格换了身份 -->
-                  <XhDatePickerWeekRow
-                    v-for="week in weeks"
-                    :key="week[0].value"
-                  >
-                    <XhDatePickerCell
-                      v-for="day in week"
-                      :key="day.value"
-                      :value="day.value"
-                    >
-                      <XhDatePickerCellTrigger>
-                        {{
-                          day.day
-                        }}
-                      </XhDatePickerCellTrigger>
-                    </XhDatePickerCell>
-                  </XhDatePickerWeekRow>
-                </XhDatePickerGridBody>
-              </XhDatePickerGrid>
-            </XhDatePickerCalendar>
-          </XhDatePickerContent>
-        </XhDatePickerPositioner>
-      </XhDatePickerRoot>
-    </div>
-  </div>
-</template>
-```
-
-```html
-<div
-  id="date-picker-axes-mount"
-  style="display: flex; flex-direction: column; gap: 20px"
-></div>
-
-<template id="date-picker-axes-template">
-  <xh-date-picker locale="zh-CN">
-    <div data-xh-part="root">
-      <span data-xh-part="label"></span>
-      <div data-xh-part="control">
-        <div data-xh-part="segment-group">
-          <!-- 段位不写内容：显示什么由组件按当前值填 -->
-          <span data-xh-part="segment"></span>
-          <span>-</span>
-          <span data-xh-part="segment"></span>
-          <span>-</span>
-          <span data-xh-part="segment"></span>
-        </div>
-        <button data-xh-part="clear-trigger"></button>
-      </div>
-      <div data-xh-part="positioner">
-        <div data-xh-part="content">
-          <div data-xh-part="calendar">
-            <div data-xh-part="header">
-              <button data-xh-part="prev-trigger" aria-label="上个月"></button>
-              <div data-xh-part="heading"></div>
-              <button data-xh-part="next-trigger" aria-label="下个月"></button>
-            </div>
-            <div data-xh-part="grid">
-              <div data-xh-part="grid-head">
-                <div data-xh-part="week-row"></div>
-              </div>
-              <div data-xh-part="grid-body"></div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-  </xh-date-picker>
-</template>
-
-<script type="module">
-  const mount = document.getElementById("date-picker-axes-mount");
-  const template = document.getElementById("date-picker-axes-template");
-
-  const rows = [
-    { axis: "variant", values: ["outline", "subtle", "ghost"] },
-    { axis: "tone", values: ["brand", "success", "danger"] },
-    { axis: "size", values: ["sm", "md", "lg"] },
-  ];
-
-  // 一张网格的画法：表头画一次，格子换了月才重画
-  function painter(picker, heading, head, body) {
-    let month = "";
-    head.replaceChildren(
-      ...picker.weekDays.map((day) => {
-        const cell = document.createElement("span");
-        cell.dataset.xhPart = "week-day";
-        cell.setAttribute("value", day.value);
-        cell.textContent = day.label;
-        return cell;
-      }),
-    );
-    return function paint() {
-      const first = picker.weeks[0][0].value;
-      if (first === month) {
-        return;
-      }
-      month = first;
-      heading.textContent = picker.headingLabel;
-      body.replaceChildren(
-        ...picker.weeks.map((week) => {
-          const row = document.createElement("div");
-          row.dataset.xhPart = "week-row";
-          for (const day of week) {
-            const cell = document.createElement("div");
-            cell.dataset.xhPart = "cell";
-            cell.setAttribute("value", day.value);
-            const trigger = document.createElement("div");
-            trigger.dataset.xhPart = "cell-trigger";
-            trigger.textContent = day.day;
-            cell.append(trigger);
-            row.append(cell);
-          }
-          return row;
-        }),
-      );
-    };
-  }
-
-  for (const row of rows) {
-    const line = document.createElement("div");
-    line.style.cssText = "display: flex; flex-wrap: wrap; gap: 16px";
-    mount.append(line);
-
-    for (const value of row.values) {
-      const fragment = template.content.cloneNode(true);
-      const picker = fragment.querySelector("xh-date-picker");
-      picker.setAttribute(row.axis, value);
-      fragment.querySelector('[data-xh-part="label"]').textContent = value;
-      const heading = fragment.querySelector('[data-xh-part="heading"]');
-      const head = fragment.querySelector(
-        '[data-xh-part="grid-head"] [data-xh-part="week-row"]',
-      );
-      const body = fragment.querySelector('[data-xh-part="grid-body"]');
-
-      line.append(fragment);
-      const paint = painter(picker, heading, head, body);
-      paint();
-      picker.addEventListener("focused-value-change", paint);
-    }
-  }
-</script>
-```
-
-### 可选的触发钮
-
-点输入行本来就展开，这个按钮不是必需的；要它是因为它才带 aria-haspopup / aria-expanded
-
-```vue
-<script setup lang="ts">
-import {
-  XhDatePickerCalendar,
-  XhDatePickerCell,
-  XhDatePickerCellTrigger,
-  XhDatePickerClearTrigger,
-  XhDatePickerContent,
-  XhDatePickerControl,
-  XhDatePickerGrid,
-  XhDatePickerGridBody,
-  XhDatePickerGridHead,
-  XhDatePickerHeader,
-  XhDatePickerHeading,
-  XhDatePickerLabel,
-  XhDatePickerNextTrigger,
-  XhDatePickerPositioner,
-  XhDatePickerPrevTrigger,
-  XhDatePickerRoot,
-  XhDatePickerSegment,
-  XhDatePickerSegmentGroup,
-  XhDatePickerTrigger,
-  XhDatePickerWeekDay,
-  XhDatePickerWeekRow,
-} from "@xihan-ui/vue";
-import { ref } from "vue";
-
-const value = ref<string[]>([]);
-</script>
-
-<template>
-  <XhDatePickerRoot v-slot="{ weeks, weekDays }" v-model:value="value" locale="zh-CN">
-    <XhDatePickerLabel>交付日期</XhDatePickerLabel>
-    <XhDatePickerControl>
-      <XhDatePickerSegmentGroup>
-        <XhDatePickerSegment :index="0" />
-        <span>-</span>
-        <XhDatePickerSegment :index="1" />
-        <span>-</span>
-        <XhDatePickerSegment :index="2" />
-      </XhDatePickerSegmentGroup>
-      <XhDatePickerClearTrigger />
-      <!-- 写上它多一个明写的入口；不写也照样能展开——点输入行即可，
-           键盘则在段上按 Alt+ArrowDown -->
-      <XhDatePickerTrigger aria-label="展开日历" />
-    </XhDatePickerControl>
-    <XhDatePickerPositioner>
-      <XhDatePickerContent>
-        <XhDatePickerCalendar>
-          <XhDatePickerHeader>
-            <XhDatePickerPrevTrigger aria-label="上个月" />
-            <XhDatePickerHeading />
-            <XhDatePickerNextTrigger aria-label="下个月" />
-          </XhDatePickerHeader>
-          <XhDatePickerGrid>
-            <XhDatePickerGridHead>
-              <XhDatePickerWeekRow>
-                <XhDatePickerWeekDay v-for="d in weekDays" :key="d.value" :value="d.value" />
-              </XhDatePickerWeekRow>
-            </XhDatePickerGridHead>
-            <XhDatePickerGridBody>
-              <XhDatePickerWeekRow v-for="week in weeks" :key="week[0].value">
-                <XhDatePickerCell v-for="day in week" :key="day.value" :value="day.value">
-                  <XhDatePickerCellTrigger>{{ day.day }}</XhDatePickerCellTrigger>
-                </XhDatePickerCell>
-              </XhDatePickerWeekRow>
-            </XhDatePickerGridBody>
-          </XhDatePickerGrid>
-        </XhDatePickerCalendar>
-      </XhDatePickerContent>
-    </XhDatePickerPositioner>
-  </XhDatePickerRoot>
-
-  <span style="font-size: 13px">当前值：{{ value[0] ?? "（未选）" }}</span>
-</template>
-```
-
-```html
-<div id="date-picker-trigger-mount"></div>
-<span style="font-size: 13px">
-  当前值：<span id="date-picker-trigger-value">（未选）</span>
-</span>
-
-<template id="date-picker-trigger-template">
-  <xh-date-picker locale="zh-CN">
-    <div data-xh-part="root">
-      <span data-xh-part="label">交付日期</span>
-      <div data-xh-part="control">
-        <div data-xh-part="segment-group">
-          <span data-xh-part="segment"></span>
-          <span>-</span>
-          <span data-xh-part="segment"></span>
-          <span>-</span>
-          <span data-xh-part="segment"></span>
-        </div>
-        <button data-xh-part="clear-trigger"></button>
-        <!-- 写上它多一个明写的入口；不写也照样能展开——点输入行即可，
-             键盘则在段上按 Alt+ArrowDown -->
-        <button data-xh-part="trigger" aria-label="展开日历"></button>
-      </div>
-      <div data-xh-part="positioner">
-        <div data-xh-part="content">
-          <div data-xh-part="calendar">
-            <div data-xh-part="header">
-              <button data-xh-part="prev-trigger" aria-label="上个月"></button>
-              <div data-xh-part="heading"></div>
-              <button data-xh-part="next-trigger" aria-label="下个月"></button>
-            </div>
-            <div data-xh-part="grid">
-              <div data-xh-part="grid-head">
-                <div data-xh-part="week-row"></div>
-              </div>
-              <div data-xh-part="grid-body"></div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-  </xh-date-picker>
-</template>
-
-<script type="module">
-  const fragment = document
-    .getElementById("date-picker-trigger-template")
-    .content.cloneNode(true);
-  const picker = fragment.querySelector("xh-date-picker");
-  const heading = fragment.querySelector('[data-xh-part="heading"]');
-  const head = fragment.querySelector(
-    '[data-xh-part="grid-head"] [data-xh-part="week-row"]',
-  );
-  const body = fragment.querySelector('[data-xh-part="grid-body"]');
-  const readout = document.getElementById("date-picker-trigger-value");
-
-  let month = "";
-
-  function paintHead() {
-    head.replaceChildren(
-      ...picker.weekDays.map((day) => {
-        const cell = document.createElement("span");
-        cell.dataset.xhPart = "week-day";
-        cell.setAttribute("value", day.value);
-        cell.textContent = day.label;
-        return cell;
-      }),
-    );
-  }
-
-  function paintBody() {
-    const first = picker.weeks[0][0].value;
-    if (first === month) {
-      return;
-    }
-    month = first;
-    heading.textContent = picker.headingLabel;
-    body.replaceChildren(
-      ...picker.weeks.map((week) => {
-        const row = document.createElement("div");
-        row.dataset.xhPart = "week-row";
-        for (const day of week) {
-          const cell = document.createElement("div");
-          cell.dataset.xhPart = "cell";
-          cell.setAttribute("value", day.value);
-          const trigger = document.createElement("div");
-          trigger.dataset.xhPart = "cell-trigger";
-          trigger.textContent = day.day;
-          cell.append(trigger);
-          row.append(cell);
-        }
-        return row;
-      }),
-    );
-  }
-
-  document.getElementById("date-picker-trigger-mount").append(fragment);
-  paintHead();
-  paintBody();
-
-  picker.addEventListener("focused-value-change", paintBody);
-  picker.addEventListener("value-change", (event) => {
-    readout.textContent = event.detail.value[0] ?? "（未选）";
-  });
 </script>
 ```
 
@@ -2420,33 +1641,37 @@ const value = ref<string[]>([]);
 
 ### 何时使用
 
-- 用户需要看着日历判断（星期几、离今天多远、区间有多长）。
-- 需要选区间，或需要日期加时间。
+- 用户需要查看月份和星期信息后选择日期。
+- 需要选择日期区间或日期时间。
 
 ### 何时不用
 
-- 用户已经知道确切日期且只想打字：用[日期输入](./date-field)。
+- 用户已知确切日期且只需要键盘输入：使用[日期输入](./date-field)。
 - 只要时间：用[时间选择器](./time-picker)。
 
 ### 特性
 
-- 五种粒度（周 / 月 / 季度 / 年 / 日）走同一套结构。
-- `selectionMode` 支持单选与区间；区间的两端各有自己的 `name`。
-- `isDateUnavailable` 逐日判断可选性。
-- `presets` 在浮层里排出一列快捷选项（今天 / 近 7 天 / 本月），点一下整份写进去。
-- 快捷项与 `showTime` 的时 / 分 / 秒选项统一由逻辑末端对号表示持久选值；正文保持普通颜色和字重，
-  悬停与键盘焦点才铺中性底。日期格、范围连片和预览仍由内嵌 Calendar 的独立状态表达。
-- 时间数字两侧保留等宽标记轨，数字保持在整行数学中心；RTL 只把对号翻到另一侧，不移动数字。
-  手机复合面板在 comfortable 密度使用 12px 小标记（compact 随同一令牌收至 10px），以容下日历与
-  时 / 分两列；平板起恢复 16px。作者槽仍可显式覆盖。
-- 禁用态同步压低正文与对号，并停止 hover 反馈；forced-colors 下对号改用系统前景色，禁用标记使用
-  `GrayText`，与公共选中轮廓形成两条独立通道。
-- `closeOnSelect` 决定选完就关还是等确认。
-- 输入框保持实体表面，日历浮层采用统一磨砂材质、细顶光与分隔线；内嵌 Calendar 和时间列共用外层表面。
-- 浮层按实际弹出方向短距离淡入淡出，不缩放日期和文字；手机双月历堆叠、时间列与确认按钮布局在退场中保持稳定。
-- 减弱动效、增强对比度沿用主题设置，键盘关闭后归还打开前的焦点。
+- 支持单选、区间和按周、月、季度、年选择。
+- `min`、`max` 与 `isDateUnavailable` 限制可选日期。
+- `presets` 提供常用日期快捷项。
+- `showTime` 在日历旁加入时间选择。
+- 输入值、展开状态和聚焦日期均可受控。
 
-## 产物
+### 最佳实践
+
+- 使用明确的字段标签。
+- 区间选择应说明开始与结束日期。
+- 不可用日期应同时提供原因。
+- 常用日期优先提供快捷项。
+
+### 反模式
+
+- 未经说明就预先选择今天。
+- 让浮层遮挡当前输入值。
+
+## API 参考
+
+### 产物
 
 | 层 | 值 |
 | --- | --- |
@@ -2456,13 +1681,7 @@ const value = ref<string[]>([]);
 | 状态机 | `datePickerMachine` |
 | 皮肤 | `@xihan-ui/styles/date-picker.css` |
 
-## 解剖
-
-部件名即 `data-part` 属性值，也是皮肤的选择器。加粗的是必备部件，不渲染它组件不工作（Web Components 适配器会在诊断通道上报 `wc.missing-part`）。
-
-`data-scope="date-picker"`：`root` · `label` · **`control`** · `segment-group` · `trigger` · `clear-trigger` · `positioner` · **`content`** · `preset-group` · `preset` · **`calendar`** · `time-column` · `time-item` · `confirm-trigger`
-
-## Props
+### Props
 
 | 属性 | 类型 | 必填 | 说明 |
 | --- | --- | --- | --- |
@@ -2505,9 +1724,9 @@ const value = ref<string[]>([]);
 | `onFocusedValueChange` | `(details: DatePickerFocusChangeDetails) => void` |  | 聚焦日变化（方向键、翻月、展开、段位输入都会发）。 网格由外部渲染，不监听这条日历不会换月。 |
 | `onActiveViewChange` | `(details: CalendarViewChangeDetails) => void` |  | 面板钻到了哪一层（点标题钻上、点格子钻下都会发）；受控时是唯一出口。 |
 
-## 事件
+### 事件
 
-自定义元素派发这些事件，Vue 组件对应同名 emit；载荷都在 `detail` 上。可双向绑定的值另有 `update:xxx`，见 Props。
+自定义元素将载荷放在 `detail`；Vue 使用同名 emit。
 
 | 事件 | 载荷 | 说明 |
 | --- | --- | --- |
@@ -2516,9 +1735,9 @@ const value = ref<string[]>([]);
 | `focused-value-change` | `DatePickerFocusChangeDetails` | 聚焦日变化（意味着展示月可能换了）；detail 为 `{ focusedValue: string }`，作者据此重画网格 |
 | `active-view-change` | `CalendarViewChangeDetails` | 钻到了另一层（点标题钻上、点格子钻下）；detail 为 `{ activeView: 'day'\|'month'\|'quarter'\|'year' }`，作者据此重画网格 |
 
-## 插槽
+### 插槽
 
-作者能拿到载荷的插槽。只转发内容、不带载荷的默认插槽不在此列——那类直接写子节点即可。
+仅列出带载荷的插槽。
 
 | Vue 组件 | 插槽 | 载荷 | 说明 |
 | --- | --- | --- | --- |
@@ -2527,9 +1746,9 @@ const value = ref<string[]>([]);
 | `XhDatePickerRoot` | `default` | `DatePickerRootSlotProps` |  |
 | `XhDatePickerSegment` | `default` | `DatePickerSegmentSlotProps` |  |
 
-## 状态
+### 状态
 
-对外可见的状态落在 `data-state` 上，写样式与断言都读它：
+公开状态写入 `data-state`。
 
 | 部件 | 取值 |
 | --- | --- |
@@ -2542,7 +1761,7 @@ const value = ref<string[]>([]);
 | `calendar` | 'open' \| 'closed' |
 | `time-item` | 'checked' \| 'unchecked' |
 
-状态机内部转移，写样式与业务都用不到；要监听变化请看上面的「事件」。
+以下名称仅用于内部状态机。
 
 **状态**：`open` · `closed`
 
@@ -2550,9 +1769,9 @@ const value = ref<string[]>([]);
 
 **判据**：`isOpenControlled` · `closesOnSelect`
 
-## connect API
+### connect API
 
-`useDatePicker` 产出的对象。`getXxxProps()` 铺到对应部件的宿主元素上，其余是可读状态与操作入口。
+`getXxxProps()` 返回对应部件的宿主属性。
 
 | 成员 | 类型 | 说明 |
 | --- | --- | --- |
@@ -2593,7 +1812,9 @@ const value = ref<string[]>([]);
 | `getTimeItemProps` | `(props: DatePickerTimeItemProps) => T['element']` | 时间选项：点按把该单位写进值（没有日期时以聚焦日为日期段起值）。 |
 | `getConfirmTriggerProps` | `() => T['button']` | 确认按钮：showTime 的收口；没开 showTime 时带 hidden。 |
 
-## 键盘
+## 无障碍
+
+### 键盘
 
 规格出处：[W3C APG](https://www.w3.org/WAI/ARIA/apg/patterns/dialog-modal/examples/datepicker-dialog/#kbd_label)
 
@@ -2609,9 +1830,9 @@ const value = ref<string[]>([]);
 | `Alt+ArrowDown` | focus in 某一段, closed, not disabled | 展开浮层并把焦点送进去；触发钮是可选部件，键盘那条入口不能只挂在它身上 |
 | `Enter` | focus in 某一段, open | 收起浮层。段位里敲出来的值不触发「选完即收」（那时人还在打字），这是那条路的收口手势 |
 
-## 无障碍
+### ARIA
 
-下面这些由 `connect` 铺到部件上，作者不必自己写；重复写反而会覆盖掉正确值。
+以下属性由 `connect` 生成。
 
 | 部件 | 属性 | 值 |
 | --- | --- | --- |
@@ -2644,15 +1865,17 @@ const value = ref<string[]>([]);
 | `time-item` | `aria-selected` | 'true' \| 'false' |
 | `time-item` | `role` | 'option' |
 
-## 样式
+## 样式参考
 
-默认皮肤 `@xihan-ui/styles/date-picker.css` 按部件选择：`[data-scope="date-picker"][data-part="root"]`。它落在 `xihan.components` 与 `xihan.motion` 层；业务样式不写进 `@layer` 即高于全部库层，要按层压过来就写进 `xihan.overrides`。
+### 皮肤
+
+`@xihan-ui/styles/date-picker.css` 使用 `[data-scope="date-picker"][data-part="root"]` 部件选择器，位于 `xihan.components` 与 `xihan.motion` 层。覆盖样式使用 `xihan.overrides`。
 
 `forced-colors: active` 下另有一套规则：颜色交给系统，边框与状态标记改用系统色关键字。
 
-## 数据属性
+### 数据属性
 
-由 `connect` 产出并铺到部件上，皮肤与测试都据此选择；`data-disabled` 这类无值属性在条件不成立时整个不出现。
+由 `connect` 生成；条件不成立时不输出无值属性。
 
 | 部件 | 属性 | 值 |
 | --- | --- | --- |
@@ -2698,7 +1921,7 @@ const value = ref<string[]>([]);
 | `time-item` | `data-value` | v |
 
 <!-- xh-component-tokens:start -->
-## CSS 变量
+### CSS 变量
 
 本组件公开覆盖槽由独立皮肤的实际消费位生成；缺省来源、作用部件和状态均与 CSS 同源。
 
@@ -2780,7 +2003,7 @@ const value = ref<string[]>([]);
 | `--xh-date-picker-time-item-radius` | `time-item` | `border-radius` | `default` | `--xh-shape-control` | date-picker 的 time-item 部件 border-radius 覆盖槽。 |
 <!-- xh-component-tokens:end -->
 
-## 动效
+### 动效
 
 关键帧 `xh-overlay-slide-in` · `xh-overlay-slide-out` 随皮肤自带，不引用别处文件里的名字；`background` · `border-color` · `color` · `opacity` · `scale` 走 `transition` 过渡。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
 
@@ -2788,26 +2011,10 @@ const value = ref<string[]>([]);
 
 系统开启减弱动效时由令牌层统一收敛，皮肤不另作判断。
 
-## 响应式
+### 响应式
 
 皮肤按视口分档：`min-width: 768px` · `width < 768px`。
 
-## RTL
+### RTL
 
 皮肤用逻辑属性排布（`inline-start` 一族），`dir="rtl"` 下自动镜像。
-
-## 组合
-
-- 外面套[表单字段](./field)。
-
-## 最佳实践
-
-- 区间选择要显示已选天数，用户在挑的往往是"多长"而不是"哪两天"。
-- 不可选的日子要给出原因（已约满、超出范围），只置灰用户会反复点。
-- 自定义快捷项或时间项时，用 `--xh-date-picker-*-check-size` / `*-check-fg` 调整末端对号；不要重新
-  给持久选中铺品牌底，否则会与悬停、焦点以及 Calendar 的日期范围视觉混为一层。
-
-## 反模式
-
-- 默认值是今天却不告诉用户这是默认——他会以为自己已经选过了。
-- 浮层一打开就盖住输入框，用户看不见自己输了什么。

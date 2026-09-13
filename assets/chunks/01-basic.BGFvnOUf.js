@@ -1,0 +1,20 @@
+const t=`<!-- 基础用法 | 从按钮打开一组操作 -->
+<xh-menu>
+  <button
+    data-xh-part="trigger"
+    style="display: inline-flex; align-items: center; gap: 6px; block-size: var(--xh-control-h-md); padding-inline: var(--xh-control-px-md); border: 0; border-radius: var(--xh-shape-pill); background: var(--xh-bg-subtle); color: var(--xh-fg-default); font: inherit; cursor: pointer"
+  >
+    操作
+    <svg viewBox="0 0 24 24" width="1em" height="1em" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg>
+  </button>
+  <div data-xh-part="positioner">
+    <div data-xh-part="content">
+      <div data-xh-part="item" value="new">新建文件</div>
+      <div data-xh-part="item" value="open">打开文件</div>
+      <div data-xh-part="item" value="save">保存</div>
+      <div data-xh-part="separator"></div>
+      <div data-xh-part="item" value="delete">移到回收站</div>
+    </div>
+  </div>
+</xh-menu>
+`;export{t as default};

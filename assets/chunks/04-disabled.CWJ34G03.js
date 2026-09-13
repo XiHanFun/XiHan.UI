@@ -1,0 +1,9 @@
+const t=`<!-- 禁用 | 禁用单个选项 -->
+<xh-toggle-group default-value="center">
+  <div data-xh-part="root">
+    <button data-xh-part="item" value="left">左对齐</button>
+    <button data-xh-part="item" value="center" aria-disabled="true">居中</button>
+    <button data-xh-part="item" value="right">右对齐</button>
+  </div>
+</xh-toggle-group>
+`;export{t as default};

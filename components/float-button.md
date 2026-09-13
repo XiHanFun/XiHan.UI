@@ -1,8 +1,8 @@
 来源：https://ui.docs.xihanfun.com/components/float-button
 
-# FloatButton `浮动按钮`
+# FloatButton 浮动按钮
 
-钉在视口某一角的动作入口：平时是一枚触发器，展开后长出一列动作。
+用于在视口边缘提供持续可见的操作入口。
 
 <div class="xh-resource-links">
   <a href="https://github.com/XiHanFun/XiHan.UI/tree/dev/ui/packages/engine/headless/src/float-button" target="_blank" rel="noreferrer">Headless</a>
@@ -14,163 +14,135 @@
 
 ## 用法
 
-点触发器展开一组动作，再点一下收起；收起时那组按钮退出 Tab 序列
+展开一组悬浮操作
 
 ```vue
 <script setup lang="ts">
-import { XhFloatButtonList, XhFloatButtonRoot, XhFloatButtonTrigger } from "@xihan-ui/vue";
+import { MessageCircleIcon, SettingsIcon, ShareIcon } from "@xihan-ui/icons";
+import { XhFloatButtonList, XhFloatButtonRoot, XhFloatButtonTrigger, XhIcon } from "@xihan-ui/vue";
 </script>
 
 <template>
-  <!-- 定位壳缺省钉在视口一角；示例里改成钉在面板内，省得整页都被它压着 -->
-  <div
-    style="
-      position: relative;
-      block-size: 260px;
-      inline-size: 100%;
-      border: 1px solid var(--xh-border-default);
-      border-radius: 8px;
-    "
-  >
-    <XhFloatButtonRoot style="position: absolute" :offset="16">
-      <XhFloatButtonTrigger />
-      <XhFloatButtonList>
-        <button type="button" title="编辑">✎</button>
-        <button type="button" title="分享">↗</button>
-        <button type="button" title="删除">🗑</button>
-      </XhFloatButtonList>
-    </XhFloatButtonRoot>
-  </div>
+  <XhFloatButtonRoot style="position: static" default-open>
+    <XhFloatButtonTrigger />
+    <XhFloatButtonList>
+      <button type="button" aria-label="消息"><XhIcon :icon="MessageCircleIcon" /></button>
+      <button type="button" aria-label="分享"><XhIcon :icon="ShareIcon" /></button>
+      <button type="button" aria-label="设置"><XhIcon :icon="SettingsIcon" /></button>
+    </XhFloatButtonList>
+  </XhFloatButtonRoot>
 </template>
 ```
 
 ```html
-<!-- 定位壳缺省钉在视口一角；这块面板用 contain 造出包含块，把它收在面板里 -->
-<div
-  style="
-    contain: layout;
-    block-size: 260px;
-    inline-size: 100%;
-    border: 1px solid var(--xh-border-default);
-    border-radius: 8px;
-  "
->
-  <xh-float-button offset="16">
-    <div data-xh-part="root">
-      <button data-xh-part="trigger"></button>
-      <div data-xh-part="list">
-        <button type="button" title="编辑">✎</button>
-        <button type="button" title="分享">↗</button>
-        <button type="button" title="删除">🗑</button>
-      </div>
+<xh-float-button default-open>
+  <div data-xh-part="root" style="position: static">
+    <button data-xh-part="trigger"></button>
+    <div data-xh-part="list">
+      <button type="button" aria-label="消息"><svg viewBox="0 0 24 24" width="1em" height="1em" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 15a4 4 0 0 1-4 4H8l-5 3V7a4 4 0 0 1 4-4h10a4 4 0 0 1 4 4z"/></svg></button>
+      <button type="button" aria-label="分享"><svg viewBox="0 0 24 24" width="1em" height="1em" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><path d="m8.59 13.51 6.83 3.98M15.41 6.51 8.59 10.49"/></svg></button>
+      <button type="button" aria-label="设置"><svg viewBox="0 0 24 24" width="1em" height="1em" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .34 1.88l.06.06-2.83 2.83-.06-.06A1.7 1.7 0 0 0 15 19.4a1.7 1.7 0 0 0-1 .6 1.7 1.7 0 0 0-.4 1.1V21H9.6v-.09A1.7 1.7 0 0 0 8.5 19.4a1.7 1.7 0 0 0-1.88.34l-.06.06-2.83-2.83.06-.06A1.7 1.7 0 0 0 4.6 15a1.7 1.7 0 0 0-.6-1 1.7 1.7 0 0 0-1.1-.4H3V9.6h.09A1.7 1.7 0 0 0 4.6 8.5a1.7 1.7 0 0 0-.34-1.88l-.06-.06 2.83-2.83.06.06A1.7 1.7 0 0 0 9 4.6a1.7 1.7 0 0 0 1-.6 1.7 1.7 0 0 0 .4-1.1V3h4v.09A1.7 1.7 0 0 0 15.5 4.6a1.7 1.7 0 0 0 1.88-.34l.06-.06 2.83 2.83-.06.06A1.7 1.7 0 0 0 19.4 9a1.7 1.7 0 0 0 .6 1 1.7 1.7 0 0 0 1.1.4h.09v4h-.09A1.7 1.7 0 0 0 19.4 15Z"/></svg></button>
     </div>
-  </xh-float-button>
-</div>
+  </div>
+</xh-float-button>
 ```
+
+## 组件结构
+
+加粗的是必需部件。
+
+`data-scope="float-button"`：**`root`** · **`trigger`** · **`list`**
 
 ## 示例
 
-### 四角
+### 悬停展开
 
-placement 决定钉在哪一角，start / end 跟着书写方向走；那一组恒往页面中间长
+指针进入时展开，键盘与触控仍可点击
 
 ```vue
 <script setup lang="ts">
-import { XhFloatButtonList, XhFloatButtonRoot, XhFloatButtonTrigger } from "@xihan-ui/vue";
-import { ref } from "vue";
-
-const placements = ["top-start", "top-end", "bottom-start", "bottom-end"] as const;
-const placement = ref<(typeof placements)[number]>("bottom-end");
+import { MessageCircleIcon, ShareIcon } from "@xihan-ui/icons";
+import { XhFloatButtonList, XhFloatButtonRoot, XhFloatButtonTrigger, XhIcon } from "@xihan-ui/vue";
 </script>
 
 <template>
-  <div style="display: grid; gap: 12px; inline-size: 100%">
-    <div style="display: flex; flex-wrap: wrap; gap: 8px">
-      <label v-for="p in placements" :key="p" style="display: flex; align-items: center; gap: 4px">
-        <input v-model="placement" type="radio" :value="p">
-        {{ p }}
-      </label>
-    </div>
-
-    <div
-      style="
-        position: relative;
-        block-size: 280px;
-        border: 1px solid var(--xh-border-default);
-        border-radius: 8px;
-      "
-    >
-      <XhFloatButtonRoot
-        style="position: absolute"
-        :placement="placement"
-        :offset="16"
-        default-open
-      >
-        <XhFloatButtonTrigger />
-        <XhFloatButtonList>
-          <button type="button" title="编辑">✎</button>
-          <button type="button" title="分享">↗</button>
-        </XhFloatButtonList>
-      </XhFloatButtonRoot>
-    </div>
-  </div>
+  <XhFloatButtonRoot style="position: static" expand-trigger="hover">
+    <XhFloatButtonTrigger />
+    <XhFloatButtonList>
+      <button type="button" aria-label="消息"><XhIcon :icon="MessageCircleIcon" /></button>
+      <button type="button" aria-label="分享"><XhIcon :icon="ShareIcon" /></button>
+    </XhFloatButtonList>
+  </XhFloatButtonRoot>
 </template>
 ```
 
 ```html
-<div style="display: grid; gap: 12px; inline-size: 100%">
-  <div id="float-button-placement-picker" style="display: flex; flex-wrap: wrap; gap: 8px">
-    <label style="display: flex; align-items: center; gap: 4px">
-      <input type="radio" name="float-button-placement" value="top-start" />
-      top-start
-    </label>
-    <label style="display: flex; align-items: center; gap: 4px">
-      <input type="radio" name="float-button-placement" value="top-end" />
-      top-end
-    </label>
-    <label style="display: flex; align-items: center; gap: 4px">
-      <input type="radio" name="float-button-placement" value="bottom-start" />
-      bottom-start
-    </label>
-    <label style="display: flex; align-items: center; gap: 4px">
-      <input type="radio" name="float-button-placement" value="bottom-end" checked />
-      bottom-end
-    </label>
+<xh-float-button expand-trigger="hover">
+  <div data-xh-part="root" style="position: static">
+    <button data-xh-part="trigger"></button>
+    <div data-xh-part="list">
+      <button type="button" aria-label="消息">✉</button>
+      <button type="button" aria-label="分享">↗</button>
+    </div>
   </div>
-
-  <div
-    style="
-      contain: layout;
-      block-size: 280px;
-      border: 1px solid var(--xh-border-default);
-      border-radius: 8px;
-    "
-  >
-    <xh-float-button id="float-button-placement" placement="bottom-end" offset="16" default-open>
-      <div data-xh-part="root">
-        <button data-xh-part="trigger"></button>
-        <div data-xh-part="list">
-          <button type="button" title="编辑">✎</button>
-          <button type="button" title="分享">↗</button>
-        </div>
-      </div>
-    </xh-float-button>
-  </div>
-</div>
-
-<script type="module">
-  // 单选框改写 placement 属性
-  const host = document.getElementById("float-button-placement");
-  const picker = document.getElementById("float-button-placement-picker");
-  for (const input of picker.querySelectorAll("input")) {
-    input.addEventListener("change", () => host.setAttribute("placement", input.value));
-  }
-</script>
+</xh-float-button>
 ```
 
-### 展开方式
+### 变体
 
-hover 指针进出整个壳就开合，click 点触发器；点这条恒在，触摸与键盘都靠它
+设置浮动按钮的表面
+
+```vue
+<script setup lang="ts">
+import { XhFloatButtonList, XhFloatButtonRoot, XhFloatButtonTrigger } from "@xihan-ui/vue";
+
+const variants = [undefined, "solid", "subtle", "outline", "ghost"] as const;
+</script>
+
+<template>
+  <XhFloatButtonRoot v-for="variant in variants" :key="variant ?? 'glass'" style="position: static" :variant="variant">
+    <XhFloatButtonTrigger />
+    <XhFloatButtonList />
+  </XhFloatButtonRoot>
+</template>
+```
+
+```html
+<xh-float-button><div data-xh-part="root" style="position: static"><button data-xh-part="trigger"></button><div data-xh-part="list"></div></div></xh-float-button>
+<xh-float-button variant="solid"><div data-xh-part="root" style="position: static"><button data-xh-part="trigger"></button><div data-xh-part="list"></div></div></xh-float-button>
+<xh-float-button variant="subtle"><div data-xh-part="root" style="position: static"><button data-xh-part="trigger"></button><div data-xh-part="list"></div></div></xh-float-button>
+<xh-float-button variant="outline"><div data-xh-part="root" style="position: static"><button data-xh-part="trigger"></button><div data-xh-part="list"></div></div></xh-float-button>
+<xh-float-button variant="ghost"><div data-xh-part="root" style="position: static"><button data-xh-part="trigger"></button><div data-xh-part="list"></div></div></xh-float-button>
+```
+
+### 尺寸
+
+使用小、中、大三档尺寸
+
+```vue
+<script setup lang="ts">
+import { XhFloatButtonList, XhFloatButtonRoot, XhFloatButtonTrigger } from "@xihan-ui/vue";
+
+const sizes = ["sm", "md", "lg"] as const;
+</script>
+
+<template>
+  <XhFloatButtonRoot v-for="size in sizes" :key="size" style="position: static" :size="size">
+    <XhFloatButtonTrigger />
+    <XhFloatButtonList />
+  </XhFloatButtonRoot>
+</template>
+```
+
+```html
+<xh-float-button size="sm"><div data-xh-part="root" style="position: static"><button data-xh-part="trigger"></button><div data-xh-part="list"></div></div></xh-float-button>
+<xh-float-button size="md"><div data-xh-part="root" style="position: static"><button data-xh-part="trigger"></button><div data-xh-part="list"></div></div></xh-float-button>
+<xh-float-button size="lg"><div data-xh-part="root" style="position: static"><button data-xh-part="trigger"></button><div data-xh-part="list"></div></div></xh-float-button>
+```
+
+### 外形
+
+使用圆形或方形触发器
 
 ```vue
 <script setup lang="ts">
@@ -178,373 +150,63 @@ import { XhFloatButtonList, XhFloatButtonRoot, XhFloatButtonTrigger } from "@xih
 </script>
 
 <template>
-  <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px; inline-size: 100%">
-    <div
-      style="
-        position: relative;
-        block-size: 240px;
-        border: 1px solid var(--xh-border-default);
-        border-radius: 8px;
-      "
-    >
-      <p style="margin: 12px; color: var(--xh-fg-muted)">hover：指针移上去就展开</p>
-      <XhFloatButtonRoot style="position: absolute" :offset="16" expand-trigger="hover">
-        <XhFloatButtonTrigger />
-        <XhFloatButtonList>
-          <button type="button" title="编辑">✎</button>
-          <button type="button" title="分享">↗</button>
-        </XhFloatButtonList>
-      </XhFloatButtonRoot>
-    </div>
-
-    <div
-      style="
-        position: relative;
-        block-size: 240px;
-        border: 1px solid var(--xh-border-default);
-        border-radius: 8px;
-      "
-    >
-      <p style="margin: 12px; color: var(--xh-fg-muted)">click：点一下展开，Escape 收起</p>
-      <XhFloatButtonRoot style="position: absolute" :offset="16" expand-trigger="click">
-        <XhFloatButtonTrigger />
-        <XhFloatButtonList>
-          <button type="button" title="编辑">✎</button>
-          <button type="button" title="分享">↗</button>
-        </XhFloatButtonList>
-      </XhFloatButtonRoot>
-    </div>
-  </div>
+  <XhFloatButtonRoot style="position: static" shape="circle">
+    <XhFloatButtonTrigger />
+    <XhFloatButtonList />
+  </XhFloatButtonRoot>
+  <XhFloatButtonRoot style="position: static" shape="square">
+    <XhFloatButtonTrigger />
+    <XhFloatButtonList />
+  </XhFloatButtonRoot>
 </template>
 ```
 
 ```html
-<div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px; inline-size: 100%">
-  <div
-    style="
-      contain: layout;
-      block-size: 240px;
-      border: 1px solid var(--xh-border-default);
-      border-radius: 8px;
-    "
-  >
-    <p style="margin: 12px; color: var(--xh-fg-muted)">hover：指针移上去就展开</p>
-    <xh-float-button offset="16" expand-trigger="hover">
-      <div data-xh-part="root">
-        <button data-xh-part="trigger"></button>
-        <div data-xh-part="list">
-          <button type="button" title="编辑">✎</button>
-          <button type="button" title="分享">↗</button>
-        </div>
-      </div>
-    </xh-float-button>
-  </div>
-
-  <div
-    style="
-      contain: layout;
-      block-size: 240px;
-      border: 1px solid var(--xh-border-default);
-      border-radius: 8px;
-    "
-  >
-    <p style="margin: 12px; color: var(--xh-fg-muted)">click：点一下展开，Escape 收起</p>
-    <xh-float-button offset="16" expand-trigger="click">
-      <div data-xh-part="root">
-        <button data-xh-part="trigger"></button>
-        <div data-xh-part="list">
-          <button type="button" title="编辑">✎</button>
-          <button type="button" title="分享">↗</button>
-        </div>
-      </div>
-    </xh-float-button>
-  </div>
-</div>
-```
-
-### 外形与贴边
-
-shape 换圆角档，offset 决定距那两条边多远；translations 换掉读屏念出的名字
-
-```vue
-<script setup lang="ts">
-import { XhFloatButtonList, XhFloatButtonRoot, XhFloatButtonTrigger } from "@xihan-ui/vue";
-import { ref } from "vue";
-
-const shape = ref<"circle" | "square">("circle");
-const offset = ref(16);
-</script>
-
-<template>
-  <div style="display: grid; gap: 12px; inline-size: 100%">
-    <div style="display: flex; flex-wrap: wrap; gap: 16px">
-      <label style="display: flex; align-items: center; gap: 6px">
-        外形
-        <select v-model="shape">
-          <option value="circle">circle</option>
-          <option value="square">square</option>
-        </select>
-      </label>
-      <label style="display: flex; align-items: center; gap: 8px">
-        贴边
-        <input v-model.number="offset" type="range" min="0" max="48" step="4">
-        {{ offset }}px
-      </label>
-    </div>
-
-    <div
-      style="
-        position: relative;
-        block-size: 260px;
-        border: 1px solid var(--xh-border-default);
-        border-radius: 8px;
-      "
-    >
-      <!-- 展开的每一条动作与触发器同一副身量，圆角跟着 shape 一起换 -->
-      <XhFloatButtonRoot
-        style="position: absolute"
-        :shape="shape"
-        :offset="offset"
-        :translations="{ trigger: '更多操作' }"
-        default-open
-      >
-        <XhFloatButtonTrigger />
-        <XhFloatButtonList>
-          <button type="button" title="编辑">✎</button>
-          <button type="button" title="分享">↗</button>
-          <button type="button" title="删除">🗑</button>
-        </XhFloatButtonList>
-      </XhFloatButtonRoot>
-    </div>
-  </div>
-</template>
-```
-
-```html
-<div style="display: grid; gap: 12px; inline-size: 100%">
-  <div style="display: flex; flex-wrap: wrap; gap: 16px">
-    <label style="display: flex; align-items: center; gap: 6px">
-      外形
-      <select id="float-button-shape">
-        <option value="circle">circle</option>
-        <option value="square">square</option>
-      </select>
-    </label>
-    <label style="display: flex; align-items: center; gap: 8px">
-      贴边
-      <input id="float-button-offset" type="range" min="0" max="48" step="4" value="16" />
-      <span id="float-button-offset-readout">16px</span>
-    </label>
-  </div>
-
-  <div
-    style="
-      contain: layout;
-      block-size: 260px;
-      border: 1px solid var(--xh-border-default);
-      border-radius: 8px;
-    "
-  >
-    <!-- 展开的每一条动作与触发器同一副身量，圆角跟着 shape 一起换 -->
-    <xh-float-button id="float-button-shape-offset" shape="circle" offset="16" default-open>
-      <div data-xh-part="root">
-        <button data-xh-part="trigger"></button>
-        <div data-xh-part="list">
-          <button type="button" title="编辑">✎</button>
-          <button type="button" title="分享">↗</button>
-          <button type="button" title="删除">🗑</button>
-        </div>
-      </div>
-    </xh-float-button>
-  </div>
-</div>
-
-<script type="module">
-  // 两个控件改写 shape 与 offset，读屏名字是对象只能作为 property 交进去
-  const host = document.getElementById("float-button-shape-offset");
-  const shape = document.getElementById("float-button-shape");
-  const offset = document.getElementById("float-button-offset");
-  const readout = document.getElementById("float-button-offset-readout");
-
-  host.translations = { trigger: "更多操作" };
-  shape.addEventListener("change", () => host.setAttribute("shape", shape.value));
-  offset.addEventListener("input", () => {
-    host.setAttribute("offset", offset.value);
-    readout.textContent = `${offset.value}px`;
-  });
-</script>
-```
-
-### 形态与尺寸
-
-variant 换触发器的用色方式，size 换直径；缺省档与 lg 同高，悬浮钮起步就比行内按钮大一号
-
-```vue
-<script setup lang="ts">
-import { XhFloatButtonList, XhFloatButtonRoot, XhFloatButtonTrigger } from "@xihan-ui/vue";
-
-const box = {
-  position: "relative",
-  blockSize: "160px",
-  inlineSize: "160px",
-  border: "1px solid var(--xh-border-default)",
-  borderRadius: "8px",
-};
-</script>
-
-<template>
-  <div style="display: flex; flex-wrap: wrap; gap: 16px">
-    <div v-for="v in ['solid', 'outline', 'ghost']" :key="v" :style="box">
-      <XhFloatButtonRoot style="position: absolute" :variant="v" :offset="12">
-        <XhFloatButtonTrigger />
-        <XhFloatButtonList>
-          <button type="button" title="编辑">✎</button>
-          <button type="button" title="分享">↗</button>
-        </XhFloatButtonList>
-      </XhFloatButtonRoot>
-    </div>
-
-    <div v-for="s in ['sm', 'md']" :key="s" :style="box">
-      <XhFloatButtonRoot style="position: absolute" :size="s" :offset="12">
-        <XhFloatButtonTrigger />
-        <XhFloatButtonList>
-          <button type="button" title="编辑">✎</button>
-          <button type="button" title="分享">↗</button>
-        </XhFloatButtonList>
-      </XhFloatButtonRoot>
-    </div>
-  </div>
-</template>
-```
-
-```html
-<div style="display: flex; flex-wrap: wrap; gap: 16px">
-  <div
-    style="
-      contain: layout;
-      block-size: 160px;
-      inline-size: 160px;
-      border: 1px solid var(--xh-border-default);
-      border-radius: 8px;
-    "
-  >
-    <xh-float-button variant="solid" offset="12">
-      <div data-xh-part="root">
-        <button data-xh-part="trigger"></button>
-        <div data-xh-part="list">
-          <button type="button" title="编辑">✎</button>
-          <button type="button" title="分享">↗</button>
-        </div>
-      </div>
-    </xh-float-button>
-  </div>
-
-  <div
-    style="
-      contain: layout;
-      block-size: 160px;
-      inline-size: 160px;
-      border: 1px solid var(--xh-border-default);
-      border-radius: 8px;
-    "
-  >
-    <xh-float-button variant="outline" offset="12">
-      <div data-xh-part="root">
-        <button data-xh-part="trigger"></button>
-        <div data-xh-part="list">
-          <button type="button" title="编辑">✎</button>
-          <button type="button" title="分享">↗</button>
-        </div>
-      </div>
-    </xh-float-button>
-  </div>
-
-  <div
-    style="
-      contain: layout;
-      block-size: 160px;
-      inline-size: 160px;
-      border: 1px solid var(--xh-border-default);
-      border-radius: 8px;
-    "
-  >
-    <xh-float-button variant="ghost" offset="12">
-      <div data-xh-part="root">
-        <button data-xh-part="trigger"></button>
-        <div data-xh-part="list">
-          <button type="button" title="编辑">✎</button>
-          <button type="button" title="分享">↗</button>
-        </div>
-      </div>
-    </xh-float-button>
-  </div>
-
-  <div
-    style="
-      contain: layout;
-      block-size: 160px;
-      inline-size: 160px;
-      border: 1px solid var(--xh-border-default);
-      border-radius: 8px;
-    "
-  >
-    <xh-float-button size="sm" offset="12">
-      <div data-xh-part="root">
-        <button data-xh-part="trigger"></button>
-        <div data-xh-part="list">
-          <button type="button" title="编辑">✎</button>
-          <button type="button" title="分享">↗</button>
-        </div>
-      </div>
-    </xh-float-button>
-  </div>
-
-  <div
-    style="
-      contain: layout;
-      block-size: 160px;
-      inline-size: 160px;
-      border: 1px solid var(--xh-border-default);
-      border-radius: 8px;
-    "
-  >
-    <xh-float-button size="md" offset="12">
-      <div data-xh-part="root">
-        <button data-xh-part="trigger"></button>
-        <div data-xh-part="list">
-          <button type="button" title="编辑">✎</button>
-          <button type="button" title="分享">↗</button>
-        </div>
-      </div>
-    </xh-float-button>
-  </div>
-</div>
+<xh-float-button shape="circle"><div data-xh-part="root" style="position: static"><button data-xh-part="trigger"></button><div data-xh-part="list"></div></div></xh-float-button>
+<xh-float-button shape="square"><div data-xh-part="root" style="position: static"><button data-xh-part="trigger"></button><div data-xh-part="list"></div></div></xh-float-button>
 ```
 
 ## 设计指引
 
 ### 何时使用
 
-- 页面主动作在长内容里滚没了，但要求随时可达（新建、回到编辑、联系客服）。
-- 移动端或窄视口，工具栏没有位置再挂按钮。
+- 长页面中的常用主操作。
+- 移动端或窄屏中的紧凑操作组。
 
 ### 何时不用
 
-- 动作与当前滚动位置有关：那是[回到顶部](./back-top)。
-- 一屏里已经有固定工具栏：直接放进[工具栏](./toolbar)，别再叠一层浮层。
-- 动作超过五六个：收进[菜单](./menu)或抽屉，一列悬浮按钮遮内容。
+- 返回页面顶部时，使用[回到顶部](./back-top)。
+- 页面已有固定[工具栏](./toolbar)时。
+- 操作数量较多时，使用[菜单](./menu)或抽屉。
 
 ### 特性
 
-- 四个角可钉，`start` / `end` 跟着书写方向走，那一组恒往页面中间长。
-- `hover` 与 `click` 两种展开方式，点击那条恒在——触摸与键盘只有它。
-- click 展开后，层外按下或全局 Escape 会收起；多个浮层并存时只由同一 Document 的逻辑栈顶响应，后开的 Drawer / Popover 先退场。Toast 属于反馈通道，不登记为可消解父层。
-- hover 模式保留整个根节点的指针进出路径；指针离开与层外消解同时到达时只发一次关闭意图。
-- 收起时组内按钮退出 Tab 序列，不会盲聚焦到看不见的东西上。
-- 缺省触发器是 M3 通透玻璃：背景、边缘、高光、柔影和磨砂来自同一份 `material.glass` 配方；显式 `variant` 仍按各自语义表面绘制。
-- 键盘聚焦时触发器改用配方的实体 focus surface，让公共焦点环不依赖背后页面颜色；高对比、减少透明和强制色沿同一令牌通道降级。
+- 支持四个视口角与安全区偏移。
+- 支持点击或悬停展开；键盘与触控始终使用点击。
+- Escape、层外点击和再次触发均可收起。
+- 收起后动作项退出 Tab 序列。
+- 默认使用通透玻璃表面，显式变体使用对应语义表面。
+- 原生按钮动作项自动继承触发器的尺寸与外观。
 
-## 产物
+### 组合
+
+- 动作项可使用原生按钮或[按钮](./button)。
+- 纯图标动作可配合[文字提示](./tooltip)。
+
+### 最佳实践
+
+- 为每个图标按钮提供可访问名称。
+- 将操作数量控制在 2 至 5 个。
+- 使用 `offset` 避开系统手势区。
+
+### 反模式
+
+- 不要承载高风险的破坏性操作。
+- 不要遮挡主要内容或固定导航。
+
+## API 参考
+
+### 产物
 
 | 层 | 值 |
 | --- | --- |
@@ -554,13 +216,7 @@ const box = {
 | 状态机 | `floatButtonMachine` |
 | 皮肤 | `@xihan-ui/styles/float-button.css` |
 
-## 解剖
-
-部件名即 `data-part` 属性值，也是皮肤的选择器。加粗的是必备部件，不渲染它组件不工作（Web Components 适配器会在诊断通道上报 `wc.missing-part`）。
-
-`data-scope="float-button"`：**`root`** · **`trigger`** · **`list`**
-
-## Props
+### Props
 
 | 属性 | 类型 | 必填 | 说明 |
 | --- | --- | --- | --- |
@@ -574,29 +230,29 @@ const box = {
 | `placement` | `FloatButtonPlacement` |  | 钉在哪一角，默认 bottom-end。 |
 | `shape` | `FloatButtonShape` |  | 触发器外形，默认 circle。 |
 | `size` | `Size` |  | 尺寸：sm / md / lg，缺省与 lg 同档——悬浮钮要够得着，起步就比行内按钮大一号。 |
-| `tone` | `Tone` |  | 语气：brand / neutral / success / warning / danger / info，决定用哪族颜色。 |
+| `tone` | `Tone` |  | 颜色：brand / neutral / success / warning / danger / info。 |
 | `translations` | `Partial<FloatButtonTranslations>` |  |  |
-| `variant` | `ActionVariant` |  | 形态：solid / subtle / outline / ghost，决定底色、描边与前景怎么用。 |
+| `variant` | `ActionVariant` |  | 变体：solid / subtle / outline / ghost。 |
 
-## 事件
+### 事件
 
-自定义元素派发这些事件，Vue 组件对应同名 emit；载荷都在 `detail` 上。可双向绑定的值另有 `update:xxx`，见 Props。
+自定义元素将载荷放在 `detail`；Vue 使用同名 emit。
 
 | 事件 | 载荷 | 说明 |
 | --- | --- | --- |
 | `open-change` | `CollapsibleOpenChangeDetails` | 展开状态变化；detail 为 `{ open: boolean }` |
 
-## 插槽
+### 插槽
 
-作者能拿到载荷的插槽。只转发内容、不带载荷的默认插槽不在此列——那类直接写子节点即可。
+仅列出带载荷的插槽。
 
 | Vue 组件 | 插槽 | 载荷 | 说明 |
 | --- | --- | --- | --- |
 | `XhFloatButtonRoot` | `default` | `FloatButtonRootSlotProps` |  |
 
-## 状态
+### 状态
 
-对外可见的状态落在 `data-state` 上，写样式与断言都读它：
+公开状态写入 `data-state`。
 
 | 部件 | 取值 |
 | --- | --- |
@@ -604,7 +260,7 @@ const box = {
 | `trigger` | 'open' \| 'closed' |
 | `list` | 'open' \| 'closed' |
 
-状态机内部转移，写样式与业务都用不到；要监听变化请看上面的「事件」。
+以下名称仅用于内部状态机。
 
 **状态**：`open` · `closed`
 
@@ -612,9 +268,9 @@ const box = {
 
 **判据**：`isDisabled` · `isOpenControlled`
 
-## connect API
+### connect API
 
-`useFloatButton` 产出的对象。`getXxxProps()` 铺到对应部件的宿主元素上，其余是可读状态与操作入口。
+`getXxxProps()` 返回对应部件的宿主属性。
 
 | 成员 | 类型 | 说明 |
 | --- | --- | --- |
@@ -624,7 +280,9 @@ const box = {
 | `getTriggerProps` | `() => T['button']` |  |
 | `getListProps` | `() => T['element']` |  |
 
-## 键盘
+## 无障碍
+
+### 键盘
 
 规格出处：[W3C APG](https://www.w3.org/WAI/ARIA/apg/patterns/disclosure/#keyboardinteraction)
 
@@ -634,9 +292,9 @@ const box = {
 | `Escape` | open，无论焦点是否仍在整组内 | 只收起当前 LayerRegistry 的栈顶层；更晚打开的 Drawer / Popover 先处理自己的 Escape |
 | `Tab` / `Shift+Tab` | open | 走进展开的那一组；收起时 list 带 hidden，里面的按钮一并退出 Tab 序列 |
 
-## 无障碍
+### ARIA
 
-下面这些由 `connect` 铺到部件上，作者不必自己写；重复写反而会覆盖掉正确值。
+以下属性由 `connect` 生成。
 
 | 部件 | 属性 | 值 |
 | --- | --- | --- |
@@ -646,13 +304,15 @@ const box = {
 | `list` | `aria-labelledby` | `trigger` 部件的 id |
 | `list` | `role` | 'group' |
 
-## 样式
+## 样式参考
 
-默认皮肤 `@xihan-ui/styles/float-button.css` 按部件选择：`[data-scope="float-button"][data-part="root"]`。它落在 `xihan.components` 与 `xihan.motion` 层；业务样式不写进 `@layer` 即高于全部库层，要按层压过来就写进 `xihan.overrides`。
+### 皮肤
 
-## 数据属性
+`@xihan-ui/styles/float-button.css` 使用 `[data-scope="float-button"][data-part="root"]` 部件选择器，位于 `xihan.components` 与 `xihan.motion` 层。覆盖样式使用 `xihan.overrides`。
 
-由 `connect` 产出并铺到部件上，皮肤与测试都据此选择；`data-disabled` 这类无值属性在条件不成立时整个不出现。
+### 数据属性
+
+由 `connect` 生成；条件不成立时不输出无值属性。
 
 | 部件 | 属性 | 值 |
 | --- | --- | --- |
@@ -670,50 +330,36 @@ const box = {
 | `list` | `data-state` | 'open' \| 'closed' |
 
 <!-- xh-component-tokens:start -->
-## CSS 变量
+### CSS 变量
 
 本组件公开覆盖槽由独立皮肤的实际消费位生成；缺省来源、作用部件和状态均与 CSS 同源。
 
 | 变量 | 部件 | CSS 属性 | 状态 | 缺省来源 | 说明 |
 | --- | --- | --- | --- | --- | --- |
-| `--xh-float-button-bg` | `trigger` | `background-color` | `default` | `--xh-_float-button-bg` | float-button 的 trigger 部件 background-color 覆盖槽。 |
-| `--xh-float-button-bg-active` | `trigger` | `background-color` | `active`<br>`disabled`<br>`not([data-disabled])` | `--xh-_float-button-bg-active` | float-button 的 trigger 部件 background-color 覆盖槽。 |
-| `--xh-float-button-bg-hover` | `trigger` | `background-color` | `@media (hover: hover)`<br>`disabled`<br>`hover`<br>`not([data-disabled])` | `--xh-_float-button-bg-hover` | float-button 的 trigger 部件 background-color 覆盖槽。 |
-| `--xh-float-button-border` | `trigger` | `border` | `default` | `--xh-_float-button-border` | float-button 的 trigger 部件 border 覆盖槽。 |
-| `--xh-float-button-border-hover` | `trigger` | `border-color` | `@media (hover: hover)`<br>`disabled`<br>`hover`<br>`not([data-disabled])` | `--xh-_float-button-border-hover` | float-button 的 trigger 部件 border-color 覆盖槽。 |
-| `--xh-float-button-fg` | `root`<br>`trigger` | `--xh-_ring-color`<br>`color` | `default`<br>`disabled`<br>`focus-visible`<br>`variant=solid` | `--xh-_float-button-fg` | float-button 的 root、trigger 部件 --xh-_ring-color、color 覆盖槽。 |
+| `--xh-float-button-bg` | `list`<br>`trigger` | `background-color` | `default`<br>`not([data-scope])` | `--xh-_float-button-bg` | float-button 的 list、trigger 部件 background-color 覆盖槽。 |
+| `--xh-float-button-bg-active` | `list`<br>`trigger` | `background-color` | `active`<br>`disabled`<br>`not(:disabled)`<br>`not([data-disabled])`<br>`not([data-scope])` | `--xh-_float-button-bg-active` | float-button 的 list、trigger 部件 background-color 覆盖槽。 |
+| `--xh-float-button-bg-hover` | `list`<br>`trigger` | `background-color` | `@media (hover: hover)`<br>`disabled`<br>`hover`<br>`not(:disabled)`<br>`not([data-disabled])`<br>`not([data-scope])` | `--xh-_float-button-bg-hover` | float-button 的 list、trigger 部件 background-color 覆盖槽。 |
+| `--xh-float-button-border` | `list`<br>`trigger` | `border` | `default`<br>`not([data-scope])` | `--xh-_float-button-border` | float-button 的 list、trigger 部件 border 覆盖槽。 |
+| `--xh-float-button-border-hover` | `list`<br>`trigger` | `border-color` | `@media (hover: hover)`<br>`disabled`<br>`hover`<br>`not(:disabled)`<br>`not([data-disabled])`<br>`not([data-scope])` | `--xh-_float-button-border-hover` | float-button 的 list、trigger 部件 border-color 覆盖槽。 |
+| `--xh-float-button-fg` | `list`<br>`root`<br>`trigger` | `--xh-_ring-color`<br>`color` | `default`<br>`disabled`<br>`focus-visible`<br>`not([data-scope])`<br>`variant=solid` | `--xh-_float-button-fg` | float-button 的 list、root、trigger 部件 --xh-_ring-color、color 覆盖槽。 |
 | `--xh-float-button-gap` | `list`<br>`root` | `gap` | `default` | `--xh-space-2` | float-button 的 list、root 部件 gap 覆盖槽。 |
 | `--xh-float-button-icon-size` | `root` | `--xh-icon-size` | `default` | `--xh-glyph-size-text` | float-button 的 root 部件 --xh-icon-size 覆盖槽。 |
 | `--xh-float-button-layer` | `root` | `z-index` | `default` | `--xh-_layer` | float-button 的 root 部件 z-index 覆盖槽。 |
 | `--xh-float-button-radius` | `list`<br>`root`<br>`trigger` | `border-radius` | `default`<br>`shape=square` | `--xh-shape-control`<br>`--xh-shape-pill` | float-button 的 list、root、trigger 部件 border-radius 覆盖槽。 |
-| `--xh-float-button-shadow` | `trigger` | `box-shadow` | `default` | `--xh-_float-button-shadow` | float-button 的 trigger 部件 box-shadow 覆盖槽。 |
+| `--xh-float-button-shadow` | `list`<br>`trigger` | `box-shadow` | `default`<br>`not([data-scope])` | `--xh-_float-button-shadow` | float-button 的 list、trigger 部件 box-shadow 覆盖槽。 |
 | `--xh-float-button-size` | `list`<br>`trigger` | `block-size`<br>`inline-size` | `default` | `--xh-_float-button-size` | float-button 的 list、trigger 部件 block-size、inline-size 覆盖槽。 |
 <!-- xh-component-tokens:end -->
 
-## 动效
+### 动效
 
-关键帧 `xh-pop-in` 随皮肤自带，不引用别处文件里的名字；`background` · `border-color` · `scale` 走 `transition` 过渡。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
+关键帧 `xh-pop-in` 随皮肤自带，不引用别处文件里的名字；`background` · `background-color` · `border-color` · `scale` 走 `transition` 过渡。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
 
 系统开启减弱动效时由令牌层统一收敛，皮肤不另作判断。
 
-## 响应式
+### 响应式
 
 皮肤另按输入能力分档：`hover: hover` · `pointer: coarse`——同一份皮肤在触屏与带指针的设备上不一样，与视口宽度无关。
 
-## RTL
+### RTL
 
 皮肤用逻辑属性排布（`inline-start` 一族），`dir="rtl"` 下自动镜像。
-
-## 组合
-
-- 组内放[按钮](./button)或[图标块](./icon-wrapper)；每一项配[文字提示](./tooltip)说明它是什么。
-
-## 最佳实践
-
-- 每一项都给可及名字：悬浮按钮通常只有图标。
-- `offset` 要躲开移动端的安全区与系统手势条。
-
-## 反模式
-
-- 用它承载破坏性动作（删除、清空）：贴边的大按钮最容易误触。
-- 展开后盖住页面主内容或另一个固定条。

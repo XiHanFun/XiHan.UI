@@ -1,0 +1,76 @@
+const a=`<!-- 校验状态 | 清晰标记必填错误 -->
+<xh-cascader id="cascader-invalid" invalid placeholder="请选到具体的组">
+  <div data-xh-part="root">
+    <span data-xh-part="label">所属部门</span>
+    <div data-xh-part="control">
+      <button data-xh-part="trigger">
+        <span data-xh-part="value-text"></span>
+        <span data-xh-part="indicator"></span>
+      </button>
+      <button data-xh-part="clear-trigger"></button>
+    </div>
+    <div data-xh-part="positioner">
+      <div data-xh-part="content">
+        <div data-xh-part="column" level="0">
+          <div data-xh-part="item" value="product">
+            <span data-xh-part="item-text">产品线</span>
+            <span data-xh-part="item-indicator"></span>
+          </div>
+          <div data-xh-part="item" value="tech">
+            <span data-xh-part="item-text">技术线</span>
+            <span data-xh-part="item-indicator"></span>
+          </div>
+        </div>
+        <div data-xh-part="column" level="1">
+          <div data-xh-part="item" value="design">
+            <span data-xh-part="item-text">设计组</span>
+            <span data-xh-part="item-indicator"></span>
+          </div>
+          <div data-xh-part="item" value="research">
+            <span data-xh-part="item-text">用研组</span>
+            <span data-xh-part="item-indicator"></span>
+          </div>
+          <div data-xh-part="item" value="web">
+            <span data-xh-part="item-text">前端组</span>
+            <span data-xh-part="item-indicator"></span>
+          </div>
+          <div data-xh-part="item" value="server">
+            <span data-xh-part="item-text">服务端组</span>
+            <span data-xh-part="item-indicator"></span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</xh-cascader>
+<p id="cascader-invalid-message" style="color: var(--xh-fg-danger)">这一项必填</p>
+
+<script type="module">
+  const cascader = document.getElementById("cascader-invalid");
+  cascader.collection = [
+    {
+      value: "product",
+      label: "产品线",
+      children: [
+        { value: "design", label: "设计组" },
+        { value: "research", label: "用研组" },
+      ],
+    },
+    {
+      value: "tech",
+      label: "技术线",
+      children: [
+        { value: "web", label: "前端组" },
+        { value: "server", label: "服务端组" },
+      ],
+    },
+  ];
+
+  const message = document.getElementById("cascader-invalid-message");
+  cascader.addEventListener("value-change", (event) => {
+    const invalid = event.detail.value.length === 0;
+    cascader.invalid = invalid;
+    message.hidden = !invalid;
+  });
+<\/script>
+`;export{a as default};

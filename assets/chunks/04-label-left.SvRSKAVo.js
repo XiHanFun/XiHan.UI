@@ -1,0 +1,23 @@
+const n=`<!-- 标签左置 | 将标签放在控件左侧 -->
+<xh-field invalid>
+  <!-- 第一列放标题，第二列放控件、说明与错误文案 -->
+  <div
+    data-xh-part="root"
+    style="
+      display: grid;
+      grid-template-columns: 72px 1fr;
+      align-items: center;
+      column-gap: 12px;
+      row-gap: 4px;
+      inline-size: 360px;
+    "
+  >
+    <label data-xh-part="label">端口</label>
+    <input data-xh-part="control" value="abc" />
+    <p data-xh-part="description" style="grid-column-start: 2">
+      留空表示使用默认端口
+    </p>
+    <p data-xh-part="error-text" style="grid-column-start: 2">端口只能是数字</p>
+  </div>
+</xh-field>
+`;export{n as default};

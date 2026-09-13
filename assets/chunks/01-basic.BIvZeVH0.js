@@ -1,0 +1,12 @@
+const a=`<!-- 基础用法 | 为内容添加文字水印 -->
+<xh-watermark text="XiHan · 内部资料" style="display: block">
+  <div data-xh-part="root">
+    <div data-xh-part="content">
+      <div style="inline-size: 320px; padding: 24px; border-radius: var(--xh-shape-surface); background: var(--xh-bg-subtle)">
+        <strong>季度报告</strong>
+        <p style="margin-block-end: 0">本季度活跃用户增长 18.6%，核心功能使用率持续提升。</p>
+      </div>
+    </div>
+  </div>
+</xh-watermark>
+`;export{a as default};

@@ -1,6 +1,6 @@
 来源：https://ui.docs.xihanfun.com/components/loading-bar
 
-# LoadingBar `加载条`
+# LoadingBar 加载条
 
 页面顶部那条细进度线：表示"正在去往别处"或"正在取数据"。
 
@@ -83,6 +83,12 @@ const value = ref(0);
   });
 </script>
 ```
+
+## 组件结构
+
+加粗的是必需部件。
+
+`data-scope="loading-bar"`：**`root`** · `track` · **`range`** · `peg`
 
 ## 示例
 
@@ -310,7 +316,7 @@ const loading = ref(false);
 </script>
 ```
 
-### 语气
+### 颜色
 
 tone 只换进度段的底色（取柔和档）；条子本身是 fixed，这里给它写死 absolute 并配一个相对定位的框子，六条才留在示例里而不是叠到页面顶边
 
@@ -561,23 +567,33 @@ function reload(): void {
 - `minimum` 是起跳位置，让用户立刻看到反应。
 - 可以挂在局部容器上而不只是页面顶部。
 
-## 产物
+### 组合
+
+- 与路由守卫配合：进入时启动，完成或失败时收掉。
+
+### 最佳实践
+
+- 失败也要收掉：留在页面上的半截进度条比什么都没有更糟。
+- 极快的请求可以延迟一点再显示，否则只会闪一下。
+
+### 反模式
+
+- 爬升到 100% 却还没加载完：用户以为卡死了。
+- 同时挂好几条。
+
+## API 参考
+
+### 产物
 
 | 层 | 值 |
 | --- | --- |
 | 自定义元素 | `<xh-loading-bar>` |
 | Vue 组件 | `XhLoadingBarPeg` `XhLoadingBarRange` `XhLoadingBarRoot` `XhLoadingBarTrack` |
 | 组合式函数 | `useLoadingBar` |
-| 状态机 | 无，`connect` 直接由 props 算属性 |
+| 状态机 | `loadingBarMachine` |
 | 皮肤 | `@xihan-ui/styles/loading-bar.css` |
 
-## 解剖
-
-部件名即 `data-part` 属性值，也是皮肤的选择器。加粗的是必备部件，不渲染它组件不工作（Web Components 适配器会在诊断通道上报 `wc.missing-part`）。
-
-`data-scope="loading-bar"`：**`root`** · `track` · **`range`** · `peg`
-
-## Props
+### Props
 
 | 属性 | 类型 | 必填 | 说明 |
 | --- | --- | --- | --- |
@@ -594,40 +610,42 @@ function reload(): void {
 | `translations` | `Partial<LoadingBarTranslations>` |  |  |
 | `onValueChange` | `(details: LoadingBarValueChangeDetails) => void` |  | 进度值变化。不确定进度下每爬一步、冲到 100、归零各通知一次。 |
 
-## 事件
+### 事件
 
-自定义元素派发这些事件，Vue 组件对应同名 emit；载荷都在 `detail` 上。可双向绑定的值另有 `update:xxx`，见 Props。
+自定义元素将载荷放在 `detail`；Vue 使用同名 emit。
 
 | 事件 | 载荷 | 说明 |
 | --- | --- | --- |
 | `value-change` | `LoadingBarValueChangeDetails` | 进度值变化；detail 为 `{ value: number }` |
 
-## 插槽
+### 插槽
 
-作者能拿到载荷的插槽。只转发内容、不带载荷的默认插槽不在此列——那类直接写子节点即可。
+仅列出带载荷的插槽。
 
 | Vue 组件 | 插槽 | 载荷 | 说明 |
 | --- | --- | --- | --- |
 | `XhLoadingBarRoot` | `default` | `LoadingBarRootSlotProps` |  |
 
-## 状态
+### 状态
 
-对外可见的状态落在 `data-state` 上，写样式与断言都读它：
+公开状态写入 `data-state`。
 
 | 部件 | 取值 |
 | --- | --- |
-| `root` | state.get() |
-| `track` | state.get() |
-| `range` | state.get() |
-| `peg` | state.get() |
+| `root` | 'idle' \| 'loading' \| 'finishing' |
+| `track` | 'idle' \| 'loading' \| 'finishing' |
+| `range` | 'idle' \| 'loading' \| 'finishing' |
+| `peg` | 'idle' \| 'loading' \| 'finishing' |
 
-状态机内部转移，写样式与业务都用不到；要监听变化请看上面的「事件」。
+以下名称仅用于内部状态机。
+
+**状态**：`idle` · `loading` · `finishing`
 
 **事件**：`LOADING.START` · `LOADING.END` · `TRICKLE.SYNC` · `after.trickleSpeed` · `after.fadeDuration`
 
-## connect API
+### connect API
 
-`useLoadingBar` 产出的对象。`getXxxProps()` 铺到对应部件的宿主元素上，其余是可读状态与操作入口。
+`getXxxProps()` 返回对应部件的宿主属性。
 
 | 成员 | 类型 | 说明 |
 | --- | --- | --- |
@@ -640,15 +658,17 @@ function reload(): void {
 | `getRangeProps` | `() => T['element']` |  |
 | `getPegProps` | `() => T['element']` | 进度段末端那道亮边。纯装饰，作者不渲染它时条子照旧成立。 |
 
-## 键盘
+## 无障碍
+
+### 键盘
 
 规格出处：[W3C APG](https://www.w3.org/TR/wai-aria-1.2/#progressbar)
 
 无键盘交互（不接收焦点，或焦点行为完全由原生元素提供）。
 
-## 无障碍
+### ARIA
 
-下面这些由 `connect` 铺到部件上，作者不必自己写；重复写反而会覆盖掉正确值。
+以下属性由 `connect` 生成。
 
 | 部件 | 属性 | 值 |
 | --- | --- | --- |
@@ -659,25 +679,27 @@ function reload(): void {
 | `root` | `role` | 'progressbar' |
 | `peg` | `aria-hidden` | 'true' |
 
-## 样式
+## 样式参考
 
-默认皮肤 `@xihan-ui/styles/loading-bar.css` 按部件选择：`[data-scope="loading-bar"][data-part="root"]`。它落在 `xihan.components` 层；业务样式不写进 `@layer` 即高于全部库层，要按层压过来就写进 `xihan.overrides`。
+### 皮肤
 
-## 数据属性
+`@xihan-ui/styles/loading-bar.css` 使用 `[data-scope="loading-bar"][data-part="root"]` 部件选择器，位于 `xihan.components` 层。覆盖样式使用 `xihan.overrides`。
 
-由 `connect` 产出并铺到部件上，皮肤与测试都据此选择；`data-disabled` 这类无值属性在条件不成立时整个不出现。
+### 数据属性
+
+由 `connect` 生成；条件不成立时不输出无值属性。
 
 | 部件 | 属性 | 值 |
 | --- | --- | --- |
 | `root` | `data-indeterminate` | ''（条件成立时才出现） |
-| `root` | `data-state` | state.get() |
+| `root` | `data-state` | 'idle' \| 'loading' \| 'finishing' |
 | `root` | `data-tone` | props.tone |
-| `track` | `data-state` | state.get() |
-| `range` | `data-state` | state.get() |
-| `peg` | `data-state` | state.get() |
+| `track` | `data-state` | 'idle' \| 'loading' \| 'finishing' |
+| `range` | `data-state` | 'idle' \| 'loading' \| 'finishing' |
+| `peg` | `data-state` | 'idle' \| 'loading' \| 'finishing' |
 
 <!-- xh-component-tokens:start -->
-## CSS 变量
+### CSS 变量
 
 本组件公开覆盖槽由独立皮肤的实际消费位生成；缺省来源、作用部件和状态均与 CSS 同源。
 
@@ -692,26 +714,12 @@ function reload(): void {
 | `--xh-loading-bar-track` | `track` | `background` | `default` | `transparent` | loading-bar 的 track 部件 background 覆盖槽。 |
 <!-- xh-component-tokens:end -->
 
-## 动效
+### 动效
 
 `inline-size` · `opacity` 走 `transition` 过渡。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
 
 `prefers-reduced-motion: reduce` 下本组件另有降级规则。
 
-## RTL
+### RTL
 
 皮肤用逻辑属性排布（`inline-start` 一族），`dir="rtl"` 下自动镜像。
-
-## 组合
-
-- 与路由守卫配合：进入时启动，完成或失败时收掉。
-
-## 最佳实践
-
-- 失败也要收掉：留在页面上的半截进度条比什么都没有更糟。
-- 极快的请求可以延迟一点再显示，否则只会闪一下。
-
-## 反模式
-
-- 爬升到 100% 却还没加载完：用户以为卡死了。
-- 同时挂好几条。

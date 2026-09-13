@@ -1,6 +1,6 @@
 来源：https://ui.docs.xihanfun.com/components/empty-state
 
-# EmptyState `空状态`
+# EmptyState 空状态
 
 没有数据时那一块：说清楚为什么空，以及可以做什么。
 
@@ -66,6 +66,12 @@ import {
   </div>
 </xh-empty-state>
 ```
+
+## 组件结构
+
+加粗的是必需部件。
+
+`data-scope="empty-state"`：**`root`** · `media` · `indicator` · `title` · `description` · `action`
 
 ## 示例
 
@@ -609,7 +615,26 @@ const results = [
 - `live` 决定这块内容出现时读屏怎么播报——搜索结果变空时这一条很重要。
 - `status` 决定图标区并进哪一族语气色：三个状态码各并进最接近的一族，另有成功、警示、出错、提示四档。
 
-## 产物
+### 组合
+
+- 图标用[图标块](./icon-wrapper)；操作用[按钮](./button)。
+
+### 最佳实践
+
+- 区分三种空：从来没有、筛选之后没有、搜索没结果。三者该说的话完全不同。
+- 给一条出路：新建、清除筛选、换个关键词。
+- 用作结果页时每一页都给回退出口：回首页、重试、联系支持。403 与 500 尤其需要。
+- 失败页给可追溯的标识（请求号、时间），用户报障时用得上。
+
+### 反模式
+
+- 只画一个空盒子加"暂无数据"：用户不知道下一步做什么。
+- 首次使用时的空状态跟筛选无结果长得一样。
+- 只写"出错了"却不说是什么错，也不给下一步。
+
+## API 参考
+
+### 产物
 
 | 层 | 值 |
 | --- | --- |
@@ -618,13 +643,7 @@ const results = [
 | 状态机 | 无，`connect` 直接由 props 算属性 |
 | 皮肤 | `@xihan-ui/styles/empty-state.css` |
 
-## 解剖
-
-部件名即 `data-part` 属性值，也是皮肤的选择器。加粗的是必备部件，不渲染它组件不工作（Web Components 适配器会在诊断通道上报 `wc.missing-part`）。
-
-`data-scope="empty-state"`：**`root`** · `media` · `indicator` · `title` · `description` · `action`
-
-## Props
+### Props
 
 | 属性 | 类型 | 必填 | 说明 |
 | --- | --- | --- | --- |
@@ -633,9 +652,9 @@ const results = [
 | `status` | `EmptyStateStatus` |  | 结果类型，只落成 root 的 data-status；图标画什么由作者塞进图标槽。 |
 | `tone` | `Tone` |  | 语气：brand / neutral / success / warning / danger / info，决定用哪族颜色。不给即维持中性。 |
 
-## connect API
+### connect API
 
-`connect` 产出的对象。`getXxxProps()` 铺到对应部件的宿主元素上，其余是可读状态与操作入口。
+`getXxxProps()` 返回对应部件的宿主属性。
 
 | 成员 | 类型 | 说明 |
 | --- | --- | --- |
@@ -647,15 +666,17 @@ const results = [
 | `getDescriptionProps` | `() => T['element']` |  |
 | `getActionProps` | `() => T['element']` |  |
 
-## 键盘
+## 无障碍
+
+### 键盘
 
 规格出处：[W3C APG](https://www.w3.org/WAI/ARIA/apg/practices/live-regions/)
 
 无键盘交互（不接收焦点，或焦点行为完全由原生元素提供）。
 
-## 无障碍
+### ARIA
 
-下面这些由 `connect` 铺到部件上，作者不必自己写；重复写反而会覆盖掉正确值。
+以下属性由 `connect` 生成。
 
 | 部件 | 属性 | 值 |
 | --- | --- | --- |
@@ -663,13 +684,15 @@ const results = [
 | `media` | `aria-hidden` | 'true' |
 | `indicator` | `aria-hidden` | 'true' |
 
-## 样式
+## 样式参考
 
-默认皮肤 `@xihan-ui/styles/empty-state.css` 按部件选择：`[data-scope="empty-state"][data-part="root"]`。它落在 `xihan.components` 与 `xihan.motion` 层；业务样式不写进 `@layer` 即高于全部库层，要按层压过来就写进 `xihan.overrides`。
+### 皮肤
 
-## 数据属性
+`@xihan-ui/styles/empty-state.css` 使用 `[data-scope="empty-state"][data-part="root"]` 部件选择器，位于 `xihan.components` 与 `xihan.motion` 层。覆盖样式使用 `xihan.overrides`。
 
-由 `connect` 产出并铺到部件上，皮肤与测试都据此选择；`data-disabled` 这类无值属性在条件不成立时整个不出现。
+### 数据属性
+
+由 `connect` 生成；条件不成立时不输出无值属性。
 
 | 部件 | 属性 | 值 |
 | --- | --- | --- |
@@ -678,7 +701,7 @@ const results = [
 | `root` | `data-tone` | props.tone |
 
 <!-- xh-component-tokens:start -->
-## CSS 变量
+### CSS 变量
 
 本组件公开覆盖槽由独立皮肤的实际消费位生成；缺省来源、作用部件和状态均与 CSS 同源。
 
@@ -704,29 +727,12 @@ const results = [
 | `--xh-empty-state-title-leading` | `title` | `line-height` | `default` | `--xh-leading-tight` | empty-state 的 title 部件 line-height 覆盖槽。 |
 <!-- xh-component-tokens:end -->
 
-## 动效
+### 动效
 
 关键帧 `xh-rise-in` 随皮肤自带，不引用别处文件里的名字。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
 
 系统开启减弱动效时由令牌层统一收敛，皮肤不另作判断。
 
-## RTL
+### RTL
 
 皮肤用逻辑属性排布（`inline-start` 一族），`dir="rtl"` 下自动镜像。
-
-## 组合
-
-- 图标用[图标块](./icon-wrapper)；操作用[按钮](./button)。
-
-## 最佳实践
-
-- 区分三种空：从来没有、筛选之后没有、搜索没结果。三者该说的话完全不同。
-- 给一条出路：新建、清除筛选、换个关键词。
-- 用作结果页时每一页都给回退出口：回首页、重试、联系支持。403 与 500 尤其需要。
-- 失败页给可追溯的标识（请求号、时间），用户报障时用得上。
-
-## 反模式
-
-- 只画一个空盒子加"暂无数据"：用户不知道下一步做什么。
-- 首次使用时的空状态跟筛选无结果长得一样。
-- 只写"出错了"却不说是什么错，也不给下一步。

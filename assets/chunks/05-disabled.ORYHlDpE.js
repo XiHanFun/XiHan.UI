@@ -1,0 +1,9 @@
+const t=`<!-- 禁用 | 保留禁用前的状态 -->
+<xh-toggle disabled>
+  <button data-xh-part="root">♡ 点赞</button>
+</xh-toggle>
+
+<xh-toggle disabled default-pressed>
+  <button data-xh-part="root">♡ 点赞</button>
+</xh-toggle>
+`;export{t as default};

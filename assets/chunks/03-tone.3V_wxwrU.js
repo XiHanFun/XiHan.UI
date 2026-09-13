@@ -1,0 +1,9 @@
+const o=`<!-- 颜色 | 使用语义颜色 -->
+<div style="display: flex; align-items: center; gap: 12px">
+  <xh-icon-wrapper variant="subtle" tone="brand"><span data-xh-part="root"><xh-icon><svg data-xh-part="root" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><path d="M12 3.5L14.12 9.59L20.56 9.72L15.42 13.61L17.29 19.78L12 16.1L6.71 19.78L8.58 13.61L3.44 9.72L9.88 9.59Z" /></svg></xh-icon></span></xh-icon-wrapper>
+  <xh-icon-wrapper variant="subtle" tone="success"><span data-xh-part="root"><xh-icon><svg data-xh-part="root" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><path d="M12 3.5L14.12 9.59L20.56 9.72L15.42 13.61L17.29 19.78L12 16.1L6.71 19.78L8.58 13.61L3.44 9.72L9.88 9.59Z" /></svg></xh-icon></span></xh-icon-wrapper>
+  <xh-icon-wrapper variant="subtle" tone="warning"><span data-xh-part="root"><xh-icon><svg data-xh-part="root" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><path d="M12 3.5L14.12 9.59L20.56 9.72L15.42 13.61L17.29 19.78L12 16.1L6.71 19.78L8.58 13.61L3.44 9.72L9.88 9.59Z" /></svg></xh-icon></span></xh-icon-wrapper>
+  <xh-icon-wrapper variant="subtle" tone="danger"><span data-xh-part="root"><xh-icon><svg data-xh-part="root" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><path d="M12 3.5L14.12 9.59L20.56 9.72L15.42 13.61L17.29 19.78L12 16.1L6.71 19.78L8.58 13.61L3.44 9.72L9.88 9.59Z" /></svg></xh-icon></span></xh-icon-wrapper>
+  <xh-icon-wrapper variant="subtle" tone="info"><span data-xh-part="root"><xh-icon><svg data-xh-part="root" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><path d="M12 3.5L14.12 9.59L20.56 9.72L15.42 13.61L17.29 19.78L12 16.1L6.71 19.78L8.58 13.61L3.44 9.72L9.88 9.59Z" /></svg></xh-icon></span></xh-icon-wrapper>
+</div>
+`;export{o as default};

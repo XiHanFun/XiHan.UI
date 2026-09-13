@@ -1,0 +1,15 @@
+const p=`<!-- 固定区域 | 固定页头和侧栏 -->
+<div style="inline-size: min(640px, 100%); block-size: 260px; overflow: auto; border-radius: var(--xh-shape-surface); background: var(--xh-bg-page)">
+  <xh-layout header-fixed sider-fixed bordered style="display: contents">
+    <div data-xh-part="root" style="--xh-layout-scrollport-h: 260px">
+      <div data-xh-part="header"><strong>控制台</strong></div>
+      <div data-xh-part="sider">导航</div>
+      <div data-xh-part="content">
+        <p>内容区 01</p><p>内容区 02</p><p>内容区 03</p><p>内容区 04</p><p>内容区 05</p><p>内容区 06</p>
+        <p>内容区 07</p><p>内容区 08</p><p>内容区 09</p><p>内容区 10</p><p>内容区 11</p><p>内容区 12</p>
+      </div>
+      <div data-xh-part="footer">© 2026 XiHan.UI</div>
+    </div>
+  </xh-layout>
+</div>
+`;export{p as default};

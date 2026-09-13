@@ -1,6 +1,6 @@
 来源：https://ui.docs.xihanfun.com/components/accordion
 
-# Accordion `手风琴`
+# Accordion 手风琴
 
 一列可展开的区块，标题常驻、内容按需展开。
 
@@ -96,6 +96,12 @@ const items = [
   });
 </script>
 ```
+
+## 组件结构
+
+加粗的是必需部件。
+
+`data-scope="accordion"`：`root` · `item` · `item-separator` · `header` · **`trigger`** · **`content`** · `indicator`
 
 ## 示例
 
@@ -335,7 +341,7 @@ const items = [
 </script>
 ```
 
-### 语气
+### 颜色
 
 tone 落在展开态的标题上，六种语气各预置一项展开做对照
 
@@ -1219,7 +1225,7 @@ const panels = ref<string[]>(["shipping"]);
 </script>
 ```
 
-### 形态
+### 变体
 
 plain 不画壳，surface 给整块一层面，bordered 逐条画边；三档只改怎么与页面分开
 
@@ -1352,7 +1358,23 @@ const panels = [
 - 指示器可以放前也可以放后，图形自定。
 - 可以嵌套；触发区大小由作者决定。
 
-## 产物
+### 组合
+
+- 标题栏里可以挂附加信息（计数、状态[徽标](./badge)）。
+
+### 最佳实践
+
+- 标题写清楚里面是什么，用户不该靠展开来发现。
+- 默认展开第一项，让用户看见内容长什么样。
+
+### 反模式
+
+- 把关键信息藏进折叠：用户不会逐个点开。
+- 展开时页面下方内容大幅跳动而没有滚动补偿。
+
+## API 参考
+
+### 产物
 
 | 层 | 值 |
 | --- | --- |
@@ -1362,13 +1384,7 @@ const panels = [
 | 状态机 | `accordionMachine` |
 | 皮肤 | `@xihan-ui/styles/accordion.css` |
 
-## 解剖
-
-部件名即 `data-part` 属性值，也是皮肤的选择器。加粗的是必备部件，不渲染它组件不工作（Web Components 适配器会在诊断通道上报 `wc.missing-part`）。
-
-`data-scope="accordion"`：`root` · `item` · `item-separator` · `header` · **`trigger`** · **`content`** · `indicator`
-
-## Props
+### Props
 
 | 属性 | 类型 | 必填 | 说明 |
 | --- | --- | --- | --- |
@@ -1386,17 +1402,17 @@ const panels = [
 | `size` | `Size` |  | 尺寸：sm / md / lg。 |
 | `onValueChange` | `(details: AccordionValueChangeDetails) => void` |  | 展开集合变化回调。 |
 
-## 事件
+### 事件
 
-自定义元素派发这些事件，Vue 组件对应同名 emit；载荷都在 `detail` 上。可双向绑定的值另有 `update:xxx`，见 Props。
+自定义元素将载荷放在 `detail`；Vue 使用同名 emit。
 
 | 事件 | 载荷 | 说明 |
 | --- | --- | --- |
 | `value-change` | `AccordionValueChangeDetails` | 展开集合变化；detail 为 `{ value: string[] }` |
 
-## 状态
+### 状态
 
-对外可见的状态落在 `data-state` 上，写样式与断言都读它：
+公开状态写入 `data-state`。
 
 | 部件 | 取值 |
 | --- | --- |
@@ -1406,15 +1422,15 @@ const panels = [
 | `content` | 'open' \| 'closed' |
 | `indicator` | 'open' \| 'closed' |
 
-状态机内部转移，写样式与业务都用不到；要监听变化请看上面的「事件」。
+以下名称仅用于内部状态机。
 
 **状态**：`idle`
 
 **事件**：`ITEM.TOGGLE` · `VALUE.SET`
 
-## connect API
+### connect API
 
-`useAccordion` 产出的对象。`getXxxProps()` 铺到对应部件的宿主元素上，其余是可读状态与操作入口。
+`getXxxProps()` 返回对应部件的宿主属性。
 
 | 成员 | 类型 | 说明 |
 | --- | --- | --- |
@@ -1430,7 +1446,9 @@ const panels = [
 | `getContentProps` | `(props: AccordionItemProps) => T['element']` |  |
 | `getIndicatorProps` | `(props: AccordionItemProps) => T['element']` |  |
 
-## 键盘
+## 无障碍
+
+### 键盘
 
 规格出处：[W3C APG](https://www.w3.org/WAI/ARIA/apg/patterns/accordion/#keyboardinteraction)
 
@@ -1443,9 +1461,9 @@ const panels = [
 | `End` | focus in trigger | 焦点移到末个 trigger |
 | `Tab` / `Shift+Tab` | focus in trigger | 按文档序进出：每个 trigger 都是独立 Tab 停靠点，无 roving tabindex |
 
-## 无障碍
+### ARIA
 
-下面这些由 `connect` 铺到部件上，作者不必自己写；重复写反而会覆盖掉正确值。
+以下属性由 `connect` 生成。
 
 | 部件 | 属性 | 值 |
 | --- | --- | --- |
@@ -1459,13 +1477,15 @@ const panels = [
 | `content` | `role` | 'region' |
 | `indicator` | `aria-hidden` | 'true' |
 
-## 样式
+## 样式参考
 
-默认皮肤 `@xihan-ui/styles/accordion.css` 按部件选择：`[data-scope="accordion"][data-part="root"]`。它落在 `xihan.components` 与 `xihan.motion` 层；业务样式不写进 `@layer` 即高于全部库层，要按层压过来就写进 `xihan.overrides`。
+### 皮肤
 
-## 数据属性
+`@xihan-ui/styles/accordion.css` 使用 `[data-scope="accordion"][data-part="root"]` 部件选择器，位于 `xihan.components` 与 `xihan.motion` 层。覆盖样式使用 `xihan.overrides`。
 
-由 `connect` 产出并铺到部件上，皮肤与测试都据此选择；`data-disabled` 这类无值属性在条件不成立时整个不出现。
+### 数据属性
+
+由 `connect` 生成；条件不成立时不输出无值属性。
 
 | 部件 | 属性 | 值 |
 | --- | --- | --- |
@@ -1485,7 +1505,7 @@ const panels = [
 | `indicator` | `data-state` | 'open' \| 'closed' |
 
 <!-- xh-component-tokens:start -->
-## CSS 变量
+### CSS 变量
 
 本组件公开覆盖槽由独立皮肤的实际消费位生成；缺省来源、作用部件和状态均与 CSS 同源。
 
@@ -1512,7 +1532,7 @@ const panels = [
 | `--xh-accordion-trigger-radius` | `trigger` | `border-radius` | `default` | `--xh-shape-control` | accordion 的 trigger 部件 border-radius 覆盖槽。 |
 <!-- xh-component-tokens:end -->
 
-## 动效
+### 动效
 
 关键帧 `xh-accordion-collapse` · `xh-accordion-expand` 随皮肤自带，不引用别处文件里的名字；`rotate` · `scale` 走 `transition` 过渡。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
 
@@ -1520,20 +1540,6 @@ const panels = [
 
 系统开启减弱动效时由令牌层统一收敛，皮肤不另作判断。
 
-## RTL
+### RTL
 
 皮肤用逻辑属性排布（`inline-start` 一族），`dir="rtl"` 下自动镜像。
-
-## 组合
-
-- 标题栏里可以挂附加信息（计数、状态[徽标](./badge)）。
-
-## 最佳实践
-
-- 标题写清楚里面是什么，用户不该靠展开来发现。
-- 默认展开第一项，让用户看见内容长什么样。
-
-## 反模式
-
-- 把关键信息藏进折叠：用户不会逐个点开。
-- 展开时页面下方内容大幅跳动而没有滚动补偿。

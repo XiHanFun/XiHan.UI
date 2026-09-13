@@ -1,8 +1,8 @@
 来源：https://ui.docs.xihanfun.com/components/scrollbar
 
-# Scrollbar `滚动条`
+# Scrollbar 滚动条
 
-自绘的滚动条，挂在**任意一个**滚动容器上：表格的滚动盒、虚拟滚动的视口、随手一个 `overflow: auto` 的 div 都行。
+为现有滚动容器提供一致的滚动条样式。
 
 <div class="xh-resource-links">
   <a href="https://github.com/XiHanFun/XiHan.UI/tree/dev/ui/packages/engine/headless/src/scrollbar" target="_blank" rel="noreferrer">Headless</a>
@@ -14,7 +14,7 @@
 
 ## 用法
 
-滚动容器归你，滚动条只要拿到它；把节点交给 scrollable 即可
+为滚动容器添加滚动条
 
 ```vue
 <script setup lang="ts">
@@ -22,26 +22,24 @@ import { XhScrollbarRoot, XhScrollbarThumb, XhScrollbarTrack } from "@xihan-ui/v
 import { ref } from "vue";
 
 const box = ref<HTMLElement | null>(null);
-const lines = Array.from({ length: 40 }, (_, i) => `第 ${i + 1} 行内容`);
+const items = ["项目概览", "组件规范", "设计令牌", "无障碍", "交互状态", "主题配置", "发布记录", "迁移指南"];
 </script>
 
 <template>
-  <!-- 定位上下文归容器：滚动条是绝对定位的，贴的是最近那个定位祖先 -->
   <div style="position: relative; inline-size: 240px">
-    <!-- 藏掉原生滚动条的外观，滚动能力一点不动 -->
     <div
       ref="box"
       style="
-        block-size: 160px;
+        block-size: 144px;
         overflow: auto;
         scrollbar-width: none;
-        border: 1px solid var(--xh-border-default);
         border-radius: var(--xh-shape-surface);
-        padding: 8px;
+        background: var(--xh-bg-subtle);
+        padding: 12px;
       "
     >
-      <div v-for="line in lines" :key="line" style="padding-block: 2px">
-        {{ line }}
+      <div v-for="item in items" :key="item" style="padding-block: 6px">
+        {{ item }}
       </div>
     </div>
 
@@ -55,20 +53,17 @@ const lines = Array.from({ length: 40 }, (_, i) => `第 ${i + 1} 行内容`);
 ```
 
 ```html
-<!-- 定位上下文归容器：滚动条是绝对定位的，贴的是最近那个定位祖先 -->
 <div style="position: relative; inline-size: 240px">
-  <!-- 藏掉原生滚动条的外观，滚动能力一点不动 -->
-  <div
-    id="scrollbar-basic-box"
-    style="
-      block-size: 160px;
-      overflow: auto;
-      scrollbar-width: none;
-      border: 1px solid var(--xh-border-default);
-      border-radius: var(--xh-shape-surface);
-      padding: 8px;
-    "
-  ></div>
+  <div id="scrollbar-basic-box" style="block-size: 144px; overflow: auto; scrollbar-width: none; border-radius: var(--xh-shape-surface); background: var(--xh-bg-subtle); padding: 12px">
+    <div style="padding-block: 6px">项目概览</div>
+    <div style="padding-block: 6px">组件规范</div>
+    <div style="padding-block: 6px">设计令牌</div>
+    <div style="padding-block: 6px">无障碍</div>
+    <div style="padding-block: 6px">交互状态</div>
+    <div style="padding-block: 6px">主题配置</div>
+    <div style="padding-block: 6px">发布记录</div>
+    <div style="padding-block: 6px">迁移指南</div>
+  </div>
 
   <xh-scrollbar controls="scrollbar-basic-box" type="always">
     <div data-xh-part="root">
@@ -78,25 +73,19 @@ const lines = Array.from({ length: 40 }, (_, i) => `第 ${i + 1} 行内容`);
     </div>
   </xh-scrollbar>
 </div>
-
-<script type="module">
-  const box = document.getElementById("scrollbar-basic-box");
-  box.replaceChildren(
-    ...Array.from({ length: 40 }, (_, i) => {
-      const line = document.createElement("div");
-      line.style.paddingBlock = "2px";
-      line.textContent = `第 ${i + 1} 行内容`;
-      return line;
-    }),
-  );
-</script>
 ```
+
+## 组件结构
+
+加粗的是必需部件。
+
+`data-scope="scrollbar"`：**`root`** · **`track`** · **`thumb`** · `corner`
 
 ## 示例
 
-### 横向 + 键盘可达
+### 键盘操作
 
-focusable 让滑块进 Tab 序并报 role=scrollbar，方向键与翻页键可用
+让滑块可聚焦
 
 ```vue
 <script setup lang="ts">
@@ -150,8 +139,6 @@ const cells = Array.from({ length: 24 }, (_, i) => `第 ${i + 1} 列`);
       </XhScrollbarTrack>
     </XhScrollbarRoot>
   </div>
-
-  <span style="font-size: 13px">Tab 到滑块上，用左右键 / PageUp / PageDown / Home / End 滚动</span>
 </template>
 ```
 
@@ -186,8 +173,6 @@ const cells = Array.from({ length: 24 }, (_, i) => `第 ${i + 1} 列`);
   </xh-scrollbar>
 </div>
 
-<span style="font-size: 13px">Tab 到滑块上，用左右键 / PageUp / PageDown / Home / End 滚动</span>
-
 <script type="module">
   document.getElementById("scrollbar-focusable-row").replaceChildren(
     ...Array.from({ length: 24 }, (_, i) => {
@@ -200,15 +185,13 @@ const cells = Array.from({ length: 24 }, (_, i) => `第 ${i + 1} 列`);
       return cell;
     }),
   );
-
-  // 文案是对象，只能走 property
   document.getElementById("scrollbar-focusable").translations = { thumb: "横向滚动条" };
 </script>
 ```
 
-### 横竖两条
+### 双轴滚动
 
-同一个容器挂两条，gutter 让各自在末端让出交叉口，XhScrollbarCorner 把那一格补上
+同时显示横向和纵向滚动条
 
 ```vue
 <script setup lang="ts">
@@ -247,7 +230,6 @@ const rows = Array.from({ length: 30 }, (_, r) => Array.from({ length: 12 }, (_,
       </div>
     </div>
 
-    <!-- 交叉口补丁写在其中一条里即可，跟着这一条显隐 -->
     <XhScrollbarRoot :scrollable="box" type="auto" gutter>
       <XhScrollbarTrack>
         <XhScrollbarThumb />
@@ -277,7 +259,6 @@ const rows = Array.from({ length: 30 }, (_, r) => Array.from({ length: 12 }, (_,
     "
   ></div>
 
-  <!-- 交叉口补丁写在其中一条里即可，跟着这一条显隐 -->
   <xh-scrollbar controls="scrollbar-both-box" type="auto" gutter>
     <div data-xh-part="root">
       <div data-xh-part="track">
@@ -319,9 +300,9 @@ const rows = Array.from({ length: 30 }, (_, r) => Array.from({ length: 12 }, (_,
 </script>
 ```
 
-### 五种露面时机
+### 显示方式
 
-缺省的 scroll-hover 滚动或指针进来都露、auto 溢出就露、always 恒露、scroll 只认滚动、hover 只认指针；收起都是淡出
+设置滚动条的显示时机
 
 ```vue
 <script setup lang="ts">
@@ -414,24 +395,39 @@ const lines = Array.from({ length: 30 }, (_, i) => `第 ${i + 1} 行`);
 
 ### 何时使用
 
-- 原生滚动条在各平台长得不一样，而设计稿要求一致。
-- 滚动容器不归组件管（表格、虚拟列表、你自己的布局），但滚动条要跟库里其余部分一个样。
+- 需要统一不同平台的滚动条样式。
+- 需要为已有滚动容器补充自定义滚动条。
 
 ### 何时不用
 
-- 容器与滚动条一起要：用[滚动区域](./scroll-area)，它把视口、内容与两条滚动条打包好了。
-- 只是想让原生滚动条细一点：`scrollbar-width: thin` 就够，不必换掉整套交互。
+- 需要完整的滚动容器时，使用[滚动区域](./scroll-area)。
+- 只需调整原生滚动条宽度时，优先使用 CSS。
 
 ### 特性
 
-- 挂在作者给的滚动容器上，与它是不是本组件的后代无关；挂上后容器带 `data-xh-scrollbar`，原生滚动条的外观自动藏起来。
-- 五种露面时机（`scroll-hover` / `auto` / `always` / `scroll` / `hover`），带收起延时；露出与收起都淡变。
-- 缺省档 `scroll-hover` 浮在内容之上，滚动时与指针进来时露出，两样都停下后收起，全程不占布局宽度（横条不占高度）。
-- 拖滑块、点轨道跳转、RTL 双向换算、滑块像素下限都在库里。
-- `focusable` 打开后滑块进 Tab 序并报 `role="scrollbar"`，方向键与翻页键可用。
-- 触屏（粗指针）上默认交给原生滚动，`forceVisible` 打开才画。
+- 支持五种显示时机，默认在滚动或悬停时显示。
+- 支持拖动、点击轨道、键盘操作与 RTL。
+- 支持横向、纵向和双轴滚动。
+- 触屏设备默认保留原生滚动体验。
 
-## 产物
+### 组合
+
+- 可与[表格](./table)、[虚拟滚动](./virtualizer)和[日志](./log)组合使用。
+- 双轴滚动时使用 `gutter` 和 `corner` 处理交叉区域。
+
+### 最佳实践
+
+- 保留滚动容器的原生滚轮和键盘能力。
+- 触摸设备不要仅使用 `hover` 显示模式。
+
+### 反模式
+
+- 不要为每条辅助滚动条都启用 `focusable`。
+- 不要用滚动条组件拦截滚轮事件。
+
+## API 参考
+
+### 产物
 
 | 层 | 值 |
 | --- | --- |
@@ -441,13 +437,7 @@ const lines = Array.from({ length: 30 }, (_, i) => `第 ${i + 1} 行`);
 | 状态机 | `scrollbarMachine` |
 | 皮肤 | `@xihan-ui/styles/scrollbar.css` |
 
-## 解剖
-
-部件名即 `data-part` 属性值，也是皮肤的选择器。加粗的是必备部件，不渲染它组件不工作（Web Components 适配器会在诊断通道上报 `wc.missing-part`）。
-
-`data-scope="scrollbar"`：**`root`** · **`track`** · **`thumb`** · `corner`
-
-## Props
+### Props
 
 | 属性 | 类型 | 必填 | 说明 |
 | --- | --- | --- | --- |
@@ -469,9 +459,9 @@ const lines = Array.from({ length: 30 }, (_, i) => `第 ${i + 1} 行`);
 | `onDragStart` | `(details: ScrollbarScrollDetails) => void` |  | 按住滑块。 |
 | `onDragEnd` | `(details: ScrollbarScrollDetails) => void` |  | 松开滑块。 |
 
-## 事件
+### 事件
 
-自定义元素派发这些事件，Vue 组件对应同名 emit；载荷都在 `detail` 上。可双向绑定的值另有 `update:xxx`，见 Props。
+自定义元素将载荷放在 `detail`；Vue 使用同名 emit。
 
 | 事件 | 载荷 | 说明 |
 | --- | --- | --- |
@@ -481,24 +471,24 @@ const lines = Array.from({ length: 30 }, (_, i) => `第 ${i + 1} 行`);
 | `drag-start` | `` | 按住滑块；detail 同上 |
 | `drag-end` | `` | 松开滑块；detail 同上 |
 
-## 插槽
+### 插槽
 
-作者能拿到载荷的插槽。只转发内容、不带载荷的默认插槽不在此列——那类直接写子节点即可。
+仅列出带载荷的插槽。
 
 | Vue 组件 | 插槽 | 载荷 | 说明 |
 | --- | --- | --- | --- |
 | `XhScrollbarRoot` | `default` | `ScrollbarRootSlotProps` |  |
 
-## 状态
+### 状态
 
-对外可见的状态落在 `data-state` 上，写样式与断言都读它：
+公开状态写入 `data-state`。
 
 | 部件 | 取值 |
 | --- | --- |
 | `root` | 'visible' \| 'hidden' |
 | `corner` | 'visible' \| 'hidden' |
 
-状态机内部转移，写样式与业务都用不到；要监听变化请看上面的「事件」。
+以下名称仅用于内部状态机。
 
 **状态**：`hidden` · `visible` · `hiding` · `dragging`
 
@@ -506,9 +496,9 @@ const lines = Array.from({ length: 30 }, (_, i) => `第 ${i + 1} 行`);
 
 **判据**：`showsOnHover` · `showsOnScroll` · `staysVisible` · `canInteract`
 
-## connect API
+### connect API
 
-`useScrollbar` 产出的对象。`getXxxProps()` 铺到对应部件的宿主元素上，其余是可读状态与操作入口。
+`getXxxProps()` 返回对应部件的宿主属性。
 
 | 成员 | 类型 | 说明 |
 | --- | --- | --- |
@@ -532,7 +522,9 @@ const lines = Array.from({ length: 30 }, (_, i) => `第 ${i + 1} 行`);
 | `getThumbProps` | `() => T['element']` |  |
 | `getCornerProps` | `() => T['element']` | 交叉口补丁，写在其中一条的 root 里；跟着这一条的显隐走。 |
 
-## 键盘
+## 无障碍
+
+### 键盘
 
 规格出处：[W3C APG](https://www.w3.org/WAI/WCAG21/Techniques/general/G202)
 
@@ -546,9 +538,9 @@ const lines = Array.from({ length: 30 }, (_, i) => `第 ${i + 1} 行`);
 | `End` | focus in thumb, focusable | 滚到终点 |
 | `Tab` / `Shift+Tab` | focusable | 滑块是一个 Tab 停靠点；不开 focusable 时整条退出 Tab 序，也对读屏隐藏 |
 
-## 无障碍
+### ARIA
 
-下面这些由 `connect` 铺到部件上，作者不必自己写；重复写反而会覆盖掉正确值。
+以下属性由 `connect` 生成。
 
 | 部件 | 属性 | 值 |
 | --- | --- | --- |
@@ -562,13 +554,15 @@ const lines = Array.from({ length: 30 }, (_, i) => `第 ${i + 1} 行`);
 | `thumb` | `aria-valuenow` | Math.round(metrics.scroll) \| undefined |
 | `thumb` | `role` | 'scrollbar' \| undefined |
 
-## 样式
+## 样式参考
 
-默认皮肤 `@xihan-ui/styles/scrollbar.css` 按部件选择：`[data-scope="scrollbar"][data-part="root"]`。它落在 `xihan.components` 层；业务样式不写进 `@layer` 即高于全部库层，要按层压过来就写进 `xihan.overrides`。
+### 皮肤
 
-## 数据属性
+`@xihan-ui/styles/scrollbar.css` 使用 `[data-scope="scrollbar"][data-part="root"]` 部件选择器，位于 `xihan.components` 层。覆盖样式使用 `xihan.overrides`。
 
-由 `connect` 产出并铺到部件上，皮肤与测试都据此选择；`data-disabled` 这类无值属性在条件不成立时整个不出现。
+### 数据属性
+
+由 `connect` 生成；条件不成立时不输出无值属性。
 
 | 部件 | 属性 | 值 |
 | --- | --- | --- |
@@ -591,7 +585,7 @@ const lines = Array.from({ length: 30 }, (_, i) => `第 ${i + 1} 行`);
 | `corner` | `data-state` | 'visible' \| 'hidden' |
 
 <!-- xh-component-tokens:start -->
-## CSS 变量
+### CSS 变量
 
 本组件公开覆盖槽由独立皮肤的实际消费位生成；缺省来源、作用部件和状态均与 CSS 同源。
 
@@ -606,28 +600,12 @@ const lines = Array.from({ length: 30 }, (_, i) => `第 ${i + 1} 行`);
 | `--xh-scrollbar-track-bg` | `corner`<br>`track` | `background` | `default` | `--xh-bg-scrollbar-track` | scrollbar 的 corner、track 部件 background 覆盖槽。 |
 <!-- xh-component-tokens:end -->
 
-## 动效
+### 动效
 
 `background` · `color` · `opacity` · `visibility` 走 `transition` 过渡。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
 
 系统开启减弱动效时由令牌层统一收敛，皮肤不另作判断。
 
-## RTL
+### RTL
 
 皮肤用逻辑属性排布（`inline-start` 一族），`dir="rtl"` 下自动镜像。
-
-## 组合
-
-- [滚动区域](./scroll-area)就是视口加两条本组件的组装：它的轨道、滑块与交叉口戴的正是本组件的 scope。
-- [表格](./table)放进滚动区即可滚；[虚拟滚动](./virtualizer)与[日志](./log)的视口给个 id，用 `controls` 挂上即可。
-- 两条轴各摆一个，都打开 `gutter` 让出交叉口，`corner` 写在其中一条里补上那一格。
-
-## 最佳实践
-
-- 藏原生滚动条只藏外观（`scrollbar-width: none`），别动滚动能力——键盘与滚轮仍要走原生通路。
-- 触摸设备保留原生滚动，别给 `hover` 档：手指没有"悬停"。
-
-## 反模式
-
-- 给每条滚动条都开 `focusable`：长页面上会平白多出十几个 Tab 停靠点。
-- 用它替代滚轮拦截：这个组件不接管滚轮，嵌套滚动的冲突要在布局上解决。

@@ -1,6 +1,6 @@
 # 曦寒视图组件 · 设计令牌
 
-共 406 支。取值是缺省档（浅色 · 舒适 · 基础对比度）下的值；
+共 414 支。取值是缺省档（浅色 · 舒适 · 基础对比度）下的值；
 「改写档」列出还有哪几份令牌源重新给过它——深色、紧凑、更高对比度、减弱动效、打印各是一档。
 
 覆盖时在 `:root` 上直接设同名令牌即可，这一层是公开面。带下划线前缀的 `--xh-_*` 是私有槽，不要在外面设。
@@ -204,6 +204,8 @@
 | `--xh-control-font-sm` | dimension | `var(--xh-font-size-sm)` | — |
 | `--xh-control-font-md` | dimension | `var(--xh-font-size-md)` | — |
 | `--xh-control-font-lg` | dimension | `var(--xh-font-size-lg)` | — |
+| `--xh-control-separator-opacity` | number | `0.16` | — |
+| `--xh-control-separator-disabled-opacity` | number | `0.36` | — |
 | `--xh-control-caption-sm` | dimension | `var(--xh-font-size-xs)` | — |
 | `--xh-control-caption-md` | dimension | `var(--xh-font-size-sm)` | — |
 | `--xh-control-caption-lg` | dimension | `var(--xh-font-size-md)` | — |
@@ -279,6 +281,15 @@
 | --- | --- | --- | --- |
 | `--xh-field-py` | dimension | `var(--xh-space-2)` | compact |
 
+## action
+
+| 令牌 | 类型 | 缺省值 | 改写档 |
+| --- | --- | --- | --- |
+| `--xh-action-brand-solid` | color | `var(--xh-color-brand-600)` | — |
+| `--xh-action-brand-solid-hover` | color | `var(--xh-color-brand-700)` | — |
+| `--xh-action-brand-solid-active` | color | `var(--xh-color-brand-800)` | — |
+| `--xh-action-on-brand-solid` | color | `var(--xh-color-neutral-0)` | — |
+
 ## list
 
 | 令牌 | 类型 | 缺省值 | 改写档 |
@@ -317,7 +328,7 @@
 | --- | --- | --- | --- |
 | `--xh-ring-width` | dimension | `var(--xh-stroke-thick)` | — |
 | `--xh-ring-offset` | dimension | `calc(-1 * var(--xh-ring-width))` | — |
-| `--xh-ring-focus` | color | `var(--xh-color-brand-500)` | dark |
+| `--xh-ring-focus` | color | `var(--xh-color-brand-600)` | dark |
 | `--xh-ring-invalid` | color | `var(--xh-color-danger-500)` | dark |
 
 ## state
@@ -581,6 +592,8 @@
 | `--xh-bg-brand-hover` | color | `var(--xh-color-brand-700)` | dark |
 | `--xh-bg-brand-active` | color | `var(--xh-color-brand-800)` | dark |
 | `--xh-bg-brand-subtle` | color | `var(--xh-color-brand-100)` | dark |
+| `--xh-bg-brand-subtle-hover` | color | `color-mix(in oklab, var(--xh-bg-brand) 20%, var(--xh-bg-surface))` | dark |
+| `--xh-bg-brand-subtle-active` | color | `color-mix(in oklab, var(--xh-bg-brand) 28%, var(--xh-bg-surface))` | dark |
 | `--xh-bg-overlay` | color | `oklch(0 0 0 / 0.45)` | dark |
 | `--xh-bg-scrollbar-track` | color | `var(--xh-color-neutral-100)` | dark |
 

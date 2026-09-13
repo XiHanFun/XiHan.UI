@@ -1,0 +1,9 @@
+const t=`<!-- 基础用法 | 分隔内容区域 -->
+<div style="inline-size: min(480px, 100%)">
+  <strong>账户设置</strong>
+  <p style="color: var(--xh-fg-muted)">管理个人资料与登录方式。</p>
+  <xh-separator style="display: contents"><div data-xh-part="root"></div></xh-separator>
+  <strong style="display: block; margin-block-start: 16px">通知设置</strong>
+  <p style="margin-block-end: 0; color: var(--xh-fg-muted)">选择需要接收的消息。</p>
+</div>
+`;export{t as default};

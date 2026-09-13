@@ -1,8 +1,8 @@
 来源：https://ui.docs.xihanfun.com/components/menu
 
-# Menu `菜单`
+# Menu 菜单
 
-由一个触发器弹出的一列命令。选中一条即执行并收起。
+从触发器打开一组操作命令。
 
 <div class="xh-resource-links">
   <a href="https://github.com/XiHanFun/XiHan.UI/tree/dev/ui/packages/engine/headless/src/menu" target="_blank" rel="noreferrer">Headless</a>
@@ -14,561 +14,105 @@
 
 ## 用法
 
-条目以 value 标识身份，禁用项方向键跳过也选不中；删除前面隔着一道分隔线
+从按钮打开一组操作
 
 ```vue
 <script setup lang="ts">
-import { XhMenuRoot } from "@xihan-ui/vue";
-import { ref } from "vue";
+import { ChevronDownIcon } from "@xihan-ui/icons";
+import { XhButton, XhIcon, XhMenuRoot } from "@xihan-ui/vue";
 
 const actions = [
-  { value: "copy", label: "复制" },
-  { value: "paste", label: "粘贴" },
-  // 禁用项会被方向键跳过，也选不中；separatorBefore 在它前面隔一道
-  { value: "delete", label: "删除", disabled: true, separatorBefore: true },
+  { value: "new", label: "新建文件" },
+  { value: "open", label: "打开文件" },
+  { value: "save", label: "保存" },
+  { value: "delete", label: "移到回收站", separatorBefore: true },
 ];
-
-const picked = ref("");
-
-function onSelect(details: { value: string }): void {
-  picked.value = details.value;
-}
 </script>
 
 <template>
-  <!-- 触发器的内容归作者，走 trigger 插槽 -->
-  <XhMenuRoot :collection="actions" @select="onSelect">
-    <template #trigger>操作</template>
+  <XhMenuRoot :collection="actions" trigger-as-child>
+    <template #trigger>
+      <XhButton variant="subtle">
+        操作
+        <XhIcon :icon="ChevronDownIcon" />
+      </XhButton>
+    </template>
   </XhMenuRoot>
-  <span>最近选中：{{ picked || "（无）" }}</span>
 </template>
 ```
 
 ```html
-<div style="inline-size: 100%; display: grid; gap: 12px; justify-items: start">
-  <xh-menu id="menu-basic">
-    <!-- 触发器的内容归作者 -->
-    <button data-xh-part="trigger">操作</button>
-    <div data-xh-part="positioner">
-      <div data-xh-part="content">
-        <div data-xh-part="item" value="copy">复制</div>
-        <div data-xh-part="item" value="paste">粘贴</div>
-        <div data-xh-part="separator"></div>
-        <div data-xh-part="item" value="delete" aria-disabled="true">删除</div>
-      </div>
-    </div>
-  </xh-menu>
-
-  <span>最近选中：<span id="menu-basic-readout">（无）</span></span>
-</div>
-
-<script type="module">
-  // 选中的条目值回显在下面那行文字里
-  const menu = document.getElementById("menu-basic");
-  const readout = document.getElementById("menu-basic-readout");
-  menu.addEventListener("select", (event) => {
-    readout.textContent = event.detail.value;
-  });
-</script>
-```
-
-## 示例
-
-### 受控
-
-传了 open 就由宿主说了算，组件只发 open-change 不自己改展开态
-
-```vue
-<script setup lang="ts">
-import {
-  XhMenuContent,
-  XhMenuItem,
-  XhMenuPositioner,
-  XhMenuRoot,
-  XhMenuTrigger,
-} from "@xihan-ui/vue";
-import { ref } from "vue";
-
-const open = ref(false);
-</script>
-
-<template>
-  <!-- 外部按钮直接改 open，菜单照样展开 -->
-  <button type="button" @click="open = !open">
-    {{ open ? "从外面收起" : "从外面展开" }}
+<xh-menu>
+  <button
+    data-xh-part="trigger"
+    style="display: inline-flex; align-items: center; gap: 6px; block-size: var(--xh-control-h-md); padding-inline: var(--xh-control-px-md); border: 0; border-radius: var(--xh-shape-pill); background: var(--xh-bg-subtle); color: var(--xh-fg-default); font: inherit; cursor: pointer"
+  >
+    操作
+    <svg viewBox="0 0 24 24" width="1em" height="1em" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg>
   </button>
-
-  <XhMenuRoot v-model:open="open">
-    <XhMenuTrigger>操作</XhMenuTrigger>
-    <XhMenuPositioner>
-      <XhMenuContent>
-        <XhMenuItem value="rename">重命名</XhMenuItem>
-        <XhMenuItem value="duplicate">创建副本</XhMenuItem>
-      </XhMenuContent>
-    </XhMenuPositioner>
-  </XhMenuRoot>
-
-  <span>当前：{{ open ? "展开" : "收起" }}</span>
-</template>
-```
-
-```html
-<div style="inline-size: 100%; display: flex; flex-wrap: wrap; align-items: center; gap: 12px">
-  <!-- 外部按钮直接改 open，菜单照样展开 -->
-  <button type="button" id="menu-controlled-toggle">从外面展开</button>
-
-  <xh-menu id="menu-controlled" open="false">
-    <button data-xh-part="trigger">操作</button>
-    <div data-xh-part="positioner">
-      <div data-xh-part="content">
-        <div data-xh-part="item" value="rename">重命名</div>
-        <div data-xh-part="item" value="duplicate">创建副本</div>
-      </div>
-    </div>
-  </xh-menu>
-
-  <span>当前：<span id="menu-controlled-state">收起</span></span>
-</div>
-
-<script type="module">
-  // 展开态由这段脚本持有：组件只发意图，写回 open 才真的展开
-  const menu = document.getElementById("menu-controlled");
-  const toggle = document.getElementById("menu-controlled-toggle");
-  const readout = document.getElementById("menu-controlled-state");
-
-  function apply(open) {
-    menu.open = open;
-    toggle.textContent = open ? "从外面收起" : "从外面展开";
-    readout.textContent = open ? "展开" : "收起";
-  }
-
-  toggle.addEventListener("click", () => apply(!menu.open));
-  menu.addEventListener("open-change", (event) => apply(event.detail.open));
-</script>
-```
-
-### 放置位与箭头
-
-placement 只是首选位，空间不够时定位引擎会自动翻面；arrow 指回触发器
-
-```vue
-<script setup lang="ts">
-import {
-  XhMenuArrow,
-  XhMenuContent,
-  XhMenuItem,
-  XhMenuPositioner,
-  XhMenuRoot,
-  XhMenuTrigger,
-} from "@xihan-ui/vue";
-</script>
-
-<template>
-  <XhMenuRoot placement="right-start" :offset="12">
-    <XhMenuTrigger>贴右侧展开</XhMenuTrigger>
-    <XhMenuPositioner>
-      <XhMenuContent>
-        <XhMenuItem value="profile">个人资料</XhMenuItem>
-        <XhMenuItem value="settings">偏好设置</XhMenuItem>
-        <XhMenuItem value="logout">退出登录</XhMenuItem>
-      </XhMenuContent>
-      <!-- 箭头挂在 positioner 上，位置由引擎回填 -->
-      <XhMenuArrow />
-    </XhMenuPositioner>
-  </XhMenuRoot>
-</template>
-```
-
-```html
-<xh-menu placement="right-start" offset="12">
-  <button data-xh-part="trigger">贴右侧展开</button>
   <div data-xh-part="positioner">
     <div data-xh-part="content">
-      <div data-xh-part="item" value="profile">个人资料</div>
-      <div data-xh-part="item" value="settings">偏好设置</div>
-      <div data-xh-part="item" value="logout">退出登录</div>
+      <div data-xh-part="item" value="new">新建文件</div>
+      <div data-xh-part="item" value="open">打开文件</div>
+      <div data-xh-part="item" value="save">保存</div>
+      <div data-xh-part="separator"></div>
+      <div data-xh-part="item" value="delete">移到回收站</div>
     </div>
-    <!-- 箭头挂在 positioner 上，位置由引擎回填 -->
-    <div data-xh-part="arrow"></div>
   </div>
 </xh-menu>
 ```
 
-### 语气
+## 组件结构
 
-普通菜单行与展开项保持中性灰；tone 作用于触发器反馈和显式标记，不给展开项铺品牌色
+加粗的是必需部件。
 
-```vue
-<script setup lang="ts">
-import { XhMenuRoot } from "@xihan-ui/vue";
+`data-scope="menu"`：**`trigger`** · `positioner` · **`content`** · **`item`** · `item-text` · `item-indicator` · `item-description` · `separator` · `group` · `group-label` · `arrow`
 
-const tones = ["brand", "neutral", "success", "warning", "danger", "info"] as const;
+## 示例
 
-const actions = [
-  { value: "copy", label: "复制" },
-  { value: "rename", label: "重命名" },
-  { value: "delete", label: "删除", separatorBefore: true },
-];
-</script>
+### 图标与快捷键
 
-<template>
-  <!-- 六个各自独立的菜单，逐个展开对比条目高亮底色 -->
-  <div style="display: flex; flex-wrap: wrap; gap: 8px">
-    <XhMenuRoot v-for="tone in tones" :key="tone" :collection="actions" :tone="tone">
-      <template #trigger>{{ tone }}</template>
-    </XhMenuRoot>
-  </div>
-</template>
-```
-
-```html
-<!-- 六个各自独立的菜单，逐个展开对比条目高亮底色 -->
-<div style="display: flex; flex-wrap: wrap; gap: 8px">
-  <xh-menu tone="brand">
-    <button data-xh-part="trigger">brand</button>
-    <div data-xh-part="positioner">
-      <div data-xh-part="content">
-        <div data-xh-part="item" value="copy">复制</div>
-        <div data-xh-part="item" value="rename">重命名</div>
-        <div data-xh-part="separator"></div>
-        <div data-xh-part="item" value="delete">删除</div>
-      </div>
-    </div>
-  </xh-menu>
-  <xh-menu tone="neutral">
-    <button data-xh-part="trigger">neutral</button>
-    <div data-xh-part="positioner">
-      <div data-xh-part="content">
-        <div data-xh-part="item" value="copy">复制</div>
-        <div data-xh-part="item" value="rename">重命名</div>
-        <div data-xh-part="separator"></div>
-        <div data-xh-part="item" value="delete">删除</div>
-      </div>
-    </div>
-  </xh-menu>
-  <xh-menu tone="success">
-    <button data-xh-part="trigger">success</button>
-    <div data-xh-part="positioner">
-      <div data-xh-part="content">
-        <div data-xh-part="item" value="copy">复制</div>
-        <div data-xh-part="item" value="rename">重命名</div>
-        <div data-xh-part="separator"></div>
-        <div data-xh-part="item" value="delete">删除</div>
-      </div>
-    </div>
-  </xh-menu>
-  <xh-menu tone="warning">
-    <button data-xh-part="trigger">warning</button>
-    <div data-xh-part="positioner">
-      <div data-xh-part="content">
-        <div data-xh-part="item" value="copy">复制</div>
-        <div data-xh-part="item" value="rename">重命名</div>
-        <div data-xh-part="separator"></div>
-        <div data-xh-part="item" value="delete">删除</div>
-      </div>
-    </div>
-  </xh-menu>
-  <xh-menu tone="danger">
-    <button data-xh-part="trigger">danger</button>
-    <div data-xh-part="positioner">
-      <div data-xh-part="content">
-        <div data-xh-part="item" value="copy">复制</div>
-        <div data-xh-part="item" value="rename">重命名</div>
-        <div data-xh-part="separator"></div>
-        <div data-xh-part="item" value="delete">删除</div>
-      </div>
-    </div>
-  </xh-menu>
-  <xh-menu tone="info">
-    <button data-xh-part="trigger">info</button>
-    <div data-xh-part="positioner">
-      <div data-xh-part="content">
-        <div data-xh-part="item" value="copy">复制</div>
-        <div data-xh-part="item" value="rename">重命名</div>
-        <div data-xh-part="separator"></div>
-        <div data-xh-part="item" value="delete">删除</div>
-      </div>
-    </div>
-  </xh-menu>
-</div>
-```
-
-### 尺寸
-
-size 换的是条目的内边距、间距与字号；三档各挂一个菜单，逐个展开对比
+为常用命令补充识别信息
 
 ```vue
 <script setup lang="ts">
-import { XhMenuRoot } from "@xihan-ui/vue";
-
-const account = [
-  { value: "profile", label: "个人资料" },
-  { value: "settings", label: "偏好设置" },
-  { value: "logout", label: "退出登录" },
-];
-</script>
-
-<template>
-  <div style="display: flex; flex-wrap: wrap; gap: 8px">
-    <XhMenuRoot :collection="account" size="sm">
-      <template #trigger>sm</template>
-    </XhMenuRoot>
-
-    <!-- 不写 size 就是缺省档 -->
-    <XhMenuRoot :collection="account">
-      <template #trigger>缺省</template>
-    </XhMenuRoot>
-
-    <XhMenuRoot :collection="account" size="lg">
-      <template #trigger>lg</template>
-    </XhMenuRoot>
-  </div>
-</template>
-```
-
-```html
-<div style="display: flex; flex-wrap: wrap; gap: 8px">
-  <xh-menu size="sm">
-    <button data-xh-part="trigger">sm</button>
-    <div data-xh-part="positioner">
-      <div data-xh-part="content">
-        <div data-xh-part="item" value="profile">个人资料</div>
-        <div data-xh-part="item" value="settings">偏好设置</div>
-        <div data-xh-part="item" value="logout">退出登录</div>
-      </div>
-    </div>
-  </xh-menu>
-
-  <!-- 不写 size 就是缺省档 -->
-  <xh-menu>
-    <button data-xh-part="trigger">缺省</button>
-    <div data-xh-part="positioner">
-      <div data-xh-part="content">
-        <div data-xh-part="item" value="profile">个人资料</div>
-        <div data-xh-part="item" value="settings">偏好设置</div>
-        <div data-xh-part="item" value="logout">退出登录</div>
-      </div>
-    </div>
-  </xh-menu>
-
-  <xh-menu size="lg">
-    <button data-xh-part="trigger">lg</button>
-    <div data-xh-part="positioner">
-      <div data-xh-part="content">
-        <div data-xh-part="item" value="profile">个人资料</div>
-        <div data-xh-part="item" value="settings">偏好设置</div>
-        <div data-xh-part="item" value="logout">退出登录</div>
-      </div>
-    </div>
-  </xh-menu>
-</div>
-```
-
-### 条目里的图标与快捷键
-
-条目内容归作者：前面挂图标、后面挂快捷键，皮肤把它们按 flex 排开
-
-```vue
-<script setup lang="ts">
+import { CopyIcon, PencilIcon, TrashIcon } from "@xihan-ui/icons";
 import {
+  XhButton,
   XhIcon,
-  XhKbdGroup,
   XhMenuContent,
   XhMenuItem,
+  XhMenuItemText,
   XhMenuPositioner,
   XhMenuRoot,
   XhMenuSeparator,
   XhMenuTrigger,
 } from "@xihan-ui/vue";
-
-// 三个图标共用一套描边呈现属性，stroke 取 currentColor，颜色随条目的文字色走
-const strokeAttrs = {
-  "fill": "none",
-  "stroke": "currentColor",
-  "stroke-width": "2",
-  "stroke-linecap": "round",
-  "stroke-linejoin": "round",
-} as const;
-
-const CopyIcon = {
-  name: "copy",
-  viewBox: "0 0 24 24",
-  attrs: strokeAttrs,
-  nodes: [
-    { tag: "rect", attrs: { x: "9", y: "9", width: "11", height: "11", rx: "2" } },
-    { tag: "path", attrs: { d: "M5 15H4A2 2 0 0 1 2 13V4A2 2 0 0 1 4 2H13A2 2 0 0 1 15 4V5" } },
-  ],
-} as const;
-
-const EditIcon = {
-  name: "edit",
-  viewBox: "0 0 24 24",
-  attrs: strokeAttrs,
-  nodes: [{ tag: "path", attrs: { d: "M4 20H8L19 9A2.8 2.8 0 0 0 15 5L4 16Z" } }],
-} as const;
-
-const TrashIcon = {
-  name: "trash",
-  viewBox: "0 0 24 24",
-  attrs: strokeAttrs,
-  nodes: [
-    { tag: "path", attrs: { d: "M4 7H20" } },
-    { tag: "path", attrs: { d: "M10 11V17M14 11V17" } },
-    { tag: "path", attrs: { d: "M6 7L7 20H17L18 7" } },
-  ],
-} as const;
-
-// 快捷键提示推到条目末端；平台格式和键帽视觉由 KbdGroup 统一
-const hintStyle = {
-  marginInlineStart: "auto",
-};
 </script>
 
 <template>
   <XhMenuRoot>
-    <XhMenuTrigger>编辑</XhMenuTrigger>
+    <XhMenuTrigger as-child>
+      <XhButton variant="subtle">编辑</XhButton>
+    </XhMenuTrigger>
     <XhMenuPositioner>
       <XhMenuContent>
         <XhMenuItem value="copy">
           <XhIcon :icon="CopyIcon" size="sm" />
-          <span>复制</span>
-          <XhKbdGroup :keys="['Mod', 'C']" size="sm" :style="hintStyle" />
+          <XhMenuItemText>复制</XhMenuItemText>
+          <span aria-hidden="true">⌘ C</span>
         </XhMenuItem>
         <XhMenuItem value="rename">
-          <XhIcon :icon="EditIcon" size="sm" />
-          <span>重命名</span>
-          <XhKbdGroup :keys="['F2']" size="sm" :style="hintStyle" />
+          <XhIcon :icon="PencilIcon" size="sm" />
+          <XhMenuItemText>重命名</XhMenuItemText>
+          <span aria-hidden="true">F2</span>
         </XhMenuItem>
         <XhMenuSeparator />
         <XhMenuItem value="delete">
           <XhIcon :icon="TrashIcon" size="sm" />
-          <span>删除</span>
-          <XhKbdGroup :keys="['Delete']" size="sm" :style="hintStyle" />
+          <XhMenuItemText>移到回收站</XhMenuItemText>
+          <span aria-hidden="true">⌫</span>
         </XhMenuItem>
-      </XhMenuContent>
-    </XhMenuPositioner>
-  </XhMenuRoot>
-</template>
-```
-
-```html
-<xh-menu id="menu-icon">
-  <button data-xh-part="trigger">编辑</button>
-  <div data-xh-part="positioner">
-    <div data-xh-part="content">
-      <div data-xh-part="item" value="copy">
-        <xh-icon size="sm" data-glyph="copy">
-          <svg data-xh-part="root"><g data-xh-part="glyph"></g></svg>
-        </xh-icon>
-        <span>复制</span>
-        <!-- 快捷键提示推到条目末端；平台格式和键帽视觉由 KbdGroup 统一 -->
-        <xh-kbd-group keys="Mod,C" size="sm" style="margin-inline-start: auto">
-          <span data-xh-part="root"></span>
-        </xh-kbd-group>
-      </div>
-      <div data-xh-part="item" value="rename">
-        <xh-icon size="sm" data-glyph="edit">
-          <svg data-xh-part="root"><g data-xh-part="glyph"></g></svg>
-        </xh-icon>
-        <span>重命名</span>
-        <xh-kbd-group keys="F2" size="sm" style="margin-inline-start: auto">
-          <span data-xh-part="root"></span>
-        </xh-kbd-group>
-      </div>
-      <div data-xh-part="separator"></div>
-      <div data-xh-part="item" value="delete">
-        <xh-icon size="sm" data-glyph="trash">
-          <svg data-xh-part="root"><g data-xh-part="glyph"></g></svg>
-        </xh-icon>
-        <span>删除</span>
-        <xh-kbd-group keys="Delete" size="sm" style="margin-inline-start: auto">
-          <span data-xh-part="root"></span>
-        </xh-kbd-group>
-      </div>
-    </div>
-  </div>
-</xh-menu>
-
-<script type="module">
-  // 三个图标共用一套描边呈现属性，stroke 取 currentColor，颜色随条目的文字色走
-  const strokeAttrs = {
-    "fill": "none",
-    "stroke": "currentColor",
-    "stroke-width": "2",
-    "stroke-linecap": "round",
-    "stroke-linejoin": "round",
-  };
-
-  const icons = {
-    copy: {
-      name: "copy",
-      viewBox: "0 0 24 24",
-      attrs: strokeAttrs,
-      nodes: [
-        { tag: "rect", attrs: { x: "9", y: "9", width: "11", height: "11", rx: "2" } },
-        { tag: "path", attrs: { d: "M5 15H4A2 2 0 0 1 2 13V4A2 2 0 0 1 4 2H13A2 2 0 0 1 15 4V5" } },
-      ],
-    },
-    edit: {
-      name: "edit",
-      viewBox: "0 0 24 24",
-      attrs: strokeAttrs,
-      nodes: [{ tag: "path", attrs: { d: "M4 20H8L19 9A2.8 2.8 0 0 0 15 5L4 16Z" } }],
-    },
-    trash: {
-      name: "trash",
-      viewBox: "0 0 24 24",
-      attrs: strokeAttrs,
-      nodes: [
-        { tag: "path", attrs: { d: "M4 7H20" } },
-        { tag: "path", attrs: { d: "M10 11V17M14 11V17" } },
-        { tag: "path", attrs: { d: "M6 7L7 20H17L18 7" } },
-      ],
-    },
-  };
-
-  // 图标记录是对象，只能作为 property 交给每个 xh-icon
-  for (const el of document.getElementById("menu-icon").querySelectorAll("xh-icon")) {
-    el.icon = icons[el.dataset.glyph];
-  }
-</script>
-```
-
-### 菜单里的非条目内容
-
-content 里可以直接放任意节点；不是 item 就不进方向键行程，也选不中
-
-```vue
-<script setup lang="ts">
-import {
-  XhMenuContent,
-  XhMenuItem,
-  XhMenuPositioner,
-  XhMenuRoot,
-  XhMenuSeparator,
-  XhMenuTrigger,
-} from "@xihan-ui/vue";
-</script>
-
-<template>
-  <XhMenuRoot>
-    <XhMenuTrigger>账号</XhMenuTrigger>
-    <XhMenuPositioner>
-      <XhMenuContent>
-        <!-- 这一块是普通节点：方向键从首个条目起步，不会停在它上面 -->
-        <div style="display: grid; gap: 4px; padding: 8px 8px 6px">
-          <span style="font-weight: 600">曦寒</span>
-          <span style="font-size: 12px; color: var(--xh-fg-muted)">
-            已用 6.2 GB / 20 GB
-          </span>
-        </div>
-
-        <XhMenuSeparator />
-
-        <XhMenuItem value="profile">个人资料</XhMenuItem>
-        <XhMenuItem value="billing">账单与用量</XhMenuItem>
-        <XhMenuSeparator />
-        <XhMenuItem value="logout">退出登录</XhMenuItem>
       </XhMenuContent>
     </XhMenuPositioner>
   </XhMenuRoot>
@@ -577,344 +121,79 @@ import {
 
 ```html
 <xh-menu>
-  <button data-xh-part="trigger">账号</button>
+  <button data-xh-part="trigger" style="block-size: var(--xh-control-h-md); padding-inline: var(--xh-control-px-md); border: 0; border-radius: var(--xh-shape-pill); background: var(--xh-bg-subtle); color: var(--xh-fg-default); font: inherit; cursor: pointer">编辑</button>
   <div data-xh-part="positioner">
     <div data-xh-part="content">
-      <!-- 这一块是普通节点：方向键从首个条目起步，不会停在它上面 -->
-      <div style="display: grid; gap: 4px; padding: 8px 8px 6px">
-        <span style="font-weight: 600">曦寒</span>
-        <span style="font-size: 12px; color: var(--xh-fg-muted)">已用 6.2 GB / 20 GB</span>
+      <div data-xh-part="item" value="copy">
+        <svg viewBox="0 0 24 24" width="1em" height="1em" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><rect x="8" y="8" width="12" height="12" rx="2"/><path d="M16 8V6a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2h2"/></svg>
+        <span data-xh-part="item-text">复制</span><span aria-hidden="true">⌘ C</span>
       </div>
-
+      <div data-xh-part="item" value="rename">
+        <svg viewBox="0 0 24 24" width="1em" height="1em" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M4 20h4l11-11-4-4L4 16v4z"/><path d="M13.5 6.5l4 4"/></svg>
+        <span data-xh-part="item-text">重命名</span><span aria-hidden="true">F2</span>
+      </div>
       <div data-xh-part="separator"></div>
-
-      <div data-xh-part="item" value="profile">个人资料</div>
-      <div data-xh-part="item" value="billing">账单与用量</div>
-      <div data-xh-part="separator"></div>
-      <div data-xh-part="item" value="logout">退出登录</div>
+      <div data-xh-part="item" value="delete">
+        <svg viewBox="0 0 24 24" width="1em" height="1em" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M4 7h16M9 7V4h6v3M7 7l1 13h8l1-13"/></svg>
+        <span data-xh-part="item-text">移到回收站</span><span aria-hidden="true">⌫</span>
+      </div>
     </div>
   </div>
 </xh-menu>
 ```
 
-### 条目自带的属性与事件
+### 分组
 
-条目上的原生属性照常生效，自己挂的 click 与内部的选中处理并存
-
-```vue
-<script setup lang="ts">
-import {
-  XhMenuContent,
-  XhMenuItem,
-  XhMenuPositioner,
-  XhMenuRoot,
-  XhMenuTrigger,
-} from "@xihan-ui/vue";
-import { ref } from "vue";
-
-const trace = ref<string[]>([]);
-
-function push(text: string): void {
-  trace.value = [text, ...trace.value].slice(0, 4);
-}
-
-function onSelect(details: { value: string }): void {
-  push(`菜单的 select：${details.value}`);
-}
-</script>
-
-<template>
-  <div style="inline-size: 100%; display: grid; gap: 12px; justify-items: start">
-    <XhMenuRoot @select="onSelect">
-      <XhMenuTrigger>导出</XhMenuTrigger>
-      <XhMenuPositioner>
-        <XhMenuContent>
-          <!-- title 是原生属性，悬停就出提示；@click 与内部的选中处理两边都会跑 -->
-          <XhMenuItem
-            value="csv"
-            title="逗号分隔，表格软件直接打得开"
-            @click="push('条目自己的 click：csv')"
-          >
-            导出 CSV
-          </XhMenuItem>
-          <XhMenuItem value="json" title="结构化数据，留给程序读">
-            导出 JSON
-          </XhMenuItem>
-          <XhMenuItem value="pdf" disabled title="当前视图不支持">
-            导出 PDF
-          </XhMenuItem>
-        </XhMenuContent>
-      </XhMenuPositioner>
-    </XhMenuRoot>
-
-    <ol style="display: grid; gap: 4px; margin: 0; padding-inline-start: 20px">
-      <li v-for="(line, index) in trace" :key="index">{{ line }}</li>
-      <li v-if="trace.length === 0">（还没动过）</li>
-    </ol>
-  </div>
-</template>
-```
-
-```html
-<div style="inline-size: 100%; display: grid; gap: 12px; justify-items: start">
-  <xh-menu id="menu-item-attrs">
-    <button data-xh-part="trigger">导出</button>
-    <div data-xh-part="positioner">
-      <div data-xh-part="content">
-        <!-- title 是原生属性，悬停就出提示 -->
-        <div data-xh-part="item" value="csv" title="逗号分隔，表格软件直接打得开">导出 CSV</div>
-        <div data-xh-part="item" value="json" title="结构化数据，留给程序读">导出 JSON</div>
-        <div data-xh-part="item" value="pdf" aria-disabled="true" title="当前视图不支持">
-          导出 PDF
-        </div>
-      </div>
-    </div>
-  </xh-menu>
-
-  <ol id="menu-item-attrs-trace" style="display: grid; gap: 4px; margin: 0; padding-inline-start: 20px">
-    <li>（还没动过）</li>
-  </ol>
-</div>
-
-<script type="module">
-  // 最近四条动静倒序列在下面
-  const menu = document.getElementById("menu-item-attrs");
-  const list = document.getElementById("menu-item-attrs-trace");
-  const trace = [];
-
-  function push(text) {
-    trace.unshift(text);
-    trace.length = Math.min(trace.length, 4);
-    list.replaceChildren(
-      ...trace.map((line) => {
-        const li = document.createElement("li");
-        li.textContent = line;
-        return li;
-      }),
-    );
-  }
-
-  // 条目自己的 click 与菜单内部的选中处理两边都会跑
-  const csv = menu.querySelector('[data-xh-part="item"][value="csv"]');
-  csv.addEventListener("click", () => push("条目自己的 click：csv"));
-  menu.addEventListener("select", (event) => push(`菜单的 select：${event.detail.value}`));
-</script>
-```
-
-### 悬停触发
-
-open-on-hover 一个 prop：进触发器延时展开，离开后指针经安全三角赶往浮层不误收，走岔或停滞才收起；延时可调
+使用标题与分隔线组织命令
 
 ```vue
 <script setup lang="ts">
-import {
-  XhMenuContent,
-  XhMenuItem,
-  XhMenuPositioner,
-  XhMenuRoot,
-  XhMenuTrigger,
-} from "@xihan-ui/vue";
+import { XhButton, XhMenuRoot } from "@xihan-ui/vue";
+
+const actions = [
+  { value: "compact", label: "紧凑", group: "density", groupLabel: "行高" },
+  { value: "comfortable", label: "宽松", group: "density" },
+  { value: "sidebar", label: "侧栏", group: "panels", groupLabel: "面板", separatorBefore: true },
+  { value: "inspector", label: "属性面板", group: "panels" },
+];
 </script>
 
 <template>
-  <XhMenuRoot open-on-hover :hover-open-delay="80" @select="() => {}">
-    <XhMenuTrigger>悬停打开</XhMenuTrigger>
-    <XhMenuPositioner>
-      <XhMenuContent>
-        <XhMenuItem value="profile">个人资料</XhMenuItem>
-        <XhMenuItem value="settings">偏好设置</XhMenuItem>
-        <XhMenuItem value="logout">退出登录</XhMenuItem>
-      </XhMenuContent>
-    </XhMenuPositioner>
+  <XhMenuRoot :collection="actions" trigger-as-child>
+    <template #trigger><XhButton variant="subtle">视图</XhButton></template>
   </XhMenuRoot>
 </template>
 ```
 
 ```html
-<xh-menu open-on-hover hover-open-delay="80">
-  <button data-xh-part="trigger">悬停打开</button>
+<xh-menu>
+  <button data-xh-part="trigger" style="block-size: var(--xh-control-h-md); padding-inline: var(--xh-control-px-md); border: 0; border-radius: var(--xh-shape-pill); background: var(--xh-bg-subtle); color: var(--xh-fg-default); font: inherit; cursor: pointer">视图</button>
   <div data-xh-part="positioner">
     <div data-xh-part="content">
-      <div data-xh-part="item" value="profile">个人资料</div>
-      <div data-xh-part="item" value="settings">偏好设置</div>
-      <div data-xh-part="item" value="logout">退出登录</div>
+      <div data-xh-part="group" value="density">
+        <span data-xh-part="group-label">行高</span>
+        <div data-xh-part="item" value="compact"><span data-xh-part="item-text">紧凑</span></div>
+        <div data-xh-part="item" value="comfortable"><span data-xh-part="item-text">宽松</span></div>
+      </div>
+      <div data-xh-part="separator"></div>
+      <div data-xh-part="group" value="panels">
+        <span data-xh-part="group-label">面板</span>
+        <div data-xh-part="item" value="sidebar"><span data-xh-part="item-text">侧栏</span></div>
+        <div data-xh-part="item" value="inspector"><span data-xh-part="item-text">属性面板</span></div>
+      </div>
     </div>
   </div>
 </xh-menu>
 ```
 
-### 分组与标记位
+### 子菜单
 
-组标题与组内条目用 role="group" 加 aria-labelledby 对上；中间包一层不影响方向键行程，条目里标记位与文字各占一段
-
-```vue
-<script setup lang="ts">
-import { CheckIcon } from "@xihan-ui/icons";
-import {
-  XhIcon,
-  XhMenuContent,
-  XhMenuGroup,
-  XhMenuGroupLabel,
-  XhMenuItem,
-  XhMenuPositioner,
-  XhMenuRoot,
-  XhMenuSeparator,
-  XhMenuTrigger,
-} from "@xihan-ui/vue";
-import { ref } from "vue";
-
-const groups = [
-  {
-    value: "density",
-    label: "行高",
-    items: [
-      { value: "compact", label: "紧凑" },
-      { value: "comfortable", label: "宽松" },
-    ],
-  },
-  {
-    value: "panel",
-    label: "面板",
-    items: [
-      { value: "sidebar", label: "侧栏" },
-      { value: "inspector", label: "属性面板" },
-    ],
-  },
-];
-
-const density = ref("comfortable");
-const panels = ref<string[]>(["sidebar"]);
-
-function checked(group: string, value: string): boolean {
-  return group === "density" ? density.value === value : panels.value.includes(value);
-}
-
-function onSelect(details: { value: string }): void {
-  if (details.value === "compact" || details.value === "comfortable") {
-    density.value = details.value;
-    return;
-  }
-  panels.value = panels.value.includes(details.value)
-    ? panels.value.filter(v => v !== details.value)
-    : [...panels.value, details.value];
-}
-
-// 标记位恒占一格，勾不勾都不推动后面的文字
-const markStyle = {
-  flex: "none",
-  inlineSize: "14px",
-};
-</script>
-
-<template>
-  <div style="inline-size: 100%; display: grid; gap: 12px; justify-items: start">
-    <XhMenuRoot @select="onSelect">
-      <XhMenuTrigger>视图</XhMenuTrigger>
-      <XhMenuPositioner>
-        <XhMenuContent>
-          <template v-for="(g, index) in groups" :key="g.value">
-            <XhMenuSeparator v-if="index > 0" />
-            <XhMenuGroup :value="g.value">
-              <XhMenuGroupLabel>{{ g.label }}</XhMenuGroupLabel>
-              <XhMenuItem v-for="item in g.items" :key="item.value" :value="item.value">
-                <span :style="markStyle"><XhIcon v-if="checked(g.value, item.value)" :icon="CheckIcon" /></span>
-                <span>{{ item.label }}</span>
-              </XhMenuItem>
-            </XhMenuGroup>
-          </template>
-        </XhMenuContent>
-      </XhMenuPositioner>
-    </XhMenuRoot>
-
-    <span>
-      行高：{{ density === "compact" ? "紧凑" : "宽松" }}；面板：{{
-        panels.length ? `${panels.length} 个` : "都收起了"
-      }}
-    </span>
-  </div>
-</template>
-```
-
-```html
-<div style="inline-size: 100%; display: grid; gap: 12px; justify-items: start">
-  <xh-menu id="menu-group">
-    <button data-xh-part="trigger">视图</button>
-    <div data-xh-part="positioner">
-      <div data-xh-part="content">
-        <div data-xh-part="group" value="density">
-          <span data-xh-part="group-label">行高</span>
-          <div data-xh-part="item" value="compact">
-            <!-- 标记位恒占一格，勾不勾都不推动后面的文字 -->
-            <span style="flex: none; inline-size: 14px"></span>
-            <span>紧凑</span>
-          </div>
-          <div data-xh-part="item" value="comfortable">
-            <span style="flex: none; inline-size: 14px"><svg viewBox="0 0 24 24" width="1em" height="1em" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 12.5L9.5 18L20 6"/></svg></span>
-            <span>宽松</span>
-          </div>
-        </div>
-
-        <div data-xh-part="separator"></div>
-
-        <div data-xh-part="group" value="panel">
-          <span data-xh-part="group-label">面板</span>
-          <div data-xh-part="item" value="sidebar">
-            <span style="flex: none; inline-size: 14px"><svg viewBox="0 0 24 24" width="1em" height="1em" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 12.5L9.5 18L20 6"/></svg></span>
-            <span>侧栏</span>
-          </div>
-          <div data-xh-part="item" value="inspector">
-            <span style="flex: none; inline-size: 14px"></span>
-            <span>属性面板</span>
-          </div>
-        </div>
-      </div>
-    </div>
-  </xh-menu>
-
-  <span>行高：<span id="menu-group-density-readout">宽松</span>；面板：<span id="menu-group-panel-readout">1 个</span></span>
-</div>
-
-<script type="module">
-  // 行高是单选、面板是多选，选中后标记位与下面那行文字一起更新
-  const menu = document.getElementById("menu-group");
-  const densityReadout = document.getElementById("menu-group-density-readout");
-  const panelReadout = document.getElementById("menu-group-panel-readout");
-  const densityLabels = { compact: "紧凑", comfortable: "宽松" };
-  const panelValues = ["sidebar", "inspector"];
-
-  const checkSvg =
-    '<svg viewBox="0 0 24 24" width="1em" height="1em" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 12.5L9.5 18L20 6"/></svg>';
-
-  function mark(value, on) {
-    const item = menu.querySelector(`[data-xh-part="item"][value="${value}"]`);
-    item.firstElementChild.innerHTML = on ? checkSvg : "";
-  }
-
-  let density = "comfortable";
-  let panels = ["sidebar"];
-
-  menu.addEventListener("select", (event) => {
-    const picked = event.detail.value;
-    if (picked in densityLabels) {
-      density = picked;
-      for (const value of Object.keys(densityLabels)) mark(value, value === density);
-      densityReadout.textContent = densityLabels[density];
-      return;
-    }
-    panels = panels.includes(picked) ? panels.filter((v) => v !== picked) : [...panels, picked];
-    for (const value of panelValues) mark(value, panels.includes(value));
-    panelReadout.textContent = panels.length ? `${panels.length} 个` : "都收起了";
-  });
-</script>
-```
-
-### 二级子菜单
-
-XhMenuSub 内嵌一台子菜单：触发条目双重身份（父层方向键照常走、右方向键进子层、子层左方向键退回），悬停经安全三角斜穿不误收，任意层级选中都发根的 select 并整链关闭
+将相关操作收进下一层
 
 ```vue
 <script setup lang="ts">
 import {
+  XhButton,
   XhMenuContent,
   XhMenuItem,
   XhMenuPositioner,
@@ -924,70 +203,95 @@ import {
   XhMenuSubTrigger,
   XhMenuTrigger,
 } from "@xihan-ui/vue";
-import { ref } from "vue";
-
-const picked = ref("（还没选）");
 </script>
 
 <template>
-  <XhMenuRoot @select="({ value }) => (picked = value)">
-    <XhMenuTrigger>文件操作</XhMenuTrigger>
+  <XhMenuRoot>
+    <XhMenuTrigger as-child><XhButton variant="subtle">文件操作</XhButton></XhMenuTrigger>
     <XhMenuPositioner>
       <XhMenuContent>
         <XhMenuItem value="open">打开</XhMenuItem>
         <XhMenuItem value="rename">重命名</XhMenuItem>
         <XhMenuSeparator />
         <XhMenuSub value="share">
-          <XhMenuSubTrigger>发送到…</XhMenuSubTrigger>
+          <XhMenuSubTrigger>发送到</XhMenuSubTrigger>
           <XhMenuPositioner>
             <XhMenuContent>
-              <XhMenuItem value="share-email">邮件</XhMenuItem>
-              <XhMenuItem value="share-sms">短信</XhMenuItem>
-              <XhMenuSub value="share-im">
-                <XhMenuSubTrigger>即时通讯…</XhMenuSubTrigger>
-                <XhMenuPositioner>
-                  <XhMenuContent>
-                    <XhMenuItem value="share-wecom">企业微信</XhMenuItem>
-                    <XhMenuItem value="share-dingtalk">钉钉</XhMenuItem>
-                  </XhMenuContent>
-                </XhMenuPositioner>
-              </XhMenuSub>
+              <XhMenuItem value="email">邮件</XhMenuItem>
+              <XhMenuItem value="message">消息</XhMenuItem>
             </XhMenuContent>
           </XhMenuPositioner>
         </XhMenuSub>
         <XhMenuSeparator />
-        <XhMenuItem value="delete">删除</XhMenuItem>
+        <XhMenuItem value="delete">移到回收站</XhMenuItem>
       </XhMenuContent>
     </XhMenuPositioner>
   </XhMenuRoot>
-  <p>选中：{{ picked }}</p>
 </template>
+```
+
+```html
+<xh-menu>
+  <button data-xh-part="trigger" style="block-size: var(--xh-control-h-md); padding-inline: var(--xh-control-px-md); border: 0; border-radius: var(--xh-shape-pill); background: var(--xh-bg-subtle); color: var(--xh-fg-default); font: inherit; cursor: pointer">文件操作</button>
+  <div data-xh-part="positioner">
+    <div data-xh-part="content">
+      <div data-xh-part="item" value="open">打开</div>
+      <div data-xh-part="item" value="rename">重命名</div>
+      <div data-xh-part="separator"></div>
+      <xh-menu submenu open-on-hover placement="right-start" style="display: contents">
+        <div data-xh-part="trigger" value="share">发送到</div>
+        <div data-xh-part="positioner">
+          <div data-xh-part="content">
+            <div data-xh-part="item" value="email">邮件</div>
+            <div data-xh-part="item" value="message">消息</div>
+          </div>
+        </div>
+      </xh-menu>
+      <div data-xh-part="separator"></div>
+      <div data-xh-part="item" value="delete">移到回收站</div>
+    </div>
+  </div>
+</xh-menu>
 ```
 
 ## 设计指引
 
 ### 何时使用
 
-- 一组动作放不下、或不值得全部摆在界面上（更多操作、账户菜单）。
-- 需要二级子菜单的命令树。
+- 收纳次要操作、账户命令或多级命令。
 
 ### 何时不用
 
-- 要选一个值并保留选中态：那是[选择器](./select)——菜单的条目是命令，选完就关，不留选中。
-- 只有一两个动作：直接摆[按钮](./button)。
-- 是站点的主导航：用[导航菜单](./navigation-menu)，它的条目是链接。
+- 选择并保留一个值时使用[选择器](./select)。
+- 一两个主要操作直接使用[按钮](./button)。
+- 站点主导航使用[导航菜单](./navigation-menu)。
 
 ### 特性
 
-- 悬停触发有安全三角：指针斜穿赶往浮层不会误收；Portal 化的多级子菜单由 headless 逻辑树维护真实父子关系，在末级移动不会启动祖先关闭，叶项选择按叶到根收起并只由根上报一次。
-- 条目以 `value` 标识身份，禁用项方向键跳过也选不中。
-- `content` 里可以直接放任意节点；不是 `item` 就不进方向键行程，也选不中。
-- 子菜单触发条目双重身份：父层方向键照常走、右方向键进子层、子层左方向键退回。
-- 条目可按 `group` 分组，组标题写在 `group-label` 上，两者以 `aria-labelledby` 相认；分组不改变方向键行程。
-- 浮层使用 M2 磨砂表面；展开项使用中性灰反馈，不加左侧条、不使用默认品牌蓝底，也不改变字重。
-- 图标、正文和快捷键等作者节点按一行排列；长正文用 `item-text` 截断，`item-description` 才另起一行，子菜单箭头位于行尾。
+- `collection` 可直接生成条目、分组、标记位和分隔线。
+- 支持方向键、首字符检索、禁用条目和多级子菜单。
+- 子菜单使用安全三角避免指针斜向移动时误关闭。
+- 条目可组合图标、文字、说明和快捷键提示。
+- 选中命令后发出根级 `select` 并关闭菜单链。
 
-## 产物
+### 组合
+
+- 触发器通常使用中性按钮，避免与页面主操作争夺层级。
+
+### 最佳实践
+
+- 破坏性命令放在末尾，并与普通命令分隔。
+- 条目使用简短的动宾短语。
+- 仅为已注册的快捷键显示提示。
+
+### 反模式
+
+- 不要用命令菜单代替持久选择控件。
+- 不要在菜单中放置长段说明或复杂表单。
+
+## API 参考
+
+### 产物
 
 | 层 | 值 |
 | --- | --- |
@@ -997,13 +301,7 @@ const picked = ref("（还没选）");
 | 状态机 | `menuMachine` |
 | 皮肤 | `@xihan-ui/styles/menu.css` |
 
-## 解剖
-
-部件名即 `data-part` 属性值，也是皮肤的选择器。加粗的是必备部件，不渲染它组件不工作（Web Components 适配器会在诊断通道上报 `wc.missing-part`）。
-
-`data-scope="menu"`：**`trigger`** · `positioner` · **`content`** · **`item`** · `item-text` · `item-indicator` · `item-description` · `separator` · `group` · `group-label` · `arrow`
-
-## Props
+### Props
 
 | 属性 | 类型 | 必填 | 说明 |
 | --- | --- | --- | --- |
@@ -1026,18 +324,18 @@ const picked = ref("（还没选）");
 | `onOpenChange` | `(details: MenuOpenChangeDetails) => void` |  | open 变化回调。 |
 | `onSelect` | `(details: MenuSelectDetails) => void` |  | 条目被选中；菜单随之关闭。 |
 
-## 事件
+### 事件
 
-自定义元素派发这些事件，Vue 组件对应同名 emit；载荷都在 `detail` 上。可双向绑定的值另有 `update:xxx`，见 Props。
+自定义元素将载荷放在 `detail`；Vue 使用同名 emit。
 
 | 事件 | 载荷 | 说明 |
 | --- | --- | --- |
 | `open-change` | `MenuOpenChangeDetails` | open 状态变化；detail 为 `{ open: boolean }` |
 | `select` | `MenuSelectDetails` | 条目被选中（菜单随之关闭）；detail 为 `{ value: string }` |
 
-## 插槽
+### 插槽
 
-作者能拿到载荷的插槽。只转发内容、不带载荷的默认插槽不在此列——那类直接写子节点即可。
+仅列出带载荷的插槽。
 
 | Vue 组件 | 插槽 | 载荷 | 说明 |
 | --- | --- | --- | --- |
@@ -1046,9 +344,9 @@ const picked = ref("（还没选）");
 | `XhMenuRoot` | `item` | `MenuNodeMeta` |  |
 | `XhMenuSub` | `default` | `MenuSubSlotProps` |  |
 
-## 状态
+### 状态
 
-对外可见的状态落在 `data-state` 上，写样式与断言都读它：
+公开状态写入 `data-state`。
 
 | 部件 | 取值 |
 | --- | --- |
@@ -1057,7 +355,7 @@ const picked = ref("（还没选）");
 | `content` | 'open' \| 'closed' |
 | `submenu-trigger` | 'open' \| 'closed' |
 
-状态机内部转移，写样式与业务都用不到；要监听变化请看上面的「事件」。
+以下名称仅用于内部状态机。
 
 **状态**：`open` · `closed`
 
@@ -1065,9 +363,9 @@ const picked = ref("（还没选）");
 
 **判据**：`isOpenControlled`
 
-## connect API
+### connect API
 
-`useMenu` 产出的对象。`getXxxProps()` 铺到对应部件的宿主元素上，其余是可读状态与操作入口。
+`getXxxProps()` 返回对应部件的宿主属性。
 
 | 成员 | 类型 | 说明 |
 | --- | --- | --- |
@@ -1089,7 +387,9 @@ const picked = ref("（还没选）");
 | `getGroupLabelProps` | `(props: MenuGroupProps) => T['element']` |  |
 | `getArrowProps` | `() => T['element']` |  |
 
-## 键盘
+## 无障碍
+
+### 键盘
 
 规格出处：[W3C APG](https://www.w3.org/WAI/ARIA/apg/patterns/menu-button/#keyboardinteraction)
 
@@ -1105,9 +405,9 @@ const picked = ref("（还没选）");
 | `Escape` | open | 关闭菜单并把焦点归还 trigger |
 | `Tab` / `Shift+Tab` | open | 关闭菜单，焦点不归还 trigger，按 Tab 序列自然离开 |
 
-## 无障碍
+### ARIA
 
-下面这些由 `connect` 铺到部件上，作者不必自己写；重复写反而会覆盖掉正确值。
+以下属性由 `connect` 生成。
 
 | 部件 | 属性 | 值 |
 | --- | --- | --- |
@@ -1132,15 +432,17 @@ const picked = ref("（还没选）");
 | `submenu-trigger` | `aria-haspopup` | 'menu' |
 | `submenu-trigger` | `role` | 'menuitem' |
 
-## 样式
+## 样式参考
 
-默认皮肤 `@xihan-ui/styles/menu.css` 按部件选择：`[data-scope="menu"][data-part="trigger"]`。它落在 `xihan.components` 与 `xihan.motion` 层；业务样式不写进 `@layer` 即高于全部库层，要按层压过来就写进 `xihan.overrides`。
+### 皮肤
+
+`@xihan-ui/styles/menu.css` 使用 `[data-scope="menu"][data-part="trigger"]` 部件选择器，位于 `xihan.components` 与 `xihan.motion` 层。覆盖样式使用 `xihan.overrides`。
 
 `forced-colors: active` 下另有一套规则：颜色交给系统，边框与状态标记改用系统色关键字。
 
-## 数据属性
+### 数据属性
 
-由 `connect` 产出并铺到部件上，皮肤与测试都据此选择；`data-disabled` 这类无值属性在条件不成立时整个不出现。
+由 `connect` 生成；条件不成立时不输出无值属性。
 
 | 部件 | 属性 | 值 |
 | --- | --- | --- |
@@ -1161,7 +463,7 @@ const picked = ref("（还没选）");
 | `submenu-trigger` | `data-state` | 'open' \| 'closed' |
 
 <!-- xh-component-tokens:start -->
-## CSS 变量
+### CSS 变量
 
 本组件公开覆盖槽由独立皮肤的实际消费位生成；缺省来源、作用部件和状态均与 CSS 同源。
 
@@ -1211,7 +513,7 @@ const picked = ref("（还没选）");
 | `--xh-menu-trigger-bg-active` | `trigger` | `background` | `disabled`<br>`not([data-disabled])`<br>`state=open` | `--xh-_menu-active-bg` | menu 的 trigger 部件 background 覆盖槽。 |
 <!-- xh-component-tokens:end -->
 
-## 动效
+### 动效
 
 关键帧 `xh-overlay-slide-in` · `xh-overlay-slide-out` 随皮肤自带，不引用别处文件里的名字；`background` · `color` 走 `transition` 过渡。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
 
@@ -1219,26 +521,6 @@ const picked = ref("（还没选）");
 
 系统开启减弱动效时由令牌层统一收敛，皮肤不另作判断。
 
-## RTL
+### RTL
 
 皮肤用逻辑属性排布（`inline-start` 一族），`dir="rtl"` 下自动镜像；另有按 `dir` 分支的规则。
-
-## 组合
-
-- 触发器用[按钮](./button)；与[按钮组](./button-group)组合成分裂按钮；与[面包屑](./breadcrumb)组合做层级切换。
-
-## 最佳实践
-
-- 破坏性命令与其余条目之间隔一道[分隔线](./separator)，并放在最后。
-- 悬停触发只在指针环境有意义，触摸与键盘恒靠点击那条路径。
-- 快捷键提示用[键帽组](./kbd-group)并设置 `margin-inline-start: auto` 推到行尾，不必手写平台文本或补造占位节点。
-
-### 当前边界
-
-- 当前尚无正式 checkbox item、radio group/item 与单条 danger tone，选择能力需要行为及可访问语义一起交付，不能只画一个勾来代替。
-- KbdGroup 属于作者内容，只负责展示，不会自动注册键盘动作；正式 shortcut/trailing 部件仍待独立实现。
-
-## 反模式
-
-- 用菜单做单选：读屏用户听到的是"菜单项"，不是"选项"，选完也不知道当前值是什么。
-- 条目文字写成一句话：菜单项应是动宾短语。

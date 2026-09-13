@@ -1,0 +1,82 @@
+const a=`<!-- 基础用法 | 组织应用的主要导航入口 -->
+<xh-side-nav id="side-nav-basic" default-value="user-list">
+  <nav data-xh-part="root">
+    <ul data-xh-part="list">
+      <li data-xh-part="item">
+        <a data-xh-part="link" value="dashboard">
+          <svg aria-hidden="true" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3.5 10.5L12 3.5L20.5 10.5V20.5H3.5Z"/><path d="M9.5 20.5V14h5v6.5"/></svg>
+          <span data-xh-part="link-text">工作台</span>
+        </a>
+      </li>
+      <li data-xh-part="branch" value="user">
+        <button data-xh-part="branch-trigger">
+          <svg aria-hidden="true" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="8" r="3.5"/><path d="M15 20v-1.5a3.5 3.5 0 0 0-3.5-3.5h-5A3.5 3.5 0 0 0 3 18.5V20"/><path d="M16 4.62a3.5 3.5 0 0 1 0 6.76"/><path d="M21 20v-1.5a3.5 3.5 0 0 0-2.63-3.39"/></svg>
+          <span data-xh-part="branch-text">用户管理</span>
+          <span data-xh-part="branch-indicator"></span>
+        </button>
+        <ul data-xh-part="branch-content">
+          <li data-xh-part="item">
+            <a data-xh-part="link" value="user-list">
+              <span data-xh-part="link-text">用户列表</span>
+            </a>
+          </li>
+          <li data-xh-part="item">
+            <a data-xh-part="link" value="user-role">
+              <span data-xh-part="link-text">角色权限</span>
+            </a>
+          </li>
+        </ul>
+      </li>
+      <li data-xh-part="branch" value="order">
+        <button data-xh-part="branch-trigger">
+          <svg aria-hidden="true" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 4h2.2L8 14h10.5"/><path d="M6.18 7.5H21L18.5 14"/><circle cx="9.5" cy="19.5" r="1.5"/><circle cx="17" cy="19.5" r="1.5"/></svg>
+          <span data-xh-part="branch-text">订单管理</span>
+          <span data-xh-part="branch-indicator"></span>
+        </button>
+        <ul data-xh-part="branch-content">
+          <li data-xh-part="item">
+            <a data-xh-part="link" value="order-list">
+              <span data-xh-part="link-text">订单列表</span>
+            </a>
+          </li>
+          <li data-xh-part="item">
+            <a data-xh-part="link" value="order-refund">
+              <span data-xh-part="link-text">退款处理</span>
+            </a>
+          </li>
+        </ul>
+      </li>
+    </ul>
+  </nav>
+</xh-side-nav>
+
+<script type="module">
+  const nav = document.getElementById("side-nav-basic");
+
+  nav.collection = [
+    { value: "dashboard", label: "工作台", href: "#dashboard" },
+    {
+      value: "user",
+      label: "用户管理",
+      children: [
+        { value: "user-list", label: "用户列表", href: "#user-list" },
+        { value: "user-role", label: "角色权限", href: "#user-role" },
+      ],
+    },
+    {
+      value: "order",
+      label: "订单管理",
+      children: [
+        { value: "order-list", label: "订单列表", href: "#order-list" },
+        { value: "order-refund", label: "退款处理", href: "#order-refund" },
+      ],
+    },
+  ];
+
+  nav.expandedValue = ["user"];
+  nav.addEventListener("expanded-value-change", (event) => {
+    nav.expandedValue = event.detail.value;
+  });
+
+<\/script>
+`;export{a as default};

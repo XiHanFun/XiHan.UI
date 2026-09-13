@@ -1,0 +1,43 @@
+const t=`<!-- 快速跳页 | 输入页码后按 Enter 跳转 -->
+<xh-pagination id="pagination-jumper" count="1000" page-size="10" default-page="5">
+  <nav data-xh-part="root">
+    <button data-xh-part="prev-trigger"></button>
+    <button data-xh-part="item" value="1">1</button>
+    <button data-xh-part="ellipsis-trigger" side="start"></button>
+    <button data-xh-part="item" value="4">4</button>
+    <button data-xh-part="item" value="5">5</button>
+    <button data-xh-part="item" value="6">6</button>
+    <button data-xh-part="ellipsis-trigger" side="end"></button>
+    <button data-xh-part="item" value="100">100</button>
+    <button data-xh-part="next-trigger"></button>
+    <input data-xh-part="jumper" placeholder="页码" />
+  </nav>
+</xh-pagination>
+
+<script type="module">
+  const host = document.getElementById("pagination-jumper");
+  const root = host.querySelector('[data-xh-part="root"]');
+  const next = root.querySelector('[data-xh-part="next-trigger"]');
+
+  function render() {
+    for (const node of root.querySelectorAll(
+      '[data-xh-part="item"], [data-xh-part="ellipsis-trigger"]',
+    ))
+      node.remove();
+    for (const item of host.pageItems) {
+      const el = document.createElement("button");
+      if (item.type === "ellipsis") {
+        el.dataset.xhPart = "ellipsis-trigger";
+        el.setAttribute("side", item.side);
+      } else {
+        el.dataset.xhPart = "item";
+        el.setAttribute("value", String(item.value));
+        el.textContent = String(item.value);
+      }
+      root.insertBefore(el, next);
+    }
+  }
+
+  host.addEventListener("page-change", render);
+<\/script>
+`;export{t as default};

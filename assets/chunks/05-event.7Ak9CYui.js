@@ -1,0 +1,13 @@
+const a=`<!-- 禁用与只读 | 区分不可用与不可修改状态 -->
+<div style="display: grid; gap: 12px">
+  <xh-checkbox disabled>
+    <label data-xh-part="label"><button data-xh-part="root"><span data-xh-part="indicator"></span></button><span data-xh-part="text">禁用</span></label>
+  </xh-checkbox>
+  <xh-checkbox default-checked disabled>
+    <label data-xh-part="label"><button data-xh-part="root"><span data-xh-part="indicator"></span></button><span data-xh-part="text">已选中且禁用</span></label>
+  </xh-checkbox>
+  <xh-checkbox default-checked read-only>
+    <label data-xh-part="label"><button data-xh-part="root"><span data-xh-part="indicator"></span></button><span data-xh-part="text">只读</span></label>
+  </xh-checkbox>
+</div>
+`;export{a as default};

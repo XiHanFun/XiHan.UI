@@ -1,0 +1,21 @@
+const a=`<!-- 日期与时间 | 输入精确到分钟的日期 -->
+<xh-date-field locale="zh-CN" granularity="minute" default-value="2026-07-28T13:45">
+  <div data-xh-part="root">
+    <label data-xh-part="label">发布时间</label>
+    <div data-xh-part="control">
+      <div data-xh-part="segment-group">
+        <span data-xh-part="segment" index="0"></span>
+        <span>年</span>
+        <span data-xh-part="segment" index="1"></span>
+        <span>月</span>
+        <span data-xh-part="segment" index="2"></span>
+        <span>日</span>
+        <span>&nbsp;</span>
+        <span data-xh-part="segment" index="3"></span>
+        <span>:</span>
+        <span data-xh-part="segment" index="4"></span>
+      </div>
+    </div>
+  </div>
+</xh-date-field>
+`;export{a as default};

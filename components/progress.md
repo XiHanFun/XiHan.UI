@@ -1,6 +1,6 @@
 来源：https://ui.docs.xihanfun.com/components/progress
 
-# Progress `进度条`
+# Progress 进度条
 
 表示一件事完成了多少。线形、环形与仪表盘三种画法。
 
@@ -57,6 +57,12 @@ import { XhProgress } from "@xihan-ui/vue";
   </xh-progress>
 </div>
 ```
+
+## 组件结构
+
+加粗的是必需部件。
+
+`data-scope="progress"`：**`root`** · `canvas` · `track` · `range` · `label`
 
 ## 示例
 
@@ -164,7 +170,7 @@ import { XhProgress } from "@xihan-ui/vue";
 </div>
 ```
 
-### 语气
+### 颜色
 
 tone 决定进度段用哪族颜色，不写时沿用品牌色
 
@@ -652,7 +658,23 @@ import { XhProgress } from "@xihan-ui/vue";
 - `valueText` 决定读屏念出的是什么——"3 个文件中的第 2 个"比"66%"有用得多。
 - 环心可以放文字。
 
-## 产物
+### 组合
+
+- 与[统计数值](./statistic)并排；文件上传的每一项配一条。
+
+### 最佳实践
+
+- 长任务给出剩余时间或剩余数量，光有百分比很难判断还要等多久。
+- 到 100% 后要有明确的完成态，别停在满格不动。
+
+### 反模式
+
+- 进度会倒退。
+- 用假进度条掩盖未知的等待。
+
+## API 参考
+
+### 产物
 
 | 层 | 值 |
 | --- | --- |
@@ -661,13 +683,7 @@ import { XhProgress } from "@xihan-ui/vue";
 | 状态机 | 无，`connect` 直接由 props 算属性 |
 | 皮肤 | `@xihan-ui/styles/progress.css` |
 
-## 解剖
-
-部件名即 `data-part` 属性值，也是皮肤的选择器。加粗的是必备部件，不渲染它组件不工作（Web Components 适配器会在诊断通道上报 `wc.missing-part`）。
-
-`data-scope="progress"`：**`root`** · `canvas` · `track` · `range` · `label`
-
-## Props
+### Props
 
 | 属性 | 类型 | 必填 | 说明 |
 | --- | --- | --- | --- |
@@ -683,18 +699,18 @@ import { XhProgress } from "@xihan-ui/vue";
 | `valueText` | `string` |  | 读屏播报的文字，覆盖默认的数值播报（进度不是百分比时用，如「第 3 步，共 8 步」）。 |
 | `variant` | `ProgressVariant` |  | 形态，默认 line。circle 画整环，dashboard 在环上留一个缺口。 |
 
-## 状态
+### 状态
 
-对外可见的状态落在 `data-state` 上，写样式与断言都读它：
+公开状态写入 `data-state`。
 
 | 部件 | 取值 |
 | --- | --- |
 | `root` | 'indeterminate' \| 'complete' \| 'loading' |
 | `label` | 'complete' \| 'loading' |
 
-## connect API
+### connect API
 
-`connect` 产出的对象。`getXxxProps()` 铺到对应部件的宿主元素上，其余是可读状态与操作入口。
+`getXxxProps()` 返回对应部件的宿主属性。
 
 | 成员 | 类型 | 说明 |
 | --- | --- | --- |
@@ -708,15 +724,17 @@ import { XhProgress } from "@xihan-ui/vue";
 | `getRangeProps` | `() => T['element']` |  |
 | `getLabelProps` | `() => T['element']` | 环心那一块：落位归皮肤，写什么归作者。线形用不到。 |
 
-## 键盘
+## 无障碍
+
+### 键盘
 
 规格出处：[W3C APG](https://www.w3.org/WAI/ARIA/apg/patterns/meter/)
 
 无键盘交互（不接收焦点，或焦点行为完全由原生元素提供）。
 
-## 无障碍
+### ARIA
 
-下面这些由 `connect` 铺到部件上，作者不必自己写；重复写反而会覆盖掉正确值。
+以下属性由 `connect` 生成。
 
 | 部件 | 属性 | 值 |
 | --- | --- | --- |
@@ -727,15 +745,17 @@ import { XhProgress } from "@xihan-ui/vue";
 | `root` | `role` | 'meter' \| 'progressbar' |
 | `canvas` | `aria-hidden` | 'true' |
 
-## 样式
+## 样式参考
 
-默认皮肤 `@xihan-ui/styles/progress.css` 按部件选择：`[data-scope="progress"][data-part="root"]`。它落在 `xihan.components` 与 `xihan.motion` 层；业务样式不写进 `@layer` 即高于全部库层，要按层压过来就写进 `xihan.overrides`。
+### 皮肤
+
+`@xihan-ui/styles/progress.css` 使用 `[data-scope="progress"][data-part="root"]` 部件选择器，位于 `xihan.components` 与 `xihan.motion` 层。覆盖样式使用 `xihan.overrides`。
 
 `forced-colors: active` 下另有一套规则：颜色交给系统，边框与状态标记改用系统色关键字。
 
-## 数据属性
+### 数据属性
 
-由 `connect` 产出并铺到部件上，皮肤与测试都据此选择；`data-disabled` 这类无值属性在条件不成立时整个不出现。
+由 `connect` 生成；条件不成立时不输出无值属性。
 
 | 部件 | 属性 | 值 |
 | --- | --- | --- |
@@ -749,7 +769,7 @@ import { XhProgress } from "@xihan-ui/vue";
 | `label` | `data-variant` | props.variant |
 
 <!-- xh-component-tokens:start -->
-## CSS 变量
+### CSS 变量
 
 本组件公开覆盖槽由独立皮肤的实际消费位生成；缺省来源、作用部件和状态均与 CSS 同源。
 
@@ -767,26 +787,12 @@ import { XhProgress } from "@xihan-ui/vue";
 | `--xh-progress-track-radius` | `track` | `border-radius` | `default` | `--xh-shape-pill` | progress 的 track 部件 border-radius 覆盖槽。 |
 <!-- xh-component-tokens:end -->
 
-## 动效
+### 动效
 
 关键帧 `xh-progress-indeterminate` 随皮肤自带，不引用别处文件里的名字；`inline-size` · `stroke-dashoffset` 走 `transition` 过渡。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
 
 `prefers-reduced-motion: reduce` 下本组件另有降级规则。
 
-## RTL
+### RTL
 
 皮肤用逻辑属性排布（`inline-start` 一族），`dir="rtl"` 下自动镜像。
-
-## 组合
-
-- 与[统计数值](./statistic)并排；文件上传的每一项配一条。
-
-## 最佳实践
-
-- 长任务给出剩余时间或剩余数量，光有百分比很难判断还要等多久。
-- 到 100% 后要有明确的完成态，别停在满格不动。
-
-## 反模式
-
-- 进度会倒退。
-- 用假进度条掩盖未知的等待。

@@ -1,0 +1,11 @@
+const a=`<!-- 基础用法 | 标记一个独立选项 -->
+<xh-checkbox name="updates" default-checked>
+  <label data-xh-part="label">
+    <button data-xh-part="root">
+      <span data-xh-part="indicator"></span>
+      <input data-xh-part="hidden-input" />
+    </button>
+    <span data-xh-part="text">接收产品更新</span>
+  </label>
+</xh-checkbox>
+`;export{a as default};

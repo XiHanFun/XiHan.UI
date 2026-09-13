@@ -1,0 +1,112 @@
+const n=`<!-- 懒加载 | 展开分支时加载下一层数据 -->
+<xh-cascader id="cascader-lazy-load" placeholder="请选择地区">
+  <div data-xh-part="root">
+    <span data-xh-part="label">收货地区</span>
+    <div data-xh-part="control">
+      <button data-xh-part="trigger">
+        <span data-xh-part="value-text"></span>
+        <span data-xh-part="indicator"></span>
+      </button>
+    </div>
+    <div data-xh-part="positioner">
+      <div data-xh-part="content">
+        <div data-xh-part="column" level="0">
+          <div data-xh-part="item" value="zhejiang">
+            <span data-xh-part="item-text">浙江</span>
+            <span data-xh-part="item-indicator"></span>
+          </div>
+          <div data-xh-part="item" value="jiangsu">
+            <span data-xh-part="item-text">江苏</span>
+            <span data-xh-part="item-indicator"></span>
+          </div>
+        </div>
+        <div data-xh-part="column" level="1">
+          <div data-xh-part="item" value="zhejiang:pending">
+            <span data-xh-part="item-text">加载中…</span>
+            <span data-xh-part="item-indicator"></span>
+          </div>
+          <div data-xh-part="item" value="jiangsu:pending">
+            <span data-xh-part="item-text">加载中…</span>
+            <span data-xh-part="item-indicator"></span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</xh-cascader>
+
+<script type="module">
+  const cascader = document.getElementById("cascader-lazy-load");
+  const level1 = cascader.querySelector('[data-xh-part="column"][level="1"]');
+
+  // 下一层的数据在后端，这里用定时器代替一次请求
+  const remote = {
+    zhejiang: [
+      { value: "hangzhou", label: "杭州" },
+      { value: "ningbo", label: "宁波" },
+      { value: "wenzhou", label: "温州" },
+    ],
+    jiangsu: [
+      { value: "nanjing", label: "南京" },
+      { value: "suzhou", label: "苏州" },
+    ],
+  };
+
+  // 占位子节点：children 非空才算分支，子列才开得出来；禁用让方向键跳过它，也点不动
+  function pending(parent) {
+    return { value: \`\${parent}:pending\`, label: "加载中…", disabled: true };
+  }
+
+  const regions = [
+    { value: "zhejiang", label: "浙江", children: [pending("zhejiang")] },
+    { value: "jiangsu", label: "江苏", children: [pending("jiangsu")] },
+  ];
+  cascader.collection = regions;
+
+  // 第二列的条目照当下的树数据重建一遍
+  function renderLevel1() {
+    const nodes = [];
+    for (const parent of regions) {
+      for (const child of parent.children) {
+        const item = document.createElement("div");
+        item.setAttribute("data-xh-part", "item");
+        item.setAttribute("value", child.value);
+        const text = document.createElement("span");
+        text.setAttribute("data-xh-part", "item-text");
+        text.textContent = child.label;
+        const mark = document.createElement("span");
+        mark.setAttribute("data-xh-part", "item-indicator");
+        item.append(text, mark);
+        nodes.push(item);
+      }
+    }
+    level1.replaceChildren(...nodes);
+  }
+
+  const loading = new Set();
+  const loaded = new Set();
+
+  // 点开或键盘走到这一支时才取它的子节点，取回来把占位那一条整个换掉
+  function load(value) {
+    const children = remote[value];
+    if (!children || loading.has(value) || loaded.has(value)) return;
+    loading.add(value);
+    setTimeout(() => {
+      regions.find((node) => node.value === value).children = children;
+      loading.delete(value);
+      loaded.add(value);
+      renderLevel1();
+      cascader.collection = [...regions];
+    }, 800);
+  }
+
+  for (const item of cascader.querySelectorAll(
+    '[data-xh-part="column"][level="0"] [data-xh-part="item"]',
+  )) {
+    const value = item.getAttribute("value");
+    item.addEventListener("click", () => load(value));
+    item.addEventListener("focus", () => load(value));
+  }
+
+<\/script>
+`;export{n as default};

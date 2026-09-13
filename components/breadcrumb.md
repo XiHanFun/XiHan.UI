@@ -1,8 +1,8 @@
 来源：https://ui.docs.xihanfun.com/components/breadcrumb
 
-# Breadcrumb `面包屑`
+# Breadcrumb 面包屑
 
-把当前位置在层级里的路径摊开，每一层都能点回去。
+显示当前页面在信息层级中的位置。
 
 <div class="xh-resource-links">
   <a href="https://github.com/XiHanFun/XiHan.UI/tree/dev/ui/packages/engine/headless/src/breadcrumb" target="_blank" rel="noreferrer">Headless</a>
@@ -14,37 +14,22 @@
 
 ## 用法
 
-href 归作者写，末级只多一个 current：它拿到 aria-current="page"、点不动、也不占 Tab 位
+显示当前页面的层级路径
 
 ```vue
 <script setup lang="ts">
-import {
-  XhBreadcrumbItem,
-  XhBreadcrumbLink,
-  XhBreadcrumbList,
-  XhBreadcrumbRoot,
-  XhBreadcrumbSeparator,
-} from "@xihan-ui/vue";
+import { XhBreadcrumbRoot } from "@xihan-ui/vue";
+
+const items = [
+  { value: "home", label: "首页", href: "#/" },
+  { value: "components", label: "组件", href: "#/components" },
+  { value: "navigation", label: "导航", href: "#/components#navigation" },
+  { value: "breadcrumb", label: "面包屑", current: true },
+];
 </script>
 
 <template>
-  <XhBreadcrumbRoot>
-    <XhBreadcrumbList>
-      <XhBreadcrumbItem>
-        <XhBreadcrumbLink href="#/">首页</XhBreadcrumbLink>
-      </XhBreadcrumbItem>
-      <XhBreadcrumbSeparator>/</XhBreadcrumbSeparator>
-      <XhBreadcrumbItem>
-        <XhBreadcrumbLink href="#/components">组件</XhBreadcrumbLink>
-      </XhBreadcrumbItem>
-      <XhBreadcrumbSeparator>/</XhBreadcrumbSeparator>
-      <XhBreadcrumbItem>
-        <XhBreadcrumbLink href="#/components/breadcrumb" current>
-          面包屑
-        </XhBreadcrumbLink>
-      </XhBreadcrumbItem>
-    </XhBreadcrumbList>
-  </XhBreadcrumbRoot>
+  <XhBreadcrumbRoot :collection="items" />
 </template>
 ```
 
@@ -52,60 +37,80 @@ import {
 <xh-breadcrumb>
   <nav data-xh-part="root">
     <ol data-xh-part="list">
-      <li data-xh-part="item">
-        <a data-xh-part="link" href="#/">首页</a>
-      </li>
-      <li data-xh-part="separator">/</li>
-      <li data-xh-part="item">
-        <a data-xh-part="link" href="#/components">组件</a>
-      </li>
-      <li data-xh-part="separator">/</li>
-      <li data-xh-part="item">
-        <a data-xh-part="link" href="#/components/breadcrumb" current>面包屑</a>
-      </li>
+      <li data-xh-part="item"><a data-xh-part="link" href="#/">首页</a></li>
+      <li data-xh-part="separator"></li>
+      <li data-xh-part="item"><a data-xh-part="link" href="#/components">组件</a></li>
+      <li data-xh-part="separator"></li>
+      <li data-xh-part="item"><a data-xh-part="link" href="#/components#navigation">导航</a></li>
+      <li data-xh-part="separator"></li>
+      <li data-xh-part="item"><a data-xh-part="link" current>面包屑</a></li>
     </ol>
   </nav>
 </xh-breadcrumb>
 ```
+
+## 组件结构
+
+加粗的是必需部件。
+
+`data-scope="breadcrumb"`：**`root`** · **`list`** · **`item`** · **`link`** · `link-icon` · `separator` · `ellipsis`
 
 ## 示例
 
-### 折叠中间层级
+### 折叠层级
 
-省略号与分隔符同为 ol 的直接子 li，两者都对读屏隐藏，念出来仍是「列表，共 3 项」
+收起过长路径的中间部分
 
 ```vue
 <script setup lang="ts">
-import {
-  XhBreadcrumbEllipsis,
-  XhBreadcrumbItem,
-  XhBreadcrumbLink,
-  XhBreadcrumbList,
-  XhBreadcrumbRoot,
-  XhBreadcrumbSeparator,
-} from "@xihan-ui/vue";
+import { XhBreadcrumbRoot } from "@xihan-ui/vue";
+
+const items = [
+  { value: "home", label: "首页", href: "#/" },
+  { value: "docs", label: "文档", href: "#/docs" },
+  { value: "guides", label: "指南", href: "#/docs/guides" },
+  { value: "components", label: "组件", href: "#/docs/guides/components" },
+  { value: "breadcrumb", label: "面包屑", current: true },
+];
 </script>
 
 <template>
-  <XhBreadcrumbRoot>
-    <XhBreadcrumbList>
-      <XhBreadcrumbItem>
-        <XhBreadcrumbLink href="#/">首页</XhBreadcrumbLink>
-      </XhBreadcrumbItem>
-      <XhBreadcrumbSeparator />
-      <XhBreadcrumbItem>
-        <XhBreadcrumbLink href="#/docs">文档</XhBreadcrumbLink>
-      </XhBreadcrumbItem>
-      <XhBreadcrumbSeparator />
-      <!-- 被折叠掉的那几层，只是视觉占位，不参与列表项计数 -->
-      <XhBreadcrumbEllipsis>…</XhBreadcrumbEllipsis>
-      <XhBreadcrumbSeparator />
-      <XhBreadcrumbItem>
-        <XhBreadcrumbLink href="#/docs/deep/current" current>
-          当前页
-        </XhBreadcrumbLink>
-      </XhBreadcrumbItem>
-    </XhBreadcrumbList>
+  <XhBreadcrumbRoot :collection="items" :max-items="3" />
+</template>
+```
+
+```html
+<xh-breadcrumb max-items="3">
+  <nav data-xh-part="root">
+    <ol data-xh-part="list">
+      <li data-xh-part="item"><a data-xh-part="link" href="#/">首页</a></li>
+      <li data-xh-part="separator"></li>
+      <li data-xh-part="ellipsis">…</li>
+      <li data-xh-part="separator"></li>
+      <li data-xh-part="item"><a data-xh-part="link" current>面包屑</a></li>
+    </ol>
+  </nav>
+</xh-breadcrumb>
+```
+
+### 自定义分隔符
+
+替换层级之间的视觉标记
+
+```vue
+<script setup lang="ts">
+import { XhBreadcrumbRoot } from "@xihan-ui/vue";
+
+const items = [
+  { value: "workspace", label: "工作台", href: "#/workspace" },
+  { value: "projects", label: "项目", href: "#/workspace/projects" },
+  { value: "xihan-ui", label: "XiHan.UI", current: true },
+];
+</script>
+
+<template>
+  <XhBreadcrumbRoot :collection="items">
+    <template #separator>•</template>
   </XhBreadcrumbRoot>
 </template>
 ```
@@ -114,537 +119,129 @@ import {
 <xh-breadcrumb>
   <nav data-xh-part="root">
     <ol data-xh-part="list">
-      <li data-xh-part="item">
-        <a data-xh-part="link" href="#/">首页</a>
-      </li>
-      <li data-xh-part="separator"></li>
-      <li data-xh-part="item">
-        <a data-xh-part="link" href="#/docs">文档</a>
-      </li>
-      <li data-xh-part="separator"></li>
-      <!-- 被折叠掉的那几层，只是视觉占位，不参与列表项计数 -->
-      <li data-xh-part="ellipsis">…</li>
-      <li data-xh-part="separator"></li>
-      <li data-xh-part="item">
-        <a data-xh-part="link" href="#/docs/deep/current" current>当前页</a>
-      </li>
+      <li data-xh-part="item"><a data-xh-part="link" href="#/workspace">工作台</a></li>
+      <li data-xh-part="separator">•</li>
+      <li data-xh-part="item"><a data-xh-part="link" href="#/workspace/projects">项目</a></li>
+      <li data-xh-part="separator">•</li>
+      <li data-xh-part="item"><a data-xh-part="link" current>XiHan.UI</a></li>
     </ol>
   </nav>
 </xh-breadcrumb>
-```
-
-### 读屏文案
-
-root 是 nav 地标，translations.root 换掉它的 aria-label，同页有多个地标时靠它区分
-
-```vue
-<script setup lang="ts">
-import {
-  XhBreadcrumbItem,
-  XhBreadcrumbLink,
-  XhBreadcrumbList,
-  XhBreadcrumbRoot,
-  XhBreadcrumbSeparator,
-} from "@xihan-ui/vue";
-
-const translations = { root: "文章位置" };
-</script>
-
-<template>
-  <XhBreadcrumbRoot :translations="translations">
-    <XhBreadcrumbList>
-      <XhBreadcrumbItem>
-        <XhBreadcrumbLink href="#/blog">博客</XhBreadcrumbLink>
-      </XhBreadcrumbItem>
-      <XhBreadcrumbSeparator>/</XhBreadcrumbSeparator>
-      <XhBreadcrumbItem>
-        <XhBreadcrumbLink href="#/blog/2026">2026</XhBreadcrumbLink>
-      </XhBreadcrumbItem>
-      <XhBreadcrumbSeparator>/</XhBreadcrumbSeparator>
-      <XhBreadcrumbItem>
-        <XhBreadcrumbLink href="#/blog/2026/design-system" current>
-          设计系统运行时
-        </XhBreadcrumbLink>
-      </XhBreadcrumbItem>
-    </XhBreadcrumbList>
-  </XhBreadcrumbRoot>
-</template>
-```
-
-```html
-<xh-breadcrumb id="breadcrumb-translations">
-  <nav data-xh-part="root">
-    <ol data-xh-part="list">
-      <li data-xh-part="item">
-        <a data-xh-part="link" href="#/blog">博客</a>
-      </li>
-      <li data-xh-part="separator">/</li>
-      <li data-xh-part="item">
-        <a data-xh-part="link" href="#/blog/2026">2026</a>
-      </li>
-      <li data-xh-part="separator">/</li>
-      <li data-xh-part="item">
-        <a data-xh-part="link" href="#/blog/2026/design-system" current>
-          设计系统运行时
-        </a>
-      </li>
-    </ol>
-  </nav>
-</xh-breadcrumb>
-
-<script type="module">
-  // 文案是对象，只走 property
-  document.getElementById("breadcrumb-translations").translations = {
-    root: "文章位置",
-  };
-</script>
-```
-
-### 语气
-
-tone 换的是当前项的文字色，以及可点那几层悬停时的文字色；末级预置为当前项
-
-```vue
-<script setup lang="ts">
-import {
-  XhBreadcrumbItem,
-  XhBreadcrumbLink,
-  XhBreadcrumbList,
-  XhBreadcrumbRoot,
-  XhBreadcrumbSeparator,
-} from "@xihan-ui/vue";
-
-const tones = ["brand", "neutral", "success", "warning", "danger", "info"] as const;
-</script>
-
-<template>
-  <div style="inline-size: 100%; display: grid; gap: 12px">
-    <div
-      v-for="t in tones"
-      :key="t"
-      style="display: flex; align-items: center; gap: 12px"
-    >
-      <span style="inline-size: 80px; flex: none; font-size: 12px">{{ t }}</span>
-      <XhBreadcrumbRoot :tone="t">
-        <XhBreadcrumbList>
-          <XhBreadcrumbItem>
-            <XhBreadcrumbLink href="#/">首页</XhBreadcrumbLink>
-          </XhBreadcrumbItem>
-          <XhBreadcrumbSeparator>/</XhBreadcrumbSeparator>
-          <XhBreadcrumbItem>
-            <XhBreadcrumbLink href="#/components">组件</XhBreadcrumbLink>
-          </XhBreadcrumbItem>
-          <XhBreadcrumbSeparator>/</XhBreadcrumbSeparator>
-          <XhBreadcrumbItem>
-            <XhBreadcrumbLink href="#/components/breadcrumb" current>
-              面包屑
-            </XhBreadcrumbLink>
-          </XhBreadcrumbItem>
-        </XhBreadcrumbList>
-      </XhBreadcrumbRoot>
-    </div>
-  </div>
-</template>
-```
-
-```html
-<div style="inline-size: 100%; display: grid; gap: 12px">
-  <div style="display: flex; align-items: center; gap: 12px">
-    <span style="inline-size: 80px; flex: none; font-size: 12px">brand</span>
-    <xh-breadcrumb tone="brand">
-      <nav data-xh-part="root">
-        <ol data-xh-part="list">
-          <li data-xh-part="item">
-            <a data-xh-part="link" href="#/">首页</a>
-          </li>
-          <li data-xh-part="separator">/</li>
-          <li data-xh-part="item">
-            <a data-xh-part="link" href="#/components">组件</a>
-          </li>
-          <li data-xh-part="separator">/</li>
-          <li data-xh-part="item">
-            <a data-xh-part="link" href="#/components/breadcrumb" current>
-              面包屑
-            </a>
-          </li>
-        </ol>
-      </nav>
-    </xh-breadcrumb>
-  </div>
-
-  <div style="display: flex; align-items: center; gap: 12px">
-    <span style="inline-size: 80px; flex: none; font-size: 12px">neutral</span>
-    <xh-breadcrumb tone="neutral">
-      <nav data-xh-part="root">
-        <ol data-xh-part="list">
-          <li data-xh-part="item">
-            <a data-xh-part="link" href="#/">首页</a>
-          </li>
-          <li data-xh-part="separator">/</li>
-          <li data-xh-part="item">
-            <a data-xh-part="link" href="#/components">组件</a>
-          </li>
-          <li data-xh-part="separator">/</li>
-          <li data-xh-part="item">
-            <a data-xh-part="link" href="#/components/breadcrumb" current>
-              面包屑
-            </a>
-          </li>
-        </ol>
-      </nav>
-    </xh-breadcrumb>
-  </div>
-
-  <div style="display: flex; align-items: center; gap: 12px">
-    <span style="inline-size: 80px; flex: none; font-size: 12px">success</span>
-    <xh-breadcrumb tone="success">
-      <nav data-xh-part="root">
-        <ol data-xh-part="list">
-          <li data-xh-part="item">
-            <a data-xh-part="link" href="#/">首页</a>
-          </li>
-          <li data-xh-part="separator">/</li>
-          <li data-xh-part="item">
-            <a data-xh-part="link" href="#/components">组件</a>
-          </li>
-          <li data-xh-part="separator">/</li>
-          <li data-xh-part="item">
-            <a data-xh-part="link" href="#/components/breadcrumb" current>
-              面包屑
-            </a>
-          </li>
-        </ol>
-      </nav>
-    </xh-breadcrumb>
-  </div>
-
-  <div style="display: flex; align-items: center; gap: 12px">
-    <span style="inline-size: 80px; flex: none; font-size: 12px">warning</span>
-    <xh-breadcrumb tone="warning">
-      <nav data-xh-part="root">
-        <ol data-xh-part="list">
-          <li data-xh-part="item">
-            <a data-xh-part="link" href="#/">首页</a>
-          </li>
-          <li data-xh-part="separator">/</li>
-          <li data-xh-part="item">
-            <a data-xh-part="link" href="#/components">组件</a>
-          </li>
-          <li data-xh-part="separator">/</li>
-          <li data-xh-part="item">
-            <a data-xh-part="link" href="#/components/breadcrumb" current>
-              面包屑
-            </a>
-          </li>
-        </ol>
-      </nav>
-    </xh-breadcrumb>
-  </div>
-
-  <div style="display: flex; align-items: center; gap: 12px">
-    <span style="inline-size: 80px; flex: none; font-size: 12px">danger</span>
-    <xh-breadcrumb tone="danger">
-      <nav data-xh-part="root">
-        <ol data-xh-part="list">
-          <li data-xh-part="item">
-            <a data-xh-part="link" href="#/">首页</a>
-          </li>
-          <li data-xh-part="separator">/</li>
-          <li data-xh-part="item">
-            <a data-xh-part="link" href="#/components">组件</a>
-          </li>
-          <li data-xh-part="separator">/</li>
-          <li data-xh-part="item">
-            <a data-xh-part="link" href="#/components/breadcrumb" current>
-              面包屑
-            </a>
-          </li>
-        </ol>
-      </nav>
-    </xh-breadcrumb>
-  </div>
-
-  <div style="display: flex; align-items: center; gap: 12px">
-    <span style="inline-size: 80px; flex: none; font-size: 12px">info</span>
-    <xh-breadcrumb tone="info">
-      <nav data-xh-part="root">
-        <ol data-xh-part="list">
-          <li data-xh-part="item">
-            <a data-xh-part="link" href="#/">首页</a>
-          </li>
-          <li data-xh-part="separator">/</li>
-          <li data-xh-part="item">
-            <a data-xh-part="link" href="#/components">组件</a>
-          </li>
-          <li data-xh-part="separator">/</li>
-          <li data-xh-part="item">
-            <a data-xh-part="link" href="#/components/breadcrumb" current>
-              面包屑
-            </a>
-          </li>
-        </ol>
-      </nav>
-    </xh-breadcrumb>
-  </div>
-</div>
 ```
 
 ### 尺寸
 
-size 换整条路径的字号与各层之间的间距，不传 size 即默认档
+适配不同的信息密度
 
 ```vue
 <script setup lang="ts">
-import {
-  XhBreadcrumbItem,
-  XhBreadcrumbLink,
-  XhBreadcrumbList,
-  XhBreadcrumbRoot,
-  XhBreadcrumbSeparator,
-} from "@xihan-ui/vue";
+import { XhBreadcrumbRoot } from "@xihan-ui/vue";
 
-// 中间一档不写 size，用 undefined 表达
+const items = [
+  { value: "home", label: "首页", href: "#/" },
+  { value: "components", label: "组件", href: "#/components" },
+  { value: "breadcrumb", label: "面包屑", current: true },
+];
 const sizes = [
-  { size: "sm", label: "小" },
-  { size: undefined, label: "默认" },
-  { size: "lg", label: "大" },
+  { label: "小", value: "sm" },
+  { label: "中", value: undefined },
+  { label: "大", value: "lg" },
 ] as const;
 </script>
 
 <template>
-  <div style="inline-size: 100%; display: grid; gap: 16px">
-    <div
-      v-for="s in sizes"
-      :key="s.label"
-      style="display: flex; align-items: center; gap: 12px"
-    >
-      <span style="inline-size: 40px; flex: none; font-size: 12px">
-        {{ s.label }}
-      </span>
-      <XhBreadcrumbRoot :size="s.size">
-        <XhBreadcrumbList>
-          <XhBreadcrumbItem>
-            <XhBreadcrumbLink href="#/">首页</XhBreadcrumbLink>
-          </XhBreadcrumbItem>
-          <XhBreadcrumbSeparator>/</XhBreadcrumbSeparator>
-          <XhBreadcrumbItem>
-            <XhBreadcrumbLink href="#/components">组件</XhBreadcrumbLink>
-          </XhBreadcrumbItem>
-          <XhBreadcrumbSeparator>/</XhBreadcrumbSeparator>
-          <XhBreadcrumbItem>
-            <XhBreadcrumbLink href="#/components/breadcrumb" current>
-              面包屑
-            </XhBreadcrumbLink>
-          </XhBreadcrumbItem>
-        </XhBreadcrumbList>
-      </XhBreadcrumbRoot>
+  <div style="display: grid; gap: 16px; inline-size: min(560px, 100%)">
+    <div v-for="item in sizes" :key="item.label" style="display: flex; align-items: center; gap: 16px">
+      <span style="inline-size: 24px; color: var(--xh-fg-muted)">{{ item.label }}</span>
+      <XhBreadcrumbRoot :collection="items" :size="item.value" />
     </div>
   </div>
 </template>
 ```
 
 ```html
-<div style="inline-size: 100%; display: grid; gap: 16px">
-  <div style="display: flex; align-items: center; gap: 12px">
-    <span style="inline-size: 40px; flex: none; font-size: 12px">小</span>
+<div style="display: grid; gap: 16px; inline-size: min(560px, 100%)">
+  <div style="display: flex; align-items: center; gap: 16px">
+    <span style="inline-size: 24px; color: var(--xh-fg-muted)">小</span>
     <xh-breadcrumb size="sm">
       <nav data-xh-part="root">
         <ol data-xh-part="list">
-          <li data-xh-part="item">
-            <a data-xh-part="link" href="#/">首页</a>
-          </li>
-          <li data-xh-part="separator">/</li>
-          <li data-xh-part="item">
-            <a data-xh-part="link" href="#/components">组件</a>
-          </li>
-          <li data-xh-part="separator">/</li>
-          <li data-xh-part="item">
-            <a data-xh-part="link" href="#/components/breadcrumb" current>
-              面包屑
-            </a>
-          </li>
+          <li data-xh-part="item"><a data-xh-part="link" href="#/">首页</a></li>
+          <li data-xh-part="separator"></li>
+          <li data-xh-part="item"><a data-xh-part="link" href="#/components">组件</a></li>
+          <li data-xh-part="separator"></li>
+          <li data-xh-part="item"><a data-xh-part="link" current>面包屑</a></li>
         </ol>
       </nav>
     </xh-breadcrumb>
   </div>
-
-  <!-- 这一档不写 size，落在默认 -->
-  <div style="display: flex; align-items: center; gap: 12px">
-    <span style="inline-size: 40px; flex: none; font-size: 12px">默认</span>
+  <div style="display: flex; align-items: center; gap: 16px">
+    <span style="inline-size: 24px; color: var(--xh-fg-muted)">中</span>
     <xh-breadcrumb>
       <nav data-xh-part="root">
         <ol data-xh-part="list">
-          <li data-xh-part="item">
-            <a data-xh-part="link" href="#/">首页</a>
-          </li>
-          <li data-xh-part="separator">/</li>
-          <li data-xh-part="item">
-            <a data-xh-part="link" href="#/components">组件</a>
-          </li>
-          <li data-xh-part="separator">/</li>
-          <li data-xh-part="item">
-            <a data-xh-part="link" href="#/components/breadcrumb" current>
-              面包屑
-            </a>
-          </li>
+          <li data-xh-part="item"><a data-xh-part="link" href="#/">首页</a></li>
+          <li data-xh-part="separator"></li>
+          <li data-xh-part="item"><a data-xh-part="link" href="#/components">组件</a></li>
+          <li data-xh-part="separator"></li>
+          <li data-xh-part="item"><a data-xh-part="link" current>面包屑</a></li>
         </ol>
       </nav>
     </xh-breadcrumb>
   </div>
-
-  <div style="display: flex; align-items: center; gap: 12px">
-    <span style="inline-size: 40px; flex: none; font-size: 12px">大</span>
+  <div style="display: flex; align-items: center; gap: 16px">
+    <span style="inline-size: 24px; color: var(--xh-fg-muted)">大</span>
     <xh-breadcrumb size="lg">
       <nav data-xh-part="root">
         <ol data-xh-part="list">
-          <li data-xh-part="item">
-            <a data-xh-part="link" href="#/">首页</a>
-          </li>
-          <li data-xh-part="separator">/</li>
-          <li data-xh-part="item">
-            <a data-xh-part="link" href="#/components">组件</a>
-          </li>
-          <li data-xh-part="separator">/</li>
-          <li data-xh-part="item">
-            <a data-xh-part="link" href="#/components/breadcrumb" current>
-              面包屑
-            </a>
-          </li>
+          <li data-xh-part="item"><a data-xh-part="link" href="#/">首页</a></li>
+          <li data-xh-part="separator"></li>
+          <li data-xh-part="item"><a data-xh-part="link" href="#/components">组件</a></li>
+          <li data-xh-part="separator"></li>
+          <li data-xh-part="item"><a data-xh-part="link" current>面包屑</a></li>
         </ol>
       </nav>
     </xh-breadcrumb>
   </div>
 </div>
-```
-
-### 层级下拉
-
-某一层要换去处时，把菜单整套放进 item 里；面包屑只管这一层的排版
-
-```vue
-<script setup lang="ts">
-import { ChevronDownIcon } from "@xihan-ui/icons";
-import {
-  XhBreadcrumbItem,
-  XhBreadcrumbLink,
-  XhBreadcrumbList,
-  XhBreadcrumbRoot,
-  XhBreadcrumbSeparator,
-  XhIcon,
-  XhMenuContent,
-  XhMenuItem,
-  XhMenuPositioner,
-  XhMenuRoot,
-  XhMenuTrigger,
-} from "@xihan-ui/vue";
-import { ref } from "vue";
-
-const projects = [
-  { value: "web", label: "官网" },
-  { value: "admin", label: "后台" },
-  { value: "mobile", label: "移动端" },
-];
-const current = ref("admin");
-
-function onSelect(details: { value: string }): void {
-  current.value = details.value;
-}
-</script>
-
-<template>
-  <XhBreadcrumbRoot>
-    <XhBreadcrumbList>
-      <XhBreadcrumbItem>
-        <XhBreadcrumbLink href="#/">工作台</XhBreadcrumbLink>
-      </XhBreadcrumbItem>
-      <XhBreadcrumbSeparator>/</XhBreadcrumbSeparator>
-      <XhBreadcrumbItem>
-        <!-- 这一层不是链接而是一组可切换的去处 -->
-        <XhMenuRoot @select="onSelect">
-          <XhMenuTrigger>
-            {{ projects.find((p) => p.value === current)?.label }}
-            <XhIcon :icon="ChevronDownIcon" />
-          </XhMenuTrigger>
-          <XhMenuPositioner>
-            <XhMenuContent>
-              <XhMenuItem v-for="p in projects" :key="p.value" :value="p.value">
-                {{ p.label }}
-              </XhMenuItem>
-            </XhMenuContent>
-          </XhMenuPositioner>
-        </XhMenuRoot>
-      </XhBreadcrumbItem>
-      <XhBreadcrumbSeparator>/</XhBreadcrumbSeparator>
-      <XhBreadcrumbItem>
-        <XhBreadcrumbLink href="#/settings" current>设置</XhBreadcrumbLink>
-      </XhBreadcrumbItem>
-    </XhBreadcrumbList>
-  </XhBreadcrumbRoot>
-</template>
-```
-
-```html
-<xh-breadcrumb>
-  <nav data-xh-part="root">
-    <ol data-xh-part="list">
-      <li data-xh-part="item">
-        <a data-xh-part="link" href="#/">工作台</a>
-      </li>
-      <li data-xh-part="separator">/</li>
-      <li data-xh-part="item">
-        <!-- 这一层不是链接而是一组可切换的去处 -->
-        <xh-menu id="breadcrumb-menu">
-          <button data-xh-part="trigger">
-            <span id="breadcrumb-menu-label">后台</span>
-            <svg viewBox="0 0 24 24" width="1em" height="1em" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 9L12 15L18 9"/></svg>
-          </button>
-          <div data-xh-part="positioner">
-            <div data-xh-part="content">
-              <div data-xh-part="item" value="web">官网</div>
-              <div data-xh-part="item" value="admin">后台</div>
-              <div data-xh-part="item" value="mobile">移动端</div>
-            </div>
-          </div>
-        </xh-menu>
-      </li>
-      <li data-xh-part="separator">/</li>
-      <li data-xh-part="item">
-        <a data-xh-part="link" href="#/settings" current>设置</a>
-      </li>
-    </ol>
-  </nav>
-</xh-breadcrumb>
-
-<script type="module">
-  // 选中的那一项的文字回填到触发钮上
-  const menu = document.getElementById("breadcrumb-menu");
-  const label = document.getElementById("breadcrumb-menu-label");
-  menu.addEventListener("select", (event) => {
-    const picked = menu.querySelector(`[data-xh-part="item"][value="${event.detail.value}"]`);
-    label.textContent = picked.textContent.trim();
-  });
-</script>
 ```
 
 ## 设计指引
 
 ### 何时使用
 
-- 层级超过两级且用户可能从搜索或外链直接进到深层。
-- 需要让用户知道"我在哪，上一层是什么"。
+- 页面具有明确的父子层级。
+- 用户可能从搜索或外链直接进入深层页面。
 
 ### 何时不用
 
-- 站点是扁平的：路径只有一层，写它没有信息量。
-- 用来表达步骤的先后：那是[步骤条](./steps)。
+- 扁平页面不需要面包屑。
+- 流程进度使用[步骤条](./steps)。
 
 ### 特性
 
-- `href` 归作者写；末级只多一个 `current`：它拿到 `aria-current="page"`、点不动、也不占 Tab 位。
-- 中间层级可以折叠成省略号；省略号与分隔符都对读屏隐藏，念出来仍是完整的列表项数。
-- `root` 是 `nav` 地标，`translations.root` 换掉它的 `aria-label`。
+- `collection` 可直接生成完整路径，也支持手写部件。
+- `maxItems` 将过长路径的中间层折叠为省略号。
+- 默认分隔符为箭头，可通过插槽或渲染函数替换。
+- 当前页使用 `aria-current="page"`，不参与键盘导航。
 
-## 产物
+### 组合
+
+- 通常放在页头或正文标题之前。
+
+### 最佳实践
+
+- 当前项使用清晰的页面标题，避免“详情”等泛化名称。
+- 同页有多个 `nav` 地标时给面包屑单独的 `aria-label`。
+
+### 反模式
+
+- 不要用面包屑表示浏览历史。
+- 当前项不要链接到自身。
+
+## API 参考
+
+### 产物
 
 | 层 | 值 |
 | --- | --- |
@@ -654,13 +251,7 @@ function onSelect(details: { value: string }): void {
 | 状态机 | 无，`connect` 直接由 props 算属性 |
 | 皮肤 | `@xihan-ui/styles/breadcrumb.css` |
 
-## 解剖
-
-部件名即 `data-part` 属性值，也是皮肤的选择器。加粗的是必备部件，不渲染它组件不工作（Web Components 适配器会在诊断通道上报 `wc.missing-part`）。
-
-`data-scope="breadcrumb"`：**`root`** · **`list`** · **`item`** · **`link`** · `link-icon` · `separator` · `ellipsis`
-
-## Props
+### Props
 
 | 属性 | 类型 | 必填 | 说明 |
 | --- | --- | --- | --- |
@@ -671,9 +262,9 @@ function onSelect(details: { value: string }): void {
 | `tone` | `Tone` |  | 语气：brand / neutral / success / warning / danger / info，决定用哪族颜色。 |
 | `translations` | `Partial<BreadcrumbTranslations>` |  |  |
 
-## connect API
+### connect API
 
-`useBreadcrumb` 产出的对象。`getXxxProps()` 铺到对应部件的宿主元素上，其余是可读状态与操作入口。
+`getXxxProps()` 返回对应部件的宿主属性。
 
 | 成员 | 类型 | 说明 |
 | --- | --- | --- |
@@ -687,7 +278,9 @@ function onSelect(details: { value: string }): void {
 | `getSeparatorProps` | `() => T['element']` |  |
 | `getEllipsisProps` | `() => T['element']` |  |
 
-## 键盘
+## 无障碍
+
+### 键盘
 
 规格出处：[W3C APG](https://www.w3.org/WAI/ARIA/apg/patterns/breadcrumb/)
 
@@ -696,9 +289,9 @@ function onSelect(details: { value: string }): void {
 | `Enter` | focus in link, 非当前页 | 跟随链接（原生 &lt;a href&gt; 的激活行为，面包屑自己不监听按键） |
 | `Tab` / `Shift+Tab` | focus in root | 逐条走过可点的链接；面包屑不做 roving tabindex，当前页那条带 tabindex=-1 自动脱序 |
 
-## 无障碍
+### ARIA
 
-下面这些由 `connect` 铺到部件上，作者不必自己写；重复写反而会覆盖掉正确值。
+以下属性由 `connect` 生成。
 
 | 部件 | 属性 | 值 |
 | --- | --- | --- |
@@ -709,13 +302,15 @@ function onSelect(details: { value: string }): void {
 | `separator` | `aria-hidden` | 'true' |
 | `ellipsis` | `aria-hidden` | 'true' |
 
-## 样式
+## 样式参考
 
-默认皮肤 `@xihan-ui/styles/breadcrumb.css` 按部件选择：`[data-scope="breadcrumb"][data-part="root"]`。它落在 `xihan.components` 层；业务样式不写进 `@layer` 即高于全部库层，要按层压过来就写进 `xihan.overrides`。
+### 皮肤
 
-## 数据属性
+`@xihan-ui/styles/breadcrumb.css` 使用 `[data-scope="breadcrumb"][data-part="root"]` 部件选择器，位于 `xihan.components` 层。覆盖样式使用 `xihan.overrides`。
 
-由 `connect` 产出并铺到部件上，皮肤与测试都据此选择；`data-disabled` 这类无值属性在条件不成立时整个不出现。
+### 数据属性
+
+由 `connect` 生成；条件不成立时不输出无值属性。
 
 | 部件 | 属性 | 值 |
 | --- | --- | --- |
@@ -724,7 +319,7 @@ function onSelect(details: { value: string }): void {
 | `link` | `data-current` | ''（条件成立时才出现） |
 
 <!-- xh-component-tokens:start -->
-## CSS 变量
+### CSS 变量
 
 本组件公开覆盖槽由独立皮肤的实际消费位生成；缺省来源、作用部件和状态均与 CSS 同源。
 
@@ -749,26 +344,12 @@ function onSelect(details: { value: string }): void {
 | `--xh-breadcrumb-separator-size` | `separator` | `inline-size` | `default` | `--xh-glyph-size-text` | breadcrumb 的 separator 部件 inline-size 覆盖槽。 |
 <!-- xh-component-tokens:end -->
 
-## 动效
+### 动效
 
 `background` · `color` 走 `transition` 过渡。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
 
 系统开启减弱动效时由令牌层统一收敛，皮肤不另作判断。
 
-## RTL
+### RTL
 
 皮肤用逻辑属性排布（`inline-start` 一族），`dir="rtl"` 下自动镜像；另有按 `dir` 分支的规则。
-
-## 组合
-
-- 放进[页头](./page-header)；某一层要换去处时把整套[菜单](./menu)放进那一项里。
-
-## 最佳实践
-
-- 末级写当前页标题，别写"详情"这种没有信息的词。
-- 同页有多个 `nav` 地标时给面包屑单独的 `aria-label`。
-
-## 反模式
-
-- 拿面包屑记录浏览历史：它表达的是层级位置，不是来路。
-- 末级也做成链接指向自己。

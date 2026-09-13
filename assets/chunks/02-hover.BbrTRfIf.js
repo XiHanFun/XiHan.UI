@@ -1,0 +1,11 @@
+const t=`<!-- 悬停展开 | 指针进入时展开，键盘与触控仍可点击 -->
+<xh-float-button expand-trigger="hover">
+  <div data-xh-part="root" style="position: static">
+    <button data-xh-part="trigger"></button>
+    <div data-xh-part="list">
+      <button type="button" aria-label="消息">✉</button>
+      <button type="button" aria-label="分享">↗</button>
+    </div>
+  </div>
+</xh-float-button>
+`;export{t as default};

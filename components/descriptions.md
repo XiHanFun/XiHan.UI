@@ -1,6 +1,6 @@
 来源：https://ui.docs.xihanfun.com/components/descriptions
 
-# Descriptions `描述列表`
+# Descriptions 描述列表
 
 成对的标签与值，按列排开。
 
@@ -60,6 +60,12 @@ const order = [
   </dl>
 </xh-descriptions>
 ```
+
+## 组件结构
+
+加粗的是必需部件。
+
+`data-scope="descriptions"`：**`root`** · `item` · `label` · `value`
 
 ## 示例
 
@@ -445,7 +451,24 @@ import {
 - 标签位置可以在值的上方或左侧；`bordered` 给出外框。
 - 每一格可以写 `span` 横跨几列，上限是当前列数；窄档一行只摆一组时不认这个数。
 
-## 产物
+### 组合
+
+- 放进[卡片](./card)或[页头](./page-header)的页脚。
+
+### 最佳实践
+
+- 值为空时写"—"，别留空白——用户分不清是没有还是没加载出来。
+- 标签左置时给它们统一宽度，值才对得齐。
+- 长文本字段写 `span` 占满整行，别为它另开一份描述列表。
+
+### 反模式
+
+- 用它排版一张表格。
+- 标签写得比值还长。
+
+## API 参考
+
+### 产物
 
 | 层 | 值 |
 | --- | --- |
@@ -454,13 +477,7 @@ import {
 | 状态机 | 无，`connect` 直接由 props 算属性 |
 | 皮肤 | `@xihan-ui/styles/descriptions.css` |
 
-## 解剖
-
-部件名即 `data-part` 属性值，也是皮肤的选择器。加粗的是必备部件，不渲染它组件不工作（Web Components 适配器会在诊断通道上报 `wc.missing-part`）。
-
-`data-scope="descriptions"`：**`root`** · `item` · `label` · `value`
-
-## Props
+### Props
 
 | 属性 | 类型 | 必填 | 说明 |
 | --- | --- | --- | --- |
@@ -469,9 +486,9 @@ import {
 | `placement` | `DescriptionsPlacement` |  | 标签的位置：top / left；不写即标签在上。 |
 | `size` | `Size` |  | 尺寸：sm / md / lg。 |
 
-## connect API
+### connect API
 
-`connect` 产出的对象。`getXxxProps()` 铺到对应部件的宿主元素上，其余是可读状态与操作入口。
+`getXxxProps()` 返回对应部件的宿主属性。
 
 | 成员 | 类型 | 说明 |
 | --- | --- | --- |
@@ -480,18 +497,22 @@ import {
 | `getLabelProps` | `() => T['element']` |  |
 | `getValueProps` | `() => T['element']` |  |
 
-## 键盘
+## 无障碍
+
+### 键盘
 
 规格出处：[W3C APG](https://www.w3.org/WAI/ARIA/apg/)
 
 无键盘交互（不接收焦点，或焦点行为完全由原生元素提供）。
 
-## 样式
+## 样式参考
 
-默认皮肤 `@xihan-ui/styles/descriptions.css` 按部件选择：`[data-scope="descriptions"][data-part="root"]`。它落在 `xihan.components` 层；业务样式不写进 `@layer` 即高于全部库层，要按层压过来就写进 `xihan.overrides`。
+### 皮肤
+
+`@xihan-ui/styles/descriptions.css` 使用 `[data-scope="descriptions"][data-part="root"]` 部件选择器，位于 `xihan.components` 层。覆盖样式使用 `xihan.overrides`。
 
 <!-- xh-component-tokens:start -->
-## CSS 变量
+### CSS 变量
 
 本组件公开覆盖槽由独立皮肤的实际消费位生成；缺省来源、作用部件和状态均与 CSS 同源。
 
@@ -514,29 +535,14 @@ import {
 | `--xh-descriptions-value-fg` | `value` | `color` | `default` | `--xh-fg-default` | descriptions 的 value 部件 color 覆盖槽。 |
 <!-- xh-component-tokens:end -->
 
-## 动效
+### 动效
 
 本组件皮肤不含过渡与关键帧，也没有脚本驱动的动效：状态一变，外观立即到位。
 
-## 响应式
+### 响应式
 
 皮肤按视口分档：`min-width: 1024px` · `min-width: 768px`。
 
-## RTL
+### RTL
 
 皮肤用逻辑属性排布（`inline-start` 一族），`dir="rtl"` 下自动镜像。
-
-## 组合
-
-- 放进[卡片](./card)或[页头](./page-header)的页脚。
-
-## 最佳实践
-
-- 值为空时写"—"，别留空白——用户分不清是没有还是没加载出来。
-- 标签左置时给它们统一宽度，值才对得齐。
-- 长文本字段写 `span` 占满整行，别为它另开一份描述列表。
-
-## 反模式
-
-- 用它排版一张表格。
-- 标签写得比值还长。

@@ -1,0 +1,11 @@
+const t=`<!-- 尺寸 | 小、中、大三档 -->
+<xh-button size="sm">
+  <button data-xh-part="root">小尺寸</button>
+</xh-button>
+<xh-button>
+  <button data-xh-part="root">中尺寸</button>
+</xh-button>
+<xh-button size="lg">
+  <button data-xh-part="root">大尺寸</button>
+</xh-button>
+`;export{t as default};

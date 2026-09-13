@@ -1,0 +1,22 @@
+const t=`<!-- 固定比例 | 以 16:9 裁切封面 -->
+<xh-image-cropper
+  src="/images/image-cropper-landscape.svg"
+  alt="山谷与湖泊风景图"
+  aspect-ratio="1.7777777777777777"
+  default-value="96,84,448,252"
+  min-width="80"
+>
+  <div data-xh-part="root" style="inline-size: min(100%, 420px)">
+    <div data-xh-part="viewport">
+      <img data-xh-part="image" />
+      <div data-xh-part="crop-area">
+        <div data-xh-part="grid"></div>
+        <button data-xh-part="crop-handle" position="nw"></button>
+        <button data-xh-part="crop-handle" position="ne"></button>
+        <button data-xh-part="crop-handle" position="se"></button>
+        <button data-xh-part="crop-handle" position="sw"></button>
+      </div>
+    </div>
+  </div>
+</xh-image-cropper>
+`;export{t as default};

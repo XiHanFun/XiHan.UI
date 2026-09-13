@@ -1,0 +1,21 @@
+const n=`<!-- 垂直与折叠 | 垂直调整并折叠面板 -->
+<xh-splitter
+  panels='[{"id":"top","min":10},{"id":"middle","min":10,"collapsible":true,"collapsedSize":0},{"id":"bottom","min":10}]'
+  orientation="vertical"
+  style="display: contents"
+>
+  <div data-xh-part="root" style="inline-size: min(480px, 100%); block-size: 240px">
+    <div data-xh-part="panel" index="0" style="background: var(--xh-bg-subtle)">
+      <p style="padding: 12px">预览</p>
+    </div>
+    <div data-xh-part="resize-trigger" index="0"></div>
+    <div data-xh-part="panel" index="1" style="background: var(--xh-bg-brand-subtle)">
+      <p style="padding: 12px">编辑器</p>
+    </div>
+    <div data-xh-part="resize-trigger" index="1"></div>
+    <div data-xh-part="panel" index="2" style="background: var(--xh-bg-subtle)">
+      <p style="padding: 12px">控制台</p>
+    </div>
+  </div>
+</xh-splitter>
+`;export{n as default};

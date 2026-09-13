@@ -1,0 +1,27 @@
+const a=`<!-- 子菜单 | 将相关命令收进下一层 -->
+<xh-context-menu>
+  <div data-xh-part="root">
+    <div data-xh-part="trigger" style="display: grid; place-items: center; inline-size: min(480px, 100%); min-block-size: 144px; border-radius: var(--xh-shape-surface); background: var(--xh-bg-subtle); cursor: context-menu">
+      右键管理项目
+    </div>
+    <div data-xh-part="positioner">
+      <div data-xh-part="content">
+        <div data-xh-part="item" value="open">打开</div>
+        <div data-xh-part="item" value="rename">重命名</div>
+        <div data-xh-part="separator"></div>
+        <xh-menu submenu open-on-hover placement="right-start" style="display: contents">
+          <div data-xh-part="trigger" value="share">发送到</div>
+          <div data-xh-part="positioner">
+            <div data-xh-part="content">
+              <div data-xh-part="item" value="email">邮件</div>
+              <div data-xh-part="item" value="message">消息</div>
+            </div>
+          </div>
+        </xh-menu>
+        <div data-xh-part="separator"></div>
+        <div data-xh-part="item" value="delete">移到回收站</div>
+      </div>
+    </div>
+  </div>
+</xh-context-menu>
+`;export{a as default};

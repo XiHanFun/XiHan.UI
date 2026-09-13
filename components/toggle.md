@@ -1,8 +1,8 @@
 来源：https://ui.docs.xihanfun.com/components/toggle
 
-# Toggle `切换按钮`
+# Toggle 切换按钮
 
-一颗有记忆的按钮：按下去留在按下态，再按一下弹回来。状态由 `aria-pressed` 表达。
+在按下和未按下状态之间切换的按钮。
 
 <div class="xh-resource-links">
   <a href="https://github.com/XiHanFun/XiHan.UI/tree/dev/ui/packages/engine/headless/src/toggle" target="_blank" rel="noreferrer">Headless</a>
@@ -14,536 +14,207 @@
 
 ## 用法
 
-按下态由 pressed 表达，非受控时组件自己维护
+切换点赞状态
 
 ```vue
 <script setup lang="ts">
-import { XhToggle } from "@xihan-ui/vue";
-import { ref } from "vue";
-
-const bold = ref(false);
+import { HeartIcon } from "@xihan-ui/icons";
+import { XhIcon, XhToggle } from "@xihan-ui/vue";
 </script>
 
 <template>
-  <XhToggle>加粗</XhToggle>
-  <XhToggle v-model:pressed="bold">受控：{{ bold ? "已按下" : "未按下" }}</XhToggle>
+  <XhToggle>
+    <XhIcon :icon="HeartIcon" />
+    点赞
+  </XhToggle>
 </template>
 ```
 
 ```html
 <xh-toggle>
-  <button data-xh-part="root">加粗</button>
+  <button data-xh-part="root">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+      <path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.7l-1.1-1.1a5.5 5.5 0 0 0-7.8 7.8l1.1 1.1L12 21l7.8-7.5 1.1-1.1a5.5 5.5 0 0 0-.1-7.8Z"></path>
+    </svg>
+    点赞
+  </button>
 </xh-toggle>
-
-<xh-toggle id="toggle-basic-controlled" pressed="false">
-  <button data-xh-part="root">受控：未按下</button>
-</xh-toggle>
-
-<script type="module">
-  // 受控那颗由宿主写回按下态，按钮文字跟着换
-  const toggle = document.getElementById("toggle-basic-controlled");
-  const root = toggle.querySelector('[data-xh-part="root"]');
-  toggle.addEventListener("pressed-change", (event) => {
-    toggle.pressed = event.detail.pressed;
-    root.textContent = `受控：${event.detail.pressed ? "已按下" : "未按下"}`;
-  });
-</script>
 ```
+
+## 组件结构
+
+加粗的是必需部件。
+
+`data-scope="toggle"`：**`root`**
 
 ## 示例
 
-### 禁用
+### 变体
 
-disabled 同时挡住指针与键盘，按下态保持原样
+默认与幽灵外观
 
 ```vue
 <script setup lang="ts">
-import { XhToggle } from "@xihan-ui/vue";
+import { HeartIcon } from "@xihan-ui/icons";
+import { XhIcon, XhToggle } from "@xihan-ui/vue";
 </script>
 
 <template>
-  <XhToggle disabled>未按下</XhToggle>
-  <XhToggle disabled default-pressed>已按下</XhToggle>
+  <XhToggle default-pressed><XhIcon :icon="HeartIcon" />默认</XhToggle>
+  <XhToggle variant="ghost"><XhIcon :icon="HeartIcon" />幽灵</XhToggle>
 </template>
 ```
 
 ```html
-<xh-toggle disabled>
-  <button data-xh-part="root">未按下</button>
+<xh-toggle default-pressed>
+  <button data-xh-part="root">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.7l-1.1-1.1a5.5 5.5 0 0 0-7.8 7.8l1.1 1.1L12 21l7.8-7.5 1.1-1.1a5.5 5.5 0 0 0-.1-7.8Z"></path></svg>
+    默认
+  </button>
 </xh-toggle>
-
-<xh-toggle disabled default-pressed>
-  <button data-xh-part="root">已按下</button>
+<xh-toggle variant="ghost">
+  <button data-xh-part="root">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.7l-1.1-1.1a5.5 5.5 0 0 0-7.8 7.8l1.1 1.1L12 21l7.8-7.5 1.1-1.1a5.5 5.5 0 0 0-.1-7.8Z"></path></svg>
+    幽灵
+  </button>
 </xh-toggle>
 ```
 
-### 排成一组
+### 仅图标
 
-多个独立的 toggle 各管各的按下态；要互斥或单一 Tab 位请改用切换按钮组
+为每个图标按钮提供可访问名称
 
 ```vue
 <script setup lang="ts">
-import { XhToggle } from "@xihan-ui/vue";
-import { ref } from "vue";
-
-const marks = ref({ bold: false, italic: false, underline: true });
+import { BookmarkIcon, HeartIcon } from "@xihan-ui/icons";
+import { XhIcon, XhToggle } from "@xihan-ui/vue";
 </script>
 
 <template>
-  <XhToggle v-model:pressed="marks.bold">B</XhToggle>
-  <XhToggle v-model:pressed="marks.italic">I</XhToggle>
-  <XhToggle v-model:pressed="marks.underline">U</XhToggle>
-  <span>{{ Object.entries(marks).filter(([, on]) => on).map(([k]) => k).join(" ") || "无" }}</span>
+  <XhToggle icon-only aria-label="点赞">
+    <XhIcon :icon="HeartIcon" />
+  </XhToggle>
+  <XhToggle icon-only aria-label="收藏" variant="ghost">
+    <XhIcon :icon="BookmarkIcon" />
+  </XhToggle>
 </template>
 ```
 
 ```html
-<xh-toggle id="toggle-group-bold">
-  <button data-xh-part="root">B</button>
+<xh-toggle icon-only>
+  <button data-xh-part="root" aria-label="点赞">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+      <path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.7l-1.1-1.1a5.5 5.5 0 0 0-7.8 7.8l1.1 1.1L12 21l7.8-7.5 1.1-1.1a5.5 5.5 0 0 0-.1-7.8Z"></path>
+    </svg>
+  </button>
 </xh-toggle>
-
-<xh-toggle id="toggle-group-italic">
-  <button data-xh-part="root">I</button>
-</xh-toggle>
-
-<xh-toggle id="toggle-group-underline" default-pressed>
-  <button data-xh-part="root">U</button>
-</xh-toggle>
-
-<span id="toggle-group-readout">underline</span>
-
-<script type="module">
-  // 三颗各自的按下态汇总成一行文字
-  const marks = { bold: false, italic: false, underline: true };
-  const readout = document.getElementById("toggle-group-readout");
-  for (const key of Object.keys(marks)) {
-    const toggle = document.getElementById(`toggle-group-${key}`);
-    toggle.addEventListener("pressed-change", (event) => {
-      marks[key] = event.detail.pressed;
-      const on = Object.keys(marks).filter((name) => marks[name]);
-      readout.textContent = on.join(" ") || "无";
-    });
-  }
-</script>
-```
-
-### 形态
-
-variant 决定颜色怎么用，未按下与已按下两档一起看才完整
-
-```vue
-<script setup lang="ts">
-import { XhToggle } from "@xihan-ui/vue";
-
-const variants = ["solid", "subtle", "outline", "ghost"] as const;
-</script>
-
-<template>
-  <div style="display: grid; gap: 8px">
-    <div style="display: flex; align-items: center; gap: 8px">
-      <span style="min-width: 64px">未按下</span>
-      <XhToggle v-for="v in variants" :key="v" :variant="v">{{ v }}</XhToggle>
-    </div>
-    <div style="display: flex; align-items: center; gap: 8px">
-      <span style="min-width: 64px">已按下</span>
-      <XhToggle v-for="v in variants" :key="v" :variant="v" default-pressed>{{ v }}</XhToggle>
-    </div>
-  </div>
-</template>
-```
-
-```html
-<div style="display: grid; gap: 8px">
-  <div style="display: flex; align-items: center; gap: 8px">
-    <span style="min-width: 64px">未按下</span>
-    <xh-toggle variant="solid">
-      <button data-xh-part="root">solid</button>
-    </xh-toggle>
-    <xh-toggle variant="subtle">
-      <button data-xh-part="root">subtle</button>
-    </xh-toggle>
-    <xh-toggle variant="outline">
-      <button data-xh-part="root">outline</button>
-    </xh-toggle>
-    <xh-toggle variant="ghost">
-      <button data-xh-part="root">ghost</button>
-    </xh-toggle>
-  </div>
-  <div style="display: flex; align-items: center; gap: 8px">
-    <span style="min-width: 64px">已按下</span>
-    <xh-toggle variant="solid" default-pressed>
-      <button data-xh-part="root">solid</button>
-    </xh-toggle>
-    <xh-toggle variant="subtle" default-pressed>
-      <button data-xh-part="root">subtle</button>
-    </xh-toggle>
-    <xh-toggle variant="outline" default-pressed>
-      <button data-xh-part="root">outline</button>
-    </xh-toggle>
-    <xh-toggle variant="ghost" default-pressed>
-      <button data-xh-part="root">ghost</button>
-    </xh-toggle>
-  </div>
-</div>
-```
-
-### 语气
-
-tone 决定用哪族颜色，与 variant 正交；这里固定 solid 形态并置于按下态，语气差别最明显
-
-```vue
-<script setup lang="ts">
-import { XhToggle } from "@xihan-ui/vue";
-
-const tones = ["brand", "neutral", "success", "warning", "danger", "info"] as const;
-</script>
-
-<template>
-  <XhToggle v-for="t in tones" :key="t" variant="solid" :tone="t" default-pressed>{{ t }}</XhToggle>
-</template>
-```
-
-```html
-<xh-toggle variant="solid" tone="brand" default-pressed>
-  <button data-xh-part="root">brand</button>
-</xh-toggle>
-
-<xh-toggle variant="solid" tone="neutral" default-pressed>
-  <button data-xh-part="root">neutral</button>
-</xh-toggle>
-
-<xh-toggle variant="solid" tone="success" default-pressed>
-  <button data-xh-part="root">success</button>
-</xh-toggle>
-
-<xh-toggle variant="solid" tone="warning" default-pressed>
-  <button data-xh-part="root">warning</button>
-</xh-toggle>
-
-<xh-toggle variant="solid" tone="danger" default-pressed>
-  <button data-xh-part="root">danger</button>
-</xh-toggle>
-
-<xh-toggle variant="solid" tone="info" default-pressed>
-  <button data-xh-part="root">info</button>
+<xh-toggle icon-only variant="ghost">
+  <button data-xh-part="root" aria-label="收藏">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+      <path d="M6 3h12a1 1 0 0 1 1 1v17l-7-4-7 4V4a1 1 0 0 1 1-1Z"></path>
+    </svg>
+  </button>
 </xh-toggle>
 ```
 
 ### 尺寸
 
-size 只改高度、内边距与字号，不写就是缺省档
+提供三种尺寸
 
 ```vue
 <script setup lang="ts">
-import { XhToggle } from "@xihan-ui/vue";
+import { HeartIcon } from "@xihan-ui/icons";
+import { XhIcon, XhToggle } from "@xihan-ui/vue";
 </script>
 
 <template>
-  <div style="display: flex; align-items: center; gap: 8px">
-    <XhToggle variant="outline" size="sm">小</XhToggle>
-    <XhToggle variant="outline">缺省</XhToggle>
-    <XhToggle variant="outline" size="lg">大</XhToggle>
+  <div style="display: grid; gap: 16px">
+    <div style="display: flex; align-items: center; gap: 12px">
+      <XhToggle size="sm"><XhIcon :icon="HeartIcon" />小</XhToggle>
+      <XhToggle><XhIcon :icon="HeartIcon" />中</XhToggle>
+      <XhToggle size="lg"><XhIcon :icon="HeartIcon" />大</XhToggle>
+    </div>
+    <div style="display: flex; align-items: center; gap: 12px">
+      <XhToggle icon-only aria-label="小号点赞" size="sm"><XhIcon :icon="HeartIcon" /></XhToggle>
+      <XhToggle icon-only aria-label="中号点赞"><XhIcon :icon="HeartIcon" /></XhToggle>
+      <XhToggle icon-only aria-label="大号点赞" size="lg"><XhIcon :icon="HeartIcon" /></XhToggle>
+    </div>
   </div>
 </template>
 ```
 
 ```html
-<div style="display: flex; align-items: center; gap: 8px">
-  <xh-toggle variant="outline" size="sm">
-    <button data-xh-part="root">小</button>
-  </xh-toggle>
-  <xh-toggle variant="outline">
-    <button data-xh-part="root">缺省</button>
-  </xh-toggle>
-  <xh-toggle variant="outline" size="lg">
-    <button data-xh-part="root">大</button>
-  </xh-toggle>
+<div style="display: grid; gap: 16px">
+  <div style="display: flex; align-items: center; gap: 12px">
+    <xh-toggle size="sm"><button data-xh-part="root">♡ 小</button></xh-toggle>
+    <xh-toggle><button data-xh-part="root">♡ 中</button></xh-toggle>
+    <xh-toggle size="lg"><button data-xh-part="root">♡ 大</button></xh-toggle>
+  </div>
+  <div style="display: flex; align-items: center; gap: 12px">
+    <xh-toggle icon-only size="sm"><button data-xh-part="root" aria-label="小号点赞">♡</button></xh-toggle>
+    <xh-toggle icon-only><button data-xh-part="root" aria-label="中号点赞">♡</button></xh-toggle>
+    <xh-toggle icon-only size="lg"><button data-xh-part="root" aria-label="大号点赞">♡</button></xh-toggle>
+  </div>
 </div>
 ```
 
-### 图标
+### 禁用
 
-按钮内容随便写，图标与文字之间的空隙由 --xh-toggle-gap 给；只放图标时按钮没有可见文字，名字得由 aria-label 补上
+保留禁用前的状态
 
 ```vue
 <script setup lang="ts">
+import { HeartIcon } from "@xihan-ui/icons";
+import { XhIcon, XhToggle } from "@xihan-ui/vue";
+</script>
+
+<template>
+  <XhToggle disabled><XhIcon :icon="HeartIcon" />点赞</XhToggle>
+  <XhToggle disabled default-pressed><XhIcon :icon="HeartIcon" />点赞</XhToggle>
+</template>
+```
+
+```html
+<xh-toggle disabled>
+  <button data-xh-part="root">♡ 点赞</button>
+</xh-toggle>
+
+<xh-toggle disabled default-pressed>
+  <button data-xh-part="root">♡ 点赞</button>
+</xh-toggle>
+```
+
+### 受控状态
+
+由外部状态控制按下值
+
+```vue
+<script setup lang="ts">
+import { HeartIcon } from "@xihan-ui/icons";
 import { XhIcon, XhToggle } from "@xihan-ui/vue";
 import { ref } from "vue";
 
-const StarIcon = {
-  name: "star",
-  viewBox: "0 0 24 24",
-  attrs: {
-    "fill": "none",
-    "stroke": "currentColor",
-    "stroke-width": "2",
-    "stroke-linecap": "round",
-    "stroke-linejoin": "round",
-  },
-  nodes: [
-    { tag: "path", attrs: { d: "M12 4L14.4 8.9L19.8 9.7L15.9 13.5L16.8 18.9L12 16.4L7.2 18.9L8.1 13.5L4.2 9.7L9.6 8.9Z" } },
-  ],
-} as const;
-
-const EyeIcon = {
-  name: "eye",
-  viewBox: "0 0 24 24",
-  attrs: {
-    "fill": "none",
-    "stroke": "currentColor",
-    "stroke-width": "2",
-    "stroke-linecap": "round",
-    "stroke-linejoin": "round",
-  },
-  nodes: [
-    { tag: "path", attrs: { d: "M2 12C4.7 7.7 8 5.5 12 5.5C16 5.5 19.3 7.7 22 12C19.3 16.3 16 18.5 12 18.5C8 18.5 4.7 16.3 2 12Z" } },
-    { tag: "circle", attrs: { cx: "12", cy: "12", r: "3" } },
-  ],
-} as const;
-
-const starred = ref(false);
+const pressed = ref(false);
 </script>
 
 <template>
-  <!-- 图标配文字：文字自己说清楚这颗按钮是干什么的，图标不必再给名字 -->
-  <XhToggle v-model:pressed="starred" variant="outline">
-    <XhIcon :icon="StarIcon" />{{ starred ? "已收藏" : "收藏" }}
-  </XhToggle>
-
-  <!-- 只放图标：内边距收窄成方形，名字由 aria-label 给 -->
-  <XhToggle
-    variant="outline"
-    aria-label="显示预览"
-    style="--xh-toggle-px: var(--xh-space-2);"
-  >
-    <XhIcon :icon="EyeIcon" />
+  <XhToggle v-model:pressed="pressed">
+    <XhIcon :icon="HeartIcon" />
+    {{ pressed ? "已点赞" : "点赞" }}
   </XhToggle>
 </template>
 ```
 
 ```html
-<xh-toggle id="toggle-icon-star" variant="outline">
-  <button data-xh-part="root">
-    <xh-icon id="toggle-icon-star-glyph">
-      <svg data-xh-part="root">
-        <g data-xh-part="glyph"></g>
-      </svg>
-    </xh-icon>
-    <span id="toggle-icon-star-text">收藏</span>
-  </button>
-</xh-toggle>
-
-<xh-toggle variant="outline">
-  <button
-    data-xh-part="root"
-    aria-label="显示预览"
-    style="--xh-toggle-px: var(--xh-space-2)"
-  >
-    <xh-icon id="toggle-icon-eye">
-      <svg data-xh-part="root">
-        <g data-xh-part="glyph"></g>
-      </svg>
-    </xh-icon>
-  </button>
+<xh-toggle id="toggle-controlled" pressed="false">
+  <button data-xh-part="root">♡ <span>点赞</span></button>
 </xh-toggle>
 
 <script type="module">
-  // 图标记录是对象，只能走 property 交给元素
-  const star = {
-    name: "star",
-    viewBox: "0 0 24 24",
-    attrs: {
-      "fill": "none",
-      "stroke": "currentColor",
-      "stroke-width": "2",
-      "stroke-linecap": "round",
-      "stroke-linejoin": "round",
-    },
-    nodes: [
-      {
-        tag: "path",
-        attrs: {
-          d: "M12 4L14.4 8.9L19.8 9.7L15.9 13.5L16.8 18.9L12 16.4L7.2 18.9L8.1 13.5L4.2 9.7L9.6 8.9Z",
-        },
-      },
-    ],
-  };
-
-  const eye = {
-    name: "eye",
-    viewBox: "0 0 24 24",
-    attrs: {
-      "fill": "none",
-      "stroke": "currentColor",
-      "stroke-width": "2",
-      "stroke-linecap": "round",
-      "stroke-linejoin": "round",
-    },
-    nodes: [
-      {
-        tag: "path",
-        attrs: {
-          d: "M2 12C4.7 7.7 8 5.5 12 5.5C16 5.5 19.3 7.7 22 12C19.3 16.3 16 18.5 12 18.5C8 18.5 4.7 16.3 2 12Z",
-        },
-      },
-      { tag: "circle", attrs: { cx: "12", cy: "12", r: "3" } },
-    ],
-  };
-
-  document.getElementById("toggle-icon-star-glyph").icon = star;
-  document.getElementById("toggle-icon-eye").icon = eye;
-
-  // 图标配文字：文字自己说清楚这颗按钮是干什么的
-  const toggle = document.getElementById("toggle-icon-star");
-  const text = document.getElementById("toggle-icon-star-text");
+  const toggle = document.getElementById("toggle-controlled");
   toggle.addEventListener("pressed-change", (event) => {
-    text.textContent = event.detail.pressed ? "已收藏" : "收藏";
-  });
-</script>
-```
-
-### 变化回调
-
-pressed-change 每次带着 details 报一次按下意图；不做受控绑定时它就是拿到新值的唯一出口
-
-```vue
-<script setup lang="ts">
-import { XhToggle } from "@xihan-ui/vue";
-import { ref } from "vue";
-
-const trail = ref<string[]>([]);
-
-function onPressedChange(details: { pressed: boolean }) {
-  // 只留最近三次
-  trail.value = [details.pressed ? "开" : "关", ...trail.value].slice(0, 3);
-}
-</script>
-
-<template>
-  <XhToggle variant="outline" @pressed-change="onPressedChange">静音</XhToggle>
-  <span style="font-size: 13px;">
-    最近三次：{{ trail.join(" · ") || "（还没动过）" }}
-  </span>
-</template>
-```
-
-```html
-<xh-toggle id="toggle-events" variant="outline">
-  <button data-xh-part="root">静音</button>
-</xh-toggle>
-
-<span id="toggle-events-trail" style="font-size: 13px">
-  最近三次：（还没动过）
-</span>
-
-<script type="module">
-  // 只留最近三次
-  const toggle = document.getElementById("toggle-events");
-  const readout = document.getElementById("toggle-events-trail");
-  let trail = [];
-  toggle.addEventListener("pressed-change", (event) => {
-    trail = [event.detail.pressed ? "开" : "关", ...trail].slice(0, 3);
-    readout.textContent = `最近三次：${trail.join(" · ")}`;
-  });
-</script>
-```
-
-### 请求在途
-
-受控的 pressed 不写回就不会动，在途期间来的意图直接丢掉；忙碌反馈由 aria-busy 与一枚转圈补在按钮上
-
-```vue
-<script setup lang="ts">
-import { XhSpinner, XhToggle } from "@xihan-ui/vue";
-import { ref } from "vue";
-
-const subscribed = ref(false);
-const pending = ref(false);
-
-function onPressedChange(details: { pressed: boolean }): void {
-  // 在途期间不写回 pressed，按钮就停在原来的按下态上
-  if (pending.value)
-    return;
-  pending.value = true;
-  setTimeout(() => {
-    subscribed.value = details.pressed;
-    pending.value = false;
-  }, 1200);
-}
-</script>
-
-<template>
-  <!-- aria-disabled 而非 disabled：焦点留得住，读屏也报得出「这颗按不动」 -->
-  <XhToggle
-    :pressed="subscribed"
-    variant="outline"
-    :aria-busy="pending"
-    :aria-disabled="pending"
-    style="min-inline-size: 108px"
-    @pressed-change="onPressedChange"
-  >
-    <!-- 转圈自带活区与名字，「在等什么」由它的 label 念出来 -->
-    <XhSpinner v-if="pending" size="sm" label="正在提交" />
-    {{ subscribed ? "已订阅" : "订阅" }}
-  </XhToggle>
-
-  <span style="font-size: 13px">
-    {{ pending ? "请求在飞，这时候再点没有反应" : "点一下，落定要等 1.2 秒" }}
-  </span>
-</template>
-```
-
-```html
-<xh-toggle id="toggle-pending" pressed="false" variant="outline">
-  <!-- aria-disabled 而非 disabled：焦点留得住，读屏也报得出「这颗按不动」 -->
-  <button
-    data-xh-part="root"
-    aria-busy="false"
-    aria-disabled="false"
-    style="min-inline-size: 108px"
-  >
-    <!-- 转圈自带活区与名字，「在等什么」由它的 label 念出来 -->
-    <xh-spinner id="toggle-pending-spinner" size="sm" label="正在提交" style="display: none">
-      <span data-xh-part="root"></span>
-    </xh-spinner>
-    <span id="toggle-pending-text">订阅</span>
-  </button>
-</xh-toggle>
-
-<span id="toggle-pending-hint" style="font-size: 13px">
-  点一下，落定要等 1.2 秒
-</span>
-
-<script type="module">
-  const toggle = document.getElementById("toggle-pending");
-  const root = toggle.querySelector('[data-xh-part="root"]');
-  const spinner = document.getElementById("toggle-pending-spinner");
-  const text = document.getElementById("toggle-pending-text");
-  const hint = document.getElementById("toggle-pending-hint");
-  let pending = false;
-
-  // 在途标记落成 aria-busy 与 aria-disabled，转圈跟着显隐
-  function setPending(next) {
-    pending = next;
-    root.setAttribute("aria-busy", String(next));
-    root.setAttribute("aria-disabled", String(next));
-    spinner.style.display = next ? "" : "none";
-    hint.textContent = next
-      ? "请求在飞，这时候再点没有反应"
-      : "点一下，落定要等 1.2 秒";
-  }
-
-  // 在途期间不写回 pressed，按钮就停在原来的按下态上
-  toggle.addEventListener("pressed-change", (event) => {
-    if (pending) {
-      return;
-    }
-    setPending(true);
-    setTimeout(() => {
-      toggle.pressed = event.detail.pressed;
-      text.textContent = event.detail.pressed ? "已订阅" : "订阅";
-      setPending(false);
-    }, 1200);
+    toggle.pressed = event.detail.pressed;
+    toggle.querySelector("span").textContent = event.detail.pressed ? "已点赞" : "点赞";
   });
 </script>
 ```
@@ -552,22 +223,36 @@ function onPressedChange(details: { pressed: boolean }): void {
 
 ### 何时使用
 
-- 开关一项立即生效的格式或视图（加粗、显示网格、静音）。
-- 状态属于工具而不属于表单：它不参与表单提交。
+- 切换立即生效的格式、视图或工具状态。
+- 操作需要保留当前状态时。
 
 ### 何时不用
 
-- 表示一项设置的开与关、且要随表单提交：用[开关](./switch)或[复选框](./checkbox)。
-- 几个选项互斥：用[切换按钮组](./toggle-group)——多个独立的切换按钮各管各的按下态，凑不出互斥。
-- 按下去只发生一次动作、不留状态：那是[按钮](./button)。
+- 需要提交表单值时，使用[开关](./switch)或[复选框](./checkbox)。
+- 需要互斥选择时，使用[切换按钮组](./toggle-group)。
+- 只执行一次操作时，使用[按钮](./button)。
 
 ### 特性
 
-- 形态 · 语气 · 尺寸三轴与按钮同源。
-- 受控时宿主不写回 `pressed` 值就不动，在途期间来的意图直接丢掉。
-- `disabled` 同时挡住指针与键盘，按下态保持原样。
+- 使用 `aria-pressed` 表达当前状态。
+- 支持受控和非受控状态。
+- 支持变体、颜色、尺寸、仅图标和全宽外观。
+- 禁用后保留当前按下状态。
 
-## 产物
+### 最佳实践
+
+- 标签应说明切换后影响的功能。
+- 仅图标按钮必须提供 `aria-label`。
+- 按下状态不能只依赖颜色区分。
+
+### 反模式
+
+- 不要用切换按钮表示当前标签页。
+- 不要将切换按钮作为表单开关使用。
+
+## API 参考
+
+### 产物
 
 | 层 | 值 |
 | --- | --- |
@@ -577,43 +262,37 @@ function onPressedChange(details: { pressed: boolean }): void {
 | 状态机 | `toggleMachine` |
 | 皮肤 | `@xihan-ui/styles/toggle.css` |
 
-## 解剖
-
-部件名即 `data-part` 属性值，也是皮肤的选择器。加粗的是必备部件，不渲染它组件不工作（Web Components 适配器会在诊断通道上报 `wc.missing-part`）。
-
-`data-scope="toggle"`：**`root`**
-
-## Props
+### Props
 
 | 属性 | 类型 | 必填 | 说明 |
 | --- | --- | --- | --- |
 | `pressed` | `boolean` |  |  |
 | `defaultPressed` | `boolean` |  |  |
 | `disabled` | `boolean` |  |  |
-| `variant` | `ActionVariant` |  | 形态：solid / subtle / outline / ghost，决定颜色怎么用 |
-| `tone` | `Tone` |  | 语气：brand / neutral / success / warning / danger / info，决定用哪族颜色 |
+| `variant` | `ActionVariant` |  | 变体：solid / subtle / outline / ghost。 |
+| `tone` | `Tone` |  | 颜色：brand / neutral / success / warning / danger / info。 |
 | `size` | `Size` |  | 尺寸：sm / md / lg |
 | `iconOnly` | `boolean` |  | 只有图标：左右内距清零、宽高相等。宽度跟着当前尺寸档的高度走， 不必把档位写进行内样式。图标按钮没有可见文字，作者须自行给可及名。 |
 | `fullWidth` | `boolean` |  | 撑满行宽：工具条里一列开关常用。 |
 | `onPressedChange` | `(details: TogglePressedChangeDetails) => void` |  | pressed 变化意图回调；受控时是唯一出口，非受控随内部转移一并通知。 |
 
-## 事件
+### 事件
 
-自定义元素派发这些事件，Vue 组件对应同名 emit；载荷都在 `detail` 上。可双向绑定的值另有 `update:xxx`，见 Props。
+自定义元素将载荷放在 `detail`；Vue 使用同名 emit。
 
 | 事件 | 载荷 | 说明 |
 | --- | --- | --- |
 | `pressed-change` | `TogglePressedChangeDetails` | pressed 状态变化；detail 为 `{ pressed: boolean }` |
 
-## 状态
+### 状态
 
-对外可见的状态落在 `data-state` 上，写样式与断言都读它：
+公开状态写入 `data-state`。
 
 | 部件 | 取值 |
 | --- | --- |
 | `root` | 'on' \| 'off' |
 
-状态机内部转移，写样式与业务都用不到；要监听变化请看上面的「事件」。
+以下名称仅用于内部状态机。
 
 **状态**：`off` · `on`
 
@@ -621,9 +300,9 @@ function onPressedChange(details: { pressed: boolean }): void {
 
 **判据**：`isPressedControlled`
 
-## connect API
+### connect API
 
-`useToggle` 产出的对象。`getXxxProps()` 铺到对应部件的宿主元素上，其余是可读状态与操作入口。
+`getXxxProps()` 返回对应部件的宿主属性。
 
 | 成员 | 类型 | 说明 |
 | --- | --- | --- |
@@ -631,7 +310,9 @@ function onPressedChange(details: { pressed: boolean }): void {
 | `setPressed` | `(next: boolean) => void` |  |
 | `getRootProps` | `() => T['button']` |  |
 
-## 键盘
+## 无障碍
+
+### 键盘
 
 规格出处：[W3C APG](https://www.w3.org/WAI/ARIA/apg/patterns/button/#keyboardinteraction)
 
@@ -639,21 +320,23 @@ function onPressedChange(details: { pressed: boolean }): void {
 | --- | --- | --- |
 | `Space` / `Enter` | focus in root, not disabled | 切换 pressed 状态 |
 
-## 无障碍
+### ARIA
 
-下面这些由 `connect` 铺到部件上，作者不必自己写；重复写反而会覆盖掉正确值。
+以下属性由 `connect` 生成。
 
 | 部件 | 属性 | 值 |
 | --- | --- | --- |
 | `root` | `aria-pressed` | 'true' \| 'false' |
 
-## 样式
+## 样式参考
 
-默认皮肤 `@xihan-ui/styles/toggle.css` 按部件选择：`[data-scope="toggle"][data-part="root"]`。它落在 `xihan.components` 层；业务样式不写进 `@layer` 即高于全部库层，要按层压过来就写进 `xihan.overrides`。
+### 皮肤
 
-## 数据属性
+`@xihan-ui/styles/toggle.css` 使用 `[data-scope="toggle"][data-part="root"]` 部件选择器，位于 `xihan.components` 层。覆盖样式使用 `xihan.overrides`。
 
-由 `connect` 产出并铺到部件上，皮肤与测试都据此选择；`data-disabled` 这类无值属性在条件不成立时整个不出现。
+### 数据属性
+
+由 `connect` 生成；条件不成立时不输出无值属性。
 
 | 部件 | 属性 | 值 |
 | --- | --- | --- |
@@ -664,54 +347,42 @@ function onPressedChange(details: { pressed: boolean }): void {
 | `root` | `data-state` | 'on' \| 'off' |
 | `root` | `data-tone` | props.tone |
 | `root` | `data-variant` | props.variant |
+| `root` | `data-xh-action-control` | '' |
+| `root` | `data-xh-action-display` | 'always' |
+| `root` | `data-xh-action-profile` | 'icon' \| 'text' |
+| `root` | `data-xh-action-size` | props.size |
 
 <!-- xh-component-tokens:start -->
-## CSS 变量
+### CSS 变量
 
 本组件公开覆盖槽由独立皮肤的实际消费位生成；缺省来源、作用部件和状态均与 CSS 同源。
 
 | 变量 | 部件 | CSS 属性 | 状态 | 缺省来源 | 说明 |
 | --- | --- | --- | --- | --- | --- |
-| `--xh-toggle-bg` | `root` | `background` | `default` | `transparent` | toggle 的 root 部件 background 覆盖槽。 |
-| `--xh-toggle-bg-hover` | `root` | `background` | `hover` | `--xh-bg-subtle-hover` | toggle 的 root 部件 background 覆盖槽。 |
-| `--xh-toggle-bg-on` | `root` | `background` | `hover`<br>`state=on` | `--xh-bg-subtle-active` | toggle 的 root 部件 background 覆盖槽。 |
-| `--xh-toggle-fg` | `root` | `color` | `default` | `--xh-fg-default` | toggle 的 root 部件 color 覆盖槽。 |
-| `--xh-toggle-fg-on` | `root` | `color` | `state=on` | `--xh-fg-default` | toggle 的 root 部件 color 覆盖槽。 |
-| `--xh-toggle-font-size` | `root` | `font-size` | `default`<br>`size=lg`<br>`size=sm` | `--xh-control-font-lg`<br>`--xh-control-font-sm`<br>`--xh-text-label-size` | toggle 的 root 部件 font-size 覆盖槽。 |
+| `--xh-toggle-bg` | `root` | `background-color` | `default`<br>`disabled`<br>`focus-visible` | `--xh-bg-subtle` | toggle 的 root 部件 background-color 覆盖槽。 |
+| `--xh-toggle-bg-active` | `root` | `background-color` | `active`<br>`disabled`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])` | `--xh-bg-subtle-active` | toggle 的 root 部件 background-color 覆盖槽。 |
+| `--xh-toggle-bg-hover` | `root` | `background-color` | `disabled`<br>`hover`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])` | `--xh-bg-subtle-hover` | toggle 的 root 部件 background-color 覆盖槽。 |
+| `--xh-toggle-bg-on` | `root` | `background-color` | `disabled`<br>`focus-visible`<br>`state=on` | `--xh-_tone-subtle` | toggle 的 root 部件 background-color 覆盖槽。 |
+| `--xh-toggle-bg-on-active` | `root` | `background-color` | `active`<br>`disabled`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])`<br>`state=on` | `--xh-_tone-subtle-active` | toggle 的 root 部件 background-color 覆盖槽。 |
+| `--xh-toggle-bg-on-hover` | `root` | `background-color` | `disabled`<br>`hover`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])`<br>`state=on` | `--xh-_tone-subtle-hover` | toggle 的 root 部件 background-color 覆盖槽。 |
+| `--xh-toggle-border` | `root` | `border`<br>`border-color` | `active`<br>`default`<br>`disabled`<br>`focus-visible`<br>`hover`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])` | `transparent` | toggle 的 root 部件 border、border-color 覆盖槽。 |
+| `--xh-toggle-border-on` | `root` | `border`<br>`border-color` | `active`<br>`disabled`<br>`focus-visible`<br>`hover`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])`<br>`state=on` | `transparent` | toggle 的 root 部件 border、border-color 覆盖槽。 |
+| `--xh-toggle-fg` | `root` | `color` | `active`<br>`default`<br>`disabled`<br>`focus-visible`<br>`hover`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])` | `--xh-fg-default` | toggle 的 root 部件 color 覆盖槽。 |
+| `--xh-toggle-fg-on` | `root` | `color` | `active`<br>`disabled`<br>`focus-visible`<br>`hover`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])`<br>`state=on` | `--xh-_tone-fg` | toggle 的 root 部件 color 覆盖槽。 |
+| `--xh-toggle-font-size` | `root` | `font-size` | `default` | `--xh-_action-profile-font-size` | toggle 的 root 部件 font-size 覆盖槽。 |
 | `--xh-toggle-font-weight` | `root` | `font-weight` | `default` | `--xh-text-label-weight` | toggle 的 root 部件 font-weight 覆盖槽。 |
-| `--xh-toggle-gap` | `root` | `gap` | `default` | `--xh-control-gap-md` | toggle 的 root 部件 gap 覆盖槽。 |
-| `--xh-toggle-h` | `root` | `block-size` | `default`<br>`size=lg`<br>`size=sm` | `--xh-control-h-lg`<br>`--xh-control-h-md`<br>`--xh-control-h-sm` | toggle 的 root 部件 block-size 覆盖槽。 |
-| `--xh-toggle-icon-size` | `root` | `--xh-icon-size` | `default`<br>`size=lg`<br>`size=sm` | `--xh-glyph-size-lg`<br>`--xh-glyph-size-md`<br>`--xh-glyph-size-sm` | toggle 的 root 部件 --xh-icon-size 覆盖槽。 |
-| `--xh-toggle-px` | `root` | `padding-inline` | `default`<br>`size=lg`<br>`size=sm` | `--xh-control-px-lg`<br>`--xh-control-px-md`<br>`--xh-control-px-sm` | toggle 的 root 部件 padding-inline 覆盖槽。 |
-| `--xh-toggle-radius` | `root` | `border-radius` | `default` | `--xh-shape-control` | toggle 的 root 部件 border-radius 覆盖槽。 |
-| `--xh-toggle-shadow` | `root` | `box-shadow` | `disabled`<br>`not([data-disabled])`<br>`state=on`<br>`variant=solid` | `--xh-_toggle-highlight` | toggle 的 root 部件 box-shadow 覆盖槽。 |
+| `--xh-toggle-gap` | `root` | `gap` | `default` | `--xh-_action-profile-gap` | toggle 的 root 部件 gap 覆盖槽。 |
+| `--xh-toggle-h` | `root` | `block-size`<br>`inline-size` | `default`<br>`xh-action-profile=icon` | `--xh-_action-profile-visual-size` | toggle 的 root 部件 block-size、inline-size 覆盖槽。 |
+| `--xh-toggle-icon-size` | `*`<br>`root` | `--xh-icon-size`<br>`block-size`<br>`inline-size` | `default` | `--xh-_action-profile-glyph-size` | toggle 的 *、root 部件 --xh-icon-size、block-size、inline-size 覆盖槽。 |
+| `--xh-toggle-px` | `root` | `padding-inline` | `default` | `--xh-_action-profile-padding-inline` | toggle 的 root 部件 padding-inline 覆盖槽。 |
+| `--xh-toggle-radius` | `root` | `border-radius` | `default` | `--xh-shape-pill` | toggle 的 root 部件 border-radius 覆盖槽。 |
+| `--xh-toggle-shadow` | `root` | `box-shadow` | `active`<br>`disabled`<br>`focus-visible`<br>`hover`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])`<br>`state=on` | `none` | toggle 的 root 部件 box-shadow 覆盖槽。 |
 <!-- xh-component-tokens:end -->
 
-## 动效
+### 动效
 
-`background` · `box-shadow` · `scale` 走 `transition` 过渡。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
+本组件皮肤不含过渡与关键帧，也没有脚本驱动的动效：状态一变，外观立即到位。
 
-系统开启减弱动效时由令牌层统一收敛，皮肤不另作判断。
-
-## 响应式
-
-皮肤另按输入能力分档：`pointer: coarse`——同一份皮肤在触屏与带指针的设备上不一样，与视口宽度无关。
-
-## RTL
+### RTL
 
 皮肤用逻辑属性排布（`inline-start` 一族），`dir="rtl"` 下自动镜像。
-
-## 组合
-
-- 排成一条工具条：外面套[工具栏](./toolbar)拿到方向键导航。
-- 只放图标时配[文字提示](./tooltip)。
-
-## 最佳实践
-
-- 只放图标时给 `aria-label`，名字不能靠图形猜。
-- 按下与未按下的差别要能在灰度下看出来，别只靠颜色。
-
-## 反模式
-
-- 用它表达"当前在哪个标签页"：那是[标签页](./tabs)的事。
-- 请求在途时让按钮先翻状态再回滚：受控绑定不写回，用户看到的就是稳定的。

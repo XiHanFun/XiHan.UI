@@ -1,0 +1,46 @@
+const t=`<!-- 基础用法 | 在页码之间导航 -->
+<xh-pagination
+  id="pagination-basic"
+  count="196"
+  page-size="10"
+>
+  <nav data-xh-part="root">
+    <button data-xh-part="prev-trigger"></button>
+    <button data-xh-part="item" value="1">1</button>
+    <button data-xh-part="item" value="2">2</button>
+    <button data-xh-part="item" value="3">3</button>
+    <button data-xh-part="item" value="4">4</button>
+    <button data-xh-part="item" value="5">5</button>
+    <button data-xh-part="ellipsis-trigger" side="end"></button>
+    <button data-xh-part="item" value="20">20</button>
+    <button data-xh-part="next-trigger"></button>
+  </nav>
+</xh-pagination>
+
+<script type="module">
+  const host = document.getElementById("pagination-basic");
+  const root = host.querySelector('[data-xh-part="root"]');
+  const next = root.querySelector('[data-xh-part="next-trigger"]');
+
+  function render() {
+    for (const node of root.querySelectorAll(
+      '[data-xh-part="item"], [data-xh-part="ellipsis-trigger"]',
+    ))
+      node.remove();
+    for (const item of host.pageItems) {
+      const el = document.createElement("button");
+      if (item.type === "ellipsis") {
+        el.dataset.xhPart = "ellipsis-trigger";
+        el.setAttribute("side", item.side);
+      } else {
+        el.dataset.xhPart = "item";
+        el.setAttribute("value", String(item.value));
+        el.textContent = String(item.value);
+      }
+      root.insertBefore(el, next);
+    }
+  }
+
+  host.addEventListener("page-change", render);
+<\/script>
+`;export{t as default};

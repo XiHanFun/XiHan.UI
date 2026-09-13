@@ -1,0 +1,8 @@
+const a=`<!-- 校验状态 | 标记必须处理的选项 -->
+<xh-checkbox invalid required>
+  <label data-xh-part="label">
+    <button data-xh-part="root"><span data-xh-part="indicator"></span></button>
+    <span data-xh-part="text">我同意服务条款</span>
+  </label>
+</xh-checkbox>
+`;export{a as default};

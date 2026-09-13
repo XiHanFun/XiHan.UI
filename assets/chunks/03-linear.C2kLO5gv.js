@@ -1,0 +1,48 @@
+const t=`<!-- 线性模式 | 只能返回已完成的步骤 -->
+<xh-steps id="steps-linear" count="3" default-value="1" linear>
+  <div data-xh-part="root">
+    <div data-xh-part="list">
+      <div data-xh-part="item" value="0">
+        <button data-xh-part="trigger">
+          <span data-xh-part="indicator"></span>
+          <span data-xh-part="title">实名认证</span>
+          <span data-xh-part="description">身份信息已验证</span>
+        </button>
+        <div data-xh-part="separator"></div>
+      </div>
+      <div data-xh-part="item" value="1">
+        <button data-xh-part="trigger">
+          <span data-xh-part="indicator">2</span>
+          <span data-xh-part="title">绑定银行卡</span>
+          <span data-xh-part="description">填写本人银行卡</span>
+        </button>
+        <div data-xh-part="separator"></div>
+      </div>
+      <div data-xh-part="item" value="2">
+        <button data-xh-part="trigger">
+          <span data-xh-part="indicator">3</span>
+          <span data-xh-part="title">签署协议</span>
+          <span data-xh-part="description">完成后解锁</span>
+        </button>
+        <div data-xh-part="separator"></div>
+      </div>
+    </div>
+
+    <div data-xh-part="content" value="0">核对身份信息。</div>
+    <div data-xh-part="content" value="1">填写本人银行卡。</div>
+    <div data-xh-part="content" value="2">阅读并签署服务协议。</div>
+    <div data-xh-part="content" value="3">认证已完成。</div>
+  </div>
+</xh-steps>
+
+<script type="module">
+  const host = document.getElementById("steps-linear");
+  const indicators = [...host.querySelectorAll('[data-xh-part="indicator"]')];
+
+  host.addEventListener("value-change", (event) => {
+    indicators.forEach((indicator, index) => {
+      indicator.textContent = event.detail.value > index ? "" : String(index + 1);
+    });
+  });
+<\/script>
+`;export{t as default};

@@ -1,0 +1,39 @@
+const a=`<!-- 基础用法 | 从成员列表中选择一项 -->
+<xh-listbox default-value="lin">
+  <div data-xh-part="root" style="inline-size: min(100%, 300px)">
+    <span data-xh-part="label">团队成员</span>
+    <div data-xh-part="content">
+      <div data-xh-part="item" value="lin">
+        <span aria-hidden="true" style="display: grid; flex: none; place-items: center; inline-size: 32px; block-size: 32px; border-radius: 999px; background: var(--xh-bg-brand-subtle); color: var(--xh-fg-brand-strong); font-weight: 600">林</span>
+        <span data-xh-part="item-text">
+          <span style="display: grid; gap: 2px">
+            <span>林知夏</span>
+            <span style="color: var(--xh-fg-subtle); font-size: var(--xh-text-caption-size)">lin@xihan.dev</span>
+          </span>
+        </span>
+        <span data-xh-part="item-indicator"></span>
+      </div>
+      <div data-xh-part="item" value="chen">
+        <span aria-hidden="true" style="display: grid; flex: none; place-items: center; inline-size: 32px; block-size: 32px; border-radius: 999px; background: var(--xh-bg-brand-subtle); color: var(--xh-fg-brand-strong); font-weight: 600">陈</span>
+        <span data-xh-part="item-text">
+          <span style="display: grid; gap: 2px">
+            <span>陈望舒</span>
+            <span style="color: var(--xh-fg-subtle); font-size: var(--xh-text-caption-size)">chen@xihan.dev</span>
+          </span>
+        </span>
+        <span data-xh-part="item-indicator"></span>
+      </div>
+      <div data-xh-part="item" value="zhou">
+        <span aria-hidden="true" style="display: grid; flex: none; place-items: center; inline-size: 32px; block-size: 32px; border-radius: 999px; background: var(--xh-bg-brand-subtle); color: var(--xh-fg-brand-strong); font-weight: 600">周</span>
+        <span data-xh-part="item-text">
+          <span style="display: grid; gap: 2px">
+            <span>周予安</span>
+            <span style="color: var(--xh-fg-subtle); font-size: var(--xh-text-caption-size)">zhou@xihan.dev</span>
+          </span>
+        </span>
+        <span data-xh-part="item-indicator"></span>
+      </div>
+    </div>
+  </div>
+</xh-listbox>
+`;export{a as default};

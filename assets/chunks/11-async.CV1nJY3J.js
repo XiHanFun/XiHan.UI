@@ -1,0 +1,60 @@
+const t=`<!-- 异步候选 | 查询远程数据 -->
+<xh-combobox id="combobox-async" placeholder="搜索城市">
+  <div data-xh-part="root">
+    <label data-xh-part="label">城市</label>
+    <div data-xh-part="control">
+      <input data-xh-part="input" />
+      <button data-xh-part="trigger"></button>
+      <button data-xh-part="clear-trigger"></button>
+    </div>
+    <div data-xh-part="positioner">
+      <div data-xh-part="content"></div>
+      <div data-xh-part="loading">查询中…</div>
+      <div data-xh-part="empty">无匹配城市</div>
+    </div>
+  </div>
+</xh-combobox>
+
+<script type="module">
+  const combobox = document.getElementById("combobox-async");
+  const content = combobox.querySelector('[data-xh-part="content"]');
+  const pool = [
+    { value: "beijing", label: "Beijing 北京" },
+    { value: "berlin", label: "Berlin 柏林" },
+    { value: "bern", label: "Bern 伯尔尼" },
+    { value: "chengdu", label: "Chengdu 成都" },
+    { value: "london", label: "London 伦敦" },
+  ];
+  let timer = 0;
+
+  function makeItem(city) {
+    const item = document.createElement("div");
+    item.dataset.xhPart = "item";
+    item.setAttribute("value", city.value);
+    const text = document.createElement("span");
+    text.dataset.xhPart = "item-text";
+    text.textContent = city.label;
+    const indicator = document.createElement("span");
+    indicator.dataset.xhPart = "item-indicator";
+    item.append(text, indicator);
+    return item;
+  }
+
+  combobox.addEventListener("input-value-change", (event) => {
+    window.clearTimeout(timer);
+    const q = event.detail.inputValue.trim().toLowerCase();
+    content.replaceChildren();
+    if (q === "") {
+      combobox.loading = false;
+      return;
+    }
+    combobox.loading = true;
+    timer = window.setTimeout(() => {
+      content.replaceChildren(
+        ...pool.filter((c) => c.label.toLowerCase().includes(q)).map(makeItem),
+      );
+      combobox.loading = false;
+    }, 600);
+  });
+<\/script>
+`;export{t as default};

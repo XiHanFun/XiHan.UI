@@ -1,0 +1,7 @@
+const n=`<!-- 基础用法 | 显示一个图标 -->
+<xh-icon>
+  <svg data-xh-part="root" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M4 12.5L9.5 18L20 6" />
+  </svg>
+</xh-icon>
+`;export{n as default};

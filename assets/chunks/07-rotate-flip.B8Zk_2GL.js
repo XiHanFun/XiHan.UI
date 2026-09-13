@@ -1,0 +1,7 @@
+const o=`<!-- 旋转与翻转 | 改变图标方向 -->
+<xh-icon size="lg"><svg data-xh-part="root" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 12H20" /><path d="M14 6L20 12L14 18" /></svg></xh-icon>
+<xh-icon size="lg" rotate="90"><svg data-xh-part="root" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 12H20" /><path d="M14 6L20 12L14 18" /></svg></xh-icon>
+<xh-icon size="lg" rotate="180"><svg data-xh-part="root" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 12H20" /><path d="M14 6L20 12L14 18" /></svg></xh-icon>
+<xh-icon size="lg" rotate="270"><svg data-xh-part="root" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 12H20" /><path d="M14 6L20 12L14 18" /></svg></xh-icon>
+<xh-icon size="lg" flip="horizontal"><svg data-xh-part="root" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 12H20" /><path d="M14 6L20 12L14 18" /></svg></xh-icon>
+`;export{o as default};

@@ -1,0 +1,16 @@
+const t=`<!-- 受控状态 | 由外部状态控制选中值 -->
+<xh-toggle-group id="toggle-group-controlled" value="week" disallow-empty>
+  <div data-xh-part="root">
+    <button data-xh-part="item" value="day">日</button>
+    <button data-xh-part="item" value="week">周</button>
+    <button data-xh-part="item" value="month">月</button>
+  </div>
+</xh-toggle-group>
+
+<script type="module">
+  const group = document.getElementById("toggle-group-controlled");
+  group.addEventListener("value-change", (event) => {
+    group.value = event.detail.value;
+  });
+<\/script>
+`;export{t as default};

@@ -1,8 +1,8 @@
 来源：https://ui.docs.xihanfun.com/components/button
 
-# Button `按钮`
+# Button 按钮
 
-触发一次动作的最小控件：按下去就发生一件事。它不承载值，也不表达持续的开关态。
+用于触发即时操作。
 
 <div class="xh-resource-links">
   <a href="https://github.com/XiHanFun/XiHan.UI/tree/dev/ui/packages/engine/headless/src/button" target="_blank" rel="noreferrer">Headless</a>
@@ -14,7 +14,7 @@
 
 ## 用法
 
-按钮文字直接写在内容里
+触发一次操作
 
 ```vue
 <script setup lang="ts">
@@ -32,11 +32,17 @@ import { XhButton } from "@xihan-ui/vue";
 </xh-button>
 ```
 
+## 组件结构
+
+加粗的是必需部件。
+
+`data-scope="button"`：**`root`** · `label` · `indicator` · `prefix` · `suffix`
+
 ## 示例
 
 ### 变体
 
-variant 只改皮肤的几个颜色槽位，行为完全一致
+设置按钮外观
 
 ```vue
 <script setup lang="ts">
@@ -45,7 +51,8 @@ import { XhButton } from "@xihan-ui/vue";
 
 <template>
   <XhButton variant="solid">主要</XhButton>
-  <XhButton variant="outline">描边</XhButton>
+  <XhButton variant="subtle">次要</XhButton>
+  <XhButton variant="outline">线框</XhButton>
   <XhButton variant="ghost">幽灵</XhButton>
 </template>
 ```
@@ -54,8 +61,11 @@ import { XhButton } from "@xihan-ui/vue";
 <xh-button variant="solid">
   <button data-xh-part="root">主要</button>
 </xh-button>
+<xh-button variant="subtle">
+  <button data-xh-part="root">次要</button>
+</xh-button>
 <xh-button variant="outline">
-  <button data-xh-part="root">描边</button>
+  <button data-xh-part="root">线框</button>
 </xh-button>
 <xh-button variant="ghost">
   <button data-xh-part="root">幽灵</button>
@@ -64,7 +74,7 @@ import { XhButton } from "@xihan-ui/vue";
 
 ### 尺寸
 
-不传 size 即默认档
+小、中、大三档
 
 ```vue
 <script setup lang="ts">
@@ -72,694 +82,209 @@ import { XhButton } from "@xihan-ui/vue";
 </script>
 
 <template>
-  <XhButton size="sm">小</XhButton>
-  <XhButton>默认</XhButton>
-  <XhButton size="lg">大</XhButton>
+  <XhButton size="sm">小尺寸</XhButton>
+  <XhButton>中尺寸</XhButton>
+  <XhButton size="lg">大尺寸</XhButton>
 </template>
 ```
 
 ```html
 <xh-button size="sm">
-  <button data-xh-part="root">小</button>
+  <button data-xh-part="root">小尺寸</button>
 </xh-button>
 <xh-button>
-  <button data-xh-part="root">默认</button>
+  <button data-xh-part="root">中尺寸</button>
 </xh-button>
 <xh-button size="lg">
-  <button data-xh-part="root">大</button>
+  <button data-xh-part="root">大尺寸</button>
 </xh-button>
 ```
 
-### 禁用与载入
+### 图标
 
-loading 会挡住点击，并给 indicator 部件挂上旋转动画
-
-```vue
-<script setup lang="ts">
-import { XhButton, XhButtonIndicator, XhButtonLabel } from "@xihan-ui/vue";
-</script>
-
-<template>
-  <XhButton disabled>禁用</XhButton>
-  <XhButton loading>
-    <XhButtonIndicator />
-    <XhButtonLabel>提交中</XhButtonLabel>
-  </XhButton>
-</template>
-```
-
-```html
-<xh-button disabled>
-  <button data-xh-part="root">禁用</button>
-</xh-button>
-<xh-button loading>
-  <button data-xh-part="root">
-    <span data-xh-part="indicator"></span>
-    <span data-xh-part="label">提交中</span>
-  </button>
-</xh-button>
-```
-
-### 语气
-
-tone 决定用哪族颜色，与 variant 正交：四种形态 × 六种语气都成立
+在文字前后放置图标
 
 ```vue
 <script setup lang="ts">
-import { XhButton } from "@xihan-ui/vue";
-
-const tones = ["brand", "neutral", "success", "warning", "danger", "info"] as const;
-</script>
-
-<template>
-  <div style="display: grid; gap: 10px">
-    <div v-for="variant in ['solid', 'subtle', 'outline', 'ghost']" :key="variant" style="display: flex; gap: 8px; align-items: center">
-      <span style="min-width: 56px; font-size: 13px; opacity: 0.7">{{ variant }}</span>
-      <XhButton v-for="tone in tones" :key="tone" :variant="variant" :tone="tone" size="sm">
-        {{ tone }}
-      </XhButton>
-    </div>
-  </div>
-</template>
-```
-
-```html
-<div style="display: grid; gap: 10px">
-  <div style="display: flex; gap: 8px; align-items: center">
-    <span style="min-width: 56px; font-size: 13px; opacity: 0.7">solid</span>
-    <xh-button variant="solid" tone="brand" size="sm">
-      <button data-xh-part="root">brand</button>
-    </xh-button>
-    <xh-button variant="solid" tone="neutral" size="sm">
-      <button data-xh-part="root">neutral</button>
-    </xh-button>
-    <xh-button variant="solid" tone="success" size="sm">
-      <button data-xh-part="root">success</button>
-    </xh-button>
-    <xh-button variant="solid" tone="warning" size="sm">
-      <button data-xh-part="root">warning</button>
-    </xh-button>
-    <xh-button variant="solid" tone="danger" size="sm">
-      <button data-xh-part="root">danger</button>
-    </xh-button>
-    <xh-button variant="solid" tone="info" size="sm">
-      <button data-xh-part="root">info</button>
-    </xh-button>
-  </div>
-  <div style="display: flex; gap: 8px; align-items: center">
-    <span style="min-width: 56px; font-size: 13px; opacity: 0.7">subtle</span>
-    <xh-button variant="subtle" tone="brand" size="sm">
-      <button data-xh-part="root">brand</button>
-    </xh-button>
-    <xh-button variant="subtle" tone="neutral" size="sm">
-      <button data-xh-part="root">neutral</button>
-    </xh-button>
-    <xh-button variant="subtle" tone="success" size="sm">
-      <button data-xh-part="root">success</button>
-    </xh-button>
-    <xh-button variant="subtle" tone="warning" size="sm">
-      <button data-xh-part="root">warning</button>
-    </xh-button>
-    <xh-button variant="subtle" tone="danger" size="sm">
-      <button data-xh-part="root">danger</button>
-    </xh-button>
-    <xh-button variant="subtle" tone="info" size="sm">
-      <button data-xh-part="root">info</button>
-    </xh-button>
-  </div>
-  <div style="display: flex; gap: 8px; align-items: center">
-    <span style="min-width: 56px; font-size: 13px; opacity: 0.7">outline</span>
-    <xh-button variant="outline" tone="brand" size="sm">
-      <button data-xh-part="root">brand</button>
-    </xh-button>
-    <xh-button variant="outline" tone="neutral" size="sm">
-      <button data-xh-part="root">neutral</button>
-    </xh-button>
-    <xh-button variant="outline" tone="success" size="sm">
-      <button data-xh-part="root">success</button>
-    </xh-button>
-    <xh-button variant="outline" tone="warning" size="sm">
-      <button data-xh-part="root">warning</button>
-    </xh-button>
-    <xh-button variant="outline" tone="danger" size="sm">
-      <button data-xh-part="root">danger</button>
-    </xh-button>
-    <xh-button variant="outline" tone="info" size="sm">
-      <button data-xh-part="root">info</button>
-    </xh-button>
-  </div>
-  <div style="display: flex; gap: 8px; align-items: center">
-    <span style="min-width: 56px; font-size: 13px; opacity: 0.7">ghost</span>
-    <xh-button variant="ghost" tone="brand" size="sm">
-      <button data-xh-part="root">brand</button>
-    </xh-button>
-    <xh-button variant="ghost" tone="neutral" size="sm">
-      <button data-xh-part="root">neutral</button>
-    </xh-button>
-    <xh-button variant="ghost" tone="success" size="sm">
-      <button data-xh-part="root">success</button>
-    </xh-button>
-    <xh-button variant="ghost" tone="warning" size="sm">
-      <button data-xh-part="root">warning</button>
-    </xh-button>
-    <xh-button variant="ghost" tone="danger" size="sm">
-      <button data-xh-part="root">danger</button>
-    </xh-button>
-    <xh-button variant="ghost" tone="info" size="sm">
-      <button data-xh-part="root">info</button>
-    </xh-button>
-  </div>
-</div>
-```
-
-### 图标与文字
-
-图元放进 prefix 或 suffix 部件，文字放进 label；两个图元部件自带 aria-hidden，读屏念到的只有 label
-
-```vue
-<script setup lang="ts">
+import { ArrowRightIcon, PlusIcon } from "@xihan-ui/icons";
 import { XhButton, XhButtonLabel, XhButtonPrefix, XhButtonSuffix, XhIcon } from "@xihan-ui/vue";
-
-const PlusIcon = {
-  name: "plus",
-  viewBox: "0 0 24 24",
-  attrs: {
-    "fill": "none",
-    "stroke": "currentColor",
-    "stroke-width": "2",
-    "stroke-linecap": "round",
-    "stroke-linejoin": "round",
-  },
-  nodes: [
-    { tag: "path", attrs: { d: "M12 5V19" } },
-    { tag: "path", attrs: { d: "M5 12H19" } },
-  ],
-} as const;
-
-const ArrowRightIcon = {
-  name: "arrow-right",
-  viewBox: "0 0 24 24",
-  attrs: {
-    "fill": "none",
-    "stroke": "currentColor",
-    "stroke-width": "2",
-    "stroke-linecap": "round",
-    "stroke-linejoin": "round",
-  },
-  nodes: [
-    { tag: "path", attrs: { d: "M4 12H20" } },
-    { tag: "path", attrs: { d: "M13 5L20 12L13 19" } },
-  ],
-} as const;
 </script>
 
 <template>
-  <!-- 图元在前 -->
-  <XhButton variant="solid">
-    <XhButtonPrefix>
-      <XhIcon :icon="PlusIcon" size="sm" />
-    </XhButtonPrefix>
-    <XhButtonLabel>新建</XhButtonLabel>
+  <XhButton>
+    <XhButtonPrefix><XhIcon :icon="PlusIcon" /></XhButtonPrefix>
+    <XhButtonLabel>新建项目</XhButtonLabel>
   </XhButton>
-
-  <!-- 图元在后：换个部件就行，root 的 gap 两边通用 -->
-  <XhButton variant="outline">
+  <XhButton variant="subtle">
     <XhButtonLabel>下一步</XhButtonLabel>
-    <XhButtonSuffix>
-      <XhIcon :icon="ArrowRightIcon" size="sm" />
-    </XhButtonSuffix>
-  </XhButton>
-
-  <!-- 前后各一枚 -->
-  <XhButton variant="subtle" tone="success">
-    <XhButtonPrefix>
-      <XhIcon :icon="PlusIcon" size="sm" />
-    </XhButtonPrefix>
-    <XhButtonLabel>再来一件</XhButtonLabel>
-    <XhButtonSuffix>
-      <XhIcon :icon="ArrowRightIcon" size="sm" />
-    </XhButtonSuffix>
+    <XhButtonSuffix><XhIcon :icon="ArrowRightIcon" /></XhButtonSuffix>
   </XhButton>
 </template>
 ```
 
 ```html
-<!-- 图元在前 -->
-<xh-button variant="solid">
+<xh-button>
   <button data-xh-part="root">
     <span data-xh-part="prefix">
-      <xh-icon id="button-icon-new" size="sm">
-        <svg data-xh-part="root"><g data-xh-part="glyph"></g></svg>
-      </xh-icon>
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+        <path d="M12 5V19"></path><path d="M5 12H19"></path>
+      </svg>
     </span>
-    <span data-xh-part="label">新建</span>
+    <span data-xh-part="label">新建项目</span>
   </button>
 </xh-button>
-
-<!-- 图元在后：换个部件就行，root 的 gap 两边通用 -->
-<xh-button variant="outline">
+<xh-button variant="subtle">
   <button data-xh-part="root">
     <span data-xh-part="label">下一步</span>
     <span data-xh-part="suffix">
-      <xh-icon id="button-icon-next" size="sm">
-        <svg data-xh-part="root"><g data-xh-part="glyph"></g></svg>
-      </xh-icon>
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+        <path d="M4 12H20"></path><path d="M14 6L20 12L14 18"></path>
+      </svg>
     </span>
   </button>
 </xh-button>
-
-<!-- 前后各一枚 -->
-<xh-button variant="subtle" tone="success">
-  <button data-xh-part="root">
-    <span data-xh-part="prefix">
-      <xh-icon id="button-icon-more-prefix" size="sm">
-        <svg data-xh-part="root"><g data-xh-part="glyph"></g></svg>
-      </xh-icon>
-    </span>
-    <span data-xh-part="label">再来一件</span>
-    <span data-xh-part="suffix">
-      <xh-icon id="button-icon-more-suffix" size="sm">
-        <svg data-xh-part="root"><g data-xh-part="glyph"></g></svg>
-      </xh-icon>
-    </span>
-  </button>
-</xh-button>
-
-<script type="module">
-  // 图元记录是对象，只走 property 交给 <xh-icon>，图元铺进空的 glyph
-  const stroke = {
-    "fill": "none",
-    "stroke": "currentColor",
-    "stroke-width": "2",
-    "stroke-linecap": "round",
-    "stroke-linejoin": "round",
-  };
-
-  const plus = {
-    name: "plus",
-    viewBox: "0 0 24 24",
-    attrs: stroke,
-    nodes: [
-      { tag: "path", attrs: { d: "M12 5V19" } },
-      { tag: "path", attrs: { d: "M5 12H19" } },
-    ],
-  };
-
-  const arrowRight = {
-    name: "arrow-right",
-    viewBox: "0 0 24 24",
-    attrs: stroke,
-    nodes: [
-      { tag: "path", attrs: { d: "M4 12H20" } },
-      { tag: "path", attrs: { d: "M13 5L20 12L13 19" } },
-    ],
-  };
-
-  document.getElementById("button-icon-new").icon = plus;
-  document.getElementById("button-icon-next").icon = arrowRight;
-  document.getElementById("button-icon-more-prefix").icon = plus;
-  document.getElementById("button-icon-more-suffix").icon = arrowRight;
-</script>
 ```
 
-### 点击事件
+### 仅图标
 
-处理器照常挂在组件上；载入态与禁用态的点击在根上就被拦下，作者挂的处理器也收不到
+紧凑的图标操作
 
 ```vue
 <script setup lang="ts">
-import { XhButton } from "@xihan-ui/vue";
+import { HeartIcon, SearchIcon } from "@xihan-ui/icons";
+import { XhButton, XhIcon } from "@xihan-ui/vue";
+</script>
+
+<template>
+  <XhButton icon-only aria-label="搜索"><XhIcon :icon="SearchIcon" /></XhButton>
+  <XhButton icon-only variant="subtle" aria-label="收藏"><XhIcon :icon="HeartIcon" /></XhButton>
+  <XhButton icon-only variant="outline" aria-label="搜索"><XhIcon :icon="SearchIcon" /></XhButton>
+  <XhButton icon-only variant="ghost" aria-label="收藏"><XhIcon :icon="HeartIcon" /></XhButton>
+</template>
+```
+
+```html
+<xh-button icon-only>
+  <button data-xh-part="root" aria-label="搜索">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+      <circle cx="10.5" cy="10.5" r="6.5"></circle><path d="M15.5 15.5L20.5 20.5"></path>
+    </svg>
+  </button>
+</xh-button>
+<xh-button icon-only variant="subtle">
+  <button data-xh-part="root" aria-label="收藏">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+      <path d="M12 20.5C10.5 18.5 3 13.5 3 8.5C3 5.46 5.46 3 8.5 3C10.6 3 11.4 4.2 12 6.2C12.6 4.2 13.4 3 15.5 3C18.54 3 21 5.46 21 8.5C21 13.5 13.5 18.5 12 20.5Z"></path>
+    </svg>
+  </button>
+</xh-button>
+<xh-button icon-only variant="outline">
+  <button data-xh-part="root" aria-label="搜索">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+      <circle cx="10.5" cy="10.5" r="6.5"></circle><path d="M15.5 15.5L20.5 20.5"></path>
+    </svg>
+  </button>
+</xh-button>
+<xh-button icon-only variant="ghost">
+  <button data-xh-part="root" aria-label="收藏">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+      <path d="M12 20.5C10.5 18.5 3 13.5 3 8.5C3 5.46 5.46 3 8.5 3C10.6 3 11.4 4.2 12 6.2C12.6 4.2 13.4 3 15.5 3C18.54 3 21 5.46 21 8.5C21 13.5 13.5 18.5 12 20.5Z"></path>
+    </svg>
+  </button>
+</xh-button>
+```
+
+### 加载
+
+保留按钮标签并阻止重复操作
+
+```vue
+<script setup lang="ts">
+import { LoaderIcon } from "@xihan-ui/icons";
+import { XhButton, XhButtonIndicator, XhButtonLabel, XhIcon } from "@xihan-ui/vue";
+</script>
+
+<template>
+  <XhButton loading>
+    <XhButtonIndicator><XhIcon :icon="LoaderIcon" /></XhButtonIndicator>
+    <XhButtonLabel>提交</XhButtonLabel>
+  </XhButton>
+  <XhButton loading variant="subtle">
+    <XhButtonIndicator><XhIcon :icon="LoaderIcon" /></XhButtonIndicator>
+    <XhButtonLabel>处理中</XhButtonLabel>
+  </XhButton>
+</template>
+```
+
+```html
+<xh-button loading>
+  <button data-xh-part="root">
+    <span data-xh-part="indicator">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M21 12a9 9 0 1 1-6.219-8.56"></path></svg>
+    </span>
+    <span data-xh-part="label">提交</span>
+  </button>
+</xh-button>
+<xh-button loading variant="subtle">
+  <button data-xh-part="root">
+    <span data-xh-part="indicator">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M21 12a9 9 0 1 1-6.219-8.56"></path></svg>
+    </span>
+    <span data-xh-part="label">处理中</span>
+  </button>
+</xh-button>
+```
+
+### 异步操作
+
+点击后显示加载状态
+
+```vue
+<script setup lang="ts">
+import { LoaderIcon } from "@xihan-ui/icons";
+import { XhButton, XhButtonIndicator, XhButtonLabel, XhIcon } from "@xihan-ui/vue";
 import { ref } from "vue";
 
-const count = ref(0);
-</script>
+const loading = ref(false);
 
-<template>
-  <XhButton variant="solid" @click="count++">点一下</XhButton>
-  <XhButton loading @click="count++">载入中</XhButton>
-  <XhButton disabled @click="count++">禁用</XhButton>
-  <span style="font-size: 13px">已计数 {{ count }} 次</span>
-</template>
-```
-
-```html
-<div
-  id="button-click"
-  style="display: flex; flex-wrap: wrap; align-items: center; gap: 12px"
->
-  <xh-button variant="solid">
-    <button data-xh-part="root">点一下</button>
-  </xh-button>
-  <xh-button loading>
-    <button data-xh-part="root">载入中</button>
-  </xh-button>
-  <xh-button disabled>
-    <button data-xh-part="root">禁用</button>
-  </xh-button>
-  <span style="font-size: 13px">已计数 <span id="button-click-count">0</span> 次</span>
-</div>
-
-<script type="module">
-  // 三颗按钮各挂一个处理器，计数落在后面那行文字上
-  const host = document.getElementById("button-click");
-  const readout = document.getElementById("button-click-count");
-  let count = 0;
-  for (const button of host.querySelectorAll("xh-button")) {
-    button.addEventListener("click", () => {
-      count += 1;
-      readout.textContent = String(count);
-    });
-  }
-</script>
-```
-
-### 形状与图标按钮
-
-圆角是一个组件令牌；只放一枚图元时把左右内边距收成 0、宽度取控件档位，名字这时只能由 aria-label 给
-
-```vue
-<script setup lang="ts">
-import { XhButton, XhIcon } from "@xihan-ui/vue";
-
-const SearchIcon = {
-  name: "search",
-  viewBox: "0 0 24 24",
-  attrs: {
-    "fill": "none",
-    "stroke": "currentColor",
-    "stroke-width": "2",
-    "stroke-linecap": "round",
-    "stroke-linejoin": "round",
-  },
-  nodes: [
-    { tag: "circle", attrs: { cx: "10.5", cy: "10.5", r: "6.5" } },
-    { tag: "path", attrs: { d: "M15.5 15.5L20.5 20.5" } },
-  ],
-} as const;
-</script>
-
-<template>
-  <XhButton variant="solid">直角</XhButton>
-
-  <!-- 胶囊：只改圆角这一个槽位 -->
-  <XhButton variant="solid" style="--xh-button-radius: var(--xh-shape-pill)">胶囊</XhButton>
-
-  <!-- 方形图标按钮：icon-only 自己把内距清零、宽度跟住当前尺寸档 -->
-  <XhButton variant="outline" icon-only aria-label="搜索">
-    <XhIcon :icon="SearchIcon" size="sm" />
-  </XhButton>
-
-  <!-- 圆形图标按钮：方形再叠上胶囊圆角 -->
-  <XhButton
-    variant="solid"
-    icon-only
-    aria-label="搜索"
-    style="--xh-button-radius: var(--xh-shape-pill)"
-  >
-    <XhIcon :icon="SearchIcon" size="sm" />
-  </XhButton>
-</template>
-```
-
-```html
-<xh-button variant="solid">
-  <button data-xh-part="root">直角</button>
-</xh-button>
-
-<!-- 胶囊：只改圆角这一个槽位 -->
-<xh-button variant="solid">
-  <button data-xh-part="root" style="--xh-button-radius: var(--xh-shape-pill)">
-    胶囊
-  </button>
-</xh-button>
-
-<!-- 方形图标按钮 -->
-<xh-button variant="outline" icon-only>
-  <button data-xh-part="root" aria-label="搜索">
-    <xh-icon id="button-shape-square" size="sm">
-      <svg data-xh-part="root"><g data-xh-part="glyph"></g></svg>
-    </xh-icon>
-  </button>
-</xh-button>
-
-<!-- 圆形图标按钮：方形再叠上胶囊圆角 -->
-<xh-button variant="solid" icon-only>
-  <button
-    data-xh-part="root"
-    aria-label="搜索"
-    style="--xh-button-radius: var(--xh-shape-pill)"
-  >
-    <xh-icon id="button-shape-round" size="sm">
-      <svg data-xh-part="root"><g data-xh-part="glyph"></g></svg>
-    </xh-icon>
-  </button>
-</xh-button>
-
-<script type="module">
-  // 图元记录是对象，只走 property 交给 <xh-icon>
-  const search = {
-    name: "search",
-    viewBox: "0 0 24 24",
-    attrs: {
-      "fill": "none",
-      "stroke": "currentColor",
-      "stroke-width": "2",
-      "stroke-linecap": "round",
-      "stroke-linejoin": "round",
-    },
-    nodes: [
-      { tag: "circle", attrs: { cx: "10.5", cy: "10.5", r: "6.5" } },
-      { tag: "path", attrs: { d: "M15.5 15.5L20.5 20.5" } },
-    ],
-  };
-
-  document.getElementById("button-shape-square").icon = search;
-  document.getElementById("button-shape-round").icon = search;
-</script>
-```
-
-### 自定义配色
-
-不写 variant 时底色与文字色取自组件令牌，逐个实例覆盖就能用上语气表以外的颜色
-
-```vue
-<script setup lang="ts">
-import { XhButton } from "@xihan-ui/vue";
-
-// 静止、悬停、按下三个底色各是一个槽位，缺哪个就落回缺省值
-const grape = {
-  "--xh-button-bg": "#8a2be2",
-  "--xh-button-bg-hover": "#7a24ca",
-  "--xh-button-bg-active": "#691fac",
-  "--xh-button-fg": "#ffffff",
-};
-
-const flamingo = {
-  "--xh-button-bg": "#ff69b4",
-  "--xh-button-bg-hover": "#f2559f",
-  "--xh-button-bg-active": "#d94489",
-  "--xh-button-fg": "#ffffff",
-};
-</script>
-
-<template>
-  <XhButton :style="grape">葡萄</XhButton>
-  <XhButton :style="flamingo">火烈鸟</XhButton>
-  <!-- 颜色以外的槽位可以一起换，这里再换掉圆角 -->
-  <XhButton :style="{ ...grape, '--xh-button-radius': 'var(--xh-shape-pill)' }">胶囊葡萄</XhButton>
-</template>
-```
-
-```html
-<!-- 静止、悬停、按下三个底色各是一个槽位，缺哪个就落回缺省值 -->
-<xh-button>
-  <button
-    data-xh-part="root"
-    style="
-      --xh-button-bg: #8a2be2;
-      --xh-button-bg-hover: #7a24ca;
-      --xh-button-bg-active: #691fac;
-      --xh-button-fg: #ffffff;
-    "
-  >
-    葡萄
-  </button>
-</xh-button>
-
-<xh-button>
-  <button
-    data-xh-part="root"
-    style="
-      --xh-button-bg: #ff69b4;
-      --xh-button-bg-hover: #f2559f;
-      --xh-button-bg-active: #d94489;
-      --xh-button-fg: #ffffff;
-    "
-  >
-    火烈鸟
-  </button>
-</xh-button>
-
-<!-- 颜色以外的槽位可以一起换，这里再换掉圆角 -->
-<xh-button>
-  <button
-    data-xh-part="root"
-    style="
-      --xh-button-bg: #8a2be2;
-      --xh-button-bg-hover: #7a24ca;
-      --xh-button-bg-active: #691fac;
-      --xh-button-fg: #ffffff;
-      --xh-button-radius: var(--xh-shape-pill);
-    "
-  >
-    胶囊葡萄
-  </button>
-</xh-button>
-```
-
-### 按钮组
-
-相邻两段共用一条边，圆角只留在两端；档位与形状写在容器上，靠自定义属性流给组内每一段
-
-```vue
-<script setup lang="ts">
-import { XhButton } from "@xihan-ui/vue";
-
-const views = ["日", "周", "月"];
-
-// 首段留起始两角、末段留结尾两角，中间保持直角；
-// 后一段往回挪一个描边宽度，相邻的两条边重合成一条
-function segment(index: number, total: number, radius = "var(--xh-shape-control)") {
-  return {
-    marginInlineStart: index ? "calc(-1 * var(--xh-stroke-thin))" : undefined,
-    borderStartStartRadius: index === 0 ? radius : undefined,
-    borderEndStartRadius: index === 0 ? radius : undefined,
-    borderStartEndRadius: index === total - 1 ? radius : undefined,
-    borderEndEndRadius: index === total - 1 ? radius : undefined,
-  };
+async function save() {
+  loading.value = true;
+  await new Promise((resolve) => setTimeout(resolve, 1200));
+  loading.value = false;
 }
 </script>
 
 <template>
-  <!-- 圆角槽位在容器上收成 0，组内每段都取得到，两端的圆角再逐段补回来 -->
-  <div style="display: inline-flex; --xh-button-radius: 0">
-    <XhButton
-      v-for="(v, i) in views"
-      :key="v"
-      variant="outline"
-      :style="segment(i, views.length)"
-    >
-      {{ v }}
-    </XhButton>
-  </div>
-
-  <!-- 同一份配方换一档：高度、内边距、字号在容器上写一次，两端收成胶囊 -->
-  <div
-    style="
-      display: inline-flex;
-      --xh-button-radius: 0;
-      --xh-button-h: var(--xh-control-h-sm);
-      --xh-button-px: var(--xh-control-px-sm);
-      --xh-button-font-size: var(--xh-font-size-sm);
-    "
-  >
-    <XhButton
-      v-for="(v, i) in views"
-      :key="v"
-      variant="outline"
-      :style="segment(i, views.length, 'var(--xh-shape-pill)')"
-    >
-      {{ v }}
-    </XhButton>
-  </div>
+  <XhButton :loading="loading" @click="save">
+    <XhButtonIndicator><XhIcon :icon="LoaderIcon" /></XhButtonIndicator>
+    <XhButtonLabel>保存</XhButtonLabel>
+  </XhButton>
 </template>
 ```
 
 ```html
-<!-- 圆角槽位在容器上收成 0，组内每段都取得到，两端的圆角再逐段补回来 -->
-<div style="display: inline-flex; --xh-button-radius: 0">
-  <!-- 外壳不参与排版，分段样式落在按钮本身 -->
-  <xh-button variant="outline" style="display: contents">
-    <button
-      data-xh-part="root"
-      style="
-        border-start-start-radius: var(--xh-shape-control);
-        border-end-start-radius: var(--xh-shape-control);
-      "
-    >
-      日
-    </button>
-  </xh-button>
-  <!-- 后一段往回挪一个描边宽度，相邻的两条边重合成一条 -->
-  <xh-button variant="outline" style="display: contents">
-    <button
-      data-xh-part="root"
-      style="margin-inline-start: calc(-1 * var(--xh-stroke-thin))"
-    >
-      周
-    </button>
-  </xh-button>
-  <xh-button variant="outline" style="display: contents">
-    <button
-      data-xh-part="root"
-      style="
-        margin-inline-start: calc(-1 * var(--xh-stroke-thin));
-        border-start-end-radius: var(--xh-shape-control);
-        border-end-end-radius: var(--xh-shape-control);
-      "
-    >
-      月
-    </button>
-  </xh-button>
-</div>
+<xh-button id="button-loading-trigger">
+  <button data-xh-part="root">
+    <span data-xh-part="indicator">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M21 12a9 9 0 1 1-6.219-8.56"></path></svg>
+    </span>
+    <span data-xh-part="label">保存</span>
+  </button>
+</xh-button>
 
-<!-- 同一份配方换一档：高度、内边距、字号在容器上写一次，两端收成胶囊 -->
-<div
-  style="
-    display: inline-flex;
-    --xh-button-radius: 0;
-    --xh-button-h: var(--xh-control-h-sm);
-    --xh-button-px: var(--xh-control-px-sm);
-    --xh-button-font-size: var(--xh-font-size-sm);
-  "
->
-  <xh-button variant="outline" style="display: contents">
-    <button
-      data-xh-part="root"
-      style="
-        border-start-start-radius: var(--xh-shape-pill);
-        border-end-start-radius: var(--xh-shape-pill);
-      "
-    >
-      日
-    </button>
-  </xh-button>
-  <xh-button variant="outline" style="display: contents">
-    <button
-      data-xh-part="root"
-      style="margin-inline-start: calc(-1 * var(--xh-stroke-thin))"
-    >
-      周
-    </button>
-  </xh-button>
-  <xh-button variant="outline" style="display: contents">
-    <button
-      data-xh-part="root"
-      style="
-        margin-inline-start: calc(-1 * var(--xh-stroke-thin));
-        border-start-end-radius: var(--xh-shape-pill);
-        border-end-end-radius: var(--xh-shape-pill);
-      "
-    >
-      月
-    </button>
-  </xh-button>
-</div>
+<script type="module">
+  const button = document.getElementById("button-loading-trigger");
+  button.addEventListener("click", async () => {
+    button.loading = true;
+    await new Promise((resolve) => setTimeout(resolve, 1200));
+    button.loading = false;
+  });
+</script>
 ```
 
-### 渲染成链接
+### 全宽
 
-皮肤认的是 data-scope 与 data-part 这组契约，不是标签名：把契约铺到链接元素上就得到导航型按钮，跳转仍由浏览器原生完成
+占满容器宽度
 
 ```vue
 <script setup lang="ts">
@@ -767,84 +292,101 @@ import { XhButton } from "@xihan-ui/vue";
 </script>
 
 <template>
-  <XhButton variant="solid">留在本页</XhButton>
-
-  <!-- 根部件的两个契约属性铺上去就够；形态与档位照常由 data-variant、data-size 给 -->
-  <a
-    href="/introduction"
-    data-scope="button"
-    data-part="root"
-    data-variant="solid"
-    style="text-decoration: none"
-  >
-    去简介
-  </a>
-
-  <a
-    href="/guide/anatomy"
-    data-scope="button"
-    data-part="root"
-    data-variant="outline"
-    data-size="sm"
-    style="text-decoration: none"
-  >
-    看解剖
-  </a>
+  <XhButton full-width>继续</XhButton>
 </template>
 ```
 
 ```html
-<xh-button variant="solid">
-  <button data-xh-part="root">留在本页</button>
+<xh-button full-width>
+  <button data-xh-part="root">继续</button>
 </xh-button>
+```
 
-<!-- 根部件的两个契约属性铺上去就够；形态与档位照常由 data-variant、data-size 给 -->
-<a
-  href="/introduction"
-  data-scope="button"
-  data-part="root"
-  data-variant="solid"
-  style="text-decoration: none"
->
-  去简介
-</a>
+### 禁用
 
-<a
-  href="/guide/anatomy"
-  data-scope="button"
-  data-part="root"
-  data-variant="outline"
-  data-size="sm"
-  style="text-decoration: none"
->
-  看解剖
-</a>
+暂时不可执行的操作
+
+```vue
+<script setup lang="ts">
+import { XhButton } from "@xihan-ui/vue";
+</script>
+
+<template>
+  <XhButton disabled>主要操作</XhButton>
+  <XhButton disabled variant="subtle">次要操作</XhButton>
+  <XhButton disabled variant="outline">线框按钮</XhButton>
+  <XhButton disabled variant="ghost">幽灵按钮</XhButton>
+</template>
+```
+
+```html
+<xh-button disabled><button data-xh-part="root">主要操作</button></xh-button>
+<xh-button disabled variant="subtle"><button data-xh-part="root">次要操作</button></xh-button>
+<xh-button disabled variant="outline"><button data-xh-part="root">线框按钮</button></xh-button>
+<xh-button disabled variant="ghost"><button data-xh-part="root">幽灵按钮</button></xh-button>
+```
+
+### 链接
+
+保留原生导航能力
+
+```vue
+<script setup lang="ts">
+import { XhButton } from "@xihan-ui/vue";
+</script>
+
+<template>
+  <XhButton as="a" href="/introduction">了解更多</XhButton>
+</template>
+```
+
+```html
+<xh-button as="a">
+  <a data-xh-part="root" href="/introduction">了解更多</a>
+</xh-button>
 ```
 
 ## 设计指引
 
 ### 何时使用
 
-- 提交表单、执行一次命令、打开浮层。
-- 一屏里有多个动作、需要把主次排出来：形态（variant）与语气（tone）是两条正交的轴，四种形态 × 六种语气都成立。
-- 只放一枚图元的紧凑动作，用 `iconOnly` 收成正方形。
+- 提交表单或执行命令。
+- 打开菜单、对话框等浮层。
+- 需要明确主次关系的一组操作。
 
 ### 何时不用
 
-- 跳到另一个地址：那是链接。浏览器的中键新开、右键菜单与预读只对 `<a>` 生效，写成按钮加跳转全都拿不到。要的是链接外观加按钮质感时，把 `data-scope` / `data-part` 这组契约铺到 `<a>` 上，皮肤照样认。
-- 开关一个持续状态：用[切换按钮](./toggle)，它有 `aria-pressed`。
-- 在几个互斥项里选一个：用[切换按钮组](./toggle-group)或[单选组](./radio-group)。
+- 导航到其他地址时，将按钮渲染为链接。
+- 表达持续的开关状态时，使用[切换按钮](./toggle)。
+- 在多个选项中选择时，使用[切换按钮组](./toggle-group)或[单选组](./radio-group)。
 
 ### 特性
 
-- 形态 · 语气 · 尺寸三轴正交，任意组合都成立。
-- 载入态用 `aria-disabled` 加事件拦截表达，按钮仍能聚焦，读屏也仍念得到名字。
-- `prefix` / `suffix` 两个图元部件自带 `aria-hidden`，读屏念到的只有 `label`。
-- 默认是品牌实心胶囊按钮，与 HeroUI 的主动作保持同一视觉层级；`subtle` 使用实体 M1 柔和面，二者都不使用磨砂或背景模糊。
-- 根节点把普通文字动作 / icon-only 两种稳定视觉角色投影到 `data-xh-action-*`；尺寸数值、状态反馈与粗指针命中区由 Action Control Family Recipe 统一解析，适配器不计算 CSS。
-- 皮肤认的是 `data-scope` 与 `data-part`，不是标签名。
+- 支持四种变体、六种颜色和三种尺寸。
+- 支持文字、图标、图标加文字与全宽按钮。
+- `loading` 保留焦点并阻止重复操作。
+- `as="a"` 保留原生链接能力。
 
-## 产物
+### 组合
+
+- 使用 `prefix` 与 `suffix` 放置图标。
+- 使用 `indicator` 提供加载图形。
+- 使用[按钮组](./button-group)组合相关操作。
+
+### 最佳实践
+
+- 每个视图只保留一个主要操作。
+- 图标按钮必须提供 `aria-label`。
+- 加载时保留原有标签，避免按钮宽度变化。
+
+### 反模式
+
+- 不要使用按钮模拟普通链接。
+- 不要在按钮中嵌套可聚焦元素。
+
+## API 参考
+
+### 产物
 
 | 层 | 值 |
 | --- | --- |
@@ -853,13 +395,7 @@ import { XhButton } from "@xihan-ui/vue";
 | 状态机 | 无，`connect` 直接由 props 算属性 |
 | 皮肤 | `@xihan-ui/styles/button.css` |
 
-## 解剖
-
-部件名即 `data-part` 属性值，也是皮肤的选择器。加粗的是必备部件，不渲染它组件不工作（Web Components 适配器会在诊断通道上报 `wc.missing-part`）。
-
-`data-scope="button"`：**`root`** · `label` · `indicator` · `prefix` · `suffix`
-
-## Props
+### Props
 
 | 属性 | 类型 | 必填 | 说明 |
 | --- | --- | --- | --- |
@@ -872,13 +408,13 @@ import { XhButton } from "@xihan-ui/vue";
 | `loading` | `boolean` |  | 加载态：用 aria-disabled + 拦截事件表达，保留焦点。 |
 | `shape` | `ButtonShape` |  | 圆角档：rounded 是常规控件圆角，pill 是胶囊，square 是直角。 缺省即跟着 --xh-shape-control 走，与不写这一项时逐值相同。 |
 | `size` | `Size` |  |  |
-| `tone` | `Tone` |  | 语气：brand / neutral / success / warning / danger / info，决定用哪族颜色 |
+| `tone` | `Tone` |  | 颜色：brand / neutral / success / warning / danger / info。 |
 | `type` | `'button' \| 'submit' \| 'reset'` |  |  |
-| `variant` | `ActionVariant` |  | 形态：solid / subtle / outline / ghost，决定颜色怎么用 |
+| `variant` | `ActionVariant` |  | 变体：solid / subtle / outline / ghost。 |
 
-## connect API
+### connect API
 
-`connect` 产出的对象。`getXxxProps()` 铺到对应部件的宿主元素上，其余是可读状态与操作入口。
+`getXxxProps()` 返回对应部件的宿主属性。
 
 | 成员 | 类型 | 说明 |
 | --- | --- | --- |
@@ -890,7 +426,9 @@ import { XhButton } from "@xihan-ui/vue";
 | `getPrefixProps` | `() => T['element']` |  |
 | `getSuffixProps` | `() => T['element']` |  |
 
-## 键盘
+## 无障碍
+
+### 键盘
 
 规格出处：[W3C APG](https://www.w3.org/WAI/ARIA/apg/patterns/button/#keyboardinteraction)
 
@@ -898,9 +436,9 @@ import { XhButton } from "@xihan-ui/vue";
 | --- | --- | --- |
 | `Enter` / `Space` | focus in root, interactive | 激活按钮（原生行为） |
 
-## 无障碍
+### ARIA
 
-下面这些由 `connect` 铺到部件上，作者不必自己写；重复写反而会覆盖掉正确值。
+以下属性由 `connect` 生成。
 
 | 部件 | 属性 | 值 |
 | --- | --- | --- |
@@ -910,15 +448,17 @@ import { XhButton } from "@xihan-ui/vue";
 | `prefix` | `aria-hidden` | 'true' |
 | `suffix` | `aria-hidden` | 'true' |
 
-## 样式
+## 样式参考
 
-默认皮肤 `@xihan-ui/styles/button.css` 按部件选择：`[data-scope="button"][data-part="root"]`。它落在 `xihan.components` 与 `xihan.motion` 层；业务样式不写进 `@layer` 即高于全部库层，要按层压过来就写进 `xihan.overrides`。
+### 皮肤
+
+`@xihan-ui/styles/button.css` 使用 `[data-scope="button"][data-part="root"]` 部件选择器，位于 `xihan.components` 与 `xihan.motion` 层。覆盖样式使用 `xihan.overrides`。
 
 `forced-colors: active` 下另有一套规则：颜色交给系统，边框与状态标记改用系统色关键字。
 
-## 数据属性
+### 数据属性
 
-由 `connect` 产出并铺到部件上，皮肤与测试都据此选择；`data-disabled` 这类无值属性在条件不成立时整个不出现。
+由 `connect` 生成；条件不成立时不输出无值属性。
 
 | 部件 | 属性 | 值 |
 | --- | --- | --- |
@@ -936,16 +476,16 @@ import { XhButton } from "@xihan-ui/vue";
 | `root` | `data-xh-action-size` | props.size |
 
 <!-- xh-component-tokens:start -->
-## CSS 变量
+### CSS 变量
 
 本组件公开覆盖槽由独立皮肤的实际消费位生成；缺省来源、作用部件和状态均与 CSS 同源。
 
 | 变量 | 部件 | CSS 属性 | 状态 | 缺省来源 | 说明 |
 | --- | --- | --- | --- | --- | --- |
-| `--xh-button-bg` | `root` | `background-color` | `default`<br>`disabled`<br>`focus-visible`<br>`is(:not([data-variant])`<br>`loading`<br>`not([data-scope='button-group'] *)`<br>`not([data-variant])`<br>`variant`<br>`variant=solid` | `--xh-_tone`<br>`--xh-bg-brand` | button 的 root 部件 background-color 覆盖槽。 |
+| `--xh-button-bg` | `root` | `background-color` | `default`<br>`disabled`<br>`focus-visible`<br>`loading`<br>`not([data-scope='button-group'] *)`<br>`not([data-variant])`<br>`variant`<br>`variant=solid` | `--xh-_tone`<br>`--xh-bg-brand` | button 的 root 部件 background-color 覆盖槽。 |
 | `--xh-button-bg-active` | `root` | `background-color` | `active`<br>`disabled`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])` | `--xh-bg-brand-active` | button 的 root 部件 background-color 覆盖槽。 |
 | `--xh-button-bg-hover` | `root` | `background-color` | `disabled`<br>`hover`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])` | `--xh-bg-brand-hover` | button 的 root 部件 background-color 覆盖槽。 |
-| `--xh-button-fg` | `root` | `color` | `default`<br>`disabled`<br>`focus-visible`<br>`is(:not([data-variant])`<br>`loading`<br>`not([data-scope='button-group'] *)`<br>`not([data-variant])`<br>`variant`<br>`variant=solid` | `--xh-_tone-on`<br>`--xh-fg-on-brand` | button 的 root 部件 color 覆盖槽。 |
+| `--xh-button-fg` | `root` | `color` | `active`<br>`default`<br>`disabled`<br>`focus-visible`<br>`hover`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])`<br>`not([data-scope='button-group'] *)`<br>`not([data-variant])`<br>`variant`<br>`variant=solid` | `--xh-_tone-on`<br>`--xh-fg-on-brand` | button 的 root 部件 color 覆盖槽。 |
 | `--xh-button-font-size` | `root` | `font-size` | `default` | `--xh-_button-group-font-size` | button 的 root 部件 font-size 覆盖槽。 |
 | `--xh-button-font-weight` | `root` | `font-weight` | `default` | `--xh-text-label-weight` | button 的 root 部件 font-weight 覆盖槽。 |
 | `--xh-button-gap` | `root` | `gap` | `default` | `--xh-_button-group-gap` | button 的 root 部件 gap 覆盖槽。 |
@@ -958,31 +498,12 @@ import { XhButton } from "@xihan-ui/vue";
 | `--xh-button-spin-duration` | `indicator`<br>`root` | `animation` | `loading` | `--xh-spin-duration` | button 的 indicator、root 部件 animation 覆盖槽。 |
 <!-- xh-component-tokens:end -->
 
-## 动效
+### 动效
 
 关键帧 `xh-spin` 随皮肤自带，不引用别处文件里的名字。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
 
 `prefers-reduced-motion: reduce` 下本组件另有降级规则。
 
-## RTL
+### RTL
 
 皮肤用逻辑属性排布（`inline-start` 一族），`dir="rtl"` 下自动镜像。
-
-## 组合
-
-- 连排成一条：外面套[按钮组](./button-group)，档位与形态写在容器上，组内每一段自己不重复标注。
-- 图元用 [图标](./icon)，放进 `prefix` 或 `suffix`。
-- 需要二次确认的危险动作：外面套[弹出确认](./popconfirm)。
-
-## 最佳实践
-
-- 只放图标时必须给 `aria-label`——按钮此时没有任何可见文字，名字只能由它来给。
-- 一个视图里默认按钮或 `solid` + `brand` 只留一个，主动作唯一才排得出主次。
-- 载入指示器需要作者提供真实图形，皮肤不会猜测并补画。要保持宽度，就让 `indicator` 常驻；皮肤在非载入态用 `visibility` 隐藏它，只在 `loading` 时显示并旋转。
-- 不要在 `loading` 时条件插入或移除 label、prefix、suffix；按钮保留原内容与完整表面，只停掉交互。
-
-## 反模式
-
-- 用 `disabled` 表达"正在提交"：原生禁用会丢掉焦点、读屏也不再播报，用户不知道发生了什么。用 `loading`。
-- 把导航写成按钮加 `onClick` 跳转，见上。
-- 在按钮里再放一个可聚焦元素：一次点击落在哪个目标上不可预期。

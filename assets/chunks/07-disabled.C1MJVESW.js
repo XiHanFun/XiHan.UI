@@ -1,0 +1,21 @@
+const a=`<!-- 禁用 | 禁用后不可调整 -->
+<xh-image-cropper
+  id="cropper-disabled"
+  src="/images/image-cropper-landscape.svg"
+  alt="山谷与湖泊风景图"
+  disabled
+  default-value="96,64,448,280"
+>
+  <div data-xh-part="root" style="inline-size: min(100%, 420px)">
+    <div data-xh-part="viewport">
+      <img data-xh-part="image" />
+      <div data-xh-part="crop-area">
+        <button data-xh-part="crop-handle" position="nw"></button>
+        <button data-xh-part="crop-handle" position="ne"></button>
+        <button data-xh-part="crop-handle" position="se"></button>
+        <button data-xh-part="crop-handle" position="sw"></button>
+      </div>
+    </div>
+  </div>
+</xh-image-cropper>
+`;export{a as default};

@@ -1,0 +1,8 @@
+const n=`<!-- 可访问名称 | 为独立图标提供名称 -->
+<xh-icon label="关闭">
+  <svg data-xh-part="root" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+    <path d="M6 6L18 18" />
+    <path d="M18 6L6 18" />
+  </svg>
+</xh-icon>
+`;export{n as default};

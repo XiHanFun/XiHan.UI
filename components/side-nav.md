@@ -1,8 +1,8 @@
 来源：https://ui.docs.xihanfun.com/components/side-nav
 
-# SideNav `侧栏导航`
+# SideNav 侧栏导航
 
-后台侧边那棵导航树：分支可展开，选中落在叶子上并一路点亮祖先枝。
+用于组织应用的主要导航入口。
 
 <div class="xh-resource-links">
   <a href="https://github.com/XiHanFun/XiHan.UI/tree/dev/ui/packages/engine/headless/src/side-nav" target="_blank" rel="noreferrer">Headless</a>
@@ -14,12 +14,14 @@
 
 ## 用法
 
-管理后台侧栏：分支内嵌展开（可多开）、选中落在叶子上并一路点亮祖先枝，方向键上下走行、左右管层级
+组织应用的主要导航入口
 
 ```vue
 <script setup lang="ts">
 import type { SideNavNode } from "@xihan-ui/headless";
+import { HomeIcon, ShoppingCartIcon, UsersIcon } from "@xihan-ui/icons";
 import {
+  XhIcon,
   XhSideNavBranch,
   XhSideNavBranchContent,
   XhSideNavBranchIndicator,
@@ -31,7 +33,6 @@ import {
   XhSideNavList,
   XhSideNavRoot,
 } from "@xihan-ui/vue";
-import { ref } from "vue";
 
 const collection: SideNavNode[] = [
   { value: "dashboard", label: "工作台", href: "#dashboard" },
@@ -52,23 +53,24 @@ const collection: SideNavNode[] = [
     ],
   },
 ];
-
-const value = ref<string | null>("user-list");
 </script>
 
 <template>
   <XhSideNavRoot
-    v-model:value="value"
     :collection="collection"
+    default-value="user-list"
     :default-expanded-value="['user']"
-    style="border: 1px solid var(--xh-border-default); border-radius: 8px"
   >
     <XhSideNavList>
       <XhSideNavItem>
-        <XhSideNavLink value="dashboard"><XhSideNavLinkText>工作台</XhSideNavLinkText></XhSideNavLink>
+        <XhSideNavLink value="dashboard">
+          <XhIcon :icon="HomeIcon" aria-hidden="true" />
+          <XhSideNavLinkText>工作台</XhSideNavLinkText>
+        </XhSideNavLink>
       </XhSideNavItem>
       <XhSideNavBranch v-for="branch in collection.filter((n) => n.children)" :key="branch.value" :value="branch.value">
         <XhSideNavBranchTrigger>
+          <XhIcon :icon="branch.value === 'user' ? UsersIcon : ShoppingCartIcon" aria-hidden="true" />
           <XhSideNavBranchText>{{ branch.label }}</XhSideNavBranchText>
           <XhSideNavBranchIndicator />
         </XhSideNavBranchTrigger>
@@ -82,24 +84,22 @@ const value = ref<string | null>("user-list");
       </XhSideNavBranch>
     </XhSideNavList>
   </XhSideNavRoot>
-  <p>选中：{{ value ?? "（无）" }}</p>
 </template>
 ```
 
 ```html
 <xh-side-nav id="side-nav-basic" default-value="user-list">
-  <nav
-    data-xh-part="root"
-    style="border: 1px solid var(--xh-border-default); border-radius: 8px"
-  >
+  <nav data-xh-part="root">
     <ul data-xh-part="list">
       <li data-xh-part="item">
         <a data-xh-part="link" value="dashboard">
+          <svg aria-hidden="true" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3.5 10.5L12 3.5L20.5 10.5V20.5H3.5Z"/><path d="M9.5 20.5V14h5v6.5"/></svg>
           <span data-xh-part="link-text">工作台</span>
         </a>
       </li>
       <li data-xh-part="branch" value="user">
         <button data-xh-part="branch-trigger">
+          <svg aria-hidden="true" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="8" r="3.5"/><path d="M15 20v-1.5a3.5 3.5 0 0 0-3.5-3.5h-5A3.5 3.5 0 0 0 3 18.5V20"/><path d="M16 4.62a3.5 3.5 0 0 1 0 6.76"/><path d="M21 20v-1.5a3.5 3.5 0 0 0-2.63-3.39"/></svg>
           <span data-xh-part="branch-text">用户管理</span>
           <span data-xh-part="branch-indicator"></span>
         </button>
@@ -118,6 +118,7 @@ const value = ref<string | null>("user-list");
       </li>
       <li data-xh-part="branch" value="order">
         <button data-xh-part="branch-trigger">
+          <svg aria-hidden="true" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 4h2.2L8 14h10.5"/><path d="M6.18 7.5H21L18.5 14"/><circle cx="9.5" cy="19.5" r="1.5"/><circle cx="17" cy="19.5" r="1.5"/></svg>
           <span data-xh-part="branch-text">订单管理</span>
           <span data-xh-part="branch-indicator"></span>
         </button>
@@ -137,13 +138,10 @@ const value = ref<string | null>("user-list");
     </ul>
   </nav>
 </xh-side-nav>
-<p>选中：<span id="side-nav-basic-value">user-list</span></p>
 
 <script type="module">
   const nav = document.getElementById("side-nav-basic");
-  const readout = document.getElementById("side-nav-basic-value");
 
-  // 入口树是 href 与层级的事实源，数组只能走 property
   nav.collection = [
     { value: "dashboard", label: "工作台", href: "#dashboard" },
     {
@@ -164,29 +162,32 @@ const value = ref<string | null>("user-list");
     },
   ];
 
-  // 展开集合同样只走 property，元素发来的意图原样写回
   nav.expandedValue = ["user"];
   nav.addEventListener("expanded-value-change", (event) => {
     nav.expandedValue = event.detail.value;
   });
 
-  nav.addEventListener("value-change", (event) => {
-    readout.textContent = event.detail.value ?? "（无）";
-  });
 </script>
 ```
 
+## 组件结构
+
+加粗的是必需部件。
+
+`data-scope="side-nav"`：**`root`** · **`list`** · **`item`** · `group` · `group-label` · `branch` · `branch-trigger` · `branch-text` · `branch-indicator` · `positioner` · `branch-content` · **`link`** · `link-text`
+
 ## 示例
 
-### 手风琴与折叠
+### 折叠模式
 
-accordion 让同层只开一枝；collapsed 折叠成图标栏（内嵌展开整体收起，文字部件整个隐藏只剩图标），折叠态下悬停/点按/右方向键在旁侧弹出子级面板，面板内选中即落值收起；collapsedPopout 设为 false 可关掉弹出
+以图标保留入口，子级在浮层中展开
 
 ```vue
 <script setup lang="ts">
 import type { SideNavNode } from "@xihan-ui/headless";
+import { SettingsIcon, ShoppingCartIcon, UsersIcon } from "@xihan-ui/icons";
 import {
-  XhButton,
+  XhIcon,
   XhSideNavBranch,
   XhSideNavBranchContent,
   XhSideNavBranchIndicator,
@@ -198,7 +199,6 @@ import {
   XhSideNavList,
   XhSideNavRoot,
 } from "@xihan-ui/vue";
-import { ref } from "vue";
 
 const collection: SideNavNode[] = [
   {
@@ -221,56 +221,42 @@ const collection: SideNavNode[] = [
   },
 ];
 
-const collapsed = ref(false);
+const icons = {
+  user: UsersIcon,
+  order: ShoppingCartIcon,
+  system: SettingsIcon,
+};
 </script>
 
 <template>
-  <div style="display: grid; gap: 12px; justify-items: start">
-    <XhButton variant="outline" @click="collapsed = !collapsed">
-      {{ collapsed ? "展开侧栏" : "折叠成图标栏" }}
-    </XhButton>
-    <XhSideNavRoot
-      :collection="collection"
-      :collapsed="collapsed"
-      accordion
-      style="border: 1px solid var(--xh-border-default); border-radius: 8px"
-    >
-      <XhSideNavList>
-        <XhSideNavBranch v-for="branch in collection" :key="branch.value" :value="branch.value">
-          <XhSideNavBranchTrigger>
-            <span aria-hidden="true">▦</span>
-            <XhSideNavBranchText>{{ branch.label }}</XhSideNavBranchText>
-            <XhSideNavBranchIndicator />
-          </XhSideNavBranchTrigger>
-          <XhSideNavBranchContent>
-            <XhSideNavItem v-for="leaf in branch.children" :key="leaf.value">
-              <XhSideNavLink :value="leaf.value">
-                <XhSideNavLinkText>{{ leaf.label }}</XhSideNavLinkText>
-              </XhSideNavLink>
-            </XhSideNavItem>
-          </XhSideNavBranchContent>
-        </XhSideNavBranch>
-      </XhSideNavList>
-    </XhSideNavRoot>
-  </div>
+  <XhSideNavRoot :collection="collection" collapsed accordion>
+    <XhSideNavList>
+      <XhSideNavBranch v-for="branch in collection" :key="branch.value" :value="branch.value">
+        <XhSideNavBranchTrigger>
+          <XhIcon :icon="icons[branch.value]" aria-hidden="true" />
+          <XhSideNavBranchText>{{ branch.label }}</XhSideNavBranchText>
+          <XhSideNavBranchIndicator />
+        </XhSideNavBranchTrigger>
+        <XhSideNavBranchContent>
+          <XhSideNavItem v-for="leaf in branch.children" :key="leaf.value">
+            <XhSideNavLink :value="leaf.value">
+              <XhSideNavLinkText>{{ leaf.label }}</XhSideNavLinkText>
+            </XhSideNavLink>
+          </XhSideNavItem>
+        </XhSideNavBranchContent>
+      </XhSideNavBranch>
+    </XhSideNavList>
+  </XhSideNavRoot>
 </template>
 ```
 
 ```html
-<div style="display: grid; gap: 12px; justify-items: start">
-  <xh-button variant="outline">
-    <button data-xh-part="root" id="side-nav-collapse-toggle">折叠成图标栏</button>
-  </xh-button>
-
-  <xh-side-nav id="side-nav-accordion" accordion>
-    <nav
-      data-xh-part="root"
-      style="border: 1px solid var(--xh-border-default); border-radius: 8px"
-    >
+  <xh-side-nav id="side-nav-accordion" collapsed accordion>
+    <nav data-xh-part="root">
       <ul data-xh-part="list">
         <li data-xh-part="branch" value="user">
           <button data-xh-part="branch-trigger">
-            <span aria-hidden="true">▦</span>
+            <svg aria-hidden="true" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="8" r="3.5"/><path d="M15 20v-1.5a3.5 3.5 0 0 0-3.5-3.5h-5A3.5 3.5 0 0 0 3 18.5V20"/><path d="M16 4.62a3.5 3.5 0 0 1 0 6.76"/><path d="M21 20v-1.5a3.5 3.5 0 0 0-2.63-3.39"/></svg>
             <span data-xh-part="branch-text">用户管理</span>
             <span data-xh-part="branch-indicator"></span>
           </button>
@@ -291,7 +277,7 @@ const collapsed = ref(false);
         </li>
         <li data-xh-part="branch" value="order">
           <button data-xh-part="branch-trigger">
-            <span aria-hidden="true">▦</span>
+            <svg aria-hidden="true" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 4h2.2L8 14h10.5"/><path d="M6.18 7.5H21L18.5 14"/><circle cx="9.5" cy="19.5" r="1.5"/><circle cx="17" cy="19.5" r="1.5"/></svg>
             <span data-xh-part="branch-text">订单管理</span>
             <span data-xh-part="branch-indicator"></span>
           </button>
@@ -307,7 +293,7 @@ const collapsed = ref(false);
         </li>
         <li data-xh-part="branch" value="system">
           <button data-xh-part="branch-trigger">
-            <span aria-hidden="true">▦</span>
+            <svg aria-hidden="true" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18.57 13.76L21.66 14.59L19.07 19.07L16.81 16.81L13.76 18.57L14.59 21.66L9.41 21.66L10.24 18.57L7.19 16.81L4.93 19.07L2.34 14.59L5.43 13.76L5.43 10.24L2.34 9.41L4.93 4.93L7.19 7.19L10.24 5.43L9.41 2.34L14.59 2.34L13.76 5.43L16.81 7.19L19.07 4.93L21.66 9.41L18.57 10.24Z"/><circle cx="12" cy="12" r="3"/></svg>
             <span data-xh-part="branch-text">系统设置</span>
             <span data-xh-part="branch-indicator"></span>
           </button>
@@ -324,13 +310,10 @@ const collapsed = ref(false);
       </ul>
     </nav>
   </xh-side-nav>
-</div>
 
 <script type="module">
   const nav = document.getElementById("side-nav-accordion");
-  const toggle = document.getElementById("side-nav-collapse-toggle");
 
-  // 入口树是 href 与层级的事实源，数组只能走 property
   nav.collection = [
     {
       value: "user",
@@ -352,16 +335,12 @@ const collapsed = ref(false);
     },
   ];
 
-  toggle.addEventListener("click", () => {
-    nav.collapsed = !nav.collapsed;
-    toggle.textContent = nav.collapsed ? "展开侧栏" : "折叠成图标栏";
-  });
 </script>
 ```
 
-### 语气与尺寸
+### 尺寸
 
-tone 换选中行与展开枝用哪族颜色，size 换行高与缩进档；两轴都打在 root 上，逐层继承
+适配不同密度的应用侧栏
 
 ```vue
 <script setup lang="ts">
@@ -392,180 +371,111 @@ const collection: SideNavNode[] = [
 ];
 
 const rows = [
-  { tone: "success", size: "md", label: "success" },
-  { tone: "danger", size: "md", label: "danger" },
-  { tone: "brand", size: "sm", label: "sm" },
-  { tone: "brand", size: "lg", label: "lg" },
+  { size: "sm", label: "小" },
+  { size: undefined, label: "中" },
+  { size: "lg", label: "大" },
 ];
 </script>
 
 <template>
   <div style="display: grid; gap: 16px; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr))">
-    <XhSideNavRoot
-      v-for="row in rows"
-      :key="row.label"
-      :collection="collection"
-      :tone="row.tone"
-      :size="row.size"
-      default-value="user-list"
-      :default-expanded-value="['user']"
-      style="border: 1px solid var(--xh-border-default); border-radius: 8px"
-    >
-      <XhSideNavList>
-        <XhSideNavItem>
-          <XhSideNavLink value="dashboard">
-            <XhSideNavLinkText>工作台 · {{ row.label }}</XhSideNavLinkText>
-          </XhSideNavLink>
-        </XhSideNavItem>
-        <XhSideNavBranch value="user">
-          <XhSideNavBranchTrigger>
-            <XhSideNavBranchText>用户管理</XhSideNavBranchText>
-            <XhSideNavBranchIndicator />
-          </XhSideNavBranchTrigger>
-          <XhSideNavBranchContent>
-            <XhSideNavItem>
-              <XhSideNavLink value="user-list">
-                <XhSideNavLinkText>用户列表</XhSideNavLinkText>
-              </XhSideNavLink>
-            </XhSideNavItem>
-            <XhSideNavItem>
-              <XhSideNavLink value="user-role">
-                <XhSideNavLinkText>角色权限</XhSideNavLinkText>
-              </XhSideNavLink>
-            </XhSideNavItem>
-          </XhSideNavBranchContent>
-        </XhSideNavBranch>
-      </XhSideNavList>
-    </XhSideNavRoot>
+    <div v-for="row in rows" :key="row.label" style="display: grid; gap: 6px">
+      <span style="color: var(--xh-fg-muted)">{{ row.label }}</span>
+      <XhSideNavRoot
+        :collection="collection"
+        :size="row.size"
+        default-value="user-list"
+        :default-expanded-value="['user']"
+      >
+        <XhSideNavList>
+          <XhSideNavItem>
+            <XhSideNavLink value="dashboard">
+              <XhSideNavLinkText>工作台</XhSideNavLinkText>
+            </XhSideNavLink>
+          </XhSideNavItem>
+          <XhSideNavBranch value="user">
+            <XhSideNavBranchTrigger>
+              <XhSideNavBranchText>用户管理</XhSideNavBranchText>
+              <XhSideNavBranchIndicator />
+            </XhSideNavBranchTrigger>
+            <XhSideNavBranchContent>
+              <XhSideNavItem>
+                <XhSideNavLink value="user-list">
+                  <XhSideNavLinkText>用户列表</XhSideNavLinkText>
+                </XhSideNavLink>
+              </XhSideNavItem>
+              <XhSideNavItem>
+                <XhSideNavLink value="user-role">
+                  <XhSideNavLinkText>角色权限</XhSideNavLinkText>
+                </XhSideNavLink>
+              </XhSideNavItem>
+            </XhSideNavBranchContent>
+          </XhSideNavBranch>
+        </XhSideNavList>
+      </XhSideNavRoot>
+    </div>
   </div>
 </template>
 ```
 
 ```html
-<div style="display: grid; gap: 16px; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr))">
-  <xh-side-nav class="side-nav-axes" tone="success" default-value="user-list">
-    <nav data-xh-part="root" style="border: 1px solid var(--xh-border-default); border-radius: 8px">
-      <ul data-xh-part="list">
-        <li data-xh-part="item">
-          <a data-xh-part="link" value="dashboard">
-            <span data-xh-part="link-text">工作台 · success</span>
-          </a>
-        </li>
-        <li data-xh-part="branch" value="user">
-          <button data-xh-part="branch-trigger">
-            <span data-xh-part="branch-text">用户管理</span>
-            <span data-xh-part="branch-indicator"></span>
-          </button>
-          <ul data-xh-part="branch-content">
-            <li data-xh-part="item">
-              <a data-xh-part="link" value="user-list">
-                <span data-xh-part="link-text">用户列表</span>
-              </a>
-            </li>
-            <li data-xh-part="item">
-              <a data-xh-part="link" value="user-role">
-                <span data-xh-part="link-text">角色权限</span>
-              </a>
-            </li>
-          </ul>
-        </li>
-      </ul>
-    </nav>
-  </xh-side-nav>
+<div id="side-nav-sizes" style="display: grid; gap: 16px; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr))">
+  <div style="display: grid; gap: 6px">
+    <span style="color: var(--xh-fg-muted)">小</span>
+    <xh-side-nav class="side-nav-size" size="sm" default-value="user-list">
+      <nav data-xh-part="root">
+        <ul data-xh-part="list">
+          <li data-xh-part="item"><a data-xh-part="link" value="dashboard"><span data-xh-part="link-text">工作台</span></a></li>
+          <li data-xh-part="branch" value="user">
+            <button data-xh-part="branch-trigger"><span data-xh-part="branch-text">用户管理</span><span data-xh-part="branch-indicator"></span></button>
+            <ul data-xh-part="branch-content">
+              <li data-xh-part="item"><a data-xh-part="link" value="user-list"><span data-xh-part="link-text">用户列表</span></a></li>
+              <li data-xh-part="item"><a data-xh-part="link" value="user-role"><span data-xh-part="link-text">角色权限</span></a></li>
+            </ul>
+          </li>
+        </ul>
+      </nav>
+    </xh-side-nav>
+  </div>
 
-  <xh-side-nav class="side-nav-axes" tone="danger" default-value="user-list">
-    <nav data-xh-part="root" style="border: 1px solid var(--xh-border-default); border-radius: 8px">
-      <ul data-xh-part="list">
-        <li data-xh-part="item">
-          <a data-xh-part="link" value="dashboard">
-            <span data-xh-part="link-text">工作台 · danger</span>
-          </a>
-        </li>
-        <li data-xh-part="branch" value="user">
-          <button data-xh-part="branch-trigger">
-            <span data-xh-part="branch-text">用户管理</span>
-            <span data-xh-part="branch-indicator"></span>
-          </button>
-          <ul data-xh-part="branch-content">
-            <li data-xh-part="item">
-              <a data-xh-part="link" value="user-list">
-                <span data-xh-part="link-text">用户列表</span>
-              </a>
-            </li>
-            <li data-xh-part="item">
-              <a data-xh-part="link" value="user-role">
-                <span data-xh-part="link-text">角色权限</span>
-              </a>
-            </li>
-          </ul>
-        </li>
-      </ul>
-    </nav>
-  </xh-side-nav>
+  <div style="display: grid; gap: 6px">
+    <span style="color: var(--xh-fg-muted)">中</span>
+    <xh-side-nav class="side-nav-size" default-value="user-list">
+      <nav data-xh-part="root">
+        <ul data-xh-part="list">
+          <li data-xh-part="item"><a data-xh-part="link" value="dashboard"><span data-xh-part="link-text">工作台</span></a></li>
+          <li data-xh-part="branch" value="user">
+            <button data-xh-part="branch-trigger"><span data-xh-part="branch-text">用户管理</span><span data-xh-part="branch-indicator"></span></button>
+            <ul data-xh-part="branch-content">
+              <li data-xh-part="item"><a data-xh-part="link" value="user-list"><span data-xh-part="link-text">用户列表</span></a></li>
+              <li data-xh-part="item"><a data-xh-part="link" value="user-role"><span data-xh-part="link-text">角色权限</span></a></li>
+            </ul>
+          </li>
+        </ul>
+      </nav>
+    </xh-side-nav>
+  </div>
 
-  <xh-side-nav class="side-nav-axes" size="sm" default-value="user-list">
-    <nav data-xh-part="root" style="border: 1px solid var(--xh-border-default); border-radius: 8px">
-      <ul data-xh-part="list">
-        <li data-xh-part="item">
-          <a data-xh-part="link" value="dashboard">
-            <span data-xh-part="link-text">工作台 · sm</span>
-          </a>
-        </li>
-        <li data-xh-part="branch" value="user">
-          <button data-xh-part="branch-trigger">
-            <span data-xh-part="branch-text">用户管理</span>
-            <span data-xh-part="branch-indicator"></span>
-          </button>
-          <ul data-xh-part="branch-content">
-            <li data-xh-part="item">
-              <a data-xh-part="link" value="user-list">
-                <span data-xh-part="link-text">用户列表</span>
-              </a>
-            </li>
-            <li data-xh-part="item">
-              <a data-xh-part="link" value="user-role">
-                <span data-xh-part="link-text">角色权限</span>
-              </a>
-            </li>
-          </ul>
-        </li>
-      </ul>
-    </nav>
-  </xh-side-nav>
-
-  <xh-side-nav class="side-nav-axes" size="lg" default-value="user-list">
-    <nav data-xh-part="root" style="border: 1px solid var(--xh-border-default); border-radius: 8px">
-      <ul data-xh-part="list">
-        <li data-xh-part="item">
-          <a data-xh-part="link" value="dashboard">
-            <span data-xh-part="link-text">工作台 · lg</span>
-          </a>
-        </li>
-        <li data-xh-part="branch" value="user">
-          <button data-xh-part="branch-trigger">
-            <span data-xh-part="branch-text">用户管理</span>
-            <span data-xh-part="branch-indicator"></span>
-          </button>
-          <ul data-xh-part="branch-content">
-            <li data-xh-part="item">
-              <a data-xh-part="link" value="user-list">
-                <span data-xh-part="link-text">用户列表</span>
-              </a>
-            </li>
-            <li data-xh-part="item">
-              <a data-xh-part="link" value="user-role">
-                <span data-xh-part="link-text">角色权限</span>
-              </a>
-            </li>
-          </ul>
-        </li>
-      </ul>
-    </nav>
-  </xh-side-nav>
+  <div style="display: grid; gap: 6px">
+    <span style="color: var(--xh-fg-muted)">大</span>
+    <xh-side-nav class="side-nav-size" size="lg" default-value="user-list">
+      <nav data-xh-part="root">
+        <ul data-xh-part="list">
+          <li data-xh-part="item"><a data-xh-part="link" value="dashboard"><span data-xh-part="link-text">工作台</span></a></li>
+          <li data-xh-part="branch" value="user">
+            <button data-xh-part="branch-trigger"><span data-xh-part="branch-text">用户管理</span><span data-xh-part="branch-indicator"></span></button>
+            <ul data-xh-part="branch-content">
+              <li data-xh-part="item"><a data-xh-part="link" value="user-list"><span data-xh-part="link-text">用户列表</span></a></li>
+              <li data-xh-part="item"><a data-xh-part="link" value="user-role"><span data-xh-part="link-text">角色权限</span></a></li>
+            </ul>
+          </li>
+        </ul>
+      </nav>
+    </xh-side-nav>
+  </div>
 </div>
 
 <script type="module">
-  // 入口树与展开集合都是数组，只走 property：四份共用同一棵树
   const collection = [
     { value: "dashboard", label: "工作台", href: "#dashboard" },
     {
@@ -577,7 +487,8 @@ const rows = [
       ],
     },
   ];
-  for (const nav of document.querySelectorAll(".side-nav-axes")) {
+
+  for (const nav of document.querySelectorAll(".side-nav-size")) {
     nav.collection = collection;
     nav.expandedValue = ["user"];
     nav.addEventListener("expanded-value-change", (event) => {
@@ -587,15 +498,14 @@ const rows = [
 </script>
 ```
 
-### 受控展开与禁用
+### 禁用项
 
-展开集合交给宿主：一次全展开或全收起，也能按当前路由把该开的那一枝开上；collection 里标了 disabled 的入口方向键跳过，点它也不落值
+保留不可用入口的位置与说明
 
 ```vue
 <script setup lang="ts">
 import type { SideNavNode } from "@xihan-ui/headless";
 import {
-  XhButton,
   XhSideNavBranch,
   XhSideNavBranchContent,
   XhSideNavBranchIndicator,
@@ -607,7 +517,6 @@ import {
   XhSideNavList,
   XhSideNavRoot,
 } from "@xihan-ui/vue";
-import { ref } from "vue";
 
 const collection: SideNavNode[] = [
   { value: "dashboard", label: "工作台", href: "#dashboard" },
@@ -636,81 +545,42 @@ const collection: SideNavNode[] = [
 ];
 
 const branches = collection.filter(node => node.children);
-
-const expanded = ref<string[]>(["user"]);
-const value = ref<string | null>("user-list");
-
-// 展开集合归宿主，组件只发意图：这两颗钮改的是同一份状态
-function expandAll() {
-  expanded.value = branches.map(branch => branch.value);
-}
-
-function collapseAll() {
-  expanded.value = [];
-}
 </script>
 
 <template>
-  <div style="display: grid; gap: 12px; justify-items: start">
-    <div style="display: flex; gap: 8px">
-      <XhButton size="sm" variant="outline" @click="expandAll">全部展开</XhButton>
-      <XhButton size="sm" variant="outline" @click="collapseAll">全部收起</XhButton>
-    </div>
-
-    <XhSideNavRoot
-      v-model:value="value"
-      v-model:expanded-value="expanded"
-      :collection="collection"
-      loop
-      style="border: 1px solid var(--xh-border-default); border-radius: 8px"
-    >
-      <XhSideNavList>
-        <XhSideNavItem>
-          <XhSideNavLink value="dashboard">
-            <XhSideNavLinkText>工作台</XhSideNavLinkText>
-          </XhSideNavLink>
-        </XhSideNavItem>
-        <XhSideNavBranch v-for="branch in branches" :key="branch.value" :value="branch.value">
-          <XhSideNavBranchTrigger>
-            <XhSideNavBranchText>{{ branch.label }}</XhSideNavBranchText>
-            <XhSideNavBranchIndicator />
-          </XhSideNavBranchTrigger>
-          <XhSideNavBranchContent>
-            <XhSideNavItem v-for="leaf in branch.children" :key="leaf.value">
-              <XhSideNavLink :value="leaf.value">
-                <XhSideNavLinkText>{{ leaf.label }}</XhSideNavLinkText>
-              </XhSideNavLink>
-            </XhSideNavItem>
-          </XhSideNavBranchContent>
-        </XhSideNavBranch>
-      </XhSideNavList>
-    </XhSideNavRoot>
-
-    <p style="font-size: 13px; opacity: 0.75">
-      展开：{{ expanded.length ? expanded.join("、") : "（全收起）" }} · 选中：{{
-        value ?? "（无）"
-      }}
-    </p>
-  </div>
+  <XhSideNavRoot
+    :collection="collection"
+    default-value="user-list"
+    :default-expanded-value="['user', 'order']"
+    loop
+  >
+    <XhSideNavList>
+      <XhSideNavItem>
+        <XhSideNavLink value="dashboard">
+          <XhSideNavLinkText>工作台</XhSideNavLinkText>
+        </XhSideNavLink>
+      </XhSideNavItem>
+      <XhSideNavBranch v-for="branch in branches" :key="branch.value" :value="branch.value">
+        <XhSideNavBranchTrigger>
+          <XhSideNavBranchText>{{ branch.label }}</XhSideNavBranchText>
+          <XhSideNavBranchIndicator />
+        </XhSideNavBranchTrigger>
+        <XhSideNavBranchContent>
+          <XhSideNavItem v-for="leaf in branch.children" :key="leaf.value">
+            <XhSideNavLink :value="leaf.value">
+              <XhSideNavLinkText>{{ leaf.label }}</XhSideNavLinkText>
+            </XhSideNavLink>
+          </XhSideNavItem>
+        </XhSideNavBranchContent>
+      </XhSideNavBranch>
+    </XhSideNavList>
+  </XhSideNavRoot>
 </template>
 ```
 
 ```html
-<div style="display: grid; gap: 12px; justify-items: start">
-  <div style="display: flex; gap: 8px">
-    <xh-button size="sm" variant="outline">
-      <button data-xh-part="root" id="side-nav-expand-all">全部展开</button>
-    </xh-button>
-    <xh-button size="sm" variant="outline">
-      <button data-xh-part="root" id="side-nav-collapse-all">全部收起</button>
-    </xh-button>
-  </div>
-
   <xh-side-nav id="side-nav-controlled" default-value="user-list" loop>
-    <nav
-      data-xh-part="root"
-      style="border: 1px solid var(--xh-border-default); border-radius: 8px"
-    >
+    <nav data-xh-part="root">
       <ul data-xh-part="list">
         <li data-xh-part="item">
           <a data-xh-part="link" value="dashboard">
@@ -770,16 +640,9 @@ function collapseAll() {
     </nav>
   </xh-side-nav>
 
-  <p id="side-nav-controlled-readout" style="font-size: 13px; opacity: 0.75">
-    展开：user · 选中：user-list
-  </p>
-</div>
-
 <script type="module">
   const nav = document.getElementById("side-nav-controlled");
-  const readout = document.getElementById("side-nav-controlled-readout");
 
-  // 入口树是 href、层级与禁用的事实源，数组只能走 property
   nav.collection = [
     { value: "dashboard", label: "工作台", href: "#dashboard" },
     {
@@ -795,7 +658,6 @@ function collapseAll() {
       label: "订单管理",
       children: [
         { value: "order-list", label: "订单列表", href: "#order-list" },
-        // 没开这项权限：方向键跳过它，点也不落值
         { value: "order-refund", label: "退款处理", disabled: true },
       ],
     },
@@ -806,34 +668,9 @@ function collapseAll() {
     },
   ];
 
-  const branches = nav.collection.filter((node) => node.children);
-
-  nav.expandedValue = ["user"];
-  // 选中仍走非受控（default-value），这里只留一份读数
-  let selected = "user-list";
-
-  function render() {
-    const expanded = nav.expandedValue.length ? nav.expandedValue.join("、") : "（全收起）";
-    readout.textContent = `展开：${expanded} · 选中：${selected ?? "（无）"}`;
-  }
-
-  // 展开集合归宿主，元素只发意图：这两颗钮改的是同一份状态
-  document.getElementById("side-nav-expand-all").addEventListener("click", () => {
-    nav.expandedValue = branches.map((branch) => branch.value);
-    render();
-  });
-  document.getElementById("side-nav-collapse-all").addEventListener("click", () => {
-    nav.expandedValue = [];
-    render();
-  });
-
+  nav.expandedValue = ["user", "order"];
   nav.addEventListener("expanded-value-change", (event) => {
     nav.expandedValue = event.detail.value;
-    render();
-  });
-  nav.addEventListener("value-change", (event) => {
-    selected = event.detail.value;
-    render();
   });
 </script>
 ```
@@ -842,23 +679,38 @@ function collapseAll() {
 
 ### 何时使用
 
-- 管理后台、控制台的主导航，层级两到三层。
-- 侧栏需要折叠成图标栏，且折叠后仍要能进到子级。
+- 管理后台或控制台的主导航。
+- 导航包含分组或可展开的子级。
 
 ### 何时不用
 
-- 导航只有一层：用一列链接就够。
-- 是内容树而不是导航树（文件、组织架构）：用[树](./tree)。
-- 顶部横向导航：用[导航菜单](./navigation-menu)。
+- 顶部横向导航，使用[导航菜单](./navigation-menu)。
+- 文件或组织结构，使用[树](./tree)。
 
 ### 特性
 
-- `collection` 是层级与文本的唯一事实源。
-- `accordion` 让同层只开一枝；不开即可多开。
-- 折叠成图标栏时内嵌展开整体收起、文字由皮肤藏掉；顶层分支换装浮层弹出，悬停 / 点按 / 右方向键在旁侧弹出子级面板，面板内选中即落值收起。
-- 方向键上下走行、左右管层级。
+- 支持分组、嵌套分支与当前项高亮。
+- `accordion` 限制同一层级只展开一个分支。
+- 折叠后保留图标入口，子级在浮层中展示。
+- 方向键上下移动，左右键展开或收起分支。
 
-## 产物
+### 组合
+
+- 放入[布局](./layout)的侧栏区域。
+
+### 最佳实践
+
+- 导航层级保持在两到三级。
+- 折叠模式下为每个入口保留清晰图标。
+
+### 反模式
+
+- 不要为单个入口创建分支。
+- 不要在折叠时卸载导航树。
+
+## API 参考
+
+### 产物
 
 | 层 | 值 |
 | --- | --- |
@@ -868,13 +720,7 @@ function collapseAll() {
 | 状态机 | `sideNavMachine` |
 | 皮肤 | `@xihan-ui/styles/side-nav.css` |
 
-## 解剖
-
-部件名即 `data-part` 属性值，也是皮肤的选择器。加粗的是必备部件，不渲染它组件不工作（Web Components 适配器会在诊断通道上报 `wc.missing-part`）。
-
-`data-scope="side-nav"`：**`root`** · **`list`** · **`item`** · `group` · `group-label` · `branch` · `branch-trigger` · `branch-text` · `branch-indicator` · `positioner` · `branch-content` · **`link`** · `link-text`
-
-## Props
+### Props
 
 | 属性 | 类型 | 必填 | 说明 |
 | --- | --- | --- | --- |
@@ -895,26 +741,26 @@ function collapseAll() {
 | `onValueChange` | `(details: SideNavValueChangeDetails) => void` |  | 选中意图回调；受控时是唯一出口，非受控随内部写入一并通知。 |
 | `onExpandedValueChange` | `(details: SideNavExpandedValueChangeDetails) => void` |  | 展开集合变化意图回调；语义同上。 |
 
-## 事件
+### 事件
 
-自定义元素派发这些事件，Vue 组件对应同名 emit；载荷都在 `detail` 上。可双向绑定的值另有 `update:xxx`，见 Props。
+自定义元素将载荷放在 `detail`；Vue 使用同名 emit。
 
 | 事件 | 载荷 | 说明 |
 | --- | --- | --- |
 | `value-change` | `SideNavValueChangeDetails` | 选中变化；detail 为 `{ value: string \| null }` |
 | `expanded-value-change` | `SideNavExpandedValueChangeDetails` | 展开集合变化；detail 为 `{ value: string[] }` |
 
-## 插槽
+### 插槽
 
-作者能拿到载荷的插槽。只转发内容、不带载荷的默认插槽不在此列——那类直接写子节点即可。
+仅列出带载荷的插槽。
 
 | Vue 组件 | 插槽 | 载荷 | 说明 |
 | --- | --- | --- | --- |
 | `XhSideNavRoot` | `default` | `SideNavRootSlotProps` |  |
 
-## 状态
+### 状态
 
-对外可见的状态落在 `data-state` 上，写样式与断言都读它：
+公开状态写入 `data-state`。
 
 | 部件 | 取值 |
 | --- | --- |
@@ -924,7 +770,7 @@ function collapseAll() {
 | `branch-content` | 'open' \| 'closed' |
 | `popout-positioner` | 'open' \| 'closed' |
 
-状态机内部转移，写样式与业务都用不到；要监听变化请看上面的「事件」。
+以下名称仅用于内部状态机。
 
 **状态**：`idle` · `popout`
 
@@ -932,9 +778,9 @@ function collapseAll() {
 
 **判据**：`canChange` · `canPopout`
 
-## connect API
+### connect API
 
-`useSideNav` 产出的对象。`getXxxProps()` 铺到对应部件的宿主元素上，其余是可读状态与操作入口。
+`getXxxProps()` 返回对应部件的宿主属性。
 
 | 成员 | 类型 | 说明 |
 | --- | --- | --- |
@@ -968,7 +814,9 @@ function collapseAll() {
 | `getLinkProps` | `(props: SideNavNodeProps) => T['element']` |  |
 | `getLinkTextProps` | `() => T['element']` | 链接文字的载体：折叠时由皮肤整个藏掉。 |
 
-## 键盘
+## 无障碍
+
+### 键盘
 
 规格出处：[W3C APG](https://www.w3.org/WAI/ARIA/apg/patterns/disclosure/examples/disclosure-navigation/)
 
@@ -985,9 +833,9 @@ function collapseAll() {
 | `ArrowRight` / `Enter` / `Space` | focus in 折叠态顶层分支行 | 弹出子级面板并落焦第一行（RTL 与 ArrowLeft 对调） |
 | `ArrowLeft` / `Escape` | focus in 弹出面板 | 收回面板，焦点还给触发按钮（RTL 与 ArrowRight 对调；Escape 归消解层） |
 
-## 无障碍
+### ARIA
 
-下面这些由 `connect` 铺到部件上，作者不必自己写；重复写反而会覆盖掉正确值。
+以下属性由 `connect` 生成。
 
 | 部件 | 属性 | 值 |
 | --- | --- | --- |
@@ -1003,17 +851,19 @@ function collapseAll() {
 | `link` | `aria-disabled` | 'true' \| undefined |
 | `popout-positioner` | `aria-hidden` | !open \|\| undefined |
 
-- `list` 与 `branch-content` 是列表容器（`ul`），直接子节点只能是列表项：分支写 `branch`（`li`），叶子写 `item`（`li`）裹住 `link`（`a`）。链接直接挂在列表下会让列表语义作废。
-- 行文字必须写进 `branch-text` / `link-text`。折叠成图标栏时这段文字被裁到看不见但仍参与播报，它就是按钮与链接在图标栏里唯一的可及名；行里只放图标不写文字，折叠后读屏报不出这一项是什么。
-- 行里的图标是装饰，写 `aria-hidden="true"`，别让它挤进可及名。
+- `list` 与 `branch-content` 使用列表语义。
+- 将文字放入 `branch-text` 或 `link-text`，确保折叠后仍有可访问名称。
+- 装饰图标使用 `aria-hidden="true"`。
 
-## 样式
+## 样式参考
 
-默认皮肤 `@xihan-ui/styles/side-nav.css` 按部件选择：`[data-scope="side-nav"][data-part="root"]`。它落在 `xihan.components` 与 `xihan.motion` 层；业务样式不写进 `@layer` 即高于全部库层，要按层压过来就写进 `xihan.overrides`。
+### 皮肤
 
-## 数据属性
+`@xihan-ui/styles/side-nav.css` 使用 `[data-scope="side-nav"][data-part="root"]` 部件选择器，位于 `xihan.components` 与 `xihan.motion` 层。覆盖样式使用 `xihan.overrides`。
 
-由 `connect` 产出并铺到部件上，皮肤与测试都据此选择；`data-disabled` 这类无值属性在条件不成立时整个不出现。
+### 数据属性
+
+由 `connect` 生成；条件不成立时不输出无值属性。
 
 | 部件 | 属性 | 值 |
 | --- | --- | --- |
@@ -1046,7 +896,7 @@ function collapseAll() {
 | `popout-positioner` | `data-tone` | props.tone |
 
 <!-- xh-component-tokens:start -->
-## CSS 变量
+### CSS 变量
 
 本组件公开覆盖槽由独立皮肤的实际消费位生成；缺省来源、作用部件和状态均与 CSS 同源。
 
@@ -1055,7 +905,7 @@ function collapseAll() {
 | `--xh-side-nav-collapsed-w` | `root` | `inline-size` | `collapsed` | `56px` | side-nav 的 root 部件 inline-size 覆盖槽。 |
 | `--xh-side-nav-fg` | `root` | `color` | `default` | `--xh-fg-default` | side-nav 的 root 部件 color 覆盖槽。 |
 | `--xh-side-nav-gap` | `branch`<br>`branch-content`<br>`group`<br>`list`<br>`root` | `gap` | `default` | `--xh-space-1` | side-nav 的 branch、branch-content、group、list、root 部件 gap 覆盖槽。 |
-| `--xh-side-nav-group-label-px` | `group-label` | `padding-inline` | `default` | `--xh-control-px-md` | side-nav 的 group-label 部件 padding-inline 覆盖槽。 |
+| `--xh-side-nav-group-label-px` | `group-label` | `padding-inline` | `default` | `--xh-_side-nav-row-px` | side-nav 的 group-label 部件 padding-inline 覆盖槽。 |
 | `--xh-side-nav-group-label-py` | `group-label` | `padding-block` | `default` | `--xh-space-1` | side-nav 的 group-label 部件 padding-block 覆盖槽。 |
 | `--xh-side-nav-icon-size` | `positioner`<br>`root` | `--xh-icon-size` | `is([data-part='root'], [data-part='positioner'])` | `--xh-glyph-size-text` | side-nav 的 positioner、root 部件 --xh-icon-size 覆盖槽。 |
 | `--xh-side-nav-indent` | `branch-content` | `padding-inline-start` | `default` | `--xh-space-4` | side-nav 的 branch-content 部件 padding-inline-start 覆盖槽。 |
@@ -1081,7 +931,7 @@ function collapseAll() {
 | `--xh-side-nav-w` | `root` | `inline-size` | `default` | `240px` | side-nav 的 root 部件 inline-size 覆盖槽。 |
 <!-- xh-component-tokens:end -->
 
-## 动效
+### 动效
 
 关键帧 `xh-pop-in` · `xh-pop-out` 随皮肤自带，不引用别处文件里的名字；`rotate` 走 `transition` 过渡。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
 
@@ -1089,20 +939,6 @@ function collapseAll() {
 
 系统开启减弱动效时由令牌层统一收敛，皮肤不另作判断。
 
-## RTL
+### RTL
 
 皮肤用逻辑属性排布（`inline-start` 一族），`dir="rtl"` 下自动镜像。
-
-## 组合
-
-- 放进[布局](./layout)的 `sider`，折叠开关接布局的折叠态。
-
-## 最佳实践
-
-- 层级压到两级，第三级开始用户就记不住路径了。
-- 折叠态一定要留 `collapsedPopout`，否则图标栏进不去子级。
-
-## 反模式
-
-- 把每个叶子都做成分支（点开只有一项）。
-- 折叠时把整棵树卸载：展开状态与滚动位置全丢。

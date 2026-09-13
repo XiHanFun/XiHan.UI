@@ -1,0 +1,8 @@
+const t=`<!-- 行内强调 | 只为关键词添加渐变 -->
+<p style="font-size: 28px; font-weight: 700; line-height: 1.6">
+  快速、轻量、高效、用心的
+  <xh-gradient-text direction="to-bottom-right" from="#8b5cf6" to="#06b6d4">
+    <span data-xh-part="root">框架无关 Headless UI 组件库</span>
+  </xh-gradient-text>
+</p>
+`;export{t as default};

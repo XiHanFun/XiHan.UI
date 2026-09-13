@@ -1,0 +1,1 @@
+import{t as e}from"./theme.BeqczABU.js";import{d as a,o,b as t,k as r}from"./framework.DkvuVDKz.js";const _=a({__name:"03-disabled",setup(s){return(n,c)=>(o(),t(r(e),{value:"Delete",disabled:""}))}});export{_ as default};

@@ -1,0 +1,30 @@
+const t=`<!-- 简洁模式 | 只显示上一页、当前页与下一页 -->
+<xh-pagination
+  id="pagination-simple"
+  count="1000"
+  page-size="10"
+  page="2"
+>
+  <nav data-xh-part="root">
+    <button data-xh-part="prev-trigger"></button>
+    <button id="pagination-simple-current" data-xh-part="item" value="2">
+      2
+    </button>
+    <span id="pagination-simple-total">/ 100</span>
+    <button data-xh-part="next-trigger"></button>
+  </nav>
+</xh-pagination>
+
+<script type="module">
+  const host = document.getElementById("pagination-simple");
+  const current = document.getElementById("pagination-simple-current");
+  const total = document.getElementById("pagination-simple-total");
+
+  host.addEventListener("page-change", (event) => {
+    host.page = event.detail.page;
+    current.setAttribute("value", String(host.currentPage));
+    current.textContent = String(host.currentPage);
+    total.textContent = \`/ \${host.totalPages}\`;
+  });
+<\/script>
+`;export{t as default};

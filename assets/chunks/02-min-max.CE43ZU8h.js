@@ -1,0 +1,50 @@
+const t=`<!-- 数量限制 | 设置最少和最多行数 -->
+<xh-field-array id="field-array-bounds" min="2" max="4">
+  <div data-xh-part="root" style="max-inline-size: 420px">
+    <button data-xh-part="add-trigger">+ 添加选项</button>
+  </div>
+</xh-field-array>
+
+<template id="field-array-bounds-row">
+  <div data-xh-part="item">
+    <div data-xh-part="item-content">
+      <input class="xh-demo-control" style="inline-size: 100%" placeholder="填一个选项" />
+    </div>
+    <div data-xh-part="item-action">
+      <button data-xh-part="item-delete-trigger"></button>
+    </div>
+  </div>
+</template>
+
+<script type="module">
+  const host = document.getElementById("field-array-bounds");
+  const root = host.querySelector('[data-xh-part="root"]');
+  const addTrigger = host.querySelector('[data-xh-part="add-trigger"]');
+  const template = document.getElementById("field-array-bounds-row");
+  let options = ["红", "绿"];
+
+  function render() {
+    for (const row of root.querySelectorAll('[data-xh-part="item"]')) row.remove();
+    options.forEach((value, index) => {
+      const row = template.content.firstElementChild.cloneNode(true);
+      const input = row.querySelector("input");
+      input.value = value;
+      input.addEventListener("input", () => {
+        options = options.map((item, i) => (i === index ? input.value : item));
+        host.value = options;
+      });
+      root.insertBefore(row, addTrigger);
+    });
+  }
+
+  host.createItem = () => "";
+  host.value = options;
+  host.addEventListener("value-change", (event) => {
+    options = event.detail.value;
+    host.value = options;
+    render();
+  });
+
+  render();
+<\/script>
+`;export{t as default};

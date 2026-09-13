@@ -1,0 +1,11 @@
+const a=`<!-- 换行与行内 | 换行排列或随文字排布 -->
+<style>
+  #flex-wrap [data-tag] { padding: 4px 10px; border-radius: var(--xh-shape-pill); background: var(--xh-bg-brand-subtle); color: var(--xh-fg-brand); font-size: 13px; }
+</style>
+<xh-flex id="flex-wrap" orientation="vertical" gap="lg" style="display: contents">
+  <div data-xh-part="root">
+    <xh-flex wrap gap="sm" style="display: contents"><div data-xh-part="root" style="max-inline-size: 280px"><span data-tag>前端</span><span data-tag>组件库</span><span data-tag>无障碍</span><span data-tag>设计令牌</span><span data-tag>键盘导航</span></div></xh-flex>
+    <div>当前筛选：<xh-flex inline gap="xs" style="display: contents"><div data-xh-part="root"><span data-tag>近 7 天</span><span data-tag>已完成</span></div></xh-flex></div>
+  </div>
+</xh-flex>
+`;export{a as default};

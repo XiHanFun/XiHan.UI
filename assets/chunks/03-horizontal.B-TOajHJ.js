@@ -1,0 +1,1 @@
+import{a8 as o}from"./theme.BeqczABU.js";import{d as a,o as l,b as t,k as n}from"./framework.DkvuVDKz.js";const m=a({__name:"03-horizontal",setup(r){const e=[{value:"sm",label:"小"},{value:"md",label:"中"},{value:"lg",label:"大"}];return(s,c)=>(l(),t(n(o),{collection:e,"default-value":"md",label:"尺寸",orientation:"horizontal"}))}});export{m as default};

@@ -1,0 +1,34 @@
+const a=`<!-- 共享面板 | 在固定位置切换不同导航内容 -->
+<div style="inline-size: min(640px, 100%); padding-block-end: 180px">
+  <xh-navigation-menu style="display: contents">
+    <nav data-xh-part="root">
+      <ul data-xh-part="list">
+        <li data-xh-part="item">
+          <button data-xh-part="trigger" value="products">产品</button>
+        </li>
+        <li data-xh-part="item">
+          <button data-xh-part="trigger" value="docs">文档</button>
+        </li>
+        <li data-xh-part="item">
+          <button data-xh-part="trigger" value="about">关于</button>
+        </li>
+      </ul>
+
+      <div data-xh-part="viewport">
+        <div data-xh-part="content" value="products">
+          <a data-xh-part="link" href="#/products/runtime">运行时内核</a>
+          <a data-xh-part="link" href="#/products/vue">Vue 适配器</a>
+          <a data-xh-part="link" href="#/products/wc">Web Components 适配器</a>
+        </div>
+        <div data-xh-part="content" value="docs">
+          <a data-xh-part="link" href="#/docs/guide">上手指南</a>
+        </div>
+        <div data-xh-part="content" value="about">
+          <a data-xh-part="link" href="#/about/team">团队</a>
+          <a data-xh-part="link" href="#/about/contact">联系我们</a>
+        </div>
+      </div>
+    </nav>
+  </xh-navigation-menu>
+</div>
+`;export{a as default};

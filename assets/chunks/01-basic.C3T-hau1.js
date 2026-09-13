@@ -1,0 +1,13 @@
+const a=`<!-- 基础用法 | 在一条菜单栏中组织应用命令 -->
+<xh-menubar>
+  <div data-xh-part="root" style="background: var(--xh-bg-subtle)">
+    <button data-xh-part="trigger" value="file">文件</button>
+    <button data-xh-part="trigger" value="edit">编辑</button>
+    <button data-xh-part="trigger" value="view">视图</button>
+
+    <div data-xh-part="positioner" value="file"><div data-xh-part="content" value="file"><div data-xh-part="item" value="new">新建</div><div data-xh-part="item" value="open">打开</div><div data-xh-part="item" value="save">保存</div></div></div>
+    <div data-xh-part="positioner" value="edit"><div data-xh-part="content" value="edit"><div data-xh-part="item" value="undo">撤销</div><div data-xh-part="item" value="redo">重做</div></div></div>
+    <div data-xh-part="positioner" value="view"><div data-xh-part="content" value="view"><div data-xh-part="item" value="sidebar">侧栏</div><div data-xh-part="item" value="terminal">终端</div></div></div>
+  </div>
+</xh-menubar>
+`;export{a as default};

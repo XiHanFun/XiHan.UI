@@ -1,0 +1,7 @@
+const t=`<!-- 自定义颜色 | 设置渐变两端颜色 -->
+<div style="display: flex; flex-direction: column; gap: 12px; font-size: 28px; font-weight: 700">
+  <xh-gradient-text from="#f97316" to="#ec4899"><span data-xh-part="root">日落橙</span></xh-gradient-text>
+  <xh-gradient-text from="#8b5cf6" to="#06b6d4"><span data-xh-part="root">极光紫</span></xh-gradient-text>
+  <xh-gradient-text from="#0ea5e9" to="#2563eb"><span data-xh-part="root">海洋蓝</span></xh-gradient-text>
+</div>
+`;export{t as default};

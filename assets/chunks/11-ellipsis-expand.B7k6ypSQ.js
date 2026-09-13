@@ -1,0 +1,80 @@
+const t=`<!-- 展开省略位 | 查看被折叠的页码 -->
+<xh-pagination
+  id="pagination-expand"
+  count="2000"
+  page-size="10"
+  default-page="100"
+>
+  <nav data-xh-part="root">
+    <button data-xh-part="prev-trigger"></button>
+    <button data-xh-part="item" value="1">1</button>
+    <button data-xh-part="ellipsis-trigger" side="start"></button>
+    <button data-xh-part="item" value="99">99</button>
+    <button data-xh-part="item" value="100">100</button>
+    <button data-xh-part="item" value="101">101</button>
+    <button data-xh-part="ellipsis-trigger" side="end"></button>
+    <button data-xh-part="item" value="200">200</button>
+    <button data-xh-part="next-trigger"></button>
+
+    <div data-xh-part="positioner">
+      <div data-xh-part="content"></div>
+    </div>
+  </nav>
+</xh-pagination>
+
+<script type="module">
+  const host = document.getElementById("pagination-expand");
+  const root = host.querySelector('[data-xh-part="root"]');
+  const next = root.querySelector('[data-xh-part="next-trigger"]');
+  const content = root.querySelector('[data-xh-part="content"]');
+
+  function makeItem(value) {
+    const el = document.createElement("button");
+    el.dataset.xhPart = "item";
+    el.setAttribute("value", String(value));
+    el.textContent = String(value);
+    return el;
+  }
+
+  function render() {
+    for (const node of [...root.children]) {
+      const part = node.dataset.xhPart;
+      if (part === "item" || part === "ellipsis-trigger") node.remove();
+    }
+    for (const item of host.pageItems) {
+      if (item.type === "ellipsis") {
+        const el = document.createElement("button");
+        el.dataset.xhPart = "ellipsis-trigger";
+        el.setAttribute("side", item.side);
+        root.insertBefore(el, next);
+      } else {
+        root.insertBefore(makeItem(item.value), next);
+      }
+    }
+  }
+
+  let filled = null;
+
+  function fill(el) {
+    const side = el.getAttribute("side");
+    if (filled === side) return;
+    filled = side;
+    const folded = host.pageItems.find(
+      (item) => item.type === "ellipsis" && item.side === side,
+    );
+    content.replaceChildren(...(folded?.pages ?? []).map(makeItem));
+  }
+
+  for (const type of ["pointerover", "click"]) {
+    root.addEventListener(type, (event) => {
+      const el = event.target.closest('[data-xh-part="ellipsis-trigger"]');
+      if (el) fill(el);
+    });
+  }
+
+  host.addEventListener("page-change", () => {
+    filled = null;
+    render();
+  });
+<\/script>
+`;export{t as default};

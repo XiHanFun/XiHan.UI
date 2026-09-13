@@ -1,8 +1,8 @@
 来源：https://ui.docs.xihanfun.com/components/tour
 
-# Tour `引导`
+# Tour 引导
 
-一串聚光灯步骤，逐个指向界面上的元素并解释它。
+用于逐步介绍界面中的关键功能。
 
 <div class="xh-resource-links">
   <a href="https://github.com/XiHanFun/XiHan.UI/tree/dev/ui/packages/engine/headless/src/tour" target="_blank" rel="noreferrer">Headless</a>
@@ -14,7 +14,7 @@
 
 ## 用法
 
-steps 是唯一事实源，组件只按下标取用；每步的 target 是一个 CSS 选择器，高亮框与浮层都锚在它上面
+逐步介绍页面中的关键操作
 
 ```vue
 <script setup lang="ts">
@@ -64,9 +64,6 @@ const translations = {
   close: "关闭",
   progress: (step: number, count: number) => `第 ${step} 步，共 ${count} 步`,
 };
-
-const panel
-  = "padding: 8px 14px; border: 1px solid var(--vp-c-divider); border-radius: 8px";
 </script>
 
 <template>
@@ -75,12 +72,10 @@ const panel
     :steps="steps"
     :translations="translations"
   >
-    <div style="display: grid; gap: 16px; justify-items: start">
-      <div style="display: flex; flex-wrap: wrap; gap: 12px">
-        <div id="tour-basic-search" :style="panel">搜索</div>
-        <div id="tour-basic-filter" :style="panel">筛选</div>
-        <div id="tour-basic-export" :style="panel">导出</div>
-      </div>
+    <div style="display: flex; flex-wrap: wrap; gap: 8px">
+      <XhButton id="tour-basic-search" variant="outline">搜索</XhButton>
+      <XhButton id="tour-basic-filter" variant="outline">筛选</XhButton>
+      <XhButton id="tour-basic-export" variant="outline">导出</XhButton>
       <XhButton variant="solid" @click="setOpen(true)">开始引导</XhButton>
     </div>
 
@@ -112,39 +107,10 @@ const panel
 ```html
 <xh-tour id="tour-basic">
   <div data-xh-part="root">
-    <div style="display: grid; gap: 16px; justify-items: start">
-      <div style="display: flex; flex-wrap: wrap; gap: 12px">
-        <div
-          id="tour-basic-search"
-          style="
-            padding: 8px 14px;
-            border: 1px solid var(--vp-c-divider);
-            border-radius: 8px;
-          "
-        >
-          搜索
-        </div>
-        <div
-          id="tour-basic-filter"
-          style="
-            padding: 8px 14px;
-            border: 1px solid var(--vp-c-divider);
-            border-radius: 8px;
-          "
-        >
-          筛选
-        </div>
-        <div
-          id="tour-basic-export"
-          style="
-            padding: 8px 14px;
-            border: 1px solid var(--vp-c-divider);
-            border-radius: 8px;
-          "
-        >
-          导出
-        </div>
-      </div>
+    <div style="display: flex; flex-wrap: wrap; gap: 8px">
+      <xh-button variant="outline"><button id="tour-basic-search" data-xh-part="root">搜索</button></xh-button>
+      <xh-button variant="outline"><button id="tour-basic-filter" data-xh-part="root">筛选</button></xh-button>
+      <xh-button variant="outline"><button id="tour-basic-export" data-xh-part="root">导出</button></xh-button>
       <xh-button variant="solid">
         <button data-xh-part="root" id="tour-basic-start">开始引导</button>
       </xh-button>
@@ -179,7 +145,6 @@ const panel
 <script type="module">
   const tour = document.getElementById("tour-basic");
 
-  // 步骤清单与文案是对象，只走 property
   tour.steps = [
     {
       id: "search",
@@ -208,7 +173,6 @@ const panel
     progress: (step, count) => `第 ${step} 步，共 ${count} 步`,
   };
 
-  // 开合由宿主保管：按钮打开，组件要关时写回
   document.getElementById("tour-basic-start").addEventListener("click", () => {
     tour.open = true;
   });
@@ -216,7 +180,6 @@ const panel
     tour.open = event.detail.open;
   });
 
-  // 末步那颗按钮改念「完成」
   const next = document.getElementById("tour-basic-next");
   tour.addEventListener("value-change", (event) => {
     next.textContent =
@@ -225,11 +188,17 @@ const panel
 </script>
 ```
 
+## 组件结构
+
+加粗的是必需部件。
+
+`data-scope="tour"`：**`root`** · `backdrop` · `spotlight` · `positioner` · **`content`** · `title` · `description` · `progress-text` · `progress-indicator` · `progress-dot` · `prev-trigger` · `next-trigger` · `skip-trigger` · `close-trigger` · `arrow`
+
 ## 示例
 
-### 居中步
+### 居中步骤
 
-不写 target 的那一步不锚定任何元素：浮层居中、不画高亮框、也不出箭头，适合当开场白与收尾
+用于引导的开场与结束
 
 ```vue
 <script setup lang="ts">
@@ -277,26 +246,14 @@ const translations = {
 
 <template>
   <XhTourRoot
-    v-slot="{ setOpen, lastStep, currentStep }"
+    v-slot="{ setOpen, lastStep }"
     :steps="steps"
     :spotlight-padding="12"
     :translations="translations"
   >
-    <div style="display: grid; gap: 16px; justify-items: start">
-      <div
-        id="tour-centered-inbox"
-        style="
-          padding: 8px 14px;
-          border: 1px solid var(--vp-c-divider);
-          border-radius: 8px;
-        "
-      >
-        收件箱
-      </div>
+    <div style="display: flex; flex-wrap: wrap; gap: 8px">
+      <XhButton id="tour-centered-inbox" variant="outline">收件箱</XhButton>
       <XhButton variant="solid" @click="setOpen(true)">开始引导</XhButton>
-      <span style="font-size: 13px; opacity: 0.75">
-        当前步：{{ currentStep ? currentStep.id : "（未开始）" }}
-      </span>
     </div>
 
     <XhTourBackdrop />
@@ -322,19 +279,11 @@ const translations = {
 ```html
 <xh-tour id="tour-centered" spotlight-padding="12">
   <div data-xh-part="root">
-    <div style="display: grid; gap: 16px; justify-items: start">
-      <div
-        id="tour-centered-inbox"
-        style="padding: 8px 14px; border: 1px solid var(--vp-c-divider); border-radius: 8px"
-      >
-        收件箱
-      </div>
+    <div style="display: flex; flex-wrap: wrap; gap: 8px">
+      <xh-button variant="outline"><button id="tour-centered-inbox" data-xh-part="root">收件箱</button></xh-button>
       <xh-button variant="solid">
         <button data-xh-part="root" id="tour-centered-start">开始引导</button>
       </xh-button>
-      <span id="tour-centered-current" style="font-size: 13px; opacity: 0.75">
-        当前步：welcome
-      </span>
     </div>
 
     <div data-xh-part="backdrop"></div>
@@ -359,7 +308,6 @@ const translations = {
 <script type="module">
   const tour = document.getElementById("tour-centered");
 
-  // 头尾两步没有 target，浮层落在屏幕正中
   tour.steps = [
     {
       id: "welcome",
@@ -383,7 +331,6 @@ const translations = {
     progress: (step, count) => `第 ${step} 步，共 ${count} 步`,
   };
 
-  // 开合由宿主保管：按钮打开，组件要关时写回
   document.getElementById("tour-centered-start").addEventListener("click", () => {
     tour.open = true;
   });
@@ -391,20 +338,17 @@ const translations = {
     tour.open = event.detail.open;
   });
 
-  // 外面这行文字跟着步序走
-  const current = document.getElementById("tour-centered-current");
   const next = document.getElementById("tour-centered-next");
   tour.addEventListener("value-change", (event) => {
-    current.textContent = `当前步：${tour.steps[event.detail.value].id}`;
     next.textContent =
       event.detail.value === tour.steps.length - 1 ? "完成" : "下一步";
   });
 </script>
 ```
 
-### 受控
+### 定位
 
-传了 open 与 value 就由宿主说了算：内部不再自改，只发意图，浮层里的按钮与外面的进度读的是同一份状态
+为每一步选择合适的浮层方向
 
 ```vue
 <script setup lang="ts">
@@ -418,75 +362,31 @@ import {
   XhTourNextTrigger,
   XhTourPositioner,
   XhTourPrevTrigger,
+  XhTourProgressText,
   XhTourRoot,
   XhTourSpotlight,
   XhTourTitle,
 } from "@xihan-ui/vue";
-import { ref } from "vue";
 
 const steps = [
-  {
-    id: "list",
-    target: "#tour-controlled-list",
-    title: "列表",
-    description: "记录都在这里。",
-  },
-  {
-    id: "detail",
-    target: "#tour-controlled-detail",
-    title: "详情",
-    description: "选中一条后在这块看明细。",
-  },
-  {
-    id: "actions",
-    target: "#tour-controlled-actions",
-    title: "操作",
-    description: "批量动作收在这一栏。",
-  },
+  { id: "left", target: "#tour-placement-left", title: "左侧入口", description: "浮层显示在目标下方。", placement: "bottom-start" as const },
+  { id: "center", target: "#tour-placement-center", title: "中间入口", description: "浮层显示在目标上方。", placement: "top" as const },
+  { id: "right", target: "#tour-placement-right", title: "右侧入口", description: "浮层显示在目标左侧。", placement: "left" as const },
 ];
 
-const open = ref(false);
-const step = ref(0);
-const log = ref("（未开始）");
-
-const panel
-  = "padding: 8px 14px; border: 1px solid var(--vp-c-divider); border-radius: 8px";
-
-function start(from: number): void {
-  step.value = from;
-  open.value = true;
-}
-
-function onComplete(details: { step: number }): void {
-  log.value = `走完了第 ${details.step + 1} 步`;
-}
-
-function onSkip(details: { step: number }): void {
-  log.value = `在第 ${details.step + 1} 步放弃`;
-}
+const translations = {
+  close: "关闭",
+  progress: (step: number, count: number) => `第 ${step} 步，共 ${count} 步`,
+};
 </script>
 
 <template>
-  <XhTourRoot
-    v-model:open="open"
-    v-model:value="step"
-    :steps="steps"
-    @complete="onComplete"
-    @skip="onSkip"
-  >
-    <div style="display: grid; gap: 16px; justify-items: start">
-      <div style="display: flex; flex-wrap: wrap; gap: 12px">
-        <div id="tour-controlled-list" :style="panel">列表</div>
-        <div id="tour-controlled-detail" :style="panel">详情</div>
-        <div id="tour-controlled-actions" :style="panel">操作</div>
-      </div>
-      <div style="display: flex; flex-wrap: wrap; align-items: center; gap: 12px">
-        <XhButton variant="solid" @click="start(0)">从头开始</XhButton>
-        <XhButton variant="outline" @click="start(2)">直接跳到第 3 步</XhButton>
-        <span style="font-size: 13px; opacity: 0.75">
-          open={{ open }} · value={{ step }} · {{ log }}
-        </span>
-      </div>
+  <XhTourRoot v-slot="{ setOpen, lastStep }" :steps="steps" :translations="translations">
+    <div style="display: flex; flex-wrap: wrap; gap: 8px">
+      <XhButton id="tour-placement-left" variant="outline">左侧</XhButton>
+      <XhButton id="tour-placement-center" variant="outline">中间</XhButton>
+      <XhButton id="tour-placement-right" variant="outline">右侧</XhButton>
+      <XhButton variant="solid" @click="setOpen(true)">查看定位</XhButton>
     </div>
 
     <XhTourBackdrop />
@@ -495,9 +395,10 @@ function onSkip(details: { step: number }): void {
       <XhTourContent>
         <XhTourTitle />
         <XhTourDescription />
+        <XhTourProgressText />
         <div style="display: flex; align-items: center; gap: 8px">
           <XhTourPrevTrigger>上一步</XhTourPrevTrigger>
-          <XhTourNextTrigger>下一步</XhTourNextTrigger>
+          <XhTourNextTrigger>{{ lastStep ? "完成" : "下一步" }}</XhTourNextTrigger>
         </div>
         <XhTourCloseTrigger />
         <XhTourArrow />
@@ -508,42 +409,13 @@ function onSkip(details: { step: number }): void {
 ```
 
 ```html
-<xh-tour id="tour-controlled" open="false" value="0">
+<xh-tour id="tour-placement">
   <div data-xh-part="root">
-    <div style="display: grid; gap: 16px; justify-items: start">
-      <div style="display: flex; flex-wrap: wrap; gap: 12px">
-        <div
-          id="tour-controlled-list"
-          style="padding: 8px 14px; border: 1px solid var(--vp-c-divider); border-radius: 8px"
-        >
-          列表
-        </div>
-        <div
-          id="tour-controlled-detail"
-          style="padding: 8px 14px; border: 1px solid var(--vp-c-divider); border-radius: 8px"
-        >
-          详情
-        </div>
-        <div
-          id="tour-controlled-actions"
-          style="padding: 8px 14px; border: 1px solid var(--vp-c-divider); border-radius: 8px"
-        >
-          操作
-        </div>
-      </div>
-      <div style="display: flex; flex-wrap: wrap; align-items: center; gap: 12px">
-        <xh-button variant="solid">
-          <button data-xh-part="root" id="tour-controlled-from-start">从头开始</button>
-        </xh-button>
-        <xh-button variant="outline">
-          <button data-xh-part="root" id="tour-controlled-from-third">
-            直接跳到第 3 步
-          </button>
-        </xh-button>
-        <span id="tour-controlled-readout" style="font-size: 13px; opacity: 0.75">
-          open=false · value=0 · （未开始）
-        </span>
-      </div>
+    <div style="display: flex; flex-wrap: wrap; gap: 8px">
+      <xh-button variant="outline"><button id="tour-placement-left" data-xh-part="root">左侧</button></xh-button>
+      <xh-button variant="outline"><button id="tour-placement-center" data-xh-part="root">中间</button></xh-button>
+      <xh-button variant="outline"><button id="tour-placement-right" data-xh-part="root">右侧</button></xh-button>
+      <xh-button variant="solid"><button id="tour-placement-start" data-xh-part="root">查看定位</button></xh-button>
     </div>
 
     <div data-xh-part="backdrop"></div>
@@ -552,9 +424,10 @@ function onSkip(details: { step: number }): void {
       <div data-xh-part="content">
         <h3 data-xh-part="title"></h3>
         <p data-xh-part="description"></p>
+        <p data-xh-part="progress-text"></p>
         <div style="display: flex; align-items: center; gap: 8px">
           <button data-xh-part="prev-trigger">上一步</button>
-          <button data-xh-part="next-trigger">下一步</button>
+          <button id="tour-placement-next" data-xh-part="next-trigger">下一步</button>
         </div>
         <button data-xh-part="close-trigger"></button>
         <div data-xh-part="arrow"></div>
@@ -564,72 +437,34 @@ function onSkip(details: { step: number }): void {
 </xh-tour>
 
 <script type="module">
-  const tour = document.getElementById("tour-controlled");
-  const readout = document.getElementById("tour-controlled-readout");
-  let log = "（未开始）";
+  const tour = document.getElementById("tour-placement");
+  const next = document.getElementById("tour-placement-next");
 
   tour.steps = [
-    {
-      id: "list",
-      target: "#tour-controlled-list",
-      title: "列表",
-      description: "记录都在这里。",
-    },
-    {
-      id: "detail",
-      target: "#tour-controlled-detail",
-      title: "详情",
-      description: "选中一条后在这块看明细。",
-    },
-    {
-      id: "actions",
-      target: "#tour-controlled-actions",
-      title: "操作",
-      description: "批量动作收在这一栏。",
-    },
+    { id: "left", target: "#tour-placement-left", title: "左侧入口", description: "浮层显示在目标下方。", placement: "bottom-start" },
+    { id: "center", target: "#tour-placement-center", title: "中间入口", description: "浮层显示在目标上方。", placement: "top" },
+    { id: "right", target: "#tour-placement-right", title: "右侧入口", description: "浮层显示在目标左侧。", placement: "left" },
   ];
+  tour.translations = {
+    close: "关闭",
+    progress: (step, count) => `第 ${step} 步，共 ${count} 步`,
+  };
 
-  function render() {
-    readout.textContent = `open=${tour.open} · value=${tour.value} · ${log}`;
-  }
-
-  // 从第几步起都由宿主先落值，再打开
-  function start(from) {
-    tour.value = from;
+  document.getElementById("tour-placement-start").addEventListener("click", () => {
     tour.open = true;
-    render();
-  }
-
-  document
-    .getElementById("tour-controlled-from-start")
-    .addEventListener("click", () => start(0));
-  document
-    .getElementById("tour-controlled-from-third")
-    .addEventListener("click", () => start(2));
-
-  // 内部只发意图，落值全在这几个处理器里
+  });
   tour.addEventListener("open-change", (event) => {
     tour.open = event.detail.open;
-    render();
   });
   tour.addEventListener("value-change", (event) => {
-    tour.value = event.detail.value;
-    render();
-  });
-  tour.addEventListener("complete", (event) => {
-    log = `走完了第 ${event.detail.value + 1} 步`;
-    render();
-  });
-  tour.addEventListener("skip", (event) => {
-    log = `在第 ${event.detail.value + 1} 步放弃`;
-    render();
+    next.textContent = event.detail.value === tour.steps.length - 1 ? "完成" : "下一步";
   });
 </script>
 ```
 
-### 按步定制正文
+### 无遮罩
 
-标题与说明之外，正文按当前步的 id 换成自己的一块内容；showBackdrop 关掉那层压暗，引导与页面一起看
+保留页面环境并突出目标
 
 ```vue
 <script setup lang="ts">
@@ -644,60 +479,26 @@ import {
   XhTourPrevTrigger,
   XhTourProgressText,
   XhTourRoot,
-  XhTourSkipTrigger,
   XhTourSpotlight,
   XhTourTitle,
 } from "@xihan-ui/vue";
 
 const steps = [
-  {
-    id: "search",
-    target: "#tour-per-step-search",
-    title: "全站搜索",
-    description: "按名称或编号找记录。",
-  },
-  {
-    id: "filter",
-    target: "#tour-per-step-filter",
-    title: "筛选",
-    description: "条件会记在本地，下次进来还在。",
-  },
-  {
-    id: "export",
-    target: "#tour-per-step-export",
-    title: "导出",
-    description: "导出当前筛选后的全部数据。",
-  },
+  { id: "search", target: "#tour-clear-search", title: "搜索", description: "输入关键词查找记录。" },
+  { id: "filter", target: "#tour-clear-filter", title: "筛选", description: "按状态收窄结果。" },
 ];
-
-// 各步自己的那块正文：键就是 steps 里的 id
-const tips: Record<string, string[]> = {
-  search: ["支持拼音首字母", "编号可以只输后六位"],
-  filter: ["状态与时间区间可以叠加", "清空条件用一次「重置」"],
-  export: ["走后台队列，导完站内信通知", "单次上限十万行"],
-};
 
 const translations = {
   close: "关闭",
   progress: (step: number, count: number) => `第 ${step} 步，共 ${count} 步`,
 };
-
-const panel = "padding: 8px 14px; border: 1px solid var(--vp-c-divider); border-radius: 8px";
 </script>
 
 <template>
-  <XhTourRoot
-    v-slot="{ setOpen, lastStep, currentStep }"
-    :steps="steps"
-    :show-backdrop="false"
-    :translations="translations"
-  >
-    <div style="display: grid; gap: 16px; justify-items: start">
-      <div style="display: flex; flex-wrap: wrap; gap: 12px">
-        <div id="tour-per-step-search" :style="panel">搜索</div>
-        <div id="tour-per-step-filter" :style="panel">筛选</div>
-        <div id="tour-per-step-export" :style="panel">导出</div>
-      </div>
+  <XhTourRoot v-slot="{ setOpen, lastStep }" :steps="steps" :show-backdrop="false" :translations="translations">
+    <div style="display: flex; flex-wrap: wrap; gap: 8px">
+      <XhButton id="tour-clear-search" variant="outline">搜索</XhButton>
+      <XhButton id="tour-clear-filter" variant="outline">筛选</XhButton>
       <XhButton variant="solid" @click="setOpen(true)">开始引导</XhButton>
     </div>
 
@@ -706,15 +507,10 @@ const panel = "padding: 8px 14px; border: 1px solid var(--vp-c-divider); border-
       <XhTourContent>
         <XhTourTitle />
         <XhTourDescription />
-        <!-- 按当前步换的那一块：标题与说明照旧由组件按 steps 填 -->
-        <ul v-if="currentStep" style="margin: 0; padding-inline-start: 18px">
-          <li v-for="tip in tips[currentStep.id] ?? []" :key="tip">{{ tip }}</li>
-        </ul>
         <XhTourProgressText />
         <div style="display: flex; align-items: center; gap: 8px">
           <XhTourPrevTrigger>上一步</XhTourPrevTrigger>
           <XhTourNextTrigger>{{ lastStep ? "完成" : "下一步" }}</XhTourNextTrigger>
-          <XhTourSkipTrigger>跳过</XhTourSkipTrigger>
         </div>
         <XhTourCloseTrigger />
         <XhTourArrow />
@@ -725,32 +521,12 @@ const panel = "padding: 8px 14px; border: 1px solid var(--vp-c-divider); border-
 ```
 
 ```html
-<xh-tour id="tour-per-step" show-backdrop="false">
+<xh-tour id="tour-clear" show-backdrop="false">
   <div data-xh-part="root">
-    <div style="display: grid; gap: 16px; justify-items: start">
-      <div style="display: flex; flex-wrap: wrap; gap: 12px">
-        <div
-          id="tour-per-step-search"
-          style="padding: 8px 14px; border: 1px solid var(--vp-c-divider); border-radius: 8px"
-        >
-          搜索
-        </div>
-        <div
-          id="tour-per-step-filter"
-          style="padding: 8px 14px; border: 1px solid var(--vp-c-divider); border-radius: 8px"
-        >
-          筛选
-        </div>
-        <div
-          id="tour-per-step-export"
-          style="padding: 8px 14px; border: 1px solid var(--vp-c-divider); border-radius: 8px"
-        >
-          导出
-        </div>
-      </div>
-      <xh-button variant="solid">
-        <button data-xh-part="root" id="tour-per-step-start">开始引导</button>
-      </xh-button>
+    <div style="display: flex; flex-wrap: wrap; gap: 8px">
+      <xh-button variant="outline"><button id="tour-clear-search" data-xh-part="root">搜索</button></xh-button>
+      <xh-button variant="outline"><button id="tour-clear-filter" data-xh-part="root">筛选</button></xh-button>
+      <xh-button variant="solid"><button id="tour-clear-start" data-xh-part="root">开始引导</button></xh-button>
     </div>
 
     <div data-xh-part="spotlight"></div>
@@ -758,13 +534,10 @@ const panel = "padding: 8px 14px; border: 1px solid var(--vp-c-divider); border-
       <div data-xh-part="content">
         <h3 data-xh-part="title"></h3>
         <p data-xh-part="description"></p>
-        <!-- 按当前步换的那一块：标题与说明照旧由元素按 steps 填 -->
-        <ul id="tour-per-step-tips" style="margin: 0; padding-inline-start: 18px"></ul>
         <p data-xh-part="progress-text"></p>
         <div style="display: flex; align-items: center; gap: 8px">
           <button data-xh-part="prev-trigger">上一步</button>
-          <button data-xh-part="next-trigger">下一步</button>
-          <button data-xh-part="skip-trigger">跳过</button>
+          <button id="tour-clear-next" data-xh-part="next-trigger">下一步</button>
         </div>
         <button data-xh-part="close-trigger"></button>
         <div data-xh-part="arrow"></div>
@@ -774,64 +547,27 @@ const panel = "padding: 8px 14px; border: 1px solid var(--vp-c-divider); border-
 </xh-tour>
 
 <script type="module">
-  const tour = document.getElementById("tour-per-step");
-  const tipList = document.getElementById("tour-per-step-tips");
+  const tour = document.getElementById("tour-clear");
+  const next = document.getElementById("tour-clear-next");
 
   tour.steps = [
-    {
-      id: "search",
-      target: "#tour-per-step-search",
-      title: "全站搜索",
-      description: "按名称或编号找记录。",
-    },
-    {
-      id: "filter",
-      target: "#tour-per-step-filter",
-      title: "筛选",
-      description: "条件会记在本地，下次进来还在。",
-    },
-    {
-      id: "export",
-      target: "#tour-per-step-export",
-      title: "导出",
-      description: "导出当前筛选后的全部数据。",
-    },
+    { id: "search", target: "#tour-clear-search", title: "搜索", description: "输入关键词查找记录。" },
+    { id: "filter", target: "#tour-clear-filter", title: "筛选", description: "按状态收窄结果。" },
   ];
-
   tour.translations = {
     close: "关闭",
     progress: (step, count) => `第 ${step} 步，共 ${count} 步`,
   };
 
-  // 各步自己的那块正文：键就是 steps 里的 id
-  const tips = {
-    search: ["支持拼音首字母", "编号可以只输后六位"],
-    filter: ["状态与时间区间可以叠加", "清空条件用一次「重置」"],
-    export: ["走后台队列，导完站内信通知", "单次上限十万行"],
-  };
-
-  function paint(index) {
-    const step = tour.steps[index];
-    tipList.replaceChildren(
-      ...(tips[step?.id] ?? []).map((tip) => {
-        const li = document.createElement("li");
-        li.textContent = tip;
-        return li;
-      }),
-    );
-  }
-
-  paint(0);
-
-  // 开合由宿主保管：按钮打开，元素要关时写回
-  document.getElementById("tour-per-step-start").addEventListener("click", () => {
+  document.getElementById("tour-clear-start").addEventListener("click", () => {
     tour.open = true;
   });
   tour.addEventListener("open-change", (event) => {
     tour.open = event.detail.open;
   });
-
-  tour.addEventListener("value-change", (event) => paint(event.detail.value));
+  tour.addEventListener("value-change", (event) => {
+    next.textContent = event.detail.value === tour.steps.length - 1 ? "完成" : "下一步";
+  });
 </script>
 ```
 
@@ -839,21 +575,41 @@ const panel = "padding: 8px 14px; border: 1px solid var(--vp-c-divider); border-
 
 ### 何时使用
 
-- 新功能上线、首次进入复杂界面时的一次性介绍。
+- 首次进入复杂页面时介绍关键操作。
+- 新功能上线后提供一次性引导。
 
 ### 何时不用
 
-- 界面本身不好懂：改界面，别用引导补丁。
-- 用户需要随时查阅的说明：写进帮助或[文字提示](./tooltip)。
+- 界面结构本身不清晰时应先改进界面。
+- 需要随时查看的说明使用帮助内容或[文字提示](./tooltip)。
 
 ### 特性
 
-- 聚光灯把目标从遮罩里挖出来，`spotlightPadding` 决定挖多大。
-- `autoScroll` 把目标滚进视野。
-- 可以有居中的无目标步（开场与结束）。
-- 步序与展开都可受控，另有完成与跳过两个回调。
+- 聚光灯突出目标，`spotlightPadding` 控制留白。
+- `autoScroll` 自动将目标滚动到可见区域。
+- 无目标步骤在视口中居中，适合开场与结束。
+- `showBackdrop=false` 关闭背景暗幕，但保留目标高亮环。
+- 支持受控步序、完成和跳过回调。
 
-## 产物
+### 组合
+
+- 使用 `progress-text` 或 `progress-indicator` 展示进度。
+- 使用 `prev-trigger`、`next-trigger` 与 `skip-trigger` 提供导航。
+
+### 最佳实践
+
+- 步数控制在三到五步。
+- 从第一步开始提供跳过入口。
+- 记录完成状态，避免重复展示。
+
+### 反模式
+
+- 不要强制用户完成引导。
+- 不要指向尚未渲染的目标。
+
+## API 参考
+
+### 产物
 
 | 层 | 值 |
 | --- | --- |
@@ -863,13 +619,7 @@ const panel = "padding: 8px 14px; border: 1px solid var(--vp-c-divider); border-
 | 状态机 | `tourMachine` |
 | 皮肤 | `@xihan-ui/styles/tour.css` |
 
-## 解剖
-
-部件名即 `data-part` 属性值，也是皮肤的选择器。加粗的是必备部件，不渲染它组件不工作（Web Components 适配器会在诊断通道上报 `wc.missing-part`）。
-
-`data-scope="tour"`：**`root`** · `backdrop` · `spotlight` · `positioner` · **`content`** · `title` · `description` · `progress-text` · `progress-indicator` · `progress-dot` · `prev-trigger` · `next-trigger` · `skip-trigger` · `close-trigger` · `arrow`
-
-## Props
+### Props
 
 | 属性 | 类型 | 必填 | 说明 |
 | --- | --- | --- | --- |
@@ -892,9 +642,9 @@ const panel = "padding: 8px 14px; border: 1px solid var(--vp-c-divider); border-
 | `onComplete` | `(details: TourCompleteDetails) => void` |  | 末步再按"下一步"：先发它，再按 onOpenChange 关闭。 |
 | `onSkip` | `(details: TourSkipDetails) => void` |  | 用户主动放弃（skip-trigger 或 Escape）：先发它，再按 onOpenChange 关闭。 |
 
-## 事件
+### 事件
 
-自定义元素派发这些事件，Vue 组件对应同名 emit；载荷都在 `detail` 上。可双向绑定的值另有 `update:xxx`，见 Props。
+自定义元素将载荷放在 `detail`；Vue 使用同名 emit。
 
 | 事件 | 载荷 | 说明 |
 | --- | --- | --- |
@@ -903,17 +653,17 @@ const panel = "padding: 8px 14px; border: 1px solid var(--vp-c-divider); border-
 | `complete` | `TourCompleteDetails` | 末步再按下一步；detail 为 `{ step: number }` |
 | `skip` | `TourSkipDetails` | 用户放弃（跳过按钮或 Escape）；detail 为 `{ step: number }` |
 
-## 插槽
+### 插槽
 
-作者能拿到载荷的插槽。只转发内容、不带载荷的默认插槽不在此列——那类直接写子节点即可。
+仅列出带载荷的插槽。
 
 | Vue 组件 | 插槽 | 载荷 | 说明 |
 | --- | --- | --- | --- |
 | `XhTourRoot` | `default` | `TourRootSlotProps` |  |
 
-## 状态
+### 状态
 
-对外可见的状态落在 `data-state` 上，写样式与断言都读它：
+公开状态写入 `data-state`。
 
 | 部件 | 取值 |
 | --- | --- |
@@ -926,7 +676,7 @@ const panel = "padding: 8px 14px; border: 1px solid var(--vp-c-divider); border-
 | `next-trigger` | 'open' \| 'closed' |
 | `skip-trigger` | 'open' \| 'closed' |
 
-状态机内部转移，写样式与业务都用不到；要监听变化请看上面的「事件」。
+以下名称仅用于内部状态机。
 
 **状态**：`open` · `closed`
 
@@ -934,9 +684,9 @@ const panel = "padding: 8px 14px; border: 1px solid var(--vp-c-divider); border-
 
 **判据**：`isOpenControlled` · `isLastStep` · `isLastStepOpenControlled`
 
-## connect API
+### connect API
 
-`useTour` 产出的对象。`getXxxProps()` 铺到对应部件的宿主元素上，其余是可读状态与操作入口。
+`getXxxProps()` 返回对应部件的宿主属性。
 
 | 成员 | 类型 | 说明 |
 | --- | --- | --- |
@@ -970,7 +720,9 @@ const panel = "padding: 8px 14px; border: 1px solid var(--vp-c-divider); border-
 | `getCloseTriggerProps` | `() => T['button']` |  |
 | `getArrowProps` | `() => T['element']` |  |
 
-## 键盘
+## 无障碍
+
+### 键盘
 
 规格出处：[W3C APG](https://www.w3.org/WAI/ARIA/apg/patterns/dialog-modal/#keyboardinteraction)
 
@@ -981,9 +733,9 @@ const panel = "padding: 8px 14px; border: 1px solid var(--vp-c-divider); border-
 | `ArrowUp` / `ArrowDown` / `ArrowLeft` / `ArrowRight` | open | 一概不接管：既不换步也不阻止默认行为，留给页面滚动与读屏浏览 |
 | `Tab` / `Shift+Tab` | open | 焦点陷在 content 内循环，跑出去会被拉回来 |
 
-## 无障碍
+### ARIA
 
-下面这些由 `connect` 铺到部件上，作者不必自己写；重复写反而会覆盖掉正确值。
+以下属性由 `connect` 生成。
 
 | 部件 | 属性 | 值 |
 | --- | --- | --- |
@@ -1000,22 +752,26 @@ const panel = "padding: 8px 14px; border: 1px solid var(--vp-c-divider); border-
 | `close-trigger` | `aria-label` | translations?.close |
 | `arrow` | `aria-hidden` | 'true' |
 
-## 样式
+## 样式参考
 
-默认皮肤 `@xihan-ui/styles/tour.css` 按部件选择：`[data-scope="tour"][data-part="root"]`。它落在 `xihan.components` 与 `xihan.motion` 层；业务样式不写进 `@layer` 即高于全部库层，要按层压过来就写进 `xihan.overrides`。
+### 皮肤
+
+`@xihan-ui/styles/tour.css` 使用 `[data-scope="tour"][data-part="root"]` 部件选择器，位于 `xihan.components` 与 `xihan.motion` 层。覆盖样式使用 `xihan.overrides`。
 
 `forced-colors: active` 下另有一套规则：颜色交给系统，边框与状态标记改用系统色关键字。
 
-## 数据属性
+### 数据属性
 
-由 `connect` 产出并铺到部件上，皮肤与测试都据此选择；`data-disabled` 这类无值属性在条件不成立时整个不出现。
+由 `connect` 生成；条件不成立时不输出无值属性。
 
 | 部件 | 属性 | 值 |
 | --- | --- | --- |
 | `root` | `data-empty` | ''（条件成立时才出现） |
 | `root` | `data-state` | 'open' \| 'closed' |
 | `root` | `data-step` | String(value) |
+| `backdrop` | `data-position` | 'anchored' \| 'center' |
 | `backdrop` | `data-state` | 'open' \| 'closed' |
+| `spotlight` | `data-dimmed` | ''（条件成立时才出现） |
 | `spotlight` | `data-state` | 'open' \| 'closed' |
 | `positioner` | `data-placement` | 定位引擎算出的实际落位 |
 | `positioner` | `data-position` | 'anchored' \| 'center' |
@@ -1037,7 +793,7 @@ const panel = "padding: 8px 14px; border: 1px solid var(--vp-c-divider); border-
 | `arrow` | `data-placement` | 定位引擎算出的实际落位 |
 
 <!-- xh-component-tokens:start -->
-## CSS 变量
+### CSS 变量
 
 本组件公开覆盖槽由独立皮肤的实际消费位生成；缺省来源、作用部件和状态均与 CSS 同源。
 
@@ -1081,13 +837,13 @@ const panel = "padding: 8px 14px; border: 1px solid var(--vp-c-divider); border-
 | `--xh-tour-spotlight-layer` | `spotlight` | `z-index` | `default` | `--xh-_layer` | tour 的 spotlight 部件 z-index 覆盖槽。 |
 | `--xh-tour-spotlight-radius` | `spotlight` | `border-radius` | `default` | `--xh-shape-surface` | tour 的 spotlight 部件 border-radius 覆盖槽。 |
 | `--xh-tour-spotlight-ring` | `spotlight` | `box-shadow` | `default` | `--xh-ring-focus` | tour 的 spotlight 部件 box-shadow 覆盖槽。 |
-| `--xh-tour-spotlight-shroud` | `spotlight` | `box-shadow` | `default` | `--xh-bg-overlay` | tour 的 spotlight 部件 box-shadow 覆盖槽。 |
+| `--xh-tour-spotlight-shroud` | `spotlight` | `box-shadow` | `dimmed` | `--xh-bg-overlay` | tour 的 spotlight 部件 box-shadow 覆盖槽。 |
 | `--xh-tour-title-fg` | `title` | `color` | `default` | `--xh-fg-default` | tour 的 title 部件 color 覆盖槽。 |
 | `--xh-tour-title-font-size` | `title` | `font-size` | `default` | `--xh-text-heading-3-size` | tour 的 title 部件 font-size 覆盖槽。 |
 | `--xh-tour-title-font-weight` | `title` | `font-weight` | `default` | `--xh-text-heading-3-weight` | tour 的 title 部件 font-weight 覆盖槽。 |
 <!-- xh-component-tokens:end -->
 
-## 动效
+### 动效
 
 关键帧 `xh-fade-in` · `xh-fade-out` · `xh-overlay-pop-in` · `xh-pop-out` · `xh-tour-spotlight-in` · `xh-tour-spotlight-out` 随皮肤自带，不引用别处文件里的名字；`background` · `background-color` · `block-size` · `color` · `inline-size` · `inset-block-start` · `inset-inline-start` · `scale` 走 `transition` 过渡。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
 
@@ -1095,25 +851,10 @@ const panel = "padding: 8px 14px; border: 1px solid var(--vp-c-divider); border-
 
 系统开启减弱动效时由令牌层统一收敛，皮肤不另作判断。
 
-## 响应式
+### 响应式
 
 皮肤另按输入能力分档：`pointer: coarse`——同一份皮肤在触屏与带指针的设备上不一样，与视口宽度无关。
 
-## RTL
+### RTL
 
 皮肤用逻辑属性排布（`inline-start` 一族），`dir="rtl"` 下自动镜像。
-
-## 组合
-
-- 与[对话框](./dialog)配合做开场；结束后引导用户去[空状态](./empty-state)那一页或具体功能。
-
-## 最佳实践
-
-- 步数压到三到五步，多了没人走完。
-- 跳过入口从第一步就要有，且要显眼。
-- 只讲一次，记住用户已经看过。
-
-## 反模式
-
-- 强制走完不许跳过。
-- 引导目标在当前视口里不存在（还没渲染出来），聚光灯挖了个空。

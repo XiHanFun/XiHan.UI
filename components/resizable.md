@@ -1,8 +1,8 @@
 来源：https://ui.docs.xihanfun.com/components/resizable
 
-# Resizable `可调容器`
+# Resizable 可调容器
 
-一块能拖着改尺寸的区域，八条边都能推，键盘也能推。
+通过拖拽或键盘调整内容区域的尺寸。
 
 <div class="xh-resource-links">
   <a href="https://github.com/XiHanFun/XiHan.UI/tree/dev/ui/packages/engine/headless/src/resizable" target="_blank" rel="noreferrer">Headless</a>
@@ -14,7 +14,7 @@
 
 ## 用法
 
-八条边各一个把手；拖动改尺寸，Tab 到把手用方向键也能推
+从右侧、底部或右下角调整尺寸
 
 ```vue
 <script setup lang="ts">
@@ -22,66 +22,51 @@ import { XhResizableHandle, XhResizableRoot } from "@xihan-ui/vue";
 import { ref } from "vue";
 
 const dimensions = ref({ width: 260, height: 140 });
-const EDGES = ["n", "ne", "e", "se", "s", "sw", "w", "nw"] as const;
+const EDGES = ["e", "s", "se"] as const;
 </script>
 
 <template>
-  <!-- 留出余量：把手压在边上，往外挪了半个身位 -->
   <div style="padding: 12px">
     <XhResizableRoot
       v-model:dimensions="dimensions"
       :min-width="120"
       :min-height="80"
       :max-width="480"
-      style="border: 1px solid var(--xh-border-default); border-radius: var(--xh-shape-surface); padding: 12px"
+      style="border-radius: var(--xh-shape-surface); background: var(--xh-bg-subtle); padding: 16px"
     >
-      <span>拖任意一条边或一个角</span>
+      <strong>预览区域</strong>
+      <p style="color: var(--xh-fg-muted)">拖动边缘调整画布大小。</p>
       <XhResizableHandle v-for="edge in EDGES" :key="edge" :edge="edge" />
     </XhResizableRoot>
   </div>
-  <p style="margin-top: 12px; color: var(--xh-fg-muted)">
-    {{ Math.round(dimensions.width) }} × {{ Math.round(dimensions.height) }}
-  </p>
 </template>
 ```
 
 ```html
-<!-- 留出余量：把手压在边上，往外挪了半个身位 -->
 <div style="padding: 12px">
-  <xh-resizable id="rz" default-dimensions="260x140" min-width="120" min-height="80" max-width="480">
-    <div
-      data-xh-part="root"
-      style="border: 1px solid var(--xh-border-default); border-radius: var(--xh-shape-surface); padding: 12px"
-    >
-      <span>拖任意一条边或一个角</span>
-      <span data-xh-part="handle" edge="n"></span>
-      <span data-xh-part="handle" edge="ne"></span>
+  <xh-resizable default-dimensions="260x140" edges="e,s,se" min-width="120" min-height="80" max-width="480">
+    <div data-xh-part="root" style="border-radius: var(--xh-shape-surface); background: var(--xh-bg-subtle); padding: 16px">
+      <strong>预览区域</strong>
+      <p style="color: var(--xh-fg-muted)">拖动边缘调整画布大小。</p>
       <span data-xh-part="handle" edge="e"></span>
-      <span data-xh-part="handle" edge="se"></span>
       <span data-xh-part="handle" edge="s"></span>
-      <span data-xh-part="handle" edge="sw"></span>
-      <span data-xh-part="handle" edge="w"></span>
-      <span data-xh-part="handle" edge="nw"></span>
+      <span data-xh-part="handle" edge="se"></span>
     </div>
   </xh-resizable>
 </div>
-<p id="rz-out" style="margin-top: 12px; color: var(--xh-fg-muted)">260 × 140</p>
-
-<script type="module">
-  const el = document.getElementById("rz");
-  const out = document.getElementById("rz-out");
-  el.addEventListener("dimensions-change", (event) => {
-    const { width, height } = event.detail.dimensions;
-    out.textContent = `${Math.round(width)} × ${Math.round(height)}`;
-  });
-</script>
 ```
+
+## 组件结构
+
+加粗的是必需部件。
+
+`data-scope="resizable"`：**`root`** · `handle`
 
 ## 示例
 
-### 只开放部分边
+### 全部边缘
 
-edges 决定哪几条边可调；没开放的边不显示把手
+从任意边缘或角点调整尺寸
 
 ```vue
 <script setup lang="ts">
@@ -89,8 +74,7 @@ import { XhResizableHandle, XhResizableRoot } from "@xihan-ui/vue";
 import { ref } from "vue";
 
 const dimensions = ref({ width: 240, height: 120 });
-// 只往右下角撑大——文档流里最常见的形态，不需要定位上下文也完全正确
-const EDGES = ["e", "s", "se"] as const;
+const EDGES = ["n", "ne", "e", "se", "s", "sw", "w", "nw"] as const;
 </script>
 
 <template>
@@ -99,32 +83,29 @@ const EDGES = ["e", "s", "se"] as const;
     :edges="[...EDGES]"
     :min-width="120"
     :min-height="80"
-    style="border: 1px solid var(--xh-border-default); border-radius: var(--xh-shape-surface); padding: 12px"
+    style="border-radius: var(--xh-shape-surface); background: var(--xh-bg-subtle); padding: 16px"
   >
-    <span>只有右、下、右下三个把手</span>
+    <span>从任意边缘调整</span>
     <XhResizableHandle v-for="edge in EDGES" :key="edge" :edge="edge" />
   </XhResizableRoot>
 </template>
 ```
 
 ```html
-<!-- 只往右下角撑大——文档流里最常见的形态，不需要定位上下文也完全正确 -->
-<xh-resizable default-dimensions="240x120" edges="e,s,se" min-width="120" min-height="80">
-  <div
-    data-xh-part="root"
-    style="border: 1px solid var(--xh-border-default); border-radius: var(--xh-shape-surface); padding: 12px"
-  >
-    <span>只有右、下、右下三个把手</span>
-    <span data-xh-part="handle" edge="e"></span>
-    <span data-xh-part="handle" edge="s"></span>
-    <span data-xh-part="handle" edge="se"></span>
+<xh-resizable default-dimensions="240x120" min-width="120" min-height="80">
+  <div data-xh-part="root" style="border-radius: var(--xh-shape-surface); background: var(--xh-bg-subtle); padding: 16px">
+    <span>从任意边缘调整</span>
+    <span data-xh-part="handle" edge="n"></span><span data-xh-part="handle" edge="ne"></span>
+    <span data-xh-part="handle" edge="e"></span><span data-xh-part="handle" edge="se"></span>
+    <span data-xh-part="handle" edge="s"></span><span data-xh-part="handle" edge="sw"></span>
+    <span data-xh-part="handle" edge="w"></span><span data-xh-part="handle" edge="nw"></span>
   </div>
 </xh-resizable>
 ```
 
 ### 约束
 
-上下限夹住范围，aspectRatio 锁宽高比，step 吸附到整数倍
+设置宽高比和步进
 
 ```vue
 <script setup lang="ts">
@@ -138,13 +119,13 @@ const snapped = ref({ width: 240, height: 120 });
 <template>
   <div style="display: grid; gap: 24px">
     <div>
-      <p style="margin-bottom: 8px">锁 16:9——推一条边，另一轴跟着算</p>
+      <p style="margin-bottom: 8px">16:9 宽高比</p>
       <XhResizableRoot
         v-model:dimensions="ratio"
         :aspect-ratio="16 / 9"
         :edges="['e', 's', 'se']"
         :min-width="160"
-        style="border: 1px solid var(--xh-border-default); border-radius: var(--xh-shape-surface); padding: 12px"
+        style="border-radius: var(--xh-shape-surface); background: var(--xh-bg-subtle); padding: 16px"
       >
         <span>{{ Math.round(ratio.width) }} × {{ Math.round(ratio.height) }}</span>
         <XhResizableHandle v-for="edge in ['e', 's', 'se']" :key="edge" :edge="edge as never" />
@@ -152,14 +133,14 @@ const snapped = ref({ width: 240, height: 120 });
     </div>
 
     <div>
-      <p style="margin-bottom: 8px">吸附到 40 的整数倍</p>
+      <p style="margin-bottom: 8px">40px 步进</p>
       <XhResizableRoot
         v-model:dimensions="snapped"
         :step="40"
         :edges="['e', 's', 'se']"
         :min-width="120"
         :min-height="80"
-        style="border: 1px solid var(--xh-border-default); border-radius: var(--xh-shape-surface); padding: 12px"
+        style="border-radius: var(--xh-shape-surface); background: var(--xh-bg-subtle); padding: 16px"
       >
         <span>{{ snapped.width }} × {{ snapped.height }}</span>
         <XhResizableHandle v-for="edge in ['e', 's', 'se']" :key="edge" :edge="edge as never" />
@@ -172,11 +153,11 @@ const snapped = ref({ width: 240, height: 120 });
 ```html
 <div style="display: grid; gap: 24px">
   <div>
-    <p style="margin-bottom: 8px">锁 16:9——推一条边，另一轴跟着算</p>
+    <p style="margin-bottom: 8px">16:9 宽高比</p>
     <xh-resizable id="rz-ratio" default-dimensions="240x135" edges="e,s,se" min-width="160">
       <div
         data-xh-part="root"
-        style="border: 1px solid var(--xh-border-default); border-radius: var(--xh-shape-surface); padding: 12px"
+        style="border-radius: var(--xh-shape-surface); background: var(--xh-bg-subtle); padding: 16px"
       >
         <span id="rz-ratio-out">240 × 135</span>
         <span data-xh-part="handle" edge="e"></span>
@@ -187,7 +168,7 @@ const snapped = ref({ width: 240, height: 120 });
   </div>
 
   <div>
-    <p style="margin-bottom: 8px">吸附到 40 的整数倍</p>
+    <p style="margin-bottom: 8px">40px 步进</p>
     <xh-resizable
       id="rz-step"
       default-dimensions="240x120"
@@ -198,7 +179,7 @@ const snapped = ref({ width: 240, height: 120 });
     >
       <div
         data-xh-part="root"
-        style="border: 1px solid var(--xh-border-default); border-radius: var(--xh-shape-surface); padding: 12px"
+        style="border-radius: var(--xh-shape-surface); background: var(--xh-bg-subtle); padding: 16px"
       >
         <span id="rz-step-out">240 × 120</span>
         <span data-xh-part="handle" edge="e"></span>
@@ -213,7 +194,6 @@ const snapped = ref({ width: 240, height: 120 });
   const ratio = document.getElementById("rz-ratio");
   const step = document.getElementById("rz-step");
 
-  // 宽高比是个数，写成属性只能取近似值，直接给 property
   ratio.aspectRatio = 16 / 9;
 
   ratio.addEventListener("dimensions-change", (event) => {
@@ -231,7 +211,7 @@ const snapped = ref({ width: 240, height: 120 });
 
 ### 禁用
 
-把手全部退出 Tab 序列，按下也不进调整
+禁止调整尺寸
 
 ```vue
 <script setup lang="ts">
@@ -242,7 +222,7 @@ import { XhResizableHandle, XhResizableRoot } from "@xihan-ui/vue";
   <XhResizableRoot
     disabled
     :default-dimensions="{ width: 240, height: 120 }"
-    style="border: 1px solid var(--xh-border-default); border-radius: var(--xh-shape-surface); padding: 12px"
+    style="border-radius: var(--xh-shape-surface); background: var(--xh-bg-subtle); padding: 16px"
   >
     <span>尺寸锁定</span>
     <XhResizableHandle v-for="edge in ['e', 's', 'se']" :key="edge" :edge="edge as never" />
@@ -254,7 +234,7 @@ import { XhResizableHandle, XhResizableRoot } from "@xihan-ui/vue";
 <xh-resizable disabled default-dimensions="240x120">
   <div
     data-xh-part="root"
-    style="border: 1px solid var(--xh-border-default); border-radius: var(--xh-shape-surface); padding: 12px"
+    style="border-radius: var(--xh-shape-surface); background: var(--xh-bg-subtle); padding: 16px"
   >
     <span>尺寸锁定</span>
     <span data-xh-part="handle" edge="e"></span>
@@ -268,28 +248,29 @@ import { XhResizableHandle, XhResizableRoot } from "@xihan-ui/vue";
 
 ### 何时使用
 
-- 尺寸该由用户自己定：可调侧栏、可调卡片、编辑器里的预览区。
-- 尺寸要记下来：`onDimensionsChangeEnd` 就是为此留的，一次调整只发一次。
+- 调整侧栏、卡片或编辑器预览区域。
+- 保存用户设置的内容尺寸。
 
 ### 何时不用
 
-- 两块区域按比例分配、一块变大另一块必须变小：那是[分栏](./splitter)，它是守恒的。
-- 只是表格的列宽：[表格](./table)自己就有改宽把手。
-- 浮在页面上、可拖可调的窗口：用[浮动面板](./floating-panel)。
+- 两块区域联动调整时使用[分栏](./splitter)。
+- 表格列宽使用[表格](./table)内置调整。
+- 可拖动浮窗使用[浮动面板](./floating-panel)。
 
 ### 特性
 
-- 八条边各一个把手，`edges` 可以只开放其中几条；没开放的边不显示把手。
-- `minWidth` / `maxWidth` / `minHeight` / `maxHeight` 夹住范围，`aspectRatio` 锁宽高比，`step` 吸附到整数倍。
-- 键盘按**屏幕方向**推：推东边时右键变宽、推西边时右键变窄，与拖动完全同义。Home / End 直接推到两端。
-- 两个回调分工明确：`onDimensionsChange` 拖动途中连着发，`onDimensionsChangeEnd` 收尾才发一次，存尺寸用后者。
-- 拖到一半按 Escape 放弃这一次：尺寸与位移退回按下那一刻，`onDimensionsChangeEnd` 不发。
-- **推西边与北边时容器的起点会动**，那段位移写成 root 的 `left` / `top`。皮肤已给
-  `position: relative`，开箱即对——`relative` 的 `left` / `top` 是视觉位移、元素仍占原位，
-  因此对边钉得住。把 root 改成 `static` 会让这两个方向只变尺寸不移位，看起来像是「拖左边、
-  右边在长」；只用东 / 南 / 东南三向时没有这个前提。
+- 支持八个方向的调整把手。
+- 支持最小/最大尺寸、宽高比和步进约束。
+- 支持方向键、Home、End 和 Escape。
+- 调整中和调整结束分别提供回调。
 
-## 产物
+### 组合
+
+- 可在内部放置[滚动区域](./scroll-area)。
+
+## API 参考
+
+### 产物
 
 | 层 | 值 |
 | --- | --- |
@@ -299,13 +280,7 @@ import { XhResizableHandle, XhResizableRoot } from "@xihan-ui/vue";
 | 状态机 | `resizableMachine` |
 | 皮肤 | `@xihan-ui/styles/resizable.css` |
 
-## 解剖
-
-部件名即 `data-part` 属性值，也是皮肤的选择器。加粗的是必备部件，不渲染它组件不工作（Web Components 适配器会在诊断通道上报 `wc.missing-part`）。
-
-`data-scope="resizable"`：**`root`** · `handle`
-
-## Props
+### Props
 
 | 属性 | 类型 | 必填 | 说明 |
 | --- | --- | --- | --- |
@@ -326,27 +301,27 @@ import { XhResizableHandle, XhResizableRoot } from "@xihan-ui/vue";
 | `onDimensionsChange` | `(details: ResizableDimensionsChangeDetails) => void` |  | 尺寸变化意图。拖动途中连着发。 |
 | `onDimensionsChangeEnd` | `(details: ResizableDimensionsChangeEndDetails) => void` |  | 一次调整收尾发一次。存尺寸用它，别用 onDimensionsChange。 |
 
-## 事件
+### 事件
 
-自定义元素派发这些事件，Vue 组件对应同名 emit；载荷都在 `detail` 上。可双向绑定的值另有 `update:xxx`，见 Props。
+自定义元素将载荷放在 `detail`；Vue 使用同名 emit。
 
 | 事件 | 载荷 | 说明 |
 | --- | --- | --- |
 | `dimensions-change` | `ResizableDimensionsChangeDetails` | 尺寸变化（拖动途中会连发）；detail 为 `{ dimensions }` |
 | `dimensions-change-end` | `ResizableDimensionsChangeEndDetails` | 一次调整收尾发一次；detail 为 `{ dimensions, edge }` |
 
-## 插槽
+### 插槽
 
-作者能拿到载荷的插槽。只转发内容、不带载荷的默认插槽不在此列——那类直接写子节点即可。
+仅列出带载荷的插槽。
 
 | Vue 组件 | 插槽 | 载荷 | 说明 |
 | --- | --- | --- | --- |
 | `XhResizableHandle` | `default` | — |  |
 | `XhResizableRoot` | `default` | `ResizableRootSlotProps` |  |
 
-## 状态
+### 状态
 
-状态机内部转移，写样式与业务都用不到；要监听变化请看上面的「事件」。
+以下名称仅用于内部状态机。
 
 **状态**：`idle` · `resizing`
 
@@ -354,9 +329,9 @@ import { XhResizableHandle, XhResizableRoot } from "@xihan-ui/vue";
 
 **判据**：`canResize`
 
-## connect API
+### connect API
 
-`useResizable` 产出的对象。`getXxxProps()` 铺到对应部件的宿主元素上，其余是可读状态与操作入口。
+`getXxxProps()` 返回对应部件的宿主属性。
 
 | 成员 | 类型 | 说明 |
 | --- | --- | --- |
@@ -370,7 +345,9 @@ import { XhResizableHandle, XhResizableRoot } from "@xihan-ui/vue";
 | `getRootProps` | `() => T['element']` |  |
 | `getHandleProps` | `(props: { edge: ResizeEdge }) => T['element']` |  |
 
-## 键盘
+## 无障碍
+
+### 键盘
 
 规格出处：[W3C APG](https://www.w3.org/WAI/ARIA/apg/patterns/windowsplitter/#keyboardinteraction)
 
@@ -383,9 +360,9 @@ import { XhResizableHandle, XhResizableRoot } from "@xihan-ui/vue";
 | `End` | focus in handle, not disabled | 推到最大尺寸；没给上限时不动 |
 | `Escape` | 调整中 | 放弃这一次调整，尺寸与位移退回按下那一刻；收尾回调不发 |
 
-## 无障碍
+### ARIA
 
-下面这些由 `connect` 铺到部件上，作者不必自己写；重复写反而会覆盖掉正确值。
+以下属性由 `connect` 生成。
 
 | 部件 | 属性 | 值 |
 | --- | --- | --- |
@@ -397,15 +374,17 @@ import { XhResizableHandle, XhResizableRoot } from "@xihan-ui/vue";
 | `handle` | `aria-valuenow` | Math.round(edge === 'n' \|\| edge === 's' ? dimensions.… |
 | `handle` | `role` | 'separator' |
 
-## 样式
+## 样式参考
 
-默认皮肤 `@xihan-ui/styles/resizable.css` 按部件选择：`[data-scope="resizable"][data-part="root"]`。它落在 `xihan.components` 层；业务样式不写进 `@layer` 即高于全部库层，要按层压过来就写进 `xihan.overrides`。
+### 皮肤
+
+`@xihan-ui/styles/resizable.css` 使用 `[data-scope="resizable"][data-part="root"]` 部件选择器，位于 `xihan.components` 层。覆盖样式使用 `xihan.overrides`。
 
 `forced-colors: active` 下另有一套规则：颜色交给系统，边框与状态标记改用系统色关键字。
 
-## 数据属性
+### 数据属性
 
-由 `connect` 产出并铺到部件上，皮肤与测试都据此选择；`data-disabled` 这类无值属性在条件不成立时整个不出现。
+由 `connect` 生成；条件不成立时不输出无值属性。
 
 | 部件 | 属性 | 值 |
 | --- | --- | --- |
@@ -417,7 +396,7 @@ import { XhResizableHandle, XhResizableRoot } from "@xihan-ui/vue";
 | `handle` | `data-resizing` | ''（条件成立时才出现） |
 
 <!-- xh-component-tokens:start -->
-## CSS 变量
+### CSS 变量
 
 本组件公开覆盖槽由独立皮肤的实际消费位生成；缺省来源、作用部件和状态均与 CSS 同源。
 
@@ -427,20 +406,15 @@ import { XhResizableHandle, XhResizableRoot } from "@xihan-ui/vue";
 | `--xh-resizable-grip` | `handle` | `block-size`<br>`inline-size`<br>`inset-block`<br>`inset-block-end`<br>`inset-block-start`<br>`inset-inline`<br>`inset-inline-end`<br>`inset-inline-start` | `edge=e`<br>`edge=n`<br>`edge=s`<br>`edge=w` | `--xh-space-2` | resizable 的 handle 部件 block-size、inline-size、inset-block、inset-block-end、inset-block-start、inset-inline、inset-inline-end、inset-inline-start 覆盖槽。 |
 <!-- xh-component-tokens:end -->
 
-## 动效
+### 动效
 
 `background` 走 `transition` 过渡。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
 
 系统开启减弱动效时由令牌层统一收敛，皮肤不另作判断。
 
-## RTL
+### RTL
 
 皮肤用逻辑属性排布（`inline-start` 一族），`dir="rtl"` 下自动镜像。
 
-`edge` 说的是**逻辑方向**：`e` 是行尾侧，从右往左排版时它落在屏幕左边。机器把逻辑边翻成
-物理边再算几何——翻的是边不是位移的正负，只翻位移会算对宽度却动错那一头。键盘那侧因此
-不看文字方向：方向键按的恒是屏幕方向，与拖动完全同义。
-
-## 组合
-
-- 里面放[滚动区域](./scroll-area)，内容超出时自己滚。
+- 边缘使用逻辑方向，自动适配 RTL。
+- 键盘方向始终对应屏幕方向。

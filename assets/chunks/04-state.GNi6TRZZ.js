@@ -1,0 +1,51 @@
+const a=`<!-- 状态 | 禁用、只读与校验失败 -->
+<div style="display: grid; gap: 16px">
+  <xh-date-field default-value="2026-07-28" locale="zh-CN" disabled>
+    <div data-xh-part="root">
+      <label data-xh-part="label">禁用</label>
+      <div data-xh-part="control">
+        <div data-xh-part="segment-group">
+          <span data-xh-part="segment" index="0"></span>
+          <span>年</span>
+          <span data-xh-part="segment" index="1"></span>
+          <span>月</span>
+          <span data-xh-part="segment" index="2"></span>
+          <span>日</span>
+        </div>
+      </div>
+    </div>
+  </xh-date-field>
+
+  <xh-date-field default-value="2026-07-28" locale="zh-CN" read-only>
+    <div data-xh-part="root">
+      <label data-xh-part="label">只读</label>
+      <div data-xh-part="control">
+        <div data-xh-part="segment-group">
+          <span data-xh-part="segment" index="0"></span>
+          <span>年</span>
+          <span data-xh-part="segment" index="1"></span>
+          <span>月</span>
+          <span data-xh-part="segment" index="2"></span>
+          <span>日</span>
+        </div>
+      </div>
+    </div>
+  </xh-date-field>
+
+  <xh-date-field default-value="2026-07-28" locale="zh-CN" invalid>
+    <div data-xh-part="root">
+      <label data-xh-part="label">校验失败</label>
+      <div data-xh-part="control">
+        <div data-xh-part="segment-group">
+          <span data-xh-part="segment" index="0"></span>
+          <span>年</span>
+          <span data-xh-part="segment" index="1"></span>
+          <span>月</span>
+          <span data-xh-part="segment" index="2"></span>
+          <span>日</span>
+        </div>
+      </div>
+    </div>
+  </xh-date-field>
+</div>
+`;export{a as default};

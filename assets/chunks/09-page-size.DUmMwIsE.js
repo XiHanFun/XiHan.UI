@@ -1,0 +1,62 @@
+const t=`<!-- 每页条数 | 调整每页展示数量 -->
+<xh-pagination
+  id="pagination-page-size"
+  count="196"
+  default-page-size="10"
+  default-page="8"
+>
+  <nav data-xh-part="root">
+    <span id="pagination-page-size-summary" data-xh-part="summary">
+      第 71-80 条，共 196 条
+    </span>
+    <div data-xh-part="page-size-select"></div>
+
+    <button data-xh-part="prev-trigger"></button>
+    <button data-xh-part="item" value="1">1</button>
+    <button data-xh-part="ellipsis-trigger" side="start"></button>
+    <button data-xh-part="item" value="7">7</button>
+    <button data-xh-part="item" value="8">8</button>
+    <button data-xh-part="item" value="9">9</button>
+    <button data-xh-part="ellipsis-trigger" side="end"></button>
+    <button data-xh-part="item" value="20">20</button>
+    <button data-xh-part="next-trigger"></button>
+  </nav>
+</xh-pagination>
+
+<script type="module">
+  const host = document.getElementById("pagination-page-size");
+  const root = host.querySelector('[data-xh-part="root"]');
+  const next = root.querySelector('[data-xh-part="next-trigger"]');
+  const summary = document.getElementById("pagination-page-size-summary");
+
+  host.pageSizeOptions = [10, 20, 50];
+  host.translations = {
+    pageSizeOption: (size) => \`\${size} 条 / 页\`,
+    summary: (start, end, total) => \`第 \${start}-\${end} 条，共 \${total} 条\`,
+  };
+
+  function render() {
+    for (const node of root.querySelectorAll(
+      '[data-xh-part="item"], [data-xh-part="ellipsis-trigger"]',
+    ))
+      node.remove();
+    for (const item of host.pageItems) {
+      const el = document.createElement("button");
+      if (item.type === "ellipsis") {
+        el.dataset.xhPart = "ellipsis-trigger";
+        el.setAttribute("side", item.side);
+      } else {
+        el.dataset.xhPart = "item";
+        el.setAttribute("value", String(item.value));
+        el.textContent = String(item.value);
+      }
+      root.insertBefore(el, next);
+    }
+    const { start, end } = host.pageRange;
+    summary.textContent = \`第 \${start}-\${end} 条，共 \${host.count} 条\`;
+  }
+
+  host.addEventListener("page-change", render);
+  host.addEventListener("page-size-change", render);
+<\/script>
+`;export{t as default};

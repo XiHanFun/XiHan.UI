@@ -1,0 +1,15 @@
+const n=`<!-- Blob | 下载 JSON 文件 -->
+<xh-download-trigger id="json-download" file-name="package.json">
+  <button data-xh-part="root">
+    <svg viewBox="0 0 24 24" width="1em" height="1em" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><path d="M7 10L12 15L17 10"/><path d="M12 3V15"/></svg>
+    导出 JSON
+  </button>
+</xh-download-trigger>
+
+<script type="module">
+  document.querySelector("#json-download").data = new Blob(
+    [JSON.stringify({ name: "XiHan.UI", version: "1.1.0" }, null, 2)],
+    { type: "application/json" },
+  );
+<\/script>
+`;export{n as default};

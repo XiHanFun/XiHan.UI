@@ -1,8 +1,8 @@
 来源：https://ui.docs.xihanfun.com/components/flex
 
-# Flex `弹性布局`
+# Flex 弹性布局
 
-一维排布容器：子项沿一条轴排开，间距走档位，还能在每两项之间放一份分隔符。容器自己不给子项加任何样式。
+沿水平或垂直方向排列内容。
 
 <div class="xh-resource-links">
   <a href="https://github.com/XiHanFun/XiHan.UI/tree/dev/ui/packages/engine/headless/src/flex" target="_blank" rel="noreferrer">Headless</a>
@@ -14,78 +14,65 @@
 
 ## 用法
 
-一维排布容器：子项横着排，间距走档位，容器自己不给子项加任何样式
+水平排列内容
 
 ```vue
 <script setup lang="ts">
 import { XhFlex } from "@xihan-ui/vue";
-
-const boxStyle
-  = "padding: 8px 14px; border-radius: var(--xh-radius-md); background: var(--xh-bg-subtle); color: var(--xh-fg-default)";
 </script>
 
 <template>
-  <XhFlex gap="sm">
-    <span :style="boxStyle">甲</span>
-    <span :style="boxStyle">乙</span>
-    <span :style="boxStyle">丙</span>
+  <XhFlex align="center" gap="sm">
+    <span style="display: grid; inline-size: 40px; block-size: 40px; place-items: center; border-radius: var(--xh-shape-pill); background: var(--xh-bg-brand-subtle); color: var(--xh-fg-brand); font-weight: 600">林</span>
+    <XhFlex orientation="vertical" gap="xs">
+      <strong>林晓</strong>
+      <span style="color: var(--xh-fg-muted); font-size: 13px">产品设计师</span>
+    </XhFlex>
   </XhFlex>
 </template>
 ```
 
 ```html
-<style>
-  #flex-basic [data-box] {
-    padding: 8px 14px;
-    border-radius: var(--xh-radius-md);
-    background: var(--xh-bg-subtle);
-    color: var(--xh-fg-default);
-  }
-</style>
-
-<!-- 宿主设 display: contents，排布落在 root 上 -->
-<xh-flex id="flex-basic" gap="sm" style="display: contents">
+<xh-flex align="center" gap="sm" style="display: contents">
   <div data-xh-part="root">
-    <span data-box>甲</span>
-    <span data-box>乙</span>
-    <span data-box>丙</span>
+    <span style="display: grid; inline-size: 40px; block-size: 40px; place-items: center; border-radius: var(--xh-shape-pill); background: var(--xh-bg-brand-subtle); color: var(--xh-fg-brand); font-weight: 600">林</span>
+    <xh-flex orientation="vertical" gap="xs" style="display: contents">
+      <div data-xh-part="root">
+        <strong>林晓</strong>
+        <span style="color: var(--xh-fg-muted); font-size: 13px">产品设计师</span>
+      </div>
+    </xh-flex>
   </div>
 </xh-flex>
 ```
+
+## 组件结构
+
+加粗的是必需部件。
+
+`data-scope="flex"`：**`root`** · `split`
 
 ## 示例
 
 ### 方向
 
-orientation 换主轴：horizontal 横排（缺省），vertical 竖排
+设置水平或垂直排列
 
 ```vue
 <script setup lang="ts">
 import { XhFlex } from "@xihan-ui/vue";
 
-const boxStyle
-  = "padding: 8px 14px; border-radius: var(--xh-radius-md); background: var(--xh-bg-subtle); color: var(--xh-fg-default)";
-const labelStyle = "font-size: 13px; color: var(--xh-fg-muted)";
+const items = ["设计", "开发", "测试"];
+const itemStyle = "padding: 8px 14px; border-radius: var(--xh-shape-control); background: var(--xh-bg-subtle)";
 </script>
 
 <template>
   <XhFlex orientation="vertical" gap="lg">
-    <XhFlex orientation="vertical" gap="xs">
-      <span :style="labelStyle">horizontal（缺省）</span>
-      <XhFlex gap="sm">
-        <span :style="boxStyle">甲</span>
-        <span :style="boxStyle">乙</span>
-        <span :style="boxStyle">丙</span>
-      </XhFlex>
+    <XhFlex gap="sm">
+      <span v-for="item in items" :key="item" :style="itemStyle">{{ item }}</span>
     </XhFlex>
-
-    <XhFlex orientation="vertical" gap="xs">
-      <span :style="labelStyle">vertical</span>
-      <XhFlex orientation="vertical" gap="sm">
-        <span :style="boxStyle">甲</span>
-        <span :style="boxStyle">乙</span>
-        <span :style="boxStyle">丙</span>
-      </XhFlex>
+    <XhFlex orientation="vertical" gap="sm" style="inline-size: 120px">
+      <span v-for="item in items" :key="item" :style="itemStyle">{{ item }}</span>
     </XhFlex>
   </XhFlex>
 </template>
@@ -93,264 +80,75 @@ const labelStyle = "font-size: 13px; color: var(--xh-fg-muted)";
 
 ```html
 <style>
-  #flex-direction [data-box] {
-    padding: 8px 14px;
-    border-radius: var(--xh-radius-md);
-    background: var(--xh-bg-subtle);
-    color: var(--xh-fg-default);
-  }
-  #flex-direction [data-label] {
-    font-size: 13px;
-    color: var(--xh-fg-muted);
-  }
+  #flex-direction [data-item] { padding: 8px 14px; border-radius: var(--xh-shape-control); background: var(--xh-bg-subtle); }
 </style>
-
-<!-- 宿主设 display: contents，排布落在 root 上 -->
-<div id="flex-direction">
-  <xh-flex orientation="vertical" gap="lg" style="display: contents">
-    <div data-xh-part="root">
-      <xh-flex orientation="vertical" gap="xs" style="display: contents">
-        <div data-xh-part="root">
-          <span data-label>horizontal（缺省）</span>
-          <xh-flex gap="sm" style="display: contents">
-            <div data-xh-part="root">
-              <span data-box>甲</span>
-              <span data-box>乙</span>
-              <span data-box>丙</span>
-            </div>
-          </xh-flex>
-        </div>
-      </xh-flex>
-
-      <xh-flex orientation="vertical" gap="xs" style="display: contents">
-        <div data-xh-part="root">
-          <span data-label>vertical</span>
-          <xh-flex orientation="vertical" gap="sm" style="display: contents">
-            <div data-xh-part="root">
-              <span data-box>甲</span>
-              <span data-box>乙</span>
-              <span data-box>丙</span>
-            </div>
-          </xh-flex>
-        </div>
-      </xh-flex>
-    </div>
-  </xh-flex>
-</div>
+<xh-flex id="flex-direction" orientation="vertical" gap="lg" style="display: contents">
+  <div data-xh-part="root">
+    <xh-flex gap="sm" style="display: contents"><div data-xh-part="root"><span data-item>设计</span><span data-item>开发</span><span data-item>测试</span></div></xh-flex>
+    <xh-flex orientation="vertical" gap="sm" style="display: contents"><div data-xh-part="root" style="inline-size: 120px"><span data-item>设计</span><span data-item>开发</span><span data-item>测试</span></div></xh-flex>
+  </div>
+</xh-flex>
 ```
 
 ### 对齐与分布
 
-justify 管主轴怎么分，align 管交叉轴怎么对；两条轴互不相干
+对齐内容并分配剩余空间
 
 ```vue
 <script setup lang="ts">
 import { XhFlex } from "@xihan-ui/vue";
-
-const trackStyle
-  = "border: 1px solid var(--xh-border-default); border-radius: var(--xh-radius-md); padding: 8px; block-size: 72px";
-const boxStyle
-  = "padding: 8px 14px; border-radius: var(--xh-radius-md); background: var(--xh-bg-subtle); color: var(--xh-fg-default)";
-const tallBoxStyle = `${boxStyle}; padding-block: 20px`;
-const labelStyle = "font-size: 13px; color: var(--xh-fg-muted)";
-
-const justifies = ["start", "center", "end", "between"] as const;
-const aligns = ["start", "center", "end", "stretch"] as const;
 </script>
 
 <template>
-  <XhFlex orientation="vertical" gap="lg">
-    <XhFlex v-for="j in justifies" :key="j" orientation="vertical" gap="xs">
-      <span :style="labelStyle">justify = {{ j }}</span>
-      <!-- 轨道给了固定高度，主轴上才有多余空间可分 -->
-      <XhFlex :justify="j" gap="sm" align="center" :style="trackStyle">
-        <span :style="boxStyle">甲</span>
-        <span :style="boxStyle">乙</span>
-        <span :style="boxStyle">丙</span>
-      </XhFlex>
+  <XhFlex
+    align="center"
+    justify="between"
+    style="inline-size: min(360px, 100%); padding: 16px; border-radius: var(--xh-shape-surface); background: var(--xh-bg-subtle)"
+  >
+    <XhFlex align="center" gap="sm">
+      <span style="display: grid; inline-size: 36px; block-size: 36px; place-items: center; border-radius: var(--xh-shape-pill); background: var(--xh-bg-brand-subtle); color: var(--xh-fg-brand)">周</span>
+      <XhFlex orientation="vertical" gap="xs"><strong>周宁</strong><small style="color: var(--xh-fg-muted)">在线</small></XhFlex>
     </XhFlex>
-
-    <XhFlex v-for="a in aligns" :key="a" orientation="vertical" gap="xs">
-      <span :style="labelStyle">align = {{ a }}</span>
-      <XhFlex :align="a" gap="sm" :style="trackStyle">
-        <span :style="boxStyle">甲</span>
-        <span :style="tallBoxStyle">乙（更高）</span>
-        <span :style="boxStyle">丙</span>
-      </XhFlex>
-    </XhFlex>
+    <span style="color: var(--xh-fg-brand)">项目负责人</span>
   </XhFlex>
 </template>
 ```
 
 ```html
-<style>
-  #flex-align-justify [data-track] {
-    border: 1px solid var(--xh-border-default);
-    border-radius: var(--xh-radius-md);
-    padding: 8px;
-    block-size: 72px;
-  }
-  #flex-align-justify [data-box] {
-    padding: 8px 14px;
-    border-radius: var(--xh-radius-md);
-    background: var(--xh-bg-subtle);
-    color: var(--xh-fg-default);
-  }
-  #flex-align-justify [data-tall] {
-    padding-block: 20px;
-  }
-  #flex-align-justify [data-label] {
-    font-size: 13px;
-    color: var(--xh-fg-muted);
-  }
-</style>
-
-<!-- 宿主设 display: contents，排布落在 root 上 -->
-<div id="flex-align-justify">
-  <xh-flex orientation="vertical" gap="lg" style="display: contents">
-    <div data-xh-part="root">
-      <xh-flex orientation="vertical" gap="xs" style="display: contents">
-        <div data-xh-part="root">
-          <span data-label>justify = start</span>
-          <!-- 轨道给了固定高度，主轴上才有多余空间可分 -->
-          <xh-flex justify="start" gap="sm" align="center" style="display: contents">
-            <div data-xh-part="root" data-track>
-              <span data-box>甲</span>
-              <span data-box>乙</span>
-              <span data-box>丙</span>
-            </div>
-          </xh-flex>
-        </div>
-      </xh-flex>
-
-      <xh-flex orientation="vertical" gap="xs" style="display: contents">
-        <div data-xh-part="root">
-          <span data-label>justify = center</span>
-          <xh-flex justify="center" gap="sm" align="center" style="display: contents">
-            <div data-xh-part="root" data-track>
-              <span data-box>甲</span>
-              <span data-box>乙</span>
-              <span data-box>丙</span>
-            </div>
-          </xh-flex>
-        </div>
-      </xh-flex>
-
-      <xh-flex orientation="vertical" gap="xs" style="display: contents">
-        <div data-xh-part="root">
-          <span data-label>justify = end</span>
-          <xh-flex justify="end" gap="sm" align="center" style="display: contents">
-            <div data-xh-part="root" data-track>
-              <span data-box>甲</span>
-              <span data-box>乙</span>
-              <span data-box>丙</span>
-            </div>
-          </xh-flex>
-        </div>
-      </xh-flex>
-
-      <xh-flex orientation="vertical" gap="xs" style="display: contents">
-        <div data-xh-part="root">
-          <span data-label>justify = between</span>
-          <xh-flex justify="between" gap="sm" align="center" style="display: contents">
-            <div data-xh-part="root" data-track>
-              <span data-box>甲</span>
-              <span data-box>乙</span>
-              <span data-box>丙</span>
-            </div>
-          </xh-flex>
-        </div>
-      </xh-flex>
-
-      <xh-flex orientation="vertical" gap="xs" style="display: contents">
-        <div data-xh-part="root">
-          <span data-label>align = start</span>
-          <xh-flex align="start" gap="sm" style="display: contents">
-            <div data-xh-part="root" data-track>
-              <span data-box>甲</span>
-              <span data-box data-tall>乙（更高）</span>
-              <span data-box>丙</span>
-            </div>
-          </xh-flex>
-        </div>
-      </xh-flex>
-
-      <xh-flex orientation="vertical" gap="xs" style="display: contents">
-        <div data-xh-part="root">
-          <span data-label>align = center</span>
-          <xh-flex align="center" gap="sm" style="display: contents">
-            <div data-xh-part="root" data-track>
-              <span data-box>甲</span>
-              <span data-box data-tall>乙（更高）</span>
-              <span data-box>丙</span>
-            </div>
-          </xh-flex>
-        </div>
-      </xh-flex>
-
-      <xh-flex orientation="vertical" gap="xs" style="display: contents">
-        <div data-xh-part="root">
-          <span data-label>align = end</span>
-          <xh-flex align="end" gap="sm" style="display: contents">
-            <div data-xh-part="root" data-track>
-              <span data-box>甲</span>
-              <span data-box data-tall>乙（更高）</span>
-              <span data-box>丙</span>
-            </div>
-          </xh-flex>
-        </div>
-      </xh-flex>
-
-      <xh-flex orientation="vertical" gap="xs" style="display: contents">
-        <div data-xh-part="root">
-          <span data-label>align = stretch</span>
-          <xh-flex align="stretch" gap="sm" style="display: contents">
-            <div data-xh-part="root" data-track>
-              <span data-box>甲</span>
-              <span data-box data-tall>乙（更高）</span>
-              <span data-box>丙</span>
-            </div>
-          </xh-flex>
-        </div>
-      </xh-flex>
-    </div>
-  </xh-flex>
-</div>
+<xh-flex align="center" justify="between" style="display: contents">
+  <div data-xh-part="root" style="inline-size: min(360px, 100%); padding: 16px; border-radius: var(--xh-shape-surface); background: var(--xh-bg-subtle)">
+    <xh-flex align="center" gap="sm" style="display: contents">
+      <div data-xh-part="root">
+        <span style="display: grid; inline-size: 36px; block-size: 36px; place-items: center; border-radius: var(--xh-shape-pill); background: var(--xh-bg-brand-subtle); color: var(--xh-fg-brand)">周</span>
+        <xh-flex orientation="vertical" gap="xs" style="display: contents"><div data-xh-part="root"><strong>周宁</strong><small style="color: var(--xh-fg-muted)">在线</small></div></xh-flex>
+      </div>
+    </xh-flex>
+    <span style="color: var(--xh-fg-brand)">项目负责人</span>
+  </div>
+</xh-flex>
 ```
 
-### 间距档位
+### 间距
 
-gap 收的是档位名不是像素：xs / sm / md / lg / xl 逐档指向一个间距令牌
+使用预设间距
 
 ```vue
 <script setup lang="ts">
 import { XhFlex } from "@xihan-ui/vue";
 
-const boxStyle
-  = "padding: 6px 12px; border-radius: var(--xh-radius-md); background: var(--xh-bg-subtle); color: var(--xh-fg-default)";
-const labelStyle = "font-size: 13px; color: var(--xh-fg-muted); inline-size: 96px";
-
-const gaps = ["xs", "sm", "md", "lg", "xl"] as const;
+const groups = [
+  { gap: "sm", label: "紧凑" },
+  { gap: "md", label: "标准" },
+  { gap: "lg", label: "宽松" },
+] as const;
 </script>
 
 <template>
-  <XhFlex orientation="vertical" gap="sm">
-    <XhFlex v-for="g in gaps" :key="g" align="center" gap="md">
-      <span :style="labelStyle">gap = {{ g }}</span>
-      <XhFlex :gap="g">
-        <span :style="boxStyle">甲</span>
-        <span :style="boxStyle">乙</span>
-        <span :style="boxStyle">丙</span>
-      </XhFlex>
-    </XhFlex>
-
-    <!-- 档位不够用时，直接给使用者槽位写值，它排在所有档位之前 -->
-    <XhFlex align="center" gap="md">
-      <span :style="labelStyle">槽位覆盖</span>
-      <XhFlex gap="xs" style="--xh-flex-gap: 40px">
-        <span :style="boxStyle">甲</span>
-        <span :style="boxStyle">乙</span>
-        <span :style="boxStyle">丙</span>
+  <XhFlex orientation="vertical" gap="md">
+    <XhFlex v-for="group in groups" :key="group.gap" align="center" gap="md">
+      <span style="inline-size: 48px; color: var(--xh-fg-muted)">{{ group.label }}</span>
+      <XhFlex :gap="group.gap">
+        <span v-for="item in 3" :key="item" style="inline-size: 28px; block-size: 28px; border-radius: var(--xh-shape-control); background: var(--xh-bg-brand-subtle)" />
       </XhFlex>
     </XhFlex>
   </XhFlex>
@@ -360,242 +158,80 @@ const gaps = ["xs", "sm", "md", "lg", "xl"] as const;
 ```html
 <style>
   #flex-gap [data-box] {
-    padding: 6px 12px;
-    border-radius: var(--xh-radius-md);
-    background: var(--xh-bg-subtle);
-    color: var(--xh-fg-default);
+    inline-size: 28px;
+    block-size: 28px;
+    border-radius: var(--xh-shape-control);
+    background: var(--xh-bg-brand-subtle);
   }
   #flex-gap [data-label] {
-    font-size: 13px;
+    inline-size: 48px;
     color: var(--xh-fg-muted);
-    inline-size: 96px;
   }
 </style>
-
-<!-- 宿主设 display: contents，排布落在 root 上 -->
-<div id="flex-gap">
-  <xh-flex orientation="vertical" gap="sm" style="display: contents">
-    <div data-xh-part="root">
-      <xh-flex align="center" gap="md" style="display: contents">
-        <div data-xh-part="root">
-          <span data-label>gap = xs</span>
-          <xh-flex gap="xs" style="display: contents">
-            <div data-xh-part="root">
-              <span data-box>甲</span>
-              <span data-box>乙</span>
-              <span data-box>丙</span>
-            </div>
-          </xh-flex>
-        </div>
-      </xh-flex>
-
-      <xh-flex align="center" gap="md" style="display: contents">
-        <div data-xh-part="root">
-          <span data-label>gap = sm</span>
-          <xh-flex gap="sm" style="display: contents">
-            <div data-xh-part="root">
-              <span data-box>甲</span>
-              <span data-box>乙</span>
-              <span data-box>丙</span>
-            </div>
-          </xh-flex>
-        </div>
-      </xh-flex>
-
-      <xh-flex align="center" gap="md" style="display: contents">
-        <div data-xh-part="root">
-          <span data-label>gap = md</span>
-          <xh-flex gap="md" style="display: contents">
-            <div data-xh-part="root">
-              <span data-box>甲</span>
-              <span data-box>乙</span>
-              <span data-box>丙</span>
-            </div>
-          </xh-flex>
-        </div>
-      </xh-flex>
-
-      <xh-flex align="center" gap="md" style="display: contents">
-        <div data-xh-part="root">
-          <span data-label>gap = lg</span>
-          <xh-flex gap="lg" style="display: contents">
-            <div data-xh-part="root">
-              <span data-box>甲</span>
-              <span data-box>乙</span>
-              <span data-box>丙</span>
-            </div>
-          </xh-flex>
-        </div>
-      </xh-flex>
-
-      <xh-flex align="center" gap="md" style="display: contents">
-        <div data-xh-part="root">
-          <span data-label>gap = xl</span>
-          <xh-flex gap="xl" style="display: contents">
-            <div data-xh-part="root">
-              <span data-box>甲</span>
-              <span data-box>乙</span>
-              <span data-box>丙</span>
-            </div>
-          </xh-flex>
-        </div>
-      </xh-flex>
-
-      <!-- 档位不够用时，直接给使用者槽位写值，它排在所有档位之前 -->
-      <xh-flex align="center" gap="md" style="display: contents">
-        <div data-xh-part="root">
-          <span data-label>槽位覆盖</span>
-          <xh-flex gap="xs" style="display: contents">
-            <div data-xh-part="root" style="--xh-flex-gap: 40px">
-              <span data-box>甲</span>
-              <span data-box>乙</span>
-              <span data-box>丙</span>
-            </div>
-          </xh-flex>
-        </div>
-      </xh-flex>
-    </div>
-  </xh-flex>
-</div>
+<xh-flex id="flex-gap" orientation="vertical" gap="md" style="display: contents">
+  <div data-xh-part="root">
+    <xh-flex align="center" gap="md" style="display: contents">
+      <div data-xh-part="root"><span data-label>紧凑</span><xh-flex gap="sm" style="display: contents"><div data-xh-part="root"><span data-box></span><span data-box></span><span data-box></span></div></xh-flex></div>
+    </xh-flex>
+    <xh-flex align="center" gap="md" style="display: contents">
+      <div data-xh-part="root"><span data-label>标准</span><xh-flex gap="md" style="display: contents"><div data-xh-part="root"><span data-box></span><span data-box></span><span data-box></span></div></xh-flex></div>
+    </xh-flex>
+    <xh-flex align="center" gap="md" style="display: contents">
+      <div data-xh-part="root"><span data-label>宽松</span><xh-flex gap="lg" style="display: contents"><div data-xh-part="root"><span data-box></span><span data-box></span><span data-box></span></div></xh-flex></div>
+    </xh-flex>
+  </div>
+</xh-flex>
 ```
 
-### 折行与行内
+### 换行与行内
 
-wrap 让放不下的子项换行、行与行之间同样吃 gap；inline 让容器缩到内容宽度、能跟文字排一行
+换行排列或随文字排布
 
 ```vue
 <script setup lang="ts">
 import { XhFlex } from "@xihan-ui/vue";
 
-const trackStyle
-  = "border: 1px solid var(--xh-border-default); border-radius: var(--xh-radius-md); padding: 8px; max-inline-size: 320px";
-const tagStyle
-  = "padding: 4px 10px; border-radius: var(--xh-radius-full); background: var(--xh-bg-subtle); color: var(--xh-fg-default); font-size: 13px";
-const labelStyle = "font-size: 13px; color: var(--xh-fg-muted)";
-
-const tags = ["前端", "组件库", "无障碍", "设计令牌", "自定义元素", "键盘导航"];
+const tags = ["前端", "组件库", "无障碍", "设计令牌", "键盘导航"];
+const tagStyle = "padding: 4px 10px; border-radius: var(--xh-shape-pill); background: var(--xh-bg-brand-subtle); color: var(--xh-fg-brand); font-size: 13px";
 </script>
 
 <template>
   <XhFlex orientation="vertical" gap="lg">
-    <XhFlex orientation="vertical" gap="xs">
-      <span :style="labelStyle">不折行（缺省）：全部挤在一行里，宽度不够就被压窄</span>
-      <XhFlex gap="sm" :style="trackStyle">
-        <span v-for="t in tags" :key="t" :style="tagStyle">{{ t }}</span>
+    <XhFlex wrap gap="sm" style="max-inline-size: 280px">
+      <span v-for="tag in tags" :key="tag" :style="tagStyle">{{ tag }}</span>
+    </XhFlex>
+    <div>
+      当前筛选：
+      <XhFlex inline gap="xs">
+        <span :style="tagStyle">近 7 天</span>
+        <span :style="tagStyle">已完成</span>
       </XhFlex>
-    </XhFlex>
-
-    <XhFlex orientation="vertical" gap="xs">
-      <span :style="labelStyle">wrap：换行摆，行间距同样是 gap</span>
-      <XhFlex wrap gap="sm" :style="trackStyle">
-        <span v-for="t in tags" :key="t" :style="tagStyle">{{ t }}</span>
-      </XhFlex>
-    </XhFlex>
-
-    <XhFlex orientation="vertical" gap="xs">
-      <span :style="labelStyle">inline：容器缩到内容宽度，跟前后文字排在同一行</span>
-      <!-- 外层留成普通块级容器：行内盒要和文字处在同一个行内格式化上下文里才看得出效果 -->
-      <div style="line-height: 2">
-        当前筛选条件为
-        <XhFlex inline align="center" gap="xs">
-          <span :style="tagStyle">近 7 天</span>
-          <span :style="tagStyle">已完成</span>
-        </XhFlex>
-        ，共 24 条。
-      </div>
-    </XhFlex>
+    </div>
   </XhFlex>
 </template>
 ```
 
 ```html
 <style>
-  #flex-wrap-inline [data-track] {
-    border: 1px solid var(--xh-border-default);
-    border-radius: var(--xh-radius-md);
-    padding: 8px;
-    max-inline-size: 320px;
-  }
-  #flex-wrap-inline [data-tag] {
-    padding: 4px 10px;
-    border-radius: var(--xh-radius-full);
-    background: var(--xh-bg-subtle);
-    color: var(--xh-fg-default);
-    font-size: 13px;
-  }
-  #flex-wrap-inline [data-label] {
-    font-size: 13px;
-    color: var(--xh-fg-muted);
-  }
+  #flex-wrap [data-tag] { padding: 4px 10px; border-radius: var(--xh-shape-pill); background: var(--xh-bg-brand-subtle); color: var(--xh-fg-brand); font-size: 13px; }
 </style>
-
-<!-- 宿主设 display: contents，排布落在 root 上 -->
-<div id="flex-wrap-inline">
-  <xh-flex orientation="vertical" gap="lg" style="display: contents">
-    <div data-xh-part="root">
-      <xh-flex orientation="vertical" gap="xs" style="display: contents">
-        <div data-xh-part="root">
-          <span data-label>不折行（缺省）：全部挤在一行里，宽度不够就被压窄</span>
-          <xh-flex gap="sm" style="display: contents">
-            <div data-xh-part="root" data-track>
-              <span data-tag>前端</span>
-              <span data-tag>组件库</span>
-              <span data-tag>无障碍</span>
-              <span data-tag>设计令牌</span>
-              <span data-tag>自定义元素</span>
-              <span data-tag>键盘导航</span>
-            </div>
-          </xh-flex>
-        </div>
-      </xh-flex>
-
-      <xh-flex orientation="vertical" gap="xs" style="display: contents">
-        <div data-xh-part="root">
-          <span data-label>wrap：换行摆，行间距同样是 gap</span>
-          <xh-flex wrap gap="sm" style="display: contents">
-            <div data-xh-part="root" data-track>
-              <span data-tag>前端</span>
-              <span data-tag>组件库</span>
-              <span data-tag>无障碍</span>
-              <span data-tag>设计令牌</span>
-              <span data-tag>自定义元素</span>
-              <span data-tag>键盘导航</span>
-            </div>
-          </xh-flex>
-        </div>
-      </xh-flex>
-
-      <xh-flex orientation="vertical" gap="xs" style="display: contents">
-        <div data-xh-part="root">
-          <span data-label>inline：容器缩到内容宽度，跟前后文字排在同一行</span>
-          <!-- 外层留成普通块级容器：行内盒要和文字处在同一个行内格式化上下文里才看得出效果 -->
-          <div style="line-height: 2">
-            当前筛选条件为
-            <xh-flex inline align="center" gap="xs" style="display: contents">
-              <span data-xh-part="root">
-                <span data-tag>近 7 天</span>
-                <span data-tag>已完成</span>
-              </span>
-            </xh-flex>
-            ，共 24 条。
-          </div>
-        </div>
-      </xh-flex>
-    </div>
-  </xh-flex>
-</div>
+<xh-flex id="flex-wrap" orientation="vertical" gap="lg" style="display: contents">
+  <div data-xh-part="root">
+    <xh-flex wrap gap="sm" style="display: contents"><div data-xh-part="root" style="max-inline-size: 280px"><span data-tag>前端</span><span data-tag>组件库</span><span data-tag>无障碍</span><span data-tag>设计令牌</span><span data-tag>键盘导航</span></div></xh-flex>
+    <div>当前筛选：<xh-flex inline gap="xs" style="display: contents"><div data-xh-part="root"><span data-tag>近 7 天</span><span data-tag>已完成</span></div></xh-flex></div>
+  </div>
+</xh-flex>
 ```
 
 ### 分隔符
 
-每两个子项之间放一份分隔符：Vue 交给 split 插槽自动铺，WC 由作者逐个写在 root 里
+在相邻内容之间添加分隔符
 
 ```vue
 <script setup lang="ts">
 import { XhFlex } from "@xihan-ui/vue";
 
 const linkStyle = "color: var(--xh-fg-brand); cursor: pointer";
-// 分隔符部件自带 aria-hidden，这里只画那条线；display: block 让它吃得住尺寸
 const ruleStyle
   = "display: block; inline-size: 1px; block-size: 1em; background: var(--xh-border-default)";
 
@@ -618,7 +254,6 @@ const actions = ["编辑", "复制", "归档", "删除"];
     color: var(--xh-fg-brand);
     cursor: pointer;
   }
-  /* 分隔符部件自带 aria-hidden，这里只画那条线；display: block 让它吃得住尺寸 */
   #flex-split [data-rule] {
     display: block;
     inline-size: 1px;
@@ -627,7 +262,6 @@ const actions = ["编辑", "复制", "归档", "删除"];
   }
 </style>
 
-<!-- 宿主设 display: contents，排布落在 root 上 -->
 <xh-flex id="flex-split" gap="sm" style="display: contents">
   <div data-xh-part="root">
     <span data-link>编辑</span>
@@ -645,25 +279,41 @@ const actions = ["编辑", "复制", "归档", "删除"];
 
 ### 何时使用
 
-- 一行按钮、一行图标加文字、一列表单项这类沿单轴排开的结构。
-- 需要控制主轴分布与交叉轴对齐。
-- 需要在相邻两项之间统一放一条竖线、一个点号这类分隔符。
+- 排列按钮、图标、标签或表单项。
+- 控制内容的对齐、分布、间距和换行。
+- 在相邻内容之间插入统一的分隔符。
 
 ### 何时不用
 
-- 要排成二维网格、需要跨列：用[栅格](./grid)。
-- 只是想切分页面上的两块区域：用[分隔线](./separator)，那是一条有语义的横线，不是排布容器。
-- 只是想在两个元素之间留点空：直接写间距，别为此多套一层容器。
+- 二维布局或跨列内容使用[栅格](./grid)。
+- 分隔页面区域使用[分隔线](./separator)。
+- 仅需一个固定间距时可直接使用 CSS。
 
 ### 特性
 
-- `gap` 收的是档位名不是像素：`xs` / `sm` / `md` / `lg` / `xl` 逐档指向一个间距令牌；不写不留间距。
-- `justify` 管主轴怎么分、`align` 管交叉轴怎么对，两条轴互不相干。
-- 缺省的交叉轴对齐随方向走：横排按中线对齐，竖排拉伸占满。写了 `align` 即以它为准。
-- `inline` 让容器缩到内容宽度，能跟文字排一行。
-- 档位不够用时给 `--xh-flex-gap` 写一个值，它排在所有档位之前。**它是自定义属性，会顺着继承流进嵌套在里面的每一层排布容器，把那些层的档位一并压掉**；只想改一层就写在那一层上。
+- 支持水平、垂直和行内布局。
+- 支持五档间距、对齐和主轴分布。
+- 支持换行和自动分隔符。
 
-## 产物
+### 组合
+
+- 可与[分隔线](./separator)组合为操作列表。
+
+### 最佳实践
+
+- 优先使用间距档位保持页面节奏一致。
+- 可换行内容使用 `gap`，不要用子项外边距拼接。
+- 动态移除可聚焦内容时，由业务层处理焦点交接。
+
+### 反模式
+
+- 不要用多层 Flex 模拟二维网格。
+- 不要用负外边距修正对齐。
+- 不要在分隔符中放置有意义的内容。
+
+## API 参考
+
+### 产物
 
 | 层 | 值 |
 | --- | --- |
@@ -672,13 +322,7 @@ const actions = ["编辑", "复制", "归档", "删除"];
 | 状态机 | 无，`connect` 直接由 props 算属性 |
 | 皮肤 | `@xihan-ui/styles/flex.css` |
 
-## 解剖
-
-部件名即 `data-part` 属性值，也是皮肤的选择器。加粗的是必备部件，不渲染它组件不工作（Web Components 适配器会在诊断通道上报 `wc.missing-part`）。
-
-`data-scope="flex"`：**`root`** · `split`
-
-## Props
+### Props
 
 | 属性 | 类型 | 必填 | 说明 |
 | --- | --- | --- | --- |
@@ -689,48 +333,52 @@ const actions = ["编辑", "复制", "归档", "删除"];
 | `orientation` | `Orientation` |  | 主轴方向：horizontal 横排、vertical 竖排，缺省 horizontal。 |
 | `wrap` | `boolean` |  | 一行放不下时折行。 |
 
-## 插槽
+### 插槽
 
-作者能拿到载荷的插槽。只转发内容、不带载荷的默认插槽不在此列——那类直接写子节点即可。
+仅列出带载荷的插槽。
 
 | Vue 组件 | 插槽 | 载荷 | 说明 |
 | --- | --- | --- | --- |
 | `XhFlex` | `default` | — | 子项，按写进来的顺序排开。 |
 | `XhFlex` | `split` | — | 分隔符的内容：写了它，组件在每两个子项之间各铺一个分隔符部件，逐缝重新求值一次。 |
 
-## connect API
+### connect API
 
-`connect` 产出的对象。`getXxxProps()` 铺到对应部件的宿主元素上，其余是可读状态与操作入口。
+`getXxxProps()` 返回对应部件的宿主属性。
 
 | 成员 | 类型 | 说明 |
 | --- | --- | --- |
 | `getRootProps` | `() => T['element']` |  |
 | `getSplitProps` | `() => T['element']` | 分隔符节点。它是装饰件，恒带 aria-hidden：一排里夹着的竖线被逐条念出来只会打断内容。 |
 
-## 键盘
+## 无障碍
+
+### 键盘
 
 规格出处：[W3C APG](https://www.w3.org/WAI/ARIA/apg/)
 
 无键盘交互（不接收焦点，或焦点行为完全由原生元素提供）。
 
-## 无障碍
+### ARIA
 
-下面这些由 `connect` 铺到部件上，作者不必自己写；重复写反而会覆盖掉正确值。
+以下属性由 `connect` 生成。
 
 | 部件 | 属性 | 值 |
 | --- | --- | --- |
 | `split` | `aria-hidden` | 'true' |
 
-- 分隔符自带 `aria-hidden="true"`，不必自己写：读屏逐项念过来时，中间夹一堆竖线只会打断内容。
-- 容器根上不写 `role`：里面装的是列表还是一组按钮，由作者自己声明。
+- 分隔符自动隐藏于辅助技术。
+- 容器不预设语义角色。
 
-## 样式
+## 样式参考
 
-默认皮肤 `@xihan-ui/styles/flex.css` 按部件选择：`[data-scope="flex"][data-part="root"]`。它落在 `xihan.components` 层；业务样式不写进 `@layer` 即高于全部库层，要按层压过来就写进 `xihan.overrides`。
+### 皮肤
 
-## 数据属性
+`@xihan-ui/styles/flex.css` 使用 `[data-scope="flex"][data-part="root"]` 部件选择器，位于 `xihan.components` 层。覆盖样式使用 `xihan.overrides`。
 
-由 `connect` 产出并铺到部件上，皮肤与测试都据此选择；`data-disabled` 这类无值属性在条件不成立时整个不出现。
+### 数据属性
+
+由 `connect` 生成；条件不成立时不输出无值属性。
 
 | 部件 | 属性 | 值 |
 | --- | --- | --- |
@@ -742,7 +390,7 @@ const actions = ["编辑", "复制", "归档", "删除"];
 | `root` | `data-wrap` | ''（条件成立时才出现） |
 
 <!-- xh-component-tokens:start -->
-## CSS 变量
+### CSS 变量
 
 本组件公开覆盖槽由独立皮肤的实际消费位生成；缺省来源、作用部件和状态均与 CSS 同源。
 
@@ -751,29 +399,10 @@ const actions = ["编辑", "复制", "归档", "删除"];
 | `--xh-flex-gap` | `root` | `gap` | `default`<br>`gap=lg`<br>`gap=md`<br>`gap=sm`<br>`gap=xl`<br>`gap=xs` | `--xh-layout-gap-lg`<br>`--xh-layout-gap-md`<br>`--xh-layout-gap-sm`<br>`--xh-layout-gap-xl`<br>`--xh-layout-gap-xs`<br>`--xh-space-0` | flex 的 root 部件 gap 覆盖槽。 |
 <!-- xh-component-tokens:end -->
 
-## 动效
+### 动效
 
 本组件皮肤不含过渡与关键帧，也没有脚本驱动的动效：状态一变，外观立即到位。
 
-## RTL
+### RTL
 
-- 排布走的是逻辑方向：`dir="rtl"` 下横排自动从右往左，皮肤里没有物理左右。
-
-## 组合
-
-- 分隔符是一个正经部件：两端铺出来的 DOM 形状一致（`root` 底下按 `子项、分隔符、子项…` 相间排列），皮肤按 `split` 给它样式，样子由放进去的内容决定。
-  - Vue：写 `split` 具名插槽，组件在每两个子项之间各铺一个分隔符部件，插槽逐缝重新求值；也可以不写插槽、自己在子项之间手写分隔符部件，两种写法铺出来的结构相同。
-  - Web Components：元素不生成任何结构，分隔符由作者自己写在 `root` 里、夹在两个子项中间。
-- 与[分隔线](./separator)配合：把一条竖向分隔线放进分隔符里，一排操作就被切成几组。
-
-## 最佳实践
-
-- 间距一律走档位，别写具体像素：换主题时间距节奏才跟着一起变。
-- 一行里的按钮用它排，别用外边距凑——外边距在折行时会留出多余的空白。
-- 一排东西会被动态摘掉时（关掉一个标签、删掉一条操作），焦点交接要自己接：被摘的那一项若正持有焦点，焦点会掉回页面根上，键盘与读屏用户每摘一次就丢一次位置。本组件只管排布，不接管焦点。
-
-## 反模式
-
-- 用嵌套的弹性容器模拟网格：列宽对不齐，且改一处要动很多层。
-- 为了对齐给子项写负外边距。
-- 把分隔符当内容用：它在每一道缝里各有一份，写进去的文字会重复很多遍，而且整个部件对读屏是隐藏的。
+- 使用逻辑方向属性，自动适配 RTL。

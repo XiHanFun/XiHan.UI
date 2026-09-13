@@ -1,6 +1,6 @@
 来源：https://ui.docs.xihanfun.com/components/approval
 
-# Approval `审批`
+# Approval 审批
 
 危险动作执行前的人在环闸门：批准、拒绝，超时按拒绝收口，可带勾选式的授权范围。
 
@@ -125,6 +125,12 @@ const decided = ref("");
   });
 </script>
 ```
+
+## 组件结构
+
+加粗的是必需部件。
+
+`data-scope="approval"`：**`root`** · `title` · `description` · `live-region` · `group` · `item` · `item-indicator` · `item-text` · `note` · `timer` · `result` · `footer` · **`approve-trigger`** · **`deny-trigger`**
 
 ## 示例
 
@@ -481,23 +487,45 @@ const rows = [
   它对读屏隐藏：同一句话由播报区念一次就够。
 - 两颗按钮住在 `actions` 那一行里，间距与对齐归库管，不必每个使用者自己写一个 flex 容器。
 
-## 产物
+### 组合
+
+- 装进[工具调用](./tool-call)的 `approval` 部件位：那一格常驻在开关与详情之间，不会被折叠藏起来。
+- 要弹窗就一条一个[对话框](./dialog)：`role="alertdialog"`、关掉 `closeOnEscape`，
+  并把 `initialFocus` 设成本组件导出的 `APPROVAL_DENY_SELECTOR`——
+  这样浮层只剩批准与拒绝两个出口，而 Escape 仍会冒泡到闸门上判拒绝。
+- 剩余时间的跳字交给[计时器](./timer)，判定权仍在本组件手里。
+  **别把倒计时直接当 `timer` 那个节点渲**：两套解剖打在同一节点上会互相盖，
+  让 `timer` 做外层容器、倒计时住在它里面。
+- 要一次问好几件事：用[步骤条](./steps)或[走马灯](./carousel)串起若干个闸门，一步一个。
+  本组件是单发闸门，`data-state` 的四个值互斥，塞不下「第几题」。
+- 要给用户「稍后再说」：那个入口归宿主，不归闸门。
+  常见做法是在 `onDecision` 之外自己留一条延后的路，或按上一条把闸门装进对话框——
+  浮层里仍只有批准与拒绝两个出口。
+
+### 最佳实践
+
+- 判定落定后两颗按钮都会禁用，浮层再无出口：**宿主必须在判定回调里自己关闭浮层**。
+- 卸载即拒绝（`denyOnUnmount`）默认关着。开之前想清楚：列表换 key、路由切换、
+  热更新任何一次重挂，都会替用户发出他没做过的判定。
+
+### 反模式
+
+- 把超时做成「到点自动放行」：那等于把最危险的一档交给了沉默。
+- 用一个可关闭的浮层承载它：关掉窗口既不是批准也不是拒绝，闸门就悬空了。
+
+## API 参考
+
+### 产物
 
 | 层 | 值 |
 | --- | --- |
 | 自定义元素 | `<xh-approval>` |
 | Vue 组件 | `XhApprovalApproveTrigger` `XhApprovalDenyTrigger` `XhApprovalDescription` `XhApprovalFooter` `XhApprovalGroup` `XhApprovalItem` `XhApprovalItemIndicator` `XhApprovalItemText` `XhApprovalLiveRegion` `XhApprovalNote` `XhApprovalResult` `XhApprovalRoot` `XhApprovalTimer` `XhApprovalTitle` |
 | 组合式函数 | `useApproval` |
-| 状态机 | 无，`connect` 直接由 props 算属性 |
+| 状态机 | `approvalMachine` |
 | 皮肤 | `@xihan-ui/styles/approval.css` |
 
-## 解剖
-
-部件名即 `data-part` 属性值，也是皮肤的选择器。加粗的是必备部件，不渲染它组件不工作（Web Components 适配器会在诊断通道上报 `wc.missing-part`）。
-
-`data-scope="approval"`：**`root`** · `title` · `description` · `live-region` · `group` · `item` · `item-indicator` · `item-text` · `note` · `timer` · `result` · `footer` · **`approve-trigger`** · **`deny-trigger`**
-
-## Props
+### Props
 
 | 属性 | 类型 | 必填 | 说明 |
 | --- | --- | --- | --- |
@@ -522,9 +550,9 @@ const rows = [
 | `onGrantedScopesChange` | `(details: ApprovalScopesChangeDetails) => void` |  |  |
 | `onNoteChange` | `(details: ApprovalNoteChangeDetails) => void` |  |  |
 
-## 事件
+### 事件
 
-自定义元素派发这些事件，Vue 组件对应同名 emit；载荷都在 `detail` 上。可双向绑定的值另有 `update:xxx`，见 Props。
+自定义元素将载荷放在 `detail`；Vue 使用同名 emit。
 
 | 事件 | 载荷 | 说明 |
 | --- | --- | --- |
@@ -532,39 +560,41 @@ const rows = [
 | `granted-scopes-change` | `ApprovalScopesChangeDetails` | 勾选的授权项变化；detail 为 `{ value: string[] }` |
 | `note-change` | `ApprovalNoteChangeDetails` | 备注变化；detail 为 `{ value: string }` |
 
-## 插槽
+### 插槽
 
-作者能拿到载荷的插槽。只转发内容、不带载荷的默认插槽不在此列——那类直接写子节点即可。
+仅列出带载荷的插槽。
 
 | Vue 组件 | 插槽 | 载荷 | 说明 |
 | --- | --- | --- | --- |
 | `XhApprovalItem` | `default` | `ApprovalScopeSlotProps` |  |
 | `XhApprovalRoot` | `default` | `ApprovalRootSlotProps` |  |
 
-## 状态
+### 状态
 
-对外可见的状态落在 `data-state` 上，写样式与断言都读它：
+公开状态写入 `data-state`。
 
 | 部件 | 取值 |
 | --- | --- |
-| `root` | state.get() |
+| `root` | 'pending' \| 'approved' \| 'denied' \| 'expired' |
 | `item` | 'checked' \| 'unchecked' |
 | `item-indicator` | 'checked' \| 'unchecked' |
-| `note` | state.get() |
-| `timer` | state.get() |
-| `result` | state.get() |
-| `approve-trigger` | state.get() |
-| `deny-trigger` | state.get() |
+| `note` | 'pending' \| 'approved' \| 'denied' \| 'expired' |
+| `timer` | 'pending' \| 'approved' \| 'denied' \| 'expired' |
+| `result` | 'pending' \| 'approved' \| 'denied' \| 'expired' |
+| `approve-trigger` | 'pending' \| 'approved' \| 'denied' \| 'expired' |
+| `deny-trigger` | 'pending' \| 'approved' \| 'denied' \| 'expired' |
 
-状态机内部转移，写样式与业务都用不到；要监听变化请看上面的「事件」。
+以下名称仅用于内部状态机。
+
+**状态**：`pending` · `approved` · `denied` · `expired`
 
 **事件**：`APPROVE` · `DENY` · `SCOPE.TOGGLE` · `SCOPE.SET` · `NOTE.SET` · `after.timeout` · `CONTROLLED.PENDING` · `CONTROLLED.APPROVE` · `CONTROLLED.DENY` · `CONTROLLED.EXPIRE` · `REQUEST.RESET`
 
 **判据**：`isStatusControlled` · `canApprove` · `isEditable` · `canApproveControlled`
 
-## connect API
+### connect API
 
-`useApproval` 产出的对象。`getXxxProps()` 铺到对应部件的宿主元素上，其余是可读状态与操作入口。
+`getXxxProps()` 返回对应部件的宿主属性。
 
 | 成员 | 类型 | 说明 |
 | --- | --- | --- |
@@ -595,7 +625,9 @@ const rows = [
 | `getApproveTriggerProps` | `() => T['button']` |  |
 | `getDenyTriggerProps` | `() => T['button']` |  |
 
-## 键盘
+## 无障碍
+
+### 键盘
 
 规格出处：[W3C APG](https://www.w3.org/WAI/ARIA/apg/patterns/checkbox/)
 
@@ -606,9 +638,9 @@ const rows = [
 | `Space` | 焦点在授权项上，待决且该项未禁用 | 勾选或取消该项。Enter 刻意不参与，与原生复选框一致 |
 | `Escape` | 焦点在闸门内，待决、不在挂起中、且开着 denyOnEscape | 判为拒绝。**它不是「关闭」**——本组件不提供不作答的出口 |
 
-## 无障碍
+### ARIA
 
-下面这些由 `connect` 铺到部件上，作者不必自己写；重复写反而会覆盖掉正确值。
+以下属性由 `connect` 生成。
 
 | 部件 | 属性 | 值 |
 | --- | --- | --- |
@@ -641,19 +673,21 @@ const rows = [
   截止这件事同样在播报区里一次说清。
 - 备注那一格取 `translations.note` 作可及名（缺省 `Note`），占位文字另走 `translations.notePlaceholder`。
 
-## 样式
+## 样式参考
 
-默认皮肤 `@xihan-ui/styles/approval.css` 按部件选择：`[data-scope="approval"][data-part="root"]`。它落在 `xihan.components` 与 `xihan.motion` 层；业务样式不写进 `@layer` 即高于全部库层，要按层压过来就写进 `xihan.overrides`。
+### 皮肤
 
-## 数据属性
+`@xihan-ui/styles/approval.css` 使用 `[data-scope="approval"][data-part="root"]` 部件选择器，位于 `xihan.components` 与 `xihan.motion` 层。覆盖样式使用 `xihan.overrides`。
 
-由 `connect` 产出并铺到部件上，皮肤与测试都据此选择；`data-disabled` 这类无值属性在条件不成立时整个不出现。
+### 数据属性
+
+由 `connect` 生成；条件不成立时不输出无值属性。
 
 | 部件 | 属性 | 值 |
 | --- | --- | --- |
 | `root` | `data-loading` | ''（条件成立时才出现） |
 | `root` | `data-size` | props.size |
-| `root` | `data-state` | state.get() |
+| `root` | `data-state` | 'pending' \| 'approved' \| 'denied' \| 'expired' |
 | `root` | `data-tone` | props.tone |
 | `root` | `data-variant` | props.variant |
 | `item` | `data-disabled` | ''（条件成立时才出现） |
@@ -661,16 +695,16 @@ const rows = [
 | `item` | `data-value` | item.value |
 | `item-indicator` | `data-state` | 'checked' \| 'unchecked' |
 | `item-text` | `data-value` | item.value |
-| `note` | `data-state` | state.get() |
-| `timer` | `data-state` | state.get() |
-| `result` | `data-state` | state.get() |
+| `note` | `data-state` | 'pending' \| 'approved' \| 'denied' \| 'expired' |
+| `timer` | `data-state` | 'pending' \| 'approved' \| 'denied' \| 'expired' |
+| `result` | `data-state` | 'pending' \| 'approved' \| 'denied' \| 'expired' |
 | `approve-trigger` | `data-loading` | ''（条件成立时才出现） |
-| `approve-trigger` | `data-state` | state.get() |
+| `approve-trigger` | `data-state` | 'pending' \| 'approved' \| 'denied' \| 'expired' |
 | `deny-trigger` | `data-loading` | ''（条件成立时才出现） |
-| `deny-trigger` | `data-state` | state.get() |
+| `deny-trigger` | `data-state` | 'pending' \| 'approved' \| 'denied' \| 'expired' |
 
 <!-- xh-component-tokens:start -->
-## CSS 变量
+### CSS 变量
 
 本组件公开覆盖槽由独立皮肤的实际消费位生成；缺省来源、作用部件和状态均与 CSS 同源。
 
@@ -743,38 +777,12 @@ const rows = [
 | `--xh-approval-title-font-weight` | `title` | `font-weight` | `default` | `--xh-text-label-weight` | approval 的 title 部件 font-weight 覆盖槽。 |
 <!-- xh-component-tokens:end -->
 
-## 动效
+### 动效
 
 关键帧 `xh-approval-in` · `xh-approval-result-in` · `xh-approval-rotate` 随皮肤自带，不引用别处文件里的名字；`background` · `border-color` · `box-shadow` · `color` · `scale` 走 `transition` 过渡。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
 
 `prefers-reduced-motion: reduce` 下本组件另有降级规则。
 
-## RTL
+### RTL
 
 皮肤用逻辑属性排布（`inline-start` 一族），`dir="rtl"` 下自动镜像。
-
-## 组合
-
-- 装进[工具调用](./tool-call)的 `approval` 部件位：那一格常驻在开关与详情之间，不会被折叠藏起来。
-- 要弹窗就一条一个[对话框](./dialog)：`role="alertdialog"`、关掉 `closeOnEscape`，
-  并把 `initialFocus` 设成本组件导出的 `APPROVAL_DENY_SELECTOR`——
-  这样浮层只剩批准与拒绝两个出口，而 Escape 仍会冒泡到闸门上判拒绝。
-- 剩余时间的跳字交给[计时器](./timer)，判定权仍在本组件手里。
-  **别把倒计时直接当 `timer` 那个节点渲**：两套解剖打在同一节点上会互相盖，
-  让 `timer` 做外层容器、倒计时住在它里面。
-- 要一次问好几件事：用[步骤条](./steps)或[走马灯](./carousel)串起若干个闸门，一步一个。
-  本组件是单发闸门，`data-state` 的四个值互斥，塞不下「第几题」。
-- 要给用户「稍后再说」：那个入口归宿主，不归闸门。
-  常见做法是在 `onDecision` 之外自己留一条延后的路，或按上一条把闸门装进对话框——
-  浮层里仍只有批准与拒绝两个出口。
-
-## 最佳实践
-
-- 判定落定后两颗按钮都会禁用，浮层再无出口：**宿主必须在判定回调里自己关闭浮层**。
-- 卸载即拒绝（`denyOnUnmount`）默认关着。开之前想清楚：列表换 key、路由切换、
-  热更新任何一次重挂，都会替用户发出他没做过的判定。
-
-## 反模式
-
-- 把超时做成「到点自动放行」：那等于把最危险的一档交给了沉默。
-- 用一个可关闭的浮层承载它：关掉窗口既不是批准也不是拒绝，闸门就悬空了。

@@ -1,8 +1,8 @@
 来源：https://ui.docs.xihanfun.com/components/toolbar
 
-# Toolbar `工具栏`
+# Toolbar 工具栏
 
-把一排控件收成一组：整条在 Tab 序列里只占一个位子，条内改用方向键走。
+用于组织一组相关的操作控件。
 
 <div class="xh-resource-links">
   <a href="https://github.com/XiHanFun/XiHan.UI/tree/dev/ui/packages/engine/headless/src/toolbar" target="_blank" rel="noreferrer">Headless</a>
@@ -14,622 +14,11 @@
 
 ## 用法
 
-整条在 Tab 序列里只占一个位子，条内改用方向键走；条目是作者自己的按钮，工具条不接管它的点击
+集中常用编辑操作
 
 ```vue
 <script setup lang="ts">
-import {
-  XhToolbarItem,
-  XhToolbarRoot,
-  XhToolbarSeparator,
-} from "@xihan-ui/vue";
-import { ref } from "vue";
-
-// 条目的观感归条目自己，工具条只补焦点环与禁用光标
-const itemStyle = {
-  padding: "4px 10px",
-  borderRadius: "6px",
-  border: "1px solid var(--xh-border-default)",
-  background: "var(--xh-bg-surface)",
-};
-
-const command = ref("（无）");
-</script>
-
-<template>
-  <div style="display: flex; flex-direction: column; gap: 12px; inline-size: 100%">
-    <XhToolbarRoot>
-      <XhToolbarItem value="bold" :style="itemStyle" @click="command = '粗体'">
-        粗体
-      </XhToolbarItem>
-      <XhToolbarItem value="italic" :style="itemStyle" @click="command = '斜体'">
-        斜体
-      </XhToolbarItem>
-      <XhToolbarSeparator />
-      <XhToolbarItem value="link" :style="itemStyle" @click="command = '插入链接'">
-        插入链接
-      </XhToolbarItem>
-    </XhToolbarRoot>
-
-    <span>最近点击：{{ command }}</span>
-  </div>
-</template>
-```
-
-```html
-<div style="display: flex; flex-direction: column; gap: 12px; inline-size: 100%">
-  <xh-toolbar id="toolbar-basic">
-    <div data-xh-part="root">
-      <!-- 条目的观感归条目自己，工具条只补焦点环与禁用光标 -->
-      <button
-        type="button"
-        data-xh-part="item"
-        value="bold"
-        style="
-          padding: 4px 10px;
-          border-radius: 6px;
-          border: 1px solid var(--xh-border-default);
-          background: var(--xh-bg-surface);
-        "
-      >
-        粗体
-      </button>
-      <button
-        type="button"
-        data-xh-part="item"
-        value="italic"
-        style="
-          padding: 4px 10px;
-          border-radius: 6px;
-          border: 1px solid var(--xh-border-default);
-          background: var(--xh-bg-surface);
-        "
-      >
-        斜体
-      </button>
-      <div data-xh-part="separator"></div>
-      <button
-        type="button"
-        data-xh-part="item"
-        value="link"
-        style="
-          padding: 4px 10px;
-          border-radius: 6px;
-          border: 1px solid var(--xh-border-default);
-          background: var(--xh-bg-surface);
-        "
-      >
-        插入链接
-      </button>
-    </div>
-  </xh-toolbar>
-
-  <span id="toolbar-basic-log">最近点击：（无）</span>
-</div>
-
-<script type="module">
-  // 点击归条目自己，工具条不接管
-  const toolbar = document.getElementById("toolbar-basic");
-  const log = document.getElementById("toolbar-basic-log");
-  for (const item of toolbar.querySelectorAll('[data-xh-part="item"]')) {
-    item.addEventListener("click", () => {
-      log.textContent = `最近点击：${item.textContent.trim()}`;
-    });
-  }
-</script>
-```
-
-## 示例
-
-### 分组
-
-分组只是把一伙控件在视觉上收紧，不是导航里多出来的一层：方向键照样一路走过去
-
-```vue
-<script setup lang="ts">
-import {
-  XhToolbarGroup,
-  XhToolbarItem,
-  XhToolbarRoot,
-  XhToolbarSeparator,
-} from "@xihan-ui/vue";
-
-const itemStyle = {
-  padding: "4px 10px",
-  borderRadius: "6px",
-  border: "1px solid var(--xh-border-default)",
-  background: "var(--xh-bg-surface)",
-};
-</script>
-
-<template>
-  <XhToolbarRoot style="inline-size: 100%">
-    <XhToolbarItem value="undo" :style="itemStyle">撤销</XhToolbarItem>
-    <XhToolbarItem value="redo" :style="itemStyle">重做</XhToolbarItem>
-    <XhToolbarSeparator />
-    <XhToolbarGroup>
-      <XhToolbarItem value="align-left" :style="itemStyle">左对齐</XhToolbarItem>
-      <XhToolbarItem value="align-center" :style="itemStyle">居中</XhToolbarItem>
-      <XhToolbarItem value="align-right" :style="itemStyle">右对齐</XhToolbarItem>
-    </XhToolbarGroup>
-  </XhToolbarRoot>
-</template>
-```
-
-```html
-<xh-toolbar style="inline-size: 100%">
-  <div data-xh-part="root">
-    <button
-      type="button"
-      data-xh-part="item"
-      value="undo"
-      style="
-        padding: 4px 10px;
-        border-radius: 6px;
-        border: 1px solid var(--xh-border-default);
-        background: var(--xh-bg-surface);
-      "
-    >
-      撤销
-    </button>
-    <button
-      type="button"
-      data-xh-part="item"
-      value="redo"
-      style="
-        padding: 4px 10px;
-        border-radius: 6px;
-        border: 1px solid var(--xh-border-default);
-        background: var(--xh-bg-surface);
-      "
-    >
-      重做
-    </button>
-    <div data-xh-part="separator"></div>
-    <div data-xh-part="group">
-      <button
-        type="button"
-        data-xh-part="item"
-        value="align-left"
-        style="
-          padding: 4px 10px;
-          border-radius: 6px;
-          border: 1px solid var(--xh-border-default);
-          background: var(--xh-bg-surface);
-        "
-      >
-        左对齐
-      </button>
-      <button
-        type="button"
-        data-xh-part="item"
-        value="align-center"
-        style="
-          padding: 4px 10px;
-          border-radius: 6px;
-          border: 1px solid var(--xh-border-default);
-          background: var(--xh-bg-surface);
-        "
-      >
-        居中
-      </button>
-      <button
-        type="button"
-        data-xh-part="item"
-        value="align-right"
-        style="
-          padding: 4px 10px;
-          border-radius: 6px;
-          border: 1px solid var(--xh-border-default);
-          background: var(--xh-bg-surface);
-        "
-      >
-        右对齐
-      </button>
-    </div>
-  </div>
-</xh-toolbar>
-```
-
-### 竖排
-
-orientation 决定方向键收哪一对键（另一轴原样放行给页面），分隔线的朝向恒与主轴垂直
-
-```vue
-<script setup lang="ts">
-import {
-  XhToolbarItem,
-  XhToolbarRoot,
-  XhToolbarSeparator,
-} from "@xihan-ui/vue";
-
-const itemStyle = {
-  padding: "4px 10px",
-  borderRadius: "6px",
-  border: "1px solid var(--xh-border-default)",
-  background: "var(--xh-bg-surface)",
-};
-</script>
-
-<template>
-  <XhToolbarRoot orientation="vertical" style="inline-size: 140px">
-    <XhToolbarItem value="zoom-in" :style="itemStyle">放大</XhToolbarItem>
-    <XhToolbarItem value="zoom-out" :style="itemStyle">缩小</XhToolbarItem>
-    <XhToolbarSeparator />
-    <XhToolbarItem value="fit" :style="itemStyle">适应画布</XhToolbarItem>
-  </XhToolbarRoot>
-</template>
-```
-
-```html
-<xh-toolbar orientation="vertical" style="inline-size: 140px">
-  <div data-xh-part="root">
-    <button
-      type="button"
-      data-xh-part="item"
-      value="zoom-in"
-      style="
-        padding: 4px 10px;
-        border-radius: 6px;
-        border: 1px solid var(--xh-border-default);
-        background: var(--xh-bg-surface);
-      "
-    >
-      放大
-    </button>
-    <button
-      type="button"
-      data-xh-part="item"
-      value="zoom-out"
-      style="
-        padding: 4px 10px;
-        border-radius: 6px;
-        border: 1px solid var(--xh-border-default);
-        background: var(--xh-bg-surface);
-      "
-    >
-      缩小
-    </button>
-    <div data-xh-part="separator"></div>
-    <button
-      type="button"
-      data-xh-part="item"
-      value="fit"
-      style="
-        padding: 4px 10px;
-        border-radius: 6px;
-        border: 1px solid var(--xh-border-default);
-        background: var(--xh-bg-surface);
-      "
-    >
-      适应画布
-    </button>
-  </div>
-</xh-toolbar>
-```
-
-### 禁用
-
-禁用走 aria-disabled 而非原生 disabled：禁用项仍聚焦得上、仍能当方向键的起点，只是方向键路过时跳过它
-
-```vue
-<script setup lang="ts">
-import {
-  XhSwitch,
-  XhToolbarItem,
-  XhToolbarRoot,
-  XhToolbarSeparator,
-} from "@xihan-ui/vue";
-import { ref } from "vue";
-
-const itemStyle = {
-  padding: "4px 10px",
-  borderRadius: "6px",
-  border: "1px solid var(--xh-border-default)",
-  background: "var(--xh-bg-surface)",
-};
-
-const locked = ref(false);
-</script>
-
-<template>
-  <div style="display: flex; flex-direction: column; gap: 12px; inline-size: 100%">
-    <XhToolbarRoot :disabled="locked">
-      <XhToolbarItem value="cut" :style="itemStyle">剪切</XhToolbarItem>
-      <!-- 单项禁用：整条没锁时，方向键也只跳过这一项 -->
-      <XhToolbarItem value="paste" :style="itemStyle" disabled>
-        粘贴（禁用）
-      </XhToolbarItem>
-      <XhToolbarSeparator />
-      <XhToolbarItem value="delete" :style="itemStyle">删除</XhToolbarItem>
-    </XhToolbarRoot>
-
-    <label style="display: flex; align-items: center; gap: 8px">
-      <XhSwitch v-model:checked="locked" />
-      整条禁用（方向键当场不再接管，焦点进来就停在容器上）
-    </label>
-  </div>
-</template>
-```
-
-```html
-<div style="display: flex; flex-direction: column; gap: 12px; inline-size: 100%">
-  <xh-toolbar id="toolbar-disabled">
-    <div data-xh-part="root">
-      <button
-        type="button"
-        data-xh-part="item"
-        value="cut"
-        style="
-          padding: 4px 10px;
-          border-radius: 6px;
-          border: 1px solid var(--xh-border-default);
-          background: var(--xh-bg-surface);
-        "
-      >
-        剪切
-      </button>
-      <!-- 单项禁用：整条没锁时，方向键也只跳过这一项 -->
-      <button
-        type="button"
-        data-xh-part="item"
-        value="paste"
-        aria-disabled="true"
-        style="
-          padding: 4px 10px;
-          border-radius: 6px;
-          border: 1px solid var(--xh-border-default);
-          background: var(--xh-bg-surface);
-        "
-      >
-        粘贴（禁用）
-      </button>
-      <div data-xh-part="separator"></div>
-      <button
-        type="button"
-        data-xh-part="item"
-        value="delete"
-        style="
-          padding: 4px 10px;
-          border-radius: 6px;
-          border: 1px solid var(--xh-border-default);
-          background: var(--xh-bg-surface);
-        "
-      >
-        删除
-      </button>
-    </div>
-  </xh-toolbar>
-
-  <label style="display: flex; align-items: center; gap: 8px">
-    <xh-switch id="toolbar-disabled-lock">
-      <button data-xh-part="root">
-        <span data-xh-part="thumb"></span>
-      </button>
-    </xh-switch>
-    整条禁用（方向键当场不再接管，焦点进来就停在容器上）
-  </label>
-</div>
-
-<script type="module">
-  // 整条禁用由宿主说了算
-  const toolbar = document.getElementById("toolbar-disabled");
-  const lock = document.getElementById("toolbar-disabled-lock");
-  lock.addEventListener("checked-change", (event) => {
-    toolbar.toggleAttribute("disabled", event.detail.checked);
-  });
-</script>
-```
-
-### 尺寸
-
-size 只换整条的内边距与条目间的间距，条目自身的高度与字号归条目的皮肤管
-
-```vue
-<script setup lang="ts">
-import {
-  XhToolbarItem,
-  XhToolbarRoot,
-  XhToolbarSeparator,
-} from "@xihan-ui/vue";
-
-const itemStyle = {
-  padding: "4px 10px",
-  borderRadius: "6px",
-  border: "1px solid var(--xh-border-default)",
-  background: "var(--xh-bg-surface)",
-};
-</script>
-
-<template>
-  <div style="display: flex; flex-wrap: wrap; align-items: flex-start; gap: 16px">
-    <div style="display: flex; flex-direction: column; gap: 6px">
-      <span>sm</span>
-      <XhToolbarRoot size="sm">
-        <XhToolbarItem value="sm-bold" :style="itemStyle">粗体</XhToolbarItem>
-        <XhToolbarItem value="sm-italic" :style="itemStyle">斜体</XhToolbarItem>
-        <XhToolbarSeparator />
-        <XhToolbarItem value="sm-link" :style="itemStyle">链接</XhToolbarItem>
-      </XhToolbarRoot>
-    </div>
-
-    <div style="display: flex; flex-direction: column; gap: 6px">
-      <span>缺省</span>
-      <XhToolbarRoot>
-        <XhToolbarItem value="md-bold" :style="itemStyle">粗体</XhToolbarItem>
-        <XhToolbarItem value="md-italic" :style="itemStyle">斜体</XhToolbarItem>
-        <XhToolbarSeparator />
-        <XhToolbarItem value="md-link" :style="itemStyle">链接</XhToolbarItem>
-      </XhToolbarRoot>
-    </div>
-
-    <div style="display: flex; flex-direction: column; gap: 6px">
-      <span>lg</span>
-      <XhToolbarRoot size="lg">
-        <XhToolbarItem value="lg-bold" :style="itemStyle">粗体</XhToolbarItem>
-        <XhToolbarItem value="lg-italic" :style="itemStyle">斜体</XhToolbarItem>
-        <XhToolbarSeparator />
-        <XhToolbarItem value="lg-link" :style="itemStyle">链接</XhToolbarItem>
-      </XhToolbarRoot>
-    </div>
-  </div>
-</template>
-```
-
-```html
-<div style="display: flex; flex-wrap: wrap; align-items: flex-start; gap: 16px">
-  <div style="display: flex; flex-direction: column; gap: 6px">
-    <span>sm</span>
-    <xh-toolbar size="sm">
-      <div data-xh-part="root">
-        <button
-          type="button"
-          data-xh-part="item"
-          value="sm-bold"
-          style="
-            padding: 4px 10px;
-            border-radius: 6px;
-            border: 1px solid var(--xh-border-default);
-            background: var(--xh-bg-surface);
-          "
-        >
-          粗体
-        </button>
-        <button
-          type="button"
-          data-xh-part="item"
-          value="sm-italic"
-          style="
-            padding: 4px 10px;
-            border-radius: 6px;
-            border: 1px solid var(--xh-border-default);
-            background: var(--xh-bg-surface);
-          "
-        >
-          斜体
-        </button>
-        <div data-xh-part="separator"></div>
-        <button
-          type="button"
-          data-xh-part="item"
-          value="sm-link"
-          style="
-            padding: 4px 10px;
-            border-radius: 6px;
-            border: 1px solid var(--xh-border-default);
-            background: var(--xh-bg-surface);
-          "
-        >
-          链接
-        </button>
-      </div>
-    </xh-toolbar>
-  </div>
-
-  <div style="display: flex; flex-direction: column; gap: 6px">
-    <span>缺省</span>
-    <xh-toolbar>
-      <div data-xh-part="root">
-        <button
-          type="button"
-          data-xh-part="item"
-          value="md-bold"
-          style="
-            padding: 4px 10px;
-            border-radius: 6px;
-            border: 1px solid var(--xh-border-default);
-            background: var(--xh-bg-surface);
-          "
-        >
-          粗体
-        </button>
-        <button
-          type="button"
-          data-xh-part="item"
-          value="md-italic"
-          style="
-            padding: 4px 10px;
-            border-radius: 6px;
-            border: 1px solid var(--xh-border-default);
-            background: var(--xh-bg-surface);
-          "
-        >
-          斜体
-        </button>
-        <div data-xh-part="separator"></div>
-        <button
-          type="button"
-          data-xh-part="item"
-          value="md-link"
-          style="
-            padding: 4px 10px;
-            border-radius: 6px;
-            border: 1px solid var(--xh-border-default);
-            background: var(--xh-bg-surface);
-          "
-        >
-          链接
-        </button>
-      </div>
-    </xh-toolbar>
-  </div>
-
-  <div style="display: flex; flex-direction: column; gap: 6px">
-    <span>lg</span>
-    <xh-toolbar size="lg">
-      <div data-xh-part="root">
-        <button
-          type="button"
-          data-xh-part="item"
-          value="lg-bold"
-          style="
-            padding: 4px 10px;
-            border-radius: 6px;
-            border: 1px solid var(--xh-border-default);
-            background: var(--xh-bg-surface);
-          "
-        >
-          粗体
-        </button>
-        <button
-          type="button"
-          data-xh-part="item"
-          value="lg-italic"
-          style="
-            padding: 4px 10px;
-            border-radius: 6px;
-            border: 1px solid var(--xh-border-default);
-            background: var(--xh-bg-surface);
-          "
-        >
-          斜体
-        </button>
-        <div data-xh-part="separator"></div>
-        <button
-          type="button"
-          data-xh-part="item"
-          value="lg-link"
-          style="
-            padding: 4px 10px;
-            border-radius: 6px;
-            border: 1px solid var(--xh-border-default);
-            background: var(--xh-bg-surface);
-          "
-        >
-          链接
-        </button>
-      </div>
-    </xh-toolbar>
-  </div>
-</div>
-```
-
-### 图标条目
-
-只画图标的条目必须自带无障碍名：aria-label 直接写在条目上，透传到那一层 DOM
-
-```vue
-<script setup lang="ts">
+import { BoldIcon, ClipboardIcon, CopyIcon, ItalicIcon, UnderlineIcon } from "@xihan-ui/icons";
 import {
   XhIcon,
   XhToolbarGroup,
@@ -639,301 +28,97 @@ import {
 } from "@xihan-ui/vue";
 import { ref } from "vue";
 
-// 描边取 currentColor，图标颜色随条目文字色走
-const strokeAttrs = {
-  "fill": "none",
-  "stroke": "currentColor",
-  "stroke-width": "2",
-  "stroke-linecap": "round",
-  "stroke-linejoin": "round",
-} as const;
+const formats = [
+  { value: "bold", label: "加粗", icon: BoldIcon },
+  { value: "italic", label: "斜体", icon: ItalicIcon },
+  { value: "underline", label: "下划线", icon: UnderlineIcon },
+];
+const selected = ref(new Set(["bold"]));
 
-const UndoIcon = {
-  name: "undo",
-  viewBox: "0 0 24 24",
-  attrs: strokeAttrs,
-  nodes: [
-    { tag: "path", attrs: { d: "M4 10H15A5 5 0 0 1 15 20H10" } },
-    { tag: "path", attrs: { d: "M8 6L4 10L8 14" } },
-  ],
-} as const;
-
-const RedoIcon = {
-  name: "redo",
-  viewBox: "0 0 24 24",
-  attrs: strokeAttrs,
-  nodes: [
-    { tag: "path", attrs: { d: "M20 10H9A5 5 0 0 0 9 20H14" } },
-    { tag: "path", attrs: { d: "M16 6L20 10L16 14" } },
-  ],
-} as const;
-
-const AlignLeftIcon = {
-  name: "align-left",
-  viewBox: "0 0 24 24",
-  attrs: strokeAttrs,
-  nodes: [{ tag: "path", attrs: { d: "M4 6H20M4 12H14M4 18H18" } }],
-} as const;
-
-const AlignCenterIcon = {
-  name: "align-center",
-  viewBox: "0 0 24 24",
-  attrs: strokeAttrs,
-  nodes: [{ tag: "path", attrs: { d: "M4 6H20M7 12H17M5 18H19" } }],
-} as const;
-
-const AlignRightIcon = {
-  name: "align-right",
-  viewBox: "0 0 24 24",
-  attrs: strokeAttrs,
-  nodes: [{ tag: "path", attrs: { d: "M4 6H20M10 12H20M6 18H20" } }],
-} as const;
-
-// 条目的观感归条目自己，工具条只补焦点环与禁用光标
-const itemStyle = {
-  display: "inline-flex",
-  alignItems: "center",
-  padding: "6px",
-  borderRadius: "6px",
-  border: "1px solid var(--xh-border-default)",
-  background: "var(--xh-bg-surface)",
-  color: "inherit",
-};
-
-const command = ref("（无）");
+function toggle(value: string) {
+  const next = new Set(selected.value);
+  next.has(value) ? next.delete(value) : next.add(value);
+  selected.value = next;
+}
 </script>
 
 <template>
-  <div style="display: flex; flex-direction: column; gap: 12px; inline-size: 100%">
-    <XhToolbarRoot>
-      <XhToolbarItem
-        value="undo"
-        :style="itemStyle"
-        aria-label="撤销"
-        @click="command = '撤销'"
-      >
-        <XhIcon :icon="UndoIcon" size="sm" />
+  <XhToolbarRoot aria-label="文本编辑">
+    <XhToolbarGroup>
+      <template v-for="(format, index) in formats" :key="format.value">
+        <XhToolbarSeparator v-if="index > 0" />
+        <XhToolbarItem
+          :value="format.value"
+          type="button"
+          :aria-label="format.label"
+          :aria-pressed="selected.has(format.value)"
+          @click="toggle(format.value)"
+        >
+          <XhIcon :icon="format.icon" />
+        </XhToolbarItem>
+      </template>
+    </XhToolbarGroup>
+    <XhToolbarGroup>
+      <XhToolbarItem value="copy" type="button" aria-label="复制">
+        <XhIcon :icon="CopyIcon" />
       </XhToolbarItem>
-      <XhToolbarItem
-        value="redo"
-        :style="itemStyle"
-        aria-label="重做"
-        @click="command = '重做'"
-      >
-        <XhIcon :icon="RedoIcon" size="sm" />
-      </XhToolbarItem>
-
       <XhToolbarSeparator />
-
-      <XhToolbarGroup>
-        <XhToolbarItem
-          value="align-left"
-          :style="itemStyle"
-          aria-label="左对齐"
-          @click="command = '左对齐'"
-        >
-          <XhIcon :icon="AlignLeftIcon" size="sm" />
-        </XhToolbarItem>
-        <XhToolbarItem
-          value="align-center"
-          :style="itemStyle"
-          aria-label="居中"
-          @click="command = '居中'"
-        >
-          <XhIcon :icon="AlignCenterIcon" size="sm" />
-        </XhToolbarItem>
-        <XhToolbarItem
-          value="align-right"
-          :style="itemStyle"
-          aria-label="右对齐"
-          @click="command = '右对齐'"
-        >
-          <XhIcon :icon="AlignRightIcon" size="sm" />
-        </XhToolbarItem>
-      </XhToolbarGroup>
-    </XhToolbarRoot>
-
-    <span>最近点击：{{ command }}</span>
-  </div>
+      <XhToolbarItem value="paste" type="button" aria-label="粘贴">
+        <XhIcon :icon="ClipboardIcon" />
+      </XhToolbarItem>
+    </XhToolbarGroup>
+  </XhToolbarRoot>
 </template>
 ```
 
 ```html
-<div style="display: flex; flex-direction: column; gap: 12px; inline-size: 100%">
-  <xh-toolbar id="toolbar-icon">
-    <div data-xh-part="root">
-      <!-- 条目的观感归条目自己，工具条只补焦点环与禁用光标 -->
-      <button
-        type="button"
-        data-xh-part="item"
-        value="undo"
-        aria-label="撤销"
-        style="
-          display: inline-flex;
-          align-items: center;
-          padding: 6px;
-          border-radius: 6px;
-          border: 1px solid var(--xh-border-default);
-          background: var(--xh-bg-surface);
-          color: inherit;
-        "
-      >
-        <xh-icon size="sm">
-          <svg data-xh-part="root"><g data-xh-part="glyph"></g></svg>
-        </xh-icon>
+<xh-toolbar>
+  <div data-xh-part="root" aria-label="文本编辑">
+    <div data-xh-part="group">
+      <button data-format data-xh-part="item" type="button" value="bold" aria-label="加粗" aria-pressed="true">
+        <svg aria-hidden="true" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M7 5H13A4 4 0 0 1 13 13H7Z"/><path d="M7 13H14A4 4 0 0 1 14 21H7Z"/></svg>
       </button>
-      <button
-        type="button"
-        data-xh-part="item"
-        value="redo"
-        aria-label="重做"
-        style="
-          display: inline-flex;
-          align-items: center;
-          padding: 6px;
-          border-radius: 6px;
-          border: 1px solid var(--xh-border-default);
-          background: var(--xh-bg-surface);
-          color: inherit;
-        "
-      >
-        <xh-icon size="sm">
-          <svg data-xh-part="root"><g data-xh-part="glyph"></g></svg>
-        </xh-icon>
-      </button>
-
       <div data-xh-part="separator"></div>
-
-      <div data-xh-part="group">
-        <button
-          type="button"
-          data-xh-part="item"
-          value="align-left"
-          aria-label="左对齐"
-          style="
-            display: inline-flex;
-            align-items: center;
-            padding: 6px;
-            border-radius: 6px;
-            border: 1px solid var(--xh-border-default);
-            background: var(--xh-bg-surface);
-            color: inherit;
-          "
-        >
-          <xh-icon size="sm">
-            <svg data-xh-part="root"><g data-xh-part="glyph"></g></svg>
-          </xh-icon>
-        </button>
-        <button
-          type="button"
-          data-xh-part="item"
-          value="align-center"
-          aria-label="居中"
-          style="
-            display: inline-flex;
-            align-items: center;
-            padding: 6px;
-            border-radius: 6px;
-            border: 1px solid var(--xh-border-default);
-            background: var(--xh-bg-surface);
-            color: inherit;
-          "
-        >
-          <xh-icon size="sm">
-            <svg data-xh-part="root"><g data-xh-part="glyph"></g></svg>
-          </xh-icon>
-        </button>
-        <button
-          type="button"
-          data-xh-part="item"
-          value="align-right"
-          aria-label="右对齐"
-          style="
-            display: inline-flex;
-            align-items: center;
-            padding: 6px;
-            border-radius: 6px;
-            border: 1px solid var(--xh-border-default);
-            background: var(--xh-bg-surface);
-            color: inherit;
-          "
-        >
-          <xh-icon size="sm">
-            <svg data-xh-part="root"><g data-xh-part="glyph"></g></svg>
-          </xh-icon>
-        </button>
-      </div>
+      <button data-format data-xh-part="item" type="button" value="italic" aria-label="斜体" aria-pressed="false">
+        <svg aria-hidden="true" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="19" y1="4" x2="10" y2="4"/><line x1="14" y1="20" x2="5" y2="20"/><line x1="15" y1="4" x2="9" y2="20"/></svg>
+      </button>
+      <div data-xh-part="separator"></div>
+      <button data-format data-xh-part="item" type="button" value="underline" aria-label="下划线" aria-pressed="false">
+        <svg aria-hidden="true" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 4V11A6 6 0 0 0 18 11V4"/><line x1="4" y1="21" x2="20" y2="21"/></svg>
+      </button>
     </div>
-  </xh-toolbar>
-
-  <span id="toolbar-icon-log">最近点击：（无）</span>
-</div>
+    <div data-xh-part="group">
+      <button data-xh-part="item" type="button" value="copy" aria-label="复制">
+        <svg aria-hidden="true" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+      </button>
+      <div data-xh-part="separator"></div>
+      <button data-xh-part="item" type="button" value="paste" aria-label="粘贴">
+        <svg aria-hidden="true" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="4" width="14" height="17" rx="2"/><path d="M9 4V2h6v2"/></svg>
+      </button>
+    </div>
+  </div>
+</xh-toolbar>
 
 <script type="module">
-  // 描边取 currentColor，图标颜色随条目文字色走
-  const strokeAttrs = {
-    "fill": "none",
-    "stroke": "currentColor",
-    "stroke-width": "2",
-    "stroke-linecap": "round",
-    "stroke-linejoin": "round",
-  };
-
-  // 图标记录是对象，只走 property；键与条目的 value 一一对应
-  const icons = {
-    "undo": {
-      name: "undo",
-      viewBox: "0 0 24 24",
-      attrs: strokeAttrs,
-      nodes: [
-        { tag: "path", attrs: { d: "M4 10H15A5 5 0 0 1 15 20H10" } },
-        { tag: "path", attrs: { d: "M8 6L4 10L8 14" } },
-      ],
-    },
-    "redo": {
-      name: "redo",
-      viewBox: "0 0 24 24",
-      attrs: strokeAttrs,
-      nodes: [
-        { tag: "path", attrs: { d: "M20 10H9A5 5 0 0 0 9 20H14" } },
-        { tag: "path", attrs: { d: "M16 6L20 10L16 14" } },
-      ],
-    },
-    "align-left": {
-      name: "align-left",
-      viewBox: "0 0 24 24",
-      attrs: strokeAttrs,
-      nodes: [{ tag: "path", attrs: { d: "M4 6H20M4 12H14M4 18H18" } }],
-    },
-    "align-center": {
-      name: "align-center",
-      viewBox: "0 0 24 24",
-      attrs: strokeAttrs,
-      nodes: [{ tag: "path", attrs: { d: "M4 6H20M7 12H17M5 18H19" } }],
-    },
-    "align-right": {
-      name: "align-right",
-      viewBox: "0 0 24 24",
-      attrs: strokeAttrs,
-      nodes: [{ tag: "path", attrs: { d: "M4 6H20M10 12H20M6 18H20" } }],
-    },
-  };
-
-  const toolbar = document.getElementById("toolbar-icon");
-  const log = document.getElementById("toolbar-icon-log");
-  for (const item of toolbar.querySelectorAll('[data-xh-part="item"]')) {
-    const name = item.getAttribute("value");
-    item.querySelector("xh-icon").icon = icons[name];
+  for (const item of document.querySelectorAll("[data-format]")) {
     item.addEventListener("click", () => {
-      log.textContent = `最近点击：${item.getAttribute("aria-label")}`;
+      item.setAttribute("aria-pressed", String(item.getAttribute("aria-pressed") !== "true"));
     });
   }
 </script>
 ```
 
-### 对齐与分布
+## 组件结构
 
-工具条只定主轴与条目间距，怎么分布交给 CSS：justify-content 一改，同一条就贴尾、居中或两端摊开
+加粗的是必需部件。
+
+`data-scope="toolbar"`：**`root`** · `group` · **`item`** · `separator`
+
+## 示例
+
+### 分组
+
+将相关操作收在一起
 
 ```vue
 <script setup lang="ts">
@@ -943,361 +128,170 @@ import {
   XhToolbarRoot,
   XhToolbarSeparator,
 } from "@xihan-ui/vue";
-
-const itemStyle = {
-  padding: "4px 10px",
-  borderRadius: "6px",
-  border: "1px solid var(--xh-border-default)",
-  background: "var(--xh-bg-surface)",
-};
-
-// 分布方式写在 root 的内联样式上，条目的 DOM 顺序不动，方向键行程也就不受影响
-const layouts = [
-  { value: "flex-end", label: "贴尾" },
-  { value: "center", label: "居中" },
-  { value: "space-between", label: "两端摊开" },
-];
 </script>
 
 <template>
-  <div style="display: grid; gap: 12px; inline-size: 100%">
-    <div v-for="l in layouts" :key="l.value" style="display: grid; gap: 6px">
-      <span>{{ l.label }}</span>
-      <XhToolbarRoot :style="{ justifyContent: l.value }">
-        <XhToolbarGroup>
-          <XhToolbarItem :value="`${l.value}-undo`" :style="itemStyle">
-            撤销
-          </XhToolbarItem>
-          <XhToolbarItem :value="`${l.value}-redo`" :style="itemStyle">
-            重做
-          </XhToolbarItem>
-        </XhToolbarGroup>
-        <XhToolbarSeparator />
-        <XhToolbarItem :value="`${l.value}-publish`" :style="itemStyle">
-          发布
-        </XhToolbarItem>
-      </XhToolbarRoot>
-    </div>
-  </div>
+  <XhToolbarRoot aria-label="编辑操作">
+    <XhToolbarGroup>
+      <XhToolbarItem value="copy" type="button">复制</XhToolbarItem>
+      <XhToolbarSeparator />
+      <XhToolbarItem value="cut" type="button">剪切</XhToolbarItem>
+      <XhToolbarSeparator />
+      <XhToolbarItem value="paste" type="button">粘贴</XhToolbarItem>
+    </XhToolbarGroup>
+    <XhToolbarGroup>
+      <XhToolbarItem value="undo" type="button">撤销</XhToolbarItem>
+      <XhToolbarSeparator />
+      <XhToolbarItem value="redo" type="button">重做</XhToolbarItem>
+    </XhToolbarGroup>
+  </XhToolbarRoot>
 </template>
 ```
 
 ```html
-<div style="display: grid; gap: 12px; inline-size: 100%">
-  <div style="display: grid; gap: 6px">
-    <span>贴尾</span>
-    <xh-toolbar>
-      <!-- 分布方式写在 root 上，条目的 DOM 顺序不动，方向键行程也就不受影响 -->
-      <div data-xh-part="root" style="justify-content: flex-end">
-        <div data-xh-part="group">
-          <button
-            type="button"
-            data-xh-part="item"
-            value="flex-end-undo"
-            style="
-              padding: 4px 10px;
-              border-radius: 6px;
-              border: 1px solid var(--xh-border-default);
-              background: var(--xh-bg-surface);
-            "
-          >
-            撤销
-          </button>
-          <button
-            type="button"
-            data-xh-part="item"
-            value="flex-end-redo"
-            style="
-              padding: 4px 10px;
-              border-radius: 6px;
-              border: 1px solid var(--xh-border-default);
-              background: var(--xh-bg-surface);
-            "
-          >
-            重做
-          </button>
-        </div>
-        <div data-xh-part="separator"></div>
-        <button
-          type="button"
-          data-xh-part="item"
-          value="flex-end-publish"
-          style="
-            padding: 4px 10px;
-            border-radius: 6px;
-            border: 1px solid var(--xh-border-default);
-            background: var(--xh-bg-surface);
-          "
-        >
-          发布
-        </button>
-      </div>
-    </xh-toolbar>
+<xh-toolbar>
+  <div data-xh-part="root" aria-label="编辑操作">
+    <div data-xh-part="group">
+      <button data-xh-part="item" type="button" value="copy">复制</button>
+      <div data-xh-part="separator"></div>
+      <button data-xh-part="item" type="button" value="cut">剪切</button>
+      <div data-xh-part="separator"></div>
+      <button data-xh-part="item" type="button" value="paste">粘贴</button>
+    </div>
+    <div data-xh-part="group">
+      <button data-xh-part="item" type="button" value="undo">撤销</button>
+      <div data-xh-part="separator"></div>
+      <button data-xh-part="item" type="button" value="redo">重做</button>
+    </div>
   </div>
-
-  <div style="display: grid; gap: 6px">
-    <span>居中</span>
-    <xh-toolbar>
-      <div data-xh-part="root" style="justify-content: center">
-        <div data-xh-part="group">
-          <button
-            type="button"
-            data-xh-part="item"
-            value="center-undo"
-            style="
-              padding: 4px 10px;
-              border-radius: 6px;
-              border: 1px solid var(--xh-border-default);
-              background: var(--xh-bg-surface);
-            "
-          >
-            撤销
-          </button>
-          <button
-            type="button"
-            data-xh-part="item"
-            value="center-redo"
-            style="
-              padding: 4px 10px;
-              border-radius: 6px;
-              border: 1px solid var(--xh-border-default);
-              background: var(--xh-bg-surface);
-            "
-          >
-            重做
-          </button>
-        </div>
-        <div data-xh-part="separator"></div>
-        <button
-          type="button"
-          data-xh-part="item"
-          value="center-publish"
-          style="
-            padding: 4px 10px;
-            border-radius: 6px;
-            border: 1px solid var(--xh-border-default);
-            background: var(--xh-bg-surface);
-          "
-        >
-          发布
-        </button>
-      </div>
-    </xh-toolbar>
-  </div>
-
-  <div style="display: grid; gap: 6px">
-    <span>两端摊开</span>
-    <xh-toolbar>
-      <div data-xh-part="root" style="justify-content: space-between">
-        <div data-xh-part="group">
-          <button
-            type="button"
-            data-xh-part="item"
-            value="space-between-undo"
-            style="
-              padding: 4px 10px;
-              border-radius: 6px;
-              border: 1px solid var(--xh-border-default);
-              background: var(--xh-bg-surface);
-            "
-          >
-            撤销
-          </button>
-          <button
-            type="button"
-            data-xh-part="item"
-            value="space-between-redo"
-            style="
-              padding: 4px 10px;
-              border-radius: 6px;
-              border: 1px solid var(--xh-border-default);
-              background: var(--xh-bg-surface);
-            "
-          >
-            重做
-          </button>
-        </div>
-        <div data-xh-part="separator"></div>
-        <button
-          type="button"
-          data-xh-part="item"
-          value="space-between-publish"
-          style="
-            padding: 4px 10px;
-            border-radius: 6px;
-            border: 1px solid var(--xh-border-default);
-            background: var(--xh-bg-surface);
-          "
-        >
-          发布
-        </button>
-      </div>
-    </xh-toolbar>
-  </div>
-</div>
+</xh-toolbar>
 ```
 
-### 形态
+### 垂直布局
 
-surface 让工具条自己画一块面，plain 不画：贴在编辑区顶上时用 plain，浮在内容之上时用 surface
+按纵向排列工具
 
 ```vue
 <script setup lang="ts">
-import { XhToolbarItem, XhToolbarRoot, XhToolbarSeparator } from "@xihan-ui/vue";
-
-const itemStyle = {
-  padding: "4px 10px",
-  borderRadius: "6px",
-  border: "1px solid var(--xh-border-default)",
-  background: "var(--xh-bg-surface)",
-};
+import { MaximizeIcon, ZoomInIcon, ZoomOutIcon } from "@xihan-ui/icons";
+import {
+  XhIcon,
+  XhToolbarItem,
+  XhToolbarRoot,
+  XhToolbarSeparator,
+} from "@xihan-ui/vue";
 </script>
 
 <template>
-  <div style="display: flex; flex-direction: column; gap: 12px">
-    <div style="display: flex; flex-direction: column; gap: 6px">
-      <span>surface（缺省）</span>
-      <XhToolbarRoot variant="surface">
-        <XhToolbarItem value="surface-bold" :style="itemStyle">粗体</XhToolbarItem>
-        <XhToolbarItem value="surface-italic" :style="itemStyle">斜体</XhToolbarItem>
-        <XhToolbarSeparator />
-        <XhToolbarItem value="surface-link" :style="itemStyle">链接</XhToolbarItem>
-      </XhToolbarRoot>
-    </div>
-
-    <div style="display: flex; flex-direction: column; gap: 6px">
-      <span>plain</span>
-      <XhToolbarRoot variant="plain">
-        <XhToolbarItem value="plain-bold" :style="itemStyle">粗体</XhToolbarItem>
-        <XhToolbarItem value="plain-italic" :style="itemStyle">斜体</XhToolbarItem>
-        <XhToolbarSeparator />
-        <XhToolbarItem value="plain-link" :style="itemStyle">链接</XhToolbarItem>
-      </XhToolbarRoot>
-    </div>
-  </div>
+  <XhToolbarRoot orientation="vertical" aria-label="画布缩放">
+    <XhToolbarItem value="zoom-in" type="button"><XhIcon :icon="ZoomInIcon" />放大</XhToolbarItem>
+    <XhToolbarItem value="zoom-out" type="button"><XhIcon :icon="ZoomOutIcon" />缩小</XhToolbarItem>
+    <XhToolbarSeparator />
+    <XhToolbarItem value="fit" type="button"><XhIcon :icon="MaximizeIcon" />适应画布</XhToolbarItem>
+  </XhToolbarRoot>
 </template>
 ```
 
 ```html
-<div style="display: flex; flex-direction: column; gap: 12px">
-  <div style="display: flex; flex-direction: column; gap: 6px">
-    <span>surface（缺省）</span>
-    <xh-toolbar variant="surface">
-      <div data-xh-part="root">
-        <button
-          type="button"
-          data-xh-part="item"
-          value="surface-bold"
-          style="
-            padding: 4px 10px;
-            border-radius: 6px;
-            border: 1px solid var(--xh-border-default);
-            background: var(--xh-bg-surface);
-          "
-        >
-          粗体
-        </button>
-        <button
-          type="button"
-          data-xh-part="item"
-          value="surface-italic"
-          style="
-            padding: 4px 10px;
-            border-radius: 6px;
-            border: 1px solid var(--xh-border-default);
-            background: var(--xh-bg-surface);
-          "
-        >
-          斜体
-        </button>
-        <div data-xh-part="separator"></div>
-        <button
-          type="button"
-          data-xh-part="item"
-          value="surface-link"
-          style="
-            padding: 4px 10px;
-            border-radius: 6px;
-            border: 1px solid var(--xh-border-default);
-            background: var(--xh-bg-surface);
-          "
-        >
-          链接
-        </button>
-      </div>
-    </xh-toolbar>
+<xh-toolbar orientation="vertical">
+  <div data-xh-part="root" aria-label="画布缩放">
+    <button data-xh-part="item" type="button" value="zoom-in">
+      <svg aria-hidden="true" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="M20 20L16 16"/><path d="M11 8V14M8 11H14"/></svg>
+      放大
+    </button>
+    <button data-xh-part="item" type="button" value="zoom-out">
+      <svg aria-hidden="true" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="M20 20L16 16"/><path d="M8 11H14"/></svg>
+      缩小
+    </button>
+    <div data-xh-part="separator"></div>
+    <button data-xh-part="item" type="button" value="fit">
+      <svg aria-hidden="true" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 3H3V8M16 3H21V8M8 21H3V16M16 21H21V16"/></svg>
+      适应画布
+    </button>
   </div>
+</xh-toolbar>
+```
 
-  <div style="display: flex; flex-direction: column; gap: 6px">
-    <span>plain</span>
-    <xh-toolbar variant="plain">
-      <div data-xh-part="root">
-        <button
-          type="button"
-          data-xh-part="item"
-          value="plain-bold"
-          style="
-            padding: 4px 10px;
-            border-radius: 6px;
-            border: 1px solid var(--xh-border-default);
-            background: var(--xh-bg-surface);
-          "
-        >
-          粗体
-        </button>
-        <button
-          type="button"
-          data-xh-part="item"
-          value="plain-italic"
-          style="
-            padding: 4px 10px;
-            border-radius: 6px;
-            border: 1px solid var(--xh-border-default);
-            background: var(--xh-bg-surface);
-          "
-        >
-          斜体
-        </button>
-        <div data-xh-part="separator"></div>
-        <button
-          type="button"
-          data-xh-part="item"
-          value="plain-link"
-          style="
-            padding: 4px 10px;
-            border-radius: 6px;
-            border: 1px solid var(--xh-border-default);
-            background: var(--xh-bg-surface);
-          "
-        >
-          链接
-        </button>
-      </div>
-    </xh-toolbar>
+### 附着工具面
+
+为悬浮工具条提供完整表面
+
+```vue
+<script setup lang="ts">
+import {
+  XhToolbarGroup,
+  XhToolbarItem,
+  XhToolbarRoot,
+  XhToolbarSeparator,
+} from "@xihan-ui/vue";
+</script>
+
+<template>
+  <XhToolbarRoot variant="surface" aria-label="快捷操作">
+    <XhToolbarGroup>
+      <XhToolbarItem value="copy" type="button">复制</XhToolbarItem>
+      <XhToolbarItem value="cut" type="button">剪切</XhToolbarItem>
+      <XhToolbarItem value="paste" type="button">粘贴</XhToolbarItem>
+    </XhToolbarGroup>
+    <XhToolbarSeparator />
+    <XhToolbarItem value="more" type="button">更多</XhToolbarItem>
+  </XhToolbarRoot>
+</template>
+```
+
+```html
+<xh-toolbar variant="surface">
+  <div data-xh-part="root" aria-label="快捷操作">
+    <div data-xh-part="group">
+      <button data-xh-part="item" type="button" value="copy">复制</button>
+      <button data-xh-part="item" type="button" value="cut">剪切</button>
+      <button data-xh-part="item" type="button" value="paste">粘贴</button>
+    </div>
+    <div data-xh-part="separator"></div>
+    <button data-xh-part="item" type="button" value="more">更多</button>
   </div>
-</div>
+</xh-toolbar>
 ```
 
 ## 设计指引
 
 ### 何时使用
 
-- 编辑器的格式条、表格的操作条、图表的视图控制条。
-- 控件多到逐个 Tab 走过去太慢。
+- 文本编辑、表格操作或画布工具。
+- 相关控件需要统一的方向键导航。
 
 ### 何时不用
 
-- 只有两三个按钮：直接摆，别为此接管键盘。
-- 各控件之间是并列动作而非工具：用[按钮组](./button-group)。
+- 只有少量独立操作时直接使用按钮。
+- 操作必须连接成一个整体时使用[按钮组](./button-group)。
 
 ### 特性
 
-- 条目是作者自己的按钮，工具栏不接管它的点击。
-- 分组只是把一伙控件在视觉上收紧，不是导航里多出来的一层：方向键照样一路走过去。
-- 禁用走 `aria-disabled`：禁用项仍聚焦得上、仍能当方向键的起点，只是方向键路过时跳过它。
-- 工具栏只定主轴与条目间距，怎么分布交给 CSS。
+- 默认 `plain` 变体不绘制工具条外框。
+- `surface` 变体提供带内距、描边和背景的附着式工具面。
+- `group` 使用浅色胶囊表面收纳相关操作。
+- 默认条目使用无描边工具按钮样式，`aria-pressed` 表示选中状态。
+- 支持水平、垂直、分组、分隔线与整体禁用。
+- 方向键在条目间移动，禁用项会被跳过。
 
-## 产物
+### 组合
+
+- 使用 `group` 收紧相关操作。
+- 使用 `separator` 区分操作组。
+
+### 最佳实践
+
+- 仅图标条目必须提供 `aria-label`。
+- 使用 `aria-pressed` 表示可切换工具的当前状态。
+
+### 反模式
+
+- 不要在工具栏中放置文本输入控件。
+- 不要将整页所有操作放入同一工具栏。
+
+## API 参考
+
+### 产物
 
 | 层 | 值 |
 | --- | --- |
@@ -1307,13 +301,7 @@ const itemStyle = {
 | 状态机 | `toolbarMachine` |
 | 皮肤 | `@xihan-ui/styles/toolbar.css` |
 
-## 解剖
-
-部件名即 `data-part` 属性值，也是皮肤的选择器。加粗的是必备部件，不渲染它组件不工作（Web Components 适配器会在诊断通道上报 `wc.missing-part`）。
-
-`data-scope="toolbar"`：**`root`** · `group` · **`item`** · `separator`
-
-## Props
+### Props
 
 | 属性 | 类型 | 必填 | 说明 |
 | --- | --- | --- | --- |
@@ -1321,28 +309,28 @@ const itemStyle = {
 | `dir` | `Direction` |  | 文字方向，默认 ltr；只改写水平主轴上左右方向键的语义。 |
 | `loop` | `boolean` |  | 方向键走到尽头是否回绕，默认 true。 |
 | `disabled` | `boolean` |  | 整条禁用：条目全部转 aria-disabled，方向键不再接管。 |
-| `variant` | `ToolbarVariant` |  | 形态：plain / surface，决定工具条自己画不画一块面。缺省 surface。 |
-| `size` | `Size` |  | 尺寸：sm / md / lg。工具条是布局容器，只换排布尺寸，不带语气。 |
+| `variant` | `ToolbarVariant` |  | 变体：plain / surface，决定工具条自己画不画一块面。缺省 plain。 |
+| `size` | `Size` |  | 尺寸：sm / md / lg，同时调整排布与默认条目尺寸。 |
 
-## 插槽
+### 插槽
 
-作者能拿到载荷的插槽。只转发内容、不带载荷的默认插槽不在此列——那类直接写子节点即可。
+仅列出带载荷的插槽。
 
 | Vue 组件 | 插槽 | 载荷 | 说明 |
 | --- | --- | --- | --- |
 | `XhToolbarRoot` | `default` | `ToolbarRootSlotProps` |  |
 
-## 状态
+### 状态
 
-状态机内部转移，写样式与业务都用不到；要监听变化请看上面的「事件」。
+以下名称仅用于内部状态机。
 
 **状态**：`idle`
 
 **事件**：`ITEM.FOCUS` · `TOOLBAR.BLUR`
 
-## connect API
+### connect API
 
-`useToolbar` 产出的对象。`getXxxProps()` 铺到对应部件的宿主元素上，其余是可读状态与操作入口。
+`getXxxProps()` 返回对应部件的宿主属性。
 
 | 成员 | 类型 | 说明 |
 | --- | --- | --- |
@@ -1355,7 +343,9 @@ const itemStyle = {
 | `getItemProps` | `(props: ToolbarItemProps) => T['element']` |  |
 | `getSeparatorProps` | `() => T['element']` |  |
 
-## 键盘
+## 无障碍
+
+### 键盘
 
 规格出处：[W3C APG](https://www.w3.org/WAI/ARIA/apg/patterns/toolbar/#keyboardinteraction)
 
@@ -1368,9 +358,9 @@ const itemStyle = {
 | `End` | 焦点在条内且未整条禁用 | 焦点移到末个可停留条目 |
 | `交叉轴的两个方向键` | 焦点在条内（横排按上下、竖排按左右） | 不归工具条管：原样放行给页面滚动与读屏，绝不 preventDefault |
 
-## 无障碍
+### ARIA
 
-下面这些由 `connect` 铺到部件上，作者不必自己写；重复写反而会覆盖掉正确值。
+以下属性由 `connect` 生成。
 
 | 部件 | 属性 | 值 |
 | --- | --- | --- |
@@ -1382,15 +372,17 @@ const itemStyle = {
 | `separator` | `aria-orientation` | 'vertical' \| 'horizontal' |
 | `separator` | `role` | 'separator' |
 
-## 样式
+## 样式参考
 
-默认皮肤 `@xihan-ui/styles/toolbar.css` 按部件选择：`[data-scope="toolbar"][data-part="root"]`。它落在 `xihan.components` 层；业务样式不写进 `@layer` 即高于全部库层，要按层压过来就写进 `xihan.overrides`。
+### 皮肤
+
+`@xihan-ui/styles/toolbar.css` 使用 `[data-scope="toolbar"][data-part="root"]` 部件选择器，位于 `xihan.components` 层。覆盖样式使用 `xihan.overrides`。
 
 `forced-colors: active` 下另有一套规则：颜色交给系统，边框与状态标记改用系统色关键字。
 
-## 数据属性
+### 数据属性
 
-由 `connect` 产出并铺到部件上，皮肤与测试都据此选择；`data-disabled` 这类无值属性在条件不成立时整个不出现。
+由 `connect` 生成；条件不成立时不输出无值属性。
 
 | 部件 | 属性 | 值 |
 | --- | --- | --- |
@@ -1404,20 +396,39 @@ const itemStyle = {
 | `separator` | `data-orientation` | 'vertical' \| 'horizontal' |
 
 <!-- xh-component-tokens:start -->
-## CSS 变量
+### CSS 变量
 
 本组件公开覆盖槽由独立皮肤的实际消费位生成；缺省来源、作用部件和状态均与 CSS 同源。
 
 | 变量 | 部件 | CSS 属性 | 状态 | 缺省来源 | 说明 |
 | --- | --- | --- | --- | --- | --- |
-| `--xh-toolbar-bg` | `root` | `background` | `default`<br>`variant=plain` | `--xh-bg-surface`<br>`transparent` | toolbar 的 root 部件 background 覆盖槽。 |
-| `--xh-toolbar-bg-disabled` | `root` | `background` | `disabled` | `--xh-bg-muted` | toolbar 的 root 部件 background 覆盖槽。 |
-| `--xh-toolbar-border` | `root` | `border` | `default` | `--xh-border-default` | toolbar 的 root 部件 border 覆盖槽。 |
+| `--xh-toolbar-bg` | `root` | `background` | `default` | `--xh-_toolbar-root-bg` | toolbar 的 root 部件 background 覆盖槽。 |
+| `--xh-toolbar-bg-disabled` | `root` | `background` | `disabled` | `--xh-_toolbar-root-bg-disabled` | toolbar 的 root 部件 background 覆盖槽。 |
+| `--xh-toolbar-border` | `root` | `border` | `default` | `--xh-_toolbar-root-border` | toolbar 的 root 部件 border 覆盖槽。 |
 | `--xh-toolbar-fg` | `root` | `color` | `default` | `--xh-fg-default` | toolbar 的 root 部件 color 覆盖槽。 |
 | `--xh-toolbar-gap` | `root` | `gap` | `default` | `--xh-_toolbar-gap` | toolbar 的 root 部件 gap 覆盖槽。 |
-| `--xh-toolbar-group-gap` | `group` | `gap` | `default` | `--xh-space-0_5` | toolbar 的 group 部件 gap 覆盖槽。 |
-| `--xh-toolbar-px` | `root` | `padding-inline` | `default`<br>`variant=plain` | `--xh-_toolbar-p`<br>`0` | toolbar 的 root 部件 padding-inline 覆盖槽。 |
-| `--xh-toolbar-py` | `root` | `padding-block` | `default`<br>`variant=plain` | `--xh-_toolbar-p`<br>`0` | toolbar 的 root 部件 padding-block 覆盖槽。 |
+| `--xh-toolbar-group-bg` | `group` | `background` | `default` | `--xh-bg-subtle` | toolbar 的 group 部件 background 覆盖槽。 |
+| `--xh-toolbar-group-gap` | `group` | `gap` | `default` | `--xh-space-0` | toolbar 的 group 部件 gap 覆盖槽。 |
+| `--xh-toolbar-group-p` | `group` | `padding` | `default` | `--xh-space-0_5` | toolbar 的 group 部件 padding 覆盖槽。 |
+| `--xh-toolbar-group-radius` | `group` | `border-radius` | `default`<br>`orientation=vertical` | `--xh-shape-pill`<br>`--xh-shape-surface` | toolbar 的 group 部件 border-radius 覆盖槽。 |
+| `--xh-toolbar-group-separator-gap` | `group`<br>`separator` | `margin-block`<br>`margin-inline` | `orientation=horizontal`<br>`orientation=vertical` | `--xh-space-0_5` | toolbar 的 group、separator 部件 margin-block、margin-inline 覆盖槽。 |
+| `--xh-toolbar-icon-size` | `root` | `--xh-icon-size` | `default`<br>`size=lg`<br>`size=sm` | `--xh-glyph-size-lg`<br>`--xh-glyph-size-md`<br>`--xh-glyph-size-sm` | toolbar 的 root 部件 --xh-icon-size 覆盖槽。 |
+| `--xh-toolbar-item-bg` | `item` | `background` | `default` | `transparent` | toolbar 的 item 部件 background 覆盖槽。 |
+| `--xh-toolbar-item-bg-active` | `item` | `background` | `active`<br>`disabled`<br>`not([data-disabled])` | `--xh-bg-subtle-active` | toolbar 的 item 部件 background 覆盖槽。 |
+| `--xh-toolbar-item-bg-disabled` | `item` | `background` | `disabled` | `transparent` | toolbar 的 item 部件 background 覆盖槽。 |
+| `--xh-toolbar-item-bg-hover` | `item` | `background` | `disabled`<br>`hover`<br>`not([data-disabled])` | `--xh-bg-subtle-hover` | toolbar 的 item 部件 background 覆盖槽。 |
+| `--xh-toolbar-item-bg-pressed` | `item` | `background` | `default` | `--xh-bg-brand-subtle` | toolbar 的 item 部件 background 覆盖槽。 |
+| `--xh-toolbar-item-bg-pressed-hover` | `item` | `background` | `disabled`<br>`hover`<br>`not([data-disabled])` | `--xh-bg-brand-subtle-hover` | toolbar 的 item 部件 background 覆盖槽。 |
+| `--xh-toolbar-item-fg` | `item` | `color` | `default` | `inherit` | toolbar 的 item 部件 color 覆盖槽。 |
+| `--xh-toolbar-item-fg-pressed` | `item` | `color` | `default` | `--xh-fg-brand-strong` | toolbar 的 item 部件 color 覆盖槽。 |
+| `--xh-toolbar-item-font-size` | `item` | `font-size` | `default` | `--xh-_toolbar-item-font-size` | toolbar 的 item 部件 font-size 覆盖槽。 |
+| `--xh-toolbar-item-font-weight` | `item` | `font-weight` | `default` | `--xh-text-label-weight` | toolbar 的 item 部件 font-weight 覆盖槽。 |
+| `--xh-toolbar-item-gap` | `item` | `gap` | `default` | `--xh-control-gap-sm` | toolbar 的 item 部件 gap 覆盖槽。 |
+| `--xh-toolbar-item-h` | `item` | `min-block-size` | `default` | `--xh-_toolbar-item-h` | toolbar 的 item 部件 min-block-size 覆盖槽。 |
+| `--xh-toolbar-item-px` | `item` | `padding-inline` | `default` | `--xh-_toolbar-item-px` | toolbar 的 item 部件 padding-inline 覆盖槽。 |
+| `--xh-toolbar-item-radius` | `item` | `border-radius` | `default` | `--xh-shape-control` | toolbar 的 item 部件 border-radius 覆盖槽。 |
+| `--xh-toolbar-px` | `root` | `padding-inline` | `default` | `--xh-_toolbar-root-p` | toolbar 的 root 部件 padding-inline 覆盖槽。 |
+| `--xh-toolbar-py` | `root` | `padding-block` | `default` | `--xh-_toolbar-root-p` | toolbar 的 root 部件 padding-block 覆盖槽。 |
 | `--xh-toolbar-radius` | `root` | `border-radius` | `default` | `--xh-shape-surface` | toolbar 的 root 部件 border-radius 覆盖槽。 |
 | `--xh-toolbar-separator-color` | `separator` | `background` | `default` | `--xh-border-default` | toolbar 的 separator 部件 background 覆盖槽。 |
 | `--xh-toolbar-separator-gap` | `separator` | `margin-block`<br>`margin-inline` | `orientation=horizontal`<br>`orientation=vertical` | `--xh-space-1` | toolbar 的 separator 部件 margin-block、margin-inline 覆盖槽。 |
@@ -1426,26 +437,12 @@ const itemStyle = {
 | `--xh-toolbar-separator-thickness` | `separator` | `block-size`<br>`inline-size` | `orientation=horizontal`<br>`orientation=vertical` | `--xh-stroke-thin` | toolbar 的 separator 部件 block-size、inline-size 覆盖槽。 |
 <!-- xh-component-tokens:end -->
 
-## 动效
+### 动效
 
-`background` · `color` 走 `transition` 过渡。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
+`background` · `color` · `scale` 走 `transition` 过渡。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
 
 系统开启减弱动效时由令牌层统一收敛，皮肤不另作判断。
 
-## RTL
+### RTL
 
 皮肤用逻辑属性排布（`inline-start` 一族），`dir="rtl"` 下自动镜像。
-
-## 组合
-
-- 条目用[切换按钮](./toggle)、[切换按钮组](./toggle-group)、[菜单](./menu)的触发器；分组之间放[分隔线](./separator)。
-
-## 最佳实践
-
-- 只画图标的条目必须自带 `aria-label`。
-- 尺寸只写在条上，条目自身的高度与字号归条目的皮肤管。
-
-## 反模式
-
-- 在工具栏里放文本输入：方向键会被输入框吃掉，条内导航当场失效。
-- 把整页的所有动作都塞进一条工具栏。

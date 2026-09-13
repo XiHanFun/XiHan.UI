@@ -1,8 +1,8 @@
 来源：https://ui.docs.xihanfun.com/components/splitter
 
-# Splitter `分栏`
+# Splitter 分栏
 
-把一块区域拆成几片可拖动的面板，边界由用户自己分配。
+将内容区域拆分为可调整大小的面板。
 
 <div class="xh-resource-links">
   <a href="https://github.com/XiHanFun/XiHan.UI/tree/dev/ui/packages/engine/headless/src/splitter" target="_blank" rel="noreferrer">Headless</a>
@@ -14,7 +14,7 @@
 
 ## 用法
 
-panels 数组的长度决定面板块数，每条分隔条调的是它前面那一块
+调整侧栏和编辑区域的比例
 
 ```vue
 <script setup lang="ts">
@@ -24,7 +24,6 @@ import {
   XhSplitterRoot,
 } from "@xihan-ui/vue";
 
-// id 用来派生面板的 DOM id，分隔条的 aria-controls 指向它
 const panels = [
   { id: "aside", min: 20, max: 60 },
   { id: "main", min: 25 },
@@ -32,141 +31,38 @@ const panels = [
 </script>
 
 <template>
-  <!-- 分栏必须先有一个确定的跨轴尺寸，才谈得上把它分成几份 -->
-  <XhSplitterRoot :panels="panels" style="inline-size: 100%; block-size: 140px">
-    <XhSplitterPanel :index="0">
-      <p style="padding: 12px">侧栏：min 20% / max 60%，拖到底也留得住 20%。</p>
-    </XhSplitterPanel>
+  <XhSplitterRoot :panels="panels" style="inline-size: min(640px, 100%); block-size: 180px">
+    <XhSplitterPanel :index="0" style="padding: 16px; background: var(--xh-bg-subtle)">文件</XhSplitterPanel>
     <XhSplitterResizeTrigger :index="0" />
-    <XhSplitterPanel :index="1">
-      <p style="padding: 12px">正文：min 25%，侧栏再撑也吃不掉它这一份。</p>
-    </XhSplitterPanel>
+    <XhSplitterPanel :index="1" style="padding: 16px; background: var(--xh-bg-brand-subtle)">编辑器</XhSplitterPanel>
   </XhSplitterRoot>
 </template>
 ```
 
 ```html
-<!-- 分栏必须先有一个确定的跨轴尺寸，才谈得上把它分成几份 -->
 <xh-splitter
   panels='[{"id":"aside","min":20,"max":60},{"id":"main","min":25}]'
   style="display: contents"
 >
-  <div data-xh-part="root" style="inline-size: 100%; block-size: 140px">
-    <div data-xh-part="panel" index="0">
-      <p style="padding: 12px">侧栏：min 20% / max 60%，拖到底也留得住 20%。</p>
-    </div>
+  <div data-xh-part="root" style="inline-size: min(640px, 100%); block-size: 180px">
+    <div data-xh-part="panel" index="0" style="padding: 16px; background: var(--xh-bg-subtle)">文件</div>
     <div data-xh-part="resize-trigger" index="0"></div>
-    <div data-xh-part="panel" index="1">
-      <p style="padding: 12px">正文：min 25%，侧栏再撑也吃不掉它这一份。</p>
-    </div>
+    <div data-xh-part="panel" index="1" style="padding: 16px; background: var(--xh-bg-brand-subtle)">编辑器</div>
   </div>
 </xh-splitter>
 ```
 
+## 组件结构
+
+加粗的是必需部件。
+
+`data-scope="splitter"`：**`root`** · **`panel`** · **`resize-trigger`**
+
 ## 示例
 
-### 受控
+### 垂直与折叠
 
-传了 sizes 就由宿主说了算；sizes-change 拖动途中连着发，sizes-change-end 松手才发一次
-
-```vue
-<script setup lang="ts">
-import {
-  XhSplitterPanel,
-  XhSplitterResizeTrigger,
-  XhSplitterRoot,
-} from "@xihan-ui/vue";
-import { ref } from "vue";
-
-const panels = [{ id: "aside", min: 20 }, { id: "main", min: 20 }];
-const size = ref([30, 70]);
-const lastEnd = ref("（还没拖过）");
-
-function onSizeChangeEnd(details: { sizes: number[]; index: number }): void {
-  lastEnd.value = `第 ${details.index} 条 → ${details.sizes
-    .map(n => `${Math.round(n)}%`)
-    .join(" / ")}`;
-}
-</script>
-
-<template>
-  <div style="inline-size: 100%; display: grid; gap: 12px">
-    <XhSplitterRoot
-      v-model:sizes="size"
-      :panels="panels"
-      style="block-size: 140px"
-      @sizes-change-end="onSizeChangeEnd"
-    >
-      <XhSplitterPanel :index="0">
-        <p style="padding: 12px">侧栏</p>
-      </XhSplitterPanel>
-      <XhSplitterResizeTrigger :index="0" />
-      <XhSplitterPanel :index="1">
-        <p style="padding: 12px">正文</p>
-      </XhSplitterPanel>
-    </XhSplitterRoot>
-
-    <div style="display: flex; align-items: center; gap: 12px; flex-wrap: wrap">
-      <button type="button" @click="size = [30, 70]">复位到 30 / 70</button>
-      <span>当前：{{ size.map((n) => `${Math.round(n)}%`).join(" / ") }}</span>
-      <span>上次收尾：{{ lastEnd }}</span>
-    </div>
-  </div>
-</template>
-```
-
-```html
-<div style="inline-size: 100%; display: grid; gap: 12px">
-  <xh-splitter
-    id="splitter-controlled"
-    sizes="30,70"
-    panels='[{"id":"aside","min":20},{"id":"main","min":20}]'
-    style="display: contents"
-  >
-    <div data-xh-part="root" style="block-size: 140px">
-      <div data-xh-part="panel" index="0">
-        <p style="padding: 12px">侧栏</p>
-      </div>
-      <div data-xh-part="resize-trigger" index="0"></div>
-      <div data-xh-part="panel" index="1">
-        <p style="padding: 12px">正文</p>
-      </div>
-    </div>
-  </xh-splitter>
-
-  <div style="display: flex; align-items: center; gap: 12px; flex-wrap: wrap">
-    <button type="button" id="splitter-controlled-reset">复位到 30 / 70</button>
-    <span>当前：<span id="splitter-controlled-now">30% / 70%</span></span>
-    <span>上次收尾：<span id="splitter-controlled-end">（还没拖过）</span></span>
-  </div>
-</div>
-
-<script type="module">
-  // 拖动发来的布局写回元素，界面才跟着变
-  const splitter = document.getElementById("splitter-controlled");
-  const now = document.getElementById("splitter-controlled-now");
-  const end = document.getElementById("splitter-controlled-end");
-  const format = (sizes) => sizes.map((n) => `${Math.round(n)}%`).join(" / ");
-
-  splitter.addEventListener("sizes-change", (event) => {
-    splitter.sizes = event.detail.sizes;
-    now.textContent = format(event.detail.sizes);
-  });
-
-  splitter.addEventListener("sizes-change-end", (event) => {
-    end.textContent = `第 ${event.detail.index} 条 → ${format(event.detail.sizes)}`;
-  });
-
-  document.getElementById("splitter-controlled-reset").addEventListener("click", () => {
-    splitter.sizes = [30, 70];
-    now.textContent = format([30, 70]);
-  });
-</script>
-```
-
-### 竖排与折叠
-
-orientation 换轴后方向键跟着换，collapsible 的面板在它的分隔条上按 Enter 折叠
+垂直调整并折叠面板
 
 ```vue
 <script setup lang="ts">
@@ -176,7 +72,6 @@ import {
   XhSplitterRoot,
 } from "@xihan-ui/vue";
 
-// 中间那栏可折叠：折叠后带上 data-collapsed，收到 collapsedSize
 const panels = [
   { id: "top", min: 10 },
   { id: "middle", min: 10, collapsible: true, collapsedSize: 0 },
@@ -188,45 +83,40 @@ const panels = [
   <XhSplitterRoot
     :panels="panels"
     orientation="vertical"
-    style="inline-size: 100%; block-size: 220px"
+    style="inline-size: min(480px, 100%); block-size: 240px"
   >
-    <XhSplitterPanel :index="0">
-      <p style="padding: 12px">顶栏：min 10%，不可折叠。</p>
+    <XhSplitterPanel :index="0" style="background: var(--xh-bg-subtle)">
+      <p style="padding: 12px">预览</p>
     </XhSplitterPanel>
     <XhSplitterResizeTrigger :index="0" />
-    <XhSplitterPanel :index="1">
-      <p style="padding: 12px">
-        中间这栏可折叠：焦点落到它下面那条分隔条上按 Enter 折叠，再按一次回到折叠前的尺寸。
-      </p>
+    <XhSplitterPanel :index="1" style="background: var(--xh-bg-brand-subtle)">
+      <p style="padding: 12px">编辑器</p>
     </XhSplitterPanel>
     <XhSplitterResizeTrigger :index="1" />
-    <XhSplitterPanel :index="2">
-      <p style="padding: 12px">底栏：min 10%。</p>
+    <XhSplitterPanel :index="2" style="background: var(--xh-bg-subtle)">
+      <p style="padding: 12px">控制台</p>
     </XhSplitterPanel>
   </XhSplitterRoot>
 </template>
 ```
 
 ```html
-<!-- 中间那栏可折叠：折叠后带上 data-collapsed，收到 collapsedSize -->
 <xh-splitter
   panels='[{"id":"top","min":10},{"id":"middle","min":10,"collapsible":true,"collapsedSize":0},{"id":"bottom","min":10}]'
   orientation="vertical"
   style="display: contents"
 >
-  <div data-xh-part="root" style="inline-size: 100%; block-size: 220px">
-    <div data-xh-part="panel" index="0">
-      <p style="padding: 12px">顶栏：min 10%，不可折叠。</p>
+  <div data-xh-part="root" style="inline-size: min(480px, 100%); block-size: 240px">
+    <div data-xh-part="panel" index="0" style="background: var(--xh-bg-subtle)">
+      <p style="padding: 12px">预览</p>
     </div>
     <div data-xh-part="resize-trigger" index="0"></div>
-    <div data-xh-part="panel" index="1">
-      <p style="padding: 12px">
-        中间这栏可折叠：焦点落到它下面那条分隔条上按 Enter 折叠，再按一次回到折叠前的尺寸。
-      </p>
+    <div data-xh-part="panel" index="1" style="background: var(--xh-bg-brand-subtle)">
+      <p style="padding: 12px">编辑器</p>
     </div>
     <div data-xh-part="resize-trigger" index="1"></div>
-    <div data-xh-part="panel" index="2">
-      <p style="padding: 12px">底栏：min 10%。</p>
+    <div data-xh-part="panel" index="2" style="background: var(--xh-bg-subtle)">
+      <p style="padding: 12px">控制台</p>
     </div>
   </div>
 </xh-splitter>
@@ -234,7 +124,7 @@ const panels = [
 
 ### 禁用
 
-disabled 后拖不动也推不动，分隔条整个退出 Tab 序列，方向键放行给页面
+禁止调整面板比例
 
 ```vue
 <script setup lang="ts">
@@ -251,13 +141,13 @@ const panels = [{ id: "aside" }, { id: "main" }];
   <XhSplitterRoot
     :panels="panels"
     disabled
-    style="inline-size: 100%; block-size: 120px"
+    style="inline-size: min(480px, 100%); block-size: 140px"
   >
-    <XhSplitterPanel :index="0">
+    <XhSplitterPanel :index="0" style="background: var(--xh-bg-subtle)">
       <p style="padding: 12px">侧栏</p>
     </XhSplitterPanel>
     <XhSplitterResizeTrigger :index="0" />
-    <XhSplitterPanel :index="1">
+    <XhSplitterPanel :index="1" style="background: var(--xh-bg-brand-subtle)">
       <p style="padding: 12px">正文</p>
     </XhSplitterPanel>
   </XhSplitterRoot>
@@ -270,21 +160,21 @@ const panels = [{ id: "aside" }, { id: "main" }];
   disabled
   style="display: contents"
 >
-  <div data-xh-part="root" style="inline-size: 100%; block-size: 120px">
-    <div data-xh-part="panel" index="0">
+  <div data-xh-part="root" style="inline-size: min(480px, 100%); block-size: 140px">
+    <div data-xh-part="panel" index="0" style="background: var(--xh-bg-subtle)">
       <p style="padding: 12px">侧栏</p>
     </div>
     <div data-xh-part="resize-trigger" index="0"></div>
-    <div data-xh-part="panel" index="1">
+    <div data-xh-part="panel" index="1" style="background: var(--xh-bg-brand-subtle)">
       <p style="padding: 12px">正文</p>
     </div>
   </div>
 </xh-splitter>
 ```
 
-### 嵌套
+### 嵌套分栏
 
-面板里再放一套分栏即可拆出第二根轴，里外两层各管各的尺寸，互不干涉
+组合水平和垂直面板
 
 ```vue
 <script setup lang="ts">
@@ -305,24 +195,23 @@ const inner = [
 </script>
 
 <template>
-  <XhSplitterRoot :panels="outer" style="inline-size: 100%; block-size: 220px">
-    <XhSplitterPanel :index="0">
-      <p style="padding: 12px">侧栏</p>
+  <XhSplitterRoot :panels="outer" style="inline-size: min(640px, 100%); block-size: 240px">
+    <XhSplitterPanel :index="0" style="background: var(--xh-bg-subtle)">
+      <p style="padding: 12px">文件</p>
     </XhSplitterPanel>
     <XhSplitterResizeTrigger :index="0" />
     <XhSplitterPanel :index="1">
-      <!-- 内层是另一套分栏：跨轴尺寸取满外层这一格 -->
       <XhSplitterRoot
         :panels="inner"
         orientation="vertical"
         style="inline-size: 100%; block-size: 100%"
       >
-        <XhSplitterPanel :index="0">
-          <p style="padding: 12px">编辑区</p>
+        <XhSplitterPanel :index="0" style="background: var(--xh-bg-brand-subtle)">
+          <p style="padding: 12px">编辑器</p>
         </XhSplitterPanel>
         <XhSplitterResizeTrigger :index="0" />
-        <XhSplitterPanel :index="1">
-          <p style="padding: 12px">输出区</p>
+        <XhSplitterPanel :index="1" style="background: var(--xh-bg-subtle)">
+          <p style="padding: 12px">控制台</p>
         </XhSplitterPanel>
       </XhSplitterRoot>
     </XhSplitterPanel>
@@ -335,101 +224,27 @@ const inner = [
   panels='[{"id":"aside","min":15,"max":50},{"id":"workbench","min":30}]'
   style="display: contents"
 >
-  <div data-xh-part="root" style="inline-size: 100%; block-size: 220px">
-    <div data-xh-part="panel" index="0">
-      <p style="padding: 12px">侧栏</p>
+  <div data-xh-part="root" style="inline-size: min(640px, 100%); block-size: 240px">
+    <div data-xh-part="panel" index="0" style="background: var(--xh-bg-subtle)">
+      <p style="padding: 12px">文件</p>
     </div>
     <div data-xh-part="resize-trigger" index="0"></div>
     <div data-xh-part="panel" index="1">
-      <!-- 内层是另一套分栏：跨轴尺寸取满外层这一格 -->
       <xh-splitter
         panels='[{"id":"editor","min":20},{"id":"console","min":15}]'
         orientation="vertical"
         style="display: contents"
       >
         <div data-xh-part="root" style="inline-size: 100%; block-size: 100%">
-          <div data-xh-part="panel" index="0">
-            <p style="padding: 12px">编辑区</p>
+          <div data-xh-part="panel" index="0" style="background: var(--xh-bg-brand-subtle)">
+            <p style="padding: 12px">编辑器</p>
           </div>
           <div data-xh-part="resize-trigger" index="0"></div>
-          <div data-xh-part="panel" index="1">
-            <p style="padding: 12px">输出区</p>
+          <div data-xh-part="panel" index="1" style="background: var(--xh-bg-subtle)">
+            <p style="padding: 12px">控制台</p>
           </div>
         </div>
       </xh-splitter>
-    </div>
-  </div>
-</xh-splitter>
-```
-
-### 分隔条里放内容
-
-分隔条内可以再摆一个把手，粗细由 --xh-splitter-trigger-thickness 让出位置
-
-```vue
-<script setup lang="ts">
-import {
-  XhSplitterPanel,
-  XhSplitterResizeTrigger,
-  XhSplitterRoot,
-} from "@xihan-ui/vue";
-
-const panels = [
-  { id: "list", min: 25, max: 75 },
-  { id: "detail", min: 25 },
-];
-const defaultSize = [40, 60];
-
-// 把手不参与命中判定，指针与键盘照旧落在分隔条自己身上
-const gripStyle = {
-  fontSize: "12px",
-  lineHeight: "1",
-  color: "var(--xh-fg-muted)",
-};
-</script>
-
-<template>
-  <XhSplitterRoot
-    :panels="panels"
-    :default-sizes="defaultSize"
-    style="inline-size: 100%; block-size: 140px"
-  >
-    <XhSplitterPanel :index="0">
-      <p style="padding: 12px">列表</p>
-    </XhSplitterPanel>
-    <XhSplitterResizeTrigger
-      :index="0"
-      style="--xh-splitter-trigger-thickness: 14px"
-    >
-      <span aria-hidden="true" :style="gripStyle">⋮⋮</span>
-    </XhSplitterResizeTrigger>
-    <XhSplitterPanel :index="1">
-      <p style="padding: 12px">详情</p>
-    </XhSplitterPanel>
-  </XhSplitterRoot>
-</template>
-```
-
-```html
-<xh-splitter
-  panels='[{"id":"list","min":25,"max":75},{"id":"detail","min":25}]'
-  default-sizes="40,60"
-  style="display: contents"
->
-  <div data-xh-part="root" style="inline-size: 100%; block-size: 140px">
-    <div data-xh-part="panel" index="0">
-      <p style="padding: 12px">列表</p>
-    </div>
-    <!-- 把手不参与命中判定，指针与键盘照旧落在分隔条自己身上 -->
-    <div
-      data-xh-part="resize-trigger"
-      index="0"
-      style="--xh-splitter-trigger-thickness: 14px"
-    >
-      <span aria-hidden="true" style="font-size: 12px; line-height: 1; color: var(--xh-fg-muted)">⋮⋮</span>
-    </div>
-    <div data-xh-part="panel" index="1">
-      <p style="padding: 12px">详情</p>
     </div>
   </div>
 </xh-splitter>
@@ -439,24 +254,38 @@ const gripStyle = {
 
 ### 何时使用
 
-- 代码编辑器、文件管理器、带预览的编辑界面这类"两边都重要、比例因人而异"的布局。
-- 用户调好的比例需要记下来：`onSizesChangeEnd` 就是为此留的。
+- 构建编辑器、文件管理器或预览界面。
+- 保存用户调整后的面板比例。
 
 ### 何时不用
 
-- 比例是固定的：用[栅格](./grid)或[弹性布局](./flex)。
-- 侧栏只有展开与折叠两态：用[布局](./layout)的折叠侧栏。
+- 固定比例使用[栅格](./grid)或[弹性布局](./flex)。
+- 仅需展开/折叠侧栏时使用[布局](./layout)。
 
 ### 特性
 
-- `panels` 数组的长度决定面板块数，每条分隔条调的是它前面那一块。
-- 两个回调分工明确：`onSizesChange` 拖动途中连着发，`onSizesChangeEnd` 松手才发一次，存布局用后者。
-- 方向键按 `step` 推、Shift 加方向键按 `largeStep` 推；`collapsible` 的面板在分隔条上按 Enter 折叠。
-- 面板里再放一套分栏即可拆出第二根轴，里外两层各管各的尺寸。
-- 拖到一半按 Escape 放弃这一场：布局退回按下那一刻，`onSizesChangeEnd` 不发。
-- `translations` 给整组面板与各条分隔条起名，读屏念到的就不再是一串无名的盒子。
+- 支持水平、垂直和嵌套分栏。
+- 支持最小/最大尺寸和面板折叠。
+- 支持方向键、Shift、Enter 和 Escape。
+- 调整中和调整结束分别提供回调。
 
-## 产物
+### 组合
+
+- 可在每个面板中放置独立的[滚动区域](./scroll-area)。
+
+### 最佳实践
+
+- 为每个面板设置合理的最小尺寸。
+- 使用 `onSizesChangeEnd` 保存最终布局。
+
+### 反模式
+
+- 不要用于固定比例布局。
+- 不要缩小分隔条的交互区域。
+
+## API 参考
+
+### 产物
 
 | 层 | 值 |
 | --- | --- |
@@ -466,13 +295,7 @@ const gripStyle = {
 | 状态机 | `splitterMachine` |
 | 皮肤 | `@xihan-ui/styles/splitter.css` |
 
-## 解剖
-
-部件名即 `data-part` 属性值，也是皮肤的选择器。加粗的是必备部件，不渲染它组件不工作（Web Components 适配器会在诊断通道上报 `wc.missing-part`）。
-
-`data-scope="splitter"`：**`root`** · **`panel`** · **`resize-trigger`**
-
-## Props
+### Props
 
 | 属性 | 类型 | 必填 | 说明 |
 | --- | --- | --- | --- |
@@ -488,26 +311,26 @@ const gripStyle = {
 | `onSizesChange` | `(details: SplitterSizesChangeDetails) => void` |  | 每次尺寸变化都发；拖动过程中会连续发很多次。 |
 | `onSizesChangeEnd` | `(details: SplitterSizesChangeEndDetails) => void` |  | 只在一次操作结束时发一次，适合拿来存布局。 |
 
-## 事件
+### 事件
 
-自定义元素派发这些事件，Vue 组件对应同名 emit；载荷都在 `detail` 上。可双向绑定的值另有 `update:xxx`，见 Props。
+自定义元素将载荷放在 `detail`；Vue 使用同名 emit。
 
 | 事件 | 载荷 | 说明 |
 | --- | --- | --- |
 | `sizes-change` | `SplitterSizesChangeDetails` | 布局变化（拖动途中会连发）；detail 为 `{ sizes: number[] }` |
 | `sizes-change-end` | `SplitterSizesChangeEndDetails` | 一次拖拽收尾发一次；detail 为 `{ sizes: number[], index: number }` |
 
-## 插槽
+### 插槽
 
-作者能拿到载荷的插槽。只转发内容、不带载荷的默认插槽不在此列——那类直接写子节点即可。
+仅列出带载荷的插槽。
 
 | Vue 组件 | 插槽 | 载荷 | 说明 |
 | --- | --- | --- | --- |
 | `XhSplitterRoot` | `default` | `SplitterRootSlotProps` |  |
 
-## 状态
+### 状态
 
-状态机内部转移，写样式与业务都用不到；要监听变化请看上面的「事件」。
+以下名称仅用于内部状态机。
 
 **状态**：`idle` · `dragging`
 
@@ -515,9 +338,9 @@ const gripStyle = {
 
 **判据**：`canResize`
 
-## connect API
+### connect API
 
-`useSplitter` 产出的对象。`getXxxProps()` 铺到对应部件的宿主元素上，其余是可读状态与操作入口。
+`getXxxProps()` 返回对应部件的宿主属性。
 
 | 成员 | 类型 | 说明 |
 | --- | --- | --- |
@@ -534,7 +357,9 @@ const gripStyle = {
 | `getPanelProps` | `(index: number) => T['element']` |  |
 | `getResizeTriggerProps` | `(index: number) => T['element']` | 第 index 条分隔条坐在第 index 与第 index+1 块面板之间，调整的是前一块。 |
 
-## 键盘
+## 无障碍
+
+### 键盘
 
 规格出处：[W3C APG](https://www.w3.org/WAI/ARIA/apg/patterns/windowsplitter/#keyboardinteraction)
 
@@ -549,9 +374,9 @@ const gripStyle = {
 | `Escape` | 拖动中 | 放弃这一场拖拽，布局退回按下那一刻；收尾回调不发 |
 | `Enter` | focus in resize-trigger 且它调整的面板 collapsible，not disabled | 折叠 / 展开该面板；展开回到折叠前的尺寸。面板不可折叠时不接这个键 |
 
-## 无障碍
+### ARIA
 
-下面这些由 `connect` 铺到部件上，作者不必自己写；重复写反而会覆盖掉正确值。
+以下属性由 `connect` 生成。
 
 | 部件 | 属性 | 值 |
 | --- | --- | --- |
@@ -566,15 +391,17 @@ const gripStyle = {
 | `resize-trigger` | `aria-valuenow` | String(panel.size) |
 | `resize-trigger` | `role` | 'separator' |
 
-## 样式
+## 样式参考
 
-默认皮肤 `@xihan-ui/styles/splitter.css` 按部件选择：`[data-scope="splitter"][data-part="root"]`。它落在 `xihan.components` 层；业务样式不写进 `@layer` 即高于全部库层，要按层压过来就写进 `xihan.overrides`。
+### 皮肤
+
+`@xihan-ui/styles/splitter.css` 使用 `[data-scope="splitter"][data-part="root"]` 部件选择器，位于 `xihan.components` 层。覆盖样式使用 `xihan.overrides`。
 
 `forced-colors: active` 下另有一套规则：颜色交给系统，边框与状态标记改用系统色关键字。
 
-## 数据属性
+### 数据属性
 
-由 `connect` 产出并铺到部件上，皮肤与测试都据此选择；`data-disabled` 这类无值属性在条件不成立时整个不出现。
+由 `connect` 生成；条件不成立时不输出无值属性。
 
 | 部件 | 属性 | 值 |
 | --- | --- | --- |
@@ -584,7 +411,7 @@ const gripStyle = {
 | `resize-trigger` | `data-index` | String(boundary) |
 
 <!-- xh-component-tokens:start -->
-## CSS 变量
+### CSS 变量
 
 本组件公开覆盖槽由独立皮肤的实际消费位生成；缺省来源、作用部件和状态均与 CSS 同源。
 
@@ -599,22 +426,8 @@ const gripStyle = {
 | `--xh-splitter-trigger-thickness` | `resize-trigger` | `block-size`<br>`inline-size` | `orientation=horizontal`<br>`orientation=vertical` | `--xh-space-1` | splitter 的 resize-trigger 部件 block-size、inline-size 覆盖槽。 |
 <!-- xh-component-tokens:end -->
 
-## 动效
+### 动效
 
 `background` 走 `transition` 过渡。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
 
 系统开启减弱动效时由令牌层统一收敛，皮肤不另作判断。
-
-## 组合
-
-- 面板里放[滚动区域](./scroll-area)，让每一片各自滚动。
-
-## 最佳实践
-
-- 给每块面板设最小尺寸，否则能被拖到完全看不见、也拖不回来。
-- 存布局用 `onSizesChangeEnd`：拖动途中的每一帧都写存储会把主线程拖垮。
-
-## 反模式
-
-- 拿它做固定比例的两栏布局：多出来的拖动能力只会让用户误操作。
-- 分隔条做得只有一两个像素宽：指针命中率极低。

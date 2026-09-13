@@ -1,0 +1,45 @@
+const n=`<!-- 底部固定 | 将操作栏固定在底部 -->
+<div
+  id="affix-offset-bottom-scroll"
+  style="
+    block-size: 240px;
+    inline-size: min(420px, 100%);
+    overflow: auto;
+    padding: 12px;
+    border-radius: var(--xh-shape-surface);
+    background: var(--xh-bg-subtle);
+  "
+>
+  <div style="block-size: 80px">订单列表</div>
+
+  <template id="affix-offset-bottom-tpl">
+    <xh-affix offset-bottom="12" style="display: block">
+      <div data-xh-part="root">
+        <div
+          data-xh-part="content"
+          style="
+            display: flex;
+            gap: 8px;
+            padding: 8px 12px;
+            border-radius: var(--xh-shape-control);
+            background: var(--xh-bg-surface-raised);
+            box-shadow: var(--xh-elevation-floating);
+          "
+        >
+          <span>共 42 项</span>
+          <span>已选 3 项</span>
+        </div>
+      </div>
+    </xh-affix>
+  </template>
+
+  <div style="block-size: 600px"></div>
+</div>
+
+<script type="module">
+  const template = document.getElementById("affix-offset-bottom-tpl");
+  const affix = template.content.firstElementChild;
+  affix.target = document.getElementById("affix-offset-bottom-scroll");
+  template.replaceWith(affix);
+<\/script>
+`;export{n as default};

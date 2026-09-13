@@ -1,0 +1,39 @@
+const a=`<!-- 基础用法 | 单选 -->
+<xh-select default-value="banana" placeholder="请选择">
+  <div data-xh-part="root">
+    <span data-xh-part="label">水果</span>
+    <div data-xh-part="control">
+      <button data-xh-part="trigger">
+        <span data-xh-part="value-text"></span>
+        <span data-xh-part="indicator"></span>
+      </button>
+    </div>
+    <div data-xh-part="positioner">
+      <div data-xh-part="content">
+        <div data-xh-part="list">
+          <div data-xh-part="item" value="apple">
+            <span data-xh-part="item-text">苹果</span>
+            <span data-xh-part="item-indicator"></span>
+          </div>
+          <div data-xh-part="item" value="banana">
+            <span data-xh-part="item-text">香蕉</span>
+            <span data-xh-part="item-indicator"></span>
+          </div>
+          <div data-xh-part="item" value="blueberry">
+            <span data-xh-part="item-text">蓝莓</span>
+            <span data-xh-part="item-indicator"></span>
+          </div>
+          <div data-xh-part="item" value="cherry" aria-disabled="true">
+            <span data-xh-part="item-text">樱桃（缺货）</span>
+            <span data-xh-part="item-indicator"></span>
+          </div>
+          <div data-xh-part="item" value="durian">
+            <span data-xh-part="item-text">榴莲</span>
+            <span data-xh-part="item-indicator"></span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</xh-select>
+`;export{a as default};

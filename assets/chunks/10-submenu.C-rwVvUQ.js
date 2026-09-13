@@ -1,0 +1,23 @@
+const a=`<!-- 子菜单 | 将相关操作收进下一层 -->
+<xh-menu>
+  <button data-xh-part="trigger" style="block-size: var(--xh-control-h-md); padding-inline: var(--xh-control-px-md); border: 0; border-radius: var(--xh-shape-pill); background: var(--xh-bg-subtle); color: var(--xh-fg-default); font: inherit; cursor: pointer">文件操作</button>
+  <div data-xh-part="positioner">
+    <div data-xh-part="content">
+      <div data-xh-part="item" value="open">打开</div>
+      <div data-xh-part="item" value="rename">重命名</div>
+      <div data-xh-part="separator"></div>
+      <xh-menu submenu open-on-hover placement="right-start" style="display: contents">
+        <div data-xh-part="trigger" value="share">发送到</div>
+        <div data-xh-part="positioner">
+          <div data-xh-part="content">
+            <div data-xh-part="item" value="email">邮件</div>
+            <div data-xh-part="item" value="message">消息</div>
+          </div>
+        </div>
+      </xh-menu>
+      <div data-xh-part="separator"></div>
+      <div data-xh-part="item" value="delete">移到回收站</div>
+    </div>
+  </div>
+</xh-menu>
+`;export{a as default};

@@ -1,0 +1,7 @@
+const a=`<!-- 尺寸 | 设置图标块大小 -->
+<div style="display: flex; align-items: center; gap: 12px">
+  <xh-icon-wrapper size="sm" variant="subtle" tone="brand"><span data-xh-part="root"><xh-icon><svg data-xh-part="root" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><path d="M21.5 18.5a2 2 0 0 1-2 2h-15a2 2 0 0 1-2-2v-13a2 2 0 0 1 2-2H9l2 3h8.5a2 2 0 0 1 2 2Z" /></svg></xh-icon></span></xh-icon-wrapper>
+  <xh-icon-wrapper size="md" variant="subtle" tone="brand"><span data-xh-part="root"><xh-icon><svg data-xh-part="root" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><path d="M21.5 18.5a2 2 0 0 1-2 2h-15a2 2 0 0 1-2-2v-13a2 2 0 0 1 2-2H9l2 3h8.5a2 2 0 0 1 2 2Z" /></svg></xh-icon></span></xh-icon-wrapper>
+  <xh-icon-wrapper size="lg" variant="subtle" tone="brand"><span data-xh-part="root"><xh-icon><svg data-xh-part="root" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><path d="M21.5 18.5a2 2 0 0 1-2 2h-15a2 2 0 0 1-2-2v-13a2 2 0 0 1 2-2H9l2 3h8.5a2 2 0 0 1 2 2Z" /></svg></xh-icon></span></xh-icon-wrapper>
+</div>
+`;export{a as default};

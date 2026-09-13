@@ -1,6 +1,6 @@
 来源：https://ui.docs.xihanfun.com/components/select
 
-# Select `选择器`
+# Select 选择器
 
 从一份已知清单里选一个或多个值，选项收在浮层里。
 
@@ -14,14 +14,12 @@
 
 ## 用法
 
-选中值恒是数组，条目按 value 标识身份；禁用的条目方向键会跳过
+单选
 
 ```vue
 <script setup lang="ts">
 import { XhSelectRoot } from "@xihan-ui/vue";
-import { ref } from "vue";
 
-const fruit = ref<string[]>([]);
 const fruits = [
   { value: "apple", label: "苹果" },
   { value: "banana", label: "香蕉" },
@@ -32,13 +30,12 @@ const fruits = [
 </script>
 
 <template>
-  <XhSelectRoot v-model:value="fruit" :collection="fruits" label="水果" placeholder="请选择" />
-  <p>当前值：{{ fruit.length ? fruit.join("、") : "（未选）" }}</p>
+  <XhSelectRoot :collection="fruits" :default-value="['banana']" label="水果" placeholder="请选择" />
 </template>
 ```
 
 ```html
-<xh-select id="select-basic" placeholder="请选择">
+<xh-select default-value="banana" placeholder="请选择">
   <div data-xh-part="root">
     <span data-xh-part="label">水果</span>
     <div data-xh-part="control">
@@ -75,23 +72,19 @@ const fruits = [
     </div>
   </div>
 </xh-select>
-<p>当前值：<span id="select-basic-value">（未选）</span></p>
-
-<script type="module">
-  // 选中值回显在下面那行文字里
-  const select = document.getElementById("select-basic");
-  const readout = document.getElementById("select-basic-value");
-  select.addEventListener("value-change", (event) => {
-    readout.textContent = event.detail.value.join("、") || "（未选）";
-  });
-</script>
 ```
+
+## 组件结构
+
+加粗的是必需部件。
+
+`data-scope="select"`：`root` · `label` · `control` · **`trigger`** · `value-text` · `indicator` · `clear-trigger` · `tag-list` · `positioner` · **`content`** · **`list`** · `footer` · `group` · `group-label` · `item` · `item-text` · `item-indicator` · `empty` · `loading` · `hidden-select`
 
 ## 示例
 
 ### 多选
 
-multiple 下点中即在集合里增删该项、浮层不收起，触发器上的文本把选中项连起来
+选择多个值
 
 ```vue
 <script setup lang="ts">
@@ -172,7 +165,7 @@ const fruits = [
 
 ### 受控
 
-传了 value 就由宿主说了算：组件只发 value-change，宿主写回它才变，这里把樱桃挡在门外
+由 value 和 value-change 控制
 
 ```vue
 <script setup lang="ts">
@@ -283,7 +276,7 @@ function onValueChange(details: { value: string[] }) {
 
 ### 禁用
 
-根部件的 disabled 把触发器转成原生 disabled，浮层展不开、也不占 Tab 位
+禁止展开和聚焦
 
 ```vue
 <script setup lang="ts">
@@ -334,9 +327,9 @@ const fruits = [
 </xh-select>
 ```
 
-### 形态
+### 变体
 
-variant 只改盒的颜色槽位，浮层与键盘行为三档一致
+outline、subtle 和 ghost
 
 ```vue
 <script setup lang="ts">
@@ -459,9 +452,9 @@ const fruits = [
 </div>
 ```
 
-### 语气
+### 颜色
 
-tone 决定用哪族颜色，与 variant 正交；这里固定 outline 只看语气的差别
+六种语气
 
 ```vue
 <script setup lang="ts">
@@ -677,7 +670,7 @@ const fruits = [
 
 ### 尺寸
 
-盒与浮层条目一起换档，不传 size 即默认档
+小、中、大三档
 
 ```vue
 <script setup lang="ts">
@@ -805,9 +798,9 @@ const fruits = [
 </div>
 ```
 
-### 异步加载选项
+### 异步加载
 
-首次展开才去取数据：open-change 报出展开意图，数据到达前使用正式加载状态
+展开时加载选项
 
 ```vue
 <script setup lang="ts">
@@ -945,7 +938,7 @@ function onOpenChange(details: { open: boolean }): void {
 
 ### 宽度
 
-盒与浮层各有自己的宽度槽位，写在根部件上即可；装不下的文本在行内以省略号收口
+分别设置控件和浮层宽度
 
 ```vue
 <script setup lang="ts">
@@ -1091,9 +1084,9 @@ const plans = [
 </div>
 ```
 
-### 选项里的自定义内容
+### 自定义内容
 
-条目与触发器显示的内容都由你写：想写什么写什么，选中与键盘行为不变
+自定义选项和当前值
 
 ```vue
 <script setup lang="ts">
@@ -1256,9 +1249,9 @@ const current = computed(() => members.find(m => m.value === picked.value[0]) ??
 </script>
 ```
 
-### 插槽里的操作入口
+### 操作入口
 
-根部件把 open、value 与 setOpen、setValue 交给插槽，浮层之外的按钮据此展开或清空
+通过插槽状态控制开合和值
 
 ```vue
 <script setup lang="ts">
@@ -1277,9 +1270,7 @@ import {
   XhSelectTrigger,
   XhSelectValueText,
 } from "@xihan-ui/vue";
-import { ref } from "vue";
 
-const picked = ref<string[]>([]);
 const fruits = [
   { value: "apple", label: "苹果" },
   { value: "banana", label: "香蕉" },
@@ -1290,7 +1281,6 @@ const fruits = [
 <template>
   <XhSelectRoot
     v-slot="{ open, value, setOpen, setValue }"
-    v-model:value="picked"
     placeholder="请选择"
   >
     <XhSelectLabel>水果</XhSelectLabel>
@@ -1319,7 +1309,6 @@ const fruits = [
       </XhButton>
     </div>
   </XhSelectRoot>
-  <p>当前值：{{ picked[0] ?? "（未选）" }}</p>
 </template>
 ```
 
@@ -1351,7 +1340,6 @@ const fruits = [
         </div>
       </div>
     </div>
-    <!-- 浮层之外的两颗按钮：读元素上的 open 与 value，写回去就是 setOpen / setValue -->
     <div style="display: flex; gap: 8px; margin-block-start: 8px">
       <xh-button variant="outline" size="sm" id="select-actions-toggle">
         <button data-xh-part="root">展开</button>
@@ -1362,25 +1350,21 @@ const fruits = [
     </div>
   </div>
 </xh-select>
-<p>当前值：<span id="select-actions-value">（未选）</span></p>
 
 <script type="module">
   const select = document.getElementById("select-actions");
   const toggle = document.getElementById("select-actions-toggle");
   const toggleLabel = toggle.querySelector('[data-xh-part="root"]');
   const clear = document.getElementById("select-actions-clear");
-  const readout = document.getElementById("select-actions-value");
 
   let open = false;
   let value = [];
 
-  // 开合与选中都握在宿主这一侧，元素只发意图
   function apply() {
     select.open = open;
     select.value = value;
     toggleLabel.textContent = open ? "收起" : "展开";
     clear.disabled = value.length === 0;
-    readout.textContent = value[0] ?? "（未选）";
   }
 
   select.addEventListener("open-change", (event) => {
@@ -1407,37 +1391,27 @@ const fruits = [
 
 ### 大量选项
 
-浮层高度封顶后自行滚动；敲首字母连打检索直接跳到该字母开头的条目，方向键照常可用
+列表内部滚动并支持连打检索
 
 ```vue
 <script setup lang="ts">
 import { XhSelectRoot } from "@xihan-ui/vue";
-import { ref } from "vue";
 
 const letters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
-// 26 个字母各四条，首字母连打即可在段间跳转
-const options = Array.from({ length: 104 }, (_, i) => {
-  const letter = letters[i % 26];
-  const seq = Math.floor(i / 26) + 1;
-  return { value: `${letter}${seq}`, label: `${letter} 区 ${seq} 号仓` };
-});
-
-const picked = ref<string[]>([]);
+const options = Array.from(letters, letter => ({ value: letter, label: `${letter} 区` }));
 </script>
 
 <template>
   <XhSelectRoot
-    v-model:value="picked"
     :collection="options"
     label="仓位"
     placeholder="敲 M 试试"
   />
-  <p>当前值：{{ picked[0] ?? "（未选）" }}</p>
 </template>
 ```
 
 ```html
-<xh-select id="select-many" placeholder="敲 M 试试">
+<xh-select placeholder="敲 M 试试">
   <div data-xh-part="root">
     <span data-xh-part="label">仓位</span>
     <div data-xh-part="control">
@@ -1449,420 +1423,108 @@ const picked = ref<string[]>([]);
     <div data-xh-part="positioner">
       <div data-xh-part="content">
         <div data-xh-part="list">
-          <div data-xh-part="item" value="A1">
-            <span data-xh-part="item-text">A 区 1 号仓</span>
+          <div data-xh-part="item" value="A">
+            <span data-xh-part="item-text">A 区</span>
             <span data-xh-part="item-indicator"></span>
           </div>
-          <div data-xh-part="item" value="B1">
-            <span data-xh-part="item-text">B 区 1 号仓</span>
+          <div data-xh-part="item" value="B">
+            <span data-xh-part="item-text">B 区</span>
             <span data-xh-part="item-indicator"></span>
           </div>
-          <div data-xh-part="item" value="C1">
-            <span data-xh-part="item-text">C 区 1 号仓</span>
+          <div data-xh-part="item" value="C">
+            <span data-xh-part="item-text">C 区</span>
             <span data-xh-part="item-indicator"></span>
           </div>
-          <div data-xh-part="item" value="D1">
-            <span data-xh-part="item-text">D 区 1 号仓</span>
+          <div data-xh-part="item" value="D">
+            <span data-xh-part="item-text">D 区</span>
             <span data-xh-part="item-indicator"></span>
           </div>
-          <div data-xh-part="item" value="E1">
-            <span data-xh-part="item-text">E 区 1 号仓</span>
+          <div data-xh-part="item" value="E">
+            <span data-xh-part="item-text">E 区</span>
             <span data-xh-part="item-indicator"></span>
           </div>
-          <div data-xh-part="item" value="F1">
-            <span data-xh-part="item-text">F 区 1 号仓</span>
+          <div data-xh-part="item" value="F">
+            <span data-xh-part="item-text">F 区</span>
             <span data-xh-part="item-indicator"></span>
           </div>
-          <div data-xh-part="item" value="G1">
-            <span data-xh-part="item-text">G 区 1 号仓</span>
+          <div data-xh-part="item" value="G">
+            <span data-xh-part="item-text">G 区</span>
             <span data-xh-part="item-indicator"></span>
           </div>
-          <div data-xh-part="item" value="H1">
-            <span data-xh-part="item-text">H 区 1 号仓</span>
+          <div data-xh-part="item" value="H">
+            <span data-xh-part="item-text">H 区</span>
             <span data-xh-part="item-indicator"></span>
           </div>
-          <div data-xh-part="item" value="I1">
-            <span data-xh-part="item-text">I 区 1 号仓</span>
+          <div data-xh-part="item" value="I">
+            <span data-xh-part="item-text">I 区</span>
             <span data-xh-part="item-indicator"></span>
           </div>
-          <div data-xh-part="item" value="J1">
-            <span data-xh-part="item-text">J 区 1 号仓</span>
+          <div data-xh-part="item" value="J">
+            <span data-xh-part="item-text">J 区</span>
             <span data-xh-part="item-indicator"></span>
           </div>
-          <div data-xh-part="item" value="K1">
-            <span data-xh-part="item-text">K 区 1 号仓</span>
+          <div data-xh-part="item" value="K">
+            <span data-xh-part="item-text">K 区</span>
             <span data-xh-part="item-indicator"></span>
           </div>
-          <div data-xh-part="item" value="L1">
-            <span data-xh-part="item-text">L 区 1 号仓</span>
+          <div data-xh-part="item" value="L">
+            <span data-xh-part="item-text">L 区</span>
             <span data-xh-part="item-indicator"></span>
           </div>
-          <div data-xh-part="item" value="M1">
-            <span data-xh-part="item-text">M 区 1 号仓</span>
+          <div data-xh-part="item" value="M">
+            <span data-xh-part="item-text">M 区</span>
             <span data-xh-part="item-indicator"></span>
           </div>
-          <div data-xh-part="item" value="N1">
-            <span data-xh-part="item-text">N 区 1 号仓</span>
+          <div data-xh-part="item" value="N">
+            <span data-xh-part="item-text">N 区</span>
             <span data-xh-part="item-indicator"></span>
           </div>
-          <div data-xh-part="item" value="O1">
-            <span data-xh-part="item-text">O 区 1 号仓</span>
+          <div data-xh-part="item" value="O">
+            <span data-xh-part="item-text">O 区</span>
             <span data-xh-part="item-indicator"></span>
           </div>
-          <div data-xh-part="item" value="P1">
-            <span data-xh-part="item-text">P 区 1 号仓</span>
+          <div data-xh-part="item" value="P">
+            <span data-xh-part="item-text">P 区</span>
             <span data-xh-part="item-indicator"></span>
           </div>
-          <div data-xh-part="item" value="Q1">
-            <span data-xh-part="item-text">Q 区 1 号仓</span>
+          <div data-xh-part="item" value="Q">
+            <span data-xh-part="item-text">Q 区</span>
             <span data-xh-part="item-indicator"></span>
           </div>
-          <div data-xh-part="item" value="R1">
-            <span data-xh-part="item-text">R 区 1 号仓</span>
+          <div data-xh-part="item" value="R">
+            <span data-xh-part="item-text">R 区</span>
             <span data-xh-part="item-indicator"></span>
           </div>
-          <div data-xh-part="item" value="S1">
-            <span data-xh-part="item-text">S 区 1 号仓</span>
+          <div data-xh-part="item" value="S">
+            <span data-xh-part="item-text">S 区</span>
             <span data-xh-part="item-indicator"></span>
           </div>
-          <div data-xh-part="item" value="T1">
-            <span data-xh-part="item-text">T 区 1 号仓</span>
+          <div data-xh-part="item" value="T">
+            <span data-xh-part="item-text">T 区</span>
             <span data-xh-part="item-indicator"></span>
           </div>
-          <div data-xh-part="item" value="U1">
-            <span data-xh-part="item-text">U 区 1 号仓</span>
+          <div data-xh-part="item" value="U">
+            <span data-xh-part="item-text">U 区</span>
             <span data-xh-part="item-indicator"></span>
           </div>
-          <div data-xh-part="item" value="V1">
-            <span data-xh-part="item-text">V 区 1 号仓</span>
+          <div data-xh-part="item" value="V">
+            <span data-xh-part="item-text">V 区</span>
             <span data-xh-part="item-indicator"></span>
           </div>
-          <div data-xh-part="item" value="W1">
-            <span data-xh-part="item-text">W 区 1 号仓</span>
+          <div data-xh-part="item" value="W">
+            <span data-xh-part="item-text">W 区</span>
             <span data-xh-part="item-indicator"></span>
           </div>
-          <div data-xh-part="item" value="X1">
-            <span data-xh-part="item-text">X 区 1 号仓</span>
+          <div data-xh-part="item" value="X">
+            <span data-xh-part="item-text">X 区</span>
             <span data-xh-part="item-indicator"></span>
           </div>
-          <div data-xh-part="item" value="Y1">
-            <span data-xh-part="item-text">Y 区 1 号仓</span>
+          <div data-xh-part="item" value="Y">
+            <span data-xh-part="item-text">Y 区</span>
             <span data-xh-part="item-indicator"></span>
           </div>
-          <div data-xh-part="item" value="Z1">
-            <span data-xh-part="item-text">Z 区 1 号仓</span>
-            <span data-xh-part="item-indicator"></span>
-          </div>
-          <div data-xh-part="item" value="A2">
-            <span data-xh-part="item-text">A 区 2 号仓</span>
-            <span data-xh-part="item-indicator"></span>
-          </div>
-          <div data-xh-part="item" value="B2">
-            <span data-xh-part="item-text">B 区 2 号仓</span>
-            <span data-xh-part="item-indicator"></span>
-          </div>
-          <div data-xh-part="item" value="C2">
-            <span data-xh-part="item-text">C 区 2 号仓</span>
-            <span data-xh-part="item-indicator"></span>
-          </div>
-          <div data-xh-part="item" value="D2">
-            <span data-xh-part="item-text">D 区 2 号仓</span>
-            <span data-xh-part="item-indicator"></span>
-          </div>
-          <div data-xh-part="item" value="E2">
-            <span data-xh-part="item-text">E 区 2 号仓</span>
-            <span data-xh-part="item-indicator"></span>
-          </div>
-          <div data-xh-part="item" value="F2">
-            <span data-xh-part="item-text">F 区 2 号仓</span>
-            <span data-xh-part="item-indicator"></span>
-          </div>
-          <div data-xh-part="item" value="G2">
-            <span data-xh-part="item-text">G 区 2 号仓</span>
-            <span data-xh-part="item-indicator"></span>
-          </div>
-          <div data-xh-part="item" value="H2">
-            <span data-xh-part="item-text">H 区 2 号仓</span>
-            <span data-xh-part="item-indicator"></span>
-          </div>
-          <div data-xh-part="item" value="I2">
-            <span data-xh-part="item-text">I 区 2 号仓</span>
-            <span data-xh-part="item-indicator"></span>
-          </div>
-          <div data-xh-part="item" value="J2">
-            <span data-xh-part="item-text">J 区 2 号仓</span>
-            <span data-xh-part="item-indicator"></span>
-          </div>
-          <div data-xh-part="item" value="K2">
-            <span data-xh-part="item-text">K 区 2 号仓</span>
-            <span data-xh-part="item-indicator"></span>
-          </div>
-          <div data-xh-part="item" value="L2">
-            <span data-xh-part="item-text">L 区 2 号仓</span>
-            <span data-xh-part="item-indicator"></span>
-          </div>
-          <div data-xh-part="item" value="M2">
-            <span data-xh-part="item-text">M 区 2 号仓</span>
-            <span data-xh-part="item-indicator"></span>
-          </div>
-          <div data-xh-part="item" value="N2">
-            <span data-xh-part="item-text">N 区 2 号仓</span>
-            <span data-xh-part="item-indicator"></span>
-          </div>
-          <div data-xh-part="item" value="O2">
-            <span data-xh-part="item-text">O 区 2 号仓</span>
-            <span data-xh-part="item-indicator"></span>
-          </div>
-          <div data-xh-part="item" value="P2">
-            <span data-xh-part="item-text">P 区 2 号仓</span>
-            <span data-xh-part="item-indicator"></span>
-          </div>
-          <div data-xh-part="item" value="Q2">
-            <span data-xh-part="item-text">Q 区 2 号仓</span>
-            <span data-xh-part="item-indicator"></span>
-          </div>
-          <div data-xh-part="item" value="R2">
-            <span data-xh-part="item-text">R 区 2 号仓</span>
-            <span data-xh-part="item-indicator"></span>
-          </div>
-          <div data-xh-part="item" value="S2">
-            <span data-xh-part="item-text">S 区 2 号仓</span>
-            <span data-xh-part="item-indicator"></span>
-          </div>
-          <div data-xh-part="item" value="T2">
-            <span data-xh-part="item-text">T 区 2 号仓</span>
-            <span data-xh-part="item-indicator"></span>
-          </div>
-          <div data-xh-part="item" value="U2">
-            <span data-xh-part="item-text">U 区 2 号仓</span>
-            <span data-xh-part="item-indicator"></span>
-          </div>
-          <div data-xh-part="item" value="V2">
-            <span data-xh-part="item-text">V 区 2 号仓</span>
-            <span data-xh-part="item-indicator"></span>
-          </div>
-          <div data-xh-part="item" value="W2">
-            <span data-xh-part="item-text">W 区 2 号仓</span>
-            <span data-xh-part="item-indicator"></span>
-          </div>
-          <div data-xh-part="item" value="X2">
-            <span data-xh-part="item-text">X 区 2 号仓</span>
-            <span data-xh-part="item-indicator"></span>
-          </div>
-          <div data-xh-part="item" value="Y2">
-            <span data-xh-part="item-text">Y 区 2 号仓</span>
-            <span data-xh-part="item-indicator"></span>
-          </div>
-          <div data-xh-part="item" value="Z2">
-            <span data-xh-part="item-text">Z 区 2 号仓</span>
-            <span data-xh-part="item-indicator"></span>
-          </div>
-          <div data-xh-part="item" value="A3">
-            <span data-xh-part="item-text">A 区 3 号仓</span>
-            <span data-xh-part="item-indicator"></span>
-          </div>
-          <div data-xh-part="item" value="B3">
-            <span data-xh-part="item-text">B 区 3 号仓</span>
-            <span data-xh-part="item-indicator"></span>
-          </div>
-          <div data-xh-part="item" value="C3">
-            <span data-xh-part="item-text">C 区 3 号仓</span>
-            <span data-xh-part="item-indicator"></span>
-          </div>
-          <div data-xh-part="item" value="D3">
-            <span data-xh-part="item-text">D 区 3 号仓</span>
-            <span data-xh-part="item-indicator"></span>
-          </div>
-          <div data-xh-part="item" value="E3">
-            <span data-xh-part="item-text">E 区 3 号仓</span>
-            <span data-xh-part="item-indicator"></span>
-          </div>
-          <div data-xh-part="item" value="F3">
-            <span data-xh-part="item-text">F 区 3 号仓</span>
-            <span data-xh-part="item-indicator"></span>
-          </div>
-          <div data-xh-part="item" value="G3">
-            <span data-xh-part="item-text">G 区 3 号仓</span>
-            <span data-xh-part="item-indicator"></span>
-          </div>
-          <div data-xh-part="item" value="H3">
-            <span data-xh-part="item-text">H 区 3 号仓</span>
-            <span data-xh-part="item-indicator"></span>
-          </div>
-          <div data-xh-part="item" value="I3">
-            <span data-xh-part="item-text">I 区 3 号仓</span>
-            <span data-xh-part="item-indicator"></span>
-          </div>
-          <div data-xh-part="item" value="J3">
-            <span data-xh-part="item-text">J 区 3 号仓</span>
-            <span data-xh-part="item-indicator"></span>
-          </div>
-          <div data-xh-part="item" value="K3">
-            <span data-xh-part="item-text">K 区 3 号仓</span>
-            <span data-xh-part="item-indicator"></span>
-          </div>
-          <div data-xh-part="item" value="L3">
-            <span data-xh-part="item-text">L 区 3 号仓</span>
-            <span data-xh-part="item-indicator"></span>
-          </div>
-          <div data-xh-part="item" value="M3">
-            <span data-xh-part="item-text">M 区 3 号仓</span>
-            <span data-xh-part="item-indicator"></span>
-          </div>
-          <div data-xh-part="item" value="N3">
-            <span data-xh-part="item-text">N 区 3 号仓</span>
-            <span data-xh-part="item-indicator"></span>
-          </div>
-          <div data-xh-part="item" value="O3">
-            <span data-xh-part="item-text">O 区 3 号仓</span>
-            <span data-xh-part="item-indicator"></span>
-          </div>
-          <div data-xh-part="item" value="P3">
-            <span data-xh-part="item-text">P 区 3 号仓</span>
-            <span data-xh-part="item-indicator"></span>
-          </div>
-          <div data-xh-part="item" value="Q3">
-            <span data-xh-part="item-text">Q 区 3 号仓</span>
-            <span data-xh-part="item-indicator"></span>
-          </div>
-          <div data-xh-part="item" value="R3">
-            <span data-xh-part="item-text">R 区 3 号仓</span>
-            <span data-xh-part="item-indicator"></span>
-          </div>
-          <div data-xh-part="item" value="S3">
-            <span data-xh-part="item-text">S 区 3 号仓</span>
-            <span data-xh-part="item-indicator"></span>
-          </div>
-          <div data-xh-part="item" value="T3">
-            <span data-xh-part="item-text">T 区 3 号仓</span>
-            <span data-xh-part="item-indicator"></span>
-          </div>
-          <div data-xh-part="item" value="U3">
-            <span data-xh-part="item-text">U 区 3 号仓</span>
-            <span data-xh-part="item-indicator"></span>
-          </div>
-          <div data-xh-part="item" value="V3">
-            <span data-xh-part="item-text">V 区 3 号仓</span>
-            <span data-xh-part="item-indicator"></span>
-          </div>
-          <div data-xh-part="item" value="W3">
-            <span data-xh-part="item-text">W 区 3 号仓</span>
-            <span data-xh-part="item-indicator"></span>
-          </div>
-          <div data-xh-part="item" value="X3">
-            <span data-xh-part="item-text">X 区 3 号仓</span>
-            <span data-xh-part="item-indicator"></span>
-          </div>
-          <div data-xh-part="item" value="Y3">
-            <span data-xh-part="item-text">Y 区 3 号仓</span>
-            <span data-xh-part="item-indicator"></span>
-          </div>
-          <div data-xh-part="item" value="Z3">
-            <span data-xh-part="item-text">Z 区 3 号仓</span>
-            <span data-xh-part="item-indicator"></span>
-          </div>
-          <div data-xh-part="item" value="A4">
-            <span data-xh-part="item-text">A 区 4 号仓</span>
-            <span data-xh-part="item-indicator"></span>
-          </div>
-          <div data-xh-part="item" value="B4">
-            <span data-xh-part="item-text">B 区 4 号仓</span>
-            <span data-xh-part="item-indicator"></span>
-          </div>
-          <div data-xh-part="item" value="C4">
-            <span data-xh-part="item-text">C 区 4 号仓</span>
-            <span data-xh-part="item-indicator"></span>
-          </div>
-          <div data-xh-part="item" value="D4">
-            <span data-xh-part="item-text">D 区 4 号仓</span>
-            <span data-xh-part="item-indicator"></span>
-          </div>
-          <div data-xh-part="item" value="E4">
-            <span data-xh-part="item-text">E 区 4 号仓</span>
-            <span data-xh-part="item-indicator"></span>
-          </div>
-          <div data-xh-part="item" value="F4">
-            <span data-xh-part="item-text">F 区 4 号仓</span>
-            <span data-xh-part="item-indicator"></span>
-          </div>
-          <div data-xh-part="item" value="G4">
-            <span data-xh-part="item-text">G 区 4 号仓</span>
-            <span data-xh-part="item-indicator"></span>
-          </div>
-          <div data-xh-part="item" value="H4">
-            <span data-xh-part="item-text">H 区 4 号仓</span>
-            <span data-xh-part="item-indicator"></span>
-          </div>
-          <div data-xh-part="item" value="I4">
-            <span data-xh-part="item-text">I 区 4 号仓</span>
-            <span data-xh-part="item-indicator"></span>
-          </div>
-          <div data-xh-part="item" value="J4">
-            <span data-xh-part="item-text">J 区 4 号仓</span>
-            <span data-xh-part="item-indicator"></span>
-          </div>
-          <div data-xh-part="item" value="K4">
-            <span data-xh-part="item-text">K 区 4 号仓</span>
-            <span data-xh-part="item-indicator"></span>
-          </div>
-          <div data-xh-part="item" value="L4">
-            <span data-xh-part="item-text">L 区 4 号仓</span>
-            <span data-xh-part="item-indicator"></span>
-          </div>
-          <div data-xh-part="item" value="M4">
-            <span data-xh-part="item-text">M 区 4 号仓</span>
-            <span data-xh-part="item-indicator"></span>
-          </div>
-          <div data-xh-part="item" value="N4">
-            <span data-xh-part="item-text">N 区 4 号仓</span>
-            <span data-xh-part="item-indicator"></span>
-          </div>
-          <div data-xh-part="item" value="O4">
-            <span data-xh-part="item-text">O 区 4 号仓</span>
-            <span data-xh-part="item-indicator"></span>
-          </div>
-          <div data-xh-part="item" value="P4">
-            <span data-xh-part="item-text">P 区 4 号仓</span>
-            <span data-xh-part="item-indicator"></span>
-          </div>
-          <div data-xh-part="item" value="Q4">
-            <span data-xh-part="item-text">Q 区 4 号仓</span>
-            <span data-xh-part="item-indicator"></span>
-          </div>
-          <div data-xh-part="item" value="R4">
-            <span data-xh-part="item-text">R 区 4 号仓</span>
-            <span data-xh-part="item-indicator"></span>
-          </div>
-          <div data-xh-part="item" value="S4">
-            <span data-xh-part="item-text">S 区 4 号仓</span>
-            <span data-xh-part="item-indicator"></span>
-          </div>
-          <div data-xh-part="item" value="T4">
-            <span data-xh-part="item-text">T 区 4 号仓</span>
-            <span data-xh-part="item-indicator"></span>
-          </div>
-          <div data-xh-part="item" value="U4">
-            <span data-xh-part="item-text">U 区 4 号仓</span>
-            <span data-xh-part="item-indicator"></span>
-          </div>
-          <div data-xh-part="item" value="V4">
-            <span data-xh-part="item-text">V 区 4 号仓</span>
-            <span data-xh-part="item-indicator"></span>
-          </div>
-          <div data-xh-part="item" value="W4">
-            <span data-xh-part="item-text">W 区 4 号仓</span>
-            <span data-xh-part="item-indicator"></span>
-          </div>
-          <div data-xh-part="item" value="X4">
-            <span data-xh-part="item-text">X 区 4 号仓</span>
-            <span data-xh-part="item-indicator"></span>
-          </div>
-          <div data-xh-part="item" value="Y4">
-            <span data-xh-part="item-text">Y 区 4 号仓</span>
-            <span data-xh-part="item-indicator"></span>
-          </div>
-          <div data-xh-part="item" value="Z4">
-            <span data-xh-part="item-text">Z 区 4 号仓</span>
+          <div data-xh-part="item" value="Z">
+            <span data-xh-part="item-text">Z 区</span>
             <span data-xh-part="item-indicator"></span>
           </div>
         </div>
@@ -1870,21 +1532,11 @@ const picked = ref<string[]>([]);
     </div>
   </div>
 </xh-select>
-<p>当前值：<span id="select-many-value">（未选）</span></p>
-
-<script type="module">
-  // 选中值回显在下面那行文字里
-  const select = document.getElementById("select-many");
-  const readout = document.getElementById("select-many-value");
-  select.addEventListener("value-change", (event) => {
-    readout.textContent = event.detail.value[0] ?? "（未选）";
-  });
-</script>
 ```
 
 ### 分组
 
-条目分段展示：group 是 role=group 的段落壳，group-label 是它的可及名字；条目照旧归到同一份集合，方向键与连打检索跨段贯通
+跨分组保持键盘导航
 
 ```vue
 <script setup lang="ts">
@@ -2011,7 +1663,7 @@ const picked = ref<string[]>([]);
 
 ### 多选标签
 
-内建标签形态：触发器里的标签行最多摆 maxTagCount 枚（缺省 3），其余合成一枚 +N；每枚标签与 +N 都是库里的 tag（语气与尺寸随控件，形态按控件的面派），触发器里纯展示，触发器外配删除钮即可删，那颗钮就是 tag 的 close-trigger
+超出数量合并为 +N
 
 ```vue
 <script setup lang="ts">
@@ -2197,9 +1849,9 @@ const picked = ref<string[]>(["vue", "svelte", "solid"]);
 </script>
 ```
 
-### 校验状态
+### 校验
 
-校验结论由宿主给出：invalid 让盒标红并输出 aria-invalid，错误文案用 aria-describedby 挂到触发器上
+显示无效状态和错误说明
 
 ```vue
 <script setup lang="ts">
@@ -2303,7 +1955,7 @@ const invalid = computed(() => picked.value.length === 0);
 
 ### 滚动加载
 
-list 承担选项滚动：滚到底追加下一页，独立加载状态不会混入可选项
+到达列表底部加载下一页
 
 ```vue
 <script setup lang="ts">
@@ -2527,7 +2179,7 @@ function onScroll(event: Event): void {
 
 ### 命令式聚焦
 
-触发器就是你写的那个按钮，focus 与 blur 直接调它
+聚焦触发器
 
 ```vue
 <script setup lang="ts">
@@ -2565,9 +2217,6 @@ function submit(): void {
     trigger.value?.$el.focus();
 }
 
-function blurTrigger(): void {
-  trigger.value?.$el.blur();
-}
 </script>
 
 <template>
@@ -2592,7 +2241,6 @@ function blurTrigger(): void {
   </XhSelectRoot>
   <div style="display: flex; gap: 8px; margin-block-start: 8px">
     <XhButton variant="outline" size="sm" @click="submit">提交</XhButton>
-    <XhButton variant="ghost" size="sm" @click="blurTrigger">移开焦点</XhButton>
   </div>
   <p v-if="submitted && picked.length === 0" style="color: var(--xh-fg-danger)">
     还没选优先级，焦点已回到选择器
@@ -2634,9 +2282,6 @@ function blurTrigger(): void {
   <xh-button variant="outline" size="sm">
     <button data-xh-part="root" id="select-focus-submit">提交</button>
   </xh-button>
-  <xh-button variant="ghost" size="sm">
-    <button data-xh-part="root" id="select-focus-blur">移开焦点</button>
-  </xh-button>
 </div>
 <p id="select-focus-tip" style="color: var(--xh-fg-danger)" hidden>
   还没选优先级，焦点已回到选择器
@@ -2660,34 +2305,16 @@ function blurTrigger(): void {
     trigger.focus();
   });
 
-  document.getElementById("select-focus-blur").addEventListener("click", () => {
-    trigger.blur();
-  });
 </script>
 ```
 
-### 清空按钮
+### 清空
 
-清空钮是触发器的兄弟节点，一起收在盒里并排（Vue 的 collection 自动渲染加 clearable 即带上它）；有选中才出现、出现即顶替下拉箭头，不占 Tab 位（键盘清空走 Delete / Backspace）；点按清空全部选中、不展开浮层，焦点回到触发器；可及名走 translations.clearTrigger
+有值时显示清空按钮
 
 ```vue
 <script setup lang="ts">
-import {
-  XhSelectClearTrigger,
-  XhSelectContent,
-  XhSelectControl,
-  XhSelectIndicator,
-  XhSelectItem,
-  XhSelectItemIndicator,
-  XhSelectItemText,
-  XhSelectLabel,
-  XhSelectList,
-  XhSelectPositioner,
-  XhSelectRoot,
-  XhSelectTrigger,
-  XhSelectValueText,
-} from "@xihan-ui/vue";
-import { ref } from "vue";
+import { XhSelectRoot } from "@xihan-ui/vue";
 
 const teams = [
   { value: "design", label: "设计组" },
@@ -2695,52 +2322,23 @@ const teams = [
   { value: "server", label: "服务端组" },
 ];
 
-const picked = ref<string[]>(["design"]);
-const auto = ref<string[]>(["frontend"]);
 </script>
 
 <template>
   <XhSelectRoot
-    v-model:value="picked"
-    :translations="{ clearTrigger: '清空所选' }"
-    placeholder="选一个组"
-    style="inline-size: 240px"
-  >
-    <XhSelectLabel>所属小组</XhSelectLabel>
-    <XhSelectControl>
-      <XhSelectTrigger>
-        <XhSelectValueText />
-        <XhSelectIndicator />
-      </XhSelectTrigger>
-      <XhSelectClearTrigger />
-    </XhSelectControl>
-    <XhSelectPositioner>
-      <XhSelectContent>
-        <XhSelectList>
-          <XhSelectItem v-for="t in teams" :key="t.value" :value="t.value">
-            <XhSelectItemText>{{ t.label }}</XhSelectItemText>
-            <XhSelectItemIndicator />
-          </XhSelectItem>
-        </XhSelectList>
-      </XhSelectContent>
-    </XhSelectPositioner>
-  </XhSelectRoot>
-  <p style="margin: 8px 0 0; font-size: 13px">选中：{{ picked.length ? picked.join(", ") : "（空）" }}</p>
-  <XhSelectRoot
-    v-model:value="auto"
     :collection="teams"
+    :default-value="['frontend']"
     :translations="{ clearTrigger: '清空所选' }"
     clearable
-    label="所属小组（自动渲染）"
+    label="所属小组"
     placeholder="选一个组"
-    style="margin-top: 16px; inline-size: 240px"
+    style="inline-size: 240px"
   />
-  <p style="margin: 8px 0 0; font-size: 13px">选中：{{ auto.length ? auto.join(", ") : "（空）" }}</p>
 </template>
 ```
 
 ```html
-<xh-select id="select-clear" default-value="design" placeholder="选一个组">
+<xh-select default-value="design" placeholder="选一个组">
   <div data-xh-part="root" style="inline-size: 240px">
     <span data-xh-part="label">所属小组</span>
     <div data-xh-part="control">
@@ -2770,26 +2368,11 @@ const auto = ref<string[]>(["frontend"]);
     </div>
   </div>
 </xh-select>
-<p style="margin: 8px 0 0; font-size: 13px">
-  选中：<span id="select-clear-value">design</span>
-</p>
-
-<script type="module">
-  const select = document.getElementById("select-clear");
-  const readout = document.getElementById("select-clear-value");
-
-  // 读屏文案是对象，只能走 property
-  select.translations = { clearTrigger: "清空所选" };
-
-  select.addEventListener("value-change", (event) => {
-    readout.textContent = event.detail.value.join(", ") || "（空）";
-  });
-</script>
 ```
 
-### 浮层底部的操作区
+### 底部操作区
 
-footer 是 list 的兄弟：不随条目滚走，也不会被方向键与连打检索走到
+固定在滚动列表下方
 
 ```vue
 <script setup lang="ts">
@@ -2922,9 +2505,9 @@ function addOne() {
 </script>
 ```
 
-### 官方组合：浮层 + 列表框
+### Popover + Listbox
 
-值不进表单、只是就地切一个视图参数时用这一套：popover 管开合与定位，listbox 管条目与键盘，没有 hidden-select，也不占 name
+不参与表单的选择
 
 ```vue
 <script setup lang="ts">
@@ -3025,35 +2608,44 @@ function onValueChange(details: { value: string[] }): void {
 
 ### 何时使用
 
-- 选项五个以上、且都能列举出来。
-- 需要多选并把选中项显示成标签。
+- 从已知选项中选择一个或多个值。
+- 需要分组、标签多选或异步加载。
 
 ### 何时不用
 
-- 选项二到五个且都值得同时可见：用[单选组](./radio-group)。
-- 用户需要输入自由文本或搜索候选：用[组合框](./combobox)。
-- 选项是层级的：用[级联选择](./cascader)或[树选择](./tree-select)。
-- 值不随表单提交、只是就地切一个视图参数：把[列表框](./listbox)装进[浮层](./popover)，那一套组合更轻，也不占 `name`。
+- 少量选项使用[单选组](./radio-group)。
+- 可输入或可搜索场景使用[组合框](./combobox)。
+- 层级选项使用[级联选择](./cascader)或[树选择](./tree-select)。
+- 不参与表单的视图切换使用 [Popover](./popover) 与 [Listbox](./listbox)。
 
 ### 特性
 
-- `hidden-select` 承担表单参与。
-- 多选可以把选中项显示成标签行：最多摆 `maxTagCount` 枚（缺省 3），其余合成一枚 +N，触发器始终是一行。每枚标签都是库里的 tag；摆在触发器外时可以配删除钮，那颗钮就是 tag 的 `close-trigger`。
-- 浮层里可以有分组、底部操作区与滚动加载。
-- 三种非条目相位各有部件：空（`empty`）与在途（`loading`）。`loading` 为真时列表报 `aria-busy`，在途占位顶上来、空态让位。
-- 大量选项时列表可以只渲可视区。
-- 触发盒保持实体 Field Chrome，选项浮层使用 M2 磨砂表面；面板落位后按实际 placement 从锚点一侧
-  淡入短移，退出沿原方向收回，不缩放整张列表。
-- 逻辑关闭时列表立即 `inert` 并退出可访问树；Layer、DismissableLayer 与焦点域会保留到
-  content 的全部有限退场动画完成。退场中重开复用原 Layer 并重新激活焦点域，卸载立即释放。
-- 选项按作者给出的 DOM 顺序排布；正式 `item-text` 弹性占据剩余宽度并负责长文省略，
-  `item-indicator` 固定在逻辑末端。单选、多选统一由对号表示选中，正文保持正常颜色和字重；
-  悬停与键盘高亮使用中性底，键盘焦点另有独立焦点环。选中本身不铺品牌底。
-- `item` 由 Headless 投影 Collection Item 的角色、尺寸、selected/checked/disabled 事实；`item-text`
-  与 `item-indicator` 投影固定内容列。三端适配器只展开这些属性，不各自判断视觉状态。
-- 相邻分组之间自动画材质分隔线，分组标题、空态、加载态与 footer 使用浮层的次要前景节奏。
+- 通过 `hidden-select` 参与表单。
+- 多选值可显示为标签，超出 `maxTagCount` 后合并为 `+N`。
+- 支持分组、加载、空状态、底部操作区和滚动加载。
+- 控件使用 Field Chrome，浮层使用 M2 磨砂表面。
+- 选中项保留普通文字，通过末端对号表示状态。
+- 关闭时立即退出交互，资源在退场动画结束后释放。
 
-## 产物
+### 组合
+
+- 与[表单字段](./field)组合。
+- 不参与表单时使用 [Popover](./popover) 与 [Listbox](./listbox)。
+
+### 最佳实践
+
+- 固定触发器宽度，避免选中值改变布局。
+- 选项较多或需要搜索时使用 Combobox。
+- 自定义内容中的主要文字放在 `item-text` 中。
+
+### 反模式
+
+- 不要用 Select 承载“导出”“删除”等动作。
+- 异步加载时不要省略加载和空状态。
+
+## API 参考
+
+### 产物
 
 | 层 | 值 |
 | --- | --- |
@@ -3063,13 +2655,7 @@ function onValueChange(details: { value: string[] }): void {
 | 状态机 | `selectMachine` |
 | 皮肤 | `@xihan-ui/styles/select.css` |
 
-## 解剖
-
-部件名即 `data-part` 属性值，也是皮肤的选择器。加粗的是必备部件，不渲染它组件不工作（Web Components 适配器会在诊断通道上报 `wc.missing-part`）。
-
-`data-scope="select"`：`root` · `label` · `control` · **`trigger`** · `value-text` · `indicator` · `clear-trigger` · `tag-list` · `positioner` · **`content`** · **`list`** · `footer` · `group` · `group-label` · `item` · `item-text` · `item-indicator` · `empty` · `loading` · `hidden-select`
-
-## Props
+### Props
 
 | 属性 | 类型 | 必填 | 说明 |
 | --- | --- | --- | --- |
@@ -3098,18 +2684,18 @@ function onValueChange(details: { value: string[] }): void {
 | `onValueChange` | `(details: SelectValueChangeDetails) => void` |  | value 变化意图回调；受控时是唯一出口，非受控随内部写入一并通知。 |
 | `onOpenChange` | `(details: SelectOpenChangeDetails) => void` |  | open 变化意图回调；受控时是唯一出口，非受控时随内部转移一并通知。 |
 
-## 事件
+### 事件
 
-自定义元素派发这些事件，Vue 组件对应同名 emit；载荷都在 `detail` 上。可双向绑定的值另有 `update:xxx`，见 Props。
+自定义元素将载荷放在 `detail`；Vue 使用同名 emit。
 
 | 事件 | 载荷 | 说明 |
 | --- | --- | --- |
 | `value-change` | `SelectValueChangeDetails` | 选中值变化；detail 为 `{ value: string[] }` |
 | `open-change` | `SelectOpenChangeDetails` | open 状态变化；detail 为 `{ open: boolean }` |
 
-## 插槽
+### 插槽
 
-作者能拿到载荷的插槽。只转发内容、不带载荷的默认插槽不在此列——那类直接写子节点即可。
+仅列出带载荷的插槽。
 
 | Vue 组件 | 插槽 | 载荷 | 说明 |
 | --- | --- | --- | --- |
@@ -3117,9 +2703,9 @@ function onValueChange(details: { value: string[] }): void {
 | `XhSelectRoot` | `label` | — |  |
 | `XhSelectRoot` | `item` | `SelectNodeMeta` |  |
 
-## 状态
+### 状态
 
-对外可见的状态落在 `data-state` 上，写样式与断言都读它：
+公开状态写入 `data-state`。
 
 | 部件 | 取值 |
 | --- | --- |
@@ -3134,7 +2720,7 @@ function onValueChange(details: { value: string[] }): void {
 | `empty` | 'open' \| 'closed' |
 | `loading` | 'open' \| 'closed' |
 
-状态机内部转移，写样式与业务都用不到；要监听变化请看上面的「事件」。
+以下名称仅用于内部状态机。
 
 **状态**：`open` · `closed`
 
@@ -3142,9 +2728,9 @@ function onValueChange(details: { value: string[] }): void {
 
 **判据**：`isOpenControlled` · `isMultiple` · `isReadOnly`
 
-## connect API
+### connect API
 
-`useSelect` 产出的对象。`getXxxProps()` 铺到对应部件的宿主元素上，其余是可读状态与操作入口。
+`getXxxProps()` 返回对应部件的宿主属性。
 
 | 成员 | 类型 | 说明 |
 | --- | --- | --- |
@@ -3190,7 +2776,9 @@ function onValueChange(details: { value: string[] }): void {
 | `getItemIndicatorProps` | `(props: SelectItemProps) => T['element']` |  |
 | `getHiddenSelectProps` | `() => T['select']` | 表单出口：一份视觉隐藏的原生 select，由根部件自行渲染（作者不必手写）。 选项由适配器按当前值补齐，原生提交与 required 校验据此拿到值。 |
 
-## 键盘
+## 无障碍
+
+### 键盘
 
 规格出处：[W3C APG](https://www.w3.org/WAI/ARIA/apg/patterns/listbox/#keyboardinteraction)
 
@@ -3212,9 +2800,9 @@ function onValueChange(details: { value: string[] }): void {
 | `Escape` | open | 关闭列表并把焦点归还 trigger，选中值不变 |
 | `Tab` / `Shift+Tab` | open | 关闭列表，焦点不归还 trigger，按 Tab 序列自然离开 |
 
-## 无障碍
+### ARIA
 
-下面这些由 `connect` 铺到部件上，作者不必自己写；重复写反而会覆盖掉正确值。
+以下属性由 `connect` 生成。
 
 | 部件 | 属性 | 值 |
 | --- | --- | --- |
@@ -3241,13 +2829,15 @@ function onValueChange(details: { value: string[] }): void {
 | `item-indicator` | `aria-hidden` | 'true' |
 | `hidden-select` | `aria-hidden` | 'true' |
 
-## 样式
+## 样式参考
 
-默认皮肤 `@xihan-ui/styles/select.css` 按部件选择：`[data-scope="select"][data-part="root"]`。它落在 `xihan.components` 与 `xihan.motion` 层；业务样式不写进 `@layer` 即高于全部库层，要按层压过来就写进 `xihan.overrides`。
+### 皮肤
 
-## 数据属性
+`@xihan-ui/styles/select.css` 使用 `[data-scope="select"][data-part="root"]` 部件选择器，位于 `xihan.components` 与 `xihan.motion` 层。覆盖样式使用 `xihan.overrides`。
 
-由 `connect` 产出并铺到部件上，皮肤与测试都据此选择；`data-disabled` 这类无值属性在条件不成立时整个不出现。
+### 数据属性
+
+由 `connect` 生成；条件不成立时不输出无值属性。
 
 | 部件 | 属性 | 值 |
 | --- | --- | --- |
@@ -3297,7 +2887,7 @@ function onValueChange(details: { value: string[] }): void {
 | `tag` | `data-value` | v |
 
 <!-- xh-component-tokens:start -->
-## CSS 变量
+### CSS 变量
 
 本组件公开覆盖槽由独立皮肤的实际消费位生成；缺省来源、作用部件和状态均与 CSS 同源。
 
@@ -3323,10 +2913,10 @@ function onValueChange(details: { value: string[] }): void {
 | `--xh-select-content-py` | `content` | `padding-block` | `default` | `--xh-space-1` | select 的 content 部件 padding-block 覆盖槽。 |
 | `--xh-select-content-radius` | `content` | `border-radius` | `default` | `--xh-shape-surface` | select 的 content 部件 border-radius 覆盖槽。 |
 | `--xh-select-content-shadow` | `content` | `box-shadow` | `default` | `--xh-material-frosted-shadow` | select 的 content 部件 box-shadow 覆盖槽。 |
-| `--xh-select-control-bg` | `control` | `background` | `default` | `--xh-_select-control-bg` | select 的 control 部件 background 覆盖槽。 |
-| `--xh-select-control-bg-disabled` | `control` | `background` | `disabled` | `--xh-bg-subtle` | select 的 control 部件 background 覆盖槽。 |
-| `--xh-select-control-bg-hover` | `control` | `background` | `disabled`<br>`hover`<br>`not([data-disabled], [data-readonly])`<br>`readonly` | `--xh-_select-control-bg-hover` | select 的 control 部件 background 覆盖槽。 |
-| `--xh-select-control-bg-readonly` | `control` | `background` | `readonly` | `--xh-bg-subtle` | select 的 control 部件 background 覆盖槽。 |
+| `--xh-select-control-bg` | `control` | `background-color` | `default` | `--xh-_select-control-bg` | select 的 control 部件 background-color 覆盖槽。 |
+| `--xh-select-control-bg-disabled` | `control` | `background-color` | `disabled` | `--xh-bg-subtle` | select 的 control 部件 background-color 覆盖槽。 |
+| `--xh-select-control-bg-hover` | `control` | `background-color` | `disabled`<br>`hover`<br>`not([data-disabled], [data-readonly])`<br>`readonly` | `--xh-_select-control-bg-hover` | select 的 control 部件 background-color 覆盖槽。 |
+| `--xh-select-control-bg-readonly` | `control` | `background-color` | `readonly` | `--xh-bg-subtle` | select 的 control 部件 background-color 覆盖槽。 |
 | `--xh-select-control-border` | `control` | `border` | `default` | `--xh-_select-control-border` | select 的 control 部件 border 覆盖槽。 |
 | `--xh-select-control-border-focus` | `control` | `border-color` | `focus-within`<br>`invalid`<br>`not([data-invalid])` | `--xh-_tone` | select 的 control 部件 border-color 覆盖槽。 |
 | `--xh-select-control-border-hover` | `control` | `border-color` | `disabled`<br>`hover`<br>`invalid`<br>`not([data-disabled], [data-invalid])` | `--xh-_select-control-border-hover` | select 的 control 部件 border-color 覆盖槽。 |
@@ -3335,7 +2925,7 @@ function onValueChange(details: { value: string[] }): void {
 | `--xh-select-control-h` | `control` | `block-size` | `default` | `--xh-_select-h` | select 的 control 部件 block-size 覆盖槽。 |
 | `--xh-select-control-min-w` | `control`<br>`root` | `min-inline-size` | `default` | `--xh-control-min-w` | select 的 control、root 部件 min-inline-size 覆盖槽。 |
 | `--xh-select-control-px` | `control` | `padding-inline` | `default` | `--xh-_select-px` | select 的 control 部件 padding-inline 覆盖槽。 |
-| `--xh-select-control-radius` | `control` | `border-radius` | `default` | `--xh-shape-control` | select 的 control 部件 border-radius 覆盖槽。 |
+| `--xh-select-control-radius` | `control` | `border-radius` | `default` | `--xh-shape-surface` | select 的 control 部件 border-radius 覆盖槽。 |
 | `--xh-select-control-shadow` | `control` | `box-shadow` | `default` | `--xh-_select-control-shadow` | select 的 control 部件 box-shadow 覆盖槽。 |
 | `--xh-select-empty-fg` | `empty` | `color` | `default` | `--xh-material-frosted-fg-muted` | select 的 empty 部件 color 覆盖槽。 |
 | `--xh-select-empty-font-size` | `empty` | `font-size` | `default` | `--xh-_select-font-size` | select 的 empty 部件 font-size 覆盖槽。 |
@@ -3359,13 +2949,13 @@ function onValueChange(details: { value: string[] }): void {
 | `--xh-select-icon-size` | `root` | `--xh-icon-size` | `default`<br>`size=lg`<br>`size=sm` | `--xh-glyph-size-lg`<br>`--xh-glyph-size-md`<br>`--xh-glyph-size-sm` | select 的 root 部件 --xh-icon-size 覆盖槽。 |
 | `--xh-select-indicator-fg` | `indicator` | `color` | `default` | `--xh-fg-muted` | select 的 indicator 部件 color 覆盖槽。 |
 | `--xh-select-item-bg-hover` | `item` | `background-color` | `error`<br>`highlighted`<br>`hover`<br>`is(:focus-visible, [data-highlighted])`<br>`not([aria-disabled='true'], [aria-busy='true'], [data-error])` | `--xh-bg-subtle` | select 的 item 部件 background-color 覆盖槽。 |
-| `--xh-select-item-bg-pressed` | `item` | `background` | `active`<br>`disabled`<br>`not([data-disabled])` | `--xh-bg-subtle-active` | select 的 item 部件 background 覆盖槽。 |
+| `--xh-select-item-bg-pressed` | `item` | `background-color` | `active`<br>`disabled`<br>`not([data-disabled])` | `--xh-bg-subtle-active` | select 的 item 部件 background-color 覆盖槽。 |
+| `--xh-select-item-check-fg` | `item` | `color` | `state=checked`<br>`xh-collection-slot=indicator` | `--xh-_select-accent` | select 的 item 部件 color 覆盖槽。 |
 | `--xh-select-item-fg` | `item` | `color` | `default`<br>`error`<br>`highlighted`<br>`hover`<br>`is(:focus-visible, [data-highlighted])`<br>`not([aria-disabled='true'], [aria-busy='true'], [data-error])` | `--xh-material-frosted-fg` | select 的 item 部件 color 覆盖槽。 |
 | `--xh-select-item-fg-selected` | `item` | `color` | `default`<br>`highlighted`<br>`is(:focus-visible, [data-highlighted])` | `--xh-select-item-fg` | select 的 item 部件 color 覆盖槽。 |
 | `--xh-select-item-font-size` | `item` | `font-size` | `default` | `--xh-_select-font-size` | select 的 item 部件 font-size 覆盖槽。 |
 | `--xh-select-item-font-weight-selected` | `item` | `font-weight` | `default`<br>`highlighted`<br>`is(:focus-visible, [data-highlighted])` | `--xh-font-weight-regular` | select 的 item 部件 font-weight 覆盖槽。 |
 | `--xh-select-item-gap` | `item` | `margin-inline-end`<br>`margin-inline-start` | `xh-collection-slot=indicator`<br>`xh-collection-slot=prefix`<br>`xh-collection-slot=shortcut`<br>`xh-collection-slot=suffix` | `--xh-_select-gap` | select 的 item 部件 margin-inline-end、margin-inline-start 覆盖槽。 |
-| `--xh-select-item-indicator-fg` | `item` | `color` | `state=checked`<br>`xh-collection-slot=indicator` | `--xh-_select-accent` | select 的 item 部件 color 覆盖槽。 |
 | `--xh-select-item-indicator-size` | `item-indicator` | `block-size`<br>`inline-size` | `default` | `--xh-control-indicator-size` | select 的 item-indicator 部件 block-size、inline-size 覆盖槽。 |
 | `--xh-select-item-leading` | `item` | `line-height` | `default` | `--xh-leading-normal` | select 的 item 部件 line-height 覆盖槽。 |
 | `--xh-select-item-px` | `item` | `padding-inline` | `default` | `--xh-_select-item-px` | select 的 item 部件 padding-inline 覆盖槽。 |
@@ -3388,37 +2978,14 @@ function onValueChange(details: { value: string[] }): void {
 | `--xh-select-trigger-gap` | `trigger` | `gap` | `default` | `--xh-_select-gap` | select 的 trigger 部件 gap 覆盖槽。 |
 <!-- xh-component-tokens:end -->
 
-## 动效
+### 动效
 
-关键帧 `xh-overlay-slide-in` · `xh-overlay-slide-out` 随皮肤自带，不引用别处文件里的名字；`background` · `border-color` · `color` · `rotate` · `scale` 走 `transition` 过渡。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
+关键帧 `xh-overlay-slide-in` · `xh-overlay-slide-out` 随皮肤自带，不引用别处文件里的名字；`background` · `background-color` · `border-color` · `box-shadow` · `rotate` · `scale` 走 `transition` 过渡。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
 
 皮肤之外还有一段：退场由适配器的退场闸门把关，动画播完才真收起。
 
 系统开启减弱动效时由令牌层统一收敛，皮肤不另作判断。
 
-## RTL
+### RTL
 
 皮肤用逻辑属性排布（`inline-start` 一族），`dir="rtl"` 下自动镜像。
-
-## 组合
-
-- 外面套[表单字段](./field)；选项文字过长时里面用[文本截断](./truncate)。
-- **浮层 + 列表框**：值不进表单、只是就地切一个视图参数（排序方式、显示密度）时，用[浮层](./popover)装[列表框](./listbox)——浮层管开合与定位，列表框管条目与键盘，两边各自完整，不必另立组件。这是本库「浮层壳 + 条目层」的官方组合写法，示例见本页「官方组合：浮层 + 列表框」与[列表框](./listbox)页的同一例；要随表单提交、要 `name` 与 `hidden-select` 时才用本组件。
-
-## 最佳实践
-
-- 触发器的宽度固定，别随选中项的长度变——整行布局会跟着抖。
-- 选项超过约二十条就该加搜索，也就是换成[组合框](./combobox)。
-- 多选标签直接复用 Tag 的 M1 表面；调整标签外观应使用 `--xh-tag-*` 覆盖槽，不要在 Select 里重画。
-- 自定义选项里的图标、头像、正文和尾部提示按作者 DOM 顺序写；需要截断的正文放进 `item-text`，
-  不要靠皮肤猜测任意 span 的职责。
-
-### 当前边界
-
-- 当前 anatomy 尚无独立 `separator`、`viewport`、`scroll-up-button` 或 `scroll-down-button`。本次只在
-  相邻 `group` 之间提供自动分隔，`list` 继续同时承担滚动视口；这些新部件需要独立行为与三端 API。
-
-## 反模式
-
-- 用它承载动作（"导出"、"删除"）：那是[菜单](./menu)。
-- 异步加载选项时浮层里什么都不显示：给一个加载态或空态。

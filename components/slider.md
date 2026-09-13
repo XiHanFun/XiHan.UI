@@ -1,6 +1,6 @@
 来源：https://ui.docs.xihanfun.com/components/slider
 
-# Slider `滑块`
+# Slider 滑块
 
 在一个连续或离散的区间里拖出一个值或一段范围。
 
@@ -87,6 +87,12 @@ import {
   });
 </script>
 ```
+
+## 组件结构
+
+加粗的是必需部件。
+
+`data-scope="slider"`：**`root`** · `label` · **`control`** · **`track`** · `range` · **`thumb`** · `value-text` · `tick-group` · `tick` · `tick-label` · `hidden-input`
 
 ## 示例
 
@@ -317,7 +323,7 @@ import {
 </xh-slider>
 ```
 
-### 语气
+### 颜色
 
 tone 决定已填轨道与滑块用哪族颜色，不写时沿用品牌色
 
@@ -1080,7 +1086,23 @@ function valueText({ value }: { value: number }) {
 - 两个回调：拖动途中连着发，松手发一次——写存储用后者。
 - `getValueText` 决定读屏念出的是什么，别让它只念数字。
 
-## 产物
+### 组合
+
+- 与[数字输入](./number-field)并排，两边同步一个值。
+
+### 最佳实践
+
+- 两端标出最小与最大值，用户才知道自己在哪。
+- 拖动时用值气泡显示当前值，松手后收起。
+
+### 反模式
+
+- 区间很大却不给数字输入：拖到某个精确值几乎不可能。
+- 在移动端把滑块做得又细又短。
+
+## API 参考
+
+### 产物
 
 | 层 | 值 |
 | --- | --- |
@@ -1090,13 +1112,7 @@ function valueText({ value }: { value: number }) {
 | 状态机 | `sliderMachine` |
 | 皮肤 | `@xihan-ui/styles/slider.css` |
 
-## 解剖
-
-部件名即 `data-part` 属性值，也是皮肤的选择器。加粗的是必备部件，不渲染它组件不工作（Web Components 适配器会在诊断通道上报 `wc.missing-part`）。
-
-`data-scope="slider"`：**`root`** · `label` · **`control`** · **`track`** · `range` · **`thumb`** · `value-text` · `tick-group` · `tick` · `tick-label` · `hidden-input`
-
-## Props
+### Props
 
 | 属性 | 类型 | 必填 | 说明 |
 | --- | --- | --- | --- |
@@ -1121,27 +1137,27 @@ function valueText({ value }: { value: number }) {
 | `onValueChange` | `(details: SliderValueChangeDetails) => void` |  | 每次推动都发；拖动过程中会连续发很多次。 |
 | `onValueChangeEnd` | `(details: SliderValueChangeEndDetails) => void` |  | 只在一次操作结束时发一次，适合拿来发请求。 |
 
-## 事件
+### 事件
 
-自定义元素派发这些事件，Vue 组件对应同名 emit；载荷都在 `detail` 上。可双向绑定的值另有 `update:xxx`，见 Props。
+自定义元素将载荷放在 `detail`；Vue 使用同名 emit。
 
 | 事件 | 载荷 | 说明 |
 | --- | --- | --- |
 | `value-change` | `SliderValueTextDetails` | 值变化（拖动途中会连发）；detail 为 `{ value: number[] }` |
 | `value-change-end` | `SliderValueChangeEndDetails` | 一次操作收尾发一次；detail 为 `{ value: number[], index: number }` |
 
-## 插槽
+### 插槽
 
-作者能拿到载荷的插槽。只转发内容、不带载荷的默认插槽不在此列——那类直接写子节点即可。
+仅列出带载荷的插槽。
 
 | Vue 组件 | 插槽 | 载荷 | 说明 |
 | --- | --- | --- | --- |
 | `XhSliderRoot` | `default` | `SliderRootSlotProps` |  |
 | `XhSliderTickGroup` | `tick` | `SliderTickGroupTickSlotProps` |  |
 
-## 状态
+### 状态
 
-状态机内部转移，写样式与业务都用不到；要监听变化请看上面的「事件」。
+以下名称仅用于内部状态机。
 
 **状态**：`idle` · `dragging`
 
@@ -1149,9 +1165,9 @@ function valueText({ value }: { value: number }) {
 
 **判据**：`canDrag`
 
-## connect API
+### connect API
 
-`useSlider` 产出的对象。`getXxxProps()` 铺到对应部件的宿主元素上，其余是可读状态与操作入口。
+`getXxxProps()` 返回对应部件的宿主属性。
 
 | 成员 | 类型 | 说明 |
 | --- | --- | --- |
@@ -1177,7 +1193,9 @@ function valueText({ value }: { value: number }) {
 | `getTickLabelProps` | `(props: SliderTickProps) => T['element']` | 刻度文案：点按把最近的滑块跳到这一档。 |
 | `getHiddenInputProps` | `(index: number) => T['input']` |  |
 
-## 键盘
+## 无障碍
+
+### 键盘
 
 规格出处：[W3C APG](https://www.w3.org/WAI/ARIA/apg/patterns/slider/#keyboardinteraction)
 
@@ -1190,9 +1208,9 @@ function valueText({ value }: { value: number }) {
 | `Home` | focus in thumb, not disabled/readOnly | 取 min；多滑块时取自己被邻居允许的下界 |
 | `End` | focus in thumb, not disabled/readOnly | 取 max；多滑块时取自己被邻居允许的上界 |
 
-## 无障碍
+### ARIA
 
-下面这些由 `connect` 铺到部件上，作者不必自己写；重复写反而会覆盖掉正确值。
+以下属性由 `connect` 生成。
 
 | 部件 | 属性 | 值 |
 | --- | --- | --- |
@@ -1207,13 +1225,15 @@ function valueText({ value }: { value: number }) {
 | `value-text` | `aria-hidden` | 'true' |
 | `tick` | `aria-hidden` | 'true' |
 
-## 样式
+## 样式参考
 
-默认皮肤 `@xihan-ui/styles/slider.css` 按部件选择：`[data-scope="slider"][data-part="root"]`。它落在 `xihan.components` 层；业务样式不写进 `@layer` 即高于全部库层，要按层压过来就写进 `xihan.overrides`。
+### 皮肤
 
-## 数据属性
+`@xihan-ui/styles/slider.css` 使用 `[data-scope="slider"][data-part="root"]` 部件选择器，位于 `xihan.components` 层。覆盖样式使用 `xihan.overrides`。
 
-由 `connect` 产出并铺到部件上，皮肤与测试都据此选择；`data-disabled` 这类无值属性在条件不成立时整个不出现。
+### 数据属性
+
+由 `connect` 生成；条件不成立时不输出无值属性。
 
 | 部件 | 属性 | 值 |
 | --- | --- | --- |
@@ -1228,7 +1248,7 @@ function valueText({ value }: { value: number }) {
 | `hidden-input` | `data-index` | String(thumb.index) |
 
 <!-- xh-component-tokens:start -->
-## CSS 变量
+### CSS 变量
 
 本组件公开覆盖槽由独立皮肤的实际消费位生成；缺省来源、作用部件和状态均与 CSS 同源。
 
@@ -1271,26 +1291,12 @@ function valueText({ value }: { value: number }) {
 | `--xh-slider-vertical-length` | `control` | `block-size` | `orientation=vertical` | `10rem` | slider 的 control 部件 block-size 覆盖槽。 |
 <!-- xh-component-tokens:end -->
 
-## 动效
+### 动效
 
 `box-shadow` · `opacity` · `scale` 走 `transition` 过渡。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
 
 系统开启减弱动效时由令牌层统一收敛，皮肤不另作判断。
 
-## RTL
+### RTL
 
 皮肤用逻辑属性排布（`inline-start` 一族），`dir="rtl"` 下自动镜像。
-
-## 组合
-
-- 与[数字输入](./number-field)并排，两边同步一个值。
-
-## 最佳实践
-
-- 两端标出最小与最大值，用户才知道自己在哪。
-- 拖动时用值气泡显示当前值，松手后收起。
-
-## 反模式
-
-- 区间很大却不给数字输入：拖到某个精确值几乎不可能。
-- 在移动端把滑块做得又细又短。

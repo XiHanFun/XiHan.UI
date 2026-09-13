@@ -1,8 +1,8 @@
 来源：https://ui.docs.xihanfun.com/components/steps
 
-# Steps `步骤条`
+# Steps 步骤条
 
-把一件事拆成有先后的几步，并标出走到哪一步了。
+用于展示多步骤流程的进度。
 
 <div class="xh-resource-links">
   <a href="https://github.com/XiHanFun/XiHan.UI/tree/dev/ui/packages/engine/headless/src/steps" target="_blank" rel="noreferrer">Headless</a>
@@ -14,12 +14,11 @@
 
 ## 用法
 
-不传 value 即为非受控；方向键只搬焦点，按 Enter 或空格才切步，进退方法由 root 的插槽交出来
+展示流程进度与当前步骤内容
 
 ```vue
 <script setup lang="ts">
 import {
-  XhButton,
   XhStepsContent,
   XhStepsDescription,
   XhStepsIndicator,
@@ -39,15 +38,10 @@ const steps = [
 </script>
 
 <template>
-  <XhStepsRoot
-    v-slot="{ value, count, complete, goToPrevStep, goToNextStep }"
-    :count="steps.length"
-    style="inline-size: 100%"
-  >
+  <XhStepsRoot v-slot="{ value }" :count="steps.length" :default-value="1">
     <XhStepsList>
       <XhStepsItem v-for="(s, i) in steps" :key="s.title" :value="i">
         <XhStepsTrigger>
-          <!-- 圆点里的字符是作者内容：皮肤只按 data-state 管描边与填充 -->
           <XhStepsIndicator>{{ value > i ? "" : i + 1 }}</XhStepsIndicator>
           <XhStepsTitle>{{ s.title }}</XhStepsTitle>
           <XhStepsDescription>{{ s.description }}</XhStepsDescription>
@@ -56,231 +50,83 @@ const steps = [
       </XhStepsItem>
     </XhStepsList>
 
-    <XhStepsContent :value="0">面板 1：填写收货地址。</XhStepsContent>
-    <XhStepsContent :value="1">面板 2：选择支付方式。</XhStepsContent>
-    <XhStepsContent :value="2">面板 3：核对金额并提交。</XhStepsContent>
-    <!-- value 等于 count 的这块是完成页：走完最后一步之后的那一格 -->
-    <XhStepsContent :value="steps.length">全部完成：订单已提交。</XhStepsContent>
-
-    <div style="display: flex; align-items: center; gap: 8px">
-      <XhButton variant="outline" :disabled="value === 0" @click="goToPrevStep()">
-        上一步
-      </XhButton>
-      <XhButton variant="solid" :disabled="complete" @click="goToNextStep()">
-        下一步
-      </XhButton>
-      <span>{{ complete ? "当前：全部完成" : `当前：第 ${value + 1} / ${count} 步` }}</span>
-    </div>
+    <XhStepsContent :value="0">填写收货人与联系方式。</XhStepsContent>
+    <XhStepsContent :value="1">选择支付方式并确认优惠信息。</XhStepsContent>
+    <XhStepsContent :value="2">核对订单金额后提交。</XhStepsContent>
+    <XhStepsContent :value="steps.length">订单已提交。</XhStepsContent>
   </XhStepsRoot>
 </template>
 ```
 
 ```html
-<div style="display: flex; flex-direction: column; gap: 12px; inline-size: 100%">
-  <!-- 不写 value：步序住在组件里，宿主只跟着它回显 -->
-  <xh-steps id="steps-basic" count="3">
-    <div data-xh-part="root">
-      <div data-xh-part="list">
-        <div data-xh-part="item" value="0">
-          <button data-xh-part="trigger">
-            <!-- 圆点里的字符是作者内容：皮肤只按 data-state 管描边与填充 -->
-            <span data-xh-part="indicator">1</span>
-            <span data-xh-part="title">填写地址</span>
-            <span data-xh-part="description">收货人与联系方式</span>
-          </button>
-          <div data-xh-part="separator"></div>
-        </div>
-        <div data-xh-part="item" value="1">
-          <button data-xh-part="trigger">
-            <span data-xh-part="indicator">2</span>
-            <span data-xh-part="title">选择支付</span>
-            <span data-xh-part="description">支付方式与优惠</span>
-          </button>
-          <div data-xh-part="separator"></div>
-        </div>
-        <div data-xh-part="item" value="2">
-          <button data-xh-part="trigger">
-            <span data-xh-part="indicator">3</span>
-            <span data-xh-part="title">确认订单</span>
-            <span data-xh-part="description">核对金额</span>
-          </button>
-          <div data-xh-part="separator"></div>
-        </div>
+<xh-steps id="steps-basic" count="3" default-value="1">
+  <div data-xh-part="root">
+    <div data-xh-part="list">
+      <div data-xh-part="item" value="0">
+        <button data-xh-part="trigger">
+          <span data-xh-part="indicator"></span>
+          <span data-xh-part="title">填写地址</span>
+          <span data-xh-part="description">收货人与联系方式</span>
+        </button>
+        <div data-xh-part="separator"></div>
       </div>
-
-      <div data-xh-part="content" value="0">面板 1：填写收货地址。</div>
-      <div data-xh-part="content" value="1">面板 2：选择支付方式。</div>
-      <div data-xh-part="content" value="2">面板 3：核对金额并提交。</div>
+      <div data-xh-part="item" value="1">
+        <button data-xh-part="trigger">
+          <span data-xh-part="indicator">2</span>
+          <span data-xh-part="title">选择支付</span>
+          <span data-xh-part="description">支付方式与优惠</span>
+        </button>
+        <div data-xh-part="separator"></div>
+      </div>
+      <div data-xh-part="item" value="2">
+        <button data-xh-part="trigger">
+          <span data-xh-part="indicator">3</span>
+          <span data-xh-part="title">确认订单</span>
+          <span data-xh-part="description">核对金额</span>
+        </button>
+        <div data-xh-part="separator"></div>
+      </div>
     </div>
-  </xh-steps>
 
-  <div style="display: flex; align-items: center; gap: 8px">
-    <xh-button id="steps-basic-prev" variant="outline">
-      <button data-xh-part="root">上一步</button>
-    </xh-button>
-    <xh-button id="steps-basic-next" variant="solid">
-      <button data-xh-part="root">下一步</button>
-    </xh-button>
-    <span>当前：第 <span id="steps-basic-value">1</span> / 3 步</span>
+    <div data-xh-part="content" value="0">填写收货人与联系方式。</div>
+    <div data-xh-part="content" value="1">选择支付方式并确认优惠信息。</div>
+    <div data-xh-part="content" value="2">核对订单金额后提交。</div>
+    <div data-xh-part="content" value="3">订单已提交。</div>
   </div>
-</div>
+</xh-steps>
 
 <script type="module">
-  const steps = document.getElementById("steps-basic");
-  const readout = document.getElementById("steps-basic-value");
-  const prev = document.getElementById("steps-basic-prev");
-  const next = document.getElementById("steps-basic-next");
-  const triggers = [...steps.querySelectorAll('[data-xh-part="trigger"]')];
-  const indicators = [...steps.querySelectorAll('[data-xh-part="indicator"]')];
-
-  // 步序不在这里持有，只从 value-change 抄一份用来画圆点与开合按钮
-  let step = 0;
+  const host = document.getElementById("steps-basic");
+  const indicators = [...host.querySelectorAll('[data-xh-part="indicator"]')];
 
   function paint(current) {
-    step = current;
-    readout.textContent = String(current + 1);
-    prev.disabled = current === 0;
-    next.disabled = current === triggers.length - 1;
     indicators.forEach((indicator, index) => {
       indicator.textContent = current > index ? "" : String(index + 1);
     });
   }
 
-  // 外部按钮转交给对应那一步的标签，与用户自己点它走的是同一条路
-  prev.addEventListener("click", () => triggers[step - 1]?.click());
-  next.addEventListener("click", () => triggers[step + 1]?.click());
-
-  steps.addEventListener("value-change", (event) => paint(event.detail.value));
-  paint(0);
+  host.addEventListener("value-change", (event) => paint(event.detail.value));
+  paint(1);
 </script>
 ```
+
+## 组件结构
+
+加粗的是必需部件。
+
+`data-scope="steps"`：**`root`** · **`list`** · **`item`** · **`trigger`** · `indicator` · `title` · `description` · `separator` · `content`
 
 ## 示例
 
-### 受控
-
-传了 value 就由宿主说了算，组件自己不再改步序；切步意图从 value-change 出来，写回才真的切
-
-```vue
-<script setup lang="ts">
-import {
-  XhButton,
-  XhStepsIndicator,
-  XhStepsItem,
-  XhStepsList,
-  XhStepsRoot,
-  XhStepsSeparator,
-  XhStepsTitle,
-  XhStepsTrigger,
-} from "@xihan-ui/vue";
-import { ref } from "vue";
-
-const steps = ["提交申请", "主管审批", "财务复核", "归档"];
-const current = ref(1);
-</script>
-
-<template>
-  <div style="display: flex; flex-direction: column; gap: 12px; inline-size: 100%">
-    <XhStepsRoot v-model:value="current" :count="steps.length">
-      <XhStepsList>
-        <XhStepsItem v-for="(s, i) in steps" :key="s" :value="i">
-          <XhStepsTrigger>
-            <XhStepsIndicator>{{ current > i ? "" : i + 1 }}</XhStepsIndicator>
-            <XhStepsTitle>{{ s }}</XhStepsTitle>
-          </XhStepsTrigger>
-          <XhStepsSeparator />
-        </XhStepsItem>
-      </XhStepsList>
-    </XhStepsRoot>
-
-    <div style="display: flex; align-items: center; gap: 8px">
-      <XhButton variant="outline" @click="current = 0">回到第一步</XhButton>
-      <XhButton variant="outline" @click="current = steps.length">直接完成</XhButton>
-      <span>当前 value：{{ current }}</span>
-    </div>
-  </div>
-</template>
-```
-
-```html
-<div style="display: flex; flex-direction: column; gap: 12px; inline-size: 100%">
-  <xh-steps id="steps-controlled" value="1" count="4">
-    <div data-xh-part="root">
-      <div data-xh-part="list">
-        <div data-xh-part="item" value="0">
-          <button data-xh-part="trigger">
-            <span data-xh-part="indicator"></span>
-            <span data-xh-part="title">提交申请</span>
-          </button>
-          <div data-xh-part="separator"></div>
-        </div>
-        <div data-xh-part="item" value="1">
-          <button data-xh-part="trigger">
-            <span data-xh-part="indicator">2</span>
-            <span data-xh-part="title">主管审批</span>
-          </button>
-          <div data-xh-part="separator"></div>
-        </div>
-        <div data-xh-part="item" value="2">
-          <button data-xh-part="trigger">
-            <span data-xh-part="indicator">3</span>
-            <span data-xh-part="title">财务复核</span>
-          </button>
-          <div data-xh-part="separator"></div>
-        </div>
-        <div data-xh-part="item" value="3">
-          <button data-xh-part="trigger">
-            <span data-xh-part="indicator">4</span>
-            <span data-xh-part="title">归档</span>
-          </button>
-          <div data-xh-part="separator"></div>
-        </div>
-      </div>
-    </div>
-  </xh-steps>
-
-  <div style="display: flex; align-items: center; gap: 8px">
-    <xh-button id="steps-controlled-first" variant="outline">
-      <button data-xh-part="root">回到第一步</button>
-    </xh-button>
-    <xh-button id="steps-controlled-complete" variant="outline">
-      <button data-xh-part="root">直接完成</button>
-    </xh-button>
-    <span>当前 value：<span id="steps-controlled-value">1</span></span>
-  </div>
-</div>
-
-<script type="module">
-  // 步序只在这里写，圆点里的对勾与序号跟着它走
-  const steps = document.getElementById("steps-controlled");
-  const readout = document.getElementById("steps-controlled-value");
-  const first = document.getElementById("steps-controlled-first");
-  const complete = document.getElementById("steps-controlled-complete");
-  const indicators = [...steps.querySelectorAll('[data-xh-part="indicator"]')];
-
-  function setValue(next) {
-    steps.value = next;
-    readout.textContent = String(next);
-    indicators.forEach((indicator, index) => {
-      indicator.textContent = next > index ? "" : String(index + 1);
-    });
-  }
-
-  steps.addEventListener("value-change", (event) => setValue(event.detail.value));
-  first.addEventListener("click", () => setValue(0));
-  complete.addEventListener("click", () => setValue(4));
-</script>
-```
-
 ### 线性模式
 
-linear 下还没走到的步一律禁用，只能回头看走过的；它只拦界面上的乱跳，逐步前进照常
+只能返回已完成的步骤
 
 ```vue
 <script setup lang="ts">
 import {
-  XhButton,
   XhStepsContent,
+  XhStepsDescription,
   XhStepsIndicator,
   XhStepsItem,
   XhStepsList,
@@ -290,124 +136,86 @@ import {
   XhStepsTrigger,
 } from "@xihan-ui/vue";
 
-const steps = ["实名认证", "绑定银行卡", "签署协议"];
+const steps = [
+  { title: "实名认证", description: "身份信息已验证" },
+  { title: "绑定银行卡", description: "填写本人银行卡" },
+  { title: "签署协议", description: "完成后解锁" },
+];
 </script>
 
 <template>
-  <XhStepsRoot
-    v-slot="{ value, complete, goToPrevStep, goToNextStep }"
-    :count="steps.length"
-    linear
-    style="inline-size: 100%"
-  >
+  <XhStepsRoot v-slot="{ value }" :count="steps.length" :default-value="1" linear>
     <XhStepsList>
-      <XhStepsItem v-for="(s, i) in steps" :key="s" :value="i">
+      <XhStepsItem v-for="(step, i) in steps" :key="step.title" :value="i">
         <XhStepsTrigger>
           <XhStepsIndicator>{{ value > i ? "" : i + 1 }}</XhStepsIndicator>
-          <XhStepsTitle>{{ s }}</XhStepsTitle>
+          <XhStepsTitle>{{ step.title }}</XhStepsTitle>
+          <XhStepsDescription>{{ step.description }}</XhStepsDescription>
         </XhStepsTrigger>
         <XhStepsSeparator />
       </XhStepsItem>
     </XhStepsList>
 
-    <XhStepsContent :value="0">面板 1：上传证件照。</XhStepsContent>
-    <XhStepsContent :value="1">面板 2：填写卡号。</XhStepsContent>
-    <XhStepsContent :value="2">面板 3：勾选并签署。</XhStepsContent>
-    <XhStepsContent :value="steps.length">全部完成。</XhStepsContent>
-
-    <div style="display: flex; align-items: center; gap: 8px">
-      <XhButton variant="outline" :disabled="value === 0" @click="goToPrevStep()">
-        上一步
-      </XhButton>
-      <XhButton variant="solid" :disabled="complete" @click="goToNextStep()">
-        下一步
-      </XhButton>
-    </div>
+    <XhStepsContent :value="0">核对身份信息。</XhStepsContent>
+    <XhStepsContent :value="1">填写本人银行卡。</XhStepsContent>
+    <XhStepsContent :value="2">阅读并签署服务协议。</XhStepsContent>
+    <XhStepsContent :value="steps.length">认证已完成。</XhStepsContent>
   </XhStepsRoot>
 </template>
 ```
 
 ```html
-<div style="display: flex; flex-direction: column; gap: 12px; inline-size: 100%">
-  <xh-steps id="steps-linear" value="0" count="3" linear>
-    <div data-xh-part="root">
-      <div data-xh-part="list">
-        <div data-xh-part="item" value="0">
-          <button data-xh-part="trigger">
-            <span data-xh-part="indicator">1</span>
-            <span data-xh-part="title">实名认证</span>
-          </button>
-          <div data-xh-part="separator"></div>
-        </div>
-        <div data-xh-part="item" value="1">
-          <button data-xh-part="trigger">
-            <span data-xh-part="indicator">2</span>
-            <span data-xh-part="title">绑定银行卡</span>
-          </button>
-          <div data-xh-part="separator"></div>
-        </div>
-        <div data-xh-part="item" value="2">
-          <button data-xh-part="trigger">
-            <span data-xh-part="indicator">3</span>
-            <span data-xh-part="title">签署协议</span>
-          </button>
-          <div data-xh-part="separator"></div>
-        </div>
+<xh-steps id="steps-linear" count="3" default-value="1" linear>
+  <div data-xh-part="root">
+    <div data-xh-part="list">
+      <div data-xh-part="item" value="0">
+        <button data-xh-part="trigger">
+          <span data-xh-part="indicator"></span>
+          <span data-xh-part="title">实名认证</span>
+          <span data-xh-part="description">身份信息已验证</span>
+        </button>
+        <div data-xh-part="separator"></div>
       </div>
-
-      <div data-xh-part="content" value="0">面板 1：上传证件照。</div>
-      <div data-xh-part="content" value="1">面板 2：填写卡号。</div>
-      <div data-xh-part="content" value="2">面板 3：勾选并签署。</div>
-      <div data-xh-part="content" value="3">全部完成。</div>
+      <div data-xh-part="item" value="1">
+        <button data-xh-part="trigger">
+          <span data-xh-part="indicator">2</span>
+          <span data-xh-part="title">绑定银行卡</span>
+          <span data-xh-part="description">填写本人银行卡</span>
+        </button>
+        <div data-xh-part="separator"></div>
+      </div>
+      <div data-xh-part="item" value="2">
+        <button data-xh-part="trigger">
+          <span data-xh-part="indicator">3</span>
+          <span data-xh-part="title">签署协议</span>
+          <span data-xh-part="description">完成后解锁</span>
+        </button>
+        <div data-xh-part="separator"></div>
+      </div>
     </div>
-  </xh-steps>
 
-  <div style="display: flex; align-items: center; gap: 8px">
-    <xh-button id="steps-linear-prev" variant="outline">
-      <button data-xh-part="root">上一步</button>
-    </xh-button>
-    <xh-button id="steps-linear-next" variant="solid">
-      <button data-xh-part="root">下一步</button>
-    </xh-button>
-    <span id="steps-linear-value">当前：第 1 / 3 步</span>
+    <div data-xh-part="content" value="0">核对身份信息。</div>
+    <div data-xh-part="content" value="1">填写本人银行卡。</div>
+    <div data-xh-part="content" value="2">阅读并签署服务协议。</div>
+    <div data-xh-part="content" value="3">认证已完成。</div>
   </div>
-</div>
+</xh-steps>
 
 <script type="module">
-  const steps = document.getElementById("steps-linear");
-  const readout = document.getElementById("steps-linear-value");
-  const prev = document.getElementById("steps-linear-prev");
-  const next = document.getElementById("steps-linear-next");
-  const indicators = [...steps.querySelectorAll('[data-xh-part="indicator"]')];
+  const host = document.getElementById("steps-linear");
+  const indicators = [...host.querySelectorAll('[data-xh-part="indicator"]')];
 
-  const COUNT = 3;
-  let step = 0;
-
-  // 两颗按钮直接写步序：linear 拦的是标签上的乱跳，逐步前进不受它管
-  function setValue(current) {
-    step = current;
-    steps.value = current;
-    prev.disabled = current === 0;
-    next.disabled = current === COUNT;
-    readout.textContent =
-      current === COUNT ? "当前：全部完成" : `当前：第 ${current + 1} / ${COUNT} 步`;
+  host.addEventListener("value-change", (event) => {
     indicators.forEach((indicator, index) => {
-      indicator.textContent = current > index ? "" : String(index + 1);
+      indicator.textContent = event.detail.value > index ? "" : String(index + 1);
     });
-  }
-
-  prev.addEventListener("click", () => setValue(step - 1));
-  next.addEventListener("click", () => setValue(step + 1));
-
-  // 点已经走过的标签能回头看，还没解锁的那些按不动
-  steps.addEventListener("value-change", (event) => setValue(event.detail.value));
-  setValue(0);
+  });
 </script>
 ```
 
-### 竖排
+### 垂直布局
 
-orientation="vertical" 把步骤列与面板并排摆，方向键随之改收上下键
+展示纵向流程与步骤内容
 
 ```vue
 <script setup lang="ts">
@@ -432,15 +240,15 @@ const steps = [
 
 <template>
   <XhStepsRoot
+    v-slot="{ value }"
     :count="steps.length"
     :default-value="1"
     orientation="vertical"
-    style="inline-size: 100%"
   >
     <XhStepsList>
       <XhStepsItem v-for="(s, i) in steps" :key="s.title" :value="i">
         <XhStepsTrigger>
-          <XhStepsIndicator>{{ i + 1 }}</XhStepsIndicator>
+          <XhStepsIndicator>{{ value > i ? "" : i + 1 }}</XhStepsIndicator>
           <XhStepsTitle>{{ s.title }}</XhStepsTitle>
           <XhStepsDescription>{{ s.description }}</XhStepsDescription>
         </XhStepsTrigger>
@@ -448,21 +256,21 @@ const steps = [
       </XhStepsItem>
     </XhStepsList>
 
-    <XhStepsContent :value="0">面板 1：打包日志。</XhStepsContent>
-    <XhStepsContent :value="1">面板 2：测试报告。</XhStepsContent>
-    <XhStepsContent :value="2">面板 3：发布记录。</XhStepsContent>
-    <XhStepsContent :value="steps.length">流水线跑完了。</XhStepsContent>
+    <XhStepsContent :value="0">查看构建产物。</XhStepsContent>
+    <XhStepsContent :value="1">检查测试报告。</XhStepsContent>
+    <XhStepsContent :value="2">确认发布记录。</XhStepsContent>
+    <XhStepsContent :value="steps.length">流水线已完成。</XhStepsContent>
   </XhStepsRoot>
 </template>
 ```
 
 ```html
-<xh-steps count="3" default-value="1" orientation="vertical">
-  <div data-xh-part="root" style="inline-size: 100%">
+<xh-steps id="steps-vertical" count="3" default-value="1" orientation="vertical">
+  <div data-xh-part="root">
     <div data-xh-part="list">
       <div data-xh-part="item" value="0">
         <button data-xh-part="trigger">
-          <span data-xh-part="indicator">1</span>
+          <span data-xh-part="indicator"></span>
           <span data-xh-part="title">打包</span>
           <span data-xh-part="description">生成产物</span>
         </button>
@@ -486,614 +294,33 @@ const steps = [
       </div>
     </div>
 
-    <div data-xh-part="content" value="0">面板 1：打包日志。</div>
-    <div data-xh-part="content" value="1">面板 2：测试报告。</div>
-    <div data-xh-part="content" value="2">面板 3：发布记录。</div>
-    <!-- value 等于 count 的这块是完成页：走完最后一步之后的那一格 -->
-    <div data-xh-part="content" value="3">流水线跑完了。</div>
+    <div data-xh-part="content" value="0">查看构建产物。</div>
+    <div data-xh-part="content" value="1">检查测试报告。</div>
+    <div data-xh-part="content" value="2">确认发布记录。</div>
+    <div data-xh-part="content" value="3">流水线已完成。</div>
   </div>
 </xh-steps>
-```
-
-### 语气
-
-tone 决定已完成与当前这两步的标记、连接线用哪族颜色；示例预置到第 2 步，第 1 步已走完
-
-```vue
-<script setup lang="ts">
-import {
-  XhStepsContent,
-  XhStepsDescription,
-  XhStepsIndicator,
-  XhStepsItem,
-  XhStepsList,
-  XhStepsRoot,
-  XhStepsSeparator,
-  XhStepsTitle,
-  XhStepsTrigger,
-} from "@xihan-ui/vue";
-
-const tones = ["brand", "neutral", "success", "warning", "danger", "info"] as const;
-const steps = [
-  { title: "填写地址", description: "收货人与联系方式" },
-  { title: "选择支付", description: "支付方式与优惠" },
-  { title: "确认订单", description: "核对金额" },
-];
-</script>
-
-<template>
-  <div style="display: flex; flex-direction: column; gap: 24px; inline-size: 100%">
-    <div v-for="t in tones" :key="t">
-      <div style="margin-block-end: 8px; font-size: 12px">{{ t }}</div>
-      <XhStepsRoot
-        :tone="t"
-        :count="steps.length"
-        :default-value="1"
-        style="inline-size: 100%"
-      >
-        <XhStepsList>
-          <XhStepsItem v-for="(s, i) in steps" :key="s.title" :value="i">
-            <XhStepsTrigger>
-              <XhStepsIndicator>{{ i === 0 ? "" : i + 1 }}</XhStepsIndicator>
-              <XhStepsTitle>{{ s.title }}</XhStepsTitle>
-              <XhStepsDescription>{{ s.description }}</XhStepsDescription>
-            </XhStepsTrigger>
-            <XhStepsSeparator />
-          </XhStepsItem>
-        </XhStepsList>
-
-        <XhStepsContent v-for="(s, i) in steps" :key="s.title" :value="i">
-          面板 {{ i + 1 }}：{{ s.title }}
-        </XhStepsContent>
-        <XhStepsContent :value="steps.length">全部完成。</XhStepsContent>
-      </XhStepsRoot>
-    </div>
-  </div>
-</template>
-```
-
-```html
-<div style="display: flex; flex-direction: column; gap: 24px; inline-size: 100%">
-  <div>
-    <div style="margin-block-end: 8px; font-size: 12px">brand</div>
-    <xh-steps tone="brand" count="3" default-value="1">
-      <div data-xh-part="root" style="inline-size: 100%">
-        <div data-xh-part="list">
-          <div data-xh-part="item" value="0">
-            <button data-xh-part="trigger">
-              <span data-xh-part="indicator"></span>
-              <span data-xh-part="title">填写地址</span>
-              <span data-xh-part="description">收货人与联系方式</span>
-            </button>
-            <div data-xh-part="separator"></div>
-          </div>
-          <div data-xh-part="item" value="1">
-            <button data-xh-part="trigger">
-              <span data-xh-part="indicator">2</span>
-              <span data-xh-part="title">选择支付</span>
-              <span data-xh-part="description">支付方式与优惠</span>
-            </button>
-            <div data-xh-part="separator"></div>
-          </div>
-          <div data-xh-part="item" value="2">
-            <button data-xh-part="trigger">
-              <span data-xh-part="indicator">3</span>
-              <span data-xh-part="title">确认订单</span>
-              <span data-xh-part="description">核对金额</span>
-            </button>
-            <div data-xh-part="separator"></div>
-          </div>
-        </div>
-
-        <div data-xh-part="content" value="0">面板 1：填写地址</div>
-        <div data-xh-part="content" value="1">面板 2：选择支付</div>
-        <div data-xh-part="content" value="2">面板 3：确认订单</div>
-        <div data-xh-part="content" value="3">全部完成。</div>
-      </div>
-    </xh-steps>
-  </div>
-  <div>
-    <div style="margin-block-end: 8px; font-size: 12px">neutral</div>
-    <xh-steps tone="neutral" count="3" default-value="1">
-      <div data-xh-part="root" style="inline-size: 100%">
-        <div data-xh-part="list">
-          <div data-xh-part="item" value="0">
-            <button data-xh-part="trigger">
-              <span data-xh-part="indicator"></span>
-              <span data-xh-part="title">填写地址</span>
-              <span data-xh-part="description">收货人与联系方式</span>
-            </button>
-            <div data-xh-part="separator"></div>
-          </div>
-          <div data-xh-part="item" value="1">
-            <button data-xh-part="trigger">
-              <span data-xh-part="indicator">2</span>
-              <span data-xh-part="title">选择支付</span>
-              <span data-xh-part="description">支付方式与优惠</span>
-            </button>
-            <div data-xh-part="separator"></div>
-          </div>
-          <div data-xh-part="item" value="2">
-            <button data-xh-part="trigger">
-              <span data-xh-part="indicator">3</span>
-              <span data-xh-part="title">确认订单</span>
-              <span data-xh-part="description">核对金额</span>
-            </button>
-            <div data-xh-part="separator"></div>
-          </div>
-        </div>
-
-        <div data-xh-part="content" value="0">面板 1：填写地址</div>
-        <div data-xh-part="content" value="1">面板 2：选择支付</div>
-        <div data-xh-part="content" value="2">面板 3：确认订单</div>
-        <div data-xh-part="content" value="3">全部完成。</div>
-      </div>
-    </xh-steps>
-  </div>
-  <div>
-    <div style="margin-block-end: 8px; font-size: 12px">success</div>
-    <xh-steps tone="success" count="3" default-value="1">
-      <div data-xh-part="root" style="inline-size: 100%">
-        <div data-xh-part="list">
-          <div data-xh-part="item" value="0">
-            <button data-xh-part="trigger">
-              <span data-xh-part="indicator"></span>
-              <span data-xh-part="title">填写地址</span>
-              <span data-xh-part="description">收货人与联系方式</span>
-            </button>
-            <div data-xh-part="separator"></div>
-          </div>
-          <div data-xh-part="item" value="1">
-            <button data-xh-part="trigger">
-              <span data-xh-part="indicator">2</span>
-              <span data-xh-part="title">选择支付</span>
-              <span data-xh-part="description">支付方式与优惠</span>
-            </button>
-            <div data-xh-part="separator"></div>
-          </div>
-          <div data-xh-part="item" value="2">
-            <button data-xh-part="trigger">
-              <span data-xh-part="indicator">3</span>
-              <span data-xh-part="title">确认订单</span>
-              <span data-xh-part="description">核对金额</span>
-            </button>
-            <div data-xh-part="separator"></div>
-          </div>
-        </div>
-
-        <div data-xh-part="content" value="0">面板 1：填写地址</div>
-        <div data-xh-part="content" value="1">面板 2：选择支付</div>
-        <div data-xh-part="content" value="2">面板 3：确认订单</div>
-        <div data-xh-part="content" value="3">全部完成。</div>
-      </div>
-    </xh-steps>
-  </div>
-  <div>
-    <div style="margin-block-end: 8px; font-size: 12px">warning</div>
-    <xh-steps tone="warning" count="3" default-value="1">
-      <div data-xh-part="root" style="inline-size: 100%">
-        <div data-xh-part="list">
-          <div data-xh-part="item" value="0">
-            <button data-xh-part="trigger">
-              <span data-xh-part="indicator"></span>
-              <span data-xh-part="title">填写地址</span>
-              <span data-xh-part="description">收货人与联系方式</span>
-            </button>
-            <div data-xh-part="separator"></div>
-          </div>
-          <div data-xh-part="item" value="1">
-            <button data-xh-part="trigger">
-              <span data-xh-part="indicator">2</span>
-              <span data-xh-part="title">选择支付</span>
-              <span data-xh-part="description">支付方式与优惠</span>
-            </button>
-            <div data-xh-part="separator"></div>
-          </div>
-          <div data-xh-part="item" value="2">
-            <button data-xh-part="trigger">
-              <span data-xh-part="indicator">3</span>
-              <span data-xh-part="title">确认订单</span>
-              <span data-xh-part="description">核对金额</span>
-            </button>
-            <div data-xh-part="separator"></div>
-          </div>
-        </div>
-
-        <div data-xh-part="content" value="0">面板 1：填写地址</div>
-        <div data-xh-part="content" value="1">面板 2：选择支付</div>
-        <div data-xh-part="content" value="2">面板 3：确认订单</div>
-        <div data-xh-part="content" value="3">全部完成。</div>
-      </div>
-    </xh-steps>
-  </div>
-  <div>
-    <div style="margin-block-end: 8px; font-size: 12px">danger</div>
-    <xh-steps tone="danger" count="3" default-value="1">
-      <div data-xh-part="root" style="inline-size: 100%">
-        <div data-xh-part="list">
-          <div data-xh-part="item" value="0">
-            <button data-xh-part="trigger">
-              <span data-xh-part="indicator"></span>
-              <span data-xh-part="title">填写地址</span>
-              <span data-xh-part="description">收货人与联系方式</span>
-            </button>
-            <div data-xh-part="separator"></div>
-          </div>
-          <div data-xh-part="item" value="1">
-            <button data-xh-part="trigger">
-              <span data-xh-part="indicator">2</span>
-              <span data-xh-part="title">选择支付</span>
-              <span data-xh-part="description">支付方式与优惠</span>
-            </button>
-            <div data-xh-part="separator"></div>
-          </div>
-          <div data-xh-part="item" value="2">
-            <button data-xh-part="trigger">
-              <span data-xh-part="indicator">3</span>
-              <span data-xh-part="title">确认订单</span>
-              <span data-xh-part="description">核对金额</span>
-            </button>
-            <div data-xh-part="separator"></div>
-          </div>
-        </div>
-
-        <div data-xh-part="content" value="0">面板 1：填写地址</div>
-        <div data-xh-part="content" value="1">面板 2：选择支付</div>
-        <div data-xh-part="content" value="2">面板 3：确认订单</div>
-        <div data-xh-part="content" value="3">全部完成。</div>
-      </div>
-    </xh-steps>
-  </div>
-  <div>
-    <div style="margin-block-end: 8px; font-size: 12px">info</div>
-    <xh-steps tone="info" count="3" default-value="1">
-      <div data-xh-part="root" style="inline-size: 100%">
-        <div data-xh-part="list">
-          <div data-xh-part="item" value="0">
-            <button data-xh-part="trigger">
-              <span data-xh-part="indicator"></span>
-              <span data-xh-part="title">填写地址</span>
-              <span data-xh-part="description">收货人与联系方式</span>
-            </button>
-            <div data-xh-part="separator"></div>
-          </div>
-          <div data-xh-part="item" value="1">
-            <button data-xh-part="trigger">
-              <span data-xh-part="indicator">2</span>
-              <span data-xh-part="title">选择支付</span>
-              <span data-xh-part="description">支付方式与优惠</span>
-            </button>
-            <div data-xh-part="separator"></div>
-          </div>
-          <div data-xh-part="item" value="2">
-            <button data-xh-part="trigger">
-              <span data-xh-part="indicator">3</span>
-              <span data-xh-part="title">确认订单</span>
-              <span data-xh-part="description">核对金额</span>
-            </button>
-            <div data-xh-part="separator"></div>
-          </div>
-        </div>
-
-        <div data-xh-part="content" value="0">面板 1：填写地址</div>
-        <div data-xh-part="content" value="1">面板 2：选择支付</div>
-        <div data-xh-part="content" value="2">面板 3：确认订单</div>
-        <div data-xh-part="content" value="3">全部完成。</div>
-      </div>
-    </xh-steps>
-  </div>
-</div>
-```
-
-### 尺寸
-
-size 换序号圆点的直径与标题、说明的字号，不传 size 即默认档
-
-```vue
-<script setup lang="ts">
-import {
-  XhStepsContent,
-  XhStepsDescription,
-  XhStepsIndicator,
-  XhStepsItem,
-  XhStepsList,
-  XhStepsRoot,
-  XhStepsSeparator,
-  XhStepsTitle,
-  XhStepsTrigger,
-} from "@xihan-ui/vue";
-
-// 中间一档不写 size，用 undefined 表达
-const sizes = [
-  { size: "sm", label: "小" },
-  { size: undefined, label: "默认" },
-  { size: "lg", label: "大" },
-] as const;
-const steps = [
-  { title: "填写地址", description: "收货人与联系方式" },
-  { title: "选择支付", description: "支付方式与优惠" },
-  { title: "确认订单", description: "核对金额" },
-];
-</script>
-
-<template>
-  <div style="display: flex; flex-direction: column; gap: 24px; inline-size: 100%">
-    <div v-for="s in sizes" :key="s.label">
-      <div style="margin-block-end: 8px; font-size: 12px">{{ s.label }}</div>
-      <XhStepsRoot
-        :size="s.size"
-        :count="steps.length"
-        :default-value="1"
-        style="inline-size: 100%"
-      >
-        <XhStepsList>
-          <XhStepsItem v-for="(item, i) in steps" :key="item.title" :value="i">
-            <XhStepsTrigger>
-              <XhStepsIndicator>{{ i === 0 ? "" : i + 1 }}</XhStepsIndicator>
-              <XhStepsTitle>{{ item.title }}</XhStepsTitle>
-              <XhStepsDescription>{{ item.description }}</XhStepsDescription>
-            </XhStepsTrigger>
-            <XhStepsSeparator />
-          </XhStepsItem>
-        </XhStepsList>
-
-        <XhStepsContent v-for="(item, i) in steps" :key="item.title" :value="i">
-          面板 {{ i + 1 }}：{{ item.title }}
-        </XhStepsContent>
-        <XhStepsContent :value="steps.length">全部完成。</XhStepsContent>
-      </XhStepsRoot>
-    </div>
-  </div>
-</template>
-```
-
-```html
-<div style="display: flex; flex-direction: column; gap: 24px; inline-size: 100%">
-  <div>
-    <div style="margin-block-end: 8px; font-size: 12px">小</div>
-    <xh-steps size="sm" count="3" default-value="1">
-      <div data-xh-part="root" style="inline-size: 100%">
-        <div data-xh-part="list">
-          <div data-xh-part="item" value="0">
-            <button data-xh-part="trigger">
-              <span data-xh-part="indicator"></span>
-              <span data-xh-part="title">填写地址</span>
-              <span data-xh-part="description">收货人与联系方式</span>
-            </button>
-            <div data-xh-part="separator"></div>
-          </div>
-          <div data-xh-part="item" value="1">
-            <button data-xh-part="trigger">
-              <span data-xh-part="indicator">2</span>
-              <span data-xh-part="title">选择支付</span>
-              <span data-xh-part="description">支付方式与优惠</span>
-            </button>
-            <div data-xh-part="separator"></div>
-          </div>
-          <div data-xh-part="item" value="2">
-            <button data-xh-part="trigger">
-              <span data-xh-part="indicator">3</span>
-              <span data-xh-part="title">确认订单</span>
-              <span data-xh-part="description">核对金额</span>
-            </button>
-            <div data-xh-part="separator"></div>
-          </div>
-        </div>
-
-        <div data-xh-part="content" value="0">面板 1：填写地址</div>
-        <div data-xh-part="content" value="1">面板 2：选择支付</div>
-        <div data-xh-part="content" value="2">面板 3：确认订单</div>
-        <div data-xh-part="content" value="3">全部完成。</div>
-      </div>
-    </xh-steps>
-  </div>
-  <!-- 中间一档不写 size -->
-  <div>
-    <div style="margin-block-end: 8px; font-size: 12px">默认</div>
-    <xh-steps count="3" default-value="1">
-      <div data-xh-part="root" style="inline-size: 100%">
-        <div data-xh-part="list">
-          <div data-xh-part="item" value="0">
-            <button data-xh-part="trigger">
-              <span data-xh-part="indicator"></span>
-              <span data-xh-part="title">填写地址</span>
-              <span data-xh-part="description">收货人与联系方式</span>
-            </button>
-            <div data-xh-part="separator"></div>
-          </div>
-          <div data-xh-part="item" value="1">
-            <button data-xh-part="trigger">
-              <span data-xh-part="indicator">2</span>
-              <span data-xh-part="title">选择支付</span>
-              <span data-xh-part="description">支付方式与优惠</span>
-            </button>
-            <div data-xh-part="separator"></div>
-          </div>
-          <div data-xh-part="item" value="2">
-            <button data-xh-part="trigger">
-              <span data-xh-part="indicator">3</span>
-              <span data-xh-part="title">确认订单</span>
-              <span data-xh-part="description">核对金额</span>
-            </button>
-            <div data-xh-part="separator"></div>
-          </div>
-        </div>
-
-        <div data-xh-part="content" value="0">面板 1：填写地址</div>
-        <div data-xh-part="content" value="1">面板 2：选择支付</div>
-        <div data-xh-part="content" value="2">面板 3：确认订单</div>
-        <div data-xh-part="content" value="3">全部完成。</div>
-      </div>
-    </xh-steps>
-  </div>
-  <div>
-    <div style="margin-block-end: 8px; font-size: 12px">大</div>
-    <xh-steps size="lg" count="3" default-value="1">
-      <div data-xh-part="root" style="inline-size: 100%">
-        <div data-xh-part="list">
-          <div data-xh-part="item" value="0">
-            <button data-xh-part="trigger">
-              <span data-xh-part="indicator"></span>
-              <span data-xh-part="title">填写地址</span>
-              <span data-xh-part="description">收货人与联系方式</span>
-            </button>
-            <div data-xh-part="separator"></div>
-          </div>
-          <div data-xh-part="item" value="1">
-            <button data-xh-part="trigger">
-              <span data-xh-part="indicator">2</span>
-              <span data-xh-part="title">选择支付</span>
-              <span data-xh-part="description">支付方式与优惠</span>
-            </button>
-            <div data-xh-part="separator"></div>
-          </div>
-          <div data-xh-part="item" value="2">
-            <button data-xh-part="trigger">
-              <span data-xh-part="indicator">3</span>
-              <span data-xh-part="title">确认订单</span>
-              <span data-xh-part="description">核对金额</span>
-            </button>
-            <div data-xh-part="separator"></div>
-          </div>
-        </div>
-
-        <div data-xh-part="content" value="0">面板 1：填写地址</div>
-        <div data-xh-part="content" value="1">面板 2：选择支付</div>
-        <div data-xh-part="content" value="2">面板 3：确认订单</div>
-        <div data-xh-part="content" value="3">全部完成。</div>
-      </div>
-    </xh-steps>
-  </div>
-</div>
-```
-
-### 点击切步与禁用某步
-
-点标签直接切到那一步；单步标了 disabled 就点不动，方向键也跳过它
-
-```vue
-<script setup lang="ts">
-import {
-  XhStepsContent,
-  XhStepsIndicator,
-  XhStepsItem,
-  XhStepsList,
-  XhStepsRoot,
-  XhStepsSeparator,
-  XhStepsTitle,
-  XhStepsTrigger,
-} from "@xihan-ui/vue";
-import { ref } from "vue";
-
-const steps = [
-  { title: "选择商品", disabled: false },
-  { title: "确认订单", disabled: false },
-  { title: "在线支付", disabled: true },
-  { title: "等待发货", disabled: false },
-];
-const current = ref(0);
-</script>
-
-<template>
-  <div style="display: flex; flex-direction: column; gap: 12px; inline-size: 100%">
-    <XhStepsRoot v-model:value="current" :count="steps.length">
-      <XhStepsList>
-        <XhStepsItem
-          v-for="(s, i) in steps"
-          :key="s.title"
-          :value="i"
-          :disabled="s.disabled"
-        >
-          <XhStepsTrigger>
-            <XhStepsIndicator>{{ current > i ? "" : i + 1 }}</XhStepsIndicator>
-            <XhStepsTitle>{{ s.title }}</XhStepsTitle>
-          </XhStepsTrigger>
-          <XhStepsSeparator />
-        </XhStepsItem>
-      </XhStepsList>
-
-      <XhStepsContent v-for="(s, i) in steps" :key="s.title" :value="i">
-        面板 {{ i + 1 }}：{{ s.title }}
-      </XhStepsContent>
-      <XhStepsContent :value="steps.length">全部完成。</XhStepsContent>
-    </XhStepsRoot>
-
-    <span>当前 value：{{ current }}（第三步禁用，点它没有反应）</span>
-  </div>
-</template>
-```
-
-```html
-<div style="display: flex; flex-direction: column; gap: 12px; inline-size: 100%">
-  <xh-steps id="steps-click" value="0" count="4">
-    <div data-xh-part="root">
-      <div data-xh-part="list">
-        <div data-xh-part="item" value="0">
-          <button data-xh-part="trigger">
-            <span data-xh-part="indicator">1</span>
-            <span data-xh-part="title">选择商品</span>
-          </button>
-          <div data-xh-part="separator"></div>
-        </div>
-        <div data-xh-part="item" value="1">
-          <button data-xh-part="trigger">
-            <span data-xh-part="indicator">2</span>
-            <span data-xh-part="title">确认订单</span>
-          </button>
-          <div data-xh-part="separator"></div>
-        </div>
-        <div data-xh-part="item" value="2" aria-disabled="true">
-          <button data-xh-part="trigger">
-            <span data-xh-part="indicator">3</span>
-            <span data-xh-part="title">在线支付</span>
-          </button>
-          <div data-xh-part="separator"></div>
-        </div>
-        <div data-xh-part="item" value="3">
-          <button data-xh-part="trigger">
-            <span data-xh-part="indicator">4</span>
-            <span data-xh-part="title">等待发货</span>
-          </button>
-          <div data-xh-part="separator"></div>
-        </div>
-      </div>
-
-      <div data-xh-part="content" value="0">面板 1：选择商品</div>
-      <div data-xh-part="content" value="1">面板 2：确认订单</div>
-      <div data-xh-part="content" value="2">面板 3：在线支付</div>
-      <div data-xh-part="content" value="3">面板 4：等待发货</div>
-      <div data-xh-part="content" value="4">全部完成。</div>
-    </div>
-  </xh-steps>
-
-  <span>当前 value：<span id="steps-click-value">0</span>（第三步禁用，点它没有反应）</span>
-</div>
 
 <script type="module">
-  // 步序只在这里写，圆点里的对勾与序号跟着它走
-  const steps = document.getElementById("steps-click");
-  const readout = document.getElementById("steps-click-value");
-  const indicators = [...steps.querySelectorAll('[data-xh-part="indicator"]')];
+  const host = document.getElementById("steps-vertical");
+  const indicators = [...host.querySelectorAll('[data-xh-part="indicator"]')];
 
-  steps.addEventListener("value-change", (event) => {
-    const next = event.detail.value;
-    steps.value = next;
-    readout.textContent = String(next);
+  host.addEventListener("value-change", (event) => {
     indicators.forEach((indicator, index) => {
-      indicator.textContent = next > index ? "" : String(index + 1);
+      indicator.textContent = event.detail.value > index ? "" : String(index + 1);
     });
   });
 </script>
 ```
 
-### 出错的那一步
+### 错误状态
 
-步序只认下标，「这一步出错了」是宿主自己的数据：在那一步的 item 上换掉标记与颜色令牌
+标记需要用户处理的步骤
 
 ```vue
 <script setup lang="ts">
 import {
-  XhButton,
+  XhStepsContent,
   XhStepsDescription,
   XhStepsIndicator,
   XhStepsItem,
@@ -1103,7 +330,6 @@ import {
   XhStepsTitle,
   XhStepsTrigger,
 } from "@xihan-ui/vue";
-import { ref } from "vue";
 
 const steps = [
   { title: "提交材料", description: "已通过" },
@@ -1111,132 +337,82 @@ const steps = [
   { title: "签署合同", description: "等待中" },
 ];
 
-// 出错的那一步
 const errorAt = 1;
-
-// 当前档与已走过档一起换成危险色，写在 item 上，序号、标题与连接线都从这里继承
-const errorTokens = {
-  "--xh-steps-indicator-border-current": "var(--xh-fg-danger)",
-  "--xh-steps-indicator-fg-current": "var(--xh-fg-danger)",
-  "--xh-steps-indicator-border-completed": "var(--xh-fg-danger)",
-  "--xh-steps-indicator-bg-completed": "var(--xh-fg-danger)",
-  "--xh-steps-title-fg-active": "var(--xh-fg-danger)",
-  "--xh-steps-separator-bg-completed": "var(--xh-fg-danger)",
-};
-
-const current = ref(1);
 </script>
 
 <template>
-  <div style="display: flex; flex-direction: column; gap: 12px; inline-size: 100%">
-    <XhStepsRoot v-model:value="current" :count="steps.length">
-      <XhStepsList>
-        <XhStepsItem
-          v-for="(s, i) in steps"
-          :key="s.title"
-          :value="i"
-          :style="i === errorAt ? errorTokens : undefined"
-        >
-          <XhStepsTrigger>
-            <XhStepsIndicator>
-              {{ i === errorAt ? "!" : current > i ? "" : i + 1 }}
-            </XhStepsIndicator>
-            <XhStepsTitle>{{ s.title }}</XhStepsTitle>
-            <XhStepsDescription>{{ s.description }}</XhStepsDescription>
-          </XhStepsTrigger>
-          <XhStepsSeparator />
-        </XhStepsItem>
-      </XhStepsList>
-    </XhStepsRoot>
+  <XhStepsRoot v-slot="{ value }" :count="steps.length" :default-value="1" :statuses="{ [errorAt]: 'error' }">
+    <XhStepsList>
+      <XhStepsItem v-for="(s, i) in steps" :key="s.title" :value="i">
+        <XhStepsTrigger>
+          <XhStepsIndicator>
+            {{ i === errorAt ? "!" : value > i ? "" : i + 1 }}
+          </XhStepsIndicator>
+          <XhStepsTitle>{{ s.title }}</XhStepsTitle>
+          <XhStepsDescription>{{ s.description }}</XhStepsDescription>
+        </XhStepsTrigger>
+        <XhStepsSeparator />
+      </XhStepsItem>
+    </XhStepsList>
 
-    <div style="display: flex; align-items: center; gap: 8px">
-      <XhButton size="sm" variant="outline" @click="current = 2">
-        走到第三步
-      </XhButton>
-      <XhButton size="sm" variant="outline" @click="current = 1">
-        退回第二步
-      </XhButton>
-      <span>第二步无论是当前步还是已走过，都停在危险色上</span>
-    </div>
-  </div>
+    <XhStepsContent :value="0">材料已提交。</XhStepsContent>
+    <XhStepsContent :value="1">请补充营业执照副本。</XhStepsContent>
+    <XhStepsContent :value="2">等待签署合同。</XhStepsContent>
+    <XhStepsContent :value="steps.length">流程已完成。</XhStepsContent>
+  </XhStepsRoot>
 </template>
 ```
 
 ```html
-<div style="display: flex; flex-direction: column; gap: 12px; inline-size: 100%">
-  <xh-steps id="steps-error" value="1" count="3">
-    <div data-xh-part="root">
-      <div data-xh-part="list">
-        <div data-xh-part="item" value="0">
-          <button data-xh-part="trigger">
-            <span data-xh-part="indicator"></span>
-            <span data-xh-part="title">提交材料</span>
-            <span data-xh-part="description">已通过</span>
-          </button>
-          <div data-xh-part="separator"></div>
-        </div>
-        <!-- 当前档与已走过档一起换成危险色，写在 item 上，序号、标题与连接线都从这里继承 -->
-        <div
-          data-xh-part="item"
-          value="1"
-          style="
-            --xh-steps-indicator-border-current: var(--xh-fg-danger);
-            --xh-steps-indicator-fg-current: var(--xh-fg-danger);
-            --xh-steps-indicator-border-completed: var(--xh-fg-danger);
-            --xh-steps-indicator-bg-completed: var(--xh-fg-danger);
-            --xh-steps-title-fg-active: var(--xh-fg-danger);
-            --xh-steps-separator-bg-completed: var(--xh-fg-danger);
-          "
-        >
-          <button data-xh-part="trigger">
-            <span data-xh-part="indicator">!</span>
-            <span data-xh-part="title">资质审核</span>
-            <span data-xh-part="description">材料不齐，被打回</span>
-          </button>
-          <div data-xh-part="separator"></div>
-        </div>
-        <div data-xh-part="item" value="2">
-          <button data-xh-part="trigger">
-            <span data-xh-part="indicator">3</span>
-            <span data-xh-part="title">签署合同</span>
-            <span data-xh-part="description">等待中</span>
-          </button>
-          <div data-xh-part="separator"></div>
-        </div>
+<xh-steps id="steps-error" count="3" default-value="1">
+  <div data-xh-part="root">
+    <div data-xh-part="list">
+      <div data-xh-part="item" value="0">
+        <button data-xh-part="trigger">
+          <span data-xh-part="indicator"></span>
+          <span data-xh-part="title">提交材料</span>
+          <span data-xh-part="description">已通过</span>
+        </button>
+        <div data-xh-part="separator"></div>
+      </div>
+      <div data-xh-part="item" value="1">
+        <button data-xh-part="trigger">
+          <span data-xh-part="indicator">!</span>
+          <span data-xh-part="title">资质审核</span>
+          <span data-xh-part="description">材料不齐，被打回</span>
+        </button>
+        <div data-xh-part="separator"></div>
+      </div>
+      <div data-xh-part="item" value="2">
+        <button data-xh-part="trigger">
+          <span data-xh-part="indicator">3</span>
+          <span data-xh-part="title">签署合同</span>
+          <span data-xh-part="description">等待中</span>
+        </button>
+        <div data-xh-part="separator"></div>
       </div>
     </div>
-  </xh-steps>
 
-  <div style="display: flex; align-items: center; gap: 8px">
-    <xh-button id="steps-error-third" size="sm" variant="outline">
-      <button data-xh-part="root">走到第三步</button>
-    </xh-button>
-    <xh-button id="steps-error-second" size="sm" variant="outline">
-      <button data-xh-part="root">退回第二步</button>
-    </xh-button>
-    <span>第二步无论是当前步还是已走过，都停在危险色上</span>
+    <div data-xh-part="content" value="0">材料已提交。</div>
+    <div data-xh-part="content" value="1">请补充营业执照副本。</div>
+    <div data-xh-part="content" value="2">等待签署合同。</div>
+    <div data-xh-part="content" value="3">流程已完成。</div>
   </div>
-</div>
+</xh-steps>
 
 <script type="module">
-  // 步序只在这里写；出错那一步的标记固定是感叹号，其余跟着步序走
+  const host = document.getElementById("steps-error");
   const errorAt = 1;
-  const steps = document.getElementById("steps-error");
-  const third = document.getElementById("steps-error-third");
-  const second = document.getElementById("steps-error-second");
-  const indicators = [...steps.querySelectorAll('[data-xh-part="indicator"]')];
+  const indicators = [...host.querySelectorAll('[data-xh-part="indicator"]')];
 
-  function setValue(next) {
-    steps.value = next;
+  host.statuses = { [errorAt]: "error" };
+  host.addEventListener("value-change", (event) => {
     indicators.forEach((indicator, index) => {
-      indicator.textContent =
-        index === errorAt ? "!" : next > index ? "" : String(index + 1);
+      indicator.textContent = index === errorAt
+        ? "!"
+        : event.detail.value > index ? "" : String(index + 1);
     });
-  }
-
-  steps.addEventListener("value-change", (event) => setValue(event.detail.value));
-  third.addEventListener("click", () => setValue(2));
-  second.addEventListener("click", () => setValue(1));
+  });
 </script>
 ```
 
@@ -1244,22 +420,39 @@ const current = ref(1);
 
 ### 何时使用
 
-- 多步表单、开通流程、安装向导，步数固定且顺序明确。
-- 需要让用户看见"还剩几步"。
+- 多步表单、开通流程或安装向导。
+- 流程步骤固定且顺序明确。
 
 ### 何时不用
 
-- 各段之间没有先后、可以随便切：那是[标签页](./tabs)。
-- 展示已经发生的事件序列：用[时间线](./timeline)。
+- 可自由切换的并列内容，使用[标签页](./tabs)。
+- 已发生的事件记录，使用[时间线](./timeline)。
 
 ### 特性
 
-- `count` 是步序的上界，也是读屏"第 k 步，共 n 步"的分母。
-- `linear` 只拦界面上的乱跳（未解锁的入口一律禁用），逐步前进的方法照常可用。
-- 方向键只搬焦点，按 Enter 或空格才切步。
-- "这一步出错了"是宿主自己的数据：在那一步上换掉标记与颜色令牌即可。
+- 支持水平与垂直布局。
+- 已完成、当前、未完成、错误与警告状态清晰区分。
+- `linear` 限制用户跳到尚未完成的步骤。
+- 方向键移动焦点，Enter 或空格切换步骤。
 
-## 产物
+### 组合
+
+- 与[表单](./form)组合实现分步填写。
+- 使用 `content` 展示当前步骤内容。
+
+### 最佳实践
+
+- 步数建议控制在三到五步。
+- 标题描述任务，不使用“第一步”之类的编号文本。
+
+### 反模式
+
+- 不要在流程进行中改变步骤总数。
+- 不要用步骤条表示连续百分比进度。
+
+## API 参考
+
+### 产物
 
 | 层 | 值 |
 | --- | --- |
@@ -1269,13 +462,7 @@ const current = ref(1);
 | 状态机 | `stepsMachine` |
 | 皮肤 | `@xihan-ui/styles/steps.css` |
 
-## 解剖
-
-部件名即 `data-part` 属性值，也是皮肤的选择器。加粗的是必备部件，不渲染它组件不工作（Web Components 适配器会在诊断通道上报 `wc.missing-part`）。
-
-`data-scope="steps"`：**`root`** · **`list`** · **`item`** · **`trigger`** · `indicator` · `title` · `description` · `separator` · `content`
-
-## Props
+### Props
 
 | 属性 | 类型 | 必填 | 说明 |
 | --- | --- | --- | --- |
@@ -1294,25 +481,25 @@ const current = ref(1);
 | `size` | `Size` |  | 尺寸：sm / md / lg。 |
 | `onValueChange` | `(details: StepsValueChangeDetails) => void` |  | 步序变化意图回调；受控时是唯一出口，非受控随内部写入一并通知。 |
 
-## 事件
+### 事件
 
-自定义元素派发这些事件，Vue 组件对应同名 emit；载荷都在 `detail` 上。可双向绑定的值另有 `update:xxx`，见 Props。
+自定义元素将载荷放在 `detail`；Vue 使用同名 emit。
 
 | 事件 | 载荷 | 说明 |
 | --- | --- | --- |
 | `value-change` | `StepsValueChangeDetails` | 步序变化；detail 为 `{ value: number }` |
 
-## 插槽
+### 插槽
 
-作者能拿到载荷的插槽。只转发内容、不带载荷的默认插槽不在此列——那类直接写子节点即可。
+仅列出带载荷的插槽。
 
 | Vue 组件 | 插槽 | 载荷 | 说明 |
 | --- | --- | --- | --- |
 | `XhStepsRoot` | `default` | `StepsRootSlotProps` |  |
 
-## 状态
+### 状态
 
-对外可见的状态落在 `data-state` 上，写样式与断言都读它：
+公开状态写入 `data-state`。
 
 | 部件 | 取值 |
 | --- | --- |
@@ -1324,15 +511,15 @@ const current = ref(1);
 | `separator` | getItemState(item).status |
 | `content` | getItemState(item).status |
 
-状态机内部转移，写样式与业务都用不到；要监听变化请看上面的「事件」。
+以下名称仅用于内部状态机。
 
 **状态**：`idle`
 
 **事件**：`VALUE.SET` · `STEP.PREV` · `STEP.NEXT` · `TRIGGER.FOCUS` · `LIST.BLUR`
 
-## connect API
+### connect API
 
-`useSteps` 产出的对象。`getXxxProps()` 铺到对应部件的宿主元素上，其余是可读状态与操作入口。
+`getXxxProps()` 返回对应部件的宿主属性。
 
 | 成员 | 类型 | 说明 |
 | --- | --- | --- |
@@ -1355,7 +542,9 @@ const current = ref(1);
 | `getSeparatorProps` | `(props: StepsItemProps) => T['element']` |  |
 | `getContentProps` | `(props: StepsItemProps) => T['element']` | 面板按 index 与当前步配对；未命中的常挂并带 hidden。 |
 
-## 键盘
+## 无障碍
+
+### 键盘
 
 规格出处：[W3C APG](https://www.w3.org/WAI/ARIA/apg/patterns/tabs/#keyboardinteraction)
 
@@ -1368,9 +557,9 @@ const current = ref(1);
 | `Enter` / `Space` | focus in trigger, 未禁用且已解锁 | 把当前步切到焦点所在的那一步 |
 | `Tab` / `Shift+Tab` | focus in list | 整组只有锚点 trigger 留在 Tab 序列内，一次 Tab 进出；无锚点时由 list 兜底 |
 
-## 无障碍
+### ARIA
 
-下面这些由 `connect` 铺到部件上，作者不必自己写；重复写反而会覆盖掉正确值。
+以下属性由 `connect` 生成。
 
 | 部件 | 属性 | 值 |
 | --- | --- | --- |
@@ -1390,15 +579,17 @@ const current = ref(1);
 | `content` | `aria-labelledby` | `trigger` 部件的 id |
 | `content` | `role` | 'tabpanel' |
 
-## 样式
+## 样式参考
 
-默认皮肤 `@xihan-ui/styles/steps.css` 按部件选择：`[data-scope="steps"][data-part="root"]`。它落在 `xihan.components` 层；业务样式不写进 `@layer` 即高于全部库层，要按层压过来就写进 `xihan.overrides`。
+### 皮肤
+
+`@xihan-ui/styles/steps.css` 使用 `[data-scope="steps"][data-part="root"]` 部件选择器，位于 `xihan.components` 层。覆盖样式使用 `xihan.overrides`。
 
 `forced-colors: active` 下另有一套规则：颜色交给系统，边框与状态标记改用系统色关键字。
 
-## 数据属性
+### 数据属性
 
-由 `connect` 产出并铺到部件上，皮肤与测试都据此选择；`data-disabled` 这类无值属性在条件不成立时整个不出现。
+由 `connect` 生成；条件不成立时不输出无值属性。
 
 | 部件 | 属性 | 值 |
 | --- | --- | --- |
@@ -1422,7 +613,7 @@ const current = ref(1);
 | `content` | `data-state` | getItemState(item).status |
 
 <!-- xh-component-tokens:start -->
-## CSS 变量
+### CSS 变量
 
 本组件公开覆盖槽由独立皮肤的实际消费位生成；缺省来源、作用部件和状态均与 CSS 同源。
 
@@ -1473,26 +664,12 @@ const current = ref(1);
 | `--xh-steps-trigger-radius` | `trigger` | `border-radius` | `default` | `--xh-shape-control` | steps 的 trigger 部件 border-radius 覆盖槽。 |
 <!-- xh-component-tokens:end -->
 
-## 动效
+### 动效
 
 `background` · `border-color` · `box-shadow` · `color` 走 `transition` 过渡。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
 
 系统开启减弱动效时由令牌层统一收敛，皮肤不另作判断。
 
-## RTL
+### RTL
 
 皮肤用逻辑属性排布（`inline-start` 一族），`dir="rtl"` 下自动镜像。
-
-## 组合
-
-- 与[表单](./form)配合做分步表单；每步的内容放进 `content` 部件。
-
-## 最佳实践
-
-- 步数控制在三到五步，多了就把相邻两步合并。
-- 每步的标题写用户要做的事，不写"第一步"。
-
-## 反模式
-
-- 步数会变：用户刚看到"共 3 步"，走到一半变成 5 步。
-- 用它表达进度百分比：那是[进度条](./progress)。

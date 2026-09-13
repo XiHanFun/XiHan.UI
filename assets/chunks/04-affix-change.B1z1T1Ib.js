@@ -1,0 +1,44 @@
+const n=`<!-- 吸附状态 | 根据当前状态更新内容 -->
+<div style="display: grid; gap: 12px; inline-size: min(420px, 100%)">
+  <div
+    id="affix-change-scroll"
+    style="
+      block-size: 220px;
+      overflow: auto;
+      padding: 12px;
+      border-radius: var(--xh-shape-surface);
+      background: var(--xh-bg-subtle);
+    "
+  >
+    <div style="block-size: 120px"></div>
+
+    <template id="affix-change-tpl">
+      <xh-affix style="display: block">
+        <div data-xh-part="root">
+          <div
+            data-xh-part="content"
+            style="padding: 8px 12px; border-radius: var(--xh-shape-control); background: var(--xh-bg-surface-raised)"
+          >
+            工具栏
+          </div>
+        </div>
+      </xh-affix>
+    </template>
+
+    <div style="block-size: 600px"></div>
+  </div>
+</div>
+
+<script type="module">
+  const template = document.getElementById("affix-change-tpl");
+  const affix = template.content.firstElementChild;
+  const content = affix.querySelector('[data-xh-part="content"]');
+  affix.target = document.getElementById("affix-change-scroll");
+  template.replaceWith(affix);
+
+  affix.addEventListener("affix-change", (event) => {
+    const { affixed } = event.detail;
+    content.textContent = affixed ? "已固定" : "工具栏";
+  });
+<\/script>
+`;export{n as default};

@@ -1,0 +1,5 @@
+const t=`<!-- 尺寸 | 使用小、中、大三档尺寸 -->
+<xh-float-button size="sm"><div data-xh-part="root" style="position: static"><button data-xh-part="trigger"></button><div data-xh-part="list"></div></div></xh-float-button>
+<xh-float-button size="md"><div data-xh-part="root" style="position: static"><button data-xh-part="trigger"></button><div data-xh-part="list"></div></div></xh-float-button>
+<xh-float-button size="lg"><div data-xh-part="root" style="position: static"><button data-xh-part="trigger"></button><div data-xh-part="list"></div></div></xh-float-button>
+`;export{t as default};

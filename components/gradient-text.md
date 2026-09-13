@@ -1,8 +1,8 @@
 来源：https://ui.docs.xihanfun.com/components/gradient-text
 
-# GradientText `渐变文字`
+# GradientText 渐变文字
 
-把渐变裁进字形里：颜色只出现在笔画上，不铺成一块底色。
+用于为短文本添加渐变色强调。
 
 <div class="xh-resource-links">
   <a href="https://github.com/XiHanFun/XiHan.UI/tree/dev/ui/packages/engine/headless/src/gradient-text" target="_blank" rel="noreferrer">Headless</a>
@@ -14,7 +14,7 @@
 
 ## 用法
 
-渐变裁进字形里；不给颜色就用品牌色族，走向缺省从左到右
+使用默认品牌渐变
 
 ```vue
 <script setup lang="ts">
@@ -36,138 +36,83 @@ import { XhGradientText } from "@xihan-ui/vue";
 </p>
 ```
 
+## 组件结构
+
+加粗的是必需部件。
+
+`data-scope="gradient-text"`：**`root`**
+
 ## 示例
 
-### 两端颜色
+### 自定义颜色
 
-from 与 to 收颜色值，落成根上的 CSS 变量；写令牌或写具体色值都行
+设置渐变两端颜色
 
 ```vue
 <script setup lang="ts">
 import { XhGradientText } from "@xihan-ui/vue";
 
-const pairs = [
-  { from: "#ff5500", to: "#ff0088" },
-  { from: "#00b8d9", to: "#6554c0" },
-  { from: "var(--xh-color-success-500)", to: "var(--xh-color-info-600)" },
+const gradients = [
+  { label: "日落橙", from: "#f97316", to: "#ec4899" },
+  { label: "极光紫", from: "#8b5cf6", to: "#06b6d4" },
+  { label: "海洋蓝", from: "#0ea5e9", to: "#2563eb" },
 ] as const;
 </script>
 
 <template>
   <div style="display: flex; flex-direction: column; gap: 12px; font-size: 28px; font-weight: 700">
-    <p v-for="p in pairs" :key="p.from">
-      <XhGradientText :from="p.from" :to="p.to">从 {{ p.from }} 渐到 {{ p.to }}</XhGradientText>
-    </p>
+    <XhGradientText v-for="gradient in gradients" :key="gradient.label" :from="gradient.from" :to="gradient.to">
+      {{ gradient.label }}
+    </XhGradientText>
   </div>
 </template>
 ```
 
 ```html
-<div
-  style="display: flex; flex-direction: column; gap: 12px; font-size: 28px; font-weight: 700"
->
-  <p>
-    <xh-gradient-text from="#ff5500" to="#ff0088">
-      <span data-xh-part="root">从 #ff5500 渐到 #ff0088</span>
-    </xh-gradient-text>
-  </p>
-  <p>
-    <xh-gradient-text from="#00b8d9" to="#6554c0">
-      <span data-xh-part="root">从 #00b8d9 渐到 #6554c0</span>
-    </xh-gradient-text>
-  </p>
-  <p>
-    <xh-gradient-text
-      from="var(--xh-color-success-500)"
-      to="var(--xh-color-info-600)"
-    >
-      <span data-xh-part="root">
-        从 var(--xh-color-success-500) 渐到 var(--xh-color-info-600)
-      </span>
-    </xh-gradient-text>
-  </p>
+<div style="display: flex; flex-direction: column; gap: 12px; font-size: 28px; font-weight: 700">
+  <xh-gradient-text from="#f97316" to="#ec4899"><span data-xh-part="root">日落橙</span></xh-gradient-text>
+  <xh-gradient-text from="#8b5cf6" to="#06b6d4"><span data-xh-part="root">极光紫</span></xh-gradient-text>
+  <xh-gradient-text from="#0ea5e9" to="#2563eb"><span data-xh-part="root">海洋蓝</span></xh-gradient-text>
 </div>
 ```
 
-### 走向
+### 方向
 
-direction 收的是档位，四条边加四个角共八档，逐档对应 CSS 渐变的 to 边或角写法；不收任意角度
+设置渐变方向
 
 ```vue
 <script setup lang="ts">
 import { XhGradientText } from "@xihan-ui/vue";
 
 const directions = [
-  "to-right",
-  "to-left",
-  "to-bottom",
-  "to-top",
-  "to-bottom-right",
-  "to-bottom-left",
-  "to-top-right",
-  "to-top-left",
+  { label: "向右", value: "to-right" },
+  { label: "向下", value: "to-bottom" },
+  { label: "右下", value: "to-bottom-right" },
+  { label: "右上", value: "to-top-right" },
 ] as const;
 </script>
 
 <template>
   <div style="display: flex; flex-wrap: wrap; gap: 20px; font-size: 24px; font-weight: 700">
-    <span v-for="d in directions" :key="d">
-      <XhGradientText :direction="d" from="#ff5500" to="#0055ff">{{ d }}</XhGradientText>
-    </span>
+    <XhGradientText v-for="direction in directions" :key="direction.value" :direction="direction.value" from="#f97316" to="#2563eb">
+      {{ direction.label }}
+    </XhGradientText>
   </div>
 </template>
 ```
 
 ```html
-<div
-  style="display: flex; flex-wrap: wrap; gap: 20px; font-size: 24px; font-weight: 700"
->
-  <span>
-    <xh-gradient-text direction="to-right" from="#ff5500" to="#0055ff">
-      <span data-xh-part="root">to-right</span>
-    </xh-gradient-text>
-  </span>
-  <span>
-    <xh-gradient-text direction="to-left" from="#ff5500" to="#0055ff">
-      <span data-xh-part="root">to-left</span>
-    </xh-gradient-text>
-  </span>
-  <span>
-    <xh-gradient-text direction="to-bottom" from="#ff5500" to="#0055ff">
-      <span data-xh-part="root">to-bottom</span>
-    </xh-gradient-text>
-  </span>
-  <span>
-    <xh-gradient-text direction="to-top" from="#ff5500" to="#0055ff">
-      <span data-xh-part="root">to-top</span>
-    </xh-gradient-text>
-  </span>
-  <span>
-    <xh-gradient-text direction="to-bottom-right" from="#ff5500" to="#0055ff">
-      <span data-xh-part="root">to-bottom-right</span>
-    </xh-gradient-text>
-  </span>
-  <span>
-    <xh-gradient-text direction="to-bottom-left" from="#ff5500" to="#0055ff">
-      <span data-xh-part="root">to-bottom-left</span>
-    </xh-gradient-text>
-  </span>
-  <span>
-    <xh-gradient-text direction="to-top-right" from="#ff5500" to="#0055ff">
-      <span data-xh-part="root">to-top-right</span>
-    </xh-gradient-text>
-  </span>
-  <span>
-    <xh-gradient-text direction="to-top-left" from="#ff5500" to="#0055ff">
-      <span data-xh-part="root">to-top-left</span>
-    </xh-gradient-text>
-  </span>
+<div style="display: flex; flex-wrap: wrap; gap: 20px; font-size: 24px; font-weight: 700">
+  <xh-gradient-text direction="to-right" from="#f97316" to="#2563eb"><span data-xh-part="root">向右</span></xh-gradient-text>
+  <xh-gradient-text direction="to-bottom" from="#f97316" to="#2563eb"><span data-xh-part="root">向下</span></xh-gradient-text>
+  <xh-gradient-text direction="to-bottom-right" from="#f97316" to="#2563eb"><span data-xh-part="root">右下</span></xh-gradient-text>
+  <xh-gradient-text direction="to-top-right" from="#f97316" to="#2563eb"><span data-xh-part="root">右上</span></xh-gradient-text>
 </div>
 ```
 
-### 只渐变一段
+### 行内强调
 
-组件是行内的，可以只包住整句话里的几个字，字号字重由外面的文字决定
+只为关键词添加渐变
 
 ```vue
 <script setup lang="ts">
@@ -177,8 +122,8 @@ import { XhGradientText } from "@xihan-ui/vue";
 <template>
   <p style="font-size: 28px; font-weight: 700; line-height: 1.6">
     快速、轻量、高效、用心的
-    <XhGradientText direction="to-bottom-right" from="#7c3aed" to="#06b6d4">
-      设计系统运行时
+    <XhGradientText direction="to-bottom-right" from="#8b5cf6" to="#06b6d4">
+      框架无关 Headless UI 组件库
     </XhGradientText>
   </p>
 </template>
@@ -187,83 +132,83 @@ import { XhGradientText } from "@xihan-ui/vue";
 ```html
 <p style="font-size: 28px; font-weight: 700; line-height: 1.6">
   快速、轻量、高效、用心的
-  <xh-gradient-text direction="to-bottom-right" from="#7c3aed" to="#06b6d4">
-    <span data-xh-part="root">设计系统运行时</span>
+  <xh-gradient-text direction="to-bottom-right" from="#8b5cf6" to="#06b6d4">
+    <span data-xh-part="root">框架无关 Headless UI 组件库</span>
   </xh-gradient-text>
 </p>
 ```
 
-### 语气
+### 颜色
 
-tone 决定两端取哪族颜色；写了 from / to 就由它们说了算，tone 让位
+使用预设语义颜色
 
 ```vue
 <script setup lang="ts">
 import { XhGradientText } from "@xihan-ui/vue";
 
-const tones = ["brand", "neutral", "success", "warning", "danger", "info"];
+const tones = [
+  { label: "品牌", value: "brand" },
+  { label: "成功", value: "success" },
+  { label: "警告", value: "warning" },
+  { label: "危险", value: "danger" },
+  { label: "信息", value: "info" },
+] as const;
 </script>
 
 <template>
-  <p v-for="tone in tones" :key="tone" style="margin: 0 0 8px; font-size: 28px; font-weight: 700">
-    <XhGradientText :tone="tone">曦寒前端组件库 · {{ tone }}</XhGradientText>
-  </p>
+  <div style="display: flex; flex-wrap: wrap; gap: 20px; font-size: 24px; font-weight: 700">
+    <XhGradientText v-for="tone in tones" :key="tone.value" :tone="tone.value">{{ tone.label }}</XhGradientText>
+  </div>
 </template>
 ```
 
 ```html
-<p style="margin: 0 0 8px; font-size: 28px; font-weight: 700">
-  <xh-gradient-text tone="brand">
-    <span data-xh-part="root">曦寒前端组件库 · brand</span>
-  </xh-gradient-text>
-</p>
-<p style="margin: 0 0 8px; font-size: 28px; font-weight: 700">
-  <xh-gradient-text tone="neutral">
-    <span data-xh-part="root">曦寒前端组件库 · neutral</span>
-  </xh-gradient-text>
-</p>
-<p style="margin: 0 0 8px; font-size: 28px; font-weight: 700">
-  <xh-gradient-text tone="success">
-    <span data-xh-part="root">曦寒前端组件库 · success</span>
-  </xh-gradient-text>
-</p>
-<p style="margin: 0 0 8px; font-size: 28px; font-weight: 700">
-  <xh-gradient-text tone="warning">
-    <span data-xh-part="root">曦寒前端组件库 · warning</span>
-  </xh-gradient-text>
-</p>
-<p style="margin: 0 0 8px; font-size: 28px; font-weight: 700">
-  <xh-gradient-text tone="danger">
-    <span data-xh-part="root">曦寒前端组件库 · danger</span>
-  </xh-gradient-text>
-</p>
-<p style="margin: 0 0 8px; font-size: 28px; font-weight: 700">
-  <xh-gradient-text tone="info">
-    <span data-xh-part="root">曦寒前端组件库 · info</span>
-  </xh-gradient-text>
-</p>
+<div style="display: flex; flex-wrap: wrap; gap: 20px; font-size: 24px; font-weight: 700">
+  <xh-gradient-text tone="brand"><span data-xh-part="root">品牌</span></xh-gradient-text>
+  <xh-gradient-text tone="success"><span data-xh-part="root">成功</span></xh-gradient-text>
+  <xh-gradient-text tone="warning"><span data-xh-part="root">警告</span></xh-gradient-text>
+  <xh-gradient-text tone="danger"><span data-xh-part="root">危险</span></xh-gradient-text>
+  <xh-gradient-text tone="info"><span data-xh-part="root">信息</span></xh-gradient-text>
+</div>
 ```
 
 ## 设计指引
 
 ### 何时使用
 
-- 标题、品牌字样、营销页里需要一处视觉重音的短句。
+- 标题、品牌名称或营销短句。
+- 需要突出显示的关键词。
 
 ### 何时不用
 
-- 正文、表单标签、任何需要长时间阅读的文字：渐变会让对比度沿着文字变化，读起来更费力。
-- 需要底色而不是字色：那是普通容器的背景。
+- 正文、表单标签和长篇内容。
+- 对比度要求严格的关键信息。
 
 ### 特性
 
-- 组件是行内的，可以只包住整句话里的几个字，字号字重由外面的文字决定。
-- `from` / `to` 收颜色值并落成根上的 CSS 变量，写令牌或写具体色值都行；不给就用品牌色族。
-- `direction` 收的是档位——四条边加四个角共八档，不收任意角度。
-- `tone` 换成六族语气之一，两端自动取该族的主色与压深一档；写了 `from` / `to` 就以它们为准。
-- 高对比、强制色和打印环境自动退回当前实体前景；选中与复制仍使用原始文本，不生成替代内容。
+- 继承外部字号与字重，可用于行内文本。
+- `from` 与 `to` 设置渐变两端颜色。
+- `direction` 提供八个方向。
+- `tone` 使用预设颜色；显式颜色优先。
+- 高对比、强制色和打印环境自动使用实体前景色。
 
-## 产物
+### 组合
+
+- 嵌入[排印](./typography)标题中强调关键词。
+
+### 最佳实践
+
+- 使用明度接近的两端颜色。
+- 每个视图只保留少量渐变强调。
+
+### 反模式
+
+- 不要用于正文或长段落。
+- 不要使用几乎无法区分的两端颜色。
+
+## API 参考
+
+### 产物
 
 | 层 | 值 |
 | --- | --- |
@@ -272,42 +217,40 @@ const tones = ["brand", "neutral", "success", "warning", "danger", "info"];
 | 状态机 | 无，`connect` 直接由 props 算属性 |
 | 皮肤 | `@xihan-ui/styles/gradient-text.css` |
 
-## 解剖
-
-部件名即 `data-part` 属性值，也是皮肤的选择器。加粗的是必备部件，不渲染它组件不工作（Web Components 适配器会在诊断通道上报 `wc.missing-part`）。
-
-`data-scope="gradient-text"`：**`root`**
-
-## Props
+### Props
 
 | 属性 | 类型 | 必填 | 说明 |
 | --- | --- | --- | --- |
 | `direction` | `GradientTextDirection` |  | 渐变走向档位，缺省 to-right。 |
 | `from` | `string` |  | 起点颜色，写成 CSS 变量交给皮肤；不给则用品牌色族。 |
 | `to` | `string` |  | 终点颜色，写成 CSS 变量交给皮肤；不给则用品牌色族。 |
-| `tone` | `Tone` |  | 语气：brand / neutral / success / warning / danger / info，两端取该族颜色；写了 from / to 即让位。 |
+| `tone` | `Tone` |  | 颜色：brand / neutral / success / warning / danger / info；显式 from / to 优先。 |
 
-## connect API
+### connect API
 
-`connect` 产出的对象。`getXxxProps()` 铺到对应部件的宿主元素上，其余是可读状态与操作入口。
+`getXxxProps()` 返回对应部件的宿主属性。
 
 | 成员 | 类型 | 说明 |
 | --- | --- | --- |
 | `getRootProps` | `() => T['element']` |  |
 
-## 键盘
+## 无障碍
+
+### 键盘
 
 规格出处：[W3C APG](https://www.w3.org/WAI/ARIA/apg/)
 
 无键盘交互（不接收焦点，或焦点行为完全由原生元素提供）。
 
-## 样式
+## 样式参考
 
-默认皮肤 `@xihan-ui/styles/gradient-text.css` 按部件选择：`[data-scope="gradient-text"][data-part="root"]`。它落在 `xihan.components` 层；业务样式不写进 `@layer` 即高于全部库层，要按层压过来就写进 `xihan.overrides`。
+### 皮肤
 
-## 数据属性
+`@xihan-ui/styles/gradient-text.css` 使用 `[data-scope="gradient-text"][data-part="root"]` 部件选择器，位于 `xihan.components` 层。覆盖样式使用 `xihan.overrides`。
 
-由 `connect` 产出并铺到部件上，皮肤与测试都据此选择；`data-disabled` 这类无值属性在条件不成立时整个不出现。
+### 数据属性
+
+由 `connect` 生成；条件不成立时不输出无值属性。
 
 | 部件 | 属性 | 值 |
 | --- | --- | --- |
@@ -315,7 +258,7 @@ const tones = ["brand", "neutral", "success", "warning", "danger", "info"];
 | `root` | `data-tone` | props.tone |
 
 <!-- xh-component-tokens:start -->
-## CSS 变量
+### CSS 变量
 
 本组件公开覆盖槽由独立皮肤的实际消费位生成；缺省来源、作用部件和状态均与 CSS 同源。
 
@@ -325,20 +268,6 @@ const tones = ["brand", "neutral", "success", "warning", "danger", "info"];
 | `--xh-gradient-text-to` | `root` | `background-image` | `default` | `--xh-_gradient-text-to` | gradient-text 的 root 部件 background-image 覆盖槽。 |
 <!-- xh-component-tokens:end -->
 
-## 动效
+### 动效
 
 本组件皮肤不含过渡与关键帧，也没有脚本驱动的动效：状态一变，外观立即到位。
-
-## 组合
-
-- 嵌在[排印](./typography)的标题里只强调其中几个字。
-
-## 最佳实践
-
-- 两端颜色的明度要接近，否则一句话里会有一半读不清。
-- 同一页面只用一处，用多了就不再是重音。
-
-## 反模式
-
-- 拿它做正文或长段落。
-- 两端取对比度极低的相近色：渐变看不出来，只剩渲染成本。

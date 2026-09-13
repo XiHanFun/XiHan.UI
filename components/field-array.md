@@ -1,8 +1,8 @@
 来源：https://ui.docs.xihanfun.com/components/field-array
 
-# FieldArray `字段数组`
+# FieldArray 字段数组
 
-一组行数可变的录入行：可以加一行、删一行、换顺序。
+用于管理可添加、删除和排序的重复字段。
 
 <div class="xh-resource-links">
   <a href="https://github.com/XiHanFun/XiHan.UI/tree/dev/ui/packages/engine/headless/src/field-array" target="_blank" rel="noreferrer">Headless</a>
@@ -14,7 +14,7 @@
 
 ## 用法
 
-加一行、删一行归组件管；行里放什么控件归作者，写在 item-content 里
+添加和删除重复字段
 
 ```vue
 <script setup lang="ts">
@@ -38,7 +38,7 @@ function setAt(index: number, next: string) {
 
 <template>
   <XhFieldArrayRoot
-    v-slot="{ items, count }"
+    v-slot="{ items }"
     v-model:value="links"
     :create-item="() => ''"
     style="max-inline-size: 420px"
@@ -47,6 +47,7 @@ function setAt(index: number, next: string) {
     <XhFieldArrayItem v-for="row in items" :key="row.key" :index="row.index">
       <XhFieldArrayItemContent>
         <input
+          class="xh-demo-control"
           style="inline-size: 100%"
           placeholder="填一个链接"
           :value="row.value"
@@ -58,7 +59,6 @@ function setAt(index: number, next: string) {
       </XhFieldArrayItemAction>
     </XhFieldArrayItem>
     <XhFieldArrayAddTrigger>+ 添加链接</XhFieldArrayAddTrigger>
-    <p>共 {{ count }} 条</p>
   </XhFieldArrayRoot>
 </template>
 ```
@@ -67,15 +67,13 @@ function setAt(index: number, next: string) {
 <xh-field-array id="field-array-basic">
   <div data-xh-part="root" style="max-inline-size: 420px">
     <button data-xh-part="add-trigger">+ 添加链接</button>
-    <p id="field-array-basic-count">共 0 条</p>
   </div>
 </xh-field-array>
 
-<!-- 一行的骨架，脚本按当前值克隆出行来 -->
 <template id="field-array-basic-row">
   <div data-xh-part="item">
     <div data-xh-part="item-content">
-      <input style="inline-size: 100%" placeholder="填一个链接" />
+      <input class="xh-demo-control" style="inline-size: 100%" placeholder="填一个链接" />
     </div>
     <div data-xh-part="item-action">
       <button data-xh-part="item-delete-trigger"></button>
@@ -88,11 +86,9 @@ function setAt(index: number, next: string) {
   const root = host.querySelector('[data-xh-part="root"]');
   const addTrigger = host.querySelector('[data-xh-part="add-trigger"]');
   const template = document.getElementById("field-array-basic-row");
-  const count = document.getElementById("field-array-basic-count");
 
   let links = ["https://xihan.fun", ""];
 
-  // 行由作者按当前值铺：清掉旧行，再逐条克隆骨架插到新增把手前面
   function render() {
     for (const row of root.querySelectorAll('[data-xh-part="item"]')) row.remove();
     links.forEach((value, index) => {
@@ -106,7 +102,6 @@ function setAt(index: number, next: string) {
       });
       root.insertBefore(row, addTrigger);
     });
-    count.textContent = `共 ${links.length} 条`;
   }
 
   host.createItem = () => "";
@@ -122,11 +117,17 @@ function setAt(index: number, next: string) {
 </script>
 ```
 
+## 组件结构
+
+加粗的是必需部件。
+
+`data-scope="field-array"`：**`root`** · `item` · `item-label` · `item-content` · `item-action` · `add-trigger` · `item-delete-trigger` · `move-up-trigger` · `move-down-trigger`
+
 ## 示例
 
-### 行数上下限
+### 数量限制
 
-到 min 删除把手按不动、到 max 新增把手按不动；两者都转 aria-disabled，焦点留得住
+设置最少和最多行数
 
 ```vue
 <script setup lang="ts">
@@ -149,7 +150,7 @@ function setAt(index: number, next: string) {
 
 <template>
   <XhFieldArrayRoot
-    v-slot="{ items, count, atMin, atMax }"
+    v-slot="{ items }"
     v-model:value="options"
     :min="2"
     :max="4"
@@ -159,6 +160,7 @@ function setAt(index: number, next: string) {
     <XhFieldArrayItem v-for="row in items" :key="row.key" :index="row.index">
       <XhFieldArrayItemContent>
         <input
+          class="xh-demo-control"
           style="inline-size: 100%"
           placeholder="填一个选项"
           :value="row.value"
@@ -170,11 +172,6 @@ function setAt(index: number, next: string) {
       </XhFieldArrayItemAction>
     </XhFieldArrayItem>
     <XhFieldArrayAddTrigger>+ 添加选项</XhFieldArrayAddTrigger>
-    <p>
-      {{ count }} / 4
-      <span v-if="atMin"> · 至少留 2 个</span>
-      <span v-if="atMax"> · 已到上限</span>
-    </p>
   </XhFieldArrayRoot>
 </template>
 ```
@@ -183,14 +180,13 @@ function setAt(index: number, next: string) {
 <xh-field-array id="field-array-bounds" min="2" max="4">
   <div data-xh-part="root" style="max-inline-size: 420px">
     <button data-xh-part="add-trigger">+ 添加选项</button>
-    <p id="field-array-bounds-note">2 / 4</p>
   </div>
 </xh-field-array>
 
 <template id="field-array-bounds-row">
   <div data-xh-part="item">
     <div data-xh-part="item-content">
-      <input style="inline-size: 100%" placeholder="填一个选项" />
+      <input class="xh-demo-control" style="inline-size: 100%" placeholder="填一个选项" />
     </div>
     <div data-xh-part="item-action">
       <button data-xh-part="item-delete-trigger"></button>
@@ -203,10 +199,6 @@ function setAt(index: number, next: string) {
   const root = host.querySelector('[data-xh-part="root"]');
   const addTrigger = host.querySelector('[data-xh-part="add-trigger"]');
   const template = document.getElementById("field-array-bounds-row");
-  const note = document.getElementById("field-array-bounds-note");
-
-  const MIN = 2;
-  const MAX = 4;
   let options = ["红", "绿"];
 
   function render() {
@@ -221,11 +213,6 @@ function setAt(index: number, next: string) {
       });
       root.insertBefore(row, addTrigger);
     });
-    // 上下限的判断与组件同一条规则：到底了就是到底了
-    const bounds
-      = (options.length <= MIN ? " · 至少留 2 个" : "")
-      + (options.length >= MAX ? " · 已到上限" : "");
-    note.textContent = `${options.length} / ${MAX}${bounds}`;
   }
 
   host.createItem = () => "";
@@ -240,9 +227,9 @@ function setAt(index: number, next: string) {
 </script>
 ```
 
-### 换序
+### 排序
 
-movable 开了才出上下把手；挪完焦点跟着这一行走，键盘可以连按一路挪到底
+上移或下移字段
 
 ```vue
 <script setup lang="ts">
@@ -277,6 +264,7 @@ function setAt(index: number, next: string) {
       <XhFieldArrayItemContent>
         <span style="inline-size: 1.5rem">{{ row.index + 1 }}.</span>
         <input
+          class="xh-demo-control"
           style="inline-size: 100%"
           placeholder="这一步做什么"
           :value="row.value"
@@ -290,7 +278,6 @@ function setAt(index: number, next: string) {
       </XhFieldArrayItemAction>
     </XhFieldArrayItem>
     <XhFieldArrayAddTrigger>+ 添加一步</XhFieldArrayAddTrigger>
-    <p>顺序：{{ steps.join(" → ") }}</p>
   </XhFieldArrayRoot>
 </template>
 ```
@@ -299,7 +286,6 @@ function setAt(index: number, next: string) {
 <xh-field-array id="field-array-movable" movable>
   <div data-xh-part="root" style="max-inline-size: 420px">
     <button data-xh-part="add-trigger">+ 添加一步</button>
-    <p id="field-array-movable-order">顺序：</p>
   </div>
 </xh-field-array>
 
@@ -307,7 +293,7 @@ function setAt(index: number, next: string) {
   <div data-xh-part="item">
     <div data-xh-part="item-content">
       <span style="inline-size: 1.5rem"></span>
-      <input style="inline-size: 100%" placeholder="这一步做什么" />
+      <input class="xh-demo-control" style="inline-size: 100%" placeholder="这一步做什么" />
     </div>
     <div data-xh-part="item-action">
       <button data-xh-part="move-up-trigger"></button>
@@ -322,7 +308,6 @@ function setAt(index: number, next: string) {
   const root = host.querySelector('[data-xh-part="root"]');
   const addTrigger = host.querySelector('[data-xh-part="add-trigger"]');
   const template = document.getElementById("field-array-movable-row");
-  const order = document.getElementById("field-array-movable-order");
 
   let steps = ["拉取代码", "安装依赖", "跑构建", "发布"];
 
@@ -339,7 +324,6 @@ function setAt(index: number, next: string) {
       });
       root.insertBefore(row, addTrigger);
     });
-    order.textContent = `顺序：${steps.join(" → ")}`;
   }
 
   host.createItem = () => "";
@@ -354,9 +338,9 @@ function setAt(index: number, next: string) {
 </script>
 ```
 
-### 一行多个字段
+### 多字段行
 
-行数据是对象，createItem 造一个空项；改字段时整份重建数组，行号不跟着变
+每行包含多个输入框
 
 ```vue
 <script setup lang="ts">
@@ -400,12 +384,14 @@ function patch(index: number, key: keyof Header, next: string) {
     <XhFieldArrayItem v-for="row in items" :key="row.key" :index="row.index">
       <XhFieldArrayItemContent>
         <input
+          class="xh-demo-control"
           style="inline-size: 40%"
           placeholder="字段名"
           :value="row.value.name"
           @input="patch(row.index, 'name', ($event.target as HTMLInputElement).value)"
         >
         <input
+          class="xh-demo-control"
           style="inline-size: 60%"
           placeholder="字段值"
           :value="row.value.value"
@@ -420,7 +406,6 @@ function patch(index: number, key: keyof Header, next: string) {
     </XhFieldArrayItem>
     <XhFieldArrayAddTrigger>+ 添加请求头</XhFieldArrayAddTrigger>
   </XhFieldArrayRoot>
-  <pre>{{ JSON.stringify(headers, null, 2) }}</pre>
 </template>
 ```
 
@@ -431,13 +416,11 @@ function patch(index: number, key: keyof Header, next: string) {
   </div>
 </xh-field-array>
 
-<pre id="field-array-object-dump"></pre>
-
 <template id="field-array-object-row">
   <div data-xh-part="item">
     <div data-xh-part="item-content">
-      <input data-key="name" style="inline-size: 40%" placeholder="字段名" />
-      <input data-key="value" style="inline-size: 60%" placeholder="字段值" />
+      <input data-key="name" class="xh-demo-control" style="inline-size: 40%" placeholder="字段名" />
+      <input data-key="value" class="xh-demo-control" style="inline-size: 60%" placeholder="字段值" />
     </div>
     <div data-xh-part="item-action">
       <button data-xh-part="move-up-trigger"></button>
@@ -452,7 +435,6 @@ function patch(index: number, key: keyof Header, next: string) {
   const root = host.querySelector('[data-xh-part="root"]');
   const addTrigger = host.querySelector('[data-xh-part="add-trigger"]');
   const template = document.getElementById("field-array-object-row");
-  const dump = document.getElementById("field-array-object-dump");
 
   let headers = [
     { name: "Accept", value: "application/json" },
@@ -463,7 +445,6 @@ function patch(index: number, key: keyof Header, next: string) {
   function patch(index, key, next) {
     headers = headers.map((row, i) => (i === index ? { ...row, [key]: next } : row));
     host.value = headers;
-    dump.textContent = JSON.stringify(headers, null, 2);
   }
 
   function render() {
@@ -476,7 +457,6 @@ function patch(index: number, key: keyof Header, next: string) {
       }
       root.insertBefore(row, addTrigger);
     });
-    dump.textContent = JSON.stringify(headers, null, 2);
   }
 
   host.createItem = () => ({ name: "", value: "" });
@@ -491,152 +471,39 @@ function patch(index: number, key: keyof Header, next: string) {
 </script>
 ```
 
-### 禁用与程序化操作
-
-禁用时三类把手全按不动；从外面加一条走同一条闸门，整份替换值则不受闸门约束
-
-```vue
-<script setup lang="ts">
-import {
-  XhFieldArrayAddTrigger,
-  XhFieldArrayItem,
-  XhFieldArrayItemAction,
-  XhFieldArrayItemContent,
-  XhFieldArrayItemDeleteTrigger,
-  XhFieldArrayRoot,
-} from "@xihan-ui/vue";
-import { ref } from "vue";
-
-const locked = ref(false);
-const tasks = ref<string[]>(["写方案", "评审", "上线"]);
-</script>
-
-<template>
-  <label>
-    <input v-model="locked" type="checkbox">
-    锁定这份清单
-  </label>
-
-  <XhFieldArrayRoot
-    v-slot="{ items, setValue, add }"
-    v-model:value="tasks"
-    :disabled="locked"
-    :create-item="() => '新任务'"
-    style="max-inline-size: 420px"
-  >
-    <XhFieldArrayItem v-for="row in items" :key="row.key" :index="row.index">
-      <XhFieldArrayItemContent>{{ row.value }}</XhFieldArrayItemContent>
-      <XhFieldArrayItemAction>
-        <XhFieldArrayItemDeleteTrigger />
-      </XhFieldArrayItemAction>
-    </XhFieldArrayItem>
-    <XhFieldArrayAddTrigger>+ 添加任务</XhFieldArrayAddTrigger>
-
-    <!-- add 与把手走同一条闸门，锁定时同样按不动；setValue 是整份替换，不受闸门约束 -->
-    <p>
-      <button type="button" @click="add()">从外面加一条</button>
-      <button type="button" @click="setValue(['写方案', '评审', '上线'])">恢复默认</button>
-    </p>
-  </XhFieldArrayRoot>
-</template>
-```
-
-```html
-<label>
-  <input id="field-array-lock" type="checkbox" />
-  锁定这份清单
-</label>
-
-<xh-field-array id="field-array-api">
-  <div data-xh-part="root" style="max-inline-size: 420px">
-    <button data-xh-part="add-trigger">+ 添加任务</button>
-    <p>
-      <button type="button" id="field-array-api-add">从外面加一条</button>
-      <button type="button" id="field-array-api-restore">恢复默认</button>
-    </p>
-  </div>
-</xh-field-array>
-
-<template id="field-array-api-row">
-  <div data-xh-part="item">
-    <div data-xh-part="item-content"></div>
-    <div data-xh-part="item-action">
-      <button data-xh-part="item-delete-trigger"></button>
-    </div>
-  </div>
-</template>
-
-<script type="module">
-  const host = document.getElementById("field-array-api");
-  const root = host.querySelector('[data-xh-part="root"]');
-  const addTrigger = host.querySelector('[data-xh-part="add-trigger"]');
-  const template = document.getElementById("field-array-api-row");
-
-  const DEFAULTS = ["写方案", "评审", "上线"];
-  let tasks = [...DEFAULTS];
-
-  function render() {
-    for (const row of root.querySelectorAll('[data-xh-part="item"]')) row.remove();
-    for (const value of tasks) {
-      const row = template.content.firstElementChild.cloneNode(true);
-      row.querySelector('[data-xh-part="item-content"]').textContent = value;
-      root.insertBefore(row, addTrigger);
-    }
-  }
-
-  host.createItem = () => "新任务";
-  host.value = tasks;
-  host.addEventListener("value-change", (event) => {
-    tasks = event.detail.value;
-    host.value = tasks;
-    render();
-  });
-
-  document.getElementById("field-array-lock").addEventListener("change", (event) => {
-    host.disabled = event.target.checked;
-  });
-
-  // 转交给已接线的新增把手，锁定时同样按不动
-  document.getElementById("field-array-api-add").addEventListener("click", () => {
-    addTrigger.click();
-  });
-
-  // 整份替换值不经把手，锁定时照样生效
-  document.getElementById("field-array-api-restore").addEventListener("click", () => {
-    tasks = [...DEFAULTS];
-    host.value = tasks;
-    render();
-  });
-
-  render();
-</script>
-```
-
 ## 设计指引
 
 ### 何时使用
 
-- 联系方式、规格参数、收件人这类"数量由用户决定"的重复字段。
+- 联系方式、规格参数、收件人等数量可变的字段。
 
 ### 何时不用
 
-- 行数固定：直接写几行。
-- 每一行是一个短词：用[标签输入](./tags-input)。
+- 行数固定时直接使用普通字段。
+- 每项只是短文本时使用[标签输入](./tags-input)。
 
 ### 特性
 
-- `min` / `max` 约束行数，到下限时删除按钮不可用。
-- `movable` 给出上移下移。
-- `createItem` 决定新增一行时的初值。
-- 一行里可以放多个字段。
-- `name` 是 `FormPath`。嵌套在 Form 里时自动读取该路径的数组值，每行经 `item.name`
-  拿到显式数组路径；点号与方括号从不被猜成层级。
-- 在 Form 内新增、删除、换序会一并迁移该数组子字段的 values、rules、errors、异步
-  validation 与已验证错误标记；字符串字段绝不参与数组下标迁移。
-- `readOnly` 让行数改不动，`invalid` 把校验状态传到每一行。
-- `item-label` 承载行前的行号或名目。
+- `min` 与 `max` 限制行数。
+- `movable` 启用上移和下移操作。
+- `createItem` 设置新增行的初始值。
+- 每行可以包含一个或多个字段。
+- 在 Form 中会同步迁移数组子字段的值、规则和错误。
 
-## 产物
+### 最佳实践
+
+- 新增后将焦点移到新行的第一个输入框。
+- 删除按钮应说明目标行。
+- 到达数量限制时保持操作按钮可见并禁用。
+
+### 反模式
+
+- 删除后无法撤销。
+- 只在提交时提示数量限制。
+
+## API 参考
+
+### 产物
 
 | 层 | 值 |
 | --- | --- |
@@ -646,13 +513,7 @@ const tasks = ref<string[]>(["写方案", "评审", "上线"]);
 | 状态机 | `fieldArrayMachine` |
 | 皮肤 | `@xihan-ui/styles/field-array.css` |
 
-## 解剖
-
-部件名即 `data-part` 属性值，也是皮肤的选择器。加粗的是必备部件，不渲染它组件不工作（Web Components 适配器会在诊断通道上报 `wc.missing-part`）。
-
-`data-scope="field-array"`：**`root`** · `item` · `item-label` · `item-content` · `item-action` · `add-trigger` · `item-delete-trigger` · `move-up-trigger` · `move-down-trigger`
-
-## Props
+### Props
 
 | 属性 | 类型 | 必填 | 说明 |
 | --- | --- | --- | --- |
@@ -669,25 +530,25 @@ const tasks = ref<string[]>(["写方案", "评审", "上线"]);
 | `translations` | `Partial<FieldArrayTranslations>` |  |  |
 | `onValueChange` | `(details: FieldArrayValueChangeDetails) => void` |  |  |
 
-## 事件
+### 事件
 
-自定义元素派发这些事件，Vue 组件对应同名 emit；载荷都在 `detail` 上。可双向绑定的值另有 `update:xxx`，见 Props。
+自定义元素将载荷放在 `detail`；Vue 使用同名 emit。
 
 | 事件 | 载荷 | 说明 |
 | --- | --- | --- |
 | `value-change` | `FieldArrayValueChangeDetails` | 数据数组变化；detail 为 `{ value: unknown[] }` |
 
-## 插槽
+### 插槽
 
-作者能拿到载荷的插槽。只转发内容、不带载荷的默认插槽不在此列——那类直接写子节点即可。
+仅列出带载荷的插槽。
 
 | Vue 组件 | 插槽 | 载荷 | 说明 |
 | --- | --- | --- | --- |
 | `XhFieldArrayRoot` | `default` | `FieldArrayRootSlotProps` |  |
 
-## 状态
+### 状态
 
-状态机内部转移，写样式与业务都用不到；要监听变化请看上面的「事件」。
+以下名称仅用于内部状态机。
 
 **状态**：`idle`
 
@@ -695,9 +556,9 @@ const tasks = ref<string[]>(["写方案", "评审", "上线"]);
 
 **判据**：`canAdd` · `canRemove` · `canMove`
 
-## connect API
+### connect API
 
-`useFieldArray` 产出的对象。`getXxxProps()` 铺到对应部件的宿主元素上，其余是可读状态与操作入口。
+`getXxxProps()` 返回对应部件的宿主属性。
 
 | 成员 | 类型 | 说明 |
 | --- | --- | --- |
@@ -728,15 +589,17 @@ const tasks = ref<string[]>(["写方案", "评审", "上线"]);
 | `getMoveUpTriggerProps` | `(item: FieldArrayItemProps) => T['button']` |  |
 | `getMoveDownTriggerProps` | `(item: FieldArrayItemProps) => T['button']` |  |
 
-## 键盘
+## 无障碍
+
+### 键盘
 
 规格出处：[W3C APG](https://www.w3.org/WAI/ARIA/apg/)
 
 无键盘交互（不接收焦点，或焦点行为完全由原生元素提供）。
 
-## 无障碍
+### ARIA
 
-下面这些由 `connect` 铺到部件上，作者不必自己写；重复写反而会覆盖掉正确值。
+以下属性由 `connect` 生成。
 
 | 部件 | 属性 | 值 |
 | --- | --- | --- |
@@ -744,13 +607,15 @@ const tasks = ref<string[]>(["写方案", "评审", "上线"]);
 | `item-delete-trigger` | `aria-disabled` | 'false' \| 'true' |
 | `item-delete-trigger` | `aria-label` | label.deleteItem(item.index + 1, count) |
 
-## 样式
+## 样式参考
 
-默认皮肤 `@xihan-ui/styles/field-array.css` 按部件选择：`[data-scope="field-array"][data-part="root"]`。它落在 `xihan.components` 层；业务样式不写进 `@layer` 即高于全部库层，要按层压过来就写进 `xihan.overrides`。
+### 皮肤
 
-## 数据属性
+`@xihan-ui/styles/field-array.css` 使用 `[data-scope="field-array"][data-part="root"]` 部件选择器，位于 `xihan.components` 层。覆盖样式使用 `xihan.overrides`。
 
-由 `connect` 产出并铺到部件上，皮肤与测试都据此选择；`data-disabled` 这类无值属性在条件不成立时整个不出现。
+### 数据属性
+
+由 `connect` 生成；条件不成立时不输出无值属性。
 
 | 部件 | 属性 | 值 |
 | --- | --- | --- |
@@ -767,7 +632,7 @@ const tasks = ref<string[]>(["写方案", "评审", "上线"]);
 | `item-delete-trigger` | `data-disabled` | ''（条件成立时才出现） |
 
 <!-- xh-component-tokens:start -->
-## CSS 变量
+### CSS 变量
 
 本组件公开覆盖槽由独立皮肤的实际消费位生成；缺省来源、作用部件和状态均与 CSS 同源。
 
@@ -804,26 +669,12 @@ const tasks = ref<string[]>(["写方案", "评审", "上线"]);
 | `--xh-field-array-trigger-size` | `item-delete-trigger`<br>`move-down-trigger`<br>`move-up-trigger` | `block-size`<br>`inline-size` | `default` | `--xh-control-action-size` | field-array 的 item-delete-trigger、move-down-trigger、move-up-trigger 部件 block-size、inline-size 覆盖槽。 |
 <!-- xh-component-tokens:end -->
 
-## 动效
+### 动效
 
 `background` · `border-color` · `scale` 走 `transition` 过渡。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
 
 系统开启减弱动效时由令牌层统一收敛，皮肤不另作判断。
 
-## RTL
+### RTL
 
 皮肤用逻辑属性排布（`inline-start` 一族），`dir="rtl"` 下自动镜像。
-
-## 组合
-
-- 每行里放[表单字段](./field)与各类录入组件；整体放进[表单](./form)。
-
-## 最佳实践
-
-- 新增一行后把焦点移到这一行的第一个输入框。
-- 删除按钮要说明删的是哪一行（`aria-label` 带上行号或内容）。
-
-## 反模式
-
-- 删除不给撤销，误删只能重填。
-- 行数上限只在提交时才提示。

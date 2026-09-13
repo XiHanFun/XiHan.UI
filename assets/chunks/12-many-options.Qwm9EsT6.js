@@ -1,0 +1,123 @@
+const a=`<!-- 大量选项 | 列表内部滚动并支持连打检索 -->
+<xh-select placeholder="敲 M 试试">
+  <div data-xh-part="root">
+    <span data-xh-part="label">仓位</span>
+    <div data-xh-part="control">
+      <button data-xh-part="trigger">
+        <span data-xh-part="value-text"></span>
+        <span data-xh-part="indicator"></span>
+      </button>
+    </div>
+    <div data-xh-part="positioner">
+      <div data-xh-part="content">
+        <div data-xh-part="list">
+          <div data-xh-part="item" value="A">
+            <span data-xh-part="item-text">A 区</span>
+            <span data-xh-part="item-indicator"></span>
+          </div>
+          <div data-xh-part="item" value="B">
+            <span data-xh-part="item-text">B 区</span>
+            <span data-xh-part="item-indicator"></span>
+          </div>
+          <div data-xh-part="item" value="C">
+            <span data-xh-part="item-text">C 区</span>
+            <span data-xh-part="item-indicator"></span>
+          </div>
+          <div data-xh-part="item" value="D">
+            <span data-xh-part="item-text">D 区</span>
+            <span data-xh-part="item-indicator"></span>
+          </div>
+          <div data-xh-part="item" value="E">
+            <span data-xh-part="item-text">E 区</span>
+            <span data-xh-part="item-indicator"></span>
+          </div>
+          <div data-xh-part="item" value="F">
+            <span data-xh-part="item-text">F 区</span>
+            <span data-xh-part="item-indicator"></span>
+          </div>
+          <div data-xh-part="item" value="G">
+            <span data-xh-part="item-text">G 区</span>
+            <span data-xh-part="item-indicator"></span>
+          </div>
+          <div data-xh-part="item" value="H">
+            <span data-xh-part="item-text">H 区</span>
+            <span data-xh-part="item-indicator"></span>
+          </div>
+          <div data-xh-part="item" value="I">
+            <span data-xh-part="item-text">I 区</span>
+            <span data-xh-part="item-indicator"></span>
+          </div>
+          <div data-xh-part="item" value="J">
+            <span data-xh-part="item-text">J 区</span>
+            <span data-xh-part="item-indicator"></span>
+          </div>
+          <div data-xh-part="item" value="K">
+            <span data-xh-part="item-text">K 区</span>
+            <span data-xh-part="item-indicator"></span>
+          </div>
+          <div data-xh-part="item" value="L">
+            <span data-xh-part="item-text">L 区</span>
+            <span data-xh-part="item-indicator"></span>
+          </div>
+          <div data-xh-part="item" value="M">
+            <span data-xh-part="item-text">M 区</span>
+            <span data-xh-part="item-indicator"></span>
+          </div>
+          <div data-xh-part="item" value="N">
+            <span data-xh-part="item-text">N 区</span>
+            <span data-xh-part="item-indicator"></span>
+          </div>
+          <div data-xh-part="item" value="O">
+            <span data-xh-part="item-text">O 区</span>
+            <span data-xh-part="item-indicator"></span>
+          </div>
+          <div data-xh-part="item" value="P">
+            <span data-xh-part="item-text">P 区</span>
+            <span data-xh-part="item-indicator"></span>
+          </div>
+          <div data-xh-part="item" value="Q">
+            <span data-xh-part="item-text">Q 区</span>
+            <span data-xh-part="item-indicator"></span>
+          </div>
+          <div data-xh-part="item" value="R">
+            <span data-xh-part="item-text">R 区</span>
+            <span data-xh-part="item-indicator"></span>
+          </div>
+          <div data-xh-part="item" value="S">
+            <span data-xh-part="item-text">S 区</span>
+            <span data-xh-part="item-indicator"></span>
+          </div>
+          <div data-xh-part="item" value="T">
+            <span data-xh-part="item-text">T 区</span>
+            <span data-xh-part="item-indicator"></span>
+          </div>
+          <div data-xh-part="item" value="U">
+            <span data-xh-part="item-text">U 区</span>
+            <span data-xh-part="item-indicator"></span>
+          </div>
+          <div data-xh-part="item" value="V">
+            <span data-xh-part="item-text">V 区</span>
+            <span data-xh-part="item-indicator"></span>
+          </div>
+          <div data-xh-part="item" value="W">
+            <span data-xh-part="item-text">W 区</span>
+            <span data-xh-part="item-indicator"></span>
+          </div>
+          <div data-xh-part="item" value="X">
+            <span data-xh-part="item-text">X 区</span>
+            <span data-xh-part="item-indicator"></span>
+          </div>
+          <div data-xh-part="item" value="Y">
+            <span data-xh-part="item-text">Y 区</span>
+            <span data-xh-part="item-indicator"></span>
+          </div>
+          <div data-xh-part="item" value="Z">
+            <span data-xh-part="item-text">Z 区</span>
+            <span data-xh-part="item-indicator"></span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</xh-select>
+`;export{a as default};

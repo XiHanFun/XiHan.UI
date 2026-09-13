@@ -1,0 +1,27 @@
+const a=`<!-- 分组 | 使用标题与分隔线组织命令 -->
+<xh-context-menu>
+  <div data-xh-part="root">
+    <div
+      data-xh-part="trigger"
+      style="display: grid; place-items: center; inline-size: min(480px, 100%); min-block-size: 144px; border-radius: var(--xh-shape-surface); background: var(--xh-bg-subtle); cursor: context-menu"
+    >
+      右键设置文件视图
+    </div>
+    <div data-xh-part="positioner">
+      <div data-xh-part="content">
+        <div data-xh-part="group" value="sort">
+          <span data-xh-part="group-label">排序方式</span>
+          <div data-xh-part="item" value="name"><span data-xh-part="item-indicator"></span><span data-xh-part="item-text">按名称</span></div>
+          <div data-xh-part="item" value="time"><span data-xh-part="item-text">按修改时间</span></div>
+        </div>
+        <div data-xh-part="separator"></div>
+        <div data-xh-part="group" value="view">
+          <span data-xh-part="group-label">视图</span>
+          <div data-xh-part="item" value="list"><span data-xh-part="item-text">列表</span></div>
+          <div data-xh-part="item" value="grid"><span data-xh-part="item-text">网格</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</xh-context-menu>
+`;export{a as default};

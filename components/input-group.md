@@ -1,8 +1,8 @@
 来源：https://ui.docs.xihanfun.com/components/input-group
 
-# InputGroup `输入组`
+# InputGroup 输入组
 
-把输入框与它的前后缀、动作按钮拼成一个盒：相邻两段共用一条边，圆角只留在两端。
+用于在同一输入表面中组合前缀、输入控件和后缀。
 
 <div class="xh-resource-links">
   <a href="https://github.com/XiHanFun/XiHan.UI/tree/dev/ui/packages/engine/headless/src/input-group" target="_blank" rel="noreferrer">Headless</a>
@@ -14,7 +14,177 @@
 
 ## 用法
 
-前后缀与输入框拼成一个盒：中缝合成一条，圆角只留在两端
+为输入框添加固定前缀
+
+```vue
+<script setup lang="ts">
+import {
+  XhInputGroupItem,
+  XhInputGroupRoot,
+  XhTextFieldControl,
+  XhTextFieldInput,
+  XhTextFieldRoot,
+} from "@xihan-ui/vue";
+</script>
+
+<template>
+  <XhInputGroupRoot>
+    <XhInputGroupItem>
+      <svg aria-hidden="true" viewBox="0 0 20 20" style="inline-size: 1em; block-size: 1em">
+        <path d="M2.5 5.5 10 10.75 17.5 5.5M4 4h12a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2Z" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" />
+      </svg>
+    </XhInputGroupItem>
+    <XhTextFieldRoot type="email" placeholder="name@example.com">
+      <XhTextFieldControl>
+        <XhTextFieldInput aria-label="邮箱地址" />
+      </XhTextFieldControl>
+    </XhTextFieldRoot>
+  </XhInputGroupRoot>
+</template>
+```
+
+```html
+<xh-input-group>
+  <div data-xh-part="root">
+    <span data-xh-part="item">
+      <svg aria-hidden="true" viewBox="0 0 20 20" style="inline-size: 1em; block-size: 1em">
+        <path d="M2.5 5.5 10 10.75 17.5 5.5M4 4h12a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2Z" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" />
+      </svg>
+    </span>
+    <xh-text-field type="email" placeholder="name@example.com">
+      <div data-xh-part="root">
+        <div data-xh-part="control">
+          <input data-xh-part="input" aria-label="邮箱地址" />
+        </div>
+      </div>
+    </xh-text-field>
+  </div>
+</xh-input-group>
+```
+
+## 组件结构
+
+加粗的是必需部件。
+
+`data-scope="input-group"`：**`root`** · `item`
+
+## 示例
+
+### 动作
+
+将关联操作放在输入框末端
+
+```vue
+<script setup lang="ts">
+import {
+  XhButton,
+  XhInputGroupRoot,
+  XhTextFieldControl,
+  XhTextFieldInput,
+  XhTextFieldRoot,
+} from "@xihan-ui/vue";
+</script>
+
+<template>
+  <XhInputGroupRoot>
+    <XhTextFieldRoot placeholder="搜索文档">
+      <XhTextFieldControl>
+        <XhTextFieldInput aria-label="搜索文档" />
+      </XhTextFieldControl>
+    </XhTextFieldRoot>
+    <XhButton variant="solid">搜索</XhButton>
+  </XhInputGroupRoot>
+</template>
+```
+
+```html
+<xh-input-group>
+  <div data-xh-part="root">
+    <xh-text-field placeholder="搜索文档">
+      <div data-xh-part="root">
+        <div data-xh-part="control">
+          <input data-xh-part="input" aria-label="搜索文档" />
+        </div>
+      </div>
+    </xh-text-field>
+    <xh-button variant="solid">
+      <button data-xh-part="root">搜索</button>
+    </xh-button>
+  </div>
+</xh-input-group>
+```
+
+### 变体
+
+使用主要或次级输入表面
+
+```vue
+<script setup lang="ts">
+import {
+  XhInputGroupItem,
+  XhInputGroupRoot,
+  XhTextFieldControl,
+  XhTextFieldInput,
+  XhTextFieldRoot,
+} from "@xihan-ui/vue";
+</script>
+
+<template>
+  <div style="display: flex; flex-wrap: wrap; gap: 12px">
+    <XhInputGroupRoot variant="primary">
+      <XhInputGroupItem>¥</XhInputGroupItem>
+      <XhTextFieldRoot placeholder="主要表面">
+        <XhTextFieldControl>
+          <XhTextFieldInput inputmode="decimal" aria-label="主要金额" />
+        </XhTextFieldControl>
+      </XhTextFieldRoot>
+    </XhInputGroupRoot>
+
+    <XhInputGroupRoot variant="secondary">
+      <XhInputGroupItem>¥</XhInputGroupItem>
+      <XhTextFieldRoot placeholder="次级表面">
+        <XhTextFieldControl>
+          <XhTextFieldInput inputmode="decimal" aria-label="次要金额" />
+        </XhTextFieldControl>
+      </XhTextFieldRoot>
+    </XhInputGroupRoot>
+  </div>
+</template>
+```
+
+```html
+<div style="display: flex; flex-wrap: wrap; gap: 12px">
+  <xh-input-group variant="primary">
+    <div data-xh-part="root">
+      <span data-xh-part="item">¥</span>
+      <xh-text-field placeholder="主要表面">
+        <div data-xh-part="root">
+          <div data-xh-part="control">
+            <input data-xh-part="input" inputmode="decimal" aria-label="主要金额" />
+          </div>
+        </div>
+      </xh-text-field>
+    </div>
+  </xh-input-group>
+
+  <xh-input-group variant="secondary">
+    <div data-xh-part="root">
+      <span data-xh-part="item">¥</span>
+      <xh-text-field placeholder="次级表面">
+        <div data-xh-part="root">
+          <div data-xh-part="control">
+            <input data-xh-part="input" inputmode="decimal" aria-label="次要金额" />
+          </div>
+        </div>
+      </xh-text-field>
+    </div>
+  </xh-input-group>
+</div>
+```
+
+### 文本前后缀
+
+添加协议和域名后缀
 
 ```vue
 <script setup lang="ts">
@@ -30,12 +200,12 @@ import {
 <template>
   <XhInputGroupRoot>
     <XhInputGroupItem>https://</XhInputGroupItem>
-    <XhTextFieldRoot placeholder="xihanfun">
+    <XhTextFieldRoot placeholder="xihan">
       <XhTextFieldControl>
-        <XhTextFieldInput />
+        <XhTextFieldInput aria-label="站点地址" />
       </XhTextFieldControl>
     </XhTextFieldRoot>
-    <XhInputGroupItem>.com</XhInputGroupItem>
+    <XhInputGroupItem>.dev</XhInputGroupItem>
   </XhInputGroupRoot>
 </template>
 ```
@@ -44,268 +214,51 @@ import {
 <xh-input-group>
   <div data-xh-part="root">
     <span data-xh-part="item">https://</span>
-    <xh-text-field placeholder="xihanfun">
+    <xh-text-field placeholder="xihan">
       <div data-xh-part="root">
         <div data-xh-part="control">
-          <input data-xh-part="input" />
+          <input data-xh-part="input" aria-label="站点地址" />
         </div>
       </div>
     </xh-text-field>
-    <span data-xh-part="item">.com</span>
+    <span data-xh-part="item">.dev</span>
   </div>
 </xh-input-group>
-```
-
-## 示例
-
-### 搭动作钮
-
-按钮作用在紧挨着它的那个输入框上，两段共用中缝那条边
-
-```vue
-<script setup lang="ts">
-import {
-  XhButton,
-  XhInputGroupRoot,
-  XhTextFieldControl,
-  XhTextFieldInput,
-  XhTextFieldRoot,
-} from "@xihan-ui/vue";
-</script>
-
-<template>
-  <XhInputGroupRoot>
-    <XhTextFieldRoot placeholder="搜索文档" clearable>
-      <XhTextFieldControl>
-        <XhTextFieldInput />
-      </XhTextFieldControl>
-    </XhTextFieldRoot>
-    <XhButton variant="solid">搜索</XhButton>
-  </XhInputGroupRoot>
-</template>
-```
-
-```html
-<xh-input-group>
-  <div data-xh-part="root">
-    <xh-text-field placeholder="搜索文档" clearable>
-      <div data-xh-part="root">
-        <div data-xh-part="control">
-          <input data-xh-part="input" />
-        </div>
-      </div>
-    </xh-text-field>
-    <xh-button variant="solid">
-      <button data-xh-part="root">搜索</button>
-    </xh-button>
-  </div>
-</xh-input-group>
-```
-
-### 尺寸档
-
-前后缀块跟着组内控件自己的档走，组上不必把同一档再写一遍
-
-```vue
-<script setup lang="ts">
-import {
-  XhInputGroupItem,
-  XhInputGroupRoot,
-  XhTextFieldControl,
-  XhTextFieldInput,
-  XhTextFieldRoot,
-} from "@xihan-ui/vue";
-</script>
-
-<template>
-  <XhInputGroupRoot>
-    <XhInputGroupItem>￥</XhInputGroupItem>
-    <XhTextFieldRoot size="sm" placeholder="0.00">
-      <XhTextFieldControl>
-        <XhTextFieldInput />
-      </XhTextFieldControl>
-    </XhTextFieldRoot>
-  </XhInputGroupRoot>
-
-  <XhInputGroupRoot>
-    <XhInputGroupItem>￥</XhInputGroupItem>
-    <XhTextFieldRoot size="lg" placeholder="0.00">
-      <XhTextFieldControl>
-        <XhTextFieldInput />
-      </XhTextFieldControl>
-    </XhTextFieldRoot>
-  </XhInputGroupRoot>
-</template>
-```
-
-```html
-<xh-input-group>
-  <div data-xh-part="root">
-    <span data-xh-part="item">￥</span>
-    <xh-text-field size="sm" placeholder="0.00">
-      <div data-xh-part="root">
-        <div data-xh-part="control">
-          <input data-xh-part="input" />
-        </div>
-      </div>
-    </xh-text-field>
-  </div>
-</xh-input-group>
-
-<xh-input-group>
-  <div data-xh-part="root">
-    <span data-xh-part="item">￥</span>
-    <xh-text-field size="lg" placeholder="0.00">
-      <div data-xh-part="root">
-        <div data-xh-part="control">
-          <input data-xh-part="input" />
-        </div>
-      </div>
-    </xh-text-field>
-  </div>
-</xh-input-group>
-```
-
-### 区间输入
-
-组里放两个输入框，中间夹一个前后缀块当连接词：三段共用两条中缝，圆角只留在最外两端；两头各自带 aria-label，读屏分得清哪个是起点
-
-```vue
-<script setup lang="ts">
-import {
-  XhInputGroupItem,
-  XhInputGroupRoot,
-  XhTextFieldControl,
-  XhTextFieldInput,
-  XhTextFieldRoot,
-} from "@xihan-ui/vue";
-import { computed, ref } from "vue";
-
-const min = ref("100");
-const max = ref("800");
-
-const summary = computed(() => {
-  if (!min.value && !max.value) {
-    return "不限";
-  }
-  if (!min.value) {
-    return `${max.value} 元以下`;
-  }
-  if (!max.value) {
-    return `${min.value} 元以上`;
-  }
-  return `${min.value} — ${max.value} 元`;
-});
-</script>
-
-<template>
-  <div style="display: grid; gap: 8px; justify-items: start">
-    <XhInputGroupRoot>
-      <XhInputGroupItem>￥</XhInputGroupItem>
-      <XhTextFieldRoot v-model:value="min" placeholder="最低价">
-        <XhTextFieldControl>
-          <XhTextFieldInput aria-label="最低价" />
-        </XhTextFieldControl>
-      </XhTextFieldRoot>
-      <!-- 连接词也是一段：与两侧同高、同一条描边，它是这个盒的一部分 -->
-      <XhInputGroupItem>至</XhInputGroupItem>
-      <XhTextFieldRoot v-model:value="max" placeholder="最高价">
-        <XhTextFieldControl>
-          <XhTextFieldInput aria-label="最高价" />
-        </XhTextFieldControl>
-      </XhTextFieldRoot>
-    </XhInputGroupRoot>
-
-    <p style="font-size: 13px; opacity: 0.75">价格区间：{{ summary }}</p>
-  </div>
-</template>
-```
-
-```html
-<div style="display: grid; gap: 8px; justify-items: start">
-  <xh-input-group>
-    <div data-xh-part="root">
-      <span data-xh-part="item">￥</span>
-      <xh-text-field id="input-group-range-min" default-value="100" placeholder="最低价">
-        <div data-xh-part="root">
-          <div data-xh-part="control">
-            <input data-xh-part="input" aria-label="最低价" />
-          </div>
-        </div>
-      </xh-text-field>
-      <!-- 连接词也是一段：与两侧同高、同一条描边，它是这个盒的一部分 -->
-      <span data-xh-part="item">至</span>
-      <xh-text-field id="input-group-range-max" default-value="800" placeholder="最高价">
-        <div data-xh-part="root">
-          <div data-xh-part="control">
-            <input data-xh-part="input" aria-label="最高价" />
-          </div>
-        </div>
-      </xh-text-field>
-    </div>
-  </xh-input-group>
-
-  <p id="input-group-range-summary" style="font-size: 13px; opacity: 0.75">
-    价格区间：100 — 800 元
-  </p>
-</div>
-
-<script type="module">
-  const min = document.getElementById("input-group-range-min");
-  const max = document.getElementById("input-group-range-max");
-  const summary = document.getElementById("input-group-range-summary");
-
-  // 两头都是非受控，读数只跟着元素发来的意图走
-  let lo = "100";
-  let hi = "800";
-
-  function render() {
-    let text = "不限";
-    if (lo && hi) {
-      text = `${lo} — ${hi} 元`;
-    } else if (lo) {
-      text = `${lo} 元以上`;
-    } else if (hi) {
-      text = `${hi} 元以下`;
-    }
-    summary.textContent = `价格区间：${text}`;
-  }
-
-  min.addEventListener("value-change", (event) => {
-    lo = event.detail.value;
-    render();
-  });
-  max.addEventListener("value-change", (event) => {
-    hi = event.detail.value;
-    render();
-  });
-</script>
 ```
 
 ## 设计指引
 
 ### 何时使用
 
-- 一个输入框需要固定的前后缀说明它填什么（`https://` 打头、`.com` 收尾、单位、币种）。
-- 输入框后面紧跟一个作用在它身上的动作（搜索、复制、提交）。
-- 几个控件填的是同一件事的不同部分（区号 + 号码），想让它们看起来是一个控件。
+- 输入框需要图标、单位或固定文本。
+- 输入框需要紧邻的搜索、复制或提交动作。
 
 ### 何时不用
 
-- 组内几段是并列的动作、彼此不围绕同一个输入：那是[按钮组](./button-group)。
-- 前后缀要跟着输入内容变、或者本身可点：把它做成组里的一枚[按钮](./button)或[选择器](./select)，
-  别塞进 `item`——`item` 是不可交互的固定文本。
-- 只是想让两个控件挨着：留间距摆开就行，拼成一体会让人以为它们必须一起填。
+- 组合并列操作：使用[按钮组](./button-group)。
+- 仅用于排列控件：使用布局组件。
 
 ### 特性
 
-- 两个部件：`root` 是组容器，`item` 是前后缀块；组内的控件是作者自己的节点。
-- 中缝合并：后一段回挪一个描边宽度，两条边叠成一条，组里看不到双线。
-- 圆角只留在首尾两端，中间各段收平；用逻辑角属性写，rtl 下自动换边。
-- 悬停或拿到焦点的那一段抬到最上层，聚焦环不会被邻座的底色和描边切掉一半。
-- 档位跟着组内控件走：组里有 `sm` 的控件，`item` 就是 `sm`；也可以在组上写 `size` 直接指定。
+- 所有内容共享一个背景、外轮廓和焦点环。
+- 支持 `primary` 与 `secondary` 两种视觉变体。
+- 前后缀不参与交互，控件保留自身语义。
+- 支持 `sm`、`md` 和 `lg` 三种尺寸。
 
-## 产物
+### 最佳实践
+
+- 前后缀保持简短，并使用静态内容。
+- 可交互内容使用对应控件，不要放进 `item`。
+- 组内控件使用相同尺寸。
+
+### 反模式
+
+- 使用过多前后缀，让输入区域难以识别。
+- 用 `item` 承载按钮或链接。
+
+## API 参考
+
+### 产物
 
 | 层 | 值 |
 | --- | --- |
@@ -314,83 +267,76 @@ const summary = computed(() => {
 | 状态机 | 无，`connect` 直接由 props 算属性 |
 | 皮肤 | `@xihan-ui/styles/input-group.css` |
 
-## 解剖
-
-部件名即 `data-part` 属性值，也是皮肤的选择器。加粗的是必备部件，不渲染它组件不工作（Web Components 适配器会在诊断通道上报 `wc.missing-part`）。
-
-`data-scope="input-group"`：**`root`** · `item`
-
-## Props
+### Props
 
 | 属性 | 类型 | 必填 | 说明 |
 | --- | --- | --- | --- |
 | `size` | `Size` |  | 尺寸：sm / md / lg，落到根上供皮肤写进 item 的高度、内衬与字号槽位。 不写时档位由组内控件自己的 data-size 决定，组里没有带档的控件就走 md。 |
+| `variant` | `InputGroupVariant` |  | 视觉变体：primary / secondary。缺省 primary。 |
 
-## connect API
+### connect API
 
-`connect` 产出的对象。`getXxxProps()` 铺到对应部件的宿主元素上，其余是可读状态与操作入口。
+`getXxxProps()` 返回对应部件的宿主属性。
 
 | 成员 | 类型 | 说明 |
 | --- | --- | --- |
 | `getRootProps` | `() => T['element']` |  |
 | `getItemProps` | `() => T['element']` |  |
 
-## 键盘
+## 无障碍
+
+### 键盘
 
 规格出处：[W3C APG](https://www.w3.org/WAI/ARIA/apg/)
 
 无键盘交互（不接收焦点，或焦点行为完全由原生元素提供）。
 
-## 样式
+## 样式参考
 
-默认皮肤 `@xihan-ui/styles/input-group.css` 按部件选择：`[data-scope="input-group"][data-part="root"]`。它落在 `xihan.components` 层；业务样式不写进 `@layer` 即高于全部库层，要按层压过来就写进 `xihan.overrides`。
+### 皮肤
 
-## 数据属性
+`@xihan-ui/styles/input-group.css` 使用 `[data-scope="input-group"][data-part="root"]` 部件选择器，位于 `xihan.components` 层。覆盖样式使用 `xihan.overrides`。
 
-由 `connect` 产出并铺到部件上，皮肤与测试都据此选择；`data-disabled` 这类无值属性在条件不成立时整个不出现。
+`forced-colors: active` 下另有一套规则：颜色交给系统，边框与状态标记改用系统色关键字。
+
+### 数据属性
+
+由 `connect` 生成；条件不成立时不输出无值属性。
 
 | 部件 | 属性 | 值 |
 | --- | --- | --- |
 | `root` | `data-size` | props.size |
+| `root` | `data-variant` | props.variant |
 
 <!-- xh-component-tokens:start -->
-## CSS 变量
+### CSS 变量
 
 本组件公开覆盖槽由独立皮肤的实际消费位生成；缺省来源、作用部件和状态均与 CSS 同源。
 
 | 变量 | 部件 | CSS 属性 | 状态 | 缺省来源 | 说明 |
 | --- | --- | --- | --- | --- | --- |
-| `--xh-input-group-item-bg` | `item` | `background` | `default` | `--xh-bg-subtle` | input-group 的 item 部件 background 覆盖槽。 |
-| `--xh-input-group-item-border` | `item` | `border` | `default` | `--xh-border-control` | input-group 的 item 部件 border 覆盖槽。 |
+| `--xh-input-group-bg` | `root` | `background` | `default` | `--xh-_input-group-bg` | input-group 的 root 部件 background 覆盖槽。 |
+| `--xh-input-group-bg-hover` | `root` | `background` | `disabled`<br>`hover`<br>`not(:has([data-disabled])` | `--xh-_input-group-bg-hover` | input-group 的 root 部件 background 覆盖槽。 |
+| `--xh-input-group-border` | `root` | `border` | `default` | `--xh-_input-group-border` | input-group 的 root 部件 border 覆盖槽。 |
+| `--xh-input-group-border-focus` | `root` | `border-color` | `focus-within` | `--xh-_input-group-border-focus` | input-group 的 root 部件 border-color 覆盖槽。 |
+| `--xh-input-group-border-hover` | `root` | `border-color` | `disabled`<br>`hover`<br>`not(:has([data-disabled])` | `--xh-_input-group-border-hover` | input-group 的 root 部件 border-color 覆盖槽。 |
+| `--xh-input-group-border-invalid` | `root` | `border-color` | `has([data-invalid], [aria-invalid='true'])`<br>`invalid` | `--xh-border-invalid` | input-group 的 root 部件 border-color 覆盖槽。 |
 | `--xh-input-group-item-fg` | `item` | `color` | `default` | `--xh-fg-muted` | input-group 的 item 部件 color 覆盖槽。 |
 | `--xh-input-group-item-font-size` | `item` | `font-size` | `default` | `--xh-_input-group-font-size` | input-group 的 item 部件 font-size 覆盖槽。 |
 | `--xh-input-group-item-h` | `item` | `block-size` | `default` | `--xh-_input-group-h` | input-group 的 item 部件 block-size 覆盖槽。 |
 | `--xh-input-group-item-px` | `item` | `padding-inline` | `default` | `--xh-_input-group-px` | input-group 的 item 部件 padding-inline 覆盖槽。 |
-| `--xh-input-group-radius` | `control`<br>`root` | `border-end-end-radius`<br>`border-end-start-radius`<br>`border-start-end-radius`<br>`border-start-start-radius` | `first-child`<br>`is(*, [data-part='control'], [data-part='root'])`<br>`is([data-part='control'], [data-part='root'])`<br>`last-child` | `--xh-shape-control` | input-group 的 control、root 部件 border-end-end-radius、border-end-start-radius、border-start-end-radius、border-start-start-radius 覆盖槽。 |
+| `--xh-input-group-radius` | `control`<br>`root` | `border-end-end-radius`<br>`border-end-start-radius`<br>`border-radius`<br>`border-start-end-radius`<br>`border-start-start-radius` | `default`<br>`first-child`<br>`is(*, [data-part='control'], [data-part='root'])`<br>`is([data-part='control'], [data-part='root'])`<br>`last-child` | `--xh-shape-control`<br>`--xh-shape-surface` | input-group 的 control、root 部件 border-end-end-radius、border-end-start-radius、border-radius、border-start-end-radius、border-start-start-radius 覆盖槽。 |
+| `--xh-input-group-ring-focus` | `root` | `outline` | `focus-within` | `--xh-ring-focus` | input-group 的 root 部件 outline 覆盖槽。 |
+| `--xh-input-group-ring-invalid` | `root` | `outline-color` | `focus-within`<br>`has([data-invalid], [aria-invalid='true'])`<br>`invalid` | `--xh-ring-invalid` | input-group 的 root 部件 outline-color 覆盖槽。 |
+| `--xh-input-group-shadow` | `root` | `box-shadow` | `default` | `--xh-_input-group-shadow` | input-group 的 root 部件 box-shadow 覆盖槽。 |
 <!-- xh-component-tokens:end -->
 
-## 动效
+### 动效
 
-`background` · `border-color` · `color` 走 `transition` 过渡。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
+`background` · `border-color` · `box-shadow` 走 `transition` 过渡。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
 
-系统开启减弱动效时由令牌层统一收敛，皮肤不另作判断。
+`prefers-reduced-motion: reduce` 下本组件另有降级规则。
 
-## RTL
+### RTL
 
 皮肤用逻辑属性排布（`inline-start` 一族），`dir="rtl"` 下自动镜像。
-
-## 组合
-
-- 组里放[输入框](./text-field)、[数字输入框](./number-field)、[选择器](./select)、[按钮](./button)。
-- 要带标签与校验提示时，把整个组放进[表单域](./field)，标签与提示由它给。
-
-## 最佳实践
-
-- 一组以三到四段为宜：段越多，哪一段是可填的就越难一眼看出来。
-- 前后缀写成静态文本，别放会变的值——它长在框上，看起来像是已经填好的内容。
-- 组里各控件写同一个尺寸档，或者干脆都不写：混档会让中缝对不齐。
-
-## 反模式
-
-- 用 `item` 装可点的东西：它不出角色也不接键盘，读屏用户不知道那里能点。
-- 靠负外边距在业务代码里自己拼中缝：改一次描边宽度就得把每一处拼法翻一遍。

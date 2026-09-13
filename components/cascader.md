@@ -1,8 +1,8 @@
 来源：https://ui.docs.xihanfun.com/components/cascader
 
-# Cascader `级联选择`
+# Cascader 级联选择
 
-按层逐列展开的选择器：一列选完展开下一列，值是一条路径。
+用于从多层分类中选择完整路径。
 
 <div class="xh-resource-links">
   <a href="https://github.com/XiHanFun/XiHan.UI/tree/dev/ui/packages/engine/headless/src/cascader" target="_blank" rel="noreferrer">Headless</a>
@@ -14,7 +14,7 @@
 
 ## 用法
 
-collection 是层级、显示文本与禁用的唯一事实源；levels 按深度摊开，每层一个 column
+按层级选择完整地区路径
 
 ```vue
 <script setup lang="ts">
@@ -32,7 +32,6 @@ import {
   XhCascaderTrigger,
   XhCascaderValueText,
 } from "@xihan-ui/vue";
-import { ref } from "vue";
 
 const regions = [
   {
@@ -69,12 +68,10 @@ const regions = [
     ],
   },
 ];
-
-const area = ref<string[][]>([]);
 </script>
 
 <template>
-  <XhCascaderRoot v-slot="{ levels }" v-model:value="area" :collection="regions" placeholder="请选择地区">
+  <XhCascaderRoot v-slot="{ levels }" :collection="regions" placeholder="请选择地区">
     <XhCascaderLabel>收货地区</XhCascaderLabel>
     <XhCascaderControl>
       <XhCascaderTrigger>
@@ -93,7 +90,6 @@ const area = ref<string[][]>([]);
       </XhCascaderContent>
     </XhCascaderPositioner>
   </XhCascaderRoot>
-  <p>当前路径：{{ area.length ? area[0].join(" / ") : "（未选）" }}</p>
 </template>
 ```
 
@@ -159,10 +155,8 @@ const area = ref<string[][]>([]);
     </div>
   </div>
 </xh-cascader>
-<p>当前路径：<span id="cascader-basic-value">（未选）</span></p>
 
 <script type="module">
-  // 树数据是数组，只走属性；标记里的列与条目照它的层级摆
   const cascader = document.getElementById("cascader-basic");
   cascader.collection = [
     {
@@ -200,326 +194,20 @@ const area = ref<string[][]>([]);
     },
   ];
 
-  const readout = document.getElementById("cascader-basic-value");
-  cascader.addEventListener("value-change", (event) => {
-    const path = event.detail.value[0];
-    readout.textContent = path ? path.join(" / ") : "（未选）";
-  });
 </script>
 ```
+
+## 组件结构
+
+加粗的是必需部件。
+
+`data-scope="cascader"`：`root` · `hidden-input` · `label` · `control` · **`trigger`** · `value-text` · `indicator` · `clear-trigger` · `positioner` · **`content`** · `input` · `search-list` · `search-item` · `column` · `group` · `group-label` · `item` · `item-text` · `item-indicator` · `empty` · `loading` · `footer`
 
 ## 示例
 
-### 中间层可选
-
-change-on-select 让分支自己也能落值；选中分支后浮层不收起，还能接着往下挑
-
-```vue
-<script setup lang="ts">
-import {
-  XhCascaderClearTrigger,
-  XhCascaderColumn,
-  XhCascaderContent,
-  XhCascaderControl,
-  XhCascaderIndicator,
-  XhCascaderItem,
-  XhCascaderItemIndicator,
-  XhCascaderItemText,
-  XhCascaderLabel,
-  XhCascaderPositioner,
-  XhCascaderRoot,
-  XhCascaderTrigger,
-  XhCascaderValueText,
-} from "@xihan-ui/vue";
-import { ref } from "vue";
-
-const catalog = [
-  {
-    value: "docs",
-    label: "文档",
-    children: [
-      { value: "guide", label: "指南" },
-      { value: "api", label: "接口" },
-    ],
-  },
-  {
-    value: "design",
-    label: "设计",
-    children: [
-      { value: "token", label: "设计令牌" },
-      { value: "icon", label: "图标" },
-    ],
-  },
-];
-
-const path = ref<string[][]>([]);
-</script>
-
-<template>
-  <XhCascaderRoot
-    v-slot="{ levels }"
-    v-model:value="path"
-    :collection="catalog"
-    change-on-select
-    separator=" › "
-    placeholder="选一个栏目"
-  >
-    <XhCascaderLabel>栏目</XhCascaderLabel>
-    <XhCascaderControl>
-      <XhCascaderTrigger>
-        <XhCascaderValueText />
-        <XhCascaderIndicator />
-      </XhCascaderTrigger>
-      <XhCascaderClearTrigger />
-    </XhCascaderControl>
-    <XhCascaderPositioner>
-      <XhCascaderContent>
-        <XhCascaderColumn v-for="lv in levels" :key="lv.level" :level="lv.level">
-          <XhCascaderItem v-for="node in lv.items" :key="node.value" :value="node.value">
-            <XhCascaderItemText>{{ node.label }}</XhCascaderItemText>
-            <XhCascaderItemIndicator />
-          </XhCascaderItem>
-        </XhCascaderColumn>
-      </XhCascaderContent>
-    </XhCascaderPositioner>
-  </XhCascaderRoot>
-  <p>当前路径：{{ path.length ? path[0].join(" › ") : "（未选）" }}</p>
-</template>
-```
-
-```html
-<xh-cascader
-  id="cascader-change-on-select"
-  change-on-select
-  separator=" › "
-  placeholder="选一个栏目"
->
-  <div data-xh-part="root">
-    <span data-xh-part="label">栏目</span>
-    <div data-xh-part="control">
-      <button data-xh-part="trigger">
-        <span data-xh-part="value-text"></span>
-        <span data-xh-part="indicator"></span>
-      </button>
-      <button data-xh-part="clear-trigger"></button>
-    </div>
-    <div data-xh-part="positioner">
-      <div data-xh-part="content">
-        <div data-xh-part="column" level="0">
-          <div data-xh-part="item" value="docs">
-            <span data-xh-part="item-text">文档</span>
-            <span data-xh-part="item-indicator"></span>
-          </div>
-          <div data-xh-part="item" value="design">
-            <span data-xh-part="item-text">设计</span>
-            <span data-xh-part="item-indicator"></span>
-          </div>
-        </div>
-        <div data-xh-part="column" level="1">
-          <div data-xh-part="item" value="guide">
-            <span data-xh-part="item-text">指南</span>
-            <span data-xh-part="item-indicator"></span>
-          </div>
-          <div data-xh-part="item" value="api">
-            <span data-xh-part="item-text">接口</span>
-            <span data-xh-part="item-indicator"></span>
-          </div>
-          <div data-xh-part="item" value="token">
-            <span data-xh-part="item-text">设计令牌</span>
-            <span data-xh-part="item-indicator"></span>
-          </div>
-          <div data-xh-part="item" value="icon">
-            <span data-xh-part="item-text">图标</span>
-            <span data-xh-part="item-indicator"></span>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-</xh-cascader>
-<p>当前路径：<span id="cascader-change-on-select-value">（未选）</span></p>
-
-<script type="module">
-  const cascader = document.getElementById("cascader-change-on-select");
-  cascader.collection = [
-    {
-      value: "docs",
-      label: "文档",
-      children: [
-        { value: "guide", label: "指南" },
-        { value: "api", label: "接口" },
-      ],
-    },
-    {
-      value: "design",
-      label: "设计",
-      children: [
-        { value: "token", label: "设计令牌" },
-        { value: "icon", label: "图标" },
-      ],
-    },
-  ];
-
-  const readout = document.getElementById("cascader-change-on-select-value");
-  cascader.addEventListener("value-change", (event) => {
-    const path = event.detail.value[0];
-    readout.textContent = path ? path.join(" › ") : "（未选）";
-  });
-</script>
-```
-
-### 悬停展开
-
-expand-trigger 改成 hover 后，指针划过分支即开子列，只挪展开路径不抢焦点；键盘仍走右方向键
-
-```vue
-<script setup lang="ts">
-import {
-  XhCascaderColumn,
-  XhCascaderContent,
-  XhCascaderControl,
-  XhCascaderIndicator,
-  XhCascaderItem,
-  XhCascaderItemIndicator,
-  XhCascaderItemText,
-  XhCascaderLabel,
-  XhCascaderPositioner,
-  XhCascaderRoot,
-  XhCascaderTrigger,
-  XhCascaderValueText,
-} from "@xihan-ui/vue";
-import { ref } from "vue";
-
-const menu = [
-  {
-    value: "frontend",
-    label: "前端",
-    children: [
-      { value: "vue", label: "Vue" },
-      { value: "wc", label: "Web Components" },
-    ],
-  },
-  {
-    value: "backend",
-    label: "后端",
-    children: [
-      { value: "dotnet", label: ".NET" },
-      { value: "node", label: "Node.js" },
-    ],
-  },
-];
-
-const picked = ref<string[][]>([]);
-</script>
-
-<template>
-  <XhCascaderRoot
-    v-slot="{ levels }"
-    v-model:value="picked"
-    :collection="menu"
-    expand-trigger="hover"
-    placeholder="划过即展开"
-  >
-    <XhCascaderLabel>方向</XhCascaderLabel>
-    <XhCascaderControl>
-      <XhCascaderTrigger>
-        <XhCascaderValueText />
-        <XhCascaderIndicator />
-      </XhCascaderTrigger>
-    </XhCascaderControl>
-    <XhCascaderPositioner>
-      <XhCascaderContent>
-        <XhCascaderColumn v-for="lv in levels" :key="lv.level" :level="lv.level">
-          <XhCascaderItem v-for="node in lv.items" :key="node.value" :value="node.value">
-            <XhCascaderItemText>{{ node.label }}</XhCascaderItemText>
-            <XhCascaderItemIndicator />
-          </XhCascaderItem>
-        </XhCascaderColumn>
-      </XhCascaderContent>
-    </XhCascaderPositioner>
-  </XhCascaderRoot>
-  <p>当前路径：{{ picked.length ? picked[0].join(" / ") : "（未选）" }}</p>
-</template>
-```
-
-```html
-<xh-cascader id="cascader-hover-expand" expand-trigger="hover" placeholder="划过即展开">
-  <div data-xh-part="root">
-    <span data-xh-part="label">方向</span>
-    <div data-xh-part="control">
-      <button data-xh-part="trigger">
-        <span data-xh-part="value-text"></span>
-        <span data-xh-part="indicator"></span>
-      </button>
-    </div>
-    <div data-xh-part="positioner">
-      <div data-xh-part="content">
-        <div data-xh-part="column" level="0">
-          <div data-xh-part="item" value="frontend">
-            <span data-xh-part="item-text">前端</span>
-            <span data-xh-part="item-indicator"></span>
-          </div>
-          <div data-xh-part="item" value="backend">
-            <span data-xh-part="item-text">后端</span>
-            <span data-xh-part="item-indicator"></span>
-          </div>
-        </div>
-        <div data-xh-part="column" level="1">
-          <div data-xh-part="item" value="vue">
-            <span data-xh-part="item-text">Vue</span>
-            <span data-xh-part="item-indicator"></span>
-          </div>
-          <div data-xh-part="item" value="wc">
-            <span data-xh-part="item-text">Web Components</span>
-            <span data-xh-part="item-indicator"></span>
-          </div>
-          <div data-xh-part="item" value="dotnet">
-            <span data-xh-part="item-text">.NET</span>
-            <span data-xh-part="item-indicator"></span>
-          </div>
-          <div data-xh-part="item" value="node">
-            <span data-xh-part="item-text">Node.js</span>
-            <span data-xh-part="item-indicator"></span>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-</xh-cascader>
-<p>当前路径：<span id="cascader-hover-expand-value">（未选）</span></p>
-
-<script type="module">
-  const cascader = document.getElementById("cascader-hover-expand");
-  cascader.collection = [
-    {
-      value: "frontend",
-      label: "前端",
-      children: [
-        { value: "vue", label: "Vue" },
-        { value: "wc", label: "Web Components" },
-      ],
-    },
-    {
-      value: "backend",
-      label: "后端",
-      children: [
-        { value: "dotnet", label: ".NET" },
-        { value: "node", label: "Node.js" },
-      ],
-    },
-  ];
-
-  const readout = document.getElementById("cascader-hover-expand-value");
-  cascader.addEventListener("value-change", (event) => {
-    const path = event.detail.value[0];
-    readout.textContent = path ? path.join(" / ") : "（未选）";
-  });
-</script>
-```
-
 ### 多选
 
-选中的是一组路径，落值后浮层不收起、焦点留在列里接着挑；再点一次即取消
+选择多个分类路径
 
 ```vue
 <script setup lang="ts">
@@ -589,7 +277,6 @@ const picked = ref<string[][]>([["fruit", "apple"]]);
       </XhCascaderContent>
     </XhCascaderPositioner>
   </XhCascaderRoot>
-  <p>已选 {{ picked.length }} 条：{{ picked.map((p) => p.join("/")).join("、") || "（无）" }}</p>
 </template>
 ```
 
@@ -638,7 +325,6 @@ const picked = ref<string[][]>([["fruit", "apple"]]);
     </div>
   </div>
 </xh-cascader>
-<p id="cascader-multiple-value">已选 1 条：fruit/apple</p>
 
 <script type="module">
   const cascader = document.getElementById("cascader-multiple");
@@ -661,806 +347,17 @@ const picked = ref<string[][]>([["fruit", "apple"]]);
     },
   ];
 
-  // 选中路径集合是数组，只走属性；给了它即受控，宿主写回才算数
   cascader.value = [["fruit", "apple"]];
 
-  const readout = document.getElementById("cascader-multiple-value");
   cascader.addEventListener("value-change", (event) => {
     cascader.value = event.detail.value;
-    const text = event.detail.value.map((path) => path.join("/")).join("、");
-    readout.textContent = `已选 ${event.detail.value.length} 条：${text || "（无）"}`;
   });
-</script>
-```
-
-### 形态
-
-variant 只改触发框的底色与描边用法，浮层与列不跟着变
-
-```vue
-<script setup lang="ts">
-import {
-  XhCascaderColumn,
-  XhCascaderContent,
-  XhCascaderControl,
-  XhCascaderIndicator,
-  XhCascaderItem,
-  XhCascaderItemIndicator,
-  XhCascaderItemText,
-  XhCascaderLabel,
-  XhCascaderPositioner,
-  XhCascaderRoot,
-  XhCascaderTrigger,
-  XhCascaderValueText,
-} from "@xihan-ui/vue";
-
-const variants = ["outline", "subtle", "ghost"] as const;
-
-const regions = [
-  {
-    value: "zhejiang",
-    label: "浙江",
-    children: [
-      { value: "hangzhou", label: "杭州" },
-      { value: "ningbo", label: "宁波" },
-    ],
-  },
-  {
-    value: "jiangsu",
-    label: "江苏",
-    children: [{ value: "nanjing", label: "南京" }],
-  },
-];
-</script>
-
-<template>
-  <div style="display: grid; gap: 16px; justify-items: start">
-    <XhCascaderRoot
-      v-for="v in variants"
-      :key="v"
-      v-slot="{ levels }"
-      :variant="v"
-      :collection="regions"
-      placeholder="请选择地区"
-    >
-      <XhCascaderLabel>{{ v }}</XhCascaderLabel>
-      <XhCascaderControl>
-        <XhCascaderTrigger>
-          <XhCascaderValueText />
-          <XhCascaderIndicator />
-        </XhCascaderTrigger>
-      </XhCascaderControl>
-      <XhCascaderPositioner>
-        <XhCascaderContent>
-          <XhCascaderColumn v-for="lv in levels" :key="lv.level" :level="lv.level">
-            <XhCascaderItem v-for="node in lv.items" :key="node.value" :value="node.value">
-              <XhCascaderItemText>{{ node.label }}</XhCascaderItemText>
-              <XhCascaderItemIndicator />
-            </XhCascaderItem>
-          </XhCascaderColumn>
-        </XhCascaderContent>
-      </XhCascaderPositioner>
-    </XhCascaderRoot>
-  </div>
-</template>
-```
-
-```html
-<div id="cascader-variant" style="display: grid; gap: 16px; justify-items: start">
-  <xh-cascader variant="outline" placeholder="请选择地区">
-    <div data-xh-part="root">
-      <span data-xh-part="label">outline</span>
-      <div data-xh-part="control">
-        <button data-xh-part="trigger">
-          <span data-xh-part="value-text"></span>
-          <span data-xh-part="indicator"></span>
-        </button>
-      </div>
-      <div data-xh-part="positioner">
-        <div data-xh-part="content">
-          <div data-xh-part="column" level="0">
-            <div data-xh-part="item" value="zhejiang">
-              <span data-xh-part="item-text">浙江</span>
-              <span data-xh-part="item-indicator"></span>
-            </div>
-            <div data-xh-part="item" value="jiangsu">
-              <span data-xh-part="item-text">江苏</span>
-              <span data-xh-part="item-indicator"></span>
-            </div>
-          </div>
-          <div data-xh-part="column" level="1">
-            <div data-xh-part="item" value="hangzhou">
-              <span data-xh-part="item-text">杭州</span>
-              <span data-xh-part="item-indicator"></span>
-            </div>
-            <div data-xh-part="item" value="ningbo">
-              <span data-xh-part="item-text">宁波</span>
-              <span data-xh-part="item-indicator"></span>
-            </div>
-            <div data-xh-part="item" value="nanjing">
-              <span data-xh-part="item-text">南京</span>
-              <span data-xh-part="item-indicator"></span>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-  </xh-cascader>
-
-  <xh-cascader variant="subtle" placeholder="请选择地区">
-    <div data-xh-part="root">
-      <span data-xh-part="label">subtle</span>
-      <div data-xh-part="control">
-        <button data-xh-part="trigger">
-          <span data-xh-part="value-text"></span>
-          <span data-xh-part="indicator"></span>
-        </button>
-      </div>
-      <div data-xh-part="positioner">
-        <div data-xh-part="content">
-          <div data-xh-part="column" level="0">
-            <div data-xh-part="item" value="zhejiang">
-              <span data-xh-part="item-text">浙江</span>
-              <span data-xh-part="item-indicator"></span>
-            </div>
-            <div data-xh-part="item" value="jiangsu">
-              <span data-xh-part="item-text">江苏</span>
-              <span data-xh-part="item-indicator"></span>
-            </div>
-          </div>
-          <div data-xh-part="column" level="1">
-            <div data-xh-part="item" value="hangzhou">
-              <span data-xh-part="item-text">杭州</span>
-              <span data-xh-part="item-indicator"></span>
-            </div>
-            <div data-xh-part="item" value="ningbo">
-              <span data-xh-part="item-text">宁波</span>
-              <span data-xh-part="item-indicator"></span>
-            </div>
-            <div data-xh-part="item" value="nanjing">
-              <span data-xh-part="item-text">南京</span>
-              <span data-xh-part="item-indicator"></span>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-  </xh-cascader>
-
-  <xh-cascader variant="ghost" placeholder="请选择地区">
-    <div data-xh-part="root">
-      <span data-xh-part="label">ghost</span>
-      <div data-xh-part="control">
-        <button data-xh-part="trigger">
-          <span data-xh-part="value-text"></span>
-          <span data-xh-part="indicator"></span>
-        </button>
-      </div>
-      <div data-xh-part="positioner">
-        <div data-xh-part="content">
-          <div data-xh-part="column" level="0">
-            <div data-xh-part="item" value="zhejiang">
-              <span data-xh-part="item-text">浙江</span>
-              <span data-xh-part="item-indicator"></span>
-            </div>
-            <div data-xh-part="item" value="jiangsu">
-              <span data-xh-part="item-text">江苏</span>
-              <span data-xh-part="item-indicator"></span>
-            </div>
-          </div>
-          <div data-xh-part="column" level="1">
-            <div data-xh-part="item" value="hangzhou">
-              <span data-xh-part="item-text">杭州</span>
-              <span data-xh-part="item-indicator"></span>
-            </div>
-            <div data-xh-part="item" value="ningbo">
-              <span data-xh-part="item-text">宁波</span>
-              <span data-xh-part="item-indicator"></span>
-            </div>
-            <div data-xh-part="item" value="nanjing">
-              <span data-xh-part="item-text">南京</span>
-              <span data-xh-part="item-indicator"></span>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-  </xh-cascader>
-</div>
-
-<script type="module">
-  // 三份形态共用同一份树数据
-  const scope = document.getElementById("cascader-variant");
-  const regions = [
-    {
-      value: "zhejiang",
-      label: "浙江",
-      children: [
-        { value: "hangzhou", label: "杭州" },
-        { value: "ningbo", label: "宁波" },
-      ],
-    },
-    {
-      value: "jiangsu",
-      label: "江苏",
-      children: [{ value: "nanjing", label: "南京" }],
-    },
-  ];
-  for (const cascader of scope.querySelectorAll("xh-cascader")) {
-    cascader.collection = regions;
-  }
-</script>
-```
-
-### 语气
-
-tone 决定用哪族颜色，与 variant 正交；这里固定 subtle 形态，只看语气这一轴
-
-```vue
-<script setup lang="ts">
-import {
-  XhCascaderColumn,
-  XhCascaderContent,
-  XhCascaderControl,
-  XhCascaderIndicator,
-  XhCascaderItem,
-  XhCascaderItemIndicator,
-  XhCascaderItemText,
-  XhCascaderLabel,
-  XhCascaderPositioner,
-  XhCascaderRoot,
-  XhCascaderTrigger,
-  XhCascaderValueText,
-} from "@xihan-ui/vue";
-
-const tones = ["brand", "neutral", "success", "warning", "danger", "info"] as const;
-
-const regions = [
-  {
-    value: "zhejiang",
-    label: "浙江",
-    children: [
-      { value: "hangzhou", label: "杭州" },
-      { value: "ningbo", label: "宁波" },
-    ],
-  },
-  {
-    value: "jiangsu",
-    label: "江苏",
-    children: [{ value: "nanjing", label: "南京" }],
-  },
-];
-</script>
-
-<template>
-  <div style="display: flex; flex-wrap: wrap; gap: 16px">
-    <XhCascaderRoot
-      v-for="t in tones"
-      :key="t"
-      v-slot="{ levels }"
-      variant="subtle"
-      :tone="t"
-      :collection="regions"
-      placeholder="请选择地区"
-    >
-      <XhCascaderLabel>{{ t }}</XhCascaderLabel>
-      <XhCascaderControl>
-        <XhCascaderTrigger>
-          <XhCascaderValueText />
-          <XhCascaderIndicator />
-        </XhCascaderTrigger>
-      </XhCascaderControl>
-      <XhCascaderPositioner>
-        <XhCascaderContent>
-          <XhCascaderColumn v-for="lv in levels" :key="lv.level" :level="lv.level">
-            <XhCascaderItem v-for="node in lv.items" :key="node.value" :value="node.value">
-              <XhCascaderItemText>{{ node.label }}</XhCascaderItemText>
-              <XhCascaderItemIndicator />
-            </XhCascaderItem>
-          </XhCascaderColumn>
-        </XhCascaderContent>
-      </XhCascaderPositioner>
-    </XhCascaderRoot>
-  </div>
-</template>
-```
-
-```html
-<div id="cascader-tone" style="display: flex; flex-wrap: wrap; gap: 16px">
-  <xh-cascader variant="subtle" tone="brand" placeholder="请选择地区">
-    <div data-xh-part="root">
-      <span data-xh-part="label">brand</span>
-      <div data-xh-part="control">
-        <button data-xh-part="trigger">
-          <span data-xh-part="value-text"></span>
-          <span data-xh-part="indicator"></span>
-        </button>
-      </div>
-      <div data-xh-part="positioner">
-        <div data-xh-part="content">
-          <div data-xh-part="column" level="0">
-            <div data-xh-part="item" value="zhejiang">
-              <span data-xh-part="item-text">浙江</span>
-              <span data-xh-part="item-indicator"></span>
-            </div>
-            <div data-xh-part="item" value="jiangsu">
-              <span data-xh-part="item-text">江苏</span>
-              <span data-xh-part="item-indicator"></span>
-            </div>
-          </div>
-          <div data-xh-part="column" level="1">
-            <div data-xh-part="item" value="hangzhou">
-              <span data-xh-part="item-text">杭州</span>
-              <span data-xh-part="item-indicator"></span>
-            </div>
-            <div data-xh-part="item" value="ningbo">
-              <span data-xh-part="item-text">宁波</span>
-              <span data-xh-part="item-indicator"></span>
-            </div>
-            <div data-xh-part="item" value="nanjing">
-              <span data-xh-part="item-text">南京</span>
-              <span data-xh-part="item-indicator"></span>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-  </xh-cascader>
-
-  <xh-cascader variant="subtle" tone="neutral" placeholder="请选择地区">
-    <div data-xh-part="root">
-      <span data-xh-part="label">neutral</span>
-      <div data-xh-part="control">
-        <button data-xh-part="trigger">
-          <span data-xh-part="value-text"></span>
-          <span data-xh-part="indicator"></span>
-        </button>
-      </div>
-      <div data-xh-part="positioner">
-        <div data-xh-part="content">
-          <div data-xh-part="column" level="0">
-            <div data-xh-part="item" value="zhejiang">
-              <span data-xh-part="item-text">浙江</span>
-              <span data-xh-part="item-indicator"></span>
-            </div>
-            <div data-xh-part="item" value="jiangsu">
-              <span data-xh-part="item-text">江苏</span>
-              <span data-xh-part="item-indicator"></span>
-            </div>
-          </div>
-          <div data-xh-part="column" level="1">
-            <div data-xh-part="item" value="hangzhou">
-              <span data-xh-part="item-text">杭州</span>
-              <span data-xh-part="item-indicator"></span>
-            </div>
-            <div data-xh-part="item" value="ningbo">
-              <span data-xh-part="item-text">宁波</span>
-              <span data-xh-part="item-indicator"></span>
-            </div>
-            <div data-xh-part="item" value="nanjing">
-              <span data-xh-part="item-text">南京</span>
-              <span data-xh-part="item-indicator"></span>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-  </xh-cascader>
-
-  <xh-cascader variant="subtle" tone="success" placeholder="请选择地区">
-    <div data-xh-part="root">
-      <span data-xh-part="label">success</span>
-      <div data-xh-part="control">
-        <button data-xh-part="trigger">
-          <span data-xh-part="value-text"></span>
-          <span data-xh-part="indicator"></span>
-        </button>
-      </div>
-      <div data-xh-part="positioner">
-        <div data-xh-part="content">
-          <div data-xh-part="column" level="0">
-            <div data-xh-part="item" value="zhejiang">
-              <span data-xh-part="item-text">浙江</span>
-              <span data-xh-part="item-indicator"></span>
-            </div>
-            <div data-xh-part="item" value="jiangsu">
-              <span data-xh-part="item-text">江苏</span>
-              <span data-xh-part="item-indicator"></span>
-            </div>
-          </div>
-          <div data-xh-part="column" level="1">
-            <div data-xh-part="item" value="hangzhou">
-              <span data-xh-part="item-text">杭州</span>
-              <span data-xh-part="item-indicator"></span>
-            </div>
-            <div data-xh-part="item" value="ningbo">
-              <span data-xh-part="item-text">宁波</span>
-              <span data-xh-part="item-indicator"></span>
-            </div>
-            <div data-xh-part="item" value="nanjing">
-              <span data-xh-part="item-text">南京</span>
-              <span data-xh-part="item-indicator"></span>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-  </xh-cascader>
-
-  <xh-cascader variant="subtle" tone="warning" placeholder="请选择地区">
-    <div data-xh-part="root">
-      <span data-xh-part="label">warning</span>
-      <div data-xh-part="control">
-        <button data-xh-part="trigger">
-          <span data-xh-part="value-text"></span>
-          <span data-xh-part="indicator"></span>
-        </button>
-      </div>
-      <div data-xh-part="positioner">
-        <div data-xh-part="content">
-          <div data-xh-part="column" level="0">
-            <div data-xh-part="item" value="zhejiang">
-              <span data-xh-part="item-text">浙江</span>
-              <span data-xh-part="item-indicator"></span>
-            </div>
-            <div data-xh-part="item" value="jiangsu">
-              <span data-xh-part="item-text">江苏</span>
-              <span data-xh-part="item-indicator"></span>
-            </div>
-          </div>
-          <div data-xh-part="column" level="1">
-            <div data-xh-part="item" value="hangzhou">
-              <span data-xh-part="item-text">杭州</span>
-              <span data-xh-part="item-indicator"></span>
-            </div>
-            <div data-xh-part="item" value="ningbo">
-              <span data-xh-part="item-text">宁波</span>
-              <span data-xh-part="item-indicator"></span>
-            </div>
-            <div data-xh-part="item" value="nanjing">
-              <span data-xh-part="item-text">南京</span>
-              <span data-xh-part="item-indicator"></span>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-  </xh-cascader>
-
-  <xh-cascader variant="subtle" tone="danger" placeholder="请选择地区">
-    <div data-xh-part="root">
-      <span data-xh-part="label">danger</span>
-      <div data-xh-part="control">
-        <button data-xh-part="trigger">
-          <span data-xh-part="value-text"></span>
-          <span data-xh-part="indicator"></span>
-        </button>
-      </div>
-      <div data-xh-part="positioner">
-        <div data-xh-part="content">
-          <div data-xh-part="column" level="0">
-            <div data-xh-part="item" value="zhejiang">
-              <span data-xh-part="item-text">浙江</span>
-              <span data-xh-part="item-indicator"></span>
-            </div>
-            <div data-xh-part="item" value="jiangsu">
-              <span data-xh-part="item-text">江苏</span>
-              <span data-xh-part="item-indicator"></span>
-            </div>
-          </div>
-          <div data-xh-part="column" level="1">
-            <div data-xh-part="item" value="hangzhou">
-              <span data-xh-part="item-text">杭州</span>
-              <span data-xh-part="item-indicator"></span>
-            </div>
-            <div data-xh-part="item" value="ningbo">
-              <span data-xh-part="item-text">宁波</span>
-              <span data-xh-part="item-indicator"></span>
-            </div>
-            <div data-xh-part="item" value="nanjing">
-              <span data-xh-part="item-text">南京</span>
-              <span data-xh-part="item-indicator"></span>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-  </xh-cascader>
-
-  <xh-cascader variant="subtle" tone="info" placeholder="请选择地区">
-    <div data-xh-part="root">
-      <span data-xh-part="label">info</span>
-      <div data-xh-part="control">
-        <button data-xh-part="trigger">
-          <span data-xh-part="value-text"></span>
-          <span data-xh-part="indicator"></span>
-        </button>
-      </div>
-      <div data-xh-part="positioner">
-        <div data-xh-part="content">
-          <div data-xh-part="column" level="0">
-            <div data-xh-part="item" value="zhejiang">
-              <span data-xh-part="item-text">浙江</span>
-              <span data-xh-part="item-indicator"></span>
-            </div>
-            <div data-xh-part="item" value="jiangsu">
-              <span data-xh-part="item-text">江苏</span>
-              <span data-xh-part="item-indicator"></span>
-            </div>
-          </div>
-          <div data-xh-part="column" level="1">
-            <div data-xh-part="item" value="hangzhou">
-              <span data-xh-part="item-text">杭州</span>
-              <span data-xh-part="item-indicator"></span>
-            </div>
-            <div data-xh-part="item" value="ningbo">
-              <span data-xh-part="item-text">宁波</span>
-              <span data-xh-part="item-indicator"></span>
-            </div>
-            <div data-xh-part="item" value="nanjing">
-              <span data-xh-part="item-text">南京</span>
-              <span data-xh-part="item-indicator"></span>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-  </xh-cascader>
-</div>
-
-<script type="module">
-  // 六份语气共用同一份树数据
-  const scope = document.getElementById("cascader-tone");
-  const regions = [
-    {
-      value: "zhejiang",
-      label: "浙江",
-      children: [
-        { value: "hangzhou", label: "杭州" },
-        { value: "ningbo", label: "宁波" },
-      ],
-    },
-    {
-      value: "jiangsu",
-      label: "江苏",
-      children: [{ value: "nanjing", label: "南京" }],
-    },
-  ];
-  for (const cascader of scope.querySelectorAll("xh-cascader")) {
-    cascader.collection = regions;
-  }
-</script>
-```
-
-### 尺寸
-
-不传 size 即默认档；触发框与列里的条目一起换档
-
-```vue
-<script setup lang="ts">
-import {
-  XhCascaderColumn,
-  XhCascaderContent,
-  XhCascaderControl,
-  XhCascaderIndicator,
-  XhCascaderItem,
-  XhCascaderItemIndicator,
-  XhCascaderItemText,
-  XhCascaderLabel,
-  XhCascaderPositioner,
-  XhCascaderRoot,
-  XhCascaderTrigger,
-  XhCascaderValueText,
-} from "@xihan-ui/vue";
-
-const sizes = [
-  { size: "sm", label: "sm" },
-  { size: undefined, label: "默认" },
-  { size: "lg", label: "lg" },
-];
-
-const regions = [
-  {
-    value: "zhejiang",
-    label: "浙江",
-    children: [
-      { value: "hangzhou", label: "杭州" },
-      { value: "ningbo", label: "宁波" },
-    ],
-  },
-  {
-    value: "jiangsu",
-    label: "江苏",
-    children: [{ value: "nanjing", label: "南京" }],
-  },
-];
-</script>
-
-<template>
-  <div style="display: flex; flex-wrap: wrap; align-items: flex-end; gap: 16px">
-    <XhCascaderRoot
-      v-for="s in sizes"
-      :key="s.label"
-      v-slot="{ levels }"
-      :size="s.size"
-      :collection="regions"
-      placeholder="请选择地区"
-    >
-      <XhCascaderLabel>{{ s.label }}</XhCascaderLabel>
-      <XhCascaderControl>
-        <XhCascaderTrigger>
-          <XhCascaderValueText />
-          <XhCascaderIndicator />
-        </XhCascaderTrigger>
-      </XhCascaderControl>
-      <XhCascaderPositioner>
-        <XhCascaderContent>
-          <XhCascaderColumn v-for="lv in levels" :key="lv.level" :level="lv.level">
-            <XhCascaderItem v-for="node in lv.items" :key="node.value" :value="node.value">
-              <XhCascaderItemText>{{ node.label }}</XhCascaderItemText>
-              <XhCascaderItemIndicator />
-            </XhCascaderItem>
-          </XhCascaderColumn>
-        </XhCascaderContent>
-      </XhCascaderPositioner>
-    </XhCascaderRoot>
-  </div>
-</template>
-```
-
-```html
-<div
-  id="cascader-size"
-  style="display: flex; flex-wrap: wrap; align-items: flex-end; gap: 16px"
->
-  <xh-cascader size="sm" placeholder="请选择地区">
-    <div data-xh-part="root">
-      <span data-xh-part="label">sm</span>
-      <div data-xh-part="control">
-        <button data-xh-part="trigger">
-          <span data-xh-part="value-text"></span>
-          <span data-xh-part="indicator"></span>
-        </button>
-      </div>
-      <div data-xh-part="positioner">
-        <div data-xh-part="content">
-          <div data-xh-part="column" level="0">
-            <div data-xh-part="item" value="zhejiang">
-              <span data-xh-part="item-text">浙江</span>
-              <span data-xh-part="item-indicator"></span>
-            </div>
-            <div data-xh-part="item" value="jiangsu">
-              <span data-xh-part="item-text">江苏</span>
-              <span data-xh-part="item-indicator"></span>
-            </div>
-          </div>
-          <div data-xh-part="column" level="1">
-            <div data-xh-part="item" value="hangzhou">
-              <span data-xh-part="item-text">杭州</span>
-              <span data-xh-part="item-indicator"></span>
-            </div>
-            <div data-xh-part="item" value="ningbo">
-              <span data-xh-part="item-text">宁波</span>
-              <span data-xh-part="item-indicator"></span>
-            </div>
-            <div data-xh-part="item" value="nanjing">
-              <span data-xh-part="item-text">南京</span>
-              <span data-xh-part="item-indicator"></span>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-  </xh-cascader>
-
-  <!-- 中间一档不写 size -->
-  <xh-cascader placeholder="请选择地区">
-    <div data-xh-part="root">
-      <span data-xh-part="label">默认</span>
-      <div data-xh-part="control">
-        <button data-xh-part="trigger">
-          <span data-xh-part="value-text"></span>
-          <span data-xh-part="indicator"></span>
-        </button>
-      </div>
-      <div data-xh-part="positioner">
-        <div data-xh-part="content">
-          <div data-xh-part="column" level="0">
-            <div data-xh-part="item" value="zhejiang">
-              <span data-xh-part="item-text">浙江</span>
-              <span data-xh-part="item-indicator"></span>
-            </div>
-            <div data-xh-part="item" value="jiangsu">
-              <span data-xh-part="item-text">江苏</span>
-              <span data-xh-part="item-indicator"></span>
-            </div>
-          </div>
-          <div data-xh-part="column" level="1">
-            <div data-xh-part="item" value="hangzhou">
-              <span data-xh-part="item-text">杭州</span>
-              <span data-xh-part="item-indicator"></span>
-            </div>
-            <div data-xh-part="item" value="ningbo">
-              <span data-xh-part="item-text">宁波</span>
-              <span data-xh-part="item-indicator"></span>
-            </div>
-            <div data-xh-part="item" value="nanjing">
-              <span data-xh-part="item-text">南京</span>
-              <span data-xh-part="item-indicator"></span>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-  </xh-cascader>
-  <xh-cascader size="lg" placeholder="请选择地区">
-    <div data-xh-part="root">
-      <span data-xh-part="label">lg</span>
-      <div data-xh-part="control">
-        <button data-xh-part="trigger">
-          <span data-xh-part="value-text"></span>
-          <span data-xh-part="indicator"></span>
-        </button>
-      </div>
-      <div data-xh-part="positioner">
-        <div data-xh-part="content">
-          <div data-xh-part="column" level="0">
-            <div data-xh-part="item" value="zhejiang">
-              <span data-xh-part="item-text">浙江</span>
-              <span data-xh-part="item-indicator"></span>
-            </div>
-            <div data-xh-part="item" value="jiangsu">
-              <span data-xh-part="item-text">江苏</span>
-              <span data-xh-part="item-indicator"></span>
-            </div>
-          </div>
-          <div data-xh-part="column" level="1">
-            <div data-xh-part="item" value="hangzhou">
-              <span data-xh-part="item-text">杭州</span>
-              <span data-xh-part="item-indicator"></span>
-            </div>
-            <div data-xh-part="item" value="ningbo">
-              <span data-xh-part="item-text">宁波</span>
-              <span data-xh-part="item-indicator"></span>
-            </div>
-            <div data-xh-part="item" value="nanjing">
-              <span data-xh-part="item-text">南京</span>
-              <span data-xh-part="item-indicator"></span>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-  </xh-cascader>
-</div>
-
-<script type="module">
-  // 三个尺寸档共用同一份树数据
-  const scope = document.getElementById("cascader-size");
-  const regions = [
-    {
-      value: "zhejiang",
-      label: "浙江",
-      children: [
-        { value: "hangzhou", label: "杭州" },
-        { value: "ningbo", label: "宁波" },
-      ],
-    },
-    {
-      value: "jiangsu",
-      label: "江苏",
-      children: [{ value: "nanjing", label: "南京" }],
-    },
-  ];
-  for (const cascader of scope.querySelectorAll("xh-cascader")) {
-    cascader.collection = regions;
-  }
 </script>
 ```
 
 ### 校验状态
 
-invalid 让 trigger 报 aria-invalid、描边换成错误色；浮层照常展开，判定归宿主，这里是没选就报错
+清晰标记必填错误
 
 ```vue
 <script setup lang="ts">
@@ -1501,7 +398,6 @@ const departments = [
 ];
 
 const dept = ref<string[][]>([]);
-// 校验归宿主，组件只负责把这个结论铺成属性
 const invalid = computed(() => dept.value.length === 0);
 </script>
 
@@ -1604,7 +500,6 @@ const invalid = computed(() => dept.value.length === 0);
     },
   ];
 
-  // 校验归宿主，组件只负责把这个结论铺成属性
   const message = document.getElementById("cascader-invalid-message");
   cascader.addEventListener("value-change", (event) => {
     const invalid = event.detail.value.length === 0;
@@ -1614,418 +509,9 @@ const invalid = computed(() => dept.value.length === 0);
 </script>
 ```
 
-### 后端字段映射
+### 懒加载
 
-collection 只认 value / label / disabled / children 这几个名字，后端字段不一致就在进组件前转一道
-
-```vue
-<script setup lang="ts">
-import {
-  XhCascaderColumn,
-  XhCascaderContent,
-  XhCascaderControl,
-  XhCascaderIndicator,
-  XhCascaderItem,
-  XhCascaderItemIndicator,
-  XhCascaderItemText,
-  XhCascaderLabel,
-  XhCascaderPositioner,
-  XhCascaderRoot,
-  XhCascaderTrigger,
-  XhCascaderValueText,
-} from "@xihan-ui/vue";
-import { ref } from "vue";
-
-// 后端原样返回的树：键名与组件对不上
-interface RawNode {
-  code: string;
-  name: string;
-  frozen?: boolean;
-  sub?: RawNode[];
-}
-
-interface RegionNode {
-  value: string;
-  label: string;
-  disabled?: boolean;
-  children?: RegionNode[];
-}
-
-const raw: RawNode[] = [
-  {
-    code: "east",
-    name: "华东",
-    sub: [
-      {
-        code: "shanghai",
-        name: "上海",
-        sub: [
-          { code: "pudong", name: "浦东新区" },
-          { code: "xuhui", name: "徐汇区" },
-        ],
-      },
-      {
-        code: "hangzhou",
-        name: "杭州",
-        sub: [{ code: "xihu", name: "西湖区" }],
-      },
-    ],
-  },
-  {
-    code: "south",
-    name: "华南",
-    sub: [
-      {
-        code: "guangzhou",
-        name: "广州",
-        sub: [{ code: "tianhe", name: "天河区" }],
-      },
-      { code: "shenzhen", name: "深圳", frozen: true },
-    ],
-  },
-];
-
-function toNodes(list: RawNode[]): RegionNode[] {
-  return list.map(item => ({
-    value: item.code,
-    label: item.name,
-    disabled: item.frozen,
-    children: item.sub ? toNodes(item.sub) : undefined,
-  }));
-}
-
-const regions = toNodes(raw);
-const area = ref<string[][]>([]);
-</script>
-
-<template>
-  <XhCascaderRoot
-    v-slot="{ levels }"
-    v-model:value="area"
-    :collection="regions"
-    placeholder="请选择服务区域"
-  >
-    <XhCascaderLabel>服务区域</XhCascaderLabel>
-    <XhCascaderControl>
-      <XhCascaderTrigger>
-        <XhCascaderValueText />
-        <XhCascaderIndicator />
-      </XhCascaderTrigger>
-    </XhCascaderControl>
-    <XhCascaderPositioner>
-      <XhCascaderContent>
-        <XhCascaderColumn v-for="lv in levels" :key="lv.level" :level="lv.level">
-          <XhCascaderItem v-for="node in lv.items" :key="node.value" :value="node.value">
-            <XhCascaderItemText>{{ node.label }}</XhCascaderItemText>
-            <XhCascaderItemIndicator />
-          </XhCascaderItem>
-        </XhCascaderColumn>
-      </XhCascaderContent>
-    </XhCascaderPositioner>
-  </XhCascaderRoot>
-  <p>选中的是转换后的 value：{{ area.length ? area[0].join(" / ") : "（未选）" }}</p>
-</template>
-```
-
-```html
-<xh-cascader id="cascader-custom-field" placeholder="请选择服务区域">
-  <div data-xh-part="root">
-    <span data-xh-part="label">服务区域</span>
-    <div data-xh-part="control">
-      <button data-xh-part="trigger">
-        <span data-xh-part="value-text"></span>
-        <span data-xh-part="indicator"></span>
-      </button>
-    </div>
-    <div data-xh-part="positioner">
-      <div data-xh-part="content">
-        <div data-xh-part="column" level="0">
-          <div data-xh-part="item" value="east">
-            <span data-xh-part="item-text">华东</span>
-            <span data-xh-part="item-indicator"></span>
-          </div>
-          <div data-xh-part="item" value="south">
-            <span data-xh-part="item-text">华南</span>
-            <span data-xh-part="item-indicator"></span>
-          </div>
-        </div>
-        <div data-xh-part="column" level="1">
-          <div data-xh-part="item" value="shanghai">
-            <span data-xh-part="item-text">上海</span>
-            <span data-xh-part="item-indicator"></span>
-          </div>
-          <div data-xh-part="item" value="hangzhou">
-            <span data-xh-part="item-text">杭州</span>
-            <span data-xh-part="item-indicator"></span>
-          </div>
-          <div data-xh-part="item" value="guangzhou">
-            <span data-xh-part="item-text">广州</span>
-            <span data-xh-part="item-indicator"></span>
-          </div>
-          <div data-xh-part="item" value="shenzhen">
-            <span data-xh-part="item-text">深圳</span>
-            <span data-xh-part="item-indicator"></span>
-          </div>
-        </div>
-        <div data-xh-part="column" level="2">
-          <div data-xh-part="item" value="pudong">
-            <span data-xh-part="item-text">浦东新区</span>
-            <span data-xh-part="item-indicator"></span>
-          </div>
-          <div data-xh-part="item" value="xuhui">
-            <span data-xh-part="item-text">徐汇区</span>
-            <span data-xh-part="item-indicator"></span>
-          </div>
-          <div data-xh-part="item" value="xihu">
-            <span data-xh-part="item-text">西湖区</span>
-            <span data-xh-part="item-indicator"></span>
-          </div>
-          <div data-xh-part="item" value="tianhe">
-            <span data-xh-part="item-text">天河区</span>
-            <span data-xh-part="item-indicator"></span>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-</xh-cascader>
-<p>选中的是转换后的 value：<span id="cascader-custom-field-value">（未选）</span></p>
-
-<script type="module">
-  // 后端原样返回的树：键名与组件对不上
-  const raw = [
-    {
-      code: "east",
-      name: "华东",
-      sub: [
-        {
-          code: "shanghai",
-          name: "上海",
-          sub: [
-            { code: "pudong", name: "浦东新区" },
-            { code: "xuhui", name: "徐汇区" },
-          ],
-        },
-        {
-          code: "hangzhou",
-          name: "杭州",
-          sub: [{ code: "xihu", name: "西湖区" }],
-        },
-      ],
-    },
-    {
-      code: "south",
-      name: "华南",
-      sub: [
-        {
-          code: "guangzhou",
-          name: "广州",
-          sub: [{ code: "tianhe", name: "天河区" }],
-        },
-        { code: "shenzhen", name: "深圳", frozen: true },
-      ],
-    },
-  ];
-
-  function toNodes(list) {
-    return list.map((item) => ({
-      value: item.code,
-      label: item.name,
-      disabled: item.frozen,
-      children: item.sub ? toNodes(item.sub) : undefined,
-    }));
-  }
-
-  const cascader = document.getElementById("cascader-custom-field");
-  cascader.collection = toNodes(raw);
-
-  const readout = document.getElementById("cascader-custom-field-value");
-  cascader.addEventListener("value-change", (event) => {
-    const path = event.detail.value[0];
-    readout.textContent = path ? path.join(" / ") : "（未选）";
-  });
-</script>
-```
-
-### 条目自定义内容
-
-条目里放什么由作者定：文本后面加一段附加信息，分支箭头由皮肤自动画
-
-```vue
-<script setup lang="ts">
-import {
-  XhCascaderColumn,
-  XhCascaderContent,
-  XhCascaderControl,
-  XhCascaderIndicator,
-  XhCascaderItem,
-  XhCascaderItemIndicator,
-  XhCascaderItemText,
-  XhCascaderLabel,
-  XhCascaderPositioner,
-  XhCascaderRoot,
-  XhCascaderTrigger,
-  XhCascaderValueText,
-} from "@xihan-ui/vue";
-import { ref } from "vue";
-
-const org = [
-  {
-    value: "product",
-    label: "产品线",
-    children: [
-      { value: "design", label: "设计组" },
-      { value: "research", label: "用研组" },
-    ],
-  },
-  {
-    value: "tech",
-    label: "技术线",
-    children: [
-      { value: "web", label: "前端组" },
-      { value: "server", label: "服务端组" },
-    ],
-  },
-];
-
-// 条目上的附加信息由作者自己按值查，组件只管值与层级
-const headcount: Record<string, number> = {
-  product: 18,
-  design: 11,
-  research: 7,
-  tech: 32,
-  web: 14,
-  server: 18,
-};
-
-const dept = ref<string[][]>([]);
-</script>
-
-<template>
-  <XhCascaderRoot
-    v-slot="{ levels }"
-    v-model:value="dept"
-    :collection="org"
-    placeholder="请选择团队"
-  >
-    <XhCascaderLabel>团队</XhCascaderLabel>
-    <XhCascaderControl>
-      <XhCascaderTrigger>
-        <XhCascaderValueText />
-        <XhCascaderIndicator />
-      </XhCascaderTrigger>
-    </XhCascaderControl>
-    <XhCascaderPositioner>
-      <XhCascaderContent>
-        <XhCascaderColumn v-for="lv in levels" :key="lv.level" :level="lv.level">
-          <XhCascaderItem v-for="node in lv.items" :key="node.value" :value="node.value">
-            <XhCascaderItemText>{{ node.label }}</XhCascaderItemText>
-            <span style="flex: none; color: var(--xh-fg-subtle); font-size: 12px">
-              {{ headcount[node.value] }} 人
-            </span>
-            <XhCascaderItemIndicator />
-          </XhCascaderItem>
-        </XhCascaderColumn>
-      </XhCascaderContent>
-    </XhCascaderPositioner>
-  </XhCascaderRoot>
-  <p>当前团队：{{ dept.length ? dept[0].join(" / ") : "（未选）" }}</p>
-</template>
-```
-
-```html
-<style>
-  #cascader-rich-item [data-headcount] {
-    flex: none;
-    color: var(--xh-fg-subtle);
-    font-size: 12px;
-  }
-</style>
-
-<xh-cascader id="cascader-rich-item" placeholder="请选择团队">
-  <div data-xh-part="root">
-    <span data-xh-part="label">团队</span>
-    <div data-xh-part="control">
-      <button data-xh-part="trigger">
-        <span data-xh-part="value-text"></span>
-        <span data-xh-part="indicator"></span>
-      </button>
-    </div>
-    <div data-xh-part="positioner">
-      <div data-xh-part="content">
-        <div data-xh-part="column" level="0">
-          <div data-xh-part="item" value="product">
-            <span data-xh-part="item-text">产品线</span>
-            <!-- 条目上的附加信息由作者自己写，组件只管值与层级 -->
-            <span data-headcount>18 人</span>
-            <span data-xh-part="item-indicator"></span>
-          </div>
-          <div data-xh-part="item" value="tech">
-            <span data-xh-part="item-text">技术线</span>
-            <span data-headcount>32 人</span>
-            <span data-xh-part="item-indicator"></span>
-          </div>
-        </div>
-        <div data-xh-part="column" level="1">
-          <div data-xh-part="item" value="design">
-            <span data-xh-part="item-text">设计组</span>
-            <span data-headcount>11 人</span>
-            <span data-xh-part="item-indicator"></span>
-          </div>
-          <div data-xh-part="item" value="research">
-            <span data-xh-part="item-text">用研组</span>
-            <span data-headcount>7 人</span>
-            <span data-xh-part="item-indicator"></span>
-          </div>
-          <div data-xh-part="item" value="web">
-            <span data-xh-part="item-text">前端组</span>
-            <span data-headcount>14 人</span>
-            <span data-xh-part="item-indicator"></span>
-          </div>
-          <div data-xh-part="item" value="server">
-            <span data-xh-part="item-text">服务端组</span>
-            <span data-headcount>18 人</span>
-            <span data-xh-part="item-indicator"></span>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-</xh-cascader>
-<p>当前团队：<span id="cascader-rich-item-value">（未选）</span></p>
-
-<script type="module">
-  const cascader = document.getElementById("cascader-rich-item");
-  cascader.collection = [
-    {
-      value: "product",
-      label: "产品线",
-      children: [
-        { value: "design", label: "设计组" },
-        { value: "research", label: "用研组" },
-      ],
-    },
-    {
-      value: "tech",
-      label: "技术线",
-      children: [
-        { value: "web", label: "前端组" },
-        { value: "server", label: "服务端组" },
-      ],
-    },
-  ];
-
-  const readout = document.getElementById("cascader-rich-item-value");
-  cascader.addEventListener("value-change", (event) => {
-    const path = event.detail.value[0];
-    readout.textContent = path ? path.join(" / ") : "（未选）";
-  });
-</script>
-```
-
-### 子节点按需加载
-
-先给分支塞一个禁用的占位子节点让子列开得出来，展开到它时才去取真数据换掉占位
+展开分支时加载下一层数据
 
 ```vue
 <script setup lang="ts">
@@ -2094,14 +580,11 @@ function load(value: string) {
     loaded.value = [...loaded.value, value];
   }, 800);
 }
-
-const area = ref<string[][]>([]);
 </script>
 
 <template>
   <XhCascaderRoot
     v-slot="{ levels }"
-    v-model:value="area"
     :collection="regions"
     placeholder="请选择地区"
   >
@@ -2123,31 +606,16 @@ const area = ref<string[][]>([]);
             @focus="load(node.value)"
           >
             <XhCascaderItemText>{{ node.label }}</XhCascaderItemText>
-            <span
-              v-if="loading.includes(node.value)"
-              style="flex: none; color: var(--xh-fg-subtle); font-size: 12px"
-            >
-              取数中
-            </span>
             <XhCascaderItemIndicator />
           </XhCascaderItem>
         </XhCascaderColumn>
       </XhCascaderContent>
     </XhCascaderPositioner>
   </XhCascaderRoot>
-  <p>当前路径：{{ area.length ? area[0].join(" / ") : "（未选）" }}</p>
 </template>
 ```
 
 ```html
-<style>
-  #cascader-lazy-load .lazy-hint {
-    flex: none;
-    color: var(--xh-fg-subtle);
-    font-size: 12px;
-  }
-</style>
-
 <xh-cascader id="cascader-lazy-load" placeholder="请选择地区">
   <div data-xh-part="root">
     <span data-xh-part="label">收货地区</span>
@@ -2162,12 +630,10 @@ const area = ref<string[][]>([]);
         <div data-xh-part="column" level="0">
           <div data-xh-part="item" value="zhejiang">
             <span data-xh-part="item-text">浙江</span>
-            <span class="lazy-hint" hidden>取数中</span>
             <span data-xh-part="item-indicator"></span>
           </div>
           <div data-xh-part="item" value="jiangsu">
             <span data-xh-part="item-text">江苏</span>
-            <span class="lazy-hint" hidden>取数中</span>
             <span data-xh-part="item-indicator"></span>
           </div>
         </div>
@@ -2185,7 +651,6 @@ const area = ref<string[][]>([]);
     </div>
   </div>
 </xh-cascader>
-<p>当前路径：<span id="cascader-lazy-load-value">（未选）</span></p>
 
 <script type="module">
   const cascader = document.getElementById("cascader-lazy-load");
@@ -2235,12 +700,6 @@ const area = ref<string[][]>([]);
     level1.replaceChildren(...nodes);
   }
 
-  function setBusy(value, busy) {
-    cascader.querySelector(
-      `[data-xh-part="item"][value="${value}"] .lazy-hint`,
-    ).hidden = !busy;
-  }
-
   const loading = new Set();
   const loaded = new Set();
 
@@ -2249,12 +708,10 @@ const area = ref<string[][]>([]);
     const children = remote[value];
     if (!children || loading.has(value) || loaded.has(value)) return;
     loading.add(value);
-    setBusy(value, true);
     setTimeout(() => {
       regions.find((node) => node.value === value).children = children;
       loading.delete(value);
       loaded.add(value);
-      setBusy(value, false);
       renderLevel1();
       cascader.collection = [...regions];
     }, 800);
@@ -2268,1055 +725,12 @@ const area = ref<string[][]>([]);
     item.addEventListener("focus", () => load(value));
   }
 
-  const readout = document.getElementById("cascader-lazy-load-value");
-  cascader.addEventListener("value-change", (event) => {
-    const path = event.detail.value[0];
-    readout.textContent = path ? path.join(" / ") : "（未选）";
-  });
-</script>
-```
-
-### 长列表只渲可视区
-
-列自己就是滚动容器：按滚动位置切一段挂出来，其余交给撑高块，焦点那一条无论在不在窗口里都挂着
-
-```vue
-<script setup lang="ts">
-import {
-  XhCascaderColumn,
-  XhCascaderContent,
-  XhCascaderControl,
-  XhCascaderIndicator,
-  XhCascaderItem,
-  XhCascaderItemIndicator,
-  XhCascaderItemText,
-  XhCascaderLabel,
-  XhCascaderPositioner,
-  XhCascaderRoot,
-  XhCascaderTrigger,
-  XhCascaderValueText,
-} from "@xihan-ui/vue";
-import { nextTick, ref } from "vue";
-
-// 行高与列高写死，窗口才算得出来
-const ROW = 32;
-const VIEW = 256;
-const OVERSCAN = 6;
-
-interface ColumnItem {
-  value: string;
-  label: string;
-}
-
-interface Column {
-  level: number;
-  items: ColumnItem[];
-}
-
-interface Row extends ColumnItem {
-  index: number;
-}
-
-function shelves(prefix: string, name: string): ColumnItem[] {
-  return Array.from({ length: 1000 }, (_, i) => ({
-    value: `${prefix}-${i + 1}`,
-    label: `${name}货位 ${String(i + 1).padStart(4, "0")}`,
-  }));
-}
-
-const warehouses = [
-  { value: "east", label: "华东仓", children: shelves("east", "华东") },
-  { value: "south", label: "华南仓", children: shelves("south", "华南") },
-];
-
-// 每一列自己的滚动位置：列号 → scrollTop
-const scrolled = ref<Record<number, number>>({});
-const shell = ref<HTMLElement | null>(null);
-
-function onScroll(level: number, event: Event) {
-  scrolled.value = {
-    ...scrolled.value,
-    [level]: (event.target as HTMLElement).scrollTop,
-  };
-}
-
-// 展开那一刻以列真实的滚动位置为准，重算一遍窗口
-function onOpenChange(details: { open: boolean }) {
-  if (!details.open) {
-    return;
-  }
-  nextTick(() => {
-    const next: Record<number, number> = {};
-    shell.value
-      ?.querySelectorAll<HTMLElement>("[data-part=\"column\"]")
-      .forEach((el, level) => {
-        next[level] = el.scrollTop;
-      });
-    scrolled.value = next;
-  });
-}
-
-// 方向键把焦点挪到了窗口外的一条：等它渲染出来再把浏览器焦点补上去，滚动随之跟到位
-function syncFocus(event: KeyboardEvent) {
-  const content = event.currentTarget as HTMLElement;
-  nextTick(() => {
-    const el = content.querySelector<HTMLElement>(
-      "[data-part=\"item\"][data-highlighted]",
-    );
-    if (el && el !== document.activeElement) {
-      el.focus();
-    }
-  });
-}
-
-// 该挂出来的那一段：可视区前后各多铺几条，再补上焦点所在的一条——
-// 它一旦离开 DOM，方向键就接不下去了
-function windowOf(column: Column, focusedPath: string[] | null): Row[] {
-  const max = Math.max(0, column.items.length * ROW - VIEW);
-  const top = Math.min(scrolled.value[column.level] ?? 0, max);
-  const start = Math.max(0, Math.floor(top / ROW) - OVERSCAN);
-  const end = Math.min(
-    column.items.length,
-    Math.ceil((top + VIEW) / ROW) + OVERSCAN,
-  );
-  const rows: Row[] = column.items
-    .slice(start, end)
-    .map((item, i) => ({ ...item, index: start + i }));
-
-  const anchor = focusedPath?.[column.level];
-  const hit
-    = anchor == null
-      ? undefined
-      : column.items.find(item => item.value === anchor);
-  if (hit) {
-    const at = column.items.indexOf(hit);
-    if (at < start || at >= end) {
-      rows.push({ ...hit, index: at });
-    }
-  }
-  return rows;
-}
-
-const shelf = ref<string[][]>([]);
-</script>
-
-<template>
-  <div ref="shell">
-    <XhCascaderRoot
-      v-slot="{ columns, focusedPath }"
-      v-model:value="shelf"
-      :collection="warehouses"
-      placeholder="请选择货位"
-      @open-change="onOpenChange"
-    >
-      <XhCascaderLabel>货位（每仓 1000 条）</XhCascaderLabel>
-      <XhCascaderControl>
-        <XhCascaderTrigger>
-          <XhCascaderValueText />
-          <XhCascaderIndicator />
-        </XhCascaderTrigger>
-      </XhCascaderControl>
-      <XhCascaderPositioner>
-        <XhCascaderContent @keydown="syncFocus">
-          <XhCascaderColumn
-            v-for="col in columns"
-            :key="col.level"
-            :level="col.level"
-            style="
-              --xh-cascader-column-h: 256px;
-              --xh-cascader-column-min-w: 11rem;
-              position: relative;
-              padding-block: 0;
-            "
-            @scroll="onScroll(col.level, $event)"
-          >
-            <!-- 撑高块把滚动条撑到全长，条目按各自的索引落位 -->
-            <div
-              aria-hidden="true"
-              :style="{ flex: 'none', blockSize: `${col.items.length * ROW}px` }"
-            />
-            <XhCascaderItem
-              v-for="row in windowOf(col, focusedPath)"
-              :key="row.value"
-              :value="row.value"
-              :style="{
-                position: 'absolute',
-                insetInlineStart: 'var(--xh-space-1)',
-                insetInlineEnd: 'var(--xh-space-1)',
-                insetBlockStart: `${row.index * ROW}px`,
-                blockSize: `${ROW}px`,
-              }"
-            >
-              <XhCascaderItemText>{{ row.label }}</XhCascaderItemText>
-              <XhCascaderItemIndicator />
-            </XhCascaderItem>
-          </XhCascaderColumn>
-        </XhCascaderContent>
-      </XhCascaderPositioner>
-    </XhCascaderRoot>
-    <p>当前货位：{{ shelf.length ? shelf[0].join(" / ") : "（未选）" }}</p>
-  </div>
-</template>
-```
-
-```html
-<xh-cascader id="cascader-long-column" placeholder="请选择货位">
-  <div data-xh-part="root">
-    <span data-xh-part="label">货位（每仓 1000 条）</span>
-    <div data-xh-part="control">
-      <button data-xh-part="trigger">
-        <span data-xh-part="value-text"></span>
-        <span data-xh-part="indicator"></span>
-      </button>
-    </div>
-    <div data-xh-part="positioner">
-      <div data-xh-part="content">
-        <div data-xh-part="column" level="0" id="cascader-long-column-roots">
-          <div data-xh-part="item" value="east">
-            <span data-xh-part="item-text">华东仓</span>
-            <span data-xh-part="item-indicator"></span>
-          </div>
-          <div data-xh-part="item" value="south">
-            <span data-xh-part="item-text">华南仓</span>
-            <span data-xh-part="item-indicator"></span>
-          </div>
-        </div>
-        <div
-          data-xh-part="column"
-          level="1"
-          id="cascader-long-column-shelves"
-          style="
-            --xh-cascader-column-h: 256px;
-            --xh-cascader-column-min-w: 11rem;
-            position: relative;
-            padding-block: 0;
-          "
-        >
-          <!-- 撑高块把滚动条撑到全长，条目按各自的索引落位 -->
-          <div
-            id="cascader-long-column-spacer"
-            aria-hidden="true"
-            style="flex: none"
-          ></div>
-        </div>
-      </div>
-    </div>
-  </div>
-</xh-cascader>
-<p>当前货位：<span id="cascader-long-column-value">（未选）</span></p>
-
-<script type="module">
-  // 行高与列高写死，窗口才算得出来
-  const ROW = 32;
-  const VIEW = 256;
-  const OVERSCAN = 6;
-
-  const cascader = document.getElementById("cascader-long-column");
-  const roots = document.getElementById("cascader-long-column-roots");
-  const column = document.getElementById("cascader-long-column-shelves");
-  const spacer = document.getElementById("cascader-long-column-spacer");
-  const readout = document.getElementById("cascader-long-column-value");
-
-  function shelves(prefix, name) {
-    return Array.from({ length: 1000 }, (_, i) => ({
-      value: prefix + "-" + (i + 1),
-      label: name + "货位 " + String(i + 1).padStart(4, "0"),
-    }));
-  }
-
-  const warehouses = [
-    { value: "east", label: "华东仓", children: shelves("east", "华东") },
-    { value: "south", label: "华南仓", children: shelves("south", "华南") },
-  ];
-  cascader.collection = warehouses;
-
-  // 已挂出来的条目：按值复用节点，重排窗口时焦点不会被连根拔掉
-  const mounted = new Map();
-  let items = [];
-  let focused = null;
-
-  function itemOf(item, index) {
-    const el = document.createElement("div");
-    el.setAttribute("data-xh-part", "item");
-    el.setAttribute("value", item.value);
-    el.style.position = "absolute";
-    el.style.insetInlineStart = "var(--xh-space-1)";
-    el.style.insetInlineEnd = "var(--xh-space-1)";
-    el.style.blockSize = ROW + "px";
-    el.style.insetBlockStart = index * ROW + "px";
-    const text = document.createElement("span");
-    text.setAttribute("data-xh-part", "item-text");
-    text.textContent = item.label;
-    const mark = document.createElement("span");
-    mark.setAttribute("data-xh-part", "item-indicator");
-    el.append(text, mark);
-    return el;
-  }
-
-  // 该挂出来的那一段：可视区前后各多铺几条，另外三条无论滚到哪儿都留着
-  function windowOf() {
-    const wanted = new Map();
-    if (items.length === 0) return wanted;
-    const max = Math.max(0, items.length * ROW - VIEW);
-    const top = Math.min(column.scrollTop, max);
-    const start = Math.max(0, Math.floor(top / ROW) - OVERSCAN);
-    const end = Math.min(items.length, Math.ceil((top + VIEW) / ROW) + OVERSCAN);
-    for (let i = start; i < end; i++) wanted.set(items[i].value, i);
-    // 首尾两条：Home 与 End 直奔它们，机器按值现查 DOM 时得找得到
-    wanted.set(items[0].value, 0);
-    wanted.set(items[items.length - 1].value, items.length - 1);
-    // 焦点那一条一旦离开 DOM，方向键就接不下去了
-    const at = items.findIndex((item) => item.value === focused);
-    if (at >= 0) wanted.set(items[at].value, at);
-    return wanted;
-  }
-
-  function render() {
-    spacer.style.blockSize = items.length * ROW + "px";
-    const wanted = windowOf();
-    for (const [value, el] of mounted) {
-      if (wanted.has(value)) continue;
-      el.remove();
-      mounted.delete(value);
-    }
-    for (const [value, index] of wanted) {
-      const el = mounted.get(value);
-      if (el) {
-        el.style.insetBlockStart = index * ROW + "px";
-        continue;
-      }
-      const next = itemOf(items[index], index);
-      mounted.set(value, next);
-      column.append(next);
-    }
-  }
-
-  // 展开路径落在哪一仓，第二列就换成它的货位
-  function syncBranch() {
-    const branch = roots.querySelector(
-      '[data-xh-part="item"][data-in-path]',
-    );
-    const hit = warehouses.find(
-      (warehouse) => warehouse.value === branch?.getAttribute("value"),
-    );
-    const next = hit ? hit.children : [];
-    if (next === items) return;
-    items = next;
-    focused = null;
-    column.scrollTop = 0;
-    render();
-  }
-
-  new MutationObserver(syncBranch).observe(roots, {
-    attributes: true,
-    attributeFilter: ["data-in-path"],
-    subtree: true,
-  });
-
-  column.addEventListener("scroll", render);
-  column.addEventListener("focusin", (event) => {
-    const item = event.target.closest('[data-xh-part="item"]');
-    if (item) focused = item.getAttribute("value");
-  });
-
-  cascader.addEventListener("value-change", (event) => {
-    const path = event.detail.value[0];
-    readout.textContent = path ? path.join(" / ") : "（未选）";
-  });
-
-  render();
-</script>
-```
-
-### 级联勾选与回显策略
-
-multiple 加 cascade 内建父子传导：点分支整枝勾上、子全勾父勾、部分勾中半选；对外值按 checked-strategy 收敛（默认只收叶），半选标记由条目自报的半选态出面
-
-```vue
-<script setup lang="ts">
-import {
-  XhCascaderClearTrigger,
-  XhCascaderColumn,
-  XhCascaderContent,
-  XhCascaderControl,
-  XhCascaderIndicator,
-  XhCascaderItem,
-  XhCascaderItemIndicator,
-  XhCascaderItemText,
-  XhCascaderLabel,
-  XhCascaderPositioner,
-  XhCascaderRoot,
-  XhCascaderTrigger,
-  XhCascaderValueText,
-} from "@xihan-ui/vue";
-import { computed, ref } from "vue";
-
-interface CatalogNode {
-  value: string;
-  label: string;
-  children?: CatalogNode[];
-}
-
-const catalog: CatalogNode[] = [
-  {
-    value: "digital",
-    label: "数码",
-    children: [
-      {
-        value: "phone",
-        label: "手机",
-        children: [
-          { value: "ios", label: "iOS" },
-          { value: "android", label: "Android" },
-        ],
-      },
-      {
-        value: "laptop",
-        label: "笔记本",
-        children: [
-          { value: "light", label: "轻薄本" },
-          { value: "game", label: "游戏本" },
-        ],
-      },
-    ],
-  },
-  {
-    value: "home",
-    label: "家居",
-    children: [
-      {
-        value: "kitchen",
-        label: "厨房",
-        children: [
-          { value: "pot", label: "锅具" },
-          { value: "knife", label: "刀具" },
-        ],
-      },
-    ],
-  },
-];
-
-const value = ref<string[][]>([["digital", "phone", "ios"]]);
-
-function labelOf(path: readonly string[]): string {
-  let nodes: CatalogNode[] | undefined = catalog;
-  let hit: CatalogNode | undefined;
-  for (const segment of path) {
-    hit = nodes?.find(node => node.value === segment);
-    nodes = hit?.children;
-  }
-  return hit?.label ?? path[path.length - 1]!;
-}
-
-const text = computed(() => value.value.map(labelOf).join("、"));
-</script>
-
-<template>
-  <XhCascaderRoot
-    v-slot="{ levels, isIndeterminate }"
-    v-model:value="value"
-    :collection="catalog"
-    multiple
-    cascade
-  >
-    <XhCascaderLabel>投放品类</XhCascaderLabel>
-    <XhCascaderControl>
-      <XhCascaderTrigger>
-        <XhCascaderValueText>
-          {{ text || "请选择品类" }}
-        </XhCascaderValueText>
-        <XhCascaderIndicator />
-      </XhCascaderTrigger>
-      <XhCascaderClearTrigger />
-    </XhCascaderControl>
-    <XhCascaderPositioner>
-      <XhCascaderContent>
-        <XhCascaderColumn v-for="lv in levels" :key="lv.level" :level="lv.level">
-          <XhCascaderItem
-            v-for="node in lv.items"
-            :key="node.value"
-            :value="node.value"
-          >
-            <XhCascaderItemText>{{ node.label }}</XhCascaderItemText>
-            <span
-              v-if="isIndeterminate(node.value)"
-              aria-hidden="true"
-              style="flex: none; color: var(--xh-fg-subtle)"
-            >
-              －
-            </span>
-            <XhCascaderItemIndicator />
-          </XhCascaderItem>
-        </XhCascaderColumn>
-      </XhCascaderContent>
-    </XhCascaderPositioner>
-  </XhCascaderRoot>
-  <p>选中值（默认只收叶）：{{ text || "（未选）" }}</p>
-</template>
-```
-
-```html
-<style>
-  #cascader-cascade-check [data-half] {
-    display: none;
-  }
-  /* 条目半选时才画这道横杠，标记随 data-indeterminate 出面 */
-  #cascader-cascade-check
-    [data-xh-part="item"][data-indeterminate]
-    [data-half] {
-    display: inline;
-    flex: none;
-    color: var(--xh-fg-subtle);
-  }
-</style>
-
-<xh-cascader id="cascader-cascade-check" multiple cascade>
-  <div data-xh-part="root">
-    <span data-xh-part="label">投放品类</span>
-    <div data-xh-part="control">
-      <button data-xh-part="trigger">
-        <span data-xh-part="value-text">iOS</span>
-        <span data-xh-part="indicator"></span>
-      </button>
-      <button data-xh-part="clear-trigger"></button>
-    </div>
-    <div data-xh-part="positioner">
-      <div data-xh-part="content">
-        <div data-xh-part="column" level="0">
-          <div data-xh-part="item" value="digital">
-            <span data-xh-part="item-text">数码</span>
-            <span data-half aria-hidden="true">－</span>
-            <span data-xh-part="item-indicator"></span>
-          </div>
-          <div data-xh-part="item" value="home">
-            <span data-xh-part="item-text">家居</span>
-            <span data-half aria-hidden="true">－</span>
-            <span data-xh-part="item-indicator"></span>
-          </div>
-        </div>
-        <div data-xh-part="column" level="1">
-          <div data-xh-part="item" value="phone">
-            <span data-xh-part="item-text">手机</span>
-            <span data-half aria-hidden="true">－</span>
-            <span data-xh-part="item-indicator"></span>
-          </div>
-          <div data-xh-part="item" value="laptop">
-            <span data-xh-part="item-text">笔记本</span>
-            <span data-half aria-hidden="true">－</span>
-            <span data-xh-part="item-indicator"></span>
-          </div>
-          <div data-xh-part="item" value="kitchen">
-            <span data-xh-part="item-text">厨房</span>
-            <span data-half aria-hidden="true">－</span>
-            <span data-xh-part="item-indicator"></span>
-          </div>
-        </div>
-        <div data-xh-part="column" level="2">
-          <div data-xh-part="item" value="ios">
-            <span data-xh-part="item-text">iOS</span>
-            <span data-half aria-hidden="true">－</span>
-            <span data-xh-part="item-indicator"></span>
-          </div>
-          <div data-xh-part="item" value="android">
-            <span data-xh-part="item-text">Android</span>
-            <span data-half aria-hidden="true">－</span>
-            <span data-xh-part="item-indicator"></span>
-          </div>
-          <div data-xh-part="item" value="light">
-            <span data-xh-part="item-text">轻薄本</span>
-            <span data-half aria-hidden="true">－</span>
-            <span data-xh-part="item-indicator"></span>
-          </div>
-          <div data-xh-part="item" value="game">
-            <span data-xh-part="item-text">游戏本</span>
-            <span data-half aria-hidden="true">－</span>
-            <span data-xh-part="item-indicator"></span>
-          </div>
-          <div data-xh-part="item" value="pot">
-            <span data-xh-part="item-text">锅具</span>
-            <span data-half aria-hidden="true">－</span>
-            <span data-xh-part="item-indicator"></span>
-          </div>
-          <div data-xh-part="item" value="knife">
-            <span data-xh-part="item-text">刀具</span>
-            <span data-half aria-hidden="true">－</span>
-            <span data-xh-part="item-indicator"></span>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-</xh-cascader>
-<p>选中值（默认只收叶）：<span id="cascader-cascade-check-value">iOS</span></p>
-
-<script type="module">
-  const cascader = document.getElementById("cascader-cascade-check");
-  const catalog = [
-    {
-      value: "digital",
-      label: "数码",
-      children: [
-        {
-          value: "phone",
-          label: "手机",
-          children: [
-            { value: "ios", label: "iOS" },
-            { value: "android", label: "Android" },
-          ],
-        },
-        {
-          value: "laptop",
-          label: "笔记本",
-          children: [
-            { value: "light", label: "轻薄本" },
-            { value: "game", label: "游戏本" },
-          ],
-        },
-      ],
-    },
-    {
-      value: "home",
-      label: "家居",
-      children: [
-        {
-          value: "kitchen",
-          label: "厨房",
-          children: [
-            { value: "pot", label: "锅具" },
-            { value: "knife", label: "刀具" },
-          ],
-        },
-      ],
-    },
-  ];
-  cascader.collection = catalog;
-  cascader.value = [["digital", "phone", "ios"]];
-
-  // 回显只取整条路径末段的显示名
-  function labelOf(path) {
-    let nodes = catalog;
-    let hit;
-    for (const segment of path) {
-      hit = nodes?.find((node) => node.value === segment);
-      nodes = hit?.children;
-    }
-    return hit?.label ?? path[path.length - 1];
-  }
-
-  // 触发框里写了内容就归作者，元素不再代填，改由这里同步
-  const valueText = cascader.querySelector('[data-xh-part="value-text"]');
-  const readout = document.getElementById("cascader-cascade-check-value");
-  cascader.addEventListener("value-change", (event) => {
-    cascader.value = event.detail.value;
-    const text = event.detail.value.map(labelOf).join("、");
-    valueText.textContent = text || "请选择品类";
-    readout.textContent = text || "（未选）";
-  });
-</script>
-```
-
-### 浮层底栏
-
-footer 写在 content 里、与列并列，横跨全部列；它不进任何一列的拥有关系，方向键也走不到
-
-```vue
-<script setup lang="ts">
-import {
-  XhButton,
-  XhCascaderColumn,
-  XhCascaderContent,
-  XhCascaderControl,
-  XhCascaderFooter,
-  XhCascaderIndicator,
-  XhCascaderItem,
-  XhCascaderItemIndicator,
-  XhCascaderItemText,
-  XhCascaderLabel,
-  XhCascaderPositioner,
-  XhCascaderRoot,
-  XhCascaderTrigger,
-  XhCascaderValueText,
-} from "@xihan-ui/vue";
-import { ref } from "vue";
-
-const catalog = [
-  {
-    value: "fruit",
-    label: "水果",
-    children: [
-      { value: "apple", label: "苹果" },
-      { value: "banana", label: "香蕉" },
-      { value: "grape", label: "葡萄" },
-    ],
-  },
-  {
-    value: "vegetable",
-    label: "蔬菜",
-    children: [
-      { value: "tomato", label: "番茄" },
-      { value: "potato", label: "土豆" },
-    ],
-  },
-];
-
-const picked = ref<string[][]>([["fruit", "apple"]]);
-</script>
-
-<template>
-  <XhCascaderRoot
-    v-slot="{ levels, value, clear, setOpen }"
-    v-model:value="picked"
-    :collection="catalog"
-    multiple
-    placeholder="可以多挑几条"
-  >
-    <XhCascaderLabel>采购清单</XhCascaderLabel>
-    <XhCascaderControl>
-      <XhCascaderTrigger>
-        <XhCascaderValueText />
-        <XhCascaderIndicator />
-      </XhCascaderTrigger>
-    </XhCascaderControl>
-    <XhCascaderPositioner>
-      <XhCascaderContent>
-        <XhCascaderColumn
-          v-for="lv in levels"
-          :key="lv.level"
-          :level="lv.level"
-        >
-          <XhCascaderItem
-            v-for="node in lv.items"
-            :key="node.value"
-            :value="node.value"
-          >
-            <XhCascaderItemText>{{ node.label }}</XhCascaderItemText>
-            <XhCascaderItemIndicator />
-          </XhCascaderItem>
-        </XhCascaderColumn>
-        <XhCascaderFooter style="justify-content: space-between">
-          <span>已选 {{ value.length }} 条</span>
-          <span style="display: flex; gap: 8px">
-            <XhButton size="sm" variant="ghost" @click="clear()">清空</XhButton>
-            <XhButton size="sm" @click="setOpen(false)">完成</XhButton>
-          </span>
-        </XhCascaderFooter>
-      </XhCascaderContent>
-    </XhCascaderPositioner>
-  </XhCascaderRoot>
-  <p>已选：{{ picked.map((p) => p.join("/")).join("、") || "（无）" }}</p>
-</template>
-```
-
-```html
-<xh-cascader
-  id="cascader-content-footer"
-  multiple
-  open="false"
-  placeholder="可以多挑几条"
->
-  <div data-xh-part="root">
-    <span data-xh-part="label">采购清单</span>
-    <div data-xh-part="control">
-      <button data-xh-part="trigger">
-        <span data-xh-part="value-text"></span>
-        <span data-xh-part="indicator"></span>
-      </button>
-    </div>
-    <div data-xh-part="positioner">
-      <div data-xh-part="content">
-        <div data-xh-part="column" level="0">
-          <div data-xh-part="item" value="fruit">
-            <span data-xh-part="item-text">水果</span>
-            <span data-xh-part="item-indicator"></span>
-          </div>
-          <div data-xh-part="item" value="vegetable">
-            <span data-xh-part="item-text">蔬菜</span>
-            <span data-xh-part="item-indicator"></span>
-          </div>
-        </div>
-        <div data-xh-part="column" level="1">
-          <div data-xh-part="item" value="apple">
-            <span data-xh-part="item-text">苹果</span>
-            <span data-xh-part="item-indicator"></span>
-          </div>
-          <div data-xh-part="item" value="banana">
-            <span data-xh-part="item-text">香蕉</span>
-            <span data-xh-part="item-indicator"></span>
-          </div>
-          <div data-xh-part="item" value="grape">
-            <span data-xh-part="item-text">葡萄</span>
-            <span data-xh-part="item-indicator"></span>
-          </div>
-          <div data-xh-part="item" value="tomato">
-            <span data-xh-part="item-text">番茄</span>
-            <span data-xh-part="item-indicator"></span>
-          </div>
-          <div data-xh-part="item" value="potato">
-            <span data-xh-part="item-text">土豆</span>
-            <span data-xh-part="item-indicator"></span>
-          </div>
-        </div>
-        <div data-xh-part="footer" style="justify-content: space-between">
-          <span id="cascader-content-footer-count">已选 1 条</span>
-          <span style="display: flex; gap: 8px">
-            <xh-button size="sm" variant="ghost">
-              <button data-xh-part="root" id="cascader-content-footer-clear">
-                清空
-              </button>
-            </xh-button>
-            <xh-button size="sm">
-              <button data-xh-part="root" id="cascader-content-footer-done">
-                完成
-              </button>
-            </xh-button>
-          </span>
-        </div>
-      </div>
-    </div>
-  </div>
-</xh-cascader>
-<p>已选：<span id="cascader-content-footer-value">fruit/apple</span></p>
-
-<script type="module">
-  const cascader = document.getElementById("cascader-content-footer");
-  cascader.collection = [
-    {
-      value: "fruit",
-      label: "水果",
-      children: [
-        { value: "apple", label: "苹果" },
-        { value: "banana", label: "香蕉" },
-        { value: "grape", label: "葡萄" },
-      ],
-    },
-    {
-      value: "vegetable",
-      label: "蔬菜",
-      children: [
-        { value: "tomato", label: "番茄" },
-        { value: "potato", label: "土豆" },
-      ],
-    },
-  ];
-
-  const count = document.getElementById("cascader-content-footer-count");
-  const readout = document.getElementById("cascader-content-footer-value");
-
-  // 选中路径集合与开合都受控：组件只发意图，宿主写回才算数
-  function apply(next) {
-    cascader.value = next;
-    count.textContent = `已选 ${next.length} 条`;
-    readout.textContent = next.map((path) => path.join("/")).join("、") || "（无）";
-  }
-
-  apply([["fruit", "apple"]]);
-  cascader.addEventListener("value-change", (event) => apply(event.detail.value));
-  cascader.addEventListener("open-change", (event) => {
-    cascader.open = event.detail.open;
-  });
-
-  document
-    .getElementById("cascader-content-footer-clear")
-    .addEventListener("click", () => apply([]));
-  document
-    .getElementById("cascader-content-footer-done")
-    .addEventListener("click", () => {
-      cascader.open = false;
-    });
-</script>
-```
-
-### 命令式聚焦与展开
-
-trigger 部件就是原生按钮，拿到它即可 focus / blur；开合交给宿主写 open
-
-```vue
-<script setup lang="ts">
-import {
-  XhButton,
-  XhCascaderColumn,
-  XhCascaderContent,
-  XhCascaderControl,
-  XhCascaderIndicator,
-  XhCascaderItem,
-  XhCascaderItemIndicator,
-  XhCascaderItemText,
-  XhCascaderLabel,
-  XhCascaderPositioner,
-  XhCascaderRoot,
-  XhCascaderTrigger,
-  XhCascaderValueText,
-} from "@xihan-ui/vue";
-import { ref } from "vue";
-
-const regions = [
-  {
-    value: "zhejiang",
-    label: "浙江",
-    children: [
-      { value: "hangzhou", label: "杭州" },
-      { value: "ningbo", label: "宁波" },
-    ],
-  },
-  {
-    value: "jiangsu",
-    label: "江苏",
-    children: [{ value: "nanjing", label: "南京" }],
-  },
-];
-
-const trigger = ref<InstanceType<typeof XhCascaderTrigger> | null>(null);
-const area = ref<string[][]>([]);
-
-// 组件实例的 $el 就是那个按钮
-const triggerEl = () => trigger.value?.$el as HTMLButtonElement | undefined;
-</script>
-
-<template>
-  <XhCascaderRoot
-    v-slot="{ levels, open, setOpen }"
-    v-model:value="area"
-    :collection="regions"
-    placeholder="请选择地区"
-  >
-    <XhCascaderLabel>收货地区</XhCascaderLabel>
-    <XhCascaderControl>
-      <XhCascaderTrigger ref="trigger">
-        <XhCascaderValueText />
-        <XhCascaderIndicator />
-      </XhCascaderTrigger>
-    </XhCascaderControl>
-    <XhCascaderPositioner>
-      <XhCascaderContent>
-        <XhCascaderColumn v-for="lv in levels" :key="lv.level" :level="lv.level">
-          <XhCascaderItem
-            v-for="node in lv.items"
-            :key="node.value"
-            :value="node.value"
-          >
-            <XhCascaderItemText>{{ node.label }}</XhCascaderItemText>
-            <XhCascaderItemIndicator />
-          </XhCascaderItem>
-        </XhCascaderColumn>
-      </XhCascaderContent>
-    </XhCascaderPositioner>
-    <div style="display: flex; gap: 8px; margin-block-start: 12px">
-      <XhButton size="sm" variant="outline" @click="triggerEl()?.focus()">
-        聚焦
-      </XhButton>
-      <XhButton size="sm" variant="outline" @click="triggerEl()?.blur()">
-        失焦
-      </XhButton>
-      <XhButton size="sm" variant="outline" @click="setOpen(!open)">
-        {{ open ? "收起" : "展开" }}
-      </XhButton>
-    </div>
-  </XhCascaderRoot>
-</template>
-```
-
-```html
-<xh-cascader id="cascader-imperative-focus" open="false" placeholder="请选择地区">
-  <div data-xh-part="root">
-    <span data-xh-part="label">收货地区</span>
-    <div data-xh-part="control">
-      <button data-xh-part="trigger">
-        <span data-xh-part="value-text"></span>
-        <span data-xh-part="indicator"></span>
-      </button>
-    </div>
-    <div data-xh-part="positioner">
-      <div data-xh-part="content">
-        <div data-xh-part="column" level="0">
-          <div data-xh-part="item" value="zhejiang">
-            <span data-xh-part="item-text">浙江</span>
-            <span data-xh-part="item-indicator"></span>
-          </div>
-          <div data-xh-part="item" value="jiangsu">
-            <span data-xh-part="item-text">江苏</span>
-            <span data-xh-part="item-indicator"></span>
-          </div>
-        </div>
-        <div data-xh-part="column" level="1">
-          <div data-xh-part="item" value="hangzhou">
-            <span data-xh-part="item-text">杭州</span>
-            <span data-xh-part="item-indicator"></span>
-          </div>
-          <div data-xh-part="item" value="ningbo">
-            <span data-xh-part="item-text">宁波</span>
-            <span data-xh-part="item-indicator"></span>
-          </div>
-          <div data-xh-part="item" value="nanjing">
-            <span data-xh-part="item-text">南京</span>
-            <span data-xh-part="item-indicator"></span>
-          </div>
-        </div>
-      </div>
-    </div>
-    <div style="display: flex; gap: 8px; margin-block-start: 12px">
-      <xh-button size="sm" variant="outline">
-        <button data-xh-part="root" id="cascader-imperative-focus-focus">
-          聚焦
-        </button>
-      </xh-button>
-      <xh-button size="sm" variant="outline">
-        <button data-xh-part="root" id="cascader-imperative-focus-blur">
-          失焦
-        </button>
-      </xh-button>
-      <xh-button size="sm" variant="outline">
-        <button data-xh-part="root" id="cascader-imperative-focus-toggle">
-          展开
-        </button>
-      </xh-button>
-    </div>
-  </div>
-</xh-cascader>
-
-<script type="module">
-  const cascader = document.getElementById("cascader-imperative-focus");
-  cascader.collection = [
-    {
-      value: "zhejiang",
-      label: "浙江",
-      children: [
-        { value: "hangzhou", label: "杭州" },
-        { value: "ningbo", label: "宁波" },
-      ],
-    },
-    {
-      value: "jiangsu",
-      label: "江苏",
-      children: [{ value: "nanjing", label: "南京" }],
-    },
-  ];
-
-  // trigger 部件就是那个原生按钮
-  const trigger = cascader.querySelector('[data-xh-part="trigger"]');
-  const toggle = document.getElementById("cascader-imperative-focus-toggle");
-
-  document
-    .getElementById("cascader-imperative-focus-focus")
-    .addEventListener("click", () => trigger.focus());
-  document
-    .getElementById("cascader-imperative-focus-blur")
-    .addEventListener("click", () => trigger.blur());
-
-  // 开合受控：按钮改写 open，组件发的意图由宿主写回
-  toggle.addEventListener("click", () => {
-    cascader.open = !cascader.open;
-    toggle.textContent = cascader.open ? "收起" : "展开";
-  });
-  cascader.addEventListener("open-change", (event) => {
-    cascader.open = event.detail.open;
-    toggle.textContent = event.detail.open ? "收起" : "展开";
-  });
 </script>
 ```
 
 ### 搜索
 
-searchable 让搜索框可用：输入后整条路径连缀过滤，候选列表替换列视图；上下键走候选、Enter 选中、Escape 先清词再收浮层。无匹配（试试输入「苏州」）时空态占位露面，文案经 translations 覆盖
+按完整路径筛选选项
 
 ```vue
 <script setup lang="ts">
@@ -3336,7 +750,6 @@ import {
   XhCascaderTrigger,
   XhCascaderValueText,
 } from "@xihan-ui/vue";
-import { ref } from "vue";
 
 const regions = [
   {
@@ -3369,14 +782,11 @@ const regions = [
     ],
   },
 ];
-
-const area = ref<string[][]>([]);
 </script>
 
 <template>
   <XhCascaderRoot
     v-slot="{ levels }"
-    v-model:value="area"
     :collection="regions"
     :translations="{ noMatch: '未找到匹配的地区' }"
     searchable
@@ -3402,7 +812,6 @@ const area = ref<string[][]>([]);
       </XhCascaderContent>
     </XhCascaderPositioner>
   </XhCascaderRoot>
-  <p>当前路径：{{ area.length ? area[0].join(" / ") : "（未选）" }}</p>
 </template>
 ```
 
@@ -3490,7 +899,6 @@ const area = ref<string[][]>([]);
     </div>
   </div>
 </xh-cascader>
-<p>当前路径：<span id="cascader-search-value">（未选）</span></p>
 
 <script type="module">
   const cascader = document.getElementById("cascader-search");
@@ -3533,11 +941,6 @@ const area = ref<string[][]>([]);
   // 读屏与空态占位的文案是对象，只走属性
   cascader.translations = { noMatch: "未找到匹配的地区" };
 
-  const readout = document.getElementById("cascader-search-value");
-  cascader.addEventListener("value-change", (event) => {
-    const path = event.detail.value[0];
-    readout.textContent = path ? path.join(" / ") : "（未选）";
-  });
 </script>
 ```
 
@@ -3545,39 +948,43 @@ const area = ref<string[][]>([]);
 
 ### 何时使用
 
-- 选项是规整的多层分类且层数固定（省市区、商品类目）。
-- 用户按层缩小范围比一次性搜索更自然。
+- 选项具有稳定的多层结构，如地区或商品类目。
+- 用户需要逐层缩小选择范围。
 
 ### 何时不用
 
-- 层级不规整、深浅不一：用[树选择](./tree-select)。
-- 只有一层：用[选择器](./select)。
-- 用户更习惯直接搜：给它开 `searchable`，或换[组合框](./combobox)。
+- 不规则层级使用[树选择](./tree-select)。
+- 单层选项使用[选择器](./select)。
+- 主要通过关键词查找时使用[组合框](./combobox)。
 
 ### 特性
 
-- `changeOnSelect` 决定中间层能不能直接作为结果。
-- `expandTrigger` 可改成悬停展开。
-- `name` 开启原生表单提交；每条已选路径生成一个同名隐藏字段，单选和多选均按 JSON 字符串数组编码，例如 `["华东","a,b"]`。通过 `FormData.getAll(name)` 取得各路径 JSON，再逐项解析；`separator` 只影响显示文字。
-- `value` / `defaultValue` 保留单路径字符串数组简写与路径集合两种正式写法；`setValue` 接收路径集合。路径必须非空且每段都是字符串，非法结构直接报错；零选中用 `[]`，不使用 `[[]]`，不猜测逗号字符串或隐式转换数字。
-- 异步候选尚未加载时仍保留已知选值，结构校验不以当前 `collection` 是否包含该路径为条件。
-- 三端根组件自动装配原生字段，零路径没有字段。`form` 指定同一文档或影子树内的表单 ID；无效 ID 不回退祖先。整体 `disabled` 不提交，只读已选值仍提交。
-- `form.reset()` 还原 `defaultValue`，保留当前浏览列、搜索和实际焦点，不主动关闭面板。受控值未声明默认值时保持业务数据；声明默认值时只通知重置意图，由业务回写。
-- 多选时 `cascade` 与 `checkedStrategy` 一对：前者决定勾父带不带子，后者决定回显给出哪一层。
-- 单选、多选、列项和搜索结果统一用末端对号表示选中；级联半选保留横线。选中正文不换色、不加粗，
-  悬停、键盘高亮、焦点与展开路径只使用中性底，不叠加品牌选中面。
-- 搜索结果与列项从同一份级联聚合读取 `checked` / `indeterminate`，所以 `all` / `parent` / `child`
-  只改变提交值的收敛形式，不会让同一节点在两种视图中显示成不同状态。半选候选同步输出
-  `aria-checked="mixed"`；整控件禁用时，候选不再保留虚假高亮。
-- 子节点可按需加载；长列表只渲可视区。
-- 后端字段名不一致时在进组件前转一道，组件只认 `label` / `value` / `children`。
-- 空（`empty`）与在途（`loading`）两个相位都由 `content` 自动装配；首次取数且当前视图没有候选时显示
-  `translations.loading`，作者显式写 `loading` 部件即可替换默认内容且不会重复。已有候选或祖先列时仍保留
-  可操作内容，只在浮层上报 `aria-busy`；加载不会把可用列清空。
-- 输入框保持实体；浮层使用 M2 磨砂材质与内侧顶光，列间和搜索框分隔线使用同一材质语义。
-  浮层按实际落位方向短距离进出，列项只淡入；减弱动效时取消位移，增强对比度时改为实体表面。
+- `changeOnSelect` 允许选择中间层。
+- `expandTrigger` 支持点击或悬停展开。
+- `multiple`、`cascade` 与 `checkedStrategy` 控制多选及路径收敛方式。
+- `searchable` 按完整路径筛选选项。
+- 支持按需加载、空状态、加载状态与原生表单提交。
+- 选中项使用末端标记，半选项使用横线。
 
-## 产物
+### 组合
+
+- 使用 `label`、`control` 与 `value-text` 组成字段外壳。
+- 使用 `column`、`item` 与 `item-indicator` 组成分级列表。
+
+### 最佳实践
+
+- 层级建议控制在三层以内。
+- 回显完整路径，避免同名末级选项产生歧义。
+- 自定义条目时保留 `item-text` 与 `item-indicator`。
+
+### 反模式
+
+- 不要在异步加载时隐藏已有列。
+- 多选时明确约定 `checkedStrategy`。
+
+## API 参考
+
+### 产物
 
 | 层 | 值 |
 | --- | --- |
@@ -3587,13 +994,7 @@ const area = ref<string[][]>([]);
 | 状态机 | `cascaderMachine` |
 | 皮肤 | `@xihan-ui/styles/cascader.css` |
 
-## 解剖
-
-部件名即 `data-part` 属性值，也是皮肤的选择器。加粗的是必备部件，不渲染它组件不工作（Web Components 适配器会在诊断通道上报 `wc.missing-part`）。
-
-`data-scope="cascader"`：`root` · `hidden-input` · `label` · `control` · **`trigger`** · `value-text` · `indicator` · `clear-trigger` · `positioner` · **`content`** · `input` · `search-list` · `search-item` · `column` · `group` · `group-label` · `item` · `item-text` · `item-indicator` · `empty` · `loading` · `footer`
-
-## Props
+### Props
 
 | 属性 | 类型 | 必填 | 说明 |
 | --- | --- | --- | --- |
@@ -3627,27 +1028,27 @@ const area = ref<string[][]>([]);
 | `onValueChange` | `(details: CascaderValueChangeDetails) => void` |  | value 变化意图回调；受控时是唯一出口，非受控随内部写入一并通知。 |
 | `onOpenChange` | `(details: CascaderOpenChangeDetails) => void` |  | open 变化意图回调；受控时是唯一出口，非受控时随内部转移一并通知。 |
 
-## 事件
+### 事件
 
-自定义元素派发这些事件，Vue 组件对应同名 emit；载荷都在 `detail` 上。可双向绑定的值另有 `update:xxx`，见 Props。
+自定义元素将载荷放在 `detail`；Vue 使用同名 emit。
 
 | 事件 | 载荷 | 说明 |
 | --- | --- | --- |
 | `value-change` | `CascaderValueChangeDetails` | 选中路径集合变化；detail 为 `{ value: string[][] }` |
 | `open-change` | `CascaderOpenChangeDetails` | open 状态变化；detail 为 `{ open: boolean }` |
 
-## 插槽
+### 插槽
 
-作者能拿到载荷的插槽。只转发内容、不带载荷的默认插槽不在此列——那类直接写子节点即可。
+仅列出带载荷的插槽。
 
 | Vue 组件 | 插槽 | 载荷 | 说明 |
 | --- | --- | --- | --- |
 | `XhCascaderRoot` | `default` | `CascaderRootSlotProps` |  |
 | `XhCascaderSearchList` | `item` | `CascaderSearchListItemSlotProps` |  |
 
-## 状态
+### 状态
 
-对外可见的状态落在 `data-state` 上，写样式与断言都读它：
+公开状态写入 `data-state`。
 
 | 部件 | 取值 |
 | --- | --- |
@@ -3661,7 +1062,7 @@ const area = ref<string[][]>([]);
 | `column` | 'open' \| 'closed' |
 | `footer` | 'open' \| 'closed' |
 
-状态机内部转移，写样式与业务都用不到；要监听变化请看上面的「事件」。
+以下名称仅用于内部状态机。
 
 **状态**：`open` · `closed`
 
@@ -3669,9 +1070,9 @@ const area = ref<string[][]>([]);
 
 **判据**：`isOpenControlled` · `isMultiple` · `staysOpenOnSelect`
 
-## connect API
+### connect API
 
-`useCascader` 产出的对象。`getXxxProps()` 铺到对应部件的宿主元素上，其余是可读状态与操作入口。
+`getXxxProps()` 返回对应部件的宿主属性。
 
 | 成员 | 类型 | 说明 |
 | --- | --- | --- |
@@ -3728,7 +1129,9 @@ const area = ref<string[][]>([]);
 | `getItemTextProps` | `(props: CascaderItemProps) => T['element']` |  |
 | `getItemIndicatorProps` | `(props: CascaderItemProps) => T['element']` |  |
 
-## 键盘
+## 无障碍
+
+### 键盘
 
 规格出处：[W3C APG](https://www.w3.org/WAI/ARIA/apg/patterns/combobox/#keyboardinteraction)
 
@@ -3760,9 +1163,9 @@ const area = ref<string[][]>([]);
 | `Tab` / `Shift+Tab` | open, focus in input | 收起浮层，焦点不归还 trigger，按 Tab 序列自然离开 |
 | `输入法组合期间的任意键` | open, focus in input, isComposing | 一律不接管：组合期的 Enter 与上下键属于输入法候选框，既不选中候选也不移高亮 |
 
-## 无障碍
+### ARIA
 
-下面这些由 `connect` 铺到部件上，作者不必自己写；重复写反而会覆盖掉正确值。
+以下属性由 `connect` 生成。
 
 | 部件 | 属性 | 值 |
 | --- | --- | --- |
@@ -3805,15 +1208,17 @@ const area = ref<string[][]>([]);
 | `empty` | `role` | 'status' |
 | `loading` | `role` | 'status' |
 
-## 样式
+## 样式参考
 
-默认皮肤 `@xihan-ui/styles/cascader.css` 按部件选择：`[data-scope="cascader"][data-part="root"]`。它落在 `xihan.components` 与 `xihan.motion` 层；业务样式不写进 `@layer` 即高于全部库层，要按层压过来就写进 `xihan.overrides`。
+### 皮肤
+
+`@xihan-ui/styles/cascader.css` 使用 `[data-scope="cascader"][data-part="root"]` 部件选择器，位于 `xihan.components` 与 `xihan.motion` 层。覆盖样式使用 `xihan.overrides`。
 
 `forced-colors: active` 下另有一套规则：颜色交给系统，边框与状态标记改用系统色关键字。
 
-## 数据属性
+### 数据属性
 
-由 `connect` 产出并铺到部件上，皮肤与测试都据此选择；`data-disabled` 这类无值属性在条件不成立时整个不出现。
+由 `connect` 生成；条件不成立时不输出无值属性。
 
 | 部件 | 属性 | 值 |
 | --- | --- | --- |
@@ -3864,7 +1269,7 @@ const area = ref<string[][]>([]);
 | `footer` | `data-state` | 'open' \| 'closed' |
 
 <!-- xh-component-tokens:start -->
-## CSS 变量
+### CSS 变量
 
 本组件公开覆盖槽由独立皮肤的实际消费位生成；缺省来源、作用部件和状态均与 CSS 同源。
 
@@ -3967,7 +1372,7 @@ const area = ref<string[][]>([]);
 | `--xh-cascader-trigger-gap` | `trigger` | `gap` | `default` | `--xh-_cascader-gap` | cascader 的 trigger 部件 gap 覆盖槽。 |
 <!-- xh-component-tokens:end -->
 
-## 动效
+### 动效
 
 关键帧 `xh-fade-in` · `xh-overlay-slide-in` · `xh-overlay-slide-out` 随皮肤自带，不引用别处文件里的名字；`background` · `border-color` · `color` · `rotate` · `scale` 走 `transition` 过渡。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
 
@@ -3975,24 +1380,6 @@ const area = ref<string[][]>([]);
 
 系统开启减弱动效时由令牌层统一收敛，皮肤不另作判断。
 
-## RTL
+### RTL
 
 皮肤用逻辑属性排布（`inline-start` 一族），`dir="rtl"` 下自动镜像；另有按 `dir` 分支的规则。
-
-## 组合
-
-- 外面套[表单字段](./field)；浮层底部可以加操作栏。
-
-## 最佳实践
-
-- 层数控制在三层，第四层开始用户就迷路了。
-- 回显要给完整路径，不只给末级名字——"朝阳区"在好几个省都有。
-- 自定义列项应同时组合 `item-text` 与 `item-indicator`；标记部件留空即可由皮肤按选中或半选状态画
-  对号或横线。自动生成的搜索结果会复用同一组标记尺寸和颜色槽。
-- 定制 `--xh-cascader-item-fg-selected`、`--xh-cascader-item-selected-font-weight`、
-  `--xh-cascader-item-bg-active` 时要同时核对列视图与搜索视图；默认值刻意保持正文和路径中性。
-
-## 反模式
-
-- 每层都要一次网络往返却不给加载反馈。
-- 多选时不说明 `checkedStrategy`：后端收到的是父节点还是所有叶子，两边理解不一致就会出事。

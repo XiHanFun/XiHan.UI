@@ -1,0 +1,53 @@
+const t=`<!-- 定位 | 为每一步选择合适的浮层方向 -->
+<xh-tour id="tour-placement">
+  <div data-xh-part="root">
+    <div style="display: flex; flex-wrap: wrap; gap: 8px">
+      <xh-button variant="outline"><button id="tour-placement-left" data-xh-part="root">左侧</button></xh-button>
+      <xh-button variant="outline"><button id="tour-placement-center" data-xh-part="root">中间</button></xh-button>
+      <xh-button variant="outline"><button id="tour-placement-right" data-xh-part="root">右侧</button></xh-button>
+      <xh-button variant="solid"><button id="tour-placement-start" data-xh-part="root">查看定位</button></xh-button>
+    </div>
+
+    <div data-xh-part="backdrop"></div>
+    <div data-xh-part="spotlight"></div>
+    <div data-xh-part="positioner">
+      <div data-xh-part="content">
+        <h3 data-xh-part="title"></h3>
+        <p data-xh-part="description"></p>
+        <p data-xh-part="progress-text"></p>
+        <div style="display: flex; align-items: center; gap: 8px">
+          <button data-xh-part="prev-trigger">上一步</button>
+          <button id="tour-placement-next" data-xh-part="next-trigger">下一步</button>
+        </div>
+        <button data-xh-part="close-trigger"></button>
+        <div data-xh-part="arrow"></div>
+      </div>
+    </div>
+  </div>
+</xh-tour>
+
+<script type="module">
+  const tour = document.getElementById("tour-placement");
+  const next = document.getElementById("tour-placement-next");
+
+  tour.steps = [
+    { id: "left", target: "#tour-placement-left", title: "左侧入口", description: "浮层显示在目标下方。", placement: "bottom-start" },
+    { id: "center", target: "#tour-placement-center", title: "中间入口", description: "浮层显示在目标上方。", placement: "top" },
+    { id: "right", target: "#tour-placement-right", title: "右侧入口", description: "浮层显示在目标左侧。", placement: "left" },
+  ];
+  tour.translations = {
+    close: "关闭",
+    progress: (step, count) => \`第 \${step} 步，共 \${count} 步\`,
+  };
+
+  document.getElementById("tour-placement-start").addEventListener("click", () => {
+    tour.open = true;
+  });
+  tour.addEventListener("open-change", (event) => {
+    tour.open = event.detail.open;
+  });
+  tour.addEventListener("value-change", (event) => {
+    next.textContent = event.detail.value === tour.steps.length - 1 ? "完成" : "下一步";
+  });
+<\/script>
+`;export{t as default};

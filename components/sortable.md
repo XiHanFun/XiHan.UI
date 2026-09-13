@@ -1,8 +1,8 @@
 来源：https://ui.docs.xihanfun.com/components/sortable
 
-# Sortable `排序`
+# Sortable 排序
 
-让用户拖着重排一列条目，键盘也能完成同一件事。
+通过拖拽或键盘重新排列内容。
 
 <div class="xh-resource-links">
   <a href="https://github.com/XiHanFun/XiHan.UI/tree/dev/ui/packages/engine/headless/src/sortable" target="_blank" rel="noreferrer">Headless</a>
@@ -14,311 +14,250 @@
 
 ## 用法
 
-ids 是顺序的唯一真源，sort 事件回传的 ids 已经重排好，可直接写回
+拖动任务调整顺序
 
 ```vue
 <script setup lang="ts">
-import { XhSortableItem, XhSortableItemDragTrigger, XhSortableRoot } from "@xihan-ui/vue";
+import { XhSortableDropIndicator, XhSortableItem, XhSortableItemDragTrigger, XhSortableLiveRegion, XhSortableRoot } from "@xihan-ui/vue";
 import { ref } from "vue";
 
-const ids = ref(["写方案", "评审", "实现", "上线"]);
+const ids = ref(["规划", "设计", "实现", "发布"]);
 </script>
 
 <template>
-  <XhSortableRoot v-model:ids="ids" style="inline-size: 100%">
-    <XhSortableItem v-for="id in ids" :key="id" :item-id="id" style="display: flex; align-items: center; gap: 8px; padding: 8px 12px; border: 1px solid var(--xh-border-default)">
+  <XhSortableRoot v-model:ids="ids" style="inline-size: min(360px, 100%)">
+    <XhSortableItem
+      v-for="id in ids"
+      :key="id"
+      :item-id="id"
+      style="display: flex; align-items: center; gap: 8px; padding: 10px 12px; border-radius: var(--xh-shape-surface); background: var(--xh-bg-subtle)"
+    >
       <XhSortableItemDragTrigger :item-id="id" />
       <span>{{ id }}</span>
     </XhSortableItem>
+    <XhSortableDropIndicator />
+    <XhSortableLiveRegion />
   </XhSortableRoot>
-  <p style="margin-top: 12px; color: var(--xh-fg-muted)">当前顺序：{{ ids.join(" → ") }}</p>
 </template>
 ```
 
 ```html
-<xh-sortable ids="写方案,评审,实现,上线" style="display: contents">
-  <div data-xh-part="root" style="inline-size: 100%">
-    <div data-xh-part="item" id="写方案" style="display: flex; align-items: center; gap: 8px; padding: 8px 12px; border: 1px solid var(--xh-border-default)">
-      <button data-xh-part="item-drag-trigger" id="写方案"></button>
-      <span>写方案</span>
-    </div>
-    <div data-xh-part="item" id="评审" style="display: flex; align-items: center; gap: 8px; padding: 8px 12px; border: 1px solid var(--xh-border-default)">
-      <button data-xh-part="item-drag-trigger" id="评审"></button>
-      <span>评审</span>
-    </div>
-    <div data-xh-part="item" id="实现" style="display: flex; align-items: center; gap: 8px; padding: 8px 12px; border: 1px solid var(--xh-border-default)">
-      <button data-xh-part="item-drag-trigger" id="实现"></button>
-      <span>实现</span>
-    </div>
-    <div data-xh-part="item" id="上线" style="display: flex; align-items: center; gap: 8px; padding: 8px 12px; border: 1px solid var(--xh-border-default)">
-      <button data-xh-part="item-drag-trigger" id="上线"></button>
-      <span>上线</span>
-    </div>
+<style>
+  #sortable-basic [data-xh-part="item"] { display: flex; align-items: center; gap: 8px; padding: 10px 12px; border-radius: var(--xh-shape-surface); background: var(--xh-bg-subtle); }
+</style>
+<xh-sortable id="sortable-basic" ids="规划,设计,实现,发布" style="display: contents">
+  <div data-xh-part="root" style="inline-size: min(360px, 100%)">
+    <div data-xh-part="item" item-id="规划"><button data-xh-part="item-drag-trigger" item-id="规划"></button><span>规划</span></div>
+    <div data-xh-part="item" item-id="设计"><button data-xh-part="item-drag-trigger" item-id="设计"></button><span>设计</span></div>
+    <div data-xh-part="item" item-id="实现"><button data-xh-part="item-drag-trigger" item-id="实现"></button><span>实现</span></div>
+    <div data-xh-part="item" item-id="发布"><button data-xh-part="item-drag-trigger" item-id="发布"></button><span>发布</span></div>
+    <div data-xh-part="drop-indicator"></div>
     <div data-xh-part="live-region"></div>
   </div>
 </xh-sortable>
+<script type="module">
+  const host = document.getElementById("sortable-basic");
+  const root = host.querySelector('[data-xh-part="root"]');
+  host.addEventListener("sort", (event) => {
+    host.ids = event.detail.ids;
+    for (const id of event.detail.ids) root.insertBefore(root.querySelector(`[item-id="${id}"]`), root.querySelector('[data-xh-part="drop-indicator"]'));
+  });
+</script>
 ```
+
+## 组件结构
+
+加粗的是必需部件。
+
+`data-scope="sortable"`：**`root`** · **`item`** · `item-drag-trigger` · `drop-indicator` · `live-region`
 
 ## 示例
 
-### 横排与网格
+### 水平排序
 
-orientation 三档：竖排、横排，换行网格用 both，落点按最近中心判
+调整标签顺序
 
 ```vue
 <script setup lang="ts">
-import { XhSortableItem, XhSortableItemDragTrigger, XhSortableRoot } from "@xihan-ui/vue";
+import { XhSortableDropIndicator, XhSortableItem, XhSortableItemDragTrigger, XhSortableLiveRegion, XhSortableRoot } from "@xihan-ui/vue";
 import { ref } from "vue";
 
-const tabs = ref(["概览", "订单", "库存", "报表"]);
-const cards = ref(["甲", "乙", "丙", "丁", "戊", "己"]);
+const ids = ref(["概览", "订单", "库存", "报表"]);
 </script>
 
 <template>
-  <p style="margin-bottom: 8px">横排：只认左右方向键。</p>
-  <XhSortableRoot v-model:ids="tabs" orientation="horizontal">
-    <XhSortableItem v-for="id in tabs" :key="id" :item-id="id" style="display: flex; align-items: center; gap: 8px; padding: 6px 12px; border: 1px solid var(--xh-border-default)">
+  <XhSortableRoot v-model:ids="ids" orientation="horizontal">
+    <XhSortableItem
+      v-for="id in ids"
+      :key="id"
+      :item-id="id"
+      style="display: flex; align-items: center; gap: 6px; padding: 8px 12px; border-radius: var(--xh-shape-pill); background: var(--xh-bg-subtle)"
+    >
       <XhSortableItemDragTrigger :item-id="id" />
       <span>{{ id }}</span>
     </XhSortableItem>
-  </XhSortableRoot>
-
-  <p style="margin: 20px 0 8px">换行网格：上下左右都认，落点取离指针最近的那一格。</p>
-  <XhSortableRoot v-model:ids="cards" orientation="both" style="max-inline-size: 320px">
-    <XhSortableItem v-for="id in cards" :key="id" :item-id="id" style="display: flex; align-items: center; justify-content: center; inline-size: 88px; block-size: 64px; border: 1px solid var(--xh-border-default)">
-      <XhSortableItemDragTrigger :item-id="id">{{ id }}</XhSortableItemDragTrigger>
-    </XhSortableItem>
+    <XhSortableDropIndicator />
+    <XhSortableLiveRegion />
   </XhSortableRoot>
 </template>
 ```
 
 ```html
-<p style="margin-bottom: 8px">横排：只认左右方向键。</p>
-<xh-sortable
-  id="sortable-tabs"
-  ids="概览,订单,库存,报表"
-  orientation="horizontal"
-  style="display: contents"
->
+<style>
+  #sortable-horizontal [data-xh-part="item"] { display: flex; align-items: center; gap: 6px; padding: 8px 12px; border-radius: var(--xh-shape-pill); background: var(--xh-bg-subtle); }
+</style>
+<xh-sortable id="sortable-horizontal" ids="概览,订单,库存,报表" orientation="horizontal" style="display: contents">
   <div data-xh-part="root">
-    <div data-xh-part="item" item-id="概览" style="display: flex; align-items: center; gap: 8px; padding: 6px 12px; border: 1px solid var(--xh-border-default)">
-      <button data-xh-part="item-drag-trigger" item-id="概览"></button>
-      <span>概览</span>
-    </div>
-    <div data-xh-part="item" item-id="订单" style="display: flex; align-items: center; gap: 8px; padding: 6px 12px; border: 1px solid var(--xh-border-default)">
-      <button data-xh-part="item-drag-trigger" item-id="订单"></button>
-      <span>订单</span>
-    </div>
-    <div data-xh-part="item" item-id="库存" style="display: flex; align-items: center; gap: 8px; padding: 6px 12px; border: 1px solid var(--xh-border-default)">
-      <button data-xh-part="item-drag-trigger" item-id="库存"></button>
-      <span>库存</span>
-    </div>
-    <div data-xh-part="item" item-id="报表" style="display: flex; align-items: center; gap: 8px; padding: 6px 12px; border: 1px solid var(--xh-border-default)">
-      <button data-xh-part="item-drag-trigger" item-id="报表"></button>
-      <span>报表</span>
-    </div>
-    <div data-xh-part="live-region"></div>
+    <div data-xh-part="item" item-id="概览"><button data-xh-part="item-drag-trigger" item-id="概览"></button><span>概览</span></div>
+    <div data-xh-part="item" item-id="订单"><button data-xh-part="item-drag-trigger" item-id="订单"></button><span>订单</span></div>
+    <div data-xh-part="item" item-id="库存"><button data-xh-part="item-drag-trigger" item-id="库存"></button><span>库存</span></div>
+    <div data-xh-part="item" item-id="报表"><button data-xh-part="item-drag-trigger" item-id="报表"></button><span>报表</span></div>
+    <div data-xh-part="drop-indicator"></div><div data-xh-part="live-region"></div>
   </div>
 </xh-sortable>
-
-<p style="margin: 20px 0 8px">换行网格：上下左右都认，落点取离指针最近的那一格。</p>
-<xh-sortable
-  id="sortable-cards"
-  ids="甲,乙,丙,丁,戊,己"
-  orientation="both"
-  style="display: contents"
->
-  <div data-xh-part="root" style="max-inline-size: 320px">
-    <div data-xh-part="item" item-id="甲" style="display: flex; align-items: center; justify-content: center; inline-size: 88px; block-size: 64px; border: 1px solid var(--xh-border-default)">
-      <button data-xh-part="item-drag-trigger" item-id="甲">甲</button>
-    </div>
-    <div data-xh-part="item" item-id="乙" style="display: flex; align-items: center; justify-content: center; inline-size: 88px; block-size: 64px; border: 1px solid var(--xh-border-default)">
-      <button data-xh-part="item-drag-trigger" item-id="乙">乙</button>
-    </div>
-    <div data-xh-part="item" item-id="丙" style="display: flex; align-items: center; justify-content: center; inline-size: 88px; block-size: 64px; border: 1px solid var(--xh-border-default)">
-      <button data-xh-part="item-drag-trigger" item-id="丙">丙</button>
-    </div>
-    <div data-xh-part="item" item-id="丁" style="display: flex; align-items: center; justify-content: center; inline-size: 88px; block-size: 64px; border: 1px solid var(--xh-border-default)">
-      <button data-xh-part="item-drag-trigger" item-id="丁">丁</button>
-    </div>
-    <div data-xh-part="item" item-id="戊" style="display: flex; align-items: center; justify-content: center; inline-size: 88px; block-size: 64px; border: 1px solid var(--xh-border-default)">
-      <button data-xh-part="item-drag-trigger" item-id="戊">戊</button>
-    </div>
-    <div data-xh-part="item" item-id="己" style="display: flex; align-items: center; justify-content: center; inline-size: 88px; block-size: 64px; border: 1px solid var(--xh-border-default)">
-      <button data-xh-part="item-drag-trigger" item-id="己">己</button>
-    </div>
-    <div data-xh-part="live-region"></div>
-  </div>
-</xh-sortable>
-
 <script type="module">
-  // 顺序真源是 ids：sort 回传的那份已经重排好，写回去的同时把 DOM 顺序搬成一样——几何按 DOM 量
-  for (const id of ["sortable-tabs", "sortable-cards"]) {
-    const host = document.getElementById(id);
-    const root = host.querySelector('[data-xh-part="root"]');
-    host.addEventListener("sort", (event) => {
-      host.ids = event.detail.ids;
-      for (const itemId of event.detail.ids) {
-        root.append(root.querySelector(`[data-xh-part="item"][item-id="${itemId}"]`));
-      }
-    });
-  }
-</script>
-```
-
-### 键盘拖拽
-
-默认开着且关不掉：Tab 到手柄，空格拾起，方向键挪，空格放下，Esc 取消
-
-```vue
-<script setup lang="ts">
-import { XhSortableItem, XhSortableItemDragTrigger, XhSortableRoot } from "@xihan-ui/vue";
-import { ref } from "vue";
-
-const ids = ref(["第一项", "第二项", "第三项"]);
-const log = ref<string[]>([]);
-</script>
-
-<template>
-  <p style="margin-bottom: 8px; color: var(--xh-fg-muted)">
-    Tab 聚焦到手柄，按空格拾起后用 ↑↓ 移动，再按空格落下；Esc 退回原位。
-  </p>
-  <XhSortableRoot
-    v-model:ids="ids"
-    @sort="log.unshift(`${$event.id}：第 ${$event.from + 1} 位 → 第 ${$event.to + 1} 位`)"
-    @drag-end="$event.canceled && log.unshift(`${$event.id}：已取消`)"
-  >
-    <XhSortableItem v-for="id in ids" :key="id" :item-id="id" style="display: flex; align-items: center; gap: 8px; padding: 8px 12px; border: 1px solid var(--xh-border-default)">
-      <XhSortableItemDragTrigger :item-id="id" />
-      <span>{{ id }}</span>
-    </XhSortableItem>
-  </XhSortableRoot>
-  <ul style="margin-top: 12px; color: var(--xh-fg-muted)">
-    <li v-for="(line, i) in log.slice(0, 4)" :key="i">{{ line }}</li>
-  </ul>
-</template>
-```
-
-```html
-<p style="margin-bottom: 8px; color: var(--xh-fg-muted)">
-  Tab 聚焦到手柄，按空格拾起后用 ↑↓ 移动，再按空格落下；Esc 退回原位。
-</p>
-<xh-sortable id="sortable-keyboard" ids="第一项,第二项,第三项" style="display: contents">
-  <div data-xh-part="root">
-    <div data-xh-part="item" item-id="第一项" style="display: flex; align-items: center; gap: 8px; padding: 8px 12px; border: 1px solid var(--xh-border-default)">
-      <button data-xh-part="item-drag-trigger" item-id="第一项"></button>
-      <span>第一项</span>
-    </div>
-    <div data-xh-part="item" item-id="第二项" style="display: flex; align-items: center; gap: 8px; padding: 8px 12px; border: 1px solid var(--xh-border-default)">
-      <button data-xh-part="item-drag-trigger" item-id="第二项"></button>
-      <span>第二项</span>
-    </div>
-    <div data-xh-part="item" item-id="第三项" style="display: flex; align-items: center; gap: 8px; padding: 8px 12px; border: 1px solid var(--xh-border-default)">
-      <button data-xh-part="item-drag-trigger" item-id="第三项"></button>
-      <span>第三项</span>
-    </div>
-    <div data-xh-part="live-region"></div>
-  </div>
-</xh-sortable>
-<ul id="sortable-keyboard-log" style="margin-top: 12px; color: var(--xh-fg-muted)"></ul>
-
-<script type="module">
-  const host = document.getElementById("sortable-keyboard");
+  const host = document.getElementById("sortable-horizontal");
   const root = host.querySelector('[data-xh-part="root"]');
-  const logEl = document.getElementById("sortable-keyboard-log");
-  const log = [];
-
-  function push(line) {
-    log.unshift(line);
-    logEl.replaceChildren(
-      ...log.slice(0, 4).map((text) => {
-        const li = document.createElement("li");
-        li.textContent = text;
-        return li;
-      })
-    );
-  }
-
   host.addEventListener("sort", (event) => {
-    // 顺序真源是 ids：写回去的同时把 DOM 顺序搬成一样——几何按 DOM 量
     host.ids = event.detail.ids;
-    for (const itemId of event.detail.ids) {
-      root.append(root.querySelector(`[data-xh-part="item"][item-id="${itemId}"]`));
-    }
-    push(`${event.detail.id}：第 ${event.detail.from + 1} 位 → 第 ${event.detail.to + 1} 位`);
-  });
-
-  host.addEventListener("drag-end", (event) => {
-    if (event.detail.canceled) push(`${event.detail.id}：已取消`);
+    for (const id of event.detail.ids) root.insertBefore(root.querySelector(`[data-xh-part="item"][item-id="${id}"]`), root.querySelector('[data-xh-part="drop-indicator"]'));
   });
 </script>
 ```
 
-### 禁用
+### 网格排序
 
-手柄退出 Tab 序列，按下也不进拖动
+在换行布局中排序
 
 ```vue
 <script setup lang="ts">
-import { XhSortableItem, XhSortableItemDragTrigger, XhSortableRoot } from "@xihan-ui/vue";
+import { XhSortableDropIndicator, XhSortableItem, XhSortableItemDragTrigger, XhSortableLiveRegion, XhSortableRoot } from "@xihan-ui/vue";
 import { ref } from "vue";
 
-const ids = ref(["锁定一", "锁定二", "锁定三"]);
+const ids = ref(["颜色", "排版", "间距", "圆角", "阴影", "动效"]);
 </script>
 
 <template>
-  <XhSortableRoot v-model:ids="ids" disabled>
-    <XhSortableItem v-for="id in ids" :key="id" :item-id="id" style="display: flex; align-items: center; gap: 8px; padding: 8px 12px; border: 1px solid var(--xh-border-default)">
+  <XhSortableRoot v-model:ids="ids" orientation="both" style="max-inline-size: 340px">
+    <XhSortableItem
+      v-for="id in ids"
+      :key="id"
+      :item-id="id"
+      style="display: flex; align-items: center; gap: 6px; inline-size: 104px; block-size: 72px; padding: 10px; border-radius: var(--xh-shape-surface); background: var(--xh-bg-subtle)"
+    >
       <XhSortableItemDragTrigger :item-id="id" />
       <span>{{ id }}</span>
     </XhSortableItem>
+    <XhSortableDropIndicator />
+    <XhSortableLiveRegion />
   </XhSortableRoot>
 </template>
 ```
 
 ```html
-<xh-sortable ids="锁定一,锁定二,锁定三" disabled style="display: contents">
-  <div data-xh-part="root">
-    <div data-xh-part="item" item-id="锁定一" style="display: flex; align-items: center; gap: 8px; padding: 8px 12px; border: 1px solid var(--xh-border-default)">
-      <button data-xh-part="item-drag-trigger" item-id="锁定一"></button>
-      <span>锁定一</span>
-    </div>
-    <div data-xh-part="item" item-id="锁定二" style="display: flex; align-items: center; gap: 8px; padding: 8px 12px; border: 1px solid var(--xh-border-default)">
-      <button data-xh-part="item-drag-trigger" item-id="锁定二"></button>
-      <span>锁定二</span>
-    </div>
-    <div data-xh-part="item" item-id="锁定三" style="display: flex; align-items: center; gap: 8px; padding: 8px 12px; border: 1px solid var(--xh-border-default)">
-      <button data-xh-part="item-drag-trigger" item-id="锁定三"></button>
-      <span>锁定三</span>
-    </div>
+<style>
+  #sortable-grid [data-xh-part="item"] { display: flex; align-items: center; gap: 6px; inline-size: 104px; block-size: 72px; padding: 10px; border-radius: var(--xh-shape-surface); background: var(--xh-bg-subtle); }
+</style>
+<xh-sortable id="sortable-grid" ids="颜色,排版,间距,圆角,阴影,动效" orientation="both" style="display: contents">
+  <div data-xh-part="root" style="max-inline-size: 340px">
+    <div data-xh-part="item" item-id="颜色"><button data-xh-part="item-drag-trigger" item-id="颜色"></button><span>颜色</span></div>
+    <div data-xh-part="item" item-id="排版"><button data-xh-part="item-drag-trigger" item-id="排版"></button><span>排版</span></div>
+    <div data-xh-part="item" item-id="间距"><button data-xh-part="item-drag-trigger" item-id="间距"></button><span>间距</span></div>
+    <div data-xh-part="item" item-id="圆角"><button data-xh-part="item-drag-trigger" item-id="圆角"></button><span>圆角</span></div>
+    <div data-xh-part="item" item-id="阴影"><button data-xh-part="item-drag-trigger" item-id="阴影"></button><span>阴影</span></div>
+    <div data-xh-part="item" item-id="动效"><button data-xh-part="item-drag-trigger" item-id="动效"></button><span>动效</span></div>
+    <div data-xh-part="drop-indicator"></div><div data-xh-part="live-region"></div>
+  </div>
+</xh-sortable>
+<script type="module">
+  const host = document.getElementById("sortable-grid");
+  const root = host.querySelector('[data-xh-part="root"]');
+  host.addEventListener("sort", (event) => {
+    host.ids = event.detail.ids;
+    for (const id of event.detail.ids) root.insertBefore(root.querySelector(`[data-xh-part="item"][item-id="${id}"]`), root.querySelector('[data-xh-part="drop-indicator"]'));
+  });
+</script>
+```
+
+### 禁用项目
+
+固定单个项目的位置
+
+```vue
+<script setup lang="ts">
+import { XhSortableItem, XhSortableItemDragTrigger, XhSortableLiveRegion, XhSortableRoot } from "@xihan-ui/vue";
+import { ref } from "vue";
+
+const ids = ref(["固定项", "设计", "实现", "发布"]);
+</script>
+
+<template>
+  <XhSortableRoot v-model:ids="ids" style="inline-size: min(360px, 100%)">
+    <XhSortableItem
+      v-for="id in ids"
+      :key="id"
+      :item-id="id"
+      :disabled="id === '固定项'"
+      style="display: flex; align-items: center; gap: 8px; padding: 10px 12px; border-radius: var(--xh-shape-surface); background: var(--xh-bg-subtle)"
+    >
+      <XhSortableItemDragTrigger :item-id="id" :disabled="id === '固定项'" />
+      <span>{{ id }}</span>
+    </XhSortableItem>
+    <XhSortableLiveRegion />
+  </XhSortableRoot>
+</template>
+```
+
+```html
+<style>
+  #sortable-disabled [data-xh-part="item"] { display: flex; align-items: center; gap: 8px; padding: 10px 12px; border-radius: var(--xh-shape-surface); background: var(--xh-bg-subtle); }
+</style>
+<xh-sortable id="sortable-disabled" ids="固定项,设计,实现,发布" style="display: contents">
+  <div data-xh-part="root" style="inline-size: min(360px, 100%)">
+    <div data-xh-part="item" item-id="固定项" disabled><button data-xh-part="item-drag-trigger" item-id="固定项" disabled></button><span>固定项</span></div>
+    <div data-xh-part="item" item-id="设计"><button data-xh-part="item-drag-trigger" item-id="设计"></button><span>设计</span></div>
+    <div data-xh-part="item" item-id="实现"><button data-xh-part="item-drag-trigger" item-id="实现"></button><span>实现</span></div>
+    <div data-xh-part="item" item-id="发布"><button data-xh-part="item-drag-trigger" item-id="发布"></button><span>发布</span></div>
     <div data-xh-part="live-region"></div>
   </div>
 </xh-sortable>
+<script type="module">
+  const host = document.getElementById("sortable-disabled");
+  const root = host.querySelector('[data-xh-part="root"]');
+  host.addEventListener("sort", (event) => {
+    host.ids = event.detail.ids;
+    for (const id of event.detail.ids) root.insertBefore(root.querySelector(`[data-xh-part="item"][item-id="${id}"]`), root.querySelector('[data-xh-part="live-region"]'));
+  });
+</script>
 ```
 
 ## 设计指引
 
 ### 何时使用
 
-- 顺序本身是数据的一部分：表格列的先后、标签页的排列、收藏项的次序。
-- 顺序要存回后端：`sort` 事件直接给出重排好的 `ids`，接上就能提交。
+- 调整任务、标签页、收藏项或表格列的顺序。
+- 需要保存用户定义的排列顺序。
 
 ### 何时不用
 
-- 顺序由数据决定而不由人决定：那是排序规则，不是拖拽。
-- 要把条目拖到**另一个**容器里：本组件只管单个列表内部的重排。
+- 数据规则决定顺序时使用普通排序。
+- 跨容器拖拽需要使用更完整的拖放方案。
 
 ### 特性
 
-- `ids` 是顺序的唯一真源，`sort` 事件回传的 `ids` 已经重排好，可以直接写回。
-- 拖动过程走乐观投影：其余条目实时让位，松手即定，不是拖完才跳一下。
-- 键盘路径默认开着且关不掉：空格拾起、方向键挪、空格放下、Esc 取消，全程有读屏播报。
-- 按下之后要走够 `activationDistance`（默认 5px）才算拖动，因此条目本身仍然可以点击。
-- 拖到容器边缘会自动滚动，视口外的落点够得着。
-- `orientation` 三档：竖排、横排，以及换行网格用的 `both`——网格按最近中心判落点。
-- 写一个 `drop-indicator` 节点（排在末项之后），拖动中会在松手后条目要插进去的那条缝上画一条线；落点回到起点时它自动收起。
+- 支持垂直、水平和换行网格排序。
+- 拖动时实时显示让位和落点。
+- 支持边缘自动滚动。
+- `sort` 事件返回重排后的 `ids`。
 
-## 产物
+### 组合
+
+- 可在项目中放置独立拖拽手柄。
+- 可与[表格](./table)组合为列排序面板。
+
+## API 参考
+
+### 产物
 
 | 层 | 值 |
 | --- | --- |
@@ -328,13 +267,7 @@ const ids = ref(["锁定一", "锁定二", "锁定三"]);
 | 状态机 | `sortableMachine` |
 | 皮肤 | `@xihan-ui/styles/sortable.css` |
 
-## 解剖
-
-部件名即 `data-part` 属性值，也是皮肤的选择器。加粗的是必备部件，不渲染它组件不工作（Web Components 适配器会在诊断通道上报 `wc.missing-part`）。
-
-`data-scope="sortable"`：**`root`** · **`item`** · `item-drag-trigger` · `drop-indicator` · `live-region`
-
-## Props
+### Props
 
 | 属性 | 类型 | 必填 | 说明 |
 | --- | --- | --- | --- |
@@ -349,9 +282,9 @@ const ids = ref(["锁定一", "锁定二", "锁定三"]);
 | `onDragStart` | `(details: SortableDragStartDetails) => void` |  |  |
 | `onDragEnd` | `(details: SortableDragEndDetails) => void` |  |  |
 
-## 事件
+### 事件
 
-自定义元素派发这些事件，Vue 组件对应同名 emit；载荷都在 `detail` 上。可双向绑定的值另有 `update:xxx`，见 Props。
+自定义元素将载荷放在 `detail`；Vue 使用同名 emit。
 
 | 事件 | 载荷 | 说明 |
 | --- | --- | --- |
@@ -359,9 +292,9 @@ const ids = ref(["锁定一", "锁定二", "锁定三"]);
 | `drag-start` | `SortableDragStartDetails` | 拾起；detail 为 `{ id, from, mode }` |
 | `drag-end` | `SortableDragEndDetails` | 收尾（含取消）；detail 为 `{ id, from, to, mode, canceled }` |
 
-## 插槽
+### 插槽
 
-作者能拿到载荷的插槽。只转发内容、不带载荷的默认插槽不在此列——那类直接写子节点即可。
+仅列出带载荷的插槽。
 
 | Vue 组件 | 插槽 | 载荷 | 说明 |
 | --- | --- | --- | --- |
@@ -369,9 +302,9 @@ const ids = ref(["锁定一", "锁定二", "锁定三"]);
 | `XhSortableItemDragTrigger` | `default` | — |  |
 | `XhSortableRoot` | `default` | `SortableRootSlotProps` |  |
 
-## 状态
+### 状态
 
-状态机内部转移，写样式与业务都用不到；要监听变化请看上面的「事件」。
+以下名称仅用于内部状态机。
 
 **状态**：`idle` · `pending` · `dragging`
 
@@ -379,9 +312,9 @@ const ids = ref(["锁定一", "锁定二", "锁定三"]);
 
 **判据**：`canSort` · `passedActivation`
 
-## connect API
+### connect API
 
-`useSortable` 产出的对象。`getXxxProps()` 铺到对应部件的宿主元素上，其余是可读状态与操作入口。
+`getXxxProps()` 返回对应部件的宿主属性。
 
 | 成员 | 类型 | 说明 |
 | --- | --- | --- |
@@ -397,7 +330,9 @@ const ids = ref(["锁定一", "锁定二", "锁定三"]);
 | `getDropIndicatorProps` | `() => T['element']` | 落点线：拖动中且落点与起点不同一位时才在场，位置由内联样式给出。 |
 | `getLiveRegionProps` | `() => T['element']` |  |
 
-## 键盘
+## 无障碍
+
+### 键盘
 
 规格出处：[W3C APG](https://www.w3.org/WAI/ARIA/apg/practices/keyboard-interface/)
 
@@ -409,9 +344,9 @@ const ids = ref(["锁定一", "锁定二", "锁定三"]);
 | `Space` / `Enter` | 键盘拖动中 | 放下，按当前位置提交顺序并播报落点 |
 | `Escape` | 键盘拖动中 | 取消，顺序回到拾起前，播报已取消与原位置 |
 
-## 无障碍
+### ARIA
 
-下面这些由 `connect` 铺到部件上，作者不必自己写；重复写反而会覆盖掉正确值。
+以下属性由 `connect` 生成。
 
 | 部件 | 属性 | 值 |
 | --- | --- | --- |
@@ -427,17 +362,19 @@ const ids = ref(["锁定一", "锁定二", "锁定三"]);
 | `live-region` | `aria-live` | 'polite' |
 | `live-region` | `role` | 'status' |
 
-- 手柄是 `role=button`，带 `aria-roledescription="sortable"` 与 `aria-pressed`。
-- 拖动过程的每一步都写进视觉隐藏的 `role=status` 区域，读屏能听到「移到第几位，共几项」。
-- 拖动中的 Tab 会被拦下：焦点一旦移走，这一场就没有出口了。
+- 空格拾取或放下，方向键移动，Escape 取消。
+- `live-region` 会播报当前拖动位置。
+- 拖动期间焦点保留在当前手柄。
 
-## 样式
+## 样式参考
 
-默认皮肤 `@xihan-ui/styles/sortable.css` 按部件选择：`[data-scope="sortable"][data-part="root"]`。它落在 `xihan.components` 层；业务样式不写进 `@layer` 即高于全部库层，要按层压过来就写进 `xihan.overrides`。
+### 皮肤
 
-## 数据属性
+`@xihan-ui/styles/sortable.css` 使用 `[data-scope="sortable"][data-part="root"]` 部件选择器，位于 `xihan.components` 层。覆盖样式使用 `xihan.overrides`。
 
-由 `connect` 产出并铺到部件上，皮肤与测试都据此选择；`data-disabled` 这类无值属性在条件不成立时整个不出现。
+### 数据属性
+
+由 `connect` 生成；条件不成立时不输出无值属性。
 
 | 部件 | 属性 | 值 |
 | --- | --- | --- |
@@ -452,7 +389,7 @@ const ids = ref(["锁定一", "锁定二", "锁定三"]);
 | `drop-indicator` | `data-orientation` | props.orientation |
 
 <!-- xh-component-tokens:start -->
-## CSS 变量
+### CSS 变量
 
 本组件公开覆盖槽由独立皮肤的实际消费位生成；缺省来源、作用部件和状态均与 CSS 同源。
 
@@ -474,17 +411,12 @@ const ids = ref(["锁定一", "锁定二", "锁定三"]);
 | `--xh-sortable-item-shadow-dragging` | `item` | `box-shadow` | `dragging` | `--xh-elevation-raised` | sortable 的 item 部件 box-shadow 覆盖槽。 |
 <!-- xh-component-tokens:end -->
 
-## 动效
+### 动效
 
 `box-shadow` · `opacity` · `transform` 走 `transition` 过渡。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
 
 系统开启减弱动效时由令牌层统一收敛，皮肤不另作判断。
 
-## RTL
+### RTL
 
 皮肤用逻辑属性排布（`inline-start` 一族），`dir="rtl"` 下自动镜像。
-
-## 组合
-
-- 每项里放一个拖拽手柄：只有手柄能拖，条目其余部分照常可点。
-- 与[表格](./table)的列设置配合，做成可拖的列顺序面板。

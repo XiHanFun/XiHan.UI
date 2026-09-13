@@ -1,0 +1,10 @@
+const t=`<!-- 基础用法 | 同时切换多个文本格式 -->
+<xh-toggle-group default-value="bold" multiple>
+  <div data-xh-part="root">
+    <button data-xh-part="item" value="bold" aria-label="粗体"><strong>B</strong></button>
+    <button data-xh-part="item" value="italic" aria-label="斜体"><em>I</em></button>
+    <button data-xh-part="item" value="underline" aria-label="下划线"><u>U</u></button>
+    <button data-xh-part="item" value="strike" aria-label="删除线"><s>S</s></button>
+  </div>
+</xh-toggle-group>
+`;export{t as default};

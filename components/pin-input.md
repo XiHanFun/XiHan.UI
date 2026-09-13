@@ -1,6 +1,6 @@
 来源：https://ui.docs.xihanfun.com/components/pin-input
 
-# PinInput `分格输入`
+# PinInput 分格输入
 
 把一串短码拆成几个格子，一格一个字符。
 
@@ -46,6 +46,12 @@ import { XhPinInputInput, XhPinInputLabel, XhPinInputRoot } from "@xihan-ui/vue"
   </div>
 </xh-pin-input>
 ```
+
+## 组件结构
+
+加粗的是必需部件。
+
+`data-scope="pin-input"`：**`root`** · `label` · `group` · **`input`** · `separator` · `hidden-input`
 
 ## 示例
 
@@ -217,7 +223,7 @@ import { XhPinInputInput, XhPinInputLabel, XhPinInputRoot } from "@xihan-ui/vue"
 </xh-pin-input>
 ```
 
-### 形态
+### 变体
 
 variant 只改每格的颜色槽位，跳格与粘贴铺开的行为三档一致
 
@@ -284,7 +290,7 @@ const variants = ["outline", "subtle", "ghost"] as const;
 </div>
 ```
 
-### 语气
+### 颜色
 
 tone 决定用哪族颜色，与 variant 正交；这里固定 outline 只看语气的差别
 
@@ -707,7 +713,23 @@ import { XhPinInputInput, XhPinInputLabel, XhPinInputRoot } from "@xihan-ui/vue"
 - `group` 与 `separator` 把格子分段排（123-456），下标仍按文档序算。
 - `readOnly` 让格子只能看与复制，`required` 给每格补上原生必填。
 
-## 产物
+### 组合
+
+- 与[表单](./form)配合，填满才允许提交。
+
+### 最佳实践
+
+- 验证码务必开 `otp`，否则短信里的码要用户手打。
+- 填满后自动提交，别让用户再找一次按钮。
+
+### 反模式
+
+- 格数超过八个：视觉上就不再是"一串短码"了。
+- 遮蔽验证码：用户看不见自己输错在哪一位。
+
+## API 参考
+
+### 产物
 
 | 层 | 值 |
 | --- | --- |
@@ -717,13 +739,7 @@ import { XhPinInputInput, XhPinInputLabel, XhPinInputRoot } from "@xihan-ui/vue"
 | 状态机 | `pinInputMachine` |
 | 皮肤 | `@xihan-ui/styles/pin-input.css` |
 
-## 解剖
-
-部件名即 `data-part` 属性值，也是皮肤的选择器。加粗的是必备部件，不渲染它组件不工作（Web Components 适配器会在诊断通道上报 `wc.missing-part`）。
-
-`data-scope="pin-input"`：**`root`** · `label` · `group` · **`input`** · `separator` · `hidden-input`
-
-## Props
+### Props
 
 | 属性 | 类型 | 必填 | 说明 |
 | --- | --- | --- | --- |
@@ -748,26 +764,26 @@ import { XhPinInputInput, XhPinInputLabel, XhPinInputRoot } from "@xihan-ui/vue"
 | `onValueChange` | `(details: PinInputValueChangeDetails) => void` |  | value 变化意图回调；受控时是唯一出口，非受控随内部写入一并通知。 |
 | `onValueComplete` | `(details: PinInputValueChangeDetails) => void` |  | 每格都填满的那一刻触发；值没真变时不重复触发。 |
 
-## 事件
+### 事件
 
-自定义元素派发这些事件，Vue 组件对应同名 emit；载荷都在 `detail` 上。可双向绑定的值另有 `update:xxx`，见 Props。
+自定义元素将载荷放在 `detail`；Vue 使用同名 emit。
 
 | 事件 | 载荷 | 说明 |
 | --- | --- | --- |
 | `value-change` | `PinInputValueChangeDetails` | 值变化；detail 为 `{ value: string[], valueAsString: string }` |
 | `value-complete` | `PinInputValueChangeDetails` | 每格都填满；detail 同上 |
 
-## 插槽
+### 插槽
 
-作者能拿到载荷的插槽。只转发内容、不带载荷的默认插槽不在此列——那类直接写子节点即可。
+仅列出带载荷的插槽。
 
 | Vue 组件 | 插槽 | 载荷 | 说明 |
 | --- | --- | --- | --- |
 | `XhPinInputRoot` | `default` | `PinInputRootSlotProps` |  |
 
-## 状态
+### 状态
 
-状态机内部转移，写样式与业务都用不到；要监听变化请看上面的「事件」。
+以下名称仅用于内部状态机。
 
 **状态**：`idle`
 
@@ -775,9 +791,9 @@ import { XhPinInputInput, XhPinInputLabel, XhPinInputRoot } from "@xihan-ui/vue"
 
 **判据**：`canEdit`
 
-## connect API
+### connect API
 
-`usePinInput` 产出的对象。`getXxxProps()` 铺到对应部件的宿主元素上，其余是可读状态与操作入口。
+`getXxxProps()` 返回对应部件的宿主属性。
 
 | 成员 | 类型 | 说明 |
 | --- | --- | --- |
@@ -798,7 +814,9 @@ import { XhPinInputInput, XhPinInputLabel, XhPinInputRoot } from "@xihan-ui/vue"
 | `getSeparatorProps` | `() => T['element']` | 段与段之间的分隔；对读屏隐藏，念出来只会打断验证码。 |
 | `getHiddenInputProps` | `() => T['input']` | 整份验证码的表单出口：一份 type=hidden 的原生输入，随表单提交拼好的串。 |
 
-## 键盘
+## 无障碍
+
+### 键盘
 
 规格出处：[W3C APG](https://www.w3.org/WAI/ARIA/apg/patterns/spinbutton/#textbox)
 
@@ -811,9 +829,9 @@ import { XhPinInputInput, XhPinInputLabel, XhPinInputRoot } from "@xihan-ui/vue"
 | `Backspace` | focus in a box, not disabled | 本格有值则清本格；本格为空则退回上一格并清掉上一格 |
 | `Delete` | focus in a box, not disabled | 清掉本格，焦点不动 |
 
-## 无障碍
+### ARIA
 
-下面这些由 `connect` 铺到部件上，作者不必自己写；重复写反而会覆盖掉正确值。
+以下属性由 `connect` 生成。
 
 | 部件 | 属性 | 值 |
 | --- | --- | --- |
@@ -823,13 +841,15 @@ import { XhPinInputInput, XhPinInputLabel, XhPinInputRoot } from "@xihan-ui/vue"
 | `input` | `aria-label` | label.input(index + 1, length) |
 | `separator` | `aria-hidden` | 'true' |
 
-## 样式
+## 样式参考
 
-默认皮肤 `@xihan-ui/styles/pin-input.css` 按部件选择：`[data-scope="pin-input"][data-part="root"]`。它落在 `xihan.components` 层；业务样式不写进 `@layer` 即高于全部库层，要按层压过来就写进 `xihan.overrides`。
+### 皮肤
 
-## 数据属性
+`@xihan-ui/styles/pin-input.css` 使用 `[data-scope="pin-input"][data-part="root"]` 部件选择器，位于 `xihan.components` 层。覆盖样式使用 `xihan.overrides`。
 
-由 `connect` 产出并铺到部件上，皮肤与测试都据此选择；`data-disabled` 这类无值属性在条件不成立时整个不出现。
+### 数据属性
+
+由 `connect` 生成；条件不成立时不输出无值属性。
 
 | 部件 | 属性 | 值 |
 | --- | --- | --- |
@@ -852,7 +872,7 @@ import { XhPinInputInput, XhPinInputLabel, XhPinInputRoot } from "@xihan-ui/vue"
 | `separator` | `data-disabled` | ''（条件成立时才出现） |
 
 <!-- xh-component-tokens:start -->
-## CSS 变量
+### CSS 变量
 
 本组件公开覆盖槽由独立皮肤的实际消费位生成；缺省来源、作用部件和状态均与 CSS 同源。
 
@@ -887,26 +907,12 @@ import { XhPinInputInput, XhPinInputLabel, XhPinInputRoot } from "@xihan-ui/vue"
 | `--xh-pin-input-separator-gap` | `separator` | `margin-inline` | `default` | `--xh-_pin-input-box-gap` | pin-input 的 separator 部件 margin-inline 覆盖槽。 |
 <!-- xh-component-tokens:end -->
 
-## 动效
+### 动效
 
 `background` · `border-color` 走 `transition` 过渡。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
 
 系统开启减弱动效时由令牌层统一收敛，皮肤不另作判断。
 
-## RTL
+### RTL
 
 皮肤用逻辑属性排布（`inline-start` 一族），`dir="rtl"` 下自动镜像。
-
-## 组合
-
-- 与[表单](./form)配合，填满才允许提交。
-
-## 最佳实践
-
-- 验证码务必开 `otp`，否则短信里的码要用户手打。
-- 填满后自动提交，别让用户再找一次按钮。
-
-## 反模式
-
-- 格数超过八个：视觉上就不再是"一串短码"了。
-- 遮蔽验证码：用户看不见自己输错在哪一位。

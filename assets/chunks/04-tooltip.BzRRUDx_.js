@@ -1,0 +1,7 @@
+const t=`<!-- 原生提示 | 仅在内容溢出时显示完整文本 -->
+<div style="inline-size: 240px; max-inline-size: 100%">
+  <xh-truncate tooltip>
+    <div data-xh-part="root">浙江省杭州市余杭区文一西路 969 号 3 号楼 12 层 1203 室</div>
+  </xh-truncate>
+</div>
+`;export{t as default};

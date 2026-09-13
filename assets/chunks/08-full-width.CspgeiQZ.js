@@ -1,0 +1,5 @@
+const t=`<!-- 全宽 | 占满容器宽度 -->
+<xh-button full-width>
+  <button data-xh-part="root">继续</button>
+</xh-button>
+`;export{t as default};

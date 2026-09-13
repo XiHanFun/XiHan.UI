@@ -1,0 +1,5 @@
+const a=`<!-- 禁用 | 表示对应动作不可用 -->
+<xh-kbd-group keys="Mod,S" disabled>
+  <span data-xh-part="root"></span>
+</xh-kbd-group>
+`;export{a as default};

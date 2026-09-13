@@ -1,0 +1,9 @@
+const t=`<!-- 颜色 | 使用预设语义颜色 -->
+<div style="display: flex; flex-wrap: wrap; gap: 20px; font-size: 24px; font-weight: 700">
+  <xh-gradient-text tone="brand"><span data-xh-part="root">品牌</span></xh-gradient-text>
+  <xh-gradient-text tone="success"><span data-xh-part="root">成功</span></xh-gradient-text>
+  <xh-gradient-text tone="warning"><span data-xh-part="root">警告</span></xh-gradient-text>
+  <xh-gradient-text tone="danger"><span data-xh-part="root">危险</span></xh-gradient-text>
+  <xh-gradient-text tone="info"><span data-xh-part="root">信息</span></xh-gradient-text>
+</div>
+`;export{t as default};

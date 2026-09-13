@@ -1,8 +1,8 @@
 来源：https://ui.docs.xihanfun.com/components/typography
 
-# Typography `排印`
+# Typography 排印
 
-一块正文的排版容器：管住段间距与最大行宽，标题、段落与行内文字各自拿自己的字号、字重与行高。
+用于组织标题、正文和富文本内容。
 
 <div class="xh-resource-links">
   <a href="https://github.com/XiHanFun/XiHan.UI/tree/dev/ui/packages/engine/headless/src/typography" target="_blank" rel="noreferrer">Headless</a>
@@ -14,22 +14,18 @@
 
 ## 用法
 
-root 管段间距与最大行宽，标题与段落各自拿字号、字重、行高
+组合标题和正文
 
 ```vue
 <script setup lang="ts">
-import { XhTypographyHeading, XhTypographyParagraph, XhTypographyRoot } from "@xihan-ui/vue";
+import { XhTypographyHeading, XhTypographyLink, XhTypographyParagraph, XhTypographyRoot } from "@xihan-ui/vue";
 </script>
 
 <template>
   <XhTypographyRoot>
-    <!-- as 决定渲染成哪个标签，要进文档大纲就自己写上去 -->
-    <XhTypographyHeading as="h3" :level="3">版式约定</XhTypographyHeading>
+    <XhTypographyHeading as="h3" :level="3">构建一致的产品体验</XhTypographyHeading>
     <XhTypographyParagraph>
-      字号、字重与行高都收进令牌，不再逐处手写。段与段之间的间距由 root 统一给。
-    </XhTypographyParagraph>
-    <XhTypographyParagraph>
-      最大行宽也由 root 管，整块正文不会拉成一行行难读的长句。
+      使用清晰的层级和舒适的行距组织内容。<XhTypographyLink href="#">阅读设计指南</XhTypographyLink>
     </XhTypographyParagraph>
   </XhTypographyRoot>
 </template>
@@ -38,36 +34,44 @@ import { XhTypographyHeading, XhTypographyParagraph, XhTypographyRoot } from "@x
 ```html
 <xh-typography>
   <div data-xh-part="root">
-    <!-- 标签由作者写，要进文档大纲就写 h1-h6 -->
-    <h3 data-xh-part="heading" level="3">版式约定</h3>
+    <h3 data-xh-part="heading" level="3">构建一致的产品体验</h3>
     <p data-xh-part="paragraph">
-      字号、字重与行高都收进令牌，不再逐处手写。段与段之间的间距由 root 统一给。
-    </p>
-    <p data-xh-part="paragraph">
-      最大行宽也由 root 管，整块正文不会拉成一行行难读的长句。
+      使用清晰的层级和舒适的行距组织内容。<a data-xh-part="link" href="#">阅读设计指南</a>
     </p>
   </div>
 </xh-typography>
 ```
 
+## 组件结构
+
+加粗的是必需部件。
+
+`data-scope="typography"`：**`root`** · `heading` · `paragraph` · `text` · `link` · `prose`
+
 ## 示例
 
-### 标题档位
+### 标题层级
 
-level 只换字号档位，用哪个标签由作者定；不传 level 即默认档
+设置标题的视觉层级
 
 ```vue
 <script setup lang="ts">
 import { XhTypographyHeading, XhTypographyRoot } from "@xihan-ui/vue";
 
-// as const 让每一项是字面量类型，才对得上 level 收的 1-6 联合
-const levels = [1, 2, 3, 4, 5, 6] as const;
+const headings = [
+  { level: 1, label: "一级标题" },
+  { level: 2, label: "二级标题" },
+  { level: 3, label: "三级标题" },
+  { level: 4, label: "四级标题" },
+  { level: 5, label: "五级标题" },
+  { level: 6, label: "六级标题" },
+] as const;
 </script>
 
 <template>
   <XhTypographyRoot>
-    <XhTypographyHeading v-for="l in levels" :key="l" :level="l">
-      第 {{ l }} 档标题
+    <XhTypographyHeading v-for="heading in headings" :key="heading.level" :level="heading.level">
+      {{ heading.label }}
     </XhTypographyHeading>
   </XhTypographyRoot>
 </template>
@@ -76,19 +80,19 @@ const levels = [1, 2, 3, 4, 5, 6] as const;
 ```html
 <xh-typography>
   <div data-xh-part="root">
-    <p data-xh-part="heading" level="1">第 1 档标题</p>
-    <p data-xh-part="heading" level="2">第 2 档标题</p>
-    <p data-xh-part="heading" level="3">第 3 档标题</p>
-    <p data-xh-part="heading" level="4">第 4 档标题</p>
-    <p data-xh-part="heading" level="5">第 5 档标题</p>
-    <p data-xh-part="heading" level="6">第 6 档标题</p>
+    <p data-xh-part="heading" level="1">一级标题</p>
+    <p data-xh-part="heading" level="2">二级标题</p>
+    <p data-xh-part="heading" level="3">三级标题</p>
+    <p data-xh-part="heading" level="4">四级标题</p>
+    <p data-xh-part="heading" level="5">五级标题</p>
+    <p data-xh-part="heading" level="6">六级标题</p>
   </div>
 </xh-typography>
 ```
 
-### 行内文字
+### 文本变体
 
-variant 换形态：muted 弱化、strong 加重、code 等宽
+设置正文、辅助、强调、代码和链接样式
 
 ```vue
 <script setup lang="ts">
@@ -102,14 +106,11 @@ import {
 
 <template>
   <XhTypographyRoot>
-    <XhTypographyParagraph>
-      不写 variant 就是一段普通正文，<XhTypographyText variant="muted">这一段弱化</XhTypographyText>，
-      <XhTypographyText variant="strong">这一段加重</XhTypographyText>，
-      档位写在 <XhTypographyText as="code" variant="code">data-level</XhTypographyText> 上。
-    </XhTypographyParagraph>
-    <XhTypographyParagraph>
-      链接自带下划线，<XhTypographyLink href="#">不只靠颜色区分</XhTypographyLink>。
-    </XhTypographyParagraph>
+    <XhTypographyParagraph>默认正文</XhTypographyParagraph>
+    <XhTypographyParagraph><XhTypographyText variant="muted">辅助信息</XhTypographyText></XhTypographyParagraph>
+    <XhTypographyParagraph><XhTypographyText variant="strong">重要内容</XhTypographyText></XhTypographyParagraph>
+    <XhTypographyParagraph><XhTypographyText as="code" variant="code">pnpm add @xihan-ui/vue</XhTypographyText></XhTypographyParagraph>
+    <XhTypographyParagraph><XhTypographyLink href="#">查看文档</XhTypographyLink></XhTypographyParagraph>
   </XhTypographyRoot>
 </template>
 ```
@@ -117,36 +118,36 @@ import {
 ```html
 <xh-typography>
   <div data-xh-part="root">
-    <p data-xh-part="paragraph">
-      不写 variant 就是一段普通正文，<span data-xh-part="text" variant="muted">这一段弱化</span>，
-      <span data-xh-part="text" variant="strong">这一段加重</span>，
-      档位写在 <code data-xh-part="text" variant="code">data-level</code> 上。
-    </p>
-    <p data-xh-part="paragraph">
-      链接自带下划线，<a data-xh-part="link" href="#">不只靠颜色区分</a>。
-    </p>
+    <p data-xh-part="paragraph">默认正文</p>
+    <p data-xh-part="paragraph"><span data-xh-part="text" variant="muted">辅助信息</span></p>
+    <p data-xh-part="paragraph"><span data-xh-part="text" variant="strong">重要内容</span></p>
+    <p data-xh-part="paragraph"><code data-xh-part="text" variant="code">pnpm add @xihan-ui/web-components</code></p>
+    <p data-xh-part="paragraph"><a data-xh-part="link" href="#">查看文档</a></p>
   </div>
 </xh-typography>
 ```
 
-### 语气
+### 颜色
 
-tone 决定这一段行内文字用哪族颜色，与 variant 是两个轴，可以一起写
+使用语义颜色
 
 ```vue
 <script setup lang="ts">
 import { XhTypographyParagraph, XhTypographyRoot, XhTypographyText } from "@xihan-ui/vue";
 
-const tones = ["brand", "neutral", "success", "warning", "danger", "info"];
+const tones = [
+  { tone: "brand", label: "品牌" },
+  { tone: "success", label: "成功" },
+  { tone: "warning", label: "警告" },
+  { tone: "danger", label: "危险" },
+  { tone: "info", label: "信息" },
+] as const;
 </script>
 
 <template>
   <XhTypographyRoot>
-    <XhTypographyParagraph v-for="t in tones" :key="t">
-      <XhTypographyText :tone="t">{{ t }} 语气的一段文字</XhTypographyText>
-    </XhTypographyParagraph>
-    <XhTypographyParagraph>
-      <XhTypographyText tone="danger" variant="strong">此操作不可撤销</XhTypographyText>
+    <XhTypographyParagraph v-for="item in tones" :key="item.tone">
+      <XhTypographyText :tone="item.tone">{{ item.label }}</XhTypographyText>
     </XhTypographyParagraph>
   </XhTypographyRoot>
 </template>
@@ -156,25 +157,19 @@ const tones = ["brand", "neutral", "success", "warning", "danger", "info"];
 <xh-typography>
   <div data-xh-part="root">
     <p data-xh-part="paragraph">
-      <span data-xh-part="text" tone="brand">brand 语气的一段文字</span>
+      <span data-xh-part="text" tone="brand">品牌</span>
     </p>
     <p data-xh-part="paragraph">
-      <span data-xh-part="text" tone="neutral">neutral 语气的一段文字</span>
+      <span data-xh-part="text" tone="success">成功</span>
     </p>
     <p data-xh-part="paragraph">
-      <span data-xh-part="text" tone="success">success 语气的一段文字</span>
+      <span data-xh-part="text" tone="warning">警告</span>
     </p>
     <p data-xh-part="paragraph">
-      <span data-xh-part="text" tone="warning">warning 语气的一段文字</span>
+      <span data-xh-part="text" tone="danger">危险</span>
     </p>
     <p data-xh-part="paragraph">
-      <span data-xh-part="text" tone="danger">danger 语气的一段文字</span>
-    </p>
-    <p data-xh-part="paragraph">
-      <span data-xh-part="text" tone="info">info 语气的一段文字</span>
-    </p>
-    <p data-xh-part="paragraph">
-      <span data-xh-part="text" tone="danger" variant="strong">此操作不可撤销</span>
+      <span data-xh-part="text" tone="info">信息</span>
     </p>
   </div>
 </xh-typography>
@@ -182,25 +177,23 @@ const tones = ["brand", "neutral", "success", "warning", "danger", "info"];
 
 ### 尺寸
 
-size 换的是整块正文的字号与段间距，不传 size 即默认档
+设置正文大小
 
 ```vue
 <script setup lang="ts">
-import { XhTypographyHeading, XhTypographyParagraph, XhTypographyRoot } from "@xihan-ui/vue";
+import { XhTypographyParagraph, XhTypographyRoot } from "@xihan-ui/vue";
 
-// 中间一档不写 size，用 undefined 表达
 const sizes = [
-  { size: "sm", label: "小" },
-  { size: undefined, label: "默认" },
-  { size: "lg", label: "大" },
+  { size: "sm", label: "小号正文" },
+  { size: undefined, label: "默认正文" },
+  { size: "lg", label: "大号正文" },
 ] as const;
 </script>
 
 <template>
   <div style="display: flex; flex-direction: column; gap: 24px">
     <XhTypographyRoot v-for="s in sizes" :key="s.label" :size="s.size">
-      <XhTypographyHeading :level="4">{{ s.label }}档</XhTypographyHeading>
-      <XhTypographyParagraph>正文字号与段间距跟着档位走，标题档位另由 level 决定。</XhTypographyParagraph>
+      <XhTypographyParagraph>{{ s.label }}</XhTypographyParagraph>
     </XhTypographyRoot>
   </div>
 </template>
@@ -210,23 +203,19 @@ const sizes = [
 <div style="display: flex; flex-direction: column; gap: 24px">
   <xh-typography size="sm">
     <div data-xh-part="root">
-      <p data-xh-part="heading" level="4">小档</p>
-      <p data-xh-part="paragraph">正文字号与段间距跟着档位走，标题档位另由 level 决定。</p>
+      <p data-xh-part="paragraph">小号正文</p>
     </div>
   </xh-typography>
 
-  <!-- 中间一档不写 size -->
   <xh-typography>
     <div data-xh-part="root">
-      <p data-xh-part="heading" level="4">默认档</p>
-      <p data-xh-part="paragraph">正文字号与段间距跟着档位走，标题档位另由 level 决定。</p>
+      <p data-xh-part="paragraph">默认正文</p>
     </div>
   </xh-typography>
 
   <xh-typography size="lg">
     <div data-xh-part="root">
-      <p data-xh-part="heading" level="4">大档</p>
-      <p data-xh-part="paragraph">正文字号与段间距跟着档位走，标题档位另由 level 决定。</p>
+      <p data-xh-part="paragraph">大号正文</p>
     </div>
   </xh-typography>
 </div>
@@ -234,25 +223,23 @@ const sizes = [
 
 ### 富文本
 
-prose 收外来的整段 HTML：节点由内容自己带，样式按标签给
+排版外部 HTML 内容
 
 ```vue
 <script setup lang="ts">
 import { XhTypographyProse, XhTypographyRoot } from "@xihan-ui/vue";
 
-// Markdown 渲染器产出的那一串 HTML，这里直接写死当样例
 const html = `
   <h3>安装</h3>
-  <p>包管理器装上 <code>@xihan-ui/vue</code>，再把皮肤引进来。</p>
+  <p>安装 Vue 组件和默认样式。</p>
   <pre><code>pnpm add @xihan-ui/vue @xihan-ui/styles</code></pre>
   <ul><li>组件按需引入</li><li>皮肤整份引入</li></ul>
-  <blockquote>皮肤只引一次，重复引入会让层序失效。</blockquote>
 `;
 </script>
 
 <template>
   <XhTypographyRoot>
-    <!-- eslint-disable-next-line vue/no-v-text-v-html-on-component -- 这个部件本来就是拿来放一段外来 HTML 的，它不收插槽内容 -->
+    <!-- eslint-disable-next-line vue/no-v-text-v-html-on-component -- prose 用于渲染可信 HTML -->
     <XhTypographyProse v-html="html" />
   </XhTypographyRoot>
 </template>
@@ -263,13 +250,12 @@ const html = `
   <div data-xh-part="root">
     <div data-xh-part="prose">
       <h3>安装</h3>
-      <p>包管理器装上 <code>@xihan-ui/web-components</code>，再把皮肤引进来。</p>
+      <p>安装 Web Components 和默认样式。</p>
       <pre><code>pnpm add @xihan-ui/web-components @xihan-ui/styles</code></pre>
       <ul>
         <li>元素按需注册</li>
         <li>皮肤整份引入</li>
       </ul>
-      <blockquote>皮肤只引一次，重复引入会让层序失效。</blockquote>
     </div>
   </div>
 </xh-typography>
@@ -279,24 +265,39 @@ const html = `
 
 ### 何时使用
 
-- 渲染一段较长的正文：文章、说明、条款、AI 回复。
-- 需要标题层级与段落节奏一致，而不想逐处写字号。
+- 展示文章、说明、条款或消息正文。
+- 统一标题层级、段落间距和行宽。
 
 ### 何时不用
 
-- 只是一行标签或一句提示：直接写文本，别套整套排版。
-- 要把长文本裁成几行：用[文本截断](./truncate)。
-- 要渲染 Markdown：用 `@xihan-ui/markdown`，它产出的节点套一层 `prose` 部件即得排版。
+- 单行标签或简短提示直接使用文本。
+- 需要限制长文本行数时，使用[文本截断](./truncate)。
+- Markdown 内容使用 `@xihan-ui/markdown` 渲染后放入 `prose`。
 
 ### 特性
 
-- `root` 管段间距与最大行宽；`level` 只换标题字号档位，用哪个标签由作者定。
-- 行内文字三种形态：`muted` 弱化、`strong` 加重、`code` 等宽；与语气、字重是三条轴，可以一起写。
-- `link` 是一个独立部件，链接样式不必另写。
-- `prose` 收外来的整段 HTML：节点由内容自己带，标题、段落、列表、代码块、引用、表格按标签上样式。
-- `align` 与 `weight` 落在 `root` 上，整块正文一起换；`weight` 也能只写在一段行内文字上。
+- 支持六档标题层级和三档正文尺寸。
+- 支持弱化、强调、代码等文本变体。
+- 支持链接、语义颜色、对齐和字重。
+- `prose` 可直接排版外部 HTML 内容。
 
-## 产物
+### 组合
+
+- 可与[文本高亮](./highlight)和[代码视图](./code-view)组合使用。
+
+### 最佳实践
+
+- 使用 `root` 控制正文最大行宽。
+- 根据文档结构选择标题标签，使用 `level` 调整视觉大小。
+
+### 反模式
+
+- 不要仅为了放大文字而改变标题语义。
+- 不要在正文中密集放置交互控件。
+
+## API 参考
+
+### 产物
 
 | 层 | 值 |
 | --- | --- |
@@ -305,13 +306,7 @@ const html = `
 | 状态机 | 无，`connect` 直接由 props 算属性 |
 | 皮肤 | `@xihan-ui/styles/typography.css` |
 
-## 解剖
-
-部件名即 `data-part` 属性值，也是皮肤的选择器。加粗的是必备部件，不渲染它组件不工作（Web Components 适配器会在诊断通道上报 `wc.missing-part`）。
-
-`data-scope="typography"`：**`root`** · `heading` · `paragraph` · `text` · `link` · `prose`
-
-## Props
+### Props
 
 | 属性 | 类型 | 必填 | 说明 |
 | --- | --- | --- | --- |
@@ -319,9 +314,9 @@ const html = `
 | `size` | `Size` |  | 尺寸：sm / md / lg，整块正文的字号与段间距跟着换档。 |
 | `weight` | `TypographyWeight` |  | 字重：regular / medium / semibold / bold，整块正文跟着换。 |
 
-## connect API
+### connect API
 
-`connect` 产出的对象。`getXxxProps()` 铺到对应部件的宿主元素上，其余是可读状态与操作入口。
+`getXxxProps()` 返回对应部件的宿主属性。
 
 | 成员 | 类型 | 说明 |
 | --- | --- | --- |
@@ -332,19 +327,23 @@ const html = `
 | `getLinkProps` | `() => T['element']` |  |
 | `getProseProps` | `() => T['element']` | 富文本容器：外来的 HTML（Markdown 渲染结果）铺进来，样式按标签给。 |
 
-## 键盘
+## 无障碍
+
+### 键盘
 
 规格出处：[W3C APG](https://www.w3.org/WAI/ARIA/apg/)
 
 无键盘交互（不接收焦点，或焦点行为完全由原生元素提供）。
 
-## 样式
+## 样式参考
 
-默认皮肤 `@xihan-ui/styles/typography.css` 按部件选择：`[data-scope="typography"][data-part="root"]`。它落在 `xihan.components` 层；业务样式不写进 `@layer` 即高于全部库层，要按层压过来就写进 `xihan.overrides`。
+### 皮肤
 
-## 数据属性
+`@xihan-ui/styles/typography.css` 使用 `[data-scope="typography"][data-part="root"]` 部件选择器，位于 `xihan.components` 层。覆盖样式使用 `xihan.overrides`。
 
-由 `connect` 产出并铺到部件上，皮肤与测试都据此选择；`data-disabled` 这类无值属性在条件不成立时整个不出现。
+### 数据属性
+
+由 `connect` 生成；条件不成立时不输出无值属性。
 
 | 部件 | 属性 | 值 |
 | --- | --- | --- |
@@ -357,7 +356,7 @@ const html = `
 | `text` | `data-weight` | text.weight |
 
 <!-- xh-component-tokens:start -->
-## CSS 变量
+### CSS 变量
 
 本组件公开覆盖槽由独立皮肤的实际消费位生成；缺省来源、作用部件和状态均与 CSS 同源。
 
@@ -419,30 +418,16 @@ const html = `
 | `--xh-typography-text-font-weight` | `text` | `font-weight` | `variant=strong` | `--xh-font-weight-semibold` | typography 的 text 部件 font-weight 覆盖槽。 |
 <!-- xh-component-tokens:end -->
 
-## 动效
+### 动效
 
 `color` 走 `transition` 过渡。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
 
 系统开启减弱动效时由令牌层统一收敛，皮肤不另作判断。
 
-## 响应式
+### 响应式
 
 皮肤另按输入能力分档：`hover: hover`——同一份皮肤在触屏与带指针的设备上不一样，与视口宽度无关。
 
-## RTL
+### RTL
 
 皮肤用逻辑属性排布（`inline-start` 一族），`dir="rtl"` 下自动镜像。
-
-## 组合
-
-- 与[文本高亮](./highlight)配合做检索命中标记；与[代码视图](./code-view)配合放整段代码。
-
-## 最佳实践
-
-- 最大行宽交给 `root`，别让正文横贯整个宽屏——一行超过约四十个汉字就很难回到下一行的行首。
-- 标题层级按文档结构选标签，视觉大小用 `level` 单独调，两件事分开。
-
-## 反模式
-
-- 为了字大就用 `<h1>`：读屏用户按标题跳转时会撞见错的结构。
-- 在正文块里塞交互控件却不留间距，点击目标会挤在一起。

@@ -1,0 +1,25 @@
+const a=`<!-- 多选 | 允许选择多个选项 -->
+<xh-listbox default-value="design" selection-mode="multiple">
+  <div data-xh-part="root" style="inline-size: min(100%, 300px)">
+    <span data-xh-part="label">参与团队</span>
+    <div data-xh-part="content">
+      <div data-xh-part="item" value="design">
+        <span data-xh-part="item-text">产品设计</span>
+        <span data-xh-part="item-indicator"></span>
+      </div>
+      <div data-xh-part="item" value="engineering">
+        <span data-xh-part="item-text">工程研发</span>
+        <span data-xh-part="item-indicator"></span>
+      </div>
+      <div data-xh-part="item" value="marketing">
+        <span data-xh-part="item-text">市场运营</span>
+        <span data-xh-part="item-indicator"></span>
+      </div>
+      <div data-xh-part="item" value="support">
+        <span data-xh-part="item-text">客户支持</span>
+        <span data-xh-part="item-indicator"></span>
+      </div>
+    </div>
+  </div>
+</xh-listbox>
+`;export{a as default};

@@ -1,0 +1,15 @@
+const e=`<!-- 异步内容 | 点击后获取下载内容 -->
+<xh-download-trigger id="orders-download" file-name="orders.csv" mime-type="text/csv">
+  <button data-xh-part="root">
+    <svg viewBox="0 0 24 24" width="1em" height="1em" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><path d="M7 10L12 15L17 10"/><path d="M12 3V15"/></svg>
+    导出订单
+  </button>
+</xh-download-trigger>
+
+<script type="module">
+  document.querySelector("#orders-download").data = async () => {
+    await new Promise(resolve => setTimeout(resolve, 600));
+    return "订单号,金额\\nA-1001,128.00\\nA-1002,96.50";
+  };
+<\/script>
+`;export{e as default};

@@ -1,8 +1,8 @@
 来源：https://ui.docs.xihanfun.com/components/menubar
 
-# Menubar `菜单栏`
+# Menubar 菜单栏
 
-一排入口各带一张菜单，同时只展开一张——桌面应用顶部那条。
+用于桌面应用的横向命令菜单栏。
 
 <div class="xh-resource-links">
   <a href="https://github.com/XiHanFun/XiHan.UI/tree/dev/ui/packages/engine/headless/src/menubar" target="_blank" rel="noreferrer">Headless</a>
@@ -14,230 +14,49 @@
 
 ## 用法
 
-一排入口各带一张菜单，同时只展开一张；条目以 value 标识身份，禁用项方向键跳过也选不中
+在一条菜单栏中组织应用命令
 
 ```vue
 <script setup lang="ts">
 import { XhMenubarRoot } from "@xihan-ui/vue";
-import { ref } from "vue";
 
 const menus = [
-  {
-    value: "file",
-    label: "文件",
-    items: [
-      { value: "new", label: "新建" },
-      { value: "open", label: "打开" },
-      { value: "close", label: "关闭", disabled: true },
-    ],
-  },
-  {
-    value: "edit",
-    label: "编辑",
-    items: [
-      { value: "undo", label: "撤销" },
-      { value: "redo", label: "重做" },
-    ],
-  },
-  {
-    value: "view",
-    label: "视图",
-    items: [
-      { value: "zoom-in", label: "放大" },
-      { value: "zoom-out", label: "缩小" },
-    ],
-  },
+  { value: "file", label: "文件", items: [{ value: "new", label: "新建" }, { value: "open", label: "打开" }, { value: "save", label: "保存" }] },
+  { value: "edit", label: "编辑", items: [{ value: "undo", label: "撤销" }, { value: "redo", label: "重做" }] },
+  { value: "view", label: "视图", items: [{ value: "sidebar", label: "侧栏" }, { value: "terminal", label: "终端" }] },
 ];
-
-const picked = ref("");
-
-function onSelect(details: { menu: string; value: string }): void {
-  picked.value = `${details.menu} / ${details.value}`;
-}
 </script>
 
 <template>
-  <div style="inline-size: 100%; display: grid; gap: 12px; justify-items: start">
-    <XhMenubarRoot :collection="menus" @select="onSelect" />
-
-    <span>最近选中：{{ picked || "（无）" }}</span>
-  </div>
+  <XhMenubarRoot :collection="menus" style="background: var(--xh-bg-subtle)" />
 </template>
 ```
 
 ```html
-<div style="inline-size: 100%; display: grid; gap: 12px; justify-items: start">
-  <xh-menubar id="menubar-basic">
-    <div data-xh-part="root">
-      <button data-xh-part="trigger" value="file">文件</button>
-      <button data-xh-part="trigger" value="edit">编辑</button>
-      <button data-xh-part="trigger" value="view">视图</button>
+<xh-menubar>
+  <div data-xh-part="root" style="background: var(--xh-bg-subtle)">
+    <button data-xh-part="trigger" value="file">文件</button>
+    <button data-xh-part="trigger" value="edit">编辑</button>
+    <button data-xh-part="trigger" value="view">视图</button>
 
-      <div data-xh-part="positioner" value="file">
-        <div data-xh-part="content" value="file">
-          <div data-xh-part="item" value="new">
-            <span data-xh-part="item-text">新建</span>
-          </div>
-          <div data-xh-part="item" value="open">
-            <span data-xh-part="item-text">打开</span>
-          </div>
-          <div data-xh-part="item" value="close" aria-disabled="true">
-            <span data-xh-part="item-text">关闭</span>
-          </div>
-        </div>
-      </div>
-
-      <div data-xh-part="positioner" value="edit">
-        <div data-xh-part="content" value="edit">
-          <div data-xh-part="item" value="undo">
-            <span data-xh-part="item-text">撤销</span>
-          </div>
-          <div data-xh-part="item" value="redo">
-            <span data-xh-part="item-text">重做</span>
-          </div>
-        </div>
-      </div>
-
-      <div data-xh-part="positioner" value="view">
-        <div data-xh-part="content" value="view">
-          <div data-xh-part="item" value="zoom-in">
-            <span data-xh-part="item-text">放大</span>
-          </div>
-          <div data-xh-part="item" value="zoom-out">
-            <span data-xh-part="item-text">缩小</span>
-          </div>
-        </div>
-      </div>
-    </div>
-  </xh-menubar>
-
-  <span>最近选中：<span id="menubar-basic-readout">（无）</span></span>
-</div>
-
-<script type="module">
-  // select 带上条目所属的那张菜单，两段一起回显
-  const readout = document.getElementById("menubar-basic-readout");
-  document
-    .getElementById("menubar-basic")
-    .addEventListener("select", (event) => {
-      readout.textContent = `${event.detail.menu} / ${event.detail.value}`;
-    });
-</script>
+    <div data-xh-part="positioner" value="file"><div data-xh-part="content" value="file"><div data-xh-part="item" value="new">新建</div><div data-xh-part="item" value="open">打开</div><div data-xh-part="item" value="save">保存</div></div></div>
+    <div data-xh-part="positioner" value="edit"><div data-xh-part="content" value="edit"><div data-xh-part="item" value="undo">撤销</div><div data-xh-part="item" value="redo">重做</div></div></div>
+    <div data-xh-part="positioner" value="view"><div data-xh-part="content" value="view"><div data-xh-part="item" value="sidebar">侧栏</div><div data-xh-part="item" value="terminal">终端</div></div></div>
+  </div>
+</xh-menubar>
 ```
+
+## 组件结构
+
+加粗的是必需部件。
+
+`data-scope="menubar"`：**`root`** · **`trigger`** · `positioner` · **`content`** · **`item`** · `item-text` · `item-indicator` · `item-description` · `separator` · `group` · `group-label` · `arrow`
 
 ## 示例
 
-### 受控
+### 分组
 
-value 是当前展开的那一项，null 表示都收起；给了它就由宿主说了算
-
-```vue
-<script setup lang="ts">
-import {
-  XhMenubarContent,
-  XhMenubarItem,
-  XhMenubarItemText,
-  XhMenubarPositioner,
-  XhMenubarRoot,
-  XhMenubarTrigger,
-} from "@xihan-ui/vue";
-import { ref } from "vue";
-
-const value = ref<string | null>(null);
-</script>
-
-<template>
-  <div style="inline-size: 100%; display: grid; gap: 12px; justify-items: start">
-    <XhMenubarRoot v-model:value="value">
-      <XhMenubarTrigger value="file">文件</XhMenubarTrigger>
-      <XhMenubarTrigger value="help">帮助</XhMenubarTrigger>
-
-      <XhMenubarPositioner value="file">
-        <XhMenubarContent>
-          <XhMenubarItem value="save">
-            <XhMenubarItemText>保存</XhMenubarItemText>
-          </XhMenubarItem>
-        </XhMenubarContent>
-      </XhMenubarPositioner>
-
-      <XhMenubarPositioner value="help">
-        <XhMenubarContent>
-          <XhMenubarItem value="about">
-            <XhMenubarItemText>关于</XhMenubarItemText>
-          </XhMenubarItem>
-        </XhMenubarContent>
-      </XhMenubarPositioner>
-    </XhMenubarRoot>
-
-    <div style="display: flex; gap: 8px; align-items: center; flex-wrap: wrap">
-      <button type="button" @click="value = 'file'">展开「文件」</button>
-      <button type="button" @click="value = 'help'">展开「帮助」</button>
-      <button type="button" @click="value = null">全部收起</button>
-      <span>当前：{{ value ?? "（都收起）" }}</span>
-    </div>
-  </div>
-</template>
-```
-
-```html
-<div style="inline-size: 100%; display: grid; gap: 12px; justify-items: start">
-  <xh-menubar id="menubar-controlled">
-    <div data-xh-part="root">
-      <button data-xh-part="trigger" value="file">文件</button>
-      <button data-xh-part="trigger" value="help">帮助</button>
-
-      <div data-xh-part="positioner" value="file">
-        <div data-xh-part="content" value="file">
-          <div data-xh-part="item" value="save">
-            <span data-xh-part="item-text">保存</span>
-          </div>
-        </div>
-      </div>
-
-      <div data-xh-part="positioner" value="help">
-        <div data-xh-part="content" value="help">
-          <div data-xh-part="item" value="about">
-            <span data-xh-part="item-text">关于</span>
-          </div>
-        </div>
-      </div>
-    </div>
-  </xh-menubar>
-
-  <div
-    id="menubar-controlled-actions"
-    style="display: flex; gap: 8px; align-items: center; flex-wrap: wrap"
-  >
-    <button type="button" data-open="file">展开「文件」</button>
-    <button type="button" data-open="help">展开「帮助」</button>
-    <button type="button" data-open="">全部收起</button>
-    <span>当前：<span id="menubar-controlled-state">（都收起）</span></span>
-  </div>
-</div>
-
-<script type="module">
-  // 展开项由这段脚本持有：组件只发意图，写回 value 才真的展开
-  const menubar = document.getElementById("menubar-controlled");
-  const readout = document.getElementById("menubar-controlled-state");
-
-  function apply(value) {
-    menubar.value = value;
-    readout.textContent = value ?? "（都收起）";
-  }
-
-  apply(null);
-
-  const actions = document.getElementById("menubar-controlled-actions");
-  for (const button of actions.querySelectorAll("[data-open]")) {
-    button.addEventListener("click", () => apply(button.dataset.open || null));
-  }
-  menubar.addEventListener("value-change", (event) => apply(event.detail.value));
-</script>
-```
-
-### 分组与标记位
-
-group 用 value 跟自己的 group-label 配对，item-indicator 是纯装饰的勾选位
+在菜单内组织相关命令
 
 ```vue
 <script setup lang="ts">
@@ -253,624 +72,60 @@ import {
   XhMenubarSeparator,
   XhMenubarTrigger,
 } from "@xihan-ui/vue";
-import { ref } from "vue";
-
-const theme = ref("light");
-
-function onSelect(details: { menu: string; value: string }): void {
-  if (details.menu === "view")
-    theme.value = details.value;
-}
 </script>
 
 <template>
-  <div style="inline-size: 100%; display: grid; gap: 12px; justify-items: start">
-    <XhMenubarRoot @select="onSelect">
-      <XhMenubarTrigger value="view">视图</XhMenubarTrigger>
-
-      <XhMenubarPositioner value="view">
-        <XhMenubarContent>
-          <XhMenubarGroup value="theme">
-            <XhMenubarGroupLabel>主题</XhMenubarGroupLabel>
-            <XhMenubarItem value="light">
-              <XhMenubarItemIndicator
-                :style="{ visibility: theme === 'light' ? 'visible' : 'hidden' }"
-              />
-              <XhMenubarItemText>浅色</XhMenubarItemText>
-            </XhMenubarItem>
-            <XhMenubarItem value="dark">
-              <XhMenubarItemIndicator
-                :style="{ visibility: theme === 'dark' ? 'visible' : 'hidden' }"
-              />
-              <XhMenubarItemText>深色</XhMenubarItemText>
-            </XhMenubarItem>
-          </XhMenubarGroup>
-
-          <XhMenubarSeparator />
-
-          <XhMenubarGroup value="panel">
-            <XhMenubarGroupLabel>面板</XhMenubarGroupLabel>
-            <XhMenubarItem value="sidebar">
-              <XhMenubarItemText>侧栏</XhMenubarItemText>
-            </XhMenubarItem>
-            <XhMenubarItem value="terminal">
-              <XhMenubarItemText>终端</XhMenubarItemText>
-            </XhMenubarItem>
-          </XhMenubarGroup>
-        </XhMenubarContent>
-      </XhMenubarPositioner>
-    </XhMenubarRoot>
-
-    <span>当前主题：{{ theme === "light" ? "浅色" : "深色" }}</span>
-  </div>
+  <XhMenubarRoot style="background: var(--xh-bg-subtle)">
+    <XhMenubarTrigger value="view">视图</XhMenubarTrigger>
+    <XhMenubarPositioner value="view">
+      <XhMenubarContent>
+        <XhMenubarGroup value="theme">
+          <XhMenubarGroupLabel>主题</XhMenubarGroupLabel>
+          <XhMenubarItem value="light"><XhMenubarItemIndicator /><XhMenubarItemText>浅色</XhMenubarItemText></XhMenubarItem>
+          <XhMenubarItem value="dark"><XhMenubarItemText>深色</XhMenubarItemText></XhMenubarItem>
+        </XhMenubarGroup>
+        <XhMenubarSeparator />
+        <XhMenubarGroup value="panels">
+          <XhMenubarGroupLabel>面板</XhMenubarGroupLabel>
+          <XhMenubarItem value="sidebar"><XhMenubarItemText>侧栏</XhMenubarItemText></XhMenubarItem>
+          <XhMenubarItem value="terminal"><XhMenubarItemText>终端</XhMenubarItemText></XhMenubarItem>
+        </XhMenubarGroup>
+      </XhMenubarContent>
+    </XhMenubarPositioner>
+  </XhMenubarRoot>
 </template>
 ```
 
 ```html
-<div style="inline-size: 100%; display: grid; gap: 12px; justify-items: start">
-  <xh-menubar id="menubar-group">
-    <div data-xh-part="root">
-      <button data-xh-part="trigger" value="view">视图</button>
-
-      <div data-xh-part="positioner" value="view">
-        <div data-xh-part="content" value="view">
-          <div data-xh-part="group" value="theme">
-            <span data-xh-part="group-label">主题</span>
-            <div data-xh-part="item" value="light">
-              <span data-xh-part="item-indicator"></span>
-              <span data-xh-part="item-text">浅色</span>
-            </div>
-            <div data-xh-part="item" value="dark">
-              <span data-xh-part="item-indicator" style="visibility: hidden"></span>
-              <span data-xh-part="item-text">深色</span>
-            </div>
-          </div>
-
-          <div data-xh-part="separator"></div>
-
-          <div data-xh-part="group" value="panel">
-            <span data-xh-part="group-label">面板</span>
-            <div data-xh-part="item" value="sidebar">
-              <span data-xh-part="item-text">侧栏</span>
-            </div>
-            <div data-xh-part="item" value="terminal">
-              <span data-xh-part="item-text">终端</span>
-            </div>
-          </div>
+<xh-menubar>
+  <div data-xh-part="root" style="background: var(--xh-bg-subtle)">
+    <button data-xh-part="trigger" value="view">视图</button>
+    <div data-xh-part="positioner" value="view">
+      <div data-xh-part="content" value="view">
+        <div data-xh-part="group" value="theme">
+          <span data-xh-part="group-label">主题</span>
+          <div data-xh-part="item" value="light"><span data-xh-part="item-indicator"></span><span data-xh-part="item-text">浅色</span></div>
+          <div data-xh-part="item" value="dark"><span data-xh-part="item-text">深色</span></div>
+        </div>
+        <div data-xh-part="separator"></div>
+        <div data-xh-part="group" value="panels">
+          <span data-xh-part="group-label">面板</span>
+          <div data-xh-part="item" value="sidebar"><span data-xh-part="item-text">侧栏</span></div>
+          <div data-xh-part="item" value="terminal"><span data-xh-part="item-text">终端</span></div>
         </div>
       </div>
     </div>
-  </xh-menubar>
-
-  <span>当前主题：<span id="menubar-group-readout">浅色</span></span>
-</div>
-
-<script type="module">
-  // 选中主题项后勾移到那一条上
-  const menubar = document.getElementById("menubar-group");
-  const readout = document.getElementById("menubar-group-readout");
-  const labels = { light: "浅色", dark: "深色" };
-
-  menubar.addEventListener("select", (event) => {
-    const picked = event.detail.value;
-    if (!(picked in labels)) return;
-    for (const value of Object.keys(labels)) {
-      const item = menubar.querySelector(`[data-xh-part="item"][value="${value}"]`);
-      item.querySelector('[data-xh-part="item-indicator"]').style.visibility =
-        value === picked ? "" : "hidden";
-    }
-    readout.textContent = labels[picked];
-  });
-</script>
+  </div>
+</xh-menubar>
 ```
 
-### 语气
+### 图标与快捷键
 
-普通菜单行与展开项保持中性灰；tone 作用于触发器反馈和显式标记，不给展开项铺品牌色
+补充常用命令的识别信息
 
 ```vue
 <script setup lang="ts">
-import { XhMenubarRoot } from "@xihan-ui/vue";
-
-const tones = [
-  { value: "brand", label: "brand（缺省）" },
-  { value: "neutral", label: "neutral" },
-  { value: "success", label: "success" },
-  { value: "warning", label: "warning" },
-  { value: "danger", label: "danger" },
-  { value: "info", label: "info" },
-];
-
-const menus = [
-  {
-    value: "file",
-    label: "文件",
-    items: [
-      { value: "new", label: "新建" },
-      { value: "open", label: "打开" },
-      { value: "save", label: "保存" },
-    ],
-  },
-  {
-    value: "edit",
-    label: "编辑",
-    items: [
-      { value: "undo", label: "撤销" },
-      { value: "redo", label: "重做" },
-    ],
-  },
-];
-</script>
-
-<template>
-  <!-- 菜单浮层往下落位，给容器底部留出它展开的空间 -->
-  <div style="inline-size: 100%; display: grid; gap: 8px; padding-block-end: 160px">
-    <div
-      v-for="t in tones"
-      :key="t.value"
-      style="display: flex; align-items: center; gap: 12px"
-    >
-      <span style="inline-size: 120px; flex: none">{{ t.label }}</span>
-      <XhMenubarRoot :tone="t.value" :collection="menus" />
-    </div>
-  </div>
-</template>
-```
-
-```html
-<!-- 菜单浮层往下落位，给容器底部留出它展开的空间 -->
-<div style="inline-size: 100%; display: grid; gap: 8px; padding-block-end: 160px">
-  <div style="display: flex; align-items: center; gap: 12px">
-    <span style="inline-size: 120px; flex: none">brand（缺省）</span>
-    <xh-menubar tone="brand">
-      <div data-xh-part="root">
-        <button data-xh-part="trigger" value="file">文件</button>
-        <button data-xh-part="trigger" value="edit">编辑</button>
-
-        <div data-xh-part="positioner" value="file">
-          <div data-xh-part="content" value="file">
-            <div data-xh-part="item" value="new">
-              <span data-xh-part="item-text">新建</span>
-            </div>
-            <div data-xh-part="item" value="open">
-              <span data-xh-part="item-text">打开</span>
-            </div>
-            <div data-xh-part="item" value="save">
-              <span data-xh-part="item-text">保存</span>
-            </div>
-          </div>
-        </div>
-
-        <div data-xh-part="positioner" value="edit">
-          <div data-xh-part="content" value="edit">
-            <div data-xh-part="item" value="undo">
-              <span data-xh-part="item-text">撤销</span>
-            </div>
-            <div data-xh-part="item" value="redo">
-              <span data-xh-part="item-text">重做</span>
-            </div>
-          </div>
-        </div>
-      </div>
-    </xh-menubar>
-  </div>
-  <div style="display: flex; align-items: center; gap: 12px">
-    <span style="inline-size: 120px; flex: none">neutral</span>
-    <xh-menubar tone="neutral">
-      <div data-xh-part="root">
-        <button data-xh-part="trigger" value="file">文件</button>
-        <button data-xh-part="trigger" value="edit">编辑</button>
-
-        <div data-xh-part="positioner" value="file">
-          <div data-xh-part="content" value="file">
-            <div data-xh-part="item" value="new">
-              <span data-xh-part="item-text">新建</span>
-            </div>
-            <div data-xh-part="item" value="open">
-              <span data-xh-part="item-text">打开</span>
-            </div>
-            <div data-xh-part="item" value="save">
-              <span data-xh-part="item-text">保存</span>
-            </div>
-          </div>
-        </div>
-
-        <div data-xh-part="positioner" value="edit">
-          <div data-xh-part="content" value="edit">
-            <div data-xh-part="item" value="undo">
-              <span data-xh-part="item-text">撤销</span>
-            </div>
-            <div data-xh-part="item" value="redo">
-              <span data-xh-part="item-text">重做</span>
-            </div>
-          </div>
-        </div>
-      </div>
-    </xh-menubar>
-  </div>
-  <div style="display: flex; align-items: center; gap: 12px">
-    <span style="inline-size: 120px; flex: none">success</span>
-    <xh-menubar tone="success">
-      <div data-xh-part="root">
-        <button data-xh-part="trigger" value="file">文件</button>
-        <button data-xh-part="trigger" value="edit">编辑</button>
-
-        <div data-xh-part="positioner" value="file">
-          <div data-xh-part="content" value="file">
-            <div data-xh-part="item" value="new">
-              <span data-xh-part="item-text">新建</span>
-            </div>
-            <div data-xh-part="item" value="open">
-              <span data-xh-part="item-text">打开</span>
-            </div>
-            <div data-xh-part="item" value="save">
-              <span data-xh-part="item-text">保存</span>
-            </div>
-          </div>
-        </div>
-
-        <div data-xh-part="positioner" value="edit">
-          <div data-xh-part="content" value="edit">
-            <div data-xh-part="item" value="undo">
-              <span data-xh-part="item-text">撤销</span>
-            </div>
-            <div data-xh-part="item" value="redo">
-              <span data-xh-part="item-text">重做</span>
-            </div>
-          </div>
-        </div>
-      </div>
-    </xh-menubar>
-  </div>
-  <div style="display: flex; align-items: center; gap: 12px">
-    <span style="inline-size: 120px; flex: none">warning</span>
-    <xh-menubar tone="warning">
-      <div data-xh-part="root">
-        <button data-xh-part="trigger" value="file">文件</button>
-        <button data-xh-part="trigger" value="edit">编辑</button>
-
-        <div data-xh-part="positioner" value="file">
-          <div data-xh-part="content" value="file">
-            <div data-xh-part="item" value="new">
-              <span data-xh-part="item-text">新建</span>
-            </div>
-            <div data-xh-part="item" value="open">
-              <span data-xh-part="item-text">打开</span>
-            </div>
-            <div data-xh-part="item" value="save">
-              <span data-xh-part="item-text">保存</span>
-            </div>
-          </div>
-        </div>
-
-        <div data-xh-part="positioner" value="edit">
-          <div data-xh-part="content" value="edit">
-            <div data-xh-part="item" value="undo">
-              <span data-xh-part="item-text">撤销</span>
-            </div>
-            <div data-xh-part="item" value="redo">
-              <span data-xh-part="item-text">重做</span>
-            </div>
-          </div>
-        </div>
-      </div>
-    </xh-menubar>
-  </div>
-  <div style="display: flex; align-items: center; gap: 12px">
-    <span style="inline-size: 120px; flex: none">danger</span>
-    <xh-menubar tone="danger">
-      <div data-xh-part="root">
-        <button data-xh-part="trigger" value="file">文件</button>
-        <button data-xh-part="trigger" value="edit">编辑</button>
-
-        <div data-xh-part="positioner" value="file">
-          <div data-xh-part="content" value="file">
-            <div data-xh-part="item" value="new">
-              <span data-xh-part="item-text">新建</span>
-            </div>
-            <div data-xh-part="item" value="open">
-              <span data-xh-part="item-text">打开</span>
-            </div>
-            <div data-xh-part="item" value="save">
-              <span data-xh-part="item-text">保存</span>
-            </div>
-          </div>
-        </div>
-
-        <div data-xh-part="positioner" value="edit">
-          <div data-xh-part="content" value="edit">
-            <div data-xh-part="item" value="undo">
-              <span data-xh-part="item-text">撤销</span>
-            </div>
-            <div data-xh-part="item" value="redo">
-              <span data-xh-part="item-text">重做</span>
-            </div>
-          </div>
-        </div>
-      </div>
-    </xh-menubar>
-  </div>
-  <div style="display: flex; align-items: center; gap: 12px">
-    <span style="inline-size: 120px; flex: none">info</span>
-    <xh-menubar tone="info">
-      <div data-xh-part="root">
-        <button data-xh-part="trigger" value="file">文件</button>
-        <button data-xh-part="trigger" value="edit">编辑</button>
-
-        <div data-xh-part="positioner" value="file">
-          <div data-xh-part="content" value="file">
-            <div data-xh-part="item" value="new">
-              <span data-xh-part="item-text">新建</span>
-            </div>
-            <div data-xh-part="item" value="open">
-              <span data-xh-part="item-text">打开</span>
-            </div>
-            <div data-xh-part="item" value="save">
-              <span data-xh-part="item-text">保存</span>
-            </div>
-          </div>
-        </div>
-
-        <div data-xh-part="positioner" value="edit">
-          <div data-xh-part="content" value="edit">
-            <div data-xh-part="item" value="undo">
-              <span data-xh-part="item-text">撤销</span>
-            </div>
-            <div data-xh-part="item" value="redo">
-              <span data-xh-part="item-text">重做</span>
-            </div>
-          </div>
-        </div>
-      </div>
-    </xh-menubar>
-  </div>
-</div>
-```
-
-### 尺寸
-
-size 一档换掉 trigger 与菜单条目的字号与内边距，写在 root 上、浮层里的条目一并跟着变
-
-```vue
-<script setup lang="ts">
-import { XhMenubarRoot } from "@xihan-ui/vue";
-
-const sizes = [
-  { value: "sm", label: "sm" },
-  { value: undefined, label: "缺省" },
-  { value: "lg", label: "lg" },
-];
-
-const menus = [
-  {
-    value: "file",
-    label: "文件",
-    items: [
-      { value: "new", label: "新建" },
-      { value: "open", label: "打开" },
-    ],
-  },
-  {
-    value: "view",
-    label: "视图",
-    items: [
-      { value: "zoom-in", label: "放大" },
-      { value: "zoom-out", label: "缩小" },
-    ],
-  },
-];
-</script>
-
-<template>
-  <!-- 菜单浮层往下落位，给容器底部留出它展开的空间 -->
-  <div style="inline-size: 100%; display: grid; gap: 12px; padding-block-end: 180px">
-    <div
-      v-for="s in sizes"
-      :key="s.label"
-      style="display: flex; align-items: center; gap: 12px"
-    >
-      <span style="inline-size: 60px; flex: none">{{ s.label }}</span>
-      <XhMenubarRoot :size="s.value" :collection="menus" />
-    </div>
-  </div>
-</template>
-```
-
-```html
-<!-- 菜单浮层往下落位，给容器底部留出它展开的空间 -->
-<div style="inline-size: 100%; display: grid; gap: 12px; padding-block-end: 180px">
-  <div style="display: flex; align-items: center; gap: 12px">
-    <span style="inline-size: 60px; flex: none">sm</span>
-    <xh-menubar size="sm">
-      <div data-xh-part="root">
-        <button data-xh-part="trigger" value="file">文件</button>
-        <button data-xh-part="trigger" value="view">视图</button>
-
-        <div data-xh-part="positioner" value="file">
-          <div data-xh-part="content" value="file">
-            <div data-xh-part="item" value="new">
-              <span data-xh-part="item-text">新建</span>
-            </div>
-            <div data-xh-part="item" value="open">
-              <span data-xh-part="item-text">打开</span>
-            </div>
-          </div>
-        </div>
-
-        <div data-xh-part="positioner" value="view">
-          <div data-xh-part="content" value="view">
-            <div data-xh-part="item" value="zoom-in">
-              <span data-xh-part="item-text">放大</span>
-            </div>
-            <div data-xh-part="item" value="zoom-out">
-              <span data-xh-part="item-text">缩小</span>
-            </div>
-          </div>
-        </div>
-      </div>
-    </xh-menubar>
-  </div>
-  <div style="display: flex; align-items: center; gap: 12px">
-    <span style="inline-size: 60px; flex: none">缺省</span>
-    <xh-menubar>
-      <div data-xh-part="root">
-        <button data-xh-part="trigger" value="file">文件</button>
-        <button data-xh-part="trigger" value="view">视图</button>
-
-        <div data-xh-part="positioner" value="file">
-          <div data-xh-part="content" value="file">
-            <div data-xh-part="item" value="new">
-              <span data-xh-part="item-text">新建</span>
-            </div>
-            <div data-xh-part="item" value="open">
-              <span data-xh-part="item-text">打开</span>
-            </div>
-          </div>
-        </div>
-
-        <div data-xh-part="positioner" value="view">
-          <div data-xh-part="content" value="view">
-            <div data-xh-part="item" value="zoom-in">
-              <span data-xh-part="item-text">放大</span>
-            </div>
-            <div data-xh-part="item" value="zoom-out">
-              <span data-xh-part="item-text">缩小</span>
-            </div>
-          </div>
-        </div>
-      </div>
-    </xh-menubar>
-  </div>
-  <div style="display: flex; align-items: center; gap: 12px">
-    <span style="inline-size: 60px; flex: none">lg</span>
-    <xh-menubar size="lg">
-      <div data-xh-part="root">
-        <button data-xh-part="trigger" value="file">文件</button>
-        <button data-xh-part="trigger" value="view">视图</button>
-
-        <div data-xh-part="positioner" value="file">
-          <div data-xh-part="content" value="file">
-            <div data-xh-part="item" value="new">
-              <span data-xh-part="item-text">新建</span>
-            </div>
-            <div data-xh-part="item" value="open">
-              <span data-xh-part="item-text">打开</span>
-            </div>
-          </div>
-        </div>
-
-        <div data-xh-part="positioner" value="view">
-          <div data-xh-part="content" value="view">
-            <div data-xh-part="item" value="zoom-in">
-              <span data-xh-part="item-text">放大</span>
-            </div>
-            <div data-xh-part="item" value="zoom-out">
-              <span data-xh-part="item-text">缩小</span>
-            </div>
-          </div>
-        </div>
-      </div>
-    </xh-menubar>
-  </div>
-</div>
-```
-
-### 竖排菜单栏
-
-orientation 决定主轴：竖排时上下键在入口之间走，左右键改为展开本项的菜单
-
-```vue
-<script setup lang="ts">
-import { XhMenubarRoot } from "@xihan-ui/vue";
-
-const menus = [
-  {
-    value: "file",
-    label: "文件",
-    items: [
-      { value: "new", label: "新建" },
-      { value: "open", label: "打开" },
-      { value: "save", label: "保存" },
-    ],
-  },
-  {
-    value: "edit",
-    label: "编辑",
-    items: [
-      { value: "undo", label: "撤销" },
-      { value: "redo", label: "重做" },
-    ],
-  },
-  { value: "help", label: "帮助", items: [{ value: "about", label: "关于" }] },
-];
-</script>
-
-<template>
-  <div style="inline-size: 100%; padding-block-end: 60px">
-    <!-- 竖排时菜单该从入口侧边长出来，placement 一并改掉 -->
-    <XhMenubarRoot
-      orientation="vertical"
-      placement="right-start"
-      :offset="6"
-      :collection="menus"
-      style="inline-size: 160px"
-    />
-  </div>
-</template>
-```
-
-```html
-<div style="inline-size: 100%; padding-block-end: 60px">
-  <!-- 竖排时菜单该从入口侧边长出来，placement 一并改掉 -->
-  <xh-menubar orientation="vertical" placement="right-start" offset="6">
-    <div data-xh-part="root" style="inline-size: 160px">
-      <button data-xh-part="trigger" value="file">文件</button>
-      <button data-xh-part="trigger" value="edit">编辑</button>
-      <button data-xh-part="trigger" value="help">帮助</button>
-
-      <div data-xh-part="positioner" value="file">
-        <div data-xh-part="content" value="file">
-          <div data-xh-part="item" value="new">
-            <span data-xh-part="item-text">新建</span>
-          </div>
-          <div data-xh-part="item" value="open">
-            <span data-xh-part="item-text">打开</span>
-          </div>
-          <div data-xh-part="item" value="save">
-            <span data-xh-part="item-text">保存</span>
-          </div>
-        </div>
-      </div>
-
-      <div data-xh-part="positioner" value="edit">
-        <div data-xh-part="content" value="edit">
-          <div data-xh-part="item" value="undo">
-            <span data-xh-part="item-text">撤销</span>
-          </div>
-          <div data-xh-part="item" value="redo">
-            <span data-xh-part="item-text">重做</span>
-          </div>
-        </div>
-      </div>
-
-      <div data-xh-part="positioner" value="help">
-        <div data-xh-part="content" value="help">
-          <div data-xh-part="item" value="about">
-            <span data-xh-part="item-text">关于</span>
-          </div>
-        </div>
-      </div>
-    </div>
-  </xh-menubar>
-</div>
-```
-
-### 入口与条目的图标
-
-图标是插槽里的普通节点：入口里排在文字前，条目里排在 item-text 前，逐项自己写
-
-```vue
-<script setup lang="ts">
+import { FileIcon, FolderIcon, PencilIcon, PlusIcon, SaveIcon } from "@xihan-ui/icons";
 import {
   XhIcon,
   XhMenubarContent,
@@ -881,709 +136,51 @@ import {
   XhMenubarSeparator,
   XhMenubarTrigger,
 } from "@xihan-ui/vue";
-
-// 描边取 currentColor，图标颜色随入口与条目当下的文字色走
-const strokeAttrs = {
-  "fill": "none",
-  "stroke": "currentColor",
-  "stroke-width": "2",
-  "stroke-linecap": "round",
-  "stroke-linejoin": "round",
-} as const;
-
-const FileIcon = {
-  name: "file",
-  viewBox: "0 0 24 24",
-  attrs: strokeAttrs,
-  nodes: [
-    { tag: "path", attrs: { d: "M13 3H7A2 2 0 0 0 5 5V19A2 2 0 0 0 7 21H17A2 2 0 0 0 19 19V9Z" } },
-    { tag: "path", attrs: { d: "M13 3V9H19" } },
-  ],
-} as const;
-
-const EditIcon = {
-  name: "edit",
-  viewBox: "0 0 24 24",
-  attrs: strokeAttrs,
-  nodes: [{ tag: "path", attrs: { d: "M4 20H8L19 9A2.8 2.8 0 0 0 15 5L4 16Z" } }],
-} as const;
-
-const PlusIcon = {
-  name: "plus",
-  viewBox: "0 0 24 24",
-  attrs: strokeAttrs,
-  nodes: [{ tag: "path", attrs: { d: "M12 5V19M5 12H19" } }],
-} as const;
-
-const FolderIcon = {
-  name: "folder",
-  viewBox: "0 0 24 24",
-  attrs: strokeAttrs,
-  nodes: [
-    { tag: "path", attrs: { d: "M3 7A2 2 0 0 1 5 5H9L11 8H19A2 2 0 0 1 21 10V17A2 2 0 0 1 19 19H5A2 2 0 0 1 3 17Z" } },
-  ],
-} as const;
-
-const SaveIcon = {
-  name: "save",
-  viewBox: "0 0 24 24",
-  attrs: strokeAttrs,
-  nodes: [
-    { tag: "path", attrs: { d: "M5 4H16L20 8V19A1 1 0 0 1 19 20H5A1 1 0 0 1 4 19V5A1 1 0 0 1 5 4Z" } },
-    { tag: "path", attrs: { d: "M8 4V9H15" } },
-  ],
-} as const;
 </script>
 
 <template>
-  <div style="inline-size: 100%; padding-block-end: 160px">
-    <XhMenubarRoot>
-      <XhMenubarTrigger value="file">
-        <XhIcon :icon="FileIcon" size="sm" />
-        文件
-      </XhMenubarTrigger>
-      <XhMenubarTrigger value="edit">
-        <XhIcon :icon="EditIcon" size="sm" />
-        编辑
-      </XhMenubarTrigger>
-
-      <XhMenubarPositioner value="file">
-        <XhMenubarContent>
-          <XhMenubarItem value="new">
-            <XhIcon :icon="PlusIcon" size="sm" />
-            <XhMenubarItemText>新建</XhMenubarItemText>
-          </XhMenubarItem>
-          <XhMenubarItem value="open">
-            <XhIcon :icon="FolderIcon" size="sm" />
-            <XhMenubarItemText>打开</XhMenubarItemText>
-          </XhMenubarItem>
-          <XhMenubarSeparator />
-          <XhMenubarItem value="save">
-            <XhIcon :icon="SaveIcon" size="sm" />
-            <XhMenubarItemText>保存</XhMenubarItemText>
-          </XhMenubarItem>
-        </XhMenubarContent>
-      </XhMenubarPositioner>
-
-      <XhMenubarPositioner value="edit">
-        <XhMenubarContent>
-          <XhMenubarItem value="undo">
-            <XhMenubarItemText>撤销</XhMenubarItemText>
-          </XhMenubarItem>
-          <XhMenubarItem value="redo">
-            <XhMenubarItemText>重做</XhMenubarItemText>
-          </XhMenubarItem>
-        </XhMenubarContent>
-      </XhMenubarPositioner>
-    </XhMenubarRoot>
-  </div>
+  <XhMenubarRoot style="background: var(--xh-bg-subtle)">
+    <XhMenubarTrigger value="file"><XhIcon :icon="FileIcon" size="sm" />文件</XhMenubarTrigger>
+    <XhMenubarTrigger value="edit"><XhIcon :icon="PencilIcon" size="sm" />编辑</XhMenubarTrigger>
+    <XhMenubarPositioner value="file">
+      <XhMenubarContent>
+        <XhMenubarItem value="new"><XhIcon :icon="PlusIcon" size="sm" /><XhMenubarItemText>新建</XhMenubarItemText><span aria-hidden="true">⌘ N</span></XhMenubarItem>
+        <XhMenubarItem value="open"><XhIcon :icon="FolderIcon" size="sm" /><XhMenubarItemText>打开</XhMenubarItemText><span aria-hidden="true">⌘ O</span></XhMenubarItem>
+        <XhMenubarSeparator />
+        <XhMenubarItem value="save"><XhIcon :icon="SaveIcon" size="sm" /><XhMenubarItemText>保存</XhMenubarItemText><span aria-hidden="true">⌘ S</span></XhMenubarItem>
+      </XhMenubarContent>
+    </XhMenubarPositioner>
+    <XhMenubarPositioner value="edit">
+      <XhMenubarContent>
+        <XhMenubarItem value="undo">撤销</XhMenubarItem>
+        <XhMenubarItem value="redo">重做</XhMenubarItem>
+      </XhMenubarContent>
+    </XhMenubarPositioner>
+  </XhMenubarRoot>
 </template>
 ```
 
 ```html
-<div style="inline-size: 100%; padding-block-end: 160px">
-  <xh-menubar id="menubar-icon">
-    <div data-xh-part="root">
-      <button data-xh-part="trigger" value="file">
-        <xh-icon size="sm" data-glyph="file">
-          <svg data-xh-part="root"><g data-xh-part="glyph"></g></svg>
-        </xh-icon>
-        文件
-      </button>
-      <button data-xh-part="trigger" value="edit">
-        <xh-icon size="sm" data-glyph="edit">
-          <svg data-xh-part="root"><g data-xh-part="glyph"></g></svg>
-        </xh-icon>
-        编辑
-      </button>
-
-      <div data-xh-part="positioner" value="file">
-        <div data-xh-part="content" value="file">
-          <div data-xh-part="item" value="new">
-            <xh-icon size="sm" data-glyph="plus">
-              <svg data-xh-part="root"><g data-xh-part="glyph"></g></svg>
-            </xh-icon>
-            <span data-xh-part="item-text">新建</span>
-          </div>
-          <div data-xh-part="item" value="open">
-            <xh-icon size="sm" data-glyph="folder">
-              <svg data-xh-part="root"><g data-xh-part="glyph"></g></svg>
-            </xh-icon>
-            <span data-xh-part="item-text">打开</span>
-          </div>
-          <div data-xh-part="separator"></div>
-          <div data-xh-part="item" value="save">
-            <xh-icon size="sm" data-glyph="save">
-              <svg data-xh-part="root"><g data-xh-part="glyph"></g></svg>
-            </xh-icon>
-            <span data-xh-part="item-text">保存</span>
-          </div>
-        </div>
-      </div>
-
-      <div data-xh-part="positioner" value="edit">
-        <div data-xh-part="content" value="edit">
-          <div data-xh-part="item" value="undo">
-            <span data-xh-part="item-text">撤销</span>
-          </div>
-          <div data-xh-part="item" value="redo">
-            <span data-xh-part="item-text">重做</span>
-          </div>
-        </div>
+<xh-menubar>
+  <div data-xh-part="root" style="background: var(--xh-bg-subtle)">
+    <button data-xh-part="trigger" value="file">文件</button>
+    <button data-xh-part="trigger" value="edit">编辑</button>
+    <div data-xh-part="positioner" value="file">
+      <div data-xh-part="content" value="file">
+        <div data-xh-part="item" value="new"><svg viewBox="0 0 24 24" width="1em" height="1em" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg><span data-xh-part="item-text">新建</span><span aria-hidden="true">⌘ N</span></div>
+        <div data-xh-part="item" value="open"><svg viewBox="0 0 24 24" width="1em" height="1em" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M3 7h7l2 3h9v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg><span data-xh-part="item-text">打开</span><span aria-hidden="true">⌘ O</span></div>
+        <div data-xh-part="separator"></div>
+        <div data-xh-part="item" value="save"><svg viewBox="0 0 24 24" width="1em" height="1em" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M5 4h12l3 3v13H4V5zM8 4v6h8M8 20v-6h8v6"/></svg><span data-xh-part="item-text">保存</span><span aria-hidden="true">⌘ S</span></div>
       </div>
     </div>
-  </xh-menubar>
-</div>
-
-<script type="module">
-  // 描边取 currentColor，图标颜色随入口与条目当下的文字色走
-  const strokeAttrs = {
-    "fill": "none",
-    "stroke": "currentColor",
-    "stroke-width": "2",
-    "stroke-linecap": "round",
-    "stroke-linejoin": "round",
-  };
-
-  const icons = {
-    file: {
-      name: "file",
-      viewBox: "0 0 24 24",
-      attrs: strokeAttrs,
-      nodes: [
-        { tag: "path", attrs: { d: "M13 3H7A2 2 0 0 0 5 5V19A2 2 0 0 0 7 21H17A2 2 0 0 0 19 19V9Z" } },
-        { tag: "path", attrs: { d: "M13 3V9H19" } },
-      ],
-    },
-    edit: {
-      name: "edit",
-      viewBox: "0 0 24 24",
-      attrs: strokeAttrs,
-      nodes: [{ tag: "path", attrs: { d: "M4 20H8L19 9A2.8 2.8 0 0 0 15 5L4 16Z" } }],
-    },
-    plus: {
-      name: "plus",
-      viewBox: "0 0 24 24",
-      attrs: strokeAttrs,
-      nodes: [{ tag: "path", attrs: { d: "M12 5V19M5 12H19" } }],
-    },
-    folder: {
-      name: "folder",
-      viewBox: "0 0 24 24",
-      attrs: strokeAttrs,
-      nodes: [
-        { tag: "path", attrs: { d: "M3 7A2 2 0 0 1 5 5H9L11 8H19A2 2 0 0 1 21 10V17A2 2 0 0 1 19 19H5A2 2 0 0 1 3 17Z" } },
-      ],
-    },
-    save: {
-      name: "save",
-      viewBox: "0 0 24 24",
-      attrs: strokeAttrs,
-      nodes: [
-        { tag: "path", attrs: { d: "M5 4H16L20 8V19A1 1 0 0 1 19 20H5A1 1 0 0 1 4 19V5A1 1 0 0 1 5 4Z" } },
-        { tag: "path", attrs: { d: "M8 4V9H15" } },
-      ],
-    },
-  };
-
-  // 图标记录是对象，只能作为 property 交给每个 xh-icon
-  for (const el of document
-    .getElementById("menubar-icon")
-    .querySelectorAll("xh-icon")) {
-    el.icon = icons[el.dataset.glyph];
-  }
-</script>
+    <div data-xh-part="positioner" value="edit"><div data-xh-part="content" value="edit"><div data-xh-part="item" value="undo">撤销</div><div data-xh-part="item" value="redo">重做</div></div></div>
+  </div>
+</xh-menubar>
 ```
 
-### 禁用
+### 子菜单
 
-禁用走 aria-disabled 而非原生 disabled：禁用的入口仍聚焦得上、仍是方向键的起点，只是展不开菜单
-
-```vue
-<script setup lang="ts">
-import { XhMenubarRoot, XhSwitch } from "@xihan-ui/vue";
-import { ref } from "vue";
-
-const menus = [
-  {
-    value: "file",
-    label: "文件",
-    items: [
-      { value: "new", label: "新建" },
-      { value: "open", label: "打开" },
-    ],
-  },
-  // 单项禁用：整条没锁时，也只有这一项展不开
-  {
-    value: "edit",
-    label: "编辑",
-    disabled: true,
-    items: [{ value: "undo", label: "撤销" }],
-  },
-  { value: "help", label: "帮助", items: [{ value: "about", label: "关于" }] },
-];
-
-const locked = ref(false);
-</script>
-
-<template>
-  <div style="inline-size: 100%; display: grid; gap: 12px; padding-block-end: 140px">
-    <XhMenubarRoot :disabled="locked" :collection="menus" />
-
-    <label style="display: flex; align-items: center; gap: 8px">
-      <XhSwitch v-model:checked="locked" />
-      整条禁用（展开与选中都不再发生）
-    </label>
-  </div>
-</template>
-```
-
-```html
-<div style="inline-size: 100%; display: grid; gap: 12px; padding-block-end: 140px">
-  <xh-menubar id="menubar-disabled">
-    <div data-xh-part="root">
-      <button data-xh-part="trigger" value="file">文件</button>
-      <!-- 单项禁用：整条没锁时，也只有这一项展不开 -->
-      <button data-xh-part="trigger" value="edit" aria-disabled="true">编辑</button>
-      <button data-xh-part="trigger" value="help">帮助</button>
-
-      <div data-xh-part="positioner" value="file">
-        <div data-xh-part="content" value="file">
-          <div data-xh-part="item" value="new">
-            <span data-xh-part="item-text">新建</span>
-          </div>
-          <div data-xh-part="item" value="open">
-            <span data-xh-part="item-text">打开</span>
-          </div>
-        </div>
-      </div>
-
-      <div data-xh-part="positioner" value="edit">
-        <div data-xh-part="content" value="edit">
-          <div data-xh-part="item" value="undo">
-            <span data-xh-part="item-text">撤销</span>
-          </div>
-        </div>
-      </div>
-
-      <div data-xh-part="positioner" value="help">
-        <div data-xh-part="content" value="help">
-          <div data-xh-part="item" value="about">
-            <span data-xh-part="item-text">关于</span>
-          </div>
-        </div>
-      </div>
-    </div>
-  </xh-menubar>
-
-  <div style="display: flex; align-items: center; gap: 8px">
-    <xh-switch id="menubar-disabled-switch">
-      <button data-xh-part="root">
-        <span data-xh-part="thumb"></span>
-      </button>
-    </xh-switch>
-    <span>整条禁用（展开与选中都不再发生）</span>
-  </div>
-</div>
-
-<script type="module">
-  // 开关翻到开就锁住整条菜单栏
-  const menubar = document.getElementById("menubar-disabled");
-  document
-    .getElementById("menubar-disabled-switch")
-    .addEventListener("checked-change", (event) => {
-      menubar.disabled = event.detail.checked;
-    });
-</script>
-```
-
-### 装不下就收进「更多」
-
-宿主自己观测容器宽度，一次收起一个入口直到这排不再溢出；收起来的那几张菜单在「更多」里各占一组
-
-```vue
-<script setup lang="ts">
-import {
-  XhButton,
-  XhMenubarContent,
-  XhMenubarGroup,
-  XhMenubarGroupLabel,
-  XhMenubarItem,
-  XhMenubarItemText,
-  XhMenubarPositioner,
-  XhMenubarRoot,
-  XhMenubarTrigger,
-} from "@xihan-ui/vue";
-import { computed, nextTick, onBeforeUnmount, onMounted, ref } from "vue";
-
-const menus = [
-  {
-    value: "file",
-    label: "文件",
-    items: [
-      { value: "new", label: "新建" },
-      { value: "open", label: "打开" },
-    ],
-  },
-  {
-    value: "edit",
-    label: "编辑",
-    items: [
-      { value: "undo", label: "撤销" },
-      { value: "redo", label: "重做" },
-    ],
-  },
-  {
-    value: "view",
-    label: "视图",
-    items: [
-      { value: "zoom-in", label: "放大" },
-      { value: "zoom-out", label: "缩小" },
-    ],
-  },
-  {
-    value: "insert",
-    label: "插入",
-    items: [
-      { value: "image", label: "图片" },
-      { value: "table", label: "表格" },
-    ],
-  },
-  {
-    value: "format",
-    label: "格式",
-    items: [
-      { value: "bold", label: "加粗" },
-      { value: "italic", label: "倾斜" },
-    ],
-  },
-  { value: "tools", label: "工具", items: [{ value: "spell", label: "拼写检查" }] },
-  { value: "help", label: "帮助", items: [{ value: "about", label: "关于" }] },
-];
-
-const widths = [560, 380, 240];
-
-const boxRef = ref<HTMLElement | null>(null);
-const boxWidth = ref(560);
-const visible = ref(menus.length);
-const shown = computed(() => menus.slice(0, visible.value));
-const folded = computed(() => menus.slice(visible.value));
-const picked = ref("");
-
-let observer: ResizeObserver | undefined;
-let reflowing = false;
-
-// 先全铺开，再一次收一个，直到这排不再溢出
-async function reflow(): Promise<void> {
-  const box = boxRef.value;
-  if (!box || reflowing)
-    return;
-  reflowing = true;
-  visible.value = menus.length;
-  await nextTick();
-  while (visible.value > 1 && box.scrollWidth > box.clientWidth + 1) {
-    visible.value -= 1;
-    await nextTick();
-  }
-  reflowing = false;
-}
-
-function onSelect(details: { menu: string; value: string }): void {
-  picked.value = `${details.menu} / ${details.value}`;
-}
-
-onMounted(() => {
-  const box = boxRef.value;
-  if (!box)
-    return;
-  observer = new ResizeObserver(() => void reflow());
-  observer.observe(box);
-});
-
-onBeforeUnmount(() => observer?.disconnect());
-</script>
-
-<template>
-  <div style="inline-size: 100%; display: grid; gap: 12px; justify-items: start">
-    <div style="display: flex; flex-wrap: wrap; gap: 8px">
-      <XhButton
-        v-for="w in widths"
-        :key="w"
-        size="sm"
-        :variant="boxWidth === w ? 'solid' : 'outline'"
-        @click="boxWidth = w"
-      >
-        {{ w }} 像素
-      </XhButton>
-    </div>
-
-    <!-- 溢出裁在这一层，量的也是这一层 -->
-    <div
-      ref="boxRef"
-      :style="{ inlineSize: `${boxWidth}px`, maxInlineSize: '100%', overflow: 'hidden' }"
-    >
-      <XhMenubarRoot @select="onSelect">
-        <XhMenubarTrigger v-for="m in shown" :key="m.value" :value="m.value">
-          {{ m.label }}
-        </XhMenubarTrigger>
-        <XhMenubarTrigger v-if="folded.length" value="more">更多</XhMenubarTrigger>
-
-        <XhMenubarPositioner v-for="m in shown" :key="m.value" :value="m.value">
-          <XhMenubarContent>
-            <XhMenubarItem v-for="item in m.items" :key="item.value" :value="item.value">
-              <XhMenubarItemText>{{ item.label }}</XhMenubarItemText>
-            </XhMenubarItem>
-          </XhMenubarContent>
-        </XhMenubarPositioner>
-
-        <XhMenubarPositioner v-if="folded.length" value="more">
-          <XhMenubarContent>
-            <XhMenubarGroup v-for="m in folded" :key="m.value" :value="m.value">
-              <XhMenubarGroupLabel>{{ m.label }}</XhMenubarGroupLabel>
-              <XhMenubarItem
-                v-for="item in m.items"
-                :key="item.value"
-                :value="`${m.value}:${item.value}`"
-              >
-                <XhMenubarItemText>{{ item.label }}</XhMenubarItemText>
-              </XhMenubarItem>
-            </XhMenubarGroup>
-          </XhMenubarContent>
-        </XhMenubarPositioner>
-      </XhMenubarRoot>
-    </div>
-
-    <span>
-      在场入口 {{ shown.length }} / {{ menus.length }}；最近选中：{{ picked || "（无）" }}
-    </span>
-  </div>
-</template>
-```
-
-```html
-<div style="inline-size: 100%; display: grid; gap: 12px; justify-items: start">
-  <div id="menubar-overflow-widths" style="display: flex; flex-wrap: wrap; gap: 8px">
-    <xh-button size="sm" variant="solid" data-width="560">
-      <button data-xh-part="root">560 像素</button>
-    </xh-button>
-    <xh-button size="sm" variant="outline" data-width="380">
-      <button data-xh-part="root">380 像素</button>
-    </xh-button>
-    <xh-button size="sm" variant="outline" data-width="240">
-      <button data-xh-part="root">240 像素</button>
-    </xh-button>
-  </div>
-
-  <!-- 溢出裁在这一层，量的也是这一层 -->
-  <div id="menubar-overflow-box" style="inline-size: 560px; max-inline-size: 100%; overflow: hidden">
-    <xh-menubar id="menubar-overflow">
-      <div data-xh-part="root">
-        <button data-xh-part="trigger" value="file">文件</button>
-        <button data-xh-part="trigger" value="edit">编辑</button>
-        <button data-xh-part="trigger" value="view">视图</button>
-        <button data-xh-part="trigger" value="insert">插入</button>
-        <button data-xh-part="trigger" value="format">格式</button>
-        <button data-xh-part="trigger" value="tools">工具</button>
-        <button data-xh-part="trigger" value="help">帮助</button>
-        <button data-xh-part="trigger" value="more">更多</button>
-
-        <div data-xh-part="positioner" value="file">
-          <div data-xh-part="content" value="file">
-            <div data-xh-part="item" value="new">
-              <span data-xh-part="item-text">新建</span>
-            </div>
-            <div data-xh-part="item" value="open">
-              <span data-xh-part="item-text">打开</span>
-            </div>
-          </div>
-        </div>
-
-        <div data-xh-part="positioner" value="edit">
-          <div data-xh-part="content" value="edit">
-            <div data-xh-part="item" value="undo">
-              <span data-xh-part="item-text">撤销</span>
-            </div>
-            <div data-xh-part="item" value="redo">
-              <span data-xh-part="item-text">重做</span>
-            </div>
-          </div>
-        </div>
-
-        <div data-xh-part="positioner" value="view">
-          <div data-xh-part="content" value="view">
-            <div data-xh-part="item" value="zoom-in">
-              <span data-xh-part="item-text">放大</span>
-            </div>
-            <div data-xh-part="item" value="zoom-out">
-              <span data-xh-part="item-text">缩小</span>
-            </div>
-          </div>
-        </div>
-
-        <div data-xh-part="positioner" value="insert">
-          <div data-xh-part="content" value="insert">
-            <div data-xh-part="item" value="image">
-              <span data-xh-part="item-text">图片</span>
-            </div>
-            <div data-xh-part="item" value="table">
-              <span data-xh-part="item-text">表格</span>
-            </div>
-          </div>
-        </div>
-
-        <div data-xh-part="positioner" value="format">
-          <div data-xh-part="content" value="format">
-            <div data-xh-part="item" value="bold">
-              <span data-xh-part="item-text">加粗</span>
-            </div>
-            <div data-xh-part="item" value="italic">
-              <span data-xh-part="item-text">倾斜</span>
-            </div>
-          </div>
-        </div>
-
-        <div data-xh-part="positioner" value="tools">
-          <div data-xh-part="content" value="tools">
-            <div data-xh-part="item" value="spell">
-              <span data-xh-part="item-text">拼写检查</span>
-            </div>
-          </div>
-        </div>
-
-        <div data-xh-part="positioner" value="help">
-          <div data-xh-part="content" value="help">
-            <div data-xh-part="item" value="about">
-              <span data-xh-part="item-text">关于</span>
-            </div>
-          </div>
-        </div>
-
-        <div data-xh-part="positioner" value="more">
-          <div data-xh-part="content" value="more">
-            <div data-xh-part="group" value="file">
-              <span data-xh-part="group-label">文件</span>
-              <div data-xh-part="item" value="file:new">
-                <span data-xh-part="item-text">新建</span>
-              </div>
-              <div data-xh-part="item" value="file:open">
-                <span data-xh-part="item-text">打开</span>
-              </div>
-            </div>
-            <div data-xh-part="group" value="edit">
-              <span data-xh-part="group-label">编辑</span>
-              <div data-xh-part="item" value="edit:undo">
-                <span data-xh-part="item-text">撤销</span>
-              </div>
-              <div data-xh-part="item" value="edit:redo">
-                <span data-xh-part="item-text">重做</span>
-              </div>
-            </div>
-            <div data-xh-part="group" value="view">
-              <span data-xh-part="group-label">视图</span>
-              <div data-xh-part="item" value="view:zoom-in">
-                <span data-xh-part="item-text">放大</span>
-              </div>
-              <div data-xh-part="item" value="view:zoom-out">
-                <span data-xh-part="item-text">缩小</span>
-              </div>
-            </div>
-            <div data-xh-part="group" value="insert">
-              <span data-xh-part="group-label">插入</span>
-              <div data-xh-part="item" value="insert:image">
-                <span data-xh-part="item-text">图片</span>
-              </div>
-              <div data-xh-part="item" value="insert:table">
-                <span data-xh-part="item-text">表格</span>
-              </div>
-            </div>
-            <div data-xh-part="group" value="format">
-              <span data-xh-part="group-label">格式</span>
-              <div data-xh-part="item" value="format:bold">
-                <span data-xh-part="item-text">加粗</span>
-              </div>
-              <div data-xh-part="item" value="format:italic">
-                <span data-xh-part="item-text">倾斜</span>
-              </div>
-            </div>
-            <div data-xh-part="group" value="tools">
-              <span data-xh-part="group-label">工具</span>
-              <div data-xh-part="item" value="tools:spell">
-                <span data-xh-part="item-text">拼写检查</span>
-              </div>
-            </div>
-            <div data-xh-part="group" value="help">
-              <span data-xh-part="group-label">帮助</span>
-              <div data-xh-part="item" value="help:about">
-                <span data-xh-part="item-text">关于</span>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </xh-menubar>
-  </div>
-
-  <span>
-    在场入口 <span id="menubar-overflow-shown">7</span> / 7；最近选中：<span id="menubar-overflow-picked">（无）</span>
-  </span>
-</div>
-
-<script type="module">
-  const menubar = document.getElementById("menubar-overflow");
-  const box = document.getElementById("menubar-overflow-box");
-  const root = menubar.querySelector('[data-xh-part="root"]');
-  const moreContent = menubar.querySelector('[data-xh-part="content"][value="more"]');
-  const moreTrigger = root.querySelector('[data-xh-part="trigger"][value="more"]');
-  // 入口一律插在首个浮层之前，方向键的行程才与视觉顺序一致
-  const anchor = root.querySelector('[data-xh-part="positioner"]');
-  const order = ["file", "edit", "view", "insert", "format", "tools", "help"];
-
-  const pick = (selector) => menubar.querySelector(selector);
-  const triggers = order.map((v) => pick(`[data-xh-part="trigger"][value="${v}"]`));
-  const groups = order.map((v) => pick(`[data-xh-part="group"][value="${v}"]`));
-  const shownReadout = document.getElementById("menubar-overflow-shown");
-
-  // 前 count 个入口留在这一排，其余各自的那一组进「更多」
-  function show(count) {
-    for (const node of [...triggers, moreTrigger, ...groups]) node.remove();
-    for (let i = 0; i < count; i++) root.insertBefore(triggers[i], anchor);
-    for (let i = count; i < order.length; i++) moreContent.append(groups[i]);
-    if (count < order.length) root.insertBefore(moreTrigger, anchor);
-    shownReadout.textContent = String(count);
-  }
-
-  // 先全铺开，再一次收一个，直到这排不再溢出
-  function reflow() {
-    show(order.length);
-    let count = order.length;
-    while (count > 1 && box.scrollWidth > box.clientWidth + 1) {
-      count -= 1;
-      show(count);
-    }
-  }
-
-  new ResizeObserver(reflow).observe(box);
-
-  const widths = document.getElementById("menubar-overflow-widths");
-  for (const button of widths.querySelectorAll("[data-width]")) {
-    button.addEventListener("click", () => {
-      box.style.inlineSize = `${button.dataset.width}px`;
-      for (const other of widths.querySelectorAll("[data-width]")) {
-        other.variant = other === button ? "solid" : "outline";
-      }
-    });
-  }
-
-  const picked = document.getElementById("menubar-overflow-picked");
-  menubar.addEventListener("select", (event) => {
-    picked.textContent = `${event.detail.menu} / ${event.detail.value}`;
-  });
-</script>
-```
-
-### 二级子菜单
-
-XhMenubarSub 在菜单栏的一张菜单里再嵌一层：触发条目双重身份（菜单栏的方向键照常走、右方向键进子层），子层内用 XhMenu 系部件，选中带上所属菜单的身份汇到根并关掉整条菜单栏
+在菜单栏命令中打开下一层
 
 ```vue
 <script setup lang="ts">
@@ -1600,81 +197,106 @@ import {
   XhMenuItem,
   XhMenuPositioner,
 } from "@xihan-ui/vue";
-import { ref } from "vue";
-
-const picked = ref("（还没选）");
-
-function onSelect(details: { menu: string; value: string }): void {
-  picked.value = `${details.menu} / ${details.value}`;
-}
 </script>
 
 <template>
-  <div style="inline-size: 100%; display: grid; gap: 12px; justify-items: start">
-    <XhMenubarRoot @select="onSelect">
-      <XhMenubarTrigger value="file">文件</XhMenubarTrigger>
-      <XhMenubarPositioner value="file">
-        <XhMenubarContent>
-          <XhMenubarItem value="open">打开</XhMenubarItem>
-          <XhMenubarItem value="save">保存</XhMenubarItem>
-          <XhMenubarSeparator />
-
-          <XhMenubarSub value="share">
-            <XhMenubarSubTrigger>发送到…</XhMenubarSubTrigger>
-            <XhMenuPositioner>
-              <XhMenuContent>
-                <XhMenuItem value="email">邮件</XhMenuItem>
-                <XhMenuItem value="sms">短信</XhMenuItem>
-              </XhMenuContent>
-            </XhMenuPositioner>
-          </XhMenubarSub>
-
-          <XhMenubarSeparator />
-          <XhMenubarItem value="close">关闭</XhMenubarItem>
-        </XhMenubarContent>
-      </XhMenubarPositioner>
-
-      <XhMenubarTrigger value="edit">编辑</XhMenubarTrigger>
-      <XhMenubarPositioner value="edit">
-        <XhMenubarContent>
-          <XhMenubarItem value="undo">撤销</XhMenubarItem>
-          <XhMenubarItem value="redo">重做</XhMenubarItem>
-        </XhMenubarContent>
-      </XhMenubarPositioner>
-    </XhMenubarRoot>
-
-    <p>选中：{{ picked }}</p>
-  </div>
+  <XhMenubarRoot style="background: var(--xh-bg-subtle)">
+    <XhMenubarTrigger value="file">文件</XhMenubarTrigger>
+    <XhMenubarTrigger value="edit">编辑</XhMenubarTrigger>
+    <XhMenubarPositioner value="file">
+      <XhMenubarContent>
+        <XhMenubarItem value="open">打开</XhMenubarItem>
+        <XhMenubarItem value="save">保存</XhMenubarItem>
+        <XhMenubarSeparator />
+        <XhMenubarSub value="share">
+          <XhMenubarSubTrigger>发送到</XhMenubarSubTrigger>
+          <XhMenuPositioner>
+            <XhMenuContent>
+              <XhMenuItem value="email">邮件</XhMenuItem>
+              <XhMenuItem value="message">消息</XhMenuItem>
+            </XhMenuContent>
+          </XhMenuPositioner>
+        </XhMenubarSub>
+        <XhMenubarSeparator />
+        <XhMenubarItem value="close">关闭</XhMenubarItem>
+      </XhMenubarContent>
+    </XhMenubarPositioner>
+    <XhMenubarPositioner value="edit">
+      <XhMenubarContent>
+        <XhMenubarItem value="undo">撤销</XhMenubarItem>
+        <XhMenubarItem value="redo">重做</XhMenubarItem>
+      </XhMenubarContent>
+    </XhMenubarPositioner>
+  </XhMenubarRoot>
 </template>
+```
+
+```html
+<xh-menubar>
+  <div data-xh-part="root" style="background: var(--xh-bg-subtle)">
+    <button data-xh-part="trigger" value="file">文件</button>
+    <button data-xh-part="trigger" value="edit">编辑</button>
+    <div data-xh-part="positioner" value="file">
+      <div data-xh-part="content" value="file">
+        <div data-xh-part="item" value="open">打开</div>
+        <div data-xh-part="item" value="save">保存</div>
+        <div data-xh-part="separator"></div>
+        <xh-menu submenu open-on-hover placement="right-start" style="display: contents">
+          <div data-xh-part="trigger" value="share">发送到</div>
+          <div data-xh-part="positioner">
+            <div data-xh-part="content">
+              <div data-xh-part="item" value="email">邮件</div>
+              <div data-xh-part="item" value="message">消息</div>
+            </div>
+          </div>
+        </xh-menu>
+        <div data-xh-part="separator"></div>
+        <div data-xh-part="item" value="close">关闭</div>
+      </div>
+    </div>
+    <div data-xh-part="positioner" value="edit"><div data-xh-part="content" value="edit"><div data-xh-part="item" value="undo">撤销</div><div data-xh-part="item" value="redo">重做</div></div></div>
+  </div>
+</xh-menubar>
 ```
 
 ## 设计指引
 
 ### 何时使用
 
-- 功能密集的编辑器类界面，命令多到需要按"文件 / 编辑 / 视图"分门别类。
+- 在编辑器或桌面应用中按“文件、编辑、视图”组织命令。
 
 ### 何时不用
 
-- 站点导航：那是[导航菜单](./navigation-menu)或[侧栏导航](./side-nav)。
-- 只有一个入口：直接用[菜单](./menu)。
-- 移动端：这排入口在窄屏上放不下，且悬停切换无从谈起。
+- 站点导航使用[导航菜单](./navigation-menu)。
+- 单个入口使用[菜单](./menu)。
+- 窄屏和触摸优先界面不适合菜单栏。
 
 ### 特性
 
-- `value` 是当前展开的那一项，`null` 表示都收起。
-- 一张菜单展开后，指针移到相邻入口即直接换张展开，不必先关再开。
-- 禁用走 `aria-disabled` 而非原生 `disabled`：禁用的入口仍聚焦得上、仍是方向键的起点。
-- `orientation` 竖排时上下键在入口之间走，左右键改为展开本项的菜单。
-- 顶层控制条保持轻量导航表面；每张弹出菜单使用 M2 磨砂材质，箭头与面板同色同边界且不重复模糊。
-- 菜单条目的悬停/键盘锚点与打开路径使用同一中性淡底，按下加深一档；打开二级菜单不加色条、
-  不改字重，也不使用品牌蓝底。顶层当前菜单的 trigger 仍保留自己的导航选中反馈。
-- 条目使用 flex 主行并保留作者的实际插槽顺序：图标、`item-text`、任意快捷键节点和子菜单箭头
-  可以同排；`item-text` 占剩余空间并截断，只有 `item-description` 独占第二行。
-- 首次展开与最终收起沿实际 placement 短移淡变，不缩放整张面；在顶层入口之间换张仍保持瞬时交接，
-  避免两张菜单交叉动画造成闪烁。
+- 同一时间只展开一个顶层菜单。
+- 展开后移向相邻入口会直接切换菜单。
+- 支持方向键、首字符检索、禁用项、分组与子菜单。
+- 条目可组合图标、文字、说明和快捷键提示。
+- 首次展开与最终关闭使用短距离淡变，顶层菜单切换不播放交叉动画。
 
-## 产物
+### 组合
+
+- 菜单栏应放在宽度稳定的应用顶栏中。
+
+### 最佳实践
+
+- 顶层入口使用单个名词，并控制在少量常用分类内。
+- 破坏性命令放在菜单末尾并与普通命令分隔。
+- 仅为已注册的快捷键显示提示。
+
+### 反模式
+
+- 不要在菜单栏中堆积过多顶层入口。
+- 不要用菜单栏代替持久选项控件。
+
+## API 参考
+
+### 产物
 
 | 层 | 值 |
 | --- | --- |
@@ -1684,13 +306,7 @@ function onSelect(details: { menu: string; value: string }): void {
 | 状态机 | `menubarMachine` |
 | 皮肤 | `@xihan-ui/styles/menubar.css` |
 
-## 解剖
-
-部件名即 `data-part` 属性值，也是皮肤的选择器。加粗的是必备部件，不渲染它组件不工作（Web Components 适配器会在诊断通道上报 `wc.missing-part`）。
-
-`data-scope="menubar"`：**`root`** · **`trigger`** · `positioner` · **`content`** · **`item`** · `item-text` · `item-indicator` · `item-description` · `separator` · `group` · `group-label` · `arrow`
-
-## Props
+### Props
 
 | 属性 | 类型 | 必填 | 说明 |
 | --- | --- | --- | --- |
@@ -1710,18 +326,18 @@ function onSelect(details: { menu: string; value: string }): void {
 | `onValueChange` | `(details: MenubarValueChangeDetails) => void` |  | value 变化回调。 |
 | `onSelect` | `(details: MenubarSelectDetails) => void` |  | 条目被选中；菜单随之收起。 |
 
-## 事件
+### 事件
 
-自定义元素派发这些事件，Vue 组件对应同名 emit；载荷都在 `detail` 上。可双向绑定的值另有 `update:xxx`，见 Props。
+自定义元素将载荷放在 `detail`；Vue 使用同名 emit。
 
 | 事件 | 载荷 | 说明 |
 | --- | --- | --- |
 | `value-change` | `MenubarValueChangeDetails` | 展开项变化；detail 为 `{ value: string \| null }` |
 | `select` | `MenubarSelectDetails` | 条目被选中（菜单随之收起）；detail 为 `{ menu: string, value: string }` |
 
-## 插槽
+### 插槽
 
-作者能拿到载荷的插槽。只转发内容、不带载荷的默认插槽不在此列——那类直接写子节点即可。
+仅列出带载荷的插槽。
 
 | Vue 组件 | 插槽 | 载荷 | 说明 |
 | --- | --- | --- | --- |
@@ -1729,9 +345,9 @@ function onSelect(details: { menu: string; value: string }): void {
 | `XhMenubarRoot` | `item` | `MenubarNodeMeta` |  |
 | `XhMenubarSub` | `default` | `MenubarSubSlotProps` |  |
 
-## 状态
+### 状态
 
-对外可见的状态落在 `data-state` 上，写样式与断言都读它：
+公开状态写入 `data-state`。
 
 | 部件 | 取值 |
 | --- | --- |
@@ -1740,7 +356,7 @@ function onSelect(details: { menu: string; value: string }): void {
 | `positioner` | 'open' \| 'closed' |
 | `content` | 'open' \| 'closed' |
 
-状态机内部转移，写样式与业务都用不到；要监听变化请看上面的「事件」。
+以下名称仅用于内部状态机。
 
 **状态**：`idle` · `open`
 
@@ -1748,9 +364,9 @@ function onSelect(details: { menu: string; value: string }): void {
 
 **判据**：`hasValue` · `isCurrent` · `shouldAbsorbToggle` · `shouldSwitch`
 
-## connect API
+### connect API
 
-`useMenubar` 产出的对象。`getXxxProps()` 铺到对应部件的宿主元素上，其余是可读状态与操作入口。
+`getXxxProps()` 返回对应部件的宿主属性。
 
 | 成员 | 类型 | 说明 |
 | --- | --- | --- |
@@ -1776,7 +392,9 @@ function onSelect(details: { menu: string; value: string }): void {
 | `getGroupLabelProps` | `(props: MenubarGroupProps) => T['element']` |  |
 | `getArrowProps` | `(props: MenubarContentProps) => T['element']` |  |
 
-## 键盘
+## 无障碍
+
+### 键盘
 
 规格出处：[W3C APG](https://www.w3.org/WAI/ARIA/apg/patterns/menubar/#keyboardinteraction)
 
@@ -1798,9 +416,9 @@ function onSelect(details: { menu: string; value: string }): void {
 | `Escape` | open | 收起菜单并把焦点留在 trigger 上 |
 | `Tab` / `Shift+Tab` | open | 收起菜单，焦点不被抢回 trigger，按 Tab 序列自然离开 |
 
-## 无障碍
+### ARIA
 
-下面这些由 `connect` 铺到部件上，作者不必自己写；重复写反而会覆盖掉正确值。
+以下属性由 `connect` 生成。
 
 | 部件 | 属性 | 值 |
 | --- | --- | --- |
@@ -1825,15 +443,17 @@ function onSelect(details: { menu: string; value: string }): void {
 | `group` | `role` | 'group' |
 | `arrow` | `aria-hidden` | 'true' |
 
-## 样式
+## 样式参考
 
-默认皮肤 `@xihan-ui/styles/menubar.css` 按部件选择：`[data-scope="menubar"][data-part="root"]`。它落在 `xihan.components` 与 `xihan.motion` 层；业务样式不写进 `@layer` 即高于全部库层，要按层压过来就写进 `xihan.overrides`。
+### 皮肤
+
+`@xihan-ui/styles/menubar.css` 使用 `[data-scope="menubar"][data-part="root"]` 部件选择器，位于 `xihan.components` 与 `xihan.motion` 层。覆盖样式使用 `xihan.overrides`。
 
 `forced-colors: active` 下另有一套规则：颜色交给系统，边框与状态标记改用系统色关键字。
 
-## 数据属性
+### 数据属性
 
-由 `connect` 产出并铺到部件上，皮肤与测试都据此选择；`data-disabled` 这类无值属性在条件不成立时整个不出现。
+由 `connect` 生成；条件不成立时不输出无值属性。
 
 | 部件 | 属性 | 值 |
 | --- | --- | --- |
@@ -1856,7 +476,7 @@ function onSelect(details: { menu: string; value: string }): void {
 | `arrow` | `data-placement` | 定位引擎算出的实际落位 |
 
 <!-- xh-component-tokens:start -->
-## CSS 变量
+### CSS 变量
 
 本组件公开覆盖槽由独立皮肤的实际消费位生成；缺省来源、作用部件和状态均与 CSS 同源。
 
@@ -1918,7 +538,7 @@ function onSelect(details: { menu: string; value: string }): void {
 | `--xh-menubar-trigger-radius` | `trigger` | `border-radius` | `default` | `--xh-shape-control` | menubar 的 trigger 部件 border-radius 覆盖槽。 |
 <!-- xh-component-tokens:end -->
 
-## 动效
+### 动效
 
 关键帧 `xh-overlay-slide-in` · `xh-overlay-slide-out` 随皮肤自带，不引用别处文件里的名字；`background` · `color` · `scale` 走 `transition` 过渡。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
 
@@ -1926,25 +546,6 @@ function onSelect(details: { menu: string; value: string }): void {
 
 系统开启减弱动效时由令牌层统一收敛，皮肤不另作判断。
 
-## RTL
+### RTL
 
 皮肤用逻辑属性排布（`inline-start` 一族），`dir="rtl"` 下自动镜像；另有按 `dir` 分支的规则。
-
-## 组合
-
-- 装不下时由宿主观测容器宽度，一次收起一个入口到"更多"里，收起的菜单在"更多"中各占一组。
-
-## 最佳实践
-
-- 入口名用单个名词，宽度尽量接近，避免展开时整排跳动。
-- 图标与快捷键按实际需要写入对应条目，不必为了别的条目有 indicator 而给整层补空占位。
-
-### 当前边界
-
-- 当前没有正式 shortcut、trailing、checkbox/radio item 或单条 danger tone 部件。快捷键提示使用作者放入的 [KbdGroup](./kbd-group)，
-  但不会自动注册键盘动作；选择类菜单项还需要完整的行为与可访问语义。
-
-## 反模式
-
-- 入口超过七八个：找一条命令比翻文档还慢。
-- 在菜单栏里放选项而不是命令。

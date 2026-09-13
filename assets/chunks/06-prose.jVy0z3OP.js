@@ -1,0 +1,15 @@
+const n=`<!-- 富文本 | 排版外部 HTML 内容 -->
+<xh-typography>
+  <div data-xh-part="root">
+    <div data-xh-part="prose">
+      <h3>安装</h3>
+      <p>安装 Web Components 和默认样式。</p>
+      <pre><code>pnpm add @xihan-ui/web-components @xihan-ui/styles</code></pre>
+      <ul>
+        <li>元素按需注册</li>
+        <li>皮肤整份引入</li>
+      </ul>
+    </div>
+  </div>
+</xh-typography>
+`;export{n as default};

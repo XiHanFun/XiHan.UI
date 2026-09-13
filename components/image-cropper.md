@@ -1,8 +1,8 @@
 来源：https://ui.docs.xihanfun.com/components/image-cropper
 
-# ImageCropper `图片裁切`
+# ImageCropper 图片裁切
 
-在一张图上框出要保留的那一块。框可以整体拖动，八个把手各拉一条边或一个角，可锁定宽高比、可设最小尺寸，也能缩放与旋转来看清细节。裁切矩形以源图的自然像素记录，出图那一步由使用者自己决定什么时候做、做成什么。
+用于选择图片中需要保留的区域。
 
 <div class="xh-resource-links">
   <a href="https://github.com/XiHanFun/XiHan.UI/tree/dev/ui/packages/engine/headless/src/image-cropper" target="_blank" rel="noreferrer">Headless</a>
@@ -14,7 +14,7 @@
 
 ## 用法
 
-在图上框出要保留的那一块：整块可拖动，八个把手各拉一条边或一个角；裁切矩形以源图的自然像素记录
+拖动裁切区域或调整把手
 
 ```vue
 <script setup lang="ts">
@@ -27,21 +27,17 @@ import {
   XhImageCropperViewport,
 } from "@xihan-ui/vue";
 
-// 示例图片内联成 SVG，省得依赖网络
-const photo
-  = "data:image/svg+xml;utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='480' height='320'%3E%3Crect width='480' height='320' fill='%23c7d2fe'/%3E%3Ccircle cx='150' cy='120' r='72' fill='%23f9a8d4'/%3E%3Crect x='250' y='160' width='180' height='120' rx='16' fill='%2334d399'/%3E%3C/svg%3E";
-
 const handles = ["nw", "n", "ne", "e", "se", "s", "sw", "w"] as const;
 </script>
 
 <template>
-  <!-- 不传 value 即非受控；图片加载完成时自动取整张图当初值 -->
   <XhImageCropperRoot
-    :src="photo"
-    alt="示例图片"
+    src="/images/image-cropper-landscape.svg"
+    alt="山谷与湖泊风景图"
+    :default-value="{ x: 96, y: 64, width: 448, height: 280 }"
     :min-width="40"
     :min-height="40"
-    style="inline-size: 360px"
+    style="inline-size: min(100%, 420px)"
   >
     <XhImageCropperViewport>
       <XhImageCropperImage />
@@ -59,14 +55,14 @@ const handles = ["nw", "n", "ne", "e", "se", "s", "sw", "w"] as const;
 ```
 
 ```html
-<!-- 不传 value 即非受控；图片加载完成时自动取整张图当初值 -->
 <xh-image-cropper
-  src="data:image/svg+xml;utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='480' height='320'%3E%3Crect width='480' height='320' fill='%23c7d2fe'/%3E%3Ccircle cx='150' cy='120' r='72' fill='%23f9a8d4'/%3E%3Crect x='250' y='160' width='180' height='120' rx='16' fill='%2334d399'/%3E%3C/svg%3E"
-  alt="示例图片"
+  src="/images/image-cropper-landscape.svg"
+  alt="山谷与湖泊风景图"
+  default-value="96,64,448,280"
   min-width="40"
   min-height="40"
 >
-  <div data-xh-part="root" style="inline-size: 360px">
+  <div data-xh-part="root" style="inline-size: min(100%, 420px)">
     <div data-xh-part="viewport">
       <img data-xh-part="image" />
       <div data-xh-part="crop-area">
@@ -85,11 +81,17 @@ const handles = ["nw", "n", "ne", "e", "se", "s", "sw", "w"] as const;
 </xh-image-cropper>
 ```
 
+## 组件结构
+
+加粗的是必需部件。
+
+`data-scope="image-cropper"`：**`root`** · **`viewport`** · **`image`** · **`crop-area`** · `crop-handle` · `grid` · `zoom-slider` · `rotate-slider` · `hidden-input`
+
 ## 示例
 
-### 锁定宽高比
+### 固定比例
 
-给了 aspectRatio，拉角由位移更大的那条轴驱动、另一条边跟着算，产出比例恒定
+以 16:9 裁切封面
 
 ```vue
 <script setup lang="ts">
@@ -102,20 +104,17 @@ import {
   XhImageCropperViewport,
 } from "@xihan-ui/vue";
 
-const photo
-  = "data:image/svg+xml;utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='480' height='320'%3E%3Crect width='480' height='320' fill='%23c7d2fe'/%3E%3Ccircle cx='150' cy='120' r='72' fill='%23f9a8d4'/%3E%3Crect x='250' y='160' width='180' height='120' rx='16' fill='%2334d399'/%3E%3C/svg%3E";
-
 const handles = ["nw", "ne", "se", "sw"] as const;
 </script>
 
 <template>
-  <!-- 16:9 的封面图：只放四个角的把手，边上的把手在锁比例时能做的事一样 -->
   <XhImageCropperRoot
-    :src="photo"
-    alt="示例图片"
+    src="/images/image-cropper-landscape.svg"
+    alt="山谷与湖泊风景图"
     :aspect-ratio="16 / 9"
+    :default-value="{ x: 96, y: 84, width: 448, height: 252 }"
     :min-width="80"
-    style="inline-size: 360px"
+    style="inline-size: min(100%, 420px)"
   >
     <XhImageCropperViewport>
       <XhImageCropperImage />
@@ -133,14 +132,14 @@ const handles = ["nw", "ne", "se", "sw"] as const;
 ```
 
 ```html
-<!-- 16:9 的封面图：只放四个角的把手，边上的把手在锁比例时能做的事一样 -->
 <xh-image-cropper
-  src="data:image/svg+xml;utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='480' height='320'%3E%3Crect width='480' height='320' fill='%23c7d2fe'/%3E%3Ccircle cx='150' cy='120' r='72' fill='%23f9a8d4'/%3E%3Crect x='250' y='160' width='180' height='120' rx='16' fill='%2334d399'/%3E%3C/svg%3E"
-  alt="示例图片"
+  src="/images/image-cropper-landscape.svg"
+  alt="山谷与湖泊风景图"
   aspect-ratio="1.7777777777777777"
+  default-value="96,84,448,252"
   min-width="80"
 >
-  <div data-xh-part="root" style="inline-size: 360px">
+  <div data-xh-part="root" style="inline-size: min(100%, 420px)">
     <div data-xh-part="viewport">
       <img data-xh-part="image" />
       <div data-xh-part="crop-area">
@@ -157,7 +156,7 @@ const handles = ["nw", "ne", "se", "sw"] as const;
 
 ### 圆形裁切
 
-shape 只改遮罩与描边的样子，裁切矩形还是那个矩形；配 1:1 比例即头像裁切
+以 1:1 裁切头像
 
 ```vue
 <script setup lang="ts">
@@ -169,20 +168,18 @@ import {
   XhImageCropperViewport,
 } from "@xihan-ui/vue";
 
-const photo
-  = "data:image/svg+xml;utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='480' height='320'%3E%3Crect width='480' height='320' fill='%23c7d2fe'/%3E%3Ccircle cx='150' cy='120' r='72' fill='%23f9a8d4'/%3E%3Crect x='250' y='160' width='180' height='120' rx='16' fill='%2334d399'/%3E%3C/svg%3E";
-
 const handles = ["nw", "ne", "se", "sw"] as const;
 </script>
 
 <template>
   <XhImageCropperRoot
-    :src="photo"
-    alt="示例图片"
+    src="/images/image-cropper-landscape.svg"
+    alt="山谷与湖泊风景图"
     shape="round"
     :aspect-ratio="1"
+    :default-value="{ x: 160, y: 50, width: 320, height: 320 }"
     :min-width="48"
-    style="inline-size: 360px"
+    style="inline-size: min(100%, 420px)"
   >
     <XhImageCropperViewport>
       <XhImageCropperImage />
@@ -200,13 +197,14 @@ const handles = ["nw", "ne", "se", "sw"] as const;
 
 ```html
 <xh-image-cropper
-  src="data:image/svg+xml;utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='480' height='320'%3E%3Crect width='480' height='320' fill='%23c7d2fe'/%3E%3Ccircle cx='150' cy='120' r='72' fill='%23f9a8d4'/%3E%3Crect x='250' y='160' width='180' height='120' rx='16' fill='%2334d399'/%3E%3C/svg%3E"
-  alt="示例图片"
+  src="/images/image-cropper-landscape.svg"
+  alt="山谷与湖泊风景图"
   shape="round"
   aspect-ratio="1"
+  default-value="160,50,320,320"
   min-width="48"
 >
-  <div data-xh-part="root" style="inline-size: 360px">
+  <div data-xh-part="root" style="inline-size: min(100%, 420px)">
     <div data-xh-part="viewport">
       <img data-xh-part="image" />
       <div data-xh-part="crop-area">
@@ -222,7 +220,7 @@ const handles = ["nw", "ne", "se", "sw"] as const;
 
 ### 缩放与旋转
 
-两者同时作用在图片与裁切框上，看得更清楚；裁切矩形与源图像素的对应关系一点不变
+使用内置滑块调整视图
 
 ```vue
 <script setup lang="ts">
@@ -231,26 +229,22 @@ import {
   XhImageCropperCropHandle,
   XhImageCropperImage,
   XhImageCropperRoot,
+  XhImageCropperRotateSlider,
   XhImageCropperViewport,
+  XhImageCropperZoomSlider,
 } from "@xihan-ui/vue";
-import { ref } from "vue";
 
-const photo
-  = "data:image/svg+xml;utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='480' height='320'%3E%3Crect width='480' height='320' fill='%23c7d2fe'/%3E%3Ccircle cx='150' cy='120' r='72' fill='%23f9a8d4'/%3E%3Crect x='250' y='160' width='180' height='120' rx='16' fill='%2334d399'/%3E%3C/svg%3E";
-
-const zoom = ref(1);
-const rotation = ref(0);
 const handles = ["nw", "ne", "se", "sw"] as const;
 </script>
 
 <template>
   <XhImageCropperRoot
-    v-model:zoom="zoom"
-    :src="photo"
-    alt="示例图片"
-    :rotation="rotation"
+    src="/images/image-cropper-landscape.svg"
+    alt="山谷与湖泊风景图"
+    :default-value="{ x: 96, y: 64, width: 448, height: 280 }"
+    :default-zoom="1.25"
     :min-width="40"
-    style="inline-size: 360px"
+    style="inline-size: min(100%, 420px)"
   >
     <XhImageCropperViewport>
       <XhImageCropperImage />
@@ -262,22 +256,27 @@ const handles = ["nw", "ne", "se", "sw"] as const;
         />
       </XhImageCropperCropArea>
     </XhImageCropperViewport>
+    <div
+      style="display: grid; grid-template-columns: auto minmax(0, 1fr); align-items: center; gap: 8px 12px; padding-block-start: 12px"
+    >
+      <label for="cropper-zoom">缩放</label>
+      <XhImageCropperZoomSlider id="cropper-zoom" />
+      <label for="cropper-rotation">旋转</label>
+      <XhImageCropperRotateSlider id="cropper-rotation" />
+    </div>
   </XhImageCropperRoot>
-  <button type="button" @click="zoom = Math.min(zoom * 1.25, 4)">放大</button>
-  <button type="button" @click="zoom = Math.max(zoom / 1.25, 1)">缩小</button>
-  <button type="button" @click="rotation = (rotation + 90) % 360">旋转 90°</button>
-  <span>倍率 {{ zoom.toFixed(2) }} · 角度 {{ rotation }}°</span>
 </template>
 ```
 
 ```html
 <xh-image-cropper
-  id="cropper-zoom"
-  src="data:image/svg+xml;utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='480' height='320'%3E%3Crect width='480' height='320' fill='%23c7d2fe'/%3E%3Ccircle cx='150' cy='120' r='72' fill='%23f9a8d4'/%3E%3Crect x='250' y='160' width='180' height='120' rx='16' fill='%2334d399'/%3E%3C/svg%3E"
-  alt="示例图片"
+  src="/images/image-cropper-landscape.svg"
+  alt="山谷与湖泊风景图"
+  default-value="96,64,448,280"
+  default-zoom="1.25"
   min-width="40"
 >
-  <div data-xh-part="root" style="inline-size: 360px">
+  <div data-xh-part="root" style="inline-size: min(100%, 420px)">
     <div data-xh-part="viewport">
       <img data-xh-part="image" />
       <div data-xh-part="crop-area">
@@ -287,265 +286,19 @@ const handles = ["nw", "ne", "se", "sw"] as const;
         <button data-xh-part="crop-handle" position="sw"></button>
       </div>
     </div>
-  </div>
-</xh-image-cropper>
-<button id="cropper-zoom-in" type="button">放大</button>
-<button id="cropper-zoom-out" type="button">缩小</button>
-<button id="cropper-zoom-rotate" type="button">旋转 90°</button>
-<span id="cropper-zoom-readout">倍率 1.00 · 角度 0°</span>
-
-<script type="module">
-  // 倍率与角度由宿主握着：改完写回元素属性，组件跟着重算
-  const cropper = document.getElementById("cropper-zoom");
-  const readout = document.getElementById("cropper-zoom-readout");
-  let zoom = 1;
-  let rotation = 0;
-
-  function apply() {
-    cropper.zoom = zoom;
-    cropper.rotation = rotation;
-    readout.textContent = `倍率 ${zoom.toFixed(2)} · 角度 ${rotation}°`;
-  }
-
-  document.getElementById("cropper-zoom-in").addEventListener("click", () => {
-    zoom = Math.min(zoom * 1.25, 4);
-    apply();
-  });
-  document.getElementById("cropper-zoom-out").addEventListener("click", () => {
-    zoom = Math.max(zoom / 1.25, 1);
-    apply();
-  });
-  document.getElementById("cropper-zoom-rotate").addEventListener("click", () => {
-    rotation = (rotation + 90) % 360;
-    apply();
-  });
-  apply();
-</script>
-```
-
-### 受控
-
-传了 value 就由宿主说了算：组件只发变更意图，写回去之后框才动
-
-```vue
-<script setup lang="ts">
-import {
-  XhImageCropperCropArea,
-  XhImageCropperCropHandle,
-  XhImageCropperImage,
-  XhImageCropperRoot,
-  XhImageCropperViewport,
-} from "@xihan-ui/vue";
-import { ref } from "vue";
-
-const photo
-  = "data:image/svg+xml;utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='480' height='320'%3E%3Crect width='480' height='320' fill='%23c7d2fe'/%3E%3Ccircle cx='150' cy='120' r='72' fill='%23f9a8d4'/%3E%3Crect x='250' y='160' width='180' height='120' rx='16' fill='%2334d399'/%3E%3C/svg%3E";
-
-const rect = ref({ x: 60, y: 40, width: 240, height: 180 });
-const handles = ["nw", "ne", "se", "sw"] as const;
-</script>
-
-<template>
-  <XhImageCropperRoot
-    v-model:value="rect"
-    :src="photo"
-    alt="示例图片"
-    :min-width="40"
-    style="inline-size: 360px"
-  >
-    <XhImageCropperViewport>
-      <XhImageCropperImage />
-      <XhImageCropperCropArea>
-        <XhImageCropperCropHandle
-          v-for="position in handles"
-          :key="position"
-          :position="position"
-        />
-      </XhImageCropperCropArea>
-    </XhImageCropperViewport>
-  </XhImageCropperRoot>
-  <span>
-    裁切矩形：{{ rect.x }},{{ rect.y }} · {{ rect.width }}×{{ rect.height }}
-  </span>
-  <button
-    type="button"
-    @click="rect = { x: 60, y: 40, width: 240, height: 180 }"
-  >
-    复位
-  </button>
-</template>
-```
-
-```html
-<xh-image-cropper
-  id="cropper-controlled"
-  src="data:image/svg+xml;utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='480' height='320'%3E%3Crect width='480' height='320' fill='%23c7d2fe'/%3E%3Ccircle cx='150' cy='120' r='72' fill='%23f9a8d4'/%3E%3Crect x='250' y='160' width='180' height='120' rx='16' fill='%2334d399'/%3E%3C/svg%3E"
-  alt="示例图片"
-  min-width="40"
->
-  <div data-xh-part="root" style="inline-size: 360px">
-    <div data-xh-part="viewport">
-      <img data-xh-part="image" />
-      <div data-xh-part="crop-area">
-        <button data-xh-part="crop-handle" position="nw"></button>
-        <button data-xh-part="crop-handle" position="ne"></button>
-        <button data-xh-part="crop-handle" position="se"></button>
-        <button data-xh-part="crop-handle" position="sw"></button>
-      </div>
+    <div style="display: grid; grid-template-columns: auto minmax(0, 1fr); align-items: center; gap: 8px 12px; padding-block-start: 12px">
+      <label for="cropper-zoom">缩放</label>
+      <input id="cropper-zoom" data-xh-part="zoom-slider" />
+      <label for="cropper-rotation">旋转</label>
+      <input id="cropper-rotation" data-xh-part="rotate-slider" />
     </div>
   </div>
 </xh-image-cropper>
-<span id="cropper-controlled-readout">裁切矩形：60,40 · 240×180</span>
-<button id="cropper-controlled-reset" type="button">复位</button>
-
-<script type="module">
-  // 裁切矩形由宿主握着：变更经事件回来，写回去才生效
-  const cropper = document.getElementById("cropper-controlled");
-  const readout = document.getElementById("cropper-controlled-readout");
-  const initial = { x: 60, y: 40, width: 240, height: 180 };
-
-  function apply(rect) {
-    cropper.value = rect;
-    readout.textContent = `裁切矩形：${rect.x},${rect.y} · ${rect.width}×${rect.height}`;
-  }
-
-  cropper.addEventListener("value-change", (event) => apply(event.detail.value));
-  document
-    .getElementById("cropper-controlled-reset")
-    .addEventListener("click", () => apply({ ...initial }));
-  apply({ ...initial });
-</script>
 ```
 
-### 导出裁切结果
+### 禁用
 
-出图不归组件管：拿 getCropRect() 的矩形喂给 cropToCanvas，画出来的是一张新画布
-
-```vue
-<script setup lang="ts">
-import { cropToCanvas } from "@xihan-ui/headless";
-import {
-  XhImageCropperCropArea,
-  XhImageCropperCropHandle,
-  XhImageCropperImage,
-  XhImageCropperRoot,
-  XhImageCropperViewport,
-} from "@xihan-ui/vue";
-import { ref } from "vue";
-
-const photo
-  = "data:image/svg+xml;utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='480' height='320'%3E%3Crect width='480' height='320' fill='%23c7d2fe'/%3E%3Ccircle cx='150' cy='120' r='72' fill='%23f9a8d4'/%3E%3Crect x='250' y='160' width='180' height='120' rx='16' fill='%2334d399'/%3E%3C/svg%3E";
-
-const preview = ref<HTMLElement | null>(null);
-const handles = ["nw", "ne", "se", "sw"] as const;
-
-function exportCrop(rect: {
-  x: number;
-  y: number;
-  width: number;
-  height: number;
-}) {
-  const image = document.querySelector<HTMLImageElement>(
-    "#cropper-export img[data-part=\"image\"]",
-  );
-  if (!image || !preview.value)
-    return;
-  // 出图只在点确认时做一次：拖动途中每帧都出图会把主线程占满
-  const canvas = cropToCanvas(image, rect, { width: 160 });
-  if (canvas)
-    preview.value.replaceChildren(canvas);
-}
-</script>
-
-<template>
-  <XhImageCropperRoot
-    id="cropper-export"
-    v-slot="{ getCropRect }"
-    :src="photo"
-    alt="示例图片"
-    :min-width="40"
-    style="inline-size: 360px"
-  >
-    <XhImageCropperViewport>
-      <XhImageCropperImage />
-      <XhImageCropperCropArea>
-        <XhImageCropperCropHandle
-          v-for="position in handles"
-          :key="position"
-          :position="position"
-        />
-      </XhImageCropperCropArea>
-    </XhImageCropperViewport>
-    <button type="button" @click="exportCrop(getCropRect())">导出这一块</button>
-  </XhImageCropperRoot>
-  <div ref="preview" style="min-block-size: 40px" />
-</template>
-```
-
-```html
-<xh-image-cropper
-  id="cropper-export"
-  src="data:image/svg+xml;utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='480' height='320'%3E%3Crect width='480' height='320' fill='%23c7d2fe'/%3E%3Ccircle cx='150' cy='120' r='72' fill='%23f9a8d4'/%3E%3Crect x='250' y='160' width='180' height='120' rx='16' fill='%2334d399'/%3E%3C/svg%3E"
-  alt="示例图片"
-  min-width="40"
->
-  <div data-xh-part="root" style="inline-size: 360px">
-    <div data-xh-part="viewport">
-      <img data-xh-part="image" />
-      <div data-xh-part="crop-area">
-        <button data-xh-part="crop-handle" position="nw"></button>
-        <button data-xh-part="crop-handle" position="ne"></button>
-        <button data-xh-part="crop-handle" position="se"></button>
-        <button data-xh-part="crop-handle" position="sw"></button>
-      </div>
-    </div>
-    <button id="cropper-export-run" type="button">导出这一块</button>
-  </div>
-</xh-image-cropper>
-<div id="cropper-export-preview" style="min-block-size: 40px"></div>
-
-<script type="module">
-  // 示例台不能 import 包，这里把 cropToCanvas 做的事等价地写一遍；
-  // 应用里直接用 @xihan-ui/headless 导出的那个函数即可。
-  const cropper = document.getElementById("cropper-export");
-  const preview = document.getElementById("cropper-export-preview");
-  let rect = { x: 0, y: 0, width: 0, height: 0 };
-
-  cropper.addEventListener("value-change", (event) => {
-    rect = event.detail.value;
-  });
-
-  document
-    .getElementById("cropper-export-run")
-    .addEventListener("click", () => {
-      const image = cropper.querySelector('img[data-part="image"]');
-      if (!image || rect.width <= 0 || rect.height <= 0) return;
-      const width = 160;
-      const height = Math.round((width * rect.height) / rect.width);
-      const canvas = document.createElement("canvas");
-      canvas.width = width;
-      canvas.height = height;
-      const ctx = canvas.getContext("2d");
-      if (!ctx) return;
-      ctx.drawImage(
-        image,
-        rect.x,
-        rect.y,
-        rect.width,
-        rect.height,
-        0,
-        0,
-        width,
-        height,
-      );
-      preview.replaceChildren(canvas);
-    });
-</script>
-```
-
-### 禁用与只读
-
-禁用把裁切框与把手一起摘出 Tab 序列；只读仍可聚焦、仍念得出来，只是改不动
+禁用后不可调整
 
 ```vue
 <script setup lang="ts">
@@ -557,38 +310,17 @@ import {
   XhImageCropperViewport,
 } from "@xihan-ui/vue";
 
-const photo
-  = "data:image/svg+xml;utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='480' height='320'%3E%3Crect width='480' height='320' fill='%23c7d2fe'/%3E%3Ccircle cx='150' cy='120' r='72' fill='%23f9a8d4'/%3E%3Crect x='250' y='160' width='180' height='120' rx='16' fill='%2334d399'/%3E%3C/svg%3E";
-
-const crop = { x: 60, y: 40, width: 240, height: 180 };
+const crop = { x: 96, y: 64, width: 448, height: 280 };
 const handles = ["nw", "ne", "se", "sw"] as const;
 </script>
 
 <template>
   <XhImageCropperRoot
-    :src="photo"
-    alt="只读示例"
-    read-only
-    :default-value="crop"
-    style="inline-size: 240px"
-  >
-    <XhImageCropperViewport>
-      <XhImageCropperImage />
-      <XhImageCropperCropArea>
-        <XhImageCropperCropHandle
-          v-for="position in handles"
-          :key="position"
-          :position="position"
-        />
-      </XhImageCropperCropArea>
-    </XhImageCropperViewport>
-  </XhImageCropperRoot>
-  <XhImageCropperRoot
-    :src="photo"
-    alt="禁用示例"
+    src="/images/image-cropper-landscape.svg"
+    alt="山谷与湖泊风景图"
     disabled
     :default-value="crop"
-    style="inline-size: 240px"
+    style="inline-size: min(100%, 420px)"
   >
     <XhImageCropperViewport>
       <XhImageCropperImage />
@@ -606,32 +338,13 @@ const handles = ["nw", "ne", "se", "sw"] as const;
 
 ```html
 <xh-image-cropper
-  id="cropper-readonly"
-  src="data:image/svg+xml;utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='480' height='320'%3E%3Crect width='480' height='320' fill='%23c7d2fe'/%3E%3Ccircle cx='150' cy='120' r='72' fill='%23f9a8d4'/%3E%3Crect x='250' y='160' width='180' height='120' rx='16' fill='%2334d399'/%3E%3C/svg%3E"
-  alt="只读示例"
-  read-only
-  default-value="60,40,240,180"
->
-  <div data-xh-part="root" style="inline-size: 240px">
-    <div data-xh-part="viewport">
-      <img data-xh-part="image" />
-      <div data-xh-part="crop-area">
-        <button data-xh-part="crop-handle" position="nw"></button>
-        <button data-xh-part="crop-handle" position="ne"></button>
-        <button data-xh-part="crop-handle" position="se"></button>
-        <button data-xh-part="crop-handle" position="sw"></button>
-      </div>
-    </div>
-  </div>
-</xh-image-cropper>
-<xh-image-cropper
   id="cropper-disabled"
-  src="data:image/svg+xml;utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='480' height='320'%3E%3Crect width='480' height='320' fill='%23c7d2fe'/%3E%3Ccircle cx='150' cy='120' r='72' fill='%23f9a8d4'/%3E%3Crect x='250' y='160' width='180' height='120' rx='16' fill='%2334d399'/%3E%3C/svg%3E"
-  alt="禁用示例"
+  src="/images/image-cropper-landscape.svg"
+  alt="山谷与湖泊风景图"
   disabled
-  default-value="60,40,240,180"
+  default-value="96,64,448,280"
 >
-  <div data-xh-part="root" style="inline-size: 240px">
+  <div data-xh-part="root" style="inline-size: min(100%, 420px)">
     <div data-xh-part="viewport">
       <img data-xh-part="image" />
       <div data-xh-part="crop-area">
@@ -649,28 +362,38 @@ const handles = ["nw", "ne", "se", "sw"] as const;
 
 ### 何时使用
 
-- 上传头像、封面、缩略图之前，让用户自己决定保留哪一块。
-- 需要固定产出比例（16:9 的封面、1:1 的头像）的图片录入。
-- 需要把裁切结果连同表单一起提交：给了 `name`，矩形会以 `x,y,width,height` 随表单发出去。
+- 裁切头像、封面或缩略图。
+- 需要固定比例的图片输出。
 
 ### 何时不用
 
-- 只是把图片摆在页面上：用[图片](./image)。
-- 只要放大看清楚、翻页浏览，不改数据：用[图片查看器](./image-viewer)。
-- 只是选文件、还没到框选这一步：用[文件上传](./file-upload)。
-- 要调的是一个一维的量（亮度、缩放倍率本身）：用[滑块](./slider)。
+- 仅展示图片：使用[图片](./image)。
+- 仅浏览或缩放图片：使用[图片查看器](./image-viewer)。
+- 仅选择文件：使用[文件上传](./file-upload)。
 
 ### 特性
 
-- 裁切矩形的单位是源图自然像素，与图片显示多大无关；换一块屏幕、换一个容器宽度，值不变。
-- 缩放与旋转同时作用在图片和裁切框上，两者始终贴合；它们只改呈现，不改裁切矩形与源图像素的对应关系。
-- 指针位移会按当前的缩放与旋转反算回图片坐标系，放大之后拖动依然跟手。
-- 一次拖动的位移从按下那一刻的矩形整体算起，不逐帧累加，长距离拖动不会漂。
-- 锁定宽高比时，拉角由位移更大的那条轴当驱动，另一条边跟着算；拉边则由那条边驱动。
-- 受控与非受控两态齐全：`value` / `defaultValue` 管裁切矩形，`zoom` / `defaultZoom` 管缩放倍率。
-- `onValueChangeEnd` 覆盖指针与键盘两条路：一次指针拖动松手时发一次，一次方向键微调也发一次（一按就是一次改完的操作）。矩形没真的变（在框上原地点一下、顶到图片边界推不动）不发。
+- 使用源图自然像素记录裁切矩形。
+- 支持拖动、八方向调整和键盘微调。
+- 支持固定宽高比、圆形遮罩、缩放和旋转。
+- 支持受控裁切区域和原生表单提交。
+- `onValueChangeEnd` 在一次调整结束时触发。
 
-## 产物
+### 最佳实践
+
+- 为裁切区域设置合理的最小尺寸。
+- 头像使用 1:1 比例和圆形遮罩。
+- 在调整结束或确认时生成裁切结果。
+- 跨域图片应在加载前配置 `crossorigin`。
+
+### 反模式
+
+- 在每次位置变化时生成图片或请求服务端。
+- 使用过小且无法键盘聚焦的调整把手。
+
+## API 参考
+
+### 产物
 
 | 层 | 值 |
 | --- | --- |
@@ -680,13 +403,7 @@ const handles = ["nw", "ne", "se", "sw"] as const;
 | 状态机 | `imageCropperMachine` |
 | 皮肤 | `@xihan-ui/styles/image-cropper.css` |
 
-## 解剖
-
-部件名即 `data-part` 属性值，也是皮肤的选择器。加粗的是必备部件，不渲染它组件不工作（Web Components 适配器会在诊断通道上报 `wc.missing-part`）。
-
-`data-scope="image-cropper"`：**`root`** · **`viewport`** · **`image`** · **`crop-area`** · `crop-handle` · `grid` · `zoom-slider` · `rotate-slider` · `hidden-input`
-
-## Props
+### Props
 
 | 属性 | 类型 | 必填 | 说明 |
 | --- | --- | --- | --- |
@@ -717,9 +434,9 @@ const handles = ["nw", "ne", "se", "sw"] as const;
 | `onZoomChange` | `(details: ImageCropperZoomChangeDetails) => void` |  | 缩放变化意图；受控时是唯一出口。 |
 | `onRotationChange` | `(details: ImageCropperRotationChangeDetails) => void` |  | 旋转变化意图；受控时是唯一出口。 |
 
-## 事件
+### 事件
 
-自定义元素派发这些事件，Vue 组件对应同名 emit；载荷都在 `detail` 上。可双向绑定的值另有 `update:xxx`，见 Props。
+自定义元素将载荷放在 `detail`；Vue 使用同名 emit。
 
 | 事件 | 载荷 | 说明 |
 | --- | --- | --- |
@@ -728,17 +445,17 @@ const handles = ["nw", "ne", "se", "sw"] as const;
 | `zoom-change` | `ImageCropperZoomChangeDetails` | 缩放倍率变化；detail 为 `{ zoom: number }` |
 | `rotation-change` | `ImageCropperRotationChangeDetails` | 旋转角度变化；detail 为 `{ rotation: number }` |
 
-## 插槽
+### 插槽
 
-作者能拿到载荷的插槽。只转发内容、不带载荷的默认插槽不在此列——那类直接写子节点即可。
+仅列出带载荷的插槽。
 
 | Vue 组件 | 插槽 | 载荷 | 说明 |
 | --- | --- | --- | --- |
 | `XhImageCropperRoot` | `default` | `ImageCropperRootSlotProps` |  |
 
-## 状态
+### 状态
 
-状态机内部转移，写样式与业务都用不到；要监听变化请看上面的「事件」。
+以下名称仅用于内部状态机。
 
 **状态**：`dragging` · `idle` · `resizing`
 
@@ -746,9 +463,9 @@ const handles = ["nw", "ne", "se", "sw"] as const;
 
 **判据**：`canEdit`
 
-## connect API
+### connect API
 
-`useImageCropper` 产出的对象。`getXxxProps()` 铺到对应部件的宿主元素上，其余是可读状态与操作入口。
+`getXxxProps()` 返回对应部件的宿主属性。
 
 | 成员 | 类型 | 说明 |
 | --- | --- | --- |
@@ -774,7 +491,9 @@ const handles = ["nw", "ne", "se", "sw"] as const;
 | `getRotateSliderProps` | `() => T['input']` | 旋转滑杆，原生 range 输入。 |
 | `getHiddenInputProps` | `() => T['input']` |  |
 
-## 键盘
+## 无障碍
+
+### 键盘
 
 规格出处：[W3C APG](https://www.w3.org/WAI/ARIA/apg/patterns/slider/#keyboardinteraction)
 
@@ -786,9 +505,9 @@ const handles = ["nw", "ne", "se", "sw"] as const;
 | `Shift+ArrowLeft` / `Shift+ArrowRight` / `Shift+ArrowUp` / `Shift+ArrowDown` | focus on crop-handle, 未禁用且非只读 | 同上，一次走十个自然像素 |
 | `Tab` / `Shift+Tab` | 未禁用 | 裁切框与八个把手各占一个 Tab 停靠点，按文档序依次走过 |
 
-## 无障碍
+### ARIA
 
-下面这些由 `connect` 铺到部件上，作者不必自己写；重复写反而会覆盖掉正确值。
+以下属性由 `connect` 生成。
 
 | 部件 | 属性 | 值 |
 | --- | --- | --- |
@@ -806,22 +525,15 @@ const handles = ["nw", "ne", "se", "sw"] as const;
 | `zoom-slider` | `aria-label` | label.zoomSlider |
 | `rotate-slider` | `aria-label` | label.rotateSlider |
 
-- 读屏在浏览模式下把方向键收给虚拟光标，节点报成普通分组就等于键盘调整到不了组件。裁切框因此报成 `role="application"`：焦点落进来读屏自动切焦点模式，方向键归组件。代价是这一小块（框内的参考线与把手）读不了虚拟光标的浏览命令；图片与它的 `alt` 在框外，不受影响。
-- 八个把手各自报成 `role="slider"`——它们是叶子节点，报成 slider 才有值语义。裁切框本身不能报 slider：规范里 slider 的子节点一律当装饰，那样八个把手会整批从无障碍树里消失。
-- 把手的 `aria-valuenow` 报它推动的那条边长（上下两条边报高度，其余六个报宽度），四个数完整念一遍靠 `aria-valuetext`（`translations.valueText`，收一份裁切矩形、返回一句话）。裁切框自己没有值语义可挂：需要逐次播报平移结果的应用，自己挂一个 `aria-live` 区域监听 `onValueChange` 即可。
-- 名字取自 `translations.cropArea` 与八条把手文案，缺省是英文，接入应用时请覆盖成本地语言。
-- 键盘可以完成全部操作：裁切框上方向键平移，把手上方向键改尺寸，按住 Shift 走十倍。指针不是唯一路径。
-- 整组禁用时裁切框与把手一起退出 Tab 序列——把手是原生按钮，不写 `tabindex` 照样可聚焦，所以禁用时给的是 `-1` 而不是不写；只读时仍可聚焦、仍念得出来，只是改不动。
-- 图片的替代文本走根上的 `alt`（与 `src` 同一条通道，与 image / avatar 一致），由连接层写到 image 部件上；作者自己写在 image 节点上的 `alt` 会被覆盖。组件不替作者编描述：不给 `alt` 时落的是空串，读屏跳过这张图而不是改念图片地址。图有内容就把它写出来。
-- 皮肤给每个把手铺了一层不可见的命中区，撑到最小可点尺寸；框拉得很小时相邻把手的命中区会挨上，需要更宽裕的话把 `--xh-image-cropper-handle-size` 调大。只放四个角的把手也是合法用法，剩下的边靠键盘调。
+## 样式参考
 
-## 样式
+### 皮肤
 
-默认皮肤 `@xihan-ui/styles/image-cropper.css` 按部件选择：`[data-scope="image-cropper"][data-part="root"]`。它落在 `xihan.components` 层；业务样式不写进 `@layer` 即高于全部库层，要按层压过来就写进 `xihan.overrides`。
+`@xihan-ui/styles/image-cropper.css` 使用 `[data-scope="image-cropper"][data-part="root"]` 部件选择器，位于 `xihan.components` 层。覆盖样式使用 `xihan.overrides`。
 
-## 数据属性
+### 数据属性
 
-由 `connect` 产出并铺到部件上，皮肤与测试都据此选择；`data-disabled` 这类无值属性在条件不成立时整个不出现。
+由 `connect` 生成；条件不成立时不输出无值属性。
 
 | 部件 | 属性 | 值 |
 | --- | --- | --- |
@@ -836,7 +548,7 @@ const handles = ["nw", "ne", "se", "sw"] as const;
 | `rotate-slider` | `data-disabled` | ''（条件成立时才出现） |
 
 <!-- xh-component-tokens:start -->
-## CSS 变量
+### CSS 变量
 
 本组件公开覆盖槽由独立皮肤的实际消费位生成；缺省来源、作用部件和状态均与 CSS 同源。
 
@@ -857,38 +569,12 @@ const handles = ["nw", "ne", "se", "sw"] as const;
 | `--xh-image-cropper-w` | `root` | `inline-size` | `default` | `100%` | image-cropper 的 root 部件 inline-size 覆盖槽。 |
 <!-- xh-component-tokens:end -->
 
-## 动效
+### 动效
 
 `background` 走 `transition` 过渡。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
 
 系统开启减弱动效时由令牌层统一收敛，皮肤不另作判断。
 
-## RTL
+### RTL
 
 皮肤用逻辑属性排布（`inline-start` 一族），`dir="rtl"` 下自动镜像。
-
-- 裁切矩形描述的是图片像素，坐标恒是物理方向：`x` 永远从图片左边缘算起，方向键的左右也永远对应图片的左右。整页 `dir="rtl"` 时框不会翻到另一侧，组件因此不收 `dir`。
-- 皮肤里裁切框与把手的落点跟着写物理属性，与连接层算出来的那份坐标同一口径，不依赖祖先链上的文字方向。
-
-## 组合
-
-- 配一个[滑块](./slider)驱动 `zoom`，配两个[按钮](./button)驱动 `rotation`，是最常见的一套工具条。
-- 裁好之后把结果丢进[图片](./image)做预览。
-- 整套放进[对话框](./dialog)里，确认时再出图。
-
-## 最佳实践
-
-- 视口的尺寸要由图片撑出来（图片铺满视口、高度自适应），裁切框的百分比坐标才对得上。给视口写死一个与图片比例不同的高度，框会和图错位。
-- 角色节点的结构有三条硬要求：crop-area 必须是 viewport 的后代（坐标以 viewport 的矩形为准），image 必须是原生 `<img>`（自然尺寸只有它的 load 事件报得出来），crop-handle 必须是原生 `<button>`。
-- Web Components 侧每个 crop-handle 都要自己写 `position="nw|n|ne|e|se|s|sw|w"`——把手的身份只能从这个属性上取。写漏或写错的把手不接行为、控制台留一条诊断；Vue 侧同名 prop 是必填的，漏写会有告警。
-- 给 `minWidth` / `minHeight` 定一个下限：不给的话用户能把框拉成一条线，出图是一张空图。
-- 出图用导出的 `cropToCanvas(image, rect, options)`，在 `onValueChangeEnd` 或用户点确认时调一次即可；每帧都出图会把主线程占满。源图带透明像素又要存成 JPEG 时记得传 `background`，否则透明区会变成黑块。
-- `cropToCanvas` 只按矩形裁，不烘焙旋转角度。要把旋转也固化进结果，请先把旋转后的图渲成一张新图再喂进来。
-- 跨域图片要先设好 `crossorigin`，否则画布会被污染、`toDataURL` 直接抛错。
-- 裁切框的描边与把手底色跟着主题的表面色走，而它们压着的是一张任意的图：图与主题表面色亮度相近时（深色主题配一张暗图、浅色主题配一张亮图）线会看不清。图源的亮度可预期时，用 `--xh-image-cropper-crop-border` 与 `--xh-image-cropper-handle-bg` 把这两处钉成与图对得起来的颜色。
-
-## 反模式
-
-- 把 `zoom` 与 `rotation` 当成裁切参数来读：它们只是看图的辅助，产出永远以裁切矩形为准。
-- 每次 `onValueChange` 都去服务端出图：拖动过程中这个回调一秒会发几十次，要发请求请用 `onValueChangeEnd`。
-- 只提供指针操作、把八个把手做成两三个像素的小点：既碰不到也说不出，键盘与触屏用户都被挡在外面。

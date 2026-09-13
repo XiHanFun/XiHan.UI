@@ -1,0 +1,23 @@
+const t=`<!-- 尺寸 | 提供三种尺寸 -->
+<xh-toggle-group default-value="day" size="sm">
+  <div data-xh-part="root">
+    <button data-xh-part="item" value="day">日</button>
+    <button data-xh-part="item" value="week">周</button>
+    <button data-xh-part="item" value="month">月</button>
+  </div>
+</xh-toggle-group>
+<xh-toggle-group default-value="week">
+  <div data-xh-part="root">
+    <button data-xh-part="item" value="day">日</button>
+    <button data-xh-part="item" value="week">周</button>
+    <button data-xh-part="item" value="month">月</button>
+  </div>
+</xh-toggle-group>
+<xh-toggle-group default-value="month" size="lg">
+  <div data-xh-part="root">
+    <button data-xh-part="item" value="day">日</button>
+    <button data-xh-part="item" value="week">周</button>
+    <button data-xh-part="item" value="month">月</button>
+  </div>
+</xh-toggle-group>
+`;export{t as default};

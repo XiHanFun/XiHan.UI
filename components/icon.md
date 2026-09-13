@@ -1,8 +1,8 @@
 来源：https://ui.docs.xihanfun.com/components/icon
 
-# Icon `图标`
+# Icon 图标
 
-画一枚矢量图元，并把"它是装饰还是信息"这件事说清楚。
+用于显示矢量图标。
 
 <div class="xh-resource-links">
   <a href="https://github.com/XiHanFun/XiHan.UI/tree/dev/ui/packages/engine/headless/src/icon" target="_blank" rel="noreferrer">Headless</a>
@@ -14,343 +14,103 @@
 
 ## 用法
 
-传的是图标记录本身而不是名字：名字要运行期查表，查表就得把整张表静态引进来，摇树全废
+显示一个图标
 
 ```vue
 <script setup lang="ts">
+import { CheckIcon } from "@xihan-ui/icons";
 import { XhIcon } from "@xihan-ui/vue";
-
-// 图标记录是纯数据：坐标系、打在根 svg 上的呈现属性、图元树
-const CheckIcon = {
-  name: "check",
-  viewBox: "0 0 24 24",
-  attrs: {
-    "fill": "none",
-    "stroke": "currentColor",
-    "stroke-width": "2",
-    "stroke-linecap": "round",
-    "stroke-linejoin": "round",
-  },
-  nodes: [{ tag: "path", attrs: { d: "M4 12.5L9.5 18L20 6" } }],
-} as const;
-
-const SearchIcon = {
-  name: "search",
-  viewBox: "0 0 24 24",
-  attrs: {
-    "fill": "none",
-    "stroke": "currentColor",
-    "stroke-width": "2",
-    "stroke-linecap": "round",
-    "stroke-linejoin": "round",
-  },
-  nodes: [
-    { tag: "circle", attrs: { cx: "10.5", cy: "10.5", r: "6.5" } },
-    { tag: "path", attrs: { d: "M15.5 15.5L20.5 20.5" } },
-  ],
-} as const;
-
-const StarIcon = {
-  name: "star",
-  viewBox: "0 0 24 24",
-  attrs: {
-    "fill": "none",
-    "stroke": "currentColor",
-    "stroke-width": "2",
-    "stroke-linecap": "round",
-    "stroke-linejoin": "round",
-  },
-  nodes: [
-    {
-      tag: "path",
-      attrs: {
-        d: "M12 3.5L14.12 9.59L20.56 9.72L15.42 13.61L17.29 19.78L12 16.1L6.71 19.78L8.58 13.61L3.44 9.72L9.88 9.59Z",
-      },
-    },
-  ],
-} as const;
 </script>
 
 <template>
   <XhIcon :icon="CheckIcon" />
-  <XhIcon :icon="SearchIcon" />
-  <XhIcon :icon="StarIcon" />
-  <!-- 记录里的 stroke 取 currentColor，配色随上下文的文字色流下来 -->
-  <span style="display: inline-flex; align-items: center; gap: 6px; color: #16a34a;">
-    <XhIcon :icon="CheckIcon" />已完成
-  </span>
 </template>
 ```
 
 ```html
-<xh-icon id="icon-basic-check">
-  <svg data-xh-part="root"><g data-xh-part="glyph"></g></svg>
+<xh-icon>
+  <svg data-xh-part="root" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M4 12.5L9.5 18L20 6" />
+  </svg>
 </xh-icon>
-
-<xh-icon id="icon-basic-search">
-  <svg data-xh-part="root"><g data-xh-part="glyph"></g></svg>
-</xh-icon>
-
-<xh-icon id="icon-basic-star">
-  <svg data-xh-part="root"><g data-xh-part="glyph"></g></svg>
-</xh-icon>
-
-<!-- 记录里的 stroke 取 currentColor，配色随上下文的文字色流下来 -->
-<span style="display: inline-flex; align-items: center; gap: 6px; color: #16a34a">
-  <xh-icon id="icon-basic-check-inline">
-    <svg data-xh-part="root"><g data-xh-part="glyph"></g></svg>
-  </xh-icon>
-  已完成
-</span>
-
-<script type="module">
-  // 图标记录是纯数据：坐标系、打在根 svg 上的呈现属性、图元树；是对象，只走 property
-  const stroke = {
-    "fill": "none",
-    "stroke": "currentColor",
-    "stroke-width": "2",
-    "stroke-linecap": "round",
-    "stroke-linejoin": "round",
-  };
-
-  const checkIcon = {
-    name: "check",
-    viewBox: "0 0 24 24",
-    attrs: stroke,
-    nodes: [{ tag: "path", attrs: { d: "M4 12.5L9.5 18L20 6" } }],
-  };
-
-  const searchIcon = {
-    name: "search",
-    viewBox: "0 0 24 24",
-    attrs: stroke,
-    nodes: [
-      { tag: "circle", attrs: { cx: "10.5", cy: "10.5", r: "6.5" } },
-      { tag: "path", attrs: { d: "M15.5 15.5L20.5 20.5" } },
-    ],
-  };
-
-  const starIcon = {
-    name: "star",
-    viewBox: "0 0 24 24",
-    attrs: stroke,
-    nodes: [
-      {
-        tag: "path",
-        attrs: {
-          d: "M12 3.5L14.12 9.59L20.56 9.72L15.42 13.61L17.29 19.78L12 16.1L6.71 19.78L8.58 13.61L3.44 9.72L9.88 9.59Z",
-        },
-      },
-    ],
-  };
-
-  document.getElementById("icon-basic-check").icon = checkIcon;
-  document.getElementById("icon-basic-search").icon = searchIcon;
-  document.getElementById("icon-basic-star").icon = starIcon;
-  document.getElementById("icon-basic-check-inline").icon = checkIcon;
-</script>
 ```
+
+## 组件结构
+
+加粗的是必需部件。
+
+`data-scope="icon"`：**`root`** · `glyph`
 
 ## 示例
 
 ### 尺寸与描边
 
-size 八档改直径（text 跟着相邻文字的字号走）、weight 三档改 stroke-width；缺省档 md 不落 data-* 属性，皮肤的基础规则就是缺省档
+设置图标大小和描边粗细
 
 ```vue
 <script setup lang="ts">
+import { StarIcon } from "@xihan-ui/icons";
 import { XhIcon } from "@xihan-ui/vue";
-
-const StarIcon = {
-  name: "star",
-  viewBox: "0 0 24 24",
-  attrs: {
-    "fill": "none",
-    "stroke": "currentColor",
-    "stroke-width": "2",
-    "stroke-linecap": "round",
-    "stroke-linejoin": "round",
-  },
-  nodes: [
-    {
-      tag: "path",
-      attrs: {
-        d: "M12 3.5L14.12 9.59L20.56 9.72L15.42 13.61L17.29 19.78L12 16.1L6.71 19.78L8.58 13.61L3.44 9.72L9.88 9.59Z",
-      },
-    },
-  ],
-} as const;
 </script>
 
 <template>
-  <span style="display: inline-flex; align-items: center; gap: 10px;">
+  <div style="display: flex; align-items: center; gap: 12px">
     <XhIcon :icon="StarIcon" size="text" />
     <XhIcon :icon="StarIcon" size="sm" />
-    <XhIcon :icon="StarIcon" />
+    <XhIcon :icon="StarIcon" size="md" />
     <XhIcon :icon="StarIcon" size="lg" />
     <XhIcon :icon="StarIcon" size="xl" />
-    <span style="font-size: 13px;">text / sm / md（缺省）/ lg / xl，另有 2xl / 3xl / 4xl</span>
-  </span>
-
-  <span style="display: inline-flex; align-items: center; gap: 10px;">
+  </div>
+  <div style="display: flex; align-items: center; gap: 12px">
     <XhIcon :icon="StarIcon" size="lg" weight="light" />
     <XhIcon :icon="StarIcon" size="lg" />
     <XhIcon :icon="StarIcon" size="lg" weight="bold" />
-    <span style="font-size: 13px;">light / regular（缺省）/ bold</span>
-  </span>
+  </div>
 </template>
 ```
 
 ```html
-<span id="icon-size" style="display: inline-flex; align-items: center; gap: 10px">
-  <xh-icon size="text"><svg data-xh-part="root"><g data-xh-part="glyph"></g></svg></xh-icon>
-  <xh-icon size="sm"><svg data-xh-part="root"><g data-xh-part="glyph"></g></svg></xh-icon>
-  <xh-icon><svg data-xh-part="root"><g data-xh-part="glyph"></g></svg></xh-icon>
-  <xh-icon size="lg"><svg data-xh-part="root"><g data-xh-part="glyph"></g></svg></xh-icon>
-  <xh-icon size="xl"><svg data-xh-part="root"><g data-xh-part="glyph"></g></svg></xh-icon>
-  <span style="font-size: 13px">text / sm / md（缺省）/ lg / xl，另有 2xl / 3xl / 4xl</span>
-</span>
-
-<span id="icon-weight" style="display: inline-flex; align-items: center; gap: 10px">
-  <xh-icon size="lg" weight="light"><svg data-xh-part="root"><g data-xh-part="glyph"></g></svg></xh-icon>
-  <xh-icon size="lg"><svg data-xh-part="root"><g data-xh-part="glyph"></g></svg></xh-icon>
-  <xh-icon size="lg" weight="bold"><svg data-xh-part="root"><g data-xh-part="glyph"></g></svg></xh-icon>
-  <span style="font-size: 13px">light / regular（缺省）/ bold</span>
-</span>
-
-<script type="module">
-  // 图标记录是对象，只走 property
-  const starIcon = {
-    name: "star",
-    viewBox: "0 0 24 24",
-    attrs: {
-      "fill": "none",
-      "stroke": "currentColor",
-      "stroke-width": "2",
-      "stroke-linecap": "round",
-      "stroke-linejoin": "round",
-    },
-    nodes: [
-      {
-        tag: "path",
-        attrs: {
-          d: "M12 3.5L14.12 9.59L20.56 9.72L15.42 13.61L17.29 19.78L12 16.1L6.71 19.78L8.58 13.61L3.44 9.72L9.88 9.59Z",
-        },
-      },
-    ],
-  };
-
-  for (const id of ["icon-size", "icon-weight"]) {
-    for (const icon of document.getElementById(id).querySelectorAll("xh-icon")) {
-      icon.icon = starIcon;
-    }
-  }
-</script>
+<div style="display: flex; align-items: center; gap: 12px">
+  <xh-icon size="text"><svg data-xh-part="root" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M12 3.5L14.12 9.59L20.56 9.72L15.42 13.61L17.29 19.78L12 16.1L6.71 19.78L8.58 13.61L3.44 9.72L9.88 9.59Z"/></svg></xh-icon>
+  <xh-icon size="sm"><svg data-xh-part="root" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M12 3.5L14.12 9.59L20.56 9.72L15.42 13.61L17.29 19.78L12 16.1L6.71 19.78L8.58 13.61L3.44 9.72L9.88 9.59Z"/></svg></xh-icon>
+  <xh-icon size="md"><svg data-xh-part="root" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M12 3.5L14.12 9.59L20.56 9.72L15.42 13.61L17.29 19.78L12 16.1L6.71 19.78L8.58 13.61L3.44 9.72L9.88 9.59Z"/></svg></xh-icon>
+  <xh-icon size="lg"><svg data-xh-part="root" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M12 3.5L14.12 9.59L20.56 9.72L15.42 13.61L17.29 19.78L12 16.1L6.71 19.78L8.58 13.61L3.44 9.72L9.88 9.59Z"/></svg></xh-icon>
+  <xh-icon size="xl"><svg data-xh-part="root" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M12 3.5L14.12 9.59L20.56 9.72L15.42 13.61L17.29 19.78L12 16.1L6.71 19.78L8.58 13.61L3.44 9.72L9.88 9.59Z"/></svg></xh-icon>
+</div>
+<div style="display: flex; align-items: center; gap: 12px">
+  <xh-icon size="lg" weight="light"><svg data-xh-part="root" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M12 3.5L14.12 9.59L20.56 9.72L15.42 13.61L17.29 19.78L12 16.1L6.71 19.78L8.58 13.61L3.44 9.72L9.88 9.59Z"/></svg></xh-icon>
+  <xh-icon size="lg"><svg data-xh-part="root" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M12 3.5L14.12 9.59L20.56 9.72L15.42 13.61L17.29 19.78L12 16.1L6.71 19.78L8.58 13.61L3.44 9.72L9.88 9.59Z"/></svg></xh-icon>
+  <xh-icon size="lg" weight="bold"><svg data-xh-part="root" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M12 3.5L14.12 9.59L20.56 9.72L15.42 13.61L17.29 19.78L12 16.1L6.71 19.78L8.58 13.61L3.44 9.72L9.88 9.59Z"/></svg></xh-icon>
+</div>
 ```
 
-### 可及名字
+### 可访问名称
 
-命名只有两态：给了非空白 label 就是 role="img" + aria-label，没给就是 aria-hidden="true" 的装饰件
+为独立图标提供名称
 
 ```vue
 <script setup lang="ts">
+import { XIcon } from "@xihan-ui/icons";
 import { XhIcon } from "@xihan-ui/vue";
-
-const PlusIcon = {
-  name: "plus",
-  viewBox: "0 0 24 24",
-  attrs: {
-    "fill": "none",
-    "stroke": "currentColor",
-    "stroke-width": "2",
-    "stroke-linecap": "round",
-    "stroke-linejoin": "round",
-  },
-  nodes: [
-    { tag: "path", attrs: { d: "M12 5V19" } },
-    { tag: "path", attrs: { d: "M5 12H19" } },
-  ],
-} as const;
-
-const XIcon = {
-  name: "x",
-  viewBox: "0 0 24 24",
-  attrs: {
-    "fill": "none",
-    "stroke": "currentColor",
-    "stroke-width": "2",
-    "stroke-linecap": "round",
-    "stroke-linejoin": "round",
-  },
-  nodes: [
-    { tag: "path", attrs: { d: "M6 6L18 18" } },
-    { tag: "path", attrs: { d: "M18 6L6 18" } },
-  ],
-} as const;
 </script>
 
 <template>
-  <!-- 旁边已经有文字说这件事，图标不给 label，读屏不会把「加号 新建」念两遍 -->
-  <span style="display: inline-flex; align-items: center; gap: 6px;">
-    <XhIcon :icon="PlusIcon" />新建
-  </span>
-
-  <!-- 图标是这里唯一说出「关闭」的东西，必须给 label -->
-  <span style="display: inline-flex; align-items: center; gap: 6px;">
-    <XhIcon :icon="XIcon" label="关闭" />
-    <span style="font-size: 13px;">这枚没有可见文字，名字只能由 label 给</span>
-  </span>
+  <XhIcon :icon="XIcon" label="关闭" />
 </template>
 ```
 
 ```html
-<!-- 旁边已经有文字说这件事，图标不给 label，读屏不会把「加号 新建」念两遍 -->
-<span style="display: inline-flex; align-items: center; gap: 6px">
-  <xh-icon id="icon-label-plus"><svg data-xh-part="root"><g data-xh-part="glyph"></g></svg></xh-icon>
-  新建
-</span>
-
-<!-- 图标是这里唯一说出「关闭」的东西，必须给 label -->
-<span style="display: inline-flex; align-items: center; gap: 6px">
-  <xh-icon id="icon-label-x" label="关闭"><svg data-xh-part="root"><g data-xh-part="glyph"></g></svg></xh-icon>
-  <span style="font-size: 13px">这枚没有可见文字，名字只能由 label 给</span>
-</span>
-
-<script type="module">
-  // 图标记录是对象，只走 property
-  const stroke = {
-    "fill": "none",
-    "stroke": "currentColor",
-    "stroke-width": "2",
-    "stroke-linecap": "round",
-    "stroke-linejoin": "round",
-  };
-
-  document.getElementById("icon-label-plus").icon = {
-    name: "plus",
-    viewBox: "0 0 24 24",
-    attrs: stroke,
-    nodes: [
-      { tag: "path", attrs: { d: "M12 5V19" } },
-      { tag: "path", attrs: { d: "M5 12H19" } },
-    ],
-  };
-
-  document.getElementById("icon-label-x").icon = {
-    name: "x",
-    viewBox: "0 0 24 24",
-    attrs: stroke,
-    nodes: [
-      { tag: "path", attrs: { d: "M6 6L18 18" } },
-      { tag: "path", attrs: { d: "M18 6L6 18" } },
-    ],
-  };
-</script>
+<xh-icon label="关闭">
+  <svg data-xh-part="root" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+    <path d="M6 6L18 18" />
+    <path d="M18 6L6 18" />
+  </svg>
+</xh-icon>
 ```
 
-### 自定义图元
+### 自定义图形
 
-默认插槽给出内容时改由插槽填充根 svg，元素不再生成 glyph 空壳；坐标系此时由自己写的 viewBox 定
+直接提供 SVG 图形
 
 ```vue
 <script setup lang="ts">
@@ -358,357 +118,111 @@ import { XhIcon } from "@xihan-ui/vue";
 </script>
 
 <template>
-  <!-- 不传 icon，几何自己写：适合一次性的品牌标记、渐变填充这类不进图标集的图形 -->
   <XhIcon viewBox="0 0 24 24" size="lg" label="曦寒标记">
     <circle cx="12" cy="12" r="9" fill="none" stroke="currentColor" stroke-width="2" />
-    <path
-      d="M8 8L16 16M16 8L8 16"
-      fill="none"
-      stroke="currentColor"
-      stroke-width="2"
-      stroke-linecap="round"
-    />
-  </XhIcon>
-
-  <XhIcon viewBox="0 0 24 24" size="lg" label="半满进度">
-    <rect x="3" y="9" width="18" height="6" rx="3" fill="none" stroke="currentColor" stroke-width="2" />
-    <rect x="5" y="11" width="7" height="2" rx="1" fill="currentColor" />
+    <path d="M8 8L16 16M16 8L8 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" />
   </XhIcon>
 </template>
 ```
 
 ```html
-<!-- 不传 icon、也不留 glyph 空壳，几何自己写：适合一次性的品牌标记、渐变填充这类不进图标集的图形 -->
 <xh-icon size="lg" label="曦寒标记">
   <svg data-xh-part="root" viewBox="0 0 24 24">
     <circle cx="12" cy="12" r="9" fill="none" stroke="currentColor" stroke-width="2" />
-    <path
-      d="M8 8L16 16M16 8L8 16"
-      fill="none"
-      stroke="currentColor"
-      stroke-width="2"
-      stroke-linecap="round"
-    />
-  </svg>
-</xh-icon>
-
-<xh-icon size="lg" label="半满进度">
-  <svg data-xh-part="root" viewBox="0 0 24 24">
-    <rect x="3" y="9" width="18" height="6" rx="3" fill="none" stroke="currentColor" stroke-width="2" />
-    <rect x="5" y="11" width="7" height="2" rx="1" fill="currentColor" />
+    <path d="M8 8L16 16M16 8L8 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" />
   </svg>
 </xh-icon>
 ```
 
-### 语气
+### 颜色
 
-图标没有底色，语气只落在前景上，取普通背景上表达该语气的那档文字色
+使用语义颜色
 
 ```vue
 <script setup lang="ts">
+import { StarIcon } from "@xihan-ui/icons";
 import { XhIcon } from "@xihan-ui/vue";
 
-const StarIcon = {
-  name: "star",
-  viewBox: "0 0 24 24",
-  attrs: {
-    "fill": "none",
-    "stroke": "currentColor",
-    "stroke-width": "2",
-    "stroke-linecap": "round",
-    "stroke-linejoin": "round",
-  },
-  nodes: [
-    {
-      tag: "path",
-      attrs: {
-        d: "M12 3.5L14.12 9.59L20.56 9.72L15.42 13.61L17.29 19.78L12 16.1L6.71 19.78L8.58 13.61L3.44 9.72L9.88 9.59Z",
-      },
-    },
-  ],
-} as const;
-
-const tones = ["brand", "neutral", "success", "warning", "danger", "info"] as const;
+const tones = ["brand", "success", "warning", "danger", "info"] as const;
 </script>
 
 <template>
-  <!-- 同一枚图标只换语气：旁边的文字不带语气，对照得出改的只是图标前景 -->
-  <span
-    v-for="t in tones"
-    :key="t"
-    style="display: inline-flex; align-items: center; gap: 6px"
-  >
-    <XhIcon :icon="StarIcon" :tone="t" size="lg" />
-    <span style="font-size: 13px">{{ t }}</span>
-  </span>
+  <XhIcon v-for="tone in tones" :key="tone" :icon="StarIcon" :tone="tone" size="lg" />
 </template>
 ```
 
 ```html
-<!-- 同一枚图标只换语气：旁边的文字不带语气，对照得出改的只是图标前景 -->
-<span id="icon-tone" style="display: contents">
-  <span style="display: inline-flex; align-items: center; gap: 6px">
-    <xh-icon tone="brand" size="lg"><svg data-xh-part="root"><g data-xh-part="glyph"></g></svg></xh-icon>
-    <span style="font-size: 13px">brand</span>
-  </span>
-  <span style="display: inline-flex; align-items: center; gap: 6px">
-    <xh-icon tone="neutral" size="lg"><svg data-xh-part="root"><g data-xh-part="glyph"></g></svg></xh-icon>
-    <span style="font-size: 13px">neutral</span>
-  </span>
-  <span style="display: inline-flex; align-items: center; gap: 6px">
-    <xh-icon tone="success" size="lg"><svg data-xh-part="root"><g data-xh-part="glyph"></g></svg></xh-icon>
-    <span style="font-size: 13px">success</span>
-  </span>
-  <span style="display: inline-flex; align-items: center; gap: 6px">
-    <xh-icon tone="warning" size="lg"><svg data-xh-part="root"><g data-xh-part="glyph"></g></svg></xh-icon>
-    <span style="font-size: 13px">warning</span>
-  </span>
-  <span style="display: inline-flex; align-items: center; gap: 6px">
-    <xh-icon tone="danger" size="lg"><svg data-xh-part="root"><g data-xh-part="glyph"></g></svg></xh-icon>
-    <span style="font-size: 13px">danger</span>
-  </span>
-  <span style="display: inline-flex; align-items: center; gap: 6px">
-    <xh-icon tone="info" size="lg"><svg data-xh-part="root"><g data-xh-part="glyph"></g></svg></xh-icon>
-    <span style="font-size: 13px">info</span>
-  </span>
-</span>
-
-<script type="module">
-  // 图标记录是对象，只走 property
-  const starIcon = {
-    name: "star",
-    viewBox: "0 0 24 24",
-    attrs: {
-      "fill": "none",
-      "stroke": "currentColor",
-      "stroke-width": "2",
-      "stroke-linecap": "round",
-      "stroke-linejoin": "round",
-    },
-    nodes: [
-      {
-        tag: "path",
-        attrs: {
-          d: "M12 3.5L14.12 9.59L20.56 9.72L15.42 13.61L17.29 19.78L12 16.1L6.71 19.78L8.58 13.61L3.44 9.72L9.88 9.59Z",
-        },
-      },
-    ],
-  };
-
-  for (const icon of document.getElementById("icon-tone").querySelectorAll("xh-icon")) {
-    icon.icon = starIcon;
-  }
-</script>
-```
-
-### 前景分级
-
-图标没有底色，前景是一个组件令牌；跟正文取同一族文字色，图标就跟着排出主次
-
-```vue
-<script setup lang="ts">
-import { XhIcon } from "@xihan-ui/vue";
-
-const InfoIcon = {
-  name: "info",
-  viewBox: "0 0 24 24",
-  attrs: {
-    "fill": "none",
-    "stroke": "currentColor",
-    "stroke-width": "2",
-    "stroke-linecap": "round",
-    "stroke-linejoin": "round",
-  },
-  nodes: [
-    { tag: "circle", attrs: { cx: "12", cy: "12", r: "9" } },
-    { tag: "path", attrs: { d: "M12 11V16.5" } },
-    { tag: "path", attrs: { d: "M12 7.5V8" } },
-  ],
-} as const;
-
-// 前景取普通背景上的四档文字色，从正文一路淡到不可用
-const depths = [
-  { fg: "var(--xh-fg-default)", label: "正文" },
-  { fg: "var(--xh-fg-muted)", label: "次要" },
-  { fg: "var(--xh-fg-subtle)", label: "更次要" },
-  { fg: "var(--xh-fg-disabled)", label: "不可用" },
-];
-</script>
-
-<template>
-  <span
-    v-for="d in depths"
-    :key="d.label"
-    :style="{ display: 'inline-flex', alignItems: 'center', gap: '6px', color: d.fg }"
-  >
-    <XhIcon :icon="InfoIcon" size="lg" :style="{ '--xh-icon-fg': d.fg }" />
-    <span style="font-size: 13px">{{ d.label }}</span>
-  </span>
-</template>
-```
-
-```html
-<!-- 前景取普通背景上的四档文字色，从正文一路淡到不可用 -->
-<span id="icon-depth" style="display: contents">
-  <span style="display: inline-flex; align-items: center; gap: 6px; color: var(--xh-fg-default)">
-    <xh-icon size="lg">
-      <svg data-xh-part="root" style="--xh-icon-fg: var(--xh-fg-default)"><g data-xh-part="glyph"></g></svg>
-    </xh-icon>
-    <span style="font-size: 13px">正文</span>
-  </span>
-  <span style="display: inline-flex; align-items: center; gap: 6px; color: var(--xh-fg-muted)">
-    <xh-icon size="lg">
-      <svg data-xh-part="root" style="--xh-icon-fg: var(--xh-fg-muted)"><g data-xh-part="glyph"></g></svg>
-    </xh-icon>
-    <span style="font-size: 13px">次要</span>
-  </span>
-  <span style="display: inline-flex; align-items: center; gap: 6px; color: var(--xh-fg-subtle)">
-    <xh-icon size="lg">
-      <svg data-xh-part="root" style="--xh-icon-fg: var(--xh-fg-subtle)"><g data-xh-part="glyph"></g></svg>
-    </xh-icon>
-    <span style="font-size: 13px">更次要</span>
-  </span>
-  <span style="display: inline-flex; align-items: center; gap: 6px; color: var(--xh-fg-disabled)">
-    <xh-icon size="lg">
-      <svg data-xh-part="root" style="--xh-icon-fg: var(--xh-fg-disabled)"><g data-xh-part="glyph"></g></svg>
-    </xh-icon>
-    <span style="font-size: 13px">不可用</span>
-  </span>
-</span>
-
-<script type="module">
-  // 图标记录是对象，只走 property
-  const infoIcon = {
-    name: "info",
-    viewBox: "0 0 24 24",
-    attrs: {
-      "fill": "none",
-      "stroke": "currentColor",
-      "stroke-width": "2",
-      "stroke-linecap": "round",
-      "stroke-linejoin": "round",
-    },
-    nodes: [
-      { tag: "circle", attrs: { cx: "12", cy: "12", r: "9" } },
-      { tag: "path", attrs: { d: "M12 11V16.5" } },
-      { tag: "path", attrs: { d: "M12 7.5V8" } },
-    ],
-  };
-
-  for (const icon of document.getElementById("icon-depth").querySelectorAll("xh-icon")) {
-    icon.icon = infoIcon;
-  }
-</script>
+<xh-icon tone="brand" size="lg"><svg data-xh-part="root" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><path d="M12 3.5L14.12 9.59L20.56 9.72L15.42 13.61L17.29 19.78L12 16.1L6.71 19.78L8.58 13.61L3.44 9.72L9.88 9.59Z" /></svg></xh-icon>
+<xh-icon tone="success" size="lg"><svg data-xh-part="root" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><path d="M12 3.5L14.12 9.59L20.56 9.72L15.42 13.61L17.29 19.78L12 16.1L6.71 19.78L8.58 13.61L3.44 9.72L9.88 9.59Z" /></svg></xh-icon>
+<xh-icon tone="warning" size="lg"><svg data-xh-part="root" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><path d="M12 3.5L14.12 9.59L20.56 9.72L15.42 13.61L17.29 19.78L12 16.1L6.71 19.78L8.58 13.61L3.44 9.72L9.88 9.59Z" /></svg></xh-icon>
+<xh-icon tone="danger" size="lg"><svg data-xh-part="root" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><path d="M12 3.5L14.12 9.59L20.56 9.72L15.42 13.61L17.29 19.78L12 16.1L6.71 19.78L8.58 13.61L3.44 9.72L9.88 9.59Z" /></svg></xh-icon>
+<xh-icon tone="info" size="lg"><svg data-xh-part="root" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><path d="M12 3.5L14.12 9.59L20.56 9.72L15.42 13.61L17.29 19.78L12 16.1L6.71 19.78L8.58 13.61L3.44 9.72L9.88 9.59Z" /></svg></xh-icon>
 ```
 
 ### 旋转与翻转
 
-rotate 只收 90 / 180 / 270 三档，flip 沿横轴或纵轴取反；两者是独立属性，同写即叠加
+改变图标方向
 
 ```vue
 <script setup lang="ts">
+import { ArrowRightIcon } from "@xihan-ui/icons";
 import { XhIcon } from "@xihan-ui/vue";
-
-const ArrowIcon = {
-  name: "arrow-right",
-  viewBox: "0 0 24 24",
-  attrs: {
-    "fill": "none",
-    "stroke": "currentColor",
-    "stroke-width": "2",
-    "stroke-linecap": "round",
-    "stroke-linejoin": "round",
-  },
-  nodes: [
-    { tag: "path", attrs: { d: "M4 12h15" } },
-    { tag: "path", attrs: { d: "M13 6l6 6-6 6" } },
-  ],
-} as const;
 </script>
 
 <template>
-  <span style="display: inline-flex; align-items: center; gap: 10px;">
-    <XhIcon :icon="ArrowIcon" size="lg" />
-    <XhIcon :icon="ArrowIcon" size="lg" :rotate="90" />
-    <XhIcon :icon="ArrowIcon" size="lg" :rotate="180" />
-    <XhIcon :icon="ArrowIcon" size="lg" :rotate="270" />
-    <span style="font-size: 13px;">不转 / 90 / 180 / 270</span>
-  </span>
-
-  <span style="display: inline-flex; align-items: center; gap: 10px;">
-    <XhIcon :icon="ArrowIcon" size="lg" flip="horizontal" />
-    <XhIcon :icon="ArrowIcon" size="lg" flip="vertical" />
-    <XhIcon :icon="ArrowIcon" size="lg" flip="both" />
-    <XhIcon :icon="ArrowIcon" size="lg" :rotate="90" flip="horizontal" />
-    <span style="font-size: 13px;">横轴 / 纵轴 / 两轴 / 转 90 再翻横轴</span>
-  </span>
+  <XhIcon :icon="ArrowRightIcon" size="lg" />
+  <XhIcon :icon="ArrowRightIcon" size="lg" :rotate="90" />
+  <XhIcon :icon="ArrowRightIcon" size="lg" :rotate="180" />
+  <XhIcon :icon="ArrowRightIcon" size="lg" :rotate="270" />
+  <XhIcon :icon="ArrowRightIcon" size="lg" flip="horizontal" />
 </template>
 ```
 
 ```html
-<span id="icon-rotate" style="display: inline-flex; align-items: center; gap: 10px">
-  <xh-icon size="lg"><svg data-xh-part="root"><g data-xh-part="glyph"></g></svg></xh-icon>
-  <xh-icon size="lg" rotate="90"><svg data-xh-part="root"><g data-xh-part="glyph"></g></svg></xh-icon>
-  <xh-icon size="lg" rotate="180"><svg data-xh-part="root"><g data-xh-part="glyph"></g></svg></xh-icon>
-  <xh-icon size="lg" rotate="270"><svg data-xh-part="root"><g data-xh-part="glyph"></g></svg></xh-icon>
-  <span style="font-size: 13px">不转 / 90 / 180 / 270</span>
-</span>
-
-<span id="icon-flip" style="display: inline-flex; align-items: center; gap: 10px">
-  <xh-icon size="lg" flip="horizontal"><svg data-xh-part="root"><g data-xh-part="glyph"></g></svg></xh-icon>
-  <xh-icon size="lg" flip="vertical"><svg data-xh-part="root"><g data-xh-part="glyph"></g></svg></xh-icon>
-  <xh-icon size="lg" flip="both"><svg data-xh-part="root"><g data-xh-part="glyph"></g></svg></xh-icon>
-  <xh-icon size="lg" rotate="90" flip="horizontal"><svg data-xh-part="root"><g data-xh-part="glyph"></g></svg></xh-icon>
-  <span style="font-size: 13px">横轴 / 纵轴 / 两轴 / 转 90 再翻横轴</span>
-</span>
-
-<script type="module">
-  // 图标记录是对象，只走 property
-  const arrowIcon = {
-    name: "arrow-right",
-    viewBox: "0 0 24 24",
-    attrs: {
-      "fill": "none",
-      "stroke": "currentColor",
-      "stroke-width": "2",
-      "stroke-linecap": "round",
-      "stroke-linejoin": "round",
-    },
-    nodes: [
-      { tag: "path", attrs: { d: "M4 12h15" } },
-      { tag: "path", attrs: { d: "M13 6l6 6-6 6" } },
-    ],
-  };
-
-  for (const id of ["icon-rotate", "icon-flip"]) {
-    for (const icon of document.getElementById(id).querySelectorAll("xh-icon")) {
-      icon.icon = arrowIcon;
-    }
-  }
-</script>
+<xh-icon size="lg"><svg data-xh-part="root" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 12H20" /><path d="M14 6L20 12L14 18" /></svg></xh-icon>
+<xh-icon size="lg" rotate="90"><svg data-xh-part="root" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 12H20" /><path d="M14 6L20 12L14 18" /></svg></xh-icon>
+<xh-icon size="lg" rotate="180"><svg data-xh-part="root" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 12H20" /><path d="M14 6L20 12L14 18" /></svg></xh-icon>
+<xh-icon size="lg" rotate="270"><svg data-xh-part="root" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 12H20" /><path d="M14 6L20 12L14 18" /></svg></xh-icon>
+<xh-icon size="lg" flip="horizontal"><svg data-xh-part="root" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 12H20" /><path d="M14 6L20 12L14 18" /></svg></xh-icon>
 ```
 
 ## 设计指引
 
 ### 何时使用
 
-- 给动作、状态或条目配一枚图形标记。
-- 图形本身就是唯一的信息载体（比如只有图标的按钮里那枚图元）——这时给 `label`。
+- 为操作、状态或条目提供图形标识。
+- 作为独立信息使用时提供可访问名称。
 
 ### 何时不用
 
-- 需要一个带底色的圆形底座：用[图标块](./icon-wrapper)。
-- 图形是照片或插画：用[图片](./image)。
+- 需要带背景的图标时，使用[图标块](./icon-wrapper)。
+- 照片或插画使用[图片](./image)。
 
 ### 特性
 
-- 传的是图标记录本身而不是名字：按名字查表就得把整张表静态引进来，摇树全废。
-- 命名只有两态：给了非空白 `label` 就是 `role="img"` 加 `aria-label`；没给就是 `aria-hidden="true"` 的装饰件。没有第三种。
-- `size` 八档改直径（`text` 跟着相邻文字的字号走，其余七档是固定直径）、`weight` 三档改描边粗细；缺省档 `md` 不落 `data-*`，皮肤的基础规则就是缺省档。
-- `rotate` 只收 90 / 180 / 270 三档，`flip` 沿横轴或纵轴取反；两者同写时叠加，都是静态几何，不带过渡。
-- 图标没有底色，语气只落在前景上。
+- 直接接收可摇树优化的图标记录。
+- `label` 区分信息图标与装饰图标。
+- 支持八档尺寸和三档描边粗细。
+- 支持旋转与水平、垂直翻转。
+- 颜色只作用于图标前景。
 
-## 产物
+### 组合
+
+- 放入[按钮](./button)或[图标块](./icon-wrapper)。
+
+### 最佳实践
+
+- 图标旁已有同义文字时保持装饰状态。
+- 同一操作区域使用一致的描边粗细。
+
+### 反模式
+
+- 不要为装饰图标重复提供名称。
+- 不要只用图标表达不明确的状态。
+
+## API 参考
+
+### 产物
 
 | 层 | 值 |
 | --- | --- |
@@ -718,13 +232,7 @@ const ArrowIcon = {
 | 状态机 | 无，`connect` 直接由 props 算属性 |
 | 皮肤 | `@xihan-ui/styles/icon.css` |
 
-## 解剖
-
-部件名即 `data-part` 属性值，也是皮肤的选择器。加粗的是必备部件，不渲染它组件不工作（Web Components 适配器会在诊断通道上报 `wc.missing-part`）。
-
-`data-scope="icon"`：**`root`** · `glyph`
-
-## Props
+### Props
 
 | 属性 | 类型 | 必填 | 说明 |
 | --- | --- | --- | --- |
@@ -733,12 +241,12 @@ const ArrowIcon = {
 | `label` | `string` |  | 可及名字。 给了非空白文本 = 这个图标是页面上唯一说出这件事的东西，输出 role="img" + aria-label； 缺席或全空白 = 装饰，输出 aria-hidden="true"。没有第三种形态。 |
 | `rotate` | `IconRotate \| string` |  | 旋转档位：90 / 180 / 270，不转就不写。 收字符串是因为 WC 那侧的档位来自 DOM 属性；不是这三档的值一律不写出。 |
 | `size` | `IconSize` |  | 直径档位，缺省 md；缺省档不输出 data-size。 |
-| `tone` | `Tone` |  | 语气：brand / neutral / success / warning / danger / info，决定用哪族颜色 |
+| `tone` | `Tone` |  | 颜色：brand / neutral / success / warning / danger / info。 |
 | `weight` | `IconWeight` |  | 描边粗细档位，缺省 regular；缺省档不输出 data-weight。 |
 
-## connect API
+### connect API
 
-`useIcon` 产出的对象。`getXxxProps()` 铺到对应部件的宿主元素上，其余是可读状态与操作入口。
+`getXxxProps()` 返回对应部件的宿主属性。
 
 | 成员 | 类型 | 说明 |
 | --- | --- | --- |
@@ -749,15 +257,17 @@ const ArrowIcon = {
 | `getRootProps` | `() => T['element']` |  |
 | `getGlyphProps` | `() => T['element']` |  |
 
-## 键盘
+## 无障碍
+
+### 键盘
 
 规格出处：[W3C APG](https://www.w3.org/WAI/ARIA/apg/practices/names-and-descriptions/)
 
 无键盘交互（不接收焦点，或焦点行为完全由原生元素提供）。
 
-## 无障碍
+### ARIA
 
-下面这些由 `connect` 铺到部件上，作者不必自己写；重复写反而会覆盖掉正确值。
+以下属性由 `connect` 生成。
 
 | 部件 | 属性 | 值 |
 | --- | --- | --- |
@@ -765,13 +275,15 @@ const ArrowIcon = {
 | `root` | `aria-label` | props.label \| undefined |
 | `root` | `role` | undefined \| 'img' |
 
-## 样式
+## 样式参考
 
-默认皮肤 `@xihan-ui/styles/icon.css` 按部件选择：`[data-scope="icon"][data-part="root"]`。它落在 `xihan.components` 层；业务样式不写进 `@layer` 即高于全部库层，要按层压过来就写进 `xihan.overrides`。
+### 皮肤
 
-## 数据属性
+`@xihan-ui/styles/icon.css` 使用 `[data-scope="icon"][data-part="root"]` 部件选择器，位于 `xihan.components` 层。覆盖样式使用 `xihan.overrides`。
 
-由 `connect` 产出并铺到部件上，皮肤与测试都据此选择；`data-disabled` 这类无值属性在条件不成立时整个不出现。
+### 数据属性
+
+由 `connect` 生成；条件不成立时不输出无值属性。
 
 | 部件 | 属性 | 值 |
 | --- | --- | --- |
@@ -783,7 +295,7 @@ const ArrowIcon = {
 | `root` | `data-weight` | props.weight |
 
 <!-- xh-component-tokens:start -->
-## CSS 变量
+### CSS 变量
 
 本组件公开覆盖槽由独立皮肤的实际消费位生成；缺省来源、作用部件和状态均与 CSS 同源。
 
@@ -791,24 +303,10 @@ const ArrowIcon = {
 | --- | --- | --- | --- | --- | --- |
 | `--xh-icon-fg` | `root` | `color` | `default`<br>`tone` | `--xh-_tone-fg`<br>`currentColor` | icon 的 root 部件 color 覆盖槽。 |
 | `--xh-icon-shift` | `root` | `vertical-align` | `default` | `--xh-glyph-baseline-shift` | icon 的 root 部件 vertical-align 覆盖槽。 |
-| `--xh-icon-size` | `autoplay-trigger`<br>`branch-checkbox`<br>`branch-indicator`<br>`branch-trigger`<br>`caps-lock-indicator`<br>`clear-trigger`<br>`close-trigger`<br>`column-visibility-trigger`<br>`decrement-trigger`<br>`ellipsis-trigger`<br>`expand-trigger`<br>`flip-horizontal-trigger`<br>`flip-vertical-trigger`<br>`increment-trigger`<br>`indicator`<br>`item`<br>`item-checkbox`<br>`item-close-trigger`<br>`item-delete-trigger`<br>`item-indicator`<br>`move-down-trigger`<br>`move-up-trigger`<br>`next-trigger`<br>`next-year-trigger`<br>`prev-trigger`<br>`prev-year-trigger`<br>`root`<br>`rotate-left-trigger`<br>`rotate-right-trigger`<br>`row-select-trigger`<br>`scroll-to-end-trigger`<br>`select-all-trigger`<br>`separator`<br>`sort-trigger`<br>`submit-trigger`<br>`to-source-trigger`<br>`to-target-trigger`<br>`trend`<br>`trigger`<br>`trigger-indicator`<br>`truncation`<br>`visibility-trigger`<br>`window-state-trigger`<br>`zoom-in-trigger`<br>`zoom-out-trigger` | `block-size`<br>`inline-size`<br>`margin-inline-start` | `@media (min-width: 640px)`<br>`branch`<br>`default`<br>`direction`<br>`empty`<br>`indeterminate`<br>`mode=send`<br>`mode=stop`<br>`not([data-selected])`<br>`not([data-state='preparing'])`<br>`selected`<br>`size=2xl`<br>`size=3xl`<br>`size=4xl`<br>`size=lg`<br>`size=md`<br>`size=sm`<br>`size=text`<br>`size=xl`<br>`sort=asc`<br>`sort=desc`<br>`state=checked`<br>`state=completed`<br>`state=done`<br>`state=error`<br>`state=indeterminate`<br>`state=paused`<br>`state=preparing`<br>`state=running`<br>`state=visible` | `--xh-glyph-size-2xl`<br>`--xh-glyph-size-3xl`<br>`--xh-glyph-size-4xl`<br>`--xh-glyph-size-lg`<br>`--xh-glyph-size-md`<br>`--xh-glyph-size-sm`<br>`--xh-glyph-size-text`<br>`--xh-glyph-size-xl` | icon 的 autoplay-trigger、branch-checkbox、branch-indicator、branch-trigger、caps-lock-indicator、clear-trigger、close-trigger、column-visibility-trigger、decrement-trigger、ellipsis-trigger、expand-trigger、flip-horizontal-trigger、flip-vertical-trigger、increment-trigger、indicator、item、item-checkbox、item-close-trigger、item-delete-trigger、item-indicator、move-down-trigger、move-up-trigger、next-trigger、next-year-trigger、prev-trigger、prev-year-trigger、root、rotate-left-trigger、rotate-right-trigger、row-select-trigger、scroll-to-end-trigger、select-all-trigger、separator、sort-trigger、submit-trigger、to-source-trigger、to-target-trigger、trend、trigger、trigger-indicator、truncation、visibility-trigger、window-state-trigger、zoom-in-trigger、zoom-out-trigger 部件 block-size、inline-size、margin-inline-start 覆盖槽。 |
+| `--xh-icon-size` | `autoplay-trigger`<br>`branch-checkbox`<br>`branch-indicator`<br>`branch-trigger`<br>`caps-lock-indicator`<br>`clear-trigger`<br>`close-trigger`<br>`column-visibility-trigger`<br>`decrement-trigger`<br>`ellipsis-trigger`<br>`expand-trigger`<br>`flip-horizontal-trigger`<br>`flip-vertical-trigger`<br>`increment-trigger`<br>`indicator`<br>`item`<br>`item-checkbox`<br>`item-close-trigger`<br>`item-delete-trigger`<br>`item-indicator`<br>`move-down-trigger`<br>`move-up-trigger`<br>`next-trigger`<br>`next-year-trigger`<br>`prev-trigger`<br>`prev-year-trigger`<br>`root`<br>`rotate-left-trigger`<br>`rotate-right-trigger`<br>`row-select-trigger`<br>`scroll-to-end-trigger`<br>`select-all-trigger`<br>`separator`<br>`sort-trigger`<br>`submit-trigger`<br>`to-source-trigger`<br>`to-target-trigger`<br>`trend`<br>`trigger`<br>`trigger-indicator`<br>`truncation`<br>`visibility-trigger`<br>`window-state-trigger`<br>`zoom-in-trigger`<br>`zoom-out-trigger` | `block-size`<br>`inline-size`<br>`margin-inline-start` | `@media (min-width: 640px)`<br>`branch`<br>`default`<br>`direction`<br>`empty`<br>`indeterminate`<br>`mode=send`<br>`mode=stop`<br>`not([aria-busy='true'])`<br>`not([data-selected])`<br>`selected`<br>`size=2xl`<br>`size=3xl`<br>`size=4xl`<br>`size=lg`<br>`size=md`<br>`size=sm`<br>`size=text`<br>`size=xl`<br>`sort=asc`<br>`sort=desc`<br>`state=checked`<br>`state=completed`<br>`state=done`<br>`state=error`<br>`state=indeterminate`<br>`state=paused`<br>`state=running`<br>`state=visible` | `--xh-glyph-size-2xl`<br>`--xh-glyph-size-3xl`<br>`--xh-glyph-size-4xl`<br>`--xh-glyph-size-lg`<br>`--xh-glyph-size-md`<br>`--xh-glyph-size-sm`<br>`--xh-glyph-size-text`<br>`--xh-glyph-size-xl` | icon 的 autoplay-trigger、branch-checkbox、branch-indicator、branch-trigger、caps-lock-indicator、clear-trigger、close-trigger、column-visibility-trigger、decrement-trigger、ellipsis-trigger、expand-trigger、flip-horizontal-trigger、flip-vertical-trigger、increment-trigger、indicator、item、item-checkbox、item-close-trigger、item-delete-trigger、item-indicator、move-down-trigger、move-up-trigger、next-trigger、next-year-trigger、prev-trigger、prev-year-trigger、root、rotate-left-trigger、rotate-right-trigger、row-select-trigger、scroll-to-end-trigger、select-all-trigger、separator、sort-trigger、submit-trigger、to-source-trigger、to-target-trigger、trend、trigger、trigger-indicator、truncation、visibility-trigger、window-state-trigger、zoom-in-trigger、zoom-out-trigger 部件 block-size、inline-size、margin-inline-start 覆盖槽。 |
 | `--xh-icon-stroke` | `root` | `stroke-width` | `default`<br>`weight=bold`<br>`weight=light` | `--xh-glyph-stroke-bold`<br>`--xh-glyph-stroke-light`<br>`--xh-glyph-stroke-regular` | icon 的 root 部件 stroke-width 覆盖槽。 |
 <!-- xh-component-tokens:end -->
 
-## 动效
+### 动效
 
 本组件皮肤不含过渡与关键帧，也没有脚本驱动的动效：状态一变，外观立即到位。
-
-## 组合
-
-- 放进[按钮](./button)的 `prefix` / `suffix`，或[图标块](./icon-wrapper)的底座里。
-
-## 最佳实践
-
-- 旁边已经有文字说明同一件事时，别给 `label`——重复的名字会被读屏念两遍。
-- 同一屏里的图标保持同一档 `weight`，粗细混用比尺寸混用更显乱。
-
-## 反模式
-
-- 给装饰性图标写 `label`，或给唯一承载语义的图标漏写 `label`：两者都会让读屏用户听到错的东西。
-- 用图标单独表达状态而不配文字或提示：图形的含义没有共识。

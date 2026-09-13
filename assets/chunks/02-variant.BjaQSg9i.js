@@ -1,0 +1,8 @@
+const o=`<!-- 变体 | 设置背景和边框样式 -->
+<div style="display: flex; align-items: center; gap: 12px">
+  <xh-icon-wrapper variant="solid"><span data-xh-part="root"><xh-icon><svg data-xh-part="root" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 12.5L9.5 18L20 6" /></svg></xh-icon></span></xh-icon-wrapper>
+  <xh-icon-wrapper variant="subtle"><span data-xh-part="root"><xh-icon><svg data-xh-part="root" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 12.5L9.5 18L20 6" /></svg></xh-icon></span></xh-icon-wrapper>
+  <xh-icon-wrapper variant="outline"><span data-xh-part="root"><xh-icon><svg data-xh-part="root" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 12.5L9.5 18L20 6" /></svg></xh-icon></span></xh-icon-wrapper>
+  <xh-icon-wrapper variant="ghost"><span data-xh-part="root"><xh-icon><svg data-xh-part="root" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 12.5L9.5 18L20 6" /></svg></xh-icon></span></xh-icon-wrapper>
+</div>
+`;export{o as default};

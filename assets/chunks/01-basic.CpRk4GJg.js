@@ -1,0 +1,15 @@
+const t=`<!-- 基础用法 | 组合相关操作 -->
+<xh-button-group>
+  <div data-xh-part="root">
+    <xh-button>
+      <button data-xh-part="root">照片</button>
+    </xh-button>
+    <xh-button>
+      <button data-xh-part="root">视频</button>
+    </xh-button>
+    <xh-button>
+      <button data-xh-part="root">更多</button>
+    </xh-button>
+  </div>
+</xh-button-group>
+`;export{t as default};

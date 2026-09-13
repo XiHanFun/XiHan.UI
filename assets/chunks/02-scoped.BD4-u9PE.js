@@ -1,0 +1,17 @@
+const e=`<!-- 局部范围 | 仅在指定区域内响应 -->
+<div id="scoped-hotkey-area" tabindex="0" style="padding: 12px 16px; border-radius: var(--xh-shape-control); background: var(--xh-bg-subtle)">
+  聚焦后按 Mod + Enter · <span>等待输入</span>
+  <xh-hotkeys id="scoped-hotkey" keys="Mod,Enter"></xh-hotkeys>
+</div>
+
+<script type="module">
+  const area = document.querySelector("#scoped-hotkey-area");
+  const hotkey = document.querySelector("#scoped-hotkey");
+  let count = 0;
+  hotkey.target = () => area;
+  hotkey.addEventListener("hot-key", () => {
+    count += 1;
+    area.querySelector("span").textContent = \`已触发 \${count} 次\`;
+  });
+<\/script>
+`;export{e as default};

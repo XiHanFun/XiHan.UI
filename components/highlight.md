@@ -1,6 +1,6 @@
 来源：https://ui.docs.xihanfun.com/components/highlight
 
-# Highlight `文本高亮`
+# Highlight 文本高亮
 
 把一段文本里命中关键词的片段标出来。
 
@@ -37,6 +37,12 @@ const text = "曦寒 UI 是一套框架无关的设计系统运行时，组件�
   <span data-xh-part="root"></span>
 </xh-highlight>
 ```
+
+## 组件结构
+
+加粗的是必需部件。
+
+`data-scope="highlight"`：**`root`** · `mark`
 
 ## 示例
 
@@ -184,7 +190,7 @@ const rows = [
 </script>
 ```
 
-### 语气
+### 颜色
 
 tone 决定命中片段用哪族颜色，没命中的文本不受影响
 
@@ -278,7 +284,22 @@ const tones = ["brand", "neutral", "success", "warning", "danger", "info"];
 - 命中片段落在 `mark` 部件上，样式归皮肤。
 - `tone` 换命中片段用哪族颜色，落在 `root` 上——一段里有好几个命中，语气是整段的属性。
 
-## 产物
+### 组合
+
+- 放进[组合框](./combobox)的候选、[表格](./table)的单元格、[列表](./list)的条目标题。
+
+### 最佳实践
+
+- 高亮只用底色，别同时改字色与字重——一句话里到处是重音就读不下去了。
+- 关键词很短（一两个字符）时考虑不高亮，命中会散得到处都是。
+
+### 反模式
+
+- 用它做正文重点标注：那是内容的事，不是检索反馈。
+
+## API 参考
+
+### 产物
 
 | 层 | 值 |
 | --- | --- |
@@ -287,13 +308,7 @@ const tones = ["brand", "neutral", "success", "warning", "danger", "info"];
 | 状态机 | 无，`connect` 直接由 props 算属性 |
 | 皮肤 | `@xihan-ui/styles/highlight.css` |
 
-## 解剖
-
-部件名即 `data-part` 属性值，也是皮肤的选择器。加粗的是必备部件，不渲染它组件不工作（Web Components 适配器会在诊断通道上报 `wc.missing-part`）。
-
-`data-scope="highlight"`：**`root`** · `mark`
-
-## Props
+### Props
 
 | 属性 | 类型 | 必填 | 说明 |
 | --- | --- | --- | --- |
@@ -302,9 +317,9 @@ const tones = ["brand", "neutral", "success", "warning", "danger", "info"];
 | `text` | `string` |  | 要显示的整段文本。命中位置按这个串逐字符算出来。 |
 | `tone` | `Tone` |  | 语气：brand / neutral / success / warning / danger / info，决定命中片段用哪族颜色。 |
 
-## connect API
+### connect API
 
-`connect` 产出的对象。`getXxxProps()` 铺到对应部件的宿主元素上，其余是可读状态与操作入口。
+`getXxxProps()` 返回对应部件的宿主属性。
 
 | 成员 | 类型 | 说明 |
 | --- | --- | --- |
@@ -313,19 +328,23 @@ const tones = ["brand", "neutral", "success", "warning", "danger", "info"];
 | `getRootProps` | `() => T['element']` |  |
 | `getMarkProps` | `() => T['element']` | 铺到每个命中片段上的属性；每段都一样，命中的是哪个关键词不落到 DOM 上。 |
 
-## 键盘
+## 无障碍
+
+### 键盘
 
 规格出处：[W3C APG](https://www.w3.org/WAI/ARIA/apg/)
 
 无键盘交互（不接收焦点，或焦点行为完全由原生元素提供）。
 
-## 样式
+## 样式参考
 
-默认皮肤 `@xihan-ui/styles/highlight.css` 按部件选择：`[data-scope="highlight"][data-part="root"]`。它落在 `xihan.components` 层；业务样式不写进 `@layer` 即高于全部库层，要按层压过来就写进 `xihan.overrides`。
+### 皮肤
 
-## 数据属性
+`@xihan-ui/styles/highlight.css` 使用 `[data-scope="highlight"][data-part="root"]` 部件选择器，位于 `xihan.components` 层。覆盖样式使用 `xihan.overrides`。
 
-由 `connect` 产出并铺到部件上，皮肤与测试都据此选择；`data-disabled` 这类无值属性在条件不成立时整个不出现。
+### 数据属性
+
+由 `connect` 生成；条件不成立时不输出无值属性。
 
 | 部件 | 属性 | 值 |
 | --- | --- | --- |
@@ -333,7 +352,7 @@ const tones = ["brand", "neutral", "success", "warning", "danger", "info"];
 | `root` | `data-tone` | props.tone |
 
 <!-- xh-component-tokens:start -->
-## CSS 变量
+### CSS 变量
 
 本组件公开覆盖槽由独立皮肤的实际消费位生成；缺省来源、作用部件和状态均与 CSS 同源。
 
@@ -346,23 +365,10 @@ const tones = ["brand", "neutral", "success", "warning", "danger", "info"];
 | `--xh-highlight-mark-radius` | `mark` | `border-radius` | `default` | `--xh-shape-inset` | highlight 的 mark 部件 border-radius 覆盖槽。 |
 <!-- xh-component-tokens:end -->
 
-## 动效
+### 动效
 
 本组件皮肤不含过渡与关键帧，也没有脚本驱动的动效：状态一变，外观立即到位。
 
-## RTL
+### RTL
 
 皮肤用逻辑属性排布（`inline-start` 一族），`dir="rtl"` 下自动镜像。
-
-## 组合
-
-- 放进[组合框](./combobox)的候选、[表格](./table)的单元格、[列表](./list)的条目标题。
-
-## 最佳实践
-
-- 高亮只用底色，别同时改字色与字重——一句话里到处是重音就读不下去了。
-- 关键词很短（一两个字符）时考虑不高亮，命中会散得到处都是。
-
-## 反模式
-
-- 用它做正文重点标注：那是内容的事，不是检索反馈。

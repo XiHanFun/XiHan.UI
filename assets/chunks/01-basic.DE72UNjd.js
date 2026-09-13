@@ -1,0 +1,12 @@
+const n=`<!-- 基础用法 | 显示带背景的图标 -->
+<xh-icon-wrapper>
+  <span data-xh-part="root">
+    <xh-icon>
+      <svg data-xh-part="root" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+        <path d="M18 9a6 6 0 0 0-12 0c0 5-2 6.5-2 6.5h16S18 14 18 9Z" />
+        <path d="M13.7 19a2 2 0 0 1-3.4 0" />
+      </svg>
+    </xh-icon>
+  </span>
+</xh-icon-wrapper>
+`;export{n as default};

@@ -1,0 +1,45 @@
+const t=`<!-- 尺寸 | 设置整组尺寸 -->
+<div style="display: flex; align-items: center; gap: 16px">
+  <xh-button-group size="sm">
+    <div data-xh-part="root">
+      <xh-button>
+        <button data-xh-part="root">日</button>
+      </xh-button>
+      <xh-button>
+        <button data-xh-part="root">周</button>
+      </xh-button>
+      <xh-button>
+        <button data-xh-part="root">月</button>
+      </xh-button>
+    </div>
+  </xh-button-group>
+
+  <xh-button-group size="md">
+    <div data-xh-part="root">
+      <xh-button>
+        <button data-xh-part="root">日</button>
+      </xh-button>
+      <xh-button>
+        <button data-xh-part="root">周</button>
+      </xh-button>
+      <xh-button>
+        <button data-xh-part="root">月</button>
+      </xh-button>
+    </div>
+  </xh-button-group>
+
+  <xh-button-group size="lg">
+    <div data-xh-part="root">
+      <xh-button>
+        <button data-xh-part="root">日</button>
+      </xh-button>
+      <xh-button>
+        <button data-xh-part="root">周</button>
+      </xh-button>
+      <xh-button>
+        <button data-xh-part="root">月</button>
+      </xh-button>
+    </div>
+  </xh-button-group>
+</div>
+`;export{t as default};

@@ -1,6 +1,6 @@
 来源：https://ui.docs.xihanfun.com/components/spinner
 
-# Spinner `加载指示器`
+# Spinner 加载指示器
 
 一个不确定时长的等待标记。
 
@@ -31,6 +31,12 @@ import { XhSpinner } from "@xihan-ui/vue";
   <span data-xh-part="root"></span>
 </xh-spinner>
 ```
+
+## 组件结构
+
+加粗的是必需部件。
+
+`data-scope="spinner"`：**`root`** · `label`
 
 ## 示例
 
@@ -117,7 +123,7 @@ import { XhSpinner, XhSpinnerLabel } from "@xihan-ui/vue";
 </script>
 ```
 
-### 语气
+### 颜色
 
 tone 只换圆环起始边那一段颜色，轨道留在中性描边上，转到哪儿才看得出来
 
@@ -418,7 +424,7 @@ function dotStyle(step: number): string {
 </script>
 ```
 
-### 形态
+### 变体
 
 ring 整圈、arc 一段弧、dots 三点；缺省档 ring 不输出 data-variant
 
@@ -465,7 +471,23 @@ import { XhSpinner } from "@xihan-ui/vue";
 - 可以盖住等待中的内容（遮罩形态）。
 - 转圈图形可换。
 
-## 产物
+### 组合
+
+- 放进[按钮](./button)的 `indicator` 部件；盖住[卡片](./card)或[表格](./table)。
+
+### 最佳实践
+
+- 等待超过几秒就配上文字说明在做什么。
+- 遮罩形态下要挡住交互，否则用户会重复点击。
+
+### 反模式
+
+- 一个页面里同时转好几个圈。
+- 用它代替可预测版面的骨架屏。
+
+## API 参考
+
+### 产物
 
 | 层 | 值 |
 | --- | --- |
@@ -474,13 +496,7 @@ import { XhSpinner } from "@xihan-ui/vue";
 | 状态机 | 无，`connect` 直接由 props 算属性 |
 | 皮肤 | `@xihan-ui/styles/spinner.css` |
 
-## 解剖
-
-部件名即 `data-part` 属性值，也是皮肤的选择器。加粗的是必备部件，不渲染它组件不工作（Web Components 适配器会在诊断通道上报 `wc.missing-part`）。
-
-`data-scope="spinner"`：**`root`** · `label`
-
-## Props
+### Props
 
 | 属性 | 类型 | 必填 | 说明 |
 | --- | --- | --- | --- |
@@ -490,9 +506,9 @@ import { XhSpinner } from "@xihan-ui/vue";
 | `translations` | `Partial<SpinnerTranslations>` |  |  |
 | `variant` | `SpinnerVariant` |  | 形态，缺省 ring；缺省档不输出 data-variant。 |
 
-## connect API
+### connect API
 
-`connect` 产出的对象。`getXxxProps()` 铺到对应部件的宿主元素上，其余是可读状态与操作入口。
+`getXxxProps()` 返回对应部件的宿主属性。
 
 | 成员 | 类型 | 说明 |
 | --- | --- | --- |
@@ -500,15 +516,17 @@ import { XhSpinner } from "@xihan-ui/vue";
 | `getRootProps` | `() => T['element']` |  |
 | `getLabelProps` | `() => T['element']` |  |
 
-## 键盘
+## 无障碍
+
+### 键盘
 
 规格出处：[W3C APG](https://www.w3.org/WAI/ARIA/apg/practices/live-regions/)
 
 无键盘交互（不接收焦点，或焦点行为完全由原生元素提供）。
 
-## 无障碍
+### ARIA
 
-下面这些由 `connect` 铺到部件上，作者不必自己写；重复写反而会覆盖掉正确值。
+以下属性由 `connect` 生成。
 
 | 部件 | 属性 | 值 |
 | --- | --- | --- |
@@ -516,15 +534,17 @@ import { XhSpinner } from "@xihan-ui/vue";
 | `root` | `aria-live` | 'polite' |
 | `root` | `role` | 'status' |
 
-## 样式
+## 样式参考
 
-默认皮肤 `@xihan-ui/styles/spinner.css` 按部件选择：`[data-scope="spinner"][data-part="root"]`。它落在 `xihan.components` 与 `xihan.motion` 层；业务样式不写进 `@layer` 即高于全部库层，要按层压过来就写进 `xihan.overrides`。
+### 皮肤
+
+`@xihan-ui/styles/spinner.css` 使用 `[data-scope="spinner"][data-part="root"]` 部件选择器，位于 `xihan.components` 与 `xihan.motion` 层。覆盖样式使用 `xihan.overrides`。
 
 `forced-colors: active` 下另有一套规则：颜色交给系统，边框与状态标记改用系统色关键字。
 
-## 数据属性
+### 数据属性
 
-由 `connect` 产出并铺到部件上，皮肤与测试都据此选择；`data-disabled` 这类无值属性在条件不成立时整个不出现。
+由 `connect` 生成；条件不成立时不输出无值属性。
 
 | 部件 | 属性 | 值 |
 | --- | --- | --- |
@@ -533,7 +553,7 @@ import { XhSpinner } from "@xihan-ui/vue";
 | `root` | `data-variant` | props.variant |
 
 <!-- xh-component-tokens:start -->
-## CSS 变量
+### CSS 变量
 
 本组件公开覆盖槽由独立皮肤的实际消费位生成；缺省来源、作用部件和状态均与 CSS 同源。
 
@@ -550,22 +570,8 @@ import { XhSpinner } from "@xihan-ui/vue";
 | `--xh-spinner-track` | `root` | `border` | `default` | `--xh-border-default` | spinner 的 root 部件 border 覆盖槽。 |
 <!-- xh-component-tokens:end -->
 
-## 动效
+### 动效
 
 关键帧 `xh-spinner-dots` · `xh-spinner-rotate` 随皮肤自带，不引用别处文件里的名字。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
 
 `prefers-reduced-motion: reduce` 下本组件另有降级规则。
-
-## 组合
-
-- 放进[按钮](./button)的 `indicator` 部件；盖住[卡片](./card)或[表格](./table)。
-
-## 最佳实践
-
-- 等待超过几秒就配上文字说明在做什么。
-- 遮罩形态下要挡住交互，否则用户会重复点击。
-
-## 反模式
-
-- 一个页面里同时转好几个圈。
-- 用它代替可预测版面的骨架屏。

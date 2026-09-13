@@ -1,6 +1,6 @@
 来源：https://ui.docs.xihanfun.com/components/transfer
 
-# Transfer `穿梭框`
+# Transfer 穿梭框
 
 左右两栏，把条目从一边搬到另一边。
 
@@ -200,6 +200,12 @@ const value = ref<string[]>(["read"]);
   transfer.addEventListener("value-change", (event) => apply(event.detail.value));
 </script>
 ```
+
+## 组件结构
+
+加粗的是必需部件。
+
+`data-scope="transfer"`：`root` · `hidden-input` · **`source-panel`** · **`target-panel`** · `panel-header` · `panel-title` · `panel-count` · `search` · **`list`** · `group` · `group-label` · `item` · `item-text` · `item-checkbox` · `empty` · `loading` · **`to-target-trigger`** · `to-source-trigger` · `select-all-trigger`
 
 ## 示例
 
@@ -2297,7 +2303,23 @@ const rows = [
 - `form` 可指定同一文档或影子树内的原生表单 ID；指定无效 ID 时不关联其他表单。整体 `disabled` 不提交，只读和禁用条目已经存在的目标值仍提交。
 - 原生 `form.reset()` 恢复 `defaultValue` 与 `defaultSelection`，清理搜索与导航状态。受控值没有声明默认值时保持业务数据；声明默认值时只通知重置意图，由业务回写受控值。
 
-## 产物
+### 组合
+
+- 内层是[列表框](./listbox)；长列表配[虚拟滚动](./virtualizer)。
+
+### 最佳实践
+
+- 两栏都显示计数，用户才知道还剩多少没挑。
+- 候选很大时把搜索做成远端过滤，别把全量灌进前端。
+
+### 反模式
+
+- 在窄屏上用它：两栏加中间的按钮列放不下。
+- 搬运后不保留滚动位置，用户每搬一条都要重新找位置。
+
+## API 参考
+
+### 产物
 
 | 层 | 值 |
 | --- | --- |
@@ -2307,13 +2329,7 @@ const rows = [
 | 状态机 | `transferMachine` |
 | 皮肤 | `@xihan-ui/styles/transfer.css` |
 
-## 解剖
-
-部件名即 `data-part` 属性值，也是皮肤的选择器。加粗的是必备部件，不渲染它组件不工作（Web Components 适配器会在诊断通道上报 `wc.missing-part`）。
-
-`data-scope="transfer"`：`root` · `hidden-input` · **`source-panel`** · **`target-panel`** · `panel-header` · `panel-title` · `panel-count` · `search` · **`list`** · `group` · `group-label` · `item` · `item-text` · `item-checkbox` · `empty` · `loading` · **`to-target-trigger`** · `to-source-trigger` · `select-all-trigger`
-
-## Props
+### Props
 
 | 属性 | 类型 | 必填 | 说明 |
 | --- | --- | --- | --- |
@@ -2339,40 +2355,40 @@ const rows = [
 | `onValueChange` | `(details: TransferValueChangeDetails) => void` |  |  |
 | `onSelectionChange` | `(details: TransferSelectionChangeDetails) => void` |  |  |
 
-## 事件
+### 事件
 
-自定义元素派发这些事件，Vue 组件对应同名 emit；载荷都在 `detail` 上。可双向绑定的值另有 `update:xxx`，见 Props。
+自定义元素将载荷放在 `detail`；Vue 使用同名 emit。
 
 | 事件 | 载荷 | 说明 |
 | --- | --- | --- |
 | `value-change` | `TransferValueChangeDetails` | 落在右侧的值变化；detail 为 `{ value: string[] }` |
 | `selection-change` | `TransferSelectionChangeDetails` | 勾选集合变化；detail 为 `{ value: string[] }` |
 
-## 插槽
+### 插槽
 
-作者能拿到载荷的插槽。只转发内容、不带载荷的默认插槽不在此列——那类直接写子节点即可。
+仅列出带载荷的插槽。
 
 | Vue 组件 | 插槽 | 载荷 | 说明 |
 | --- | --- | --- | --- |
 | `XhTransferRoot` | `default` | `TransferRootSlotProps` |  |
 
-## 状态
+### 状态
 
-对外可见的状态落在 `data-state` 上，写样式与断言都读它：
+公开状态写入 `data-state`。
 
 | 部件 | 取值 |
 | --- | --- |
 | `select-all-trigger` | checkStates[panel.side] |
 
-状态机内部转移，写样式与业务都用不到；要监听变化请看上面的「事件」。
+以下名称仅用于内部状态机。
 
 **状态**：`idle`
 
 **事件**：`FORM.RESET` · `VALUE.SET` · `SELECTION.SET` · `ITEM.TOGGLE` · `SIDE.TOGGLE_ALL` · `ITEMS.MOVE` · `SEARCH.SET` · `ITEM.FOCUS` · `LIST.BLUR`
 
-## connect API
+### connect API
 
-`useTransfer` 产出的对象。`getXxxProps()` 铺到对应部件的宿主元素上，其余是可读状态与操作入口。
+`getXxxProps()` 返回对应部件的宿主属性。
 
 | 成员 | 类型 | 说明 |
 | --- | --- | --- |
@@ -2416,7 +2432,9 @@ const rows = [
 | `getToTargetTriggerProps` | `() => T['button']` |  |
 | `getToSourceTriggerProps` | `() => T['button']` |  |
 
-## 键盘
+## 无障碍
+
+### 键盘
 
 规格出处：[W3C APG](https://www.w3.org/WAI/ARIA/apg/patterns/listbox/#keyboardinteraction)
 
@@ -2434,9 +2452,9 @@ const rows = [
 | `Enter` / `Space` | focus on to-target-trigger / to-source-trigger | 把对面勾中的条目搬过来（原生按钮的激活行为）；搬完按钮多半随即变禁用，焦点改落到目的地那一侧的列表上 |
 | `Enter` / `Space` | focus on select-all-trigger | 全选/取消全选该侧可操作条目（原生按钮的激活行为）；三态经 aria-checked 上报，半选时是 mixed |
 
-## 无障碍
+### ARIA
 
-下面这些由 `connect` 铺到部件上，作者不必自己写；重复写反而会覆盖掉正确值。
+以下属性由 `connect` 生成。
 
 | 部件 | 属性 | 值 |
 | --- | --- | --- |
@@ -2463,13 +2481,15 @@ const rows = [
 | `select-all-trigger` | `aria-controls` | listId[panel.side] |
 | `select-all-trigger` | `role` | 'checkbox' |
 
-## 样式
+## 样式参考
 
-默认皮肤 `@xihan-ui/styles/transfer.css` 按部件选择：`[data-scope="transfer"][data-part="root"]`。它落在 `xihan.components` 层；业务样式不写进 `@layer` 即高于全部库层，要按层压过来就写进 `xihan.overrides`。
+### 皮肤
 
-## 数据属性
+`@xihan-ui/styles/transfer.css` 使用 `[data-scope="transfer"][data-part="root"]` 部件选择器，位于 `xihan.components` 层。覆盖样式使用 `xihan.overrides`。
 
-由 `connect` 产出并铺到部件上，皮肤与测试都据此选择；`data-disabled` 这类无值属性在条件不成立时整个不出现。
+### 数据属性
+
+由 `connect` 生成；条件不成立时不输出无值属性。
 
 | 部件 | 属性 | 值 |
 | --- | --- | --- |
@@ -2508,7 +2528,7 @@ const rows = [
 | `panel` | `data-side` | panel.side |
 
 <!-- xh-component-tokens:start -->
-## CSS 变量
+### CSS 变量
 
 本组件公开覆盖槽由独立皮肤的实际消费位生成；缺省来源、作用部件和状态均与 CSS 同源。
 
@@ -2590,30 +2610,16 @@ const rows = [
 | `--xh-transfer-trigger-size` | `to-source-trigger`<br>`to-target-trigger` | `block-size`<br>`min-inline-size` | `default` | `--xh-control-h-sm` | transfer 的 to-source-trigger、to-target-trigger 部件 block-size、min-inline-size 覆盖槽。 |
 <!-- xh-component-tokens:end -->
 
-## 动效
+### 动效
 
 `background` · `border-color` · `box-shadow` · `color` · `scale` 走 `transition` 过渡。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
 
 系统开启减弱动效时由令牌层统一收敛，皮肤不另作判断。
 
-## 响应式
+### 响应式
 
 皮肤按视口分档：`min-width: 640px`。
 
-## RTL
+### RTL
 
 皮肤用逻辑属性排布（`inline-start` 一族），`dir="rtl"` 下自动镜像。
-
-## 组合
-
-- 内层是[列表框](./listbox)；长列表配[虚拟滚动](./virtualizer)。
-
-## 最佳实践
-
-- 两栏都显示计数，用户才知道还剩多少没挑。
-- 候选很大时把搜索做成远端过滤，别把全量灌进前端。
-
-## 反模式
-
-- 在窄屏上用它：两栏加中间的按钮列放不下。
-- 搬运后不保留滚动位置，用户每搬一条都要重新找位置。

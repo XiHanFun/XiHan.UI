@@ -1,0 +1,63 @@
+const n=`<!-- 外观 | 设置角度、间距、字号和透明度 -->
+<div style="display: flex; flex-wrap: wrap; gap: 16px">
+  <xh-watermark
+    text="曦寒"
+    style="
+      display: block;
+      inline-size: 220px;
+      border-radius: var(--xh-shape-surface);
+      background: var(--xh-bg-subtle);
+    "
+  >
+    <div data-xh-part="root">
+      <div data-xh-part="content">
+        <div style="padding: 16px; block-size: 160px; font-size: 13px">默认</div>
+      </div>
+    </div>
+  </xh-watermark>
+
+  <xh-watermark
+    text="曦寒"
+    rotate="0"
+    gap="8"
+    font-size="12"
+    opacity="0.18"
+    style="
+      display: block;
+      inline-size: 220px;
+      border-radius: var(--xh-shape-surface);
+      background: var(--xh-bg-subtle);
+    "
+  >
+    <div data-xh-part="root">
+      <div data-xh-part="content">
+        <div style="padding: 16px; block-size: 160px; font-size: 13px">
+          紧凑
+        </div>
+      </div>
+    </div>
+  </xh-watermark>
+
+  <xh-watermark
+    text="曦寒"
+    rotate="-45"
+    gap="56"
+    font-size="18"
+    opacity="0.12"
+    style="
+      display: block;
+      inline-size: 220px;
+      border-radius: var(--xh-shape-surface);
+      background: var(--xh-bg-subtle);
+    "
+  >
+    <div data-xh-part="root">
+      <div data-xh-part="content">
+        <div style="padding: 16px; block-size: 160px; font-size: 13px">
+          宽松
+        </div>
+      </div>
+    </div>
+  </xh-watermark>
+</div>
+`;export{n as default};

@@ -1,8 +1,8 @@
 来源：https://ui.docs.xihanfun.com/components/affix
 
-# Affix `固钉`
+# Affix 固钉
 
-滚过判定线就把内容钉在滚动容器可视区的边上；占位盒留在原位，页面不跳。
+在滚动超过指定位置后固定内容。
 
 <div class="xh-resource-links">
   <a href="https://github.com/XiHanFun/XiHan.UI/tree/dev/ui/packages/engine/headless/src/affix" target="_blank" rel="noreferrer">Headless</a>
@@ -14,7 +14,7 @@
 
 ## 用法
 
-滚过判定线就把内容钉在滚动容器可视区的上边；占位盒留在原位，页面不跳
+滚动后固定工具栏
 
 ```vue
 <script setup lang="ts">
@@ -29,29 +29,29 @@ const scrollEl = ref<HTMLElement | null>(null);
     ref="scrollEl"
     style="
       block-size: 240px;
+      inline-size: min(420px, 100%);
       overflow: auto;
       padding: 12px;
-      border: 1px solid var(--xh-border-default);
-      border-radius: 8px;
+      border-radius: var(--xh-shape-surface);
+      background: var(--xh-bg-subtle);
     "
   >
-    <p style="block-size: 120px">往下滚，下面那条会钉在容器顶边。</p>
+    <div style="block-size: 120px; padding: 8px">项目概览</div>
 
-    <!-- target 指向真正在滚的那层；不给就按整页滚动算 -->
     <XhAffixRoot :target="scrollEl">
       <XhAffixContent
         style="
           padding: 8px 12px;
-          border-radius: 6px;
-          background: var(--xh-bg-brand);
-          color: var(--xh-fg-on-brand);
+          border-radius: var(--xh-shape-control);
+          background: var(--xh-bg-brand-subtle);
+          color: var(--xh-fg-brand);
         "
       >
-        我会钉在顶边
+        筛选与操作
       </XhAffixContent>
     </XhAffixRoot>
 
-    <p style="block-size: 600px">后面还有很长的内容，一直滚到底再滚回去。</p>
+    <div style="block-size: 600px; padding: 12px">项目动态<br><br>最近访问<br><br>团队成员</div>
   </div>
 </template>
 ```
@@ -61,15 +61,15 @@ const scrollEl = ref<HTMLElement | null>(null);
   id="affix-basic-scroll"
   style="
     block-size: 240px;
+    inline-size: min(420px, 100%);
     overflow: auto;
     padding: 12px;
-    border: 1px solid var(--xh-border-default);
-    border-radius: 8px;
+    border-radius: var(--xh-shape-surface);
+    background: var(--xh-bg-subtle);
   "
 >
-  <p style="block-size: 120px">往下滚，下面那条会钉在容器顶边。</p>
+  <div style="block-size: 120px; padding: 8px">项目概览</div>
 
-  <!-- target 指向真正在滚的那层；不给就按整页滚动算 -->
   <template id="affix-basic-tpl">
     <xh-affix style="display: block">
       <div data-xh-part="root">
@@ -77,22 +77,21 @@ const scrollEl = ref<HTMLElement | null>(null);
           data-xh-part="content"
           style="
             padding: 8px 12px;
-            border-radius: 6px;
-            background: var(--xh-bg-brand);
-            color: var(--xh-fg-on-brand);
+            border-radius: var(--xh-shape-control);
+            background: var(--xh-bg-brand-subtle);
+            color: var(--xh-fg-brand);
           "
         >
-          我会钉在顶边
+          筛选与操作
         </div>
       </div>
     </xh-affix>
   </template>
 
-  <p style="block-size: 600px">后面还有很长的内容，一直滚到底再滚回去。</p>
+  <div style="block-size: 600px; padding: 12px">项目动态<br><br>最近访问<br><br>团队成员</div>
 </div>
 
 <script type="module">
-  // 滚动容器是 DOM 句柄，只走属性；先交句柄再进 DOM，滚动观察器才挂得到这一层
   const template = document.getElementById("affix-basic-tpl");
   const affix = template.content.firstElementChild;
   affix.target = document.getElementById("affix-basic-scroll");
@@ -100,11 +99,17 @@ const scrollEl = ref<HTMLElement | null>(null);
 </script>
 ```
 
+## 组件结构
+
+加粗的是必需部件。
+
+`data-scope="affix"`：**`root`** · **`content`**
+
 ## 示例
 
-### 让出吸顶栏
+### 顶部偏移
 
-offset-top 把判定线往下挪，钉住后也在同一位置留出这段高度
+避让固定页头
 
 ```vue
 <script setup lang="ts">
@@ -120,13 +125,13 @@ const scrollEl = ref<HTMLElement | null>(null);
     style="
       position: relative;
       block-size: 240px;
+      inline-size: min(420px, 100%);
       overflow: auto;
       padding: 12px;
-      border: 1px solid var(--xh-border-default);
-      border-radius: 8px;
+      border-radius: var(--xh-shape-surface);
+      background: var(--xh-bg-subtle);
     "
   >
-    <!-- 容器自带一条 40px 的吸顶栏，钉住的内容要躲开它 -->
     <div
       style="
         position: sticky;
@@ -142,22 +147,22 @@ const scrollEl = ref<HTMLElement | null>(null);
       吸顶栏
     </div>
 
-    <p style="block-size: 120px">往下滚。</p>
+    <div style="block-size: 120px" />
 
     <XhAffixRoot :target="scrollEl" :offset-top="40">
       <XhAffixContent
         style="
           padding: 8px 12px;
-          border-radius: 6px;
-          background: var(--xh-bg-brand);
-          color: var(--xh-fg-on-brand);
+          border-radius: var(--xh-shape-control);
+          background: var(--xh-bg-brand-subtle);
+          color: var(--xh-fg-brand);
         "
       >
-        钉在吸顶栏下方 40px 处
+        二级工具栏
       </XhAffixContent>
     </XhAffixRoot>
 
-    <p style="block-size: 600px">后面还有很长的内容。</p>
+    <div style="block-size: 600px" />
   </div>
 </template>
 ```
@@ -168,13 +173,13 @@ const scrollEl = ref<HTMLElement | null>(null);
   style="
     position: relative;
     block-size: 240px;
+    inline-size: min(420px, 100%);
     overflow: auto;
     padding: 12px;
-    border: 1px solid var(--xh-border-default);
-    border-radius: 8px;
+    border-radius: var(--xh-shape-surface);
+    background: var(--xh-bg-subtle);
   "
 >
-  <!-- 容器自带一条 40px 的吸顶栏，钉住的内容要躲开它 -->
   <div
     style="
       position: sticky;
@@ -190,7 +195,7 @@ const scrollEl = ref<HTMLElement | null>(null);
     吸顶栏
   </div>
 
-  <p style="block-size: 120px">往下滚。</p>
+  <div style="block-size: 120px"></div>
 
   <template id="affix-offset-top-tpl">
     <xh-affix offset-top="40" style="display: block">
@@ -199,22 +204,21 @@ const scrollEl = ref<HTMLElement | null>(null);
           data-xh-part="content"
           style="
             padding: 8px 12px;
-            border-radius: 6px;
-            background: var(--xh-bg-brand);
-            color: var(--xh-fg-on-brand);
+            border-radius: var(--xh-shape-control);
+            background: var(--xh-bg-brand-subtle);
+            color: var(--xh-fg-brand);
           "
         >
-          钉在吸顶栏下方 40px 处
+          二级工具栏
         </div>
       </div>
     </xh-affix>
   </template>
 
-  <p style="block-size: 600px">后面还有很长的内容。</p>
+  <div style="block-size: 600px"></div>
 </div>
 
 <script type="module">
-  // 滚动容器是 DOM 句柄，只走属性；先交句柄再进 DOM，滚动观察器才挂得到这一层
   const template = document.getElementById("affix-offset-top-tpl");
   const affix = template.content.firstElementChild;
   affix.target = document.getElementById("affix-offset-top-scroll");
@@ -222,9 +226,9 @@ const scrollEl = ref<HTMLElement | null>(null);
 </script>
 ```
 
-### 贴下边
+### 底部固定
 
-给了 offset-bottom 就改贴可视区的下边，判定线也换到下边
+将操作栏固定在底部
 
 ```vue
 <script setup lang="ts">
@@ -239,13 +243,14 @@ const scrollEl = ref<HTMLElement | null>(null);
     ref="scrollEl"
     style="
       block-size: 240px;
+      inline-size: min(420px, 100%);
       overflow: auto;
       padding: 12px;
-      border: 1px solid var(--xh-border-default);
-      border-radius: 8px;
+      border-radius: var(--xh-shape-surface);
+      background: var(--xh-bg-subtle);
     "
   >
-    <p style="block-size: 80px">这块工具条在滚到它之前就贴在容器底边，滚过去之后回到常规流。</p>
+    <div style="block-size: 80px">订单列表</div>
 
     <XhAffixRoot :target="scrollEl" :offset-bottom="12">
       <XhAffixContent
@@ -253,7 +258,7 @@ const scrollEl = ref<HTMLElement | null>(null);
           display: flex;
           gap: 8px;
           padding: 8px 12px;
-          border-radius: 6px;
+          border-radius: var(--xh-shape-control);
           background: var(--xh-bg-surface-raised);
           box-shadow: var(--xh-elevation-floating);
         "
@@ -263,7 +268,7 @@ const scrollEl = ref<HTMLElement | null>(null);
       </XhAffixContent>
     </XhAffixRoot>
 
-    <p style="block-size: 600px">下面是很长的列表内容。</p>
+    <div style="block-size: 600px" />
   </div>
 </template>
 ```
@@ -273,15 +278,14 @@ const scrollEl = ref<HTMLElement | null>(null);
   id="affix-offset-bottom-scroll"
   style="
     block-size: 240px;
+    inline-size: min(420px, 100%);
     overflow: auto;
     padding: 12px;
-    border: 1px solid var(--xh-border-default);
-    border-radius: 8px;
+    border-radius: var(--xh-shape-surface);
+    background: var(--xh-bg-subtle);
   "
 >
-  <p style="block-size: 80px">
-    这块工具条在滚到它之前就贴在容器底边，滚过去之后回到常规流。
-  </p>
+  <div style="block-size: 80px">订单列表</div>
 
   <template id="affix-offset-bottom-tpl">
     <xh-affix offset-bottom="12" style="display: block">
@@ -292,7 +296,7 @@ const scrollEl = ref<HTMLElement | null>(null);
             display: flex;
             gap: 8px;
             padding: 8px 12px;
-            border-radius: 6px;
+            border-radius: var(--xh-shape-control);
             background: var(--xh-bg-surface-raised);
             box-shadow: var(--xh-elevation-floating);
           "
@@ -304,11 +308,10 @@ const scrollEl = ref<HTMLElement | null>(null);
     </xh-affix>
   </template>
 
-  <p style="block-size: 600px">下面是很长的列表内容。</p>
+  <div style="block-size: 600px"></div>
 </div>
 
 <script type="module">
-  // 滚动容器是 DOM 句柄，只走属性；先交句柄再进 DOM，滚动观察器才挂得到这一层
   const template = document.getElementById("affix-offset-bottom-tpl");
   const affix = template.content.firstElementChild;
   affix.target = document.getElementById("affix-offset-bottom-scroll");
@@ -316,9 +319,9 @@ const scrollEl = ref<HTMLElement | null>(null);
 </script>
 ```
 
-### 监听吸附状态
+### 吸附状态
 
-affix-change 报吸住与松开；默认插槽也把 affixed 透出来
+根据当前状态更新内容
 
 ```vue
 <script setup lang="ts">
@@ -326,90 +329,77 @@ import { XhAffixContent, XhAffixRoot } from "@xihan-ui/vue";
 import { ref } from "vue";
 
 const scrollEl = ref<HTMLElement | null>(null);
-const affixed = ref(false);
-
-function onAffixChange(details: { affixed: boolean }): void {
-  affixed.value = details.affixed;
-}
 </script>
 
 <template>
-  <div style="display: grid; gap: 12px; inline-size: 100%">
+  <div style="display: grid; gap: 12px; inline-size: min(420px, 100%)">
     <div
       ref="scrollEl"
       style="
         block-size: 220px;
         overflow: auto;
         padding: 12px;
-        border: 1px solid var(--xh-border-default);
-        border-radius: 8px;
+        border-radius: var(--xh-shape-surface);
+        background: var(--xh-bg-subtle);
       "
     >
-      <p style="block-size: 120px">往下滚，下面的状态会跟着变。</p>
+      <div style="block-size: 120px" />
 
-      <XhAffixRoot v-slot="{ affixed: pinned }" :target="scrollEl" @affix-change="onAffixChange">
+      <XhAffixRoot v-slot="{ affixed: pinned }" :target="scrollEl">
         <XhAffixContent
           style="padding: 8px 12px; border-radius: 6px; background: var(--xh-bg-subtle)"
         >
-          {{ pinned ? "已钉住" : "在常规流里" }}
+          {{ pinned ? "已固定" : "工具栏" }}
         </XhAffixContent>
       </XhAffixRoot>
 
-      <p style="block-size: 600px">后面还有很长的内容。</p>
+      <div style="block-size: 600px" />
     </div>
-
-    <span>affix-change 最近一次报的是：{{ affixed ? "吸住" : "松开" }}</span>
   </div>
 </template>
 ```
 
 ```html
-<div style="display: grid; gap: 12px; inline-size: 100%">
+<div style="display: grid; gap: 12px; inline-size: min(420px, 100%)">
   <div
     id="affix-change-scroll"
     style="
       block-size: 220px;
       overflow: auto;
       padding: 12px;
-      border: 1px solid var(--xh-border-default);
-      border-radius: 8px;
+      border-radius: var(--xh-shape-surface);
+      background: var(--xh-bg-subtle);
     "
   >
-    <p style="block-size: 120px">往下滚，下面的状态会跟着变。</p>
+    <div style="block-size: 120px"></div>
 
     <template id="affix-change-tpl">
       <xh-affix style="display: block">
         <div data-xh-part="root">
-          <!-- 同一份状态也写在这个部件的 data-fixed 上，纯样式的场合不必接事件 -->
           <div
             data-xh-part="content"
-            style="padding: 8px 12px; border-radius: 6px; background: var(--xh-bg-subtle)"
+            style="padding: 8px 12px; border-radius: var(--xh-shape-control); background: var(--xh-bg-surface-raised)"
           >
-            在常规流里
+            工具栏
           </div>
         </div>
       </xh-affix>
     </template>
 
-    <p style="block-size: 600px">后面还有很长的内容。</p>
+    <div style="block-size: 600px"></div>
   </div>
-
-  <span>affix-change 最近一次报的是：<span id="affix-change-readout">松开</span></span>
 </div>
 
 <script type="module">
-  // 滚动容器是 DOM 句柄，只走属性；先交句柄再进 DOM，滚动观察器才挂得到这一层
   const template = document.getElementById("affix-change-tpl");
   const affix = template.content.firstElementChild;
   const content = affix.querySelector('[data-xh-part="content"]');
-  const readout = document.getElementById("affix-change-readout");
   affix.target = document.getElementById("affix-change-scroll");
   template.replaceWith(affix);
 
   affix.addEventListener("affix-change", (event) => {
     const { affixed } = event.detail;
-    content.textContent = affixed ? "已钉住" : "在常规流里";
-    readout.textContent = affixed ? "吸住" : "松开";
+    content.textContent = affixed ? "已固定" : "工具栏";
   });
 </script>
 ```
@@ -418,21 +408,37 @@ function onAffixChange(details: { affixed: boolean }): void {
 
 ### 何时使用
 
-- 表格的操作栏、表单的提交条、文章的目录，需要滚动时一直可达。
+- 固定表格操作栏、表单提交栏或文章目录。
 
 ### 何时不用
 
-- 元素从一开始就该钉住：直接写 `position: sticky`，不需要判定线。
-- 要钉的是整块页面骨架（头、侧栏）：用[布局](./layout)的吸顶开关。
-- 需要滚到顶部的按钮：那是[回到顶部](./back-top)。
+- 始终固定的元素直接使用 `position: sticky`。
+- 页面骨架使用[布局](./layout)的固定能力。
+- 返回顶部操作使用[回到顶部](./back-top)。
 
 ### 特性
 
-- 占位盒留在原位：吸住的那一刻页面不会突然少一段高度。
-- `offsetTop` 把判定线往下挪，钉住后也在同一位置留出这段高度；给了 `offsetBottom` 就改贴下边。
-- 吸附状态会回调，默认插槽也把它透出来。
+- 固定时保留原始占位，避免页面跳动。
+- 支持顶部、底部和偏移位置。
+- 提供吸附状态和变化事件。
 
-## 产物
+### 组合
+
+- 可与[锚点](./anchor)或[工具栏](./toolbar)组合使用。
+
+### 最佳实践
+
+- 页面已有固定页头时设置对应的顶部偏移。
+- 固定后使用轻微阴影或背景变化提示状态。
+
+### 反模式
+
+- 不要在同一视口固定过多内容。
+- 移动端避免固定过高的区域。
+
+## API 参考
+
+### 产物
 
 | 层 | 值 |
 | --- | --- |
@@ -442,13 +448,7 @@ function onAffixChange(details: { affixed: boolean }): void {
 | 状态机 | `affixMachine` |
 | 皮肤 | `@xihan-ui/styles/affix.css` |
 
-## 解剖
-
-部件名即 `data-part` 属性值，也是皮肤的选择器。加粗的是必备部件，不渲染它组件不工作（Web Components 适配器会在诊断通道上报 `wc.missing-part`）。
-
-`data-scope="affix"`：**`root`** · **`content`**
-
-## Props
+### Props
 
 | 属性 | 类型 | 必填 | 说明 |
 | --- | --- | --- | --- |
@@ -456,25 +456,25 @@ function onAffixChange(details: { affixed: boolean }): void {
 | `offsetBottom` | `number` |  | 吸住后距滚动容器可视区下边的距离（px）；给了它就改贴下边。 |
 | `onAffixChange` | `(details: AffixChangeDetails) => void` |  | 吸附状态变化回调。 |
 
-## 事件
+### 事件
 
-自定义元素派发这些事件，Vue 组件对应同名 emit；载荷都在 `detail` 上。可双向绑定的值另有 `update:xxx`，见 Props。
+自定义元素将载荷放在 `detail`；Vue 使用同名 emit。
 
 | 事件 | 载荷 | 说明 |
 | --- | --- | --- |
 | `affix-change` | `AffixChangeDetails` | 吸附状态变化；detail 为 `{ affixed: boolean }` |
 
-## 插槽
+### 插槽
 
-作者能拿到载荷的插槽。只转发内容、不带载荷的默认插槽不在此列——那类直接写子节点即可。
+仅列出带载荷的插槽。
 
 | Vue 组件 | 插槽 | 载荷 | 说明 |
 | --- | --- | --- | --- |
 | `XhAffixRoot` | `default` | `AffixRootSlotProps` |  |
 
-## 状态
+### 状态
 
-状态机内部转移，写样式与业务都用不到；要监听变化请看上面的「事件」。
+以下名称仅用于内部状态机。
 
 **状态**：`released` · `affixed`
 
@@ -482,9 +482,9 @@ function onAffixChange(details: { affixed: boolean }): void {
 
 **判据**：`shouldAffix` · `shouldRelease`
 
-## connect API
+### connect API
 
-`useAffix` 产出的对象。`getXxxProps()` 铺到对应部件的宿主元素上，其余是可读状态与操作入口。
+`getXxxProps()` 返回对应部件的宿主属性。
 
 | 成员 | 类型 | 说明 |
 | --- | --- | --- |
@@ -492,26 +492,30 @@ function onAffixChange(details: { affixed: boolean }): void {
 | `getRootProps` | `() => T['element']` |  |
 | `getContentProps` | `() => T['element']` |  |
 
-## 键盘
+## 无障碍
+
+### 键盘
 
 规格出处：[W3C APG](https://www.w3.org/WAI/ARIA/apg/)
 
 无键盘交互（不接收焦点，或焦点行为完全由原生元素提供）。
 
-## 样式
+## 样式参考
 
-默认皮肤 `@xihan-ui/styles/affix.css` 按部件选择：`[data-scope="affix"][data-part="root"]`。它落在 `xihan.components` 层；业务样式不写进 `@layer` 即高于全部库层，要按层压过来就写进 `xihan.overrides`。
+### 皮肤
 
-## 数据属性
+`@xihan-ui/styles/affix.css` 使用 `[data-scope="affix"][data-part="root"]` 部件选择器，位于 `xihan.components` 层。覆盖样式使用 `xihan.overrides`。
 
-由 `connect` 产出并铺到部件上，皮肤与测试都据此选择；`data-disabled` 这类无值属性在条件不成立时整个不出现。
+### 数据属性
+
+由 `connect` 生成；条件不成立时不输出无值属性。
 
 | 部件 | 属性 | 值 |
 | --- | --- | --- |
 | `content` | `data-fixed` | ''（条件成立时才出现） |
 
 <!-- xh-component-tokens:start -->
-## CSS 变量
+### CSS 变量
 
 本组件公开覆盖槽由独立皮肤的实际消费位生成；缺省来源、作用部件和状态均与 CSS 同源。
 
@@ -520,20 +524,6 @@ function onAffixChange(details: { affixed: boolean }): void {
 | `--xh-affix-layer` | `content` | `z-index` | `fixed` | `--xh-layer-sticky` | affix 的 content 部件 z-index 覆盖槽。 |
 <!-- xh-component-tokens:end -->
 
-## 动效
+### 动效
 
 本组件皮肤不含过渡与关键帧，也没有脚本驱动的动效：状态一变，外观立即到位。
-
-## 组合
-
-- 与[锚点](./anchor)配合做吸顶目录；与[工具栏](./toolbar)配合做吸顶操作条。
-
-## 最佳实践
-
-- 页面已有吸顶栏时把栏高填进 `offsetTop`，否则会两层叠在一起。
-- 钉住后给一点视觉变化（阴影或描边），让用户知道它已经脱离了原位。
-
-## 反模式
-
-- 一屏里钉住多个条：可视高度被吃光，正文只剩一条缝。
-- 在移动端钉住高条：小屏上这块面积很贵。

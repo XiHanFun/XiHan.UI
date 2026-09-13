@@ -1,8 +1,8 @@
 来源：https://ui.docs.xihanfun.com/components/page-header
 
-# PageHeader `页头`
+# PageHeader 页头
 
-一页内容的抬头：面包屑、返回位、头像位、标题、副标题、行尾操作与页脚各占一段。
+统一呈现页面标题、说明、导航和主要操作。
 
 <div class="xh-resource-links">
   <a href="https://github.com/XiHanFun/XiHan.UI/tree/dev/ui/packages/engine/headless/src/page-header" target="_blank" rel="noreferrer">Headless</a>
@@ -14,352 +14,173 @@
 
 ## 用法
 
-除了 root，返回位、副标题、操作、页脚都可选；只写用得上的那几段
+显示标题、说明与页面操作
 
 ```vue
 <script setup lang="ts">
-import { XhPageHeaderDescription, XhPageHeaderRoot, XhPageHeaderTitle } from "@xihan-ui/vue";
+import {
+  XhButton,
+  XhPageHeaderBackTrigger,
+  XhPageHeaderDescription,
+  XhPageHeaderExtra,
+  XhPageHeaderRoot,
+  XhPageHeaderTitle,
+} from "@xihan-ui/vue";
 </script>
 
 <template>
-  <XhPageHeaderRoot>
-    <XhPageHeaderTitle>订单详情</XhPageHeaderTitle>
-    <XhPageHeaderDescription>编号 SO-20260731-004</XhPageHeaderDescription>
+  <XhPageHeaderRoot variant="surface" style="inline-size: min(720px, 100%)">
+    <XhPageHeaderBackTrigger
+      type="button"
+      aria-label="返回订单列表"
+      style="inline-size: 36px; block-size: 36px; border: 0; border-radius: var(--xh-shape-control); background: transparent; color: inherit; font: inherit; cursor: pointer"
+    >
+      ←
+    </XhPageHeaderBackTrigger>
+    <XhPageHeaderTitle>订单 SO-20260731-004</XhPageHeaderTitle>
+    <XhPageHeaderDescription>由赵一创建 · 今天 14:32 更新</XhPageHeaderDescription>
+    <XhPageHeaderExtra>
+      <XhButton variant="subtle">归档</XhButton>
+      <XhButton>编辑订单</XhButton>
+    </XhPageHeaderExtra>
   </XhPageHeaderRoot>
 </template>
 ```
 
 ```html
-<xh-page-header>
-  <div data-xh-part="root">
-    <div data-xh-part="title">订单详情</div>
-    <div data-xh-part="description">编号 SO-20260731-004</div>
+<xh-page-header variant="surface">
+  <div data-xh-part="root" style="inline-size: min(720px, 100%)">
+    <button data-xh-part="back-trigger" type="button" aria-label="返回订单列表" style="inline-size: 36px; block-size: 36px; border: 0; border-radius: var(--xh-shape-control); background: transparent; color: inherit; font: inherit; cursor: pointer">←</button>
+    <div data-xh-part="title">订单 SO-20260731-004</div>
+    <div data-xh-part="description">由赵一创建 · 今天 14:32 更新</div>
+    <div data-xh-part="extra">
+      <xh-button variant="subtle"><button data-xh-part="root">归档</button></xh-button>
+      <xh-button><button data-xh-part="root">编辑订单</button></xh-button>
+    </div>
   </div>
 </xh-page-header>
 ```
+
+## 组件结构
+
+加粗的是必需部件。
+
+`data-scope="page-header"`：**`root`** · `breadcrumb` · `back-trigger` · `media` · `title` · `description` · `extra` · `footer`
 
 ## 示例
 
-### 返回位
+### 页脚
 
-返回位就是作者自己的按钮：组件只给身份与位置，type、可及名字与点击行为自己写
-
-```vue
-<script setup lang="ts">
-import {
-  XhPageHeaderBackTrigger,
-  XhPageHeaderDescription,
-  XhPageHeaderRoot,
-  XhPageHeaderTitle,
-} from "@xihan-ui/vue";
-import { ref } from "vue";
-
-const times = ref(0);
-</script>
-
-<template>
-  <XhPageHeaderRoot>
-    <XhPageHeaderBackTrigger type="button" aria-label="返回上一页" @click="times++">
-      ←
-    </XhPageHeaderBackTrigger>
-    <XhPageHeaderTitle>订单详情</XhPageHeaderTitle>
-    <XhPageHeaderDescription>已点返回 {{ times }} 次</XhPageHeaderDescription>
-  </XhPageHeaderRoot>
-</template>
-```
-
-```html
-<xh-page-header id="page-header-back">
-  <div data-xh-part="root">
-    <button data-xh-part="back-trigger" type="button" aria-label="返回上一页">
-      ←
-    </button>
-    <div data-xh-part="title">订单详情</div>
-    <div data-xh-part="description">
-      已点返回 <span id="page-header-back-times">0</span> 次
-    </div>
-  </div>
-</xh-page-header>
-
-<script type="module">
-  // 点击行为归作者：这里只数次数
-  const host = document.getElementById("page-header-back");
-  const trigger = host.querySelector('[data-xh-part="back-trigger"]');
-  const readout = document.getElementById("page-header-back-times");
-  let times = 0;
-  trigger.addEventListener("click", () => {
-    times += 1;
-    readout.textContent = times;
-  });
-</script>
-```
-
-### 行尾操作
-
-extra 贴在整行的末尾，里面放什么按钮由作者决定
+在标题下方显示页面摘要
 
 ```vue
 <script setup lang="ts">
-import {
-  XhPageHeaderDescription,
-  XhPageHeaderExtra,
-  XhPageHeaderRoot,
-  XhPageHeaderTitle,
-} from "@xihan-ui/vue";
+import { XhButton, XhPageHeaderExtra, XhPageHeaderFooter, XhPageHeaderRoot, XhPageHeaderTitle } from "@xihan-ui/vue";
 </script>
 
 <template>
-  <XhPageHeaderRoot>
-    <XhPageHeaderTitle>订单详情</XhPageHeaderTitle>
-    <XhPageHeaderDescription>编号 SO-20260731-004</XhPageHeaderDescription>
-    <XhPageHeaderExtra>
-      <button type="button">导出</button>
-      <button type="button">打印</button>
-    </XhPageHeaderExtra>
-  </XhPageHeaderRoot>
-</template>
-```
-
-```html
-<xh-page-header>
-  <div data-xh-part="root">
-    <div data-xh-part="title">订单详情</div>
-    <div data-xh-part="description">编号 SO-20260731-004</div>
-    <div data-xh-part="extra">
-      <button type="button">导出</button>
-      <button type="button">打印</button>
-    </div>
-  </div>
-</xh-page-header>
-```
-
-### 尺寸
-
-size 换的是标题字号与整块的上下留白，不写 size 即默认档
-
-```vue
-<script setup lang="ts">
-import { XhPageHeaderDescription, XhPageHeaderRoot, XhPageHeaderTitle } from "@xihan-ui/vue";
-
-// 中间一档不写 size，用 undefined 表达
-const sizes = [
-  { size: "sm", label: "小" },
-  { size: undefined, label: "默认" },
-  { size: "lg", label: "大" },
-] as const;
-</script>
-
-<template>
-  <div style="display: flex; flex-direction: column">
-    <XhPageHeaderRoot v-for="s in sizes" :key="s.label" :size="s.size" bordered>
-      <XhPageHeaderTitle>{{ s.label }}档标题</XhPageHeaderTitle>
-      <XhPageHeaderDescription>副标题跟着标题排在同一行</XhPageHeaderDescription>
-    </XhPageHeaderRoot>
-  </div>
-</template>
-```
-
-```html
-<div style="display: flex; flex-direction: column">
-  <xh-page-header size="sm" bordered>
-    <div data-xh-part="root">
-      <div data-xh-part="title">小档标题</div>
-      <div data-xh-part="description">副标题跟着标题排在同一行</div>
-    </div>
-  </xh-page-header>
-
-  <!-- 中间一档不写 size -->
-  <xh-page-header bordered>
-    <div data-xh-part="root">
-      <div data-xh-part="title">默认档标题</div>
-      <div data-xh-part="description">副标题跟着标题排在同一行</div>
-    </div>
-  </xh-page-header>
-
-  <xh-page-header size="lg" bordered>
-    <div data-xh-part="root">
-      <div data-xh-part="title">大档标题</div>
-      <div data-xh-part="description">副标题跟着标题排在同一行</div>
-    </div>
-  </xh-page-header>
-</div>
-```
-
-### 分隔线与页脚
-
-bordered 在底部画一条线，footer 整行另起，装描述或一组摘要
-
-```vue
-<script setup lang="ts">
-import {
-  XhPageHeaderExtra,
-  XhPageHeaderFooter,
-  XhPageHeaderRoot,
-  XhPageHeaderTitle,
-} from "@xihan-ui/vue";
-</script>
-
-<template>
-  <XhPageHeaderRoot bordered>
+  <XhPageHeaderRoot bordered style="inline-size: min(720px, 100%)">
     <XhPageHeaderTitle>七月账单</XhPageHeaderTitle>
-    <XhPageHeaderExtra>
-      <button type="button">去支付</button>
-    </XhPageHeaderExtra>
-    <XhPageHeaderFooter>账期 7 月 1 日至 7 月 31 日，共 128 笔，合计 3,240.00 元。</XhPageHeaderFooter>
+    <XhPageHeaderExtra><XhButton variant="subtle">下载账单</XhButton></XhPageHeaderExtra>
+    <XhPageHeaderFooter>7 月 1 日至 7 月 31 日 · 128 笔 · 合计 ¥3,240.00</XhPageHeaderFooter>
   </XhPageHeaderRoot>
 </template>
 ```
 
 ```html
 <xh-page-header bordered>
-  <div data-xh-part="root">
+  <div data-xh-part="root" style="inline-size: min(720px, 100%)">
     <div data-xh-part="title">七月账单</div>
-    <div data-xh-part="extra">
-      <button type="button">去支付</button>
-    </div>
-    <div data-xh-part="footer">账期 7 月 1 日至 7 月 31 日，共 128 笔，合计 3,240.00 元。</div>
+    <div data-xh-part="extra"><xh-button variant="subtle"><button data-xh-part="root">下载账单</button></xh-button></div>
+    <div data-xh-part="footer">7 月 1 日至 7 月 31 日 · 128 笔 · 合计 ¥3,240.00</div>
   </div>
 </xh-page-header>
 ```
 
-### 形态
+### 变体
 
-不写 variant 即不画面（与写 plain 一个样）；surface 加底色、圆角与左右内衬，raised 再加一层抬起投影，bordered 在这两档改画整圈描边
+适配页面、表面与抬升区域
 
 ```vue
 <script setup lang="ts">
 import { XhPageHeaderDescription, XhPageHeaderRoot, XhPageHeaderTitle } from "@xihan-ui/vue";
 
-// 第一档不写 variant，用 undefined 表达
 const variants = [
-  { variant: undefined, label: "不画面" },
-  { variant: "surface", label: "有面" },
-  { variant: "raised", label: "抬起" },
+  { variant: undefined, label: "纯净", description: "融入页面背景" },
+  { variant: "surface", label: "表面", description: "使用独立内容面" },
+  { variant: "raised", label: "抬升", description: "突出当前页面" },
 ] as const;
 </script>
 
 <template>
-  <div style="display: flex; flex-direction: column; gap: 12px">
+  <div style="display: grid; gap: 12px; inline-size: min(720px, 100%)">
     <XhPageHeaderRoot v-for="v in variants" :key="v.label" :variant="v.variant" bordered>
       <XhPageHeaderTitle>{{ v.label }}</XhPageHeaderTitle>
-      <XhPageHeaderDescription>页头贴在什么底上，由这一轴决定</XhPageHeaderDescription>
+      <XhPageHeaderDescription>{{ v.description }}</XhPageHeaderDescription>
     </XhPageHeaderRoot>
   </div>
 </template>
 ```
 
 ```html
-<div style="display: flex; flex-direction: column; gap: 12px">
-  <!-- 第一档不写 variant -->
+<div style="display: grid; gap: 12px; inline-size: min(720px, 100%)">
   <xh-page-header bordered>
     <div data-xh-part="root">
-      <div data-xh-part="title">不画面</div>
-      <div data-xh-part="description">页头贴在什么底上，由这一轴决定</div>
+      <div data-xh-part="title">纯净</div>
+      <div data-xh-part="description">融入页面背景</div>
     </div>
   </xh-page-header>
 
   <xh-page-header variant="surface" bordered>
     <div data-xh-part="root">
-      <div data-xh-part="title">有面</div>
-      <div data-xh-part="description">页头贴在什么底上，由这一轴决定</div>
+      <div data-xh-part="title">表面</div>
+      <div data-xh-part="description">使用独立内容面</div>
     </div>
   </xh-page-header>
 
   <xh-page-header variant="raised" bordered>
     <div data-xh-part="root">
-      <div data-xh-part="title">抬起</div>
-      <div data-xh-part="description">页头贴在什么底上，由这一轴决定</div>
+      <div data-xh-part="title">抬升</div>
+      <div data-xh-part="description">突出当前页面</div>
     </div>
   </xh-page-header>
 </div>
 ```
 
-### 面包屑与头像位
+### 导航与媒体
 
-面包屑整行排在标题之上（写在标记最前面），头像/图标排在返回位与标题之间；两块都可缺省
+补充页面路径和对象标识
 
 ```vue
 <script setup lang="ts">
 import {
-  XhAvatarFallback,
-  XhAvatarRoot,
-  XhBreadcrumbItem,
-  XhBreadcrumbLink,
-  XhBreadcrumbList,
-  XhBreadcrumbRoot,
-  XhBreadcrumbSeparator,
   XhPageHeaderBreadcrumb,
   XhPageHeaderDescription,
   XhPageHeaderMedia,
   XhPageHeaderRoot,
   XhPageHeaderTitle,
 } from "@xihan-ui/vue";
-
-const trail = [
-  { label: "工作台", href: "#" },
-  { label: "订单", href: "#" },
-];
 </script>
 
 <template>
-  <XhPageHeaderRoot variant="surface" bordered>
-    <XhPageHeaderBreadcrumb>
-      <XhBreadcrumbRoot>
-        <XhBreadcrumbList>
-          <template v-for="item in trail" :key="item.label">
-            <XhBreadcrumbItem>
-              <XhBreadcrumbLink :href="item.href">{{ item.label }}</XhBreadcrumbLink>
-            </XhBreadcrumbItem>
-            <XhBreadcrumbSeparator>/</XhBreadcrumbSeparator>
-          </template>
-          <XhBreadcrumbItem>
-            <XhBreadcrumbLink href="#" current>SO-20260731-004</XhBreadcrumbLink>
-          </XhBreadcrumbItem>
-        </XhBreadcrumbList>
-      </XhBreadcrumbRoot>
-    </XhPageHeaderBreadcrumb>
+  <XhPageHeaderRoot variant="surface" style="inline-size: min(720px, 100%)">
+    <XhPageHeaderBreadcrumb>工作台 / 客户 / Acme Inc.</XhPageHeaderBreadcrumb>
     <XhPageHeaderMedia>
-      <XhAvatarRoot size="sm">
-        <XhAvatarFallback>赵</XhAvatarFallback>
-      </XhAvatarRoot>
+      <span style="display: grid; place-items: center; inline-size: 40px; block-size: 40px; border-radius: var(--xh-shape-pill); background: var(--xh-bg-brand-subtle); color: var(--xh-fg-brand); font-weight: 600">A</span>
     </XhPageHeaderMedia>
-    <XhPageHeaderTitle>订单详情</XhPageHeaderTitle>
-    <XhPageHeaderDescription>负责人 赵一 · 编号 SO-20260731-004</XhPageHeaderDescription>
+    <XhPageHeaderTitle>Acme Inc.</XhPageHeaderTitle>
+    <XhPageHeaderDescription>企业客户 · 最近联系于昨天</XhPageHeaderDescription>
   </XhPageHeaderRoot>
 </template>
 ```
 
 ```html
-<xh-page-header variant="surface" bordered>
-  <div data-xh-part="root">
-    <div data-xh-part="breadcrumb">
-      <xh-breadcrumb>
-        <nav data-xh-part="root">
-          <ol data-xh-part="list">
-            <li data-xh-part="item">
-              <a data-xh-part="link" href="#">工作台</a>
-            </li>
-            <li data-xh-part="separator">/</li>
-            <li data-xh-part="item">
-              <a data-xh-part="link" href="#">订单</a>
-            </li>
-            <li data-xh-part="separator">/</li>
-            <li data-xh-part="item">
-              <a data-xh-part="link" href="#" current>SO-20260731-004</a>
-            </li>
-          </ol>
-        </nav>
-      </xh-breadcrumb>
-    </div>
-    <div data-xh-part="media">
-      <xh-avatar size="sm">
-        <span data-xh-part="root">
-          <span data-xh-part="fallback">赵</span>
-        </span>
-      </xh-avatar>
-    </div>
-    <div data-xh-part="title">订单详情</div>
-    <div data-xh-part="description">负责人 赵一 · 编号 SO-20260731-004</div>
+<xh-page-header variant="surface">
+  <div data-xh-part="root" style="inline-size: min(720px, 100%)">
+    <div data-xh-part="breadcrumb">工作台 / 客户 / Acme Inc.</div>
+    <div data-xh-part="media"><span style="display: grid; place-items: center; inline-size: 40px; block-size: 40px; border-radius: var(--xh-shape-pill); background: var(--xh-bg-brand-subtle); color: var(--xh-fg-brand); font-weight: 600">A</span></div>
+    <div data-xh-part="title">Acme Inc.</div>
+    <div data-xh-part="description">企业客户 · 最近联系于昨天</div>
   </div>
 </xh-page-header>
 ```
@@ -368,21 +189,37 @@ const trail = [
 
 ### 何时使用
 
-- 详情页、编辑页需要一个统一的抬头，带返回与本页主操作。
+- 详情页、编辑页或对象页面需要稳定的标题区域。
 
 ### 何时不用
 
-- 页面就是一张表或一块卡片，标题写在卡片里更近：用[卡片](./card)。
-- 需要的是站点级的头（logo、全局搜索、账户）：那属于[布局](./layout)的 `header`。
+- 卡片标题应放在卡片内部。
+- Logo、全局搜索和账户入口属于站点级布局。
 
 ### 特性
 
-- 除了 `root`，返回位、副标题、操作、页脚都可选，只写用得上的那几段。
-- 返回位就是作者自己的按钮：组件只给身份与位置，类型、可及名字与点击行为自己写。
-- `extra` 贴在整行的末尾；面包屑整行排在标题之上，头像 / 图标排在返回位与标题之间。
-- 形态分三档：不写即不画面（贴在页面底色上），`surface` 加底色与圆角，`raised` 再加一层抬起投影；后两档的 `bordered` 改画整圈描边。
+- 标题与说明上下排列，操作区位于末侧。
+- 面包屑、返回位、媒体位、操作区和页脚均可省略。
+- `surface` 提供独立内容面，`raised` 增加抬升层级。
+- `bordered` 为纯净页头增加底部分隔，为有面页头增加完整边界。
 
-## 产物
+### 组合
+
+- 使用 `breadcrumb`、`media`、`extra` 和 `footer` 组织补充内容。
+
+### 最佳实践
+
+- 标题使用具体对象名称，说明文字保持简短。
+- 操作区只保留一个主要操作。
+
+### 反模式
+
+- 返回入口应指向明确的上级页面。
+- 不要在页头中放置完整表单。
+
+## API 参考
+
+### 产物
 
 | 层 | 值 |
 | --- | --- |
@@ -391,13 +228,7 @@ const trail = [
 | 状态机 | 无，`connect` 直接由 props 算属性 |
 | 皮肤 | `@xihan-ui/styles/page-header.css` |
 
-## 解剖
-
-部件名即 `data-part` 属性值，也是皮肤的选择器。加粗的是必备部件，不渲染它组件不工作（Web Components 适配器会在诊断通道上报 `wc.missing-part`）。
-
-`data-scope="page-header"`：**`root`** · `breadcrumb` · `back-trigger` · `media` · `title` · `description` · `extra` · `footer`
-
-## Props
+### Props
 
 | 属性 | 类型 | 必填 | 说明 |
 | --- | --- | --- | --- |
@@ -405,9 +236,9 @@ const trail = [
 | `size` | `Size` |  | 尺寸：sm / md / lg，决定标题字号与整块的上下留白。 |
 | `variant` | `PageHeaderVariant` |  | 形态：plain / surface / raised。不写即不画面，与写 plain 同一个样子。 |
 
-## connect API
+### connect API
 
-`connect` 产出的对象。`getXxxProps()` 铺到对应部件的宿主元素上，其余是可读状态与操作入口。
+`getXxxProps()` 返回对应部件的宿主属性。
 
 | 成员 | 类型 | 说明 |
 | --- | --- | --- |
@@ -420,19 +251,23 @@ const trail = [
 | `getExtraProps` | `() => T['element']` |  |
 | `getFooterProps` | `() => T['element']` |  |
 
-## 键盘
+## 无障碍
+
+### 键盘
 
 规格出处：[W3C APG](https://www.w3.org/WAI/ARIA/apg/)
 
 无键盘交互（不接收焦点，或焦点行为完全由原生元素提供）。
 
-## 样式
+## 样式参考
 
-默认皮肤 `@xihan-ui/styles/page-header.css` 按部件选择：`[data-scope="page-header"][data-part="root"]`。它落在 `xihan.components` 层；业务样式不写进 `@layer` 即高于全部库层，要按层压过来就写进 `xihan.overrides`。
+### 皮肤
 
-## 数据属性
+`@xihan-ui/styles/page-header.css` 使用 `[data-scope="page-header"][data-part="root"]` 部件选择器，位于 `xihan.components` 层。覆盖样式使用 `xihan.overrides`。
 
-由 `connect` 产出并铺到部件上，皮肤与测试都据此选择；`data-disabled` 这类无值属性在条件不成立时整个不出现。
+### 数据属性
+
+由 `connect` 生成；条件不成立时不输出无值属性。
 
 | 部件 | 属性 | 值 |
 | --- | --- | --- |
@@ -441,7 +276,7 @@ const trail = [
 | `root` | `data-variant` | props.variant |
 
 <!-- xh-component-tokens:start -->
-## CSS 变量
+### CSS 变量
 
 本组件公开覆盖槽由独立皮肤的实际消费位生成；缺省来源、作用部件和状态均与 CSS 同源。
 
@@ -451,7 +286,7 @@ const trail = [
 | `--xh-page-header-border` | `root` | `border`<br>`border-block-end` | `bordered`<br>`is([data-variant='surface'], [data-variant='raised'])`<br>`variant=raised`<br>`variant=surface` | `--xh-border-subtle` | page-header 的 root 部件 border、border-block-end 覆盖槽。 |
 | `--xh-page-header-breadcrumb-fg` | `breadcrumb` | `color` | `default` | `--xh-fg-muted` | page-header 的 breadcrumb 部件 color 覆盖槽。 |
 | `--xh-page-header-breadcrumb-font-size` | `breadcrumb` | `font-size` | `default` | `--xh-text-secondary-size` | page-header 的 breadcrumb 部件 font-size 覆盖槽。 |
-| `--xh-page-header-column-gap` | `root` | `column-gap` | `default` | `--xh-space-3` | page-header 的 root 部件 column-gap 覆盖槽。 |
+| `--xh-page-header-column-gap` | `back-trigger`<br>`extra`<br>`media` | `margin-inline-end`<br>`margin-inline-start` | `default` | `--xh-space-3` | page-header 的 back-trigger、extra、media 部件 margin-inline-end、margin-inline-start 覆盖槽。 |
 | `--xh-page-header-description-fg` | `description` | `color` | `default` | `--xh-fg-muted` | page-header 的 description 部件 color 覆盖槽。 |
 | `--xh-page-header-description-font-size` | `description` | `font-size` | `default` | `--xh-text-secondary-size` | page-header 的 description 部件 font-size 覆盖槽。 |
 | `--xh-page-header-extra-gap` | `extra` | `gap` | `default` | `--xh-space-2` | page-header 的 extra 部件 gap 覆盖槽。 |
@@ -468,24 +303,14 @@ const trail = [
 | `--xh-page-header-title-font-weight` | `title` | `font-weight` | `default` | `--xh-font-weight-semibold` | page-header 的 title 部件 font-weight 覆盖槽。 |
 <!-- xh-component-tokens:end -->
 
-## 动效
+### 动效
 
 本组件皮肤不含过渡与关键帧，也没有脚本驱动的动效：状态一变，外观立即到位。
 
-## RTL
+### 响应式
+
+皮肤按视口分档：`max-width: 640px`。
+
+### RTL
 
 皮肤用逻辑属性排布（`inline-start` 一族），`dir="rtl"` 下自动镜像。
-
-## 组合
-
-- 面包屑位里放[面包屑](./breadcrumb)，头像位里放[头像](./avatar)，`extra` 里放[按钮组](./button-group)，`footer` 里放[描述列表](./descriptions)或一组[统计数值](./statistic)。
-
-## 最佳实践
-
-- 标题写具体对象的名字，不写页面类型。
-- `extra` 里的主操作只留一个，其余收进[菜单](./menu)。
-
-## 反模式
-
-- 返回位直接调 `history.back()`：用户从外链进来时会退出站点。给它一个确定的上级地址。
-- 页头里塞进整块表单。

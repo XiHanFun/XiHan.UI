@@ -1,0 +1,28 @@
+const a=`<!-- 直达链接 | 混合下拉入口与普通链接 -->
+<div style="inline-size: min(640px, 100%); padding-block-end: 150px">
+  <xh-navigation-menu style="display: contents">
+    <nav data-xh-part="root">
+      <ul data-xh-part="list">
+        <li data-xh-part="item">
+          <button data-xh-part="trigger" value="products">产品</button>
+          <div data-xh-part="content" value="products">
+            <a data-xh-part="link" href="#/products/runtime">运行时内核</a>
+            <a data-xh-part="link" href="#/products/vue">Vue 适配器</a>
+          </div>
+        </li>
+        <li data-xh-part="item">
+          <button data-xh-part="trigger" value="docs">文档</button>
+          <div data-xh-part="content" value="docs">
+            <a data-xh-part="link" href="#/docs/guide">上手指南</a>
+            <a data-xh-part="link" href="#/docs/anatomy">部件解剖</a>
+          </div>
+        </li>
+        <li data-xh-part="item">
+          <a data-xh-part="link" href="#/changelog">更新日志</a>
+        </li>
+        <li data-xh-part="indicator"></li>
+      </ul>
+    </nav>
+  </xh-navigation-menu>
+</div>
+`;export{a as default};

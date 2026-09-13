@@ -1,0 +1,9 @@
+const t=`<!-- 多选 | 同时选择多个格式 -->
+<xh-toggle-group multiple default-value="bold">
+  <div data-xh-part="root">
+    <button data-xh-part="item" value="bold">B</button>
+    <button data-xh-part="item" value="italic">I</button>
+    <button data-xh-part="item" value="underline">U</button>
+  </div>
+</xh-toggle-group>
+`;export{t as default};

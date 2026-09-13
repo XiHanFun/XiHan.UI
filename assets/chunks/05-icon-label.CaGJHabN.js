@@ -1,0 +1,29 @@
+const n=`// 图标与标签 | 组合图标按钮与文字按钮
+import type { ReactNode } from "react";
+import { EllipsisIcon, ImageIcon, VideoIcon } from "@xihan-ui/icons";
+import {
+  XhButton,
+  XhButtonGroup,
+  XhButtonLabel,
+  XhButtonPrefix,
+  XhIcon,
+} from "@xihan-ui/react";
+
+export default function Demo(): ReactNode {
+  return (
+    <XhButtonGroup>
+      <XhButton>
+        <XhButtonPrefix><XhIcon icon={ImageIcon} /></XhButtonPrefix>
+        <XhButtonLabel>照片</XhButtonLabel>
+      </XhButton>
+      <XhButton>
+        <XhButtonPrefix><XhIcon icon={VideoIcon} /></XhButtonPrefix>
+        <XhButtonLabel>视频</XhButtonLabel>
+      </XhButton>
+      <XhButton iconOnly aria-label="更多选项">
+        <XhIcon icon={EllipsisIcon} />
+      </XhButton>
+    </XhButtonGroup>
+  );
+}
+`;export{n as default};

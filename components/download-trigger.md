@@ -1,8 +1,8 @@
 来源：https://ui.docs.xihanfun.com/components/download-trigger
 
-# DownloadTrigger `下载触发器`
+# DownloadTrigger 下载触发器
 
-把一段数据交给浏览器下载，并把取数这段过程如实报出来。
+用于将文本或 Blob 保存为本地文件。
 
 <div class="xh-resource-links">
   <a href="https://github.com/XiHanFun/XiHan.UI/tree/dev/ui/packages/engine/headless/src/download-trigger" target="_blank" rel="noreferrer">Headless</a>
@@ -14,262 +14,199 @@
 
 ## 用法
 
-内容已经在手里就直接给字符串，点一下即交给浏览器；文件名连同扩展名都由 file-name 说了算
+下载文本文件
 
 ```vue
 <script setup lang="ts">
-import { XhDownloadTrigger } from "@xihan-ui/vue";
+import { DownloadIcon } from "@xihan-ui/icons";
+import { XhDownloadTrigger, XhIcon } from "@xihan-ui/vue";
 
-const notes = "曦寒 UI 导出示例：这一行会被写进 notes.txt";
+const content = "XiHan.UI";
 </script>
 
 <template>
-  <XhDownloadTrigger :data="notes" file-name="notes.txt">
-    导出文本
+  <XhDownloadTrigger :data="content" file-name="xihan-ui.txt">
+    <XhIcon :icon="DownloadIcon" /> 下载文件
   </XhDownloadTrigger>
 </template>
 ```
 
 ```html
-<xh-download-trigger
-  data="曦寒 UI 导出示例：这一行会被写进 notes.txt"
-  file-name="notes.txt"
->
-  <button data-xh-part="root">导出文本</button>
+<xh-download-trigger data="XiHan.UI" file-name="xihan-ui.txt">
+  <button data-xh-part="root">
+    <svg viewBox="0 0 24 24" width="1em" height="1em" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><path d="M7 10L12 15L17 10"/><path d="M12 3V15"/></svg>
+    下载文件
+  </button>
 </xh-download-trigger>
 ```
 
+## 组件结构
+
+加粗的是必需部件。
+
+`data-scope="download-trigger"`：**`root`**
+
 ## 示例
 
-### 按需取数
+### 异步内容
 
-data 给函数就是点了才算：它可以返回 Promise，这段时间状态是 preparing，再点也不会重复取一遍
+点击后获取下载内容
 
 ```vue
 <script setup lang="ts">
-import { XhDownloadTrigger } from "@xihan-ui/vue";
+import { DownloadIcon } from "@xihan-ui/icons";
+import { XhDownloadTrigger, XhIcon } from "@xihan-ui/vue";
 
-// 点下去才拼这份 CSV，页面加载时不把整份内容备在内存里
-async function makeCsv() {
+async function createCsv() {
   await new Promise(resolve => setTimeout(resolve, 600));
-  const rows = [
-    ["日期", "订单号", "金额"],
-    ["2026-08-01", "A-1001", "128.00"],
-    ["2026-08-02", "A-1002", "96.50"],
-  ];
-  return rows.map(row => row.join(",")).join("\n");
+  return "订单号,金额\nA-1001,128.00\nA-1002,96.50";
 }
+</script>
+
+<template>
+  <XhDownloadTrigger :data="createCsv" file-name="orders.csv" mime-type="text/csv">
+    <XhIcon :icon="DownloadIcon" /> 导出订单
+  </XhDownloadTrigger>
+</template>
+```
+
+```html
+<xh-download-trigger id="orders-download" file-name="orders.csv" mime-type="text/csv">
+  <button data-xh-part="root">
+    <svg viewBox="0 0 24 24" width="1em" height="1em" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><path d="M7 10L12 15L17 10"/><path d="M12 3V15"/></svg>
+    导出订单
+  </button>
+</xh-download-trigger>
+
+<script type="module">
+  document.querySelector("#orders-download").data = async () => {
+    await new Promise(resolve => setTimeout(resolve, 600));
+    return "订单号,金额\nA-1001,128.00\nA-1002,96.50";
+  };
+</script>
+```
+
+### Blob
+
+下载 JSON 文件
+
+```vue
+<script setup lang="ts">
+import { DownloadIcon } from "@xihan-ui/icons";
+import { XhDownloadTrigger, XhIcon } from "@xihan-ui/vue";
+
+const data = new Blob([JSON.stringify({ name: "XiHan.UI", version: "1.1.0" }, null, 2)], {
+  type: "application/json",
+});
+</script>
+
+<template>
+  <XhDownloadTrigger :data="data" file-name="package.json">
+    <XhIcon :icon="DownloadIcon" /> 导出 JSON
+  </XhDownloadTrigger>
+</template>
+```
+
+```html
+<xh-download-trigger id="json-download" file-name="package.json">
+  <button data-xh-part="root">
+    <svg viewBox="0 0 24 24" width="1em" height="1em" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><path d="M7 10L12 15L17 10"/><path d="M12 3V15"/></svg>
+    导出 JSON
+  </button>
+</xh-download-trigger>
+
+<script type="module">
+  document.querySelector("#json-download").data = new Blob(
+    [JSON.stringify({ name: "XiHan.UI", version: "1.1.0" }, null, 2)],
+    { type: "application/json" },
+  );
+</script>
+```
+
+### 变体
+
+设置触发器外观
+
+```vue
+<script setup lang="ts">
+import { DownloadIcon } from "@xihan-ui/icons";
+import { XhDownloadTrigger, XhIcon } from "@xihan-ui/vue";
+
+const variants = ["solid", "subtle", "outline", "ghost"] as const;
+const labels = { solid: "实心", subtle: "浅色", outline: "线框", ghost: "幽灵" };
 </script>
 
 <template>
   <XhDownloadTrigger
-    :data="makeCsv"
-    file-name="orders.csv"
-    mime-type="text/csv"
+    v-for="variant in variants"
+    :key="variant"
+    data="XiHan.UI"
+    file-name="xihan-ui.txt"
+    :variant="variant"
   >
-    导出订单（取数 600 毫秒）
+    <XhIcon :icon="DownloadIcon" /> {{ labels[variant] }}
   </XhDownloadTrigger>
 </template>
 ```
 
 ```html
-<xh-download-trigger
-  id="download-trigger-lazy"
-  file-name="orders.csv"
-  mime-type="text/csv"
->
-  <button data-xh-part="root">导出订单（取数 600 毫秒）</button>
-</xh-download-trigger>
-
-<script type="module">
-  // 取数函数属性装不下，只能走 property
-  const host = document.getElementById("download-trigger-lazy");
-
-  // 点下去才拼这份 CSV，页面加载时不把整份内容备在内存里
-  host.data = async () => {
-    await new Promise((resolve) => setTimeout(resolve, 600));
-    const rows = [
-      ["日期", "订单号", "金额"],
-      ["2026-08-01", "A-1001", "128.00"],
-      ["2026-08-02", "A-1002", "96.50"],
-    ];
-    return rows.map((row) => row.join(",")).join("\n");
-  };
-</script>
+<xh-download-trigger data="XiHan.UI" file-name="xihan-ui.txt" variant="solid"><button data-xh-part="root">实心</button></xh-download-trigger>
+<xh-download-trigger data="XiHan.UI" file-name="xihan-ui.txt" variant="subtle"><button data-xh-part="root">浅色</button></xh-download-trigger>
+<xh-download-trigger data="XiHan.UI" file-name="xihan-ui.txt" variant="outline"><button data-xh-part="root">线框</button></xh-download-trigger>
+<xh-download-trigger data="XiHan.UI" file-name="xihan-ui.txt" variant="ghost"><button data-xh-part="root">幽灵</button></xh-download-trigger>
 ```
 
-### Blob 内容
+### 尺寸
 
-结构化与二进制内容交 Blob，它自带的类型就是写出去的类型；显式写了 mime-type 则以 mime-type 为准
+使用小、中、大三档尺寸
 
 ```vue
 <script setup lang="ts">
-import { XhDownloadTrigger } from "@xihan-ui/vue";
+import { DownloadIcon } from "@xihan-ui/icons";
+import { XhDownloadTrigger, XhIcon } from "@xihan-ui/vue";
 
-function makeProfile() {
-  const profile = { name: "曦寒 UI", version: "1.0.0", locale: "zh-CN" };
-  return new Blob([JSON.stringify(profile, null, 2)], {
-    type: "application/json",
-  });
-}
+const sizes = ["sm", "md", "lg"] as const;
 </script>
 
 <template>
-  <XhDownloadTrigger :data="makeProfile" file-name="profile.json">
-    导出配置
+  <XhDownloadTrigger
+    v-for="size in sizes"
+    :key="size"
+    data="XiHan.UI"
+    file-name="xihan-ui.txt"
+    :size="size"
+  >
+    <XhIcon :icon="DownloadIcon" /> 下载文件
   </XhDownloadTrigger>
 </template>
 ```
 
 ```html
-<xh-download-trigger id="download-trigger-blob" file-name="profile.json">
-  <button data-xh-part="root">导出配置</button>
-</xh-download-trigger>
-
-<script type="module">
-  // Blob 属性装不下，只能走 property
-  const host = document.getElementById("download-trigger-blob");
-
-  host.data = () => {
-    const profile = { name: "曦寒 UI", version: "1.0.0", locale: "zh-CN" };
-    return new Blob([JSON.stringify(profile, null, 2)], {
-      type: "application/json",
-    });
-  };
-</script>
-```
-
-### 失败要说出来
-
-取数抛出或拒绝都会退回 idle 并派 download-error，按钮不会一直停在"下载中"
-
-```vue
-<script setup lang="ts">
-import type { DownloadTriggerErrorDetails } from "@xihan-ui/headless";
-import { XhDownloadTrigger } from "@xihan-ui/vue";
-import { ref } from "vue";
-
-const message = ref("还没试过");
-
-function failingData(): Promise<string> {
-  return Promise.reject(new Error("导出接口没响应"));
-}
-
-function onError(details: DownloadTriggerErrorDetails) {
-  message.value = `下载失败：${(details.error as Error).message}`;
-}
-</script>
-
-<template>
-  <div style="display: flex; align-items: center; gap: 10px">
-    <XhDownloadTrigger
-      :data="failingData"
-      file-name="report.csv"
-      @download-error="onError"
-    >
-      导出报表（必失败）
-    </XhDownloadTrigger>
-    <span style="font-size: 13px">{{ message }}</span>
-  </div>
-</template>
-```
-
-```html
-<div style="display: flex; align-items: center; gap: 10px">
-  <xh-download-trigger id="download-trigger-error" file-name="report.csv">
-    <button data-xh-part="root">导出报表（必失败）</button>
-  </xh-download-trigger>
-  <span id="download-trigger-error-message" style="font-size: 13px">
-    还没试过
-  </span>
-</div>
-
-<script type="module">
-  const host = document.getElementById("download-trigger-error");
-  const message = document.getElementById("download-trigger-error-message");
-
-  host.data = () => Promise.reject(new Error("导出接口没响应"));
-  host.addEventListener("download-error", (event) => {
-    message.textContent = `下载失败：${event.detail.error.message}`;
-  });
-</script>
+<xh-download-trigger data="XiHan.UI" file-name="xihan-ui.txt" size="sm"><button data-xh-part="root">下载文件</button></xh-download-trigger>
+<xh-download-trigger data="XiHan.UI" file-name="xihan-ui.txt" size="md"><button data-xh-part="root">下载文件</button></xh-download-trigger>
+<xh-download-trigger data="XiHan.UI" file-name="xihan-ui.txt" size="lg"><button data-xh-part="root">下载文件</button></xh-download-trigger>
 ```
 
 ### 禁用
 
-禁用的触发器不可聚焦也点不动，连取数函数都不会被调用
+禁止触发下载
 
 ```vue
 <script setup lang="ts">
-import { XhDownloadTrigger } from "@xihan-ui/vue";
-
-const notes = "曦寒 UI 导出示例：这一行会被写进 notes.txt";
+import { DownloadIcon } from "@xihan-ui/icons";
+import { XhDownloadTrigger, XhIcon } from "@xihan-ui/vue";
 </script>
 
 <template>
-  <XhDownloadTrigger disabled :data="notes" file-name="notes.txt">
-    导出文本（暂不可用）
+  <XhDownloadTrigger disabled data="XiHan.UI" file-name="xihan-ui.txt">
+    <XhIcon :icon="DownloadIcon" /> 下载文件
   </XhDownloadTrigger>
 </template>
 ```
 
 ```html
-<xh-download-trigger
-  disabled
-  data="曦寒 UI 导出示例：这一行会被写进 notes.txt"
-  file-name="notes.txt"
->
-  <button data-xh-part="root">导出文本（暂不可用）</button>
-</xh-download-trigger>
-```
-
-### 形态、语气与尺寸
-
-三轴只改按钮外观，取数与落盘那条链一个字都不动
-
-```vue
-<script setup lang="ts">
-import { XhDownloadTrigger } from "@xihan-ui/vue";
-
-const notes = "曦寒 UI 导出示例：这一行会被写进 notes.txt";
-</script>
-
-<template>
-  <XhDownloadTrigger :data="notes" file-name="notes.txt" variant="solid">实心</XhDownloadTrigger>
-  <XhDownloadTrigger :data="notes" file-name="notes.txt" variant="outline">描边</XhDownloadTrigger>
-  <XhDownloadTrigger :data="notes" file-name="notes.txt" variant="ghost">幽灵</XhDownloadTrigger>
-
-  <XhDownloadTrigger :data="notes" file-name="notes.txt" tone="neutral">中性</XhDownloadTrigger>
-  <XhDownloadTrigger :data="notes" file-name="notes.txt" tone="success">成功</XhDownloadTrigger>
-
-  <XhDownloadTrigger :data="notes" file-name="notes.txt" size="sm">小</XhDownloadTrigger>
-  <XhDownloadTrigger :data="notes" file-name="notes.txt" size="lg">大</XhDownloadTrigger>
-</template>
-```
-
-```html
-<xh-download-trigger data="曦寒 UI 导出示例：这一行会被写进 notes.txt" file-name="notes.txt" variant="solid">
-  <button data-xh-part="root">实心</button>
-</xh-download-trigger>
-<xh-download-trigger data="曦寒 UI 导出示例：这一行会被写进 notes.txt" file-name="notes.txt" variant="outline">
-  <button data-xh-part="root">描边</button>
-</xh-download-trigger>
-<xh-download-trigger data="曦寒 UI 导出示例：这一行会被写进 notes.txt" file-name="notes.txt" variant="ghost">
-  <button data-xh-part="root">幽灵</button>
-</xh-download-trigger>
-
-<xh-download-trigger data="曦寒 UI 导出示例：这一行会被写进 notes.txt" file-name="notes.txt" tone="neutral">
-  <button data-xh-part="root">中性</button>
-</xh-download-trigger>
-<xh-download-trigger data="曦寒 UI 导出示例：这一行会被写进 notes.txt" file-name="notes.txt" tone="success">
-  <button data-xh-part="root">成功</button>
-</xh-download-trigger>
-
-<xh-download-trigger data="曦寒 UI 导出示例：这一行会被写进 notes.txt" file-name="notes.txt" size="sm">
-  <button data-xh-part="root">小</button>
-</xh-download-trigger>
-<xh-download-trigger data="曦寒 UI 导出示例：这一行会被写进 notes.txt" file-name="notes.txt" size="lg">
-  <button data-xh-part="root">大</button>
+<xh-download-trigger disabled data="XiHan.UI" file-name="xihan-ui.txt">
+  <button data-xh-part="root">下载文件</button>
 </xh-download-trigger>
 ```
 
@@ -277,40 +214,52 @@ const notes = "曦寒 UI 导出示例：这一行会被写进 notes.txt";
 
 ### 何时使用
 
-- 内容已经在前端手里：当前表格导出成 CSV、编辑器里的草稿存成文件、生成好的配置文本。
-- 数据要点了才算：交一个取数函数，点下去才发请求或才开始序列化。
+- 导出 CSV、JSON、日志或配置文件。
+- 点击后才获取或生成下载内容。
 
 ### 何时不用
 
-- 文件在服务端且有稳定地址：直接写一个 `<a href download>` 指过去，让服务端决定文件名与类型，别在前端造一份副本。
-- 内容只是要带走一小段文字：用[剪贴板](./clipboard)，用户不必再去下载目录里翻。
-- 方向反过来是把文件交进来：用[文件上传](./file-upload)。
+- 文件已有稳定地址时，使用原生 `<a download>`。
+- 复制少量文字时，使用[剪贴板](./clipboard)。
+- 接收用户文件时，使用[文件上传](./file-upload)。
 
 ### 特性
 
-- 数据可以是文本、Blob，或点了才调用的取数函数（可返回 Promise）。
-- 取数在途时状态是 `preparing`，此时再点不会重复发起；无论成败都回到 `idle`，界面上不留"下载中"的假象。
-- 失败会说出来：取数抛出、拒绝，或环境造不出下载，都走 `onDownloadError` 并带上原始原因。
-- 文件名与类型在发起那一刻定死，取数途中宿主改了 prop 也不影响这一次写出的那份。
-- Vue 侧默认插槽拿得到 `{ status, preparing, disabled, fileName, download }`，可据 `preparing` 换掉按钮上的文字；Web Components 侧按钮内容由作者自己写，要跟着状态换文字得自己盯 `data-state`。
+- 接受字符串、Blob 与异步数据函数。
+- `preparing` 期间保留焦点并阻止重复触发。
+- 通过完成与失败事件返回本次文件名和错误。
+- 默认使用 Button 家族的中性工具样式，按下时只改变表面，不缩放。
 
-## 产物
+### 组合
+
+- 与[进度条](./progress)组合展示可量化的长任务。
+- 通过变体与颜色调整操作层级。
+
+### 最佳实践
+
+- 文件名应包含正确扩展名。
+- 保留下载图标与可见文字；只有下载是页面主操作时才使用 `solid`。
+- 大文件优先使用服务端下载地址。
+- 失败事件应连接可见反馈。
+
+### 反模式
+
+- 不要将“下载已发起”等同于“文件已写入磁盘”。
+- 不要在页面加载时预先生成大文件。
+
+## API 参考
+
+### 产物
 
 | 层 | 值 |
 | --- | --- |
 | 自定义元素 | `<xh-download-trigger>` |
 | Vue 组件 | `XhDownloadTrigger` |
 | 组合式函数 | `useDownloadTrigger` |
-| 状态机 | 无，`connect` 直接由 props 算属性 |
+| 状态机 | `downloadTriggerMachine` |
 | 皮肤 | `@xihan-ui/styles/download-trigger.css` |
 
-## 解剖
-
-部件名即 `data-part` 属性值，也是皮肤的选择器。加粗的是必备部件，不渲染它组件不工作（Web Components 适配器会在诊断通道上报 `wc.missing-part`）。
-
-`data-scope="download-trigger"`：**`root`**
-
-## Props
+### Props
 
 | 属性 | 类型 | 必填 | 说明 |
 | --- | --- | --- | --- |
@@ -318,47 +267,49 @@ const notes = "曦寒 UI 导出示例：这一行会被写进 notes.txt";
 | `fileName` | `string` |  | 写出的文件名；缺省或空串退回内建默认名。 |
 | `mimeType` | `string` |  | 内容类型；给了它就以它为准，连 Blob 自带的类型也照它重包一次。缺省时文本按纯文本处理。 |
 | `disabled` | `boolean` |  | 禁用：按钮不可聚焦、点不动。 |
-| `variant` | `ActionVariant` |  | 形态：solid / subtle / outline / ghost，决定颜色怎么用。 |
-| `tone` | `Tone` |  | 语气：brand / neutral / success / warning / danger / info，决定用哪族颜色。 |
+| `variant` | `ActionVariant` |  | 变体：solid / subtle / outline / ghost。 |
+| `tone` | `Tone` |  | 颜色：brand / neutral / success / warning / danger / info。 |
 | `size` | `Size` |  | 尺寸：sm / md / lg。 |
 | `translations` | `Partial<DownloadTriggerTranslations>` |  |  |
 | `onDownloadComplete` | `(details: DownloadTriggerCompleteDetails) => void` |  | 数据已交给浏览器时通知一次。到这里只说明下载已经发起，浏览器把文件写没写到盘上组件看不见。 |
 | `onDownloadError` | `(details: DownloadTriggerErrorDetails) => void` |  | 取数失败或造不出下载时通知；此刻状态已经回到 idle。 |
 
-## 事件
+### 事件
 
-自定义元素派发这些事件，Vue 组件对应同名 emit；载荷都在 `detail` 上。可双向绑定的值另有 `update:xxx`，见 Props。
+自定义元素将载荷放在 `detail`；Vue 使用同名 emit。
 
 | 事件 | 载荷 | 说明 |
 | --- | --- | --- |
 | `download-complete` | `DownloadTriggerCompleteDetails` | 数据已交给浏览器；detail 为 `{ fileName }` |
 | `download-error` | `DownloadTriggerErrorDetails` | 取数失败或造不出下载；detail 为 `{ error, fileName }`，此刻状态已经回到 idle |
 
-## 插槽
+### 插槽
 
-作者能拿到载荷的插槽。只转发内容、不带载荷的默认插槽不在此列——那类直接写子节点即可。
+仅列出带载荷的插槽。
 
 | Vue 组件 | 插槽 | 载荷 | 说明 |
 | --- | --- | --- | --- |
 | `XhDownloadTrigger` | `default` | `DownloadTriggerSlotProps` |  |
 
-## 状态
+### 状态
 
-对外可见的状态落在 `data-state` 上，写样式与断言都读它：
+公开状态写入 `data-state`。
 
 | 部件 | 取值 |
 | --- | --- |
-| `root` | state.get() |
+| `root` | 'idle' \| 'preparing' |
 
-状态机内部转移，写样式与业务都用不到；要监听变化请看上面的「事件」。
+以下名称仅用于内部状态机。
+
+**状态**：`idle` · `preparing`
 
 **事件**：`DOWNLOAD.TRIGGER` · `DOWNLOAD.SUCCESS` · `DOWNLOAD.ERROR`
 
 **判据**：`isDisabled`
 
-## connect API
+### connect API
 
-`useDownloadTrigger` 产出的对象。`getXxxProps()` 铺到对应部件的宿主元素上，其余是可读状态与操作入口。
+`getXxxProps()` 返回对应部件的宿主属性。
 
 | 成员 | 类型 | 说明 |
 | --- | --- | --- |
@@ -369,7 +320,9 @@ const notes = "曦寒 UI 导出示例：这一行会被写进 notes.txt";
 | `download` | `() => void` | 走一次下载意图，与点按钮同一条路：禁用时不动，取数在途时不重复发起。 |
 | `getRootProps` | `() => T['button']` |  |
 
-## 键盘
+## 无障碍
+
+### 键盘
 
 规格出处：[W3C APG](https://www.w3.org/WAI/ARIA/apg/patterns/button/#keyboardinteraction)
 
@@ -377,89 +330,80 @@ const notes = "曦寒 UI 导出示例：这一行会被写进 notes.txt";
 | --- | --- | --- |
 | `Enter` / `Space` | focus in root, 未禁用 | 发起一次下载；取数在途时这两个键同样不会重复发起 |
 
-## 无障碍
+### ARIA
 
-下面这些由 `connect` 铺到部件上，作者不必自己写；重复写反而会覆盖掉正确值。
+以下属性由 `connect` 生成。
 
 | 部件 | 属性 | 值 |
 | --- | --- | --- |
 | `root` | `aria-busy` | 'true' \| undefined |
+| `root` | `aria-disabled` | 'true' \| undefined |
 | `root` | `aria-label` | props.translations.trigger |
 
-- 触发器是原生 `<button type="button">`，Enter 与 Space 的激活由平台负责。
-- 取数在途时按钮不变成禁用，只挂 `aria-busy="true"`：禁用会把焦点从按钮上弹走，键盘用户等回来时不知道自己在哪。
-- 按钮上的文字要说清楚下的是什么（"导出 CSV"而不是"下载"），读屏一次只念一个按钮，光有图标听不出区别。
+- 触发器使用原生 `<button type="button">`。
+- 准备数据时使用 `aria-busy` 与 `aria-disabled`，但不移除焦点。
+- 仅显示图标时必须提供可访问名称。
 
-## 样式
+## 样式参考
 
-默认皮肤 `@xihan-ui/styles/download-trigger.css` 按部件选择：`[data-scope="download-trigger"][data-part="root"]`。它落在 `xihan.components` 与 `xihan.motion` 层；业务样式不写进 `@layer` 即高于全部库层，要按层压过来就写进 `xihan.overrides`。
+### 皮肤
 
-## 数据属性
+`@xihan-ui/styles/download-trigger.css` 使用 `[data-scope="download-trigger"][data-part="root"]` 部件选择器，位于 `xihan.components` 与 `xihan.motion` 层。覆盖样式使用 `xihan.overrides`。
 
-由 `connect` 产出并铺到部件上，皮肤与测试都据此选择；`data-disabled` 这类无值属性在条件不成立时整个不出现。
+### 数据属性
+
+由 `connect` 生成；条件不成立时不输出无值属性。
 
 | 部件 | 属性 | 值 |
 | --- | --- | --- |
 | `root` | `data-disabled` | ''（条件成立时才出现） |
+| `root` | `data-loading` | ''（条件成立时才出现） |
 | `root` | `data-size` | props.size |
-| `root` | `data-state` | state.get() |
+| `root` | `data-state` | 'idle' \| 'preparing' |
 | `root` | `data-tone` | props.tone |
 | `root` | `data-variant` | props.variant |
+| `root` | `data-xh-action-control` | '' |
+| `root` | `data-xh-action-display` | 'always' |
+| `root` | `data-xh-action-profile` | 'text' |
+| `root` | `data-xh-action-size` | props.size |
 
 <!-- xh-component-tokens:start -->
-## CSS 变量
+### CSS 变量
 
 本组件公开覆盖槽由独立皮肤的实际消费位生成；缺省来源、作用部件和状态均与 CSS 同源。
 
 | 变量 | 部件 | CSS 属性 | 状态 | 缺省来源 | 说明 |
 | --- | --- | --- | --- | --- | --- |
 | `--xh-download-trigger-bg` | `root` | `background` | `default` | `--xh-_download-trigger-bg` | download-trigger 的 root 部件 background 覆盖槽。 |
-| `--xh-download-trigger-bg-active` | `root` | `background` | `active` | `--xh-_download-trigger-bg-active` | download-trigger 的 root 部件 background 覆盖槽。 |
+| `--xh-download-trigger-bg-active` | `root` | `background` | `active`<br>`loading`<br>`not([data-loading])` | `--xh-_download-trigger-bg-active` | download-trigger 的 root 部件 background 覆盖槽。 |
 | `--xh-download-trigger-bg-disabled` | `root` | `background` | `disabled` | `--xh-bg-muted` | download-trigger 的 root 部件 background 覆盖槽。 |
-| `--xh-download-trigger-bg-hover` | `root` | `background` | `hover` | `--xh-_download-trigger-bg-hover` | download-trigger 的 root 部件 background 覆盖槽。 |
+| `--xh-download-trigger-bg-hover` | `root` | `background` | `hover`<br>`loading`<br>`not([data-loading])` | `--xh-_download-trigger-bg-hover` | download-trigger 的 root 部件 background 覆盖槽。 |
 | `--xh-download-trigger-border` | `root` | `border` | `default` | `--xh-_download-trigger-border` | download-trigger 的 root 部件 border 覆盖槽。 |
-| `--xh-download-trigger-border-disabled` | `root` | `border-color` | `disabled` | `--xh-border-control` | download-trigger 的 root 部件 border-color 覆盖槽。 |
-| `--xh-download-trigger-border-hover` | `root` | `border-color` | `hover` | `--xh-_download-trigger-border-hover` | download-trigger 的 root 部件 border-color 覆盖槽。 |
+| `--xh-download-trigger-border-disabled` | `root` | `border-color` | `disabled` | `--xh-_download-trigger-border` | download-trigger 的 root 部件 border-color 覆盖槽。 |
+| `--xh-download-trigger-border-hover` | `root` | `border-color` | `hover`<br>`loading`<br>`not([data-loading])` | `--xh-_download-trigger-border-hover` | download-trigger 的 root 部件 border-color 覆盖槽。 |
 | `--xh-download-trigger-fg` | `root` | `color` | `default` | `--xh-_download-trigger-fg` | download-trigger 的 root 部件 color 覆盖槽。 |
-| `--xh-download-trigger-font-size` | `root` | `font-size` | `default`<br>`size=lg`<br>`size=sm` | `--xh-control-font-lg`<br>`--xh-control-font-sm`<br>`--xh-text-label-size` | download-trigger 的 root 部件 font-size 覆盖槽。 |
+| `--xh-download-trigger-font-size` | `root` | `font-size` | `default`<br>`size=lg`<br>`size=sm` | `--xh-control-font-lg`<br>`--xh-control-font-md`<br>`--xh-control-font-sm` | download-trigger 的 root 部件 font-size 覆盖槽。 |
 | `--xh-download-trigger-font-weight` | `root` | `font-weight` | `default` | `--xh-text-label-weight` | download-trigger 的 root 部件 font-weight 覆盖槽。 |
 | `--xh-download-trigger-gap` | `root` | `gap` | `default`<br>`size=lg`<br>`size=sm` | `--xh-control-gap-lg`<br>`--xh-control-gap-md`<br>`--xh-control-gap-sm` | download-trigger 的 root 部件 gap 覆盖槽。 |
 | `--xh-download-trigger-h` | `root` | `block-size` | `default`<br>`size=lg`<br>`size=sm` | `--xh-control-h-lg`<br>`--xh-control-h-md`<br>`--xh-control-h-sm` | download-trigger 的 root 部件 block-size 覆盖槽。 |
 | `--xh-download-trigger-icon-size` | `root` | `--xh-icon-size` | `default`<br>`size=lg`<br>`size=sm` | `--xh-glyph-size-lg`<br>`--xh-glyph-size-md`<br>`--xh-glyph-size-sm` | download-trigger 的 root 部件 --xh-icon-size 覆盖槽。 |
-| `--xh-download-trigger-loading-duration` | `root` | `animation` | `state=preparing` | `--xh-spin-duration` | download-trigger 的 root 部件 animation 覆盖槽。 |
+| `--xh-download-trigger-loading-duration` | `root` | `animation` | `default` | `--xh-spin-duration` | download-trigger 的 root 部件 animation 覆盖槽。 |
+| `--xh-download-trigger-loading-fg` | `root` | `border-block-start-color`<br>`border-color` | `@media (prefers-reduced-motion: reduce)`<br>`default`<br>`motion=reduce`<br>`where([data-motion='reduce'])` | `--xh-_download-trigger-fg` | download-trigger 的 root 部件 border-block-start-color、border-color 覆盖槽。 |
 | `--xh-download-trigger-px` | `root` | `padding-inline` | `default`<br>`size=lg`<br>`size=sm` | `--xh-control-px-lg`<br>`--xh-control-px-md`<br>`--xh-control-px-sm` | download-trigger 的 root 部件 padding-inline 覆盖槽。 |
-| `--xh-download-trigger-radius` | `root` | `border-radius` | `default` | `--xh-shape-control` | download-trigger 的 root 部件 border-radius 覆盖槽。 |
-| `--xh-download-trigger-shadow-hover` | `root` | `box-shadow` | `hover` | `--xh-elevation-raised` | download-trigger 的 root 部件 box-shadow 覆盖槽。 |
+| `--xh-download-trigger-radius` | `root` | `border-radius` | `default` | `--xh-shape-pill` | download-trigger 的 root 部件 border-radius 覆盖槽。 |
+| `--xh-download-trigger-shadow-hover` | `root` | `box-shadow` | `hover`<br>`loading`<br>`not([data-loading])` | `--xh-_download-trigger-shadow-hover` | download-trigger 的 root 部件 box-shadow 覆盖槽。 |
 <!-- xh-component-tokens:end -->
 
-## 动效
+### 动效
 
-关键帧 `xh-download-trigger-rotate` 随皮肤自带，不引用别处文件里的名字；`background` · `border-color` · `box-shadow` · `scale` 走 `transition` 过渡。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
+关键帧 `xh-download-trigger-content-hide` · `xh-download-trigger-loading-reveal` · `xh-download-trigger-rotate` 随皮肤自带，不引用别处文件里的名字；`background` · `border-color` · `box-shadow` 走 `transition` 过渡。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
 
 `prefers-reduced-motion: reduce` 下本组件另有降级规则。
 
-## 响应式
+### 响应式
 
 皮肤另按输入能力分档：`pointer: coarse`——同一份皮肤在触屏与带指针的设备上不一样，与视口宽度无关。
 
-## RTL
+### RTL
 
 皮肤用逻辑属性排布（`inline-start` 一族），`dir="rtl"` 下自动镜像。
-
-## 组合
-
-- 与[按钮](./button)是两件事：按钮带形态/语气/尺寸三轴，下载触发器只管行为，自带的是一份中性按钮外观（高度、描边、底色、字号都走令牌）。要品牌语气就把按钮的类名写到触发器上，或改 `--xh-download-trigger-*` 这一族槽位。
-- 与[进度条](./progress)搭配：取数要跑很久时，自己在旁边放一条进度，本组件只报"在途 / 结束"两档。
-
-## 最佳实践
-
-- 大文件走服务端直链，别在前端拼 Blob：整份内容会先住进内存，几十兆的导出足以让标签页卡住。
-- 取数函数里自己兜住失败并给出可见提示，`onDownloadError` 只通知你，用户看到的还是那颗没反应的按钮。
-- 文件名带扩展名。浏览器不会替你猜，`report` 与 `report.csv` 打开的方式完全不同。
-- 换外观改 `--xh-download-trigger-*` 槽位，别只覆盖前景色：禁用态的底色也在这一族里，只改一半会把禁用前后压成同一个样子。
-
-## 反模式
-
-- 认为回调触发就等于文件已经存好：组件只能知道下载已经发起，用户取消保存、磁盘写失败都在浏览器那一侧。
-- 页面一加载就把整份数据备在内存里等着点：改成取数函数，点了再算。
-- 用它下载跨域地址上的文件：浏览器发起的下载受同源与下载策略约束，跨域内容取不回来也就造不出 Blob。

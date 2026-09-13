@@ -1,0 +1,11 @@
+const a=`<!-- 文本变体 | 设置正文、辅助、强调、代码和链接样式 -->
+<xh-typography>
+  <div data-xh-part="root">
+    <p data-xh-part="paragraph">默认正文</p>
+    <p data-xh-part="paragraph"><span data-xh-part="text" variant="muted">辅助信息</span></p>
+    <p data-xh-part="paragraph"><span data-xh-part="text" variant="strong">重要内容</span></p>
+    <p data-xh-part="paragraph"><code data-xh-part="text" variant="code">pnpm add @xihan-ui/web-components</code></p>
+    <p data-xh-part="paragraph"><a data-xh-part="link" href="#">查看文档</a></p>
+  </div>
+</xh-typography>
+`;export{a as default};

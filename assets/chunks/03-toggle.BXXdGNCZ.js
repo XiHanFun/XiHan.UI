@@ -1,0 +1,22 @@
+const e=`<!-- 启用状态 | 动态启用或暂停监听 -->
+<label style="display: flex; align-items: center; gap: 8px">
+  <input id="toggle-hotkey-enabled" type="checkbox" checked />
+  启用 Mod + B
+</label>
+<xh-hotkeys id="toggle-hotkey" keys="Mod,B"></xh-hotkeys>
+<output id="toggle-hotkey-output">等待输入</output>
+
+<script type="module">
+  const enabled = document.querySelector("#toggle-hotkey-enabled");
+  const hotkey = document.querySelector("#toggle-hotkey");
+  const output = document.querySelector("#toggle-hotkey-output");
+  let count = 0;
+  enabled.addEventListener("change", () => {
+    hotkey.enabled = enabled.checked;
+  });
+  hotkey.addEventListener("hot-key", () => {
+    count += 1;
+    output.textContent = \`已触发 \${count} 次\`;
+  });
+<\/script>
+`;export{e as default};

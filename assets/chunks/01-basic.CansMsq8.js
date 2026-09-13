@@ -1,0 +1,51 @@
+const t=`<!-- 基础用法 | 展示流程进度与当前步骤内容 -->
+<xh-steps id="steps-basic" count="3" default-value="1">
+  <div data-xh-part="root">
+    <div data-xh-part="list">
+      <div data-xh-part="item" value="0">
+        <button data-xh-part="trigger">
+          <span data-xh-part="indicator"></span>
+          <span data-xh-part="title">填写地址</span>
+          <span data-xh-part="description">收货人与联系方式</span>
+        </button>
+        <div data-xh-part="separator"></div>
+      </div>
+      <div data-xh-part="item" value="1">
+        <button data-xh-part="trigger">
+          <span data-xh-part="indicator">2</span>
+          <span data-xh-part="title">选择支付</span>
+          <span data-xh-part="description">支付方式与优惠</span>
+        </button>
+        <div data-xh-part="separator"></div>
+      </div>
+      <div data-xh-part="item" value="2">
+        <button data-xh-part="trigger">
+          <span data-xh-part="indicator">3</span>
+          <span data-xh-part="title">确认订单</span>
+          <span data-xh-part="description">核对金额</span>
+        </button>
+        <div data-xh-part="separator"></div>
+      </div>
+    </div>
+
+    <div data-xh-part="content" value="0">填写收货人与联系方式。</div>
+    <div data-xh-part="content" value="1">选择支付方式并确认优惠信息。</div>
+    <div data-xh-part="content" value="2">核对订单金额后提交。</div>
+    <div data-xh-part="content" value="3">订单已提交。</div>
+  </div>
+</xh-steps>
+
+<script type="module">
+  const host = document.getElementById("steps-basic");
+  const indicators = [...host.querySelectorAll('[data-xh-part="indicator"]')];
+
+  function paint(current) {
+    indicators.forEach((indicator, index) => {
+      indicator.textContent = current > index ? "" : String(index + 1);
+    });
+  }
+
+  host.addEventListener("value-change", (event) => paint(event.detail.value));
+  paint(1);
+<\/script>
+`;export{t as default};

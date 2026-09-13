@@ -1,0 +1,76 @@
+const t=`<!-- 操作入口 | 通过插槽状态控制开合和值 -->
+<xh-select id="select-actions" open="false" placeholder="请选择">
+  <div data-xh-part="root">
+    <span data-xh-part="label">水果</span>
+    <div data-xh-part="control">
+      <button data-xh-part="trigger">
+        <span data-xh-part="value-text"></span>
+        <span data-xh-part="indicator"></span>
+      </button>
+    </div>
+    <div data-xh-part="positioner">
+      <div data-xh-part="content">
+        <div data-xh-part="list">
+          <div data-xh-part="item" value="apple">
+            <span data-xh-part="item-text">苹果</span>
+            <span data-xh-part="item-indicator"></span>
+          </div>
+          <div data-xh-part="item" value="banana">
+            <span data-xh-part="item-text">香蕉</span>
+            <span data-xh-part="item-indicator"></span>
+          </div>
+          <div data-xh-part="item" value="cherry">
+            <span data-xh-part="item-text">樱桃</span>
+            <span data-xh-part="item-indicator"></span>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div style="display: flex; gap: 8px; margin-block-start: 8px">
+      <xh-button variant="outline" size="sm" id="select-actions-toggle">
+        <button data-xh-part="root">展开</button>
+      </xh-button>
+      <xh-button variant="ghost" size="sm" id="select-actions-clear" disabled>
+        <button data-xh-part="root">清空</button>
+      </xh-button>
+    </div>
+  </div>
+</xh-select>
+
+<script type="module">
+  const select = document.getElementById("select-actions");
+  const toggle = document.getElementById("select-actions-toggle");
+  const toggleLabel = toggle.querySelector('[data-xh-part="root"]');
+  const clear = document.getElementById("select-actions-clear");
+
+  let open = false;
+  let value = [];
+
+  function apply() {
+    select.open = open;
+    select.value = value;
+    toggleLabel.textContent = open ? "收起" : "展开";
+    clear.disabled = value.length === 0;
+  }
+
+  select.addEventListener("open-change", (event) => {
+    open = event.detail.open;
+    apply();
+  });
+  select.addEventListener("value-change", (event) => {
+    value = event.detail.value;
+    apply();
+  });
+
+  toggle.addEventListener("click", () => {
+    open = !open;
+    apply();
+  });
+  clear.addEventListener("click", () => {
+    value = [];
+    apply();
+  });
+
+  apply();
+<\/script>
+`;export{t as default};

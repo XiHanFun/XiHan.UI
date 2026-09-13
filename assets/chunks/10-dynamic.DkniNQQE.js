@@ -1,0 +1,17 @@
+const t=`<!-- 分隔线 | 在相邻标签之间增加视觉分组 -->
+<xh-tabs default-value="monthly">
+  <div data-xh-part="root" style="inline-size: 360px; max-inline-size: 100%">
+    <div data-xh-part="list" aria-label="账单周期">
+      <button data-xh-part="trigger" value="monthly">按月</button>
+      <div data-xh-part="separator"></div>
+      <button data-xh-part="trigger" value="quarterly">按季</button>
+      <div data-xh-part="separator"></div>
+      <button data-xh-part="trigger" value="yearly">按年</button>
+    </div>
+
+    <div data-xh-part="content" value="monthly">每月自动续费，可随时取消。</div>
+    <div data-xh-part="content" value="quarterly">每三个月结算一次。</div>
+    <div data-xh-part="content" value="yearly">按年结算可享优惠。</div>
+  </div>
+</xh-tabs>
+`;export{t as default};

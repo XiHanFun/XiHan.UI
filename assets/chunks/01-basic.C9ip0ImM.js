@@ -1,0 +1,22 @@
+const d=`<!-- 基础用法 | 为滚动容器添加滚动条 -->
+<div style="position: relative; inline-size: 240px">
+  <div id="scrollbar-basic-box" style="block-size: 144px; overflow: auto; scrollbar-width: none; border-radius: var(--xh-shape-surface); background: var(--xh-bg-subtle); padding: 12px">
+    <div style="padding-block: 6px">项目概览</div>
+    <div style="padding-block: 6px">组件规范</div>
+    <div style="padding-block: 6px">设计令牌</div>
+    <div style="padding-block: 6px">无障碍</div>
+    <div style="padding-block: 6px">交互状态</div>
+    <div style="padding-block: 6px">主题配置</div>
+    <div style="padding-block: 6px">发布记录</div>
+    <div style="padding-block: 6px">迁移指南</div>
+  </div>
+
+  <xh-scrollbar controls="scrollbar-basic-box" type="always">
+    <div data-xh-part="root">
+      <div data-xh-part="track">
+        <div data-xh-part="thumb"></div>
+      </div>
+    </div>
+  </xh-scrollbar>
+</div>
+`;export{d as default};

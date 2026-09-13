@@ -1,0 +1,7 @@
+const t=`<!-- 基础用法 | 使用默认品牌渐变 -->
+<p style="font-size: 32px; font-weight: 700">
+  <xh-gradient-text>
+    <span data-xh-part="root">曦寒前端组件库</span>
+  </xh-gradient-text>
+</p>
+`;export{t as default};

@@ -1,0 +1,14 @@
+const t=`<!-- 变体 | 设置按钮外观 -->
+<xh-button variant="solid">
+  <button data-xh-part="root">主要</button>
+</xh-button>
+<xh-button variant="subtle">
+  <button data-xh-part="root">次要</button>
+</xh-button>
+<xh-button variant="outline">
+  <button data-xh-part="root">线框</button>
+</xh-button>
+<xh-button variant="ghost">
+  <button data-xh-part="root">幽灵</button>
+</xh-button>
+`;export{t as default};
