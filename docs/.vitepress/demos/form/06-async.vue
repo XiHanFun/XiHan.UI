@@ -1,4 +1,4 @@
-<!-- 异步校验 | 规则里的 validator 直接返回 Promise：提交时机器等它回来再放行或拦下，期间 validating 置真可用来标忙 -->
+<!-- 异步校验 | 提交前检查用户名 -->
 <script setup lang="ts">
 import type { FormRules } from "@xihan-ui/headless";
 import {
@@ -11,10 +11,8 @@ import {
   XhFormRoot,
   XhFormSubmitTrigger,
 } from "@xihan-ui/vue";
-import { ref } from "vue";
 
 const taken = ["admin", "root", "xihan"];
-const submitted = ref("（还没提交过）");
 
 // 远程唯一性核验：这里用定时器模拟服务端往返
 const rules: FormRules = {
@@ -28,10 +26,6 @@ const rules: FormRules = {
     },
   ],
 };
-
-function onSubmit(details: { values: Record<string, unknown> }) {
-  submitted.value = String(details.values.username ?? "");
-}
 </script>
 
 <template>
@@ -40,7 +34,6 @@ function onSubmit(details: { values: Record<string, unknown> }) {
     :default-values="{ username: '' }"
     :rules="rules"
     style="inline-size: 320px"
-    @submit="onSubmit"
   >
     <XhFormFieldGroup v-slot="{ value, error, invalid, setValue }" name="username">
       <XhFieldRoot :invalid="invalid" required>
@@ -58,6 +51,5 @@ function onSubmit(details: { values: Record<string, unknown> }) {
     </XhFormFieldGroup>
 
     <XhFormSubmitTrigger>{{ validating ? "核验中…" : "提交" }}</XhFormSubmitTrigger>
-    <p style="margin: 0; font-size: 13px">已提交：{{ submitted }}</p>
   </XhFormRoot>
 </template>

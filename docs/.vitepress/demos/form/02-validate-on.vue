@@ -1,4 +1,4 @@
-<!-- 校验时机 | blur 与 change 两种模式下 validate 仍整表跑（校验可能带跨字段规则），但只把当事字段那一条写回错误表 -->
+<!-- 校验时机 | 在失焦或输入时校验 -->
 <script setup lang="ts">
 import {
   XhFieldControl,

@@ -1,4 +1,4 @@
-<!-- 异步校验 | 规则里的 validator 直接返回 Promise：提交时机器等它回来再放行或拦下，期间 validating 置真可用来标忙 -->
+<!-- 异步校验 | 提交前检查用户名 -->
 <xh-form id="form-async">
   <form data-xh-part="root" style="inline-size: 320px; display: grid; gap: 12px">
     <div data-xh-part="field-group" name="username">
@@ -13,7 +13,6 @@
     </div>
 
     <button data-xh-part="submit-trigger" id="form-async-submit">提交</button>
-    <p style="margin: 0; font-size: 13px">已提交：<span id="form-async-submitted">（还没提交过）</span></p>
   </form>
 </xh-form>
 
@@ -24,7 +23,6 @@
   const hint = host.querySelector('[data-xh-part="description"]');
   const error = host.querySelector('[data-xh-part="error-text"]');
   const submit = document.getElementById("form-async-submit");
-  const submitted = document.getElementById("form-async-submitted");
 
   const TAKEN = ["admin", "root", "xihan"];
   const HINT = "提交时先问一次服务端，占用的名字会被挡下";
@@ -68,9 +66,8 @@
   });
 
   submit.addEventListener("click", () => setBusy(true));
-  host.addEventListener("submit", (event) => {
+  host.addEventListener("submit", () => {
     setBusy(false);
-    submitted.textContent = String(event.detail.values.username ?? "");
   });
   host.addEventListener("invalid", () => setBusy(false));
 </script>
