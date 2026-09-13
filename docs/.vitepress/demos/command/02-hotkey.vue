@@ -68,7 +68,7 @@ const groups = [
                   <!-- 检索串就是高亮的关键词，用户看得见这条为什么被选出来 -->
                   <XhHighlight :text="command.label!" :keyword="inputValue" />
                 </XhCommandItemText>
-                <XhKbdGroup v-if="command.hotkey" :keys="command.hotkey" size="sm" />
+                <XhKbdGroup v-if="command.hotkey" :keys="command.hotkey" />
               </XhCommandItem>
             </template>
           </XhCommandGroup>

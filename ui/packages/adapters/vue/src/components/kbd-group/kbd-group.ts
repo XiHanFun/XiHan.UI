@@ -5,8 +5,7 @@
 
 // 提供 kbd group 相关实现。
 
-import type { Size } from '@xihan-ui/core'
-import type { HotkeysPlatform, KbdGroupProps, KbdGroupTranslations } from '@xihan-ui/headless'
+import type { HotkeysPlatform, KbdGroupProps, KbdGroupTranslations, KbdVariant } from '@xihan-ui/headless'
 import type { PropType, VNode } from 'vue'
 import { connectKbdGroup } from '@xihan-ui/headless'
 import { computed, defineComponent, h } from 'vue'
@@ -20,9 +19,7 @@ export const XhKbdGroup = defineComponent({
   props: {
     keys: { type: Array as PropType<string[]>, required: true },
     platform: { type: String as PropType<HotkeysPlatform> },
-    size: { type: String as PropType<Size> },
-    pressed: { type: Boolean, default: undefined },
-    disabled: { type: Boolean, default: undefined },
+    variant: { type: String as PropType<KbdVariant> },
     translations: { type: Object as PropType<Partial<KbdGroupTranslations>> },
   },
   setup(props) {
@@ -35,11 +32,8 @@ export const XhKbdGroup = defineComponent({
 
     return () => {
       const current = api.value
-      const separatorProps = current.getSeparatorProps() as Record<string, unknown>
       const children: VNode[] = []
       current.segments.forEach((segment, index) => {
-        if (index > 0)
-          children.push(h('span', { ...separatorProps, key: `xh-kbd-group-separator-${index}` }, current.separator))
         children.push(h(
           'kbd',
           { ...current.getKeyProps({ value: segment.source }) as Record<string, unknown>, key: `xh-kbd-group-key-${index}` },

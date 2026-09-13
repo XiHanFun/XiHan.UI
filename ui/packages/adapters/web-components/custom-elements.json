@@ -24666,7 +24666,7 @@
       "declarations": [
         {
           "kind": "class",
-          "description": "`<xh-kbd-group>` —— 数据驱动的纯展示组合。root 承担唯一 aria-label，子键帽与连接符只作视觉。",
+          "description": "`<xh-kbd-group>` —— 数据驱动的纯展示组合。root 承担唯一 aria-label，子键帽只作视觉。",
           "name": "XhKbdGroupElement",
           "cssParts": [
             {
@@ -24676,10 +24676,6 @@
             {
               "description": "元素按 keys 生成的一枚原生 kbd",
               "name": "key"
-            },
-            {
-              "description": "非 Mac 平台两枚键之间的加号",
-              "name": "separator"
             }
           ],
           "members": [
@@ -24712,30 +24708,12 @@
             },
             {
               "kind": "field",
-              "name": "size",
+              "name": "variant",
               "privacy": "public",
               "type": {
-                "text": "Size | undefined"
+                "text": "KbdVariant | undefined"
               },
-              "attribute": "size"
-            },
-            {
-              "kind": "field",
-              "name": "pressed",
-              "privacy": "public",
-              "type": {
-                "text": "boolean | undefined"
-              },
-              "attribute": "pressed"
-            },
-            {
-              "kind": "field",
-              "name": "disabled",
-              "privacy": "public",
-              "type": {
-                "text": "boolean | undefined"
-              },
-              "attribute": "disabled"
+              "attribute": "variant"
             },
             {
               "kind": "field",
@@ -24816,27 +24794,11 @@
             },
             {
               "type": {
-                "text": "Size | undefined"
+                "text": "KbdVariant | undefined"
               },
-              "description": "尺寸",
-              "name": "size",
-              "fieldName": "size"
-            },
-            {
-              "type": {
-                "text": "boolean | undefined"
-              },
-              "description": "作者确认动作真实激活时的轻压事实",
-              "name": "pressed",
-              "fieldName": "pressed"
-            },
-            {
-              "type": {
-                "text": "boolean | undefined"
-              },
-              "description": "所提示动作是否不可用",
-              "name": "disabled",
-              "fieldName": "disabled"
+              "description": "外观，默认 default",
+              "name": "variant",
+              "fieldName": "variant"
             }
           ],
           "superclass": {
@@ -24847,64 +24809,37 @@
           "customElement": true,
           "cssProperties": [
             {
+              "name": "--xh-kbd-group-bg"
+            },
+            {
+              "name": "--xh-kbd-group-border"
+            },
+            {
               "name": "--xh-kbd-group-fg"
+            },
+            {
+              "name": "--xh-kbd-group-font"
             },
             {
               "name": "--xh-kbd-group-font-size"
             },
             {
+              "name": "--xh-kbd-group-font-weight"
+            },
+            {
               "name": "--xh-kbd-group-gap"
             },
             {
-              "name": "--xh-kbd-group-key-bg"
+              "name": "--xh-kbd-group-h"
             },
             {
-              "name": "--xh-kbd-group-key-bg-disabled"
+              "name": "--xh-kbd-group-min-w"
             },
             {
-              "name": "--xh-kbd-group-key-border"
+              "name": "--xh-kbd-group-px"
             },
             {
-              "name": "--xh-kbd-group-key-fg"
-            },
-            {
-              "name": "--xh-kbd-group-key-fg-disabled"
-            },
-            {
-              "name": "--xh-kbd-group-key-fg-modifier"
-            },
-            {
-              "name": "--xh-kbd-group-key-font"
-            },
-            {
-              "name": "--xh-kbd-group-key-font-weight"
-            },
-            {
-              "name": "--xh-kbd-group-key-h"
-            },
-            {
-              "name": "--xh-kbd-group-key-min-w"
-            },
-            {
-              "name": "--xh-kbd-group-key-px"
-            },
-            {
-              "name": "--xh-kbd-group-key-py"
-            },
-            {
-              "name": "--xh-kbd-group-key-radius"
-            },
-            {
-              "name": "--xh-kbd-group-key-shadow"
-            },
-            {
-              "name": "--xh-kbd-group-key-shadow-pressed"
-            },
-            {
-              "name": "--xh-kbd-group-separator-fg"
-            },
-            {
-              "name": "--xh-kbd-group-separator-fg-disabled"
+              "name": "--xh-kbd-group-radius"
             }
           ]
         }

@@ -16,8 +16,7 @@ import '@xihan-ui/styles'
 let app: App | null = null
 let host: HTMLElement | null = null
 
-function mount(render: () => VNode, density: 'comfortable' | 'compact' = 'comfortable'): HTMLElement {
-  document.documentElement.dataset.density = density
+function mount(render: () => VNode): HTMLElement {
   host = document.createElement('div')
   document.body.append(host)
   app = createApp({ setup: () => render })
@@ -31,7 +30,6 @@ afterEach(async () => {
   app = null
   host?.remove()
   host = null
-  delete document.documentElement.dataset.density
 })
 
 describe('kbd / KbdGroup 键帽', () => {
@@ -48,21 +46,13 @@ describe('kbd / KbdGroup 键帽', () => {
     expect(keys[0]!.getBoundingClientRect().left).toBeLessThan(keys[1]!.getBoundingClientRect().left)
   })
 
-  it('compact 收紧缺省键帽，200% CSS zoom 下组合仍是不拆分单元', () => {
-    const comfortable = mount(() => h(XhKbdGroup, { keys: ['Mod', 'Shift', 'P'], platform: 'other' }))
-    const comfortableKey = comfortable.querySelector<HTMLElement>('[data-part="key"]')!
-    const comfortableWidth = comfortableKey.getBoundingClientRect().width
-    app?.unmount()
-    comfortable.remove()
-    app = null
-    host = null
-
-    const compact = mount(() => h('div', { style: { inlineSize: '160px', zoom: '2' } }, [
-      h(XhKbdGroup, { keys: ['Mod', 'Shift', 'P'], platform: 'other' }),
-    ]), 'compact')
-    const group = compact.querySelector<HTMLElement>('[data-scope="kbd-group"][data-part="root"]')!
-    const compactKey = group.querySelector<HTMLElement>('[data-part="key"]')!
-    expect(compactKey.getBoundingClientRect().width).toBeLessThan(comfortableWidth * 2)
+  it('组合根承载唯一键帽表面，各枚键名不再各画一层框', () => {
+    const root = mount(() => h(XhKbdGroup, { keys: ['Mod', 'Shift', 'P'], platform: 'other' }))
+    const group = root.querySelector<HTMLElement>('[data-scope="kbd-group"][data-part="root"]')!
+    const keys = [...group.querySelectorAll<HTMLElement>('[data-part="key"]')]
+    expect(getComputedStyle(group).backgroundColor).not.toBe('rgba(0, 0, 0, 0)')
+    expect(keys.every(key => getComputedStyle(key).backgroundColor === 'rgba(0, 0, 0, 0)')).toBe(true)
+    expect(keys.every(key => getComputedStyle(key).borderTopWidth === '0px')).toBe(true)
     expect(getComputedStyle(group).whiteSpace).toBe('nowrap')
   })
 
@@ -81,29 +71,24 @@ describe('kbd / KbdGroup 键帽', () => {
     expect(getComputedStyle(light).backgroundColor).toBe('rgba(0, 0, 0, 0)')
   })
 
-  it('禁用后代只命中 kbd-group 自己的 key，其他 scope 的同名 part 不被污染', () => {
-    const root = mount(() => h(XhKbdGroup, { keys: ['S'], disabled: true }))
+  it('组合键不生成可见加号或 separator 节点', () => {
+    const root = mount(() => h(XhKbdGroup, { keys: ['Mod', 'S'], platform: 'other' }))
     const group = root.querySelector<HTMLElement>('[data-scope="kbd-group"][data-part="root"]')!
-    const foreign = document.createElement('span')
-    foreign.dataset.scope = 'foreign'
-    foreign.dataset.part = 'key'
-    group.append(foreign)
-    expect(getComputedStyle(foreign).backgroundColor).toBe('rgba(0, 0, 0, 0)')
+    expect(group.querySelector('[data-part="separator"]')).toBeNull()
+    expect(group.textContent).toBe('CtrlS')
   })
 
-  it('forced-colors 下禁用键帽和分隔符使用系统 GrayText', async () => {
+  it('forced-colors 下由组合根提供系统边界', async () => {
     await cdp().send('Emulation.setEmulatedMedia', {
       media: '',
       features: [{ name: 'forced-colors', value: 'active' }],
     })
-    const root = mount(() => h(XhKbdGroup, { keys: ['Mod', 'S'], disabled: true, platform: 'other' }))
-    const key = root.querySelector<HTMLElement>('[data-part="key"]')!
-    const separator = root.querySelector<HTMLElement>('[data-part="separator"]')!
+    const root = mount(() => h(XhKbdGroup, { keys: ['Mod', 'S'], platform: 'other' }))
+    const group = root.querySelector<HTMLElement>('[data-scope="kbd-group"][data-part="root"]')!
     const reference = document.createElement('span')
-    reference.style.color = 'GrayText'
+    reference.style.color = 'ButtonText'
     document.body.append(reference)
-    expect(getComputedStyle(key).color).toBe(getComputedStyle(reference).color)
-    expect(getComputedStyle(separator).color).toBe(getComputedStyle(reference).color)
+    expect(getComputedStyle(group).borderTopColor).toBe(getComputedStyle(reference).color)
     reference.remove()
   })
 })

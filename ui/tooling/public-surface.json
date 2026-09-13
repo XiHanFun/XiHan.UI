@@ -8237,8 +8237,7 @@
     ],
     "kbd-group": [
       "key",
-      "root",
-      "separator"
+      "root"
     ],
     "layout": [
       "content",
@@ -9690,12 +9689,10 @@
       "variant"
     ],
     "kbd-group": [
-      "disabled",
       "keys",
       "platform",
-      "pressed",
-      "size",
-      "translations"
+      "translations",
+      "variant"
     ],
     "layout": [
       "bordered",
@@ -10865,7 +10862,6 @@
     "data-max",
     "data-min-col",
     "data-mode",
-    "data-modifier",
     "data-modules",
     "data-movable",
     "data-multiline",
@@ -10891,7 +10887,6 @@
     "data-position",
     "data-positioned",
     "data-presentation",
-    "data-pressed",
     "data-pressing",
     "data-range-end",
     "data-range-preview",
@@ -12985,26 +12980,17 @@
     "--xh-kbd-font",
     "--xh-kbd-font-size",
     "--xh-kbd-font-weight",
+    "--xh-kbd-group-bg",
+    "--xh-kbd-group-border",
     "--xh-kbd-group-fg",
+    "--xh-kbd-group-font",
     "--xh-kbd-group-font-size",
+    "--xh-kbd-group-font-weight",
     "--xh-kbd-group-gap",
-    "--xh-kbd-group-key-bg",
-    "--xh-kbd-group-key-bg-disabled",
-    "--xh-kbd-group-key-border",
-    "--xh-kbd-group-key-fg",
-    "--xh-kbd-group-key-fg-disabled",
-    "--xh-kbd-group-key-fg-modifier",
-    "--xh-kbd-group-key-font",
-    "--xh-kbd-group-key-font-weight",
-    "--xh-kbd-group-key-h",
-    "--xh-kbd-group-key-min-w",
-    "--xh-kbd-group-key-px",
-    "--xh-kbd-group-key-py",
-    "--xh-kbd-group-key-radius",
-    "--xh-kbd-group-key-shadow",
-    "--xh-kbd-group-key-shadow-pressed",
-    "--xh-kbd-group-separator-fg",
-    "--xh-kbd-group-separator-fg-disabled",
+    "--xh-kbd-group-h",
+    "--xh-kbd-group-min-w",
+    "--xh-kbd-group-px",
+    "--xh-kbd-group-radius",
     "--xh-kbd-h",
     "--xh-kbd-min-w",
     "--xh-kbd-px",
@@ -16057,11 +16043,9 @@
     },
     "xh-kbd-group": {
       "attributes": [
-        "disabled",
         "keys",
         "platform",
-        "pressed",
-        "size"
+        "variant"
       ],
       "events": []
     },

@@ -5,8 +5,8 @@
 
 // 定义 kbd group 类型契约。
 
-import type { PropTypes, Size } from '@xihan-ui/core'
-import type { KbdTranslations } from '../kbd/kbd.types'
+import type { PropTypes } from '@xihan-ui/core'
+import type { KbdTranslations, KbdVariant } from '../kbd/kbd.types'
 import type { HotkeySegment, HotkeysPlatform, HotkeysResolvedPlatform } from '../shared/hotkey'
 
 export interface KbdGroupKeyProps {
@@ -19,12 +19,8 @@ export interface KbdGroupProps {
   keys: string[]
   /** 平台写法；auto 在适配器测出平台前按 other。 */
   platform?: HotkeysPlatform
-  /** 尺寸：sm / md / lg。 */
-  size?: Size
-  /** 整组是否正在被真实动作激活；纯展示默认静止。 */
-  pressed?: boolean
-  /** 组合所提示的动作是否不可用。 */
-  disabled?: boolean
+  /** 外观：default 使用中性底，light 保持透明。 */
+  variant?: KbdVariant
   /** 读屏文案覆盖。 */
   translations?: Partial<KbdGroupTranslations>
 }
@@ -34,13 +30,10 @@ export interface KbdGroupApi<T extends PropTypes = PropTypes> {
   segments: readonly HotkeySegment[]
   /** 实际采用的平台写法。 */
   platform: HotkeysResolvedPlatform
-  /** Mac 为空串，其余平台为 +。 */
-  separator: string
   /** 按原始声明取回一枚键。 */
   segmentOf: (value: string) => HotkeySegment | null
   getRootProps: () => T['element']
   getKeyProps: (props: KbdGroupKeyProps) => T['element']
-  getSeparatorProps: () => T['element']
 }
 
 export interface KbdGroupTranslations extends KbdTranslations {
