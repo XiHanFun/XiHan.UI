@@ -1,4 +1,4 @@
-// 数字输入盒内那道分隔线：把加减钮与输入分成两块，线比控件矮一截、落在两者之间那道间隙的正中。
+// 数字字段盒内那道分隔线：把加减钮与输入分成两块，线占满控件高度并贴在两段边界。
 // 伪元素的几何、逻辑侧解析成哪一边、以及选择器在别的结构下命不命中，只有真实浏览器量得出。
 import type { App } from 'vue'
 import { afterEach, describe, expect, it } from 'vitest'
@@ -13,11 +13,11 @@ import {
 import '@xihan-ui/tokens/tokens.css'
 import '@xihan-ui/styles'
 
-/** 控件高与线长：线长恒为控件高的一半，三档各自比一次。 */
+/** 控件高与线长：线长恒为控件全高，三档各自比一次。 */
 const TIERS = [
-  { size: 'sm', controlH: 28, dividerH: 14 },
-  { size: 'md', controlH: 32, dividerH: 16 },
-  { size: 'lg', controlH: 40, dividerH: 20 },
+  { size: 'sm', controlH: 32 },
+  { size: 'md', controlH: 36 },
+  { size: 'lg', controlH: 40 },
 ] as const
 
 let app: App | null = null
@@ -89,7 +89,7 @@ function tokenColor(token: string): string {
 }
 
 describe('数字输入的加减钮分隔线', () => {
-  it.each(TIERS)('$size 档：线长是控件高的一半，上下各留白，不与控件等高', async ({ size, controlH, dividerH }) => {
+  it.each(TIERS)('$size 档：分隔线占满控件高度', async ({ size, controlH }) => {
     mountBoxed({ size })
     await settle()
 
@@ -98,14 +98,8 @@ describe('数字输入的加减钮分隔线', () => {
       const line = divider(name)
       // 线在场
       expect(line.content).toBe('""')
-      expect(px(line.height)).toBe(dividerH)
-      // 「不和组件等高」：线长严格短于控件高，且上下各留了一截
-      expect(px(line.height)).toBeLessThan(controlH)
-      const spare = controlH - px(line.height)
-      expect(spare).toBeGreaterThanOrEqual(controlH / 4)
-      // 纵向居中在钮里：钮高减线长后上下均分
-      const triggerH = part(name).getBoundingClientRect().height
-      expect(px(line.top)).toBeCloseTo((triggerH - px(line.height)) / 2, 5)
+      expect(px(line.height)).toBe(controlH)
+      expect(px(line.top)).toBe(0)
     }
   })
 
@@ -120,17 +114,17 @@ describe('数字输入的加减钮分隔线', () => {
     expect(line.backgroundColor).toBe('rgba(0, 0, 0, 0)')
   })
 
-  it('线落在钮与输入之间那道间隙的正中，两侧钮各朝输入的那一边', async () => {
+  it('线落在钮与输入的边界，两侧钮各朝输入的一边', async () => {
     mountBoxed()
     await settle()
     const dec = part('decrement-trigger').getBoundingClientRect()
     const inc = part('increment-trigger').getBoundingClientRect()
     const input = part('input').getBoundingClientRect()
 
-    // 减钮排在输入之前：线落在减钮右边缘与输入左边缘之间的正中
-    expect(lineCenter('decrement-trigger')).toBeCloseTo((dec.right + input.left) / 2, 5)
-    // 加钮排在输入之后：线换到加钮的左侧，同样是那道间隙的正中
-    expect(lineCenter('increment-trigger')).toBeCloseTo((input.right + inc.left) / 2, 5)
+    expect(lineCenter('decrement-trigger')).toBeCloseTo(dec.right - 0.5, 5)
+    expect(dec.right).toBe(input.left)
+    expect(lineCenter('increment-trigger')).toBeCloseTo(inc.left + 0.5, 5)
+    expect(inc.left).toBe(input.right)
   })
 
   it('右起排版：线跟着换边，仍在钮朝向输入的那一侧', async () => {
@@ -142,11 +136,11 @@ describe('数字输入的加减钮分隔线', () => {
     const input = part('input').getBoundingClientRect()
 
     // 右起时减钮在输入右边：线要落到减钮的左侧那道间隙里
-    expect(dec.left).toBeGreaterThan(input.right)
-    expect(lineCenter('decrement-trigger')).toBeCloseTo((input.right + dec.left) / 2, 5)
+    expect(dec.left).toBe(input.right)
+    expect(lineCenter('decrement-trigger')).toBeCloseTo(dec.left + 0.5, 5)
     // 加钮在输入左边：线换到加钮的右侧
-    expect(inc.right).toBeLessThan(input.left)
-    expect(lineCenter('increment-trigger')).toBeCloseTo((inc.right + input.left) / 2, 5)
+    expect(inc.right).toBe(input.left)
+    expect(lineCenter('increment-trigger')).toBeCloseTo(inc.right - 0.5, 5)
   })
 
   it('贴住 min 的钮画着线：线是盒的分区，不是钮的状态', async () => {

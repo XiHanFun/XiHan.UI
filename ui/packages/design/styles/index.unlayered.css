@@ -14328,6 +14328,11 @@
   [data-scope='calendar'][data-part='cell-trigger'][data-today] {
     border-color: Highlight;
   }
+
+  [data-scope='calendar'][data-part='cell'][data-range-preview]:is([data-range-start], [data-range-end])
+    > [data-part='cell-trigger']:not([data-selected], [data-disabled]) {
+    border-color: Highlight;
+  }
 }
 
 /* 面是实心的，环色与面同族，画在面里就看不出来；环改取面自己的前景色——
@@ -26185,33 +26190,35 @@
      换档不必给每个部件各写一条选择器 */
   --xh-_number-field-h: var(--xh-control-h-md);
   --xh-_number-field-px: var(--xh-control-px-md);
-  --xh-_number-field-gap: var(--xh-control-gap-md);
+  --xh-_number-field-gap: 0;
   --xh-_number-field-font-size: var(--xh-control-font-md);
   --xh-_number-field-label-font-size: var(--xh-control-font-md);
   --xh-_number-field-trigger-font-size: var(--xh-control-font-md);
-  /* 内嵌动作比输入盒小一档；compact 会经 action-size 同步收紧。 */
-  --xh-_number-field-trigger-size: var(--xh-control-action-size);
+  /* 两侧动作占完整分栏宽度，纵向跟随 control。 */
+  --xh-_number-field-trigger-size: var(--xh-_number-field-h);
+  --xh-number-field-trigger-size: var(--xh-_number-field-trigger-size);
 
   /* 盒子的圆角 */
-  --xh-_number-field-radius: var(--xh-shape-control);
+  --xh-_number-field-radius: var(--xh-shape-surface);
 
   /* 盒内那道分隔线的长度：取控件高的一半，线的上下各留一截空白，不与控件等高。
      按控件高算而不是按钮高算：钮三档同宽高，只有控件跟着尺寸档变，
      线跟着控件走才在 sm/md/lg 三档都保持同一个比例 */
-  --xh-_number-field-divider-h: calc(var(--xh-_number-field-h) * 0.5);
+  --xh-_number-field-divider-h: 100%;
 
   /* 形态档只换这几个私有槽：输入框的底、描边与落影，加减钮的底与描边 */
   --xh-_number-field-bg: var(--xh-bg-canvas);
-  --xh-_number-field-border: var(--xh-border-control);
-  --xh-_number-field-border-hover: var(--xh-border-control-hover);
+  --xh-_number-field-border: transparent;
+  --xh-_number-field-border-hover: var(--xh-border-default);
   /* 悬停时底色朝 subtle 走小半步：换一条 1px 的描边色是全场最轻的一档回执，
      填充跟着动才看得出指针停在哪个盒上。基准取本档的底，三个形态各自算各自的；
      只走小半步是为了与只读那一档的 subtle 实底分得开 */
   --xh-_number-field-bg-hover: color-mix(in oklab, var(--xh-bg-subtle) 45%, var(--xh-_number-field-bg));
+  --xh-_number-field-bg-focus: var(--xh-bg-subtle);
   /* 一档静态落影把盒从页面里抬起一层，与描边一起画出盒的边界 */
   --xh-_number-field-shadow: var(--xh-elevation-raised);
-  --xh-_number-field-trigger-bg: var(--xh-bg-subtle);
-  --xh-_number-field-trigger-bg-hover: var(--xh-bg-subtle-hover);
+  --xh-_number-field-trigger-bg: transparent;
+  --xh-_number-field-trigger-bg-hover: transparent;
   --xh-_number-field-trigger-bg-active: var(--xh-bg-subtle-active);
   --xh-_number-field-trigger-border: var(--xh-border-control);
   --xh-_number-field-trigger-border-hover: var(--xh-border-control-hover);
@@ -26241,7 +26248,6 @@
   --xh-icon-size: var(--xh-number-field-icon-size, var(--xh-glyph-size-sm));
   --xh-_number-field-h: var(--xh-control-h-sm);
   --xh-_number-field-px: var(--xh-control-px-sm);
-  --xh-_number-field-gap: var(--xh-control-gap-sm);
   --xh-_number-field-font-size: var(--xh-control-font-sm);
   --xh-_number-field-label-font-size: var(--xh-control-font-sm);
   --xh-_number-field-trigger-font-size: var(--xh-control-font-sm);
@@ -26251,12 +26257,9 @@
   --xh-icon-size: var(--xh-number-field-icon-size, var(--xh-glyph-size-lg));
   --xh-_number-field-h: var(--xh-control-h-lg);
   --xh-_number-field-px: var(--xh-control-px-lg);
-  --xh-_number-field-gap: var(--xh-control-gap-lg);
   --xh-_number-field-font-size: var(--xh-control-font-lg);
   --xh-_number-field-label-font-size: var(--xh-control-font-lg);
   --xh-_number-field-trigger-font-size: var(--xh-control-font-lg);
-  /* lg 盒给动作多一档面积，仍比 40px 输入盒内收；compact 下 box-sm 同步变成 28px。 */
-  --xh-_number-field-trigger-size: var(--xh-control-box-sm);
 }
 
 /* —— 形态 —— */
@@ -26330,11 +26333,12 @@
   gap: var(--xh-number-field-control-gap, var(--xh-_number-field-gap));
   min-inline-size: min(var(--xh-number-field-control-min-w, var(--xh-control-min-w)), 100%);
   block-size: var(--xh-number-field-control-h, var(--xh-_number-field-h));
-  padding-inline: var(--xh-number-field-control-px, var(--xh-_number-field-px));
+  padding-inline: var(--xh-number-field-control-px, 0);
   border: var(--xh-stroke-thin) solid var(--xh-number-field-control-border, var(--xh-_number-field-border));
   border-radius: var(--xh-number-field-control-radius, var(--xh-_number-field-radius));
   background: var(--xh-number-field-control-bg, var(--xh-_number-field-bg));
   box-shadow: var(--xh-number-field-control-shadow, var(--xh-_number-field-shadow));
+  overflow: hidden;
   transition:
     background var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
     border-color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
@@ -26349,12 +26353,14 @@
 
 [data-scope='number-field'][data-part='control']:focus-within:not([data-disabled]) {
   border-color: var(--xh-number-field-control-border-focus, var(--xh-_number-field-border-focus));
+  background: var(--xh-number-field-control-bg-focus, var(--xh-_number-field-bg-focus));
   outline: var(--xh-ring-width) solid var(--xh-_number-field-ring);
   outline-offset: var(--xh-ring-offset);
 }
 
 [data-scope='number-field'][data-part='control'][data-invalid] {
   border-color: var(--xh-number-field-control-border-invalid, var(--xh-border-invalid));
+  background: var(--xh-number-field-control-bg-invalid, var(--xh-_number-field-bg-focus));
 
   /* 校验失败时环也跟着变红：两圈等宽相邻却一红一蓝，读的人不知道哪个才是当前状态 */
   --xh-_number-field-ring: var(--xh-ring-invalid);
@@ -26399,7 +26405,7 @@
   inline-size: var(--xh-number-field-input-w, 5em);
   min-inline-size: 0;
   block-size: 100%;
-  padding-inline: 0;
+  padding-inline: var(--xh-number-field-input-px, var(--xh-_number-field-px));
   border: 0;
   border-radius: 0;
   background: transparent;
@@ -26437,8 +26443,9 @@
   position: relative;
   margin: 0;
   border: 0;
+  border-radius: 0;
   background: transparent;
-  color: var(--xh-number-field-trigger-fg, var(--xh-fg-muted));
+  color: var(--xh-number-field-trigger-fg, var(--xh-fg-default));
 }
 
 /* 加减钮与输入之间的细线：把「按的」与「填的」分成两块。
@@ -26451,8 +26458,7 @@
 [data-scope='number-field'][data-part='control'] [data-part='input'] ~ :is([data-part='decrement-trigger'], [data-part='increment-trigger'])::after {
   content: '';
   position: absolute;
-  /* 线在钮的纵向中线上：钮高减线长，余下的上下均分 */
-  inset-block-start: calc((100% - var(--xh-number-field-trigger-divider-h, var(--xh-_number-field-divider-h))) / 2);
+  inset-block-start: 0;
   inline-size: 0;
   block-size: var(--xh-number-field-trigger-divider-h, var(--xh-_number-field-divider-h));
   /* 一道发丝线走 border 而不是底色：高对比档下底色被系统换成面色，线会整条消失，
@@ -26461,25 +26467,20 @@
     var(--xh-number-field-trigger-divider, var(--xh-material-soft-separator));
 }
 
-/* 钮排在输入之前：线落在钮与输入之间那道间隙的正中。
-   位移是「半道间隙再加半根线」——线本身占一根发丝的宽，只退半道间隙会把它压到偏钮的一侧 */
+/* 钮排在输入之前：线落在钮与输入的边界。 */
 [data-scope='number-field'][data-part='control'] :is([data-part='decrement-trigger'], [data-part='increment-trigger']):has(~ [data-part='input'])::after {
-  inset-inline-end: calc(
-    (var(--xh-number-field-control-gap, var(--xh-_number-field-gap)) + var(--xh-stroke-thin)) / -2
-  );
+  inset-inline-end: 0;
 }
 
-/* 钮排在输入之后：同一道间隙，换到钮的起始端 */
+/* 钮排在输入之后：同一道边界，换到钮的起始端。 */
 [data-scope='number-field'][data-part='control'] [data-part='input'] ~ :is([data-part='decrement-trigger'], [data-part='increment-trigger'])::after {
-  inset-inline-start: calc(
-    (var(--xh-number-field-control-gap, var(--xh-_number-field-gap)) + var(--xh-stroke-thin)) / -2
-  );
+  inset-inline-start: 0;
 }
 
-/* 悬停只在分段自己身上浮出一块底色与更实的符号，盒子的描边纹丝不动 */
+/* 悬停由整个 control 反馈，分段本身保持透明。 */
 [data-scope='number-field'][data-part='control'] [data-part='increment-trigger']:hover:not(:disabled),
 [data-scope='number-field'][data-part='control'] [data-part='decrement-trigger']:hover:not(:disabled) {
-  background: var(--xh-number-field-trigger-bg-hover, var(--xh-_number-field-trigger-bg-hover));
+  background: transparent;
   color: var(--xh-number-field-trigger-fg-hover, var(--xh-fg-default));
 }
 
@@ -26597,8 +26598,8 @@
   flex: none;
   align-items: center;
   justify-content: center;
-  inline-size: var(--xh-number-field-trigger-size, var(--xh-_number-field-trigger-size));
-  block-size: var(--xh-number-field-trigger-size, var(--xh-_number-field-trigger-size));
+  inline-size: var(--xh-number-field-trigger-size, var(--xh-control-action-size));
+  block-size: var(--xh-number-field-trigger-size, var(--xh-control-action-size));
   padding: 0;
   border: var(--xh-stroke-thin) solid var(--xh-number-field-trigger-border, var(--xh-_number-field-trigger-border));
   border-radius: var(--xh-number-field-trigger-radius, var(--xh-shape-control));

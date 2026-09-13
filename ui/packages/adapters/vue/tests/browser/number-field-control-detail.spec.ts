@@ -16,12 +16,12 @@ import '@xihan-ui/tokens/tokens.css'
 import '@xihan-ui/styles'
 
 const SIZE_CASES = [
-  { density: 'comfortable', size: 'sm', control: 28, trigger: 24 },
-  { density: 'comfortable', size: 'md', control: 32, trigger: 24 },
-  { density: 'comfortable', size: 'lg', control: 40, trigger: 32 },
-  { density: 'compact', size: 'sm', control: 24, trigger: 20 },
-  { density: 'compact', size: 'md', control: 28, trigger: 20 },
-  { density: 'compact', size: 'lg', control: 36, trigger: 28 },
+  { density: 'comfortable', size: 'sm', control: 32, trigger: 32 },
+  { density: 'comfortable', size: 'md', control: 36, trigger: 36 },
+  { density: 'comfortable', size: 'lg', control: 40, trigger: 40 },
+  { density: 'compact', size: 'sm', control: 28, trigger: 28 },
+  { density: 'compact', size: 'md', control: 32, trigger: 32 },
+  { density: 'compact', size: 'lg', control: 36, trigger: 36 },
 ] as const
 
 let app: App | null = null
@@ -90,7 +90,7 @@ afterEach(async () => {
 })
 
 describe('数字输入的尺寸与内部节奏', () => {
-  it.each(SIZE_CASES)('$density / $size：动作随档位与密度缩放，仍完整收在实体盒内', async (item) => {
+  it.each(SIZE_CASES)('$density / $size：两侧动作占完整分栏宽度与控件高度', async (item) => {
     mountField({ size: item.size }, { density: item.density })
     await settle()
     const control = part('control').getBoundingClientRect()
@@ -171,18 +171,21 @@ describe('数字输入的边界、只读与焦点', () => {
     expect((part('increment-trigger') as HTMLButtonElement).disabled).toBe(true)
   })
 
-  it('可用动作悬停有反馈，边界动作不响应；分隔线不随禁用消失', async () => {
+  it('悬停由整体输入壳反馈，单个动作保持透明；分隔线不随禁用消失', async () => {
     mountField({ min: 5 })
     await settle()
     const decrement = part('decrement-trigger')
     const increment = part('increment-trigger')
+    const control = part('control')
     const decrementRest = getComputedStyle(decrement).backgroundColor
     const incrementRest = getComputedStyle(increment).backgroundColor
+    const controlRest = getComputedStyle(control).backgroundColor
 
     await userEvent.hover(decrement)
     expect(getComputedStyle(decrement).backgroundColor).toBe(decrementRest)
     await userEvent.hover(increment)
-    expect(getComputedStyle(increment).backgroundColor).not.toBe(incrementRest)
+    expect(getComputedStyle(increment).backgroundColor).toBe(incrementRest)
+    expect(getComputedStyle(control).backgroundColor).not.toBe(controlRest)
     expect(getComputedStyle(decrement, '::after').content).toBe('""')
   })
 

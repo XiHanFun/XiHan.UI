@@ -36731,6 +36731,26 @@
       "description": "number-field 的 control 部件 background 覆盖槽。"
     },
     {
+      "name": "--xh-number-field-control-bg-focus",
+      "component": "number-field",
+      "part": [
+        "control"
+      ],
+      "property": [
+        "background"
+      ],
+      "state": [
+        "disabled",
+        "focus-within",
+        "not([data-disabled])"
+      ],
+      "defaultToken": [
+        "--xh-_number-field-bg-focus"
+      ],
+      "visibility": "public",
+      "description": "number-field 的 control 部件 background 覆盖槽。"
+    },
+    {
       "name": "--xh-number-field-control-bg-hover",
       "component": "number-field",
       "part": [
@@ -36748,6 +36768,24 @@
       ],
       "defaultToken": [
         "--xh-_number-field-bg-hover"
+      ],
+      "visibility": "public",
+      "description": "number-field 的 control 部件 background 覆盖槽。"
+    },
+    {
+      "name": "--xh-number-field-control-bg-invalid",
+      "component": "number-field",
+      "part": [
+        "control"
+      ],
+      "property": [
+        "background"
+      ],
+      "state": [
+        "invalid"
+      ],
+      "defaultToken": [
+        "--xh-_number-field-bg-focus"
       ],
       "visibility": "public",
       "description": "number-field 的 control 部件 background 覆盖槽。"
@@ -36852,26 +36890,19 @@
       "name": "--xh-number-field-control-gap",
       "component": "number-field",
       "part": [
-        "control",
-        "decrement-trigger",
-        "increment-trigger",
-        "input"
+        "control"
       ],
       "property": [
-        "gap",
-        "inset-inline-end",
-        "inset-inline-start"
+        "gap"
       ],
       "state": [
-        "default",
-        "has(~ [data-part='input'])",
-        "is([data-part='decrement-trigger'], [data-part='increment-trigger'])"
+        "default"
       ],
       "defaultToken": [
         "--xh-_number-field-gap"
       ],
       "visibility": "public",
-      "description": "number-field 的 control、decrement-trigger、increment-trigger、input 部件 gap、inset-inline-end、inset-inline-start 覆盖槽。"
+      "description": "number-field 的 control 部件 gap 覆盖槽。"
     },
     {
       "name": "--xh-number-field-control-h",
@@ -36923,7 +36954,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-_number-field-px"
+        "0"
       ],
       "visibility": "public",
       "description": "number-field 的 control 部件 padding-inline 覆盖槽。"
@@ -37268,6 +37299,7 @@
       "name": "--xh-number-field-input-px",
       "component": "number-field",
       "part": [
+        "control",
         "input"
       ],
       "property": [
@@ -37280,7 +37312,7 @@
         "--xh-_number-field-px"
       ],
       "visibility": "public",
-      "description": "number-field 的 input 部件 padding-inline 覆盖槽。"
+      "description": "number-field 的 control、input 部件 padding-inline 覆盖槽。"
     },
     {
       "name": "--xh-number-field-input-radius",
@@ -37513,7 +37545,6 @@
       "name": "--xh-number-field-trigger-bg-hover",
       "component": "number-field",
       "part": [
-        "control",
         "decrement-trigger",
         "increment-trigger"
       ],
@@ -37528,7 +37559,7 @@
         "--xh-_number-field-trigger-bg-hover"
       ],
       "visibility": "public",
-      "description": "number-field 的 control、decrement-trigger、increment-trigger 部件 background 覆盖槽。"
+      "description": "number-field 的 decrement-trigger、increment-trigger 部件 background 覆盖槽。"
     },
     {
       "name": "--xh-number-field-trigger-border",
@@ -37620,8 +37651,7 @@
         "input"
       ],
       "property": [
-        "block-size",
-        "inset-block-start"
+        "block-size"
       ],
       "state": [
         "has(~ [data-part='input'])",
@@ -37631,7 +37661,7 @@
         "--xh-_number-field-divider-h"
       ],
       "visibility": "public",
-      "description": "number-field 的 control、decrement-trigger、increment-trigger、input 部件 block-size、inset-block-start 覆盖槽。"
+      "description": "number-field 的 control、decrement-trigger、increment-trigger、input 部件 block-size 覆盖槽。"
     },
     {
       "name": "--xh-number-field-trigger-fg",
@@ -37648,8 +37678,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-fg-default",
-        "--xh-fg-muted"
+        "--xh-fg-default"
       ],
       "visibility": "public",
       "description": "number-field 的 control、decrement-trigger、increment-trigger 部件 color 覆盖槽。"
@@ -37728,7 +37757,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-_number-field-trigger-size"
+        "--xh-control-action-size"
       ],
       "visibility": "public",
       "description": "number-field 的 decrement-trigger、increment-trigger 部件 block-size、inline-size 覆盖槽。"

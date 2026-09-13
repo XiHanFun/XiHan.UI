@@ -290,7 +290,7 @@
         },
         {
           "id": "number-field",
-          "name": "数字输入"
+          "name": "数字字段"
         },
         {
           "id": "password-input",
