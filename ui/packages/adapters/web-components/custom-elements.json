@@ -46885,6 +46885,9 @@
               "name": "--xh-tabs-trigger-fg-active"
             },
             {
+              "name": "--xh-tabs-trigger-fg-hover"
+            },
+            {
               "name": "--xh-tabs-trigger-font-size"
             },
             {

@@ -2813,6 +2813,7 @@ export type ComponentTokenName =
   | '--xh-tabs-trigger-border-active'
   | '--xh-tabs-trigger-fg'
   | '--xh-tabs-trigger-fg-active'
+  | '--xh-tabs-trigger-fg-hover'
   | '--xh-tabs-trigger-font-size'
   | '--xh-tabs-trigger-font-weight'
   | '--xh-tabs-trigger-gap'
