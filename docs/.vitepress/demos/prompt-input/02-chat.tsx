@@ -85,7 +85,7 @@ export default function Demo(): ReactNode {
             ))}
           </XhMessageFeedList>
         </XhMessageFeedViewport>
-        <XhMessageFeedScrollToEndTrigger>↓</XhMessageFeedScrollToEndTrigger>
+        <XhMessageFeedScrollToEndTrigger />
       </XhMessageFeedRoot>
 
       {/* loading 期间按钮换成停止，输入框仍可编辑：用户还要能改下一句 */}
