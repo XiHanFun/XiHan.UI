@@ -1,17 +1,15 @@
-<!-- 一行多个字段 | 行数据是对象，createItem 造一个空项；改字段时整份重建数组，行号不跟着变 -->
+<!-- 多字段行 | 每行包含多个输入框 -->
 <xh-field-array id="field-array-object" movable>
   <div data-xh-part="root" style="max-inline-size: 480px">
     <button data-xh-part="add-trigger">+ 添加请求头</button>
   </div>
 </xh-field-array>
 
-<pre id="field-array-object-dump"></pre>
-
 <template id="field-array-object-row">
   <div data-xh-part="item">
     <div data-xh-part="item-content">
-      <input data-key="name" style="inline-size: 40%" placeholder="字段名" />
-      <input data-key="value" style="inline-size: 60%" placeholder="字段值" />
+      <input data-key="name" class="xh-demo-control" style="inline-size: 40%" placeholder="字段名" />
+      <input data-key="value" class="xh-demo-control" style="inline-size: 60%" placeholder="字段值" />
     </div>
     <div data-xh-part="item-action">
       <button data-xh-part="move-up-trigger"></button>
@@ -26,7 +24,6 @@
   const root = host.querySelector('[data-xh-part="root"]');
   const addTrigger = host.querySelector('[data-xh-part="add-trigger"]');
   const template = document.getElementById("field-array-object-row");
-  const dump = document.getElementById("field-array-object-dump");
 
   let headers = [
     { name: "Accept", value: "application/json" },
@@ -37,7 +34,6 @@
   function patch(index, key, next) {
     headers = headers.map((row, i) => (i === index ? { ...row, [key]: next } : row));
     host.value = headers;
-    dump.textContent = JSON.stringify(headers, null, 2);
   }
 
   function render() {
@@ -50,7 +46,6 @@
       }
       root.insertBefore(row, addTrigger);
     });
-    dump.textContent = JSON.stringify(headers, null, 2);
   }
 
   host.createItem = () => ({ name: "", value: "" });

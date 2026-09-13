@@ -1,4 +1,4 @@
-// 换序 | movable 开了才出上下把手；挪完焦点跟着这一行走，键盘可以连按一路挪到底
+// 排序 | 上移或下移字段
 import type { ReactNode } from "react";
 import {
   XhFieldArrayAddTrigger,
@@ -34,6 +34,7 @@ export default function Demo(): ReactNode {
               <XhFieldArrayItemContent>
                 <span style={{ inlineSize: "1.5rem" }}>{`${row.index + 1}.`}</span>
                 <input
+                  className="xh-demo-control"
                   style={{ inlineSize: "100%" }}
                   placeholder="这一步做什么"
                   value={row.value as string}
@@ -48,7 +49,6 @@ export default function Demo(): ReactNode {
             </XhFieldArrayItem>
           ))}
           <XhFieldArrayAddTrigger>+ 添加一步</XhFieldArrayAddTrigger>
-          <p>{`顺序：${steps.join(" → ")}`}</p>
         </>
       )}
     </XhFieldArrayRoot>
