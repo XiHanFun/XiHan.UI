@@ -1,4 +1,4 @@
-// 语气 | tone 落在触发按钮的展开态上，六种语气各展开一份做对照
+// 颜色 | tone 落在触发按钮的展开态上，六种颜色各展开一份做对照
 import type { ReactNode } from "react";
 import { XhCollapsibleContent, XhCollapsibleRoot, XhCollapsibleTrigger } from "@xihan-ui/react";
 
@@ -17,7 +17,7 @@ export default function Demo(): ReactNode {
       {tones.map(tone => (
         <XhCollapsibleRoot key={tone} tone={tone} defaultOpen>
           <XhCollapsibleTrigger>{tone}</XhCollapsibleTrigger>
-          <XhCollapsibleContent>收起后触发按钮不吃语气色。</XhCollapsibleContent>
+          <XhCollapsibleContent>收起后触发按钮保持默认颜色。</XhCollapsibleContent>
         </XhCollapsibleRoot>
       ))}
     </div>

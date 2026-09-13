@@ -1,4 +1,4 @@
-// 语气 | tone 落在展开态的标题上，六种语气各预置一项展开做对照
+// 颜色 | tone 落在展开态的标题上，六种颜色各预置一项展开做对照
 import type { ReactNode } from "react";
 import { XhAccordionRoot } from "@xihan-ui/react";
 
@@ -20,7 +20,7 @@ const tones = ([
     {
       value: "closed",
       label: `${tone.label}（收起）`,
-      content: "收起态的标题不吃语气色。",
+      content: "收起态标题保持默认颜色。",
     },
   ],
 }));

@@ -2,7 +2,7 @@
   "$description": "关键帧的名字与内容真源。关键帧逐皮肤自带，同名散在多份皮肤里各定义一次，本表登记「这个名字全库该长什么样」。duplicateContent 记的是现存的「一个视觉多个名字」，每消掉一组就删一条，删完判据 4 即对全库生效。",
   "frames": {
     "xh-accordion-collapse": {
-      "content": "from{grid-template-rows:1fr;padding-block:var(--xh-accordion-content-py,var(--xh-stack-gap-md))}to{grid-template-rows:0fr;padding-block:0}",
+      "content": "from{grid-template-rows:1fr;padding-block-end:var(--xh-accordion-content-pb,var(--xh-_accordion-content-pb))}to{grid-template-rows:0fr;padding-block-end:0}",
       "definedIn": [
         "accordion.css"
       ],
@@ -11,7 +11,7 @@
       ]
     },
     "xh-accordion-expand": {
-      "content": "from{grid-template-rows:0fr;padding-block:0}to{grid-template-rows:1fr;padding-block:var(--xh-accordion-content-py,var(--xh-stack-gap-md))}",
+      "content": "from{grid-template-rows:0fr;padding-block-end:0}to{grid-template-rows:1fr;padding-block-end:var(--xh-accordion-content-pb,var(--xh-_accordion-content-pb))}",
       "definedIn": [
         "accordion.css"
       ],
@@ -74,7 +74,7 @@
       ]
     },
     "xh-collapsible-collapse": {
-      "content": "from{grid-template-rows:1fr;padding-block:var(--xh-collapsible-content-py,var(--xh-stack-gap-md))}to{grid-template-rows:0fr;padding-block:0}",
+      "content": "from{grid-template-rows:1fr;padding-block-end:var(--xh-collapsible-content-pb,var(--xh-_collapsible-content-pb))}to{grid-template-rows:0fr;padding-block-end:0}",
       "definedIn": [
         "collapsible.css"
       ],
@@ -83,7 +83,7 @@
       ]
     },
     "xh-collapsible-expand": {
-      "content": "from{grid-template-rows:0fr;padding-block:0}to{grid-template-rows:1fr;padding-block:var(--xh-collapsible-content-py,var(--xh-stack-gap-md))}",
+      "content": "from{grid-template-rows:0fr;padding-block-end:0}to{grid-template-rows:1fr;padding-block-end:var(--xh-collapsible-content-pb,var(--xh-_collapsible-content-pb))}",
       "definedIn": [
         "collapsible.css"
       ],

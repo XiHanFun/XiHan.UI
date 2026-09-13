@@ -343,13 +343,19 @@
               "name": "--xh-accordion-content-fg"
             },
             {
+              "name": "--xh-accordion-content-font-size"
+            },
+            {
+              "name": "--xh-accordion-content-pb"
+            },
+            {
               "name": "--xh-accordion-content-px"
             },
             {
-              "name": "--xh-accordion-content-py"
+              "name": "--xh-accordion-icon-size"
             },
             {
-              "name": "--xh-accordion-icon-size"
+              "name": "--xh-accordion-indicator-fg"
             },
             {
               "name": "--xh-accordion-item-bg"
@@ -392,6 +398,9 @@
             },
             {
               "name": "--xh-accordion-trigger-px"
+            },
+            {
+              "name": "--xh-accordion-trigger-py"
             },
             {
               "name": "--xh-accordion-trigger-radius"
@@ -7919,13 +7928,22 @@
               "name": "--xh-collapsible-content-fg"
             },
             {
-              "name": "--xh-collapsible-content-py"
+              "name": "--xh-collapsible-content-font-size"
+            },
+            {
+              "name": "--xh-collapsible-content-pb"
+            },
+            {
+              "name": "--xh-collapsible-content-px"
             },
             {
               "name": "--xh-collapsible-header-gap"
             },
             {
               "name": "--xh-collapsible-icon-size"
+            },
+            {
+              "name": "--xh-collapsible-indicator-fg"
             },
             {
               "name": "--xh-collapsible-trigger-bg"
@@ -7953,6 +7971,9 @@
             },
             {
               "name": "--xh-collapsible-trigger-px"
+            },
+            {
+              "name": "--xh-collapsible-trigger-py"
             },
             {
               "name": "--xh-collapsible-trigger-radius"

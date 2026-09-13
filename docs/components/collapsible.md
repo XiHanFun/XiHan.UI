@@ -56,7 +56,7 @@ size 换的是触发按钮的高度、内边距与字号，三档并排对照
 
 ### 颜色
 
-tone 落在触发按钮的展开态上，六种语气各展开一份做对照
+tone 落在触发按钮的展开态上，六种颜色各展开一份做对照
 
 <XhDemo src="collapsible/07-tone" />
 
@@ -109,7 +109,7 @@ tone 落在触发按钮的展开态上，六种语气各展开一份做对照
 | `open` | `boolean` |  |  |
 | `defaultOpen` | `boolean` |  |  |
 | `disabled` | `boolean` |  |  |
-| `tone` | `Tone` |  | 语气：brand / neutral / success / warning / danger / info，决定用哪族颜色。 |
+| `tone` | `Tone` |  | 颜色：brand / neutral / success / warning / danger / info，决定使用哪组状态色。 |
 | `size` | `Size` |  | 尺寸：sm / md / lg。 |
 | `dir` | `Direction` |  | 文字方向，只作用于排版；作者没给就不写。 |
 | `onOpenChange` | `(details: CollapsibleOpenChangeDetails) => void` |  | open 变化意图回调；受控时是唯一出口，非受控随内部转移一并通知。 |
@@ -207,25 +207,29 @@ tone 落在触发按钮的展开态上，六种语气各展开一份做对照
 
 | 变量 | 部件 | CSS 属性 | 状态 | 缺省来源 | 说明 |
 | --- | --- | --- | --- | --- | --- |
-| `--xh-collapsible-content-fg` | `content` | `color` | `default` | `--xh-fg-default` | collapsible 的 content 部件 color 覆盖槽。 |
-| `--xh-collapsible-content-py` | `*`<br>`content` | `padding-block` | `@keyframes xh-collapsible-collapse`<br>`@keyframes xh-collapsible-expand`<br>`default` | `--xh-stack-gap-md` | collapsible 的 *、content 部件 padding-block 覆盖槽。 |
+| `--xh-collapsible-content-fg` | `content` | `color` | `default` | `--xh-fg-muted` | collapsible 的 content 部件 color 覆盖槽。 |
+| `--xh-collapsible-content-font-size` | `content` | `font-size` | `default` | `--xh-text-secondary-size` | collapsible 的 content 部件 font-size 覆盖槽。 |
+| `--xh-collapsible-content-pb` | `*`<br>`content` | `padding-block-end` | `@keyframes xh-collapsible-collapse`<br>`@keyframes xh-collapsible-expand`<br>`default` | `--xh-_collapsible-content-pb` | collapsible 的 *、content 部件 padding-block-end 覆盖槽。 |
+| `--xh-collapsible-content-px` | `content` | `padding-inline` | `default` | `--xh-_collapsible-content-px` | collapsible 的 content 部件 padding-inline 覆盖槽。 |
 | `--xh-collapsible-header-gap` | `header` | `gap` | `default` | `--xh-_collapsible-trigger-gap` | collapsible 的 header 部件 gap 覆盖槽。 |
 | `--xh-collapsible-icon-size` | `root` | `--xh-icon-size` | `default` | `--xh-glyph-size-text` | collapsible 的 root 部件 --xh-icon-size 覆盖槽。 |
+| `--xh-collapsible-indicator-fg` | `indicator` | `color` | `default` | `--xh-fg-muted` | collapsible 的 indicator 部件 color 覆盖槽。 |
 | `--xh-collapsible-trigger-bg` | `trigger` | `background` | `default` | `transparent` | collapsible 的 trigger 部件 background 覆盖槽。 |
-| `--xh-collapsible-trigger-bg-hover` | `trigger` | `background` | `hover` | `--xh-bg-subtle` | collapsible 的 trigger 部件 background 覆盖槽。 |
+| `--xh-collapsible-trigger-bg-hover` | `trigger` | `background` | `disabled`<br>`hover`<br>`not([data-disabled])`<br>`not([data-state='open'])`<br>`state=open` | `--xh-bg-subtle-hover` | collapsible 的 trigger 部件 background 覆盖槽。 |
 | `--xh-collapsible-trigger-fg` | `trigger` | `color` | `default` | `--xh-fg-default` | collapsible 的 trigger 部件 color 覆盖槽。 |
 | `--xh-collapsible-trigger-fg-open` | `trigger` | `color` | `state=open` | `--xh-_collapsible-open-fg` | collapsible 的 trigger 部件 color 覆盖槽。 |
 | `--xh-collapsible-trigger-font-size` | `trigger` | `font-size` | `default` | `--xh-_collapsible-trigger-font-size` | collapsible 的 trigger 部件 font-size 覆盖槽。 |
 | `--xh-collapsible-trigger-font-weight` | `trigger` | `font-weight` | `default` | `--xh-text-label-weight` | collapsible 的 trigger 部件 font-weight 覆盖槽。 |
 | `--xh-collapsible-trigger-gap` | `trigger` | `gap` | `default` | `--xh-_collapsible-trigger-gap` | collapsible 的 trigger 部件 gap 覆盖槽。 |
-| `--xh-collapsible-trigger-h` | `trigger` | `block-size` | `default` | `--xh-_collapsible-trigger-h` | collapsible 的 trigger 部件 block-size 覆盖槽。 |
+| `--xh-collapsible-trigger-h` | `trigger` | `min-block-size` | `default` | `--xh-_collapsible-trigger-h` | collapsible 的 trigger 部件 min-block-size 覆盖槽。 |
 | `--xh-collapsible-trigger-px` | `trigger` | `padding-inline` | `default` | `--xh-_collapsible-trigger-px` | collapsible 的 trigger 部件 padding-inline 覆盖槽。 |
+| `--xh-collapsible-trigger-py` | `trigger` | `padding-block` | `default` | `--xh-_collapsible-trigger-py` | collapsible 的 trigger 部件 padding-block 覆盖槽。 |
 | `--xh-collapsible-trigger-radius` | `trigger` | `border-radius` | `default` | `--xh-shape-control` | collapsible 的 trigger 部件 border-radius 覆盖槽。 |
 <!-- xh-component-tokens:end -->
 
 ### 动效
 
-关键帧 `xh-collapsible-collapse` · `xh-collapsible-expand` 随皮肤自带，不引用别处文件里的名字；`rotate` · `scale` 走 `transition` 过渡。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
+关键帧 `xh-collapsible-collapse` · `xh-collapsible-expand` 随皮肤自带，不引用别处文件里的名字；`background` · `rotate` · `scale` 走 `transition` 过渡。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
 
 皮肤之外还有一段：退场由适配器的退场闸门把关，动画播完才真收起。
 

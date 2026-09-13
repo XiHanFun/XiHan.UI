@@ -10,9 +10,12 @@
 
     /* 尺寸档只换这四个私有槽，标题栏从 root 继承它们，换档不必给每个部件各写一条选择器 */
     --xh-_accordion-trigger-h: var(--xh-control-h-md);
-    --xh-_accordion-trigger-px: var(--xh-control-px-md);
+    --xh-_accordion-trigger-px: var(--xh-space-4);
+    --xh-_accordion-trigger-py: var(--xh-space-4);
     --xh-_accordion-trigger-gap: var(--xh-control-gap-md);
     --xh-_accordion-trigger-font-size: var(--xh-control-font-md);
+    --xh-_accordion-content-px: var(--xh-space-4);
+    --xh-_accordion-content-pb: var(--xh-space-4);
 
     /* 语气落在展开着的标题上，指示器写在标题里、跟着继承这个色，不另立规则。
        没写 data-tone 时 --xh-_tone-fg 没被声明，退回原来的前景色。
@@ -22,6 +25,7 @@
     display: flex;
     flex-direction: column;
     inline-size: 100%;
+    contain: layout style;
   }
 
   [data-scope='accordion'][data-part='root'][data-orientation='horizontal'] {
@@ -32,19 +36,26 @@
   /* 缺省档写在上面的基础规则里 */
   [data-scope='accordion'][data-part='root'][data-size='sm'] {
     --xh-_accordion-trigger-h: var(--xh-control-h-sm);
-    --xh-_accordion-trigger-px: var(--xh-control-px-sm);
+    --xh-_accordion-trigger-px: var(--xh-space-3);
+    --xh-_accordion-trigger-py: var(--xh-space-3);
     --xh-_accordion-trigger-gap: var(--xh-control-gap-sm);
     --xh-_accordion-trigger-font-size: var(--xh-control-font-sm);
+    --xh-_accordion-content-px: var(--xh-space-3);
+    --xh-_accordion-content-pb: var(--xh-space-3);
   }
 
   [data-scope='accordion'][data-part='root'][data-size='lg'] {
     --xh-_accordion-trigger-h: var(--xh-control-h-lg);
-    --xh-_accordion-trigger-px: var(--xh-control-px-lg);
+    --xh-_accordion-trigger-px: var(--xh-space-5);
+    --xh-_accordion-trigger-py: var(--xh-space-5);
     --xh-_accordion-trigger-gap: var(--xh-control-gap-lg);
     --xh-_accordion-trigger-font-size: var(--xh-control-font-lg);
+    --xh-_accordion-content-px: var(--xh-space-5);
+    --xh-_accordion-content-pb: var(--xh-space-5);
   }
 
   [data-scope='accordion'][data-part='item'] {
+    position: relative;
     min-inline-size: 0;
   }
 
@@ -86,7 +97,7 @@
 
   /* —— 形态 —— */
   /* plain 档不在这儿：它就是上面那套基础取值，写不写 data-variant 都长一个样 */
-  [data-scope='accordion'][data-part='root']:is([data-variant='surface'], [data-variant='bordered']) {
+  [data-scope='accordion'][data-part='root'][data-variant='bordered'] {
     gap: var(--xh-accordion-item-gap, var(--xh-space-2));
   }
 
@@ -98,11 +109,22 @@
     border-inline-start: 0;
   }
 
-  [data-scope='accordion'][data-part='root'][data-variant='surface']
-    > [data-scope='accordion'][data-part='item'] {
+  [data-scope='accordion'][data-part='root'][data-variant='surface'] {
     border-radius: var(--xh-accordion-item-radius, var(--xh-shape-surface));
     background: var(--xh-accordion-item-bg, var(--xh-bg-surface));
-    box-shadow: var(--xh-accordion-item-shadow, var(--xh-elevation-raised));
+    box-shadow: var(--xh-accordion-item-shadow, none);
+    overflow: clip;
+  }
+
+  [data-scope='accordion'][data-part='root'][data-variant='surface']
+    > [data-scope='accordion'][data-part='item']:not(:last-child)::after {
+    content: '';
+    position: absolute;
+    inset-inline: 3%;
+    inset-block-end: 0;
+    block-size: var(--xh-stroke-thin);
+    background: var(--xh-accordion-item-border, var(--xh-border-subtle));
+    pointer-events: none;
   }
 
   [data-scope='accordion'][data-part='root'][data-variant='bordered']
@@ -122,7 +144,8 @@
     justify-content: space-between;
     inline-size: 100%;
     gap: var(--xh-accordion-trigger-gap, var(--xh-_accordion-trigger-gap));
-    block-size: var(--xh-accordion-trigger-h, var(--xh-_accordion-trigger-h));
+    min-block-size: var(--xh-accordion-trigger-h, var(--xh-_accordion-trigger-h));
+    padding-block: var(--xh-accordion-trigger-py, var(--xh-_accordion-trigger-py));
     padding-inline: var(--xh-accordion-trigger-px, var(--xh-_accordion-trigger-px));
     border: 0;
     border-radius: var(--xh-accordion-trigger-radius, var(--xh-shape-control));
@@ -132,13 +155,15 @@
     font-weight: var(--xh-accordion-trigger-font-weight, var(--xh-text-label-weight));
     line-height: var(--xh-leading-none);
     cursor: pointer;
-    transition: scale var(--xh-motion-duration-micro) var(--xh-motion-ease-enter-strong);
+    transition:
+      background var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
+      scale var(--xh-motion-duration-micro) var(--xh-motion-ease-enter-strong);
   }
 
   /* 禁用条目带的是 aria-disabled 而非原生 disabled，:hover 照样命中；
      不挡掉的话置灰的那一条悬停仍会换底 */
-  [data-scope='accordion'][data-part='trigger']:not([data-disabled]):hover {
-    background: var(--xh-accordion-trigger-bg-hover, var(--xh-bg-subtle));
+  [data-scope='accordion'][data-part='trigger']:not([data-disabled]):not([data-state='open']):hover {
+    background: var(--xh-accordion-trigger-bg-hover, var(--xh-bg-subtle-hover));
   }
 
   /* 按下去要有回应：标题栏整条轻微下压，松手即弹回 */
@@ -162,6 +187,7 @@
     align-items: center;
     justify-content: center;
     flex: none;
+    color: var(--xh-accordion-indicator-fg, var(--xh-fg-muted));
     line-height: var(--xh-leading-none);
     transition: rotate var(--xh-motion-duration-micro) var(--xh-motion-ease-enter-strong);
   }
@@ -188,9 +214,12 @@
     display: grid;
     grid-template-rows: 1fr;
     overflow: clip;
-    padding-block: var(--xh-accordion-content-py, var(--xh-stack-gap-md));
-    padding-inline: var(--xh-accordion-content-px, var(--xh-control-px-md));
-    color: var(--xh-accordion-content-fg, var(--xh-fg-default));
+    padding-block-start: 0;
+    padding-block-end: var(--xh-accordion-content-pb, var(--xh-_accordion-content-pb));
+    padding-inline: var(--xh-accordion-content-px, var(--xh-_accordion-content-px));
+    color: var(--xh-accordion-content-fg, var(--xh-fg-muted));
+    font-size: var(--xh-accordion-content-font-size, var(--xh-text-secondary-size));
+    line-height: var(--xh-leading-normal);
   }
 
   /* 展开那一档才提前备好行高这条通道：属性随 data-state 一起消失，收起后不长期占着 */
@@ -209,24 +238,24 @@
   @keyframes xh-accordion-expand {
     from {
       grid-template-rows: 0fr;
-      padding-block: 0;
+      padding-block-end: 0;
     }
 
     to {
       grid-template-rows: 1fr;
-      padding-block: var(--xh-accordion-content-py, var(--xh-stack-gap-md));
+      padding-block-end: var(--xh-accordion-content-pb, var(--xh-_accordion-content-pb));
     }
   }
 
   @keyframes xh-accordion-collapse {
     from {
       grid-template-rows: 1fr;
-      padding-block: var(--xh-accordion-content-py, var(--xh-stack-gap-md));
+      padding-block-end: var(--xh-accordion-content-pb, var(--xh-_accordion-content-pb));
     }
 
     to {
       grid-template-rows: 0fr;
-      padding-block: 0;
+      padding-block-end: 0;
     }
   }
 

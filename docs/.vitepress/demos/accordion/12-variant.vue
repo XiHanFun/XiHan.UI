@@ -1,4 +1,4 @@
-<!-- 形态 | plain 不画壳，surface 给整块一层面，bordered 逐条画边；三档只改怎么与页面分开 -->
+<!-- 变体 | plain 不画壳，surface 连成单一表面，bordered 逐条画边；三档只改怎么与页面分开 -->
 <script setup lang="ts">
 import { XhAccordionRoot } from "@xihan-ui/vue";
 
