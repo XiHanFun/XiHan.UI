@@ -277,11 +277,21 @@
     display: none;
   }
 
+  /* 区间：起点那组只占自己的宽度，分隔符紧跟在起点后面；剩下的宽度全给终点那组 */
+  [data-scope='date-picker'][data-part='segment-group'][data-index='0']:has(+ [data-part='range-separator']:not([hidden])) {
+    flex: 0 0 auto;
+  }
+
   [data-scope='date-picker'][data-part='range-separator'] {
     display: inline-flex;
     flex: none;
     align-items: center;
     justify-content: center;
+    /* 两侧各留一个小间距：把输入行的常规间距收回来，再补上自己那一份 */
+    margin-inline: var(
+      --xh-date-picker-range-separator-mx,
+      calc(var(--xh-date-picker-range-separator-px, var(--xh-space-1)) - var(--xh-date-picker-control-gap, var(--xh-_date-picker-gap)))
+    );
     padding-inline: var(--xh-date-picker-range-separator-px, var(--xh-space-1));
     color: var(--xh-date-picker-range-separator-fg, var(--xh-fg-subtle));
     font: inherit;

@@ -116,6 +116,9 @@ const HOOKS = {
   'tree:data-loading': '在途的观感由只在取数期在场的 loading 部件承载，根上这一位是给作者接线的镜像',
   'tree-select:data-loading': '在途的观感由只在取数期在场的 loading 部件承载，根上这一位是给作者接线的镜像',
   'tree-select:data-error': '懒分支失败不预设错误文案或重试按钮；这一位留给作者结构接线，默认皮肤不伪造局部错误面',
+  // 区间日历：预览与已落定同一副长相，校验失败的观感落在字段外壳上
+  'calendar:data-range-preview': '挑到一半的预览与已落定的区间同一副长相，视觉由 data-in-range 与两端标记承载；这一位供作者区分预览自取',
+  'calendar:data-invalid': '校验失败的观感由包着它的字段外壳承载（日期选择器的输入行描边与环）；日历格子只报 aria-invalid，不另画一档',
   // 只读：观感落在真正的输入件身上
   'field-array:data-readonly': '行数改不动的观感落在三个把手的 aria-disabled 上，行里控件的只读由作者自己置，这一层只往下传状态',
   'field-array:data-invalid': '校验失败的观感落在行里各输入件自己身上，这一层只往下传状态',

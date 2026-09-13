@@ -149,20 +149,63 @@ describe('范围日历轨道', () => {
     expect(alpha(getComputedStyle(trigger('2026-09-09')).backgroundColor)).toBeLessThan(8)
   })
 
-  it('只落起点时以更轻的轨道预览 hover 范围，并强调预览端点', async () => {
+  it('挑到一半的预览与已落定的区间同一副长相：轨道同色，起点与悬停端都是实心圆帽', async () => {
     await mountCalendar()
     await userEvent.click(trigger('2026-09-07'))
     await userEvent.hover(trigger('2026-09-11'))
     await nextTick()
 
-    for (const day of ['07', '08', '09', '10', '11'])
+    for (const day of ['07', '08', '09', '10', '11']) {
       expect(cell(`2026-09-${day}`).hasAttribute('data-range-preview')).toBe(true)
+      expect(cell(`2026-09-${day}`).getAttribute('aria-selected')).toBe('true')
+    }
 
     const preview = getComputedStyle(cell('2026-09-09'), '::before')
-    expect(alpha(preview.backgroundColor)).toBeGreaterThan(0)
-    expect(alpha(preview.backgroundColor)).toBeLessThan(255)
+    expect(alpha(preview.backgroundColor)).toBe(255)
     expect(alpha(getComputedStyle(trigger('2026-09-09')).backgroundColor)).toBeLessThan(8)
-    expect(alpha(getComputedStyle(trigger('2026-09-11')).backgroundColor)).toBe(255)
+    const startBg = getComputedStyle(trigger('2026-09-07')).backgroundColor
+    const endBg = getComputedStyle(trigger('2026-09-11')).backgroundColor
+    expect(alpha(startBg)).toBe(255)
+    expect(endBg).toBe(startBg)
+
+    // 落下终点后，两端与轨道逐值不变
+    await userEvent.click(trigger('2026-09-11'))
+    await nextTick()
+    expect(getComputedStyle(trigger('2026-09-07')).backgroundColor).toBe(startBg)
+    expect(getComputedStyle(trigger('2026-09-11')).backgroundColor).toBe(endBg)
+    expect(getComputedStyle(cell('2026-09-09'), '::before').backgroundColor).toBe(preview.backgroundColor)
+    expect(cell('2026-09-09').hasAttribute('data-range-preview')).toBe(false)
+  })
+
+  it('按住拖过去也能挑出区间，拖动中整张网格保持手型', async () => {
+    await mountCalendar()
+    const grid = document.querySelector<HTMLElement>(`[data-scope='calendar'][data-part='grid']`)!
+    // 按下与松开拆开发：拖动中间那一段要停下来量
+    const pointer = (el: HTMLElement, type: string): void => {
+      el.dispatchEvent(new PointerEvent(type, {
+        bubbles: true,
+        cancelable: true,
+        pointerId: 1,
+        pointerType: 'mouse',
+        isPrimary: true,
+        button: 0,
+        width: 8,
+        height: 8,
+        pressure: type === 'pointerdown' ? 0.5 : 0,
+      }))
+    }
+    pointer(trigger('2026-09-07'), 'pointerdown')
+    trigger('2026-09-09').dispatchEvent(new PointerEvent('pointerenter', { bubbles: false, pointerType: 'mouse' }))
+    await nextTick()
+    expect(grid.hasAttribute('data-dragging')).toBe(true)
+    expect(getComputedStyle(grid).cursor).toBe('pointer')
+    expect(cell('2026-09-08').hasAttribute('data-in-range')).toBe(true)
+    pointer(trigger('2026-09-09'), 'pointerup')
+    await nextTick()
+    expect(grid.hasAttribute('data-dragging')).toBe(false)
+    expect(cell('2026-09-07').hasAttribute('data-range-start')).toBe(true)
+    expect(cell('2026-09-09').hasAttribute('data-range-end')).toBe(true)
+    expect(cell('2026-09-09').hasAttribute('data-range-preview')).toBe(false)
   })
 
   it('区间端点具备按压缩放的过渡通道', async () => {
@@ -208,12 +251,22 @@ describe('范围日历轨道', () => {
     expect(after.height).toBeLessThanOrEqual(40)
   })
 
-  it('日期范围字段使用正式分隔部件，默认字符不进入可访问树', async () => {
+  it('日期范围字段使用正式分隔部件，默认字符不进入可访问树；起点那组只占自己的宽度', async () => {
     const separator = await mountRangeField()
     const style = getComputedStyle(separator)
     expect(separator.textContent).toBe('-')
     expect(separator.getAttribute('aria-hidden')).toBe('true')
     expect(style.display).toBe('flex')
     expect(Number.parseFloat(style.paddingInlineStart)).toBeGreaterThan(0)
+
+    const [start, end] = document.querySelectorAll<HTMLElement>(`[data-scope='date-picker'][data-part='segment-group']`)
+    expect(getComputedStyle(start!).flexGrow).toBe('0')
+    expect(getComputedStyle(end!).flexGrow).toBe('1')
+    // 分隔符紧跟在起点后面：两侧各只留一个小间距
+    const gapBefore = separator.getBoundingClientRect().left - start!.getBoundingClientRect().right
+    const gapAfter = end!.getBoundingClientRect().left - separator.getBoundingClientRect().right
+    expect(gapBefore).toBeGreaterThan(0)
+    expect(gapBefore).toBeLessThanOrEqual(6)
+    expect(gapAfter).toBeCloseTo(gapBefore, 0)
   })
 })
