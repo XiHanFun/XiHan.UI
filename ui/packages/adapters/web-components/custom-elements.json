@@ -53600,19 +53600,7 @@
               "name": "--xh-toolbar-gap"
             },
             {
-              "name": "--xh-toolbar-group-bg"
-            },
-            {
               "name": "--xh-toolbar-group-gap"
-            },
-            {
-              "name": "--xh-toolbar-group-p"
-            },
-            {
-              "name": "--xh-toolbar-group-radius"
-            },
-            {
-              "name": "--xh-toolbar-group-separator-gap"
             },
             {
               "name": "--xh-toolbar-icon-size"
@@ -53678,10 +53666,16 @@
               "name": "--xh-toolbar-separator-inset"
             },
             {
+              "name": "--xh-toolbar-separator-opacity"
+            },
+            {
               "name": "--xh-toolbar-separator-radius"
             },
             {
               "name": "--xh-toolbar-separator-thickness"
+            },
+            {
+              "name": "--xh-toolbar-shadow"
             }
           ]
         }

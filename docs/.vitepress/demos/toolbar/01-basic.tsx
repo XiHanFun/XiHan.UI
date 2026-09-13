@@ -43,6 +43,7 @@ export default function Demo(): ReactNode {
           </Fragment>
         ))}
       </XhToolbarGroup>
+      <XhToolbarSeparator />
       <XhToolbarGroup>
         <XhToolbarItem value="copy" type="button" aria-label="复制">
           <XhIcon icon={CopyIcon} />
