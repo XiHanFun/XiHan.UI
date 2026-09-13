@@ -12178,7 +12178,7 @@
 [data-scope='skeleton'][data-part='root'] {
   display: flex;
   flex-direction: column;
-  gap: var(--xh-skeleton-gap, var(--xh-space-2));
+  gap: var(--xh-skeleton-gap, var(--xh-space-3));
 }
 
 /* 声明了 display 就盖掉了 UA 的 [hidden]{display:none}，补这条兜住加载结束后的收起态 */
@@ -12194,6 +12194,7 @@
  */
 [data-scope='skeleton'][data-part='item'] {
   inline-size: 100%;
+  pointer-events: none;
   border-radius: var(--xh-skeleton-radius, var(--xh-shape-control));
   background-color: var(--xh-skeleton-bg, var(--xh-bg-subtle));
   background-image: linear-gradient(
@@ -12209,7 +12210,7 @@
 
 /* 一行文字的高度取正文字号，圆角拉满，看起来就是一行还没排出来的字 */
 [data-scope='skeleton'][data-part='item'][data-shape='text'] {
-  block-size: var(--xh-skeleton-text-block-size, var(--xh-text-body-size));
+  block-size: var(--xh-skeleton-text-block-size, var(--xh-text-caption-size));
   border-radius: var(--xh-skeleton-text-radius, var(--xh-shape-pill));
 }
 

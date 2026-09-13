@@ -1,4 +1,4 @@
-# Skeleton 骨架屏 <Badge type="info" text="alpha" />
+# Skeleton 骨架屏
 
 内容还没到时，先按最终版面占位。
 
@@ -12,7 +12,7 @@
 
 ## 用法
 
-容器竖着码放骨架条，形状缺省是一行文字
+按真实卡片的封面与文字节奏占位
 
 <XhDemo src="skeleton/01-basic" />
 
@@ -36,11 +36,11 @@ loading 期间容器报 aria-busy，翻成 false 后整块收起，位置让给�
 
 <XhDemo src="skeleton/03-loading" />
 
-### 按版面占位
+### 动效
 
-骨架条的宽高由内联样式与组件令牌定，占位形状贴着真内容将来的样子
+在微光、呼吸和静止三档之间选择
 
-<XhDemo src="skeleton/04-layout" />
+<XhDemo src="skeleton/04-animation" />
 
 ## 设计指引
 
@@ -58,7 +58,8 @@ loading 期间容器报 aria-busy，翻成 false 后整块收起，位置让给�
 ### 特性
 
 - `loading` 翻假即换成真内容。
-- `variant` 决定骨块的形状（文本行、圆形、矩形）。
+- `shape` 决定骨块的形状（文本行、圆形、矩形）。
+- `animation` 在微光、呼吸和静止三档之间切换。
 
 ### 组合
 
@@ -157,13 +158,13 @@ loading 期间容器报 aria-busy，翻成 false 后整块收起，位置让给�
 | `--xh-skeleton-circle-radius` | `item` | `border-radius` | `shape=circle` | `--xh-shape-pill` | skeleton 的 item 部件 border-radius 覆盖槽。 |
 | `--xh-skeleton-circle-size` | `item` | `inline-size` | `shape=circle` | `--xh-control-h-lg` | skeleton 的 item 部件 inline-size 覆盖槽。 |
 | `--xh-skeleton-duration` | `item` | `animation` | `default` | `--xh-shimmer-duration` | skeleton 的 item 部件 animation 覆盖槽。 |
-| `--xh-skeleton-gap` | `root` | `gap` | `default` | `--xh-space-2` | skeleton 的 root 部件 gap 覆盖槽。 |
+| `--xh-skeleton-gap` | `root` | `gap` | `default` | `--xh-space-3` | skeleton 的 root 部件 gap 覆盖槽。 |
 | `--xh-skeleton-pulse-duration` | `item`<br>`root` | `animation` | `animation=pulse` | `--xh-shimmer-duration` | skeleton 的 item、root 部件 animation 覆盖槽。 |
 | `--xh-skeleton-radius` | `item` | `border-radius` | `default` | `--xh-shape-control` | skeleton 的 item 部件 border-radius 覆盖槽。 |
 | `--xh-skeleton-rect-block-size` | `item` | `min-block-size` | `shape=rect` | `--xh-control-h-lg` | skeleton 的 item 部件 min-block-size 覆盖槽。 |
 | `--xh-skeleton-rect-radius` | `item` | `border-radius` | `shape=rect` | `--xh-shape-surface` | skeleton 的 item 部件 border-radius 覆盖槽。 |
 | `--xh-skeleton-sheen` | `item` | `background-image` | `default` | `--xh-bg-surface-raised` | skeleton 的 item 部件 background-image 覆盖槽。 |
-| `--xh-skeleton-text-block-size` | `item` | `block-size` | `shape=text` | `--xh-text-body-size` | skeleton 的 item 部件 block-size 覆盖槽。 |
+| `--xh-skeleton-text-block-size` | `item` | `block-size` | `shape=text` | `--xh-text-caption-size` | skeleton 的 item 部件 block-size 覆盖槽。 |
 | `--xh-skeleton-text-radius` | `item` | `border-radius` | `shape=text` | `--xh-shape-pill` | skeleton 的 item 部件 border-radius 覆盖槽。 |
 <!-- xh-component-tokens:end -->
 

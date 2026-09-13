@@ -3,16 +3,17 @@
  * Licensed under the MIT License. See LICENSE in the project root for license information.
  */
 
-// 基础用法 | 容器竖着码放骨架条，形状缺省是一行文字
-import type { ReactNode } from "react";
+// 基础用法 | 按真实卡片的封面与文字节奏占位
+import type { CSSProperties, ReactNode } from "react";
 import { XhSkeletonItem, XhSkeletonRoot } from "@xihan-ui/react";
 
 export default function Demo(): ReactNode {
   return (
     <XhSkeletonRoot style={{ inlineSize: "260px" }}>
-      <XhSkeletonItem />
-      <XhSkeletonItem />
-      <XhSkeletonItem />
+      <XhSkeletonItem shape="rect" style={{ "--xh-skeleton-rect-block-size": "120px" } as CSSProperties} />
+      <XhSkeletonItem style={{ inlineSize: "60%" }} />
+      <XhSkeletonItem style={{ inlineSize: "80%" }} />
+      <XhSkeletonItem style={{ inlineSize: "40%" }} />
     </XhSkeletonRoot>
   );
 }

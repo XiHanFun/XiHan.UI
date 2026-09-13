@@ -48385,7 +48385,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-space-2"
+        "--xh-space-3"
       ],
       "visibility": "public",
       "description": "skeleton 的 root 部件 gap 覆盖槽。"
@@ -48494,7 +48494,7 @@
         "shape=text"
       ],
       "defaultToken": [
-        "--xh-text-body-size"
+        "--xh-text-caption-size"
       ],
       "visibility": "public",
       "description": "skeleton 的 item 部件 block-size 覆盖槽。"
