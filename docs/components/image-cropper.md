@@ -65,6 +65,7 @@
 
 - 使用源图自然像素记录裁切矩形。
 - 支持拖动、八方向调整和键盘微调。
+- 边缘把手显示为框内短条，角部把手随裁切框形状变化。
 - 支持固定宽高比、圆形遮罩、缩放和旋转。
 - 支持受控裁切区域和原生表单提交。
 - `onValueChangeEnd` 在一次调整结束时触发。
@@ -247,11 +248,14 @@
 | `--xh-image-cropper-bg` | `viewport` | `background` | `default` | `--xh-bg-muted` | image-cropper 的 viewport 部件 background 覆盖槽。 |
 | `--xh-image-cropper-crop-border` | `crop-area` | `border-color` | `default` | `--xh-bg-surface` | image-cropper 的 crop-area 部件 border-color 覆盖槽。 |
 | `--xh-image-cropper-grid-line` | `grid` | `background-image` | `default` | `--xh-border-subtle` | image-cropper 的 grid 部件 background-image 覆盖槽。 |
-| `--xh-image-cropper-handle-bg` | `crop-handle` | `background` | `default` | `--xh-bg-surface` | image-cropper 的 crop-handle 部件 background 覆盖槽。 |
-| `--xh-image-cropper-handle-bg-resizing` | `crop-handle` | `background` | `resizing` | `--xh-bg-brand` | image-cropper 的 crop-handle 部件 background 覆盖槽。 |
-| `--xh-image-cropper-handle-border` | `crop-handle` | `border-color` | `default` | `--xh-border-strong` | image-cropper 的 crop-handle 部件 border-color 覆盖槽。 |
-| `--xh-image-cropper-handle-radius` | `crop-handle` | `border-radius` | `default` | `--xh-shape-inset` | image-cropper 的 crop-handle 部件 border-radius 覆盖槽。 |
-| `--xh-image-cropper-handle-size` | `crop-handle`<br>`root` | `block-size`<br>`inline-size`<br>`inset` | `default` | `--xh-control-indicator-size` | image-cropper 的 crop-handle、root 部件 block-size、inline-size、inset 覆盖槽。 |
+| `--xh-image-cropper-handle-bg` | `crop-handle` | `background`<br>`border`<br>`outline` | `default`<br>`is([data-position='nw'], [data-position='ne'], [data-position='sw'], [data-position='se'])`<br>`position=ne`<br>`position=nw`<br>`position=se`<br>`position=sw` | `--xh-bg-surface` | image-cropper 的 crop-handle 部件 background、border、outline 覆盖槽。 |
+| `--xh-image-cropper-handle-bg-hover` | `crop-handle` | `background`<br>`border`<br>`outline` | `disabled`<br>`hover`<br>`is([data-position='nw'], [data-position='ne'], [data-position='sw'], [data-position='se'])`<br>`not([data-disabled], [data-readonly])`<br>`position=ne`<br>`position=nw`<br>`position=se`<br>`position=sw`<br>`readonly` | `--xh-bg-brand-subtle-hover` | image-cropper 的 crop-handle 部件 background、border、outline 覆盖槽。 |
+| `--xh-image-cropper-handle-bg-resizing` | `crop-handle` | `background`<br>`border`<br>`outline` | `is([data-position='nw'], [data-position='ne'], [data-position='sw'], [data-position='se'])`<br>`position=ne`<br>`position=nw`<br>`position=se`<br>`position=sw`<br>`resizing` | `--xh-bg-brand` | image-cropper 的 crop-handle 部件 background、border、outline 覆盖槽。 |
+| `--xh-image-cropper-handle-border` | `crop-handle` | `border`<br>`outline` | `default`<br>`is([data-position='nw'], [data-position='ne'], [data-position='sw'], [data-position='se'])`<br>`position=ne`<br>`position=nw`<br>`position=se`<br>`position=sw` | `--xh-_image-cropper-handle-color` | image-cropper 的 crop-handle 部件 border、outline 覆盖槽。 |
+| `--xh-image-cropper-handle-length` | `crop-handle` | `block-size`<br>`inline-size` | `is([data-position='e'], [data-position='w'])`<br>`is([data-position='n'], [data-position='s'])`<br>`position=e`<br>`position=n`<br>`position=s`<br>`position=w` | `--xh-space-8` | image-cropper 的 crop-handle 部件 block-size、inline-size 覆盖槽。 |
+| `--xh-image-cropper-handle-radius` | `crop-handle` | `border-radius` | `default` | `--xh-shape-pill` | image-cropper 的 crop-handle 部件 border-radius 覆盖槽。 |
+| `--xh-image-cropper-handle-size` | `crop-handle`<br>`root` | `block-size`<br>`inline-size`<br>`inset` | `default`<br>`is([data-position='nw'], [data-position='ne'], [data-position='sw'], [data-position='se'])`<br>`position=ne`<br>`position=nw`<br>`position=se`<br>`position=sw` | `--xh-control-indicator-size` | image-cropper 的 crop-handle、root 部件 block-size、inline-size、inset 覆盖槽。 |
+| `--xh-image-cropper-handle-thickness` | `crop-handle` | `block-size`<br>`border-block-end-width`<br>`border-block-start-width`<br>`border-inline-end-width`<br>`border-inline-start-width`<br>`inline-size` | `is([data-position='e'], [data-position='w'])`<br>`is([data-position='n'], [data-position='s'])`<br>`position=e`<br>`position=n`<br>`position=ne`<br>`position=nw`<br>`position=s`<br>`position=se`<br>`position=sw`<br>`position=w` | `--xh-stroke-thick` | image-cropper 的 crop-handle 部件 block-size、border-block-end-width、border-block-start-width、border-inline-end-width、border-inline-start-width、inline-size 覆盖槽。 |
 | `--xh-image-cropper-mask` | `crop-area` | `box-shadow` | `default` | `--xh-bg-overlay` | image-cropper 的 crop-area 部件 box-shadow 覆盖槽。 |
 | `--xh-image-cropper-slider-accent` | `rotate-slider`<br>`zoom-slider` | `accent-color` | `default` | `--xh-bg-brand` | image-cropper 的 rotate-slider、zoom-slider 部件 accent-color 覆盖槽。 |
 | `--xh-image-cropper-slider-w` | `rotate-slider`<br>`zoom-slider` | `inline-size` | `default` | `100%` | image-cropper 的 rotate-slider、zoom-slider 部件 inline-size 覆盖槽。 |
@@ -261,7 +265,7 @@
 
 ### 动效
 
-`background` 走 `transition` 过渡。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
+`background` · `border-color` 走 `transition` 过渡。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
 
 系统开启减弱动效时由令牌层统一收敛，皮肤不另作判断。
 
