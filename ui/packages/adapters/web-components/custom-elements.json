@@ -22719,16 +22719,25 @@
               "name": "--xh-image-cropper-handle-bg"
             },
             {
+              "name": "--xh-image-cropper-handle-bg-hover"
+            },
+            {
               "name": "--xh-image-cropper-handle-bg-resizing"
             },
             {
               "name": "--xh-image-cropper-handle-border"
             },
             {
+              "name": "--xh-image-cropper-handle-length"
+            },
+            {
               "name": "--xh-image-cropper-handle-radius"
             },
             {
               "name": "--xh-image-cropper-handle-size"
+            },
+            {
+              "name": "--xh-image-cropper-handle-thickness"
             },
             {
               "name": "--xh-image-cropper-mask"

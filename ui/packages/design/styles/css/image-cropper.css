@@ -99,24 +99,33 @@
     background-image: none;
   }
 
-  /* 把手钉在裁切框的角与边上。落点写物理 left / top：裁切框的坐标是图片像素，
-     连接层写进内联样式的也是物理 left / top，把手跟着走才不会与框错开一侧。
-     translate 把方块的中心挪到点上；scale 按倍率缩回去，缩放时把手看着大小不变。 */
+  /* 把手的命中区仍以裁切框边界为中心，视觉短条与折角只向框内绘制。 */
   [data-scope='image-cropper'][data-part='crop-handle'] {
+    --xh-_image-cropper-handle-color: var(--xh-image-cropper-handle-bg, var(--xh-bg-surface));
+
     position: absolute;
     display: block;
     box-sizing: border-box;
-    border-style: solid;
-    border-width: calc(var(--xh-stroke-thin) / var(--xh-_image-cropper-zoom));
-    border-color: var(--xh-image-cropper-handle-border, var(--xh-border-strong));
-    border-radius: var(--xh-image-cropper-handle-radius, var(--xh-shape-inset));
-    background: var(--xh-image-cropper-handle-bg, var(--xh-bg-surface));
+    border: 0;
+    background: transparent;
     inline-size: var(--xh-_image-cropper-handle-size);
     block-size: var(--xh-_image-cropper-handle-size);
     translate: -50% -50%;
     scale: calc(1 / var(--xh-_image-cropper-zoom));
-    /* 拉动那一枚换底色，换的过程要看得出来 */
-    transition: background var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
+  }
+
+  [data-scope='image-cropper'][data-part='crop-handle']::after {
+    content: '';
+    position: absolute;
+    border-radius: var(--xh-image-cropper-handle-radius, var(--xh-shape-pill));
+    background: var(--xh-_image-cropper-handle-color);
+    outline: var(--xh-stroke-thin) solid
+      var(--xh-image-cropper-handle-border, var(--xh-_image-cropper-handle-color));
+    outline-offset: calc(-1 * var(--xh-stroke-thin));
+    pointer-events: none;
+    transition:
+      background var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
+      border-color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
   }
 
   /* 看得见的方块比手指小：另铺一层不可见的命中区，把它撑到最小可点尺寸。
@@ -127,14 +136,16 @@
     content: '';
   }
 
-  [data-scope='image-cropper'][data-part='crop-handle'][data-resizing] {
-    background: var(--xh-image-cropper-handle-bg-resizing, var(--xh-bg-brand));
+  [data-scope='image-cropper'][data-part='crop-handle']:hover:not([data-disabled], [data-readonly]) {
+    --xh-_image-cropper-handle-color: var(--xh-image-cropper-handle-bg-hover, var(--xh-bg-brand-subtle-hover));
   }
 
-  /* 面是实心的，环色与面同族，画在面里就看不出来；环改取面自己的前景色——
-     那一族色本来就要在这块面上把字读清楚，与面的对比是按可读性定的 */
-  [data-scope='image-cropper'][data-part='crop-handle'][data-resizing]:focus-visible {
-    --xh-_ring-color: currentColor;
+  [data-scope='image-cropper'][data-part='crop-handle'][data-resizing] {
+    --xh-_image-cropper-handle-color: var(--xh-image-cropper-handle-bg-resizing, var(--xh-bg-brand));
+  }
+
+  [data-scope='image-cropper'][data-part='crop-handle']:focus-visible {
+    outline: none;
   }
 
   /* —— 八个方位：落点 + 光标 —— */
@@ -192,6 +203,101 @@
     /* stylelint-disable-next-line property-disallowed-list -- 同上 */
     left: 0;
     cursor: ew-resize;
+  }
+
+  /* stylelint-disable property-disallowed-list -- 裁切框的八向位置使用图片物理坐标，内部标记必须朝对应物理方向内收 */
+  [data-scope='image-cropper'][data-part='crop-handle']:is([data-position='n'], [data-position='s'])::after {
+    left: 50%;
+    inline-size: var(--xh-image-cropper-handle-length, var(--xh-space-8));
+    block-size: var(--xh-image-cropper-handle-thickness, var(--xh-stroke-thick));
+    translate: -50% 0;
+  }
+
+  [data-scope='image-cropper'][data-part='crop-handle'][data-position='n']::after {
+    bottom: 0;
+  }
+
+  [data-scope='image-cropper'][data-part='crop-handle'][data-position='s']::after {
+    top: 0;
+  }
+
+  [data-scope='image-cropper'][data-part='crop-handle']:is([data-position='e'], [data-position='w'])::after {
+    top: 50%;
+    inline-size: var(--xh-image-cropper-handle-thickness, var(--xh-stroke-thick));
+    block-size: var(--xh-image-cropper-handle-length, var(--xh-space-8));
+    translate: 0 -50%;
+  }
+
+  [data-scope='image-cropper'][data-part='crop-handle'][data-position='e']::after {
+    left: 0;
+  }
+
+  [data-scope='image-cropper'][data-part='crop-handle'][data-position='w']::after {
+    right: 0;
+  }
+
+  [data-scope='image-cropper'][data-part='crop-handle'][data-position='nw'] {
+    border-start-start-radius: inherit;
+  }
+
+  [data-scope='image-cropper'][data-part='crop-handle'][data-position='ne'] {
+    border-start-end-radius: inherit;
+  }
+
+  [data-scope='image-cropper'][data-part='crop-handle'][data-position='sw'] {
+    border-end-start-radius: inherit;
+  }
+
+  [data-scope='image-cropper'][data-part='crop-handle'][data-position='se'] {
+    border-end-end-radius: inherit;
+  }
+
+  [data-scope='image-cropper'][data-part='crop-handle']:is(
+    [data-position='nw'],
+    [data-position='ne'],
+    [data-position='sw'],
+    [data-position='se']
+  )::after {
+    inline-size: calc(var(--xh-_image-cropper-handle-size) / 2);
+    block-size: calc(var(--xh-_image-cropper-handle-size) / 2);
+    border: 0 solid var(--xh-image-cropper-handle-border, var(--xh-_image-cropper-handle-color));
+    border-radius: inherit;
+    background: transparent;
+    outline: none;
+  }
+
+  [data-scope='image-cropper'][data-part='crop-handle'][data-position='nw']::after {
+    right: 0;
+    bottom: 0;
+    border-block-start-width: var(--xh-image-cropper-handle-thickness, var(--xh-stroke-thick));
+    border-inline-start-width: var(--xh-image-cropper-handle-thickness, var(--xh-stroke-thick));
+  }
+
+  [data-scope='image-cropper'][data-part='crop-handle'][data-position='ne']::after {
+    bottom: 0;
+    left: 0;
+    border-block-start-width: var(--xh-image-cropper-handle-thickness, var(--xh-stroke-thick));
+    border-inline-end-width: var(--xh-image-cropper-handle-thickness, var(--xh-stroke-thick));
+  }
+
+  [data-scope='image-cropper'][data-part='crop-handle'][data-position='sw']::after {
+    top: 0;
+    right: 0;
+    border-block-end-width: var(--xh-image-cropper-handle-thickness, var(--xh-stroke-thick));
+    border-inline-start-width: var(--xh-image-cropper-handle-thickness, var(--xh-stroke-thick));
+  }
+
+  [data-scope='image-cropper'][data-part='crop-handle'][data-position='se']::after {
+    top: 0;
+    left: 0;
+    border-block-end-width: var(--xh-image-cropper-handle-thickness, var(--xh-stroke-thick));
+    border-inline-end-width: var(--xh-image-cropper-handle-thickness, var(--xh-stroke-thick));
+  }
+  /* stylelint-enable property-disallowed-list */
+
+  [data-scope='image-cropper'][data-part='crop-handle']:focus-visible::after {
+    outline: var(--xh-ring-width) solid var(--xh-ring-focus);
+    outline-offset: var(--xh-ring-offset);
   }
 
   /* 只读与禁用的光标排在八个方位之后：那八条每条都写了 cursor，特异性又完全相同，

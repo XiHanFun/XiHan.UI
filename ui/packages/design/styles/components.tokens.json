@@ -26667,16 +26667,51 @@
         "crop-handle"
       ],
       "property": [
-        "background"
+        "background",
+        "border",
+        "outline"
       ],
       "state": [
-        "default"
+        "default",
+        "is([data-position='nw'], [data-position='ne'], [data-position='sw'], [data-position='se'])",
+        "position=ne",
+        "position=nw",
+        "position=se",
+        "position=sw"
       ],
       "defaultToken": [
         "--xh-bg-surface"
       ],
       "visibility": "public",
-      "description": "image-cropper 的 crop-handle 部件 background 覆盖槽。"
+      "description": "image-cropper 的 crop-handle 部件 background、border、outline 覆盖槽。"
+    },
+    {
+      "name": "--xh-image-cropper-handle-bg-hover",
+      "component": "image-cropper",
+      "part": [
+        "crop-handle"
+      ],
+      "property": [
+        "background",
+        "border",
+        "outline"
+      ],
+      "state": [
+        "disabled",
+        "hover",
+        "is([data-position='nw'], [data-position='ne'], [data-position='sw'], [data-position='se'])",
+        "not([data-disabled], [data-readonly])",
+        "position=ne",
+        "position=nw",
+        "position=se",
+        "position=sw",
+        "readonly"
+      ],
+      "defaultToken": [
+        "--xh-bg-brand-subtle-hover"
+      ],
+      "visibility": "public",
+      "description": "image-cropper 的 crop-handle 部件 background、border、outline 覆盖槽。"
     },
     {
       "name": "--xh-image-cropper-handle-bg-resizing",
@@ -26685,16 +26720,23 @@
         "crop-handle"
       ],
       "property": [
-        "background"
+        "background",
+        "border",
+        "outline"
       ],
       "state": [
+        "is([data-position='nw'], [data-position='ne'], [data-position='sw'], [data-position='se'])",
+        "position=ne",
+        "position=nw",
+        "position=se",
+        "position=sw",
         "resizing"
       ],
       "defaultToken": [
         "--xh-bg-brand"
       ],
       "visibility": "public",
-      "description": "image-cropper 的 crop-handle 部件 background 覆盖槽。"
+      "description": "image-cropper 的 crop-handle 部件 background、border、outline 覆盖槽。"
     },
     {
       "name": "--xh-image-cropper-handle-border",
@@ -26703,16 +26745,46 @@
         "crop-handle"
       ],
       "property": [
-        "border-color"
+        "border",
+        "outline"
       ],
       "state": [
-        "default"
+        "default",
+        "is([data-position='nw'], [data-position='ne'], [data-position='sw'], [data-position='se'])",
+        "position=ne",
+        "position=nw",
+        "position=se",
+        "position=sw"
       ],
       "defaultToken": [
-        "--xh-border-strong"
+        "--xh-_image-cropper-handle-color"
       ],
       "visibility": "public",
-      "description": "image-cropper 的 crop-handle 部件 border-color 覆盖槽。"
+      "description": "image-cropper 的 crop-handle 部件 border、outline 覆盖槽。"
+    },
+    {
+      "name": "--xh-image-cropper-handle-length",
+      "component": "image-cropper",
+      "part": [
+        "crop-handle"
+      ],
+      "property": [
+        "block-size",
+        "inline-size"
+      ],
+      "state": [
+        "is([data-position='e'], [data-position='w'])",
+        "is([data-position='n'], [data-position='s'])",
+        "position=e",
+        "position=n",
+        "position=s",
+        "position=w"
+      ],
+      "defaultToken": [
+        "--xh-space-8"
+      ],
+      "visibility": "public",
+      "description": "image-cropper 的 crop-handle 部件 block-size、inline-size 覆盖槽。"
     },
     {
       "name": "--xh-image-cropper-handle-radius",
@@ -26727,7 +26799,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-shape-inset"
+        "--xh-shape-pill"
       ],
       "visibility": "public",
       "description": "image-cropper 的 crop-handle 部件 border-radius 覆盖槽。"
@@ -26745,13 +26817,50 @@
         "inset"
       ],
       "state": [
-        "default"
+        "default",
+        "is([data-position='nw'], [data-position='ne'], [data-position='sw'], [data-position='se'])",
+        "position=ne",
+        "position=nw",
+        "position=se",
+        "position=sw"
       ],
       "defaultToken": [
         "--xh-control-indicator-size"
       ],
       "visibility": "public",
       "description": "image-cropper 的 crop-handle、root 部件 block-size、inline-size、inset 覆盖槽。"
+    },
+    {
+      "name": "--xh-image-cropper-handle-thickness",
+      "component": "image-cropper",
+      "part": [
+        "crop-handle"
+      ],
+      "property": [
+        "block-size",
+        "border-block-end-width",
+        "border-block-start-width",
+        "border-inline-end-width",
+        "border-inline-start-width",
+        "inline-size"
+      ],
+      "state": [
+        "is([data-position='e'], [data-position='w'])",
+        "is([data-position='n'], [data-position='s'])",
+        "position=e",
+        "position=n",
+        "position=ne",
+        "position=nw",
+        "position=s",
+        "position=se",
+        "position=sw",
+        "position=w"
+      ],
+      "defaultToken": [
+        "--xh-stroke-thick"
+      ],
+      "visibility": "public",
+      "description": "image-cropper 的 crop-handle 部件 block-size、border-block-end-width、border-block-start-width、border-inline-end-width、border-inline-start-width、inline-size 覆盖槽。"
     },
     {
       "name": "--xh-image-cropper-mask",

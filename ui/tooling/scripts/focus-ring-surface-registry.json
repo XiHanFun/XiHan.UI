@@ -75,6 +75,7 @@
     "floating-panel [data-part='content'][data-scope='floating-panel']": "面板本体不接收焦点，只是键盘事件的收口点；环长在标题栏的按钮上",
     "form [data-part='error-summary'][data-scope='form']": "摘要不承载焦点（焦点直接送去出错的字段），它只是一段播报",
     "hover-card [data-part='content'][data-scope='hover-card']": "可编程聚焦的容器（tabindex=-1），环留给里面真正的可聚焦元素",
+    "image-cropper [data-part='crop-handle'][data-scope='image-cropper']": "把手本体是跨越裁切边界的透明命中区，焦点环由 ::after 画在框内短条或折角上",
     "json-viewer [data-part='branch'][data-scope='json-viewer']": "branch 是 treeitem，环画在它自己那一行上；整棵子树套一圈会把展开的层级全框进去",
     "json-viewer [data-part='tree'][data-scope='json-viewer']": "焦点在树外时容器自己进 Tab 序列兜底，环永远长在行上",
     "listbox [data-part='content'][data-scope='listbox']": "焦点在集合外时容器自己进 Tab 序列兜底，高亮永远长在条目上",
@@ -272,13 +273,6 @@
     "form [data-part='submit-trigger'][data-scope='form']": {
       "parts": [
         "submit-trigger"
-      ],
-      "ratio": 1,
-      "ring": "poured"
-    },
-    "image-cropper [data-part='crop-handle'][data-resizing][data-scope='image-cropper']": {
-      "parts": [
-        "crop-handle"
       ],
       "ratio": 1,
       "ring": "poured"
