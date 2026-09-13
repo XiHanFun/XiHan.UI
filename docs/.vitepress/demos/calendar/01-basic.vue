@@ -14,22 +14,19 @@ import {
   XhCalendarWeekDay,
   XhCalendarWeekRow,
 } from "@xihan-ui/vue";
-import { ref } from "vue";
-
-// 选中值恒为数组，单选时长度不超过 1
-const value = ref<string[]>([]);
 </script>
 
 <template>
   <XhCalendarRoot
     v-slot="{ weeks, weekDays }"
-    v-model:value="value"
+    :default-value="['2026-09-13']"
+    default-focused-value="2026-09-13"
     locale="zh-CN"
     fixed-weeks
     style="max-inline-size: 280px"
   >
     <XhCalendarHeader>
-      <!-- 箭头字符念不出「上个月」，可及名字得自己给 -->
+      <!-- 翻月按钮需要明确可及名称 -->
       <XhCalendarPrevTrigger aria-label="上个月" />
       <XhCalendarHeading />
       <XhCalendarNextTrigger aria-label="下个月" />
@@ -50,6 +47,4 @@ const value = ref<string[]>([]);
       </XhCalendarGridBody>
     </XhCalendarGrid>
   </XhCalendarRoot>
-
-  <span style="font-size: 13px">选中：{{ value[0] ?? "（未选）" }}</span>
 </template>
