@@ -899,7 +899,7 @@
       "tree-select"
     ],
     "logo": [
-      "qr-code"
+      "matrix-code"
     ],
     "mark": [
       "highlight"
@@ -1148,6 +1148,7 @@
       "markdown-stream",
       "marquee",
       "masonry",
+      "matrix-code",
       "mention",
       "menubar",
       "message-feed",
@@ -1162,7 +1163,6 @@
       "popconfirm",
       "progress",
       "prompt-input",
-      "qr-code",
       "question-flow",
       "radio-group",
       "rating",

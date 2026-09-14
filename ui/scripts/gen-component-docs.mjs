@@ -731,8 +731,8 @@ function typeMeta(id) {
       // 视图 props 单独写成一个 XxxProps：没有机器的组件全部 props 都在这儿，
       // 机器 props 与视图 props 分开写的组件（log 与 AI 族）这儿是走 connect 第二参的那一半。
       // 有的写成 `Omit<别人Schema['props'], …> & …` 这样的类型别名（popconfirm、float-button），
-      // 更多的直接写成 interface（qr-code、badge、card 等 30 余个）。两种形态都要认，
-      // 少认一种就是整页 Props 表缺席——qr-code 的 pixelSize 曾因此全站无处可查。
+      // 更多的直接写成 interface（matrix-code、badge、card 等 30 余个）。两种形态都要认，
+      // 少认一种就是整页 Props 表缺席——matrix-code 的 pixelSize 曾因此全站无处可查。
       if ((ts.isTypeAliasDeclaration(node) || ts.isInterfaceDeclaration(node))
         && name === `${P}Props`) {
         // 别名取它右边那个类型，接口取声明自身

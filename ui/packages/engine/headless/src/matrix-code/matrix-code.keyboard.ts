@@ -1,0 +1,17 @@
+/*
+ * Copyright (c) 2021-Present XiHanFun and contributors.
+ * Licensed under the MIT License. See LICENSE in the project root for license information.
+ */
+
+// 提供 matrix code 相关实现。
+
+import type { KeyboardTable } from '../spec/types'
+
+// 二维码是一张图，不可聚焦、不接任何按键。
+const APG = 'https://www.w3.org/WAI/ARIA/apg/practices/names-and-descriptions/'
+
+export const matrixCodeKeyboard: KeyboardTable = {
+  component: 'matrix-code',
+  source: APG,
+  rows: [],
+}

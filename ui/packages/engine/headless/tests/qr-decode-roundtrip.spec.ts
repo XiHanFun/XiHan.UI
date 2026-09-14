@@ -5,7 +5,7 @@
 // 蛇形读取换成方向翻转的写法、格式信息与版本信息都验 BCH、纠错码字用校验子核。
 // 与编码器同源的实现只会一起错，所以这里刻意不共用任何一行。
 import { describe, expect, it } from 'vitest'
-import { QR_MAX_VERSION, qrAlignmentPositions, qrCapacityBytes, qrEncode } from '../src/qr-code/qr-encode'
+import { QR_MAX_VERSION, qrAlignmentPositions, qrCapacityBytes, qrEncode } from '../src/matrix-code/qr-encode'
 
 type Level = 'L' | 'M' | 'Q' | 'H'
 

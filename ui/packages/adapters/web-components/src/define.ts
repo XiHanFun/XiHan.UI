@@ -79,6 +79,7 @@ import { XhLogElement } from './elements/log'
 import { XhMarkdownStreamElement } from './elements/markdown-stream'
 import { XhMarqueeElement } from './elements/marquee'
 import { XhMasonryElement } from './elements/masonry'
+import { XhMatrixCodeElement } from './elements/matrix-code'
 import { XhMentionElement } from './elements/mention'
 import { XhMenuElement } from './elements/menu'
 import { XhMenubarElement } from './elements/menubar'
@@ -95,7 +96,6 @@ import { XhPopconfirmElement } from './elements/popconfirm'
 import { XhPopoverElement } from './elements/popover'
 import { XhProgressElement } from './elements/progress'
 import { XhPromptInputElement } from './elements/prompt-input'
-import { XhQrCodeElement } from './elements/qr-code'
 import { XhQuestionFlowElement } from './elements/question-flow'
 import { XhRadioGroupElement } from './elements/radio-group'
 import { XhRatingElement } from './elements/rating'
@@ -182,12 +182,12 @@ export function defineXhElements(): void {
   defineElement('xh-markdown-stream', XhMarkdownStreamElement, VERSION)
   defineElement('xh-marquee', XhMarqueeElement, VERSION)
   defineElement('xh-masonry', XhMasonryElement, VERSION)
+  defineElement('xh-matrix-code', XhMatrixCodeElement, VERSION)
   defineElement('xh-mention', XhMentionElement, VERSION)
   defineElement('xh-number-animation', XhNumberAnimationElement, VERSION)
   defineElement('xh-page-header', XhPageHeaderElement, VERSION)
   defineElement('xh-password-input', XhPasswordInputElement, VERSION)
   defineElement('xh-popconfirm', XhPopconfirmElement, VERSION)
-  defineElement('xh-qr-code', XhQrCodeElement, VERSION)
   defineElement('xh-question-flow', XhQuestionFlowElement, VERSION)
   defineElement('xh-reasoning', XhReasoningElement, VERSION)
   defineElement('xh-resizable', XhResizableElement, VERSION)

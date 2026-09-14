@@ -4,7 +4,7 @@
 // 最后一组把矩阵整个读回来：去掩模、按规格反向取码字、还原分块、核对里德-所罗门校验子、
 // 解出内容比对原文——「画得出」与「扫得出」是两回事，只有读回来才证明后者。
 import { describe, expect, it } from 'vitest'
-import { QR_MAX_VERSION, qrAlignmentPositions, qrCapacityBytes, qrEncode } from '../src/qr-code/qr-encode'
+import { QR_MAX_VERSION, qrAlignmentPositions, qrCapacityBytes, qrEncode } from '../src/matrix-code/qr-encode'
 
 type Level = 'L' | 'M' | 'Q' | 'H'
 
