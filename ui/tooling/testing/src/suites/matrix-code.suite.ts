@@ -395,6 +395,104 @@ export const matrixCodeSuite: ConformanceSuite = {
       ],
     },
     {
+      name: 'pdf417：根上落级别与模块列行数，只铺模块那一条 path，静区两格；level 给错值落 error',
+      spec: { apg: APG },
+      props: { format: 'pdf417', value: URL_23, level: 3 },
+      initial: {
+        counts: { root: 1 },
+        parts: {
+          root: {
+            'data-format': 'pdf417',
+            'data-level': '3',
+            'data-version': null,
+            // 23 字节 → 锁存 + 3 组 5 码字 + 5 个零头 = 21 个码字，3 级纠错 8 个，加长度描述符 30 个；
+            // 按宽高比挑成 3 列 13 行：宽 17 × 6 + 18 = 120 模块，高 13 × 3 = 39 模块
+            'data-columns': '120',
+            'data-rows': '39',
+            'data-state': 'ready',
+          },
+        },
+      },
+      steps: [
+        {
+          kind: 'raw',
+          why: 'PDF417 是堆叠条码，没有码眼：root 下只有模块那一条 path',
+          run: ({ doc, adapterName }) => {
+            if (rootEl(doc).childElementCount !== 1 || !geomEl(doc, 'modules'))
+              throw new Error(`${adapterName}: root 下应当只有 data-xh-geom="modules" 这一条`)
+          },
+        },
+        {
+          kind: 'raw',
+          why: '静区两格：宽 120 + 4、高 39 + 4',
+          run: expectViewBox('0 0 124 43'),
+        },
+        {
+          kind: 'setProps',
+          props: { level: 'H' },
+          expect: { parts: { root: { 'data-state': 'error', 'data-level': null, 'data-columns': null } } },
+        },
+        {
+          kind: 'raw',
+          why: '级别给了 QR 的字母档，PDF417 不认：一个模块都不铺，不静默换成缺省档',
+          run: expectNothingPainted,
+        },
+      ],
+    },
+    {
+      name: 'aztec：根上落边长、没有 level 与 version，不留静区；牛眼居中',
+      spec: { apg: APG },
+      props: { format: 'aztec', value: URL_23 },
+      initial: {
+        counts: { root: 1 },
+        parts: {
+          root: {
+            'data-format': 'aztec',
+            'data-level': null,
+            'data-version': null,
+            // 23 个字符：小写与标点走二进制移位，落在紧凑型 2 层 19×19
+            'data-columns': '19',
+            'data-rows': '19',
+            'data-state': 'ready',
+          },
+        },
+      },
+      steps: [
+        {
+          kind: 'raw',
+          why: 'Aztec 不需要静区：viewBox 就是边长',
+          run: expectViewBox('0 0 19 19'),
+        },
+        {
+          kind: 'raw',
+          why: '牛眼正中那一格是深的，四周一圈是浅的：直接读 path 的落点',
+          run: ({ doc, adapterName }) => {
+            const d = geomD(doc, 'modules', adapterName)
+            // 中心 (9, 9) 深：某段矩形游程覆盖 x=9, y=9
+            const covers = (x: number, y: number): boolean => {
+              const re = /M(\d+) (\d+)h(\d+)v1h-\d+z/g
+              let m: RegExpExecArray | null
+              // eslint-disable-next-line no-cond-assign
+              while ((m = re.exec(d)) !== null) {
+                if (Number(m[2]) === y && x >= Number(m[1]) && x < Number(m[1]) + Number(m[3]))
+                  return true
+              }
+              return false
+            }
+            if (!covers(9, 9))
+              throw new Error(`${adapterName}: 牛眼正中那一格没有墨`)
+            if (covers(9, 8) || covers(8, 9))
+              throw new Error(`${adapterName}: 牛眼正中那格四周应当是浅的一圈`)
+          },
+        },
+        {
+          kind: 'setProps',
+          props: { level: 90 },
+          expect: { parts: { root: { 'data-state': 'ready', 'data-columns': '23', 'data-rows': '23' } } },
+        },
+      ],
+    },
+    {
       name: 'data-matrix 装不下：落 error 态、一个模块都不铺；换回 qr 就画得出',
       spec: { apg: APG },
       props: { format: 'data-matrix', value: 'x'.repeat(1600) },

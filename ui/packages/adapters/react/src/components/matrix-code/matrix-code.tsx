@@ -5,7 +5,7 @@
 
 // 提供 matrix code 相关实现。
 
-import type { MatrixCodeFormat, MatrixCodeProps, QrLevel } from '@xihan-ui/headless'
+import type { MatrixCodeFormat, MatrixCodeLevel, MatrixCodeProps } from '@xihan-ui/headless'
 import type { ComponentPropsWithRef, ReactElement, ReactNode } from 'react'
 import { connectMatrixCode } from '@xihan-ui/headless'
 import { mergeReactProps } from '../../runtime/merge-props'
@@ -23,10 +23,12 @@ export interface XhMatrixCodeProps extends Omit<ComponentPropsWithRef<'svg'>, 'c
   value?: string
   /** GS1 模式：最前面放 FNC1，即 GS1 QR / GS1 DataMatrix。 */
   gs1?: boolean
-  /** 纠错级别 L / M / Q / H；只对 qr 有意义。 */
-  level?: QrLevel
+  /** 纠错级别：qr 是 L / M / Q / H，pdf417 是 0–8，aztec 是纠错百分比 5–95。 */
+  level?: MatrixCodeLevel
   /** 从矩形尺寸里挑；只对 data-matrix 有意义。 */
   rectangular?: boolean
+  /** PDF417 的数据列数 1–30；只对 pdf417 有意义。 */
+  columns?: number
   /** 像素边长，写成根上的内联宽高。 */
   pixelSize?: number
   /** 静区宽度，单位是模块数；静区含在 viewBox 里，不额外占尺寸。 */
@@ -39,7 +41,7 @@ export interface XhMatrixCodeProps extends Omit<ComponentPropsWithRef<'svg'>, 'c
 }
 
 /**
- * 整张码画成一个 `<svg>`，`format` 选码制；QR 下数据模块与三个码眼各成一条 `<path>`，Data Matrix 只有前一条，静区靠 viewBox 留出。
+ * 整张码画成一个 `<svg>`，`format` 选码制；QR 下数据模块与三个码眼各成一条 `<path>`，其余码制只有前一条，静区靠 viewBox 留出。
  * 矩阵由 connect 算一遍，这里只取现成的 path；没有可画的内容时不生成任何几何节点。
  *
  * children 里放 XhMatrixCodeLogo 就等于给码面正中放了一块 logo：那片模块底下先铺一个底色矩形挖空，
@@ -51,6 +53,7 @@ export function XhMatrixCode({
   gs1,
   level,
   rectangular,
+  columns,
   pixelSize,
   margin,
   label,
@@ -66,6 +69,7 @@ export function XhMatrixCode({
     gs1,
     level,
     rectangular,
+    columns,
     pixelSize,
     margin,
     label,

@@ -6,22 +6,61 @@
 // 提供 matrix code 相关实现。
 
 import type { NormalizeProps, PropTypes } from '@xihan-ui/core'
-import type { MatrixCodeApi, MatrixCodeEyeShape, MatrixCodeFormat, MatrixCodeLogoArea, MatrixCodeLogoDamage, MatrixCodeModuleShape, MatrixCodeProps, MatrixCodeState } from './matrix-code.types'
+import type { MatrixCodeApi, MatrixCodeEyeShape, MatrixCodeFormat, MatrixCodeLevel, MatrixCodeLogoArea, MatrixCodeLogoDamage, MatrixCodeModuleShape, MatrixCodeProps, MatrixCodeState } from './matrix-code.types'
+import type { Pdf417Level } from './pdf417-encode'
 import type { QrLevel } from './qr-encode'
 import { dataAttr, DIAGNOSTIC_CODES, reportDiagnostic } from '@xihan-ui/core'
+import { aztecEncode } from './aztec-encode'
 import { dmEncode } from './dm-encode'
 import { matrixCodeAnatomy } from './matrix-code.anatomy'
+import { pdf417Encode } from './pdf417-encode'
 import { qrAlignmentPositions, qrDamage, qrEncode } from './qr-encode'
 
 const parts = matrixCodeAnatomy.build()
 
 const DEFAULT_FORMAT: MatrixCodeFormat = 'qr'
 /** 认识的码制；`format` 是从 DOM 特性来的字符串，得按运行时的表核，光靠类型拦不住。 */
-const FORMATS: ReadonlySet<string> = new Set<MatrixCodeFormat>(['qr', 'data-matrix'])
+const FORMATS: ReadonlySet<string> = new Set<MatrixCodeFormat>(['qr', 'data-matrix', 'pdf417', 'aztec'])
 const DEFAULT_LEVEL: QrLevel = 'M'
-/** 各码制的规范静区，单位是模块：QR 四格，Data Matrix 一格；不认识的码制按 QR 的兜住 viewBox。 */
+const QR_LEVELS: ReadonlySet<string> = new Set<QrLevel>(['L', 'M', 'Q', 'H'])
+/** Aztec 纠错百分比的缺省与取值范围。 */
+const AZTEC_DEFAULT_PERCENT = 33
+const AZTEC_MIN_PERCENT = 5
+const AZTEC_MAX_PERCENT = 95
+/** 各码制的规范静区，单位是模块：QR 四格，Data Matrix 一格，PDF417 两格，Aztec 不需要；不认识的码制按 QR 的兜住 viewBox。 */
 function defaultMargin(format: MatrixCodeFormat): number {
-  return format === 'data-matrix' ? 1 : 4
+  if (format === 'data-matrix')
+    return 1
+  if (format === 'pdf417')
+    return 2
+  if (format === 'aztec')
+    return 0
+  return 4
+}
+
+/** 纠错级别按码制核取值域；不合的抛 RangeError，走 error 态那条路。 */
+function resolveQrLevel(level: MatrixCodeLevel | undefined): QrLevel {
+  if (level === undefined)
+    return DEFAULT_LEVEL
+  if (typeof level === 'string' && QR_LEVELS.has(level))
+    return level as QrLevel
+  throw new RangeError(`QR 的纠错级别只认 L / M / Q / H，收到「${String(level)}」`)
+}
+function resolvePdf417Level(level: MatrixCodeLevel | undefined): Pdf417Level | undefined {
+  if (level === undefined)
+    return undefined
+  const n = Number(level)
+  if (Number.isInteger(n) && n >= 0 && n <= 8)
+    return n as Pdf417Level
+  throw new RangeError(`PDF417 的纠错级别是 0–8 的整数，收到「${String(level)}」`)
+}
+function resolveAztecPercent(level: MatrixCodeLevel | undefined): number {
+  if (level === undefined)
+    return AZTEC_DEFAULT_PERCENT
+  const n = Number(level)
+  if (Number.isFinite(n) && n >= AZTEC_MIN_PERCENT && n <= AZTEC_MAX_PERCENT)
+    return Math.trunc(n)
+  throw new RangeError(`Aztec 的纠错级别是纠错码字至少占的百分比 ${AZTEC_MIN_PERCENT}–${AZTEC_MAX_PERCENT}，收到「${String(level)}」`)
 }
 const DEFAULT_SIZE = 160
 const DEFAULT_MODULE_SHAPE: MatrixCodeModuleShape = 'square'
@@ -251,19 +290,24 @@ export function connectMatrixCode<T extends PropTypes>(
 ): MatrixCodeApi<T> {
   const format = props.format ?? DEFAULT_FORMAT
   const value = props.value ?? ''
-  const level = props.level ?? DEFAULT_LEVEL
   const known = FORMATS.has(format)
   const margin = resolveNumber(props.margin, defaultMargin(format))
   const pixelSize = resolveNumber(props.pixelSize, DEFAULT_SIZE)
-  const moduleShape = props.moduleShape ?? DEFAULT_MODULE_SHAPE
+  const isQr = format === 'qr'
+  const isPdf417 = format === 'pdf417'
+  // PDF417 是条不是点，码点形状不认
+  const moduleShape = isPdf417 ? DEFAULT_MODULE_SHAPE : (props.moduleShape ?? DEFAULT_MODULE_SHAPE)
   const eyeShape = props.eyeShape ?? DEFAULT_EYE_SHAPE
   const gs1 = props.gs1 === true
-  const isQr = format === 'qr'
+  // QR 的级别在几何与 logo 损伤那几处还要用；别的码制走各自的解析
+  let level: QrLevel = DEFAULT_LEVEL
 
   let modules = EMPTY_MODULES
   let version = 0
   let columns = 0
   let rows = 0
+  /** PDF417 实际用的级别，缺省时由编码器按数据量定，画出来才知道。 */
+  let pdfLevel: Pdf417Level | undefined
   let state: MatrixCodeState = 'empty'
   let error: string | undefined
   // 不认识的码制与装不下的内容同一条路：一个模块都不铺，落 error 态并说明原因。
@@ -273,18 +317,27 @@ export function connectMatrixCode<T extends PropTypes>(
     error = `不认识的码制「${String(format)}」，只认 ${[...FORMATS].join(' / ')}`
   }
   else {
+    if (format === 'data-matrix' && props.level !== undefined)
+      warnIgnored(format, 'level', 'qr')
     if (!isQr) {
-      if (props.level !== undefined)
-        warnIgnored(format, 'level', 'qr')
       if (props.eyeShape !== undefined)
         warnIgnored(format, 'eyeShape', 'qr')
       if (props.logo === true)
         warnIgnored(format, 'logo', 'qr')
     }
-    if (isQr && props.rectangular !== undefined)
+    if (format !== 'data-matrix' && props.rectangular !== undefined)
       warnIgnored(format, 'rectangular', 'data-matrix')
-    if (value !== '') {
-      try {
+    if (!isPdf417 && props.columns !== undefined)
+      warnIgnored(format, 'columns', 'pdf417')
+    if (isPdf417 && props.moduleShape !== undefined)
+      warnIgnored(format, 'moduleShape', 'qr')
+    if ((isPdf417 || format === 'aztec') && gs1)
+      warnIgnored(format, 'gs1', 'qr')
+    try {
+      // 级别先核：给错了值不画码，不静默换成缺省
+      if (isQr)
+        level = resolveQrLevel(props.level)
+      if (value !== '') {
         if (isQr) {
           const matrix = qrEncode(value, level, { gs1 })
           modules = matrix.modules
@@ -292,18 +345,37 @@ export function connectMatrixCode<T extends PropTypes>(
           columns = matrix.count
           rows = matrix.count
         }
-        else {
+        else if (format === 'data-matrix') {
           const matrix = dmEncode(value, { gs1, rectangular: props.rectangular === true })
           modules = matrix.modules
           columns = matrix.symbol.columns
           rows = matrix.symbol.rows
         }
+        else if (isPdf417) {
+          const matrix = pdf417Encode(value, { level: resolvePdf417Level(props.level), columns: props.columns })
+          modules = matrix.modules
+          columns = matrix.width
+          rows = matrix.rows * matrix.rowHeight
+          pdfLevel = matrix.level
+        }
+        else {
+          const matrix = aztecEncode(value, { eccPercent: resolveAztecPercent(props.level) })
+          modules = matrix.modules
+          columns = matrix.size
+          rows = matrix.size
+        }
         state = 'ready'
       }
-      catch (cause) {
-        state = 'error'
-        error = cause instanceof Error ? cause.message : String(cause)
+      else if (isPdf417) {
+        resolvePdf417Level(props.level)
       }
+      else if (format === 'aztec') {
+        resolveAztecPercent(props.level)
+      }
+    }
+    catch (cause) {
+      state = 'error'
+      error = cause instanceof Error ? cause.message : String(cause)
     }
   }
 
@@ -382,8 +454,8 @@ export function connectMatrixCode<T extends PropTypes>(
       'aria-hidden': label === undefined ? true : undefined,
       // 不认识的码制也原样写上：error 态下作者要看的正是这个值
       'data-format': format,
-      // QR 才有纠错级别与版本；没画出码时也不写，皮肤与调试都不会读到一个假的版本号
-      'data-level': isQr ? level : undefined,
+      // QR 与 PDF417 有纠错级别、QR 有版本；没画出码时也不写，皮肤与调试都不会读到一个假的版本号
+      'data-level': isQr ? level : pdfLevel !== undefined ? String(pdfLevel) : undefined,
       'data-version': version === 0 ? undefined : String(version),
       'data-columns': columns === 0 ? undefined : String(columns),
       'data-rows': rows === 0 ? undefined : String(rows),

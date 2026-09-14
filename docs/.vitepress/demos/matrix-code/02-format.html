@@ -1,4 +1,4 @@
-<!-- 码制 | format 切到 data-matrix 就是工业打标常用的 Data Matrix：L 形定位图形、纠错率随尺寸固定；rectangular 从矩形尺寸里挑 -->
+<!-- 码制 | qr 之外还有三种：工业打标用的 Data Matrix（rectangular 从矩形尺寸里挑）、运单证件用的 PDF417、票务用的 Aztec -->
 <div style="display: flex; flex-wrap: wrap; gap: 16px; align-items: end">
   <div style="display: grid; gap: 6px; justify-items: center">
     <xh-matrix-code value="SN-2026-0915-0001" pixel-size="120">
@@ -17,5 +17,17 @@
       <svg data-xh-part="root"></svg>
     </xh-matrix-code>
     <span style="font-size: 12px">data-matrix · rectangular</span>
+  </div>
+  <div style="display: grid; gap: 6px; justify-items: center">
+    <xh-matrix-code format="pdf417" value="SN-2026-0915-0001" pixel-size="240">
+      <svg data-xh-part="root"></svg>
+    </xh-matrix-code>
+    <span style="font-size: 12px">pdf417</span>
+  </div>
+  <div style="display: grid; gap: 6px; justify-items: center">
+    <xh-matrix-code format="aztec" value="SN-2026-0915-0001" pixel-size="120">
+      <svg data-xh-part="root"></svg>
+    </xh-matrix-code>
+    <span style="font-size: 12px">aztec</span>
   </div>
 </div>
