@@ -59875,18 +59875,6 @@
       "description": "time-picker 的 segment 部件 border-radius 覆盖槽。"
     },
     {
-      "name": "--xh-timeline-connector-bg",
-      "component": "timeline",
-      "part": [
-        "connector"
-      ],
-      "property": [
-        "background"
-      ],
-      "state": [
-        "default"
-      ],
-    {
       "name": "--xh-time-range-picker-action-bg",
       "component": "time-range-picker",
       "part": [
@@ -61556,6 +61544,18 @@
       "visibility": "public",
       "description": "time-range-picker 的 segment 部件 border-radius 覆盖槽。"
     },
+    {
+      "name": "--xh-timeline-connector-bg",
+      "component": "timeline",
+      "part": [
+        "connector"
+      ],
+      "property": [
+        "background"
+      ],
+      "state": [
+        "default"
+      ],
       "defaultToken": [
         "--xh-border-default"
       ],
