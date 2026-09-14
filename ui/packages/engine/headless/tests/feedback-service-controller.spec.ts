@@ -191,7 +191,7 @@ describe('feedback service controller', () => {
     })
     const controller = createFeedbackServiceController<RecordOptions, Partial<RecordOptions>>({ name: 'toast' })
     controller.attach(queue)
-    const result = controller.trackPromise(running, {}, () => ({ type: 'success' }), () => ({ type: 'error' }))
+    const result = controller.trackPromise(running, {}, () => ({ loading: false, tone: 'success' }), () => ({ loading: false, tone: 'danger' }))
     controller.dispose()
     resolve(3)
 
