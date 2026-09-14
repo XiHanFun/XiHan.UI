@@ -57,6 +57,8 @@ const EXEMPT = {
   'context-menu.css:data-pressing': '长按还没到阈值那一小段的临时反馈，手指正按在触发区上',
   'diff-view.css:data-empty': '并排视图里空的那一侧本来就没有内容，空这件事由没有字表出',
   'list.css:data-hoverable': '悬停反馈是指针停在条目上那一刻的临时表达，指针本身就在那儿',
+  'bar-code.css:data-state=empty': '没有内容与出错都一根条不铺，底色只是占位的衬',
+  'bar-code.css:data-state=error': '同上',
   'matrix-code.css:data-state=empty': '没有内容与出错都另渲一段提示文字，底色只是衬它',
   'matrix-code.css:data-state=error': '同上',
   'scrollbar.css:data-dragging': '正在拖动滑块时的临时反馈，指针正按在滑块上',

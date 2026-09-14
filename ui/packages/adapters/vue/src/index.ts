@@ -49,6 +49,7 @@ export { provideBackTop, useBackTopContext } from './components/back-top/context
 export { useBackTop } from './components/back-top/use-back-top'
 export type { BackTopContext } from './components/back-top/use-back-top'
 export { XhBadge, XhBadgeIndicator, XhBadgeRoot } from './components/badge/badge'
+export { XhBarCode } from './components/bar-code/bar-code'
 export {
   XhBreadcrumbEllipsis,
   XhBreadcrumbItem,

@@ -25,6 +25,8 @@ export { BACK_TOP_VISIBILITY_HEIGHT, backTopAnatomy, backTopKeyboard, backTopMac
 export type { BackTopApi, BackTopBehavior, BackTopRefs, BackTopSchema, BackTopTranslations, BackTopVisibilityChangeDetails } from './back-top'
 export { badgeAnatomy, badgeKeyboard, badgeMeta, connectBadge } from './badge'
 export type { BadgeApi, BadgePlacement, BadgeProps, BadgeTranslations } from './badge'
+export { BAR_FNC1_CHAR, barCodeAnatomy, barCodeKeyboard, barCodeMeta, barEncode, connectBarCode, gs1CheckDigit, upceExpand } from './bar-code'
+export type { BarCodeApi, BarCodeFormat, BarCodeProps, BarCodeState, BarCodeTextRun, BarCodeTranslations, BarEncodeOptions, BarSymbol, BarText } from './bar-code'
 export { breadcrumbAnatomy, breadcrumbKeyboard, breadcrumbMeta, buildBreadcrumbItems, connectBreadcrumb, normalizeBreadcrumbNodes } from './breadcrumb'
 export type { BreadcrumbApi, BreadcrumbItem, BreadcrumbLinkProps, BreadcrumbNode, BreadcrumbNodeMeta, BreadcrumbProps, BreadcrumbTranslations } from './breadcrumb'
 export { buttonAnatomy, buttonKeyboard, buttonMeta, connectButton } from './button'

@@ -1,0 +1,62 @@
+/*
+ * Copyright (c) 2021-Present XiHanFun and contributors.
+ * Licensed under the MIT License. See LICENSE in the project root for license information.
+ */
+
+/* 定义 bar code 样式。 */
+
+@layer xihan.components {
+  /* 皮肤在场的标记：开发模式下按 scope 探一次，取不到就说明这份皮肤没被引入。 */
+  [data-scope='bar-code'] {
+    --xh-bar-code-skin: 1;
+  }
+
+  /*
+   * 根 <svg>。深浅两色取固定档而不是语义前景/背景：语义色跟着主题走，深色主题下整张码
+   * 会翻成浅底深条的反相图，读码器按"深条浅底"取样，反相码扫不出来。要换配色改下面这两个覆盖槽。
+   *
+   * 换色只有一条硬约束：条必须比底色深，且两者对比要足。反相与深浅相近都会让读码器扫不出来，
+   * 而这件事肉眼看不出来。
+   *
+   *   --xh-bar-code-fg  条色，同时经 currentColor 传给人读文字
+   *   --xh-bar-code-bg  底色
+   */
+  [data-scope='bar-code'][data-part='root'] {
+    display: block;
+    border-radius: var(--xh-bar-code-radius, var(--xh-shape-control));
+    background: var(--xh-bar-code-bg, var(--xh-color-neutral-0));
+
+    /* 条那条 path 不带自己的填充色，从这里继承下去 */
+    color: var(--xh-bar-code-fg, var(--xh-color-neutral-950));
+    fill: currentColor;
+
+    /* 占位与码面之间来回时，底色与那圈描边淡变 */
+    transition:
+      background var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
+      box-shadow var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
+  }
+
+  /* 声明了 display 就盖掉了 UA 的 [hidden]{display:none}，收起态得自己还回去 */
+  [data-scope='bar-code'][data-part='root'][hidden] {
+    display: none;
+  }
+
+  /*
+   * 人读文字：字号由 connect 按 X 尺寸写在节点上（规范里数字高约 8X），这里只定字体。
+   * 等宽字体让每位数字一样宽，EAN 逐位居中落格才整齐；规范要的 OCR-B 一般机器上没有，退到系统等宽。
+   */
+  [data-scope='bar-code'][data-part='root'] > [data-xh-geom='text'] {
+    font-family: var(--xh-bar-code-font-family, var(--xh-font-family-mono));
+    fill: var(--xh-bar-code-text-fg, currentColor);
+  }
+
+  /*
+   * 没有可编码的内容、以及内容不合规则：两种情形都一根条不铺，留一块带描边的占位。
+   * 占位用的是语义色——它是界面元素不是码面，跟着主题走才对。
+   */
+  [data-scope='bar-code'][data-part='root'][data-state='empty'],
+  [data-scope='bar-code'][data-part='root'][data-state='error'] {
+    background: var(--xh-bar-code-placeholder-bg, var(--xh-bg-subtle));
+    box-shadow: inset 0 0 0 var(--xh-stroke-thin) var(--xh-bar-code-placeholder-border, var(--xh-border-default));
+  }
+}

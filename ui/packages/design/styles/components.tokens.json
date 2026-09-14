@@ -3115,6 +3115,134 @@
       "description": "badge 的 indicator 部件 border 覆盖槽。"
     },
     {
+      "name": "--xh-bar-code-bg",
+      "component": "bar-code",
+      "part": [
+        "root"
+      ],
+      "property": [
+        "background"
+      ],
+      "state": [
+        "default"
+      ],
+      "defaultToken": [
+        "--xh-color-neutral-0"
+      ],
+      "visibility": "public",
+      "description": "bar-code 的 root 部件 background 覆盖槽。"
+    },
+    {
+      "name": "--xh-bar-code-fg",
+      "component": "bar-code",
+      "part": [
+        "root"
+      ],
+      "property": [
+        "color"
+      ],
+      "state": [
+        "default"
+      ],
+      "defaultToken": [
+        "--xh-color-neutral-950"
+      ],
+      "visibility": "public",
+      "description": "bar-code 的 root 部件 color 覆盖槽。"
+    },
+    {
+      "name": "--xh-bar-code-font-family",
+      "component": "bar-code",
+      "part": [
+        "root"
+      ],
+      "property": [
+        "font-family"
+      ],
+      "state": [
+        "xh-geom=text"
+      ],
+      "defaultToken": [
+        "--xh-font-family-mono"
+      ],
+      "visibility": "public",
+      "description": "bar-code 的 root 部件 font-family 覆盖槽。"
+    },
+    {
+      "name": "--xh-bar-code-placeholder-bg",
+      "component": "bar-code",
+      "part": [
+        "root"
+      ],
+      "property": [
+        "background"
+      ],
+      "state": [
+        "state=empty",
+        "state=error"
+      ],
+      "defaultToken": [
+        "--xh-bg-subtle"
+      ],
+      "visibility": "public",
+      "description": "bar-code 的 root 部件 background 覆盖槽。"
+    },
+    {
+      "name": "--xh-bar-code-placeholder-border",
+      "component": "bar-code",
+      "part": [
+        "root"
+      ],
+      "property": [
+        "box-shadow"
+      ],
+      "state": [
+        "state=empty",
+        "state=error"
+      ],
+      "defaultToken": [
+        "--xh-border-default"
+      ],
+      "visibility": "public",
+      "description": "bar-code 的 root 部件 box-shadow 覆盖槽。"
+    },
+    {
+      "name": "--xh-bar-code-radius",
+      "component": "bar-code",
+      "part": [
+        "root"
+      ],
+      "property": [
+        "border-radius"
+      ],
+      "state": [
+        "default"
+      ],
+      "defaultToken": [
+        "--xh-shape-control"
+      ],
+      "visibility": "public",
+      "description": "bar-code 的 root 部件 border-radius 覆盖槽。"
+    },
+    {
+      "name": "--xh-bar-code-text-fg",
+      "component": "bar-code",
+      "part": [
+        "root"
+      ],
+      "property": [
+        "fill"
+      ],
+      "state": [
+        "xh-geom=text"
+      ],
+      "defaultToken": [
+        "currentColor"
+      ],
+      "visibility": "public",
+      "description": "bar-code 的 root 部件 fill 覆盖槽。"
+    },
+    {
       "name": "--xh-breadcrumb-ellipsis-size",
       "component": "breadcrumb",
       "part": [
