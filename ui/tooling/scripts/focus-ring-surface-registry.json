@@ -74,6 +74,10 @@
     "date-range-picker [data-part='segment-group'][data-scope='date-range-picker']": "容器不占 Tab 位也不承载焦点，环由 control 画",
     "dialog [data-part='content'][data-scope='dialog']": "面板是焦点陷阱的兜底落点（tabindex=-1），环长在里面的可聚焦控件上",
     "drawer [data-part='content'][data-scope='drawer']": "面板是焦点陷阱的兜底落点（tabindex=-1），环长在里面的可聚焦控件上",
+    "editable [data-part='cancel-trigger'][data-scope='editable']": "按钮位于一体式字段盒内，环由 control 的 :focus-within 画在统一外框上",
+    "editable [data-part='edit-trigger'][data-scope='editable']": "按钮位于一体式字段盒内，环由 control 的 :focus-within 画在统一外框上",
+    "editable [data-part='input'][data-scope='editable']": "输入框位于一体式字段盒内，环由 control 的 :focus-within 画在统一外框上",
+    "editable [data-part='submit-trigger'][data-scope='editable']": "按钮位于一体式字段盒内，环由 control 的 :focus-within 画在统一外框上",
     "floating-panel [data-part='content'][data-scope='floating-panel']": "面板本体不接收焦点，只是键盘事件的收口点；环长在标题栏的按钮上",
     "form [data-part='error-summary'][data-scope='form']": "摘要不承载焦点（焦点直接送去出错的字段），它只是一段播报",
     "hover-card [data-part='content'][data-scope='hover-card']": "可编程聚焦的容器（tabindex=-1），环留给里面真正的可聚焦元素",
@@ -246,13 +250,6 @@
         "trigger"
       ],
       "ratio": 2.89,
-      "ring": "poured"
-    },
-    "editable [data-part='submit-trigger'][data-scope='editable']": {
-      "parts": [
-        "submit-trigger"
-      ],
-      "ratio": 1,
       "ring": "poured"
     },
     "float-button [data-part='root'][data-scope='float-button'][data-variant='solid'] [data-part='trigger'][data-scope='float-button']": {

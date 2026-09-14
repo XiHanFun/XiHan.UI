@@ -22,9 +22,9 @@ import {
     <XhEditableControl>
       <XhEditablePreview />
       <XhEditableInput />
-      <XhEditableEditTrigger>编辑</XhEditableEditTrigger>
-      <XhEditableSubmitTrigger>保存</XhEditableSubmitTrigger>
-      <XhEditableCancelTrigger>取消</XhEditableCancelTrigger>
+      <XhEditableEditTrigger aria-label="编辑" />
+      <XhEditableSubmitTrigger aria-label="确认" />
+      <XhEditableCancelTrigger aria-label="取消" />
     </XhEditableControl>
   </XhEditableRoot>
 
@@ -37,9 +37,9 @@ import {
     <XhEditableControl>
       <XhEditablePreview />
       <XhEditableInput />
-      <XhEditableEditTrigger>编辑</XhEditableEditTrigger>
-      <XhEditableSubmitTrigger>保存</XhEditableSubmitTrigger>
-      <XhEditableCancelTrigger>取消</XhEditableCancelTrigger>
+      <XhEditableEditTrigger aria-label="编辑" />
+      <XhEditableSubmitTrigger aria-label="确认" />
+      <XhEditableCancelTrigger aria-label="取消" />
     </XhEditableControl>
   </XhEditableRoot>
 </template>
