@@ -11,12 +11,13 @@
     --xh-editable-skin: 1;
   }
 
-  /* 就地编辑是"一行文字里的一处可改内容"：标题、显示区与按钮天然同行，
-     所以根是一条横向的行，而不是文本框那种"标题一行、控件一行"的竖排。
-     要竖排的作者把 flex-direction 覆盖掉即可，其余尺寸都长在各自的角色节点上 */
+  /* 与 NumberField 同一套信息层级：标题在上，内容与动作共用下面一行；
+     预览态是一段文字加编辑钮，编辑态换成输入框加确认 / 取消钮。 */
   [data-scope='editable'][data-part='root'] {
-    /* 尺寸档只换这四个私有槽，标题、预览区与输入框都从 root 继承它们，换档不必给每个部件各写一条选择器。
-       三颗按钮不进这套档位：它们比框小一号是形上的固定关系，跟着档走就与框一样高了 */
+    --xh-icon-size: var(--xh-editable-icon-size, var(--xh-glyph-size-md));
+
+    /* 尺寸档只换这四个私有槽，标题、预览区、输入框与动作钮都从 root 继承它们，
+       换档不必给每个部件各写一条选择器。 */
     --xh-_editable-h: var(--xh-control-h-md);
     --xh-_editable-px: var(--xh-control-px-md);
     --xh-_editable-font-size: var(--xh-control-font-md);
@@ -29,14 +30,16 @@
     --xh-_editable-input-shadow: var(--xh-elevation-raised);
 
     display: inline-flex;
-    flex-wrap: wrap;
-    align-items: center;
-    gap: var(--xh-editable-gap, var(--xh-space-2));
+    flex-direction: column;
+    gap: var(--xh-editable-gap, var(--xh-space-1));
+    min-inline-size: min(var(--xh-editable-control-min-w, var(--xh-control-min-w)), 100%);
+    max-inline-size: 100%;
   }
 
   /* —— 尺寸 —— */
   /* 缺省档写在上面的基础规则里 */
   [data-scope='editable'][data-part='root'][data-size='sm'] {
+    --xh-icon-size: var(--xh-editable-icon-size, var(--xh-glyph-size-sm));
     --xh-_editable-h: var(--xh-control-h-sm);
     --xh-_editable-px: var(--xh-control-px-sm);
     --xh-_editable-font-size: var(--xh-control-font-sm);
@@ -44,6 +47,7 @@
   }
 
   [data-scope='editable'][data-part='root'][data-size='lg'] {
+    --xh-icon-size: var(--xh-editable-icon-size, var(--xh-glyph-size-lg));
     --xh-_editable-h: var(--xh-control-h-lg);
     --xh-_editable-px: var(--xh-control-px-lg);
     --xh-_editable-font-size: var(--xh-control-font-lg);
@@ -98,8 +102,10 @@
      单行值定在控件档上，多行值才往下长 */
   [data-scope='editable'][data-part='preview'] {
     display: inline-flex;
+    flex: 1 1 auto;
     align-items: center;
-    inline-size: 100%;
+    inline-size: auto;
+    min-inline-size: 0;
     min-block-size: var(--xh-editable-preview-min-h, var(--xh-_editable-h));
     padding-inline: var(--xh-editable-preview-px, var(--xh-_editable-px));
     padding-block: 0;
@@ -146,7 +152,9 @@
   }
 
   [data-scope='editable'][data-part='input'] {
-    inline-size: 100%;
+    flex: 1 1 auto;
+    inline-size: auto;
+    min-inline-size: 0;
     block-size: var(--xh-editable-input-h, var(--xh-_editable-h));
     padding-inline: var(--xh-editable-input-px, var(--xh-_editable-px));
     padding-block: 0;
@@ -173,6 +181,7 @@
 
   /* 宽度跟着内容走时交给原生 size 说了算，别再用 100% 把它撑满 */
   [data-scope='editable'][data-part='input'][data-auto-resize] {
+    flex: 0 1 auto;
     inline-size: auto;
   }
 
@@ -232,8 +241,9 @@
     display: inline-flex;
     align-items: center;
     gap: var(--xh-editable-control-gap, var(--xh-space-1));
+    inline-size: 100%;
     min-block-size: var(--xh-editable-control-min-h, var(--xh-_editable-h));
-    min-inline-size: var(--xh-editable-control-min-w, 6ch);
+    min-inline-size: min(var(--xh-editable-control-min-w, var(--xh-control-min-w)), 100%);
   }
 
   [data-scope='editable'][data-part='control'][hidden] {
@@ -249,8 +259,9 @@
     flex: none;
     align-items: center;
     justify-content: center;
-    block-size: var(--xh-editable-trigger-h, var(--xh-control-h-sm));
-    padding-inline: var(--xh-editable-trigger-px, var(--xh-control-px-sm));
+    block-size: var(--xh-editable-trigger-h, var(--xh-_editable-h));
+    min-inline-size: var(--xh-editable-trigger-h, var(--xh-_editable-h));
+    padding-inline: var(--xh-editable-trigger-px, 0);
     padding-block: 0;
     border: var(--xh-stroke-thin) solid var(--xh-editable-trigger-border, var(--xh-border-control));
     border-radius: var(--xh-editable-trigger-radius, var(--xh-shape-control));
@@ -267,6 +278,35 @@
       background var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
       box-shadow var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
       scale var(--xh-motion-duration-micro) var(--xh-motion-ease-enter-strong);
+  }
+
+  /* 每个状态的第一颗动作把整组推到逻辑末端；取消钮紧跟确认钮。 */
+  [data-scope='editable'][data-part='edit-trigger'],
+  [data-scope='editable'][data-part='submit-trigger'] {
+    margin-inline-start: auto;
+  }
+
+  /* 三颗动作默认是纯图标按钮；作者放了自己的图标后 :empty 不命中，不会叠两层。 */
+  [data-scope='editable']:is([data-part='edit-trigger'], [data-part='submit-trigger'], [data-part='cancel-trigger']):empty::before {
+    content: '';
+    display: inline-block;
+    inline-size: var(--xh-icon-size, var(--xh-glyph-size-md));
+    block-size: var(--xh-icon-size, var(--xh-glyph-size-md));
+    background-color: currentColor;
+    -webkit-mask: var(--xh-_editable-trigger-glyph) center / contain no-repeat;
+    mask: var(--xh-_editable-trigger-glyph) center / contain no-repeat;
+  }
+
+  [data-scope='editable'][data-part='edit-trigger'] {
+    --xh-_editable-trigger-glyph: var(--xh-glyph-mark-edit);
+  }
+
+  [data-scope='editable'][data-part='submit-trigger'] {
+    --xh-_editable-trigger-glyph: var(--xh-glyph-mark-check);
+  }
+
+  [data-scope='editable'][data-part='cancel-trigger'] {
+    --xh-_editable-trigger-glyph: var(--xh-glyph-mark-close);
   }
 
   /* 三颗按钮按形态轮流收起，连接层给的是 hidden 属性；
@@ -330,5 +370,14 @@
   [data-scope='editable'][data-part='submit-trigger']:active:not(:disabled) {
     border-color: var(--xh-editable-submit-border-active, var(--xh-editable-submit-bg-active, var(--xh-_tone-active, var(--xh-bg-brand-active))));
     background: var(--xh-editable-submit-bg-active, var(--xh-_tone-active, var(--xh-bg-brand-active)));
+  }
+
+  @media (pointer: coarse) {
+    [data-scope='editable'][data-part='edit-trigger'],
+    [data-scope='editable'][data-part='submit-trigger'],
+    [data-scope='editable'][data-part='cancel-trigger'] {
+      min-inline-size: var(--xh-editable-touch-target-size, var(--xh-control-box-lg));
+      min-block-size: var(--xh-editable-touch-target-size, var(--xh-control-box-lg));
+    }
   }
 }

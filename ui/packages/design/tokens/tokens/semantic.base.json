@@ -181,6 +181,10 @@
       "$type": "icon",
       "$value": "check"
     },
+    "mark-edit": {
+      "$type": "icon",
+      "$value": "pencil"
+    },
     "mark-minus": {
       "$type": "icon",
       "$value": "minus"

@@ -19821,6 +19821,9 @@
               "name": "--xh-editable-gap"
             },
             {
+              "name": "--xh-editable-icon-size"
+            },
+            {
               "name": "--xh-editable-input-autofill-bg"
             },
             {
@@ -19924,6 +19927,9 @@
             },
             {
               "name": "--xh-editable-submit-shadow"
+            },
+            {
+              "name": "--xh-editable-touch-target-size"
             },
             {
               "name": "--xh-editable-trigger-bg"
