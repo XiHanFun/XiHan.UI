@@ -38,7 +38,7 @@ allows-non-contiguous-ranges 允许区间跨过周末，只是那些日子不铺
 
 ### 按周挑
 
-granularity=week：一行一个整周，值是两端那两周的周首日；月、季度与年同理
+granularity=week：一行一个整周，格子直接铺进网格；值是两端那两周的周首日；月、季度与年同理
 
 <XhDemo src="calendar-range-picker/04-granularity" />
 

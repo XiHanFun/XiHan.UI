@@ -1,18 +1,14 @@
-// 按周挑 | granularity=week：一行一个整周，值是两端那两周的周首日；月、季度与年同理
+// 按周挑 | granularity=week：一行一个整周，格子直接铺进网格；值是两端那两周的周首日；月、季度与年同理
 import type { ReactNode } from "react";
 import {
   XhCalendarRangePickerCell,
   XhCalendarRangePickerCellTrigger,
   XhCalendarRangePickerGrid,
-  XhCalendarRangePickerGridBody,
-  XhCalendarRangePickerGridHead,
   XhCalendarRangePickerHeader,
   XhCalendarRangePickerHeading,
   XhCalendarRangePickerNextTrigger,
   XhCalendarRangePickerPrevTrigger,
   XhCalendarRangePickerRoot,
-  XhCalendarRangePickerWeekDay,
-  XhCalendarRangePickerWeekRow,
 } from "@xihan-ui/react";
 import { useState } from "react";
 
@@ -29,41 +25,28 @@ export default function Demo(): ReactNode {
         onValueChange={details => setValue(details.value)}
         locale="zh-CN"
         granularity="week"
-        fixedWeeks
         style={{ maxInlineSize: "280px" }}
       >
-        {({ weeks, weekDays }) => (
+        {({ periods }) => (
           <>
             <XhCalendarRangePickerHeader>
               <XhCalendarRangePickerPrevTrigger aria-label="上个月" />
               <XhCalendarRangePickerHeading />
               <XhCalendarRangePickerNextTrigger aria-label="下个月" />
             </XhCalendarRangePickerHeader>
+            {/* 周期视图没有周行那一层：一格就是一整周，格子直接铺进网格 */}
             <XhCalendarRangePickerGrid>
-              <XhCalendarRangePickerGridHead>
-                <XhCalendarRangePickerWeekRow>
-                  {weekDays.map(d => (
-                    <XhCalendarRangePickerWeekDay key={d.value} value={d.value} />
-                  ))}
-                </XhCalendarRangePickerWeekRow>
-              </XhCalendarRangePickerGridHead>
-              <XhCalendarRangePickerGridBody>
-                {weeks.map(week => (
-                  <XhCalendarRangePickerWeekRow key={week[0]?.start}>
-                    {week.map(day => (
-                      <XhCalendarRangePickerCell key={day.start} value={day.start}>
-                        <XhCalendarRangePickerCellTrigger>{day.day}</XhCalendarRangePickerCellTrigger>
-                      </XhCalendarRangePickerCell>
-                    ))}
-                  </XhCalendarRangePickerWeekRow>
-                ))}
-              </XhCalendarRangePickerGridBody>
+              {periods.map(period => (
+                <XhCalendarRangePickerCell key={period.key} value={period.start}>
+                  <XhCalendarRangePickerCellTrigger>{period.label}</XhCalendarRangePickerCellTrigger>
+                </XhCalendarRangePickerCell>
+              ))}
             </XhCalendarRangePickerGrid>
           </>
         )}
       </XhCalendarRangePickerRoot>
 
-      <span style={{ fontSize: "13px" }}>{`区间：${text}`}</span>
+      <span style={{ fontSize: "13px" }}>{`周区间：${text}`}</span>
     </>
   );
 }
