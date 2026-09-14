@@ -1,8 +1,3 @@
-<!--
-  Copyright (c) 2021-Present XiHanFun and contributors.
-  Licensed under the MIT License. See LICENSE in the project root for license information.
--->
-
 <!-- 超长差异的截断提示 | 超过 maxLines 的部分被砍掉，提示条把砍了多少行说给读的人 -->
 <script setup lang="ts">
 import { computeTextDiff } from "@xihan-ui/headless";

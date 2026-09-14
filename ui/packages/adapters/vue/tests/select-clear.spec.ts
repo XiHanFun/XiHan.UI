@@ -1,10 +1,3 @@
-/*
- * Copyright (c) 2021-Present XiHanFun and contributors.
- * Licensed under the MIT License. See LICENSE in the project root for license information.
- */
-
-// 验证 select clear 相关行为。
-
 // @vitest-environment jsdom
 // select 清空按钮：有选中才出现，点按清空全部选中且不展开浮层、焦点回到 trigger；可及名走 translations.clearTrigger。
 import { afterEach, describe, expect, it, vi } from 'vitest'

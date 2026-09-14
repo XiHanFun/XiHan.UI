@@ -1,8 +1,3 @@
-/*
- * Copyright (c) 2021-Present XiHanFun and contributors.
- * Licensed under the MIT License. See LICENSE in the project root for license information.
- */
-
 // 一屏多张 | slidesPerPage 决定一屏露几张，一次翻几张缺省跟着它走，所以仍是整屏翻
 import type { ReactNode } from "react";
 import {

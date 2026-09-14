@@ -1,10 +1,3 @@
-/*
- * Copyright (c) 2021-Present XiHanFun and contributors.
- * Licensed under the MIT License. See LICENSE in the project root for license information.
- */
-
-// 验证 truncate children 相关行为。
-
 // @vitest-environment jsdom
 //
 // 函数式 children 那条路与量测口的接线，共享一致性套件都咬不到：

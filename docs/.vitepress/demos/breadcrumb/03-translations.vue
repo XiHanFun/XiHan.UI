@@ -1,8 +1,3 @@
-<!--
-  Copyright (c) 2021-Present XiHanFun and contributors.
-  Licensed under the MIT License. See LICENSE in the project root for license information.
--->
-
 <!-- 自定义分隔符 | 替换层级之间的视觉标记 -->
 <script setup lang="ts">
 import { XhBreadcrumbRoot } from "@xihan-ui/vue";

@@ -1,8 +1,3 @@
-<!--
-  Copyright (c) 2021-Present XiHanFun and contributors.
-  Licensed under the MIT License. See LICENSE in the project root for license information.
--->
-
 <!-- 代码块交给代码视图 | markdown 块铺 html，代码块拿 source 交出去——照 html 渲会让同一段代码出现两次 -->
 <script setup lang="ts">
 import type { MarkdownBlock } from "@xihan-ui/headless";

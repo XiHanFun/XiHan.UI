@@ -1,10 +1,3 @@
-/*
- * Copyright (c) 2021-Present XiHanFun and contributors.
- * Licensed under the MIT License. See LICENSE in the project root for license information.
- */
-
-// 验证 layout 相关行为。
-
 // @vitest-environment jsdom
 // 覆盖档要真 DOM：断点跟随读的是文档元素上的断点令牌，Escape 挂在 document 上。
 import type { Disposable, LayerRegistry, RuntimeConfig, Scope } from '@xihan-ui/core'

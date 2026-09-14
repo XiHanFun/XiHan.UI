@@ -1,8 +1,3 @@
-/*
- * Copyright (c) 2021-Present XiHanFun and contributors.
- * Licensed under the MIT License. See LICENSE in the project root for license information.
- */
-
 // Alert 的中性抬升表面、语气文字与尾端操作依赖真实计算样式和布局。
 import type { App } from 'vue'
 import { afterEach, describe, expect, it } from 'vitest'

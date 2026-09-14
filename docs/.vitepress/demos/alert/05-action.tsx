@@ -1,8 +1,3 @@
-/*
- * Copyright (c) 2021-Present XiHanFun and contributors.
- * Licensed under the MIT License. See LICENSE in the project root for license information.
- */
-
 // 操作 | 将与提示直接相关的短操作放在尾端
 import type { ReactNode } from "react";
 import {

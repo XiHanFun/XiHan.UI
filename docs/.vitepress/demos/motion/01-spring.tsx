@@ -1,8 +1,3 @@
-/*
- * Copyright (c) 2021-Present XiHanFun and contributors.
- * Licensed under the MIT License. See LICENSE in the project root for license information.
- */
-
 // 弹簧 | 感知参数调出物理参数，曲线是解析解直接采样的，右边的方块按同一条曲线走
 import type { ReactNode } from "react";
 import { animate, createSpring, springToLinearEasing } from "@xihan-ui/motion";

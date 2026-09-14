@@ -1,10 +1,3 @@
-/*
- * Copyright (c) 2021-Present XiHanFun and contributors.
- * Licensed under the MIT License. See LICENSE in the project root for license information.
- */
-
-// 提供 json viewer.suite 相关实现。
-
 import type { ConformanceSuite, StepWithExpect } from '../conformance/types'
 import { jsonViewerAnatomy, jsonViewerKeyboard } from '@xihan-ui/headless'
 

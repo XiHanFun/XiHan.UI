@@ -1,10 +1,3 @@
-/*
- * Copyright (c) 2021-Present XiHanFun and contributors.
- * Licensed under the MIT License. See LICENSE in the project root for license information.
- */
-
-// 验证 listbox empty surface 相关行为。
-
 import type { XhListboxElement } from '../../src/elements/listbox'
 import { afterEach, expect, it } from 'vitest'
 import { userEvent } from 'vitest/browser'

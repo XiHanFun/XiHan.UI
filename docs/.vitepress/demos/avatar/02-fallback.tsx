@@ -1,8 +1,3 @@
-/*
- * Copyright (c) 2021-Present XiHanFun and contributors.
- * Licensed under the MIT License. See LICENSE in the project root for license information.
- */
-
 // 加载失败回退 | 图片地址取不到时切到 fallback，切换由状态机决定而不是 CSS
 import type { ReactNode } from "react";
 import { XhAvatarFallback, XhAvatarImage, XhAvatarRoot } from "@xihan-ui/react";

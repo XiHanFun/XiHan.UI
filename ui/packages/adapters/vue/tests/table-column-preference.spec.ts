@@ -1,10 +1,3 @@
-/*
- * Copyright (c) 2021-Present XiHanFun and contributors.
- * Licensed under the MIT License. See LICENSE in the project root for license information.
- */
-
-// 验证 table column preference 相关行为。
-
 // @vitest-environment jsdom
 // 列偏好在组件上的表现：受控/非受控两态，以及四个写入口真的改到生效列。
 //

@@ -1,8 +1,3 @@
-/*
- * Copyright (c) 2021-Present XiHanFun and contributors.
- * Licensed under the MIT License. See LICENSE in the project root for license information.
- */
-
 // 失效档的聚焦环不取被压过的前景墨；中性选中档同样使用公共环。
 //
 // 实心面那几档把 --xh-_ring-color 灌成 currentColor，环随面自己的前景色走。

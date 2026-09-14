@@ -1,8 +1,3 @@
-/*
- * Copyright (c) 2021-Present XiHanFun and contributors.
- * Licensed under the MIT License. See LICENSE in the project root for license information.
- */
-
 // Cascader 的列项与搜索结果共用选择标记；路径、级联半选、RTL 与禁用需由真实 CSS 验证。
 import type { CascaderLevel } from '@xihan-ui/headless'
 import type { App } from 'vue'

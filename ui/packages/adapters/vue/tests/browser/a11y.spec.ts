@@ -1,10 +1,3 @@
-/*
- * Copyright (c) 2021-Present XiHanFun and contributors.
- * Licensed under the MIT License. See LICENSE in the project root for license information.
- */
-
-// 验证 a11y 相关行为。
-
 import { allSuites } from '@xihan-ui/testing'
 import { runA11y, vueA11yBaseline } from '@xihan-ui/testing/a11y'
 import { describe, it } from 'vitest'

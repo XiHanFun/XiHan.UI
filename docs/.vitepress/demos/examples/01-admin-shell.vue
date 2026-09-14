@@ -1,8 +1,3 @@
-<!--
-  Copyright (c) 2021-Present XiHanFun and contributors.
-  Licensed under the MIT License. See LICENSE in the project root for license information.
--->
-
 <!-- 后台壳 | 布局四段、侧栏导航、面包屑、页头、工具条、通知角标与账户菜单同框；间距、圆角、颜色一律取令牌 -->
 <script setup lang="ts">
 import type { MenuNode, SideNavNode } from "@xihan-ui/headless";

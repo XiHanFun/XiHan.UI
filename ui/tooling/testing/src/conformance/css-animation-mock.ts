@@ -1,8 +1,3 @@
-/*
- * Copyright (c) 2021-Present XiHanFun and contributors.
- * Licensed under the MIT License. See LICENSE in the project root for license information.
- */
-
 /** 无布局测试显式提供可控动画对象；真实动画几何另由浏览器套件验证。 */
 export function installCssAnimationMock(node: Element, name: string): { finish: () => void, restore: () => void } {
   const descriptor = Object.getOwnPropertyDescriptor(node, 'getAnimations')

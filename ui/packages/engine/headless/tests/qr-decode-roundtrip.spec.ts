@@ -1,8 +1,3 @@
-/*
- * Copyright (c) 2021-Present XiHanFun and contributors.
- * Licensed under the MIT License. See LICENSE in the project root for license information.
- */
-
 // 独立解码器对 QR 编码器做回环验证。
 //
 // 这个文件只用编码器的三个公开导出（qrEncode / qrCapacityBytes / qrAlignmentPositions），

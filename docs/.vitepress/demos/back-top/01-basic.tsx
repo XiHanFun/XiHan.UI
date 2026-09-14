@@ -1,8 +1,3 @@
-/*
- * Copyright (c) 2021-Present XiHanFun and contributors.
- * Licensed under the MIT License. See LICENSE in the project root for license information.
- */
-
 // 基础用法 | 滚动后显示回到顶部按钮
 import type { CSSProperties, ReactNode } from "react";
 import { XhBackTopRoot, XhBackTopTrigger } from "@xihan-ui/react";

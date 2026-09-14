@@ -1,8 +1,3 @@
-/*
- * Copyright (c) 2021-Present XiHanFun and contributors.
- * Licensed under the MIT License. See LICENSE in the project root for license information.
- */
-
 // 整块换档 | 面板高度、表头、条目行、勾选格与搬运按钮各是一个令牌，写在根上整块一起换档
 import type { CSSProperties, ReactNode } from "react";
 import {

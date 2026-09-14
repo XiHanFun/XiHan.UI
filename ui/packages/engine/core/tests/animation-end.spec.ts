@@ -1,10 +1,3 @@
-/*
- * Copyright (c) 2021-Present XiHanFun and contributors.
- * Licensed under the MIT License. See LICENSE in the project root for license information.
- */
-
-// 验证 animation end 相关行为。
-
 // @vitest-environment jsdom
 
 // 退场租约靠 animationend 归还。凡是「animationName 算得出、动画却不会播」的情形，

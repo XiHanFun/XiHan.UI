@@ -1,10 +1,3 @@
-/*
- * Copyright (c) 2021-Present XiHanFun and contributors.
- * Licensed under the MIT License. See LICENSE in the project root for license information.
- */
-
-// 验证 button group disabled 相关行为。
-
 // @vitest-environment jsdom
 //
 // 整组禁用要落到组内每一段的原生 disabled 上：只在根上打 data-disabled 的话，

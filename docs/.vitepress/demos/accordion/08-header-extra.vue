@@ -1,8 +1,3 @@
-<!--
-  Copyright (c) 2021-Present XiHanFun and contributors.
-  Licensed under the MIT License. See LICENSE in the project root for license information.
--->
-
 <!-- 标题栏附加信息 | 标题栏里的节点全归作者，把计数与指示器包成一组排在末尾 -->
 <script setup lang="ts">
 import {

@@ -1,8 +1,3 @@
-/*
- * Copyright (c) 2021-Present XiHanFun and contributors.
- * Licensed under the MIT License. See LICENSE in the project root for license information.
- */
-
 // 指示器在前 | 指示器写在标题之前就落到起始缘，标题拿 auto 外边距吃掉余量
 import type { ReactNode } from "react";
 import {

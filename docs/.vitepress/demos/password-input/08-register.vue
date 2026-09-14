@@ -1,8 +1,3 @@
-<!--
-  Copyright (c) 2021-Present XiHanFun and contributors.
-  Licensed under the MIT License. See LICENSE in the project root for license information.
--->
-
 <!-- 注册表单 | name 才让它参与提交，auto-complete 写成 new-password 密码管理器才去存新密码而不是填旧的 -->
 <script setup lang="ts">
 import {

@@ -1,10 +1,3 @@
-/*
- * Copyright (c) 2021-Present XiHanFun and contributors.
- * Licensed under the MIT License. See LICENSE in the project root for license information.
- */
-
-// 验证 switch loading 相关行为。
-
 // @vitest-environment jsdom
 // switch loading：提交中交互挂起（点按不翻转）、aria-busy 置真、data-loading 上漆，
 // 但不是禁用——按钮不带 disabled、仍可聚焦。

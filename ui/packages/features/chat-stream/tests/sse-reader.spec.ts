@@ -1,10 +1,3 @@
-/*
- * Copyright (c) 2021-Present XiHanFun and contributors.
- * Licensed under the MIT License. See LICENSE in the project root for license information.
- */
-
-// 验证 sse reader 相关行为。
-
 import type { RawFrame, SseReaderOptions } from '../src/transport/sse-reader'
 import { describe, expect, it } from 'vitest'
 import { createSseReader } from '../src/transport/sse-reader'

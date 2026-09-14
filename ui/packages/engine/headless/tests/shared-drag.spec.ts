@@ -1,8 +1,3 @@
-/*
- * Copyright (c) 2021-Present XiHanFun and contributors.
- * Licensed under the MIT License. See LICENSE in the project root for license information.
- */
-
 // 拖拽重排的共用纯函数。四处（table 行/列、tree 节点、tabs 标签）吃的是同一套判定，
 // 这份测试钉的就是那套判定本身。
 import { describe, expect, it } from 'vitest'

@@ -1,10 +1,3 @@
-/*
- * Copyright (c) 2021-Present XiHanFun and contributors.
- * Licensed under the MIT License. See LICENSE in the project root for license information.
- */
-
-// 验证 collection focus report 相关行为。
-
 // @vitest-environment jsdom
 //
 // 集合条目被移出 DOM 时，浏览器不派 focusout——焦点就这么无声地掉到 body 上。

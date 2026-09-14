@@ -1,8 +1,3 @@
-<!--
-  Copyright (c) 2021-Present XiHanFun and contributors.
-  Licensed under the MIT License. See LICENSE in the project root for license information.
--->
-
 <!-- 受控通道 | 给了 value 与 active 就走受控分支：value 改写即重新计时，active 翻假停在当前剩余量、翻真接着走 -->
 <script setup lang="ts">
 import { XhButton, XhTimerDisplay, XhTimerRoot } from "@xihan-ui/vue";

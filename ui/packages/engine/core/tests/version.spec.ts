@@ -1,10 +1,3 @@
-/*
- * Copyright (c) 2021-Present XiHanFun and contributors.
- * Licensed under the MIT License. See LICENSE in the project root for license information.
- */
-
-// 验证 version 相关行为。
-
 import type { DiagnosticRecord } from '../src/kernel'
 import { afterEach, beforeEach, describe, expect, it } from 'vitest'
 import { DIAGNOSTIC_CODES, onDiagnostic, resetDiagnostics, VERSION } from '../src/kernel'

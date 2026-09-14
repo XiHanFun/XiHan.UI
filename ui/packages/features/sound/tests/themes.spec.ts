@@ -1,8 +1,3 @@
-/*
- * Copyright (c) 2021-Present XiHanFun and contributors.
- * Licensed under the MIT License. See LICENSE in the project root for license information.
- */
-
 /**
  * 判据按「内置主题是给人听的成品数据」写：三套主题覆盖全部语义名、
  * 数值本身就在安全域内（钳制不改任何一个数）、时长与峰值有上限——

@@ -1,8 +1,3 @@
-/*
- * Copyright (c) 2021-Present XiHanFun and contributors.
- * Licensed under the MIT License. See LICENSE in the project root for license information.
- */
-
 // 两页并排 | 起止常跨月时给 visibleCount=2，两页一起翻
 import type { CSSProperties, ReactNode } from "react";
 import {

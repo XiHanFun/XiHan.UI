@@ -1,8 +1,3 @@
-/*
- * Copyright (c) 2021-Present XiHanFun and contributors.
- * Licensed under the MIT License. See LICENSE in the project root for license information.
- */
-
 // Card 的语义表面、统一节奏与部件布局依赖真实 CSS 计算值。
 import type { CardVariant } from '@xihan-ui/headless'
 import type { App } from 'vue'

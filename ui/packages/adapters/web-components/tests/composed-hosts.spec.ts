@@ -1,10 +1,3 @@
-/*
- * Copyright (c) 2021-Present XiHanFun and contributors.
- * Licensed under the MIT License. See LICENSE in the project root for license information.
- */
-
-// 验证 composed hosts 相关行为。
-
 // @vitest-environment jsdom
 // 覆盖宿主元素嵌套在其他元素内的场景，以及事件名与属性名和 HTML 全局名的冲突。
 import { beforeEach, describe, expect, it, vi } from 'vitest'

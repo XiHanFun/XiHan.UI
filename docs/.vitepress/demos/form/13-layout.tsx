@@ -1,8 +1,3 @@
-/*
- * Copyright (c) 2021-Present XiHanFun and contributors.
- * Licensed under the MIT License. See LICENSE in the project root for license information.
- */
-
 // 布局 | 设置纵向、横向、行内或网格布局
 import type { FormLayout } from "@xihan-ui/headless";
 import type { ReactNode } from "react";

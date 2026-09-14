@@ -1,8 +1,3 @@
-/*
- * Copyright (c) 2021-Present XiHanFun and contributors.
- * Licensed under the MIT License. See LICENSE in the project root for license information.
- */
-
 // 长行换行与词级差异 | 开 wrap 让长行原地折行；配对的删改行之间再比一次词，只有真正动过的那几段上底色
 import type { ReactNode } from "react";
 import { createHighlighter } from "@xihan-ui/code-highlight";

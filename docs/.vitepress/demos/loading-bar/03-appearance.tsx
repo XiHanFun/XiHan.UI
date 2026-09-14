@@ -1,8 +1,3 @@
-/*
- * Copyright (c) 2021-Present XiHanFun and contributors.
- * Licensed under the MIT License. See LICENSE in the project root for license information.
- */
-
 // 厚度与颜色 | height 数字按像素、字符串按任意 CSS 长度；color 只改进度段的底色
 import type { ReactNode } from "react";
 import {

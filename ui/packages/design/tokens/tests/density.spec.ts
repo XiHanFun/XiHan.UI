@@ -1,8 +1,3 @@
-/*
- * Copyright (c) 2021-Present XiHanFun and contributors.
- * Licensed under the MIT License. See LICENSE in the project root for license information.
- */
-
 // compact 档是覆盖档：每一项都必须对得上基线里的同名令牌，且解析后的取值真的不同。
 // 拼错组名/键名会发出一个没人消费的新自定义属性，静默无效——这里把它挡下来。
 import { readFileSync } from 'node:fs'

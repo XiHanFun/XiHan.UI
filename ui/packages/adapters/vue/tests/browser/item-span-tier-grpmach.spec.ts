@@ -1,8 +1,3 @@
-/*
- * Copyright (c) 2021-Present XiHanFun and contributors.
- * Licensed under the MIT License. See LICENSE in the project root for license information.
- */
-
 // 视口档：descriptions 里作者写在某一格上的 span，逐档由皮肤决定认不认。
 //
 // 换档由 @media (min-width) 决定，宿主视口固定改不动，所以每一档开一个那么宽的 iframe，

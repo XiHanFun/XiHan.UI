@@ -1,8 +1,3 @@
-/*
- * Copyright (c) 2021-Present XiHanFun and contributors.
- * Licensed under the MIT License. See LICENSE in the project root for license information.
- */
-
 // 快捷键注册 | 可见提示显式开启 register 后响应按键
 import type { ReactNode } from "react";
 import { XhKbd } from "@xihan-ui/react";

@@ -1,8 +1,3 @@
-/*
- * Copyright (c) 2021-Present XiHanFun and contributors.
- * Licensed under the MIT License. See LICENSE in the project root for license information.
- */
-
 // 本文件不加 @vitest-environment，跑在默认的 node 环境里：无 window 的宿主。
 import { afterEach, describe, expect, it, vi } from 'vitest'
 import {

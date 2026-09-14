@@ -1,8 +1,3 @@
-/*
- * Copyright (c) 2021-Present XiHanFun and contributors.
- * Licensed under the MIT License. See LICENSE in the project root for license information.
- */
-
 // 精度到秒 | granularity=second 让秒段显出来并参与值，空段按上下键从该段边界起步
 import type { ReactNode } from "react";
 import {

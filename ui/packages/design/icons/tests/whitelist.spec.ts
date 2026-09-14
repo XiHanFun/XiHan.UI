@@ -1,10 +1,3 @@
-/*
- * Copyright (c) 2021-Present XiHanFun and contributors.
- * Licensed under the MIT License. See LICENSE in the project root for license information.
- */
-
-// 验证 whitelist 相关行为。
-
 import { describe, expect, it } from 'vitest'
 // 只从管线出口进：判据按「输入这段 SVG，产出的 IconNode[] 里不得出现 X」写，
 // 换一套实现这些用例仍然有效。

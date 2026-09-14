@@ -1,8 +1,3 @@
-/*
- * Copyright (c) 2021-Present XiHanFun and contributors.
- * Licensed under the MIT License. See LICENSE in the project root for license information.
- */
-
 // 间距 | 设置列与项目之间的间距
 import type { ReactNode } from "react";
 import { XhMasonry } from "@xihan-ui/react";

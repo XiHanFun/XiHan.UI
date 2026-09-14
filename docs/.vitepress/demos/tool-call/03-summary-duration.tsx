@@ -1,8 +1,3 @@
-/*
- * Copyright (c) 2021-Present XiHanFun and contributors.
- * Licensed under the MIT License. See LICENSE in the project root for license information.
- */
-
 // 摘要与耗时 | 详情收起时也看得见查了什么、跑了多久；两个时刻由宿主给，组件自己不读时钟
 import type { ReactNode } from "react";
 import {

@@ -1,10 +1,3 @@
-/*
- * Copyright (c) 2021-Present XiHanFun and contributors.
- * Licensed under the MIT License. See LICENSE in the project root for license information.
- */
-
-// 验证 menubar switch position 相关行为。
-
 // @vitest-environment jsdom
 // 菜单栏一排入口共用一台机器一份 position。换菜单时共享份立刻归新菜单所有，
 // 而正在收起的那张还要播 120ms 退场——它若从共享份取坐标会当场归零，

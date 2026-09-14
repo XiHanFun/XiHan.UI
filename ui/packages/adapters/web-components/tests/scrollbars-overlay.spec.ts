@@ -1,10 +1,3 @@
-/*
- * Copyright (c) 2021-Present XiHanFun and contributors.
- * Licensed under the MIT License. See LICENSE in the project root for license information.
- */
-
-// 验证 scrollbars overlay 相关行为。
-
 // @vitest-environment jsdom
 //
 // 浮层族的自绘条：七个宿主一律把条子挂在作者写的 positioner 上、排在 content 之后。

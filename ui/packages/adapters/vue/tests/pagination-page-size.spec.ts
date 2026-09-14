@@ -1,10 +1,3 @@
-/*
- * Copyright (c) 2021-Present XiHanFun and contributors.
- * Licensed under the MIT License. See LICENSE in the project root for license information.
- */
-
-// 验证 pagination page size 相关行为。
-
 // @vitest-environment jsdom
 // 每页条数是一份真状态。三件事要钉住：
 // 一是受控——只给 pageSize 时档位由外部持有；

@@ -1,10 +1,3 @@
-/*
- * Copyright (c) 2021-Present XiHanFun and contributors.
- * Licensed under the MIT License. See LICENSE in the project root for license information.
- */
-
-// 验证 feedback service queue 相关行为。
-
 // @vitest-environment jsdom
 // 轻提示与通知合用同一台队列机器之后新出的那几样：行内动作、合并计数、
 // 优先级挤条、整摞暂停与 promise 三态。

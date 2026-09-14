@@ -1,10 +1,3 @@
-/*
- * Copyright (c) 2021-Present XiHanFun and contributors.
- * Licensed under the MIT License. See LICENSE in the project root for license information.
- */
-
-// 验证 popconfirm dismiss live read 相关行为。
-
 // @vitest-environment jsdom
 //
 // 消解开关要现读：消解层的回调只在展开那一刻挂一次，在那之前把 closeOnEscape /

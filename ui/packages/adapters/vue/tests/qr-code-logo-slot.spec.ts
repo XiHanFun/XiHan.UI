@@ -1,10 +1,3 @@
-/*
- * Copyright (c) 2021-Present XiHanFun and contributors.
- * Licensed under the MIT License. See LICENSE in the project root for license information.
- */
-
-// 验证 qr code logo slot 相关行为。
-
 // @vitest-environment jsdom
 // 默认插槽决定要不要在码面正中挖一块。挖空是拿底色盖住一片模块，对读码器等同人为污损，
 // 所以这里盯的是「什么才算真放了 logo」：插槽里只剩注释或空白时一格都不许挖。

@@ -1,8 +1,3 @@
-/*
- * Copyright (c) 2021-Present XiHanFun and contributors.
- * Licensed under the MIT License. See LICENSE in the project root for license information.
- */
-
 // 分格输入按顺序录入：焦点落在第一个空格上，还轮不到的格子连 Tab 都停不上去。
 //
 // 判据要的是真实焦点：真鼠标点在第三格上、真 Tab 键走过整组，两样 jsdom 都演不出来

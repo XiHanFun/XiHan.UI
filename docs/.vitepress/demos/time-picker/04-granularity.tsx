@@ -1,8 +1,3 @@
-/*
- * Copyright (c) 2021-Present XiHanFun and contributors.
- * Licensed under the MIT License. See LICENSE in the project root for license information.
- */
-
 // 精度到秒 | granularity 同时决定输入行显示几段、浮层里排几列
 import type { ReactNode } from "react";
 import {

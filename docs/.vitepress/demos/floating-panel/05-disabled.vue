@@ -1,8 +1,3 @@
-<!--
-  Copyright (c) 2021-Present XiHanFun and contributors.
-  Licensed under the MIT License. See LICENSE in the project root for license information.
--->
-
 <!-- 禁用 | 搬不动、改不了尺寸、切不了形态；关闭与开合照常，面板不会被锁死在屏幕上 -->
 <script setup lang="ts">
 import {

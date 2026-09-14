@@ -1,8 +1,3 @@
-/*
- * Copyright (c) 2021-Present XiHanFun and contributors.
- * Licensed under the MIT License. See LICENSE in the project root for license information.
- */
-
 // 分组 | 使用标题与分隔线组织命令
 import type { ReactNode } from "react";
 import { XhButton, XhMenuRoot } from "@xihan-ui/react";

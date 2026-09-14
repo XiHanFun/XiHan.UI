@@ -1,8 +1,3 @@
-/*
- * Copyright (c) 2021-Present XiHanFun and contributors.
- * Licensed under the MIT License. See LICENSE in the project root for license information.
- */
-
 // @xihan-ui/testing —— 跨适配器一致性套件运行时（私有，不发布）。
 
 export { applyStep } from './conformance/apply-step'

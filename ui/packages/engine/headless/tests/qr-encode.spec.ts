@@ -1,8 +1,3 @@
-/*
- * Copyright (c) 2021-Present XiHanFun and contributors.
- * Licensed under the MIT License. See LICENSE in the project root for license information.
- */
-
 // QR 编码器的判据。全是纯函数，不碰 DOM，不需要 jsdom。
 //
 // 结构类断言（定位图形、时序图形、暗模块）单独钉每一处；

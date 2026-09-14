@@ -1,8 +1,3 @@
-<!--
-  Copyright (c) 2021-Present XiHanFun and contributors.
-  Licensed under the MIT License. See LICENSE in the project root for license information.
--->
-
 <!-- 给通知配声 | withToastSound 包一层现成服务，调用点一行都不用改；loading 不响，转成 success 那一刻才响 -->
 <script setup lang="ts">
 import type { ToastService } from "@xihan-ui/vue";

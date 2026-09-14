@@ -1,10 +1,3 @@
-/*
- * Copyright (c) 2021-Present XiHanFun and contributors.
- * Licensed under the MIT License. See LICENSE in the project root for license information.
- */
-
-// 验证 code view 相关行为。
-
 import type { CodeToken, HighlighterPort } from '@xihan-ui/core'
 import type { CodeViewApi, CodeViewProps } from '../src/code-view'
 import { createCounterIdGenerator, createScope, normalizeProps } from '@xihan-ui/core'

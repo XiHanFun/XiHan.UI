@@ -1,8 +1,3 @@
-/*
- * Copyright (c) 2021-Present XiHanFun and contributors.
- * Licensed under the MIT License. See LICENSE in the project root for license information.
- */
-
 // 皮肤里用 `lh`（一行字的高度）的两处，都必须写成级联兜底：同一条 padding-block
 // 先写一条按令牌算的「字号 × 行距」，再写 lh 那条。不认 lh 的引擎丢掉后一条、留下前一条，
 // 上下留白仍在；认 lh 的引擎取后一条，两者算出来是同一个数。

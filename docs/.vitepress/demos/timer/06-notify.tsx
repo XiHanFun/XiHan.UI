@@ -1,8 +1,3 @@
-/*
- * Copyright (c) 2021-Present XiHanFun and contributors.
- * Licensed under the MIT License. See LICENSE in the project root for license information.
- */
-
 // 每一拍与到点 | tick 每过一个 interval 发一次，complete 只在走到终点那一刻发一次；到点那一拍不再发 tick
 import type { ReactNode } from "react";
 import {

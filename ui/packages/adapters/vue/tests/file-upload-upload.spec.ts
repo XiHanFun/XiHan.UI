@@ -1,10 +1,3 @@
-/*
- * Copyright (c) 2021-Present XiHanFun and contributors.
- * Licensed under the MIT License. See LICENSE in the project root for license information.
- */
-
-// 验证 file upload upload 相关行为。
-
 // @vitest-environment jsdom
 // file-upload 的上传生命周期与远程附件形态：进度/成败/重试/中止、回显与名额共享。
 import type { FileUploadFile, FileUploadRemoteFile, FileUploadRequest, FileUploadResult, FileUploadSnapshot } from '@xihan-ui/headless'

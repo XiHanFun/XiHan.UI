@@ -1,10 +1,3 @@
-/*
- * Copyright (c) 2021-Present XiHanFun and contributors.
- * Licensed under the MIT License. See LICENSE in the project root for license information.
- */
-
-// 验证 context menubar hover tree 相关行为。
-
 import type { ContextMenuSelectDetails, MenubarSelectDetails } from '@xihan-ui/headless'
 import type { Mock } from 'vitest'
 import type { App, VNode } from 'vue'

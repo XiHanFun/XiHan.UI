@@ -1,10 +1,3 @@
-/*
- * Copyright (c) 2021-Present XiHanFun and contributors.
- * Licensed under the MIT License. See LICENSE in the project root for license information.
- */
-
-// 验证 navigation menu collection 相关行为。
-
 // @vitest-environment jsdom
 import type { NavigationMenuNode, NavigationMenuNodeMeta } from '@xihan-ui/headless'
 import type { VNode } from 'vue'

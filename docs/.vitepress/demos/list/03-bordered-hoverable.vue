@@ -1,8 +1,3 @@
-<!--
-  Copyright (c) 2021-Present XiHanFun and contributors.
-  Licensed under the MIT License. See LICENSE in the project root for license information.
--->
-
 <!-- 外框与悬停 | bordered 给整份列表画一圈描边，hoverable 让条目在指针悬停时换底色 -->
 <script setup lang="ts">
 import { XhListItem, XhListItemContent, XhListItemTitle, XhListRoot } from "@xihan-ui/vue";

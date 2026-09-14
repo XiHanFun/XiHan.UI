@@ -1,8 +1,3 @@
-/*
- * Copyright (c) 2021-Present XiHanFun and contributors.
- * Licensed under the MIT License. See LICENSE in the project root for license information.
- */
-
 // 组合框有值时清空钮顶替展开钮的位置：两颗钮互斥显示，盒的宽度不随「有没有值」跳动。
 // 宽度与 display 都是级联和布局算出来的，只有真实浏览器量得出。
 import type { App } from 'vue'

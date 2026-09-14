@@ -1,8 +1,3 @@
-/*
- * Copyright (c) 2021-Present XiHanFun and contributors.
- * Licensed under the MIT License. See LICENSE in the project root for license information.
- */
-
 // 语气 | tone 决定指示器与选中段文字用哪族颜色，六种语气各一组
 import type { ReactNode } from "react";
 import { XhSegmentedRoot } from "@xihan-ui/react";

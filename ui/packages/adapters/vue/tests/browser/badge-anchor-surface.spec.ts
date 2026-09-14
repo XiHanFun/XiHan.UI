@@ -1,8 +1,3 @@
-/*
- * Copyright (c) 2021-Present XiHanFun and contributors.
- * Licensed under the MIT License. See LICENSE in the project root for license information.
- */
-
 // Badge 的尺寸与角标探出比例依赖真实布局，只在 Chromium 中验证。
 import type { Size } from '@xihan-ui/core'
 import type { App } from 'vue'

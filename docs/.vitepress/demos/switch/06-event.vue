@@ -1,8 +1,3 @@
-<!--
-  Copyright (c) 2021-Present XiHanFun and contributors.
-  Licensed under the MIT License. See LICENSE in the project root for license information.
--->
-
 <!-- 事件 | checked-change 带一份 { checked }，非受控时内部转移也照发一次 -->
 <script setup lang="ts">
 import { XhSwitch } from "@xihan-ui/vue";

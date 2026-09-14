@@ -1,10 +1,3 @@
-/*
- * Copyright (c) 2021-Present XiHanFun and contributors.
- * Licensed under the MIT License. See LICENSE in the project root for license information.
- */
-
-// 验证 portal c 相关行为。
-
 // @vitest-environment jsdom
 // positioner 部件搬到 portal 落点：宿主祖先建了层叠上下文也压不住浮层。
 import { afterEach, beforeEach, describe, expect, it } from 'vitest'

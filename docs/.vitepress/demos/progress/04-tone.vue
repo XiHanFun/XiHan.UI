@@ -1,8 +1,3 @@
-<!--
-  Copyright (c) 2021-Present XiHanFun and contributors.
-  Licensed under the MIT License. See LICENSE in the project root for license information.
--->
-
 <!-- 语气 | tone 决定进度段用哪族颜色，不写时沿用品牌色 -->
 <script setup lang="ts">
 import { XhProgress } from "@xihan-ui/vue";

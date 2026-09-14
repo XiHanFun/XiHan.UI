@@ -1,8 +1,3 @@
-/*
- * Copyright (c) 2021-Present XiHanFun and contributors.
- * Licensed under the MIT License. See LICENSE in the project root for license information.
- */
-
 // 自定义值 | 选择候选项或输入新值
 import type { ReactNode } from "react";
 import { XhComboboxRoot } from "@xihan-ui/react";

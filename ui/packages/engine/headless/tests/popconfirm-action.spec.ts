@@ -1,10 +1,3 @@
-/*
- * Copyright (c) 2021-Present XiHanFun and contributors.
- * Licensed under the MIT License. See LICENSE in the project root for license information.
- */
-
-// 验证 popconfirm action 相关行为。
-
 import type { Service } from '@xihan-ui/core'
 import type { PopconfirmApi, PopconfirmConfirmErrorDetails, PopconfirmIntents, PopoverSchema } from '../src'
 import { createService, normalizeProps } from '@xihan-ui/core'

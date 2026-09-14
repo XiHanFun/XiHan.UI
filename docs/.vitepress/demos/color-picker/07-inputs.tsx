@@ -1,8 +1,3 @@
-/*
- * Copyright (c) 2021-Present XiHanFun and contributors.
- * Licensed under the MIT License. See LICENSE in the project root for license information.
- */
-
 // 精确输入 | 输入色值或使用屏幕取色
 import type { CSSProperties, ReactNode } from "react";
 import { PipetteIcon } from "@xihan-ui/icons";

@@ -1,8 +1,3 @@
-/*
- * Copyright (c) 2021-Present XiHanFun and contributors.
- * Licensed under the MIT License. See LICENSE in the project root for license information.
- */
-
 // 异步候选 | 查询串每变一次就重新去远端查一遍，加载、空结果和候选共用一张浮层表面
 import type { ReactNode } from "react";
 import {

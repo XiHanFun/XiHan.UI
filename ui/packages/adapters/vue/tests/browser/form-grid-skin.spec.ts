@@ -1,8 +1,3 @@
-/*
- * Copyright (c) 2021-Present XiHanFun and contributors.
- * Licensed under the MIT License. See LICENSE in the project root for license information.
- */
-
 // 表单的网格档：列数与跨列都只在 CSS 里兑现，jsdom 只看得见属性落没落。
 // 这里查真浏览器算出来的轨道表与每一格的起止列线——没有它，皮肤规则写反了也没人知道。
 import type { FormFieldSpan } from '@xihan-ui/headless'

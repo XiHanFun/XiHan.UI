@@ -1,8 +1,3 @@
-/*
- * Copyright (c) 2021-Present XiHanFun and contributors.
- * Licensed under the MIT License. See LICENSE in the project root for license information.
- */
-
 // 回退延迟与原生属性 | fallback-delay 决定回退内容多久才露面，Infinity 表示加载期间一直不露面、只有失败才显；写在 image 部件上的原生属性照常落到底层图片元素上
 import type { CSSProperties, ReactNode } from "react";
 import { XhImageFallback, XhImageImage, XhImageRoot } from "@xihan-ui/react";

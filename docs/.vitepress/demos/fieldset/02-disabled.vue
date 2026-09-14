@@ -1,8 +1,3 @@
-<!--
-  Copyright (c) 2021-Present XiHanFun and contributors.
-  Licensed under the MIT License. See LICENSE in the project root for license information.
--->
-
 <!-- 整组禁用 | disabled 落成原生 fieldset[disabled]，组内每个控件一并停掉，不必逐个写 disabled -->
 <script setup lang="ts">
 import { XhFieldsetDescription, XhFieldsetLegend, XhFieldsetRoot } from "@xihan-ui/vue";

@@ -1,8 +1,3 @@
-/*
- * Copyright (c) 2021-Present XiHanFun and contributors.
- * Licensed under the MIT License. See LICENSE in the project root for license information.
- */
-
 // 控件最小宽度地板（--xh-control-min-w）：宽处顶住 12rem，窄处跟着容器收。
 //
 // 宿主视口固定在一个宽度上且改不动，这里改用内嵌 iframe 自带视口，宽度由这边说了算。

@@ -1,8 +1,3 @@
-<!--
-  Copyright (c) 2021-Present XiHanFun and contributors.
-  Licensed under the MIT License. See LICENSE in the project root for license information.
--->
-
 <!-- 快捷选项 | 提供常用日期 -->
 <script setup lang="ts">
 import { datePickerPresetDay } from "@xihan-ui/headless";

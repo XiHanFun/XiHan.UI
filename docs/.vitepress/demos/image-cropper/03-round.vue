@@ -1,8 +1,3 @@
-<!--
-  Copyright (c) 2021-Present XiHanFun and contributors.
-  Licensed under the MIT License. See LICENSE in the project root for license information.
--->
-
 <!-- 圆形裁切 | 以 1:1 裁切头像 -->
 <script setup lang="ts">
 import {

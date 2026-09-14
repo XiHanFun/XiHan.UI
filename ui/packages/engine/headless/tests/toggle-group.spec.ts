@@ -1,8 +1,3 @@
-/*
- * Copyright (c) 2021-Present XiHanFun and contributors.
- * Licensed under the MIT License. See LICENSE in the project root for license information.
- */
-
 /**
  * 键盘导航要真实的活 DOM：条目集合是在事件那一刻现查的，纯逻辑环境里演不出来。
  *

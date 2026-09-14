@@ -152,13 +152,9 @@ async function inlineDemos(body) {
 
 /** 示例首行是 `<!-- 标题 | 说明 -->`，那两句在页面正文里已经出现过一次。 */
 function stripDemoHeading(source) {
-  const licensePattern = /^(\/\*[\s\S]*?Copyright \(c\) 2021-Present XiHanFun[\s\S]*?\*\/|<!--[\s\S]*?Copyright \(c\) 2021-Present XiHanFun[\s\S]*?-->)\s*/;
-  const match = source.match(licensePattern);
-  const license = match?.[1] ?? "";
-  const body = source.slice(match?.[0].length ?? 0)
+  return source
     .replace(/^(<!--[\s\S]*?-->|\/\/[^\n]*)\s*/, "")
     .trimEnd();
-  return license ? `${license}\n\n${body}` : body;
 }
 
 /** <Badge text="button" /> 在纯文本里没有意义，压成行内代码保留组件标识。 */

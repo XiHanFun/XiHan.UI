@@ -1,8 +1,3 @@
-<!--
-  Copyright (c) 2021-Present XiHanFun and contributors.
-  Licensed under the MIT License. See LICENSE in the project root for license information.
--->
-
 <!-- 呈现方式 | date 只到日、datetime 到秒、relative 说成「几分钟前」；datetime 属性的精度跟着走 -->
 <script setup lang="ts">
 import { XhTimestamp } from "@xihan-ui/vue";

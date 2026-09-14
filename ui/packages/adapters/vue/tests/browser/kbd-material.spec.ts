@@ -1,8 +1,3 @@
-/*
- * Copyright (c) 2021-Present XiHanFun and contributors.
- * Licensed under the MIT License. See LICENSE in the project root for license information.
- */
-
 // 验证 Kbd 键盘按键的真实浏览器材质。
 
 import type { App, VNode } from 'vue'

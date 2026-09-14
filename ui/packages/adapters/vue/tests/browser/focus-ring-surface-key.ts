@@ -1,8 +1,3 @@
-/*
- * Copyright (c) 2021-Present XiHanFun and contributors.
- * Licensed under the MIT License. See LICENSE in the project root for license information.
- */
-
 // 把一条皮肤选择器写成静态门禁 check-focus-ring-surface 登记表里那种键。
 //
 // 键的形状：`${组件} ${祖先…} ${主语}`，每个复合按属性名排序写成 [key='value']，

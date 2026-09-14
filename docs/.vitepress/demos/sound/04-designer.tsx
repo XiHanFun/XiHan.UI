@@ -1,8 +1,3 @@
-/*
- * Copyright (c) 2021-Present XiHanFun and contributors.
- * Licensed under the MIT License. See LICENSE in the project root for license information.
- */
-
 // 调音台 | 配方是纯数据：调参、试听、把代码抄进项目，中间没有任何音频文件
 import type { OscillatorLayer, SoundSpec } from "@xihan-ui/sound";
 import type { ReactNode } from "react";

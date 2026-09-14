@@ -1,8 +1,3 @@
-/*
- * Copyright (c) 2021-Present XiHanFun and contributors.
- * Licensed under the MIT License. See LICENSE in the project root for license information.
- */
-
 // 语气 | tone 决定数值与前后缀用哪族颜色，标签始终保持弱前景
 import type { ReactNode } from "react";
 import { ArrowUpIcon } from "@xihan-ui/icons";

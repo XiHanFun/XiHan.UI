@@ -1,10 +1,3 @@
-<!--
-  Copyright (c) 2021-Present XiHanFun and contributors.
-  Licensed under the MIT License. See LICENSE in the project root for license information.
--->
-
-<!-- 提供 XhDemo 相关实现。 -->
-
 <script setup lang="ts">
 import type { Component } from "vue";
 import type { ComponentType } from "react";
@@ -97,17 +90,12 @@ watchEffect(async () => {
     raw.value = text;
 });
 
-// 示例文件首行注释写「标题 | 说明」，标题与说明由生成器落成 h3 与段落，
-// 这里只负责把它从展示的源码里剔除
-const licenseHeader = /^(\/\*[\s\S]*?Copyright \(c\) 2021-Present XiHanFun[\s\S]*?\*\/|<!--[\s\S]*?Copyright \(c\) 2021-Present XiHanFun[\s\S]*?-->)\s*/;
-
+// 示例首行注释写「标题 | 说明」，标题与说明由生成器落成 h3 与段落，
+// 这里只负责把它从展示和复制的源码里剔除
 function stripDemoHeading(source: string): string {
-  const match = source.match(licenseHeader);
-  const license = match?.[1] ?? "";
-  const body = source.slice(match?.[0].length ?? 0)
+  return source
     .replace(/^(<!--[\s\S]*?-->|\/\/[^\n]*)\s*/, "")
     .trimEnd();
-  return license ? `${license}\n\n${body}` : body;
 }
 
 const code = computed(() => stripDemoHeading(raw.value));

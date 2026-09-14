@@ -1,10 +1,3 @@
-/*
- * Copyright (c) 2021-Present XiHanFun and contributors.
- * Licensed under the MIT License. See LICENSE in the project root for license information.
- */
-
-// 验证 date picker panel index 相关行为。
-
 // @vitest-environment jsdom
 //
 // 面板号写在日历上一处：面板内的标题、网格与格子跟着它走，自己写了仍按自己写的算。

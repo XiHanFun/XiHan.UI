@@ -1,8 +1,3 @@
-/*
- * Copyright (c) 2021-Present XiHanFun and contributors.
- * Licensed under the MIT License. See LICENSE in the project root for license information.
- */
-
 // 四个按视口换形态的组件，在手机 / 平板 / 电脑三档各是什么样子。
 //
 // descriptions、diff-view、transfer、timeline 的换档都写在 @media (min-width) 上，

@@ -1,10 +1,3 @@
-/*
- * Copyright (c) 2021-Present XiHanFun and contributors.
- * Licensed under the MIT License. See LICENSE in the project root for license information.
- */
-
-// 验证 cascader loading 相关行为。
-
 // @vitest-environment jsdom
 // StrictMode 下作者 Loading 的登记/释放必须成对；业务包装与条件卸载都不能留下双节点或空态。
 import type { ReactNode } from 'react'

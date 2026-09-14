@@ -1,8 +1,3 @@
-<!--
-  Copyright (c) 2021-Present XiHanFun and contributors.
-  Licensed under the MIT License. See LICENSE in the project root for license information.
--->
-
 <!-- 参与表单 | 给了 name 就带上表单影子，提交的是一份独立 SVG；表单重置会把画布清回空 -->
 <script setup lang="ts">
 import {

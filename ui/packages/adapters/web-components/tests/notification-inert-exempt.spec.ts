@@ -1,10 +1,3 @@
-/*
- * Copyright (c) 2021-Present XiHanFun and contributors.
- * Licensed under the MIT License. See LICENSE in the project root for license information.
- */
-
-// 验证 notification inert exempt 相关行为。
-
 // @vitest-environment jsdom
 //
 // 通知画在模态遮罩之上，被背景失活的 inert 一并罩住就成了看得见点不动。

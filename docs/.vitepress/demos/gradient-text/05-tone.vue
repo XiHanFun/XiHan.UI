@@ -1,8 +1,3 @@
-<!--
-  Copyright (c) 2021-Present XiHanFun and contributors.
-  Licensed under the MIT License. See LICENSE in the project root for license information.
--->
-
 <!-- 颜色 | 使用预设语义颜色 -->
 <script setup lang="ts">
 import { XhGradientText } from "@xihan-ui/vue";

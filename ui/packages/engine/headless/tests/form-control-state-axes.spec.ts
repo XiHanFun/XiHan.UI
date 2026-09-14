@@ -1,10 +1,3 @@
-/*
- * Copyright (c) 2021-Present XiHanFun and contributors.
- * Licensed under the MIT License. See LICENSE in the project root for license information.
- */
-
-// 验证 form control state axes 相关行为。
-
 // @vitest-environment jsdom
 // 三个单体表单控件的 readOnly / invalid / required 轴：
 // 只读要挡住交互但不动焦点与提交，禁用才用原生 disabled。

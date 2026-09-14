@@ -1,8 +1,3 @@
-/*
- * Copyright (c) 2021-Present XiHanFun and contributors.
- * Licensed under the MIT License. See LICENSE in the project root for license information.
- */
-
 // 矩阵格子的两个方向必须各有各的尺寸来源。
 //
 // 栽过一次：皮肤只给了 inline-size，block-size 仍沿用日历那档 cell-size（给「一天一个小方块」

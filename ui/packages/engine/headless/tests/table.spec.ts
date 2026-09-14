@@ -1,10 +1,3 @@
-/*
- * Copyright (c) 2021-Present XiHanFun and contributors.
- * Licensed under the MIT License. See LICENSE in the project root for license information.
- */
-
-// 验证 table 相关行为。
-
 // @vitest-environment jsdom
 import type { TableApi, TableColumnDef, TableRowDef, TableSchema } from '../src/table'
 import { createService, normalizeProps } from '@xihan-ui/core'

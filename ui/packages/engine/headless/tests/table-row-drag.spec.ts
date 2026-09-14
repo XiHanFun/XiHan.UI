@@ -1,10 +1,3 @@
-/*
- * Copyright (c) 2021-Present XiHanFun and contributors.
- * Licensed under the MIT License. See LICENSE in the project root for license information.
- */
-
-// 验证 table row drag 相关行为。
-
 // @vitest-environment jsdom
 // 行拖拽：纯算法（行组并块、降级判定、命令）与机器/连接层（激活阈值、长按、播报）。
 import type { TableRowDef, TableSchema } from '../src/table'

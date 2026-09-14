@@ -1,8 +1,3 @@
-/*
- * Copyright (c) 2021-Present XiHanFun and contributors.
- * Licensed under the MIT License. See LICENSE in the project root for license information.
- */
-
 // 图标与标签 | 组合图标按钮与文字按钮
 import type { ReactNode } from "react";
 import { EllipsisIcon, ImageIcon, VideoIcon } from "@xihan-ui/icons";

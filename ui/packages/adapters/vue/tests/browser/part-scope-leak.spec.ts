@@ -1,8 +1,3 @@
-/*
- * Copyright (c) 2021-Present XiHanFun and contributors.
- * Licensed under the MIT License. See LICENSE in the project root for license information.
- */
-
 // 卡片与字段的后代规则只管自己那一份部件，装进去的别家组件不受影响。
 //
 // 这条必须在真实浏览器里验：判据是层叠之后真正生效的字号与伪元素内容，

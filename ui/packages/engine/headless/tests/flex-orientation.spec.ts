@@ -1,8 +1,3 @@
-/*
- * Copyright (c) 2021-Present XiHanFun and contributors.
- * Licensed under the MIT License. See LICENSE in the project root for license information.
- */
-
 // 布局原语的排布方向与全库其余 connect 说同一句话：prop 叫 orientation，
 // 属性落 data-orientation，取值 horizontal / vertical。除此之外不发第二个方向属性。
 import { describe, expect, it } from 'vitest'

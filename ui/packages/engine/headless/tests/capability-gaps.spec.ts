@@ -1,10 +1,3 @@
-/*
- * Copyright (c) 2021-Present XiHanFun and contributors.
- * Licensed under the MIT License. See LICENSE in the project root for license information.
- */
-
-// 验证 capability gaps 相关行为。
-
 // @vitest-environment jsdom
 // 本轮补的三处能力缺口：输入类型出口、进度不确定态、看图器两端直达。
 import type { ImageViewerSchema } from '../src/image-viewer'

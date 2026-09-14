@@ -1,8 +1,3 @@
-<!--
-  Copyright (c) 2021-Present XiHanFun and contributors.
-  Licensed under the MIT License. See LICENSE in the project root for license information.
--->
-
 <!-- 禁用 | 保留禁用前的状态 -->
 <script setup lang="ts">
 import { HeartIcon } from "@xihan-ui/icons";

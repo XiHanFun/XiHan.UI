@@ -1,10 +1,3 @@
-/*
- * Copyright (c) 2021-Present XiHanFun and contributors.
- * Licensed under the MIT License. See LICENSE in the project root for license information.
- */
-
-// 验证 pagination side nav portal 相关行为。
-
 import { setDiagnosticsLevel } from '@xihan-ui/core'
 import { afterEach, beforeEach, describe, expect, it } from 'vitest'
 import { defineXhElements } from '../../src/define'

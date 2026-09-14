@@ -1,8 +1,3 @@
-/*
- * Copyright (c) 2021-Present XiHanFun and contributors.
- * Licensed under the MIT License. See LICENSE in the project root for license information.
- */
-
 // 尺寸 | 设置正文大小
 import type { ReactNode } from "react";
 import { XhTypographyParagraph, XhTypographyRoot } from "@xihan-ui/react";

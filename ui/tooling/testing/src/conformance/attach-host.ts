@@ -1,10 +1,3 @@
-/*
- * Copyright (c) 2021-Present XiHanFun and contributors.
- * Licensed under the MIT License. See LICENSE in the project root for license information.
- */
-
-// 提供 attach host 相关实现。
-
 import { PORTAL_ROOT_ID } from '@xihan-ui/core'
 
 // 测试宿主的落位：portal 落点必须始终是 body 的最后一个孩子。

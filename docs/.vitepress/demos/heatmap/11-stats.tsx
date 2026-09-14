@@ -1,8 +1,3 @@
-/*
- * Copyright (c) 2021-Present XiHanFun and contributors.
- * Licensed under the MIT License. See LICENSE in the project root for license information.
- */
-
 // 数据统计 | 总天数、空白天数与占比、最大值、平均值都从网格模型直接读，不必自己再遍历一遍数据
 import type { HeatmapDatum } from "@xihan-ui/headless";
 import type { ReactNode } from "react";

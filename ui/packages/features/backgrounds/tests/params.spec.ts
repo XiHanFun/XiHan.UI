@@ -1,10 +1,3 @@
-/*
- * Copyright (c) 2021-Present XiHanFun and contributors.
- * Licensed under the MIT License. See LICENSE in the project root for license information.
- */
-
-// 验证 params 相关行为。
-
 import type { ParamSpecMap } from '../src/types'
 import { describe, expect, it } from 'vitest'
 import { boolSpec, colorSpec, enumSpec, numberSpec } from '../src/effects/define'

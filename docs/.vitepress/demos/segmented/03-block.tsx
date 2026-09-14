@@ -1,8 +1,3 @@
-/*
- * Copyright (c) 2021-Present XiHanFun and contributors.
- * Licensed under the MIT License. See LICENSE in the project root for license information.
- */
-
 // 撑满行宽 | block 让整组占满一行，各段等分剩余空间，长短不一的文字也排得齐
 import type { ReactNode } from "react";
 import { XhSegmentedRoot } from "@xihan-ui/react";

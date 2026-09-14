@@ -1,8 +1,3 @@
-/*
- * Copyright (c) 2021-Present XiHanFun and contributors.
- * Licensed under the MIT License. See LICENSE in the project root for license information.
- */
-
 // 提供 Kbd 跨适配器一致性判据。
 
 import type { ConformanceSuite } from '../conformance/types'

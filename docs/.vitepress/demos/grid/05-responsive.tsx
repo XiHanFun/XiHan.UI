@@ -1,8 +1,3 @@
-/*
- * Copyright (c) 2021-Present XiHanFun and contributors.
- * Licensed under the MIT License. See LICENSE in the project root for license information.
- */
-
 // 响应式列 | 在不同视口使用不同列数
 import type { CSSProperties, ReactNode } from "react";
 import { XhGridItem, XhGridRoot } from "@xihan-ui/react";

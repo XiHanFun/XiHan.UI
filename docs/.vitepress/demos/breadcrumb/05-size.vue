@@ -1,8 +1,3 @@
-<!--
-  Copyright (c) 2021-Present XiHanFun and contributors.
-  Licensed under the MIT License. See LICENSE in the project root for license information.
--->
-
 <!-- 尺寸 | 适配不同的信息密度 -->
 <script setup lang="ts">
 import { XhBreadcrumbRoot } from "@xihan-ui/vue";

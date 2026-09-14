@@ -1,10 +1,3 @@
-/*
- * Copyright (c) 2021-Present XiHanFun and contributors.
- * Licensed under the MIT License. See LICENSE in the project root for license information.
- */
-
-// 验证 image viewer 相关行为。
-
 // @vitest-environment jsdom
 // image-viewer 的看片行为：开合、翻页与回绕、缩放钳制、旋转翻转、换图归零、方向键。
 // jsdom 不做布局，几何断言落在内联 transform 字符串上。

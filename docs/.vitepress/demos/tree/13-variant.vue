@@ -1,8 +1,3 @@
-<!--
-  Copyright (c) 2021-Present XiHanFun and contributors.
-  Licensed under the MIT License. See LICENSE in the project root for license information.
--->
-
 <!-- 形态 | variant="plain" 去掉外框与底色，树直接落在页面上；缺省 surface 保持带框的样子 -->
 <script setup lang="ts">
 import {

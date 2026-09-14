@@ -1,8 +1,3 @@
-/*
- * Copyright (c) 2021-Present XiHanFun and contributors.
- * Licensed under the MIT License. See LICENSE in the project root for license information.
- */
-
 // 行内轴夹取：popover / popconfirm / tour / select / combobox 的面板宽度受落位后的可用宽度约束，
 // 窄视口下不再伸出屏幕。
 //

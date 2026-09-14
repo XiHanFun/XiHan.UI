@@ -1,10 +1,3 @@
-/*
- * Copyright (c) 2021-Present XiHanFun and contributors.
- * Licensed under the MIT License. See LICENSE in the project root for license information.
- */
-
-// 验证 form grid 相关行为。
-
 // @vitest-environment jsdom
 // 网格排布在 WC 这一端独有的那两段：columns 特性收整数与 JSON 对象两种写法，
 // 字段容器自报的 span 特性读回来落成 data-span。

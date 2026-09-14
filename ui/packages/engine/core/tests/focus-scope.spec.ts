@@ -1,10 +1,3 @@
-/*
- * Copyright (c) 2021-Present XiHanFun and contributors.
- * Licensed under the MIT License. See LICENSE in the project root for license information.
- */
-
-// 验证 focus scope 相关行为。
-
 // @vitest-environment jsdom
 
 // 焦点域是无障碍库最基本的那条承诺，此前只有 tabbable / focus-guards 两个辅助件被测过，

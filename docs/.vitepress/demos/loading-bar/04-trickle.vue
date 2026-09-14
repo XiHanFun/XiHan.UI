@@ -1,8 +1,3 @@
-<!--
-  Copyright (c) 2021-Present XiHanFun and contributors.
-  Licensed under the MIT License. See LICENSE in the project root for license information.
--->
-
 <!-- 关掉爬升 | trickle 为 false 时条子停在起步值 minimum 不动，往前走全靠宿主收尾 -->
 <script setup lang="ts">
 import {

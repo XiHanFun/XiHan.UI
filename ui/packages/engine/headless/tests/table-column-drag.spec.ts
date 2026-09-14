@@ -1,10 +1,3 @@
-/*
- * Copyright (c) 2021-Present XiHanFun and contributors.
- * Licensed under the MIT License. See LICENSE in the project root for license information.
- */
-
-// 验证 table column drag 相关行为。
-
 // @vitest-environment jsdom
 // 列拖拽：纯算法（谁能拖、落点折算）与机器/连接层（指针拖动、键盘命令、播报）。
 import type { TableColumn, TableColumnDef, TableSchema } from '../src/table'

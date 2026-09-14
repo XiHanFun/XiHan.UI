@@ -1,8 +1,3 @@
-<!--
-  Copyright (c) 2021-Present XiHanFun and contributors.
-  Licensed under the MIT License. See LICENSE in the project root for license information.
--->
-
 <!-- 基础用法 | 点触发器打开面板：标题栏那条把手可以拖，右下角可以改大小，Esc 关闭 -->
 <script setup lang="ts">
 import {

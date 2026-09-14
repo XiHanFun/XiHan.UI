@@ -1,8 +1,3 @@
-/*
- * Copyright (c) 2021-Present XiHanFun and contributors.
- * Licensed under the MIT License. See LICENSE in the project root for license information.
- */
-
 // 换行与行内 | 换行排列或随文字排布
 import type { CSSProperties, ReactNode } from "react";
 import { XhFlex } from "@xihan-ui/react";

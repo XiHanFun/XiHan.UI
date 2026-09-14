@@ -1,8 +1,3 @@
-<!--
-  Copyright (c) 2021-Present XiHanFun and contributors.
-  Licensed under the MIT License. See LICENSE in the project root for license information.
--->
-
 <!-- 受控与文案 | open 与 index 双受控；translations 换工具条的可及名与计数文案 -->
 <script setup lang="ts">
 import {

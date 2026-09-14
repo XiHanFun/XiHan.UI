@@ -1,8 +1,3 @@
-/*
- * Copyright (c) 2021-Present XiHanFun and contributors.
- * Licensed under the MIT License. See LICENSE in the project root for license information.
- */
-
 /**
  * 落笔要真实的活 DOM：屏幕坐标换算成画布坐标靠的是画布节点的矩形，
  * 而拖动途中的指针事件挂在 document 上，纯逻辑环境里演不出来。

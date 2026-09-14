@@ -1,8 +1,3 @@
-/*
- * Copyright (c) 2021-Present XiHanFun and contributors.
- * Licensed under the MIT License. See LICENSE in the project root for license information.
- */
-
 // 槽名的部件段与它作用的部件对不上时，使用者按名字找过去改的是另一处，或者干脆
 // 找不到名字。这一批把走样的名字改成按部件取名，走样的那个名字直接摘掉。
 // 所以每一处都要量三遍——新名真的改得动，摘掉的名字一点效果都没有，

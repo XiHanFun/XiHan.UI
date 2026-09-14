@@ -1,8 +1,3 @@
-/*
- * Copyright (c) 2021-Present XiHanFun and contributors.
- * Licensed under the MIT License. See LICENSE in the project root for license information.
- */
-
 // 预设一览 | 十七个内置预设，进场一族从不在场进来，注意一族原地提醒；播完都回到静息态
 import type { ReactNode } from "react";
 import { BUILTIN_MOTION_NAMES, createMotionPlayer } from "@xihan-ui/animations";

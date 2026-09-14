@@ -1,10 +1,3 @@
-/*
- * Copyright (c) 2021-Present XiHanFun and contributors.
- * Licensed under the MIT License. See LICENSE in the project root for license information.
- */
-
-// 验证 tree checkbox 相关行为。
-
 // @vitest-environment jsdom
 // 勾选把手：把「勾这一项」与「点这一行」分成两个可点区域。
 // 点行的语义（单选替换、分支展开）归 item / branch-control，把手只管勾选。

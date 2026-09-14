@@ -1,8 +1,3 @@
-/*
- * Copyright (c) 2021-Present XiHanFun and contributors.
- * Licensed under the MIT License. See LICENSE in the project root for license information.
- */
-
 // 详情条往哪一缘长是量出来的：格子的落点、条的宽、容器的可视宽都要真布局才有值，
 // jsdom 不做布局，那边这条永远是绿的。
 import { afterEach, beforeAll, describe, expect, it } from 'vitest'

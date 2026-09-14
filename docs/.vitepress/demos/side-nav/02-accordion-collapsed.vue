@@ -1,8 +1,3 @@
-<!--
-  Copyright (c) 2021-Present XiHanFun and contributors.
-  Licensed under the MIT License. See LICENSE in the project root for license information.
--->
-
 <!-- 折叠模式 | 以图标保留入口，子级在浮层中展开 -->
 <script setup lang="ts">
 import type { SideNavNode } from "@xihan-ui/headless";

@@ -1,8 +1,3 @@
-/*
- * Copyright (c) 2021-Present XiHanFun and contributors.
- * Licensed under the MIT License. See LICENSE in the project root for license information.
- */
-
 // 三档状态的皮肤取值：「当前项」的槽名、「在途」的转圈、「只读」的观感，以及轻提示的严重度字形。
 //
 // 判据全是级联算出来的取值与伪元素上的取值，只有真实浏览器算得出来：

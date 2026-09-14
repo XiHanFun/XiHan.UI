@@ -1,10 +1,3 @@
-/*
- * Copyright (c) 2021-Present XiHanFun and contributors.
- * Licensed under the MIT License. See LICENSE in the project root for license information.
- */
-
-// 验证 dialog 相关行为。
-
 // @vitest-environment jsdom
 // 末段的消解开关要真 DOM：机器把 config/registerLayer/getContentEl 塞进 refs 后，
 // trackOverlay 才会装配消解层。前面的纯逻辑用例在 jsdom 下照跑。

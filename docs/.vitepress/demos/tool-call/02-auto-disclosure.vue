@@ -1,8 +1,3 @@
-<!--
-  Copyright (c) 2021-Present XiHanFun and contributors.
-  Licensed under the MIT License. See LICENSE in the project root for license information.
--->
-
 <!-- 自动开合与锁存 | 跑起来自动展开、结束自动收起；你手动开合过一次之后，阶段怎么变都不再自动 -->
 <script setup lang="ts">
 import type { ToolCallPhase } from "@xihan-ui/headless";

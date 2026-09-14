@@ -1,8 +1,3 @@
-/*
- * Copyright (c) 2021-Present XiHanFun and contributors.
- * Licensed under the MIT License. See LICENSE in the project root for license information.
- */
-
 // 平台键名 | 常用按键与跨平台组合由 Headless 统一格式化
 import type { ReactNode } from "react";
 import { XhKbd } from "@xihan-ui/react";

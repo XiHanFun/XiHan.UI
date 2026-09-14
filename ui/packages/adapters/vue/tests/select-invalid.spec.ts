@@ -1,10 +1,3 @@
-/*
- * Copyright (c) 2021-Present XiHanFun and contributors.
- * Licensed under the MIT License. See LICENSE in the project root for license information.
- */
-
-// 验证 select invalid 相关行为。
-
 // @vitest-environment jsdom
 // select 校验错误态：invalid 让触发器输出 aria-invalid 并在触发器与根上打 data-invalid。
 import { afterEach, describe, expect, it } from 'vitest'

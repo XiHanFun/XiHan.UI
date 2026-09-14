@@ -1,8 +1,3 @@
-<!--
-  Copyright (c) 2021-Present XiHanFun and contributors.
-  Licensed under the MIT License. See LICENSE in the project root for license information.
--->
-
 <!-- 状态透出 | phase / loading / disabled 由组件交给宿主，加载提示与结束语都由宿主自己摆 -->
 <script setup lang="ts">
 import { XhInfiniteScrollRoot, XhInfiniteScrollSentinel } from "@xihan-ui/vue";

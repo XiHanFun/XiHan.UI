@@ -1,8 +1,3 @@
-/*
- * Copyright (c) 2021-Present XiHanFun and contributors.
- * Licensed under the MIT License. See LICENSE in the project root for license information.
- */
-
 /** Layout 的 jsdom 夹具：明确提供浏览器媒体查询与断点令牌，不由生产代码降级。 */
 export function installLayoutViewport(doc: Document): () => void {
   const win = doc.defaultView! as Window & typeof globalThis

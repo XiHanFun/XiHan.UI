@@ -1,8 +1,3 @@
-/*
- * Copyright (c) 2021-Present XiHanFun and contributors.
- * Licensed under the MIT License. See LICENSE in the project root for license information.
- */
-
 // 基于 axe-core 的无障碍断言，只在浏览器模式下引用。
 import axe from 'axe-core'
 

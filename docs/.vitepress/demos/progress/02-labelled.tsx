@@ -1,8 +1,3 @@
-/*
- * Copyright (c) 2021-Present XiHanFun and contributors.
- * Licensed under the MIT License. See LICENSE in the project root for license information.
- */
-
 // 配文字说明 | 进度条自身只画轨道与进度，百分比文字由使用者摆
 import type { ReactNode } from "react";
 import { XhProgress } from "@xihan-ui/react";

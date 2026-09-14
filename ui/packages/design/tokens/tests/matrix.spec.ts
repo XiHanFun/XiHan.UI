@@ -1,8 +1,3 @@
-/*
- * Copyright (c) 2021-Present XiHanFun and contributors.
- * Licensed under the MIT License. See LICENSE in the project root for license information.
- */
-
 // 五条轴笛卡尔积 32 格，每格一份「解析后的语义令牌最终取值」快照。
 // 这一层不渲染组件、不开浏览器，只把 tokens.css 的取值块按层叠顺序算一遍，秒级，可以每次改动都跑。
 //

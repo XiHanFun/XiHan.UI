@@ -1,10 +1,3 @@
-/*
- * Copyright (c) 2021-Present XiHanFun and contributors.
- * Licensed under the MIT License. See LICENSE in the project root for license information.
- */
-
-// 验证 notification config bucket 相关行为。
-
 // @vitest-environment jsdom
 //
 // 通知的卡片跑的是 toast 那台机器，但它的文案该跟着通知走。

@@ -1,8 +1,3 @@
-/*
- * Copyright (c) 2021-Present XiHanFun and contributors.
- * Licensed under the MIT License. See LICENSE in the project root for license information.
- */
-
 // 基础用法 | 一整年铺成周列 × 星期行的方格阵，颜色深浅表示当天数值落在第几档
 import type { HeatmapDatum } from "@xihan-ui/headless";
 import type { ReactNode } from "react";

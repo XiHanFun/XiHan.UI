@@ -1,8 +1,3 @@
-<!--
-  Copyright (c) 2021-Present XiHanFun and contributors.
-  Licensed under the MIT License. See LICENSE in the project root for license information.
--->
-
 <!-- 受控 | 传了 value 就由宿主说了算；value-change 除了原始串还带一份 valueAsNumber -->
 <script setup lang="ts">
 import {

@@ -1,8 +1,3 @@
-<!--
-  Copyright (c) 2021-Present XiHanFun and contributors.
-  Licensed under the MIT License. See LICENSE in the project root for license information.
--->
-
 <!-- 自己决定何时取图 | src 是响应式的：进入视口前不给地址，观察器命中再换上，机器立刻走一遍完整加载 -->
 <script setup lang="ts">
 import { XhImageFallback, XhImageImage, XhImageRoot } from "@xihan-ui/vue";

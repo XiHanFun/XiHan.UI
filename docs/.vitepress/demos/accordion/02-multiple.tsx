@@ -1,8 +1,3 @@
-/*
- * Copyright (c) 2021-Present XiHanFun and contributors.
- * Licensed under the MIT License. See LICENSE in the project root for license information.
- */
-
 // 多项展开 | multiple 允许多项并存，展开集合恒为 string[]，受控绑定即可拿到它
 import type { ReactNode } from "react";
 import { XhAccordionRoot } from "@xihan-ui/react";

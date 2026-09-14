@@ -1,8 +1,3 @@
-/*
- * Copyright (c) 2021-Present XiHanFun and contributors.
- * Licensed under the MIT License. See LICENSE in the project root for license information.
- */
-
 // 年份切换 | 一排按钮换的是区间，网格、月份段、色阶与锚点全按新区间从头算
 import type { HeatmapDatum } from "@xihan-ui/headless";
 import type { ReactNode } from "react";

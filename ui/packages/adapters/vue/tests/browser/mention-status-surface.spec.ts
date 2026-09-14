@@ -1,8 +1,3 @@
-/*
- * Copyright (c) 2021-Present XiHanFun and contributors.
- * Licensed under the MIT License. See LICENSE in the project root for license information.
- */
-
 // Mention 的 content 保持 listbox 与 Presence 宿主；empty/loading 是同级 role=status。
 // 单一表面、隐藏候选和真实退场需要 Chromium 的级联、布局与事件流。
 import type { MentionNode } from '@xihan-ui/headless'

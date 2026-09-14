@@ -1,8 +1,3 @@
-<!--
-  Copyright (c) 2021-Present XiHanFun and contributors.
-  Licensed under the MIT License. See LICENSE in the project root for license information.
--->
-
 <!-- 档数 | levels 决定分几档，图例与格子共用同一条色阶 -->
 <script setup lang="ts">
 import { XhHeatmapRoot } from "@xihan-ui/vue";

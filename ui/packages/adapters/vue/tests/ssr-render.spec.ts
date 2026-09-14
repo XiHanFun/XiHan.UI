@@ -1,10 +1,3 @@
-/*
- * Copyright (c) 2021-Present XiHanFun and contributors.
- * Licensed under the MIT License. See LICENSE in the project root for license information.
- */
-
-// 验证 ssr render 相关行为。
-
 // @vitest-environment node
 //
 // 这份用例必须跑在真正没有 document 的宿主里。jsdom 下 `typeof document !== 'undefined'`

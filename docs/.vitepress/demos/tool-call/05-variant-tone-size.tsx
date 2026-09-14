@@ -1,8 +1,3 @@
-/*
- * Copyright (c) 2021-Present XiHanFun and contributors.
- * Licensed under the MIT License. See LICENSE in the project root for license information.
- */
-
 // 形态、语气与尺寸 | 三轴只改这块壳怎么与正文分开，阶段与展开逻辑不受影响
 import type { ReactNode } from "react";
 import {

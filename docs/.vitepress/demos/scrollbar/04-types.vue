@@ -1,8 +1,3 @@
-<!--
-  Copyright (c) 2021-Present XiHanFun and contributors.
-  Licensed under the MIT License. See LICENSE in the project root for license information.
--->
-
 <!-- 显示方式 | 设置滚动条的显示时机 -->
 <script setup lang="ts">
 import type { ScrollbarType } from "@xihan-ui/headless";

@@ -1,10 +1,3 @@
-/*
- * Copyright (c) 2021-Present XiHanFun and contributors.
- * Licensed under the MIT License. See LICENSE in the project root for license information.
- */
-
-// 验证 runtime contract 相关行为。
-
 import type { MachineConfig, MachineSchema, Service } from '@xihan-ui/core'
 import type { DisclosureSchema } from './disclosure-machine'
 import { act, StrictMode, useEffect, useState } from 'react'

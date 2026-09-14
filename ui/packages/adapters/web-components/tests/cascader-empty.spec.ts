@@ -1,10 +1,3 @@
-/*
- * Copyright (c) 2021-Present XiHanFun and contributors.
- * Licensed under the MIT License. See LICENSE in the project root for license information.
- */
-
-// 验证 cascader empty 相关行为。
-
 // @vitest-environment jsdom
 //
 // 空态占位在 Vue 侧由 Content 内部无条件渲染，作者一个字都不用写。

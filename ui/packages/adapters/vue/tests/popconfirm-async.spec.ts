@@ -1,10 +1,3 @@
-/*
- * Copyright (c) 2021-Present XiHanFun and contributors.
- * Licensed under the MIT License. See LICENSE in the project root for license information.
- */
-
-// 验证 popconfirm async 相关行为。
-
 // @vitest-environment jsdom
 // popconfirm 异步确认门：onConfirm 返回 thenable 即挂起——浮层等兑现才收、
 // 确认按钮 data-loading 且再点无效；拒绝留在原地；取消把在途结果作废。

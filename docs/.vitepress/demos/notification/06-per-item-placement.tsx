@@ -1,8 +1,3 @@
-/*
- * Copyright (c) 2021-Present XiHanFun and contributors.
- * Licensed under the MIT License. See LICENSE in the project root for license information.
- */
-
 // 逐条落位 | 单条通知自带 placement 就盖掉 notification 的默认落位；placements 报出眼下有条目的位置，一个位置一摞
 import type { NotificationOptions, NotificationPlacement } from "@xihan-ui/headless";
 import type { ReactNode } from "react";

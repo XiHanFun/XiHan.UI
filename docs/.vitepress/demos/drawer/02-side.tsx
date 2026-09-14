@@ -1,8 +1,3 @@
-/*
- * Copyright (c) 2021-Present XiHanFun and contributors.
- * Licensed under the MIT License. See LICENSE in the project root for license information.
- */
-
 // 贴边方向 | side 只落成 data-side，面板压在哪条边由皮肤按这个值决定；root 与 content 报的是同一条边
 import type { ReactNode } from "react";
 import {

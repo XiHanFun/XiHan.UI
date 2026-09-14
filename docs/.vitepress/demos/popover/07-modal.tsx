@@ -1,8 +1,3 @@
-/*
- * Copyright (c) 2021-Present XiHanFun and contributors.
- * Licensed under the MIT License. See LICENSE in the project root for license information.
- */
-
 // 模态浮层 | modal 让焦点陷在浮层里：Tab 到末尾回绕，旁边那颗按钮这时接不到焦点
 import type { ReactNode } from "react";
 import {

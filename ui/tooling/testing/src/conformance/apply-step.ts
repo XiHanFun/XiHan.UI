@@ -1,10 +1,3 @@
-/*
- * Copyright (c) 2021-Present XiHanFun and contributors.
- * Licensed under the MIT License. See LICENSE in the project root for license information.
- */
-
-// 提供 apply step 相关实现。
-
 import type { Anatomy } from '@xihan-ui/core'
 import type { AdapterHarness, ModifierKey, PartRef, SettleCondition, Step } from './types'
 

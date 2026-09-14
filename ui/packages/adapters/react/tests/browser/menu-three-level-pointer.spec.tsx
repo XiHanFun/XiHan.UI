@@ -1,8 +1,3 @@
-/*
- * Copyright (c) 2021-Present XiHanFun and contributors.
- * Licensed under the MIT License. See LICENSE in the project root for license information.
- */
-
 // docs menu/10-submenu 的真实三级菜单：二、三级经 Portal 分离，必须仍是一棵指针悬停树。
 import type { ReactNode } from 'react'
 import type { Root } from 'react-dom/client'

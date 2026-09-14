@@ -1,8 +1,3 @@
-<!--
-  Copyright (c) 2021-Present XiHanFun and contributors.
-  Licensed under the MIT License. See LICENSE in the project root for license information.
--->
-
 <!-- 条目禁用 | 禁用写在 items 上：勾不动也搬不动，但仍可聚焦、仍是方向键的起点 -->
 <script setup lang="ts">
 import {

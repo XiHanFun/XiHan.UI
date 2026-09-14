@@ -1,8 +1,3 @@
-/*
- * Copyright (c) 2021-Present XiHanFun and contributors.
- * Licensed under the MIT License. See LICENSE in the project root for license information.
- */
-
 // 标题、基准线与清空 | 基准线是纯画面（带 aria-hidden），清空按钮是原生 button，读屏念的是 translations 里那句
 import type { ReactNode } from "react";
 import {

@@ -1,10 +1,3 @@
-/*
- * Copyright (c) 2021-Present XiHanFun and contributors.
- * Licensed under the MIT License. See LICENSE in the project root for license information.
- */
-
-// 验证 multi value form 相关行为。
-
 // @vitest-environment jsdom
 import type { XhComboboxElement } from '../src/elements/combobox'
 import type { XhTreeSelectElement } from '../src/elements/tree-select'

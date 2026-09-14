@@ -1,8 +1,3 @@
-/*
- * Copyright (c) 2021-Present XiHanFun and contributors.
- * Licensed under the MIT License. See LICENSE in the project root for license information.
- */
-
 // 逐条语气 | tone 写在条目上，只给这一条的圆点上色；不写 tone 的条目是中性圆点
 import type { ReactNode } from "react";
 import {

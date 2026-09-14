@@ -1,10 +1,3 @@
-/*
- * Copyright (c) 2021-Present XiHanFun and contributors.
- * Licensed under the MIT License. See LICENSE in the project root for license information.
- */
-
-// 验证 service mount guard 相关行为。
-
 import { onDiagnostic, resetDiagnostics } from '@xihan-ui/core'
 // @vitest-environment jsdom
 // 命令式服务的宿主挂不起来时，不许把调用方一起拖下水。

@@ -1,8 +1,3 @@
-<!--
-  Copyright (c) 2021-Present XiHanFun and contributors.
-  Licensed under the MIT License. See LICENSE in the project root for license information.
--->
-
 <!-- 嵌套 | content 里再放一组手风琴，内外两组各自维护展开集合，方向键也各管各的 -->
 <script setup lang="ts">
 import {

@@ -1,10 +1,3 @@
-/*
- * Copyright (c) 2021-Present XiHanFun and contributors.
- * Licensed under the MIT License. See LICENSE in the project root for license information.
- */
-
-// 验证 layer stack 相关行为。
-
 import type { Layer, LayerRegistry } from '../src/kernel'
 import { describe, expect, it, vi } from 'vitest'
 import { isInside, shouldDismiss } from '../src/behavior'

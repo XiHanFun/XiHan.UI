@@ -1,8 +1,3 @@
-<!--
-  Copyright (c) 2021-Present XiHanFun and contributors.
-  Licensed under the MIT License. See LICENSE in the project root for license information.
--->
-
 <!-- 定位 | 为每一步选择合适的浮层方向 -->
 <script setup lang="ts">
 import {

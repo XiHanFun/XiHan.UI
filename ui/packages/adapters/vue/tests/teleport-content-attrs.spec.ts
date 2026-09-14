@@ -1,10 +1,3 @@
-/*
- * Copyright (c) 2021-Present XiHanFun and contributors.
- * Licensed under the MIT License. See LICENSE in the project root for license information.
- */
-
-// 验证 teleport content attrs 相关行为。
-
 // @vitest-environment jsdom
 // 浮层的 content 部件以 Teleport 作根：Vue 只在根 vnode 是元素或组件时才合并直通属性，
 // 所以作者写在标签上的 class 与 style 必须由组件自己接住并落到 content 节点上。

@@ -1,10 +1,3 @@
-/*
- * Copyright (c) 2021-Present XiHanFun and contributors.
- * Licensed under the MIT License. See LICENSE in the project root for license information.
- */
-
-// 提供 timestamp.suite 相关实现。
-
 import type { ConformanceSuite, RawStepContext } from '../conformance/types'
 import { timestampAnatomy, timestampKeyboard } from '@xihan-ui/headless'
 

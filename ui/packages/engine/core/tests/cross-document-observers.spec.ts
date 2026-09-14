@@ -1,10 +1,3 @@
-/*
- * Copyright (c) 2021-Present XiHanFun and contributors.
- * Licensed under the MIT License. See LICENSE in the project root for license information.
- */
-
-// 验证 cross document observers 相关行为。
-
 // @vitest-environment jsdom
 // 观察器的构造器必须从被观测节点自己的文档取。跨 iframe 时全局的那个来自另一个 window，
 // 拿它去观测别的文档里的节点，回调一次都不会来——而且不报错，是静默失效。

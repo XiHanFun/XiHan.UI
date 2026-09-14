@@ -1,8 +1,3 @@
-<!--
-  Copyright (c) 2021-Present XiHanFun and contributors.
-  Licensed under the MIT License. See LICENSE in the project root for license information.
--->
-
 <!-- 形态与尺寸 | variant 换这块闸门怎么与正文分开，size 换标题、条目与按钮的几何档；判定链一个字不动 -->
 <script setup lang="ts">
 import type { ApprovalScope } from "@xihan-ui/headless";

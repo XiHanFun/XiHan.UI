@@ -1,8 +1,3 @@
-/*
- * Copyright (c) 2021-Present XiHanFun and contributors.
- * Licensed under the MIT License. See LICENSE in the project root for license information.
- */
-
 // 形状 | 轨道与滑块共用同一个形状令牌，在实例上覆盖一次两者一起变方
 import type { CSSProperties, ReactNode } from "react";
 import { XhSwitch } from "@xihan-ui/react";

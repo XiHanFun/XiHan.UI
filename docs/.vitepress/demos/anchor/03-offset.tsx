@@ -1,8 +1,3 @@
-/*
- * Copyright (c) 2021-Present XiHanFun and contributors.
- * Licensed under the MIT License. See LICENSE in the project root for license information.
- */
-
 // 判定线偏移 | 为吸顶内容预留空间
 import type { CSSProperties, ReactNode } from "react";
 import {

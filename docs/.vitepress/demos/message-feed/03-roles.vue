@@ -1,8 +1,3 @@
-<!--
-  Copyright (c) 2021-Present XiHanFun and contributors.
-  Licensed under the MIT License. See LICENSE in the project root for license information.
--->
-
 <!-- 按角色分侧 | 条目上带 data-role，左右分侧与气泡在使用者这一侧写，组件不预设这层外观 -->
 <script setup lang="ts">
 import {

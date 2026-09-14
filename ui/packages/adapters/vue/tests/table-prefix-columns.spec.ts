@@ -1,10 +1,3 @@
-/*
- * Copyright (c) 2021-Present XiHanFun and contributors.
- * Licensed under the MIT License. See LICENSE in the project root for license information.
- */
-
-// 验证 table prefix columns 相关行为。
-
 // @vitest-environment jsdom
 // 前缀列（序号 / 多选 / 展开）由库插在最前面并**占住列号**。
 //

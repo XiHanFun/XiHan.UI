@@ -1,10 +1,3 @@
-/*
- * Copyright (c) 2021-Present XiHanFun and contributors.
- * Licensed under the MIT License. See LICENSE in the project root for license information.
- */
-
-// 验证 masonry observer 相关行为。
-
 // @vitest-environment jsdom
 //
 // masonry 的排布要跟着容器宽度与每一项的高度走，量测挂在 ResizeObserver 上。

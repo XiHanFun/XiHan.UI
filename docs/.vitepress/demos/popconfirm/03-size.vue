@@ -1,8 +1,3 @@
-<!--
-  Copyright (c) 2021-Present XiHanFun and contributors.
-  Licensed under the MIT License. See LICENSE in the project root for license information.
--->
-
 <!-- 尺寸 | size 换的是面板的内边距与最大宽度，三个档位落在 content 上 -->
 <script setup lang="ts">
 import {

@@ -1,8 +1,3 @@
-<!--
-  Copyright (c) 2021-Present XiHanFun and contributors.
-  Licensed under the MIT License. See LICENSE in the project root for license information.
--->
-
 <!-- 试听 | 十四个语义名，切主题听同一件事的三种说法；音量与开关直接落在播放器上 -->
 <script setup lang="ts">
 import type { SoundTheme } from "@xihan-ui/sound";

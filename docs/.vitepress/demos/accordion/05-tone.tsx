@@ -1,8 +1,3 @@
-/*
- * Copyright (c) 2021-Present XiHanFun and contributors.
- * Licensed under the MIT License. See LICENSE in the project root for license information.
- */
-
 // 颜色 | tone 落在展开态的标题上，六种颜色各预置一项展开做对照
 import type { ReactNode } from "react";
 import { XhAccordionRoot } from "@xihan-ui/react";

@@ -1,8 +1,3 @@
-<!--
-  Copyright (c) 2021-Present XiHanFun and contributors.
-  Licensed under the MIT License. See LICENSE in the project root for license information.
--->
-
 <!-- 基础用法 | 挂载即从 from 走到 to，三个尺寸档只改字号；不写 size 就跟着上下文的字号走 -->
 <script setup lang="ts">
 import { XhNumberAnimation } from "@xihan-ui/vue";

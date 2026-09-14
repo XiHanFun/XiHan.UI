@@ -1,8 +1,3 @@
-<!--
-  Copyright (c) 2021-Present XiHanFun and contributors.
-  Licensed under the MIT License. See LICENSE in the project root for license information.
--->
-
 <!-- 一组图共用一个预览层 | 图与图之间不必互相认识：宿主拿着地址数组与当前下标，预览层里只放一份图片实例 -->
 <script setup lang="ts">
 import {

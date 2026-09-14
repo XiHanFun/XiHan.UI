@@ -1,10 +1,3 @@
-/*
- * Copyright (c) 2021-Present XiHanFun and contributors.
- * Licensed under the MIT License. See LICENSE in the project root for license information.
- */
-
-// 验证 metadata 相关行为。
-
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 
 // 宿主登记与「横幅只打一次」的记账都挂在模块上，逐条用例重取一份模块拿出厂状态

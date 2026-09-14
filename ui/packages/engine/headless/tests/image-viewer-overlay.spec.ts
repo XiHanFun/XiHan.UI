@@ -1,10 +1,3 @@
-/*
- * Copyright (c) 2021-Present XiHanFun and contributors.
- * Licensed under the MIT License. See LICENSE in the project root for license information.
- */
-
-// 验证 image viewer overlay 相关行为。
-
 // @vitest-environment jsdom
 // 展开期的两个消解开关：Escape 与层外交互。要真 DOM，因此走 jsdom——
 // 机器把 config/registerLayer/getContentEl 塞进 refs 后，trackOverlay 才会装配消解层。

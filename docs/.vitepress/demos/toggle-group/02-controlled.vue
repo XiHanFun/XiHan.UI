@@ -1,8 +1,3 @@
-<!--
-  Copyright (c) 2021-Present XiHanFun and contributors.
-  Licensed under the MIT License. See LICENSE in the project root for license information.
--->
-
 <!-- 受控状态 | 由外部状态控制选中值 -->
 <script setup lang="ts">
 import { XhToggleGroupRoot } from "@xihan-ui/vue";

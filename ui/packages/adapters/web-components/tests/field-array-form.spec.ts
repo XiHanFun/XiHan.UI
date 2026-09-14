@@ -1,10 +1,3 @@
-/*
- * Copyright (c) 2021-Present XiHanFun and contributors.
- * Licensed under the MIT License. See LICENSE in the project root for license information.
- */
-
-// 验证 field array form 相关行为。
-
 import type { XhFieldArrayElement } from '../src/elements/field-array'
 import type { XhFormElement } from '../src/elements/form'
 // @vitest-environment jsdom

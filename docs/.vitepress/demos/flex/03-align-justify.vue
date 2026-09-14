@@ -1,8 +1,3 @@
-<!--
-  Copyright (c) 2021-Present XiHanFun and contributors.
-  Licensed under the MIT License. See LICENSE in the project root for license information.
--->
-
 <!-- 对齐与分布 | 对齐内容并分配剩余空间 -->
 <script setup lang="ts">
 import { XhFlex } from "@xihan-ui/vue";

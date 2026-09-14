@@ -1,8 +1,3 @@
-/*
- * Copyright (c) 2021-Present XiHanFun and contributors.
- * Licensed under the MIT License. See LICENSE in the project root for license information.
- */
-
 // 把与框架无关的 fixture 树翻成 Vue 的 VNode。DOM 宿主与服务端直出宿主共用这一份。
 import type { FixtureNode } from '@xihan-ui/testing'
 import type { Component, VNode } from 'vue'

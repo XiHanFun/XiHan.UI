@@ -1,8 +1,3 @@
-/*
- * Copyright (c) 2021-Present XiHanFun and contributors.
- * Licensed under the MIT License. See LICENSE in the project root for license information.
- */
-
 // tag-group 叠在标签上的三档状态（悬停、键盘锚点、选中）落在实心标签上时，字得读得出来。
 //
 // 悬停与锚点的中性灰轻档只给淡底 / 描边 / 缺省档：实心档的字是实心底上配对的那支前景色，

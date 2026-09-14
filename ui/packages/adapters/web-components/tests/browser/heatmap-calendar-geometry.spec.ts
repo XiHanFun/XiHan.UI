@@ -1,8 +1,3 @@
-/*
- * Copyright (c) 2021-Present XiHanFun and contributors.
- * Licensed under the MIT License. See LICENSE in the project root for license information.
- */
-
 // 日历形态的格距必须四周一样宽，星期名必须隔行画。
 //
 // 栽过一次：行首那一列星期名的字（12px）比格子（10px）高，行的高度被那行字定死，

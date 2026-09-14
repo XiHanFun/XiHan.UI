@@ -1,8 +1,3 @@
-/*
- * Copyright (c) 2021-Present XiHanFun and contributors.
- * Licensed under the MIT License. See LICENSE in the project root for license information.
- */
-
 // 基础用法 | root / viewport / content / line 四层；一行写什么由作者定，组件只给身份与等宽排版
 import type { ReactNode } from "react";
 import { XhLogContent, XhLogLine, XhLogRoot, XhLogViewport } from "@xihan-ui/react";

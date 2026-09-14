@@ -1,8 +1,3 @@
-<!--
-  Copyright (c) 2021-Present XiHanFun and contributors.
-  Licensed under the MIT License. See LICENSE in the project root for license information.
--->
-
 <!-- 受控 | 传了 open 就由宿主说了算；这里额外关掉点外部关闭，只有按钮与 Escape 能收起 -->
 <script setup lang="ts">
 import {

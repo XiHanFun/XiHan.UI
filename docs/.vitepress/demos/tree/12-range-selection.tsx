@@ -1,8 +1,3 @@
-/*
- * Copyright (c) 2021-Present XiHanFun and contributors.
- * Licensed under the MIT License. See LICENSE in the project root for license information.
- */
-
 // 范围选 | 按住 Shift 点某一项，选中锚点到它那一段；按可见序取，折叠起来的子节点选不进去
 import type { ReactNode } from "react";
 import {
