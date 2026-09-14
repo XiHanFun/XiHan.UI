@@ -268,11 +268,17 @@ describe('区间模式', () => {
   })
 
   it('终点落在邻月的日子上：按下落焦不翻页，松开才收尾并翻到那个月', async () => {
-    const h = mount({ defaultFocusedValue: '2024-02-15' })
+    const visibleMonths: number[] = []
+    let h: ReturnType<typeof mount>
+    h = mount({
+      defaultFocusedValue: '2024-02-15',
+      onFocusedValueChange: () => visibleMonths.push(h.api().visibleMonth.month),
+    })
     pointerDown(h.cell('2024-02-10'))
     pointerUp(h.cell('2024-02-10'))
     click(h.cell('2024-02-10'))
     expect(h.api().rangeAnchor).toBe('2024-02-10')
+    visibleMonths.length = 0
     const end = h.cell('2024-03-02')
     hover(end)
     pointerDown(end)
@@ -281,20 +287,28 @@ describe('区间模式', () => {
     expect(h.api().headingLabel).toContain('February')
     expect(h.cell('2024-03-02')).toBe(end)
     expect(h.value()).toEqual([])
+    expect(visibleMonths).toEqual([])
     pointerUp(end)
     click(end)
     expect(h.value()).toEqual(['2024-02-10', '2024-03-02'])
     expect(h.api().rangeAnchor).toBeNull()
     expect(h.api().headingLabel).toContain('March')
+    expect(visibleMonths).toEqual([3])
     // 翻月重画后旧节点被换掉，焦点由机器搬回被点的那一天
     await settle()
     expect(focused()).toBe('2024-03-02')
   })
 
   it('反着挑：终点落在上个月的邻月格上，两端照样排好并翻到那个月', () => {
-    const h = mount({ defaultFocusedValue: '2024-02-15' })
+    const visibleMonths: number[] = []
+    let h: ReturnType<typeof mount>
+    h = mount({
+      defaultFocusedValue: '2024-02-15',
+      onFocusedValueChange: () => visibleMonths.push(h.api().visibleMonth.month),
+    })
     click(h.cell('2024-02-10'))
     expect(h.api().rangeAnchor).toBe('2024-02-10')
+    visibleMonths.length = 0
     // 1 月 30 日铺在二月网格的首行
     const end = h.cell('2024-01-30')
     hover(end)
@@ -302,10 +316,12 @@ describe('区间模式', () => {
     end.focus()
     expect(h.api().headingLabel).toContain('February')
     expect(h.cell('2024-01-30')).toBe(end)
+    expect(visibleMonths).toEqual([])
     pointerUp(end)
     click(end)
     expect(h.value()).toEqual(['2024-01-30', '2024-02-10'])
     expect(h.api().headingLabel).toContain('January')
+    expect(visibleMonths).toEqual([1])
   })
 
   it('按在落于邻月的区间端点上拖：按下落焦不翻页，拖到哪格就改到哪格', () => {

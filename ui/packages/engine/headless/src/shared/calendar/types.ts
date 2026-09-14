@@ -158,9 +158,9 @@ export interface CalendarBaseContext {
    */
   visibleStart: string | null
   /**
-   * 被指针按住的邻月格子落焦时记下的聚焦日（FOCUS.SET 带 keepVisible 那一路）。
-   * 连接层据此不把视窗对到它身上：机器已明说这一下不翻页，兜底推导也不许替它翻。
-   * 下一次 FOCUS.SET / VIEW.SET 即清掉。
+   * 被指针按住的邻月格子落焦时记下的临时聚焦日（FOCUS.SET 带 keepVisible 那一路）。
+   * 连接层拿它画聚焦态并保持原视窗，但不提前改写 bindable focusedValue；真正选中或导航时
+   * 下一次 FOCUS.SET 才把它提交并清掉，作者收到回调时即可画到目标月份。VIEW.SET 也会清掉。
    */
   heldFocus: string | null
   /** 面板此刻铺哪一档格子。受控（activeView 给定）时 cell 直读 prop。 */
@@ -184,8 +184,9 @@ export interface CalendarBaseRefs {
  *   restoreFocus 表示这一下是网格内的键盘操作，机器据此把 DOM 焦点搬到落点那一格。
  *   只能用事件自带的这个意图，不能事后回读 activeElement：跨月重渲后旧格子已被摘掉、焦点早退回 body，
  *   而重渲发生在读 DOM 之前还是之后取决于宿主调度。
- *   keepVisible 表示只记聚焦日、视窗原地不动：指针按在邻月的日子上，浏览器把焦点落上去那一下
- *   不能翻页——翻了页格子会从指针底下挪走，随后的松开与 click 就压在另一格上。翻页留给选中那一下。
+ *   keepVisible 表示只临时记聚焦日、视窗原地不动且不通知 bindable：指针按在邻月的日子上，
+ *   浏览器把焦点落上去那一下不能翻页——翻了页格子会从指针底下挪走，随后的松开与 click 就压在
+ *   另一格上。真正选中时再提交聚焦日并通知作者重画目标月份。
  * - VIEW.SET：钻到另一层，点标题往上、点格子往下。restoreFocus 表示焦点要跟到新格子上。
  */
 export type CalendarBaseEvent
