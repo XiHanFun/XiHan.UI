@@ -26,6 +26,7 @@ export {
   calendarPeriodOf,
   calendarPeriodStart,
   calendarPeriodValue,
+  calendarWeekListedIn,
   calendarWeekRange,
   calendarZoomIn,
   isoWeekNumber,
