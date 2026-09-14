@@ -124,8 +124,8 @@
 
 | 事件 | 载荷 | 说明 |
 | --- | --- | --- |
-| `download-complete` | `` | 数据已交给浏览器；detail 为 `{ fileName }` |
-| `download-error` | `` | 取数失败或造不出下载；detail 为 `{ error, fileName }`，此刻状态已经回到 idle |
+| `download-complete` | `DownloadTriggerCompleteDetails` | 数据已交给浏览器；detail 为 `{ fileName }` |
+| `download-error` | `DownloadTriggerErrorDetails` | 取数失败或造不出下载；detail 为 `{ error, fileName }`，此刻状态已经回到 idle |
 
 ### 插槽
 

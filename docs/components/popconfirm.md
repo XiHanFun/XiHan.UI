@@ -125,9 +125,9 @@ size 换的是面板的内边距与最大宽度，三个档位落在 content 上
 
 | 事件 | 载荷 | 说明 |
 | --- | --- | --- |
-| `open-change` | `` | open 状态变化；detail 为 `{ open: boolean }` |
+| `open-change` | `PopoverOpenChangeDetails` | open 状态变化；detail 为 `{ open: boolean }` |
 | `confirm` | `` | 点了确认按钮；随后浮层收起。异步门走 confirmAction 属性： 事件拿不到监听函数的返回值，给元素赋 `confirmAction = () =&gt; thenable` 即挂起确认门 （浮层等兑现才收、确认按钮转圈，拒绝留在原地），confirm 事件照发只作通知 |
-| `confirm-error` | `` | 确认动作同步抛出或 thenable 拒绝；detail 为 `{ cause }`，保留原始原因 |
+| `confirm-error` | `PopconfirmConfirmErrorDetails` | 确认动作同步抛出或 thenable 拒绝；detail 为 `{ cause }`，保留原始原因 |
 | `cancel` | `` | 点了取消按钮；随后浮层收起 |
 
 ### 插槽

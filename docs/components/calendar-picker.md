@@ -104,9 +104,9 @@ cell-trigger 的内容全由作者写，日号之外还能塞自己的标记
 
 | 事件 | 载荷 | 说明 |
 | --- | --- | --- |
-| `value-change` | `` | 选中集合变化；detail 为 `{ value: string[] }` |
-| `focused-value-change` | `` | 聚焦日变化；detail 为 `{ focusedValue: string }` |
-| `active-view-change` | `` | 钻到了另一层；detail 为 `{ activeView: 'day'\|'week'\|'month'\|'quarter'\|'year' }` |
+| `value-change` | `CalendarPickerValueChangeDetails` | 选中集合变化；detail 为 `{ value: string[] }` |
+| `focused-value-change` | `CalendarFocusChangeDetails` | 聚焦日变化；detail 为 `{ focusedValue: string }` |
+| `active-view-change` | `CalendarViewChangeDetails` | 钻到了另一层；detail 为 `{ activeView: 'day'\|'week'\|'month'\|'quarter'\|'year' }` |
 
 ### 插槽
 

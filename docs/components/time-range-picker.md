@@ -139,8 +139,8 @@ hourCycle 决定两组段位与时列的写法，上下午各成一段一列
 
 | 事件 | 载荷 | 说明 |
 | --- | --- | --- |
-| `value-change` | `` | 两端变化；detail 为 `{ value: string[] }`，只填了终点时是 `['', end]` |
-| `open-change` | `` | open 状态变化；detail 为 `{ open: boolean }` |
+| `value-change` | `TimeRangePickerValueChangeDetails` | 两端变化；detail 为 `{ value: string[] }`，只填了终点时是 `['', end]` |
+| `open-change` | `TimeRangePickerOpenChangeDetails` | open 状态变化；detail 为 `{ open: boolean }` |
 
 ### 插槽
 

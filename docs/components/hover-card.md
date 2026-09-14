@@ -122,7 +122,7 @@ disabled 只关掉卡片本身，触发器照样可点、可聚焦，也照样�
 
 | 事件 | 载荷 | 说明 |
 | --- | --- | --- |
-| `open-change` | `` | open 状态变化；detail 为 `{ open: boolean }` |
+| `open-change` | `HoverCardOpenChangeDetails` | open 状态变化；detail 为 `{ open: boolean }` |
 
 ### 插槽
 

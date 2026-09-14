@@ -142,7 +142,7 @@ slidesPerMove 与 slidesPerPage 分开给：一屏露三张、一次只挪一张
 
 | 事件 | 载荷 | 说明 |
 | --- | --- | --- |
-| `page-change` | `` | 页码变化；detail 为 `{ page: number }` |
+| `page-change` | `CarouselPageChangeDetails` | 页码变化；detail 为 `{ page: number }` |
 
 ### 插槽
 

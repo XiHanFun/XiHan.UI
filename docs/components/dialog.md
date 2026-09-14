@@ -150,7 +150,7 @@ createDialogService 的 confirm 与单按钮预设：一行调用弹出，onOk �
 | 事件 | 载荷 | 说明 |
 | --- | --- | --- |
 | `exit-complete` | `CustomEvent` | 退出完成且本层资源已释放 |
-| `open-change` | `` | open 状态变化；detail 为 `{ open: boolean }` |
+| `open-change` | `DialogOpenChangeDetails` | open 状态变化；detail 为 `{ open: boolean }` |
 
 ### 插槽
 

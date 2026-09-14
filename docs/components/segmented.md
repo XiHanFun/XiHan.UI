@@ -145,7 +145,7 @@ size 换的是段的高度、内边距与字号，指示器跟着量出来的段
 
 | 事件 | 载荷 | 说明 |
 | --- | --- | --- |
-| `value-change` | `` | 选中值变化；detail 为 `{ value: string \| null }` |
+| `value-change` | `SegmentedValueChangeDetails` | 选中值变化；detail 为 `{ value: string \| null }` |
 
 ### 插槽
 

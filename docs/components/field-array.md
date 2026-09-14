@@ -107,7 +107,7 @@
 
 | 事件 | 载荷 | 说明 |
 | --- | --- | --- |
-| `value-change` | `` | 数据数组变化；detail 为 `{ value: unknown[] }` |
+| `value-change` | `FieldArrayValueChangeDetails` | 数据数组变化；detail 为 `{ value: unknown[] }` |
 
 ### 插槽
 

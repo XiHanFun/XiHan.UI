@@ -148,7 +148,7 @@ tone 决定用哪族颜色，与 variant 正交；这里固定 subtle 形态，�
 
 | 事件 | 载荷 | 说明 |
 | --- | --- | --- |
-| `value-change` | `` | 值变化；detail 为 `{ value: string }` |
+| `value-change` | `TimeFieldValueChangeDetails` | 值变化；detail 为 `{ value: string }` |
 
 ### 插槽
 

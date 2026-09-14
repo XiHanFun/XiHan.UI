@@ -129,7 +129,7 @@ size 改条目间距与字号，不写即缺省中档
 
 | 事件 | 载荷 | 说明 |
 | --- | --- | --- |
-| `value-change` | `` | 选中值变化；detail 为 `{ value: string \| null }` |
+| `value-change` | `RadioGroupValueChangeDetails` | 选中值变化；detail 为 `{ value: string \| null }` |
 
 ### 状态
 

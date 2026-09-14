@@ -154,7 +154,7 @@ view="text" 直接出缩进过的 JSON 原文：整块可框选可复制，且�
 
 | 事件 | 载荷 | 说明 |
 | --- | --- | --- |
-| `expanded-value-change` | `` | 展开集合变化；detail 为 `{ value: string[] }` |
+| `expanded-value-change` | `JsonViewerExpandedValueChangeDetails` | 展开集合变化；detail 为 `{ value: string[] }` |
 
 ### 插槽
 

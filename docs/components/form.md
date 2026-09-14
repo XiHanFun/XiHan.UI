@@ -128,11 +128,11 @@
 
 | 事件 | 载荷 | 说明 |
 | --- | --- | --- |
-| `values-change` | `` | 值表变化；detail 为 `{ values }` |
-| `errors-change` | `` | 错误表变化；detail 为 `{ errors }` |
-| `submit` | `` | 校验通过才派发；detail 为 `{ values }` |
-| `invalid` | `` | 校验不通过时派发；detail 为 `{ errors, values }` |
-| `validation-error` | `` | 校验器执行异常；detail 为 `{ cause, values, field }`，field 为 null 表示整表提交 |
+| `values-change` | `FormValuesChangeDetails` | 值表变化；detail 为 `{ values }` |
+| `errors-change` | `FormErrorsChangeDetails` | 错误表变化；detail 为 `{ errors }` |
+| `submit` | `FormSubmitDetails` | 校验通过才派发；detail 为 `{ values }` |
+| `invalid` | `FormInvalidDetails` | 校验不通过时派发；detail 为 `{ errors, values }` |
+| `validation-error` | `FormValidationErrorDetails` | 校验器执行异常；detail 为 `{ cause, values, field }`，field 为 null 表示整表提交 |
 
 ### 插槽
 

@@ -127,7 +127,7 @@ create 返回的就是队列身份 id，存下来随时 dismiss 掉那一条；d
 
 | 事件 | 载荷 | 说明 |
 | --- | --- | --- |
-| `items-change` | `` | 队列变化；detail 为 `{ items: NotificationRecord[] }` |
+| `items-change` | `NotificationItemsChangeDetails` | 队列变化；detail 为 `{ items: NotificationRecord[] }` |
 
 ### 插槽
 

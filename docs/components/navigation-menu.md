@@ -110,7 +110,7 @@
 
 | 事件 | 载荷 | 说明 |
 | --- | --- | --- |
-| `value-change` | `` | 展开项变化；detail 为 `{ value: string \| null }` |
+| `value-change` | `NavigationMenuValueChangeDetails` | 展开项变化；detail 为 `{ value: string \| null }` |
 
 ### 状态
 

@@ -129,9 +129,9 @@
 
 | 事件 | 载荷 | 说明 |
 | --- | --- | --- |
-| `value-change` | `` | 选中值变化；detail 为 `{ value: string \| null }` |
-| `tab-move` | `` | 标签换了位；detail 为 `{ value, from, to, values }`，values 是重排好的整份标签序 |
-| `tab-close` | `` | 标签被关闭；detail 为 `{ value, values }`，values 是关掉这一条之后余下的标签序 |
+| `value-change` | `TabsValueChangeDetails` | 选中值变化；detail 为 `{ value: string \| null }` |
+| `tab-move` | `TabsMoveDetails` | 标签换了位；detail 为 `{ value, from, to, values }`，values 是重排好的整份标签序 |
+| `tab-close` | `TabsCloseDetails` | 标签被关闭；detail 为 `{ value, values }`，values 是关掉这一条之后余下的标签序 |
 
 ### 状态
 

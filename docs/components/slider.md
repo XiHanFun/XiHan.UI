@@ -160,8 +160,8 @@ value-text 挂在 thumb 里就跟着走位；推动那一刻由皮肤放它出�
 
 | 事件 | 载荷 | 说明 |
 | --- | --- | --- |
-| `value-change` | `` | 值变化（拖动途中会连发）；detail 为 `{ value: number[] }` |
-| `value-change-end` | `` | 一次操作收尾发一次；detail 为 `{ value: number[], index: number }` |
+| `value-change` | `SliderValueTextDetails` | 值变化（拖动途中会连发）；detail 为 `{ value: number[] }` |
+| `value-change-end` | `SliderValueChangeEndDetails` | 一次操作收尾发一次；detail 为 `{ value: number[], index: number }` |
 
 ### 插槽
 

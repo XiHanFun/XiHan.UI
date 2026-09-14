@@ -134,8 +134,8 @@ size 打在组上逐枚落到每一枚标签上，走 tag 的三档，标签自�
 
 | 事件 | 载荷 | 说明 |
 | --- | --- | --- |
-| `value-change` | `` | 选中集合变化；detail 为 `{ value: string[] }` |
-| `item-delete` | `` | 用户要摘掉某一枚；detail 为 `{ value: string }` |
+| `value-change` | `TagGroupValueChangeDetails` | 选中集合变化；detail 为 `{ value: string[] }` |
+| `item-delete` | `TagGroupItemDeleteDetails` | 用户要摘掉某一枚；detail 为 `{ value: string }` |
 
 ### 插槽
 

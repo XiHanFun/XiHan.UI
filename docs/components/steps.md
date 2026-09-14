@@ -114,7 +114,7 @@
 
 | 事件 | 载荷 | 说明 |
 | --- | --- | --- |
-| `value-change` | `` | 步序变化；detail 为 `{ value: number }` |
+| `value-change` | `StepsValueChangeDetails` | 步序变化；detail 为 `{ value: number }` |
 
 ### 插槽
 

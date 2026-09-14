@@ -112,7 +112,7 @@ primary 用于页面背景，secondary 用于卡片等已有表面
 
 | 事件 | 载荷 | 说明 |
 | --- | --- | --- |
-| `value-change` | `` | 选中值变化；detail 为 `{ value: string[] }` |
+| `value-change` | `CheckboxGroupValueChangeDetails` | 选中值变化；detail 为 `{ value: string[] }` |
 
 ### 插槽
 

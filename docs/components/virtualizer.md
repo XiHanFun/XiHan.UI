@@ -122,7 +122,7 @@ horizontal 把主轴换成行内轴：位移改写进行首侧，条目宽度由
 
 | 事件 | 载荷 | 说明 |
 | --- | --- | --- |
-| `range-change` | `` | 该渲的区间变了；detail 为 `{ virtualItems, totalSize, startIndex, endIndex }` |
+| `range-change` | `VirtualizerRangeChangeDetails` | 该渲的区间变了；detail 为 `{ virtualItems, totalSize, startIndex, endIndex }` |
 
 ### 插槽
 

@@ -105,8 +105,8 @@
 
 | 事件 | 载荷 | 说明 |
 | --- | --- | --- |
-| `open-change` | `` | 展开状态变化；detail 为 `{ open: boolean }` |
-| `overflow-change` | `` | 溢出结论翻面；detail 为 `{ overflowing: boolean }` |
+| `open-change` | `TruncateOpenChangeDetails` | 展开状态变化；detail 为 `{ open: boolean }` |
+| `overflow-change` | `TruncateOverflowChangeDetails` | 溢出结论翻面；detail 为 `{ overflowing: boolean }` |
 
 ### 插槽
 

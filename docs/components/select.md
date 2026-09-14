@@ -224,8 +224,8 @@ outline、subtle 和 ghost
 
 | 事件 | 载荷 | 说明 |
 | --- | --- | --- |
-| `value-change` | `` | 选中值变化；detail 为 `{ value: string[] }` |
-| `open-change` | `` | open 状态变化；detail 为 `{ open: boolean }` |
+| `value-change` | `SelectValueChangeDetails` | 选中值变化；detail 为 `{ value: string[] }` |
+| `open-change` | `SelectOpenChangeDetails` | open 状态变化；detail 为 `{ open: boolean }` |
 
 ### 插槽
 

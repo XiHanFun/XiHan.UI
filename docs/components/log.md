@@ -129,7 +129,7 @@ loading 让日志区报 aria-busy 并把指针换成忙碌态；「正在拉取�
 
 | 事件 | 载荷 | 说明 |
 | --- | --- | --- |
-| `stick-change` | `` | 粘底状态变化；detail 为 `{ atBottom: boolean, sticking: boolean }` |
+| `stick-change` | `LogStickChangeDetails` | 粘底状态变化；detail 为 `{ atBottom: boolean, sticking: boolean }` |
 
 ### 插槽
 

@@ -110,7 +110,7 @@ default 使用中性底，light 保持透明
 
 | 事件 | 载荷 | 说明 |
 | --- | --- | --- |
-| `hot-key` | `` | 组合被按出；detail 为 `{ keys: string[], event: KeyboardEvent }` |
+| `hot-key` | `KbdTriggerDetails` | 组合被按出；detail 为 `{ keys: string[], event: KeyboardEvent }` |
 
 ### connect API
 
