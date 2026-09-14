@@ -1,5 +1,5 @@
 // 构建期把文档站落成机读资产：四份 llms 汇编、一份令牌全表、每页一份 .md，
-// 外加一份仓库根 skills/ 的可下载副本，发布路径仍为 /skills/xihan-ui。全部内容从本仓现算，没有手写清单。
+// 外加一份仓库原生 Codex skill 的可下载副本，发布路径仍为 /skills/xihan-ui。全部内容从本仓现算，没有手写清单。
 //
 // 站点是纯静态的，没有 route handler，所以产物一律写进 outDir。
 import { copyFile, mkdir, readdir, readFile, writeFile } from "node:fs/promises";
@@ -11,7 +11,7 @@ const DOCS = join(HERE, "..");
 const REPO = join(DOCS, "..");
 const UI = join(REPO, "ui");
 const DEMOS = join(HERE, "demos");
-const SKILL = join(REPO, "skills");
+const SKILL = join(REPO, ".agents", "skills", "xihan-ui");
 
 const SITE = "https://ui.docs.xihanfun.com";
 

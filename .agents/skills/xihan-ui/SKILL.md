@@ -36,10 +36,10 @@ description: 设计、实现、重构、审查或使用 XiHan.UI 组件时使用
 在仓库根运行：
 
 ```bash
-node skills/scripts/list-components.mjs [关键词]
-node skills/scripts/get-component-docs.mjs <组件标识>
-node skills/scripts/get-tokens.mjs [名字片段]
-node skills/scripts/get-skin.mjs <组件标识>
+node .agents/skills/xihan-ui/scripts/list-components.mjs [关键词]
+node .agents/skills/xihan-ui/scripts/get-component-docs.mjs <组件标识>
+node .agents/skills/xihan-ui/scripts/get-tokens.mjs [名字片段]
+node .agents/skills/xihan-ui/scripts/get-skin.mjs <组件标识>
 ```
 
 这些脚本只读取当前 XiHan.UI 检出；找不到仓库或文件时直接失败，不回落到已发布站点。可用 `XIHAN_UI_ROOT` 显式指定仓库根。
