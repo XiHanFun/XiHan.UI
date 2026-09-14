@@ -52,7 +52,8 @@ export const calendarRangePickerMachine = createMachine({
   // 作者换了选择粒度，钻层与原选择都失去语义：回到新粒度并清空。
   watch: ({ track, prop, action }) => {
     track([() => prop('granularity')], () => action(['syncGranularity']))
-    // 值被宿主整份改写（快捷选项、清空、段位输入）：挑到一半的那个起点作废
+    // 值被宿主整份改写（快捷选项、清空、段位输入）：挑到一半的那个起点作废。
+    // 盯的是引用：清空时 [] 换成另一份 []，内容没变也算改写；宿主每次读都归一出新数组的话得自己缓存
     track([() => prop('value')], () => action(['dropRangeAnchor']))
   },
   // 两个状态都要认的事件

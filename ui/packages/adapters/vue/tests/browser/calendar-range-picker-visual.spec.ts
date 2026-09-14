@@ -224,3 +224,72 @@ describe('范围日历轨道', () => {
     expect(after.height).toBeLessThanOrEqual(40)
   })
 })
+
+describe('邻月格子的点选', () => {
+  const values: string[][] = []
+
+  async function mountTracked(): Promise<void> {
+    values.length = 0
+    host = document.createElement('div')
+    document.body.append(host)
+    app = createApp({
+      render: () => h(XhCalendarRangePickerRoot, {
+        defaultFocusedValue: '2026-09-09',
+        fixedWeeks: true,
+        locale: 'zh-CN',
+        timeZone: 'UTC',
+        onValueChange: ({ value }: { value: string[] }) => values.push(value),
+      }, {
+        default: ({ weeks, weekDays }: any) => h(XhCalendarRangePickerGrid, null, () => [
+          h(XhCalendarRangePickerGridHead, null, () => h(XhCalendarRangePickerWeekRow, null, () =>
+            weekDays.map((day: any) => h(XhCalendarRangePickerWeekDay, { key: day.value, value: day.value })))),
+          h(XhCalendarRangePickerGridBody, null, () => weeks.map((week: any[]) =>
+            h(XhCalendarRangePickerWeekRow, { key: week[0].start }, () => week.map(day =>
+              h(XhCalendarRangePickerCell, { key: day.start, value: day.start }, () =>
+                h(XhCalendarRangePickerCellTrigger, null, () => String(day.day))))))),
+        ]),
+      }),
+    })
+    app.mount(host)
+    await nextTick()
+  }
+
+  it('终点点在下个月的邻月格上：落的就是那一格，随后才翻到那个月', async () => {
+    // 真实指针：按下时浏览器把焦点落到格子上。此前落焦即翻页，网格重画后压在指针下的是
+    // 另一格（十月面板同一位置是 11 月 3 日），松开就收在了错的日子上
+    await mountTracked()
+    await userEvent.click(trigger('2026-09-28'))
+    expect(cell('2026-10-06').hasAttribute('data-outside-month')).toBe(true)
+    await userEvent.click(trigger('2026-10-06'))
+    await nextTick()
+    expect(values.at(-1)).toEqual(['2026-09-28', '2026-10-06'])
+    // 翻到了十月：10 月 6 日成了本月格子，9 月 28 日退成邻月格
+    expect(cell('2026-10-06').hasAttribute('data-outside-month')).toBe(false)
+    expect(cell('2026-10-06').hasAttribute('data-range-end')).toBe(true)
+    expect(cell('2026-09-28').hasAttribute('data-range-start')).toBe(true)
+    expect(document.activeElement).toBe(trigger('2026-10-06'))
+  })
+
+  it('反着挑：终点点在上个月的邻月格上，两端照样排好并翻到那个月', async () => {
+    await mountTracked()
+    await userEvent.click(trigger('2026-09-07'))
+    expect(cell('2026-08-31').hasAttribute('data-outside-month')).toBe(true)
+    await userEvent.click(trigger('2026-08-31'))
+    await nextTick()
+    expect(values.at(-1)).toEqual(['2026-08-31', '2026-09-07'])
+    expect(cell('2026-08-31').hasAttribute('data-outside-month')).toBe(false)
+    expect(cell('2026-08-31').hasAttribute('data-range-start')).toBe(true)
+  })
+
+  it('起点点在邻月格上：按下不翻页，松开才落起点并翻页', async () => {
+    await mountTracked()
+    await userEvent.click(trigger('2026-10-06'))
+    await nextTick()
+    expect(values).toHaveLength(0)
+    expect(cell('2026-10-06').hasAttribute('data-outside-month')).toBe(false)
+    expect(cell('2026-10-06').getAttribute('aria-selected')).toBe('true')
+    await userEvent.click(trigger('2026-10-09'))
+    await nextTick()
+    expect(values.at(-1)).toEqual(['2026-10-06', '2026-10-09'])
+  })
+})

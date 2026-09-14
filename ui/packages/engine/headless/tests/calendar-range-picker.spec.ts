@@ -248,18 +248,79 @@ describe('区间模式', () => {
   it('按在邻月的日子上：起点等同一格松手再落，按下那一刻不翻页也不起拖', () => {
     const h = mount({ defaultFocusedValue: '2024-02-15' })
     // 3 月 2 日铺在二月网格的末行；按下即翻页的话，指针原地不动就会压到另一格上
-    pointerDown(h.cell('2024-03-02'))
+    const pressed = h.cell('2024-03-02')
+    pointerDown(pressed)
+    // 按下那一下浏览器会把焦点落到格子上：落焦同样不许翻页
+    pressed.focus()
     expect(h.api().rangeAnchor).toBeNull()
     expect(h.api().dragging).toBe(false)
     expect(h.api().headingLabel).toContain('February')
-    pointerUp(h.cell('2024-03-02'))
-    click(h.cell('2024-03-02'))
+    expect(h.focusedValue()).toBe('2024-03-02')
+    expect(h.cell('2024-03-02')).toBe(pressed)
+    pointerUp(pressed)
+    click(pressed)
     expect(h.api().rangeAnchor).toBe('2024-03-02')
     expect(h.api().headingLabel).toContain('March')
     expect(h.value()).toEqual([])
     // 松在别的格子上不算：起点没落、也不收尾
     pointerDown(h.cell('2024-03-20'))
     expect(h.api().rangeAnchor).toBe('2024-03-02')
+  })
+
+  it('终点落在邻月的日子上：按下落焦不翻页，松开才收尾并翻到那个月', async () => {
+    const h = mount({ defaultFocusedValue: '2024-02-15' })
+    pointerDown(h.cell('2024-02-10'))
+    pointerUp(h.cell('2024-02-10'))
+    click(h.cell('2024-02-10'))
+    expect(h.api().rangeAnchor).toBe('2024-02-10')
+    const end = h.cell('2024-03-02')
+    hover(end)
+    pointerDown(end)
+    end.focus()
+    // 页没翻：被按的那个节点还在原处，松开压着的仍是它
+    expect(h.api().headingLabel).toContain('February')
+    expect(h.cell('2024-03-02')).toBe(end)
+    expect(h.value()).toEqual([])
+    pointerUp(end)
+    click(end)
+    expect(h.value()).toEqual(['2024-02-10', '2024-03-02'])
+    expect(h.api().rangeAnchor).toBeNull()
+    expect(h.api().headingLabel).toContain('March')
+    // 翻月重画后旧节点被换掉，焦点由机器搬回被点的那一天
+    await settle()
+    expect(focused()).toBe('2024-03-02')
+  })
+
+  it('反着挑：终点落在上个月的邻月格上，两端照样排好并翻到那个月', () => {
+    const h = mount({ defaultFocusedValue: '2024-02-15' })
+    click(h.cell('2024-02-10'))
+    expect(h.api().rangeAnchor).toBe('2024-02-10')
+    // 1 月 30 日铺在二月网格的首行
+    const end = h.cell('2024-01-30')
+    hover(end)
+    pointerDown(end)
+    end.focus()
+    expect(h.api().headingLabel).toContain('February')
+    expect(h.cell('2024-01-30')).toBe(end)
+    pointerUp(end)
+    click(end)
+    expect(h.value()).toEqual(['2024-01-30', '2024-02-10'])
+    expect(h.api().headingLabel).toContain('January')
+  })
+
+  it('按在落于邻月的区间端点上拖：按下落焦不翻页，拖到哪格就改到哪格', () => {
+    const h = mount({ defaultFocusedValue: '2024-02-15', defaultValue: ['2024-02-10', '2024-03-02'] })
+    const end = h.cell('2024-03-02')
+    pointerDown(end)
+    end.focus()
+    expect(h.api().rangeAnchor).toBe('2024-02-10')
+    expect(h.api().dragging).toBe(true)
+    expect(h.api().headingLabel).toContain('February')
+    expect(h.cell('2024-03-02')).toBe(end)
+    hover(h.cell('2024-02-28'))
+    pointerUp(h.cell('2024-02-28'))
+    expect(h.value()).toEqual(['2024-02-10', '2024-02-28'])
+    expect(h.api().dragging).toBe(false)
   })
 
   it('拖到的那一格必须是指针真扫进去过的：没扫过就松手不收尾', () => {

@@ -284,7 +284,9 @@ export function connectCalendarPicker<T extends PropTypes>(
         'tabindex': state.focused ? 0 : -1,
         'onClick': () => frame.cellClick(item, state, { onSelect: () => frame.selectAt(item.value) }),
         // 不可用的格子获得焦点也记锚点，方向键据此起步
-        'onFocus': () => frame.focusAt(item.value),
+        // 邻月的格子：按下那一刻浏览器把焦点落上来，只记聚焦日不翻页——
+        // 翻了页格子会从指针底下挪走，click 就落不到它身上；翻页由 click 里的 focusInGrid 做
+        'onFocus': () => frame.focusAt(item.value, { keepVisible: state.outsideMonth }),
       })
     },
   }
