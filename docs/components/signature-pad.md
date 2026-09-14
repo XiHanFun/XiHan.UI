@@ -145,8 +145,8 @@ drawing 调笔宽与压感：thinning 越大，划得越快笔画越细，simula
 
 | 事件 | 载荷 | 说明 |
 | --- | --- | --- |
-| `draw` | `SignaturePadDrawDetails` | 笔迹变了就通知一次（含清空与表单重置）；detail 为 `{ paths: string[], path: string }` |
-| `draw-end` | `SignaturePadDrawEndDetails` | 签名定稿时通知一次（抬笔、清空、表单重置）；detail 为 `{ paths: string[], svg: string }`，svg 可直接落库 |
+| `draw` | `` | 笔迹变了就通知一次（含清空与表单重置）；detail 为 `{ paths: string[], path: string }` |
+| `draw-end` | `` | 签名定稿时通知一次（抬笔、清空、表单重置）；detail 为 `{ paths: string[], svg: string }`，svg 可直接落库 |
 
 ### 插槽
 

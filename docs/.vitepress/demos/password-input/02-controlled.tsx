@@ -11,15 +11,15 @@ import { useState } from "react";
 
 export default function Demo(): ReactNode {
   const [password, setPassword] = useState("hunter2");
-  const [visible, setVisible] = useState(false);
+  const [revealed, setRevealed] = useState(false);
 
   return (
     <>
       <XhPasswordInputRoot
         value={password}
         onValueChange={details => setPassword(details.value)}
-        visible={visible}
-        onVisibilityChange={details => setVisible(details.visible)}
+        revealed={revealed}
+        onRevealedChange={details => setRevealed(details.revealed)}
       >
         <XhPasswordInputLabel>密码</XhPasswordInputLabel>
         <XhPasswordInputControl>
@@ -27,8 +27,8 @@ export default function Demo(): ReactNode {
           <XhPasswordInputVisibilityTrigger />
         </XhPasswordInputControl>
       </XhPasswordInputRoot>
-      <span>{`当前：${visible ? password : "•".repeat(password.length)}`}</span>
-      <button type="button" onClick={() => setVisible(false)}>收起明文</button>
+      <span>{`当前：${revealed ? password : "•".repeat(password.length)}`}</span>
+      <button type="button" onClick={() => setRevealed(false)}>收起明文</button>
     </>
   );
 }

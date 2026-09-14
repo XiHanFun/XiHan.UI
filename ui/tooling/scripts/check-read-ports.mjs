@@ -99,7 +99,7 @@ const PENDING = {
   'message-feed': ['status', 'atBottom', 'sticking', 'focusedId', 'showScrollToEndTrigger', 'scrollToItem', 'focusItem'],
   'number-field': ['value', 'valueAsNumber', 'empty', 'canIncrement', 'canDecrement', 'setValue', 'increment', 'decrement'],
   'pagination': ['pageSizeOptions', 'count', 'openEllipsis', 'previousPage', 'nextPage', 'goToPrevPage', 'goToNextPage'],
-  'password-input': ['value', 'empty', 'visible', 'capsLock', 'inputType', 'setValue', 'setVisible', 'toggleVisibility'],
+  'password-input': ['value', 'empty', 'revealed', 'capsLock', 'inputType', 'setValue', 'setRevealed', 'toggleRevealed'],
   'pin-input': ['value', 'valueAsString', 'complete', 'length', 'focusedIndex', 'setValue', 'clear'],
   'popconfirm': ['open', 'setOpen', 'confirm', 'cancel'],
   'popover': ['open', 'setOpen'],

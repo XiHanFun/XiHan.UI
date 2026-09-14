@@ -110,8 +110,8 @@
 
 | 事件 | 载荷 | 说明 |
 | --- | --- | --- |
-| `status-change` | `ClipboardStatusChangeDetails` | 状态变化；detail 为 `{ status: 'copying' \| 'copied' \| 'idle' }` |
-| `copy-error` | `ClipboardCopyErrorDetails` | 写入失败；detail 为 `{ error, value }`，此刻状态已经回到 idle |
+| `status-change` | `` | 状态变化；detail 为 `{ status: 'copying' \| 'copied' \| 'idle' }` |
+| `copy-error` | `` | 写入失败；detail 为 `{ error, value }`，此刻状态已经回到 idle |
 
 ### 插槽
 

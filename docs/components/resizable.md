@@ -106,8 +106,8 @@
 
 | 事件 | 载荷 | 说明 |
 | --- | --- | --- |
-| `dimensions-change` | `ResizableDimensionsChangeDetails` | 尺寸变化（拖动途中会连发）；detail 为 `{ dimensions }` |
-| `dimensions-change-end` | `ResizableDimensionsChangeEndDetails` | 一次调整收尾发一次；detail 为 `{ dimensions, edge }` |
+| `dimensions-change` | `` | 尺寸变化（拖动途中会连发）；detail 为 `{ dimensions }` |
+| `dimensions-change-end` | `` | 一次调整收尾发一次；detail 为 `{ dimensions, edge }` |
 
 ### 插槽
 

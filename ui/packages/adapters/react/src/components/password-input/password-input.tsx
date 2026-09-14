@@ -22,7 +22,7 @@ type PasswordInputProps = PasswordInputSchema['props']
 /** 函数式 children 的载荷：当前值与空标志、明暗与大写锁定，以及写值与翻明暗的动作。 */
 export type PasswordInputRootSlotProps = Pick<
   PasswordInputApi,
-  'value' | 'empty' | 'visible' | 'capsLock' | 'inputType' | 'setValue' | 'setVisible' | 'toggleVisibility'
+  'value' | 'empty' | 'revealed' | 'capsLock' | 'inputType' | 'setValue' | 'setRevealed' | 'toggleRevealed'
 >
 
 /** 根上自有的那些取值；defaultValue 与原生的同名属性含义不同，由这里接管。 */
@@ -31,8 +31,8 @@ type RootElementProps = Omit<ComponentPropsWithRef<'div'>, 'children' | 'default
 export interface XhPasswordInputRootProps extends RootElementProps {
   value?: string
   defaultValue?: string
-  visible?: boolean
-  defaultVisible?: boolean
+  revealed?: boolean
+  defaultRevealed?: boolean
   disabled?: boolean
   readOnly?: boolean
   required?: boolean
@@ -48,15 +48,15 @@ export interface XhPasswordInputRootProps extends RootElementProps {
   size?: Size
   translations?: Partial<PasswordInputTranslations>
   onValueChange?: PasswordInputProps['onValueChange']
-  onVisibilityChange?: PasswordInputProps['onVisibilityChange']
+  onRevealedChange?: PasswordInputProps['onRevealedChange']
   children?: SlotChildren<PasswordInputRootSlotProps>
 }
 
 export function XhPasswordInputRoot({
   value,
   defaultValue,
-  visible,
-  defaultVisible,
+  revealed,
+  defaultRevealed,
   disabled,
   readOnly,
   required,
@@ -70,15 +70,15 @@ export function XhPasswordInputRoot({
   size,
   translations,
   onValueChange,
-  onVisibilityChange,
+  onRevealedChange,
   children,
   ...rest
 }: XhPasswordInputRootProps): ReactNode {
   const machineProps = {
     value,
     defaultValue,
-    visible,
-    defaultVisible,
+    revealed,
+    defaultRevealed,
     disabled,
     readOnly,
     required,
@@ -92,7 +92,7 @@ export function XhPasswordInputRoot({
     size,
     translations,
     onValueChange,
-    onVisibilityChange,
+    onRevealedChange,
   }
   const ctx = usePasswordInput(withXhConfig('password-input', useFormControlProps(machineProps)) as PasswordInputProps)
   const api = ctx.api
@@ -108,19 +108,19 @@ export function XhPasswordInputRoot({
         {renderSlot(children, {
           value: api.value,
           empty: api.empty,
-          visible: api.visible,
+          revealed: api.revealed,
           capsLock: api.capsLock,
           inputType: api.inputType,
           setValue: api.setValue,
-          setVisible: api.setVisible,
-          toggleVisibility: api.toggleVisibility,
+          setRevealed: api.setRevealed,
+          toggleRevealed: api.toggleRevealed,
         })}
       </div>
     </PasswordInputProvider>
   )
 }
 
-XhPasswordInputRoot.xhEvents = ['value-change', 'visibility-change'] as const
+XhPasswordInputRoot.xhEvents = ['value-change', 'revealed-change'] as const
 
 export interface XhPasswordInputLabelProps extends ComponentPropsWithRef<'label'> {}
 /** 必须是原生 label，connect 把 for 写向 input。 */

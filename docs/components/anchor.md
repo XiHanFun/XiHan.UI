@@ -108,7 +108,7 @@
 
 | 事件 | 载荷 | 说明 |
 | --- | --- | --- |
-| `value-change` | `AnchorValueChangeDetails` | 激活项变化；detail 为 `{ value: string \| null }` |
+| `value-change` | `` | 激活项变化；detail 为 `{ value: string \| null }` |
 
 ### 状态
 

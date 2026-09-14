@@ -34,13 +34,13 @@ export function connectPasswordInput<T extends PropTypes>(
   const inputId = passwordInputInputId(scope)
 
   const value = context.get('value')
-  const visible = context.get('visible')
+  const revealed = context.get('revealed')
   const capsLock = context.get('capsLock')
   const empty = value === ''
   const disabled = !!prop('disabled')
   const readOnly = !!prop('readOnly')
   const invalid = !!prop('invalid')
-  const inputType = visible ? 'text' : 'password'
+  const inputType = revealed ? 'text' : 'password'
 
   const translations = prop('translations')
   const label = {
@@ -69,7 +69,7 @@ export function connectPasswordInput<T extends PropTypes>(
   return {
     value,
     empty,
-    visible,
+    revealed,
     capsLock,
     disabled,
     readOnly,
@@ -78,8 +78,8 @@ export function connectPasswordInput<T extends PropTypes>(
     inputType,
     capsLockMessage: capsLock ? label.capsLockOn : '',
     setValue: next => send({ type: 'VALUE.SET', value: next }),
-    setVisible: next => send({ type: 'VISIBILITY.SET', visible: next }),
-    toggleVisibility: () => send({ type: 'VISIBILITY.TOGGLE' }),
+    setRevealed: next => send({ type: 'REVEALED.SET', revealed: next }),
+    toggleRevealed: () => send({ type: 'REVEALED.TOGGLE' }),
 
     getRootProps: () => normalize.element({
       ...parts.root.attrs,
@@ -152,16 +152,16 @@ export function connectPasswordInput<T extends PropTypes>(
       'type': 'button',
       // 名字随动作走。名字换了就不再加 aria-pressed：两个通道各说各的，
       // 会念成"隐藏密码 已按下"，听的人分不清此刻到底是明是暗
-      'aria-label': visible ? label.visibilityTriggerHide : label.visibilityTriggerShow,
+      'aria-label': revealed ? label.visibilityTriggerHide : label.visibilityTriggerShow,
       'aria-controls': inputId,
       // 单体控件走原生 disabled
       'disabled': disabled || undefined,
-      'data-state': visible ? 'visible' : 'hidden',
+      'data-state': revealed ? 'visible' : 'hidden',
       'data-disabled': dataAttr(disabled),
       // 不拦 pointerdown：焦点本就该落在按钮上，切完还能接着按第二下
       'onClick': () => {
         if (!disabled)
-          send({ type: 'VISIBILITY.TOGGLE' })
+          send({ type: 'REVEALED.TOGGLE' })
       },
     }),
 

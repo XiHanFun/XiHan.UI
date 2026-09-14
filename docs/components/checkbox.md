@@ -125,7 +125,7 @@
 
 | 事件 | 载荷 | 说明 |
 | --- | --- | --- |
-| `checked-change` | `CheckboxCheckedChangeDetails` | checked 状态变化；detail 为 `{ checked: boolean }` |
+| `checked-change` | `` | checked 状态变化；detail 为 `{ checked: boolean }` |
 
 ### 插槽
 

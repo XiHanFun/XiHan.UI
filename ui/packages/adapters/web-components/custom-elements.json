@@ -36900,21 +36900,21 @@
             },
             {
               "kind": "field",
-              "name": "visible",
+              "name": "revealed",
               "privacy": "public",
               "type": {
                 "text": "boolean | undefined"
               },
-              "attribute": "visible"
+              "attribute": "revealed"
             },
             {
               "kind": "field",
-              "name": "defaultVisible",
+              "name": "defaultRevealed",
               "privacy": "public",
               "type": {
                 "text": "boolean | undefined"
               },
-              "attribute": "default-visible"
+              "attribute": "default-revealed"
             },
             {
               "kind": "field",
@@ -37031,7 +37031,7 @@
             },
             {
               "kind": "field",
-              "name": "notifyVisibility",
+              "name": "notifyRevealed",
               "privacy": "private",
               "readonly": true
             },
@@ -37098,10 +37098,10 @@
               }
             },
             {
-              "description": "明暗变化；detail 为 `{ visible: boolean }`",
-              "name": "visibility-change",
+              "description": "明暗变化；detail 为 `{ revealed: boolean }`",
+              "name": "revealed-change",
               "type": {
-                "text": "PasswordInputVisibilityChangeDetails"
+                "text": "PasswordInputRevealedChangeDetails"
               }
             }
           ],
@@ -37126,17 +37126,17 @@
               "type": {
                 "text": "boolean | undefined"
               },
-              "description": "受控的明暗态；缺省该属性即非受控",
-              "name": "visible",
-              "fieldName": "visible"
+              "description": "受控的明暗态（明文是否揭开）；缺省该属性即非受控",
+              "name": "revealed",
+              "fieldName": "revealed"
             },
             {
               "type": {
                 "text": "boolean | undefined"
               },
               "description": "非受控的初始明暗态，缺省隐藏",
-              "name": "default-visible",
-              "fieldName": "defaultVisible"
+              "name": "default-revealed",
+              "fieldName": "defaultRevealed"
             },
             {
               "type": {

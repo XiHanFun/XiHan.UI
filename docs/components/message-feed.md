@@ -143,8 +143,8 @@ stick-change 报到底，宿主据此去取下一页；先往上翻一段再滚�
 
 | 事件 | 载荷 | 说明 |
 | --- | --- | --- |
-| `stick-change` | `MessageFeedStickChangeDetails` | 粘底状态变化；detail 为 `{ atBottom: boolean, sticking: boolean }` |
-| `item-focus` | `MessageFeedItemFocusDetails` | 锚点变化；detail 为 `{ id: string \| null }` |
+| `stick-change` | `` | 粘底状态变化；detail 为 `{ atBottom: boolean, sticking: boolean }` |
+| `item-focus` | `` | 锚点变化；detail 为 `{ id: string \| null }` |
 
 ### 插槽
 

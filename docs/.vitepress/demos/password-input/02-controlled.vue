@@ -10,17 +10,17 @@ import {
 import { ref } from "vue";
 
 const password = ref("hunter2");
-const visible = ref(false);
+const revealed = ref(false);
 </script>
 
 <template>
-  <XhPasswordInputRoot v-model:value="password" v-model:visible="visible">
+  <XhPasswordInputRoot v-model:value="password" v-model:revealed="revealed">
     <XhPasswordInputLabel>密码</XhPasswordInputLabel>
     <XhPasswordInputControl>
       <XhPasswordInputInput style="inline-size: 200px" />
       <XhPasswordInputVisibilityTrigger />
     </XhPasswordInputControl>
   </XhPasswordInputRoot>
-  <span>当前：{{ visible ? password : "•".repeat(password.length) }}</span>
-  <button type="button" @click="visible = false">收起明文</button>
+  <span>当前：{{ revealed ? password : "•".repeat(password.length) }}</span>
+  <button type="button" @click="revealed = false">收起明文</button>
 </template>

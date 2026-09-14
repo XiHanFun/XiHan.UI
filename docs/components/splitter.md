@@ -109,8 +109,8 @@
 
 | 事件 | 载荷 | 说明 |
 | --- | --- | --- |
-| `sizes-change` | `SplitterSizesChangeDetails` | 布局变化（拖动途中会连发）；detail 为 `{ sizes: number[] }` |
-| `sizes-change-end` | `SplitterSizesChangeEndDetails` | 一次拖拽收尾发一次；detail 为 `{ sizes: number[], index: number }` |
+| `sizes-change` | `` | 布局变化（拖动途中会连发）；detail 为 `{ sizes: number[] }` |
+| `sizes-change-end` | `` | 一次拖拽收尾发一次；detail 为 `{ sizes: number[], index: number }` |
 
 ### 插槽
 

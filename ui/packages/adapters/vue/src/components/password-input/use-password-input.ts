@@ -20,7 +20,7 @@ export interface PasswordInputContext {
 
 export function usePasswordInput(
   props: PasswordInputSchema['props'],
-  handlers: Pick<PasswordInputSchema['props'], 'onValueChange' | 'onVisibilityChange'> = {},
+  handlers: Pick<PasswordInputSchema['props'], 'onValueChange' | 'onRevealedChange'> = {},
 ): PasswordInputContext {
   // scope id 走 Vue 的 useId，保证同页多实例的 IDREF 不相撞
   const idGen = createVueIdGenerator()

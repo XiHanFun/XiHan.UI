@@ -119,10 +119,10 @@
 
 | 事件 | 载荷 | 说明 |
 | --- | --- | --- |
-| `value-change` | `EditableValueChangeDetails` | 编辑途中的值变化；detail 为 `{ value: string }` |
-| `value-commit` | `EditableValueCommitDetails` | 提交；detail 为 `{ value: string, previousValue: string }` |
-| `value-revert` | `EditableValueRevertDetails` | 撤销；detail 为 `{ value: string, discardedValue: string }` |
-| `edit-change` | `EditableEditChangeDetails` | 编辑态变化；detail 为 `{ edit: boolean }` |
+| `value-change` | `` | 编辑途中的值变化；detail 为 `{ value: string }` |
+| `value-commit` | `` | 提交；detail 为 `{ value: string, previousValue: string }` |
+| `value-revert` | `` | 撤销；detail 为 `{ value: string, discardedValue: string }` |
+| `edit-change` | `` | 编辑态变化；detail 为 `{ edit: boolean }` |
 
 ### 插槽
 

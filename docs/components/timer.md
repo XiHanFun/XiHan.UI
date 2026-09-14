@@ -152,8 +152,8 @@ tick 每过一个 interval 发一次，complete 只在走到终点那一刻发�
 
 | 事件 | 载荷 | 说明 |
 | --- | --- | --- |
-| `tick` | `TimerTickDetails` | 走过一拍；detail 为 `{ value: number, elapsed: number }` |
-| `complete` | `TimerCompleteDetails` | 走到终点；detail 为 `{ value: number, elapsed: number }` |
+| `tick` | `` | 走过一拍；detail 为 `{ value: number, elapsed: number }` |
+| `complete` | `` | 走到终点；detail 为 `{ value: number, elapsed: number }` |
 
 ### 插槽
 

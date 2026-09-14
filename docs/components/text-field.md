@@ -210,7 +210,7 @@ input 部件写成 textarea 即多行宿主；autoSize 让高度跟内容走，�
 
 | 事件 | 载荷 | 说明 |
 | --- | --- | --- |
-| `value-change` | `TextFieldValueChangeDetails` | 值变化；detail 为 `{ value: string }` |
+| `value-change` | `` | 值变化；detail 为 `{ value: string }` |
 
 ### 插槽
 

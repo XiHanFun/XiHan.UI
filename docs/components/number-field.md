@@ -182,7 +182,7 @@ parse 把显示串读成数、format 把数写回显示串；两个方向必须�
 
 | 事件 | 载荷 | 说明 |
 | --- | --- | --- |
-| `value-change` | `NumberFieldValueChangeDetails` | 值变化；detail 为 `{ value: string, valueAsNumber: number }` |
+| `value-change` | `` | 值变化；detail 为 `{ value: string, valueAsNumber: number }` |
 
 ### 插槽
 

@@ -173,8 +173,8 @@ presets 在列旁边多排一列，点一条整份写进值并收起；时刻在
 
 | 事件 | 载荷 | 说明 |
 | --- | --- | --- |
-| `value-change` | `TimePickerValueChangeDetails` | 值变化；detail 为 `{ value: string }` |
-| `open-change` | `TimePickerOpenChangeDetails` | open 状态变化；detail 为 `{ open: boolean }` |
+| `value-change` | `` | 值变化；detail 为 `{ value: string }` |
+| `open-change` | `` | open 状态变化；detail 为 `{ open: boolean }` |
 
 ### 插槽
 

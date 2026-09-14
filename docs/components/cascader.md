@@ -138,8 +138,8 @@
 
 | 事件 | 载荷 | 说明 |
 | --- | --- | --- |
-| `value-change` | `CascaderValueChangeDetails` | 选中路径集合变化；detail 为 `{ value: string[][] }` |
-| `open-change` | `CascaderOpenChangeDetails` | open 状态变化；detail 为 `{ open: boolean }` |
+| `value-change` | `` | 选中路径集合变化；detail 为 `{ value: string[][] }` |
+| `open-change` | `` | open 状态变化；detail 为 `{ open: boolean }` |
 
 ### 插槽
 

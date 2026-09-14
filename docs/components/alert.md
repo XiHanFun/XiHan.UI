@@ -109,7 +109,7 @@ icon 部件排在标题前面，颜色取当前语气的强调色；内容由作
 
 | 事件 | 载荷 | 说明 |
 | --- | --- | --- |
-| `open-change` | `AlertOpenChangeDetails` | open 状态变化；detail 为 `{ open: boolean }` |
+| `open-change` | `` | open 状态变化；detail 为 `{ open: boolean }` |
 
 ### 状态
 

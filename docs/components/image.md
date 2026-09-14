@@ -125,7 +125,7 @@ src 是响应式的：进入视口前不给地址，观察器命中再换上，�
 
 | 事件 | 载荷 | 说明 |
 | --- | --- | --- |
-| `status-change` | `ImageStatusChangeDetails` | 加载状态变化；detail 为 `{ status: 'loading' \| 'loaded' \| 'error' }` |
+| `status-change` | `` | 加载状态变化；detail 为 `{ status: 'loading' \| 'loaded' \| 'error' }` |
 
 ### 插槽
 

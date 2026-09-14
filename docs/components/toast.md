@@ -124,8 +124,8 @@ description 提供一行简短上下文；需要长时间阅读的内容改用 N
 
 | 事件 | 载荷 | 说明 |
 | --- | --- | --- |
-| `status-change` | `ToastStatusChangeDetails` | 生命周期落位；detail 为 `{ id: string, status: 'dismissing'\|'unmounted' }` |
-| `action` | `ToastActionDetails` | 操作按钮被按下；detail 为 `{ id: string }` |
+| `status-change` | `` | 生命周期落位；detail 为 `{ id: string, status: 'dismissing'\|'unmounted' }` |
+| `action` | `` | 操作按钮被按下；detail 为 `{ id: string }` |
 
 ### 插槽
 

@@ -135,9 +135,9 @@ alpha 开启后值串带透明度，浮层里多一条透明度滑块；两条�
 
 | 事件 | 载荷 | 说明 |
 | --- | --- | --- |
-| `value-change` | `ColorPickerValueChangeDetails` | 颜色变化；detail 为 `{ value: string }` |
-| `open-change` | `ColorPickerOpenChangeDetails` | open 状态变化；detail 为 `{ open: boolean }` |
-| `color-error` | `ColorPickerErrorDetails` | 格式、输入、颜色解析或屏幕取色失败；detail 为判别式错误对象 |
+| `value-change` | `` | 颜色变化；detail 为 `{ value: string }` |
+| `open-change` | `` | open 状态变化；detail 为 `{ open: boolean }` |
+| `color-error` | `` | 格式、输入、颜色解析或屏幕取色失败；detail 为判别式错误对象 |
 
 ### 插槽
 

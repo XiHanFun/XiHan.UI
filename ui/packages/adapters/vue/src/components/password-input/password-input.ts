@@ -21,7 +21,7 @@ type PasswordInputProps = PasswordInputSchema['props']
 /** 默认插槽的载荷：当前值与空标志、明暗与大写锁定，以及写值与翻明暗的动作。 */
 export type PasswordInputRootSlotProps = Pick<
   PasswordInputApi,
-  'value' | 'empty' | 'visible' | 'capsLock' | 'inputType' | 'setValue' | 'setVisible' | 'toggleVisibility'
+  'value' | 'empty' | 'revealed' | 'capsLock' | 'inputType' | 'setValue' | 'setRevealed' | 'toggleRevealed'
 >
 
 export const XhPasswordInputRoot = defineComponent({
@@ -30,8 +30,8 @@ export const XhPasswordInputRoot = defineComponent({
     // 缺席值 undefined 表示非受控
     value: { type: String },
     defaultValue: { type: String },
-    visible: { type: Boolean, default: undefined },
-    defaultVisible: { type: Boolean, default: undefined },
+    revealed: { type: Boolean, default: undefined },
+    defaultRevealed: { type: Boolean, default: undefined },
     disabled: { type: Boolean, default: undefined },
     readOnly: { type: Boolean, default: undefined },
     required: { type: Boolean, default: undefined },
@@ -49,8 +49,8 @@ export const XhPasswordInputRoot = defineComponent({
   emits: {
     'value-change': (_details: PayloadOf<PasswordInputProps, 'onValueChange'>) => true,
     'update:value': (_value: PayloadOf<PasswordInputProps, 'onValueChange'>['value']) => true,
-    'visibility-change': (_details: PayloadOf<PasswordInputProps, 'onVisibilityChange'>) => true,
-    'update:visible': (_visible: PayloadOf<PasswordInputProps, 'onVisibilityChange'>['visible']) => true,
+    'revealed-change': (_details: PayloadOf<PasswordInputProps, 'onRevealedChange'>) => true,
+    'update:revealed': (_revealed: PayloadOf<PasswordInputProps, 'onRevealedChange'>['revealed']) => true,
   },
   slots: Object as SlotsType<{
     default?: (props: PasswordInputRootSlotProps) => VNode[]
@@ -60,24 +60,24 @@ export const XhPasswordInputRoot = defineComponent({
       emit('value-change', details)
       emit('update:value', details.value)
     }
-    const onVisibilityChange: PasswordInputProps['onVisibilityChange'] = (details) => {
-      emit('visibility-change', details)
-      emit('update:visible', details.visible)
+    const onRevealedChange: PasswordInputProps['onRevealedChange'] = (details) => {
+      emit('revealed-change', details)
+      emit('update:revealed', details.revealed)
     }
     const ctx = usePasswordInput(
       withXhConfig('password-input', useFormControlProps(props)) as PasswordInputProps,
-      { onValueChange, onVisibilityChange },
+      { onValueChange, onRevealedChange },
     )
     providePasswordInput(ctx)
     return () => h('div', ctx.api.value.getRootProps() as Record<string, unknown>, slots.default?.({
       value: ctx.api.value.value,
       empty: ctx.api.value.empty,
-      visible: ctx.api.value.visible,
+      revealed: ctx.api.value.revealed,
       capsLock: ctx.api.value.capsLock,
       inputType: ctx.api.value.inputType,
       setValue: ctx.api.value.setValue,
-      setVisible: ctx.api.value.setVisible,
-      toggleVisibility: ctx.api.value.toggleVisibility,
+      setRevealed: ctx.api.value.setRevealed,
+      toggleRevealed: ctx.api.value.toggleRevealed,
     }))
   },
 })

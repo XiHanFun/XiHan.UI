@@ -115,7 +115,7 @@ open 交给宿主：外面一颗钮统一开合几段思考，自动开合让位
 
 | 事件 | 载荷 | 说明 |
 | --- | --- | --- |
-| `open-change` | `ToolCallOpenChangeDetails` | 开合变化；detail 为 `{ open: boolean, source: 'user' \| 'auto' \| 'api' }` |
+| `open-change` | `` | 开合变化；detail 为 `{ open: boolean, source: 'user' \| 'auto' \| 'api' }` |
 
 ### 插槽
 
