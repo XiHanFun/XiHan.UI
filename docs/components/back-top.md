@@ -103,7 +103,7 @@
 
 | 事件 | 载荷 | 说明 |
 | --- | --- | --- |
-| `visibility-change` | `` | 露面与否变化；detail 为 `{ visible: boolean }` |
+| `visibility-change` | `BackTopVisibilityChangeDetails` | 露面与否变化；detail 为 `{ visible: boolean }` |
 
 ### 插槽
 

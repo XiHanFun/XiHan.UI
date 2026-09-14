@@ -120,10 +120,10 @@
 
 | 事件 | 载荷 | 说明 |
 | --- | --- | --- |
-| `open-change` | `` | open 状态变化；detail 为 `{ open: boolean }` |
-| `value-change` | `` | 步序变化；detail 为 `{ value: number }` |
-| `complete` | `` | 末步再按下一步；detail 为 `{ step: number }` |
-| `skip` | `` | 用户放弃（跳过按钮或 Escape）；detail 为 `{ step: number }` |
+| `open-change` | `TourOpenChangeDetails` | open 状态变化；detail 为 `{ open: boolean }` |
+| `value-change` | `TourValueChangeDetails` | 步序变化；detail 为 `{ value: number }` |
+| `complete` | `TourCompleteDetails` | 末步再按下一步；detail 为 `{ step: number }` |
+| `skip` | `TourSkipDetails` | 用户放弃（跳过按钮或 Escape）；detail 为 `{ step: number }` |
 
 ### 插槽
 

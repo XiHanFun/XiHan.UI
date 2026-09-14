@@ -151,9 +151,9 @@
 
 | 事件 | 载荷 | 说明 |
 | --- | --- | --- |
-| `value-change` | `` | 选中集合变化；detail 为 `{ value: string[] }` |
-| `input-value-change` | `` | 输入串变化；detail 为 `{ inputValue: string }`，作者据此过滤候选 |
-| `open-change` | `` | open 状态变化；detail 为 `{ open: boolean }` |
+| `value-change` | `ComboboxValueChangeDetails` | 选中集合变化；detail 为 `{ value: string[] }` |
+| `input-value-change` | `ComboboxInputValueChangeDetails` | 输入串变化；detail 为 `{ inputValue: string }`，作者据此过滤候选 |
+| `open-change` | `ComboboxOpenChangeDetails` | open 状态变化；detail 为 `{ open: boolean }` |
 
 ### 插槽
 

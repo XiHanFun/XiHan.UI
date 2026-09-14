@@ -159,7 +159,7 @@ plain 不画壳，surface 连成单一表面，bordered 逐条画边；三档只
 
 | 事件 | 载荷 | 说明 |
 | --- | --- | --- |
-| `value-change` | `` | 展开集合变化；detail 为 `{ value: string[] }` |
+| `value-change` | `AccordionValueChangeDetails` | 展开集合变化；detail 为 `{ value: string[] }` |
 
 ### 状态
 

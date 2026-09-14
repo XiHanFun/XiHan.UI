@@ -117,7 +117,7 @@
 
 | 事件 | 载荷 | 说明 |
 | --- | --- | --- |
-| `value-change` | `` | 选中集合变化；detail 为 `{ value: string[] }` |
+| `value-change` | `ListboxValueChangeDetails` | 选中集合变化；detail 为 `{ value: string[] }` |
 
 ### 插槽
 

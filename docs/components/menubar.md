@@ -115,8 +115,8 @@
 
 | 事件 | 载荷 | 说明 |
 | --- | --- | --- |
-| `value-change` | `` | 展开项变化；detail 为 `{ value: string \| null }` |
-| `select` | `` | 条目被选中（菜单随之收起）；detail 为 `{ menu: string, value: string }` |
+| `value-change` | `MenubarValueChangeDetails` | 展开项变化；detail 为 `{ value: string \| null }` |
+| `select` | `MenubarSelectDetails` | 条目被选中（菜单随之收起）；detail 为 `{ menu: string, value: string }` |
 
 ### 插槽
 

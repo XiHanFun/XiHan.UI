@@ -156,8 +156,8 @@ name 才让它参与提交，auto-complete 写成 new-password 密码管理器�
 
 | 事件 | 载荷 | 说明 |
 | --- | --- | --- |
-| `value-change` | `` | 值变化；detail 为 `{ value: string }` |
-| `revealed-change` | `` | 明暗变化；detail 为 `{ revealed: boolean }` |
+| `value-change` | `PasswordInputValueChangeDetails` | 值变化；detail 为 `{ value: string }` |
+| `revealed-change` | `PasswordInputRevealedChangeDetails` | 明暗变化；detail 为 `{ revealed: boolean }` |
 
 ### 插槽
 

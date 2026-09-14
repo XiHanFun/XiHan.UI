@@ -129,7 +129,7 @@
 
 | 事件 | 载荷 | 说明 |
 | --- | --- | --- |
-| `page-change` | `` | 页码变化；detail 为 `{ page: number, pageSize: number }` |
+| `page-change` | `PaginationPageChangeDetails` | 页码变化；detail 为 `{ page: number, pageSize: number }` |
 | `page-size-change` | `` | 每页条数变化；detail 为 `{ pageSize: number, page: number }`，页码是换算后的 |
 
 ### 插槽

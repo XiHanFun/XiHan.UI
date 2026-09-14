@@ -149,10 +149,10 @@ granularity 决定两组输入行铺哪几段、浮层铺哪一档格子
 
 | 事件 | 载荷 | 说明 |
 | --- | --- | --- |
-| `value-change` | `` | 区间两端变化；detail 为 `{ value: string[] }`，只填了终点时是 `['', end]` |
-| `open-change` | `` | open 状态变化；detail 为 `{ open: boolean }` |
-| `focused-value-change` | `` | 聚焦日变化（意味着展示月可能换了）；detail 为 `{ focusedValue: string }`，作者据此重画网格 |
-| `active-view-change` | `` | 钻到了另一层（点标题钻上、点格子钻下）；detail 为 `{ activeView: 'day'\|'week'\|'month'\|'quarter'\|'year' }`，作者据此重画网格 |
+| `value-change` | `DateRangePickerValueChangeDetails` | 区间两端变化；detail 为 `{ value: string[] }`，只填了终点时是 `['', end]` |
+| `open-change` | `DateRangePickerOpenChangeDetails` | open 状态变化；detail 为 `{ open: boolean }` |
+| `focused-value-change` | `DateRangePickerFocusChangeDetails` | 聚焦日变化（意味着展示月可能换了）；detail 为 `{ focusedValue: string }`，作者据此重画网格 |
+| `active-view-change` | `CalendarViewChangeDetails` | 钻到了另一层（点标题钻上、点格子钻下）；detail 为 `{ activeView: 'day'\|'week'\|'month'\|'quarter'\|'year' }`，作者据此重画网格 |
 
 ### 插槽
 

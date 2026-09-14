@@ -141,8 +141,8 @@ allowClear 缺省就开：点中当前那一档清回“还没评”，键盘在
 
 | 事件 | 载荷 | 说明 |
 | --- | --- | --- |
-| `value-change` | `` | 评分变化；detail 为 `{ value: number }` |
-| `hover-change` | `` | 悬停预览变化；detail 为 `{ value: number \| null }`，指针离开时带 null |
+| `value-change` | `RatingValueChangeDetails` | 评分变化；detail 为 `{ value: number }` |
+| `hover-change` | `RatingHoverChangeDetails` | 悬停预览变化；detail 为 `{ value: number \| null }`，指针离开时带 null |
 
 ### 插槽
 

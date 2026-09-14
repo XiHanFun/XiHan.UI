@@ -99,9 +99,9 @@
 
 | 事件 | 载荷 | 说明 |
 | --- | --- | --- |
-| `sort` | `` | 顺序变化；detail 为 `{ from, to, id, ids }`，其中 ids 已重排好 |
-| `drag-start` | `` | 拾起；detail 为 `{ id, from, mode }` |
-| `drag-end` | `` | 收尾（含取消）；detail 为 `{ id, from, to, mode, canceled }` |
+| `sort` | `SortableSortDetails` | 顺序变化；detail 为 `{ from, to, id, ids }`，其中 ids 已重排好 |
+| `drag-start` | `SortableDragStartDetails` | 拾起；detail 为 `{ id, from, mode }` |
+| `drag-end` | `SortableDragEndDetails` | 收尾（含取消）；detail 为 `{ id, from, to, mode, canceled }` |
 
 ### 插槽
 

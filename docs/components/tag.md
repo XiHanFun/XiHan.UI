@@ -142,7 +142,7 @@ readOnly 只锁关闭钮：叉留在原地但按不动，标签本身不置灰�
 
 | 事件 | 载荷 | 说明 |
 | --- | --- | --- |
-| `open-change` | `` | open 状态变化；detail 为 `{ open: boolean }` |
+| `open-change` | `TagOpenChangeDetails` | open 状态变化；detail 为 `{ open: boolean }` |
 
 ### 状态
 

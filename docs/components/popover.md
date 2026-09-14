@@ -155,7 +155,7 @@ start / end 是逻辑对齐不是左右：RTL 下 bottom-start 贴的是锚点�
 
 | 事件 | 载荷 | 说明 |
 | --- | --- | --- |
-| `open-change` | `` | open 状态变化；detail 为 `{ open: boolean }` |
+| `open-change` | `PopoverOpenChangeDetails` | open 状态变化；detail 为 `{ open: boolean }` |
 
 ### 插槽
 

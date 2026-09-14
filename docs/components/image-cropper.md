@@ -131,10 +131,10 @@
 
 | 事件 | 载荷 | 说明 |
 | --- | --- | --- |
-| `value-change` | `` | 裁切矩形变化（拖动途中会连发）；detail 为 `{ value: { x, y, width, height } }` |
-| `value-change-end` | `` | 一次指针拖动松手发一次，一次方向键微调也发一次；detail 为 `{ value: { x, y, width, height } }` |
-| `zoom-change` | `` | 缩放倍率变化；detail 为 `{ zoom: number }` |
-| `rotation-change` | `` | 旋转角度变化；detail 为 `{ rotation: number }` |
+| `value-change` | `ImageCropperValueChangeDetails` | 裁切矩形变化（拖动途中会连发）；detail 为 `{ value: { x, y, width, height } }` |
+| `value-change-end` | `ImageCropperValueChangeEndDetails` | 一次指针拖动松手发一次，一次方向键微调也发一次；detail 为 `{ value: { x, y, width, height } }` |
+| `zoom-change` | `ImageCropperZoomChangeDetails` | 缩放倍率变化；detail 为 `{ zoom: number }` |
+| `rotation-change` | `ImageCropperRotationChangeDetails` | 旋转角度变化；detail 为 `{ rotation: number }` |
 
 ### 插槽
 

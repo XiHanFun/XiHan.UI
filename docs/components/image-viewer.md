@@ -116,8 +116,8 @@ open 与 index 双受控；translations 换工具条的可及名与计数文案
 
 | 事件 | 载荷 | 说明 |
 | --- | --- | --- |
-| `open-change` | `` | open 状态变化；detail 为 `{ open: boolean }` |
-| `index-change` | `` | 下标变化；detail 为 `{ index: number }` |
+| `open-change` | `ImageViewerOpenChangeDetails` | open 状态变化；detail 为 `{ open: boolean }` |
+| `index-change` | `ImageViewerIndexChangeDetails` | 下标变化；detail 为 `{ index: number }` |
 
 ### 插槽
 

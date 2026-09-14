@@ -117,7 +117,7 @@
 
 | 事件 | 载荷 | 说明 |
 | --- | --- | --- |
-| `pressed-change` | `` | pressed 状态变化；detail 为 `{ pressed: boolean }` |
+| `pressed-change` | `TogglePressedChangeDetails` | pressed 状态变化；detail 为 `{ pressed: boolean }` |
 
 ### 状态
 

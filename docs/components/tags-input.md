@@ -172,8 +172,8 @@ tone 决定用哪族颜色，与 variant 正交；这里固定 outline 只看语
 
 | 事件 | 载荷 | 说明 |
 | --- | --- | --- |
-| `value-change` | `` | 标签集合变化；detail 为 `{ value: string[] }` |
-| `input-value-change` | `` | 输入文本变化；detail 为 `{ inputValue: string }` |
+| `value-change` | `TagsInputValueChangeDetails` | 标签集合变化；detail 为 `{ value: string[] }` |
+| `input-value-change` | `TagsInputInputValueChangeDetails` | 输入文本变化；detail 为 `{ inputValue: string }` |
 
 ### 插槽
 

@@ -163,8 +163,8 @@ pattern 是一段正则源码，逐个字符整格匹配；写坏了退回 type 
 
 | 事件 | 载荷 | 说明 |
 | --- | --- | --- |
-| `value-change` | `` | 值变化；detail 为 `{ value: string[], valueAsString: string }` |
-| `value-complete` | `` | 每格都填满；detail 同上 |
+| `value-change` | `PinInputValueChangeDetails` | 值变化；detail 为 `{ value: string[], valueAsString: string }` |
+| `value-complete` | `PinInputValueChangeDetails` | 每格都填满；detail 同上 |
 
 ### 插槽
 

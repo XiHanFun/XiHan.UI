@@ -142,9 +142,9 @@ variant 换这块闸门怎么与正文分开，size 换标题、条目与按钮�
 
 | 事件 | 载荷 | 说明 |
 | --- | --- | --- |
-| `decision` | `` | 判定落定；detail 为 `{ requestId, decision, source, scopes }` |
-| `granted-scopes-change` | `` | 勾选的授权项变化；detail 为 `{ value: string[] }` |
-| `note-change` | `` | 备注变化；detail 为 `{ value: string }` |
+| `decision` | `ApprovalDecisionDetails` | 判定落定；detail 为 `{ requestId, decision, source, scopes }` |
+| `granted-scopes-change` | `ApprovalScopesChangeDetails` | 勾选的授权项变化；detail 为 `{ value: string[] }` |
+| `note-change` | `ApprovalNoteChangeDetails` | 备注变化；detail 为 `{ value: string }` |
 
 ### 插槽
 

@@ -208,8 +208,8 @@ levels 决定分几档，图例与格子共用同一条色阶
 
 | 事件 | 载荷 | 说明 |
 | --- | --- | --- |
-| `cell-focus` | `` | 焦点落到某一格；detail 为 `{ date, row, column, count, level, percent }` |
-| `cell-active` | `` | 详情该显示哪一格（悬停或聚焦）；收起时 detail 为 null |
+| `cell-focus` | `HeatmapCellFocusDetails` | 焦点落到某一格；detail 为 `{ date, row, column, count, level, percent }` |
+| `cell-active` | `HeatmapCellDetails` | 详情该显示哪一格（悬停或聚焦）；收起时 detail 为 null |
 
 ### 插槽
 

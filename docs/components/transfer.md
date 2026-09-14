@@ -159,8 +159,8 @@ tone 换勾选标记的色族，size 换条目行与勾选格的几何档；两�
 
 | 事件 | 载荷 | 说明 |
 | --- | --- | --- |
-| `value-change` | `` | 落在右侧的值变化；detail 为 `{ value: string[] }` |
-| `selection-change` | `` | 勾选集合变化；detail 为 `{ value: string[] }` |
+| `value-change` | `TransferValueChangeDetails` | 落在右侧的值变化；detail 为 `{ value: string[] }` |
+| `selection-change` | `TransferSelectionChangeDetails` | 勾选集合变化；detail 为 `{ value: string[] }` |
 
 ### 插槽
 
