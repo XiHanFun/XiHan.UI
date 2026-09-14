@@ -12,7 +12,7 @@ import type { CalendarBaseAction, CalendarBaseContext, CalendarBaseEvent, Calend
 import { getLocalTimeZone, startOfMonth, today } from '@internationalized/date'
 import { focusItem, itemValue, queryItems } from '@xihan-ui/core'
 import { sameArray as sameValues, toArray as toValues } from '../array'
-import { calendarPageMonths, calendarPeriodOf, calendarPeriodStart, parseCalendarDate, visibleCountOf } from './grid'
+import { calendarPageMonths, calendarPeriodOf, calendarPeriodStart, calendarWeekListedIn, parseCalendarDate, visibleCountOf } from './grid'
 
 /**
  * 两个日历机器的公共 schema 下界：只钉住 props / context / refs 三片的最小形状，
@@ -66,6 +66,13 @@ export function alignVisibleStart(
   const first = align(start)
   const cell = align(target)
   const span = (visibleCountOf(prop('visibleCount')) - 1) * page
+  // 周视图：落点那一周只要列在窗内任一页的名单上就不挪窗——跨月的首尾周按周首日归月会判成走出去
+  if (view === 'week') {
+    for (let offset = 0; offset <= span; offset += page) {
+      if (calendarWeekListedIn(target, first.add({ months: offset })))
+        return
+    }
+  }
   if (cell.compare(first) < 0) {
     context.set('visibleStart', cell.toString())
     return

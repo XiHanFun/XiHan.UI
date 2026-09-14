@@ -576,6 +576,17 @@ export function calendarPageMonths(view: CalendarView): number {
   return 1
 }
 
+/**
+ * 周视图里，以 weekStart 标识的那一周是否列在以 monthStart 为容器的那一页里。
+ * 一页列的是从当月首日所在周到当月末日所在周，首尾两周常跨到邻月——与日视图首尾行带上邻月日子同一套做法。
+ * 判归属只能按这份名单来：拿周首日归月会把 8 月 31 日起的那一周归到 8 月，而人是在 9 月那一页点到它的。
+ */
+export function calendarWeekListedIn(weekStart: CalendarDate, monthStart: CalendarDate): boolean {
+  const first = startOfMonth(monthStart)
+  const last = first.add({ months: 1 }).subtract({ days: 1 })
+  return weekStart.compare(startOfWeek(first, 'en-GB')) >= 0 && weekStart.compare(startOfWeek(last, 'en-GB')) <= 0
+}
+
 /** 面板跨度的起点：日/周归到当月，月/季度归到当年，年归到当个十年。 */
 export function calendarPeriodStart(anchor: CalendarDate, view: CalendarView): CalendarDate {
   if (view === 'day' || view === 'week')
