@@ -94,7 +94,7 @@ size 换字号、行高与内边距三档，行号槽与折叠钮跟着一起走
 
 ### 组合
 
-- 与[剪贴板](./clipboard)配合提供复制；要非受控的折叠就套[折叠面板](./collapsible)。
+- 与[剪贴板](./clipboard)配合提供复制；要非受控的折叠就套[折叠区域](./collapsible)。
   把剪贴板三件放进 `header`，再用 `--xh-clipboard-copy-trigger-border: transparent`、
   `--xh-clipboard-copy-trigger-bg: transparent`、`--xh-clipboard-copy-trigger-h: var(--xh-control-h-sm)`
   三个槽把按钮压成头部里的安静形态。

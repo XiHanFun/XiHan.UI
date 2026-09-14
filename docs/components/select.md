@@ -150,7 +150,7 @@ outline、subtle 和 ghost
 - 少量选项使用[单选组](./radio-group)。
 - 可输入或可搜索场景使用[组合框](./combobox)。
 - 层级选项使用[级联选择](./cascader)或[树选择](./tree-select)。
-- 不参与表单的视图切换使用 [Popover](./popover) 与 [Listbox](./listbox)。
+- 不参与表单的视图切换使用 [气泡卡片](./popover) 与 [列表框](./listbox)。
 
 ### 特性
 
@@ -164,7 +164,7 @@ outline、subtle 和 ghost
 ### 组合
 
 - 与[表单字段](./field)组合。
-- 不参与表单时使用 [Popover](./popover) 与 [Listbox](./listbox)。
+- 不参与表单时使用 [气泡卡片](./popover) 与 [列表框](./listbox)。
 
 ### 最佳实践
 
