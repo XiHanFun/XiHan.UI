@@ -52389,6 +52389,1023 @@
     },
     {
       "kind": "javascript-module",
+      "path": "src/elements/time-range-picker.ts",
+      "declarations": [
+        {
+          "kind": "class",
+          "description": "`<xh-time-range-picker>` —— Light-DOM 行为宿主：作者写 root/label/control/segment-group（两个）/segment（多个）/\nrange-separator/trigger/clear-trigger/positioner/content/column-group（两个）/column（多个）/item（多个）/\nhidden-input（两个）角色节点，元素跑 time-range-picker 机器并把 connect 产出打上去。\n浮层定位引擎在本元素里建好、经 refs 注入机器，锚点取 control（浮层因此与整个输入行对齐），被定位的浮层取 positioner。\n\n起止两端各一组：segment-group、column-group 与 hidden-input 都写两个，文档序在前的是起点、在后的是终点，\n也可以自带 index 属性显式声明；段位、列与格子按所在的组认领哪一端。\n\n两条改值的路写同一份值：输入行里逐段敲（每段是 role=spinbutton，上下键加减、数字直输自动跳段，方向键不跨组），\n浮层里按列挑（每列是一个 listbox，上下键在列内走、左右键换列——跨组也换、Enter 选中）。\n\n段与格子上的文字由元素填；作者自己写了内容的不碰。",
+          "name": "XhTimeRangePickerElement",
+          "cssParts": [
+            {
+              "description": "组件根容器（承载 data-state/data-disabled/data-readonly/data-invalid/data-empty）",
+              "name": "root"
+            },
+            {
+              "description": "标题；点它会把焦点送到第一段",
+              "name": "label"
+            },
+            {
+              "description": "role=group 的输入行，同时是浮层的定位锚点",
+              "name": "control"
+            },
+            {
+              "description": "一端的段位容器（role=group），起止各一个，可自带 index 属性（0 / 1），缺省按文档序",
+              "name": "segment-group"
+            },
+            {
+              "description": "一段一个的 spinbutton，可自带 segment 属性声明身份，缺省按所在组内的文档序",
+              "name": "segment"
+            },
+            {
+              "description": "起止两组段位之间的视觉分隔，退出可访问树",
+              "name": "range-separator"
+            },
+            {
+              "description": "展开/收起按钮，须是原生 button",
+              "name": "trigger"
+            },
+            {
+              "description": "清空按钮，须是原生 button；不占 Tab 位，可及名走 translations.clearTrigger；没值即收起",
+              "name": "clear-trigger"
+            },
+            {
+              "description": "浮层定位容器，坐标由引擎写成内联样式",
+              "name": "positioner"
+            },
+            {
+              "description": "浮层容器（消解层与焦点域的根节点），收起时带 hidden",
+              "name": "content"
+            },
+            {
+              "description": "快捷选项列（role=listbox）；没给 presets 时带 hidden",
+              "name": "preset-group"
+            },
+            {
+              "description": "一条快捷选项（role=option），须自带 value 属性（与 presets 数据里的 value 逐字对上）",
+              "name": "preset"
+            },
+            {
+              "description": "一端的时列外壳（role=group），起止各一个，可自带 index 属性（0 / 1），缺省按文档序",
+              "name": "column-group"
+            },
+            {
+              "description": "时列外壳顶上的小标题（「开始」「结束」），纯视觉",
+              "name": "column-group-label"
+            },
+            {
+              "description": "role=listbox 的一列，可自带 unit 属性声明单位，缺省按所在组内的文档序",
+              "name": "column"
+            },
+            {
+              "description": "role=option 的一格，须自带 value 属性（两位补零的显示串；上下午列写 '00' / '01'）",
+              "name": "item"
+            },
+            {
+              "description": "type=hidden 的表单出口，起止各一份，可自带 index 属性，缺省按文档序；值是完整 ISO 串",
+              "name": "hidden-input"
+            }
+          ],
+          "members": [
+            {
+              "kind": "field",
+              "name": "portalContainer",
+              "type": {
+                "text": "() => Element | null | undefined"
+              },
+              "description": "本实例的 Portal 容器；显式解析失败不回退配置默认。"
+            },
+            {
+              "kind": "field",
+              "name": "partContract",
+              "type": {
+                "text": "object"
+              },
+              "static": true,
+              "default": "{ anatomy: timeRangePickerAnatomy, meta: timeRangePickerMeta }"
+            },
+            {
+              "kind": "field",
+              "name": "value",
+              "privacy": "public",
+              "type": {
+                "text": "string[]"
+              },
+              "description": "受控的区间两端 [start, end]（数组只走 property），每端是 ISO 时间串；空缺的一端用空串占位；缺省即非受控"
+            },
+            {
+              "kind": "field",
+              "name": "defaultValue",
+              "privacy": "public",
+              "type": {
+                "text": "string[] | undefined"
+              }
+            },
+            {
+              "kind": "field",
+              "name": "open",
+              "privacy": "public",
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "attribute": "open"
+            },
+            {
+              "kind": "field",
+              "name": "defaultOpen",
+              "privacy": "public",
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "attribute": "default-open"
+            },
+            {
+              "kind": "field",
+              "name": "min",
+              "privacy": "public",
+              "type": {
+                "text": "string | undefined"
+              },
+              "attribute": "min"
+            },
+            {
+              "kind": "field",
+              "name": "max",
+              "privacy": "public",
+              "type": {
+                "text": "string | undefined"
+              },
+              "attribute": "max"
+            },
+            {
+              "kind": "field",
+              "name": "locale",
+              "privacy": "public",
+              "type": {
+                "text": "string | undefined"
+              },
+              "attribute": "locale"
+            },
+            {
+              "kind": "field",
+              "name": "hourCycle",
+              "privacy": "public",
+              "type": {
+                "text": "TimeHourCycle | undefined"
+              },
+              "attribute": "hour-cycle"
+            },
+            {
+              "kind": "field",
+              "name": "granularity",
+              "privacy": "public",
+              "type": {
+                "text": "TimeGranularity | undefined"
+              },
+              "attribute": "granularity"
+            },
+            {
+              "kind": "field",
+              "name": "step",
+              "privacy": "public",
+              "type": {
+                "text": "number | undefined"
+              },
+              "attribute": "step"
+            },
+            {
+              "kind": "field",
+              "name": "presets",
+              "privacy": "public",
+              "type": {
+                "text": "TimeRangePickerPreset[]"
+              },
+              "description": "快捷选项（数组只走 property）：给了就在浮层里多出一列"
+            },
+            {
+              "kind": "field",
+              "name": "disabled",
+              "privacy": "public",
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "attribute": "disabled"
+            },
+            {
+              "kind": "field",
+              "name": "readOnly",
+              "privacy": "public",
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "attribute": "read-only"
+            },
+            {
+              "kind": "field",
+              "name": "invalid",
+              "privacy": "public",
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "attribute": "invalid"
+            },
+            {
+              "kind": "field",
+              "name": "translations",
+              "privacy": "public",
+              "type": {
+                "text": "TimeRangePickerSchema['props']['translations'] | undefined"
+              }
+            },
+            {
+              "kind": "field",
+              "name": "isTimeUnavailable",
+              "privacy": "public",
+              "type": {
+                "text": "TimeRangePickerSchema['props']['isTimeUnavailable'] | undefined"
+              }
+            },
+            {
+              "kind": "field",
+              "name": "required",
+              "privacy": "public",
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "attribute": "required"
+            },
+            {
+              "kind": "field",
+              "name": "name",
+              "privacy": "public",
+              "type": {
+                "text": "string | undefined"
+              },
+              "attribute": "name"
+            },
+            {
+              "kind": "field",
+              "name": "endName",
+              "privacy": "public",
+              "type": {
+                "text": "string | undefined"
+              },
+              "attribute": "end-name"
+            },
+            {
+              "kind": "field",
+              "name": "variant",
+              "privacy": "public",
+              "type": {
+                "text": "ControlVariant | undefined"
+              },
+              "attribute": "variant"
+            },
+            {
+              "kind": "field",
+              "name": "tone",
+              "privacy": "public",
+              "type": {
+                "text": "Tone | undefined"
+              },
+              "attribute": "tone"
+            },
+            {
+              "kind": "field",
+              "name": "size",
+              "privacy": "public",
+              "type": {
+                "text": "Size | undefined"
+              },
+              "attribute": "size"
+            },
+            {
+              "kind": "field",
+              "name": "placement",
+              "privacy": "public",
+              "type": {
+                "text": "Placement | undefined"
+              },
+              "attribute": "placement"
+            },
+            {
+              "kind": "field",
+              "name": "offset",
+              "privacy": "public",
+              "type": {
+                "text": "number | undefined"
+              },
+              "attribute": "offset"
+            },
+            {
+              "kind": "field",
+              "name": "direction",
+              "privacy": "public",
+              "type": {
+                "text": "Direction | undefined"
+              },
+              "attribute": "dir"
+            },
+            {
+              "kind": "field",
+              "name": "idGen",
+              "type": {
+                "text": "IdGenerator"
+              },
+              "privacy": "private",
+              "readonly": true
+            },
+            {
+              "kind": "field",
+              "name": "pickerScope",
+              "privacy": "private",
+              "readonly": true
+            },
+            {
+              "kind": "field",
+              "name": "positionEngine",
+              "type": {
+                "text": "PositionEnginePort"
+              },
+              "privacy": "private",
+              "readonly": true
+            },
+            {
+              "kind": "field",
+              "name": "config",
+              "type": {
+                "text": "RuntimeConfig | null"
+              },
+              "privacy": "private",
+              "default": "null"
+            },
+            {
+              "kind": "field",
+              "name": "exit",
+              "type": {
+                "text": "OverlayExit | null"
+              },
+              "privacy": "private",
+              "default": "null",
+              "description": "退场闸门：收起从跟着 open 走改成跟着 presence 走，退场动画播完才真收。"
+            },
+            {
+              "kind": "field",
+              "name": "portal",
+              "privacy": "private",
+              "readonly": true
+            },
+            {
+              "kind": "field",
+              "name": "notifyValue",
+              "privacy": "private",
+              "readonly": true
+            },
+            {
+              "kind": "field",
+              "name": "notifyOpen",
+              "privacy": "private",
+              "readonly": true
+            },
+            {
+              "kind": "field",
+              "name": "ctrl",
+              "privacy": "private",
+              "readonly": true,
+              "default": "new MachineController<TimeRangePickerSchema>( this, timeRangePickerMachine, () => this.machineProps(), { scope: this.pickerScope, onBuilt: svc => this.injectRefs(svc) }, )"
+            },
+            {
+              "kind": "field",
+              "name": "inheritedControl",
+              "type": {
+                "text": "FormControlState | undefined"
+              },
+              "privacy": "private"
+            },
+            {
+              "kind": "method",
+              "name": "setFormControlState",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "state",
+                  "type": {
+                    "text": "FormControlState | undefined"
+                  }
+                }
+              ]
+            },
+            {
+              "kind": "method",
+              "name": "machineProps",
+              "privacy": "private",
+              "return": {
+                "type": {
+                  "text": "Partial<TimeRangePickerSchema['props']>"
+                }
+              }
+            },
+            {
+              "kind": "method",
+              "name": "ensureConfig",
+              "privacy": "private",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              }
+            },
+            {
+              "kind": "method",
+              "name": "externalPartRoots",
+              "privacy": "protected",
+              "return": {
+                "type": {
+                  "text": "readonly HTMLElement[]"
+                }
+              }
+            },
+            {
+              "kind": "field",
+              "name": "registerLayer",
+              "privacy": "private",
+              "readonly": true
+            },
+            {
+              "kind": "method",
+              "name": "injectRefs",
+              "privacy": "private",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "svc",
+                  "type": {
+                    "text": "Service<TimeRangePickerSchema>"
+                  }
+                }
+              ]
+            },
+            {
+              "kind": "field",
+              "name": "ownsText",
+              "privacy": "private",
+              "readonly": true,
+              "default": "new WeakMap<HTMLElement, boolean>()",
+              "description": "段与格子上的文字是否归元素填，首次见到该节点时定。"
+            },
+            {
+              "kind": "method",
+              "name": "fillText",
+              "privacy": "private",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "el",
+                  "type": {
+                    "text": "HTMLElement"
+                  }
+                },
+                {
+                  "name": "text",
+                  "type": {
+                    "text": "string"
+                  }
+                }
+              ],
+              "description": "填节点上的文字，归属只在第一次见到这个节点时定一次。"
+            },
+            {
+              "kind": "field",
+              "name": "columnGroups",
+              "type": {
+                "text": "readonly TimeRangePickerColumnGroup[]"
+              },
+              "description": "起止两组各自此刻该排哪几列、每列有哪些可选值——落在 min/max 之外的、不合 step 的、\n被另一端顶住的、以及随已选的时（分）收窄掉的那些都已经不在里面。作者据它渲染两组列与格子。\n机器尚未建起时两组都是空数组。",
+              "readonly": true
+            },
+            {
+              "kind": "method",
+              "name": "partsIn",
+              "privacy": "private",
+              "return": {
+                "type": {
+                  "text": "HTMLElement[]"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "owner",
+                  "type": {
+                    "text": "HTMLElement"
+                  }
+                },
+                {
+                  "name": "name",
+                  "type": {
+                    "text": "string"
+                  }
+                }
+              ],
+              "description": "取指定角色节点在 owner 子树内的实例：段、列与格子按所在的那一组切分。"
+            },
+            {
+              "kind": "method",
+              "name": "wire",
+              "privacy": "protected",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              }
+            },
+            {
+              "type": {
+                "text": "string[]"
+              },
+              "description": "非受控初始区间",
+              "name": "default-value",
+              "kind": "field"
+            }
+          ],
+          "events": [
+            {
+              "description": "两端变化；detail 为 `{ value: string[] }`，只填了终点时是 `['', end]`",
+              "name": "value-change",
+              "type": {
+                "text": "TimeRangePickerValueChangeDetails"
+              }
+            },
+            {
+              "description": "open 状态变化；detail 为 `{ open: boolean }`",
+              "name": "open-change",
+              "type": {
+                "text": "TimeRangePickerOpenChangeDetails"
+              }
+            }
+          ],
+          "attributes": [
+            {
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "description": "受控开合；缺省该属性即非受控",
+              "name": "open",
+              "fieldName": "open"
+            },
+            {
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "description": "非受控初始为展开",
+              "name": "default-open",
+              "fieldName": "defaultOpen"
+            },
+            {
+              "type": {
+                "text": "string | undefined"
+              },
+              "description": "下界（含）：裁掉浮层里落在界外的可选值，并把已填的越界值标注出来；终点那组还以起点为下界",
+              "name": "min",
+              "fieldName": "min"
+            },
+            {
+              "type": {
+                "text": "string | undefined"
+              },
+              "description": "上界（含），同上；起点那组还以终点为上界",
+              "name": "max",
+              "fieldName": "max"
+            },
+            {
+              "type": {
+                "text": "string | undefined"
+              },
+              "description": "BCP 47 语言标记，决定上午/下午文字与默认小时制",
+              "name": "locale",
+              "fieldName": "locale"
+            },
+            {
+              "type": {
+                "text": "TimeHourCycle | undefined"
+              },
+              "description": "小时制；不写则按 locale 推断，再没有就用 24",
+              "name": "hour-cycle",
+              "fieldName": "hourCycle"
+            },
+            {
+              "type": {
+                "text": "TimeGranularity | undefined"
+              },
+              "description": "值精确到哪一段，默认 minute",
+              "name": "granularity",
+              "fieldName": "granularity"
+            },
+            {
+              "type": {
+                "text": "number | undefined"
+              },
+              "description": "分列的步进（分钟），默认 1",
+              "name": "step",
+              "fieldName": "step"
+            },
+            {
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "description": "禁用：段整组退出 Tab 序列，触发器用原生 disabled，隐藏输入不参与提交",
+              "name": "disabled",
+              "fieldName": "disabled"
+            },
+            {
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "description": "只读：浮层照常展开与浏览，但值改不动也清不掉",
+              "name": "read-only",
+              "fieldName": "readOnly"
+            },
+            {
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "description": "校验失败标注；不给也会自己判：任一端越界、或终点早于起点",
+              "name": "invalid",
+              "fieldName": "invalid"
+            },
+            {
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "description": "必填标注，落到每段的 aria-required 上",
+              "name": "required",
+              "fieldName": "required"
+            },
+            {
+              "type": {
+                "text": "string | undefined"
+              },
+              "description": "起点那份隐藏输入的表单字段名；给了才带 name",
+              "name": "name",
+              "fieldName": "name"
+            },
+            {
+              "type": {
+                "text": "string | undefined"
+              },
+              "description": "终点那份隐藏输入的表单字段名；不给即终点不参与提交",
+              "name": "end-name",
+              "fieldName": "endName"
+            },
+            {
+              "type": {
+                "text": "ControlVariant | undefined"
+              },
+              "description": "视觉变体",
+              "name": "variant",
+              "fieldName": "variant"
+            },
+            {
+              "type": {
+                "text": "Tone | undefined"
+              },
+              "description": "语气",
+              "name": "tone",
+              "fieldName": "tone"
+            },
+            {
+              "type": {
+                "text": "Size | undefined"
+              },
+              "description": "尺寸",
+              "name": "size",
+              "fieldName": "size"
+            },
+            {
+              "type": {
+                "text": "Placement | undefined"
+              },
+              "description": "首选放置位，默认 bottom-start；避让后的实际位写在 data-placement 上",
+              "name": "placement",
+              "fieldName": "placement"
+            },
+            {
+              "type": {
+                "text": "number | undefined"
+              },
+              "description": "浮层与锚点的间距（px）",
+              "name": "offset",
+              "fieldName": "offset"
+            },
+            {
+              "type": {
+                "text": "Direction | undefined"
+              },
+              "description": "文字方向，翻转浮层在行内轴上 start 与 end 的落点；只在显式给了才写到定位层上",
+              "name": "dir",
+              "fieldName": "direction"
+            }
+          ],
+          "superclass": {
+            "name": "XhPortalHostElement",
+            "module": "/src/runtime/portal-host"
+          },
+          "tagName": "xh-time-range-picker",
+          "customElement": true,
+          "cssProperties": [
+            {
+              "name": "--xh-time-range-picker-action-bg"
+            },
+            {
+              "name": "--xh-time-range-picker-action-bg-active"
+            },
+            {
+              "name": "--xh-time-range-picker-action-bg-hover"
+            },
+            {
+              "name": "--xh-time-range-picker-action-fg"
+            },
+            {
+              "name": "--xh-time-range-picker-action-fg-hover"
+            },
+            {
+              "name": "--xh-time-range-picker-action-font-size"
+            },
+            {
+              "name": "--xh-time-range-picker-action-radius"
+            },
+            {
+              "name": "--xh-time-range-picker-action-size"
+            },
+            {
+              "name": "--xh-time-range-picker-column-divider"
+            },
+            {
+              "name": "--xh-time-range-picker-column-gap"
+            },
+            {
+              "name": "--xh-time-range-picker-column-group-divider"
+            },
+            {
+              "name": "--xh-time-range-picker-column-group-gap"
+            },
+            {
+              "name": "--xh-time-range-picker-column-group-label-fg"
+            },
+            {
+              "name": "--xh-time-range-picker-column-group-label-px"
+            },
+            {
+              "name": "--xh-time-range-picker-column-group-label-py"
+            },
+            {
+              "name": "--xh-time-range-picker-column-h"
+            },
+            {
+              "name": "--xh-time-range-picker-column-min-w"
+            },
+            {
+              "name": "--xh-time-range-picker-column-px"
+            },
+            {
+              "name": "--xh-time-range-picker-content-backdrop"
+            },
+            {
+              "name": "--xh-time-range-picker-content-bg"
+            },
+            {
+              "name": "--xh-time-range-picker-content-border"
+            },
+            {
+              "name": "--xh-time-range-picker-content-fg"
+            },
+            {
+              "name": "--xh-time-range-picker-content-highlight"
+            },
+            {
+              "name": "--xh-time-range-picker-content-max-h"
+            },
+            {
+              "name": "--xh-time-range-picker-content-px"
+            },
+            {
+              "name": "--xh-time-range-picker-content-py"
+            },
+            {
+              "name": "--xh-time-range-picker-content-radius"
+            },
+            {
+              "name": "--xh-time-range-picker-content-shadow"
+            },
+            {
+              "name": "--xh-time-range-picker-control-bg"
+            },
+            {
+              "name": "--xh-time-range-picker-control-bg-disabled"
+            },
+            {
+              "name": "--xh-time-range-picker-control-bg-hover"
+            },
+            {
+              "name": "--xh-time-range-picker-control-bg-readonly"
+            },
+            {
+              "name": "--xh-time-range-picker-control-border"
+            },
+            {
+              "name": "--xh-time-range-picker-control-border-focus"
+            },
+            {
+              "name": "--xh-time-range-picker-control-border-hover"
+            },
+            {
+              "name": "--xh-time-range-picker-control-border-invalid"
+            },
+            {
+              "name": "--xh-time-range-picker-control-fg"
+            },
+            {
+              "name": "--xh-time-range-picker-control-gap"
+            },
+            {
+              "name": "--xh-time-range-picker-control-h"
+            },
+            {
+              "name": "--xh-time-range-picker-control-min-w"
+            },
+            {
+              "name": "--xh-time-range-picker-control-px"
+            },
+            {
+              "name": "--xh-time-range-picker-control-radius"
+            },
+            {
+              "name": "--xh-time-range-picker-control-shadow"
+            },
+            {
+              "name": "--xh-time-range-picker-font-size"
+            },
+            {
+              "name": "--xh-time-range-picker-gap"
+            },
+            {
+              "name": "--xh-time-range-picker-icon-size"
+            },
+            {
+              "name": "--xh-time-range-picker-item-bg-checked"
+            },
+            {
+              "name": "--xh-time-range-picker-item-bg-checked-hover"
+            },
+            {
+              "name": "--xh-time-range-picker-item-bg-hover"
+            },
+            {
+              "name": "--xh-time-range-picker-item-check-fg"
+            },
+            {
+              "name": "--xh-time-range-picker-item-check-size"
+            },
+            {
+              "name": "--xh-time-range-picker-item-fg"
+            },
+            {
+              "name": "--xh-time-range-picker-item-fg-checked"
+            },
+            {
+              "name": "--xh-time-range-picker-item-font-size"
+            },
+            {
+              "name": "--xh-time-range-picker-item-h"
+            },
+            {
+              "name": "--xh-time-range-picker-item-px"
+            },
+            {
+              "name": "--xh-time-range-picker-item-py"
+            },
+            {
+              "name": "--xh-time-range-picker-item-radius"
+            },
+            {
+              "name": "--xh-time-range-picker-item-weight-checked"
+            },
+            {
+              "name": "--xh-time-range-picker-label-fg"
+            },
+            {
+              "name": "--xh-time-range-picker-label-fg-disabled"
+            },
+            {
+              "name": "--xh-time-range-picker-label-font-size"
+            },
+            {
+              "name": "--xh-time-range-picker-label-font-weight"
+            },
+            {
+              "name": "--xh-time-range-picker-layer"
+            },
+            {
+              "name": "--xh-time-range-picker-literal-fg"
+            },
+            {
+              "name": "--xh-time-range-picker-placeholder-fg"
+            },
+            {
+              "name": "--xh-time-range-picker-preset-bg-hover"
+            },
+            {
+              "name": "--xh-time-range-picker-preset-check-fg"
+            },
+            {
+              "name": "--xh-time-range-picker-preset-check-size"
+            },
+            {
+              "name": "--xh-time-range-picker-preset-fg"
+            },
+            {
+              "name": "--xh-time-range-picker-preset-fg-checked"
+            },
+            {
+              "name": "--xh-time-range-picker-preset-fg-disabled"
+            },
+            {
+              "name": "--xh-time-range-picker-preset-group-gap"
+            },
+            {
+              "name": "--xh-time-range-picker-preset-group-h"
+            },
+            {
+              "name": "--xh-time-range-picker-preset-group-px"
+            },
+            {
+              "name": "--xh-time-range-picker-preset-px"
+            },
+            {
+              "name": "--xh-time-range-picker-preset-py"
+            },
+            {
+              "name": "--xh-time-range-picker-preset-radius"
+            },
+            {
+              "name": "--xh-time-range-picker-range-separator-fg"
+            },
+            {
+              "name": "--xh-time-range-picker-range-separator-mx"
+            },
+            {
+              "name": "--xh-time-range-picker-range-separator-px"
+            },
+            {
+              "name": "--xh-time-range-picker-segment-bg-focus"
+            },
+            {
+              "name": "--xh-time-range-picker-segment-bg-hover"
+            },
+            {
+              "name": "--xh-time-range-picker-segment-bg-invalid-focus"
+            },
+            {
+              "name": "--xh-time-range-picker-segment-fg-focus"
+            },
+            {
+              "name": "--xh-time-range-picker-segment-fg-invalid"
+            },
+            {
+              "name": "--xh-time-range-picker-segment-fg-invalid-focus"
+            },
+            {
+              "name": "--xh-time-range-picker-segment-px"
+            },
+            {
+              "name": "--xh-time-range-picker-segment-radius"
+            }
+          ]
+        }
+      ],
+      "exports": [
+        {
+          "kind": "js",
+          "name": "XhTimeRangePickerElement",
+          "declaration": {
+            "name": "XhTimeRangePickerElement",
+            "module": "src/elements/time-range-picker.ts"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
       "path": "src/elements/timeline.ts",
       "declarations": [
         {

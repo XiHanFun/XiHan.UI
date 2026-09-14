@@ -404,6 +404,7 @@
         "menubar.css",
         "select.css",
         "time-picker.css",
+        "time-range-picker.css",
         "tooltip.css",
         "tree-select.css"
       ],
@@ -419,6 +420,7 @@
         "menubar",
         "select",
         "time-picker",
+        "time-range-picker",
         "tooltip",
         "tree-select"
       ]
@@ -437,6 +439,7 @@
         "menubar.css",
         "select.css",
         "time-picker.css",
+        "time-range-picker.css",
         "tooltip.css",
         "tree-select.css"
       ],
@@ -452,6 +455,7 @@
         "menubar",
         "select",
         "time-picker",
+        "time-range-picker",
         "tooltip",
         "tree-select"
       ]

@@ -101,6 +101,7 @@
 <XhComponentCard src="text-field" name="TextField" label="文本字段" href="/components/text-field" status="alpha" />
 <XhComponentCard src="time-field" name="TimeField" label="时间字段" href="/components/time-field" />
 <XhComponentCard src="time-picker" name="TimePicker" label="时间选择器" href="/components/time-picker" />
+<XhComponentCard src="time-range-picker" name="TimeRangePicker" label="时间范围选择器" href="/components/time-range-picker" status="alpha" />
 <XhComponentCard src="transfer" name="Transfer" label="穿梭框" href="/components/transfer" status="alpha" />
 <XhComponentCard src="tree-select" name="TreeSelect" label="树选择" href="/components/tree-select" status="alpha" />
 

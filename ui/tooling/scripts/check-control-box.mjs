@@ -27,6 +27,7 @@ const COMPONENTS = [
   'date-picker',
   'date-range-picker',
   'time-picker',
+  'time-range-picker',
   'mention',
   'pin-input',
 ]

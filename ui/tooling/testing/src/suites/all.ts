@@ -110,6 +110,7 @@ import { tagsInputSuite } from './tags-input.suite'
 import { textFieldSuite } from './text-field.suite'
 import { timeFieldSuite } from './time-field.suite'
 import { timePickerSuite } from './time-picker.suite'
+import { timeRangePickerSuite } from './time-range-picker.suite'
 import { timelineSuite } from './timeline.suite'
 import { timerSuite } from './timer.suite'
 import { timestampSuite } from './timestamp.suite'
@@ -258,4 +259,5 @@ export const allSuites: readonly ConformanceSuite[] = [
   inputGroupSuite,
   commandSuite,
   dateRangePickerSuite,
+  timeRangePickerSuite,
 ]

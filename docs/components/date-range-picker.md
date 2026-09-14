@@ -38,7 +38,7 @@
 
 ### 不可用日期
 
-周末不可选；allowsNonContiguousRanges 让区间跨过它们
+周末不可选，区间允许跨过不可用的日子
 
 <XhDemo src="date-range-picker/04-unavailable" />
 
@@ -59,7 +59,7 @@ granularity 决定两组输入行铺哪几段、浮层铺哪一档格子
 
 - 只选一天或几个不连续的日子：用[日期选择器](./date-picker)。
 - 不需要输入行，只在页面上摆一张日历挑区间：用[日历范围选择器](./calendar-range-picker)。
-- 只要时间段：用时间范围选择器。
+- 只要时间段：用[时间范围选择器](./time-range-picker)。
 
 ### 特性
 
@@ -98,6 +98,8 @@ granularity 决定两组输入行铺哪几段、浮层铺哪一档格子
 | 层 | 值 |
 | --- | --- |
 | 自定义元素 | `<xh-date-range-picker>` |
+| Vue 组件 | `XhDateRangePickerCalendar` `XhDateRangePickerCell` `XhDateRangePickerCellTrigger` `XhDateRangePickerClearTrigger` `XhDateRangePickerContent` `XhDateRangePickerControl` `XhDateRangePickerGrid` `XhDateRangePickerGridBody` `XhDateRangePickerGridHead` `XhDateRangePickerHeader` `XhDateRangePickerHeading` `XhDateRangePickerHeadingMonthTrigger` `XhDateRangePickerHeadingYearTrigger` `XhDateRangePickerHiddenInput` `XhDateRangePickerLabel` `XhDateRangePickerNextTrigger` `XhDateRangePickerNextYearTrigger` `XhDateRangePickerPositioner` `XhDateRangePickerPreset` `XhDateRangePickerPresetGroup` `XhDateRangePickerPrevTrigger` `XhDateRangePickerPrevYearTrigger` `XhDateRangePickerRangeSeparator` `XhDateRangePickerRoot` `XhDateRangePickerSegment` `XhDateRangePickerSegmentGroup` `XhDateRangePickerTrigger` `XhDateRangePickerWeekDay` `XhDateRangePickerWeekNumber` `XhDateRangePickerWeekRow` |
+| 组合式函数 | `useDateRangePicker` |
 | 状态机 | `dateRangePickerMachine` |
 | 皮肤 | `@xihan-ui/styles/date-range-picker.css` |
 
@@ -151,6 +153,17 @@ granularity 决定两组输入行铺哪几段、浮层铺哪一档格子
 | `open-change` | `DateRangePickerOpenChangeDetails` | open 状态变化；detail 为 `{ open: boolean }` |
 | `focused-value-change` | `DateRangePickerFocusChangeDetails` | 聚焦日变化（意味着展示月可能换了）；detail 为 `{ focusedValue: string }`，作者据此重画网格 |
 | `active-view-change` | `CalendarViewChangeDetails` | 钻到了另一层（点标题钻上、点格子钻下）；detail 为 `{ activeView: 'day'\|'week'\|'month'\|'quarter'\|'year' }`，作者据此重画网格 |
+
+### 插槽
+
+仅列出带载荷的插槽。
+
+| Vue 组件 | 插槽 | 载荷 | 说明 |
+| --- | --- | --- | --- |
+| `XhDateRangePickerPreset` | `default` | — | 条目内容；不写就用数据里的 label。 |
+| `XhDateRangePickerPresetGroup` | `default` | `DateRangePickerPresetsSlotProps` | 自己铺条目；不写就按 presets 数据自动铺，两者产出的 DOM 一致。 |
+| `XhDateRangePickerRoot` | `default` | `DateRangePickerRootSlotProps` |  |
+| `XhDateRangePickerSegment` | `default` | `DateRangePickerSegmentSlotProps` |  |
 
 ### 状态
 

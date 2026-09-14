@@ -329,6 +329,10 @@
     "variant",
     "size"
   ],
+  "time-range-picker": [
+    "variant",
+    "size"
+  ],
   "timeline": [
     "size"
   ],

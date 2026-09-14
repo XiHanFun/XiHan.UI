@@ -30,6 +30,7 @@ const PAIRED = {
   'transfer': ['list'],
   'cascader': ['column'],
   'time-picker': ['column'],
+  'time-range-picker': ['column'],
   'date-picker': ['time-column'],
 }
 

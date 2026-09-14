@@ -31,6 +31,7 @@ import {
 const SIZE_EXEMPT = {
   'cascader': '每列高度定死且列内自滚，面板高度不随数据增长',
   'time-picker': '每列各自限高自滚；整面板滚会让时列与分列一起走，反而不能对齐着挑',
+  'time-range-picker': '每列各自限高自滚；整面板滚会让起止两组的时列与分列一起走，反而不能对齐着挑',
   'tooltip': 'role=tooltip 不可聚焦，内部滚动区键盘用户够不到，加滚动是制造无障碍陷阱',
   'floating-panel': '尺寸是用户自己拖出来的，由 minSize/maxSize 夹取，不从锚点下的可用空间推',
 }

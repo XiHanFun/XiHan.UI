@@ -60,6 +60,7 @@ const PRESSABLE = {
   'date-picker': ['clear-trigger', 'trigger', 'confirm-trigger'],
   'date-range-picker': ['clear-trigger', 'trigger'],
   'time-picker': ['clear-trigger', 'trigger'],
+  'time-range-picker': ['clear-trigger', 'trigger'],
   'text-field': ['clear-trigger'],
   // 标签里的删除钮是 tag 的 close-trigger，按压归 tag.css
   'tags-input': ['clear-trigger'],
@@ -178,6 +179,8 @@ const NO_PRESS = {
   'date-picker:time-item': '列表行的按下回执走高亮档，缩放会抖动整列',
   'time-picker:preset': '列表行的按下回执走高亮档，缩放会抖动整列',
   'time-picker:item': '列表行的按下回执走高亮档，缩放会抖动整列',
+  'time-range-picker:preset': '列表行的按下回执走高亮档，缩放会抖动整列',
+  'time-range-picker:item': '列表行的按下回执走高亮档，缩放会抖动整列',
   'side-nav:link': '列表行的按下回执走高亮档，缩放会抖动整列',
   'side-nav:branch-trigger': '列表行的按下回执走高亮档，缩放会抖动整列',
   'form:error-summary-item': '错误摘要里的每一条是一行文字链接，回执走文字色，缩放一行文字会把整块摘要抖起来',

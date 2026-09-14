@@ -52,6 +52,7 @@ const ATTR = {
   'select': 'value-text',
   'time-field': 'segment',
   'time-picker': 'segment',
+  'time-range-picker': 'segment',
   'tree-select': 'value-text',
 }
 

@@ -6,6 +6,7 @@
     "pin-input:hidden-input": "原生 input 被压成 1px 藏在控件里承接表单提交，指针落在可见的格子上，不落在它身上",
     "time-field:hidden-input": "原生 input 被压成 1px 藏在控件里承接表单提交与读屏，指针落在可见的时间段上，不落在它身上",
     "time-picker:hidden-input": "原生 input 被压成 1px 藏在控件里承接表单提交与读屏，指针落在可见的触发钮上，不落在它身上",
+    "time-range-picker:hidden-input": "原生 input 被压成 1px 藏在控件里承接表单提交与读屏，指针落在可见的触发钮上，不落在它身上",
     "toggle-group:hidden-input": "原生 input 被压成 1px 藏在组里承接表单提交，指针落在可见的段上，不落在它身上"
   },
   "inlineMark": {
