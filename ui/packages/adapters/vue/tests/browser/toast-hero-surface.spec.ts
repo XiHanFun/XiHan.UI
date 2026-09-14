@@ -103,8 +103,13 @@ describe('轻提示的 Hero 风格中性浮层', () => {
 
     close.focus()
     await new Promise(resolve => setTimeout(resolve, 200))
+    const rootRect = root.getBoundingClientRect()
+    const closeRect = close.getBoundingClientRect()
     expect(getComputedStyle(close).opacity).toBe('1')
-    expect(close.getBoundingClientRect().width).toBe(resolvedWidth(root, 'var(--xh-control-action-size)'))
+    expect(closeRect.width).toBe(resolvedWidth(root, 'var(--xh-control-action-size)'))
+    expect(closeRect.left).toBeGreaterThanOrEqual(rootRect.left)
+    expect(closeRect.right).toBeLessThanOrEqual(rootRect.right)
+    expect(Math.abs((closeRect.top + closeRect.bottom - rootRect.top - rootRect.bottom) / 2)).toBeLessThan(1)
   })
 
   it('到点后沿堆叠方向播放退场动画，再进入 unmounted', async () => {
