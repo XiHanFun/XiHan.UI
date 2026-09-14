@@ -120,7 +120,7 @@ tone 落在触发按钮的展开态上，六种颜色各展开一份做对照
 
 | 事件 | 载荷 | 说明 |
 | --- | --- | --- |
-| `open-change` | `CollapsibleOpenChangeDetails` | open 状态变化；detail 为 `{ open: boolean }` |
+| `open-change` | `` | open 状态变化；detail 为 `{ open: boolean }` |
 
 ### 状态
 

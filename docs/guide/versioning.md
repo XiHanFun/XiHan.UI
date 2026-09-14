@@ -214,7 +214,7 @@ brand  neutral  success  warning  danger  info
 | 注册函数 | 2（`defineXhElements`、`defineXhBackground`） | **受约束** |
 | observed attribute | 1325 条声明 / 375 个不同名字 | **受约束**（具体元素上的具体属性名） |
 | attribute 名词汇表本身 | 375 | **只增不减**（新组件复用 `size` / `tone` / `dir` 不算破坏） |
-| `CustomEvent` 名 | 90 个名字 / 201 条「元素 × 事件」 | **受约束** |
+| `CustomEvent` 名 | 91 个名字 / 201 条「元素 × 事件」 | **受约束** |
 | 事件传播语义 | `bubbles: true, composed: true`（186 处中 184 处） | **受约束**——把冒泡改掉会让祖先节点上的事件委托静默失效。例外是名为 `submit` 的事件（`xh-prompt-input` / `xh-question-flow`）：与原生表单提交同名，一律不冒泡，免得被祖先 `<form>` 当成自己的提交 |
 | 事件 `detail` 形状 | 184 个 `*Details` 类型 | **受约束**，等同于 headless 的同名类型 |
 | `attribute: false` 的 JS 字段 | 209 条（涉及 69 个字段名） | **受约束**。`collection`、`translations`、`validate`、`filter` 这类只能用 JS 赋值，HTML 里表达不出来——**不是每个 property 都有对应 attribute** |

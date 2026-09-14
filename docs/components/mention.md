@@ -143,10 +143,10 @@ variant 换正文框的描边与底色，候选面板不受影响
 
 | 事件 | 载荷 | 说明 |
 | --- | --- | --- |
-| `value-change` | `MentionValueChangeDetails` | 正文变化；detail 为 `{ value: string }` |
-| `query-change` | `MentionQueryChangeDetails` | 查询串变化；detail 为 `{ query, prefix }`，作者据此过滤候选；收起时报 null |
-| `select` | `MentionSelectDetails` | 候选被插进正文；detail 为 `{ value, label, prefix }` |
-| `open-change` | `MentionOpenChangeDetails` | 浮层开合；detail 为 `{ open: boolean }` |
+| `value-change` | `` | 正文变化；detail 为 `{ value: string }` |
+| `query-change` | `` | 查询串变化；detail 为 `{ query, prefix }`，作者据此过滤候选；收起时报 null |
+| `select` | `` | 候选被插进正文；detail 为 `{ value, label, prefix }` |
+| `open-change` | `` | 浮层开合；detail 为 `{ open: boolean }` |
 
 ### 插槽
 

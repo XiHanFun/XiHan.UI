@@ -111,8 +111,8 @@
 
 | 事件 | 载荷 | 说明 |
 | --- | --- | --- |
-| `sider-collapsed-change` | `LayoutSiderCollapsedChangeDetails` | 折叠态变化；detail 为 `{ collapsed: boolean }` |
-| `sider-breakpoint` | `LayoutSiderBreakpointDetails` | 断点跨过去时发，挂载时也发一次当前值；detail 为 `{ matched: boolean }` |
+| `sider-collapsed-change` | `` | 折叠态变化；detail 为 `{ collapsed: boolean }` |
+| `sider-breakpoint` | `` | 断点跨过去时发，挂载时也发一次当前值；detail 为 `{ matched: boolean }` |
 
 ### 状态
 

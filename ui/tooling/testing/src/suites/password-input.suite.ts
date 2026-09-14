@@ -215,9 +215,9 @@ export const passwordInputSuite: ConformanceSuite = {
       ],
     },
     {
-      name: 'defaultVisible：只给初值，之后仍可自己翻',
+      name: 'defaultRevealed：只给初值，之后仍可自己翻',
       spec: { adr: 'controlled-uncontrolled' },
-      props: { defaultVisible: true },
+      props: { defaultRevealed: true },
       initial: {
         parts: {
           'input': { type: 'text' },
@@ -229,9 +229,9 @@ export const passwordInputSuite: ConformanceSuite = {
       ],
     },
     {
-      name: '受控 visible：点击只发意图不自改 DOM，宿主写回后才切',
+      name: '受控 revealed：点击只发意图不自改 DOM，宿主写回后才切',
       spec: { adr: 'controlled-uncontrolled' },
-      props: { visible: false },
+      props: { revealed: false },
       steps: [
         {
           kind: 'click',
@@ -243,7 +243,7 @@ export const passwordInputSuite: ConformanceSuite = {
             },
           },
         },
-        { kind: 'setProps', props: { visible: true } },
+        { kind: 'setProps', props: { revealed: true } },
         {
           kind: 'settle',
           until: { attr: { part: 'input', name: 'type', value: 'text' } },
@@ -412,7 +412,7 @@ export const passwordInputSuite: ConformanceSuite = {
       name: 'translations：三句读屏文案都能被覆盖',
       spec: { apg: APG },
       props: {
-        defaultVisible: true,
+        defaultRevealed: true,
         translations: { visibilityTriggerHide: '隐藏密码', capsLockOn: '大写锁定已打开' },
       },
       initial: {

@@ -114,8 +114,8 @@
 
 | 事件 | 载荷 | 说明 |
 | --- | --- | --- |
-| `value-change` | `SideNavValueChangeDetails` | 选中变化；detail 为 `{ value: string \| null }` |
-| `expanded-value-change` | `SideNavExpandedValueChangeDetails` | 展开集合变化；detail 为 `{ value: string[] }` |
+| `value-change` | `` | 选中变化；detail 为 `{ value: string \| null }` |
+| `expanded-value-change` | `` | 展开集合变化；detail 为 `{ value: string[] }` |
 
 ### 插槽
 

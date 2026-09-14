@@ -164,7 +164,7 @@ checked-change 带一份 { checked }，非受控时内部转移也照发一次
 
 | 事件 | 载荷 | 说明 |
 | --- | --- | --- |
-| `checked-change` | `SwitchCheckedChangeDetails` | checked 状态变化；detail 为 `{ checked: boolean }` |
+| `checked-change` | `` | checked 状态变化；detail 为 `{ checked: boolean }` |
 
 ### 状态
 

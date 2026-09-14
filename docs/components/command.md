@@ -135,9 +135,9 @@ filter 关掉：交进来的 collection 就是此刻该显示的那几条，筛�
 
 | 事件 | 载荷 | 说明 |
 | --- | --- | --- |
-| `open-change` | `CommandOpenChangeDetails` | open 状态变化；detail 为 `{ open: boolean, reason?: string }` |
-| `input-value-change` | `CommandInputValueChangeDetails` | 检索串变化；detail 为 `{ inputValue: string }` |
-| `select` | `CommandSelectDetails` | 选中一条命令；detail 为 `{ value: string, label: string }` |
+| `open-change` | `` | open 状态变化；detail 为 `{ open: boolean, reason?: string }` |
+| `input-value-change` | `` | 检索串变化；detail 为 `{ inputValue: string }` |
+| `select` | `` | 选中一条命令；detail 为 `{ value: string, label: string }` |
 
 ### 插槽
 

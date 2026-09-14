@@ -12,7 +12,7 @@
 
 ## 用法
 
-root 持有状态，control 是那个视觉盒；不传 value 与 visible 即为非受控，明暗由组件自己管，钮里的图标跟着明暗换
+root 持有状态，control 是那个视觉盒；不传 value 与 revealed 即为非受控，明暗由组件自己管，钮里的图标跟着明暗换
 
 <XhDemo src="password-input/01-basic" />
 
@@ -81,7 +81,7 @@ name 才让它参与提交，auto-complete 写成 new-password 密码管理器�
 
 ### 特性
 
-- 明暗切换在 `visible` / `defaultVisible` 两态齐全，受控与非受控都走同一条路。
+- 明暗切换在 `revealed` / `defaultRevealed` 两态齐全，受控与非受控都走同一条路。
 - 切换之后焦点留在切换钮上，框里的光标与选中范围原样放回。
 - 大写锁定提示由按键事件驱动，焦点离开输入框即熄灭。
 - `autoComplete` 缺省 `current-password`，注册表单要显式改成 `new-password`。
@@ -99,7 +99,7 @@ name 才让它参与提交，auto-complete 写成 new-password 密码管理器�
 
 - 自己写角色节点时（Web Components 用法），三个角色必须用对标签：标题是原生 `<label>`、输入框是原生 `<input>`、切换钮是原生 `<button>`。标题的 `for` 恒写向输入框的 id，写成 `<span>` 就点不动；切换钮写成 `<div>` 就没有 Enter / Space 激活——两种都不报错，只是静默失效。
 - 大写锁定提示这个节点也得由作者写出来（元素不生成结构），写成空壳即可，文字由组件填。Vue 侧这些由组件代劳，作者不会写错。
-- 明文只在用户主动切开时出现，别默认 `defaultVisible`：屏幕背后有别人。
+- 明文只在用户主动切开时出现，别默认 `defaultRevealed`：屏幕背后有别人。
 - 切换钮别在切开后消失或换位置：它承着焦点，一动键盘用户就丢了位置。
 - `readOnly` 只禁止改值，不禁止显隐：用户仍可聚焦、复制和核对已有密码；`disabled` 才同时禁用输入与显隐动作。
 - 大写锁定提示只提示，不拦提交：它是键盘的物理状态，用户可能就是要打大写。
@@ -133,8 +133,8 @@ name 才让它参与提交，auto-complete 写成 new-password 密码管理器�
 | --- | --- | --- | --- |
 | `value` | `string` |  | 受控值；给了就由宿主说了算，机器不自改。 |
 | `defaultValue` | `string` |  | 非受控初值。 |
-| `visible` | `boolean` |  | 受控的明暗态；给了就由宿主说了算。 |
-| `defaultVisible` | `boolean` |  | 非受控的初始明暗态，缺省隐藏。 |
+| `revealed` | `boolean` |  | 受控的明暗态：明文是否揭开；给了就由宿主说了算。 |
+| `defaultRevealed` | `boolean` |  | 非受控的初始明暗态，缺省隐藏。 |
 | `disabled` | `boolean` |  |  |
 | `readOnly` | `boolean` |  |  |
 | `required` | `boolean` |  |  |
@@ -148,7 +148,7 @@ name 才让它参与提交，auto-complete 写成 new-password 密码管理器�
 | `tone` | `Tone` |  | 语气：brand / neutral / success / warning / danger / info，决定用哪族颜色。 |
 | `size` | `Size` |  | 尺寸：sm / md / lg。 |
 | `onValueChange` | `(details: PasswordInputValueChangeDetails) => void` |  |  |
-| `onVisibilityChange` | `(details: PasswordInputVisibilityChangeDetails) => void` |  |  |
+| `onRevealedChange` | `(details: PasswordInputRevealedChangeDetails) => void` |  |  |
 
 ### 事件
 
@@ -156,8 +156,8 @@ name 才让它参与提交，auto-complete 写成 new-password 密码管理器�
 
 | 事件 | 载荷 | 说明 |
 | --- | --- | --- |
-| `value-change` | `PasswordInputValueChangeDetails` | 值变化；detail 为 `{ value: string }` |
-| `visibility-change` | `PasswordInputVisibilityChangeDetails` | 明暗变化；detail 为 `{ visible: boolean }` |
+| `value-change` | `` | 值变化；detail 为 `{ value: string }` |
+| `revealed-change` | `` | 明暗变化；detail 为 `{ revealed: boolean }` |
 
 ### 插槽
 
@@ -180,9 +180,9 @@ name 才让它参与提交，auto-complete 写成 new-password 密码管理器�
 
 **状态**：`idle`
 
-**事件**：`VALUE.SET` · `VISIBILITY.SET` · `VISIBILITY.TOGGLE` · `CAPS_LOCK.SET` · `FORM.RESET`
+**事件**：`VALUE.SET` · `REVEALED.SET` · `REVEALED.TOGGLE` · `CAPS_LOCK.SET` · `FORM.RESET`
 
-**判据**：`canEdit` · `canToggleVisibility`
+**判据**：`canEdit` · `canReveal`
 
 ### connect API
 
@@ -192,17 +192,17 @@ name 才让它参与提交，auto-complete 写成 new-password 密码管理器�
 | --- | --- | --- |
 | `value` | `string` |  |
 | `empty` | `boolean` | 值为空串。 |
-| `visible` | `boolean` | 此刻是否明文显示。 |
+| `revealed` | `boolean` | 此刻明文是否已揭开。 |
 | `capsLock` | `boolean` | 大写锁定是否开着；为真时提示部件才显出来。 |
 | `disabled` | `boolean` |  |
 | `readOnly` | `boolean` |  |
 | `invalid` | `boolean` |  |
-| `inputType` | `PasswordInputType` | 输入框此刻的 type，随 visible 走。 |
+| `inputType` | `PasswordInputType` | 输入框此刻的 type，随 revealed 走。 |
 | `capsLockMessage` | `string` | 大写锁定播报区里此刻的文字：开着时是 `translations.capsLockOn`，关着时是空串。 适配器把它落成提示部件的文本内容，读屏念的就是这一段。 |
 | `strength` | `number \| undefined` | 夹回 0–4 后的强度档位；没给 strength 时是 undefined，此时强度条收起。 |
 | `setValue` | `(next: string) => void` | 直接写值，只受 disabled / readOnly 约束。 |
-| `setVisible` | `(next: boolean) => void` | 指定明暗态；整枚控件禁用时不生效。 |
-| `toggleVisibility` | `() => void` | 翻转明暗态；整枚控件禁用时不生效。 |
+| `setRevealed` | `(next: boolean) => void` | 指定明暗态；整枚控件禁用时不生效。 |
+| `toggleRevealed` | `() => void` | 翻转明暗态；整枚控件禁用时不生效。 |
 | `getRootProps` | `() => T['element']` |  |
 | `getLabelProps` | `() => T['label']` |  |
 | `getControlProps` | `() => T['element']` |  |

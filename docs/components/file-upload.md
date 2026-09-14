@@ -162,12 +162,12 @@ remote-files 装编辑表单里已存在的附件：与本地文件同列渲染�
 
 | 事件 | 载荷 | 说明 |
 | --- | --- | --- |
-| `files-change` | `FileUploadFilesChangeDetails` | 列表变化；detail 为 `{ files: File[] }` |
-| `remote-files-change` | `FileUploadRemoteFilesChangeDetails` | 远程附件列表变化；detail 为 `{ files: FileUploadRemoteFile[] }` |
-| `upload-complete` | `FileUploadCompleteDetails` | 单个文件传完；detail 为 `{ file, url? }` |
-| `upload-error` | `FileUploadErrorDetails` | 单个文件传败；detail 为 `{ file, error }` |
-| `file-accept` | `FileUploadFileAcceptDetails` | 本次收下了哪些；detail 为 `{ files: File[] }` |
-| `file-reject` | `FileUploadFileRejectDetails` | 本次拒了哪些、各自为什么；detail 为 `{ files: { file, reasons }[] }` |
+| `files-change` | `` | 列表变化；detail 为 `{ files: File[] }` |
+| `remote-files-change` | `` | 远程附件列表变化；detail 为 `{ files: FileUploadRemoteFile[] }` |
+| `upload-complete` | `` | 单个文件传完；detail 为 `{ file, url? }` |
+| `upload-error` | `` | 单个文件传败；detail 为 `{ file, error }` |
+| `file-accept` | `` | 本次收下了哪些；detail 为 `{ files: File[] }` |
+| `file-reject` | `` | 本次拒了哪些、各自为什么；detail 为 `{ files: { file, reasons }[] }` |
 
 ### 插槽
 

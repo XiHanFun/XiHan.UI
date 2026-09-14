@@ -122,7 +122,7 @@
 
 | 事件 | 载荷 | 说明 |
 | --- | --- | --- |
-| `open-change` | `CollapsibleOpenChangeDetails` | 展开状态变化；detail 为 `{ open: boolean }` |
+| `open-change` | `` | 展开状态变化；detail 为 `{ open: boolean }` |
 
 ### 插槽
 

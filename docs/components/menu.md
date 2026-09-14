@@ -118,8 +118,8 @@
 
 | 事件 | 载荷 | 说明 |
 | --- | --- | --- |
-| `open-change` | `MenuOpenChangeDetails` | open 状态变化；detail 为 `{ open: boolean }` |
-| `select` | `MenuSelectDetails` | 条目被选中（菜单随之关闭）；detail 为 `{ value: string }` |
+| `open-change` | `` | open 状态变化；detail 为 `{ open: boolean }` |
+| `select` | `` | 条目被选中（菜单随之关闭）；detail 为 `{ value: string }` |
 
 ### 插槽
 

@@ -6,7 +6,7 @@
 // 提供 password input 相关实现。
 
 import type { ControlVariant, Size, Tone } from '@xihan-ui/core'
-import type { FormControlState, PasswordInputSchema, PasswordInputTranslations, PasswordInputValueChangeDetails, PasswordInputVisibilityChangeDetails } from '@xihan-ui/headless'
+import type { FormControlState, PasswordInputRevealedChangeDetails, PasswordInputSchema, PasswordInputTranslations, PasswordInputValueChangeDetails } from '@xihan-ui/headless'
 import { connectPasswordInput, passwordInputAnatomy, passwordInputMachine, passwordInputMeta, resolveFormControlState } from '@xihan-ui/headless'
 import { wcNormalize } from '../dom/normalize'
 import { XhElement } from '../element-base'
@@ -15,7 +15,7 @@ import { MachineController } from '../runtime/machine-controller'
 // 属性缺席翻成 undefined，以此区分受控与非受控。
 const STRING_CONVERTER = { fromAttribute: (v: string | null) => v ?? undefined }
 // 三态布尔：缺席=undefined（用默认值）、="false"=false、其余=true。
-// Lit 默认的 Boolean 转换器是 v !== null，受控的 visible 会因此再也表达不了「宿主没管」
+// Lit 默认的 Boolean 转换器是 v !== null，受控的 revealed 会因此再也表达不了「宿主没管」
 const BOOLEAN_CONVERTER = { fromAttribute: (v: string | null) => (v === null ? undefined : v !== 'false') }
 // 数值缺席或空串翻成 undefined，以此区分"没给"与 0。
 const NUMBER_CONVERTER = { fromAttribute: (v: string | null) => (v == null || v === '' ? undefined : Number(v)) }
@@ -37,8 +37,8 @@ const NUMBER_CONVERTER = { fromAttribute: (v: string | null) => (v == null || v 
  * @customElement xh-password-input
  * @attr {string} value - 受控值；缺省该属性即非受控
  * @attr {string} default-value - 非受控初值
- * @attr {boolean} visible - 受控的明暗态；缺省该属性即非受控
- * @attr {boolean} default-visible - 非受控的初始明暗态，缺省隐藏
+ * @attr {boolean} revealed - 受控的明暗态（明文是否揭开）；缺省该属性即非受控
+ * @attr {boolean} default-revealed - 非受控的初始明暗态，缺省隐藏
  * @attr {boolean} disabled - 禁用：输入与明暗切换都推不动
  * @attr {boolean} read-only - 只读：值写不进，明暗照切
  * @attr {boolean} required - 必填标注
@@ -51,7 +51,7 @@ const NUMBER_CONVERTER = { fromAttribute: (v: string | null) => (v == null || v 
  * @attr {'brand'|'neutral'|'success'|'warning'|'danger'|'info'} tone - 语气
  * @attr {'sm'|'md'|'lg'} size - 尺寸
  * @fires value-change - 值变化；detail 为 `{ value: string }`
- * @fires visibility-change - 明暗变化；detail 为 `{ visible: boolean }`
+ * @fires revealed-change - 明暗变化；detail 为 `{ revealed: boolean }`
  * @csspart root - 承载三个视觉轴与 data-disabled / data-readonly / data-invalid / data-empty 的容器
  * @csspart label - 标题；`for` 恒写向 input，故须是原生 `<label>` 才点得动
  * @csspart control - 视觉盒：描边、底色与聚焦环画在它身上，框内三件都是透明分段
@@ -67,8 +67,8 @@ export class XhPasswordInputElement extends XhElement {
   static override properties = {
     value: { converter: STRING_CONVERTER },
     defaultValue: { converter: STRING_CONVERTER, attribute: 'default-value' },
-    visible: { converter: BOOLEAN_CONVERTER },
-    defaultVisible: { converter: BOOLEAN_CONVERTER, attribute: 'default-visible' },
+    revealed: { converter: BOOLEAN_CONVERTER },
+    defaultRevealed: { converter: BOOLEAN_CONVERTER, attribute: 'default-revealed' },
     disabled: { converter: BOOLEAN_CONVERTER },
     readOnly: { converter: BOOLEAN_CONVERTER, attribute: 'read-only' },
     required: { converter: BOOLEAN_CONVERTER },
@@ -86,8 +86,8 @@ export class XhPasswordInputElement extends XhElement {
 
   declare value?: string
   declare defaultValue?: string
-  declare visible?: boolean
-  declare defaultVisible?: boolean
+  declare revealed?: boolean
+  declare defaultRevealed?: boolean
   declare disabled?: boolean
   declare readOnly?: boolean
   declare required?: boolean
@@ -105,8 +105,8 @@ export class XhPasswordInputElement extends XhElement {
     this.dispatchEvent(new CustomEvent('value-change', { detail: details, bubbles: true, composed: true }))
   }
 
-  private readonly notifyVisibility = (details: PasswordInputVisibilityChangeDetails): void => {
-    this.dispatchEvent(new CustomEvent('visibility-change', { detail: details, bubbles: true, composed: true }))
+  private readonly notifyRevealed = (details: PasswordInputRevealedChangeDetails): void => {
+    this.dispatchEvent(new CustomEvent('revealed-change', { detail: details, bubbles: true, composed: true }))
   }
 
   private readonly ctrl = new MachineController<PasswordInputSchema>(this, passwordInputMachine, () => this.machineProps())
@@ -129,8 +129,8 @@ export class XhPasswordInputElement extends XhElement {
       value: this.value,
       defaultValue: this.defaultValue,
       // 布尔一律原样透传：属性不在即 undefined，把缺省交回 connect
-      visible: this.visible,
-      defaultVisible: this.defaultVisible,
+      revealed: this.revealed,
+      defaultRevealed: this.defaultRevealed,
       disabled: control.disabled,
       readOnly: control.readOnly,
       required: control.required,
@@ -144,7 +144,7 @@ export class XhPasswordInputElement extends XhElement {
       size: this.size,
       translations: this.translations,
       onValueChange: this.notifyValue,
-      onVisibilityChange: this.notifyVisibility,
+      onRevealedChange: this.notifyRevealed,
     }
   }
 

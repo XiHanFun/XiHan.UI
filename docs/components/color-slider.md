@@ -122,8 +122,8 @@ orientation 竖排时渐变自下而上；禁用整体压暗，只读留 Tab 位
 
 | 事件 | 载荷 | 说明 |
 | --- | --- | --- |
-| `value-change` | `ColorSliderValueChangeDetails` | 颜色变化；detail 为 `{ value: string }`，拖动过程中会连续发 |
-| `value-change-end` | `ColorSliderValueChangeDetails` | 一次推动结束；detail 为 `{ value: string }` |
+| `value-change` | `` | 颜色变化；detail 为 `{ value: string }`，拖动过程中会连续发 |
+| `value-change-end` | `` | 一次推动结束；detail 为 `{ value: string }` |
 
 ### 插槽
 

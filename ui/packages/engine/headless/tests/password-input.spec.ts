@@ -6,7 +6,7 @@
  */
 
 import type { Service } from '@xihan-ui/core'
-import type { PasswordInputSchema, PasswordInputValueChangeDetails, PasswordInputVisibilityChangeDetails } from '../src/password-input'
+import type { PasswordInputRevealedChangeDetails, PasswordInputSchema, PasswordInputValueChangeDetails } from '../src/password-input'
 import { createService, FORM_RESET_EVENT, normalizeProps } from '@xihan-ui/core'
 import { createVanillaRuntime } from '@xihan-ui/core/vanilla'
 import { afterEach, describe, expect, it } from 'vitest'
@@ -66,7 +66,7 @@ interface Harness {
   indicator: HTMLElement
   service: Service<PasswordInputSchema>
   changes: PasswordInputValueChangeDetails[]
-  visibilityChanges: PasswordInputVisibilityChangeDetails[]
+  revealedChanges: PasswordInputRevealedChangeDetails[]
   setProps: (next: Partial<Props>) => void
   render: () => void
 }
@@ -74,13 +74,13 @@ interface Harness {
 function mount(initial: Partial<Props> = {}): Harness {
   const props: Partial<Props> = { ...initial }
   const changes: PasswordInputValueChangeDetails[] = []
-  const visibilityChanges: PasswordInputVisibilityChangeDetails[] = []
+  const revealedChanges: PasswordInputRevealedChangeDetails[] = []
 
   const runtime = createVanillaRuntime()
   // 受控的两个 prop 必须由 signal 承载：宿主写回要能把订阅者唤醒，
   // 直接改普通对象没有任何东西通知机器，重渲那一拍就永远等不到
   const valueSignal = runtime.signal<string | undefined>(initial.value)
-  const visibleSignal = runtime.signal<boolean | undefined>(initial.visible)
+  const revealedSignal = runtime.signal<boolean | undefined>(initial.revealed)
   const propsVersion = runtime.signal(0)
   const service = createService(passwordInputMachine, {
     props: () => {
@@ -88,9 +88,9 @@ function mount(initial: Partial<Props> = {}): Harness {
       return {
         ...props,
         value: valueSignal.get(),
-        visible: visibleSignal.get(),
+        revealed: revealedSignal.get(),
         onValueChange: d => changes.push(d),
-        onVisibilityChange: d => visibilityChanges.push(d),
+        onRevealedChange: d => revealedChanges.push(d),
       }
     },
     runtime,
@@ -134,13 +134,13 @@ function mount(initial: Partial<Props> = {}): Harness {
     indicator,
     service,
     changes,
-    visibilityChanges,
+    revealedChanges,
     setProps: (next) => {
       Object.assign(props, next)
       if ('value' in next)
         valueSignal.set(next.value)
-      if ('visible' in next)
-        visibleSignal.set(next.visible)
+      if ('revealed' in next)
+        revealedSignal.set(next.revealed)
       propsVersion.set(v => v + 1)
       render()
     },
@@ -211,7 +211,7 @@ describe('connectPasswordInput 默认形态', () => {
 
   it('translations 覆盖三句文案', () => {
     const h = mount({
-      visible: true,
+      revealed: true,
       translations: { visibilityTriggerHide: '隐藏密码', capsLockOn: '大写锁定已打开' },
     })
     expect(h.trigger.getAttribute('aria-label')).toBe('隐藏密码')
@@ -227,25 +227,25 @@ describe('connectPasswordInput 明暗切换', () => {
     expect(h.input.getAttribute('type')).toBe('text')
     expect(h.trigger.getAttribute('aria-label')).toBe('Hide password')
     expect(h.trigger.getAttribute('data-state')).toBe('visible')
-    expect(h.visibilityChanges).toEqual([{ visible: true }])
+    expect(h.revealedChanges).toEqual([{ revealed: true }])
     h.trigger.click()
     expect(h.input.getAttribute('type')).toBe('password')
-    expect(h.visibilityChanges).toEqual([{ visible: true }, { visible: false }])
+    expect(h.revealedChanges).toEqual([{ revealed: true }, { revealed: false }])
   })
 
-  it('defaultVisible 只给初值，之后仍可自己翻', () => {
-    const h = mount({ defaultVisible: true })
+  it('defaultRevealed 只给初值，之后仍可自己翻', () => {
+    const h = mount({ defaultRevealed: true })
     expect(h.input.getAttribute('type')).toBe('text')
     h.trigger.click()
     expect(h.input.getAttribute('type')).toBe('password')
   })
 
-  it('受控 visible：点了不自改，只发意图；宿主写回才切', () => {
-    const h = mount({ visible: false })
+  it('受控 revealed：点了不自改，只发意图；宿主写回才切', () => {
+    const h = mount({ revealed: false })
     h.trigger.click()
     expect(h.input.getAttribute('type')).toBe('password')
-    expect(h.visibilityChanges).toEqual([{ visible: true }])
-    h.setProps({ visible: true })
+    expect(h.revealedChanges).toEqual([{ revealed: true }])
+    h.setProps({ revealed: true })
     expect(h.input.getAttribute('type')).toBe('text')
   })
 
@@ -271,13 +271,13 @@ describe('connectPasswordInput 明暗切换', () => {
     expect(document.activeElement).toBe(h.trigger)
   })
 
-  it('api.setVisible / toggleVisibility 与点按钮同义', () => {
+  it('api.setRevealed / toggleRevealed 与点按钮同义', () => {
     const h = mount()
     const api = connectPasswordInput(h.service, normalizeProps)
-    api.setVisible(true)
-    expect(h.service.context.get('visible')).toBe(true)
-    api.toggleVisibility()
-    expect(h.service.context.get('visible')).toBe(false)
+    api.setRevealed(true)
+    expect(h.service.context.get('revealed')).toBe(true)
+    api.toggleRevealed()
+    expect(h.service.context.get('revealed')).toBe(false)
   })
 })
 
@@ -340,10 +340,10 @@ describe('connectPasswordInput 值与禁用', () => {
     expect(h.trigger.getAttribute('disabled')).toBe('')
     dispatchClick(h.trigger)
     typeInto(h, '换一个')
-    expect(h.service.context.get('visible')).toBe(false)
+    expect(h.service.context.get('revealed')).toBe(false)
     expect(h.service.context.get('value')).toBe('hunter2')
     expect(h.changes).toEqual([])
-    expect(h.visibilityChanges).toEqual([])
+    expect(h.revealedChanges).toEqual([])
   })
 
   it('readOnly：值写不进，但明暗照切——改的是怎么显示，不是值', () => {
@@ -364,13 +364,13 @@ describe('connectPasswordInput 值与禁用', () => {
 
 describe('passwordInputMachine 表单重置', () => {
   it('值回到 defaultValue，明暗一并收回去', () => {
-    const h = mount({ defaultValue: 'hunter2', defaultVisible: false })
+    const h = mount({ defaultValue: 'hunter2', defaultRevealed: false })
     typeInto(h, 'changed')
     h.trigger.click()
-    expect(h.service.context.get('visible')).toBe(true)
+    expect(h.service.context.get('revealed')).toBe(true)
     h.service.send({ type: FORM_RESET_EVENT })
     expect(h.service.context.get('value')).toBe('hunter2')
-    expect(h.service.context.get('visible')).toBe(false)
+    expect(h.service.context.get('revealed')).toBe(false)
   })
 
   it('宿主攥着值又没声明默认值时，重置不动它：那会把宿主的数据抹掉', () => {

@@ -106,7 +106,7 @@ duration 定跑多久，easing 定快慢怎么分配；同一段距离四档并�
 
 | 事件 | 载荷 | 说明 |
 | --- | --- | --- |
-| `complete` | `NumberAnimationCompleteDetails` | 走到终点；detail 为 `{ value: number }` |
+| `complete` | `` | 走到终点；detail 为 `{ value: number }` |
 
 ### 插槽
 

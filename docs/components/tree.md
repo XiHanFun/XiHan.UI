@@ -182,9 +182,9 @@ variant="plain" 去掉外框与底色，树直接落在页面上；缺省 surfac
 
 | 事件 | 载荷 | 说明 |
 | --- | --- | --- |
-| `expanded-value-change` | `TreeExpandedValueChangeDetails` | 展开集合变化；detail 为 `{ value: string[] }` |
-| `selection-change` | `TreeSelectionChangeDetails` | 选中集合变化；detail 为 `{ value: string[] }` |
-| `node-move` | `TreeNodeMoveDetails` | 节点搬了家；detail 为 `{ value, parent, index }`，parent 为 null 即根层，index 是在那一层的落位（已算过先摘后插） |
+| `expanded-value-change` | `` | 展开集合变化；detail 为 `{ value: string[] }` |
+| `selection-change` | `` | 选中集合变化；detail 为 `{ value: string[] }` |
+| `node-move` | `` | 节点搬了家；detail 为 `{ value, parent, index }`，parent 为 null 即根层，index 是在那一层的落位（已算过先摘后插） |
 
 ### 插槽
 

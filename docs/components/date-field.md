@@ -129,7 +129,7 @@
 
 | 事件 | 载荷 | 说明 |
 | --- | --- | --- |
-| `value-change` | `DateFieldValueChangeDetails` | 值变化；detail 为 `{ value: string \| null }` |
+| `value-change` | `` | 值变化；detail 为 `{ value: string \| null }` |
 
 ### 插槽
 

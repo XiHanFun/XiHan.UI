@@ -5947,11 +5947,11 @@
       "PaginationTranslations",
       "PanelConstraint",
       "PasswordInputApi",
+      "PasswordInputRevealedChangeDetails",
       "PasswordInputSchema",
       "PasswordInputTranslations",
       "PasswordInputType",
       "PasswordInputValueChangeDetails",
-      "PasswordInputVisibilityChangeDetails",
       "PinInputApi",
       "PinInputInputProps",
       "PinInputSchema",
@@ -10528,23 +10528,23 @@
     ],
     "password-input": [
       "autoComplete",
+      "defaultRevealed",
       "defaultValue",
-      "defaultVisible",
       "disabled",
       "invalid",
       "name",
+      "onRevealedChange",
       "onValueChange",
-      "onVisibilityChange",
       "placeholder",
       "readOnly",
       "required",
+      "revealed",
       "size",
       "strength",
       "tone",
       "translations",
       "value",
-      "variant",
-      "visible"
+      "variant"
     ],
     "pin-input": [
       "blurOnComplete",
@@ -17366,24 +17366,24 @@
     "xh-password-input": {
       "attributes": [
         "auto-complete",
+        "default-revealed",
         "default-value",
-        "default-visible",
         "disabled",
         "invalid",
         "name",
         "placeholder",
         "read-only",
         "required",
+        "revealed",
         "size",
         "strength",
         "tone",
         "value",
-        "variant",
-        "visible"
+        "variant"
       ],
       "events": [
-        "value-change",
-        "visibility-change"
+        "revealed-change",
+        "value-change"
       ]
     },
     "xh-pin-input": {

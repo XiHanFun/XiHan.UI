@@ -100,7 +100,7 @@
 
 | 事件 | 载荷 | 说明 |
 | --- | --- | --- |
-| `affix-change` | `AffixChangeDetails` | 吸附状态变化；detail 为 `{ affixed: boolean }` |
+| `affix-change` | `` | 吸附状态变化；detail 为 `{ affixed: boolean }` |
 
 ### 插槽
 

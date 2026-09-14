@@ -18,7 +18,7 @@ const { createMachine } = setup<PasswordInputSchema>()
  * input 的 type 一改，浏览器会重建框内的编辑器：光标被顶到末尾，选中的那一段也没了。
  * 用户点一下切换钮就要重新找位置，密码长的时候尤其难受。
  */
-function applyVisibility(
+function applyRevealed(
   params: Pick<Params<PasswordInputSchema>, 'context' | 'flush' | 'scope'>,
   next: boolean,
 ): void {
@@ -26,7 +26,7 @@ function applyVisibility(
   const input = scope.getById<HTMLInputElement>(passwordInputInputId(scope))
   const start = input?.selectionStart ?? null
   const end = input?.selectionEnd ?? null
-  context.set('visible', next)
+  context.set('revealed', next)
   // 等宿主把新的 type 提交到 DOM 之后再放光标：早一步放会被这次重建抹掉
   flush(() => {
     if (!input || start == null || end == null)
@@ -48,10 +48,10 @@ export const passwordInputMachine = createMachine({
       onChange: value => prop('onValueChange')?.({ value }),
     })),
     // 明暗态同样走 cell：它不改变组件能做什么，没必要编码成状态
-    visible: cell<boolean>(() => ({
-      value: prop('visible'),
-      defaultValue: prop('defaultVisible') ?? false,
-      onChange: visible => prop('onVisibilityChange')?.({ visible }),
+    revealed: cell<boolean>(() => ({
+      value: prop('revealed'),
+      defaultValue: prop('defaultRevealed') ?? false,
+      onChange: revealed => prop('onRevealedChange')?.({ revealed }),
     })),
     // 大写锁定是 DOM 那侧的事实：不受控、不对外通知，只驱动提示部件
     capsLock: cell<boolean>(() => ({ defaultValue: false })),
@@ -61,8 +61,8 @@ export const passwordInputMachine = createMachine({
   on: {
     'FORM.RESET': { actions: ['resetToDefault'] },
     'VALUE.SET': { guard: 'canEdit', actions: ['setValue'] },
-    'VISIBILITY.SET': { guard: 'canToggleVisibility', actions: ['setVisible'] },
-    'VISIBILITY.TOGGLE': { guard: 'canToggleVisibility', actions: ['toggleVisibility'] },
+    'REVEALED.SET': { guard: 'canReveal', actions: ['setRevealed'] },
+    'REVEALED.TOGGLE': { guard: 'canReveal', actions: ['toggleRevealed'] },
     'CAPS_LOCK.SET': { actions: ['setCapsLock'] },
   },
   states: {
@@ -72,14 +72,14 @@ export const passwordInputMachine = createMachine({
     guards: {
       canEdit: ({ prop }) => !prop('disabled') && !prop('readOnly'),
       // 只读不拦明暗：改的是怎么显示，不是值本身
-      canToggleVisibility: ({ prop }) => !prop('disabled'),
+      canReveal: ({ prop }) => !prop('disabled'),
     },
     actions: {
       resetToDefault: (params) => {
         resetDeclaredValue(params, 'value', 'value', 'defaultValue')
         // 明暗一并收回初始态：重置之后把明文密码继续摊在屏幕上不合适。
         // 大写锁定不动——它是键盘上的物理事实，重置表单改不了它
-        resetDeclaredValue(params, 'visible', 'visible', 'defaultVisible')
+        resetDeclaredValue(params, 'revealed', 'revealed', 'defaultRevealed')
       },
       setValue: ({ context, event }) => {
         const e = event.current()
@@ -87,17 +87,17 @@ export const passwordInputMachine = createMachine({
           return
         context.set('value', e.value)
       },
-      setVisible: (params) => {
+      setRevealed: (params) => {
         const e = params.event.current()
-        if (e.type !== 'VISIBILITY.SET')
+        if (e.type !== 'REVEALED.SET')
           return
-        applyVisibility(params, e.visible)
+        applyRevealed(params, e.revealed)
       },
-      toggleVisibility: (params) => {
+      toggleRevealed: (params) => {
         const e = params.event.current()
-        if (e.type !== 'VISIBILITY.TOGGLE')
+        if (e.type !== 'REVEALED.TOGGLE')
           return
-        applyVisibility(params, !params.context.get('visible'))
+        applyRevealed(params, !params.context.get('revealed'))
       },
       setCapsLock: ({ context, event }) => {
         const e = event.current()

@@ -12,9 +12,9 @@ export interface PasswordInputValueChangeDetails {
   value: string
 }
 
-export interface PasswordInputVisibilityChangeDetails {
-  /** true 表示此刻明文显示。 */
-  visible: boolean
+export interface PasswordInputRevealedChangeDetails {
+  /** true 表示此刻明文已揭开。 */
+  revealed: boolean
 }
 
 /** 输入框此刻的 type：隐藏态是原生密码框，显示态换成 text。 */
@@ -26,10 +26,10 @@ export interface PasswordInputSchema extends MachineSchema {
     value?: string
     /** 非受控初值。 */
     defaultValue?: string
-    /** 受控的明暗态；给了就由宿主说了算。 */
-    visible?: boolean
+    /** 受控的明暗态：明文是否揭开；给了就由宿主说了算。 */
+    revealed?: boolean
     /** 非受控的初始明暗态，缺省隐藏。 */
-    defaultVisible?: boolean
+    defaultRevealed?: boolean
     disabled?: boolean
     readOnly?: boolean
     required?: boolean
@@ -57,11 +57,11 @@ export interface PasswordInputSchema extends MachineSchema {
     /** 尺寸：sm / md / lg。 */
     size?: Size
     onValueChange?: (details: PasswordInputValueChangeDetails) => void
-    onVisibilityChange?: (details: PasswordInputVisibilityChangeDetails) => void
+    onRevealedChange?: (details: PasswordInputRevealedChangeDetails) => void
   }
   context: {
     value: string
-    visible: boolean
+    revealed: boolean
     /** 大写锁定是否开着。只有按键事件报得出来，故焦点离开输入框即清空。 */
     capsLock: boolean
   }
@@ -73,15 +73,15 @@ export interface PasswordInputSchema extends MachineSchema {
     /** 用户敲字或作者调 setValue。 */
     | { type: 'VALUE.SET', value: string }
     /** 直接指定明暗态。 */
-    | { type: 'VISIBILITY.SET', visible: boolean }
+    | { type: 'REVEALED.SET', revealed: boolean }
     /** 翻转明暗态，切换钮走这一条。 */
-    | { type: 'VISIBILITY.TOGGLE' }
+    | { type: 'REVEALED.TOGGLE' }
     /** 按键事件报回来的大写锁定状态，或焦点离开输入框时的清空。 */
     | { type: 'CAPS_LOCK.SET', on: boolean }
     | { type: 'FORM.RESET' }
   tag: never
-  guard: 'canEdit' | 'canToggleVisibility'
-  action: 'setValue' | 'setVisible' | 'toggleVisibility' | 'setCapsLock' | 'resetToDefault'
+  guard: 'canEdit' | 'canReveal'
+  action: 'setValue' | 'setRevealed' | 'toggleRevealed' | 'setCapsLock' | 'resetToDefault'
   effect: never
 }
 
@@ -89,14 +89,14 @@ export interface PasswordInputApi<T extends PropTypes = PropTypes> {
   value: string
   /** 值为空串。 */
   empty: boolean
-  /** 此刻是否明文显示。 */
-  visible: boolean
+  /** 此刻明文是否已揭开。 */
+  revealed: boolean
   /** 大写锁定是否开着；为真时提示部件才显出来。 */
   capsLock: boolean
   disabled: boolean
   readOnly: boolean
   invalid: boolean
-  /** 输入框此刻的 type，随 visible 走。 */
+  /** 输入框此刻的 type，随 revealed 走。 */
   inputType: PasswordInputType
   /**
    * 大写锁定播报区里此刻的文字：开着时是 `translations.capsLockOn`，关着时是空串。
@@ -108,9 +108,9 @@ export interface PasswordInputApi<T extends PropTypes = PropTypes> {
   /** 直接写值，只受 disabled / readOnly 约束。 */
   setValue: (next: string) => void
   /** 指定明暗态；整枚控件禁用时不生效。 */
-  setVisible: (next: boolean) => void
+  setRevealed: (next: boolean) => void
   /** 翻转明暗态；整枚控件禁用时不生效。 */
-  toggleVisibility: () => void
+  toggleRevealed: () => void
   getRootProps: () => T['element']
   getLabelProps: () => T['label']
   getControlProps: () => T['element']

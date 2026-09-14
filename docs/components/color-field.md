@@ -121,7 +121,7 @@
 
 | 事件 | 载荷 | 说明 |
 | --- | --- | --- |
-| `value-change` | `ColorFieldValueChangeDetails` | 收下的值变化；detail 为 `{ value: string }`，打字途中不发 |
+| `value-change` | `` | 收下的值变化；detail 为 `{ value: string }`，打字途中不发 |
 
 ### 插槽
 

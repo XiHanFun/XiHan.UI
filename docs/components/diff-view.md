@@ -130,7 +130,7 @@ size 换字号、行高与行号槽的宽度，三档并列对照
 
 | 事件 | 载荷 | 说明 |
 | --- | --- | --- |
-| `expanded-value-change` | `DiffViewExpandedValueChangeDetails` | 展开集合变化；detail 为 `{ value: string[] }` |
+| `expanded-value-change` | `` | 展开集合变化；detail 为 `{ value: string[] }` |
 
 ### 插槽
 

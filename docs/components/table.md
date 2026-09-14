@@ -252,11 +252,11 @@ prefix-columns 让库把序号/多选列插在最前面并占住列号；序号�
 
 | 事件 | 载荷 | 说明 |
 | --- | --- | --- |
-| `sort-change` | `TableSortChangeDetails` | 排序链变化；detail 为 `{ value: { id, direction }[] }` |
+| `sort-change` | `` | 排序链变化；detail 为 `{ value: { id, direction }[] }` |
 | `column-preference-change` | `` | 列偏好变化；detail 为 `{ value: TableColumnPreference }` |
-| `selection-change` | `TableSelectionChangeDetails` | 选中集合变化；detail 为 `{ value: string[] \| 'all' }` |
-| `expanded-value-change` | `TableExpandedValueChangeDetails` | 展开集合变化；detail 为 `{ value: string[] }` |
-| `row-move` | `TableRowMoveDetails` | 行换了位置；detail 为 `{ id, parent, index, ids }`，parent 为 null 即根层，index 是在那一层的落位（已算过先摘后插），ids 是重排好的整份行序 |
+| `selection-change` | `` | 选中集合变化；detail 为 `{ value: string[] \| 'all' }` |
+| `expanded-value-change` | `` | 展开集合变化；detail 为 `{ value: string[] }` |
+| `row-move` | `` | 行换了位置；detail 为 `{ id, parent, index, ids }`，parent 为 null 即根层，index 是在那一层的落位（已算过先摘后插），ids 是重排好的整份行序 |
 
 ### 插槽
 

@@ -140,11 +140,11 @@ size 换问句、选项行与页脚按钮的几何档，三档共用同一份问
 
 | 事件 | 载荷 | 说明 |
 | --- | --- | --- |
-| `index-change` | `QuestionFlowIndexChangeDetails` | 当前题变化；detail 为 `{ index }` |
-| `answers-change` | `QuestionFlowAnswersChangeDetails` | 答案变化；detail 为 `{ answers }` |
-| `notes-change` | `QuestionFlowNotesChangeDetails` | 自由文本变化；detail 为 `{ notes }` |
-| `skip` | `QuestionFlowSkipDetails` | 跳过一题；detail 为 `{ index, questionId }` |
-| `submit` | `QuestionFlowSubmitDetails` | 交卷；detail 为 `{ answers, notes }` |
+| `index-change` | `` | 当前题变化；detail 为 `{ index }` |
+| `answers-change` | `` | 答案变化；detail 为 `{ answers }` |
+| `notes-change` | `` | 自由文本变化；detail 为 `{ notes }` |
+| `skip` | `` | 跳过一题；detail 为 `{ index, questionId }` |
+| `submit` | `` | 交卷；detail 为 `{ answers, notes }` |
 
 ### 插槽
 

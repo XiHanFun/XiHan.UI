@@ -138,7 +138,7 @@ header / body / footer 把面板切成三段：头与尾定在原处，只有正
 | 事件 | 载荷 | 说明 |
 | --- | --- | --- |
 | `exit-complete` | `CustomEvent` | 退出完成且本层资源已释放 |
-| `open-change` | `DrawerOpenChangeDetails` | open 状态变化；detail 为 `{ open: boolean }` |
+| `open-change` | `` | open 状态变化；detail 为 `{ open: boolean }` |
 
 ### 插槽
 

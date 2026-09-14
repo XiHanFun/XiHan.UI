@@ -120,7 +120,7 @@ tone 只换进度段的底色（取柔和档）；条子本身是 fixed，这里
 
 | 事件 | 载荷 | 说明 |
 | --- | --- | --- |
-| `value-change` | `LoadingBarValueChangeDetails` | 进度值变化；detail 为 `{ value: number }` |
+| `value-change` | `` | 进度值变化；detail 为 `{ value: number }` |
 
 ### 插槽
 

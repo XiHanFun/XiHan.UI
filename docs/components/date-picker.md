@@ -162,10 +162,10 @@ granularity 决定输入行铺哪几段、浮层铺哪一档格子
 
 | 事件 | 载荷 | 说明 |
 | --- | --- | --- |
-| `value-change` | `DatePickerValueChangeDetails` | 选中集合变化；detail 为 `{ value: string[] }` |
-| `open-change` | `DatePickerOpenChangeDetails` | open 状态变化；detail 为 `{ open: boolean }` |
-| `focused-value-change` | `DatePickerFocusChangeDetails` | 聚焦日变化（意味着展示月可能换了）；detail 为 `{ focusedValue: string }`，作者据此重画网格 |
-| `active-view-change` | `CalendarViewChangeDetails` | 钻到了另一层（点标题钻上、点格子钻下）；detail 为 `{ activeView: 'day'\|'week'\|'month'\|'quarter'\|'year' }`，作者据此重画网格 |
+| `value-change` | `` | 选中集合变化；detail 为 `{ value: string[] }` |
+| `open-change` | `` | open 状态变化；detail 为 `{ open: boolean }` |
+| `focused-value-change` | `` | 聚焦日变化（意味着展示月可能换了）；detail 为 `{ focusedValue: string }`，作者据此重画网格 |
+| `active-view-change` | `` | 钻到了另一层（点标题钻上、点格子钻下）；detail 为 `{ activeView: 'day'\|'week'\|'month'\|'quarter'\|'year' }`，作者据此重画网格 |
 
 ### 插槽
 

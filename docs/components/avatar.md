@@ -126,7 +126,7 @@ tone 换淡底与回退字的配色组；不写 tone 就是中性缺省，直径
 
 | 事件 | 载荷 | 说明 |
 | --- | --- | --- |
-| `status-change` | `AvatarStatusChangeDetails` | 加载状态变化；detail 为 `{ status: 'loading' \| 'loaded' \| 'error' }` |
+| `status-change` | `` | 加载状态变化；detail 为 `{ status: 'loading' \| 'loaded' \| 'error' }` |
 
 ### 状态
 

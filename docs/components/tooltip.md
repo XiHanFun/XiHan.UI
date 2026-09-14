@@ -141,7 +141,7 @@ disabled 只关掉提示本身，被包裹的触发器照样可点、可聚焦
 
 | 事件 | 载荷 | 说明 |
 | --- | --- | --- |
-| `open-change` | `TooltipOpenChangeDetails` | open 状态变化；detail 为 `{ open: boolean }` |
+| `open-change` | `` | open 状态变化；detail 为 `{ open: boolean }` |
 
 ### 插槽
 

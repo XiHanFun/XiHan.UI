@@ -141,10 +141,10 @@ open 与 position 都交给外面握着：面板只报意图，值写回来才�
 
 | 事件 | 载荷 | 说明 |
 | --- | --- | --- |
-| `open-change` | `FloatingPanelOpenChangeDetails` | 展开态变化；detail 为 `{ open: boolean }` |
-| `position-change` | `FloatingPanelPositionChangeDetails` | 落点变化（拖动途中会连发）；detail 为 `{ position: { x, y } }` |
-| `dimensions-change` | `FloatingPanelDimensionsChangeDetails` | 尺寸变化（改尺途中会连发）；detail 为 `{ dimensions: { width, height } }` |
-| `window-state-change` | `FloatingPanelWindowStateChangeDetails` | 形态变化；detail 为 `{ windowState: 'default' \| 'minimized' \| 'maximized' }` |
+| `open-change` | `` | 展开态变化；detail 为 `{ open: boolean }` |
+| `position-change` | `` | 落点变化（拖动途中会连发）；detail 为 `{ position: { x, y } }` |
+| `dimensions-change` | `` | 尺寸变化（改尺途中会连发）；detail 为 `{ dimensions: { width, height } }` |
+| `window-state-change` | `` | 形态变化；detail 为 `{ windowState: 'default' \| 'minimized' \| 'maximized' }` |
 
 ### 插槽
 
