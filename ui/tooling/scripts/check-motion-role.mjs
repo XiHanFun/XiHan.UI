@@ -70,6 +70,7 @@ const SLIDE_REQUIRED = {
  */
 const ROLE_OVERRIDE = {
   'radio-group:scale': '圆点直径为指示器一半的小件落位，走 --xh-motion-ease-settle 的过冲收束，过冲量落在圈内不碰描边',
+  'color-swatch-picker:scale': '压在色块正中的选中徽标落位，走 --xh-motion-ease-settle 的过冲收束，过冲量落在格内不碰描边',
 }
 
 /** 去掉块注释但保留换行，报错行号才对得上源文件。 */

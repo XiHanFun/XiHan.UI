@@ -506,6 +506,20 @@ export type {
 export { useColorSliderContext } from './components/color-slider/context'
 export { useColorSlider } from './components/color-slider/use-color-slider'
 export type { ColorSliderContext } from './components/color-slider/use-color-slider'
+export {
+  XhColorSwatchPickerItem,
+  XhColorSwatchPickerLabel,
+  XhColorSwatchPickerRoot,
+} from './components/color-swatch-picker/color-swatch-picker'
+export type {
+  ColorSwatchPickerRootSlotProps,
+  XhColorSwatchPickerItemProps,
+  XhColorSwatchPickerLabelProps,
+  XhColorSwatchPickerRootProps,
+} from './components/color-swatch-picker/color-swatch-picker'
+export { useColorSwatchPickerContext } from './components/color-swatch-picker/context'
+export { useColorSwatchPicker } from './components/color-swatch-picker/use-color-swatch-picker'
+export type { ColorSwatchPickerContext } from './components/color-swatch-picker/use-color-swatch-picker'
 export { XhColorSwatch } from './components/color-swatch/color-swatch'
 export type { XhColorSwatchProps } from './components/color-swatch/color-swatch'
 export {

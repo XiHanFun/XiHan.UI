@@ -25,6 +25,7 @@ import { colorFieldSuite } from './color-field.suite'
 import { colorPickerSuite } from './color-picker.suite'
 import { colorSliderSuite } from './color-slider.suite'
 import { colorSwatchSuite } from './color-swatch.suite'
+import { colorSwatchPickerSuite } from './color-swatch-picker.suite'
 import { comboboxSuite } from './combobox.suite'
 import { commandSuite } from './command.suite'
 import { contextMenuSuite } from './context-menu.suite'
@@ -266,4 +267,5 @@ export const allSuites: readonly ConformanceSuite[] = [
   colorSwatchSuite,
   colorSliderSuite,
   colorFieldSuite,
+  colorSwatchPickerSuite,
 ]

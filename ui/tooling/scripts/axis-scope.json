@@ -76,6 +76,9 @@
     "size"
   ],
   "color-swatch": [],
+  "color-swatch-picker": [
+    "size"
+  ],
   "combobox": [
     "variant",
     "size"

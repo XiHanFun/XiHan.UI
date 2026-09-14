@@ -75,6 +75,7 @@
 <XhComponentCard src="color-field" name="ColorField" label="颜色字段" href="/components/color-field" status="alpha" />
 <XhComponentCard src="color-picker" name="ColorPicker" label="颜色选择器" href="/components/color-picker" status="alpha" />
 <XhComponentCard src="color-slider" name="ColorSlider" label="颜色滑块" href="/components/color-slider" status="alpha" />
+<XhComponentCard src="color-swatch-picker" name="ColorSwatchPicker" label="颜色色块选择器" href="/components/color-swatch-picker" status="alpha" />
 <XhComponentCard src="combobox" name="Combobox" label="组合框" href="/components/combobox" status="alpha" />
 <XhComponentCard src="date-field" name="DateField" label="日期字段" href="/components/date-field" status="alpha" />
 <XhComponentCard src="date-picker" name="DatePicker" label="日期选择器" href="/components/date-picker" status="alpha" />

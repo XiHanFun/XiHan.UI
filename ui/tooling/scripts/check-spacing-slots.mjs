@@ -44,6 +44,8 @@ const CROSS_PART = {
   'calendar-picker.week-number': ['week-row'],
   'calendar-range-picker.week-number': ['week-row'],
   // 搜索结果列表与空态占的都是一格列的位置，几何跟着 column 走，三种形态才等宽等高
+  // 色块面铺满格子，两者的圆角必须是同一个值，否则四角露出格子的底
+  'color-swatch-picker.item': ['swatch'],
   'cascader.column': ['search-list', 'empty'],
   // 搜索候选与列内条目排的是同一套行度量，空态文字与条目同一档字号
   'cascader.item': ['search-item', 'empty'],

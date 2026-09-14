@@ -33,6 +33,7 @@ import type { ColorFieldTranslations } from '../color-field/color-field.types'
 import type { ColorPickerTranslations } from '../color-picker/color-picker.types'
 import type { ColorSliderTranslations } from '../color-slider/color-slider.types'
 import type { ColorSwatchTranslations } from '../color-swatch/color-swatch.types'
+import type { ColorSwatchPickerTranslations } from '../color-swatch-picker/color-swatch-picker.types'
 import type { ComboboxTranslations } from '../combobox/combobox.types'
 import type { CommandTranslations } from '../command/command.types'
 import type { ContextMenuTranslations } from '../context-menu/context-menu.types'
@@ -168,6 +169,7 @@ export interface XhTranslationOverrides {
   'color-picker'?: Partial<ColorPickerTranslations>
   'color-slider'?: Partial<ColorSliderTranslations>
   'color-swatch'?: Partial<ColorSwatchTranslations>
+  'color-swatch-picker'?: Partial<ColorSwatchPickerTranslations>
   'combobox'?: Partial<ComboboxTranslations>
   'command'?: Partial<CommandTranslations>
   'context-menu'?: Partial<ContextMenuTranslations>

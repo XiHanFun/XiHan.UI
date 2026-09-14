@@ -249,6 +249,10 @@
           "name": "颜色滑块"
         },
         {
+          "id": "color-swatch-picker",
+          "name": "颜色色块选择器"
+        },
+        {
           "id": "combobox",
           "name": "组合框"
         },

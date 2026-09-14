@@ -107,6 +107,7 @@ const PRESSABLE = {
   'rating': ['item'],
   // 色板格子的底色就是它要展示的那个颜色，换底会盖掉展示物，按压回执只能落在缩放上
   'color-picker': ['eye-dropper-trigger', 'swatch-item'],
+  'color-swatch-picker': ['item'],
   'pagination': ['prev-trigger', 'next-trigger', 'item', 'ellipsis-trigger'],
   // 两个日历的翻页钮、标题钮与日期格
   'calendar-picker': [

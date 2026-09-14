@@ -10701,6 +10701,557 @@
     },
     {
       "kind": "javascript-module",
+      "path": "src/elements/color-swatch-picker.ts",
+      "declarations": [
+        {
+          "kind": "class",
+          "description": "`<xh-color-swatch-picker>` —— Light-DOM 行为宿主，跑 color-swatch-picker 机器并把 connect 产出打到\nroot/label/item/swatch/indicator/hidden-input 等角色节点。\n\n从若干固定颜色里挑一个：与单选组同一套 roving tabindex，方向键移焦点并选中，Space 选中；\n每格的色块面经 Swatch 家族画，颜色由元素写进私有槽。",
+          "name": "XhColorSwatchPickerElement",
+          "cssParts": [
+            {
+              "description": "role=radiogroup 容器（承载 roving tabindex 的兜底位）",
+              "name": "root"
+            },
+            {
+              "description": "组标题（aria-labelledby 目标）",
+              "name": "label"
+            },
+            {
+              "description": "role=radio 的一格，作者用 value 属性声明颜色串、可用 label 属性给名字",
+              "name": "item"
+            },
+            {
+              "description": "格里的色块面；颜色由元素写进私有槽，解析不出的串只画棋盘格",
+              "name": "swatch"
+            },
+            {
+              "description": "格子的选中标记",
+              "name": "indicator"
+            },
+            {
+              "description": "格子的表单影子输入（必须是原生 input）",
+              "name": "hidden-input"
+            }
+          ],
+          "members": [
+            {
+              "kind": "field",
+              "name": "partContract",
+              "type": {
+                "text": "object"
+              },
+              "static": true,
+              "default": "{ anatomy: colorSwatchPickerAnatomy, meta: colorSwatchPickerMeta }"
+            },
+            {
+              "kind": "field",
+              "name": "swatches",
+              "privacy": "public",
+              "type": {
+                "text": "ColorSwatchPickerNode[]"
+              },
+              "description": "格子数据（只走 property）：可及名字与禁用的事实源，格子部件只需报 value"
+            },
+            {
+              "kind": "field",
+              "name": "value",
+              "privacy": "public",
+              "type": {
+                "text": "string | undefined"
+              },
+              "attribute": "value"
+            },
+            {
+              "kind": "field",
+              "name": "defaultValue",
+              "privacy": "public",
+              "type": {
+                "text": "string | undefined"
+              },
+              "attribute": "default-value"
+            },
+            {
+              "kind": "field",
+              "name": "disabled",
+              "privacy": "public",
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "attribute": "disabled"
+            },
+            {
+              "kind": "field",
+              "name": "readOnly",
+              "privacy": "public",
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "attribute": "read-only"
+            },
+            {
+              "kind": "field",
+              "name": "invalid",
+              "privacy": "public",
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "attribute": "invalid"
+            },
+            {
+              "kind": "field",
+              "name": "required",
+              "privacy": "public",
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "attribute": "required"
+            },
+            {
+              "kind": "field",
+              "name": "direction",
+              "privacy": "public",
+              "type": {
+                "text": "Direction | undefined"
+              },
+              "attribute": "dir"
+            },
+            {
+              "kind": "field",
+              "name": "name",
+              "privacy": "public",
+              "type": {
+                "text": "string | undefined"
+              },
+              "attribute": "name"
+            },
+            {
+              "kind": "field",
+              "name": "size",
+              "privacy": "public",
+              "type": {
+                "text": "Size | undefined"
+              },
+              "attribute": "size"
+            },
+            {
+              "kind": "field",
+              "name": "tone",
+              "privacy": "public",
+              "type": {
+                "text": "Tone | undefined"
+              },
+              "attribute": "tone"
+            },
+            {
+              "kind": "field",
+              "name": "translations",
+              "privacy": "public",
+              "type": {
+                "text": "object"
+              },
+              "description": "读屏文案（只走 property）：group 是整组的名字，swatch(value) 是一格的名字"
+            },
+            {
+              "kind": "field",
+              "name": "declaredDisabled",
+              "privacy": "private",
+              "readonly": true,
+              "default": "new WeakMap<HTMLElement, boolean>()"
+            },
+            {
+              "kind": "field",
+              "name": "wasGroupDisabled",
+              "type": {
+                "text": "boolean"
+              },
+              "privacy": "private",
+              "default": "false",
+              "description": "上一帧是否整组禁用：解禁当帧 DOM 上还留着机器写回的 aria-disabled，读不得。"
+            },
+            {
+              "kind": "field",
+              "name": "notify",
+              "privacy": "private",
+              "readonly": true
+            },
+            {
+              "kind": "field",
+              "name": "ctrl",
+              "privacy": "private",
+              "readonly": true,
+              "default": "new MachineController<ColorSwatchPickerSchema>(this, colorSwatchPickerMachine, () => this.machineProps())"
+            },
+            {
+              "kind": "field",
+              "name": "inheritedControl",
+              "type": {
+                "text": "FormControlState | undefined"
+              },
+              "privacy": "private"
+            },
+            {
+              "kind": "method",
+              "name": "setFormControlState",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "state",
+                  "type": {
+                    "text": "FormControlState | undefined"
+                  }
+                }
+              ],
+              "description": "最近的 Field 或 Form 只交状态；四轴优先级由 Headless 真源结算。"
+            },
+            {
+              "kind": "method",
+              "name": "controlState",
+              "privacy": "private",
+              "return": {
+                "type": {
+                  "text": "ResolvedFormControlState"
+                }
+              }
+            },
+            {
+              "kind": "method",
+              "name": "machineProps",
+              "privacy": "private",
+              "return": {
+                "type": {
+                  "text": "Partial<ColorSwatchPickerSchema['props']>"
+                }
+              }
+            },
+            {
+              "kind": "field",
+              "name": "selectedValue",
+              "type": {
+                "text": "string|null"
+              },
+              "description": "只读：此刻选中的颜色串（受控与非受控都读机器）",
+              "readonly": true
+            },
+            {
+              "kind": "field",
+              "name": "swatchMeta",
+              "type": {
+                "text": "ColorSwatchPickerNodeMeta[]"
+              },
+              "description": "只读：swatches 推出的格子元信息，名字与禁用已定案",
+              "readonly": true
+            },
+            {
+              "kind": "field",
+              "name": "focusedValue",
+              "type": {
+                "text": "string|null"
+              },
+              "description": "只读：焦点锚点的格子串，焦点在组外时为 null",
+              "readonly": true
+            },
+            {
+              "kind": "method",
+              "name": "isSelected",
+              "return": {
+                "type": {
+                  "text": "boolean"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "candidate",
+                  "type": {
+                    "text": "string"
+                  }
+                }
+              ],
+              "description": "某个颜色串是否算选中：按颜色比不按串比。机器尚未建起时为 false。"
+            },
+            {
+              "kind": "method",
+              "name": "setValue",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "next",
+                  "type": {
+                    "text": "string | null"
+                  }
+                }
+              ],
+              "description": "从外面写选中值；null 即清空。机器尚未建起时是空操作。"
+            },
+            {
+              "kind": "method",
+              "name": "onPartsReleased",
+              "privacy": "protected",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "nodes",
+                  "type": {
+                    "text": "readonly HTMLElement[]"
+                  }
+                }
+              ],
+              "description": "承载焦点的格子被移出 DOM 时浏览器不派 focusout，这里替 DOM 上报焦点离场，免得焦点锚点停在已消失的值上。"
+            },
+            {
+              "kind": "field",
+              "name": "declaredItemDisabled",
+              "privacy": "private",
+              "readonly": true,
+              "description": "作者声明的格子禁用，只认首见那一份；没写即 undefined，交给 swatches 定夺"
+            },
+            {
+              "kind": "method",
+              "name": "itemProps",
+              "privacy": "private",
+              "return": {
+                "type": {
+                  "text": "ColorSwatchPickerItemProps"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "el",
+                  "type": {
+                    "text": "HTMLElement"
+                  }
+                }
+              ]
+            },
+            {
+              "kind": "method",
+              "name": "partsIn",
+              "privacy": "private",
+              "return": {
+                "type": {
+                  "text": "HTMLElement[]"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "item",
+                  "type": {
+                    "text": "HTMLElement"
+                  }
+                },
+                {
+                  "name": "name",
+                  "type": {
+                    "text": "string"
+                  }
+                }
+              ]
+            },
+            {
+              "kind": "method",
+              "name": "spreadHiddenInput",
+              "privacy": "private",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "input",
+                  "type": {
+                    "text": "HTMLInputElement"
+                  }
+                },
+                {
+                  "name": "props",
+                  "type": {
+                    "text": "Record<string, unknown>"
+                  }
+                }
+              ]
+            },
+            {
+              "kind": "method",
+              "name": "wire",
+              "privacy": "protected",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              }
+            }
+          ],
+          "events": [
+            {
+              "description": "选中值变化；detail 为 `{ value: string | null }`",
+              "name": "value-change",
+              "type": {
+                "text": "ColorSwatchPickerValueChangeDetails"
+              }
+            }
+          ],
+          "attributes": [
+            {
+              "type": {
+                "text": "string | undefined"
+              },
+              "description": "受控选中的颜色串；缺省该属性即非受控。写法不同的同一个颜色也算选中",
+              "name": "value",
+              "fieldName": "value"
+            },
+            {
+              "type": {
+                "text": "string | undefined"
+              },
+              "description": "非受控初始选中值",
+              "name": "default-value",
+              "fieldName": "defaultValue"
+            },
+            {
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "description": "整组禁用",
+              "name": "disabled",
+              "fieldName": "disabled"
+            },
+            {
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "description": "只读：选不动，方向键照常移焦点",
+              "name": "read-only",
+              "fieldName": "readOnly"
+            },
+            {
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "description": "校验失败态",
+              "name": "invalid",
+              "fieldName": "invalid"
+            },
+            {
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "description": "必填",
+              "name": "required",
+              "fieldName": "required"
+            },
+            {
+              "type": {
+                "text": "Direction | undefined"
+              },
+              "description": "文字方向，只改写左右方向键语义，默认 ltr",
+              "name": "dir",
+              "fieldName": "direction"
+            },
+            {
+              "type": {
+                "text": "string | undefined"
+              },
+              "description": "表单字段名；给定后隐藏输入才带 name 并参与提交",
+              "name": "name",
+              "fieldName": "name"
+            },
+            {
+              "type": {
+                "text": "Size | undefined"
+              },
+              "description": "尺寸：换的是格子的边长与间距",
+              "name": "size",
+              "fieldName": "size"
+            },
+            {
+              "type": {
+                "text": "Tone | undefined"
+              },
+              "description": "语气：决定选中环与选中标记用哪族颜色",
+              "name": "tone",
+              "fieldName": "tone"
+            }
+          ],
+          "superclass": {
+            "name": "XhElement",
+            "module": "/src/element-base"
+          },
+          "tagName": "xh-color-swatch-picker",
+          "customElement": true,
+          "cssProperties": [
+            {
+              "name": "--xh-color-swatch-picker-gap"
+            },
+            {
+              "name": "--xh-color-swatch-picker-icon-size"
+            },
+            {
+              "name": "--xh-color-swatch-picker-indicator-bg"
+            },
+            {
+              "name": "--xh-color-swatch-picker-indicator-border"
+            },
+            {
+              "name": "--xh-color-swatch-picker-indicator-fg"
+            },
+            {
+              "name": "--xh-color-swatch-picker-indicator-size"
+            },
+            {
+              "name": "--xh-color-swatch-picker-item-radius"
+            },
+            {
+              "name": "--xh-color-swatch-picker-item-size"
+            },
+            {
+              "name": "--xh-color-swatch-picker-label-fg"
+            },
+            {
+              "name": "--xh-color-swatch-picker-label-font-size"
+            },
+            {
+              "name": "--xh-color-swatch-picker-label-font-weight"
+            },
+            {
+              "name": "--xh-color-swatch-picker-ring"
+            },
+            {
+              "name": "--xh-color-swatch-picker-swatch-border"
+            },
+            {
+              "name": "--xh-color-swatch-picker-swatch-border-hover"
+            },
+            {
+              "name": "--xh-color-swatch-picker-swatch-border-invalid"
+            }
+          ]
+        }
+      ],
+      "exports": [
+        {
+          "kind": "js",
+          "name": "XhColorSwatchPickerElement",
+          "declaration": {
+            "name": "XhColorSwatchPickerElement",
+            "module": "src/elements/color-swatch-picker.ts"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
       "path": "src/elements/color-swatch.ts",
       "declarations": [
         {
