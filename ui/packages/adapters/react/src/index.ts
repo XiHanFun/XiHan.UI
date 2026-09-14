@@ -149,6 +149,8 @@ export type {
 } from './components/badge/badge'
 export { useBadgeContext } from './components/badge/context'
 export type { BadgeContext } from './components/badge/context'
+export { XhBarCode } from './components/bar-code/bar-code'
+export type { XhBarCodeProps } from './components/bar-code/bar-code'
 export {
   XhBreadcrumbEllipsis,
   XhBreadcrumbItem,

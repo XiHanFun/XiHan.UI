@@ -16,6 +16,7 @@ import type { AvatarGroupTranslations } from '../avatar-group/avatar-group.types
 import type { AvatarTranslations } from '../avatar/avatar.types'
 import type { BackTopTranslations } from '../back-top/back-top.types'
 import type { BadgeTranslations } from '../badge/badge.types'
+import type { BarCodeTranslations } from '../bar-code/bar-code.types'
 import type { BreadcrumbTranslations } from '../breadcrumb/breadcrumb.types'
 import type { ButtonGroupTranslations } from '../button-group/button-group.types'
 import type { ButtonTranslations } from '../button/button.types'
@@ -152,6 +153,7 @@ export interface XhTranslationOverrides {
   'avatar-group'?: Partial<AvatarGroupTranslations>
   'back-top'?: Partial<BackTopTranslations>
   'badge'?: Partial<BadgeTranslations>
+  'bar-code'?: Partial<BarCodeTranslations>
   'breadcrumb'?: Partial<BreadcrumbTranslations>
   'button'?: Partial<ButtonTranslations>
   'button-group'?: Partial<ButtonGroupTranslations>

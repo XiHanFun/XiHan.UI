@@ -8,6 +8,7 @@ import { avatarGroupSuite } from './avatar-group.suite'
 import { avatarSuite } from './avatar.suite'
 import { backTopSuite } from './back-top.suite'
 import { badgeSuite } from './badge.suite'
+import { barCodeSuite } from './bar-code.suite'
 import { breadcrumbSuite } from './breadcrumb.suite'
 import { buttonGroupSuite } from './button-group.suite'
 import { buttonSuite } from './button.suite'
@@ -268,4 +269,5 @@ export const allSuites: readonly ConformanceSuite[] = [
   colorSliderSuite,
   colorFieldSuite,
   colorSwatchPickerSuite,
+  barCodeSuite,
 ]

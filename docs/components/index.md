@@ -117,6 +117,7 @@
 <XhComponentCard src="accordion" name="Accordion" label="手风琴" href="/components/accordion" status="alpha" />
 <XhComponentCard src="avatar" name="Avatar" label="头像" href="/components/avatar" status="alpha" />
 <XhComponentCard src="avatar-group" name="AvatarGroup" label="头像组" href="/components/avatar-group" status="alpha" />
+<XhComponentCard src="bar-code" name="BarCode" label="条形码" href="/components/bar-code" status="alpha" />
 <XhComponentCard src="card" name="Card" label="卡片" href="/components/card" />
 <XhComponentCard src="carousel" name="Carousel" label="走马灯" href="/components/carousel" />
 <XhComponentCard src="collapsible" name="Collapsible" label="折叠区域" href="/components/collapsible" status="alpha" />

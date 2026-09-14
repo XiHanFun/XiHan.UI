@@ -17,6 +17,7 @@ import { XhAvatarElement } from './elements/avatar'
 import { XhAvatarGroupElement } from './elements/avatar-group'
 import { XhBackTopElement } from './elements/back-top'
 import { XhBadgeElement } from './elements/badge'
+import { XhBarCodeElement } from './elements/bar-code'
 import { XhBreadcrumbElement } from './elements/breadcrumb'
 import { XhButtonElement } from './elements/button'
 import { XhButtonGroupElement } from './elements/button-group'
@@ -150,6 +151,7 @@ export function defineXhElements(): void {
   defineElement('xh-alert', XhAlertElement, VERSION)
   defineElement('xh-avatar-group', XhAvatarGroupElement, VERSION)
   defineElement('xh-back-top', XhBackTopElement, VERSION)
+  defineElement('xh-bar-code', XhBarCodeElement, VERSION)
   defineElement('xh-button-group', XhButtonGroupElement, VERSION)
   defineElement('xh-color-field', XhColorFieldElement, VERSION)
   defineElement('xh-color-slider', XhColorSliderElement, VERSION)
@@ -298,6 +300,7 @@ export {
   XhApprovalElement,
   XhAvatarElement,
   XhBadgeElement,
+  XhBarCodeElement,
   XhBreadcrumbElement,
   XhButtonElement,
   XhCalendarPickerElement,

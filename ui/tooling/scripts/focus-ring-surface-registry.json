@@ -139,6 +139,7 @@
   },
   "unfocusable": {
     "badge [indicator]": "角标是贴在别的东西上的标记，不接焦点",
+    "bar-code [root]": "条形码的底色块，纯展示不接焦点",
     "icon-wrapper [root]": "图标底座是装饰容器，不接焦点",
     "loading-bar [range]": "顶部进度细带的已完成段，纯展示不接焦点",
     "matrix-code [root]": "二维码的底色块，纯展示不接焦点",

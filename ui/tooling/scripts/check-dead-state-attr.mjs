@@ -152,6 +152,7 @@ const HOOKS = {
   'markdown-stream:data-live': '这一块还在流。看得见的是内容上的 data-caret',
   'masonry:data-sequential': '按序还是按高度填列，是排布入参不是外观',
   'message-feed:data-streaming': '这条消息还在流，气泡本身不随它改样子',
+  'bar-code:data-format': '用的哪种码制，是编码入参不是外观：条已经写在 path 里，皮肤不按码制换样子',
   'matrix-code:data-format': '用的哪种码制，是编码入参不是外观：几何本身已经写在 path 里，皮肤不按码制换样子',
   'matrix-code:data-logo': '中心留没留出徽标位。真正挖洞的是 connect 算出来的内联 style',
   'question-flow:data-mode': '提交钮是"继续"还是"发送"，换的是文案不是外观',
