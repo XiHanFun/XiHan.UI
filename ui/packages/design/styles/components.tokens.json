@@ -17604,7 +17604,7 @@
         "default"
       ],
       "defaultToken": [
-        "3.5rem"
+        "--xh-overlay-column-min-w"
       ],
       "visibility": "public",
       "description": "date-picker 的 time-column 部件 min-inline-size 覆盖槽。"
@@ -18955,7 +18955,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-date-range-picker-range-separator-px"
+        "--xh-_date-range-picker-range-separator-mx"
       ],
       "visibility": "public",
       "description": "date-range-picker 的 range-separator 部件 margin-inline 覆盖槽。"
@@ -58580,7 +58580,7 @@
         "default"
       ],
       "defaultToken": [
-        "3.5rem"
+        "--xh-overlay-column-min-w"
       ],
       "visibility": "public",
       "description": "time-picker 的 column 部件 min-inline-size 覆盖槽。"
@@ -59290,7 +59290,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-control-h-sm"
+        "--xh-overlay-column-item-h"
       ],
       "visibility": "public",
       "description": "time-picker 的 item 部件 block-size 覆盖槽。"

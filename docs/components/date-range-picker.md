@@ -375,7 +375,7 @@ granularity 决定两组输入行铺哪几段、浮层铺哪一档格子
 | `--xh-date-range-picker-preset-py` | `preset` | `padding-block` | `default` | `--xh-space-1` | date-range-picker 的 preset 部件 padding-block 覆盖槽。 |
 | `--xh-date-range-picker-preset-radius` | `preset` | `border-radius` | `default` | `--xh-shape-control` | date-range-picker 的 preset 部件 border-radius 覆盖槽。 |
 | `--xh-date-range-picker-range-separator-fg` | `range-separator` | `color` | `default` | `--xh-fg-subtle` | date-range-picker 的 range-separator 部件 color 覆盖槽。 |
-| `--xh-date-range-picker-range-separator-mx` | `range-separator` | `margin-inline` | `default` | `--xh-date-range-picker-range-separator-px` | date-range-picker 的 range-separator 部件 margin-inline 覆盖槽。 |
+| `--xh-date-range-picker-range-separator-mx` | `range-separator` | `margin-inline` | `default` | `--xh-_date-range-picker-range-separator-mx` | date-range-picker 的 range-separator 部件 margin-inline 覆盖槽。 |
 | `--xh-date-range-picker-range-separator-px` | `range-separator` | `margin-inline`<br>`padding-inline` | `default` | `--xh-space-1` | date-range-picker 的 range-separator 部件 margin-inline、padding-inline 覆盖槽。 |
 <!-- xh-component-tokens:end -->
 

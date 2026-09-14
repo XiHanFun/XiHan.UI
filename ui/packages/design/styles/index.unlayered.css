@@ -21248,7 +21248,7 @@
   flex: none;
   flex-direction: column;
   gap: var(--xh-date-picker-time-column-gap, 0);
-  min-inline-size: var(--xh-date-picker-time-column-min-w, 3.5rem);
+  min-inline-size: var(--xh-date-picker-time-column-min-w, var(--xh-overlay-column-min-w));
   /* 几列并排：定高而不是随内容收，否则时列与分列的可选值一多一少就错位 */
   block-size: var(
     --xh-date-picker-time-column-h,
@@ -21764,10 +21764,9 @@
   align-items: center;
   justify-content: center;
   /* 两侧各留一个小间距：把输入行的常规间距收回来，再补上自己那一份 */
-  margin-inline: var(
-    --xh-date-range-picker-range-separator-mx,
-    calc(var(--xh-date-range-picker-range-separator-px, var(--xh-space-1)) - var(--xh-date-range-picker-control-gap, var(--xh-_date-range-picker-gap)))
-  );
+  --xh-_date-range-picker-range-separator-mx: calc(var(--xh-date-range-picker-range-separator-px, var(--xh-space-1)) - var(--xh-date-range-picker-control-gap, var(--xh-_date-range-picker-gap)));
+
+  margin-inline: var(--xh-date-range-picker-range-separator-mx, var(--xh-_date-range-picker-range-separator-mx));
   padding-inline: var(--xh-date-range-picker-range-separator-px, var(--xh-space-1));
   color: var(--xh-date-range-picker-range-separator-fg, var(--xh-fg-subtle));
   font: inherit;
@@ -36143,7 +36142,7 @@
   flex: none;
   flex-direction: column;
   gap: var(--xh-time-picker-column-gap, 0);
-  min-inline-size: var(--xh-time-picker-column-min-w, 3.5rem);
+  min-inline-size: var(--xh-time-picker-column-min-w, var(--xh-overlay-column-min-w));
   /* 几列并排：定高而不是随内容收，否则时列与分列的可选值一多一少就错位 */
   block-size: var(--xh-time-picker-column-h, var(--xh-viewport-h-sm));
   padding-inline: var(--xh-time-picker-column-px, 0);
@@ -36183,7 +36182,7 @@
   flex: none;
   align-items: center;
   justify-content: center;
-  block-size: var(--xh-time-picker-item-h, calc(var(--xh-control-h-sm) - var(--xh-space-1)));
+  block-size: var(--xh-time-picker-item-h, var(--xh-overlay-column-item-h));
   padding-block: var(--xh-time-picker-item-py, 0);
   /* 两侧留同宽轨：对号绝对落在末端，数字仍在整格的数学中心。 */
   padding-inline: var(--xh-_time-picker-item-rail);

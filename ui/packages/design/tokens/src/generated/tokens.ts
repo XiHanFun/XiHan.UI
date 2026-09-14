@@ -285,6 +285,8 @@ export const tokens = {
   "--xh-overlay-arrow-size": "var(--xh-space-2)",
   "--xh-overlay-min-w": "12rem",
   "--xh-overlay-menu-min-w": "10rem",
+  "--xh-overlay-column-min-w": "3.5rem",
+  "--xh-overlay-column-item-h": "calc(var(--xh-control-h-sm) - var(--xh-space-1))",
   "--xh-overlay-menu-max-h": "20rem",
   "--xh-overlay-max-w-sm": "16rem",
   "--xh-overlay-max-w": "20rem",

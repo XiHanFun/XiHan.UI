@@ -424,7 +424,7 @@ granularity 决定输入行铺哪几段、浮层铺哪一档格子
 | `--xh-date-picker-preset-radius` | `preset` | `border-radius` | `default` | `--xh-shape-control` | date-picker 的 preset 部件 border-radius 覆盖槽。 |
 | `--xh-date-picker-time-column-gap` | `time-column` | `gap` | `default` | `0` | date-picker 的 time-column 部件 gap 覆盖槽。 |
 | `--xh-date-picker-time-column-h` | `time-column` | `block-size` | `default` | `--xh-viewport-h-md` | date-picker 的 time-column 部件 block-size 覆盖槽。 |
-| `--xh-date-picker-time-column-min-w` | `time-column` | `min-inline-size` | `default` | `3.5rem` | date-picker 的 time-column 部件 min-inline-size 覆盖槽。 |
+| `--xh-date-picker-time-column-min-w` | `time-column` | `min-inline-size` | `default` | `--xh-overlay-column-min-w` | date-picker 的 time-column 部件 min-inline-size 覆盖槽。 |
 | `--xh-date-picker-time-column-min-w-mobile` | `time-column` | `min-inline-size` | `@media (width < 768px)` | `2.75rem` | date-picker 的 time-column 部件 min-inline-size 覆盖槽。 |
 | `--xh-date-picker-time-column-offset` | `time-column` | `margin-block-start` | `default` | `--xh-control-h-sm` | date-picker 的 time-column 部件 margin-block-start 覆盖槽。 |
 | `--xh-date-picker-time-column-padding` | `time-column` | `padding-block` | `default` | `--xh-space-1` | date-picker 的 time-column 部件 padding-block 覆盖槽。 |

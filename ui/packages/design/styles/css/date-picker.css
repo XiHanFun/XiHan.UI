@@ -626,7 +626,7 @@
     flex: none;
     flex-direction: column;
     gap: var(--xh-date-picker-time-column-gap, 0);
-    min-inline-size: var(--xh-date-picker-time-column-min-w, 3.5rem);
+    min-inline-size: var(--xh-date-picker-time-column-min-w, var(--xh-overlay-column-min-w));
     /* 几列并排：定高而不是随内容收，否则时列与分列的可选值一多一少就错位 */
     block-size: var(
       --xh-date-picker-time-column-h,

@@ -738,6 +738,16 @@
       "$type": "dimension",
       "$value": "10rem"
     },
+    "column-min-w": {
+      "$description": "浮层里成列排布的选项列（时 / 分 / 秒）的最小宽度：两位数字加两侧标记轨。",
+      "$type": "dimension",
+      "$value": "3.5rem"
+    },
+    "column-item-h": {
+      "$description": "浮层时列里一格的高度：比小号控件行矮一档，列里十几格并排时才不显得稀疏。",
+      "$type": "dimension",
+      "$value": "calc({control.h-sm} - {space.1})"
+    },
     "menu-max-h": {
       "$type": "dimension",
       "$value": "20rem"
