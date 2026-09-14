@@ -11,7 +11,7 @@ import {
 
 <template>
   <XhToastRoot
-    type="success"
+    tone="success"
     title="更改已保存"
     description="内容已同步到云端"
     :duration="0"
