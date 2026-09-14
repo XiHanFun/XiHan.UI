@@ -36356,12 +36356,6 @@
   }
 }
 
-/* styles/toast.css */
-/* 定义 toast 样式。 */
-
-  }
-}
-
 /* styles/time-range-picker.css */
 /* 定义 time range picker 样式。 */
 
@@ -37180,6 +37174,12 @@
      收起写在这份皮肤里而不是 reset：reset 层排在组件层之前，组件层里任何一条 display 都压得住它。 */
   [data-scope='time-range-picker'][data-part='positioner'] {
     display: none;
+  }
+}
+
+/* styles/toast.css */
+/* 定义 toast 样式。 */
+
 /* 新条目从视口边缘外进入，同时落到自己的折叠层级。 */
 @keyframes xh-toast-in {
   from {
