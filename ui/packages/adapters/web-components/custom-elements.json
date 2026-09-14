@@ -31129,11 +31129,11 @@
       "declarations": [
         {
           "kind": "class",
-          "description": "`<xh-matrix-code>` —— 二维码宿主，无状态机，`format` 选码制，把命名与档位打到 root 上，把几何铺进 root。\n\n作者写一个空的 `<svg data-xh-part=\"root\"></svg>`，几何由本元素生成：模块是算出来的派生数据，\n作者没法自己写。矩阵在 connectMatrixCode 里算一遍，这里只取现成的 path。\n\n几何恒是两条 `<path>`：除码眼外的模块一条、三个码眼一条，码眼那条另有 `--xh-matrix-code-eye-fg` 可单独上色。\n\n要放中心 logo 就在 root 里写一个 `<svg data-xh-part=\"logo\">` 并把图形放进去，落位与尺寸由本元素写上；\n那块底下会先铺一个底色矩形把模块挖空，作者的图形画在它上面。放了 logo 就把 level 提到 Q 或 H：\n挖掉的码字超出所选级别的纠错余量时，诊断通道会收到一条 `matrix-code.logo-damage` 警告，码照画。\n\n内容超出 40 版容量时不画任何模块，root 上落 `data-state=\"error\"`：\n截断能画出一张扫得开的码，但扫出来的是半截内容。",
+          "description": "`<xh-matrix-code>` —— 二维码宿主，无状态机，`format` 选码制（qr / data-matrix），把命名与档位打到 root 上，把几何铺进 root。\n\n作者写一个空的 `<svg data-xh-part=\"root\"></svg>`，几何由本元素生成：模块是算出来的派生数据，\n作者没法自己写。矩阵在 connectMatrixCode 里算一遍，这里只取现成的 path。\n\nQR 的几何是两条 `<path>`：除码眼外的模块一条、三个码眼一条，码眼那条另有 `--xh-matrix-code-eye-fg` 可单独上色；\nData Matrix 没有码眼，只有前一条。\n\n要放中心 logo 就在 root 里写一个 `<svg data-xh-part=\"logo\">` 并把图形放进去，落位与尺寸由本元素写上；\n那块底下会先铺一个底色矩形把模块挖空，作者的图形画在它上面。放了 logo 就把 level 提到 Q 或 H：\n挖掉的码字超出所选级别的纠错余量时，诊断通道会收到一条 `matrix-code.logo-damage` 警告，码照画。\nlogo 只对 qr 有意义，Data Matrix 下写了 logo 部件会收到一条 `matrix-code.option-ignored` 警告并按没放处理。\n\n内容超出该码制的最大尺寸时不画任何模块，root 上落 `data-state=\"error\"`：\n截断能画出一张扫得开的码，但扫出来的是半截内容。",
           "name": "XhMatrixCodeElement",
           "cssParts": [
             {
-              "description": "根 `<svg>`，承载 viewBox / role=img / aria-label / data-format / data-level / data-version / data-modules / data-state / data-logo",
+              "description": "根 `<svg>`，承载 viewBox / role=img / aria-label / data-format / data-level / data-version / data-columns / data-rows / data-state / data-logo",
               "name": "root"
             },
             {
@@ -31171,12 +31171,30 @@
             },
             {
               "kind": "field",
+              "name": "gs1",
+              "privacy": "public",
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "attribute": "gs1"
+            },
+            {
+              "kind": "field",
               "name": "level",
               "privacy": "public",
               "type": {
                 "text": "QrLevel | undefined"
               },
               "attribute": "level"
+            },
+            {
+              "kind": "field",
+              "name": "rectangular",
+              "privacy": "public",
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "attribute": "rectangular"
             },
             {
               "kind": "field",
@@ -31281,23 +31299,39 @@
               "type": {
                 "text": "string | undefined"
               },
-              "description": "要编码的内容，按 UTF-8 取字节走字节模式",
+              "description": "要编码的内容；QR 按 UTF-8 走字节模式，Data Matrix 走 ASCII 模式",
               "name": "value",
               "fieldName": "value"
             },
             {
               "type": {
+                "text": "boolean | undefined"
+              },
+              "description": "GS1 模式：最前面放 FNC1，即 GS1 QR / GS1 DataMatrix",
+              "name": "gs1",
+              "fieldName": "gs1"
+            },
+            {
+              "type": {
                 "text": "QrLevel | undefined"
               },
-              "description": "纠错级别，缺省 M",
+              "description": "纠错级别，缺省 M；只对 qr 有意义",
               "name": "level",
               "fieldName": "level"
             },
             {
               "type": {
+                "text": "boolean | undefined"
+              },
+              "description": "从矩形尺寸里挑；只对 data-matrix 有意义",
+              "name": "rectangular",
+              "fieldName": "rectangular"
+            },
+            {
+              "type": {
                 "text": "number | undefined"
               },
-              "description": "像素边长，缺省 160",
+              "description": "像素宽度，缺省 160；高按模块比例",
               "name": "pixel-size",
               "fieldName": "pixelSize"
             },
@@ -31305,7 +31339,7 @@
               "type": {
                 "text": "number | undefined"
               },
-              "description": "静区宽度（模块数），缺省 4",
+              "description": "静区宽度（模块数），缺省按码制的规范值（qr 4、data-matrix 1）",
               "name": "margin",
               "fieldName": "margin"
             },
@@ -31329,7 +31363,7 @@
               "type": {
                 "text": "EyeShape | undefined"
               },
-              "description": "码眼形状，缺省 square",
+              "description": "码眼形状，缺省 square；只对 qr 有意义",
               "name": "eye-shape",
               "fieldName": "eyeShape"
             }

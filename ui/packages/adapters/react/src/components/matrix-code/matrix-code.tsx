@@ -19,10 +19,14 @@ type EyeShape = NonNullable<MatrixCodeProps['eyeShape']>
 export interface XhMatrixCodeProps extends Omit<ComponentPropsWithRef<'svg'>, 'children'> {
   /** 码制，缺省 qr。 */
   format?: MatrixCodeFormat
-  /** 要编码的内容，按 UTF-8 走字节模式；空串不画码。 */
+  /** 要编码的内容；空串不画码。 */
   value?: string
-  /** 纠错级别 L / M / Q / H。 */
+  /** GS1 模式：最前面放 FNC1，即 GS1 QR / GS1 DataMatrix。 */
+  gs1?: boolean
+  /** 纠错级别 L / M / Q / H；只对 qr 有意义。 */
   level?: QrLevel
+  /** 从矩形尺寸里挑；只对 data-matrix 有意义。 */
+  rectangular?: boolean
   /** 像素边长，写成根上的内联宽高。 */
   pixelSize?: number
   /** 静区宽度，单位是模块数；静区含在 viewBox 里，不额外占尺寸。 */
@@ -35,7 +39,7 @@ export interface XhMatrixCodeProps extends Omit<ComponentPropsWithRef<'svg'>, 'c
 }
 
 /**
- * 整张码画成一个 `<svg>`，`format` 选码制；QR 下数据模块与三个码眼各成一条 `<path>`，静区靠 viewBox 留出。
+ * 整张码画成一个 `<svg>`，`format` 选码制；QR 下数据模块与三个码眼各成一条 `<path>`，Data Matrix 只有前一条，静区靠 viewBox 留出。
  * 矩阵由 connect 算一遍，这里只取现成的 path；没有可画的内容时不生成任何几何节点。
  *
  * children 里放 XhMatrixCodeLogo 就等于给码面正中放了一块 logo：那片模块底下先铺一个底色矩形挖空，
@@ -44,7 +48,9 @@ export interface XhMatrixCodeProps extends Omit<ComponentPropsWithRef<'svg'>, 'c
 export function XhMatrixCode({
   format,
   value,
+  gs1,
   level,
+  rectangular,
   pixelSize,
   margin,
   label,
@@ -57,7 +63,9 @@ export function XhMatrixCode({
   const api = connectMatrixCode({
     format,
     value,
+    gs1,
     level,
+    rectangular,
     pixelSize,
     margin,
     label,

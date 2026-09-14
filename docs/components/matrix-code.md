@@ -24,66 +24,82 @@
 
 ## 示例
 
+### 码制
+
+format 切到 data-matrix 就是工业打标常用的 Data Matrix：L 形定位图形、纠错率随尺寸固定；rectangular 从矩形尺寸里挑
+
+<XhDemo src="matrix-code/02-format" />
+
 ### 纠错级别
 
 L / M / Q / H 依次能容忍更多污损，同样的内容也因此占更多模块
 
-<XhDemo src="matrix-code/02-level" />
+<XhDemo src="matrix-code/03-level" />
 
 ### 边长与静区
 
 pixelSize 是整块的像素边长；margin 的单位是模块数，静区含在里面不额外占地方
 
-<XhDemo src="matrix-code/03-size-margin" />
+<XhDemo src="matrix-code/04-size-margin" />
 
 ### 可及名字
 
 缺省拿 value 当 aria-label；内容不是给人念的时候用 label 换一句人话
 
-<XhDemo src="matrix-code/04-label" />
+<XhDemo src="matrix-code/05-label" />
 
 ### 码点形状
 
 square / dot / rounded；三种形状的墨都盖住每个模块的格心，读码器按格心取样
 
-<XhDemo src="matrix-code/05-module-shape" />
+<XhDemo src="matrix-code/06-module-shape" />
 
 ### 码眼形状
 
 只作用于三个定位图形，7×7 的外环加内心结构保持不变，读码器靠它找码
 
-<XhDemo src="matrix-code/06-eye-shape" />
+<XhDemo src="matrix-code/07-eye-shape" />
 
 ### 中心 logo
 
 落位与尺寸由组件给出，那片模块先被底色挖空；放 logo 就把 level 提到 Q 或 H
 
-<XhDemo src="matrix-code/07-logo" />
+<XhDemo src="matrix-code/08-logo" />
 
 ### 换色
 
 颜色不是 props，写三个 CSS 变量即可：码点必须比底色深且对比要足，反相码一部分读码器不认
 
-<XhDemo src="matrix-code/08-color" />
+<XhDemo src="matrix-code/09-color" />
+
+### GS1
+
+gs1 打开后最前面放 FNC1，读码器把内容当 GS1 元素串：变长 AI 后面用 GS（U+001D）隔开下一个；医药 UDI 用 GS1 DataMatrix，零售 2D 迁移用 GS1 QR
+
+<XhDemo src="matrix-code/10-gs1" />
 
 ## 设计指引
 
 ### 何时使用
 
-- 跨设备传递地址、配对码、票据。
+- 跨设备传递地址、配对码、票据：`qr`。
+- 工业零件打标、电子元件、医药 UDI、追溯标签这类要在很小的面积上放码的地方：`data-matrix`。
 
 ### 何时不用
 
 - 用户就在这台设备上：给一条可点的链接。
 - 内容很长：二维码会密到扫不出来，改成短链。
+- 只有几十个字符的货号、运单号，让扫描枪一枪读：用[条形码](./bar-code)。
 
 ### 特性
 
-- `format` 选码制，当前只有 `qr`；给了不认识的值不画码，根落到 error 态。
-- `level` 四档纠错（L / M / Q / H）：越高越能容忍污损，同样的内容也因此占更多模块。
-- `moduleShape` 与 `eyeShape` 换码点与码眼的形状；三种形状的墨都盖住每个模块的格心，读码器按格心取样。
-- `margin` 是静区，`pixelSize` 是边长。
-- 中心可以放 logo，配色可换。
+- `format` 两种码制：`qr`（缺省，ISO/IEC 18004）与 `data-matrix`（ISO/IEC 16022，含 2024 版并入的矩形扩展）；给了不认识的值不画码，根落到 error 态。
+- `gs1` 把码变成 GS1 QR / GS1 DataMatrix：最前面放 FNC1，变长 AI 之间用内容里的 GS（U+001D）分隔。
+- QR：`level` 四档纠错（L / M / Q / H），越高越能容忍污损，同样的内容也因此占更多模块；`eyeShape` 换码眼形状；中心可以放 logo。
+- Data Matrix：纠错率随尺寸固定，没有级别可挑；`rectangular` 从矩形尺寸里挑，窄条标签放得下；没有码眼，L 形定位图形随码点形状一起换。
+- `moduleShape` 换码点形状；三种形状的墨都盖住每个模块的格心，读码器按格心取样。
+- `margin` 是静区，缺省按码制的规范值；`pixelSize` 是宽度，高按模块比例。
+- 配色可换。
 
 ### 组合
 
@@ -92,13 +108,15 @@ square / dot / rounded；三种形状的墨都盖住每个模块的格心，读�
 ### 最佳实践
 
 - 放 logo 就把纠错级别提到 Q 或 H，否则遮住的模块补不回来。
-- 静区不能省，贴边的二维码扫不出来。
+- 静区不能省，贴边的码扫不出来；Data Matrix 只要一格，QR 要四格。
 - 旁边同时给出文本或链接：不是所有人都能扫。
+- 对当前码制没有意义的选项（给 Data Matrix 传 `level`、给 QR 传 `rectangular`）会往诊断通道报一条警告，按没给处理；别靠它们切换码制。
 
 ### 反模式
 
 - 深色主题下直接反色：读码器默认深码点浅底，反色的码很多设备扫不出来。
 - 二维码印得太小。
+- 给 Data Matrix 放 logo：它没有可挑的纠错级别，挖掉的那块补不回来，组件会按没放处理。
 
 ## API 参考
 
@@ -115,15 +133,17 @@ square / dot / rounded；三种形状的墨都盖住每个模块的格心，读�
 
 | 属性 | 类型 | 必填 | 说明 |
 | --- | --- | --- | --- |
-| `eyeShape` | `MatrixCodeEyeShape` |  | 码眼形状，缺省 square。时序图形与校正图形不受它影响，一律保持方块——它们是透视校正的几何基准。 |
+| `eyeShape` | `MatrixCodeEyeShape` |  | 码眼形状，缺省 square。时序图形与校正图形不受它影响，一律保持方块——它们是透视校正的几何基准。 只对 qr 有意义，给别的码制会往诊断通道报一条警告，按没给处理。 |
 | `format` | `MatrixCodeFormat` |  | 码制，缺省 qr。给了不认识的值不画码，根落到 `error` 态。 |
+| `gs1` | `boolean` |  | GS1 模式：在最前面放 FNC1，读码器据此把内容当 GS1 元素串解释，即 GS1 QR / GS1 DataMatrix； 变长 AI 之间用内容里的 GS（U+001D）分隔。 |
 | `label` | `string` |  | 可及名字，缺省用 value；给了全空白的名字等于没给。 |
-| `level` | `QrLevel` |  | 纠错级别 L / M / Q / H，缺省 M。 |
-| `logo` | `boolean` |  | 码面正中是否留一块给 logo。 留出来的那片模块会被底色盖住，对读码器而言等于人为污损：放 logo 就把 level 提到 Q 或 H， L 与 M 那点纠错余量赔不起这一块。损伤量见 `logoDamage`；超出所选级别的余量时 会往诊断通道报一条 `matrix-code.logo-damage` 警告，码照画。 |
-| `margin` | `number` |  | 静区宽度，单位是模块数，缺省 4；静区含在 viewBox 里，不占额外尺寸。 |
+| `level` | `QrLevel` |  | 纠错级别 L / M / Q / H，缺省 M。只对 qr 有意义，给别的码制会往诊断通道报一条警告，按没给处理。 |
+| `logo` | `boolean` |  | 码面正中是否留一块给 logo。 留出来的那片模块会被底色盖住，对读码器而言等于人为污损：放 logo 就把 level 提到 Q 或 H， L 与 M 那点纠错余量赔不起这一块。损伤量见 `logoDamage`；超出所选级别的余量时 会往诊断通道报一条 `matrix-code.logo-damage` 警告，码照画。 只对 qr 有意义：Data Matrix 的纠错余量随尺寸固定、没有可挑的级别，放 logo 会报一条警告并按没放处理。 |
+| `margin` | `number` |  | 静区宽度，单位是模块数，缺省按码制的规范值（qr 4、data-matrix 1）；静区含在 viewBox 里，不占额外尺寸。 |
 | `moduleShape` | `MatrixCodeModuleShape` |  | 码点形状，缺省 square。 |
-| `pixelSize` | `number` |  | 像素边长，缺省 160；写成根上的内联宽高。 |
-| `value` | `string` |  | 要编码的内容，按 UTF-8 取字节走字节模式；空串不画码。 |
+| `pixelSize` | `number` |  | 像素宽度，缺省 160；高按模块比例算出，正方形码宽高相等。两者都写成根上的内联尺寸。 |
+| `rectangular` | `boolean` |  | 从矩形尺寸（含矩形扩展 DMRE）里挑，缺省从正方形尺寸里挑。 只对 data-matrix 有意义，给别的码制会往诊断通道报一条警告，按没给处理。 |
+| `value` | `string` |  | 要编码的内容；空串不画码。QR 按 UTF-8 取字节走字节模式；Data Matrix 走 ASCII 模式，Latin-1 以外的字符按 UTF-8 并声明 ECI。 |
 
 ### 状态
 
@@ -141,12 +161,13 @@ square / dot / rounded；三种形状的墨都盖住每个模块的格心，读�
 | --- | --- | --- |
 | `format` | `MatrixCodeFormat` | 解析后的码制。给了不认识的值时保持原样透出，好让错误信息与 data-format 都指着那个值。 |
 | `modules` | `readonly (readonly boolean[])[]` | 模块矩阵，[行][列]，true = 深色；没画出码时是空数组。 |
-| `version` | `number` | 实际用到的版本；没画出码时为 0。 |
-| `count` | `number` | 每边模块数，不含静区；没画出码时为 0。 |
+| `version` | `number` | QR 实际用到的版本；别的码制与没画出码时为 0。 |
+| `columns` | `number` | 模块列数与行数，不含静区；正方形码两者相等，没画出码时为 0。 |
+| `rows` | `number` |  |
 | `margin` | `number` | 解析后的静区宽度，单位是模块数。 |
 | `viewBox` | `string` | 根的 viewBox，含静区。 |
-| `path` | `string` | 除三个码眼以外的模块合成的那条 `&lt;path&gt;` 的 d；没画出码时是空串，此时不该生成 path 节点。 码眼永远不在这一条里，与形状无关。 |
-| `eyePath` | `string` | 三个码眼合成的那条 `&lt;path&gt;` 的 d；没画出码时是空串，此时不该生成第二个 path 节点。 两条分开画与形状无关：码眼的颜色可以与码点不同，合成一条就没地方单独上色。 |
+| `path` | `string` | 除 QR 三个码眼以外的模块合成的那条 `&lt;path&gt;` 的 d；没画出码时是空串，此时不该生成 path 节点。 码眼永远不在这一条里，与形状无关。 |
+| `eyePath` | `string` | QR 三个码眼合成的那条 `&lt;path&gt;` 的 d；别的码制与没画出码时是空串，此时不该生成第二个 path 节点。 两条分开画与形状无关：码眼的颜色可以与码点不同，合成一条就没地方单独上色。 |
 | `logoArea` | `MatrixCodeLogoArea \| undefined` | logo 的落位与挖空矩形；没留位时为 undefined。 |
 | `logoDamage` | `MatrixCodeLogoDamage \| undefined` | 挖空对码面造成的损伤；没留 logo 位时为 undefined。 |
 | `state` | `MatrixCodeState` | 当前状态。 |
@@ -185,10 +206,11 @@ square / dot / rounded；三种形状的墨都盖住每个模块的格心，读�
 
 | 部件 | 属性 | 值 |
 | --- | --- | --- |
+| `root` | `data-columns` | undefined \| String(columns) |
 | `root` | `data-format` | props.format |
-| `root` | `data-level` | props.level |
+| `root` | `data-level` | props.level \| undefined |
 | `root` | `data-logo` | ''（条件成立时才出现） |
-| `root` | `data-modules` | undefined \| String(count) |
+| `root` | `data-rows` | undefined \| String(rows) |
 | `root` | `data-state` | 'empty' |
 | `root` | `data-version` | undefined \| String(version) |
 

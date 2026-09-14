@@ -9,6 +9,7 @@ import type { NormalizeProps, PropTypes } from '@xihan-ui/core'
 import type { MatrixCodeApi, MatrixCodeEyeShape, MatrixCodeFormat, MatrixCodeLogoArea, MatrixCodeLogoDamage, MatrixCodeModuleShape, MatrixCodeProps, MatrixCodeState } from './matrix-code.types'
 import type { QrLevel } from './qr-encode'
 import { dataAttr, DIAGNOSTIC_CODES, reportDiagnostic } from '@xihan-ui/core'
+import { dmEncode } from './dm-encode'
 import { matrixCodeAnatomy } from './matrix-code.anatomy'
 import { qrAlignmentPositions, qrDamage, qrEncode } from './qr-encode'
 
@@ -16,9 +17,12 @@ const parts = matrixCodeAnatomy.build()
 
 const DEFAULT_FORMAT: MatrixCodeFormat = 'qr'
 /** 认识的码制；`format` 是从 DOM 特性来的字符串，得按运行时的表核，光靠类型拦不住。 */
-const FORMATS: ReadonlySet<string> = new Set<MatrixCodeFormat>(['qr'])
+const FORMATS: ReadonlySet<string> = new Set<MatrixCodeFormat>(['qr', 'data-matrix'])
 const DEFAULT_LEVEL: QrLevel = 'M'
-const DEFAULT_MARGIN = 4
+/** 各码制的规范静区，单位是模块：QR 四格，Data Matrix 一格；不认识的码制按 QR 的兜住 viewBox。 */
+function defaultMargin(format: MatrixCodeFormat): number {
+  return format === 'data-matrix' ? 1 : 4
+}
 const DEFAULT_SIZE = 160
 const DEFAULT_MODULE_SHAPE: MatrixCodeModuleShape = 'square'
 const DEFAULT_EYE_SHAPE: MatrixCodeEyeShape = 'square'
@@ -150,25 +154,26 @@ function buildEyePath(count: number, margin: number, shape: MatrixCodeEyeShape):
 function buildShapedPath(
   modules: readonly (readonly boolean[])[],
   cells: Uint8Array,
-  count: number,
+  columns: number,
+  rows: number,
   margin: number,
   shape: MatrixCodeModuleShape,
 ): string {
   const merged = shape === 'square'
   const segments: string[] = []
-  for (let row = 0; row < count; row++) {
+  for (let row = 0; row < rows; row++) {
     const line = modules[row]!
     let col = 0
-    while (col < count) {
-      const kind = cells[row * count + col]!
+    while (col < columns) {
+      const kind = cells[row * columns + col]!
       if (!line[col] || kind === CELL_EYE) {
         col++
         continue
       }
       if (merged || kind === CELL_FIXED) {
         let run = 1
-        while (col + run < count && line[col + run]) {
-          const next = cells[row * count + col + run]!
+        while (col + run < columns && line[col + run]) {
+          const next = cells[row * columns + col + run]!
           if (next === CELL_EYE || (!merged && next !== CELL_FIXED))
             break
           run++
@@ -193,6 +198,17 @@ function buildShapedPath(
 function logoSideModules(count: number): number {
   const limit = Math.floor(count / LOGO_SIDE_DIVISOR)
   return limit % 2 === 0 ? limit - 1 : limit
+}
+
+/** 对当前码制没有意义的选项：往诊断通道报一条警告，按没给处理。 */
+function warnIgnored(format: MatrixCodeFormat, option: string, onlyFor: MatrixCodeFormat): void {
+  reportDiagnostic({
+    code: DIAGNOSTIC_CODES.matrixCodeOptionIgnored,
+    level: 'warn',
+    scope: matrixCodeAnatomy.name,
+    message: `${option} 只对 ${onlyFor} 有意义，${format} 不认它，这次按没给处理`,
+    detail: { format, option, onlyFor },
+  })
 }
 
 /**
@@ -236,51 +252,83 @@ export function connectMatrixCode<T extends PropTypes>(
   const format = props.format ?? DEFAULT_FORMAT
   const value = props.value ?? ''
   const level = props.level ?? DEFAULT_LEVEL
-  const margin = resolveNumber(props.margin, DEFAULT_MARGIN)
+  const known = FORMATS.has(format)
+  const margin = resolveNumber(props.margin, defaultMargin(format))
   const pixelSize = resolveNumber(props.pixelSize, DEFAULT_SIZE)
   const moduleShape = props.moduleShape ?? DEFAULT_MODULE_SHAPE
   const eyeShape = props.eyeShape ?? DEFAULT_EYE_SHAPE
+  const gs1 = props.gs1 === true
+  const isQr = format === 'qr'
 
   let modules = EMPTY_MODULES
   let version = 0
+  let columns = 0
+  let rows = 0
   let state: MatrixCodeState = 'empty'
   let error: string | undefined
   // 不认识的码制与装不下的内容同一条路：一个模块都不铺，落 error 态并说明原因。
   // 不静默退回 qr——按别的码制扫出来的内容对不上，作者却看不出哪里错了。
-  if (!FORMATS.has(format)) {
+  if (!known) {
     state = 'error'
     error = `不认识的码制「${String(format)}」，只认 ${[...FORMATS].join(' / ')}`
   }
-  else if (value !== '') {
-    try {
-      const matrix = qrEncode(value, level)
-      modules = matrix.modules
-      version = matrix.version
-      state = 'ready'
+  else {
+    if (!isQr) {
+      if (props.level !== undefined)
+        warnIgnored(format, 'level', 'qr')
+      if (props.eyeShape !== undefined)
+        warnIgnored(format, 'eyeShape', 'qr')
+      if (props.logo === true)
+        warnIgnored(format, 'logo', 'qr')
     }
-    catch (cause) {
-      state = 'error'
-      error = cause instanceof Error ? cause.message : String(cause)
+    if (isQr && props.rectangular !== undefined)
+      warnIgnored(format, 'rectangular', 'data-matrix')
+    if (value !== '') {
+      try {
+        if (isQr) {
+          const matrix = qrEncode(value, level, { gs1 })
+          modules = matrix.modules
+          version = matrix.version
+          columns = matrix.count
+          rows = matrix.count
+        }
+        else {
+          const matrix = dmEncode(value, { gs1, rectangular: props.rectangular === true })
+          modules = matrix.modules
+          columns = matrix.symbol.columns
+          rows = matrix.symbol.rows
+        }
+        state = 'ready'
+      }
+      catch (cause) {
+        state = 'error'
+        error = cause instanceof Error ? cause.message : String(cause)
+      }
     }
   }
 
-  const count = version === 0 ? 0 : 4 * version + 17
-  const viewBox = `0 0 ${count + margin * 2} ${count + margin * 2}`
+  const viewBox = `0 0 ${columns + margin * 2} ${rows + margin * 2}`
+  // 宽是 pixelSize，高按模块比例；正方形码两者相等
+  const pixelHeight = columns === 0 ? pixelSize : (pixelSize * (rows + margin * 2)) / (columns + margin * 2)
 
   // 缺省形状全是轴对齐的整格矩形，带弧的那几种才需要精确几何
   const curved = moduleShape !== DEFAULT_MODULE_SHAPE || eyeShape !== DEFAULT_EYE_SHAPE
   let path = ''
   let eyePath = ''
-  if (version !== 0) {
-    path = buildShapedPath(modules, classifyCells(count, version), count, margin, moduleShape)
-    eyePath = buildEyePath(count, margin, eyeShape)
+  if (state === 'ready') {
+    // QR 的码眼另成一条、时序与校正图形保持方块；Data Matrix 没有码眼，定位图形也随码点形状走——
+    // 点刻打标出来的 Data Matrix 连 L 形定位图形都是一排点，读码器认的就是这个样子
+    const cells = isQr ? classifyCells(columns, version) : new Uint8Array(columns * rows)
+    path = buildShapedPath(modules, cells, columns, rows, margin, moduleShape)
+    if (isQr)
+      eyePath = buildEyePath(columns, margin, eyeShape)
   }
 
   let logoArea: MatrixCodeLogoArea | undefined
   let logoDamage: MatrixCodeLogoDamage | undefined
-  if (props.logo === true && version !== 0) {
-    const side = logoSideModules(count)
-    const at = margin + (count - side) / 2
+  if (props.logo === true && isQr && version !== 0) {
+    const side = logoSideModules(columns)
+    const at = margin + (columns - side) / 2
     logoArea = { x: at, y: at, size: side }
 
     // 挖空压在码面正中，落位换算回不含静区的坐标
@@ -311,7 +359,8 @@ export function connectMatrixCode<T extends PropTypes>(
     format,
     modules,
     version,
-    count,
+    columns,
+    rows,
     margin,
     viewBox,
     path,
@@ -333,14 +382,15 @@ export function connectMatrixCode<T extends PropTypes>(
       'aria-hidden': label === undefined ? true : undefined,
       // 不认识的码制也原样写上：error 态下作者要看的正是这个值
       'data-format': format,
-      'data-level': level,
-      // 没画出码时这两个属性不写，皮肤与调试都不会读到一个假的版本号
+      // QR 才有纠错级别与版本；没画出码时也不写，皮肤与调试都不会读到一个假的版本号
+      'data-level': isQr ? level : undefined,
       'data-version': version === 0 ? undefined : String(version),
-      'data-modules': version === 0 ? undefined : String(count),
+      'data-columns': columns === 0 ? undefined : String(columns),
+      'data-rows': rows === 0 ? undefined : String(rows),
       'data-state': state,
       // 码面上留了 logo 位；皮肤据此不做别的事，留给作者当选择器用
       'data-logo': dataAttr(logoArea !== undefined),
-      'style': { inlineSize: `${pixelSize}px`, blockSize: `${pixelSize}px` },
+      'style': { inlineSize: `${pixelSize}px`, blockSize: `${pixelHeight}px` },
     }),
 
     // 没画出码时收成 0 宽 0 高：viewBox 里只剩静区，这块摆哪儿都不对，

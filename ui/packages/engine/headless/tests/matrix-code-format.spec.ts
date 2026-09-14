@@ -39,7 +39,8 @@ describe('码制', () => {
     expect(root['data-format']).toBe('ean13')
     expect(root['data-state']).toBe('error')
     expect(root['data-version']).toBeUndefined()
-    expect(root['data-modules']).toBeUndefined()
+    expect(root['data-columns']).toBeUndefined()
+    expect(root['data-rows']).toBeUndefined()
   })
 
   it('码制不认识时先于内容判定：空内容也落 error 而不是 empty', () => {

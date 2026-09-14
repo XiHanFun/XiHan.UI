@@ -25,6 +25,8 @@ export const DIAGNOSTIC_CODES = {
   wcWrongPartTag: 'wc.wrong-part-tag',
   /** 二维码中心 logo 挖掉的码字超出所选纠错级别能恢复的量。 */
   matrixCodeLogoDamage: 'matrix-code.logo-damage',
+  /** 二维码收到一个对当前码制没有意义的选项，按没给处理。 */
+  matrixCodeOptionIgnored: 'matrix-code.option-ignored',
   /** 条形码收到一个对当前码制没有意义的选项，按没给处理。 */
   barCodeOptionIgnored: 'bar-code.option-ignored',
   /** 页面上出现了某个组件，但它那份皮肤没被引入。 */
