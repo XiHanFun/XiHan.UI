@@ -26,21 +26,21 @@
 - 行号由皮肤用 `attr()` 画出来，因此**复制代码不会带上行号**，读屏也不会逐行念数字。
 - `clamped` 是纯受控的：折叠态通常由外部「全部展开 / 全部折叠」统一持有，内建一份只会跟它打架。
 
+## 无障碍
+
+- `pre` 可聚焦并带可访问名：渲了文件名就指向它，没渲就用 `translations.code` 兜底。
+- 折叠按钮带 `aria-expanded` 与 `aria-controls`，指向 `pre`。
+- 语言角标与行号槽都对读屏隐藏，它们是装饰不是内容。
+
 ## 组合
 
-- 与[剪贴板](./clipboard)配合提供复制；要非受控的折叠就套[折叠面板](./collapsible)。
+- 与[剪贴板](./clipboard)配合提供复制；要非受控的折叠就套[折叠区域](./collapsible)。
   把剪贴板三件放进 `header`，再用 `--xh-clipboard-copy-trigger-border: transparent`、
   `--xh-clipboard-copy-trigger-bg: transparent`、`--xh-clipboard-copy-trigger-h: var(--xh-control-h-sm)`
   三个槽把按钮压成头部里的安静形态。
 - 内建词法只分注释、字符串、数字、关键字、标点五档。要区分函数名、类型名、属性名这类精度，
   就自己实现 `highlighter` 端口（同步纯函数，接 Shiki 之类）传进来，皮肤按记号种类上色的那套照旧生效。
 - 放进 AI 回复正文时由[流式正文](./markdown-stream)把代码块交过来。
-
-## 无障碍
-
-- `pre` 可聚焦并带可访问名：渲了文件名就指向它，没渲就用 `translations.code` 兜底。
-- 折叠按钮带 `aria-expanded` 与 `aria-controls`，指向 `pre`。
-- 语言角标与行号槽都对读屏隐藏，它们是装饰不是内容。
 
 ## 最佳实践
 

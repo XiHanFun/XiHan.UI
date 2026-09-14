@@ -10,7 +10,7 @@
 ## 何时不用
 
 - 展示的是「思考过程」而不是一次调用：用[思考过程](./reasoning)，两者共用同一台机器但正文形态不同。
-- 只想要一个状态色块：用[徽章](./badge)，配 `toneOfToolCallPhase(phase)` 取语气。
+- 只想要一个状态色块：用[徽标](./badge)，配 `toneOfToolCallPhase(phase)` 取语气。
 - 多次调用要一次只展开一张：外面套[手风琴](./accordion)，每格里装一张。
 
 ## 特性
@@ -26,25 +26,25 @@
 - 耗时由宿主给两个时刻，`toolCallDuration(startTime, endTime)` 折出毫秒数；
   **组件自己不读时钟也不起定时器**，秒数要跳就由宿主驱动。
 
-## 组合
-
-- 参数与结果用[代码视图](./code-view)：参数在流式期是半截 JSON，把 `complete` 接成
-  「阶段不是参数在传」即可。富文本结果走[流式正文](./markdown-stream)。
-- 结果是代码改动时，详情那一格装[差异视图](./diff-view)；收起态的摘要取它的 `stats`
-  折成 `+{added} −{removed} 文件名` 写进摘要位，减号用 U+2212 而不是连字符。
-  摘要要能悬停看全文就套[悬浮卡](./hover-card)，别自己往 body 上挂节点。
-- 审批那一格装[审批](./approval)。
-- 复制不内建，与[剪贴板](./clipboard)组合；多张并排要方向键跳卡片就套[工具条](./toolbar)。
-- 一轮里跑了好几次工具时，外面套一层[手风琴](./accordion)当分组：
-  手风琴的开关里写「跑了 N 个工具」，计数那一段加 `font-variant-numeric: tabular-nums`
-  免得数字跳动时左右挪；整组的开合由手风琴的 `aria-expanded` 承担，卡片各自只管自己那一张。
-
 ## 无障碍
 
 - 开关带 `aria-expanded` 与 `aria-controls`，详情区是 `role=region` 且由开关命名。
 - 出错时开关才补 `aria-describedby` 指向错误区——无条件挂会指向一个作者根本没渲的节点。
 - 卡片自己不开活区：一屏若干张卡各开一个会互相打断。播报文本由 `statusText` 交出去，
   由宿主写进会话级的那一个播报区。
+
+## 组合
+
+- 参数与结果用[代码视图](./code-view)：参数在流式期是半截 JSON，把 `complete` 接成
+  「阶段不是参数在传」即可。富文本结果走[流式正文](./markdown-stream)。
+- 结果是代码改动时，详情那一格装[差异视图](./diff-view)；收起态的摘要取它的 `stats`
+  折成 `+{added} −{removed} 文件名` 写进摘要位，减号用 U+2212 而不是连字符。
+  摘要要能悬停看全文就套[悬浮卡片](./hover-card)，别自己往 body 上挂节点。
+- 审批那一格装[审批](./approval)。
+- 复制不内建，与[剪贴板](./clipboard)组合；多张并排要方向键跳卡片就套[工具栏](./toolbar)。
+- 一轮里跑了好几次工具时，外面套一层[手风琴](./accordion)当分组：
+  手风琴的开关里写「跑了 N 个工具」，计数那一段加 `font-variant-numeric: tabular-nums`
+  免得数字跳动时左右挪；整组的开合由手风琴的 `aria-expanded` 承担，卡片各自只管自己那一张。
 
 ## 最佳实践
 

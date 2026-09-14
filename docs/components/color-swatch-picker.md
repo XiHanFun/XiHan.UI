@@ -75,7 +75,7 @@
 
 - 内嵌在[颜色选择器](./color-picker)的浮层里当预设色板。
 - 与[颜色字段](./color-field)并排：色板挑常用色，字段手输精确值。
-- 放进[字段](./field)里承接标题、说明与错误信息，`disabled` / `readOnly` / `invalid` / `required` 随字段下发。
+- 放进[表单字段](./field)里承接标题、说明与错误信息，`disabled` / `readOnly` / `invalid` / `required` 随字段下发。
 
 ### 最佳实践
 

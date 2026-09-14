@@ -124,7 +124,7 @@ input 部件写成 textarea 即多行宿主；autoSize 让高度跟内容走，�
 
 - 值来自一份已知清单：用[选择器](./select)或[组合框](./combobox)。
 - 输入的是数字并需要加减：用[数字字段](./number-field)。
-- 输入的是日期或时间：用[日期输入](./date-field)、[时间输入](./time-field)。
+- 输入的是日期或时间：用[日期字段](./date-field)、[时间字段](./time-field)。
 
 ### 特性
 
@@ -166,7 +166,7 @@ input 部件写成 textarea 即多行宿主；autoSize 让高度跟内容走，�
 
 ### 反模式
 
-- 用它收集固定格式的分段值（日期、验证码）：用[日期输入](./date-field)、[分格输入](./pin-input)。
+- 用它收集固定格式的分段值（日期、验证码）：用[日期字段](./date-field)、[分格输入](./pin-input)。
 - 输入时就报格式错误。
 
 ## API 参考

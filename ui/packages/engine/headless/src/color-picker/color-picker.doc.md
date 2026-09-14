@@ -48,7 +48,7 @@
 ## 组合
 
 - 三个挂载点 `hue-slider` / `alpha-slider` / `swatch-picker` 同时充当内嵌组件的根节点，里面摆的是[颜色滑块](./color-slider)与[颜色色块选择器](./color-swatch-picker)自己的部件；不写子节点时自动铺开最简结构。
-- 放进[字段](./field)里承接标题、说明与错误信息，`disabled` / `readOnly` 随字段下发。
+- 放进[表单字段](./field)里承接标题、说明与错误信息，`disabled` / `readOnly` 随字段下发。
 - 与[颜色字段](./color-field)并排：取色器挑颜色，字段里看得见并能微调那个值。
 
 ## 最佳实践
