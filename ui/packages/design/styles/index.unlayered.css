@@ -14885,7 +14885,7 @@
 }
 
 /* 区间底色：横向铺满格子，相邻两格接成一条；纵向收在格子内衬里，行与行之间留出空当 */
-[data-scope='calendar-range-picker'][data-part='cell'][data-in-range]::before {
+[data-scope='calendar-range-picker'][data-part='cell'][data-in-range]:not([data-outside-month])::before {
   content: '';
   position: absolute;
   inset-block: var(--xh-calendar-range-picker-cell-gap, var(--xh-space-0_5));
@@ -14985,7 +14985,7 @@
 /* 实心强调面只给单选 / 多选的选中格与区间的两端；区间中段的格子由格子上的轨道铺底，
    自己不换面——不然一整段都是实心圆，就分不出哪两格是端点 */
 [data-scope='calendar-range-picker'][data-part='cell-trigger'][data-selected]:not([data-in-range]),
-[data-scope='calendar-range-picker'][data-part='cell-trigger'][data-in-range]:is([data-range-start], [data-range-end]) {
+[data-scope='calendar-range-picker'][data-part='cell-trigger'][data-in-range]:not([data-outside-month]):is([data-range-start], [data-range-end]) {
   border-color: transparent;
   background: var(--xh-calendar-range-picker-cell-bg-selected, var(--xh-bg-brand));
   color: var(--xh-calendar-range-picker-cell-fg-selected, var(--xh-fg-on-brand));
@@ -14993,7 +14993,7 @@
 
 /* 实心面按下时再压深一档：光缩放在深色底上看不出回执 */
 [data-scope='calendar-range-picker'][data-part='cell-trigger'][data-selected]:not([data-in-range], [data-disabled]):active,
-[data-scope='calendar-range-picker'][data-part='cell-trigger'][data-in-range]:is([data-range-start], [data-range-end]):not([data-disabled]):active {
+[data-scope='calendar-range-picker'][data-part='cell-trigger'][data-in-range]:not([data-outside-month]):is([data-range-start], [data-range-end]):not([data-disabled]):active {
   background: var(--xh-calendar-range-picker-cell-bg-selected-active, var(--xh-bg-brand-hover));
 }
 
@@ -15008,7 +15008,7 @@
   }
 
   /* 强制色下底色被抹平，区间两端只剩描边能说明身份 */
-  [data-scope='calendar-range-picker'][data-part='cell-trigger'][data-in-range]:is([data-range-start], [data-range-end]) {
+  [data-scope='calendar-range-picker'][data-part='cell-trigger'][data-in-range]:not([data-outside-month]):is([data-range-start], [data-range-end]) {
     border-color: Highlight;
   }
 }
@@ -15018,7 +15018,7 @@
    排掉不可用的格子：那一档的底换成置灰底、字换成置灰色，环取过来就跟底一起糊了，
    它仍要能聚焦（方向键的起点），环由公共层画 */
 [data-scope='calendar-range-picker'][data-part='cell-trigger'][data-selected]:not([data-in-range], [data-disabled]):focus-visible,
-[data-scope='calendar-range-picker'][data-part='cell-trigger'][data-in-range]:is([data-range-start], [data-range-end]):not([data-disabled]):focus-visible {
+[data-scope='calendar-range-picker'][data-part='cell-trigger'][data-in-range]:not([data-outside-month]):is([data-range-start], [data-range-end]):not([data-disabled]):focus-visible {
   --xh-_ring-color: currentColor;
 }
 
@@ -15031,6 +15031,12 @@
 [data-scope='calendar-range-picker'][data-part='cell-trigger'][data-disabled][data-selected] {
   background: var(--xh-bg-muted);
   color: var(--xh-fg-disabled);
+}
+
+/* 每张面板只画自己的月份：邻月格仍保留区间语义与可点能力，但不铺轨道或端点面。 */
+[data-scope='calendar-range-picker'][data-part='cell-trigger'][data-outside-month][data-in-range] {
+  border-color: transparent;
+  background: transparent;
 }
 
 /* 只读：日子改不动，但不是禁用——颜色照常，只把"可点"这个暗示收回来。
@@ -15113,7 +15119,7 @@
   /* 打印默认丢背景色：选中片与区间底都不画，一整张网格印出来是一模一样的三十来个数字。
      两档各换一条不吃底色的通道——选中走实边加粗体，区间走格底下的一道线。 */
   [data-scope='calendar-range-picker'][data-part='cell-trigger'][data-selected]:not([data-in-range]),
-  [data-scope='calendar-range-picker'][data-part='cell-trigger'][data-in-range]:is([data-range-start], [data-range-end]) {
+  [data-scope='calendar-range-picker'][data-part='cell-trigger'][data-in-range]:not([data-outside-month]):is([data-range-start], [data-range-end]) {
     border-color: currentColor;
     /* 反白那层文字的取值是「压在实心底上的前景」，底一没就印成一片白，退回正文色 */
     color: var(--xh-calendar-range-picker-cell-fg, var(--xh-fg-default));
