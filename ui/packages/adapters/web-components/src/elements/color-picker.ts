@@ -7,10 +7,10 @@
 
 import type { Cleanup, Direction, IdGenerator, Layer, Placement, PositionEnginePort, RuntimeConfig, Service, Size } from '@xihan-ui/core'
 import type {
+  ColorFormat,
   ColorPickerChannel,
   ColorPickerErrorDetails,
   ColorPickerErrors,
-  ColorPickerFormat,
   ColorPickerOpenChangeDetails,
   ColorPickerSchema,
   ColorPickerServices,
@@ -123,7 +123,7 @@ export class XhColorPickerElement extends XhPortalHostElement {
 
   declare value?: string
   declare defaultValue?: string
-  declare format?: ColorPickerFormat
+  declare format?: ColorFormat
   declare open?: boolean
   declare defaultOpen?: boolean
   declare disabled?: boolean

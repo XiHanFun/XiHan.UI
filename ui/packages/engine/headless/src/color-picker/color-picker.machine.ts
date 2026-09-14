@@ -6,25 +6,20 @@
 // 提供 color picker 相关实现。
 
 import type { Params, Scope, Service } from '@xihan-ui/core'
+import type { ColorHsva } from '../shared/color'
 import type { SliderSchema } from '../slider'
-import type { ColorPickerChannel, ColorPickerHsva } from './color-picker.color'
+import type { ColorPickerChannel } from './color-picker.color'
 import type { ColorPickerPoint } from './color-picker.geometry'
 import type { ColorPickerDragTarget, ColorPickerErrorDetails, ColorPickerErrors, ColorPickerSchema } from './color-picker.types'
 import { resetDeclaredValue, setup } from '@xihan-ui/core'
 import { createPointerSession, resolveSessionDoc } from '@xihan-ui/pointer'
+import { COLOR_FALLBACK, colorHsvaToRgba, colorParse, colorResolveFormat, colorResolveHsva, colorRgbaToHsva, colorToString } from '../shared/color'
 import { OVERLAY_OFFSET, OVERLAY_PLACEMENT_LIST } from '../shared/overlay'
 import { trackOverlayLayer, trackPresenceResources } from '../shared/overlay-shell'
 import {
-  COLOR_PICKER_FALLBACK,
   colorPickerApplyInput,
   colorPickerChannelRange,
   colorPickerChannelValue,
-  colorPickerHsvaToRgba,
-  colorPickerParse,
-  colorPickerResolveFormat,
-  colorPickerResolveHsva,
-  colorPickerRgbaToHsva,
-  colorPickerToString,
   colorPickerWithArea,
   colorPickerWithChannel,
 } from './color-picker.color'
@@ -117,7 +112,7 @@ function syncValueError(params: MachineParams): void {
   params.context.set('draft', null)
   clearError(params, 'input')
   const value = params.context.get('value')
-  if (colorPickerParse(value)) {
+  if (colorParse(value)) {
     clearError(params, 'parse')
     return
   }
@@ -126,7 +121,7 @@ function syncValueError(params: MachineParams): void {
 
 function syncFormatError(params: MachineParams): void {
   const format = params.prop('format') as string | undefined
-  if (colorPickerResolveFormat(format)) {
+  if (colorResolveFormat(format)) {
     clearError(params, 'format')
     return
   }
@@ -137,9 +132,9 @@ function isEyeDropperCancel(error: unknown): boolean {
   return typeof error === 'object' && error !== null && (error as { name?: unknown }).name === 'AbortError'
 }
 
-/** 当前工作色：值串加上锚。灰度处的色相由锚保住，详见 colorPickerResolveHsva。 */
-function currentHsva(params: MachineParams): ColorPickerHsva {
-  return colorPickerResolveHsva(params.context.get('value'), params.context.get('anchor'))
+/** 当前工作色：值串加上锚。灰度处的色相由锚保住，详见 colorResolveHsva。 */
+function currentHsva(params: MachineParams): ColorHsva {
+  return colorResolveHsva(params.context.get('value'), params.context.get('anchor'))
 }
 
 /**
@@ -147,16 +142,16 @@ function currentHsva(params: MachineParams): ColorPickerHsva {
  *
  * 受控时 context.set('value') 只发回调不落内部值，锚与当前值对不上，connect 退回按当前值反解。
  */
-function applyHsva(params: MachineParams, next: ColorPickerHsva): void {
+function applyHsva(params: MachineParams, next: ColorHsva): void {
   const { context, prop } = params
-  const format = colorPickerResolveFormat(prop('format') as string | undefined)
+  const format = colorResolveFormat(prop('format') as string | undefined)
   if (!format) {
     syncFormatError(params)
     return
   }
   const alpha = prop('alpha') ?? false
-  const hsva: ColorPickerHsva = alpha ? next : { ...next, a: 1 }
-  const value = colorPickerToString(colorPickerHsvaToRgba(hsva), format, alpha)
+  const hsva: ColorHsva = alpha ? next : { ...next, a: 1 }
+  const value = colorToString(colorHsvaToRgba(hsva), format, alpha)
   context.set('draft', null)
   clearError(params, 'format')
   clearError(params, 'input')
@@ -167,12 +162,12 @@ function applyHsva(params: MachineParams, next: ColorPickerHsva): void {
 
 /** 把一个外来的串收成工作色；解析不出时保留原值并显式报告来源。 */
 function applyValueString(params: MachineParams, raw: string, source: 'external' | 'api' | 'swatch' | 'eye-dropper'): void {
-  const rgba = colorPickerParse(raw)
+  const rgba = colorParse(raw)
   if (!rgba) {
     setError(params, 'parse', { type: 'parse', source, value: raw })
     return
   }
-  applyHsva(params, colorPickerRgbaToHsva(rgba, currentHsva(params).h))
+  applyHsva(params, colorRgbaToHsva(rgba, currentHsva(params).h))
 }
 
 /** 取色区的拖动落点 → 工作色。矩形在事件那一刻现量，connect 不得读 DOM。 */
@@ -198,7 +193,7 @@ export function colorPickerChannelSliderProps(
 ): SliderSchema['props'] {
   const { prop, context, send } = service
   const range = colorPickerChannelRange(channel)
-  const hsva = colorPickerResolveHsva(context.get('value'), context.get('anchor'))
+  const hsva = colorResolveHsva(context.get('value'), context.get('anchor'))
   return {
     value: [Math.round(colorPickerChannelValue(hsva, channel))],
     min: range.min,
@@ -232,7 +227,7 @@ export const colorPickerMachine = createMachine({
   context: ({ prop, cell }) => ({
     value: cell<string>(() => ({
       value: prop('value'),
-      defaultValue: prop('defaultValue') ?? COLOR_PICKER_FALLBACK,
+      defaultValue: prop('defaultValue') ?? COLOR_FALLBACK,
       onChange: value => prop('onValueChange')?.({ value }),
     })),
     anchor: cell<ColorPickerSchema['context']['anchor']>(() => ({ defaultValue: null })),

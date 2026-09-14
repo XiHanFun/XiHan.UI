@@ -7,43 +7,16 @@
 
 export { colorPickerAnatomy } from './color-picker.anatomy'
 export {
-  COLOR_PICKER_FALLBACK,
   colorPickerApplyInput,
   colorPickerChannelRange,
   colorPickerChannelValue,
-  colorPickerCss,
-  colorPickerHexToRgba,
-  colorPickerHslaToRgba,
-  colorPickerHsvaToRgba,
-  colorPickerHueCss,
   colorPickerInputText,
-  colorPickerNormalizeHsva,
-  colorPickerNormalizeRgba,
-  colorPickerParse,
-  colorPickerResolveFormat,
-  colorPickerResolveHsva,
-  colorPickerRgbaToHex,
-  colorPickerRgbaToHsla,
-  colorPickerRgbaToHsva,
-  colorPickerSameColor,
-  colorPickerSameRgba,
   colorPickerToChannel,
   colorPickerToInputChannel,
-  colorPickerToRgba,
-  colorPickerToString,
   colorPickerWithArea,
   colorPickerWithChannel,
 } from './color-picker.color'
-export type {
-  ColorPickerAnchor,
-  ColorPickerChannel,
-  ColorPickerChannelRange,
-  ColorPickerFormat,
-  ColorPickerHsla,
-  ColorPickerHsva,
-  ColorPickerInputChannel,
-  ColorPickerRgba,
-} from './color-picker.color'
+export type { ColorPickerChannel, ColorPickerInputChannel } from './color-picker.color'
 export { connectColorPicker } from './color-picker.connect'
 export { colorPickerPercent, colorPickerPointRatio } from './color-picker.geometry'
 export type { ColorPickerPoint, ColorPickerRatio, ColorPickerRect } from './color-picker.geometry'

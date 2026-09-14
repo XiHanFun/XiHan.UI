@@ -5,241 +5,243 @@ import {
   colorPickerApplyInput,
   colorPickerChannelRange,
   colorPickerChannelValue,
-  colorPickerCss,
-  colorPickerHexToRgba,
-  colorPickerHslaToRgba,
-  colorPickerHsvaToRgba,
-  colorPickerHueCss,
   colorPickerInputText,
-  colorPickerParse,
-  colorPickerResolveFormat,
-  colorPickerResolveHsva,
-  colorPickerRgbaToHex,
-  colorPickerRgbaToHsla,
-  colorPickerRgbaToHsva,
-  colorPickerSameColor,
-  colorPickerToRgba,
-  colorPickerToString,
   colorPickerWithArea,
   colorPickerWithChannel,
 } from '../src/color-picker/color-picker.color'
 import { colorPickerPercent, colorPickerPointRatio } from '../src/color-picker/color-picker.geometry'
+import {
+  colorCss,
+  colorHexToRgba,
+  colorHslaToRgba,
+  colorHsvaToRgba,
+  colorHueCss,
+  colorParse,
+  colorResolveFormat,
+  colorResolveHsva,
+  colorRgbaToHex,
+  colorRgbaToHsla,
+  colorRgbaToHsva,
+  colorSameColor,
+  colorToRgba,
+  colorToString,
+} from '../src/shared/color'
 
 // 参照色：#3b82f6 = rgb(59,130,246) = hsl(217, 91%, 60%) = hsv(217, 76%, 96%)
 const BLUE = { r: 59, g: 130, b: 246, a: 1 }
 
-describe('colorPickerHexToRgba', () => {
+describe('colorHexToRgba', () => {
   it('三位与六位是同一个颜色，`#` 可省', () => {
-    expect(colorPickerHexToRgba('#f0a')).toEqual({ r: 255, g: 0, b: 170, a: 1 })
-    expect(colorPickerHexToRgba('ff00aa')).toEqual({ r: 255, g: 0, b: 170, a: 1 })
+    expect(colorHexToRgba('#f0a')).toEqual({ r: 255, g: 0, b: 170, a: 1 })
+    expect(colorHexToRgba('ff00aa')).toEqual({ r: 255, g: 0, b: 170, a: 1 })
   })
 
   it('四位与八位带透明度', () => {
-    expect(colorPickerHexToRgba('#0000')).toEqual({ r: 0, g: 0, b: 0, a: 0 })
-    expect(colorPickerHexToRgba('#3b82f680')!.a).toBeCloseTo(128 / 255, 5)
+    expect(colorHexToRgba('#0000')).toEqual({ r: 0, g: 0, b: 0, a: 0 })
+    expect(colorHexToRgba('#3b82f680')!.a).toBeCloseTo(128 / 255, 5)
   })
 
   it('位数不对（用户打了一半）一律 null，不猜颜色', () => {
     // 这几串在长度上都是"半截"，猜一个出来会让输入框在打字途中乱跳
-    expect(colorPickerHexToRgba('#3b')).toBeNull()
-    expect(colorPickerHexToRgba('#3b8')).not.toBeNull() // 三位是合法简写
-    expect(colorPickerHexToRgba('#3b82')).not.toBeNull() // 四位是带透明度的简写
-    expect(colorPickerHexToRgba('#3b82f')).toBeNull()
-    expect(colorPickerHexToRgba('#3b82f6a')).toBeNull()
-    expect(colorPickerHexToRgba('')).toBeNull()
-    expect(colorPickerHexToRgba('#zzzzzz')).toBeNull()
+    expect(colorHexToRgba('#3b')).toBeNull()
+    expect(colorHexToRgba('#3b8')).not.toBeNull() // 三位是合法简写
+    expect(colorHexToRgba('#3b82')).not.toBeNull() // 四位是带透明度的简写
+    expect(colorHexToRgba('#3b82f')).toBeNull()
+    expect(colorHexToRgba('#3b82f6a')).toBeNull()
+    expect(colorHexToRgba('')).toBeNull()
+    expect(colorHexToRgba('#zzzzzz')).toBeNull()
   })
 })
 
-describe('colorPickerRgbaToHex', () => {
+describe('colorRgbaToHex', () => {
   it('每个分量补足两位，默认不带透明度', () => {
-    expect(colorPickerRgbaToHex({ r: 0, g: 0, b: 0, a: 1 })).toBe('#000000')
-    expect(colorPickerRgbaToHex(BLUE)).toBe('#3b82f6')
+    expect(colorRgbaToHex({ r: 0, g: 0, b: 0, a: 1 })).toBe('#000000')
+    expect(colorRgbaToHex(BLUE)).toBe('#3b82f6')
   })
 
   it('withAlpha 才输出第四对', () => {
-    expect(colorPickerRgbaToHex({ ...BLUE, a: 0.5 }, true)).toBe('#3b82f680')
-    expect(colorPickerRgbaToHex({ ...BLUE, a: 0.5 })).toBe('#3b82f6')
+    expect(colorRgbaToHex({ ...BLUE, a: 0.5 }, true)).toBe('#3b82f680')
+    expect(colorRgbaToHex({ ...BLUE, a: 0.5 })).toBe('#3b82f6')
   })
 })
 
 describe('rgb ↔ hsv 互转', () => {
   it('参照色往返回得来', () => {
-    const hsva = colorPickerRgbaToHsva(BLUE)
+    const hsva = colorRgbaToHsva(BLUE)
     expect(Math.round(hsva.h)).toBe(217)
     expect(Math.round(hsva.s)).toBe(76)
     expect(Math.round(hsva.v)).toBe(96)
-    expect(colorPickerHsvaToRgba(hsva)).toEqual(BLUE)
+    expect(colorHsvaToRgba(hsva)).toEqual(BLUE)
   })
 
   it('三原色的色相分别落在 0 / 120 / 240', () => {
-    expect(colorPickerRgbaToHsva({ r: 255, g: 0, b: 0, a: 1 }).h).toBe(0)
-    expect(colorPickerRgbaToHsva({ r: 0, g: 255, b: 0, a: 1 }).h).toBe(120)
-    expect(colorPickerRgbaToHsva({ r: 0, g: 0, b: 255, a: 1 }).h).toBe(240)
+    expect(colorRgbaToHsva({ r: 255, g: 0, b: 0, a: 1 }).h).toBe(0)
+    expect(colorRgbaToHsva({ r: 0, g: 255, b: 0, a: 1 }).h).toBe(120)
+    expect(colorRgbaToHsva({ r: 0, g: 0, b: 255, a: 1 }).h).toBe(240)
   })
 
   it('灰度色算不出色相，交回 hint（不给就落 0）', () => {
     // 这是取色器最容易塌的一处：把明度拖到 0 再拖回来，色相会变成红
-    expect(colorPickerRgbaToHsva({ r: 0, g: 0, b: 0, a: 1 }).h).toBe(0)
-    expect(colorPickerRgbaToHsva({ r: 0, g: 0, b: 0, a: 1 }, 217).h).toBe(217)
-    expect(colorPickerRgbaToHsva({ r: 128, g: 128, b: 128, a: 1 }, 217).h).toBe(217)
+    expect(colorRgbaToHsva({ r: 0, g: 0, b: 0, a: 1 }).h).toBe(0)
+    expect(colorRgbaToHsva({ r: 0, g: 0, b: 0, a: 1 }, 217).h).toBe(217)
+    expect(colorRgbaToHsva({ r: 128, g: 128, b: 128, a: 1 }, 217).h).toBe(217)
     // 有色相可算时 hint 不许插手
-    expect(Math.round(colorPickerRgbaToHsva(BLUE, 30).h)).toBe(217)
+    expect(Math.round(colorRgbaToHsva(BLUE, 30).h)).toBe(217)
   })
 
   it('纯黑的饱和度取 0，不做除零', () => {
-    const hsva = colorPickerRgbaToHsva({ r: 0, g: 0, b: 0, a: 1 })
+    const hsva = colorRgbaToHsva({ r: 0, g: 0, b: 0, a: 1 })
     expect(hsva.s).toBe(0)
     expect(hsva.v).toBe(0)
     expect(Number.isNaN(hsva.s)).toBe(false)
   })
 
   it('透明度原样带过去', () => {
-    expect(colorPickerRgbaToHsva({ ...BLUE, a: 0.25 }).a).toBe(0.25)
-    expect(colorPickerHsvaToRgba({ h: 0, s: 0, v: 0, a: 0.25 }).a).toBe(0.25)
+    expect(colorRgbaToHsva({ ...BLUE, a: 0.25 }).a).toBe(0.25)
+    expect(colorHsvaToRgba({ h: 0, s: 0, v: 0, a: 0.25 }).a).toBe(0.25)
   })
 
   it('越界输入夹回区间而不是产出 NaN', () => {
-    expect(colorPickerHsvaToRgba({ h: 400, s: 200, v: -5, a: 3 })).toEqual({ r: 0, g: 0, b: 0, a: 1 })
-    expect(colorPickerRgbaToHsva({ r: 999, g: -20, b: Number.NaN, a: 1 })).toEqual({ h: 0, s: 100, v: 100, a: 1 })
+    expect(colorHsvaToRgba({ h: 400, s: 200, v: -5, a: 3 })).toEqual({ r: 0, g: 0, b: 0, a: 1 })
+    expect(colorRgbaToHsva({ r: 999, g: -20, b: Number.NaN, a: 1 })).toEqual({ h: 0, s: 100, v: 100, a: 1 })
   })
 })
 
 describe('rgb ↔ hsl 互转', () => {
   it('参照色往返回得来', () => {
-    const hsla = colorPickerRgbaToHsla(BLUE)
+    const hsla = colorRgbaToHsla(BLUE)
     expect(Math.round(hsla.h)).toBe(217)
     expect(Math.round(hsla.s)).toBe(91)
     expect(Math.round(hsla.l)).toBe(60)
-    expect(colorPickerHslaToRgba(hsla)).toEqual(BLUE)
+    expect(colorHslaToRgba(hsla)).toEqual(BLUE)
   })
 
   it('纯白纯黑的饱和度取 0，不做除零', () => {
-    expect(colorPickerRgbaToHsla({ r: 255, g: 255, b: 255, a: 1 })).toEqual({ h: 0, s: 0, l: 100, a: 1 })
-    expect(colorPickerRgbaToHsla({ r: 0, g: 0, b: 0, a: 1 })).toEqual({ h: 0, s: 0, l: 0, a: 1 })
+    expect(colorRgbaToHsla({ r: 255, g: 255, b: 255, a: 1 })).toEqual({ h: 0, s: 0, l: 100, a: 1 })
+    expect(colorRgbaToHsla({ r: 0, g: 0, b: 0, a: 1 })).toEqual({ h: 0, s: 0, l: 0, a: 1 })
   })
 })
 
-describe('colorPickerParse', () => {
+describe('colorParse', () => {
   it('认十六进制、rgb()、hsl() 三类写法', () => {
-    expect(colorPickerParse('#3b82f6')).toEqual(BLUE)
-    expect(colorPickerParse('rgb(59, 130, 246)')).toEqual(BLUE)
-    expect(colorPickerParse('rgba(59, 130, 246, 0.5)')).toEqual({ ...BLUE, a: 0.5 })
+    expect(colorParse('#3b82f6')).toEqual(BLUE)
+    expect(colorParse('rgb(59, 130, 246)')).toEqual(BLUE)
+    expect(colorParse('rgba(59, 130, 246, 0.5)')).toEqual({ ...BLUE, a: 0.5 })
     // 整数百分数比原色少一点精度，这正是锚要按串逐字比、不按颜色比的原因
-    expect(colorPickerParse('hsl(217, 91%, 60%)')).toEqual({ r: 60, g: 131, b: 246, a: 1 })
-    expect(colorPickerParse('hsla(217, 91%, 60%, 0.5)')).toEqual({ r: 60, g: 131, b: 246, a: 0.5 })
+    expect(colorParse('hsl(217, 91%, 60%)')).toEqual({ r: 60, g: 131, b: 246, a: 1 })
+    expect(colorParse('hsla(217, 91%, 60%, 0.5)')).toEqual({ r: 60, g: 131, b: 246, a: 0.5 })
   })
 
   it('空格与斜杠分隔、百分数透明度、大写都收得下', () => {
-    expect(colorPickerParse('rgb(59 130 246 / 50%)')).toEqual({ ...BLUE, a: 0.5 })
-    expect(colorPickerParse('  #3B82F6  ')).toEqual(BLUE)
-    expect(colorPickerParse('hsl(217deg 91% 60%)')).toEqual({ r: 60, g: 131, b: 246, a: 1 })
+    expect(colorParse('rgb(59 130 246 / 50%)')).toEqual({ ...BLUE, a: 0.5 })
+    expect(colorParse('  #3B82F6  ')).toEqual(BLUE)
+    expect(colorParse('hsl(217deg 91% 60%)')).toEqual({ r: 60, g: 131, b: 246, a: 1 })
   })
 
   it('半截串、空串、颜色关键字一律 null', () => {
-    expect(colorPickerParse('')).toBeNull()
-    expect(colorPickerParse('   ')).toBeNull()
-    expect(colorPickerParse('#3b82f')).toBeNull()
-    expect(colorPickerParse('rgb(59, 130)')).toBeNull()
-    expect(colorPickerParse('rgb(59, abc, 246)')).toBeNull()
+    expect(colorParse('')).toBeNull()
+    expect(colorParse('   ')).toBeNull()
+    expect(colorParse('#3b82f')).toBeNull()
+    expect(colorParse('rgb(59, 130)')).toBeNull()
+    expect(colorParse('rgb(59, abc, 246)')).toBeNull()
     // 颜色关键字要一张随浏览器版本走的名字表，取值口径必须是确定的，所以不认
-    expect(colorPickerParse('red')).toBeNull()
-    expect(colorPickerParse('transparent')).toBeNull()
+    expect(colorParse('red')).toBeNull()
+    expect(colorParse('transparent')).toBeNull()
   })
 
   it('越界分量、透明度或多余参数一律拒绝，不静默裁切', () => {
-    expect(colorPickerParse('rgb(300, -20, 246)')).toBeNull()
-    expect(colorPickerParse('rgba(59, 130, 246, 5)')).toBeNull()
-    expect(colorPickerParse('hsl(217, 101%, 60%)')).toBeNull()
-    expect(colorPickerParse('hsla(217, 91%, -1%, 0.5)')).toBeNull()
-    expect(colorPickerParse('rgb(59, 130, 246, 1, 0)')).toBeNull()
+    expect(colorParse('rgb(300, -20, 246)')).toBeNull()
+    expect(colorParse('rgba(59, 130, 246, 5)')).toBeNull()
+    expect(colorParse('hsl(217, 101%, 60%)')).toBeNull()
+    expect(colorParse('hsla(217, 91%, -1%, 0.5)')).toBeNull()
+    expect(colorParse('rgb(59, 130, 246, 1, 0)')).toBeNull()
   })
 })
 
-describe('colorPickerResolveFormat', () => {
+describe('colorResolveFormat', () => {
   it('缺省是 hex，未知格式显式返回 null', () => {
-    expect(colorPickerResolveFormat(undefined)).toBe('hex')
-    expect(colorPickerResolveFormat('rgba')).toBe('rgba')
-    expect(colorPickerResolveFormat('oklch')).toBeNull()
+    expect(colorResolveFormat(undefined)).toBe('hex')
+    expect(colorResolveFormat('rgba')).toBe('rgba')
+    expect(colorResolveFormat('oklch')).toBeNull()
   })
 })
 
-describe('colorPickerToRgba', () => {
+describe('colorToRgba', () => {
   it('解析不出时退到兜底色（展示用途不该因为一个坏串整块消失）', () => {
-    expect(colorPickerToRgba('乱写的')).toEqual({ r: 0, g: 0, b: 0, a: 1 })
-    expect(colorPickerToRgba('#3b82f6')).toEqual(BLUE)
+    expect(colorToRgba('乱写的')).toEqual({ r: 0, g: 0, b: 0, a: 1 })
+    expect(colorToRgba('#3b82f6')).toEqual(BLUE)
   })
 })
 
-describe('colorPickerToString', () => {
+describe('colorToString', () => {
   it('hex：不透明只写六位，半透明且开了 alpha 才写八位', () => {
-    expect(colorPickerToString(BLUE, 'hex', false)).toBe('#3b82f6')
-    expect(colorPickerToString({ ...BLUE, a: 0.5 }, 'hex', true)).toBe('#3b82f680')
-    expect(colorPickerToString({ ...BLUE, a: 1 }, 'hex', true)).toBe('#3b82f6')
+    expect(colorToString(BLUE, 'hex', false)).toBe('#3b82f6')
+    expect(colorToString({ ...BLUE, a: 0.5 }, 'hex', true)).toBe('#3b82f680')
+    expect(colorToString({ ...BLUE, a: 1 }, 'hex', true)).toBe('#3b82f6')
   })
 
   it('alpha 关掉时透明度恒按 1 输出', () => {
     // 组件不带透明度却吐出半透明值，调用方拿去用会莫名其妙
-    expect(colorPickerToString({ ...BLUE, a: 0.2 }, 'hex', false)).toBe('#3b82f6')
-    expect(colorPickerToString({ ...BLUE, a: 0.2 }, 'rgba', false)).toBe('rgba(59, 130, 246, 1)')
-    expect(colorPickerToString({ ...BLUE, a: 0.2 }, 'hsla', false)).toBe('hsla(217, 91%, 60%, 1)')
+    expect(colorToString({ ...BLUE, a: 0.2 }, 'hex', false)).toBe('#3b82f6')
+    expect(colorToString({ ...BLUE, a: 0.2 }, 'rgba', false)).toBe('rgba(59, 130, 246, 1)')
+    expect(colorToString({ ...BLUE, a: 0.2 }, 'hsla', false)).toBe('hsla(217, 91%, 60%, 1)')
   })
 
   it('rgba / hsla 写法与解析互为逆运算', () => {
-    const rgbaText = colorPickerToString({ ...BLUE, a: 0.5 }, 'rgba', true)
+    const rgbaText = colorToString({ ...BLUE, a: 0.5 }, 'rgba', true)
     expect(rgbaText).toBe('rgba(59, 130, 246, 0.5)')
-    expect(colorPickerParse(rgbaText)).toEqual({ ...BLUE, a: 0.5 })
+    expect(colorParse(rgbaText)).toEqual({ ...BLUE, a: 0.5 })
 
-    const hslaText = colorPickerToString(BLUE, 'hsla', false)
+    const hslaText = colorToString(BLUE, 'hsla', false)
     expect(hslaText).toBe('hsla(217, 91%, 60%, 1)')
     // 百分数舍进整数，往返会差一点点：这正是锚要按串逐字比、不按颜色比的原因
-    expect(colorPickerParse(hslaText)).not.toBeNull()
+    expect(colorParse(hslaText)).not.toBeNull()
   })
 
   it('透明度的小数尾巴截到三位', () => {
-    expect(colorPickerToString({ ...BLUE, a: 1 / 3 }, 'rgba', true)).toBe('rgba(59, 130, 246, 0.333)')
+    expect(colorToString({ ...BLUE, a: 1 / 3 }, 'rgba', true)).toBe('rgba(59, 130, 246, 0.333)')
   })
 })
 
-describe('colorPickerCss / colorPickerHueCss', () => {
+describe('colorCss / colorHueCss', () => {
   it('色块背景恒用 rgba()，透明度不会被吃掉', () => {
-    expect(colorPickerCss({ ...BLUE, a: 0.4 })).toBe('rgba(59, 130, 246, 0.4)')
+    expect(colorCss({ ...BLUE, a: 0.4 })).toBe('rgba(59, 130, 246, 0.4)')
   })
 
   it('取色区底色是当前色相的纯色', () => {
-    expect(colorPickerHueCss(217.4)).toBe('hsl(217, 100%, 50%)')
-    expect(colorPickerHueCss(-30)).toBe('hsl(330, 100%, 50%)')
+    expect(colorHueCss(217.4)).toBe('hsl(217, 100%, 50%)')
+    expect(colorHueCss(-30)).toBe('hsl(330, 100%, 50%)')
   })
 })
 
-describe('colorPickerSameColor', () => {
+describe('colorSameColor', () => {
   it('写法不同、颜色相同算同一个', () => {
-    expect(colorPickerSameColor('#f00', 'rgb(255, 0, 0)')).toBe(true)
-    expect(colorPickerSameColor('#ff0000', 'hsl(0, 100%, 50%)')).toBe(true)
-    expect(colorPickerSameColor('#ff0000', '#ff0001')).toBe(false)
+    expect(colorSameColor('#f00', 'rgb(255, 0, 0)')).toBe(true)
+    expect(colorSameColor('#ff0000', 'hsl(0, 100%, 50%)')).toBe(true)
+    expect(colorSameColor('#ff0000', '#ff0001')).toBe(false)
   })
 
   it('任一侧解析不出即不相同', () => {
-    expect(colorPickerSameColor('#ff0000', '半截')).toBe(false)
+    expect(colorSameColor('#ff0000', '半截')).toBe(false)
   })
 })
 
-describe('colorPickerResolveHsva', () => {
+describe('colorResolveHsva', () => {
   it('锚记的串与当前值逐字相同就沿用锚里的色相', () => {
     // 值是纯黑（色相算不出来），但这个串正是由 217 度那次操作产出的
     const anchor = { value: '#000000', hsva: { h: 217, s: 76, v: 0, a: 1 } }
-    expect(colorPickerResolveHsva('#000000', anchor).h).toBe(217)
+    expect(colorResolveHsva('#000000', anchor).h).toBe(217)
   })
 
   it('串对不上（外部写进来的值）就老老实实反解，色相拿锚当兜底', () => {
     const anchor = { value: '#000000', hsva: { h: 217, s: 76, v: 0, a: 1 } }
-    expect(Math.round(colorPickerResolveHsva('#ff0000', anchor).h)).toBe(0)
+    expect(Math.round(colorResolveHsva('#ff0000', anchor).h)).toBe(0)
     // 新值也是灰度：算不出色相，此时才轮到锚的色相兜底
-    expect(colorPickerResolveHsva('#808080', anchor).h).toBe(217)
+    expect(colorResolveHsva('#808080', anchor).h).toBe(217)
   })
 
   it('没有锚、值也解析不出时退到兜底色', () => {
-    expect(colorPickerResolveHsva('乱写的', null)).toEqual({ h: 0, s: 0, v: 0, a: 1 })
+    expect(colorResolveHsva('乱写的', null)).toEqual({ h: 0, s: 0, v: 0, a: 1 })
   })
 })
 
@@ -272,7 +274,7 @@ describe('通道读写', () => {
 })
 
 describe('colorPickerInputText', () => {
-  const hsva = colorPickerRgbaToHsva({ ...BLUE, a: 0.5 })
+  const hsva = colorRgbaToHsva({ ...BLUE, a: 0.5 })
 
   it('十六进制框显示整串，rgb 三个框各显示一个分量', () => {
     expect(colorPickerInputText(hsva, 'hex', false)).toBe('#3b82f6')
@@ -288,12 +290,12 @@ describe('colorPickerInputText', () => {
 })
 
 describe('colorPickerApplyInput', () => {
-  const hsva = colorPickerRgbaToHsva({ ...BLUE, a: 0.5 })
+  const hsva = colorRgbaToHsva({ ...BLUE, a: 0.5 })
 
   it('十六进制：六位写法保留当前透明度，八位写法带上新的', () => {
     const six = colorPickerApplyInput(hsva, 'hex', '#ff0000', true)!
     expect(six.a).toBe(0.5)
-    expect(colorPickerHsvaToRgba(six)).toEqual({ r: 255, g: 0, b: 0, a: 0.5 })
+    expect(colorHsvaToRgba(six)).toEqual({ r: 255, g: 0, b: 0, a: 0.5 })
 
     const eight = colorPickerApplyInput(hsva, 'hex', '#ff000000', true)!
     expect(eight.a).toBe(0)
@@ -304,13 +306,13 @@ describe('colorPickerApplyInput', () => {
   })
 
   it('rgb 分量按 0-255 收，越界显式拒绝', () => {
-    expect(colorPickerHsvaToRgba(colorPickerApplyInput(hsva, 'r', '200', true)!).r).toBe(200)
+    expect(colorHsvaToRgba(colorPickerApplyInput(hsva, 'r', '200', true)!).r).toBe(200)
     expect(colorPickerApplyInput(hsva, 'r', '999', true)).toBeNull()
     expect(colorPickerApplyInput(hsva, 'g', '-1', true)).toBeNull()
   })
 
   it('把分量改到与另两个相等（变灰）时色相不塌成红', () => {
-    const gray = colorPickerApplyInput(colorPickerRgbaToHsva({ r: 10, g: 10, b: 200, a: 1 }, 240), 'b', '10', false)!
+    const gray = colorPickerApplyInput(colorRgbaToHsva({ r: 10, g: 10, b: 200, a: 1 }, 240), 'b', '10', false)!
     expect(Math.round(gray.h)).toBe(240)
   })
 

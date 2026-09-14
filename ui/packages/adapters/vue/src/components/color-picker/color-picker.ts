@@ -7,9 +7,9 @@
 
 import type { Direction, Placement, Size } from '@xihan-ui/core'
 import type {
+  ColorFormat,
   ColorPickerApi,
   ColorPickerChannel,
-  ColorPickerFormat,
   ColorPickerInputChannel,
   ColorPickerSchema,
   ColorPickerTranslations,
@@ -44,7 +44,7 @@ export const XhColorPickerRoot = defineComponent({
   props: {
     value: { type: String },
     defaultValue: { type: String },
-    format: { type: String as PropType<ColorPickerFormat> },
+    format: { type: String as PropType<ColorFormat> },
     open: { type: Boolean, default: undefined },
     defaultOpen: Boolean,
     disabled: { type: Boolean, default: undefined },
