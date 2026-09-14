@@ -1,0 +1,101 @@
+<!-- 不可用的日子 | allows-non-contiguous-ranges 允许区间跨过周末，只是那些日子不铺轨道；isDateUnavailable 拿得到起点，据此限制区间长度 -->
+<div id="calendar-range-picker-unavailable-mount"></div>
+<span style="font-size: 13px">区间：<span id="calendar-range-picker-unavailable-value">（未选）</span></span>
+
+<!-- 结构先收在模板里：必需的格子要在元素接线前就位，所以网格填好了才入页 -->
+<template id="calendar-range-picker-unavailable-template">
+  <xh-calendar-range-picker locale="zh-CN" allows-non-contiguous-ranges fixed-weeks>
+    <div data-xh-part="root" style="max-inline-size: 280px">
+      <div data-xh-part="header">
+        <button data-xh-part="prev-trigger" aria-label="上个月"></button>
+        <div data-xh-part="heading"></div>
+        <button data-xh-part="next-trigger" aria-label="下个月"></button>
+      </div>
+      <div data-xh-part="grid">
+        <div data-xh-part="grid-head">
+          <div data-xh-part="week-row"></div>
+        </div>
+        <div data-xh-part="grid-body"></div>
+      </div>
+    </div>
+  </xh-calendar-range-picker>
+</template>
+
+<script type="module">
+  const fragment = document
+    .getElementById("calendar-range-picker-unavailable-template")
+    .content.cloneNode(true);
+  const calendar = fragment.querySelector("xh-calendar-range-picker");
+  const heading = fragment.querySelector('[data-xh-part="heading"]');
+  const head = fragment.querySelector('[data-xh-part="grid-head"] [data-xh-part="week-row"]');
+  const body = fragment.querySelector('[data-xh-part="grid-body"]');
+  const readout = document.getElementById("calendar-range-picker-unavailable-value");
+
+  // 周末判为不可用；第二个参数是挑到一半的起点，落了起点之后只许挑 7 天内
+  calendar.isDateUnavailable = (iso, anchor) => {
+    const [y, m, d] = iso.split("-").map(Number);
+    const weekday = new Date(y, m - 1, d).getDay();
+    if (weekday === 0 || weekday === 6) {
+      return true;
+    }
+    if (!anchor) {
+      return false;
+    }
+    const days = Math.abs((new Date(iso).getTime() - new Date(anchor).getTime()) / 86400000);
+    return days > 7;
+  };
+
+  // 已经画出来的是哪个月
+  let month = "";
+
+  // 表头七列只跟 locale 走，画一次就够
+  function paintHead() {
+    head.replaceChildren(
+      ...calendar.weekDays.map((day) => {
+        const cell = document.createElement("span");
+        cell.dataset.xhPart = "week-day";
+        cell.setAttribute("value", day.value);
+        cell.textContent = day.label;
+        return cell;
+      }),
+    );
+  }
+
+  // 换了月才重画格子：同月内移动焦点时格子原样留着，区间底色由元素自己写
+  function paintBody() {
+    const first = calendar.weeks[0][0].start;
+    if (first === month) {
+      return;
+    }
+    month = first;
+    heading.textContent = calendar.headingLabel;
+    body.replaceChildren(
+      ...calendar.weeks.map((week) => {
+        const row = document.createElement("div");
+        row.dataset.xhPart = "week-row";
+        for (const day of week) {
+          const cell = document.createElement("div");
+          cell.dataset.xhPart = "cell";
+          cell.setAttribute("value", day.start);
+          const trigger = document.createElement("div");
+          trigger.dataset.xhPart = "cell-trigger";
+          trigger.textContent = day.day;
+          cell.append(trigger);
+          row.append(cell);
+        }
+        return row;
+      }),
+    );
+  }
+
+  document.getElementById("calendar-range-picker-unavailable-mount").append(fragment);
+  paintHead();
+  paintBody();
+
+  calendar.addEventListener("focused-value-change", paintBody);
+  calendar.addEventListener("value-change", (event) => {
+    // 值只在两端都落定时更新；挑到一半的起点记在元素里
+    const [start, end] = event.detail.value;
+    readout.textContent = start && end ? `${start} → ${end}` : "（未选）";
+  });
+</script>

@@ -102,7 +102,7 @@ async function open(): Promise<void> {
 }
 
 function pickDay(value?: string): string {
-  const cells = [...document.querySelectorAll<HTMLElement>('[data-scope="calendar"][data-part="cell-trigger"]')]
+  const cells = [...document.querySelectorAll<HTMLElement>('[data-scope="calendar-picker"][data-part="cell-trigger"]')]
   const cell = value
     ? cells.find(c => c.getAttribute('data-value') === value)!
     : cells.find(c => !c.hasAttribute('data-outside-month') && c.getAttribute('aria-disabled') !== 'true')!

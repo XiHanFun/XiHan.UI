@@ -18,7 +18,8 @@ import { badgeSuite } from './badge.suite'
 import { breadcrumbSuite } from './breadcrumb.suite'
 import { buttonGroupSuite } from './button-group.suite'
 import { buttonSuite } from './button.suite'
-import { calendarSuite } from './calendar.suite'
+import { calendarPickerSuite } from './calendar-picker.suite'
+import { calendarRangePickerSuite } from './calendar-range-picker.suite'
 import { cardSuite } from './card.suite'
 import { carouselSuite } from './carousel.suite'
 import { cascaderSuite } from './cascader.suite'
@@ -147,7 +148,8 @@ export const allSuites: readonly ConformanceSuite[] = [
   breadcrumbSuite,
   buttonSuite,
   buttonGroupSuite,
-  calendarSuite,
+  calendarPickerSuite,
+  calendarRangePickerSuite,
   cardSuite,
   carouselSuite,
   cascaderSuite,

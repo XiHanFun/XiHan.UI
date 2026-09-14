@@ -223,7 +223,7 @@ describe('委派给内嵌部件的角色节点', () => {
   it('委派节点接线后戴的是内嵌部件的 scope，与宿主重名的角色归宿主', async () => {
     const el = await mountDatePicker()
     expect(el.querySelector('[data-xh-part="segment"]')!.getAttribute('data-scope')).toBe('date-field')
-    expect(el.querySelector('[data-xh-part="heading"]')!.getAttribute('data-scope')).toBe('calendar')
+    expect(el.querySelector('[data-xh-part="heading"]')!.getAttribute('data-scope')).toBe('calendar-picker')
     expect(el.querySelector('[data-xh-part="root"]')!.getAttribute('data-scope')).toBe('date-picker')
     expect(seen).toEqual([])
   })

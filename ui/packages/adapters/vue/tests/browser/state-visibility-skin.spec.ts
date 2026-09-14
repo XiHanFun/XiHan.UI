@@ -12,12 +12,12 @@ import type { App } from 'vue'
 import { afterEach, describe, expect, it, vi } from 'vitest'
 import { createApp, h } from 'vue'
 import {
-  XhCalendarCell,
-  XhCalendarCellTrigger,
-  XhCalendarGrid,
-  XhCalendarGridBody,
-  XhCalendarRoot,
-  XhCalendarWeekRow,
+  XhCalendarPickerCell,
+  XhCalendarPickerCellTrigger,
+  XhCalendarPickerGrid,
+  XhCalendarPickerGridBody,
+  XhCalendarPickerRoot,
+  XhCalendarPickerWeekRow,
   XhCheckbox,
   XhPromptInputRoot,
   XhPromptInputSubmitTrigger,
@@ -103,17 +103,17 @@ describe('radio-group 的只读手势', () => {
   })
 })
 
-describe('calendar 的只读手势', () => {
+describe('calendar-picker 的只读手势', () => {
   function calendar(readOnly: boolean) {
     return h(
-      XhCalendarRoot,
+      XhCalendarPickerRoot,
       { readOnly, locale: 'zh-CN', timeZone: 'UTC', defaultValue: '2026-07-15' },
       {
         default: ({ weeks }: { weeks: Array<Array<{ value: string }>> }) => [
-          h(XhCalendarGrid, null, () => [
-            h(XhCalendarGridBody, null, () => weeks.map(week =>
-              h(XhCalendarWeekRow, null, () => week.map(day =>
-                h(XhCalendarCell, { value: day.start, key: day.start }, () => [h(XhCalendarCellTrigger)]),
+          h(XhCalendarPickerGrid, null, () => [
+            h(XhCalendarPickerGridBody, null, () => weeks.map(week =>
+              h(XhCalendarPickerWeekRow, null, () => week.map(day =>
+                h(XhCalendarPickerCell, { value: day.start, key: day.start }, () => [h(XhCalendarPickerCellTrigger)]),
               )),
             )),
           ]),
@@ -124,12 +124,12 @@ describe('calendar 的只读手势', () => {
 
   it('只读：日格不再摆手型', () => {
     mount(() => calendar(true))
-    expect(cursorOf(part('calendar', 'cell-trigger'))).toBe('default')
+    expect(cursorOf(part('calendar-picker', 'cell-trigger'))).toBe('default')
   })
 
   it('常态仍是手型', () => {
     mount(() => calendar(false))
-    expect(cursorOf(part('calendar', 'cell-trigger'))).toBe('pointer')
+    expect(cursorOf(part('calendar-picker', 'cell-trigger'))).toBe('pointer')
   })
 })
 

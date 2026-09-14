@@ -277,33 +277,6 @@
     display: none;
   }
 
-  /* 区间：起点那组只占自己的宽度，分隔符紧跟在起点后面；剩下的宽度全给终点那组 */
-  [data-scope='date-picker'][data-part='segment-group'][data-index='0']:has(+ [data-part='range-separator']:not([hidden])) {
-    flex: 0 0 auto;
-  }
-
-  [data-scope='date-picker'][data-part='range-separator'] {
-    display: inline-flex;
-    flex: none;
-    align-items: center;
-    justify-content: center;
-    /* 两侧各留一个小间距：把输入行的常规间距收回来，再补上自己那一份 */
-    margin-inline: var(
-      --xh-date-picker-range-separator-mx,
-      calc(var(--xh-date-picker-range-separator-px, var(--xh-space-1)) - var(--xh-date-picker-control-gap, var(--xh-_date-picker-gap)))
-    );
-    padding-inline: var(--xh-date-picker-range-separator-px, var(--xh-space-1));
-    color: var(--xh-date-picker-range-separator-fg, var(--xh-fg-subtle));
-    font: inherit;
-    line-height: var(--xh-leading-none);
-    pointer-events: none;
-    user-select: none;
-  }
-
-  [data-scope='date-picker'][data-part='range-separator'][hidden] {
-    display: none;
-  }
-
   [data-scope='date-picker'][data-part='segment-group'] > :not([data-scope]) {
     color: var(--xh-date-picker-literal-fg, var(--xh-fg-subtle));
   }
@@ -449,8 +422,8 @@
   }
 
   /* 内嵌日历的挂载点同时充当日历的根节点：日历那份样式的 root 规则落在
-     [data-scope='calendar'][data-part='root'] 上，而这里没有那个节点，
-     所以网格外层该有的排布得在这儿补齐（网格内部的皮仍归 calendar 那一份） */
+     [data-scope='calendar-picker'][data-part='root'] 上，而这里没有那个节点，
+     所以网格外层该有的排布得在这儿补齐（网格内部的皮仍归 calendar-picker 那一份） */
   /* 真的摆了两张日历才横过来。写成 :has 而不是无条件 flex 行:
      showTime 那套结构里 content 直属子节点是作者自己的包裹块与确认行,
      无条件横排会把它们并到日历旁边去。

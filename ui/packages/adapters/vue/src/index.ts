@@ -63,27 +63,49 @@ export type { BreadcrumbContext } from './components/breadcrumb/use-breadcrumb'
 export { XhButton, XhButtonIndicator, XhButtonLabel, XhButtonPrefix, XhButtonSuffix } from './components/button'
 export { XhButtonGroup } from './components/button-group/button-group'
 export {
-  XhCalendarCell,
-  XhCalendarCellTrigger,
-  XhCalendarGrid,
-  XhCalendarGridBody,
-  XhCalendarGridHead,
-  XhCalendarHeader,
-  XhCalendarHeading,
-  XhCalendarHeadingMonthTrigger,
-  XhCalendarHeadingYearTrigger,
-  XhCalendarNextTrigger,
-  XhCalendarNextYearTrigger,
-  XhCalendarPrevTrigger,
-  XhCalendarPrevYearTrigger,
-  XhCalendarRoot,
-  XhCalendarWeekDay,
-  XhCalendarWeekNumber,
-  XhCalendarWeekRow,
-} from './components/calendar/calendar'
-export type { CalendarRootSlotProps } from './components/calendar/calendar'
-export { useCalendar } from './components/calendar/use-calendar'
-export type { CalendarContext } from './components/calendar/use-calendar'
+  XhCalendarPickerCell,
+  XhCalendarPickerCellTrigger,
+  XhCalendarPickerGrid,
+  XhCalendarPickerGridBody,
+  XhCalendarPickerGridHead,
+  XhCalendarPickerHeader,
+  XhCalendarPickerHeading,
+  XhCalendarPickerHeadingMonthTrigger,
+  XhCalendarPickerHeadingYearTrigger,
+  XhCalendarPickerNextTrigger,
+  XhCalendarPickerNextYearTrigger,
+  XhCalendarPickerPrevTrigger,
+  XhCalendarPickerPrevYearTrigger,
+  XhCalendarPickerRoot,
+  XhCalendarPickerWeekDay,
+  XhCalendarPickerWeekNumber,
+  XhCalendarPickerWeekRow,
+} from './components/calendar-picker/calendar-picker'
+export type { CalendarPickerRootSlotProps } from './components/calendar-picker/calendar-picker'
+export { useCalendarPicker } from './components/calendar-picker/use-calendar-picker'
+export type { CalendarPickerContext } from './components/calendar-picker/use-calendar-picker'
+export {
+  XhCalendarRangePickerCell,
+  XhCalendarRangePickerCellTrigger,
+  XhCalendarRangePickerGrid,
+  XhCalendarRangePickerGridBody,
+  XhCalendarRangePickerGridHead,
+  XhCalendarRangePickerHeader,
+  XhCalendarRangePickerHeading,
+  XhCalendarRangePickerHeadingMonthTrigger,
+  XhCalendarRangePickerHeadingYearTrigger,
+  XhCalendarRangePickerNextTrigger,
+  XhCalendarRangePickerNextYearTrigger,
+  XhCalendarRangePickerPrevTrigger,
+  XhCalendarRangePickerPrevYearTrigger,
+  XhCalendarRangePickerRoot,
+  XhCalendarRangePickerWeekDay,
+  XhCalendarRangePickerWeekNumber,
+  XhCalendarRangePickerWeekRow,
+} from './components/calendar-range-picker/calendar-range-picker'
+export type { CalendarRangePickerRootSlotProps } from './components/calendar-range-picker/calendar-range-picker'
+export { useCalendarRangePicker } from './components/calendar-range-picker/use-calendar-range-picker'
+export type { CalendarRangePickerContext } from './components/calendar-range-picker/use-calendar-range-picker'
 export {
   XhCardContent,
   XhCardDescription,
@@ -297,7 +319,6 @@ export {
   XhDatePickerPrevTrigger,
   XhDatePickerPrevYearTrigger,
   XhDatePickerRoot,
-  XhDatePickerRangeSeparator,
   XhDatePickerSegment,
   XhDatePickerSegmentGroup,
   XhDatePickerTimePanel,

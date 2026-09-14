@@ -6,15 +6,14 @@
 // 提供 use date picker 相关实现。
 
 import type { Layer, MachineSchema, Service } from '@xihan-ui/core'
-import type { CalendarSchema, DateFieldSchema, DatePickerApi, DatePickerSchema, DatePickerServices } from '@xihan-ui/headless'
+import type { CalendarPickerSchema, DateFieldSchema, DatePickerApi, DatePickerSchema, DatePickerServices } from '@xihan-ui/headless'
 import type { RefObject } from 'react'
 import type { OverlayWiring } from '../../runtime/use-overlay'
 import {
-  calendarMachine,
+  calendarPickerMachine,
   connectDatePicker,
   dateFieldMachine,
   datePickerCalendarProps,
-  datePickerFieldEndProps,
   datePickerFieldProps,
   datePickerMachine,
 } from '@xihan-ui/headless'
@@ -83,26 +82,21 @@ export function useDatePicker(props: DatePickerSchema['props']): DatePickerConte
   })
   serviceRef.current = root
 
-  const calendar = useMachine<CalendarSchema>(calendarMachine, () => datePickerCalendarProps(root), {
+  const calendar = useMachine<CalendarPickerSchema>(calendarPickerMachine, () => datePickerCalendarProps(root), {
     scope,
     // 跨月后的焦点落点要等重渲，日历机器推迟一拍再从这里取网格现查
     onCreate: (svc) => {
       svc.refs.set('getGridEl', () => gridRef.current)
-      // 区间挑到一半时，指针在浮层与输入行之外松开就地收口
-      svc.refs.set('getBoundaryEls', () => [contentRef.current, controlRef.current])
     },
   })
   const field = useMachine<DateFieldSchema>(dateFieldMachine, () => datePickerFieldProps(root), { scope })
-  // 终点那组段位无条件建：机器实例数不随模式变，非区间模式下它的值恒为空且不参与写值
-  const fieldEnd = useMachine<DateFieldSchema>(dateFieldMachine, () => datePickerFieldEndProps(root), { scope })
-  const services: DatePickerServices = { root, calendar, field, fieldEnd }
+  const services: DatePickerServices = { root, calendar, field }
 
   // 值攥在机器里，原生 reset 只还原原生控件——不接这条线，点重置什么都不会发生。
-  // 四台逐一挂：认重置的那几台各自收到事件，不认的那台由 hook 自己让位
+  // 三台逐一挂：认重置的那几台各自收到事件，不认的那台由 hook 自己让位
   useFormReset(root, rootRef)
   useFormReset(calendar, rootRef)
   useFormReset(field, rootRef)
-  useFormReset(fieldEnd, rootRef)
 
   return {
     ...overlay,

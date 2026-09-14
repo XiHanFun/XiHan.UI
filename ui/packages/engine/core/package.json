@@ -49,13 +49,13 @@
       "types": "./dist/vanilla.d.ts",
       "import": "./dist/vanilla.js"
     },
-    "./vite": {
-      "types": "./dist/vite.d.ts",
-      "import": "./dist/vite.js"
-    },
     "./visual-environment": {
       "types": "./dist/visual-environment.d.ts",
       "import": "./dist/visual-environment.js"
+    },
+    "./vite": {
+      "types": "./dist/vite.d.ts",
+      "import": "./dist/vite.js"
     }
   },
   "main": "./dist/index.js",

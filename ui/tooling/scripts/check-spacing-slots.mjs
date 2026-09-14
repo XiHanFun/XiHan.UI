@@ -41,7 +41,8 @@ const SUFFIX = {
  */
 const CROSS_PART = {
   // 摆了周序号的那一行是「序号列 + 七天」的网格，行首那一列的宽度按被排的那一列取名
-  'calendar.week-number': ['week-row'],
+  'calendar-picker.week-number': ['week-row'],
+  'calendar-range-picker.week-number': ['week-row'],
   // 搜索结果列表与空态占的都是一格列的位置，几何跟着 column 走，三种形态才等宽等高
   'cascader.column': ['search-list', 'empty'],
   // 搜索候选与列内条目排的是同一套行度量，空态文字与条目同一档字号

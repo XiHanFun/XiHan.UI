@@ -20,7 +20,8 @@ import {
   XhAnchorRoot,
   XhApprovalRoot,
   XhBackTopRoot,
-  XhCalendarRoot,
+  XhCalendarPickerRoot,
+  XhCalendarRangePickerRoot,
   XhCarouselRoot,
   XhCascaderRoot,
   XhCheckboxGroupRoot,
@@ -151,9 +152,16 @@ const cases: Case[] = [
     schemaKeys: ['visibilityHeight', 'behavior', 'size', 'onVisibilityChange'],
   },
   {
-    name: 'calendar',
+    name: 'calendar-picker',
     render: extra => (
-      <XhCalendarRoot locale="zh-CN" visibleCount={1} timeZone="UTC" onValueChange={noop} {...extra} />
+      <XhCalendarPickerRoot locale="zh-CN" visibleCount={1} timeZone="UTC" onValueChange={noop} {...extra} />
+    ),
+    schemaKeys: ['locale', 'visibleCount', 'timeZone', 'onValueChange'],
+  },
+  {
+    name: 'calendar-range-picker',
+    render: extra => (
+      <XhCalendarRangePickerRoot locale="zh-CN" visibleCount={1} timeZone="UTC" onValueChange={noop} {...extra} />
     ),
     schemaKeys: ['locale', 'visibleCount', 'timeZone', 'onValueChange'],
   },

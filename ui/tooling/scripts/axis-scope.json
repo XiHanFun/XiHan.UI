@@ -37,7 +37,8 @@
     "variant",
     "size"
   ],
-  "calendar": [],
+  "calendar-picker": [],
+  "calendar-range-picker": [],
   "card": [
     "variant"
   ],

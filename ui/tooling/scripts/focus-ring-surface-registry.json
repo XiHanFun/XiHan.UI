@@ -50,7 +50,8 @@
     "tree-select [content] var(--xh-material-frosted-bg)": "M2 外壳的透明底随背后内容变化，不能按单一实体色判定；此 content 已由同表 ringless 逐条登记并在皮肤明确关闭程序化焦点环。内部真实控件仍按各自部件独立检查，不能由本条放行。"
   },
   "ringless": {
-    "calendar [data-part='grid'][data-scope='calendar']": "网格自己不落焦，焦点永远在某一格上，环长在格上",
+    "calendar-picker [data-part='grid'][data-scope='calendar-picker']": "网格自己不落焦，焦点永远在某一格上，环长在格上",
+    "calendar-range-picker [data-part='grid'][data-scope='calendar-range-picker']": "网格自己不落焦，焦点永远在某一格上，环长在格上",
     "carousel [data-part='indicator-group'][data-scope='carousel']": "不是可聚焦节点，落焦只会是浏览器兜底行为；指示点各自有环",
     "carousel [data-part='list'][data-scope='carousel']": "不是可聚焦节点，落焦只会是浏览器兜底行为；两侧按钮与指示点各自有环",
     "carousel [data-part='viewport'][data-scope='carousel']": "不是可聚焦节点，落焦只会是浏览器兜底行为；两侧按钮与指示点各自有环",
@@ -156,14 +157,21 @@
       "ratio": 1,
       "ring": "poured"
     },
-    "calendar [data-in-range][data-part='cell-trigger'][data-scope='calendar']:is([data-range-start], [data-range-end])": {
+    "calendar-picker [data-part='cell-trigger'][data-scope='calendar-picker'][data-selected]": {
       "parts": [
         "cell-trigger"
       ],
       "ratio": 1,
       "ring": "poured"
     },
-    "calendar [data-part='cell-trigger'][data-scope='calendar'][data-selected]:not([data-in-range])": {
+    "calendar-range-picker [data-in-range][data-part='cell-trigger'][data-scope='calendar-range-picker']:is([data-range-start], [data-range-end])": {
+      "parts": [
+        "cell-trigger"
+      ],
+      "ratio": 1,
+      "ring": "poured"
+    },
+    "calendar-range-picker [data-part='cell-trigger'][data-scope='calendar-range-picker'][data-selected]:not([data-in-range])": {
       "parts": [
         "cell-trigger"
       ],

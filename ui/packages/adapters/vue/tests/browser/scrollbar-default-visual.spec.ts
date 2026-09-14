@@ -75,14 +75,14 @@ describe('scrollbar 默认视觉', () => {
   it('快速选年使用三列可滚动网格并继承内部滚动条', () => {
     host = document.createElement('div')
     const grid = document.createElement('div')
-    grid.dataset.scope = 'calendar'
+    grid.dataset.scope = 'calendar-picker'
     grid.dataset.part = 'grid'
     grid.dataset.view = 'year'
     grid.style.inlineSize = '240px'
 
     for (let year = 1900; year <= 2099; year += 1) {
       const cell = document.createElement('button')
-      cell.dataset.scope = 'calendar'
+      cell.dataset.scope = 'calendar-picker'
       cell.dataset.part = 'cell-trigger'
       cell.textContent = `${year}年`
       grid.append(cell)

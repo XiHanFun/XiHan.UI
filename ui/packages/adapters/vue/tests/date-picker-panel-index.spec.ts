@@ -57,7 +57,7 @@ async function mountPicker(props: Record<string, unknown> = {}): Promise<void> {
       h(XhDatePickerRoot, {
         locale: 'zh-CN',
         timeZone: 'UTC',
-        selectionMode: 'range',
+        selectionMode: 'multiple',
         visibleCount: 2,
         defaultOpen: true,
         defaultValue: ['2026-07-01', '2026-08-05'],
@@ -91,7 +91,7 @@ async function mountPicker(props: Record<string, unknown> = {}): Promise<void> {
 }
 
 function headings(): string[] {
-  return [...document.querySelectorAll('[data-scope="calendar"][data-part="heading"]')]
+  return [...document.querySelectorAll('[data-scope="calendar-picker"][data-part="heading"]')]
     .map(el => el.textContent ?? '')
 }
 
@@ -108,22 +108,21 @@ describe('双面板的面板号写在日历上', () => {
 
   it('每张网格各有自己那行标题当名字', async () => {
     await mountPicker()
-    const grids = [...document.querySelectorAll('[data-scope="calendar"][data-part="grid"]')]
+    const grids = [...document.querySelectorAll('[data-scope="calendar-picker"][data-part="grid"]')]
     const ids = headings().length
     expect(ids).toBe(2)
     expect(grids).toHaveLength(2)
     expect(grids[0]!.getAttribute('aria-labelledby')).not.toBe(grids[1]!.getAttribute('aria-labelledby'))
   })
 
-  it('邻月的格子按所在面板判，区间与端点只在认领它的那张上画', async () => {
+  it('邻月的格子按所在面板判，选中只在认领它的那张上画', async () => {
     await mountPicker()
     // 8/1 既在七月网格的末行，也在八月网格里
     expect(cellsOf(0, '2026-08-01')?.hasAttribute('data-outside-month')).toBe(true)
     expect(cellsOf(1, '2026-08-01')?.hasAttribute('data-outside-month')).toBe(false)
-    expect(cellsOf(0, '2026-08-01')?.hasAttribute('data-in-range')).toBe(false)
-    expect(cellsOf(1, '2026-08-01')?.hasAttribute('data-in-range')).toBe(true)
-    // 区间终点 8/5 只在八月那张上是端点
-    expect(cellsOf(1, '2026-08-05')?.hasAttribute('data-range-end')).toBe(true)
+    // 多选里 8/5 被选中，只在八月那张上画
+    expect(cellsOf(0, '2026-08-05')?.hasAttribute('data-selected')).toBe(false)
+    expect(cellsOf(1, '2026-08-05')?.hasAttribute('data-selected')).toBe(true)
   })
 
   it('部件自己写了面板号仍按自己写的算', async () => {
@@ -134,7 +133,7 @@ describe('双面板的面板号写在日历上', () => {
         h(XhDatePickerRoot, {
           locale: 'zh-CN',
           timeZone: 'UTC',
-          selectionMode: 'range',
+          selectionMode: 'multiple',
           visibleCount: 2,
           defaultOpen: true,
           defaultValue: ['2026-07-01', '2026-08-05'],

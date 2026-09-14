@@ -217,6 +217,14 @@
       "description": "承载表单值的组件，统一走受控/非受控两态与 name 表单集成。",
       "components": [
         {
+          "id": "calendar-picker",
+          "name": "日历选择器"
+        },
+        {
+          "id": "calendar-range-picker",
+          "name": "日历范围选择器"
+        },
+        {
           "id": "cascader",
           "name": "级联选择"
         },
@@ -366,10 +374,6 @@
         {
           "id": "avatar-group",
           "name": "头像组"
-        },
-        {
-          "id": "calendar",
-          "name": "日历"
         },
         {
           "id": "card",

@@ -1,0 +1,466 @@
+/*
+ * Copyright (c) 2021-Present XiHanFun and contributors.
+ * Licensed under the MIT License. See LICENSE in the project root for license information.
+ */
+
+/* 定义 calendar picker 样式。 */
+
+@import './scrollbar.css';
+
+@layer xihan.components {
+  /* 皮肤在场的标记：开发模式下按 scope 探一次，取不到就说明这份皮肤没被引入。 */
+  [data-scope='calendar-picker'] {
+    --xh-calendar-picker-skin: 1;
+  }
+
+  [data-scope='calendar-picker'][data-part='root'] {
+    /* 作者塞进指示符槽的图标跟着字号走，与皮肤画的兜底字形同一把尺 */
+    --xh-icon-size: var(--xh-calendar-picker-icon-size, var(--xh-glyph-size-text));
+
+    display: flex;
+    flex-direction: column;
+    gap: var(--xh-calendar-picker-gap, var(--xh-space-2));
+    /* 数字等宽：1 与 7 的字形宽度在比例字体里并不相同，不定住会让整张网格随月份抖动 */
+    font-variant-numeric: tabular-nums;
+  }
+
+  [data-scope='calendar-picker'][data-part='root'][hidden] {
+    display: none;
+  }
+
+  [data-scope='calendar-picker'][data-part='header'] {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--xh-calendar-picker-header-gap, var(--xh-space-2));
+    min-block-size: var(--xh-control-h-sm);
+  }
+
+  [data-scope='calendar-picker'][data-part='header'][hidden] {
+    display: none;
+  }
+
+  [data-scope='calendar-picker'][data-part='heading'] {
+    flex: 1;
+    text-align: center;
+    color: var(--xh-calendar-picker-heading-fg, var(--xh-fg-default));
+    font-size: var(--xh-calendar-picker-heading-font-size, var(--xh-text-label-size));
+    font-weight: var(--xh-calendar-picker-heading-font-weight, var(--xh-font-weight-semibold));
+    line-height: var(--xh-leading-none);
+    user-select: none;
+  }
+
+  /* 标题里的年与月：点它们逐级钻上去（年 → 十年格、月 → 月格）。
+     长得像标题而不像按钮——它本来就是标题，只是可点 */
+  [data-scope='calendar-picker'][data-part='heading-year-trigger']:not([hidden]),
+  [data-scope='calendar-picker'][data-part='heading-month-trigger']:not([hidden]) {
+    display: inline-flex;
+    align-items: center;
+    padding-inline: var(--xh-calendar-picker-heading-trigger-px, var(--xh-space-1));
+    border: var(--xh-stroke-thin) solid transparent;
+    border-radius: var(--xh-calendar-picker-heading-trigger-radius, var(--xh-shape-control));
+    background: transparent;
+    color: var(--xh-calendar-picker-heading-fg, var(--xh-fg-default));
+    font-size: var(--xh-calendar-picker-heading-font-size, var(--xh-text-label-size));
+    font-weight: var(--xh-calendar-picker-heading-font-weight, var(--xh-font-weight-semibold));
+    line-height: var(--xh-leading-none);
+    cursor: pointer;
+    transition:
+      color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
+      scale var(--xh-motion-duration-micro) var(--xh-motion-ease-enter-strong);
+  }
+
+  [data-scope='calendar-picker'][data-part='heading-year-trigger'][hidden],
+  [data-scope='calendar-picker'][data-part='heading-month-trigger'][hidden] {
+    display: none;
+  }
+
+  [data-scope='calendar-picker'][data-part='heading-year-trigger']:hover:not(:disabled),
+  [data-scope='calendar-picker'][data-part='heading-month-trigger']:hover:not(:disabled) {
+    color: var(--xh-calendar-picker-heading-trigger-fg-hover, var(--xh-fg-brand));
+  }
+
+  /* 按下微缩：钻进上一层时给指针一个回执 */
+  [data-scope='calendar-picker'][data-part='heading-year-trigger']:active:not(:disabled),
+  [data-scope='calendar-picker'][data-part='heading-month-trigger']:active:not(:disabled) {
+    scale: var(--xh-motion-scale-press);
+  }
+
+  /* 到顶那一层（年视图的年那一截）只作标题显示：不再是可点的东西，光标也别装成能点 */
+  [data-scope='calendar-picker'][data-part='heading-year-trigger']:disabled,
+  [data-scope='calendar-picker'][data-part='heading-month-trigger']:disabled {
+    cursor: default;
+  }
+
+  [data-scope='calendar-picker'][data-part='prev-year-trigger'],
+  [data-scope='calendar-picker'][data-part='prev-trigger'],
+  [data-scope='calendar-picker'][data-part='next-year-trigger'],
+  [data-scope='calendar-picker'][data-part='next-trigger'] {
+    display: inline-flex;
+    flex: none;
+    align-items: center;
+    justify-content: center;
+    inline-size: var(--xh-calendar-picker-nav-size, var(--xh-control-h-sm));
+    block-size: var(--xh-calendar-picker-nav-size, var(--xh-control-h-sm));
+    border: var(--xh-stroke-thin) solid transparent;
+    border-radius: var(--xh-calendar-picker-nav-radius, var(--xh-shape-control));
+    background: var(--xh-calendar-picker-nav-bg, transparent);
+    color: var(--xh-calendar-picker-nav-fg, var(--xh-fg-muted));
+    cursor: pointer;
+    transition:
+      background var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
+      scale var(--xh-motion-duration-micro) var(--xh-motion-ease-enter-strong);
+  }
+
+  [data-scope='calendar-picker'][data-part='prev-year-trigger'][hidden],
+  [data-scope='calendar-picker'][data-part='prev-trigger'][hidden],
+  [data-scope='calendar-picker'][data-part='next-year-trigger'][hidden],
+  [data-scope='calendar-picker'][data-part='next-trigger'][hidden] {
+    display: none;
+  }
+
+  [data-scope='calendar-picker'][data-part='prev-year-trigger']:hover:not(:disabled),
+  [data-scope='calendar-picker'][data-part='prev-trigger']:hover:not(:disabled),
+  [data-scope='calendar-picker'][data-part='next-year-trigger']:hover:not(:disabled),
+  [data-scope='calendar-picker'][data-part='next-trigger']:hover:not(:disabled) {
+    background: var(--xh-calendar-picker-nav-bg-hover, var(--xh-bg-subtle-hover));
+    color: var(--xh-calendar-picker-nav-fg-hover, var(--xh-fg-default));
+  }
+
+  /* 换底之外再压一档：方向钮按下时缩放 */
+  [data-scope='calendar-picker'][data-part='prev-year-trigger']:active:not(:disabled),
+  [data-scope='calendar-picker'][data-part='prev-trigger']:active:not(:disabled),
+  [data-scope='calendar-picker'][data-part='next-year-trigger']:active:not(:disabled),
+  [data-scope='calendar-picker'][data-part='next-trigger']:active:not(:disabled) {
+    scale: var(--xh-motion-scale-press);
+  }
+
+  /* 翻月是单体控件，禁用走原生 :disabled（连接层输出的正是原生 disabled） */
+  [data-scope='calendar-picker'][data-part='prev-year-trigger']:disabled,
+  [data-scope='calendar-picker'][data-part='prev-trigger']:disabled,
+  [data-scope='calendar-picker'][data-part='next-year-trigger']:disabled,
+  [data-scope='calendar-picker'][data-part='next-trigger']:disabled {
+    color: var(--xh-fg-disabled);
+  }
+
+  [data-scope='calendar-picker'][data-part='grid'] {
+    display: flex;
+    flex-direction: column;
+    gap: var(--xh-calendar-picker-grid-gap, var(--xh-space-1));
+  }
+
+  /* 周期视图：格子直接铺进网格，不再有周行那一层。 */
+  [data-scope='calendar-picker'][data-part='grid'][data-view='week'] {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: var(--xh-calendar-picker-period-gap, var(--xh-space-1));
+  }
+
+  /* 月 3 列 × 4 行、季度 4 列一行、年 3 列。 */
+  [data-scope='calendar-picker'][data-part='grid'][data-view='month'],
+  [data-scope='calendar-picker'][data-part='grid'][data-view='year'] {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: var(--xh-calendar-picker-period-gap, var(--xh-space-1));
+  }
+
+  [data-scope='calendar-picker'][data-part='grid'][data-view='quarter'] {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: var(--xh-calendar-picker-period-gap, var(--xh-space-1));
+  }
+
+  [data-scope='calendar-picker'][data-part='grid'][data-view='year'] {
+    align-content: start;
+    max-block-size: var(--xh-calendar-picker-year-grid-max-h, var(--xh-viewport-h-sm));
+    padding-inline-end: var(--xh-calendar-picker-year-grid-pe, var(--xh-space-1));
+    overflow-y: auto;
+    overscroll-behavior: contain;
+  }
+
+  /* 周期格沿横轴铺开，但始终保持控制件高度；选中面只换颜色，不改变几何尺寸。 */
+  [data-scope='calendar-picker'][data-part='grid']:is([data-view='week'], [data-view='month'], [data-view='quarter'], [data-view='year']) [data-part='cell-trigger'] {
+    flex: 0 0 auto;
+    aspect-ratio: auto;
+    min-inline-size: 0;
+    inline-size: min(3.5rem, 100%);
+    padding-block: var(--xh-calendar-picker-period-py, var(--xh-space-2));
+    border-radius: var(--xh-calendar-picker-period-radius, var(--xh-shape-control));
+  }
+
+  [data-scope='calendar-picker'][data-part='grid'][data-view='week'] [data-part='cell-trigger'] {
+    flex: 1 1 auto;
+    justify-content: flex-start;
+    inline-size: 100%;
+    padding-inline: var(--xh-calendar-picker-week-cell-px, var(--xh-space-3));
+  }
+
+  [data-scope='calendar-picker'][data-part='grid'][hidden] {
+    display: none;
+  }
+
+  /* 网格自己不落焦（焦点永远在某一格上），这里不画环 */
+  [data-scope='calendar-picker'][data-part='grid']:focus-visible {
+    outline: none;
+  }
+
+  [data-scope='calendar-picker'][data-part='grid-head'],
+  [data-scope='calendar-picker'][data-part='grid-body'] {
+    display: flex;
+    flex-direction: column;
+    gap: var(--xh-calendar-picker-row-gap, var(--xh-space-0));
+  }
+
+  [data-scope='calendar-picker'][data-part='grid-head'][hidden],
+  [data-scope='calendar-picker'][data-part='grid-body'][hidden] {
+    display: none;
+  }
+
+  /* 七等分：表头行与日期行共用同一条轨道定义，列才对得齐 */
+  [data-scope='calendar-picker'][data-part='week-row'] {
+    display: grid;
+    grid-template-columns: repeat(7, minmax(0, 1fr));
+  }
+
+  /* 摆了周序号格的行多让出行首一列。写 :not([hidden]) 而不是靠顺序压过下面那条兜底——
+     同特指度的规则谁在后面谁赢,收起态会被这条 display 掀开 */
+  [data-scope='calendar-picker'][data-part='week-row']:not([hidden]):has(> [data-part='week-number']) {
+    display: grid;
+    grid-template-columns: var(--xh-calendar-picker-week-number-w, var(--xh-control-h-md)) repeat(7, minmax(0, 1fr));
+  }
+
+  /* 周序号只是行的标号:比日子小一号、颜色压下去,不跟着选中态走 */
+  [data-scope='calendar-picker'][data-part='week-number'] {
+    display: grid;
+    place-items: center;
+    color: var(--xh-calendar-picker-week-number-fg, var(--xh-fg-subtle));
+    font-size: var(--xh-calendar-picker-week-number-font-size, var(--xh-text-caption-size));
+    font-variant-numeric: tabular-nums;
+    user-select: none;
+  }
+
+  [data-scope='calendar-picker'][data-part='week-number'][hidden] {
+    display: none;
+  }
+  [data-scope='calendar-picker'][data-part='week-row'][hidden] {
+    display: none;
+  }
+
+  [data-scope='calendar-picker'][data-part='week-day'] {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    block-size: var(--xh-calendar-picker-week-day-h, var(--xh-control-h-sm));
+    color: var(--xh-calendar-picker-week-day-fg, var(--xh-fg-subtle));
+    font-size: var(--xh-calendar-picker-week-day-font-size, var(--xh-text-caption-size));
+    font-weight: var(--xh-calendar-picker-week-day-font-weight, var(--xh-font-weight-medium));
+    line-height: var(--xh-leading-none);
+    user-select: none;
+  }
+
+  [data-scope='calendar-picker'][data-part='week-day'][hidden] {
+    display: none;
+  }
+
+  /* 格子只是等分轨道里的一格，圆角的选中片留给 trigger */
+  [data-scope='calendar-picker'][data-part='cell'] {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: var(--xh-calendar-picker-cell-gap, var(--xh-space-0_5));
+  }
+
+  [data-scope='calendar-picker'][data-part='cell'][hidden] {
+    display: none;
+  }
+
+  [data-scope='calendar-picker'][data-part='cell-trigger'] {
+    /* 命中区是绝对定位的伪元素，得定位 */
+    position: relative;
+    display: flex;
+    flex: 1;
+    align-items: center;
+    justify-content: center;
+    /* 正方格：宽度由 week-row 的等分轨道给，高度跟着走，日历才不会被长月份拉扁 */
+    aspect-ratio: 1;
+    min-inline-size: var(--xh-calendar-picker-cell-size, var(--xh-control-h-sm));
+    border: var(--xh-stroke-thin) solid transparent;
+    border-radius: var(--xh-calendar-picker-cell-radius, var(--xh-shape-pill));
+    color: var(--xh-calendar-picker-cell-fg, var(--xh-fg-default));
+    font-size: var(--xh-calendar-picker-cell-font-size, var(--xh-text-body-size));
+    font-weight: var(--xh-calendar-picker-cell-font-weight, var(--xh-font-weight-medium));
+    line-height: var(--xh-leading-none);
+    cursor: pointer;
+    user-select: none;
+    transition:
+      background var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
+      color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
+      scale var(--xh-motion-duration-micro) var(--xh-motion-ease-enter-strong);
+  }
+
+  [data-scope='calendar-picker'][data-part='cell-trigger'][hidden] {
+    display: none;
+  }
+
+  /* 命中区铺满整格：格子四周那圈留白也归它，指尖落在两格之间的空隙不会落空 */
+  [data-scope='calendar-picker'][data-part='cell-trigger']::after {
+    content: '';
+    position: absolute;
+    inset: calc(-1 * var(--xh-calendar-picker-cell-gap, var(--xh-space-0_5)));
+  }
+
+  /* 邻月的日子照样可点，只是压暗——它们不是占位符 */
+  [data-scope='calendar-picker'][data-part='cell-trigger'][data-outside-month] {
+    color: var(--xh-calendar-picker-cell-fg-outside, var(--xh-fg-subtle));
+  }
+
+  [data-scope='calendar-picker'][data-part='cell-trigger']:not([data-disabled], [data-selected]):hover {
+    background: var(--xh-calendar-picker-cell-bg-hover, var(--xh-bg-subtle-hover));
+  }
+
+  /* 按下微缩：缩放走 transform 通道，一格自己缩不推动整张网格；已选中的格照样压 */
+  [data-scope='calendar-picker'][data-part='cell-trigger']:not([data-disabled]):active {
+    scale: var(--xh-motion-scale-press);
+  }
+
+  /* 今天用淡强调面，选中仍用后面的实心强调面；两个状态叠加时不会混成同一种反馈。 */
+  [data-scope='calendar-picker'][data-part='cell-trigger'][data-today] {
+    border-color: var(--xh-calendar-picker-today-border, transparent);
+    background: var(--xh-calendar-picker-today-bg, var(--xh-bg-brand-subtle));
+    color: var(--xh-calendar-picker-today-fg, var(--xh-fg-brand));
+  }
+
+  [data-scope='calendar-picker'][data-part='cell-trigger'][data-today]:not([data-selected], [data-disabled]):hover {
+    background: var(--xh-calendar-picker-today-bg-hover, var(--xh-bg-brand-subtle-hover));
+  }
+
+  /* 实心强调面给单选 / 多选的选中格 */
+  [data-scope='calendar-picker'][data-part='cell-trigger'][data-selected] {
+    border-color: transparent;
+    background: var(--xh-calendar-picker-cell-bg-selected, var(--xh-bg-brand));
+    color: var(--xh-calendar-picker-cell-fg-selected, var(--xh-fg-on-brand));
+  }
+
+  /* 实心面按下时再压深一档：光缩放在深色底上看不出回执 */
+  [data-scope='calendar-picker'][data-part='cell-trigger'][data-selected]:not([data-disabled]):active {
+    background: var(--xh-calendar-picker-cell-bg-selected-active, var(--xh-bg-brand-hover));
+  }
+
+  @media (forced-colors: active) {
+    [data-scope='calendar-picker'][data-part='cell-trigger'][data-today] {
+      border-color: Highlight;
+    }
+
+    /* 强制色下底色被抹平，选中格只剩描边能说明身份 */
+    [data-scope='calendar-picker'][data-part='cell-trigger'][data-selected] {
+      border-color: Highlight;
+    }
+  }
+
+  /* 面是实心的，环色与面同族，画在面里就看不出来；环改取面自己的前景色——
+     那一族色本来就要在这块面上把字读清楚，与面的对比是按可读性定的。
+     排掉不可用的格子：那一档的底换成置灰底、字换成置灰色，环取过来就跟底一起糊了，
+     它仍要能聚焦（方向键的起点），环由公共层画 */
+  [data-scope='calendar-picker'][data-part='cell-trigger'][data-selected]:not([data-disabled]):focus-visible {
+    --xh-_ring-color: currentColor;
+  }
+
+  /* 不可用走 aria-disabled 而非原生 disabled：格子仍要可聚焦（它还得当方向键的起点），
+     所以只能靠 data-disabled 表达，写 :disabled 永远不命中 */
+  [data-scope='calendar-picker'][data-part='cell-trigger'][data-disabled] {
+    color: var(--xh-fg-disabled);
+  }
+
+  [data-scope='calendar-picker'][data-part='cell-trigger'][data-disabled][data-selected] {
+    background: var(--xh-bg-muted);
+    color: var(--xh-fg-disabled);
+  }
+
+  /* 只读：日子改不动，但不是禁用——颜色照常，只把"可点"这个暗示收回来。
+     只收日视图这一档：粗粒度视图（月格、年格）点一格是往下钻一层，只读也照做，
+     那些格子仍是按得动的按钮，手型不能撤。
+     排掉不可用的格子是因为这条选择器权重高过上面那条，不排就会把 not-allowed 覆盖回 default */
+  [data-scope='calendar-picker'][data-part='grid'][data-readonly][data-view='day']
+    [data-part='cell-trigger']:not([data-disabled]) {
+    cursor: default;
+  }
+
+  /* 没写内容就由皮肤画兜底字形；作者往部件里塞了自己的图形，这几条即不命中 */
+  [data-scope='calendar-picker'][data-part='prev-trigger']:empty::before {
+    content: '';
+    display: inline-block;
+    inline-size: var(--xh-icon-size, var(--xh-glyph-size-text));
+    block-size: var(--xh-icon-size, var(--xh-glyph-size-text));
+    vertical-align: var(--xh-glyph-baseline-shift);
+    background-color: currentColor;
+    -webkit-mask: var(--xh-glyph-mark-chevron-left) center / contain no-repeat;
+    mask: var(--xh-glyph-mark-chevron-left) center / contain no-repeat;
+  }
+
+  [data-scope='calendar-picker'][data-part='next-trigger']:empty::before {
+    content: '';
+    display: inline-block;
+    inline-size: var(--xh-icon-size, var(--xh-glyph-size-text));
+    block-size: var(--xh-icon-size, var(--xh-glyph-size-text));
+    vertical-align: var(--xh-glyph-baseline-shift);
+    background-color: currentColor;
+    -webkit-mask: var(--xh-glyph-mark-chevron-right) center / contain no-repeat;
+    mask: var(--xh-glyph-mark-chevron-right) center / contain no-repeat;
+  }
+
+  /* 大步翻那对画双箭头，与单步的单箭头同一把尺、同一副着色 */
+  [data-scope='calendar-picker'][data-part='prev-year-trigger']:empty::before {
+    content: '';
+    display: inline-block;
+    inline-size: var(--xh-icon-size, var(--xh-glyph-size-text));
+    block-size: var(--xh-icon-size, var(--xh-glyph-size-text));
+    vertical-align: var(--xh-glyph-baseline-shift);
+    background-color: currentColor;
+    -webkit-mask: var(--xh-glyph-mark-chevrons-left) center / contain no-repeat;
+    mask: var(--xh-glyph-mark-chevrons-left) center / contain no-repeat;
+  }
+
+  [data-scope='calendar-picker'][data-part='next-year-trigger']:empty::before {
+    content: '';
+    display: inline-block;
+    inline-size: var(--xh-icon-size, var(--xh-glyph-size-text));
+    block-size: var(--xh-icon-size, var(--xh-glyph-size-text));
+    vertical-align: var(--xh-glyph-baseline-shift);
+    background-color: currentColor;
+    -webkit-mask: var(--xh-glyph-mark-chevrons-right) center / contain no-repeat;
+    mask: var(--xh-glyph-mark-chevrons-right) center / contain no-repeat;
+  }
+
+  /* rtl 下月份从右往左排，四支箭头跟着指向行进方向 */
+  [dir='rtl'] [data-scope='calendar-picker'][data-part='prev-trigger']:empty::before {
+    -webkit-mask-image: var(--xh-glyph-mark-chevron-right);
+    mask-image: var(--xh-glyph-mark-chevron-right);
+  }
+
+  [dir='rtl'] [data-scope='calendar-picker'][data-part='next-trigger']:empty::before {
+    -webkit-mask-image: var(--xh-glyph-mark-chevron-left);
+    mask-image: var(--xh-glyph-mark-chevron-left);
+  }
+
+  [dir='rtl'] [data-scope='calendar-picker'][data-part='prev-year-trigger']:empty::before {
+    -webkit-mask-image: var(--xh-glyph-mark-chevrons-right);
+    mask-image: var(--xh-glyph-mark-chevrons-right);
+  }
+
+  [dir='rtl'] [data-scope='calendar-picker'][data-part='next-year-trigger']:empty::before {
+    -webkit-mask-image: var(--xh-glyph-mark-chevrons-left);
+    mask-image: var(--xh-glyph-mark-chevrons-left);
+  }
+
+  @media print {
+    /* 打印默认丢背景色：选中片不画，一整张网格印出来是一模一样的三十来个数字。
+       换一条不吃底色的通道——选中走实边加粗体 */
+    [data-scope='calendar-picker'][data-part='cell-trigger'][data-selected] {
+      border-color: currentColor;
+      /* 反白那层文字的取值是「压在实心底上的前景」，底一没就印成一片白，退回正文色 */
+      color: var(--xh-calendar-picker-cell-fg, var(--xh-fg-default));
+      font-weight: var(--xh-font-weight-bold);
+    }
+  }
+}

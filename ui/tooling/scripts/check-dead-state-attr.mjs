@@ -8,7 +8,7 @@
 //
 // 消费面不止本组件那份皮肤：
 // · 带 scope 值的选择器（`[data-scope='x'] … [data-attr]`）算 x 这个组件的消费，
-//   写在哪份文件里都算——date-picker.css 里那些 `[data-scope='calendar']` 的规则就是给日历的。
+//   写在哪份文件里都算——date-picker.css 里那些 `[data-scope='calendar-picker']` 的规则就是给日历的。
 // · 整条选择器一个 scope 值都没有的，是与组件无关的通用规则（tone.css 的 [data-tone]、
 //   reset.css 的 [data-positioned]），对所有组件都算消费。
 //
@@ -119,8 +119,9 @@ const HOOKS = {
   'tree-select:data-loading': '在途的观感由只在取数期在场的 loading 部件承载，根上这一位是给作者接线的镜像',
   'tree-select:data-error': '懒分支失败不预设错误文案或重试按钮；这一位留给作者结构接线，默认皮肤不伪造局部错误面',
   // 区间日历：预览与已落定同一副长相，校验失败的观感落在字段外壳上
-  'calendar:data-range-preview': '挑到一半的预览与已落定的区间同一副长相，视觉由 data-in-range 与两端标记承载；这一位供作者区分预览自取',
-  'calendar:data-invalid': '校验失败的观感由包着它的字段外壳承载（日期选择器的输入行描边与环）；日历格子只报 aria-invalid，不另画一档',
+  'calendar-range-picker:data-range-preview': '挑到一半的预览与已落定的区间同一副长相，视觉由 data-in-range 与两端标记承载；这一位供作者区分预览自取',
+  'calendar-range-picker:data-invalid': '校验失败的观感由包着它的字段外壳承载（日期范围选择器的输入行描边与环）；日历格子只报 aria-invalid，不另画一档',
+  'calendar-picker:data-invalid': '校验失败的观感由包着它的字段外壳承载（日期选择器的输入行描边与环）；日历自己不另画一档',
   // 只读：观感落在真正的输入件身上
   'field-array:data-readonly': '行数改不动的观感落在三个把手的 aria-disabled 上，行里控件的只读由作者自己置，这一层只往下传状态',
   'field-array:data-invalid': '校验失败的观感落在行里各输入件自己身上，这一层只往下传状态',
@@ -128,7 +129,8 @@ const HOOKS = {
   // 忙：锁住的观感由提交钮的身份切换承载
   'prompt-input:data-loading': '在途时提交钮切成 data-mode=stop，观感挂在那一位上',
   // 其余逐条
-  'calendar:data-focus': '漫游焦点的锚点位。看得见的聚焦环走 :focus-visible',
+  'calendar-picker:data-focus': '漫游焦点的锚点位。看得见的聚焦环走 :focus-visible',
+  'calendar-range-picker:data-focus': '漫游焦点的锚点位。看得见的聚焦环走 :focus-visible',
   'carousel:data-inview': '这一帧在不在视口里，作者拿它做懒加载与埋点',
   'code-view:data-foldable': '折不折得动。真正裁切的是根上的 data-clamped',
   'diff-view:data-expanded': '折叠段展开后整条 gap 置 hidden，显隐由它承载',

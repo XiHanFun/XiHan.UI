@@ -6,7 +6,7 @@
 // 提供 date picker 相关实现。
 
 import type { Dict, NavIntent, NormalizeProps, PropTypes, Service } from '@xihan-ui/core'
-import type { CalendarTranslations } from '../calendar'
+import type { CalendarPickerTranslations } from '../calendar-picker'
 import type { DateFieldApi, DateFieldSchema, DateSegmentType } from '../date-field'
 import type { TimePickerColumn } from '../time-picker'
 import type {
@@ -18,7 +18,7 @@ import type {
   DatePickerTranslations,
 } from './date-picker.types'
 import { dataAttr, focusSafely, navIntentFromKey, normalizeProps, readDirection, stepIndex } from '@xihan-ui/core'
-import { calendarPeriodValue, connectCalendar } from '../calendar'
+import { connectCalendarPicker } from '../calendar-picker'
 import {
   applySegmentDigit,
   connectDateField,
@@ -28,6 +28,7 @@ import {
   segmentMaxDigits,
 } from '../date-field'
 import { sameArray as sameDates } from '../shared/array'
+import { calendarPeriodValue } from '../shared/calendar'
 import { overlayAvailableSpaceVars, overlayFixedStyle, overlayPositioned } from '../shared/overlay'
 import { timePickerColumns } from '../time-picker'
 import { datePickerAnatomy } from './date-picker.anatomy'
@@ -46,12 +47,10 @@ function hasModifier(event: KeyboardEvent): boolean {
 }
 
 /** 只收本组件自己那几句；内嵌日历的文案由日历自己兜底。 */
-type OwnTranslations = Omit<DatePickerTranslations, keyof CalendarTranslations>
+type OwnTranslations = Omit<DatePickerTranslations, keyof CalendarPickerTranslations>
 
 function resolveTranslations(input: Partial<DatePickerTranslations> | undefined): OwnTranslations {
   return {
-    startDate: input?.startDate ?? 'Start date',
-    endDate: input?.endDate ?? 'End date',
     presets: input?.presets ?? 'Shortcuts',
     clearTrigger: input?.clearTrigger ?? 'Clear',
     // 内建英文与时间选择器那份逐字相同：同一页上的两个组件不该把同一列念成两个名字
@@ -67,34 +66,30 @@ export function connectDatePicker<T extends PropTypes>(
 ): DatePickerApi<T> {
   const { state, prop, send, context, scope } = services.root
   const open = state.get() === 'open'
-  // 两组段位容器各占一个 id：同一份 id 出现两次会被判成重复 id
-  const ids = scope.ids('date-picker', 'label', 'trigger', 'content', 'segment-group', 'segment-group-end')
+  const ids = scope.ids('date-picker', 'label', 'trigger', 'content', 'segment-group')
 
   const value = context.get('value')
-  // 空串是区间里空缺那一端的占位，算数的只有填了的
-  const filled = value.filter(v => v !== '')
   const selectionMode = prop('selectionMode') ?? 'single'
-  const range = selectionMode === 'range'
   const label = resolveTranslations(prop('translations'))
   const disabled = !!prop('disabled')
   const readOnly = !!prop('readOnly')
   const invalid = !!prop('invalid')
   // 只读与禁用都改不了选中值，禁用还额外展不开浮层
   const interactive = !disabled && !readOnly
-  const canClear = interactive && filled.length > 0
+  const canClear = interactive && value.length > 0
   const stateAttr = open ? 'open' : 'closed'
   // connect 在 render 期求值，不得读 DOM：位置只读引擎写进 context 的结果
   const position = context.get('position')
   const placement = position?.placement ?? prop('placement') ?? DATE_PICKER_DEFAULT_PLACEMENT
 
   // 内嵌日历：整份 api 原样转发
-  const calendar = connectCalendar(services.calendar, normalize)
+  const calendar = connectCalendarPicker(services.calendar, normalize)
   const periodValue = selectionMode === 'multiple'
     ? null
     : calendarPeriodValue(
         calendar.granularity,
-        selectionMode,
-        filled.map(datePickerDatePart),
+        'single',
+        value.map(datePickerDatePart),
         { locale: prop('locale'), timeZone: prop('timeZone') },
       )
 
@@ -106,7 +101,7 @@ export function connectDatePicker<T extends PropTypes>(
     ? timePickerColumns({ granularity: timeGranularity, hourCycle: 24 })
         .filter((column): column is TimePickerColumn<DatePickerTimeUnit> => column.unit !== 'dayPeriod')
     : []
-  const timeValue = showTime && filled[0] != null ? datePickerTimePart(filled[0]) : null
+  const timeValue = showTime && value[0] != null ? datePickerTimePart(value[0]) : null
 
   /** 时间列里那一段在 'HH:mm[:ss]' 里排第几。 */
   const timeSlotOf = (unit: DatePickerTimeUnit): number => (unit === 'hour' ? 0 : unit === 'minute' ? 1 : 2)
@@ -151,16 +146,16 @@ export function connectDatePicker<T extends PropTypes>(
   }
 
   // —— 快捷选项：一条选项就是一次整份写值 ——
-  /** 这条选项带的日期数与选择模式合不合：单选恰一条、区间恰两条、多选至少一条。 */
+  /** 这条选项带的日期数与选择模式合不合：单选恰一条、多选至少一条。 */
   const fitsSelection = (dates: readonly string[]): boolean =>
-    selectionMode === 'single' ? dates.length === 1 : selectionMode === 'range' ? dates.length === 2 : dates.length >= 1
+    selectionMode === 'single' ? dates.length === 1 : dates.length >= 1
   const presetInput = prop('presets') ?? []
   const presets: readonly DatePickerPresetState[] = presetInput.map((preset) => {
     const dates = datePickerPresetDates(preset.value)
     // 与模式不配、或有哪一天落在 min/max 之外 / 被作者判为不可用的，按下不写值；
     // 选中判定只看日期段：showTime 下值里带着时间
     const presetDisabled = !!preset.disabled || !fitsSelection(dates) || dates.some(d => calendar.isUnavailable(d))
-    const selected = dates.length > 0 && sameDates(filled.map(datePickerDatePart), dates)
+    const selected = dates.length > 0 && sameDates(value.map(datePickerDatePart), dates)
     return { ...preset, dates, disabled: presetDisabled, selected }
   })
 
@@ -197,7 +192,7 @@ export function connectDatePicker<T extends PropTypes>(
   const pickTimeUnit = (unit: 'hour' | 'minute' | 'second', next: string): void => {
     if (!interactive)
       return
-    const date = filled[0] != null ? datePickerDatePart(filled[0]) : calendar.focusedValue
+    const date = value[0] != null ? datePickerDatePart(value[0]) : calendar.focusedValue
     const nextTime = datePickerSetTimeUnit(timeValue, unit, next, timeGranularity)
     send({ type: 'VALUE.SET', value: [datePickerJoinDateTime(date, nextTime, timeGranularity)], src: 'api' })
   }
@@ -208,14 +203,10 @@ export function connectDatePicker<T extends PropTypes>(
    * 不能传调用方的归一化器：它已把 onKeyDown 改成各框架的事件键名，再覆盖会变成两个键、两个处理器。
    */
   const fieldRaw = connectDateField(services.field, normalizeProps)
-  const fieldEndRaw = services.fieldEnd ? connectDateField(services.fieldEnd, normalizeProps) : null
   const bounds = { min: parseBoundary(prop('min')), max: parseBoundary(prop('max')) }
   // 越界与显式 invalid 在读屏那里是同一件事：这份输入现在不合法。
-  // 整份控件的不合法态照它发，只标出错的那一组段位等于把反馈藏在输入行里的一小块。
-  // 区间两端各是一份分段输入，任一端越界整份就都算越界；终点那组只在区间模式下算数。
-  // 两端都填了却终点早于起点，同样不合法：两组段位各写各的，顺序只能在这里把关
-  const reversed = range && !!value[0] && !!value[1] && datePickerDatePart(value[1]!) < datePickerDatePart(value[0]!)
-  const flagged = invalid || !!fieldRaw.outOfRange || (range && !!fieldEndRaw?.outOfRange) || reversed
+  // 整份控件的不合法态照它发，只标出错的那一组段位等于把反馈藏在输入行里的一小块
+  const flagged = invalid || !!fieldRaw.outOfRange
 
   /**
    * 同一份分段输入里的全部段位，文档序。事件那一刻现查，不缓存节点数组。
@@ -324,16 +315,12 @@ export function connectDatePicker<T extends PropTypes>(
   })
 
   // showTime 下表单提交整个 datetime，段位里只显示日期段
-  const field = toFieldApi(services.field, fieldRaw, showTime ? (filled[0] ?? '') : undefined)
-  // 终点那一组只在区间模式下露出
-  const fieldEnd = range && services.fieldEnd && fieldEndRaw
-    ? toFieldApi(services.fieldEnd, fieldEndRaw)
-    : null
+  const field = toFieldApi(services.field, fieldRaw, showTime ? (value[0] ?? '') : undefined)
 
   return {
     open,
     value,
-    valueAsString: filled[0] ?? null,
+    valueAsString: value[0] ?? null,
     selectionMode,
     periodValue,
     // 取日历已收口的结果（宿主设过的 → 首个选中值 → 今天），不在这里重算
@@ -342,7 +329,7 @@ export function connectDatePicker<T extends PropTypes>(
     activeView: calendar.activeView,
     disabled,
     readOnly,
-    // 与根节点的 data-invalid 同一口径：作者标的、越界的、终点早于起点的都算
+    // 与根节点的 data-invalid 同一口径：作者标的、越界的都算
     invalid: flagged,
     canClear,
     presets,
@@ -351,7 +338,6 @@ export function connectDatePicker<T extends PropTypes>(
     timeValue,
     calendar,
     field,
-    fieldEnd,
     setOpen: (next) => {
       if (next !== open)
         send({ type: next ? 'OPEN' : 'CLOSE' })
@@ -410,26 +396,21 @@ export function connectDatePicker<T extends PropTypes>(
       },
     }),
 
-    // 分段容器：role=group 把一排段位兜成整体。单值时名字由 label 提供，
-    // 区间的两组各自报名字，否则读屏念出来的是同一个。
+    // 分段容器：role=group 把一排段位兜成整体，名字由 label 提供。
     // 它同时承担内嵌分段输入的 root/control 两个部件，不另挂分段输入的根节点
-    getSegmentGroupProps: ({ index = 0 } = {}) => {
-      const end = index === 1
-      const raw = end ? fieldEndRaw : fieldRaw
-      const outOfRange = !!raw?.outOfRange
+    getSegmentGroupProps: () => {
+      const outOfRange = !!fieldRaw.outOfRange
       return normalize.element({
         ...parts['segment-group'].attrs,
-        'id': end ? ids['segment-group-end'] : ids['segment-group'],
-        'data-index': String(index),
+        'id': ids['segment-group'],
         'role': 'group',
-        'aria-labelledby': range ? undefined : ids.label,
-        'aria-label': range ? (end ? label.endDate : label.startDate) : undefined,
+        'aria-labelledby': ids.label,
         'aria-disabled': disabled ? 'true' : 'false',
         'data-disabled': dataAttr(disabled),
         'data-readonly': dataAttr(readOnly),
         'data-invalid': dataAttr(invalid || outOfRange),
-        'data-empty': dataAttr(!!raw?.empty),
-        'data-complete': dataAttr(!!raw?.complete),
+        'data-empty': dataAttr(fieldRaw.empty),
+        'data-complete': dataAttr(fieldRaw.complete),
         'data-out-of-range': dataAttr(outOfRange),
         // 触发钮是可选部件，键盘那条入口不能只挂在它身上：Alt+ArrowDown 是下拉类控件通用的展开键。
         // 挂在分段容器而不是段位上——段位属于分段输入那份解剖，keydown 冒到这儿一样收得到
@@ -451,12 +432,6 @@ export function connectDatePicker<T extends PropTypes>(
         },
       })
     },
-
-    getRangeSeparatorProps: () => normalize.element({
-      ...parts['range-separator'].attrs,
-      'aria-hidden': true,
-      'hidden': !range || undefined,
-    }),
 
     getTriggerProps: () => normalize.button({
       ...parts.trigger.attrs,

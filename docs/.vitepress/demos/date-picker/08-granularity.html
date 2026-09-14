@@ -1,7 +1,7 @@
-<!-- 周期选择 | 粒度与单选/区间彼此独立 -->
+<!-- 周期选择 | granularity 决定输入行铺哪几段、浮层铺哪一档格子 -->
 <div id="period-picker-mount"></div>
 <template id="period-picker-template">
-<xh-date-picker id="period-picker" granularity="day" selection-mode="single" close-on-select="false" locale="zh-CN">
+<xh-date-picker id="period-picker" granularity="day" close-on-select="false" locale="zh-CN">
   <div data-xh-part="root" style="--xh-date-picker-control-min-w: 22rem">
     <span data-xh-part="label">统计周期</span>
     <div data-xh-part="control">
@@ -11,7 +11,7 @@
     </div>
     <div data-xh-part="positioner">
       <div data-xh-part="content">
-        <div id="period-picker-toolbar" style="display: flex; justify-content: space-between; gap: var(--xh-space-3); padding: var(--xh-space-3)">
+        <div id="period-picker-toolbar" style="display: flex; padding: var(--xh-space-3)">
           <xh-toggle-group id="period-picker-granularity" default-value="day" disallow-empty size="sm">
             <div data-xh-part="root">
               <button data-xh-part="item" value="day">天</button>
@@ -19,12 +19,6 @@
               <button data-xh-part="item" value="month">月</button>
               <button data-xh-part="item" value="quarter">季</button>
               <button data-xh-part="item" value="year">年</button>
-            </div>
-          </xh-toggle-group>
-          <xh-toggle-group id="period-picker-mode" default-value="single" disallow-empty size="sm">
-            <div data-xh-part="root">
-              <button data-xh-part="item" value="single">单选</button>
-              <button data-xh-part="item" value="range">区间</button>
             </div>
           </xh-toggle-group>
         </div>
@@ -56,7 +50,6 @@
   document.getElementById("period-picker-mount").append(fragment);
   const picker = document.getElementById("period-picker");
   const granularityControl = document.getElementById("period-picker-granularity");
-  const modeControl = document.getElementById("period-picker-mode");
   const panelMount = document.getElementById("period-picker-panels");
   const summary = document.getElementById("period-picker-summary");
   const clearButton = document.getElementById("period-picker-clear");
@@ -106,17 +99,6 @@
     group.replaceChildren(...output);
   }
 
-  function ensureSegmentGroups(mode = picker.selectionMode) {
-    const groups = control.querySelectorAll(":scope > [data-xh-part='segment-group']");
-    if (mode === "range" && groups.length === 1) {
-      control.insertBefore(node("span", "range-separator", "-"), clearTrigger);
-      control.insertBefore(node("div", "segment-group"), clearTrigger);
-    } else if (mode !== "range" && groups.length > 1) {
-      control.querySelector(":scope > [data-xh-part='range-separator']")?.remove();
-      groups[1].remove();
-    }
-  }
-
   function panelOf(panel, weekDays) {
     const calendar = node("div", "calendar");
     calendar.setAttribute("index", panel.index);
@@ -161,10 +143,7 @@
   }
 
   function paint() {
-    ensureSegmentGroups();
-    const groups = control.querySelectorAll(":scope > [data-xh-part='segment-group']");
-    paintSegments(groups[0], picker.fieldSegments);
-    if (groups[1]) paintSegments(groups[1], picker.fieldEndSegments);
+    paintSegments(control.querySelector(":scope > [data-xh-part='segment-group']"), picker.fieldSegments);
     panelMount.replaceChildren(...picker.panels.map(panel => panelOf(panel, picker.weekDays)));
     const period = picker.periodValue;
     summary.textContent = period ? `${period.start} – ${period.end}` : "尚未选择";
@@ -178,11 +157,6 @@
 
   granularityControl.addEventListener("value-change", (event) => {
     picker.granularity = event.detail.value;
-    schedulePaint();
-  });
-  modeControl.addEventListener("value-change", (event) => {
-    ensureSegmentGroups(event.detail.value);
-    picker.selectionMode = event.detail.value;
     schedulePaint();
   });
   picker.addEventListener("value-change", (event) => {

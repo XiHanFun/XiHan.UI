@@ -6,15 +6,14 @@
 // 提供 use date picker 相关实现。
 
 import type { Cleanup, Layer, RuntimeConfig } from '@xihan-ui/core'
-import type { CalendarSchema, DateFieldSchema, DatePickerApi, DatePickerSchema, DatePickerServices } from '@xihan-ui/headless'
+import type { CalendarPickerSchema, DateFieldSchema, DatePickerApi, DatePickerSchema, DatePickerServices } from '@xihan-ui/headless'
 import type { ComputedRef, Ref } from 'vue'
 import { createRuntimeConfig, createScope, isElement } from '@xihan-ui/core'
 import {
-  calendarMachine,
+  calendarPickerMachine,
   connectDatePicker,
   dateFieldMachine,
   datePickerCalendarProps,
-  datePickerFieldEndProps,
   datePickerFieldProps,
   datePickerMachine,
 } from '@xihan-ui/headless'
@@ -77,17 +76,15 @@ function createDatePickerContext(
   const contentRef = ref<HTMLElement | null>(null)
   const gridRef = ref<HTMLElement | null>(null)
 
-  // 四台机器共用一份 scope，part id 里带组件名区分；两组段位不产出 id，同 scope 不会撞
+  // 三台机器共用一份 scope，part id 里带组件名区分；段位不产出 id，同 scope 不会撞
   const idGen = createVueIdGenerator()
   const scope = rootRef ? createScope(() => rootRef.value, idGen) : createScope(null, idGen)
 
-  // 三台内嵌机器的 props 都从编排机现读，编排机须先建立
+  // 两台内嵌机器的 props 都从编排机现读，编排机须先建立
   const root = useMachine(datePickerMachine, () => ({ ...props, ...handlers }), scope)
-  const calendar = useMachine<CalendarSchema>(calendarMachine, () => datePickerCalendarProps(root), scope)
+  const calendar = useMachine<CalendarPickerSchema>(calendarPickerMachine, () => datePickerCalendarProps(root), scope)
   const field = useMachine<DateFieldSchema>(dateFieldMachine, () => datePickerFieldProps(root), scope)
-  // 终点那组段位无条件建：机器实例数不随模式变，非区间模式下它的值恒为空且不参与写值
-  const fieldEnd = useMachine<DateFieldSchema>(dateFieldMachine, () => datePickerFieldEndProps(root), scope)
-  const services: DatePickerServices = { root, calendar, field, fieldEnd }
+  const services: DatePickerServices = { root, calendar, field }
 
   // 服务端没有 DOM、也就没有退场：config 传 null 时闸门退化成「跟着展开态」
   const config = shallowRef<RuntimeConfig | null>(null)
@@ -122,7 +119,7 @@ function createDatePickerContext(
     }
 
     if (rootRef) {
-      // 元素 ref 在 mounted hooks 之前同步提交：先绑定真实 realm、再让四台 service 启动。
+      // 元素 ref 在 mounted hooks 之前同步提交：先绑定真实 realm、再让三台 service 启动。
       watch(rootRef, (node) => {
         if (node)
           installConfig(node)
@@ -141,8 +138,6 @@ function createDatePickerContext(
 
   // 跨月后的焦点落点要等重渲，日历机器推迟一拍再从这里取网格现查
   calendar.refs.set('getGridEl', () => gridRef.value)
-  // 区间挑到一半时，指针在浮层与输入行之外松开就地收口
-  calendar.refs.set('getBoundaryEls', () => [contentRef.value, controlRef.value])
 
   const api = computed(() => connectDatePicker(services, vueNormalize))
   // 退场闸门：收起从跟着 open 走，改成跟着 presence 走
