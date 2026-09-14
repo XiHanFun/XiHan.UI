@@ -46,6 +46,7 @@ const PASS_THROUGH = new Set(['100%', 'auto', 'inherit', 'unset', 'revert', 'fit
  */
 const OFF_SCALE = {
   'slider.css control': '滑轨的块尺寸是拇指直径与竖向轨道长度，与控件行高无关',
+  'color-slider.css control': '同 slider：块尺寸取拇指直径与颜色带厚度里大的那个，与控件行高无关',
 }
 
 /**

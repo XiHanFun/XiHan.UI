@@ -12436,6 +12436,479 @@
       "description": "color-picker 的 value-text 部件 font-size 覆盖槽。"
     },
     {
+      "name": "--xh-color-slider-checker",
+      "component": "color-slider",
+      "part": [
+        "track"
+      ],
+      "property": [
+        "background-image"
+      ],
+      "state": [
+        "channel=alpha"
+      ],
+      "defaultToken": [
+        "--xh-color-neutral-300"
+      ],
+      "visibility": "public",
+      "description": "color-slider 的 track 部件 background-image 覆盖槽。"
+    },
+    {
+      "name": "--xh-color-slider-checker-base",
+      "component": "color-slider",
+      "part": [
+        "track"
+      ],
+      "property": [
+        "background-color"
+      ],
+      "state": [
+        "channel=alpha"
+      ],
+      "defaultToken": [
+        "--xh-bg-surface"
+      ],
+      "visibility": "public",
+      "description": "color-slider 的 track 部件 background-color 覆盖槽。"
+    },
+    {
+      "name": "--xh-color-slider-gap",
+      "component": "color-slider",
+      "part": [
+        "root"
+      ],
+      "property": [
+        "gap"
+      ],
+      "state": [
+        "default"
+      ],
+      "defaultToken": [
+        "--xh-stack-gap-md"
+      ],
+      "visibility": "public",
+      "description": "color-slider 的 root 部件 gap 覆盖槽。"
+    },
+    {
+      "name": "--xh-color-slider-label-fg",
+      "component": "color-slider",
+      "part": [
+        "label"
+      ],
+      "property": [
+        "color"
+      ],
+      "state": [
+        "default"
+      ],
+      "defaultToken": [
+        "--xh-fg-muted"
+      ],
+      "visibility": "public",
+      "description": "color-slider 的 label 部件 color 覆盖槽。"
+    },
+    {
+      "name": "--xh-color-slider-label-font-size",
+      "component": "color-slider",
+      "part": [
+        "label"
+      ],
+      "property": [
+        "font-size"
+      ],
+      "state": [
+        "default"
+      ],
+      "defaultToken": [
+        "--xh-text-label-size"
+      ],
+      "visibility": "public",
+      "description": "color-slider 的 label 部件 font-size 覆盖槽。"
+    },
+    {
+      "name": "--xh-color-slider-label-font-weight",
+      "component": "color-slider",
+      "part": [
+        "label"
+      ],
+      "property": [
+        "font-weight"
+      ],
+      "state": [
+        "default"
+      ],
+      "defaultToken": [
+        "--xh-text-label-weight"
+      ],
+      "visibility": "public",
+      "description": "color-slider 的 label 部件 font-weight 覆盖槽。"
+    },
+    {
+      "name": "--xh-color-slider-thumb-bg",
+      "component": "color-slider",
+      "part": [
+        "thumb"
+      ],
+      "property": [
+        "background"
+      ],
+      "state": [
+        "default"
+      ],
+      "defaultToken": [
+        "--xh-_color-slider-thumb-color"
+      ],
+      "visibility": "public",
+      "description": "color-slider 的 thumb 部件 background 覆盖槽。"
+    },
+    {
+      "name": "--xh-color-slider-thumb-border",
+      "component": "color-slider",
+      "part": [
+        "thumb"
+      ],
+      "property": [
+        "border"
+      ],
+      "state": [
+        "default"
+      ],
+      "defaultToken": [
+        "--xh-bg-surface"
+      ],
+      "visibility": "public",
+      "description": "color-slider 的 thumb 部件 border 覆盖槽。"
+    },
+    {
+      "name": "--xh-color-slider-thumb-border-invalid",
+      "component": "color-slider",
+      "part": [
+        "thumb"
+      ],
+      "property": [
+        "border-color"
+      ],
+      "state": [
+        "invalid"
+      ],
+      "defaultToken": [
+        "--xh-border-invalid"
+      ],
+      "visibility": "public",
+      "description": "color-slider 的 thumb 部件 border-color 覆盖槽。"
+    },
+    {
+      "name": "--xh-color-slider-thumb-radius",
+      "component": "color-slider",
+      "part": [
+        "thumb"
+      ],
+      "property": [
+        "border-radius"
+      ],
+      "state": [
+        "default"
+      ],
+      "defaultToken": [
+        "--xh-shape-pill"
+      ],
+      "visibility": "public",
+      "description": "color-slider 的 thumb 部件 border-radius 覆盖槽。"
+    },
+    {
+      "name": "--xh-color-slider-thumb-scale-dragging",
+      "component": "color-slider",
+      "part": [
+        "thumb"
+      ],
+      "property": [
+        "scale"
+      ],
+      "state": [
+        "dragging"
+      ],
+      "defaultToken": [
+        "--xh-motion-scale-drag"
+      ],
+      "visibility": "public",
+      "description": "color-slider 的 thumb 部件 scale 覆盖槽。"
+    },
+    {
+      "name": "--xh-color-slider-thumb-shadow",
+      "component": "color-slider",
+      "part": [
+        "thumb"
+      ],
+      "property": [
+        "box-shadow"
+      ],
+      "state": [
+        "default"
+      ],
+      "defaultToken": [
+        "--xh-elevation-raised"
+      ],
+      "visibility": "public",
+      "description": "color-slider 的 thumb 部件 box-shadow 覆盖槽。"
+    },
+    {
+      "name": "--xh-color-slider-thumb-shadow-dragging",
+      "component": "color-slider",
+      "part": [
+        "thumb"
+      ],
+      "property": [
+        "box-shadow"
+      ],
+      "state": [
+        "dragging"
+      ],
+      "defaultToken": [
+        "--xh-elevation-lifted"
+      ],
+      "visibility": "public",
+      "description": "color-slider 的 thumb 部件 box-shadow 覆盖槽。"
+    },
+    {
+      "name": "--xh-color-slider-thumb-size",
+      "component": "color-slider",
+      "part": [
+        "control",
+        "root",
+        "thumb"
+      ],
+      "property": [
+        "block-size",
+        "inline-size",
+        "margin-block-end",
+        "margin-block-start",
+        "margin-inline-start"
+      ],
+      "state": [
+        "default",
+        "orientation=horizontal",
+        "orientation=vertical",
+        "size=lg",
+        "size=sm"
+      ],
+      "defaultToken": [
+        "--xh-space-3",
+        "--xh-space-6",
+        "--xh-track-thumb-size"
+      ],
+      "visibility": "public",
+      "description": "color-slider 的 control、root、thumb 部件 block-size、inline-size、margin-block-end、margin-block-start、margin-inline-start 覆盖槽。"
+    },
+    {
+      "name": "--xh-color-slider-track-border",
+      "component": "color-slider",
+      "part": [
+        "track"
+      ],
+      "property": [
+        "box-shadow"
+      ],
+      "state": [
+        "default"
+      ],
+      "defaultToken": [
+        "--xh-border-subtle"
+      ],
+      "visibility": "public",
+      "description": "color-slider 的 track 部件 box-shadow 覆盖槽。"
+    },
+    {
+      "name": "--xh-color-slider-track-radius",
+      "component": "color-slider",
+      "part": [
+        "track"
+      ],
+      "property": [
+        "border-radius"
+      ],
+      "state": [
+        "default"
+      ],
+      "defaultToken": [
+        "--xh-shape-pill"
+      ],
+      "visibility": "public",
+      "description": "color-slider 的 track 部件 border-radius 覆盖槽。"
+    },
+    {
+      "name": "--xh-color-slider-track-thickness",
+      "component": "color-slider",
+      "part": [
+        "control",
+        "root",
+        "track"
+      ],
+      "property": [
+        "block-size",
+        "inline-size"
+      ],
+      "state": [
+        "default",
+        "orientation=horizontal",
+        "orientation=vertical",
+        "size=lg",
+        "size=sm"
+      ],
+      "defaultToken": [
+        "--xh-space-2",
+        "--xh-space-3",
+        "--xh-space-4"
+      ],
+      "visibility": "public",
+      "description": "color-slider 的 control、root、track 部件 block-size、inline-size 覆盖槽。"
+    },
+    {
+      "name": "--xh-color-slider-value-text-bg",
+      "component": "color-slider",
+      "part": [
+        "value-text"
+      ],
+      "property": [
+        "background"
+      ],
+      "state": [
+        "default"
+      ],
+      "defaultToken": [
+        "--xh-bg-brand"
+      ],
+      "visibility": "public",
+      "description": "color-slider 的 value-text 部件 background 覆盖槽。"
+    },
+    {
+      "name": "--xh-color-slider-value-text-fg",
+      "component": "color-slider",
+      "part": [
+        "value-text"
+      ],
+      "property": [
+        "color"
+      ],
+      "state": [
+        "default"
+      ],
+      "defaultToken": [
+        "--xh-fg-on-brand"
+      ],
+      "visibility": "public",
+      "description": "color-slider 的 value-text 部件 color 覆盖槽。"
+    },
+    {
+      "name": "--xh-color-slider-value-text-font-size",
+      "component": "color-slider",
+      "part": [
+        "value-text"
+      ],
+      "property": [
+        "font-size"
+      ],
+      "state": [
+        "default"
+      ],
+      "defaultToken": [
+        "--xh-text-caption-size"
+      ],
+      "visibility": "public",
+      "description": "color-slider 的 value-text 部件 font-size 覆盖槽。"
+    },
+    {
+      "name": "--xh-color-slider-value-text-offset",
+      "component": "color-slider",
+      "part": [
+        "value-text"
+      ],
+      "property": [
+        "margin-block-end",
+        "margin-inline"
+      ],
+      "state": [
+        "default",
+        "orientation=vertical"
+      ],
+      "defaultToken": [
+        "--xh-space-2"
+      ],
+      "visibility": "public",
+      "description": "color-slider 的 value-text 部件 margin-block-end、margin-inline 覆盖槽。"
+    },
+    {
+      "name": "--xh-color-slider-value-text-px",
+      "component": "color-slider",
+      "part": [
+        "value-text"
+      ],
+      "property": [
+        "padding-inline"
+      ],
+      "state": [
+        "default"
+      ],
+      "defaultToken": [
+        "--xh-space-2"
+      ],
+      "visibility": "public",
+      "description": "color-slider 的 value-text 部件 padding-inline 覆盖槽。"
+    },
+    {
+      "name": "--xh-color-slider-value-text-py",
+      "component": "color-slider",
+      "part": [
+        "value-text"
+      ],
+      "property": [
+        "padding-block"
+      ],
+      "state": [
+        "default"
+      ],
+      "defaultToken": [
+        "--xh-space-0_5"
+      ],
+      "visibility": "public",
+      "description": "color-slider 的 value-text 部件 padding-block 覆盖槽。"
+    },
+    {
+      "name": "--xh-color-slider-value-text-radius",
+      "component": "color-slider",
+      "part": [
+        "value-text"
+      ],
+      "property": [
+        "border-radius"
+      ],
+      "state": [
+        "default"
+      ],
+      "defaultToken": [
+        "--xh-shape-control"
+      ],
+      "visibility": "public",
+      "description": "color-slider 的 value-text 部件 border-radius 覆盖槽。"
+    },
+    {
+      "name": "--xh-color-slider-vertical-length",
+      "component": "color-slider",
+      "part": [
+        "control"
+      ],
+      "property": [
+        "block-size"
+      ],
+      "state": [
+        "orientation=vertical"
+      ],
+      "defaultToken": [
+        "--xh-overlay-menu-min-w"
+      ],
+      "visibility": "public",
+      "description": "color-slider 的 control 部件 block-size 覆盖槽。"
+    },
+    {
       "name": "--xh-color-swatch-border",
       "component": "color-swatch",
       "part": [

@@ -102,6 +102,10 @@ const PRIMITIVE_OK = {
     reason: '拇指描边压在使用者选的任意颜色上，要恒定；棋盘格画的是「透明」这件事本身',
     tokens: ['neutral-0', 'neutral-300'],
   },
+  'color-slider.css': {
+    reason: '透明度那一路轨道底下的棋盘格画的是「透明」这件事本身，不随主题翻',
+    tokens: ['neutral-300'],
+  },
 }
 
 /** CSS 具名色全表。这些词单独出现在会吃颜色的取值里就是写死的颜色。 */

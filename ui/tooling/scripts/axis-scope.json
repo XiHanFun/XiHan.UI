@@ -68,6 +68,9 @@
   "color-picker": [
     "size"
   ],
+  "color-slider": [
+    "size"
+  ],
   "color-swatch": [],
   "combobox": [
     "variant",
