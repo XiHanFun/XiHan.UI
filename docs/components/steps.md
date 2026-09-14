@@ -28,19 +28,19 @@
 
 只能返回已完成的步骤
 
-<XhDemo src="steps/03-linear" />
+<XhDemo src="steps/02-linear" />
 
 ### 垂直布局
 
 展示纵向流程与步骤内容
 
-<XhDemo src="steps/04-vertical" />
+<XhDemo src="steps/03-vertical" />
 
 ### 出错的那一步
 
 用 tones 给被打回的那一步标 danger 语气，状态照旧按步序算
 
-<XhDemo src="steps/08-error-step" />
+<XhDemo src="steps/04-error-step" />
 
 ## 设计指引
 

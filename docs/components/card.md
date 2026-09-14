@@ -40,7 +40,7 @@ Card 只提供内容面，方向和媒体尺寸由使用场景决定
 
 图片或自绘媒体作为普通子节点放入，由内容自己决定比例与圆角
 
-<XhDemo src="card/05-cover" />
+<XhDemo src="card/04-cover" />
 
 ## 设计指引
 

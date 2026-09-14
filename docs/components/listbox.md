@@ -40,13 +40,13 @@
 
 固定高度显示长列表
 
-<XhDemo src="listbox/06-scroll" />
+<XhDemo src="listbox/04-scroll" />
 
 ### 空态
 
 没有选项时显示简洁提示
 
-<XhDemo src="listbox/07-empty" />
+<XhDemo src="listbox/05-empty" />
 
 ## 设计指引
 

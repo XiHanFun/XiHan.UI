@@ -28,19 +28,19 @@
 
 为吸顶内容预留空间
 
-<XhDemo src="anchor/03-offset" />
+<XhDemo src="anchor/02-offset" />
 
 ### 横向排列
 
 在内容上方显示章节导航
 
-<XhDemo src="anchor/04-horizontal" />
+<XhDemo src="anchor/03-horizontal" />
 
 ### 嵌套目录
 
 展示父级与子级章节
 
-<XhDemo src="anchor/08-nested" />
+<XhDemo src="anchor/04-nested" />
 
 ## 设计指引
 

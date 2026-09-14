@@ -28,19 +28,19 @@
 
 在侧栏旁展开子级导航
 
-<XhDemo src="navigation-menu/04-vertical" />
+<XhDemo src="navigation-menu/02-vertical" />
 
 ### 直达链接
 
 混合下拉入口与普通链接
 
-<XhDemo src="navigation-menu/07-link-item" />
+<XhDemo src="navigation-menu/03-link-item" />
 
 ### 共享面板
 
 在固定位置切换不同导航内容
 
-<XhDemo src="navigation-menu/08-viewport" />
+<XhDemo src="navigation-menu/04-viewport" />
 
 ## 设计指引
 

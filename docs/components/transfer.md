@@ -54,29 +54,29 @@ oneWay 把往回搬那条路整个封死，右侧不再接受勾选，往回的�
 
 <XhDemo src="transfer/06-grouped-list" />
 
-### 一万条只渲可视区
-
-面板插槽给的是本侧此刻看得见的全集，作者按滚动位置切一段挂出来，上下各留一个撑高块；全选、计数与搬运不读 DOM，照样管到窗口外
-
-<XhDemo src="transfer/07-long-list" />
-
 ### 范围选
 
 按住 Shift 点某一项，选中锚点到它那一段；锚点跨到另一侧时退化成普通勾选
 
 <XhDemo src="transfer/07-range-selection" />
 
+### 一万条只渲可视区
+
+面板插槽给的是本侧此刻看得见的全集，作者按滚动位置切一段挂出来，上下各留一个撑高块；全选、计数与搬运不读 DOM，照样管到窗口外
+
+<XhDemo src="transfer/08-long-list" />
+
 ### 整块换档
 
 面板高度、表头、条目行、勾选格与搬运按钮各是一个令牌，写在根上整块一起换档
 
-<XhDemo src="transfer/08-scale" />
+<XhDemo src="transfer/09-scale" />
 
 ### 语气与尺寸
 
 tone 换勾选标记的色族，size 换条目行与勾选格的几何档；两轴打在根上，两侧面板一起走
 
-<XhDemo src="transfer/09-tone-size" />
+<XhDemo src="transfer/10-tone-size" />
 
 ## 设计指引
 

@@ -52,7 +52,7 @@ tone 只换圆环起始边那一段颜色，轨道留在中性描边上，转到
 
 默认渐隐弧，另有 ring 整圈与 dots 三点
 
-<XhDemo src="spinner/07-variant" />
+<XhDemo src="spinner/06-variant" />
 
 ## 设计指引
 

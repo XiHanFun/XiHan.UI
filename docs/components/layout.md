@@ -34,13 +34,13 @@
 
 将侧栏放在行首或行尾
 
-<XhDemo src="layout/04-sider-placement" />
+<XhDemo src="layout/03-sider-placement" />
 
 ### 固定区域
 
 固定页头和侧栏
 
-<XhDemo src="layout/06-fixed" />
+<XhDemo src="layout/04-fixed" />
 
 ## 设计指引
 

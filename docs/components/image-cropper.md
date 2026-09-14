@@ -46,7 +46,7 @@
 
 禁用后不可调整
 
-<XhDemo src="image-cropper/07-disabled" />
+<XhDemo src="image-cropper/05-disabled" />
 
 ## 设计指引
 

@@ -28,25 +28,25 @@
 
 选择多个分类路径
 
-<XhDemo src="cascader/04-multiple" />
+<XhDemo src="cascader/02-multiple" />
 
 ### 校验状态
 
 清晰标记必填错误
 
-<XhDemo src="cascader/08-invalid" />
+<XhDemo src="cascader/03-invalid" />
 
 ### 懒加载
 
 展开分支时加载下一层数据
 
-<XhDemo src="cascader/11-lazy-load" />
+<XhDemo src="cascader/04-lazy-load" />
 
 ### 搜索
 
 按完整路径筛选选项
 
-<XhDemo src="cascader/16-search" />
+<XhDemo src="cascader/05-search" />
 
 ## 设计指引
 

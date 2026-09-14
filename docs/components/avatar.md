@@ -34,37 +34,37 @@
 
 size 三档只换直径，回退字的字号跟着一起缩放；缺省档不输出 data-size
 
-<XhDemo src="avatar/04-size" />
+<XhDemo src="avatar/03-size" />
 
 ### 形状
 
 圆角是一个组件令牌，整圆、圆角方、直角都是同一个槽位换值；图片的圆角从根继承，不用另设
 
-<XhDemo src="avatar/05-shape" />
+<XhDemo src="avatar/04-shape" />
 
 ### 图标当回退
 
 fallback 是普通插槽，放图标和放缩写字一样；没有名字可写时用图标表示「某位用户」
 
-<XhDemo src="avatar/06-icon" />
+<XhDemo src="avatar/05-icon" />
 
 ### 自定义直径与配色
 
 三档之外的直径、底色、字色各是一个组件令牌；按人名分配颜色就是逐个实例覆盖
 
-<XhDemo src="avatar/07-custom" />
+<XhDemo src="avatar/06-custom" />
 
 ### 加载状态
 
 status-change 在状态落位时通知，过渡态 idle 不通知；没给地址等同于取不到，直接落 error 让回退接管
 
-<XhDemo src="avatar/08-status" />
+<XhDemo src="avatar/07-status" />
 
 ### 颜色
 
 tone 换淡底与回退字的配色组；不写 tone 就是中性缺省，直径与字号都不受影响
 
-<XhDemo src="avatar/11-tone" />
+<XhDemo src="avatar/08-tone" />
 
 ## 设计指引
 

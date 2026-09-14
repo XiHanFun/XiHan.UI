@@ -70,19 +70,19 @@ control 仍是必需的输入壳；加减钮可以省略，键盘仍按 step 与
 
 invalid 由宿主自己判定，不必挂在表单上；标出来之后值照样能改、加减钮照样能按
 
-<XhDemo src="number-field/10-invalid" />
+<XhDemo src="number-field/09-invalid" />
 
 ### 框内单位与货币符号
 
 前后缀图标/文字直接流式插进 control，减、加按钮统一收在右侧
 
-<XhDemo src="number-field/11-affix" />
+<XhDemo src="number-field/10-affix" />
 
 ### 自定义换算
 
 parse 把显示串读成数、format 把数写回显示串；两个方向必须互逆，否则按一下加号值就会漂
 
-<XhDemo src="number-field/14-parse-format" />
+<XhDemo src="number-field/11-parse-format" />
 
 ## 设计指引
 

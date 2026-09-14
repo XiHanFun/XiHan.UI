@@ -34,13 +34,13 @@
 
 在命令两侧补充识别信息
 
-<XhDemo src="context-menu/07-icon" />
+<XhDemo src="context-menu/03-icon" />
 
 ### 子菜单
 
 将相关命令收进下一层
 
-<XhDemo src="context-menu/09-submenu" />
+<XhDemo src="context-menu/04-submenu" />
 
 ## 设计指引
 

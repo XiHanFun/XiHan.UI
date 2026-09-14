@@ -34,13 +34,13 @@
 
 禁用、只读与空值
 
-<XhDemo src="editable/04-disabled" />
+<XhDemo src="editable/03-disabled" />
 
 ### 变体
 
 设置编辑框外观
 
-<XhDemo src="editable/07-variant-tone" />
+<XhDemo src="editable/04-variant-tone" />
 
 ## 设计指引
 

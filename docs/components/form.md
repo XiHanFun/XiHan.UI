@@ -34,25 +34,25 @@
 
 禁用与只读表单
 
-<XhDemo src="form/04-disabled" />
+<XhDemo src="form/03-disabled" />
 
 ### 异步校验
 
 提交前检查用户名
 
-<XhDemo src="form/06-async" />
+<XhDemo src="form/04-async" />
 
 ### 声明式规则
 
 配置字段校验规则
 
-<XhDemo src="form/12-rules" />
+<XhDemo src="form/05-rules" />
 
 ### 布局
 
 设置纵向、横向、行内或网格布局
 
-<XhDemo src="form/13-layout" />
+<XhDemo src="form/06-layout" />
 
 ## 设计指引
 
