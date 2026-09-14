@@ -31,7 +31,6 @@ export function createLoadingBarService(options: LoadingBarServiceOptions = {}):
   bar.appendChild(root)
 
   bar.height = barProps.height
-  bar.color = barProps.color
   bar.trickle = barProps.trickle
   bar.trickleSpeed = barProps.trickleSpeed
   bar.minimum = barProps.minimum

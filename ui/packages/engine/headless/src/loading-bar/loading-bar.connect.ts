@@ -31,7 +31,6 @@ export function connectLoadingBar<T extends PropTypes>(
   const visible = phase !== 'idle'
   const determinate = isLoadingBarDeterminate(prop('value'))
   const value = clampLoadingBarValue(context.get('value'))
-  const color = prop('color')
 
   return {
     phase,
@@ -69,7 +68,7 @@ export function connectLoadingBar<T extends PropTypes>(
       ...parts.range.attrs,
       'data-state': phase,
       // 两个样式键每帧都写全，用不上的写空串清掉
-      'style': { inlineSize: `${value}%`, background: color ?? '' },
+      'style': { inlineSize: `${value}%` },
     }),
 
     // 亮边贴在进度段末端，是纯装饰：进度值由 root 的 aria-valuenow 报出

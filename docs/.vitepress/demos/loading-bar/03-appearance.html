@@ -1,5 +1,5 @@
-<!-- 厚度与颜色 | height 数字按像素、字符串按任意 CSS 长度；color 只改进度段的底色 -->
-<xh-loading-bar id="loading-bar-appearance" height="6" color="#f97316">
+<!-- 厚度 | height 数字按像素、字符串按任意 CSS 长度；进度段的颜色走语气或皮肤槽，不走内联 -->
+<xh-loading-bar id="loading-bar-appearance" height="6" tone="warning">
   <div data-xh-part="root">
     <div data-xh-part="track">
       <div data-xh-part="range"></div>
@@ -17,7 +17,7 @@
   <xh-button variant="outline" data-loading="off">
     <button data-xh-part="root">结束加载</button>
   </xh-button>
-  <span>6px 厚的橙色条子，仍然贴在视口顶边</span>
+  <span>6px 厚的警示色条子，仍然贴在视口顶边</span>
 </div>
 
 <script type="module">

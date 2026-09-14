@@ -29755,15 +29755,6 @@
             },
             {
               "kind": "field",
-              "name": "color",
-              "privacy": "public",
-              "type": {
-                "text": "string | undefined"
-              },
-              "attribute": "color"
-            },
-            {
-              "kind": "field",
               "name": "tone",
               "privacy": "public",
               "type": {
@@ -29890,14 +29881,6 @@
               "description": "条子厚度：纯数字按像素，其余按 CSS 长度；默认 2px",
               "name": "height",
               "fieldName": "height"
-            },
-            {
-              "type": {
-                "text": "string | undefined"
-              },
-              "description": "进度段颜色（任意 CSS 颜色）；不给就用皮肤的品牌色",
-              "name": "color",
-              "fieldName": "color"
             },
             {
               "type": {

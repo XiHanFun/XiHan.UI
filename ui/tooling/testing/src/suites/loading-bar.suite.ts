@@ -296,9 +296,9 @@ export const loadingBarSuite: ConformanceSuite = {
       ],
     },
     {
-      name: 'height / color 落到内联样式上：厚度归 root，颜色归 range',
+      name: 'height 落到 root 的内联样式上；range 的内联只有宽度，颜色归皮肤的语气槽',
       spec: { apg: SPEC },
-      props: { loading: true, value: 50, trickle: false, height: 6, color: 'tomato' },
+      props: { loading: true, value: 50, trickle: false, height: 6 },
       steps: [
         {
           kind: 'raw',
@@ -308,8 +308,8 @@ export const loadingBarSuite: ConformanceSuite = {
             if (thickness !== '6px')
               throw new Error(`厚度期望 6px，实际 ${thickness || '(空)'}`)
             const background = partEl(doc, 'range').style.background
-            if (background !== 'tomato')
-              throw new Error(`进度段颜色期望 tomato，实际 ${background || '(空)'}`)
+            if (background !== '')
+              throw new Error(`进度段不该写内联颜色，实际 ${background}`)
           },
         },
       ],
