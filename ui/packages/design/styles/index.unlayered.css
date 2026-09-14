@@ -35408,12 +35408,13 @@
   animation: xh-toast-in var(--xh-motion-duration-enter) var(--xh-motion-ease-enter-strong) backwards;
 }
 
-[data-scope='toast'][data-part='root']:not([data-frontmost]):not([data-expanded]) {
+[data-scope='toast'][data-part='root'][data-stack-index]:not([data-frontmost]):not([data-expanded]) {
   block-size: var(--xh-toast-front-height, auto);
   overflow: hidden;
 }
 
-[data-scope='toast'][data-part='root']:not([data-frontmost]):not([data-expanded]) > :not([data-part='close-trigger']) {
+[data-scope='toast'][data-part='root'][data-stack-index]:not([data-frontmost]):not([data-expanded])
+> :not([data-part='close-trigger']) {
   opacity: 0;
 }
 

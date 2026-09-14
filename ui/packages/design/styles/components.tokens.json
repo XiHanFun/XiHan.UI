@@ -59318,7 +59318,8 @@
         "expanded",
         "frontmost",
         "not([data-expanded])",
-        "not([data-frontmost])"
+        "not([data-frontmost])",
+        "stack-index"
       ],
       "defaultToken": [
         "auto"

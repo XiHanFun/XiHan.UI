@@ -83,6 +83,9 @@ describe('轻提示的 Hero 风格中性浮层', () => {
     expect(rootStyle.paddingInline).toBe('16px')
     expect(rootStyle.borderRadius).toBe('24px')
     expect(rootStyle.backgroundColor).toBe(resolvedColor(root, 'background', 'var(--xh-bg-surface)'))
+    expect(getComputedStyle(indicator).opacity).toBe('1')
+    expect(getComputedStyle(title).opacity).toBe('1')
+    expect(title.textContent).toBe('更改已保存')
     expect(getComputedStyle(title).color).toBe(resolvedColor(root, 'color', 'var(--xh-_tone-fg)'))
     expect(getComputedStyle(description).color).toBe(resolvedColor(root, 'color', 'var(--xh-fg-muted)'))
     expect(indicator.getBoundingClientRect().width).toBe(resolvedWidth(
