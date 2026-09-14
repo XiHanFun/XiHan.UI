@@ -35291,18 +35291,18 @@
 /* styles/toast.css */
 /* 定义 toast 样式。 */
 
-/* 六个边缘落位共用一条短距离进出场，避免位置变化时产生横向跳跃。 */
+/* 新条目从视口边缘外进入，同时落到自己的折叠层级。 */
 @keyframes xh-toast-in {
   from {
     opacity: 0;
-    translate: 0 var(--xh-motion-distance-md);
-    scale: var(--xh-motion-scale-enter);
+    transform: translateY(calc(var(--xh-toast-dir, 1) * (var(--xh-toast-offset-collapsed, 0px) - 100%)))
+      scale(var(--xh-toast-scale-collapsed, 1));
   }
 
   to {
     opacity: 1;
-    translate: 0 0;
-    scale: 1;
+    transform: translateY(calc(var(--xh-toast-dir, 1) * var(--xh-toast-offset-collapsed, 0px)))
+      scale(var(--xh-toast-scale-collapsed, 1));
   }
 }
 
@@ -35326,14 +35326,14 @@
 @keyframes xh-toast-out {
   from {
     opacity: 1;
-    translate: 0 0;
-    scale: 1;
+    transform: translateY(calc(var(--xh-toast-dir, 1) * var(--xh-toast-y, 0px)))
+      scale(var(--xh-toast-scale, 1));
   }
 
   to {
     opacity: 0;
-    translate: 0 var(--xh-motion-distance-md);
-    scale: var(--xh-motion-scale-exit);
+    transform: translateY(calc(var(--xh-toast-dir, 1) * (var(--xh-toast-y, 0px) - 100%)))
+      scale(var(--xh-toast-scale, 1));
   }
 }
 
@@ -35342,38 +35342,13 @@
   --xh-toast-skin: 1;
 }
 
-/*
- * 一摞 = 一整面视口大小的定位面：贴边靠 padding，落位靠 justify/align 表达。
- * 不用四角 inset 逐个摆，是因为 column flex 的 align-items 走的是行内轴，
- * RTL 下 start/end 自动跟着翻；写死 inset-inline-start 的话居中那三个位
- * 还得再配一次 translate，方向一变就错。
- * 摞由全局服务渲染，没有对应的容器组件——一次操作的反馈落在哪儿是整个服务的口径。
- */
+/* 固定宽度的堆叠定位面；每条 Toast 在其中绝对定位。 */
 [data-scope='toast'][data-part='group'] {
   position: fixed;
-  inset-block: 0;
-  inset-inline: 0;
   z-index: var(--xh-toast-layer, var(--xh-layer-toast));
-  display: flex;
-  flex-direction: column;
-  /* 基线按默认落位 bottom 写。 */
-  justify-content: flex-end;
-  align-items: center;
-  /* 贴边与安全区取大的一头：刘海、圆角与底部横条压住的那一段由系统给出，
-     贴边比它窄时条子会被切掉一角。桌面上 env() 恒为 0，取值与贴边槽完全一致。
-     两条内联的 env 一起取大值：安全区只有物理方向的四个名字，
-     分左右写在 RTL 下会翻错边，两侧同取较宽的那一段。 */
-  padding-block-start: max(var(--xh-toast-inset, var(--xh-space-4)), env(safe-area-inset-top));
-  padding-block-end: max(var(--xh-toast-inset, var(--xh-space-4)), env(safe-area-inset-bottom));
-  padding-inline: max(
-    var(--xh-toast-inset, var(--xh-space-4)),
-    env(safe-area-inset-left),
-    env(safe-area-inset-right)
-  );
-  /* 摞内间距由服务写进内联 style，这里绝不重复写：
-     写了也会被内联盖掉，只会让人误以为间距归样式层管 */
-  /* 整面铺开就等于罩住了整块视口。面本身不吃指针，只有条子吃（见下），
-     否则底下的页面就再也点不动了 */
+  display: block;
+  inline-size: min(var(--xh-toast-inline-size, 28.75rem), calc(100vw - var(--xh-space-8)));
+  block-size: 0;
   pointer-events: none;
 }
 
@@ -35381,31 +35356,49 @@
   display: none;
 }
 
-/* 块轴落位：^= 一次吃掉顶部一行的三个位。 */
-[data-scope='toast'][data-part='group'][data-placement^='top'] {
-  justify-content: flex-start;
+[data-scope='toast'][data-part='group'][data-placement='bottom'] {
+  inset-block-end: max(var(--xh-toast-inset, var(--xh-space-4)), env(safe-area-inset-bottom));
+  inset-inline-start: 50%;
+  translate: -50% 0;
 }
 
-/* 行内轴落位：不带后缀的 top / bottom 用基线的居中。 */
+[data-scope='toast'][data-part='group'][data-placement='top'] {
+  inset-block-start: max(var(--xh-toast-inset, var(--xh-space-4)), env(safe-area-inset-top));
+  inset-inline-start: 50%;
+  translate: -50% 0;
+}
+
 [data-scope='toast'][data-part='group'][data-placement$='-start'] {
-  align-items: flex-start;
+  inset-inline-start: max(var(--xh-toast-inset, var(--xh-space-4)), env(safe-area-inset-left));
 }
 
 [data-scope='toast'][data-part='group'][data-placement$='-end'] {
-  align-items: flex-end;
+  inset-inline-end: max(var(--xh-toast-inset, var(--xh-space-4)), env(safe-area-inset-right));
+}
+
+[data-scope='toast'][data-part='group'][data-placement^='bottom'][data-placement$='-start'],
+[data-scope='toast'][data-part='group'][data-placement^='bottom'][data-placement$='-end'] {
+  inset-block-end: max(var(--xh-toast-inset, var(--xh-space-4)), env(safe-area-inset-bottom));
+}
+
+[data-scope='toast'][data-part='group'][data-placement^='top'][data-placement$='-start'],
+[data-scope='toast'][data-part='group'][data-placement^='top'][data-placement$='-end'] {
+  inset-block-start: max(var(--xh-toast-inset, var(--xh-space-4)), env(safe-area-inset-top));
 }
 
 /* 中性浮层承载整条反馈，语气只落到状态字形和标题。 */
 [data-scope='toast'][data-part='root'] {
   --xh-icon-size: var(--xh-toast-icon-size, var(--xh-glyph-size-sm));
 
+  --xh-toast-y: var(--xh-toast-offset-collapsed, 0px);
+  --xh-toast-scale: var(--xh-toast-scale-collapsed, 1);
+
   position: relative;
   display: flex;
   flex: none;
   align-items: flex-start;
   gap: var(--xh-toast-gap, var(--xh-space-1_5));
-  inline-size: min(var(--xh-toast-w, var(--xh-overlay-max-w-lg)), 100%);
-  max-inline-size: 100%;
+  inline-size: min(var(--xh-toast-inline-size, 28.75rem), 100%);
   padding-block: var(--xh-toast-py, var(--xh-space-3));
   padding-inline: var(--xh-toast-px, var(--xh-space-4));
   border: var(--xh-stroke-thin) solid var(--xh-toast-border, transparent);
@@ -35418,6 +35411,29 @@
   /* 摞的定位面整面铺开且不吃指针，条子必须自己吃回来：
      悬停按住计时、按钮可点、焦点进出，全指着这一条 */
   pointer-events: auto;
+  transform: translateY(calc(var(--xh-toast-dir, 1) * var(--xh-toast-y))) scale(var(--xh-toast-scale));
+  transform-origin: bottom center;
+  transition:
+    transform var(--xh-motion-duration-enter) var(--xh-motion-ease-continuous),
+    block-size var(--xh-motion-duration-enter) var(--xh-motion-ease-continuous),
+    opacity var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
+}
+
+[data-scope='toast'][data-part='group'] [data-scope='toast'][data-part='root'] {
+  position: absolute;
+  inset-inline: 0;
+  inline-size: 100%;
+}
+
+[data-scope='toast'][data-part='root'][data-placement^='bottom'] {
+  --xh-toast-dir: -1;
+  inset-block-end: 0;
+}
+
+[data-scope='toast'][data-part='root'][data-placement^='top'] {
+  --xh-toast-dir: 1;
+  inset-block-start: 0;
+  transform-origin: top center;
 }
 
 /* 退场窗口走完连接层给的是 hidden 属性，而上面声明了 display——
@@ -35431,26 +35447,23 @@
   animation: xh-toast-in var(--xh-motion-duration-enter) var(--xh-motion-ease-enter-strong) backwards;
 }
 
-/* 一摞里的多条按位次错开开幕。backwards 不能省：等待期间起帧不生效的话，
-   条子会先以全不透明度露一下再跳回起帧。第 6 条起并到同一拍上 */
-[data-scope='toast'][data-part='root'][data-state='visible']:nth-child(2) {
-  animation-delay: calc(var(--xh-motion-stagger-step) * 1);
+[data-scope='toast'][data-part='root']:not([data-frontmost]):not([data-expanded]) {
+  block-size: var(--xh-toast-front-height, auto);
+  overflow: hidden;
 }
 
-[data-scope='toast'][data-part='root'][data-state='visible']:nth-child(3) {
-  animation-delay: calc(var(--xh-motion-stagger-step) * 2);
+[data-scope='toast'][data-part='root']:not([data-frontmost]):not([data-expanded]) > :not([data-part='close-trigger']) {
+  opacity: 0;
 }
 
-[data-scope='toast'][data-part='root'][data-state='visible']:nth-child(4) {
-  animation-delay: calc(var(--xh-motion-stagger-step) * 3);
+[data-scope='toast'][data-part='root'][data-expanded] {
+  --xh-toast-y: var(--xh-toast-offset-expanded, 0px);
+  --xh-toast-scale: 1;
+  block-size: var(--xh-toast-height, auto);
 }
 
-[data-scope='toast'][data-part='root'][data-state='visible']:nth-child(5) {
-  animation-delay: calc(var(--xh-motion-stagger-step) * 4);
-}
-
-[data-scope='toast'][data-part='root'][data-state='visible']:nth-child(n + 6) {
-  animation-delay: calc(var(--xh-motion-stagger-step) * 5);
+[data-scope='toast'][data-part='root'] > :not([data-part='close-trigger']) {
+  transition: opacity var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
 }
 
 /* forwards 不能省：退场窗口（removeDelay 默认 300ms）比退场动画长，

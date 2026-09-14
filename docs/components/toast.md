@@ -72,6 +72,7 @@ description 提供一行简短上下文；需要长时间阅读的内容改用 N
 - 可以带一个操作按钮（撤销、查看详情）。
 - `type` 只改变标题与状态字形，卡片始终使用中性浮层。
 - `closable` 默认开启；悬停或焦点进入卡片时显示关闭按钮。
+- 全局服务默认将最新一条置于最前，后两层按 12px 偏移与 0.05 比例收拢；鼠标或焦点进入后按真实高度展开。
 
 ### 组合
 
@@ -253,32 +254,40 @@ description 提供一行简短上下文；需要长时间阅读的内容改用 N
 | `--xh-toast-description-fg` | `description` | `color` | `default` | `--xh-fg-muted` | toast 的 description 部件 color 覆盖槽。 |
 | `--xh-toast-description-font-size` | `description` | `font-size` | `default` | `--xh-text-label-size` | toast 的 description 部件 font-size 覆盖槽。 |
 | `--xh-toast-description-leading` | `description` | `line-height` | `default` | `--xh-text-body-leading` | toast 的 description 部件 line-height 覆盖槽。 |
+| `--xh-toast-dir` | `*`<br>`root` | `transform` | `@keyframes xh-toast-in`<br>`@keyframes xh-toast-out`<br>`default` | `1` | toast 的 *、root 部件 transform 覆盖槽。 |
 | `--xh-toast-fg` | `root` | `color` | `default` | `--xh-fg-default` | toast 的 root 部件 color 覆盖槽。 |
 | `--xh-toast-font-size` | `root` | `font-size` | `default` | `--xh-text-label-size` | toast 的 root 部件 font-size 覆盖槽。 |
+| `--xh-toast-front-height` | `root` | `block-size` | `expanded`<br>`frontmost`<br>`not([data-expanded])`<br>`not([data-frontmost])` | `auto` | toast 的 root 部件 block-size 覆盖槽。 |
 | `--xh-toast-gap` | `root` | `gap` | `default` | `--xh-space-1_5` | toast 的 root 部件 gap 覆盖槽。 |
+| `--xh-toast-height` | `root` | `block-size` | `expanded` | `auto` | toast 的 root 部件 block-size 覆盖槽。 |
 | `--xh-toast-icon-fg` | `indicator`<br>`root` | `background-color`<br>`color` | `default` | `--xh-_tone-fg` | toast 的 indicator、root 部件 background-color、color 覆盖槽。 |
 | `--xh-toast-icon-size` | `root` | `--xh-icon-size` | `default` | `--xh-glyph-size-sm` | toast 的 root 部件 --xh-icon-size 覆盖槽。 |
 | `--xh-toast-indicator-p` | `indicator` | `padding` | `default` | `--xh-space-1` | toast 的 indicator 部件 padding 覆盖槽。 |
-| `--xh-toast-inset` | `group` | `padding-block-end`<br>`padding-block-start`<br>`padding-inline` | `default` | `--xh-space-4` | toast 的 group 部件 padding-block-end、padding-block-start、padding-inline 覆盖槽。 |
+| `--xh-toast-inline-size` | `group`<br>`root` | `inline-size` | `default` | `28.75rem` | toast 的 group、root 部件 inline-size 覆盖槽。 |
+| `--xh-toast-inset` | `group` | `inset-block-end`<br>`inset-block-start`<br>`inset-inline-end`<br>`inset-inline-start` | `placement=-end`<br>`placement=-start`<br>`placement=bottom`<br>`placement=top` | `--xh-space-4` | toast 的 group 部件 inset-block-end、inset-block-start、inset-inline-end、inset-inline-start 覆盖槽。 |
 | `--xh-toast-layer` | `group` | `z-index` | `default` | `--xh-layer-toast` | toast 的 group 部件 z-index 覆盖槽。 |
 | `--xh-toast-leading` | `root` | `line-height` | `default` | `--xh-text-body-leading` | toast 的 root 部件 line-height 覆盖槽。 |
+| `--xh-toast-offset-collapsed` | `*`<br>`root` | `--xh-toast-y`<br>`transform` | `@keyframes xh-toast-in`<br>`default` | `0px` | toast 的 *、root 部件 --xh-toast-y、transform 覆盖槽。 |
+| `--xh-toast-offset-expanded` | `root` | `--xh-toast-y` | `expanded` | `0px` | toast 的 root 部件 --xh-toast-y 覆盖槽。 |
 | `--xh-toast-progress-bg` | `progress` | `background` | `default` | `--xh-_tone-soft` | toast 的 progress 部件 background 覆盖槽。 |
 | `--xh-toast-progress-duration` | `progress` | `animation` | `default` | `--xh-motion-duration-slide` | toast 的 progress 部件 animation 覆盖槽。 |
 | `--xh-toast-progress-thickness` | `progress` | `block-size` | `default` | `--xh-space-0_5` | toast 的 progress 部件 block-size 覆盖槽。 |
 | `--xh-toast-px` | `root` | `padding-inline` | `default` | `--xh-space-4` | toast 的 root 部件 padding-inline 覆盖槽。 |
 | `--xh-toast-py` | `root` | `padding-block` | `default` | `--xh-space-3` | toast 的 root 部件 padding-block 覆盖槽。 |
 | `--xh-toast-radius` | `root` | `border-radius` | `default` | `--xh-shape-overlay` | toast 的 root 部件 border-radius 覆盖槽。 |
+| `--xh-toast-scale` | `*` | `transform` | `@keyframes xh-toast-out` | `1` | toast 的 * 部件 transform 覆盖槽。 |
+| `--xh-toast-scale-collapsed` | `*`<br>`root` | `--xh-toast-scale`<br>`transform` | `@keyframes xh-toast-in`<br>`default` | `1` | toast 的 *、root 部件 --xh-toast-scale、transform 覆盖槽。 |
 | `--xh-toast-shadow` | `root` | `box-shadow` | `default` | `--xh-elevation-sheet` | toast 的 root 部件 box-shadow 覆盖槽。 |
 | `--xh-toast-title-fg` | `title` | `color` | `default` | `--xh-_tone-fg` | toast 的 title 部件 color 覆盖槽。 |
 | `--xh-toast-title-font-size` | `title` | `font-size` | `default` | `--xh-text-label-size` | toast 的 title 部件 font-size 覆盖槽。 |
 | `--xh-toast-title-font-weight` | `title` | `font-weight` | `default` | `--xh-font-weight-medium` | toast 的 title 部件 font-weight 覆盖槽。 |
 | `--xh-toast-title-leading` | `title` | `line-height` | `default` | `--xh-text-body-leading` | toast 的 title 部件 line-height 覆盖槽。 |
-| `--xh-toast-w` | `root` | `inline-size` | `default` | `--xh-overlay-max-w-lg` | toast 的 root 部件 inline-size 覆盖槽。 |
+| `--xh-toast-y` | `*` | `transform` | `@keyframes xh-toast-out` | `0px` | toast 的 * 部件 transform 覆盖槽。 |
 <!-- xh-component-tokens:end -->
 
 ### 动效
 
-关键帧 `xh-countdown` · `xh-toast-in` · `xh-toast-out` · `xh-toast-spin` 随皮肤自带，不引用别处文件里的名字；`background` · `color` · `opacity` · `scale` 走 `transition` 过渡。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
+关键帧 `xh-countdown` · `xh-toast-in` · `xh-toast-out` · `xh-toast-spin` 随皮肤自带，不引用别处文件里的名字；`background` · `block-size` · `color` · `opacity` · `scale` · `transform` 走 `transition` 过渡。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
 
 `prefers-reduced-motion: reduce` 下本组件另有降级规则。
 

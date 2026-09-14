@@ -47,6 +47,7 @@ async function burst(options: Omit<ToastServiceOptions, 'target'> = {}): Promise
   for (let i = 1; i <= BURST; i++)
     toast.info(`第 ${i} 条`, { duration: 0 })
   await tick()
+  await new Promise(resolve => setTimeout(resolve, 400))
   return doc
 }
 
@@ -75,7 +76,21 @@ describe('轻提示的缺省上限', () => {
     expect(items).toHaveLength(3)
     expect(group(doc).getAttribute('data-count')).toBe('3')
     expect(items.every(insideViewport)).toBe(true)
-    expect(group(doc).scrollHeight).toBe(group(doc).clientHeight)
+  })
+
+  it('默认折叠成三层，鼠标进入后展开为按真实高度排列的队列', async () => {
+    const doc = await burst()
+    const items = roots(doc)
+    expect(items.map(item => item.dataset.stackIndex)).toEqual(['2', '1', '0'])
+    expect(items.at(-1)?.hasAttribute('data-frontmost')).toBe(true)
+    expect(items.slice(0, -1).every(item => !item.hasAttribute('data-expanded'))).toBe(true)
+
+    group(doc).dispatchEvent(new PointerEvent('pointerenter', { pointerType: 'mouse' }))
+    await new Promise(resolve => setTimeout(resolve, 400))
+    expect(group(doc).hasAttribute('data-expanded')).toBe(true)
+    expect(items.every(item => item.hasAttribute('data-expanded'))).toBe(true)
+    const tops = items.map(item => item.getBoundingClientRect().top)
+    expect(new Set(tops).size).toBe(items.length)
   })
 
   it('留下的是最新的三条，队列顺序就是视觉顺序', async () => {
@@ -87,14 +102,14 @@ describe('轻提示的缺省上限', () => {
     expect(tops).toEqual([...tops].sort((a, b) => a - b))
   })
 
-  it('对照 max: Infinity 即不限：20 条全挂上，超出的那几条页面滚动也够不到', async () => {
+  it('对照 max: Infinity 即不限：20 条都在折叠堆叠中', async () => {
     const doc = await burst({ max: Number.POSITIVE_INFINITY })
     const items = roots(doc)
 
     expect(items).toHaveLength(BURST)
-    expect(items.filter(insideViewport).length).toBeLessThan(BURST)
-    expect(Math.min(...items.map(el => el.getBoundingClientRect().top))).toBeLessThan(0)
-    // 摞是 fixed 面，文档本身没有因此长高：被切掉的那几条不在任何可滚动的地方
+    expect(items.every(insideViewport)).toBe(true)
+    expect(items.at(-1)?.hasAttribute('data-frontmost')).toBe(true)
+    // 摞是 fixed 面，文档本身不会因此长高。
     expect(doc.documentElement.scrollHeight).toBe(doc.documentElement.clientHeight)
   })
 })

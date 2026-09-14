@@ -646,7 +646,7 @@
       ]
     },
     "xh-toast-in": {
-      "content": "from{opacity:0;translate:0 var(--xh-motion-distance-md);scale:var(--xh-motion-scale-enter)}to{opacity:1;translate:0 0;scale:1}",
+      "content": "from{opacity:0;transform:translateY(calc(var(--xh-toast-dir,1) * (var(--xh-toast-offset-collapsed,0px) - 100%))) scale(var(--xh-toast-scale-collapsed,1))}to{opacity:1;transform:translateY(calc(var(--xh-toast-dir,1) * var(--xh-toast-offset-collapsed,0px))) scale(var(--xh-toast-scale-collapsed,1))}",
       "definedIn": [
         "toast.css"
       ],
@@ -655,7 +655,7 @@
       ]
     },
     "xh-toast-out": {
-      "content": "from{opacity:1;translate:0 0;scale:1}to{opacity:0;translate:0 var(--xh-motion-distance-md);scale:var(--xh-motion-scale-exit)}",
+      "content": "from{opacity:1;transform:translateY(calc(var(--xh-toast-dir,1) * var(--xh-toast-y,0px))) scale(var(--xh-toast-scale,1))}to{opacity:0;transform:translateY(calc(var(--xh-toast-dir,1) * (var(--xh-toast-y,0px) - 100%))) scale(var(--xh-toast-scale,1))}",
       "definedIn": [
         "toast.css"
       ],
@@ -772,19 +772,17 @@
       ]
     },
     "xh-dialog-in": {
-      "$description": "3 个名字是同一段动画，收敛前登记在案",
+      "$description": "2 个名字是同一段动画，收敛前登记在案",
       "names": [
         "xh-dialog-in",
-        "xh-notification-in",
-        "xh-toast-in"
+        "xh-notification-in"
       ]
     },
     "xh-dialog-out": {
-      "$description": "3 个名字是同一段动画，收敛前登记在案",
+      "$description": "2 个名字是同一段动画，收敛前登记在案",
       "names": [
         "xh-dialog-out",
-        "xh-notification-out",
-        "xh-toast-out"
+        "xh-notification-out"
       ]
     },
     "xh-diff-view-reveal": {

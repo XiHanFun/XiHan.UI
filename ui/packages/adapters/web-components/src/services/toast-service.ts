@@ -16,6 +16,7 @@ import { createService, DATA_INERT_EXEMPT } from '@xihan-ui/core'
 import {
   connectNotification,
   createFeedbackServiceController,
+  createToastStackController,
   notificationMachine,
   resolveToastServiceItem,
   TOAST_GAP,
@@ -58,7 +59,6 @@ export function createToastService(options: ToastServiceOptions = {}): ToastServ
   for (const [name, value] of Object.entries(parts.group.attrs))
     group.setAttribute(name, String(value))
   group.setAttribute('data-placement', placement)
-  group.style.gap = `${gap}px`
   // 模态浮层给背景施加 inert 时跳过这一摞：轻提示画在遮罩之上，
   // 一并罩住就成了看得见、点不动、读屏也跳过
   group.setAttribute(DATA_INERT_EXEMPT, '')
@@ -71,6 +71,12 @@ export function createToastService(options: ToastServiceOptions = {}): ToastServ
     name: 'toast',
     idPrefix: 'toast',
     onStateChange: () => render(),
+  })
+  const stack = createToastStackController({
+    group,
+    gap,
+    placement,
+    onInteractionChange: active => active ? controller.pauseAll() : controller.resumeAll(),
   })
 
   const machineProps = (): Partial<NotificationSchema['props']> => withXhConfig('notification', {
@@ -229,6 +235,7 @@ export function createToastService(options: ToastServiceOptions = {}): ToastServ
     pauseAll: controller.pauseAll,
     resumeAll: controller.resumeAll,
     dispose: () => {
+      stack.dispose()
       group.removeEventListener('status-change', onStatus)
       group.removeEventListener('action', onPress)
       controller.dispose()
