@@ -102,7 +102,7 @@ BasicApp 的前端约定请看[基础应用前端手册](https://basicapp.docs.x
 
 只要一页的话，把地址后缀成 `.md`——`https://ui.docs.xihanfun.com/components/button.md` 就是按钮那一页，示例已内联成代码块。每页正文右上角的「取本页 Markdown」指向的也是它。
 
-支持 Agent Skills 的工具另有一份现成的：仓库根的 `skills/`，站点上是 [`/skills/xihan-ui/SKILL.md`](https://ui.docs.xihanfun.com/skills/xihan-ui/SKILL.md)。技能按组件设计、仓库实现和三端用法路由到对应规范，并提供四个只读取数脚本；脚本严格读取当前检出，找不到仓库时直接报错，不会拿已发布站点的旧内容代替本地事实。
+支持 Agent Skills 的工具另有一份现成的：仓库根的 `.agents/skills/xihan-ui/`，站点上是 [`/skills/xihan-ui/SKILL.md`](https://ui.docs.xihanfun.com/skills/xihan-ui/SKILL.md)。技能按组件设计、仓库实现和三端用法路由到对应规范，并提供四个只读脚本；脚本严格读取当前检出，找不到仓库时直接报错，不会拿已发布站点的旧内容代替本地事实。
 
 ## 还有别的问题
 
