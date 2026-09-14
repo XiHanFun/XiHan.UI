@@ -67,6 +67,8 @@
 
 <div class="xh-component-grid">
 
+<XhComponentCard src="calendar-picker" name="CalendarPicker" label="日历选择器" href="/components/calendar-picker" status="alpha" />
+<XhComponentCard src="calendar-range-picker" name="CalendarRangePicker" label="日历范围选择器" href="/components/calendar-range-picker" status="alpha" />
 <XhComponentCard src="cascader" name="Cascader" label="级联选择" href="/components/cascader" status="alpha" />
 <XhComponentCard src="checkbox" name="Checkbox" label="复选框" href="/components/checkbox" status="alpha" />
 <XhComponentCard src="checkbox-group" name="CheckboxGroup" label="复选框组" href="/components/checkbox-group" status="alpha" />
@@ -110,7 +112,6 @@
 <XhComponentCard src="accordion" name="Accordion" label="手风琴" href="/components/accordion" status="alpha" />
 <XhComponentCard src="avatar" name="Avatar" label="头像" href="/components/avatar" status="alpha" />
 <XhComponentCard src="avatar-group" name="AvatarGroup" label="头像组" href="/components/avatar-group" status="alpha" />
-<XhComponentCard src="calendar" name="Calendar" label="日历" href="/components/calendar" status="alpha" />
 <XhComponentCard src="card" name="Card" label="卡片" href="/components/card" />
 <XhComponentCard src="carousel" name="Carousel" label="走马灯" href="/components/carousel" />
 <XhComponentCard src="collapsible" name="Collapsible" label="折叠区域" href="/components/collapsible" status="alpha" />

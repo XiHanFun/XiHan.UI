@@ -23,12 +23,18 @@ import { act } from 'react'
 import { createRoot } from 'react-dom/client'
 import { afterEach, describe, expect, it } from 'vitest'
 import {
-  XhCalendarCell,
-  XhCalendarCellTrigger,
-  XhCalendarGrid,
-  XhCalendarGridBody,
-  XhCalendarRoot,
-  XhCalendarWeekRow,
+  XhCalendarPickerCell,
+  XhCalendarPickerCellTrigger,
+  XhCalendarPickerGrid,
+  XhCalendarPickerGridBody,
+  XhCalendarPickerRoot,
+  XhCalendarPickerWeekRow,
+  XhCalendarRangePickerCell,
+  XhCalendarRangePickerCellTrigger,
+  XhCalendarRangePickerGrid,
+  XhCalendarRangePickerGridBody,
+  XhCalendarRangePickerRoot,
+  XhCalendarRangePickerWeekRow,
   XhDateFieldControl,
   XhDateFieldRoot,
   XhDateFieldSegment,
@@ -121,25 +127,48 @@ const ANCHOR = '2024-02-15'
 const CAL_PROPS = { defaultFocusedValue: ANCHOR, locale: 'zh-CN', timeZone: 'UTC' } as const
 
 /** 网格由作者照 weeks 铺，与套件里那棵 fixture 同形。 */
-function calendarTree(selectionMode?: 'single' | 'range'): ReactNode {
+function calendarTree(): ReactNode {
   return (
-    <XhCalendarRoot {...CAL_PROPS} selectionMode={selectionMode}>
+    <XhCalendarPickerRoot {...CAL_PROPS}>
       {({ weeks }) => (
-        <XhCalendarGrid>
-          <XhCalendarGridBody>
+        <XhCalendarPickerGrid>
+          <XhCalendarPickerGridBody>
             {weeks.map(week => (
-              <XhCalendarWeekRow key={week[0]!.start}>
+              <XhCalendarPickerWeekRow key={week[0]!.start}>
                 {week.map(d => (
-                  <XhCalendarCell key={d.start} value={d.start}>
-                    <XhCalendarCellTrigger>{d.day}</XhCalendarCellTrigger>
-                  </XhCalendarCell>
+                  <XhCalendarPickerCell key={d.start} value={d.start}>
+                    <XhCalendarPickerCellTrigger>{d.day}</XhCalendarPickerCellTrigger>
+                  </XhCalendarPickerCell>
                 ))}
-              </XhCalendarWeekRow>
+              </XhCalendarPickerWeekRow>
             ))}
-          </XhCalendarGridBody>
-        </XhCalendarGrid>
+          </XhCalendarPickerGridBody>
+        </XhCalendarPickerGrid>
       )}
-    </XhCalendarRoot>
+    </XhCalendarPickerRoot>
+  )
+}
+
+/** 区间日历同形，只是换成范围选择器那套部件。 */
+function rangeCalendarTree(): ReactNode {
+  return (
+    <XhCalendarRangePickerRoot {...CAL_PROPS}>
+      {({ weeks }) => (
+        <XhCalendarRangePickerGrid>
+          <XhCalendarRangePickerGridBody>
+            {weeks.map(week => (
+              <XhCalendarRangePickerWeekRow key={week[0]!.start}>
+                {week.map(d => (
+                  <XhCalendarRangePickerCell key={d.start} value={d.start}>
+                    <XhCalendarRangePickerCellTrigger>{d.day}</XhCalendarRangePickerCellTrigger>
+                  </XhCalendarRangePickerCell>
+                ))}
+              </XhCalendarRangePickerWeekRow>
+            ))}
+          </XhCalendarRangePickerGridBody>
+        </XhCalendarRangePickerGrid>
+      )}
+    </XhCalendarRangePickerRoot>
   )
 }
 
@@ -228,32 +257,33 @@ describe('日历的不冒泡事件按 DOM 语义送达', () => {
   it('格子自己得焦：聚焦锚点改记它，roving tabindex 跟着换人', async () => {
     await mount(calendarTree())
 
-    await fire(day('calendar', '2024-02-20'), new Event('focus'))
+    await fire(day('calendar-picker', '2024-02-20'), new Event('focus'))
 
-    expect(day('calendar', '2024-02-20').getAttribute('data-focus')).toBe('')
-    expect(day('calendar', '2024-02-20').getAttribute('tabindex')).toBe('0')
-    expect(day('calendar', ANCHOR).getAttribute('data-focus')).toBeNull()
-    expect(day('calendar', ANCHOR).getAttribute('tabindex')).toBe('-1')
+    expect(day('calendar-picker', '2024-02-20').getAttribute('data-focus')).toBe('')
+    expect(day('calendar-picker', '2024-02-20').getAttribute('tabindex')).toBe('0')
+    expect(day('calendar-picker', ANCHOR).getAttribute('data-focus')).toBeNull()
+    expect(day('calendar-picker', ANCHOR).getAttribute('tabindex')).toBe('-1')
   })
 
-  it('指针扫过格子：区间预览跟着走；指针离开整张网格，预览收回起点', async () => {
-    await mount(calendarTree('range'))
+  it('指针扫过格子：区间预览跟着走；起点已落下时指针离开整张网格，预览留在最后扫过的那一格', async () => {
+    await mount(rangeCalendarTree())
     // 先落起点，随后的预览才有可比的一端
     await act(async () => {
-      day('calendar', ANCHOR).click()
+      day('calendar-range-picker', ANCHOR).click()
     })
     await settle()
-    expect(day('calendar', '2024-02-17').getAttribute('data-in-range')).toBeNull()
+    expect(day('calendar-range-picker', '2024-02-17').getAttribute('data-in-range')).toBeNull()
 
-    await fire(day('calendar', '2024-02-18'), new PointerEvent('pointerenter', { pointerType: 'mouse' }))
-    expect(day('calendar', '2024-02-17').getAttribute('data-in-range')).toBe('')
+    await fire(day('calendar-range-picker', '2024-02-18'), new PointerEvent('pointerenter', { pointerType: 'mouse' }))
+    expect(day('calendar-range-picker', '2024-02-17').getAttribute('data-in-range')).toBe('')
 
-    // 离开挂在网格上而非格子上：格子间挪动会成对发 leave/enter，预览会闪
+    // 离开挂在网格上而非格子上：格子间挪动会成对发 leave/enter，预览会闪。
+    // 起点已落下时留住预览：指针出去了，轨道停在它最后扫过的那一格
     await fire(
-      one('[data-scope="calendar"][data-part="grid"]'),
+      one('[data-scope="calendar-range-picker"][data-part="grid"]'),
       new PointerEvent('pointerleave', { pointerType: 'mouse', relatedTarget: document.body }),
     )
-    expect(day('calendar', '2024-02-17').getAttribute('data-in-range')).toBeNull()
+    expect(day('calendar-range-picker', '2024-02-17').getAttribute('data-in-range')).toBe('')
   })
 })
 
@@ -315,10 +345,10 @@ describe('日期选择器转交出去的那两家，不冒泡事件同样按 DOM
   it('格子自己得焦：聚焦锚点改记它（处理器是日历那一份派的）', async () => {
     await mount(DATE_PICKER_TREE)
 
-    await fire(day('calendar', '2024-02-20'), new Event('focus'))
+    await fire(day('calendar-picker', '2024-02-20'), new Event('focus'))
 
-    expect(day('calendar', '2024-02-20').getAttribute('data-focus')).toBe('')
-    expect(day('calendar', '2024-02-20').getAttribute('tabindex')).toBe('0')
-    expect(day('calendar', ANCHOR).getAttribute('tabindex')).toBe('-1')
+    expect(day('calendar-picker', '2024-02-20').getAttribute('data-focus')).toBe('')
+    expect(day('calendar-picker', '2024-02-20').getAttribute('tabindex')).toBe('0')
+    expect(day('calendar-picker', ANCHOR).getAttribute('tabindex')).toBe('-1')
   })
 })

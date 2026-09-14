@@ -12,8 +12,8 @@ import type {
   CalendarPanel,
   CalendarPeriod,
   CalendarPeriodValue,
-  CalendarSchema,
-  CalendarSelectionMode,
+  CalendarPickerSchema,
+  CalendarPickerSelectionMode,
   CalendarView,
   CalendarViewChangeDetails,
   CalendarWeekDay,
@@ -33,7 +33,7 @@ import type {
 } from '@xihan-ui/headless'
 import type { OverlayExit } from '../overlay-exit'
 import { createCounterIdGenerator, createRuntimeConfig, createScope } from '@xihan-ui/core'
-import { calendarAnatomy, calendarMachine, connectDatePicker, dateFieldAnatomy, dateFieldMachine, datePickerAnatomy, datePickerCalendarProps, datePickerFieldAt, datePickerFieldEndProps, datePickerFieldProps, datePickerMachine, datePickerMeta, resolveDatePickerPanelIndex, resolveFormControlState } from '@xihan-ui/headless'
+import { calendarPickerAnatomy, calendarPickerMachine, connectDatePicker, dateFieldAnatomy, dateFieldMachine, datePickerAnatomy, datePickerCalendarProps, datePickerFieldProps, datePickerMachine, datePickerMeta, resolveDatePickerPanelIndex, resolveFormControlState } from '@xihan-ui/headless'
 import { createPositionEngine } from '@xihan-ui/position'
 import { wcNormalize } from '../dom/normalize'
 import { createOverlayExit } from '../overlay-exit'
@@ -78,8 +78,8 @@ function declaredIndex(el: HTMLElement, position: number): number {
 }
 
 /**
- * `<xh-date-picker>` —— Light-DOM 行为宿主：作者写 root/label/control/segment-group/range-separator/segment/trigger/
- * clear-trigger/positioner/content/calendar 角色节点，calendar 之内再照日历那套写
+ * `<xh-date-picker>` —— Light-DOM 行为宿主：作者写 root/label/control/segment-group/segment/trigger/
+ * clear-trigger/positioner/content/calendar 角色节点，calendar 之内再照日历选择器那套写
  * header/prev-trigger/next-trigger/heading/grid/grid-head/week-day/grid-body/week-row/cell/cell-trigger。
  *
  * 本元素是编排机，只持有开合与「分段输入 ↔ 日历」之间的值同步；选日期、翻月、网格键盘导航
@@ -87,19 +87,14 @@ function declaredIndex(el: HTMLElement, position: number): number {
  *
  * 网格由作者渲染，元素不生成节点：读 `panels` / `weeks` / `weekDays` / `headingLabel` 几个只读属性，
  * 听 `focused-value-change` 与 `active-view-change` 重画。并排多页时读 `panels`，每页自带
- * 日期矩阵、粗粒度格子与标题；输入行铺哪几段读 `fieldSegments` 与 `fieldEndSegments`。
+ * 日期矩阵、粗粒度格子与标题；输入行铺哪几段读 `fieldSegments`。
  * 日期身份取 cell 节点上的 `value`（ISO 串），
  * cell-trigger 跟随所在 cell；表头列取 week-day 上的 `value`（列序 0-6）；
  * 段位可自带 `segment` 属性按段名认领（`segment="quarter"`），或自带 `index` 属性声明下标，
- * 两者都没写按所在 segment-group 之内的文档序。
- *
- * 区间模式（selection-mode="range"）下 segment-group 写两个：文档序在前的是起点、在后的是终点，
- * 各自内部写一整套段位。段位与 hidden-input 按所在 segment-group 归组，方向键不跨组；
- * hidden-input 写在 segment-group 之外（如与 control 平级）时按文档序对应起止两端。
- * 其余模式只认第一个 segment-group。
+ * 两者都没写按所在 segment-group 之内的文档序。区间选择是另一个元素 `<xh-date-range-picker>`。
  *
  * @customElement xh-date-picker
- * @attr {string} value - 受控选中值（单选简写，ISO 串）；缺省该属性即非受控，区间/多选请用 property 传数组
+ * @attr {string} value - 受控选中值（单选简写，ISO 串）；缺省该属性即非受控，多选请用 property 传数组
  * @attr {string} default-value - 非受控初始选中值
  * @attr {boolean} open - 受控开合；缺省该属性即非受控
  * @attr {boolean} default-open - 非受控初始为展开
@@ -107,20 +102,18 @@ function declaredIndex(el: HTMLElement, position: number): number {
  * @attr {string} max - 可选范围上界（含当天）
  * @attr {string} locale - 决定周首日、月份文案与段位先后；不给按宿主语言，宿主也没有时按 en-US
  * @attr {string} time-zone - 判定"今天"与格式化用的时区，默认宿主本地时区
- * @attr {'single'|'multiple'|'range'} selection-mode - 选择模式，默认 single
+ * @attr {'single'|'multiple'} selection-mode - 选择模式，默认 single
  * @attr {'day'|'week'|'month'|'quarter'|'year'} granularity - 选择粒度，默认 day；与 selection-mode 正交
  * @attr {'day'|'week'|'month'|'quarter'|'year'} active-view - 受控：面板此刻钻到了哪一层；缺省跟着 granularity
  * @prop {DatePickerPreset[]} presets - 快捷选项（数组只走 property）：给了就在浮层里多出一列
- * @attr {number} visible-count - 并排展示几页；缺省单选 1，区间按两端定，同一页放得下就 1
+ * @attr {number} visible-count - 并排展示几页；缺省 1
  * @attr {boolean} fixed-weeks - 日历恒渲染六行，默认开；写 fixed-weeks="false" 关掉
  * @attr {string} default-focused-value - 初始聚焦日，同时决定展开时先落在哪一页
  * @attr {boolean} disabled - 整个控件禁用：trigger 转原生 disabled，段位退出 Tab 序
  * @attr {boolean} read-only - 只读：浮层照常展开、日历照常浏览，但选中值改不动
- * @attr {boolean} invalid - 校验失败标注；不给也会自己判：任一端越界、或区间终点早于起点
- * @attr {boolean} allows-non-contiguous-ranges - 区间允许跨过不可用的日子；默认关，落了起点后只能挑到两侧最近的不可用日为止
+ * @attr {boolean} invalid - 校验失败标注；不给也会自己判：填齐了但越界
  * @attr {boolean} required - 必填标注，落到每段的 aria-required 上
- * @attr {string} name - 表单字段名；给了隐藏输入才带 name。区间模式下是起点那一份
- * @attr {string} end-name - 区间终点那份隐藏输入的表单字段名；不给即终点不参与提交
+ * @attr {string} name - 表单字段名；给了隐藏输入才带 name
  * @attr {'outline'|'subtle'|'ghost'} variant - 视觉变体
  * @attr {'brand'|'neutral'|'success'|'warning'|'danger'|'info'} tone - 语气
  * @attr {'sm'|'md'|'lg'} size - 尺寸
@@ -135,8 +128,7 @@ function declaredIndex(el: HTMLElement, position: number): number {
  * @csspart root - 组件根容器（承载 data-state/data-disabled/data-readonly/data-invalid）
  * @csspart label - 标题；点它把焦点送进首段。刻意不是原生 label（段位是 div，标不了）
  * @csspart control - 输入行容器，同时是浮层的定位锚点
- * @csspart segment-group - role=group 的分段容器，段位挂在它里面；区间模式下有起止两个，data-index 区分
- * @csspart range-separator - 区间起止输入之间的视觉分隔；非区间模式自动隐藏
+ * @csspart segment-group - role=group 的分段容器，段位挂在它里面
  * @csspart segment - 一段一个的 spinbutton 节点（data-scope="date-field"）。可自带 segment 属性按段名认领
  *   （segment="quarter"），或自带 index 属性声明下标（在所属 segment-group 组内数），两者都没写按文档序
  * @csspart trigger - 展开日历的按钮，须是原生 button
@@ -149,7 +141,7 @@ function declaredIndex(el: HTMLElement, position: number): number {
  * @csspart time-column - showTime 的时间列，须自带 unit 属性（hour/minute/second）；没开时带 hidden
  * @csspart time-item - 时间选项，须自带 value 属性（两位补零串）；点按把该单位写进值
  * @csspart confirm-trigger - showTime 的收口按钮；没开时带 hidden
- * @csspart header - 日历标题栏外壳（data-scope="calendar"）
+ * @csspart header - 日历标题栏外壳（data-scope="calendar-picker"）
  * @csspart prev-year-trigger - 快速往前翻一大步（日视图一年、粗粒度十页）；可选
  * @csspart prev-trigger - 上一月；越过 min 时转原生 disabled
  * @csspart next-trigger - 下一月；越过 max 时转原生 disabled
@@ -165,7 +157,7 @@ function declaredIndex(el: HTMLElement, position: number): number {
  * @csspart week-number - 行首的周序号格（role=rowheader），须自带 value 属性（行首那天）；可选
  * @csspart cell - role=gridcell 日期格，承载 aria-selected；须自带 value 属性（ISO 串）
  * @csspart cell-trigger - 真正可点可聚焦的那一层，承载 aria-disabled 与 roving tabindex
- * @csspart hidden-input - type=hidden 的表单出口，值是 ISO 串；区间模式下起止各一份
+ * @csspart hidden-input - type=hidden 的表单出口，值是 ISO 串
  */
 export class XhDatePickerElement extends XhPortalHostElement {
   /** 本实例的 Portal 容器；显式解析失败不回退配置默认。 */
@@ -175,7 +167,7 @@ export class XhDatePickerElement extends XhPortalHostElement {
   static override partContract = {
     anatomy: datePickerAnatomy,
     meta: datePickerMeta,
-    delegates: [dateFieldAnatomy, calendarAnatomy],
+    delegates: [dateFieldAnatomy, calendarPickerAnatomy],
   }
 
   // 描述符逐个写全，CEM 分析器读不了对象展开。
@@ -200,10 +192,8 @@ export class XhDatePickerElement extends XhPortalHostElement {
     disabled: { converter: BOOLEAN_CONVERTER },
     readOnly: { converter: BOOLEAN_CONVERTER, attribute: 'read-only' },
     invalid: { converter: BOOLEAN_CONVERTER },
-    allowsNonContiguousRanges: { converter: BOOLEAN_CONVERTER, attribute: 'allows-non-contiguous-ranges' },
     required: { converter: BOOLEAN_CONVERTER },
     name: { converter: STRING_CONVERTER },
-    endName: { converter: STRING_CONVERTER, attribute: 'end-name' },
     // 文案是对象，只能走 property
     translations: { attribute: false },
     variant: { converter: STRING_CONVERTER },
@@ -229,7 +219,7 @@ export class XhDatePickerElement extends XhPortalHostElement {
   declare max?: string
   declare locale?: string
   declare timeZone?: string
-  declare selectionMode?: CalendarSelectionMode
+  declare selectionMode?: CalendarPickerSelectionMode
   declare granularity?: CalendarGranularity
   declare activeView?: CalendarView
   declare segments?: DateSegmentSet
@@ -240,10 +230,8 @@ export class XhDatePickerElement extends XhPortalHostElement {
   declare disabled?: boolean
   declare readOnly?: boolean
   declare invalid?: boolean
-  declare allowsNonContiguousRanges?: boolean
   declare required?: boolean
   declare name?: string
-  declare endName?: string
   declare translations?: DatePickerSchema['props']['translations']
   declare variant?: ControlVariant
   declare tone?: Tone
@@ -254,10 +242,10 @@ export class XhDatePickerElement extends XhPortalHostElement {
   declare closeOnSelect?: boolean
   declare showTime?: boolean
   declare timeGranularity?: DatePickerSchema['props']['timeGranularity']
-  declare isDateUnavailable?: (value: string, anchor: string | null) => boolean
+  declare isDateUnavailable?: (value: string) => boolean
 
   private readonly idGen: IdGenerator = createCounterIdGenerator()
-  // 四台机器共用一份 scope，part id 里带组件名故不相撞
+  // 三台机器共用一份 scope，part id 里带组件名故不相撞
   private readonly pickerScope = createScope(() => this, this.idGen)
   private readonly positionEngine: PositionEnginePort = createPositionEngine()
   private config: RuntimeConfig | null = null
@@ -288,7 +276,7 @@ export class XhDatePickerElement extends XhPortalHostElement {
     this.dispatchEvent(new CustomEvent('focused-value-change', { detail: details, bubbles: true, composed: true }))
   }
 
-  // 声明顺序即 controller 挂载顺序：三台内嵌机器的 props 从编排机现读，编排机须先建
+  // 声明顺序即 controller 挂载顺序：两台内嵌机器的 props 从编排机现读，编排机须先建
   private readonly rootCtrl = new MachineController<DatePickerSchema>(
     this,
     datePickerMachine,
@@ -296,17 +284,15 @@ export class XhDatePickerElement extends XhPortalHostElement {
     { scope: this.pickerScope, onBuilt: svc => this.injectRefs(svc) },
   )
 
-  private readonly calendarCtrl = new MachineController<CalendarSchema>(
+  private readonly calendarCtrl = new MachineController<CalendarPickerSchema>(
     this,
-    calendarMachine,
+    calendarPickerMachine,
     () => datePickerCalendarProps(this.rootCtrl.service),
     {
       scope: this.pickerScope,
       // 机器跨月后靠它把焦点送进重画出来的格子
       onBuilt: (service) => {
         service.refs.set('getGridEl', () => this.getPart('grid'))
-        // 区间挑到一半时，指针在浮层与输入行之外松开就地收口
-        service.refs.set('getBoundaryEls', () => [this.getPart('content'), this.getPart('control')])
       },
     },
   )
@@ -315,15 +301,6 @@ export class XhDatePickerElement extends XhPortalHostElement {
     this,
     dateFieldMachine,
     () => datePickerFieldProps(this.rootCtrl.service),
-    { scope: this.pickerScope },
-  )
-
-  // 终点那组段位；一律建起来不按模式条件建，机器实例数得是定数。
-  // 非区间模式下它的值恒为空、写值入口自锁，connect 也不把它露出来
-  private readonly fieldEndCtrl = new MachineController<DateFieldSchema>(
-    this,
-    dateFieldMachine,
-    () => datePickerFieldEndProps(this.rootCtrl.service),
     { scope: this.pickerScope },
   )
 
@@ -338,7 +315,6 @@ export class XhDatePickerElement extends XhPortalHostElement {
       root: this.rootCtrl.service,
       calendar: this.calendarCtrl.service,
       field: this.fieldCtrl.service,
-      fieldEnd: this.fieldEndCtrl.service,
     }
   }
 
@@ -374,13 +350,11 @@ export class XhDatePickerElement extends XhPortalHostElement {
       fixedWeeks: this.fixedWeeks,
       defaultFocusedValue: this.defaultFocusedValue,
       isDateUnavailable: this.isDateUnavailable,
-      allowsNonContiguousRanges: this.allowsNonContiguousRanges,
       disabled: control.disabled,
       readOnly: control.readOnly,
       invalid: control.invalid,
       required: control.required,
       name: this.name,
-      endName: this.endName,
       translations: this.translations,
       variant: this.variant,
       tone: this.tone,
@@ -455,7 +429,7 @@ export class XhDatePickerElement extends XhPortalHostElement {
   }
 
   /**
-   * 并排展示的面板，长度即此刻铺了几页（区间跨页时是两页）。
+   * 并排展示的面板，长度即此刻铺了几页。
    * 每页自带日期矩阵、粗粒度格子与标题，作者照它渲染 calendar / heading / grid 那几层。
    */
   get panels(): CalendarPanel[] {
@@ -472,7 +446,7 @@ export class XhDatePickerElement extends XhPortalHostElement {
     return this.api()?.calendar.periods ?? []
   }
 
-  /** single / range 的规范化周期值；multiple 返回 null。 */
+  /** 单选的规范化周期值；multiple 返回 null。 */
   get periodValue(): CalendarPeriodValue | null {
     return this.api()?.periodValue ?? null
   }
@@ -489,33 +463,15 @@ export class XhDatePickerElement extends XhPortalHostElement {
 
   /**
    * 输入行此刻该铺哪几段（段名、当前文字与占位），段数与段序按 granularity 与 locale 推出来。
-   * 作者照它写 segment 节点，不必自己数几段。区间模式下这是起点那一组。
+   * 作者照它写 segment 节点，不必自己数几段。
    */
   get fieldSegments(): DateFieldSegmentState[] {
     return this.api()?.field.segments ?? []
   }
 
-  /** 区间终点那一组该铺哪几段；非区间模式为空数组。 */
-  get fieldEndSegments(): DateFieldSegmentState[] {
-    return this.api()?.fieldEnd?.segments ?? []
-  }
-
   /** 取 owner 子树内指定名字的角色节点。 */
   private partsIn(owner: HTMLElement, name: string): HTMLElement[] {
     return this.getParts(name).filter(el => owner.contains(el))
-  }
-
-  /**
-   * 把隐藏输入分到起止两端：写在某个 segment-group 之内的归那一组，
-   * 写在全部 segment-group 之外的按自己的文档序对号入座。多出来的一律不接线。
-   */
-  private hiddenInputGroups(groupsOfSegments: readonly HTMLElement[]): HTMLElement[][] {
-    const groups: HTMLElement[][] = [[], []]
-    this.getParts('hidden-input').forEach((el, position) => {
-      const owned = groupsOfSegments.findIndex(group => group.contains(el))
-      groups[owned >= 0 ? owned : position]?.push(el)
-    })
-    return groups
   }
 
   /** 打一组段位：下标在组内从 0 数起，段位文字与收起态一并落。 */
@@ -550,7 +506,6 @@ export class XhDatePickerElement extends XhPortalHostElement {
     put('root', api.getRootProps() as Record<string, unknown>)
     put('label', api.getLabelProps() as Record<string, unknown>)
     put('control', api.getControlProps() as Record<string, unknown>)
-    put('range-separator', api.getRangeSeparatorProps() as Record<string, unknown>)
     put('clear-trigger', api.getClearTriggerProps() as Record<string, unknown>)
     put('trigger', api.getTriggerProps() as Record<string, unknown>)
     // positioner 的 style 是对象，spreader 会逐条写成内联样式
@@ -574,25 +529,12 @@ export class XhDatePickerElement extends XhPortalHostElement {
       }) as Record<string, unknown>)
     }
 
-    // 起止两组各自成组：段位与隐藏输入按所属 segment-group 归组，跨组不共用下标。
-    // segment-group 可缺省，作者没写就拿宿主自身当归组容器，段位全归起点那一组
-    const segmentGroups = this.getParts('segment-group')
-    const owners = [segmentGroups[0] ?? (this as unknown as HTMLElement), segmentGroups[1]]
-    const hiddenInputs = this.hiddenInputGroups(segmentGroups)
-    for (const index of [0, 1] as const) {
-      // 非区间模式没有终点那一组，作者多写的 segment-group、段位与隐藏输入一概不接线
-      const field = datePickerFieldAt(api, index)
-      if (!field)
-        continue
-      const segmentGroup = segmentGroups[index]
-      if (segmentGroup)
-        this.spreader.spread(segmentGroup, api.getSegmentGroupProps({ index }) as Record<string, unknown>)
-      const owner = owners[index]
-      if (owner)
-        this.wireSegments(owner, field)
-      for (const el of hiddenInputs[index] ?? [])
-        this.spreader.spread(el, field.getHiddenInputProps() as Record<string, unknown>)
-    }
+    // segment-group 可缺省，作者没写就拿宿主自身当归组容器
+    const segmentGroup = this.getPart('segment-group')
+    if (segmentGroup)
+      this.spreader.spread(segmentGroup, api.getSegmentGroupProps() as Record<string, unknown>)
+    this.wireSegments(segmentGroup ?? (this as unknown as HTMLElement), api.field)
+    put('hidden-input', api.field.getHiddenInputProps() as Record<string, unknown>)
 
     // 内嵌日历的角色节点：行为取自本元素持有的那台日历机器
     putAll('header', api.calendar.getHeaderProps() as Record<string, unknown>)

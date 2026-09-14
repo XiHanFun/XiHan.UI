@@ -3,8 +3,8 @@
  * Licensed under the MIT License. See LICENSE in the project root for license information.
  */
 
-// 周期选择 | 粒度与单选/区间彼此独立
-import type { CalendarGranularity, CalendarPeriod, CalendarSelectionMode } from "@xihan-ui/headless";
+// 周期选择 | granularity 决定输入行铺哪几段、浮层铺哪一档格子
+import type { CalendarGranularity, CalendarPeriod } from "@xihan-ui/headless";
 import type { CSSProperties, ReactNode } from "react";
 import { calendarPeriodOf, calendarPeriodValue } from "@xihan-ui/headless";
 import {
@@ -28,7 +28,6 @@ import {
   XhDatePickerPositioner,
   XhDatePickerPrevTrigger,
   XhDatePickerPrevYearTrigger,
-  XhDatePickerRangeSeparator,
   XhDatePickerRoot,
   XhDatePickerSegment,
   XhDatePickerSegmentGroup,
@@ -48,58 +47,46 @@ const granularities: { value: CalendarGranularity; label: string }[] = [
   { value: "year", label: "年" },
 ];
 
-const modes: { value: Extract<CalendarSelectionMode, "single" | "range">; label: string }[] = [
-  { value: "single", label: "单选" },
-  { value: "range", label: "区间" },
-];
-
 const yearCells: CalendarPeriod[] = Array.from({ length: 200 }, (_, index) =>
   calendarPeriodOf(`${1900 + index}-01-01`, "year", { locale: "zh-CN" })!);
 
 export default function Demo(): ReactNode {
   const [granularity, setGranularity] = useState<CalendarGranularity>("day");
-  const [selectionMode, setSelectionMode] = useState<"single" | "range">("single");
   const [value, setValue] = useState<string[]>([]);
   const summary = useMemo(() => {
-    const period = calendarPeriodValue(granularity, selectionMode, value, { locale: "zh-CN" });
+    const period = calendarPeriodValue(granularity, "single", value, { locale: "zh-CN" });
     return period ? `${period.start} – ${period.end}` : "尚未选择";
-  }, [granularity, selectionMode, value]);
+  }, [granularity, value]);
 
   return (
     <XhDatePickerRoot
       value={value}
       granularity={granularity}
-      selectionMode={selectionMode}
       closeOnSelect={false}
       locale="zh-CN"
       onValueChange={({ value: next }) => setValue(next)}
       style={{ "--xh-date-picker-control-min-w": "22rem" } as CSSProperties}
     >
-      {({ panels, weekDays, segments, endSegments, clear, setOpen }) => (
+      {({ panels, weekDays, segments, clear, setOpen }) => (
         <>
           <XhDatePickerLabel>统计周期</XhDatePickerLabel>
           <XhDatePickerControl>
-            {Array.from({ length: selectionMode === "range" ? 2 : 1 }, (_, group) => (
-              <Fragment key={group}>
-                {group === 1 && <XhDatePickerRangeSeparator />}
-                <XhDatePickerSegmentGroup index={group as 0 | 1}>
-                  {(group === 0 ? segments : endSegments).map((segment, index) => (
-                    <Fragment key={segment.type}>
-                      {index > 0 && <span>/</span>}
-                      <XhDatePickerSegment index={index} />
-                      {segment.type === "week" && <span>周</span>}
-                    </Fragment>
-                  ))}
-                </XhDatePickerSegmentGroup>
-              </Fragment>
-            ))}
+            <XhDatePickerSegmentGroup>
+              {segments.map((segment, index) => (
+                <Fragment key={segment.type}>
+                  {index > 0 && <span>/</span>}
+                  <XhDatePickerSegment index={index} />
+                  {segment.type === "week" && <span>周</span>}
+                </Fragment>
+              ))}
+            </XhDatePickerSegmentGroup>
             <XhDatePickerClearTrigger />
             <XhDatePickerTrigger />
           </XhDatePickerControl>
 
           <XhDatePickerPositioner>
             <XhDatePickerContent>
-              <div style={{ display: "flex", justifyContent: "space-between", gap: "var(--xh-space-3)", paddingBlockEnd: "var(--xh-space-2)" }}>
+              <div style={{ display: "flex", paddingBlockEnd: "var(--xh-space-2)" }}>
                 <XhToggleGroupRoot
                   value={granularity}
                   disallowEmpty
@@ -107,14 +94,6 @@ export default function Demo(): ReactNode {
                   onValueChange={({ value: next }) => typeof next === "string" && setGranularity(next as CalendarGranularity)}
                 >
                   {granularities.map(item => <XhToggleGroupItem key={item.value} value={item.value}>{item.label}</XhToggleGroupItem>)}
-                </XhToggleGroupRoot>
-                <XhToggleGroupRoot
-                  value={selectionMode}
-                  disallowEmpty
-                  size="sm"
-                  onValueChange={({ value: next }) => (next === "single" || next === "range") && setSelectionMode(next)}
-                >
-                  {modes.map(item => <XhToggleGroupItem key={item.value} value={item.value}>{item.label}</XhToggleGroupItem>)}
                 </XhToggleGroupRoot>
               </div>
 

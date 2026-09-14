@@ -19,7 +19,8 @@ import type { BadgeTranslations } from '../badge/badge.types'
 import type { BreadcrumbTranslations } from '../breadcrumb/breadcrumb.types'
 import type { ButtonGroupTranslations } from '../button-group/button-group.types'
 import type { ButtonTranslations } from '../button/button.types'
-import type { CalendarTranslations } from '../calendar/calendar.types'
+import type { CalendarPickerTranslations } from '../calendar-picker/calendar-picker.types'
+import type { CalendarRangePickerTranslations } from '../calendar-range-picker/calendar-range-picker.types'
 import type { CardTranslations } from '../card/card.types'
 import type { CarouselTranslations } from '../carousel/carousel.types'
 import type { CascaderTranslations } from '../cascader/cascader.types'
@@ -148,7 +149,8 @@ export interface XhTranslationOverrides {
   'breadcrumb'?: Partial<BreadcrumbTranslations>
   'button'?: Partial<ButtonTranslations>
   'button-group'?: Partial<ButtonGroupTranslations>
-  'calendar'?: Partial<CalendarTranslations>
+  'calendar-picker'?: Partial<CalendarPickerTranslations>
+  'calendar-range-picker'?: Partial<CalendarRangePickerTranslations>
   'card'?: Partial<CardTranslations>
   'carousel'?: Partial<CarouselTranslations>
   'cascader'?: Partial<CascaderTranslations>

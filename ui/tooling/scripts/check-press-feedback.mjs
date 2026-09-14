@@ -105,8 +105,17 @@ const PRESSABLE = {
   // 色板格子的底色就是它要展示的那个颜色，换底会盖掉展示物，按压回执只能落在缩放上
   'color-picker': ['eye-dropper-trigger', 'swatch-item'],
   'pagination': ['prev-trigger', 'next-trigger', 'item', 'ellipsis-trigger'],
-  // 日历的翻页钮、标题钮与日期格
-  'calendar': [
+  // 两个日历的翻页钮、标题钮与日期格
+  'calendar-picker': [
+    'prev-year-trigger',
+    'prev-trigger',
+    'next-trigger',
+    'next-year-trigger',
+    'heading-year-trigger',
+    'heading-month-trigger',
+    'cell-trigger',
+  ],
+  'calendar-range-picker': [
     'prev-year-trigger',
     'prev-trigger',
     'next-trigger',
@@ -149,7 +158,7 @@ const PRESSABLE = {
  */
 const NO_PRESS = {
   // 网格在拖着挑区间时才换手型：按下的回执落在格子上，网格自己不是可按的东西
-  'calendar:grid': '拖着挑区间时整张网格保持手型，按压回执由格子承担',
+  'calendar-range-picker:grid': '拖着挑区间时整张网格保持手型，按压回执由格子承担',
   // 列表族条目：一行文字，按下的回执走高亮档（悬停中性灰、展开路径品牌淡底）
   'listbox:item': '列表行的按下回执走高亮档，缩放会抖动整列',
   'combobox:item': '列表行的按下回执走高亮档，缩放会抖动整列',

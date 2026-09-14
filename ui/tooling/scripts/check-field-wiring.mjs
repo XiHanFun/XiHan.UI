@@ -52,7 +52,6 @@ const NOT_SINGLE_CONTROL = {
   'signature-pad': '图形控件：画布自己承担名字与描述',
   'file-upload': '根是投放区，触发钮只是其中一个入口',
   'editable': '预览态与编辑态是两个不同的焦点目标',
-  'calendar': '网格：焦点在各个日期格上，没有单一可聚焦控件；校验态落在 role=grid 里的格子上',
   'field-array': '一列行，每行里的控件各自是焦点目标；这一层没有单一可聚焦控件',
 }
 

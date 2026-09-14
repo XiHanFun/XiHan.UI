@@ -3,9 +3,9 @@
   Licensed under the MIT License. See LICENSE in the project root for license information.
 -->
 
-<!-- 周期选择 | 粒度与单选/区间彼此独立 -->
+<!-- 周期选择 | granularity 决定输入行铺哪几段、浮层铺哪一档格子 -->
 <script setup lang="ts">
-import type { CalendarGranularity, CalendarPeriod, CalendarSelectionMode } from "@xihan-ui/headless";
+import type { CalendarGranularity, CalendarPeriod } from "@xihan-ui/headless";
 import { calendarPeriodOf, calendarPeriodValue } from "@xihan-ui/headless";
 import {
   XhButton,
@@ -28,7 +28,6 @@ import {
   XhDatePickerPositioner,
   XhDatePickerPrevTrigger,
   XhDatePickerPrevYearTrigger,
-  XhDatePickerRangeSeparator,
   XhDatePickerRoot,
   XhDatePickerSegment,
   XhDatePickerSegmentGroup,
@@ -48,20 +47,14 @@ const granularities: { value: CalendarGranularity; label: string }[] = [
   { value: "year", label: "年" },
 ];
 
-const modes: { value: Extract<CalendarSelectionMode, "single" | "range">; label: string }[] = [
-  { value: "single", label: "单选" },
-  { value: "range", label: "区间" },
-];
-
 const granularity = ref<CalendarGranularity>("day");
-const selectionMode = ref<"single" | "range">("single");
 const value = ref<string[]>([]);
 
 const yearCells: CalendarPeriod[] = Array.from({ length: 200 }, (_, index) =>
   calendarPeriodOf(`${1900 + index}-01-01`, "year", { locale: "zh-CN" })!);
 
 const summary = computed(() => {
-  const period = calendarPeriodValue(granularity.value, selectionMode.value, value.value, { locale: "zh-CN" });
+  const period = calendarPeriodValue(granularity.value, "single", value.value, { locale: "zh-CN" });
   return period ? `${period.start} – ${period.end}` : "尚未选择";
 });
 
@@ -69,49 +62,35 @@ function changeGranularity(details: { value: string | string[] | null }) {
   if (typeof details.value === "string")
     granularity.value = details.value as CalendarGranularity;
 }
-
-function changeMode(details: { value: string | string[] | null }) {
-  if (details.value === "single" || details.value === "range")
-    selectionMode.value = details.value;
-}
 </script>
 
 <template>
   <XhDatePickerRoot
-    v-slot="{ panels, weekDays, segments, endSegments, clear, setOpen }"
+    v-slot="{ panels, weekDays, segments, clear, setOpen }"
     v-model:value="value"
     :granularity="granularity"
-    :selection-mode="selectionMode"
     :close-on-select="false"
     locale="zh-CN"
     style="--xh-date-picker-control-min-w: 22rem"
   >
     <XhDatePickerLabel>统计周期</XhDatePickerLabel>
     <XhDatePickerControl>
-      <template v-for="group in selectionMode === 'range' ? 2 : 1" :key="group">
-        <XhDatePickerRangeSeparator v-if="group === 2" />
-        <XhDatePickerSegmentGroup :index="group - 1">
-          <template v-for="(segment, index) in group === 1 ? segments : endSegments" :key="segment.type">
-            <span v-if="index > 0">/</span>
-            <XhDatePickerSegment :index="index" />
-            <span v-if="segment.type === 'week'">周</span>
-          </template>
-        </XhDatePickerSegmentGroup>
-      </template>
+      <XhDatePickerSegmentGroup>
+        <template v-for="(segment, index) in segments" :key="segment.type">
+          <span v-if="index > 0">/</span>
+          <XhDatePickerSegment :index="index" />
+          <span v-if="segment.type === 'week'">周</span>
+        </template>
+      </XhDatePickerSegmentGroup>
       <XhDatePickerClearTrigger />
       <XhDatePickerTrigger />
     </XhDatePickerControl>
 
     <XhDatePickerPositioner>
       <XhDatePickerContent>
-        <div style="display: flex; justify-content: space-between; gap: var(--xh-space-3); padding-block-end: var(--xh-space-2)">
+        <div style="display: flex; padding-block-end: var(--xh-space-2)">
           <XhToggleGroupRoot :value="granularity" disallow-empty size="sm" @value-change="changeGranularity">
             <XhToggleGroupItem v-for="item in granularities" :key="item.value" :value="item.value">
-              {{ item.label }}
-            </XhToggleGroupItem>
-          </XhToggleGroupRoot>
-          <XhToggleGroupRoot :value="selectionMode" disallow-empty size="sm" @value-change="changeMode">
-            <XhToggleGroupItem v-for="item in modes" :key="item.value" :value="item.value">
               {{ item.label }}
             </XhToggleGroupItem>
           </XhToggleGroupRoot>

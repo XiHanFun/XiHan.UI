@@ -7,26 +7,19 @@
 
 import type { Cleanup, ControlVariant, Direction, Layer, MachineSchema, Placement, PositionEnginePort, PositionResult, PropTypes, RuntimeConfig, Service, Size, Tone } from '@xihan-ui/core'
 import type { PresenceHandle } from '@xihan-ui/core/presence'
-import type { CalendarApi, CalendarGranularity, CalendarPeriodValue, CalendarSchema, CalendarSelectionMode, CalendarTranslations, CalendarView, CalendarViewChangeDetails } from '../calendar'
+import type { CalendarPickerApi, CalendarPickerSchema, CalendarPickerSelectionMode, CalendarPickerTranslations } from '../calendar-picker'
 import type { DateFieldSchema, DateFieldSegmentProps, DateFieldSegmentState, DateSegmentSet } from '../date-field'
+import type { CalendarGranularity, CalendarPeriodValue, CalendarView, CalendarViewChangeDetails } from '../shared/calendar'
 import type { TimePickerColumn, TimePickerColumnUnit } from '../time-picker'
 import type { DatePickerTimeGranularity } from './date-picker.time'
 
-/**
- * 值的来源；calendar 与 preset 两路参与「选完即收起」判定。
- * field 是起点那组段位，field-end 是终点那组（只在区间模式下有）。
- */
-export type DatePickerValueSource = 'calendar' | 'preset' | 'field' | 'field-end' | 'api'
+/** 值的来源；calendar 与 preset 两路参与「选完即收起」判定，field 是段位输入。 */
+export type DatePickerValueSource = 'calendar' | 'preset' | 'field' | 'api'
 
 /**
- * 读屏用的文案，默认英文。区间模式下两组段位各是一个 role=group，各要一个名字；
- * 内嵌日历那几句（挑区间的提示、区间两端的名字、今天）原样转交给日历。
+ * 读屏用的文案，默认英文。内嵌日历那几句（今天）原样转交给日历。
  */
-export interface DatePickerTranslations extends CalendarTranslations {
-  /** 起点那组段位的名字。 */
-  startDate: string
-  /** 终点那组段位的名字。 */
-  endDate: string
+export interface DatePickerTranslations extends CalendarPickerTranslations {
   /** 快捷选项那一列的名字。 */
   presets: string
   /** 清空按钮的名字。 */
@@ -42,9 +35,9 @@ export interface DatePickerTranslations extends CalendarTranslations {
 /**
  * 一条快捷选项。
  *
- * value 同时是写进去的日期与这一项的身份：单日是一条 ISO 日期串，区间用 ISO 8601 的
- * 区间写法把两端拼起来（`2026-08-15/2026-08-21`）。日子由作者算好传进来，
- * `date-picker.presets` 里备了几个纯函数（`datePickerPresetDay` / `-Range` / `-Month` / `-Year`）。
+ * value 同时是写进去的日期与这一项的身份：单日是一条 ISO 日期串，多选用 `/` 把多天拼起来
+ * （`2026-08-15/2026-08-21`）。日子由作者算好传进来，`date-picker.presets` 里备了
+ * `datePickerPresetDay`。
  */
 export interface DatePickerPreset {
   value: string
@@ -56,10 +49,10 @@ export interface DatePickerPreset {
 
 /** 一条快捷选项此刻的样子，连接层算好后透出，两个适配器照它渲染。 */
 export interface DatePickerPresetState extends DatePickerPreset {
-  /** 拆开的日期，长度 1 是单日、2 是区间。 */
+  /** 拆开的日期，单选恒一条，多选可以多条。 */
   dates: string[]
   /**
-   * 按不下去：作者标了 disabled、日期数与选择模式不配（单选给了区间）、
+   * 按不下去：作者标了 disabled、日期数与选择模式不配（单选给了多条）、
    * 或有哪一天落在 min/max 之外 / 被 isDateUnavailable 判掉。
    */
   disabled: boolean
@@ -70,12 +63,6 @@ export interface DatePickerPresetState extends DatePickerPreset {
 /** 选项自报自己是哪一条（值即身份）。 */
 export interface DatePickerPresetProps {
   value: string
-}
-
-/** 分段容器自报家门：区间模式下 0 是起点那组、1 是终点那组。 */
-export interface DatePickerSegmentGroupProps {
-  /** 默认 0。 */
-  index?: 0 | 1
 }
 
 /** 内嵌时间面板的列单位：这份面板恒为 24 小时制，没有上下午那一列。 */
@@ -97,10 +84,7 @@ export interface DatePickerOpenChangeDetails {
 }
 
 export interface DatePickerValueChangeDetails {
-  /**
-   * 选中日期集合，ISO 串。单选模式下也是数组（长度 ≤ 1）。
-   * 区间按位存放：只落起点时长度为 1，只落终点时是 ['', 终点]。
-   */
+  /** 选中日期集合，ISO 串。单选模式下也是数组（长度 ≤ 1）。 */
   value: string[]
 }
 
@@ -148,30 +132,23 @@ export interface DatePickerSchema extends MachineSchema {
     locale?: string
     /** 判定「今天」与格式化文案用的时区，默认取宿主本地时区。 */
     timeZone?: string
-    /** 选择模式，默认 single；区间模式下两端都落定才算选完。 */
-    selectionMode?: CalendarSelectionMode
-    /**
-     * 不可用判定，收 ISO 串。界外与它判真的日子同等对待。
-     * 第二个参数是区间挑到一半时的起点，其余时候为 null。
-     */
-    isDateUnavailable?: (value: string, anchor: string | null) => boolean
-    /** 区间允许跨过不可用的日子，默认关；关着时落了起点之后只能挑到两侧最近的不可用日为止。 */
-    allowsNonContiguousRanges?: boolean
+    /** 选择模式，默认 single。区间选择是另一个组件（日期范围选择器）。 */
+    selectionMode?: CalendarPickerSelectionMode
+    /** 不可用判定，收 ISO 串。界外与它判真的日子同等对待。 */
+    isDateUnavailable?: (value: string) => boolean
     /** 整个控件禁用：trigger 转原生 disabled，段位退出 Tab 序，日历格子全转 aria-disabled。 */
     disabled?: boolean
     /** 只读：浮层照常展开、日历照常翻月浏览，但选中值改不动。 */
     readOnly?: boolean
     /**
      * 校验失败：段位报 aria-invalid，各角色节点带 data-invalid。
-     * 不给也会自己判：任一端越界、或区间的终点早于起点。
+     * 不给也会自己判：填齐了但越界。
      */
     invalid?: boolean
     /** 必填标注，落到每一段的 aria-required 上。 */
     required?: boolean
-    /** 表单字段名；给了隐藏输入才带 name，ISO 串随表单一并提交。区间模式下是起点那一份。 */
+    /** 表单字段名；给了隐藏输入才带 name，ISO 串随表单一并提交。 */
     name?: string
-    /** 区间终点那份隐藏输入的表单字段名；不给即终点不参与提交。 */
-    endName?: string
     /** 选择粒度；与 selectionMode 正交。输入行与周期网格都由它决定。 */
     granularity?: CalendarGranularity
     /**
@@ -188,13 +165,13 @@ export interface DatePickerSchema extends MachineSchema {
      */
     segments?: DateSegmentSet
     /**
-     * 快捷选项（「今天」「近 7 天」这类）。给了就在浮层里多出一列，点一下整份写进选中值。
+     * 快捷选项（「今天」「明天」这类）。给了就在浮层里多出一列，点一下整份写进选中值。
      * 日子要算好再传：连接层每帧求值，把 `today()` 放进渲染期会跨零点算出两个答案。
-     * 与 selectionMode 不配（单选给了区间）、落在 min/max 之外或被 isDateUnavailable 判掉的那条
+     * 与 selectionMode 不配（单选给了多条）、落在 min/max 之外或被 isDateUnavailable 判掉的那条
      * 自动按不下去；showTime 下写进去的日期带上此刻已挑的时间。
      */
     presets?: DatePickerPreset[]
-    /** 展示几个连续日历面板；默认 1。区间选择同样保持单栏，需要并排时由作者显式增加。 */
+    /** 展示几个连续日历面板；默认 1。 */
     visibleCount?: number
     /** 日历恒渲染六行，默认开。关掉后网格按当月实际周数收，翻页时浮层高度会跟着变。 */
     fixedWeeks?: boolean
@@ -214,7 +191,7 @@ export interface DatePickerSchema extends MachineSchema {
     dir?: Direction
     offset?: number
     translations?: Partial<DatePickerTranslations>
-    /** 选完即收起，默认 true。区间模式下要两端都落定才算选完。 */
+    /** 选完即收起，默认 true。多选不收起。 */
     closeOnSelect?: boolean
     /**
      * 一体化时间：值升格为 'YYYY-MM-DDTHH:mm[:ss]'，面板里多出时间列，
@@ -238,10 +215,7 @@ export interface DatePickerSchema extends MachineSchema {
   context: {
     /** 定位引擎回填的最新结果；connect 只读它，不碰 DOM 也不调引擎。 */
     position: PositionResult | null
-    /**
-     * 选中集合，恒为数组。受控（value 给定）时直读 prop。
-     * 区间模式下段位按位写入：下标即起止两端，空缺的那一端是空串。
-     */
+    /** 选中集合，恒为数组。受控（value 给定）时直读 prop。 */
     value: string[]
     /**
      * 聚焦日，ISO 串；同时决定日历展示哪个月。内嵌日历的聚焦日恒由这里受控。
@@ -302,11 +276,9 @@ export interface DatePickerSchema extends MachineSchema {
  */
 export interface DatePickerServices {
   root: Service<DatePickerSchema>
-  calendar: Service<CalendarSchema>
-  /** 起点那组段位。 */
+  calendar: Service<CalendarPickerSchema>
+  /** 分段输入。 */
   field: Service<DateFieldSchema>
-  /** 终点那组段位；缺席即区间模式下没有终点输入。 */
-  fieldEnd?: Service<DateFieldSchema>
 }
 
 /**
@@ -335,15 +307,12 @@ export interface DatePickerFieldApi<T extends PropTypes = PropTypes> {
 
 export interface DatePickerApi<T extends PropTypes = PropTypes> {
   open: boolean
-  /**
-   * 选中集合，ISO 串；形状不随模式变。
-   * 区间模式下按位存放，空缺的那一端是空串。
-   */
+  /** 选中集合，ISO 串；形状不随模式变。 */
   value: string[]
-  /** 首个选中值（跳过空缺的那一端）；无选中时为 null。 */
+  /** 首个选中值；无选中时为 null。 */
   valueAsString: string | null
-  selectionMode: CalendarSelectionMode
-  /** single / range 的规范化周期值；multiple 没有连续区间语义，返回 null。 */
+  selectionMode: CalendarPickerSelectionMode
+  /** single 的规范化周期值；multiple 没有连续区间语义，返回 null。 */
   periodValue: CalendarPeriodValue | null
   /** 生效聚焦日（三路收口后的结果），恒非空。日历展示哪个月由它决定。 */
   focusedValue: string
@@ -353,7 +322,7 @@ export interface DatePickerApi<T extends PropTypes = PropTypes> {
   activeView: CalendarView
   disabled: boolean
   readOnly: boolean
-  /** 校验失败：作者标的、任一端越界、或区间终点早于起点。 */
+  /** 校验失败：作者标的或越界。 */
   invalid: boolean
   /** 清空按钮此刻可不可按。 */
   canClear: boolean
@@ -371,18 +340,14 @@ export interface DatePickerApi<T extends PropTypes = PropTypes> {
   /** 当前时间段（'HH:mm[:ss]'）；还没有值时为 null。 */
   timeValue: string | null
   /** 内嵌日历：选日期、翻月、键盘导航都在它身上。 */
-  calendar: CalendarApi<T>
-  /** 内嵌分段输入，区间模式下是起点那一组。 */
+  calendar: CalendarPickerApi<T>
+  /** 内嵌分段输入。 */
   field: DatePickerFieldApi<T>
-  /** 终点那组分段输入；非区间模式为 null。 */
-  fieldEnd: DatePickerFieldApi<T> | null
   getRootProps: () => T['element']
   getLabelProps: () => T['element']
   getControlProps: () => T['element']
-  /** role=group 的分段容器，段位挂在它里面。区间模式下 index 选起止两组，不传即起点。 */
-  getSegmentGroupProps: (props?: DatePickerSegmentGroupProps) => T['element']
-  /** 起止输入之间的视觉分隔；非区间模式自动隐藏。 */
-  getRangeSeparatorProps: () => T['element']
+  /** role=group 的分段容器，段位挂在它里面。 */
+  getSegmentGroupProps: () => T['element']
   getTriggerProps: () => T['button']
   getClearTriggerProps: () => T['button']
   getPositionerProps: () => T['element']

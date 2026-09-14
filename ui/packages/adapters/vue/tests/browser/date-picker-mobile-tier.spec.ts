@@ -161,7 +161,7 @@ function control(): VNode {
 
 /** 显式要求两张月历时，验证窄视口排布。 */
 function rangeShape(): VNode {
-  return h(XhDatePickerRoot, { open: true, selectionMode: 'range', visibleCount: 2, locale: 'zh-CN' } as any, {
+  return h(XhDatePickerRoot, { open: true, visibleCount: 2, locale: 'zh-CN' } as any, {
     default: ({ panels, weekDays }: any) => [
       control(),
       h(XhDatePickerPositioner, null, () => [
@@ -287,7 +287,7 @@ describe('显式双面板的响应式排布', () => {
   it.each([[PHONE], [TABLET], [DESKTOP]])('%ipx 下日期钮不与右邻重叠、末钮不越出周行', async (width) => {
     const doc = mountAt(width, rangeShape)
     await contentAt(doc)
-    const row = doc.querySelector<HTMLElement>(`[data-scope='calendar'][data-part='grid-body'] [data-part='week-row']`)
+    const row = doc.querySelector<HTMLElement>(`[data-scope='calendar-picker'][data-part='grid-body'] [data-part='week-row']`)
     if (!row)
       throw new Error('没有铺出周行')
     const cells = [...row.querySelectorAll<HTMLElement>(`[data-part='cell-trigger']`)]

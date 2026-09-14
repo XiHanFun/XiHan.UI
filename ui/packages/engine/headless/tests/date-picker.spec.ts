@@ -14,12 +14,11 @@ import { createCounterIdGenerator, createRuntimeConfig, createScope, createServi
 import { createPresence } from '@xihan-ui/core/presence'
 import { createVanillaRuntime } from '@xihan-ui/core/vanilla'
 import { afterEach, describe, expect, it, vi } from 'vitest'
-import { calendarMachine } from '../src/calendar'
+import { calendarPickerMachine } from '../src/calendar-picker'
 import { dateFieldMachine } from '../src/date-field'
 import {
   connectDatePicker,
   datePickerCalendarProps,
-  datePickerFieldEndProps,
   datePickerFieldProps,
   datePickerMachine,
   datePickerSegmentSet,
@@ -91,8 +90,6 @@ interface Harness {
   label: HTMLElement
   control: HTMLElement
   input: HTMLElement
-  /** 终点那组分段容器；只有区间模式挂进文档。 */
-  inputEnd: HTMLElement
   trigger: HTMLButtonElement
   clear: HTMLButtonElement
   content: HTMLElement
@@ -102,17 +99,11 @@ interface Harness {
   prev: HTMLButtonElement
   next: HTMLButtonElement
   hiddenInput: HTMLInputElement
-  /** 终点那份表单出口。 */
-  hiddenInputEnd: HTMLInputElement
   segments: () => HTMLElement[]
-  /** 终点那组的段位，文档序。 */
-  segmentsEnd: () => HTMLElement[]
   /** 段位的可见文字，文档序。 */
   /** 某一列的容器与逐格节点；没开 showTime 时列仍在但带 hidden。 */
   timeColumn: (unit: DatePickerTimeUnit) => { col: HTMLElement, items: Map<string, HTMLElement> }
   segmentTexts: () => string[]
-  /** 终点那组段位的可见文字，文档序。 */
-  segmentEndTexts: () => string[]
   /** 当前渲染出来的某一天的 cell-trigger；不在这个月的网格里就抛。 */
   cell: (value: string) => HTMLElement
   /** 同一天的 cell（外层 gridcell）。 */
@@ -134,17 +125,14 @@ interface Harness {
 const runtimes: VanillaRuntime[] = []
 
 /**
- * 挂载一台完整的日期选择器：编排机 + 内嵌日历 + 两台内嵌分段输入共用一个运行时与一份 scope，
+ * 挂载一台完整的日期选择器：编排机 + 内嵌日历 + 内嵌分段输入共用一个运行时与一份 scope，
  * 网格随聚焦日重画——这正是作者该做的事（连接层只给数据，不生成节点）。
  * 重画只在「这个月的日期集合真的换了」时发生，与 Vue 的 keyed diff 同语义。
- *
- * 机器一律建两台，终点那组的节点只有区间模式才挂进文档，与两个适配器同语义。
  */
 function mount(initial: Partial<Props> = {}, options: MountOptions = {}): Harness {
   const doc = document
   const runtime = createVanillaRuntime()
   runtimes.push(runtime)
-  const range = (initial.selectionMode ?? 'single') === 'range'
   // props 挂在 signal 上：布尔态受控（open）靠 watch 里的 track 回写，
   // 而 track 只在有值真的变过时才复查——直接改一个普通对象，宿主的写回就被静默吞掉了
   const props = runtime.signal<Partial<Props>>({ locale: 'zh-CN', timeZone: 'UTC', ...initial })
@@ -159,14 +147,10 @@ function mount(initial: Partial<Props> = {}, options: MountOptions = {}): Harnes
   const input = doc.createElement('div')
   const segmentEls = Array.from({ length: SEGMENT_NODES }, () => doc.createElement('div'))
   input.append(...segmentEls)
-  const inputEnd = doc.createElement('div')
-  const segmentEndEls = Array.from({ length: SEGMENT_NODES }, () => doc.createElement('div'))
-  inputEnd.append(...segmentEndEls)
   const clear = doc.createElement('button')
   const trigger = doc.createElement('button')
-  control.append(input, ...(range ? [inputEnd] : []), clear, trigger)
+  control.append(input, clear, trigger)
   const hiddenInput = doc.createElement('input')
-  const hiddenInputEnd = doc.createElement('input')
   const positioner = doc.createElement('div')
   const content = doc.createElement('div')
   const calendarEl = doc.createElement('div')
@@ -189,12 +173,12 @@ function mount(initial: Partial<Props> = {}, options: MountOptions = {}): Harnes
   const timeWrap = doc.createElement('div')
   content.appendChild(timeWrap)
   positioner.appendChild(content)
-  root.append(label, control, hiddenInput, ...(range ? [hiddenInputEnd] : []), positioner)
+  root.append(label, control, hiddenInput, positioner)
   doc.body.appendChild(root)
 
   // 顺序要紧：内嵌机器的 props 都从编排机现读，编排机必须先立起来
   const rootService = createService(datePickerMachine, { props: () => props.get(), runtime, scope })
-  const calendarService = createService(calendarMachine, {
+  const calendarService = createService(calendarPickerMachine, {
     props: () => datePickerCalendarProps(rootService),
     runtime,
     scope,
@@ -204,16 +188,10 @@ function mount(initial: Partial<Props> = {}, options: MountOptions = {}): Harnes
     runtime,
     scope,
   })
-  const fieldEndService = createService(dateFieldMachine, {
-    props: () => datePickerFieldEndProps(rootService),
-    runtime,
-    scope,
-  })
   const services: DatePickerServices = {
     root: rootService,
     calendar: calendarService,
     field: fieldService,
-    fieldEnd: fieldEndService,
   }
 
   const config: RuntimeConfig = createRuntimeConfig({ scope, idGenerator: idGen })
@@ -291,16 +269,6 @@ function mount(initial: Partial<Props> = {}, options: MountOptions = {}): Harnes
       // 段位的文字归适配器写：连接层只管属性与事件
       el.textContent = api.field.segments[index]?.text ?? ''
     })
-    // 终点那一组：非区间模式连接层不露出它，节点也就不接线
-    const fieldEnd = api.fieldEnd
-    if (fieldEnd) {
-      spread(inputEnd, api.getSegmentGroupProps({ index: 1 }) as Record<string, unknown>)
-      spread(hiddenInputEnd, fieldEnd.getHiddenInputProps() as Record<string, unknown>)
-      segmentEndEls.forEach((el, index) => {
-        spread(el, fieldEnd.getSegmentProps({ index }) as Record<string, unknown>)
-        el.textContent = fieldEnd.segments[index]?.text ?? ''
-      })
-    }
     // 时间列逐列铺：列数与选项数由 granularity 决定，变了就重建
     const timeKey = api.timeColumns.map(c => `${c.unit}:${c.options.length}`).join('|')
     if (timeKey !== timePainted) {
@@ -360,7 +328,6 @@ function mount(initial: Partial<Props> = {}, options: MountOptions = {}): Harnes
     label,
     control,
     input,
-    inputEnd,
     trigger: trigger as HTMLButtonElement,
     clear: clear as HTMLButtonElement,
     content,
@@ -370,11 +337,8 @@ function mount(initial: Partial<Props> = {}, options: MountOptions = {}): Harnes
     prev: prev as HTMLButtonElement,
     next: next as HTMLButtonElement,
     hiddenInput: hiddenInput as HTMLInputElement,
-    hiddenInputEnd: hiddenInputEnd as HTMLInputElement,
     segments: () => segmentEls,
-    segmentsEnd: () => segmentEndEls,
     segmentTexts: () => segmentEls.map(el => el.textContent ?? ''),
-    segmentEndTexts: () => segmentEndEls.map(el => el.textContent ?? ''),
     cell: (value) => {
       const el = triggers.get(value)
       if (!el)
@@ -511,19 +475,19 @@ describe('开合与受控', () => {
 describe('选中值的三个入口', () => {
   it('裸串是单选简写，内部一律归一成数组', () => {
     expect(mount({ defaultValue: '2026-07-28' }).value()).toEqual(['2026-07-28'])
-    expect(mount({ defaultValue: ['2026-07-01', '2026-07-09'], selectionMode: 'range' }).value())
+    expect(mount({ defaultValue: ['2026-07-01', '2026-07-09'], selectionMode: 'multiple' }).value())
       .toEqual(['2026-07-01', '2026-07-09'])
     expect(mount().value()).toEqual([])
   })
 
-  it('setValue 单选截断到一个；区间去重并按先后排好', () => {
+  it('setValue 单选截断到一个；多选去重并按先后排好', () => {
     const single = mount()
     single.api().setValue(['2026-07-28', '2026-08-01'])
     expect(single.value()).toEqual(['2026-07-28'])
 
-    const range = mount({ selectionMode: 'range' })
-    range.api().setValue(['2026-07-30', '2026-07-02', '2026-07-02'])
-    expect(range.value()).toEqual(['2026-07-02', '2026-07-30'])
+    const multiple = mount({ selectionMode: 'multiple' })
+    multiple.api().setValue(['2026-07-30', '2026-07-02', '2026-07-02'])
+    expect(multiple.value()).toEqual(['2026-07-02', '2026-07-30'])
   })
 
   it('点日历里的一天：值落进编排机，段位与隐藏输入跟着对齐', () => {
@@ -567,17 +531,6 @@ describe('选中值的三个入口', () => {
     expect(active()).toBe(h.segments()[0])
   })
 
-  it('范围分隔符只在区间模式出现，并退出可访问树', () => {
-    const single = mount().api().getRangeSeparatorProps() as Record<string, unknown>
-    expect(single.hidden).toBe(true)
-    expect(single['aria-hidden']).toBe(true)
-
-    const range = mount({ selectionMode: 'range' }).api().getRangeSeparatorProps() as Record<string, unknown>
-    expect(range.hidden).toBeUndefined()
-    expect(range['aria-hidden']).toBe(true)
-    expect(range['data-part']).toBe('range-separator')
-  })
-
   it('受控 value：宿主不写回则两侧都纹丝不动，回调照发；写回才跟着走', () => {
     const onValueChange = vi.fn()
     const h = mount({ value: '2026-07-28', defaultOpen: true, onValueChange })
@@ -602,49 +555,6 @@ describe('选中值的三个入口', () => {
   })
 })
 
-describe('区间：起止两组段位', () => {
-  it('两组各管一端：敲终点只改 value[1]，起点原封不动', () => {
-    const h = mount({ selectionMode: 'range', defaultValue: ['2026-07-01', '2026-07-09'] })
-    const day = h.segmentsEnd()[2]!
-    day.focus()
-    press(day, 'ArrowUp')
-    expect(h.value()).toEqual(['2026-07-01', '2026-07-10'])
-    expect(h.segmentTexts().slice(0, 3)).toEqual(['2026', '07', '01'])
-    expect(h.segmentEndTexts().slice(0, 3)).toEqual(['2026', '07', '10'])
-    expect(h.hiddenInput.value).toBe('2026-07-01')
-    expect(h.hiddenInputEnd.value).toBe('2026-07-10')
-  })
-
-  it('只敲终点：起点那一格留空占位，对外照位报出；换段不越出本组', () => {
-    const onValueChange = vi.fn()
-    const h = mount({ selectionMode: 'range', onValueChange })
-    h.segmentsEnd()[0]!.focus()
-    // 逐位敲满年月日，敲满一段就跳下一段
-    for (const digit of '20261119')
-      press(active(), digit)
-
-    expect(h.segmentsEnd()).toContain(active())
-    expect(h.value()).toEqual(['', '2026-11-19'])
-    expect(h.segmentTexts().slice(0, 3)).toEqual(['yyyy', 'mm', 'dd'])
-    expect(h.hiddenInput.value).toBe('')
-    expect(h.hiddenInputEnd.value).toBe('2026-11-19')
-    // 前面的空缺照位留着，受控回写才认得出这是终点
-    expect(onValueChange).toHaveBeenLastCalledWith({ value: ['', '2026-11-19'] })
-  })
-
-  it('终点早于起点也照位存放：段位那一路不排序、不去重', () => {
-    const h = mount({ selectionMode: 'range', defaultValue: ['2026-07-20', '2026-07-25'] })
-    const day = h.segmentsEnd()[2]!
-    day.focus()
-    // 5 后面再接一位最小也是 50，越过当月天数，这一下当场敲定
-    press(day, '5')
-    expect(h.value()).toEqual(['2026-07-20', '2026-07-05'])
-    expect(h.segmentTexts().slice(0, 3)).toEqual(['2026', '07', '20'])
-    // 日历跟着终点走，不被拽回起点
-    expect(h.focusedValue()).toBe('2026-07-05')
-  })
-})
-
 describe('closeOnSelect', () => {
   it('单选：选中即收起', () => {
     const h = mount({ defaultOpen: true })
@@ -657,20 +567,6 @@ describe('closeOnSelect', () => {
     click(h.cell(h.rendered()[10]!))
     expect(h.value()).toHaveLength(1)
     expect(h.state()).toBe('open')
-  })
-
-  it('区间：只落起点不收起，两端都落定才收起', () => {
-    const h = mount({ defaultOpen: true, selectionMode: 'range' })
-    const days = h.rendered()
-    click(h.cell(days[10]!))
-    // 起点只记在日历里，选择器的值要等终点落下才写
-    expect(h.value()).toEqual([])
-    expect(h.api().calendar.rangeAnchor).toBe(days[10])
-    expect(h.state()).toBe('open')
-
-    click(h.cell(days[14]!))
-    expect(h.value()).toEqual([days[10], days[14]])
-    expect(h.state()).toBe('closed')
   })
 
   it('多选：选多少次都不收起', () => {
@@ -823,7 +719,7 @@ describe('点输入行即展开', () => {
   })
 
   it('段上 Enter 收起：敲出来的值不触发选完即收，得给一个我填完了的手势', async () => {
-    const h = await open({ selectionMode: 'range' })
+    const h = await open({ selectionMode: 'multiple' })
     expect(h.state()).toBe('open')
     const group = h.input
     press(group, 'Enter')
@@ -936,108 +832,19 @@ describe('defaultFocusedValue 决定先落在哪一页', () => {
   })
 })
 
-describe('区间的校验与可选范围', () => {
-  it('终点早于起点即不合法：根与输入行带 data-invalid，api.invalid 同一口径', () => {
-    const h = mount({ selectionMode: 'range', defaultValue: ['2026-08-20', '2026-08-10'] })
-    expect(h.api().invalid).toBe(true)
-    expect(h.root.getAttribute('data-invalid')).toBe('')
-    expect(h.control.getAttribute('data-invalid')).toBe('')
-    h.api().setValue(['2026-08-10', '2026-08-20'])
-    expect(h.api().invalid).toBe(false)
-    expect(h.root.hasAttribute('data-invalid')).toBe(false)
-  })
-
-  it('只填了一端不算不合法', () => {
-    expect(mount({ selectionMode: 'range', defaultValue: ['', '2026-08-10'] }).api().invalid).toBe(false)
-    expect(mount({ selectionMode: 'range', defaultValue: ['2026-08-10'] }).api().invalid).toBe(false)
-  })
-
-  it('allowsNonContiguousRanges 与 isDateUnavailable 的起点参数原样交给内嵌日历', () => {
-    const anchors: (string | null)[] = []
-    const h = mount({
-      defaultOpen: true,
-      selectionMode: 'range',
-      visibleCount: 2,
-      defaultFocusedValue: '2026-08-10',
-      allowsNonContiguousRanges: true,
-      isDateUnavailable: (value, anchor) => {
-        anchors.push(anchor)
-        return value === '2026-08-12'
-      },
-    })
-    click(h.cell('2026-08-10'))
-    expect(anchors).toContain('2026-08-10')
-    // 允许跨过不可用日：终点落在它之后照样收成区间，中间那一天不铺轨道
-    click(h.cell('2026-08-14'))
-    expect(h.api().value).toEqual(['2026-08-10', '2026-08-14'])
-    expect(h.gridcell('2026-08-12').hasAttribute('data-in-range')).toBe(false)
-    expect(h.gridcell('2026-08-13').getAttribute('data-in-range')).toBe('')
-  })
-})
-
-describe('值被整份改写后区间不再跟着鼠标走', () => {
-  it('点了起点再整份写值（快捷选项 / 清空 / setValue）：那个起点作废，指针扫过不再铺预览带', () => {
-    // 钉住铺开的那一页：不给就落到「今天」那一页，用例里写死的八月格子会随日历时钟消失
-    const h = mount({
-      defaultOpen: true,
-      selectionMode: 'range',
-      visibleCount: 2,
-      defaultFocusedValue: '2026-08-10',
-      presets: [{ value: '2026-08-01/2026-08-31', label: '整月' }],
-    })
-    // 先落一个起点，区间进入「挑到一半」
-    click(h.cell('2026-08-10'))
-    expect(h.api().value).toEqual([])
-    expect(h.api().calendar.rangeAnchor).toBe('2026-08-10')
-
-    // 整份写进去，与点快捷选项同一条路：起点作废
-    h.api().setValue(['2026-08-01', '2026-08-31'])
-    expect(h.api().value).toEqual(['2026-08-01', '2026-08-31'])
-    expect(h.api().calendar.rangeAnchor).toBeNull()
-
-    // 指针扫过 7/20：区间仍是 7/01–7/31，不是从 7/15 铺到 7/20
-    h.cell('2026-08-20').dispatchEvent(new Event('pointerenter'))
-    expect(h.gridcell('2026-08-05').hasAttribute('data-in-range')).toBe(true)
-    expect(h.gridcell('2026-08-25').hasAttribute('data-in-range')).toBe(true)
-    expect(h.gridcell('2026-08-01').getAttribute('data-range-start')).toBe('')
-    expect(h.gridcell('2026-08-31').getAttribute('data-range-end')).toBe('')
-  })
-
-  it('作废之后再点一格，是重新起一段而不是接着旧起点收口', () => {
-    const h = mount({ defaultOpen: true, selectionMode: 'range', visibleCount: 2, defaultFocusedValue: '2026-08-10' })
-    click(h.cell('2026-08-10'))
-    h.api().setValue([])
-    click(h.cell('2026-08-20'))
-    expect(h.api().value).toEqual([])
-    expect(h.api().calendar.rangeAnchor).toBe('2026-08-20')
-    click(h.cell('2026-08-22'))
-    expect(h.api().value).toEqual(['2026-08-20', '2026-08-22'])
-  })
-
-  it('escape 撤掉起点后浮层照常收起，原来的区间原样还在', () => {
-    const h = mount({ defaultOpen: true, selectionMode: 'range', visibleCount: 2, defaultFocusedValue: '2026-08-10', defaultValue: ['2026-08-03', '2026-08-05'] })
-    click(h.cell('2026-08-10'))
-    expect(h.api().calendar.rangeAnchor).toBe('2026-08-10')
-    h.grid.dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape', bubbles: true, cancelable: true }))
-    expect(h.api().calendar.rangeAnchor).toBeNull()
-    expect(h.api().value).toEqual(['2026-08-03', '2026-08-05'])
-  })
-})
-
 describe('日历面板数量', () => {
-  it('单选与区间默认都只铺一个面板', () => {
+  it('单选与多选默认都只铺一个面板', () => {
     expect(mount({ defaultFocusedValue: '2026-08-17' }).api().calendar.panels).toHaveLength(1)
-    const range = mount({ selectionMode: 'range', defaultFocusedValue: '2026-08-17' }).api()
-    expect(range.calendar.panels.map(p => [p.year, p.month])).toEqual([[2026, 8]])
-    expect(mount({ selectionMode: 'range', defaultValue: ['2026-07-01', '2026-08-05'] }).api().calendar.panels).toHaveLength(1)
-    expect(mount({ selectionMode: 'range', defaultValue: ['2026-07-01'] }).api().calendar.panels).toHaveLength(1)
-    expect(mount({ selectionMode: 'range', granularity: 'month', defaultValue: ['2026-02-01', '2027-03-01'] }).api().calendar.panels).toHaveLength(1)
+    const multiple = mount({ selectionMode: 'multiple', defaultFocusedValue: '2026-08-17' }).api()
+    expect(multiple.calendar.panels.map(p => [p.year, p.month])).toEqual([[2026, 8]])
+    expect(mount({ selectionMode: 'multiple', defaultValue: ['2026-07-01', '2026-08-05'] }).api().calendar.panels).toHaveLength(1)
+    expect(mount({ granularity: 'month', defaultValue: '2026-02-01' }).api().calendar.panels).toHaveLength(1)
   })
 
   it('visibleCount 显式给了以它为准，两种模式都听它的', () => {
     expect(mount({ visibleCount: 3, defaultFocusedValue: '2026-08-17' }).api().calendar.panels).toHaveLength(3)
-    expect(mount({ selectionMode: 'range', visibleCount: 1, defaultFocusedValue: '2026-08-17' }).api().calendar.panels).toHaveLength(1)
-    expect(mount({ selectionMode: 'range', visibleCount: 2, defaultValue: ['2026-07-01', '2026-07-31'] }).api().calendar.panels).toHaveLength(2)
+    expect(mount({ selectionMode: 'multiple', visibleCount: 1, defaultFocusedValue: '2026-08-17' }).api().calendar.panels).toHaveLength(1)
+    expect(mount({ selectionMode: 'multiple', visibleCount: 2, defaultValue: ['2026-07-01', '2026-07-31'] }).api().calendar.panels).toHaveLength(2)
   })
 
   it('恒六行：五行月与六行月的网格一样高，关掉才按实际周数收', () => {
@@ -1104,7 +911,7 @@ describe('内嵌日历原样复用，不重写一条', () => {
     const h = mount({ defaultOpen: true })
     expect(h.calendarEl.getAttribute('data-scope')).toBe('date-picker')
     expect(h.calendarEl.getAttribute('data-part')).toBe('calendar')
-    expect(h.grid.getAttribute('data-scope')).toBe('calendar')
+    expect(h.grid.getAttribute('data-scope')).toBe('calendar-picker')
     expect(h.grid.getAttribute('role')).toBe('grid')
     // 段位同理：segment-group 是本组件的挂载点，里面是分段输入那一份解剖
     expect(h.input.getAttribute('data-part')).toBe('segment-group')
@@ -1138,13 +945,6 @@ describe('无障碍与表单出口', () => {
     const ok = mount({ defaultValue: '2026-07-28', min: '2026-01-01' })
     expect(ok.root.hasAttribute('data-invalid')).toBe(false)
     expect(ok.control.hasAttribute('data-invalid')).toBe(false)
-  })
-
-  it('区间模式下终点那端越界，整份输入照样标成不合法', () => {
-    const h = mount({ selectionMode: 'range', defaultValue: ['2026-07-10', '2030-07-10'], max: '2026-12-31' })
-    expect(h.inputEnd.getAttribute('data-invalid')).toBe('')
-    expect(h.root.getAttribute('data-invalid')).toBe('')
-    expect(h.control.getAttribute('data-invalid')).toBe('')
   })
 
   it('name 缺省即不参与提交；禁用的控件也不提交', () => {
@@ -1236,32 +1036,23 @@ describe('granularity 与输入行段集联动', () => {
     expect(h.value()).toEqual(['2026-10-01'])
   })
 
-  it('周粒度：两端各出周序号，值统一存周期首日', () => {
-    const h = mount({
-      selectionMode: 'range',
-      granularity: 'week',
-      defaultValue: ['2026-08-10', '2026-09-07'],
-    })
-    // 起点是第 33 周，终点是第 37 周
+  it('周粒度：输入行出周序号，值统一存周期首日', () => {
+    const h = mount({ granularity: 'week', defaultValue: '2026-08-10' })
+    // 第 33 周
     expect(h.api().field.segments.map(s => s.text)).toEqual(['2026', '33'])
-    expect(h.api().fieldEnd!.segments.map(s => s.text)).toEqual(['2026', '37'])
-    // 把终点改成第 40 周：落的是那一周的周首日
-    h.segmentsEnd()[1]!.focus()
-    press(h.segmentsEnd()[1]!, '4')
-    press(h.segmentsEnd()[1]!, '0')
-    expect(h.value()).toEqual(['2026-08-10', '2026-09-28'])
+    // 改成第 40 周：落的是那一周的周首日
+    h.segments()[1]!.focus()
+    press(h.segments()[1]!, '4')
+    press(h.segments()[1]!, '0')
+    expect(h.value()).toEqual(['2026-09-28'])
   })
 
   it('对外同时提供可直接查询的周期首尾与回显键', () => {
-    expect(mount({
+    expect(mount({ granularity: 'quarter', defaultValue: '2026-07-01' }).api().periodValue).toEqual({
       granularity: 'quarter',
-      selectionMode: 'range',
-      defaultValue: ['2026-01-01', '2026-07-01'],
-    }).api().periodValue).toEqual({
-      granularity: 'quarter',
-      start: '2026-01-01',
+      start: '2026-07-01',
       end: '2026-09-30',
-      keys: ['2026-Q1', '2026-Q3'],
+      keys: ['2026-Q3'],
     })
     expect(mount({ selectionMode: 'multiple', defaultValue: ['2026-01-01', '2026-02-01'] }).api().periodValue).toBeNull()
   })
@@ -1449,8 +1240,8 @@ describe('快捷选项', () => {
     (h.api().getPresetProps({ value }) as { onClick: () => void }).onClick()
   }
 
-  it('单日、区间各写各的；与模式不配的那条按不下去', () => {
-    const single = mount({ defaultOpen: true, presets: [{ value: '2026-07-10', label: '某日' }, { value: '2026-07-01/2026-07-31', label: '整月' }] })
+  it('单日、多日各写各的；与模式不配的那条按不下去', () => {
+    const single = mount({ defaultOpen: true, presets: [{ value: '2026-07-10', label: '某日' }, { value: '2026-07-01/2026-07-31', label: '首尾两天' }] })
     expect(single.api().presets.map(p => p.disabled)).toEqual([false, true])
     pick(single, '2026-07-01/2026-07-31')
     expect(single.value()).toEqual([])
@@ -1458,11 +1249,12 @@ describe('快捷选项', () => {
     expect(single.value()).toEqual(['2026-07-10'])
     expect(single.state()).toBe('closed')
 
-    const range = mount({ defaultOpen: true, selectionMode: 'range', presets: [{ value: '2026-07-10', label: '某日' }, { value: '2026-07-01/2026-07-31', label: '整月' }] })
-    expect(range.api().presets.map(p => p.disabled)).toEqual([true, false])
-    pick(range, '2026-07-01/2026-07-31')
-    expect(range.value()).toEqual(['2026-07-01', '2026-07-31'])
-    expect(range.state()).toBe('closed')
+    const multiple = mount({ defaultOpen: true, selectionMode: 'multiple', presets: [{ value: '2026-07-10', label: '某日' }, { value: '2026-07-01/2026-07-31', label: '首尾两天' }] })
+    expect(multiple.api().presets.map(p => p.disabled)).toEqual([false, false])
+    pick(multiple, '2026-07-01/2026-07-31')
+    expect(multiple.value()).toEqual(['2026-07-01', '2026-07-31'])
+    // 多选不收起
+    expect(multiple.state()).toBe('open')
   })
 
   it('落在 min/max 之外或被作者判不可用的，按不下去', () => {

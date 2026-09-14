@@ -12,7 +12,6 @@ export {
   DATE_PICKER_DEFAULT_PLACEMENT,
   DATE_PICKER_GRANULARITY,
   datePickerCalendarProps,
-  datePickerFieldEndProps,
   datePickerFieldProps,
   datePickerFocusedValue,
   datePickerLocale,
@@ -24,16 +23,13 @@ export {
 } from './date-picker.machine'
 export { datePickerMeta } from './date-picker.meta'
 export {
-  DATE_PICKER_RANGE_SEPARATOR,
+  DATE_PICKER_PRESET_SEPARATOR,
   datePickerPresetDates,
   datePickerPresetDay,
-  datePickerPresetMonth,
-  datePickerPresetRange,
   datePickerPresetValue,
-  datePickerPresetYear,
 } from './date-picker.presets'
-export { datePickerFieldAt, resolveDatePickerFieldIndex, resolveDatePickerPanelIndex } from './date-picker.projection'
-export type { DatePickerFieldIndex, DatePickerIndexInput } from './date-picker.projection'
+export { resolveDatePickerPanelIndex } from './date-picker.projection'
+export type { DatePickerIndexInput } from './date-picker.projection'
 export {
   datePickerDatePart,
   datePickerJoinDateTime,
@@ -52,7 +48,6 @@ export type {
   DatePickerPresetState,
   DatePickerRefs,
   DatePickerSchema,
-  DatePickerSegmentGroupProps,
   DatePickerServices,
   DatePickerTimeColumnProps,
   DatePickerTimeItemProps,

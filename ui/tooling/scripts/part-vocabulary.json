@@ -126,13 +126,15 @@
       "table"
     ],
     "cell": [
-      "calendar",
+      "calendar-picker",
+      "calendar-range-picker",
       "heatmap",
       "table",
       "tag-group"
     ],
     "cell-trigger": [
-      "calendar"
+      "calendar-picker",
+      "calendar-range-picker"
     ],
     "change-label": [
       "diff-view"
@@ -430,15 +432,18 @@
       "icon"
     ],
     "grid": [
-      "calendar",
+      "calendar-picker",
+      "calendar-range-picker",
       "heatmap",
       "image-cropper"
     ],
     "grid-body": [
-      "calendar"
+      "calendar-picker",
+      "calendar-range-picker"
     ],
     "grid-head": [
-      "calendar"
+      "calendar-picker",
+      "calendar-range-picker"
     ],
     "group": [
       "approval",
@@ -478,7 +483,8 @@
     ],
     "header": [
       "accordion",
-      "calendar",
+      "calendar-picker",
+      "calendar-range-picker",
       "card",
       "code-view",
       "collapsible",
@@ -490,14 +496,17 @@
       "table"
     ],
     "heading": [
-      "calendar",
+      "calendar-picker",
+      "calendar-range-picker",
       "typography"
     ],
     "heading-month-trigger": [
-      "calendar"
+      "calendar-picker",
+      "calendar-range-picker"
     ],
     "heading-year-trigger": [
-      "calendar"
+      "calendar-picker",
+      "calendar-range-picker"
     ],
     "hidden-input": [
       "cascader",
@@ -885,7 +894,8 @@
       "field-array"
     ],
     "next-trigger": [
-      "calendar",
+      "calendar-picker",
+      "calendar-range-picker",
       "carousel",
       "image-viewer",
       "pagination",
@@ -893,7 +903,8 @@
       "tour"
     ],
     "next-year-trigger": [
-      "calendar"
+      "calendar-picker",
+      "calendar-range-picker"
     ],
     "node-drag-trigger": [
       "tree"
@@ -978,7 +989,8 @@
       "time-picker"
     ],
     "prev-trigger": [
-      "calendar",
+      "calendar-picker",
+      "calendar-range-picker",
       "carousel",
       "image-viewer",
       "pagination",
@@ -986,7 +998,8 @@
       "tour"
     ],
     "prev-year-trigger": [
-      "calendar"
+      "calendar-picker",
+      "calendar-range-picker"
     ],
     "preview": [
       "editable",
@@ -1018,9 +1031,6 @@
       "progress",
       "slider"
     ],
-    "range-separator": [
-      "date-picker"
-    ],
     "reset-trigger": [
       "form",
       "image-viewer"
@@ -1046,7 +1056,8 @@
       "breadcrumb",
       "button",
       "button-group",
-      "calendar",
+      "calendar-picker",
+      "calendar-range-picker",
       "card",
       "carousel",
       "cascader",
@@ -1441,14 +1452,17 @@
       "password-input"
     ],
     "week-day": [
-      "calendar",
+      "calendar-picker",
+      "calendar-range-picker",
       "heatmap"
     ],
     "week-number": [
-      "calendar"
+      "calendar-picker",
+      "calendar-range-picker"
     ],
     "week-row": [
-      "calendar"
+      "calendar-picker",
+      "calendar-range-picker"
     ],
     "window-state-trigger": [
       "floating-panel"

@@ -84,7 +84,8 @@
 @import './css/badge.css';
 @import './css/breadcrumb.css';
 @import './css/button.css';
-@import './css/calendar.css';
+@import './css/calendar-picker.css';
+@import './css/calendar-range-picker.css';
 @import './css/card.css';
 @import './css/carousel.css';
 @import './css/cascader.css';

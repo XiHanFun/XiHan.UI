@@ -20,7 +20,8 @@ import { XhBadgeElement } from './elements/badge'
 import { XhBreadcrumbElement } from './elements/breadcrumb'
 import { XhButtonElement } from './elements/button'
 import { XhButtonGroupElement } from './elements/button-group'
-import { XhCalendarElement } from './elements/calendar'
+import { XhCalendarPickerElement } from './elements/calendar-picker'
+import { XhCalendarRangePickerElement } from './elements/calendar-range-picker'
 import { XhCardElement } from './elements/card'
 import { XhCarouselElement } from './elements/carousel'
 import { XhCascaderElement } from './elements/cascader'
@@ -190,7 +191,8 @@ export function defineXhElements(): void {
   defineElement('xh-badge', XhBadgeElement, VERSION)
   defineElement('xh-breadcrumb', XhBreadcrumbElement, VERSION)
   defineElement('xh-button', XhButtonElement, VERSION)
-  defineElement('xh-calendar', XhCalendarElement, VERSION)
+  defineElement('xh-calendar-picker', XhCalendarPickerElement, VERSION)
+  defineElement('xh-calendar-range-picker', XhCalendarRangePickerElement, VERSION)
   defineElement('xh-card', XhCardElement, VERSION)
   defineElement('xh-carousel', XhCarouselElement, VERSION)
   defineElement('xh-cascader', XhCascaderElement, VERSION)
@@ -286,7 +288,8 @@ export {
   XhBadgeElement,
   XhBreadcrumbElement,
   XhButtonElement,
-  XhCalendarElement,
+  XhCalendarPickerElement,
+  XhCalendarRangePickerElement,
   XhCarouselElement,
   XhCascaderElement,
   XhCheckboxElement,

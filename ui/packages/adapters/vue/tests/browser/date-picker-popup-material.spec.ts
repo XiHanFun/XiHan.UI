@@ -52,7 +52,7 @@ function alpha(color: string): number {
   return context.getImageData(0, 0, 1, 1).data[3]!
 }
 
-type Shape = 'single' | 'range' | 'show-time' | 'presets'
+type Shape = 'single' | 'multiple' | 'show-time' | 'presets'
 
 async function mount(theme: 'light' | 'dark', shape: Shape = 'single', keyboardOpen = false): Promise<void> {
   host = document.createElement('div')
@@ -62,7 +62,7 @@ async function mount(theme: 'light' | 'dark', shape: Shape = 'single', keyboardO
     defaultOpen: !keyboardOpen,
     defaultValue: ['2026-09-12'],
     locale: 'zh-CN',
-    selectionMode: shape === 'range' ? 'range' : 'single',
+    selectionMode: shape === 'multiple' ? 'multiple' : 'single',
     showTime: shape === 'show-time',
     presets: shape === 'presets' ? [{ value: '2026-09-12', label: '发布日' }] : undefined,
   }, {
@@ -156,7 +156,7 @@ describe('日期选择浮层', () => {
 
   it('日期时间组合面板的时间列与日期网格顶部对齐', async () => {
     await mount('light', 'show-time')
-    const grid = document.querySelector<HTMLElement>(`[data-scope='calendar'][data-part='grid']`)
+    const grid = document.querySelector<HTMLElement>(`[data-scope='calendar-picker'][data-part='grid']`)
     if (!grid)
       throw new Error('日期时间组合面板缺少日期网格')
 
@@ -173,8 +173,8 @@ describe('日期选择浮层', () => {
     expect(Number.parseFloat(divider.height)).toBeCloseTo(calendar.getBoundingClientRect().height, 1)
   })
 
-  it('区间选择默认只渲染一张日历', async () => {
-    await mount('light', 'range')
+  it('多选默认只渲染一张日历', async () => {
+    await mount('light', 'multiple')
     expect(document.querySelectorAll(`[data-scope='date-picker'][data-part='calendar']`)).toHaveLength(1)
   })
 
@@ -219,7 +219,7 @@ describe('日期选择浮层', () => {
     }
   })
 
-  it.each(['single', 'range', 'show-time'] as const)('%s：键盘关闭后保持完整几何直至退场完成，再归还焦点', async (shape) => {
+  it.each(['single', 'multiple', 'show-time'] as const)('%s：键盘关闭后保持完整几何直至退场完成，再归还焦点', async (shape) => {
     await mount('light', shape, true)
     const content = part('content')
     await Promise.all(content.getAnimations().map(animation => animation.finished))
@@ -227,7 +227,7 @@ describe('日期选择浮层', () => {
     const before = { width: content.offsetWidth, height: content.offsetHeight }
     const calendars = [...content.querySelectorAll<HTMLElement>(`[data-part='calendar']`)]
     const offsets = calendars.map(calendar => [calendar.offsetLeft, calendar.offsetTop])
-    const cell = content.querySelector<HTMLElement>(`[data-scope='calendar'][data-part='cell-trigger'][tabindex='0']`)
+    const cell = content.querySelector<HTMLElement>(`[data-scope='calendar-picker'][data-part='cell-trigger'][tabindex='0']`)
     if (!cell)
       throw new Error('日历没有可聚焦日期')
     cell.focus()

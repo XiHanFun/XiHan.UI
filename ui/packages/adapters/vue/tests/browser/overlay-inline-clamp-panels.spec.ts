@@ -139,7 +139,7 @@ function cascaderOf(depth: number): () => VNode {
 function datePickerRange(): VNode {
   return h(
     XhDatePickerRoot,
-    { open: true, selectionMode: 'range', locale: 'zh-CN' } as any,
+    { open: true, visibleCount: 2, locale: 'zh-CN' } as any,
     {
       default: ({ panels, weekDays }: any) => [
         h(XhDatePickerControl, null, () => [

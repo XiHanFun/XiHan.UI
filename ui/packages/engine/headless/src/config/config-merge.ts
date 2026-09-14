@@ -13,7 +13,7 @@ import type { XhTranslationOverrides } from './translations'
  * （Vue 多一个 portalContainer）。合并与垫底的规则只在这里写一遍，两个适配器共用。
  */
 export interface XhConfigBase {
-  /** BCP 47 语言标记，喂给日期时间系组件（calendar / date-* / time-*）。 */
+  /** BCP 47 语言标记，喂给日期时间系组件（calendar-* / date-* / time-*）。 */
   locale?: string
   translations?: XhTranslationOverrides
   /**

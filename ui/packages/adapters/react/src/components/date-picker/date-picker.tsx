@@ -7,9 +7,9 @@
 
 import type { ControlVariant, Direction, Placement, Size, Tone } from '@xihan-ui/core'
 import type {
-  CalendarApi,
   CalendarGranularity,
-  CalendarSelectionMode,
+  CalendarPickerApi,
+  CalendarPickerSelectionMode,
   CalendarView,
   DateFieldSegmentState,
   DatePickerApi,
@@ -21,8 +21,7 @@ import type {
 } from '@xihan-ui/headless'
 import type { ComponentPropsWithRef, ReactNode } from 'react'
 import type { SlotChildren } from '../../runtime/slot-content'
-import type { DatePickerGroupIndex } from './context'
-import { datePickerFieldAt, resolveDatePickerFieldIndex, resolveDatePickerPanelIndex } from '@xihan-ui/headless'
+import { resolveDatePickerPanelIndex } from '@xihan-ui/headless'
 import { useMemo } from 'react'
 import { withXhConfig } from '../../config/config'
 import { mergeReactProps } from '../../runtime/merge-props'
@@ -36,11 +35,9 @@ import {
   DatePickerCellProvider,
   DatePickerPanelProvider,
   DatePickerProvider,
-  DatePickerSegmentGroupProvider,
   useDatePickerCellContext,
   useDatePickerContext,
   useDatePickerPanelContext,
-  useDatePickerSegmentGroupContext,
 } from './context'
 import { useDatePicker } from './use-date-picker'
 
@@ -72,7 +69,7 @@ export type DatePickerRootSlotProps
     | 'clear'
   >
   & Pick<
-    CalendarApi,
+    CalendarPickerApi,
     | 'visibleMonth'
     | 'panels'
     | 'periods'
@@ -85,7 +82,6 @@ export type DatePickerRootSlotProps
   & {
     segments: DateFieldSegmentState[]
     /** 区间终点那组段位；非区间模式为空数组。 */
-    endSegments: DateFieldSegmentState[]
   }
 
 /** 段位函数式 children 的载荷：本段的投影；下标越界时缺席。 */
@@ -107,14 +103,14 @@ export interface XhDatePickerRootProps extends Omit<ComponentPropsWithRef<'div'>
   max?: string
   locale?: string
   timeZone?: string
-  selectionMode?: CalendarSelectionMode
+  selectionMode?: CalendarPickerSelectionMode
   /** 选择粒度；与 selectionMode 正交，输入行铺哪几段也跟着它走。 */
   granularity?: CalendarGranularity
   /** 面板此刻钻到了哪一层；给定即受控，缺省跟着 granularity。 */
   activeView?: CalendarView
   /** 输入行铺哪几段；不给就按 granularity 推。 */
   segments?: DateSegmentSet
-  /** 并排展示几页；缺省单选 1，区间按两端定：同一页放得下就 1，跨页才 2。 */
+  /** 并排展示几页；缺省 1。 */
   visibleCount?: number
   /** 日历恒渲染六行，默认开。关掉后翻页时浮层高度会跟着月份变。 */
   fixedWeeks?: boolean
@@ -122,17 +118,12 @@ export interface XhDatePickerRootProps extends Omit<ComponentPropsWithRef<'div'>
   defaultFocusedValue?: string
   /** 快捷选项；给了就在浮层里多出一列，日子要在自己那儿算好再传。 */
   presets?: DatePickerPreset[]
-  isDateUnavailable?: (value: string, anchor: string | null) => boolean
-  /** 区间允许跨过不可用的日子；默认关，落了起点后只能挑到两侧最近的不可用日为止。 */
-  allowsNonContiguousRanges?: boolean
+  isDateUnavailable?: (value: string) => boolean
   disabled?: boolean
   readOnly?: boolean
   invalid?: boolean
   required?: boolean
   name?: string
-  /** 区间终点那份隐藏输入的表单名；不给即终点不参与提交。 */
-  endName?: string
-  /** 区间模式下两组段位各自的读屏名字。 */
   translations?: DatePickerProps['translations']
   variant?: ControlVariant
   tone?: Tone
@@ -170,13 +161,11 @@ export function XhDatePickerRoot({
   defaultFocusedValue,
   presets,
   isDateUnavailable,
-  allowsNonContiguousRanges,
   disabled,
   readOnly,
   invalid,
   required,
   name,
-  endName,
   translations,
   variant,
   tone,
@@ -212,13 +201,11 @@ export function XhDatePickerRoot({
     defaultFocusedValue,
     presets,
     isDateUnavailable,
-    allowsNonContiguousRanges,
     disabled,
     readOnly,
     invalid,
     required,
     name,
-    endName,
     translations,
     variant,
     tone,
@@ -262,7 +249,6 @@ export function XhDatePickerRoot({
               canGoNext: api.calendar.canGoNext,
               segments: api.field.segments,
               // 区间终点那组段位；非区间模式为空数组，作者据此决定渲不渲第二组
-              endSegments: api.fieldEnd?.segments ?? [],
               canClear: api.canClear,
               setOpen: api.setOpen,
               setValue: api.setValue,
@@ -298,21 +284,14 @@ export function XhDatePickerControl({ children, ...rest }: XhDatePickerControlPr
   )
 }
 
-export interface XhDatePickerSegmentGroupProps extends ComponentPropsWithRef<'div'> {
-  /** 组号：0 起点、1 区间终点，兼收字符串。 */
-  index?: number | string
-}
+export interface XhDatePickerSegmentGroupProps extends ComponentPropsWithRef<'div'> {}
 /** role=group 的分段容器，也是换段时的查询边界。 */
-export function XhDatePickerSegmentGroup({ index = 0, children, ...rest }: XhDatePickerSegmentGroupProps): ReactNode {
+export function XhDatePickerSegmentGroup({ children, ...rest }: XhDatePickerSegmentGroupProps): ReactNode {
   const ctx = useDatePickerContext()
-  const group: DatePickerGroupIndex = resolveDatePickerFieldIndex(index)
   return (
-    // 组内的段位与隐藏输入据此认领起止
-    <DatePickerSegmentGroupProvider value={group}>
-      <div {...mergeReactProps(ctx.api.getSegmentGroupProps({ index: group }) as Record<string, unknown>, rest as Record<string, unknown>)}>
-        {children}
-      </div>
-    </DatePickerSegmentGroupProvider>
+    <div {...mergeReactProps(ctx.api.getSegmentGroupProps() as Record<string, unknown>, rest as Record<string, unknown>)}>
+      {children}
+    </div>
   )
 }
 
@@ -326,33 +305,16 @@ export interface XhDatePickerSegmentProps extends Omit<ComponentPropsWithRef<'di
 /** 有内容用内容，否则渲染连接层算好的段位文本。 */
 export function XhDatePickerSegment({ index, segment, children, ...rest }: XhDatePickerSegmentProps): ReactNode {
   const ctx = useDatePickerContext()
-  const group = useDatePickerSegmentGroupContext()
-  const field = datePickerFieldAt(ctx.api, group)
+  const { field } = ctx.api
   // 落点由连接层算：按下标还是按段名是同一条路，适配器这边不重写一份
   const declared = segment != null ? { segment } : { index: Math.trunc(Number(index)) }
-  const state = field?.segmentOf(declared)
+  const state = field.segmentOf(declared)
   // 段位的聚焦上报不冒泡（连接层直接转交分段输入那一份），改装成原生监听器
-  const bind = useNativeEvents(
-    (field ? field.getSegmentProps(declared) : {}) as Record<string, unknown>,
-    ['onFocus'],
-  )
-  // 非区间模式下写在终点组里的段位无处落脚，不渲染
-  if (!field)
-    return null
+  const bind = useNativeEvents(field.getSegmentProps(declared) as Record<string, unknown>, ['onFocus'])
   return (
     <div {...mergeReactProps(bind.attrs, rest as Record<string, unknown>, { ref: bind.ref })}>
       {children == null ? state?.text : renderSlot(children, { segment: state })}
     </div>
-  )
-}
-
-export interface XhDatePickerRangeSeparatorProps extends ComponentPropsWithRef<'span'> {}
-export function XhDatePickerRangeSeparator({ children, ...rest }: XhDatePickerRangeSeparatorProps): ReactNode {
-  const ctx = useDatePickerContext()
-  return (
-    <span {...mergeReactProps(ctx.api.getRangeSeparatorProps() as Record<string, unknown>, rest as Record<string, unknown>)}>
-      {children ?? '-'}
-    </span>
   )
 }
 
@@ -589,17 +551,11 @@ export interface XhDatePickerGridProps extends ComponentPropsWithRef<'div'> {
 export function XhDatePickerGrid({ index, children, ...rest }: XhDatePickerGridProps): ReactNode {
   const ctx = useDatePickerContext()
   const panel = usePanelIndex(index)
-  // 区间预览的清除挂在网格上，pointerleave 不冒泡，改装成原生监听器
-  const bind = useNativeEvents(
-    ctx.api.calendar.getGridProps({ index: panel }) as Record<string, unknown>,
-    ['onPointerLeave'],
-  )
   return (
     <div
       {...mergeReactProps(
-        bind.attrs,
+        ctx.api.calendar.getGridProps({ index: panel }) as Record<string, unknown>,
         rest as Record<string, unknown>,
-        { ref: bind.ref },
         // 键盘在首个网格上收口；其余面板只渲染，方向键仍能跨面板走（落点按值现查）
         panel === 0 ? { ref: (el: HTMLDivElement | null) => { ctx.gridRef.current = el } } : {},
       )}
@@ -683,10 +639,10 @@ export interface XhDatePickerCellTriggerProps extends ComponentPropsWithRef<'div
 export function XhDatePickerCellTrigger({ children, ...rest }: XhDatePickerCellTriggerProps): ReactNode {
   const ctx = useDatePickerContext()
   const cell = useDatePickerCellContext()
-  // 格子的聚焦上报与指针进入都不冒泡（连接层直接转交日历那一份），改装成原生监听器
+  // 格子的聚焦上报不冒泡（连接层直接转交日历那一份），改装成原生监听器
   const bind = useNativeEvents(
     ctx.api.calendar.getCellTriggerProps(cell) as Record<string, unknown>,
-    ['onFocus', 'onPointerEnter'],
+    ['onFocus'],
   )
   return (
     <div {...mergeReactProps(bind.attrs, rest as Record<string, unknown>, { ref: bind.ref })}>
@@ -695,22 +651,13 @@ export function XhDatePickerCellTrigger({ children, ...rest }: XhDatePickerCellT
   )
 }
 
-export interface XhDatePickerHiddenInputProps extends Omit<ComponentPropsWithRef<'input'>, 'value' | 'defaultValue' | 'type'> {
-  /** 写在分段容器外面时用它指明属于哪一端；写在容器里面不必给，跟着容器走。 */
-  index?: number | string
-}
-export function XhDatePickerHiddenInput({ index, ...rest }: XhDatePickerHiddenInputProps): ReactNode {
+export interface XhDatePickerHiddenInputProps extends Omit<ComponentPropsWithRef<'input'>, 'value' | 'defaultValue' | 'type'> {}
+export function XhDatePickerHiddenInput(rest: XhDatePickerHiddenInputProps): ReactNode {
   const ctx = useDatePickerContext()
-  const group = useDatePickerSegmentGroupContext()
-  const at: DatePickerGroupIndex = index === undefined ? group : resolveDatePickerFieldIndex(index)
-  const field = datePickerFieldAt(ctx.api, at)
-  // 非区间模式下终点那份没有可提交的值，不渲染
-  if (!field)
-    return null
   return (
     <input
       {...mergeReactProps(
-        field.getHiddenInputProps() as Record<string, unknown>,
+        ctx.api.field.getHiddenInputProps() as Record<string, unknown>,
         // 值攥在机器里，这份影子输入没有自己的变更出口。React 要求带 value 的输入
         // 交出一个出口，否则在开发构建里逐帧告警；节点是 hidden，这个出口不会被调用
         { onChange: noop },

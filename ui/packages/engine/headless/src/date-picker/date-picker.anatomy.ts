@@ -22,7 +22,6 @@ export const datePickerAnatomy = createAnatomy('date-picker', [
   'label',
   'control',
   'segment-group',
-  'range-separator',
   'trigger',
   'clear-trigger',
   'positioner',

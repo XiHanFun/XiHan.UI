@@ -3427,12 +3427,12 @@
     },
     {
       "kind": "javascript-module",
-      "path": "src/elements/calendar.ts",
+      "path": "src/elements/calendar-picker.ts",
       "declarations": [
         {
           "kind": "class",
-          "description": "`<xh-calendar>` —— 日历行为宿主。\n\n网格由作者渲染，元素不生成节点：读 `weeks` / `weekDays` / `headingLabel` 三个只读属性，\n听 `focused-value-change` 重画（须在收到事件的同一拍内完成）。日期身份取 cell 上的\n`value`（ISO 串），cell-trigger 跟随所在 cell；表头列取 week-day 上的 `value`（列序 0-6）。\n翻月按钮的可及名字由作者给。",
-          "name": "XhCalendarElement",
+          "description": "`<xh-calendar-picker>` —— 日历选择器行为宿主：挑一天或多天。\n\n网格由作者渲染，元素不生成节点：读 `weeks` / `weekDays` / `headingLabel` 三个只读属性，\n听 `focused-value-change` 重画（须在收到事件的同一拍内完成）。日期身份取 cell 上的\n`value`（ISO 串），cell-trigger 跟随所在 cell；表头列取 week-day 上的 `value`（列序 0-6）。\n翻月按钮的可及名字由作者给。",
+          "name": "XhCalendarPickerElement",
           "cssParts": [
             {
               "description": "组件根容器",
@@ -3511,7 +3511,7 @@
                 "text": "object"
               },
               "static": true,
-              "default": "{ anatomy: calendarAnatomy, meta: calendarMeta }"
+              "default": "{ anatomy: calendarPickerAnatomy, meta: calendarPickerMeta }"
             },
             {
               "kind": "field",
@@ -3536,9 +3536,700 @@
               "name": "selectionMode",
               "privacy": "public",
               "type": {
-                "text": "CalendarSelectionMode | undefined"
+                "text": "CalendarPickerSelectionMode | undefined"
               },
               "attribute": "selection-mode"
+            },
+            {
+              "kind": "field",
+              "name": "focusedValue",
+              "privacy": "public",
+              "type": {
+                "text": "string | undefined"
+              },
+              "attribute": "focused-value"
+            },
+            {
+              "kind": "field",
+              "name": "defaultFocusedValue",
+              "privacy": "public",
+              "type": {
+                "text": "string | undefined"
+              },
+              "attribute": "default-focused-value"
+            },
+            {
+              "kind": "field",
+              "name": "min",
+              "privacy": "public",
+              "type": {
+                "text": "string | undefined"
+              },
+              "attribute": "min"
+            },
+            {
+              "kind": "field",
+              "name": "max",
+              "privacy": "public",
+              "type": {
+                "text": "string | undefined"
+              },
+              "attribute": "max"
+            },
+            {
+              "kind": "field",
+              "name": "locale",
+              "privacy": "public",
+              "type": {
+                "text": "string | undefined"
+              },
+              "attribute": "locale"
+            },
+            {
+              "kind": "field",
+              "name": "timeZone",
+              "privacy": "public",
+              "type": {
+                "text": "string | undefined"
+              },
+              "attribute": "time-zone"
+            },
+            {
+              "kind": "field",
+              "name": "weekdayFormat",
+              "privacy": "public",
+              "type": {
+                "text": "CalendarWeekdayFormat | undefined"
+              },
+              "attribute": "weekday-format"
+            },
+            {
+              "kind": "field",
+              "name": "disabled",
+              "privacy": "public",
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "attribute": "disabled"
+            },
+            {
+              "kind": "field",
+              "name": "readOnly",
+              "privacy": "public",
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "attribute": "read-only"
+            },
+            {
+              "kind": "field",
+              "name": "fixedWeeks",
+              "privacy": "public",
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "attribute": "fixed-weeks"
+            },
+            {
+              "kind": "field",
+              "name": "invalid",
+              "privacy": "public",
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "attribute": "invalid"
+            },
+            {
+              "kind": "field",
+              "name": "granularity",
+              "privacy": "public",
+              "type": {
+                "text": "CalendarGranularity | undefined"
+              },
+              "attribute": "granularity"
+            },
+            {
+              "kind": "field",
+              "name": "activeView",
+              "privacy": "public",
+              "type": {
+                "text": "CalendarView | undefined"
+              },
+              "attribute": "active-view"
+            },
+            {
+              "kind": "field",
+              "name": "defaultActiveView",
+              "privacy": "public",
+              "type": {
+                "text": "CalendarView | undefined"
+              },
+              "attribute": "default-active-view"
+            },
+            {
+              "kind": "field",
+              "name": "visibleCount",
+              "privacy": "public",
+              "type": {
+                "text": "number | undefined"
+              },
+              "attribute": "visible-count"
+            },
+            {
+              "kind": "field",
+              "name": "isDateUnavailable",
+              "privacy": "public",
+              "type": {
+                "text": "(value: string) => boolean | undefined"
+              }
+            },
+            {
+              "kind": "field",
+              "name": "translations",
+              "privacy": "public",
+              "type": {
+                "text": "Partial<CalendarPickerTranslations>"
+              },
+              "description": "读屏文案（今天），只走 property"
+            },
+            {
+              "kind": "field",
+              "name": "notifyValue",
+              "privacy": "private",
+              "readonly": true
+            },
+            {
+              "kind": "field",
+              "name": "notifyFocus",
+              "privacy": "private",
+              "readonly": true
+            },
+            {
+              "kind": "field",
+              "name": "notifyActiveView",
+              "privacy": "private",
+              "readonly": true
+            },
+            {
+              "kind": "field",
+              "name": "ctrl",
+              "privacy": "private",
+              "readonly": true,
+              "default": "new MachineController<CalendarPickerSchema>( this, calendarPickerMachine, () => this.machineProps(), { // 机器跨月后靠它把焦点送进重画出来的格子 onBuilt: (service) => { service.refs.set('getGridEl', () => this.getPart('grid')) }, }, )"
+            },
+            {
+              "kind": "method",
+              "name": "machineProps",
+              "privacy": "private",
+              "return": {
+                "type": {
+                  "text": "Partial<CalendarPickerSchema['props']>"
+                }
+              }
+            },
+            {
+              "kind": "field",
+              "name": "weeks",
+              "type": {
+                "text": "CalendarDay[][]"
+              },
+              "description": "当前展示月的日期矩阵，作者照它重画网格。机器尚未建起时给空数组。",
+              "readonly": true
+            },
+            {
+              "kind": "field",
+              "name": "periods",
+              "type": {
+                "text": "CalendarPeriod[]"
+              },
+              "description": "当前面板内的统一周期数据。",
+              "readonly": true
+            },
+            {
+              "kind": "field",
+              "name": "weekDays",
+              "type": {
+                "text": "CalendarWeekDay[]"
+              },
+              "description": "七列表头（缩写 + 全称），列序与 weeks 的列序一致。",
+              "readonly": true
+            },
+            {
+              "kind": "field",
+              "name": "headingLabel",
+              "type": {
+                "text": "string"
+              },
+              "description": "展示月标题文案，作者写进 heading 节点。",
+              "readonly": true
+            },
+            {
+              "kind": "method",
+              "name": "partsIn",
+              "privacy": "private",
+              "return": {
+                "type": {
+                  "text": "HTMLElement[]"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "owner",
+                  "type": {
+                    "text": "HTMLElement"
+                  }
+                },
+                {
+                  "name": "name",
+                  "type": {
+                    "text": "string"
+                  }
+                }
+              ],
+              "description": "取指定角色节点在 owner 子树内的实例。"
+            },
+            {
+              "kind": "method",
+              "name": "wire",
+              "privacy": "protected",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              }
+            }
+          ],
+          "events": [
+            {
+              "description": "选中集合变化；detail 为 `{ value: string[] }`",
+              "name": "value-change",
+              "type": {
+                "text": "CalendarPickerValueChangeDetails"
+              }
+            },
+            {
+              "description": "聚焦日变化；detail 为 `{ focusedValue: string }`",
+              "name": "focused-value-change",
+              "type": {
+                "text": "CalendarFocusChangeDetails"
+              }
+            },
+            {
+              "description": "钻到了另一层；detail 为 `{ activeView: 'day'|'week'|'month'|'quarter'|'year' }`",
+              "name": "active-view-change",
+              "type": {
+                "text": "CalendarViewChangeDetails"
+              }
+            }
+          ],
+          "attributes": [
+            {
+              "type": {
+                "text": "string | string[] | undefined"
+              },
+              "description": "受控选中值（单选简写，ISO 串）；缺省即非受控，多选用 property",
+              "name": "value",
+              "fieldName": "value"
+            },
+            {
+              "type": {
+                "text": "string | string[] | undefined"
+              },
+              "description": "非受控初始选中值",
+              "name": "default-value",
+              "fieldName": "defaultValue"
+            },
+            {
+              "type": {
+                "text": "CalendarPickerSelectionMode | undefined"
+              },
+              "description": "选择模式，默认 single；区间选择是 `<xh-calendar-range-picker>`",
+              "name": "selection-mode",
+              "fieldName": "selectionMode"
+            },
+            {
+              "type": {
+                "text": "string | undefined"
+              },
+              "description": "受控聚焦日（ISO 串），同时决定展示哪个月",
+              "name": "focused-value",
+              "fieldName": "focusedValue"
+            },
+            {
+              "type": {
+                "text": "string | undefined"
+              },
+              "description": "非受控初始聚焦日；缺省时退回首个选中值，再退回今天",
+              "name": "default-focused-value",
+              "fieldName": "defaultFocusedValue"
+            },
+            {
+              "type": {
+                "text": "string | undefined"
+              },
+              "description": "可选范围下界（含当天），界外的日子转 aria-disabled 但仍可聚焦",
+              "name": "min",
+              "fieldName": "min"
+            },
+            {
+              "type": {
+                "text": "string | undefined"
+              },
+              "description": "可选范围上界（含当天）",
+              "name": "max",
+              "fieldName": "max"
+            },
+            {
+              "type": {
+                "text": "string | undefined"
+              },
+              "description": "决定周首日与文案；不给按宿主语言，宿主也没有时按 en-US",
+              "name": "locale",
+              "fieldName": "locale"
+            },
+            {
+              "type": {
+                "text": "string | undefined"
+              },
+              "description": "判定今天与格式化用的时区，默认宿主本地时区",
+              "name": "time-zone",
+              "fieldName": "timeZone"
+            },
+            {
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "description": "整张禁用：翻月按钮转原生 disabled，格子全转 aria-disabled",
+              "name": "disabled",
+              "fieldName": "disabled"
+            },
+            {
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "description": "只读：翻月与移动焦点照常，只是选不动值",
+              "name": "read-only",
+              "fieldName": "readOnly"
+            },
+            {
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "description": "校验失败：根带 data-invalid",
+              "name": "invalid",
+              "fieldName": "invalid"
+            },
+            {
+              "type": {
+                "text": "CalendarWeekdayFormat | undefined"
+              },
+              "description": "表头缩写粒度，默认 short",
+              "name": "weekday-format",
+              "fieldName": "weekdayFormat"
+            },
+            {
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "description": "恒渲染六行",
+              "name": "fixed-weeks",
+              "fieldName": "fixedWeeks"
+            },
+            {
+              "type": {
+                "text": "CalendarGranularity | undefined"
+              },
+              "description": "选择粒度，默认 day；与 selection-mode 正交",
+              "name": "granularity",
+              "fieldName": "granularity"
+            },
+            {
+              "type": {
+                "text": "CalendarView | undefined"
+              },
+              "description": "受控：面板此刻钻到了哪一层；缺省跟着 granularity",
+              "name": "active-view",
+              "fieldName": "activeView"
+            },
+            {
+              "type": {
+                "text": "CalendarView | undefined"
+              },
+              "description": "非受控初值，缺省同 granularity",
+              "name": "default-active-view",
+              "fieldName": "defaultActiveView"
+            },
+            {
+              "type": {
+                "text": "number | undefined"
+              },
+              "description": "并排展示几页",
+              "name": "visible-count",
+              "fieldName": "visibleCount"
+            }
+          ],
+          "superclass": {
+            "name": "XhElement",
+            "module": "/src/element-base"
+          },
+          "tagName": "xh-calendar-picker",
+          "customElement": true,
+          "cssProperties": [
+            {
+              "name": "--xh-calendar-picker-cell-bg-hover"
+            },
+            {
+              "name": "--xh-calendar-picker-cell-bg-selected"
+            },
+            {
+              "name": "--xh-calendar-picker-cell-bg-selected-active"
+            },
+            {
+              "name": "--xh-calendar-picker-cell-fg"
+            },
+            {
+              "name": "--xh-calendar-picker-cell-fg-outside"
+            },
+            {
+              "name": "--xh-calendar-picker-cell-fg-selected"
+            },
+            {
+              "name": "--xh-calendar-picker-cell-font-size"
+            },
+            {
+              "name": "--xh-calendar-picker-cell-font-weight"
+            },
+            {
+              "name": "--xh-calendar-picker-cell-gap"
+            },
+            {
+              "name": "--xh-calendar-picker-cell-radius"
+            },
+            {
+              "name": "--xh-calendar-picker-cell-size"
+            },
+            {
+              "name": "--xh-calendar-picker-gap"
+            },
+            {
+              "name": "--xh-calendar-picker-grid-gap"
+            },
+            {
+              "name": "--xh-calendar-picker-header-gap"
+            },
+            {
+              "name": "--xh-calendar-picker-heading-fg"
+            },
+            {
+              "name": "--xh-calendar-picker-heading-font-size"
+            },
+            {
+              "name": "--xh-calendar-picker-heading-font-weight"
+            },
+            {
+              "name": "--xh-calendar-picker-heading-trigger-fg-hover"
+            },
+            {
+              "name": "--xh-calendar-picker-heading-trigger-px"
+            },
+            {
+              "name": "--xh-calendar-picker-heading-trigger-radius"
+            },
+            {
+              "name": "--xh-calendar-picker-icon-size"
+            },
+            {
+              "name": "--xh-calendar-picker-nav-bg"
+            },
+            {
+              "name": "--xh-calendar-picker-nav-bg-hover"
+            },
+            {
+              "name": "--xh-calendar-picker-nav-fg"
+            },
+            {
+              "name": "--xh-calendar-picker-nav-fg-hover"
+            },
+            {
+              "name": "--xh-calendar-picker-nav-radius"
+            },
+            {
+              "name": "--xh-calendar-picker-nav-size"
+            },
+            {
+              "name": "--xh-calendar-picker-period-gap"
+            },
+            {
+              "name": "--xh-calendar-picker-period-py"
+            },
+            {
+              "name": "--xh-calendar-picker-period-radius"
+            },
+            {
+              "name": "--xh-calendar-picker-row-gap"
+            },
+            {
+              "name": "--xh-calendar-picker-today-bg"
+            },
+            {
+              "name": "--xh-calendar-picker-today-bg-hover"
+            },
+            {
+              "name": "--xh-calendar-picker-today-border"
+            },
+            {
+              "name": "--xh-calendar-picker-today-fg"
+            },
+            {
+              "name": "--xh-calendar-picker-week-cell-px"
+            },
+            {
+              "name": "--xh-calendar-picker-week-day-fg"
+            },
+            {
+              "name": "--xh-calendar-picker-week-day-font-size"
+            },
+            {
+              "name": "--xh-calendar-picker-week-day-font-weight"
+            },
+            {
+              "name": "--xh-calendar-picker-week-day-h"
+            },
+            {
+              "name": "--xh-calendar-picker-week-number-fg"
+            },
+            {
+              "name": "--xh-calendar-picker-week-number-font-size"
+            },
+            {
+              "name": "--xh-calendar-picker-week-number-w"
+            },
+            {
+              "name": "--xh-calendar-picker-year-grid-max-h"
+            },
+            {
+              "name": "--xh-calendar-picker-year-grid-pe"
+            }
+          ]
+        }
+      ],
+      "exports": [
+        {
+          "kind": "js",
+          "name": "XhCalendarPickerElement",
+          "declaration": {
+            "name": "XhCalendarPickerElement",
+            "module": "src/elements/calendar-picker.ts"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
+      "path": "src/elements/calendar-range-picker.ts",
+      "declarations": [
+        {
+          "kind": "class",
+          "description": "`<xh-calendar-range-picker>` —— 日历范围选择器行为宿主：先落起点再落终点。\n\n网格由作者渲染，元素不生成节点：读 `weeks` / `weekDays` / `headingLabel` 三个只读属性，\n听 `focused-value-change` 重画（须在收到事件的同一拍内完成）。日期身份取 cell 上的\n`value`（ISO 串），cell-trigger 跟随所在 cell；表头列取 week-day 上的 `value`（列序 0-6）。\n翻月按钮的可及名字由作者给。",
+          "name": "XhCalendarRangePickerElement",
+          "cssParts": [
+            {
+              "description": "组件根容器",
+              "name": "root"
+            },
+            {
+              "description": "标题栏外壳",
+              "name": "header"
+            },
+            {
+              "description": "快速往前翻一大步（日视图一年、粗粒度十页）；可选",
+              "name": "prev-year-trigger"
+            },
+            {
+              "description": "上一月；越过 min 时转原生 disabled",
+              "name": "prev-trigger"
+            },
+            {
+              "description": "下一月；越过 max 时转原生 disabled",
+              "name": "next-trigger"
+            },
+            {
+              "description": "快速往后翻一大步；可选",
+              "name": "next-year-trigger"
+            },
+            {
+              "description": "展示月标题（grid 的 aria-labelledby 目标）",
+              "name": "heading"
+            },
+            {
+              "description": "标题里年那一截，点它钻到十年格；文字由元素填。年视图下已到顶，转原生 disabled；可选",
+              "name": "heading-year-trigger"
+            },
+            {
+              "description": "标题里月那一截，点它钻到月格；只有日视图有这一截，其余层带 hidden；可选",
+              "name": "heading-month-trigger"
+            },
+            {
+              "description": "role=grid 容器，键盘在此收口",
+              "name": "grid"
+            },
+            {
+              "description": "role=rowgroup 表头组，里面套一个 week-row",
+              "name": "grid-head"
+            },
+            {
+              "description": "role=columnheader 列头，须自带 value 属性标明列序 0-6",
+              "name": "week-day"
+            },
+            {
+              "description": "role=rowgroup 日期组",
+              "name": "grid-body"
+            },
+            {
+              "description": "role=row 周行，表头与日期行共用",
+              "name": "week-row"
+            },
+            {
+              "description": "行首的周序号格（role=rowheader），须自带 value 属性（行首那天）；可选",
+              "name": "week-number"
+            },
+            {
+              "description": "role=gridcell 日期格，承载 aria-selected；须自带 value 属性（ISO 串）标明是哪一天",
+              "name": "cell"
+            },
+            {
+              "description": "可点可聚焦层，承载 aria-disabled 与 roving tabindex",
+              "name": "cell-trigger"
+            }
+          ],
+          "members": [
+            {
+              "kind": "field",
+              "name": "partContract",
+              "type": {
+                "text": "object"
+              },
+              "static": true,
+              "default": "{ anatomy: calendarRangePickerAnatomy, meta: calendarRangePickerMeta }"
+            },
+            {
+              "kind": "field",
+              "name": "value",
+              "privacy": "public",
+              "type": {
+                "text": "string[]"
+              },
+              "description": "受控区间两端（升序 ISO 串）；缺省即非受控，只走 property",
+              "attribute": "value"
+            },
+            {
+              "kind": "field",
+              "name": "defaultValue",
+              "privacy": "public",
+              "type": {
+                "text": "string | string[] | undefined"
+              },
+              "attribute": "default-value"
             },
             {
               "kind": "field",
@@ -3697,7 +4388,7 @@
               "name": "translations",
               "privacy": "public",
               "type": {
-                "text": "Partial<CalendarTranslations>"
+                "text": "Partial<CalendarRangePickerTranslations>"
               },
               "description": "读屏文案（挑区间的提示、区间两端的名字、今天），只走 property"
             },
@@ -3724,7 +4415,7 @@
               "name": "ctrl",
               "privacy": "private",
               "readonly": true,
-              "default": "new MachineController<CalendarSchema>( this, calendarMachine, () => this.machineProps(), { // 机器跨月后靠它把焦点送进重画出来的格子 onBuilt: (service) => { service.refs.set('getGridEl', () => this.getPart('grid')) // 区间挑到一半时，指针在根节点之外松开就地收口 service.refs.set('getBoundaryEls', () => [this.getPart('root')]) }, }, )"
+              "default": "new MachineController<CalendarRangePickerSchema>( this, calendarRangePickerMachine, () => this.machineProps(), { // 机器跨月后靠它把焦点送进重画出来的格子 onBuilt: (service) => { service.refs.set('getGridEl', () => this.getPart('grid')) // 区间挑到一半时，指针在根节点之外松开就地收口 service.refs.set('getBoundaryEls', () => [this.getPart('root')]) }, }, )"
             },
             {
               "kind": "method",
@@ -3732,7 +4423,7 @@
               "privacy": "private",
               "return": {
                 "type": {
-                  "text": "Partial<CalendarSchema['props']>"
+                  "text": "Partial<CalendarRangePickerSchema['props']>"
                 }
               }
             },
@@ -3815,14 +4506,22 @@
                   "text": "void"
                 }
               }
+            },
+            {
+              "type": {
+                "text": "string[]"
+              },
+              "description": "非受控初始区间",
+              "name": "default-value",
+              "kind": "field"
             }
           ],
           "events": [
             {
-              "description": "选中集合变化；detail 为 `{ value: string[] }`",
+              "description": "区间两端都落定；detail 为 `{ value: string[] }`，长度恒为 2",
               "name": "value-change",
               "type": {
-                "text": "CalendarValueChangeDetails"
+                "text": "CalendarRangePickerValueChangeDetails"
               }
             },
             {
@@ -3841,30 +4540,6 @@
             }
           ],
           "attributes": [
-            {
-              "type": {
-                "text": "string | string[] | undefined"
-              },
-              "description": "受控选中值（单选简写，ISO 串）；缺省即非受控，多选/区间用 property",
-              "name": "value",
-              "fieldName": "value"
-            },
-            {
-              "type": {
-                "text": "string | string[] | undefined"
-              },
-              "description": "非受控初始选中值",
-              "name": "default-value",
-              "fieldName": "defaultValue"
-            },
-            {
-              "type": {
-                "text": "CalendarSelectionMode | undefined"
-              },
-              "description": "选择模式，默认 single",
-              "name": "selection-mode",
-              "fieldName": "selectionMode"
-            },
             {
               "type": {
                 "text": "string | undefined"
@@ -3965,7 +4640,7 @@
               "type": {
                 "text": "CalendarGranularity | undefined"
               },
-              "description": "选择粒度，默认 day；与 selection-mode 正交",
+              "description": "选择粒度，默认 day",
               "name": "granularity",
               "fieldName": "granularity"
             },
@@ -3992,158 +4667,173 @@
               "description": "并排展示几页",
               "name": "visible-count",
               "fieldName": "visibleCount"
+            },
+            {
+              "name": "value",
+              "type": {
+                "text": "string[]"
+              },
+              "description": "受控区间两端（升序 ISO 串）；缺省即非受控，只走 property",
+              "fieldName": "value"
+            },
+            {
+              "name": "default-value",
+              "type": {
+                "text": "string | string[] | undefined"
+              },
+              "fieldName": "defaultValue"
             }
           ],
           "superclass": {
             "name": "XhElement",
             "module": "/src/element-base"
           },
-          "tagName": "xh-calendar",
+          "tagName": "xh-calendar-range-picker",
           "customElement": true,
           "cssProperties": [
             {
-              "name": "--xh-calendar-cell-bg-hover"
+              "name": "--xh-calendar-range-picker-cell-bg-hover"
             },
             {
-              "name": "--xh-calendar-cell-bg-selected"
+              "name": "--xh-calendar-range-picker-cell-bg-selected"
             },
             {
-              "name": "--xh-calendar-cell-bg-selected-active"
+              "name": "--xh-calendar-range-picker-cell-bg-selected-active"
             },
             {
-              "name": "--xh-calendar-cell-fg"
+              "name": "--xh-calendar-range-picker-cell-fg"
             },
             {
-              "name": "--xh-calendar-cell-fg-outside"
+              "name": "--xh-calendar-range-picker-cell-fg-outside"
             },
             {
-              "name": "--xh-calendar-cell-fg-selected"
+              "name": "--xh-calendar-range-picker-cell-fg-selected"
             },
             {
-              "name": "--xh-calendar-cell-font-size"
+              "name": "--xh-calendar-range-picker-cell-font-size"
             },
             {
-              "name": "--xh-calendar-cell-font-weight"
+              "name": "--xh-calendar-range-picker-cell-font-weight"
             },
             {
-              "name": "--xh-calendar-cell-gap"
+              "name": "--xh-calendar-range-picker-cell-gap"
             },
             {
-              "name": "--xh-calendar-cell-radius"
+              "name": "--xh-calendar-range-picker-cell-radius"
             },
             {
-              "name": "--xh-calendar-cell-size"
+              "name": "--xh-calendar-range-picker-cell-size"
             },
             {
-              "name": "--xh-calendar-gap"
+              "name": "--xh-calendar-range-picker-gap"
             },
             {
-              "name": "--xh-calendar-grid-gap"
+              "name": "--xh-calendar-range-picker-grid-gap"
             },
             {
-              "name": "--xh-calendar-header-gap"
+              "name": "--xh-calendar-range-picker-header-gap"
             },
             {
-              "name": "--xh-calendar-heading-fg"
+              "name": "--xh-calendar-range-picker-heading-fg"
             },
             {
-              "name": "--xh-calendar-heading-font-size"
+              "name": "--xh-calendar-range-picker-heading-font-size"
             },
             {
-              "name": "--xh-calendar-heading-font-weight"
+              "name": "--xh-calendar-range-picker-heading-font-weight"
             },
             {
-              "name": "--xh-calendar-heading-trigger-fg-hover"
+              "name": "--xh-calendar-range-picker-heading-trigger-fg-hover"
             },
             {
-              "name": "--xh-calendar-heading-trigger-px"
+              "name": "--xh-calendar-range-picker-heading-trigger-px"
             },
             {
-              "name": "--xh-calendar-heading-trigger-radius"
+              "name": "--xh-calendar-range-picker-heading-trigger-radius"
             },
             {
-              "name": "--xh-calendar-icon-size"
+              "name": "--xh-calendar-range-picker-icon-size"
             },
             {
-              "name": "--xh-calendar-nav-bg"
+              "name": "--xh-calendar-range-picker-nav-bg"
             },
             {
-              "name": "--xh-calendar-nav-bg-hover"
+              "name": "--xh-calendar-range-picker-nav-bg-hover"
             },
             {
-              "name": "--xh-calendar-nav-fg"
+              "name": "--xh-calendar-range-picker-nav-fg"
             },
             {
-              "name": "--xh-calendar-nav-fg-hover"
+              "name": "--xh-calendar-range-picker-nav-fg-hover"
             },
             {
-              "name": "--xh-calendar-nav-radius"
+              "name": "--xh-calendar-range-picker-nav-radius"
             },
             {
-              "name": "--xh-calendar-nav-size"
+              "name": "--xh-calendar-range-picker-nav-size"
             },
             {
-              "name": "--xh-calendar-period-gap"
+              "name": "--xh-calendar-range-picker-period-gap"
             },
             {
-              "name": "--xh-calendar-period-py"
+              "name": "--xh-calendar-range-picker-period-py"
             },
             {
-              "name": "--xh-calendar-period-radius"
+              "name": "--xh-calendar-range-picker-period-radius"
             },
             {
-              "name": "--xh-calendar-range-bg"
+              "name": "--xh-calendar-range-picker-range-bg"
             },
             {
-              "name": "--xh-calendar-range-cap-radius"
+              "name": "--xh-calendar-range-picker-range-cap-radius"
             },
             {
-              "name": "--xh-calendar-range-row-radius"
+              "name": "--xh-calendar-range-picker-range-row-radius"
             },
             {
-              "name": "--xh-calendar-row-gap"
+              "name": "--xh-calendar-range-picker-row-gap"
             },
             {
-              "name": "--xh-calendar-today-bg"
+              "name": "--xh-calendar-range-picker-today-bg"
             },
             {
-              "name": "--xh-calendar-today-bg-hover"
+              "name": "--xh-calendar-range-picker-today-bg-hover"
             },
             {
-              "name": "--xh-calendar-today-border"
+              "name": "--xh-calendar-range-picker-today-border"
             },
             {
-              "name": "--xh-calendar-today-fg"
+              "name": "--xh-calendar-range-picker-today-fg"
             },
             {
-              "name": "--xh-calendar-week-cell-px"
+              "name": "--xh-calendar-range-picker-week-cell-px"
             },
             {
-              "name": "--xh-calendar-week-day-fg"
+              "name": "--xh-calendar-range-picker-week-day-fg"
             },
             {
-              "name": "--xh-calendar-week-day-font-size"
+              "name": "--xh-calendar-range-picker-week-day-font-size"
             },
             {
-              "name": "--xh-calendar-week-day-font-weight"
+              "name": "--xh-calendar-range-picker-week-day-font-weight"
             },
             {
-              "name": "--xh-calendar-week-day-h"
+              "name": "--xh-calendar-range-picker-week-day-h"
             },
             {
-              "name": "--xh-calendar-week-number-fg"
+              "name": "--xh-calendar-range-picker-week-number-fg"
             },
             {
-              "name": "--xh-calendar-week-number-font-size"
+              "name": "--xh-calendar-range-picker-week-number-font-size"
             },
             {
-              "name": "--xh-calendar-week-number-w"
+              "name": "--xh-calendar-range-picker-week-number-w"
             },
             {
-              "name": "--xh-calendar-year-grid-max-h"
+              "name": "--xh-calendar-range-picker-year-grid-max-h"
             },
             {
-              "name": "--xh-calendar-year-grid-pe"
+              "name": "--xh-calendar-range-picker-year-grid-pe"
             }
           ]
         }
@@ -4151,10 +4841,10 @@
       "exports": [
         {
           "kind": "js",
-          "name": "XhCalendarElement",
+          "name": "XhCalendarRangePickerElement",
           "declaration": {
-            "name": "XhCalendarElement",
-            "module": "src/elements/calendar.ts"
+            "name": "XhCalendarRangePickerElement",
+            "module": "src/elements/calendar-range-picker.ts"
           }
         }
       ]
@@ -12366,7 +13056,7 @@
       "declarations": [
         {
           "kind": "class",
-          "description": "`<xh-date-picker>` —— Light-DOM 行为宿主：作者写 root/label/control/segment-group/range-separator/segment/trigger/\nclear-trigger/positioner/content/calendar 角色节点，calendar 之内再照日历那套写\nheader/prev-trigger/next-trigger/heading/grid/grid-head/week-day/grid-body/week-row/cell/cell-trigger。\n\n本元素是编排机，只持有开合与「分段输入 ↔ 日历」之间的值同步；选日期、翻月、网格键盘导航\n委派给内嵌日历，分段输入委派给内嵌分段输入，两部件之内的 DOM 各戴各自的 data-scope。\n\n网格由作者渲染，元素不生成节点：读 `panels` / `weeks` / `weekDays` / `headingLabel` 几个只读属性，\n听 `focused-value-change` 与 `active-view-change` 重画。并排多页时读 `panels`，每页自带\n日期矩阵、粗粒度格子与标题；输入行铺哪几段读 `fieldSegments` 与 `fieldEndSegments`。\n日期身份取 cell 节点上的 `value`（ISO 串），\ncell-trigger 跟随所在 cell；表头列取 week-day 上的 `value`（列序 0-6）；\n段位可自带 `segment` 属性按段名认领（`segment=\"quarter\"`），或自带 `index` 属性声明下标，\n两者都没写按所在 segment-group 之内的文档序。\n\n区间模式（selection-mode=\"range\"）下 segment-group 写两个：文档序在前的是起点、在后的是终点，\n各自内部写一整套段位。段位与 hidden-input 按所在 segment-group 归组，方向键不跨组；\nhidden-input 写在 segment-group 之外（如与 control 平级）时按文档序对应起止两端。\n其余模式只认第一个 segment-group。",
+          "description": "`<xh-date-picker>` —— Light-DOM 行为宿主：作者写 root/label/control/segment-group/segment/trigger/\nclear-trigger/positioner/content/calendar 角色节点，calendar 之内再照日历选择器那套写\nheader/prev-trigger/next-trigger/heading/grid/grid-head/week-day/grid-body/week-row/cell/cell-trigger。\n\n本元素是编排机，只持有开合与「分段输入 ↔ 日历」之间的值同步；选日期、翻月、网格键盘导航\n委派给内嵌日历，分段输入委派给内嵌分段输入，两部件之内的 DOM 各戴各自的 data-scope。\n\n网格由作者渲染，元素不生成节点：读 `panels` / `weeks` / `weekDays` / `headingLabel` 几个只读属性，\n听 `focused-value-change` 与 `active-view-change` 重画。并排多页时读 `panels`，每页自带\n日期矩阵、粗粒度格子与标题；输入行铺哪几段读 `fieldSegments`。\n日期身份取 cell 节点上的 `value`（ISO 串），\ncell-trigger 跟随所在 cell；表头列取 week-day 上的 `value`（列序 0-6）；\n段位可自带 `segment` 属性按段名认领（`segment=\"quarter\"`），或自带 `index` 属性声明下标，\n两者都没写按所在 segment-group 之内的文档序。区间选择是另一个元素 `<xh-date-range-picker>`。",
           "name": "XhDatePickerElement",
           "cssParts": [
             {
@@ -12382,12 +13072,8 @@
               "name": "control"
             },
             {
-              "description": "role=group 的分段容器，段位挂在它里面；区间模式下有起止两个，data-index 区分",
+              "description": "role=group 的分段容器，段位挂在它里面",
               "name": "segment-group"
-            },
-            {
-              "description": "区间起止输入之间的视觉分隔；非区间模式自动隐藏",
-              "name": "range-separator"
             },
             {
               "description": "一段一个的 spinbutton 节点（data-scope=\"date-field\"）。可自带 segment 属性按段名认领 （segment=\"quarter\"），或自带 index 属性声明下标（在所属 segment-group 组内数），两者都没写按文档序",
@@ -12434,7 +13120,7 @@
               "name": "confirm-trigger"
             },
             {
-              "description": "日历标题栏外壳（data-scope=\"calendar\"）",
+              "description": "日历标题栏外壳（data-scope=\"calendar-picker\"）",
               "name": "header"
             },
             {
@@ -12498,7 +13184,7 @@
               "name": "cell-trigger"
             },
             {
-              "description": "type=hidden 的表单出口，值是 ISO 串；区间模式下起止各一份",
+              "description": "type=hidden 的表单出口，值是 ISO 串",
               "name": "hidden-input"
             }
           ],
@@ -12518,7 +13204,7 @@
                 "text": "object"
               },
               "static": true,
-              "default": "{ anatomy: datePickerAnatomy, meta: datePickerMeta, delegates: [dateFieldAnatomy, calendarAnatomy], }"
+              "default": "{ anatomy: datePickerAnatomy, meta: datePickerMeta, delegates: [dateFieldAnatomy, calendarPickerAnatomy], }"
             },
             {
               "kind": "field",
@@ -12597,7 +13283,7 @@
               "name": "selectionMode",
               "privacy": "public",
               "type": {
-                "text": "CalendarSelectionMode | undefined"
+                "text": "CalendarPickerSelectionMode | undefined"
               },
               "attribute": "selection-mode"
             },
@@ -12692,15 +13378,6 @@
             },
             {
               "kind": "field",
-              "name": "allowsNonContiguousRanges",
-              "privacy": "public",
-              "type": {
-                "text": "boolean | undefined"
-              },
-              "attribute": "allows-non-contiguous-ranges"
-            },
-            {
-              "kind": "field",
               "name": "required",
               "privacy": "public",
               "type": {
@@ -12716,15 +13393,6 @@
                 "text": "string | undefined"
               },
               "attribute": "name"
-            },
-            {
-              "kind": "field",
-              "name": "endName",
-              "privacy": "public",
-              "type": {
-                "text": "string | undefined"
-              },
-              "attribute": "end-name"
             },
             {
               "kind": "field",
@@ -12820,7 +13488,7 @@
               "name": "isDateUnavailable",
               "privacy": "public",
               "type": {
-                "text": "(value: string, anchor: string | null) => boolean | undefined"
+                "text": "(value: string) => boolean | undefined"
               }
             },
             {
@@ -12908,7 +13576,7 @@
               "name": "calendarCtrl",
               "privacy": "private",
               "readonly": true,
-              "default": "new MachineController<CalendarSchema>( this, calendarMachine, () => datePickerCalendarProps(this.rootCtrl.service), { scope: this.pickerScope, // 机器跨月后靠它把焦点送进重画出来的格子 onBuilt: (service) => { service.refs.set('getGridEl', () => this.getPart('grid')) // 区间挑到一半时，指针在浮层与输入行之外松开就地收口 service.refs.set('getBoundaryEls', () => [this.getPart('content'), this.getPart('control')]) }, }, )"
+              "default": "new MachineController<CalendarPickerSchema>( this, calendarPickerMachine, () => datePickerCalendarProps(this.rootCtrl.service), { scope: this.pickerScope, // 机器跨月后靠它把焦点送进重画出来的格子 onBuilt: (service) => { service.refs.set('getGridEl', () => this.getPart('grid')) }, }, )"
             },
             {
               "kind": "field",
@@ -12916,13 +13584,6 @@
               "privacy": "private",
               "readonly": true,
               "default": "new MachineController<DateFieldSchema>( this, dateFieldMachine, () => datePickerFieldProps(this.rootCtrl.service), { scope: this.pickerScope }, )"
-            },
-            {
-              "kind": "field",
-              "name": "fieldEndCtrl",
-              "privacy": "private",
-              "readonly": true,
-              "default": "new MachineController<DateFieldSchema>( this, dateFieldMachine, () => datePickerFieldEndProps(this.rootCtrl.service), { scope: this.pickerScope }, )"
             },
             {
               "kind": "field",
@@ -13038,7 +13699,7 @@
               "type": {
                 "text": "CalendarPanel[]"
               },
-              "description": "并排展示的面板，长度即此刻铺了几页（区间跨页时是两页）。\n每页自带日期矩阵、粗粒度格子与标题，作者照它渲染 calendar / heading / grid 那几层。",
+              "description": "并排展示的面板，长度即此刻铺了几页。\n每页自带日期矩阵、粗粒度格子与标题，作者照它渲染 calendar / heading / grid 那几层。",
               "readonly": true
             },
             {
@@ -13065,7 +13726,7 @@
               "type": {
                 "text": "CalendarPeriodValue | null"
               },
-              "description": "single / range 的规范化周期值；multiple 返回 null。",
+              "description": "单选的规范化周期值；multiple 返回 null。",
               "readonly": true
             },
             {
@@ -13092,16 +13753,7 @@
               "type": {
                 "text": "DateFieldSegmentState[]"
               },
-              "description": "输入行此刻该铺哪几段（段名、当前文字与占位），段数与段序按 granularity 与 locale 推出来。\n作者照它写 segment 节点，不必自己数几段。区间模式下这是起点那一组。",
-              "readonly": true
-            },
-            {
-              "kind": "field",
-              "name": "fieldEndSegments",
-              "type": {
-                "text": "DateFieldSegmentState[]"
-              },
-              "description": "区间终点那一组该铺哪几段；非区间模式为空数组。",
+              "description": "输入行此刻该铺哪几段（段名、当前文字与占位），段数与段序按 granularity 与 locale 推出来。\n作者照它写 segment 节点，不必自己数几段。",
               "readonly": true
             },
             {
@@ -13128,25 +13780,6 @@
                 }
               ],
               "description": "取 owner 子树内指定名字的角色节点。"
-            },
-            {
-              "kind": "method",
-              "name": "hiddenInputGroups",
-              "privacy": "private",
-              "return": {
-                "type": {
-                  "text": "HTMLElement[][]"
-                }
-              },
-              "parameters": [
-                {
-                  "name": "groupsOfSegments",
-                  "type": {
-                    "text": "readonly HTMLElement[]"
-                  }
-                }
-              ],
-              "description": "把隐藏输入分到起止两端：写在某个 segment-group 之内的归那一组，\n写在全部 segment-group 之外的按自己的文档序对号入座。多出来的一律不接线。"
             },
             {
               "kind": "method",
@@ -13219,7 +13852,7 @@
               "type": {
                 "text": "string | string[] | undefined"
               },
-              "description": "受控选中值（单选简写，ISO 串）；缺省该属性即非受控，区间/多选请用 property 传数组",
+              "description": "受控选中值（单选简写，ISO 串）；缺省该属性即非受控，多选请用 property 传数组",
               "name": "value",
               "fieldName": "value"
             },
@@ -13281,7 +13914,7 @@
             },
             {
               "type": {
-                "text": "CalendarSelectionMode | undefined"
+                "text": "CalendarPickerSelectionMode | undefined"
               },
               "description": "选择模式，默认 single",
               "name": "selection-mode",
@@ -13307,7 +13940,7 @@
               "type": {
                 "text": "number | undefined"
               },
-              "description": "并排展示几页；缺省单选 1，区间按两端定，同一页放得下就 1",
+              "description": "并排展示几页；缺省 1",
               "name": "visible-count",
               "fieldName": "visibleCount"
             },
@@ -13347,17 +13980,9 @@
               "type": {
                 "text": "boolean | undefined"
               },
-              "description": "校验失败标注；不给也会自己判：任一端越界、或区间终点早于起点",
+              "description": "校验失败标注；不给也会自己判：填齐了但越界",
               "name": "invalid",
               "fieldName": "invalid"
-            },
-            {
-              "type": {
-                "text": "boolean | undefined"
-              },
-              "description": "区间允许跨过不可用的日子；默认关，落了起点后只能挑到两侧最近的不可用日为止",
-              "name": "allows-non-contiguous-ranges",
-              "fieldName": "allowsNonContiguousRanges"
             },
             {
               "type": {
@@ -13371,17 +13996,9 @@
               "type": {
                 "text": "string | undefined"
               },
-              "description": "表单字段名；给了隐藏输入才带 name。区间模式下是起点那一份",
+              "description": "表单字段名；给了隐藏输入才带 name",
               "name": "name",
               "fieldName": "name"
-            },
-            {
-              "type": {
-                "text": "string | undefined"
-              },
-              "description": "区间终点那份隐藏输入的表单字段名；不给即终点不参与提交",
-              "name": "end-name",
-              "fieldName": "endName"
             },
             {
               "type": {
@@ -13655,15 +14272,6 @@
             },
             {
               "name": "--xh-date-picker-preset-radius"
-            },
-            {
-              "name": "--xh-date-picker-range-separator-fg"
-            },
-            {
-              "name": "--xh-date-picker-range-separator-mx"
-            },
-            {
-              "name": "--xh-date-picker-range-separator-px"
             },
             {
               "name": "--xh-date-picker-time-column-gap"
