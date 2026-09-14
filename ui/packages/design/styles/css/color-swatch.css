@@ -1,0 +1,35 @@
+/*
+ * Copyright (c) 2021-Present XiHanFun and contributors.
+ * Licensed under the MIT License. See LICENSE in the project root for license information.
+ */
+
+/* 定义 color swatch 样式。 */
+
+@import '../family/swatch.css';
+
+@layer xihan.components {
+  /* 皮肤在场的标记：开发模式下按 scope 探一次，取不到就说明这份皮肤没被引入。 */
+  [data-scope='color-swatch'] {
+    --xh-color-swatch-skin: 1;
+  }
+
+  /* 面、棋盘格、描边与尺寸档全由色块面家族画（root 带 data-xh-swatch）；
+     组件层只把自己的公开槽映射到家族合同，并给行内排版补一个基线对齐。
+     棋盘格的两色是家族层的事（--xh-swatch-checker / --xh-swatch-checker-base），画的是「透明」本身，不随组件换 */
+  [data-scope='color-swatch'][data-part='root'] {
+    --xh-swatch-size: var(--xh-color-swatch-size, var(--xh-_swatch-size));
+    --xh-swatch-radius: var(--xh-color-swatch-radius, var(--xh-shape-inset));
+    --xh-swatch-border: var(--xh-color-swatch-border, var(--xh-border-default));
+
+    vertical-align: middle;
+  }
+
+  /* 解析不出的颜色只剩棋盘格：描边换成危险色，看得出这里本该有个颜色 */
+  [data-scope='color-swatch'][data-part='root'][data-invalid] {
+    --xh-swatch-border: var(--xh-color-swatch-border-invalid, var(--xh-border-invalid));
+  }
+
+  [data-scope='color-swatch'][data-part='root'][hidden] {
+    display: none;
+  }
+}

@@ -462,6 +462,8 @@ export type {
 export { useColorPickerChannelContext, useColorPickerContext } from './components/color-picker/context'
 export { useColorPicker } from './components/color-picker/use-color-picker'
 export type { ColorPickerContext } from './components/color-picker/use-color-picker'
+export { XhColorSwatch } from './components/color-swatch/color-swatch'
+export type { XhColorSwatchProps } from './components/color-swatch/color-swatch'
 export {
   XhComboboxClearTrigger,
   XhComboboxContent,

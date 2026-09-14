@@ -9640,6 +9640,127 @@
     },
     {
       "kind": "javascript-module",
+      "path": "src/elements/color-swatch.ts",
+      "declarations": [
+        {
+          "kind": "class",
+          "description": "`<xh-color-swatch>` —— 颜色色块宿主，无状态机。\n\n把一个颜色画成一小块给人看，不接交互；颜色经家族配方铺在棋盘格上。\n要挑颜色请用 `<xh-color-swatch-picker>`。",
+          "name": "XhColorSwatchElement",
+          "cssParts": [
+            {
+              "description": "色块本体（role=img）",
+              "name": "root"
+            }
+          ],
+          "members": [
+            {
+              "kind": "field",
+              "name": "partContract",
+              "type": {
+                "text": "object"
+              },
+              "static": true,
+              "default": "{ anatomy: colorSwatchAnatomy, meta: colorSwatchMeta }"
+            },
+            {
+              "kind": "field",
+              "name": "value",
+              "privacy": "public",
+              "type": {
+                "text": "string | undefined"
+              },
+              "attribute": "value"
+            },
+            {
+              "kind": "field",
+              "name": "size",
+              "privacy": "public",
+              "type": {
+                "text": "Size | undefined"
+              },
+              "attribute": "size"
+            },
+            {
+              "kind": "field",
+              "name": "label",
+              "privacy": "public",
+              "type": {
+                "text": "string | undefined"
+              },
+              "attribute": "label"
+            },
+            {
+              "kind": "method",
+              "name": "wire",
+              "privacy": "protected",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              }
+            }
+          ],
+          "attributes": [
+            {
+              "type": {
+                "text": "string | undefined"
+              },
+              "description": "要展示的颜色串：#rgb / #rrggbb(aa) / rgb() / hsl()，不认颜色关键字；解析不出时只画棋盘格并带 data-invalid",
+              "name": "value",
+              "fieldName": "value"
+            },
+            {
+              "type": {
+                "text": "Size | undefined"
+              },
+              "description": "尺寸：换的是边长与棋盘格粒度",
+              "name": "size",
+              "fieldName": "size"
+            },
+            {
+              "type": {
+                "text": "string | undefined"
+              },
+              "description": "读屏怎么念这块颜色，例如「品牌红」；不给就念颜色串",
+              "name": "label",
+              "fieldName": "label"
+            }
+          ],
+          "superclass": {
+            "name": "XhElement",
+            "module": "/src/element-base"
+          },
+          "tagName": "xh-color-swatch",
+          "customElement": true,
+          "cssProperties": [
+            {
+              "name": "--xh-color-swatch-border"
+            },
+            {
+              "name": "--xh-color-swatch-border-invalid"
+            },
+            {
+              "name": "--xh-color-swatch-radius"
+            },
+            {
+              "name": "--xh-color-swatch-size"
+            }
+          ]
+        }
+      ],
+      "exports": [
+        {
+          "kind": "js",
+          "name": "XhColorSwatchElement",
+          "declaration": {
+            "name": "XhColorSwatchElement",
+            "module": "src/elements/color-swatch.ts"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
       "path": "src/elements/combobox.ts",
       "declarations": [
         {

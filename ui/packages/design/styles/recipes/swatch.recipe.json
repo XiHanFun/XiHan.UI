@@ -1,0 +1,35 @@
+{
+  "$description": "Swatch 色块面家族配方：棋盘格底、颜色填充层、描边与尺寸档只有这一份生成真源；颜色色块、色块选择器的格子、取色器与颜色字段里的当前色块只投影角色、尺寸与颜色。",
+  "version": 1,
+  "sizes": [
+    "sm",
+    "md",
+    "lg"
+  ],
+  "sizeValues": {
+    "sm": {
+      "boxSize": "var(--xh-glyph-size-sm)",
+      "checkerTile": "var(--xh-space-1)"
+    },
+    "md": {
+      "boxSize": "var(--xh-glyph-size-md)",
+      "checkerTile": "var(--xh-space-1)"
+    },
+    "lg": {
+      "boxSize": "var(--xh-glyph-size-lg)",
+      "checkerTile": "var(--xh-space-1_5)"
+    }
+  },
+  "surface": {
+    "radius": "var(--xh-shape-inset)",
+    "borderColor": "var(--xh-border-default)",
+    "checkerBase": "var(--xh-bg-surface)",
+    "checkerColor": "var(--xh-color-neutral-300)"
+  },
+  "print": {
+    "strategy": "exact-color"
+  },
+  "forcedColors": {
+    "borderColor": "CanvasText"
+  }
+}

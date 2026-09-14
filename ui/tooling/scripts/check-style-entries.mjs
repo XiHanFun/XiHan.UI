@@ -12,6 +12,7 @@ import { readdir, readFile } from 'node:fs/promises'
 import { emitActionControlRecipe } from '../../packages/design/styles/build/action-control-recipe.mjs'
 import { emitCollectionItemRecipe } from '../../packages/design/styles/build/collection-item-recipe.mjs'
 import { emitFieldChromeRecipe } from '../../packages/design/styles/build/field-chrome-recipe.mjs'
+import { emitSwatchRecipe } from '../../packages/design/styles/build/swatch-recipe.mjs'
 
 const PKG = 'packages/design/styles'
 
@@ -33,6 +34,7 @@ try {
   await emitActionControlRecipe({ check: true })
   await emitFieldChromeRecipe({ check: true })
   await emitCollectionItemRecipe({ check: true })
+  await emitSwatchRecipe({ check: true })
 }
 catch (error) {
   errors.push(error instanceof Error ? error.message : String(error))

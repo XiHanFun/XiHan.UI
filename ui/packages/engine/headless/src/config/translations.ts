@@ -30,6 +30,7 @@ import type { ClipboardTranslations } from '../clipboard/clipboard.types'
 import type { CodeViewTranslations } from '../code-view/code-view.types'
 import type { CollapsibleTranslations } from '../collapsible/collapsible.types'
 import type { ColorPickerTranslations } from '../color-picker/color-picker.types'
+import type { ColorSwatchTranslations } from '../color-swatch/color-swatch.types'
 import type { ComboboxTranslations } from '../combobox/combobox.types'
 import type { CommandTranslations } from '../command/command.types'
 import type { ContextMenuTranslations } from '../context-menu/context-menu.types'
@@ -162,6 +163,7 @@ export interface XhTranslationOverrides {
   'code-view'?: Partial<CodeViewTranslations>
   'collapsible'?: Partial<CollapsibleTranslations>
   'color-picker'?: Partial<ColorPickerTranslations>
+  'color-swatch'?: Partial<ColorSwatchTranslations>
   'combobox'?: Partial<ComboboxTranslations>
   'command'?: Partial<CommandTranslations>
   'context-menu'?: Partial<ContextMenuTranslations>

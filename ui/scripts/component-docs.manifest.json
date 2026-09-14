@@ -396,6 +396,10 @@
           "name": "折叠区域"
         },
         {
+          "id": "color-swatch",
+          "name": "颜色色块"
+        },
+        {
           "id": "descriptions",
           "name": "描述列表"
         },

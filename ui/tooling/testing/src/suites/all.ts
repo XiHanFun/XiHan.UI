@@ -22,6 +22,7 @@ import { clipboardSuite } from './clipboard.suite'
 import { codeViewSuite } from './code-view.suite'
 import { collapsibleSuite } from './collapsible.suite'
 import { colorPickerSuite } from './color-picker.suite'
+import { colorSwatchSuite } from './color-swatch.suite'
 import { comboboxSuite } from './combobox.suite'
 import { commandSuite } from './command.suite'
 import { contextMenuSuite } from './context-menu.suite'
@@ -260,4 +261,5 @@ export const allSuites: readonly ConformanceSuite[] = [
   commandSuite,
   dateRangePickerSuite,
   timeRangePickerSuite,
+  colorSwatchSuite,
 ]

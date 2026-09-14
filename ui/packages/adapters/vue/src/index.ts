@@ -223,6 +223,7 @@ export {
 export type { ColorPickerRootSlotProps } from './components/color-picker/color-picker'
 export { useColorPicker } from './components/color-picker/use-color-picker'
 export type { ColorPickerContext } from './components/color-picker/use-color-picker'
+export { XhColorSwatch } from './components/color-swatch/color-swatch'
 export {
   XhComboboxClearTrigger,
   XhComboboxContent,

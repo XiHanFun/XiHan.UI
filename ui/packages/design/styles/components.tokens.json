@@ -12436,6 +12436,78 @@
       "description": "color-picker 的 value-text 部件 font-size 覆盖槽。"
     },
     {
+      "name": "--xh-color-swatch-border",
+      "component": "color-swatch",
+      "part": [
+        "root"
+      ],
+      "property": [
+        "--xh-swatch-border"
+      ],
+      "state": [
+        "default"
+      ],
+      "defaultToken": [
+        "--xh-border-default"
+      ],
+      "visibility": "public",
+      "description": "color-swatch 的 root 部件 --xh-swatch-border 覆盖槽。"
+    },
+    {
+      "name": "--xh-color-swatch-border-invalid",
+      "component": "color-swatch",
+      "part": [
+        "root"
+      ],
+      "property": [
+        "--xh-swatch-border"
+      ],
+      "state": [
+        "invalid"
+      ],
+      "defaultToken": [
+        "--xh-border-invalid"
+      ],
+      "visibility": "public",
+      "description": "color-swatch 的 root 部件 --xh-swatch-border 覆盖槽。"
+    },
+    {
+      "name": "--xh-color-swatch-radius",
+      "component": "color-swatch",
+      "part": [
+        "root"
+      ],
+      "property": [
+        "--xh-swatch-radius"
+      ],
+      "state": [
+        "default"
+      ],
+      "defaultToken": [
+        "--xh-shape-inset"
+      ],
+      "visibility": "public",
+      "description": "color-swatch 的 root 部件 --xh-swatch-radius 覆盖槽。"
+    },
+    {
+      "name": "--xh-color-swatch-size",
+      "component": "color-swatch",
+      "part": [
+        "root"
+      ],
+      "property": [
+        "--xh-swatch-size"
+      ],
+      "state": [
+        "default"
+      ],
+      "defaultToken": [
+        "--xh-_swatch-size"
+      ],
+      "visibility": "public",
+      "description": "color-swatch 的 root 部件 --xh-swatch-size 覆盖槽。"
+    },
+    {
       "name": "--xh-combobox-action-bg",
       "component": "combobox",
       "part": [
