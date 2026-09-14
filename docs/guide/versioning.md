@@ -79,8 +79,8 @@ XiHan.UI 的公开面横跨五种介质，因为「丢掉自带皮肤自己写�
 
 | 类别 | 数量 | 为什么排除是安全的 |
 | --- | --- | --- |
-| `@xihan-ui/headless` 的内部算子与常量 | 625 | `clampRating`、`buildMonthGrid`、`colorPickerHexToRgba`、`CAROUSEL_AUTOPLAY_INTERVAL` 这类。它们是内核实现的一部分，改一次实现就得改一次签名。你需要的默认值应当从组件 props 的文档默认值读，不要 import 一个常量再自己比对 |
-| `@xihan-ui/headless` 的内部伴生类型 | 564 | `*Refs`（机器持有的 DOM 引用袋，45 个）、`ColorPickerHsva`、`CascaderLevel` 等，是上面那批函数的参数与返回类型 |
+| `@xihan-ui/headless` 的内部算子与常量 | 625 | `clampRating`、`buildMonthGrid`、`colorHexToRgba`、`CAROUSEL_AUTOPLAY_INTERVAL` 这类。它们是内核实现的一部分，改一次实现就得改一次签名。你需要的默认值应当从组件 props 的文档默认值读，不要 import 一个常量再自己比对 |
+| `@xihan-ui/headless` 的内部伴生类型 | 564 | `*Refs`（机器持有的 DOM 引用袋，45 个）、`ColorHsva`、`CascaderLevel` 等，是上面那批函数的参数与返回类型 |
 | `xxxAnatomy` / `xxxMeta` / `xxxKeyboard` 三组导出对象 | 各 129 | **它们描述的 part 名单是受约束的（见第二节），但这三个对象本身的组织方式不是。** 想拿到部件名单，请以组件文档页的解剖表为准，不要 import 这些对象 |
 | Vue 的 `provide*` / `use*Context` 函数 | 109 | [Vue 适配器](../adapters/vue) 早已写明「父子组件之间的 provide / inject 是内部实现，不对外开放」。要下探请用 `use<家族>()` |
 | Vue 的 `useTimelineItem` | 1 | 名字看着像组合式函数，实际是 inject 管道，与上一行同类 |
@@ -411,10 +411,10 @@ Web Components 侧不构成额外约束：全部 Light DOM，不用 shadow DOM�
 ### 已经焊死的
 
 **六种介质的「改名 = major」现在有门禁兜着。** `pnpm gate:surface` 跑的 `check-public-surface`
-拿一份入库的基线（`ui/tooling/public-surface.json`，14831 个名字）比对当前状态：
+拿一份入库的基线（`ui/tooling/public-surface.json`，14837 个名字）比对当前状态：
 **基线里有而当前没有，就是删了或改名了，构建失败**。新增一律放行，因为那是 minor。
 
-覆盖：包名与 184 条子入口、7730 个导出名、129 个 `data-scope` 与 988 条部件配对、
+覆盖：包名与 184 条子入口、7736 个导出名、129 个 `data-scope` 与 988 条部件配对、
 129 个组件的 1661 个 prop 名、221 种 `data-*`、34 个 `data-state` 取值、418 个令牌、
 5 个 `@layer` 名、3813 个组件覆盖槽、131 个自定义元素及其 attribute 与事件。
 

@@ -8,7 +8,8 @@ import { createRuntimeConfig, createService, normalizeProps } from '@xihan-ui/co
 import { createPresence } from '@xihan-ui/core/presence'
 import { createVanillaRuntime } from '@xihan-ui/core/vanilla'
 import { afterEach, describe, expect, it, vi } from 'vitest'
-import { colorPickerChannelSliderProps, colorPickerMachine, colorPickerParse, connectColorPicker } from '../src/color-picker'
+import { colorPickerChannelSliderProps, colorPickerMachine, connectColorPicker } from '../src/color-picker'
+import { colorParse } from '../src/shared/color'
 import { sliderMachine } from '../src/slider'
 
 type Props = ColorPickerSchema['props']
@@ -107,7 +108,7 @@ function pressChannel(
 
 /** 值串 → rgba，断言里用它比颜色，免得被写法差异绊倒。 */
 function rgbaOf(service: Service<ColorPickerSchema>) {
-  return colorPickerParse(service.context.get('value'))
+  return colorParse(service.context.get('value'))
 }
 
 // ── 拖动用的一套真实节点：矩形由测试自己摆，机器在事件那一刻现量 ──

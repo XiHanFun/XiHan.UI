@@ -18,21 +18,11 @@ import type {
   ColorPickerTranslations,
 } from './color-picker.types'
 import { dataAttr, isComposingEvent, ITEM_VALUE_ATTR, normalizeProps } from '@xihan-ui/core'
+import { colorCss, colorHsvaToRgba, colorHueCss, colorResolveFormat, colorResolveHsva, colorSameColor, colorToRgba } from '../shared/color'
 import { overlayAvailableSpaceVars, overlayFixedStyle, overlayPositioned } from '../shared/overlay'
 import { connectSlider } from '../slider'
 import { colorPickerAnatomy } from './color-picker.anatomy'
-import {
-  colorPickerChannelRange,
-  colorPickerChannelValue,
-  colorPickerCss,
-  colorPickerHsvaToRgba,
-  colorPickerHueCss,
-  colorPickerInputText,
-  colorPickerResolveFormat,
-  colorPickerResolveHsva,
-  colorPickerSameColor,
-  colorPickerToRgba,
-} from './color-picker.color'
+import { colorPickerChannelRange, colorPickerChannelValue, colorPickerInputText } from './color-picker.color'
 import { colorPickerPercent } from './color-picker.geometry'
 import { COLOR_PICKER_DEFAULT_PLACEMENT } from './color-picker.machine'
 
@@ -105,7 +95,7 @@ export function connectColorPicker<T extends PropTypes>(
   const eyeDropperSupported = context.get('eyeDropperSupported')
   const errors = context.get('errors')
 
-  const format = colorPickerResolveFormat(prop('format') as string | undefined) ?? 'hex'
+  const format = colorResolveFormat(prop('format') as string | undefined) ?? 'hex'
   const alpha = prop('alpha') ?? false
   const disabled = !!prop('disabled')
   const readOnly = !!prop('readOnly')
@@ -118,8 +108,8 @@ export function connectColorPicker<T extends PropTypes>(
   const flipHorizontal = dir === 'rtl'
 
   // 工作色由值串加锚结算，锚保住灰度处的色相
-  const hsva = colorPickerResolveHsva(value, context.get('anchor'))
-  const rgba = colorPickerHsvaToRgba(hsva)
+  const hsva = colorResolveHsva(value, context.get('anchor'))
+  const rgba = colorHsvaToRgba(hsva)
 
   const stateAttr = open ? 'open' : 'closed'
   // 位置由引擎写进 context，这里只读结果，不量 DOM、不调引擎
@@ -195,7 +185,7 @@ export function connectColorPicker<T extends PropTypes>(
     eyeDropperSupported,
     errors,
     swatches,
-    isSwatchSelected: swatch => colorPickerSameColor(swatch, value),
+    isSwatchSelected: swatch => colorSameColor(swatch, value),
     channelState,
     inputText,
     setOpen: (next) => {
@@ -255,7 +245,7 @@ export function connectColorPicker<T extends PropTypes>(
       // 纯装饰：颜色已由 value-text 念出
       'aria-hidden': true,
       'data-value': value,
-      'style': { background: colorPickerCss(rgba) },
+      'style': { background: colorCss(rgba) },
     }),
 
     getPositionerProps: () => normalize.element({
@@ -300,7 +290,7 @@ export function connectColorPicker<T extends PropTypes>(
       ...stateAttrs(),
       'data-dragging': dataAttr(areaDragging && dragTarget === 'area'),
       // 底色是当前色相的纯色，两层渐变（饱和度、明度）由皮肤盖在上面
-      'style': { backgroundColor: colorPickerHueCss(hsva.h), touchAction: 'none' },
+      'style': { backgroundColor: colorHueCss(hsva.h), touchAction: 'none' },
       // 按下即跳，随后的拖动由机器的 trackPointer 接手；挂在区域而不是拇指上
       'onPointerDown': (event: PointerEvent) => {
         // 只认主键：右键弹上下文菜单、中键是自动滚动
@@ -383,7 +373,7 @@ export function connectColorPicker<T extends PropTypes>(
       // 色相那条写空串清掉内联声明而不是不写键：WC 侧 Object.assign 不会撤掉上一帧旧键
       'style': {
         backgroundImage: channel === 'alpha'
-          ? `linear-gradient(to ${flipHorizontal ? 'left' : 'right'}, transparent, ${colorPickerCss({ ...rgba, a: 1 })})`
+          ? `linear-gradient(to ${flipHorizontal ? 'left' : 'right'}, transparent, ${colorCss({ ...rgba, a: 1 })})`
           : '',
       },
     }),
@@ -501,7 +491,7 @@ export function connectColorPicker<T extends PropTypes>(
     }),
 
     getSwatchItemProps: ({ value: swatch }: ColorPickerSwatchItemProps) => {
-      const selected = colorPickerSameColor(swatch, value)
+      const selected = colorSameColor(swatch, value)
       return normalize.button({
         ...parts['swatch-item'].attrs,
         // 身份写在 data-value 上：测试与样式都靠它认这一格是哪个颜色
@@ -514,7 +504,7 @@ export function connectColorPicker<T extends PropTypes>(
         'disabled': !interactive || undefined,
         'data-state': selected ? 'checked' : 'unchecked',
         'data-disabled': dataAttr(!interactive),
-        'style': { background: colorPickerCss(colorPickerToRgba(swatch)) },
+        'style': { background: colorCss(colorToRgba(swatch)) },
         'onClick': () => {
           if (interactive)
             send({ type: 'VALUE.SET', value: swatch, source: 'swatch' })

@@ -8830,7 +8830,7 @@
               "name": "format",
               "privacy": "public",
               "type": {
-                "text": "ColorPickerFormat | undefined"
+                "text": "ColorFormat | undefined"
               },
               "attribute": "format"
             },
@@ -9303,7 +9303,7 @@
             },
             {
               "type": {
-                "text": "ColorPickerFormat | undefined"
+                "text": "ColorFormat | undefined"
               },
               "description": "值串写法，默认 hex",
               "name": "format",

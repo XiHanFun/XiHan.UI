@@ -7,15 +7,9 @@
 
 import type { Cleanup, Direction, Layer, MachineSchema, Placement, PositionEnginePort, PositionResult, PropTypes, RuntimeConfig, Service, Size } from '@xihan-ui/core'
 import type { PresenceHandle } from '@xihan-ui/core/presence'
+import type { ColorAnchor, ColorFormat, ColorHsva, ColorRgba } from '../shared/color'
 import type { SliderSchema } from '../slider'
-import type {
-  ColorPickerAnchor,
-  ColorPickerChannel,
-  ColorPickerFormat,
-  ColorPickerHsva,
-  ColorPickerInputChannel,
-  ColorPickerRgba,
-} from './color-picker.color'
+import type { ColorPickerChannel, ColorPickerInputChannel } from './color-picker.color'
 import type { ColorPickerPoint } from './color-picker.geometry'
 
 /**
@@ -149,7 +143,7 @@ export interface ColorPickerSchema extends MachineSchema {
     value?: string
     defaultValue?: string
     /** 值串的写法，默认 hex。改它只改对外的序列化，工作色恒是 HSVA。 */
-    format?: ColorPickerFormat
+    format?: ColorFormat
     /** 展开态。给定即受控：内部不再自改，只发 onOpenChange。 */
     open?: boolean
     defaultOpen?: boolean
@@ -181,7 +175,7 @@ export interface ColorPickerSchema extends MachineSchema {
     /** 值串。受控（value 给定）时 cell 直读 prop。 */
     value: string
     /** 工作色的锚：上一次由内部操作产出的 HSVA 与它对应的串，灰度处的色相靠它保住。 */
-    anchor: ColorPickerAnchor | null
+    anchor: ColorAnchor | null
     /** 定位引擎回填的最新结果；connect 只读它，不碰 DOM 也不调引擎。 */
     position: PositionResult | null
     /** 某个输入框里还没收下的半截字；null = 没人在编辑，输入框显示规范文本。 */
@@ -273,10 +267,10 @@ export interface ColorPickerApi<T extends PropTypes = PropTypes> {
   open: boolean
   /** 当前值串（与 onValueChange 送出的是同一个）。 */
   value: string
-  rgba: ColorPickerRgba
+  rgba: ColorRgba
   /** 工作色。取色区与色相滑杆读的都是它。 */
-  hsva: ColorPickerHsva
-  format: ColorPickerFormat
+  hsva: ColorHsva
+  format: ColorFormat
   alpha: boolean
   disabled: boolean
   readOnly: boolean

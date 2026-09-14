@@ -94,7 +94,7 @@
 | --- | --- | --- | --- |
 | `value` | `string` |  | 颜色值串。给定即受控：cell 直读 prop，写只发 onValueChange 不落内部值。 |
 | `defaultValue` | `string` |  |  |
-| `format` | `ColorPickerFormat` |  | 值串的写法，默认 hex。改它只改对外的序列化，工作色恒是 HSVA。 |
+| `format` | `ColorFormat` |  | 值串的写法，默认 hex。改它只改对外的序列化，工作色恒是 HSVA。 |
 | `open` | `boolean` |  | 展开态。给定即受控：内部不再自改，只发 onOpenChange。 |
 | `defaultOpen` | `boolean` |  |  |
 | `disabled` | `boolean` |  | 整个控件禁用：trigger 与两个按钮走原生 disabled，取色区与滑杆退出 Tab 序列。 |
@@ -155,9 +155,9 @@
 | --- | --- | --- |
 | `open` | `boolean` |  |
 | `value` | `string` | 当前值串（与 onValueChange 送出的是同一个）。 |
-| `rgba` | `ColorPickerRgba` |  |
-| `hsva` | `ColorPickerHsva` | 工作色。取色区与色相滑杆读的都是它。 |
-| `format` | `ColorPickerFormat` |  |
+| `rgba` | `ColorRgba` |  |
+| `hsva` | `ColorHsva` | 工作色。取色区与色相滑杆读的都是它。 |
+| `format` | `ColorFormat` |  |
 | `alpha` | `boolean` |  |
 | `disabled` | `boolean` |  |
 | `readOnly` | `boolean` |  |

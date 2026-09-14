@@ -7,9 +7,9 @@
 
 import type { Direction, Placement, Size } from '@xihan-ui/core'
 import type {
+  ColorFormat,
   ColorPickerApi,
   ColorPickerChannel,
-  ColorPickerFormat,
   ColorPickerInputChannel,
   ColorPickerSchema,
   ColorPickerTranslations,
@@ -46,7 +46,7 @@ export interface XhColorPickerRootProps extends RootElementProps {
   /** 非受控初值。 */
   defaultValue?: string
   /** 值串的写法，默认 hex。改它只改对外的序列化，工作色恒是 HSVA。 */
-  format?: ColorPickerFormat
+  format?: ColorFormat
   open?: boolean
   defaultOpen?: boolean
   disabled?: boolean
