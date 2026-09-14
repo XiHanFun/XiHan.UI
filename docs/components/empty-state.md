@@ -3,8 +3,9 @@
 没有数据时那一块：说清楚为什么空，以及可以做什么。
 
 空态与结果页共用一副骨架：图标、标题、说明、操作四段与整页结果完全一致，所以 404、403、500
-这类结果页也用本组件铺。`status` 只落成 root 的 `data-status`，皮肤据它给图标区上语气色，
-不改任何语义、不带插画资产。
+这类结果页也用本组件铺。`status` 只收这三个状态码、只落成 root 的 `data-status`，皮肤据它给
+图标区并进最接近的一族语气色，不改任何语义、不带插画资产；成功、警示、出错、提示这类通用结果
+走全库同一根 `tone` 轴。
 
 <div class="xh-resource-links">
   <a href="https://github.com/XiHanFun/XiHan.UI/tree/dev/ui/packages/engine/headless/src/empty-state" target="_blank" rel="noreferrer">Headless</a>
@@ -48,15 +49,15 @@ size 只换留白与字号，语义一点不动；不传即 md
 
 ### 图标自带语气
 
-图标槽里放一枚带 tone 的图标，着色落在图标自己身上，不经过 status
+图标槽里放一枚带 tone 的图标，着色落在图标自己身上，不经过根上的 tone
 
 <XhDemo src="empty-state/05-tone-icon" />
 
-### 结果类型
+### 颜色
 
-status 只落成 data-status，皮肤据它给图标区上语气色；画什么图标仍由作者塞
+tone 给图标区上语气色，与全库同一根轴；画什么图标仍由作者塞
 
-<XhDemo src="empty-state/06-status" />
+<XhDemo src="empty-state/06-tone" />
 
 ## 设计指引
 
@@ -74,7 +75,7 @@ status 只落成 data-status，皮肤据它给图标区上语气色；画什么�
 
 - 图标、标题、描述、操作四段都可选。
 - `live` 决定这块内容出现时读屏怎么播报——搜索结果变空时这一条很重要。
-- `status` 决定图标区并进哪一族语气色：三个状态码各并进最接近的一族，另有成功、警示、出错、提示四档。
+- `status` 只收 404 / 403 / 500 三个状态码，各并进最接近的一族语气色；`tone` 直接指定语气，两者都写时以 `tone` 为准。
 
 ### 组合
 
@@ -110,8 +111,8 @@ status 只落成 data-status，皮肤据它给图标区上语气色；画什么�
 | --- | --- | --- | --- |
 | `live` | `EmptyStateLive` |  | 缺省 polite。 |
 | `size` | `Size` |  | 尺寸档位，只改留白与字号，不改语义。 |
-| `status` | `EmptyStateStatus` |  | 结果类型，只落成 root 的 data-status；图标画什么由作者塞进图标槽。 |
-| `tone` | `Tone` |  | 语气：brand / neutral / success / warning / danger / info，决定用哪族颜色。不给即维持中性。 |
+| `status` | `EmptyStateStatus` |  | 结果页的状态码，只落成 root 的 data-status；皮肤据它把图标区并进最接近的一族语气色，图标画什么由作者塞进图标槽。 |
+| `tone` | `Tone` |  | 语气：brand / neutral / success / warning / danger / info，决定图标区用哪族颜色；与 status 都写时以它为准。不给即维持中性。 |
 
 ### connect API
 

@@ -20174,7 +20174,7 @@
               "type": {
                 "text": "EmptyStateStatus | undefined"
               },
-              "description": "结果类型，写到 root 的 data-status 上",
+              "description": "结果页的状态码，写到 root 的 data-status 上；通用结果走 tone",
               "name": "status",
               "fieldName": "status"
             },

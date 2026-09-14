@@ -62,20 +62,20 @@ export const emptyStateSuite: ConformanceSuite = {
       },
     },
     {
-      name: 'status：只落成 data-status，不改任何语义，也不与 live 相干',
+      name: 'status：只收状态码、只落成 data-status，不改任何语义，也不与 live 相干；语气另走 data-tone',
       spec: { apg: APG },
       props: { status: '404', live: 'off' },
       initial: {
         parts: {
-          root: { 'role': null, 'data-status': '404' },
+          root: { 'role': null, 'data-status': '404', 'data-tone': null },
         },
       },
       steps: [
         {
           kind: 'setProps',
-          props: { status: 'success' },
+          props: { status: '500', tone: 'danger' },
           expect: {
-            parts: { root: { 'role': null, 'data-status': 'success' } },
+            parts: { root: { 'role': null, 'data-status': '500', 'data-tone': 'danger' } },
           },
         },
       ],

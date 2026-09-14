@@ -18,7 +18,7 @@ export interface XhEmptyStateRootProps extends ComponentPropsWithRef<'div'> {
   size?: Size
   /** 播报方式，缺省 polite；off 让根只是个普通容器。 */
   live?: EmptyStateLive
-  /** 结果类型，只落成 data-status。 */
+  /** 结果页的状态码，只落成 data-status；通用结果走 tone。 */
   status?: EmptyStateStatus
   /** 语气：决定用哪族颜色。 */
   tone?: Tone

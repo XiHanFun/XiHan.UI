@@ -11832,7 +11832,7 @@
   --xh-_empty-state-py: var(--xh-section-py-md);
   --xh-_empty-state-icon-size: var(--xh-glyph-size-2xl);
   --xh-_empty-state-title-size: var(--xh-control-font-lg);
-  /* 图标区的语气色，由 data-status 换掉；没写 status 就退成中性 */
+  /* 图标区的强调色：由 data-status（状态码）或 data-tone（语气）换掉；两样都没写就退成中性 */
   --xh-_empty-state-accent: var(--xh-fg-subtle);
 
   display: flex;
@@ -11865,24 +11865,18 @@
   --xh-_empty-state-title-size: var(--xh-text-heading-3-size);
 }
 
-/* —— 语气 —— */
+/* —— 状态码 —— */
 /* 三个状态码各并进最接近的一族：找不到=提示，没权限=警示，服务出错=危险。
-   用 500 档而不是 600：500 是装饰性强调档，600 是给实心底与文字用的 */
-[data-scope='empty-state'][data-part='root'][data-status='success'] {
-  --xh-_empty-state-accent: var(--xh-color-success-500);
-}
-
-[data-scope='empty-state'][data-part='root'][data-status='warning'],
+   用 500 档而不是 600：500 是装饰性强调档，600 是给实心底与文字用的。
+   成功 / 警示 / 出错 / 提示这类通用结果不在这儿：那是语气，走下面的 data-tone */
 [data-scope='empty-state'][data-part='root'][data-status='403'] {
   --xh-_empty-state-accent: var(--xh-color-warning-500);
 }
 
-[data-scope='empty-state'][data-part='root'][data-status='error'],
 [data-scope='empty-state'][data-part='root'][data-status='500'] {
   --xh-_empty-state-accent: var(--xh-color-danger-500);
 }
 
-[data-scope='empty-state'][data-part='root'][data-status='info'],
 [data-scope='empty-state'][data-part='root'][data-status='404'] {
   --xh-_empty-state-accent: var(--xh-color-info-500);
 }
