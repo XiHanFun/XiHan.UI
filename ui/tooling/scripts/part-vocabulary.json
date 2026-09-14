@@ -165,6 +165,7 @@
       "text-field",
       "time-field",
       "time-picker",
+      "time-range-picker",
       "tree-select"
     ],
     "close-trigger": [
@@ -184,10 +185,17 @@
     "column": [
       "cascader",
       "masonry",
-      "time-picker"
+      "time-picker",
+      "time-range-picker"
     ],
     "column-drag-trigger": [
       "table"
+    ],
+    "column-group": [
+      "time-range-picker"
+    ],
+    "column-group-label": [
+      "time-range-picker"
     ],
     "column-header": [
       "table"
@@ -248,6 +256,7 @@
       "steps",
       "tabs",
       "time-picker",
+      "time-range-picker",
       "timeline",
       "toast",
       "tool-call",
@@ -278,6 +287,7 @@
       "text-field",
       "time-field",
       "time-picker",
+      "time-range-picker",
       "timer",
       "tree-select"
     ],
@@ -531,6 +541,7 @@
       "tags-input",
       "time-field",
       "time-picker",
+      "time-range-picker",
       "toggle-group",
       "transfer",
       "tree-select"
@@ -635,6 +646,7 @@
       "steps",
       "tags-input",
       "time-picker",
+      "time-range-picker",
       "timeline",
       "timer",
       "toggle-group",
@@ -787,6 +799,7 @@
       "text-field",
       "time-field",
       "time-picker",
+      "time-range-picker",
       "timeline",
       "tool-call",
       "tree",
@@ -973,6 +986,7 @@
       "select",
       "side-nav",
       "time-picker",
+      "time-range-picker",
       "tooltip",
       "tour",
       "tree-select"
@@ -989,12 +1003,14 @@
     "preset": [
       "date-picker",
       "date-range-picker",
-      "time-picker"
+      "time-picker",
+      "time-range-picker"
     ],
     "preset-group": [
       "date-picker",
       "date-range-picker",
-      "time-picker"
+      "time-picker",
+      "time-range-picker"
     ],
     "prev-trigger": [
       "calendar-picker",
@@ -1040,7 +1056,8 @@
       "slider"
     ],
     "range-separator": [
-      "date-range-picker"
+      "date-range-picker",
+      "time-range-picker"
     ],
     "reset-trigger": [
       "form",
@@ -1161,6 +1178,7 @@
       "text-field",
       "time-field",
       "time-picker",
+      "time-range-picker",
       "timeline",
       "timer",
       "timestamp",
@@ -1223,14 +1241,16 @@
     "segment": [
       "date-field",
       "time-field",
-      "time-picker"
+      "time-picker",
+      "time-range-picker"
     ],
     "segment-group": [
       "date-field",
       "date-picker",
       "date-range-picker",
       "time-field",
-      "time-picker"
+      "time-picker",
+      "time-range-picker"
     ],
     "select-all-trigger": [
       "checkbox-group",
@@ -1428,6 +1448,7 @@
       "steps",
       "tabs",
       "time-picker",
+      "time-range-picker",
       "tool-call",
       "tooltip",
       "tree-select"

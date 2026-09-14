@@ -33,6 +33,8 @@ const STATUS_MARKS = {
   'date-range-picker:preset': '--xh-date-range-picker-preset-check-size',
   'time-picker:preset': '--xh-time-picker-preset-check-size',
   'time-picker:item': '--xh-time-picker-item-check-size',
+  'time-range-picker:preset': '--xh-time-range-picker-preset-check-size',
+  'time-range-picker:item': '--xh-time-range-picker-item-check-size',
 }
 const statusMarksSeen = new Set()
 

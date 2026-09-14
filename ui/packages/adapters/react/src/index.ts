@@ -2308,6 +2308,55 @@ export type {
 } from './components/time-picker/time-picker'
 export { useTimePicker } from './components/time-picker/use-time-picker'
 export type { TimePickerContext } from './components/time-picker/use-time-picker'
+export {
+  useTimeRangePickerColumnContext,
+  useTimeRangePickerContext,
+  useTimeRangePickerEndContext,
+} from './components/time-range-picker/context'
+export {
+  XhTimeRangePickerClearTrigger,
+  XhTimeRangePickerColumn,
+  XhTimeRangePickerColumnGroup,
+  XhTimeRangePickerColumnGroupLabel,
+  XhTimeRangePickerContent,
+  XhTimeRangePickerControl,
+  XhTimeRangePickerHiddenInput,
+  XhTimeRangePickerItem,
+  XhTimeRangePickerLabel,
+  XhTimeRangePickerPositioner,
+  XhTimeRangePickerPreset,
+  XhTimeRangePickerPresetGroup,
+  XhTimeRangePickerRangeSeparator,
+  XhTimeRangePickerRoot,
+  XhTimeRangePickerSegment,
+  XhTimeRangePickerSegmentGroup,
+  XhTimeRangePickerTrigger,
+} from './components/time-range-picker/time-range-picker'
+export type {
+  TimeRangePickerColumnGroupSlotProps,
+  TimeRangePickerColumnSlotProps,
+  TimeRangePickerPresetsSlotProps,
+  TimeRangePickerRootSlotProps,
+  XhTimeRangePickerClearTriggerProps,
+  XhTimeRangePickerColumnGroupLabelProps,
+  XhTimeRangePickerColumnGroupProps,
+  XhTimeRangePickerColumnProps,
+  XhTimeRangePickerContentProps,
+  XhTimeRangePickerControlProps,
+  XhTimeRangePickerHiddenInputProps,
+  XhTimeRangePickerItemProps,
+  XhTimeRangePickerLabelProps,
+  XhTimeRangePickerPositionerProps,
+  XhTimeRangePickerPresetGroupProps,
+  XhTimeRangePickerPresetProps,
+  XhTimeRangePickerRangeSeparatorProps,
+  XhTimeRangePickerRootProps,
+  XhTimeRangePickerSegmentGroupProps,
+  XhTimeRangePickerSegmentProps,
+  XhTimeRangePickerTriggerProps,
+} from './components/time-range-picker/time-range-picker'
+export { useTimeRangePicker } from './components/time-range-picker/use-time-range-picker'
+export type { TimeRangePickerContext } from './components/time-range-picker/use-time-range-picker'
 export { useTimelineContext, useTimelineItemContext } from './components/timeline/context'
 export type { TimelineContext } from './components/timeline/context'
 export {

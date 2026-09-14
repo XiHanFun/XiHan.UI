@@ -1,0 +1,86 @@
+/*
+ * Copyright (c) 2021-Present XiHanFun and contributors.
+ * Licensed under the MIT License. See LICENSE in the project root for license information.
+ */
+
+// 提供 use time range picker 相关实现。
+
+import type { Cleanup, Layer, RuntimeConfig } from '@xihan-ui/core'
+import type { TimeRangePickerApi, TimeRangePickerSchema } from '@xihan-ui/headless'
+import type { ComputedRef, Ref } from 'vue'
+import { createRuntimeConfig, createScope } from '@xihan-ui/core'
+import { connectTimeRangePicker, timeRangePickerMachine } from '@xihan-ui/headless'
+import { createPositionEngine } from '@xihan-ui/position'
+import { computed, ref } from 'vue'
+import { useXhConfig } from '../../config/config'
+import { vueNormalize } from '../../runtime/normalize-props'
+import { useMachine } from '../../runtime/use-machine'
+import { useOverlayExit } from '../../runtime/use-overlay-exit'
+import { createVueIdGenerator } from '../../runtime/vue-id'
+
+export interface TimeRangePickerContext {
+  api: ComputedRef<TimeRangePickerApi>
+  controlRef: Ref<HTMLElement | null>
+  triggerRef: Ref<HTMLElement | null>
+  positionerRef: Ref<HTMLElement | null>
+  contentRef: Ref<HTMLElement | null>
+  /** 此刻该不该渲染：退场动画播完之前仍为真。 */
+  visible: Ref<boolean>
+  /** 浮层搬到哪儿：全局配置的容器 > 运行时的浮层落点 > body。 */
+  portalTarget: ComputedRef<string | Element>
+}
+
+export function useTimeRangePicker(
+  props: TimeRangePickerSchema['props'],
+  handlers: Pick<TimeRangePickerSchema['props'], 'onValueChange' | 'onOpenChange'> = {},
+): TimeRangePickerContext {
+  const xhConfig = useXhConfig()
+  const controlRef = ref<HTMLElement | null>(null)
+  const triggerRef = ref<HTMLElement | null>(null)
+  const positionerRef = ref<HTMLElement | null>(null)
+  const contentRef = ref<HTMLElement | null>(null)
+
+  // scope id 走 Vue 的 useId，保证同页多实例的 IDREF 不相撞
+  const idGen = createVueIdGenerator()
+  const scope = createScope(null, idGen)
+  const service = useMachine(timeRangePickerMachine, () => ({ ...props, ...handlers }), scope)
+
+  // 服务端没有 DOM、也就没有退场：config 传 null 时闸门退化成「跟着展开态」
+  let config: RuntimeConfig | null = null
+
+  if (typeof document !== 'undefined') {
+    config = createRuntimeConfig({ scope, idGenerator: idGen })
+
+    // 只提供注册函数，入栈出栈由机器的 trackLayer 效应按展开态驱动
+    const registerLayer = (): { layer: Layer, dispose: Cleanup } => config!.layerRegistry.register({
+      kind: 'popover',
+      node: () => contentRef.value,
+      // 整个输入行记为本层分支，点触发器算层内交互
+      branches: () => [controlRef.value].filter(Boolean) as Element[],
+      isModal: () => false,
+      surfaces: () => [],
+    })
+
+    // 定位引擎由适配器注入，机器只经端口驱动；锚点取整个输入行
+    service.refs.set('config', config!)
+    service.refs.set('registerLayer', registerLayer)
+    service.refs.set('position', createPositionEngine())
+    service.refs.set('getAnchorEl', () => controlRef.value)
+    service.refs.set('getTriggerEl', () => triggerRef.value)
+    service.refs.set('getFloatingEl', () => positionerRef.value)
+    service.refs.set('getContentEl', () => contentRef.value)
+  }
+
+  const api = computed(() => connectTimeRangePicker(service, vueNormalize))
+  // 退场闸门：收起从跟着 open 走，改成跟着 presence 走
+  const visible = useOverlayExit({
+    config,
+    isOpen: () => api.value.open,
+    contentRef,
+    onPresence: presence => service.refs.set('presence', presence),
+  })
+  // 全局配置写了容器就用它，否则落到运行时那个单一浮层落点；没有 DOM 时才回到 body
+  const portalTarget = computed<string | Element>(() => xhConfig.value.portalContainer?.() ?? config?.portalContainer() ?? 'body')
+
+  return { visible, api, controlRef, triggerRef, positionerRef, contentRef, portalTarget }
+}

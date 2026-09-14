@@ -118,6 +118,7 @@ import type { TagsInputTranslations } from '../tags-input/tags-input.types'
 import type { TextFieldTranslations } from '../text-field/text-field.types'
 import type { TimeFieldTranslations } from '../time-field/time-field.types'
 import type { TimePickerTranslations } from '../time-picker/time-picker.types'
+import type { TimeRangePickerTranslations } from '../time-range-picker/time-range-picker.types'
 import type { TimelineTranslations } from '../timeline/timeline.types'
 import type { TimerTranslations } from '../timer/timer.types'
 import type { TimestampTranslations } from '../timestamp/timestamp.types'
@@ -248,6 +249,7 @@ export interface XhTranslationOverrides {
   'text-field'?: Partial<TextFieldTranslations>
   'time-field'?: Partial<TimeFieldTranslations>
   'time-picker'?: Partial<TimePickerTranslations>
+  'time-range-picker'?: Partial<TimeRangePickerTranslations>
   'timeline'?: Partial<TimelineTranslations>
   'timer'?: Partial<TimerTranslations>
   'timestamp'?: Partial<TimestampTranslations>

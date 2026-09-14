@@ -82,6 +82,7 @@ const EXPECTED = {
   'switch': { thumb: ['soft', 'raised'] },
   'tag': { root: ['soft'] },
   'time-picker': { content: ['frosted'] },
+  'time-range-picker': { content: ['frosted'] },
   'toast': { root: ['sheet'] },
   'tooltip': { content: ['frosted'] },
   'tour': { content: ['sheet'] },

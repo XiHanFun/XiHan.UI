@@ -61,6 +61,7 @@ const CROSS_PART = {
   'field.control': ['label'],
   // 区间分隔符两侧的留白是「自己那份 px 减去输入行的常规 gap」：算式必然读 control 的 gap，否则收不回来
   'date-range-picker.control': ['range-separator'],
+  'time-range-picker.control': ['range-separator'],
   // 空态条与截断提示条与表头同一档字号，三条并排时字号一致才读得成一行
   'diff-view.header': ['empty', 'truncation'],
   // 并排视图里空的那一侧铺的就是空态底色，两处不同源会在同一屏上出现两种空白
@@ -90,6 +91,7 @@ const CROSS_PART = {
   'table.header': ['column-header'],
   // 预设列与时间列并排在同一行，分隔线取同一族，两列之间只有一道等宽的线
   'time-picker.column': ['preset-group'],
+  'time-range-picker.column': ['preset-group'],
   // 工具名用等宽字族，摘要行里跟着它排；耗时与错误行与状态标签同一档字号
   'tool-call.label': ['summary'],
   'tool-call.status': ['duration', 'error'],

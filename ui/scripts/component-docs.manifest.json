@@ -353,6 +353,10 @@
           "name": "时间选择器"
         },
         {
+          "id": "time-range-picker",
+          "name": "时间范围选择器"
+        },
+        {
           "id": "transfer",
           "name": "穿梭框"
         },
