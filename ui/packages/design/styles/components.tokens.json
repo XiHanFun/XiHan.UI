@@ -53066,24 +53066,6 @@
       "description": "steps 的 indicator、item 部件 background 覆盖槽。"
     },
     {
-      "name": "--xh-steps-indicator-bg-error",
-      "component": "steps",
-      "part": [
-        "indicator"
-      ],
-      "property": [
-        "background"
-      ],
-      "state": [
-        "state=error"
-      ],
-      "defaultToken": [
-        "--xh-fg-danger"
-      ],
-      "visibility": "public",
-      "description": "steps 的 indicator 部件 background 覆盖槽。"
-    },
-    {
       "name": "--xh-steps-indicator-bg-hover",
       "component": "steps",
       "part": [
@@ -53106,22 +53088,24 @@
       "description": "steps 的 indicator、trigger 部件 background 覆盖槽。"
     },
     {
-      "name": "--xh-steps-indicator-bg-warning",
+      "name": "--xh-steps-indicator-bg-toned",
       "component": "steps",
       "part": [
-        "indicator"
+        "indicator",
+        "item"
       ],
       "property": [
         "background"
       ],
       "state": [
-        "state=warning"
+        "state=incomplete",
+        "tone"
       ],
       "defaultToken": [
-        "--xh-fg-warning"
+        "--xh-_steps-accent-soft"
       ],
       "visibility": "public",
-      "description": "steps 的 indicator 部件 background 覆盖槽。"
+      "description": "steps 的 indicator、item 部件 background 覆盖槽。"
     },
     {
       "name": "--xh-steps-indicator-border",
@@ -53197,40 +53181,24 @@
       "description": "steps 的 indicator、item 部件 border-color 覆盖槽。"
     },
     {
-      "name": "--xh-steps-indicator-border-error",
+      "name": "--xh-steps-indicator-border-toned",
       "component": "steps",
       "part": [
-        "indicator"
+        "indicator",
+        "item"
       ],
       "property": [
         "border-color"
       ],
       "state": [
-        "state=error"
+        "state=incomplete",
+        "tone"
       ],
       "defaultToken": [
-        "--xh-fg-danger"
+        "--xh-_steps-accent"
       ],
       "visibility": "public",
-      "description": "steps 的 indicator 部件 border-color 覆盖槽。"
-    },
-    {
-      "name": "--xh-steps-indicator-border-warning",
-      "component": "steps",
-      "part": [
-        "indicator"
-      ],
-      "property": [
-        "border-color"
-      ],
-      "state": [
-        "state=warning"
-      ],
-      "defaultToken": [
-        "--xh-fg-warning"
-      ],
-      "visibility": "public",
-      "description": "steps 的 indicator 部件 border-color 覆盖槽。"
+      "description": "steps 的 indicator、item 部件 border-color 覆盖槽。"
     },
     {
       "name": "--xh-steps-indicator-fg",
@@ -53306,24 +53274,6 @@
       "description": "steps 的 indicator、item 部件 color 覆盖槽。"
     },
     {
-      "name": "--xh-steps-indicator-fg-error",
-      "component": "steps",
-      "part": [
-        "indicator"
-      ],
-      "property": [
-        "color"
-      ],
-      "state": [
-        "state=error"
-      ],
-      "defaultToken": [
-        "--xh-fg-danger"
-      ],
-      "visibility": "public",
-      "description": "steps 的 indicator 部件 color 覆盖槽。"
-    },
-    {
       "name": "--xh-steps-indicator-fg-hover",
       "component": "steps",
       "part": [
@@ -53346,22 +53296,24 @@
       "description": "steps 的 indicator、trigger 部件 color 覆盖槽。"
     },
     {
-      "name": "--xh-steps-indicator-fg-warning",
+      "name": "--xh-steps-indicator-fg-toned",
       "component": "steps",
       "part": [
-        "indicator"
+        "indicator",
+        "item"
       ],
       "property": [
         "color"
       ],
       "state": [
-        "state=warning"
+        "state=incomplete",
+        "tone"
       ],
       "defaultToken": [
-        "--xh-fg-warning"
+        "--xh-_steps-accent-text"
       ],
       "visibility": "public",
-      "description": "steps 的 indicator 部件 color 覆盖槽。"
+      "description": "steps 的 indicator、item 部件 color 覆盖槽。"
     },
     {
       "name": "--xh-steps-indicator-font-size",
@@ -53630,40 +53582,23 @@
       "description": "steps 的 title 部件 color 覆盖槽。"
     },
     {
-      "name": "--xh-steps-title-fg-error",
+      "name": "--xh-steps-title-fg-toned",
       "component": "steps",
       "part": [
+        "item",
         "title"
       ],
       "property": [
         "color"
       ],
       "state": [
-        "state=error"
+        "tone"
       ],
       "defaultToken": [
-        "--xh-fg-danger"
+        "--xh-_steps-accent-text"
       ],
       "visibility": "public",
-      "description": "steps 的 title 部件 color 覆盖槽。"
-    },
-    {
-      "name": "--xh-steps-title-fg-warning",
-      "component": "steps",
-      "part": [
-        "title"
-      ],
-      "property": [
-        "color"
-      ],
-      "state": [
-        "state=warning"
-      ],
-      "defaultToken": [
-        "--xh-fg-warning"
-      ],
-      "visibility": "public",
-      "description": "steps 的 title 部件 color 覆盖槽。"
+      "description": "steps 的 item、title 部件 color 覆盖槽。"
     },
     {
       "name": "--xh-steps-title-font-size",

@@ -28,10 +28,12 @@ export function connectSteps<T extends PropTypes>(
     title: node.title ?? '',
     description: node.description,
     status: node.status,
+    tone: node.tone,
     disabled: !!node.disabled,
   }))
   const metaOf = new Map(collection.map(meta => [meta.index, meta]))
   const statuses = prop('statuses')
+  const tones = prop('tones')
 
   // 步数缺省取 collection 的长度：只交数据时不必再报一遍总步数
   const count = normalizeStepCount(prop('count') ?? (collection.length || undefined))
@@ -55,12 +57,14 @@ export function connectSteps<T extends PropTypes>(
     const completed = item.index < value
     const current = item.index === value
     const meta = metaOf.get(item.index)
-    // 显式指定的状态优先：error / warning 只能从 statuses 或 collection 来
+    // 显式指定的状态优先，其次 collection，最后按步序算
     const status = statuses?.[item.index] ?? meta?.status
       ?? (completed ? 'completed' : current ? 'current' : 'incomplete')
     return {
       index: item.index,
       status,
+      // 单步语气与状态互不相干：被打回的那一步照样可以是 current 或 completed
+      tone: tones?.[item.index] ?? meta?.tone,
       completed,
       current,
       // 四条独立判据：整组禁用、作者标禁用、collection 里标的禁用、linear 下 index > value 未解锁
@@ -172,6 +176,8 @@ export function connectSteps<T extends PropTypes>(
         ...parts.item.attrs,
         'data-orientation': orientation,
         'data-state': s.status,
+        // 单步语气打在最外层：语气层在这一级重算颜色，indicator / title / separator 靠继承拿到
+        'data-tone': s.tone,
         // 禁用标记打在最外层，后代选择器才够得着 indicator / title / description
         'data-disabled': dataAttr(s.disabled),
       })

@@ -1,4 +1,4 @@
-<!-- 错误状态 | 标记需要用户处理的步骤 -->
+<!-- 出错的那一步 | 用 tones 给被打回的那一步标 danger 语气，状态照旧按步序算 -->
 <xh-steps id="steps-error" count="3" default-value="1">
   <div data-xh-part="root">
     <div data-xh-part="list">
@@ -42,7 +42,7 @@
   const errorAt = 1;
   const indicators = [...host.querySelectorAll('[data-xh-part="indicator"]')];
 
-  host.statuses = { [errorAt]: "error" };
+  host.tones = { [errorAt]: "danger" };
   host.addEventListener("value-change", (event) => {
     indicators.forEach((indicator, index) => {
       if (index !== errorAt) {

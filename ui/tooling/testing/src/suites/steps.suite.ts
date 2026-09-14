@@ -179,6 +179,20 @@ export const stepsSuite: ConformanceSuite = {
       },
     },
     {
+      // 出错 / 警示不是状态而是语气：statuses 定那一档，tones 只给这一步换色
+      name: 'tones 逐步标语气：只落成 item 的 data-tone，状态那一档照按步序算',
+      spec: { apg: APG },
+      props: { count: COUNT, defaultValue: 1, tones: { 1: 'danger' }, statuses: { 2: 'completed' } },
+      initial: {
+        parts: {
+          'item[0]': { 'data-state': 'completed', 'data-tone': null },
+          'item[1]': { 'data-state': 'current', 'data-tone': 'danger' },
+          'item[2]': { 'data-state': 'completed', 'data-tone': null },
+          'trigger[1]': { 'data-state': 'current', 'data-tone': null },
+        },
+      },
+    },
+    {
       // 走完最后一步后没有任何一步是 current，也没有条目认领 tabindex=0，容器须兜底
       name: '走到完成位：每一步都 completed，面板全收起，list 兜底进 Tab 序列',
       spec: { apg: APG },

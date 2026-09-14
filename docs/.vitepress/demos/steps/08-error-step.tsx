@@ -1,4 +1,4 @@
-// 错误状态 | 标记需要用户处理的步骤
+// 出错的那一步 | 用 tones 给被打回的那一步标 danger 语气，状态照旧按步序算
 import type { ReactNode } from "react";
 import { XIcon } from "@xihan-ui/icons";
 import {
@@ -24,7 +24,7 @@ const errorAt = 1;
 
 export default function Demo(): ReactNode {
   return (
-    <XhStepsRoot count={steps.length} defaultValue={1} statuses={{ [errorAt]: "error" }}>
+    <XhStepsRoot count={steps.length} defaultValue={1} tones={{ [errorAt]: "danger" }}>
       {({ value }) => (
         <>
           <XhStepsList>

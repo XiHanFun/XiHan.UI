@@ -31,6 +31,7 @@ export const XhStepsRoot = defineComponent({
     count: { type: Number },
     collection: { type: Array as PropType<StepNode[]> },
     statuses: { type: Object as PropType<Record<number, StepStatus>> },
+    tones: { type: Object as PropType<Record<number, Tone>> },
     orientation: { type: String as PropType<Orientation> },
     linear: { type: Boolean, default: undefined },
     disabled: { type: Boolean, default: undefined },

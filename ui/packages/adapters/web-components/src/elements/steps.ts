@@ -81,6 +81,7 @@ export class XhStepsElement extends XhElement {
     // 数组与对象进不了属性，只作为 property 暴露
     collection: { attribute: false },
     statuses: { attribute: false },
+    tones: { attribute: false },
     translations: { attribute: false },
     tone: { converter: STRING_CONVERTER },
     size: { converter: STRING_CONVERTER },
@@ -96,6 +97,7 @@ export class XhStepsElement extends XhElement {
   declare direction?: Direction
   declare collection?: StepNode[]
   declare statuses?: Record<number, StepStatus>
+  declare tones?: Record<number, Tone>
   declare translations?: Partial<StepsTranslations>
   declare tone?: Tone
   declare size?: Size
@@ -114,6 +116,7 @@ export class XhStepsElement extends XhElement {
       count: this.count,
       collection: this.collection,
       statuses: this.statuses,
+      tones: this.tones,
       translations: this.translations,
       orientation: this.orientation,
       // 布尔属性缺席即 undefined，把缺省交回 connect

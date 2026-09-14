@@ -33442,24 +33442,22 @@
   color: var(--xh-steps-indicator-fg-completed, var(--xh-_steps-accent-text));
 }
 
-/* 出错与警示两档只能由 statuses / collection 显式指定，画法与当前步同构：
-   空心描边加同色数字，不动实心那档的内高光 */
-[data-scope='steps'][data-part='indicator'][data-state='error'] {
-  border-color: var(--xh-steps-indicator-border-error, var(--xh-fg-danger));
-  background: var(
-    --xh-steps-indicator-bg-error,
-    color-mix(in oklab, var(--xh-fg-danger) 12%, var(--xh-bg-surface))
-  );
-  color: var(--xh-steps-indicator-fg-error, var(--xh-fg-danger));
+/* 单步语气：tones / collection 给某一步标了 data-tone，五个强调槽在这一步重新从语气层取值，
+   它的标记、标题与连接线照旧从祖先继承——只有这一步换色，状态那一档照算 */
+[data-scope='steps'][data-part='item'][data-tone] {
+  --xh-_steps-accent: var(--xh-_tone);
+  --xh-_steps-accent-soft: var(--xh-_tone-subtle);
+  --xh-_steps-accent-soft-hover: var(--xh-_tone-subtle-hover);
+  --xh-_steps-accent-text: var(--xh-_tone-fg);
+  --xh-_steps-on-accent: var(--xh-_tone-on);
 }
 
-[data-scope='steps'][data-part='indicator'][data-state='warning'] {
-  border-color: var(--xh-steps-indicator-border-warning, var(--xh-fg-warning));
-  background: var(
-    --xh-steps-indicator-bg-warning,
-    color-mix(in oklab, var(--xh-fg-warning) 12%, var(--xh-bg-surface))
-  );
-  color: var(--xh-steps-indicator-fg-warning, var(--xh-fg-warning));
+/* 标了语气的那一步还没走到也得被看见：空心描边加同色数字，不动实心那档的内高光 */
+[data-scope='steps'][data-part='item'][data-tone]
+  [data-scope='steps'][data-part='indicator'][data-state='incomplete'] {
+  border-color: var(--xh-steps-indicator-border-toned, var(--xh-_steps-accent));
+  background: var(--xh-steps-indicator-bg-toned, var(--xh-_steps-accent-soft));
+  color: var(--xh-steps-indicator-fg-toned, var(--xh-_steps-accent-text));
 }
 
 [data-scope='steps'][data-part='item'][data-disabled] [data-scope='steps'][data-part='indicator'] {
@@ -33487,12 +33485,9 @@
   color: var(--xh-steps-title-fg-active, var(--xh-_steps-accent-text));
 }
 
-[data-scope='steps'][data-part='title'][data-state='error'] {
-  color: var(--xh-steps-title-fg-error, var(--xh-fg-danger));
-}
-
-[data-scope='steps'][data-part='title'][data-state='warning'] {
-  color: var(--xh-steps-title-fg-warning, var(--xh-fg-warning));
+/* 标了语气的那一步标题跟着换色，不论走到没走到 */
+[data-scope='steps'][data-part='item'][data-tone] [data-scope='steps'][data-part='title'] {
+  color: var(--xh-steps-title-fg-toned, var(--xh-_steps-accent-text));
 }
 
 [data-scope='steps'][data-part='description'] {

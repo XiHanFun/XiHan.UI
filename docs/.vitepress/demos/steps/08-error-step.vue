@@ -1,4 +1,4 @@
-<!-- 错误状态 | 标记需要用户处理的步骤 -->
+<!-- 出错的那一步 | 用 tones 给被打回的那一步标 danger 语气，状态照旧按步序算 -->
 <script setup lang="ts">
 import { XIcon } from "@xihan-ui/icons";
 import {
@@ -24,7 +24,7 @@ const errorAt = 1;
 </script>
 
 <template>
-  <XhStepsRoot v-slot="{ value }" :count="steps.length" :default-value="1" :statuses="{ [errorAt]: 'error' }">
+  <XhStepsRoot v-slot="{ value }" :count="steps.length" :default-value="1" :tones="{ [errorAt]: 'danger' }">
     <XhStepsList>
       <XhStepsItem v-for="(s, i) in steps" :key="s.title" :value="i">
         <XhStepsTrigger>

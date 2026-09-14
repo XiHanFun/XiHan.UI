@@ -12,8 +12,8 @@ export interface StepsValueChangeDetails {
   value: number
 }
 
-/** 单步的状态。前三档由步序算出，后两档只能由 statuses 或 collection 显式指定。 */
-export type StepStatus = 'completed' | 'current' | 'incomplete' | 'error' | 'warning'
+/** 单步的状态，由步序算出；statuses 或 collection 可以逐步改写。出错 / 警示不是状态，是语气，走 tones。 */
+export type StepStatus = 'completed' | 'current' | 'incomplete'
 
 /** 单步的数据。给了 collection，标题、说明、状态与禁用就以它为准。 */
 export interface StepNode {
@@ -23,6 +23,8 @@ export interface StepNode {
   description?: string
   /** 覆盖这一步的状态；不给即由步序算出。 */
   status?: StepStatus
+  /** 这一步的语气：被打回的写 danger、要留意的写 warning；不给即跟着整组的 tone。 */
+  tone?: Tone
   /** 这一步不可点。 */
   disabled?: boolean
 }
@@ -37,6 +39,8 @@ export interface StepNodeMeta {
   description?: string
   /** 显式指定的状态，没写即为 undefined。 */
   status?: StepStatus
+  /** 显式指定的语气，没写即为 undefined。 */
+  tone?: Tone
   disabled: boolean
 }
 
@@ -56,6 +60,8 @@ export interface StepsItemProps {
 export interface StepsItemState {
   index: number
   status: StepStatus
+  /** 这一步自己的语气，没标即为 undefined（跟整组走）。 */
+  tone?: Tone
   /** 走过了：index < step。 */
   completed: boolean
   /** 正停在这一步：index === step。 */
@@ -75,11 +81,13 @@ export interface StepsSchema extends MachineSchema {
      * 缺省即回到「文本与状态都写在部件上」的老路。
      */
     collection?: StepNode[]
-    /**
-     * 按下标覆盖单步状态，优先于 collection 与步序算出来的那档。
-     * error / warning 两档只能从这里或 collection 来。
-     */
+    /** 按下标覆盖单步状态，优先于 collection 与步序算出来的那档。 */
     statuses?: Record<number, StepStatus>
+    /**
+     * 按下标给单步标语气，优先于 collection；被打回的那一步写 danger、要留意的写 warning。
+     * 落成 item 的 data-tone，那一步的标记、标题与连接线都改用这族颜色。
+     */
+    tones?: Record<number, Tone>
     /**
      * 总步数，是步序的上界与读屏"第 k 步，共 n 步"的分母。
      * 缺省按 0 处理：此时 root 带 data-empty，步序被夹死在 0。
