@@ -9,6 +9,7 @@ import type {
   CalendarDay,
   CalendarFocusChangeDetails,
   CalendarGranularity,
+  CalendarPanel,
   CalendarPeriod,
   CalendarRangePickerSchema,
   CalendarRangePickerTranslations,
@@ -187,6 +188,11 @@ export class XhCalendarRangePickerElement extends XhElement {
     }
   }
 
+  /** 视窗里的各张面板（visibleCount 张连续月），标题与格子都在里面；多面板时按 index 各画各的。机器尚未建起时给空数组。 */
+  get panels(): CalendarPanel[] {
+    return this.ctrl.service ? connectCalendarRangePicker(this.ctrl.service, wcNormalize).panels : []
+  }
+
   /** 当前展示月的日期矩阵，作者照它重画网格。机器尚未建起时给空数组。 */
   get weeks(): CalendarDay[][] {
     return this.ctrl.service ? connectCalendarRangePicker(this.ctrl.service, wcNormalize).weeks : []
@@ -255,8 +261,11 @@ export class XhCalendarRangePickerElement extends XhElement {
     this.getParts('grid').forEach((el, position) => {
       this.spreader.spread(el, api.getGridProps({ index: declaredIndex(el, position) }) as Record<string, unknown>)
     })
-    put('grid-head', api.getGridHeadProps() as Record<string, unknown>)
-    put('grid-body', api.getGridBodyProps() as Record<string, unknown>)
+    // 多面板时每张 grid 各有一对表头组与日期组，逐个打；两组的属性不带面板下标
+    for (const el of this.getParts('grid-head'))
+      this.spreader.spread(el, api.getGridHeadProps() as Record<string, unknown>)
+    for (const el of this.getParts('grid-body'))
+      this.spreader.spread(el, api.getGridBodyProps() as Record<string, unknown>)
 
     // 表头行与日期行共用 role=row，一并打
     // 周序号格：身份取行首那天，文字由元素填

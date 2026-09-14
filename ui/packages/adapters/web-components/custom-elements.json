@@ -3729,6 +3729,15 @@
             },
             {
               "kind": "field",
+              "name": "panels",
+              "type": {
+                "text": "CalendarPanel[]"
+              },
+              "description": "视窗里的各张面板（visibleCount 张连续月），标题与格子都在里面；多面板时按 index 各画各的。机器尚未建起时给空数组。",
+              "readonly": true
+            },
+            {
+              "kind": "field",
               "name": "weeks",
               "type": {
                 "text": "CalendarDay[][]"
@@ -4426,6 +4435,15 @@
                   "text": "Partial<CalendarRangePickerSchema['props']>"
                 }
               }
+            },
+            {
+              "kind": "field",
+              "name": "panels",
+              "type": {
+                "text": "CalendarPanel[]"
+              },
+              "description": "视窗里的各张面板（visibleCount 张连续月），标题与格子都在里面；多面板时按 index 各画各的。机器尚未建起时给空数组。",
+              "readonly": true
             },
             {
               "kind": "field",

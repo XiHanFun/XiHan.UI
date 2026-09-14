@@ -1,18 +1,14 @@
-<!-- 按周挑 | granularity=week：一行一个整周，值是两端那两周的周首日；月、季度与年同理 -->
+<!-- 按周挑 | granularity=week：一行一个整周，格子直接铺进网格；值是两端那两周的周首日；月、季度与年同理 -->
 <script setup lang="ts">
 import {
   XhCalendarRangePickerCell,
   XhCalendarRangePickerCellTrigger,
   XhCalendarRangePickerGrid,
-  XhCalendarRangePickerGridBody,
-  XhCalendarRangePickerGridHead,
   XhCalendarRangePickerHeader,
   XhCalendarRangePickerHeading,
   XhCalendarRangePickerNextTrigger,
   XhCalendarRangePickerPrevTrigger,
   XhCalendarRangePickerRoot,
-  XhCalendarRangePickerWeekDay,
-  XhCalendarRangePickerWeekRow,
 } from "@xihan-ui/vue";
 import { computed, ref } from "vue";
 
@@ -24,11 +20,10 @@ const text = computed(() => (value.value.length === 2 ? `${value.value[0]} → $
 
 <template>
   <XhCalendarRangePickerRoot
-    v-slot="{ weeks, weekDays }"
+    v-slot="{ periods }"
     v-model:value="value"
     locale="zh-CN"
     granularity="week"
-    fixed-weeks
     style="max-inline-size: 280px"
   >
     <XhCalendarRangePickerHeader>
@@ -36,19 +31,11 @@ const text = computed(() => (value.value.length === 2 ? `${value.value[0]} → $
       <XhCalendarRangePickerHeading />
       <XhCalendarRangePickerNextTrigger aria-label="下个月" />
     </XhCalendarRangePickerHeader>
+    <!-- 周期视图没有周行那一层：一格就是一整周，格子直接铺进网格 -->
     <XhCalendarRangePickerGrid>
-      <XhCalendarRangePickerGridHead>
-        <XhCalendarRangePickerWeekRow>
-          <XhCalendarRangePickerWeekDay v-for="d in weekDays" :key="d.value" :value="d.value" />
-        </XhCalendarRangePickerWeekRow>
-      </XhCalendarRangePickerGridHead>
-      <XhCalendarRangePickerGridBody>
-        <XhCalendarRangePickerWeekRow v-for="week in weeks" :key="week[0].start">
-          <XhCalendarRangePickerCell v-for="day in week" :key="day.start" :value="day.start">
-            <XhCalendarRangePickerCellTrigger>{{ day.day }}</XhCalendarRangePickerCellTrigger>
-          </XhCalendarRangePickerCell>
-        </XhCalendarRangePickerWeekRow>
-      </XhCalendarRangePickerGridBody>
+      <XhCalendarRangePickerCell v-for="period in periods" :key="period.key" :value="period.start">
+        <XhCalendarRangePickerCellTrigger>{{ period.label }}</XhCalendarRangePickerCellTrigger>
+      </XhCalendarRangePickerCell>
     </XhCalendarRangePickerGrid>
   </XhCalendarRangePickerRoot>
 
