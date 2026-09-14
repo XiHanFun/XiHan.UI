@@ -59,6 +59,8 @@ const CROSS_PART = {
   'descriptions.label': ['item'],
   // 横排布局下标签的上下留白由控件高度算出来，算的就是「与控件首行对齐」这件事
   'field.control': ['label'],
+  // 区间分隔符两侧的留白是「自己那份 px 减去输入行的常规 gap」：算式必然读 control 的 gap，否则收不回来
+  'date-range-picker.control': ['range-separator'],
   // 空态条与截断提示条与表头同一档字号，三条并排时字号一致才读得成一行
   'diff-view.header': ['empty', 'truncation'],
   // 并排视图里空的那一侧铺的就是空态底色，两处不同源会在同一屏上出现两种空白

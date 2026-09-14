@@ -25,6 +25,7 @@ const ALLOWED = new Map([
   ['1', '倍数或比例 1（line-height、opacity、scale），不是 leading.none'],
   ['color-picker.css:--xh-color-picker-swatch-size=18px', '色板色块的几何，与 18px 的滑杆拇指同值是巧合'],
   ['color-picker.css:--xh-color-picker-track-thickness=8px', '色相带比滑杆轨道厚一档，与 space-2 同值是巧合'],
+  ['layout.css:--xh-layout-header-h=3.5rem', '页面顶栏的高度，与浮层时列的最小列宽同值是巧合'],
   ['marquee.css:--xh-marquee-span=600', '跑马灯单程像素长度的无单位数，不是字重'],
   ['marquee.css:--xh-marquee-block-size=10rem', '纵向跑马灯的视口高度，与菜单最小宽同值是巧合'],
   ['progress.css:--xh-progress-size=10rem', '环形进度大档直径，与菜单最小宽同值是巧合'],

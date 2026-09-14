@@ -408,7 +408,7 @@ presets 在列旁边多排一列，点一条整份写进值并收起；时刻在
 | `--xh-time-picker-column-divider` | `column`<br>`preset-group` | `border-inline-end`<br>`border-inline-start` | `default` | `--xh-material-frosted-separator` | time-picker 的 column、preset-group 部件 border-inline-end、border-inline-start 覆盖槽。 |
 | `--xh-time-picker-column-gap` | `column` | `gap` | `default` | `0` | time-picker 的 column 部件 gap 覆盖槽。 |
 | `--xh-time-picker-column-h` | `column` | `block-size` | `default` | `--xh-viewport-h-sm` | time-picker 的 column 部件 block-size 覆盖槽。 |
-| `--xh-time-picker-column-min-w` | `column` | `min-inline-size` | `default` | `3.5rem` | time-picker 的 column 部件 min-inline-size 覆盖槽。 |
+| `--xh-time-picker-column-min-w` | `column` | `min-inline-size` | `default` | `--xh-overlay-column-min-w` | time-picker 的 column 部件 min-inline-size 覆盖槽。 |
 | `--xh-time-picker-column-px` | `column` | `padding-inline` | `default` | `0` | time-picker 的 column 部件 padding-inline 覆盖槽。 |
 | `--xh-time-picker-content-backdrop` | `content` | `-webkit-backdrop-filter`<br>`backdrop-filter` | `default` | `none` | time-picker 的 content 部件 -webkit-backdrop-filter、backdrop-filter 覆盖槽。 |
 | `--xh-time-picker-content-bg` | `content` | `background` | `default` | `--xh-bg-surface` | time-picker 的 content 部件 background 覆盖槽。 |
@@ -446,7 +446,7 @@ presets 在列旁边多排一列，点一条整份写进值并收起；时刻在
 | `--xh-time-picker-item-fg` | `item` | `color` | `default` | `--xh-fg-default` | time-picker 的 item 部件 color 覆盖槽。 |
 | `--xh-time-picker-item-fg-checked` | `item` | `color` | `state=checked` | `--xh-_time-picker-option-fg-selected` | time-picker 的 item 部件 color 覆盖槽。 |
 | `--xh-time-picker-item-font-size` | `item` | `font-size` | `default` | `--xh-_time-picker-font-size` | time-picker 的 item 部件 font-size 覆盖槽。 |
-| `--xh-time-picker-item-h` | `item` | `block-size` | `default` | `--xh-control-h-sm` | time-picker 的 item 部件 block-size 覆盖槽。 |
+| `--xh-time-picker-item-h` | `item` | `block-size` | `default` | `--xh-overlay-column-item-h` | time-picker 的 item 部件 block-size 覆盖槽。 |
 | `--xh-time-picker-item-px` | `item` | `padding-inline` | `default` | `--xh-space-0_5` | time-picker 的 item 部件 padding-inline 覆盖槽。 |
 | `--xh-time-picker-item-py` | `item` | `padding-block` | `default` | `0` | time-picker 的 item 部件 padding-block 覆盖槽。 |
 | `--xh-time-picker-item-radius` | `item` | `border-radius` | `default` | `--xh-shape-control` | time-picker 的 item 部件 border-radius 覆盖槽。 |

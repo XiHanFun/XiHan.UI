@@ -270,10 +270,9 @@
     align-items: center;
     justify-content: center;
     /* 两侧各留一个小间距：把输入行的常规间距收回来，再补上自己那一份 */
-    margin-inline: var(
-      --xh-date-range-picker-range-separator-mx,
-      calc(var(--xh-date-range-picker-range-separator-px, var(--xh-space-1)) - var(--xh-date-range-picker-control-gap, var(--xh-_date-range-picker-gap)))
-    );
+    --xh-_date-range-picker-range-separator-mx: calc(var(--xh-date-range-picker-range-separator-px, var(--xh-space-1)) - var(--xh-date-range-picker-control-gap, var(--xh-_date-range-picker-gap)));
+
+    margin-inline: var(--xh-date-range-picker-range-separator-mx, var(--xh-_date-range-picker-range-separator-mx));
     padding-inline: var(--xh-date-range-picker-range-separator-px, var(--xh-space-1));
     color: var(--xh-date-range-picker-range-separator-fg, var(--xh-fg-subtle));
     font: inherit;

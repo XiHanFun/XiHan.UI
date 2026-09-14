@@ -11725,6 +11725,8 @@
     "--xh-alert-indicator-p",
     "--xh-alert-leading",
     "--xh-alert-px",
+    "--xh-overlay-column-item-h",
+    "--xh-overlay-column-min-w",
     "--xh-alert-py",
     "--xh-alert-radius",
     "--xh-alert-shadow",
