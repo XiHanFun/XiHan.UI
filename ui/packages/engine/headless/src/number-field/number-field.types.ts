@@ -95,7 +95,7 @@ export interface NumberFieldApi<T extends PropTypes = PropTypes> {
   decrement: () => void
   getRootProps: () => T['element']
   getLabelProps: () => T['label']
-  /** 必需的唯一输入壳：皮肤把视觉盒画在它身上，减在左、加在右、输入框居中。 */
+  /** 必需的唯一输入壳：皮肤把视觉盒画在它身上，输入在左，减、加动作依次收在右侧。 */
   getControlProps: () => T['element']
   /** 输入框前的装饰段（货币符、单位、图标）；对读屏隐藏，不参与名字链。 */
   getPrefixProps: () => T['element']

@@ -40660,21 +40660,19 @@
       "part": [
         "control",
         "decrement-trigger",
-        "increment-trigger",
         "input"
       ],
       "property": [
         "border-inline-start"
       ],
       "state": [
-        "has(~ [data-part='input'])",
-        "is([data-part='decrement-trigger'], [data-part='increment-trigger'])"
+        "has([data-part='input'])"
       ],
       "defaultToken": [
         "--xh-material-soft-separator"
       ],
       "visibility": "public",
-      "description": "number-field 的 control、decrement-trigger、increment-trigger、input 部件 border-inline-start 覆盖槽。"
+      "description": "number-field 的 control、decrement-trigger、input 部件 border-inline-start 覆盖槽。"
     },
     {
       "name": "--xh-number-field-trigger-divider-h",
@@ -40682,7 +40680,6 @@
       "part": [
         "control",
         "decrement-trigger",
-        "increment-trigger",
         "input"
       ],
       "property": [
@@ -40690,14 +40687,13 @@
         "inset-block-start"
       ],
       "state": [
-        "has(~ [data-part='input'])",
-        "is([data-part='decrement-trigger'], [data-part='increment-trigger'])"
+        "has([data-part='input'])"
       ],
       "defaultToken": [
         "--xh-_number-field-divider-h"
       ],
       "visibility": "public",
-      "description": "number-field 的 control、decrement-trigger、increment-trigger、input 部件 block-size、inset-block-start 覆盖槽。"
+      "description": "number-field 的 control、decrement-trigger、input 部件 block-size、inset-block-start 覆盖槽。"
     },
     {
       "name": "--xh-number-field-trigger-fg",
