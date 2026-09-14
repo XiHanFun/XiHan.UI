@@ -11,7 +11,7 @@ const DOCS = join(HERE, "..");
 const REPO = join(DOCS, "..");
 const UI = join(REPO, "ui");
 const DEMOS = join(HERE, "demos");
-const SKILL = join(REPO, ".agents", "skills", "xihan-ui");
+const SKILLS = join(REPO, ".agents", "skills");
 
 const SITE = "https://ui.docs.xihanfun.com";
 
@@ -371,16 +371,16 @@ export async function writeLlmsAssets(outDir) {
   );
   await writeFile(join(outDir, "llms-tokens.txt"), tokensAsset(tokens, toneNames), "utf8");
 
-  // 技能包副本：站点上取得到，不必先克隆仓库
-  const skillFiles = await allFiles(SKILL);
+  // 按仓库原生分类发布全部技能：站点上取得到，不必先克隆仓库
+  const skillFiles = await allFiles(SKILLS);
   for (const rel of skillFiles) {
-    const target = join(outDir, "skills", "xihan-ui", rel);
+    const target = join(outDir, "skills", rel);
     await mkdir(dirname(target), { recursive: true });
-    await copyFile(join(SKILL, rel), target);
+    await copyFile(join(SKILLS, rel), target);
   }
   if (skillFiles.length) {
     await writeFile(
-      join(outDir, "skills", "xihan-ui", "FILES.txt"),
+      join(outDir, "skills", "FILES.txt"),
       `${skillFiles.join("\n")}\n`,
       "utf8",
     );

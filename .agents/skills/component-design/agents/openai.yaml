@@ -1,0 +1,7 @@
+interface:
+  display_name: "XiHan.UI 组件设计"
+  short_description: "设计与审查 XiHan.UI 组件视觉、交互和文档呈现"
+  default_prompt: "使用 $xihan-ui-component-design 设计并审查一个符合统一规范的组件方案。"
+
+policy:
+  allow_implicit_invocation: true

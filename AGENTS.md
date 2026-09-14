@@ -22,18 +22,20 @@ XiHan.UI 是 pnpm + Turborepo 管理的多包组件库。组件行为由框架�
 
 ## 开始前必须做
 
-1. 读取 `.agents/skills/xihan-ui/SKILL.md`。
-2. 按任务类型读取该技能指向的 references，不要一次加载无关资料。
+1. 按任务读取对应技能：组件视觉、交互与文档呈现读取 `.agents/skills/component-design/SKILL.md`；组件实现与重构读取 `.agents/skills/component-development/SKILL.md`；三端接法与适配器差异读取 `.agents/skills/framework-adapters/SKILL.md`。
+2. 同时涉及多个职责时加载对应多个技能，不要一次读取无关资料。
 3. 检查当前分支、`git status` 和最近提交；保留用户已有改动。
 4. 先检查现有组件、Core 原语、Headless 契约、Family Recipe、令牌和门禁，确认没有重复建设。
-5. 组件设计、样式修改和组件重构必须读取 `.agents/skills/xihan-ui/references/component-design.md`。
+5. 组件设计、样式修改和视觉重构必须读取 `.agents/skills/component-design/references/component-design.md`。
 
 ## 目录结构
 
 ```text
 /
 ├─ AGENTS.md
-├─ .agents/skills/xihan-ui/               # Codex 仓库技能与统一设计规范
+├─ .agents/skills/                        # 按设计、开发和适配器分类的仓库技能
+├─ .claude/skills -> ../.agents/skills    # Claude Code 技能兼容入口
+├─ CLAUDE.md -> AGENTS.md                 # Claude Code 仓库指令入口
 ├─ docs/                                  # VitePress 文档站（独立 package.json）
 └─ ui/                                    # pnpm monorepo 根
    ├─ packages/
@@ -138,7 +140,7 @@ XiHan.UI 是 pnpm + Turborepo 管理的多包组件库。组件行为由框架�
 
 ### 样式
 
-- 统一设计真源是 `.agents/skills/xihan-ui/references/component-design.md`。
+- 统一设计真源是 `.agents/skills/component-design/references/component-design.md`。
 - 普通 control 使用 4px 圆角，surface 8px，overlay 12px；pill 只用于具有胶囊身份的组件。
 - 离散 Action Control 使用统一按压反馈：120ms 缩放到 0.97，释放 200ms 回到 1。
 - 禁止 glass 材质及兼容别名；透明浮层只允许使用 frosted 柔和模糊材质。
