@@ -170,7 +170,7 @@
       "ratio": 1,
       "ring": "poured"
     },
-    "calendar-range-picker [data-in-range][data-part='cell-trigger'][data-scope='calendar-range-picker']:is([data-range-start], [data-range-end])": {
+    "calendar-range-picker [data-in-range][data-part='cell-trigger'][data-scope='calendar-range-picker']:not([data-outside-month]):is([data-range-start], [data-range-end])": {
       "parts": [
         "cell-trigger"
       ],

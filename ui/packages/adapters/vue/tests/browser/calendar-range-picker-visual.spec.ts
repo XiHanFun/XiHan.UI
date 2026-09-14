@@ -34,6 +34,16 @@ function trigger(value: string): HTMLElement {
   return element
 }
 
+function panelCell(index: number, value: string): HTMLElement {
+  const element = document.querySelector<HTMLElement>(
+    `[data-scope='calendar-range-picker'][data-part='grid'][data-index='${index}'] `
+    + `[data-part='cell'][data-value='${value}']`,
+  )
+  if (!element)
+    throw new Error(`找不到面板 ${index} 的日期格 ${value}`)
+  return element
+}
+
 function alpha(color: string): number {
   const canvas = document.createElement('canvas')
   canvas.width = canvas.height = 1
@@ -92,6 +102,33 @@ async function mountPeriodCalendar(granularity: 'week' | 'month' | 'quarter' | '
   await nextTick()
 }
 
+async function mountTwoPanelCalendar(defaultValue: string[]): Promise<void> {
+  host = document.createElement('div')
+  document.body.append(host)
+  app = createApp({
+    render: () => h(XhCalendarRangePickerRoot, {
+      defaultFocusedValue: '2026-07-09',
+      defaultValue,
+      fixedWeeks: true,
+      locale: 'zh-CN',
+      timeZone: 'UTC',
+      visibleCount: 2,
+    }, {
+      default: ({ panels, weekDays }: any) => panels.map((panel: any) =>
+        h(XhCalendarRangePickerGrid, { key: panel.index, index: panel.index }, () => [
+          h(XhCalendarRangePickerGridHead, null, () => h(XhCalendarRangePickerWeekRow, null, () =>
+            weekDays.map((day: any) => h(XhCalendarRangePickerWeekDay, { key: day.value, value: day.value })))),
+          h(XhCalendarRangePickerGridBody, null, () => panel.weeks.map((week: any[]) =>
+            h(XhCalendarRangePickerWeekRow, { key: week[0].start }, () => week.map(day =>
+              h(XhCalendarRangePickerCell, { key: day.start, value: day.start, index: panel.index }, () =>
+                h(XhCalendarRangePickerCellTrigger, null, () => String(day.day))))))),
+        ])),
+    }),
+  })
+  app.mount(host)
+  await nextTick()
+}
+
 afterEach(() => {
   app?.unmount()
   host?.remove()
@@ -113,6 +150,20 @@ describe('范围日历轨道', () => {
 
     await userEvent.hover(trigger('2026-09-09'))
     expect(alpha(getComputedStyle(trigger('2026-09-09')).backgroundColor)).toBeLessThan(8)
+  })
+
+  it('并排月份只给各自当月日期铺选区背景，首尾邻月格保持透明', async () => {
+    await mountTwoPanelCalendar(['2026-06-29', '2026-09-01'])
+
+    expect(alpha(getComputedStyle(panelCell(0, '2026-07-01'), '::before').backgroundColor)).toBe(255)
+    expect(alpha(getComputedStyle(panelCell(1, '2026-08-01'), '::before').backgroundColor)).toBe(255)
+    for (const [index, value] of [[0, '2026-06-29'], [1, '2026-09-01']] as const) {
+      const outside = panelCell(index, value)
+      expect(outside.hasAttribute('data-outside-month')).toBe(true)
+      expect(outside.hasAttribute('data-in-range')).toBe(true)
+      expect(alpha(getComputedStyle(outside, '::before').backgroundColor)).toBeLessThan(8)
+      expect(alpha(getComputedStyle(outside.querySelector<HTMLElement>(`[data-part='cell-trigger']`)!).backgroundColor)).toBeLessThan(8)
+    }
   })
 
   it('挑到一半的预览与已落定的区间同一副长相：轨道同色，起点与悬停端都是实心圆帽', async () => {

@@ -4803,6 +4803,8 @@
         "in-range",
         "is([data-range-start], [data-range-end])",
         "not([data-in-range])",
+        "not([data-outside-month])",
+        "outside-month",
         "range-end",
         "range-start",
         "selected"
@@ -4829,6 +4831,8 @@
         "is([data-range-start], [data-range-end])",
         "not([data-disabled])",
         "not([data-in-range], [data-disabled])",
+        "not([data-outside-month])",
+        "outside-month",
         "range-end",
         "range-start",
         "selected"
@@ -4854,6 +4858,8 @@
         "in-range",
         "is([data-range-start], [data-range-end])",
         "not([data-in-range])",
+        "not([data-outside-month])",
+        "outside-month",
         "range-end",
         "range-start",
         "selected"
@@ -4895,6 +4901,8 @@
         "in-range",
         "is([data-range-start], [data-range-end])",
         "not([data-in-range])",
+        "not([data-outside-month])",
+        "outside-month",
         "range-end",
         "range-start",
         "selected"
@@ -4955,7 +4963,9 @@
       ],
       "state": [
         "default",
-        "in-range"
+        "in-range",
+        "not([data-outside-month])",
+        "outside-month"
       ],
       "defaultToken": [
         "--xh-space-0_5"
@@ -5406,7 +5416,9 @@
         "background"
       ],
       "state": [
-        "in-range"
+        "in-range",
+        "not([data-outside-month])",
+        "outside-month"
       ],
       "defaultToken": [
         "--xh-bg-brand-subtle"
