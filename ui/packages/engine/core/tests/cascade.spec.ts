@@ -1,8 +1,3 @@
-/*
- * Copyright (c) 2021-Present XiHanFun and contributors.
- * Licensed under the MIT License. See LICENSE in the project root for license information.
- */
-
 // 级联勾选算法的判据：AntD/常规树形多选的公认语义——
 // 点分支整枝传导、子全勾父勾、有勾有不勾半选、禁用冻结、三种回显收敛。
 import type { CascadeNodeLike } from '../src/behavior'

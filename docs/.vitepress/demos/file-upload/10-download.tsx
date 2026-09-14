@@ -1,8 +1,3 @@
-/*
- * Copyright (c) 2021-Present XiHanFun and contributors.
- * Licensed under the MIT License. See LICENSE in the project root for license information.
- */
-
 // 列表项上的下载 | 条目里放什么由作者定：一条普通的 a[download] 就是下载口；想自己接管就换成按钮，在处理器里怎么取都行
 import type { CSSProperties, ReactNode } from "react";
 import {

@@ -1,8 +1,3 @@
-/*
- * Copyright (c) 2021-Present XiHanFun and contributors.
- * Licensed under the MIT License. See LICENSE in the project root for license information.
- */
-
 // 密码与明暗切换 | 写在 input 部件上的 type 盖过默认的 text，明暗由宿主的一个布尔翻转
 import type { ReactNode } from "react";
 import {

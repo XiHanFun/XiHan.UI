@@ -1,10 +1,3 @@
-/*
- * Copyright (c) 2021-Present XiHanFun and contributors.
- * Licensed under the MIT License. See LICENSE in the project root for license information.
- */
-
-// 验证 tree cascade 相关行为。
-
 // @vitest-environment jsdom
 // tree 的级联勾选接线：点分支整枝传导、半选三态、收敛策略。算法本身在 behavior 包已有判据，
 // 这里只验组件层接对了。

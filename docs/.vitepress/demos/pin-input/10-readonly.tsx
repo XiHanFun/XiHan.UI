@@ -1,8 +1,3 @@
-/*
- * Copyright (c) 2021-Present XiHanFun and contributors.
- * Licensed under the MIT License. See LICENSE in the project root for license information.
- */
-
 // 只读 | 格子带上原生 readonly，值走受控且宿主不回写：能聚焦、能选中复制，改不动
 import type { ReactNode } from "react";
 import { XhPinInputInput, XhPinInputLabel, XhPinInputRoot } from "@xihan-ui/react";

@@ -1,8 +1,3 @@
-<!--
-  Copyright (c) 2021-Present XiHanFun and contributors.
-  Licensed under the MIT License. See LICENSE in the project root for license information.
--->
-
 <!-- 基础用法 | 一次一题：单选选中后自动翻到下一题，多选等人点继续，末题上那颗按钮变成发送 -->
 <script setup lang="ts">
 import type { QuestionFlowQuestion } from "@xihan-ui/headless";

@@ -1,8 +1,3 @@
-<!--
-  Copyright (c) 2021-Present XiHanFun and contributors.
-  Licensed under the MIT License. See LICENSE in the project root for license information.
--->
-
 <!-- 基础用法 | 渲染成 <time datetime>：文本给人看，datetime 给机器读，两者取自同一个墙钟 -->
 <script setup lang="ts">
 import { XhTimestamp } from "@xihan-ui/vue";

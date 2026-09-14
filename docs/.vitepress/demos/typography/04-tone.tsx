@@ -1,8 +1,3 @@
-/*
- * Copyright (c) 2021-Present XiHanFun and contributors.
- * Licensed under the MIT License. See LICENSE in the project root for license information.
- */
-
 // 颜色 | 使用语义颜色
 import type { ReactNode } from "react";
 import { XhTypographyParagraph, XhTypographyRoot, XhTypographyText } from "@xihan-ui/react";

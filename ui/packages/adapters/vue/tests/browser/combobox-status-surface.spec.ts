@@ -1,8 +1,3 @@
-/*
- * Copyright (c) 2021-Present XiHanFun and contributors.
- * Licensed under the MIT License. See LICENSE in the project root for license information.
- */
-
 // Combobox 的 content 必须继续承担 listbox 与 Presence；empty/loading 是同级 role=status。
 // 单一表面、同格几何与真实退场只能在浏览器级联和布局中验证。
 import type { ComboboxNode } from '@xihan-ui/headless'

@@ -1,10 +1,3 @@
-/*
- * Copyright (c) 2021-Present XiHanFun and contributors.
- * Licensed under the MIT License. See LICENSE in the project root for license information.
- */
-
-// 验证 side nav 相关行为。
-
 // @vitest-environment jsdom
 // side-nav 的侧栏行为：内嵌展开/手风琴、选中与祖先枝点亮、折叠图标栏、roving 方向键。
 import type { SideNavNode } from '@xihan-ui/headless'

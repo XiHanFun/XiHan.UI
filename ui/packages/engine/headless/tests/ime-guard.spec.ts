@@ -1,8 +1,3 @@
-/*
- * Copyright (c) 2021-Present XiHanFun and contributors.
- * Licensed under the MIT License. See LICENSE in the project root for license information.
- */
-
 // 门禁：键盘落在文本输入上的组件，必须挡住输入法组合态。
 //
 // 规格层的 KeyboardRow 只有 keys/when/does 三维，「组合中」这个条件进不去，

@@ -1,8 +1,3 @@
-/*
- * Copyright (c) 2021-Present XiHanFun and contributors.
- * Licensed under the MIT License. See LICENSE in the project root for license information.
- */
-
 // 外框 | bordered 画一圈描边，并在格与格之间补上网格线
 import type { ReactNode } from "react";
 import {

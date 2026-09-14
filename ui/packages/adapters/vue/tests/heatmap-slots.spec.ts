@@ -1,10 +1,3 @@
-/*
- * Copyright (c) 2021-Present XiHanFun and contributors.
- * Licensed under the MIT License. See LICENSE in the project root for license information.
- */
-
-// 验证 heatmap slots 相关行为。
-
 import type { HeatmapCellSlotProps, HeatmapRootSlotProps } from '../src'
 import { mount } from '@vue/test-utils'
 // @vitest-environment jsdom

@@ -1,10 +1,3 @@
-/*
- * Copyright (c) 2021-Present XiHanFun and contributors.
- * Licensed under the MIT License. See LICENSE in the project root for license information.
- */
-
-// 验证 create machine 相关行为。
-
 import type { MachineConfig, MachineSchema } from '../src/machine'
 import { describe, expect, expectTypeOf, it } from 'vitest'
 import { createMachine, MachineError, setup } from '../src/machine'

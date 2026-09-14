@@ -1,10 +1,3 @@
-/*
- * Copyright (c) 2021-Present XiHanFun and contributors.
- * Licensed under the MIT License. See LICENSE in the project root for license information.
- */
-
-// 验证 date picker popup material 相关行为。
-
 import type { App } from 'vue'
 import type { DatePickerRootSlotProps } from '../../src/components/date-picker/date-picker'
 import { afterEach, describe, expect, it } from 'vitest'

@@ -1,8 +1,3 @@
-<!--
-  Copyright (c) 2021-Present XiHanFun and contributors.
-  Licensed under the MIT License. See LICENSE in the project root for license information.
--->
-
 <!-- 顺序排列 | 按文档顺序逐列填充 -->
 <script setup lang="ts">
 import { XhMasonry } from "@xihan-ui/vue";

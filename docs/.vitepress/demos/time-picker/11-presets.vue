@@ -1,8 +1,3 @@
-<!--
-  Copyright (c) 2021-Present XiHanFun and contributors.
-  Licensed under the MIT License. See LICENSE in the project root for license information.
--->
-
 <!-- 快捷选项 | presets 在列旁边多排一列，点一条整份写进值并收起；时刻在组件外算好再传 -->
 <script setup lang="ts">
 import { timePickerPresetNow } from "@xihan-ui/headless";

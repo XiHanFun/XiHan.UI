@@ -1,8 +1,3 @@
-/*
- * Copyright (c) 2021-Present XiHanFun and contributors.
- * Licensed under the MIT License. See LICENSE in the project root for license information.
- */
-
 // 三条环境轴上的皮肤取值：高对比（forced-colors）、打印（print）、移动视口的安全区。
 //
 // 三档都不是常态渲染，开发机上一个像素都看不出差别，只有把浏览器真切到那一档才验得了：

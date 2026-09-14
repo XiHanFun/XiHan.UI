@@ -1,8 +1,3 @@
-/*
- * Copyright (c) 2021-Present XiHanFun and contributors.
- * Licensed under the MIT License. See LICENSE in the project root for license information.
- */
-
 // 尺寸 | 适配不同的界面密度
 import type { ReactNode } from "react";
 import { XhCheckbox } from "@xihan-ui/react";

@@ -1,10 +1,3 @@
-/*
- * Copyright (c) 2021-Present XiHanFun and contributors.
- * Licensed under the MIT License. See LICENSE in the project root for license information.
- */
-
-// 验证 date picker showtime 相关行为。
-
 // @vitest-environment jsdom
 // date-picker showTime：值升格为 datetime——选日保时不收起、时间列点选换单位、
 // 确认按钮收口；没开 showTime 的行为原样。

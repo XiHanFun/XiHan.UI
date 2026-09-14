@@ -1,10 +1,3 @@
-/*
- * Copyright (c) 2021-Present XiHanFun and contributors.
- * Licensed under the MIT License. See LICENSE in the project root for license information.
- */
-
-// 验证 trigger handler order 相关行为。
-
 // @vitest-environment jsdom
 //
 // 同名处理器的先后：作者挂在角色节点上的监听器先跑，部件的后跑——与 Vue / React 两侧

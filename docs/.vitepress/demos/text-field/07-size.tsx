@@ -1,8 +1,3 @@
-/*
- * Copyright (c) 2021-Present XiHanFun and contributors.
- * Licensed under the MIT License. See LICENSE in the project root for license information.
- */
-
 // 尺寸 | size 只改高度、内边距与字号，标签与清空按钮一起跟着换档；不写就是缺省档
 import type { ReactNode } from "react";
 import {

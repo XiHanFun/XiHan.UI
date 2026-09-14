@@ -1,8 +1,3 @@
-<!--
-  Copyright (c) 2021-Present XiHanFun and contributors.
-  Licensed under the MIT License. See LICENSE in the project root for license information.
--->
-
 <!-- 基础用法 | 不传 open 即为非受控；Esc 或点遮罩关闭，关闭后焦点回到触发按钮 -->
 <script setup lang="ts">
 import {

@@ -1,10 +1,3 @@
-/*
- * Copyright (c) 2021-Present XiHanFun and contributors.
- * Licensed under the MIT License. See LICENSE in the project root for license information.
- */
-
-// 验证 clipboard native events 相关行为。
-
 // @vitest-environment jsdom
 //
 // clipboard 的 connect 给只读框派了 focus：聚焦即全选，键盘用户的 Ctrl/Cmd+C 靠它。

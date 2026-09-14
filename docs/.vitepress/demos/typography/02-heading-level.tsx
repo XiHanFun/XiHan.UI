@@ -1,8 +1,3 @@
-/*
- * Copyright (c) 2021-Present XiHanFun and contributors.
- * Licensed under the MIT License. See LICENSE in the project root for license information.
- */
-
 // 标题层级 | 设置标题的视觉层级
 import type { ReactNode } from "react";
 import { XhTypographyHeading, XhTypographyRoot } from "@xihan-ui/react";

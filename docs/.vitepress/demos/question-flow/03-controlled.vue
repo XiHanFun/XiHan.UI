@@ -1,8 +1,3 @@
-<!--
-  Copyright (c) 2021-Present XiHanFun and contributors.
-  Licensed under the MIT License. See LICENSE in the project root for license information.
--->
-
 <!-- 受控当前题 | 进度归宿主管：外面的按钮直接跳题，答案也一并受控，组件只发意图 -->
 <script setup lang="ts">
 import type { QuestionFlowAnswers, QuestionFlowQuestion } from "@xihan-ui/headless";

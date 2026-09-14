@@ -1,8 +1,3 @@
-/*
- * Copyright (c) 2021-Present XiHanFun and contributors.
- * Licensed under the MIT License. See LICENSE in the project root for license information.
- */
-
 // 框里的附加节点 | root 里除三件外还能放自己的按钮与计数；值的读写归宿主，原生属性照旧直接落到输入框上
 import type { ReactNode } from "react";
 import {

@@ -1,10 +1,3 @@
-/*
- * Copyright (c) 2021-Present XiHanFun and contributors.
- * Licensed under the MIT License. See LICENSE in the project root for license information.
- */
-
-// 验证 select native events 相关行为。
-
 // @vitest-environment jsdom
 //
 // select 的条目上，connect 派的是 focus 与 pointerleave 两个不冒泡的事件。

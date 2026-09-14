@@ -1,8 +1,3 @@
-/*
- * Copyright (c) 2021-Present XiHanFun and contributors.
- * Licensed under the MIT License. See LICENSE in the project root for license information.
- */
-
 // 轻提示那一摞的缺省上限：真渲一台服务连发 20 条，DOM 里只挂 3 条，三条全落在视口内。
 // 对照 max: Infinity（不限）的同一批：20 条全挂上，超出的那几条既滚不到也点不到——
 // 缺省那个 3 就是把摞留在视口里的那道闸。

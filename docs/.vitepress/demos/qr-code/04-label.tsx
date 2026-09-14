@@ -1,8 +1,3 @@
-/*
- * Copyright (c) 2021-Present XiHanFun and contributors.
- * Licensed under the MIT License. See LICENSE in the project root for license information.
- */
-
 // 可及名字 | 缺省拿 value 当 aria-label；内容不是给人念的时候用 label 换一句人话
 import type { ReactNode } from "react";
 import { XhQrCode } from "@xihan-ui/react";

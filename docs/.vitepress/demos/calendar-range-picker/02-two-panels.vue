@@ -1,8 +1,3 @@
-<!--
-  Copyright (c) 2021-Present XiHanFun and contributors.
-  Licensed under the MIT License. See LICENSE in the project root for license information.
--->
-
 <!-- 并排两个月 | visible-count=2：起止常跨月，并排看两页才好挑；翻页时整窗一起走 -->
 <script setup lang="ts">
 import {

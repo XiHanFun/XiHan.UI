@@ -1,10 +1,3 @@
-/*
- * Copyright (c) 2021-Present XiHanFun and contributors.
- * Licensed under the MIT License. See LICENSE in the project root for license information.
- */
-
-// 验证 side nav popout 相关行为。
-
 // @vitest-environment jsdom
 // side-nav 折叠态的子级弹出：顶层分支换装浮层触发（悬停/点按/方向键），
 // 面板内选中叶子落值并收面板；平铺态与 collapsedPopout=false 不受影响。

@@ -1,8 +1,3 @@
-/*
- * Copyright (c) 2021-Present XiHanFun and contributors.
- * Licensed under the MIT License. See LICENSE in the project root for license information.
- */
-
 // date-picker 浮层的手机档排布：面板放不下并排的那几块时，它们改成上下堆叠。
 //
 // 宿主视口固定改不动，换宽度只能靠内嵌 iframe：浮层挂进 iframe 的文档，

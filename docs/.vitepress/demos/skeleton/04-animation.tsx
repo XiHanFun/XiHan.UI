@@ -1,8 +1,3 @@
-/*
- * Copyright (c) 2021-Present XiHanFun and contributors.
- * Licensed under the MIT License. See LICENSE in the project root for license information.
- */
-
 // 动效 | 在微光、呼吸和静止三档之间选择
 import type { SkeletonAnimation } from "@xihan-ui/headless";
 import type { CSSProperties, ReactNode } from "react";

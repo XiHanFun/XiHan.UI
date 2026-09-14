@@ -1,8 +1,3 @@
-/*
- * Copyright (c) 2021-Present XiHanFun and contributors.
- * Licensed under the MIT License. See LICENSE in the project root for license information.
- */
-
 // 视口档：diff-view 的并排视图与 transfer 的两栏面板，在窄视口里换成堆叠。
 //
 // 换档由 @media (min-width) 决定，宿主视口固定改不动，所以每一档开一个那么宽的 iframe，

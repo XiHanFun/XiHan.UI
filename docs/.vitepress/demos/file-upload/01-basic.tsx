@@ -1,8 +1,3 @@
-/*
- * Copyright (c) 2021-Present XiHanFun and contributors.
- * Licensed under the MIT License. See LICENSE in the project root for license information.
- */
-
 // 基础用法 | 投放区自己就是一个大按钮，隐藏输入是必备部件，缺了它选不了文件
 import type { ReactNode } from "react";
 import {

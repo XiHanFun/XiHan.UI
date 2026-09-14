@@ -1,10 +1,3 @@
-/*
- * Copyright (c) 2021-Present XiHanFun and contributors.
- * Licensed under the MIT License. See LICENSE in the project root for license information.
- */
-
-// 验证 text field 相关行为。
-
 // @vitest-environment jsdom
 import type { TextFieldSchema, TextFieldValueChangeDetails } from '../src/text-field/index'
 import { createService, normalizeProps } from '@xihan-ui/core'

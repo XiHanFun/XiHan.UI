@@ -1,8 +1,3 @@
-/*
- * Copyright (c) 2021-Present XiHanFun and contributors.
- * Licensed under the MIT License. See LICENSE in the project root for license information.
- */
-
 // 分列步长 | step=15 只裁浮层里的可选值（分列剩四格），段位上手打的分数不受它限制
 import type { ReactNode } from "react";
 import {

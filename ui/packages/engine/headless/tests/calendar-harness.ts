@@ -1,8 +1,3 @@
-/*
- * Copyright (c) 2021-Present XiHanFun and contributors.
- * Licensed under the MIT License. See LICENSE in the project root for license information.
- */
-
 // 日历选择器与日历范围选择器共用的单测夹具：挂一张会跟着聚焦日重画的活网格。
 
 import type { MachineConfig, NormalizeProps, PropTypes, Service } from '@xihan-ui/core'

@@ -1,10 +1,3 @@
-/*
- * Copyright (c) 2021-Present XiHanFun and contributors.
- * Licensed under the MIT License. See LICENSE in the project root for license information.
- */
-
-// 验证 hover card name chain 相关行为。
-
 // @vitest-environment jsdom
 //
 // 卡片的名字链与说明链由两个可选部件的在场与否决定，而 connect 是在渲染期求值的：

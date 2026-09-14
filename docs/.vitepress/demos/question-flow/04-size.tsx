@@ -1,8 +1,3 @@
-/*
- * Copyright (c) 2021-Present XiHanFun and contributors.
- * Licensed under the MIT License. See LICENSE in the project root for license information.
- */
-
 // 尺寸 | size 换问句、选项行与页脚按钮的几何档，三档共用同一份问题
 import type { QuestionFlowQuestion } from "@xihan-ui/headless";
 import type { ReactNode } from "react";

@@ -1,8 +1,3 @@
-/*
- * Copyright (c) 2021-Present XiHanFun and contributors.
- * Licensed under the MIT License. See LICENSE in the project root for license information.
- */
-
 // 末端那一层的排布：只有「子节点全是叶子」的那层能横排，其余恒竖排。
 //
 // 菜单授权是这条的用例：一个菜单下十几个按钮，横排一行铺完，省掉纵向翻找；

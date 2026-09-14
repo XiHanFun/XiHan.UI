@@ -1,8 +1,3 @@
-/*
- * Copyright (c) 2021-Present XiHanFun and contributors.
- * Licensed under the MIT License. See LICENSE in the project root for license information.
- */
-
 // 无障碍子入口，依赖 axe-core，只在真实浏览器里跑，故与主入口分开。
 export { expectNoAxeViolations, formatViolations, runAxe, WCAG_21_AA_TAGS } from './axe'
 export type { AxeCheckOptions } from './axe'

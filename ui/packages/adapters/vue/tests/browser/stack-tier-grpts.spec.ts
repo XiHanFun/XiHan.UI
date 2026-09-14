@@ -1,8 +1,3 @@
-/*
- * Copyright (c) 2021-Present XiHanFun and contributors.
- * Licensed under the MIT License. See LICENSE in the project root for license information.
- */
-
 // 横排折竖排这一组：timeline 按视口断点换档，steps 只折行、不翻朝向。
 //
 // steps 的键盘轴跟着 orientation 走（方向键与 aria-orientation 都读它），

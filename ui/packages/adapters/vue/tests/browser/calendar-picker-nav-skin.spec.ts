@@ -1,8 +1,3 @@
-/*
- * Copyright (c) 2021-Present XiHanFun and contributors.
- * Licensed under the MIT License. See LICENSE in the project root for license information.
- */
-
 // 四颗翻页钮在皮肤下都得画得出来，判据是级联算出的 display 与盒宽——
 // 「大步翻」那两颗曾因选择器列表里少了限定而被一条 display:none 无条件收掉。
 import type { App } from 'vue'

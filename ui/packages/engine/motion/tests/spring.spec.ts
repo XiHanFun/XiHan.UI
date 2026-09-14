@@ -1,10 +1,3 @@
-/*
- * Copyright (c) 2021-Present XiHanFun and contributors.
- * Licensed under the MIT License. See LICENSE in the project root for license information.
- */
-
-// 验证 spring 相关行为。
-
 import type { SpringPhysical } from '../src/spring'
 import { describe, expect, it } from 'vitest'
 import { createSpring, springFromPerceptual, springPresets, springToLinearEasing } from '../src/spring'

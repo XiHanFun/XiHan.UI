@@ -1,10 +1,3 @@
-/*
- * Copyright (c) 2021-Present XiHanFun and contributors.
- * Licensed under the MIT License. See LICENSE in the project root for license information.
- */
-
-// 验证 overlay close reason 相关行为。
-
 // @vitest-environment jsdom
 // 关闭原因在机器里早就算出来了（消解层回报 escape-key 还是 interact-outside、
 // 关闭按钮与 Tab 各自带 src），此前只用来决定要不要归还焦点，没有交到使用者手上。

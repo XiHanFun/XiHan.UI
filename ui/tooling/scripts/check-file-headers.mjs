@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-// 检查并批量补齐仓库内代码文件的版权头与功能注释。
+// 检查并批量同步 packages 核心源码的版权头与功能注释。
 import { execFileSync } from 'node:child_process'
 import { readFile, writeFile } from 'node:fs/promises'
 import { extname, resolve } from 'node:path'
@@ -29,11 +29,15 @@ const SOURCE_EXTENSIONS = new Set(['.css', '.ts', '.tsx', '.vue'])
 function isPrimarySource(path) {
   const normalized = path.replaceAll('\\', '/')
   const extension = extname(path).toLowerCase()
+  if (!normalized.startsWith('ui/packages/'))
+    return false
   if (!SOURCE_EXTENSIONS.has(extension))
+    return false
+  if (/(?:^|\/)(?:__tests__|tests?)\//i.test(normalized) || /\.(?:spec|test)\.(?:ts|tsx)$/i.test(normalized))
     return false
   if (/(?:^|\/)[^/]+\.config\.ts$/i.test(normalized) || /(?:^|\/)vitest\.workspace\.ts$/i.test(normalized))
     return false
-  return normalized !== 'docs/.vitepress/config.ts'
+  return true
 }
 
 const files = execFileSync(
@@ -65,10 +69,10 @@ for (const relative of files) {
 }
 
 if (WRITE) {
-  console.log(`[file-headers] 已同步 ${missing.length} 个文件；主体源码 ${primary} 个，排除配置与辅助文件 ${excluded} 个`)
+  console.log(`[file-headers] 已同步 ${missing.length} 个文件；packages 核心源码 ${primary} 个，其他文件 ${excluded} 个`)
 }
 else if (missing.length > 0) {
-  console.error(`[file-headers] 缺少统一文件头或功能注释：${missing.length} 个`)
+  console.error(`[file-headers] 文件头策略不一致：${missing.length} 个`)
   for (const path of missing.slice(0, 80))
     console.error(`  ${path}`)
   if (missing.length > 80)
@@ -77,5 +81,5 @@ else if (missing.length > 0) {
   process.exit(1)
 }
 else {
-  console.log(`[file-headers] 通过：${primary} 个主体源码文件具备统一文件头，${excluded} 个配置与辅助文件保持无文件头`)
+  console.log(`[file-headers] 通过：${primary} 个 packages 核心源码文件具备统一文件头，${excluded} 个其他文件保持无文件头`)
 }

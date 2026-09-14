@@ -1,8 +1,3 @@
-<!--
-  Copyright (c) 2021-Present XiHanFun and contributors.
-  Licensed under the MIT License. See LICENSE in the project root for license information.
--->
-
 <!-- 禁用与校验态 | disabled 与 readOnly 都改不动值，invalid 只把 aria-invalid 标出来、不拦输入 -->
 <script setup lang="ts">
 import {

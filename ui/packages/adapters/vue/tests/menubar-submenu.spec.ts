@@ -1,10 +1,3 @@
-/*
- * Copyright (c) 2021-Present XiHanFun and contributors.
- * Licensed under the MIT License. See LICENSE in the project root for license information.
- */
-
-// 验证 menubar submenu 相关行为。
-
 // @vitest-environment jsdom
 // 菜单栏嵌套子菜单：跨 scope 双重身份（父层 item 身份胜出，否则菜单栏按自己的 scope 查不到它）、
 // 子层选中带上菜单身份汇到根并关掉整条菜单栏。

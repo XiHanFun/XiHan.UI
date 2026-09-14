@@ -1,10 +1,3 @@
-/*
- * Copyright (c) 2021-Present XiHanFun and contributors.
- * Licensed under the MIT License. See LICENSE in the project root for license information.
- */
-
-// 验证 shorthand children 相关行为。
-
 // @vitest-environment jsdom
 //
 // 两处「看 children 决定渲什么」的分支，共享一致性套件都咬不到：

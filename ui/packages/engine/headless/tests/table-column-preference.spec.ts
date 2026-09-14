@@ -1,8 +1,3 @@
-/*
- * Copyright (c) 2021-Present XiHanFun and contributors.
- * Licensed under the MIT License. See LICENSE in the project root for license information.
- */
-
 // 列偏好：一份可序列化的状态，说的是「这张表这次要怎么显示列」。
 //
 // 库只负责把它算进生效列，存到哪儿归使用者——把存储通道焊进组件库

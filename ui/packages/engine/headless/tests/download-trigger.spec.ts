@@ -1,8 +1,3 @@
-/*
- * Copyright (c) 2021-Present XiHanFun and contributors.
- * Licensed under the MIT License. See LICENSE in the project root for license information.
- */
-
 /**
  * 造下载要真实的活 DOM：临时地址、隐藏链接与那一下点击都发生在文档里，纯逻辑环境里演不出来。
  *

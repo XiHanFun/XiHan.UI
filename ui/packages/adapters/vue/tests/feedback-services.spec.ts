@@ -1,10 +1,3 @@
-/*
- * Copyright (c) 2021-Present XiHanFun and contributors.
- * Licensed under the MIT License. See LICENSE in the project root for license information.
- */
-
-// 验证 feedback services 相关行为。
-
 // @vitest-environment jsdom
 // 命令式反馈服务：不在组件树内、模块作用域直接调用，是这几个服务存在的意义，
 // 所有用例都不挂宿主组件。

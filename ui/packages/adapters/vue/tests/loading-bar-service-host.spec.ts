@@ -1,10 +1,3 @@
-/*
- * Copyright (c) 2021-Present XiHanFun and contributors.
- * Licensed under the MIT License. See LICENSE in the project root for license information.
- */
-
-// 验证 loading bar service host 相关行为。
-
 // @vitest-environment jsdom
 // 进度条服务的宿主自己渲染那三层，不经 provide/inject 拿 api。
 //

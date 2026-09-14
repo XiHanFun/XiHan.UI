@@ -1,8 +1,3 @@
-/*
- * Copyright (c) 2021-Present XiHanFun and contributors.
- * Licensed under the MIT License. See LICENSE in the project root for license information.
- */
-
 // 横向布局 | Card 只提供内容面，方向和媒体尺寸由使用场景决定
 import type { ReactNode } from "react";
 import {

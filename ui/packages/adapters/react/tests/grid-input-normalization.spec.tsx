@@ -1,10 +1,3 @@
-/*
- * Copyright (c) 2021-Present XiHanFun and contributors.
- * Licensed under the MIT License. See LICENSE in the project root for license information.
- */
-
-// 验证 grid input normalization 相关行为。
-
 import { render } from '@testing-library/react'
 import { describe, expect, it } from 'vitest'
 import { XhGridItem, XhGridRoot } from '../src'

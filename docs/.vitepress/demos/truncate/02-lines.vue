@@ -1,8 +1,3 @@
-<!--
-  Copyright (c) 2021-Present XiHanFun and contributors.
-  Licensed under the MIT License. See LICENSE in the project root for license information.
--->
-
 <!-- 多行截断 | 限制文本显示两行 -->
 <script setup lang="ts">
 import { XhTruncate } from "@xihan-ui/vue";

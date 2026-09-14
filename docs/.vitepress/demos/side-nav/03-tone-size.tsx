@@ -1,8 +1,3 @@
-/*
- * Copyright (c) 2021-Present XiHanFun and contributors.
- * Licensed under the MIT License. See LICENSE in the project root for license information.
- */
-
 // 尺寸 | 适配不同密度的应用侧栏
 import type { SideNavNode } from "@xihan-ui/headless";
 import type { ReactNode } from "react";

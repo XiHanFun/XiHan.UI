@@ -1,8 +1,3 @@
-/*
- * Copyright (c) 2021-Present XiHanFun and contributors.
- * Licensed under the MIT License. See LICENSE in the project root for license information.
- */
-
 // 颜色 | tone 换淡底与回退字的配色组；不写 tone 就是中性缺省，直径与字号都不受影响
 import type { ReactNode } from "react";
 import { XhAvatarFallback, XhAvatarImage, XhAvatarRoot } from "@xihan-ui/react";

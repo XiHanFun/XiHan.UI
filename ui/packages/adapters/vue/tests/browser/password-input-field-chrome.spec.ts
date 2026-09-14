@@ -1,10 +1,3 @@
-/*
- * Copyright (c) 2021-Present XiHanFun and contributors.
- * Licensed under the MIT License. See LICENSE in the project root for license information.
- */
-
-// 验证 password input field chrome 相关行为。
-
 import type { Size } from '@xihan-ui/core'
 import type { App, VNode } from 'vue'
 import { afterEach, describe, expect, it } from 'vitest'

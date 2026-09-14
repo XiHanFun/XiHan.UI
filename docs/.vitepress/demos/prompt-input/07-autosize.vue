@@ -1,8 +1,3 @@
-<!--
-  Copyright (c) 2021-Present XiHanFun and contributors.
-  Licensed under the MIT License. See LICENSE in the project root for license information.
--->
-
 <!-- 随内容长高 | 输入框的高度跟着内容走，rows 定的是起始行数；不手动拖拽，也不写死高度 -->
 <script setup lang="ts">
 import { XhPromptInputInput, XhPromptInputRoot, XhPromptInputSubmitTrigger } from "@xihan-ui/vue";

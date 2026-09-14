@@ -1,8 +1,3 @@
-/*
- * Copyright (c) 2021-Present XiHanFun and contributors.
- * Licensed under the MIT License. See LICENSE in the project root for license information.
- */
-
 // 文档站自定义元素版示例的批量验证台：每份 .html 在真实 Chromium 里挂一遍，逐条判据过。
 //
 // 判据五条：元素升级、作者写的角色节点全被发现、必需部件齐备、控制台零 error、脚本是 type="module"。

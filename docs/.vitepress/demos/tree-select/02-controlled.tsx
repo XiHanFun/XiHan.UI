@@ -1,8 +1,3 @@
-/*
- * Copyright (c) 2021-Present XiHanFun and contributors.
- * Licensed under the MIT License. See LICENSE in the project root for license information.
- */
-
 // 选中与展开双受控 | 两份集合都由宿主持有：组件只发事件，宿主写回它才动，回显的就是写回的那两份
 import type { ReactNode } from "react";
 import {

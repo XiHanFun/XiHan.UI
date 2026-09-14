@@ -1,8 +1,3 @@
-/*
- * Copyright (c) 2021-Present XiHanFun and contributors.
- * Licensed under the MIT License. See LICENSE in the project root for license information.
- */
-
 // 文案本地化 | 把手与几个按钮只有图标，可及名一律走 translations
 import type { FloatingPanelSchema } from "@xihan-ui/headless";
 import type { ReactNode } from "react";

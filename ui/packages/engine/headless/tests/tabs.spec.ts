@@ -1,10 +1,3 @@
-/*
- * Copyright (c) 2021-Present XiHanFun and contributors.
- * Licensed under the MIT License. See LICENSE in the project root for license information.
- */
-
-// 验证 tabs 相关行为。
-
 // @vitest-environment jsdom
 //
 // tabs 的机器级基线：受控/非受控、两种激活模式、roving 锚点。

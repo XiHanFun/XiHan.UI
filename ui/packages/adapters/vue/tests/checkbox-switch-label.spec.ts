@@ -1,10 +1,3 @@
-/*
- * Copyright (c) 2021-Present XiHanFun and contributors.
- * Licensed under the MIT License. See LICENSE in the project root for license information.
- */
-
-// 验证 checkbox switch label 相关行为。
-
 // @vitest-environment jsdom
 // 单体复选框 / 开关的文字标签：给了默认插槽就用 <label> 包住控件与文字，
 // 点文字即切换、可及名从文字来；没给文字仍只渲染控件本身，DOM 契约不变。

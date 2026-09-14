@@ -1,10 +1,3 @@
-/*
- * Copyright (c) 2021-Present XiHanFun and contributors.
- * Licensed under the MIT License. See LICENSE in the project root for license information.
- */
-
-// 验证 overlay layer transaction 相关行为。
-
 // @vitest-environment jsdom
 // 浮层 effect 先登记 layer；后续任何同步初始化失败都必须把已取得资源逆序回滚。
 import type { RuntimeConfig } from '@xihan-ui/core'

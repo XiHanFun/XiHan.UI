@@ -1,8 +1,3 @@
-/*
- * Copyright (c) 2021-Present XiHanFun and contributors.
- * Licensed under the MIT License. See LICENSE in the project root for license information.
- */
-
 // 下拉候选的高亮只用底色，不画环。
 //
 // 焦点恒在输入框上（这几家走 aria-activedescendant），候选并不真的持有焦点，

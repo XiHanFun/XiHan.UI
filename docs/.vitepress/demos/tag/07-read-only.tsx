@@ -1,8 +1,3 @@
-/*
- * Copyright (c) 2021-Present XiHanFun and contributors.
- * Licensed under the MIT License. See LICENSE in the project root for license information.
- */
-
 // 只读 | readOnly 只锁关闭钮：叉留在原地但按不动，标签本身不置灰；与 disabled 的区别只在标签本体的颜色
 import type { ReactNode } from "react";
 import { XhTagCloseTrigger, XhTagLabel, XhTagRoot } from "@xihan-ui/react";

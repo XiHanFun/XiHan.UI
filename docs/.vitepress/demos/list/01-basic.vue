@@ -1,8 +1,3 @@
-<!--
-  Copyright (c) 2021-Present XiHanFun and contributors.
-  Licensed under the MIT License. See LICENSE in the project root for license information.
--->
-
 <!-- 基础用法 | 根与条目的标签由使用者定，这里写成 ul 与 li；条目里只写用得上的那几个位 -->
 <script setup lang="ts">
 import {

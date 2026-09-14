@@ -1,10 +1,3 @@
-/*
- * Copyright (c) 2021-Present XiHanFun and contributors.
- * Licensed under the MIT License. See LICENSE in the project root for license information.
- */
-
-// 验证 notification item 相关行为。
-
 // @vitest-environment jsdom
 //
 // 卡片是另一个自定义元素（<xh-notification-item>），一致性夹具只挂一个宿主，

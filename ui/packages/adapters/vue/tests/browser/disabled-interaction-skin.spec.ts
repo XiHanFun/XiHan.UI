@@ -1,8 +1,3 @@
-/*
- * Copyright (c) 2021-Present XiHanFun and contributors.
- * Licensed under the MIT License. See LICENSE in the project root for license information.
- */
-
 // 禁用与挂起件的交互伪类。这些件的禁用不走原生 disabled 而是 aria-disabled / data-disabled，
 // 节点始终是可命中的，:hover 与 :active 照样命中；皮肤不在选择器里挡掉，
 // 置灰的那颗悬停照样换底、按下照样缩，看着还能点。

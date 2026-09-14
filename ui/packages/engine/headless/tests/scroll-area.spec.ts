@@ -1,10 +1,3 @@
-/*
- * Copyright (c) 2021-Present XiHanFun and contributors.
- * Licensed under the MIT License. See LICENSE in the project root for license information.
- */
-
-// 验证 scroll area 相关行为。
-
 // @vitest-environment jsdom
 // 滚动区没有自己的机器：它是视口加两条 scrollbar 的组装。
 // 这里只验组装那一层——轴的开关、占道、交叉口让位、props 透传；

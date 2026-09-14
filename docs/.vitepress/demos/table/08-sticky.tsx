@@ -1,8 +1,3 @@
-/*
- * Copyright (c) 2021-Present XiHanFun and contributors.
- * Licensed under the MIT License. See LICENSE in the project root for license information.
- */
-
 // 表头吸顶与列吸附 | root 自己就是那个滚动容器：stickyHeader 钉住表头，列上标 sticky 的钉住那一列
 import type { ReactNode } from "react";
 import {

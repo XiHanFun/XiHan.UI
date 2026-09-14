@@ -1,8 +1,3 @@
-/*
- * Copyright (c) 2021-Present XiHanFun and contributors.
- * Licensed under the MIT License. See LICENSE in the project root for license information.
- */
-
 // 形态 | variant 换正文框的描边与底色，候选面板不受影响
 import type { ReactNode } from "react";
 import { XhMentionRoot } from "@xihan-ui/react";

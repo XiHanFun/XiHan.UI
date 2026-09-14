@@ -1,8 +1,3 @@
-/*
- * Copyright (c) 2021-Present XiHanFun and contributors.
- * Licensed under the MIT License. See LICENSE in the project root for license information.
- */
-
 // 矩阵形态 | 行列都由作者给，数据按行列定位而不按日期：星期 × 时段的活跃度
 import type { CSSProperties, ReactNode } from "react";
 import { XhHeatmapRoot } from "@xihan-ui/react";

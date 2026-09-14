@@ -1,8 +1,3 @@
-/*
- * Copyright (c) 2021-Present XiHanFun and contributors.
- * Licensed under the MIT License. See LICENSE in the project root for license information.
- */
-
 // 多选把选中项摆成标签时，触发器是一行控件：标签越选越多，盒不许被撑高，也不许让标签冲出盒外。
 // 摆不下的折成 +N 那一枚；行还是装不下时各枚标签缩短带省略号，+N 始终看得见。
 // 标签与 +N 都是库里的 tag（data-scope="tag"）：样子归 tag.css，档位跟着控件的 size 走，

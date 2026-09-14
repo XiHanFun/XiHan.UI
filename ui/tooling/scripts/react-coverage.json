@@ -112,6 +112,7 @@
     "text-field",
     "time-field",
     "time-picker",
+    "time-range-picker",
     "timeline",
     "timer",
     "timestamp",

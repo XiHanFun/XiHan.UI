@@ -1,8 +1,3 @@
-/*
- * Copyright (c) 2021-Present XiHanFun and contributors.
- * Licensed under the MIT License. See LICENSE in the project root for license information.
- */
-
 // 单向搬运 | oneWay 把往回搬那条路整个封死，右侧不再接受勾选，往回的按钮也就不必写
 import type { ReactNode } from "react";
 import {

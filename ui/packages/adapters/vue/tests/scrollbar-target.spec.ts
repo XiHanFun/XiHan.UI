@@ -1,10 +1,3 @@
-/*
- * Copyright (c) 2021-Present XiHanFun and contributors.
- * Licensed under the MIT License. See LICENSE in the project root for license information.
- */
-
-// 验证 scrollbar target 相关行为。
-
 // @vitest-environment jsdom
 //
 // 滚动条挂的是作者的滚动容器，而模板 ref 在挂载那一拍才有值。

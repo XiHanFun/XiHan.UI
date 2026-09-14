@@ -1,10 +1,3 @@
-/*
- * Copyright (c) 2021-Present XiHanFun and contributors.
- * Licensed under the MIT License. See LICENSE in the project root for license information.
- */
-
-// 验证 marquee auto fill 相关行为。
-
 // @vitest-environment jsdom
 // autoFill 决定轨道里铺几份内容。接缝对不对得上，看的是「走完的距离恰好等于一份的长度」，
 // 所以每份都要各自成壳、各自等长；这里盯的就是壳的份数、副本的可及性，以及什么才算真有内容可铺。

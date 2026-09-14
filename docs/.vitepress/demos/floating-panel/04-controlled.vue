@@ -1,8 +1,3 @@
-<!--
-  Copyright (c) 2021-Present XiHanFun and contributors.
-  Licensed under the MIT License. See LICENSE in the project root for license information.
--->
-
 <!-- 受控 | open 与 position 都交给外面握着：面板只报意图，值写回来才动 -->
 <script setup lang="ts">
 import type { FloatingPanelPosition } from "@xihan-ui/headless";

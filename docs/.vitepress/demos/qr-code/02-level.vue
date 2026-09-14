@@ -1,8 +1,3 @@
-<!--
-  Copyright (c) 2021-Present XiHanFun and contributors.
-  Licensed under the MIT License. See LICENSE in the project root for license information.
--->
-
 <!-- 纠错级别 | L / M / Q / H 依次能容忍更多污损，同样的内容也因此占更多模块 -->
 <script setup lang="ts">
 import { XhQrCode } from "@xihan-ui/vue";

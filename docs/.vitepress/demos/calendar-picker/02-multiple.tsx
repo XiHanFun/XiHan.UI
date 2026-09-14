@@ -1,8 +1,3 @@
-/*
- * Copyright (c) 2021-Present XiHanFun and contributors.
- * Licensed under the MIT License. See LICENSE in the project root for license information.
- */
-
 // 多选 | selection-mode=multiple：点一下加进去，再点一下摘掉，集合按日期升序
 import type { ReactNode } from "react";
 import {

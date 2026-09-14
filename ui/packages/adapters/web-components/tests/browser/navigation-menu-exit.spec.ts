@@ -1,8 +1,3 @@
-/*
- * Copyright (c) 2021-Present XiHanFun and contributors.
- * Licensed under the MIT License. See LICENSE in the project root for license information.
- */
-
 // NavigationMenu 的 CSS 退场要在真实 Chromium 验：jsdom 不会从样式表解析 animation 简写。
 import { getLayerRegistry } from '@xihan-ui/core'
 import { afterEach, describe, expect, it } from 'vitest'

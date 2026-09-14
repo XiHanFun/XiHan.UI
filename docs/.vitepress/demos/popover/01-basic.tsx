@@ -1,8 +1,3 @@
-/*
- * Copyright (c) 2021-Present XiHanFun and contributors.
- * Licensed under the MIT License. See LICENSE in the project root for license information.
- */
-
 // 基础用法 | 点击展开，Escape 或点外部关闭；positioner 负责摆位，content 才是浮层本体
 import type { ReactNode } from "react";
 import {

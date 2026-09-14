@@ -1,8 +1,3 @@
-/*
- * Copyright (c) 2021-Present XiHanFun and contributors.
- * Licensed under the MIT License. See LICENSE in the project root for license information.
- */
-
 // 滚动加载 | 到达列表底部加载下一页
 import type { ReactNode, UIEvent } from "react";
 import {

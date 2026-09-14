@@ -1,8 +1,3 @@
-/*
- * Copyright (c) 2021-Present XiHanFun and contributors.
- * Licensed under the MIT License. See LICENSE in the project root for license information.
- */
-
 // 尺寸 | 输入框高度与加减按钮一起换档，不传 size 即默认档
 import type { ReactNode } from "react";
 import {

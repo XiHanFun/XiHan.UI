@@ -1,8 +1,3 @@
-<!--
-  Copyright (c) 2021-Present XiHanFun and contributors.
-  Licensed under the MIT License. See LICENSE in the project root for license information.
--->
-
 <!-- 密度 | size 只落成 root 的 data-size，换的是单元格纵向内边距与字号；三档并排，差别在行高上 -->
 <script setup lang="ts">
 import {

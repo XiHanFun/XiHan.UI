@@ -1,8 +1,3 @@
-/*
- * Copyright (c) 2021-Present XiHanFun and contributors.
- * Licensed under the MIT License. See LICENSE in the project root for license information.
- */
-
 // 自定义颜色 | 开态轨道、关态轨道与滑块各是一个组件令牌，语气档之外的配色写在行内
 import type { CSSProperties, ReactNode } from "react";
 import { XhSwitch } from "@xihan-ui/react";

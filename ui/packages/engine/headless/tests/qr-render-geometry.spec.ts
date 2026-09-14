@@ -1,8 +1,3 @@
-/*
- * Copyright (c) 2021-Present XiHanFun and contributors.
- * Licensed under the MIT License. See LICENSE in the project root for license information.
- */
-
 // 把渲染出来的几何读回网格，再与 qrEncode 的矩阵逐格对账。
 //
 // 这里不看 d 是怎么写的，只看墨最后落在哪儿：自带一个 SVG 路径求值器——记号解析、

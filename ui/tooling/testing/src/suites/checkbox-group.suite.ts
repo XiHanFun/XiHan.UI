@@ -1,10 +1,3 @@
-/*
- * Copyright (c) 2021-Present XiHanFun and contributors.
- * Licensed under the MIT License. See LICENSE in the project root for license information.
- */
-
-// 提供 checkbox group.suite 相关实现。
-
 import type { ConformanceSuite, FixtureNode, StepWithExpect } from '../conformance/types'
 import { checkboxGroupAnatomy, checkboxGroupKeyboard } from '@xihan-ui/headless'
 

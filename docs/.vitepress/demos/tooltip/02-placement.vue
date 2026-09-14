@@ -1,8 +1,3 @@
-<!--
-  Copyright (c) 2021-Present XiHanFun and contributors.
-  Licensed under the MIT License. See LICENSE in the project root for license information.
--->
-
 <!-- 朝向 | placement 是请求值，空间不够时由定位引擎避让；箭头跟着最终落定的那一面走 -->
 <script setup lang="ts">
 import {

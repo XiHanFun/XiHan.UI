@@ -1,8 +1,3 @@
-/*
- * Copyright (c) 2021-Present XiHanFun and contributors.
- * Licensed under the MIT License. See LICENSE in the project root for license information.
- */
-
 // 无壳内联形态 | ghost 档不占一块面，开关收成只占文字宽度的小药丸，适合在一段回答里穿插好几处
 import type { ReactNode } from "react";
 import {

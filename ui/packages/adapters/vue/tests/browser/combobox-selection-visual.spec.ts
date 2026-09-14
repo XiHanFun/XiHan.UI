@@ -1,8 +1,3 @@
-/*
- * Copyright (c) 2021-Present XiHanFun and contributors.
- * Licensed under the MIT License. See LICENSE in the project root for license information.
- */
-
 // Combobox 的焦点留在输入框，候选仅用 data-highlighted 表达导航位置。
 // 这里在真实 Chromium 中同时验证选择语义、作者内容几何与逻辑方向。
 import type { App } from 'vue'

@@ -1,8 +1,3 @@
-<!--
-  Copyright (c) 2021-Present XiHanFun and contributors.
-  Licensed under the MIT License. See LICENSE in the project root for license information.
--->
-
 <!-- 放置位 | placement 是首选位，位置不够时引擎自己避让，实际落点写在 data-placement 上 -->
 <script setup lang="ts">
 import {

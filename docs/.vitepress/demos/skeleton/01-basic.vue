@@ -1,8 +1,3 @@
-<!--
-  Copyright (c) 2021-Present XiHanFun and contributors.
-  Licensed under the MIT License. See LICENSE in the project root for license information.
--->
-
 <!-- 基础用法 | 按真实卡片的封面与文字节奏占位 -->
 <script setup lang="ts">
 import { XhSkeletonItem, XhSkeletonRoot } from "@xihan-ui/vue";

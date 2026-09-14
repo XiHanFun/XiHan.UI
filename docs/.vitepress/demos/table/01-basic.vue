@@ -1,8 +1,3 @@
-<!--
-  Copyright (c) 2021-Present XiHanFun and contributors.
-  Licensed under the MIT License. See LICENSE in the project root for license information.
--->
-
 <!-- 基础用法 | columns 是列号与列宽的唯一事实源，rows 是行序与行号的唯一事实源，标记只管长相 -->
 <script setup lang="ts">
 import {

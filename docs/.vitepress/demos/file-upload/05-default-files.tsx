@@ -1,8 +1,3 @@
-/*
- * Copyright (c) 2021-Present XiHanFun and contributors.
- * Licensed under the MIT License. See LICENSE in the project root for license information.
- */
-
 // 预置列表 | defaultFiles 给出挂载时就在的那几份，之后列表照旧由组件自己保管，删除与清空都照常
 import type { ReactNode } from "react";
 import {

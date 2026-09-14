@@ -1,10 +1,3 @@
-/*
- * Copyright (c) 2021-Present XiHanFun and contributors.
- * Licensed under the MIT License. See LICENSE in the project root for license information.
- */
-
-// 验证 drawer 相关行为。
-
 // @vitest-environment jsdom
 import type { RuntimeConfig, Service } from '@xihan-ui/core'
 // 直接指到组件目录：drawer 尚未接进 src/index.ts（统一接线由别处做），

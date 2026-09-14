@@ -1,10 +1,3 @@
-/*
- * Copyright (c) 2021-Present XiHanFun and contributors.
- * Licensed under the MIT License. See LICENSE in the project root for license information.
- */
-
-// 验证 json viewer element 相关行为。
-
 // @vitest-environment jsdom
 // 元素自己铺行的那几件事：一致性套件只看铺出来的部件与属性，
 // 铺行的过程（root 归谁、行元素复不复用、数据晚到还算不算数）只能在这里验。

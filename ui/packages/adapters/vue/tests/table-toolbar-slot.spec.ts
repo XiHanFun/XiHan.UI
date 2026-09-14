@@ -1,10 +1,3 @@
-/*
- * Copyright (c) 2021-Present XiHanFun and contributors.
- * Licensed under the MIT License. See LICENSE in the project root for license information.
- */
-
-// 验证 table toolbar slot 相关行为。
-
 // @vitest-environment jsdom
 // 工具条与列设置区摆在 root 之外：root 是 role=grid，它的子节点只能是 row 与 rowgroup。
 // Vue 侧因此另开一个 toolbar 插槽——写在默认插槽里的东西全都渲进 root。

@@ -1,10 +1,3 @@
-/*
- * Copyright (c) 2021-Present XiHanFun and contributors.
- * Licensed under the MIT License. See LICENSE in the project root for license information.
- */
-
-// 验证 cascader search 相关行为。
-
 // @vitest-environment jsdom
 // cascader 搜索：输入即过滤（整条路径连缀匹配、候选替换列视图），
 // 上下键走候选 + Enter 选中整条路径，Escape 先清词；禁用整条不落值。

@@ -1,10 +1,3 @@
-/*
- * Copyright (c) 2021-Present XiHanFun and contributors.
- * Licensed under the MIT License. See LICENSE in the project root for license information.
- */
-
-// 验证 text field multiline 相关行为。
-
 // @vitest-environment jsdom
 // text-field 多行宿主：as="textarea" 渲染 textarea（无 type、带 Field Chrome 布局事实），
 // autoSize 输入后按内容量高、行数下限撑底；单行路径不受影响。

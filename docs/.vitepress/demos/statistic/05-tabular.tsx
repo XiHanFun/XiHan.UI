@@ -1,8 +1,3 @@
-/*
- * Copyright (c) 2021-Present XiHanFun and contributors.
- * Licensed under the MIT License. See LICENSE in the project root for license information.
- */
-
 // 等宽数字 | 数值用等宽数字排版，反复换数时字宽不变，后面的单位不会左右挪
 import type { ReactNode } from "react";
 import {

@@ -1,8 +1,3 @@
-<!--
-  Copyright (c) 2021-Present XiHanFun and contributors.
-  Licensed under the MIT License. See LICENSE in the project root for license information.
--->
-
 <!-- 语气 | tone 决定选中圆点用哪族颜色，六种语气各一组 -->
 <script setup lang="ts">
 import { XhRadioGroupRoot } from "@xihan-ui/vue";

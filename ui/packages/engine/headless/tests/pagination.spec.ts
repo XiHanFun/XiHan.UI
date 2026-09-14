@@ -1,10 +1,3 @@
-/*
- * Copyright (c) 2021-Present XiHanFun and contributors.
- * Licensed under the MIT License. See LICENSE in the project root for license information.
- */
-
-// 验证 pagination 相关行为。
-
 import type { Service } from '@xihan-ui/core'
 import type { PaginationPage } from '../src/pagination'
 import type { PaginationSchema } from '../src/pagination/pagination.types'

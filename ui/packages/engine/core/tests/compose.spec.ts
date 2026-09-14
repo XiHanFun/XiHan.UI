@@ -1,10 +1,3 @@
-/*
- * Copyright (c) 2021-Present XiHanFun and contributors.
- * Licensed under the MIT License. See LICENSE in the project root for license information.
- */
-
-// 验证 compose 相关行为。
-
 import { describe, expect, it, vi } from 'vitest'
 import { callAll, composeEventHandlers, composeRefs, isDict, isEventHandlerKey } from '../src/kernel/compose'
 

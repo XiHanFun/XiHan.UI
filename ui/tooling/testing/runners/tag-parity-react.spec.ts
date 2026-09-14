@@ -1,10 +1,3 @@
-/*
- * Copyright (c) 2021-Present XiHanFun and contributors.
- * Licensed under the MIT License. See LICENSE in the project root for license information.
- */
-
-// 验证 tag parity react 相关行为。
-
 // @vitest-environment jsdom
 //
 // 同一份 fixture 在 Vue 与 React 里渲出来的标签名逐个部件比对。

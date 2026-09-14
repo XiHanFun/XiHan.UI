@@ -1,10 +1,3 @@
-/*
- * Copyright (c) 2021-Present XiHanFun and contributors.
- * Licensed under the MIT License. See LICENSE in the project root for license information.
- */
-
-// 验证 popconfirm resource exit 相关行为。
-
 import type { App, Ref } from 'vue'
 import { getLayerRegistry } from '@xihan-ui/core'
 import { afterEach, describe, expect, it } from 'vitest'

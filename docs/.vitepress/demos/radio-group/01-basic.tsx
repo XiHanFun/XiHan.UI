@@ -1,8 +1,3 @@
-/*
- * Copyright (c) 2021-Present XiHanFun and contributors.
- * Licensed under the MIT License. See LICENSE in the project root for license information.
- */
-
 // 基础用法 | 组内只有一个 Tab 停靠点，进组后四个方向键都能切换
 import type { ReactNode } from "react";
 import { XhRadioGroupRoot } from "@xihan-ui/react";

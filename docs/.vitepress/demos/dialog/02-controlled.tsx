@@ -1,8 +1,3 @@
-/*
- * Copyright (c) 2021-Present XiHanFun and contributors.
- * Licensed under the MIT License. See LICENSE in the project root for license information.
- */
-
 // 受控 | 传了 open 就由宿主说了算，组件自己不再改状态；Esc、点遮罩、按叉都只回写 open
 import type { ReactNode } from "react";
 import {

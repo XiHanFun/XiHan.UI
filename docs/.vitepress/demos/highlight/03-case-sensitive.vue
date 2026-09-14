@@ -1,8 +1,3 @@
-<!--
-  Copyright (c) 2021-Present XiHanFun and contributors.
-  Licensed under the MIT License. See LICENSE in the project root for license information.
--->
-
 <!-- 区分大小写 | 缺省不区分，开了 case-sensitive 就按写法比 -->
 <script setup lang="ts">
 import { XhHighlight } from "@xihan-ui/vue";

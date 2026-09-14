@@ -1,8 +1,3 @@
-/*
- * Copyright (c) 2021-Present XiHanFun and contributors.
- * Licensed under the MIT License. See LICENSE in the project root for license information.
- */
-
 // 外部写值与清空 | 值由宿主持有，按钮直接写值；框内自带清空钮，有值才显形，点完焦点回到第一段
 import type { ReactNode } from "react";
 import {

@@ -1,8 +1,3 @@
-/*
- * Copyright (c) 2021-Present XiHanFun and contributors.
- * Licensed under the MIT License. See LICENSE in the project root for license information.
- */
-
 // 可选中 | selectionMode 决定点一枚是替换还是加选；Ctrl/Cmd + A 全选
 import type { ReactNode } from "react";
 import { XhTagGroupRoot } from "@xihan-ui/react";

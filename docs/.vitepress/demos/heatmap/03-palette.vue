@@ -1,8 +1,3 @@
-<!--
-  Copyright (c) 2021-Present XiHanFun and contributors.
-  Licensed under the MIT License. See LICENSE in the project root for license information.
--->
-
 <!-- 色板换色 | palette 直接按颜色点名，六个色板只换色阶满档那一端，分档与空格底都不动 -->
 <script setup lang="ts">
 import type { HeatmapPalette } from "@xihan-ui/headless";

@@ -1,8 +1,3 @@
-/*
- * Copyright (c) 2021-Present XiHanFun and contributors.
- * Licensed under the MIT License. See LICENSE in the project root for license information.
- */
-
 // 关闭前拦截 | 受控时组件不自改状态：Escape、点面板外、按叉都只发一次收起意图，写不写由宿主定
 import type { ReactNode } from "react";
 import {

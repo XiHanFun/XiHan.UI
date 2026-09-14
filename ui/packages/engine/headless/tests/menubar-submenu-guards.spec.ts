@@ -1,10 +1,3 @@
-/*
- * Copyright (c) 2021-Present XiHanFun and contributors.
- * Licensed under the MIT License. See LICENSE in the project root for license information.
- */
-
-// 验证 menubar submenu guards 相关行为。
-
 // @vitest-environment jsdom
 // 菜单栏要能容下子菜单：带 aria-haspopup 的条目是子菜单入口，不是可选中的条目；
 // 子层处理掉的键不再由本层接管；焦点走进子菜单不算离场。

@@ -1,8 +1,3 @@
-/*
- * Copyright (c) 2021-Present XiHanFun and contributors.
- * Licensed under the MIT License. See LICENSE in the project root for license information.
- */
-
 // 按周挑 | granularity=week：一行一个整周，值是两端那两周的周首日；月、季度与年同理
 import type { ReactNode } from "react";
 import {

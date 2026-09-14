@@ -1,8 +1,3 @@
-/*
- * Copyright (c) 2021-Present XiHanFun and contributors.
- * Licensed under the MIT License. See LICENSE in the project root for license information.
- */
-
 // 三类部件不写内容时看得见什么，只有真实浏览器答得出来：字形画在伪元素上，
 // jsdom 的 getComputedStyle 不解析伪元素里的 var()，量出来恒是空串。
 //

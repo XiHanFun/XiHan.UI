@@ -1,8 +1,3 @@
-/*
- * Copyright (c) 2021-Present XiHanFun and contributors.
- * Licensed under the MIT License. See LICENSE in the project root for license information.
- */
-
 // 竖排字段里标签与控件之间那一段距离由 --xh-field-label-gap-block 单独管，
 // 描述与错误文案那两段仍归 --xh-field-gap。横排（标签左置）下这段补白清零，
 // 那一档的间距是列间距，归 --xh-field-label-gap。

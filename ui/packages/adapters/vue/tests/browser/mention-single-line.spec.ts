@@ -1,8 +1,3 @@
-/*
- * Copyright (c) 2021-Present XiHanFun and contributors.
- * Licensed under the MIT License. See LICENSE in the project root for license information.
- */
-
 // 提及的输入框是单行 <input>：候选浮层贴的是整个输入框，不跟着光标走，
 // 换掉宿主标签之后落位仍然成立；框的几何与文本输入的单行档同一档。
 import type { App } from 'vue'

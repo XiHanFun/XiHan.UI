@@ -1,10 +1,3 @@
-/*
- * Copyright (c) 2021-Present XiHanFun and contributors.
- * Licensed under the MIT License. See LICENSE in the project root for license information.
- */
-
-// 验证 hover intent 相关行为。
-
 // @vitest-environment jsdom
 // 悬停意图的判据：安全三角几何用手算坐标核对；跟踪器用假定时器走完
 // 「进-延时开」「斜穿三角不收」「走岔即收」「停滞超时收」四条路径。

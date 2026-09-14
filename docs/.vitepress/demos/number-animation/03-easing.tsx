@@ -1,8 +1,3 @@
-/*
- * Copyright (c) 2021-Present XiHanFun and contributors.
- * Licensed under the MIT License. See LICENSE in the project root for license information.
- */
-
 // 缓动与时长 | duration 定跑多久，easing 定快慢怎么分配；同一段距离四档并排跑，差别一眼可见
 import type { ReactNode } from "react";
 import { XhButton, XhNumberAnimation } from "@xihan-ui/react";

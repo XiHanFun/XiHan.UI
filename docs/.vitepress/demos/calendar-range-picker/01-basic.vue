@@ -1,8 +1,3 @@
-<!--
-  Copyright (c) 2021-Present XiHanFun and contributors.
-  Licensed under the MIT License. See LICENSE in the project root for license information.
--->
-
 <!-- 基础用法 | 先落起点再落终点，也可以按住拖过去；两端都落定才写值，Escape 撤掉起点 -->
 <script setup lang="ts">
 import {

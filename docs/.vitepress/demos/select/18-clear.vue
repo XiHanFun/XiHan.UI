@@ -1,8 +1,3 @@
-<!--
-  Copyright (c) 2021-Present XiHanFun and contributors.
-  Licensed under the MIT License. See LICENSE in the project root for license information.
--->
-
 <!-- 清空 | 有值时显示清空按钮 -->
 <script setup lang="ts">
 import { XhSelectRoot } from "@xihan-ui/vue";

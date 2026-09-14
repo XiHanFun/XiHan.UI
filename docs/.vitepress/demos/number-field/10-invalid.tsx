@@ -1,8 +1,3 @@
-/*
- * Copyright (c) 2021-Present XiHanFun and contributors.
- * Licensed under the MIT License. See LICENSE in the project root for license information.
- */
-
 // 校验态 | invalid 由宿主自己判定，不必挂在表单上；标出来之后值照样能改、加减钮照样能按
 import type { ReactNode } from "react";
 import {

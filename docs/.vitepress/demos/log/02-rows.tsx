@@ -1,8 +1,3 @@
-/*
- * Copyright (c) 2021-Present XiHanFun and contributors.
- * Licensed under the MIT License. See LICENSE in the project root for license information.
- */
-
 // 按行数定高 | rows 定的是「看得见几行」，一行有多高归皮肤，改 --xh-log-line-height 两边一起变
 import type { CSSProperties, ReactNode } from "react";
 import { XhLogContent, XhLogLine, XhLogRoot, XhLogViewport } from "@xihan-ui/react";

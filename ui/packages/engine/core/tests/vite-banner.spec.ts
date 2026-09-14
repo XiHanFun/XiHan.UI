@@ -1,10 +1,3 @@
-/*
- * Copyright (c) 2021-Present XiHanFun and contributors.
- * Licensed under the MIT License. See LICENSE in the project root for license information.
- */
-
-// 验证 vite banner 相关行为。
-
 import { afterEach, describe, expect, it, vi } from 'vitest'
 import { XIHAN_UI_METADATA } from '../src/kernel/metadata'
 import { getXiHanUiBanner, printXiHanUiBanner, xihanUiBanner } from '../src/kernel/vite'

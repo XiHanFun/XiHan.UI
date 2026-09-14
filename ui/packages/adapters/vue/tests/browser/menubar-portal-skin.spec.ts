@@ -1,8 +1,3 @@
-/*
- * Copyright (c) 2021-Present XiHanFun and contributors.
- * Licensed under the MIT License. See LICENSE in the project root for license information.
- */
-
 // 浮层搬出 root 之后皮肤还接不接得上，只能在真实浏览器里验：判据是级联算出来的字号与内缩。
 import type { App } from 'vue'
 import { afterEach, describe, expect, it } from 'vitest'

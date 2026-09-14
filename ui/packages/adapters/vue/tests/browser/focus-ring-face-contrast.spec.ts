@@ -1,8 +1,3 @@
-/*
- * Copyright (c) 2021-Present XiHanFun and contributors.
- * Licensed under the MIT License. See LICENSE in the project root for license information.
- */
-
 // 聚焦环压着的那块面，得看得见环。
 //
 // 环往内收一个环宽，外沿与元素边框外沿重合，环内侧紧挨着的就是元素自己那块面。

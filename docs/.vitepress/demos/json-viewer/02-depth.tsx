@@ -1,8 +1,3 @@
-/*
- * Copyright (c) 2021-Present XiHanFun and contributors.
- * Licensed under the MIT License. See LICENSE in the project root for license information.
- */
-
 // 默认展开层数 | defaultExpandedDepth 决定初次摊到第几层：1 只展开根行，3 连孙层一起铺开
 import type { ReactNode } from "react";
 import { XhJsonViewerRoot } from "@xihan-ui/react";

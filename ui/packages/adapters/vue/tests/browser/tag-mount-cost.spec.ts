@@ -1,8 +1,3 @@
-/*
- * Copyright (c) 2021-Present XiHanFun and contributors.
- * Licensed under the MIT License. See LICENSE in the project root for license information.
- */
-
 // 量一量：一枚标签一台状态机，到底贵不贵。
 //
 // 表格一页几十行、每行几个状态药丸，就是几百枚。徽标原先是零状态机的纯计算，

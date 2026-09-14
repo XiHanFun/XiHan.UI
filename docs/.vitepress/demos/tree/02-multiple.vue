@@ -1,8 +1,3 @@
-<!--
-  Copyright (c) 2021-Present XiHanFun and contributors.
-  Licensed under the MIT License. See LICENSE in the project root for license information.
--->
-
 <!-- 多选 | multiple 关着是单选，打开后点击与确认键都变成切换，选中集合形状不变仍是数组 -->
 <script setup lang="ts">
 import {

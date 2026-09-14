@@ -1,10 +1,3 @@
-/*
- * Copyright (c) 2021-Present XiHanFun and contributors.
- * Licensed under the MIT License. See LICENSE in the project root for license information.
- */
-
-// 验证 flex split 相关行为。
-
 // @vitest-environment jsdom
 //
 // 分隔符自动铺开这条路，共享一致性套件咬不到：套件的 fixture 把 split 部件一个不落地手写在树里，

@@ -1,8 +1,3 @@
-/*
- * Copyright (c) 2021-Present XiHanFun and contributors.
- * Licensed under the MIT License. See LICENSE in the project root for license information.
- */
-
 // 图标与快捷键 | 为常用命令补充识别信息
 import type { ReactNode } from "react";
 import { CopyIcon, PencilIcon, TrashIcon } from "@xihan-ui/icons";

@@ -1,8 +1,3 @@
-/*
- * Copyright (c) 2021-Present XiHanFun and contributors.
- * Licensed under the MIT License. See LICENSE in the project root for license information.
- */
-
 // 全选格的方框与字形是两层，勾中之后方框还在不在。
 //
 // 只有真实浏览器量得出来：方框与字形都画在伪元素上，jsdom 的 getComputedStyle 不解析

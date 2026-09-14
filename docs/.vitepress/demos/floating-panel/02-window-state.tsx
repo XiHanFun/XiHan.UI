@@ -1,8 +1,3 @@
-/*
- * Copyright (c) 2021-Present XiHanFun and contributors.
- * Licensed under the MIT License. See LICENSE in the project root for license information.
- */
-
 // 三种形态 | 收拢只留标题栏、铺满占满视口；按着的那个钮再按一次回到常规
 import type { ReactNode } from "react";
 import {

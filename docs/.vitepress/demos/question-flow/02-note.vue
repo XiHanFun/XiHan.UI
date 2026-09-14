@@ -1,8 +1,3 @@
-<!--
-  Copyright (c) 2021-Present XiHanFun and contributors.
-  Licensed under the MIT License. See LICENSE in the project root for license information.
--->
-
 <!-- 自由文本与跳过 | 选项之外还能自己写一句，写了就算答过；关掉自动前进，每题都等人点继续 -->
 <script setup lang="ts">
 import type { QuestionFlowQuestion } from "@xihan-ui/headless";

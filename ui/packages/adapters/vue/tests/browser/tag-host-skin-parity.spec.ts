@@ -1,8 +1,3 @@
-/*
- * Copyright (c) 2021-Present XiHanFun and contributors.
- * Licensed under the MIT License. See LICENSE in the project root for license information.
- */
-
 // 套了 tag 的三处宿主（tag-group / tags-input / select）里，标签画出来必须与独立渲染的同轴 tag 逐值相同：
 // 三轴从宿主传下去只换 tag 的档，宿主自己的皮肤不再给标签任何一条会改变静息态的规则；
 // 不写形态 / 尺寸与写缺省值画得一样；tag.css 的 --xh-tag-* 覆盖槽写在宿主根上对标签照样生效。

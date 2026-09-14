@@ -1,8 +1,3 @@
-<!--
-  Copyright (c) 2021-Present XiHanFun and contributors.
-  Licensed under the MIT License. See LICENSE in the project root for license information.
--->
-
 <!-- 原文视图 | view="text" 直接出缩进过的 JSON 原文：整块可框选可复制，且不受 maxStringLength / maxItems 折减 -->
 <script setup lang="ts">
 import { XhJsonViewerRoot } from "@xihan-ui/vue";

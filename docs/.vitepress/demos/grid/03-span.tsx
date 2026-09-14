@@ -1,8 +1,3 @@
-/*
- * Copyright (c) 2021-Present XiHanFun and contributors.
- * Licensed under the MIT License. See LICENSE in the project root for license information.
- */
-
 // 跨列与错列 | 控制内容占用的列
 import type { CSSProperties, ReactNode } from "react";
 import { XhGridItem, XhGridRoot } from "@xihan-ui/react";

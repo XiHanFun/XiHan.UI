@@ -1,8 +1,3 @@
-/*
- * Copyright (c) 2021-Present XiHanFun and contributors.
- * Licensed under the MIT License. See LICENSE in the project root for license information.
- */
-
 // 标签输入的控件是一行控件高的框：一枚标签装进去框不长高，标签多了按行长高，行数由宽度定。
 // 框里的每一枚标签都是库里的 tag（data-scope="tag"）：样子归 tag.css，档位跟着控件的 size 走，
 // 三档 22 / 26 / 30 装进控件的 28 / 32 / 40 里；删除钮就是 tag 的 close-trigger；

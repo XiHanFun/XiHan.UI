@@ -1,8 +1,3 @@
-/*
- * Copyright (c) 2021-Present XiHanFun and contributors.
- * Licensed under the MIT License. See LICENSE in the project root for license information.
- */
-
 /**
  * 判据按「配方来自不可信来源」写：越界要钳、类型不对要回落、未知形态要丢，
  * 任何垃圾输入都不许抛错；钳完的配方必须已经在安全域内（再钳一次不变）。

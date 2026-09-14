@@ -1,8 +1,3 @@
-/*
- * Copyright (c) 2021-Present XiHanFun and contributors.
- * Licensed under the MIT License. See LICENSE in the project root for license information.
- */
-
 // 中心 logo | 落位与尺寸由组件给出，那片模块先被底色挖空；放 logo 就把 level 提到 Q 或 H
 import type { ReactNode } from "react";
 import { XhQrCode, XhQrCodeLogo } from "@xihan-ui/react";

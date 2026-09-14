@@ -1,8 +1,3 @@
-/*
- * Copyright (c) 2021-Present XiHanFun and contributors.
- * Licensed under the MIT License. See LICENSE in the project root for license information.
- */
-
 // 语气 | tone 只换圆环起始边那一段颜色，轨道留在中性描边上，转到哪儿才看得出来
 import type { ReactNode } from "react";
 import { XhSpinner } from "@xihan-ui/react";

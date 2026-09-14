@@ -1,8 +1,3 @@
-<!--
-  Copyright (c) 2021-Present XiHanFun and contributors.
-  Licensed under the MIT License. See LICENSE in the project root for license information.
--->
-
 <!-- 变体 | 设置分隔线强度和线型 -->
 <script setup lang="ts">
 import { XhSeparator } from "@xihan-ui/vue";

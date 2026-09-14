@@ -1,8 +1,3 @@
-/*
- * Copyright (c) 2021-Present XiHanFun and contributors.
- * Licensed under the MIT License. See LICENSE in the project root for license information.
- */
-
 // 基础用法 | 图片与回退内容始终同挂 DOM、靠 hidden 互斥显隐，换人时盒子不塌也不跳
 import type { CSSProperties, ReactNode } from "react";
 import { XhImageFallback, XhImageImage, XhImageRoot } from "@xihan-ui/react";

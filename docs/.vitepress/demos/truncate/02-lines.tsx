@@ -1,8 +1,3 @@
-/*
- * Copyright (c) 2021-Present XiHanFun and contributors.
- * Licensed under the MIT License. See LICENSE in the project root for license information.
- */
-
 // 多行截断 | 限制文本显示两行
 import type { ReactNode } from "react";
 import { XhTruncate } from "@xihan-ui/react";

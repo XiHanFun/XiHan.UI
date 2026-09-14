@@ -1,8 +1,3 @@
-/*
- * Copyright (c) 2021-Present XiHanFun and contributors.
- * Licensed under the MIT License. See LICENSE in the project root for license information.
- */
-
 // Spinner 的默认渐隐弧与三档尺寸依赖真实伪元素样式。
 import type { Size } from '@xihan-ui/core'
 import type { App } from 'vue'

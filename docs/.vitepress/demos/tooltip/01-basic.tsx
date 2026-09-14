@@ -1,8 +1,3 @@
-/*
- * Copyright (c) 2021-Present XiHanFun and contributors.
- * Licensed under the MIT License. See LICENSE in the project root for license information.
- */
-
 // 基础用法 | 悬停或聚焦触发器即出；指针停在提示上也不收起
 import type { ReactNode } from "react";
 import {

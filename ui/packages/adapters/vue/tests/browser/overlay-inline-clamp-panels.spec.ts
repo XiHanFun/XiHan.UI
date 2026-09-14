@@ -1,8 +1,3 @@
-/*
- * Copyright (c) 2021-Present XiHanFun and contributors.
- * Licensed under the MIT License. See LICENSE in the project root for license information.
- */
-
 // 浮层的行内轴夹取：面板宽过落位那一侧的可用区时，皮肤把它夹回来，撑出去的那截改成面内横滚。
 //
 // 宿主视口是固定的，改不动，所以换宽度只能靠内嵌 iframe：浮层挂在 iframe 文档里，

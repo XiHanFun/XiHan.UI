@@ -1,8 +1,3 @@
-<!--
-  Copyright (c) 2021-Present XiHanFun and contributors.
-  Licensed under the MIT License. See LICENSE in the project root for license information.
--->
-
 <!-- 八个改尺把手 | 四条边加四个角；min-size 与 max-size 在拖、推、setDimensions 三处同时生效 -->
 <script setup lang="ts">
 import type { FloatingPanelResizeEdge } from "@xihan-ui/headless";

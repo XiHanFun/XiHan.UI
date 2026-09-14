@@ -1,10 +1,3 @@
-/*
- * Copyright (c) 2021-Present XiHanFun and contributors.
- * Licensed under the MIT License. See LICENSE in the project root for license information.
- */
-
-// 验证 pagination ellipsis hover 相关行为。
-
 // @vitest-environment jsdom
 //
 // 省略位的 pointerenter / pointerleave 不冒泡：React 的同名合成事件挂在根容器上，

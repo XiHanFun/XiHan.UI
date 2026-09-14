@@ -1,8 +1,3 @@
-/*
- * Copyright (c) 2021-Present XiHanFun and contributors.
- * Licensed under the MIT License. See LICENSE in the project root for license information.
- */
-
 // 重复铺满 | autoFill 在轨道里铺两份内容，走完一份第二份正好压在起点上，看不出接缝；不开则整段走完再回来
 import type { ReactNode } from "react";
 import { XhMarqueeContent, XhMarqueeRoot } from "@xihan-ui/react";

@@ -1,10 +1,3 @@
-/*
- * Copyright (c) 2021-Present XiHanFun and contributors.
- * Licensed under the MIT License. See LICENSE in the project root for license information.
- */
-
-// 验证 pagination page size select 相关行为。
-
 // @vitest-environment jsdom
 //
 // 每页条数控制器在 React 侧同样是库里的 select：一个组件铺完挂载点与被搬走的浮层两截。

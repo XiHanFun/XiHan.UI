@@ -1,8 +1,3 @@
-<!--
-  Copyright (c) 2021-Present XiHanFun and contributors.
-  Licensed under the MIT License. See LICENSE in the project root for license information.
--->
-
 <!-- 键排序 | sortKeys 让对象键按字典序排，数组顺序不动；接口返回的字段顺序不稳定时用它 -->
 <script setup lang="ts">
 import { XhJsonViewerRoot } from "@xihan-ui/vue";

@@ -1,8 +1,3 @@
-/*
- * Copyright (c) 2021-Present XiHanFun and contributors.
- * Licensed under the MIT License. See LICENSE in the project root for license information.
- */
-
 // 坐标列 | label 与内容对置：逐条交替排布时时间戳仍停在同一侧，不跟着内容左右横跳
 import type { ReactNode } from "react";
 import {

@@ -1,8 +1,3 @@
-/*
- * Copyright (c) 2021-Present XiHanFun and contributors.
- * Licensed under the MIT License. See LICENSE in the project root for license information.
- */
-
 // 关键词过滤 | collection 换一份树就换一棵：标记跟着数据重铺，过滤剩下的分支顺手全展开
 import type { ReactNode } from "react";
 import {

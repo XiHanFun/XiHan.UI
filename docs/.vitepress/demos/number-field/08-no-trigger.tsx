@@ -1,8 +1,3 @@
-/*
- * Copyright (c) 2021-Present XiHanFun and contributors.
- * Licensed under the MIT License. See LICENSE in the project root for license information.
- */
-
 // 只用输入框 | control 仍是必需的输入壳；加减钮可以省略，键盘仍按 step 与 largeStep 改值
 import type { ReactNode } from "react";
 import { XhNumberFieldControl, XhNumberFieldInput, XhNumberFieldLabel, XhNumberFieldRoot } from "@xihan-ui/react";

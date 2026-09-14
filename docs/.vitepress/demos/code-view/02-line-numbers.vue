@@ -1,8 +1,3 @@
-<!--
-  Copyright (c) 2021-Present XiHanFun and contributors.
-  Licensed under the MIT License. See LICENSE in the project root for license information.
--->
-
 <!-- 行号与高亮行 | 行号由皮肤画上去，复制代码不会带上它；高亮行按行号写，与 startLine 对齐 -->
 <script setup lang="ts">
 import { XhCodeViewCode, XhCodeViewPre, XhCodeViewRoot } from "@xihan-ui/vue";

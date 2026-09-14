@@ -1,8 +1,3 @@
-<!--
-  Copyright (c) 2021-Present XiHanFun and contributors.
-  Licensed under the MIT License. See LICENSE in the project root for license information.
--->
-
 <!-- 回退与状态 | 地址写坏和压根没给 src 是同一个落点，status-change 把三态报出来，root 上的 data-state 也有一份 -->
 <script setup lang="ts">
 import { XhImageFallback, XhImageImage, XhImageRoot } from "@xihan-ui/vue";

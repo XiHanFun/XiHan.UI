@@ -1,8 +1,3 @@
-/*
- * Copyright (c) 2021-Present XiHanFun and contributors.
- * Licensed under the MIT License. See LICENSE in the project root for license information.
- */
-
 // 月历形态 | 按自然月分块，每块是一张真月历，1 号落在它真实的星期几上
 import type { ReactNode } from "react";
 import { XhHeatmapRoot } from "@xihan-ui/react";

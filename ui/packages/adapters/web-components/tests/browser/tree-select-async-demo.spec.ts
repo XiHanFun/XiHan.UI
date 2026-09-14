@@ -1,10 +1,3 @@
-/*
- * Copyright (c) 2021-Present XiHanFun and contributors.
- * Licensed under the MIT License. See LICENSE in the project root for license information.
- */
-
-// 验证 tree select async demo 相关行为。
-
 import type { XhTreeSelectElement } from '../../src/elements/tree-select'
 import { afterEach, beforeAll, describe, expect, it } from 'vitest'
 import demo from '../../../../../../docs/.vitepress/demos/tree-select/08-async.html?raw'

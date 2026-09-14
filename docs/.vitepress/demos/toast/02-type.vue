@@ -1,8 +1,3 @@
-<!--
-  Copyright (c) 2021-Present XiHanFun and contributors.
-  Licensed under the MIT License. See LICENSE in the project root for license information.
--->
-
 <!-- 语气 | 卡片保持中性，type 只改变标题与状态图标；error 使用 assertive 实时区，loading 不自动消失 -->
 <script setup lang="ts">
 import {

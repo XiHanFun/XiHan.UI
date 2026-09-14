@@ -1,10 +1,3 @@
-/*
- * Copyright (c) 2021-Present XiHanFun and contributors.
- * Licensed under the MIT License. See LICENSE in the project root for license information.
- */
-
-// 验证 menu submenu hover 相关行为。
-
 // @vitest-environment jsdom
 // 真实三级菜单悬停链：Portal 化的后代浮层仍属于祖先的悬停区域。
 import { afterEach, describe, expect, it, vi } from 'vitest'

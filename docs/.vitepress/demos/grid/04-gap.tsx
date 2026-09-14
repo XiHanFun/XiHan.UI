@@ -1,8 +1,3 @@
-/*
- * Copyright (c) 2021-Present XiHanFun and contributors.
- * Licensed under the MIT License. See LICENSE in the project root for license information.
- */
-
 // 间距 | 设置栅格间距
 import type { ReactNode } from "react";
 import { XhGridItem, XhGridRoot } from "@xihan-ui/react";

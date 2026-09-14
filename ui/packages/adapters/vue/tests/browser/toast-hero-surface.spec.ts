@@ -1,8 +1,3 @@
-/*
- * Copyright (c) 2021-Present XiHanFun and contributors.
- * Licensed under the MIT License. See LICENSE in the project root for license information.
- */
-
 // Toast 的中性浮层、文本列与悬停关闭入口依赖真实布局和媒体查询。
 import type { App } from 'vue'
 import { afterEach, describe, expect, it } from 'vitest'

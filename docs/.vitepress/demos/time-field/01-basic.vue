@@ -1,8 +1,3 @@
-<!--
-  Copyright (c) 2021-Present XiHanFun and contributors.
-  Licensed under the MIT License. See LICENSE in the project root for license information.
--->
-
 <!-- 基础用法 | 逐段输入并实时获得标准时间值；有值时可以一键清空 -->
 <script setup lang="ts">
 import {

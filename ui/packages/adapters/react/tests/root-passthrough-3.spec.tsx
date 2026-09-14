@@ -1,10 +1,3 @@
-/*
- * Copyright (c) 2021-Present XiHanFun and contributors.
- * Licensed under the MIT License. See LICENSE in the project root for license information.
- */
-
-// 验证 root passthrough 3 相关行为。
-
 // @vitest-environment jsdom
 //
 // 逐实例令牌是这个库有文档的主题通道：作者把 `--xh-*` 写在 root 元素的 style 上。

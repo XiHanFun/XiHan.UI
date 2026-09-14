@@ -1,10 +1,3 @@
-/*
- * Copyright (c) 2021-Present XiHanFun and contributors.
- * Licensed under the MIT License. See LICENSE in the project root for license information.
- */
-
-// 验证 table translations 相关行为。
-
 // @vitest-environment jsdom
 // table 的读屏文案能不能改：一条走实例 prop，一条走全局配置。
 //

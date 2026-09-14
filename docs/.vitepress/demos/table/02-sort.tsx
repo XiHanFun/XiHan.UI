@@ -1,8 +1,3 @@
-/*
- * Copyright (c) 2021-Present XiHanFun and contributors.
- * Licensed under the MIT License. See LICENSE in the project root for license information.
- */
-
 // 排序 | 列上标了 sortable 才认排序把手；按住 Shift 点是追加到排序链，裸点是整条链换成这一列
 import type { TableSortDescriptor } from "@xihan-ui/headless";
 import type { ReactNode } from "react";

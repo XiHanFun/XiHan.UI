@@ -1,8 +1,3 @@
-<!--
-  Copyright (c) 2021-Present XiHanFun and contributors.
-  Licensed under the MIT License. See LICENSE in the project root for license information.
--->
-
 <!-- 形态 | variant 决定底与描边怎么画：描边、淡色填底、无框；输入框没有实心档 -->
 <script setup lang="ts">
 import {

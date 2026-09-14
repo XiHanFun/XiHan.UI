@@ -1,8 +1,3 @@
-<!--
-  Copyright (c) 2021-Present XiHanFun and contributors.
-  Licensed under the MIT License. See LICENSE in the project root for license information.
--->
-
 <!-- 垂直布局 | 用于侧栏式内容导航 -->
 <script setup lang="ts">
 import {

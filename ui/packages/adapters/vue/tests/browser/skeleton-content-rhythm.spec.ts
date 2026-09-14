@@ -1,8 +1,3 @@
-/*
- * Copyright (c) 2021-Present XiHanFun and contributors.
- * Licensed under the MIT License. See LICENSE in the project root for license information.
- */
-
 // Skeleton 的内容节奏依赖真实计算样式。
 import type { App } from 'vue'
 import { afterEach, describe, expect, it } from 'vitest'

@@ -1,8 +1,3 @@
-<!--
-  Copyright (c) 2021-Present XiHanFun and contributors.
-  Licensed under the MIT License. See LICENSE in the project root for license information.
--->
-
 <!-- 环心文字 | 组件只负责把内容摆到环心，写什么由使用者决定 -->
 <script setup lang="ts">
 import { CheckIcon } from "@xihan-ui/icons";

@@ -1,8 +1,3 @@
-<!--
-  Copyright (c) 2021-Present XiHanFun and contributors.
-  Licensed under the MIT License. See LICENSE in the project root for license information.
--->
-
 <!-- 轨道内文案与滑块标记 | 轨道的子节点全由作者决定，data-state 同时打在轨道与滑块上 -->
 <script setup lang="ts">
 import { CheckIcon, XIcon } from "@xihan-ui/icons";

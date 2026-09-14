@@ -1,8 +1,3 @@
-/*
- * Copyright (c) 2021-Present XiHanFun and contributors.
- * Licensed under the MIT License. See LICENSE in the project root for license information.
- */
-
 // Vue 内建的布尔属性表里没有 inert，原样透传会写成 inert="true"，
 // 而 WC 侧走 toggleAttribute 得到空串。行为一致但 DOM 不一样，parity 会红。
 import { describe, expect, it } from 'vitest'

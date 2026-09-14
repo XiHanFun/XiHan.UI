@@ -1,10 +1,3 @@
-/*
- * Copyright (c) 2021-Present XiHanFun and contributors.
- * Licensed under the MIT License. See LICENSE in the project root for license information.
- */
-
-// 验证 badge indicator 相关行为。
-
 // @vitest-environment jsdom
 // 徽标收窄成「只做角标」：root 是锚点、indicator 是贴在它角上的那枚标记。
 //

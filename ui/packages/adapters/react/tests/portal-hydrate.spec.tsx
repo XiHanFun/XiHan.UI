@@ -1,10 +1,3 @@
-/*
- * Copyright (c) 2021-Present XiHanFun and contributors.
- * Licensed under the MIT License. See LICENSE in the project root for license information.
- */
-
-// 验证 portal hydrate 相关行为。
-
 // @vitest-environment jsdom
 //
 // 服务端直出过、又要搬到浮层落点的那一屏，水合时两条路都验一遍。

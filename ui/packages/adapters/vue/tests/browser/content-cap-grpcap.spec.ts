@@ -1,8 +1,3 @@
-/*
- * Copyright (c) 2021-Present XiHanFun and contributors.
- * Licensed under the MIT License. See LICENSE in the project root for license information.
- */
-
 // 内容不断加进来时，控件自己的盒子不许没有上限地长，超出的那一截还要够得到。
 //
 // 三件都是「一个表单字段」：标签输入的框、自增高的多行输入框、文件列表。

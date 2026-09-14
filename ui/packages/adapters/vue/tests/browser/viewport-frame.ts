@@ -1,8 +1,3 @@
-/*
- * Copyright (c) 2021-Present XiHanFun and contributors.
- * Licensed under the MIT License. See LICENSE in the project root for license information.
- */
-
 // 在指定宽度的视口里量东西的公共装置。
 //
 // 换档由 @media (min-width) 决定，而测试宿主的视口是固定的一个宽度，改不动。

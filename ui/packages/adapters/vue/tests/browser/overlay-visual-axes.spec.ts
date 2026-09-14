@@ -1,8 +1,3 @@
-/*
- * Copyright (c) 2021-Present XiHanFun and contributors.
- * Licensed under the MIT License. See LICENSE in the project root for license information.
- */
-
 // 浮层被搬去 portal 落点之后，视觉轴还落不落得到浮层里的部件上。
 // 只有真实浏览器算得出来：jsdom 不解析样式表里的 var() 与继承，getComputedStyle 恒是空串。
 import type { PaginationPageItem } from '@xihan-ui/headless'

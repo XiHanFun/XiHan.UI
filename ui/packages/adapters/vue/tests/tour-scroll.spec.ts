@@ -1,10 +1,3 @@
-/*
- * Copyright (c) 2021-Present XiHanFun and contributors.
- * Licensed under the MIT License. See LICENSE in the project root for license information.
- */
-
-// 验证 tour scroll 相关行为。
-
 // @vitest-environment jsdom
 // tour 的滚动跟随：展开与换步把目标滚进视口、滚动事件按帧重量高亮框、remeasure 手动校准。
 // jsdom 不做布局也没有 scrollIntoView，目标矩形与滚动行为都由测试自己钉。

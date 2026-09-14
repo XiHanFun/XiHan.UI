@@ -1,10 +1,3 @@
-/*
- * Copyright (c) 2021-Present XiHanFun and contributors.
- * Licensed under the MIT License. See LICENSE in the project root for license information.
- */
-
-// 验证 cascader cascade 相关行为。
-
 // @vitest-environment jsdom
 // cascader 的级联勾选接线：值是路径集合，级联按尾值走原语、收敛后映射回完整路径。
 import type { CascaderLevel } from '@xihan-ui/headless'
