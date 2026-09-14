@@ -25,6 +25,7 @@ import {
   calendarPageMonths,
   calendarPeriodOf,
   calendarPeriodStart,
+  calendarWeekListedIn,
   calendarZoomIn,
   isoWeekNumber,
   parseCalendarDate,
@@ -194,6 +195,14 @@ export function createCalendarFrame<S extends CalendarBaseSchema>(service: Servi
     // 翻了页格子会从指针底下挪走，松开与 click 就压在另一格上
     if (context.get('heldFocus') === focusedValue)
       return first
+    // 周视图：聚焦那一周只要列在窗内任一页的名单上就照用——跨月的首尾周按周首日归月会判成走出去，
+    // 点 9 月那一页的首周（周首日在 8 月）整窗就翻回 8 月
+    if (view === 'week') {
+      for (let offset = 0; offset <= (visibleCount - 1) * pageMonths; offset += pageMonths) {
+        if (calendarWeekListedIn(anchor, first.add({ months: offset })))
+          return first
+      }
+    }
     if (target.compare(first) < 0)
       return target
     if (target.compare(first.add({ months: (visibleCount - 1) * pageMonths })) > 0)

@@ -45,6 +45,23 @@ describe('周粒度区间', () => {
     })
   })
 
+  it('点 9 月那一页的首周（周首日在 8 月）：视窗留在 9 月，不翻回 8 月', async () => {
+    const h = mountDrill({ defaultFocusedValue: '2026-09-09', granularity: 'week', locale: 'zh-CN' })
+    expect(h.api().visibleMonth).toMatchObject({ year: 2026, month: 9 })
+    // 9 月那一页列的第一周从 8 月 31 日起
+    expect(h.rendered()[0]).toBe('2026-08-31')
+    click(h.cell('2026-08-31'))
+    expect(h.api().rangeAnchor).toBe('2026-08-31')
+    expect(h.api().visibleMonth).toMatchObject({ year: 2026, month: 9 })
+    expect(h.rendered()[0]).toBe('2026-08-31')
+    // 键盘往上走到它也一样：那一周仍列在 9 月的名单上
+    h.cell('2026-09-07').focus()
+    press(h.cell('2026-09-07'), 'ArrowUp')
+    await settle()
+    expect(focused()).toBe('2026-08-31')
+    expect(h.api().visibleMonth).toMatchObject({ year: 2026, month: 9 })
+  })
+
   it('周区间反着挑也会按周期首日排序', () => {
     const h = mountDrill({ defaultFocusedValue: '2026-09-09', granularity: 'week', locale: 'zh-CN' })
     h.api().select('2026-09-09')
