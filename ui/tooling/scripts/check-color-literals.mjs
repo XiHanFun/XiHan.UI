@@ -71,8 +71,8 @@ const PRIMITIVE_OK = {
     tokens: ['neutral-450', 'neutral-600', 'success-600', 'warning-600', 'danger-600', 'info-600', 'purple-600'],
   },
   'empty-state.css': {
-    reason: '四档结果色标取 500 那一装饰档，与语气层实心底用的 600 档不同源',
-    tokens: ['success-500', 'warning-500', 'danger-500', 'info-500'],
+    reason: '三个状态码各并进最接近的一族，取 500 那一装饰档，与语气层实心底用的 600 档不同源；通用结果走 data-tone',
+    tokens: ['warning-500', 'danger-500', 'info-500'],
   },
   'rating.css': {
     reason: '没写 data-tone 时点亮色退回警示色；这一支是语气缺席时的落点，与语气层同族同档',
