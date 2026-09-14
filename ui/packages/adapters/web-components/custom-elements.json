@@ -52039,13 +52039,22 @@
               "name": "--xh-toast-description-leading"
             },
             {
+              "name": "--xh-toast-dir"
+            },
+            {
               "name": "--xh-toast-fg"
             },
             {
               "name": "--xh-toast-font-size"
             },
             {
+              "name": "--xh-toast-front-height"
+            },
+            {
               "name": "--xh-toast-gap"
+            },
+            {
+              "name": "--xh-toast-height"
             },
             {
               "name": "--xh-toast-icon-fg"
@@ -52057,6 +52066,9 @@
               "name": "--xh-toast-indicator-p"
             },
             {
+              "name": "--xh-toast-inline-size"
+            },
+            {
               "name": "--xh-toast-inset"
             },
             {
@@ -52064,6 +52076,12 @@
             },
             {
               "name": "--xh-toast-leading"
+            },
+            {
+              "name": "--xh-toast-offset-collapsed"
+            },
+            {
+              "name": "--xh-toast-offset-expanded"
             },
             {
               "name": "--xh-toast-progress-bg"
@@ -52084,6 +52102,12 @@
               "name": "--xh-toast-radius"
             },
             {
+              "name": "--xh-toast-scale"
+            },
+            {
+              "name": "--xh-toast-scale-collapsed"
+            },
+            {
               "name": "--xh-toast-shadow"
             },
             {
@@ -52099,7 +52123,7 @@
               "name": "--xh-toast-title-leading"
             },
             {
-              "name": "--xh-toast-w"
+              "name": "--xh-toast-y"
             }
           ]
         }

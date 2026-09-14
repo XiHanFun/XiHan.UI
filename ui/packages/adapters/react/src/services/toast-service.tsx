@@ -26,6 +26,7 @@ import { DATA_INERT_EXEMPT, ensurePortalRoot } from '@xihan-ui/core'
 import {
   connectNotification,
   createFeedbackServiceController,
+  createToastStackController,
   notificationMachine,
   resolveToastServiceItem,
   TOAST_GAP,
@@ -34,7 +35,7 @@ import {
   toastAnatomy,
   visibleNotifications,
 } from '@xihan-ui/headless'
-import { Fragment, useSyncExternalStore } from 'react'
+import { Fragment, useCallback, useRef, useSyncExternalStore } from 'react'
 import {
   XhToastActionTrigger,
   XhToastCloseTrigger,
@@ -198,6 +199,18 @@ export function createToastService(options: ToastServiceOptions = {}): ToastServ
 
   function Host(): ReactNode {
     useSyncExternalStore(subscribe, () => version, () => version)
+    const stackRef = useRef<ReturnType<typeof createToastStackController> | null>(null)
+    const bindGroup = useCallback((group: HTMLDivElement | null): void => {
+      stackRef.current?.dispose()
+      stackRef.current = group
+        ? createToastStackController({
+            group,
+            gap,
+            placement,
+            onInteractionChange: active => active ? controller.pauseAll() : controller.resumeAll(),
+          })
+        : null
+    }, [])
     const service = useMachine(notificationMachine, () => ({
       placement,
       max,
@@ -220,11 +233,11 @@ export function createToastService(options: ToastServiceOptions = {}): ToastServ
     return (
       <XhConfigProvider config={configSource.read()}>
         <div
+          ref={bindGroup}
           // 摞没有对应的容器组件，属性直接从解剖里取
           {...parts.group.attrs}
           data-placement={placement}
           data-count={items.length}
-          style={{ gap: `${gap}px` }}
           // 模态浮层给背景施加 inert 时跳过这一摞：轻提示画在遮罩之上，
           // 一并罩住就成了看得见、点不动、读屏也跳过
           {...{ [DATA_INERT_EXEMPT]: '' }}

@@ -20,6 +20,8 @@ export {
 } from './toast.machine'
 export { toastMeta } from './toast.meta'
 export { resolveToastServiceItem } from './toast.service'
+export { createToastStackController } from './toast.stack'
+export type { ToastStackController, ToastStackControllerOptions } from './toast.stack'
 export type {
   ResolvedToastServiceItem,
   ToastActionDetails,

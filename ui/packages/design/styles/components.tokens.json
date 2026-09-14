@@ -59411,6 +59411,27 @@
       "description": "toast 的 description 部件 line-height 覆盖槽。"
     },
     {
+      "name": "--xh-toast-dir",
+      "component": "toast",
+      "part": [
+        "*",
+        "root"
+      ],
+      "property": [
+        "transform"
+      ],
+      "state": [
+        "@keyframes xh-toast-in",
+        "@keyframes xh-toast-out",
+        "default"
+      ],
+      "defaultToken": [
+        "1"
+      ],
+      "visibility": "public",
+      "description": "toast 的 *、root 部件 transform 覆盖槽。"
+    },
+    {
       "name": "--xh-toast-fg",
       "component": "toast",
       "part": [
@@ -59447,6 +59468,27 @@
       "description": "toast 的 root 部件 font-size 覆盖槽。"
     },
     {
+      "name": "--xh-toast-front-height",
+      "component": "toast",
+      "part": [
+        "root"
+      ],
+      "property": [
+        "block-size"
+      ],
+      "state": [
+        "expanded",
+        "frontmost",
+        "not([data-expanded])",
+        "not([data-frontmost])"
+      ],
+      "defaultToken": [
+        "auto"
+      ],
+      "visibility": "public",
+      "description": "toast 的 root 部件 block-size 覆盖槽。"
+    },
+    {
       "name": "--xh-toast-gap",
       "component": "toast",
       "part": [
@@ -59463,6 +59505,24 @@
       ],
       "visibility": "public",
       "description": "toast 的 root 部件 gap 覆盖槽。"
+    },
+    {
+      "name": "--xh-toast-height",
+      "component": "toast",
+      "part": [
+        "root"
+      ],
+      "property": [
+        "block-size"
+      ],
+      "state": [
+        "expanded"
+      ],
+      "defaultToken": [
+        "auto"
+      ],
+      "visibility": "public",
+      "description": "toast 的 root 部件 block-size 覆盖槽。"
     },
     {
       "name": "--xh-toast-icon-fg",
@@ -59521,24 +59581,47 @@
       "description": "toast 的 indicator 部件 padding 覆盖槽。"
     },
     {
+      "name": "--xh-toast-inline-size",
+      "component": "toast",
+      "part": [
+        "group",
+        "root"
+      ],
+      "property": [
+        "inline-size"
+      ],
+      "state": [
+        "default"
+      ],
+      "defaultToken": [
+        "28.75rem"
+      ],
+      "visibility": "public",
+      "description": "toast 的 group、root 部件 inline-size 覆盖槽。"
+    },
+    {
       "name": "--xh-toast-inset",
       "component": "toast",
       "part": [
         "group"
       ],
       "property": [
-        "padding-block-end",
-        "padding-block-start",
-        "padding-inline"
+        "inset-block-end",
+        "inset-block-start",
+        "inset-inline-end",
+        "inset-inline-start"
       ],
       "state": [
-        "default"
+        "placement=-end",
+        "placement=-start",
+        "placement=bottom",
+        "placement=top"
       ],
       "defaultToken": [
         "--xh-space-4"
       ],
       "visibility": "public",
-      "description": "toast 的 group 部件 padding-block-end、padding-block-start、padding-inline 覆盖槽。"
+      "description": "toast 的 group 部件 inset-block-end、inset-block-start、inset-inline-end、inset-inline-start 覆盖槽。"
     },
     {
       "name": "--xh-toast-layer",
@@ -59575,6 +59658,45 @@
       ],
       "visibility": "public",
       "description": "toast 的 root 部件 line-height 覆盖槽。"
+    },
+    {
+      "name": "--xh-toast-offset-collapsed",
+      "component": "toast",
+      "part": [
+        "*",
+        "root"
+      ],
+      "property": [
+        "--xh-toast-y",
+        "transform"
+      ],
+      "state": [
+        "@keyframes xh-toast-in",
+        "default"
+      ],
+      "defaultToken": [
+        "0px"
+      ],
+      "visibility": "public",
+      "description": "toast 的 *、root 部件 --xh-toast-y、transform 覆盖槽。"
+    },
+    {
+      "name": "--xh-toast-offset-expanded",
+      "component": "toast",
+      "part": [
+        "root"
+      ],
+      "property": [
+        "--xh-toast-y"
+      ],
+      "state": [
+        "expanded"
+      ],
+      "defaultToken": [
+        "0px"
+      ],
+      "visibility": "public",
+      "description": "toast 的 root 部件 --xh-toast-y 覆盖槽。"
     },
     {
       "name": "--xh-toast-progress-bg",
@@ -59685,6 +59807,45 @@
       "description": "toast 的 root 部件 border-radius 覆盖槽。"
     },
     {
+      "name": "--xh-toast-scale",
+      "component": "toast",
+      "part": [
+        "*"
+      ],
+      "property": [
+        "transform"
+      ],
+      "state": [
+        "@keyframes xh-toast-out"
+      ],
+      "defaultToken": [
+        "1"
+      ],
+      "visibility": "public",
+      "description": "toast 的 * 部件 transform 覆盖槽。"
+    },
+    {
+      "name": "--xh-toast-scale-collapsed",
+      "component": "toast",
+      "part": [
+        "*",
+        "root"
+      ],
+      "property": [
+        "--xh-toast-scale",
+        "transform"
+      ],
+      "state": [
+        "@keyframes xh-toast-in",
+        "default"
+      ],
+      "defaultToken": [
+        "1"
+      ],
+      "visibility": "public",
+      "description": "toast 的 *、root 部件 --xh-toast-scale、transform 覆盖槽。"
+    },
+    {
       "name": "--xh-toast-shadow",
       "component": "toast",
       "part": [
@@ -59775,22 +59936,22 @@
       "description": "toast 的 title 部件 line-height 覆盖槽。"
     },
     {
-      "name": "--xh-toast-w",
+      "name": "--xh-toast-y",
       "component": "toast",
       "part": [
-        "root"
+        "*"
       ],
       "property": [
-        "inline-size"
+        "transform"
       ],
       "state": [
-        "default"
+        "@keyframes xh-toast-out"
       ],
       "defaultToken": [
-        "--xh-overlay-max-w-lg"
+        "0px"
       ],
       "visibility": "public",
-      "description": "toast 的 root 部件 inline-size 覆盖槽。"
+      "description": "toast 的 * 部件 transform 覆盖槽。"
     },
     {
       "name": "--xh-toggle-bg",

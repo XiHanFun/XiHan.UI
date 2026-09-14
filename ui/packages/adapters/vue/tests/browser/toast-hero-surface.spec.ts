@@ -28,7 +28,7 @@ afterEach(() => {
   host = null
 })
 
-async function mount(): Promise<HTMLElement> {
+async function mount(duration = 0): Promise<HTMLElement> {
   host = document.createElement('div')
   document.body.append(host)
   app = createApp({
@@ -36,7 +36,8 @@ async function mount(): Promise<HTMLElement> {
       type: 'success',
       title: '更改已保存',
       description: '内容已同步到云端',
-      duration: 0,
+      duration,
+      removeDelay: 300,
     }, () => [
       h(XhToastIndicator),
       h(XhToastContent, () => [h(XhToastTitle), h(XhToastDescription)]),
@@ -74,7 +75,10 @@ describe('轻提示的 Hero 风格中性浮层', () => {
     const description = root.querySelector<HTMLElement>('[data-part="description"]')!
     const indicator = root.querySelector<HTMLElement>('[data-part="indicator"]')!
 
-    expect(root.getBoundingClientRect().width).toBe(resolvedWidth(root, 'var(--xh-overlay-max-w-lg)'))
+    expect(root.getBoundingClientRect().width).toBe(Math.min(
+      resolvedWidth(root, '28.75rem'),
+      root.parentElement!.getBoundingClientRect().width,
+    ))
     expect(rootStyle.paddingBlock).toBe('12px')
     expect(rootStyle.paddingInline).toBe('16px')
     expect(rootStyle.borderRadius).toBe('24px')
@@ -98,5 +102,15 @@ describe('轻提示的 Hero 风格中性浮层', () => {
     await new Promise(resolve => setTimeout(resolve, 200))
     expect(getComputedStyle(close).opacity).toBe('1')
     expect(close.getBoundingClientRect().width).toBe(resolvedWidth(root, 'var(--xh-control-action-size)'))
+  })
+
+  it('到点后沿堆叠方向播放退场动画，再进入 unmounted', async () => {
+    const root = await mount(80)
+    await new Promise(resolve => setTimeout(resolve, 120))
+    expect(root.dataset.state).toBe('dismissing')
+    expect(getComputedStyle(root).animationName).toBe('xh-toast-out')
+    await new Promise(resolve => setTimeout(resolve, 320))
+    expect(root.dataset.state).toBe('unmounted')
+    expect(root.hidden).toBe(true)
   })
 })

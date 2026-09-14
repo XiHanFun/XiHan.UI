@@ -25,6 +25,7 @@ import { DATA_INERT_EXEMPT, ensurePortalRoot } from '@xihan-ui/core'
 import {
   connectNotification,
   createFeedbackServiceController,
+  createToastStackController,
   notificationMachine,
   resolveToastServiceItem,
   TOAST_GAP,
@@ -183,6 +184,23 @@ export function createToastService(options: ToastServiceOptions = {}): ToastServ
   })
   const pausedAll = shallowRef(controller.state.paused)
   publishState = paused => void (pausedAll.value = paused)
+  let stack: ReturnType<typeof createToastStackController> | null = null
+  let stackGroup: HTMLElement | null = null
+  const bindGroup = (group: unknown): void => {
+    const next = group instanceof HTMLElement ? group : null
+    if (next === stackGroup)
+      return
+    stack?.dispose()
+    stackGroup = next
+    stack = next
+      ? createToastStackController({
+          group: next,
+          gap,
+          placement,
+          onInteractionChange: active => active ? controller.pauseAll() : controller.resumeAll(),
+        })
+      : null
+  }
 
   const Host = defineComponent({
     name: 'XhToastServiceHost',
@@ -212,9 +230,9 @@ export function createToastService(options: ToastServiceOptions = {}): ToastServ
           // 摞没有对应的容器组件，属性直接从解剖里取
           {
             ...parts.group.attrs,
+            'ref': bindGroup,
             'data-placement': placement,
             'data-count': items.value.length,
-            'style': { gap: `${gap}px` },
             // 模态浮层给背景施加 inert 时跳过这一摞：轻提示画在遮罩之上，
             // 一并罩住就成了看得见、点不动、读屏也跳过
             [DATA_INERT_EXEMPT]: '',
@@ -277,6 +295,9 @@ export function createToastService(options: ToastServiceOptions = {}): ToastServ
     resumeAll: controller.resumeAll,
     setConfig: next => configSource.set(next),
     dispose: () => {
+      stack?.dispose()
+      stack = null
+      stackGroup = null
       if (mounted)
         app.unmount()
       controller.dispose()
