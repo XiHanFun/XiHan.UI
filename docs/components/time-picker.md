@@ -52,7 +52,7 @@ granularity 同时决定输入行显示几段、浮层里排几列
 
 min / max 直接把界外的格从列里裁掉；分列还会随已选的时再裁一遍
 
-<XhDemo src="time-picker/06-range" />
+<XhDemo src="time-picker/06-bounds" />
 
 ### 浮层里的操作按钮
 
