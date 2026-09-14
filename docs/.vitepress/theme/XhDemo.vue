@@ -303,7 +303,7 @@ async function copy() {
   border: 1px solid color-mix(in oklab, var(--vp-c-divider) 82%, transparent);
   border-radius: 18px;
   overflow: hidden;
-  background: var(--vp-c-bg-elv);
+  background: var(--vp-c-bg);
   box-shadow: var(--xh-doc-shadow-surface);
 }
 .xh-demo__stage {
@@ -314,7 +314,7 @@ async function copy() {
   gap: 12px;
   min-height: 236px;
   padding: 48px 32px;
-  background: var(--demo-stage-bg, var(--vp-c-bg-elv));
+  background: var(--demo-stage-bg, var(--vp-c-bg));
 }
 /* 主题轴钉住深浅时舞台的底与字改由令牌给，与所选那一档同源 */
 .xh-demo__stage--themed {
@@ -353,7 +353,7 @@ async function copy() {
   gap: 8px 16px;
   padding: 9px 12px;
   border-top: 1px solid color-mix(in oklab, var(--vp-c-divider) 76%, transparent);
-  background: color-mix(in oklab, var(--vp-c-bg-soft) 68%, transparent);
+  background: color-mix(in oklab, var(--vp-c-bg) 98%, black);
 }
 /* 舞台的档位在左、代码的动作在右；行装不下时动作整组落到下一行右端 */
 .xh-demo__actions {
