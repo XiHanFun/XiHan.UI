@@ -23,7 +23,6 @@ import { XhElement } from '../element-base'
  * @attr {'solid'|'subtle'|'outline'|'ghost'} variant - 视觉变体
  * @attr {'brand'|'neutral'|'success'|'warning'|'danger'|'info'} tone - 颜色
  * @attr {'sm'|'md'|'lg'} size - 尺寸
- * @attr {'rounded'|'pill'|'square'} shape - 圆角档；缺省跟着控件圆角走
  * @attr {'button'|'a'} as - 根节点写成哪个标签，默认 button；写 a 时不再产出 type 与原生 disabled
  * @csspart root - 承载 data-scope/data-part/data-* 的原生 button（as="a" 时是 a）
  */
@@ -39,7 +38,6 @@ export class XhButtonElement extends XhElement {
     variant: {},
     tone: {},
     size: {},
-    shape: {},
     as: {},
   }
 
@@ -51,7 +49,6 @@ export class XhButtonElement extends XhElement {
   declare variant?: ActionVariant
   declare tone?: Tone
   declare size?: Size
-  declare shape?: ButtonProps['shape']
   declare as?: ButtonProps['as']
 
   protected wire(): void {
@@ -65,7 +62,6 @@ export class XhButtonElement extends XhElement {
       variant: this.variant,
       tone: this.tone,
       size: this.size,
-      shape: this.shape,
       as: this.as,
       iconOnly: this.iconOnly,
       fullWidth: this.fullWidth,

@@ -12,7 +12,6 @@ import type {
   FloatButtonNotifiers,
   FloatButtonPlacement,
   FloatButtonProps,
-  FloatButtonShape,
   FloatButtonTranslations,
 } from '@xihan-ui/headless'
 import type { PropType, SlotsType, VNode } from 'vue'
@@ -36,7 +35,6 @@ export const XhFloatButtonRoot = defineComponent({
     dir: { type: String as PropType<Direction> },
     placement: { type: String as PropType<FloatButtonPlacement> },
     offset: { type: Number },
-    shape: { type: String as PropType<FloatButtonShape> },
     expandTrigger: { type: String as PropType<FloatButtonExpandTrigger> },
     variant: { type: String as PropType<ActionVariant> },
     tone: { type: String as PropType<Tone> },

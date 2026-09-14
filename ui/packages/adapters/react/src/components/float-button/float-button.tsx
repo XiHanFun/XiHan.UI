@@ -11,7 +11,6 @@ import type {
   FloatButtonExpandTrigger,
   FloatButtonPlacement,
   FloatButtonProps,
-  FloatButtonShape,
   FloatButtonTranslations,
 } from '@xihan-ui/headless'
 import type { ComponentPropsWithRef, ReactNode } from 'react'
@@ -33,7 +32,6 @@ export interface XhFloatButtonRootProps extends Omit<ComponentPropsWithRef<'div'
   dir?: Direction
   placement?: FloatButtonPlacement
   offset?: number
-  shape?: FloatButtonShape
   expandTrigger?: FloatButtonExpandTrigger
   variant?: ActionVariant
   tone?: Tone
@@ -51,7 +49,6 @@ export function XhFloatButtonRoot({
   dir,
   placement,
   offset,
-  shape,
   expandTrigger,
   variant,
   tone,
@@ -68,7 +65,6 @@ export function XhFloatButtonRoot({
     dir,
     placement,
     offset,
-    shape,
     expandTrigger,
     variant,
     tone,

@@ -52,7 +52,6 @@ export function connectButton<T extends PropTypes>(
       'data-variant': props.variant,
       'data-tone': props.tone,
       'data-size': props.size,
-      'data-shape': props.shape,
       'data-disabled': dataAttr(disabled),
       'data-loading': dataAttr(loading),
       'data-icon-only': dataAttr(!!props.iconOnly),

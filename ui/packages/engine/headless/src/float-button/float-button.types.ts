@@ -14,9 +14,6 @@ import type { CollapsibleOpenChangeDetails } from '../collapsible'
  */
 export type FloatButtonPlacement = 'top-start' | 'top-end' | 'bottom-start' | 'bottom-end'
 
-/** 触发器外形：圆的还是方的。 */
-export type FloatButtonShape = 'circle' | 'square'
-
 /** 展开那一组的方式：指针悬上去，或点一下。 */
 export type FloatButtonExpandTrigger = 'hover' | 'click'
 
@@ -47,8 +44,6 @@ export interface FloatButtonAppearance {
   placement?: FloatButtonPlacement
   /** 距那两条边的距离（px），默认 24。 */
   offset?: number
-  /** 触发器外形，默认 circle。 */
-  shape?: FloatButtonShape
   /** 展开方式，默认 click。 */
   expandTrigger?: FloatButtonExpandTrigger
   /** 变体：solid / subtle / outline / ghost。 */

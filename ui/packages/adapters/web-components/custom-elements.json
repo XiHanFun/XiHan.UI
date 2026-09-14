@@ -3253,15 +3253,6 @@
             },
             {
               "kind": "field",
-              "name": "shape",
-              "privacy": "public",
-              "type": {
-                "text": "ButtonProps['shape'] | undefined"
-              },
-              "attribute": "shape"
-            },
-            {
-              "kind": "field",
               "name": "as",
               "privacy": "public",
               "type": {
@@ -3344,14 +3335,6 @@
               "description": "尺寸",
               "name": "size",
               "fieldName": "size"
-            },
-            {
-              "type": {
-                "text": "ButtonProps['shape'] | undefined"
-              },
-              "description": "圆角档；缺省跟着控件圆角走",
-              "name": "shape",
-              "fieldName": "shape"
             },
             {
               "type": {
@@ -22234,7 +22217,7 @@
           "name": "XhFloatButtonElement",
           "cssParts": [
             {
-              "description": "定位壳，承载 data-state / data-placement / data-shape / data-disabled",
+              "description": "定位壳，承载 data-state / data-placement / data-disabled",
               "name": "root"
             },
             {
@@ -22309,15 +22292,6 @@
                 "text": "number | undefined"
               },
               "attribute": "offset"
-            },
-            {
-              "kind": "field",
-              "name": "shape",
-              "privacy": "public",
-              "type": {
-                "text": "FloatButtonShape | undefined"
-              },
-              "attribute": "shape"
             },
             {
               "kind": "field",
@@ -22522,14 +22496,6 @@
               "description": "距那两条边的距离（px），默认 24",
               "name": "offset",
               "fieldName": "offset"
-            },
-            {
-              "type": {
-                "text": "FloatButtonShape | undefined"
-              },
-              "description": "触发器外形，默认 circle",
-              "name": "shape",
-              "fieldName": "shape"
             },
             {
               "type": {
