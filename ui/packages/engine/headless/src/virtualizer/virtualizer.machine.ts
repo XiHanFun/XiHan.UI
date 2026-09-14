@@ -62,11 +62,11 @@ function publishSnapshot(p: MachineParams, kernel: VirtualizerKernel): void {
 export const virtualizerMachine = createMachine({
   name: 'virtualizer',
   context: ({ prop, cell }) => ({
-    // 快照是算出来的，宿主写不回来，因此只给 onChange 不给 value
+    // 快照是算出来的，宿主写不回来，因此只给 onRangeChange 不给 value
     snapshot: cell<typeof VIRTUALIZER_EMPTY_SNAPSHOT>(() => ({
       defaultValue: VIRTUALIZER_EMPTY_SNAPSHOT,
       isEqual: virtualizerSnapshotEqual,
-      onChange: value => prop('onChange')?.({
+      onChange: value => prop('onRangeChange')?.({
         virtualItems: value.items,
         totalSize: value.totalSize,
         startIndex: value.startIndex,

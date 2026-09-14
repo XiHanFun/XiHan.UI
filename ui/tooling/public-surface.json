@@ -6484,7 +6484,6 @@
       "VISUALLY_HIDDEN_STYLE",
       "VirtualizerAlign",
       "VirtualizerApi",
-      "VirtualizerChangeDetails",
       "VirtualizerCore",
       "VirtualizerItemProps",
       "VirtualizerItemState",
@@ -6493,6 +6492,7 @@
       "VirtualizerMeasurement",
       "VirtualizerMetrics",
       "VirtualizerRange",
+      "VirtualizerRangeChangeDetails",
       "VirtualizerRefs",
       "VirtualizerSchema",
       "VirtualizerScrollToOptions",
@@ -11353,7 +11353,7 @@
       "getItemKey",
       "horizontal",
       "lanes",
-      "onChange",
+      "onRangeChange",
       "overscan",
       "paddingEnd",
       "paddingStart",
@@ -18306,7 +18306,7 @@
         "scroll-margin"
       ],
       "events": [
-        "change"
+        "range-change"
       ]
     },
     "xh-watermark": {

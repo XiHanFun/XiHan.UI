@@ -40,7 +40,7 @@
 
   // 首批在监听挂上之前就算好了，直接从元素上取
   render(host.virtualItems);
-  host.addEventListener("change", (event) => {
+  host.addEventListener("range-change", (event) => {
     render(event.detail.virtualItems);
     range.textContent = `${event.detail.startIndex} – ${event.detail.endIndex}`;
   });

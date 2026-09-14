@@ -43,5 +43,5 @@
   }
 
   render(host.virtualItems);
-  host.addEventListener("change", (event) => render(event.detail.virtualItems));
+  host.addEventListener("range-change", (event) => render(event.detail.virtualItems));
 </script>

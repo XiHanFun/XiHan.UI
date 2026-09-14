@@ -5,7 +5,7 @@
 
 // 提供 virtualizer 相关实现。
 
-import type { VirtualizerApi, VirtualizerChangeDetails, VirtualizerSchema } from '@xihan-ui/headless'
+import type { VirtualizerApi, VirtualizerRangeChangeDetails, VirtualizerSchema } from '@xihan-ui/headless'
 import type { PropType, SlotsType, VNode } from 'vue'
 import type { PayloadOf } from '../../runtime/payload'
 import { defineComponent, h, onMounted, onUpdated, ref } from 'vue'
@@ -45,13 +45,13 @@ export const XhVirtualizerRoot = defineComponent({
   },
   // change 携带当前该渲染哪些条目的详情
   emits: {
-    change: (_details: PayloadOf<VirtualizerProps, 'onChange'>) => true,
+    'range-change': (_details: PayloadOf<VirtualizerProps, 'onRangeChange'>) => true,
   },
   slots: Object as SlotsType<{
     default?: (props: VirtualizerRootSlotProps) => VNode[]
   }>,
   setup(props, { slots, emit }) {
-    const notify: VirtualizerProps['onChange'] = (details: VirtualizerChangeDetails) => emit('change', details)
+    const notify: VirtualizerProps['onRangeChange'] = (details: VirtualizerRangeChangeDetails) => emit('range-change', details)
     const ctx = useVirtualizer(props as VirtualizerProps, notify)
     provideVirtualizer(ctx)
     return () => h('div', ctx.api.value.getRootProps() as Record<string, unknown>, slots.default?.({

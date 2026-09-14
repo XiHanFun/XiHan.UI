@@ -110,7 +110,7 @@ horizontal 把主轴换成行内轴：位移改写进行首侧，条目宽度由
 | `horizontal` | `boolean` |  | 横向列表（主轴是行内轴），默认 false。 |
 | `gap` | `number` |  | 相邻两条之间的主轴间距（px），默认 0。位移由内核直接算进去，不靠外边距。 |
 | `getItemKey` | `(index: number) => string \| number` |  | 条目身份。默认即下标；列表会增删时给稳定 key，测量缓存才跟得住条目。 |
-| `onChange` | `(details: VirtualizerChangeDetails) => void` |  | 该渲什么变了。只在快照真的变了时回调，滚动但可见区间没变不会触发。 |
+| `onRangeChange` | `(details: VirtualizerRangeChangeDetails) => void` |  | 该渲的区间变了。只在快照真的变了时回调，滚动但可见区间没变不会触发。 |
 | `scrollMargin` | `number` |  | 列表起点距滚动容器起点的距离（px），默认 0。 列表上方还有别的内容（页头、筛选栏）时给它，否则区间会整体偏掉那一截。 |
 | `paddingStart` | `number` |  | 列表前后的内边距（px），默认 0。计进总长，第一条从 paddingStart 处起算。 |
 | `paddingEnd` | `number` |  |  |
@@ -122,7 +122,7 @@ horizontal 把主轴换成行内轴：位移改写进行首侧，条目宽度由
 
 | 事件 | 载荷 | 说明 |
 | --- | --- | --- |
-| `change` | `VirtualizerChangeDetails` | 该渲什么变了；detail 为 `{ virtualItems, totalSize, startIndex, endIndex }` |
+| `range-change` | `VirtualizerRangeChangeDetails` | 该渲的区间变了；detail 为 `{ virtualItems, totalSize, startIndex, endIndex }` |
 
 ### 插槽
 
