@@ -372,10 +372,10 @@ export const datePickerMachine = createMachine({
         context.set('activeView', prop('granularity') ?? 'day')
       },
 
-      /** 展开那一刻把聚焦日拉回当前选中值；没有选中就落到今天。 */
+      /** 展开那一刻把聚焦日拉回当前选中值；没有选中就落作者给的起始页，再没有才落到今天。 */
       focusSelectedDay: ({ context, prop }) => {
         const first = firstValue(context.get('value'))
-        context.set('focusedValue', first ?? today(prop('timeZone') ?? getLocalTimeZone()).toString())
+        context.set('focusedValue', first ?? prop('defaultFocusedValue') ?? today(prop('timeZone') ?? getLocalTimeZone()).toString())
       },
     },
     effects: {
