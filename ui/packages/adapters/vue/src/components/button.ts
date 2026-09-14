@@ -37,7 +37,6 @@ export const XhButton = defineComponent({
     variant: String as PropType<ButtonProps['variant']>,
     tone: String as PropType<ButtonProps['tone']>,
     size: String as PropType<ButtonProps['size']>,
-    shape: String as PropType<ButtonProps['shape']>,
     /** 渲染成哪个标签，默认 button；写成 a 时作者自行给 href。 */
     as: { type: String as PropType<ButtonProps['as']>, default: 'button' },
   },

@@ -31,11 +31,6 @@ export interface ButtonProps {
   /** 撑满行宽：表单末尾的提交按钮与移动端常用。 */
   fullWidth?: boolean
   /**
-   * 圆角档：rounded 是常规控件圆角，pill 是胶囊，square 是直角。
-   * 缺省即跟着 --xh-shape-control 走，与不写这一项时逐值相同。
-   */
-  shape?: ButtonShape
-  /**
    * 渲染成哪个标签，默认 button。
    * 写成 a 时不再产出 type 与原生 disabled（两者在链接上无效），禁用改由 aria-disabled 表达，
    * 点击仍被拦下。作者自行给 href。
@@ -44,7 +39,6 @@ export interface ButtonProps {
 }
 
 /** 圆角档。 */
-export type ButtonShape = 'rounded' | 'pill' | 'square'
 
 /** 根节点渲染成哪个标签。 */
 export type ButtonElement = 'button' | 'a'

@@ -27638,11 +27638,9 @@
         "border-radius"
       ],
       "state": [
-        "default",
-        "shape=square"
+        "default"
       ],
       "defaultToken": [
-        "--xh-shape-control",
         "--xh-shape-pill"
       ],
       "visibility": "public",

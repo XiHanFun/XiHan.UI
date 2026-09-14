@@ -12,7 +12,6 @@ import type {
   FloatButtonExpandTrigger,
   FloatButtonPlacement,
   FloatButtonSchema,
-  FloatButtonShape,
   FloatButtonTranslations,
 } from '@xihan-ui/headless'
 import { createCounterIdGenerator, createRuntimeConfig, createScope } from '@xihan-ui/core'
@@ -45,13 +44,12 @@ const TRISTATE_CONVERTER = { fromAttribute: (v: string | null) => (v === null ? 
  * @attr {'ltr'|'rtl'} dir - 文字方向
  * @attr {'top-start'|'top-end'|'bottom-start'|'bottom-end'} placement - 钉在哪一角，默认 bottom-end
  * @attr {number} offset - 距那两条边的距离（px），默认 24
- * @attr {'circle'|'square'} shape - 触发器外形，默认 circle
  * @attr {'hover'|'click'} expand-trigger - 展开方式，默认 click
  * @attr {'solid'|'subtle'|'outline'|'ghost'} variant - 变体
  * @attr {'brand'|'neutral'|'success'|'warning'|'danger'|'info'} tone - 颜色
  * @attr {'sm'|'md'|'lg'} size - 尺寸，缺省与 lg 同档
  * @fires open-change - 展开状态变化；detail 为 `{ open: boolean }`
- * @csspart root - 定位壳，承载 data-state / data-placement / data-shape / data-disabled
+ * @csspart root - 定位壳，承载 data-state / data-placement / data-disabled
  * @csspart trigger - 触发按钮，须写成 `<button>`；可及名字由 translations.trigger 给
  * @csspart list - 展开的那一组动作；收起时带 hidden
  */
@@ -66,7 +64,6 @@ export class XhFloatButtonElement extends XhElement {
     direction: { converter: STRING_CONVERTER, attribute: 'dir' },
     placement: { converter: STRING_CONVERTER },
     offset: { converter: NUMBER_CONVERTER },
-    shape: { converter: STRING_CONVERTER },
     expandTrigger: { converter: STRING_CONVERTER, attribute: 'expand-trigger' },
     variant: { converter: STRING_CONVERTER },
     tone: { converter: STRING_CONVERTER },
@@ -81,7 +78,6 @@ export class XhFloatButtonElement extends XhElement {
   declare direction?: Direction
   declare placement?: FloatButtonPlacement
   declare offset?: number
-  declare shape?: FloatButtonShape
   declare expandTrigger?: FloatButtonExpandTrigger
   declare variant?: ActionVariant
   declare tone?: Tone
@@ -136,7 +132,6 @@ export class XhFloatButtonElement extends XhElement {
     return {
       placement: this.placement,
       offset: this.offset,
-      shape: this.shape,
       expandTrigger: this.expandTrigger,
       variant: this.variant,
       tone: this.tone,

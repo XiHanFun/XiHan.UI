@@ -2466,6 +2466,7 @@
   --xh-_float-button-offset: var(--xh-space-6);
   /* 触发器与展开的每一条动作共用这两个私有槽，换档只改这里 */
   --xh-_float-button-size: var(--xh-control-h-lg);
+  /* 触发器与每一条动作都是圆形：悬浮钮没有 shape 轴，作者要方的写 --xh-float-button-radius */
   --xh-_float-button-radius: var(--xh-float-button-radius, var(--xh-shape-pill));
 
   /* 缺省面是 M3 通透玻璃：背景、边缘、顶光、投影与磨砂全部从同一份配方取，
@@ -2510,12 +2511,6 @@
 
 [data-scope='float-button'][data-part='root'][data-placement$='-end'] {
   inset-inline-end: max(var(--xh-_float-button-offset), env(safe-area-inset-left), env(safe-area-inset-right));
-}
-
-/* —— 外形 —— */
-/* 使用者令牌排在形态之前：写了 --xh-float-button-radius 就以它为准，没写才按 shape 换档 */
-[data-scope='float-button'][data-part='root'][data-shape='square'] {
-  --xh-_float-button-radius: var(--xh-float-button-radius, var(--xh-shape-control));
 }
 
 /* —— 尺寸 —— */
@@ -13688,6 +13683,8 @@
   --xh-action-padding-inline: var(--xh-button-px, var(--xh-_button-group-px, var(--xh-_action-profile-padding-inline)));
   --xh-action-gap: var(--xh-button-gap, var(--xh-_button-group-gap, var(--xh-_action-profile-gap)));
   --xh-action-font-size: var(--xh-button-font-size, var(--xh-_button-group-font-size, var(--xh-_action-profile-font-size)));
+  /* 圆角只有一个身份：与 toggle / button-group 同为胶囊，按钮不再有 shape 轴；成组时由按钮组接管相接侧，
+     要换档写 --xh-button-radius */
   --xh-_button-radius: var(--xh-_button-group-radius, var(--xh-shape-pill));
   --xh-icon-size: var(--xh-button-icon-size, var(--xh-_action-profile-glyph-size));
 
@@ -13825,18 +13822,6 @@
   border: var(--xh-ring-width) solid var(--xh-ring-focus);
   border-radius: inherit;
   pointer-events: none;
-}
-
-[data-scope='button'][data-part='root'][data-shape='rounded'] {
-  --xh-_button-radius: var(--xh-_button-group-radius, var(--xh-shape-control));
-}
-
-[data-scope='button'][data-part='root'][data-shape='pill'] {
-  --xh-_button-radius: var(--xh-_button-group-radius, var(--xh-shape-pill));
-}
-
-[data-scope='button'][data-part='root'][data-shape='square'] {
-  --xh-_button-radius: var(--xh-_button-group-radius, 0);
 }
 
 /* icon profile 已经给出正方视觉盒；Button 的公开 px 槽不能把它重新撑开。 */

@@ -10,7 +10,6 @@ export {
   connectFloatButton,
   FLOAT_BUTTON_DEFAULT_OFFSET,
   FLOAT_BUTTON_DEFAULT_PLACEMENT,
-  FLOAT_BUTTON_DEFAULT_SHAPE,
   resolveFloatButtonOffset,
 } from './float-button.connect'
 export { floatButtonKeyboard } from './float-button.keyboard'
@@ -26,6 +25,5 @@ export type {
   FloatButtonProps,
   FloatButtonRefs,
   FloatButtonSchema,
-  FloatButtonShape,
   FloatButtonTranslations,
 } from './float-button.types'

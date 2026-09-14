@@ -83,7 +83,6 @@ describe('float-button 结构与缺省', () => {
     const rig = makeRig()
     expect(rig.root()['data-state']).toBe('closed')
     expect(rig.root()['data-placement']).toBe('bottom-end')
-    expect(rig.root()['data-shape']).toBe('circle')
     // 贴边距离落进内联自定义属性，贴哪两条边由皮肤按 data-placement 决定
     expect(rig.root().style).toBe('--xh-_float-button-offset: 24px')
 
@@ -98,12 +97,12 @@ describe('float-button 结构与缺省', () => {
     expect(rig.list().hidden).toBe(true)
   })
 
-  it('落位、外形与贴边如实落到壳上，list 也拿得到落位', () => {
-    const rig = makeRig({}, { placement: 'top-start', shape: 'square', offset: 8 })
+  it('落位与贴边如实落到壳上，list 也拿得到落位；没有 shape 位', () => {
+    const rig = makeRig({}, { placement: 'top-start', offset: 8 })
     expect(rig.root()['data-placement']).toBe('top-start')
-    expect(rig.root()['data-shape']).toBe('square')
     expect(rig.root().style).toBe('--xh-_float-button-offset: 8px')
-    expect(rig.trigger()['data-shape']).toBe('square')
+    expect(rig.root()['data-shape']).toBeUndefined()
+    expect(rig.trigger()['data-shape']).toBeUndefined()
     expect(rig.list()['data-placement']).toBe('top-start')
   })
 

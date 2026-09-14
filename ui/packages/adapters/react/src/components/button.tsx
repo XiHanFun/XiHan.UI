@@ -37,7 +37,6 @@ export interface XhButtonProps extends Omit<ComponentPropsWithRef<'button'>, 'ty
   variant?: ButtonProps['variant']
   tone?: ButtonProps['tone']
   size?: ButtonProps['size']
-  shape?: ButtonProps['shape']
   /** 渲染成哪个标签，默认 button；写成 a 时作者自行给 href。 */
   as?: ButtonProps['as']
   href?: ComponentPropsWithRef<'a'>['href']
@@ -54,7 +53,6 @@ export function XhButton({
   variant,
   tone,
   size,
-  shape,
   as = 'button',
   children,
   ...rest
@@ -68,7 +66,6 @@ export function XhButton({
     variant,
     tone,
     size,
-    shape,
     as,
   } as ButtonProps)
   // 外层按钮组禁用时整组一起禁用；段自己写了禁用的仍然禁用

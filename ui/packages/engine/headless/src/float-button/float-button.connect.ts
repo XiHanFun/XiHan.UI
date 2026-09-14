@@ -6,7 +6,7 @@
 // 提供 float button 相关实现。
 
 import type { NormalizeProps, PropTypes, Service } from '@xihan-ui/core'
-import type { FloatButtonApi, FloatButtonAppearance, FloatButtonPlacement, FloatButtonSchema, FloatButtonShape } from './float-button.types'
+import type { FloatButtonApi, FloatButtonAppearance, FloatButtonPlacement, FloatButtonSchema } from './float-button.types'
 import { dataAttr } from '@xihan-ui/core'
 import { floatButtonAnatomy } from './float-button.anatomy'
 
@@ -16,7 +16,6 @@ const parts = floatButtonAnatomy.build()
 export const FLOAT_BUTTON_DEFAULT_PLACEMENT: FloatButtonPlacement = 'bottom-end'
 
 /** 不给外形时是圆的。 */
-export const FLOAT_BUTTON_DEFAULT_SHAPE: FloatButtonShape = 'circle'
 
 /** 不给距离时距那两条边 24px。 */
 export const FLOAT_BUTTON_DEFAULT_OFFSET = 24
@@ -43,7 +42,6 @@ export function connectFloatButton<T extends PropTypes>(
   const ids = scope.ids('float-button', 'trigger', 'list')
   const stateAttr = open ? 'open' : 'closed'
   const placement = props.placement ?? FLOAT_BUTTON_DEFAULT_PLACEMENT
-  const shape = props.shape ?? FLOAT_BUTTON_DEFAULT_SHAPE
   const offset = resolveFloatButtonOffset(props.offset)
   const hover = prop('expandTrigger') === 'hover'
 
@@ -60,7 +58,6 @@ export function connectFloatButton<T extends PropTypes>(
       ...parts.root.attrs,
       'data-state': stateAttr,
       'data-placement': placement,
-      'data-shape': shape,
       // 三个视觉轴落在壳上，触发器与展开的每一条动作沿继承流取值
       'data-variant': props.variant,
       'data-tone': props.tone,
@@ -93,7 +90,6 @@ export function connectFloatButton<T extends PropTypes>(
       // 单体控件用原生 disabled，只留 data-disabled 的话禁用态只是样式
       'disabled': disabled || undefined,
       'data-state': stateAttr,
-      'data-shape': shape,
       'data-disabled': dataAttr(disabled),
       // 点一下恒能开合：悬停只是多给一条路，触摸与键盘还得靠它
       'onClick': () => {

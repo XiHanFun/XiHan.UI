@@ -55,7 +55,7 @@ export const floatButtonSuite: ConformanceSuite = {
           root: {
             'data-state': 'closed',
             'data-placement': 'bottom-end',
-            'data-shape': 'circle',
+            'data-shape': null,
             'data-disabled': null,
             // 壳只管落位，语义都在 trigger 与 list 上
             'role': null,
@@ -185,13 +185,12 @@ export const floatButtonSuite: ConformanceSuite = {
       ],
     },
     {
-      name: '落位与外形如实落到壳上，list 也拿得到落位',
+      name: '落位如实落到壳上，list 也拿得到落位',
       spec: { apg: APG },
-      props: { placement: 'top-start', shape: 'square', offset: 8 },
+      props: { placement: 'top-start', offset: 8 },
       initial: {
         parts: {
-          root: { 'data-placement': 'top-start', 'data-shape': 'square' },
-          trigger: { 'data-shape': 'square' },
+          root: { 'data-placement': 'top-start' },
           list: { 'data-placement': 'top-start' },
         },
       },

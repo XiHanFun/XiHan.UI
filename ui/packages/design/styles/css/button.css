@@ -42,6 +42,8 @@
     --xh-action-padding-inline: var(--xh-button-px, var(--xh-_button-group-px, var(--xh-_action-profile-padding-inline)));
     --xh-action-gap: var(--xh-button-gap, var(--xh-_button-group-gap, var(--xh-_action-profile-gap)));
     --xh-action-font-size: var(--xh-button-font-size, var(--xh-_button-group-font-size, var(--xh-_action-profile-font-size)));
+    /* 圆角只有一个身份：与 toggle / button-group 同为胶囊，按钮不再有 shape 轴；成组时由按钮组接管相接侧，
+       要换档写 --xh-button-radius */
     --xh-_button-radius: var(--xh-_button-group-radius, var(--xh-shape-pill));
     --xh-icon-size: var(--xh-button-icon-size, var(--xh-_action-profile-glyph-size));
 
@@ -179,18 +181,6 @@
     border: var(--xh-ring-width) solid var(--xh-ring-focus);
     border-radius: inherit;
     pointer-events: none;
-  }
-
-  [data-scope='button'][data-part='root'][data-shape='rounded'] {
-    --xh-_button-radius: var(--xh-_button-group-radius, var(--xh-shape-control));
-  }
-
-  [data-scope='button'][data-part='root'][data-shape='pill'] {
-    --xh-_button-radius: var(--xh-_button-group-radius, var(--xh-shape-pill));
-  }
-
-  [data-scope='button'][data-part='root'][data-shape='square'] {
-    --xh-_button-radius: var(--xh-_button-group-radius, 0);
   }
 
   /* icon profile 已经给出正方视觉盒；Button 的公开 px 槽不能把它重新撑开。 */
