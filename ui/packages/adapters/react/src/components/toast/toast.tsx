@@ -5,7 +5,7 @@
 
 // 提供 toast 相关实现。
 
-import type { ToastApi, ToastSchema, ToastType } from '@xihan-ui/headless'
+import type { ToastApi, ToastSchema, ToastTone } from '@xihan-ui/headless'
 import type { ComponentPropsWithRef, ReactNode } from 'react'
 import type { SlotChildren } from '../../runtime/slot-content'
 import { withXhConfig } from '../../config/config'
@@ -20,7 +20,7 @@ type ToastProps = ToastSchema['props']
 /** 函数式 children 的载荷：这一条的身份、状态、计时剩余与生命周期方法。 */
 export type ToastRootSlotProps = Pick<
   ToastApi,
-  'id' | 'status' | 'type' | 'paused' | 'remaining' | 'dismiss' | 'pause' | 'resume'
+  'id' | 'status' | 'tone' | 'loading' | 'paused' | 'remaining' | 'dismiss' | 'pause' | 'resume'
 >
 
 export interface XhToastRootProps extends Omit<ComponentPropsWithRef<'div'>, 'children'> {
@@ -28,7 +28,8 @@ export interface XhToastRootProps extends Omit<ComponentPropsWithRef<'div'>, 'ch
   id?: string
   title?: string
   description?: string
-  type?: ToastType
+  tone?: ToastTone
+  loading?: boolean
   duration?: number
   removeDelay?: number
   closable?: boolean
@@ -45,7 +46,8 @@ export function XhToastRoot({
   id,
   title,
   description,
-  type,
+  tone,
+  loading,
   duration,
   removeDelay,
   closable,
@@ -61,7 +63,8 @@ export function XhToastRoot({
     id,
     title,
     description,
-    type,
+    tone,
+  loading,
     duration,
     removeDelay,
     closable,
@@ -82,7 +85,8 @@ export function XhToastRoot({
         {renderSlot(children, {
           id: api.id,
           status: api.status,
-          type: api.type,
+          tone: api.tone,
+          loading: api.loading,
           paused: api.paused,
           remaining: api.remaining,
           dismiss: api.dismiss,
@@ -97,7 +101,7 @@ export function XhToastRoot({
 XhToastRoot.xhEvents = ['status-change', 'action'] as const
 
 export interface XhToastIndicatorProps extends ComponentPropsWithRef<'span'> {}
-/** 严重度指示符：不给内容就由皮肤按节点上的 data-severity 画兜底字形。 */
+/** 语气指示符：不给内容就由皮肤按节点上的 data-tone 画兜底字形，data-loading 时换成转圈。 */
 export function XhToastIndicator({ children, ...rest }: XhToastIndicatorProps): ReactNode {
   const ctx = useToastContext()
   return <span {...mergeReactProps(ctx.api.getIndicatorProps() as Record<string, unknown>, rest as Record<string, unknown>)}>{children}</span>

@@ -1,18 +1,18 @@
-<!-- 语气 | 卡片保持中性，type 只改变标题与状态图标；error 使用 assertive 实时区，loading 不自动消失 -->
+<!-- 语气 | 卡片保持中性，tone 只改变标题与状态字形；danger 使用 assertive 实时区，loading 另有一位，转圈且不自动消失 -->
 <div style="display: grid; width: 100%; gap: 12px; justify-items: center">
-  <xh-toast type="info" title="草稿已保存" duration="0" closable="false">
+  <xh-toast tone="info" title="草稿已保存" duration="0" closable="false">
     <div data-xh-part="root"><span data-xh-part="indicator"></span><div data-xh-part="content"><div data-xh-part="title"></div></div></div>
   </xh-toast>
-  <xh-toast type="success" title="发布成功" duration="0" closable="false">
+  <xh-toast tone="success" title="发布成功" duration="0" closable="false">
     <div data-xh-part="root"><span data-xh-part="indicator"></span><div data-xh-part="content"><div data-xh-part="title"></div></div></div>
   </xh-toast>
-  <xh-toast type="warning" title="配额即将用尽" duration="0" closable="false">
+  <xh-toast tone="warning" title="配额即将用尽" duration="0" closable="false">
     <div data-xh-part="root"><span data-xh-part="indicator"></span><div data-xh-part="content"><div data-xh-part="title"></div></div></div>
   </xh-toast>
-  <xh-toast type="error" title="同步失败，稍后自动重试" duration="0" closable="false">
+  <xh-toast tone="danger" title="同步失败，稍后自动重试" duration="0" closable="false">
     <div data-xh-part="root"><span data-xh-part="indicator"></span><div data-xh-part="content"><div data-xh-part="title"></div></div></div>
   </xh-toast>
-  <xh-toast type="loading" title="正在上传" duration="0" closable="false">
+  <xh-toast loading title="正在上传" duration="0" closable="false">
     <div data-xh-part="root"><span data-xh-part="indicator"></span><div data-xh-part="content"><div data-xh-part="title"></div></div></div>
   </xh-toast>
 </div>

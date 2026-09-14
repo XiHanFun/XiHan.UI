@@ -281,20 +281,20 @@ describe('开关的只读观感', () => {
   })
 })
 
-// —— 轻提示的严重度：此前只有色相一条通道 ——
+// —— 轻提示的语气：此前只有色相一条通道 ——
 
-describe('轻提示的严重度字形', () => {
-  const TOAST = (type: string): unknown =>
-    h(XhToastRoot, { type: type as never, duration: 0 }, () => [
+describe('轻提示的语气字形', () => {
+  const TOAST = (props: Record<string, unknown>): unknown =>
+    h(XhToastRoot, { ...props, duration: 0 }, () => [
       h(XhToastContent, null, () => h(XhToastTitle, null, () => '一句话')),
     ])
 
   it('四档各画一枚不同的字形，行首那一格真占了指示符那么大', async () => {
     const marks: string[] = []
-    for (const type of ['info', 'success', 'warning', 'error']) {
-      await mount(() => TOAST(type))
+    for (const tone of ['info', 'success', 'warning', 'danger']) {
+      await mount(() => TOAST({ tone }))
       const root = part('toast', 'root')
-      expect(root.getAttribute('data-severity')).toBe(type)
+      expect(root.getAttribute('data-tone')).toBe(tone)
       const mask = beforeOf(root, 'mask-image')
       expect(mask).not.toBe('none')
       marks.push(mask)
@@ -303,17 +303,18 @@ describe('轻提示的严重度字形', () => {
     expect(new Set(marks).size).toBe(4)
   })
 
-  it('loading 那一档转起来，且颜色不随语气跑到红绿上', async () => {
-    await mount(() => TOAST('loading'))
+  it('加载中转起来，语气位不受它影响', async () => {
+    await mount(() => TOAST({ loading: true, tone: 'success' }))
     const root = part('toast', 'root')
-    expect(root.getAttribute('data-tone')).toBe('neutral')
+    expect(root.getAttribute('data-tone')).toBe('success')
+    expect(root.hasAttribute('data-loading')).toBe(true)
     expect(beforeOf(root, 'animation-name')).toBe('xh-toast-spin')
     expect(beforeOf(root, 'animation-iteration-count')).toBe('infinite')
   })
 
   it('字形的颜色留了使用者槽', async () => {
     setSlot('--xh-toast-icon-fg', RED)
-    await mount(() => TOAST('success'))
+    await mount(() => TOAST({ tone: 'success' }))
     expect(beforeOf(part('toast', 'root'), 'background-color')).toBe(RED)
   })
 })

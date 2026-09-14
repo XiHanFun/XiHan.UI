@@ -41,7 +41,8 @@ export default function Demo(): ReactNode {
                 id={item.id}
                 title={item.title}
                 description={item.description}
-                type={item.type}
+                tone={item.tone}
+                loading={item.loading}
                 duration={item.duration}
                 removeDelay={item.removeDelay}
                 closable={item.closable}

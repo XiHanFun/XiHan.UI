@@ -184,7 +184,7 @@
     "data-last": "集合里的最后一个：field-array 的末行、tour 的末步（那颗按钮的语义变成完成）。",
     "data-line-numbers": "code-view 显示行号列。",
     "data-live": "markdown-stream 的这一块还在增长，尚未定稿。",
-    "data-loading": "正在加载、提交，或等外部结果落定：approval、button、image-viewer、infinite-scroll、log、popconfirm、prompt-input、switch、table、tool-call，以及集合件取条目在途（cascader、combobox、listbox、mention、select、transfer、tree、tree-select）。配对 aria-busy。",
+    "data-loading": "正在加载、提交，或等外部结果落定：approval、button、image-viewer、infinite-scroll、log、popconfirm、prompt-input、switch、table、tool-call，反馈件的「事情还没完」（notification、toast：字形换成转圈且不自动消失），以及集合件取条目在途（cascader、combobox、listbox、mention、select、transfer、tree、tree-select）。配对 aria-busy。",
     "data-logo": "qr-code 的码面上留了 logo 位；皮肤不据此做事，留给作者当选择器。",
     "data-movable": "field-array 允许拖动调整行序。",
     "data-multiline": "输入宿主是多行的：combobox 的 textarea、truncate 的多行省略。",
@@ -243,7 +243,7 @@
     "data-segmented": "改 data-split",
     "data-sider-collapsed": "改 data-collapsed",
     "data-sticky": "表头吸顶改 data-fixed",
-    "data-type": "一名六义。JSON 值形态改 data-value-type，消息严重度改 data-severity，题型改 data-select-mode，滚动条露面策略改 data-reveal-mode，时间显示格式改 data-format",
+    "data-type": "一名六义。JSON 值形态改 data-value-type，消息语气改 data-tone（加载中另由 data-loading 说），题型改 data-select-mode，滚动条露面策略改 data-reveal-mode，时间显示格式改 data-format",
     "data-visible": "派生显隐改 data-state=visible|hidden"
   },
   "aria": {

@@ -7,8 +7,8 @@
 
 import type { MachineSchema, PropTypes } from '@xihan-ui/core'
 
-/** 轻提示的语气。loading 例外：它表达"事情还没完"，不自动消失。 */
-export type ToastType = 'info' | 'success' | 'warning' | 'error' | 'loading'
+/** 轻提示的语气：与全库语气轴同一套词，决定配色、行首字形与实时区级别。加载中不是语气，另有 loading 一位。 */
+export type ToastTone = 'info' | 'success' | 'warning' | 'danger'
 
 /**
  * 对外的三段式生命周期。
@@ -35,7 +35,9 @@ export interface ToastRecord {
   id: string
   title?: string
   description?: string
-  type?: ToastType
+  tone?: ToastTone
+  /** 事情还没完：行首换成转圈，且不自动消失。 */
+  loading?: boolean
   duration?: number
   removeDelay?: number
   /** 出不出关闭按钮；单组件与全局服务都默认开启。 */
@@ -64,7 +66,8 @@ export interface ResolvedToastServiceItem {
   id: string
   title?: string
   description?: string
-  type: ToastType
+  tone: ToastTone
+  loading: boolean
   duration?: number
   removeDelay?: number
   closable: boolean
@@ -97,8 +100,10 @@ export interface ToastSchema extends MachineSchema {
     title?: string
     /** 可选的补充说明；应保持简短，需要持续阅读的长内容改用 notification。 */
     description?: string
-    /** 语气，默认 info。error 走 alert + assertive，loading 不自动消失。 */
-    type?: ToastType
+    /** 语气，默认 info。danger 走 alert + assertive。 */
+    tone?: ToastTone
+    /** 事情还没完：行首换成转圈，且不自动消失（duration 不再起作用），完事后改写成别的语气收尾。 */
+    loading?: boolean
     /** 停留毫秒，默认 4000。<=0 或非有限数即不自动消失。 */
     duration?: number
     /** 退场窗口毫秒，默认 300：进入 dismissing 后停留这么久再转 unmounted，留给退场动画。 */
@@ -137,7 +142,7 @@ export interface ToastSchema extends MachineSchema {
     | { type: 'TOAST.ACTION' }
     | { type: 'TOAST.PAUSE', src: ToastPauseSource }
     | { type: 'TOAST.RESUME', src: ToastPauseSource }
-    /** 时长预算被改写（type / duration 变了），重算并重起计时器。 */
+    /** 时长预算被改写（loading / duration 变了），重算并重起计时器。 */
     | { type: 'TOAST.RESET' }
     | { type: 'after.duration' }
     | { type: 'after.removeDelay' }
@@ -158,7 +163,8 @@ export interface ToastSchema extends MachineSchema {
 export interface ToastApi<T extends PropTypes = PropTypes> {
   id: string
   status: ToastStatus
-  type: ToastType
+  tone: ToastTone
+  loading: boolean
   title: string | undefined
   description: string | undefined
   /** 计时被按住中。倒计时的可见反馈由使用者自己渲染，这个标记是留给他的钩子——自带皮肤不画。 */
@@ -172,7 +178,7 @@ export interface ToastApi<T extends PropTypes = PropTypes> {
   /** 停留总时长（毫秒）；不自动消失时为 Infinity。 */
   duration: number
   getRootProps: () => T['element']
-  /** 严重度指示符：作者塞自己的图形，不塞则由皮肤画兜底字形。 */
+  /** 语气指示符：作者塞自己的图形，不塞则由皮肤按语气画兜底字形，加载中换成转圈。 */
   getIndicatorProps: () => T['element']
   /** 标题与说明的文本列。 */
   getContentProps: () => T['element']

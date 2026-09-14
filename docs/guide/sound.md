@@ -114,9 +114,9 @@ await dialog.confirm({ title: "删除这条记录？" });
 
 | 调用 | 声音 |
 | --- | --- |
-| `toast.info/success/warning/error` | 同名语义声 |
+| `toast.info/success/warning/danger` | 同名语义声（`danger` 对应 `error` 那把声） |
 | `toast.loading` | 不发声（加载中只是过渡态） |
-| `toast.update(id, { type })` | 新类型的声音，`loading` 除外——上传完成那一刻该响，改文案不该响 |
+| `toast.update(id, { tone })` | 新语气的声音，`loading: true` 还开着时除外——上传完成那一刻该响，改文案不该响 |
 | `dialog.confirm` | `open` |
 | `dialog.info/success/warning/error` | 同名语义声 |
 | 关闭、消失 | 不发声 |
@@ -125,7 +125,7 @@ await dialog.confirm({ title: "删除这条记录？" });
 
 ```ts
 withToastSound(createToastService(), {
-  sounds: { success: "complete", error: null },
+  sounds: { success: "complete", danger: null },
 });
 ```
 

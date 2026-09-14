@@ -5,7 +5,7 @@
 
 // 提供 toast 相关实现。
 
-import type { ToastActionDetails, ToastSchema, ToastStatusChangeDetails, ToastTranslations, ToastType } from '@xihan-ui/headless'
+import type { ToastActionDetails, ToastSchema, ToastStatusChangeDetails, ToastTone, ToastTranslations } from '@xihan-ui/headless'
 import { connectToast, toastAnatomy, toastMachine, toastMeta } from '@xihan-ui/headless'
 import { wcNormalize } from '../dom/normalize'
 import { XhElement } from '../element-base'
@@ -25,7 +25,7 @@ const BOOLEAN_CONVERTER = { fromAttribute: (v: string | null) => (v === null ? u
  * 角色节点，元素跑 toast 机器并把 connect 产出打上去。
  *
  * root 承载 role 与 aria-live：默认 status + polite（排队等读屏的空隙），
- * type="error" 换成 alert + assertive（打断当前朗读）。指针停在条子上、
+ * tone="danger" 换成 alert + assertive（打断当前朗读）。指针停在条子上、
  * 或焦点落进条子内部都会把倒计时按住，离开才接着走剩下的那一段。
  *
  * 退场窗口走完只把 root 收起、不删节点：作者写在里面的内容归作者，
@@ -35,7 +35,8 @@ const BOOLEAN_CONVERTER = { fromAttribute: (v: string | null) => (v === null ? u
  * @attr {string} id - 队列身份，全局服务按它寻址；不给就用实例自己的 scope id
  * @attr {string} title - 标题文案；作者没在 title 部件里写内容时由元素填入
  * @attr {string} description - 简短补充说明；作者没在 description 部件里写内容时由元素填入
- * @attr {'info'|'success'|'warning'|'error'|'loading'} type - 语气，默认 info；loading 不自动消失
+ * @attr {'info'|'success'|'warning'|'danger'} tone - 语气，默认 info；danger 走 alert + assertive
+ * @attr {boolean} loading - 事情还没完：行首换成转圈，且不自动消失
  * @attr {number} duration - 停留毫秒，默认 4000；<=0 即关掉自动消失
  * @attr {number} remove-delay - 退场窗口毫秒，默认 300，留给退场动画
  * @attr {boolean} closable - 是否给可用的关闭按钮，默认 true；写 closable="false" 关掉
@@ -43,8 +44,8 @@ const BOOLEAN_CONVERTER = { fromAttribute: (v: string | null) => (v === null ? u
  * @attr {boolean} paused - 由宿主整摞一起按住计时，默认关；与指针、焦点那几路并存
  * @fires status-change - 生命周期落位；detail 为 `{ id: string, status: 'dismissing'|'unmounted' }`
  * @fires action - 操作按钮被按下；detail 为 `{ id: string }`
- * @csspart root - role=status（error 时 alert）的容器，承载 data-severity / data-tone / data-state / data-paused
- * @csspart indicator - 严重度指示符（对读屏隐藏）；不渲染它时字形由 root 的伪元素兜住
+ * @csspart root - role=status（danger 时 alert）的容器，承载 data-tone / data-loading / data-state / data-paused
+ * @csspart indicator - 语气指示符（对读屏隐藏），同样承载 data-loading；不渲染它时字形由 root 的伪元素兜住
  * @csspart content - 标题与说明的文本列
  * @csspart title - 标题，aria-labelledby 的目标
  * @csspart description - 可选的简短补充说明
@@ -62,7 +63,8 @@ export class XhToastElement extends XhElement {
     toastId: { converter: STRING_CONVERTER, attribute: 'id' },
     titleText: { converter: STRING_CONVERTER, attribute: 'title' },
     descriptionText: { converter: STRING_CONVERTER, attribute: 'description' },
-    type: { converter: STRING_CONVERTER },
+    tone: { converter: STRING_CONVERTER },
+    loading: { converter: BOOLEAN_CONVERTER },
     duration: { converter: NUMBER_CONVERTER },
     removeDelay: { converter: NUMBER_CONVERTER, attribute: 'remove-delay' },
     closable: { converter: BOOLEAN_CONVERTER },
@@ -75,7 +77,8 @@ export class XhToastElement extends XhElement {
   declare toastId?: string
   declare titleText?: string
   declare descriptionText?: string
-  declare type?: ToastType
+  declare tone?: ToastTone
+  declare loading?: boolean
   declare duration?: number
   declare removeDelay?: number
   declare closable?: boolean
@@ -101,7 +104,8 @@ export class XhToastElement extends XhElement {
       id: this.toastId,
       title: this.titleText,
       description: this.descriptionText,
-      type: this.type,
+      tone: this.tone,
+      loading: this.loading,
       duration: this.duration,
       removeDelay: this.removeDelay,
       closable: this.closable,

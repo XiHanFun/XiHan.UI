@@ -17,7 +17,7 @@ import type {
   ToastRecord,
   ToastServiceDefaults,
   ToastTranslations,
-  ToastType,
+  ToastTone,
 } from '@xihan-ui/headless'
 import type { ReactNode } from 'react'
 import type { Root } from 'react-dom/client'
@@ -85,8 +85,8 @@ export interface ToastCreateOptions extends ToastOptions {
   onAction?: () => void
 }
 
-/** 类型糖的入参：只差 type，其余同 create。 */
-export type ToastMessageOptions = Omit<ToastCreateOptions, 'type' | 'title'>
+/** 语气糖的入参：只差 tone / loading，其余同 create。 */
+export type ToastMessageOptions = Omit<ToastCreateOptions, 'tone' | 'loading' | 'title'>
 
 /** promise 三态的文案：成功与失败可以给函数，拿到结果再拼话。 */
 export interface ToastPromiseOptions<T> extends Omit<ToastMessageOptions, 'duration'> {
@@ -105,7 +105,7 @@ export interface ToastService {
   info: (message: string, options?: ToastMessageOptions) => string
   success: (message: string, options?: ToastMessageOptions) => string
   warning: (message: string, options?: ToastMessageOptions) => string
-  error: (message: string, options?: ToastMessageOptions) => string
+  danger: (message: string, options?: ToastMessageOptions) => string
   loading: (message: string, options?: ToastMessageOptions) => string
   /** 挂一条 loading，兑现后就地改写成成功或失败；原样透传 promise 的结果。 */
   promise: <T>(input: Promise<T> | (() => Promise<T>), options: ToastPromiseOptions<T>) => Promise<T>
@@ -133,7 +133,8 @@ function DefaultToast(props: {
       id={item.id}
       title={item.title}
       description={item.description}
-      type={item.type}
+      tone={item.tone}
+      loading={item.loading}
       duration={item.duration}
       removeDelay={item.removeDelay}
       closable={item.closable}
@@ -273,8 +274,8 @@ export function createToastService(options: ToastServiceOptions = {}): ToastServ
     return controller.create(record, onAction)
   }
 
-  const sugar = (type: ToastType) => (message: string, opts: ToastMessageOptions = {}): string =>
-    create({ ...opts, type, title: message })
+  const sugar = (tone: ToastTone) => (message: string, opts: ToastMessageOptions = {}): string =>
+    create({ ...opts, tone, title: message })
 
   return {
     create,
@@ -284,8 +285,8 @@ export function createToastService(options: ToastServiceOptions = {}): ToastServ
     info: sugar('info'),
     success: sugar('success'),
     warning: sugar('warning'),
-    error: sugar('error'),
-    loading: sugar('loading'),
+    danger: sugar('danger'),
+    loading: (message, opts = {}) => create({ ...opts, loading: true, title: message }),
     // 类型参数写成 <T,>：.tsx 里裸的 <T> 会被当成 JSX 标签
     promise: <T,>(input: Promise<T> | (() => Promise<T>), opts: ToastPromiseOptions<T>): Promise<T> => {
       const { loading, success, error, ...rest } = opts
@@ -293,9 +294,9 @@ export function createToastService(options: ToastServiceOptions = {}): ToastServ
       const { onAction, ...record } = rest
       return controller.trackPromise(
         running,
-        { ...record, type: 'loading', title: loading },
-        value => ({ type: 'success', title: typeof success === 'function' ? success(value) : success }),
-        reason => ({ type: 'error', title: typeof error === 'function' ? error(reason) : error }),
+        { ...record, loading: true, title: loading },
+        value => ({ loading: false, tone: 'success', title: typeof success === 'function' ? success(value) : success }),
+        reason => ({ loading: false, tone: 'danger', title: typeof error === 'function' ? error(reason) : error }),
         onAction,
       )
     },

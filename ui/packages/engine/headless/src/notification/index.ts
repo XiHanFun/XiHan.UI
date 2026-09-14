@@ -37,6 +37,6 @@ export type {
   NotificationSchema,
   NotificationStatus,
   NotificationTranslations,
-  NotificationType,
+  NotificationTone,
   ResolvedNotification,
 } from './notification.types'

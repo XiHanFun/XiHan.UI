@@ -21,7 +21,7 @@ const itemTranslations = { close: "关闭" };
 function startUpload(create: Create, update: Update): void {
   create({
     id: "upload",
-    type: "loading",
+    loading: true,
     title: "正在上传",
     description: "3 个文件排队中",
   });
@@ -30,7 +30,8 @@ function startUpload(create: Create, update: Update): void {
   // 同一个 id 再 create 一次同样是就地改写
   window.setTimeout(create, 2400, {
     id: "upload",
-    type: "success",
+    loading: false,
+    tone: "success",
     title: "上传完成",
     description: "3 个文件已入库",
   });
@@ -51,7 +52,8 @@ export default function Demo(): ReactNode {
                 id={item.id}
                 title={item.title}
                 description={item.description}
-                type={item.type}
+                tone={item.tone}
+                loading={item.loading}
                 duration={item.duration}
                 removeDelay={item.removeDelay}
                 closable={item.closable}

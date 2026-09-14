@@ -122,7 +122,8 @@ export function createNotificationService(options: NotificationServiceOptions = 
     node.itemId = item.id
     node.titleText = resolveFeedbackServiceTitle(item)
     node.description = item.description
-    node.type = item.type
+    node.tone = item.tone
+    node.loading = item.loading
     node.duration = item.duration
     node.removeDelay = item.removeDelay
     node.closable = item.closable
@@ -191,8 +192,8 @@ export function createNotificationService(options: NotificationServiceOptions = 
     return id
   }
 
-  const sugar = (type: NotificationCreateOptions['type']) =>
-    (title: string, opts: NotificationMessageOptions = {}): string => create({ ...opts, type, title })
+  const sugar = (tone: NotificationCreateOptions['tone']) =>
+    (title: string, opts: NotificationMessageOptions = {}): string => create({ ...opts, tone, title })
 
   return {
     create,
@@ -211,7 +212,7 @@ export function createNotificationService(options: NotificationServiceOptions = 
     info: sugar('info'),
     success: sugar('success'),
     warning: sugar('warning'),
-    error: sugar('error'),
+    danger: sugar('danger'),
     pauseAll: controller.pauseAll,
     resumeAll: controller.resumeAll,
     dispose: () => {

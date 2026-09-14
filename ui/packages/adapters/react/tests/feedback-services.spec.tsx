@@ -40,7 +40,7 @@ describe('轻提示服务', () => {
     await settle()
     expect(toasts()).toHaveLength(1)
     expect(titleTexts(toasts())).toEqual(['保存好了'])
-    expect(toasts()[0]!.getAttribute('data-severity')).toBe('success')
+    expect(toasts()[0]!.getAttribute('data-tone')).toBe('success')
   })
 
   it('dismiss 把那一条删掉', async () => {

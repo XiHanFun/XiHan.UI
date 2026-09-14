@@ -6,7 +6,8 @@ import { resolveToastServiceItem } from '../src/toast'
 interface RecordOptions {
   id?: string
   title?: string
-  type?: string
+  tone?: string
+  loading?: boolean
 }
 
 function makeQueue() {
@@ -45,16 +46,17 @@ describe('feedback service controller', () => {
       id: 'a',
       title: '处理中 ×2',
       description: '正在同步云端数据',
-      type: 'info',
+      tone: 'info',
+      loading: false,
       duration: 3000,
       removeDelay: 180,
       closable: true,
       pauseOnPageIdle: false,
       actionLabel: '撤销',
     })
-    expect(resolveToastServiceItem({ id: 'loading', type: 'loading' }).closable).toBe(true)
+    expect(resolveToastServiceItem({ id: 'loading', loading: true }).closable).toBe(true)
     expect(resolveToastServiceItem({ id: 'fixed', duration: 0 }).closable).toBe(true)
-    expect(resolveToastServiceItem({ id: 'forced', type: 'loading', closable: false }).closable).toBe(false)
+    expect(resolveToastServiceItem({ id: 'forced', loading: true, closable: false }).closable).toBe(false)
   })
 
   it('复用注入的 notification 队列端口完成 create/update/dismiss/dismissAll', () => {
@@ -144,13 +146,13 @@ describe('feedback service controller', () => {
 
     const result = controller.trackPromise(
       Promise.resolve(7),
-      { type: 'loading', title: '上传中' },
-      value => ({ type: 'success', title: `完成 ${value}` }),
-      () => ({ type: 'error', title: '失败' }),
+      { loading: true, title: '上传中' },
+      value => ({ loading: false, tone: 'success', title: `完成 ${value}` }),
+      () => ({ loading: false, tone: 'danger', title: '失败' }),
     )
-    expect(records.get('toast-1')).toMatchObject({ type: 'loading', title: '上传中' })
+    expect(records.get('toast-1')).toMatchObject({ loading: true, title: '上传中' })
     await expect(result).resolves.toBe(7)
-    expect(records.get('toast-1')).toMatchObject({ type: 'success', title: '完成 7' })
+    expect(records.get('toast-1')).toMatchObject({ loading: false, tone: 'success', title: '完成 7' })
   })
 
   it('promise 拒绝就地改写失败并保留原拒绝原因', async () => {
@@ -161,12 +163,12 @@ describe('feedback service controller', () => {
 
     const result = controller.trackPromise(
       Promise.reject(cause),
-      { type: 'loading', title: '提交中' },
-      () => ({ type: 'success' }),
-      reason => ({ type: 'error', title: (reason as Error).message }),
+      { loading: true, title: '提交中' },
+      () => ({ loading: false, tone: 'success' }),
+      reason => ({ loading: false, tone: 'danger', title: (reason as Error).message }),
     )
     await expect(result).rejects.toBe(cause)
-    expect(records.get('toast-1')).toMatchObject({ type: 'error', title: '后端失败' })
+    expect(records.get('toast-1')).toMatchObject({ loading: false, tone: 'danger', title: '后端失败' })
   })
 
   it('宿主不可用时静默丢消息，dispose 后则明确报已卸载', async () => {

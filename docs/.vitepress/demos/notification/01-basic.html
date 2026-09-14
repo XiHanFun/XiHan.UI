@@ -4,8 +4,8 @@
     <xh-button variant="solid" data-create="save">
       <button data-xh-part="root">弹一条</button>
     </xh-button>
-    <xh-button variant="outline" data-create="error">
-      <button data-xh-part="root">弹一条 error</button>
+    <xh-button variant="outline" data-create="danger">
+      <button data-xh-part="root">弹一条 danger</button>
     </xh-button>
     <span>队列：<span id="notification-basic-count">0</span> 条</span>
 
@@ -51,7 +51,8 @@
       }
       node.titleText = item.title;
       node.description = item.description;
-      node.type = item.type;
+      node.tone = item.tone;
+      node.loading = item.loading;
       node.duration = item.duration;
       node.removeDelay = item.removeDelay;
       node.closable = item.closable;
@@ -63,8 +64,8 @@
 
   const messages = {
     save: { title: "草稿已保存", description: "内容已同步到云端" },
-    error: {
-      type: "error",
+    danger: {
+      tone: "danger",
       title: "同步失败",
       description: "网络中断，稍后自动重试",
     },

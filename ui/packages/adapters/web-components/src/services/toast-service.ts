@@ -9,7 +9,7 @@
 // 摞落在哪儿是整个服务的口径，因此库里没有对应的自定义元素；
 // 队列跑的是 notification 那台队列机器，上限、挤条与合并计数全库一份实现。
 import type { Service } from '@xihan-ui/core'
-import type { NotificationApi, NotificationSchema, ToastOptions, ToastRecord, ToastType } from '@xihan-ui/headless'
+import type { NotificationApi, NotificationSchema, ToastOptions, ToastRecord, ToastTone } from '@xihan-ui/headless'
 import type { XhToastElement } from '../elements/toast'
 import type { ToastCreateOptions, ToastMessageOptions, ToastPromiseOptions, ToastService, ToastServiceOptions } from './types'
 import { createService, DATA_INERT_EXEMPT } from '@xihan-ui/core'
@@ -141,7 +141,8 @@ export function createToastService(options: ToastServiceOptions = {}): ToastServ
     node.toastId = resolved.id
     node.titleText = resolved.title
     node.descriptionText = resolved.description
-    node.type = resolved.type
+    node.tone = resolved.tone
+    node.loading = resolved.loading
     node.duration = resolved.duration
     node.removeDelay = resolved.removeDelay
     node.closable = resolved.closable
@@ -207,8 +208,8 @@ export function createToastService(options: ToastServiceOptions = {}): ToastServ
     return controller.create(record, onAction)
   }
 
-  const sugar = (type: ToastType) => (message: string, opts: ToastMessageOptions = {}): string =>
-    create({ ...opts, type, title: message })
+  const sugar = (tone: ToastTone) => (message: string, opts: ToastMessageOptions = {}): string =>
+    create({ ...opts, tone, title: message })
 
   return {
     create,
@@ -218,17 +219,17 @@ export function createToastService(options: ToastServiceOptions = {}): ToastServ
     info: sugar('info'),
     success: sugar('success'),
     warning: sugar('warning'),
-    error: sugar('error'),
-    loading: sugar('loading'),
+    danger: sugar('danger'),
+    loading: (message, opts = {}) => create({ ...opts, loading: true, title: message }),
     promise: <T>(input: Promise<T> | (() => Promise<T>), opts: ToastPromiseOptions<T>): Promise<T> => {
       const { loading, success, error, ...rest } = opts
       const running = typeof input === 'function' ? input() : input
       const { onAction, ...record } = rest
       return controller.trackPromise(
         running,
-        { ...record, type: 'loading', title: loading },
-        value => ({ type: 'success', title: typeof success === 'function' ? success(value) : success }),
-        reason => ({ type: 'error', title: typeof error === 'function' ? error(reason) : error }),
+        { ...record, loading: true, title: loading },
+        value => ({ loading: false, tone: 'success', title: typeof success === 'function' ? success(value) : success }),
+        reason => ({ loading: false, tone: 'danger', title: typeof error === 'function' ? error(reason) : error }),
         onAction,
       )
     },

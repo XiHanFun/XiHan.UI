@@ -51,8 +51,8 @@ describe('xh-notification-item 的角色节点', () => {
     expect(item.getAttribute('role')).toBe('status')
     expect(item.getAttribute('aria-live')).toBe('polite')
     expect(item.getAttribute('aria-atomic')).toBe('true')
-    expect(item.getAttribute('data-severity')).toBe('info')
     expect(item.getAttribute('data-tone')).toBe('info')
+    expect(item.hasAttribute('data-loading')).toBe(false)
     expect(item.getAttribute('data-state')).toBe('visible')
 
     // 名字与说明必须真的指到那两个节点上，别是悬空的 IDREF
@@ -64,15 +64,24 @@ describe('xh-notification-item 的角色节点', () => {
     expect(part(el, 'item-close-trigger').getAttribute('aria-label')).toBe('Close')
   })
 
-  it('type=error 换成 alert + assertive，语气落 danger', async () => {
-    const el = mount('type="error"')
+  it('tone=danger 换成 alert + assertive', async () => {
+    const el = mount('tone="danger"')
     await settle(el)
 
     const item = part(el, 'item')
     expect(item.getAttribute('role')).toBe('alert')
     expect(item.getAttribute('aria-live')).toBe('assertive')
-    // 词汇表里没有 error 这个语气，出错走 danger
     expect(item.getAttribute('data-tone')).toBe('danger')
+  })
+
+  it('loading 落到卡片上，语气位不受它影响；指示符靠祖先选择器换字形', async () => {
+    const el = mount('loading tone="success"')
+    await settle(el)
+
+    const item = part(el, 'item')
+    expect(item.hasAttribute('data-loading')).toBe(true)
+    expect(item.getAttribute('data-tone')).toBe('success')
+    expect(part(el, 'item-indicator').hasAttribute('data-loading')).toBe(false)
   })
 
   it('closable="false"：叉转原生 disabled 并收起', async () => {

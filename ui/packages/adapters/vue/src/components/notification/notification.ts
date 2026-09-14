@@ -5,7 +5,7 @@
 
 // 提供 notification 相关实现。
 
-import type { NotificationDedupe, NotificationItemApi, NotificationOptions, NotificationPlacement, NotificationRecord, NotificationSchema, NotificationTranslations, ResolvedNotification, ToastSchema, ToastType } from '@xihan-ui/headless'
+import type { NotificationDedupe, NotificationItemApi, NotificationOptions, NotificationPlacement, NotificationRecord, NotificationSchema, NotificationTranslations, ResolvedNotification, ToastSchema, ToastTone } from '@xihan-ui/headless'
 import type { PropType, SlotsType, VNode } from 'vue'
 import type { PayloadOf } from '../../runtime/payload'
 import { defineComponent, Fragment, h } from 'vue'
@@ -111,7 +111,8 @@ export const XhNotificationItem = defineComponent({
     id: { type: String },
     title: { type: String },
     description: { type: String },
-    type: { type: String as PropType<ToastType> },
+    tone: { type: String as PropType<ToastTone> },
+    loading: { type: Boolean, default: undefined },
     duration: { type: Number },
     removeDelay: { type: Number },
     closable: { type: Boolean, default: undefined },
@@ -144,7 +145,7 @@ export const XhNotificationItem = defineComponent({
   },
 })
 
-/** 类型指示符。作者不写内容时由皮肤按 data-severity 画一枚兜底字形。 */
+/** 语气指示符。作者不写内容时由皮肤按 data-tone 画一枚兜底字形，data-loading 时换成转圈。 */
 export const XhNotificationItemIndicator = defineComponent({
   name: 'XhNotificationItemIndicator',
   setup(_, { slots }) {

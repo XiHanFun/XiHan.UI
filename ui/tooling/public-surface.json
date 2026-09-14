@@ -5906,8 +5906,8 @@
       "NotificationRecord",
       "NotificationSchema",
       "NotificationStatus",
+      "NotificationTone",
       "NotificationTranslations",
-      "NotificationType",
       "NumberAnimationApi",
       "NumberAnimationCompleteDetails",
       "NumberAnimationEasing",
@@ -6375,8 +6375,8 @@
       "ToastStackControllerOptions",
       "ToastStatus",
       "ToastStatusChangeDetails",
+      "ToastTone",
       "ToastTranslations",
-      "ToastType",
       "ToggleApi",
       "ToggleGroupApi",
       "ToggleGroupItemProps",
@@ -11155,14 +11155,15 @@
       "description",
       "duration",
       "id",
+      "loading",
       "onAction",
       "onStatusChange",
       "pauseOnPageIdle",
       "paused",
       "removeDelay",
       "title",
-      "translations",
-      "type"
+      "tone",
+      "translations"
     ],
     "toggle": [
       "defaultPressed",
@@ -11538,7 +11539,6 @@
     "data-selected",
     "data-sequential",
     "data-settled",
-    "data-severity",
     "data-shape",
     "data-side",
     "data-sider-breakpoint",
@@ -17281,11 +17281,12 @@
         "description",
         "duration",
         "id",
+        "loading",
         "pause-on-page-idle",
         "paused",
         "remove-delay",
         "title",
-        "type"
+        "tone"
       ],
       "events": [
         "action",
@@ -18081,11 +18082,12 @@
         "description",
         "duration",
         "id",
+        "loading",
         "pause-on-page-idle",
         "paused",
         "remove-delay",
         "title",
-        "type"
+        "tone"
       ],
       "events": [
         "action",

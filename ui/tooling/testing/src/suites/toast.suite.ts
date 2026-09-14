@@ -64,9 +64,9 @@ export const toastSuite: ConformanceSuite = {
             'aria-atomic': 'true',
             'aria-labelledby': '@part(title)',
             'aria-describedby': '@part(description)',
-            'data-severity': 'info',
-            // 配色走全库共用的语气层，由 type 派生
+            // 配色走全库共用的语气层，tone 直接落上去；不在加载中就没有 data-loading
             'data-tone': 'info',
+            'data-loading': null,
             'data-state': 'visible',
             'data-paused': null,
             'hidden': null,
@@ -85,16 +85,14 @@ export const toastSuite: ConformanceSuite = {
       },
     },
     {
-      name: 'type=error：换成 alert + assertive，打断当前朗读',
+      name: 'tone=danger：换成 alert + assertive，打断当前朗读',
       spec: { apg: `${APG}#roles_states_properties` },
-      props: { duration: 0, type: 'error' },
+      props: { duration: 0, tone: 'danger' },
       initial: {
         parts: {
           root: {
             'role': 'alert',
             'aria-live': 'assertive',
-            'data-severity': 'error',
-            // 词汇表里没有 error 这个语气，出错走 danger
             'data-tone': 'danger',
           },
         },
@@ -249,9 +247,9 @@ export const toastSuite: ConformanceSuite = {
       ],
     },
     {
-      name: 'type=loading 不自动消失：事情还没完，不能替用户把进度抹掉',
+      name: 'loading 不自动消失：事情还没完，不能替用户把进度抹掉',
       spec: { apg: APG },
-      props: { type: 'loading', duration: 40 },
+      props: { loading: true, duration: 40 },
       steps: [
         {
           kind: 'raw',
@@ -262,17 +260,17 @@ export const toastSuite: ConformanceSuite = {
             expectState(doc, 'visible', 'loading 不该到点自动消失')
           },
           expect: {
-            // loading 既不是好消息也不是坏消息，语气走中性
-            parts: { root: { 'data-state': 'visible', 'data-severity': 'loading', 'data-tone': 'neutral' } },
+            // 加载中不是语气：语气位照默认落 info，转圈另由 data-loading 说
+            parts: { 'root': { 'data-state': 'visible', 'data-loading': '', 'data-tone': 'info' }, 'indicator': { 'data-loading': '' } },
             events: [],
           },
         },
       ],
     },
     {
-      name: 'loading 转 success：预算重算并开始计时，不再挂着不走',
+      name: 'loading 收尾成 success：预算重算并开始计时，不再挂着不走',
       spec: { apg: APG },
-      props: { id: 't1', type: 'loading', duration: 150, removeDelay: 3000 },
+      props: { id: 't1', loading: true, duration: 150, removeDelay: 3000 },
       steps: [
         {
           kind: 'raw',
@@ -283,12 +281,12 @@ export const toastSuite: ConformanceSuite = {
             expectState(doc, 'visible', 'loading 期间不该退场')
           },
         },
-        { kind: 'setProps', props: { type: 'success' } },
+        { kind: 'setProps', props: { loading: false, tone: 'success' } },
         {
           kind: 'settle',
           until: { attr: { part: 'root', name: 'data-state', value: 'dismissing' } },
           expect: {
-            parts: { root: { 'data-severity': 'success' } },
+            parts: { root: { 'data-tone': 'success', 'data-loading': null } },
             events: [{ type: 'status-change', detail: { id: 't1', status: 'dismissing' } }],
           },
         },

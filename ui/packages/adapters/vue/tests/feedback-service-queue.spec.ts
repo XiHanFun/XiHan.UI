@@ -46,9 +46,9 @@ describe('轻提示的行内动作', () => {
 describe('轻提示的队列口径', () => {
   it('dedupe=content：同一句话并成一条，标题后追加计数', async () => {
     const toast = createToastService({ dedupe: 'content' })
-    toast.error('同步失败', { duration: 0 })
-    toast.error('同步失败', { duration: 0 })
-    toast.error('同步失败', { duration: 0 })
+    toast.danger('同步失败', { duration: 0 })
+    toast.danger('同步失败', { duration: 0 })
+    toast.danger('同步失败', { duration: 0 })
     await tick()
     const roots = document.querySelectorAll('[data-scope="toast"][data-part="root"]')
     expect(roots.length).toBe(1)
@@ -58,7 +58,7 @@ describe('轻提示的队列口径', () => {
 
   it('一条报错不会被随后的提示挤掉', async () => {
     const toast = createToastService({ max: 2 })
-    toast.error('同步失败', { duration: 0 })
+    toast.danger('同步失败', { duration: 0 })
     toast.info('第一条', { duration: 0 })
     toast.info('第二条', { duration: 0 })
     await tick()
@@ -137,7 +137,7 @@ describe('promise 三态', () => {
     await expect(answer).rejects.toThrow('后端 500')
     await tick()
     expect(partOf('toast', 'title')?.textContent).toBe('提交失败：后端 500')
-    expect(partOf('toast', 'root')?.getAttribute('data-severity')).toBe('error')
+    expect(partOf('toast', 'root')?.getAttribute('data-tone')).toBe('danger')
     toast.dispose()
   })
 })

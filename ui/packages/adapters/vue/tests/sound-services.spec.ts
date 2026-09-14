@@ -46,16 +46,17 @@ afterEach(() => {
 })
 
 describe('withToastSound', () => {
-  it('四个类型糖各发各的声，视觉照旧', async () => {
+  it('四个语气糖各发各的声，视觉照旧', async () => {
     const player = recorder()
     const toast = withToastSound(createToastService(), { player, autoUnlock: false })
     toast.success('已保存')
-    toast.error('保存失败')
+    toast.danger('保存失败')
     toast.warning('注意')
     toast.info('提示')
     await tick()
     expect(player.played).toEqual(['success', 'error', 'warning', 'info'])
-    expect(document.body.textContent).toContain('已保存')
+    // 服务默认只留 3 条，先挤低优先级里最旧的那条 success；报错那条最重，一定还在台上
+    expect(document.body.textContent).toContain('保存失败')
     toast.dispose()
   })
 
@@ -65,7 +66,7 @@ describe('withToastSound', () => {
     const id = toast.loading('上传中')
     await tick()
     expect(player.played).toEqual([])
-    toast.update(id, { type: 'success', title: '上传完成' })
+    toast.update(id, { loading: false, tone: 'success', title: '上传完成' })
     await tick()
     expect(player.played).toEqual(['success'])
     expect(document.body.textContent).toContain('上传完成')
@@ -75,7 +76,7 @@ describe('withToastSound', () => {
   it('只改文案不发声', async () => {
     const player = recorder()
     const toast = withToastSound(createToastService(), { player, autoUnlock: false })
-    const id = toast.create({ type: 'info', title: '一' })
+    const id = toast.create({ tone: 'info', title: '一' })
     await tick()
     toast.update(id, { title: '二' })
     await tick()
@@ -102,10 +103,10 @@ describe('withToastSound', () => {
     const toast = withToastSound(createToastService(), {
       player,
       autoUnlock: false,
-      sounds: { success: 'complete', error: null },
+      sounds: { success: 'complete', danger: null },
     })
     toast.success('好了')
-    toast.error('坏了')
+    toast.danger('坏了')
     toast.warning('小心')
     await tick()
     expect(player.played).toEqual(['complete', 'warning'])

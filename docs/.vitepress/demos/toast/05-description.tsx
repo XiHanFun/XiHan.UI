@@ -12,7 +12,7 @@ import {
 export default function Demo(): ReactNode {
   return (
     <XhToastRoot
-      type="success"
+      tone="success"
       title="文件已上传"
       description="可在项目资源中继续查看"
       duration={0}

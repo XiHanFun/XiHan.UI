@@ -39352,22 +39352,19 @@
       "name": "--xh-notification-indicator-fg",
       "component": "notification",
       "part": [
-        "item",
         "item-indicator"
       ],
       "property": [
         "color"
       ],
       "state": [
-        "default",
-        "severity=loading"
+        "default"
       ],
       "defaultToken": [
-        "--xh-_tone-fg",
-        "--xh-fg-muted"
+        "--xh-_tone-fg"
       ],
       "visibility": "public",
-      "description": "notification 的 item、item-indicator 部件 color 覆盖槽。"
+      "description": "notification 的 item-indicator 部件 color 覆盖槽。"
     },
     {
       "name": "--xh-notification-indicator-size",

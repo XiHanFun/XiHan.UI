@@ -15,15 +15,15 @@ export default function Demo(): ReactNode {
 
   function save(): void {
     const id = use().loading("保存中");
-    setTimeout(() => use().update(id, { type: "success", title: "已保存" }), 900);
+    setTimeout(() => use().update(id, { loading: false, tone: "success", title: "已保存" }), 900);
   }
 
   return (
     <div style={{ display: "flex", flexWrap: "wrap", gap: "8px" }}>
-      <XhButton variant="solid" onClick={() => save()}>保存（loading 转 success）</XhButton>
+      <XhButton variant="solid" onClick={() => save()}>保存（loading 收尾成 success）</XhButton>
       <XhButton variant="outline" onClick={() => use().success("已发布")}>success</XhButton>
       <XhButton variant="outline" onClick={() => use().warning("配额即将用尽")}>warning</XhButton>
-      <XhButton variant="outline" onClick={() => use().error("同步失败")}>error</XhButton>
+      <XhButton variant="outline" onClick={() => use().danger("同步失败")}>danger</XhButton>
     </div>
   );
 }

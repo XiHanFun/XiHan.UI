@@ -6,7 +6,7 @@
 // 提供 toast 相关实现。
 
 import type { Scope } from '@xihan-ui/core'
-import type { ToastPauseSource, ToastPlacement, ToastSchema, ToastType } from './toast.types'
+import type { ToastPauseSource, ToastPlacement, ToastSchema } from './toast.types'
 import { setTimeoutEffect, setup } from '@xihan-ui/core'
 
 const { createMachine } = setup<ToastSchema>()
@@ -34,8 +34,8 @@ export function resolveToastId(id: string | undefined, scope: Scope): string {
  * 停留时长归一。返回 Infinity 表示不起计时器：
  * loading 一律不自动消失；duration <= 0 或非有限数同样按不自动消失处理。
  */
-export function resolveToastDuration(type: ToastType | undefined, duration: number | undefined): number {
-  if ((type ?? 'info') === 'loading')
+export function resolveToastDuration(loading: boolean | undefined, duration: number | undefined): number {
+  if (loading)
     return Number.POSITIVE_INFINITY
   const ms = duration ?? TOAST_DURATION
   return Number.isFinite(ms) && ms > 0 ? ms : Number.POSITIVE_INFINITY
@@ -44,16 +44,16 @@ export function resolveToastDuration(type: ToastType | undefined, duration: numb
 export const toastMachine = createMachine({
   name: 'toast',
   context: ({ prop, cell }) => ({
-    remaining: cell<number>(() => ({ defaultValue: resolveToastDuration(prop('type'), prop('duration')) })),
+    remaining: cell<number>(() => ({ defaultValue: resolveToastDuration(prop('loading'), prop('duration')) })),
     // 暂停来源做成集合而不是布尔：指针悬停与焦点停留会同时按住计时，最后一个松开才继续走
     pausedBy: cell<ToastPauseSource[]>(() => ({ defaultValue: prop('paused') ? ['service'] : [] })),
   }),
   // 建出来就被宿主按住的那种直接落 paused 子态：watch 只在值变了才响，起手为真的这一条它看不见
   initialState: ({ prop }) => (prop('paused') ? 'visible.paused' : 'visible'),
   watch: ({ track, prop, action }) => {
-    // 语气或时长被改写要重算预算，否则 loading 转 success 后仍带着永不消失的预算
+    // 加载态或时长被改写要重算预算，否则 loading 收尾成 success 后仍带着永不消失的预算
     track(
-      [() => prop('type'), () => prop('duration')],
+      [() => prop('loading'), () => prop('duration')],
       () => action(['syncDuration']),
     )
     // 宿主整摞一起按住/放开
@@ -134,7 +134,7 @@ export const toastMachine = createMachine({
         context.set('pausedBy', context.get('pausedBy').filter(src => src !== e.src))
       },
       resetDuration: ({ context, prop }) => {
-        context.set('remaining', resolveToastDuration(prop('type'), prop('duration')))
+        context.set('remaining', resolveToastDuration(prop('loading'), prop('duration')))
       },
       syncDuration: ({ send }) => send({ type: 'TOAST.RESET' }),
       syncPaused: ({ prop, send }) => send(prop('paused')

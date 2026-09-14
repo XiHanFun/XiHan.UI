@@ -88,12 +88,12 @@ describe('toast 声音服务装饰器', () => {
     let seq = 0
     const service = {
       marker: 'toast',
-      create: (options?: { type?: 'info' | 'success' | 'warning' | 'error' | 'loading', title?: string }) => {
-        calls.push(`create:${options?.type ?? 'none'}`)
+      create: (options?: { tone?: 'info' | 'success' | 'warning' | 'danger', loading?: boolean, title?: string }) => {
+        calls.push(`create:${options?.tone ?? 'none'}`)
         return `id-${++seq}`
       },
-      update: (id: string, options: { type?: 'info' | 'success' | 'warning' | 'error' | 'loading', title?: string }) => {
-        calls.push(`update:${id}:${options.type ?? 'none'}`)
+      update: (id: string, options: { tone?: 'info' | 'success' | 'warning' | 'danger', loading?: boolean, title?: string }) => {
+        calls.push(`update:${id}:${options.tone ?? 'none'}`)
       },
       info: (message: string) => {
         calls.push(`info:${message}`)
@@ -107,8 +107,8 @@ describe('toast 声音服务装饰器', () => {
         calls.push(`warning:${message}`)
         return `id-${++seq}`
       },
-      error: (message: string) => {
-        calls.push(`error:${message}`)
+      danger: (message: string) => {
+        calls.push(`danger:${message}`)
         return `id-${++seq}`
       },
       loading: (message: string) => {
@@ -124,15 +124,18 @@ describe('toast 声音服务装饰器', () => {
     expect(decorated.create({ title: '默认' })).toBe('id-1')
     const loading = decorated.loading('上传中')
     decorated.update(loading, { title: '只改文案' })
-    decorated.update(loading, { type: 'success' })
-    expect(decorated.error('失败')).toBe('id-3')
+    // 加载中打开着就算带了语气也不响；收尾那一刻才响
+    decorated.update(loading, { loading: true, tone: 'info' })
+    decorated.update(loading, { loading: false, tone: 'success' })
+    expect(decorated.danger('失败')).toBe('id-3')
     expect(player.played).toEqual(['info', 'success', 'error'])
     expect(calls).toEqual([
       'create:none',
       'loading:上传中',
       'update:id-2:none',
+      'update:id-2:info',
       'update:id-2:success',
-      'error:失败',
+      'danger:失败',
     ])
   })
 

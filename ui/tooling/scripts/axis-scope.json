@@ -212,7 +212,9 @@
   "navigation-menu": [
     "size"
   ],
-  "notification": [],
+  "notification": [
+    "tone"
+  ],
   "number-animation": [
     "size"
   ],
@@ -351,7 +353,9 @@
     "size"
   ],
   "timestamp": [],
-  "toast": [],
+  "toast": [
+    "tone"
+  ],
   "toggle": [
     "variant",
     "tone"
