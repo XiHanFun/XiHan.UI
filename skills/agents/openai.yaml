@@ -1,0 +1,7 @@
+interface:
+  display_name: "XiHan.UI 组件工程"
+  short_description: "设计、实现和审查 XiHan.UI 跨框架组件"
+  default_prompt: "使用 $xihan-ui 设计并实现一个符合仓库统一规范的组件。"
+
+policy:
+  allow_implicit_invocation: true
