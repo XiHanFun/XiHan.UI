@@ -8,8 +8,8 @@
 import type { IdGenerator, Service } from '@xihan-ui/core'
 import type {
   VirtualizerAlign,
-  VirtualizerChangeDetails,
   VirtualizerItemState,
+  VirtualizerRangeChangeDetails,
   VirtualizerSchema,
 } from '@xihan-ui/headless'
 import { createCounterIdGenerator, createScope } from '@xihan-ui/core'
@@ -59,7 +59,7 @@ function wantsMeasure(el: HTMLElement): boolean {
  * @attr {number} padding-start - 列表前内边距（px），默认 0
  * @attr {number} padding-end - 列表后内边距（px），默认 0
  * @attr {number} lanes - 多列网格的列数，默认 1
- * @fires change - 该渲什么变了；detail 为 `{ virtualItems, totalSize, startIndex, endIndex }`
+ * @fires range-change - 该渲的区间变了；detail 为 `{ virtualItems, totalSize, startIndex, endIndex }`
  * @csspart root - 组件根容器，承载 data-orientation 与 data-scrolling
  * @csspart viewport - 真正 overflow:auto 的那层，带 tabindex=0 让键盘用户落得进来
  * @csspart content - 撑出总长的那层（内联样式给主轴长度），条目的定位上下文
@@ -97,8 +97,8 @@ export class XhVirtualizerElement extends XhElement {
   private readonly idGen: IdGenerator = createCounterIdGenerator()
   private readonly virtualizerScope = createScope(null, this.idGen)
 
-  private readonly notify = (details: VirtualizerChangeDetails): void => {
-    this.dispatchEvent(new CustomEvent('change', { detail: details, bubbles: true, composed: true }))
+  private readonly notify = (details: VirtualizerRangeChangeDetails): void => {
+    this.dispatchEvent(new CustomEvent('range-change', { detail: details, bubbles: true, composed: true }))
   }
 
   private readonly ctrl = new MachineController<VirtualizerSchema>(
@@ -120,7 +120,7 @@ export class XhVirtualizerElement extends XhElement {
       paddingEnd: this.paddingEnd,
       lanes: this.lanes,
       getItemKey: this.getItemKey,
-      onChange: this.notify,
+      onRangeChange: this.notify,
     }
   }
 

@@ -30,7 +30,7 @@ export type VirtualizerRootSlotProps = Pick<
   | 'measure'
 >
 
-export interface XhVirtualizerRootProps extends Omit<ComponentPropsWithRef<'div'>, 'children' | 'onChange'> {
+export interface XhVirtualizerRootProps extends Omit<ComponentPropsWithRef<'div'>, 'children'> {
   /** 总条数。 */
   count?: number
   /** 每条的估算主轴尺寸（px）；等高列表直接给一个数字。 */
@@ -51,7 +51,7 @@ export interface XhVirtualizerRootProps extends Omit<ComponentPropsWithRef<'div'
   /** 多列网格的列数；条目按下标轮流落到各道上。 */
   lanes?: number
   /** 该渲什么变了。 */
-  onChange?: VirtualizerProps['onChange']
+  onRangeChange?: VirtualizerProps['onRangeChange']
   children?: SlotChildren<VirtualizerRootSlotProps>
 }
 
@@ -66,7 +66,7 @@ export function XhVirtualizerRoot({
   paddingStart,
   paddingEnd,
   lanes,
-  onChange,
+  onRangeChange,
   children,
   ...rest
 }: XhVirtualizerRootProps): ReactNode {
@@ -81,7 +81,7 @@ export function XhVirtualizerRoot({
     paddingStart,
     paddingEnd,
     lanes,
-    onChange,
+    onRangeChange,
   } as VirtualizerProps)
   const api = ctx.api
   return (
@@ -103,7 +103,7 @@ export function XhVirtualizerRoot({
   )
 }
 
-XhVirtualizerRoot.xhEvents = ['change'] as const
+XhVirtualizerRoot.xhEvents = ['range-change'] as const
 
 export interface XhVirtualizerViewportProps extends ComponentPropsWithRef<'div'> {}
 /** 视口节点经 ref 交给机器，由内核在效应里接上。 */

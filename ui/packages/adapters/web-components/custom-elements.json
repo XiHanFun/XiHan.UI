@@ -62825,10 +62825,10 @@
           ],
           "events": [
             {
-              "description": "该渲什么变了；detail 为 `{ virtualItems, totalSize, startIndex, endIndex }`",
-              "name": "change",
+              "description": "该渲的区间变了；detail 为 `{ virtualItems, totalSize, startIndex, endIndex }`",
+              "name": "range-change",
               "type": {
-                "text": "VirtualizerChangeDetails"
+                "text": "VirtualizerRangeChangeDetails"
               }
             }
           ],

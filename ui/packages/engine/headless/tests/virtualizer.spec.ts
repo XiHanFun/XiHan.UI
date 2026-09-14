@@ -474,10 +474,10 @@ describe('prop 变化', () => {
   })
 })
 
-describe('onChange', () => {
+describe('onRangeChange', () => {
   it('窗口变了才回调，滚一点点但区间没变不回调', async () => {
     const onChange = vi.fn()
-    const r = rig({ ...LIST, overscan: 0, onChange })
+    const r = rig({ ...LIST, overscan: 0, onRangeChange: onChange })
     await settle()
     onChange.mockClear()
 

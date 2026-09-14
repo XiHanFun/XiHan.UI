@@ -44,4 +44,4 @@ export {
   virtualizerSnapshotEqual,
 } from './virtualizer.sizing'
 export type { VirtualizerItemState, VirtualizerSnapshot } from './virtualizer.sizing'
-export type { VirtualizerApi, VirtualizerChangeDetails, VirtualizerCore, VirtualizerItemProps, VirtualizerRefs, VirtualizerSchema, VirtualizerScrollToOptions, VirtualizerTranslations } from './virtualizer.types'
+export type { VirtualizerApi, VirtualizerCore, VirtualizerItemProps, VirtualizerRangeChangeDetails, VirtualizerRefs, VirtualizerSchema, VirtualizerScrollToOptions, VirtualizerTranslations } from './virtualizer.types'

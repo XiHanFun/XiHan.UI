@@ -22,7 +22,7 @@ export interface VirtualizerScrollToOptions {
 }
 
 /** 该渲什么变了时对外报的详情，与 api 上的同名字段同源。 */
-export interface VirtualizerChangeDetails {
+export interface VirtualizerRangeChangeDetails {
   virtualItems: readonly VirtualizerItemState[]
   totalSize: number
   startIndex: number | null
@@ -64,8 +64,8 @@ export interface VirtualizerSchema extends MachineSchema {
     gap?: number
     /** 条目身份。默认即下标；列表会增删时给稳定 key，测量缓存才跟得住条目。 */
     getItemKey?: (index: number) => string | number
-    /** 该渲什么变了。只在快照真的变了时回调，滚动但可见区间没变不会触发。 */
-    onChange?: (details: VirtualizerChangeDetails) => void
+    /** 该渲的区间变了。只在快照真的变了时回调，滚动但可见区间没变不会触发。 */
+    onRangeChange?: (details: VirtualizerRangeChangeDetails) => void
     /**
      * 列表起点距滚动容器起点的距离（px），默认 0。
      * 列表上方还有别的内容（页头、筛选栏）时给它，否则区间会整体偏掉那一截。

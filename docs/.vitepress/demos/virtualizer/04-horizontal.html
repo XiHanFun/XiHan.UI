@@ -45,5 +45,5 @@
 
   // 首批在监听挂上之前就算好了，直接从元素上取
   render(host.virtualItems);
-  host.addEventListener("change", (event) => render(event.detail.virtualItems));
+  host.addEventListener("range-change", (event) => render(event.detail.virtualItems));
 </script>
