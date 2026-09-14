@@ -1,0 +1,7 @@
+interface:
+  display_name: "XiHan.UI 组件开发"
+  short_description: "实现和重构 XiHan.UI Core、Headless 与三端组件"
+  default_prompt: "使用 $xihan-ui-component-development 实现并验证一个跨框架组件改动。"
+
+policy:
+  allow_implicit_invocation: true
