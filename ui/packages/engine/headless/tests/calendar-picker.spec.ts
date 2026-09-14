@@ -579,25 +579,38 @@ describe('方向键导航', () => {
     expect(h.focusedValue()).toBe('2024-02-15')
   })
 
-  it('点邻月的日子：翻月重画之后焦点回到被点的那一天', async () => {
-    // 真人点一下是两段：按下时落焦（这一下就把展示月翻到三月、网格随之重画，
-    // 用户刚碰到的那个节点被换掉、焦点掉回 body），抬起时才派 click。
-    // 点击这一路不补搬焦点的话，值选上了、键盘却从此接不上——按方向键什么都不会发生。
+  it('点邻月的日子：按下落焦那一刻不翻页，click 才翻页选中，重画之后焦点回到被点的那一天', async () => {
+    // 真人点一下是两段：按下时浏览器把焦点落到格子上，抬起时才派 click。
+    // 落焦那一下若已把展示月翻到三月，网格随之重画，用户刚碰到的那个节点从指针底下挪走，
+    // 抬起时压着的是另一格，click 根本落不到它身上——翻页只能留给 click。
     const h = mount({ defaultFocusedValue: '2024-02-15' })
-    h.cell('2024-03-02').focus()
+    const pressed = h.cell('2024-03-02')
+    pressed.focus()
+    await settle()
+    expect(h.api().visibleMonth.month).toBe(2)
+    expect(h.focusedValue()).toBe('2024-03-02')
+    expect(h.cell('2024-03-02')).toBe(pressed)
+    expect(document.activeElement).toBe(pressed)
+
+    click(pressed)
     await settle()
     expect(h.api().visibleMonth.month).toBe(3)
-    const repainted = h.cell('2024-03-02')
-    expect(document.activeElement).not.toBe(repainted)
-
-    click(repainted)
-    await settle()
     expect(h.value()).toEqual(['2024-03-02'])
+    // 翻月重画后旧节点被换掉，点击这一路不补搬焦点的话键盘就从此接不上
     expect(document.activeElement).toBe(h.cell('2024-03-02'))
     // 焦点接得上：方向键从这一天继续走
     press(h.cell('2024-03-02'), 'ArrowRight')
     await settle()
     expect(focused()).toBe('2024-03-03')
+  })
+
+  it('邻月的格子只在被指针按住时才不翻页：方向键走进邻月照常翻', async () => {
+    const h = mount({ defaultFocusedValue: '2024-02-29' })
+    h.cell('2024-02-29').focus()
+    press(h.cell('2024-02-29'), 'ArrowRight')
+    await settle()
+    expect(h.api().visibleMonth.month).toBe(3)
+    expect(focused()).toBe('2024-03-01')
   })
 
   it('同月内点击：焦点落在被点的那一格', async () => {

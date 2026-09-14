@@ -276,7 +276,8 @@ export function connectCalendarRangePicker<T extends PropTypes>(
     if (other != null) {
       send({ type: 'RANGE.ANCHOR', value: other })
       send({ type: 'DRAG.SET', dragging: true })
-      frame.focusAt(v)
+      // 端点落在邻月里时同样不翻页，不然拖动一开始格子就从指针底下挪走了
+      frame.focusAt(v, { keepVisible: outsideMonth })
       setPress({ value: v, role: 'boundary', timer: null })
       return
     }
@@ -595,8 +596,10 @@ export function connectCalendarRangePicker<T extends PropTypes>(
         }),
         'onPointerDown': (event: PointerEvent) => pressDown(item.value, event, state.outsideMonth),
         'onPointerUp': () => pressUp(item.value),
-        // 不可用的格子获得焦点也记锚点，方向键据此起步
-        'onFocus': () => frame.focusAt(item.value),
+        // 不可用的格子获得焦点也记锚点，方向键据此起步。
+        // 邻月的格子只记聚焦日不翻页：翻了页格子会从指针底下挪走，松开那一下就压在另一格上；
+        // 翻页由松开 / click 里的 focusInGrid 做
+        'onFocus': () => frame.focusAt(item.value, { keepVisible: state.outsideMonth }),
         // 触屏只在拖动中才跟着手指走预览：轻扫过去是在滚页面
         'onPointerEnter': (event: PointerEvent) => {
           if (!calendarDisabled && !state.disabled && (event.pointerType !== 'touch' || dragging))

@@ -119,8 +119,11 @@ export interface CalendarFrame {
   dateLabel: (date: CalendarDate | null, fallback: CalendarPeriod | null) => string | undefined
   /** 这一行该显示的周序号文字；解析不了给空串，让它只占住列宽。 */
   weekNumberText: (value: string) => string
-  /** 格子拿到焦点时把聚焦日记下来；机器还没挂载就丢掉。 */
-  focusAt: (value: string) => void
+  /**
+   * 格子拿到焦点时把聚焦日记下来；机器还没挂载就丢掉。
+   * keepVisible：只记落点、视窗不动——邻月的格子被指针按住时用，翻页留给选中那一下。
+   */
+  focusAt: (value: string, options?: { keepVisible?: boolean }) => void
   /** 网格内的用户操作专用：连带把 DOM 焦点搬到落点那一格。 */
   focusInGrid: (value: string) => void
   stepMonth: (amount: 1 | -1) => void
@@ -183,6 +186,10 @@ export function createCalendarFrame<S extends CalendarBaseSchema>(service: Servi
     if (!stored)
       return target
     const first = align(stored)
+    // 指针按在邻月格子上落的焦点：机器已明说这一下不翻页，兜底也不替它翻——
+    // 翻了页格子会从指针底下挪走，松开与 click 就压在另一格上
+    if (context.get('heldFocus') === focusedValue)
+      return first
     if (target.compare(first) < 0)
       return target
     if (target.compare(first.add({ months: (visibleCount - 1) * pageMonths })) > 0)
@@ -348,10 +355,10 @@ export function createCalendarFrame<S extends CalendarBaseSchema>(service: Servi
    * 编排机挂载那一刻就把焦点送进了格子，而日历这台机器排在它后面才挂载。那一下的落点
    * 本就是按 props 算出来的聚焦日，记不记都一样。
    */
-  const focusAt = (next: string): void => {
+  const focusAt = (next: string, options?: { keepVisible?: boolean }): void => {
     if (service.getStatus() === 'NotStarted')
       return
-    send({ type: 'FOCUS.SET', value: next } as S['event'])
+    send({ type: 'FOCUS.SET', value: next, keepVisible: options?.keepVisible || undefined } as S['event'])
   }
   /**
    * 网格内的用户操作（方向键、翻页键、点格子）专用：连带把 DOM 焦点搬到落点那一格。
