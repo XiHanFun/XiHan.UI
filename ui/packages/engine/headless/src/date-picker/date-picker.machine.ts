@@ -11,7 +11,7 @@ import type { DateFieldSchema, DateGranularity, DateSegmentSet } from '../date-f
 import type { CalendarGranularity, CalendarView } from '../shared/calendar'
 import type { DatePickerSchema } from './date-picker.types'
 import { getLocalTimeZone, today } from '@internationalized/date'
-import { itemValue, resetDeclaredValue, resolveLocale, setup } from '@xihan-ui/core'
+import { canTakeFocus, itemValue, resetDeclaredValue, resolveLocale, setup } from '@xihan-ui/core'
 import { calendarPickerAnatomy } from '../calendar-picker'
 import { sameArray as sameValues, toArray as toValues } from '../shared/array'
 import { sortIso } from '../shared/calendar'
@@ -430,7 +430,10 @@ export const datePickerMachine = createMachine({
                   if (anchor && active instanceof HTMLElement && anchor.contains(active))
                     return active
                 }
-                return findDatePickerCellEl(refs.get('getContentEl')(), context.get('focusedValue'))
+                // 目标还没显形（Light DOM 宿主晚一拍才把浮层摘掉 hidden、搬进落点）时回 null：
+                // 回非空会被当成焦点已安排好，随后节点一搬焦点就丢了；回 null 焦点域下一帧再来
+                const cell = findDatePickerCellEl(refs.get('getContentEl')(), context.get('focusedValue'))
+                return canTakeFocus(cell, scope) ? cell : null
               },
               restoreFocus: () => context.get('returnFocus'),
               onReactivate: reactivate => reactivateFocus = reactivate,

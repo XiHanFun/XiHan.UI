@@ -14,7 +14,7 @@ import type {
   TimePickerFocusIntent,
   TimePickerSchema,
 } from './time-picker.types'
-import { resetDeclaredValue, setup } from '@xihan-ui/core'
+import { canTakeFocus, resetDeclaredValue, setup } from '@xihan-ui/core'
 import { OVERLAY_OFFSET, OVERLAY_PLACEMENT_LIST } from '../shared/overlay'
 import { trackOverlayLayer, trackPresenceResources } from '../shared/overlay-shell'
 import {
@@ -586,17 +586,22 @@ export const timePickerMachine = createMachine({
                   if (anchor && active instanceof HTMLElement && anchor.contains(active))
                     return active
                 }
+                // 目标还没显形（Light DOM 宿主晚一拍才把浮层摘掉 hidden、搬进落点）时回 null：
+                // 回非空会被当成焦点已安排好，随后节点一搬焦点就丢了；回 null 焦点域下一帧再来
                 const unit = context.get('focusedColumn')
                 const value = context.get('focusedItem')
-                if (unit != null && value != null)
-                  return findTimePickerItem(content, unit, value)
+                if (unit != null && value != null) {
+                  const el = findTimePickerItem(content, unit, value)
+                  return canTakeFocus(el, scope) ? el : null
+                }
                 // 判据与 setInitialFocusedItem 同一条：只有「指针入口且首列那一段还空着」才真的没有锚点。
                 // 其余情形是本轮该有锚点却还没挑出来，返回 null 让焦点域重试。
                 const first = currentColumns(params)[0]
                 const empty = !first || segmentNumber(currentDraft(params), first.unit, currentHourCycle(params)) == null
                 if (!first || !empty || context.get('focusIntent') !== 'selected')
                   return null
-                return findTimePickerColumn(content, first.unit)
+                const columnEl = findTimePickerColumn(content, first.unit)
+                return canTakeFocus(columnEl, scope) ? columnEl : null
               },
               restoreFocus: () => context.get('returnFocus'),
               // 归还落点显式给触发器，避免 Safari 指针激活时退回 body。
