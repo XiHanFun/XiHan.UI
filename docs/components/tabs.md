@@ -28,31 +28,31 @@
 
 用于侧栏式内容导航
 
-<XhDemo src="tabs/04-vertical" />
+<XhDemo src="tabs/02-vertical" />
 
 ### 次级变体
 
 使用下划线表示当前标签
 
-<XhDemo src="tabs/05-variant" />
+<XhDemo src="tabs/03-variant" />
 
 ### 图标标签
 
 图标辅助识别内容类别
 
-<XhDemo src="tabs/08-prefix-suffix" />
+<XhDemo src="tabs/04-prefix-suffix" />
 
 ### 禁用标签
 
 保留暂不可用的内容入口
 
-<XhDemo src="tabs/09-guard" />
+<XhDemo src="tabs/05-guard" />
 
 ### 分隔线
 
 在相邻标签之间增加视觉分组
 
-<XhDemo src="tabs/10-dynamic" />
+<XhDemo src="tabs/06-dynamic" />
 
 ## 设计指引
 

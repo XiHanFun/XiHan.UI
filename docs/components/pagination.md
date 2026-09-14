@@ -28,31 +28,31 @@
 
 适配不同的界面密度
 
-<XhDemo src="pagination/06-size" />
+<XhDemo src="pagination/02-size" />
 
 ### 简洁模式
 
 只显示上一页、当前页与下一页
 
-<XhDemo src="pagination/07-simple" />
+<XhDemo src="pagination/03-simple" />
 
 ### 快速跳页
 
 输入页码后按 Enter 跳转
 
-<XhDemo src="pagination/08-jumper" />
+<XhDemo src="pagination/04-jumper" />
 
 ### 每页条数
 
 调整每页展示数量
 
-<XhDemo src="pagination/09-page-size" />
+<XhDemo src="pagination/05-page-size" />
 
 ### 展开省略位
 
 查看被折叠的页码
 
-<XhDemo src="pagination/11-ellipsis-expand" />
+<XhDemo src="pagination/06-ellipsis-expand" />
 
 ## 设计指引
 

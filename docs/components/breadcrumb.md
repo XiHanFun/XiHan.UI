@@ -40,7 +40,7 @@
 
 适配不同的信息密度
 
-<XhDemo src="breadcrumb/05-size" />
+<XhDemo src="breadcrumb/04-size" />
 
 ## 设计指引
 

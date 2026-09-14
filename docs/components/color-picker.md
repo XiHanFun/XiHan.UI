@@ -30,25 +30,25 @@
 
 swatches 给一组常用颜色，浮层里内嵌一台色块选择器：方向键在格子间走、按颜色比选中
 
-<XhDemo src="color-picker/03-swatches" />
+<XhDemo src="color-picker/02-swatches" />
 
 ### 禁用
 
 禁止更改颜色
 
-<XhDemo src="color-picker/04-disabled" />
+<XhDemo src="color-picker/03-disabled" />
 
 ### 透明度
 
 alpha 开启后值串带透明度，浮层里多一条透明度滑块；两条滑块共用同一份工作色，推色相不会把透明度归 1
 
-<XhDemo src="color-picker/05-alpha" />
+<XhDemo src="color-picker/04-alpha" />
 
 ### 精确输入
 
 输入色值或使用屏幕取色
 
-<XhDemo src="color-picker/07-inputs" />
+<XhDemo src="color-picker/05-inputs" />
 
 ## 设计指引
 

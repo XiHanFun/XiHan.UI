@@ -28,19 +28,19 @@
 
 同时显示横向和纵向滚动条
 
-<XhDemo src="scroll-area/03-both-axes" />
+<XhDemo src="scroll-area/02-both-axes" />
 
 ### 横向滚动
 
 只启用横向滚动
 
-<XhDemo src="scroll-area/04-orientation" />
+<XhDemo src="scroll-area/03-orientation" />
 
 ### 边缘渐隐
 
 提示还有更多内容
 
-<XhDemo src="scroll-area/06-fade" />
+<XhDemo src="scroll-area/04-fade" />
 
 ## 设计指引
 

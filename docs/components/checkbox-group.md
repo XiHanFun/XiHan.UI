@@ -46,7 +46,7 @@
 
 primary 用于页面背景，secondary 用于卡片等已有表面
 
-<XhDemo src="checkbox-group/09-tone-size" />
+<XhDemo src="checkbox-group/05-tone-size" />
 
 ## 设计指引
 

@@ -52,19 +52,19 @@
 
 标记无效输入
 
-<XhDemo src="combobox/10-invalid" />
+<XhDemo src="combobox/06-invalid" />
 
 ### 异步候选
 
 查询远程数据
 
-<XhDemo src="combobox/11-async" />
+<XhDemo src="combobox/07-async" />
 
 ### 自定义内容
 
 在候选项中显示辅助信息
 
-<XhDemo src="combobox/12-custom-content" />
+<XhDemo src="combobox/08-custom-content" />
 
 ## 设计指引
 

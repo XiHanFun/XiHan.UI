@@ -28,19 +28,19 @@
 
 垂直调整并折叠面板
 
-<XhDemo src="splitter/03-vertical-collapsible" />
+<XhDemo src="splitter/02-vertical-collapsible" />
 
 ### 禁用
 
 禁止调整面板比例
 
-<XhDemo src="splitter/04-disabled" />
+<XhDemo src="splitter/03-disabled" />
 
 ### 嵌套分栏
 
 组合水平和垂直面板
 
-<XhDemo src="splitter/05-nested" />
+<XhDemo src="splitter/04-nested" />
 
 ## 设计指引
 

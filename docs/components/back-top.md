@@ -40,7 +40,7 @@
 
 选择与所在表面匹配的样式
 
-<XhDemo src="back-top/05-variant" />
+<XhDemo src="back-top/04-variant" />
 
 ## 设计指引
 

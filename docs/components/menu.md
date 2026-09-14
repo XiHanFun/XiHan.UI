@@ -28,19 +28,19 @@
 
 为常用命令补充识别信息
 
-<XhDemo src="menu/06-icon" />
+<XhDemo src="menu/02-icon" />
 
 ### 分组
 
 使用标题与分隔线组织命令
 
-<XhDemo src="menu/10-group" />
+<XhDemo src="menu/03-group" />
 
 ### 子菜单
 
 将相关操作收进下一层
 
-<XhDemo src="menu/10-submenu" />
+<XhDemo src="menu/04-submenu" />
 
 ## 设计指引
 

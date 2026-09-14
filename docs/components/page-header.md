@@ -28,19 +28,19 @@
 
 在标题下方显示页面摘要
 
-<XhDemo src="page-header/05-bordered-footer" />
+<XhDemo src="page-header/02-bordered-footer" />
 
 ### 变体
 
 适配页面、表面与抬升区域
 
-<XhDemo src="page-header/06-variant" />
+<XhDemo src="page-header/03-variant" />
 
 ### 导航与媒体
 
 补充页面路径和对象标识
 
-<XhDemo src="page-header/07-breadcrumb-media" />
+<XhDemo src="page-header/04-breadcrumb-media" />
 
 ## 设计指引
 

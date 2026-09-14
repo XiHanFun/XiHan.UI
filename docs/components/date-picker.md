@@ -28,31 +28,31 @@
 
 禁止选择周末
 
-<XhDemo src="date-picker/03-unavailable" />
+<XhDemo src="date-picker/02-unavailable" />
 
 ### 状态
 
 禁用、只读与校验失败
 
-<XhDemo src="date-picker/04-state" />
+<XhDemo src="date-picker/03-state" />
 
 ### 快捷选项
 
 提供常用日期
 
-<XhDemo src="date-picker/05-shortcuts" />
+<XhDemo src="date-picker/04-shortcuts" />
 
 ### 日期与时间
 
 同时选择日期和时间
 
-<XhDemo src="date-picker/07-datetime" />
+<XhDemo src="date-picker/05-datetime" />
 
 ### 周期选择
 
 granularity 决定输入行铺哪几段、浮层铺哪一档格子
 
-<XhDemo src="date-picker/08-granularity" />
+<XhDemo src="date-picker/06-granularity" />
 
 ## 设计指引
 

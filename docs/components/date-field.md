@@ -52,7 +52,7 @@
 
 输入精确到分钟的日期
 
-<XhDemo src="date-field/08-datetime" />
+<XhDemo src="date-field/06-datetime" />
 
 ## 设计指引
 

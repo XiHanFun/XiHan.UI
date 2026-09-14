@@ -1,4 +1,4 @@
-// docs menu/10-submenu 的真实三级菜单：二、三级经 Portal 分离，必须仍是一棵指针悬停树。
+// docs menu/04-submenu 的真实三级菜单：二、三级经 Portal 分离，必须仍是一棵指针悬停树。
 import type { ReactNode } from 'react'
 import type { Root } from 'react-dom/client'
 import { act } from 'react'

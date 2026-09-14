@@ -66,23 +66,23 @@ open-change 带一份 { open }，报的是这次要落到的状态；非受控�
 
 <XhDemo src="popover/08-event" />
 
-### 书写方向
-
-start / end 是逻辑对齐不是左右：RTL 下 bottom-start 贴的是锚点右缘，块轴上的对齐不受影响
-
-<XhDemo src="popover/09-rtl" />
-
 ### 浮层与触发器同宽
 
 量出触发器的实际宽度写进 content 的行内样式，同时解掉最大宽度上限；触发器换了文案宽度也跟着走
 
 <XhDemo src="popover/09-trigger-width" />
 
+### 书写方向
+
+start / end 是逻辑对齐不是左右：RTL 下 bottom-start 贴的是锚点右缘，块轴上的对齐不受影响
+
+<XhDemo src="popover/10-rtl" />
+
 ### 落在指针位置
 
 触发器缩成一个像素、按点击坐标固定摆放，浮层就钉在刚点到的那一点上；再点一下换个落点
 
-<XhDemo src="popover/10-point-anchor" />
+<XhDemo src="popover/11-point-anchor" />
 
 ## 设计指引
 

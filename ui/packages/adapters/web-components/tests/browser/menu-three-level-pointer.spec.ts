@@ -1,4 +1,4 @@
-// docs menu/10-submenu 的 WC 同构结构：三级 Light DOM 在视觉上分离，逻辑上仍是一棵悬停树。
+// docs menu/04-submenu 的 WC 同构结构：三级 Light DOM 在视觉上分离，逻辑上仍是一棵悬停树。
 import { afterEach, describe, expect, it, vi } from 'vitest'
 import { userEvent } from 'vitest/browser'
 import { defineXhElements } from '../../src/define'

@@ -52,7 +52,7 @@
 
 改变图标方向
 
-<XhDemo src="icon/07-rotate-flip" />
+<XhDemo src="icon/06-rotate-flip" />
 
 ## 设计指引
 

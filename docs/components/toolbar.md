@@ -40,7 +40,7 @@
 
 为悬浮工具条提供完整表面
 
-<XhDemo src="toolbar/08-variant" />
+<XhDemo src="toolbar/04-variant" />
 
 ## 设计指引
 

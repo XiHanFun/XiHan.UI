@@ -28,19 +28,19 @@
 
 在菜单内组织相关命令
 
-<XhDemo src="menubar/03-group" />
+<XhDemo src="menubar/02-group" />
 
 ### 图标与快捷键
 
 补充常用命令的识别信息
 
-<XhDemo src="menubar/07-icon" />
+<XhDemo src="menubar/03-icon" />
 
 ### 子菜单
 
 在菜单栏命令中打开下一层
 
-<XhDemo src="menubar/10-submenu" />
+<XhDemo src="menubar/04-submenu" />
 
 ## 设计指引
 
