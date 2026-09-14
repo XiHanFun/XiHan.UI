@@ -5,15 +5,13 @@ import { createApp, h, nextTick } from 'vue'
 import {
   XhColorPickerAreaThumb,
   XhColorPickerChannelInput,
-  XhColorPickerChannelSlider,
-  XhColorPickerChannelSliderThumb,
-  XhColorPickerChannelSliderTrack,
   XhColorPickerContent,
   XhColorPickerControl,
+  XhColorPickerHueSlider,
   XhColorPickerPositioner,
   XhColorPickerRoot,
   XhColorPickerSaturationArea,
-  XhColorPickerSwatchItem,
+  XhColorPickerSwatchPicker,
   XhColorPickerTrigger,
 } from '../../src'
 import '@xihan-ui/tokens/tokens.css'
@@ -22,11 +20,18 @@ import '@xihan-ui/styles'
 let app: App | null = null
 let host: HTMLElement | null = null
 
-function part(name: string): HTMLElement {
-  const element = document.querySelector<HTMLElement>(`[data-scope='color-picker'][data-part='${name}']`)
+function part(name: string, scope = 'color-picker'): HTMLElement {
+  const element = document.querySelector<HTMLElement>(`[data-scope='${scope}'][data-part='${name}']`)
   if (!element)
-    throw new Error(`缺少颜色选择器部件：${name}`)
+    throw new Error(`缺少 ${scope} 部件：${name}`)
   return element
+}
+
+/** 内嵌色板的格子的色块面：颜色层压在棋盘格上，头一层渐变就是那个颜色 */
+function swatchFaceColor(): string {
+  const face = getComputedStyle(part('swatch', 'color-swatch-picker')).backgroundImage
+  const match = /linear-gradient\((rgb\([^)]*\)), /.exec(face)
+  return match?.[1] ?? face
 }
 
 function alpha(color: string): number {
@@ -45,16 +50,14 @@ async function mount(theme: 'light' | 'dark'): Promise<void> {
   app = createApp({ render: () => h(XhColorPickerRoot, {
     defaultOpen: true,
     defaultValue: '#ff0000',
+    swatches: ['#00ff00'],
   }, () => [
     h(XhColorPickerControl, null, () => h(XhColorPickerTrigger, null, () => '选择颜色')),
     h(XhColorPickerPositioner, null, () => h(XhColorPickerContent, null, () => [
       h(XhColorPickerSaturationArea, null, () => h(XhColorPickerAreaThumb)),
-      h(XhColorPickerChannelSlider, { channel: 'hue' }, () => [
-        h(XhColorPickerChannelSliderTrack),
-        h(XhColorPickerChannelSliderThumb),
-      ]),
+      h(XhColorPickerHueSlider),
       h(XhColorPickerChannelInput, { channel: 'hex' }),
-      h(XhColorPickerSwatchItem, { value: '#00ff00' }),
+      h(XhColorPickerSwatchPicker),
     ])),
   ]) })
   app.mount(host)
@@ -87,9 +90,11 @@ describe('颜色选择器 M2 浮层', () => {
     expect(alpha(highlight.backgroundColor)).toBeGreaterThan(0)
     expect(highlight.pointerEvents).toBe('none')
     expect(getComputedStyle(part('saturation-area')).backgroundColor).toBe('rgb(255, 0, 0)')
-    expect(getComputedStyle(part('swatch-item')).backgroundColor).toBe('rgb(0, 255, 0)')
+    expect(swatchFaceColor()).toBe('rgb(0, 255, 0)')
     expect(getComputedStyle(part('saturation-area')).backdropFilter).toBe('none')
-    expect(getComputedStyle(part('channel-slider-track')).backgroundImage).toContain('linear-gradient')
+    // 色相带归内嵌的 color-slider：轨道渐变由连接层内联给，挂载点把滑块 root 上的两个私有槽接上
+    expect(getComputedStyle(part('track', 'color-slider')).backgroundImage).toContain('linear-gradient')
+    expect(part('thumb', 'color-slider').getBoundingClientRect().width).toBeGreaterThan(0)
     expect(alpha(getComputedStyle(part('channel-input')).backgroundColor)).toBe(255)
   })
 
@@ -100,7 +105,7 @@ describe('颜色选择器 M2 浮层', () => {
     expect(content.backdropFilter).toBe('none')
     expect(alpha(content.backgroundColor)).toBe(255)
     expect(alpha(getComputedStyle(part('content'), '::before').backgroundColor)).toBe(0)
-    expect(getComputedStyle(part('swatch-item')).backgroundColor).toBe('rgb(0, 255, 0)')
+    expect(swatchFaceColor()).toBe('rgb(0, 255, 0)')
   })
 
   it('四向短位移不缩放，嵌套面板不继承祖先方向', async () => {

@@ -441,47 +441,43 @@ export { useColorFieldContext } from './components/color-field/context'
 export { useColorField } from './components/color-field/use-color-field'
 export type { ColorFieldContext } from './components/color-field/use-color-field'
 export {
+  XhColorPickerAlphaSlider,
   XhColorPickerAreaThumb,
   XhColorPickerChannelInput,
-  XhColorPickerChannelSlider,
-  XhColorPickerChannelSliderThumb,
-  XhColorPickerChannelSliderTrack,
   XhColorPickerContent,
   XhColorPickerControl,
   XhColorPickerEyeDropperTrigger,
   XhColorPickerHiddenInput,
+  XhColorPickerHueSlider,
   XhColorPickerLabel,
   XhColorPickerPositioner,
   XhColorPickerRoot,
   XhColorPickerSaturationArea,
   XhColorPickerSwatch,
-  XhColorPickerSwatchGroup,
-  XhColorPickerSwatchItem,
+  XhColorPickerSwatchPicker,
   XhColorPickerTrigger,
   XhColorPickerValueText,
 } from './components/color-picker/color-picker'
 export type {
   ColorPickerRootSlotProps,
+  XhColorPickerAlphaSliderProps,
   XhColorPickerAreaThumbProps,
   XhColorPickerChannelInputProps,
-  XhColorPickerChannelSliderProps,
-  XhColorPickerChannelSliderThumbProps,
-  XhColorPickerChannelSliderTrackProps,
   XhColorPickerContentProps,
   XhColorPickerControlProps,
   XhColorPickerEyeDropperTriggerProps,
   XhColorPickerHiddenInputProps,
+  XhColorPickerHueSliderProps,
   XhColorPickerLabelProps,
   XhColorPickerPositionerProps,
   XhColorPickerRootProps,
   XhColorPickerSaturationAreaProps,
-  XhColorPickerSwatchGroupProps,
-  XhColorPickerSwatchItemProps,
+  XhColorPickerSwatchPickerProps,
   XhColorPickerSwatchProps,
   XhColorPickerTriggerProps,
   XhColorPickerValueTextProps,
 } from './components/color-picker/color-picker'
-export { useColorPickerChannelContext, useColorPickerContext } from './components/color-picker/context'
+export { useColorPickerContext } from './components/color-picker/context'
 export { useColorPicker } from './components/color-picker/use-color-picker'
 export type { ColorPickerContext } from './components/color-picker/use-color-picker'
 export {

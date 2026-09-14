@@ -31,6 +31,11 @@ export interface ColorSliderServices {
 export interface ColorSliderValueChangeDetails {
   /** 按 format 序列化好的值串。 */
   value: string
+  /**
+   * 这一下产出的工作色。串是有损的：灰度处色相、全透明处三个分量都写不进串里，
+   * 几条并排的滑块要共用同一份工作色（取色器就是这样接它们的），只能从这里拿。
+   */
+  hsva: ColorHsva
 }
 
 export interface ColorSliderSchema extends MachineSchema {
@@ -42,6 +47,12 @@ export interface ColorSliderSchema extends MachineSchema {
     channel?: ColorChannel
     /** 值串的写法，默认 hex。改它只改对外的序列化，工作色恒是 HSVA。 */
     format?: ColorFormat
+    /**
+     * 受控的工作色。给定时本通道以外的分量、灰度处的色相都以它为准，不再从值串反解：
+     * 取色器把同一份工作色交给几条并排的滑块，推色相那条时饱和度与明度不会被值串抹掉。
+     * 单独用一条滑块时不必给，滑块自己记着锚。
+     */
+    hsva?: ColorHsva
     /**
      * 值串带不带透明度。默认跟着通道走：推透明度那一路时带，其余不带。
      * 显式给 true 时别的通道也保留透明度（与一条透明度滑块并排时要开它，否则推色相会把透明度归 1）。

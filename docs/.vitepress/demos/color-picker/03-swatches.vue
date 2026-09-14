@@ -1,4 +1,4 @@
-<!-- 预设色板 | 提供常用颜色 -->
+<!-- 预设色板 | swatches 给一组常用颜色，浮层里内嵌一台色块选择器：方向键在格子间走、按颜色比选中 -->
 <script setup lang="ts">
 import {
   XhColorPickerAreaThumb,
@@ -9,8 +9,7 @@ import {
   XhColorPickerRoot,
   XhColorPickerSaturationArea,
   XhColorPickerSwatch,
-  XhColorPickerSwatchGroup,
-  XhColorPickerSwatchItem,
+  XhColorPickerSwatchPicker,
   XhColorPickerTrigger,
   XhColorPickerValueText,
 } from "@xihan-ui/vue";
@@ -32,9 +31,7 @@ const swatches = ["#00a98e", "#3b82f6", "#f59e0b", "#ef4444", "#8b5cf6"];
         <XhColorPickerSaturationArea>
           <XhColorPickerAreaThumb />
         </XhColorPickerSaturationArea>
-        <XhColorPickerSwatchGroup>
-          <XhColorPickerSwatchItem v-for="c in swatches" :key="c" :value="c" />
-        </XhColorPickerSwatchGroup>
+        <XhColorPickerSwatchPicker />
       </XhColorPickerContent>
     </XhColorPickerPositioner>
   </XhColorPickerRoot>

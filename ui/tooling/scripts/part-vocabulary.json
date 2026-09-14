@@ -14,6 +14,9 @@
     "add-trigger": [
       "field-array"
     ],
+    "alpha-slider": [
+      "color-picker"
+    ],
     "approval": [
       "tool-call"
     ],
@@ -141,15 +144,6 @@
       "diff-view"
     ],
     "channel-input": [
-      "color-picker"
-    ],
-    "channel-slider": [
-      "color-picker"
-    ],
-    "channel-slider-thumb": [
-      "color-picker"
-    ],
-    "channel-slider-track": [
       "color-picker"
     ],
     "clear-trigger": [
@@ -554,6 +548,9 @@
     ],
     "hidden-select": [
       "select"
+    ],
+    "hue-slider": [
+      "color-picker"
     ],
     "icon": [
       "reasoning"
@@ -1342,10 +1339,7 @@
       "color-picker",
       "color-swatch-picker"
     ],
-    "swatch-group": [
-      "color-picker"
-    ],
-    "swatch-item": [
+    "swatch-picker": [
       "color-picker"
     ],
     "tab-drag-trigger": [
@@ -1610,6 +1604,7 @@
     "paragraph": true,
     "path": true,
     "peg": true,
+    "picker": true,
     "placeholder": true,
     "positioner": true,
     "pre": true,

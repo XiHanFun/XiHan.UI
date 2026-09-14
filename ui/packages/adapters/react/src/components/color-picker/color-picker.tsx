@@ -9,22 +9,25 @@ import type { Direction, Placement, Size } from '@xihan-ui/core'
 import type {
   ColorFormat,
   ColorPickerApi,
-  ColorPickerChannel,
   ColorPickerInputChannel,
   ColorPickerSchema,
   ColorPickerTranslations,
 } from '@xihan-ui/headless'
 import type { ComponentPropsWithRef, ReactNode } from 'react'
 import type { SlotChildren } from '../../runtime/slot-content'
-import { colorPickerToChannel, colorPickerToInputChannel } from '@xihan-ui/headless'
+import { colorPickerToInputChannel } from '@xihan-ui/headless'
 import { withXhConfig } from '../../config/config'
 import { mergeReactProps } from '../../runtime/merge-props'
 import { useNativeEvents } from '../../runtime/native-events'
 import { XhPortal } from '../../runtime/portal'
 import { renderSlot } from '../../runtime/slot-content'
 import { useScrollbars } from '../../runtime/use-scrollbars'
+import { XhColorSliderControl, XhColorSliderThumb, XhColorSliderTrack } from '../color-slider/color-slider'
+import { ColorSliderProvider } from '../color-slider/context'
+import { XhColorSwatchPickerItem } from '../color-swatch-picker/color-swatch-picker'
+import { ColorSwatchPickerProvider } from '../color-swatch-picker/context'
 import { useFormControlProps } from '../form/use-form-control'
-import { ColorPickerChannelProvider, ColorPickerProvider, useColorPickerChannelContext, useColorPickerContext } from './context'
+import { ColorPickerProvider, useColorPickerContext } from './context'
 import { useColorPicker } from './use-color-picker'
 
 type ColorPickerProps = ColorPickerSchema['props']
@@ -54,7 +57,7 @@ export interface XhColorPickerRootProps extends RootElementProps {
   readOnly?: boolean
   /** 带透明度，默认关。 */
   alpha?: boolean
-  /** 预设色板。作者据此渲染 swatch-item，组件只标出哪一格正被选中。 */
+  /** 预设色板：交给内嵌的色块选择器铺格，选中的那一格按颜色比。 */
   swatches?: string[]
   /** 表单字段名；给了表单影子才带 name 并参与提交。 */
   name?: string
@@ -284,63 +287,45 @@ export function XhColorPickerAreaThumb({ children, ...rest }: XhColorPickerAreaT
   )
 }
 
-export interface XhColorPickerChannelSliderProps extends ComponentPropsWithRef<'div'> {
-  /** 这条滑杆调的是哪一路，缺省或不识别时按色相处理。 */
-  channel?: ColorPickerChannel
-}
+export interface XhColorPickerHueSliderProps extends ComponentPropsWithRef<'div'> {}
 
-export function XhColorPickerChannelSlider({ channel, children, ...rest }: XhColorPickerChannelSliderProps): ReactNode {
+/**
+ * 色相滑块的挂载点，同时充当那条滑块的根节点：里面摆的是 XhColorSlider* 那些普通部件
+ * （control / track / thumb / label / value-text），DOM 带 data-scope="color-slider"。
+ * 不写 children 时铺开最简结构：一条轨道加一枚拇指。
+ */
+export function XhColorPickerHueSlider({ children, ...rest }: XhColorPickerHueSliderProps): ReactNode {
   const ctx = useColorPickerContext()
-  const resolved = colorPickerToChannel(channel)
   return (
-    <ColorPickerChannelProvider value={resolved}>
-      <div
-        {...mergeReactProps(
-          ctx.api.getChannelSliderProps({ channel: resolved }) as Record<string, unknown>,
-          rest as Record<string, unknown>,
-        )}
-      >
-        {children}
+    <ColorSliderProvider value={ctx.hueSlider}>
+      <div {...mergeReactProps(ctx.api.getHueSliderProps() as Record<string, unknown>, rest as Record<string, unknown>)}>
+        {children ?? <SliderTree />}
       </div>
-    </ColorPickerChannelProvider>
+    </ColorSliderProvider>
   )
 }
 
-export interface XhColorPickerChannelSliderTrackProps extends ComponentPropsWithRef<'div'> {}
+export interface XhColorPickerAlphaSliderProps extends ComponentPropsWithRef<'div'> {}
 
-/** 轨道节点按通道逐条登记给机器，矩形在指针事件里现量。 */
-export function XhColorPickerChannelSliderTrack({ children, ...rest }: XhColorPickerChannelSliderTrackProps): ReactNode {
+/** 透明度滑块的挂载点，同上；alpha 关掉时整条禁用。 */
+export function XhColorPickerAlphaSlider({ children, ...rest }: XhColorPickerAlphaSliderProps): ReactNode {
   const ctx = useColorPickerContext()
-  const channel = useColorPickerChannelContext()
   return (
-    <div
-      {...mergeReactProps(
-        ctx.api.getChannelSliderTrackProps({ channel }) as Record<string, unknown>,
-        rest as Record<string, unknown>,
-        // 节点摘掉时登记为空，避免留下已离开文档的节点
-        { ref: (el: HTMLDivElement | null) => { ctx.setChannelTrack(channel, el) } },
-      )}
-    >
-      {children}
-    </div>
+    <ColorSliderProvider value={ctx.alphaSlider}>
+      <div {...mergeReactProps(ctx.api.getAlphaSliderProps() as Record<string, unknown>, rest as Record<string, unknown>)}>
+        {children ?? <SliderTree />}
+      </div>
+    </ColorSliderProvider>
   )
 }
 
-export interface XhColorPickerChannelSliderThumbProps extends ComponentPropsWithRef<'div'> {}
-
-export function XhColorPickerChannelSliderThumb({ children, ...rest }: XhColorPickerChannelSliderThumbProps): ReactNode {
-  const ctx = useColorPickerContext()
-  const channel = useColorPickerChannelContext()
-  // 拇指上的 onFocus 来自内嵌滑杆，是不冒泡的 DOM focus，React 的同名合成事件挂的是冒泡的 focusin：
-  // 后代得焦会被算成拇指自己得焦。装成原生监听器，到达路径才与另外两家一致
-  const bind = useNativeEvents(
-    ctx.api.getChannelSliderThumbProps({ channel }) as Record<string, unknown>,
-    ['onFocus'],
-  )
+/** 没写 children 时的滑块内部：control 里一条 track 与一枚 thumb，与手写部件产出的 DOM 一致。 */
+function SliderTree(): ReactNode {
   return (
-    <div {...mergeReactProps(bind.attrs, { ref: bind.ref }, rest as Record<string, unknown>)}>
-      {children}
-    </div>
+    <XhColorSliderControl>
+      <XhColorSliderTrack />
+      <XhColorSliderThumb />
+    </XhColorSliderControl>
   )
 }
 
@@ -377,33 +362,25 @@ export function XhColorPickerEyeDropperTrigger({ children, ...rest }: XhColorPic
   )
 }
 
-export interface XhColorPickerSwatchGroupProps extends ComponentPropsWithRef<'div'> {}
+export interface XhColorPickerSwatchPickerProps extends ComponentPropsWithRef<'div'> {}
 
-export function XhColorPickerSwatchGroup({ children, ...rest }: XhColorPickerSwatchGroupProps): ReactNode {
+/**
+ * 预设色板的挂载点，同时充当色板的根节点（role=radiogroup、方向键与 roving tabindex 都在它身上）：
+ * 里面摆的是 XhColorSwatchPickerItem，DOM 带 data-scope="color-swatch-picker"。
+ * 不写 children 时按 swatches 自动铺开格子。
+ */
+export function XhColorPickerSwatchPicker({ children, ...rest }: XhColorPickerSwatchPickerProps): ReactNode {
   const ctx = useColorPickerContext()
+  // 挂载点的 onFocus 是 DOM 的 focus（不冒泡，只在容器自己得焦时接管）。React 的同名合成事件
+  // 挂的是冒泡的 focusin，格子得焦也会把它叫起来，那一下会把焦点从格子抢回锚点上——
+  // 装成原生监听器，到达路径才与另外两家一致
+  const bind = useNativeEvents(ctx.api.getSwatchPickerProps() as Record<string, unknown>, ['onFocus'])
   return (
-    <div {...mergeReactProps(ctx.api.getSwatchGroupProps() as Record<string, unknown>, rest as Record<string, unknown>)}>
-      {children}
-    </div>
-  )
-}
-
-export interface XhColorPickerSwatchItemProps extends Omit<ComponentPropsWithRef<'button'>, 'value'> {
-  /** 这一格的颜色。 */
-  value?: string
-}
-
-export function XhColorPickerSwatchItem({ value = '', children, ...rest }: XhColorPickerSwatchItemProps): ReactNode {
-  const ctx = useColorPickerContext()
-  return (
-    <button
-      {...mergeReactProps(
-        ctx.api.getSwatchItemProps({ value }) as Record<string, unknown>,
-        rest as Record<string, unknown>,
-      )}
-    >
-      {children}
-    </button>
+    <ColorSwatchPickerProvider value={ctx.swatchPicker}>
+      <div {...mergeReactProps(bind.attrs, rest as Record<string, unknown>, { ref: bind.ref })}>
+        {children ?? ctx.api.swatchPicker.swatches.map(node => <XhColorSwatchPickerItem key={node.value} value={node.value} />)}
+      </div>
+    </ColorSwatchPickerProvider>
   )
 }
 

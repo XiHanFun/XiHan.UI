@@ -9,25 +9,23 @@ import type { Direction, Placement, Size } from '@xihan-ui/core'
 import type {
   ColorFormat,
   ColorPickerApi,
-  ColorPickerChannel,
   ColorPickerInputChannel,
   ColorPickerSchema,
   ColorPickerTranslations,
 } from '@xihan-ui/headless'
 import type { PropType, SlotsType, VNode } from 'vue'
 import type { PayloadOf } from '../../runtime/payload'
-import { colorPickerToChannel, colorPickerToInputChannel } from '@xihan-ui/headless'
-import { computed, defineComponent, h, mergeProps, onUnmounted } from 'vue'
+import { colorPickerToInputChannel } from '@xihan-ui/headless'
+import { computed, defineComponent, h, mergeProps } from 'vue'
 import { withXhConfig } from '../../config/config'
 import { XhPortal } from '../../runtime/portal'
 import { useScrollbars } from '../../runtime/use-scrollbars'
+import { XhColorSliderControl, XhColorSliderThumb, XhColorSliderTrack } from '../color-slider/color-slider'
+import { provideColorSlider } from '../color-slider/context'
+import { XhColorSwatchPickerItem } from '../color-swatch-picker/color-swatch-picker'
+import { provideColorSwatchPicker } from '../color-swatch-picker/context'
 import { useFormControlProps } from '../form/use-form-control'
-import {
-  provideColorPicker,
-  provideColorPickerChannel,
-  useColorPickerChannelContext,
-  useColorPickerContext,
-} from './context'
+import { provideColorPicker, useColorPickerContext } from './context'
 import { useColorPicker } from './use-color-picker'
 
 type ColorPickerProps = ColorPickerSchema['props']
@@ -207,50 +205,34 @@ export const XhColorPickerAreaThumb = defineComponent({
   },
 })
 
-export const XhColorPickerChannelSlider = defineComponent({
-  name: 'XhColorPickerChannelSlider',
-  props: {
-    /** 这条滑杆调的是哪一路，缺省或不识别时按色相处理。 */
-    channel: { type: String as PropType<ColorPickerChannel> },
-  },
-  setup(props, { slots }) {
+/**
+ * 色相滑块的挂载点，同时充当那条滑块的根节点：里面摆的是 XhColorSlider* 那些普通部件
+ * （control / track / thumb / label / value-text），DOM 带 data-scope="color-slider"。
+ * 不写默认插槽时铺开最简结构：一条轨道加一枚拇指。
+ */
+export const XhColorPickerHueSlider = defineComponent({
+  name: 'XhColorPickerHueSlider',
+  setup(_, { slots }) {
     const ctx = useColorPickerContext()
-    const channel = computed(() => colorPickerToChannel(props.channel))
-    provideColorPickerChannel({ channel })
-    return () => h(
-      'div',
-      ctx.api.value.getChannelSliderProps({ channel: channel.value }) as Record<string, unknown>,
-      slots.default?.(),
-    )
+    provideColorSlider(ctx.hueSlider)
+    return () => h('div', ctx.api.value.getHueSliderProps() as Record<string, unknown>, slots.default?.() ?? renderSliderTree())
   },
 })
 
-export const XhColorPickerChannelSliderTrack = defineComponent({
-  name: 'XhColorPickerChannelSliderTrack',
+/** 透明度滑块的挂载点，同上；alpha 关掉时整条禁用。 */
+export const XhColorPickerAlphaSlider = defineComponent({
+  name: 'XhColorPickerAlphaSlider',
   setup(_, { slots }) {
     const ctx = useColorPickerContext()
-    const { channel } = useColorPickerChannelContext()
-    // 卸载时撤掉登记，避免留下已离开文档的节点
-    onUnmounted(() => ctx.setChannelTrack(channel.value, null))
-    return () => h('div', {
-      ...ctx.api.value.getChannelSliderTrackProps({ channel: channel.value }) as Record<string, unknown>,
-      ref: (el: unknown) => ctx.setChannelTrack(channel.value, el as HTMLElement | null),
-    }, slots.default?.())
+    provideColorSlider(ctx.alphaSlider)
+    return () => h('div', ctx.api.value.getAlphaSliderProps() as Record<string, unknown>, slots.default?.() ?? renderSliderTree())
   },
 })
 
-export const XhColorPickerChannelSliderThumb = defineComponent({
-  name: 'XhColorPickerChannelSliderThumb',
-  setup(_, { slots }) {
-    const ctx = useColorPickerContext()
-    const { channel } = useColorPickerChannelContext()
-    return () => h(
-      'div',
-      ctx.api.value.getChannelSliderThumbProps({ channel: channel.value }) as Record<string, unknown>,
-      slots.default?.(),
-    )
-  },
-})
+/** 没写默认插槽时的滑块内部：control 里一条 track 与一枚 thumb，与手写部件产出的 DOM 一致。 */
+function renderSliderTree(): VNode[] {
+  return [h(XhColorSliderControl, null, () => [h(XhColorSliderTrack), h(XhColorSliderThumb)])]
+}
 
 export const XhColorPickerChannelInput = defineComponent({
   name: 'XhColorPickerChannelInput',
@@ -274,26 +256,20 @@ export const XhColorPickerEyeDropperTrigger = defineComponent({
   },
 })
 
-export const XhColorPickerSwatchGroup = defineComponent({
-  name: 'XhColorPickerSwatchGroup',
+/**
+ * 预设色板的挂载点，同时充当色板的根节点（role=radiogroup、方向键与 roving tabindex 都在它身上）：
+ * 里面摆的是 XhColorSwatchPickerItem，DOM 带 data-scope="color-swatch-picker"。
+ * 不写默认插槽时按 swatches 自动铺开格子。
+ */
+export const XhColorPickerSwatchPicker = defineComponent({
+  name: 'XhColorPickerSwatchPicker',
   setup(_, { slots }) {
     const ctx = useColorPickerContext()
-    return () => h('div', ctx.api.value.getSwatchGroupProps() as Record<string, unknown>, slots.default?.())
-  },
-})
-
-export const XhColorPickerSwatchItem = defineComponent({
-  name: 'XhColorPickerSwatchItem',
-  props: {
-    /** 这一格的颜色。 */
-    value: { type: String, default: '' },
-  },
-  setup(props, { slots }) {
-    const ctx = useColorPickerContext()
+    provideColorSwatchPicker(ctx.swatchPicker)
     return () => h(
-      'button',
-      ctx.api.value.getSwatchItemProps({ value: props.value }) as Record<string, unknown>,
-      slots.default?.(),
+      'div',
+      ctx.api.value.getSwatchPickerProps() as Record<string, unknown>,
+      slots.default?.() ?? ctx.api.value.swatchPicker.swatches.map(node => h(XhColorSwatchPickerItem, { key: node.value, value: node.value })),
     )
   },
 })

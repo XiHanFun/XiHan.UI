@@ -8,7 +8,6 @@
 import type { Cleanup, Direction, IdGenerator, Layer, Placement, PositionEnginePort, RuntimeConfig, Service, Size } from '@xihan-ui/core'
 import type {
   ColorFormat,
-  ColorPickerChannel,
   ColorPickerErrorDetails,
   ColorPickerErrors,
   ColorPickerOpenChangeDetails,
@@ -16,12 +15,31 @@ import type {
   ColorPickerServices,
   ColorPickerTranslations,
   ColorPickerValueChangeDetails,
+  ColorSliderApi,
+  ColorSliderSchema,
+  ColorSwatchPickerItemProps,
   FormControlState,
   SliderSchema,
 } from '@xihan-ui/headless'
 import type { OverlayExit } from '../overlay-exit'
 import { createCounterIdGenerator, createRuntimeConfig, createScope } from '@xihan-ui/core'
-import { colorPickerAnatomy, colorPickerChannelSliderProps, colorPickerMachine, colorPickerMeta, colorPickerToChannel, colorPickerToInputChannel, connectColorPicker, resolveFormControlState, sliderMachine } from '@xihan-ui/headless'
+import {
+  colorPickerAlphaSliderProps,
+  colorPickerAnatomy,
+  colorPickerHueSliderProps,
+  colorPickerMachine,
+  colorPickerMeta,
+  colorPickerSwatchPickerProps,
+  colorPickerToInputChannel,
+  colorSliderAnatomy,
+  colorSliderMachine,
+  colorSliderSliderProps,
+  colorSwatchPickerAnatomy,
+  colorSwatchPickerMachine,
+  connectColorPicker,
+  resolveFormControlState,
+  sliderMachine,
+} from '@xihan-ui/headless'
 import { createPositionEngine } from '@xihan-ui/position'
 import { wcNormalize } from '../dom/normalize'
 import { createOverlayExit } from '../overlay-exit'
@@ -46,16 +64,18 @@ const STRING_LIST_CONVERTER = {
 
 /**
  * `<xh-color-picker>` —— Light-DOM 行为宿主：作者写 root/label/trigger/value-text/swatch/
- * positioner/content/saturation-area/area-thumb/channel-slider/channel-input/swatch-item 等角色节点，
- * 元素跑 color-picker 机器并把 connect 产出打上去。浮层定位引擎在本元素里建好、经 refs 注入机器，
+ * positioner/content/saturation-area/area-thumb/hue-slider/alpha-slider/channel-input/swatch-picker
+ * 等角色节点，元素跑 color-picker 机器并把 connect 产出打上去。浮层定位引擎在本元素里建好、经 refs 注入机器，
  * 锚点取 trigger，被定位的浮层取 positioner。
  *
  * 工作色恒是 HSVA（取色区两轴为饱和度与明度），对外的值串按 format 序列化。
  * format 只在落值那一刻起作用，单独改它不重排已有的值串——要让当前颜色改按新写法产出，
- * 换过 format 再调一次 `setValue(当前值)`。取色区与通道滑杆的矩形只在指针事件那一刻才量。
+ * 换过 format 再调一次 `setValue(当前值)`。取色区与滑块轨道的矩形只在指针事件那一刻才量。
  *
- * 通道滑杆与数值框用 channel 属性写明自己调哪一路（`channel="hue"` / `channel="r"`），
- * 滑杆内的轨道与拇指跟随所在滑杆的通道；预设色板每格用 value 属性写明颜色。
+ * 色相 / 透明度两条颜色滑块与预设色板是内嵌组件：hue-slider / alpha-slider / swatch-picker 三个挂载点
+ * 同时充当它们的根节点，挂载点里作者写的是 color-slider 的 control / track / thumb / label / value-text /
+ * hidden-input 与 color-swatch-picker 的 item / swatch / indicator / hidden-input，接线后各带自己的
+ * data-scope；色板的格子用 value 属性写明颜色。数值框用 channel 属性写明自己调哪一路（`channel="r"`）。
  *
  * @customElement xh-color-picker
  * @attr {string} value - 受控颜色值串；缺省该属性即非受控
@@ -85,20 +105,23 @@ const STRING_LIST_CONVERTER = {
  * @csspart content - role=dialog 容器（焦点域与消解层的根节点），收起时带 hidden
  * @csspart saturation-area - 二维取色区，横轴饱和度、纵轴明度；底色是当前色相
  * @csspart area-thumb - role=slider 的取色区拇指，两条轴的位置由连接层写成内联样式
- * @csspart channel-slider - 一条通道滑杆的外框，须自带 channel 属性（hue / alpha）
- * @csspart channel-slider-track - 通道轨道，值与坐标的换算以它的矩形为准
- * @csspart channel-slider-thumb - role=slider 的通道拇指
+ * @csspart hue-slider - 色相滑块的挂载点，同时是那条滑块的根节点；里面写 color-slider 的 control / track / thumb
+ * @csspart alpha-slider - 透明度滑块的挂载点，同上；alpha 关掉时整条禁用
  * @csspart channel-input - 数值输入框，须是原生 input 且自带 channel 属性（hex / r / g / b / a）
  * @csspart eye-dropper-trigger - 屏幕取色按钮，须是原生 button；环境不支持时自动禁用
- * @csspart swatch-group - role=group 的预设色板容器
- * @csspart swatch-item - 预设色板一格，须是原生 button 且自带 value 属性
+ * @csspart swatch-picker - 预设色板的挂载点，同时是色板的根节点（role=radiogroup）；里面写 color-swatch-picker 的 item / swatch / indicator / hidden-input，每格自带 value 属性
  * @csspart hidden-input - type=hidden 的表单出口，值是当前颜色串；作者不写这个部件就不参与提交
  */
 export class XhColorPickerElement extends XhPortalHostElement {
   /** 本实例的 Portal 容器；显式解析失败不回退配置默认。 */
   declare portalContainer?: () => Element | null
 
-  static override partContract = { anatomy: colorPickerAnatomy, meta: colorPickerMeta }
+  // 两条颜色滑块与色板的 DOM 摊在本元素的 Light DOM 里由本元素接线，它们的角色节点归各自 scope 管
+  static override partContract = {
+    anatomy: colorPickerAnatomy,
+    meta: colorPickerMeta,
+    delegates: [colorSliderAnatomy, colorSwatchPickerAnatomy],
+  }
 
   // dir 只占属性名、字段改叫 direction，避开 HTMLElement 原生 dir 访问器。
   // 描述符逐个写全，CEM 分析器读不了对象展开。
@@ -170,25 +193,51 @@ export class XhColorPickerElement extends XhPortalHostElement {
     { scope: this.pickerScope, onBuilt: svc => this.injectRefs(svc) },
   )
 
-  // 两条通道各自一台滑杆：区间与当下的值从取色器现读，推动经 CHANNEL.SET 送回去。
-  // 三台共用一份 scope，part id 里带组件名区分，不会撞
-  private readonly hueCtrl = new MachineController<SliderSchema>(
+  // 两条颜色滑块各自一台机器再各内嵌一台滑杆，色板一台：值与工作色从取色器现读，推动经回调送回去。
+  // 几台共用一份 scope，part id 里带组件名区分，不会撞
+  private readonly hueCtrl = new MachineController<ColorSliderSchema>(
     this,
-    sliderMachine,
-    () => colorPickerChannelSliderProps(this.ctrl.service, 'hue'),
-    { scope: this.pickerScope, onBuilt: svc => svc.refs.set('getTrackEl', () => this.channelTrack('hue')) },
+    colorSliderMachine,
+    () => colorPickerHueSliderProps(this.ctrl.service),
+    { scope: this.pickerScope },
   )
 
-  private readonly alphaCtrl = new MachineController<SliderSchema>(
+  private readonly hueSliderCtrl = new MachineController<SliderSchema>(
     this,
     sliderMachine,
-    () => colorPickerChannelSliderProps(this.ctrl.service, 'alpha'),
-    { scope: this.pickerScope, onBuilt: svc => svc.refs.set('getTrackEl', () => this.channelTrack('alpha')) },
+    () => colorSliderSliderProps(this.hueCtrl.service),
+    { scope: this.pickerScope, onBuilt: svc => svc.refs.set('getTrackEl', () => this.mountedPart('hue-slider', 'track')) },
+  )
+
+  private readonly alphaCtrl = new MachineController<ColorSliderSchema>(
+    this,
+    colorSliderMachine,
+    () => colorPickerAlphaSliderProps(this.ctrl.service),
+    { scope: this.pickerScope },
+  )
+
+  private readonly alphaSliderCtrl = new MachineController<SliderSchema>(
+    this,
+    sliderMachine,
+    () => colorSliderSliderProps(this.alphaCtrl.service),
+    { scope: this.pickerScope, onBuilt: svc => svc.refs.set('getTrackEl', () => this.mountedPart('alpha-slider', 'track')) },
+  )
+
+  private readonly swatchCtrl = new MachineController(
+    this,
+    colorSwatchPickerMachine,
+    () => colorPickerSwatchPickerProps(this.ctrl.service),
+    { scope: this.pickerScope },
   )
 
   /** 连接层要的整份服务表。 */
   private services(): ColorPickerServices {
-    return { root: this.ctrl.service, hueSlider: this.hueCtrl.service, alphaSlider: this.alphaCtrl.service }
+    return {
+      root: this.ctrl.service,
+      hueSlider: { root: this.hueCtrl.service, slider: this.hueSliderCtrl.service },
+      alphaSlider: { root: this.alphaCtrl.service, slider: this.alphaSliderCtrl.service },
+      swatchPicker: this.swatchCtrl.service,
+    }
   }
 
   /** 面板的自绘条：与 content 同级挂在已经 fixed 的 positioner 上 */
@@ -256,13 +305,21 @@ export class XhColorPickerElement extends XhPortalHostElement {
     })
   }
 
-  /** 某条通道的轨道：先按 channel 属性找到那条滑杆，再取它自己那条轨道。 */
-  private channelTrack(channel: ColorPickerChannel): HTMLElement | null {
-    const slider = this.getParts('channel-slider')
-      .find(el => colorPickerToChannel(el.getAttribute('channel') ?? undefined) === channel)
-    if (!slider)
-      return null
-    return this.getParts('channel-slider-track').find(el => slider.contains(el)) ?? null
+  /** 三个挂载点：里面的角色节点归内嵌组件管，宿主自己的同名部件（label / control / value-text / hidden-input / swatch）不算它们。 */
+  private mounts(): HTMLElement[] {
+    return [...this.getParts('hue-slider'), ...this.getParts('alpha-slider'), ...this.getParts('swatch-picker')]
+  }
+
+  /** 挂载点里的某个角色节点（内嵌组件的部件）。 */
+  private mountedPart(mount: string, name: string): HTMLElement | null {
+    const owner = this.getPart(mount)
+    return owner ? this.getParts(name).find(el => owner.contains(el)) ?? null : null
+  }
+
+  /** 宿主自己的某个角色节点：同名的部件落在挂载点里的归内嵌组件，不算宿主的。 */
+  private ownPart(name: string): HTMLElement | null {
+    const mounts = this.mounts()
+    return this.getParts(name).find(el => !mounts.some(mount => mount.contains(el))) ?? null
   }
 
   // onBuilt 在 ctrl 构造期就跑，service 由参数传入；节点一律懒读，建机器时 partMap 还空着。
@@ -328,16 +385,48 @@ export class XhColorPickerElement extends XhPortalHostElement {
     el.textContent = text
   }
 
-  // 滑杆内的子部件：getParts 收的是整个元素范围，按滑杆子树过滤才归得对通道。
+  // 挂载点内的子部件：getParts 收的是整个元素范围，按挂载点子树过滤才归得对内嵌组件。
   private partsIn(owner: HTMLElement, name: string): HTMLElement[] {
     return this.getParts(name).filter(el => owner.contains(el))
+  }
+
+  // hidden-input 的 style 是对象、checked 只认 DOM property，走 spread 都会写坏，两者绕开 spread 单独落
+  private spreadHiddenInput(input: HTMLInputElement, props: Record<string, unknown>): void {
+    const { style, checked, ...attrs } = props
+    this.spreader.spread(input, attrs)
+    input.checked = checked === true
+    Object.assign(input.style, style as Record<string, string> | undefined)
+  }
+
+  /** 一条内嵌颜色滑块：挂载点顶替它的 root，里面的 label / control / track / thumb / value-text / hidden-input 逐个打。 */
+  private wireSlider(mountName: string, mountProps: Record<string, unknown>, slider: ColorSliderApi): void {
+    const mount = this.getPart(mountName)
+    if (!mount)
+      return
+    this.spreader.spread(mount, mountProps)
+    for (const el of this.partsIn(mount, 'label'))
+      this.spreader.spread(el, slider.getLabelProps() as Record<string, unknown>)
+    for (const el of this.partsIn(mount, 'control'))
+      this.spreader.spread(el, slider.getControlProps() as Record<string, unknown>)
+    for (const el of this.partsIn(mount, 'track'))
+      this.spreader.spread(el, slider.getTrackProps() as Record<string, unknown>)
+    for (const el of this.partsIn(mount, 'thumb'))
+      this.spreader.spread(el, slider.getThumbProps() as Record<string, unknown>)
+    for (const el of this.partsIn(mount, 'hidden-input'))
+      this.spreader.spread(el, slider.getHiddenInputProps() as Record<string, unknown>)
+    // 属性先落，再填显示文字；作者自己写了内容就归作者，元素不再改写
+    for (const el of this.partsIn(mount, 'value-text')) {
+      this.spreader.spread(el, slider.getValueTextProps() as Record<string, unknown>)
+      this.fillValueText(el, String(slider.channelValue))
+    }
   }
 
   protected wire(): void {
     const api = connectColorPicker(this.services(), wcNormalize)
 
+    // 宿主自己的部件：同名部件落在挂载点里的归内嵌组件，这里跳过它们
     const put = (name: string, props: Record<string, unknown>): void => {
-      const el = this.getPart(name)
+      const el = this.ownPart(name)
       if (el)
         this.spreader.spread(el, props)
     }
@@ -353,34 +442,42 @@ export class XhColorPickerElement extends XhPortalHostElement {
     put('saturation-area', api.getSaturationAreaProps() as Record<string, unknown>)
     put('area-thumb', api.getAreaThumbProps() as Record<string, unknown>)
     put('eye-dropper-trigger', api.getEyeDropperTriggerProps() as Record<string, unknown>)
-    put('swatch-group', api.getSwatchGroupProps() as Record<string, unknown>)
     put('hidden-input', api.getHiddenInputProps() as Record<string, unknown>)
 
     // 值串的显示由元素代填（作者只需给出空节点）；作者写了内容就归作者，元素不再改写
-    const valueText = this.getPart('value-text')
+    const valueText = this.ownPart('value-text')
     if (valueText) {
       this.spreader.spread(valueText, api.getValueTextProps() as Record<string, unknown>)
       this.fillValueText(valueText, api.value)
     }
 
-    // 通道滑杆是多实例 part，逐条打：身份取作者写的 channel 属性，漏写或写错都退回色相
-    for (const el of this.getParts('channel-slider')) {
-      const channel = colorPickerToChannel(el.getAttribute('channel') ?? undefined)
-      this.spreader.spread(el, api.getChannelSliderProps({ channel }) as Record<string, unknown>)
-      for (const track of this.partsIn(el, 'channel-slider-track'))
-        this.spreader.spread(track, api.getChannelSliderTrackProps({ channel }) as Record<string, unknown>)
-      for (const thumb of this.partsIn(el, 'channel-slider-thumb'))
-        this.spreader.spread(thumb, api.getChannelSliderThumbProps({ channel }) as Record<string, unknown>)
-    }
+    // 两条内嵌颜色滑块
+    this.wireSlider('hue-slider', api.getHueSliderProps() as Record<string, unknown>, api.hueSlider)
+    this.wireSlider('alpha-slider', api.getAlphaSliderProps() as Record<string, unknown>, api.alphaSlider)
 
-    // 数值框不必住在滑杆里（多半与滑杆各占一行），身份由它自己声明
+    // 数值框不必住在滑块里（多半与滑块各占一行），身份由它自己声明
     for (const el of this.getParts('channel-input')) {
       const channel = colorPickerToInputChannel(el.getAttribute('channel') ?? undefined)
       this.spreader.spread(el, api.getChannelInputProps({ channel }) as Record<string, unknown>)
     }
 
-    for (const el of this.getParts('swatch-item'))
-      this.spreader.spread(el, api.getSwatchItemProps({ value: el.getAttribute('value') ?? '' }) as Record<string, unknown>)
+    // 预设色板：挂载点顶替色板的 root；每格身份取作者写的 value 属性，名字与禁用回 swatches 数据里查
+    const swatchMount = this.getPart('swatch-picker')
+    if (swatchMount) {
+      this.spreader.spread(swatchMount, api.getSwatchPickerProps() as Record<string, unknown>)
+      for (const el of this.partsIn(swatchMount, 'label'))
+        this.spreader.spread(el, api.swatchPicker.getLabelProps() as Record<string, unknown>)
+      for (const el of this.partsIn(swatchMount, 'item')) {
+        const item: ColorSwatchPickerItemProps = { value: el.getAttribute('value') ?? '' }
+        this.spreader.spread(el, api.swatchPicker.getItemProps(item) as Record<string, unknown>)
+        for (const input of this.partsIn(el, 'hidden-input'))
+          this.spreadHiddenInput(input as HTMLInputElement, api.swatchPicker.getHiddenInputProps(item) as Record<string, unknown>)
+        for (const swatch of this.partsIn(el, 'swatch'))
+          this.spreader.spread(swatch, api.swatchPicker.getSwatchProps(item) as Record<string, unknown>)
+        for (const indicator of this.partsIn(el, 'indicator'))
+          this.spreader.spread(indicator, api.swatchPicker.getIndicatorProps(item) as Record<string, unknown>)
+      }
+    }
 
     // Light DOM 常驻，WC 自管可见性：作者层若给 content 声明了 display，
     // 会盖过 UA 的 [hidden]{display:none}，光靠 hidden 属性收不起来。

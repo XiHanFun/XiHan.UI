@@ -3,12 +3,15 @@
 import type { ReactiveRuntime, Service } from '@xihan-ui/core'
 import type { ExitLease } from '@xihan-ui/core/presence'
 import type { ColorPickerChannel, ColorPickerSchema, ColorPickerServices } from '../src/color-picker'
+import type { ColorSliderSchema, ColorSliderServices } from '../src/color-slider'
 import type { SliderSchema } from '../src/slider'
 import { createRuntimeConfig, createService, normalizeProps } from '@xihan-ui/core'
 import { createPresence } from '@xihan-ui/core/presence'
 import { createVanillaRuntime } from '@xihan-ui/core/vanilla'
 import { afterEach, describe, expect, it, vi } from 'vitest'
-import { colorPickerChannelSliderProps, colorPickerMachine, connectColorPicker } from '../src/color-picker'
+import { colorPickerAlphaSliderProps, colorPickerHueSliderProps, colorPickerMachine, colorPickerSwatchPickerProps, connectColorPicker } from '../src/color-picker'
+import { colorSliderMachine, colorSliderSliderProps } from '../src/color-slider'
+import { colorSwatchPickerMachine } from '../src/color-swatch-picker'
 import { colorParse } from '../src/shared/color'
 import { sliderMachine } from '../src/slider'
 
@@ -16,17 +19,28 @@ type Props = ColorPickerSchema['props']
 type Dict = Record<string, unknown>
 
 /**
- * 两条通道各自那台内嵌滑杆，按根服务索引。
+ * 三件内嵌组件（两条颜色滑块各带一台滑杆、一台色块选择器），按根服务索引。
  * 用例照旧只拿根服务说话，连接层要的整份服务表由这里补齐。
  */
 const sliderBundles = new WeakMap<Service<ColorPickerSchema>, ColorPickerServices>()
 
-/** 给一台取色器补上两条通道的滑杆机器；须在 runtime.start() 之前调。 */
+/** 给一台取色器补上两条颜色滑块与色板的机器；须在 runtime.start() 之前调。 */
 function attachSliders(service: Service<ColorPickerSchema>, runtime: ReactiveRuntime): Service<ColorPickerSchema> {
-  const make = (channel: ColorPickerChannel): Service<SliderSchema> =>
-    createService(sliderMachine, { props: () => colorPickerChannelSliderProps(service, channel), runtime })
-  sliderBundles.set(service, { root: service, hueSlider: make('hue'), alphaSlider: make('alpha') })
+  const make = (channel: ColorPickerChannel): ColorSliderServices => {
+    const props = channel === 'hue' ? colorPickerHueSliderProps : colorPickerAlphaSliderProps
+    const root = createService<ColorSliderSchema>(colorSliderMachine, { props: () => props(service), runtime })
+    const slider = createService<SliderSchema>(sliderMachine, { props: () => colorSliderSliderProps(root), runtime })
+    return { root, slider }
+  }
+  const swatchPicker = createService(colorSwatchPickerMachine, { props: () => colorPickerSwatchPickerProps(service), runtime })
+  sliderBundles.set(service, { root: service, hueSlider: make('hue'), alphaSlider: make('alpha'), swatchPicker })
   return service
+}
+
+/** 推某条内嵌滑块的通道数值：与拇指上的键盘、轨道上的指针最后走的是同一条路。 */
+function setChannel(service: Service<ColorPickerSchema>, channel: ColorPickerChannel, value: number): void {
+  const bundle = servicesOf(service)
+  ;(channel === 'hue' ? bundle.hueSlider : bundle.alphaSlider).root.send({ type: 'CHANNEL.SET', value })
 }
 
 function servicesOf(service: Service<ColorPickerSchema>): ColorPickerServices {
@@ -101,7 +115,8 @@ function pressChannel(
   init?: KeyboardEventInit,
 ): KeyboardEvent {
   const event = keydown(key, init)
-  const props = api(service).getChannelSliderThumbProps({ channel }) as Dict
+  const slider = channel === 'hue' ? api(service).hueSlider : api(service).alphaSlider
+  const props = slider.getThumbProps() as Dict
   ;(props.onKeyDown as (e: KeyboardEvent) => void)(event)
   return event
 }
@@ -144,13 +159,17 @@ function mountRig(service: Service<ColorPickerSchema>): Rig {
   areaThumb.tabIndex = 0
   area.append(areaThumb)
 
-  const sliders: Record<ColorPickerChannel, HTMLElement> = { hue: make('channel-slider'), alpha: make('channel-slider') }
-  const tracks: Record<ColorPickerChannel, HTMLElement> = {
-    hue: make('channel-slider-track'),
-    alpha: make('channel-slider-track'),
+  // 两条内嵌滑块的部件带 color-slider 自己的 scope
+  const makeSliderPart = (part: string): HTMLElement => {
+    const el = document.createElement('div')
+    el.setAttribute('data-scope', 'color-slider')
+    el.setAttribute('data-part', part)
+    return el
   }
+  const sliders: Record<ColorPickerChannel, HTMLElement> = { hue: makeSliderPart('control'), alpha: makeSliderPart('control') }
+  const tracks: Record<ColorPickerChannel, HTMLElement> = { hue: makeSliderPart('track'), alpha: makeSliderPart('track') }
   for (const channel of ['hue', 'alpha'] as const) {
-    const thumb = make('channel-slider-thumb')
+    const thumb = makeSliderPart('thumb')
     thumb.tabIndex = 0
     sliders[channel].append(tracks[channel], thumb)
     // jsdom 不做布局，量出来恒是 0×0（几何那边会当作"还没布局"给 0）；摆一条 200px 的轨道
@@ -161,16 +180,14 @@ function mountRig(service: Service<ColorPickerSchema>): Rig {
   document.body.append(area, sliders.hue, sliders.alpha)
 
   service.refs.set('getAreaEl', () => area)
-  // 通道的轨道矩形归各自那台滑杆量
-  servicesOf(service).hueSlider.refs.set('getTrackEl', () => tracks.hue)
-  servicesOf(service).alphaSlider.refs.set('getTrackEl', () => tracks.alpha)
+  // 通道的轨道矩形归各条滑块内嵌的那台滑杆量
+  servicesOf(service).hueSlider.slider.refs.set('getTrackEl', () => tracks.hue)
+  servicesOf(service).alphaSlider.slider.refs.set('getTrackEl', () => tracks.alpha)
 
   area.addEventListener('pointerdown', api(service).getSaturationAreaProps().onPointerDown as EventListener)
   for (const channel of ['hue', 'alpha'] as const) {
-    sliders[channel].addEventListener(
-      'pointerdown',
-      api(service).getChannelSliderProps({ channel }).onPointerDown as EventListener,
-    )
+    const slider = channel === 'hue' ? api(service).hueSlider : api(service).alphaSlider
+    sliders[channel].addEventListener('pointerdown', slider.getControlProps().onPointerDown as EventListener)
   }
 
   return {
@@ -273,13 +290,14 @@ describe('colorPickerMachine 值', () => {
     expect(onColorError).toHaveBeenCalledTimes(1)
   })
 
-  it('alpha 关掉时值恒不透明', () => {
+  it('alpha 关掉时值恒不透明：透明度那条滑块整条禁用，推也推不动', () => {
     const s = makeService({ defaultValue: '#3b82f6' })
-    s.send({ type: 'CHANNEL.SET', channel: 'alpha', value: 30 })
+    setChannel(s, 'alpha', 30)
     expect(rgbaOf(s)?.a).toBe(1)
+    expect(api(s).alphaSlider.disabled).toBe(true)
 
     const withAlpha = makeService({ defaultValue: '#3b82f6', alpha: true })
-    withAlpha.send({ type: 'CHANNEL.SET', channel: 'alpha', value: 30 })
+    setChannel(withAlpha, 'alpha', 30)
     expect(rgbaOf(withAlpha)?.a).toBeCloseTo(0.3, 2)
   })
 })
@@ -317,28 +335,55 @@ describe('colorPickerMachine 取色区', () => {
   })
 })
 
-describe('colorPickerMachine 通道', () => {
-  it('色相按 1 走、Shift 走 10，Home/End 取端点', () => {
+describe('colorPickerMachine 内嵌滑块', () => {
+  it('推色相那条滑块，取色器落下整份工作色；两条滑块与取色器读的是同一个颜色', () => {
     const s = makeService({ defaultValue: '#ff0000' })
-    s.send({ type: 'CHANNEL.STEP', channel: 'hue', direction: 1 })
-    expect(Math.round(api(s).hsva.h)).toBe(1)
-    s.send({ type: 'CHANNEL.STEP', channel: 'hue', direction: 1, large: true })
-    expect(Math.round(api(s).hsva.h)).toBe(11)
-    s.send({ type: 'CHANNEL.TO_EDGE', channel: 'hue', edge: 'max' })
-    expect(Math.round(api(s).hsva.h)).toBe(360)
-    s.send({ type: 'CHANNEL.TO_EDGE', channel: 'hue', edge: 'min' })
-    expect(Math.round(api(s).hsva.h)).toBe(0)
+    setChannel(s, 'hue', 120)
+    expect(rgbaOf(s)).toEqual({ r: 0, g: 255, b: 0, a: 1 })
+    expect(api(s).hueSlider.channelValue).toBe(120)
+    expect(api(s).hueSlider.value).toBe('#00ff00')
+    expect(api(s).alphaSlider.value).toBe('#00ff00')
   })
 
-  it('透明度按百分数走，端点是 0 与 100', () => {
+  it('灰度处推色相：串不变但色相记下了，再把饱和度拉起来颜色就是那个色相', () => {
+    // #808080 反解不出色相；推到 200 后串照旧是灰，取色区一拉饱和度就该是青蓝而不是红
+    const s = makeService({ defaultValue: '#808080' })
+    setChannel(s, 'hue', 200)
+    expect(s.context.get('value')).toBe('#808080')
+    expect(Math.round(api(s).hsva.h)).toBe(200)
+    expect(api(s).hueSlider.channelValue).toBe(200)
+    s.send({ type: 'AREA.TO_EDGE', axis: 'x', edge: 'max' })
+    expect(Math.round(api(s).hsva.h)).toBe(200)
+    expect(rgbaOf(s)).toEqual({ r: 0, g: 85, b: 128, a: 1 })
+  })
+
+  it('透明度那条按百分数走，值串带透明度', () => {
     const s = makeService({ defaultValue: '#ff0000', alpha: true })
-    s.send({ type: 'CHANNEL.TO_EDGE', channel: 'alpha', edge: 'min' })
+    setChannel(s, 'alpha', 0)
     expect(rgbaOf(s)?.a).toBe(0)
     // 值串是八位十六进制，透明度到那儿会被量化成 1/255 的整数格，比不了太细
-    s.send({ type: 'CHANNEL.STEP', channel: 'alpha', direction: 1, large: true })
+    setChannel(s, 'alpha', 10)
     expect(rgbaOf(s)?.a).toBeCloseTo(0.1, 2)
-    s.send({ type: 'CHANNEL.TO_EDGE', channel: 'alpha', edge: 'max' })
+    setChannel(s, 'alpha', 100)
     expect(rgbaOf(s)?.a).toBe(1)
+    expect(api(s).alphaSlider.channelValue).toBe(100)
+  })
+
+  it('推色相不会把透明度归 1：两条滑块共用同一份工作色', () => {
+    const s = makeService({ defaultValue: '#ff000080', alpha: true })
+    setChannel(s, 'hue', 240)
+    expect(rgbaOf(s)?.a).toBeCloseTo(0.5, 2)
+    expect(rgbaOf(s)?.b).toBe(255)
+  })
+
+  it('预设色板：挑一格即换色，当前色那一格按颜色比选中', () => {
+    const s = makeService({ defaultValue: '#f00', swatches: ['#ff0000', '#00ff00'] })
+    expect(api(s).swatchPicker.swatches.map(m => m.value)).toEqual(['#ff0000', '#00ff00'])
+    expect(api(s).swatchPicker.isSelected('#ff0000')).toBe(true)
+    expect(api(s).swatchPicker.isSelected('#00ff00')).toBe(false)
+    servicesOf(s).swatchPicker.send({ type: 'ITEM.SELECT', value: '#00ff00' })
+    expect(rgbaOf(s)).toEqual({ r: 0, g: 255, b: 0, a: 1 })
+    expect(api(s).swatchPicker.isSelected('#00ff00')).toBe(true)
   })
 })
 
@@ -451,7 +496,7 @@ describe('colorPickerMachine 受控', () => {
     }), runtime)
     runtime.start()
 
-    s.send({ type: 'CHANNEL.SET', channel: 'hue', value: 120 })
+    setChannel(s, 'hue', 120)
     expect(s.context.get('value')).toBe('#ff0000')
     expect(onValueChange).toHaveBeenCalledWith({ value: '#00ff00' })
     // 受控下界面不许自作主张：工作色仍是宿主给的那个
@@ -639,29 +684,57 @@ describe('connectColorPicker 输出', () => {
     expect(thumb.style).toEqual({ insetInlineStart: '76.02%', insetBlockStart: '3.53%' })
   })
 
-  it('两条通道滑杆各自报自己的区间与单位', () => {
+  it('两条内嵌滑块各自报自己的区间、单位与名字，文案取自取色器的文案桶', () => {
     const s = makeService({ defaultValue: '#3b82f6', alpha: true })
-    const hue = api(s).getChannelSliderThumbProps({ channel: 'hue' }) as Dict
+    const hue = api(s).hueSlider.getThumbProps() as Dict
     expect(hue['aria-valuemin']).toBe('0')
     expect(hue['aria-valuemax']).toBe('360')
     expect(hue['aria-valuenow']).toBe('217')
     expect(hue['aria-valuetext']).toBe('217°')
     expect(hue['aria-label']).toBe('Hue')
 
-    const alpha = api(s).getChannelSliderThumbProps({ channel: 'alpha' }) as Dict
+    const alpha = api(s).alphaSlider.getThumbProps() as Dict
     expect(alpha['aria-valuemax']).toBe('100')
     expect(alpha['aria-valuenow']).toBe('100')
     expect(alpha['aria-valuetext']).toBe('100%')
+    expect(alpha['aria-label']).toBe('Alpha')
+
+    const custom = makeService({
+      defaultValue: '#3b82f6',
+      translations: { channel: c => (c === 'hue' ? '色相' : '透明度'), channelValueText: (c, v) => `${c} ${v}` },
+    })
+    expect((api(custom).hueSlider.getThumbProps() as Dict)['aria-label']).toBe('色相')
+    expect((api(custom).hueSlider.getThumbProps() as Dict)['aria-valuetext']).toBe('hue 217')
   })
 
-  it('alpha 关掉时透明度那条整条不可用（含输入框）', () => {
+  it('挂载点同时充当内嵌根节点：滑块 root 的状态标记照抄，scope 与部件名是取色器自己的', () => {
+    const s = makeService({ defaultValue: '#3b82f6', size: 'lg' })
+    const hue = api(s).getHueSliderProps() as Dict
+    expect(hue['data-scope']).toBe('color-picker')
+    expect(hue['data-part']).toBe('hue-slider')
+    expect(hue['data-channel']).toBe('hue')
+    expect(hue['data-orientation']).toBe('horizontal')
+    expect(hue['data-size']).toBe('lg')
+    expect(hue['data-disabled']).toBeUndefined()
+    // 色板的挂载点带着 radiogroup 的角色与兜底 Tab 位
+    const swatches = api(s).getSwatchPickerProps() as Dict
+    expect(swatches['data-scope']).toBe('color-picker')
+    expect(swatches['data-part']).toBe('swatch-picker')
+    expect(swatches.role).toBe('radiogroup')
+    expect(swatches.tabindex).toBe(0)
+    expect(typeof swatches.onKeyDown).toBe('function')
+  })
+
+  it('alpha 关掉时透明度那条整条不可用（含输入框与挂载点）', () => {
     const s = makeService({ defaultValue: '#3b82f6' })
-    const thumb = api(s).getChannelSliderThumbProps({ channel: 'alpha' }) as Dict
+    const thumb = api(s).alphaSlider.getThumbProps() as Dict
     expect(thumb['aria-disabled']).toBe('true')
     expect(thumb.tabindex).toBeUndefined()
+    expect((api(s).getAlphaSliderProps() as Dict)['data-disabled']).toBe('')
     expect((api(s).getChannelInputProps({ channel: 'a' }) as Dict).disabled).toBe(true)
     // 色相那条不受影响
-    expect((api(s).getChannelSliderThumbProps({ channel: 'hue' }) as Dict).tabindex).toBe(0)
+    expect((api(s).hueSlider.getThumbProps() as Dict).tabindex).toBe(0)
+    expect((api(s).getHueSliderProps() as Dict)['data-disabled']).toBeUndefined()
   })
 
   it('disabled 抽掉 Tab 位；readOnly 保留 Tab 位但改不动', () => {
@@ -700,27 +773,44 @@ describe('connectColorPicker 输出', () => {
     expect(input['data-invalid']).toBe('')
   })
 
-  it('预设色板：当前色那一格报 aria-pressed=true，点击即换色', () => {
+  it('预设色板：当前色那一格是 role=radio 且 aria-checked=true，点击即换色', () => {
     const s = makeService({ defaultValue: '#ff0000', swatches: ['#ff0000', '#00ff00'] })
     expect(api(s).swatches).toEqual(['#ff0000', '#00ff00'])
-    expect(api(s).isSwatchSelected('#f00')).toBe(true)
-    const red = api(s).getSwatchItemProps({ value: '#ff0000' }) as Dict
-    const green = api(s).getSwatchItemProps({ value: '#00ff00' }) as Dict
-    expect(red['aria-pressed']).toBe('true')
+    const red = api(s).swatchPicker.getItemProps({ value: '#ff0000' }) as Dict
+    const green = api(s).swatchPicker.getItemProps({ value: '#00ff00' }) as Dict
+    expect(red.role).toBe('radio')
+    expect(red['aria-checked']).toBe('true')
     expect(red['data-value']).toBe('#ff0000')
-    expect(green['aria-pressed']).toBe('false')
+    expect(green['aria-checked']).toBe('false')
     ;(green.onClick as () => void)()
     expect(rgbaOf(s)).toEqual({ r: 0, g: 255, b: 0, a: 1 })
+    expect(api(s).swatchPicker.isSelected('#0f0')).toBe(true)
   })
 
-  it('透明度轨道的渐变收在内联样式里，色相轨道把它清空', () => {
+  it('禁用与只读时色板挑不动：格子标 data-disabled / data-readonly，点击不落值', () => {
+    for (const props of [{ disabled: true }, { readOnly: true }] as const) {
+      const s = makeService({ defaultValue: '#ff0000', swatches: ['#ff0000', '#00ff00'], ...props })
+      const green = api(s).swatchPicker.getItemProps({ value: '#00ff00' }) as Dict
+      expect(green['data-disabled'] ?? green['data-readonly']).toBe('')
+      ;(green.onClick as () => void)()
+      expect(s.context.get('value')).toBe('#ff0000')
+    }
+  })
+
+  it('两条轨道的渐变收在内联样式里：透明度从全透明走到实色，色相走满七段', () => {
     const s = makeService({ defaultValue: '#ff0000', alpha: true })
-    const alphaTrack = api(s).getChannelSliderTrackProps({ channel: 'alpha' }) as Dict
-    expect(alphaTrack.style).toEqual({
-      backgroundImage: 'linear-gradient(to right, transparent, rgba(255, 0, 0, 1))',
-    })
-    // 两个适配器的内联样式必须逐帧一致：色相那条要显式写空串把上一帧的声明撤掉
-    expect(api(s).getChannelSliderTrackProps({ channel: 'hue' }).style).toEqual({ backgroundImage: '' })
+    const alphaTrack = api(s).alphaSlider.getTrackProps() as Dict
+    expect((alphaTrack.style as Dict).backgroundImage).toBe('linear-gradient(to right, rgba(255, 0, 0, 0), rgba(255, 0, 0, 1))')
+    const hueTrack = api(s).hueSlider.getTrackProps() as Dict
+    expect(String((hueTrack.style as Dict).backgroundImage)).toContain('linear-gradient(to right, hsl(0')
+  })
+
+  it('触发钮里的色块走 Swatch 家族：带家族属性，颜色写进私有槽，解析不出的串不画颜色层', () => {
+    const s = makeService({ defaultValue: '#ff000080', alpha: true, size: 'sm' })
+    const swatch = api(s).getSwatchProps() as Dict
+    expect(swatch['data-xh-swatch']).toBe('')
+    expect(swatch['data-xh-swatch-size']).toBe('sm')
+    expect(swatch.style).toEqual({ '--xh-_swatch-color': 'rgba(255, 0, 0, 0.502)' })
   })
 })
 
@@ -752,11 +842,11 @@ describe('connectColorPicker 键盘', () => {
     expect(api(s).hsva.v).toBeCloseTo(before.v + 1, 5)
   })
 
-  it('通道滑杆：方向键与 Home/End', () => {
+  it('内嵌滑块的拇指上按方向键与 Home/End，取色器跟着落值', () => {
     const s = makeService({ defaultValue: '#ff0000' })
     expect(pressChannel(s, 'hue', 'ArrowUp').defaultPrevented).toBe(true)
     expect(Math.round(api(s).hsva.h)).toBe(1)
-    pressChannel(s, 'hue', 'ArrowRight', { shiftKey: true })
+    pressChannel(s, 'hue', 'PageUp')
     expect(Math.round(api(s).hsva.h)).toBe(11)
     pressChannel(s, 'hue', 'End')
     expect(Math.round(api(s).hsva.h)).toBe(360)
@@ -792,144 +882,23 @@ describe('connectColorPicker 键盘', () => {
 })
 
 // 通道滑杆三件套的现状判据：属性、键盘、指针三面各钉一遍。
-describe('connectColorPicker 通道滑杆', () => {
-  it('三个部件各带 data-channel，状态标记逐个写全', () => {
-    const s = makeService({ defaultValue: '#3b82f6', defaultOpen: true, alpha: true })
-    const slider = api(s).getChannelSliderProps({ channel: 'hue' }) as Dict
-    const track = api(s).getChannelSliderTrackProps({ channel: 'hue' }) as Dict
-    const thumb = api(s).getChannelSliderThumbProps({ channel: 'hue' }) as Dict
-    for (const props of [slider, track, thumb]) {
-      expect(props['data-channel']).toBe('hue')
-      expect(props['data-state']).toBe('open')
-      expect(props['data-disabled']).toBeUndefined()
-      expect(props['data-readonly']).toBeUndefined()
-      expect(props['data-scope']).toBe('color-picker')
-    }
-    expect(slider['data-part']).toBe('channel-slider')
-    expect(track['data-part']).toBe('channel-slider-track')
-    expect(thumb['data-part']).toBe('channel-slider-thumb')
-    expect(thumb['aria-orientation']).toBe('horizontal')
-    // 拇指的位置写进内联样式，横轴一条
-    expect(thumb.style).toMatchObject({ insetInlineStart: '60.34%' })
-  })
-
-  it('只读留 Tab 位、写上 data-readonly；禁用抽 Tab 位、三个部件都打 data-disabled', () => {
-    const ro = makeService({ defaultValue: '#3b82f6', readOnly: true })
-    const roThumb = api(ro).getChannelSliderThumbProps({ channel: 'hue' }) as Dict
-    expect(roThumb['data-readonly']).toBe('')
-    expect(roThumb['data-disabled']).toBeUndefined()
-    expect(roThumb['aria-disabled']).toBe('false')
-    expect(roThumb.tabindex).toBe(0)
-
-    const off = makeService({ defaultValue: '#3b82f6', disabled: true })
-    for (const part of ['getChannelSliderProps', 'getChannelSliderTrackProps', 'getChannelSliderThumbProps'] as const) {
-      const props = (api(off)[part] as (p: { channel: ColorPickerChannel }) => Dict)({ channel: 'hue' })
-      expect(props['data-disabled']).toBe('')
-    }
-    expect((api(off).getChannelSliderThumbProps({ channel: 'hue' }) as Dict).tabindex).toBeUndefined()
-  })
-
-  it('alpha 关掉时那条滑杆整条打 data-disabled，色相那条不受牵连', () => {
-    const s = makeService({ defaultValue: '#3b82f6' })
-    expect((api(s).getChannelSliderProps({ channel: 'alpha' }) as Dict)['data-disabled']).toBe('')
-    expect((api(s).getChannelSliderTrackProps({ channel: 'alpha' }) as Dict)['data-disabled']).toBe('')
-    expect((api(s).getChannelSliderProps({ channel: 'hue' }) as Dict)['data-disabled']).toBeUndefined()
-  })
-
-  it('channelState 报出对外的区间与位置', () => {
-    const s = makeService({ defaultValue: '#ff0000', alpha: true })
-    expect(api(s).channelState('hue')).toEqual({ channel: 'hue', value: 0, min: 0, max: 360, percent: 0 })
-    s.send({ type: 'CHANNEL.SET', channel: 'hue', value: 180 })
-    expect(api(s).channelState('hue')).toEqual({ channel: 'hue', value: 180, min: 0, max: 360, percent: 0.5 })
-    expect(api(s).channelState('alpha')).toEqual({ channel: 'alpha', value: 100, min: 0, max: 100, percent: 1 })
-  })
-
-  it('rtl 下通道的左右两键对调，上下不受影响', () => {
-    const s = makeService({ defaultValue: '#ff0000', dir: 'rtl' })
-    pressChannel(s, 'hue', 'ArrowLeft')
-    expect(Math.round(api(s).hsva.h)).toBe(1)
-    pressChannel(s, 'hue', 'ArrowRight')
-    expect(Math.round(api(s).hsva.h)).toBe(0)
-    pressChannel(s, 'hue', 'ArrowUp')
-    expect(Math.round(api(s).hsva.h)).toBe(1)
-  })
-
-  it('通道上的 Home/End 与 Shift 大步在透明度那条同样成立', () => {
-    const s = makeService({ defaultValue: '#ff0000', alpha: true })
-    expect(pressChannel(s, 'alpha', 'Home').defaultPrevented).toBe(true)
-    expect(api(s).channelState('alpha').value).toBe(0)
-    pressChannel(s, 'alpha', 'ArrowUp', { shiftKey: true })
-    expect(api(s).channelState('alpha').value).toBe(10)
-    pressChannel(s, 'alpha', 'End')
-    expect(api(s).channelState('alpha').value).toBe(100)
-  })
-
-  it('pageUp / PageDown 在通道上走大步，与 dir 无关', () => {
-    const s = makeService({ defaultValue: '#ff0000', dir: 'rtl' })
-    expect(pressChannel(s, 'hue', 'PageUp').defaultPrevented).toBe(true)
-    expect(api(s).channelState('hue').value).toBe(10)
-    pressChannel(s, 'hue', 'PageDown')
-    expect(api(s).channelState('hue').value).toBe(0)
-  })
-
-  it('禁用、只读与 alpha 关掉时 PageUp 同样不吞键', () => {
-    for (const props of [{ disabled: true }, { readOnly: true }] as const) {
-      const s = makeService({ defaultValue: '#ff0000', ...props })
-      expect(pressChannel(s, 'hue', 'PageUp').defaultPrevented).toBe(false)
-      expect(api(s).channelState('hue').value).toBe(0)
-    }
-    const off = makeService({ defaultValue: '#ff0000' })
-    expect(pressChannel(off, 'alpha', 'PageUp').defaultPrevented).toBe(false)
-    expect(api(off).channelState('alpha').value).toBe(100)
-  })
-
-  it('通道上带 Ctrl / Meta / Alt 的组合一律放行', () => {
-    const s = makeService({ defaultValue: '#ff0000' })
-    for (const init of [{ ctrlKey: true }, { metaKey: true }, { altKey: true }]) {
-      const event = pressChannel(s, 'hue', 'End', init)
-      expect(event.defaultPrevented).toBe(false)
-    }
-    expect(Math.round(api(s).hsva.h)).toBe(0)
-  })
-
-  it('通道上认不下的键不吞，留给页面', () => {
-    const s = makeService({ defaultValue: '#ff0000' })
-    expect(pressChannel(s, 'hue', 'a').defaultPrevented).toBe(false)
-    expect(pressChannel(s, 'hue', 'Tab').defaultPrevented).toBe(false)
-    expect(Math.round(api(s).hsva.h)).toBe(0)
-  })
-
-  it('alpha 关掉时透明度那条键盘也推不动', () => {
-    const s = makeService({ defaultValue: '#ff0000' })
-    expect(pressChannel(s, 'alpha', 'Home').defaultPrevented).toBe(false)
-    expect(api(s).channelState('alpha').value).toBe(100)
-  })
-
-  it('按下通道滑杆把焦点转投到该条的拇指上，拖动期间三个部件打 data-dragging', () => {
+describe('connectColorPicker 内嵌滑块的指针', () => {
+  it('按下滑块的 control 把焦点转投到它的拇指上，拖动期间取色器与那条滑块都报 dragging', () => {
     const s = makeService({ defaultValue: '#ff0000', defaultOpen: true })
     const rig = mountRig(s)
 
     rig.pressChannel('hue', 100)
-    expect(document.activeElement?.getAttribute('data-part')).toBe('channel-slider-thumb')
+    expect(document.activeElement?.getAttribute('data-part')).toBe('thumb')
     expect(api(s).dragging).toBe(true)
-    // 外框与拇指打这个标记，轨道不打
-    for (const props of [
-      api(s).getChannelSliderProps({ channel: 'hue' }) as Dict,
-      api(s).getChannelSliderThumbProps({ channel: 'hue' }) as Dict,
-    ]) {
-      expect(props['data-dragging']).toBe('')
-    }
-    expect((api(s).getChannelSliderTrackProps({ channel: 'hue' }) as Dict)['data-dragging']).toBeUndefined()
-    // 另一条滑杆不该跟着亮
-    expect((api(s).getChannelSliderThumbProps({ channel: 'alpha' }) as Dict)['data-dragging']).toBeUndefined()
-    // 取色区也不该跟着亮
+    expect(api(s).hueSlider.dragging).toBe(true)
+    // 另一条滑块与取色区都不该跟着亮
+    expect(api(s).alphaSlider.dragging).toBe(false)
     expect((api(s).getSaturationAreaProps() as Dict)['data-dragging']).toBeUndefined()
 
     movePointer(200)
     expect(Math.round(api(s).hsva.h)).toBe(360)
     releasePointer()
     expect(api(s).dragging).toBe(false)
-    expect((api(s).getChannelSliderThumbProps({ channel: 'hue' }) as Dict)['data-dragging']).toBeUndefined()
 
     // 松手后监听器撤干净，再动指针值不跟
     const settled = s.context.get('value')
@@ -937,7 +906,7 @@ describe('connectColorPicker 通道滑杆', () => {
     expect(s.context.get('value')).toBe(settled)
   })
 
-  it('只读、禁用、以及 alpha 关掉时按下通道都不改值', () => {
+  it('只读、禁用、以及 alpha 关掉时按下滑块都不改值', () => {
     for (const props of [{ readOnly: true }, { disabled: true }] as const) {
       const s = makeService({ defaultValue: '#ff0000', alpha: true, defaultOpen: true, ...props })
       const rig = mountRig(s)

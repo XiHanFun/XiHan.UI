@@ -25,6 +25,17 @@ function api(services: ColorSliderServices) {
 }
 
 describe('colorSliderMachine 值与通道', () => {
+  it('受控 hsva：灰度串本身没有色相，滑块按宿主给的工作色定位并推色相', () => {
+    const onValueChange = vi.fn()
+    // #808080 反解出来色相是 0；宿主说它的色相其实是 200
+    const s = makeServices({ value: '#808080', hsva: { h: 200, s: 0, v: 50, a: 1 }, onValueChange })
+    expect(api(s).channelValue).toBe(200)
+    expect(api(s).hsva).toEqual({ h: 200, s: 0, v: 50, a: 1 })
+    s.root.send({ type: 'CHANNEL.SET', value: 90 })
+    // 串照旧是灰（饱和度为 0），但回调里的工作色带着推出来的色相
+    expect(onValueChange).toHaveBeenLastCalledWith({ value: '#808080', hsva: { h: 90, s: 0, v: 50, a: 1 } })
+  })
+
   it('默认推色相：值串的色相角就是通道数值，推一下按 hex 写回', () => {
     const onValueChange = vi.fn()
     const s = makeServices({ defaultValue: '#ff0000', onValueChange })
@@ -35,7 +46,7 @@ describe('colorSliderMachine 值与通道', () => {
     s.root.send({ type: 'CHANNEL.SET', value: 120 })
     expect(api(s).value).toBe('#00ff00')
     expect(api(s).channelValue).toBe(120)
-    expect(onValueChange).toHaveBeenLastCalledWith({ value: '#00ff00' })
+    expect(onValueChange).toHaveBeenLastCalledWith({ value: '#00ff00', hsva: { h: 120, s: 100, v: 100, a: 1 } })
   })
 
   it('推透明度那一路默认带透明度，其余通道默认把透明度归 1；显式 alpha 以它为准', () => {
@@ -86,7 +97,7 @@ describe('colorSliderMachine 值与通道', () => {
     const props: Props = { value: '#ff0000', onValueChange }
     const s = makeServices(props)
     s.root.send({ type: 'CHANNEL.SET', value: 180 })
-    expect(onValueChange).toHaveBeenCalledWith({ value: '#00ffff' })
+    expect(onValueChange).toHaveBeenCalledWith({ value: '#00ffff', hsva: { h: 180, s: 100, v: 100, a: 1 } })
     expect(api(s).value).toBe('#ff0000')
     expect(s.slider.context.get('value')).toEqual([0])
     props.value = '#00ffff'
@@ -113,7 +124,7 @@ describe('colorSliderMachine 值与通道', () => {
     const s = makeServices({ defaultValue: '#ff0000', onValueChangeEnd })
     s.root.send({ type: 'CHANNEL.SET', value: 60 })
     s.root.send({ type: 'CHANGE.END' })
-    expect(onValueChangeEnd).toHaveBeenCalledWith({ value: '#ffff00' })
+    expect(onValueChangeEnd).toHaveBeenCalledWith({ value: '#ffff00', hsva: { h: 60, s: 100, v: 100, a: 1 } })
   })
 })
 

@@ -7,7 +7,8 @@
 
 import type { KeyboardTable } from '../spec/types'
 
-// APG 无取色器模式：两条可交互的轴按滑杆模式办，浮层部分按对话框模式办。
+// APG 无取色器模式：取色区按滑杆模式办，浮层部分按对话框模式办；
+// 色相 / 透明度两条滑块与预设色板的键盘各归 color-slider 与 color-swatch-picker 那两张表。
 const APG = 'https://www.w3.org/WAI/ARIA/apg/patterns/slider/#keyboardinteraction'
 
 export const colorPickerKeyboard: KeyboardTable = {
@@ -37,30 +38,6 @@ export const colorPickerKeyboard: KeyboardTable = {
       keys: ['Home', 'End'],
       when: 'focus in area-thumb, not disabled/readOnly',
       does: '饱和度取 0 / 100（与 aria-valuenow 报的是同一条轴）',
-    },
-    {
-      id: 'color-picker.kbd.channel-step',
-      keys: ['ArrowRight', 'ArrowLeft', 'ArrowUp', 'ArrowDown'],
-      when: 'focus in channel-slider-thumb, channel enabled',
-      does: '按 1 调该通道；RTL 下左右对调，上下恒是"朝 max 走"',
-    },
-    {
-      id: 'color-picker.kbd.channel-large-step',
-      keys: ['Shift+ArrowRight', 'Shift+ArrowLeft', 'Shift+ArrowUp', 'Shift+ArrowDown'],
-      when: 'focus in channel-slider-thumb, channel enabled',
-      does: '同上，但一步走 10',
-    },
-    {
-      id: 'color-picker.kbd.channel-page-step',
-      keys: ['PageUp', 'PageDown'],
-      when: 'focus in channel-slider-thumb, channel enabled',
-      does: '朝 max / min 各走 10，与 dir 无关',
-    },
-    {
-      id: 'color-picker.kbd.channel-edge',
-      keys: ['Home', 'End'],
-      when: 'focus in channel-slider-thumb, channel enabled',
-      does: '该通道取 min / max（色相 0-360，透明度 0-100）',
     },
     {
       id: 'color-picker.kbd.input-commit',

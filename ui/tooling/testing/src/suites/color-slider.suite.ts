@@ -140,7 +140,8 @@ export const colorSliderSuite: ConformanceSuite = {
           key: 'ArrowLeft',
           expect: {
             parts: { thumb: { 'aria-valuenow': '99' }, root: { 'data-value': '#00fc00' } },
-            events: [{ type: 'value-change', detail: { value: '#00fc00' } }],
+            // 载荷带着整份工作色：串是有损的，灰度处色相只能从这里拿
+            events: [{ type: 'value-change', detail: { value: '#00fc00', hsva: { h: 120, s: 100, v: 99, a: 1 } } }],
           },
         },
         { kind: 'key', key: 'ArrowRight', expect: { parts: { thumb: { 'aria-valuenow': '100' }, root: { 'data-value': '#00ff00' } } } },
@@ -271,7 +272,7 @@ export const colorSliderSuite: ConformanceSuite = {
           key: 'ArrowRight',
           expect: {
             parts: { thumb: { 'aria-valuenow': '0' }, root: { 'data-value': '#ff0000' } },
-            events: [{ type: 'value-change', detail: { value: '#ff0400' } }],
+            events: [{ type: 'value-change', detail: { value: '#ff0400', hsva: { h: 1, s: 100, v: 100, a: 1 } } }],
           },
         },
         { kind: 'setProps', props: { value: '#ffff00' }, expect: { parts: { thumb: { 'aria-valuenow': '60' } } } },

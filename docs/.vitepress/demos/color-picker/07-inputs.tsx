@@ -4,12 +4,10 @@ import { PipetteIcon } from "@xihan-ui/icons";
 import {
   XhColorPickerAreaThumb,
   XhColorPickerChannelInput,
-  XhColorPickerChannelSlider,
-  XhColorPickerChannelSliderThumb,
-  XhColorPickerChannelSliderTrack,
   XhColorPickerContent,
   XhColorPickerControl,
   XhColorPickerEyeDropperTrigger,
+  XhColorPickerHueSlider,
   XhColorPickerLabel,
   XhColorPickerPositioner,
   XhColorPickerRoot,
@@ -49,10 +47,7 @@ export default function Demo(): ReactNode {
             <XhColorPickerEyeDropperTrigger>
               <XhIcon icon={PipetteIcon} />
             </XhColorPickerEyeDropperTrigger>
-            <XhColorPickerChannelSlider channel="hue" style={{ flex: 1 }}>
-              <XhColorPickerChannelSliderTrack />
-              <XhColorPickerChannelSliderThumb />
-            </XhColorPickerChannelSlider>
+            <XhColorPickerHueSlider style={{ flex: 1 }} />
           </div>
           <div style={inputRow}>
             <XhColorPickerChannelInput channel="hex" />

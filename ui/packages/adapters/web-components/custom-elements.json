@@ -9285,7 +9285,7 @@
       "declarations": [
         {
           "kind": "class",
-          "description": "`<xh-color-picker>` —— Light-DOM 行为宿主：作者写 root/label/trigger/value-text/swatch/\npositioner/content/saturation-area/area-thumb/channel-slider/channel-input/swatch-item 等角色节点，\n元素跑 color-picker 机器并把 connect 产出打上去。浮层定位引擎在本元素里建好、经 refs 注入机器，\n锚点取 trigger，被定位的浮层取 positioner。\n\n工作色恒是 HSVA（取色区两轴为饱和度与明度），对外的值串按 format 序列化。\nformat 只在落值那一刻起作用，单独改它不重排已有的值串——要让当前颜色改按新写法产出，\n换过 format 再调一次 `setValue(当前值)`。取色区与通道滑杆的矩形只在指针事件那一刻才量。\n\n通道滑杆与数值框用 channel 属性写明自己调哪一路（`channel=\"hue\"` / `channel=\"r\"`），\n滑杆内的轨道与拇指跟随所在滑杆的通道；预设色板每格用 value 属性写明颜色。",
+          "description": "`<xh-color-picker>` —— Light-DOM 行为宿主：作者写 root/label/trigger/value-text/swatch/\npositioner/content/saturation-area/area-thumb/hue-slider/alpha-slider/channel-input/swatch-picker\n等角色节点，元素跑 color-picker 机器并把 connect 产出打上去。浮层定位引擎在本元素里建好、经 refs 注入机器，\n锚点取 trigger，被定位的浮层取 positioner。\n\n工作色恒是 HSVA（取色区两轴为饱和度与明度），对外的值串按 format 序列化。\nformat 只在落值那一刻起作用，单独改它不重排已有的值串——要让当前颜色改按新写法产出，\n换过 format 再调一次 `setValue(当前值)`。取色区与滑块轨道的矩形只在指针事件那一刻才量。\n\n色相 / 透明度两条颜色滑块与预设色板是内嵌组件：hue-slider / alpha-slider / swatch-picker 三个挂载点\n同时充当它们的根节点，挂载点里作者写的是 color-slider 的 control / track / thumb / label / value-text /\nhidden-input 与 color-swatch-picker 的 item / swatch / indicator / hidden-input，接线后各带自己的\ndata-scope；色板的格子用 value 属性写明颜色。数值框用 channel 属性写明自己调哪一路（`channel=\"r\"`）。",
           "name": "XhColorPickerElement",
           "cssParts": [
             {
@@ -9329,16 +9329,12 @@
               "name": "area-thumb"
             },
             {
-              "description": "一条通道滑杆的外框，须自带 channel 属性（hue / alpha）",
-              "name": "channel-slider"
+              "description": "色相滑块的挂载点，同时是那条滑块的根节点；里面写 color-slider 的 control / track / thumb",
+              "name": "hue-slider"
             },
             {
-              "description": "通道轨道，值与坐标的换算以它的矩形为准",
-              "name": "channel-slider-track"
-            },
-            {
-              "description": "role=slider 的通道拇指",
-              "name": "channel-slider-thumb"
+              "description": "透明度滑块的挂载点，同上；alpha 关掉时整条禁用",
+              "name": "alpha-slider"
             },
             {
               "description": "数值输入框，须是原生 input 且自带 channel 属性（hex / r / g / b / a）",
@@ -9349,12 +9345,8 @@
               "name": "eye-dropper-trigger"
             },
             {
-              "description": "role=group 的预设色板容器",
-              "name": "swatch-group"
-            },
-            {
-              "description": "预设色板一格，须是原生 button 且自带 value 属性",
-              "name": "swatch-item"
+              "description": "预设色板的挂载点，同时是色板的根节点（role=radiogroup）；里面写 color-swatch-picker 的 item / swatch / indicator / hidden-input，每格自带 value 属性",
+              "name": "swatch-picker"
             },
             {
               "description": "type=hidden 的表单出口，值是当前颜色串；作者不写这个部件就不参与提交",
@@ -9377,7 +9369,7 @@
                 "text": "object"
               },
               "static": true,
-              "default": "{ anatomy: colorPickerAnatomy, meta: colorPickerMeta }"
+              "default": "{ anatomy: colorPickerAnatomy, meta: colorPickerMeta, delegates: [colorSliderAnatomy, colorSwatchPickerAnatomy], }"
             },
             {
               "kind": "field",
@@ -9592,14 +9584,35 @@
               "name": "hueCtrl",
               "privacy": "private",
               "readonly": true,
-              "default": "new MachineController<SliderSchema>( this, sliderMachine, () => colorPickerChannelSliderProps(this.ctrl.service, 'hue'), { scope: this.pickerScope, onBuilt: svc => svc.refs.set('getTrackEl', () => this.channelTrack('hue')) }, )"
+              "default": "new MachineController<ColorSliderSchema>( this, colorSliderMachine, () => colorPickerHueSliderProps(this.ctrl.service), { scope: this.pickerScope }, )"
+            },
+            {
+              "kind": "field",
+              "name": "hueSliderCtrl",
+              "privacy": "private",
+              "readonly": true,
+              "default": "new MachineController<SliderSchema>( this, sliderMachine, () => colorSliderSliderProps(this.hueCtrl.service), { scope: this.pickerScope, onBuilt: svc => svc.refs.set('getTrackEl', () => this.mountedPart('hue-slider', 'track')) }, )"
             },
             {
               "kind": "field",
               "name": "alphaCtrl",
               "privacy": "private",
               "readonly": true,
-              "default": "new MachineController<SliderSchema>( this, sliderMachine, () => colorPickerChannelSliderProps(this.ctrl.service, 'alpha'), { scope: this.pickerScope, onBuilt: svc => svc.refs.set('getTrackEl', () => this.channelTrack('alpha')) }, )"
+              "default": "new MachineController<ColorSliderSchema>( this, colorSliderMachine, () => colorPickerAlphaSliderProps(this.ctrl.service), { scope: this.pickerScope }, )"
+            },
+            {
+              "kind": "field",
+              "name": "alphaSliderCtrl",
+              "privacy": "private",
+              "readonly": true,
+              "default": "new MachineController<SliderSchema>( this, sliderMachine, () => colorSliderSliderProps(this.alphaCtrl.service), { scope: this.pickerScope, onBuilt: svc => svc.refs.set('getTrackEl', () => this.mountedPart('alpha-slider', 'track')) }, )"
+            },
+            {
+              "kind": "field",
+              "name": "swatchCtrl",
+              "privacy": "private",
+              "readonly": true,
+              "default": "new MachineController( this, colorSwatchPickerMachine, () => colorPickerSwatchPickerProps(this.ctrl.service), { scope: this.pickerScope }, )"
             },
             {
               "kind": "method",
@@ -9683,7 +9696,18 @@
             },
             {
               "kind": "method",
-              "name": "channelTrack",
+              "name": "mounts",
+              "privacy": "private",
+              "return": {
+                "type": {
+                  "text": "HTMLElement[]"
+                }
+              },
+              "description": "三个挂载点：里面的角色节点归内嵌组件管，宿主自己的同名部件（label / control / value-text / hidden-input / swatch）不算它们。"
+            },
+            {
+              "kind": "method",
+              "name": "mountedPart",
               "privacy": "private",
               "return": {
                 "type": {
@@ -9692,13 +9716,38 @@
               },
               "parameters": [
                 {
-                  "name": "channel",
+                  "name": "mount",
                   "type": {
-                    "text": "ColorPickerChannel"
+                    "text": "string"
+                  }
+                },
+                {
+                  "name": "name",
+                  "type": {
+                    "text": "string"
                   }
                 }
               ],
-              "description": "某条通道的轨道：先按 channel 属性找到那条滑杆，再取它自己那条轨道。"
+              "description": "挂载点里的某个角色节点（内嵌组件的部件）。"
+            },
+            {
+              "kind": "method",
+              "name": "ownPart",
+              "privacy": "private",
+              "return": {
+                "type": {
+                  "text": "HTMLElement | null"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "name",
+                  "type": {
+                    "text": "string"
+                  }
+                }
+              ],
+              "description": "宿主自己的某个角色节点：同名的部件落在挂载点里的归内嵌组件，不算宿主的。"
             },
             {
               "kind": "method",
@@ -9821,6 +9870,61 @@
                   }
                 }
               ]
+            },
+            {
+              "kind": "method",
+              "name": "spreadHiddenInput",
+              "privacy": "private",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "input",
+                  "type": {
+                    "text": "HTMLInputElement"
+                  }
+                },
+                {
+                  "name": "props",
+                  "type": {
+                    "text": "Record<string, unknown>"
+                  }
+                }
+              ]
+            },
+            {
+              "kind": "method",
+              "name": "wireSlider",
+              "privacy": "private",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "mountName",
+                  "type": {
+                    "text": "string"
+                  }
+                },
+                {
+                  "name": "mountProps",
+                  "type": {
+                    "text": "Record<string, unknown>"
+                  }
+                },
+                {
+                  "name": "slider",
+                  "type": {
+                    "text": "ColorSliderApi"
+                  }
+                }
+              ],
+              "description": "一条内嵌颜色滑块：挂载点顶替它的 root，里面的 label / control / track / thumb / value-text / hidden-input 逐个打。"
             },
             {
               "kind": "method",
@@ -10008,7 +10112,7 @@
               "name": "--xh-color-picker-action-size"
             },
             {
-              "name": "--xh-color-picker-checker"
+              "name": "--xh-color-picker-alpha-slider-gap"
             },
             {
               "name": "--xh-color-picker-content-backdrop"
@@ -10089,6 +10193,9 @@
               "name": "--xh-color-picker-gap"
             },
             {
+              "name": "--xh-color-picker-hue-slider-gap"
+            },
+            {
               "name": "--xh-color-picker-input-bg"
             },
             {
@@ -10140,22 +10247,28 @@
               "name": "--xh-color-picker-saturation-area-radius"
             },
             {
+              "name": "--xh-color-picker-slider-thumb-size"
+            },
+            {
+              "name": "--xh-color-picker-slider-track-thickness"
+            },
+            {
               "name": "--xh-color-picker-swatch-border"
             },
             {
-              "name": "--xh-color-picker-swatch-border-hover"
+              "name": "--xh-color-picker-swatch-cell"
             },
             {
               "name": "--xh-color-picker-swatch-gap"
             },
             {
-              "name": "--xh-color-picker-swatch-item-size"
+              "name": "--xh-color-picker-swatch-icon-size"
+            },
+            {
+              "name": "--xh-color-picker-swatch-picker-gap"
             },
             {
               "name": "--xh-color-picker-swatch-radius"
-            },
-            {
-              "name": "--xh-color-picker-swatch-ring"
             },
             {
               "name": "--xh-color-picker-swatch-size"
@@ -10174,12 +10287,6 @@
             },
             {
               "name": "--xh-color-picker-thumb-size"
-            },
-            {
-              "name": "--xh-color-picker-track-radius"
-            },
-            {
-              "name": "--xh-color-picker-track-thickness"
             },
             {
               "name": "--xh-color-picker-trigger-fg"

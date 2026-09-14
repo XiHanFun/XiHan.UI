@@ -6,8 +6,9 @@
 // 提供 color picker 相关实现。
 
 import type { Params, Scope, Service } from '@xihan-ui/core'
+import type { ColorSliderSchema } from '../color-slider'
+import type { ColorSwatchPickerSchema } from '../color-swatch-picker'
 import type { ColorHsva } from '../shared/color'
-import type { SliderSchema } from '../slider'
 import type { ColorPickerChannel } from './color-picker.color'
 import type { ColorPickerPoint } from './color-picker.geometry'
 import type { ColorPickerDragTarget, ColorPickerErrorDetails, ColorPickerErrors, ColorPickerSchema } from './color-picker.types'
@@ -16,13 +17,7 @@ import { createPointerSession, resolveSessionDoc } from '@xihan-ui/pointer'
 import { COLOR_FALLBACK, colorHsvaToRgba, colorParse, colorResolveFormat, colorResolveHsva, colorRgbaToHsva, colorToString } from '../shared/color'
 import { OVERLAY_OFFSET, OVERLAY_PLACEMENT_LIST } from '../shared/overlay'
 import { trackOverlayLayer, trackPresenceResources } from '../shared/overlay-shell'
-import {
-  colorPickerApplyInput,
-  colorPickerChannelRange,
-  colorPickerChannelValue,
-  colorPickerWithArea,
-  colorPickerWithChannel,
-} from './color-picker.color'
+import { colorPickerApplyInput, colorPickerWithArea } from './color-picker.color'
 import { colorPickerPointRatio } from './color-picker.geometry'
 
 const { createMachine } = setup<ColorPickerSchema>()
@@ -182,41 +177,78 @@ function applyPoint(params: MachineParams, point: ColorPickerPoint): void {
   applyHsva(params, { ...currentHsva(params), s: ratio.x * 100, v: (1 - ratio.y) * 100 })
 }
 
+/** 通道名与播报文本：取色器文案桶里的两条，转成滑块那份文案的形状。 */
+const CHANNEL_UNIT: Record<ColorPickerChannel, string> = { hue: '°', alpha: '%' }
+const CHANNEL_NAME: Record<ColorPickerChannel, string> = { hue: 'Hue', alpha: 'Alpha' }
+
 /**
- * 喂给某条通道那台内嵌滑杆的 props：区间、步长与当下的值都受控于取色器，推动经回调送回来。
+ * 喂给某条内嵌颜色滑块的 props：值串、工作色与状态都受控于取色器，推动经 HSVA.SET 送回来。
+ * 工作色整份交过去（而不只是串）：灰度处的色相、全透明处的三个分量串里写不进，滑块推色相时才不会把它们抹掉。
  *
  * 透明度那条在 alpha 关掉时整条不可用，与禁用同一档；只读只是改不动，Tab 位照留。
  */
-export function colorPickerChannelSliderProps(
-  service: Service<ColorPickerSchema>,
-  channel: ColorPickerChannel,
-): SliderSchema['props'] {
+function colorPickerSliderProps(service: Service<ColorPickerSchema>, channel: ColorPickerChannel): ColorSliderSchema['props'] {
   const { prop, context, send } = service
-  const range = colorPickerChannelRange(channel)
-  const hsva = colorResolveHsva(context.get('value'), context.get('anchor'))
+  const translations = prop('translations')
+  const format = colorResolveFormat(prop('format') as string | undefined) ?? 'hex'
+  const alpha = prop('alpha') ?? false
   return {
-    value: [Math.round(colorPickerChannelValue(hsva, channel))],
-    min: range.min,
-    max: range.max,
-    step: range.step,
-    largeStep: range.largeStep,
+    channel,
+    value: context.get('value'),
+    hsva: colorResolveHsva(context.get('value'), context.get('anchor')),
+    format,
+    // 色相那条也要保留透明度，否则推色相会把透明度归 1
+    alpha,
     orientation: 'horizontal',
     dir: prop('dir'),
-    disabled: !!prop('disabled') || (channel === 'alpha' && !(prop('alpha') ?? false)),
+    size: prop('size'),
+    disabled: !!prop('disabled') || (channel === 'alpha' && !alpha),
     readOnly: !!prop('readOnly'),
+    translations: {
+      label: () => translations?.channel?.(channel) ?? CHANNEL_NAME[channel],
+      valueText: (_, value) => translations?.channelValueText?.(channel, value) ?? `${value}${CHANNEL_UNIT[channel]}`,
+    },
+    onValueChange: ({ hsva }) => send({ type: 'HSVA.SET', hsva }),
+  }
+}
+
+/** 色相那条颜色滑块的 props。 */
+export function colorPickerHueSliderProps(service: Service<ColorPickerSchema>): ColorSliderSchema['props'] {
+  return colorPickerSliderProps(service, 'hue')
+}
+
+/** 透明度那条颜色滑块的 props。 */
+export function colorPickerAlphaSliderProps(service: Service<ColorPickerSchema>): ColorSliderSchema['props'] {
+  return colorPickerSliderProps(service, 'alpha')
+}
+
+/**
+ * 喂给内嵌色块选择器的 props：格子取 swatches，选中值就是取色器当前的串（色板按颜色比，写法不同也对得上），
+ * 挑一格经 VALUE.SET 送回来。只读与禁用都不改值；色板整组禁用时格子仍可聚焦，与色板单独用时一致。
+ */
+export function colorPickerSwatchPickerProps(service: Service<ColorPickerSchema>): ColorSwatchPickerSchema['props'] {
+  const { prop, context, send } = service
+  const translations = prop('translations')
+  return {
+    swatches: (prop('swatches') ?? []).map(value => ({ value })),
+    value: context.get('value'),
+    disabled: !!prop('disabled'),
+    readOnly: !!prop('readOnly'),
+    dir: prop('dir'),
+    size: prop('size'),
+    translations: {
+      group: translations?.swatchGroup ?? 'Color swatches',
+      swatch: translations?.swatch ?? (value => `Color ${value}`),
+    },
     onValueChange: ({ value }) => {
-      const next = value[0]
-      if (Number.isFinite(next))
-        send({ type: 'CHANNEL.SET', channel, value: next! })
+      if (value != null)
+        send({ type: 'VALUE.SET', value, source: 'swatch' })
     },
   }
 }
 
-function stepSize(channel: ColorPickerChannel | 'area', large: boolean): number {
-  if (channel === 'area')
-    return large ? 10 : 1
-  const range = colorPickerChannelRange(channel)
-  return large ? range.largeStep : range.step
+function stepSize(large: boolean): number {
+  return large ? 10 : 1
 }
 
 // 值走 cell 原生受控（value 给定即受控），不需要影子事件；
@@ -265,9 +297,7 @@ export const colorPickerMachine = createMachine({
     'AREA.SET': { guard: 'canInteract', actions: ['setArea'] },
     'AREA.STEP': { guard: 'canInteract', actions: ['stepArea'] },
     'AREA.TO_EDGE': { guard: 'canInteract', actions: ['areaToEdge'] },
-    'CHANNEL.SET': { guard: 'canInteract', actions: ['setChannel'] },
-    'CHANNEL.STEP': { guard: 'canInteract', actions: ['stepChannel'] },
-    'CHANNEL.TO_EDGE': { guard: 'canInteract', actions: ['channelToEdge'] },
+    'HSVA.SET': { guard: 'canInteract', actions: ['setHsva'] },
     // 打字不设守卫：草稿是纯显示状态，落值那一步在 setDraft / commitDraft 内另有守卫
     'INPUT.CHANGE': { actions: ['setDraft'] },
     'INPUT.COMMIT': { actions: ['commitDraft'] },
@@ -385,7 +415,7 @@ export const colorPickerMachine = createMachine({
         if (e.type !== 'AREA.STEP')
           return
         const hsva = currentHsva(params)
-        const size = stepSize('area', !!e.large)
+        const size = stepSize(!!e.large)
         const base = e.axis === 'x' ? hsva.s : hsva.v
         applyHsva(params, colorPickerWithArea(hsva, e.axis, base + e.direction * size))
       },
@@ -397,28 +427,12 @@ export const colorPickerMachine = createMachine({
         applyHsva(params, colorPickerWithArea(currentHsva(params), e.axis, e.edge === 'min' ? 0 : 100))
       },
 
-      setChannel: (params) => {
+      // 内嵌滑块推出来的整份工作色直接落下：它已经按取色器交过去的工作色算好，不再从串反解
+      setHsva: (params) => {
         const e = params.event.current()
-        if (e.type !== 'CHANNEL.SET')
+        if (e.type !== 'HSVA.SET')
           return
-        applyHsva(params, colorPickerWithChannel(currentHsva(params), e.channel, e.value))
-      },
-
-      stepChannel: (params) => {
-        const e = params.event.current()
-        if (e.type !== 'CHANNEL.STEP')
-          return
-        const hsva = currentHsva(params)
-        const next = colorPickerChannelValue(hsva, e.channel) + e.direction * stepSize(e.channel, !!e.large)
-        applyHsva(params, colorPickerWithChannel(hsva, e.channel, next))
-      },
-
-      channelToEdge: (params) => {
-        const e = params.event.current()
-        if (e.type !== 'CHANNEL.TO_EDGE')
-          return
-        const range = colorPickerChannelRange(e.channel)
-        applyHsva(params, colorPickerWithChannel(currentHsva(params), e.channel, e.edge === 'min' ? range.min : range.max))
+        applyHsva(params, e.hsva)
       },
 
       /** 打字：先留下草稿（框里的字不能被规范文本冲掉），能收下就顺手落值。 */
