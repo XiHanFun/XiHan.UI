@@ -10328,7 +10328,6 @@
       "value"
     ],
     "loading-bar": [
-      "color",
       "defaultValue",
       "fadeDuration",
       "height",
@@ -17114,7 +17113,6 @@
     },
     "xh-loading-bar": {
       "attributes": [
-        "color",
         "default-value",
         "fade-duration",
         "height",

@@ -30,9 +30,7 @@ export interface LoadingBarSchema extends MachineSchema {
     loading?: boolean
     /** 条子厚度：数字按像素，字符串按任意 CSS 长度。缺省 2px。 */
     height?: string | number
-    /** 进度段颜色（任意 CSS 颜色）。不给就用皮肤的品牌色。 */
-    color?: string
-    /** 语气：brand / neutral / success / warning / danger / info，决定进度段用哪族颜色。给了 color 就以 color 为准。 */
+    /** 语气：brand / neutral / success / warning / danger / info，决定进度段用哪族颜色。要用别的颜色改皮肤槽 --xh-loading-bar-range。 */
     tone?: Tone
     /** 不确定进度时自行往前爬，默认开。关掉即停在起步值等宿主收尾。 */
     trickle?: boolean

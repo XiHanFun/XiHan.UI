@@ -29,7 +29,6 @@ export interface XhLoadingBarRootProps extends RootElementProps {
   loading?: boolean
   /** 条子厚度：数字按像素，字符串按任意 CSS 长度。 */
   height?: string | number
-  color?: string
   tone?: Tone
   trickle?: boolean
   trickleSpeed?: number
@@ -45,7 +44,6 @@ export function XhLoadingBarRoot({
   defaultValue,
   loading,
   height,
-  color,
   tone,
   trickle,
   trickleSpeed,
@@ -61,7 +59,6 @@ export function XhLoadingBarRoot({
     defaultValue,
     loading,
     height,
-    color,
     tone,
     trickle,
     trickleSpeed,

@@ -31,7 +31,6 @@ export interface LoadingBarServiceOptions {
   /** error() 收尾用的语气，缺省 danger：出错的收尾要与正常收尾区分得开。 */
   errorTone?: Tone
   height?: string | number
-  color?: string
   trickle?: boolean
   trickleSpeed?: number
   minimum?: number

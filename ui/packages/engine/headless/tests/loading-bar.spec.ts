@@ -508,13 +508,9 @@ describe('connectLoadingBar', () => {
     expect((makeLoadingBar({ height: '0.5rem' }).root().style as Dict).blockSize).toBe('0.5rem')
   })
 
-  it('range 的宽度是百分比；颜色给了才写，没给写空串把上一帧清掉', () => {
+  it('range 的内联样式只有宽度那条轴：颜色归皮肤的语气槽，不走内联', () => {
     const plain = makeLoadingBar({ loading: true, value: 37.5 }).range()
-    expect((plain.style as Dict).inlineSize).toBe('37.5%')
-    expect((plain.style as Dict).background).toBe('')
-
-    const painted = makeLoadingBar({ loading: true, value: 10, color: 'tomato' }).range()
-    expect((painted.style as Dict).background).toBe('tomato')
+    expect(plain.style).toEqual({ inlineSize: '37.5%' })
   })
 
   it('三个角色节点的 data-state 同步推进', () => {
