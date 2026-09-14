@@ -34,6 +34,7 @@ import { commandSuite } from './command.suite'
 import { contextMenuSuite } from './context-menu.suite'
 import { dateFieldSuite } from './date-field.suite'
 import { datePickerSuite } from './date-picker.suite'
+import { dateRangePickerSuite } from './date-range-picker.suite'
 import { descriptionsSuite } from './descriptions.suite'
 import { dialogSuite } from './dialog.suite'
 import { diffViewSuite } from './diff-view.suite'
@@ -263,4 +264,5 @@ export const allSuites: readonly ConformanceSuite[] = [
   tagGroupSuite,
   inputGroupSuite,
   commandSuite,
+  dateRangePickerSuite,
 ]

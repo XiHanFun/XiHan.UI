@@ -110,7 +110,8 @@
       "page-header"
     ],
     "calendar": [
-      "date-picker"
+      "date-picker",
+      "date-range-picker"
     ],
     "cancel-trigger": [
       "editable",
@@ -156,6 +157,7 @@
       "combobox",
       "date-field",
       "date-picker",
+      "date-range-picker",
       "file-upload",
       "select",
       "signature-pad",
@@ -221,6 +223,7 @@
       "command",
       "context-menu",
       "date-picker",
+      "date-range-picker",
       "dialog",
       "drawer",
       "floating-panel",
@@ -261,6 +264,7 @@
       "combobox",
       "date-field",
       "date-picker",
+      "date-range-picker",
       "editable",
       "field",
       "number-field",
@@ -757,6 +761,7 @@
       "combobox",
       "date-field",
       "date-picker",
+      "date-range-picker",
       "descriptions",
       "editable",
       "field",
@@ -953,6 +958,7 @@
       "command",
       "context-menu",
       "date-picker",
+      "date-range-picker",
       "dialog",
       "drawer",
       "floating-panel",
@@ -982,10 +988,12 @@
     ],
     "preset": [
       "date-picker",
+      "date-range-picker",
       "time-picker"
     ],
     "preset-group": [
       "date-picker",
+      "date-range-picker",
       "time-picker"
     ],
     "prev-trigger": [
@@ -1031,6 +1039,9 @@
       "progress",
       "slider"
     ],
+    "range-separator": [
+      "date-range-picker"
+    ],
     "reset-trigger": [
       "form",
       "image-viewer"
@@ -1071,6 +1082,7 @@
       "context-menu",
       "date-field",
       "date-picker",
+      "date-range-picker",
       "descriptions",
       "diff-view",
       "download-trigger",
@@ -1216,6 +1228,7 @@
     "segment-group": [
       "date-field",
       "date-picker",
+      "date-range-picker",
       "time-field",
       "time-picker"
     ],
@@ -1397,6 +1410,7 @@
       "command",
       "context-menu",
       "date-picker",
+      "date-range-picker",
       "dialog",
       "drawer",
       "file-upload",

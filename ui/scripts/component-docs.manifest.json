@@ -253,6 +253,10 @@
           "name": "日期选择器"
         },
         {
+          "id": "date-range-picker",
+          "name": "日期范围选择器"
+        },
+        {
           "id": "editable",
           "name": "就地编辑"
         },

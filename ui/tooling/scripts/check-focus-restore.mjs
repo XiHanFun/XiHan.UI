@@ -38,6 +38,7 @@ const EXEMPT = {
   'navigation-menu': '不建焦点域：面板里是链接不是菜单项，收起时由 focusItem 直接把焦点放回对应 trigger',
   'menubar': 'roving 锚点自己算，退出动作里手搬焦点（restoreTriggerFocus）',
   'date-picker': '触发器是输入行，点它必然把焦点落到某一段上，创建前的快照就是它本身',
+  'date-range-picker': '触发器是输入行，点它必然把焦点落到某一段上，创建前的快照就是它本身',
   'tour': '引导没有触发器，由宿主程序发起，除了创建前的持有者没有别的落点可交',
 }
 

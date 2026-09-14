@@ -35,6 +35,7 @@ import type { CommandTranslations } from '../command/command.types'
 import type { ContextMenuTranslations } from '../context-menu/context-menu.types'
 import type { DateFieldTranslations } from '../date-field/date-field.types'
 import type { DatePickerTranslations } from '../date-picker/date-picker.types'
+import type { DateRangePickerTranslations } from '../date-range-picker/date-range-picker.types'
 import type { DescriptionsTranslations } from '../descriptions/descriptions.types'
 import type { DialogTranslations } from '../dialog/dialog.types'
 import type { DiffViewTranslations } from '../diff-view/diff-view.types'
@@ -165,6 +166,7 @@ export interface XhTranslationOverrides {
   'context-menu'?: Partial<ContextMenuTranslations>
   'date-field'?: Partial<DateFieldTranslations>
   'date-picker'?: Partial<DatePickerTranslations>
+  'date-range-picker'?: Partial<DateRangePickerTranslations>
   'descriptions'?: Partial<DescriptionsTranslations>
   'dialog'?: Partial<DialogTranslations>
   'diff-view'?: Partial<DiffViewTranslations>

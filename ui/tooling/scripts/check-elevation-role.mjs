@@ -55,6 +55,7 @@ const EXPECTED = {
   'command': { content: ['sheet'] },
   'context-menu': { content: ['frosted'] },
   'date-picker': { content: ['frosted'] },
+  'date-range-picker': { content: ['frosted'] },
   'dialog': { content: ['sheet'] },
   'drawer': { content: ['sheet'] },
   'float-button': { root: ['glass'] },

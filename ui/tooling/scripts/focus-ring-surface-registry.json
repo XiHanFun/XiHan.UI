@@ -69,6 +69,8 @@
     "date-field [data-part='segment'][data-scope='date-field']": "环由 control 的 :focus-within 画在外框上，段位只反白标出当前段",
     "date-picker [data-part='content'][data-scope='date-picker']": "浮层壳不承载焦点（焦点直接落到聚焦日那一格），tabindex=-1 只接程序化落焦",
     "date-picker [data-part='segment-group'][data-scope='date-picker']": "容器不占 Tab 位也不承载焦点，环由 control 画",
+    "date-range-picker [data-part='content'][data-scope='date-range-picker']": "浮层壳不承载焦点（焦点直接落到起点那一格），tabindex=-1 只接程序化落焦",
+    "date-range-picker [data-part='segment-group'][data-scope='date-range-picker']": "容器不占 Tab 位也不承载焦点，环由 control 画",
     "dialog [data-part='content'][data-scope='dialog']": "面板是焦点陷阱的兜底落点（tabindex=-1），环长在里面的可聚焦控件上",
     "drawer [data-part='content'][data-scope='drawer']": "面板是焦点陷阱的兜底落点（tabindex=-1），环长在里面的可聚焦控件上",
     "floating-panel [data-part='content'][data-scope='floating-panel']": "面板本体不接收焦点，只是键盘事件的收口点；环长在标题栏的按钮上",
@@ -214,6 +216,13 @@
       "ring": "poured"
     },
     "date-picker [data-part='trigger'][data-scope='date-picker'][data-state='open']": {
+      "parts": [
+        "trigger"
+      ],
+      "ratio": 2.89,
+      "ring": "poured"
+    },
+    "date-range-picker [data-part='trigger'][data-scope='date-range-picker'][data-state='open']": {
       "parts": [
         "trigger"
       ],

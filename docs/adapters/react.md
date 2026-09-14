@@ -4,7 +4,7 @@
 
 依赖：`react` 与 `react-dom` 是 peer 依赖，下限 19。这一版只支持 React 19——机器要求「宿主提交完这一帧、DOM 落定之后再跑回调」，`flushSync` 与 `useSyncExternalStore` 的行为是这条契约的地基。
 
-铺开进度：127 个组件里已铺 127 个，组件面与 Vue 侧齐平。登记在 `ui/tooling/scripts/react-coverage.json`，十几张门禁按它决定该核哪些组件——登记多了会核到不存在的组件，登记少了是静默漏检，两侧都判失败。
+铺开进度：128 个组件里已铺 128 个，组件面与 Vue 侧齐平。登记在 `ui/tooling/scripts/react-coverage.json`，十几张门禁按它决定该核哪些组件——登记多了会核到不存在的组件，登记少了是静默漏检，两侧都判失败。
 
 ## 组件命名
 
@@ -104,7 +104,7 @@ const { api, service } = useDialog({ open, onOpenChange });
 | `flush` | `flushSync` 逼出一次提交，回调在 DOM 落定之后跑 |
 | `onMount` / `onCleanup` | `useLayoutEffect` 的挂载与清理 |
 
-`track` 是拉式的，这一条与 Vue 侧不同。Vue 的 `watch` 挂在响应式源上，源一动就通知；React 这边 props 的变化不经过任何可订阅的源，它就是下一次渲染函数的入参。推式实现在这里会永远收不到 props 变化——56 个机器里的 `track` 与 55 个 `watch` 块全部静默失效，而且不报错。
+`track` 是拉式的，这一条与 Vue 侧不同。Vue 的 `watch` 挂在响应式源上，源一动就通知；React 这边 props 的变化不经过任何可订阅的源，它就是下一次渲染函数的入参。推式实现在这里会永远收不到 props 变化——57 个机器里的 `track` 与 56 个 `watch` 块全部静默失效，而且不报错。
 
 `useMachine(machine, getProps, options)` 把它包起来。props 传的是 getter：每次渲染现取，机器读到的永远是这一帧的值。
 
