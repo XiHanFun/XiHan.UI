@@ -184,7 +184,7 @@
     "data-line-numbers": "code-view 显示行号列。",
     "data-live": "markdown-stream 的这一块还在增长，尚未定稿。",
     "data-loading": "正在加载、提交，或等外部结果落定：approval、button、image-viewer、infinite-scroll、log、popconfirm、prompt-input、switch、table、tool-call，反馈件的「事情还没完」（notification、toast：字形换成转圈且不自动消失），以及集合件取条目在途（cascader、combobox、listbox、mention、select、transfer、tree、tree-select）。配对 aria-busy。",
-    "data-logo": "qr-code 的码面上留了 logo 位；皮肤不据此做事，留给作者当选择器。",
+    "data-logo": "matrix-code 的码面上留了 logo 位；皮肤不据此做事，留给作者当选择器。",
     "data-movable": "field-array 允许拖动调整行序。",
     "data-multiline": "输入宿主是多行的：combobox 的 textarea、truncate 的多行省略。",
     "data-native": "scroll-area / scrollbar 把滚动条交还给了原生，不再自绘。",

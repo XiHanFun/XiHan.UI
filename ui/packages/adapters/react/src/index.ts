@@ -149,6 +149,8 @@ export type {
 } from './components/badge/badge'
 export { useBadgeContext } from './components/badge/context'
 export type { BadgeContext } from './components/badge/context'
+export { XhBarCode } from './components/bar-code/bar-code'
+export type { XhBarCodeProps } from './components/bar-code/bar-code'
 export {
   XhBreadcrumbEllipsis,
   XhBreadcrumbItem,
@@ -1371,6 +1373,10 @@ export { XhMarqueeContent, XhMarqueeRoot } from './components/marquee/marquee'
 export type { XhMarqueeContentProps, XhMarqueeRootProps } from './components/marquee/marquee'
 export { XhMasonry } from './components/masonry/masonry'
 export type { XhMasonryProps } from './components/masonry/masonry'
+export { useMatrixCodeContext } from './components/matrix-code/context'
+export type { MatrixCodeContext } from './components/matrix-code/context'
+export { XhMatrixCode, XhMatrixCodeLogo } from './components/matrix-code/matrix-code'
+export type { XhMatrixCodeLogoProps, XhMatrixCodeProps } from './components/matrix-code/matrix-code'
 export { useMentionContext, useMentionItemContext } from './components/mention/context'
 export {
   XhMentionContent,
@@ -1754,10 +1760,6 @@ export type {
 } from './components/prompt-input/prompt-input'
 export { usePromptInput } from './components/prompt-input/use-prompt-input'
 export type { PromptInputContext } from './components/prompt-input/use-prompt-input'
-export { useQrCodeContext } from './components/qr-code/context'
-export type { QrCodeContext } from './components/qr-code/context'
-export { XhQrCode, XhQrCodeLogo } from './components/qr-code/qr-code'
-export type { XhQrCodeLogoProps, XhQrCodeProps } from './components/qr-code/qr-code'
 export { useQuestionFlowContext } from './components/question-flow/context'
 export {
   XhQuestionFlowCounter,

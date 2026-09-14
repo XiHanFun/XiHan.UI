@@ -16,6 +16,7 @@ import type { AvatarGroupTranslations } from '../avatar-group/avatar-group.types
 import type { AvatarTranslations } from '../avatar/avatar.types'
 import type { BackTopTranslations } from '../back-top/back-top.types'
 import type { BadgeTranslations } from '../badge/badge.types'
+import type { BarCodeTranslations } from '../bar-code/bar-code.types'
 import type { BreadcrumbTranslations } from '../breadcrumb/breadcrumb.types'
 import type { ButtonGroupTranslations } from '../button-group/button-group.types'
 import type { ButtonTranslations } from '../button/button.types'
@@ -32,8 +33,8 @@ import type { CollapsibleTranslations } from '../collapsible/collapsible.types'
 import type { ColorFieldTranslations } from '../color-field/color-field.types'
 import type { ColorPickerTranslations } from '../color-picker/color-picker.types'
 import type { ColorSliderTranslations } from '../color-slider/color-slider.types'
-import type { ColorSwatchTranslations } from '../color-swatch/color-swatch.types'
 import type { ColorSwatchPickerTranslations } from '../color-swatch-picker/color-swatch-picker.types'
+import type { ColorSwatchTranslations } from '../color-swatch/color-swatch.types'
 import type { ComboboxTranslations } from '../combobox/combobox.types'
 import type { CommandTranslations } from '../command/command.types'
 import type { ContextMenuTranslations } from '../context-menu/context-menu.types'
@@ -77,6 +78,7 @@ import type { LogTranslations } from '../log/log.types'
 import type { MarkdownStreamTranslations } from '../markdown-stream/markdown-stream.types'
 import type { MarqueeTranslations } from '../marquee/marquee.types'
 import type { MasonryTranslations } from '../masonry/masonry.types'
+import type { MatrixCodeTranslations } from '../matrix-code/matrix-code.types'
 import type { MentionTranslations } from '../mention/mention.types'
 import type { MenuTranslations } from '../menu/menu.types'
 import type { MenubarTranslations } from '../menubar/menubar.types'
@@ -93,7 +95,6 @@ import type { PopconfirmTranslations } from '../popconfirm/popconfirm.types'
 import type { PopoverTranslations } from '../popover/popover.types'
 import type { ProgressTranslations } from '../progress/progress.types'
 import type { PromptInputTranslations } from '../prompt-input/prompt-input.types'
-import type { QrCodeTranslations } from '../qr-code/qr-code.types'
 import type { QuestionFlowTranslations } from '../question-flow/question-flow.types'
 import type { RadioGroupTranslations } from '../radio-group/radio-group.types'
 import type { RatingTranslations } from '../rating/rating.types'
@@ -152,6 +153,7 @@ export interface XhTranslationOverrides {
   'avatar-group'?: Partial<AvatarGroupTranslations>
   'back-top'?: Partial<BackTopTranslations>
   'badge'?: Partial<BadgeTranslations>
+  'bar-code'?: Partial<BarCodeTranslations>
   'breadcrumb'?: Partial<BreadcrumbTranslations>
   'button'?: Partial<ButtonTranslations>
   'button-group'?: Partial<ButtonGroupTranslations>
@@ -213,6 +215,7 @@ export interface XhTranslationOverrides {
   'markdown-stream'?: Partial<MarkdownStreamTranslations>
   'marquee'?: Partial<MarqueeTranslations>
   'masonry'?: Partial<MasonryTranslations>
+  'matrix-code'?: Partial<MatrixCodeTranslations>
   'mention'?: Partial<MentionTranslations>
   'menu'?: Partial<MenuTranslations>
   'message-feed'?: Partial<MessageFeedTranslations>
@@ -228,7 +231,6 @@ export interface XhTranslationOverrides {
   'popover'?: Partial<PopoverTranslations>
   'progress'?: Partial<ProgressTranslations>
   'prompt-input'?: Partial<PromptInputTranslations>
-  'qr-code'?: Partial<QrCodeTranslations>
   'question-flow'?: Partial<QuestionFlowTranslations>
   'radio-group'?: Partial<RadioGroupTranslations>
   'rating'?: Partial<RatingTranslations>

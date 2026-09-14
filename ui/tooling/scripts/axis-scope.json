@@ -26,6 +26,7 @@
   "badge": [
     "size"
   ],
+  "bar-code": [],
   "breadcrumb": [
     "size"
   ],
@@ -196,6 +197,7 @@
   ],
   "marquee": [],
   "masonry": [],
+  "matrix-code": [],
   "mention": [
     "variant",
     "size"
@@ -252,7 +254,6 @@
     "variant",
     "size"
   ],
-  "qr-code": [],
   "question-flow": [
     "variant",
     "size"

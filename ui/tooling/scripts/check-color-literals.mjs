@@ -82,7 +82,11 @@ const PRIMITIVE_OK = {
     reason: '看图时整块画布是恒定的深底加浅字，照片要在中性底上看，不随主题翻',
     tokens: ['neutral-0', 'neutral-950'],
   },
-  'qr-code.css': {
+  'bar-code.css': {
+    reason: '条必须比底色深且对比要足，读码器按深条浅底取样，反相与深浅相近都扫不出来',
+    tokens: ['neutral-0', 'neutral-950'],
+  },
+  'matrix-code.css': {
     reason: '码点必须比底色深且对比要足，反相与深浅相近都会让一部分读码器扫不出来',
     tokens: ['neutral-0', 'neutral-950'],
   },

@@ -1,0 +1,479 @@
+/*
+ * Copyright (c) 2021-Present XiHanFun and contributors.
+ * Licensed under the MIT License. See LICENSE in the project root for license information.
+ */
+
+// 提供 matrix code 相关实现。
+
+import type { NormalizeProps, PropTypes } from '@xihan-ui/core'
+import type { MatrixCodeApi, MatrixCodeEyeShape, MatrixCodeFormat, MatrixCodeLevel, MatrixCodeLogoArea, MatrixCodeLogoDamage, MatrixCodeModuleShape, MatrixCodeProps, MatrixCodeState } from './matrix-code.types'
+import type { Pdf417Level } from './pdf417-encode'
+import type { QrLevel } from './qr-encode'
+import { dataAttr, DIAGNOSTIC_CODES, reportDiagnostic } from '@xihan-ui/core'
+import { aztecEncode } from './aztec-encode'
+import { dmEncode } from './dm-encode'
+import { matrixCodeAnatomy } from './matrix-code.anatomy'
+import { pdf417Encode } from './pdf417-encode'
+import { qrAlignmentPositions, qrDamage, qrEncode } from './qr-encode'
+
+const parts = matrixCodeAnatomy.build()
+
+const DEFAULT_FORMAT: MatrixCodeFormat = 'qr'
+/** 认识的码制；`format` 是从 DOM 特性来的字符串，得按运行时的表核，光靠类型拦不住。 */
+const FORMATS: ReadonlySet<string> = new Set<MatrixCodeFormat>(['qr', 'data-matrix', 'pdf417', 'aztec'])
+const DEFAULT_LEVEL: QrLevel = 'M'
+const QR_LEVELS: ReadonlySet<string> = new Set<QrLevel>(['L', 'M', 'Q', 'H'])
+/** Aztec 纠错百分比的缺省与取值范围。 */
+const AZTEC_DEFAULT_PERCENT = 33
+const AZTEC_MIN_PERCENT = 5
+const AZTEC_MAX_PERCENT = 95
+/** 各码制的规范静区，单位是模块：QR 四格，Data Matrix 一格，PDF417 两格，Aztec 不需要；不认识的码制按 QR 的兜住 viewBox。 */
+function defaultMargin(format: MatrixCodeFormat): number {
+  if (format === 'data-matrix')
+    return 1
+  if (format === 'pdf417')
+    return 2
+  if (format === 'aztec')
+    return 0
+  return 4
+}
+
+/** 纠错级别按码制核取值域；不合的抛 RangeError，走 error 态那条路。 */
+function resolveQrLevel(level: MatrixCodeLevel | undefined): QrLevel {
+  if (level === undefined)
+    return DEFAULT_LEVEL
+  if (typeof level === 'string' && QR_LEVELS.has(level))
+    return level as QrLevel
+  throw new RangeError(`QR 的纠错级别只认 L / M / Q / H，收到「${String(level)}」`)
+}
+function resolvePdf417Level(level: MatrixCodeLevel | undefined): Pdf417Level | undefined {
+  if (level === undefined)
+    return undefined
+  const n = Number(level)
+  if (Number.isInteger(n) && n >= 0 && n <= 8)
+    return n as Pdf417Level
+  throw new RangeError(`PDF417 的纠错级别是 0–8 的整数，收到「${String(level)}」`)
+}
+function resolveAztecPercent(level: MatrixCodeLevel | undefined): number {
+  if (level === undefined)
+    return AZTEC_DEFAULT_PERCENT
+  const n = Number(level)
+  if (Number.isFinite(n) && n >= AZTEC_MIN_PERCENT && n <= AZTEC_MAX_PERCENT)
+    return Math.trunc(n)
+  throw new RangeError(`Aztec 的纠错级别是纠错码字至少占的百分比 ${AZTEC_MIN_PERCENT}–${AZTEC_MAX_PERCENT}，收到「${String(level)}」`)
+}
+const DEFAULT_SIZE = 160
+const DEFAULT_MODULE_SHAPE: MatrixCodeModuleShape = 'square'
+const DEFAULT_EYE_SHAPE: MatrixCodeEyeShape = 'square'
+
+// ── 形状的几何常量，单位一律是模块边长 ──
+// 读码器按模块中心取样，这几个数各自的上限就是"墨还盖得住格心"这一条。
+
+/** 圆码点的半径：0.5 即格内最大内切圆，格心到墨边留满半格。 */
+const DOT_RADIUS = 0.5
+/** 圆角码点的圆角半径：小于半格，切掉的四个角够不着格心。 */
+const MODULE_CORNER = 0.25
+/** 圆角码眼外框 7×7 的圆角半径：外环四角那格的格心距外角 (0.5, 0.5)，圆角超过 1.707 就盖不住它。 */
+const EYE_CORNER = 1
+/** 圆角码眼挖孔 5×5 的圆角半径：孔的圆角只让墨变多，啃不到外环任何一格的格心。 */
+const EYE_HOLE_CORNER = 0.5
+/** 圆角码眼内心 3×3 的圆角半径。 */
+const EYE_CORE_CORNER = 0.75
+
+/** logo 边长占每边模块数的上限：1/5 边长约合 4% 面积。 */
+const LOGO_SIDE_DIVISOR = 5
+
+/** 四个纠错级别标称可恢复的码字比例。 */
+const RECOVERY: Readonly<Record<QrLevel, number>> = { L: 0.07, M: 0.15, Q: 0.25, H: 0.3 }
+
+// 格子分三类：数据模块、一律保持方块的时序与校正图形、三个码眼的 7×7 块。
+const CELL_DATA = 0
+const CELL_FIXED = 1
+const CELL_EYE = 2
+
+/** 没画出码时透出的空矩阵，恒等以免每次调用都换一个新数组。 */
+const EMPTY_MODULES: readonly (readonly boolean[])[] = []
+
+/**
+ * 逐格标出三类：三个定位图形的 7×7 块、时序图形与校正图形、其余数据模块。
+ * 时序与校正图形单列一类是因为它们不跟着码点形状变形。
+ */
+function classifyCells(count: number, version: number): Uint8Array {
+  const cells = new Uint8Array(count * count)
+
+  const corners: readonly (readonly [number, number])[] = [[0, 0], [0, count - 7], [count - 7, 0]]
+  for (const [top, left] of corners) {
+    for (let row = 0; row < 7; row++) {
+      for (let col = 0; col < 7; col++)
+        cells[(top + row) * count + left + col] = CELL_EYE
+    }
+  }
+
+  for (let i = 0; i < count; i++) {
+    if (cells[6 * count + i] === CELL_DATA)
+      cells[6 * count + i] = CELL_FIXED
+    if (cells[i * count + 6] === CELL_DATA)
+      cells[i * count + 6] = CELL_FIXED
+  }
+
+  const positions = qrAlignmentPositions(version)
+  const last = positions.length - 1
+  for (let i = 0; i <= last; i++) {
+    for (let j = 0; j <= last; j++) {
+      // 三个角上的校正图形压在定位图形里，不单独标
+      if ((i === 0 && j === 0) || (i === 0 && j === last) || (i === last && j === 0))
+        continue
+      for (let dr = -2; dr <= 2; dr++) {
+        for (let dc = -2; dc <= 2; dc++) {
+          const at = (positions[i]! + dr) * count + positions[j]! + dc
+          if (cells[at] === CELL_DATA)
+            cells[at] = CELL_FIXED
+        }
+      }
+    }
+  }
+  return cells
+}
+
+/** 一段横向游程的方块，与合并路径同一种写法。 */
+function runRect(x: number, y: number, run: number): string {
+  return `M${x} ${y}h${run}v1h-${run}z`
+}
+
+/** 一格的内切圆：起点取圆的最左点，两段半圆合成整圆。 */
+function dotCell(x: number, y: number): string {
+  const r = DOT_RADIUS
+  return `M${x} ${y + r}a${r} ${r} 0 1 0 ${r * 2} 0a${r} ${r} 0 1 0 ${-r * 2} 0z`
+}
+
+/**
+ * 矩形子路径。clockwise 决定绕向：同一条 d 里外框顺绕、挖孔逆绕，
+ * 按非零填充规则得到一个中空的环。
+ */
+function rectPath(x: number, y: number, w: number, h: number, clockwise: boolean): string {
+  return clockwise ? `M${x} ${y}h${w}v${h}h${-w}z` : `M${x} ${y}v${h}h${w}v${-h}z`
+}
+
+/** 圆角矩形子路径，绕向含义与 rectPath 相同。 */
+function roundedRectPath(x: number, y: number, w: number, h: number, r: number, clockwise: boolean): string {
+  const ix = w - r * 2
+  const iy = h - r * 2
+  if (clockwise) {
+    return `M${x + r} ${y}h${ix}a${r} ${r} 0 0 1 ${r} ${r}v${iy}a${r} ${r} 0 0 1 ${-r} ${r}`
+      + `h${-ix}a${r} ${r} 0 0 1 ${-r} ${-r}v${-iy}a${r} ${r} 0 0 1 ${r} ${-r}z`
+  }
+  return `M${x} ${y + r}v${iy}a${r} ${r} 0 0 0 ${r} ${r}h${ix}a${r} ${r} 0 0 0 ${r} ${-r}`
+    + `v${-iy}a${r} ${r} 0 0 0 ${-r} ${-r}h${-ix}a${r} ${r} 0 0 0 ${-r} ${r}z`
+}
+
+/** 一个 7×7 定位图形：外框挖掉 5×5 得到外环，再补一个 3×3 的内心。 */
+function eyeAt(x: number, y: number, shape: MatrixCodeEyeShape): string {
+  if (shape === 'rounded') {
+    return roundedRectPath(x, y, 7, 7, EYE_CORNER, true)
+      + roundedRectPath(x + 1, y + 1, 5, 5, EYE_HOLE_CORNER, false)
+      + roundedRectPath(x + 2, y + 2, 3, 3, EYE_CORE_CORNER, true)
+  }
+  return rectPath(x, y, 7, 7, true)
+    + rectPath(x + 1, y + 1, 5, 5, false)
+    + rectPath(x + 2, y + 2, 3, 3, true)
+}
+
+/** 左上、右上、左下三个定位图形合成一条 d。 */
+function buildEyePath(count: number, margin: number, shape: MatrixCodeEyeShape): string {
+  const near = margin
+  const far = margin + count - 7
+  return eyeAt(near, near, shape) + eyeAt(far, near, shape) + eyeAt(near, far, shape)
+}
+
+/**
+ * 除码眼以外的模块合成一条 d：码眼那 3 块 7×7 留给 buildEyePath。
+ * 方块码点、以及一律保持方块的时序与校正图形，横向连续的同类并成一个矩形——
+ * 一格一个 `<rect>` 的话，40 版满码是三万多个节点；圆点与圆角码点一格一段。
+ */
+function buildShapedPath(
+  modules: readonly (readonly boolean[])[],
+  cells: Uint8Array,
+  columns: number,
+  rows: number,
+  margin: number,
+  shape: MatrixCodeModuleShape,
+): string {
+  const merged = shape === 'square'
+  const segments: string[] = []
+  for (let row = 0; row < rows; row++) {
+    const line = modules[row]!
+    let col = 0
+    while (col < columns) {
+      const kind = cells[row * columns + col]!
+      if (!line[col] || kind === CELL_EYE) {
+        col++
+        continue
+      }
+      if (merged || kind === CELL_FIXED) {
+        let run = 1
+        while (col + run < columns && line[col + run]) {
+          const next = cells[row * columns + col + run]!
+          if (next === CELL_EYE || (!merged && next !== CELL_FIXED))
+            break
+          run++
+        }
+        segments.push(runRect(col + margin, row + margin, run))
+        col += run
+        continue
+      }
+      segments.push(shape === 'dot'
+        ? dotCell(col + margin, row + margin)
+        : roundedRectPath(col + margin, row + margin, 1, 1, MODULE_CORNER, true))
+      col++
+    }
+  }
+  return segments.join('')
+}
+
+/**
+ * 中心留给 logo 的正方形边长，单位是模块：取不超过每边模块数 1/5 的最大奇数。
+ * 每边模块数恒为奇数，取奇数边长才能整格居中，挖空的四条边不会切开半个模块。
+ */
+function logoSideModules(count: number): number {
+  const limit = Math.floor(count / LOGO_SIDE_DIVISOR)
+  return limit % 2 === 0 ? limit - 1 : limit
+}
+
+/** 对当前码制没有意义的选项：往诊断通道报一条警告，按没给处理。 */
+function warnIgnored(format: MatrixCodeFormat, option: string, onlyFor: MatrixCodeFormat): void {
+  reportDiagnostic({
+    code: DIAGNOSTIC_CODES.matrixCodeOptionIgnored,
+    level: 'warn',
+    scope: matrixCodeAnatomy.name,
+    message: `${option} 只对 ${onlyFor} 有意义，${format} 不认它，这次按没给处理`,
+    detail: { format, option, onlyFor },
+  })
+}
+
+/**
+ * 取一个非负整数档位。
+ * 没给、给了 null、或给了非有限数一律落回缺省值：NaN 会一路写进 viewBox 与内联尺寸，
+ * 得到的是一个不报错也不显示的 `viewBox="0 0 NaN NaN"`。
+ */
+function resolveNumber(value: number | undefined, fallback: number): number {
+  return typeof value === 'number' && Number.isFinite(value) ? Math.max(0, Math.trunc(value)) : fallback
+}
+
+/**
+ * MatrixCode 无状态机：矩阵全部由 props 算出。
+ *
+ * 矩阵只在这里算一遍，适配器直接取 api 上现成的 `path` / `eyePath` / `logoArea` 画，两端不各算一次。
+ *
+ * 几何恒分两条：除码眼外的模块合成 `path`，三个码眼合成 `eyePath`。与形状无关地分开，
+ * 是因为码眼可以单独上色（皮肤里的 `--xh-matrix-code-eye-fg` 铺在 `eyePath` 那个节点上）；
+ * 并成一条的话那个变量就没有能落地的节点，设了也不动。
+ *
+ * 编码失败（内容超出 40 版容量）不往外抛：抛在 Vue 的 computed 或 WC 的 wire 里会连累整棵树。
+ * 改成落到 `state: 'error'` 并且一个模块都不铺——宁可什么都不画，也不画一张扫出半截内容的码。
+ *
+ * 留了 logo 位时算一份 `logoDamage`；损伤比例超出所选纠错级别的余量就往诊断通道报一条警告，
+ * 但码照画：这是能渲染、只是不明智的组合，抛错会连累整棵树。
+ *
+ * 命名分两态且互斥，与 Icon 同一套判据：
+ * · 有名字 → role="img" + aria-label，不写 aria-hidden；
+ * · 无名字（label 与 value 都是空白） → aria-hidden="true"，不写 role 与 aria-label。
+ *
+ * @example
+ * // 23 字节的 URL 落在 2 版（每边 25 模块）：挖空边长 5，盖住 25 个模块，压掉 44 个码字里的 6 个，
+ * // 于是 logoDamage 是 { modules: 25, ratio: 6 / 44, hitsFunctionPatterns: false }。
+ * // 13.6% 这一档，Q 级（25%）与缺省的 M 级（15%）都兜得住，L 级（7%）会报一条警告、码照画。
+ * connectMatrixCode({ value: 'https://ui.xihanfun.com', level: 'Q', logo: true }, normalize)
+ */
+export function connectMatrixCode<T extends PropTypes>(
+  props: MatrixCodeProps,
+  normalize: NormalizeProps<T>,
+): MatrixCodeApi<T> {
+  const format = props.format ?? DEFAULT_FORMAT
+  const value = props.value ?? ''
+  const known = FORMATS.has(format)
+  const margin = resolveNumber(props.margin, defaultMargin(format))
+  const pixelSize = resolveNumber(props.pixelSize, DEFAULT_SIZE)
+  const isQr = format === 'qr'
+  const isPdf417 = format === 'pdf417'
+  // PDF417 是条不是点，码点形状不认
+  const moduleShape = isPdf417 ? DEFAULT_MODULE_SHAPE : (props.moduleShape ?? DEFAULT_MODULE_SHAPE)
+  const eyeShape = props.eyeShape ?? DEFAULT_EYE_SHAPE
+  const gs1 = props.gs1 === true
+  // QR 的级别在几何与 logo 损伤那几处还要用；别的码制走各自的解析
+  let level: QrLevel = DEFAULT_LEVEL
+
+  let modules = EMPTY_MODULES
+  let version = 0
+  let columns = 0
+  let rows = 0
+  /** PDF417 实际用的级别，缺省时由编码器按数据量定，画出来才知道。 */
+  let pdfLevel: Pdf417Level | undefined
+  let state: MatrixCodeState = 'empty'
+  let error: string | undefined
+  // 不认识的码制与装不下的内容同一条路：一个模块都不铺，落 error 态并说明原因。
+  // 不静默退回 qr——按别的码制扫出来的内容对不上，作者却看不出哪里错了。
+  if (!known) {
+    state = 'error'
+    error = `不认识的码制「${String(format)}」，只认 ${[...FORMATS].join(' / ')}`
+  }
+  else {
+    if (format === 'data-matrix' && props.level !== undefined)
+      warnIgnored(format, 'level', 'qr')
+    if (!isQr) {
+      if (props.eyeShape !== undefined)
+        warnIgnored(format, 'eyeShape', 'qr')
+      if (props.logo === true)
+        warnIgnored(format, 'logo', 'qr')
+    }
+    if (format !== 'data-matrix' && props.rectangular !== undefined)
+      warnIgnored(format, 'rectangular', 'data-matrix')
+    if (!isPdf417 && props.columns !== undefined)
+      warnIgnored(format, 'columns', 'pdf417')
+    if (isPdf417 && props.moduleShape !== undefined)
+      warnIgnored(format, 'moduleShape', 'qr')
+    if ((isPdf417 || format === 'aztec') && gs1)
+      warnIgnored(format, 'gs1', 'qr')
+    try {
+      // 级别先核：给错了值不画码，不静默换成缺省
+      if (isQr)
+        level = resolveQrLevel(props.level)
+      if (value !== '') {
+        if (isQr) {
+          const matrix = qrEncode(value, level, { gs1 })
+          modules = matrix.modules
+          version = matrix.version
+          columns = matrix.count
+          rows = matrix.count
+        }
+        else if (format === 'data-matrix') {
+          const matrix = dmEncode(value, { gs1, rectangular: props.rectangular === true })
+          modules = matrix.modules
+          columns = matrix.symbol.columns
+          rows = matrix.symbol.rows
+        }
+        else if (isPdf417) {
+          const matrix = pdf417Encode(value, { level: resolvePdf417Level(props.level), columns: props.columns })
+          modules = matrix.modules
+          columns = matrix.width
+          rows = matrix.rows * matrix.rowHeight
+          pdfLevel = matrix.level
+        }
+        else {
+          const matrix = aztecEncode(value, { eccPercent: resolveAztecPercent(props.level) })
+          modules = matrix.modules
+          columns = matrix.size
+          rows = matrix.size
+        }
+        state = 'ready'
+      }
+      else if (isPdf417) {
+        resolvePdf417Level(props.level)
+      }
+      else if (format === 'aztec') {
+        resolveAztecPercent(props.level)
+      }
+    }
+    catch (cause) {
+      state = 'error'
+      error = cause instanceof Error ? cause.message : String(cause)
+    }
+  }
+
+  const viewBox = `0 0 ${columns + margin * 2} ${rows + margin * 2}`
+  // 宽是 pixelSize，高按模块比例；正方形码两者相等
+  const pixelHeight = columns === 0 ? pixelSize : (pixelSize * (rows + margin * 2)) / (columns + margin * 2)
+
+  // 缺省形状全是轴对齐的整格矩形，带弧的那几种才需要精确几何
+  const curved = moduleShape !== DEFAULT_MODULE_SHAPE || eyeShape !== DEFAULT_EYE_SHAPE
+  let path = ''
+  let eyePath = ''
+  if (state === 'ready') {
+    // QR 的码眼另成一条、时序与校正图形保持方块；Data Matrix 没有码眼，定位图形也随码点形状走——
+    // 点刻打标出来的 Data Matrix 连 L 形定位图形都是一排点，读码器认的就是这个样子
+    const cells = isQr ? classifyCells(columns, version) : new Uint8Array(columns * rows)
+    path = buildShapedPath(modules, cells, columns, rows, margin, moduleShape)
+    if (isQr)
+      eyePath = buildEyePath(columns, margin, eyeShape)
+  }
+
+  let logoArea: MatrixCodeLogoArea | undefined
+  let logoDamage: MatrixCodeLogoDamage | undefined
+  if (props.logo === true && isQr && version !== 0) {
+    const side = logoSideModules(columns)
+    const at = margin + (columns - side) / 2
+    logoArea = { x: at, y: at, size: side }
+
+    // 挖空压在码面正中，落位换算回不含静区的坐标
+    const damage = qrDamage(version, at - margin, at - margin, side)
+    logoDamage = {
+      modules: damage.modules,
+      ratio: damage.codewords / damage.total,
+      hitsFunctionPatterns: damage.hitsFunctionPatterns,
+    }
+    if (logoDamage.ratio > RECOVERY[level]) {
+      reportDiagnostic({
+        code: DIAGNOSTIC_CODES.matrixCodeLogoDamage,
+        level: 'warn',
+        scope: matrixCodeAnatomy.name,
+        message: `中心 logo 盖住了 ${damage.modules} 个模块，压掉 ${damage.total} 个码字里的 ${damage.codewords} 个`
+          + `（${(logoDamage.ratio * 100).toFixed(1)}%），超出 ${level} 级纠错能恢复的 ${(RECOVERY[level] * 100).toFixed(0)}%，`
+          + `这张码可能扫不出来；把 level 提到 Q 或 H，或者去掉 logo`,
+        detail: { level, version, ratio: logoDamage.ratio, recoverable: RECOVERY[level] },
+      })
+    }
+  }
+
+  // 空串与纯空白不算给过名字：认了它就得到一个有 role="img" 却没有名字的对象，读屏只报"图像"
+  const named = props.label ?? value
+  const label = named.trim() === '' ? undefined : named
+
+  return {
+    format,
+    modules,
+    version,
+    columns,
+    rows,
+    margin,
+    viewBox,
+    path,
+    eyePath,
+    logoArea,
+    logoDamage,
+    state,
+    error,
+    label,
+
+    getRootProps: () => normalize.element({
+      ...parts.root.attrs,
+      'viewBox': viewBox,
+      // 缺省形状全是轴对齐的方块，边界都落在整数坐标上，交给渲染器按整像素画，
+      // 边缘不出现半透明的过渡带；带圆弧的形状按整像素画会变成锯齿，改走精确几何
+      'shape-rendering': curved ? 'geometricPrecision' : 'crispEdges',
+      'role': label === undefined ? undefined : 'img',
+      'aria-label': label,
+      'aria-hidden': label === undefined ? true : undefined,
+      // 不认识的码制也原样写上：error 态下作者要看的正是这个值
+      'data-format': format,
+      // QR 与 PDF417 有纠错级别、QR 有版本；没画出码时也不写，皮肤与调试都不会读到一个假的版本号
+      'data-level': isQr ? level : pdfLevel !== undefined ? String(pdfLevel) : undefined,
+      'data-version': version === 0 ? undefined : String(version),
+      'data-columns': columns === 0 ? undefined : String(columns),
+      'data-rows': rows === 0 ? undefined : String(rows),
+      'data-state': state,
+      // 码面上留了 logo 位；皮肤据此不做别的事，留给作者当选择器用
+      'data-logo': dataAttr(logoArea !== undefined),
+      'style': { inlineSize: `${pixelSize}px`, blockSize: `${pixelHeight}px` },
+    }),
+
+    // 没画出码时收成 0 宽 0 高：viewBox 里只剩静区，这块摆哪儿都不对，
+    // 而宽高为 0 的嵌套 <svg> 连同里面的图形一起不渲染
+    getLogoProps: () => normalize.element({
+      ...parts.logo.attrs,
+      // 嵌套 <svg> 自带裁剪，作者的图形溢不出这块方框；里面写 100% 即铺满这块
+      x: logoArea?.x ?? 0,
+      y: logoArea?.y ?? 0,
+      width: logoArea?.size ?? 0,
+      height: logoArea?.size ?? 0,
+    }),
+  }
+}
