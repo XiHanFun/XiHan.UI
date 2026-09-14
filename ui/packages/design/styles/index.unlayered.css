@@ -35654,9 +35654,9 @@
 }
 
 [data-scope='toast'][data-part='close-trigger'] {
-  position: absolute;
-  inset-block-start: calc(-1 * var(--xh-space-1));
-  inset-inline-end: calc(-1 * var(--xh-space-1));
+  position: relative;
+  flex: none;
+  align-self: center;
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -35687,6 +35687,13 @@
     opacity: 1;
     pointer-events: auto;
   }
+}
+
+/* 折叠堆叠只允许最前一条露出关闭入口；触屏没有 hover，必须显式收起后台按钮。 */
+[data-scope='toast'][data-part='root'][data-stack-index]:not([data-frontmost]):not([data-expanded])
+[data-part='close-trigger'] {
+  opacity: 0;
+  pointer-events: none;
 }
 
 /* closable=false 时连接层同时给了 hidden 与 disabled，这条是它真正收起的那一半：
