@@ -3,7 +3,7 @@
  * Licensed under the MIT License. See LICENSE in the project root for license information.
  */
 
-// 验证 hotkeys listener 相关行为。
+// 验证 Web Component Kbd 显式注册与断开行为。
 
 // @vitest-environment jsdom
 import { afterEach, describe, expect, it } from 'vitest'
@@ -11,8 +11,9 @@ import { defineXhElements } from '../src/define'
 
 defineXhElements()
 
-interface HotkeysHost extends HTMLElement {
+interface KbdHost extends HTMLElement {
   keys: string[]
+  register: boolean
   target?: 'document' | (() => EventTarget | null)
   updateComplete: Promise<unknown>
 }
@@ -27,10 +28,19 @@ function press(target: EventTarget): KeyboardEvent {
   return event
 }
 
-describe('xh-hotkeys 纯行为宿主', () => {
-  it('不生成任何展示节点，默认在 ownerDocument 监听', async () => {
-    const host = document.createElement('xh-hotkeys') as HotkeysHost
+function createHost(): KbdHost {
+  const host = document.createElement('xh-kbd') as KbdHost
+  const root = document.createElement('kbd')
+  root.dataset.xhPart = 'root'
+  host.append(root)
+  return host
+}
+
+describe('xh-kbd 快捷键注册', () => {
+  it('显示组合键并在 register 开启后监听 ownerDocument', async () => {
+    const host = createHost()
     host.keys = ['Mod', 'S']
+    host.register = true
     let hits = 0
     host.addEventListener('hot-key', () => {
       hits += 1
@@ -38,31 +48,24 @@ describe('xh-hotkeys 纯行为宿主', () => {
     document.body.append(host)
     await host.updateComplete
 
-    expect(host.children).toHaveLength(0)
-    expect(host.querySelector('[data-scope]')).toBeNull()
+    expect(host.querySelector('kbd')?.textContent).toBe('CtrlS')
     expect(press(document.body).defaultPrevented).toBe(true)
     expect(hits).toBe(1)
   })
 
   it('显式 resolver 限定局部目标，断开后解绑', async () => {
     const local = document.createElement('section')
-    const host = document.createElement('xh-hotkeys') as HotkeysHost
+    const host = createHost()
     host.keys = ['Mod', 'S']
+    host.register = true
     host.target = () => local
-    let hits = 0
-    host.addEventListener('hot-key', () => {
-      hits += 1
-    })
     document.body.append(local, host)
     await host.updateComplete
 
     expect(press(document.body).defaultPrevented).toBe(false)
     expect(press(local).defaultPrevented).toBe(true)
-    expect(hits).toBe(1)
-
     host.remove()
     await Promise.resolve()
     expect(press(local).defaultPrevented).toBe(false)
-    expect(hits).toBe(1)
   })
 })

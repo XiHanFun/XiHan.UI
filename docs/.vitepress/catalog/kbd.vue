@@ -10,5 +10,5 @@ import { XhKbd } from "@xihan-ui/vue";
 </script>
 
 <template>
-  <XhKbd value="Escape" />
+  <XhKbd :keys="['Mod', 'K']" />
 </template>

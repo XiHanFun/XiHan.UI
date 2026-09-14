@@ -62,7 +62,6 @@ import type { ImageTranslations } from '../image/image.types'
 import type { InfiniteScrollTranslations } from '../infinite-scroll/infinite-scroll.types'
 import type { InputGroupTranslations } from '../input-group/input-group.types'
 import type { JsonViewerTranslations } from '../json-viewer/json-viewer.types'
-import type { KbdGroupTranslations } from '../kbd-group/kbd-group.types'
 import type { KbdTranslations } from '../kbd/kbd.types'
 import type { LayoutTranslations } from '../layout/layout.types'
 import type { ListTranslations } from '../list/list.types'
@@ -187,7 +186,6 @@ export interface XhTranslationOverrides {
   'icon'?: Partial<IconTranslations>
   'icon-wrapper'?: Partial<IconWrapperTranslations>
   'kbd'?: Partial<KbdTranslations>
-  'kbd-group'?: Partial<KbdGroupTranslations>
   'image'?: Partial<ImageTranslations>
   'image-cropper'?: Partial<ImageCropperTranslations>
   'image-viewer'?: Partial<ImageViewerTranslations>

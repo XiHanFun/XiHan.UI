@@ -3,17 +3,17 @@
  * Licensed under the MIT License. See LICENSE in the project root for license information.
  */
 
-// 快捷键共享纯函数：Kbd/KbdGroup 用它格式化，Hotkeys 用它判定，三端适配器不复制规则。
+// Kbd 共享纯函数：统一格式化与匹配规则，三端适配器不复制行为。
 //
 // 翻写与判定全程不读 navigator：服务端渲染时没有它，读了会炸；平台由适配器挂载后
-// 调 detectHotkeysPlatform 测出来往下传。
+// 调 detectKbdPlatform 测出来往下传。
 import { isHTMLElement } from '@xihan-ui/core'
 
 /** 平台写法。'auto' 表示还没测出来，由适配器挂载后换成实测值。 */
-export type HotkeysPlatform = 'auto' | 'mac' | 'other'
+export type KbdPlatform = 'auto' | 'mac' | 'other'
 
 /** 落定后的平台写法，只有两种。 */
-export type HotkeysResolvedPlatform = 'mac' | 'other'
+export type KbdResolvedPlatform = 'mac' | 'other'
 
 /** 归一化后的修饰键名，与 KeyboardEvent 上那四个开关一一对应。 */
 type HotkeyModifier = 'Alt' | 'Control' | 'Meta' | 'Shift'
@@ -49,7 +49,7 @@ const MODIFIER_ALIAS: Record<string, HotkeyModifier | 'Mod'> = {
 }
 
 /** 修饰键的键帽写法。 */
-const MODIFIER_LABEL: Record<HotkeyModifier, Record<HotkeysResolvedPlatform, string>> = {
+const MODIFIER_LABEL: Record<HotkeyModifier, Record<KbdResolvedPlatform, string>> = {
   Alt: { mac: '⌥', other: 'Alt' },
   Control: { mac: '⌃', other: 'Ctrl' },
   Meta: { mac: '⌘', other: 'Win' },
@@ -57,7 +57,7 @@ const MODIFIER_LABEL: Record<HotkeyModifier, Record<HotkeysResolvedPlatform, str
 }
 
 /** 修饰键读屏念的名字：同一枚键在两个平台上的叫法不一样。 */
-const MODIFIER_NAME: Record<HotkeyModifier, Record<HotkeysResolvedPlatform, string>> = {
+const MODIFIER_NAME: Record<HotkeyModifier, Record<KbdResolvedPlatform, string>> = {
   Alt: { mac: 'Option', other: 'Alt' },
   Control: { mac: 'Control', other: 'Control' },
   Meta: { mac: 'Command', other: 'Windows' },
@@ -86,7 +86,7 @@ const KEY_ALIAS: Record<string, string> = {
 }
 
 /** 主键的键帽写法；表里没有的键（字母、数字、标点）直接用大写形式。 */
-const KEY_LABEL: Record<string, Record<HotkeysResolvedPlatform, string>> = {
+const KEY_LABEL: Record<string, Record<KbdResolvedPlatform, string>> = {
   ' ': { mac: 'Space', other: 'Space' },
   'ArrowDown': { mac: '↓', other: '↓' },
   'ArrowLeft': { mac: '←', other: '←' },
@@ -141,7 +141,7 @@ function lookup<T>(table: Record<string, T>, key: string): T | undefined {
  * 只在浏览器里、组件挂载之后调用：服务端渲染那一帧没有 navigator。两个适配器共用这一份，
  * 各自拷一份会漂移成「同一组合在 Vue 页面和 WC 页面上显示不同的修饰键」。
  */
-export function detectHotkeysPlatform(): HotkeysResolvedPlatform {
+export function detectKbdPlatform(): KbdResolvedPlatform {
   const nav = globalThis.navigator as (Navigator & { userAgentData?: { platform?: string } }) | undefined
   const raw = nav?.userAgentData?.platform ?? nav?.platform ?? ''
   return /mac|iphone|ipad|ipod/i.test(raw) ? 'mac' : 'other'
@@ -151,17 +151,17 @@ export function detectHotkeysPlatform(): HotkeysResolvedPlatform {
  * 定下按哪个平台的写法出。
  * 'auto' 是「还没测出来」而不是一种平台，未落定前一律按非 Mac 出：符号写法只有 Mac 认得。
  */
-export function resolveHotkeysPlatform(platform: HotkeysPlatform | undefined): HotkeysResolvedPlatform {
+export function resolveKbdPlatform(platform: KbdPlatform | undefined): KbdResolvedPlatform {
   return platform === 'mac' ? 'mac' : 'other'
 }
 
 /** 'Mod' 落到本平台的那一枚修饰键：Mac 上是 ⌘，其余平台是 Ctrl。 */
-function resolveMod(platform: HotkeysResolvedPlatform): HotkeyModifier {
+function resolveMod(platform: KbdResolvedPlatform): HotkeyModifier {
   return platform === 'mac' ? 'Meta' : 'Control'
 }
 
 /** 单个词翻成一枚键。 */
-function toSegment(source: string, platform: HotkeysResolvedPlatform): HotkeySegment {
+function toSegment(source: string, platform: KbdResolvedPlatform): HotkeySegment {
   const alias = lookup(MODIFIER_ALIAS, source.toLowerCase())
   if (alias) {
     const key = alias === 'Mod' ? resolveMod(platform) : alias
@@ -194,9 +194,9 @@ function toSegment(source: string, platform: HotkeysResolvedPlatform): HotkeySeg
  */
 export function formatHotkey(
   keys: readonly string[] | undefined,
-  platform?: HotkeysPlatform,
+  platform?: KbdPlatform,
 ): readonly HotkeySegment[] {
-  const resolved = resolveHotkeysPlatform(platform)
+  const resolved = resolveKbdPlatform(platform)
   // 空串翻不出任何键，留着会铺出一枚没有字的键帽
   return (keys ?? []).filter(key => typeof key === 'string' && key !== '').map(key => toSegment(key, resolved))
 }
@@ -226,7 +226,7 @@ function hitsMainKey(event: KeyboardEvent, key: string): boolean {
 export function matchesHotkey(
   event: KeyboardEvent,
   keys: readonly string[] | undefined,
-  platform?: HotkeysPlatform,
+  platform?: KbdPlatform,
 ): boolean {
   const segments = formatHotkey(keys, platform)
   const mains = segments.filter(segment => !segment.modifier)

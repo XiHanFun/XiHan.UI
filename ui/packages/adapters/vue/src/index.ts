@@ -432,9 +432,6 @@ export type { HeatmapCellSlotProps, HeatmapRootSlotProps } from './components/he
 export { useHeatmap } from './components/heatmap/use-heatmap'
 export type { HeatmapContext } from './components/heatmap/use-heatmap'
 export { XhHighlight } from './components/highlight/highlight'
-export { XhHotkeys } from './components/hotkeys/hotkeys'
-export { useHotkeys } from './components/hotkeys/use-hotkeys'
-export type { HotkeysHandle, UseHotkeysOptions } from './components/hotkeys/use-hotkeys'
 export {
   XhHoverCardArrow,
   XhHoverCardContent,
@@ -499,7 +496,6 @@ export { XhInputGroupItem, XhInputGroupRoot } from './components/input-group/inp
 export { XhJsonViewerRoot } from './components/json-viewer/json-viewer'
 export { useJsonViewer } from './components/json-viewer/use-json-viewer'
 export type { JsonViewerContext } from './components/json-viewer/use-json-viewer'
-export { XhKbdGroup } from './components/kbd-group/kbd-group'
 export { XhKbd } from './components/kbd/kbd'
 export { provideLayout, useLayoutContext } from './components/layout/context'
 export { XhLayoutContent, XhLayoutFooter, XhLayoutHeader, XhLayoutRoot, XhLayoutSider, XhLayoutSiderBackdrop, XhLayoutSiderTrigger } from './components/layout/layout'

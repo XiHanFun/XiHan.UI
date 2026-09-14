@@ -52,7 +52,6 @@ import { gradientTextSuite } from './gradient-text.suite'
 import { gridSuite } from './grid.suite'
 import { heatmapSuite } from './heatmap.suite'
 import { highlightSuite } from './highlight.suite'
-import { hotkeysSuite } from './hotkeys.suite'
 import { hoverCardSuite } from './hover-card.suite'
 import { iconWrapperSuite } from './icon-wrapper.suite'
 import { iconSuite } from './icon.suite'
@@ -62,7 +61,6 @@ import { imageSuite } from './image.suite'
 import { infiniteScrollSuite } from './infinite-scroll.suite'
 import { inputGroupSuite } from './input-group.suite'
 import { jsonViewerSuite } from './json-viewer.suite'
-import { kbdGroupSuite } from './kbd-group.suite'
 import { kbdSuite } from './kbd.suite'
 import { layoutSuite } from './layout.suite'
 import { listSuite } from './list.suite'
@@ -183,8 +181,6 @@ export const allSuites: readonly ConformanceSuite[] = [
   heatmapSuite,
   highlightSuite,
   kbdSuite,
-  kbdGroupSuite,
-  hotkeysSuite,
   hoverCardSuite,
   iconSuite,
   iconWrapperSuite,

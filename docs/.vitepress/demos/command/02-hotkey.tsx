@@ -18,8 +18,7 @@ import {
   XhCommandList,
   XhCommandRoot,
   XhHighlight,
-  XhHotkeys,
-  XhKbdGroup,
+  XhKbd,
 } from "@xihan-ui/react";
 import { useState } from "react";
 
@@ -44,8 +43,7 @@ export default function Demo(): ReactNode {
     <>
       {/* 唤起的入口：监听装在整篇文档上，面板收着也按得出来 */}
       <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
-        <XhKbdGroup keys={["Mod", "K"]} />
-        <XhHotkeys keys={["Mod", "K"]} onHotKey={() => setOpen(true)} />
+        <XhKbd keys={["Mod", "K"]} register onHotKey={() => setOpen(true)} />
         <span>按一下唤起命令面板</span>
       </div>
 
@@ -73,7 +71,7 @@ export default function Demo(): ReactNode {
                           {/* 检索串就是高亮的关键词，用户看得见这条为什么被选出来 */}
                           <XhHighlight text={command.label} keyword={inputValue} />
                         </XhCommandItemText>
-                        {command.hotkey && <XhKbdGroup keys={command.hotkey} />}
+                        {command.hotkey && <XhKbd keys={command.hotkey} />}
                       </XhCommandItem>
                     ))}
                 </XhCommandGroup>

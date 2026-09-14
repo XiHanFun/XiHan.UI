@@ -173,6 +173,7 @@
     "data-in-path": "落在展开 / 选中路径上的祖先（级联的列项、侧栏的分支）。",
     "data-in-range": "calendar 的这一格落在已选区间之内。",
     "data-range-preview": "calendar 的这一格落在尚未确认的区间预览内。",
+    "data-register": "Kbd 已显式开启快捷键注册，适配器会在指定 target 上监听 keydown。",
     "data-indeterminate": "取值定不下来：loading-bar 的进度不可知，tree / tree-select 的父节点子项只勾了一部分。两处是同一个意思落在不同主语上——既不是此也不是彼的中间态，与原生 progress 无 value、checkbox.indeterminate 同义，所以共用一个名字。",
     "data-inline": "flex / space 排成行内盒而不是块盒。",
     "data-instant": "menubar 正在同一条菜单栏内换张，新开的不播进场、收起的不播退场。",

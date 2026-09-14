@@ -3,32 +3,65 @@
  * Licensed under the MIT License. See LICENSE in the project root for license information.
  */
 
-// 提供 kbd 相关实现。
+// 提供 kbd 展示与快捷键注册实现。
 
-import type { HotkeysPlatform, KbdProps, KbdTranslations, KbdVariant } from '@xihan-ui/headless'
+import type { KbdPlatform, KbdProps, KbdTarget, KbdTranslations, KbdVariant } from '@xihan-ui/headless'
 import type { PropType } from 'vue'
+import type { PayloadOf } from '../../runtime/payload'
 import { connectKbd } from '@xihan-ui/headless'
-import { computed, defineComponent, h } from 'vue'
+import { computed, defineComponent, h, onBeforeUnmount, watchEffect } from 'vue'
 import { withXhConfig } from '../../config/config'
 import { vueNormalize } from '../../runtime/normalize-props'
 import { useKbdPlatform } from './use-kbd-platform'
 
-/** 单枚原生 kbd；只展示，不安装任何键盘监听。 */
 export const XhKbd = defineComponent({
   name: 'XhKbd',
   props: {
-    value: { type: String, required: true },
-    platform: { type: String as PropType<HotkeysPlatform> },
+    keys: { type: Array as PropType<string[]>, required: true },
+    platform: { type: String as PropType<KbdPlatform> },
     variant: { type: String as PropType<KbdVariant> },
+    register: { type: Boolean, default: undefined },
+    target: { type: [String, Function] as PropType<KbdTarget> },
+    preventDefault: { type: Boolean, default: undefined },
+    enabled: { type: Boolean, default: undefined },
     translations: { type: Object as PropType<Partial<KbdTranslations>> },
   },
-  setup(props) {
+  emits: {
+    'hot-key': (_details: PayloadOf<KbdProps, 'onHotKey'>) => true,
+  },
+  setup(props, { emit }) {
     const detected = useKbdPlatform()
-    const configured = withXhConfig('kbd', props)
-    const api = computed(() => connectKbd({
-      ...configured,
+    const api = computed(() => connectKbd(withXhConfig('kbd', {
+      keys: props.keys,
       platform: props.platform && props.platform !== 'auto' ? props.platform : detected.value,
-    } as KbdProps, vueNormalize))
-    return () => h('kbd', api.value.getRootProps() as Record<string, unknown>, api.value.label)
+      variant: props.variant,
+      register: props.register,
+      target: props.target,
+      preventDefault: props.preventDefault,
+      enabled: props.enabled,
+      translations: props.translations,
+      onHotKey: details => emit('hot-key', details),
+    }) as KbdProps, vueNormalize))
+    const onKeyDown = (event: Event): void => api.value.handleKeyDown(event as KeyboardEvent)
+    let bound: EventTarget | null = null
+    const stop = (): void => {
+      bound?.removeEventListener('keydown', onKeyDown)
+      bound = null
+    }
+    watchEffect(() => {
+      const next = api.value.resolveTarget(typeof document === 'undefined' ? null : document)
+      if (next === bound)
+        return
+      stop()
+      bound = next
+      bound?.addEventListener('keydown', onKeyDown)
+    })
+    onBeforeUnmount(stop)
+
+    return () => h('kbd', api.value.getRootProps() as Record<string, unknown>, api.value.segments.map((segment, index) => h(
+      'span',
+      { ...api.value.getKeyProps({ value: segment.source }) as Record<string, unknown>, key: `${segment.source}-${index}` },
+      segment.label,
+    )))
   },
 })

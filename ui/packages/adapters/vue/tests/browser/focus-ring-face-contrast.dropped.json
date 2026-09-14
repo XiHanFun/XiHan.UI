@@ -275,8 +275,6 @@
   "[data-scope=\"json-viewer\"][data-part=\"empty\"]": "部件不接焦点：json-viewer/empty",
   "[data-scope=\"json-viewer\"][data-part=\"item\"]:hover": "写法挂不出来：:hover",
   "[data-scope=\"json-viewer\"][data-part=\"text\"]": "部件不接焦点：json-viewer/text",
-  "[data-scope=\"kbd-group\"][data-part=\"key\"]": "部件不接焦点：kbd-group/key",
-  "[data-scope=\"kbd-group\"][data-part=\"root\"][data-disabled] [data-scope=\"kbd-group\"][data-part=\"key\"]": "部件不接焦点：kbd-group/key",
   "[data-scope=\"kbd\"][data-part=\"root\"]": "部件不接焦点：kbd/root",
   "[data-scope=\"kbd\"][data-part=\"root\"][data-disabled]": "部件不接焦点：kbd/root",
   "[data-scope=\"layout\"][data-part=\"footer\"]": "部件不接焦点：layout/footer",

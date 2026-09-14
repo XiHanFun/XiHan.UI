@@ -5,8 +5,10 @@
 
 // 导出 kbd 模块的公共接口。
 
+export { detectKbdPlatform, formatHotkey, isTypingTarget, matchesHotkey, resolveKbdPlatform } from '../shared/hotkey'
+export type { HotkeySegment, KbdPlatform, KbdResolvedPlatform } from '../shared/hotkey'
 export { kbdAnatomy } from './kbd.anatomy'
 export { connectKbd } from './kbd.connect'
 export { kbdKeyboard } from './kbd.keyboard'
 export { kbdMeta } from './kbd.meta'
-export type { KbdApi, KbdProps, KbdTranslations, KbdVariant } from './kbd.types'
+export type { KbdApi, KbdKeyProps, KbdProps, KbdTarget, KbdTranslations, KbdTriggerDetails, KbdVariant } from './kbd.types'

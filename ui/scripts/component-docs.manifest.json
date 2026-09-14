@@ -7,7 +7,6 @@
     "truncate",
     "gradient-text",
     "kbd",
-    "kbd-group",
     "icon",
     "icon-wrapper",
     "toggle",
@@ -65,19 +64,8 @@
           "name": "渐变文字"
         },
         {
-          "id": "hotkeys",
-          "name": "快捷键",
-          "renderless": true
-        },
-        {
           "id": "kbd",
-          "name": "键帽",
-          "status": "new"
-        },
-        {
-          "id": "kbd-group",
-          "name": "键帽组",
-          "status": "new"
+          "name": "键盘按键"
         },
         {
           "id": "icon",

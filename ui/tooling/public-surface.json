@@ -91,7 +91,6 @@
       "./infinite-scroll.css",
       "./input-group.css",
       "./json-viewer.css",
-      "./kbd-group.css",
       "./kbd.css",
       "./label.css",
       "./layers.css",
@@ -314,7 +313,6 @@
       "HeatmapCellSlotProps",
       "HeatmapContext",
       "HeatmapRootSlotProps",
-      "HotkeysHandle",
       "HoverCardContext",
       "HoverCardRootSlotProps",
       "ImageContext",
@@ -490,7 +488,6 @@
       "TypographyContext",
       "UseBackgroundOptions",
       "UseBackgroundReturn",
-      "UseHotkeysOptions",
       "UseHoverIntentOptions",
       "VirtualizerContext",
       "VirtualizerRootSlotProps",
@@ -1157,8 +1154,6 @@
       "XhHeatmapWeekDayProps",
       "XhHighlight",
       "XhHighlightProps",
-      "XhHotkeys",
-      "XhHotkeysProps",
       "XhHoverCardArrow",
       "XhHoverCardArrowProps",
       "XhHoverCardContent",
@@ -1241,8 +1236,6 @@
       "XhJsonViewerRoot",
       "XhJsonViewerRootProps",
       "XhKbd",
-      "XhKbdGroup",
-      "XhKbdGroupProps",
       "XhKbdProps",
       "XhLayoutContent",
       "XhLayoutContentProps",
@@ -2349,7 +2342,6 @@
       "useHeatmapContext",
       "useHeatmapMonth",
       "useHeatmapRow",
-      "useHotkeys",
       "useHoverCard",
       "useHoverCardContext",
       "useHoverIntent",
@@ -2634,7 +2626,6 @@
       "HeatmapCellSlotProps",
       "HeatmapContext",
       "HeatmapRootSlotProps",
-      "HotkeysHandle",
       "HoverCardContext",
       "HoverCardRootSlotProps",
       "IconContext",
@@ -2800,7 +2791,6 @@
       "TypographyContext",
       "UseBackgroundOptions",
       "UseBackgroundReturn",
-      "UseHotkeysOptions",
       "UseHoverIntentOptions",
       "VirtualizerContext",
       "VirtualizerRootSlotProps",
@@ -3159,7 +3149,6 @@
       "XhHeatmapTooltip",
       "XhHeatmapWeekDay",
       "XhHighlight",
-      "XhHotkeys",
       "XhHoverCardArrow",
       "XhHoverCardContent",
       "XhHoverCardDescription",
@@ -3206,7 +3195,6 @@
       "XhInputGroupRoot",
       "XhJsonViewerRoot",
       "XhKbd",
-      "XhKbdGroup",
       "XhLayoutContent",
       "XhLayoutFooter",
       "XhLayoutHeader",
@@ -3845,7 +3833,6 @@
       "useGridContext",
       "useHeatmap",
       "useHeatmapContext",
-      "useHotkeys",
       "useHoverCard",
       "useHoverIntent",
       "useIcon",
@@ -4029,7 +4016,6 @@
       "XhFloatingPanelElement",
       "XhFormElement",
       "XhHeatmapElement",
-      "XhHotkeysElement",
       "XhHoverCardElement",
       "XhIconElement",
       "XhImageCropperElement",
@@ -4038,7 +4024,6 @@
       "XhInputGroupElement",
       "XhJsonViewerElement",
       "XhKbdElement",
-      "XhKbdGroupElement",
       "XhListboxElement",
       "XhLoadingBarElement",
       "XhMarkdownStreamElement",
@@ -5328,12 +5313,6 @@
       "HighlightSegment",
       "HighlightTranslations",
       "HotkeySegment",
-      "HotkeysApi",
-      "HotkeysPlatform",
-      "HotkeysProps",
-      "HotkeysResolvedPlatform",
-      "HotkeysTarget",
-      "HotkeysTriggerDetails",
       "HoverCardApi",
       "HoverCardOpenChangeDetails",
       "HoverCardRefs",
@@ -5413,12 +5392,13 @@
       "JsonViewerView",
       "JsonViewerWalkOptions",
       "KbdApi",
-      "KbdGroupApi",
-      "KbdGroupKeyProps",
-      "KbdGroupProps",
-      "KbdGroupTranslations",
+      "KbdKeyProps",
+      "KbdPlatform",
       "KbdProps",
+      "KbdResolvedPlatform",
+      "KbdTarget",
       "KbdTranslations",
+      "KbdTriggerDetails",
       "KbdVariant",
       "KeyboardRow",
       "KeyboardTable",
@@ -6410,7 +6390,6 @@
       "connectGrid",
       "connectHeatmap",
       "connectHighlight",
-      "connectHotkeys",
       "connectHoverCard",
       "connectIcon",
       "connectIconWrapper",
@@ -6421,7 +6400,6 @@
       "connectInputGroup",
       "connectJsonViewer",
       "connectKbd",
-      "connectKbdGroup",
       "connectLayout",
       "connectList",
       "connectListbox",
@@ -6549,7 +6527,7 @@
       "descriptionsAnatomy",
       "descriptionsKeyboard",
       "descriptionsMeta",
-      "detectHotkeysPlatform",
+      "detectKbdPlatform",
       "dialogAnatomy",
       "dialogKeyboard",
       "dialogMachine",
@@ -6697,9 +6675,6 @@
       "highlightMeta",
       "hitAlong",
       "hitAlongNested",
-      "hotkeysAnatomy",
-      "hotkeysKeyboard",
-      "hotkeysMeta",
       "hoverCardAnatomy",
       "hoverCardKeyboard",
       "hoverCardMachine",
@@ -6780,9 +6755,6 @@
       "jsonViewerMachine",
       "jsonViewerMeta",
       "kbdAnatomy",
-      "kbdGroupAnatomy",
-      "kbdGroupKeyboard",
-      "kbdGroupMeta",
       "kbdKeyboard",
       "kbdMeta",
       "layoutAnatomy",
@@ -7018,9 +6990,9 @@
       "resolveFloatButtonOffset",
       "resolveFormControlState",
       "resolveHeatmapTip",
-      "resolveHotkeysPlatform",
       "resolveHourCycle",
       "resolveInfiniteScrollPhase",
+      "resolveKbdPlatform",
       "resolveLoadingBarFadeDuration",
       "resolveLoadingBarMinimum",
       "resolveLoadingBarTrickleSpeed",
@@ -8156,7 +8128,6 @@
       "mark",
       "root"
     ],
-    "hotkeys": [],
     "hover-card": [
       "arrow",
       "content",
@@ -8236,9 +8207,6 @@
       "tree"
     ],
     "kbd": [
-      "root"
-    ],
-    "kbd-group": [
       "key",
       "root"
     ],
@@ -9573,14 +9541,6 @@
       "text",
       "tone"
     ],
-    "hotkeys": [
-      "enabled",
-      "keys",
-      "onHotKey",
-      "platform",
-      "preventDefault",
-      "target"
-    ],
     "hover-card": [
       "closeDelay",
       "defaultOpen",
@@ -9686,14 +9646,13 @@
       "view"
     ],
     "kbd": [
-      "platform",
-      "translations",
-      "value",
-      "variant"
-    ],
-    "kbd-group": [
+      "enabled",
       "keys",
+      "onHotKey",
       "platform",
+      "preventDefault",
+      "register",
+      "target",
       "translations",
       "variant"
     ],
@@ -10846,6 +10805,7 @@
     "data-inview",
     "data-justify",
     "data-justify-items",
+    "data-key",
     "data-kind",
     "data-label-align",
     "data-lane",
@@ -10895,6 +10855,7 @@
     "data-range-preview",
     "data-range-start",
     "data-readonly",
+    "data-register",
     "data-relative",
     "data-remote",
     "data-required",
@@ -12980,20 +12941,11 @@
     "--xh-kbd-bg",
     "--xh-kbd-border",
     "--xh-kbd-fg",
+    "--xh-kbd-fg-disabled",
     "--xh-kbd-font",
     "--xh-kbd-font-size",
     "--xh-kbd-font-weight",
-    "--xh-kbd-group-bg",
-    "--xh-kbd-group-border",
-    "--xh-kbd-group-fg",
-    "--xh-kbd-group-font",
-    "--xh-kbd-group-font-size",
-    "--xh-kbd-group-font-weight",
-    "--xh-kbd-group-gap",
-    "--xh-kbd-group-h",
-    "--xh-kbd-group-min-w",
-    "--xh-kbd-group-px",
-    "--xh-kbd-group-radius",
+    "--xh-kbd-gap",
     "--xh-kbd-h",
     "--xh-kbd-min-w",
     "--xh-kbd-px",
@@ -15911,17 +15863,6 @@
       ],
       "events": []
     },
-    "xh-hotkeys": {
-      "attributes": [
-        "enabled",
-        "keys",
-        "platform",
-        "prevent-default"
-      ],
-      "events": [
-        "hot-key"
-      ]
-    },
     "xh-hover-card": {
       "attributes": [
         "close-delay",
@@ -16052,21 +15993,18 @@
         "expanded-value-change"
       ]
     },
-    "xh-kbd-group": {
-      "attributes": [
-        "keys",
-        "platform",
-        "variant"
-      ],
-      "events": []
-    },
     "xh-kbd": {
       "attributes": [
+        "enabled",
+        "keys",
         "platform",
-        "value",
+        "prevent-default",
+        "register",
         "variant"
       ],
-      "events": []
+      "events": [
+        "hot-key"
+      ]
     },
     "xh-layout": {
       "attributes": [

@@ -13,9 +13,7 @@
 <XhComponentCard src="truncate" name="Truncate" label="文本截断" href="/components/truncate" />
 <XhComponentCard src="float-button" name="FloatButton" label="浮动按钮" href="/components/float-button" status="alpha" />
 <XhComponentCard src="gradient-text" name="GradientText" label="渐变文字" href="/components/gradient-text" />
-<XhComponentCard src="hotkeys" name="Hotkeys" label="快捷键" href="/components/hotkeys" status="alpha" renderless />
-<XhComponentCard src="kbd" name="Kbd" label="键帽" href="/components/kbd" status="new" />
-<XhComponentCard src="kbd-group" name="KbdGroup" label="键帽组" href="/components/kbd-group" status="new" />
+<XhComponentCard src="kbd" name="Kbd" label="键盘按键" href="/components/kbd" />
 <XhComponentCard src="icon" name="Icon" label="图标" href="/components/icon" />
 <XhComponentCard src="icon-wrapper" name="IconWrapper" label="图标块" href="/components/icon-wrapper" />
 <XhComponentCard src="scrollbar" name="Scrollbar" label="滚动条" href="/components/scrollbar" status="alpha" />
