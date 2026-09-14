@@ -60,12 +60,15 @@
 - `activationMode` 设置单击、双击或按钮激活。
 - 支持提交、取消、受控值和受控编辑状态。
 - `autoResize` 让输入框随内容调整宽度。
+- 标题在上，预览文字或输入框占左侧，动作组固定在右侧；预览态只显示编辑按钮，编辑态只显示确认与取消按钮。
+- 三颗动作使用图标呈现：编辑、确认、取消；图标按钮必须提供可访问名称。
 
 ### 最佳实践
 
 - 为展示态提供清晰的可编辑提示。
 - 保持预览态和编辑态高度一致。
 - 保留 Escape 取消并还原原值。
+- 使用空按钮时由皮肤绘制默认图标，并通过 `aria-label` 写明编辑、确认与取消。
 
 ### 反模式
 
@@ -256,8 +259,9 @@
 | --- | --- | --- | --- | --- | --- |
 | `--xh-editable-control-gap` | `control` | `gap` | `default` | `--xh-space-1` | editable 的 control 部件 gap 覆盖槽。 |
 | `--xh-editable-control-min-h` | `control` | `min-block-size` | `default` | `--xh-_editable-h` | editable 的 control 部件 min-block-size 覆盖槽。 |
-| `--xh-editable-control-min-w` | `control` | `min-inline-size` | `default` | `6ch` | editable 的 control 部件 min-inline-size 覆盖槽。 |
-| `--xh-editable-gap` | `root` | `gap` | `default` | `--xh-space-2` | editable 的 root 部件 gap 覆盖槽。 |
+| `--xh-editable-control-min-w` | `control`<br>`root` | `min-inline-size` | `default` | `--xh-control-min-w` | editable 的 control、root 部件 min-inline-size 覆盖槽。 |
+| `--xh-editable-gap` | `root` | `gap` | `default` | `--xh-space-1` | editable 的 root 部件 gap 覆盖槽。 |
+| `--xh-editable-icon-size` | `root` | `--xh-icon-size` | `default`<br>`size=lg`<br>`size=sm` | `--xh-glyph-size-lg`<br>`--xh-glyph-size-md`<br>`--xh-glyph-size-sm` | editable 的 root 部件 --xh-icon-size 覆盖槽。 |
 | `--xh-editable-input-autofill-bg` | `input` | `box-shadow` | `-webkit-autofill`<br>`autofill` | `--xh-bg-canvas` | editable 的 input 部件 box-shadow 覆盖槽。 |
 | `--xh-editable-input-autofill-fg` | `input` | `-webkit-text-fill-color` | `-webkit-autofill`<br>`autofill` | `--xh-fg-default` | editable 的 input 部件 -webkit-text-fill-color 覆盖槽。 |
 | `--xh-editable-input-bg` | `input` | `background` | `default`<br>`hover`<br>`invalid`<br>`not(:disabled, [readonly], [data-invalid])` | `--xh-_editable-input-bg` | editable 的 input 部件 background 覆盖槽。 |
@@ -293,6 +297,7 @@
 | `--xh-editable-submit-border-hover` | `submit-trigger` | `border-color` | `hover`<br>`not(:disabled)` | `--xh-editable-submit-bg-hover` | editable 的 submit-trigger 部件 border-color 覆盖槽。 |
 | `--xh-editable-submit-fg` | `submit-trigger` | `color` | `not(:disabled)` | `--xh-_tone-on` | editable 的 submit-trigger 部件 color 覆盖槽。 |
 | `--xh-editable-submit-shadow` | `submit-trigger` | `box-shadow` | `not(:disabled)` | `--xh-_editable-submit-highlight` | editable 的 submit-trigger 部件 box-shadow 覆盖槽。 |
+| `--xh-editable-touch-target-size` | `cancel-trigger`<br>`edit-trigger`<br>`submit-trigger` | `min-block-size`<br>`min-inline-size` | `@media (pointer: coarse)` | `--xh-control-box-lg` | editable 的 cancel-trigger、edit-trigger、submit-trigger 部件 min-block-size、min-inline-size 覆盖槽。 |
 | `--xh-editable-trigger-bg` | `cancel-trigger`<br>`edit-trigger`<br>`submit-trigger` | `background` | `default` | `--xh-bg-subtle` | editable 的 cancel-trigger、edit-trigger、submit-trigger 部件 background 覆盖槽。 |
 | `--xh-editable-trigger-bg-active` | `cancel-trigger`<br>`edit-trigger`<br>`submit-trigger` | `background` | `active`<br>`not(:disabled)` | `--xh-bg-subtle-active` | editable 的 cancel-trigger、edit-trigger、submit-trigger 部件 background 覆盖槽。 |
 | `--xh-editable-trigger-bg-disabled` | `cancel-trigger`<br>`edit-trigger`<br>`submit-trigger` | `background` | `disabled` | `--xh-bg-muted` | editable 的 cancel-trigger、edit-trigger、submit-trigger 部件 background 覆盖槽。 |
@@ -302,8 +307,8 @@
 | `--xh-editable-trigger-border-hover` | `cancel-trigger`<br>`edit-trigger`<br>`submit-trigger` | `border-color` | `hover`<br>`not(:disabled)` | `--xh-border-control-hover` | editable 的 cancel-trigger、edit-trigger、submit-trigger 部件 border-color 覆盖槽。 |
 | `--xh-editable-trigger-fg` | `cancel-trigger`<br>`edit-trigger`<br>`submit-trigger` | `color` | `default` | `--xh-fg-default` | editable 的 cancel-trigger、edit-trigger、submit-trigger 部件 color 覆盖槽。 |
 | `--xh-editable-trigger-font-size` | `cancel-trigger`<br>`edit-trigger`<br>`submit-trigger` | `font-size` | `default` | `--xh-text-secondary-size` | editable 的 cancel-trigger、edit-trigger、submit-trigger 部件 font-size 覆盖槽。 |
-| `--xh-editable-trigger-h` | `cancel-trigger`<br>`edit-trigger`<br>`submit-trigger` | `block-size` | `default` | `--xh-control-h-sm` | editable 的 cancel-trigger、edit-trigger、submit-trigger 部件 block-size 覆盖槽。 |
-| `--xh-editable-trigger-px` | `cancel-trigger`<br>`edit-trigger`<br>`submit-trigger` | `padding-inline` | `default` | `--xh-control-px-sm` | editable 的 cancel-trigger、edit-trigger、submit-trigger 部件 padding-inline 覆盖槽。 |
+| `--xh-editable-trigger-h` | `cancel-trigger`<br>`edit-trigger`<br>`submit-trigger` | `block-size`<br>`min-inline-size` | `default` | `--xh-_editable-h` | editable 的 cancel-trigger、edit-trigger、submit-trigger 部件 block-size、min-inline-size 覆盖槽。 |
+| `--xh-editable-trigger-px` | `cancel-trigger`<br>`edit-trigger`<br>`submit-trigger` | `padding-inline` | `default` | `0` | editable 的 cancel-trigger、edit-trigger、submit-trigger 部件 padding-inline 覆盖槽。 |
 | `--xh-editable-trigger-radius` | `cancel-trigger`<br>`edit-trigger`<br>`submit-trigger` | `border-radius` | `default` | `--xh-shape-control` | editable 的 cancel-trigger、edit-trigger、submit-trigger 部件 border-radius 覆盖槽。 |
 <!-- xh-component-tokens:end -->
 
@@ -312,6 +317,10 @@
 `background` · `border-color` · `box-shadow` · `scale` 走 `transition` 过渡。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
 
 系统开启减弱动效时由令牌层统一收敛，皮肤不另作判断。
+
+### 响应式
+
+皮肤另按输入能力分档：`pointer: coarse`——同一份皮肤在触屏与带指针的设备上不一样，与视口宽度无关。
 
 ### RTL
 

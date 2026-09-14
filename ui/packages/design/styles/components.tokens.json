@@ -23526,7 +23526,8 @@
       "name": "--xh-editable-control-min-w",
       "component": "editable",
       "part": [
-        "control"
+        "control",
+        "root"
       ],
       "property": [
         "min-inline-size"
@@ -23535,10 +23536,10 @@
         "default"
       ],
       "defaultToken": [
-        "6ch"
+        "--xh-control-min-w"
       ],
       "visibility": "public",
-      "description": "editable 的 control 部件 min-inline-size 覆盖槽。"
+      "description": "editable 的 control、root 部件 min-inline-size 覆盖槽。"
     },
     {
       "name": "--xh-editable-gap",
@@ -23553,10 +23554,32 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-space-2"
+        "--xh-space-1"
       ],
       "visibility": "public",
       "description": "editable 的 root 部件 gap 覆盖槽。"
+    },
+    {
+      "name": "--xh-editable-icon-size",
+      "component": "editable",
+      "part": [
+        "root"
+      ],
+      "property": [
+        "--xh-icon-size"
+      ],
+      "state": [
+        "default",
+        "size=lg",
+        "size=sm"
+      ],
+      "defaultToken": [
+        "--xh-glyph-size-lg",
+        "--xh-glyph-size-md",
+        "--xh-glyph-size-sm"
+      ],
+      "visibility": "public",
+      "description": "editable 的 root 部件 --xh-icon-size 覆盖槽。"
     },
     {
       "name": "--xh-editable-input-autofill-bg",
@@ -24212,6 +24235,27 @@
       "description": "editable 的 submit-trigger 部件 box-shadow 覆盖槽。"
     },
     {
+      "name": "--xh-editable-touch-target-size",
+      "component": "editable",
+      "part": [
+        "cancel-trigger",
+        "edit-trigger",
+        "submit-trigger"
+      ],
+      "property": [
+        "min-block-size",
+        "min-inline-size"
+      ],
+      "state": [
+        "@media (pointer: coarse)"
+      ],
+      "defaultToken": [
+        "--xh-control-box-lg"
+      ],
+      "visibility": "public",
+      "description": "editable 的 cancel-trigger、edit-trigger、submit-trigger 部件 min-block-size、min-inline-size 覆盖槽。"
+    },
+    {
       "name": "--xh-editable-trigger-bg",
       "component": "editable",
       "part": [
@@ -24403,16 +24447,17 @@
         "submit-trigger"
       ],
       "property": [
-        "block-size"
+        "block-size",
+        "min-inline-size"
       ],
       "state": [
         "default"
       ],
       "defaultToken": [
-        "--xh-control-h-sm"
+        "--xh-_editable-h"
       ],
       "visibility": "public",
-      "description": "editable 的 cancel-trigger、edit-trigger、submit-trigger 部件 block-size 覆盖槽。"
+      "description": "editable 的 cancel-trigger、edit-trigger、submit-trigger 部件 block-size、min-inline-size 覆盖槽。"
     },
     {
       "name": "--xh-editable-trigger-px",
@@ -24429,7 +24474,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-control-px-sm"
+        "0"
       ],
       "visibility": "public",
       "description": "editable 的 cancel-trigger、edit-trigger、submit-trigger 部件 padding-inline 覆盖槽。"
@@ -30424,12 +30469,14 @@
         "branch-checkbox",
         "branch-indicator",
         "branch-trigger",
+        "cancel-trigger",
         "caps-lock-indicator",
         "clear-trigger",
         "close-trigger",
         "column-visibility-trigger",
         "control",
         "decrement-trigger",
+        "edit-trigger",
         "ellipsis-trigger",
         "expand-trigger",
         "flip-horizontal-trigger",
@@ -30479,6 +30526,7 @@
         "direction",
         "empty",
         "indeterminate",
+        "is([data-part='edit-trigger'], [data-part='submit-trigger'], [data-part='cancel-trigger'])",
         "mode=send",
         "mode=stop",
         "not([aria-busy='true'])",
@@ -30515,7 +30563,7 @@
         "--xh-glyph-size-xl"
       ],
       "visibility": "public",
-      "description": "icon 的 autoplay-trigger、branch-checkbox、branch-indicator、branch-trigger、caps-lock-indicator、clear-trigger、close-trigger、column-visibility-trigger、control、decrement-trigger、ellipsis-trigger、expand-trigger、flip-horizontal-trigger、flip-vertical-trigger、increment-trigger、indicator、item、item-checkbox、item-close-trigger、item-delete-trigger、item-indicator、move-down-trigger、move-up-trigger、next-trigger、next-year-trigger、prev-trigger、prev-year-trigger、root、rotate-left-trigger、rotate-right-trigger、row-select-trigger、scroll-to-end-trigger、select-all-trigger、separator、sort-trigger、submit-trigger、to-source-trigger、to-target-trigger、trend、trigger、trigger-indicator、truncation、visibility-trigger、window-state-trigger、zoom-in-trigger、zoom-out-trigger 部件 block-size、inline-size、margin-inline-start 覆盖槽。"
+      "description": "icon 的 autoplay-trigger、branch-checkbox、branch-indicator、branch-trigger、cancel-trigger、caps-lock-indicator、clear-trigger、close-trigger、column-visibility-trigger、control、decrement-trigger、edit-trigger、ellipsis-trigger、expand-trigger、flip-horizontal-trigger、flip-vertical-trigger、increment-trigger、indicator、item、item-checkbox、item-close-trigger、item-delete-trigger、item-indicator、move-down-trigger、move-up-trigger、next-trigger、next-year-trigger、prev-trigger、prev-year-trigger、root、rotate-left-trigger、rotate-right-trigger、row-select-trigger、scroll-to-end-trigger、select-all-trigger、separator、sort-trigger、submit-trigger、to-source-trigger、to-target-trigger、trend、trigger、trigger-indicator、truncation、visibility-trigger、window-state-trigger、zoom-in-trigger、zoom-out-trigger 部件 block-size、inline-size、margin-inline-start 覆盖槽。"
     },
     {
       "name": "--xh-icon-stroke",
