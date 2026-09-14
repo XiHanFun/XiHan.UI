@@ -12,6 +12,8 @@ import { XhElement } from '../element-base'
 
 // 属性缺席翻成 undefined，缺省值由 connect 决定。
 const STRING_CONVERTER = { fromAttribute: (v: string | null) => v ?? undefined }
+// 布尔三态：缺席是没给，`x="false"` 是关，其余写法都是开——没给与关在 connect 里是两回事
+const BOOLEAN_CONVERTER = { fromAttribute: (v: string | null) => (v === null ? undefined : v !== 'false') }
 
 const SVG_NS = 'http://www.w3.org/2000/svg'
 
@@ -28,30 +30,34 @@ function makeGeom(doc: Document, tag: string, name: string): Element {
 }
 
 /**
- * `<xh-matrix-code>` —— 二维码宿主，无状态机，`format` 选码制，把命名与档位打到 root 上，把几何铺进 root。
+ * `<xh-matrix-code>` —— 二维码宿主，无状态机，`format` 选码制（qr / data-matrix），把命名与档位打到 root 上，把几何铺进 root。
  *
  * 作者写一个空的 `<svg data-xh-part="root"></svg>`，几何由本元素生成：模块是算出来的派生数据，
  * 作者没法自己写。矩阵在 connectMatrixCode 里算一遍，这里只取现成的 path。
  *
- * 几何恒是两条 `<path>`：除码眼外的模块一条、三个码眼一条，码眼那条另有 `--xh-matrix-code-eye-fg` 可单独上色。
+ * QR 的几何是两条 `<path>`：除码眼外的模块一条、三个码眼一条，码眼那条另有 `--xh-matrix-code-eye-fg` 可单独上色；
+ * Data Matrix 没有码眼，只有前一条。
  *
  * 要放中心 logo 就在 root 里写一个 `<svg data-xh-part="logo">` 并把图形放进去，落位与尺寸由本元素写上；
  * 那块底下会先铺一个底色矩形把模块挖空，作者的图形画在它上面。放了 logo 就把 level 提到 Q 或 H：
  * 挖掉的码字超出所选级别的纠错余量时，诊断通道会收到一条 `matrix-code.logo-damage` 警告，码照画。
+ * logo 只对 qr 有意义，Data Matrix 下写了 logo 部件会收到一条 `matrix-code.option-ignored` 警告并按没放处理。
  *
- * 内容超出 40 版容量时不画任何模块，root 上落 `data-state="error"`：
+ * 内容超出该码制的最大尺寸时不画任何模块，root 上落 `data-state="error"`：
  * 截断能画出一张扫得开的码，但扫出来的是半截内容。
  *
  * @customElement xh-matrix-code
- * @attr {'qr'} format - 码制，缺省 qr
- * @attr {string} value - 要编码的内容，按 UTF-8 取字节走字节模式
- * @attr {'L'|'M'|'Q'|'H'} level - 纠错级别，缺省 M
- * @attr {number} pixel-size - 像素边长，缺省 160
- * @attr {number} margin - 静区宽度（模块数），缺省 4
+ * @attr {'qr'|'data-matrix'} format - 码制，缺省 qr
+ * @attr {string} value - 要编码的内容；QR 按 UTF-8 走字节模式，Data Matrix 走 ASCII 模式
+ * @attr {boolean} gs1 - GS1 模式：最前面放 FNC1，即 GS1 QR / GS1 DataMatrix
+ * @attr {'L'|'M'|'Q'|'H'} level - 纠错级别，缺省 M；只对 qr 有意义
+ * @attr {boolean} rectangular - 从矩形尺寸里挑；只对 data-matrix 有意义
+ * @attr {number} pixel-size - 像素宽度，缺省 160；高按模块比例
+ * @attr {number} margin - 静区宽度（模块数），缺省按码制的规范值（qr 4、data-matrix 1）
  * @attr {string} label - 可及名字，缺省用 value
  * @attr {'square'|'dot'|'rounded'} module-shape - 码点形状，缺省 square
- * @attr {'square'|'rounded'} eye-shape - 码眼形状，缺省 square
- * @csspart root - 根 `<svg>`，承载 viewBox / role=img / aria-label / data-format / data-level / data-version / data-modules / data-state / data-logo
+ * @attr {'square'|'rounded'} eye-shape - 码眼形状，缺省 square；只对 qr 有意义
+ * @csspart root - 根 `<svg>`，承载 viewBox / role=img / aria-label / data-format / data-level / data-version / data-columns / data-rows / data-state / data-logo
  * @csspart logo - 码面正中放 logo 的嵌套 `<svg>`，承载 x / y / width / height
  */
 export class XhMatrixCodeElement extends XhElement {
@@ -67,7 +73,9 @@ export class XhMatrixCodeElement extends XhElement {
   static override properties = {
     format: { converter: STRING_CONVERTER },
     value: { converter: STRING_CONVERTER },
+    gs1: { converter: BOOLEAN_CONVERTER },
     level: { converter: STRING_CONVERTER },
+    rectangular: { converter: BOOLEAN_CONVERTER },
     label: { converter: STRING_CONVERTER },
     pixelSize: { type: Number, attribute: 'pixel-size' },
     margin: { type: Number },
@@ -77,7 +85,9 @@ export class XhMatrixCodeElement extends XhElement {
 
   declare format?: MatrixCodeFormat
   declare value?: string
+  declare gs1?: boolean
   declare level?: QrLevel
+  declare rectangular?: boolean
   declare label?: string
   declare pixelSize?: number
   declare margin?: number
@@ -98,7 +108,9 @@ export class XhMatrixCodeElement extends XhElement {
     const api = connectMatrixCode({
       format: this.format,
       value: this.value,
+      gs1: this.gs1,
       level: this.level,
+      rectangular: this.rectangular,
       pixelSize: this.pixelSize,
       margin: this.margin,
       label: this.label,

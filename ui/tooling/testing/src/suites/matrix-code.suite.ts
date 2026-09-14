@@ -137,7 +137,8 @@ export const matrixCodeSuite: ConformanceSuite = {
             'data-format': 'qr',
             'data-level': 'M',
             'data-version': '2',
-            'data-modules': '25',
+            'data-columns': '25',
+            'data-rows': '25',
             'data-state': 'ready',
             'data-logo': null,
           },
@@ -168,7 +169,8 @@ export const matrixCodeSuite: ConformanceSuite = {
           root: {
             'data-level': 'H',
             'data-version': '1',
-            'data-modules': '21',
+            'data-columns': '21',
+            'data-rows': '21',
             'data-state': 'ready',
           },
         },
@@ -218,7 +220,7 @@ export const matrixCodeSuite: ConformanceSuite = {
       props: { value: 'x'.repeat(10), level: 'L' },
       initial: {
         parts: {
-          root: { 'data-version': '1', 'data-modules': '21' },
+          root: { 'data-version': '1', 'data-columns': '21', 'data-rows': '21' },
         },
       },
       steps: [
@@ -230,7 +232,8 @@ export const matrixCodeSuite: ConformanceSuite = {
             parts: {
               root: {
                 'data-version': '3',
-                'data-modules': '29',
+                'data-columns': '29',
+                'data-rows': '29',
                 'data-state': 'ready',
                 'aria-label': 'x'.repeat(40),
               },
@@ -263,7 +266,8 @@ export const matrixCodeSuite: ConformanceSuite = {
             'aria-label': null,
             'data-level': 'M',
             'data-version': null,
-            'data-modules': null,
+            'data-columns': null,
+            'data-rows': null,
             'data-state': 'empty',
           },
         },
@@ -291,7 +295,8 @@ export const matrixCodeSuite: ConformanceSuite = {
           root: {
             'data-state': 'error',
             'data-version': null,
-            'data-modules': null,
+            'data-columns': null,
+            'data-rows': null,
             // 内容还在，名字照给
             'role': 'img',
             'aria-label': TOO_LONG,
@@ -317,7 +322,8 @@ export const matrixCodeSuite: ConformanceSuite = {
             'data-format': 'ean13',
             'data-state': 'error',
             'data-version': null,
-            'data-modules': null,
+            'data-columns': null,
+            'data-rows': null,
             'role': 'img',
             'aria-label': URL_23,
           },
@@ -333,6 +339,79 @@ export const matrixCodeSuite: ConformanceSuite = {
           kind: 'setProps',
           props: { format: 'qr' },
           expect: { parts: { root: { 'data-format': 'qr', 'data-state': 'ready', 'data-version': '2' } } },
+        },
+      ],
+    },
+    {
+      name: 'data-matrix：根上落行列数、没有 level 与 version，只铺模块那一条 path，静区一格',
+      spec: { apg: APG },
+      props: { format: 'data-matrix', value: URL_23 },
+      initial: {
+        order: ['root'],
+        counts: { root: 1 },
+        parts: {
+          root: {
+            'role': 'img',
+            'aria-label': URL_23,
+            'data-format': 'data-matrix',
+            'data-level': null,
+            'data-version': null,
+            // 23 个字符走 ASCII 模式 23 个码字，落在 26×26（44 个）之前的 22×22（30 个）
+            'data-columns': '22',
+            'data-rows': '22',
+            'data-state': 'ready',
+            'data-logo': null,
+          },
+        },
+      },
+      steps: [
+        {
+          kind: 'raw',
+          why: 'Data Matrix 没有码眼：root 下只有模块那一条 path，多一条 eyes 就是把 QR 的几何硬套了过来',
+          run: ({ doc, adapterName }) => {
+            const root = rootEl(doc)
+            if (root.childElementCount !== 1)
+              throw new Error(`${adapterName}: root 下有 ${root.childElementCount} 个元素，Data Matrix 应当只有模块那一条 <path>`)
+            if (!geomEl(doc, 'modules') || geomEl(doc, 'eyes'))
+              throw new Error(`${adapterName}: 应当只有 data-xh-geom="modules" 这一条`)
+          },
+        },
+        {
+          kind: 'raw',
+          why: '静区一格：22 + 2',
+          run: expectViewBox('0 0 24 24'),
+        },
+        {
+          kind: 'setProps',
+          props: { rectangular: true },
+          // 23 个码字从矩形里挑：8×64 装 24 个，是装得下的最小一档
+          expect: { parts: { root: { 'data-columns': '64', 'data-rows': '8', 'data-state': 'ready' } } },
+        },
+        {
+          kind: 'raw',
+          why: '矩形：viewBox 跟着行列走，宽高不再相等',
+          run: expectViewBox('0 0 66 10'),
+        },
+      ],
+    },
+    {
+      name: 'data-matrix 装不下：落 error 态、一个模块都不铺；换回 qr 就画得出',
+      spec: { apg: APG },
+      props: { format: 'data-matrix', value: 'x'.repeat(1600) },
+      initial: {
+        counts: { root: 1 },
+        parts: { root: { 'data-format': 'data-matrix', 'data-state': 'error', 'data-columns': null, 'data-rows': null } },
+      },
+      steps: [
+        {
+          kind: 'raw',
+          why: '钉住的是"什么都不画"，只能数子元素',
+          run: expectNothingPainted,
+        },
+        {
+          kind: 'setProps',
+          props: { format: 'qr', level: 'L' },
+          expect: { parts: { root: { 'data-format': 'qr', 'data-state': 'ready', 'data-level': 'L' } } },
         },
       ],
     },
@@ -449,7 +528,7 @@ export const matrixCodeSuite: ConformanceSuite = {
               if (read(clear, name) !== read(logo, name))
                 throw new Error(`${adapterName}: 挖空矩形的 ${name} 与 logo 的对不上，logo 边上会露出模块`)
             }
-            const count = Number(root.getAttribute('data-modules'))
+            const count = Number(root.getAttribute('data-columns'))
             const side = read(logo, 'width')
             if (!(side > 0) || side * 5 > count)
               throw new Error(`${adapterName}: logo 边长 ${side} 超出每边 ${count} 个模块的 1/5`)

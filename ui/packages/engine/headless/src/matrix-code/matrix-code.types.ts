@@ -12,9 +12,10 @@ import type { QrLevel } from './qr-encode'
  * 码制。
  *
  * 每种码制各有自己的编码器与几何，组件只按这个值分派；同一个 `value` 换一种码制就是另一张码。
- * · qr —— QR Code（ISO/IEC 18004），有三个码眼与四档纠错。
+ * · qr —— QR Code（ISO/IEC 18004），有三个码眼与四档纠错；
+ * · data-matrix —— Data Matrix ECC 200（ISO/IEC 16022，含矩形扩展），L 形定位图形，纠错率随尺寸固定。
  */
-export type MatrixCodeFormat = 'qr'
+export type MatrixCodeFormat = 'qr' | 'data-matrix'
 
 /** 根的三态：画出了码 / 没有可编码的内容 / 内容装不下或码制不认识。 */
 export type MatrixCodeState = 'ready' | 'empty' | 'error'
@@ -79,19 +80,32 @@ export interface MatrixCodeLogoDamage {
 export interface MatrixCodeProps {
   /** 码制，缺省 qr。给了不认识的值不画码，根落到 `error` 态。 */
   format?: MatrixCodeFormat
-  /** 要编码的内容，按 UTF-8 取字节走字节模式；空串不画码。 */
+  /** 要编码的内容；空串不画码。QR 按 UTF-8 取字节走字节模式；Data Matrix 走 ASCII 模式，Latin-1 以外的字符按 UTF-8 并声明 ECI。 */
   value?: string
-  /** 纠错级别 L / M / Q / H，缺省 M。 */
+  /**
+   * GS1 模式：在最前面放 FNC1，读码器据此把内容当 GS1 元素串解释，即 GS1 QR / GS1 DataMatrix；
+   * 变长 AI 之间用内容里的 GS（U+001D）分隔。
+   */
+  gs1?: boolean
+  /** 纠错级别 L / M / Q / H，缺省 M。只对 qr 有意义，给别的码制会往诊断通道报一条警告，按没给处理。 */
   level?: QrLevel
-  /** 像素边长，缺省 160；写成根上的内联宽高。 */
+  /**
+   * 从矩形尺寸（含矩形扩展 DMRE）里挑，缺省从正方形尺寸里挑。
+   * 只对 data-matrix 有意义，给别的码制会往诊断通道报一条警告，按没给处理。
+   */
+  rectangular?: boolean
+  /** 像素宽度，缺省 160；高按模块比例算出，正方形码宽高相等。两者都写成根上的内联尺寸。 */
   pixelSize?: number
-  /** 静区宽度，单位是模块数，缺省 4；静区含在 viewBox 里，不占额外尺寸。 */
+  /** 静区宽度，单位是模块数，缺省按码制的规范值（qr 4、data-matrix 1）；静区含在 viewBox 里，不占额外尺寸。 */
   margin?: number
   /** 可及名字，缺省用 value；给了全空白的名字等于没给。 */
   label?: string
   /** 码点形状，缺省 square。 */
   moduleShape?: MatrixCodeModuleShape
-  /** 码眼形状，缺省 square。时序图形与校正图形不受它影响，一律保持方块——它们是透视校正的几何基准。 */
+  /**
+   * 码眼形状，缺省 square。时序图形与校正图形不受它影响，一律保持方块——它们是透视校正的几何基准。
+   * 只对 qr 有意义，给别的码制会往诊断通道报一条警告，按没给处理。
+   */
   eyeShape?: MatrixCodeEyeShape
   /**
    * 码面正中是否留一块给 logo。
@@ -99,6 +113,7 @@ export interface MatrixCodeProps {
    * 留出来的那片模块会被底色盖住，对读码器而言等于人为污损：放 logo 就把 level 提到 Q 或 H，
    * L 与 M 那点纠错余量赔不起这一块。损伤量见 `logoDamage`；超出所选级别的余量时
    * 会往诊断通道报一条 `matrix-code.logo-damage` 警告，码照画。
+   * 只对 qr 有意义：Data Matrix 的纠错余量随尺寸固定、没有可挑的级别，放 logo 会报一条警告并按没放处理。
    */
   logo?: boolean
 }
@@ -108,21 +123,22 @@ export interface MatrixCodeApi<T extends PropTypes = PropTypes> {
   format: MatrixCodeFormat
   /** 模块矩阵，[行][列]，true = 深色；没画出码时是空数组。 */
   modules: readonly (readonly boolean[])[]
-  /** 实际用到的版本；没画出码时为 0。 */
+  /** QR 实际用到的版本；别的码制与没画出码时为 0。 */
   version: number
-  /** 每边模块数，不含静区；没画出码时为 0。 */
-  count: number
+  /** 模块列数与行数，不含静区；正方形码两者相等，没画出码时为 0。 */
+  columns: number
+  rows: number
   /** 解析后的静区宽度，单位是模块数。 */
   margin: number
   /** 根的 viewBox，含静区。 */
   viewBox: string
   /**
-   * 除三个码眼以外的模块合成的那条 `<path>` 的 d；没画出码时是空串，此时不该生成 path 节点。
+   * 除 QR 三个码眼以外的模块合成的那条 `<path>` 的 d；没画出码时是空串，此时不该生成 path 节点。
    * 码眼永远不在这一条里，与形状无关。
    */
   path: string
   /**
-   * 三个码眼合成的那条 `<path>` 的 d；没画出码时是空串，此时不该生成第二个 path 节点。
+   * QR 三个码眼合成的那条 `<path>` 的 d；别的码制与没画出码时是空串，此时不该生成第二个 path 节点。
    * 两条分开画与形状无关：码眼的颜色可以与码点不同，合成一条就没地方单独上色。
    */
   eyePath: string

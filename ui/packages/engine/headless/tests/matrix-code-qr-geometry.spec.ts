@@ -349,7 +349,7 @@ interface Readback {
 
 function readback(props: MatrixCodeProps): Readback {
   const api = connectMatrixCode(props, normalizeProps)
-  const { count, margin } = api
+  const { columns: count, margin } = api
   const centers = Array.from({ length: count }, (_, i) => i + margin + 0.5)
   const painted = paintedOf(api.path, api.eyePath, api.logoArea)
   return {
@@ -676,7 +676,7 @@ describe('缺省形状的几何总量不变', () => {
 
       // 二、落点：缺省形状的边界全在整数坐标上，格内墨色恒定，
       // 于是逐格取样就是完备判据——整个 viewBox（含静区）每一格都与参照实现相同
-      const side = api.count + margin * 2
+      const side = api.columns + margin * 2
       const coords = Array.from({ length: side }, (_, i) => i + 0.5)
       const now = inkGrid(paintedOf(api.path, api.eyePath, undefined), coords, coords)
       const before = inkGrid(paintedOf(merged, '', undefined), coords, coords)
@@ -719,7 +719,7 @@ describe('缺省形状的几何总量不变', () => {
         // 码眼的 7×7 由 eyePath 管，modules 那条不许在那三块里落墨
         const painted = paintedOf(api.path, '', undefined)
         const near = api.margin
-        const far = api.margin + api.count - 7
+        const far = api.margin + api.columns - 7
         for (const [ex, ey] of [[near, near], [far, near], [near, far]] as const) {
           const xs = Array.from({ length: 7 }, (_, i) => ex + i + 0.5)
           const ys = Array.from({ length: 7 }, (_, i) => ey + i + 0.5)
@@ -772,13 +772,13 @@ describe('中心覆盖', () => {
     for (const moduleShape of MODULE_SHAPES) {
       for (const margin of [0, 1, 4, 9]) {
         const api = connectMatrixCode({ value: '曦寒 UI', level: 'Q', margin, moduleShape, eyeShape: 'rounded' }, normalizeProps)
-        const side = api.count + margin * 2
+        const side = api.columns + margin * 2
         const coords = Array.from({ length: side }, (_, i) => i + 0.5)
         const grid = inkGrid(paintedOf(api.path, api.eyePath, api.logoArea), coords, coords)
         const strays: string[] = []
         for (let row = 0; row < side; row++) {
           for (let col = 0; col < side; col++) {
-            const inside = row >= margin && row < margin + api.count && col >= margin && col < margin + api.count
+            const inside = row >= margin && row < margin + api.columns && col >= margin && col < margin + api.columns
             if (!inside && grid[row]![col])
               strays.push(`静区 ${row},${col} 有墨`)
           }
@@ -795,8 +795,8 @@ describe('中心覆盖', () => {
         for (const { value, level } of SAMPLES.slice(0, 3)) {
           const api = connectMatrixCode({ value, level, moduleShape, eyeShape }, normalizeProps)
           const index = indexSegments(paintedOf(api.path, api.eyePath, undefined).layers)
-          for (let row = 0; row < api.count; row++) {
-            for (let col = 0; col < api.count; col++) {
+          for (let row = 0; row < api.columns; row++) {
+            for (let col = 0; col < api.columns; col++) {
               const gap = inkMarginAt(index, col + api.margin + 0.5, row + api.margin + 0.5)
               if (gap < worst.margin)
                 worst = { margin: gap, where: `${moduleShape}/${eyeShape} 行 ${row} 列 ${col}` }
@@ -818,7 +818,7 @@ describe('码眼结构', () => {
     for (const { value, level } of SAMPLES) {
       const { api, painted } = readback({ value, level, moduleShape, eyeShape })
       const near = api.margin
-      const far = api.margin + api.count - 7
+      const far = api.margin + api.columns - 7
       for (const [ex, ey] of [[near, near], [far, near], [near, far]] as const) {
         const xs = Array.from({ length: 7 }, (_, i) => ex + i + 0.5)
         const ys = Array.from({ length: 7 }, (_, i) => ey + i + 0.5)
@@ -835,11 +835,11 @@ describe('码眼结构', () => {
     for (const eyeShape of EYE_SHAPES) {
       const api = connectMatrixCode({ value: '曦寒 UI', level: 'M', moduleShape: 'dot', eyeShape }, normalizeProps)
       const eyes = paintedOf(api.eyePath, '', undefined)
-      const side = api.count + api.margin * 2
+      const side = api.columns + api.margin * 2
       const coords = Array.from({ length: side * 2 }, (_, i) => i / 2 + 0.25)
       const grid = inkGrid(eyes, coords, coords)
       const near = api.margin
-      const far = api.margin + api.count - 7
+      const far = api.margin + api.columns - 7
       const boxes = [[near, near], [far, near], [near, far]] as const
       const strays: string[] = []
       coords.forEach((y, r) => {
@@ -878,9 +878,9 @@ describe('时序图形与校正图形没被变形', () => {
       const kinds = cellKinds(api.version)
       const rects = parsePath(api.path).map(rectOf).filter(box => box !== undefined)
       const bad: string[] = []
-      for (let row = 0; row < api.count && bad.length < 6; row++) {
-        for (let col = 0; col < api.count && bad.length < 6; col++) {
-          if (kinds[row * api.count + col] !== CELL_ALWAYS_SQUARE || !matrix[row]![col])
+      for (let row = 0; row < api.columns && bad.length < 6; row++) {
+        for (let col = 0; col < api.columns && bad.length < 6; col++) {
+          if (kinds[row * api.columns + col] !== CELL_ALWAYS_SQUARE || !matrix[row]![col])
             continue
           const x = col + api.margin
           const y = row + api.margin
@@ -902,14 +902,14 @@ describe('logo 挖空', () => {
         const area = api.logoArea!
         expect(area).toBeDefined()
         expect(area.size % 2).toBe(1)
-        expect(area.size).toBeLessThanOrEqual(api.count / 5)
+        expect(area.size).toBeLessThanOrEqual(api.columns / 5)
         expect(Number.isInteger(area.x)).toBe(true)
         expect(Number.isInteger(area.y)).toBe(true)
         // 四条边都压在模块边界上，且整块在码面之内
-        expect(area.x).toBe(margin + (api.count - area.size) / 2)
+        expect(area.x).toBe(margin + (api.columns - area.size) / 2)
         expect(area.y).toBe(area.x)
         expect(area.x).toBeGreaterThanOrEqual(margin)
-        expect(area.x + area.size).toBeLessThanOrEqual(margin + api.count)
+        expect(area.x + area.size).toBeLessThanOrEqual(margin + api.columns)
         expect(api.getLogoProps()).toMatchObject({ x: area.x, y: area.y, width: area.size, height: area.size })
       }
     }
@@ -930,7 +930,7 @@ describe('logo 挖空', () => {
       let alignment = 0
       for (let row = area.y - api.margin; row < area.y - api.margin + area.size; row++) {
         for (let col = area.x - api.margin; col < area.x - api.margin + area.size; col++) {
-          if (kinds[row * api.count + col] === CELL_FINDER)
+          if (kinds[row * api.columns + col] === CELL_FINDER)
             touched.push(`定位图形 ${row},${col}`)
           // 功能格里除校正图形以外的全部：定位图形与分隔带、时序图形、格式信息、版本信息
           if (reserved[row]![col] && !alignments[row]![col])
@@ -943,7 +943,7 @@ describe('logo 挖空', () => {
       // 唯一可能被压到的功能图形就是校正图形，api 上如实报出来
       expect({ version, hits: api.logoDamage!.hitsFunctionPatterns }).toEqual({ version, hits: alignment > 0 })
       // 右下角那个校正图形是多数读码器建取样网格用的那一个，它离中心最远，整块永远碰不着
-      const far = api.count - 7
+      const far = api.columns - 7
       expect(alignments[far]?.[far] ?? false).toBe(version >= 2)
       expect(far - 2).toBeGreaterThanOrEqual(area.x - api.margin + area.size)
       clearedAlignment.push([version, alignment])
@@ -961,8 +961,8 @@ describe('logo 挖空', () => {
         .toEqual({ moduleShape, eyeShape, bad: [] })
       // 判据得真的看见过一片被挖掉的深色模块，不然它什么都没验
       let erasedDark = 0
-      for (let row = 0; row < got.api.count; row++) {
-        for (let col = 0; col < got.api.count; col++) {
+      for (let row = 0; row < got.api.columns; row++) {
+        for (let col = 0; col < got.api.columns; col++) {
           const inArea = row + got.api.margin >= area.y && row + got.api.margin < area.y + area.size
             && col + got.api.margin >= area.x && col + got.api.margin < area.x + area.size
           if (inArea && got.matrix[row]![col])
@@ -1139,7 +1139,7 @@ describe('判据自身有牙', () => {
     const matrix = qrEncode('曦寒 UI', 'M').modules
     const broken = api.path.replace(/^M[^M]*/, '')
     expect(broken).not.toBe(api.path)
-    const centers = Array.from({ length: api.count }, (_, i) => i + api.margin + 0.5)
+    const centers = Array.from({ length: api.columns }, (_, i) => i + api.margin + 0.5)
     const ink = inkGrid(paintedOf(broken, api.eyePath, undefined), centers, centers)
     expect(mismatches(ink, matrix).length).toBeGreaterThan(0)
   })

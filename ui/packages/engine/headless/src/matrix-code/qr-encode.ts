@@ -11,7 +11,12 @@
  * 只走字节模式——内容一律按 UTF-8 取字节、每字节编成 8 位。数字模式与字母数字模式没有实现：
  * 它们把纯数字 / 纯大写字母压得更紧，同样的内容能落在更小的版本上。这里不做压缩，
  * 纯数字串因此可能选到比理论最小值更大的版本；扫出来的内容不受影响。
+ *
+ * gs1 模式在字节模式段前放一个"FNC1 首位"指示符（0101），读码器据此把内容当 GS1 元素串解释；
+ * 变长 AI 之间的分隔就是内容里的 GS（U+001D）字节，字节模式原样带过去。
  */
+
+import { createReedSolomon } from './reed-solomon'
 
 /** 纠错级别，可恢复的码字比例依次约为 7% / 15% / 25% / 30%。 */
 export type QrLevel = 'L' | 'M' | 'Q' | 'H'
@@ -56,6 +61,16 @@ const LEVEL_BITS: Record<QrLevel, number> = { L: 1, M: 0, Q: 3, H: 2 }
 
 /** 字节模式的模式指示符。 */
 const MODE_BYTE = 0b0100
+/** FNC1 首位的模式指示符：放在字节模式段之前，占 4 位。 */
+const MODE_FNC1_FIRST = 0b0101
+
+export interface QrEncodeOptions {
+  /** GS1 QR：在字节模式段前放 FNC1 首位指示符。 */
+  readonly gs1?: boolean
+}
+
+/** QR 的域：本原多项式 0x11D，生成多项式从 α⁰ 起。 */
+const RS = createReedSolomon(0x11D, 0)
 
 // 罚分权重：连续同色、同色 2×2 块、疑似定位图形、深色占比失衡。
 const PENALTY_RUN = 3
@@ -130,62 +145,24 @@ function charCountBits(version: number): number {
   return version < 10 ? 8 : 16
 }
 
-/** 该版本该级别在字节模式下能装的最大字节数。 */
-export function qrCapacityBytes(version: number, level: QrLevel): number {
-  return Math.floor((dataCapacityBits(version, level) - 4 - charCountBits(version)) / 8)
+/** 该版本该级别在字节模式下能装的最大字节数；gs1 模式多占 4 位的 FNC1 指示符。 */
+export function qrCapacityBytes(version: number, level: QrLevel, gs1 = false): number {
+  return Math.floor((dataCapacityBits(version, level) - (gs1 ? 4 : 0) - 4 - charCountBits(version)) / 8)
 }
 
 /** 选能装下这么多字节的最小版本；一个都装不下就抛错。 */
-function pickVersion(byteLength: number, level: QrLevel): number {
+function pickVersion(byteLength: number, level: QrLevel, gs1: boolean): number {
   for (let version = 1; version <= QR_MAX_VERSION; version++) {
-    if (byteLength <= qrCapacityBytes(version, level))
+    if (byteLength <= qrCapacityBytes(version, level, gs1))
       return version
   }
   throw new RangeError(
     `内容 ${byteLength} 字节，超出 ${QR_MAX_VERSION} 版 ${level} 级纠错的上限 `
-    + `${qrCapacityBytes(QR_MAX_VERSION, level)} 字节；截断会得到一张扫得出、但内容是半截的码`,
+    + `${qrCapacityBytes(QR_MAX_VERSION, level, gs1)} 字节；截断会得到一张扫得出、但内容是半截的码`,
   )
 }
 
-// ── GF(256) 与里德-所罗门纠错 ──
-
-/** GF(256) 上的乘法，本原多项式 0x11D。 */
-function gfMul(x: number, y: number): number {
-  let z = 0
-  for (let i = 7; i >= 0; i--) {
-    z = (z << 1) ^ ((z >>> 7) * 0x11D)
-    z ^= ((y >>> i) & 1) * x
-  }
-  return z & 0xFF
-}
-
-/** 生成多项式的系数，首项常数 1 不入表；长度 = 纠错码字数。 */
-function rsDivisor(degree: number): number[] {
-  const result = Array.from<number>({ length: degree }).fill(0)
-  result[degree - 1] = 1
-  let root = 1
-  for (let i = 0; i < degree; i++) {
-    for (let j = 0; j < degree; j++) {
-      result[j] = gfMul(result[j]!, root)
-      if (j + 1 < degree)
-        result[j] = result[j]! ^ result[j + 1]!
-    }
-    root = gfMul(root, 2)
-  }
-  return result
-}
-
-/** 数据码字除以生成多项式的余式，即这一块的纠错码字。 */
-function rsRemainder(data: readonly number[], divisor: readonly number[]): number[] {
-  const result = Array.from<number>({ length: divisor.length }).fill(0)
-  for (const byte of data) {
-    const factor = byte ^ result.shift()!
-    result.push(0)
-    for (let i = 0; i < divisor.length; i++)
-      result[i] = result[i]! ^ gfMul(divisor[i]!, factor)
-  }
-  return result
-}
+// ── 纠错与交错 ──
 
 /** 数据码字分块、逐块算纠错码字，再按规格交错成最终码字序列。 */
 function addEccAndInterleave(data: readonly number[], version: number, level: QrLevel): number[] {
@@ -196,13 +173,12 @@ function addEccAndInterleave(data: readonly number[], version: number, level: Qr
   const shortBlockCount = blockCount - rawCodewords % blockCount
   const shortBlockLen = Math.floor(rawCodewords / blockCount)
 
-  const divisor = rsDivisor(eccLen)
   const blocks: number[][] = []
   for (let i = 0, taken = 0; i < blockCount; i++) {
     const dataLen = shortBlockLen - eccLen + (i < shortBlockCount ? 0 : 1)
     const chunk = data.slice(taken, taken + dataLen)
     taken += dataLen
-    const ecc = rsRemainder(chunk, divisor)
+    const ecc = RS.remainder(chunk, eccLen)
     // 短块尾部补一个占位字节让各块等长，交错时按下标跳过它
     if (i < shortBlockCount)
       chunk.push(0)
@@ -552,13 +528,16 @@ function penaltyScore(grid: Grid): number {
  * 版本按内容长度自动选最小的那个。内容超出 40 版容量时抛 `RangeError`：
  * 截断能画出一张扫得开的码，但扫出来的是半截内容，比画不出来更难发现。
  */
-export function qrEncode(text: string, level: QrLevel = 'M'): QrMatrix {
+export function qrEncode(text: string, level: QrLevel = 'M', options: QrEncodeOptions = {}): QrMatrix {
+  const gs1 = options.gs1 === true
   const bytes = utf8Bytes(text)
-  const version = pickVersion(bytes.length, level)
+  const version = pickVersion(bytes.length, level, gs1)
   const size = 4 * version + 17
 
-  // 模式指示符 + 字符计数 + 内容字节
+  // （FNC1 首位）+ 模式指示符 + 字符计数 + 内容字节
   const bits: number[] = []
+  if (gs1)
+    appendBits(bits, MODE_FNC1_FIRST, 4)
   appendBits(bits, MODE_BYTE, 4)
   appendBits(bits, bytes.length, charCountBits(version))
   for (const byte of bytes)

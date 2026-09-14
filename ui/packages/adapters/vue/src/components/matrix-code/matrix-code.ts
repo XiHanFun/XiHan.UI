@@ -17,7 +17,7 @@ type ModuleShape = NonNullable<MatrixCodeProps['moduleShape']>
 type EyeShape = NonNullable<MatrixCodeProps['eyeShape']>
 
 /**
- * 整张码画成一个 `<svg>`，`format` 选码制；QR 下数据模块与三个码眼各成一条 `<path>`，静区靠 viewBox 留出。
+ * 整张码画成一个 `<svg>`，`format` 选码制；QR 下数据模块与三个码眼各成一条 `<path>`，Data Matrix 只有前一条，静区靠 viewBox 留出。
  * 矩阵由 connect 算一遍，这里只取现成的 path；没有可画的内容时不生成任何几何节点。
  *
  * 默认插槽里放 XhMatrixCodeLogo 就等于给码面正中放了一块 logo：那片模块底下先铺一个底色矩形挖空，
@@ -30,7 +30,10 @@ export const XhMatrixCode = defineComponent({
   props: {
     format: { type: String as PropType<MatrixCodeFormat> },
     value: { type: String },
+    // Boolean 显式保留 undefined：没给与给了 false 在 connect 里是两回事（rectangular 给了 qr 要报警告）
+    gs1: { type: Boolean, default: undefined },
     level: { type: String as PropType<QrLevel> },
+    rectangular: { type: Boolean, default: undefined },
     pixelSize: { type: Number },
     margin: { type: Number },
     label: { type: String },
@@ -44,7 +47,9 @@ export const XhMatrixCode = defineComponent({
     const api = computed(() => connectMatrixCode({
       format: props.format,
       value: props.value,
+      gs1: props.gs1,
       level: props.level,
+      rectangular: props.rectangular,
       pixelSize: props.pixelSize,
       margin: props.margin,
       label: props.label,
