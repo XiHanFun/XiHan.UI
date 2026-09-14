@@ -13,6 +13,7 @@ import {
   avatarSuite,
   backTopSuite,
   badgeSuite,
+  barCodeSuite,
   breadcrumbSuite,
   buttonGroupSuite,
   buttonSuite,
@@ -61,6 +62,7 @@ import {
   logSuite,
   markdownStreamSuite,
   marqueeSuite,
+  matrixCodeSuite,
   menubarSuite,
   navigationMenuSuite,
   notificationSuite,
@@ -73,7 +75,6 @@ import {
   popconfirmSuite,
   popoverSuite,
   promptInputSuite,
-  qrCodeSuite,
   questionFlowSuite,
   ratingSuite,
   reasoningSuite,
@@ -212,7 +213,7 @@ const SUITES: readonly ConformanceSuite[] = [
   numberAnimationSuite,
   pageHeaderSuite,
   popconfirmSuite,
-  qrCodeSuite,
+  matrixCodeSuite,
   resizableSuite,
   statisticSuite,
   timestampSuite,
@@ -243,6 +244,7 @@ const SUITES: readonly ConformanceSuite[] = [
   colorSliderSuite,
   colorFieldSuite,
   colorSwatchPickerSuite,
+  barCodeSuite,
 ]
 
 /** 暂不做逐帧比对的套件与理由。它们的跨适配器保证由两侧各自跑同一份 conformance 规格提供。 */

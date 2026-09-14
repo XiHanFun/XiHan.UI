@@ -5,7 +5,7 @@
 // 蛇形读取换成方向翻转的写法、格式信息与版本信息都验 BCH、纠错码字用校验子核。
 // 与编码器同源的实现只会一起错，所以这里刻意不共用任何一行。
 import { describe, expect, it } from 'vitest'
-import { QR_MAX_VERSION, qrAlignmentPositions, qrCapacityBytes, qrEncode } from '../src/qr-code/qr-encode'
+import { QR_MAX_VERSION, qrAlignmentPositions, qrCapacityBytes, qrEncode } from '../src/matrix-code/qr-encode'
 
 type Level = 'L' | 'M' | 'Q' | 'H'
 
@@ -336,6 +336,8 @@ interface Decoded {
   mask: number
   bytes: number[]
   text: string
+  /** 字节模式段之前有没有 FNC1 首位指示符（GS1 QR）。 */
+  gs1: boolean
   /** 各块的数据码字，按块顺序拼平。 */
   dataCodewords: number[]
   /** 数据段之后剩下的位，应当全是 0（结束符与补位对齐位）。 */
@@ -451,7 +453,11 @@ function decode(matrix: readonly (readonly boolean[])[]): Decoded {
     return value
   }
 
-  const mode = take(4)
+  let mode = take(4)
+  // GS1 QR：字节模式段前先来一个 FNC1 首位指示符 0101
+  const gs1 = mode === 0b0101
+  if (gs1)
+    mode = take(4)
   if (mode !== 0b0100)
     throw new Error(`模式指示符 0b${mode.toString(2).padStart(4, '0')}，字节模式应为 0b0100`)
   const countBits = version < 10 ? 8 : 16
@@ -467,6 +473,7 @@ function decode(matrix: readonly (readonly boolean[])[]): Decoded {
     mask,
     bytes,
     text,
+    gs1,
     dataCodewords: blockData.flat(),
     trailingBitsAfterData: dataBits.length - at,
   }
@@ -484,6 +491,7 @@ function roundtrip(text: string, level: Level): void {
   expect(got.mask).toBe(qr.mask)
   expect(got.bytes).toEqual([...encoder.encode(text)])
   expect(got.text).toBe(text)
+  expect(got.gs1).toBe(false)
 }
 
 describe('手算比对向量', () => {
@@ -577,6 +585,26 @@ describe('规格表双录对账', () => {
 })
 
 describe('回环解码', () => {
+  it('gs1：字节模式段前多一个 FNC1 首位指示符，内容里的 GS 原样是字节', () => {
+    const value = '0109501101530003\u001D10ABC123'
+    const qr = qrEncode(value, 'M', { gs1: true })
+    const got = decode(qr.modules)
+    expect(got.gs1).toBe(true)
+    expect(got.text).toBe(value)
+    // 不开 gs1 的同一内容没有那个指示符
+    expect(decode(qrEncode(value, 'M').modules).gs1).toBe(false)
+  })
+
+  it('gs1 多占的 4 位正好吃掉字节模式恒余的那 4 位：容量表 160 格一个都不变，装满时数据区一位不剩', () => {
+    for (let version = 1; version <= QR_MAX_VERSION; version++) {
+      for (const level of LEVELS)
+        expect(qrCapacityBytes(version, level, true)).toBe(qrCapacityBytes(version, level))
+    }
+    const full = 'x'.repeat(qrCapacityBytes(1, 'M'))
+    expect(decode(qrEncode(full, 'M').modules).trailingBitsAfterData).toBe(4)
+    expect(decode(qrEncode(full, 'M', { gs1: true }).modules)).toMatchObject({ version: 1, gs1: true, text: full, trailingBitsAfterData: 0 })
+  })
+
   it('四个纠错级别各解得回来', () => {
     roundtrip('https://ui.xihanfun.com', 'L')
     roundtrip('https://ui.xihanfun.com', 'M')

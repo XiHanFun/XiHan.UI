@@ -8,6 +8,7 @@ import { avatarGroupSuite } from './avatar-group.suite'
 import { avatarSuite } from './avatar.suite'
 import { backTopSuite } from './back-top.suite'
 import { badgeSuite } from './badge.suite'
+import { barCodeSuite } from './bar-code.suite'
 import { breadcrumbSuite } from './breadcrumb.suite'
 import { buttonGroupSuite } from './button-group.suite'
 import { buttonSuite } from './button.suite'
@@ -24,8 +25,8 @@ import { collapsibleSuite } from './collapsible.suite'
 import { colorFieldSuite } from './color-field.suite'
 import { colorPickerSuite } from './color-picker.suite'
 import { colorSliderSuite } from './color-slider.suite'
-import { colorSwatchSuite } from './color-swatch.suite'
 import { colorSwatchPickerSuite } from './color-swatch-picker.suite'
+import { colorSwatchSuite } from './color-swatch.suite'
 import { comboboxSuite } from './combobox.suite'
 import { commandSuite } from './command.suite'
 import { contextMenuSuite } from './context-menu.suite'
@@ -69,6 +70,7 @@ import { logSuite } from './log.suite'
 import { markdownStreamSuite } from './markdown-stream.suite'
 import { marqueeSuite } from './marquee.suite'
 import { masonrySuite } from './masonry.suite'
+import { matrixCodeSuite } from './matrix-code.suite'
 import { mentionSuite } from './mention.suite'
 import { menuSuite } from './menu.suite'
 import { menubarSuite } from './menubar.suite'
@@ -85,7 +87,6 @@ import { popconfirmSuite } from './popconfirm.suite'
 import { popoverSuite } from './popover.suite'
 import { progressSuite } from './progress.suite'
 import { promptInputSuite } from './prompt-input.suite'
-import { qrCodeSuite } from './qr-code.suite'
 import { questionFlowSuite } from './question-flow.suite'
 import { radioGroupSuite } from './radio-group.suite'
 import { ratingSuite } from './rating.suite'
@@ -198,6 +199,7 @@ export const allSuites: readonly ConformanceSuite[] = [
   markdownStreamSuite,
   marqueeSuite,
   masonrySuite,
+  matrixCodeSuite,
   mentionSuite,
   menuSuite,
   menubarSuite,
@@ -213,7 +215,6 @@ export const allSuites: readonly ConformanceSuite[] = [
   popoverSuite,
   progressSuite,
   promptInputSuite,
-  qrCodeSuite,
   questionFlowSuite,
   radioGroupSuite,
   ratingSuite,
@@ -268,4 +269,5 @@ export const allSuites: readonly ConformanceSuite[] = [
   colorSliderSuite,
   colorFieldSuite,
   colorSwatchPickerSuite,
+  barCodeSuite,
 ]

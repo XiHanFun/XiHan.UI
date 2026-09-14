@@ -6,7 +6,7 @@ import type { NavigationMenuNode, TabsNode } from '@xihan-ui/headless'
 import { mount } from '@vue/test-utils'
 import { afterEach, describe, expect, it } from 'vitest'
 import { createCommentVNode, createTextVNode, defineComponent, Fragment, h } from 'vue'
-import { XhIcon, XhNavigationMenuRoot, XhQrCode, XhQrCodeLogo, XhTabsRoot } from '../src'
+import { XhIcon, XhMatrixCode, XhMatrixCodeLogo, XhNavigationMenuRoot, XhTabsRoot } from '../src'
 import { slotPaints } from '../src/runtime/slot-content'
 
 const CHECK: IconRecord = {
@@ -38,7 +38,7 @@ afterEach(() => {
  */
 function mountTemplate(template: string, show: boolean) {
   return mount(defineComponent({
-    components: { XhIcon, XhNavigationMenuRoot, XhQrCode, XhQrCodeLogo, XhTabsRoot },
+    components: { XhIcon, XhNavigationMenuRoot, XhMatrixCode, XhMatrixCodeLogo, XhTabsRoot },
     setup: () => ({ show, icon: CHECK, menu: MENU, tabs: TABS, authoredPath: AUTHORED_PATH }),
     template,
   }), { attachTo: document.body })
@@ -159,8 +159,8 @@ describe('tabs 的默认插槽', () => {
   })
 })
 
-describe('xhQrCode 的 logo 插槽', () => {
-  const TEMPLATE = `<XhQrCode value="https://ui.xihanfun.com" level="H"><XhQrCodeLogo v-if="show"><rect /></XhQrCodeLogo></XhQrCode>`
+describe('xhMatrixCode 的 logo 插槽', () => {
+  const TEMPLATE = `<XhMatrixCode value="https://ui.xihanfun.com" level="H"><XhMatrixCodeLogo v-if="show"><rect /></XhMatrixCodeLogo></XhMatrixCode>`
 
   function dug(root: Element): boolean {
     return root.querySelector('[data-xh-geom="logo-clear"]') != null
@@ -174,7 +174,7 @@ describe('xhQrCode 的 logo 插槽', () => {
   })
 
   it('纯空白文本不算放了 logo，一格都不挖', () => {
-    const w = mountSlot(XhQrCode, { value: 'https://ui.xihanfun.com', level: 'H' }, () => ['\n  '])
+    const w = mountSlot(XhMatrixCode, { value: 'https://ui.xihanfun.com', level: 'H' }, () => ['\n  '])
     expect(dug(w.element)).toBe(false)
     expect(w.element.getAttribute('data-logo')).toBeNull()
     w.unmount()

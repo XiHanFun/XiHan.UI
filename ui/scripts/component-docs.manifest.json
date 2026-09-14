@@ -396,6 +396,10 @@
           "name": "头像组"
         },
         {
+          "id": "bar-code",
+          "name": "条形码"
+        },
+        {
           "id": "card",
           "name": "卡片"
         },
@@ -452,12 +456,12 @@
           "name": "跑马灯"
         },
         {
-          "id": "number-animation",
-          "name": "数值动画"
+          "id": "matrix-code",
+          "name": "二维码"
         },
         {
-          "id": "qr-code",
-          "name": "二维码"
+          "id": "number-animation",
+          "name": "数值动画"
         },
         {
           "id": "statistic",

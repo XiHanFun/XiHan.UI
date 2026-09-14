@@ -49,6 +49,7 @@ export { provideBackTop, useBackTopContext } from './components/back-top/context
 export { useBackTop } from './components/back-top/use-back-top'
 export type { BackTopContext } from './components/back-top/use-back-top'
 export { XhBadge, XhBadgeIndicator, XhBadgeRoot } from './components/badge/badge'
+export { XhBarCode } from './components/bar-code/bar-code'
 export {
   XhBreadcrumbEllipsis,
   XhBreadcrumbItem,
@@ -640,6 +641,9 @@ export { provideMarquee, useMarqueeContext } from './components/marquee/context'
 export type { MarqueeContext } from './components/marquee/context'
 export { XhMarqueeContent, XhMarqueeRoot } from './components/marquee/marquee'
 export { XhMasonry } from './components/masonry/masonry'
+export { provideMatrixCode, useMatrixCodeContext } from './components/matrix-code/context'
+export type { MatrixCodeContext } from './components/matrix-code/context'
+export { XhMatrixCode, XhMatrixCodeLogo } from './components/matrix-code/matrix-code'
 export { provideMention, provideMentionItem, useMentionContext, useMentionItemContext } from './components/mention/context'
 export type { MentionItemContext } from './components/mention/context'
 export { XhMentionContent, XhMentionEmpty, XhMentionInput, XhMentionItem, XhMentionItemText, XhMentionLabel, XhMentionLoading, XhMentionPositioner, XhMentionRoot } from './components/mention/mention'
@@ -796,9 +800,6 @@ export { XhPromptInputControl, XhPromptInputInput, XhPromptInputRoot, XhPromptIn
 export type { PromptInputRootSlotProps } from './components/prompt-input/prompt-input'
 export { usePromptInput } from './components/prompt-input/use-prompt-input'
 export type { PromptInputCallbacks, PromptInputContext } from './components/prompt-input/use-prompt-input'
-export { provideQrCode, useQrCodeContext } from './components/qr-code/context'
-export type { QrCodeContext } from './components/qr-code/context'
-export { XhQrCode, XhQrCodeLogo } from './components/qr-code/qr-code'
 export { provideQuestionFlow, useQuestionFlowContext } from './components/question-flow/context'
 export {
   XhQuestionFlowCounter,
