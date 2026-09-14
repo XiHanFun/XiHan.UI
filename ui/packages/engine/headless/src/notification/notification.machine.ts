@@ -39,16 +39,16 @@ export function notificationPlacementOf(item: NotificationRecord, fallback: Noti
 export function notificationPriorityOf(item: NotificationRecord): number {
   if (item.priority != null && Number.isFinite(item.priority))
     return item.priority
-  if (item.type === 'error')
+  if (item.tone === 'danger')
     return 2
-  if (item.type === 'warning')
+  if (item.tone === 'warning')
     return 1
   return 0
 }
 
-/** 两条通知说的是不是同一件事：语气与两层文本全同即算一条。 */
+/** 两条通知说的是不是同一件事：语气、加载态与两层文本全同即算一条。 */
 export function sameNotificationContent(a: NotificationRecord, b: NotificationRecord): boolean {
-  return a.title === b.title && a.description === b.description && (a.type ?? 'info') === (b.type ?? 'info')
+  return a.title === b.title && a.description === b.description && (a.tone ?? 'info') === (b.tone ?? 'info') && !!a.loading === !!b.loading
 }
 
 /**

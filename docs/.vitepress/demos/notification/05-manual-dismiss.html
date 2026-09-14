@@ -59,7 +59,8 @@
       }
       node.titleText = item.title;
       node.description = item.description;
-      node.type = item.type;
+      node.tone = item.tone;
+      node.loading = item.loading;
       node.duration = item.duration;
       node.removeDelay = item.removeDelay;
       node.closable = item.closable;
@@ -77,7 +78,7 @@
 
   start.addEventListener("click", () => {
     pending = notification.create({
-      type: "loading",
+      loading: true,
       title: "正在导出",
       description: "loading 不自动消失，等宿主来收",
     });

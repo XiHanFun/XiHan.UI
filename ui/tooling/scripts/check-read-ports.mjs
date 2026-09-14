@@ -126,7 +126,7 @@ const PENDING = {
   'time-picker': ['open', 'value', 'empty', 'outOfRange', 'segments', 'canClear', 'setOpen', 'setValue', 'clear'],
   'time-range-picker': ['open', 'value', 'start', 'end', 'empty', 'outOfRange', 'reversed', 'segments', 'canClear', 'setOpen', 'setValue', 'clear'],
   'timer': ['phase', 'value', 'text', 'controlled', 'elapsed', 'running', 'paused', 'completed', 'countdown', 'segments', 'segmentText', 'controlAction', 'controlLabel'],
-  'toast': ['id', 'status', 'type', 'paused', 'remaining', 'dismiss', 'pause', 'resume'],
+  'toast': ['id', 'status', 'tone', 'loading', 'paused', 'remaining', 'dismiss', 'pause', 'resume'],
   'tool-call': ['open', 'phase', 'running', 'disabled', 'statusText', 'durationMs', 'setOpen'],
   'toolbar': ['focusedValue', 'orientation', 'disabled'],
   'tooltip': ['open', 'setOpen'],

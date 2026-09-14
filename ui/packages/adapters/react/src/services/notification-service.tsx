@@ -65,8 +65,8 @@ export interface NotificationCreateOptions extends NotificationOptions {
   onAction?: () => void
 }
 
-/** 类型糖的入参：只差 type 与 title，其余同 create。 */
-export type NotificationMessageOptions = Omit<NotificationCreateOptions, 'type' | 'title'>
+/** 语气糖的入参：只差 tone / loading 与 title，其余同 create。 */
+export type NotificationMessageOptions = Omit<NotificationCreateOptions, 'tone' | 'loading' | 'title'>
 
 export interface NotificationService {
   /** 入队并返回 id；同 id 已存在则就地改写，合并掉的返回被并进的那一条。 */
@@ -77,7 +77,7 @@ export interface NotificationService {
   info: (title: string, options?: NotificationMessageOptions) => string
   success: (title: string, options?: NotificationMessageOptions) => string
   warning: (title: string, options?: NotificationMessageOptions) => string
-  error: (title: string, options?: NotificationMessageOptions) => string
+  danger: (title: string, options?: NotificationMessageOptions) => string
   /** 把当下这些卡片的计时全按住，'service' 这一路与指针、焦点并存。 */
   pauseAll: () => void
   resumeAll: () => void
@@ -100,7 +100,8 @@ function DefaultCard(props: {
       id={item.id}
       title={resolveFeedbackServiceTitle(item)}
       description={item.description}
-      type={item.type}
+      tone={item.tone}
+      loading={item.loading}
       duration={item.duration}
       removeDelay={item.removeDelay}
       closable={item.closable}
@@ -203,9 +204,9 @@ export function createNotificationService(options: NotificationServiceOptions = 
     return controller.create(record, onAction)
   }
 
-  const sugar = (type: NotificationOptions['type']) =>
+  const sugar = (tone: NotificationOptions['tone']) =>
     (title: string, opts: NotificationMessageOptions = {}): string =>
-      create({ ...opts, type, title })
+      create({ ...opts, tone, title })
 
   return {
     create,
@@ -215,7 +216,7 @@ export function createNotificationService(options: NotificationServiceOptions = 
     info: sugar('info'),
     success: sugar('success'),
     warning: sugar('warning'),
-    error: sugar('error'),
+    danger: sugar('danger'),
     pauseAll: controller.pauseAll,
     resumeAll: controller.resumeAll,
     setConfig: next => configSource.set(next),

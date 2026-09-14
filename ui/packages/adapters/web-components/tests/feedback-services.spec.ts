@@ -34,7 +34,7 @@ describe('createToastService', () => {
     toast.success('已保存')
     await tick()
     expect(document.body.textContent).toContain('已保存')
-    expect(partOf('toast', 'root')?.getAttribute('data-severity')).toBe('success')
+    expect(partOf('toast', 'root')?.getAttribute('data-tone')).toBe('success')
     toast.dispose()
   })
 
@@ -55,7 +55,7 @@ describe('createToastService', () => {
     const id = toast.loading('上传中')
     await tick()
     expect(document.body.textContent).toContain('上传中')
-    toast.update(id, { type: 'success', title: '上传完成' })
+    toast.update(id, { loading: false, tone: 'success', title: '上传完成' })
     await tick()
     expect(document.body.textContent).toContain('上传完成')
     expect(document.body.textContent ?? '').not.toContain('上传中')
@@ -92,7 +92,7 @@ describe('createToastService', () => {
     toast.dismissAll()
     await wait(400)
 
-    toast.error('导出失败', { duration: 0, closable: false })
+    toast.danger('导出失败', { duration: 0, closable: false })
     await tick()
     expect(partOf('toast', 'close-trigger')).toBeNull()
     toast.dispose()

@@ -11,7 +11,7 @@ import { createAnatomy } from '@xihan-ui/core'
 // 需要持续阅读的长内容仍归 notification。
 export const toastAnatomy = createAnatomy('toast', [
   'root',
-  // 严重度指示符。作者不往里写东西时由皮肤按 data-severity 画一枚兜底字形；
+  // 语气指示符。作者不往里写东西时由皮肤按 data-tone / data-loading 画一枚兜底字形；
   // 不渲染这个部件时字形仍由 root 的伪元素兜住。
   'indicator',
   // 标题与可选说明的统一文本列。

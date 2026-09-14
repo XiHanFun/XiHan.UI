@@ -35,7 +35,7 @@ describe('createToastService', () => {
     const id = toast.loading('上传中')
     await tick()
     expect(document.body.textContent).toContain('上传中')
-    toast.update(id, { type: 'success', title: '上传完成' })
+    toast.update(id, { loading: false, tone: 'success', title: '上传完成' })
     await tick()
     expect(document.body.textContent).toContain('上传完成')
     expect(document.body.textContent).not.toContain('上传中')
@@ -44,7 +44,7 @@ describe('createToastService', () => {
 
   it('dismissAll 一次收走所有条目', async () => {
     const toast = createToastService()
-    toast.error('同步失败')
+    toast.danger('同步失败')
     toast.info('另一条')
     await tick()
     expect(document.body.textContent).toContain('同步失败')
@@ -120,13 +120,13 @@ describe('createToastService 的默认模板', () => {
     expect(closeOf()).not.toBeNull()
     expect([...root.children].map(el => el.getAttribute('data-part'))).toEqual(['indicator', 'content', 'close-trigger'])
     expect(root.querySelector('[data-part="description"]')?.textContent).toBe('更改已同步到云端')
-    expect(root.getAttribute('data-severity')).toBe('success')
+    expect(root.getAttribute('data-tone')).toBe('success')
     toast.dispose()
   })
 
   it('closable=false 显式去掉关闭入口', async () => {
     const toast = createToastService()
-    toast.error('导出失败', { duration: 0, closable: false })
+    toast.danger('导出失败', { duration: 0, closable: false })
     await tick()
     expect(closeOf()).toBeNull()
     toast.dispose()
@@ -140,30 +140,32 @@ describe('createToastService 的默认模板', () => {
     toast.dismissAll()
     await tick()
 
-    toast.error('这条不许关', { duration: 0, closable: false })
+    toast.danger('这条不许关', { duration: 0, closable: false })
     await tick()
     expect(closeOf()).toBeNull()
     toast.dispose()
   })
 
-  it('没写 type 也按 info 落位：语气与严重度两位都得有，皮肤才画得出字形', async () => {
+  it('没写 tone 也按 info 落位：语气位得有，皮肤才画得出字形；不在加载中就没有 data-loading', async () => {
     const toast = createToastService()
-    toast.create({ title: '无类型' })
+    toast.create({ title: '无语气' })
     await tick()
     const root = toastRoot()
     expect(root.getAttribute('data-tone')).toBe('info')
-    expect(root.getAttribute('data-severity')).toBe('info')
+    expect(root.hasAttribute('data-loading')).toBe(false)
     toast.dispose()
   })
 
-  it('改写 type 时严重度那一位跟着换，字形才会从转圈换成勾号', async () => {
+  it('loading 收尾时加载位撤掉、语气位换掉，字形才会从转圈换成勾号', async () => {
     const toast = createToastService()
     const id = toast.loading('上传中')
     await tick()
-    expect(toastRoot().getAttribute('data-severity')).toBe('loading')
-    toast.update(id, { type: 'success', title: '上传完成' })
+    expect(toastRoot().hasAttribute('data-loading')).toBe(true)
+    expect(toastRoot().getAttribute('data-tone')).toBe('info')
+    toast.update(id, { loading: false, tone: 'success', title: '上传完成' })
     await tick()
-    expect(toastRoot().getAttribute('data-severity')).toBe('success')
+    expect(toastRoot().hasAttribute('data-loading')).toBe(false)
+    expect(toastRoot().getAttribute('data-tone')).toBe('success')
     toast.dispose()
   })
 })
@@ -197,7 +199,7 @@ describe('createNotificationService', () => {
     const notify = createNotificationService()
     const id = notify.info('导出中', { duration: 0 })
     await tick()
-    notify.update(id, { type: 'success', title: '导出完成' })
+    notify.update(id, { tone: 'success', title: '导出完成' })
     await tick()
     expect(document.body.textContent).toContain('导出完成')
     expect(document.body.textContent ?? '').not.toContain('导出中')
@@ -234,9 +236,9 @@ describe('createNotificationService 的默认模板', () => {
     notify.dispose()
   })
 
-  it('没写 type 也有指示符，语气落 info', async () => {
+  it('没写 tone 也有指示符，语气落 info', async () => {
     const notify = createNotificationService()
-    notify.create({ title: '无类型' })
+    notify.create({ title: '无语气' })
     await tick()
     expect(card().getAttribute('data-tone')).toBe('info')
     expect(partOf('item-indicator')?.getAttribute('aria-hidden')).toBe('true')
@@ -261,20 +263,20 @@ describe('createNotificationService 的默认模板', () => {
     notify.dismissAll()
     await tick()
 
-    notify.error('这条不许关', { duration: 0, closable: false })
+    notify.danger('这条不许关', { duration: 0, closable: false })
     await tick()
     expect(partOf('item-close-trigger')).toBeNull()
     notify.dispose()
   })
 
-  it('loading 改写成 success：语气与类型都跟着换，皮肤据此换字形', async () => {
+  it('loading 收尾成 success：加载位撤掉、语气位换掉，皮肤据此换字形', async () => {
     const notify = createNotificationService()
-    const id = notify.create({ title: '导出中', type: 'loading', duration: 0 })
+    const id = notify.create({ title: '导出中', loading: true, duration: 0 })
     await tick()
-    expect(card().getAttribute('data-severity')).toBe('loading')
-    notify.update(id, { type: 'success', title: '导出完成' })
+    expect(card().hasAttribute('data-loading')).toBe(true)
+    notify.update(id, { loading: false, tone: 'success', title: '导出完成' })
     await tick()
-    expect(card().getAttribute('data-severity')).toBe('success')
+    expect(card().hasAttribute('data-loading')).toBe(false)
     expect(card().getAttribute('data-tone')).toBe('success')
     notify.dispose()
   })

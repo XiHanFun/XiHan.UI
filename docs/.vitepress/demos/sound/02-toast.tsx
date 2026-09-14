@@ -16,7 +16,7 @@ export default function Demo(): ReactNode {
 
   function upload(): void {
     const id = use().loading("上传中");
-    setTimeout(() => use().update(id, { type: "success", title: "上传完成" }), 1200);
+    setTimeout(() => use().update(id, { loading: false, tone: "success", title: "上传完成" }), 1200);
   }
 
   return (
@@ -24,8 +24,8 @@ export default function Demo(): ReactNode {
       <XhButton variant="solid" onClick={() => upload()}>上传（静默转成功才响）</XhButton>
       <XhButton variant="outline" onClick={() => use().success("已保存")}>success</XhButton>
       <XhButton variant="outline" onClick={() => use().warning("磁盘快满了")}>warning</XhButton>
-      <XhButton variant="outline" onClick={() => use().error("同步失败，稍后自动重试")}>
-        error
+      <XhButton variant="outline" onClick={() => use().danger("同步失败，稍后自动重试")}>
+        danger
       </XhButton>
     </div>
   );

@@ -103,17 +103,18 @@ function Pressable(props: { value?: SoundPressValue, label?: string }): ReactNod
 const pressable = (): HTMLButtonElement => document.querySelector('button')!
 
 describe('withToastSound', () => {
-  it('四个类型糖各发各的声，视觉照旧', async () => {
+  it('四个语气糖各发各的声，视觉照旧', async () => {
     const player = recorder()
     const toast = withToastSound(createToastService(), { player, autoUnlock: false })
     cleanups.push(() => toast.dispose())
     toast.success('已保存')
-    toast.error('保存失败')
+    toast.danger('保存失败')
     toast.warning('注意')
     toast.info('提示')
     await settle()
     expect(player.played).toEqual(['success', 'error', 'warning', 'info'])
-    expect(document.body.textContent).toContain('已保存')
+    // 服务默认只留 3 条，先挤低优先级里最旧的那条 success；报错那条最重，一定还在台上
+    expect(document.body.textContent).toContain('保存失败')
   })
 
   it('loading 不发声，转成 success 时才响', async () => {
@@ -123,7 +124,7 @@ describe('withToastSound', () => {
     const id = toast.loading('上传中')
     await settle()
     expect(player.played).toEqual([])
-    toast.update(id, { type: 'success', title: '上传完成' })
+    toast.update(id, { loading: false, tone: 'success', title: '上传完成' })
     await settle()
     expect(player.played).toEqual(['success'])
     expect(document.body.textContent).toContain('上传完成')
@@ -133,7 +134,7 @@ describe('withToastSound', () => {
     const player = recorder()
     const toast = withToastSound(createToastService(), { player, autoUnlock: false })
     cleanups.push(() => toast.dispose())
-    const id = toast.create({ type: 'info', title: '一' })
+    const id = toast.create({ tone: 'info', title: '一' })
     await settle()
     toast.update(id, { title: '二' })
     await settle()
@@ -161,7 +162,7 @@ describe('withToastSound', () => {
     const onAction = vi.fn()
     const toast = withToastSound(createToastService(), { player, autoUnlock: false })
     cleanups.push(() => toast.dispose())
-    toast.create({ type: 'info', title: '已删除', actionLabel: '撤销', onAction })
+    toast.create({ tone: 'info', title: '已删除', actionLabel: '撤销', onAction })
     await settle()
     const trigger = document.querySelector<HTMLElement>('[data-scope="toast"][data-part="action-trigger"]')
     expect(trigger).not.toBeNull()
@@ -174,11 +175,11 @@ describe('withToastSound', () => {
     const toast = withToastSound(createToastService(), {
       player,
       autoUnlock: false,
-      sounds: { success: 'complete', error: null },
+      sounds: { success: 'complete', danger: null },
     })
     cleanups.push(() => toast.dispose())
     toast.success('好了')
-    toast.error('坏了')
+    toast.danger('坏了')
     toast.warning('小心')
     await settle()
     expect(player.played).toEqual(['complete', 'warning'])

@@ -26,9 +26,9 @@
 
 ### 颜色
 
-卡片保持中性，type 只改变标题与状态图标；error 使用 assertive 实时区，loading 不自动消失
+卡片保持中性，tone 只改变标题与状态字形；danger 使用 assertive 实时区，loading 另有一位，转圈且不自动消失
 
-<XhDemo src="toast/02-type" />
+<XhDemo src="toast/02-tone" />
 
 ### 计时与暂停
 
@@ -70,7 +70,7 @@ description 提供一行简短上下文；需要长时间阅读的内容改用 N
 
 - `duration` 默认 4000ms；指针悬停或焦点进入时暂停计时，全局服务还会在页面转入后台时暂停。
 - 可以带一个操作按钮（撤销、查看详情）。
-- `type` 只改变标题与状态字形，卡片始终使用中性浮层。
+- `tone` 只改变标题与状态字形，卡片始终使用中性浮层；`loading` 另有一位，字形换成转圈且不自动消失。
 - `closable` 默认开启；悬停或焦点进入卡片时显示关闭按钮。
 - 全局服务默认将最新一条置于最前，后两层按 12px 偏移与 0.05 比例收拢；鼠标或焦点进入后按真实高度展开。
 
@@ -108,7 +108,8 @@ description 提供一行简短上下文；需要长时间阅读的内容改用 N
 | `id` | `string` |  | 队列身份。服务档用它做 create/update/dismiss 的寻址键。 |
 | `title` | `string` |  | 标题文本；作者没在 title 部件里写内容时由适配器填入。 |
 | `description` | `string` |  | 可选的补充说明；应保持简短，需要持续阅读的长内容改用 notification。 |
-| `type` | `ToastType` |  | 语气，默认 info。error 走 alert + assertive，loading 不自动消失。 |
+| `tone` | `ToastTone` |  | 语气，默认 info。danger 走 alert + assertive。 |
+| `loading` | `boolean` |  | 事情还没完：行首换成转圈，且不自动消失（duration 不再起作用），完事后改写成别的语气收尾。 |
 | `duration` | `number` |  | 停留毫秒，默认 4000。&lt;=0 或非有限数即不自动消失。 |
 | `removeDelay` | `number` |  | 退场窗口毫秒，默认 300：进入 dismissing 后停留这么久再转 unmounted，留给退场动画。 |
 | `closable` | `boolean` |  | 是否显示可用的关闭按钮，默认 true。 |
@@ -160,7 +161,8 @@ description 提供一行简短上下文；需要长时间阅读的内容改用 N
 | --- | --- | --- |
 | `id` | `string` |  |
 | `status` | `ToastStatus` |  |
-| `type` | `ToastType` |  |
+| `tone` | `ToastTone` |  |
+| `loading` | `boolean` |  |
 | `title` | `string \| undefined` |  |
 | `description` | `string \| undefined` |  |
 | `paused` | `boolean` | 计时被按住中。倒计时的可见反馈由使用者自己渲染，这个标记是留给他的钩子——自带皮肤不画。 |
@@ -171,7 +173,7 @@ description 提供一行简短上下文；需要长时间阅读的内容改用 N
 | `resume` | `() => void` |  |
 | `duration` | `number` | 停留总时长（毫秒）；不自动消失时为 Infinity。 |
 | `getRootProps` | `() => T['element']` |  |
-| `getIndicatorProps` | `() => T['element']` | 严重度指示符：作者塞自己的图形，不塞则由皮肤画兜底字形。 |
+| `getIndicatorProps` | `() => T['element']` | 语气指示符：作者塞自己的图形，不塞则由皮肤按语气画兜底字形，加载中换成转圈。 |
 | `getContentProps` | `() => T['element']` | 标题与说明的文本列。 |
 | `getTitleProps` | `() => T['element']` |  |
 | `getDescriptionProps` | `() => T['element']` |  |
@@ -217,11 +219,11 @@ description 提供一行简短上下文；需要长时间阅读的内容改用 N
 
 | 部件 | 属性 | 值 |
 | --- | --- | --- |
+| `root` | `data-loading` | ''（条件成立时才出现） |
 | `root` | `data-paused` | ''（条件成立时才出现） |
-| `root` | `data-severity` | props.type |
 | `root` | `data-state` | toStatus(state.get()) |
-| `root` | `data-tone` | toneOf(type) |
-| `indicator` | `data-severity` | props.type |
+| `root` | `data-tone` | props.tone |
+| `indicator` | `data-loading` | ''（条件成立时才出现） |
 | `progress` | `data-state` | toStatus(state.get()) |
 | `close-trigger` | `data-disabled` | ''（条件成立时才出现） |
 

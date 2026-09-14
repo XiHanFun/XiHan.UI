@@ -191,7 +191,8 @@
   }
 
   /*
-   * 严重度的非颜色通道。行首字形按 data-severity 区分信息、成功、警告、失败与加载。
+   * 语气的非颜色通道。行首字形按 data-tone 区分信息、成功、警告与失败；加载中另由 data-loading 说，
+   * 字形换成转圈但配色仍照语气走。
    * 作者未渲染 indicator 时由 root 的伪元素补上。
    */
   [data-scope='toast'][data-part='root']::before {
@@ -206,23 +207,23 @@
     mask: var(--xh-glyph-mark-info) center / contain no-repeat;
   }
 
-  [data-scope='toast'][data-part='root'][data-severity='success']::before {
+  [data-scope='toast'][data-part='root'][data-tone='success']::before {
     -webkit-mask-image: var(--xh-glyph-mark-check);
     mask-image: var(--xh-glyph-mark-check);
   }
 
-  [data-scope='toast'][data-part='root'][data-severity='warning']::before {
+  [data-scope='toast'][data-part='root'][data-tone='warning']::before {
     -webkit-mask-image: var(--xh-glyph-mark-warning);
     mask-image: var(--xh-glyph-mark-warning);
   }
 
-  [data-scope='toast'][data-part='root'][data-severity='error']::before {
+  [data-scope='toast'][data-part='root'][data-tone='danger']::before {
     -webkit-mask-image: var(--xh-glyph-mark-close);
     mask-image: var(--xh-glyph-mark-close);
   }
 
-  /* loading 那一档的颜色不必在这儿再兑：它派生的语气就是中性，前景档跟着一起换 */
-  [data-scope='toast'][data-part='root'][data-severity='loading']::before {
+  /* 加载中不是语气：只换字形，颜色沿用当前语气的前景档；写在四档语气之后，转圈压过它们 */
+  [data-scope='toast'][data-part='root'][data-loading]::before {
     -webkit-mask-image: var(--xh-glyph-mark-rotate-right);
     mask-image: var(--xh-glyph-mark-rotate-right);
     animation: xh-toast-spin var(--xh-spin-duration) var(--xh-motion-ease-loop) infinite;
@@ -232,12 +233,12 @@
      role=status 与可见文案继续承担。
      两组规则是同一件事的两个触发条件：系统偏好与作者打的 data-motion */
   @media (prefers-reduced-motion: reduce) {
-    [data-scope='toast'][data-part='root'][data-severity='loading']::before {
+    [data-scope='toast'][data-part='root'][data-loading]::before {
       animation: none;
     }
   }
 
-  :where([data-motion='reduce']) [data-scope='toast'][data-part='root'][data-severity='loading']::before {
+  :where([data-motion='reduce']) [data-scope='toast'][data-part='root'][data-loading]::before {
     animation: none;
   }
 
@@ -271,22 +272,22 @@
     mask: var(--xh-glyph-mark-info) center / contain no-repeat;
   }
 
-  [data-scope='toast'][data-part='indicator'][data-severity='success']:empty::before {
+  [data-scope='toast'][data-part='indicator'][data-tone='success']:empty::before {
     -webkit-mask-image: var(--xh-glyph-mark-check);
     mask-image: var(--xh-glyph-mark-check);
   }
 
-  [data-scope='toast'][data-part='indicator'][data-severity='warning']:empty::before {
+  [data-scope='toast'][data-part='indicator'][data-tone='warning']:empty::before {
     -webkit-mask-image: var(--xh-glyph-mark-warning);
     mask-image: var(--xh-glyph-mark-warning);
   }
 
-  [data-scope='toast'][data-part='indicator'][data-severity='error']:empty::before {
+  [data-scope='toast'][data-part='indicator'][data-tone='danger']:empty::before {
     -webkit-mask-image: var(--xh-glyph-mark-close);
     mask-image: var(--xh-glyph-mark-close);
   }
 
-  [data-scope='toast'][data-part='indicator'][data-severity='loading']:empty::before {
+  [data-scope='toast'][data-part='indicator'][data-loading]:empty::before {
     -webkit-mask-image: var(--xh-glyph-mark-rotate-right);
     mask-image: var(--xh-glyph-mark-rotate-right);
     animation: xh-toast-spin var(--xh-spin-duration) var(--xh-motion-ease-loop) infinite;
@@ -295,12 +296,12 @@
   /* 减少动效：与 root 上那枚同一处理——转圈停下，静止的箭头仍读得出「还没好」。
      两组规则是同一件事的两个触发条件：系统偏好与作者打的 data-motion */
   @media (prefers-reduced-motion: reduce) {
-    [data-scope='toast'][data-part='indicator'][data-severity='loading']:empty::before {
+    [data-scope='toast'][data-part='indicator'][data-loading]:empty::before {
       animation: none;
     }
   }
 
-  :where([data-motion='reduce']) [data-scope='toast'][data-part='indicator'][data-severity='loading']:empty::before {
+  :where([data-motion='reduce']) [data-scope='toast'][data-part='indicator'][data-loading]:empty::before {
     animation: none;
   }
 
@@ -509,7 +510,7 @@
 
     /* 摞收起后条子本不该出现在纸上；这一条兜的是作者把条子摆在别处的用法：
        动画会被定格在任意一帧——转了一半的圈。取值与减弱动效那一档相同。 */
-    [data-scope='toast'][data-part='root'][data-severity='loading']::before {
+    [data-scope='toast'][data-part='root'][data-loading]::before {
       animation: none;
     }
   }

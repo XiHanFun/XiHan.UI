@@ -88,7 +88,7 @@ export interface ToastSoundServicePort {
   info: ServiceMethod
   success: ServiceMethod
   warning: ServiceMethod
-  error: ServiceMethod
+  danger: ServiceMethod
   loading: ServiceMethod
   dispose: () => void
 }
@@ -103,7 +103,8 @@ export interface DialogSoundServicePort {
   dispose: () => void
 }
 
-export type ToastSoundKey = 'info' | 'success' | 'warning' | 'error' | 'loading'
+/** 四档语气各一把，外加 loading 一把：语气决定声，加载中压过语气（缺省静音）。 */
+export type ToastSoundKey = 'info' | 'success' | 'warning' | 'danger' | 'loading'
 export type DialogSoundKey = 'confirm' | 'info' | 'success' | 'warning' | 'error'
 
 export interface ToastSoundServiceOptions extends Omit<SoundServiceControllerOptions<ToastSoundKey>, 'defaults'> {}
@@ -113,7 +114,8 @@ const TOAST_SOUND_DEFAULTS: Readonly<Record<ToastSoundKey, SoundChoice>> = {
   info: 'info',
   success: 'success',
   warning: 'warning',
-  error: 'error',
+  // 语气叫 danger，主题里那把声叫 error：一个是词汇表里的语气，一个是声音的语义名
+  danger: 'error',
   // 加载中只是过渡态，收尾时才有值得报的结果。
   loading: null,
 }
@@ -145,9 +147,16 @@ function soundMethod<Service extends object, Key extends keyof Service>(
   }) as Service[Key]
 }
 
+/** 一条入参对应哪把声：打开 loading 时压过语气，否则按 tone；两样都没写就没有声可发。 */
+function toastSoundKeyOf(input: { tone?: Exclude<ToastSoundKey, 'loading'>, loading?: boolean } | undefined): ToastSoundKey | undefined {
+  if (input?.loading)
+    return 'loading'
+  return input?.tone
+}
+
 /**
  * 给结构化 Toast 服务加声音，保留服务自身类型与返回值。
- * create 缺省按 info；update 只在显式改 type 时发声；loading 映射为静音。
+ * create 缺省按 info；update 只在显式改 tone 或打开 loading 时发声；loading 映射为静音。
  */
 export function withToastSoundService<Service extends ToastSoundServicePort>(
   service: Service,
@@ -161,20 +170,20 @@ export function withToastSoundService<Service extends ToastSoundServicePort>(
   return {
     ...service,
     create: (...args: Parameters<Service['create']>) => {
-      const input = args[0] as { type?: ToastSoundKey } | undefined
-      controller.play(input?.type ?? 'info')
+      controller.play(toastSoundKeyOf(args[0] as Parameters<typeof toastSoundKeyOf>[0]) ?? 'info')
       return call(service, service.create, args)
     },
     update: (...args: Parameters<Service['update']>) => {
-      const input = args[1] as { type?: ToastSoundKey } | undefined
-      if (input?.type)
-        controller.play(input.type)
+      // 只改文案不响；loading 收尾成别的语气时那一刻才响
+      const key = toastSoundKeyOf(args[1] as Parameters<typeof toastSoundKeyOf>[0])
+      if (key)
+        controller.play(key)
       return call(service, service.update, args)
     },
     info: soundMethod(controller, service, 'info'),
     success: soundMethod(controller, service, 'success'),
     warning: soundMethod(controller, service, 'warning'),
-    error: soundMethod(controller, service, 'error'),
+    danger: soundMethod(controller, service, 'danger'),
     loading: soundMethod(controller, service, 'loading'),
     dispose: () => {
       controller.dispose()

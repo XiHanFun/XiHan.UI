@@ -39,8 +39,8 @@ export interface ToastCreateOptions extends ToastOptions {
   onAction?: () => void
 }
 
-/** 类型糖的入参：只差 type，其余同 create。 */
-export type ToastMessageOptions = Omit<ToastCreateOptions, 'type' | 'title'>
+/** 语气糖的入参：只差 tone / loading，其余同 create。 */
+export type ToastMessageOptions = Omit<ToastCreateOptions, 'tone' | 'loading' | 'title'>
 
 /** promise 三态的文案：成功与失败可以给函数，拿到结果再拼话。 */
 export interface ToastPromiseOptions<T> extends Omit<ToastMessageOptions, 'duration'> {
@@ -75,11 +75,11 @@ export interface ToastService {
   info: (message: string, options?: ToastMessageOptions) => string
   success: (message: string, options?: ToastMessageOptions) => string
   warning: (message: string, options?: ToastMessageOptions) => string
-  error: (message: string, options?: ToastMessageOptions) => string
-  /** 返回 id，之后用 update(id, { type: 'success', title: … }) 收尾。 */
+  danger: (message: string, options?: ToastMessageOptions) => string
+  /** 返回 id，之后用 update(id, { loading: false, tone: 'success', title: … }) 收尾。 */
   loading: (message: string, options?: ToastMessageOptions) => string
   /**
-   * 先弹一条 loading，Promise 落定后就地改写成 success / error。
+   * 先弹一条 loading，Promise 落定后就地改写成 success / danger。
    * 返回那一条的 id；Promise 的结果原样交回给调用方，拒绝也照旧拒绝。
    */
   promise: <T>(input: Promise<T> | (() => Promise<T>), options: ToastPromiseOptions<T>) => Promise<T>
@@ -97,7 +97,7 @@ export interface NotificationCreateOptions extends NotificationOptions {
   onAction?: () => void
 }
 
-export type NotificationMessageOptions = Omit<NotificationCreateOptions, 'type' | 'title'>
+export type NotificationMessageOptions = Omit<NotificationCreateOptions, 'tone' | 'loading' | 'title'>
 
 export interface NotificationServiceOptions extends ServiceHostOptions {
   /** 默认落位，默认 bottom-end；单条可用 options.placement 覆盖。 */
@@ -124,7 +124,7 @@ export interface NotificationService {
   info: (title: string, options?: NotificationMessageOptions) => string
   success: (title: string, options?: NotificationMessageOptions) => string
   warning: (title: string, options?: NotificationMessageOptions) => string
-  error: (title: string, options?: NotificationMessageOptions) => string
+  danger: (title: string, options?: NotificationMessageOptions) => string
   /** 把当下这些卡片的计时全按住。 */
   pauseAll: () => void
   resumeAll: () => void

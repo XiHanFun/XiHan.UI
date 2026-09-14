@@ -23,7 +23,7 @@ export default function Demo(): ReactNode {
 
   function start(create: Create): void {
     setPending(create({
-      type: "loading",
+      loading: true,
       title: "正在导出",
       description: "loading 不自动消失，等宿主来收",
     }));
@@ -66,7 +66,8 @@ export default function Demo(): ReactNode {
                 id={item.id}
                 title={item.title}
                 description={item.description}
-                type={item.type}
+                tone={item.tone}
+                loading={item.loading}
                 duration={item.duration}
                 removeDelay={item.removeDelay}
                 closable={item.closable}

@@ -6,13 +6,13 @@
 // 定义 notification 类型契约。
 
 import type { MachineSchema, PropTypes } from '@xihan-ui/core'
-import type { ToastStatus, ToastType } from '../toast'
+import type { ToastStatus, ToastTone } from '../toast'
 
 /**
  * 语气与生命周期与轻提示同一套词汇：两者都是「到点自己走的一条消息」。
  * 这里另起一份名字，是为了用 notification 的作者不必在类型里读到 Toast。
  */
-export type NotificationType = ToastType
+export type NotificationTone = ToastTone
 export type NotificationStatus = ToastStatus
 
 /** 九宫格落位。第一段是纵向、第二段是横向（start/end 跟随文字方向）。 */
@@ -29,7 +29,9 @@ export interface NotificationRecord {
   id: string
   title?: string
   description?: string
-  type?: NotificationType
+  tone?: NotificationTone
+  /** 事情还没完：图标换成转圈，且不自动消失。 */
+  loading?: boolean
   duration?: number
   removeDelay?: number
   closable?: boolean
@@ -60,7 +62,8 @@ export type NotificationOptions = Omit<NotificationRecord, 'id'> & { id?: string
 /** 补齐 notification 默认值后的条目；命令式服务标题仍统一经过合并计数投影。 */
 export interface ResolvedNotification extends NotificationRecord {
   placement: NotificationPlacement
-  type: NotificationType
+  tone: NotificationTone
+  loading: boolean
   duration: number
   removeDelay: number
   closable: boolean
@@ -153,7 +156,8 @@ export interface NotificationApi<T extends PropTypes = PropTypes> {
 export interface NotificationItemApi<T extends PropTypes = PropTypes> {
   id: string
   status: NotificationStatus
-  type: NotificationType
+  tone: NotificationTone
+  loading: boolean
   title: string | undefined
   description: string | undefined
   /** 指针停在卡片上、或焦点落在里面时为真：计时被按住。 */

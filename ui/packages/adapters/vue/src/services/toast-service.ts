@@ -17,7 +17,7 @@ import type {
   ToastRecord,
   ToastServiceDefaults,
   ToastTranslations,
-  ToastType,
+  ToastTone,
 } from '@xihan-ui/headless'
 import type { App, MaybeRefOrGetter, VNode } from 'vue'
 import type { XhConfig } from '../config/config'
@@ -80,8 +80,8 @@ export interface ToastCreateOptions extends ToastOptions {
   onAction?: () => void
 }
 
-/** 类型糖的入参：只差 type，其余同 create。 */
-export type ToastMessageOptions = Omit<ToastCreateOptions, 'type' | 'title'>
+/** 语气糖的入参：只差 tone / loading，其余同 create。 */
+export type ToastMessageOptions = Omit<ToastCreateOptions, 'tone' | 'loading' | 'title'>
 
 /** promise 三态的文案：成功与失败可以给函数，拿到结果再拼话。 */
 export interface ToastPromiseOptions<T> extends Omit<ToastMessageOptions, 'duration'> {
@@ -100,11 +100,11 @@ export interface ToastService {
   info: (message: string, options?: ToastMessageOptions) => string
   success: (message: string, options?: ToastMessageOptions) => string
   warning: (message: string, options?: ToastMessageOptions) => string
-  error: (message: string, options?: ToastMessageOptions) => string
-  /** 返回 id，之后用 update(id, { type: 'success', title: … }) 收尾。 */
+  danger: (message: string, options?: ToastMessageOptions) => string
+  /** 返回 id，之后用 update(id, { loading: false, tone: 'success', title: … }) 收尾。 */
   loading: (message: string, options?: ToastMessageOptions) => string
   /**
-   * 先弹一条 loading，Promise 落定后就地改写成 success / error。
+   * 先弹一条 loading，Promise 落定后就地改写成 success / danger。
    * 返回那一条的 id；Promise 的结果原样交回给调用方，拒绝也照旧拒绝。
    */
   promise: <T>(input: Promise<T> | (() => Promise<T>), options: ToastPromiseOptions<T>) => Promise<T>
@@ -130,7 +130,8 @@ function defaultToast(
     id: item.id,
     title: item.title,
     description: item.description,
-    type: item.type,
+    tone: item.tone,
+    loading: item.loading,
     duration: item.duration,
     removeDelay: item.removeDelay,
     closable: item.closable,
@@ -266,8 +267,8 @@ export function createToastService(options: ToastServiceOptions = {}): ToastServ
     return controller.create(record, onAction)
   }
 
-  const sugar = (type: ToastType) => (message: string, opts: ToastMessageOptions = {}): string =>
-    create({ ...opts, type, title: message })
+  const sugar = (tone: ToastTone) => (message: string, opts: ToastMessageOptions = {}): string =>
+    create({ ...opts, tone, title: message })
 
   return {
     create,
@@ -277,17 +278,17 @@ export function createToastService(options: ToastServiceOptions = {}): ToastServ
     info: sugar('info'),
     success: sugar('success'),
     warning: sugar('warning'),
-    error: sugar('error'),
-    loading: sugar('loading'),
+    danger: sugar('danger'),
+    loading: (message, opts = {}) => create({ ...opts, loading: true, title: message }),
     promise: <T>(input: Promise<T> | (() => Promise<T>), opts: ToastPromiseOptions<T>): Promise<T> => {
       const { loading, success, error, ...rest } = opts
       const running = typeof input === 'function' ? input() : input
       const { onAction, ...record } = rest
       return controller.trackPromise(
         running,
-        { ...record, type: 'loading', title: loading },
-        value => ({ type: 'success', title: typeof success === 'function' ? success(value) : success }),
-        reason => ({ type: 'error', title: typeof error === 'function' ? error(reason) : error }),
+        { ...record, loading: true, title: loading },
+        value => ({ loading: false, tone: 'success', title: typeof success === 'function' ? success(value) : success }),
+        reason => ({ loading: false, tone: 'danger', title: typeof error === 'function' ? error(reason) : error }),
         onAction,
       )
     },

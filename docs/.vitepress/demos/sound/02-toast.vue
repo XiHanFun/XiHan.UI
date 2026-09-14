@@ -15,7 +15,7 @@ onBeforeUnmount(() => toast?.dispose());
 
 function upload(): void {
   const id = use().loading("上传中");
-  setTimeout(() => use().update(id, { type: "success", title: "上传完成" }), 1200);
+  setTimeout(() => use().update(id, { loading: false, tone: "success", title: "上传完成" }), 1200);
 }
 </script>
 
@@ -24,8 +24,8 @@ function upload(): void {
     <XhButton variant="solid" @click="upload()">上传（静默转成功才响）</XhButton>
     <XhButton variant="outline" @click="use().success('已保存')">success</XhButton>
     <XhButton variant="outline" @click="use().warning('磁盘快满了')">warning</XhButton>
-    <XhButton variant="outline" @click="use().error('同步失败，稍后自动重试')">
-      error
+    <XhButton variant="outline" @click="use().danger('同步失败，稍后自动重试')">
+      danger
     </XhButton>
   </div>
 </template>

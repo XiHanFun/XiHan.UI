@@ -6,7 +6,7 @@
 // 提供 notification 相关实现。
 
 import type { NormalizeProps, PropTypes, Service } from '@xihan-ui/core'
-import type { ToastSchema, ToastStatus, ToastType } from '../toast'
+import type { ToastSchema, ToastStatus } from '../toast'
 import type { NotificationApi, NotificationItemApi, NotificationPlacement, NotificationRecord, NotificationSchema, ResolvedNotification } from './notification.types'
 import { DATA_INERT_EXEMPT, dataAttr } from '@xihan-ui/core'
 import { resolveToastDuration, resolveToastId } from '../toast'
@@ -39,7 +39,8 @@ export function connectNotification<T extends PropTypes>(
   const resolve = (item: NotificationRecord): ResolvedNotification => ({
     ...item,
     placement: notificationPlacementOf(item, fallback),
-    type: item.type ?? 'info',
+    tone: item.tone ?? 'info',
+    loading: item.loading ?? false,
     // 单条 > notification > 内置默认，逐级兜底后必定是个具体数值。
     // loading 不自动消失那条规则住在 toast 机器里，不经 notification 的单条通知同样守得住
     duration: item.duration ?? prop('duration') ?? NOTIFICATION_DURATION,
@@ -109,19 +110,6 @@ function toStatus(state: ToastSchema['state']): ToastStatus {
 }
 
 /**
- * 类型到语气轴的映射。type 管行为（实时区级别、图标、是否自动消失），配色则统一交给
- * 全库共用的语气层，所以这里派生一份 data-tone 而不是让皮肤按 type 各写一套颜色。
- * error 在词汇表里叫 danger；loading 说的是「事情还没完」，不是好消息也不是坏消息，走中性。
- */
-function toneOf(type: ToastType): string {
-  if (type === 'error')
-    return 'danger'
-  if (type === 'loading')
-    return 'neutral'
-  return type
-}
-
-/**
  * 单条通知卡片。
  *
  * 计时、暂停与退场复用 toast 那台机器——那是「到点自己走的一条消息」这一通用行为，
@@ -136,17 +124,20 @@ export function connectNotificationItem<T extends PropTypes>(
 
   const status = toStatus(state.get())
   const paused = state.matches('visible.paused')
-  const type = prop('type') ?? 'info'
+  // 语气直接落到全库共用的语气层上；加载中另有一位，字形与不自动消失都跟它走
+  const tone = prop('tone') ?? 'info'
+  const loading = !!prop('loading')
   const closable = prop('closable') ?? true
   const id = resolveToastId(prop('id'), scope)
   const unmounted = status === 'unmounted'
-  const duration = resolveToastDuration(prop('type'), prop('duration'))
+  const duration = resolveToastDuration(loading, prop('duration'))
   const autoDismiss = Number.isFinite(duration)
 
   return {
     id,
     status,
-    type,
+    tone,
+    loading,
     title: prop('title'),
     description: prop('description'),
     paused,
@@ -161,15 +152,16 @@ export function connectNotificationItem<T extends PropTypes>(
       ...parts.item.attrs,
       // 出错要打断当前朗读（alert + assertive），其余排队等空隙（status + polite）。
       // 两者都显式写：role 隐含的 live 值各家读屏并不一致。
-      'role': type === 'error' ? 'alert' : 'status',
-      'aria-live': type === 'error' ? 'assertive' : 'polite',
+      'role': tone === 'danger' ? 'alert' : 'status',
+      'aria-live': tone === 'danger' ? 'assertive' : 'polite',
       // 整条一起念，否则用户会听到半截话
       'aria-atomic': 'true',
       'aria-labelledby': ids.title,
       'aria-describedby': ids.description,
-      'data-severity': type,
+      // 不报 aria-busy：这一块本身就是活区，busy 会让读屏把「正在上传」这句压到完事才念
+      'data-loading': dataAttr(loading),
       // 语气轴只挂在卡片上，子部件靠继承拿到语气槽
-      'data-tone': toneOf(type),
+      'data-tone': tone,
       'data-state': status,
       'data-paused': dataAttr(paused),
       // 退场窗口走完只收起、不卸载，何时把这条从队列里删掉是宿主的决定

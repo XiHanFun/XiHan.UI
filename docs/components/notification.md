@@ -213,10 +213,10 @@ create 返回的就是队列身份 id，存下来随时 dismiss 掉那一条；d
 | `group` | `data-count` | group.length |
 | `group` | `data-empty` | ''（条件成立时才出现） |
 | `group` | `data-placement` | props.placement |
+| `item` | `data-loading` | ''（条件成立时才出现） |
 | `item` | `data-paused` | ''（条件成立时才出现） |
-| `item` | `data-severity` | props.type |
 | `item` | `data-state` | toStatus(state.get()) |
-| `item` | `data-tone` | toneOf(type) |
+| `item` | `data-tone` | props.tone |
 | `item-progress` | `data-state` | toStatus(state.get()) |
 | `item-close-trigger` | `data-disabled` | ''（条件成立时才出现） |
 
@@ -246,7 +246,7 @@ create 返回的就是队列身份 id，存下来随时 dismiss 掉那一条；d
 | `--xh-notification-description-fg` | `item-description` | `color` | `default` | `--xh-fg-muted` | notification 的 item-description 部件 color 覆盖槽。 |
 | `--xh-notification-description-font-size` | `item-description` | `font-size` | `default` | `--xh-text-secondary-size` | notification 的 item-description 部件 font-size 覆盖槽。 |
 | `--xh-notification-icon-size` | `item` | `--xh-icon-size` | `default` | `--xh-control-indicator-size` | notification 的 item 部件 --xh-icon-size 覆盖槽。 |
-| `--xh-notification-indicator-fg` | `item`<br>`item-indicator` | `color` | `default`<br>`severity=loading` | `--xh-_tone-fg`<br>`--xh-fg-muted` | notification 的 item、item-indicator 部件 color 覆盖槽。 |
+| `--xh-notification-indicator-fg` | `item-indicator` | `color` | `default` | `--xh-_tone-fg` | notification 的 item-indicator 部件 color 覆盖槽。 |
 | `--xh-notification-indicator-size` | `item-indicator` | `--xh-icon-size`<br>`inline-size` | `default` | `--xh-glyph-size-md` | notification 的 item-indicator 部件 --xh-icon-size、inline-size 覆盖槽。 |
 | `--xh-notification-inset` | `group` | `padding-block-end`<br>`padding-block-start`<br>`padding-inline` | `default` | `--xh-space-6` | notification 的 group 部件 padding-block-end、padding-block-start、padding-inline 覆盖槽。 |
 | `--xh-notification-item-bg` | `item` | `background` | `default` | `--xh-bg-surface-raised` | notification 的 item 部件 background 覆盖槽。 |

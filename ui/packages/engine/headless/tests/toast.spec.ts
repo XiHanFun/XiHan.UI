@@ -32,12 +32,12 @@ afterEach(() => {
 
 describe('resolveToastDuration', () => {
   it('loading 不自动消失，其余按给定值；<=0 与非有限数一并按不自动消失', () => {
-    expect(resolveToastDuration('loading', 100)).toBe(Number.POSITIVE_INFINITY)
-    expect(resolveToastDuration('success', 100)).toBe(100)
+    expect(resolveToastDuration(true, 100)).toBe(Number.POSITIVE_INFINITY)
+    expect(resolveToastDuration(false, 100)).toBe(100)
     expect(resolveToastDuration(undefined, undefined)).toBe(4000)
-    expect(resolveToastDuration('info', 0)).toBe(Number.POSITIVE_INFINITY)
-    expect(resolveToastDuration('info', -1)).toBe(Number.POSITIVE_INFINITY)
-    expect(resolveToastDuration('info', Number.NaN)).toBe(Number.POSITIVE_INFINITY)
+    expect(resolveToastDuration(false, 0)).toBe(Number.POSITIVE_INFINITY)
+    expect(resolveToastDuration(false, -1)).toBe(Number.POSITIVE_INFINITY)
+    expect(resolveToastDuration(false, Number.NaN)).toBe(Number.POSITIVE_INFINITY)
   })
 })
 
@@ -62,8 +62,8 @@ describe('toastMachine 生命周期', () => {
     ])
   })
 
-  it('type=loading 不自动消失', () => {
-    const t = makeToast({ type: 'loading', duration: 50 })
+  it('loading 不自动消失', () => {
+    const t = makeToast({ loading: true, duration: 50 })
     vi.advanceTimersByTime(60_000)
     expect(t.state()).toBe('visible.running')
   })
@@ -163,12 +163,12 @@ describe('toastMachine 暂停与恢复', () => {
 })
 
 describe('toastMachine 预算被改写', () => {
-  it('loading 转 success：重算预算并开始计时', () => {
-    const t = makeToast({ type: 'loading', duration: 100 })
+  it('loading 收尾成 success：重算预算并开始计时', () => {
+    const t = makeToast({ loading: true, duration: 100 })
     vi.advanceTimersByTime(10_000)
     expect(t.state()).toBe('visible.running')
 
-    t.setProps({ type: 'success' })
+    t.setProps({ loading: false, tone: 'success' })
     expect(t.service.context.get('remaining')).toBe(100)
     vi.advanceTimersByTime(99)
     expect(t.state()).toBe('visible.running')
@@ -177,9 +177,9 @@ describe('toastMachine 预算被改写', () => {
   })
 
   it('改写发生在暂停期间：预算重置但不擅自恢复计时', () => {
-    const t = makeToast({ type: 'loading' })
+    const t = makeToast({ loading: true })
     t.service.send({ type: 'TOAST.PAUSE', src: 'pointer' })
-    t.setProps({ type: 'success', duration: 80 })
+    t.setProps({ loading: false, tone: 'success', duration: 80 })
     expect(t.state()).toBe('visible.paused')
     expect(t.service.context.get('remaining')).toBe(80)
 
@@ -191,7 +191,8 @@ describe('toastMachine 预算被改写', () => {
   it('改写把已跑掉的一段一并抹掉：新预算从头算', () => {
     const t = makeToast({ duration: 100 })
     vi.advanceTimersByTime(90)
-    t.setProps({ duration: 100, type: 'warning' })
+    // 语气改写不动预算，只有 loading / duration 改写才重算；这里改 duration 同值触发重算
+    t.setProps({ duration: 100, loading: false })
     // 若只拆不重置，这里只剩 10ms，下一行就会先炸
     vi.advanceTimersByTime(99)
     expect(t.state()).toBe('visible.running')
@@ -201,17 +202,26 @@ describe('toastMachine 预算被改写', () => {
 })
 
 describe('connectToast', () => {
-  it('默认是 status + polite，error 换成 alert + assertive', () => {
+  it('默认是 status + polite，danger 换成 alert + assertive；语气落到 data-tone，加载态落到 data-loading', () => {
     const info = makeToast({ duration: 0 }).api().getRootProps() as Record<string, unknown>
     expect(info.role).toBe('status')
     expect(info['aria-live']).toBe('polite')
     expect(info['aria-atomic']).toBe('true')
-    expect(info['data-severity']).toBe('info')
+    expect(info['data-tone']).toBe('info')
+    expect(info['data-loading']).toBeUndefined()
     expect(info['data-state']).toBe('visible')
 
-    const error = makeToast({ duration: 0, type: 'error' }).api().getRootProps() as Record<string, unknown>
-    expect(error.role).toBe('alert')
-    expect(error['aria-live']).toBe('assertive')
+    const danger = makeToast({ duration: 0, tone: 'danger' }).api().getRootProps() as Record<string, unknown>
+    expect(danger.role).toBe('alert')
+    expect(danger['aria-live']).toBe('assertive')
+    expect(danger['data-tone']).toBe('danger')
+
+    // 加载中不是语气：配色照语气走，转圈另由 data-loading 说
+    const loading = makeToast({ loading: true, tone: 'success' }).api()
+    expect((loading.getRootProps() as Record<string, unknown>)['data-loading']).toBe('')
+    expect((loading.getRootProps() as Record<string, unknown>)['data-tone']).toBe('success')
+    expect((loading.getIndicatorProps() as Record<string, unknown>)['data-loading']).toBe('')
+    expect(loading.loading).toBe(true)
   })
 
   it('标题与可选说明分别接到实时区', () => {

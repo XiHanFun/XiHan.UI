@@ -34596,15 +34596,15 @@
         },
         {
           "kind": "class",
-          "description": "`<xh-notification-item>` —— 单条通知卡片：作者写 item/item-indicator/item-title/\nitem-description/item-action-trigger/item-close-trigger 角色节点，\n元素跑生命周期机器并把 connect 产出打上去。\n\nitem 承载 role 与 aria-live：默认 status + polite（排队等读屏的空隙），\ntype=\"error\" 换成 alert + assertive（打断当前朗读）。指针停在卡片上、\n或焦点落进卡片内部都会把倒计时按住，离开才接着走剩下的那一段。\n\n退场窗口走完只把卡片收起、不删节点：作者写在里面的内容归作者，\n什么时候把这条从队列里删掉是 `<xh-notification>` 的事（它收本元素冒泡上去的 status-change）。",
+          "description": "`<xh-notification-item>` —— 单条通知卡片：作者写 item/item-indicator/item-title/\nitem-description/item-action-trigger/item-close-trigger 角色节点，\n元素跑生命周期机器并把 connect 产出打上去。\n\nitem 承载 role 与 aria-live：默认 status + polite（排队等读屏的空隙），\ntone=\"danger\" 换成 alert + assertive（打断当前朗读）。指针停在卡片上、\n或焦点落进卡片内部都会把倒计时按住，离开才接着走剩下的那一段。\n\n退场窗口走完只把卡片收起、不删节点：作者写在里面的内容归作者，\n什么时候把这条从队列里删掉是 `<xh-notification>` 的事（它收本元素冒泡上去的 status-change）。",
           "name": "XhNotificationItemElement",
           "cssParts": [
             {
-              "description": "role=status（error 时 alert）的卡片，承载 data-severity / data-tone / data-state / data-paused",
+              "description": "role=status（danger 时 alert）的卡片，承载 data-tone / data-loading / data-state / data-paused",
               "name": "item"
             },
             {
-              "description": "类型指示符；留空即由皮肤按 data-severity 画一枚兜底字形",
+              "description": "语气指示符；留空即由皮肤按卡片上的语气画一枚兜底字形，卡片加载中则换成转圈",
               "name": "item-indicator"
             },
             {
@@ -34667,12 +34667,21 @@
             },
             {
               "kind": "field",
-              "name": "type",
+              "name": "tone",
               "privacy": "public",
               "type": {
-                "text": "NotificationType | undefined"
+                "text": "NotificationTone | undefined"
               },
-              "attribute": "type"
+              "attribute": "tone"
+            },
+            {
+              "kind": "field",
+              "name": "loading",
+              "privacy": "public",
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "attribute": "loading"
             },
             {
               "kind": "field",
@@ -34843,11 +34852,19 @@
             },
             {
               "type": {
-                "text": "NotificationType | undefined"
+                "text": "NotificationTone | undefined"
               },
-              "description": "语气，默认 info；loading 不自动消失",
-              "name": "type",
-              "fieldName": "type"
+              "description": "语气，默认 info；danger 走 alert + assertive",
+              "name": "tone",
+              "fieldName": "tone"
+            },
+            {
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "description": "事情还没完：图标换成转圈，且不自动消失",
+              "name": "loading",
+              "fieldName": "loading"
             },
             {
               "type": {
@@ -56084,15 +56101,15 @@
       "declarations": [
         {
           "kind": "class",
-          "description": "`<xh-toast>` —— Light-DOM 行为宿主：作者写 root/title/action-trigger/close-trigger\n角色节点，元素跑 toast 机器并把 connect 产出打上去。\n\nroot 承载 role 与 aria-live：默认 status + polite（排队等读屏的空隙），\ntype=\"error\" 换成 alert + assertive（打断当前朗读）。指针停在条子上、\n或焦点落进条子内部都会把倒计时按住，离开才接着走剩下的那一段。\n\n退场窗口走完只把 root 收起、不删节点：作者写在里面的内容归作者，\n什么时候把这条从队列里删掉是全局服务的事（它收本元素冒泡上去的 status-change）。",
+          "description": "`<xh-toast>` —— Light-DOM 行为宿主：作者写 root/title/action-trigger/close-trigger\n角色节点，元素跑 toast 机器并把 connect 产出打上去。\n\nroot 承载 role 与 aria-live：默认 status + polite（排队等读屏的空隙），\ntone=\"danger\" 换成 alert + assertive（打断当前朗读）。指针停在条子上、\n或焦点落进条子内部都会把倒计时按住，离开才接着走剩下的那一段。\n\n退场窗口走完只把 root 收起、不删节点：作者写在里面的内容归作者，\n什么时候把这条从队列里删掉是全局服务的事（它收本元素冒泡上去的 status-change）。",
           "name": "XhToastElement",
           "cssParts": [
             {
-              "description": "role=status（error 时 alert）的容器，承载 data-severity / data-tone / data-state / data-paused",
+              "description": "role=status（danger 时 alert）的容器，承载 data-tone / data-loading / data-state / data-paused",
               "name": "root"
             },
             {
-              "description": "严重度指示符（对读屏隐藏）；不渲染它时字形由 root 的伪元素兜住",
+              "description": "语气指示符（对读屏隐藏），同样承载 data-loading；不渲染它时字形由 root 的伪元素兜住",
               "name": "indicator"
             },
             {
@@ -56159,12 +56176,21 @@
             },
             {
               "kind": "field",
-              "name": "type",
+              "name": "tone",
               "privacy": "public",
               "type": {
-                "text": "ToastType | undefined"
+                "text": "ToastTone | undefined"
               },
-              "attribute": "type"
+              "attribute": "tone"
+            },
+            {
+              "kind": "field",
+              "name": "loading",
+              "privacy": "public",
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "attribute": "loading"
             },
             {
               "kind": "field",
@@ -56335,11 +56361,19 @@
             },
             {
               "type": {
-                "text": "ToastType | undefined"
+                "text": "ToastTone | undefined"
               },
-              "description": "语气，默认 info；loading 不自动消失",
-              "name": "type",
-              "fieldName": "type"
+              "description": "语气，默认 info；danger 走 alert + assertive",
+              "name": "tone",
+              "fieldName": "tone"
+            },
+            {
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "description": "事情还没完：行首换成转圈，且不自动消失",
+              "name": "loading",
+              "fieldName": "loading"
             },
             {
               "type": {

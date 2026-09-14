@@ -28,12 +28,12 @@ export default function Demo(): ReactNode {
           <XhButton
             variant="outline"
             onClick={() => create({
-              type: "error",
+              tone: "danger",
               title: "同步失败",
               description: "网络中断，稍后自动重试",
             })}
           >
-            弹一条 error
+            弹一条 danger
           </XhButton>
           <span>{`队列：${count} 条`}</span>
 
@@ -43,7 +43,8 @@ export default function Demo(): ReactNode {
                 id={item.id}
                 title={item.title}
                 description={item.description}
-                type={item.type}
+                tone={item.tone}
+                loading={item.loading}
                 duration={item.duration}
                 removeDelay={item.removeDelay}
                 closable={item.closable}

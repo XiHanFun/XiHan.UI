@@ -14,7 +14,7 @@ import type {
   NotificationRecord,
   NotificationSchema,
   NotificationTranslations,
-  NotificationType,
+  NotificationTone,
   ResolvedNotification,
   ToastActionDetails,
   ToastSchema,
@@ -225,7 +225,7 @@ const ITEM_CONTRACT = { anatomy: notificationAnatomy, meta: { component: 'notifi
  * 元素跑生命周期机器并把 connect 产出打上去。
  *
  * item 承载 role 与 aria-live：默认 status + polite（排队等读屏的空隙），
- * type="error" 换成 alert + assertive（打断当前朗读）。指针停在卡片上、
+ * tone="danger" 换成 alert + assertive（打断当前朗读）。指针停在卡片上、
  * 或焦点落进卡片内部都会把倒计时按住，离开才接着走剩下的那一段。
  *
  * 退场窗口走完只把卡片收起、不删节点：作者写在里面的内容归作者，
@@ -235,7 +235,8 @@ const ITEM_CONTRACT = { anatomy: notificationAnatomy, meta: { component: 'notifi
  * @attr {string} id - 队列身份，`<xh-notification>` 按它寻址；不给就用实例自己的 scope id
  * @attr {string} title - 标题文案；作者没在 item-title 部件里写内容时由元素填入
  * @attr {string} description - 补充说明；作者没在 item-description 部件里写内容时由元素填入
- * @attr {'info'|'success'|'warning'|'error'|'loading'} type - 语气，默认 info；loading 不自动消失
+ * @attr {'info'|'success'|'warning'|'danger'} tone - 语气，默认 info；danger 走 alert + assertive
+ * @attr {boolean} loading - 事情还没完：图标换成转圈，且不自动消失
  * @attr {number} duration - 停留毫秒，默认 5000；<=0 即关掉自动消失
  * @attr {number} remove-delay - 退场窗口毫秒，默认 200，留给退场动画
  * @attr {boolean} closable - 是否给可用的关闭按钮，默认 true；写 closable="false" 关掉
@@ -243,8 +244,8 @@ const ITEM_CONTRACT = { anatomy: notificationAnatomy, meta: { component: 'notifi
  * @attr {boolean} paused - 由宿主整摞一起按住计时，默认关；与指针、焦点那几路并存
  * @fires status-change - 生命周期落位；detail 为 `{ id: string, status: 'dismissing'|'unmounted' }`
  * @fires action - 操作按钮被按下；detail 为 `{ id: string }`
- * @csspart item - role=status（error 时 alert）的卡片，承载 data-severity / data-tone / data-state / data-paused
- * @csspart item-indicator - 类型指示符；留空即由皮肤按 data-severity 画一枚兜底字形
+ * @csspart item - role=status（danger 时 alert）的卡片，承载 data-tone / data-loading / data-state / data-paused
+ * @csspart item-indicator - 语气指示符；留空即由皮肤按卡片上的语气画一枚兜底字形，卡片加载中则换成转圈
  * @csspart item-title - 标题，aria-labelledby 的目标
  * @csspart item-description - 补充说明，aria-describedby 的目标
  * @csspart item-action-trigger - 操作按钮：先发 action 再进入退场
@@ -261,7 +262,8 @@ export class XhNotificationItemElement extends XhElement {
     itemId: { converter: STRING_CONVERTER, attribute: 'id' },
     titleText: { converter: STRING_CONVERTER, attribute: 'title' },
     description: { converter: STRING_CONVERTER },
-    type: { converter: STRING_CONVERTER },
+    tone: { converter: STRING_CONVERTER },
+    loading: { converter: BOOLEAN_CONVERTER },
     duration: { converter: NUMBER_CONVERTER },
     removeDelay: { converter: NUMBER_CONVERTER, attribute: 'remove-delay' },
     closable: { converter: BOOLEAN_CONVERTER },
@@ -274,7 +276,8 @@ export class XhNotificationItemElement extends XhElement {
   declare itemId?: string
   declare titleText?: string
   declare description?: string
-  declare type?: NotificationType
+  declare tone?: NotificationTone
+  declare loading?: boolean
   declare duration?: number
   declare removeDelay?: number
   declare closable?: boolean
@@ -301,7 +304,8 @@ export class XhNotificationItemElement extends XhElement {
       id: this.itemId,
       title: this.titleText,
       description: this.description,
-      type: this.type,
+      tone: this.tone,
+      loading: this.loading,
       duration: this.duration,
       removeDelay: this.removeDelay,
       closable: this.closable,

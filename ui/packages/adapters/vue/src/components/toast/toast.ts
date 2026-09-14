@@ -5,7 +5,7 @@
 
 // 提供 toast 相关实现。
 
-import type { ToastApi, ToastSchema, ToastTranslations, ToastType } from '@xihan-ui/headless'
+import type { ToastApi, ToastSchema, ToastTone, ToastTranslations } from '@xihan-ui/headless'
 import type { PropType, SlotsType, VNode } from 'vue'
 import type { PayloadOf } from '../../runtime/payload'
 import { defineComponent, h } from 'vue'
@@ -18,7 +18,7 @@ type ToastProps = ToastSchema['props']
 /** 默认插槽的载荷：这一条的身份、状态、计时剩余与生命周期方法。 */
 export type ToastRootSlotProps = Pick<
   ToastApi,
-  'id' | 'status' | 'type' | 'paused' | 'remaining' | 'dismiss' | 'pause' | 'resume'
+  'id' | 'status' | 'tone' | 'loading' | 'paused' | 'remaining' | 'dismiss' | 'pause' | 'resume'
 >
 
 export const XhToastRoot = /* @__PURE__ */ defineComponent({
@@ -29,7 +29,8 @@ export const XhToastRoot = /* @__PURE__ */ defineComponent({
     id: { type: String },
     title: { type: String },
     description: { type: String },
-    type: { type: String as PropType<ToastType> },
+    tone: { type: String as PropType<ToastTone> },
+    loading: { type: Boolean, default: undefined },
     duration: { type: Number },
     removeDelay: { type: Number },
     closable: { type: Boolean, default: undefined },
@@ -58,7 +59,8 @@ export const XhToastRoot = /* @__PURE__ */ defineComponent({
     return () => h('div', ctx.api.value.getRootProps() as Record<string, unknown>, slots.default?.({
       id: ctx.api.value.id,
       status: ctx.api.value.status,
-      type: ctx.api.value.type,
+      tone: ctx.api.value.tone,
+      loading: ctx.api.value.loading,
       paused: ctx.api.value.paused,
       remaining: ctx.api.value.remaining,
       dismiss: ctx.api.value.dismiss,

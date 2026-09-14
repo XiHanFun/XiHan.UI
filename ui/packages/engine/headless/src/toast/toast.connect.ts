@@ -6,7 +6,7 @@
 // 提供 toast 相关实现。
 
 import type { NormalizeProps, PropTypes, Service } from '@xihan-ui/core'
-import type { ToastApi, ToastSchema, ToastStatus, ToastType } from './toast.types'
+import type { ToastApi, ToastSchema, ToastStatus } from './toast.types'
 import { dataAttr } from '@xihan-ui/core'
 import { toastAnatomy } from './toast.anatomy'
 import { resolveToastDuration, resolveToastId } from './toast.machine'
@@ -20,19 +20,6 @@ function toStatus(state: ToastSchema['state']): ToastStatus {
   return 'visible'
 }
 
-/**
- * 类型到语气轴的映射。type 管行为（实时区级别、图标、是否自动消失），配色则统一交给
- * 全库共用的语气层，所以这里派生一份 data-tone 而不是让皮肤按 type 各写一套颜色。
- * error 在词汇表里叫 danger；loading 说的是"事情还没完"，不是好消息也不是坏消息，走中性。
- */
-function toneOf(type: ToastType): string {
-  if (type === 'error')
-    return 'danger'
-  if (type === 'loading')
-    return 'neutral'
-  return type
-}
-
 export function connectToast<T extends PropTypes>(
   service: Service<ToastSchema>,
   normalize: NormalizeProps<T>,
@@ -42,17 +29,20 @@ export function connectToast<T extends PropTypes>(
 
   const status = toStatus(state.get())
   const paused = state.matches('visible.paused')
-  const type = prop('type') ?? 'info'
+  // 语气直接落到全库共用的语气层上，配色不由这里另写一套；加载中另有一位，字形与不自动消失都跟它走
+  const tone = prop('tone') ?? 'info'
+  const loading = !!prop('loading')
   const closable = prop('closable') ?? true
   const id = resolveToastId(prop('id'), scope)
   const unmounted = status === 'unmounted'
-  const duration = resolveToastDuration(prop('type'), prop('duration'))
+  const duration = resolveToastDuration(loading, prop('duration'))
   const autoDismiss = Number.isFinite(duration)
 
   return {
     id,
     status,
-    type,
+    tone,
+    loading,
     title: prop('title'),
     description: prop('description'),
     paused,
@@ -67,15 +57,16 @@ export function connectToast<T extends PropTypes>(
       ...parts.root.attrs,
       // 出错要打断当前朗读（alert + assertive），其余排队等空隙（status + polite）。
       // 两者都显式写：role 隐含的 live 值各家读屏并不一致。
-      'role': type === 'error' ? 'alert' : 'status',
-      'aria-live': type === 'error' ? 'assertive' : 'polite',
+      'role': tone === 'danger' ? 'alert' : 'status',
+      'aria-live': tone === 'danger' ? 'assertive' : 'polite',
       // 整条一起念，否则用户会听到半截话
       'aria-atomic': 'true',
       'aria-labelledby': ids.title,
       'aria-describedby': prop('description') ? ids.description : undefined,
-      'data-severity': type,
+      // 不报 aria-busy：这一块本身就是活区，busy 会让读屏把「正在上传」这句压到完事才念
+      'data-loading': dataAttr(loading),
       // 语气轴只挂在 root 上，子部件靠继承拿到语气槽
-      'data-tone': toneOf(type),
+      'data-tone': tone,
       'data-state': status,
       'data-paused': dataAttr(paused),
       // 退场窗口走完只收起、不卸载，何时把这条从队列里删掉是宿主的决定
@@ -94,11 +85,11 @@ export function connectToast<T extends PropTypes>(
       },
     }),
 
-    // 严重度这枚图形读屏念出来是重复信息：它表达的意思标题里已经写了
+    // 语气这枚图形读屏念出来是重复信息：它表达的意思标题里已经写了
     getIndicatorProps: () => normalize.element({
       ...parts.indicator.attrs,
       'aria-hidden': true,
-      'data-severity': type,
+      'data-loading': dataAttr(loading),
     }),
 
     getContentProps: () => normalize.element({

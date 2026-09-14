@@ -14,7 +14,7 @@ import type {
   NotificationSchema,
   ResolvedNotification,
   ToastSchema,
-  ToastType,
+  ToastTone,
 } from '@xihan-ui/headless'
 import type { ComponentPropsWithRef, ReactNode } from 'react'
 import type { SlotChildren } from '../../runtime/slot-content'
@@ -144,7 +144,8 @@ export interface XhNotificationItemProps {
   id?: string
   title?: string
   description?: string
-  type?: ToastType
+  tone?: ToastTone
+  loading?: boolean
   duration?: number
   removeDelay?: number
   closable?: boolean
@@ -178,7 +179,7 @@ export function XhNotificationItem({ children, ...props }: XhNotificationItemPro
 XhNotificationItem.xhEvents = ['status-change', 'action'] as const
 
 export interface XhNotificationItemIndicatorProps extends ComponentPropsWithRef<'span'> {}
-/** 类型指示符：不给内容就由皮肤按节点上的 data-severity 画兜底字形。 */
+/** 语气指示符：不给内容就由皮肤按节点上的 data-tone 画兜底字形，data-loading 时换成转圈。 */
 export function XhNotificationItemIndicator({ children, ...rest }: XhNotificationItemIndicatorProps): ReactNode {
   const ctx = useNotificationItemContext()
   return <span {...mergeReactProps(ctx.api.getItemIndicatorProps() as Record<string, unknown>, rest as Record<string, unknown>)}>{children}</span>
