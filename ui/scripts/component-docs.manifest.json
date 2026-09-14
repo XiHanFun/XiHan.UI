@@ -237,6 +237,10 @@
           "name": "复选框组"
         },
         {
+          "id": "color-field",
+          "name": "颜色字段"
+        },
+        {
           "id": "color-picker",
           "name": "颜色选择器"
         },

@@ -8709,6 +8709,560 @@
     },
     {
       "kind": "javascript-module",
+      "path": "src/elements/color-field.ts",
+      "declarations": [
+        {
+          "kind": "class",
+          "description": "`<xh-color-field>` —— Light-DOM 行为宿主，跑 color-field 机器并把 connect 产出打到\nroot/label/control/swatch/input/clear-trigger/hidden-input 等角色节点。\n\n一个能手打颜色串的字段：框里的字是草稿，回车或失焦收下，解析得了就按 format 重写成值，\n解析不了留在框里并标成无效；旁边的色块经色块面家族画当前颜色。",
+          "name": "XhColorFieldElement",
+          "cssParts": [
+            {
+              "description": "承载 data-disabled / data-readonly / data-invalid / data-empty / data-editing 的容器",
+              "name": "root"
+            },
+            {
+              "description": "视觉盒；写了它就由它画描边、底色与聚焦环，色块、输入框与清空按钮排在它里面",
+              "name": "control"
+            },
+            {
+              "description": "标题；`for` 恒写向 input，故须是原生 `<label>` 才点得动",
+              "name": "label"
+            },
+            {
+              "description": "当前颜色的色块；颜色由元素写进私有槽，空值或无效时只画棋盘格",
+              "name": "swatch"
+            },
+            {
+              "description": "真正的输入框，须是原生 `<input>`；键盘交互全在它身上",
+              "name": "input"
+            },
+            {
+              "description": "清空按钮，须是原生 button；不占 Tab 位，名字取 translations.clearTrigger；清不了时收起",
+              "name": "clear-trigger"
+            },
+            {
+              "description": "表单影子；提交的是收下的值",
+              "name": "hidden-input"
+            }
+          ],
+          "members": [
+            {
+              "kind": "field",
+              "name": "partContract",
+              "type": {
+                "text": "object"
+              },
+              "static": true,
+              "default": "{ anatomy: colorFieldAnatomy, meta: colorFieldMeta }"
+            },
+            {
+              "kind": "field",
+              "name": "value",
+              "privacy": "public",
+              "type": {
+                "text": "string | undefined"
+              },
+              "attribute": "value"
+            },
+            {
+              "kind": "field",
+              "name": "defaultValue",
+              "privacy": "public",
+              "type": {
+                "text": "string | undefined"
+              },
+              "attribute": "default-value"
+            },
+            {
+              "kind": "field",
+              "name": "format",
+              "privacy": "public",
+              "type": {
+                "text": "ColorFormat | undefined"
+              },
+              "attribute": "format"
+            },
+            {
+              "kind": "field",
+              "name": "alpha",
+              "privacy": "public",
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "attribute": "alpha"
+            },
+            {
+              "kind": "field",
+              "name": "placeholder",
+              "privacy": "public",
+              "type": {
+                "text": "string | undefined"
+              },
+              "attribute": "placeholder"
+            },
+            {
+              "kind": "field",
+              "name": "disabled",
+              "privacy": "public",
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "attribute": "disabled"
+            },
+            {
+              "kind": "field",
+              "name": "readOnly",
+              "privacy": "public",
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "attribute": "read-only"
+            },
+            {
+              "kind": "field",
+              "name": "required",
+              "privacy": "public",
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "attribute": "required"
+            },
+            {
+              "kind": "field",
+              "name": "invalid",
+              "privacy": "public",
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "attribute": "invalid"
+            },
+            {
+              "kind": "field",
+              "name": "name",
+              "privacy": "public",
+              "type": {
+                "text": "string | undefined"
+              },
+              "attribute": "name"
+            },
+            {
+              "kind": "field",
+              "name": "clearable",
+              "privacy": "public",
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "attribute": "clearable"
+            },
+            {
+              "kind": "field",
+              "name": "variant",
+              "privacy": "public",
+              "type": {
+                "text": "ControlVariant | undefined"
+              },
+              "attribute": "variant"
+            },
+            {
+              "kind": "field",
+              "name": "tone",
+              "privacy": "public",
+              "type": {
+                "text": "Tone | undefined"
+              },
+              "attribute": "tone"
+            },
+            {
+              "kind": "field",
+              "name": "size",
+              "privacy": "public",
+              "type": {
+                "text": "Size | undefined"
+              },
+              "attribute": "size"
+            },
+            {
+              "kind": "field",
+              "name": "translations",
+              "privacy": "public",
+              "type": {
+                "text": "object"
+              },
+              "description": "读屏文案（只走 property）：clearTrigger 是清空按钮的名字"
+            },
+            {
+              "kind": "field",
+              "name": "notify",
+              "privacy": "private",
+              "readonly": true
+            },
+            {
+              "kind": "field",
+              "name": "ctrl",
+              "privacy": "private",
+              "readonly": true,
+              "default": "new MachineController<ColorFieldSchema>(this, colorFieldMachine, () => this.machineProps())"
+            },
+            {
+              "kind": "field",
+              "name": "inheritedControl",
+              "type": {
+                "text": "FormControlState | undefined"
+              },
+              "privacy": "private"
+            },
+            {
+              "kind": "method",
+              "name": "setFormControlState",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "state",
+                  "type": {
+                    "text": "FormControlState | undefined"
+                  }
+                }
+              ],
+              "description": "Form 或 Field 发现此 Light-DOM 控件后调用；不是公开的业务写值入口。"
+            },
+            {
+              "kind": "method",
+              "name": "machineProps",
+              "privacy": "private",
+              "return": {
+                "type": {
+                  "text": "Partial<ColorFieldSchema['props']>"
+                }
+              }
+            },
+            {
+              "kind": "field",
+              "name": "canClear",
+              "type": {
+                "text": "boolean"
+              },
+              "description": "清空此刻可不可行（开了 clearable、可编辑、且有值）。机器尚未建起时为 false。",
+              "readonly": true
+            },
+            {
+              "kind": "field",
+              "name": "editing",
+              "type": {
+                "text": "boolean"
+              },
+              "description": "框里正有一份还没收下的草稿。机器尚未建起时为 false。",
+              "readonly": true
+            },
+            {
+              "kind": "method",
+              "name": "setValue",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "next",
+                  "type": {
+                    "text": "string"
+                  }
+                }
+              ],
+              "description": "从外面写值：空串清空，解析不出的串原地不动；只受禁用、只读约束。机器尚未建起时是空操作。"
+            },
+            {
+              "kind": "method",
+              "name": "clear",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              },
+              "description": "走清空意图，canClear 不成立时按兵不动；无条件清空请用 setValue('')。"
+            },
+            {
+              "kind": "method",
+              "name": "commit",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              },
+              "description": "把框里的草稿收下（与回车 / 失焦同一条路）。"
+            },
+            {
+              "kind": "method",
+              "name": "wire",
+              "privacy": "protected",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              }
+            }
+          ],
+          "events": [
+            {
+              "description": "收下的值变化；detail 为 `{ value: string }`，打字途中不发",
+              "name": "value-change",
+              "type": {
+                "text": "ColorFieldValueChangeDetails"
+              }
+            }
+          ],
+          "attributes": [
+            {
+              "type": {
+                "text": "string | undefined"
+              },
+              "description": "受控的颜色串；缺省该属性即非受控。空串表示没有颜色",
+              "name": "value",
+              "fieldName": "value"
+            },
+            {
+              "type": {
+                "text": "string | undefined"
+              },
+              "description": "非受控初值，缺省空串",
+              "name": "default-value",
+              "fieldName": "defaultValue"
+            },
+            {
+              "type": {
+                "text": "ColorFormat | undefined"
+              },
+              "description": "值串的写法，默认 hex；手打的任何写法收下后都按它重写",
+              "name": "format",
+              "fieldName": "format"
+            },
+            {
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "description": "带透明度，默认关；关掉时收下的颜色恒不透明",
+              "name": "alpha",
+              "fieldName": "alpha"
+            },
+            {
+              "type": {
+                "text": "string | undefined"
+              },
+              "description": "占位文案",
+              "name": "placeholder",
+              "fieldName": "placeholder"
+            },
+            {
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "description": "禁用：不可聚焦、写不进",
+              "name": "disabled",
+              "fieldName": "disabled"
+            },
+            {
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "description": "只读：仍可聚焦与复制，写不进",
+              "name": "read-only",
+              "fieldName": "readOnly"
+            },
+            {
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "description": "必填标注",
+              "name": "required",
+              "fieldName": "required"
+            },
+            {
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "description": "校验失败标注",
+              "name": "invalid",
+              "fieldName": "invalid"
+            },
+            {
+              "type": {
+                "text": "string | undefined"
+              },
+              "description": "表单字段名；给了才参与提交（经表单影子，框里的半截字不会被提交）",
+              "name": "name",
+              "fieldName": "name"
+            },
+            {
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "description": "开启清空：有值时清空按钮显出，Escape 接管",
+              "name": "clearable",
+              "fieldName": "clearable"
+            },
+            {
+              "type": {
+                "text": "ControlVariant | undefined"
+              },
+              "description": "视觉变体",
+              "name": "variant",
+              "fieldName": "variant"
+            },
+            {
+              "type": {
+                "text": "Tone | undefined"
+              },
+              "description": "语气",
+              "name": "tone",
+              "fieldName": "tone"
+            },
+            {
+              "type": {
+                "text": "Size | undefined"
+              },
+              "description": "尺寸",
+              "name": "size",
+              "fieldName": "size"
+            }
+          ],
+          "superclass": {
+            "name": "XhElement",
+            "module": "/src/element-base"
+          },
+          "tagName": "xh-color-field",
+          "customElement": true,
+          "cssProperties": [
+            {
+              "name": "--xh-color-field-action-bg"
+            },
+            {
+              "name": "--xh-color-field-action-bg-active"
+            },
+            {
+              "name": "--xh-color-field-action-bg-hover"
+            },
+            {
+              "name": "--xh-color-field-action-fg"
+            },
+            {
+              "name": "--xh-color-field-action-fg-hover"
+            },
+            {
+              "name": "--xh-color-field-action-font-size"
+            },
+            {
+              "name": "--xh-color-field-action-radius"
+            },
+            {
+              "name": "--xh-color-field-action-size"
+            },
+            {
+              "name": "--xh-color-field-control-bg"
+            },
+            {
+              "name": "--xh-color-field-control-bg-disabled"
+            },
+            {
+              "name": "--xh-color-field-control-bg-hover"
+            },
+            {
+              "name": "--xh-color-field-control-bg-readonly"
+            },
+            {
+              "name": "--xh-color-field-control-border"
+            },
+            {
+              "name": "--xh-color-field-control-border-focus"
+            },
+            {
+              "name": "--xh-color-field-control-border-hover"
+            },
+            {
+              "name": "--xh-color-field-control-border-invalid"
+            },
+            {
+              "name": "--xh-color-field-control-fg"
+            },
+            {
+              "name": "--xh-color-field-control-gap"
+            },
+            {
+              "name": "--xh-color-field-control-h"
+            },
+            {
+              "name": "--xh-color-field-control-min-w"
+            },
+            {
+              "name": "--xh-color-field-control-px"
+            },
+            {
+              "name": "--xh-color-field-control-radius"
+            },
+            {
+              "name": "--xh-color-field-control-shadow"
+            },
+            {
+              "name": "--xh-color-field-gap"
+            },
+            {
+              "name": "--xh-color-field-icon-size"
+            },
+            {
+              "name": "--xh-color-field-input-autofill-bg"
+            },
+            {
+              "name": "--xh-color-field-input-autofill-fg"
+            },
+            {
+              "name": "--xh-color-field-input-fg"
+            },
+            {
+              "name": "--xh-color-field-input-font-size"
+            },
+            {
+              "name": "--xh-color-field-label-fg"
+            },
+            {
+              "name": "--xh-color-field-label-fg-disabled"
+            },
+            {
+              "name": "--xh-color-field-label-font-size"
+            },
+            {
+              "name": "--xh-color-field-label-font-weight"
+            },
+            {
+              "name": "--xh-color-field-placeholder-fg"
+            },
+            {
+              "name": "--xh-color-field-swatch-border"
+            },
+            {
+              "name": "--xh-color-field-swatch-radius"
+            },
+            {
+              "name": "--xh-color-field-swatch-size"
+            }
+          ]
+        }
+      ],
+      "exports": [
+        {
+          "kind": "js",
+          "name": "XhColorFieldElement",
+          "declaration": {
+            "name": "XhColorFieldElement",
+            "module": "src/elements/color-field.ts"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
       "path": "src/elements/color-picker.ts",
       "declarations": [
         {

@@ -60,6 +60,7 @@
     "./clipboard.css": "./css/clipboard.css",
     "./code-view.css": "./css/code-view.css",
     "./collapsible.css": "./css/collapsible.css",
+    "./color-field.css": "./css/color-field.css",
     "./color-picker.css": "./css/color-picker.css",
     "./color-slider.css": "./css/color-slider.css",
     "./color-swatch.css": "./css/color-swatch.css",

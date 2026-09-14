@@ -19,7 +19,7 @@ const HEADLESS = 'packages/engine/headless/src'
 const ACTION_FAMILY = 'packages/design/styles/family/action-control.css'
 
 /** ① 内嵌清空钮：组件 → 点完焦点该回到的部件（只用于提示文案，判据看 connect 里有没有 focus 调用）。 */
-const EMBEDDED = ['cascader', 'tree-select', 'combobox', 'date-picker', 'date-range-picker', 'time-picker', 'time-range-picker', 'text-field', 'tags-input', 'select', 'date-field', 'time-field']
+const EMBEDDED = ['cascader', 'tree-select', 'combobox', 'date-picker', 'date-range-picker', 'time-picker', 'time-range-picker', 'text-field', 'color-field', 'tags-input', 'select', 'date-field', 'time-field']
 /** ② 独立动作钮。 */
 const STANDALONE = ['file-upload', 'signature-pad']
 /**

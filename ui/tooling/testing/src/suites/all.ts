@@ -21,6 +21,7 @@ import { checkboxSuite } from './checkbox.suite'
 import { clipboardSuite } from './clipboard.suite'
 import { codeViewSuite } from './code-view.suite'
 import { collapsibleSuite } from './collapsible.suite'
+import { colorFieldSuite } from './color-field.suite'
 import { colorPickerSuite } from './color-picker.suite'
 import { colorSliderSuite } from './color-slider.suite'
 import { colorSwatchSuite } from './color-swatch.suite'
@@ -264,4 +265,5 @@ export const allSuites: readonly ConformanceSuite[] = [
   timeRangePickerSuite,
   colorSwatchSuite,
   colorSliderSuite,
+  colorFieldSuite,
 ]

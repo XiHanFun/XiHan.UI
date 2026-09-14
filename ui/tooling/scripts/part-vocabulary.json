@@ -154,6 +154,7 @@
     ],
     "clear-trigger": [
       "cascader",
+      "color-field",
       "combobox",
       "date-field",
       "date-picker",
@@ -269,6 +270,7 @@
     "control": [
       "cascader",
       "clipboard",
+      "color-field",
       "color-picker",
       "color-slider",
       "combobox",
@@ -527,6 +529,7 @@
       "cascader",
       "checkbox",
       "checkbox-group",
+      "color-field",
       "color-picker",
       "color-slider",
       "combobox",
@@ -598,6 +601,7 @@
     "input": [
       "cascader",
       "clipboard",
+      "color-field",
       "combobox",
       "command",
       "editable",
@@ -771,6 +775,7 @@
       "checkbox",
       "checkbox-group",
       "clipboard",
+      "color-field",
       "color-picker",
       "color-slider",
       "combobox",
@@ -1097,6 +1102,7 @@
       "clipboard",
       "code-view",
       "collapsible",
+      "color-field",
       "color-picker",
       "color-slider",
       "color-swatch",
@@ -1327,6 +1333,7 @@
       "tool-call"
     ],
     "swatch": [
+      "color-field",
       "color-picker"
     ],
     "swatch-group": [

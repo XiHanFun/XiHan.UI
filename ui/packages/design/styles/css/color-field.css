@@ -1,0 +1,184 @@
+/*
+ * Copyright (c) 2021-Present XiHanFun and contributors.
+ * Licensed under the MIT License. See LICENSE in the project root for license information.
+ */
+
+/* TextField 独立皮肤同时传递引入字段视觉盒与字段内动作；full bundle 递归去重。 */
+@import '../family/field-chrome.css';
+@import '../family/action-control.css';
+@import '../family/swatch.css';
+
+@layer xihan.components {
+  [data-scope='color-field'] {
+    --xh-color-field-skin: 1;
+  }
+
+  /* 组件层只把既有公开槽映射到家族合同；色块吃 Swatch 家族，只在这里补一条与输入框的间距。 */
+  [data-scope='color-field'][data-part='root'] {
+    --xh-_color-field-h: var(--xh-control-h-md);
+    --xh-_color-field-px: var(--xh-control-px-md);
+    --xh-_color-field-gap: var(--xh-control-gap-md);
+    --xh-_color-field-font-size: var(--xh-control-font-md);
+    --xh-_color-field-label-font-size: var(--xh-control-font-md);
+    --xh-_color-field-action-font-size: var(--xh-control-caption-md);
+    --xh-_color-field-bg: var(--xh-bg-canvas);
+    --xh-_color-field-bg-hover: color-mix(in oklab, var(--xh-bg-subtle) 45%, var(--xh-_color-field-bg));
+    --xh-_color-field-border: transparent;
+    --xh-_color-field-border-hover: var(--xh-border-default);
+    --xh-_color-field-border-focus: var(--xh-_tone, var(--xh-border-control-focus));
+    --xh-_color-field-shadow: var(--xh-elevation-raised);
+
+    --xh-icon-size: var(--xh-color-field-icon-size, var(--xh-glyph-size-md));
+
+    display: inline-flex;
+    flex-direction: column;
+    gap: var(--xh-color-field-gap, var(--xh-space-1));
+    min-inline-size: min(var(--xh-color-field-control-min-w, var(--xh-control-min-w)), 100%);
+    max-inline-size: 100%;
+  }
+
+  [data-scope='color-field'][data-part='root'][hidden] {
+    display: none;
+  }
+
+  [data-scope='color-field'][data-part='root'][data-size='sm'] {
+    --xh-_color-field-h: var(--xh-control-h-sm);
+    --xh-_color-field-px: var(--xh-control-px-sm);
+    --xh-_color-field-gap: var(--xh-control-gap-sm);
+    --xh-_color-field-font-size: var(--xh-control-font-sm);
+    --xh-_color-field-label-font-size: var(--xh-control-font-sm);
+    --xh-_color-field-action-font-size: var(--xh-control-caption-sm);
+    --xh-icon-size: var(--xh-color-field-icon-size, var(--xh-glyph-size-sm));
+  }
+
+  [data-scope='color-field'][data-part='root'][data-size='lg'] {
+    --xh-_color-field-h: var(--xh-control-h-lg);
+    --xh-_color-field-px: var(--xh-control-px-lg);
+    --xh-_color-field-gap: var(--xh-control-gap-lg);
+    --xh-_color-field-font-size: var(--xh-control-font-lg);
+    --xh-_color-field-label-font-size: var(--xh-control-font-lg);
+    --xh-_color-field-action-font-size: var(--xh-control-caption-lg);
+    --xh-icon-size: var(--xh-color-field-icon-size, var(--xh-glyph-size-lg));
+  }
+
+  [data-scope='color-field'][data-part='root'][data-variant='outline'] {
+    --xh-_color-field-bg: var(--xh-bg-canvas);
+    --xh-_color-field-border: var(--xh-border-control);
+    --xh-_color-field-border-hover: var(--xh-border-control-hover);
+    --xh-_color-field-border-focus: var(--xh-_tone, var(--xh-border-control-focus));
+    --xh-_color-field-shadow: none;
+  }
+
+  [data-scope='color-field'][data-part='root'][data-variant='subtle'] {
+    --xh-_color-field-bg: var(--xh-_tone-subtle, var(--xh-bg-subtle));
+    --xh-_color-field-bg-hover: var(--xh-_tone-subtle-hover, var(--xh-bg-subtle-hover));
+    --xh-_color-field-border: transparent;
+    --xh-_color-field-border-hover: var(--xh-_tone-border, var(--xh-border-control-hover));
+    --xh-_color-field-border-focus: var(--xh-_tone, var(--xh-border-control-focus));
+    --xh-_color-field-shadow: none;
+  }
+
+  [data-scope='color-field'][data-part='root'][data-variant='ghost'] {
+    --xh-_color-field-bg: transparent;
+    --xh-_color-field-bg-hover: var(--xh-_tone-subtle, var(--xh-bg-subtle));
+    --xh-_color-field-border: transparent;
+    --xh-_color-field-border-hover: var(--xh-_tone-border, var(--xh-border-control-hover));
+    --xh-_color-field-border-focus: var(--xh-_tone, var(--xh-border-control-focus));
+    --xh-_color-field-shadow: none;
+  }
+
+  [data-scope='color-field'][data-part='label'] {
+    color: var(--xh-color-field-label-fg, var(--xh-fg-default));
+    font-size: var(--xh-color-field-label-font-size, var(--xh-_color-field-label-font-size));
+    font-weight: var(--xh-color-field-label-font-weight, var(--xh-text-label-weight));
+  }
+
+  [data-scope='color-field'][data-part='label'][data-disabled] {
+    color: var(--xh-color-field-label-fg-disabled, var(--xh-fg-subtle));
+  }
+
+  [data-scope='color-field'][data-part='control'] {
+    --xh-field-control-height: var(--xh-color-field-control-h, var(--xh-_color-field-h));
+    --xh-field-control-padding-inline: var(--xh-color-field-control-px, var(--xh-_color-field-px));
+    --xh-field-control-gap: var(--xh-color-field-control-gap, var(--xh-_color-field-gap));
+    --xh-field-control-min-inline-size: var(--xh-color-field-control-min-w, var(--xh-control-min-w));
+    --xh-field-control-radius: var(--xh-color-field-control-radius, var(--xh-shape-surface));
+    --xh-field-bg-rest: var(--xh-color-field-control-bg, var(--xh-_color-field-bg));
+    --xh-field-bg-hover: var(--xh-color-field-control-bg-hover, var(--xh-_color-field-bg-hover));
+    --xh-field-bg-read-only: var(--xh-color-field-control-bg-readonly, var(--xh-bg-subtle));
+    --xh-field-bg-disabled: var(--xh-color-field-control-bg-disabled, var(--xh-bg-subtle));
+    --xh-field-fg-rest: var(--xh-color-field-control-fg, var(--xh-fg-default));
+    --xh-field-border-rest: var(--xh-color-field-control-border, var(--xh-_color-field-border));
+    --xh-field-border-hover: var(--xh-color-field-control-border-hover, var(--xh-_color-field-border-hover));
+    --xh-field-border-focus: var(--xh-color-field-control-border-focus, var(--xh-_color-field-border-focus));
+    --xh-field-border-invalid: var(--xh-color-field-control-border-invalid, var(--xh-border-invalid));
+    --xh-field-ring-focus: var(--xh-ring-focus);
+    --xh-field-ring-invalid: var(--xh-ring-invalid);
+    --xh-field-shadow-rest: var(--xh-color-field-control-shadow, var(--xh-_color-field-shadow));
+  }
+
+  /* 当前颜色的色块：棋盘格、颜色层、描边与尺寸档由 Swatch 家族画（节点带 data-xh-swatch），
+     组件层只把自己的公开槽映射到家族合同；它排在输入框前面，间距由 Field Chrome 的 gap 给 */
+  [data-scope='color-field'][data-part='swatch'] {
+    --xh-swatch-size: var(--xh-color-field-swatch-size, var(--xh-_swatch-size));
+    --xh-swatch-radius: var(--xh-color-field-swatch-radius, var(--xh-shape-inset));
+    --xh-swatch-border: var(--xh-color-field-swatch-border, var(--xh-border-default));
+  }
+
+  [data-scope='color-field'][data-part='swatch'][data-disabled] {
+    opacity: var(--xh-state-disabled-opacity);
+  }
+
+  [data-scope='color-field'][data-part='swatch'][hidden] {
+    display: none;
+  }
+
+  [data-scope='color-field'][data-part='input'] {
+    --xh-field-input-fg: var(--xh-color-field-input-fg, var(--xh-fg-default));
+    --xh-field-input-font-size: var(--xh-color-field-input-font-size, var(--xh-_color-field-font-size));
+    --xh-field-placeholder-fg: var(--xh-color-field-placeholder-fg, var(--xh-fg-subtle));
+    --xh-field-autofill-bg: var(--xh-color-field-input-autofill-bg, var(--xh-bg-canvas));
+    --xh-field-autofill-fg: var(--xh-color-field-input-autofill-fg, var(--xh-fg-default));
+
+  }
+
+  [data-scope='color-field'][data-part='control'][hidden] {
+    display: none;
+  }
+
+  /* clear 的视觉与粗指针热区来自 MAT-05 field-inset profile，组件只映射既有覆盖槽。 */
+  [data-scope='color-field'][data-part='clear-trigger'] {
+    --xh-action-visual-size: var(--xh-color-field-action-size, var(--xh-_action-profile-visual-size));
+    --xh-action-min-inline-size: var(--xh-color-field-action-size, var(--xh-_action-profile-visual-size));
+    --xh-action-radius: var(--xh-color-field-action-radius, var(--xh-shape-inset));
+    --xh-action-bg-rest: var(--xh-color-field-action-bg, transparent);
+    --xh-action-bg-hover: var(--xh-color-field-action-bg-hover, var(--xh-bg-subtle-hover));
+    --xh-action-bg-pressed: var(--xh-color-field-action-bg-active, var(--xh-bg-subtle-active));
+    --xh-action-fg-rest: var(--xh-color-field-action-fg, var(--xh-fg-muted));
+    --xh-action-fg-hover: var(--xh-color-field-action-fg-hover, var(--xh-fg-default));
+    --xh-action-border-rest: transparent;
+    --xh-action-highlight-rest: transparent;
+    --xh-action-shadow-rest: none;
+    --xh-action-shadow-hover: none;
+    --xh-action-shadow-pressed: none;
+    --xh-action-font-size: var(--xh-color-field-action-font-size, var(--xh-_color-field-action-font-size));
+
+    border-width: 0;
+  }
+
+  [data-scope='color-field'][data-part='clear-trigger'][hidden] {
+    display: none;
+  }
+
+  [data-scope='color-field'][data-part='clear-trigger']:empty::before {
+    content: '';
+    display: inline-block;
+    inline-size: var(--xh-icon-size, var(--xh-glyph-size-text));
+    block-size: var(--xh-icon-size, var(--xh-glyph-size-text));
+    vertical-align: var(--xh-glyph-baseline-shift);
+    background-color: currentColor;
+    -webkit-mask: var(--xh-glyph-mark-close) center / contain no-repeat;
+    mask: var(--xh-glyph-mark-close) center / contain no-repeat;
+  }
+
+}

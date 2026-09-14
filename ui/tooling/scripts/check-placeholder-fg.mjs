@@ -31,6 +31,7 @@ const headlessDir = path.resolve(cssDir, '../../../engine/headless/src')
 
 /** 通道 ①：`::placeholder` 伪元素，组件 → 承载占位串的部件。 */
 const PSEUDO = {
+  'color-field': 'input',
   'combobox': 'input',
   'command': 'input',
   'editable': 'input',

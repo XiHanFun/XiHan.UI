@@ -121,6 +121,7 @@ const PENDING = {
   'table': ['columns', 'columnPreference', 'setColumnHidden', 'moveColumn', 'setColumnWidth', 'setColumnPreference', 'rowNumber', 'visibleRows', 'sort', 'selection', 'selectionState', 'expandedValue', 'focusedRow', 'empty', 'loading', 'isSelected', 'isExpanded', 'sortDirection', 'sortPriority', 'toggleSort', 'selectRow', 'toggleSelectAll', 'toggleExpandRow', 'rowReorderDisabledReason'],
   'tags-input': ['value', 'count', 'inputValue', 'empty', 'atMax', 'overflow', 'highlightedValue', 'editedValue', 'canClear', 'setValue', 'addValue', 'deleteValue', 'clear', 'setInputValue', 'highlight', 'edit'],
   'text-field': ['value', 'empty', 'atLimit'],
+  'color-field': ['value', 'empty', 'text', 'valid', 'invalid'],
   'time-field': ['value', 'empty', 'outOfRange', 'canClear', 'segments', 'focusedSegment', 'hourCycle', 'granularity', 'setValue', 'clear'],
   'time-picker': ['open', 'value', 'empty', 'outOfRange', 'segments', 'canClear', 'setOpen', 'setValue', 'clear'],
   'time-range-picker': ['open', 'value', 'start', 'end', 'empty', 'outOfRange', 'reversed', 'segments', 'canClear', 'setOpen', 'setValue', 'clear'],

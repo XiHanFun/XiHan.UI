@@ -11092,6 +11092,730 @@
       "description": "collapsible 的 trigger 部件 border-radius 覆盖槽。"
     },
     {
+      "name": "--xh-color-field-action-bg",
+      "component": "color-field",
+      "part": [
+        "clear-trigger"
+      ],
+      "property": [
+        "background-color"
+      ],
+      "state": [
+        "default"
+      ],
+      "defaultToken": [
+        "transparent"
+      ],
+      "visibility": "public",
+      "description": "color-field 的 clear-trigger 部件 background-color 覆盖槽。"
+    },
+    {
+      "name": "--xh-color-field-action-bg-active",
+      "component": "color-field",
+      "part": [
+        "clear-trigger"
+      ],
+      "property": [
+        "background-color"
+      ],
+      "state": [
+        "active",
+        "disabled",
+        "loading",
+        "not([data-disabled])",
+        "not([data-loading])"
+      ],
+      "defaultToken": [
+        "--xh-bg-subtle-active"
+      ],
+      "visibility": "public",
+      "description": "color-field 的 clear-trigger 部件 background-color 覆盖槽。"
+    },
+    {
+      "name": "--xh-color-field-action-bg-hover",
+      "component": "color-field",
+      "part": [
+        "clear-trigger"
+      ],
+      "property": [
+        "background-color"
+      ],
+      "state": [
+        "disabled",
+        "hover",
+        "loading",
+        "not([data-disabled])",
+        "not([data-loading])"
+      ],
+      "defaultToken": [
+        "--xh-bg-subtle-hover"
+      ],
+      "visibility": "public",
+      "description": "color-field 的 clear-trigger 部件 background-color 覆盖槽。"
+    },
+    {
+      "name": "--xh-color-field-action-fg",
+      "component": "color-field",
+      "part": [
+        "clear-trigger"
+      ],
+      "property": [
+        "color"
+      ],
+      "state": [
+        "default"
+      ],
+      "defaultToken": [
+        "--xh-fg-muted"
+      ],
+      "visibility": "public",
+      "description": "color-field 的 clear-trigger 部件 color 覆盖槽。"
+    },
+    {
+      "name": "--xh-color-field-action-fg-hover",
+      "component": "color-field",
+      "part": [
+        "clear-trigger"
+      ],
+      "property": [
+        "color"
+      ],
+      "state": [
+        "disabled",
+        "hover",
+        "loading",
+        "not([data-disabled])",
+        "not([data-loading])"
+      ],
+      "defaultToken": [
+        "--xh-fg-default"
+      ],
+      "visibility": "public",
+      "description": "color-field 的 clear-trigger 部件 color 覆盖槽。"
+    },
+    {
+      "name": "--xh-color-field-action-font-size",
+      "component": "color-field",
+      "part": [
+        "clear-trigger"
+      ],
+      "property": [
+        "font-size"
+      ],
+      "state": [
+        "default"
+      ],
+      "defaultToken": [
+        "--xh-_color-field-action-font-size"
+      ],
+      "visibility": "public",
+      "description": "color-field 的 clear-trigger 部件 font-size 覆盖槽。"
+    },
+    {
+      "name": "--xh-color-field-action-radius",
+      "component": "color-field",
+      "part": [
+        "clear-trigger"
+      ],
+      "property": [
+        "border-radius"
+      ],
+      "state": [
+        "default"
+      ],
+      "defaultToken": [
+        "--xh-shape-inset"
+      ],
+      "visibility": "public",
+      "description": "color-field 的 clear-trigger 部件 border-radius 覆盖槽。"
+    },
+    {
+      "name": "--xh-color-field-action-size",
+      "component": "color-field",
+      "part": [
+        "clear-trigger"
+      ],
+      "property": [
+        "block-size",
+        "inline-size",
+        "min-inline-size"
+      ],
+      "state": [
+        "default",
+        "xh-action-profile=field-inset"
+      ],
+      "defaultToken": [
+        "--xh-_action-profile-visual-size"
+      ],
+      "visibility": "public",
+      "description": "color-field 的 clear-trigger 部件 block-size、inline-size、min-inline-size 覆盖槽。"
+    },
+    {
+      "name": "--xh-color-field-control-bg",
+      "component": "color-field",
+      "part": [
+        "control"
+      ],
+      "property": [
+        "background-color"
+      ],
+      "state": [
+        "xh-field-chrome"
+      ],
+      "defaultToken": [
+        "--xh-_color-field-bg"
+      ],
+      "visibility": "public",
+      "description": "color-field 的 control 部件 background-color 覆盖槽。"
+    },
+    {
+      "name": "--xh-color-field-control-bg-disabled",
+      "component": "color-field",
+      "part": [
+        "control"
+      ],
+      "property": [
+        "background-color"
+      ],
+      "state": [
+        "disabled",
+        "xh-field-chrome"
+      ],
+      "defaultToken": [
+        "--xh-bg-subtle"
+      ],
+      "visibility": "public",
+      "description": "color-field 的 control 部件 background-color 覆盖槽。"
+    },
+    {
+      "name": "--xh-color-field-control-bg-hover",
+      "component": "color-field",
+      "part": [
+        "control"
+      ],
+      "property": [
+        "background-color"
+      ],
+      "state": [
+        "disabled",
+        "hover",
+        "invalid",
+        "loading",
+        "not([data-disabled])",
+        "not([data-invalid])",
+        "not([data-loading])",
+        "not([data-readonly])",
+        "readonly",
+        "xh-field-chrome"
+      ],
+      "defaultToken": [
+        "--xh-_color-field-bg-hover"
+      ],
+      "visibility": "public",
+      "description": "color-field 的 control 部件 background-color 覆盖槽。"
+    },
+    {
+      "name": "--xh-color-field-control-bg-readonly",
+      "component": "color-field",
+      "part": [
+        "control"
+      ],
+      "property": [
+        "background-color"
+      ],
+      "state": [
+        "readonly",
+        "xh-field-chrome"
+      ],
+      "defaultToken": [
+        "--xh-bg-subtle"
+      ],
+      "visibility": "public",
+      "description": "color-field 的 control 部件 background-color 覆盖槽。"
+    },
+    {
+      "name": "--xh-color-field-control-border",
+      "component": "color-field",
+      "part": [
+        "control"
+      ],
+      "property": [
+        "border"
+      ],
+      "state": [
+        "xh-field-chrome"
+      ],
+      "defaultToken": [
+        "--xh-_color-field-border"
+      ],
+      "visibility": "public",
+      "description": "color-field 的 control 部件 border 覆盖槽。"
+    },
+    {
+      "name": "--xh-color-field-control-border-focus",
+      "component": "color-field",
+      "part": [
+        "control"
+      ],
+      "property": [
+        "border-color"
+      ],
+      "state": [
+        "disabled",
+        "focus-within",
+        "not([data-disabled])",
+        "xh-field-chrome"
+      ],
+      "defaultToken": [
+        "--xh-_color-field-border-focus"
+      ],
+      "visibility": "public",
+      "description": "color-field 的 control 部件 border-color 覆盖槽。"
+    },
+    {
+      "name": "--xh-color-field-control-border-hover",
+      "component": "color-field",
+      "part": [
+        "control"
+      ],
+      "property": [
+        "border-color"
+      ],
+      "state": [
+        "disabled",
+        "hover",
+        "invalid",
+        "loading",
+        "not([data-disabled])",
+        "not([data-invalid])",
+        "not([data-loading])",
+        "not([data-readonly])",
+        "readonly",
+        "xh-field-chrome"
+      ],
+      "defaultToken": [
+        "--xh-_color-field-border-hover"
+      ],
+      "visibility": "public",
+      "description": "color-field 的 control 部件 border-color 覆盖槽。"
+    },
+    {
+      "name": "--xh-color-field-control-border-invalid",
+      "component": "color-field",
+      "part": [
+        "control"
+      ],
+      "property": [
+        "border-color"
+      ],
+      "state": [
+        "invalid",
+        "xh-field-chrome"
+      ],
+      "defaultToken": [
+        "--xh-border-invalid"
+      ],
+      "visibility": "public",
+      "description": "color-field 的 control 部件 border-color 覆盖槽。"
+    },
+    {
+      "name": "--xh-color-field-control-fg",
+      "component": "color-field",
+      "part": [
+        "control"
+      ],
+      "property": [
+        "color"
+      ],
+      "state": [
+        "xh-field-chrome"
+      ],
+      "defaultToken": [
+        "--xh-fg-default"
+      ],
+      "visibility": "public",
+      "description": "color-field 的 control 部件 color 覆盖槽。"
+    },
+    {
+      "name": "--xh-color-field-control-gap",
+      "component": "color-field",
+      "part": [
+        "control"
+      ],
+      "property": [
+        "gap"
+      ],
+      "state": [
+        "xh-field-chrome"
+      ],
+      "defaultToken": [
+        "--xh-_color-field-gap"
+      ],
+      "visibility": "public",
+      "description": "color-field 的 control 部件 gap 覆盖槽。"
+    },
+    {
+      "name": "--xh-color-field-control-h",
+      "component": "color-field",
+      "part": [
+        "control"
+      ],
+      "property": [
+        "block-size",
+        "min-block-size"
+      ],
+      "state": [
+        "has([data-xh-field-input][data-xh-field-layout='multi-tag'])",
+        "has([data-xh-field-input][data-xh-field-layout='single-line'])",
+        "has([data-xh-field-input][data-xh-field-layout='textarea'])",
+        "xh-field-chrome",
+        "xh-field-input",
+        "xh-field-layout=multi-tag",
+        "xh-field-layout=single-line",
+        "xh-field-layout=textarea"
+      ],
+      "defaultToken": [
+        "--xh-_color-field-h"
+      ],
+      "visibility": "public",
+      "description": "color-field 的 control 部件 block-size、min-block-size 覆盖槽。"
+    },
+    {
+      "name": "--xh-color-field-control-min-w",
+      "component": "color-field",
+      "part": [
+        "control",
+        "root"
+      ],
+      "property": [
+        "min-inline-size"
+      ],
+      "state": [
+        "default",
+        "xh-field-chrome"
+      ],
+      "defaultToken": [
+        "--xh-control-min-w"
+      ],
+      "visibility": "public",
+      "description": "color-field 的 control、root 部件 min-inline-size 覆盖槽。"
+    },
+    {
+      "name": "--xh-color-field-control-px",
+      "component": "color-field",
+      "part": [
+        "control"
+      ],
+      "property": [
+        "padding-inline"
+      ],
+      "state": [
+        "xh-field-chrome"
+      ],
+      "defaultToken": [
+        "--xh-_color-field-px"
+      ],
+      "visibility": "public",
+      "description": "color-field 的 control 部件 padding-inline 覆盖槽。"
+    },
+    {
+      "name": "--xh-color-field-control-radius",
+      "component": "color-field",
+      "part": [
+        "control"
+      ],
+      "property": [
+        "border-radius"
+      ],
+      "state": [
+        "xh-field-chrome"
+      ],
+      "defaultToken": [
+        "--xh-shape-surface"
+      ],
+      "visibility": "public",
+      "description": "color-field 的 control 部件 border-radius 覆盖槽。"
+    },
+    {
+      "name": "--xh-color-field-control-shadow",
+      "component": "color-field",
+      "part": [
+        "control"
+      ],
+      "property": [
+        "box-shadow"
+      ],
+      "state": [
+        "xh-field-chrome"
+      ],
+      "defaultToken": [
+        "--xh-_color-field-shadow"
+      ],
+      "visibility": "public",
+      "description": "color-field 的 control 部件 box-shadow 覆盖槽。"
+    },
+    {
+      "name": "--xh-color-field-gap",
+      "component": "color-field",
+      "part": [
+        "root"
+      ],
+      "property": [
+        "gap"
+      ],
+      "state": [
+        "default"
+      ],
+      "defaultToken": [
+        "--xh-space-1"
+      ],
+      "visibility": "public",
+      "description": "color-field 的 root 部件 gap 覆盖槽。"
+    },
+    {
+      "name": "--xh-color-field-icon-size",
+      "component": "color-field",
+      "part": [
+        "root"
+      ],
+      "property": [
+        "--xh-icon-size"
+      ],
+      "state": [
+        "default",
+        "size=lg",
+        "size=sm"
+      ],
+      "defaultToken": [
+        "--xh-glyph-size-lg",
+        "--xh-glyph-size-md",
+        "--xh-glyph-size-sm"
+      ],
+      "visibility": "public",
+      "description": "color-field 的 root 部件 --xh-icon-size 覆盖槽。"
+    },
+    {
+      "name": "--xh-color-field-input-autofill-bg",
+      "component": "color-field",
+      "part": [
+        "input"
+      ],
+      "property": [
+        "box-shadow"
+      ],
+      "state": [
+        "-webkit-autofill",
+        "autofill",
+        "xh-field-input"
+      ],
+      "defaultToken": [
+        "--xh-bg-canvas"
+      ],
+      "visibility": "public",
+      "description": "color-field 的 input 部件 box-shadow 覆盖槽。"
+    },
+    {
+      "name": "--xh-color-field-input-autofill-fg",
+      "component": "color-field",
+      "part": [
+        "input"
+      ],
+      "property": [
+        "-webkit-text-fill-color"
+      ],
+      "state": [
+        "-webkit-autofill",
+        "autofill",
+        "xh-field-input"
+      ],
+      "defaultToken": [
+        "--xh-fg-default"
+      ],
+      "visibility": "public",
+      "description": "color-field 的 input 部件 -webkit-text-fill-color 覆盖槽。"
+    },
+    {
+      "name": "--xh-color-field-input-fg",
+      "component": "color-field",
+      "part": [
+        "input"
+      ],
+      "property": [
+        "color"
+      ],
+      "state": [
+        "xh-field-input"
+      ],
+      "defaultToken": [
+        "--xh-fg-default"
+      ],
+      "visibility": "public",
+      "description": "color-field 的 input 部件 color 覆盖槽。"
+    },
+    {
+      "name": "--xh-color-field-input-font-size",
+      "component": "color-field",
+      "part": [
+        "input"
+      ],
+      "property": [
+        "font-size"
+      ],
+      "state": [
+        "xh-field-input"
+      ],
+      "defaultToken": [
+        "--xh-_color-field-font-size"
+      ],
+      "visibility": "public",
+      "description": "color-field 的 input 部件 font-size 覆盖槽。"
+    },
+    {
+      "name": "--xh-color-field-label-fg",
+      "component": "color-field",
+      "part": [
+        "label"
+      ],
+      "property": [
+        "color"
+      ],
+      "state": [
+        "default"
+      ],
+      "defaultToken": [
+        "--xh-fg-default"
+      ],
+      "visibility": "public",
+      "description": "color-field 的 label 部件 color 覆盖槽。"
+    },
+    {
+      "name": "--xh-color-field-label-fg-disabled",
+      "component": "color-field",
+      "part": [
+        "label"
+      ],
+      "property": [
+        "color"
+      ],
+      "state": [
+        "disabled"
+      ],
+      "defaultToken": [
+        "--xh-fg-subtle"
+      ],
+      "visibility": "public",
+      "description": "color-field 的 label 部件 color 覆盖槽。"
+    },
+    {
+      "name": "--xh-color-field-label-font-size",
+      "component": "color-field",
+      "part": [
+        "label"
+      ],
+      "property": [
+        "font-size"
+      ],
+      "state": [
+        "default"
+      ],
+      "defaultToken": [
+        "--xh-_color-field-label-font-size"
+      ],
+      "visibility": "public",
+      "description": "color-field 的 label 部件 font-size 覆盖槽。"
+    },
+    {
+      "name": "--xh-color-field-label-font-weight",
+      "component": "color-field",
+      "part": [
+        "label"
+      ],
+      "property": [
+        "font-weight"
+      ],
+      "state": [
+        "default"
+      ],
+      "defaultToken": [
+        "--xh-text-label-weight"
+      ],
+      "visibility": "public",
+      "description": "color-field 的 label 部件 font-weight 覆盖槽。"
+    },
+    {
+      "name": "--xh-color-field-placeholder-fg",
+      "component": "color-field",
+      "part": [
+        "input"
+      ],
+      "property": [
+        "color"
+      ],
+      "state": [
+        "placeholder",
+        "xh-field-input"
+      ],
+      "defaultToken": [
+        "--xh-fg-subtle"
+      ],
+      "visibility": "public",
+      "description": "color-field 的 input 部件 color 覆盖槽。"
+    },
+    {
+      "name": "--xh-color-field-swatch-border",
+      "component": "color-field",
+      "part": [
+        "swatch"
+      ],
+      "property": [
+        "--xh-swatch-border"
+      ],
+      "state": [
+        "default"
+      ],
+      "defaultToken": [
+        "--xh-border-default"
+      ],
+      "visibility": "public",
+      "description": "color-field 的 swatch 部件 --xh-swatch-border 覆盖槽。"
+    },
+    {
+      "name": "--xh-color-field-swatch-radius",
+      "component": "color-field",
+      "part": [
+        "swatch"
+      ],
+      "property": [
+        "--xh-swatch-radius"
+      ],
+      "state": [
+        "default"
+      ],
+      "defaultToken": [
+        "--xh-shape-inset"
+      ],
+      "visibility": "public",
+      "description": "color-field 的 swatch 部件 --xh-swatch-radius 覆盖槽。"
+    },
+    {
+      "name": "--xh-color-field-swatch-size",
+      "component": "color-field",
+      "part": [
+        "swatch"
+      ],
+      "property": [
+        "--xh-swatch-size"
+      ],
+      "state": [
+        "default"
+      ],
+      "defaultToken": [
+        "--xh-_swatch-size"
+      ],
+      "visibility": "public",
+      "description": "color-field 的 swatch 部件 --xh-swatch-size 覆盖槽。"
+    },
+    {
       "name": "--xh-color-picker-action-bg",
       "component": "color-picker",
       "part": [
