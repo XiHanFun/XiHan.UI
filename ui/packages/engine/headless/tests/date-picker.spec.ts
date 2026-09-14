@@ -830,6 +830,20 @@ describe('defaultFocusedValue 决定先落在哪一页', () => {
   it('不给就退回首个选中值', () => {
     expect(mount({ defaultValue: '2026-03-09' }).api().calendar.panels[0]!.month).toBe(3)
   })
+
+  it('没选值时展开也落在它那一页：defaultOpen 与翻走再重新展开都不被今天盖掉', async () => {
+    const h = mount({ defaultOpen: true, defaultFocusedValue: '2026-11-05' })
+    expect(h.focusedValue()).toBe('2026-11-05')
+    expect(h.rendered()).toContain('2026-11-05')
+
+    press(h.cell('2026-11-05'), 'PageDown')
+    expect(h.focusedValue()).toBe('2026-12-05')
+    h.api().setOpen(false)
+    await tick()
+    h.api().setOpen(true)
+    await tick()
+    expect(h.focusedValue()).toBe('2026-11-05')
+  })
 })
 
 describe('日历面板数量', () => {
