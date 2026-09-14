@@ -5,13 +5,13 @@
 
 // 提供 use kbd platform 相关实现。
 
-import type { HotkeysPlatform } from '@xihan-ui/headless'
-import { detectHotkeysPlatform } from '@xihan-ui/headless'
+import type { KbdPlatform } from '@xihan-ui/headless'
+import { detectKbdPlatform } from '@xihan-ui/headless'
 import { useEffect, useState } from 'react'
 
 /** 浏览器平台侦测只属于适配器；Headless 仍只接显式平台事实。 */
-export function useKbdPlatform(platform: HotkeysPlatform | undefined): HotkeysPlatform {
-  const [detected, setDetected] = useState<HotkeysPlatform>('auto')
-  useEffect(() => setDetected(detectHotkeysPlatform()), [])
+export function useKbdPlatform(platform: KbdPlatform | undefined): KbdPlatform {
+  const [detected, setDetected] = useState<KbdPlatform>('auto')
+  useEffect(() => setDetected(detectKbdPlatform()), [])
   return platform && platform !== 'auto' ? platform : detected
 }

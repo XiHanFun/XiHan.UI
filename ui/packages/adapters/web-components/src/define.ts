@@ -55,7 +55,6 @@ import { XhGradientTextElement } from './elements/gradient-text'
 import { XhGridElement } from './elements/grid'
 import { XhHeatmapElement } from './elements/heatmap'
 import { XhHighlightElement } from './elements/highlight'
-import { XhHotkeysElement } from './elements/hotkeys'
 import { XhHoverCardElement } from './elements/hover-card'
 import { XhIconElement } from './elements/icon'
 import { XhIconWrapperElement } from './elements/icon-wrapper'
@@ -66,7 +65,6 @@ import { XhInfiniteScrollElement } from './elements/infinite-scroll'
 import { XhInputGroupElement } from './elements/input-group'
 import { XhJsonViewerElement } from './elements/json-viewer'
 import { XhKbdElement } from './elements/kbd'
-import { XhKbdGroupElement } from './elements/kbd-group'
 import { XhLayoutElement } from './elements/layout'
 import { XhListElement } from './elements/list'
 import { XhListboxElement } from './elements/listbox'
@@ -160,9 +158,7 @@ export function defineXhElements(): void {
   defineElement('xh-grid', XhGridElement, VERSION)
   defineElement('xh-heatmap', XhHeatmapElement, VERSION)
   defineElement('xh-highlight', XhHighlightElement, VERSION)
-  defineElement('xh-hotkeys', XhHotkeysElement, VERSION)
   defineElement('xh-kbd', XhKbdElement, VERSION)
-  defineElement('xh-kbd-group', XhKbdGroupElement, VERSION)
   defineElement('xh-icon-wrapper', XhIconWrapperElement, VERSION)
   defineElement('xh-image-cropper', XhImageCropperElement, VERSION)
   defineElement('xh-infinite-scroll', XhInfiniteScrollElement, VERSION)
@@ -317,7 +313,6 @@ export {
   XhFloatingPanelElement,
   XhFormElement,
   XhHeatmapElement,
-  XhHotkeysElement,
   XhHoverCardElement,
   XhIconElement,
   XhImageCropperElement,
@@ -326,7 +321,6 @@ export {
   XhInputGroupElement,
   XhJsonViewerElement,
   XhKbdElement,
-  XhKbdGroupElement,
   XhListboxElement,
   XhLoadingBarElement,
   XhMarkdownStreamElement,

@@ -736,7 +736,7 @@
       "pagination"
     ],
     "key": [
-      "kbd-group"
+      "kbd"
     ],
     "label": [
       "button",
@@ -1087,7 +1087,6 @@
       "input-group",
       "json-viewer",
       "kbd",
-      "kbd-group",
       "layout",
       "list",
       "listbox",

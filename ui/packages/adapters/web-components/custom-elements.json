@@ -21233,180 +21233,6 @@
     },
     {
       "kind": "javascript-module",
-      "path": "src/elements/hotkeys.ts",
-      "declarations": [
-        {
-          "kind": "class",
-          "description": "`<xh-hotkeys>` —— 纯行为快捷键注册器，不生成键帽、不接管子节点，也没有视觉 part。\n\n可见快捷键提示使用 `<xh-kbd-group>`；局部监听通过 target property 传入显式 resolver，\n不再从展示节点猜测 parent。",
-          "name": "XhHotkeysElement",
-          "members": [
-            {
-              "kind": "field",
-              "name": "keys",
-              "privacy": "public",
-              "type": {
-                "text": "string[]"
-              },
-              "attribute": "keys"
-            },
-            {
-              "kind": "field",
-              "name": "platform",
-              "privacy": "public",
-              "type": {
-                "text": "HotkeysPlatform | undefined"
-              },
-              "attribute": "platform"
-            },
-            {
-              "kind": "field",
-              "name": "target",
-              "privacy": "public",
-              "type": {
-                "text": "HotkeysTarget | undefined"
-              }
-            },
-            {
-              "kind": "field",
-              "name": "preventDefault",
-              "privacy": "public",
-              "type": {
-                "text": "boolean | undefined"
-              },
-              "attribute": "prevent-default"
-            },
-            {
-              "kind": "field",
-              "name": "enabled",
-              "privacy": "public",
-              "type": {
-                "text": "boolean | undefined"
-              },
-              "attribute": "enabled"
-            },
-            {
-              "kind": "field",
-              "name": "#detected",
-              "privacy": "private",
-              "type": {
-                "text": "HotkeysPlatform"
-              },
-              "default": "'auto'"
-            },
-            {
-              "kind": "field",
-              "name": "#bound",
-              "privacy": "private",
-              "type": {
-                "text": "EventTarget | null"
-              },
-              "default": "null"
-            },
-            {
-              "kind": "field",
-              "name": "#notify",
-              "privacy": "private"
-            },
-            {
-              "kind": "method",
-              "name": "#api",
-              "privacy": "private",
-              "return": {
-                "type": {
-                  "text": "HotkeysApi"
-                }
-              }
-            },
-            {
-              "kind": "field",
-              "name": "#onKeyDown",
-              "privacy": "private"
-            },
-            {
-              "kind": "method",
-              "name": "#syncListener",
-              "privacy": "private",
-              "return": {
-                "type": {
-                  "text": "void"
-                }
-              }
-            },
-            {
-              "kind": "method",
-              "name": "wire",
-              "privacy": "protected",
-              "return": {
-                "type": {
-                  "text": "void"
-                }
-              }
-            }
-          ],
-          "events": [
-            {
-              "description": "组合被按出来；detail 为 `{ keys: string[], event: KeyboardEvent }`",
-              "name": "hot-key",
-              "type": {
-                "text": "HotkeysTriggerDetails"
-              }
-            }
-          ],
-          "attributes": [
-            {
-              "type": {
-                "text": "string[]"
-              },
-              "description": "组合里的各枚键，逗号分隔；逗号本身作为主键时改用 property 传数组",
-              "name": "keys",
-              "fieldName": "keys"
-            },
-            {
-              "type": {
-                "text": "HotkeysPlatform | undefined"
-              },
-              "description": "匹配所用平台，缺省挂载后实测",
-              "name": "platform",
-              "fieldName": "platform"
-            },
-            {
-              "type": {
-                "text": "boolean | undefined"
-              },
-              "description": "命中后是否阻止默认动作，默认开启",
-              "name": "prevent-default",
-              "fieldName": "preventDefault"
-            },
-            {
-              "type": {
-                "text": "boolean | undefined"
-              },
-              "description": "监听是否生效，默认开启",
-              "name": "enabled",
-              "fieldName": "enabled"
-            }
-          ],
-          "superclass": {
-            "name": "XhElement",
-            "module": "/src/element-base"
-          },
-          "tagName": "xh-hotkeys",
-          "customElement": true
-        }
-      ],
-      "exports": [
-        {
-          "kind": "js",
-          "name": "XhHotkeysElement",
-          "declaration": {
-            "name": "XhHotkeysElement",
-            "module": "src/elements/hotkeys.ts"
-          }
-        }
-      ]
-    },
-    {
-      "kind": "javascript-module",
       "path": "src/elements/hover-card.ts",
       "declarations": [
         {
@@ -24662,19 +24488,19 @@
     },
     {
       "kind": "javascript-module",
-      "path": "src/elements/kbd-group.ts",
+      "path": "src/elements/kbd.ts",
       "declarations": [
         {
           "kind": "class",
-          "description": "`<xh-kbd-group>` —— 数据驱动的纯展示组合。root 承担唯一 aria-label，子键帽只作视觉。",
-          "name": "XhKbdGroupElement",
+          "description": "`<xh-kbd>` —— 单键、组合键与可选快捷键监听的统一入口。",
+          "name": "XhKbdElement",
           "cssParts": [
             {
-              "description": "整组容器，承载唯一可读名称",
+              "description": "原生 kbd 表面与整组可读名称",
               "name": "root"
             },
             {
-              "description": "元素按 keys 生成的一枚原生 kbd",
+              "description": "一枚可见键名",
               "name": "key"
             }
           ],
@@ -24686,7 +24512,7 @@
                 "text": "object"
               },
               "static": true,
-              "default": "{ anatomy: kbdGroupAnatomy, meta: kbdGroupMeta }"
+              "default": "{ anatomy: kbdAnatomy, meta: kbdMeta }"
             },
             {
               "kind": "field",
@@ -24702,7 +24528,7 @@
               "name": "platform",
               "privacy": "public",
               "type": {
-                "text": "HotkeysPlatform | undefined"
+                "text": "KbdPlatform | undefined"
               },
               "attribute": "platform"
             },
@@ -24717,194 +24543,38 @@
             },
             {
               "kind": "field",
-              "name": "translations",
+              "name": "register",
               "privacy": "public",
               "type": {
-                "text": "Partial<KbdGroupTranslations> | undefined"
+                "text": "boolean | undefined"
+              },
+              "attribute": "register"
+            },
+            {
+              "kind": "field",
+              "name": "target",
+              "privacy": "public",
+              "type": {
+                "text": "KbdTarget | undefined"
               }
             },
             {
               "kind": "field",
-              "name": "#detected",
-              "privacy": "private",
-              "type": {
-                "text": "HotkeysPlatform"
-              },
-              "default": "'auto'"
-            },
-            {
-              "kind": "field",
-              "name": "#painted",
-              "privacy": "private",
-              "type": {
-                "text": "{ host: Element, key: string } | undefined"
-              }
-            },
-            {
-              "kind": "method",
-              "name": "wire",
-              "privacy": "protected",
-              "return": {
-                "type": {
-                  "text": "void"
-                }
-              }
-            },
-            {
-              "kind": "method",
-              "name": "#paint",
-              "privacy": "private",
-              "return": {
-                "type": {
-                  "text": "void"
-                }
-              },
-              "parameters": [
-                {
-                  "name": "root",
-                  "type": {
-                    "text": "HTMLElement"
-                  }
-                },
-                {
-                  "name": "api",
-                  "type": {
-                    "text": "KbdGroupApi"
-                  }
-                }
-              ]
-            }
-          ],
-          "attributes": [
-            {
-              "type": {
-                "text": "string[]"
-              },
-              "description": "组合里的各枚键，逗号分隔；逗号本身作为主键时改用 property 传数组",
-              "name": "keys",
-              "fieldName": "keys"
-            },
-            {
-              "type": {
-                "text": "HotkeysPlatform | undefined"
-              },
-              "description": "平台写法，缺省挂载后实测",
-              "name": "platform",
-              "fieldName": "platform"
-            },
-            {
-              "type": {
-                "text": "KbdVariant | undefined"
-              },
-              "description": "外观，默认 default",
-              "name": "variant",
-              "fieldName": "variant"
-            }
-          ],
-          "superclass": {
-            "name": "XhElement",
-            "module": "/src/element-base"
-          },
-          "tagName": "xh-kbd-group",
-          "customElement": true,
-          "cssProperties": [
-            {
-              "name": "--xh-kbd-group-bg"
-            },
-            {
-              "name": "--xh-kbd-group-border"
-            },
-            {
-              "name": "--xh-kbd-group-fg"
-            },
-            {
-              "name": "--xh-kbd-group-font"
-            },
-            {
-              "name": "--xh-kbd-group-font-size"
-            },
-            {
-              "name": "--xh-kbd-group-font-weight"
-            },
-            {
-              "name": "--xh-kbd-group-gap"
-            },
-            {
-              "name": "--xh-kbd-group-h"
-            },
-            {
-              "name": "--xh-kbd-group-min-w"
-            },
-            {
-              "name": "--xh-kbd-group-px"
-            },
-            {
-              "name": "--xh-kbd-group-radius"
-            }
-          ]
-        }
-      ],
-      "exports": [
-        {
-          "kind": "js",
-          "name": "XhKbdGroupElement",
-          "declaration": {
-            "name": "XhKbdGroupElement",
-            "module": "src/elements/kbd-group.ts"
-          }
-        }
-      ]
-    },
-    {
-      "kind": "javascript-module",
-      "path": "src/elements/kbd.ts",
-      "declarations": [
-        {
-          "kind": "class",
-          "description": "`<xh-kbd>` —— 单枚纯展示键帽。root 应使用原生 `<kbd>`，元素按 value 写入可见文本与可读名称。",
-          "name": "XhKbdElement",
-          "cssParts": [
-            {
-              "description": "原生 kbd 键帽",
-              "name": "root"
-            }
-          ],
-          "members": [
-            {
-              "kind": "field",
-              "name": "partContract",
-              "type": {
-                "text": "object"
-              },
-              "static": true,
-              "default": "{ anatomy: kbdAnatomy, meta: kbdMeta }"
-            },
-            {
-              "kind": "field",
-              "name": "value",
+              "name": "preventDefault",
               "privacy": "public",
               "type": {
-                "text": "string"
+                "text": "boolean | undefined"
               },
-              "attribute": "value"
+              "attribute": "prevent-default"
             },
             {
               "kind": "field",
-              "name": "platform",
+              "name": "enabled",
               "privacy": "public",
               "type": {
-                "text": "HotkeysPlatform | undefined"
+                "text": "boolean | undefined"
               },
-              "attribute": "platform"
-            },
-            {
-              "kind": "field",
-              "name": "variant",
-              "privacy": "public",
-              "type": {
-                "text": "KbdVariant | undefined"
-              },
-              "attribute": "variant"
+              "attribute": "enabled"
             },
             {
               "kind": "field",
@@ -24919,9 +24589,47 @@
               "name": "#detected",
               "privacy": "private",
               "type": {
-                "text": "HotkeysPlatform"
+                "text": "KbdPlatform"
               },
               "default": "'auto'"
+            },
+            {
+              "kind": "field",
+              "name": "#bound",
+              "privacy": "private",
+              "type": {
+                "text": "EventTarget | null"
+              },
+              "default": "null"
+            },
+            {
+              "kind": "field",
+              "name": "#painted",
+              "privacy": "private",
+              "type": {
+                "text": "string"
+              },
+              "default": "''"
+            },
+            {
+              "kind": "field",
+              "name": "#notify",
+              "privacy": "private"
+            },
+            {
+              "kind": "method",
+              "name": "#api",
+              "privacy": "private",
+              "return": {
+                "type": {
+                  "text": "KbdApi"
+                }
+              }
+            },
+            {
+              "kind": "field",
+              "name": "#onKeyDown",
+              "privacy": "private"
             },
             {
               "kind": "method",
@@ -24934,18 +24642,27 @@
               }
             }
           ],
+          "events": [
+            {
+              "description": "组合被按出；detail 为 `{ keys: string[], event: KeyboardEvent }`",
+              "name": "hot-key",
+              "type": {
+                "text": "KbdTriggerDetails"
+              }
+            }
+          ],
           "attributes": [
             {
               "type": {
-                "text": "string"
+                "text": "string[]"
               },
-              "description": "一枚键的声明，例如 Mod、Shift、Esc 或 S",
-              "name": "value",
-              "fieldName": "value"
+              "description": "按键组合，逗号分隔",
+              "name": "keys",
+              "fieldName": "keys"
             },
             {
               "type": {
-                "text": "HotkeysPlatform | undefined"
+                "text": "KbdPlatform | undefined"
               },
               "description": "平台写法，缺省挂载后实测",
               "name": "platform",
@@ -24958,6 +24675,30 @@
               "description": "外观，默认 default",
               "name": "variant",
               "fieldName": "variant"
+            },
+            {
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "description": "是否注册快捷键监听，默认 false",
+              "name": "register",
+              "fieldName": "register"
+            },
+            {
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "description": "命中后是否阻止默认动作，默认 true",
+              "name": "prevent-default",
+              "fieldName": "preventDefault"
+            },
+            {
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "description": "已注册监听是否生效，默认 true",
+              "name": "enabled",
+              "fieldName": "enabled"
             }
           ],
           "superclass": {
@@ -24977,6 +24718,9 @@
               "name": "--xh-kbd-fg"
             },
             {
+              "name": "--xh-kbd-fg-disabled"
+            },
+            {
               "name": "--xh-kbd-font"
             },
             {
@@ -24984,6 +24728,9 @@
             },
             {
               "name": "--xh-kbd-font-weight"
+            },
+            {
+              "name": "--xh-kbd-gap"
             },
             {
               "name": "--xh-kbd-h"

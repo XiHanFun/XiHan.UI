@@ -3,7 +3,7 @@
  * Licensed under the MIT License. See LICENSE in the project root for license information.
  */
 
-// 提供 kbd.suite 相关实现。
+// 提供 Kbd 跨适配器一致性判据。
 
 import type { ConformanceSuite } from '../conformance/types'
 import { kbdAnatomy, kbdKeyboard } from '@xihan-ui/headless'
@@ -12,20 +12,23 @@ export const kbdSuite: ConformanceSuite = {
   component: 'kbd',
   anatomy: kbdAnatomy,
   keyboard: kbdKeyboard,
-  defaultProps: { value: 'S', platform: 'other' },
+  defaultProps: { keys: ['S'], platform: 'other' },
   fixture: { part: 'root', tag: 'kbd' },
   cases: [
     {
-      name: '单枚键帽使用原生 kbd 角色并保留平台可读名称',
+      name: '组合键由原生 kbd 承载一个读屏名称',
       spec: { apg: 'https://html.spec.whatwg.org/multipage/text-level-semantics.html#the-kbd-element' },
-      props: { value: 'Mod', platform: 'mac' },
+      props: { keys: ['Mod', 'K'], platform: 'other' },
       initial: {
-        counts: { root: 1 },
+        counts: { root: 1, key: 2 },
         parts: {
           root: {
-            'aria-label': 'Command',
-            'data-platform': 'mac',
+            'aria-label': 'Control + K',
+            'data-platform': 'other',
             'data-variant': 'default',
+          },
+          key: {
+            'aria-hidden': 'true',
           },
         },
       },
@@ -33,24 +36,52 @@ export const kbdSuite: ConformanceSuite = {
         kind: 'raw',
         why: '可见键名属于原生 kbd 文本，不在属性快照中',
         run: ({ root }) => {
-          const key = root.querySelector('[data-scope="kbd"][data-part="root"]')
-          if (key?.tagName !== 'KBD' || key.textContent !== '⌘')
-            throw new Error('Kbd 必须以原生 <kbd> 显示 Headless 格式化后的键名')
+          const kbd = root.querySelector('[data-scope="kbd"][data-part="root"]')
+          if (kbd?.tagName !== 'KBD' || kbd.textContent !== 'CtrlK')
+            throw new Error('Kbd 必须以原生 <kbd> 连排 Headless 格式化后的键名')
         },
       }],
     },
     {
-      name: 'light 外观如实投影',
-      spec: { apg: 'https://html.spec.whatwg.org/multipage/text-level-semantics.html#the-kbd-element' },
-      props: { value: 'Enter', platform: 'other', variant: 'light' },
+      name: 'light 外观和显式注册事实如实投影',
+      spec: { apg: 'https://www.w3.org/TR/uievents/#event-type-keydown' },
+      covers: ['kbd.keydown.trigger'],
+      props: { keys: ['Escape'], platform: 'other', variant: 'light', register: true },
       initial: {
         parts: {
           root: {
-            'aria-label': 'Enter',
+            'aria-label': 'Escape',
+            'data-register': '',
             'data-variant': 'light',
           },
         },
       },
+      steps: [
+        {
+          kind: 'key',
+          key: 'Escape',
+          on: 'root',
+          expect: { defaultPrevented: true },
+        },
+      ],
+    },
+    {
+      name: '普通按键不接管输入区',
+      spec: { apg: 'https://www.w3.org/TR/uievents/#event-type-keydown' },
+      covers: ['kbd.keydown.typing'],
+      props: { keys: ['S'], platform: 'other', register: true },
+      steps: [{
+        kind: 'raw',
+        why: '输入目标必须是活的原生表单控件',
+        run: ({ root }) => {
+          const input = document.createElement('input')
+          root.append(input)
+          const event = new KeyboardEvent('keydown', { key: 's', bubbles: true, cancelable: true })
+          input.dispatchEvent(event)
+          if (event.defaultPrevented)
+            throw new Error('普通键位落在输入区时不应被 Kbd 接管')
+        },
+      }],
     },
   ],
 }

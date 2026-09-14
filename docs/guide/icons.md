@@ -64,7 +64,7 @@ import { ArrowDownIcon } from "@xihan-ui/icons";
 
 有几处的部件里本来就装着别的东西，`:empty` 恒不命中，只能走通道一：checkbox-group 与 transfer 的全选格、field 与 fieldset 的必填星号。
 
-json-viewer 键名后面那个冒号不在这族里：它是 JSON 这个数据格式的语法字符，不是视觉标记。hotkeys 的 `⌘` `⇧` 键帽由 JS 渲染成文本，走它自己的 `translations`。
+json-viewer 键名后面那个冒号不在这族里：它是 JSON 这个数据格式的语法字符，不是视觉标记。Kbd 的 `⌘` `⇧` 键名由 JS 渲染成文本，走它自己的 `translations`。
 
 
 ## 把任意 SVG 目录转成图标集

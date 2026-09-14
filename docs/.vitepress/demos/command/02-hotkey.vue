@@ -18,8 +18,7 @@ import {
   XhCommandList,
   XhCommandRoot,
   XhHighlight,
-  XhHotkeys,
-  XhKbdGroup,
+  XhKbd,
 } from "@xihan-ui/vue";
 import { ref } from "vue";
 
@@ -43,8 +42,7 @@ const groups = [
 <template>
   <!-- 唤起的入口：监听装在整篇文档上，面板收着也按得出来 -->
   <div style="display: flex; align-items: center; gap: 8px">
-    <XhKbdGroup :keys="['Mod', 'K']" />
-    <XhHotkeys :keys="['Mod', 'K']" @hot-key="open = true" />
+    <XhKbd :keys="['Mod', 'K']" register @hot-key="open = true" />
     <span>按一下唤起命令面板</span>
   </div>
 
@@ -68,7 +66,7 @@ const groups = [
                   <!-- 检索串就是高亮的关键词，用户看得见这条为什么被选出来 -->
                   <XhHighlight :text="command.label!" :keyword="inputValue" />
                 </XhCommandItemText>
-                <XhKbdGroup v-if="command.hotkey" :keys="command.hotkey" />
+                <XhKbd v-if="command.hotkey" :keys="command.hotkey" />
               </XhCommandItem>
             </template>
           </XhCommandGroup>

@@ -7,5 +7,5 @@
 
 import { createAnatomy } from '@xihan-ui/core'
 
-/** 单枚语义键帽。 */
-export const kbdAnatomy = createAnatomy('kbd', ['root'])
+/** 单键与组合键共用一枚语义键帽。 */
+export const kbdAnatomy = createAnatomy('kbd', ['root', 'key'])

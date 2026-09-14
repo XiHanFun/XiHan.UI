@@ -29237,6 +29237,24 @@
       "description": "kbd 的 root 部件 color 覆盖槽。"
     },
     {
+      "name": "--xh-kbd-fg-disabled",
+      "component": "kbd",
+      "part": [
+        "root"
+      ],
+      "property": [
+        "color"
+      ],
+      "state": [
+        "disabled"
+      ],
+      "defaultToken": [
+        "--xh-fg-disabled"
+      ],
+      "visibility": "public",
+      "description": "kbd 的 root 部件 color 覆盖槽。"
+    },
+    {
       "name": "--xh-kbd-font",
       "component": "kbd",
       "part": [
@@ -29289,6 +29307,24 @@
       ],
       "visibility": "public",
       "description": "kbd 的 root 部件 font-weight 覆盖槽。"
+    },
+    {
+      "name": "--xh-kbd-gap",
+      "component": "kbd",
+      "part": [
+        "root"
+      ],
+      "property": [
+        "gap"
+      ],
+      "state": [
+        "default"
+      ],
+      "defaultToken": [
+        "--xh-space-1"
+      ],
+      "visibility": "public",
+      "description": "kbd 的 root 部件 gap 覆盖槽。"
     },
     {
       "name": "--xh-kbd-h",
@@ -29361,204 +29397,6 @@
       ],
       "visibility": "public",
       "description": "kbd 的 root 部件 border-radius 覆盖槽。"
-    },
-    {
-      "name": "--xh-kbd-group-bg",
-      "component": "kbd-group",
-      "part": [
-        "root"
-      ],
-      "property": [
-        "background"
-      ],
-      "state": [
-        "default"
-      ],
-      "defaultToken": [
-        "--xh-bg-subtle"
-      ],
-      "visibility": "public",
-      "description": "kbd-group 的 root 部件 background 覆盖槽。"
-    },
-    {
-      "name": "--xh-kbd-group-border",
-      "component": "kbd-group",
-      "part": [
-        "root"
-      ],
-      "property": [
-        "border"
-      ],
-      "state": [
-        "default"
-      ],
-      "defaultToken": [
-        "transparent"
-      ],
-      "visibility": "public",
-      "description": "kbd-group 的 root 部件 border 覆盖槽。"
-    },
-    {
-      "name": "--xh-kbd-group-fg",
-      "component": "kbd-group",
-      "part": [
-        "root"
-      ],
-      "property": [
-        "color"
-      ],
-      "state": [
-        "default"
-      ],
-      "defaultToken": [
-        "--xh-fg-muted"
-      ],
-      "visibility": "public",
-      "description": "kbd-group 的 root 部件 color 覆盖槽。"
-    },
-    {
-      "name": "--xh-kbd-group-font",
-      "component": "kbd-group",
-      "part": [
-        "root"
-      ],
-      "property": [
-        "font-family"
-      ],
-      "state": [
-        "default"
-      ],
-      "defaultToken": [
-        "inherit"
-      ],
-      "visibility": "public",
-      "description": "kbd-group 的 root 部件 font-family 覆盖槽。"
-    },
-    {
-      "name": "--xh-kbd-group-font-size",
-      "component": "kbd-group",
-      "part": [
-        "root"
-      ],
-      "property": [
-        "font-size"
-      ],
-      "state": [
-        "default"
-      ],
-      "defaultToken": [
-        "--xh-text-label-size"
-      ],
-      "visibility": "public",
-      "description": "kbd-group 的 root 部件 font-size 覆盖槽。"
-    },
-    {
-      "name": "--xh-kbd-group-font-weight",
-      "component": "kbd-group",
-      "part": [
-        "root"
-      ],
-      "property": [
-        "font-weight"
-      ],
-      "state": [
-        "default"
-      ],
-      "defaultToken": [
-        "--xh-font-weight-medium"
-      ],
-      "visibility": "public",
-      "description": "kbd-group 的 root 部件 font-weight 覆盖槽。"
-    },
-    {
-      "name": "--xh-kbd-group-gap",
-      "component": "kbd-group",
-      "part": [
-        "root"
-      ],
-      "property": [
-        "gap"
-      ],
-      "state": [
-        "default"
-      ],
-      "defaultToken": [
-        "--xh-space-0_5"
-      ],
-      "visibility": "public",
-      "description": "kbd-group 的 root 部件 gap 覆盖槽。"
-    },
-    {
-      "name": "--xh-kbd-group-h",
-      "component": "kbd-group",
-      "part": [
-        "root"
-      ],
-      "property": [
-        "block-size"
-      ],
-      "state": [
-        "default"
-      ],
-      "defaultToken": [
-        "--xh-space-6"
-      ],
-      "visibility": "public",
-      "description": "kbd-group 的 root 部件 block-size 覆盖槽。"
-    },
-    {
-      "name": "--xh-kbd-group-min-w",
-      "component": "kbd-group",
-      "part": [
-        "root"
-      ],
-      "property": [
-        "min-inline-size"
-      ],
-      "state": [
-        "default"
-      ],
-      "defaultToken": [
-        "--xh-space-6"
-      ],
-      "visibility": "public",
-      "description": "kbd-group 的 root 部件 min-inline-size 覆盖槽。"
-    },
-    {
-      "name": "--xh-kbd-group-px",
-      "component": "kbd-group",
-      "part": [
-        "root"
-      ],
-      "property": [
-        "padding-inline"
-      ],
-      "state": [
-        "default"
-      ],
-      "defaultToken": [
-        "--xh-space-2"
-      ],
-      "visibility": "public",
-      "description": "kbd-group 的 root 部件 padding-inline 覆盖槽。"
-    },
-    {
-      "name": "--xh-kbd-group-radius",
-      "component": "kbd-group",
-      "part": [
-        "root"
-      ],
-      "property": [
-        "border-radius"
-      ],
-      "state": [
-        "default"
-      ],
-      "defaultToken": [
-        "--xh-shape-control"
-      ],
-      "visibility": "public",
-      "description": "kbd-group 的 root 部件 border-radius 覆盖槽。"
     },
     {
       "name": "--xh-layout-bg",

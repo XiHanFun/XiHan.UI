@@ -10,8 +10,8 @@ import { XhKbd } from "@xihan-ui/react";
 export default function Demo(): ReactNode {
   return (
     <div style={{ display: "flex", gap: "12px" }}>
-      <XhKbd value="Enter" />
-      <XhKbd value="Enter" variant="light" />
+      <XhKbd keys={["Enter"]} />
+      <XhKbd keys={["Enter"]} variant="light" />
     </div>
   );
 }

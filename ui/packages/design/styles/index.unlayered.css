@@ -4823,11 +4823,12 @@
   --xh-kbd-skin: 1;
 }
 
-/* 单枚键帽只展示键名，不模拟按钮的按下、禁用或尺寸状态。 */
+/* 单键和组合键共用一个整体表面，不模拟按钮按下状态。 */
 [data-scope='kbd'][data-part='root'] {
   display: inline-flex;
   align-items: center;
   justify-content: center;
+  gap: var(--xh-kbd-gap, var(--xh-space-1));
   box-sizing: border-box;
   block-size: var(--xh-kbd-h, var(--xh-space-6));
   min-inline-size: var(--xh-kbd-min-w, var(--xh-space-6));
@@ -4843,58 +4844,15 @@
   text-align: center;
   text-decoration: none;
   white-space: nowrap;
+  direction: ltr;
+  unicode-bidi: isolate;
 }
 
 [data-scope='kbd'][data-part='root'][data-variant='light'] {
   background: transparent;
 }
 
-[data-scope='kbd'][data-part='root'][hidden] {
-  display: none;
-}
-
-@media (forced-colors: active) {
-  [data-scope='kbd'][data-part='root']:not([data-variant='light']) {
-    border-color: ButtonText;
-    background: Canvas;
-    color: CanvasText;
-  }
-}
-
-/* styles/kbd-group.css */
-/* 定义 kbd group 样式。 */
-
-[data-scope='kbd-group'] {
-  --xh-kbd-group-skin: 1;
-}
-
-/* 整个组合共用一枚键帽表面，内部键名紧凑连排。 */
-[data-scope='kbd-group'][data-part='root'] {
-  display: inline-flex;
-  align-items: center;
-  gap: var(--xh-kbd-group-gap, var(--xh-space-0_5));
-  box-sizing: border-box;
-  block-size: var(--xh-kbd-group-h, var(--xh-space-6));
-  min-inline-size: var(--xh-kbd-group-min-w, var(--xh-space-6));
-  padding-inline: var(--xh-kbd-group-px, var(--xh-space-2));
-  border: var(--xh-stroke-thin) solid var(--xh-kbd-group-border, transparent);
-  border-radius: var(--xh-kbd-group-radius, var(--xh-shape-control));
-  background: var(--xh-kbd-group-bg, var(--xh-bg-subtle));
-  color: var(--xh-kbd-group-fg, var(--xh-fg-muted));
-  font-family: var(--xh-kbd-group-font, inherit);
-  font-size: var(--xh-kbd-group-font-size, var(--xh-text-label-size));
-  font-weight: var(--xh-kbd-group-font-weight, var(--xh-font-weight-medium));
-  line-height: var(--xh-leading-none);
-  white-space: nowrap;
-  direction: ltr;
-  unicode-bidi: isolate;
-}
-
-[data-scope='kbd-group'][data-part='root'][data-variant='light'] {
-  background: transparent;
-}
-
-[data-scope='kbd-group'][data-part='key'] {
+[data-scope='kbd'][data-part='key'] {
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -4905,16 +4863,19 @@
   color: inherit;
   font: inherit;
   line-height: inherit;
-  text-decoration: none;
 }
 
-[data-scope='kbd-group'][data-part='root'][hidden],
-[data-scope='kbd-group'][data-part='key'][hidden] {
+[data-scope='kbd'][data-part='root'][data-disabled] {
+  color: var(--xh-kbd-fg-disabled, var(--xh-fg-disabled));
+}
+
+[data-scope='kbd'][data-part='root'][hidden],
+[data-scope='kbd'][data-part='key'][hidden] {
   display: none;
 }
 
 @media (forced-colors: active) {
-  [data-scope='kbd-group'][data-part='root']:not([data-variant='light']) {
+  [data-scope='kbd'][data-part='root']:not([data-variant='light']) {
     border-color: ButtonText;
     background: Canvas;
     color: CanvasText;

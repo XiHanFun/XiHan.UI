@@ -3,16 +3,16 @@
  * Licensed under the MIT License. See LICENSE in the project root for license information.
  */
 
-// 特殊键 | 常用修饰键、方向键与操作键由 Headless 统一格式化
+// 平台键名 | 常用按键与跨平台组合由 Headless 统一格式化
 import type { ReactNode } from "react";
 import { XhKbd } from "@xihan-ui/react";
 
-const keys = ["Mod", "Shift", "ArrowUp", "Escape", "Enter"];
+const keys = [["Mod"], ["Shift"], ["ArrowUp"], ["Escape"], ["Mod", "Shift", "P"]];
 
 export default function Demo(): ReactNode {
   return (
     <div style={{ display: "flex", flexWrap: "wrap", gap: "8px" }}>
-      {keys.map(key => <XhKbd key={key} value={key} />)}
+      {keys.map(item => <XhKbd key={item.join("-")} keys={item} />)}
     </div>
   );
 }
