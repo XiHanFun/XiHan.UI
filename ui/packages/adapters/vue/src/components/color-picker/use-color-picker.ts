@@ -6,10 +6,22 @@
 // 提供 use color picker 相关实现。
 
 import type { Cleanup, Layer, RuntimeConfig, Service } from '@xihan-ui/core'
-import type { ColorPickerApi, ColorPickerChannel, ColorPickerSchema, ColorPickerServices, SliderSchema } from '@xihan-ui/headless'
+import type { ColorPickerApi, ColorPickerSchema, ColorPickerServices, ColorSliderSchema, ColorSliderServices, SliderSchema } from '@xihan-ui/headless'
 import type { ComputedRef, Ref } from 'vue'
+import type { ColorSliderContext } from '../color-slider/use-color-slider'
+import type { ColorSwatchPickerContext } from '../color-swatch-picker/use-color-swatch-picker'
 import { createRuntimeConfig, createScope } from '@xihan-ui/core'
-import { colorPickerChannelSliderProps, colorPickerMachine, connectColorPicker, sliderMachine } from '@xihan-ui/headless'
+import {
+  colorPickerAlphaSliderProps,
+  colorPickerHueSliderProps,
+  colorPickerMachine,
+  colorPickerSwatchPickerProps,
+  colorSliderMachine,
+  colorSliderSliderProps,
+  colorSwatchPickerMachine,
+  connectColorPicker,
+  sliderMachine,
+} from '@xihan-ui/headless'
 import { createPositionEngine } from '@xihan-ui/position'
 import { computed, ref } from 'vue'
 import { useXhConfig } from '../../config/config'
@@ -29,8 +41,13 @@ export interface ColorPickerContext {
   visible: Ref<boolean>
   /** 二维取色区，机器在指针事件里拿它量矩形。 */
   areaRef: Ref<HTMLElement | null>
-  /** 逐条登记通道轨道节点，由滑杆部件自报是哪一条。 */
-  setChannelTrack: (channel: ColorPickerChannel, el: HTMLElement | null) => void
+  /**
+   * 三件内嵌组件各自的上下文：挂载点部件把它们 provide 下去，
+   * 作者在挂载点里摆的就是 XhColorSlider* / XhColorSwatchPicker* 那些普通部件。
+   */
+  hueSlider: ColorSliderContext
+  alphaSlider: ColorSliderContext
+  swatchPicker: ColorSwatchPickerContext
   /** 浮层搬到哪儿：全局配置的 portalContainer > body。 */
   portalTarget: ComputedRef<string | Element>
 }
@@ -44,29 +61,29 @@ export function useColorPicker(
   const positionerRef = ref<HTMLElement | null>(null)
   const contentRef = ref<HTMLElement | null>(null)
   const areaRef = ref<HTMLElement | null>(null)
-  // 普通对象而非响应式引用，这两个节点只在指针事件里读
-  const channelTracks: Record<ColorPickerChannel, HTMLElement | null> = { hue: null, alpha: null }
 
   const idGen = createVueIdGenerator()
   const scope = createScope(null, idGen)
   const service = useMachine(colorPickerMachine, () => ({ ...props, ...handlers }), scope)
 
-  // 两条通道各自一台滑杆：区间与当下的值从取色器现读，取色器须先建立；
-  // 三台共用一份 scope，part id 里带组件名区分，不会撞
-  const channelSlider = (channel: ColorPickerChannel): Service<SliderSchema> => {
-    const slider = useMachine<SliderSchema>(
-      sliderMachine,
-      () => colorPickerChannelSliderProps(service, channel),
-      scope,
-    )
+  // 两条颜色滑块各自一台机器再各内嵌一台滑杆：值与工作色从取色器现读，取色器须先建立；
+  // 几台共用一份 scope，part id 里带组件名区分，不会撞
+  const colorSlider = (sliderProps: (root: Service<ColorPickerSchema>) => ColorSliderSchema['props']): ColorSliderServices & { trackRef: Ref<HTMLElement | null> } => {
+    const root = useMachine<ColorSliderSchema>(colorSliderMachine, () => sliderProps(service), scope)
+    const slider = useMachine<SliderSchema>(sliderMachine, () => colorSliderSliderProps(root), scope)
+    const trackRef = ref<HTMLElement | null>(null)
     // 传 getter 而非节点，轨道要到挂载后才有
-    slider.refs.set('getTrackEl', () => channelTracks[channel])
-    return slider
+    slider.refs.set('getTrackEl', () => trackRef.value)
+    return { root, slider, trackRef }
   }
+  const hue = colorSlider(colorPickerHueSliderProps)
+  const alpha = colorSlider(colorPickerAlphaSliderProps)
+  const swatchPicker = useMachine(colorSwatchPickerMachine, () => colorPickerSwatchPickerProps(service), scope)
   const services: ColorPickerServices = {
     root: service,
-    hueSlider: channelSlider('hue'),
-    alphaSlider: channelSlider('alpha'),
+    hueSlider: { root: hue.root, slider: hue.slider },
+    alphaSlider: { root: alpha.root, slider: alpha.slider },
+    swatchPicker,
   }
 
   // 服务端没有 DOM、也就没有退场：config 传 null 时闸门退化成「跟着展开态」
@@ -109,6 +126,11 @@ export function useColorPicker(
   // 先问全局配置的落点，没有才落 body
   const portalTarget = computed<string | Element>(() => xhConfig.value.portalContainer?.() ?? config?.portalContainer() ?? 'body')
 
+  // 内嵌组件的 api 从取色器那份 api 上取：同一帧算好的同一份，不另连一次
+  const hueSlider: ColorSliderContext = { api: computed(() => api.value.hueSlider), service: hue.root, trackRef: hue.trackRef }
+  const alphaSlider: ColorSliderContext = { api: computed(() => api.value.alphaSlider), service: alpha.root, trackRef: alpha.trackRef }
+  const swatchPickerCtx: ColorSwatchPickerContext = { api: computed(() => api.value.swatchPicker), service: swatchPicker }
+
   return {
     visible,
     service,
@@ -117,9 +139,9 @@ export function useColorPicker(
     positionerRef,
     contentRef,
     areaRef,
+    hueSlider,
+    alphaSlider,
+    swatchPicker: swatchPickerCtx,
     portalTarget,
-    setChannelTrack: (channel, el) => {
-      channelTracks[channel] = el
-    },
   }
 }

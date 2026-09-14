@@ -105,8 +105,8 @@ const PRESSABLE = {
   'checkbox-group': ['item', 'select-all-trigger'],
   'switch': ['root'],
   'rating': ['item'],
-  // 色板格子的底色就是它要展示的那个颜色，换底会盖掉展示物，按压回执只能落在缩放上
-  'color-picker': ['eye-dropper-trigger', 'swatch-item'],
+  // 预设色板的格子归内嵌的 color-swatch-picker，按压归那份皮
+  'color-picker': ['eye-dropper-trigger'],
   'color-swatch-picker': ['item'],
   'pagination': ['prev-trigger', 'next-trigger', 'item', 'ellipsis-trigger'],
   // 两个日历的翻页钮、标题钮与日期格
@@ -207,7 +207,6 @@ const NO_PRESS = {
   // 拖拽轨道：按下即进入拖动，回执由拇指给出
   'slider:control': '控件是整条轨道，按下即进入拖动，回执由拇指的拖动放大给出；缩放整条轨道会把刻度点与刻度文案一起挤',
   'color-slider:control': '拖拽轨道，按下的回执由拇指的拖拽放大给出；缩放整条轨道会让渐变与拇指位置一起错开',
-  'color-picker:channel-slider': '拖拽轨道，按下的回执由拇指的拖拽放大给出；缩放整条轨道会让渐变与拇指位置一起错开',
   // 大块区域：缩放会把里面的排版一起抖起来
   'image-viewer:trigger': '触发区是作者自己的一块内容（多为缩略图），皮肤对它零外观规则；缩放它会把作者的排版一起抖起来',
   'file-upload:dropzone': '大块投放区，按下回执由拖入态的描边与底色给出；缩放整块会把里面的说明文字一起抖起来',

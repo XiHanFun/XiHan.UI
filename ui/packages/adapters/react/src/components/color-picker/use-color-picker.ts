@@ -6,10 +6,22 @@
 // 提供 use color picker 相关实现。
 
 import type { Layer, MachineSchema, Service } from '@xihan-ui/core'
-import type { ColorPickerApi, ColorPickerChannel, ColorPickerSchema, ColorPickerServices, SliderSchema } from '@xihan-ui/headless'
+import type { ColorPickerApi, ColorPickerSchema, ColorPickerServices, ColorSliderSchema, SliderSchema } from '@xihan-ui/headless'
 import type { RefObject } from 'react'
 import type { OverlayWiring } from '../../runtime/use-overlay'
-import { colorPickerChannelSliderProps, colorPickerMachine, connectColorPicker, sliderMachine } from '@xihan-ui/headless'
+import type { ColorSliderContext } from '../color-slider/use-color-slider'
+import type { ColorSwatchPickerContext } from '../color-swatch-picker/use-color-swatch-picker'
+import {
+  colorPickerAlphaSliderProps,
+  colorPickerHueSliderProps,
+  colorPickerMachine,
+  colorPickerSwatchPickerProps,
+  colorSliderMachine,
+  colorSliderSliderProps,
+  colorSwatchPickerMachine,
+  connectColorPicker,
+  sliderMachine,
+} from '@xihan-ui/headless'
 import { createPositionEngine } from '@xihan-ui/position'
 import { useCallback, useRef } from 'react'
 import { useFormReset } from '../../runtime/attach-form-reset'
@@ -31,8 +43,13 @@ export interface ColorPickerContext extends OverlayWiring {
   contentRef: RefObject<HTMLElement | null>
   /** 二维取色区，机器在指针事件里拿它量矩形。 */
   areaRef: RefObject<HTMLElement | null>
-  /** 逐条登记通道轨道节点，由滑杆的轨道部件自报是哪一条。 */
-  setChannelTrack: (channel: ColorPickerChannel, el: HTMLElement | null) => void
+  /**
+   * 三件内嵌组件各自的上下文：挂载点部件把它们 provide 下去，
+   * 作者在挂载点里摆的就是 XhColorSlider* / XhColorSwatchPicker* 那些普通部件。
+   */
+  hueSlider: ColorSliderContext
+  alphaSlider: ColorSliderContext
+  swatchPicker: ColorSwatchPickerContext
 }
 
 export function useColorPicker(props: ColorPickerSchema['props']): ColorPickerContext {
@@ -44,8 +61,9 @@ export function useColorPicker(props: ColorPickerSchema['props']): ColorPickerCo
   const contentRef = useRef<HTMLElement | null>(null)
   const areaRef = useRef<HTMLElement | null>(null)
   const serviceRef = useRef<Service<ColorPickerSchema> | null>(null)
-  // 普通对象而非状态，这两个节点只在指针事件里读
-  const channelTracks = useRef<Record<ColorPickerChannel, HTMLElement | null>>({ hue: null, alpha: null })
+  // 两条滑块各自的轨道节点，只在指针事件里读；挂载点没有自己的 rootRef，表单重置由取色器的根统一接
+  const hueTrackRef = useRef<HTMLElement | null>(null)
+  const alphaTrackRef = useRef<HTMLElement | null>(null)
 
   const initialOpen = (props.open ?? props.defaultOpen) ?? false
 
@@ -82,39 +100,47 @@ export function useColorPicker(props: ColorPickerSchema['props']): ColorPickerCo
   })
   serviceRef.current = service
 
-  // 通道轨道的矩形归各自那台滑杆量；机器的挂载效应会立刻读 refs，交在 onCreate 里才赶得上
+  // 轨道的矩形归各条滑块内嵌的那台滑杆量；机器的挂载效应会立刻读 refs，交在 onCreate 里才赶得上
   const onHueCreate = useCallback((slider: Service<SliderSchema>) => {
-    slider.refs.set('getTrackEl', () => channelTracks.current.hue)
+    slider.refs.set('getTrackEl', () => hueTrackRef.current)
   }, [])
   const onAlphaCreate = useCallback((slider: Service<SliderSchema>) => {
-    slider.refs.set('getTrackEl', () => channelTracks.current.alpha)
+    slider.refs.set('getTrackEl', () => alphaTrackRef.current)
   }, [])
-  // 两条通道各自一台滑杆：区间与当下的值从取色器现读，取色器须先建立；
-  // 三台共用一份 scope，part id 里带组件名区分，不会撞
-  const hueSlider = useMachine(sliderMachine, () => colorPickerChannelSliderProps(service, 'hue'), {
-    scope,
-    onCreate: onHueCreate,
-  })
-  const alphaSlider = useMachine(sliderMachine, () => colorPickerChannelSliderProps(service, 'alpha'), {
-    scope,
-    onCreate: onAlphaCreate,
-  })
-  const services: ColorPickerServices = { root: service, hueSlider, alphaSlider }
+  // 两条颜色滑块各自一台机器再各内嵌一台滑杆：值与工作色从取色器现读，取色器须先建立；
+  // 几台共用一份 scope，part id 里带组件名区分，不会撞
+  const hueRoot = useMachine<ColorSliderSchema>(colorSliderMachine, () => colorPickerHueSliderProps(service), { scope })
+  const hueSliderMachine = useMachine(sliderMachine, () => colorSliderSliderProps(hueRoot), { scope, onCreate: onHueCreate })
+  const alphaRoot = useMachine<ColorSliderSchema>(colorSliderMachine, () => colorPickerAlphaSliderProps(service), { scope })
+  const alphaSliderMachine = useMachine(sliderMachine, () => colorSliderSliderProps(alphaRoot), { scope, onCreate: onAlphaCreate })
+  const swatchPickerService = useMachine(colorSwatchPickerMachine, () => colorPickerSwatchPickerProps(service), { scope })
+  const services: ColorPickerServices = {
+    root: service,
+    hueSlider: { root: hueRoot, slider: hueSliderMachine },
+    alphaSlider: { root: alphaRoot, slider: alphaSliderMachine },
+    swatchPicker: swatchPickerService,
+  }
 
   // 颜色攥在机器里，原生 reset 只还原原生控件——不接这条线，点重置颜色不变
   useFormReset(service, rootRef)
 
+  const api = connectColorPicker(services, reactNormalize)
+  // 内嵌组件的 api 从取色器那份 api 上取：同一帧算好的同一份，不另连一次
+  const hueSlider: ColorSliderContext = { api: api.hueSlider, service: hueRoot, trackRef: hueTrackRef, rootRef }
+  const alphaSlider: ColorSliderContext = { api: api.alphaSlider, service: alphaRoot, trackRef: alphaTrackRef, rootRef }
+  const swatchPicker: ColorSwatchPickerContext = { api: api.swatchPicker, service: swatchPickerService, rootRef }
+
   return {
     ...overlay,
     service,
-    api: connectColorPicker(services, reactNormalize),
+    api,
     rootRef,
     triggerRef,
     positionerRef,
     contentRef,
     areaRef,
-    setChannelTrack: (channel, el) => {
-      channelTracks.current[channel] = el
-    },
+    hueSlider,
+    alphaSlider,
+    swatchPicker,
   }
 }

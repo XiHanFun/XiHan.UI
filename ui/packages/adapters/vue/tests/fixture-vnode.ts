@@ -40,7 +40,7 @@ export function renderFixtureNode(node: FixtureNode, component: string): VNode {
   if (node.part) {
     const kids = renderFixtureChildren(node.children, component)
     const slot = kids ? () => kids : node.text != null ? () => node.text : undefined
-    return h(resolvePart(component, node.part), { ...node.attrs }, slot ? { default: slot } : undefined)
+    return h(resolvePart(node.component ?? component, node.part), { ...node.attrs }, slot ? { default: slot } : undefined)
   }
   const kids = renderFixtureChildren(node.children, component)
   return h(node.tag ?? 'div', { ...node.attrs }, kids ?? node.text)

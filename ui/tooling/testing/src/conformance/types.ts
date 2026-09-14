@@ -17,6 +17,12 @@ export type PartRef = string
 export interface FixtureNode {
   /** anatomy part 名（与 data-part 逐字相同）。省略 = 纯结构/业务节点。 */
   readonly part?: string
+  /**
+   * 这个部件属于哪个组件；省略 = 套件自己的组件。
+   * 内嵌组件的部件用它指名（取色器浮层里色相滑块的 track / thumb 属于 color-slider），
+   * Vue 与 React 侧据此解析成那个组件的部件；WC 侧作者名不变，宿主元素按挂载点子树接线。
+   */
+  readonly component?: string
   /** 标签名。纯结构节点默认 'div'。 */
   readonly tag?: string
   readonly text?: string

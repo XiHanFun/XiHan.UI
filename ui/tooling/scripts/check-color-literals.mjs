@@ -49,18 +49,6 @@ const GEOMETRY = {
     reason: '边缘渐隐的两层遮罩画的是 alpha 坡道，黑与白是不透明与全透两端，换成主题色遮罩就不成形了',
     literals: ['black'],
   },
-  'color-picker:channel-slider-track': {
-    reason: '色相条画的是色相本身，七段取的是色环上的等分角度，跟着主题换色就不是色相条了',
-    literals: [
-      'hsl(0deg 100% 50%)',
-      'hsl(60deg 100% 50%)',
-      'hsl(120deg 100% 50%)',
-      'hsl(180deg 100% 50%)',
-      'hsl(240deg 100% 50%)',
-      'hsl(300deg 100% 50%)',
-      'hsl(360deg 100% 50%)',
-    ],
-  },
 }
 
 /**
@@ -99,8 +87,8 @@ const PRIMITIVE_OK = {
     tokens: ['neutral-0', 'neutral-950'],
   },
   'color-picker.css': {
-    reason: '拇指描边压在使用者选的任意颜色上，要恒定；棋盘格画的是「透明」这件事本身',
-    tokens: ['neutral-0', 'neutral-300'],
+    reason: '取色区拇指的描边压在使用者选的任意颜色上，要恒定',
+    tokens: ['neutral-0'],
   },
   'color-slider.css': {
     reason: '透明度那一路轨道底下的棋盘格画的是「透明」这件事本身，不随主题翻',

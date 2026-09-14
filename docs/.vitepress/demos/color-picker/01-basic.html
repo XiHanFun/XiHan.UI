@@ -1,4 +1,5 @@
-<!-- 基础用法 | 选择颜色 -->
+<!-- 基础用法 | 取色面挑饱和度与明度，下面一条色相滑块；滑块是内嵌的颜色滑块组件，Vue / React 的挂载点不写子节点即自动铺开 -->
+<!-- 自定义元素不替作者建节点：挂载点里写的是 color-slider 自己的 control / track / thumb -->
 <xh-color-picker default-value="#00a98e">
   <div data-xh-part="root">
     <label data-xh-part="label">品牌色</label>
@@ -13,9 +14,11 @@
         <div data-xh-part="saturation-area">
           <div data-xh-part="area-thumb"></div>
         </div>
-        <div data-xh-part="channel-slider" channel="hue">
-          <div data-xh-part="channel-slider-track"></div>
-          <div data-xh-part="channel-slider-thumb"></div>
+        <div data-xh-part="hue-slider">
+          <div data-xh-part="control">
+            <div data-xh-part="track"></div>
+            <div data-xh-part="thumb"></div>
+          </div>
         </div>
       </div>
     </div>

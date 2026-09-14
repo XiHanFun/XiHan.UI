@@ -5,6 +5,8 @@
 
 /* 定义 color picker 样式。 */
 
+@import '../family/swatch.css';
+
 @layer xihan.motion {
   @keyframes xh-overlay-slide-in {
     from {
@@ -40,10 +42,11 @@
     --xh-color-picker-skin: 1;
   }
 
-  /* 定位分工：取色区拇指的两条轴（inset-inline-start / inset-block-start）、
-     通道拇指的主轴（inset-inline-start）、浮层坐标、取色区底色、透明度轨道的渐变，
+  /* 定位分工：取色区拇指的两条轴（inset-inline-start / inset-block-start）、浮层坐标、取色区底色，
      全都由连接层每帧写进内联样式。这份皮肤一个都不碰：内联优先级高于样式表，
-     写了不但是死声明，还会跟连接层抢位置。皮肤只管尺寸、颜色、圆角与状态表现。 */
+     写了不但是死声明，还会跟连接层抢位置。皮肤只管尺寸、颜色、圆角与状态表现。
+     色相 / 透明度两条滑块与预设色板是内嵌组件，各自的皮归 color-slider.css 与 color-swatch-picker.css；
+     这里只画三个挂载点——它们同时充当内嵌组件的根节点，根上那几条规则要在这儿照抄一遍。 */
 
   /* 标签一行、盒一行的两行堆叠 */
   [data-scope='color-picker'][data-part='root'] {
@@ -158,21 +161,17 @@
     display: none;
   }
 
-  /* 单体控件用原生 disabled（预设色板那些格子也是原生按钮，同一条规矩） */
+  /* 单体控件用原生 disabled */
   [data-scope='color-picker'][data-part='trigger']:disabled {
     color: var(--xh-fg-disabled);
   }
 
-  /* 当前颜色的色块。背景由连接层内联给（含透明度），这里只给形状与描边。
-     刻意不铺棋盘格底：连接层写的是 background 简写，会盖掉这里任何 background-image，
-     半透明色因此直接与页面底色混合——小色块上这么显示是准确的。 */
+  /* 当前颜色的色块：面、棋盘格、描边与尺寸档全由色块面家族画（带 data-xh-swatch），
+     半透明色铺在棋盘格上；组件层只把自己的公开槽映射到家族合同 */
   [data-scope='color-picker'][data-part='swatch'] {
-    display: inline-block;
-    flex: none;
-    inline-size: var(--xh-color-picker-swatch-size, 18px);
-    block-size: var(--xh-color-picker-swatch-size, 18px);
-    border: var(--xh-stroke-thin) solid var(--xh-color-picker-swatch-border, var(--xh-border-default));
-    border-radius: var(--xh-color-picker-swatch-radius, var(--xh-shape-inset));
+    --xh-swatch-size: var(--xh-color-picker-swatch-size, var(--xh-_swatch-size));
+    --xh-swatch-radius: var(--xh-color-picker-swatch-radius, var(--xh-shape-inset));
+    --xh-swatch-border: var(--xh-color-picker-swatch-border, var(--xh-border-default));
   }
 
   /* 值串可能很长，必须能截断；框宽由盒定，这里得允许自己被压缩 */
@@ -322,13 +321,13 @@
     opacity: var(--xh-state-disabled-opacity);
   }
 
-  /* 两处拇指同一副长相：镂空的小圆环，中心正好落在值所在的比例点上。
+  /* 取色区的拇指：镂空的小圆环，中心正好落在值所在的比例点上。
      内联样式把 inset-* 定在比例上，那是拇指的起始边不是圆心，用负的逻辑外边距回拉半径。
      刻意不用 translate(-50%)：rtl 下 inset-inline-start 映射到 right，
      位移量是物理方向的，会把拇指推向错误的一侧；负的逻辑外边距自己就跟着换向。
-     box-sizing 必须显式写：描边要吃进直径里，否则实际盒子比变量宽两条边，回拉就对不上圆心。 */
-  [data-scope='color-picker'][data-part='area-thumb'],
-  [data-scope='color-picker'][data-part='channel-slider-thumb'] {
+     box-sizing 必须显式写：描边要吃进直径里，否则实际盒子比变量宽两条边，回拉就对不上圆心。
+     两条滑块的拇指归 color-slider 那份皮，与这一颗同一副长相。 */
+  [data-scope='color-picker'][data-part='area-thumb'] {
     position: absolute;
     box-sizing: border-box;
     inline-size: var(--xh-color-picker-thumb-size, 14px);
@@ -347,89 +346,43 @@
     margin-block-start: calc(var(--xh-color-picker-thumb-size, 14px) / -2);
   }
 
-  /* 通道拇指的纵轴归样式表：连接层只写主轴，交叉轴不写就得在这里钉死居中 */
-  [data-scope='color-picker'][data-part='channel-slider-thumb'] {
-    inset-block-start: 50%;
-    margin-block-start: calc(var(--xh-color-picker-thumb-size, 14px) / -2);
-  }
-
-  /* 只有手真正拖着的那一处带 data-dragging：放大与光标不会三处一起变。
+  /* 只有手真正拖着时带 data-dragging：放大与光标不会几处一起变。
      放大用 scale 而不是改尺寸：变换绕自身中心发生，圆心不动，负外边距的算式不用跟着改 */
-  [data-scope='color-picker'][data-part='area-thumb'][data-dragging],
-  [data-scope='color-picker'][data-part='channel-slider-thumb'][data-dragging] {
+  [data-scope='color-picker'][data-part='area-thumb'][data-dragging] {
     scale: var(--xh-color-picker-thumb-scale-dragging, var(--xh-motion-scale-drag));
     cursor: grabbing;
   }
 
-  [data-scope='color-picker'][data-part='area-thumb'][data-readonly]:not([data-disabled]),
-  [data-scope='color-picker'][data-part='channel-slider-thumb'][data-readonly]:not([data-disabled]) {
+  [data-scope='color-picker'][data-part='area-thumb'][data-readonly]:not([data-disabled]) {
     cursor: default;
   }
 
-  /* 拇指以整条滑杆为定位上下文（拇指浮出轨道，挂在轨道上会被轨道的盒子束住）。
-     厚度取拇指直径：轨道只有几个像素，滑杆若按轨道高，浮出来的拇指会顶到上下相邻的元素。 */
-  [data-scope='color-picker'][data-part='channel-slider'] {
-    position: relative;
+  /* 两条颜色滑块的挂载点，同时充当各自的根节点：color-slider 那份皮的 root 规则落在
+     [data-scope='color-slider'][data-part='root'] 上，而这里没有那个节点，所以根上挂的两个私有槽
+     （拇指直径、轨道厚度，control / track / thumb 都读它们）与排布得在这儿照抄一遍；
+     滑块内部的皮仍归 color-slider 那一份。尺寸档跟着浮层上的 data-size 走，不必再各写一遍 */
+  [data-scope='color-picker'][data-part='hue-slider'],
+  [data-scope='color-picker'][data-part='alpha-slider'] {
+    --xh-_thumb-size: var(--xh-color-picker-slider-thumb-size, var(--xh-track-thumb-size));
+    --xh-_track-thickness: var(--xh-color-picker-slider-track-thickness, var(--xh-space-3));
+
     display: flex;
-    align-items: center;
-    block-size: var(--xh-color-picker-thumb-size, 14px);
-    border-radius: var(--xh-color-picker-track-radius, var(--xh-shape-pill));
-    cursor: pointer;
+    flex-direction: column;
   }
 
-  /* 透明度那条的棋盘格铺在滑杆上、垫在轨道底下：
-     轨道自己的渐变从全透明走到实色，透明那半正好把棋盘格露出来。
-     铺在轨道上是做不到的——那儿的 background-image 归连接层。 */
-  [data-scope='color-picker'][data-part='channel-slider'][data-channel='alpha'] {
-    background-image:
-      linear-gradient(45deg, var(--xh-color-picker-checker, var(--xh-color-neutral-300)) 25%, transparent 25%),
-      linear-gradient(-45deg, var(--xh-color-picker-checker, var(--xh-color-neutral-300)) 25%, transparent 25%),
-      linear-gradient(45deg, transparent 75%, var(--xh-color-picker-checker, var(--xh-color-neutral-300)) 75%),
-      linear-gradient(-45deg, transparent 75%, var(--xh-color-picker-checker, var(--xh-color-neutral-300)) 75%);
-    background-position: 0 0, 0 4px, 4px -4px, -4px 0;
-    background-size: 8px 8px;
+  /* 标题与轨道之间的间隙 */
+  [data-scope='color-picker'][data-part='hue-slider'] {
+    gap: var(--xh-color-picker-hue-slider-gap, var(--xh-stack-gap-md));
   }
 
-  [data-scope='color-picker'][data-part='channel-slider'][data-disabled] {
+  [data-scope='color-picker'][data-part='alpha-slider'] {
+    gap: var(--xh-color-picker-alpha-slider-gap, var(--xh-stack-gap-md));
+  }
+
+  /* 禁用的整体压暗只做一次，落在最外层；alpha 关掉时透明度那条整条压暗 */
+  [data-scope='color-picker'][data-part='hue-slider'][data-disabled],
+  [data-scope='color-picker'][data-part='alpha-slider'][data-disabled] {
     opacity: var(--xh-state-disabled-opacity);
-  }
-
-  [data-scope='color-picker'][data-part='channel-slider'][data-readonly]:not([data-disabled]) {
-    cursor: default;
-  }
-
-  [data-scope='color-picker'][data-part='channel-slider-track'] {
-    inline-size: 100%;
-    block-size: var(--xh-color-picker-track-thickness, 8px);
-    border-radius: var(--xh-color-picker-track-radius, var(--xh-shape-pill));
-  }
-
-  /* 色相轨道是一条固定的彩虹：色相的六个锚点，与颜色主题无关，因此不走令牌。
-     透明度轨道的渐变归连接层（它要用到当前颜色），这里不碰。 */
-  [data-scope='color-picker'][data-part='channel-slider-track'][data-channel='hue'] {
-    background-image: linear-gradient(
-      to right,
-      hsl(0deg 100% 50%),
-      hsl(60deg 100% 50%),
-      hsl(120deg 100% 50%),
-      hsl(180deg 100% 50%),
-      hsl(240deg 100% 50%),
-      hsl(300deg 100% 50%),
-      hsl(360deg 100% 50%)
-    );
-  }
-
-  [data-scope='color-picker'][data-part='channel-slider-track'][data-channel='hue']:dir(rtl) {
-    background-image: linear-gradient(
-      to left,
-      hsl(0deg 100% 50%),
-      hsl(60deg 100% 50%),
-      hsl(120deg 100% 50%),
-      hsl(180deg 100% 50%),
-      hsl(240deg 100% 50%),
-      hsl(300deg 100% 50%),
-      hsl(360deg 100% 50%)
-    );
   }
 
   [data-scope='color-picker'][data-part='channel-input'] {
@@ -519,49 +472,27 @@
     color: var(--xh-fg-disabled);
   }
 
-  [data-scope='color-picker'][data-part='swatch-group'] {
+  /* 预设色板的挂载点，同时充当色板的根节点：color-swatch-picker 那份皮的 root 规则落在
+     [data-scope='color-swatch-picker'][data-part='root'] 上，而这里没有那个节点，所以根上挂的那几个私有槽
+     （格子边长、间距、徽标尺寸、语气色、图标尺）与排布得在这儿照抄一遍；格子的皮仍归色板那一份。
+     浮层里的色板走小号格子：与滑块的拇指、数值框一个量级，整块面板才不会被色板撑开 */
+  [data-scope='color-picker'][data-part='swatch-picker'] {
+    --xh-_color-swatch-picker-cell: var(--xh-color-picker-swatch-cell, var(--xh-control-h-sm));
+    --xh-_color-swatch-picker-gap: var(--xh-color-picker-swatch-gap, var(--xh-control-gap-sm));
+    --xh-_color-swatch-picker-font-size: var(--xh-control-font-sm);
+    --xh-_color-swatch-picker-indicator: var(--xh-control-indicator-sm);
+    --xh-_color-swatch-picker-mark: calc(var(--xh-_color-swatch-picker-indicator) - var(--xh-space-1));
+    --xh-_color-swatch-picker-accent: var(--xh-_tone, var(--xh-bg-brand));
+    --xh-icon-size: var(--xh-color-picker-swatch-icon-size, var(--xh-_color-swatch-picker-mark));
+
     display: flex;
     flex-wrap: wrap;
-    gap: var(--xh-color-picker-swatch-gap, var(--xh-space-1));
+    align-items: center;
+    gap: var(--xh-color-picker-swatch-picker-gap, var(--xh-_color-swatch-picker-gap));
   }
 
-  /* 每格都是原生按钮、各占一个 Tab 位；背景由连接层内联给 */
-  [data-scope='color-picker'][data-part='swatch-item'] {
-    inline-size: var(--xh-color-picker-swatch-item-size, 1.25rem);
-    block-size: var(--xh-color-picker-swatch-item-size, 1.25rem);
-    padding: 0;
-    border: var(--xh-stroke-thin) solid var(--xh-color-picker-swatch-border, var(--xh-border-default));
-    border-radius: var(--xh-color-picker-swatch-radius, var(--xh-shape-inset));
-    cursor: pointer;
-    transition:
-      border-color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
-      scale var(--xh-motion-duration-micro) var(--xh-motion-ease-enter-strong);
-  }
-
-  /* 这一格的底色就是它要展示的那个颜色，换底等于把展示物盖掉，交互回执只能落在别处：
-     指到哪一格看描边，按下去看下压 */
-  [data-scope='color-picker'][data-part='swatch-item']:hover:not(:disabled) {
-    border-color: var(--xh-color-picker-swatch-border-hover, var(--xh-border-strong));
-  }
-
-  [data-scope='color-picker'][data-part='swatch-item']:active:not(:disabled) {
-    scale: var(--xh-motion-scale-press);
-  }
-
-  /* 正被选中的那一格：环画在盒子外面，不挤占色块本身的面积 */
-  [data-scope='color-picker'][data-part='swatch-item'][data-state='checked'] {
-    outline: var(--xh-ring-width) solid var(--xh-color-picker-swatch-ring, var(--xh-bg-brand));
-    outline-offset: var(--xh-ring-offset);
-  }
-
-  /* 选中的色板自带一圈同特指度的环，这一条排在它之后，键盘焦点才压得住 */
-  [data-scope='color-picker'][data-part='swatch-item']:focus-visible {
-    outline: var(--xh-ring-width) solid var(--xh-ring-focus);
-    outline-offset: var(--xh-ring-offset);
-  }
-
-  [data-scope='color-picker'][data-part='swatch-item']:disabled {
-    opacity: var(--xh-state-disabled-opacity);
+  [data-scope='color-picker'][data-part='swatch-picker'][data-disabled] {
+    cursor: not-allowed;
   }
 
   /* 任何 display 都会盖掉 UA 的 [hidden]{display:none}：
@@ -569,13 +500,12 @@
      content 的收起交给 presence：退场结束后由适配器写内联 display:none，避免截断动画。 */
   [data-scope='color-picker'][data-part='root'][hidden],
   [data-scope='color-picker'][data-part='trigger'][hidden],
-  [data-scope='color-picker'][data-part='swatch'][hidden],
   [data-scope='color-picker'][data-part='saturation-area'][hidden],
   [data-scope='color-picker'][data-part='area-thumb'][hidden],
-  [data-scope='color-picker'][data-part='channel-slider'][hidden],
-  [data-scope='color-picker'][data-part='channel-slider-thumb'][hidden],
+  [data-scope='color-picker'][data-part='hue-slider'][hidden],
+  [data-scope='color-picker'][data-part='alpha-slider'][hidden],
   [data-scope='color-picker'][data-part='eye-dropper-trigger'][hidden],
-  [data-scope='color-picker'][data-part='swatch-group'][hidden] {
+  [data-scope='color-picker'][data-part='swatch-picker'][hidden] {
     display: none;
   }
 
@@ -604,24 +534,17 @@
   }
 
   /*
-   * 高对比档：取色面、色相带、透明度棋盘格与色板画的就是颜色本身，被系统换掉之后
-   * 整个组件不再能取色。这几处退出强制着色，自己保住原色。
-   * 退出之后它们不再跟着系统底色走，各补一圈系统描边把它们从背景里框出来。
+   * 高对比档：取色面画的就是颜色本身，被系统换掉之后整个组件不再能取色。这一处退出强制着色，
+   * 自己保住原色；退出之后它不再跟着系统底色走，补一圈系统描边把它从背景里框出来。
+   * 触发钮里的色块归 Swatch 家族、两条滑块的轨道与色板的格子归各自那份皮，都已各自退出强制着色。
    */
   @media (forced-colors: active) {
     [data-scope='color-picker'][data-part='saturation-area'],
-    [data-scope='color-picker'][data-part='saturation-area']::before,
-    [data-scope='color-picker'][data-part='channel-slider'],
-    [data-scope='color-picker'][data-part='channel-slider-track'],
-    [data-scope='color-picker'][data-part='swatch'],
-    [data-scope='color-picker'][data-part='swatch-item'] {
+    [data-scope='color-picker'][data-part='saturation-area']::before {
       forced-color-adjust: none;
     }
 
-    [data-scope='color-picker'][data-part='saturation-area'],
-    [data-scope='color-picker'][data-part='channel-slider'],
-    [data-scope='color-picker'][data-part='swatch'],
-    [data-scope='color-picker'][data-part='swatch-item'] {
+    [data-scope='color-picker'][data-part='saturation-area'] {
       outline: var(--xh-stroke-thin) solid ButtonBorder;
       outline-offset: calc(-1 * var(--xh-stroke-thin));
     }

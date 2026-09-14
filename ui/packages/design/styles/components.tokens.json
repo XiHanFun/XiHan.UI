@@ -12001,22 +12001,22 @@
       "description": "color-picker 的 eye-dropper-trigger 部件 block-size、inline-size 覆盖槽。"
     },
     {
-      "name": "--xh-color-picker-checker",
+      "name": "--xh-color-picker-alpha-slider-gap",
       "component": "color-picker",
       "part": [
-        "channel-slider"
+        "alpha-slider"
       ],
       "property": [
-        "background-image"
+        "gap"
       ],
       "state": [
-        "channel=alpha"
+        "default"
       ],
       "defaultToken": [
-        "--xh-color-neutral-300"
+        "--xh-stack-gap-md"
       ],
       "visibility": "public",
-      "description": "color-picker 的 channel-slider 部件 background-image 覆盖槽。"
+      "description": "color-picker 的 alpha-slider 部件 gap 覆盖槽。"
     },
     {
       "name": "--xh-color-picker-content-backdrop",
@@ -12497,6 +12497,24 @@
       "description": "color-picker 的 root 部件 gap 覆盖槽。"
     },
     {
+      "name": "--xh-color-picker-hue-slider-gap",
+      "component": "color-picker",
+      "part": [
+        "hue-slider"
+      ],
+      "property": [
+        "gap"
+      ],
+      "state": [
+        "default"
+      ],
+      "defaultToken": [
+        "--xh-stack-gap-md"
+      ],
+      "visibility": "public",
+      "description": "color-picker 的 hue-slider 部件 gap 覆盖槽。"
+    },
+    {
       "name": "--xh-color-picker-input-bg",
       "component": "color-picker",
       "part": [
@@ -12803,14 +12821,51 @@
       "description": "color-picker 的 saturation-area 部件 border-radius 覆盖槽。"
     },
     {
+      "name": "--xh-color-picker-slider-thumb-size",
+      "component": "color-picker",
+      "part": [
+        "alpha-slider",
+        "hue-slider"
+      ],
+      "property": [
+        "--xh-_thumb-size"
+      ],
+      "state": [
+        "default"
+      ],
+      "defaultToken": [
+        "--xh-track-thumb-size"
+      ],
+      "visibility": "public",
+      "description": "color-picker 的 alpha-slider、hue-slider 部件 --xh-_thumb-size 覆盖槽。"
+    },
+    {
+      "name": "--xh-color-picker-slider-track-thickness",
+      "component": "color-picker",
+      "part": [
+        "alpha-slider",
+        "hue-slider"
+      ],
+      "property": [
+        "--xh-_track-thickness"
+      ],
+      "state": [
+        "default"
+      ],
+      "defaultToken": [
+        "--xh-space-3"
+      ],
+      "visibility": "public",
+      "description": "color-picker 的 alpha-slider、hue-slider 部件 --xh-_track-thickness 覆盖槽。"
+    },
+    {
       "name": "--xh-color-picker-swatch-border",
       "component": "color-picker",
       "part": [
-        "swatch",
-        "swatch-item"
+        "swatch"
       ],
       "property": [
-        "border"
+        "--xh-swatch-border"
       ],
       "state": [
         "default"
@@ -12819,32 +12874,31 @@
         "--xh-border-default"
       ],
       "visibility": "public",
-      "description": "color-picker 的 swatch、swatch-item 部件 border 覆盖槽。"
+      "description": "color-picker 的 swatch 部件 --xh-swatch-border 覆盖槽。"
     },
     {
-      "name": "--xh-color-picker-swatch-border-hover",
+      "name": "--xh-color-picker-swatch-cell",
       "component": "color-picker",
       "part": [
-        "swatch-item"
+        "swatch-picker"
       ],
       "property": [
-        "border-color"
+        "--xh-_color-swatch-picker-cell"
       ],
       "state": [
-        "hover",
-        "not(:disabled)"
+        "default"
       ],
       "defaultToken": [
-        "--xh-border-strong"
+        "--xh-control-h-sm"
       ],
       "visibility": "public",
-      "description": "color-picker 的 swatch-item 部件 border-color 覆盖槽。"
+      "description": "color-picker 的 swatch-picker 部件 --xh-_color-swatch-picker-cell 覆盖槽。"
     },
     {
       "name": "--xh-color-picker-swatch-gap",
       "component": "color-picker",
       "part": [
-        "swatch-group"
+        "swatch-picker"
       ],
       "property": [
         "gap"
@@ -12853,39 +12907,55 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-space-1"
+        "--xh-control-gap-sm"
       ],
       "visibility": "public",
-      "description": "color-picker 的 swatch-group 部件 gap 覆盖槽。"
+      "description": "color-picker 的 swatch-picker 部件 gap 覆盖槽。"
     },
     {
-      "name": "--xh-color-picker-swatch-item-size",
+      "name": "--xh-color-picker-swatch-icon-size",
       "component": "color-picker",
       "part": [
-        "swatch-item"
+        "swatch-picker"
       ],
       "property": [
-        "block-size",
-        "inline-size"
+        "--xh-icon-size"
       ],
       "state": [
         "default"
       ],
       "defaultToken": [
-        "1.25rem"
+        "--xh-_color-swatch-picker-mark"
       ],
       "visibility": "public",
-      "description": "color-picker 的 swatch-item 部件 block-size、inline-size 覆盖槽。"
+      "description": "color-picker 的 swatch-picker 部件 --xh-icon-size 覆盖槽。"
+    },
+    {
+      "name": "--xh-color-picker-swatch-picker-gap",
+      "component": "color-picker",
+      "part": [
+        "swatch-picker"
+      ],
+      "property": [
+        "gap"
+      ],
+      "state": [
+        "default"
+      ],
+      "defaultToken": [
+        "--xh-_color-swatch-picker-gap"
+      ],
+      "visibility": "public",
+      "description": "color-picker 的 swatch-picker 部件 gap 覆盖槽。"
     },
     {
       "name": "--xh-color-picker-swatch-radius",
       "component": "color-picker",
       "part": [
-        "swatch",
-        "swatch-item"
+        "swatch"
       ],
       "property": [
-        "border-radius"
+        "--xh-swatch-radius"
       ],
       "state": [
         "default"
@@ -12894,25 +12964,7 @@
         "--xh-shape-inset"
       ],
       "visibility": "public",
-      "description": "color-picker 的 swatch、swatch-item 部件 border-radius 覆盖槽。"
-    },
-    {
-      "name": "--xh-color-picker-swatch-ring",
-      "component": "color-picker",
-      "part": [
-        "swatch-item"
-      ],
-      "property": [
-        "outline"
-      ],
-      "state": [
-        "state=checked"
-      ],
-      "defaultToken": [
-        "--xh-bg-brand"
-      ],
-      "visibility": "public",
-      "description": "color-picker 的 swatch-item 部件 outline 覆盖槽。"
+      "description": "color-picker 的 swatch 部件 --xh-swatch-radius 覆盖槽。"
     },
     {
       "name": "--xh-color-picker-swatch-size",
@@ -12921,24 +12973,22 @@
         "swatch"
       ],
       "property": [
-        "block-size",
-        "inline-size"
+        "--xh-swatch-size"
       ],
       "state": [
         "default"
       ],
       "defaultToken": [
-        "18px"
+        "--xh-_swatch-size"
       ],
       "visibility": "public",
-      "description": "color-picker 的 swatch 部件 block-size、inline-size 覆盖槽。"
+      "description": "color-picker 的 swatch 部件 --xh-swatch-size 覆盖槽。"
     },
     {
       "name": "--xh-color-picker-thumb-border",
       "component": "color-picker",
       "part": [
-        "area-thumb",
-        "channel-slider-thumb"
+        "area-thumb"
       ],
       "property": [
         "border"
@@ -12950,14 +13000,13 @@
         "--xh-color-neutral-0"
       ],
       "visibility": "public",
-      "description": "color-picker 的 area-thumb、channel-slider-thumb 部件 border 覆盖槽。"
+      "description": "color-picker 的 area-thumb 部件 border 覆盖槽。"
     },
     {
       "name": "--xh-color-picker-thumb-radius",
       "component": "color-picker",
       "part": [
-        "area-thumb",
-        "channel-slider-thumb"
+        "area-thumb"
       ],
       "property": [
         "border-radius"
@@ -12969,14 +13018,13 @@
         "--xh-shape-pill"
       ],
       "visibility": "public",
-      "description": "color-picker 的 area-thumb、channel-slider-thumb 部件 border-radius 覆盖槽。"
+      "description": "color-picker 的 area-thumb 部件 border-radius 覆盖槽。"
     },
     {
       "name": "--xh-color-picker-thumb-scale-dragging",
       "component": "color-picker",
       "part": [
-        "area-thumb",
-        "channel-slider-thumb"
+        "area-thumb"
       ],
       "property": [
         "scale"
@@ -12988,14 +13036,13 @@
         "--xh-motion-scale-drag"
       ],
       "visibility": "public",
-      "description": "color-picker 的 area-thumb、channel-slider-thumb 部件 scale 覆盖槽。"
+      "description": "color-picker 的 area-thumb 部件 scale 覆盖槽。"
     },
     {
       "name": "--xh-color-picker-thumb-shadow",
       "component": "color-picker",
       "part": [
-        "area-thumb",
-        "channel-slider-thumb"
+        "area-thumb"
       ],
       "property": [
         "box-shadow"
@@ -13007,15 +13054,13 @@
         "--xh-elevation-raised"
       ],
       "visibility": "public",
-      "description": "color-picker 的 area-thumb、channel-slider-thumb 部件 box-shadow 覆盖槽。"
+      "description": "color-picker 的 area-thumb 部件 box-shadow 覆盖槽。"
     },
     {
       "name": "--xh-color-picker-thumb-size",
       "component": "color-picker",
       "part": [
-        "area-thumb",
-        "channel-slider",
-        "channel-slider-thumb"
+        "area-thumb"
       ],
       "property": [
         "block-size",
@@ -13030,44 +13075,7 @@
         "14px"
       ],
       "visibility": "public",
-      "description": "color-picker 的 area-thumb、channel-slider、channel-slider-thumb 部件 block-size、inline-size、margin-block-start、margin-inline-start 覆盖槽。"
-    },
-    {
-      "name": "--xh-color-picker-track-radius",
-      "component": "color-picker",
-      "part": [
-        "channel-slider",
-        "channel-slider-track"
-      ],
-      "property": [
-        "border-radius"
-      ],
-      "state": [
-        "default"
-      ],
-      "defaultToken": [
-        "--xh-shape-pill"
-      ],
-      "visibility": "public",
-      "description": "color-picker 的 channel-slider、channel-slider-track 部件 border-radius 覆盖槽。"
-    },
-    {
-      "name": "--xh-color-picker-track-thickness",
-      "component": "color-picker",
-      "part": [
-        "channel-slider-track"
-      ],
-      "property": [
-        "block-size"
-      ],
-      "state": [
-        "default"
-      ],
-      "defaultToken": [
-        "8px"
-      ],
-      "visibility": "public",
-      "description": "color-picker 的 channel-slider-track 部件 block-size 覆盖槽。"
+      "description": "color-picker 的 area-thumb 部件 block-size、inline-size、margin-block-start、margin-inline-start 覆盖槽。"
     },
     {
       "name": "--xh-color-picker-trigger-fg",

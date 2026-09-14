@@ -1,4 +1,4 @@
-// 预设色板 | 提供常用颜色
+// 预设色板 | swatches 给一组常用颜色，浮层里内嵌一台色块选择器：方向键在格子间走、按颜色比选中
 import type { ReactNode } from "react";
 import {
   XhColorPickerAreaThumb,
@@ -9,8 +9,7 @@ import {
   XhColorPickerRoot,
   XhColorPickerSaturationArea,
   XhColorPickerSwatch,
-  XhColorPickerSwatchGroup,
-  XhColorPickerSwatchItem,
+  XhColorPickerSwatchPicker,
   XhColorPickerTrigger,
   XhColorPickerValueText,
 } from "@xihan-ui/react";
@@ -32,11 +31,7 @@ export default function Demo(): ReactNode {
           <XhColorPickerSaturationArea>
             <XhColorPickerAreaThumb />
           </XhColorPickerSaturationArea>
-          <XhColorPickerSwatchGroup>
-            {swatches.map(c => (
-              <XhColorPickerSwatchItem key={c} value={c} />
-            ))}
-          </XhColorPickerSwatchGroup>
+          <XhColorPickerSwatchPicker />
         </XhColorPickerContent>
       </XhColorPickerPositioner>
     </XhColorPickerRoot>

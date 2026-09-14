@@ -214,22 +214,20 @@ export { provideColorField, useColorFieldContext } from './components/color-fiel
 export { useColorField } from './components/color-field/use-color-field'
 export type { ColorFieldContext } from './components/color-field/use-color-field'
 export {
+  XhColorPickerAlphaSlider,
   XhColorPickerAreaThumb,
   XhColorPickerChannelInput,
-  XhColorPickerChannelSlider,
-  XhColorPickerChannelSliderThumb,
-  XhColorPickerChannelSliderTrack,
   XhColorPickerContent,
   XhColorPickerControl,
   XhColorPickerEyeDropperTrigger,
   XhColorPickerHiddenInput,
+  XhColorPickerHueSlider,
   XhColorPickerLabel,
   XhColorPickerPositioner,
   XhColorPickerRoot,
   XhColorPickerSaturationArea,
   XhColorPickerSwatch,
-  XhColorPickerSwatchGroup,
-  XhColorPickerSwatchItem,
+  XhColorPickerSwatchPicker,
   XhColorPickerTrigger,
   XhColorPickerValueText,
 } from './components/color-picker/color-picker'

@@ -1,20 +1,52 @@
 import type { ConformanceSuite, FixtureNode, RawStepContext } from '../conformance/types'
 import { colorPickerAnatomy, colorPickerKeyboard } from '@xihan-ui/headless'
-import { dispatchClickOnDisabled } from './shared/disabled-press'
 import { nativeActivation } from './shared/native-activation'
 
-// APG 没有取色器这一条模式：两条可交互的轴按滑杆模式办，浮层部分按对话框模式办。
+// APG 没有取色器这一条模式：取色区按滑杆模式办，浮层部分按对话框模式办；
+// 色相 / 透明度两条滑块与预设色板是内嵌组件，各自的键盘归 color-slider 与 color-swatch-picker 那两份套件。
 const APG_SLIDER = 'https://www.w3.org/WAI/ARIA/apg/patterns/slider/'
 const APG_SLIDER_KBD = `${APG_SLIDER}#keyboardinteraction`
 const APG_DIALOG = 'https://www.w3.org/WAI/ARIA/apg/patterns/dialog-modal/'
 
 const SCOPE = '[data-scope="color-picker"]'
+// 内嵌组件的部件戴各自的 scope，不进取色器的归一化快照，只能直接读 DOM
+const SLIDER = '[data-scope="color-slider"]'
+const SWATCHES = '[data-scope="color-swatch-picker"]'
 
 function findPart(doc: Document, name: string, index = 0): HTMLElement {
   const el = doc.querySelectorAll<HTMLElement>(`${SCOPE}[data-part="${name}"]`)[index]
   if (!el)
     throw new Error(`找不到 ${name}[${index}] 部件`)
   return el
+}
+
+/** 内嵌滑块的部件：0 是色相那条，1 是透明度那条（按文档序）。 */
+function sliderPart(doc: Document, name: string, index = 0): HTMLElement {
+  const el = doc.querySelectorAll<HTMLElement>(`${SLIDER}[data-part="${name}"]`)[index]
+  if (!el)
+    throw new Error(`找不到内嵌滑块的 ${name}[${index}] 部件`)
+  return el
+}
+
+/** 预设色板的格子。 */
+function swatchItem(doc: Document, index: number): HTMLElement {
+  const el = doc.querySelectorAll<HTMLElement>(`${SWATCHES}[data-part="item"]`)[index]
+  if (!el)
+    throw new Error(`找不到色板的第 ${index} 格`)
+  return el
+}
+
+function expectAttr(el: HTMLElement, name: string, expected: string | null): void {
+  const actual = el.getAttribute(name)
+  if (actual !== expected)
+    throw new Error(`${el.getAttribute('data-scope')}/${el.getAttribute('data-part')} 的 ${name} 期望 ${JSON.stringify(expected)}，实际 ${JSON.stringify(actual)}`)
+}
+
+/** 往内嵌滑块的拇指上派一次按键；`key` 步骤只派给取色器自己的部件，内嵌拇指够不到。 */
+function pressThumb(el: HTMLElement, key: string, init: KeyboardEventInit = {}): KeyboardEvent {
+  const event = new KeyboardEvent('keydown', { key, bubbles: true, cancelable: true, ...init })
+  el.dispatchEvent(event)
+  return event
 }
 
 /**
@@ -43,13 +75,34 @@ function assertHiddenInput(doc: Document, expected: readonly [string, string, bo
     throw new Error(`隐藏输入的 name/value/disabled 不符：期望 ${JSON.stringify(expected)}，实际 ${JSON.stringify(actual)}`)
 }
 
-function channelSlider(channel: string): FixtureNode {
+/**
+ * 一条内嵌颜色滑块的挂载点：里面摆的是 color-slider 自己的 control / track / thumb。
+ * 挂载点同时充当那条滑块的根节点，滑块自己的 root 部件不出现。
+ */
+function sliderMount(part: 'hue-slider' | 'alpha-slider'): FixtureNode {
   return {
-    part: 'channel-slider',
-    attrs: { channel },
+    part,
+    children: [{
+      part: 'control',
+      component: 'color-slider',
+      children: [
+        { part: 'track', component: 'color-slider' },
+        { part: 'thumb', component: 'color-slider' },
+      ],
+    }],
+  }
+}
+
+/** 预设色板的一格：色块面、选中标记与表单影子 Vue / React 由格子自行装配，WC 由作者手写。 */
+function swatchNode(value: string): FixtureNode {
+  return {
+    part: 'item',
+    component: 'color-swatch-picker',
+    attrs: { value },
     children: [
-      { part: 'channel-slider-track' },
-      { part: 'channel-slider-thumb' },
+      { part: 'hidden-input', tag: 'input', only: ['wc'] },
+      { part: 'swatch', tag: 'span', only: ['wc'] },
+      { part: 'indicator', tag: 'span', only: ['wc'] },
     ],
   }
 }
@@ -58,10 +111,10 @@ function channelSlider(channel: string): FixtureNode {
  * 按下色相轨道的正中。
  *
  * 通道的取值按轨道矩形算，而无布局环境里量什么都是 0，只能把这一帧的矩形原地伪造出来。
- * 这一步同时核的是适配器有没有把轨道节点接到那条通道上——接错或漏接，值一动不动。
+ * 这一步同时核的是适配器有没有把轨道节点接到那条滑块上——接错或漏接，值一动不动。
  */
 function pressHueTrackCenter({ doc }: RawStepContext): void {
-  const track = findPart(doc, 'channel-slider-track', 0)
+  const track = sliderPart(doc, 'track', 0)
   track.getBoundingClientRect = () => ({
     x: 0,
     y: 0,
@@ -73,7 +126,7 @@ function pressHueTrackCenter({ doc }: RawStepContext): void {
     bottom: 10,
     toJSON: () => ({}),
   }) as DOMRect
-  findPart(doc, 'channel-slider', 0).dispatchEvent(
+  sliderPart(doc, 'control', 0).dispatchEvent(
     new PointerEvent('pointerdown', { clientX: 100, clientY: 5, button: 0, bubbles: true, cancelable: true }),
   )
 }
@@ -114,17 +167,14 @@ export const colorPickerSuite: ConformanceSuite = {
             part: 'content',
             children: [
               { part: 'saturation-area', children: [{ part: 'area-thumb' }] },
-              channelSlider('hue'),
-              channelSlider('alpha'),
+              sliderMount('hue-slider'),
+              sliderMount('alpha-slider'),
               { part: 'channel-input', tag: 'input', attrs: { channel: 'hex' } },
               { part: 'channel-input', tag: 'input', attrs: { channel: 'r' } },
               { part: 'eye-dropper-trigger', tag: 'button', text: '取色' },
               {
-                part: 'swatch-group',
-                children: [
-                  { part: 'swatch-item', tag: 'button', attrs: { value: '#ff0000' } },
-                  { part: 'swatch-item', tag: 'button', attrs: { value: '#00ff00' } },
-                ],
+                part: 'swatch-picker',
+                children: [swatchNode('#ff0000'), swatchNode('#00ff00')],
               },
             ],
           },
@@ -149,18 +199,12 @@ export const colorPickerSuite: ConformanceSuite = {
           'content',
           'saturation-area',
           'area-thumb',
-          'channel-slider[0]',
-          'channel-slider-track[0]',
-          'channel-slider-thumb[0]',
-          'channel-slider[1]',
-          'channel-slider-track[1]',
-          'channel-slider-thumb[1]',
+          'hue-slider',
+          'alpha-slider',
           'channel-input[0]',
           'channel-input[1]',
           'eye-dropper-trigger',
-          'swatch-group',
-          'swatch-item[0]',
-          'swatch-item[1]',
+          'swatch-picker',
         ],
         counts: {
           'root': 1,
@@ -169,11 +213,10 @@ export const colorPickerSuite: ConformanceSuite = {
           'content': 1,
           'saturation-area': 1,
           'area-thumb': 1,
-          'channel-slider': 2,
-          'channel-slider-track': 2,
-          'channel-slider-thumb': 2,
+          'hue-slider': 1,
+          'alpha-slider': 1,
           'channel-input': 2,
-          'swatch-item': 2,
+          'swatch-picker': 1,
         },
         parts: {
           'trigger': {
@@ -205,36 +248,16 @@ export const colorPickerSuite: ConformanceSuite = {
             'aria-disabled': 'false',
             'tabindex': '0',
           },
-          'channel-slider-thumb': [
-            {
-              'role': 'slider',
-              'aria-valuemin': '0',
-              'aria-valuemax': '360',
-              'aria-valuenow': '217',
-              'aria-valuetext': '217°',
-              'aria-label': 'Hue',
-              'aria-orientation': 'horizontal',
-              'aria-disabled': 'false',
-              'tabindex': '0',
-              'data-channel': 'hue',
-            },
-            {
-              // alpha 没开：透明度那条整条不可用，且抽掉 Tab 位
-              'aria-disabled': 'true',
-              'tabindex': null,
-              'data-channel': 'alpha',
-              'data-disabled': '',
-            },
-          ],
+          // 两个挂载点同时充当两条滑块的根节点：滑块 root 的状态标记照抄在它们身上
+          'hue-slider': { 'data-channel': 'hue', 'data-orientation': 'horizontal', 'data-disabled': null },
+          // alpha 没开：透明度那条整条不可用
+          'alpha-slider': { 'data-channel': 'alpha', 'data-orientation': 'horizontal', 'data-disabled': '' },
           'channel-input': [
             { 'type': 'text', 'inputmode': null, 'aria-label': 'Hex', 'aria-invalid': 'false', 'disabled': null },
             { 'type': 'text', 'inputmode': 'numeric', 'aria-label': 'Red', 'disabled': null },
           ],
-          'swatch-group': { 'role': 'group', 'aria-label': 'Color swatches' },
-          'swatch-item': [
-            { 'type': 'button', 'aria-pressed': 'false', 'data-value': '#ff0000', 'data-state': 'unchecked' },
-            { 'type': 'button', 'aria-pressed': 'false', 'data-value': '#00ff00', 'data-state': 'unchecked' },
-          ],
+          // 色板的挂载点同时充当色板的根节点：radiogroup 与兜底 Tab 位都在它身上
+          'swatch-picker': { 'role': 'radiogroup', 'aria-label': 'Color swatches', 'tabindex': '0' },
         },
       },
       steps: [
@@ -250,6 +273,34 @@ export const colorPickerSuite: ConformanceSuite = {
               throw new Error(`红色分量框应显示 59，实际 ${red.value}`)
             if (findPart(doc, 'value-text').textContent !== '#3b82f6')
               throw new Error('value-text 应显示当前值串')
+          },
+        },
+        {
+          kind: 'raw',
+          why: '内嵌滑块与色板的部件戴各自的 scope，不进取色器的归一化快照，只能直接读 DOM',
+          run: ({ doc }) => {
+            const hue = sliderPart(doc, 'thumb', 0)
+            expectAttr(hue, 'role', 'slider')
+            expectAttr(hue, 'aria-valuemin', '0')
+            expectAttr(hue, 'aria-valuemax', '360')
+            expectAttr(hue, 'aria-valuenow', '217')
+            expectAttr(hue, 'aria-valuetext', '217°')
+            expectAttr(hue, 'aria-label', 'Hue')
+            expectAttr(hue, 'aria-orientation', 'horizontal')
+            expectAttr(hue, 'aria-disabled', 'false')
+            expectAttr(hue, 'tabindex', '0')
+            // alpha 没开：透明度那条整条不可用，且抽掉 Tab 位
+            const alpha = sliderPart(doc, 'thumb', 1)
+            expectAttr(alpha, 'aria-disabled', 'true')
+            expectAttr(alpha, 'tabindex', null)
+            expectAttr(alpha, 'data-disabled', '')
+            // 色板每格是 role=radio，未选中也显式报 false
+            const red = swatchItem(doc, 0)
+            expectAttr(red, 'role', 'radio')
+            expectAttr(red, 'aria-checked', 'false')
+            expectAttr(red, 'data-value', '#ff0000')
+            expectAttr(red, 'data-state', 'unchecked')
+            expectAttr(swatchItem(doc, 1), 'data-value', '#00ff00')
           },
         },
       ],
@@ -346,122 +397,122 @@ export const colorPickerSuite: ConformanceSuite = {
       ],
     },
     {
-      name: '色相滑杆：方向键走一格、Shift 走十格、Home/End 取端点',
+      name: '内嵌色相滑块：拇指上按方向键走一格、PageUp 走十格、Home/End 取端点，取色器跟着落值',
       spec: { apg: APG_SLIDER_KBD },
-      covers: ['color-picker.kbd.channel-step', 'color-picker.kbd.channel-large-step', 'color-picker.kbd.channel-edge'],
       props: { defaultValue: '#ff0000', defaultOpen: true },
       steps: [
-        { kind: 'focus', part: 'channel-slider-thumb[0]' },
         {
-          kind: 'key',
-          key: 'ArrowRight',
-          expect: { parts: { 'channel-slider-thumb[0]': { 'aria-valuenow': '1', 'aria-valuetext': '1°' } } },
+          kind: 'raw',
+          why: '内嵌滑块的拇指不进取色器的快照，focus / key 步骤都够不到，只能直接派发',
+          run: async (ctx) => {
+            const thumb = sliderPart(ctx.doc, 'thumb', 0)
+            thumb.focus()
+            if (!pressThumb(thumb, 'ArrowRight').defaultPrevented)
+              throw new Error('方向键该被拇指拦下')
+            await ctx.flush()
+            expectAttr(thumb, 'aria-valuenow', '1')
+            expectAttr(thumb, 'aria-valuetext', '1°')
+            pressThumb(thumb, 'PageUp')
+            await ctx.flush()
+            expectAttr(thumb, 'aria-valuenow', '11')
+            pressThumb(thumb, 'End')
+            await ctx.flush()
+            expectAttr(thumb, 'aria-valuenow', '360')
+            pressThumb(thumb, 'Home')
+            await ctx.flush()
+            expectAttr(thumb, 'aria-valuenow', '0')
+          },
+          // 值串跟着走：360° 与 0° 都是红，最后一下回到起点
+          expect: { parts: { 'area-thumb': { 'aria-valuenow': '100' } } },
         },
-        {
-          kind: 'key',
-          key: 'ArrowUp',
-          modifiers: ['Shift'],
-          expect: { parts: { 'channel-slider-thumb[0]': { 'aria-valuenow': '11' } } },
-        },
-        { kind: 'key', key: 'End', expect: { parts: { 'channel-slider-thumb[0]': { 'aria-valuenow': '360' } } } },
-        { kind: 'key', key: 'Home', expect: { parts: { 'channel-slider-thumb[0]': { 'aria-valuenow': '0' } } } },
       ],
     },
     {
-      name: '色相滑杆：按下轨道即跳到落点，焦点转投到那条的拇指上',
+      name: '内嵌色相滑块：按下轨道即跳到落点，焦点转投到那条的拇指上',
       spec: { apg: `${APG_SLIDER}#roles_states_properties` },
       props: { defaultValue: '#ff0000', defaultOpen: true },
       steps: [
         {
           kind: 'raw',
           why: '取值按轨道矩形算，无布局环境量什么都是 0，只能把这一帧的矩形原地伪造出来',
-          run: pressHueTrackCenter,
-          expect: {
-            parts: {
-              // 200px 轨道的正中 → 180 度；按下的那条打上拖动标记，另一条不跟着亮
-              'channel-slider-thumb[0]': { 'aria-valuenow': '180', 'data-dragging': '' },
-              'channel-slider-thumb[1]': { 'data-dragging': null },
-              'saturation-area': { 'data-dragging': null },
-            },
+          run: async (ctx) => {
+            pressHueTrackCenter(ctx)
+            await ctx.flush()
+            // 200px 轨道的正中 → 180 度；按下的那条打上拖动标记，另一条不跟着亮
+            const hue = sliderPart(ctx.doc, 'thumb', 0)
+            expectAttr(hue, 'aria-valuenow', '180')
+            expectAttr(hue, 'data-dragging', '')
+            expectAttr(sliderPart(ctx.doc, 'thumb', 1), 'data-dragging', null)
             // 松手就能接着用方向键微调
-            activeElement: 'channel-slider-thumb[0]',
+            if (ctx.doc.activeElement !== hue)
+              throw new Error('按下轨道后焦点应转投到色相那条的拇指上')
           },
+          expect: { parts: { 'saturation-area': { 'data-dragging': null } } },
         },
         {
           kind: 'raw',
           why: '跟手的监听挂在文档上，不松手会留到下一个用例',
-          run: releasePointer,
-          expect: { parts: { 'channel-slider-thumb[0]': { 'aria-valuenow': '180', 'data-dragging': null } } },
+          run: async (ctx) => {
+            releasePointer(ctx)
+            await ctx.flush()
+            const hue = sliderPart(ctx.doc, 'thumb', 0)
+            expectAttr(hue, 'aria-valuenow', '180')
+            expectAttr(hue, 'data-dragging', null)
+          },
         },
       ],
     },
     {
-      name: '色相滑杆：PageUp / PageDown 各走十格',
-      spec: { apg: APG_SLIDER_KBD },
-      covers: ['color-picker.kbd.channel-page-step'],
-      props: { defaultValue: '#ff0000', defaultOpen: true },
-      steps: [
-        { kind: 'focus', part: 'channel-slider-thumb[0]' },
-        {
-          kind: 'key',
-          key: 'PageUp',
-          expect: { parts: { 'channel-slider-thumb[0]': { 'aria-valuenow': '10', 'aria-valuetext': '10°' } } },
-        },
-        { kind: 'key', key: 'PageDown', expect: { parts: { 'channel-slider-thumb[0]': { 'aria-valuenow': '0' } } } },
-      ],
-    },
-    {
-      name: 'alpha 打开：透明度滑杆进 Tab 序列并可调',
+      name: 'alpha 打开：透明度滑块进 Tab 序列并可调，挂载点撤掉禁用标记',
       spec: { apg: `${APG_SLIDER}#roles_states_properties` },
       props: { defaultValue: '#ff0000', alpha: true, defaultOpen: true },
       initial: {
-        parts: {
-          'channel-slider-thumb[1]': {
-            'aria-disabled': 'false',
-            'aria-valuenow': '100',
-            'aria-valuetext': '100%',
-            'aria-label': 'Alpha',
-            'tabindex': '0',
-          },
-        },
+        parts: { 'alpha-slider': { 'data-disabled': null } },
       },
       steps: [
-        { kind: 'focus', part: 'channel-slider-thumb[1]' },
         {
-          kind: 'key',
-          key: 'ArrowLeft',
-          expect: { parts: { 'channel-slider-thumb[1]': { 'aria-valuenow': '99' } } },
+          kind: 'raw',
+          why: '内嵌滑块的拇指不进取色器的快照，只能直接读 DOM 与派发',
+          run: async (ctx) => {
+            const alpha = sliderPart(ctx.doc, 'thumb', 1)
+            expectAttr(alpha, 'aria-disabled', 'false')
+            expectAttr(alpha, 'aria-valuenow', '100')
+            expectAttr(alpha, 'aria-valuetext', '100%')
+            expectAttr(alpha, 'aria-label', 'Alpha')
+            expectAttr(alpha, 'tabindex', '0')
+            alpha.focus()
+            pressThumb(alpha, 'ArrowLeft')
+            await ctx.flush()
+            expectAttr(alpha, 'aria-valuenow', '99')
+            pressThumb(alpha, 'Home')
+            await ctx.flush()
+            expectAttr(alpha, 'aria-valuenow', '0')
+          },
         },
-        { kind: 'key', key: 'Home', expect: { parts: { 'channel-slider-thumb[1]': { 'aria-valuenow': '0' } } } },
       ],
     },
     {
-      name: '预设色板：当前色那一格报 aria-pressed=true，点另一格即换色',
+      name: '预设色板：当前色那一格 aria-checked=true，点另一格即换色，色相滑块跟着跳',
       spec: { apg: APG_DIALOG },
       props: { defaultValue: '#ff0000', defaultOpen: true },
-      initial: {
-        parts: {
-          'swatch-item': [
-            { 'aria-pressed': 'true', 'data-state': 'checked' },
-            { 'aria-pressed': 'false', 'data-state': 'unchecked' },
-          ],
-        },
-      },
       steps: [
         {
-          kind: 'click',
-          part: 'swatch-item[1]',
-          expect: {
-            parts: {
-              'swatch-item': [
-                { 'aria-pressed': 'false' },
-                { 'aria-pressed': 'true' },
-              ],
-              // 色相跟着跳到绿
-              'channel-slider-thumb[0]': { 'aria-valuenow': '120' },
-            },
-            events: [{ type: 'value-change', detail: { value: '#00ff00' } }],
+          kind: 'raw',
+          why: '色板的格子戴 color-swatch-picker 的 scope，不进取色器的快照，只能直接读 DOM 与点击',
+          run: async (ctx) => {
+            const red = swatchItem(ctx.doc, 0)
+            const green = swatchItem(ctx.doc, 1)
+            expectAttr(red, 'aria-checked', 'true')
+            expectAttr(red, 'data-state', 'checked')
+            expectAttr(green, 'aria-checked', 'false')
+            green.dispatchEvent(new MouseEvent('click', { bubbles: true, cancelable: true }))
+            await ctx.flush()
+            expectAttr(red, 'aria-checked', 'false')
+            expectAttr(green, 'aria-checked', 'true')
+            // 色相跟着跳到绿
+            expectAttr(sliderPart(ctx.doc, 'thumb', 0), 'aria-valuenow', '120')
           },
+          expect: { events: [{ type: 'value-change', detail: { value: '#00ff00' } }] },
         },
       ],
     },
@@ -492,7 +543,6 @@ export const colorPickerSuite: ConformanceSuite = {
             parts: {
               'channel-input[0]': { 'aria-invalid': 'false' },
               'area-thumb': { 'aria-valuenow': '100' },
-              'channel-slider-thumb[0]': { 'aria-valuenow': '0' },
             },
             events: [{ type: 'value-change', detail: { value: '#ff0000' } }],
           },
@@ -556,10 +606,10 @@ export const colorPickerSuite: ConformanceSuite = {
           'trigger': { disabled: '' },
           // 禁用即不可聚焦（与原生 input[type=range] 一致），tabindex 整个不写
           'area-thumb': { 'aria-disabled': 'true', 'tabindex': null, 'data-disabled': '' },
-          'channel-slider-thumb[0]': { 'aria-disabled': 'true', 'tabindex': null },
+          'hue-slider': { 'data-disabled': '' },
           'channel-input[0]': { disabled: '' },
           'eye-dropper-trigger': { disabled: '' },
-          'swatch-item[0]': { disabled: '' },
+          'swatch-picker': { 'data-disabled': '' },
         },
       },
       steps: [
@@ -577,10 +627,21 @@ export const colorPickerSuite: ConformanceSuite = {
           },
           expect: { parts: { 'area-thumb': { 'aria-valuenow': '76' } } },
         },
-        dispatchClickOnDisabled('color-picker', 'swatch-item[1]', {
-          parts: { 'area-thumb': { 'aria-valuenow': '76' } },
-          events: [],
-        }),
+        {
+          kind: 'raw',
+          why: '内嵌滑块的拇指与色板的格子不进取色器的快照，只能直接读 DOM 与派发',
+          run: async (ctx) => {
+            const hue = sliderPart(ctx.doc, 'thumb', 0)
+            expectAttr(hue, 'aria-disabled', 'true')
+            expectAttr(hue, 'tabindex', null)
+            // 色板的格子用 aria-disabled 表达禁用，点了不换色
+            const green = swatchItem(ctx.doc, 1)
+            expectAttr(green, 'aria-disabled', 'true')
+            green.dispatchEvent(new MouseEvent('click', { bubbles: true, cancelable: true }))
+            await ctx.flush()
+          },
+          expect: { parts: { 'area-thumb': { 'aria-valuenow': '76' } }, events: [] },
+        },
       ],
     },
     {
@@ -613,19 +674,24 @@ export const colorPickerSuite: ConformanceSuite = {
       spec: { apg: APG_SLIDER },
       props: { value: '#ff0000', defaultOpen: true },
       steps: [
-        { kind: 'focus', part: 'channel-slider-thumb[0]' },
         {
-          kind: 'key',
-          key: 'ArrowRight',
-          expect: {
-            parts: { 'channel-slider-thumb[0]': { 'aria-valuenow': '0' } },
-            events: [{ type: 'value-change', detail: { value: '#ff0400' } }],
+          kind: 'raw',
+          why: '内嵌滑块的拇指不进取色器的快照，focus / key 步骤都够不到，只能直接派发',
+          run: async (ctx) => {
+            const hue = sliderPart(ctx.doc, 'thumb', 0)
+            hue.focus()
+            pressThumb(hue, 'ArrowRight')
+            await ctx.flush()
+            // 受控下界面不许自作主张：拇指仍停在宿主给的那个值上
+            expectAttr(hue, 'aria-valuenow', '0')
           },
+          expect: { events: [{ type: 'value-change', detail: { value: '#ff0400' } }] },
         },
+        { kind: 'setProps', props: { value: '#00ff00' } },
         {
-          kind: 'setProps',
-          props: { value: '#00ff00' },
-          expect: { parts: { 'channel-slider-thumb[0]': { 'aria-valuenow': '120' } } },
+          kind: 'raw',
+          why: '同上：宿主写回后拇指才跟着走',
+          run: ({ doc }) => expectAttr(sliderPart(doc, 'thumb', 0), 'aria-valuenow', '120'),
         },
       ],
     },

@@ -79,6 +79,7 @@ const HOOK_ATTRS = {
 const HOOKS = {
   'button:data-size': '控件尺寸由同节点的 data-xh-action-size 交给 Action Control 配方；data-size 保留为作者样式钩子',
   'color-swatch:data-size': '色块尺寸由同节点的 data-xh-swatch-size 交给 Swatch 色块面配方；data-size 保留为作者样式钩子',
+  'color-picker:data-channel': '两个滑块挂载点各有自己的部件名（hue-slider / alpha-slider），皮肤按部件名选；data-channel 与滑块 root 上的那份同名，留给作者按通道写样式的钩子',
   'color-field:data-editing': '正在编辑的视觉就是框里那串还没收下的字本身，收不下才由 data-invalid 描红；这一位留给作者做提示文案一类的钩子',
   'kbd:data-key': '逐键规范化后的 KeyboardEvent.key，供作者与测试定位，不改变统一表面',
   'kbd:data-register': '监听已注册的行为事实；展示外观不因是否安装监听而改变，保留为作者样式钩子',

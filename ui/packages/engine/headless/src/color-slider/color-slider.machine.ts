@@ -35,9 +35,9 @@ export function colorSliderAlpha(props: Pick<ColorSliderSchema['props'], 'alpha'
   return props.alpha ?? colorToChannel(props.channel) === 'alpha'
 }
 
-/** 当前工作色：值串加上锚。灰度处的色相由锚保住，详见 colorResolveHsva。 */
+/** 当前工作色：宿主受控给了就用它，否则值串加上锚。灰度处的色相由锚保住，详见 colorResolveHsva。 */
 function currentHsva(params: MachineParams): ColorHsva {
-  return colorResolveHsva(params.context.get('value'), params.context.get('anchor'))
+  return params.prop('hsva') ?? colorResolveHsva(params.context.get('value'), params.context.get('anchor'))
 }
 
 /**
@@ -55,6 +55,11 @@ function applyHsva(params: MachineParams, next: ColorHsva): void {
   const hsva: ColorHsva = alpha ? next : { ...next, a: 1 }
   const value = colorToString(colorHsvaToRgba(hsva), format, alpha)
   context.set('anchor', { value, hsva })
+  // 串没变（灰度处推色相、全透明处推分量）cell 不会通知，但工作色变了，宿主要靠回调里的 hsva 才跟得上
+  if (value === context.get('value')) {
+    prop('onValueChange')?.({ value, hsva })
+    return
+  }
   context.set('value', value)
 }
 
@@ -88,7 +93,7 @@ export function colorSliderSliderProps(service: Service<ColorSliderSchema>): Sli
   const { prop, context, send } = service
   const channel = colorToChannel(prop('channel'))
   const range = colorChannelRange(channel)
-  const hsva = colorResolveHsva(context.get('value'), context.get('anchor'))
+  const hsva = prop('hsva') ?? colorResolveHsva(context.get('value'), context.get('anchor'))
   return {
     value: [Math.round(colorChannelValue(hsva, channel))],
     min: range.min,
@@ -114,14 +119,18 @@ export function colorSliderSliderProps(service: Service<ColorSliderSchema>): Sli
 // 这台机器只管「颜色串 ↔ 本通道数值」这一件事。
 export const colorSliderMachine = createMachine({
   name: 'color-slider',
-  context: ({ prop, cell }) => ({
-    value: cell<string>(() => ({
-      value: prop('value'),
-      defaultValue: prop('defaultValue') ?? COLOR_FALLBACK,
-      onChange: value => prop('onValueChange')?.({ value }),
-    })),
-    anchor: cell<ColorSliderSchema['context']['anchor']>(() => ({ defaultValue: null })),
-  }),
+  context: ({ prop, cell }) => {
+    // 锚先建：值变化的回调要带上这一下产出的工作色，锚在 applyHsva 里先于值写入
+    const anchor = cell<ColorSliderSchema['context']['anchor']>(() => ({ defaultValue: null }))
+    return {
+      value: cell<string>(() => ({
+        value: prop('value'),
+        defaultValue: prop('defaultValue') ?? COLOR_FALLBACK,
+        onChange: value => prop('onValueChange')?.({ value, hsva: colorResolveHsva(value, anchor.get()) }),
+      })),
+      anchor,
+    }
+  },
   refs: () => ({}),
   initialState: () => 'idle',
   on: {
@@ -163,8 +172,8 @@ export const colorSliderMachine = createMachine({
         applyHsva(params, colorWithChannel(currentHsva(params), channel, e.value))
       },
 
-      invokeChangeEnd: ({ context, prop }) => {
-        prop('onValueChangeEnd')?.({ value: context.get('value') })
+      invokeChangeEnd: (params) => {
+        params.prop('onValueChangeEnd')?.({ value: params.context.get('value'), hsva: currentHsva(params) })
       },
     },
   },

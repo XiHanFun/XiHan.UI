@@ -78,6 +78,6 @@ export function renderFixtureNode(node: FixtureNode, component: string, key?: nu
   const children = kids ?? node.text
   const props = { ...toReactProps(node.attrs, node.part != null), key } as Record<string, unknown>
   if (node.part)
-    return createElement(resolvePart(component, node.part), props, children)
+    return createElement(resolvePart(node.component ?? component, node.part), props, children)
   return createElement(node.tag ?? 'div', props, children)
 }

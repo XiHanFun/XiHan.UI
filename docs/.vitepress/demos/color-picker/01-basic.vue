@@ -1,12 +1,10 @@
-<!-- 基础用法 | 选择颜色 -->
+<!-- 基础用法 | 取色面挑饱和度与明度，下面一条色相滑块；滑块是内嵌的颜色滑块组件，Vue / React 的挂载点不写子节点即自动铺开 -->
 <script setup lang="ts">
 import {
   XhColorPickerAreaThumb,
-  XhColorPickerChannelSlider,
-  XhColorPickerChannelSliderThumb,
-  XhColorPickerChannelSliderTrack,
   XhColorPickerContent,
   XhColorPickerControl,
+  XhColorPickerHueSlider,
   XhColorPickerLabel,
   XhColorPickerPositioner,
   XhColorPickerRoot,
@@ -31,10 +29,7 @@ import {
         <XhColorPickerSaturationArea>
           <XhColorPickerAreaThumb />
         </XhColorPickerSaturationArea>
-        <XhColorPickerChannelSlider channel="hue">
-          <XhColorPickerChannelSliderTrack />
-          <XhColorPickerChannelSliderThumb />
-        </XhColorPickerChannelSlider>
+        <XhColorPickerHueSlider />
       </XhColorPickerContent>
     </XhColorPickerPositioner>
   </XhColorPickerRoot>

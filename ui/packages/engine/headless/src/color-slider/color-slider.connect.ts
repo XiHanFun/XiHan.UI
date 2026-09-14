@@ -79,7 +79,7 @@ export function connectColorSlider<T extends PropTypes>(
   const alpha = colorSliderAlpha({ alpha: prop('alpha'), channel })
 
   // 工作色由值串加锚结算，锚保住灰度处的色相
-  const hsva = colorResolveHsva(value, context.get('anchor'))
+  const hsva = prop('hsva') ?? colorResolveHsva(value, context.get('anchor'))
   const rgba = colorHsvaToRgba(hsva)
   // 位置按未取整的工作色算，比滑杆按整格算的那一份更贴当前颜色
   const exact = colorChannelValue(hsva, channel)

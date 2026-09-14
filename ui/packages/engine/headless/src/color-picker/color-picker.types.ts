@@ -7,8 +7,9 @@
 
 import type { Cleanup, Direction, Layer, MachineSchema, Placement, PositionEnginePort, PositionResult, PropTypes, RuntimeConfig, Service, Size } from '@xihan-ui/core'
 import type { PresenceHandle } from '@xihan-ui/core/presence'
+import type { ColorSliderApi, ColorSliderServices } from '../color-slider'
+import type { ColorSwatchPickerApi, ColorSwatchPickerSchema } from '../color-swatch-picker'
 import type { ColorAnchor, ColorFormat, ColorHsva, ColorRgba } from '../shared/color'
-import type { SliderSchema } from '../slider'
 import type { ColorPickerChannel, ColorPickerInputChannel } from './color-picker.color'
 import type { ColorPickerPoint } from './color-picker.geometry'
 
@@ -64,17 +65,21 @@ export interface ColorPickerRefs {
 }
 
 /**
- * 取色器跑起来要的几台机器：自己一台，两条通道滑杆各一台。
+ * 取色器跑起来要的几台机器：自己一台，色相与透明度各一条颜色滑块（各自再内嵌一台滑杆），预设色板一台色块选择器。
  *
- * 两条滑杆的区间、步长与当下的值都受控于取色器，推动经 CHANNEL.SET 送回来；
- * 轨道矩形由适配器接到各自那台滑杆的 getTrackEl 上。
+ * 三件内嵌组件的值、工作色与状态都受控于取色器，推动经各自的 onValueChange 送回来
+ * （滑块送回 HSVA.SET，色板送回 VALUE.SET）；轨道矩形由适配器接到各条滑块的内嵌滑杆上。
+ * 它们的 DOM 摊在取色器的浮层里，各自保留自己的 scope（color-slider / color-swatch-picker），
+ * 取色器只提供三个挂载点，挂载点同时充当各自的根节点。
  */
 export interface ColorPickerServices {
   root: Service<ColorPickerSchema>
-  /** 色相那条，区间 0-360。 */
-  hueSlider: Service<SliderSchema>
-  /** 透明度那条，区间 0-100；alpha 关掉时整条禁用。 */
-  alphaSlider: Service<SliderSchema>
+  /** 色相那条颜色滑块（通道 hue，区间 0-360）。 */
+  hueSlider: ColorSliderServices
+  /** 透明度那条颜色滑块（通道 alpha，区间 0-100）；alpha 关掉时整条禁用。 */
+  alphaSlider: ColorSliderServices
+  /** 预设色板：一组固定颜色里挑一个。 */
+  swatchPicker: Service<ColorSwatchPickerSchema>
 }
 
 export interface ColorPickerValueChangeDetails {
@@ -122,19 +127,9 @@ export interface ColorPickerErrors {
   eyeDropper: ColorPickerEyeDropperErrorDetails | null
 }
 
-/** 通道滑杆三件套自报的身份：作者在部件上声明，connect 据此产出属性。 */
-export interface ColorPickerChannelProps {
-  channel: ColorPickerChannel
-}
-
 /** 数值输入框自报的身份。 */
 export interface ColorPickerInputProps {
   channel: ColorPickerInputChannel
-}
-
-/** 预设色板一格自报的颜色。 */
-export interface ColorPickerSwatchItemProps {
-  value: string
 }
 
 export interface ColorPickerSchema extends MachineSchema {
@@ -151,7 +146,7 @@ export interface ColorPickerSchema extends MachineSchema {
     disabled?: boolean
     /** 只读：浮层照开（看得见当前颜色），但任何改值的动作都不发生。 */
     readOnly?: boolean
-    /** 预设色板。作者据此渲染 swatch-item，组件只负责标出哪一格正被选中。 */
+    /** 预设色板：交给内嵌的色块选择器铺格，选中的那一格按颜色比。 */
     swatches?: string[]
     /** 表单字段名；给了表单影子才带 name 并参与提交。 */
     name?: string
@@ -205,9 +200,8 @@ export interface ColorPickerSchema extends MachineSchema {
     | { type: 'AREA.STEP', axis: 'x' | 'y', direction: 1 | -1, large?: boolean }
     /** 取色区某条轴取端点。 */
     | { type: 'AREA.TO_EDGE', axis: 'x' | 'y', edge: 'min' | 'max' }
-    | { type: 'CHANNEL.SET', channel: ColorPickerChannel, value: number }
-    | { type: 'CHANNEL.STEP', channel: ColorPickerChannel, direction: 1 | -1, large?: boolean }
-    | { type: 'CHANNEL.TO_EDGE', channel: ColorPickerChannel, edge: 'min' | 'max' }
+    /** 某条内嵌颜色滑块推出了新的工作色；串是有损的，灰度处的色相只能从这里拿。 */
+    | { type: 'HSVA.SET', hsva: ColorHsva }
     /** 用户在数值框里打字：留下草稿，能收就顺手收下。 */
     | { type: 'INPUT.CHANGE', channel: ColorPickerInputChannel, value: string }
     /** 收下数值框（回车或失焦）：收得了就落值，收不了保留草稿与错误。 */
@@ -236,9 +230,7 @@ export interface ColorPickerSchema extends MachineSchema {
     | 'setArea'
     | 'stepArea'
     | 'areaToEdge'
-    | 'setChannel'
-    | 'stepChannel'
-    | 'channelToEdge'
+    | 'setHsva'
     | 'setDraft'
     | 'commitDraft'
     | 'clearDraft'
@@ -251,16 +243,6 @@ export interface ColorPickerSchema extends MachineSchema {
     | 'clearErrors'
     | 'resetToDefault'
   effect: 'trackPosition' | 'trackLayer' | 'trackPointer' | 'runEyeDropper'
-}
-
-/** 通道滑杆当下的取值与位置，作者拿它自己排版时用得上。 */
-export interface ColorPickerChannelState {
-  channel: ColorPickerChannel
-  value: number
-  min: number
-  max: number
-  /** 值在轨道上的位置，0-1。 */
-  percent: number
 }
 
 export interface ColorPickerApi<T extends PropTypes = PropTypes> {
@@ -283,8 +265,12 @@ export interface ColorPickerApi<T extends PropTypes = PropTypes> {
   errors: ColorPickerErrors
   /** 预设色板（原样透传 swatches prop，缺省是空数组）。 */
   swatches: string[]
-  isSwatchSelected: (value: string) => boolean
-  channelState: (channel: ColorPickerChannel) => ColorPickerChannelState
+  /** 色相那条颜色滑块的 api：部件属性与取值都从这里拿，DOM 带 data-scope="color-slider"。 */
+  hueSlider: ColorSliderApi<T>
+  /** 透明度那条颜色滑块的 api。 */
+  alphaSlider: ColorSliderApi<T>
+  /** 预设色板的 api，DOM 带 data-scope="color-swatch-picker"。 */
+  swatchPicker: ColorSwatchPickerApi<T>
   /** 某个数值框此刻该显示的字（有草稿显示草稿，否则显示规范文本）。 */
   inputText: (channel: ColorPickerInputChannel) => string
   setOpen: (next: boolean) => void
@@ -301,13 +287,14 @@ export interface ColorPickerApi<T extends PropTypes = PropTypes> {
   getContentProps: () => T['element']
   getSaturationAreaProps: () => T['element']
   getAreaThumbProps: () => T['element']
-  getChannelSliderProps: (props: ColorPickerChannelProps) => T['element']
-  getChannelSliderTrackProps: (props: ColorPickerChannelProps) => T['element']
-  getChannelSliderThumbProps: (props: ColorPickerChannelProps) => T['element']
+  /** 色相滑块的挂载点，同时充当那条滑块的根节点：滑块 root 的状态标记照抄在它身上。 */
+  getHueSliderProps: () => T['element']
+  /** 透明度滑块的挂载点，同上。 */
+  getAlphaSliderProps: () => T['element']
   getChannelInputProps: (props: ColorPickerInputProps) => T['input']
   getEyeDropperTriggerProps: () => T['button']
-  getSwatchGroupProps: () => T['element']
-  getSwatchItemProps: (props: ColorPickerSwatchItemProps) => T['button']
+  /** 预设色板的挂载点，同时充当色板的根节点（role=radiogroup 与键盘处理都在它身上）。 */
+  getSwatchPickerProps: () => T['element']
   /** 表单影子：值随表单提交。给了 name 才带 name，不给就不参与提交。 */
   getHiddenInputProps: () => T['input']
 }

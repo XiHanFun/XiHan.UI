@@ -1,12 +1,11 @@
-<!-- 透明度 | 调整颜色透明度 -->
+<!-- 透明度 | alpha 开启后值串带透明度，浮层里多一条透明度滑块；两条滑块共用同一份工作色，推色相不会把透明度归 1 -->
 <script setup lang="ts">
 import {
+  XhColorPickerAlphaSlider,
   XhColorPickerAreaThumb,
-  XhColorPickerChannelSlider,
-  XhColorPickerChannelSliderThumb,
-  XhColorPickerChannelSliderTrack,
   XhColorPickerContent,
   XhColorPickerControl,
+  XhColorPickerHueSlider,
   XhColorPickerLabel,
   XhColorPickerPositioner,
   XhColorPickerRoot,
@@ -31,14 +30,8 @@ import {
         <XhColorPickerSaturationArea>
           <XhColorPickerAreaThumb />
         </XhColorPickerSaturationArea>
-        <XhColorPickerChannelSlider channel="hue">
-          <XhColorPickerChannelSliderTrack />
-          <XhColorPickerChannelSliderThumb />
-        </XhColorPickerChannelSlider>
-        <XhColorPickerChannelSlider channel="alpha">
-          <XhColorPickerChannelSliderTrack />
-          <XhColorPickerChannelSliderThumb />
-        </XhColorPickerChannelSlider>
+        <XhColorPickerHueSlider />
+        <XhColorPickerAlphaSlider />
       </XhColorPickerContent>
     </XhColorPickerPositioner>
   </XhColorPickerRoot>
