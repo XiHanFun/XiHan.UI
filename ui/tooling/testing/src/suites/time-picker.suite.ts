@@ -437,7 +437,7 @@ export const timePickerSuite: ConformanceSuite = {
     },
 
     {
-      name: '点触发器展开且这一段还空着：不预落锚点，Tab 位与落焦都归时列容器',
+      name: '点触发器展开且这一段还空着：锚点落到时列第一项，方向键与 Enter 立即有明确起点',
       spec: { apg: `${APG}#keyboardinteraction` },
       props: { ...BASE },
       steps: [
@@ -446,27 +446,28 @@ export const timePickerSuite: ConformanceSuite = {
           part: 'trigger',
           expect: {
             parts: {
-              // 指针打开不预落锚点：浮层弹出那一刻一个格子都不高亮
-              [HOUR_08]: { 'tabindex': '-1', 'data-highlighted': null },
-              [HOUR_COL]: { tabindex: '0' },
+              // 从触发器打开：空值落到第一项，不让焦点停在整列容器上
+              [HOUR_08]: { 'tabindex': '0', 'data-highlighted': '', 'aria-selected': 'false' },
+              [HOUR_COL]: { tabindex: '-1' },
             },
             events: [{ type: 'open-change', detail: { open: true } }],
           },
         },
         {
           kind: 'settle',
-          until: { activeElement: HOUR_COL },
-          expect: { activeElement: { part: HOUR_COL, exact: true }, events: [] },
+          until: { activeElement: HOUR_08 },
+          expect: { activeElement: { part: HOUR_08, exact: true }, events: [] },
         },
-        // 第一按方向键才锚定首格，roving tabindex 随之移交
+        // 锚点只是焦点，不是选中：方向键从它起步，值仍是空的
         {
           kind: 'key',
           key: 'ArrowDown',
           expect: {
-            activeElement: { part: HOUR_08, exact: true },
+            activeElement: { part: HOUR_09, exact: true },
             parts: {
-              [HOUR_COL]: { tabindex: '-1' },
-              [HOUR_08]: { 'tabindex': '0', 'data-highlighted': '' },
+              root: { 'data-empty': '' },
+              [HOUR_09]: { 'tabindex': '0', 'data-highlighted': '', 'aria-selected': 'false' },
+              [HOUR_08]: { 'tabindex': '-1', 'data-highlighted': null },
             },
             events: [],
           },
