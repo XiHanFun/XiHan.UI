@@ -74,7 +74,7 @@ invalid 由宿主自己判定，不必挂在表单上；标出来之后值照样
 
 ### 框内单位与货币符号
 
-前后缀图标/文字直接流式插进 control：减在左、加在右、输入框居中，前后缀排在输入框两侧
+前后缀图标/文字直接流式插进 control，减、加按钮统一收在右侧
 
 <XhDemo src="number-field/11-affix" />
 
@@ -104,15 +104,15 @@ parse 把显示串读成数、format 把数写回显示串；两个方向必须�
 - 越界的值在失焦规范化时被夹回区间。
 - `prefix` / `suffix` 在框内摆货币符、单位或图标，两段对读屏隐藏。
 - `control` 是必需部件，也是输入、前后缀与两颗动作共用的唯一视觉盒；默认无可见描边、带轻阴影，悬停与聚焦由
-  整体盒统一反馈。两侧动作占满控件高度，常态和悬停保持透明，按下时才显示动作反馈。
+  整体盒统一反馈。减、加两颗动作依次收在右侧并占满控件高度，常态和悬停保持透明，按下时才显示动作反馈。
 - `outline` 延续默认层级投影，`subtle` 与 `ghost` 使用扁平表面；三档都由统一输入壳承担交互反馈。
 - comfortable 下 `sm` / `md` / `lg` 控件高为 32 / 36 / 40px；compact 下分别为 28 / 32 / 36px。
-  两侧动作区宽度跟随密度档，数字使用等宽字形，前缀、数值和后缀共用中线。
+  右侧动作区宽度跟随密度档，数字使用等宽字形，前缀、数值和后缀共用中线。
 - 粗指针环境会把真实加减按钮与控件高度扩到 comfortable 48px、compact 44px；命中区由 flex
   子项本身承担，不用伪元素伸进输入区，两颗按钮及输入区互不重叠。
 - Tab 只停在 `spinbutton` 输入框，聚焦环由整个 `control` 统一绘制；加减钮退出 Tab 序列，但仍可由
   指针和公开 API 操作。到达 `min` / `max` 时只禁用对应方向，`disabled` / `readOnly` 才同时锁住两侧。
-- 两侧动作与输入之间使用半高、垂直居中的柔和分隔线；位置使用逻辑属性，RTL 下自动换边。
+- 输入与右侧动作组之间使用一条半高、垂直居中的柔和分隔线；位置使用逻辑属性，RTL 下自动换边。
 
 ### 组合
 
@@ -221,7 +221,7 @@ parse 把显示串读成数、format 把数写回显示串；两个方向必须�
 | `decrement` | `() => void` |  |
 | `getRootProps` | `() => T['element']` |  |
 | `getLabelProps` | `() => T['label']` |  |
-| `getControlProps` | `() => T['element']` | 必需的唯一输入壳：皮肤把视觉盒画在它身上，减在左、加在右、输入框居中。 |
+| `getControlProps` | `() => T['element']` | 必需的唯一输入壳：皮肤把视觉盒画在它身上，输入在左，减、加动作依次收在右侧。 |
 | `getPrefixProps` | `() => T['element']` | 输入框前的装饰段（货币符、单位、图标）；对读屏隐藏，不参与名字链。 |
 | `getInputProps` | `() => T['input']` |  |
 | `getSuffixProps` | `() => T['element']` | 输入框后的装饰段；对读屏隐藏，不参与名字链。 |
@@ -330,8 +330,8 @@ parse 把显示串读成数、format 把数写回显示串；两个方向必须�
 | `--xh-number-field-placeholder-fg` | `control`<br>`input` | `color` | `placeholder` | `--xh-fg-subtle` | number-field 的 control、input 部件 color 覆盖槽。 |
 | `--xh-number-field-touch-target-size` | `control`<br>`decrement-trigger`<br>`increment-trigger` | `min-block-size`<br>`min-inline-size` | `@media (pointer: coarse)` | `--xh-control-box-lg` | number-field 的 control、decrement-trigger、increment-trigger 部件 min-block-size、min-inline-size 覆盖槽。 |
 | `--xh-number-field-trigger-bg-active` | `control`<br>`decrement-trigger`<br>`increment-trigger` | `background` | `active`<br>`not(:disabled)` | `--xh-_number-field-trigger-bg-active` | number-field 的 control、decrement-trigger、increment-trigger 部件 background 覆盖槽。 |
-| `--xh-number-field-trigger-divider` | `control`<br>`decrement-trigger`<br>`increment-trigger`<br>`input` | `border-inline-start` | `has(~ [data-part='input'])`<br>`is([data-part='decrement-trigger'], [data-part='increment-trigger'])` | `--xh-material-soft-separator` | number-field 的 control、decrement-trigger、increment-trigger、input 部件 border-inline-start 覆盖槽。 |
-| `--xh-number-field-trigger-divider-h` | `control`<br>`decrement-trigger`<br>`increment-trigger`<br>`input` | `block-size`<br>`inset-block-start` | `has(~ [data-part='input'])`<br>`is([data-part='decrement-trigger'], [data-part='increment-trigger'])` | `--xh-_number-field-divider-h` | number-field 的 control、decrement-trigger、increment-trigger、input 部件 block-size、inset-block-start 覆盖槽。 |
+| `--xh-number-field-trigger-divider` | `control`<br>`decrement-trigger`<br>`input` | `border-inline-start` | `has([data-part='input'])` | `--xh-material-soft-separator` | number-field 的 control、decrement-trigger、input 部件 border-inline-start 覆盖槽。 |
+| `--xh-number-field-trigger-divider-h` | `control`<br>`decrement-trigger`<br>`input` | `block-size`<br>`inset-block-start` | `has([data-part='input'])` | `--xh-_number-field-divider-h` | number-field 的 control、decrement-trigger、input 部件 block-size、inset-block-start 覆盖槽。 |
 | `--xh-number-field-trigger-fg` | `control`<br>`decrement-trigger`<br>`increment-trigger` | `color` | `default` | `--xh-fg-default` | number-field 的 control、decrement-trigger、increment-trigger 部件 color 覆盖槽。 |
 | `--xh-number-field-trigger-fg-hover` | `control`<br>`decrement-trigger`<br>`increment-trigger` | `color` | `hover`<br>`not(:disabled)` | `--xh-fg-default` | number-field 的 control、decrement-trigger、increment-trigger 部件 color 覆盖槽。 |
 | `--xh-number-field-trigger-font-size` | `control`<br>`decrement-trigger`<br>`increment-trigger` | `font-size` | `default` | `--xh-_number-field-trigger-font-size` | number-field 的 control、decrement-trigger、increment-trigger 部件 font-size 覆盖槽。 |
