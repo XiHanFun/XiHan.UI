@@ -6,6 +6,7 @@
 // 定义 matrix code 类型契约。
 
 import type { PropTypes } from '@xihan-ui/core'
+import type { Pdf417Level } from './pdf417-encode'
 import type { QrLevel } from './qr-encode'
 
 /**
@@ -13,9 +14,17 @@ import type { QrLevel } from './qr-encode'
  *
  * 每种码制各有自己的编码器与几何，组件只按这个值分派；同一个 `value` 换一种码制就是另一张码。
  * · qr —— QR Code（ISO/IEC 18004），有三个码眼与四档纠错；
- * · data-matrix —— Data Matrix ECC 200（ISO/IEC 16022，含矩形扩展），L 形定位图形，纠错率随尺寸固定。
+ * · data-matrix —— Data Matrix ECC 200（ISO/IEC 16022，含矩形扩展），L 形定位图形，纠错率随尺寸固定；
+ * · pdf417 —— PDF417（ISO/IEC 15438），堆叠条码，九档纠错，列数可指定；
+ * · aztec —— Aztec（ISO/IEC 24778），牛眼居中、不需要静区，纠错按百分比。
  */
-export type MatrixCodeFormat = 'qr' | 'data-matrix'
+export type MatrixCodeFormat = 'qr' | 'data-matrix' | 'pdf417' | 'aztec'
+
+/**
+ * 纠错级别，取值域随码制：qr 是 L / M / Q / H；pdf417 是 0–8；aztec 是纠错码字至少占的百分比 5–95。
+ * data-matrix 的纠错率随尺寸固定，没有级别可挑。
+ */
+export type MatrixCodeLevel = QrLevel | Pdf417Level | number
 
 /** 根的三态：画出了码 / 没有可编码的内容 / 内容装不下或码制不认识。 */
 export type MatrixCodeState = 'ready' | 'empty' | 'error'
@@ -87,8 +96,17 @@ export interface MatrixCodeProps {
    * 变长 AI 之间用内容里的 GS（U+001D）分隔。
    */
   gs1?: boolean
-  /** 纠错级别 L / M / Q / H，缺省 M。只对 qr 有意义，给别的码制会往诊断通道报一条警告，按没给处理。 */
-  level?: QrLevel
+  /**
+   * 纠错级别，取值域随码制：qr 是 L / M / Q / H（缺省 M）；pdf417 是 0–8（缺省按数据量取规范推荐档）；
+   * aztec 是纠错码字至少占的百分比 5–95（缺省 33）。给了码制不认的值不画码，根落到 `error` 态。
+   * data-matrix 没有级别可挑，给了会往诊断通道报一条警告，按没给处理。
+   */
+  level?: MatrixCodeLevel
+  /**
+   * PDF417 的数据列数 1–30，缺省在宽高比最接近 3:1 的那一档里挑。
+   * 只对 pdf417 有意义，给别的码制会往诊断通道报一条警告，按没给处理。
+   */
+  columns?: number
   /**
    * 从矩形尺寸（含矩形扩展 DMRE）里挑，缺省从正方形尺寸里挑。
    * 只对 data-matrix 有意义，给别的码制会往诊断通道报一条警告，按没给处理。
@@ -100,7 +118,7 @@ export interface MatrixCodeProps {
   margin?: number
   /** 可及名字，缺省用 value；给了全空白的名字等于没给。 */
   label?: string
-  /** 码点形状，缺省 square。 */
+  /** 码点形状，缺省 square。pdf417 是条不是点，给了会往诊断通道报一条警告，按没给处理。 */
   moduleShape?: MatrixCodeModuleShape
   /**
    * 码眼形状，缺省 square。时序图形与校正图形不受它影响，一律保持方块——它们是透视校正的几何基准。
@@ -125,7 +143,7 @@ export interface MatrixCodeApi<T extends PropTypes = PropTypes> {
   modules: readonly (readonly boolean[])[]
   /** QR 实际用到的版本；别的码制与没画出码时为 0。 */
   version: number
-  /** 模块列数与行数，不含静区；正方形码两者相等，没画出码时为 0。 */
+  /** 模块列数与行数，不含静区；正方形码两者相等，pdf417 的行数已含每个码字行占的 3 个模块高，没画出码时为 0。 */
   columns: number
   rows: number
   /** 解析后的静区宽度，单位是模块数。 */

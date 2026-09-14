@@ -26,7 +26,7 @@
 
 ### 码制
 
-format 切到 data-matrix 就是工业打标常用的 Data Matrix：L 形定位图形、纠错率随尺寸固定；rectangular 从矩形尺寸里挑
+qr 之外还有三种：工业打标用的 Data Matrix（rectangular 从矩形尺寸里挑）、运单证件用的 PDF417、票务用的 Aztec
 
 <XhDemo src="matrix-code/02-format" />
 
@@ -82,8 +82,10 @@ gs1 打开后最前面放 FNC1，读码器把内容当 GS1 元素串：变长 AI
 
 ### 何时使用
 
-- 跨设备传递地址、配对码、票据：`qr`。
+- 跨设备传递地址、配对码：`qr`。
 - 工业零件打标、电子元件、医药 UDI、追溯标签这类要在很小的面积上放码的地方：`data-matrix`。
+- 运单、证件、登机牌这类要放几百字节又只能横向扫描的地方：`pdf417`。
+- 车票、登机牌、票务这类要在低分辨率下也扫得出、边上留不出静区的地方：`aztec`。
 
 ### 何时不用
 
@@ -93,10 +95,13 @@ gs1 打开后最前面放 FNC1，读码器把内容当 GS1 元素串：变长 AI
 
 ### 特性
 
-- `format` 两种码制：`qr`（缺省，ISO/IEC 18004）与 `data-matrix`（ISO/IEC 16022，含 2024 版并入的矩形扩展）；给了不认识的值不画码，根落到 error 态。
+- `format` 四种码制：`qr`（缺省，ISO/IEC 18004）、`data-matrix`（ISO/IEC 16022，含 2024 版并入的矩形扩展）、`pdf417`（ISO/IEC 15438）、`aztec`（ISO/IEC 24778）；给了不认识的值不画码，根落到 error 态。
 - `gs1` 把码变成 GS1 QR / GS1 DataMatrix：最前面放 FNC1，变长 AI 之间用内容里的 GS（U+001D）分隔。
-- QR：`level` 四档纠错（L / M / Q / H），越高越能容忍污损，同样的内容也因此占更多模块；`eyeShape` 换码眼形状；中心可以放 logo。
+- `level` 的取值域随码制：QR 四档 L / M / Q / H，越高越能容忍污损，同样的内容也因此占更多模块；PDF417 九档 0–8，缺省按数据量取规范推荐档；Aztec 是纠错码字至少占的百分比 5–95，缺省 33。给了码制不认的值不画码。
+- QR：`eyeShape` 换码眼形状；中心可以放 logo。
 - Data Matrix：纠错率随尺寸固定，没有级别可挑；`rectangular` 从矩形尺寸里挑，窄条标签放得下；没有码眼，L 形定位图形随码点形状一起换。
+- PDF417：`columns` 指定数据列数 1–30，缺省挑宽高比最接近 3:1 的一档；它是条不是点，不吃 `moduleShape`。
+- Aztec：牛眼居中，不需要静区，缺省 `margin` 为 0。
 - `moduleShape` 换码点形状；三种形状的墨都盖住每个模块的格心，读码器按格心取样。
 - `margin` 是静区，缺省按码制的规范值；`pixelSize` 是宽度，高按模块比例。
 - 配色可换。
@@ -108,9 +113,9 @@ gs1 打开后最前面放 FNC1，读码器把内容当 GS1 元素串：变长 AI
 ### 最佳实践
 
 - 放 logo 就把纠错级别提到 Q 或 H，否则遮住的模块补不回来。
-- 静区不能省，贴边的码扫不出来；Data Matrix 只要一格，QR 要四格。
+- 静区不能省，贴边的码扫不出来；Data Matrix 只要一格，PDF417 两格，QR 要四格，Aztec 不需要。
 - 旁边同时给出文本或链接：不是所有人都能扫。
-- 对当前码制没有意义的选项（给 Data Matrix 传 `level`、给 QR 传 `rectangular`）会往诊断通道报一条警告，按没给处理；别靠它们切换码制。
+- 对当前码制没有意义的选项（给 Data Matrix 传 `level`、给 QR 传 `rectangular`、给 PDF417 传 `moduleShape`）会往诊断通道报一条警告，按没给处理；别靠它们切换码制。
 
 ### 反模式
 
@@ -133,14 +138,15 @@ gs1 打开后最前面放 FNC1，读码器把内容当 GS1 元素串：变长 AI
 
 | 属性 | 类型 | 必填 | 说明 |
 | --- | --- | --- | --- |
+| `columns` | `number` |  | PDF417 的数据列数 1–30，缺省在宽高比最接近 3:1 的那一档里挑。 只对 pdf417 有意义，给别的码制会往诊断通道报一条警告，按没给处理。 |
 | `eyeShape` | `MatrixCodeEyeShape` |  | 码眼形状，缺省 square。时序图形与校正图形不受它影响，一律保持方块——它们是透视校正的几何基准。 只对 qr 有意义，给别的码制会往诊断通道报一条警告，按没给处理。 |
 | `format` | `MatrixCodeFormat` |  | 码制，缺省 qr。给了不认识的值不画码，根落到 `error` 态。 |
 | `gs1` | `boolean` |  | GS1 模式：在最前面放 FNC1，读码器据此把内容当 GS1 元素串解释，即 GS1 QR / GS1 DataMatrix； 变长 AI 之间用内容里的 GS（U+001D）分隔。 |
 | `label` | `string` |  | 可及名字，缺省用 value；给了全空白的名字等于没给。 |
-| `level` | `QrLevel` |  | 纠错级别 L / M / Q / H，缺省 M。只对 qr 有意义，给别的码制会往诊断通道报一条警告，按没给处理。 |
+| `level` | `MatrixCodeLevel` |  | 纠错级别，取值域随码制：qr 是 L / M / Q / H（缺省 M）；pdf417 是 0–8（缺省按数据量取规范推荐档）； aztec 是纠错码字至少占的百分比 5–95（缺省 33）。给了码制不认的值不画码，根落到 `error` 态。 data-matrix 没有级别可挑，给了会往诊断通道报一条警告，按没给处理。 |
 | `logo` | `boolean` |  | 码面正中是否留一块给 logo。 留出来的那片模块会被底色盖住，对读码器而言等于人为污损：放 logo 就把 level 提到 Q 或 H， L 与 M 那点纠错余量赔不起这一块。损伤量见 `logoDamage`；超出所选级别的余量时 会往诊断通道报一条 `matrix-code.logo-damage` 警告，码照画。 只对 qr 有意义：Data Matrix 的纠错余量随尺寸固定、没有可挑的级别，放 logo 会报一条警告并按没放处理。 |
 | `margin` | `number` |  | 静区宽度，单位是模块数，缺省按码制的规范值（qr 4、data-matrix 1）；静区含在 viewBox 里，不占额外尺寸。 |
-| `moduleShape` | `MatrixCodeModuleShape` |  | 码点形状，缺省 square。 |
+| `moduleShape` | `MatrixCodeModuleShape` |  | 码点形状，缺省 square。pdf417 是条不是点，给了会往诊断通道报一条警告，按没给处理。 |
 | `pixelSize` | `number` |  | 像素宽度，缺省 160；高按模块比例算出，正方形码宽高相等。两者都写成根上的内联尺寸。 |
 | `rectangular` | `boolean` |  | 从矩形尺寸（含矩形扩展 DMRE）里挑，缺省从正方形尺寸里挑。 只对 data-matrix 有意义，给别的码制会往诊断通道报一条警告，按没给处理。 |
 | `value` | `string` |  | 要编码的内容；空串不画码。QR 按 UTF-8 取字节走字节模式；Data Matrix 走 ASCII 模式，Latin-1 以外的字符按 UTF-8 并声明 ECI。 |
@@ -162,7 +168,7 @@ gs1 打开后最前面放 FNC1，读码器把内容当 GS1 元素串：变长 AI
 | `format` | `MatrixCodeFormat` | 解析后的码制。给了不认识的值时保持原样透出，好让错误信息与 data-format 都指着那个值。 |
 | `modules` | `readonly (readonly boolean[])[]` | 模块矩阵，[行][列]，true = 深色；没画出码时是空数组。 |
 | `version` | `number` | QR 实际用到的版本；别的码制与没画出码时为 0。 |
-| `columns` | `number` | 模块列数与行数，不含静区；正方形码两者相等，没画出码时为 0。 |
+| `columns` | `number` | 模块列数与行数，不含静区；正方形码两者相等，pdf417 的行数已含每个码字行占的 3 个模块高，没画出码时为 0。 |
 | `rows` | `number` |  |
 | `margin` | `number` | 解析后的静区宽度，单位是模块数。 |
 | `viewBox` | `string` | 根的 viewBox，含静区。 |
@@ -208,7 +214,7 @@ gs1 打开后最前面放 FNC1，读码器把内容当 GS1 元素串：变长 AI
 | --- | --- | --- |
 | `root` | `data-columns` | undefined \| String(columns) |
 | `root` | `data-format` | props.format |
-| `root` | `data-level` | props.level \| undefined |
+| `root` | `data-level` | 'M' \| String(pdfLevel) \| undefined |
 | `root` | `data-logo` | ''（条件成立时才出现） |
 | `root` | `data-rows` | undefined \| String(rows) |
 | `root` | `data-state` | 'empty' |

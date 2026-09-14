@@ -354,7 +354,8 @@ function readback(props: MatrixCodeProps): Readback {
   const painted = paintedOf(api.path, api.eyePath, api.logoArea)
   return {
     api,
-    matrix: qrEncode(props.value ?? '', props.level).modules,
+    // 这份判据只喂 QR 的字母档
+    matrix: qrEncode(props.value ?? '', props.level as QrLevel | undefined).modules,
     painted,
     ink: inkGrid(painted, centers, centers),
   }

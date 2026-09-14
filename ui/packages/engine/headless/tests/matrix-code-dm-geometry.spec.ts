@@ -139,7 +139,7 @@ describe('对当前码制没有意义的选项', () => {
   })
 
   it('不认识的码制不再逐项报选项：那一条 error 已经说清了', () => {
-    connect({ format: 'pdf417' as never, value: 'x', level: 'H', rectangular: true })
+    connect({ format: 'nope' as never, value: 'x', level: 'H', rectangular: true })
     expect(ignored()).toEqual([])
   })
 })

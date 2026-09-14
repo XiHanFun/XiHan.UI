@@ -5,7 +5,7 @@
 
 // 提供 matrix code 相关实现。
 
-import type { MatrixCodeApi, MatrixCodeFormat, MatrixCodeProps, QrLevel } from '@xihan-ui/headless'
+import type { MatrixCodeApi, MatrixCodeFormat, MatrixCodeLevel, MatrixCodeProps } from '@xihan-ui/headless'
 import { connectMatrixCode, matrixCodeAnatomy, matrixCodeMeta } from '@xihan-ui/headless'
 import { wcNormalize } from '../dom/normalize'
 import { XhElement } from '../element-base'
@@ -30,13 +30,13 @@ function makeGeom(doc: Document, tag: string, name: string): Element {
 }
 
 /**
- * `<xh-matrix-code>` —— 二维码宿主，无状态机，`format` 选码制（qr / data-matrix），把命名与档位打到 root 上，把几何铺进 root。
+ * `<xh-matrix-code>` —— 二维码宿主，无状态机，`format` 选码制（qr / data-matrix / pdf417 / aztec），把命名与档位打到 root 上，把几何铺进 root。
  *
  * 作者写一个空的 `<svg data-xh-part="root"></svg>`，几何由本元素生成：模块是算出来的派生数据，
  * 作者没法自己写。矩阵在 connectMatrixCode 里算一遍，这里只取现成的 path。
  *
  * QR 的几何是两条 `<path>`：除码眼外的模块一条、三个码眼一条，码眼那条另有 `--xh-matrix-code-eye-fg` 可单独上色；
- * Data Matrix 没有码眼，只有前一条。
+ * 其余码制没有码眼，只有前一条。
  *
  * 要放中心 logo 就在 root 里写一个 `<svg data-xh-part="logo">` 并把图形放进去，落位与尺寸由本元素写上；
  * 那块底下会先铺一个底色矩形把模块挖空，作者的图形画在它上面。放了 logo 就把 level 提到 Q 或 H：
@@ -47,15 +47,16 @@ function makeGeom(doc: Document, tag: string, name: string): Element {
  * 截断能画出一张扫得开的码，但扫出来的是半截内容。
  *
  * @customElement xh-matrix-code
- * @attr {'qr'|'data-matrix'} format - 码制，缺省 qr
- * @attr {string} value - 要编码的内容；QR 按 UTF-8 走字节模式，Data Matrix 走 ASCII 模式
- * @attr {boolean} gs1 - GS1 模式：最前面放 FNC1，即 GS1 QR / GS1 DataMatrix
- * @attr {'L'|'M'|'Q'|'H'} level - 纠错级别，缺省 M；只对 qr 有意义
+ * @attr {'qr'|'data-matrix'|'pdf417'|'aztec'} format - 码制，缺省 qr
+ * @attr {string} value - 要编码的内容；QR 按 UTF-8 走字节模式，Data Matrix 走 ASCII 模式，PDF417 走字节压缩，Aztec 走大写 / 小写 / 数字加二进制移位
+ * @attr {boolean} gs1 - GS1 模式：最前面放 FNC1，即 GS1 QR / GS1 DataMatrix；只对这两种码制有意义
+ * @attr {string} level - 纠错级别：qr 是 L / M / Q / H（缺省 M），pdf417 是 0–8，aztec 是纠错百分比 5–95（缺省 33）
  * @attr {boolean} rectangular - 从矩形尺寸里挑；只对 data-matrix 有意义
+ * @attr {number} columns - PDF417 的数据列数 1–30；只对 pdf417 有意义
  * @attr {number} pixel-size - 像素宽度，缺省 160；高按模块比例
- * @attr {number} margin - 静区宽度（模块数），缺省按码制的规范值（qr 4、data-matrix 1）
+ * @attr {number} margin - 静区宽度（模块数），缺省按码制的规范值（qr 4、data-matrix 1、pdf417 2、aztec 0）
  * @attr {string} label - 可及名字，缺省用 value
- * @attr {'square'|'dot'|'rounded'} module-shape - 码点形状，缺省 square
+ * @attr {'square'|'dot'|'rounded'} module-shape - 码点形状，缺省 square；pdf417 是条不是点，不认它
  * @attr {'square'|'rounded'} eye-shape - 码眼形状，缺省 square；只对 qr 有意义
  * @csspart root - 根 `<svg>`，承载 viewBox / role=img / aria-label / data-format / data-level / data-version / data-columns / data-rows / data-state / data-logo
  * @csspart logo - 码面正中放 logo 的嵌套 `<svg>`，承载 x / y / width / height
@@ -74,8 +75,10 @@ export class XhMatrixCodeElement extends XhElement {
     format: { converter: STRING_CONVERTER },
     value: { converter: STRING_CONVERTER },
     gs1: { converter: BOOLEAN_CONVERTER },
+    // level 的取值域随码制，字符串原样交给 connect 核：qr 认字母档，pdf417 与 aztec 认数字串
     level: { converter: STRING_CONVERTER },
     rectangular: { converter: BOOLEAN_CONVERTER },
+    columns: { type: Number },
     label: { converter: STRING_CONVERTER },
     pixelSize: { type: Number, attribute: 'pixel-size' },
     margin: { type: Number },
@@ -86,8 +89,9 @@ export class XhMatrixCodeElement extends XhElement {
   declare format?: MatrixCodeFormat
   declare value?: string
   declare gs1?: boolean
-  declare level?: QrLevel
+  declare level?: MatrixCodeLevel
   declare rectangular?: boolean
+  declare columns?: number
   declare label?: string
   declare pixelSize?: number
   declare margin?: number
@@ -111,6 +115,7 @@ export class XhMatrixCodeElement extends XhElement {
       gs1: this.gs1,
       level: this.level,
       rectangular: this.rectangular,
+      columns: this.columns,
       pixelSize: this.pixelSize,
       margin: this.margin,
       label: this.label,

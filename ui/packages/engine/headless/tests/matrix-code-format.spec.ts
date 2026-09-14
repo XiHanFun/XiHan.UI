@@ -44,7 +44,7 @@ describe('码制', () => {
   })
 
   it('码制不认识时先于内容判定：空内容也落 error 而不是 empty', () => {
-    const api = connectMatrixCode({ format: 'pdf417' as never, value: '' }, normalizeProps)
+    const api = connectMatrixCode({ format: 'nope' as never, value: '' }, normalizeProps)
     expect(api.state).toBe('error')
   })
 })

@@ -58,6 +58,40 @@ describe('matrix-code 真实几何', () => {
     expect(box.height).toBe(rows)
   })
 
+  it('PDF417：横长的堆叠条码，宽是 pixelSize、高按含静区的模块比例；条从静区起止', async () => {
+    const root = await mount({ format: 'pdf417', value: 'Hello, World!', pixelSize: 320 })
+    const rect = root.getBoundingClientRect()
+    const columns = Number(root.getAttribute('data-columns'))
+    const rows = Number(root.getAttribute('data-rows'))
+    expect(columns).toBeGreaterThan(rows)
+    expect(rect.width).toBe(320)
+    // 布局把分数像素归到 1/64，误差留 0.05
+    expect(rect.height).toBeCloseTo((320 * (rows + 4)) / (columns + 4), 1)
+    const box = bbox(root.querySelector('[data-xh-geom="modules"]')!)
+    // 起始图形第一根条在最左、终止图形最后一根条在最右，两侧静区各 2 格
+    expect(box.x).toBe(2)
+    expect(box.width).toBe(columns)
+    expect(box.height).toBe(rows)
+  })
+
+  it('Aztec：不留静区，牛眼贴着正方形根的正中', async () => {
+    const root = await mount({ format: 'aztec', value: 'Hello, World!', pixelSize: 190 })
+    const rect = root.getBoundingClientRect()
+    expect(rect.width).toBe(190)
+    expect(rect.height).toBe(190)
+    const size = Number(root.getAttribute('data-columns'))
+    expect(root.getAttribute('viewBox')).toBe(`0 0 ${size} ${size}`)
+    // 正中那一格是牛眼中心：用 SVG 的坐标换算取到那一点，isPointInFill 直接问渲染器
+    const path = root.querySelector('[data-xh-geom="modules"]') as SVGGeometryElement
+    const point = root.createSVGPoint()
+    const center = Math.floor(size / 2) + 0.5
+    point.x = center
+    point.y = center
+    expect(path.isPointInFill(point)).toBe(true)
+    point.x = center + 1
+    expect(path.isPointInFill(point)).toBe(false)
+  })
+
   it('换成 qr 仍是两条 path、正方形根；两种码制的皮肤底色一致', async () => {
     const dm = await mount({ format: 'data-matrix', value: 'x' })
     const dmBg = getComputedStyle(dm).backgroundColor
