@@ -60,6 +60,8 @@ export { colorSliderAlpha, colorSliderAnatomy, colorSliderKeyboard, colorSliderM
 export type { ColorSliderApi, ColorSliderSchema, ColorSliderServices, ColorSliderTranslations, ColorSliderValueChangeDetails } from './color-slider'
 export { colorSwatchAnatomy, colorSwatchKeyboard, colorSwatchMeta, connectColorSwatch } from './color-swatch'
 export type { ColorSwatchApi, ColorSwatchProps, ColorSwatchTranslations } from './color-swatch'
+export { colorSwatchPickerAnatomy, colorSwatchPickerKeyboard, colorSwatchPickerMachine, colorSwatchPickerMeta, connectColorSwatchPicker } from './color-swatch-picker'
+export type { ColorSwatchPickerApi, ColorSwatchPickerItemProps, ColorSwatchPickerNode, ColorSwatchPickerNodeMeta, ColorSwatchPickerSchema, ColorSwatchPickerTranslations, ColorSwatchPickerValueChangeDetails } from './color-swatch-picker'
 export { COMBOBOX_DEFAULT_PLACEMENT, comboboxAnatomy, comboboxItemQuery, comboboxItemText, comboboxKeyboard, comboboxMachine, comboboxMeta, connectCombobox } from './combobox'
 export type { ComboboxApi, ComboboxFocusIntent, ComboboxGroupProps, ComboboxInputBehavior, ComboboxInputEl, ComboboxInputHost, ComboboxInputProps, ComboboxInputValueChangeDetails, ComboboxItemProps, ComboboxNode, ComboboxNodeMeta, ComboboxOpenChangeDetails, ComboboxRefs, ComboboxSchema, ComboboxTranslations, ComboboxValueChangeDetails } from './combobox'
 export { COMMAND_UNGROUPED, commandAnatomy, commandItemQuery, commandItemText, commandKeyboard, commandMachine, commandMeta, connectCommand, flattenCommandGroups, matchesCommandTerms, navigateCommandResults, normalizeCommandQuery, resolveCommandGroups, resolveCommandNode } from './command'

@@ -34,6 +34,7 @@ import { XhColorFieldElement } from './elements/color-field'
 import { XhColorPickerElement } from './elements/color-picker'
 import { XhColorSliderElement } from './elements/color-slider'
 import { XhColorSwatchElement } from './elements/color-swatch'
+import { XhColorSwatchPickerElement } from './elements/color-swatch-picker'
 import { XhComboboxElement } from './elements/combobox'
 import { XhCommandElement } from './elements/command'
 import { XhConfigElement } from './elements/config'
@@ -153,6 +154,7 @@ export function defineXhElements(): void {
   defineElement('xh-color-field', XhColorFieldElement, VERSION)
   defineElement('xh-color-slider', XhColorSliderElement, VERSION)
   defineElement('xh-color-swatch', XhColorSwatchElement, VERSION)
+  defineElement('xh-color-swatch-picker', XhColorSwatchPickerElement, VERSION)
   defineElement('xh-command', XhCommandElement, VERSION)
   defineElement('xh-date-range-picker', XhDateRangePickerElement, VERSION)
   defineElement('xh-descriptions', XhDescriptionsElement, VERSION)
@@ -311,6 +313,7 @@ export {
   XhColorPickerElement,
   XhColorSliderElement,
   XhColorSwatchElement,
+  XhColorSwatchPickerElement,
   XhComboboxElement,
   XhCommandElement,
   XhConfigElement,

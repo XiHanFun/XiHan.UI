@@ -13705,6 +13705,286 @@
       "description": "color-swatch 的 root 部件 --xh-swatch-size 覆盖槽。"
     },
     {
+      "name": "--xh-color-swatch-picker-gap",
+      "component": "color-swatch-picker",
+      "part": [
+        "root"
+      ],
+      "property": [
+        "gap"
+      ],
+      "state": [
+        "default"
+      ],
+      "defaultToken": [
+        "--xh-_color-swatch-picker-gap"
+      ],
+      "visibility": "public",
+      "description": "color-swatch-picker 的 root 部件 gap 覆盖槽。"
+    },
+    {
+      "name": "--xh-color-swatch-picker-icon-size",
+      "component": "color-swatch-picker",
+      "part": [
+        "root"
+      ],
+      "property": [
+        "--xh-icon-size"
+      ],
+      "state": [
+        "default"
+      ],
+      "defaultToken": [
+        "--xh-_color-swatch-picker-mark"
+      ],
+      "visibility": "public",
+      "description": "color-swatch-picker 的 root 部件 --xh-icon-size 覆盖槽。"
+    },
+    {
+      "name": "--xh-color-swatch-picker-indicator-bg",
+      "component": "color-swatch-picker",
+      "part": [
+        "indicator"
+      ],
+      "property": [
+        "background"
+      ],
+      "state": [
+        "default"
+      ],
+      "defaultToken": [
+        "--xh-_color-swatch-picker-accent"
+      ],
+      "visibility": "public",
+      "description": "color-swatch-picker 的 indicator 部件 background 覆盖槽。"
+    },
+    {
+      "name": "--xh-color-swatch-picker-indicator-border",
+      "component": "color-swatch-picker",
+      "part": [
+        "indicator"
+      ],
+      "property": [
+        "border"
+      ],
+      "state": [
+        "default"
+      ],
+      "defaultToken": [
+        "--xh-bg-canvas"
+      ],
+      "visibility": "public",
+      "description": "color-swatch-picker 的 indicator 部件 border 覆盖槽。"
+    },
+    {
+      "name": "--xh-color-swatch-picker-indicator-fg",
+      "component": "color-swatch-picker",
+      "part": [
+        "indicator"
+      ],
+      "property": [
+        "background-color",
+        "color"
+      ],
+      "state": [
+        "default",
+        "empty"
+      ],
+      "defaultToken": [
+        "--xh-_tone-on"
+      ],
+      "visibility": "public",
+      "description": "color-swatch-picker 的 indicator 部件 background-color、color 覆盖槽。"
+    },
+    {
+      "name": "--xh-color-swatch-picker-indicator-size",
+      "component": "color-swatch-picker",
+      "part": [
+        "indicator"
+      ],
+      "property": [
+        "block-size",
+        "inline-size"
+      ],
+      "state": [
+        "default"
+      ],
+      "defaultToken": [
+        "--xh-_color-swatch-picker-indicator"
+      ],
+      "visibility": "public",
+      "description": "color-swatch-picker 的 indicator 部件 block-size、inline-size 覆盖槽。"
+    },
+    {
+      "name": "--xh-color-swatch-picker-item-radius",
+      "component": "color-swatch-picker",
+      "part": [
+        "item",
+        "swatch"
+      ],
+      "property": [
+        "--xh-swatch-radius",
+        "border-radius"
+      ],
+      "state": [
+        "default"
+      ],
+      "defaultToken": [
+        "--xh-shape-control"
+      ],
+      "visibility": "public",
+      "description": "color-swatch-picker 的 item、swatch 部件 --xh-swatch-radius、border-radius 覆盖槽。"
+    },
+    {
+      "name": "--xh-color-swatch-picker-item-size",
+      "component": "color-swatch-picker",
+      "part": [
+        "item"
+      ],
+      "property": [
+        "block-size",
+        "inline-size"
+      ],
+      "state": [
+        "default"
+      ],
+      "defaultToken": [
+        "--xh-_color-swatch-picker-cell"
+      ],
+      "visibility": "public",
+      "description": "color-swatch-picker 的 item 部件 block-size、inline-size 覆盖槽。"
+    },
+    {
+      "name": "--xh-color-swatch-picker-label-fg",
+      "component": "color-swatch-picker",
+      "part": [
+        "label"
+      ],
+      "property": [
+        "color"
+      ],
+      "state": [
+        "default"
+      ],
+      "defaultToken": [
+        "--xh-fg-muted"
+      ],
+      "visibility": "public",
+      "description": "color-swatch-picker 的 label 部件 color 覆盖槽。"
+    },
+    {
+      "name": "--xh-color-swatch-picker-label-font-size",
+      "component": "color-swatch-picker",
+      "part": [
+        "label"
+      ],
+      "property": [
+        "font-size"
+      ],
+      "state": [
+        "default"
+      ],
+      "defaultToken": [
+        "--xh-_color-swatch-picker-font-size"
+      ],
+      "visibility": "public",
+      "description": "color-swatch-picker 的 label 部件 font-size 覆盖槽。"
+    },
+    {
+      "name": "--xh-color-swatch-picker-label-font-weight",
+      "component": "color-swatch-picker",
+      "part": [
+        "label"
+      ],
+      "property": [
+        "font-weight"
+      ],
+      "state": [
+        "default"
+      ],
+      "defaultToken": [
+        "--xh-text-label-weight"
+      ],
+      "visibility": "public",
+      "description": "color-swatch-picker 的 label 部件 font-weight 覆盖槽。"
+    },
+    {
+      "name": "--xh-color-swatch-picker-ring",
+      "component": "color-swatch-picker",
+      "part": [
+        "item"
+      ],
+      "property": [
+        "outline"
+      ],
+      "state": [
+        "state=checked"
+      ],
+      "defaultToken": [
+        "--xh-_color-swatch-picker-accent"
+      ],
+      "visibility": "public",
+      "description": "color-swatch-picker 的 item 部件 outline 覆盖槽。"
+    },
+    {
+      "name": "--xh-color-swatch-picker-swatch-border",
+      "component": "color-swatch-picker",
+      "part": [
+        "swatch"
+      ],
+      "property": [
+        "--xh-swatch-border"
+      ],
+      "state": [
+        "default"
+      ],
+      "defaultToken": [
+        "--xh-border-default"
+      ],
+      "visibility": "public",
+      "description": "color-swatch-picker 的 swatch 部件 --xh-swatch-border 覆盖槽。"
+    },
+    {
+      "name": "--xh-color-swatch-picker-swatch-border-hover",
+      "component": "color-swatch-picker",
+      "part": [
+        "item",
+        "swatch"
+      ],
+      "property": [
+        "--xh-swatch-border"
+      ],
+      "state": [
+        "disabled",
+        "hover",
+        "not([data-disabled], [data-readonly])",
+        "readonly"
+      ],
+      "defaultToken": [
+        "--xh-border-strong"
+      ],
+      "visibility": "public",
+      "description": "color-swatch-picker 的 item、swatch 部件 --xh-swatch-border 覆盖槽。"
+    },
+    {
+      "name": "--xh-color-swatch-picker-swatch-border-invalid",
+      "component": "color-swatch-picker",
+      "part": [
+        "swatch"
+      ],
+      "property": [
+        "--xh-swatch-border"
+      ],
+      "state": [
+        "invalid"
+      ],
+      "defaultToken": [
+        "--xh-border-invalid"
+      ],
+      "visibility": "public",
+      "description": "color-swatch-picker 的 swatch 部件 --xh-swatch-border 覆盖槽。"
+    },
+    {
       "name": "--xh-combobox-action-bg",
       "component": "combobox",
       "part": [
@@ -30224,6 +30504,7 @@
         "state=visible"
       ],
       "defaultToken": [
+        "--xh-_color-swatch-picker-mark",
         "--xh-glyph-size-2xl",
         "--xh-glyph-size-3xl",
         "--xh-glyph-size-4xl",

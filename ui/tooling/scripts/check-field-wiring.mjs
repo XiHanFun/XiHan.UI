@@ -44,6 +44,7 @@ const NOT_SINGLE_CONTROL = {
   'listbox': '分组：content 是 role=listbox，焦点在各条目上',
   'transfer': '分组：两侧各一个 role=listbox，没有单一可聚焦控件',
   'radio-group': '分组：根是 role=radiogroup',
+  'color-swatch-picker': '分组：根是 role=radiogroup',
   'segmented': '分组：根是 role=radiogroup',
   'date-field': '分段输入：焦点在各段上，没有单一可聚焦控件',
   'time-field': '同 date-field',

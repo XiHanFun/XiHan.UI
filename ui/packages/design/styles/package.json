@@ -64,6 +64,7 @@
     "./color-picker.css": "./css/color-picker.css",
     "./color-slider.css": "./css/color-slider.css",
     "./color-swatch.css": "./css/color-swatch.css",
+    "./color-swatch-picker.css": "./css/color-swatch-picker.css",
     "./combobox.css": "./css/combobox.css",
     "./command.css": "./css/command.css",
     "./context-menu.css": "./css/context-menu.css",

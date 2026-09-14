@@ -532,6 +532,7 @@
       "color-field",
       "color-picker",
       "color-slider",
+      "color-swatch-picker",
       "combobox",
       "date-field",
       "file-upload",
@@ -578,6 +579,7 @@
       "checkbox-group",
       "clipboard",
       "collapsible",
+      "color-swatch-picker",
       "dialog",
       "empty-state",
       "navigation-menu",
@@ -622,6 +624,7 @@
       "carousel",
       "cascader",
       "checkbox-group",
+      "color-swatch-picker",
       "combobox",
       "command",
       "context-menu",
@@ -778,6 +781,7 @@
       "color-field",
       "color-picker",
       "color-slider",
+      "color-swatch-picker",
       "combobox",
       "date-field",
       "date-picker",
@@ -1106,6 +1110,7 @@
       "color-picker",
       "color-slider",
       "color-swatch",
+      "color-swatch-picker",
       "combobox",
       "context-menu",
       "date-field",
@@ -1334,7 +1339,8 @@
     ],
     "swatch": [
       "color-field",
-      "color-picker"
+      "color-picker",
+      "color-swatch-picker"
     ],
     "swatch-group": [
       "color-picker"

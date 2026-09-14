@@ -2,7 +2,7 @@
 // 若干组件的 fixture 与 Vue 侧不同构，需在此改写后再喂给运行方。
 // jsdom 一致性与浏览器无障碍扫描共用这一份，两边跑的是同一批组件。
 import type { ConformanceSuite, FixtureNode } from '@xihan-ui/testing'
-import { accordionSuite, affixSuite, alertSuite, anchorSuite, approvalSuite, avatarGroupSuite, avatarSuite, backTopSuite, badgeSuite, breadcrumbSuite, buttonGroupSuite, buttonSuite, calendarPickerSuite, calendarRangePickerSuite, cardSuite, carouselSuite, cascaderSuite, checkboxGroupSuite, checkboxSuite, clipboardSuite, codeViewSuite, collapsibleSuite, colorFieldSuite, colorPickerSuite, colorSliderSuite, colorSwatchSuite, comboboxSuite, commandSuite, contextMenuSuite, dateFieldSuite, datePickerSuite, dateRangePickerSuite, descriptionsSuite, diffViewSuite, downloadTriggerSuite, editableSuite, emptyStateSuite, fieldArraySuite, fieldsetSuite, fieldSuite, fileUploadSuite, flexSuite, floatButtonSuite, floatingPanelSuite, formSuite, gradientTextSuite, gridSuite, heatmapSuite, highlightSuite, hoverCardSuite, iconSuite, iconWrapperSuite, imageCropperSuite, imageSuite, infiniteScrollSuite, inputGroupSuite, jsonViewerSuite, kbdSuite, layoutSuite, listboxSuite, listSuite, loadingBarSuite, logSuite, markdownStreamSuite, marqueeSuite, masonrySuite, mentionSuite, menubarSuite, menuSuite, messageFeedSuite, navigationMenuSuite, notificationSuite, numberAnimationSuite, numberFieldSuite, pageHeaderSuite, paginationSuite, passwordInputSuite, pinInputSuite, popconfirmSuite, popoverSuite, progressSuite, promptInputSuite, qrCodeSuite, questionFlowSuite, radioGroupSuite, ratingSuite, reasoningSuite, resizableSuite, scrollAreaSuite, scrollbarSuite, segmentedSuite, selectSuite, separatorSuite, sideNavSuite, signaturePadSuite, skeletonSuite, sliderSuite, sortableSuite, spinnerSuite, splitterSuite, statisticSuite, stepsSuite, switchSuite, tableSuite, tabsSuite, tagGroupSuite, tagsInputSuite, tagSuite, textFieldSuite, timeFieldSuite, timelineSuite, timePickerSuite, timeRangePickerSuite, timerSuite, timestampSuite, toastSuite, toggleGroupSuite, toggleSuite, toolbarSuite, toolCallSuite, tooltipSuite, tourSuite, transferSuite, treeSelectSuite, treeSuite, truncateSuite, typographySuite, virtualizerSuite, watermarkSuite } from '@xihan-ui/testing'
+import { accordionSuite, affixSuite, alertSuite, anchorSuite, approvalSuite, avatarGroupSuite, avatarSuite, backTopSuite, badgeSuite, breadcrumbSuite, buttonGroupSuite, buttonSuite, calendarPickerSuite, calendarRangePickerSuite, cardSuite, carouselSuite, cascaderSuite, checkboxGroupSuite, checkboxSuite, clipboardSuite, codeViewSuite, collapsibleSuite, colorFieldSuite, colorPickerSuite, colorSliderSuite, colorSwatchPickerSuite, colorSwatchSuite, comboboxSuite, commandSuite, contextMenuSuite, dateFieldSuite, datePickerSuite, dateRangePickerSuite, descriptionsSuite, diffViewSuite, downloadTriggerSuite, editableSuite, emptyStateSuite, fieldArraySuite, fieldsetSuite, fieldSuite, fileUploadSuite, flexSuite, floatButtonSuite, floatingPanelSuite, formSuite, gradientTextSuite, gridSuite, heatmapSuite, highlightSuite, hoverCardSuite, iconSuite, iconWrapperSuite, imageCropperSuite, imageSuite, infiniteScrollSuite, inputGroupSuite, jsonViewerSuite, kbdSuite, layoutSuite, listboxSuite, listSuite, loadingBarSuite, logSuite, markdownStreamSuite, marqueeSuite, masonrySuite, mentionSuite, menubarSuite, menuSuite, messageFeedSuite, navigationMenuSuite, notificationSuite, numberAnimationSuite, numberFieldSuite, pageHeaderSuite, paginationSuite, passwordInputSuite, pinInputSuite, popconfirmSuite, popoverSuite, progressSuite, promptInputSuite, qrCodeSuite, questionFlowSuite, radioGroupSuite, ratingSuite, reasoningSuite, resizableSuite, scrollAreaSuite, scrollbarSuite, segmentedSuite, selectSuite, separatorSuite, sideNavSuite, signaturePadSuite, skeletonSuite, sliderSuite, sortableSuite, spinnerSuite, splitterSuite, statisticSuite, stepsSuite, switchSuite, tableSuite, tabsSuite, tagGroupSuite, tagsInputSuite, tagSuite, textFieldSuite, timeFieldSuite, timelineSuite, timePickerSuite, timeRangePickerSuite, timerSuite, timestampSuite, toastSuite, toggleGroupSuite, toggleSuite, toolbarSuite, toolCallSuite, tooltipSuite, tourSuite, transferSuite, treeSelectSuite, treeSuite, truncateSuite, typographySuite, virtualizerSuite, watermarkSuite } from '@xihan-ui/testing'
 
 // 布尔受控用例两侧跑的是同一份：假值由 harness 写成 name="false"（元素的三态转换器
 // 认得它），不是摘掉属性——摘掉在三态语义里是"没指定"，会落回缺省。见 harness.ts 的 applyInputs。
@@ -114,6 +114,30 @@ const wcRadioGroupSuite: ConformanceSuite = authorDisabled({
       })),
     ],
   },
+})
+
+// color-swatch-picker：与 radio-group 同构，Vue 版由 XhColorSwatchPickerItem 内部装配
+// hidden-input、swatch 与 indicator，WC 版要作者手写，顺序须与 Vue 的渲染顺序一致。
+function withSwatchItemParts(node: FixtureNode): FixtureNode {
+  if (node.part !== 'item')
+    return node
+  return {
+    ...node,
+    children: [
+      { part: 'hidden-input', tag: 'input' },
+      { part: 'swatch', tag: 'span' },
+      { part: 'indicator', tag: 'span' },
+    ],
+  }
+}
+
+const wcColorSwatchPickerSuite: ConformanceSuite = authorDisabled({
+  ...colorSwatchPickerSuite,
+  fixture: mapTree(colorSwatchPickerSuite.fixture, withSwatchItemParts),
+  cases: colorSwatchPickerSuite.cases.map((c) => {
+    const derive = c.fixture
+    return derive ? { ...c, fixture: (base: FixtureNode) => mapTree(derive(base), withSwatchItemParts) } : c
+  }),
 })
 
 // tabs / accordion 的 part 本就全由作者显式写，两侧同构，只改禁用声明的写法。
@@ -401,4 +425,5 @@ export const wcSuites: readonly ConformanceSuite[]
     colorSwatchSuite,
     colorSliderSuite,
     colorFieldSuite,
+    wcColorSwatchPickerSuite,
   ]
