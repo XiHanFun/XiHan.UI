@@ -411,10 +411,10 @@ Web Components 侧不构成额外约束：全部 Light DOM，不用 shadow DOM�
 ### 已经焊死的
 
 **六种介质的「改名 = major」现在有门禁兜着。** `pnpm gate:surface` 跑的 `check-public-surface`
-拿一份入库的基线（`ui/tooling/public-surface.json`，15119 个名字）比对当前状态：
+拿一份入库的基线（`ui/tooling/public-surface.json`，15120 个名字）比对当前状态：
 **基线里有而当前没有，就是删了或改名了，构建失败**。新增一律放行，因为那是 minor。
 
-覆盖：包名与 189 条子入口、7864 个导出名、133 个 `data-scope` 与 1009 条部件配对、
+覆盖：包名与 189 条子入口、7865 个导出名、133 个 `data-scope` 与 1009 条部件配对、
 133 个组件的 1708 个 prop 名、223 种 `data-*`、34 个 `data-state` 取值、419 个令牌、
 5 个 `@layer` 名、3896 个组件覆盖槽、135 个自定义元素及其 attribute 与事件。
 
