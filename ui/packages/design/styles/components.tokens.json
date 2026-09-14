@@ -23487,6 +23487,218 @@
       "description": "drawer 的 trigger 部件 border-radius 覆盖槽。"
     },
     {
+      "name": "--xh-editable-control-bg",
+      "component": "editable",
+      "part": [
+        "control"
+      ],
+      "property": [
+        "background"
+      ],
+      "state": [
+        "default"
+      ],
+      "defaultToken": [
+        "--xh-_editable-control-bg"
+      ],
+      "visibility": "public",
+      "description": "editable 的 control 部件 background 覆盖槽。"
+    },
+    {
+      "name": "--xh-editable-control-bg-disabled",
+      "component": "editable",
+      "part": [
+        "control"
+      ],
+      "property": [
+        "background"
+      ],
+      "state": [
+        "disabled"
+      ],
+      "defaultToken": [
+        "--xh-bg-subtle"
+      ],
+      "visibility": "public",
+      "description": "editable 的 control 部件 background 覆盖槽。"
+    },
+    {
+      "name": "--xh-editable-control-bg-focus",
+      "component": "editable",
+      "part": [
+        "control"
+      ],
+      "property": [
+        "background"
+      ],
+      "state": [
+        "disabled",
+        "focus-within",
+        "not([data-disabled])"
+      ],
+      "defaultToken": [
+        "--xh-_editable-control-bg-focus"
+      ],
+      "visibility": "public",
+      "description": "editable 的 control 部件 background 覆盖槽。"
+    },
+    {
+      "name": "--xh-editable-control-bg-hover",
+      "component": "editable",
+      "part": [
+        "control"
+      ],
+      "property": [
+        "background"
+      ],
+      "state": [
+        "disabled",
+        "hover",
+        "invalid",
+        "not([data-disabled], [data-invalid])"
+      ],
+      "defaultToken": [
+        "--xh-_editable-control-bg-hover"
+      ],
+      "visibility": "public",
+      "description": "editable 的 control 部件 background 覆盖槽。"
+    },
+    {
+      "name": "--xh-editable-control-bg-invalid",
+      "component": "editable",
+      "part": [
+        "control"
+      ],
+      "property": [
+        "background"
+      ],
+      "state": [
+        "invalid"
+      ],
+      "defaultToken": [
+        "--xh-_editable-control-bg-focus"
+      ],
+      "visibility": "public",
+      "description": "editable 的 control 部件 background 覆盖槽。"
+    },
+    {
+      "name": "--xh-editable-control-bg-readonly",
+      "component": "editable",
+      "part": [
+        "control",
+        "root"
+      ],
+      "property": [
+        "background"
+      ],
+      "state": [
+        "readonly"
+      ],
+      "defaultToken": [
+        "--xh-bg-subtle"
+      ],
+      "visibility": "public",
+      "description": "editable 的 control、root 部件 background 覆盖槽。"
+    },
+    {
+      "name": "--xh-editable-control-border",
+      "component": "editable",
+      "part": [
+        "control",
+        "root"
+      ],
+      "property": [
+        "border",
+        "border-color"
+      ],
+      "state": [
+        "default",
+        "readonly"
+      ],
+      "defaultToken": [
+        "--xh-_editable-control-border"
+      ],
+      "visibility": "public",
+      "description": "editable 的 control、root 部件 border、border-color 覆盖槽。"
+    },
+    {
+      "name": "--xh-editable-control-border-disabled",
+      "component": "editable",
+      "part": [
+        "control"
+      ],
+      "property": [
+        "border-color"
+      ],
+      "state": [
+        "disabled"
+      ],
+      "defaultToken": [
+        "--xh-border-subtle"
+      ],
+      "visibility": "public",
+      "description": "editable 的 control 部件 border-color 覆盖槽。"
+    },
+    {
+      "name": "--xh-editable-control-border-focus",
+      "component": "editable",
+      "part": [
+        "control"
+      ],
+      "property": [
+        "border-color"
+      ],
+      "state": [
+        "disabled",
+        "focus-within",
+        "not([data-disabled])"
+      ],
+      "defaultToken": [
+        "--xh-_editable-control-border-focus"
+      ],
+      "visibility": "public",
+      "description": "editable 的 control 部件 border-color 覆盖槽。"
+    },
+    {
+      "name": "--xh-editable-control-border-hover",
+      "component": "editable",
+      "part": [
+        "control"
+      ],
+      "property": [
+        "border-color"
+      ],
+      "state": [
+        "disabled",
+        "hover",
+        "invalid",
+        "not([data-disabled], [data-invalid])"
+      ],
+      "defaultToken": [
+        "--xh-_editable-control-border-hover"
+      ],
+      "visibility": "public",
+      "description": "editable 的 control 部件 border-color 覆盖槽。"
+    },
+    {
+      "name": "--xh-editable-control-border-invalid",
+      "component": "editable",
+      "part": [
+        "control"
+      ],
+      "property": [
+        "border-color"
+      ],
+      "state": [
+        "invalid"
+      ],
+      "defaultToken": [
+        "--xh-border-invalid"
+      ],
+      "visibility": "public",
+      "description": "editable 的 control 部件 border-color 覆盖槽。"
+    },
+    {
       "name": "--xh-editable-control-gap",
       "component": "editable",
       "part": [
@@ -23499,19 +23711,19 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-space-1"
+        "--xh-_editable-control-gap"
       ],
       "visibility": "public",
       "description": "editable 的 control 部件 gap 覆盖槽。"
     },
     {
-      "name": "--xh-editable-control-min-h",
+      "name": "--xh-editable-control-h",
       "component": "editable",
       "part": [
         "control"
       ],
       "property": [
-        "min-block-size"
+        "block-size"
       ],
       "state": [
         "default"
@@ -23520,13 +23732,14 @@
         "--xh-_editable-h"
       ],
       "visibility": "public",
-      "description": "editable 的 control 部件 min-block-size 覆盖槽。"
+      "description": "editable 的 control 部件 block-size 覆盖槽。"
     },
     {
       "name": "--xh-editable-control-min-w",
       "component": "editable",
       "part": [
-        "control"
+        "control",
+        "root"
       ],
       "property": [
         "min-inline-size"
@@ -23535,10 +23748,46 @@
         "default"
       ],
       "defaultToken": [
-        "6ch"
+        "--xh-control-min-w"
       ],
       "visibility": "public",
-      "description": "editable 的 control 部件 min-inline-size 覆盖槽。"
+      "description": "editable 的 control、root 部件 min-inline-size 覆盖槽。"
+    },
+    {
+      "name": "--xh-editable-control-radius",
+      "component": "editable",
+      "part": [
+        "control"
+      ],
+      "property": [
+        "border-radius"
+      ],
+      "state": [
+        "default"
+      ],
+      "defaultToken": [
+        "--xh-shape-control"
+      ],
+      "visibility": "public",
+      "description": "editable 的 control 部件 border-radius 覆盖槽。"
+    },
+    {
+      "name": "--xh-editable-control-shadow",
+      "component": "editable",
+      "part": [
+        "control"
+      ],
+      "property": [
+        "box-shadow"
+      ],
+      "state": [
+        "default"
+      ],
+      "defaultToken": [
+        "--xh-_editable-control-shadow"
+      ],
+      "visibility": "public",
+      "description": "editable 的 control 部件 box-shadow 覆盖槽。"
     },
     {
       "name": "--xh-editable-gap",
@@ -23553,10 +23802,32 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-space-2"
+        "--xh-space-1"
       ],
       "visibility": "public",
       "description": "editable 的 root 部件 gap 覆盖槽。"
+    },
+    {
+      "name": "--xh-editable-icon-size",
+      "component": "editable",
+      "part": [
+        "root"
+      ],
+      "property": [
+        "--xh-icon-size"
+      ],
+      "state": [
+        "default",
+        "size=lg",
+        "size=sm"
+      ],
+      "defaultToken": [
+        "--xh-glyph-size-lg",
+        "--xh-glyph-size-md",
+        "--xh-glyph-size-sm"
+      ],
+      "visibility": "public",
+      "description": "editable 的 root 部件 --xh-icon-size 覆盖槽。"
     },
     {
       "name": "--xh-editable-input-autofill-bg",
@@ -23595,157 +23866,6 @@
       ],
       "visibility": "public",
       "description": "editable 的 input 部件 -webkit-text-fill-color 覆盖槽。"
-    },
-    {
-      "name": "--xh-editable-input-bg",
-      "component": "editable",
-      "part": [
-        "input"
-      ],
-      "property": [
-        "background"
-      ],
-      "state": [
-        "default",
-        "hover",
-        "invalid",
-        "not(:disabled, [readonly], [data-invalid])"
-      ],
-      "defaultToken": [
-        "--xh-_editable-input-bg"
-      ],
-      "visibility": "public",
-      "description": "editable 的 input 部件 background 覆盖槽。"
-    },
-    {
-      "name": "--xh-editable-input-bg-disabled",
-      "component": "editable",
-      "part": [
-        "input"
-      ],
-      "property": [
-        "background"
-      ],
-      "state": [
-        "disabled"
-      ],
-      "defaultToken": [
-        "--xh-bg-subtle"
-      ],
-      "visibility": "public",
-      "description": "editable 的 input 部件 background 覆盖槽。"
-    },
-    {
-      "name": "--xh-editable-input-bg-hover",
-      "component": "editable",
-      "part": [
-        "input"
-      ],
-      "property": [
-        "background"
-      ],
-      "state": [
-        "hover",
-        "invalid",
-        "not(:disabled, [readonly], [data-invalid])"
-      ],
-      "defaultToken": [
-        "--xh-bg-subtle"
-      ],
-      "visibility": "public",
-      "description": "editable 的 input 部件 background 覆盖槽。"
-    },
-    {
-      "name": "--xh-editable-input-bg-readonly",
-      "component": "editable",
-      "part": [
-        "input"
-      ],
-      "property": [
-        "background"
-      ],
-      "state": [
-        "default"
-      ],
-      "defaultToken": [
-        "--xh-bg-subtle"
-      ],
-      "visibility": "public",
-      "description": "editable 的 input 部件 background 覆盖槽。"
-    },
-    {
-      "name": "--xh-editable-input-border",
-      "component": "editable",
-      "part": [
-        "input"
-      ],
-      "property": [
-        "border"
-      ],
-      "state": [
-        "default"
-      ],
-      "defaultToken": [
-        "--xh-_editable-input-border"
-      ],
-      "visibility": "public",
-      "description": "editable 的 input 部件 border 覆盖槽。"
-    },
-    {
-      "name": "--xh-editable-input-border-focus",
-      "component": "editable",
-      "part": [
-        "input"
-      ],
-      "property": [
-        "border-color"
-      ],
-      "state": [
-        "focus-visible"
-      ],
-      "defaultToken": [
-        "--xh-_tone"
-      ],
-      "visibility": "public",
-      "description": "editable 的 input 部件 border-color 覆盖槽。"
-    },
-    {
-      "name": "--xh-editable-input-border-hover",
-      "component": "editable",
-      "part": [
-        "input"
-      ],
-      "property": [
-        "border-color"
-      ],
-      "state": [
-        "hover",
-        "invalid",
-        "not(:disabled, [readonly], [data-invalid])"
-      ],
-      "defaultToken": [
-        "--xh-_editable-input-border-hover"
-      ],
-      "visibility": "public",
-      "description": "editable 的 input 部件 border-color 覆盖槽。"
-    },
-    {
-      "name": "--xh-editable-input-border-invalid",
-      "component": "editable",
-      "part": [
-        "input"
-      ],
-      "property": [
-        "border-color"
-      ],
-      "state": [
-        "invalid"
-      ],
-      "defaultToken": [
-        "--xh-border-invalid"
-      ],
-      "visibility": "public",
-      "description": "editable 的 input 部件 border-color 覆盖槽。"
     },
     {
       "name": "--xh-editable-input-fg",
@@ -23818,45 +23938,6 @@
       ],
       "visibility": "public",
       "description": "editable 的 input 部件 padding-inline 覆盖槽。"
-    },
-    {
-      "name": "--xh-editable-input-radius",
-      "component": "editable",
-      "part": [
-        "input"
-      ],
-      "property": [
-        "border-radius"
-      ],
-      "state": [
-        "default"
-      ],
-      "defaultToken": [
-        "--xh-shape-control"
-      ],
-      "visibility": "public",
-      "description": "editable 的 input 部件 border-radius 覆盖槽。"
-    },
-    {
-      "name": "--xh-editable-input-shadow",
-      "component": "editable",
-      "part": [
-        "input"
-      ],
-      "property": [
-        "box-shadow"
-      ],
-      "state": [
-        "-webkit-autofill",
-        "autofill",
-        "default"
-      ],
-      "defaultToken": [
-        "--xh-_editable-input-shadow",
-        "--xh-elevation-raised"
-      ],
-      "visibility": "public",
-      "description": "editable 的 input 部件 box-shadow 覆盖槽。"
     },
     {
       "name": "--xh-editable-label-fg",
@@ -23950,28 +24031,6 @@
       "description": "editable 的 input、preview 部件 color 覆盖槽。"
     },
     {
-      "name": "--xh-editable-preview-bg-hover",
-      "component": "editable",
-      "part": [
-        "preview"
-      ],
-      "property": [
-        "background"
-      ],
-      "state": [
-        "activation-mode=none",
-        "disabled",
-        "hover",
-        "not([data-activation-mode='none'], [data-disabled], [data-readonly])",
-        "readonly"
-      ],
-      "defaultToken": [
-        "--xh-bg-subtle-hover"
-      ],
-      "visibility": "public",
-      "description": "editable 的 preview 部件 background 覆盖槽。"
-    },
-    {
       "name": "--xh-editable-preview-fg",
       "component": "editable",
       "part": [
@@ -24044,172 +24103,26 @@
       "description": "editable 的 preview 部件 padding-inline 覆盖槽。"
     },
     {
-      "name": "--xh-editable-preview-radius",
+      "name": "--xh-editable-touch-target-size",
       "component": "editable",
       "part": [
-        "preview"
-      ],
-      "property": [
-        "border-radius"
-      ],
-      "state": [
-        "default"
-      ],
-      "defaultToken": [
-        "--xh-shape-control"
-      ],
-      "visibility": "public",
-      "description": "editable 的 preview 部件 border-radius 覆盖槽。"
-    },
-    {
-      "name": "--xh-editable-submit-bg",
-      "component": "editable",
-      "part": [
+        "cancel-trigger",
+        "control",
+        "edit-trigger",
         "submit-trigger"
       ],
       "property": [
-        "background"
+        "min-block-size",
+        "min-inline-size"
       ],
       "state": [
-        "not(:disabled)"
+        "@media (pointer: coarse)"
       ],
       "defaultToken": [
-        "--xh-_tone"
+        "--xh-control-box-lg"
       ],
       "visibility": "public",
-      "description": "editable 的 submit-trigger 部件 background 覆盖槽。"
-    },
-    {
-      "name": "--xh-editable-submit-bg-active",
-      "component": "editable",
-      "part": [
-        "submit-trigger"
-      ],
-      "property": [
-        "background",
-        "border-color"
-      ],
-      "state": [
-        "active",
-        "not(:disabled)"
-      ],
-      "defaultToken": [
-        "--xh-_tone-active"
-      ],
-      "visibility": "public",
-      "description": "editable 的 submit-trigger 部件 background、border-color 覆盖槽。"
-    },
-    {
-      "name": "--xh-editable-submit-bg-hover",
-      "component": "editable",
-      "part": [
-        "submit-trigger"
-      ],
-      "property": [
-        "background",
-        "border-color"
-      ],
-      "state": [
-        "hover",
-        "not(:disabled)"
-      ],
-      "defaultToken": [
-        "--xh-_tone-hover"
-      ],
-      "visibility": "public",
-      "description": "editable 的 submit-trigger 部件 background、border-color 覆盖槽。"
-    },
-    {
-      "name": "--xh-editable-submit-border",
-      "component": "editable",
-      "part": [
-        "submit-trigger"
-      ],
-      "property": [
-        "border-color"
-      ],
-      "state": [
-        "not(:disabled)"
-      ],
-      "defaultToken": [
-        "--xh-_tone"
-      ],
-      "visibility": "public",
-      "description": "editable 的 submit-trigger 部件 border-color 覆盖槽。"
-    },
-    {
-      "name": "--xh-editable-submit-border-active",
-      "component": "editable",
-      "part": [
-        "submit-trigger"
-      ],
-      "property": [
-        "border-color"
-      ],
-      "state": [
-        "active",
-        "not(:disabled)"
-      ],
-      "defaultToken": [
-        "--xh-editable-submit-bg-active"
-      ],
-      "visibility": "public",
-      "description": "editable 的 submit-trigger 部件 border-color 覆盖槽。"
-    },
-    {
-      "name": "--xh-editable-submit-border-hover",
-      "component": "editable",
-      "part": [
-        "submit-trigger"
-      ],
-      "property": [
-        "border-color"
-      ],
-      "state": [
-        "hover",
-        "not(:disabled)"
-      ],
-      "defaultToken": [
-        "--xh-editable-submit-bg-hover"
-      ],
-      "visibility": "public",
-      "description": "editable 的 submit-trigger 部件 border-color 覆盖槽。"
-    },
-    {
-      "name": "--xh-editable-submit-fg",
-      "component": "editable",
-      "part": [
-        "submit-trigger"
-      ],
-      "property": [
-        "color"
-      ],
-      "state": [
-        "not(:disabled)"
-      ],
-      "defaultToken": [
-        "--xh-_tone-on"
-      ],
-      "visibility": "public",
-      "description": "editable 的 submit-trigger 部件 color 覆盖槽。"
-    },
-    {
-      "name": "--xh-editable-submit-shadow",
-      "component": "editable",
-      "part": [
-        "submit-trigger"
-      ],
-      "property": [
-        "box-shadow"
-      ],
-      "state": [
-        "not(:disabled)"
-      ],
-      "defaultToken": [
-        "--xh-_editable-submit-highlight"
-      ],
-      "visibility": "public",
-      "description": "editable 的 submit-trigger 部件 box-shadow 覆盖槽。"
+      "description": "editable 的 cancel-trigger、control、edit-trigger、submit-trigger 部件 min-block-size、min-inline-size 覆盖槽。"
     },
     {
       "name": "--xh-editable-trigger-bg",
@@ -24226,7 +24139,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-bg-subtle"
+        "transparent"
       ],
       "visibility": "public",
       "description": "editable 的 cancel-trigger、edit-trigger、submit-trigger 部件 background 覆盖槽。"
@@ -24247,7 +24160,7 @@
         "not(:disabled)"
       ],
       "defaultToken": [
-        "--xh-bg-subtle-active"
+        "--xh-_editable-trigger-bg-active"
       ],
       "visibility": "public",
       "description": "editable 的 cancel-trigger、edit-trigger、submit-trigger 部件 background 覆盖槽。"
@@ -24267,7 +24180,7 @@
         "disabled"
       ],
       "defaultToken": [
-        "--xh-bg-muted"
+        "transparent"
       ],
       "visibility": "public",
       "description": "editable 的 cancel-trigger、edit-trigger、submit-trigger 部件 background 覆盖槽。"
@@ -24288,71 +24201,49 @@
         "not(:disabled)"
       ],
       "defaultToken": [
-        "--xh-bg-subtle-hover"
+        "transparent"
       ],
       "visibility": "public",
       "description": "editable 的 cancel-trigger、edit-trigger、submit-trigger 部件 background 覆盖槽。"
     },
     {
-      "name": "--xh-editable-trigger-border",
+      "name": "--xh-editable-trigger-divider",
       "component": "editable",
       "part": [
-        "cancel-trigger",
         "edit-trigger",
         "submit-trigger"
       ],
       "property": [
-        "border"
+        "border-inline-start"
       ],
       "state": [
         "default"
       ],
       "defaultToken": [
-        "--xh-border-control"
+        "--xh-material-soft-separator"
       ],
       "visibility": "public",
-      "description": "editable 的 cancel-trigger、edit-trigger、submit-trigger 部件 border 覆盖槽。"
+      "description": "editable 的 edit-trigger、submit-trigger 部件 border-inline-start 覆盖槽。"
     },
     {
-      "name": "--xh-editable-trigger-border-disabled",
+      "name": "--xh-editable-trigger-divider-h",
       "component": "editable",
       "part": [
-        "cancel-trigger",
         "edit-trigger",
         "submit-trigger"
       ],
       "property": [
-        "border-color"
+        "block-size",
+        "inset-block-start"
       ],
       "state": [
-        "disabled"
+        "default"
       ],
       "defaultToken": [
-        "--xh-border-subtle"
+        "--xh-_editable-divider-h"
       ],
       "visibility": "public",
-      "description": "editable 的 cancel-trigger、edit-trigger、submit-trigger 部件 border-color 覆盖槽。"
-    },
-    {
-      "name": "--xh-editable-trigger-border-hover",
-      "component": "editable",
-      "part": [
-        "cancel-trigger",
-        "edit-trigger",
-        "submit-trigger"
-      ],
-      "property": [
-        "border-color"
-      ],
-      "state": [
-        "hover",
-        "not(:disabled)"
-      ],
-      "defaultToken": [
-        "--xh-border-control-hover"
-      ],
-      "visibility": "public",
-      "description": "editable 的 cancel-trigger、edit-trigger、submit-trigger 部件 border-color 覆盖槽。"
+      "description": "editable 的 edit-trigger、submit-trigger 部件 block-size、inset-block-start 覆盖槽。"
     },
     {
       "name": "--xh-editable-trigger-fg",
@@ -24367,6 +24258,27 @@
       ],
       "state": [
         "default"
+      ],
+      "defaultToken": [
+        "--xh-fg-default"
+      ],
+      "visibility": "public",
+      "description": "editable 的 cancel-trigger、edit-trigger、submit-trigger 部件 color 覆盖槽。"
+    },
+    {
+      "name": "--xh-editable-trigger-fg-hover",
+      "component": "editable",
+      "part": [
+        "cancel-trigger",
+        "edit-trigger",
+        "submit-trigger"
+      ],
+      "property": [
+        "color"
+      ],
+      "state": [
+        "hover",
+        "not(:disabled)"
       ],
       "defaultToken": [
         "--xh-fg-default"
@@ -24395,7 +24307,7 @@
       "description": "editable 的 cancel-trigger、edit-trigger、submit-trigger 部件 font-size 覆盖槽。"
     },
     {
-      "name": "--xh-editable-trigger-h",
+      "name": "--xh-editable-trigger-size",
       "component": "editable",
       "part": [
         "cancel-trigger",
@@ -24403,56 +24315,17 @@
         "submit-trigger"
       ],
       "property": [
-        "block-size"
+        "block-size",
+        "inline-size"
       ],
       "state": [
         "default"
       ],
       "defaultToken": [
-        "--xh-control-h-sm"
+        "--xh-_editable-trigger-size"
       ],
       "visibility": "public",
-      "description": "editable 的 cancel-trigger、edit-trigger、submit-trigger 部件 block-size 覆盖槽。"
-    },
-    {
-      "name": "--xh-editable-trigger-px",
-      "component": "editable",
-      "part": [
-        "cancel-trigger",
-        "edit-trigger",
-        "submit-trigger"
-      ],
-      "property": [
-        "padding-inline"
-      ],
-      "state": [
-        "default"
-      ],
-      "defaultToken": [
-        "--xh-control-px-sm"
-      ],
-      "visibility": "public",
-      "description": "editable 的 cancel-trigger、edit-trigger、submit-trigger 部件 padding-inline 覆盖槽。"
-    },
-    {
-      "name": "--xh-editable-trigger-radius",
-      "component": "editable",
-      "part": [
-        "cancel-trigger",
-        "edit-trigger",
-        "submit-trigger"
-      ],
-      "property": [
-        "border-radius"
-      ],
-      "state": [
-        "default"
-      ],
-      "defaultToken": [
-        "--xh-shape-control"
-      ],
-      "visibility": "public",
-      "description": "editable 的 cancel-trigger、edit-trigger、submit-trigger 部件 border-radius 覆盖槽。"
+      "description": "editable 的 cancel-trigger、edit-trigger、submit-trigger 部件 block-size、inline-size 覆盖槽。"
     },
     {
       "name": "--xh-empty-state-action-gap",
@@ -30424,12 +30297,14 @@
         "branch-checkbox",
         "branch-indicator",
         "branch-trigger",
+        "cancel-trigger",
         "caps-lock-indicator",
         "clear-trigger",
         "close-trigger",
         "column-visibility-trigger",
         "control",
         "decrement-trigger",
+        "edit-trigger",
         "ellipsis-trigger",
         "expand-trigger",
         "flip-horizontal-trigger",
@@ -30479,6 +30354,7 @@
         "direction",
         "empty",
         "indeterminate",
+        "is([data-part='edit-trigger'], [data-part='submit-trigger'], [data-part='cancel-trigger'])",
         "mode=send",
         "mode=stop",
         "not([aria-busy='true'])",
@@ -30515,7 +30391,7 @@
         "--xh-glyph-size-xl"
       ],
       "visibility": "public",
-      "description": "icon 的 autoplay-trigger、branch-checkbox、branch-indicator、branch-trigger、caps-lock-indicator、clear-trigger、close-trigger、column-visibility-trigger、control、decrement-trigger、ellipsis-trigger、expand-trigger、flip-horizontal-trigger、flip-vertical-trigger、increment-trigger、indicator、item、item-checkbox、item-close-trigger、item-delete-trigger、item-indicator、move-down-trigger、move-up-trigger、next-trigger、next-year-trigger、prev-trigger、prev-year-trigger、root、rotate-left-trigger、rotate-right-trigger、row-select-trigger、scroll-to-end-trigger、select-all-trigger、separator、sort-trigger、submit-trigger、to-source-trigger、to-target-trigger、trend、trigger、trigger-indicator、truncation、visibility-trigger、window-state-trigger、zoom-in-trigger、zoom-out-trigger 部件 block-size、inline-size、margin-inline-start 覆盖槽。"
+      "description": "icon 的 autoplay-trigger、branch-checkbox、branch-indicator、branch-trigger、cancel-trigger、caps-lock-indicator、clear-trigger、close-trigger、column-visibility-trigger、control、decrement-trigger、edit-trigger、ellipsis-trigger、expand-trigger、flip-horizontal-trigger、flip-vertical-trigger、increment-trigger、indicator、item、item-checkbox、item-close-trigger、item-delete-trigger、item-indicator、move-down-trigger、move-up-trigger、next-trigger、next-year-trigger、prev-trigger、prev-year-trigger、root、rotate-left-trigger、rotate-right-trigger、row-select-trigger、scroll-to-end-trigger、select-all-trigger、separator、sort-trigger、submit-trigger、to-source-trigger、to-target-trigger、trend、trigger、trigger-indicator、truncation、visibility-trigger、window-state-trigger、zoom-in-trigger、zoom-out-trigger 部件 block-size、inline-size、margin-inline-start 覆盖槽。"
     },
     {
       "name": "--xh-icon-stroke",

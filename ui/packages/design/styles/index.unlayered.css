@@ -24107,32 +24107,43 @@
   --xh-editable-skin: 1;
 }
 
-/* 就地编辑是"一行文字里的一处可改内容"：标题、显示区与按钮天然同行，
-   所以根是一条横向的行，而不是文本框那种"标题一行、控件一行"的竖排。
-   要竖排的作者把 flex-direction 覆盖掉即可，其余尺寸都长在各自的角色节点上 */
+/* 与 NumberField 同构：标题独占一行，control 是下面唯一的视觉盒；
+   预览/输入占据盒内左侧，编辑或确认/取消动作收在同一盒的逻辑末端。 */
 [data-scope='editable'][data-part='root'] {
-  /* 尺寸档只换这四个私有槽，标题、预览区与输入框都从 root 继承它们，换档不必给每个部件各写一条选择器。
-     三颗按钮不进这套档位：它们比框小一号是形上的固定关系，跟着档走就与框一样高了 */
+  --xh-icon-size: var(--xh-editable-icon-size, var(--xh-glyph-size-md));
+
+  /* 尺寸档只换这四个私有槽，标题、预览区、输入框与动作钮都从 root 继承它们，
+     换档不必给每个部件各写一条选择器。 */
   --xh-_editable-h: var(--xh-control-h-md);
   --xh-_editable-px: var(--xh-control-px-md);
   --xh-_editable-font-size: var(--xh-control-font-md);
   --xh-_editable-label-font-size: var(--xh-control-font-md);
+  --xh-_editable-control-gap: 0;
+  --xh-_editable-trigger-size: var(--xh-_editable-h);
+  --xh-_editable-divider-h: 50%;
 
-  /* 形态档只换这四个私有槽：底、常态描边、悬停描边、落影 */
-  --xh-_editable-input-bg: var(--xh-bg-canvas);
-  --xh-_editable-input-border: var(--xh-border-control);
-  --xh-_editable-input-border-hover: var(--xh-border-control-hover);
-  --xh-_editable-input-shadow: var(--xh-elevation-raised);
+  /* 形态与语气都落在 control：内部输入和动作不再各画一层边框。 */
+  --xh-_editable-control-bg: var(--xh-bg-canvas);
+  --xh-_editable-control-border: var(--xh-border-control);
+  --xh-_editable-control-border-hover: var(--xh-border-control-hover);
+  --xh-_editable-control-bg-hover: color-mix(in oklab, var(--xh-bg-subtle) 45%, var(--xh-_editable-control-bg));
+  --xh-_editable-control-bg-focus: var(--xh-bg-subtle);
+  --xh-_editable-control-shadow: var(--xh-elevation-raised);
+  --xh-_editable-control-ring: var(--xh-ring-focus);
+  --xh-_editable-control-border-focus: var(--xh-_tone, var(--xh-border-control-focus));
+  --xh-_editable-trigger-bg-active: var(--xh-bg-subtle-active);
 
   display: inline-flex;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: var(--xh-editable-gap, var(--xh-space-2));
+  flex-direction: column;
+  gap: var(--xh-editable-gap, var(--xh-space-1));
+  min-inline-size: min(var(--xh-editable-control-min-w, var(--xh-control-min-w)), 100%);
+  max-inline-size: 100%;
 }
 
 /* —— 尺寸 —— */
 /* 缺省档写在上面的基础规则里 */
 [data-scope='editable'][data-part='root'][data-size='sm'] {
+  --xh-icon-size: var(--xh-editable-icon-size, var(--xh-glyph-size-sm));
   --xh-_editable-h: var(--xh-control-h-sm);
   --xh-_editable-px: var(--xh-control-px-sm);
   --xh-_editable-font-size: var(--xh-control-font-sm);
@@ -24140,6 +24151,7 @@
 }
 
 [data-scope='editable'][data-part='root'][data-size='lg'] {
+  --xh-icon-size: var(--xh-editable-icon-size, var(--xh-glyph-size-lg));
   --xh-_editable-h: var(--xh-control-h-lg);
   --xh-_editable-px: var(--xh-control-px-lg);
   --xh-_editable-font-size: var(--xh-control-font-lg);
@@ -24147,29 +24159,33 @@
 }
 
 /* —— 形态 —— */
-/* 形态只决定编辑态那个框的底与描边；用哪族颜色由 data-tone 决定。
-   预览区不跟着换：它本来就没有框，换了就成了两个控件 */
+/* 形态决定整枚 control 的底、描边与落影；预览态和编辑态不换壳。 */
 [data-scope='editable'][data-part='root'][data-variant='outline'] {
-  --xh-_editable-input-bg: var(--xh-bg-canvas);
-  --xh-_editable-input-border: var(--xh-border-control);
-  --xh-_editable-input-border-hover: var(--xh-border-control-hover);
+  --xh-_editable-control-bg: var(--xh-bg-canvas);
+  --xh-_editable-control-border: var(--xh-border-control);
+  --xh-_editable-control-border-hover: var(--xh-border-control-hover);
+  --xh-_editable-trigger-bg-active: var(--xh-bg-subtle-active);
 }
 
 /* 填充式：底色顶替描边表达边界。描边只退成透明而不去掉，1px 的位置留着，
    与 outline 档并排时基线对得上 */
 [data-scope='editable'][data-part='root'][data-variant='subtle'] {
-  --xh-_editable-input-bg: var(--xh-_tone-subtle, var(--xh-bg-subtle));
-  --xh-_editable-input-border: transparent;
-  --xh-_editable-input-border-hover: var(--xh-_tone-border, var(--xh-border-control-hover));
+  --xh-_editable-control-shadow: none;
+  --xh-_editable-control-bg: var(--xh-_tone-subtle, var(--xh-bg-subtle));
+  --xh-_editable-control-bg-hover: var(--xh-_tone-subtle-hover, var(--xh-bg-subtle-hover));
+  --xh-_editable-control-border: transparent;
+  --xh-_editable-control-border-hover: var(--xh-_tone-border, var(--xh-border-control-hover));
+  --xh-_editable-trigger-bg-active: var(--xh-_tone-subtle-active, var(--xh-bg-subtle-active));
 }
 
 /* 无框：底与常态描边透明，悬停与聚焦浮出描边。
    落影一并关掉——底与描边都透明时它就是一片没有面的影子 */
 [data-scope='editable'][data-part='root'][data-variant='ghost'] {
-  --xh-_editable-input-shadow: 0 0 0 transparent;
-  --xh-_editable-input-bg: transparent;
-  --xh-_editable-input-border: transparent;
-  --xh-_editable-input-border-hover: var(--xh-_tone-border, var(--xh-border-control-hover));
+  --xh-_editable-control-shadow: 0 0 0 transparent;
+  --xh-_editable-control-bg: transparent;
+  --xh-_editable-control-border: transparent;
+  --xh-_editable-control-border-hover: var(--xh-_tone-border, var(--xh-border-control-hover));
+  --xh-_editable-trigger-bg-active: var(--xh-_tone-subtle-active, var(--xh-bg-subtle-active));
 }
 
 /* 只要声明了 display 就盖掉了 UA 的 [hidden]{display:none}，收起态得自己还回去 */
@@ -24190,17 +24206,20 @@
   color: var(--xh-editable-label-fg-disabled, var(--xh-fg-subtle));
 }
 
-/* 预览区的高度、内边距与边框都和输入框取同一档，只有描边是透明的：
-   单行值定在控件档上，多行值才往下长 */
+/* 预览区只是 control 里的内容段，不再自成一只带圆角的盒子。 */
 [data-scope='editable'][data-part='preview'] {
   display: inline-flex;
+  flex: 1 1 auto;
   align-items: center;
-  inline-size: 100%;
+  inline-size: auto;
+  min-inline-size: 0;
   min-block-size: var(--xh-editable-preview-min-h, var(--xh-_editable-h));
   padding-inline: var(--xh-editable-preview-px, var(--xh-_editable-px));
   padding-block: 0;
-  border: var(--xh-stroke-thin) solid transparent;
-  border-radius: var(--xh-editable-preview-radius, var(--xh-shape-control));
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  box-shadow: none;
   color: var(--xh-editable-preview-fg, var(--xh-fg-default));
   font-size: var(--xh-editable-preview-font-size, var(--xh-_editable-font-size));
   line-height: var(--xh-leading-normal);
@@ -24224,14 +24243,6 @@
   cursor: text;
 }
 
-[data-scope='editable'][data-part='preview']:not(
-  [data-activation-mode='none'],
-  [data-disabled],
-  [data-readonly]
-):hover {
-  background: var(--xh-editable-preview-bg-hover, var(--xh-bg-subtle-hover));
-}
-
 /* 显示的是占位文字而不是真值，压淡以示区别 */
 [data-scope='editable'][data-part='preview'][data-placeholder] {
   color: var(--xh-editable-placeholder-fg, var(--xh-fg-subtle));
@@ -24242,23 +24253,21 @@
 }
 
 [data-scope='editable'][data-part='input'] {
-  inline-size: 100%;
+  flex: 1 1 auto;
+  inline-size: auto;
+  min-inline-size: 0;
   block-size: var(--xh-editable-input-h, var(--xh-_editable-h));
   padding-inline: var(--xh-editable-input-px, var(--xh-_editable-px));
   padding-block: 0;
-  border: var(--xh-stroke-thin) solid var(--xh-editable-input-border, var(--xh-_editable-input-border));
-  border-radius: var(--xh-editable-input-radius, var(--xh-shape-control));
-  background: var(--xh-editable-input-bg, var(--xh-_editable-input-bg));
-  /* 一档静态落影把编辑态的框从页面里抬起一层，与描边一起画出框的边界 */
-  box-shadow: var(--xh-editable-input-shadow, var(--xh-_editable-input-shadow));
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  box-shadow: none;
   color: var(--xh-editable-input-fg, var(--xh-fg-default));
   /* 表单控件不继承页面字体，只给字号会让输入框用 UA 默认字族，与预览区的文字对不上 */
   font-family: inherit;
   font-size: var(--xh-editable-input-font-size, var(--xh-_editable-font-size));
   line-height: var(--xh-leading-normal);
-  transition:
-    background var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
-    border-color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
 }
 
 /* 预览态由连接层给 hidden；上面给了 inline-size 与 block-size 但没给 display，
@@ -24269,6 +24278,7 @@
 
 /* 宽度跟着内容走时交给原生 size 说了算，别再用 100% 把它撑满 */
 [data-scope='editable'][data-part='input'][data-auto-resize] {
+  flex: 0 1 auto;
   inline-size: auto;
 }
 
@@ -24276,30 +24286,29 @@
   color: var(--xh-editable-placeholder-fg, var(--xh-fg-subtle));
 }
 
-/* hover 换描边与填充两条通道：换一条 1px 的描边色是全场最轻的一档回执，填充跟着动
-   才看得出指针停在框上。底朝 subtle 走小半步，与只读那一档的 subtle 实底分得开。
-   只在中性态换：invalid 正拿边框颜色说事，被 hover 盖掉那条信息就没了；只读也排掉 */
+/* 盒内 input 不再画自己的状态，hover、focus 与 invalid 全交给 control。 */
 [data-scope='editable'][data-part='input']:hover:not(:disabled, [readonly], [data-invalid]) {
-  border-color: var(--xh-editable-input-border-hover, var(--xh-_editable-input-border-hover));
-  background: var(--xh-editable-input-bg-hover, color-mix(in oklab, var(--xh-bg-subtle) 45%, var(--xh-editable-input-bg, var(--xh-_editable-input-bg))));
+  border-color: transparent;
+  background: transparent;
 }
 
 [data-scope='editable'][data-part='input']:focus-visible {
-  border-color: var(--xh-editable-input-border-focus, var(--xh-_tone, var(--xh-border-control-focus)));
+  border-color: transparent;
+  outline: none;
 }
 
 [data-scope='editable'][data-part='input'][data-invalid] {
-  border-color: var(--xh-editable-input-border-invalid, var(--xh-border-invalid));
+  border-color: transparent;
 }
 
-/* 只读仍可聚焦、可复制，不置灰，只把底色压下去表示"改不动" */
+/* 只读仍可聚焦、可复制；底色由 control 表达。 */
 [data-scope='editable'][data-part='input'][readonly] {
-  background: var(--xh-editable-input-bg-readonly, var(--xh-bg-subtle));
+  background: transparent;
 }
 
-/* 输入框是单体表单控件，禁用走原生 disabled */
+/* 禁用前景留在原生 input，禁用背景仍由 control 统一绘制。 */
 [data-scope='editable'][data-part='input']:disabled {
-  background: var(--xh-editable-input-bg-disabled, var(--xh-bg-subtle));
+  background: transparent;
   color: var(--xh-fg-disabled);
 }
 
@@ -24310,47 +24319,90 @@
    两个选择器名分写两条：一条选择器列表里只要有一个名字不被认识，整条规则就被丢弃。
    自带的落影列在铺底之后，不然这条会把编辑态那圈抬起的边界一起抹掉。 */
 [data-scope='editable'][data-part='input']:autofill {
-  box-shadow:
-    inset 0 0 0 100vmax var(--xh-editable-input-autofill-bg, var(--xh-bg-canvas)),
-    var(--xh-editable-input-shadow, var(--xh-elevation-raised));
+  box-shadow: inset 0 0 0 100vmax var(--xh-editable-input-autofill-bg, var(--xh-bg-canvas));
   -webkit-text-fill-color: var(--xh-editable-input-autofill-fg, var(--xh-fg-default));
 }
 
 [data-scope='editable'][data-part='input']:-webkit-autofill {
-  box-shadow:
-    inset 0 0 0 100vmax var(--xh-editable-input-autofill-bg, var(--xh-bg-canvas)),
-    var(--xh-editable-input-shadow, var(--xh-elevation-raised));
+  box-shadow: inset 0 0 0 100vmax var(--xh-editable-input-autofill-bg, var(--xh-bg-canvas));
   -webkit-text-fill-color: var(--xh-editable-input-autofill-fg, var(--xh-fg-default));
 }
 
-/* 预览区、输入框与三颗按钮同在这一层：预览与输入轮流上场，控件盒给这一处定最小宽高 */
+/* 唯一视觉盒：描边、底色、圆角、落影与焦点环全画在 control；
+   预览/输入和右侧动作只是盒内分段。 */
 [data-scope='editable'][data-part='control'] {
+  position: relative;
   display: inline-flex;
   align-items: center;
-  gap: var(--xh-editable-control-gap, var(--xh-space-1));
-  min-block-size: var(--xh-editable-control-min-h, var(--xh-_editable-h));
-  min-inline-size: var(--xh-editable-control-min-w, 6ch);
+  gap: var(--xh-editable-control-gap, var(--xh-_editable-control-gap));
+  inline-size: 100%;
+  block-size: var(--xh-editable-control-h, var(--xh-_editable-h));
+  min-inline-size: min(var(--xh-editable-control-min-w, var(--xh-control-min-w)), 100%);
+  padding: 0;
+  border: var(--xh-stroke-thin) solid var(--xh-editable-control-border, var(--xh-_editable-control-border));
+  border-radius: var(--xh-editable-control-radius, var(--xh-shape-control));
+  outline: var(--xh-ring-width) solid transparent;
+  outline-offset: var(--xh-ring-offset);
+  background: var(--xh-editable-control-bg, var(--xh-_editable-control-bg));
+  box-shadow: var(--xh-editable-control-shadow, var(--xh-_editable-control-shadow));
+  overflow: hidden;
+  transition:
+    background var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
+    border-color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
+    outline-color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
+}
+
+[data-scope='editable'][data-part='control']:hover:not([data-disabled], [data-invalid]) {
+  border-color: var(--xh-editable-control-border-hover, var(--xh-_editable-control-border-hover));
+  background: var(--xh-editable-control-bg-hover, var(--xh-_editable-control-bg-hover));
+}
+
+[data-scope='editable'][data-part='control']:focus-within:not([data-disabled]) {
+  border-color: var(--xh-editable-control-border-focus, var(--xh-_editable-control-border-focus));
+  background: var(--xh-editable-control-bg-focus, var(--xh-_editable-control-bg-focus));
+  outline: var(--xh-ring-width) solid var(--xh-_editable-control-ring);
+}
+
+[data-scope='editable'][data-part='control'][data-invalid] {
+  --xh-_editable-control-ring: var(--xh-ring-invalid);
+
+  border-color: var(--xh-editable-control-border-invalid, var(--xh-border-invalid));
+  background: var(--xh-editable-control-bg-invalid, var(--xh-_editable-control-bg-focus));
+}
+
+[data-scope='editable'][data-part='root'][data-readonly]
+  [data-scope='editable'][data-part='control'] {
+  border-color: var(--xh-editable-control-border, var(--xh-_editable-control-border));
+  background: var(--xh-editable-control-bg-readonly, var(--xh-bg-subtle));
+}
+
+[data-scope='editable'][data-part='control'][data-disabled] {
+  border-color: var(--xh-editable-control-border-disabled, var(--xh-border-subtle));
+  background: var(--xh-editable-control-bg-disabled, var(--xh-bg-subtle));
+  color: var(--xh-fg-disabled);
 }
 
 [data-scope='editable'][data-part='control'][hidden] {
   display: none;
 }
 
-/* 三颗按钮共用一份皮肤：它们是同一种东西，只是干的活不同，
-   分开写迟早会改了一颗忘了另外两颗 */
+/* 三颗动作与 NumberField 的加减钮一样，是 control 内部的无框分段。 */
 [data-scope='editable'][data-part='edit-trigger'],
 [data-scope='editable'][data-part='submit-trigger'],
 [data-scope='editable'][data-part='cancel-trigger'] {
+  position: relative;
   display: inline-flex;
   flex: none;
   align-items: center;
   justify-content: center;
-  block-size: var(--xh-editable-trigger-h, var(--xh-control-h-sm));
-  padding-inline: var(--xh-editable-trigger-px, var(--xh-control-px-sm));
-  padding-block: 0;
-  border: var(--xh-stroke-thin) solid var(--xh-editable-trigger-border, var(--xh-border-control));
-  border-radius: var(--xh-editable-trigger-radius, var(--xh-shape-control));
-  background: var(--xh-editable-trigger-bg, var(--xh-bg-subtle));
+  inline-size: var(--xh-editable-trigger-size, var(--xh-_editable-trigger-size));
+  block-size: var(--xh-editable-trigger-size, var(--xh-_editable-trigger-size));
+  margin: 0;
+  padding: 0;
+  border: 0;
+  border-radius: 0;
+  background: var(--xh-editable-trigger-bg, transparent);
+  box-shadow: none;
   color: var(--xh-editable-trigger-fg, var(--xh-fg-default));
   font-family: inherit;
   font-size: var(--xh-editable-trigger-font-size, var(--xh-text-secondary-size));
@@ -24358,11 +24410,52 @@
   white-space: nowrap;
   cursor: pointer;
   user-select: none;
-  /* box-shadow 在列里是给提交钮的内高光留的：它随可用与置灰两档进出 */
+  touch-action: manipulation;
   transition:
     background var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
-    box-shadow var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
     scale var(--xh-motion-duration-micro) var(--xh-motion-ease-enter-strong);
+}
+
+/* 每个状态的第一颗动作把整组推到逻辑末端；取消钮紧跟确认钮。 */
+[data-scope='editable'][data-part='edit-trigger'],
+[data-scope='editable'][data-part='submit-trigger'] {
+  margin-inline-start: auto;
+}
+
+/* 三颗动作默认是纯图标按钮；作者放了自己的图标后 :empty 不命中，不会叠两层。 */
+[data-scope='editable']:is([data-part='edit-trigger'], [data-part='submit-trigger'], [data-part='cancel-trigger']):empty::before {
+  content: '';
+  display: inline-block;
+  inline-size: var(--xh-icon-size, var(--xh-glyph-size-md));
+  block-size: var(--xh-icon-size, var(--xh-glyph-size-md));
+  background-color: currentColor;
+  -webkit-mask: var(--xh-_editable-trigger-glyph) center / contain no-repeat;
+  mask: var(--xh-_editable-trigger-glyph) center / contain no-repeat;
+}
+
+[data-scope='editable'][data-part='edit-trigger'] {
+  --xh-_editable-trigger-glyph: var(--xh-glyph-mark-edit);
+}
+
+[data-scope='editable'][data-part='submit-trigger'] {
+  --xh-_editable-trigger-glyph: var(--xh-glyph-mark-check);
+}
+
+[data-scope='editable'][data-part='cancel-trigger'] {
+  --xh-_editable-trigger-glyph: var(--xh-glyph-mark-close);
+}
+
+/* 动作组第一颗与内容段之间只有一道短分隔线；确认与取消之间不再拼第二个按钮框。 */
+[data-scope='editable'][data-part='edit-trigger']::after,
+[data-scope='editable'][data-part='submit-trigger']::after {
+  content: '';
+  position: absolute;
+  inset-block-start: calc((100% - var(--xh-editable-trigger-divider-h, var(--xh-_editable-divider-h))) / 2);
+  inset-inline-start: 0;
+  inline-size: 0;
+  block-size: var(--xh-editable-trigger-divider-h, var(--xh-_editable-divider-h));
+  border-inline-start: var(--xh-stroke-thin) solid
+    var(--xh-editable-trigger-divider, var(--xh-material-soft-separator));
 }
 
 /* 三颗按钮按形态轮流收起，连接层给的是 hidden 属性；
@@ -24376,15 +24469,22 @@
 [data-scope='editable'][data-part='edit-trigger']:hover:not(:disabled),
 [data-scope='editable'][data-part='submit-trigger']:hover:not(:disabled),
 [data-scope='editable'][data-part='cancel-trigger']:hover:not(:disabled) {
-  border-color: var(--xh-editable-trigger-border-hover, var(--xh-border-control-hover));
-  background: var(--xh-editable-trigger-bg-hover, var(--xh-bg-subtle-hover));
+  background: var(--xh-editable-trigger-bg-hover, transparent);
+  color: var(--xh-editable-trigger-fg-hover, var(--xh-fg-default));
 }
 
 [data-scope='editable'][data-part='edit-trigger']:active:not(:disabled),
 [data-scope='editable'][data-part='submit-trigger']:active:not(:disabled),
 [data-scope='editable'][data-part='cancel-trigger']:active:not(:disabled) {
-  background: var(--xh-editable-trigger-bg-active, var(--xh-bg-subtle-active));
+  background: var(--xh-editable-trigger-bg-active, var(--xh-_editable-trigger-bg-active));
   scale: var(--xh-motion-scale-press);
+}
+
+/* control 已由 :focus-within 画出整框焦点环，内部动作不再叠第二圈。 */
+[data-scope='editable'][data-part='edit-trigger']:focus-visible,
+[data-scope='editable'][data-part='submit-trigger']:focus-visible,
+[data-scope='editable'][data-part='cancel-trigger']:focus-visible {
+  outline: none;
 }
 
 /* 单体控件用 :disabled（不是集合条目那套 [data-disabled]）：
@@ -24392,40 +24492,21 @@
 [data-scope='editable'][data-part='edit-trigger']:disabled,
 [data-scope='editable'][data-part='submit-trigger']:disabled,
 [data-scope='editable'][data-part='cancel-trigger']:disabled {
-  border-color: var(--xh-editable-trigger-border-disabled, var(--xh-border-subtle));
-  background: var(--xh-editable-trigger-bg-disabled, var(--xh-bg-muted));
+  background: var(--xh-editable-trigger-bg-disabled, transparent);
   color: var(--xh-fg-disabled);
 }
 
-/* 提交按钮是这一组里的主操作，给它一层实心底色区分开，顶边再画一条极浅的内高光衬出厚度。
-   置灰那档不命中这条选择器，高光自然不出现 */
-[data-scope='editable'][data-part='submit-trigger']:not(:disabled) {
-  --xh-_editable-submit-highlight: var(--xh-_highlight-brand);
+@media (pointer: coarse) {
+  [data-scope='editable'][data-part='control'] {
+    min-block-size: var(--xh-editable-touch-target-size, var(--xh-control-box-lg));
+  }
 
-  border-color: var(--xh-editable-submit-border, var(--xh-_tone, var(--xh-bg-brand)));
-  background: var(--xh-editable-submit-bg, var(--xh-_tone, var(--xh-bg-brand)));
-  /* 前景与底同接一条语气链：底取 --xh-_tone，字就取配它的 --xh-_tone-on；
-     没写语气时两支各自退回品牌那一档，与不接语气时逐值相同 */
-  color: var(--xh-editable-submit-fg, var(--xh-_tone-on, var(--xh-fg-on-brand)));
-  box-shadow: var(--xh-editable-submit-shadow, var(--xh-_editable-submit-highlight));
-}
-
-/* 面是实心的，环色与面同族，画在面里就看不出来；环改取面自己的前景色——
-   那一族色本来就要在这块面上把字读清楚，与面的对比是按可读性定的 */
-[data-scope='editable'][data-part='submit-trigger']:not(:disabled):focus-visible {
-  --xh-_ring-color: currentColor;
-}
-
-/* 交互两档的底同接语气链，与常态那一档同源：不接的话写了语气的提交钮一悬停就翻回品牌色，
-   而字仍是配语气底的那一支 */
-[data-scope='editable'][data-part='submit-trigger']:hover:not(:disabled) {
-  border-color: var(--xh-editable-submit-border-hover, var(--xh-editable-submit-bg-hover, var(--xh-_tone-hover, var(--xh-bg-brand-hover))));
-  background: var(--xh-editable-submit-bg-hover, var(--xh-_tone-hover, var(--xh-bg-brand-hover)));
-}
-
-[data-scope='editable'][data-part='submit-trigger']:active:not(:disabled) {
-  border-color: var(--xh-editable-submit-border-active, var(--xh-editable-submit-bg-active, var(--xh-_tone-active, var(--xh-bg-brand-active))));
-  background: var(--xh-editable-submit-bg-active, var(--xh-_tone-active, var(--xh-bg-brand-active)));
+  [data-scope='editable'][data-part='edit-trigger'],
+  [data-scope='editable'][data-part='submit-trigger'],
+  [data-scope='editable'][data-part='cancel-trigger'] {
+    min-inline-size: var(--xh-editable-touch-target-size, var(--xh-control-box-lg));
+    min-block-size: var(--xh-editable-touch-target-size, var(--xh-control-box-lg));
+  }
 }
 
 /* styles/field.css */

@@ -19809,46 +19809,64 @@
           "customElement": true,
           "cssProperties": [
             {
+              "name": "--xh-editable-control-bg"
+            },
+            {
+              "name": "--xh-editable-control-bg-disabled"
+            },
+            {
+              "name": "--xh-editable-control-bg-focus"
+            },
+            {
+              "name": "--xh-editable-control-bg-hover"
+            },
+            {
+              "name": "--xh-editable-control-bg-invalid"
+            },
+            {
+              "name": "--xh-editable-control-bg-readonly"
+            },
+            {
+              "name": "--xh-editable-control-border"
+            },
+            {
+              "name": "--xh-editable-control-border-disabled"
+            },
+            {
+              "name": "--xh-editable-control-border-focus"
+            },
+            {
+              "name": "--xh-editable-control-border-hover"
+            },
+            {
+              "name": "--xh-editable-control-border-invalid"
+            },
+            {
               "name": "--xh-editable-control-gap"
             },
             {
-              "name": "--xh-editable-control-min-h"
+              "name": "--xh-editable-control-h"
             },
             {
               "name": "--xh-editable-control-min-w"
             },
             {
+              "name": "--xh-editable-control-radius"
+            },
+            {
+              "name": "--xh-editable-control-shadow"
+            },
+            {
               "name": "--xh-editable-gap"
+            },
+            {
+              "name": "--xh-editable-icon-size"
             },
             {
               "name": "--xh-editable-input-autofill-bg"
             },
             {
               "name": "--xh-editable-input-autofill-fg"
-            },
-            {
-              "name": "--xh-editable-input-bg"
-            },
-            {
-              "name": "--xh-editable-input-bg-disabled"
-            },
-            {
-              "name": "--xh-editable-input-bg-hover"
-            },
-            {
-              "name": "--xh-editable-input-bg-readonly"
-            },
-            {
-              "name": "--xh-editable-input-border"
-            },
-            {
-              "name": "--xh-editable-input-border-focus"
-            },
-            {
-              "name": "--xh-editable-input-border-hover"
-            },
-            {
-              "name": "--xh-editable-input-border-invalid"
             },
             {
               "name": "--xh-editable-input-fg"
@@ -19861,12 +19879,6 @@
             },
             {
               "name": "--xh-editable-input-px"
-            },
-            {
-              "name": "--xh-editable-input-radius"
-            },
-            {
-              "name": "--xh-editable-input-shadow"
             },
             {
               "name": "--xh-editable-label-fg"
@@ -19884,9 +19896,6 @@
               "name": "--xh-editable-placeholder-fg"
             },
             {
-              "name": "--xh-editable-preview-bg-hover"
-            },
-            {
               "name": "--xh-editable-preview-fg"
             },
             {
@@ -19899,31 +19908,7 @@
               "name": "--xh-editable-preview-px"
             },
             {
-              "name": "--xh-editable-preview-radius"
-            },
-            {
-              "name": "--xh-editable-submit-bg"
-            },
-            {
-              "name": "--xh-editable-submit-bg-active"
-            },
-            {
-              "name": "--xh-editable-submit-bg-hover"
-            },
-            {
-              "name": "--xh-editable-submit-border"
-            },
-            {
-              "name": "--xh-editable-submit-border-active"
-            },
-            {
-              "name": "--xh-editable-submit-border-hover"
-            },
-            {
-              "name": "--xh-editable-submit-fg"
-            },
-            {
-              "name": "--xh-editable-submit-shadow"
+              "name": "--xh-editable-touch-target-size"
             },
             {
               "name": "--xh-editable-trigger-bg"
@@ -19938,28 +19923,22 @@
               "name": "--xh-editable-trigger-bg-hover"
             },
             {
-              "name": "--xh-editable-trigger-border"
+              "name": "--xh-editable-trigger-divider"
             },
             {
-              "name": "--xh-editable-trigger-border-disabled"
-            },
-            {
-              "name": "--xh-editable-trigger-border-hover"
+              "name": "--xh-editable-trigger-divider-h"
             },
             {
               "name": "--xh-editable-trigger-fg"
             },
             {
+              "name": "--xh-editable-trigger-fg-hover"
+            },
+            {
               "name": "--xh-editable-trigger-font-size"
             },
             {
-              "name": "--xh-editable-trigger-h"
-            },
-            {
-              "name": "--xh-editable-trigger-px"
-            },
-            {
-              "name": "--xh-editable-trigger-radius"
+              "name": "--xh-editable-trigger-size"
             }
           ]
         }

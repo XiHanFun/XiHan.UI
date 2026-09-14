@@ -165,6 +165,7 @@ export const tokens = {
   "--xh-glyph-stroke-bold": "2.5px",
   "--xh-glyph-baseline-shift": "-0.125em",
   "--xh-glyph-mark-check": "url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M4 12.5L9.5 18L20 6'/%3E%3C/svg%3E\")",
+  "--xh-glyph-mark-edit": "url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M18.5 2.5L21.5 5.5L8 19L3.5 20.5L5 16Z'/%3E%3Cpath d='M16.4 4.6L19.4 7.6'/%3E%3C/svg%3E\")",
   "--xh-glyph-mark-minus": "url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M5 12H19'/%3E%3C/svg%3E\")",
   "--xh-glyph-mark-plus": "url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M12 5V19'/%3E%3Cpath d='M5 12H19'/%3E%3C/svg%3E\")",
   "--xh-glyph-mark-close": "url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M6 6L18 18'/%3E%3Cpath d='M18 6L6 18'/%3E%3C/svg%3E\")",
