@@ -32,7 +32,7 @@ afterEach(() => {
   document.body.innerHTML = ''
 })
 
-/** 一体式：加减钮与输入同在 control 里，减在前、加在后。 */
+/** 一体式：DOM 顺序保持减、输入、加，皮肤把两颗动作一起排到逻辑末端。 */
 function mountBoxed(props: Record<string, unknown> = {}): void {
   mount(props, () => [
     h(XhNumberFieldControl, null, () => [
@@ -94,13 +94,11 @@ describe('数字输入的加减钮分隔线', () => {
     await settle()
 
     expect(part('control').getBoundingClientRect().height).toBe(controlH)
-    for (const name of ['decrement-trigger', 'increment-trigger']) {
-      const line = divider(name)
-      // 线在场
-      expect(line.content).toBe('""')
-      expect(px(line.height)).toBe(dividerH)
-      expect(px(line.top)).toBe((controlH - dividerH) / 2)
-    }
+    const line = divider('decrement-trigger')
+    expect(line.content).toBe('""')
+    expect(px(line.height)).toBe(dividerH)
+    expect(px(line.top)).toBe((controlH - dividerH) / 2)
+    expect(divider('increment-trigger').content).toBe('none')
   })
 
   it('线是一根发丝宽的边框色，不是自造的灰', async () => {
@@ -114,20 +112,20 @@ describe('数字输入的加减钮分隔线', () => {
     expect(line.backgroundColor).toBe('rgba(0, 0, 0, 0)')
   })
 
-  it('线落在钮与输入的边界，两侧钮各朝输入的一边', async () => {
+  it('减、加两颗钮同在右侧，分隔线只落在输入与动作组之间', async () => {
     mountBoxed()
     await settle()
     const dec = part('decrement-trigger').getBoundingClientRect()
     const inc = part('increment-trigger').getBoundingClientRect()
     const input = part('input').getBoundingClientRect()
 
-    expect(lineCenter('decrement-trigger')).toBeCloseTo(dec.right - 0.5, 5)
-    expect(dec.right).toBe(input.left)
-    expect(lineCenter('increment-trigger')).toBeCloseTo(inc.left + 0.5, 5)
-    expect(inc.left).toBe(input.right)
+    expect(input.right).toBe(dec.left)
+    expect(dec.right).toBe(inc.left)
+    expect(lineCenter('decrement-trigger')).toBeCloseTo(dec.left + 0.5, 5)
+    expect(divider('increment-trigger').content).toBe('none')
   })
 
-  it('右起排版：线跟着换边，仍在钮朝向输入的那一侧', async () => {
+  it('右起排版：动作组镜像到逻辑末端，线仍隔开输入与动作', async () => {
     document.documentElement.setAttribute('dir', 'rtl')
     mountBoxed()
     await settle()
@@ -135,12 +133,10 @@ describe('数字输入的加减钮分隔线', () => {
     const inc = part('increment-trigger').getBoundingClientRect()
     const input = part('input').getBoundingClientRect()
 
-    // 右起时减钮在输入右边：线要落到减钮的左侧那道间隙里
-    expect(dec.left).toBe(input.right)
-    expect(lineCenter('decrement-trigger')).toBeCloseTo(dec.left + 0.5, 5)
-    // 加钮在输入左边：线换到加钮的右侧
-    expect(inc.right).toBe(input.left)
-    expect(lineCenter('increment-trigger')).toBeCloseTo(inc.right - 0.5, 5)
+    expect(dec.right).toBe(input.left)
+    expect(inc.right).toBe(dec.left)
+    expect(lineCenter('decrement-trigger')).toBeCloseTo(dec.right - 0.5, 5)
+    expect(divider('increment-trigger').content).toBe('none')
   })
 
   it('贴住 min 的钮画着线：线是盒的分区，不是钮的状态', async () => {
@@ -149,6 +145,7 @@ describe('数字输入的加减钮分隔线', () => {
     const dec = part('decrement-trigger') as HTMLButtonElement
     expect(dec.disabled).toBe(true)
     expect(divider('decrement-trigger').content).toBe('""')
+    expect(divider('increment-trigger').content).toBe('none')
   })
 
   it('盒里没有输入的结构不画线：线分的是「控制」与「输入」，没有输入就没有要分的两块', async () => {

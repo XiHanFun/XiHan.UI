@@ -46,7 +46,7 @@ const BOOLEAN_CONVERTER = { fromAttribute: (v: string | null) => (v === null ? u
  * @fires value-change - 值变化；detail 为 `{ value: string, valueAsNumber: number }`
  * @csspart root - 承载 data-disabled / data-readonly / data-invalid / data-empty 的容器
  * @csspart label - 标题；`for` 恒写向 input，故须是原生 `<label>` 才点得动
- * @csspart control - 输入框与加减钮的包裹层；皮肤把视觉盒画在它身上，减在左、加在右、输入框居中
+ * @csspart control - 输入框与加减钮的包裹层；皮肤把视觉盒画在它身上，输入在左，减、加动作依次收在右侧
  * @csspart prefix - 输入框前的装饰段（货币符、单位、图标）；对读屏隐藏
  * @csspart input - role=spinbutton 的输入框，键盘交互全在它身上
  * @csspart suffix - 输入框后的装饰段；对读屏隐藏

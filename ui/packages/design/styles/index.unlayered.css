@@ -28625,7 +28625,7 @@
 
 /* 与文本框同一套堆叠：标签一行、输入行一行。
    control 是必需的唯一视觉盒，输入框、加减钮与前后缀都放在里面；
-   减在左、加在右、输入框居中，前后缀图标/文字可直接流式插在框内。 */
+   输入与前后缀在左，减、加两颗动作依次收在逻辑末端。 */
 [data-scope='number-field'][data-part='root'] {
   /* 作者塞进来的图标跟着控件的尺寸档走；它自己写了 size 时仍以作者的为准 */
   --xh-icon-size: var(--xh-number-field-icon-size, var(--xh-glyph-size-md));
@@ -28638,7 +28638,7 @@
   --xh-_number-field-font-size: var(--xh-control-font-md);
   --xh-_number-field-label-font-size: var(--xh-control-font-md);
   --xh-_number-field-trigger-font-size: var(--xh-control-font-md);
-  /* 两侧动作占完整分栏宽度，纵向跟随 control。 */
+  /* 右侧动作占完整分栏宽度，纵向跟随 control。 */
   --xh-_number-field-trigger-size: var(--xh-_number-field-h);
   --xh-number-field-trigger-size: var(--xh-_number-field-trigger-size);
 
@@ -28750,7 +28750,7 @@
 
 /* —— 一体式 control：输入框与加减钮同框 —— */
 /* control 是唯一的视觉盒：描边、底色、圆角、聚焦环全画在它身上，盒内三件都退成透明分段，
-   整枚控件从头到尾只有这一道描边。减钮在前、input 居中、加钮在后（作者在模板里的顺序决定），
+   整枚控件从头到尾只有这一道描边。输入内容在左，减、加两颗动作依次收在逻辑末端，
    前后缀内容直接流式插在框里。
    focus-within 而不是 :focus 上的聚焦态：按钮也能触发聚焦环。
    外观槽按所在部件取名 --xh-number-field-control-*；--xh-number-field-input-* 只管
@@ -28906,38 +28906,36 @@
     scale var(--xh-motion-duration-micro) var(--xh-motion-ease-enter-strong);
 }
 
+/* DOM 顺序不承担视觉位置：既有用法即使把减钮写在 input 前面，默认仍统一收进右侧动作组。 */
+[data-scope='number-field'][data-part='control'] [data-part='decrement-trigger'] {
+  order: 1;
+}
+
+[data-scope='number-field'][data-part='control'] [data-part='increment-trigger'] {
+  order: 2;
+}
+
 [data-scope='number-field'][data-part='control'] [data-part='increment-trigger'][hidden],
 [data-scope='number-field'][data-part='control'] [data-part='decrement-trigger'][hidden] {
   display: none;
 }
 
-/* 加减钮与输入之间的细线：把「按的」与「填的」分成两块。
+/* 右侧动作组与输入之间的细线：把「按的」与「填的」分成两块。
    线画在钮的伪元素上而不是钮的边框上：边框会跟着钮的圆角与悬停底走，
    而这道线要独立于钮的各态，长度也短于钮自己。
    ::before 已被兜底字形占着，几何全落在 ::after 上。
-   线落在钮朝向输入的那一侧：钮排在输入前面就画在末端，排在后面就画在起始端；
-   用 inline-start / inline-end 两个逻辑侧，阿拉伯语这类右起排版下自动换边 */
-[data-scope='number-field'][data-part='control'] :is([data-part='decrement-trigger'], [data-part='increment-trigger']):has(~ [data-part='input'])::after,
-[data-scope='number-field'][data-part='control'] [data-part='input'] ~ :is([data-part='decrement-trigger'], [data-part='increment-trigger'])::after {
+   线只画在动作组第一颗减钮的逻辑起始侧；RTL 下随 inline-start 自动换边。 */
+[data-scope='number-field'][data-part='control']:has([data-part='input']) [data-part='decrement-trigger']::after {
   content: '';
   position: absolute;
   inset-block-start: calc((100% - var(--xh-number-field-trigger-divider-h, var(--xh-_number-field-divider-h))) / 2);
+  inset-inline-start: 0;
   inline-size: 0;
   block-size: var(--xh-number-field-trigger-divider-h, var(--xh-_number-field-divider-h));
   /* 一道发丝线走 border 而不是底色：高对比档下底色被系统换成面色，线会整条消失，
      边框那一档系统换的是边色，线还在 */
   border-inline-start: var(--xh-stroke-thin) solid
     var(--xh-number-field-trigger-divider, var(--xh-material-soft-separator));
-}
-
-/* 钮排在输入之前：线落在钮与输入的边界。 */
-[data-scope='number-field'][data-part='control'] :is([data-part='decrement-trigger'], [data-part='increment-trigger']):has(~ [data-part='input'])::after {
-  inset-inline-end: 0;
-}
-
-/* 钮排在输入之后：同一道边界，换到钮的起始端。 */
-[data-scope='number-field'][data-part='control'] [data-part='input'] ~ :is([data-part='decrement-trigger'], [data-part='increment-trigger'])::after {
-  inset-inline-start: 0;
 }
 
 /* 悬停由整个 control 反馈，分段本身保持透明。 */

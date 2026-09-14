@@ -90,7 +90,7 @@ afterEach(async () => {
 })
 
 describe('数字输入的尺寸与内部节奏', () => {
-  it.each(SIZE_CASES)('$density / $size：两侧动作占完整分栏宽度与控件高度', async (item) => {
+  it.each(SIZE_CASES)('$density / $size：右侧动作占完整分栏宽度与控件高度', async (item) => {
     mountField({ size: item.size }, { density: item.density })
     await settle()
     const control = part('control').getBoundingClientRect()
@@ -103,6 +103,7 @@ describe('数字输入的尺寸与内部节奏', () => {
     expect(decrement.height).toBe(item.trigger)
     expect(increment.width).toBe(item.trigger)
     expect(increment.height).toBe(item.trigger)
+    expect(input.right).toBeLessThanOrEqual(decrement.left)
     expect(decrement.right).toBeLessThanOrEqual(increment.left)
     expect(input.width).toBeGreaterThan(0)
   })
@@ -133,11 +134,10 @@ describe('数字输入的尺寸与内部节奏', () => {
     const suffix = part('suffix').getBoundingClientRect()
     const increment = part('increment-trigger').getBoundingClientRect()
 
-    expect(decrement.left).toBeGreaterThanOrEqual(prefix.right)
     expect(prefix.left).toBeGreaterThanOrEqual(input.right)
     expect(input.left).toBeGreaterThanOrEqual(suffix.right)
-    expect(suffix.left).toBeGreaterThanOrEqual(increment.right)
-    expect(increment.right).toBeLessThanOrEqual(decrement.left)
+    expect(suffix.left).toBeGreaterThanOrEqual(decrement.right)
+    expect(decrement.left).toBeGreaterThanOrEqual(increment.right)
     expect(centerY(part('prefix'))).toBeCloseTo(centerY(part('suffix')), 1)
   })
 })
@@ -234,9 +234,8 @@ describe('数字输入的粗指针目标', () => {
     expect(increment.width).toBe(target)
     expect(increment.height).toBe(target)
     expect(control.height).toBe(target)
-    expect(decrement.right).toBeLessThanOrEqual(input.left)
     expect(input.width).toBeGreaterThan(0)
-    expect(input.right).toBeLessThanOrEqual(increment.left)
+    expect(input.right).toBeLessThanOrEqual(decrement.left)
     expect(decrement.right).toBeLessThanOrEqual(increment.left)
   })
 })
