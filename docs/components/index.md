@@ -117,6 +117,7 @@
 <XhComponentCard src="card" name="Card" label="卡片" href="/components/card" />
 <XhComponentCard src="carousel" name="Carousel" label="走马灯" href="/components/carousel" />
 <XhComponentCard src="collapsible" name="Collapsible" label="折叠区域" href="/components/collapsible" status="alpha" />
+<XhComponentCard src="color-swatch" name="ColorSwatch" label="颜色色块" href="/components/color-swatch" status="alpha" />
 <XhComponentCard src="descriptions" name="Descriptions" label="描述列表" href="/components/descriptions" status="alpha" />
 <XhComponentCard src="empty-state" name="EmptyState" label="空状态" href="/components/empty-state" status="alpha" />
 <XhComponentCard src="heatmap" name="Heatmap" label="热力图" href="/components/heatmap" status="alpha" />

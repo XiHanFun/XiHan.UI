@@ -51,6 +51,7 @@
       "./collapsible.css",
       "./collection-item.css",
       "./color-picker.css",
+      "./color-swatch.css",
       "./combobox.css",
       "./command.css",
       "./component-tokens",
@@ -143,6 +144,7 @@
       "./splitter.css",
       "./statistic.css",
       "./steps.css",
+      "./swatch.css",
       "./switch.css",
       "./table.css",
       "./tabs.css",
@@ -830,6 +832,8 @@
       "XhColorPickerTriggerProps",
       "XhColorPickerValueText",
       "XhColorPickerValueTextProps",
+      "XhColorSwatch",
+      "XhColorSwatchProps",
       "XhComboboxClearTrigger",
       "XhComboboxContent",
       "XhComboboxControl",
@@ -3127,6 +3131,7 @@
       "XhColorPickerSwatchItem",
       "XhColorPickerTrigger",
       "XhColorPickerValueText",
+      "XhColorSwatch",
       "XhComboboxClearTrigger",
       "XhComboboxContent",
       "XhComboboxControl",
@@ -4223,6 +4228,7 @@
       "XhCodeViewElement",
       "XhCollapsibleElement",
       "XhColorPickerElement",
+      "XhColorSwatchElement",
       "XhComboboxElement",
       "XhCommandElement",
       "XhConfig",
@@ -5187,6 +5193,9 @@
       "ColorPickerTranslations",
       "ColorPickerValueChangeDetails",
       "ColorRgba",
+      "ColorSwatchApi",
+      "ColorSwatchProps",
+      "ColorSwatchTranslations",
       "ComboboxApi",
       "ComboboxFocusIntent",
       "ComboboxGroupProps",
@@ -6603,6 +6612,9 @@
       "colorRgbaToHsva",
       "colorSameColor",
       "colorSameRgba",
+      "colorSwatchAnatomy",
+      "colorSwatchKeyboard",
+      "colorSwatchMeta",
       "colorToChannel",
       "colorToRgba",
       "colorToString",
@@ -6648,6 +6660,7 @@
       "connectCodeView",
       "connectCollapsible",
       "connectColorPicker",
+      "connectColorSwatch",
       "connectCombobox",
       "connectCommand",
       "connectContextMenu",
@@ -8221,6 +8234,9 @@
       "trigger",
       "value-text"
     ],
+    "color-swatch": [
+      "root"
+    ],
     "combobox": [
       "clear-trigger",
       "content",
@@ -9550,6 +9566,11 @@
       "size",
       "swatches",
       "translations",
+      "value"
+    ],
+    "color-swatch": [
+      "label",
+      "size",
       "value"
     ],
     "combobox": [
@@ -11382,7 +11403,9 @@
     "data-xh-field-chrome",
     "data-xh-field-input",
     "data-xh-field-layout",
-    "data-xh-field-size"
+    "data-xh-field-size",
+    "data-xh-swatch",
+    "data-xh-swatch-size"
   ],
   "dataStateValues": [
     "active",
@@ -12505,6 +12528,10 @@
     "--xh-color-picker-trigger-gap",
     "--xh-color-picker-value-fg",
     "--xh-color-picker-value-font-size",
+    "--xh-color-swatch-border",
+    "--xh-color-swatch-border-invalid",
+    "--xh-color-swatch-radius",
+    "--xh-color-swatch-size",
     "--xh-combobox-action-bg",
     "--xh-combobox-action-bg-active",
     "--xh-combobox-action-bg-hover",
@@ -16100,6 +16127,14 @@
         "open-change",
         "value-change"
       ]
+    },
+    "xh-color-swatch": {
+      "attributes": [
+        "label",
+        "size",
+        "value"
+      ],
+      "events": []
     },
     "xh-combobox": {
       "attributes": [

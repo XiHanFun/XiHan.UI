@@ -31,6 +31,7 @@ import { XhClipboardElement } from './elements/clipboard'
 import { XhCodeViewElement } from './elements/code-view'
 import { XhCollapsibleElement } from './elements/collapsible'
 import { XhColorPickerElement } from './elements/color-picker'
+import { XhColorSwatchElement } from './elements/color-swatch'
 import { XhComboboxElement } from './elements/combobox'
 import { XhCommandElement } from './elements/command'
 import { XhConfigElement } from './elements/config'
@@ -147,6 +148,7 @@ export function defineXhElements(): void {
   defineElement('xh-avatar-group', XhAvatarGroupElement, VERSION)
   defineElement('xh-back-top', XhBackTopElement, VERSION)
   defineElement('xh-button-group', XhButtonGroupElement, VERSION)
+  defineElement('xh-color-swatch', XhColorSwatchElement, VERSION)
   defineElement('xh-command', XhCommandElement, VERSION)
   defineElement('xh-date-range-picker', XhDateRangePickerElement, VERSION)
   defineElement('xh-descriptions', XhDescriptionsElement, VERSION)
@@ -302,6 +304,7 @@ export {
   XhCodeViewElement,
   XhCollapsibleElement,
   XhColorPickerElement,
+  XhColorSwatchElement,
   XhComboboxElement,
   XhCommandElement,
   XhConfigElement,

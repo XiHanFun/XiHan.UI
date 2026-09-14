@@ -19,7 +19,7 @@ const IDREF_ATTRS = new Set([
 const ADAPTER_NOISE = /^data-(?:v-[0-9a-f]{6,8}|server-rendered|defer-hydration|lit-|reactroot$|scope$|part$|xh-)/
 
 /** 三端共同消费的 family recipe 语义，不是适配器内部标记，必须参与跨端对拍。 */
-const PUBLIC_XH_FAMILY = /^data-xh-(?:action|field|collection)-/
+const PUBLIC_XH_FAMILY = /^data-xh-(?:action|field|collection|swatch)(?:-|$)/
 
 function isAdapterNoise(name: string): boolean {
   return ADAPTER_NOISE.test(name) && !PUBLIC_XH_FAMILY.test(name)
