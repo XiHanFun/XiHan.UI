@@ -48071,6 +48071,14 @@
             },
             {
               "kind": "field",
+              "name": "tones",
+              "privacy": "public",
+              "type": {
+                "text": "Record<number, Tone> | undefined"
+              }
+            },
+            {
+              "kind": "field",
               "name": "translations",
               "privacy": "public",
               "type": {
@@ -48302,13 +48310,10 @@
               "name": "--xh-steps-indicator-bg-disabled"
             },
             {
-              "name": "--xh-steps-indicator-bg-error"
-            },
-            {
               "name": "--xh-steps-indicator-bg-hover"
             },
             {
-              "name": "--xh-steps-indicator-bg-warning"
+              "name": "--xh-steps-indicator-bg-toned"
             },
             {
               "name": "--xh-steps-indicator-border"
@@ -48323,10 +48328,7 @@
               "name": "--xh-steps-indicator-border-disabled"
             },
             {
-              "name": "--xh-steps-indicator-border-error"
-            },
-            {
-              "name": "--xh-steps-indicator-border-warning"
+              "name": "--xh-steps-indicator-border-toned"
             },
             {
               "name": "--xh-steps-indicator-fg"
@@ -48341,13 +48343,10 @@
               "name": "--xh-steps-indicator-fg-disabled"
             },
             {
-              "name": "--xh-steps-indicator-fg-error"
-            },
-            {
               "name": "--xh-steps-indicator-fg-hover"
             },
             {
-              "name": "--xh-steps-indicator-fg-warning"
+              "name": "--xh-steps-indicator-fg-toned"
             },
             {
               "name": "--xh-steps-indicator-font-size"
@@ -48392,10 +48391,7 @@
               "name": "--xh-steps-title-fg-active"
             },
             {
-              "name": "--xh-steps-title-fg-error"
-            },
-            {
-              "name": "--xh-steps-title-fg-warning"
+              "name": "--xh-steps-title-fg-toned"
             },
             {
               "name": "--xh-steps-title-font-size"

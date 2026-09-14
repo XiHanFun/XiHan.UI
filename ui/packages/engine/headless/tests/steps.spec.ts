@@ -325,9 +325,27 @@ describe('connectSteps 属性', () => {
 
   it('getItemState 把三态与禁用一并算好，作者自绘图标直接取', () => {
     const h = mount({ defaultValue: 1, linear: true })
-    expect(h.api().getItemState({ index: 0 })).toEqual({ index: 0, status: 'completed', completed: true, current: false, disabled: false })
-    expect(h.api().getItemState({ index: 1 })).toEqual({ index: 1, status: 'current', completed: false, current: true, disabled: false })
-    expect(h.api().getItemState({ index: 2 })).toEqual({ index: 2, status: 'incomplete', completed: false, current: false, disabled: true })
+    expect(h.api().getItemState({ index: 0 })).toEqual({ index: 0, status: 'completed', tone: undefined, completed: true, current: false, disabled: false })
+    expect(h.api().getItemState({ index: 1 })).toEqual({ index: 1, status: 'current', tone: undefined, completed: false, current: true, disabled: false })
+    expect(h.api().getItemState({ index: 2 })).toEqual({ index: 2, status: 'incomplete', tone: undefined, completed: false, current: false, disabled: true })
+  })
+
+  it('statuses 改写状态、tones 标语气，两者互不相干；tones 优先于 collection 的 tone，只落成 item 的 data-tone', () => {
+    const h = mount({
+      defaultValue: 1,
+      collection: [{ title: '提交' }, { title: '审核', tone: 'warning' }, { title: '签署', tone: 'info' }],
+      statuses: { 0: 'incomplete' },
+      tones: { 1: 'danger' },
+    })
+    expect(h.api().getItemState({ index: 0 })).toMatchObject({ status: 'incomplete', tone: undefined })
+    expect(h.api().getItemState({ index: 1 })).toMatchObject({ status: 'current', tone: 'danger' })
+    expect(h.api().getItemState({ index: 2 })).toMatchObject({ status: 'incomplete', tone: 'info' })
+    expect(h.item(1).getAttribute('data-tone')).toBe('danger')
+    expect(h.item(1).getAttribute('data-state')).toBe('current')
+    expect(h.item(0).hasAttribute('data-tone')).toBe(false)
+    // 语气只打在条目上，语气层在这一级重算颜色，下面的部件靠继承
+    expect(h.trigger(1).hasAttribute('data-tone')).toBe(false)
+    expect(h.indicator(1).hasAttribute('data-tone')).toBe(false)
   })
 
   it('trigger：role=tab + aria-selected/aria-current 成对，posinset/setsize 报出"第几步共几步"', () => {

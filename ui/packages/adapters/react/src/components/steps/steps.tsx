@@ -37,6 +37,8 @@ export interface XhStepsRootProps extends RootElementProps {
   collection?: StepNode[]
   /** 逐步覆盖状态：下标 → 状态。 */
   statuses?: Record<number, StepStatus>
+  /** 逐步标语气：下标 → 语气；被打回的写 danger、要留意的写 warning。 */
+  tones?: Record<number, Tone>
   orientation?: Orientation
   /** 线性推进：没走到的那几步锁着，点不动也跳不过去。 */
   linear?: boolean
@@ -56,6 +58,7 @@ export function XhStepsRoot({
   count,
   collection,
   statuses,
+  tones,
   orientation,
   linear,
   disabled,
@@ -74,6 +77,7 @@ export function XhStepsRoot({
     count,
     collection,
     statuses,
+    tones,
     orientation,
     linear,
     disabled,
