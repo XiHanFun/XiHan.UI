@@ -131,8 +131,8 @@
 <XhComponentCard src="json-viewer" name="JsonViewer" label="JSON 视图" href="/components/json-viewer" status="alpha" />
 <XhComponentCard src="list" name="List" label="列表" href="/components/list" status="alpha" />
 <XhComponentCard src="marquee" name="Marquee" label="跑马灯" href="/components/marquee" status="alpha" />
+<XhComponentCard src="matrix-code" name="MatrixCode" label="二维码" href="/components/matrix-code" status="alpha" />
 <XhComponentCard src="number-animation" name="NumberAnimation" label="数值动画" href="/components/number-animation" status="alpha" />
-<XhComponentCard src="qr-code" name="QrCode" label="二维码" href="/components/qr-code" status="alpha" />
 <XhComponentCard src="statistic" name="Statistic" label="统计数值" href="/components/statistic" status="alpha" />
 <XhComponentCard src="table" name="Table" label="表格" href="/components/table" status="alpha" />
 <XhComponentCard src="tag" name="Tag" label="标签" href="/components/tag" status="alpha" />

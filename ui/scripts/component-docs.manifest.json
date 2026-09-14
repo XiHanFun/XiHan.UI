@@ -452,12 +452,12 @@
           "name": "跑马灯"
         },
         {
-          "id": "number-animation",
-          "name": "数值动画"
+          "id": "matrix-code",
+          "name": "二维码"
         },
         {
-          "id": "qr-code",
-          "name": "二维码"
+          "id": "number-animation",
+          "name": "数值动画"
         },
         {
           "id": "statistic",

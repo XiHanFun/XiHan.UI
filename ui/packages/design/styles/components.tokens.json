@@ -35369,6 +35369,118 @@
       "description": "masonry 的 column、root 部件 gap 覆盖槽。"
     },
     {
+      "name": "--xh-matrix-code-bg",
+      "component": "matrix-code",
+      "part": [
+        "root"
+      ],
+      "property": [
+        "background",
+        "fill"
+      ],
+      "state": [
+        "default",
+        "xh-geom=logo-clear"
+      ],
+      "defaultToken": [
+        "--xh-color-neutral-0"
+      ],
+      "visibility": "public",
+      "description": "matrix-code 的 root 部件 background、fill 覆盖槽。"
+    },
+    {
+      "name": "--xh-matrix-code-eye-fg",
+      "component": "matrix-code",
+      "part": [
+        "root"
+      ],
+      "property": [
+        "fill"
+      ],
+      "state": [
+        "xh-geom=eyes"
+      ],
+      "defaultToken": [
+        "currentColor"
+      ],
+      "visibility": "public",
+      "description": "matrix-code 的 root 部件 fill 覆盖槽。"
+    },
+    {
+      "name": "--xh-matrix-code-fg",
+      "component": "matrix-code",
+      "part": [
+        "root"
+      ],
+      "property": [
+        "color"
+      ],
+      "state": [
+        "default"
+      ],
+      "defaultToken": [
+        "--xh-color-neutral-950"
+      ],
+      "visibility": "public",
+      "description": "matrix-code 的 root 部件 color 覆盖槽。"
+    },
+    {
+      "name": "--xh-matrix-code-placeholder-bg",
+      "component": "matrix-code",
+      "part": [
+        "root"
+      ],
+      "property": [
+        "background"
+      ],
+      "state": [
+        "state=empty",
+        "state=error"
+      ],
+      "defaultToken": [
+        "--xh-bg-subtle"
+      ],
+      "visibility": "public",
+      "description": "matrix-code 的 root 部件 background 覆盖槽。"
+    },
+    {
+      "name": "--xh-matrix-code-placeholder-border",
+      "component": "matrix-code",
+      "part": [
+        "root"
+      ],
+      "property": [
+        "box-shadow"
+      ],
+      "state": [
+        "state=empty",
+        "state=error"
+      ],
+      "defaultToken": [
+        "--xh-border-default"
+      ],
+      "visibility": "public",
+      "description": "matrix-code 的 root 部件 box-shadow 覆盖槽。"
+    },
+    {
+      "name": "--xh-matrix-code-radius",
+      "component": "matrix-code",
+      "part": [
+        "root"
+      ],
+      "property": [
+        "border-radius"
+      ],
+      "state": [
+        "default"
+      ],
+      "defaultToken": [
+        "--xh-shape-control"
+      ],
+      "visibility": "public",
+      "description": "matrix-code 的 root 部件 border-radius 覆盖槽。"
+    },
+    {
       "name": "--xh-mention-content-backdrop",
       "component": "mention",
       "part": [
@@ -45015,118 +45127,6 @@
       ],
       "visibility": "public",
       "description": "prompt-input 的 submit-trigger 部件 box-shadow 覆盖槽。"
-    },
-    {
-      "name": "--xh-qr-code-bg",
-      "component": "qr-code",
-      "part": [
-        "root"
-      ],
-      "property": [
-        "background",
-        "fill"
-      ],
-      "state": [
-        "default",
-        "xh-geom=logo-clear"
-      ],
-      "defaultToken": [
-        "--xh-color-neutral-0"
-      ],
-      "visibility": "public",
-      "description": "qr-code 的 root 部件 background、fill 覆盖槽。"
-    },
-    {
-      "name": "--xh-qr-code-eye-fg",
-      "component": "qr-code",
-      "part": [
-        "root"
-      ],
-      "property": [
-        "fill"
-      ],
-      "state": [
-        "xh-geom=eyes"
-      ],
-      "defaultToken": [
-        "currentColor"
-      ],
-      "visibility": "public",
-      "description": "qr-code 的 root 部件 fill 覆盖槽。"
-    },
-    {
-      "name": "--xh-qr-code-fg",
-      "component": "qr-code",
-      "part": [
-        "root"
-      ],
-      "property": [
-        "color"
-      ],
-      "state": [
-        "default"
-      ],
-      "defaultToken": [
-        "--xh-color-neutral-950"
-      ],
-      "visibility": "public",
-      "description": "qr-code 的 root 部件 color 覆盖槽。"
-    },
-    {
-      "name": "--xh-qr-code-placeholder-bg",
-      "component": "qr-code",
-      "part": [
-        "root"
-      ],
-      "property": [
-        "background"
-      ],
-      "state": [
-        "state=empty",
-        "state=error"
-      ],
-      "defaultToken": [
-        "--xh-bg-subtle"
-      ],
-      "visibility": "public",
-      "description": "qr-code 的 root 部件 background 覆盖槽。"
-    },
-    {
-      "name": "--xh-qr-code-placeholder-border",
-      "component": "qr-code",
-      "part": [
-        "root"
-      ],
-      "property": [
-        "box-shadow"
-      ],
-      "state": [
-        "state=empty",
-        "state=error"
-      ],
-      "defaultToken": [
-        "--xh-border-default"
-      ],
-      "visibility": "public",
-      "description": "qr-code 的 root 部件 box-shadow 覆盖槽。"
-    },
-    {
-      "name": "--xh-qr-code-radius",
-      "component": "qr-code",
-      "part": [
-        "root"
-      ],
-      "property": [
-        "border-radius"
-      ],
-      "state": [
-        "default"
-      ],
-      "defaultToken": [
-        "--xh-shape-control"
-      ],
-      "visibility": "public",
-      "description": "qr-code 的 root 部件 border-radius 覆盖槽。"
     },
     {
       "name": "--xh-question-flow-action-font-size",

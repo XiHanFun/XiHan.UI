@@ -73,7 +73,7 @@ export type Tone = 'brand' | 'neutral' | 'success' | 'warning' | 'danger' | 'inf
 /**
  * 尺寸。三档，`md` 是缺省档，所以多数皮肤只写 sm 与 lg 两条选择器。
  *
- * 注意 `qr-code` 与 `splitter` 的 `size` 不是这条轴：前者是像素边长，后者是各栏比例，
+ * 注意 `matrix-code` 与 `splitter` 的 `size` 不是这条轴：前者是像素边长，后者是各栏比例，
  * 都保持数值类型。那两处是同名不同义，与本类型无关。
  */
 export type Size = 'sm' | 'md' | 'lg'
