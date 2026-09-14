@@ -330,6 +330,41 @@ export {
 export type { DatePickerPresetsSlotProps, DatePickerRootSlotProps, DatePickerSegmentSlotProps } from './components/date-picker/date-picker'
 export { useDatePicker } from './components/date-picker/use-date-picker'
 export type { DatePickerContext } from './components/date-picker/use-date-picker'
+export {
+  XhDateRangePickerCalendar,
+  XhDateRangePickerCell,
+  XhDateRangePickerCellTrigger,
+  XhDateRangePickerClearTrigger,
+  XhDateRangePickerContent,
+  XhDateRangePickerControl,
+  XhDateRangePickerGrid,
+  XhDateRangePickerGridBody,
+  XhDateRangePickerGridHead,
+  XhDateRangePickerHeader,
+  XhDateRangePickerHeading,
+  XhDateRangePickerHeadingMonthTrigger,
+  XhDateRangePickerHeadingYearTrigger,
+  XhDateRangePickerHiddenInput,
+  XhDateRangePickerLabel,
+  XhDateRangePickerNextTrigger,
+  XhDateRangePickerNextYearTrigger,
+  XhDateRangePickerPositioner,
+  XhDateRangePickerPreset,
+  XhDateRangePickerPresetGroup,
+  XhDateRangePickerPrevTrigger,
+  XhDateRangePickerPrevYearTrigger,
+  XhDateRangePickerRangeSeparator,
+  XhDateRangePickerRoot,
+  XhDateRangePickerSegment,
+  XhDateRangePickerSegmentGroup,
+  XhDateRangePickerTrigger,
+  XhDateRangePickerWeekDay,
+  XhDateRangePickerWeekNumber,
+  XhDateRangePickerWeekRow,
+} from './components/date-range-picker/date-range-picker'
+export type { DateRangePickerPresetsSlotProps, DateRangePickerRootSlotProps, DateRangePickerSegmentSlotProps } from './components/date-range-picker/date-range-picker'
+export { useDateRangePicker } from './components/date-range-picker/use-date-range-picker'
+export type { DateRangePickerContext } from './components/date-range-picker/use-date-range-picker'
 export { provideDescriptions, useDescriptionsContext } from './components/descriptions/context'
 export type { DescriptionsContext } from './components/descriptions/context'
 export { XhDescriptionsItem, XhDescriptionsLabel, XhDescriptionsRoot, XhDescriptionsValue } from './components/descriptions/descriptions'

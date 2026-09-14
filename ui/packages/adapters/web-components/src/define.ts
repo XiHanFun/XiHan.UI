@@ -37,6 +37,7 @@ import { XhConfigElement } from './elements/config'
 import { XhContextMenuElement } from './elements/context-menu'
 import { XhDateFieldElement } from './elements/date-field'
 import { XhDatePickerElement } from './elements/date-picker'
+import { XhDateRangePickerElement } from './elements/date-range-picker'
 import { XhDescriptionsElement } from './elements/descriptions'
 import { XhDialogElement } from './elements/dialog'
 import { XhDiffViewElement } from './elements/diff-view'
@@ -146,6 +147,7 @@ export function defineXhElements(): void {
   defineElement('xh-back-top', XhBackTopElement, VERSION)
   defineElement('xh-button-group', XhButtonGroupElement, VERSION)
   defineElement('xh-command', XhCommandElement, VERSION)
+  defineElement('xh-date-range-picker', XhDateRangePickerElement, VERSION)
   defineElement('xh-descriptions', XhDescriptionsElement, VERSION)
   defineElement('xh-diff-view', XhDiffViewElement, VERSION)
   defineElement('xh-download-trigger', XhDownloadTriggerElement, VERSION)
@@ -304,6 +306,7 @@ export {
   XhContextMenuElement,
   XhDateFieldElement,
   XhDatePickerElement,
+  XhDateRangePickerElement,
   XhDialogElement,
   XhDiffViewElement,
   XhDownloadTriggerElement,

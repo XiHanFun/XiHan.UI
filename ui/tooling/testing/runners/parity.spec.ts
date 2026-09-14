@@ -32,6 +32,7 @@ import {
   collapsibleSuite,
   dateFieldSuite,
   datePickerSuite,
+  dateRangePickerSuite,
   descriptionsSuite,
   diffViewSuite,
   downloadTriggerSuite,
@@ -238,6 +239,7 @@ const SUITES: readonly ConformanceSuite[] = [
   questionFlowSuite,
   promptInputSuite,
   inputGroupSuite,
+  dateRangePickerSuite,
 ]
 
 /** 暂不做逐帧比对的套件与理由。它们的跨适配器保证由两侧各自跑同一份 conformance 规格提供。 */

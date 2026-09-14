@@ -29,6 +29,7 @@
     "context-menu",
     "date-field",
     "date-picker",
+    "date-range-picker",
     "descriptions",
     "dialog",
     "diff-view",

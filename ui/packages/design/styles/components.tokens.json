@@ -17851,6 +17851,1135 @@
       "description": "date-picker 的 time-item 部件 border-radius 覆盖槽。"
     },
     {
+      "name": "--xh-date-range-picker-action-bg",
+      "component": "date-range-picker",
+      "part": [
+        "clear-trigger",
+        "trigger"
+      ],
+      "property": [
+        "background"
+      ],
+      "state": [
+        "default",
+        "disabled"
+      ],
+      "defaultToken": [
+        "transparent"
+      ],
+      "visibility": "public",
+      "description": "date-range-picker 的 clear-trigger、trigger 部件 background 覆盖槽。"
+    },
+    {
+      "name": "--xh-date-range-picker-action-bg-active",
+      "component": "date-range-picker",
+      "part": [
+        "clear-trigger",
+        "trigger"
+      ],
+      "property": [
+        "background"
+      ],
+      "state": [
+        "active",
+        "not(:disabled)",
+        "state=open"
+      ],
+      "defaultToken": [
+        "--xh-bg-subtle-active"
+      ],
+      "visibility": "public",
+      "description": "date-range-picker 的 clear-trigger、trigger 部件 background 覆盖槽。"
+    },
+    {
+      "name": "--xh-date-range-picker-action-bg-hover",
+      "component": "date-range-picker",
+      "part": [
+        "clear-trigger",
+        "trigger"
+      ],
+      "property": [
+        "background"
+      ],
+      "state": [
+        "hover",
+        "not(:disabled)"
+      ],
+      "defaultToken": [
+        "--xh-bg-subtle-hover"
+      ],
+      "visibility": "public",
+      "description": "date-range-picker 的 clear-trigger、trigger 部件 background 覆盖槽。"
+    },
+    {
+      "name": "--xh-date-range-picker-action-fg",
+      "component": "date-range-picker",
+      "part": [
+        "clear-trigger",
+        "trigger"
+      ],
+      "property": [
+        "color"
+      ],
+      "state": [
+        "default"
+      ],
+      "defaultToken": [
+        "--xh-fg-muted"
+      ],
+      "visibility": "public",
+      "description": "date-range-picker 的 clear-trigger、trigger 部件 color 覆盖槽。"
+    },
+    {
+      "name": "--xh-date-range-picker-action-fg-hover",
+      "component": "date-range-picker",
+      "part": [
+        "clear-trigger",
+        "trigger"
+      ],
+      "property": [
+        "color"
+      ],
+      "state": [
+        "hover",
+        "not(:disabled)",
+        "state=open"
+      ],
+      "defaultToken": [
+        "--xh-fg-default"
+      ],
+      "visibility": "public",
+      "description": "date-range-picker 的 clear-trigger、trigger 部件 color 覆盖槽。"
+    },
+    {
+      "name": "--xh-date-range-picker-action-font-size",
+      "component": "date-range-picker",
+      "part": [
+        "clear-trigger",
+        "trigger"
+      ],
+      "property": [
+        "font-size"
+      ],
+      "state": [
+        "default"
+      ],
+      "defaultToken": [
+        "--xh-text-secondary-size"
+      ],
+      "visibility": "public",
+      "description": "date-range-picker 的 clear-trigger、trigger 部件 font-size 覆盖槽。"
+    },
+    {
+      "name": "--xh-date-range-picker-action-radius",
+      "component": "date-range-picker",
+      "part": [
+        "clear-trigger",
+        "trigger"
+      ],
+      "property": [
+        "border-radius"
+      ],
+      "state": [
+        "default"
+      ],
+      "defaultToken": [
+        "--xh-shape-control"
+      ],
+      "visibility": "public",
+      "description": "date-range-picker 的 clear-trigger、trigger 部件 border-radius 覆盖槽。"
+    },
+    {
+      "name": "--xh-date-range-picker-action-size",
+      "component": "date-range-picker",
+      "part": [
+        "clear-trigger",
+        "trigger"
+      ],
+      "property": [
+        "block-size",
+        "inline-size"
+      ],
+      "state": [
+        "default"
+      ],
+      "defaultToken": [
+        "--xh-control-action-size"
+      ],
+      "visibility": "public",
+      "description": "date-range-picker 的 clear-trigger、trigger 部件 block-size、inline-size 覆盖槽。"
+    },
+    {
+      "name": "--xh-date-range-picker-calendar-gap",
+      "component": "date-range-picker",
+      "part": [
+        "calendar"
+      ],
+      "property": [
+        "gap"
+      ],
+      "state": [
+        "default"
+      ],
+      "defaultToken": [
+        "--xh-space-2"
+      ],
+      "visibility": "public",
+      "description": "date-range-picker 的 calendar 部件 gap 覆盖槽。"
+    },
+    {
+      "name": "--xh-date-range-picker-column-divider",
+      "component": "date-range-picker",
+      "part": [
+        "preset-group"
+      ],
+      "property": [
+        "border-block-end",
+        "border-inline-end"
+      ],
+      "state": [
+        "@media (min-width: 768px)",
+        "default"
+      ],
+      "defaultToken": [
+        "--xh-material-frosted-separator"
+      ],
+      "visibility": "public",
+      "description": "date-range-picker 的 preset-group 部件 border-block-end、border-inline-end 覆盖槽。"
+    },
+    {
+      "name": "--xh-date-range-picker-content-backdrop",
+      "component": "date-range-picker",
+      "part": [
+        "content"
+      ],
+      "property": [
+        "-webkit-backdrop-filter",
+        "backdrop-filter"
+      ],
+      "state": [
+        "default"
+      ],
+      "defaultToken": [
+        "none"
+      ],
+      "visibility": "public",
+      "description": "date-range-picker 的 content 部件 -webkit-backdrop-filter、backdrop-filter 覆盖槽。"
+    },
+    {
+      "name": "--xh-date-range-picker-content-bg",
+      "component": "date-range-picker",
+      "part": [
+        "content"
+      ],
+      "property": [
+        "background"
+      ],
+      "state": [
+        "default"
+      ],
+      "defaultToken": [
+        "--xh-bg-surface"
+      ],
+      "visibility": "public",
+      "description": "date-range-picker 的 content 部件 background 覆盖槽。"
+    },
+    {
+      "name": "--xh-date-range-picker-content-border",
+      "component": "date-range-picker",
+      "part": [
+        "content"
+      ],
+      "property": [
+        "border"
+      ],
+      "state": [
+        "default"
+      ],
+      "defaultToken": [
+        "--xh-border-subtle"
+      ],
+      "visibility": "public",
+      "description": "date-range-picker 的 content 部件 border 覆盖槽。"
+    },
+    {
+      "name": "--xh-date-range-picker-content-fg",
+      "component": "date-range-picker",
+      "part": [
+        "content"
+      ],
+      "property": [
+        "color"
+      ],
+      "state": [
+        "default"
+      ],
+      "defaultToken": [
+        "--xh-fg-default"
+      ],
+      "visibility": "public",
+      "description": "date-range-picker 的 content 部件 color 覆盖槽。"
+    },
+    {
+      "name": "--xh-date-range-picker-content-highlight",
+      "component": "date-range-picker",
+      "part": [
+        "content"
+      ],
+      "property": [
+        "background"
+      ],
+      "state": [
+        "default"
+      ],
+      "defaultToken": [
+        "transparent"
+      ],
+      "visibility": "public",
+      "description": "date-range-picker 的 content 部件 background 覆盖槽。"
+    },
+    {
+      "name": "--xh-date-range-picker-content-px",
+      "component": "date-range-picker",
+      "part": [
+        "content"
+      ],
+      "property": [
+        "padding-inline"
+      ],
+      "state": [
+        "default"
+      ],
+      "defaultToken": [
+        "--xh-space-2"
+      ],
+      "visibility": "public",
+      "description": "date-range-picker 的 content 部件 padding-inline 覆盖槽。"
+    },
+    {
+      "name": "--xh-date-range-picker-content-py",
+      "component": "date-range-picker",
+      "part": [
+        "content"
+      ],
+      "property": [
+        "padding-block"
+      ],
+      "state": [
+        "default"
+      ],
+      "defaultToken": [
+        "--xh-space-2"
+      ],
+      "visibility": "public",
+      "description": "date-range-picker 的 content 部件 padding-block 覆盖槽。"
+    },
+    {
+      "name": "--xh-date-range-picker-content-radius",
+      "component": "date-range-picker",
+      "part": [
+        "content"
+      ],
+      "property": [
+        "border-radius"
+      ],
+      "state": [
+        "default"
+      ],
+      "defaultToken": [
+        "--xh-shape-surface"
+      ],
+      "visibility": "public",
+      "description": "date-range-picker 的 content 部件 border-radius 覆盖槽。"
+    },
+    {
+      "name": "--xh-date-range-picker-content-shadow",
+      "component": "date-range-picker",
+      "part": [
+        "content"
+      ],
+      "property": [
+        "box-shadow"
+      ],
+      "state": [
+        "default"
+      ],
+      "defaultToken": [
+        "--xh-material-frosted-shadow"
+      ],
+      "visibility": "public",
+      "description": "date-range-picker 的 content 部件 box-shadow 覆盖槽。"
+    },
+    {
+      "name": "--xh-date-range-picker-control-bg",
+      "component": "date-range-picker",
+      "part": [
+        "control"
+      ],
+      "property": [
+        "background"
+      ],
+      "state": [
+        "default"
+      ],
+      "defaultToken": [
+        "--xh-_date-range-picker-control-bg"
+      ],
+      "visibility": "public",
+      "description": "date-range-picker 的 control 部件 background 覆盖槽。"
+    },
+    {
+      "name": "--xh-date-range-picker-control-bg-disabled",
+      "component": "date-range-picker",
+      "part": [
+        "control"
+      ],
+      "property": [
+        "background"
+      ],
+      "state": [
+        "disabled"
+      ],
+      "defaultToken": [
+        "--xh-bg-subtle"
+      ],
+      "visibility": "public",
+      "description": "date-range-picker 的 control 部件 background 覆盖槽。"
+    },
+    {
+      "name": "--xh-date-range-picker-control-bg-hover",
+      "component": "date-range-picker",
+      "part": [
+        "control"
+      ],
+      "property": [
+        "background"
+      ],
+      "state": [
+        "disabled",
+        "hover",
+        "not([data-disabled], [data-readonly])",
+        "readonly"
+      ],
+      "defaultToken": [
+        "--xh-_date-range-picker-control-bg-hover"
+      ],
+      "visibility": "public",
+      "description": "date-range-picker 的 control 部件 background 覆盖槽。"
+    },
+    {
+      "name": "--xh-date-range-picker-control-bg-readonly",
+      "component": "date-range-picker",
+      "part": [
+        "control"
+      ],
+      "property": [
+        "background"
+      ],
+      "state": [
+        "readonly"
+      ],
+      "defaultToken": [
+        "--xh-bg-subtle"
+      ],
+      "visibility": "public",
+      "description": "date-range-picker 的 control 部件 background 覆盖槽。"
+    },
+    {
+      "name": "--xh-date-range-picker-control-border",
+      "component": "date-range-picker",
+      "part": [
+        "control"
+      ],
+      "property": [
+        "border"
+      ],
+      "state": [
+        "default"
+      ],
+      "defaultToken": [
+        "--xh-_date-range-picker-control-border"
+      ],
+      "visibility": "public",
+      "description": "date-range-picker 的 control 部件 border 覆盖槽。"
+    },
+    {
+      "name": "--xh-date-range-picker-control-border-focus",
+      "component": "date-range-picker",
+      "part": [
+        "control"
+      ],
+      "property": [
+        "border-color"
+      ],
+      "state": [
+        "disabled",
+        "focus-within",
+        "not([data-disabled])",
+        "state=open"
+      ],
+      "defaultToken": [
+        "--xh-_tone"
+      ],
+      "visibility": "public",
+      "description": "date-range-picker 的 control 部件 border-color 覆盖槽。"
+    },
+    {
+      "name": "--xh-date-range-picker-control-border-hover",
+      "component": "date-range-picker",
+      "part": [
+        "control"
+      ],
+      "property": [
+        "border-color"
+      ],
+      "state": [
+        "disabled",
+        "hover",
+        "invalid",
+        "not([data-disabled], [data-invalid])"
+      ],
+      "defaultToken": [
+        "--xh-_date-range-picker-control-border-hover"
+      ],
+      "visibility": "public",
+      "description": "date-range-picker 的 control 部件 border-color 覆盖槽。"
+    },
+    {
+      "name": "--xh-date-range-picker-control-border-invalid",
+      "component": "date-range-picker",
+      "part": [
+        "control"
+      ],
+      "property": [
+        "border-color"
+      ],
+      "state": [
+        "invalid"
+      ],
+      "defaultToken": [
+        "--xh-border-invalid"
+      ],
+      "visibility": "public",
+      "description": "date-range-picker 的 control 部件 border-color 覆盖槽。"
+    },
+    {
+      "name": "--xh-date-range-picker-control-fg",
+      "component": "date-range-picker",
+      "part": [
+        "control"
+      ],
+      "property": [
+        "color"
+      ],
+      "state": [
+        "default"
+      ],
+      "defaultToken": [
+        "--xh-fg-default"
+      ],
+      "visibility": "public",
+      "description": "date-range-picker 的 control 部件 color 覆盖槽。"
+    },
+    {
+      "name": "--xh-date-range-picker-control-gap",
+      "component": "date-range-picker",
+      "part": [
+        "control",
+        "range-separator"
+      ],
+      "property": [
+        "gap",
+        "margin-inline"
+      ],
+      "state": [
+        "default"
+      ],
+      "defaultToken": [
+        "--xh-_date-range-picker-gap"
+      ],
+      "visibility": "public",
+      "description": "date-range-picker 的 control、range-separator 部件 gap、margin-inline 覆盖槽。"
+    },
+    {
+      "name": "--xh-date-range-picker-control-h",
+      "component": "date-range-picker",
+      "part": [
+        "control"
+      ],
+      "property": [
+        "block-size"
+      ],
+      "state": [
+        "default"
+      ],
+      "defaultToken": [
+        "--xh-_date-range-picker-control-h"
+      ],
+      "visibility": "public",
+      "description": "date-range-picker 的 control 部件 block-size 覆盖槽。"
+    },
+    {
+      "name": "--xh-date-range-picker-control-min-w",
+      "component": "date-range-picker",
+      "part": [
+        "control",
+        "root"
+      ],
+      "property": [
+        "min-inline-size"
+      ],
+      "state": [
+        "default"
+      ],
+      "defaultToken": [
+        "--xh-control-min-w"
+      ],
+      "visibility": "public",
+      "description": "date-range-picker 的 control、root 部件 min-inline-size 覆盖槽。"
+    },
+    {
+      "name": "--xh-date-range-picker-control-px",
+      "component": "date-range-picker",
+      "part": [
+        "control"
+      ],
+      "property": [
+        "padding-inline"
+      ],
+      "state": [
+        "default"
+      ],
+      "defaultToken": [
+        "--xh-_date-range-picker-control-px"
+      ],
+      "visibility": "public",
+      "description": "date-range-picker 的 control 部件 padding-inline 覆盖槽。"
+    },
+    {
+      "name": "--xh-date-range-picker-control-radius",
+      "component": "date-range-picker",
+      "part": [
+        "control"
+      ],
+      "property": [
+        "border-radius"
+      ],
+      "state": [
+        "default"
+      ],
+      "defaultToken": [
+        "--xh-shape-surface"
+      ],
+      "visibility": "public",
+      "description": "date-range-picker 的 control 部件 border-radius 覆盖槽。"
+    },
+    {
+      "name": "--xh-date-range-picker-control-shadow",
+      "component": "date-range-picker",
+      "part": [
+        "control"
+      ],
+      "property": [
+        "box-shadow"
+      ],
+      "state": [
+        "default"
+      ],
+      "defaultToken": [
+        "--xh-_date-range-picker-control-shadow"
+      ],
+      "visibility": "public",
+      "description": "date-range-picker 的 control 部件 box-shadow 覆盖槽。"
+    },
+    {
+      "name": "--xh-date-range-picker-font-size",
+      "component": "date-range-picker",
+      "part": [
+        "segment-group"
+      ],
+      "property": [
+        "font-size"
+      ],
+      "state": [
+        "default"
+      ],
+      "defaultToken": [
+        "--xh-_date-range-picker-font-size"
+      ],
+      "visibility": "public",
+      "description": "date-range-picker 的 segment-group 部件 font-size 覆盖槽。"
+    },
+    {
+      "name": "--xh-date-range-picker-gap",
+      "component": "date-range-picker",
+      "part": [
+        "root"
+      ],
+      "property": [
+        "gap"
+      ],
+      "state": [
+        "default"
+      ],
+      "defaultToken": [
+        "--xh-space-1"
+      ],
+      "visibility": "public",
+      "description": "date-range-picker 的 root 部件 gap 覆盖槽。"
+    },
+    {
+      "name": "--xh-date-range-picker-icon-size",
+      "component": "date-range-picker",
+      "part": [
+        "positioner",
+        "root"
+      ],
+      "property": [
+        "--xh-icon-size"
+      ],
+      "state": [
+        "default",
+        "is([data-part='root'], [data-part='positioner'])",
+        "size=lg",
+        "size=sm"
+      ],
+      "defaultToken": [
+        "--xh-glyph-size-lg",
+        "--xh-glyph-size-md",
+        "--xh-glyph-size-sm"
+      ],
+      "visibility": "public",
+      "description": "date-range-picker 的 positioner、root 部件 --xh-icon-size 覆盖槽。"
+    },
+    {
+      "name": "--xh-date-range-picker-label-fg",
+      "component": "date-range-picker",
+      "part": [
+        "label"
+      ],
+      "property": [
+        "color"
+      ],
+      "state": [
+        "default"
+      ],
+      "defaultToken": [
+        "--xh-fg-default"
+      ],
+      "visibility": "public",
+      "description": "date-range-picker 的 label 部件 color 覆盖槽。"
+    },
+    {
+      "name": "--xh-date-range-picker-label-fg-disabled",
+      "component": "date-range-picker",
+      "part": [
+        "label"
+      ],
+      "property": [
+        "color"
+      ],
+      "state": [
+        "disabled"
+      ],
+      "defaultToken": [
+        "--xh-fg-subtle"
+      ],
+      "visibility": "public",
+      "description": "date-range-picker 的 label 部件 color 覆盖槽。"
+    },
+    {
+      "name": "--xh-date-range-picker-label-font-size",
+      "component": "date-range-picker",
+      "part": [
+        "label"
+      ],
+      "property": [
+        "font-size"
+      ],
+      "state": [
+        "default"
+      ],
+      "defaultToken": [
+        "--xh-_date-range-picker-label-font-size"
+      ],
+      "visibility": "public",
+      "description": "date-range-picker 的 label 部件 font-size 覆盖槽。"
+    },
+    {
+      "name": "--xh-date-range-picker-label-font-weight",
+      "component": "date-range-picker",
+      "part": [
+        "label"
+      ],
+      "property": [
+        "font-weight"
+      ],
+      "state": [
+        "default"
+      ],
+      "defaultToken": [
+        "--xh-text-label-weight"
+      ],
+      "visibility": "public",
+      "description": "date-range-picker 的 label 部件 font-weight 覆盖槽。"
+    },
+    {
+      "name": "--xh-date-range-picker-layer",
+      "component": "date-range-picker",
+      "part": [
+        "positioner"
+      ],
+      "property": [
+        "z-index"
+      ],
+      "state": [
+        "default"
+      ],
+      "defaultToken": [
+        "--xh-_layer"
+      ],
+      "visibility": "public",
+      "description": "date-range-picker 的 positioner 部件 z-index 覆盖槽。"
+    },
+    {
+      "name": "--xh-date-range-picker-literal-fg",
+      "component": "date-range-picker",
+      "part": [
+        "segment-group"
+      ],
+      "property": [
+        "color"
+      ],
+      "state": [
+        "not([data-scope])"
+      ],
+      "defaultToken": [
+        "--xh-fg-subtle"
+      ],
+      "visibility": "public",
+      "description": "date-range-picker 的 segment-group 部件 color 覆盖槽。"
+    },
+    {
+      "name": "--xh-date-range-picker-max-h",
+      "component": "date-range-picker",
+      "part": [
+        "content"
+      ],
+      "property": [
+        "max-block-size"
+      ],
+      "state": [
+        "default"
+      ],
+      "defaultToken": [
+        "--xh-viewport-h-lg"
+      ],
+      "visibility": "public",
+      "description": "date-range-picker 的 content 部件 max-block-size 覆盖槽。"
+    },
+    {
+      "name": "--xh-date-range-picker-panel-divider",
+      "component": "date-range-picker",
+      "part": [
+        "calendar"
+      ],
+      "property": [
+        "border-block-start",
+        "border-inline-start"
+      ],
+      "state": [
+        "@media (min-width: 768px)",
+        "default"
+      ],
+      "defaultToken": [
+        "--xh-material-frosted-separator"
+      ],
+      "visibility": "public",
+      "description": "date-range-picker 的 calendar 部件 border-block-start、border-inline-start 覆盖槽。"
+    },
+    {
+      "name": "--xh-date-range-picker-panel-gap",
+      "component": "date-range-picker",
+      "part": [
+        "calendar",
+        "preset-group"
+      ],
+      "property": [
+        "padding-block-start",
+        "padding-inline-start"
+      ],
+      "state": [
+        "@media (min-width: 768px)",
+        "default"
+      ],
+      "defaultToken": [
+        "--xh-space-3"
+      ],
+      "visibility": "public",
+      "description": "date-range-picker 的 calendar、preset-group 部件 padding-block-start、padding-inline-start 覆盖槽。"
+    },
+    {
+      "name": "--xh-date-range-picker-preset-bg-hover",
+      "component": "date-range-picker",
+      "part": [
+        "preset"
+      ],
+      "property": [
+        "background"
+      ],
+      "state": [
+        "disabled",
+        "is(:hover, :focus-visible)",
+        "not([data-disabled])"
+      ],
+      "defaultToken": [
+        "--xh-bg-subtle"
+      ],
+      "visibility": "public",
+      "description": "date-range-picker 的 preset 部件 background 覆盖槽。"
+    },
+    {
+      "name": "--xh-date-range-picker-preset-check-fg",
+      "component": "date-range-picker",
+      "part": [
+        "preset"
+      ],
+      "property": [
+        "background-color"
+      ],
+      "state": [
+        "default"
+      ],
+      "defaultToken": [
+        "--xh-_date-range-picker-check-fg"
+      ],
+      "visibility": "public",
+      "description": "date-range-picker 的 preset 部件 background-color 覆盖槽。"
+    },
+    {
+      "name": "--xh-date-range-picker-preset-check-size",
+      "component": "date-range-picker",
+      "part": [
+        "preset"
+      ],
+      "property": [
+        "block-size",
+        "inline-size",
+        "padding-inline-end"
+      ],
+      "state": [
+        "default"
+      ],
+      "defaultToken": [
+        "--xh-glyph-size-sm"
+      ],
+      "visibility": "public",
+      "description": "date-range-picker 的 preset 部件 block-size、inline-size、padding-inline-end 覆盖槽。"
+    },
+    {
+      "name": "--xh-date-range-picker-preset-fg-disabled",
+      "component": "date-range-picker",
+      "part": [
+        "preset"
+      ],
+      "property": [
+        "background-color",
+        "color"
+      ],
+      "state": [
+        "disabled"
+      ],
+      "defaultToken": [
+        "--xh-fg-disabled"
+      ],
+      "visibility": "public",
+      "description": "date-range-picker 的 preset 部件 background-color、color 覆盖槽。"
+    },
+    {
+      "name": "--xh-date-range-picker-preset-fg-selected",
+      "component": "date-range-picker",
+      "part": [
+        "preset"
+      ],
+      "property": [
+        "color"
+      ],
+      "state": [
+        "state=checked"
+      ],
+      "defaultToken": [
+        "inherit"
+      ],
+      "visibility": "public",
+      "description": "date-range-picker 的 preset 部件 color 覆盖槽。"
+    },
+    {
+      "name": "--xh-date-range-picker-preset-group-gap",
+      "component": "date-range-picker",
+      "part": [
+        "preset-group"
+      ],
+      "property": [
+        "gap"
+      ],
+      "state": [
+        "default"
+      ],
+      "defaultToken": [
+        "--xh-list-option-gap"
+      ],
+      "visibility": "public",
+      "description": "date-range-picker 的 preset-group 部件 gap 覆盖槽。"
+    },
+    {
+      "name": "--xh-date-range-picker-preset-group-h",
+      "component": "date-range-picker",
+      "part": [
+        "preset-group"
+      ],
+      "property": [
+        "max-block-size"
+      ],
+      "state": [
+        "default"
+      ],
+      "defaultToken": [
+        "--xh-viewport-h-lg"
+      ],
+      "visibility": "public",
+      "description": "date-range-picker 的 preset-group 部件 max-block-size 覆盖槽。"
+    },
+    {
+      "name": "--xh-date-range-picker-preset-group-padding",
+      "component": "date-range-picker",
+      "part": [
+        "preset-group"
+      ],
+      "property": [
+        "padding"
+      ],
+      "state": [
+        "default"
+      ],
+      "defaultToken": [
+        "--xh-space-1"
+      ],
+      "visibility": "public",
+      "description": "date-range-picker 的 preset-group 部件 padding 覆盖槽。"
+    },
+    {
+      "name": "--xh-date-range-picker-preset-px",
+      "component": "date-range-picker",
+      "part": [
+        "preset"
+      ],
+      "property": [
+        "inset-inline-end",
+        "padding-inline",
+        "padding-inline-end"
+      ],
+      "state": [
+        "default"
+      ],
+      "defaultToken": [
+        "--xh-space-3"
+      ],
+      "visibility": "public",
+      "description": "date-range-picker 的 preset 部件 inset-inline-end、padding-inline、padding-inline-end 覆盖槽。"
+    },
+    {
+      "name": "--xh-date-range-picker-preset-py",
+      "component": "date-range-picker",
+      "part": [
+        "preset"
+      ],
+      "property": [
+        "padding-block"
+      ],
+      "state": [
+        "default"
+      ],
+      "defaultToken": [
+        "--xh-space-1"
+      ],
+      "visibility": "public",
+      "description": "date-range-picker 的 preset 部件 padding-block 覆盖槽。"
+    },
+    {
+      "name": "--xh-date-range-picker-preset-radius",
+      "component": "date-range-picker",
+      "part": [
+        "preset"
+      ],
+      "property": [
+        "border-radius"
+      ],
+      "state": [
+        "default"
+      ],
+      "defaultToken": [
+        "--xh-shape-control"
+      ],
+      "visibility": "public",
+      "description": "date-range-picker 的 preset 部件 border-radius 覆盖槽。"
+    },
+    {
+      "name": "--xh-date-range-picker-range-separator-fg",
+      "component": "date-range-picker",
+      "part": [
+        "range-separator"
+      ],
+      "property": [
+        "color"
+      ],
+      "state": [
+        "default"
+      ],
+      "defaultToken": [
+        "--xh-fg-subtle"
+      ],
+      "visibility": "public",
+      "description": "date-range-picker 的 range-separator 部件 color 覆盖槽。"
+    },
+    {
+      "name": "--xh-date-range-picker-range-separator-mx",
+      "component": "date-range-picker",
+      "part": [
+        "range-separator"
+      ],
+      "property": [
+        "margin-inline"
+      ],
+      "state": [
+        "default"
+      ],
+      "defaultToken": [
+        "--xh-date-range-picker-range-separator-px"
+      ],
+      "visibility": "public",
+      "description": "date-range-picker 的 range-separator 部件 margin-inline 覆盖槽。"
+    },
+    {
+      "name": "--xh-date-range-picker-range-separator-px",
+      "component": "date-range-picker",
+      "part": [
+        "range-separator"
+      ],
+      "property": [
+        "margin-inline",
+        "padding-inline"
+      ],
+      "state": [
+        "default"
+      ],
+      "defaultToken": [
+        "--xh-space-1"
+      ],
+      "visibility": "public",
+      "description": "date-range-picker 的 range-separator 部件 margin-inline、padding-inline 覆盖槽。"
+    },
+    {
       "name": "--xh-descriptions-bg",
       "component": "descriptions",
       "part": [

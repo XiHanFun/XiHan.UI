@@ -76,6 +76,7 @@
 <XhComponentCard src="combobox" name="Combobox" label="组合框" href="/components/combobox" status="alpha" />
 <XhComponentCard src="date-field" name="DateField" label="日期字段" href="/components/date-field" status="alpha" />
 <XhComponentCard src="date-picker" name="DatePicker" label="日期选择器" href="/components/date-picker" status="alpha" />
+<XhComponentCard src="date-range-picker" name="DateRangePicker" label="日期范围选择器" href="/components/date-range-picker" status="alpha" />
 <XhComponentCard src="editable" name="Editable" label="就地编辑" href="/components/editable" status="alpha" />
 <XhComponentCard src="field" name="Field" label="表单字段" href="/components/field" status="alpha" />
 <XhComponentCard src="field-array" name="FieldArray" label="字段数组" href="/components/field-array" status="alpha" />

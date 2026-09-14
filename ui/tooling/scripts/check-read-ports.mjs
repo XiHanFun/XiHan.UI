@@ -73,6 +73,7 @@ const PENDING = {
   'context-menu': ['open', 'point', 'setOpen', 'openAt'],
   'date-field': ['value', 'valueAsDate', 'segments', 'complete', 'empty', 'outOfRange', 'focusedSegment', 'setValue', 'clear', 'canClear'],
   'date-picker': ['open', 'value', 'valueAsString', 'focusedValue', 'visibleMonth', 'canGoPrev', 'canGoNext', 'canClear', 'setOpen', 'setValue', 'clear'],
+  'date-range-picker': ['open', 'value', 'start', 'end', 'focusedValue', 'visibleMonth', 'canGoPrev', 'canGoNext', 'canClear', 'setOpen', 'setValue', 'clear'],
   'dialog': ['open', 'setOpen'],
   'diff-view': ['view', 'rows', 'expandedValue', 'stats', 'truncated', 'truncatedLines', 'isEmpty', 'toggleGap', 'setExpandedValue'],
   'drawer': ['open', 'side', 'setOpen'],

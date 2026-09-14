@@ -65,6 +65,7 @@
     "./context-menu.css": "./css/context-menu.css",
     "./date-field.css": "./css/date-field.css",
     "./date-picker.css": "./css/date-picker.css",
+    "./date-range-picker.css": "./css/date-range-picker.css",
     "./description.css": "./css/description.css",
     "./descriptions.css": "./css/descriptions.css",
     "./dialog.css": "./css/dialog.css",

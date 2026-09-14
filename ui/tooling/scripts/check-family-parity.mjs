@@ -35,7 +35,7 @@ const FAMILIES = [
   },
   {
     name: '分段族',
-    members: ['date-field', 'time-field', 'date-picker', 'time-picker'],
+    members: ['date-field', 'time-field', 'date-picker', 'date-range-picker', 'time-picker'],
     parts: [
       { part: 'control', state: '', props: ['display', 'align-items', 'gap', 'block-size', 'padding-inline'] },
       { part: 'segment', state: '', props: ['padding-inline'], only: ['date-field', 'time-field'] },

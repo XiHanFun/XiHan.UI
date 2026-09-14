@@ -58,6 +58,7 @@ const PRESSABLE = {
   'combobox': ['clear-trigger', 'trigger'],
   // 展开钮与确认钮跟着同组件的 clear-trigger 走同一副观感
   'date-picker': ['clear-trigger', 'trigger', 'confirm-trigger'],
+  'date-range-picker': ['clear-trigger', 'trigger'],
   'time-picker': ['clear-trigger', 'trigger'],
   'text-field': ['clear-trigger'],
   // 标签里的删除钮是 tag 的 close-trigger，按压归 tag.css
@@ -173,6 +174,7 @@ const NO_PRESS = {
   'tree-select:branch-control': '分支行与叶子行共用同一套行盒，按下回执走高亮档，缩放会抖动整列',
   'json-viewer:branch-control': '分支那一行是整行点击目标，列表行的按下回执走高亮档，缩放会抖动整列',
   'date-picker:preset': '列表行的按下回执走高亮档，缩放会抖动整列',
+  'date-range-picker:preset': '列表行的按下回执走高亮档，缩放会抖动整列',
   'date-picker:time-item': '列表行的按下回执走高亮档，缩放会抖动整列',
   'time-picker:preset': '列表行的按下回执走高亮档，缩放会抖动整列',
   'time-picker:item': '列表行的按下回执走高亮档，缩放会抖动整列',
