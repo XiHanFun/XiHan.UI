@@ -419,6 +419,28 @@ export { useCollapsibleContext } from './components/collapsible/context'
 export { useCollapsible } from './components/collapsible/use-collapsible'
 export type { CollapsibleContext } from './components/collapsible/use-collapsible'
 export {
+  XhColorFieldClearTrigger,
+  XhColorFieldControl,
+  XhColorFieldHiddenInput,
+  XhColorFieldInput,
+  XhColorFieldLabel,
+  XhColorFieldRoot,
+  XhColorFieldSwatch,
+} from './components/color-field/color-field'
+export type {
+  ColorFieldRootSlotProps,
+  XhColorFieldClearTriggerProps,
+  XhColorFieldControlProps,
+  XhColorFieldHiddenInputProps,
+  XhColorFieldInputProps,
+  XhColorFieldLabelProps,
+  XhColorFieldRootProps,
+  XhColorFieldSwatchProps,
+} from './components/color-field/color-field'
+export { useColorFieldContext } from './components/color-field/context'
+export { useColorField } from './components/color-field/use-color-field'
+export type { ColorFieldContext } from './components/color-field/use-color-field'
+export {
   XhColorPickerAreaThumb,
   XhColorPickerChannelInput,
   XhColorPickerChannelSlider,

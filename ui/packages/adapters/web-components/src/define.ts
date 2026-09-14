@@ -30,6 +30,7 @@ import { XhCheckboxGroupElement } from './elements/checkbox-group'
 import { XhClipboardElement } from './elements/clipboard'
 import { XhCodeViewElement } from './elements/code-view'
 import { XhCollapsibleElement } from './elements/collapsible'
+import { XhColorFieldElement } from './elements/color-field'
 import { XhColorPickerElement } from './elements/color-picker'
 import { XhColorSliderElement } from './elements/color-slider'
 import { XhColorSwatchElement } from './elements/color-swatch'
@@ -149,6 +150,7 @@ export function defineXhElements(): void {
   defineElement('xh-avatar-group', XhAvatarGroupElement, VERSION)
   defineElement('xh-back-top', XhBackTopElement, VERSION)
   defineElement('xh-button-group', XhButtonGroupElement, VERSION)
+  defineElement('xh-color-field', XhColorFieldElement, VERSION)
   defineElement('xh-color-slider', XhColorSliderElement, VERSION)
   defineElement('xh-color-swatch', XhColorSwatchElement, VERSION)
   defineElement('xh-command', XhCommandElement, VERSION)
@@ -305,6 +307,7 @@ export {
   XhClipboardElement,
   XhCodeViewElement,
   XhCollapsibleElement,
+  XhColorFieldElement,
   XhColorPickerElement,
   XhColorSliderElement,
   XhColorSwatchElement,

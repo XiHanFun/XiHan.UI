@@ -29,6 +29,7 @@ import type { CheckboxTranslations } from '../checkbox/checkbox.types'
 import type { ClipboardTranslations } from '../clipboard/clipboard.types'
 import type { CodeViewTranslations } from '../code-view/code-view.types'
 import type { CollapsibleTranslations } from '../collapsible/collapsible.types'
+import type { ColorFieldTranslations } from '../color-field/color-field.types'
 import type { ColorPickerTranslations } from '../color-picker/color-picker.types'
 import type { ColorSliderTranslations } from '../color-slider/color-slider.types'
 import type { ColorSwatchTranslations } from '../color-swatch/color-swatch.types'
@@ -163,6 +164,7 @@ export interface XhTranslationOverrides {
   'clipboard'?: Partial<ClipboardTranslations>
   'code-view'?: Partial<CodeViewTranslations>
   'collapsible'?: Partial<CollapsibleTranslations>
+  'color-field'?: Partial<ColorFieldTranslations>
   'color-picker'?: Partial<ColorPickerTranslations>
   'color-slider'?: Partial<ColorSliderTranslations>
   'color-swatch'?: Partial<ColorSwatchTranslations>

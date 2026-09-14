@@ -19,6 +19,7 @@ const COMPONENTS = [
   'color-picker',
   'combobox',
   'text-field',
+  'color-field',
   'number-field',
   'password-input',
   'tags-input',
@@ -61,6 +62,11 @@ const ACTION_PARTS = ['clear-trigger', 'trigger', 'visibility-trigger', 'eye-dro
 /** 已迁到共享 Field Chrome / Action Control 的组件；这里登记的是可验证的家族接线，不是放行名单。 */
 const SHARED_FAMILY = {
   'text-field': {
+    boxSelector: '[data-xh-field-chrome]',
+    contentSelector: '[data-xh-field-input]',
+    actionParts: new Set(['clear-trigger']),
+  },
+  'color-field': {
     boxSelector: '[data-xh-field-chrome]',
     contentSelector: '[data-xh-field-input]',
     actionParts: new Set(['clear-trigger']),

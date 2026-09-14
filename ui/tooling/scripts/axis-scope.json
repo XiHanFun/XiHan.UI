@@ -65,6 +65,10 @@
   "collapsible": [
     "size"
   ],
+  "color-field": [
+    "variant",
+    "size"
+  ],
   "color-picker": [
     "size"
   ],

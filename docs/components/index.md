@@ -72,6 +72,7 @@
 <XhComponentCard src="cascader" name="Cascader" label="级联选择" href="/components/cascader" status="alpha" />
 <XhComponentCard src="checkbox" name="Checkbox" label="复选框" href="/components/checkbox" status="alpha" />
 <XhComponentCard src="checkbox-group" name="CheckboxGroup" label="复选框组" href="/components/checkbox-group" status="alpha" />
+<XhComponentCard src="color-field" name="ColorField" label="颜色字段" href="/components/color-field" status="alpha" />
 <XhComponentCard src="color-picker" name="ColorPicker" label="颜色选择器" href="/components/color-picker" status="alpha" />
 <XhComponentCard src="color-slider" name="ColorSlider" label="颜色滑块" href="/components/color-slider" status="alpha" />
 <XhComponentCard src="combobox" name="Combobox" label="组合框" href="/components/combobox" status="alpha" />

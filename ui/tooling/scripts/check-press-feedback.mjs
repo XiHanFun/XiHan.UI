@@ -62,6 +62,7 @@ const PRESSABLE = {
   'time-picker': ['clear-trigger', 'trigger'],
   'time-range-picker': ['clear-trigger', 'trigger'],
   'text-field': ['clear-trigger'],
+  'color-field': ['clear-trigger'],
   // 标签里的删除钮是 tag 的 close-trigger，按压归 tag.css
   'tags-input': ['clear-trigger'],
   'select': ['clear-trigger', { part: 'item', feedback: 'surface' }],
