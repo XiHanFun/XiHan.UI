@@ -270,6 +270,7 @@
       "cascader",
       "clipboard",
       "color-picker",
+      "color-slider",
       "combobox",
       "date-field",
       "date-picker",
@@ -527,6 +528,7 @@
       "checkbox",
       "checkbox-group",
       "color-picker",
+      "color-slider",
       "combobox",
       "date-field",
       "file-upload",
@@ -770,6 +772,7 @@
       "checkbox-group",
       "clipboard",
       "color-picker",
+      "color-slider",
       "combobox",
       "date-field",
       "date-picker",
@@ -1095,6 +1098,7 @@
       "code-view",
       "collapsible",
       "color-picker",
+      "color-slider",
       "color-swatch",
       "combobox",
       "context-menu",
@@ -1347,6 +1351,7 @@
       "typography"
     ],
     "thumb": [
+      "color-slider",
       "scrollbar",
       "slider",
       "switch"
@@ -1407,6 +1412,7 @@
       "heatmap"
     ],
     "track": [
+      "color-slider",
       "loading-bar",
       "progress",
       "question-flow",
@@ -1467,6 +1473,7 @@
     "value-text": [
       "cascader",
       "color-picker",
+      "color-slider",
       "rating",
       "select",
       "slider",

@@ -114,6 +114,7 @@ const PENDING = {
   'side-nav': ['value', 'expandedValue', 'collapsed', 'popoutValue', 'isSelected', 'isExpanded', 'isActiveBranch', 'select', 'setValue', 'setExpandedValue', 'expand', 'collapse', 'openPopout', 'closePopout'],
   'signature-pad': ['paths', 'drawing', 'disabled', 'readOnly', 'statusText'],
   'slider': ['value', 'thumbs', 'range', 'dragging', 'setValue', 'setThumbValue'],
+  'color-slider': ['value', 'channel', 'channelValue', 'percent', 'dragging', 'setValue', 'setChannelValue'],
   'sortable': ['items', 'dragging', 'activeId', 'from', 'to', 'mode'],
   'splitter': ['size', 'panels', 'dragging', 'setSizes', 'setPanelSize', 'collapsePanel', 'expandPanel', 'togglePanel'],
   'steps': ['value', 'count', 'complete', 'setValue', 'goToNextStep', 'goToPrevStep'],

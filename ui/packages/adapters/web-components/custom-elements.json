@@ -9640,6 +9640,513 @@
     },
     {
       "kind": "javascript-module",
+      "path": "src/elements/color-slider.ts",
+      "declarations": [
+        {
+          "kind": "class",
+          "description": "`<xh-color-slider>` —— Light-DOM 行为宿主，跑 color-slider 机器并内嵌一台 slider 机器，\n把 connect 产出打到 root/label/control/track/thumb/value-text/hidden-input 等角色节点。\n\n一条滑杆只推颜色的一路（色相 / 饱和度 / 明度 / 透明度 / 红 / 绿 / 蓝），值是整个颜色串；\n轨道的渐变按当前颜色现算写成内联样式，作者只画轨道的形状。",
+          "name": "XhColorSliderElement",
+          "cssParts": [
+            {
+              "description": "根节点，承载 data-channel / data-orientation / data-size",
+              "name": "root"
+            },
+            {
+              "description": "标签，名字经拇指上的 aria-labelledby 挂过去",
+              "name": "label"
+            },
+            {
+              "description": "可按下的整条区域：按下即跳，拖动跟手",
+              "name": "control"
+            },
+            {
+              "description": "轨道；渐变由元素写成内联 background-image",
+              "name": "track"
+            },
+            {
+              "description": "role=slider 的拇指，位置由元素写成内联样式",
+              "name": "thumb"
+            },
+            {
+              "description": "值气泡；空着时由元素填本通道的当前数值",
+              "name": "value-text"
+            },
+            {
+              "description": "表单影子",
+              "name": "hidden-input"
+            }
+          ],
+          "members": [
+            {
+              "kind": "field",
+              "name": "partContract",
+              "type": {
+                "text": "object"
+              },
+              "static": true,
+              "default": "{ anatomy: colorSliderAnatomy, meta: colorSliderMeta }"
+            },
+            {
+              "kind": "field",
+              "name": "value",
+              "privacy": "public",
+              "type": {
+                "text": "string | undefined"
+              },
+              "attribute": "value"
+            },
+            {
+              "kind": "field",
+              "name": "defaultValue",
+              "privacy": "public",
+              "type": {
+                "text": "string | undefined"
+              },
+              "attribute": "default-value"
+            },
+            {
+              "kind": "field",
+              "name": "channel",
+              "privacy": "public",
+              "type": {
+                "text": "ColorChannel | undefined"
+              },
+              "attribute": "channel"
+            },
+            {
+              "kind": "field",
+              "name": "format",
+              "privacy": "public",
+              "type": {
+                "text": "ColorFormat | undefined"
+              },
+              "attribute": "format"
+            },
+            {
+              "kind": "field",
+              "name": "alpha",
+              "privacy": "public",
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "attribute": "alpha"
+            },
+            {
+              "kind": "field",
+              "name": "orientation",
+              "privacy": "public",
+              "type": {
+                "text": "Orientation | undefined"
+              },
+              "attribute": "orientation"
+            },
+            {
+              "kind": "field",
+              "name": "direction",
+              "privacy": "public",
+              "type": {
+                "text": "Direction | undefined"
+              },
+              "attribute": "dir"
+            },
+            {
+              "kind": "field",
+              "name": "disabled",
+              "privacy": "public",
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "attribute": "disabled"
+            },
+            {
+              "kind": "field",
+              "name": "readOnly",
+              "privacy": "public",
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "attribute": "read-only"
+            },
+            {
+              "kind": "field",
+              "name": "invalid",
+              "privacy": "public",
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "attribute": "invalid"
+            },
+            {
+              "kind": "field",
+              "name": "size",
+              "privacy": "public",
+              "type": {
+                "text": "Size | undefined"
+              },
+              "attribute": "size"
+            },
+            {
+              "kind": "field",
+              "name": "name",
+              "privacy": "public",
+              "type": {
+                "text": "string | undefined"
+              },
+              "attribute": "name"
+            },
+            {
+              "kind": "field",
+              "name": "translations",
+              "privacy": "public",
+              "type": {
+                "text": "Partial<ColorSliderTranslations>"
+              },
+              "description": "读屏文案（只走 property）"
+            },
+            {
+              "kind": "field",
+              "name": "idGen",
+              "type": {
+                "text": "IdGenerator"
+              },
+              "privacy": "private",
+              "readonly": true
+            },
+            {
+              "kind": "field",
+              "name": "sliderScope",
+              "privacy": "private",
+              "readonly": true
+            },
+            {
+              "kind": "field",
+              "name": "notifyValue",
+              "privacy": "private",
+              "readonly": true
+            },
+            {
+              "kind": "field",
+              "name": "notifyValueEnd",
+              "privacy": "private",
+              "readonly": true
+            },
+            {
+              "kind": "field",
+              "name": "ctrl",
+              "privacy": "private",
+              "readonly": true,
+              "default": "new MachineController<ColorSliderSchema>( this, colorSliderMachine, () => this.machineProps(), { scope: this.sliderScope }, )"
+            },
+            {
+              "kind": "field",
+              "name": "innerCtrl",
+              "privacy": "private",
+              "readonly": true,
+              "default": "new MachineController<SliderSchema>( this, sliderMachine, () => colorSliderSliderProps(this.ctrl.service), { scope: this.sliderScope, onBuilt: svc => svc.refs.set('getTrackEl', () => this.getPart('track')) }, )"
+            },
+            {
+              "kind": "field",
+              "name": "inheritedControl",
+              "type": {
+                "text": "FormControlState | undefined"
+              },
+              "privacy": "private"
+            },
+            {
+              "kind": "method",
+              "name": "setFormControlState",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "state",
+                  "type": {
+                    "text": "FormControlState | undefined"
+                  }
+                }
+              ],
+              "description": "最近的 Field 或 Form 只交状态；本组件仅消费公开的三条轴。"
+            },
+            {
+              "kind": "method",
+              "name": "machineProps",
+              "privacy": "private",
+              "return": {
+                "type": {
+                  "text": "Partial<ColorSliderSchema['props']>"
+                }
+              }
+            },
+            {
+              "kind": "method",
+              "name": "services",
+              "privacy": "private",
+              "return": {
+                "type": {
+                  "text": "ColorSliderServices"
+                }
+              },
+              "description": "连接层要的整份服务表。"
+            },
+            {
+              "kind": "field",
+              "name": "ownsValueText",
+              "privacy": "private",
+              "readonly": true,
+              "default": "new WeakMap<HTMLElement, boolean>()",
+              "description": "值气泡的文字是否归元素填：首次见到该节点时定，之后不再回读（回读到的会是自己写的字）。"
+            },
+            {
+              "kind": "method",
+              "name": "fillValueText",
+              "privacy": "private",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "el",
+                  "type": {
+                    "text": "HTMLElement"
+                  }
+                },
+                {
+                  "name": "text",
+                  "type": {
+                    "text": "string"
+                  }
+                }
+              ],
+              "description": "填入值气泡的文本；首次见到该节点时若已有内容则归作者，之后不再改写。"
+            },
+            {
+              "kind": "method",
+              "name": "wire",
+              "privacy": "protected",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              }
+            }
+          ],
+          "events": [
+            {
+              "description": "颜色变化；detail 为 `{ value: string }`，拖动过程中会连续发",
+              "name": "value-change",
+              "type": {
+                "text": "ColorSliderValueChangeDetails"
+              }
+            },
+            {
+              "description": "一次推动结束；detail 为 `{ value: string }`",
+              "name": "value-change-end",
+              "type": {
+                "text": "ColorSliderValueChangeDetails"
+              }
+            }
+          ],
+          "attributes": [
+            {
+              "type": {
+                "text": "string | undefined"
+              },
+              "description": "受控的颜色值串；缺省该属性即非受控",
+              "name": "value",
+              "fieldName": "value"
+            },
+            {
+              "type": {
+                "text": "string | undefined"
+              },
+              "description": "非受控初值，默认 #000000",
+              "name": "default-value",
+              "fieldName": "defaultValue"
+            },
+            {
+              "type": {
+                "text": "ColorChannel | undefined"
+              },
+              "description": "推的是哪一路，默认 hue",
+              "name": "channel",
+              "fieldName": "channel"
+            },
+            {
+              "type": {
+                "text": "ColorFormat | undefined"
+              },
+              "description": "值串的写法，默认 hex",
+              "name": "format",
+              "fieldName": "format"
+            },
+            {
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "description": "值串带不带透明度；缺省时推透明度那一路带、其余不带",
+              "name": "alpha",
+              "fieldName": "alpha"
+            },
+            {
+              "type": {
+                "text": "Orientation | undefined"
+              },
+              "description": "排布方向",
+              "name": "orientation",
+              "fieldName": "orientation"
+            },
+            {
+              "type": {
+                "text": "Direction | undefined"
+              },
+              "description": "文字方向，只改写水平轨道上左右两键与指针的语义",
+              "name": "dir",
+              "fieldName": "direction"
+            },
+            {
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "description": "禁用",
+              "name": "disabled",
+              "fieldName": "disabled"
+            },
+            {
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "description": "只读：拇指仍可聚焦，推不动",
+              "name": "read-only",
+              "fieldName": "readOnly"
+            },
+            {
+              "type": {
+                "text": "boolean | undefined"
+              },
+              "description": "校验失败",
+              "name": "invalid",
+              "fieldName": "invalid"
+            },
+            {
+              "type": {
+                "text": "Size | undefined"
+              },
+              "description": "尺寸",
+              "name": "size",
+              "fieldName": "size"
+            },
+            {
+              "type": {
+                "text": "string | undefined"
+              },
+              "description": "表单字段名；给了表单影子才带 name 并参与提交",
+              "name": "name",
+              "fieldName": "name"
+            }
+          ],
+          "superclass": {
+            "name": "XhElement",
+            "module": "/src/element-base"
+          },
+          "tagName": "xh-color-slider",
+          "customElement": true,
+          "cssProperties": [
+            {
+              "name": "--xh-color-slider-checker"
+            },
+            {
+              "name": "--xh-color-slider-checker-base"
+            },
+            {
+              "name": "--xh-color-slider-gap"
+            },
+            {
+              "name": "--xh-color-slider-label-fg"
+            },
+            {
+              "name": "--xh-color-slider-label-font-size"
+            },
+            {
+              "name": "--xh-color-slider-label-font-weight"
+            },
+            {
+              "name": "--xh-color-slider-thumb-bg"
+            },
+            {
+              "name": "--xh-color-slider-thumb-border"
+            },
+            {
+              "name": "--xh-color-slider-thumb-border-invalid"
+            },
+            {
+              "name": "--xh-color-slider-thumb-radius"
+            },
+            {
+              "name": "--xh-color-slider-thumb-scale-dragging"
+            },
+            {
+              "name": "--xh-color-slider-thumb-shadow"
+            },
+            {
+              "name": "--xh-color-slider-thumb-shadow-dragging"
+            },
+            {
+              "name": "--xh-color-slider-thumb-size"
+            },
+            {
+              "name": "--xh-color-slider-track-border"
+            },
+            {
+              "name": "--xh-color-slider-track-radius"
+            },
+            {
+              "name": "--xh-color-slider-track-thickness"
+            },
+            {
+              "name": "--xh-color-slider-value-text-bg"
+            },
+            {
+              "name": "--xh-color-slider-value-text-fg"
+            },
+            {
+              "name": "--xh-color-slider-value-text-font-size"
+            },
+            {
+              "name": "--xh-color-slider-value-text-offset"
+            },
+            {
+              "name": "--xh-color-slider-value-text-px"
+            },
+            {
+              "name": "--xh-color-slider-value-text-py"
+            },
+            {
+              "name": "--xh-color-slider-value-text-radius"
+            },
+            {
+              "name": "--xh-color-slider-vertical-length"
+            }
+          ]
+        }
+      ],
+      "exports": [
+        {
+          "kind": "js",
+          "name": "XhColorSliderElement",
+          "declaration": {
+            "name": "XhColorSliderElement",
+            "module": "src/elements/color-slider.ts"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
       "path": "src/elements/color-swatch.ts",
       "declarations": [
         {

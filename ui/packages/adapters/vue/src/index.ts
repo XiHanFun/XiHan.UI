@@ -223,6 +223,19 @@ export {
 export type { ColorPickerRootSlotProps } from './components/color-picker/color-picker'
 export { useColorPicker } from './components/color-picker/use-color-picker'
 export type { ColorPickerContext } from './components/color-picker/use-color-picker'
+export {
+  XhColorSliderControl,
+  XhColorSliderHiddenInput,
+  XhColorSliderLabel,
+  XhColorSliderRoot,
+  XhColorSliderThumb,
+  XhColorSliderTrack,
+  XhColorSliderValueText,
+} from './components/color-slider/color-slider'
+export type { ColorSliderRootSlotProps } from './components/color-slider/color-slider'
+export { provideColorSlider, useColorSliderContext } from './components/color-slider/context'
+export { useColorSlider } from './components/color-slider/use-color-slider'
+export type { ColorSliderContext } from './components/color-slider/use-color-slider'
 export { XhColorSwatch } from './components/color-swatch/color-swatch'
 export {
   XhComboboxClearTrigger,

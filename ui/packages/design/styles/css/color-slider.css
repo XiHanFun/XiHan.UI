@@ -1,0 +1,258 @@
+/*
+ * Copyright (c) 2021-Present XiHanFun and contributors.
+ * Licensed under the MIT License. See LICENSE in the project root for license information.
+ */
+
+/* 定义 color slider 样式。 */
+
+@layer xihan.components {
+  /* 皮肤在场的标记：开发模式下按 scope 探一次，取不到就说明这份皮肤没被引入。 */
+  [data-scope='color-slider'] {
+    --xh-color-slider-skin: 1;
+  }
+
+  /* 定位分工：拇指在**主轴**上的位置由连接层每帧写进内联样式——
+     水平是 inset-inline-start，竖直是 inset-block-end；轨道的渐变同样是连接层按当前颜色现算的内联值。
+     这份皮肤只管交叉轴的尺寸、拇指的描边与状态表现，以及透明度那一路垫在轨道底下的棋盘格。 */
+
+  /* 私有槽位：拇指直径与轨道厚度同时被 control / track / thumb 用到，收成两个槽位挂在 root 上，
+     尺寸档只改这两处，靠继承发到子部件。颜色带比普通滑杆的底槽厚：它画的是颜色本身，太细看不清走向 */
+  [data-scope='color-slider'][data-part='root'] {
+    --xh-_thumb-size: var(--xh-color-slider-thumb-size, var(--xh-track-thumb-size));
+    --xh-_track-thickness: var(--xh-color-slider-track-thickness, var(--xh-space-3));
+
+    display: flex;
+    flex-direction: column;
+    gap: var(--xh-color-slider-gap, var(--xh-stack-gap-md));
+  }
+
+  /* 竖排时整条控件收成一块，不再撑满一行：宽度由拇指直径决定 */
+  [data-scope='color-slider'][data-part='root'][data-orientation='vertical'] {
+    display: inline-flex;
+    align-items: center;
+  }
+
+  /* 禁用的整体压暗只做一次，落在最外层：track / thumb 各自再叠一层 opacity 会越叠越黑 */
+  [data-scope='color-slider'][data-part='root'][data-disabled] {
+    opacity: var(--xh-state-disabled-opacity);
+  }
+
+  [data-scope='color-slider'][data-part='label'] {
+    color: var(--xh-color-slider-label-fg, var(--xh-fg-muted));
+    font-size: var(--xh-color-slider-label-font-size, var(--xh-text-label-size));
+    font-weight: var(--xh-color-slider-label-font-weight, var(--xh-text-label-weight));
+  }
+
+  /* 拇指以它为定位上下文（拇指常常浮出轨道，挂在 track 上会被轨道的盒子束住）。
+     厚度取拇指直径与轨道厚度里大的那个。touch-action 由连接层内联给，这里不写。 */
+  [data-scope='color-slider'][data-part='control'] {
+    position: relative;
+    display: flex;
+    align-items: center;
+    block-size: max(var(--xh-_thumb-size), var(--xh-_track-thickness));
+    cursor: pointer;
+  }
+
+  [data-scope='color-slider'][data-part='control'][data-orientation='vertical'] {
+    flex-direction: column;
+    justify-content: center;
+    inline-size: max(var(--xh-_thumb-size), var(--xh-_track-thickness));
+    block-size: var(--xh-color-slider-vertical-length, var(--xh-overlay-menu-min-w));
+  }
+
+  /* 按下轨道即跳，拖动中光标换成"抓着"的样子，手感与拇指一致 */
+  [data-scope='color-slider'][data-part='control'][data-dragging] {
+    cursor: grabbing;
+  }
+
+  [data-scope='color-slider'][data-part='control'][data-readonly]:not([data-disabled]) {
+    cursor: default;
+  }
+
+  /* 轨道画的是颜色本身：渐变由连接层内联给，这里只给形状与一圈细边把浅色端从底色里框出来。
+     透明度那一路的棋盘格垫在轨道底下（background-color 与后面几层 background-image 是同一个盒），
+     内联的渐变写的是 background-image 的第一层——连接层只写这一个属性，不会把这里的层盖掉 */
+  [data-scope='color-slider'][data-part='track'] {
+    position: relative;
+    border-radius: var(--xh-color-slider-track-radius, var(--xh-shape-pill));
+    box-shadow: inset 0 0 0 var(--xh-stroke-thin) var(--xh-color-slider-track-border, var(--xh-border-subtle));
+  }
+
+  [data-scope='color-slider'][data-part='track'][data-orientation='horizontal'] {
+    inline-size: 100%;
+    block-size: var(--xh-_track-thickness);
+  }
+
+  [data-scope='color-slider'][data-part='track'][data-orientation='vertical'] {
+    block-size: 100%;
+    inline-size: var(--xh-_track-thickness);
+  }
+
+  /* 透明度那一路：轨道从全透明走到实色，透明那半正好把棋盘格露出来。
+     棋盘格铺在轨道自己身上而不是 control 上，圆角才裁得住。
+     注意连接层写的是 background-image（覆盖整个属性），所以格子走 background-color 加伪元素 */
+  [data-scope='color-slider'][data-part='track'][data-channel='alpha']::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    border-radius: inherit;
+    background-color: var(--xh-color-slider-checker-base, var(--xh-bg-surface));
+    background-image:
+      linear-gradient(45deg, var(--xh-color-slider-checker, var(--xh-color-neutral-300)) 25%, transparent 25%),
+      linear-gradient(-45deg, var(--xh-color-slider-checker, var(--xh-color-neutral-300)) 25%, transparent 25%),
+      linear-gradient(45deg, transparent 75%, var(--xh-color-slider-checker, var(--xh-color-neutral-300)) 75%),
+      linear-gradient(-45deg, transparent 75%, var(--xh-color-slider-checker, var(--xh-color-neutral-300)) 75%);
+    background-position: 0 0, 0 4px, 4px -4px, -4px 0;
+    background-size: 8px 8px;
+  }
+
+  /* 伪元素要压在 z-index 之下，轨道得自己成一个层叠上下文 */
+  [data-scope='color-slider'][data-part='track'][data-channel='alpha'] {
+    isolation: isolate;
+  }
+
+  /* 圆点浮在轨道之上：轨道是流内的，拇指是绝对定位的，天然后来居上。
+     拇指填的是当前那一档的颜色（连接层写进私有槽），一圈实体面描边把它从任何底色里框出来。
+     box-sizing 必须显式写：描边要吃进直径里，否则下面按半个直径回拉的负外边距就对不上圆心。 */
+  [data-scope='color-slider'][data-part='thumb'] {
+    --xh-_color-slider-thumb-color: transparent;
+
+    position: absolute;
+    box-sizing: border-box;
+    inline-size: var(--xh-_thumb-size);
+    block-size: var(--xh-_thumb-size);
+    border: var(--xh-stroke-thick) solid var(--xh-color-slider-thumb-border, var(--xh-bg-surface));
+    border-radius: var(--xh-color-slider-thumb-radius, var(--xh-shape-pill));
+    background: var(--xh-color-slider-thumb-bg, var(--xh-_color-slider-thumb-color));
+    box-shadow: var(--xh-color-slider-thumb-shadow, var(--xh-elevation-raised));
+    cursor: grab;
+    transition:
+      scale var(--xh-motion-duration-micro) var(--xh-motion-ease-enter-strong),
+      box-shadow var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
+  }
+
+  /* 内联样式把 inset-inline-start 定在值所在的比例上，那是拇指的**起始边**不是圆心；
+     用负的逻辑外边距回拉半个直径，圆心才落在比例点上（rtl 下负的逻辑外边距自己跟着换向）。 */
+  [data-scope='color-slider'][data-part='thumb'][data-orientation='horizontal'] {
+    inset-block-start: 50%;
+    margin-block-start: calc(var(--xh-_thumb-size) / -2);
+    margin-inline-start: calc(var(--xh-_thumb-size) / -2);
+  }
+
+  /* 竖排的主轴是 inset-block-end（值向上增大），回拉也就换到 block-end 那侧 */
+  [data-scope='color-slider'][data-part='thumb'][data-orientation='vertical'] {
+    inset-inline-start: 50%;
+    margin-inline-start: calc(var(--xh-_thumb-size) / -2);
+    margin-block-end: calc(var(--xh-_thumb-size) / -2);
+  }
+
+  /* 放大用 scale 而不是改尺寸：变换绕自身中心发生，圆心不动。海拔从 raised 换到 lifted */
+  [data-scope='color-slider'][data-part='thumb'][data-dragging] {
+    scale: var(--xh-color-slider-thumb-scale-dragging, var(--xh-motion-scale-drag));
+    cursor: grabbing;
+    box-shadow: var(--xh-color-slider-thumb-shadow-dragging, var(--xh-elevation-lifted));
+  }
+
+  /* 校验失败时描边换成无效色：拇指的面要保住当前颜色，只能动描边 */
+  [data-scope='color-slider'][data-part='thumb'][data-invalid] {
+    border-color: var(--xh-color-slider-thumb-border-invalid, var(--xh-border-invalid));
+  }
+
+  [data-scope='color-slider'][data-part='thumb'][data-readonly]:not([data-disabled]) {
+    cursor: default;
+  }
+
+  /* 值气泡：挂在拇指里，跟着拇指一起走位。默认只在推动那一刻露面 */
+  [data-scope='color-slider'][data-part='value-text'] {
+    position: absolute;
+    inset-block-end: 100%;
+    inset-inline: 50%;
+    inline-size: max-content;
+    margin-block-end: var(--xh-color-slider-value-text-offset, var(--xh-space-2));
+    margin-inline: auto;
+    padding-block: var(--xh-color-slider-value-text-py, var(--xh-space-0_5));
+    padding-inline: var(--xh-color-slider-value-text-px, var(--xh-space-2));
+    border-radius: var(--xh-color-slider-value-text-radius, var(--xh-shape-control));
+    background: var(--xh-color-slider-value-text-bg, var(--xh-bg-brand));
+    color: var(--xh-color-slider-value-text-fg, var(--xh-fg-on-brand));
+    font-size: var(--xh-color-slider-value-text-font-size, var(--xh-text-caption-size));
+    font-variant-numeric: tabular-nums;
+    line-height: var(--xh-leading-normal);
+    white-space: nowrap;
+    /* 气泡贴在拇指上方，指针要落到拇指上，不能被它挡住 */
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
+  }
+
+  [data-scope='color-slider'][data-part='value-text'][hidden] {
+    display: none;
+  }
+
+  [data-scope='color-slider'][data-part='value-text'][data-dragging] {
+    opacity: 1;
+  }
+
+  /* 竖排轨道的气泡挪到行侧：压在拇指上方会挡住上一档的值 */
+  [data-scope='color-slider'][data-part='value-text'][data-orientation='vertical'] {
+    inset-block: 50%;
+    inset-inline: 100% auto;
+    block-size: max-content;
+    margin-block: auto;
+    margin-inline: var(--xh-color-slider-value-text-offset, var(--xh-space-2)) 0;
+  }
+
+  /* —— 尺寸 —— */
+  /* 尺寸只改 root 上那两个槽位，control / track / thumb 跟着一起走；中间档不写规则，缺省即中档 */
+  [data-scope='color-slider'][data-part='root'][data-size='sm'] {
+    --xh-_thumb-size: var(--xh-color-slider-thumb-size, var(--xh-space-3));
+    --xh-_track-thickness: var(--xh-color-slider-track-thickness, var(--xh-space-2));
+  }
+
+  [data-scope='color-slider'][data-part='root'][data-size='lg'] {
+    --xh-_thumb-size: var(--xh-color-slider-thumb-size, var(--xh-space-6));
+    --xh-_track-thickness: var(--xh-color-slider-track-thickness, var(--xh-space-4));
+  }
+
+  /* display 会盖掉 UA 的 [hidden]{display:none}，凡是被赋了 display 的角色节点都要显式让位 */
+  [data-scope='color-slider'][data-part='root'][hidden],
+  [data-scope='color-slider'][data-part='control'][hidden] {
+    display: none;
+  }
+
+  /* hidden-input 是 type=hidden 的原生输入，浏览器本就不渲染它，这里一条声明都不给。 */
+
+  @media (prefers-reduced-motion: reduce) {
+    [data-scope='color-slider'][data-part='thumb'],
+    [data-scope='color-slider'][data-part='value-text'] {
+      transition: none;
+    }
+  }
+
+  /*
+   * 高对比档：轨道画的就是颜色本身，被系统换掉之后整条滑杆不再能调色。
+   * 轨道与拇指退出强制着色保住原色，各补一圈系统描边把它们从背景里框出来。
+   */
+  @media (forced-colors: active) {
+    [data-scope='color-slider'][data-part='track'],
+    [data-scope='color-slider'][data-part='track']::before,
+    [data-scope='color-slider'][data-part='thumb'] {
+      forced-color-adjust: none;
+    }
+
+    [data-scope='color-slider'][data-part='track'] {
+      outline: var(--xh-stroke-thin) solid CanvasText;
+      outline-offset: calc(-1 * var(--xh-stroke-thin));
+    }
+
+    [data-scope='color-slider'][data-part='thumb'] {
+      border-color: CanvasText;
+    }
+
+    [data-scope='color-slider'][data-part='thumb']:focus-visible {
+      outline: var(--xh-ring-width) solid Highlight;
+      outline-offset: var(--xh-ring-offset);
+    }
+  }
+}
