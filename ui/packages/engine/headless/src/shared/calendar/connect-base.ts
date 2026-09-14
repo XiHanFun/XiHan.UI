@@ -152,8 +152,12 @@ export function createCalendarFrame<S extends CalendarBaseSchema>(service: Servi
   const min = parseCalendarDate(prop('min'))
   const max = parseCalendarDate(prop('max'))
 
-  /** 聚焦日三路收口：宿主设过的 → 首个选中值 → 今天。恒非空，展示月由它反推。 */
-  const anchor = parseCalendarDate(context.get('focusedValue'))
+  /**
+   * 聚焦日三路收口：正按着的邻月格 → 宿主设过的 → 首个选中值 → 今天。
+   * heldFocus 只在指针按下到选中之间临时接管，避免先翻页把目标格从指针底下挪走。
+   */
+  const anchor = parseCalendarDate(context.get('heldFocus'))
+    ?? parseCalendarDate(context.get('focusedValue'))
     ?? parseCalendarDate(value.find(v => v !== ''))
     ?? today(timeZone)
   const focusedValue = anchor.toString()

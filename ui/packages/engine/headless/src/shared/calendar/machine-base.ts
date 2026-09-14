@@ -148,13 +148,19 @@ export function calendarBaseActions<S extends CalendarBaseSchema>(
       const e = event.current() as CalendarBaseEvent
       if (e.type !== 'FOCUS.SET')
         return
-      // 指针按在邻月格子上落的焦点不动窗，翻页留给随后的选中；连接层的兜底推导也照这条认。
-      // 先记这条再改聚焦日：同步刷新的运行时每写一个 cell 就重渲一次，反过来写会先按旧规则翻一次页
-      context.set('heldFocus', e.keepVisible ? e.value : null)
+      // 指针按在邻月格子上只是一次尚未完成的按压：连接层临时拿它画聚焦态，但不提前改写
+      // bindable focusedValue。否则作者会在这一拍收到回调，却只能读到尚未翻页的矩阵；真正选中时
+      // focusedValue 又没有变化，不会再通知作者重画，Web Components 的 Light DOM 就与内部视窗错位。
+      if (e.keepVisible) {
+        context.set('heldFocus', e.value)
+        options.onFocusMoved?.(params, false)
+        return
+      }
+      context.set('heldFocus', null)
       context.set('focusedValue', e.value)
       options.onFocusMoved?.(params, !!e.restoreFocus)
       // 翻页那一路的视窗归 pageVisibleStart 管，这里让开：两条都动就走了双份
-      if (e.months != null || e.keepVisible)
+      if (e.months != null)
         return
       // 新落点走出视窗才把视窗挪过去；落在窗内一动不动——
       // 多面板下点第二个面板里的日子正是这一路

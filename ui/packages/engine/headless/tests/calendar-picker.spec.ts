@@ -604,6 +604,28 @@ describe('方向键导航', () => {
     expect(focused()).toBe('2024-03-03')
   })
 
+  it('邻月格的聚焦变化等 click 真正翻页后再通知，作者能在回调里画到目标月份', () => {
+    const visibleMonths: number[] = []
+    let h: ReturnType<typeof mount>
+    h = mount({
+      defaultFocusedValue: '2024-02-15',
+      onFocusedValueChange: () => visibleMonths.push(h.api().visibleMonth.month),
+    })
+    const nextMonthDay = h.cell('2024-03-02')
+    nextMonthDay.focus()
+    expect(h.focusedValue()).toBe('2024-03-02')
+    expect(visibleMonths).toEqual([])
+    click(nextMonthDay)
+    expect(visibleMonths).toEqual([3])
+
+    const previousMonthDay = h.cell('2024-02-27')
+    previousMonthDay.focus()
+    expect(h.focusedValue()).toBe('2024-02-27')
+    expect(visibleMonths).toEqual([3])
+    click(previousMonthDay)
+    expect(visibleMonths).toEqual([3, 2])
+  })
+
   it('邻月的格子只在被指针按住时才不翻页：方向键走进邻月照常翻', async () => {
     const h = mount({ defaultFocusedValue: '2024-02-29' })
     h.cell('2024-02-29').focus()
