@@ -46446,7 +46446,7 @@
       "declarations": [
         {
           "kind": "class",
-          "description": "`<xh-skeleton>` —— 骨架屏宿主，无状态机，把 connectSkeleton 产出的属性打到角色节点上。\n\n骨架条自报形状：在 item 节点上写 `shape`。运行期改写这个属性不触发重新接线，\n需作者自行 requestUpdate。",
+          "description": "`<xh-skeleton>`：骨架屏宿主，无状态机，把 connectSkeleton 产出的属性接到角色节点上。\n\n骨架条声明形状：在 item 节点上写 `shape`。运行期改写该属性不触发重新接线，\n需作者自行 requestUpdate。",
           "name": "XhSkeletonElement",
           "cssParts": [
             {
@@ -46454,7 +46454,7 @@
               "name": "root"
             },
             {
-              "description": "单根骨架条，加载期间带 aria-hidden，不进无障碍树",
+              "description": "单根骨架条，加载期间带 aria-hidden，不进入无障碍树",
               "name": "item"
             }
           ],
@@ -46511,7 +46511,7 @@
               "type": {
                 "text": "boolean | undefined"
               },
-              "description": "是否还在加载，写 \"false\" 结束加载态",
+              "description": "是否仍在加载，写 \"false\" 结束加载态",
               "name": "loading",
               "fieldName": "loading"
             },
@@ -46527,7 +46527,7 @@
               "type": {
                 "text": "SkeletonAnimation | undefined"
               },
-              "description": "动效档，缺省 shimmer",
+              "description": "动效档，默认 shimmer",
               "name": "animation",
               "fieldName": "animation"
             }

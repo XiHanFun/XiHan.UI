@@ -18,13 +18,13 @@ export interface SkeletonProps {
   loading?: boolean
   /** 容器内骨架条的默认形状，默认 'text'。 */
   shape?: SkeletonShape
-  /** 动效档，默认 'shimmer'；缺省档不输出 data-animation。 */
+  /** 动效档，默认 'shimmer'；默认档不输出 data-animation。 */
   animation?: SkeletonAnimation
 }
 
-/** 单根骨架条自报的声明。 */
+/** 单根骨架条的声明。 */
 export interface SkeletonItemProps {
-  /** 这一根的形状，覆盖容器给的默认值。 */
+  /** 该根的形状，覆盖容器提供的默认值。 */
   shape?: SkeletonShape
 }
 
@@ -35,5 +35,5 @@ export interface SkeletonApi<T extends PropTypes = PropTypes> {
   getItemProps: (item?: SkeletonItemProps) => T['element']
 }
 
-/** 读屏用的文案。本组件目前没有需要外露的文案，位先留着。 */
+/** 读屏文案。本组件目前没有需要外露的文案，保留该位。 */
 export interface SkeletonTranslations {}
