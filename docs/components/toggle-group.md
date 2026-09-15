@@ -127,23 +127,23 @@
 
 | 属性 | 类型 | 必填 | 说明 |
 | --- | --- | --- | --- |
-| `collection` | `ToggleGroupNode[]` |  | 条目数据，显示文本与禁用的事实源。给了它，条目部件只需报 value。 缺省即回到「文本与禁用都写在条目部件上」的老路。 |
-| `value` | `ToggleGroupValue` |  | 选中值。给定即受控：内部不再自改，只发 onValueChange。 |
+| `collection` | `ToggleGroupNode[]` |  | 条目数据，显示文本与禁用的事实源。提供后条目部件只需声明 value。 未提供时回到文本与禁用都写在条目部件上的方式。 |
+| `value` | `ToggleGroupValue` |  | 选中值。提供即受控：内部不再自行修改，只发 onValueChange。 |
 | `defaultValue` | `ToggleGroupValue` |  |  |
-| `multiple` | `boolean` |  | 允许多项同时选中；false 时选中一项即挤掉其余。 |
+| `multiple` | `boolean` |  | 允许多项同时选中；false 时选中一项即替换其余。 |
 | `disabled` | `boolean` |  | 整组禁用：条目全部 aria-disabled，点击与方向键都不生效。 |
-| `disallowEmpty` | `boolean` |  | 不许把值清空：单选模式下点当前选中项不再取消它，多选模式下摘不掉最后一个。 默认 false（可以点成无选中）。 |
-| `variant` | `ActionVariant` |  | 变体：solid / subtle / outline / ghost，决定段的底色与描边怎么用。 |
+| `disallowEmpty` | `boolean` |  | 不允许清空值：单选模式下点击当前选中项不再取消它，多选模式下不可移除最后一个。 默认 false（可以点击为无选中）。 |
+| `variant` | `ActionVariant` |  | 变体：solid / subtle / outline / ghost，决定段的底色与描边使用方式。 |
 | `tone` | `Tone` |  | 颜色：brand / neutral / success / warning / danger / info。 |
 | `size` | `Size` |  | 尺寸：sm / md / lg。 |
 | `fullWidth` | `boolean` |  | 撑满行宽：整组占满可用宽度，每段等分剩余空间。 |
 | `separators` | `boolean` |  | 是否自动在相邻条目之间插入分隔线，默认 true。 |
-| `name` | `string` |  | 表单字段名。给定后隐藏输入才带 name 并参与提交。 |
+| `name` | `string` |  | 表单字段名。提供后隐藏输入才带 name 并参与提交。 |
 | `orientation` | `Orientation` |  | 视觉排布，默认 horizontal。方向键接受的轴与它无关（四个方向键恒响应）。 |
 | `dir` | `Direction` |  | 文字方向，默认 ltr；只改写左右方向键的语义，上下键与之无关。 |
-| `loop` | `boolean` |  | 方向键走到尽头是否回绕，默认 true。 |
-| `rovingFocus` | `boolean` |  | roving tabindex，默认开启：整组只占一个 Tab 位，组内靠方向键走。 关掉后每个条目自成一个 Tab 停靠点，方向键不再接管。 |
-| `onValueChange` | `(details: ToggleGroupValueChangeDetails) => void` |  | value 变化意图回调；受控时是唯一出口，非受控随内部写入一并通知。 |
+| `loop` | `boolean` |  | 方向键到达末尾是否回绕，默认 true。 |
+| `rovingFocus` | `boolean` |  | roving tabindex，默认开启：整组只占一个 Tab 位，组内依靠方向键移动。 关闭后每个条目自成一个 Tab 停靠点，方向键不再接管。 |
+| `onValueChange` | `(details: ToggleGroupValueChangeDetails) => void` |  | value 变化意图回调；受控时是唯一出口，非受控时随内部写入一并通知。 |
 
 ### 事件
 
@@ -151,7 +151,7 @@
 
 | 事件 | 载荷 | 说明 |
 | --- | --- | --- |
-| `value-change` | `ToggleGroupValueChangeDetails` | 选中值变化；detail 为 `{ value: string \| string[] \| null }`（形态跟着 multiple 走） |
+| `value-change` | `ToggleGroupValueChangeDetails` | 选中值变化；detail 为 `{ value: string \| string[] \| null }`（形态随 multiple 决定） |
 
 ### 状态
 
@@ -174,17 +174,17 @@
 | 成员 | 类型 | 说明 |
 | --- | --- | --- |
 | `value` | `string[]` | 当前选中集合，恒为数组（单选时长度 ≤ 1）。 |
-| `collection` | `readonly ToggleGroupNodeMeta[]` | collection 推出的条目元信息，按数据顺序排列；没给 collection 即空数组。 |
+| `collection` | `readonly ToggleGroupNodeMeta[]` | 由 collection 推导的条目元信息，按数据顺序排列；未提供 collection 时为空数组。 |
 | `focusedValue` | `string \| null` | 焦点在组外时为 null。 |
 | `multiple` | `boolean` |  |
 | `disabled` | `boolean` |  |
 | `orientation` | `Orientation` |  |
 | `separators` | `boolean` |  |
 | `isSelected` | `(value: string) => boolean` |  |
-| `setValue` | `(next: ToggleGroupValue) => void` | 传单值 / 数组 / null 皆可，内部按 multiple 归一。 |
+| `setValue` | `(next: ToggleGroupValue) => void` | 传单值 / 数组 / null 均可，内部按 multiple 归一。 |
 | `getRootProps` | `() => T['element']` |  |
 | `getItemProps` | `(props: ToggleGroupItemProps) => T['button']` |  |
-| `getHiddenInputProps` | `() => T['input']` | 表单出口：整组只有一份，提交的就是当前选中值。 |
+| `getHiddenInputProps` | `() => T['input']` | 表单出口：整组只有一份，提交的即当前选中值。 |
 
 ## 无障碍
 

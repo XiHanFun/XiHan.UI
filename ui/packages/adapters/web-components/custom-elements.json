@@ -56912,7 +56912,7 @@
       "declarations": [
         {
           "kind": "class",
-          "description": "`<xh-toggle-group>` —— Light-DOM 行为宿主：作者写 root 与若干 item 角色节点，\n元素跑 toggle-group 机器并把 connect 产出打上去。条目须是原生 `<button>`\n（Enter/Space 的激活由平台负责），身份取写在条目上的 value 属性，禁用由条目自报 aria-disabled。\n\n单选（默认）与多选是两套 ARIA：单选 root=radiogroup、条目 role=radio + aria-checked；\n多选 root=group、条目保持原生按钮 + aria-pressed。\n\n受控值的多选形态只能走 property（`el.value = ['a','b']`）：HTML 属性只装得下一个字符串。",
+          "description": "`<xh-toggle-group>`：Light-DOM 行为宿主：作者写 root 与若干 item 角色节点，\n元素运行 toggle-group 状态机并把 connect 产出接上。条目须是原生 `<button>`\n（Enter / Space 的激活由平台负责），身份取写在条目上的 value 属性，禁用由条目声明 aria-disabled。\n\n单选（默认）与多选是两套 ARIA：单选 root=radiogroup、条目 role=radio + aria-checked；\n多选 root=group、条目保持原生按钮 + aria-pressed。\n\n受控值的多选形态只能通过 property 设置（`el.value = ['a','b']`）：HTML 属性只能承载一个字符串。",
           "name": "XhToggleGroupElement",
           "cssParts": [
             {
@@ -57096,7 +57096,7 @@
               },
               "privacy": "private",
               "default": "false",
-              "description": "上一帧是否整组禁用：解禁当帧 DOM 上还留着机器写回的 aria-disabled，读不得。"
+              "description": "上一帧是否整组禁用：解禁当帧 DOM 上仍保留着状态机写回的 aria-disabled，不可读取。"
             },
             {
               "kind": "field",
@@ -57239,7 +57239,7 @@
           ],
           "events": [
             {
-              "description": "选中值变化；detail 为 `{ value: string | string[] | null }`（形态跟着 multiple 走）",
+              "description": "选中值变化；detail 为 `{ value: string | string[] | null }`（形态随 multiple 决定）",
               "name": "value-change",
               "type": {
                 "text": "ToggleGroupValueChangeDetails"
@@ -57251,7 +57251,7 @@
               "type": {
                 "text": "string | string[] | undefined"
               },
-              "description": "受控选中值（属性形式只表达单值）；缺省该属性即非受控",
+              "description": "受控选中值（属性形式只能表达单值）；未提供该属性即非受控",
               "name": "value",
               "fieldName": "value"
             },
@@ -57283,7 +57283,7 @@
               "type": {
                 "text": "boolean | undefined"
               },
-              "description": "不许把值点空（最后一个选中项摘不掉）",
+              "description": "不允许清空值（最后一个选中项不可移除）",
               "name": "disallow-empty",
               "fieldName": "disallowEmpty"
             },
@@ -57291,7 +57291,7 @@
               "type": {
                 "text": "ActionVariant | undefined"
               },
-              "description": "变体，决定段的底色与描边怎么用",
+              "description": "变体，决定段的底色与描边使用方式",
               "name": "variant",
               "fieldName": "variant"
             },
@@ -57331,7 +57331,7 @@
               "type": {
                 "text": "string | undefined"
               },
-              "description": "表单字段名；给了它隐藏输入才带 name 并参与提交",
+              "description": "表单字段名；提供后隐藏输入才带 name 并参与提交",
               "name": "name",
               "fieldName": "name"
             },
@@ -57339,7 +57339,7 @@
               "type": {
                 "text": "Orientation | undefined"
               },
-              "description": "视觉排布，默认 horizontal；方向键四个恒响应，与它无关",
+              "description": "视觉排布，默认 horizontal；四个方向键恒响应，与它无关",
               "name": "orientation",
               "fieldName": "orientation"
             },
@@ -57355,7 +57355,7 @@
               "type": {
                 "text": "boolean | undefined"
               },
-              "description": "方向键走到尽头回绕，默认开启",
+              "description": "方向键到达末尾回绕，默认开启",
               "name": "loop",
               "fieldName": "loop"
             },
@@ -57363,7 +57363,7 @@
               "type": {
                 "text": "boolean | undefined"
               },
-              "description": "roving tabindex，默认开启；关掉后每个条目各占一个 Tab 位",
+              "description": "roving tabindex，默认开启；关闭后每个条目各占一个 Tab 位",
               "name": "roving-focus",
               "fieldName": "rovingFocus"
             }

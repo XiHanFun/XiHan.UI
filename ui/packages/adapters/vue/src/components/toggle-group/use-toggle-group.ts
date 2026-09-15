@@ -15,7 +15,7 @@ import { useMachine } from '../../runtime/use-machine'
 
 export interface ToggleGroupContext {
   api: ComputedRef<ToggleGroupApi>
-  /** 机器实例，供条目上报 DOM 侧的事实（卸载带走了焦点）。 */
+  /** 状态机实例，供条目上报 DOM 侧的事实（卸载带走了焦点）。 */
   service: Service<ToggleGroupSchema>
 }
 
