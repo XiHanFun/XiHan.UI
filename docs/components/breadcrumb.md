@@ -91,11 +91,11 @@
 
 | 属性 | 类型 | 必填 | 说明 |
 | --- | --- | --- | --- |
-| `collection` | `readonly BreadcrumbNode[]` |  | 层级数据，文字、链接与当前页的事实源。 缺省即回到「层级逐个写成部件」的老路。 |
-| `dir` | `Direction` |  | 文字方向，只作用于排版；作者没给就不写。 |
-| `maxItems` | `number` |  | 最多展开几层，超出的中间层折成一个省略位；不给即全列。 |
+| `collection` | `readonly BreadcrumbNode[]` |  | 层级数据，文字、链接与当前页的事实源。 未提供时回到层级逐个写成部件的方式。 |
+| `dir` | `Direction` |  | 文字方向，只作用于排版；作者未提供时不写入。 |
+| `maxItems` | `number` |  | 最多展开的层数，超出的中间层折叠为一个省略位；未提供时全部列出。 |
 | `size` | `Size` |  | 尺寸：sm / md / lg。 |
-| `tone` | `Tone` |  | 语气：brand / neutral / success / warning / danger / info，决定用哪族颜色。 |
+| `tone` | `Tone` |  | 语气：brand / neutral / success / warning / danger / info，决定使用哪族颜色。 |
 | `translations` | `Partial<BreadcrumbTranslations>` |  |  |
 
 ### connect API
@@ -104,8 +104,8 @@
 
 | 成员 | 类型 | 说明 |
 | --- | --- | --- |
-| `collection` | `readonly BreadcrumbNodeMeta[]` | collection 推出的层级元信息，按数据顺序排列；没给 collection 即空数组。 |
-| `items` | `readonly BreadcrumbItem[]` | 按 maxItems 折叠后的序列，省略位自带被折叠的那几层；没给 collection 即空数组。 |
+| `collection` | `readonly BreadcrumbNodeMeta[]` | 由 collection 推导的层级元信息，按数据顺序排列；未提供 collection 时为空数组。 |
+| `items` | `readonly BreadcrumbItem[]` | 按 maxItems 折叠后的序列，省略位自带被折叠的层级；未提供 collection 时为空数组。 |
 | `getRootProps` | `() => T['element']` |  |
 | `getListProps` | `() => T['element']` |  |
 | `getItemProps` | `() => T['element']` |  |

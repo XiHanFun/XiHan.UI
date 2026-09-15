@@ -2927,7 +2927,7 @@
       "declarations": [
         {
           "kind": "class",
-          "description": "`<xh-breadcrumb>` —— 面包屑行为宿主，无状态机，把 connectBreadcrumb 产出的 aria-* 打到角色节点上。\n\n标签要求：root 为 `<nav>`，list 为 `<ol>`，item / separator / ellipsis 为 `<li>`，link 为 `<a>`。\n运行期改写 link 上的 `current` 属性不触发重新接线，需作者自行 requestUpdate。",
+          "description": "`<xh-breadcrumb>`：面包屑行为宿主，无状态机，把 connectBreadcrumb 产出的 aria-* 接到角色节点上。\n\n标签要求：root 为 `<nav>`，list 为 `<ol>`，item / separator / ellipsis 为 `<li>`，link 为 `<a>`。\n运行期改写 link 上的 `current` 属性不触发重新接线，需作者自行 requestUpdate。",
           "name": "XhBreadcrumbElement",
           "cssParts": [
             {
@@ -2943,11 +2943,11 @@
               "name": "item"
             },
             {
-              "description": "a 链接；写 current 属性的那条得到 aria-current=\"page\" 并拦住点击",
+              "description": "a 链接；写 current 属性的条目得到 aria-current=\"page\" 并拦截点击",
               "name": "link"
             },
             {
-              "description": "链接里的图标位，对读屏隐藏",
+              "description": "链接中的图标位，对读屏隐藏",
               "name": "link-icon"
             },
             {
@@ -3037,7 +3037,7 @@
               "type": {
                 "text": "number | undefined"
               },
-              "description": "最多展开几层，超出的中间层由 api.items 折成一个省略位",
+              "description": "最多展开的层数，超出的中间层由 api.items 折叠为一个省略位",
               "name": "max-items",
               "fieldName": "maxItems"
             },
@@ -3045,7 +3045,7 @@
               "type": {
                 "text": "Direction | undefined"
               },
-              "description": "文字方向，写到 root 上；不给则继承祖先",
+              "description": "文字方向，写到 root 上；未提供时继承祖先",
               "name": "dir",
               "fieldName": "direction"
             },
