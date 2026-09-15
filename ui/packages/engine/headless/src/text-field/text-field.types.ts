@@ -8,63 +8,63 @@
 import type { ControlVariant, MachineSchema, PropTypes, Size, Tone } from '@xihan-ui/core'
 
 export interface TextFieldValueChangeDetails {
-  /** 输入框里的原始串；提交进 FormData 的就是它。 */
+  /** 输入框中的原始串；提交进 FormData 的即它。 */
   value: string
 }
 
-/** 输入框渲染成哪个标签：单行 input（缺省）或多行 textarea。 */
+/** 输入框渲染的标签：单行 input（默认）或多行 textarea。 */
 export type TextFieldInputHost = 'input' | 'textarea'
 
 /**
- * 单行宿主的输入类型。只收文本类的那几种：
- * checkbox / radio / file / range 这些有自己的值语义与部件，不由本组件承担。
+ * 单行宿主的输入类型。只接受文本类的几种：
+ * checkbox / radio / file / range 等有自身的值语义与部件，不由本组件承担。
  */
 export type TextFieldType = 'text' | 'password' | 'email' | 'tel' | 'url' | 'search'
 
-/** 自动高度的行数界限；不给即完全跟内容走。 */
+/** 自动高度的行数界限；未提供时完全跟随内容。 */
 export interface TextFieldAutoSize {
-  /** 最少行数；给值时必须是大于等于 1 的有限整数。 */
+  /** 最少行数；提供时必须是大于等于 1 的有限整数。 */
   minRows?: number
-  /** 最多行数；给值时必须是大于等于 1 的有限整数，且不得小于 minRows。 */
+  /** 最多行数；提供时必须是大于等于 1 的有限整数，且不得小于 minRows。 */
   maxRows?: number
 }
 
-/** 输入部件自报宿主标签，connect 据此决定写不写 type 并接自动高度。 */
+/** 输入部件声明宿主标签，connect 据此决定是否写入 type 并接入自动高度。 */
 export interface TextFieldInputProps {
-  /** 缺省 input。 */
+  /** 默认 input。 */
   as?: TextFieldInputHost
 }
 
 export interface TextFieldSchema extends MachineSchema {
   props: {
-    /** 受控值；给了就由宿主说了算，机器不自改。 */
+    /** 受控值；提供后由宿主决定，状态机不自行修改。 */
     value?: string
     /** 非受控初值。 */
     defaultValue?: string
-    /** 单行宿主的输入类型，缺省 text；as 为 textarea 时不发这条属性。 */
+    /** 单行宿主的输入类型，默认 text；as 为 textarea 时不发该属性。 */
     type?: TextFieldType
     placeholder?: string
     disabled?: boolean
     readOnly?: boolean
     required?: boolean
     invalid?: boolean
-    /** 表单字段名；给了才参与提交。 */
+    /** 表单字段名；提供后才参与提交。 */
     name?: string
-    /** 字符数上限。同时落成原生 maxlength 与机器侧的截断，两道都要。 */
+    /** 字符数上限。同时落为原生 maxlength 与状态机侧的截断，两者都需要。 */
     maxLength?: number
-    /** 开启清空能力：有值时显出清空按钮、Escape 接管。关掉时按钮带 hidden 收起。 */
+    /** 开启清空能力：有值时显示清空按钮、Escape 接管。关闭时按钮带 hidden 收起。 */
     clearable?: boolean
-    /** 显出字数部件：关掉时 count 部件带 hidden 收起。 */
+    /** 显示字数部件：关闭时 count 部件带 hidden 收起。 */
     showCount?: boolean
-    /** 多行宿主的自动高度：按横向书写的真实行盒跟内容长高；对象形态钉行数上下限。 */
+    /** 多行宿主的自动高度：按横向书写的真实行盒随内容增高；对象形态固定行数上下限。 */
     autoSize?: boolean | TextFieldAutoSize
-    /** 形态：outline / subtle / ghost，决定输入框的底与描边怎么画。 */
+    /** 形态：outline / subtle / ghost，决定输入框的底色与描边绘制方式。 */
     variant?: ControlVariant
-    /** 语气：brand / neutral / success / warning / danger / info，决定聚焦强调用哪族颜色。 */
+    /** 语气：brand / neutral / success / warning / danger / info，决定聚焦强调使用哪族颜色。 */
     tone?: Tone
     /** 尺寸：sm / md / lg，决定输入框与清空按钮的几何档位。 */
     size?: Size
-    /** 读屏文案；缺省英文。 */
+    /** 读屏文案；默认英文。 */
     translations?: Partial<TextFieldTranslations>
     onValueChange?: (details: TextFieldValueChangeDetails) => void
   }
@@ -73,12 +73,12 @@ export interface TextFieldSchema extends MachineSchema {
   }
   computed: Record<string, never>
   refs: Record<string, never>
-  /** 单态：这个组件没有任何随时间推移的过程，值本身住在 context cell 里。 */
+  /** 单态：本组件没有任何随时间推移的过程，值本身存放在 context cell 中。 */
   state: 'idle'
   event:
-    /** 用户敲字或作者调 setValue；超过 maxLength 的部分在这里被截掉。 */
+    /** 用户输入或作者调用 setValue；超过 maxLength 的部分在这里截断。 */
     | { type: 'VALUE.SET', value: string }
-    /** 清空意图（Escape 或清空按钮）；不满足清空条件时整条被守卫挡下。 */
+    /** 清空意图（Escape 或清空按钮）；不满足清空条件时整条被守卫拦截。 */
     | { type: 'VALUE.CLEAR' }
     | { type: 'FORM.RESET' }
   tag: never
@@ -89,44 +89,44 @@ export interface TextFieldSchema extends MachineSchema {
 
 export interface TextFieldApi<T extends PropTypes = PropTypes> {
   value: string
-  /** 值为空串。作者据此显示占位说明一类的东西。 */
+  /** 值为空串。作者据此显示占位说明等内容。 */
   empty: boolean
   disabled: boolean
   readOnly: boolean
   invalid: boolean
   clearable: boolean
-  /** 已顶到 maxLength：再敲也进不去，作者据此把字数提示标红。 */
+  /** 已到达 maxLength：无法再输入，作者据此把字数提示标红。 */
   atLimit: boolean
-  /** 当前字数，即 value 的长度。作者拿它渲染 count 部件里的数字。 */
+  /** 当前字数，即 value 的长度。作者用它渲染 count 部件中的数字。 */
   count: number
-  /** 字数上限的原样透传；没设上限时是 undefined，此时只渲当前字数。 */
+  /** 字数上限的原样透传；未设上限时为 undefined，此时只渲染当前字数。 */
   maxLength: number | undefined
-  /** 字数部件此刻是否显出（开了 showCount）。 */
+  /** 字数部件当前是否显示（开启了 showCount）。 */
   showCount: boolean
-  /** 清空按钮此刻是否可用（开了 clearable、可编辑、且有值）。 */
+  /** 清空按钮当前是否可用（开启 clearable、可编辑、且有值）。 */
   canClear: boolean
-  /** 直接写值，只受 disabled/readOnly 与 maxLength 约束，与 clearable 无关。 */
+  /** 直接写值，只受 disabled / readOnly 与 maxLength 约束，与 clearable 无关。 */
   setValue: (next: string) => void
-  /** 走清空意图，受 canClear 约束；无条件清空请用 setValue('')。 */
+  /** 发起清空意图，受 canClear 约束；无条件清空使用 setValue('')。 */
   clear: () => void
-  /** 自动高度配置的原样透传；适配器在程序化写值后据此补量一次。 */
+  /** 自动高度配置的原样透传；适配器在程序化写值后据此补测一次。 */
   autoSize: boolean | TextFieldAutoSize
   getRootProps: () => T['element']
-  /** 视觉盒；写了它就由它画描边与聚焦环，不写时输入框自己当盒。 */
+  /** 视觉盒；提供后由它绘制描边与聚焦环，未提供时输入框自身作为盒。 */
   getControlProps: () => T['element']
   getLabelProps: () => T['label']
-  /** 传 as: 'textarea' 即多行宿主：撤掉 type、接上自动高度。 */
+  /** 传 as: 'textarea' 即多行宿主：去除 type、接入自动高度。 */
   getInputProps: (props?: TextFieldInputProps) => T['input']
   /** 输入框前的装饰段（货币符、单位、图标）；对读屏隐藏，不参与名字链。 */
   getPrefixProps: () => T['element']
   /** 输入框后的装饰段；对读屏隐藏，不参与名字链。 */
   getSuffixProps: () => T['element']
   getClearTriggerProps: () => T['button']
-  /** 字数部件：承载 count / maxLength 两个数字，没开 showCount 时带 hidden 收起。 */
+  /** 字数部件：承载 count / maxLength 两个数字，未开启 showCount 时带 hidden 收起。 */
   getCountProps: () => T['element']
 }
 
-/** 读屏用的文案，默认英文。 */
+/** 读屏文案，默认英文。 */
 export interface TextFieldTranslations {
   /** 清空按钮的名字。 */
   clearTrigger: string

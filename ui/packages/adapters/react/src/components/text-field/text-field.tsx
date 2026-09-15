@@ -28,7 +28,7 @@ export type TextFieldRootSlotProps = Pick<
   'value' | 'empty' | 'atLimit' | 'count' | 'canClear' | 'setValue' | 'clear'
 >
 
-/** 字数部件函数式 children 的载荷：当前字数、上限与顶到上限的标志。 */
+/** 字数部件函数式 children 的载荷：当前字数、上限与已达上限的标志。 */
 export type TextFieldCountSlotProps = Pick<TextFieldApi, 'count' | 'maxLength' | 'atLimit'>
 
 export interface XhTextFieldRootProps extends Omit<ComponentPropsWithRef<'div'>, 'children'> {
@@ -40,7 +40,7 @@ export interface XhTextFieldRootProps extends Omit<ComponentPropsWithRef<'div'>,
   readOnly?: boolean
   required?: boolean
   invalid?: boolean
-  /** 表单字段名；给了才参与提交。 */
+  /** 表单字段名；提供后才参与提交。 */
   name?: string
   maxLength?: number
   clearable?: boolean
@@ -123,7 +123,7 @@ export function XhTextFieldRoot({
 XhTextFieldRoot.xhEvents = ['value-change'] as const
 
 export interface XhTextFieldLabelProps extends ComponentPropsWithRef<'label'> {}
-/** 必须是原生 label，connect 把 for 写向 input。 */
+/** 必须是原生 label，connect 把 for 指向 input。 */
 export function XhTextFieldLabel({ children, ...rest }: XhTextFieldLabelProps): ReactNode {
   const ctx = useTextFieldContext()
   return (
@@ -134,7 +134,7 @@ export function XhTextFieldLabel({ children, ...rest }: XhTextFieldLabelProps): 
 }
 
 export interface XhTextFieldControlProps extends ComponentPropsWithRef<'div'> {}
-/** 视觉盒：输入框与清空按钮都放进来，皮肤把描边、底色、聚焦环画在它身上。 */
+/** 视觉盒：输入框与清空按钮都放入其中，皮肤把描边、底色、聚焦环绘制在它上面。 */
 export function XhTextFieldControl({ children, ...rest }: XhTextFieldControlProps): ReactNode {
   const ctx = useTextFieldContext()
   return (
@@ -145,7 +145,7 @@ export function XhTextFieldControl({ children, ...rest }: XhTextFieldControlProp
 }
 
 export interface XhTextFieldInputProps extends Omit<ComponentPropsWithRef<'input'>, 'value' | 'defaultValue' | 'type'> {
-  /** 输入框渲染成哪个标签，默认 input；写 textarea 即多行宿主，接上 autoSize 自动高度。 */
+  /** 输入框渲染为哪个标签，默认 input；写 textarea 即多行宿主，接入 autoSize 自动高度。 */
   as?: TextFieldInputHost
 }
 
@@ -233,7 +233,7 @@ export interface XhTextFieldCountProps extends Omit<ComponentPropsWithRef<'span'
   children?: SlotChildren<TextFieldCountSlotProps>
 }
 
-/** 字数：不写内容时渲 `已用 / 上限`，没设上限就只渲已用。 */
+/** 字数：未写内容时渲染 `已用 / 上限`，未设上限时只渲染已用。 */
 export function XhTextFieldCount({ children, ...rest }: XhTextFieldCountProps): ReactNode {
   const ctx = useTextFieldContext()
   const api = ctx.api

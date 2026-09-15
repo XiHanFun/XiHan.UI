@@ -172,23 +172,23 @@ input 部件写成 textarea 即多行宿主；autoSize 让高度跟内容走，�
 
 | 属性 | 类型 | 必填 | 说明 |
 | --- | --- | --- | --- |
-| `value` | `string` |  | 受控值；给了就由宿主说了算，机器不自改。 |
+| `value` | `string` |  | 受控值；提供后由宿主决定，状态机不自行修改。 |
 | `defaultValue` | `string` |  | 非受控初值。 |
-| `type` | `TextFieldType` |  | 单行宿主的输入类型，缺省 text；as 为 textarea 时不发这条属性。 |
+| `type` | `TextFieldType` |  | 单行宿主的输入类型，默认 text；as 为 textarea 时不发该属性。 |
 | `placeholder` | `string` |  |  |
 | `disabled` | `boolean` |  |  |
 | `readOnly` | `boolean` |  |  |
 | `required` | `boolean` |  |  |
 | `invalid` | `boolean` |  |  |
-| `name` | `string` |  | 表单字段名；给了才参与提交。 |
-| `maxLength` | `number` |  | 字符数上限。同时落成原生 maxlength 与机器侧的截断，两道都要。 |
-| `clearable` | `boolean` |  | 开启清空能力：有值时显出清空按钮、Escape 接管。关掉时按钮带 hidden 收起。 |
-| `showCount` | `boolean` |  | 显出字数部件：关掉时 count 部件带 hidden 收起。 |
-| `autoSize` | `boolean \| TextFieldAutoSize` |  | 多行宿主的自动高度：按横向书写的真实行盒跟内容长高；对象形态钉行数上下限。 |
-| `variant` | `ControlVariant` |  | 形态：outline / subtle / ghost，决定输入框的底与描边怎么画。 |
-| `tone` | `Tone` |  | 语气：brand / neutral / success / warning / danger / info，决定聚焦强调用哪族颜色。 |
+| `name` | `string` |  | 表单字段名；提供后才参与提交。 |
+| `maxLength` | `number` |  | 字符数上限。同时落为原生 maxlength 与状态机侧的截断，两者都需要。 |
+| `clearable` | `boolean` |  | 开启清空能力：有值时显示清空按钮、Escape 接管。关闭时按钮带 hidden 收起。 |
+| `showCount` | `boolean` |  | 显示字数部件：关闭时 count 部件带 hidden 收起。 |
+| `autoSize` | `boolean \| TextFieldAutoSize` |  | 多行宿主的自动高度：按横向书写的真实行盒随内容增高；对象形态固定行数上下限。 |
+| `variant` | `ControlVariant` |  | 形态：outline / subtle / ghost，决定输入框的底色与描边绘制方式。 |
+| `tone` | `Tone` |  | 语气：brand / neutral / success / warning / danger / info，决定聚焦强调使用哪族颜色。 |
 | `size` | `Size` |  | 尺寸：sm / md / lg，决定输入框与清空按钮的几何档位。 |
-| `translations` | `Partial<TextFieldTranslations>` |  | 读屏文案；缺省英文。 |
+| `translations` | `Partial<TextFieldTranslations>` |  | 读屏文案；默认英文。 |
 | `onValueChange` | `(details: TextFieldValueChangeDetails) => void` |  |  |
 
 ### 事件
@@ -225,27 +225,27 @@ input 部件写成 textarea 即多行宿主；autoSize 让高度跟内容走，�
 | 成员 | 类型 | 说明 |
 | --- | --- | --- |
 | `value` | `string` |  |
-| `empty` | `boolean` | 值为空串。作者据此显示占位说明一类的东西。 |
+| `empty` | `boolean` | 值为空串。作者据此显示占位说明等内容。 |
 | `disabled` | `boolean` |  |
 | `readOnly` | `boolean` |  |
 | `invalid` | `boolean` |  |
 | `clearable` | `boolean` |  |
-| `atLimit` | `boolean` | 已顶到 maxLength：再敲也进不去，作者据此把字数提示标红。 |
-| `count` | `number` | 当前字数，即 value 的长度。作者拿它渲染 count 部件里的数字。 |
-| `maxLength` | `number \| undefined` | 字数上限的原样透传；没设上限时是 undefined，此时只渲当前字数。 |
-| `showCount` | `boolean` | 字数部件此刻是否显出（开了 showCount）。 |
-| `canClear` | `boolean` | 清空按钮此刻是否可用（开了 clearable、可编辑、且有值）。 |
-| `setValue` | `(next: string) => void` | 直接写值，只受 disabled/readOnly 与 maxLength 约束，与 clearable 无关。 |
-| `clear` | `() => void` | 走清空意图，受 canClear 约束；无条件清空请用 setValue('')。 |
-| `autoSize` | `boolean \| TextFieldAutoSize` | 自动高度配置的原样透传；适配器在程序化写值后据此补量一次。 |
+| `atLimit` | `boolean` | 已到达 maxLength：无法再输入，作者据此把字数提示标红。 |
+| `count` | `number` | 当前字数，即 value 的长度。作者用它渲染 count 部件中的数字。 |
+| `maxLength` | `number \| undefined` | 字数上限的原样透传；未设上限时为 undefined，此时只渲染当前字数。 |
+| `showCount` | `boolean` | 字数部件当前是否显示（开启了 showCount）。 |
+| `canClear` | `boolean` | 清空按钮当前是否可用（开启 clearable、可编辑、且有值）。 |
+| `setValue` | `(next: string) => void` | 直接写值，只受 disabled / readOnly 与 maxLength 约束，与 clearable 无关。 |
+| `clear` | `() => void` | 发起清空意图，受 canClear 约束；无条件清空使用 setValue('')。 |
+| `autoSize` | `boolean \| TextFieldAutoSize` | 自动高度配置的原样透传；适配器在程序化写值后据此补测一次。 |
 | `getRootProps` | `() => T['element']` |  |
-| `getControlProps` | `() => T['element']` | 视觉盒；写了它就由它画描边与聚焦环，不写时输入框自己当盒。 |
+| `getControlProps` | `() => T['element']` | 视觉盒；提供后由它绘制描边与聚焦环，未提供时输入框自身作为盒。 |
 | `getLabelProps` | `() => T['label']` |  |
-| `getInputProps` | `(props?: TextFieldInputProps) => T['input']` | 传 as: 'textarea' 即多行宿主：撤掉 type、接上自动高度。 |
+| `getInputProps` | `(props?: TextFieldInputProps) => T['input']` | 传 as: 'textarea' 即多行宿主：去除 type、接入自动高度。 |
 | `getPrefixProps` | `() => T['element']` | 输入框前的装饰段（货币符、单位、图标）；对读屏隐藏，不参与名字链。 |
 | `getSuffixProps` | `() => T['element']` | 输入框后的装饰段；对读屏隐藏，不参与名字链。 |
 | `getClearTriggerProps` | `() => T['button']` |  |
-| `getCountProps` | `() => T['element']` | 字数部件：承载 count / maxLength 两个数字，没开 showCount 时带 hidden 收起。 |
+| `getCountProps` | `() => T['element']` | 字数部件：承载 count / maxLength 两个数字，未开启 showCount 时带 hidden 收起。 |
 
 ## 无障碍
 
