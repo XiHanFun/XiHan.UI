@@ -76,8 +76,8 @@ export function connectNumberField<T extends PropTypes>(
 
     getRootProps: () => normalize.element({
       ...parts.root.attrs,
-      // 三个视觉轴只落在 root，子部件从这里继承皮肤声明的私有槽
-      'data-variant': prop('variant'),
+      // 三个视觉轴只落在 root，子部件从这里继承皮肤声明的私有槽；形态默认落 outline，皮肤不再依赖缺省档
+      'data-variant': prop('variant') ?? 'outline',
       'data-tone': prop('tone'),
       'data-size': prop('size'),
       'data-disabled': dataAttr(disabled),
