@@ -42,6 +42,7 @@ export interface PromptInputSchema extends MachineSchema {
     allowEmptySubmit?: boolean
     /** 提交后清空，默认 true。 */
     clearOnSubmit?: boolean
+    /** 形态：outline / subtle / ghost，决定底色与描边的绘制方式。默认 outline。 */
     variant?: ControlVariant
     tone?: Tone
     size?: Size

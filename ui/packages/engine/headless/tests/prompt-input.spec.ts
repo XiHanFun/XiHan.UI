@@ -140,3 +140,11 @@ describe('submitKey 另外两档不受影响', () => {
     expect(withMod.preventDefault).toHaveBeenCalled()
   })
 })
+
+describe('connectPromptInput 属性输出', () => {
+  it('不写 variant 时 root 落 outline；写 subtle 如实落', () => {
+    const root = (r: Rig): Dict => r.api().getRootProps() as Dict
+    expect(root(mount())['data-variant']).toBe('outline')
+    expect(root(mount({ variant: 'subtle' }))['data-variant']).toBe('subtle')
+  })
+})

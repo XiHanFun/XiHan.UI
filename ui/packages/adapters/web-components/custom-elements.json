@@ -40056,7 +40056,7 @@
               "type": {
                 "text": "ControlVariant | undefined"
               },
-              "description": "形态：outline / subtle / ghost",
+              "description": "形态：outline / subtle / ghost，默认 outline",
               "name": "variant",
               "fieldName": "variant"
             },
