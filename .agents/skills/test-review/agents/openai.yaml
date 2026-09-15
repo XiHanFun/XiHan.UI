@@ -1,0 +1,7 @@
+interface:
+  display_name: "XiHan.UI 测试审查"
+  short_description: "判断 Headless、三端和浏览器测试应保留或改写"
+  default_prompt: "使用 $xihan-ui-test-review 审查指定测试的价值和覆盖边界。"
+
+policy:
+  allow_implicit_invocation: true

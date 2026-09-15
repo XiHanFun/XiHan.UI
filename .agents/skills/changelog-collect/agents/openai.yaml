@@ -1,0 +1,7 @@
+interface:
+  display_name: "XiHan.UI 变更日志"
+  short_description: "从提交、差异和 changeset 整理用户可感知版本日志"
+  default_prompt: "使用 $xihan-ui-changelog-collect 整理指定版本范围的变更日志。"
+
+policy:
+  allow_implicit_invocation: true
