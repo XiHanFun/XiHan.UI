@@ -22,7 +22,7 @@ export interface FloatButtonContext {
 }
 
 /**
- * 专用机器持有开合与逻辑层生命周期；React 只桥接所属 Document 的配置、登记函数与 root ref。
+ * 专用状态机持有开合与逻辑层生命周期；React 只桥接所属 Document 的配置、登记函数与 root ref。
  */
 export function useFloatButton(
   props: FloatButtonProps,
