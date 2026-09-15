@@ -100,41 +100,39 @@ variant="plain" 去掉外框与底色，树直接落在页面上；缺省 surfac
 
 ### 何时使用
 
-- 文件目录、组织架构、权限节点这类任意深度的层级数据。
+- 文件目录、组织架构、权限节点等任意深度的层级数据。
 - 需要在树上多选并处理父子级联。
 
 ### 何时不用
 
-- 树只是为了选一个值：用[树选择](./tree-select)，它把树收进浮层。
-- 层级规整、层数固定且只为选值：用[级联选择](./cascader)。
-- 数据是平的：用[列表](./list)或[表格](./table)。
+- 树只用于选一个值时，使用[树选择](./tree-select)，它把树收进浮层。
+- 层级规整、层数固定且只为选值时，使用[级联选择](./cascader)。
+- 数据是扁平的时，使用[列表](./list)或[表格](./table)。
 
 ### 特性
 
 - 展开集合与选中集合两套值各自可受控。
-- `variant` 决定带不带外框，缺省 `surface`；`plain` 让树直接落在页面上。
-- `cascade` 与 `checkedStrategy` 决定勾父带不带子、以及回显给哪一层。
+- `variant` 决定是否带外框，默认 `surface`；`plain` 让树直接落在页面上。
+- `cascade` 与 `checkedStrategy` 决定勾选父节点是否带子节点，以及回显给哪一层。
 - 支持只让叶子进选中集合、关键词过滤、子节点异步加载、拖放换父。
 - `expandOnClick` 决定点整行是否展开。
-- 空（`empty`）与在途（`loading`）两个相位各有部件，都放在 `root` 里当 `tree` 的兄弟；`loading` 为真时树报 `aria-busy`，空态让位。
-- `leafOrientation` 按结构判据横排：子节点全是叶子的那层跟着它走，其余恒竖排。
-- 节点上标 `childrenOrientation: 'horizontal' | 'vertical'` 指定「我这一层子节点怎么排」，
-  比 `leafOrientation` 优先；标 `vertical` 能把树级的 `horizontal` 按回竖排。根层不受影响，恒竖排。
+- 空（`empty`）与在途（`loading`）两个相位各有部件，都放在 `root` 内作为 `tree` 的兄弟；`loading` 为真时树报告 `aria-busy`，空态让位。
+- `leafOrientation` 按结构判据横排：子节点全是叶子的层跟随它，其余始终竖排。
+- 节点上标 `childrenOrientation: 'horizontal' | 'vertical'` 指定该层子节点的排列方向，优先于 `leafOrientation`；标 `vertical` 可以把树级的 `horizontal` 改回竖排。根层不受影响，始终竖排。
 
 ### 组合
 
-- 前缀放[图标](./icon)，行尾放[菜单](./menu)；放进[分栏](./splitter)的一侧。
+- 前缀放[图标](./icon)，行尾放[菜单](./menu)；放入[分栏](./splitter)的一侧。
 
 ### 最佳实践
 
-- 大树一定要虚拟化或按需加载，一次展开全部会卡住。
-- 级联勾选的策略要与后端约定一致。
-- 只想让某一层横排就标 `childrenOrientation`，别开树级 `leafOrientation`：
-  后者认结构，别处凑巧「子节点全是叶子」的层也会跟着横过来，还会随数据增减变来变去。
+- 大树必须虚拟化或按需加载，一次展开全部会卡顿。
+- 级联勾选的策略与后端约定一致。
+- 只需要某一层横排时标 `childrenOrientation`，不开启树级 `leafOrientation`：后者按结构判断，其他恰好“子节点全是叶子”的层也会横排，并随数据增减变化。
 
 ### 反模式
 
-- 展开状态不持久：用户每次进来都要重新展开一路。
+- 展开状态不持久，用户每次进入都要重新展开。
 - 拖放换父没有落点提示。
 
 ## API 参考
