@@ -91,21 +91,21 @@
 
 | 属性 | 类型 | 必填 | 说明 |
 | --- | --- | --- | --- |
-| `collection` | `SideNavNode[]` |  | 入口树，层级与文本的唯一事实源。缺省为空。 |
-| `value` | `string \| null` |  | 选中的叶子（单选）。给定即受控：cell 直读 prop，写只发 onValueChange。 |
+| `collection` | `SideNavNode[]` |  | 入口树，层级与文本的唯一事实源。默认为空。 |
+| `value` | `string \| null` |  | 选中的叶子（单选）。提供即受控：cell 直读 prop，写入只发 onValueChange。 |
 | `defaultValue` | `string \| null` |  |  |
-| `expandedValue` | `string[]` |  | 展开集合。给定即受控，语义同上。 |
+| `expandedValue` | `string[]` |  | 展开集合。提供即受控，语义同上。 |
 | `defaultExpandedValue` | `string[]` |  |  |
 | `accordion` | `boolean` |  | 同层手风琴：展开一枝时收起同层其余分支，默认 false（可多开）。 |
-| `collapsed` | `boolean` |  | 折叠成图标栏：内嵌展开整体收起、文字由皮肤藏掉，只剩图标一列。 顶层分支换装浮层弹出：悬停/点按/右方向键在旁侧弹出子级面板。 |
-| `collapsedPopout` | `boolean` |  | 折叠态下顶层分支是否弹出子级面板，默认 true；关掉即回到纯图标栏。 |
+| `collapsed` | `boolean` |  | 折叠为图标栏：内嵌展开整体收起、文字由皮肤隐藏，只剩图标一列。 顶层分支改为浮层弹出：悬停 / 点击 / 右方向键在旁侧弹出子级面板。 |
+| `collapsedPopout` | `boolean` |  | 折叠态下顶层分支是否弹出子级面板，默认 true；关闭即回到纯图标栏。 |
 | `disabled` | `boolean` |  | 整个侧栏禁用。 |
-| `loop` | `boolean` |  | 上下键走到首尾是否回绕，默认 false。 |
-| `dir` | `Direction` |  | 文字方向，默认 ltr；只对调左右方向键的「展开/收起」语义。 |
-| `tone` | `Tone` |  | 语气：brand / neutral / success / warning / danger / info，决定用哪族颜色。 |
+| `loop` | `boolean` |  | 上下键到达首尾是否回绕，默认 false。 |
+| `dir` | `Direction` |  | 文字方向，默认 ltr；只对调左右方向键的展开 / 收起语义。 |
+| `tone` | `Tone` |  | 语气：brand / neutral / success / warning / danger / info，决定使用哪族颜色。 |
 | `size` | `Size` |  | 尺寸：sm / md / lg。 |
 | `translations` | `Partial<SideNavTranslations>` |  |  |
-| `onValueChange` | `(details: SideNavValueChangeDetails) => void` |  | 选中意图回调；受控时是唯一出口，非受控随内部写入一并通知。 |
+| `onValueChange` | `(details: SideNavValueChangeDetails) => void` |  | 选中意图回调；受控时是唯一出口，非受控时随内部写入一并通知。 |
 | `onExpandedValueChange` | `(details: SideNavExpandedValueChangeDetails) => void` |  | 展开集合变化意图回调；语义同上。 |
 
 ### 事件
@@ -151,16 +151,16 @@
 
 | 成员 | 类型 | 说明 |
 | --- | --- | --- |
-| `value` | `string \| null` | 选中的叶子；尚未选中为 null。 |
+| `value` | `string \| null` | 选中的叶子；尚未选中时为 null。 |
 | `expandedValue` | `string[]` |  |
-| `collapsed` | `boolean` | 折叠成图标栏；顶层分支改为浮层弹出子级面板。 |
-| `popoutValue` | `string \| null` | 折叠态下正弹出子级面板的顶层分支；没弹出为 null。 |
+| `collapsed` | `boolean` | 折叠为图标栏；顶层分支改为浮层弹出子级面板。 |
+| `popoutValue` | `string \| null` | 折叠态下正在弹出子级面板的顶层分支；未弹出时为 null。 |
 | `openPopout` | `(value: string) => void` | 弹出某顶层分支的子级面板（仅折叠态有效）。 |
 | `closePopout` | `() => void` |  |
-| `focusedValue` | `string \| null` | roving tabindex 的锚点；无可见锚点为 null。 |
+| `focusedValue` | `string \| null` | roving tabindex 的锚点；无可见锚点时为 null。 |
 | `isSelected` | `(value: string) => boolean` |  |
 | `isExpanded` | `(value: string) => boolean` |  |
-| `isActiveBranch` | `(value: string) => boolean` | 选中项的祖先分支：展开高亮「当前所在的那一枝」。 |
+| `isActiveBranch` | `(value: string) => boolean` | 选中项的祖先分支：展开高亮当前所在的分支。 |
 | `select` | `(value: string) => void` |  |
 | `setValue` | `(next: string \| null) => void` |  |
 | `setExpandedValue` | `(next: string[]) => void` |  |
@@ -168,18 +168,18 @@
 | `collapse` | `(value: string) => void` |  |
 | `getRootProps` | `() => T['element']` |  |
 | `getListProps` | `() => T['element']` |  |
-| `getItemProps` | `() => T['element']` | 叶子行的列表项容器：链接与分支一样是列表的一条，作者把 link 裹在它里面。 |
+| `getItemProps` | `() => T['element']` | 叶子行的列表项容器：链接与分支一样是列表的一条，作者把 link 包在其中。 |
 | `getGroupProps` | `(props: SideNavNodeProps) => T['element']` |  |
 | `getGroupLabelProps` | `(props: SideNavNodeProps) => T['element']` |  |
 | `getBranchProps` | `(props: SideNavNodeProps) => T['element']` |  |
 | `getBranchTriggerProps` | `(props: SideNavNodeProps) => T['button']` |  |
-| `getBranchTextProps` | `() => T['element']` | 行文字的载体：折叠成图标栏时由皮肤整个藏掉，不会裁出半个字。 |
+| `getBranchTextProps` | `() => T['element']` | 行文字的载体：折叠为图标栏时由皮肤整体隐藏，不会裁出半个字。 |
 | `getBranchIndicatorProps` | `(props: SideNavNodeProps) => T['element']` |  |
-| `isPopoutPanel` | `(value: string) => boolean` | 该分支在折叠态下是否以浮层面板出现；决定作者要不要渲染定位层。 |
-| `getPopoutPositionerProps` | `(props: SideNavNodeProps) => T['element']` | 弹出面板的定位层。吃引擎坐标、承载层号，作者须把它搬到浮层落点， 免得祖先的层叠上下文把面板困住。非弹出分支不渲染这一层。 |
+| `isPopoutPanel` | `(value: string) => boolean` | 该分支在折叠态下是否以浮层面板出现；决定作者是否需要渲染定位层。 |
+| `getPopoutPositionerProps` | `(props: SideNavNodeProps) => T['element']` | 弹出面板的定位层。使用引擎坐标、承载层号，作者须把它移到浮层落点， 避免祖先的层叠上下文困住面板。非弹出分支不渲染这一层。 |
 | `getBranchContentProps` | `(props: SideNavNodeProps) => T['element']` |  |
 | `getLinkProps` | `(props: SideNavNodeProps) => T['element']` |  |
-| `getLinkTextProps` | `() => T['element']` | 链接文字的载体：折叠时由皮肤整个藏掉。 |
+| `getLinkTextProps` | `() => T['element']` | 链接文字的载体：折叠时由皮肤整体隐藏。 |
 
 ## 无障碍
 

@@ -19,7 +19,7 @@ export function useSideNavContext(): SideNavContext {
   return ctx
 }
 
-/** 分支自报的身份：子部件从中取所属分支的 value，不必逐个再声明。 */
+/** 分支声明的身份：子部件从中取所属分支的 value，不必逐个再声明。 */
 export interface SideNavNodeContext {
   value: string
 }

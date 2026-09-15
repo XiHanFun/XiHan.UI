@@ -19,9 +19,9 @@ import { useMachine } from '../../runtime/use-machine'
 export interface SideNavContext {
   api: SideNavApi
   service: Service<SideNavSchema>
-  /** 运行时配置；服务端没有 DOM 时为 null。弹出面板的退场闸门从它拿 reduce 档。 */
+  /** 运行时配置；服务端没有 DOM 时为 null。弹出面板的退场闸门从它读取 reduce 档。 */
   config: RuntimeConfig | null
-  /** 弹出面板的定位层搬到哪儿：全局配置 > 运行时配置 > body。 */
+  /** 弹出面板的定位层迁移到的位置：全局配置 > 运行时配置 > body。 */
   portalContainer: () => Element | null
 }
 

@@ -23,7 +23,7 @@ export interface SideNavContext {
   service: Service<SideNavSchema>
   /** 运行时配置；服务端没有 DOM 时为 null。 */
   config: RuntimeConfig | null
-  /** 弹出面板的定位层搬到哪儿：全局配置的容器 > 运行时的浮层落点 > body。 */
+  /** 弹出面板的定位层迁移到的位置：全局配置的容器 > 运行时的浮层落点 > body。 */
   portalTarget: ComputedRef<string | Element>
 }
 
