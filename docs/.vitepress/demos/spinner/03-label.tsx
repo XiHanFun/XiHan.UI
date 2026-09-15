@@ -1,4 +1,4 @@
-// 可见文案 | label 部件不写内容时显示解析后的 label，屏幕上看到的与读屏念的因此是同一段字
+// 可见文案 | label 部件未写内容时显示解析后的 label，屏幕上看到的与读屏朗读的因此是同一段文字
 import type { ReactNode } from "react";
 import { XhSpinner, XhSpinnerLabel } from "@xihan-ui/react";
 

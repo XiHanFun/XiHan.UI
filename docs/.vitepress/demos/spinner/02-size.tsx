@@ -1,4 +1,4 @@
-// 尺寸 | size 只换直径，缺省档 md 不输出 data-size
+// 尺寸 | size 只改变直径，默认档 md 不输出 data-size
 import type { ReactNode } from "react";
 import { XhSpinner } from "@xihan-ui/react";
 

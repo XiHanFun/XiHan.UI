@@ -12,7 +12,7 @@
 
 ## 用法
 
-root 是 role=status 的活区，转圈图形由皮肤画在伪元素上；label 给出这一处在等什么
+root 是 role=status 的活区，旋转图形由皮肤绘制在伪元素上；label 给出该处在等待什么
 
 <XhDemo src="spinner/01-basic" />
 
@@ -26,25 +26,25 @@ root 是 role=status 的活区，转圈图形由皮肤画在伪元素上；label
 
 ### 尺寸
 
-size 只换直径，缺省档 md 不输出 data-size
+size 只改变直径，默认档 md 不输出 data-size
 
 <XhDemo src="spinner/02-size" />
 
 ### 可见文案
 
-label 部件不写内容时显示解析后的 label，屏幕上看到的与读屏念的因此是同一段字
+label 部件未写内容时显示解析后的 label，屏幕上看到的与读屏朗读的因此是同一段文字
 
 <XhDemo src="spinner/03-label" />
 
 ### 颜色
 
-tone 只换圆环起始边那一段颜色，轨道留在中性描边上，转到哪儿才看得出来
+tone 只更换圆环起始边一段的颜色，轨道保持中性描边，旋转时才能看出差别
 
 <XhDemo src="spinner/04-tone" />
 
-### 盖住等待中的内容
+### 覆盖等待中的内容
 
-转圈浮在内容上方，容器同时报 aria-busy，看得见的与念得出的是同一件事
+旋转指示浮在内容上方，容器同时报告 aria-busy，可见的与可朗读的是同一件事
 
 <XhDemo src="spinner/05-overlay" />
 

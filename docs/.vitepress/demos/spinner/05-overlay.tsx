@@ -1,4 +1,4 @@
-// 盖住等待中的内容 | 转圈浮在内容上方，容器同时报 aria-busy，看得见的与念得出的是同一件事
+// 覆盖等待中的内容 | 旋转指示浮在内容上方，容器同时报告 aria-busy，可见的与可朗读的是同一件事
 import type { CSSProperties, ReactNode } from "react";
 import { XhSpinner } from "@xihan-ui/react";
 import { useState } from "react";
