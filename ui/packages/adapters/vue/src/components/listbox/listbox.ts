@@ -34,7 +34,7 @@ export const XhListboxRoot = defineComponent({
   // 有 connect 兜底的 prop：普通类型省略 default，Boolean 显式保留 undefined
   props: {
     collection: { type: Array as PropType<ListboxNode[]> },
-    /** 标题文字。给了它就不必再写 label 部件；要放别的内容改用 label 插槽。 */
+    /** 标题文字。提供后不必再写 label 部件；需要放置其他内容时改用 label 插槽。 */
     label: { type: String },
     value: { type: [String, Array] as PropType<string | string[]> },
     defaultValue: { type: [String, Array] as PropType<string | string[]> },
@@ -212,8 +212,8 @@ export const XhListboxItemIndicator = defineComponent({
 })
 
 /**
- * 没写默认插槽时按 collection 铺开的整套结构，作者只交数据。
- * 与手写部件产出的 DOM 完全一致，要改结构（分组、条目外的节点）就写默认插槽。
+ * 未写默认插槽时按 collection 铺开的整套结构，作者只提供数据。
+ * 与手写部件产出的 DOM 完全一致，需要修改结构（分组、条目外的节点）时写默认插槽。
  */
 function renderDefaultTree(
   collection: readonly ListboxNodeMeta[],

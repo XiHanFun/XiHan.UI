@@ -23,43 +23,43 @@ const STRING_CONVERTER = { fromAttribute: (v: string | null) => v ?? undefined }
 const BOOLEAN_CONVERTER = { fromAttribute: (v: string | null) => (v === null ? undefined : v !== 'false') }
 
 /**
- * `<xh-listbox>` —— Light-DOM 行为宿主：作者写 root/label/content 与若干 item 角色节点，
- * 元素跑 listbox 机器并把 connect 产出打上去。条目身份取自条目节点上的 value 属性，
- * 禁用由条目自报 aria-disabled（集合条目一律如此，原生 disabled 不可聚焦、也不派 click）。
+ * `<xh-listbox>`：Light-DOM 行为宿主：作者写 root / label / content 与若干 item 角色节点，
+ * 元素运行 listbox 状态机并把 connect 产出接上。条目身份取自条目节点上的 value 属性，
+ * 禁用由条目声明 aria-disabled（集合条目一律如此，原生 disabled 不可聚焦、也不派发 click）。
  * 分组同样用 value 属性声明身份，分组标题的 id 由它派生。
  *
- * 导航与选中在事件那一刻按 data-scope+data-part 查活 DOM，依赖 connect 回写的 data-value，
- * 因此 wire 必须先于交互跑过（基类 updated 已保证）。
+ * 导航与选中在事件发生时按 data-scope + data-part 查询 DOM，依赖 connect 回写的 data-value，
+ * 因此 wire 必须先于交互运行（基类 updated 已保证）。
  *
- * 选中值是集合：单选可以直接写 value="apple" 属性，多选只能走 property（`el.value = ['a','b']`），
- * 属性表达不了数组。
+ * 选中值是集合：单选可以直接写 value="apple" 属性，多选只能通过 property 设置（`el.value = ['a','b']`），
+ * 属性无法表达数组。
  *
- * 条目的禁用也可以交给数据：`el.collection = [{ value, label, disabled }]`，此时条目部件只需自报 value。
+ * 条目的禁用也可以交给数据：`el.collection = [{ value, label, disabled }]`，此时条目部件只需声明 value。
  *
  * @customElement xh-listbox
- * @attr {string} value - 受控选中值（单选简写）；缺省该属性即非受控，多选请用 property
+ * @attr {string} value - 受控选中值（单选简写）；未提供该属性即非受控，多选通过 property 设置
  * @attr {string} default-value - 非受控初始选中值
  * @attr {'single'|'multiple'|'extended'} selection-mode - 选择模式，默认 single
- * @attr {boolean} disabled - 整列禁用：条目全转 aria-disabled，键盘与点击都改不了选中值
- * @attr {boolean} read-only - 只读：条目照常浏览与聚焦，但选中值改不动
+ * @attr {boolean} disabled - 整列禁用：条目全部为 aria-disabled，键盘与点击都不能修改选中值
+ * @attr {boolean} read-only - 只读：条目照常浏览与聚焦，但选中值不可修改
  * @attr {boolean} invalid - 校验失败标注
- * @attr {boolean} loading - 条目还在取：列表报 aria-busy，在途占位顶上来、空态占位让位
+ * @attr {boolean} loading - 条目加载中：列表报告 aria-busy，显示在途占位、隐藏空态占位
  * @attr {'brand'|'neutral'|'success'|'warning'|'danger'|'info'} tone - 语气
  * @attr {'sm'|'md'|'lg'} size - 尺寸
- * @attr {boolean} loop - 方向键走到尽头回绕，默认 true；写 loop="false" 关掉
+ * @attr {boolean} loop - 方向键到达末尾回绕，默认 true；写 loop="false" 关闭
  * @attr {'ltr'|'rtl'} dir - 文字方向，只改写左右方向键语义，默认 ltr
  * @attr {'horizontal'|'vertical'} orientation - 方向键轴向，默认 vertical
- * @attr {boolean} typeahead - 连打检索，默认开；写 typeahead="false" 关掉
+ * @attr {boolean} typeahead - 连打检索，默认开启；写 typeahead="false" 关闭
  * @fires value-change - 选中集合变化；detail 为 `{ value: string[] }`
- * @csspart root - 组件根容器（承载 data-orientation/data-disabled）
+ * @csspart root - 组件根容器（承载 data-orientation / data-disabled）
  * @csspart label - 列表标题（aria-labelledby 目标）
  * @csspart content - role=listbox 容器，键盘在此收口，也是 roving tabindex 的兜底位
  * @csspart item - role=option 条目，须自带 value 属性标识身份；禁用写 aria-disabled="true"
- * @csspart item-text - 条目文本（连打检索的取字处）
+ * @csspart item-text - 条目文本（连打检索的取字来源）
  * @csspart item-indicator - 条目选中标记（aria-hidden）
- * @csspart empty - 空态占位，须放在 root 里当 content 的兄弟；给了 collection 时由元素按条数收放，条目手写时归作者
- * @csspart loading - 在途占位，与空态占位同一个位置，取数期间顶上来
- * @csspart load-more-trigger - 取下一页的按钮，点了做什么归作者；取数在途与整列禁用两档自动停用
+ * @csspart empty - 空态占位，须放在 root 中作为 content 的兄弟；提供 collection 时由元素按条数收放，条目手写时由作者负责
+ * @csspart loading - 在途占位，与空态占位同一位置，加载期间显示
+ * @csspart load-more-trigger - 取下一页的按钮，点击后的行为由作者决定；取数在途与整列禁用两档自动停用
  * @csspart group - role=group 分组容器，须自带 value 属性标识身份
  * @csspart group-label - 分组标题（本组 aria-labelledby 的目标）
  */
@@ -106,7 +106,7 @@ export class XhListboxElement extends XhElement {
   // 整列禁用期间的条目自身声明快照。connect 每帧都把 aria-disabled 写回条目，整列禁用更是写满每一个，
   // 此时回读分不清「作者声明的」还是「自己上一帧写的」，解禁后条目就永远解不开。
   private readonly declaredDisabled = new WeakMap<HTMLElement, boolean>()
-  /** 上一帧是否整列禁用：解禁当帧 DOM 上还留着机器写回的 aria-disabled，读不得。 */
+  /** 上一帧是否整列禁用：解禁当帧 DOM 上仍保留着状态机写回的 aria-disabled，不可读取。 */
   private wasListDisabled = false
   private inheritedControl: FormControlState | undefined
 

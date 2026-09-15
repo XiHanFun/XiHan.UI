@@ -21,7 +21,7 @@ export const listboxKeyboard: KeyboardTable = {
     { id: 'listbox.kbd.last', keys: ['End'], when: 'focus in listbox', does: '焦点移到末个可停留条目' },
     { id: 'listbox.kbd.select', keys: ['Enter', 'Space'], when: 'focus on item, selectionMode 为 single 或 extended', does: '只选中焦点条目，替换原有选中；条目自报禁用则不认' },
     { id: 'listbox.kbd.toggle', keys: ['Space', 'Enter', 'Ctrl+Space'], when: 'focus on item, 可多选（multiple；extended 下须按住 Ctrl/Cmd）', does: '切换焦点条目的选中态，其余选中不动' },
-    { id: 'listbox.kbd.extend', keys: ['Shift+ArrowDown', 'Shift+ArrowUp'], when: 'focus in listbox, 可多选', does: '焦点移到相邻条目并切换它的选中态；往回走即把刚扩进来的那个摘掉' },
+    { id: 'listbox.kbd.extend', keys: ['Shift+ArrowDown', 'Shift+ArrowUp'], when: 'focus in listbox, 可多选', does: '焦点移到相邻条目并切换它的选中态；反向移动即取消刚扩展进来的条目' },
     { id: 'listbox.kbd.select-all', keys: ['Ctrl+A', 'Cmd+A'], when: 'focus in listbox, 可多选', does: '选中全部可选条目；已经全选则把它们一并取消（禁用但已选中的不动）' },
     { id: 'listbox.kbd.typeahead', keys: ['单个可打印字符'], when: 'focus in listbox, typeahead 未关', does: '连打检索把焦点移到首字母匹配的条目，不改选中值' },
   ],
