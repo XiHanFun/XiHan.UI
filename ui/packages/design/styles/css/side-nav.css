@@ -253,7 +253,7 @@
     max-inline-size: min(var(--xh-side-nav-popout-max-w, var(--xh-overlay-max-w)), var(--xh-_side-nav-available-w));
     padding: var(--xh-side-nav-popout-p, var(--xh-space-1));
     border: var(--xh-stroke-thin) solid var(--xh-side-nav-popout-border, var(--xh-border-default));
-    border-radius: var(--xh-side-nav-popout-radius, var(--xh-shape-surface));
+    border-radius: var(--xh-side-nav-popout-radius, var(--xh-shape-overlay));
     background: var(--xh-side-nav-popout-bg, var(--xh-bg-surface));
     box-shadow: var(--xh-side-nav-popout-shadow, var(--xh-elevation-floating));
 

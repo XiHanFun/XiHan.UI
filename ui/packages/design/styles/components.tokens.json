@@ -50690,7 +50690,7 @@
         "popout"
       ],
       "defaultToken": [
-        "--xh-shape-surface"
+        "--xh-shape-overlay"
       ],
       "visibility": "public",
       "description": "side-nav 的 branch-content 部件 border-radius 覆盖槽。"
