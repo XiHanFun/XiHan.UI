@@ -42,9 +42,9 @@ import { useTable } from './use-table'
 
 type TableProps = TableSchema['props']
 
-/** 服务端没有提交这一步，layout effect 换成永不执行的 useEffect，避开 React 的警告。 */
+/** 服务端没有提交这一步，layout effect 替换为永不执行的 useEffect，避开 React 的警告。 */
 
-/** 本行持有焦点时，value 变更重报焦点行，卸载时上报表体失焦。 */
+/** 本行持有焦点时，value 变更重新报告焦点行，卸载时上报表体失焦。 */
 function useRowFocusReport(
   service: Service<TableSchema>,
   el: RefObject<HTMLElement | null>,
@@ -106,8 +106,8 @@ export type TableRootSlotProps = Pick<
 >
 
 /**
- * 工具条插槽的载荷：对**整张表**下手的那几样——列设置、排序链与整表状态。
- * 逐行的东西（可见行、行号、逐行查询）不在其中：工具条摆在表外，够不着某一行。
+ * 工具条插槽的载荷：作用于整张表的项：列设置、排序链与整表状态。
+ * 逐行的内容（可见行、行号、逐行查询）不在其中：工具条放在表外，无法触及某一行。
  */
 export type TableToolbarSlotProps = Pick<
   TableApi,
@@ -127,7 +127,7 @@ export type TableToolbarSlotProps = Pick<
   | 'loading'
 >
 
-/** 根上自有的那些取值；dir 与原生的同名属性含义不同，由这里接管。 */
+/** 根上自有的取值；dir 与原生的同名属性含义不同，由这里接管。 */
 type RootElementProps = Omit<ComponentPropsWithRef<'div'>, 'children' | 'dir'>
 
 export interface XhTableRootProps extends RootElementProps {
@@ -138,12 +138,12 @@ export interface XhTableRootProps extends RootElementProps {
   selection?: TableSelection
   defaultSelection?: TableSelection
   selectionMode?: TableSelectionMode
-  /** 要哪几列前缀列（序号 / 多选 / 展开），按给定顺序插在最前面并占住列号。 */
+  /** 需要哪几列前缀列（序号 / 多选 / 展开），按给定顺序插入最前面并占用列号。 */
   prefixColumns?: TableColumnKind[]
   /** 列偏好：给定即受控。持久化归使用者，库只负责把它算进生效列。 */
   columnPreference?: TableColumnPreference
   defaultColumnPreference?: TableColumnPreference
-  /** 当前页码与每页条数：只用来算序号，不参与切片。 */
+  /** 当前页码与每页条数：只用于计算序号，不参与切片。 */
   page?: number
   pageSize?: number
   expandedValue?: string[]
@@ -155,9 +155,9 @@ export interface XhTableRootProps extends RootElementProps {
   borderless?: boolean
   ruled?: boolean
   footer?: boolean
-  /** 行可以拖着换位。整行都是拖动源，不另出把手。 */
+  /** 行可以拖动换位。整行都是拖动源，不另设把手。 */
   rowReorderable?: boolean
-  /** 这一次搬家许不许。收到的是折算好的落点（搬到哪个父下面的第几位）。不给即都许。 */
+  /** 本次移动是否允许。收到的是折算后的落点（移动到哪个父节点下的第几位）。未提供时全部允许。 */
   allowRowDrop?: TableProps['allowRowDrop']
   loop?: boolean
   dir?: Direction
@@ -167,11 +167,11 @@ export interface XhTableRootProps extends RootElementProps {
   onSortChange?: TableProps['onSortChange']
   onSelectionChange?: TableProps['onSelectionChange']
   onExpandedValueChange?: TableProps['onExpandedValueChange']
-  /** 行换位是通知，行序与父子归属的真源在使用者的数据里。 */
+  /** 行换位是通知，行序与父子归属的真源在使用者的数据中。 */
   onRowMove?: TableProps['onRowMove']
   /**
-   * 工具条槽：搜索、筛选、密度与列设置这些对整张表下手的控件写在这儿。
-   * 它渲成 root 的兄弟排在表前——root 是 grid 系角色，子节点只能是 row 与 rowgroup。
+   * 工具条槽：搜索、筛选、密度与列设置等作用于整张表的控件写在这里。
+   * 它渲染为 root 的兄弟排在表前：root 是 grid 系角色，子节点只能是 row 与 rowgroup。
    */
   toolbar?: SlotChildren<TableToolbarSlotProps>
   children?: SlotChildren<TableRootSlotProps>
@@ -316,9 +316,9 @@ XhTableRoot.xhEvents = [
 
 export interface XhTableToolbarProps extends ComponentPropsWithRef<'div'> {}
 /**
- * 工具条：搜索、筛选、密度与列设置这些对整张表下手的控件摆在这儿。
- * 写在 XhTableRoot 的 toolbar 槽里——它渲成 root 的兄弟，不进 role=grid 的子节点。
- * 不带 role：要方向键 roving 就往里放一个 XhToolbarRoot。
+ * 工具条：搜索、筛选、密度与列设置等作用于整张表的控件放在这里。
+ * 写在 XhTableRoot 的 toolbar 槽中：它渲染为 root 的兄弟，不进入 role=grid 的子节点。
+ * 不带 role：需要方向键 roving 时在其中放置一个 XhToolbarRoot。
  */
 export function XhTableToolbar({ children, ...rest }: XhTableToolbarProps): ReactNode {
   const ctx = useTableContext()
@@ -326,19 +326,19 @@ export function XhTableToolbar({ children, ...rest }: XhTableToolbarProps): Reac
 }
 
 export interface XhTableColumnListProps extends ComponentPropsWithRef<'div'> {}
-/** 列设置区：一列一行，渲什么照根槽载荷里的 columnSettings 走。 */
+/** 列设置区：一列一行，渲染内容按根槽载荷中的 columnSettings 决定。 */
 export function XhTableColumnList({ children, ...rest }: XhTableColumnListProps): ReactNode {
   const ctx = useTableContext()
   return <div {...mergeReactProps(ctx.api.getColumnListProps() as Record<string, unknown>, rest as Record<string, unknown>)}>{children}</div>
 }
 
 export interface XhTableColumnVisibilityTriggerProps extends Omit<ComponentPropsWithRef<'span'>, 'value'> {
-  /** 列 id。写在列设置区里必给；写在列标题里可省，跟着那一列走。 */
+  /** 列 id。写在列设置区中时必须提供；写在列标题中时可省略，跟随该列。 */
   value?: string
 }
 /**
- * 一列的显隐把手（复选形态，勾着＝这一列显示着）。
- * 列身份优先取自己的 value；不给就跟着所在的列标题走（表头里的那一路）。
+ * 一列的显隐控件（复选形态，勾选表示该列显示）。
+ * 列身份优先取自己的 value；未提供时跟随所在的列标题（表头中的路径）。
  */
 export function XhTableColumnVisibilityTrigger({ value, children, ...rest }: XhTableColumnVisibilityTriggerProps): ReactNode {
   const ctx = useTableContext()
@@ -392,13 +392,13 @@ export function XhTableFooter({ children, ...rest }: XhTableFooterProps): ReactN
 }
 
 export interface XhTableRowProps extends Omit<ComponentPropsWithRef<'div'>, 'value'> {
-  /** 行 id：数据行必给，表头行与脚注行省略。 */
+  /** 行 id：数据行必须提供，表头行与脚注行省略。 */
   value?: string
 }
 
 /**
- * 一行。表头行与脚注行不带身份、不进导航，数据行要报焦点与拖动，两条路的 hook 数不一样——
- * React 的 hook 不能按条件调，所以拆成两个组件，由挂载那一刻的区段冻住选择。
+ * 一行。表头行与脚注行不带身份、不进入导航，数据行要报告焦点与拖动，两条路径的 hook 数不同：
+ * React 的 hook 不能按条件调用，因此拆为两个组件，由挂载时的区段固定选择。
  */
 export function XhTableRow(props: XhTableRowProps): ReactNode {
   const section = useTableSection()
@@ -406,14 +406,14 @@ export function XhTableRow(props: XhTableRowProps): ReactNode {
   return frozen === 'body' ? <TableDataRow {...props} /> : <TableSectionRow {...props} section={frozen} />
 }
 
-/** 表头行与脚注行：不认领 Tab 位、不报行身份。 */
+/** 表头行与脚注行：不认领 Tab 位、不报告行身份。 */
 function TableSectionRow({ section, value: _value, children, ...rest }: XhTableRowProps & { section: TableSection }): ReactNode {
   const ctx = useTableContext()
   const attrs = (section === 'header' ? ctx.api.getHeaderRowProps() : ctx.api.getFooterRowProps()) as Record<string, unknown>
   return <div {...mergeReactProps(attrs, rest as Record<string, unknown>)}>{children}</div>
 }
 
-/** 数据行：行身份供行内的把手与单元格读取，焦点落点如实上报给机器。 */
+/** 数据行：行身份供行内的操作按钮与单元格读取，焦点落点如实上报给状态机。 */
 function TableDataRow({ value, children, ...rest }: XhTableRowProps): ReactNode {
   const ctx = useTableContext()
   const row = useMemo(() => ({ value: value ?? '' }), [value])
@@ -455,7 +455,7 @@ export function XhTableColumnHeader({ value, children, ...rest }: XhTableColumnH
 export interface XhTableCellProps extends Omit<ComponentPropsWithRef<'div'>, 'value'> {
   /** 列 id。 */
   value: string
-  /** 跨列数，从 value 那一列往后算。 */
+  /** 跨列数，从 value 所在列向后计算。 */
   colspan?: number | string
 }
 export function XhTableCell({ value, colspan, children, ...rest }: XhTableCellProps): ReactNode {
@@ -491,7 +491,7 @@ export function XhTableSortTrigger({ children, ...rest }: XhTableSortTriggerProp
 }
 
 export interface XhTableColumnResizeTriggerProps extends ComponentPropsWithRef<'span'> {}
-/** 列宽把手。放在表头格里，只有 resizable 的列渲它。 */
+/** 列宽把手。放在表头格中，只有 resizable 的列渲染它。 */
 export function XhTableColumnResizeTrigger({ children, ...rest }: XhTableColumnResizeTriggerProps): ReactNode {
   const ctx = useTableContext()
   const column = useTableColumnContext()
@@ -499,7 +499,7 @@ export function XhTableColumnResizeTrigger({ children, ...rest }: XhTableColumnR
 }
 
 export interface XhTableColumnDragTriggerProps extends ComponentPropsWithRef<'span'> {}
-/** 列拖拽把手。放在表头格里，只有可拖的列渲它。 */
+/** 列拖拽把手。放在表头格中，只有可拖动的列渲染它。 */
 export function XhTableColumnDragTrigger({ children, ...rest }: XhTableColumnDragTriggerProps): ReactNode {
   const ctx = useTableContext()
   const column = useTableColumnContext()
@@ -508,10 +508,10 @@ export function XhTableColumnDragTrigger({ children, ...rest }: XhTableColumnDra
 
 export interface XhTableRowDragTriggerProps extends ComponentPropsWithRef<'span'> {}
 /**
- * 行拖拽把手。放在数据行里，自带 touch-action: none，按下即拖，不等激活距离。
+ * 行拖拽把手。放在数据行中，自带 touch-action: none，按下即拖动，不等待激活距离。
  * 对读屏隐藏、也不占 Tab 位；键盘换位由表体上的 Alt + 上下键承担，
- * 树形表下另有 Alt + 左右键改缩进层级。
- * 整行起手那一路照旧可用，把手是叠加的第二个入口。
+ * 树形表下另有 Alt + 左右键改变缩进层级。
+ * 整行拖动的路径照常可用，把手是叠加的第二个入口。
  */
 export function XhTableRowDragTrigger({ children, ...rest }: XhTableRowDragTriggerProps): ReactNode {
   const ctx = useTableContext()
@@ -554,7 +554,7 @@ export function XhTableLoading({ children, ...rest }: XhTableLoadingProps): Reac
 }
 
 export interface XhTableLoadMoreTriggerProps extends ComponentPropsWithRef<'button'> {}
-/** 取下一页的入口：摆在表尾，点了做什么归作者。 */
+/** 取下一页的入口：放在表尾，点击后的行为归作者。 */
 export function XhTableLoadMoreTrigger({ children, ...rest }: XhTableLoadMoreTriggerProps): ReactNode {
   const ctx = useTableContext()
   return (

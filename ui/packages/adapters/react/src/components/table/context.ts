@@ -9,7 +9,7 @@ import type { TableColumnProps, TableRowProps } from '@xihan-ui/headless'
 import type { TableContext } from './use-table'
 import { createContext, useContext } from 'react'
 
-/** 行所在的区段，决定同一个 row 部件渲染成表头行、数据行还是脚注行。 */
+/** 行所在的区段，决定同一个 row 部件渲染为表头行、数据行还是脚注行。 */
 export type TableSection = 'body' | 'footer' | 'header'
 
 const Ctx = createContext<TableContext | undefined>(undefined)
@@ -53,7 +53,7 @@ export function useTableColumnContext(): TableColumnProps {
   return column
 }
 
-/** 取列上下文，列设置区里的把手不在列标题内时返回 undefined，列身份改由自己的 value 声明。 */
+/** 取列上下文，列设置区中的操作按钮不在列标题内时返回 undefined，列身份改由自己的 value 声明。 */
 export function useOptionalTableColumnContext(): TableColumnProps | undefined {
   return useContext(ColumnCtx)
 }

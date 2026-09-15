@@ -36,7 +36,7 @@ const NUMBER_CONVERTER = { fromAttribute: (v: string | null) => (v == null || v 
 // 三态布尔：缺席=undefined（走缺省）、在场=true、显式写 "false"=false。
 const BOOLEAN_CONVERTER = { fromAttribute: (v: string | null) => (v === null ? undefined : v !== 'false') }
 
-/** 行换位事件的 detail：从机器 props 上的回调取，不在适配器里另抄一份类型。 */
+/** 行换位事件的 detail：从状态机 props 上的回调取，不在适配器中另抄一份类型。 */
 type TableRowMoveDetails = Parameters<NonNullable<TableSchema['props']['onRowMove']>>[0]
 
 /** 行系部件的归属容器：行内的把手与单元格向上找最近的那一行。 */
@@ -47,50 +47,50 @@ const HEADER_SELECTOR = '[data-xh-part="header"]'
 const FOOTER_SELECTOR = '[data-xh-part="footer"]'
 
 /**
- * `<xh-table>` —— Light-DOM 行为宿主：作者写 root/caption/header/body/footer 与若干
- * row / column-header / cell 角色节点，元素跑 table 机器并把 connect 产出打上去。
+ * `<xh-table>`：Light-DOM 行为宿主：作者写 root / caption / header / body / footer 与若干
+ * row / column-header / cell 角色节点，元素运行 table 状态机并把 connect 产出接上。
  * 身份取自节点上的 value 属性：行系部件上是行 id，列系部件上是列 id。
  *
- * 行号（aria-rowindex / aria-rowcount）与列号（aria-colindex / aria-colcount）查 `rows` 与
- * `columns` 两份定义，不从 DOM 反推，故两份定义必须与标记同源。
+ * 行号（aria-rowindex / aria-rowcount）与列号（aria-colindex / aria-colcount）查询 `rows` 与
+ * `columns` 两份定义，不从 DOM 反推，因此两份定义必须与标记同源。
  *
- * 同一个 row 部件写在 header / body / footer 里语义不同（表头行、数据行、脚注行），
- * 元素按祖先链现查区段，作者无需换用别的部件名。
+ * 同一个 row 部件写在 header / body / footer 中语义不同（表头行、数据行、脚注行），
+ * 元素按祖先链查询区段，作者无需换用其他部件名。
  *
- * 两份定义与三个集合都是数组/对象，只走 property（`el.rows = [...]`）；
+ * 两份定义与三个集合都是数组 / 对象，只能通过 property 设置（`el.rows = [...]`）；
  * 落点校验 `allowRowDrop`（函数）同理。
  *
- * 打开 row-reorderable 后行可以拖着换位：整行都是拖动源。落点画在参照行上——
- * data-drop 为 before/after 是插在这一行前后；rows 带 parentId 的树形表另有 inside，
- * 是放进这一行底下，只有可展开或已经有孩子的行给这一档。触屏那一路走 row-drag-trigger 把手。
- * 键盘走 Alt + 方向键：上下在同层挪一位，左右在树形表下改缩进层级（rtl 下左右对调）。
+ * 开启 row-reorderable 后行可以拖动换位：整行都是拖动源。落点绘制在参照行上：
+ * data-drop 为 before / after 是插在该行前后；rows 带 parentId 的树形表另有 inside，
+ * 是放进该行下方，只有可展开或已有子行的行提供该档。触屏路径经 row-drag-trigger 把手。
+ * 键盘使用 Alt + 方向键：上下在同层移动一位，左右在树形表下改变缩进层级（rtl 下左右对调）。
  *
  * @customElement xh-table
- * @attr {'none'|'single'|'multiple'} selection-mode - 选择模式，默认 none（不声明就没有选择这回事）
- * @attr {boolean} loading - 数据在路上：root 报 aria-busy，表体为空时加载态节点显形
- * @attr {boolean} empty - 显式声明表体为空；缺省按 rows 是否为空推导，写 empty="false" 强制不空
- * @attr {boolean} sticky-header - 表头吸顶，只落 data-fixed（布尔）；列冻结另走 data-frozen
+ * @attr {'none'|'single'|'multiple'} selection-mode - 选择模式，默认 none（未声明则没有选择机制）
+ * @attr {boolean} loading - 数据加载中：root 报告 aria-busy，表体为空时加载态节点显示
+ * @attr {boolean} empty - 显式声明表体为空；未提供时按 rows 是否为空推导，写 empty="false" 强制不为空
+ * @attr {boolean} sticky-header - 表头吸顶，只写 data-fixed（布尔）；列冻结使用 data-frozen
  * @attr {boolean} striped - 斑马纹：表体偶数行换一层浅底
- * @attr {boolean} borderless - 去掉外框，只留行间横线
+ * @attr {boolean} borderless - 去掉外框，只保留行间横线
  * @attr {boolean} ruled - 列与列之间加竖分隔线
- * @attr {boolean} footer - 表格带脚注行：行号空间的最后一行留给它，aria-rowcount 也算上
- * @attr {boolean} row-reorderable - 行可以拖着换位：整行都是拖动源；触屏那一路走 row-drag-trigger 把手
- * @attr {boolean} loop - 上下键走到首尾回绕，默认关；写 loop="true" 打开
- * @attr {'ltr'|'rtl'} dir - 文字方向，只对调左右方向键的展开/收起语义，默认 ltr
- * @attr {'sm'|'md'|'lg'} size - 密度：只换单元格的纵向内边距与字号，列宽不受影响
+ * @attr {boolean} footer - 表格带脚注行：行号空间的最后一行留给它，aria-rowcount 也计入
+ * @attr {boolean} row-reorderable - 行可以拖动换位：整行都是拖动源；触屏路径经 row-drag-trigger 把手
+ * @attr {boolean} loop - 上下键到达首尾回绕，默认关闭；写 loop="true" 开启
+ * @attr {'ltr'|'rtl'} dir - 文字方向，只对调左右方向键的展开 / 收起语义，默认 ltr
+ * @attr {'sm'|'md'|'lg'} size - 密度：只影响单元格的纵向内边距与字号，列宽不受影响
  * @fires sort-change - 排序链变化；detail 为 `{ value: { id, direction }[] }`
  * @fires column-preference-change - 列偏好变化；detail 为 `{ value: TableColumnPreference }`
- * @prop {TableColumnPreference} columnPreference - 列偏好（显隐/顺序/宽/冻结），给定即受控
- * @prop {TableColumnKind[]} prefixColumns - 要哪几列前缀列，按给定顺序插在最前面
+ * @prop {TableColumnPreference} columnPreference - 列偏好（显隐 / 顺序 / 宽度 / 冻结），提供即受控
+ * @prop {TableColumnKind[]} prefixColumns - 需要的前缀列，按给定顺序插在最前面
  * @fires selection-change - 选中集合变化；detail 为 `{ value: string[] | 'all' }`
  * @fires expanded-value-change - 展开集合变化；detail 为 `{ value: string[] }`
- * @fires row-move - 行换了位置；detail 为 `{ id, parent, index, ids }`，parent 为 null 即根层，index 是在那一层的落位（已算过先摘后插），ids 是重排好的整份行序
- * @prop {(move: TableRowMoveDetails) => boolean} allowRowDrop - 这一次搬家许不许，收到的是折算好的落点；不给即都许
- * @csspart root - role=grid 容器（rows 里有可展开的行时为 treegrid），报行列总数与多选声明
+ * @fires row-move - 行换位；detail 为 `{ id, parent, index, ids }`，parent 为 null 即根层，index 是在该层的落位（已经过先移除后插入的修正），ids 是重排后的整份行序
+ * @prop {(move: TableRowMoveDetails) => boolean} allowRowDrop - 本次移动是否允许，收到的是折算后的落点；未提供时全部允许
+ * @csspart root - role=grid 容器（rows 中有可展开的行时为 treegrid），报告行列总数与多选声明
  * @csspart caption - 表格标题（aria-labelledby 目标）
- * @csspart toolbar - 工具条：搜索、筛选、密度与列设置这些对整张表下手的控件摆在这儿；须写在 root 之外（root 是 role=grid），不带 role，要方向键 roving 就往里放一个 xh-toolbar
- * @csspart column-list - 列设置区（role=group），一列一行；渲什么照 columnSettings 走，藏起来的列也在其中
- * @csspart column-visibility-trigger - 一列的显隐把手（role=checkbox，勾着＝这一列显示着），须自带 value 属性标识列身份；只剩最后一列显示着时转 aria-disabled
+ * @csspart toolbar - 工具条：搜索、筛选、密度与列设置这些作用于整张表的控件放置在此；须写在 root 之外（root 是 role=grid），不带 role，需要方向键 roving 时向其中放置一个 xh-toolbar
+ * @csspart column-list - 列设置区（role=group），一列一行；渲染内容按 columnSettings，隐藏的列也在其中
+ * @csspart column-visibility-trigger - 一列的显隐把手（role=checkbox，勾选 = 该列显示），须自带 value 属性标识列身份；只剩最后一列显示时为 aria-disabled
  * @csspart header - role=rowgroup 表头区
  * @csspart body - role=rowgroup 表体区，键盘在此收口，也是行级 roving 的兜底 Tab 位
  * @csspart footer - role=rowgroup 脚注区
@@ -98,17 +98,17 @@ const FOOTER_SELECTOR = '[data-xh-part="footer"]'
  * @csspart column-header - role=columnheader，须自带 value 属性标识列身份；承载 aria-sort
  * @csspart cell - role=gridcell，须自带 value 属性标识列身份；可写 colspan 属性声明跨列数
  * @csspart select-all-trigger - 全选把手，三态（aria-checked 半选为 mixed），自占一个 Tab 位
- * @csspart row-select-trigger - 行选择把手（aria-hidden 且不占 Tab 位，键盘那一路由 Space 承担）
- * @csspart sort-trigger - 排序把手，自占一个 Tab 位；按住 Shift 点是追加到排序链
- * @csspart column-resize-trigger - 列宽把手，自占一个 Tab 位；方向键改一步、按住 Shift 是大步
- * @csspart column-drag-trigger - 列拖拽把手，自占一个 Tab 位；方向键移一位、Home/End 移到可拖区段首末
- * @csspart row-drag-trigger - 行拖拽把手，触屏那一路的入口（自带 touch-action: none，按下即拖）；对读屏隐藏且不占 Tab 位，键盘那一路由表体上的 Alt + 方向键承担
+ * @csspart row-select-trigger - 行选择把手（aria-hidden 且不占 Tab 位，键盘路径由 Space 承担）
+ * @csspart sort-trigger - 排序把手，自占一个 Tab 位；按住 Shift 点击是追加到排序链
+ * @csspart column-resize-trigger - 列宽把手，自占一个 Tab 位；方向键调整一步、按住 Shift 是大步
+ * @csspart column-drag-trigger - 列拖拽把手，自占一个 Tab 位；方向键移动一位、Home / End 移到可拖动区段首末
+ * @csspart row-drag-trigger - 行拖拽把手，触屏路径的入口（自带 touch-action: none，按下即拖动）；对读屏隐藏且不占 Tab 位，键盘路径由表体上的 Alt + 方向键承担
  * @csspart live-region - 视觉隐藏的播报区，列拖拽过程的读屏文案写在这里；须写在 root 之外（root 是 role=grid，它的子节点只能是 row 与 rowgroup）
- * @csspart expand-trigger - 展开把手（aria-hidden 且不占 Tab 位，键盘那一路由左右方向键承担）
- * @csspart expanded-row - role=row 详情行，须自带 value 属性与它所属的数据行配对，内部须放一个 cell 承载详情；收起时 data-state=closed
- * @csspart empty - 空态节点，表体为空且不在加载时显形
- * @csspart loading - 加载态节点，表体为空且正在加载时显形
- * @csspart load-more-trigger - 取下一页的按钮，摆在表尾；点了做什么归作者，取数在途时自动停用
+ * @csspart expand-trigger - 展开把手（aria-hidden 且不占 Tab 位，键盘路径由左右方向键承担）
+ * @csspart expanded-row - role=row 详情行，须自带 value 属性与所属的数据行配对，内部须放一个 cell 承载详情；收起时 data-state=closed
+ * @csspart empty - 空态节点，表体为空且不在加载时显示
+ * @csspart loading - 加载态节点，表体为空且正在加载时显示
+ * @csspart load-more-trigger - 取下一页的按钮，放在表尾；点击后的行为由作者决定，取数在途时自动停用
  */
 export class XhTableElement extends XhElement {
   static override partContract = { anatomy: tableAnatomy, meta: tableMeta }
@@ -239,7 +239,7 @@ export class XhTableElement extends XhElement {
     }
   }
 
-  /** 命令式入口共用的取法；机器要到进文档（hostConnected）才建，未建则抛。 */
+  /** 命令式入口共用的取法；状态机在进入文档（hostConnected）后才建立，未建立则抛错。 */
   private commands(): TableApi {
     if (!this.ctrl.service)
       throw new Error('[xh] <xh-table> 还没进文档，命令式接口此时不可用')
@@ -247,19 +247,19 @@ export class XhTableElement extends XhElement {
   }
 
   /**
-   * 列设置区照它渲：作者定义的那些列，按偏好排过序，藏起来的也在其中。
-   * 生效列滤掉了藏起来的那些，而设置区正是把它们放回来的地方。
+   * 列设置区据此渲染：作者定义的列按偏好排序，隐藏的列也包含在内。
+   * 生效列已滤除隐藏的列，设置区正是恢复它们的位置。
    */
   get columnSettings(): readonly TableColumnSetting[] {
     return this.commands().columnSettings
   }
 
-  /** 改一列的冻结档。false 是不冻结，true 等于 'start'。 */
+  /** 修改一列的冻结档。false 是不冻结，true 等于 'start'。 */
   setColumnSticky(columnId: string, sticky: boolean | 'start' | 'end'): void {
     this.commands().setColumnSticky(columnId, sticky)
   }
 
-  /** 承载焦点的行被移出 DOM 时上报 TABLE.BLUR，让机器重挑焦点锚点。 */
+  /** 承载焦点的行被移出 DOM 时上报 TABLE.BLUR，让状态机重新选择焦点锚点。 */
   protected override onPartsReleased(nodes: readonly HTMLElement[]): void {
     const { context, getStatus, send } = this.ctrl.service
     // 机器已停机则跳过
@@ -274,8 +274,8 @@ export class XhTableElement extends XhElement {
   }
 
   /**
-   * 取角色节点自报的身份：行系部件上是行 id，列系部件上是列 id。
-   * 行内的把手与装饰节点向上找本宿主内最近的容器，没有则读节点自身。
+   * 取角色节点声明的身份：行系部件上是行 id，列系部件上是列 id。
+   * 行内的操作按钮与装饰节点向上查找本宿主内最近的容器，没有则读取节点自身。
    */
   private identityOf(el: HTMLElement, selector: string): string {
     const owner = el.closest<HTMLElement>(selector)
@@ -292,8 +292,8 @@ export class XhTableElement extends XhElement {
   }
 
   /**
-   * 播报区节点。第一次用时建出来挂在元素末尾，之后一直复用——
-   * 读屏不播报后插入的节点，等到拾起才建等于没有。
+   * 播报区节点。第一次使用时建立并挂在元素末尾，之后一直复用：
+   * 读屏不播报后插入的节点，等到拾起才建立等于没有。
    */
   private ensureLiveRegion(): HTMLElement {
     const existing = this.querySelector<HTMLElement>(`:scope > [data-xh-part="live-region"]`)

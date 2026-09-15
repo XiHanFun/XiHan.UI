@@ -10,15 +10,15 @@ import type { ComputedRef, InjectionKey } from 'vue'
 import type { TableContext } from './use-table'
 import { inject, provide } from 'vue'
 
-/** 行所在的区段，决定同一个 row 部件渲染成表头行、数据行还是脚注行。 */
+/** 行所在的区段，决定同一个 row 部件渲染为表头行、数据行还是脚注行。 */
 export type TableSection = 'header' | 'body' | 'footer'
 
-/** 行自报的值，供行内的把手与单元格复用同一份声明。 */
+/** 行声明的值，供行内的操作按钮与单元格复用同一份声明。 */
 export interface TableRowContext {
   row: ComputedRef<TableRowProps>
 }
 
-/** 列自报的值，供列标题里的排序把手复用同一份声明。 */
+/** 列声明的值，供列标题中的排序按钮复用同一份声明。 */
 export interface TableColumnContext {
   column: ComputedRef<TableColumnProps>
 }
@@ -75,7 +75,7 @@ export function useTableColumnContext(): TableColumnContext {
   return ctx
 }
 
-/** 注入列上下文，列设置区里的把手不在列标题内时返回 null，列身份改由自己的 value 声明。 */
+/** 注入列上下文，列设置区中的操作按钮不在列标题内时返回 null，列身份改由自己的 value 声明。 */
 export function useOptionalTableColumnContext(): TableColumnContext | null {
   return inject(COLUMN_KEY, null)
 }

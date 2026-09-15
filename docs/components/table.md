@@ -213,34 +213,34 @@ prefix-columns 让库把序号/多选列插在最前面并占住列号；序号�
 
 | 属性 | 类型 | 必填 | 说明 |
 | --- | --- | --- | --- |
-| `columns` | `TableColumnDef[]` |  | 列定义，列号与列总数的唯一事实源。缺省为空表。 |
-| `rows` | `TableRowDef[]` |  | 行定义，行序与行号的唯一事实源。缺省为空表。 |
-| `sort` | `TableSortDescriptor[]` |  | 排序链。给定即受控：cell 直读 prop，写只发 onSortChange 不落内部值。 |
+| `columns` | `TableColumnDef[]` |  | 列定义，列号与列总数的唯一事实源。默认为空表。 |
+| `rows` | `TableRowDef[]` |  | 行定义，行序与行号的唯一事实源。默认为空表。 |
+| `sort` | `TableSortDescriptor[]` |  | 排序链。提供即受控：cell 直读 prop，写入只发 onSortChange 不落内部值。 |
 | `defaultSort` | `TableSortDescriptor[]` |  |  |
-| `selection` | `TableSelection` |  | 选中集合。给定即受控，语义同上。 |
+| `selection` | `TableSelection` |  | 选中集合。提供即受控，语义同上。 |
 | `defaultSelection` | `TableSelection` |  |  |
-| `expandedValue` | `string[]` |  | 展开集合。给定即受控，语义同上。 |
+| `expandedValue` | `string[]` |  | 展开集合。提供即受控，语义同上。 |
 | `defaultExpandedValue` | `string[]` |  |  |
-| `selectionMode` | `TableSelectionMode` |  | 默认 none：不声明则没有选择机制，行也不报 aria-selected。 |
-| `prefixColumns` | `TableColumnKind[]` |  | 要哪几列前缀列，按给定顺序插在最前面，默认一列都不插。 它们由库插入并**占住列号**——不占的话右侧所有列的 aria-colindex 会整体串位， 而这正是使用者手工往 columns 里塞假列的原因。作者照 `api.columns` 渲染即可， 每一项都自报 `kind`。 |
-| `columnPreference` | `TableColumnPreference` |  | 列偏好。给定即受控：内部不自改，写只发 onColumnPreferenceChange。 持久化归使用者——库只负责把它算进生效列。 |
+| `selectionMode` | `TableSelectionMode` |  | 默认 none：未声明则没有选择机制，行也不报告 aria-selected。 |
+| `prefixColumns` | `TableColumnKind[]` |  | 需要的前缀列，按给定顺序插在最前面，默认不插入任何列。 它们由库插入并占用列号：不占用时右侧所有列的 aria-colindex 会整体错位， 这正是使用者手工向 columns 中添加假列的原因。作者按 `api.columns` 渲染即可， 每一项都声明 `kind`。 |
+| `columnPreference` | `TableColumnPreference` |  | 列偏好。提供即受控：内部不自行修改，写入只发 onColumnPreferenceChange。 持久化归使用者：库只负责把它计算进生效列。 |
 | `defaultColumnPreference` | `TableColumnPreference` |  |  |
-| `page` | `number` |  | 当前页码与每页条数，只用来算序号，不参与切片——切片归调用方 （或分页组件的 `api.slice`）。都不给时序号退回可见序。 |
+| `page` | `number` |  | 当前页码与每页条数，只用于计算序号，不参与切片：切片归调用方 （或分页组件的 `api.slice`）。都未提供时序号回退为可见序。 |
 | `pageSize` | `number` |  |  |
-| `loading` | `boolean` |  | 数据在路上：root 报 aria-busy，表体为空时加载态节点显形。 |
-| `empty` | `boolean` |  | 显式声明表体为空；缺省按 rows 是否为空推导。 |
-| `stickyHeader` | `boolean` |  | 表头吸顶：只落 data-fixed（布尔），钉住的实现归皮肤。列冻结走 data-frozen，两者不同名。 |
+| `loading` | `boolean` |  | 数据加载中：root 报告 aria-busy，表体为空时加载态节点显示。 |
+| `empty` | `boolean` |  | 显式声明表体为空；未提供时按 rows 是否为空推导。 |
+| `stickyHeader` | `boolean` |  | 表头吸顶：只写 data-fixed（布尔），固定的实现归皮肤。列冻结使用 data-frozen，两者不同名。 |
 | `striped` | `boolean` |  | 斑马纹：表体偶数行换一层浅底。 |
-| `borderless` | `boolean` |  | 去掉外框，只留行间横线：root 上的 data-bordered 随之缺席。 |
-| `ruled` | `boolean` |  | 列与列之间加竖分隔线，落成 root 上的 data-split。 |
-| `footer` | `boolean` |  | 表格带脚注行。行号空间的最后一行留给它，aria-rowcount 也把它算进去。 |
-| `loop` | `boolean` |  | 上下键走到首尾是否回绕，默认 false。 |
-| `dir` | `Direction` |  | 文字方向，默认 ltr；只对调左右方向键的「展开/收起」语义。 |
-| `size` | `Size` |  | 密度：sm / md / lg。只换单元格的纵向内边距与字号，列宽算法不受影响。 |
+| `borderless` | `boolean` |  | 去掉外框，只保留行间横线：root 上的 data-bordered 随之缺席。 |
+| `ruled` | `boolean` |  | 列与列之间加竖分隔线，写为 root 上的 data-split。 |
+| `footer` | `boolean` |  | 表格带脚注行。行号空间的最后一行留给它，aria-rowcount 也把它计入。 |
+| `loop` | `boolean` |  | 上下键到达首尾是否回绕，默认 false。 |
+| `dir` | `Direction` |  | 文字方向，默认 ltr；只对调左右方向键的展开 / 收起语义。 |
+| `size` | `Size` |  | 密度：sm / md / lg。只影响单元格的纵向内边距与字号，列宽算法不受影响。 |
 | `translations` | `Partial<TableTranslations>` |  |  |
-| `rowReorderable` | `boolean` |  | 行可以拖着换位。整行都是拖动源；另有一个不占 Tab 位的拖动把手， 触屏那一路只走它（见 getRowDragTriggerProps）。 |
+| `rowReorderable` | `boolean` |  | 行可以拖动换位。整行都是拖动源；另有一个不占 Tab 位的拖动把手， 触屏路径只经它（见 getRowDragTriggerProps）。 |
 | `onRowMove` | `(details: TableRowMoveDetails) => void` |  |  |
-| `allowRowDrop` | `(move: TableRowMoveDetails) => boolean` |  | 这一次搬家许不许。收到的是折算好的落点。 不给即都许——「落进自己的后代」与「落在禁用行上」两条库自己会拦。 |
+| `allowRowDrop` | `(move: TableRowMoveDetails) => boolean` |  | 本次移动是否允许。收到的是折算后的落点。 未提供时全部允许：落进自身后代与落在禁用行上两条由库自行拦截。 |
 | `onColumnPreferenceChange` | `(details: TableColumnPreferenceChangeDetails) => void` |  |  |
 | `onSortChange` | `(details: TableSortChangeDetails) => void` |  |  |
 | `onSelectionChange` | `(details: TableSelectionChangeDetails) => void` |  |  |
@@ -256,7 +256,7 @@ prefix-columns 让库把序号/多选列插在最前面并占住列号；序号�
 | `column-preference-change` | `` | 列偏好变化；detail 为 `{ value: TableColumnPreference }` |
 | `selection-change` | `TableSelectionChangeDetails` | 选中集合变化；detail 为 `{ value: string[] \| 'all' }` |
 | `expanded-value-change` | `TableExpandedValueChangeDetails` | 展开集合变化；detail 为 `{ value: string[] }` |
-| `row-move` | `TableRowMoveDetails` | 行换了位置；detail 为 `{ id, parent, index, ids }`，parent 为 null 即根层，index 是在那一层的落位（已算过先摘后插），ids 是重排好的整份行序 |
+| `row-move` | `TableRowMoveDetails` | 行换位；detail 为 `{ id, parent, index, ids }`，parent 为 null 即根层，index 是在该层的落位（已经过先移除后插入的修正），ids 是重排后的整份行序 |
 
 ### 插槽
 
@@ -265,7 +265,7 @@ prefix-columns 让库把序号/多选列插在最前面并占住列号；序号�
 | Vue 组件 | 插槽 | 载荷 | 说明 |
 | --- | --- | --- | --- |
 | `XhTableRoot` | `default` | `TableRootSlotProps` |  |
-| `XhTableRoot` | `toolbar` | `TableToolbarSlotProps` | 工具条槽：搜索、筛选、密度与列设置这些对整张表下手的控件写在这儿。 它渲成 root 的兄弟排在表前——root 是 grid 系角色，子节点只能是 row 与 rowgroup。 |
+| `XhTableRoot` | `toolbar` | `TableToolbarSlotProps` | 工具条槽：搜索、筛选、密度与列设置等作用于整张表的控件写在这里。 它渲染为 root 的兄弟排在表前：root 是 grid 系角色，子节点只能是 row 与 rowgroup。 |
 
 ### 状态
 
@@ -289,19 +289,19 @@ prefix-columns 让库把序号/多选列插在最前面并占住列号；序号�
 
 | 成员 | 类型 | 说明 |
 | --- | --- | --- |
-| `columns` | `readonly TableColumn[]` | 生效的列：前缀列在前、数据列在后，各自自报 kind。 列号、渲染顺序都以它为准；不要前缀列时它与作者给的那份一模一样。 |
-| `draggableColumns` | `readonly string[]` | 可以拖着换位的那一段列 id。声明了 `reorderable`、不是冻结列、且彼此相连。 冻结列与不可拖的列是屏障，把可拖范围切成段；这里给的是最长的那一段。 拿它决定渲不渲把手，与库内部判「能不能落」的口径是同一份。 |
-| `rowReorderDisabledReason` | `TableRowReorderReason \| null` | 行拖不动的原因，能拖时是 null。声明了 rowReorderable 才可能非空。 库不自己弹提示——要不要把原因显示给用户是使用者的事。 |
-| `dropTarget` | `TableDropTarget \| null` | 此刻的落点；松手就落在这儿。没有合法落点时是 null，指示线跟着消失。 |
-| `announcement` | `string` | 读屏播报文本。渲进 live-region，不进视觉版面。 |
-| `rows` | `readonly TableRowDef[]` | 作者给的行定义。 |
-| `visibleRows` | `readonly TableVisibleRow[]` | 展开摊平后的可见行序列（详情行插在它所属数据行之后）。 |
+| `columns` | `readonly TableColumn[]` | 生效的列：前缀列在前、数据列在后，各自声明 kind。 列号、渲染顺序都以它为准；不需要前缀列时它与作者提供的一致。 |
+| `draggableColumns` | `readonly string[]` | 可以拖动换位的列 id 段。声明了 `reorderable`、不是冻结列、且彼此相连。 冻结列与不可拖动的列是屏障，把可拖动范围切分为段；这里给出的是最长的一段。 用它决定是否渲染把手，与库内部判定能否落下的口径是同一份。 |
+| `rowReorderDisabledReason` | `TableRowReorderReason \| null` | 行不可拖动的原因，可拖动时为 null。声明了 rowReorderable 才可能非空。 库不自行弹出提示：是否把原因显示给用户由使用者决定。 |
+| `dropTarget` | `TableDropTarget \| null` | 当前的落点；松手即落在此处。没有合法落点时为 null，指示线随之消失。 |
+| `announcement` | `string` | 读屏播报文本。渲染进 live-region，不进入视觉版面。 |
+| `rows` | `readonly TableRowDef[]` | 作者提供的行定义。 |
+| `visibleRows` | `readonly TableVisibleRow[]` | 展开展平后的可见行序列（详情行插在所属数据行之后）。 |
 | `sort` | `TableSortDescriptor[]` |  |
 | `selection` | `TableSelection` |  |
-| `selectionState` | `TableSelectionState` | 全选把手的三态，只按**可选行**（未禁用）算。 |
+| `selectionState` | `TableSelectionState` | 全选把手的三态，只按可选行（未禁用）计算。 |
 | `selectionMode` | `TableSelectionMode` |  |
 | `expandedValue` | `string[]` |  |
-| `focusedRow` | `string \| null` | 焦点锚点；焦点不在表体里时为 null。 |
+| `focusedRow` | `string \| null` | 焦点锚点；焦点不在表体中时为 null。 |
 | `loading` | `boolean` |  |
 | `empty` | `boolean` | 表体为空（显式声明或 rows 为空）。 |
 | `rowCount` | `number` | aria-rowcount：表头行 + 可见行 + 脚注行。 |
@@ -313,7 +313,7 @@ prefix-columns 让库把序号/多选列插在最前面并占住列号；序号�
 | `setSort` | `(next: TableSortDescriptor[]) => void` |  |
 | `toggleSort` | `(value: string, options?: { append?: boolean }) => void` |  |
 | `setSelection` | `(next: TableSelection) => void` |  |
-| `selectRow` | `(value: string, options?: { extend?: boolean }) => void` | 选中某一行。extend 为真时选中锚点到这一行那一段（仅复选）。 |
+| `selectRow` | `(value: string, options?: { extend?: boolean }) => void` | 选中某一行。extend 为真时选中锚点到该行的范围（仅复选）。 |
 | `toggleSelectAll` | `() => void` |  |
 | `setExpandedValue` | `(next: string[]) => void` |  |
 | `expandRow` | `(value: string) => void` |  |
@@ -321,37 +321,37 @@ prefix-columns 让库把序号/多选列插在最前面并占住列号；序号�
 | `toggleExpandRow` | `(value: string) => void` |  |
 | `getRootProps` | `() => T['element']` |  |
 | `getCaptionProps` | `() => T['element']` |  |
-| `getToolbarProps` | `() => T['element']` | 工具条：搜索、筛选、密度与列设置这些**对整张表下手**的控件摆在这儿。 它是 root 的兄弟不是子节点——root 是 grid 系角色，子节点只能是 row 与 rowgroup。 不给 role：一条控件带要不要 role=toolbar（连同那套方向键 roving）归作者， 要就往里放一个 Toolbar 组件。 |
-| `getColumnListProps` | `() => T['element']` | 列设置区：一列一行，行里放显隐把手、列名与作者自己的宽 / 冻结 / 排序控件。 渲什么照 `columnSettings` 走。 |
-| `getColumnVisibilityTriggerProps` | `(props: TableColumnProps) => T['element']` | 一列的显隐把手（复选形态）。最后一列显示着时它转 aria-disabled。 |
+| `getToolbarProps` | `() => T['element']` | 工具条：搜索、筛选、密度与列设置这些作用于整张表的控件放置在此。 它是 root 的兄弟不是子节点：root 是 grid 系角色，子节点只能是 row 与 rowgroup。 不提供 role：一条控件带是否需要 role=toolbar（连同该套方向键 roving）由作者决定， 需要时向其中放置一个 Toolbar 组件。 |
+| `getColumnListProps` | `() => T['element']` | 列设置区：一列一行，行中放显隐把手、列名与作者自行编写的宽度 / 冻结 / 排序控件。 渲染内容按 `columnSettings`。 |
+| `getColumnVisibilityTriggerProps` | `(props: TableColumnProps) => T['element']` | 一列的显隐把手（复选形态）。最后一列显示时它为 aria-disabled。 |
 | `getHeaderProps` | `() => T['element']` |  |
 | `getBodyProps` | `() => T['element']` |  |
 | `getFooterProps` | `() => T['element']` |  |
-| `getHeaderRowProps` | `() => T['element']` | 表头那一行：恒占行号空间的第 1 行。 |
-| `getFooterRowProps` | `() => T['element']` | 脚注那一行：占行号空间的最后一行。 |
-| `rowNumber` | `(rowId: string) => string` | 这一行显示什么序号。平表是分页全局序号，树形是大纲编号。 不出序号列时仍可调用——它是纯计算，不看要不要那一列。 |
-| `columnPreference` | `TableColumnPreference` | 当下的列偏好。原样交出去即可存盘。 |
-| `columnSettings` | `readonly TableColumnSetting[]` | 列设置区照它渲：作者定义的那些列，按偏好排过序，**藏起来的也在其中**。 每条自带显隐、冻结、宽与排序，够渲一整行设置项而不必回去比对两份数组。 |
-| `setColumnHidden` | `(columnId: string, hidden: boolean) => void` | 藏起 / 放出一列。 |
-| `setColumnSticky` | `(columnId: string, sticky: boolean \| 'start' \| 'end') => void` | 改一列的冻结档。false 是不冻结，true 等于 'start'。 |
-| `moveColumn` | `(columnId: string, toIndex: number) => void` | 把一列挪到第几位（只在作者定义的那些列之间算，0 起算）。 |
-| `setColumnWidth` | `(columnId: string, width: number \| string) => void` | 改一列的宽。 |
-| `setColumnPreference` | `(next?: TableColumnPreference) => void` | 整份偏好换掉；不给即清空，回到作者定义的原样。 |
+| `getHeaderRowProps` | `() => T['element']` | 表头行：恒占行号空间的第 1 行。 |
+| `getFooterRowProps` | `() => T['element']` | 脚注行：占行号空间的最后一行。 |
+| `rowNumber` | `(rowId: string) => string` | 该行显示的序号。平表是分页全局序号，树形是大纲编号。 不显示序号列时仍可调用：它是纯计算，不依赖是否有该列。 |
+| `columnPreference` | `TableColumnPreference` | 当前的列偏好。原样交出即可存储。 |
+| `columnSettings` | `readonly TableColumnSetting[]` | 列设置区按它渲染：作者定义的列，按偏好排序，隐藏的也在其中。 每条自带显隐、冻结、宽度与排序，足以渲染一整行设置项而不必回头比对两份数组。 |
+| `setColumnHidden` | `(columnId: string, hidden: boolean) => void` | 隐藏 / 显示一列。 |
+| `setColumnSticky` | `(columnId: string, sticky: boolean \| 'start' \| 'end') => void` | 修改一列的冻结档。false 为不冻结，true 等于 'start'。 |
+| `moveColumn` | `(columnId: string, toIndex: number) => void` | 把一列移到某个位次（只在作者定义的列之间计算，0 起算）。 |
+| `setColumnWidth` | `(columnId: string, width: number \| string) => void` | 修改一列的宽度。 |
+| `setColumnPreference` | `(next?: TableColumnPreference) => void` | 整份偏好替换；未提供时清空，回到作者定义的原样。 |
 | `getRowProps` | `(props: TableRowProps) => T['element']` |  |
 | `getColumnHeaderProps` | `(props: TableColumnProps) => T['element']` |  |
 | `getCellProps` | `(props: TableCellProps) => T['element']` |  |
 | `getSelectAllTriggerProps` | `() => T['element']` |  |
 | `getRowSelectTriggerProps` | `(props: TableRowProps) => T['element']` |  |
 | `getSortTriggerProps` | `(props: TableColumnProps) => T['element']` |  |
-| `getColumnResizeTriggerProps` | `(props: TableColumnProps) => T['element']` | 列宽把手。只有 resizable 的列才渲它。 |
-| `getColumnDragTriggerProps` | `(props: TableColumnProps) => T['element']` | 列拖拽把手。只有 reorderable 的列才渲它。 |
-| `getRowDragTriggerProps` | `(props: TableRowProps) => T['element']` | 行拖动把手。触屏那一路唯一的入口，不占 Tab 位。 常挂即可：rowReorderable 关着或这张表拖不动时它自报 data-disabled、也不再让出滚动， 渲了不会错。按拖不拖得动来决定渲不渲，会让 DOM 结构随状态变。 |
+| `getColumnResizeTriggerProps` | `(props: TableColumnProps) => T['element']` | 列宽把手。只有 resizable 的列才渲染它。 |
+| `getColumnDragTriggerProps` | `(props: TableColumnProps) => T['element']` | 列拖拽把手。只有 reorderable 的列才渲染它。 |
+| `getRowDragTriggerProps` | `(props: TableRowProps) => T['element']` | 行拖动把手。触屏路径唯一的入口，不占 Tab 位。 常驻即可：rowReorderable 关闭或该表不可拖动时它声明 data-disabled、也不再让出滚动， 渲染不会出错。按是否可拖动决定是否渲染，会使 DOM 结构随状态变化。 |
 | `getExpandTriggerProps` | `(props: TableRowProps) => T['element']` |  |
 | `getExpandedRowProps` | `(props: TableRowProps) => T['element']` |  |
 | `getEmptyProps` | `() => T['element']` |  |
 | `getLoadingProps` | `() => T['element']` |  |
-| `getLoadMoreTriggerProps` | `() => T['element']` | 取下一页的入口：还有没有下一页、点了做什么都归作者， 连接层只保证取数在途那一段点不动。 |
-| `getLiveRegionProps` | `() => T['element']` | 拖动过程的读屏播报区。视觉隐藏，文本从 `announcement` 取。 它必须在拖动开始之前就在 DOM 上——读屏不播报后插入的节点。 |
+| `getLoadMoreTriggerProps` | `() => T['element']` | 取下一页的入口：是否还有下一页、点击后的行为都由作者决定， 连接层只保证取数在途期间不可点击。 |
+| `getLiveRegionProps` | `() => T['element']` | 拖动过程的读屏播报区。视觉隐藏，文本取自 `announcement`。 它必须在拖动开始之前就在 DOM 上：读屏不播报后插入的节点。 |
 
 ## 无障碍
 
