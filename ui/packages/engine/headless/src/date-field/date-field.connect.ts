@@ -81,6 +81,8 @@ export function connectDateField<T extends PropTypes>(
   const clearLabel = prop('translations')?.clearTrigger ?? DATE_FIELD_CLEAR_LABEL
   // 填了哪怕一段就能清；禁用与只读下清空钮收起
   const canClear = editable && !empty
+  // 形态默认落 outline：不写时 root 如实投影，皮肤不再依赖缺省档
+  const variant = prop('variant') ?? 'outline'
 
   const state = (type: DateSegmentType, index: number): DateFieldSegmentState => {
     const raw = segments[type]
@@ -157,7 +159,7 @@ export function connectDateField<T extends PropTypes>(
 
     getRootProps: () => normalize.element({
       ...parts.root.attrs,
-      'data-variant': prop('variant'),
+      'data-variant': variant,
       'data-tone': prop('tone'),
       'data-size': prop('size'),
       'data-disabled': dataAttr(disabled),
