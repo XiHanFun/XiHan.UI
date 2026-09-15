@@ -17,9 +17,9 @@ import { StatisticProvider, useStatisticContext } from './context'
 export interface XhStatisticRootProps extends ComponentPropsWithRef<'div'> {
   /** 尺寸：sm / md / lg。 */
   size?: Size
-  /** 语气：决定用哪族颜色。 */
+  /** 语气：决定使用哪族颜色。 */
   tone?: Tone
-  /** 涨跌方向，落成涨跌那一段的 data-direction；与语气正交。 */
+  /** 涨跌方向，写为涨跌段的 data-direction；与语气正交。 */
   trend?: StatisticTrend
 }
 
@@ -49,7 +49,7 @@ export function XhStatisticLabel({ children, ...rest }: XhStatisticLabelProps): 
 
 export interface XhStatisticValueProps extends ComponentPropsWithRef<'span'> {}
 
-/** 数值由作者格式化好再塞进来，组件只负责排版。 */
+/** 数值由作者格式化后放入，组件只负责排版。 */
 export function XhStatisticValue({ children, ...rest }: XhStatisticValueProps): ReactNode {
   const ctx = useStatisticContext()
   return (
@@ -83,7 +83,7 @@ export function XhStatisticSuffix({ children, ...rest }: XhStatisticSuffixProps)
 
 export interface XhStatisticTrendProps extends ComponentPropsWithRef<'span'> {}
 
-/** 涨跌那一段：方向由 root 的 trend 给，箭头由皮肤画，比数由作者写进来。 */
+/** 涨跌段：方向由 root 的 trend 给出，箭头由皮肤绘制，比数由作者写入。 */
 export function XhStatisticTrend({ children, ...rest }: XhStatisticTrendProps): ReactNode {
   const ctx = useStatisticContext()
   return (

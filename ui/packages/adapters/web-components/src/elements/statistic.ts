@@ -15,12 +15,12 @@ import { XhElement } from '../element-base'
 const STRING_CONVERTER = { fromAttribute: (v: string | null) => v ?? undefined }
 
 /**
- * `<xh-statistic>` —— Light-DOM 行为宿主，无状态机，把 connectStatistic 产出打到各角色节点。
+ * `<xh-statistic>`：Light-DOM 行为宿主，无状态机，把 connectStatistic 产出接到各角色节点。
  *
- * 除 root 外的部件全部可缺省：只摆一个数值也是一块合法的统计。
- * 数值由作者格式化好再塞进 value 槽，组件不做千分位、不做单位换算、不做动画。
+ * 除 root 外的部件全部可省略：只放置一个数值也是合法的统计块。
+ * 数值由作者格式化后放入 value 槽，组件不做千分位、不做单位换算、不做动画。
  *
- * root 上不写 role：一块统计数是不是列表项、要不要可及名字，由它被摆在哪里决定。
+ * root 上不写 role：一块统计数是否为列表项、是否需要可及名，由它所在的位置决定。
  *
  * @customElement xh-statistic
  * @attr {'sm'|'md'|'lg'} size - 尺寸档位，写到 root 的 data-size 上
@@ -31,7 +31,7 @@ const STRING_CONVERTER = { fromAttribute: (v: string | null) => v ?? undefined }
  * @csspart value - 数值本体，用等宽数字排版
  * @csspart prefix - 数值前的货币符号或升降箭头
  * @csspart suffix - 数值后的单位或百分号
- * @csspart trend - 涨跌那一段，承载 data-direction；空着时皮肤按方向画兜底箭头
+ * @csspart trend - 涨跌段，承载 data-direction；为空时皮肤按方向绘制兜底箭头
  */
 export class XhStatisticElement extends XhElement {
   static override partContract = { anatomy: statisticAnatomy, meta: statisticMeta }
