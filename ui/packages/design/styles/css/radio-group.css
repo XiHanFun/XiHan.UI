@@ -86,7 +86,7 @@
     inline-size: var(--xh-radio-group-indicator-size, var(--xh-_radio-group-indicator));
     block-size: var(--xh-radio-group-indicator-size, var(--xh-_radio-group-indicator));
     border: var(--xh-stroke-thin) solid var(--xh-radio-group-indicator-border, var(--xh-border-control));
-    border-radius: var(--xh-radio-group-indicator-radius, var(--xh-shape-pill));
+    border-radius: var(--xh-radio-group-indicator-radius, var(--xh-shape-circle));
     background: var(--xh-radio-group-indicator-bg, var(--xh-bg-canvas));
     transition: border-color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
   }
@@ -108,7 +108,7 @@
     content: '';
     inline-size: calc(var(--xh-radio-group-indicator-size, var(--xh-_radio-group-indicator)) / 2);
     block-size: calc(var(--xh-radio-group-indicator-size, var(--xh-_radio-group-indicator)) / 2);
-    border-radius: var(--xh-shape-pill);
+    border-radius: var(--xh-shape-circle);
     background: var(--xh-radio-group-indicator-dot, var(--xh-_radio-group-accent));
     scale: 0;
     transition: scale var(--xh-motion-duration-micro) var(--xh-motion-ease-settle);

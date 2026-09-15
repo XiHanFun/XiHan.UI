@@ -46829,7 +46829,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-shape-pill"
+        "--xh-shape-circle"
       ],
       "visibility": "public",
       "description": "radio-group 的 indicator 部件 border-radius 覆盖槽。"

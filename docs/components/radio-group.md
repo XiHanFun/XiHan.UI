@@ -1,6 +1,6 @@
 # RadioGroup 单选组 <Badge type="info" text="alpha" />
 
-一组互斥选项共一个值，所有选项同时可见。单个单选钮是这里的 `item` 部件，不另立组件——它脱离组既没有互斥对象，也无法取消选中。
+一组互斥选项共用一个值，所有选项同时可见。单个单选按钮是这里的 `item` 部件，不另立组件：它脱离组既没有互斥对象，也无法取消选中。
 
 <div class="xh-resource-links">
   <a href="https://github.com/XiHanFun/XiHan.UI/tree/dev/ui/packages/engine/headless/src/radio-group" target="_blank" rel="noreferrer">Headless</a>
@@ -64,34 +64,34 @@ size 改条目间距与字号，不写即缺省中档
 
 ### 何时使用
 
-- 二到五个互斥选项，且各选项的文字值得同时摊开让用户比较。
+- 二到五个互斥选项，且各选项的文字值得同时展开供用户比较。
 
 ### 何时不用
 
-- 选项超过五六个：用[选择器](./select)。
-- 选项是并列的视图切换：用[切换按钮组](./toggle-group)或[标签页](./tabs)。
-- 可以多选：用[复选框组](./checkbox-group)。
+- 选项超过五六个时，使用[选择器](./select)。
+- 选项是并列的视图切换时，使用[切换按钮组](./toggle-group)或[标签页](./tabs)。
+- 可以多选时，使用[复选框组](./checkbox-group)。
 
 ### 特性
 
-- 整组只占一个 Tab 位，组内靠方向键走——这是原生单选组的行为。
+- 整组只占一个 Tab 位，组内靠方向键移动，与原生单选组一致。
 - `hidden-input` 承担表单参与。
-- `collection` 可数据驱动，也可以逐项写。
-- 与[复选框](./checkbox)的不对称是有意的：一个复选框自己就成立（勾选同意条款），一个单选钮自己不成立，所以复选框另有独立组件、单选钮没有。
+- `collection` 可数据驱动，也可以逐项编写。
+- 与[复选框](./checkbox)的不对称是有意的：一个复选框自身即成立（勾选同意条款），一个单选按钮自身不成立，因此复选框有独立组件、单选按钮没有。
 
 ### 组合
 
-- 外面套[表单字段](./field)；每项下面的补充说明放进选项内容里。
+- 外层放[表单字段](./field)；每项的补充说明放进选项内容。
 
 ### 最佳实践
 
-- 给出默认选中项，除非"未选"本身有意义。
-- 选项文字写完整，别靠共同前缀省略。
+- 提供默认选中项，除非“未选”本身有意义。
+- 选项文字写完整，不依赖共同前缀省略。
 
 ### 反模式
 
-- 单选组只有一个选项：用户选不了别的，等于什么都没问。
-- 选项能被取消选中：单选组一旦选中就不该回到空值，需要空值就加一项"不指定"。
+- 单选组只有一个选项，用户无从选择。
+- 选项可以被取消选中：单选组一旦选中就不应回到空值，需要空值时增加一项“不指定”。
 
 ## API 参考
 
@@ -220,7 +220,7 @@ size 改条目间距与字号，不写即缺省中档
 | `--xh-radio-group-indicator-border-checked` | `indicator` | `border-color` | `state=checked` | `--xh-_radio-group-accent` | radio-group 的 indicator 部件 border-color 覆盖槽。 |
 | `--xh-radio-group-indicator-border-invalid` | `indicator` | `border-color` | `invalid`<br>`state=checked` | `--xh-border-invalid` | radio-group 的 indicator 部件 border-color 覆盖槽。 |
 | `--xh-radio-group-indicator-dot` | `indicator` | `background` | `default` | `--xh-_radio-group-accent` | radio-group 的 indicator 部件 background 覆盖槽。 |
-| `--xh-radio-group-indicator-radius` | `indicator` | `border-radius` | `default` | `--xh-shape-pill` | radio-group 的 indicator 部件 border-radius 覆盖槽。 |
+| `--xh-radio-group-indicator-radius` | `indicator` | `border-radius` | `default` | `--xh-shape-circle` | radio-group 的 indicator 部件 border-radius 覆盖槽。 |
 | `--xh-radio-group-indicator-size` | `indicator` | `block-size`<br>`inline-size` | `default` | `--xh-_radio-group-indicator` | radio-group 的 indicator 部件 block-size、inline-size 覆盖槽。 |
 | `--xh-radio-group-item-fg` | `item` | `color` | `default` | `--xh-fg-default` | radio-group 的 item 部件 color 覆盖槽。 |
 | `--xh-radio-group-item-fg-disabled` | `item` | `color` | `disabled` | `--xh-fg-disabled` | radio-group 的 item 部件 color 覆盖槽。 |
