@@ -1,4 +1,4 @@
-// 相对时间 | just now / n minutes ago 四档，超过三十天退回绝对日期；locale 只换用词，不给则跟随浏览器语言
+// 相对时间 | just now / n minutes ago 四档，超过三十天退回绝对日期；locale 只更换用词，未提供时跟随浏览器语言
 import type { CSSProperties, ReactNode } from "react";
 import { XhTimestamp } from "@xihan-ui/react";
 import { Fragment } from "react";
