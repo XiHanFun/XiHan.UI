@@ -35559,7 +35559,7 @@
   transition:
     background var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
     color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
-    scale var(--xh-motion-duration-micro) var(--xh-motion-ease-enter-strong);
+    scale var(--xh-motion-duration-release) var(--xh-motion-ease-release);
 }
 
 /* 参与选中的标签才是点击目标，只是标记的那些不给手势暗示 */
@@ -35570,6 +35570,8 @@
 /* 按下去要有回应：整枚轻微下压，松手即弹回。置灰的不压 */
 [data-scope='tag-group'][data-part='list'] > [data-scope='tag'][data-part='root'][data-selectable]:not([data-disabled]):active {
   scale: var(--xh-motion-scale-press);
+  transition-duration: var(--xh-motion-duration-press);
+  transition-timing-function: var(--xh-motion-ease-press);
 }
 
 /* 悬停与键盘锚点共用中性灰轻档：data-highlighted 跟的是连接层记的焦点标签，与选中互相独立。
