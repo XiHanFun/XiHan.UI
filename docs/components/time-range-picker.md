@@ -26,13 +26,13 @@
 
 ### 可选时段
 
-min/max 把界外的格从两组列里裁掉，另一端一填全再各自收窄一次
+min/max 把界外的格从两组列中裁掉，另一端填满后再各自收窄一次
 
 <XhDemo src="time-range-picker/02-bounds" />
 
 ### 快捷选项
 
-presets 在两组列旁边多排一列，点一条把两端整份写进值并收起
+presets 在两组列旁边多排一列，点击一条即把两端整份写入值并收起
 
 <XhDemo src="time-range-picker/03-presets" />
 

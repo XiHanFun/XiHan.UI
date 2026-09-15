@@ -1,4 +1,4 @@
-<!-- 可选时段 | min/max 把界外的格从两组列里裁掉，另一端一填全再各自收窄一次 -->
+<!-- 可选时段 | min/max 把界外的格从两组列中裁掉，另一端填满后再各自收窄一次 -->
 <script setup lang="ts">
 import {
   XhTimeRangePickerClearTrigger,
