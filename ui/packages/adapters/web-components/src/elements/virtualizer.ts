@@ -24,7 +24,7 @@ const NUMBER_CONVERTER = { fromAttribute: (v: string | null) => (v == null || v 
 // Lit 自带的 Boolean 转换器是 v !== null，缺省为真的开关用它会永远关不掉
 const BOOLEAN_CONVERTER = { fromAttribute: (v: string | null) => (v === null ? undefined : v !== 'false') }
 
-/** 条目自报的下标；缺失或空串一律给 NaN（见 wire 里的说明）。 */
+/** 条目声明的下标；缺失或空串一律返回 NaN（见 wire 中的说明）。 */
 function itemIndex(el: HTMLElement): number {
   const raw = el.getAttribute('value')
   return raw == null || raw === '' ? Number.NaN : Number(raw)
@@ -37,33 +37,33 @@ function wantsMeasure(el: HTMLElement): boolean {
 }
 
 /**
- * `<xh-virtualizer>` —— Light-DOM 行为宿主：作者写 root/viewport/content/item 角色节点，
- * 元素跑 virtualizer 机器并把 connect 产出打上去。
+ * `<xh-virtualizer>`：Light-DOM 行为宿主：作者写 root / viewport / content / item 角色节点，
+ * 元素运行 virtualizer 状态机并把 connect 产出接上。
  *
- * 区间与尺寸的计算走 headless 的虚拟滚动内核：它在机器的效应里建起来，挂着视口的
- * ResizeObserver 与 scroll 监听，算出"此刻该渲哪些下标、各自落在哪儿"。
- * 滚动本身一概不接管：viewport 是原生的 overflow 容器，滚轮、方向键、PageUp/PageDown、
- * Home/End 全部走浏览器原生通路。
+ * 区间与尺寸的计算使用 headless 的虚拟滚动内核：它在状态机的效应中创建，挂载视口的
+ * ResizeObserver 与 scroll 监听，计算出当前应渲染的下标与各自的位置。
+ * 滚动本身一概不接管：viewport 是原生的 overflow 容器，滚轮、方向键、PageUp / PageDown、
+ * Home / End 全部使用浏览器原生路径。
  *
- * 条目节点不替作者生成：生成节点就等于收走模板控制权，外层结构、图标、业务内容都再塞不进来。
- * 作者监听 `change` 事件，按 `virtualItems` 渲出该渲的那几条，每条用 `value` 属性写明自己是第几条；
- * 元素据此把位移写进它的内联样式，并把不在窗口里的条目收起来。
+ * 条目节点不替作者生成：生成节点等于收走模板控制权，外层结构、图标、业务内容都无法再加入。
+ * 作者监听 `change` 事件，按 `virtualItems` 渲染应渲染的条目，每条用 `value` 属性写明下标；
+ * 元素据此把位移写进它的内联样式，并把不在窗口中的条目收起。
  *
  * @customElement xh-virtualizer
  * @attr {number} count - 总条数，默认 0
- * @attr {number} estimate-size - 每条的估算主轴尺寸（px）；不等高的列表改用 estimateSize property 传函数
- * @attr {number} overscan - 可视区前后各多渲几条，默认 5
+ * @attr {number} estimate-size - 每条的估算主轴尺寸（px）；不等高的列表改用 estimateSize property 传入函数
+ * @attr {number} overscan - 可视区前后各多渲染的条数，默认 5
  * @attr {boolean} horizontal - 横向列表（主轴是行内轴），默认 false
  * @attr {number} gap - 相邻两条之间的主轴间距（px），默认 0
  * @attr {number} scroll-margin - 列表起点距滚动容器起点的距离（px），默认 0
  * @attr {number} padding-start - 列表前内边距（px），默认 0
  * @attr {number} padding-end - 列表后内边距（px），默认 0
  * @attr {number} lanes - 多列网格的列数，默认 1
- * @fires range-change - 该渲的区间变了；detail 为 `{ virtualItems, totalSize, startIndex, endIndex }`
+ * @fires range-change - 应渲染的区间变化；detail 为 `{ virtualItems, totalSize, startIndex, endIndex }`
  * @csspart root - 组件根容器，承载 data-orientation 与 data-scrolling
- * @csspart viewport - 真正 overflow:auto 的那层，带 tabindex=0 让键盘用户落得进来
- * @csspart content - 撑出总长的那层（内联样式给主轴长度），条目的定位上下文
- * @csspart item - 条目，须自带 value 属性写明下标；位移由内联逻辑属性给出，不在窗口里时带 hidden
+ * @csspart viewport - 实际 overflow:auto 的层，带 tabindex=0 使键盘用户可以进入
+ * @csspart content - 撑出总长的层（内联样式给出主轴长度），条目的定位上下文
+ * @csspart item - 条目，须自带 value 属性写明下标；位移由内联逻辑属性给出，不在窗口中时带 hidden
  */
 export class XhVirtualizerElement extends XhElement {
   static override partContract = { anatomy: virtualizerAnatomy, meta: virtualizerMeta }
@@ -132,15 +132,15 @@ export class XhVirtualizerElement extends XhElement {
   }
 
   /**
-   * 机器要等 hostConnected 才建（此刻属性已反射到 property）。
-   * 下面几个方法是公开面，作者拿到元素就可能调——还没进 DOM 时如实给空，别炸。
+   * 状态机在 hostConnected 后才建立（此时属性已反射到 property）。
+   * 下面几个方法是公开面，作者拿到元素后就可能调用：尚未进入 DOM 时如实返回空值，不抛错。
    */
   private api(): ReturnType<typeof connectVirtualizer> | null {
     const service = this.ctrl.service as Service<VirtualizerSchema> | undefined
     return service ? connectVirtualizer(service, wcNormalize) : null
   }
 
-  /** 此刻该渲染哪些下标，以及它们的位移与尺寸。作者据此渲条目节点。 */
+  /** 当前应渲染的下标，以及各自的位移与尺寸。作者据此渲染条目节点。 */
   get virtualItems(): readonly VirtualizerItemState[] {
     return this.api()?.virtualItems ?? []
   }
@@ -150,17 +150,17 @@ export class XhVirtualizerElement extends XhElement {
     return this.api()?.totalSize ?? 0
   }
 
-  /** 滚到第几条。越界下标由内核夹住。 */
+  /** 滚动到指定下标。越界下标由内核夹取。 */
   scrollToIndex(index: number, options?: { align?: VirtualizerAlign }): void {
     this.api()?.scrollToIndex(index, options)
   }
 
-  /** 把条目节点的真实尺寸回喂给内核（动态高度用）。 */
+  /** 把条目节点的真实尺寸回传给内核（动态高度使用）。 */
   measureElement(element: HTMLElement | null): void {
     this.api()?.measureElement(element)
   }
 
-  /** 重新量视口、丢掉实测尺寸整份重排。方法名避开 Lit 的生命周期钩子。 */
+  /** 重新测量视口、丢弃实测尺寸并整份重排。方法名避开 Lit 的生命周期钩子。 */
   measure(): void {
     this.api()?.measure()
   }

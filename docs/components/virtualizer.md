@@ -105,16 +105,16 @@ horizontal 把主轴换成行内轴：位移改写进行首侧，条目宽度由
 | 属性 | 类型 | 必填 | 说明 |
 | --- | --- | --- | --- |
 | `count` | `number` |  | 总条数，默认 0。 |
-| `estimateSize` | `number \| ((index: number) => number)` |  | 每条的估算主轴尺寸（px）。等高列表可以直接给一个数字。 不给按 0 算：所有条目都会落进窗口，先渲出来再靠 measureElement 回喂真实尺寸。 |
-| `overscan` | `number` |  | 可视区前后各多渲几条，默认 5。 |
+| `estimateSize` | `number \| ((index: number) => number)` |  | 每条的估算主轴尺寸（px）。等高列表可以直接提供一个数字。 未提供时按 0 计算：所有条目都会落进窗口，先渲染出来再依靠 measureElement 回填真实尺寸。 |
+| `overscan` | `number` |  | 可视区前后各多渲染的条数，默认 5。 |
 | `horizontal` | `boolean` |  | 横向列表（主轴是行内轴），默认 false。 |
-| `gap` | `number` |  | 相邻两条之间的主轴间距（px），默认 0。位移由内核直接算进去，不靠外边距。 |
-| `getItemKey` | `(index: number) => string \| number` |  | 条目身份。默认即下标；列表会增删时给稳定 key，测量缓存才跟得住条目。 |
-| `onRangeChange` | `(details: VirtualizerRangeChangeDetails) => void` |  | 该渲的区间变了。只在快照真的变了时回调，滚动但可见区间没变不会触发。 |
-| `scrollMargin` | `number` |  | 列表起点距滚动容器起点的距离（px），默认 0。 列表上方还有别的内容（页头、筛选栏）时给它，否则区间会整体偏掉那一截。 |
-| `paddingStart` | `number` |  | 列表前后的内边距（px），默认 0。计进总长，第一条从 paddingStart 处起算。 |
+| `gap` | `number` |  | 相邻两条之间的主轴间距（px），默认 0。位移由内核直接计算，不依靠外边距。 |
+| `getItemKey` | `(index: number) => string \| number` |  | 条目身份。默认即下标；列表会增删时提供稳定 key，测量缓存才能跟随条目。 |
+| `onRangeChange` | `(details: VirtualizerRangeChangeDetails) => void` |  | 应渲染的区间变化。只在快照实际变化时回调，滚动但可见区间未变不会触发。 |
+| `scrollMargin` | `number` |  | 列表起点距滚动容器起点的距离（px），默认 0。 列表上方还有其他内容（页头、筛选栏）时提供它，否则区间会整体偏移该段距离。 |
+| `paddingStart` | `number` |  | 列表前后的内边距（px），默认 0。计入总长，第一条从 paddingStart 处起算。 |
 | `paddingEnd` | `number` |  |  |
-| `lanes` | `number` |  | 多列网格的列数，默认 1（单列）。条目按下标轮流落到各道上。 |
+| `lanes` | `number` |  | 多列网格的列数，默认 1（单列）。条目按下标轮流落到各列上。 |
 
 ### 事件
 
@@ -122,7 +122,7 @@ horizontal 把主轴换成行内轴：位移改写进行首侧，条目宽度由
 
 | 事件 | 载荷 | 说明 |
 | --- | --- | --- |
-| `range-change` | `VirtualizerRangeChangeDetails` | 该渲的区间变了；detail 为 `{ virtualItems, totalSize, startIndex, endIndex }` |
+| `range-change` | `VirtualizerRangeChangeDetails` | 应渲染的区间变化；detail 为 `{ virtualItems, totalSize, startIndex, endIndex }` |
 
 ### 插槽
 
@@ -146,16 +146,16 @@ horizontal 把主轴换成行内轴：位移改写进行首侧，条目宽度由
 
 | 成员 | 类型 | 说明 |
 | --- | --- | --- |
-| `virtualItems` | `readonly VirtualizerItemState[]` | 此刻该渲染哪些下标，以及它们的位移与尺寸。 |
+| `virtualItems` | `readonly VirtualizerItemState[]` | 当前应渲染的下标，以及它们的位移与尺寸。 |
 | `totalSize` | `number` | 整份列表的主轴总长（px）。 |
-| `startIndex` | `number \| null` | 可视区首条下标（不含过扫描）；一条都排不下时为 null。 |
-| `endIndex` | `number \| null` | 可视区末条下标（不含过扫描）；一条都排不下时为 null。 |
+| `startIndex` | `number \| null` | 可视区首条下标（不含过扫描）；没有任何条目可容纳时为 null。 |
+| `endIndex` | `number \| null` | 可视区末条下标（不含过扫描）；没有任何条目可容纳时为 null。 |
 | `horizontal` | `boolean` |  |
 | `lanes` | `number` |  |
-| `scrolling` | `boolean` | 手正在滚。 |
-| `scrollToIndex` | `(index: number, options?: VirtualizerScrollToOptions) => void` | 滚到第几条。越界下标由内核夹住。 |
-| `measureElement` | `(element: HTMLElement \| null) => void` | 把条目节点的真实尺寸回喂给内核（动态高度用）。传 null 无副作用。 |
-| `measure` | `() => void` | 丢掉全部实测尺寸重新按估算值排。视口换了一种排版时用得上。 |
+| `scrolling` | `boolean` | 正在滚动。 |
+| `scrollToIndex` | `(index: number, options?: VirtualizerScrollToOptions) => void` | 滚动到某一条。越界下标由内核夹取。 |
+| `measureElement` | `(element: HTMLElement \| null) => void` | 把条目节点的真实尺寸回填给内核（动态高度使用）。传 null 无副作用。 |
+| `measure` | `() => void` | 丢弃全部实测尺寸重新按估算值排列。视口更换排版时使用。 |
 | `getRootProps` | `() => T['element']` |  |
 | `getViewportProps` | `() => T['element']` |  |
 | `getContentProps` | `() => T['element']` |  |

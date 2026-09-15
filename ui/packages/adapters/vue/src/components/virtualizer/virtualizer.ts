@@ -14,7 +14,7 @@ import { useVirtualizer } from './use-virtualizer'
 
 type VirtualizerProps = VirtualizerSchema['props']
 
-/** 默认插槽的载荷：此刻该渲染的条目与总长、可视区首末下标与滚动态，以及滚动与量尺寸的动作。 */
+/** 默认插槽的载荷：当前应渲染的条目与总长、可视区首末下标与滚动态，以及滚动与测量尺寸的动作。 */
 export type VirtualizerRootSlotProps = Pick<
   VirtualizerApi,
   | 'virtualItems'
@@ -94,9 +94,9 @@ export const XhVirtualizerContent = defineComponent({
 export const XhVirtualizerItem = defineComponent({
   name: 'XhVirtualizerItem',
   props: {
-    /** 这个节点是第几条。 */
+    /** 该节点的下标。 */
     value: { type: [Number, String] as PropType<number | string>, required: true },
-    /** 是否把真实尺寸回喂给内核；不开时条目尺寸按 estimateSize 算。 */
+    /** 是否把真实尺寸回传给内核；未开启时条目尺寸按 estimateSize 计算。 */
     measure: { type: Boolean, default: undefined },
   },
   setup(props, { slots }) {

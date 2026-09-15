@@ -17,9 +17,9 @@ import { useMachine } from '../../runtime/use-machine'
 export interface VirtualizerContext {
   service: Service<VirtualizerSchema>
   api: VirtualizerApi
-  /** 真正 overflow:auto 的那层：内核的尺寸观察与滚动监听都挂在它身上。 */
+  /** 真正 overflow:auto 的层：内核的尺寸观察与滚动监听都挂在它上面。 */
   viewportRef: RefObject<HTMLElement | null>
-  /** 撑出总长的那层，条目的定位上下文。 */
+  /** 撑出总长的层，条目的定位上下文。 */
   contentRef: RefObject<HTMLElement | null>
 }
 
