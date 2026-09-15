@@ -17,12 +17,12 @@ type ModuleShape = NonNullable<MatrixCodeProps['moduleShape']>
 type EyeShape = NonNullable<MatrixCodeProps['eyeShape']>
 
 /**
- * 整张码画成一个 `<svg>`，`format` 选码制；QR 下数据模块与三个码眼各成一条 `<path>`，其余码制只有前一条，静区靠 viewBox 留出。
- * 矩阵由 connect 算一遍，这里只取现成的 path；没有可画的内容时不生成任何几何节点。
+ * 整张码绘制为一个 `<svg>`，`format` 选择码制；QR 下数据模块与三个码眼各成一条 `<path>`，其余码制只有前一条，静区依靠 viewBox 留出。
+ * 矩阵由 connect 计算一次，这里只取现成的 path；没有可绘制的内容时不生成任何几何节点。
  *
- * 默认插槽里放 XhMatrixCodeLogo 就等于给码面正中放了一块 logo：那片模块底下先铺一个底色矩形挖空，
- * 挖空排在插槽之前，logo 画在它上面。挖掉的码字超出所选 level 的纠错余量时，
- * connect 会往诊断通道报一条警告，码照画。
+ * 默认插槽中放置 XhMatrixCodeLogo 即在码面正中放置一块 logo：该片模块下方先铺一个底色矩形挖空，
+ * 挖空排在插槽之前，logo 绘制在它上面。挖掉的码字超出所选 level 的纠错余量时，
+ * connect 会向诊断通道报告一条警告，码照常绘制。
  */
 export const XhMatrixCode = defineComponent({
   name: 'XhMatrixCode',
@@ -84,8 +84,8 @@ export const XhMatrixCode = defineComponent({
 })
 
 /**
- * 码面正中那块 logo：落位与尺寸由 connect 给出，作者只管往里放图形。
- * 渲染成嵌套 `<svg>`，里面写 `width="100%" height="100%"` 即铺满这块，溢出部分被它自己裁掉。
+ * 码面正中的 logo：落位与尺寸由 connect 给出，作者只需放入图形。
+ * 渲染为嵌套 `<svg>`，其中写 `width="100%" height="100%"` 即铺满该区域，溢出部分由它自身裁剪。
  */
 export const XhMatrixCodeLogo = defineComponent({
   name: 'XhMatrixCodeLogo',

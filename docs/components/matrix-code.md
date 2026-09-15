@@ -138,18 +138,18 @@ gs1 打开后最前面放 FNC1，读码器把内容当 GS1 元素串：变长 AI
 
 | 属性 | 类型 | 必填 | 说明 |
 | --- | --- | --- | --- |
-| `columns` | `number` |  | PDF417 的数据列数 1–30，缺省在宽高比最接近 3:1 的那一档里挑。 只对 pdf417 有意义，给别的码制会往诊断通道报一条警告，按没给处理。 |
-| `eyeShape` | `MatrixCodeEyeShape` |  | 码眼形状，缺省 square。时序图形与校正图形不受它影响，一律保持方块——它们是透视校正的几何基准。 只对 qr 有意义，给别的码制会往诊断通道报一条警告，按没给处理。 |
-| `format` | `MatrixCodeFormat` |  | 码制，缺省 qr。给了不认识的值不画码，根落到 `error` 态。 |
-| `gs1` | `boolean` |  | GS1 模式：在最前面放 FNC1，读码器据此把内容当 GS1 元素串解释，即 GS1 QR / GS1 DataMatrix； 变长 AI 之间用内容里的 GS（U+001D）分隔。 |
-| `label` | `string` |  | 可及名字，缺省用 value；给了全空白的名字等于没给。 |
-| `level` | `MatrixCodeLevel` |  | 纠错级别，取值域随码制：qr 是 L / M / Q / H（缺省 M）；pdf417 是 0–8（缺省按数据量取规范推荐档）； aztec 是纠错码字至少占的百分比 5–95（缺省 33）。给了码制不认的值不画码，根落到 `error` 态。 data-matrix 没有级别可挑，给了会往诊断通道报一条警告，按没给处理。 |
-| `logo` | `boolean` |  | 码面正中是否留一块给 logo。 留出来的那片模块会被底色盖住，对读码器而言等于人为污损：放 logo 就把 level 提到 Q 或 H， L 与 M 那点纠错余量赔不起这一块。损伤量见 `logoDamage`；超出所选级别的余量时 会往诊断通道报一条 `matrix-code.logo-damage` 警告，码照画。 只对 qr 有意义：Data Matrix 的纠错余量随尺寸固定、没有可挑的级别，放 logo 会报一条警告并按没放处理。 |
-| `margin` | `number` |  | 静区宽度，单位是模块数，缺省按码制的规范值（qr 4、data-matrix 1）；静区含在 viewBox 里，不占额外尺寸。 |
-| `moduleShape` | `MatrixCodeModuleShape` |  | 码点形状，缺省 square。pdf417 是条不是点，给了会往诊断通道报一条警告，按没给处理。 |
-| `pixelSize` | `number` |  | 像素宽度，缺省 160；高按模块比例算出，正方形码宽高相等。两者都写成根上的内联尺寸。 |
-| `rectangular` | `boolean` |  | 从矩形尺寸（含矩形扩展 DMRE）里挑，缺省从正方形尺寸里挑。 只对 data-matrix 有意义，给别的码制会往诊断通道报一条警告，按没给处理。 |
-| `value` | `string` |  | 要编码的内容；空串不画码。QR 按 UTF-8 取字节走字节模式；Data Matrix 走 ASCII 模式，Latin-1 以外的字符按 UTF-8 并声明 ECI。 |
+| `columns` | `number` |  | PDF417 的数据列数 1–30，默认在宽高比最接近 3:1 的档位中选择。 只对 pdf417 有意义，其他码制提供时向诊断通道报告一条警告，按未提供处理。 |
+| `eyeShape` | `MatrixCodeEyeShape` |  | 码眼形状，默认 square。时序图形与校正图形不受它影响，一律保持方块：它们是透视校正的几何基准。 只对 qr 有意义，其他码制提供时向诊断通道报告一条警告，按未提供处理。 |
+| `format` | `MatrixCodeFormat` |  | 码制，默认 qr。提供未知值时不绘制，根落到 `error` 态。 |
+| `gs1` | `boolean` |  | GS1 模式：在最前面放置 FNC1，读码器据此把内容解释为 GS1 元素串，即 GS1 QR / GS1 DataMatrix； 变长 AI 之间用内容中的 GS（U+001D）分隔。 |
+| `label` | `string` |  | 可及名，默认使用 value；提供全空白的名字等同于未提供。 |
+| `level` | `MatrixCodeLevel` |  | 纠错级别，取值域随码制：qr 为 L / M / Q / H（默认 M）；pdf417 为 0–8（默认按数据量取规范推荐档）； aztec 为纠错码字至少占的百分比 5–95（默认 33）。提供码制不识别的值时不绘制，根落到 `error` 态。 data-matrix 没有级别可选，提供时向诊断通道报告一条警告，按未提供处理。 |
+| `logo` | `boolean` |  | 码面正中是否留出一块给 logo。 留出的模块会被底色覆盖，对读码器而言等于人为污损：放置 logo 时把 level 提到 Q 或 H， L 与 M 的纠错余量不足以承担这一块。损伤量见 `logoDamage`；超出所选级别的余量时 向诊断通道报告一条 `matrix-code.logo-damage` 警告，码照常绘制。 只对 qr 有意义：Data Matrix 的纠错余量随尺寸固定、没有可选的级别，放置 logo 会报告一条警告并按未放置处理。 |
+| `margin` | `number` |  | 静区宽度，单位为模块数，默认按码制的规范值（qr 4、data-matrix 1）；静区含在 viewBox 中，不占额外尺寸。 |
+| `moduleShape` | `MatrixCodeModuleShape` |  | 码点形状，默认 square。pdf417 是条不是点，提供时向诊断通道报告一条警告，按未提供处理。 |
+| `pixelSize` | `number` |  | 像素宽度，默认 160；高度按模块比例计算，正方形码宽高相等。两者都写为根上的内联尺寸。 |
+| `rectangular` | `boolean` |  | 从矩形尺寸（含矩形扩展 DMRE）中选择，默认从正方形尺寸中选择。 只对 data-matrix 有意义，其他码制提供时向诊断通道报告一条警告，按未提供处理。 |
+| `value` | `string` |  | 要编码的内容；空串不绘制。QR 按 UTF-8 取字节使用字节模式；Data Matrix 使用 ASCII 模式，Latin-1 以外的字符按 UTF-8 并声明 ECI。 |
 
 ### 状态
 
@@ -165,22 +165,22 @@ gs1 打开后最前面放 FNC1，读码器把内容当 GS1 元素串：变长 AI
 
 | 成员 | 类型 | 说明 |
 | --- | --- | --- |
-| `format` | `MatrixCodeFormat` | 解析后的码制。给了不认识的值时保持原样透出，好让错误信息与 data-format 都指着那个值。 |
-| `modules` | `readonly (readonly boolean[])[]` | 模块矩阵，[行][列]，true = 深色；没画出码时是空数组。 |
-| `version` | `number` | QR 实际用到的版本；别的码制与没画出码时为 0。 |
-| `columns` | `number` | 模块列数与行数，不含静区；正方形码两者相等，pdf417 的行数已含每个码字行占的 3 个模块高，没画出码时为 0。 |
+| `format` | `MatrixCodeFormat` | 解析后的码制。提供未知值时原样透出，使错误信息与 data-format 都指向该值。 |
+| `modules` | `readonly (readonly boolean[])[]` | 模块矩阵，[行][列]，true = 深色；未绘制时为空数组。 |
+| `version` | `number` | QR 实际使用的版本；其他码制与未绘制时为 0。 |
+| `columns` | `number` | 模块列数与行数，不含静区；正方形码两者相等，pdf417 的行数已含每个码字行占的 3 个模块高，未绘制时为 0。 |
 | `rows` | `number` |  |
-| `margin` | `number` | 解析后的静区宽度，单位是模块数。 |
+| `margin` | `number` | 解析后的静区宽度，单位为模块数。 |
 | `viewBox` | `string` | 根的 viewBox，含静区。 |
-| `path` | `string` | 除 QR 三个码眼以外的模块合成的那条 `&lt;path&gt;` 的 d；没画出码时是空串，此时不该生成 path 节点。 码眼永远不在这一条里，与形状无关。 |
-| `eyePath` | `string` | QR 三个码眼合成的那条 `&lt;path&gt;` 的 d；别的码制与没画出码时是空串，此时不该生成第二个 path 节点。 两条分开画与形状无关：码眼的颜色可以与码点不同，合成一条就没地方单独上色。 |
-| `logoArea` | `MatrixCodeLogoArea \| undefined` | logo 的落位与挖空矩形；没留位时为 undefined。 |
-| `logoDamage` | `MatrixCodeLogoDamage \| undefined` | 挖空对码面造成的损伤；没留 logo 位时为 undefined。 |
+| `path` | `string` | 除 QR 三个码眼以外的模块合成的 `&lt;path&gt;` 的 d；未绘制时为空串，此时不应生成 path 节点。 码眼永远不在这一条中，与形状无关。 |
+| `eyePath` | `string` | QR 三个码眼合成的 `&lt;path&gt;` 的 d；其他码制与未绘制时为空串，此时不应生成第二个 path 节点。 两条分开绘制与形状无关：码眼的颜色可以与码点不同，合成一条就无法单独上色。 |
+| `logoArea` | `MatrixCodeLogoArea \| undefined` | logo 的落位与挖空矩形；未留位时为 undefined。 |
+| `logoDamage` | `MatrixCodeLogoDamage \| undefined` | 挖空对码面造成的损伤；未留 logo 位时为 undefined。 |
 | `state` | `MatrixCodeState` | 当前状态。 |
 | `error` | `string \| undefined` | 编码失败的原因；其余状态为 undefined。 |
-| `label` | `string \| undefined` | 解析后的可及名字；没给名字时为 undefined，此时根退出无障碍树。 |
+| `label` | `string \| undefined` | 解析后的可及名；未提供名字时为 undefined，此时根退出无障碍树。 |
 | `getRootProps` | `() => T['element']` |  |
-| `getLogoProps` | `() => T['element']` | 铺到 logo 部件上的落位；没留位时宽高都是 0，那块连同里面的图形一起不渲染。 |
+| `getLogoProps` | `() => T['element']` | 铺到 logo 部件上的落位；未留位时宽高都是 0，该块连同其中的图形一起不渲染。 |
 
 ## 无障碍
 
