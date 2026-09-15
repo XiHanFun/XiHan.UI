@@ -20,23 +20,23 @@ const STRING_CONVERTER = { fromAttribute: (v: string | null) => v ?? undefined }
 const BOOLEAN_CONVERTER = { fromAttribute: (v: string | null) => (v === null ? undefined : v !== 'false') }
 
 /**
- * `<xh-tag>` —— Light-DOM 行为宿主：作者写 root、label、close-trigger 角色节点，
- * 元素跑 tag 机器并把 connect 产出打上去。关闭钮须是原生 `<button>`
- * （Enter/Space 的激活由平台负责），收起时用内联 style.display 隐藏 root。
+ * `<xh-tag>`：Light-DOM 行为宿主：作者写 root、label、close-trigger 角色节点，
+ * 元素运行 tag 状态机并把 connect 产出接上。关闭按钮须是原生 `<button>`
+ * （Enter / Space 的激活由平台负责），收起时用内联 style.display 隐藏 root。
  *
  * @customElement xh-tag
- * @attr {'solid'|'subtle'|'outline'|'ghost'} variant - 形态，决定颜色怎么用
- * @attr {'brand'|'neutral'|'success'|'warning'|'danger'|'info'} tone - 语气，决定用哪族颜色
+ * @attr {'solid'|'subtle'|'outline'|'ghost'} variant - 形态，决定颜色的使用方式
+ * @attr {'brand'|'neutral'|'success'|'warning'|'danger'|'info'} tone - 语气，决定使用哪族颜色
  * @attr {'sm'|'md'|'lg'} size - 尺寸
- * @attr {boolean} closable - 是否给出关闭钮，缺省为假；为假时该钮同时被禁用与收起
- * @attr {boolean} disabled - 标签禁用，关闭钮留在原地但按不动
- * @attr {boolean} read-only - 只读，关闭钮留在原地但按不动，标签本身不置灰
- * @attr {boolean} open - 受控显隐；缺省该属性即非受控
- * @attr {boolean} default-open - 非受控初始显隐，缺省为显示
+ * @attr {boolean} closable - 是否提供关闭按钮，默认为假；为假时该按钮同时被禁用与收起
+ * @attr {boolean} disabled - 标签禁用，关闭按钮保留位置但不可按下
+ * @attr {boolean} read-only - 只读，关闭按钮保留位置但不可按下，标签本身不置灰
+ * @attr {boolean} open - 受控显隐；未提供该属性即非受控
+ * @attr {boolean} default-open - 非受控初始显隐，默认显示
  * @fires open-change - open 状态变化；detail 为 `{ open: boolean }`
  * @csspart root - 标签根容器
  * @csspart label - 标签文字
- * @csspart close-trigger - 关闭钮，须是原生 `<button>`
+ * @csspart close-trigger - 关闭按钮，须是原生 `<button>`
  */
 export class XhTagElement extends XhElement {
   static override partContract = { anatomy: tagAnatomy, meta: tagMeta }
