@@ -101,10 +101,10 @@ phase / loading / disabled 由组件交给宿主，加载提示与结束语都�
 
 | 属性 | 类型 | 必填 | 说明 |
 | --- | --- | --- | --- |
-| `distance` | `number` |  | 提前量（px）：哨兵离可视区还有这么远就算进入，默认 0（真正露头才算）。扩的是 getTargetEl 给出的那块可视区。 |
-| `disabled` | `boolean` |  | 关掉：不再观察，也不再触发。列表已经没有下一页时用它。 |
-| `loading` | `boolean` |  | 正在取数：其间不观察、不重复触发。取完由宿主写回 false。 |
-| `onLoad` | `() => void` |  | 该取下一页了。 |
+| `distance` | `number` |  | 提前量（px）：哨兵距可视区该距离即视为进入，默认 0（实际出现才计）。扩展的是 getTargetEl 给出的可视区。 |
+| `disabled` | `boolean` |  | 关闭：不再观察，也不再触发。列表已没有下一页时使用。 |
+| `loading` | `boolean` |  | 正在取数：期间不观察、不重复触发。取完由宿主写回 false。 |
+| `onLoad` | `() => void` |  | 应取下一页。 |
 
 ### 事件
 
@@ -112,7 +112,7 @@ phase / loading / disabled 由组件交给宿主，加载提示与结束语都�
 
 | 事件 | 载荷 | 说明 |
 | --- | --- | --- |
-| `load` | `` | 该取下一页了 |
+| `load` | `` | 应取下一页 |
 
 ### 插槽
 
@@ -140,10 +140,10 @@ phase / loading / disabled 由组件交给宿主，加载提示与结束语都�
 | --- | --- | --- |
 | `phase` | `InfiniteScrollPhase` |  |
 | `loading` | `boolean` | 正在取数。 |
-| `disabled` | `boolean` | 已关掉，不再观察。 |
+| `disabled` | `boolean` | 已关闭，不再观察。 |
 | `getRootProps` | `() => T['element']` |  |
 | `getSentinelProps` | `() => T['element']` |  |
-| `getLoadMoreTriggerProps` | `() => T['button']` | 取下一页的按钮。文案由作者写在按钮里，组件不代填。 |
+| `getLoadMoreTriggerProps` | `() => T['button']` | 取下一页的按钮。文案由作者写在按钮中，组件不代填。 |
 
 ## 无障碍
 

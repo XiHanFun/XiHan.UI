@@ -16,11 +16,11 @@ import { useMachine } from '../../runtime/use-machine'
 export interface InfiniteScrollContext {
   api: ComputedRef<InfiniteScrollApi>
   service: Service<InfiniteScrollSchema>
-  /** 哨兵节点：观察器盯的就是它。 */
+  /** 哨兵节点：观察器监视的目标。 */
   sentinelRef: Ref<HTMLElement | null>
 }
 
-/** 观察在机器的效应里跑，两处 DOM 取值口经 refs 交进去；getTargetEl 返回滚动容器，null 即整页滚动。 */
+/** 观察在状态机的效应中运行，两处 DOM 取值口经 refs 交入；getTargetEl 返回滚动容器，null 即整页滚动。 */
 export function useInfiniteScroll(
   props: InfiniteScrollSchema['props'],
   onLoad?: InfiniteScrollSchema['props']['onLoad'],

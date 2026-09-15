@@ -13,10 +13,10 @@ import { useInfiniteScroll } from './use-infinite-scroll'
 
 type InfiniteScrollProps = InfiniteScrollSchema['props']
 
-/** 默认插槽的载荷：取数所处的阶段，以及正在取数与已关掉两个状态。 */
+/** 默认插槽的载荷：取数所处的阶段，以及正在取数与已关闭两个状态。 */
 export type InfiniteScrollRootSlotProps = Pick<InfiniteScrollApi, 'phase' | 'loading' | 'disabled'>
 
-/** 根节点是列表的外壳，状态挂在它身上；滚动本身走浏览器原生通路，组件不接管。 */
+/** 根节点是列表的外壳，状态挂在它上面；滚动本身经浏览器原生通路，组件不接管。 */
 export const XhInfiniteScrollRoot = defineComponent({
   name: 'XhInfiniteScrollRoot',
   // 缺省值由机器与 connect 决定；普通类型省略 default，Boolean 显式保留 undefined
@@ -24,7 +24,7 @@ export const XhInfiniteScrollRoot = defineComponent({
     distance: { type: Number },
     disabled: { type: Boolean, default: undefined },
     loading: { type: Boolean, default: undefined },
-    /** 裁剪出可视区的滚动容器，缺省即整页滚动；distance 的提前量扩的正是这块区域。 */
+    /** 裁剪出可视区的滚动容器，默认即整页滚动；distance 的提前量扩展的正是这块区域。 */
     target: { type: Object as PropType<HTMLElement | null> },
   },
   emits: {
@@ -48,8 +48,8 @@ export const XhInfiniteScrollRoot = defineComponent({
 
 /**
  * 取下一页的按钮：与哨兵是同一条通路的两个入口。
- * 读屏在虚拟光标模式下不产生滚动事件，哨兵那条路够不着，这个按钮是它的键盘等价通路。
- * 文案写在插槽里，组件不代填。
+ * 读屏在虚拟光标模式下不产生滚动事件，哨兵路径无法触及，该按钮是它的键盘等价通路。
+ * 文案写在插槽中，组件不代填。
  */
 export const XhInfiniteScrollLoadMoreTrigger = defineComponent({
   name: 'XhInfiniteScrollLoadMoreTrigger',
@@ -63,7 +63,7 @@ export const XhInfiniteScrollLoadMoreTrigger = defineComponent({
   },
 })
 
-/** 摆在列表末尾的哨兵，进可视区即报"该取下一页了"。 */
+/** 放置在列表末尾的哨兵，进入可视区即报告应取下一页。 */
 export const XhInfiniteScrollSentinel = defineComponent({
   name: 'XhInfiniteScrollSentinel',
   setup(_, { slots }) {

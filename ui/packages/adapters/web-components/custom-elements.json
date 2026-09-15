@@ -27441,7 +27441,7 @@
       "declarations": [
         {
           "kind": "class",
-          "description": "`<xh-infinite-scroll>` —— 无限滚动行为宿主：摆在列表末尾的哨兵一进可视区就报「该取下一页了」。\n\n滚动本身一概不接管，走浏览器原生通路；触发的判据是哨兵与可视区的交叠。\n列表滚在某个 overflow 容器里时把容器交给 target：distance 的提前量扩的正是那块可视区，\n不给就只对窗口视口生效，落到列表上等于没写。\n观察器只在 idle 挂着：loading 与 disabled 两段都不观察，哨兵留在可视区里也不会连着触发第二次。",
+          "description": "`<xh-infinite-scroll>`：无限滚动行为宿主：放在列表末尾的哨兵进入可视区即报告应取下一页。\n\n滚动本身一概不接管，使用浏览器原生路径；触发的判据是哨兵与可视区的交叠。\n列表在某个 overflow 容器中滚动时把容器交给 target：distance 的提前量扩展的正是该可视区，\n未提供时只对窗口视口生效，对列表等于未设置。\n观察器只在 idle 时挂载：loading 与 disabled 两段都不观察，哨兵停留在可视区内也不会连续触发第二次。",
           "name": "XhInfiniteScrollElement",
           "cssParts": [
             {
@@ -27449,11 +27449,11 @@
               "name": "root"
             },
             {
-              "description": "哨兵，摆在列表末尾；对读屏隐藏",
+              "description": "哨兵，放在列表末尾；对读屏隐藏",
               "name": "sentinel"
             },
             {
-              "description": "取下一页的按钮，与哨兵同一条通路；文案由作者写在按钮里",
+              "description": "取下一页的按钮，与哨兵同一路径；文案由作者写在按钮中",
               "name": "load-more-trigger"
             }
           ],
@@ -27556,7 +27556,7 @@
           ],
           "events": [
             {
-              "description": "该取下一页了",
+              "description": "应取下一页",
               "name": "load"
             }
           ],
@@ -27565,7 +27565,7 @@
               "type": {
                 "text": "number | undefined"
               },
-              "description": "提前量（px）：哨兵离可视区还有这么远就算进入，默认 0",
+              "description": "提前量（px）：哨兵距可视区该距离即视为进入，默认 0",
               "name": "distance",
               "fieldName": "distance"
             },
@@ -27573,7 +27573,7 @@
               "type": {
                 "text": "boolean | undefined"
               },
-              "description": "关掉，不再观察也不再触发",
+              "description": "关闭，不再观察也不再触发",
               "name": "disabled",
               "fieldName": "disabled"
             },
@@ -27581,7 +27581,7 @@
               "type": {
                 "text": "boolean | undefined"
               },
-              "description": "正在取数，其间不观察、不重复触发；取完由宿主写回 false",
+              "description": "正在取数，期间不观察、不重复触发；取完由宿主写回 false",
               "name": "loading",
               "fieldName": "loading"
             }

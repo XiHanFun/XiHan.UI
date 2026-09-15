@@ -10,38 +10,38 @@ import type { MachineSchema, PropTypes } from '@xihan-ui/core'
 /** 三段状态，经 api.phase 暴露；DOM 上由 data-loading / data-disabled 布尔属性表达。 */
 export type InfiniteScrollPhase = 'idle' | 'loading' | 'paused'
 
-/** 适配器在挂载前填入的 DOM 取值口。 */
+/** 适配器在挂载前填入的 DOM 取值器。 */
 export interface InfiniteScrollRefs {
-  /** 哨兵节点，观察器盯的就是它。 */
+  /** 哨兵节点，观察器观察的目标。 */
   getSentinelEl: () => HTMLElement | null
   /**
    * 裁剪出可视区的滚动容器，返回 null 即以窗口视口为准。
-   * distance 是往可视区外扩的提前量，扩的正是这里给的那块区域：
-   * 列表滚在某个 overflow 容器里却不给它，提前量就只对窗口视口生效，落到列表上等于没写。
+   * distance 是向可视区外扩展的提前量，扩展的正是这里给出的区域：
+   * 列表在某个 overflow 容器中滚动却未提供它时，提前量只对窗口视口生效，对列表等于未设置。
    */
   getTargetEl: () => HTMLElement | null
 }
 
 export interface InfiniteScrollSchema extends MachineSchema {
   props: {
-    /** 提前量（px）：哨兵离可视区还有这么远就算进入，默认 0（真正露头才算）。扩的是 getTargetEl 给出的那块可视区。 */
+    /** 提前量（px）：哨兵距可视区该距离即视为进入，默认 0（实际出现才计）。扩展的是 getTargetEl 给出的可视区。 */
     distance?: number
-    /** 关掉：不再观察，也不再触发。列表已经没有下一页时用它。 */
+    /** 关闭：不再观察，也不再触发。列表已没有下一页时使用。 */
     disabled?: boolean
-    /** 正在取数：其间不观察、不重复触发。取完由宿主写回 false。 */
+    /** 正在取数：期间不观察、不重复触发。取完由宿主写回 false。 */
     loading?: boolean
-    /** 该取下一页了。 */
+    /** 应取下一页。 */
     onLoad?: () => void
   }
   context: Record<string, never>
   computed: Record<string, never>
   refs: InfiniteScrollRefs
-  /** idle 观察着等触发；loading 正在取数；paused 被关掉了。 */
+  /** idle 观察中等待触发；loading 正在取数；paused 已关闭。 */
   state: InfiniteScrollPhase
   event:
-    /** 哨兵进了可视区。 */
+    /** 哨兵进入可视区。 */
     | { type: 'SENTINEL.ENTER' }
-    /** 有人按了取下一页的按钮。与哨兵进可视区走同一段。 */
+    /** 按下了取下一页的按钮。与哨兵进入可视区走同一路径。 */
     | { type: 'LOAD' }
     /** disabled / loading 被改写，重新落到对应的状态。 */
     | { type: 'MODE.SYNC' }
@@ -55,13 +55,13 @@ export interface InfiniteScrollApi<T extends PropTypes = PropTypes> {
   phase: InfiniteScrollPhase
   /** 正在取数。 */
   loading: boolean
-  /** 已关掉，不再观察。 */
+  /** 已关闭，不再观察。 */
   disabled: boolean
   getRootProps: () => T['element']
   getSentinelProps: () => T['element']
-  /** 取下一页的按钮。文案由作者写在按钮里，组件不代填。 */
+  /** 取下一页的按钮。文案由作者写在按钮中，组件不代填。 */
   getLoadMoreTriggerProps: () => T['button']
 }
 
-/** 读屏用的文案。本组件目前没有需要外露的文案，位先留着。 */
+/** 读屏文案。本组件目前没有需要外露的文案，保留该位。 */
 export interface InfiniteScrollTranslations {}
