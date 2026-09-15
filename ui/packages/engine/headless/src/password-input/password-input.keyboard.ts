@@ -19,7 +19,7 @@ export const passwordInputKeyboard: KeyboardTable = {
       id: 'password-input.kbd.toggle',
       keys: ['Enter', 'Space'],
       when: 'focus on visibility-trigger, 控件未禁用',
-      does: '切换明暗；切换钮是原生 button，这两个键由平台翻成 click。焦点留在按钮上，框里的光标与选中范围原样放回',
+      does: '切换明暗；切换按钮是原生 button，这两个键由平台转换为 click。焦点留在按钮上，输入框中的光标与选中范围原样恢复',
     },
     {
       id: 'password-input.kbd.caps-lock',

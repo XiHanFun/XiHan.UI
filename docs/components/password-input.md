@@ -131,21 +131,21 @@ name 才让它参与提交，auto-complete 写成 new-password 密码管理器�
 
 | 属性 | 类型 | 必填 | 说明 |
 | --- | --- | --- | --- |
-| `value` | `string` |  | 受控值；给了就由宿主说了算，机器不自改。 |
+| `value` | `string` |  | 受控值；提供后由宿主决定，状态机不自行修改。 |
 | `defaultValue` | `string` |  | 非受控初值。 |
-| `revealed` | `boolean` |  | 受控的明暗态：明文是否揭开；给了就由宿主说了算。 |
-| `defaultRevealed` | `boolean` |  | 非受控的初始明暗态，缺省隐藏。 |
+| `revealed` | `boolean` |  | 受控的显隐态：明文是否显示；提供后由宿主决定。 |
+| `defaultRevealed` | `boolean` |  | 非受控的初始显隐态，默认隐藏。 |
 | `disabled` | `boolean` |  |  |
 | `readOnly` | `boolean` |  |  |
 | `required` | `boolean` |  |  |
 | `invalid` | `boolean` |  |  |
-| `name` | `string` |  | 表单字段名；给了才参与提交。 |
+| `name` | `string` |  | 表单字段名；提供后才参与提交。 |
 | `placeholder` | `string` |  |  |
-| `autoComplete` | `string` |  | 落到 input 上的 autocomplete，缺省 current-password。 密码管理器靠它决定这一格是填旧密码还是存新密码，注册表单要显式写 new-password。 |
-| `strength` | `number` |  | 强度档位，0 到 4 共五档。给了才显出强度条，缺省不显。 打分算法归调用方：口令强弱是产品规则（字典、泄漏库、业务口径），组件只负责把档位画出来。 超出区间的值被夹回区间。 |
-| `translations` | `Partial<PasswordInputTranslations>` |  | 读屏文案覆盖；没给的条目走组件内建英文。 |
-| `variant` | `ControlVariant` |  | 形态：outline / subtle / ghost，决定颜色怎么用。 |
-| `tone` | `Tone` |  | 语气：brand / neutral / success / warning / danger / info，决定用哪族颜色。 |
+| `autoComplete` | `string` |  | 写到 input 上的 autocomplete，默认 current-password。 密码管理器据此决定该字段是填入旧密码还是保存新密码，注册表单要显式写 new-password。 |
+| `strength` | `number` |  | 强度档位，0 到 4 共五档。提供后才显示强度条，默认不显示。 打分算法归调用方：口令强弱是产品规则（字典、泄漏库、业务口径），组件只负责绘制档位。 超出区间的值被夹回区间。 |
+| `translations` | `Partial<PasswordInputTranslations>` |  | 读屏文案覆盖；未提供的条目使用组件内建英文。 |
+| `variant` | `ControlVariant` |  | 形态：outline / subtle / ghost，决定颜色的使用方式。 |
+| `tone` | `Tone` |  | 语气：brand / neutral / success / warning / danger / info，决定使用哪族颜色。 |
 | `size` | `Size` |  | 尺寸：sm / md / lg。 |
 | `onValueChange` | `(details: PasswordInputValueChangeDetails) => void` |  |  |
 | `onRevealedChange` | `(details: PasswordInputRevealedChangeDetails) => void` |  |  |
@@ -157,7 +157,7 @@ name 才让它参与提交，auto-complete 写成 new-password 密码管理器�
 | 事件 | 载荷 | 说明 |
 | --- | --- | --- |
 | `value-change` | `PasswordInputValueChangeDetails` | 值变化；detail 为 `{ value: string }` |
-| `revealed-change` | `PasswordInputRevealedChangeDetails` | 明暗变化；detail 为 `{ revealed: boolean }` |
+| `revealed-change` | `PasswordInputRevealedChangeDetails` | 显隐变化；detail 为 `{ revealed: boolean }` |
 
 ### 插槽
 
@@ -192,24 +192,24 @@ name 才让它参与提交，auto-complete 写成 new-password 密码管理器�
 | --- | --- | --- |
 | `value` | `string` |  |
 | `empty` | `boolean` | 值为空串。 |
-| `revealed` | `boolean` | 此刻明文是否已揭开。 |
-| `capsLock` | `boolean` | 大写锁定是否开着；为真时提示部件才显出来。 |
+| `revealed` | `boolean` | 当前明文是否已显示。 |
+| `capsLock` | `boolean` | 大写锁定是否开启；为真时提示部件才显示。 |
 | `disabled` | `boolean` |  |
 | `readOnly` | `boolean` |  |
 | `invalid` | `boolean` |  |
-| `inputType` | `PasswordInputType` | 输入框此刻的 type，随 revealed 走。 |
-| `capsLockMessage` | `string` | 大写锁定播报区里此刻的文字：开着时是 `translations.capsLockOn`，关着时是空串。 适配器把它落成提示部件的文本内容，读屏念的就是这一段。 |
-| `strength` | `number \| undefined` | 夹回 0–4 后的强度档位；没给 strength 时是 undefined，此时强度条收起。 |
+| `inputType` | `PasswordInputType` | 输入框当前的 type，随 revealed 变化。 |
+| `capsLockMessage` | `string` | 大写锁定播报区当前的文字：开启时是 `translations.capsLockOn`，关闭时是空串。 适配器把它写为提示部件的文本内容，读屏朗读的即这一段。 |
+| `strength` | `number \| undefined` | 夹回 0–4 后的强度档位；未提供 strength 时为 undefined，此时强度条收起。 |
 | `setValue` | `(next: string) => void` | 直接写值，只受 disabled / readOnly 约束。 |
-| `setRevealed` | `(next: boolean) => void` | 指定明暗态；整枚控件禁用时不生效。 |
-| `toggleRevealed` | `() => void` | 翻转明暗态；整枚控件禁用时不生效。 |
+| `setRevealed` | `(next: boolean) => void` | 指定显隐态；整个控件禁用时不生效。 |
+| `toggleRevealed` | `() => void` | 切换显隐态；整个控件禁用时不生效。 |
 | `getRootProps` | `() => T['element']` |  |
 | `getLabelProps` | `() => T['label']` |  |
 | `getControlProps` | `() => T['element']` |  |
 | `getInputProps` | `() => T['input']` |  |
 | `getVisibilityTriggerProps` | `() => T['button']` |  |
 | `getCapsLockIndicatorProps` | `() => T['element']` |  |
-| `getStrengthMeterProps` | `() => T['element']` | 强度条：档位落在 data-level 与 aria-valuenow 上；没给 strength 时带 hidden 收起。 |
+| `getStrengthMeterProps` | `() => T['element']` | 强度条：档位写在 data-level 与 aria-valuenow 上；未提供 strength 时带 hidden 收起。 |
 
 ## 无障碍
 
@@ -219,7 +219,7 @@ name 才让它参与提交，auto-complete 写成 new-password 密码管理器�
 
 | 按键 | 生效条件 | 行为 |
 | --- | --- | --- |
-| `Enter` / `Space` | focus on visibility-trigger, 控件未禁用 | 切换明暗；切换钮是原生 button，这两个键由平台翻成 click。焦点留在按钮上，框里的光标与选中范围原样放回 |
+| `Enter` / `Space` | focus on visibility-trigger, 控件未禁用 | 切换明暗；切换按钮是原生 button，这两个键由平台转换为 click。焦点留在按钮上，输入框中的光标与选中范围原样恢复 |
 | `CapsLock` | focus in input | 每次按键都重读一次大写锁定状态：开着就亮起提示，焦点离开输入框即熄灭 |
 
 ### ARIA

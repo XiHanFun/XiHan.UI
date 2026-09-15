@@ -18,7 +18,7 @@ import { usePasswordInput } from './use-password-input'
 
 type PasswordInputProps = PasswordInputSchema['props']
 
-/** 默认插槽的载荷：当前值与空标志、明暗与大写锁定，以及写值与翻明暗的动作。 */
+/** 默认插槽的载荷：当前值与空标志、明暗与大写锁定，以及写值与切换明暗的动作。 */
 export type PasswordInputRootSlotProps = Pick<
   PasswordInputApi,
   'value' | 'empty' | 'revealed' | 'capsLock' | 'inputType' | 'setValue' | 'setRevealed' | 'toggleRevealed'
@@ -131,7 +131,7 @@ export const XhPasswordInputCapsLockIndicator = defineComponent({
   },
 })
 
-/** 强度条：档位由调用方打分后经 strength 传进来，没给就收起。 */
+/** 强度条：档位由调用方评分后经 strength 传入，未提供时收起。 */
 export const XhPasswordInputStrengthMeter = defineComponent({
   name: 'XhPasswordInputStrengthMeter',
   setup(_, { slots }) {
