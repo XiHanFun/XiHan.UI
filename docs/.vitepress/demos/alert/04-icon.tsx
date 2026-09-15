@@ -1,4 +1,4 @@
-// 图标 | icon 部件排在标题前面，颜色取当前语气的强调色；内容由作者塞，字形与内联 svg 都行
+// 图标 | icon 部件排在标题前面，颜色取当前语气的强调色；内容由作者放置，字形与内联 svg 均可
 import type { ReactNode } from "react";
 import { CheckIcon } from "@xihan-ui/icons";
 import {
