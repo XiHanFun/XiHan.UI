@@ -1,6 +1,6 @@
 # Switch 开关 <Badge type="info" text="alpha" />
 
-一项设置的开与关，翻过去立即生效。
+一项设置的开与关，切换后立即生效。
 
 <div class="xh-resource-links">
   <a href="https://github.com/XiHanFun/XiHan.UI/tree/dev/ui/packages/engine/headless/src/switch" target="_blank" rel="noreferrer">Headless</a>
@@ -88,45 +88,40 @@ checked-change 带一份 { checked }，非受控时内部转移也照发一次
 
 ### 何时使用
 
-- 设置页里立即生效的开关（通知、深色模式、自动保存）。
+- 设置页内立即生效的开关（通知、深色模式、自动保存）。
 
 ### 何时不用
 
-- 值要随表单一起提交：用[复选框](./checkbox)，它是表单控件的原生语义。
-- 是工具栏上的格式按钮：用[切换按钮](./toggle)。
+- 值需要随表单一起提交时，使用[复选框](./checkbox)，它是表单控件的原生语义。
+- 工具栏上的格式按钮使用[切换按钮](./toggle)。
 
 ### 特性
 
-- `loading` 表达在途并锁住用户再次切换：按钮保持可聚焦，以 `aria-busy` 和滑块内指示器报告状态；
-  受控宿主仍可写回 `checked` 完成事务，失败时保持原值。它不会把 loading 假装成 disabled。
+- `loading` 表达在途并锁住再次切换：按钮保持可聚焦，以 `aria-busy` 和滑块内指示器报告状态；受控宿主仍可写回 `checked` 完成事务，失败时保持原值。loading 不伪装为 disabled。
 - `readOnly` 与 `disabled` 分开：只读仍可聚焦。
-- 轨道保持实体表单控件：未选中用中性底和明确内边界，选中用实心语气色，只读选中回到中性底；
-  不使用 backdrop 或透明玻璃。
-- 滑块使用 M1 实体底、细边、顶光和接触影；指针悬停轻抬，按住时沿行进方向拉长并在释放时回圆。
-  loading、只读与禁用不产生可操作的悬停/按压假反馈。
+- 轨道保持实体表单控件：未选中使用中性底和明确内边界，选中使用实心语气色，只读选中回到中性底；不使用 backdrop 或透明材质。
+- 滑块使用 M1 实体底、细边、顶光和接触影；指针悬停轻抬，按住时沿行进方向拉长并在释放时回圆。loading、只读与禁用不产生悬停 / 按压反馈。
 - 键盘聚焦环在明暗主题和开关两态都与轨道达到 3:1；RTL 会反转滑块行程，三尺寸与密度轴保持同一比例。
 - 减弱动效会取消按压拉伸并让 loading 圆环停转，以静止点线继续表达在途。
 
 ### 组合
 
-- 与[表单字段](./field)配合；成排时放进[列表](./list)。
+- 与[表单字段](./field)配合；成排时放入[列表](./list)。
 
 ### 最佳实践
 
-- 标签写这项设置本身（"邮件通知"），不写动作（"开启邮件通知"）——开关的状态已经说明了开还是关。
-- 异步提交时用 `loading` 并保持受控，别先翻再回滚。
+- 标签写设置本身（“邮件通知”），不写动作（“开启邮件通知”），开关的状态已经说明开或关。
+- 异步提交时使用 `loading` 并保持受控，不先切换再回滚。
 - 自定义轨道与滑块颜色时同时验证未选中边界、选中底和聚焦环；只换一支底色可能让暗色主题失去边界。
 
 ### 当前边界
 
-- `label` 目前只直接拿到 disabled 状态，loading / readonly 光标需由皮肤读取内部 root；后续应由连接层把两轴
-  同步到 label，去掉关系选择器并让所有硬底线浏览器得到同一反馈。
-- React / Vue 的紧凑 `XhSwitch` 把默认插槽固定为轨道外标签，没有暴露轨道内容或 thumb 插槽；只有 Web Components
-  的 Light DOM 能给 thumb 写作者内容。若要三端支持开关内文案或自定义标记，应以独立部件 API 一起补齐。
+- `label` 目前只直接获得 disabled 状态，loading / readonly 光标需由皮肤读取内部 root；后续应由连接层把两轴同步到 label，移除关系选择器并让所有基线浏览器得到同一反馈。
+- React / Vue 的紧凑 `XhSwitch` 把默认插槽固定为轨道外标签，没有暴露轨道内容或 thumb 插槽；只有 Web Components 的 Light DOM 能为 thumb 写作者内容。三端支持开关内文案或自定义标记应以独立部件 API 一起补齐。
 
 ### 反模式
 
-- 开关翻过去还要按"保存"：那说明它应该是复选框。
+- 开关切换后还需要点击“保存”，说明它应该是复选框。
 - 用开关表达两个并列选项（列表 / 网格）。
 
 ## API 参考
@@ -283,7 +278,7 @@ checked-change 带一份 { checked }，非受控时内部转移也照发一次
 | `--xh-switch-thumb-fg` | `thumb` | `color` | `default` | `--xh-material-soft-fg` | switch 的 thumb 部件 color 覆盖槽。 |
 | `--xh-switch-thumb-highlight` | `thumb` | `background` | `default` | `--xh-material-soft-highlight` | switch 的 thumb 部件 background 覆盖槽。 |
 | `--xh-switch-thumb-press-stretch` | `root`<br>`thumb` | `inline-size`<br>`translate` | `active`<br>`disabled`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])`<br>`not([data-readonly])`<br>`readonly`<br>`state=checked` | `--xh-motion-distance-sm` | switch 的 root、thumb 部件 inline-size、translate 覆盖槽。 |
-| `--xh-switch-thumb-radius` | `thumb` | `border-radius` | `default` | `--xh-shape-pill` | switch 的 thumb 部件 border-radius 覆盖槽。 |
+| `--xh-switch-thumb-radius` | `thumb` | `border-radius` | `default` | `--xh-shape-circle` | switch 的 thumb 部件 border-radius 覆盖槽。 |
 | `--xh-switch-thumb-shadow` | `thumb` | `box-shadow` | `default` | `--xh-material-soft-shadow` | switch 的 thumb 部件 box-shadow 覆盖槽。 |
 | `--xh-switch-thumb-shadow-disabled` | `root`<br>`thumb` | `box-shadow` | `disabled` | `none` | switch 的 root、thumb 部件 box-shadow 覆盖槽。 |
 | `--xh-switch-thumb-shadow-hover` | `root`<br>`thumb` | `box-shadow` | `@media (hover: hover)`<br>`disabled`<br>`hover`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])`<br>`not([data-readonly])`<br>`readonly` | `--xh-elevation-raised` | switch 的 root、thumb 部件 box-shadow 覆盖槽。 |
