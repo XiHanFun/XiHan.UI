@@ -1,6 +1,6 @@
 # Accordion 手风琴 <Badge type="info" text="alpha" />
 
-一列可展开的区块，标题常驻、内容按需展开。
+一列可展开的区块，标题常驻，内容按需展开。
 
 <div class="xh-resource-links">
   <a href="https://github.com/XiHanFun/XiHan.UI/tree/dev/ui/packages/engine/headless/src/accordion" target="_blank" rel="noreferrer">Headless</a>
@@ -94,33 +94,33 @@ plain 不画壳，surface 连成单一表面，bordered 逐条画边；三档只
 
 ### 何时使用
 
-- 常见问题、设置分组这类"标题足以判断要不要看"的内容。
-- 内容很长，一次全铺开会让页面失去结构。
+- 常见问题、设置分组等由标题即可判断是否需要展开的内容。
+- 内容较长，一次全部铺开会使页面失去结构。
 
 ### 何时不用
 
-- 只有一块内容：用[折叠区域](./collapsible)。
-- 各块内容需要对照着看：直接铺开。
-- 各块是并列视图、同时只看一个：用[标签页](./tabs)。
+- 只有一块内容时，使用[折叠区域](./collapsible)。
+- 各块内容需要对照阅读时，直接铺开。
+- 各块是并列视图且同一时间只看一个时，使用[标签页](./tabs)。
 
 ### 特性
 
-- `multiple` 决定能不能同时展开多项，`collapsible` 决定能不能全部收起。
-- 指示器可以放前也可以放后，图形自定。
-- 可以嵌套；触发区大小由作者决定。
+- `multiple` 决定能否同时展开多项，`collapsible` 决定能否全部收起。
+- 指示器可置于标题前或标题后，图形可自定义。
+- 支持嵌套；触发区大小由作者决定。
 
 ### 组合
 
-- 标题栏里可以挂附加信息（计数、状态[徽标](./badge)）。
+- 标题栏可以放置附加信息，如计数或状态[徽标](./badge)。
 
 ### 最佳实践
 
-- 标题写清楚里面是什么，用户不该靠展开来发现。
-- 默认展开第一项，让用户看见内容长什么样。
+- 标题应说明区块内容，不依赖展开来发现。
+- 默认展开第一项，让用户看到内容的形态。
 
 ### 反模式
 
-- 把关键信息藏进折叠：用户不会逐个点开。
+- 将关键信息放进折叠区块，用户不会逐个展开。
 - 展开时页面下方内容大幅跳动而没有滚动补偿。
 
 ## API 参考
@@ -276,6 +276,7 @@ plain 不画壳，surface 连成单一表面，bordered 逐条画边；三档只
 | `--xh-accordion-trigger-bg` | `trigger` | `background` | `default` | `transparent` | accordion 的 trigger 部件 background 覆盖槽。 |
 | `--xh-accordion-trigger-bg-hover` | `trigger` | `background` | `disabled`<br>`hover`<br>`not([data-disabled])`<br>`not([data-state='open'])`<br>`state=open` | `--xh-bg-subtle-hover` | accordion 的 trigger 部件 background 覆盖槽。 |
 | `--xh-accordion-trigger-fg` | `trigger` | `color` | `default` | `--xh-fg-default` | accordion 的 trigger 部件 color 覆盖槽。 |
+| `--xh-accordion-trigger-fg-disabled` | `trigger` | `color` | `disabled` | `--xh-fg-disabled` | accordion 的 trigger 部件 color 覆盖槽。 |
 | `--xh-accordion-trigger-fg-open` | `trigger` | `color` | `state=open` | `--xh-_accordion-open-fg` | accordion 的 trigger 部件 color 覆盖槽。 |
 | `--xh-accordion-trigger-font-size` | `trigger` | `font-size` | `default` | `--xh-_accordion-trigger-font-size` | accordion 的 trigger 部件 font-size 覆盖槽。 |
 | `--xh-accordion-trigger-font-weight` | `trigger` | `font-weight` | `default` | `--xh-text-label-weight` | accordion 的 trigger 部件 font-weight 覆盖槽。 |

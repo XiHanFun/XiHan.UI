@@ -12135,6 +12135,7 @@
     "--xh-accordion-trigger-bg",
     "--xh-accordion-trigger-bg-hover",
     "--xh-accordion-trigger-fg",
+    "--xh-accordion-trigger-fg-disabled",
     "--xh-accordion-trigger-fg-open",
     "--xh-accordion-trigger-font-size",
     "--xh-accordion-trigger-font-weight",
