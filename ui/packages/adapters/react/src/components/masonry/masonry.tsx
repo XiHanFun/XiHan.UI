@@ -14,11 +14,11 @@ import { mergeReactProps } from '../../runtime/merge-props'
 import { reactNormalize } from '../../runtime/normalize-props'
 
 /**
- * 把 children 摊成一个个项。
+ * 把 children 摊平为一个个项。
  *
- * `Children.toArray` 把数组与 null / undefined / 布尔一并处理掉，这里只再摊平片段
- * 与滤掉纯空白文本：片段不摊平就整段算一项，一列里会塞进所有内容；纯空白一个像素都不画，
- * 留着会占掉一个格位。
+ * `Children.toArray` 把数组与 null / undefined / 布尔一并处理，这里只再摊平片段
+ * 与滤除纯空白文本：片段不摊平就整段算一项，一列中会放入所有内容；纯空白不渲染任何像素，
+ * 保留会占用一个格位。
  */
 function masonryItems(children: ReactNode): ReactNode[] {
   const out: ReactNode[] = []
@@ -39,25 +39,25 @@ function masonryItems(children: ReactNode): ReactNode[] {
 
 export interface XhMasonryProps extends ComponentPropsWithRef<'div'> {
   /**
-   * 分几列，不写按三列。也收断点对象 `{ base, sm, md, lg, xl }`，逐档写各自的列数，
-   * 没写的档沿用比它窄的那一档。换档看的是容器自身的宽度，不是视口宽度。
+   * 分几列，未写时按三列。也接受断点对象 `{ base, sm, md, lg, xl }`，逐档写各自的列数，
+   * 未写的档沿用比它窄的一档。换档依据容器自身的宽度，不是视口宽度。
    */
   columns?: MasonryColumns
-  /** 列与列、项与项之间的间距档位；换算成哪个令牌归皮肤。 */
+  /** 列与列、项与项之间的间距档位；换算为哪个令牌归皮肤。 */
   gap?: MasonryGap
-  /** 按文档序逐列填；不写则最短列优先。 */
+  /** 按文档序逐列填充；未写时最短列优先。 */
   sequential?: boolean
 }
 
-/** 瀑布流容器：列按当前档位铺，项按量到的高度落进某一列。 */
+/** 瀑布流容器：列按当前档位铺设，项按测得的高度落入某一列。 */
 export function XhMasonry({ columns, gap, sequential, children, ...rest }: XhMasonryProps): ReactNode {
   const rootRef = useRef<HTMLDivElement | null>(null)
   const observerRef = useRef<ResizeObserver | null>(null)
-  /** 当前挂着观察器的节点，与新一轮比对后才决定要不要重挂。 */
+  /** 当前挂载观察器的节点，与新一轮比对后才决定是否重新挂载。 */
   const observedRef = useRef<HTMLElement[]>([])
-  /** 容器自身的宽度，换档看它。 */
+  /** 容器自身的宽度，换档依据它。 */
   const [width, setWidth] = useState(0)
-  /** 按作者写的项序排好的实测高度。 */
+  /** 按作者写的项序排列的实测高度。 */
   const [heights, setHeights] = useState<readonly number[]>([])
 
   /** Headless 只产出测量快照；是否写入 React 状态仍由适配器决定。 */
@@ -66,7 +66,7 @@ export function XhMasonry({ columns, gap, sequential, children, ...rest }: XhMas
     setHeights(previous => (sameMasonryHeights(previous, measurement.heights) ? previous : measurement.heights))
   }, [])
 
-  /** 量一遍容器宽度与每一项的高度。量到的与上一遍一样就不写，否则量一次重排一次没完。 */
+  /** 测量一遍容器宽度与每一项的高度。测得的与上一遍一样则不写入，否则每测一次重排一次无法终止。 */
   const measure = useCallback((): void => {
     const el = rootRef.current
     if (!el)
@@ -74,7 +74,7 @@ export function XhMasonry({ columns, gap, sequential, children, ...rest }: XhMas
     publishMeasurement(measureMasonry(el))
   }, [publishMeasurement])
 
-  /** 项增删后把观察器挂到新的一批节点上，再量一遍。节点没变就不重挂：重挂会白白多跑一轮回调。 */
+  /** 项增删后把观察器挂载到新的一批节点上，再测量一遍。节点未变则不重新挂载：重新挂载会多运行一轮回调。 */
   const sync = useCallback((): void => {
     const el = rootRef.current
     if (!el)
