@@ -97,9 +97,9 @@
 
 | 属性 | 类型 | 必填 | 说明 |
 | --- | --- | --- | --- |
-| `direction` | `GradientTextDirection` |  | 渐变走向档位，缺省 to-right。 |
-| `from` | `string` |  | 起点颜色，写成 CSS 变量交给皮肤；不给则用品牌色族。 |
-| `to` | `string` |  | 终点颜色，写成 CSS 变量交给皮肤；不给则用品牌色族。 |
+| `direction` | `GradientTextDirection` |  | 渐变走向档位，默认 to-right。 |
+| `from` | `string` |  | 起点颜色，写为 CSS 变量交给皮肤；未提供时使用品牌色族。 |
+| `to` | `string` |  | 终点颜色，写为 CSS 变量交给皮肤；未提供时使用品牌色族。 |
 | `tone` | `Tone` |  | 颜色：brand / neutral / success / warning / danger / info；显式 from / to 优先。 |
 
 ### connect API

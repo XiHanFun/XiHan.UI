@@ -15,17 +15,17 @@ import { XhElement } from '../element-base'
 const STRING_CONVERTER = { fromAttribute: (v: string | null) => v ?? undefined }
 
 /**
- * `<xh-gradient-text>` —— Light-DOM 行为宿主，无状态机，把 connectGradientText 产出打到 root 角色节点。
+ * `<xh-gradient-text>`：Light-DOM 行为宿主，无状态机，把 connectGradientText 产出接到 root 角色节点。
  *
- * 两端颜色写成 root 上的内联 CSS 变量，渐变怎么画、缺省用哪族颜色都在皮肤里；
- * 走向按档位落成 data-direction，皮肤逐档换算成 `to <边或角>`。
+ * 两端颜色写为 root 上的内联 CSS 变量，渐变的绘制方式、默认使用哪族颜色都在皮肤中；
+ * 走向按档位写为 data-direction，皮肤逐档换算为 `to <边或角>`。
  *
- * 给了 from 或 to 时 root 的内联 style 归本元素管，作者自己的内联样式请写在宿主元素上。
+ * 提供 from 或 to 时 root 的内联 style 归本元素管理，作者自己的内联样式写在宿主元素上。
  *
  * @customElement xh-gradient-text
- * @attr {string} from - 起点颜色，写成 root 上的 --xh-gradient-text-from
- * @attr {string} to - 终点颜色，写成 root 上的 --xh-gradient-text-to
- * @attr {'to-right'|'to-left'|'to-bottom'|'to-top'|'to-bottom-right'|'to-bottom-left'|'to-top-right'|'to-top-left'} direction - 渐变走向档位，缺省 to-right
+ * @attr {string} from - 起点颜色，写为 root 上的 --xh-gradient-text-from
+ * @attr {string} to - 终点颜色，写为 root 上的 --xh-gradient-text-to
+ * @attr {'to-right'|'to-left'|'to-bottom'|'to-top'|'to-bottom-right'|'to-bottom-left'|'to-top-right'|'to-top-left'} direction - 渐变走向档位，默认 to-right
  * @attr {'brand'|'neutral'|'success'|'warning'|'danger'|'info'} tone - 颜色；显式 from / to 优先
  * @csspart root - 被上色的文字容器，承载 data-direction、data-tone 与两端颜色变量
  */
