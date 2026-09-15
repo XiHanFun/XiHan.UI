@@ -1,4 +1,4 @@
-// 码制 | 零售商品用 EAN / UPC，外箱用 ITF-14，工业标签用 Code 39；定长数字码制的校验位可省，组件补上
+// 码制 | 零售商品用 EAN / UPC，外箱用 ITF-14，工业标签用 Code 39；定长数字码制的校验位可省略，组件补齐
 import type { BarCodeFormat } from "@xihan-ui/headless";
 import type { ReactNode } from "react";
 import { XhBarCode } from "@xihan-ui/react";
