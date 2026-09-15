@@ -15,7 +15,7 @@ function mount(radius: string) {
   host = document.createElement('div')
   host.innerHTML = `
     <div data-scope="resizable" data-part="root" style="inline-size: 200px; block-size: 120px; border-radius: ${radius}">
-      <span data-scope="resizable" data-part="handle" data-edge="e"></span>
+      <span data-scope="resizable" data-part="handle" data-edge="e" tabindex="0"></span>
       <span data-scope="resizable" data-part="handle" data-edge="s"></span>
       <span data-scope="resizable" data-part="handle" data-edge="se" tabindex="0"></span>
     </div>`
@@ -52,7 +52,7 @@ describe('resizable 把手视觉', () => {
     expect(southIndicator.borderRadius).toBe('9999px')
   })
 
-  it('角把手始终使用圆弧，不跟随容器退化成直角', () => {
+  it('角把手只圆对应的外侧拐角，并继承容器圆角', () => {
     const rounded = mount('12px')
     const rootRect = rounded.root.getBoundingClientRect()
     const cornerRect = rounded.corner.getBoundingClientRect()
@@ -62,23 +62,34 @@ describe('resizable 把手视觉', () => {
     expect(cornerRect.bottom - Number.parseFloat(roundedIndicator.bottom)).toBeCloseTo(rootRect.bottom, 5)
     expect(Number.parseFloat(roundedIndicator.inlineSize)).toBe(8)
     expect(Number.parseFloat(roundedIndicator.blockSize)).toBe(8)
-    expect(roundedIndicator.borderRadius).toBe('50%')
+    expect(roundedIndicator.borderTopLeftRadius).toBe('0px')
+    expect(roundedIndicator.borderBottomRightRadius).toBe('12px')
 
     const square = mount('0px')
-    expect(getComputedStyle(square.corner, '::after').borderRadius).toBe('50%')
+    expect(getComputedStyle(square.corner, '::after').borderBottomRightRadius).toBe('0px')
   })
 
-  it('角把手聚焦环围住圆弧指示器，不围透明命中盒', () => {
-    const resizable = mount('0px')
-    resizable.corner.focus()
+  it('聚焦时高亮指示器本身，不给透明命中盒或伪元素画外框', async () => {
+    const resizable = mount('12px')
+    const edgeIdle = getComputedStyle(resizable.east, '::after').backgroundColor
+    const cornerIdle = getComputedStyle(resizable.corner, '::after').borderBottomColor
 
-    const handle = getComputedStyle(resizable.corner)
-    const indicator = getComputedStyle(resizable.corner, '::after')
+    await userEvent.tab()
+    await new Promise(resolve => setTimeout(resolve, 150))
+    const edgeIndicator = getComputedStyle(resizable.east, '::after')
+    expect(document.activeElement).toBe(resizable.east)
+    expect(getComputedStyle(resizable.east).outlineStyle).toBe('none')
+    expect(edgeIndicator.outlineStyle).toBe('none')
+    expect(edgeIndicator.backgroundColor).not.toBe(edgeIdle)
+
+    await userEvent.tab()
+    await new Promise(resolve => setTimeout(resolve, 150))
+    const cornerIndicator = getComputedStyle(resizable.corner, '::after')
     expect(document.activeElement).toBe(resizable.corner)
-    expect(handle.outlineStyle).toBe('none')
-    expect(indicator.outlineStyle).toBe('solid')
-    expect(indicator.outlineWidth).toBe('2px')
-    expect(indicator.borderRadius).toBe('50%')
+    expect(getComputedStyle(resizable.corner).outlineStyle).toBe('none')
+    expect(cornerIndicator.outlineStyle).toBe('none')
+    expect(cornerIndicator.borderBottomColor).not.toBe(cornerIdle)
+    expect(cornerIndicator.borderBottomRightRadius).toBe('12px')
   })
 
   it('悬停只增强边框指示条', async () => {
