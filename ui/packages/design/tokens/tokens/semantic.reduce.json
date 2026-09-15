@@ -21,6 +21,14 @@
       "$type": "duration",
       "$value": "1ms"
     },
+    "duration-press": {
+      "$type": "duration",
+      "$value": "1ms"
+    },
+    "duration-release": {
+      "$type": "duration",
+      "$value": "1ms"
+    },
     "stagger-step": {
       "$type": "duration",
       "$value": "0ms"

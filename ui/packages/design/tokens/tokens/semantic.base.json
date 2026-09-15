@@ -508,6 +508,16 @@
       "$type": "duration",
       "$value": "{duration.normal}"
     },
+    "duration-press": {
+      "$description": "统一点击触感的按下段：scale 1 → 0.97，背景进入 active。",
+      "$type": "duration",
+      "$value": "{duration.fast}"
+    },
+    "duration-release": {
+      "$description": "统一点击触感的释放段：scale 0.97 → 1，背景回到 hover / rest。",
+      "$type": "duration",
+      "$value": "{duration.normal}"
+    },
     "stagger-step": {
       "$description": "交错进场的相邻两项间隔。派生自 duration-enter 的五分之一，改进场时长它跟着走。减弱档显式归 0ms，不靠 calc 传递。",
       "$type": "duration",
@@ -545,6 +555,16 @@
       "$description": "往返型无限循环：进度条的不定态、骨架呼吸、加载条的游标。单向循环仍走 ease-loop——匀速是转圈的硬要求，而往返在折返点需要两端减速，linear 在那里是瞬时反向、读成硬弹。",
       "$type": "cubicBezier",
       "$value": "{ease.in-out}"
+    },
+    "ease-press": {
+      "$description": "按下段的曲线：稳定进入，不带弹簧。",
+      "$type": "cubicBezier",
+      "$value": "{ease.standard}"
+    },
+    "ease-release": {
+      "$description": "释放段的曲线：快速恢复，末端柔和。",
+      "$type": "cubicBezier",
+      "$value": "{ease.out-strong}"
     },
     "ease-settle": {
       "$description": "小件的过冲落位：勾、圆点、开关拇指、按压释放。只许打在 scale / rotate 上，且部件短边不超过 32px。",
