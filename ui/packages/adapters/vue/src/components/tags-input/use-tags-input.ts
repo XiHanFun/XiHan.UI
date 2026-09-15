@@ -17,7 +17,7 @@ import { createVueIdGenerator } from '../../runtime/vue-id'
 
 export interface TagsInputContext {
   api: ComputedRef<TagsInputApi>
-  /** 机器实例，供部件上报 DOM 侧的事实（如标签节点带着焦点离场）。 */
+  /** 状态机实例，供部件上报 DOM 侧的事实（如标签节点带着焦点离场）。 */
   service: Service<TagsInputSchema>
 }
 

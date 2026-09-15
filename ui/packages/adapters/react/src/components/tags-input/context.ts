@@ -10,7 +10,7 @@ import type { TagsInputContext } from './use-tags-input'
 import { createContext, useContext } from 'react'
 
 const Ctx = createContext<TagsInputContext | undefined>(undefined)
-/** 标签自报的值，供预览（tag 的 root）/ 文字（tag 的 label）/ 删除钮（tag 的 close-trigger）/ 编辑框复用同一份声明。 */
+/** 标签声明的值，供预览（tag 的 root）/ 文字（tag 的 label）/ 删除按钮（tag 的 close-trigger）/ 编辑框复用同一份声明。 */
 const ItemCtx = createContext<TagsInputItemProps | undefined>(undefined)
 
 export const TagsInputProvider = Ctx
