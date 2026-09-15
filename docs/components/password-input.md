@@ -12,7 +12,7 @@
 
 ## 用法
 
-root 持有状态，control 是那个视觉盒；不传 value 与 revealed 即为非受控，明暗由组件自己管，钮里的图标跟着明暗换
+root 持有状态，control 是视觉盒；不传 value 与 revealed 即为非受控，明暗由组件自行管理，按钮中的图标随明暗切换
 
 <XhDemo src="password-input/01-basic" />
 
@@ -26,43 +26,43 @@ root 持有状态，control 是那个视觉盒；不传 value 与 revealed 即�
 
 ### 受控
 
-值与明暗都能受控：传了就由宿主说了算，组件只把意图报出来，写不写回由宿主定
+值与明暗都可受控：传入后由宿主决定，组件只报告意图，是否写回由宿主决定
 
 <XhDemo src="password-input/02-controlled" />
 
 ### 大写锁定提示
 
-打开大写锁定再往框里敲一个字：提示显出来，读屏也会念一次；焦点离开输入框即熄灭
+打开大写锁定后在框中输入一个字符：提示显示，读屏也会朗读一次；焦点离开输入框即消失
 
 <XhDemo src="password-input/03-caps-lock" />
 
 ### 禁用与校验态
 
-disabled 连明暗一起停掉，read-only 只锁值、明暗照切，invalid 只标注不拦输入
+disabled 连明暗切换一起停止，read-only 只锁定值、明暗照常切换，invalid 只标注不拦截输入
 
 <XhDemo src="password-input/04-states" />
 
 ### 变体
 
-variant 决定底与描边怎么画：描边、淡色填底、无框；密码框没有实心档
+variant 决定底色与描边的绘制方式：描边、淡色填底、无框；密码框没有实心档
 
 <XhDemo src="password-input/05-variant" />
 
 ### 颜色
 
-tone 决定用哪族颜色，与 variant 正交；这里固定 subtle 形态，语气的底色差别不必聚焦就看得见
+tone 决定使用哪族颜色，与 variant 正交；这里固定 subtle 形态，语气的底色差别不必聚焦即可看到
 
 <XhDemo src="password-input/06-tone" />
 
 ### 尺寸
 
-size 只改高度、内边距与字号，标签、切换钮与大写锁定提示一起跟着换档；不写就是缺省档
+size 只改变高度、内边距与字号，标签、切换按钮与大写锁定提示一起换档；不写即默认档
 
 <XhDemo src="password-input/07-size" />
 
 ### 注册表单
 
-name 才让它参与提交，auto-complete 写成 new-password 密码管理器才去存新密码而不是填旧的
+提供 name 后才参与提交，auto-complete 写为 new-password 密码管理器才会保存新密码而不是填入旧密码
 
 <XhDemo src="password-input/08-register" />
 

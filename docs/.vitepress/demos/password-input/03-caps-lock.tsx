@@ -1,4 +1,4 @@
-// 大写锁定提示 | 打开大写锁定再往框里敲一个字：提示显出来，读屏也会念一次；焦点离开输入框即熄灭
+// 大写锁定提示 | 打开大写锁定后在框中输入一个字符：提示显示，读屏也会朗读一次；焦点离开输入框即消失
 import type { ReactNode } from "react";
 import {
   XhPasswordInputCapsLockIndicator,
