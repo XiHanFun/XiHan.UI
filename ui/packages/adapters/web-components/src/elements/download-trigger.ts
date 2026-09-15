@@ -18,23 +18,23 @@ const STRING_CONVERTER = { fromAttribute: (v: string | null) => v ?? undefined }
 const BOOLEAN_CONVERTER = { fromAttribute: (v: string | null) => (v === null ? undefined : v !== 'false') }
 
 /**
- * `<xh-download-trigger>` —— Light-DOM 行为宿主，跑 download-trigger 机器并把 connect 产出打到 root 角色节点。
+ * `<xh-download-trigger>`：Light-DOM 行为宿主，运行 download-trigger 状态机并把 connect 产出接到 root 角色节点。
  *
- * 下载走临时地址加一次隐藏链接点击：点下去先进 preparing，数据交给浏览器后回 idle 并派
- * `download-complete`，取数失败同样回 idle 并派 `download-error`。
+ * 下载经临时地址加一次隐藏链接点击：点击后先进入 preparing，数据交给浏览器后回到 idle 并派发
+ * `download-complete`，取数失败同样回到 idle 并派发 `download-error`。
  *
- * Blob 与取数函数只能走 property（`el.data = blob`）：HTML 属性只装得下一个字符串。
+ * Blob 与取数函数只能通过 property 设置（`el.data = blob`）：HTML 属性只能承载一个字符串。
  *
  * @customElement xh-download-trigger
- * @attr {string} data - 要下载的文本；Blob 与取数函数只能经 property 交进来
- * @attr {string} file-name - 写出的文件名；缺省或空串退回内建名 download
- * @attr {string} mime-type - 内容类型；给了它就以它为准，连 Blob 自带的类型也照它重包
- * @attr {boolean} disabled - 禁用，按钮不可聚焦也点不动
+ * @attr {string} data - 要下载的文本；Blob 与取数函数只能经 property 传入
+ * @attr {string} file-name - 写出的文件名；未提供或空串时回退为内建名 download
+ * @attr {string} mime-type - 内容类型；提供后以它为准，Blob 自带的类型也按它重新包装
+ * @attr {boolean} disabled - 禁用，按钮不可聚焦也不可点击
  * @attr {'solid'|'subtle'|'outline'|'ghost'} variant - 变体
  * @attr {'brand'|'neutral'|'success'|'warning'|'danger'|'info'} tone - 颜色
  * @attr {'sm'|'md'|'lg'} size - 尺寸
  * @fires download-complete - 数据已交给浏览器；detail 为 `{ fileName }`
- * @fires download-error - 取数失败或造不出下载；detail 为 `{ error, fileName }`，此刻状态已经回到 idle
+ * @fires download-error - 取数失败或无法创建下载；detail 为 `{ error, fileName }`，此时状态已回到 idle
  * @csspart root - 触发下载的按钮，须是原生 `<button>`（承载 data-state / aria-busy）
  */
 export class XhDownloadTriggerElement extends XhElement {

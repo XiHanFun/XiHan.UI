@@ -107,16 +107,16 @@
 
 | 属性 | 类型 | 必填 | 说明 |
 | --- | --- | --- | --- |
-| `data` | `DownloadTriggerData` |  | 要下载的内容：文本、Blob，或点下去才调用的取数函数（可返回 Promise）。 |
-| `fileName` | `string` |  | 写出的文件名；缺省或空串退回内建默认名。 |
-| `mimeType` | `string` |  | 内容类型；给了它就以它为准，连 Blob 自带的类型也照它重包一次。缺省时文本按纯文本处理。 |
-| `disabled` | `boolean` |  | 禁用：按钮不可聚焦、点不动。 |
+| `data` | `DownloadTriggerData` |  | 要下载的内容：文本、Blob，或点击时才调用的取数函数（可返回 Promise）。 |
+| `fileName` | `string` |  | 写出的文件名；未提供或空串时回退为内建默认名。 |
+| `mimeType` | `string` |  | 内容类型；提供后以它为准，Blob 自带的类型也按它重新包装。未提供时文本按纯文本处理。 |
+| `disabled` | `boolean` |  | 禁用：按钮不可聚焦、不可点击。 |
 | `variant` | `ActionVariant` |  | 变体：solid / subtle / outline / ghost。 |
 | `tone` | `Tone` |  | 颜色：brand / neutral / success / warning / danger / info。 |
 | `size` | `Size` |  | 尺寸：sm / md / lg。 |
 | `translations` | `Partial<DownloadTriggerTranslations>` |  |  |
-| `onDownloadComplete` | `(details: DownloadTriggerCompleteDetails) => void` |  | 数据已交给浏览器时通知一次。到这里只说明下载已经发起，浏览器把文件写没写到盘上组件看不见。 |
-| `onDownloadError` | `(details: DownloadTriggerErrorDetails) => void` |  | 取数失败或造不出下载时通知；此刻状态已经回到 idle。 |
+| `onDownloadComplete` | `(details: DownloadTriggerCompleteDetails) => void` |  | 数据已交给浏览器时通知一次。此时只说明下载已发起，浏览器是否把文件写入磁盘组件无法感知。 |
+| `onDownloadError` | `(details: DownloadTriggerErrorDetails) => void` |  | 取数失败或无法创建下载时通知；此时状态已回到 idle。 |
 
 ### 事件
 
@@ -125,7 +125,7 @@
 | 事件 | 载荷 | 说明 |
 | --- | --- | --- |
 | `download-complete` | `DownloadTriggerCompleteDetails` | 数据已交给浏览器；detail 为 `{ fileName }` |
-| `download-error` | `DownloadTriggerErrorDetails` | 取数失败或造不出下载；detail 为 `{ error, fileName }`，此刻状态已经回到 idle |
+| `download-error` | `DownloadTriggerErrorDetails` | 取数失败或无法创建下载；detail 为 `{ error, fileName }`，此时状态已回到 idle |
 
 ### 插槽
 
@@ -158,10 +158,10 @@
 | 成员 | 类型 | 说明 |
 | --- | --- | --- |
 | `status` | `DownloadTriggerStatus` |  |
-| `preparing` | `boolean` | 数据还在取。按钮不因此变禁用，只是这段时间里再点不会重复发起。 |
+| `preparing` | `boolean` | 数据获取中。按钮不因此禁用，只是期间再次点击不会重复发起。 |
 | `disabled` | `boolean` |  |
-| `fileName` | `string` | 这一次会写出的文件名（prop 缺省时是内建默认名）。 |
-| `download` | `() => void` | 走一次下载意图，与点按钮同一条路：禁用时不动，取数在途时不重复发起。 |
+| `fileName` | `string` | 本次将写出的文件名（prop 未提供时是内建默认名）。 |
+| `download` | `() => void` | 发起一次下载意图，与点击按钮走同一路径：禁用时不生效，取数在途时不重复发起。 |
 | `getRootProps` | `() => T['button']` |  |
 
 ## 无障碍
