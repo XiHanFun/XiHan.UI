@@ -103,7 +103,7 @@ granularity=week：一行一个整周，格子直接铺进网格；值是两端�
 | --- | --- | --- |
 | `value-change` | `CalendarRangePickerValueChangeDetails` | 区间两端都落定；detail 为 `{ value: string[] }`，长度恒为 2 |
 | `focused-value-change` | `CalendarFocusChangeDetails` | 聚焦日变化；detail 为 `{ focusedValue: string }` |
-| `active-view-change` | `CalendarViewChangeDetails` | 钻到了另一层；detail 为 `{ activeView: 'day'\|'week'\|'month'\|'quarter'\|'year' }` |
+| `active-view-change` | `CalendarViewChangeDetails` | 切换到另一层级；detail 为 `{ activeView: 'day'\|'week'\|'month'\|'quarter'\|'year' }` |
 
 ### 插槽
 
@@ -129,9 +129,9 @@ granularity=week：一行一个整周，格子直接铺进网格；值是两端�
 
 | 成员 | 类型 | 说明 |
 | --- | --- | --- |
-| `rangeAnchor` | `string \| null` | 区间挑到一半时的起点（周期首日的 ISO 串）；其余时候为 null。 |
-| `dragging` | `boolean` | 指针正按在格子上拖着挑区间。 |
-| `setRangeAnchor` | `(next: string \| null) => void` | 直接改写区间起点；传 null 撤掉挑到一半的区间。 |
+| `rangeAnchor` | `string \| null` | 区间选到一半时的起点（周期首日的 ISO 串）；其余时候为 null。 |
+| `dragging` | `boolean` | 指针正按在格子上拖动选择区间。 |
+| `setRangeAnchor` | `(next: string \| null) => void` | 直接改写区间起点；传 null 撤销选到一半的区间。 |
 
 ## 无障碍
 

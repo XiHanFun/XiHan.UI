@@ -18,7 +18,7 @@ import { useCalendarRangePicker } from './use-calendar-range-picker'
 
 type CalendarRangePickerProps = CalendarRangePickerSchema['props']
 
-/** 函数式 children 的载荷：区间两端与聚焦日、展示月的日期矩阵与表头、挑到一半的起点，以及选中、聚焦、翻月的动作。 */
+/** 函数式 children 的载荷：区间两端与聚焦日、展示月的日期矩阵与表头、选择到一半的起点，以及选中、聚焦、翻月的动作。 */
 export type CalendarRangePickerRootSlotProps = Pick<
   CalendarRangePickerApi,
   | 'value'
@@ -49,9 +49,9 @@ export interface XhCalendarRangePickerRootProps extends Omit<ComponentPropsWithR
   min?: string
   max?: string
   isDateUnavailable?: (value: string, anchor: string | null) => boolean
-  /** 区间允许跨过不可用的日子；默认关，落了起点后只能挑到两侧最近的不可用日为止。 */
+  /** 区间允许跨过不可用的日期；默认关闭，落下起点后只能选到两侧最近的不可用日为止。 */
   allowsNonContiguousRanges?: boolean
-  /** 校验失败：根带 data-invalid，区间里的格子报 aria-invalid。 */
+  /** 校验失败：根带 data-invalid，区间内的格子报告 aria-invalid。 */
   invalid?: boolean
   locale?: string
   timeZone?: string
@@ -61,9 +61,9 @@ export interface XhCalendarRangePickerRootProps extends Omit<ComponentPropsWithR
   fixedWeeks?: boolean
   /** 选择粒度。 */
   granularity?: CalendarGranularity
-  /** 面板此刻钻到了哪一层；给定即受控，缺省跟着 granularity。 */
+  /** 面板当前所处的层级；给定即受控，默认跟随 granularity。 */
   activeView?: CalendarView
-  /** 非受控初值，缺省同 granularity。 */
+  /** 非受控初值，默认同 granularity。 */
   defaultActiveView?: CalendarView
   /** 并排展示几页，默认 1。 */
   visibleCount?: number
@@ -74,7 +74,7 @@ export interface XhCalendarRangePickerRootProps extends Omit<ComponentPropsWithR
   children?: SlotChildren<CalendarRangePickerRootSlotProps>
 }
 
-/** 网格与表头由作者照 children 载荷里的 weeks / weekDays 自行渲染。 */
+/** 网格与表头由作者按 children 载荷中的 weeks / weekDays 自行渲染。 */
 export function XhCalendarRangePickerRoot({
   value,
   defaultValue,
@@ -197,10 +197,10 @@ export function XhCalendarRangePickerNextYearTrigger({ children, ...rest }: XhCa
 }
 
 export interface XhCalendarRangePickerHeadingProps extends ComponentPropsWithRef<'div'> {
-  /** 属于第几个面板，默认 0。单面板时不用写。 */
+  /** 属于第几个面板，默认 0。单面板时不必写。 */
   index?: number
 }
-/** 有内容用内容，否则渲染本面板的标题。 */
+/** 有内容时使用内容，否则渲染本面板的标题。 */
 export function XhCalendarRangePickerHeading({ index = 0, children, ...rest }: XhCalendarRangePickerHeadingProps): ReactNode {
   const ctx = useCalendarRangePickerContext()
   const api = ctx.api
@@ -212,10 +212,10 @@ export function XhCalendarRangePickerHeading({ index = 0, children, ...rest }: X
 }
 
 export interface XhCalendarRangePickerHeadingYearTriggerProps extends ComponentPropsWithRef<'button'> {
-  /** 属于第几个面板，默认 0。单面板时不用写。 */
+  /** 属于第几个面板，默认 0。单面板时不必写。 */
   index?: number
 }
-/** 有内容用内容，否则渲染标题里年那一截；年视图下它是整个十年跨度。 */
+/** 有内容时使用内容，否则渲染标题中年份的部分；年视图下它是整个十年跨度。 */
 export function XhCalendarRangePickerHeadingYearTrigger({ index = 0, children, ...rest }: XhCalendarRangePickerHeadingYearTriggerProps): ReactNode {
   const ctx = useCalendarRangePickerContext()
   const api = ctx.api
@@ -227,7 +227,7 @@ export function XhCalendarRangePickerHeadingYearTrigger({ index = 0, children, .
 }
 
 export interface XhCalendarRangePickerHeadingMonthTriggerProps extends ComponentPropsWithRef<'button'> {
-  /** 属于第几个面板，默认 0。单面板时不用写。 */
+  /** 属于第几个面板，默认 0。单面板时不必写。 */
   index?: number
 }
 export function XhCalendarRangePickerHeadingMonthTrigger({ index = 0, children, ...rest }: XhCalendarRangePickerHeadingMonthTriggerProps): ReactNode {
@@ -241,7 +241,7 @@ export function XhCalendarRangePickerHeadingMonthTrigger({ index = 0, children, 
 }
 
 export interface XhCalendarRangePickerGridProps extends ComponentPropsWithRef<'div'> {
-  /** 属于第几个面板，默认 0。单面板时不用写。 */
+  /** 属于第几个面板，默认 0。单面板时不必写。 */
   index?: number
 }
 export function XhCalendarRangePickerGrid({ index = 0, children, ...rest }: XhCalendarRangePickerGridProps): ReactNode {
@@ -286,10 +286,10 @@ export function XhCalendarRangePickerWeekRow({ children, ...rest }: XhCalendarRa
 }
 
 export interface XhCalendarRangePickerWeekNumberProps extends ComponentPropsWithRef<'span'> {
-  /** 这一行行首那天的 ISO 串。 */
+  /** 该行行首那一天的 ISO 串。 */
   value: string
 }
-/** 有内容用内容，否则显示这一行的周序号。 */
+/** 有内容时使用内容，否则显示该行的周序号。 */
 export function XhCalendarRangePickerWeekNumber({ value, children, ...rest }: XhCalendarRangePickerWeekNumberProps): ReactNode {
   const ctx = useCalendarRangePickerContext()
   const api = ctx.api
@@ -319,12 +319,12 @@ export interface XhCalendarRangePickerCellProps extends Omit<ComponentPropsWithR
   /** ISO 日期串。 */
   value: string
   /**
-   * 属于第几个面板，默认 0。多面板时必须给：同一天会同时出现在两个面板里
-   * （8 月末那几天也铺在 9 月的首行），「是不是本月」只有连着面板一起看才判得出来。
+   * 属于第几个面板，默认 0。多面板时必须提供：同一天会同时出现在两个面板中
+   * （8 月末的几天也铺在 9 月的首行），是否为本月只有连同面板一起看才能判定。
    */
   index?: number
 }
-/** 不上报格子卸载，翻月后由机器按聚焦日重新落点。 */
+/** 不上报格子卸载，翻月后由状态机按聚焦日重新落点。 */
 export function XhCalendarRangePickerCell({ value, index = 0, children, ...rest }: XhCalendarRangePickerCellProps): ReactNode {
   const ctx = useCalendarRangePickerContext()
   const cell = useMemo(() => ({ value, index }), [value, index])
