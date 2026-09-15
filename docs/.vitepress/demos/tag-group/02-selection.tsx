@@ -1,4 +1,4 @@
-// 可选中 | selectionMode 决定点一枚是替换还是加选；Ctrl/Cmd + A 全选
+// 可选中 | selectionMode 决定点击一个标签是替换还是加选；Ctrl/Cmd + A 全选
 import type { ReactNode } from "react";
 import { XhTagGroupRoot } from "@xihan-ui/react";
 import { useState } from "react";
