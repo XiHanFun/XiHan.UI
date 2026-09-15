@@ -274,7 +274,7 @@
 | `--xh-menubar-content-gap` | `content` | `gap` | `default` | `--xh-list-option-gap` | menubar 的 content 部件 gap 覆盖槽。 |
 | `--xh-menubar-content-px` | `content` | `padding-inline` | `default` | `--xh-surface-pad-xs` | menubar 的 content 部件 padding-inline 覆盖槽。 |
 | `--xh-menubar-content-py` | `content` | `padding-block` | `default` | `--xh-surface-pad-xs` | menubar 的 content 部件 padding-block 覆盖槽。 |
-| `--xh-menubar-content-radius` | `content` | `border-radius` | `default` | `--xh-shape-surface` | menubar 的 content 部件 border-radius 覆盖槽。 |
+| `--xh-menubar-content-radius` | `content` | `border-radius` | `default` | `--xh-shape-overlay` | menubar 的 content 部件 border-radius 覆盖槽。 |
 | `--xh-menubar-content-shadow` | `content` | `box-shadow` | `default` | `--xh-material-frosted-shadow` | menubar 的 content 部件 box-shadow 覆盖槽。 |
 | `--xh-menubar-fg` | `root` | `color` | `default` | `--xh-fg-default` | menubar 的 root 部件 color 覆盖槽。 |
 | `--xh-menubar-gap` | `root` | `gap` | `default` | `--xh-space-1` | menubar 的 root 部件 gap 覆盖槽。 |
