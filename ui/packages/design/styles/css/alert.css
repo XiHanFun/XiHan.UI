@@ -121,7 +121,7 @@
     transition:
       background var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
       color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
-      scale var(--xh-motion-duration-micro) var(--xh-motion-ease-enter-strong);
+      scale var(--xh-motion-duration-release) var(--xh-motion-ease-release);
   }
 
   /* closable=false 时连接层同时给了 hidden 与 disabled，这条是它真正收起的那一半 */
@@ -138,6 +138,8 @@
   [data-scope='alert'][data-part='close-trigger']:active {
     background: var(--xh-alert-close-bg-active, var(--xh-_tone-subtle-active, var(--xh-bg-subtle-active)));
     scale: var(--xh-motion-scale-press);
+    transition-duration: var(--xh-motion-duration-press);
+    transition-timing-function: var(--xh-motion-ease-press);
   }
 
   [data-scope='alert'][data-part='close-trigger']:disabled {
