@@ -46,8 +46,9 @@
       "$value": "{color.brand.800}"
     },
     "brand-subtle": {
+      "$description": "品牌淡底：选中与当前态的行面 / 段面。与 -hover（20%）、-active（28%）同一条曲线，也与语气层 --xh-_tone-subtle 的 12% 同式：写了 data-tone='brand' 与不写语气时兑出同一个颜色。兑的对象是 {bg.surface}：深色档 canvas 比 surface 还暗，兑 canvas 会让选中面陷进面里。",
       "$type": "color",
-      "$value": "{color.brand.100}"
+      "$value": "color-mix(in oklab, {bg.brand} 12%, {bg.surface})"
     },
     "brand-subtle-hover": {
       "$type": "color",
@@ -86,6 +87,11 @@
     "on-brand": {
       "$type": "color",
       "$value": "{color.neutral.0}"
+    },
+    "on-brand-subtle": {
+      "$description": "品牌淡底（{bg.brand-subtle} 及其 -hover / -active 三档）上的文字与字形。与语气层 --xh-_tone-fg 同式：往正文色兑到 60%，浅色态变深、深色态变浅。浅色实测压 12% / 20% / 28% 三档为 8.49 / 7.60 / 6.78；直接取 brand.700 在 28% 按下面只有 4.42，够不到 AA。",
+      "$type": "color",
+      "$value": "color-mix(in oklab, {bg.brand} 60%, {fg.default})"
     },
     "brand": {
       "$type": "color",

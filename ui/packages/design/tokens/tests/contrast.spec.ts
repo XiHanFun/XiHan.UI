@@ -46,18 +46,36 @@ function at(root: unknown, path: string): TokenNode | undefined {
   return node as TokenNode
 }
 
-/** 语义令牌的值是 `{color.neutral.500}` 这类引用，解析到 primitive 的终值。 */
+/**
+ * 语义令牌的值有三种写法，都解析到 oklch 字面值：
+ * - `{color.neutral.500}` 引用原语；
+ * - `{bg.brand}` 引用同一档里的另一支语义令牌；
+ * - `color-mix(in oklab, {A} p%, {B})` 两端各自解析后在 oklab 里按权重线性插值，
+ *   与下面热力图色阶 heatmapStep 是同一套算法，也与 CSS 的 color-mix(in oklab) 同义。
+ */
 function resolve(theme: keyof typeof themes, path: string): string {
   const node = at(themes[theme], path)
   if (!node?.$value)
     throw new Error(`令牌不存在：${theme} ${path}`)
-  const ref = /^\{(.+)\}$/.exec(node.$value)
-  if (!ref)
-    return node.$value
-  const target = at(primitive, ref[1]!)
-  if (!target?.$value)
-    throw new Error(`引用解析不到：${node.$value}`)
-  return target.$value
+  return resolveValue(theme, node.$value)
+}
+
+function resolveValue(theme: keyof typeof themes, value: string): string {
+  const ref = /^\{(.+)\}$/.exec(value)
+  if (ref) {
+    const target = at(primitive, ref[1]!) ?? at(themes[theme], ref[1]!)
+    if (!target?.$value)
+      throw new Error(`引用解析不到：${value}`)
+    return resolveValue(theme, target.$value)
+  }
+  const mix = /^color-mix\(in oklab,\s*(\{[^}]+\})\s+([\d.]+)%,\s*(\{[^}]+\})\)$/.exec(value)
+  if (mix) {
+    const p = Number(mix[2]) / 100
+    const a = toOklab(resolveValue(theme, mix[1]!))
+    const b = toOklab(resolveValue(theme, mix[3]!))
+    return toOklch({ l: p * a.l + (1 - p) * b.l, a: p * a.a + (1 - p) * b.a, b: p * a.b + (1 - p) * b.b })
+  }
+  return value
 }
 
 function gammaEncode(x: number): number {
@@ -128,6 +146,9 @@ const TEXT_PAIRS: ReadonlyArray<[keyof typeof themes, string, string]> = [
   ['light', 'fg.danger-hover', 'bg.canvas'],
   ['light', 'fg.danger-hover', 'bg.subtle-hover'],
   ['light', 'fg.default', 'bg.brand-subtle'],
+  ['light', 'fg.on-brand-subtle', 'bg.brand-subtle'],
+  ['light', 'fg.on-brand-subtle', 'bg.brand-subtle-hover'],
+  ['light', 'fg.on-brand-subtle', 'bg.brand-subtle-active'],
   ['dark', 'fg.default', 'bg.canvas'],
   ['dark', 'fg.default', 'bg.surface'],
   ['dark', 'fg.default', 'bg.subtle'],
@@ -148,6 +169,18 @@ const TEXT_PAIRS: ReadonlyArray<[keyof typeof themes, string, string]> = [
   ['dark', 'fg.danger-hover', 'bg.canvas'],
   ['dark', 'fg.danger-hover', 'bg.surface'],
   ['dark', 'fg.default', 'bg.brand-subtle'],
+  ['dark', 'fg.on-brand-subtle', 'bg.brand-subtle'],
+  ['dark', 'fg.on-brand-subtle', 'bg.brand-subtle-hover'],
+  ['dark', 'fg.on-brand-subtle', 'bg.brand-subtle-active'],
+]
+
+// 品牌淡底上的非文本图形：「当前 / 选中」写成淡底行面 + 2px 指示条（bg.brand），
+// 聚焦环也会落在这块面上（按下时是三档里最重的 -active）。WCAG 1.4.11 要 3:1。
+const BRAND_SUBTLE_GRAPHIC_PAIRS: ReadonlyArray<[keyof typeof themes, string, string]> = [
+  ['light', 'bg.brand', 'bg.brand-subtle'],
+  ['light', 'ring.focus', 'bg.brand-subtle-active'],
+  ['dark', 'bg.brand', 'bg.brand-subtle'],
+  ['dark', 'ring.focus', 'bg.brand-subtle-active'],
 ]
 
 // fg.subtle 是"控件之外的说明文字"（label / description）在禁用态用的那一档：
@@ -265,6 +298,14 @@ describe('控件边界（WCAG 1.4.11，3:1）', () => {
   for (const [theme, bg] of HOVER_ORDER) {
     it(`${theme} 悬停档比静息档更重（${bg}）`, () => {
       expect(contrast(theme, 'border.control-hover', bg)).toBeGreaterThan(contrast(theme, 'border.control', bg))
+    })
+  }
+})
+
+describe('品牌淡底上的指示条与聚焦环（WCAG 1.4.11，3:1）', () => {
+  for (const [theme, fg, bg] of BRAND_SUBTLE_GRAPHIC_PAIRS) {
+    it(`${theme} ${fg} / ${bg}`, () => {
+      expect(round(contrast(theme, fg, bg))).toBeGreaterThanOrEqual(3)
     })
   }
 })
