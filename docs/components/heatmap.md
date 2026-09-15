@@ -184,23 +184,23 @@ levels 决定分几档，图例与格子共用同一条色阶
 
 | 属性 | 类型 | 必填 | 说明 |
 | --- | --- | --- | --- |
-| `variant` | `HeatmapVariant` |  | 形态：calendar 连续周列、month 按自然月分块、matrix 行列由作者给；缺省 calendar。 |
-| `value` | `HeatmapValue[]` |  | 数据。日期形态收 { date, count }，矩阵形态收 { row, column, value }；同一格出现多次即累加。 |
-| `rows` | `HeatmapAxisInput[]` |  | 矩阵的行，顺序即渲染顺序；只写身份或身份与文本分开写都行。 |
+| `variant` | `HeatmapVariant` |  | 形态：calendar 连续周列、month 按自然月分块、matrix 行列由作者提供；默认 calendar。 |
+| `value` | `HeatmapValue[]` |  | 数据。日期形态接受 { date, count }，矩阵形态接受 { row, column, value }；同一格出现多次即累加。 |
+| `rows` | `HeatmapAxisInput[]` |  | 矩阵的行，顺序即渲染顺序；只写身份或身份与文本分开写均可。 |
 | `columns` | `HeatmapAxisInput[]` |  | 矩阵的列，顺序即渲染顺序。 |
-| `startDate` | `string` |  | 区间起点（含），ISO YYYY-MM-DD。缺省或非法即空网格。 |
+| `startDate` | `string` |  | 区间起点（含），ISO YYYY-MM-DD。未提供或非法时为空网格。 |
 | `endDate` | `string` |  | 区间终点（含）。早于起点即空网格。 |
-| `levels` | `number` |  | 档数，缺省 5；给了 thresholds 则档数由它定。 |
-| `thresholds` | `number[]` |  | 各档的下界，升序；给了它 levels 不再起作用。 |
-| `firstDayOfWeek` | `number` |  | 周首日，0 = 星期日，缺省 1。 |
-| `locale` | `string` |  | 月份名与星期名的书写 locale，不给按宿主语言，宿主也没有时按 en-US。 |
-| `dir` | `Direction` |  | 文字方向。只作显式覆盖：不写时方向从 DOM 现读， 左右方向键的语义跟着视觉次序走，上下键与它无关。 |
-| `tone` | `Tone` |  | 语气：brand / neutral / success / warning / danger / info，决定用哪族颜色。 |
-| `palette` | `HeatmapPalette` |  | 色板：green / blue / orange / purple / red / gray，直接点名色阶满档那一端的颜色；同时写了 tone 时听它的。 |
+| `levels` | `number` |  | 档数，默认 5；提供 thresholds 时档数由它决定。 |
+| `thresholds` | `number[]` |  | 各档的下界，升序；提供后 levels 不再生效。 |
+| `firstDayOfWeek` | `number` |  | 周首日，0 = 星期日，默认 1。 |
+| `locale` | `string` |  | 月份名与星期名的书写 locale，未提供时按宿主语言，宿主也没有时按 en-US。 |
+| `dir` | `Direction` |  | 文字方向。只作显式覆盖：未提供时方向从 DOM 读取， 左右方向键的语义跟随视觉次序，上下键与它无关。 |
+| `tone` | `Tone` |  | 语气：brand / neutral / success / warning / danger / info，决定使用哪族颜色。 |
+| `palette` | `HeatmapPalette` |  | 色板：green / blue / orange / purple / red / gray，直接指定色阶满档一端的颜色；同时提供 tone 时以色板为准。 |
 | `size` | `Size` |  | 尺寸：sm / md / lg。 |
 | `translations` | `Partial<HeatmapTranslations>` |  |  |
-| `onCellFocus` | `(details: HeatmapCellFocusDetails) => void` |  | DOM 焦点落到某一格时通知一次；同一格重复聚焦不重复通知。 只由真实的聚焦触发，程序化挪锚点（`setFocusedCell`）不派这个回调。 |
-| `onCellActive` | `(details: HeatmapCellDetails \| null) => void` |  | 详情该显示哪一格：指针悬停或键盘聚焦都会走到这里，收起时给 null。 详情条里写什么由作者决定，组件只报是哪一格、数值多少。 |
+| `onCellFocus` | `(details: HeatmapCellFocusDetails) => void` |  | DOM 焦点落到某一格时通知一次；同一格重复聚焦不重复通知。 只由真实的聚焦触发，程序化移动锚点（`setFocusedCell`）不派发该回调。 |
+| `onCellActive` | `(details: HeatmapCellDetails \| null) => void` |  | 详情应显示哪一格：指针悬停或键盘聚焦都会走到这里，收起时为 null。 详情条的内容由作者决定，组件只报告是哪一格、数值多少。 |
 
 ### 事件
 
@@ -209,7 +209,7 @@ levels 决定分几档，图例与格子共用同一条色阶
 | 事件 | 载荷 | 说明 |
 | --- | --- | --- |
 | `cell-focus` | `HeatmapCellFocusDetails` | 焦点落到某一格；detail 为 `{ date, row, column, count, level, percent }` |
-| `cell-active` | `HeatmapCellDetails` | 详情该显示哪一格（悬停或聚焦）；收起时 detail 为 null |
+| `cell-active` | `HeatmapCellDetails` | 详情应显示哪一格（悬停或聚焦）；收起时 detail 为 null |
 
 ### 插槽
 
@@ -218,8 +218,8 @@ levels 决定分几档，图例与格子共用同一条色阶
 | Vue 组件 | 插槽 | 载荷 | 说明 |
 | --- | --- | --- | --- |
 | `XhHeatmapRoot` | `default` | `HeatmapRootSlotProps` |  |
-| `XhHeatmapRoot` | `cell` | `HeatmapCellSlotProps` | 铺开网格时每一格的内容插槽，缺省是空格子；三种形态都铺。 |
-| `XhHeatmapRoot` | `tooltip` | `HeatmapCellDetails \| null` | 详情条的内容插槽；写了它才会铺出 tooltip 部件。 |
+| `XhHeatmapRoot` | `cell` | `HeatmapCellSlotProps` | 铺开网格时每一格的内容插槽，默认是空格子；三种形态都铺设。 |
+| `XhHeatmapRoot` | `tooltip` | `HeatmapCellDetails \| null` | 详情条的内容插槽；写了它才会铺设 tooltip 部件。 |
 
 ### 状态
 
@@ -244,17 +244,17 @@ levels 决定分几档，图例与格子共用同一条色阶
 | `variant` | `HeatmapVariant` | 当前形态。 |
 | `grid` | `HeatmapGrid` | 日历网格：行是星期几、列是周次，另带月份段、星期名与档位标尺。其余形态下是一张空网格。 |
 | `monthGrid` | `HeatmapMonthGrid \| null` | 月历网格：按自然月分块；不是 month 形态时为 null。 |
-| `matrixGrid` | `HeatmapMatrixGrid \| null` | 矩阵网格：行列由作者给；不是 matrix 形态时为 null。 |
-| `focusedCell` | `HeatmapCellRef \| null` | 最后一次被聚焦的那一格；从没聚焦过时为 null。 |
-| `focusedDate` | `string \| null` | 最后一次被聚焦的那一天；矩阵形态下恒为 null。 |
-| `anchorCell` | `HeatmapCellRef \| null` | 当下占着 Tab 位的那一格：锚点还在网格里就是它，否则退回文档序头一格。 |
-| `anchorDate` | `string \| null` | 当下占着 Tab 位的那一天；矩阵形态下恒为 null。 |
-| `activeCell` | `HeatmapCellDetails \| null` | 详情该显示哪一格的数据：身份、原始值、档位与色阶位置；不显示时为 null。 |
-| `detailOpen` | `boolean` | 详情条此刻是不是显示着。 |
-| `legendText` | `{ low: string, high: string }` | 对照条两端要写的那两个字，作者照它渲染 legend-label 部件。 与 `getLegendLabelProps` 同源，改 translations 两处一起变。 |
-| `cellAt` | `(date: string) => HeatmapCellMeta \| null` | 按日期取一格；不在区间内给 null。矩阵形态下恒为 null。 |
-| `setFocusedCell` | `(cell: HeatmapCellRef \| null) => void` | 挪动锚点。只改锚点不搬 DOM 焦点，也不派 `onCellFocus`； 需要焦点跟着走的自行调用元素的 focus()。 |
-| `setFocusedDate` | `(date: string \| null) => void` | 按日期挪动锚点，等同于 `setFocusedCell({ date })`。 |
+| `matrixGrid` | `HeatmapMatrixGrid \| null` | 矩阵网格：行列由作者提供；不是 matrix 形态时为 null。 |
+| `focusedCell` | `HeatmapCellRef \| null` | 最后一次被聚焦的格；从未聚焦过时为 null。 |
+| `focusedDate` | `string \| null` | 最后一次被聚焦的日期；矩阵形态下恒为 null。 |
+| `anchorCell` | `HeatmapCellRef \| null` | 当前占据 Tab 位的格：锚点仍在网格中即为它，否则回退为文档序首格。 |
+| `anchorDate` | `string \| null` | 当前占据 Tab 位的日期；矩阵形态下恒为 null。 |
+| `activeCell` | `HeatmapCellDetails \| null` | 详情应显示的格的数据：身份、原始值、档位与色阶位置；不显示时为 null。 |
+| `detailOpen` | `boolean` | 详情条当前是否显示。 |
+| `legendText` | `{ low: string, high: string }` | 对照条两端的文字，作者按它渲染 legend-label 部件。 与 `getLegendLabelProps` 同源，修改 translations 两处一起变化。 |
+| `cellAt` | `(date: string) => HeatmapCellMeta \| null` | 按日期取一格；不在区间内时为 null。矩阵形态下恒为 null。 |
+| `setFocusedCell` | `(cell: HeatmapCellRef \| null) => void` | 移动锚点。只改锚点不移动 DOM 焦点，也不派发 `onCellFocus`； 需要焦点跟随时自行调用元素的 focus()。 |
+| `setFocusedDate` | `(date: string \| null) => void` | 按日期移动锚点，等同于 `setFocusedCell({ date })`。 |
 | `getRootProps` | `() => T['element']` |  |
 | `getGridProps` | `() => T['element']` |  |
 | `getMonthBlockProps` | `(props: HeatmapMonthBlockProps) => T['element']` |  |

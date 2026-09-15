@@ -40,9 +40,9 @@ import { useHeatmap } from './use-heatmap'
 type HeatmapProps = HeatmapSchema['props']
 
 /**
- * 默认插槽的载荷：三张网格模型与锚点、当前详情，外加挪锚点的动作。
- * 三形态通用的那一组（`focusedCell` / `anchorCell` / `setFocusedCell`）也在里面：
- * 矩阵形态下带 Date 的那一组恒为 null，自己铺矩阵时只有这一组读得出、挪得动锚点。
+ * 默认插槽的载荷：三张网格模型与锚点、当前详情，以及移动锚点的动作。
+ * 三形态通用的一组（`focusedCell` / `anchorCell` / `setFocusedCell`）也包含在内：
+ * 矩阵形态下带 Date 的一组恒为 null，自行铺设矩阵时只有这一组能读取、移动锚点。
  */
 export type HeatmapRootSlotProps = Pick<
   HeatmapApi,
@@ -62,8 +62,8 @@ export type HeatmapRootSlotProps = Pick<
 >
 
 /**
- * `cell` 插槽的载荷：日期形态给日历那一格，矩阵形态给矩阵那一格。
- * 两者的坐标不同，用 `'date' in cell` 分辨。
+ * `cell` 插槽的载荷：日期形态给日历的格子，矩阵形态给矩阵的格子。
+ * 两者的坐标不同，用 `'date' in cell` 区分。
  */
 export type HeatmapCellSlotProps = HeatmapCellMeta | HeatmapMatrixCellMeta
 
@@ -94,9 +94,9 @@ export const XhHeatmapRoot = defineComponent({
   },
   slots: Object as SlotsType<{
     default?: (props: HeatmapRootSlotProps) => VNode[]
-    /** 铺开网格时每一格的内容插槽，缺省是空格子；三种形态都铺。 */
+    /** 铺开网格时每一格的内容插槽，默认是空格子；三种形态都铺设。 */
     cell?: (props: HeatmapCellSlotProps) => VNode[]
-    /** 详情条的内容插槽；写了它才会铺出 tooltip 部件。 */
+    /** 详情条的内容插槽；写了它才会铺设 tooltip 部件。 */
     tooltip?: (props: HeatmapCellDetails | null) => VNode[]
   }>,
   setup(props, { slots, emit }) {
@@ -131,7 +131,7 @@ export const XhHeatmapRoot = defineComponent({
   },
 })
 
-/** role=grid 的容器：键盘在这里收口，可及名字也长在它身上。 */
+/** role=grid 的容器：键盘在这里收口，可及名字也挂在它上面。 */
 export const XhHeatmapGrid = defineComponent({
   name: 'XhHeatmapGrid',
   setup(_, { slots }) {
@@ -140,7 +140,7 @@ export const XhHeatmapGrid = defineComponent({
   },
 })
 
-/** 月历形态里的一个自然月块，块内的行从这里取月份身份。 */
+/** 月历形态中的一个自然月块，块内的行从这里取月份身份。 */
 export const XhHeatmapMonthBlock = defineComponent({
   name: 'XhHeatmapMonthBlock',
   props: {
@@ -155,14 +155,14 @@ export const XhHeatmapMonthBlock = defineComponent({
 })
 
 /**
- * 一行。身份写在 value 上，怎么解释由形态决定：
- * 日历形态是行序 0-6，月历形态是月内第几周，矩阵形态是行身份；不写即坐标轴那一行。
+ * 一行。身份写在 value 上，解释方式由形态决定：
+ * 日历形态是行序 0-6，月历形态是月内第几周，矩阵形态是行身份；未写即坐标轴行。
  */
 export const XhHeatmapRow = defineComponent({
   name: 'XhHeatmapRow',
   props: {
     value: { type: [Number, String] as PropType<number | string> },
-    /** 月历形态：所属月份 YYYY-MM；写在月块里就不必再写一遍。 */
+    /** 月历形态：所属月份 YYYY-MM；写在月块中时不必再写一遍。 */
     month: { type: String },
   },
   setup(props, { slots }) {
@@ -181,7 +181,7 @@ export const XhHeatmapRow = defineComponent({
   },
 })
 
-/** 行首的星期名。不给行序即坐标轴那一行行首的占位，它只负责让月份与格子对齐。 */
+/** 行首的星期名。未提供行序即坐标轴行行首的占位，它只负责让月份与格子对齐。 */
 export const XhHeatmapWeekDay = defineComponent({
   name: 'XhHeatmapWeekDay',
   props: {
@@ -194,7 +194,7 @@ export const XhHeatmapWeekDay = defineComponent({
   },
 })
 
-/** 月份名。日历形态里横跨这个月占的那几列，月历形态里是一块的标题。 */
+/** 月份名。日历形态中横跨该月所占的列，月历形态中是一块的标题。 */
 export const XhHeatmapMonthLabel = defineComponent({
   name: 'XhHeatmapMonthLabel',
   props: {
@@ -206,7 +206,7 @@ export const XhHeatmapMonthLabel = defineComponent({
   },
 })
 
-/** 矩阵的行名。不写 value 即表头行行首那个角落占位。 */
+/** 矩阵的行名。未写 value 即表头行行首的角落占位。 */
 export const XhHeatmapRowLabel = defineComponent({
   name: 'XhHeatmapRowLabel',
   props: {
@@ -231,14 +231,14 @@ export const XhHeatmapColumnLabel = defineComponent({
 })
 
 /**
- * 一格。日期形态里 value 是 ISO 日期，矩阵形态里 value 是列身份、
- * 行身份从所在的行取（也可以写在 row 上）。数值与档位由 connect 回网格里查。
+ * 一格。日期形态中 value 是 ISO 日期，矩阵形态中 value 是列身份、
+ * 行身份从所在的行取（也可以写在 row 上）。数值与档位由 connect 查询网格。
  */
 export const XhHeatmapCell = defineComponent({
   name: 'XhHeatmapCell',
   props: {
     value: { type: String, required: true },
-    /** 矩阵形态：行身份；写在行里就不必再写一遍。 */
+    /** 矩阵形态：行身份；写在行中时不必再写一遍。 */
     row: { type: String },
   },
   setup(props, { slots }) {
@@ -251,7 +251,7 @@ export const XhHeatmapCell = defineComponent({
   },
 })
 
-/** 详情条：悬停或聚焦到某一格时显示，位置由连接层量好写成内联样式。 */
+/** 详情条：悬停或聚焦到某一格时显示，位置由连接层测量后写为内联样式。 */
 export const XhHeatmapTooltip = defineComponent({
   name: 'XhHeatmapTooltip',
   setup(_, { slots }) {
@@ -269,7 +269,7 @@ export const XhHeatmapLegend = defineComponent({
   },
 })
 
-/** 对照条一端的那个字：value 写 low 或 high，文字从 api.legendText 取。 */
+/** 对照条一端的文字：value 写 low 或 high，文字从 api.legendText 取。 */
 export const XhHeatmapLegendLabel = defineComponent({
   name: 'XhHeatmapLegendLabel',
   props: {
@@ -282,7 +282,7 @@ export const XhHeatmapLegendLabel = defineComponent({
   },
 })
 
-/** 对照条里的一格，与网格里同档的格子同色。 */
+/** 对照条中的一格，与网格中同档的格子同色。 */
 export const XhHeatmapLegendItem = defineComponent({
   name: 'XhHeatmapLegendItem',
   props: {
@@ -297,9 +297,9 @@ export const XhHeatmapLegendItem = defineComponent({
 })
 
 /**
- * 没写默认插槽时按网格模型铺开的整套结构，作者只交数据。
- * 与手写部件产出的 DOM 完全一致，要改结构就写默认插槽，行为不变。
- * 详情条只有写了 tooltip 插槽才铺，不写时整棵树与从前逐字一致。
+ * 未写默认插槽时按网格模型铺开的整套结构，作者只提供数据。
+ * 与手写部件产出的 DOM 完全一致，需要修改结构时写默认插槽，行为不变。
+ * 详情条只有写了 tooltip 插槽才铺设，未写时整棵树与从前逐字一致。
  */
 function renderDefaultTree(
   api: HeatmapApi,
@@ -341,7 +341,7 @@ function renderDefaultTree(
   return [monthRow, h(XhHeatmapGrid, null, () => weekRows), ...tooltip, legend]
 }
 
-/** 月历形态：网格里一个自然月一块，块内先一条星期名坐标轴，再逐周一行。 */
+/** 月历形态：网格中一个自然月一块，块内先一条星期名坐标轴，再逐周一行。 */
 function renderMonthTree(grid: HeatmapMonthGrid, cellSlot?: (node: HeatmapCellSlotProps) => VNode[]): VNode[] {
   const blocks = grid.blocks.map(block => h(XhHeatmapMonthBlock, { key: block.value, value: block.value }, () => [
     h(XhHeatmapMonthLabel, { value: block.value }, () => block.label),
@@ -353,7 +353,7 @@ function renderMonthTree(grid: HeatmapMonthGrid, cellSlot?: (node: HeatmapCellSl
   return [h(XhHeatmapGrid, null, () => blocks)]
 }
 
-/** 矩阵形态：头一行是列名，其余每行行首一个行名、其后逐列一格。 */
+/** 矩阵形态：首行是列名，其余每行行首一个行名、其后逐列一格。 */
 function renderMatrixTree(grid: HeatmapMatrixGrid, cellSlot?: (node: HeatmapCellSlotProps) => VNode[]): VNode[] {
   const header = h(XhHeatmapRow, null, () => [
     // 角落占位：与下面各行的行名同宽，列名才对得上列
