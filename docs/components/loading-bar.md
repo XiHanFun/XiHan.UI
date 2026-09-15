@@ -12,7 +12,7 @@
 
 ## 用法
 
-条子贴在视口顶边（往页面最上方看）；不给 value 就是不确定进度，宽度自行往前爬，loading 翻 false 才冲到头并淡出
+进度条贴在视口顶边（见页面最上方）；不提供 value 即为不确定进度，宽度自行向前爬升，loading 切换为 false 后才到达终点并淡出
 
 <XhDemo src="loading-bar/01-basic" />
 
@@ -26,31 +26,31 @@
 
 ### 确定进度
 
-传了 value 就由宿主说了算，宽度照它显示，内部爬升不再插手；loading 仍然负责露面与收起
+传入 value 后由宿主决定，宽度按它显示，内部爬升不再介入；loading 仍然负责显示与收起
 
 <XhDemo src="loading-bar/02-determinate" />
 
 ### 厚度
 
-height 数字按像素、字符串按任意 CSS 长度；进度段的颜色走语气或皮肤槽，不走内联
+height 数字按像素、字符串按任意 CSS 长度；进度段的颜色经语气或皮肤槽，不使用内联
 
 <XhDemo src="loading-bar/03-appearance" />
 
-### 关掉爬升
+### 关闭爬升
 
-trickle 为 false 时条子停在起步值 minimum 不动，往前走全靠宿主收尾
+trickle 为 false 时进度条停在起步值 minimum 不动，向前推进全部由宿主收尾
 
 <XhDemo src="loading-bar/04-trickle" />
 
 ### 颜色
 
-tone 只换进度段的底色（取柔和档）；条子本身是 fixed，这里给它写死 absolute 并配一个相对定位的框子，六条才留在示例里而不是叠到页面顶边
+tone 只更换进度段的底色（取柔和档）；进度条本身是 fixed，这里改写为 absolute 并配一个相对定位的容器，六条才留在示例中而不是叠到页面顶边
 
 <XhDemo src="loading-bar/05-tone" />
 
 ### 挂在局部
 
-条子默认贴视口顶边，改写成 absolute 再套一个相对定位的框子，它就只贴这块卡片的上沿
+进度条默认贴视口顶边，改写为 absolute 再套一个相对定位的容器，它就只贴该卡片的上沿
 
 <XhDemo src="loading-bar/06-container" />
 

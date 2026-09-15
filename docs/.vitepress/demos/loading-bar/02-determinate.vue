@@ -1,4 +1,4 @@
-<!-- 确定进度 | 传了 value 就由宿主说了算，宽度照它显示，内部爬升不再插手；loading 仍然负责露面与收起 -->
+<!-- 确定进度 | 传入 value 后由宿主决定，宽度按它显示，内部爬升不再介入；loading 仍然负责显示与收起 -->
 <script setup lang="ts">
 import {
   XhButton,

@@ -1,4 +1,4 @@
-// 语气 | tone 只换进度段的底色（取柔和档）；条子本身是 fixed，这里给它写死 absolute 并配一个相对定位的框子，六条才留在示例里而不是叠到页面顶边
+// 语气 | tone 只更换进度段的底色（取柔和档）；进度条本身是 fixed，这里改写为 absolute 并配一个相对定位的容器，六条才留在示例中而不是叠到页面顶边
 import type { CSSProperties, ReactNode } from "react";
 import {
   XhLoadingBarRange,
