@@ -1,4 +1,4 @@
-// 尺寸 | size 换格子边长与行首星期名的留白，一屏能放下的周数跟着变
+// 尺寸 | size 改变格子边长与行首星期名的留白，一屏能放下的周数随之变化
 import type { HeatmapDatum } from "@xihan-ui/headless";
 import type { ReactNode } from "react";
 import { formatHeatmapDate } from "@xihan-ui/headless";

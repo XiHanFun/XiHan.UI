@@ -1,4 +1,4 @@
-<!-- 悬停详情 | 指针悬停与键盘聚焦走同一条路：详情条跟着那一格走，Escape 收起 -->
+<!-- 悬停详情 | 指针悬停与键盘聚焦经同一条路径：详情条跟随该格，Escape 收起 -->
 <script setup lang="ts">
 import type { HeatmapCellDetails, HeatmapDatum } from "@xihan-ui/headless";
 import { formatHeatmapDate } from "@xihan-ui/headless";

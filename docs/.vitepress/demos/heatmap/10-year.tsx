@@ -1,4 +1,4 @@
-// 年份切换 | 一排按钮换的是区间，网格、月份段、色阶与锚点全按新区间从头算
+// 年份切换 | 一排按钮切换的是区间，网格、月份段、色阶与锚点全部按新区间重新计算
 import type { HeatmapDatum } from "@xihan-ui/headless";
 import type { ReactNode } from "react";
 import { formatHeatmapDate } from "@xihan-ui/headless";

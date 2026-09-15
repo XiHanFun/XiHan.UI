@@ -1,4 +1,4 @@
-// 语气换色 | tone 决定用哪族颜色，色阶两端跟着换，格子的分档不变
+// 语气换色 | tone 决定使用哪族颜色，色阶两端随之更换，格子的分档不变
 import type { ReactNode } from "react";
 import { XhHeatmapRoot } from "@xihan-ui/react";
 

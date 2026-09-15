@@ -1,4 +1,4 @@
-// 月历形态 | 按自然月分块，每块是一张真月历，1 号落在它真实的星期几上
+// 月历形态 | 按自然月分块，每块是一张真实月历，1 号落在它实际的星期几上
 import type { ReactNode } from "react";
 import { XhHeatmapRoot } from "@xihan-ui/react";
 
