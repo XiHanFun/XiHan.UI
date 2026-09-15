@@ -123,7 +123,7 @@
     padding-block: var(--xh-context-menu-content-py, var(--xh-surface-pad-xs));
     padding-inline: var(--xh-context-menu-content-px, var(--xh-surface-pad-xs));
     border: var(--xh-stroke-thin) solid var(--xh-context-menu-border, var(--xh-material-frosted-border));
-    border-radius: var(--xh-context-menu-content-radius, var(--xh-shape-surface));
+    border-radius: var(--xh-context-menu-content-radius, var(--xh-shape-overlay));
     background: var(--xh-context-menu-content-bg, var(--xh-material-frosted-bg));
     color: var(--xh-context-menu-content-fg, var(--xh-material-frosted-fg));
     box-shadow: var(--xh-context-menu-content-shadow, var(--xh-material-frosted-shadow));

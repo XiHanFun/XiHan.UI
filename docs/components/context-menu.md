@@ -256,7 +256,7 @@
 | `--xh-context-menu-content-gap` | `content` | `gap` | `default` | `--xh-list-option-gap` | context-menu 的 content 部件 gap 覆盖槽。 |
 | `--xh-context-menu-content-px` | `content` | `padding-inline` | `default` | `--xh-surface-pad-xs` | context-menu 的 content 部件 padding-inline 覆盖槽。 |
 | `--xh-context-menu-content-py` | `content` | `padding-block` | `default` | `--xh-surface-pad-xs` | context-menu 的 content 部件 padding-block 覆盖槽。 |
-| `--xh-context-menu-content-radius` | `content` | `border-radius` | `default` | `--xh-shape-surface` | context-menu 的 content 部件 border-radius 覆盖槽。 |
+| `--xh-context-menu-content-radius` | `content` | `border-radius` | `default` | `--xh-shape-overlay` | context-menu 的 content 部件 border-radius 覆盖槽。 |
 | `--xh-context-menu-content-shadow` | `content` | `box-shadow` | `default` | `--xh-material-frosted-shadow` | context-menu 的 content 部件 box-shadow 覆盖槽。 |
 | `--xh-context-menu-group-gap` | `group` | `gap` | `default` | `--xh-list-option-gap` | context-menu 的 group 部件 gap 覆盖槽。 |
 | `--xh-context-menu-group-label-fg` | `group-label` | `color` | `default` | `--xh-material-frosted-fg-muted` | context-menu 的 group-label 部件 color 覆盖槽。 |
