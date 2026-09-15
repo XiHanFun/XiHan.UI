@@ -66,8 +66,8 @@ afterEach(async () => {
   await cdp().send('Emulation.setEmulatedMedia', { media: '', features: [] })
 })
 
-describe('prompt-input 的 M3 浮动玻璃皮肤', () => {
-  it.each(['light', 'dark'] as const)('%s：外壳消费完整玻璃配方，textarea 保持实体阅读底', async (theme) => {
+describe('prompt-input 的 M1 柔和实体皮肤', () => {
+  it.each(['light', 'dark'] as const)('%s：外壳消费 soft 实体配方，不采样背景，textarea 保持实体阅读底', async (theme) => {
     document.documentElement.dataset.theme = theme
     mount()
     await settle()
@@ -76,13 +76,13 @@ describe('prompt-input 的 M3 浮动玻璃皮肤', () => {
     const input = part('input') as HTMLTextAreaElement
     const rootStyle = getComputedStyle(root)
     const inputStyle = getComputedStyle(input)
-    expect(alpha(rootStyle.backgroundColor)).toBeCloseTo(255 * 0.76, 0)
+    expect(alpha(rootStyle.backgroundColor)).toBe(255)
     expect(rootStyle.backgroundImage).toContain('linear-gradient')
     expect(rootStyle.borderTopWidth).toBe('1px')
-    expect(rootStyle.backdropFilter).toBe('blur(24px) saturate(1.12)')
+    expect(rootStyle.backdropFilter).toBe('none')
     expect(rootStyle.boxShadow).not.toBe('none')
     expect(alpha(inputStyle.backgroundColor)).toBe(255)
-    expect(inputStyle.backgroundColor).toBe(tokenBackground('--xh-material-glass-focus-surface'))
+    expect(inputStyle.backgroundColor).toBe(tokenBackground('--xh-material-soft-focus-surface'))
     expect(inputStyle.color).not.toBe('rgba(0, 0, 0, 0)')
     root.style.setProperty('--xh-prompt-input-input-radius', '12px')
     expect(getComputedStyle(input).borderTopLeftRadius).toBe('12px')
@@ -94,7 +94,7 @@ describe('prompt-input 的 M3 浮动玻璃皮肤', () => {
     expect(inputStyle.outlineStyle).toBe('none')
   })
 
-  it('高对比度将外壳实体化，同时保留整框焦点环', async () => {
+  it('高对比度收掉高光与投影，同时保留整框焦点环', async () => {
     document.documentElement.dataset.contrast = 'more'
     mount()
     await settle()
@@ -104,7 +104,6 @@ describe('prompt-input 的 M3 浮动玻璃皮肤', () => {
     const style = getComputedStyle(root)
     expect(alpha(style.backgroundColor)).toBe(255)
     expect(style.backdropFilter).toBe('none')
-    expect(style.boxShadow).toBe('none')
     expect(style.borderTopWidth).toBe('1px')
     input.focus()
     await settle()
@@ -114,7 +113,7 @@ describe('prompt-input 的 M3 浮动玻璃皮肤', () => {
   it.each([
     ['减少透明度', { name: 'prefers-reduced-transparency', value: 'reduce' }, '(prefers-reduced-transparency: reduce)'],
     ['强制色', { name: 'forced-colors', value: 'active' }, '(forced-colors: active)'],
-  ] as const)('%s：系统辅助模式实体化玻璃配方', async (_, feature, query) => {
+  ] as const)('%s：系统辅助模式保持实体面并关闭投影', async (_, feature, query) => {
     await cdp().send('Emulation.setEmulatedMedia', { media: '', features: [feature] })
     expect(matchMedia(query).matches).toBe(true)
     mount()

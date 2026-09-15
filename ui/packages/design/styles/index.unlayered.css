@@ -8631,7 +8631,7 @@
 }
 
 /* 边框画在 root 上，内部 textarea 无边框；align-items: flex-end 让按钮随输入框长高贴着底边。
-   默认外壳消费 M3 浮动玻璃；输入区仍使用实体阅读底，文字不会直接压在透入的复杂背景上。
+   默认外壳消费 M1 柔和实体面；输入区使用实体阅读底。
    三个视觉轴都落在 root 上：形态管底与描边怎么画，语气管用哪族颜色，尺寸管高度与字号 */
 [data-scope='prompt-input'][data-part='root'] {
   transition:
@@ -8646,15 +8646,15 @@
   --xh-_prompt-input-submit-px: var(--xh-control-px-md);
   /* 皮肤画的兜底字形与作者塞进来的图标读同一把尺，随尺寸档一起换 */
   --xh-icon-size: var(--xh-prompt-input-icon-size, var(--xh-glyph-size-md));
-  /* 默认 M3 外壳完整消费 tint、边缘、顶光、阴影与磨砂；辅助模式由同源令牌原位实体化。 */
-  --xh-_prompt-input-bg: var(--xh-material-glass-bg);
-  --xh-_prompt-input-bg-hover: var(--xh-material-glass-bg);
-  --xh-_prompt-input-border: var(--xh-material-glass-border);
-  --xh-_prompt-input-border-hover: var(--xh-material-glass-border);
+  /* 默认 M1 外壳完整消费 tint、边缘、顶光与阴影；辅助模式由同源令牌收掉光效。 */
+  --xh-_prompt-input-bg: var(--xh-material-soft-bg);
+  --xh-_prompt-input-bg-hover: var(--xh-material-soft-bg);
+  --xh-_prompt-input-border: var(--xh-material-soft-border);
+  --xh-_prompt-input-border-hover: var(--xh-material-soft-border);
   --xh-_prompt-input-border-focus: var(--xh-_tone, var(--xh-border-control-focus));
-  --xh-_prompt-input-shadow: var(--xh-material-glass-shadow);
-  --xh-_prompt-input-backdrop: var(--xh-material-glass-backdrop);
-  --xh-_prompt-input-highlight: var(--xh-material-glass-highlight);
+  --xh-_prompt-input-shadow: var(--xh-material-soft-shadow);
+  --xh-_prompt-input-backdrop: var(--xh-material-soft-backdrop);
+  --xh-_prompt-input-highlight: var(--xh-material-soft-highlight);
   --xh-_prompt-input-surface: var(--xh-prompt-input-bg, var(--xh-_prompt-input-bg));
   --xh-_prompt-input-border-color: var(--xh-prompt-input-border, var(--xh-_prompt-input-border));
 
@@ -8790,7 +8790,7 @@
   display: none;
 }
 
-/* 输入区使用 M3 的实体隔离底：玻璃外壳可以透景，长文本阅读与焦点对比不能依赖透入背景。
+/* 输入区使用 M1 的实体隔离底：长文本阅读与焦点对比不依赖外壳底色。
    min-inline-size: 0 防止长内容把弹性子项撑出容器。 */
 [data-scope='prompt-input'][data-part='input'] {
   flex: 1;
@@ -8805,8 +8805,8 @@
   padding-inline: 0;
   border: 0;
   border-radius: var(--xh-prompt-input-input-radius, var(--xh-shape-inset));
-  background: var(--xh-material-glass-focus-surface);
-  color: var(--xh-prompt-input-input-fg, var(--xh-material-glass-fg));
+  background: var(--xh-material-soft-focus-surface);
+  color: var(--xh-prompt-input-input-fg, var(--xh-material-soft-fg));
   /* 表单控件默认不继承页面字族，显式继承 */
   font-family: inherit;
   font-size: var(--xh-prompt-input-input-font-size, var(--xh-_prompt-input-font-size));
@@ -8838,15 +8838,15 @@
    不去拉长 transition 把系统底推迟显现：那只是把它藏起来，减弱动效通道一关过渡就当场露出。
    两个选择器名分写两条：一条选择器列表里只要有一个名字不被认识，整条规则就被丢弃。
    框的底画在 root 上，input 本身是透明分段，所以铺的是 root 那一档的底；
-   取 M3 实体阅读底而不是 --xh-_prompt-input-bg：后者在 ghost 档下是透明的，铺了等于没铺。 */
+   取 M1 实体阅读底而不是 --xh-_prompt-input-bg：后者在 ghost 档下是透明的，铺了等于没铺。 */
 [data-scope='prompt-input'][data-part='input']:autofill {
-  box-shadow: inset 0 0 0 100vmax var(--xh-prompt-input-input-autofill-bg, var(--xh-material-glass-focus-surface));
-  -webkit-text-fill-color: var(--xh-prompt-input-input-autofill-fg, var(--xh-material-glass-fg));
+  box-shadow: inset 0 0 0 100vmax var(--xh-prompt-input-input-autofill-bg, var(--xh-material-soft-focus-surface));
+  -webkit-text-fill-color: var(--xh-prompt-input-input-autofill-fg, var(--xh-material-soft-fg));
 }
 
 [data-scope='prompt-input'][data-part='input']:-webkit-autofill {
-  box-shadow: inset 0 0 0 100vmax var(--xh-prompt-input-input-autofill-bg, var(--xh-material-glass-focus-surface));
-  -webkit-text-fill-color: var(--xh-prompt-input-input-autofill-fg, var(--xh-material-glass-fg));
+  box-shadow: inset 0 0 0 100vmax var(--xh-prompt-input-input-autofill-bg, var(--xh-material-soft-focus-surface));
+  -webkit-text-fill-color: var(--xh-prompt-input-input-autofill-fg, var(--xh-material-soft-fg));
 }
 
 /* 私有变量槽位，send 与 stop 两个身份只换这几个配色值 */
@@ -8883,7 +8883,7 @@
     background var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
     color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
     box-shadow var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
-    scale var(--xh-motion-duration-micro) var(--xh-motion-ease-enter-strong);
+    scale var(--xh-motion-duration-release) var(--xh-motion-ease-release);
 }
 
 /* 面是实心的，环色与面同族，画在面里就看不出来；环改取面自己的前景色——
@@ -8903,6 +8903,8 @@
 [data-scope='prompt-input'][data-part='submit-trigger']:active:not(:disabled) {
   background: var(--xh-_bg-active);
   scale: var(--xh-motion-scale-press);
+  transition-duration: var(--xh-motion-duration-press);
+  transition-timing-function: var(--xh-motion-ease-press);
 }
 
 /* 停止身份只换配色，从主色降到中性；文案与可访问名由连接层切换 */
@@ -8949,7 +8951,7 @@
 }
 
 @media (forced-colors: active) {
-  /* 强制色会丢掉渐变图层；实体材质底、边框与焦点环仍由同源 M3 令牌和系统色表达。 */
+  /* 强制色会丢掉渐变图层；实体材质底、边框与焦点环仍由同源 M1 令牌和系统色表达。 */
   [data-scope='prompt-input'][data-part='root'] {
     background-image: none;
   }

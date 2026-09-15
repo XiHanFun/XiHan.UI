@@ -44805,7 +44805,7 @@
         "autofill"
       ],
       "defaultToken": [
-        "--xh-material-glass-focus-surface"
+        "--xh-material-soft-focus-surface"
       ],
       "visibility": "public",
       "description": "prompt-input 的 input 部件 box-shadow 覆盖槽。"
@@ -44824,7 +44824,7 @@
         "autofill"
       ],
       "defaultToken": [
-        "--xh-material-glass-fg"
+        "--xh-material-soft-fg"
       ],
       "visibility": "public",
       "description": "prompt-input 的 input 部件 -webkit-text-fill-color 覆盖槽。"
@@ -44842,7 +44842,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-material-glass-fg"
+        "--xh-material-soft-fg"
       ],
       "visibility": "public",
       "description": "prompt-input 的 input 部件 color 覆盖槽。"
