@@ -105,12 +105,12 @@
 
 | 属性 | 类型 | 必填 | 说明 |
 | --- | --- | --- | --- |
-| `align` | `FlexAlign` |  | 交叉轴对齐：start / center / end / stretch / baseline，不写则横排按中线对齐、竖排拉伸。 |
-| `gap` | `FlexGap` |  | 子项间距档位：xs / sm / md / lg / xl，不写则不留间距。档位换算成多少由皮肤定。 |
-| `inline` | `boolean` |  | 容器按行内盒排版，宽度收到内容。 |
-| `justify` | `FlexJustify` |  | 主轴分布：start / center / end / between / around / evenly，不写则子项从主轴起点排起。 |
-| `orientation` | `Orientation` |  | 主轴方向：horizontal 横排、vertical 竖排，缺省 horizontal。 |
-| `wrap` | `boolean` |  | 一行放不下时折行。 |
+| `align` | `FlexAlign` |  | 交叉轴对齐：start / center / end / stretch / baseline，未提供时横向按中线对齐、纵向拉伸。 |
+| `gap` | `FlexGap` |  | 子项间距档位：xs / sm / md / lg / xl，未提供时不留间距。档位对应的数值由皮肤决定。 |
+| `inline` | `boolean` |  | 容器按行内盒排版，宽度收缩到内容。 |
+| `justify` | `FlexJustify` |  | 主轴分布：start / center / end / between / around / evenly，未提供时子项从主轴起点排列。 |
+| `orientation` | `Orientation` |  | 主轴方向：horizontal 横向、vertical 纵向，默认 horizontal。 |
+| `wrap` | `boolean` |  | 一行放不下时换行。 |
 
 ### 插槽
 
@@ -118,8 +118,8 @@
 
 | Vue 组件 | 插槽 | 载荷 | 说明 |
 | --- | --- | --- | --- |
-| `XhFlex` | `default` | — | 子项，按写进来的顺序排开。 |
-| `XhFlex` | `split` | — | 分隔符的内容：写了它，组件在每两个子项之间各铺一个分隔符部件，逐缝重新求值一次。 |
+| `XhFlex` | `default` | — | 子项，按写入的顺序排列。 |
+| `XhFlex` | `split` | — | 分隔符的内容：写了它，组件在每两个子项之间各铺设一个分隔符部件，逐缝隙重新求值一次。 |
 
 ### connect API
 
@@ -128,7 +128,7 @@
 | 成员 | 类型 | 说明 |
 | --- | --- | --- |
 | `getRootProps` | `() => T['element']` |  |
-| `getSplitProps` | `() => T['element']` | 分隔符节点。它是装饰件，恒带 aria-hidden：一排里夹着的竖线被逐条念出来只会打断内容。 |
+| `getSplitProps` | `() => T['element']` | 分隔符节点。它是装饰件，恒带 aria-hidden：一排中夹杂的竖线被逐条朗读只会打断内容。 |
 
 ## 无障碍
 
