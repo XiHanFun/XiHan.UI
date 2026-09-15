@@ -34,25 +34,25 @@ function authorDisabled(el: HTMLElement): boolean {
 }
 
 /**
- * `<xh-menubar>` —— Light-DOM 行为宿主：作者写
- * root/trigger/positioner/content/item/item-text/item-indicator/separator/group/group-label 角色节点，
- * 元素跑 menubar 机器并把 connect 产出打上去。
+ * `<xh-menubar>`：Light-DOM 行为宿主：作者写
+ * root / trigger / positioner / content / item / item-text / item-indicator / separator / group / group-label 角色节点，
+ * 元素运行 menubar 状态机并把 connect 产出接上。
  *
- * 一排菜单同时只展开一张：已展开时指针掠过别的 trigger 直接切过去，未展开时掠过不响应。
- * 整条菜单栏只有一个 Tab 位（roving tabindex），进来之后靠方向键在 trigger 之间走。
+ * 一排菜单同时只展开一张：已展开时指针掠过其他 trigger 直接切换，未展开时掠过不响应。
+ * 整条菜单栏只有一个 Tab 位（roving tabindex），进入之后依靠方向键在 trigger 之间移动。
  *
- * 标签由作者写：trigger 必须是 `<button>`。
- * trigger / positioner / content 三者靠各自的 value 属性配对，同一项写同一个值。
+ * 标签由作者编写：trigger 必须是 `<button>`。
+ * trigger / positioner / content 三者依靠各自的 value 属性配对，同一项写同一个值。
  *
  * @customElement xh-menubar
- * @attr {string} value - 受控展开项；缺省该属性即非受控
+ * @attr {string} value - 受控展开项；未提供该属性即非受控
  * @attr {string} default-value - 非受控的初始展开项
- * @attr {'horizontal'|'vertical'} orientation - 菜单栏排布轴，默认 horizontal；决定方向键在 trigger 之间走哪一对键
- * @attr {boolean} loop - 方向键走到尽头回绕，默认 true；写 loop="false" 关掉
- * @attr {'ltr'|'rtl'} dir - 文字方向，只影响水平轴上 ArrowLeft/ArrowRight 的前后语义
+ * @attr {'horizontal'|'vertical'} orientation - 菜单栏排布轴，默认 horizontal；决定方向键在 trigger 之间使用哪一对键
+ * @attr {boolean} loop - 方向键到达末尾回绕，默认 true；写 loop="false" 关闭
+ * @attr {'ltr'|'rtl'} dir - 文字方向，只影响水平轴上 ArrowLeft / ArrowRight 的前后语义
  * @attr {boolean} disabled - 整条菜单栏禁用
- * @attr {boolean} typeahead - 菜单内的连打检索，默认开；写 typeahead="false" 关掉
- * @attr {string} placement - 首选放置位，默认 bottom-start；避让后的实际位写在 data-placement 上
+ * @attr {boolean} typeahead - 菜单内的连打检索，默认开启；写 typeahead="false" 关闭
+ * @attr {string} placement - 首选放置位，默认 bottom-start；避让后的实际位置写在 data-placement 上
  * @attr {number} offset - 浮层与锚点的间距（px）
  * @attr {'brand'|'neutral'|'success'|'warning'|'danger'|'info'} tone - 语气
  * @attr {'sm'|'md'|'lg'} size - 尺寸
@@ -60,16 +60,16 @@ function authorDisabled(el: HTMLElement): boolean {
  * @fires select - 条目被选中（菜单随之收起）；detail 为 `{ menu: string, value: string }`
  * @csspart root - role=menubar 容器，承载 roving tabindex 的兜底 Tab 位与焦点离场
  * @csspart trigger - role=menuitem 的展开按钮，须自带 value 属性标识身份；禁用写 aria-disabled="true"
- * @csspart positioner - 浮层定位容器，须自带 value 与同项 trigger 配对；坐标由引擎写成内联样式
+ * @csspart positioner - 浮层定位容器，须自带 value 与同项 trigger 配对；坐标由引擎写为内联样式
  * @csspart content - role=menu 容器，须自带 value 与同项 trigger 配对；收起时带 hidden
  * @csspart item - role=menuitem 条目，须自带 value 属性；禁用写 aria-disabled="true"
- * @csspart item-text - 条目文本（连打检索取的就是它），对读屏透明
- * @csspart item-indicator - 条目标记位（勾选符号/图标/快捷键提示），aria-hidden
+ * @csspart item-text - 条目文本（连打检索取自它），对读屏透明
+ * @csspart item-indicator - 条目标记位（勾选符号 / 图标 / 快捷键提示），aria-hidden
  * @csspart item-description - 条目副文本，排在文字下一行
- * @csspart separator - 分隔线（role=separator，不入方向键导航）
+ * @csspart separator - 分隔线（role=separator，不进入方向键导航）
  * @csspart group - 一组条目（role=group），须自带 value 属性
- * @csspart group-label - 分组标题，靠 id 被同组 group 的 aria-labelledby 指着
- * @csspart arrow - 指向锚点的箭头（aria-hidden），须写在同一张菜单的 positioner 里
+ * @csspart group-label - 分组标题，依靠 id 被同组 group 的 aria-labelledby 指向
+ * @csspart arrow - 指向锚点的箭头（aria-hidden），须写在同一张菜单的 positioner 中
  */
 export class XhMenubarElement extends XhPortalHostElement {
   /** 本实例的 Portal 容器；显式解析失败不回退配置默认。 */
@@ -293,14 +293,14 @@ export class XhMenubarElement extends XhPortalHostElement {
     svc.refs.set('getRootEl', () => this.getPart('root'))
   }
 
-  /** 提前发现一次角色节点：default-value 时机器在 hostConnected 当场要去 content 里挑焦点锚点。 */
+  /** 提前发现一次角色节点：default-value 时状态机在 hostConnected 当场要到 content 中选择焦点锚点。 */
   override connectedCallback(): void {
     setMenuSubmenuOwner(this, this.submenuOwner)
     this.refreshParts()
     super.connectedCallback()
   }
 
-  /** 承载焦点的条目被移出 DOM 时上报 ITEM.LOST，让机器按当前数据重挑焦点锚点。 */
+  /** 承载焦点的条目被移出 DOM 时上报 ITEM.LOST，让状态机按当前数据重新选择焦点锚点。 */
   protected override onPartsReleased(nodes: readonly HTMLElement[]): void {
     const { context, getStatus, send } = this.ctrl.service
     // 机器已停机则跳过

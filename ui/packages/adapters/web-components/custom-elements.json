@@ -33002,7 +33002,7 @@
       "declarations": [
         {
           "kind": "class",
-          "description": "`<xh-menubar>` —— Light-DOM 行为宿主：作者写\nroot/trigger/positioner/content/item/item-text/item-indicator/separator/group/group-label 角色节点，\n元素跑 menubar 机器并把 connect 产出打上去。\n\n一排菜单同时只展开一张：已展开时指针掠过别的 trigger 直接切过去，未展开时掠过不响应。\n整条菜单栏只有一个 Tab 位（roving tabindex），进来之后靠方向键在 trigger 之间走。\n\n标签由作者写：trigger 必须是 `<button>`。\ntrigger / positioner / content 三者靠各自的 value 属性配对，同一项写同一个值。",
+          "description": "`<xh-menubar>`：Light-DOM 行为宿主：作者写\nroot / trigger / positioner / content / item / item-text / item-indicator / separator / group / group-label 角色节点，\n元素运行 menubar 状态机并把 connect 产出接上。\n\n一排菜单同时只展开一张：已展开时指针掠过其他 trigger 直接切换，未展开时掠过不响应。\n整条菜单栏只有一个 Tab 位（roving tabindex），进入之后依靠方向键在 trigger 之间移动。\n\n标签由作者编写：trigger 必须是 `<button>`。\ntrigger / positioner / content 三者依靠各自的 value 属性配对，同一项写同一个值。",
           "name": "XhMenubarElement",
           "cssParts": [
             {
@@ -33014,7 +33014,7 @@
               "name": "trigger"
             },
             {
-              "description": "浮层定位容器，须自带 value 与同项 trigger 配对；坐标由引擎写成内联样式",
+              "description": "浮层定位容器，须自带 value 与同项 trigger 配对；坐标由引擎写为内联样式",
               "name": "positioner"
             },
             {
@@ -33026,11 +33026,11 @@
               "name": "item"
             },
             {
-              "description": "条目文本（连打检索取的就是它），对读屏透明",
+              "description": "条目文本（连打检索取自它），对读屏透明",
               "name": "item-text"
             },
             {
-              "description": "条目标记位（勾选符号/图标/快捷键提示），aria-hidden",
+              "description": "条目标记位（勾选符号 / 图标 / 快捷键提示），aria-hidden",
               "name": "item-indicator"
             },
             {
@@ -33038,7 +33038,7 @@
               "name": "item-description"
             },
             {
-              "description": "分隔线（role=separator，不入方向键导航）",
+              "description": "分隔线（role=separator，不进入方向键导航）",
               "name": "separator"
             },
             {
@@ -33046,11 +33046,11 @@
               "name": "group"
             },
             {
-              "description": "分组标题，靠 id 被同组 group 的 aria-labelledby 指着",
+              "description": "分组标题，依靠 id 被同组 group 的 aria-labelledby 指向",
               "name": "group-label"
             },
             {
-              "description": "指向锚点的箭头（aria-hidden），须写在同一张菜单的 positioner 里",
+              "description": "指向锚点的箭头（aria-hidden），须写在同一张菜单的 positioner 中",
               "name": "arrow"
             }
           ],
@@ -33449,7 +33449,7 @@
                   }
                 }
               ],
-              "description": "承载焦点的条目被移出 DOM 时上报 ITEM.LOST，让机器按当前数据重挑焦点锚点。"
+              "description": "承载焦点的条目被移出 DOM 时上报 ITEM.LOST，让状态机按当前数据重新选择焦点锚点。"
             },
             {
               "kind": "method",
@@ -33507,7 +33507,7 @@
               "type": {
                 "text": "string | undefined"
               },
-              "description": "受控展开项；缺省该属性即非受控",
+              "description": "受控展开项；未提供该属性即非受控",
               "name": "value",
               "fieldName": "value"
             },
@@ -33523,7 +33523,7 @@
               "type": {
                 "text": "Orientation | undefined"
               },
-              "description": "菜单栏排布轴，默认 horizontal；决定方向键在 trigger 之间走哪一对键",
+              "description": "菜单栏排布轴，默认 horizontal；决定方向键在 trigger 之间使用哪一对键",
               "name": "orientation",
               "fieldName": "orientation"
             },
@@ -33531,7 +33531,7 @@
               "type": {
                 "text": "boolean | undefined"
               },
-              "description": "方向键走到尽头回绕，默认 true；写 loop=\"false\" 关掉",
+              "description": "方向键到达末尾回绕，默认 true；写 loop=\"false\" 关闭",
               "name": "loop",
               "fieldName": "loop"
             },
@@ -33539,7 +33539,7 @@
               "type": {
                 "text": "Direction | undefined"
               },
-              "description": "文字方向，只影响水平轴上 ArrowLeft/ArrowRight 的前后语义",
+              "description": "文字方向，只影响水平轴上 ArrowLeft / ArrowRight 的前后语义",
               "name": "dir",
               "fieldName": "direction"
             },
@@ -33555,7 +33555,7 @@
               "type": {
                 "text": "boolean | undefined"
               },
-              "description": "菜单内的连打检索，默认开；写 typeahead=\"false\" 关掉",
+              "description": "菜单内的连打检索，默认开启；写 typeahead=\"false\" 关闭",
               "name": "typeahead",
               "fieldName": "typeahead"
             },
@@ -33563,7 +33563,7 @@
               "type": {
                 "text": "Placement | undefined"
               },
-              "description": "首选放置位，默认 bottom-start；避让后的实际位写在 data-placement 上",
+              "description": "首选放置位，默认 bottom-start；避让后的实际位置写在 data-placement 上",
               "name": "placement",
               "fieldName": "placement"
             },

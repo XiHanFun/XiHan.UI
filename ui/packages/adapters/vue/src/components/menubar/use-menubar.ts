@@ -17,7 +17,7 @@ import { vueNormalize } from '../../runtime/normalize-props'
 import { useMachine } from '../../runtime/use-machine'
 import { createVueIdGenerator } from '../../runtime/vue-id'
 
-/** 按 value 登记角色节点，浮层三件套据此取到当前展开那一项。 */
+/** 按 value 登记角色节点，浮层三件套据此取到当前展开的菜单项。 */
 export type MenubarPartRegistry = (value: string, el: HTMLElement | null) => void
 
 export interface MenubarContext {
@@ -29,7 +29,7 @@ export interface MenubarContext {
   registerContent: MenubarPartRegistry
   /** 子菜单经 Portal 分离后的逻辑父节点。 */
   tree: MenuTreeNode
-  /** 浮层搬到哪儿：全局配置的容器 > 运行时的浮层落点 > body。 */
+  /** 浮层迁移到的位置：全局配置的容器 > 运行时的浮层落点 > body。 */
   portalTarget: ComputedRef<string | Element>
 }
 
