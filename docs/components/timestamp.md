@@ -89,10 +89,10 @@ just now / n minutes ago 四档，超过三十天退回绝对日期；locale 只
 
 | 属性 | 类型 | 必填 | 说明 |
 | --- | --- | --- | --- |
-| `format` | `string` |  | 自定义格式串，记号是 YYYY / YY / MM / M / DD / D / HH / H / mm / m / ss / s。 给了就顶掉该 locale 的缺省格式串；relative 型下只在退回绝对日期时用得上。 |
-| `locale` | `string` |  | BCP 47 语言标记，决定用词与缺省格式串：zh 开头用中文那套，其余一律英文。 不给按宿主语言，宿主也没有时按 en-US。它只换给人看的文本，datetime 恒是同一种写法。 |
-| `now` | `TimestampValue` |  | 算相对说法时的参照时刻，缺省取当前时刻。给定后整个组件的产出完全由入参决定。 |
-| `type` | `TimestampType` |  | 呈现方式：date 只到日、datetime 到秒、relative 说成「几分钟前」，缺省 datetime。 |
+| `format` | `string` |  | 自定义格式串，记号为 YYYY / YY / MM / M / DD / D / HH / H / mm / m / ss / s。 提供后覆盖该 locale 的默认格式串；relative 型下只在回退为绝对日期时使用。 |
+| `locale` | `string` |  | BCP 47 语言标记，决定用词与默认格式串：zh 开头使用中文，其余一律英文。 未提供时按宿主语言，宿主也没有时按 en-US。它只切换面向用户的文本，datetime 恒为同一种写法。 |
+| `now` | `TimestampValue` |  | 计算相对表述时的参照时刻，默认取当前时刻。提供后整个组件的产出完全由入参决定。 |
+| `type` | `TimestampType` |  | 呈现方式：date 只到日、datetime 到秒、relative 表述为「几分钟前」，默认 datetime。 |
 | `value` | `TimestampValue` |  | 要显示的时刻。只写年月日的串按本地零点解读。 |
 
 ### 状态
@@ -109,11 +109,11 @@ just now / n minutes ago 四档，超过三十天退回绝对日期；locale 只
 
 | 成员 | 类型 | 说明 |
 | --- | --- | --- |
-| `date` | `Date \| undefined` | 解析出的时刻；没给或认不出时为 undefined。 |
-| `text` | `string` | 给人看的文本；没有可读时刻时是空串。 |
-| `stamp` | `string \| undefined` | 写进 datetime 的那个戳；没有可读时刻时为 undefined，此时根上不写这个属性。 |
+| `date` | `Date \| undefined` | 解析出的时刻；未提供或无法识别时为 undefined。 |
+| `text` | `string` | 面向用户的文本；没有可读时刻时为空串。 |
+| `stamp` | `string \| undefined` | 写入 datetime 的时间戳；没有可读时刻时为 undefined，此时根上不写该属性。 |
 | `state` | `TimestampState` | 当前状态。 |
-| `relative` | `boolean` | 这一次是不是真按相对说法念的。落在四档之外退回了绝对日期时为 false。 |
+| `relative` | `boolean` | 本次是否实际按相对表述朗读。落在四档之外回退为绝对日期时为 false。 |
 | `getRootProps` | `() => T['element']` |  |
 
 ## 无障碍

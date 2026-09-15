@@ -56234,11 +56234,11 @@
       "declarations": [
         {
           "kind": "class",
-          "description": "`<xh-timestamp>` —— Light-DOM 行为宿主，无状态机，把 connectTimestamp 产出打到 root 角色节点。\n\n作者写一个空的 `<time data-xh-part=\"root\"></time>`：datetime 与显示文本都是算出来的，\n两者取自同一个墙钟，元素不做时区换算。作者若自己在这个节点里写了文本，那份文本原样留着，\n元素只覆盖自己上一次铺进去的那一份。\n\n认不出的时刻落 `data-state=\"invalid\"`，此时不写 datetime——\n与其给机器一个瞎编的时间戳，不如什么都不给。\n\n数字时间戳只能走 property（`el.value = 1786000000000`）：属性里的一串数字与年份写法分不开。",
+          "description": "`<xh-timestamp>`：Light-DOM 行为宿主，无状态机，把 connectTimestamp 产出接到 root 角色节点。\n\n作者写一个空的 `<time data-xh-part=\"root\"></time>`：datetime 与显示文本都是计算得出的，\n两者取自同一个墙钟，元素不做时区换算。作者若自行在该节点中写了文本，该文本原样保留，\n元素只覆盖自己上一次铺入的内容。\n\n无法识别的时刻写 `data-state=\"invalid\"`，此时不写 datetime：\n与其提供一个错误的机读时间戳，不如不提供。\n\n数字时间戳只能通过 property 设置（`el.value = 1786000000000`）：属性中的一串数字与年份写法无法区分。",
           "name": "XhTimestampElement",
           "cssParts": [
             {
-              "description": "那个 `<time>`，承载 datetime / data-format / data-state / data-relative",
+              "description": "`<time>` 节点，承载 datetime / data-format / data-state / data-relative",
               "name": "root"
             }
           ],
@@ -56355,7 +56355,7 @@
               "type": {
                 "text": "TimestampType | undefined"
               },
-              "description": "呈现方式，缺省 datetime",
+              "description": "呈现方式，默认 datetime",
               "name": "type",
               "fieldName": "type"
             },
@@ -56363,7 +56363,7 @@
               "type": {
                 "text": "string | undefined"
               },
-              "description": "自定义格式串，记号是 YYYY / YY / MM / M / DD / D / HH / H / mm / m / ss / s",
+              "description": "自定义格式串，记号为 YYYY / YY / MM / M / DD / D / HH / H / mm / m / ss / s",
               "name": "format",
               "fieldName": "format"
             },
@@ -56371,7 +56371,7 @@
               "type": {
                 "text": "string | undefined"
               },
-              "description": "BCP 47 语言标记，zh 开头用中文用词、其余英文；不给按宿主语言，宿主也没有时按 en-US。只换给人看的文本",
+              "description": "BCP 47 语言标记，zh 开头使用中文用词、其余英文；未提供时按宿主语言，宿主也没有时按 en-US。只切换面向用户的文本",
               "name": "locale",
               "fieldName": "locale"
             },
@@ -56379,7 +56379,7 @@
               "type": {
                 "text": "TimestampValue | undefined"
               },
-              "description": "算相对说法时的参照时刻，缺省取当前时刻",
+              "description": "计算相对表述时的参照时刻，默认取当前时刻",
               "name": "now",
               "fieldName": "now"
             }

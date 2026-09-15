@@ -14,10 +14,10 @@ import { vueNormalize } from '../../runtime/normalize-props'
 import { slotPaints } from '../../runtime/slot-content'
 
 /**
- * 渲染成 `<time datetime>`：文本给人看，datetime 给机器读，两者取自同一个墙钟。
+ * 渲染为 `<time datetime>`：文本供人阅读，datetime 供机器读取，两者取自同一个墙钟。
  *
- * 默认插槽里写了东西就用作者的文本，datetime 仍由组件算——这正是拿它包一段
- * 自己排版好的时间说法的用法。插槽为空时铺组件格式化出来的文本。
+ * 默认插槽中写了内容时使用作者的文本，datetime 仍由组件计算：这正是用它包裹一段
+ * 自行排版的时间表述的用法。插槽为空时铺设组件格式化后的文本。
  */
 export const XhTimestamp = defineComponent({
   name: 'XhTimestamp',
