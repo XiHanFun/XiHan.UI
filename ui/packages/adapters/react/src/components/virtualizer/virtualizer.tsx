@@ -16,7 +16,7 @@ import { useVirtualizer } from './use-virtualizer'
 
 type VirtualizerProps = VirtualizerSchema['props']
 
-/** 函数式 children 的载荷：此刻该渲染的条目与总长、可视区首末下标与滚动态，以及滚动与量尺寸的动作。 */
+/** 函数式 children 的载荷：当前应渲染的条目与总长、可视区首末下标与滚动态，以及滚动与测量尺寸的动作。 */
 export type VirtualizerRootSlotProps = Pick<
   VirtualizerApi,
   | 'virtualItems'
@@ -33,15 +33,15 @@ export type VirtualizerRootSlotProps = Pick<
 export interface XhVirtualizerRootProps extends Omit<ComponentPropsWithRef<'div'>, 'children'> {
   /** 总条数。 */
   count?: number
-  /** 每条的估算主轴尺寸（px）；等高列表直接给一个数字。 */
+  /** 每条的估算主轴尺寸（px）；等高列表直接提供一个数字。 */
   estimateSize?: number | ((index: number) => number)
-  /** 可视区前后各多渲几条。 */
+  /** 可视区前后各多渲染几条。 */
   overscan?: number
   /** 横向列表（主轴是行内轴）。 */
   horizontal?: boolean
   /** 相邻两条之间的主轴间距（px）。 */
   gap?: number
-  /** 条目身份；列表会增删时给稳定 key，测量缓存才跟得住条目。 */
+  /** 条目身份；列表会增删时提供稳定 key，测量缓存才能跟随条目。 */
   getItemKey?: (index: number) => string | number
   /** 列表起点距滚动容器起点的距离（px）。 */
   scrollMargin?: number
@@ -50,7 +50,7 @@ export interface XhVirtualizerRootProps extends Omit<ComponentPropsWithRef<'div'
   paddingEnd?: number
   /** 多列网格的列数；条目按下标轮流落到各道上。 */
   lanes?: number
-  /** 该渲什么变了。 */
+  /** 应渲染的内容发生变化。 */
   onRangeChange?: VirtualizerProps['onRangeChange']
   children?: SlotChildren<VirtualizerRootSlotProps>
 }
@@ -106,7 +106,7 @@ export function XhVirtualizerRoot({
 XhVirtualizerRoot.xhEvents = ['range-change'] as const
 
 export interface XhVirtualizerViewportProps extends ComponentPropsWithRef<'div'> {}
-/** 视口节点经 ref 交给机器，由内核在效应里接上。 */
+/** 视口节点经 ref 交给状态机，由内核在效应中接入。 */
 export function XhVirtualizerViewport({ children, ...rest }: XhVirtualizerViewportProps): ReactNode {
   const ctx = useVirtualizerContext()
   return (
@@ -139,9 +139,9 @@ export function XhVirtualizerContent({ children, ...rest }: XhVirtualizerContent
 }
 
 export interface XhVirtualizerItemProps extends Omit<ComponentPropsWithRef<'div'>, 'value'> {
-  /** 这个节点是第几条。 */
+  /** 该节点的下标。 */
   value: number | string
-  /** 是否把真实尺寸回喂给内核；不开时条目尺寸按 estimateSize 算。 */
+  /** 是否把真实尺寸回传给内核；未开启时条目尺寸按 estimateSize 计算。 */
   measure?: boolean
 }
 
