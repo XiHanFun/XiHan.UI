@@ -13,21 +13,21 @@ import { XhElement } from '../element-base'
 import { MachineController } from '../runtime/machine-controller'
 
 /**
- * `<xh-alert>` —— Light-DOM 行为宿主，把 alert 机器打到 root/indicator/content/title/description/
- * action/close-trigger 角色节点，收起时用内联 style.display 隐藏 root。
+ * `<xh-alert>`：Light-DOM 行为宿主，把 alert 状态机接到 root / indicator / content / title / description /
+ * action / close-trigger 角色节点，收起时用内联 style.display 隐藏 root。
  *
  * @customElement xh-alert
  * @attr {'brand'|'neutral'|'success'|'warning'|'danger'|'info'} tone - 语气，决定实时区级别与配色
- * @attr {boolean} closable - 关闭按钮是否可用，缺省为真
- * @attr {boolean} open - 受控显隐；缺省该属性即非受控
- * @attr {boolean} default-open - 非受控初始显隐，缺省为显示
+ * @attr {boolean} closable - 关闭按钮是否可用，默认为真
+ * @attr {boolean} open - 受控显隐；未提供该属性即非受控
+ * @attr {boolean} default-open - 非受控初始显隐，默认显示
  * @fires open-change - open 状态变化；detail 为 `{ open: boolean }`
  * @csspart root - 提示根容器（实时区所在）
  * @csspart indicator - 语气图标（对读屏隐藏）
- * @csspart content - 文本列容器：把标题与说明摞成一列
+ * @csspart content - 文本列容器：标题与说明纵向排列
  * @csspart title - 标题（root 的 aria-labelledby 指向它）
  * @csspart description - 说明（root 的 aria-describedby 指向它）
- * @csspart action - 操作槽：圈出按钮区
+ * @csspart action - 操作槽：划定按钮区
  * @csspart close-trigger - 关闭按钮
  */
 export class XhAlertElement extends XhElement {

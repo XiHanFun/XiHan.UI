@@ -17,7 +17,7 @@ type AlertProps = AlertSchema['props']
 
 export interface XhAlertRootProps extends ComponentPropsWithRef<'div'> {
   tone?: Tone
-  /** 缺省交给 connect 决定，写 false 才真的关掉。 */
+  /** 默认交给 connect 决定，写 false 才真正关闭。 */
   closable?: boolean
   open?: boolean
   defaultOpen?: boolean
@@ -62,7 +62,7 @@ export function XhAlertIndicator({ children, ...rest }: XhAlertIndicatorProps): 
 }
 
 export interface XhAlertContentProps extends ComponentPropsWithRef<'div'> {}
-/** 文本列：标题与说明摞成一列。不写它时两段文字直接坐在 root 的那一行上。 */
+/** 文本列：标题与说明纵向排列为一列。未写它时两段文字直接位于 root 的一行上。 */
 export function XhAlertContent({ children, ...rest }: XhAlertContentProps): ReactNode {
   const ctx = useAlertContext()
   return <div {...mergeReactProps(ctx.api.getContentProps() as Record<string, unknown>, rest as Record<string, unknown>)}>{children}</div>
@@ -81,7 +81,7 @@ export function XhAlertDescription({ children, ...rest }: XhAlertDescriptionProp
 }
 
 export interface XhAlertActionProps extends ComponentPropsWithRef<'div'> {}
-/** 操作槽：圈出按钮区，按钮本身归作者。 */
+/** 操作槽：划定按钮区，按钮本身归作者。 */
 export function XhAlertAction({ children, ...rest }: XhAlertActionProps): ReactNode {
   const ctx = useAlertContext()
   return <div {...mergeReactProps(ctx.api.getActionProps() as Record<string, unknown>, rest as Record<string, unknown>)}>{children}</div>
