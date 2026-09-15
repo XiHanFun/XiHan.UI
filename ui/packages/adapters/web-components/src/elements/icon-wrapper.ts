@@ -12,9 +12,9 @@ import { wcNormalize } from '../dom/normalize'
 import { XhElement } from '../element-base'
 
 /**
- * `<xh-icon-wrapper>` —— Light-DOM 行为宿主，无状态机，把 connectIconWrapper 产出打到 root 角色节点。
+ * `<xh-icon-wrapper>`：Light-DOM 行为宿主，无状态机，把 connectIconWrapper 产出接到 root 角色节点。
  *
- * 根上不写 role、也不写 aria-hidden：里面那个图元是装饰还是信息，由作者按用途声明。
+ * 根上不写 role、也不写 aria-hidden：其中的图元是装饰还是信息，由作者按用途声明。
  *
  * @customElement xh-icon-wrapper
  * @attr {'solid'|'subtle'|'outline'|'ghost'} variant - 变体

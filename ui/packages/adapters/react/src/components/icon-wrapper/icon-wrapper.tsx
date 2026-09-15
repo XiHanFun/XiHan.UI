@@ -20,9 +20,9 @@ export interface XhIconWrapperProps extends ComponentPropsWithRef<'span'> {
 }
 
 /**
- * 图标底座：给里面那枚图元定直径与底色，三个视觉轴落在根上。
+ * 图标底座：为其中的图元确定直径与底色，三个视觉轴落在根上。
  *
- * 根上不写 role、也不写 aria-hidden——里面那个图元是装饰还是信息，由作者按用途自己声明。
+ * 根上不写 role、也不写 aria-hidden：其中的图元是装饰还是信息，由作者按用途自行声明。
  */
 export function XhIconWrapper({ variant, tone, size, children, ...rest }: XhIconWrapperProps): ReactNode {
   const configured = withXhConfig('icon-wrapper', { variant, tone, size } as IconWrapperProps)
