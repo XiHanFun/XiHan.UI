@@ -243,7 +243,7 @@
     max-block-size: min(var(--xh-color-picker-max-h, var(--xh-viewport-h-md)), var(--xh-_color-picker-available-h));
     overflow-y: auto;
     border: var(--xh-stroke-thin) solid var(--xh-color-picker-content-border, var(--xh-material-frosted-border));
-    border-radius: var(--xh-color-picker-content-radius, var(--xh-shape-surface));
+    border-radius: var(--xh-color-picker-content-radius, var(--xh-shape-overlay));
     background: var(--xh-color-picker-content-bg, var(--xh-material-frosted-bg));
     color: var(--xh-color-picker-content-fg, var(--xh-material-frosted-fg));
     box-shadow: var(--xh-color-picker-content-shadow, var(--xh-material-frosted-shadow));
@@ -334,7 +334,7 @@
     block-size: var(--xh-color-picker-thumb-size, 14px);
     margin-inline-start: calc(var(--xh-color-picker-thumb-size, 14px) / -2);
     border: var(--xh-stroke-thick) solid var(--xh-color-picker-thumb-border, var(--xh-color-neutral-0));
-    border-radius: var(--xh-color-picker-thumb-radius, var(--xh-shape-pill));
+    border-radius: var(--xh-color-picker-thumb-radius, var(--xh-shape-circle));
     background: transparent;
     box-shadow: var(--xh-color-picker-thumb-shadow, var(--xh-elevation-raised));
     cursor: grab;
@@ -440,7 +440,7 @@
     transition:
       background var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
       border-color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
-      scale var(--xh-motion-duration-micro) var(--xh-motion-ease-enter-strong);
+      scale var(--xh-motion-duration-release) var(--xh-motion-ease-release);
   }
 
   [data-scope='color-picker'][data-part='eye-dropper-trigger']:hover:not(:disabled) {
@@ -453,6 +453,8 @@
   [data-scope='color-picker'][data-part='eye-dropper-trigger']:active:not(:disabled) {
     background: var(--xh-color-picker-action-bg-active, var(--xh-bg-subtle-active));
     scale: var(--xh-motion-scale-press);
+    transition-duration: var(--xh-motion-duration-press);
+    transition-timing-function: var(--xh-motion-ease-press);
   }
 
   /* 取色途中按钮保持按下的样子：屏幕取色期间浮层多半被系统的取色镜头盖着，
