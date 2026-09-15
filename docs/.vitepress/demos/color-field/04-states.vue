@@ -1,4 +1,4 @@
-<!-- 状态与尺寸 | 禁用、只读、无效三态与 sm / lg 两档；色块与清空按钮跟着字段的尺寸档走 -->
+<!-- 状态与尺寸 | 禁用、只读、无效三态与 sm / lg 两档；色块与清空按钮跟随字段的尺寸档 -->
 <script setup lang="ts">
 import {
   XhColorFieldClearTrigger,

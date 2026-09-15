@@ -1,4 +1,4 @@
-<!-- 基础用法 | 框里的字是草稿，回车或失焦收下后按 format 重写；色块画的是收下的值，半截字不会被提交 -->
+<!-- 基础用法 | 输入框中的文字是草稿，回车或失焦提交后按 format 重写；色块绘制的是已提交的值，未完成的输入不会被提交 -->
 <script setup lang="ts">
 import {
   XhColorFieldClearTrigger,
