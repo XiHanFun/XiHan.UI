@@ -40,7 +40,7 @@
     display: none;
   }
 
-  /* 把手完整落在容器内部，命中区覆盖对应边；真正的视觉指示条由伪元素绘制。 */
+  /* 把手命中区留在容器内部并覆盖对应边；视觉指示条贴住容器边框，由伪元素绘制。 */
   [data-scope='resizable'][data-part='handle'] {
     --xh-_resizable-indicator-color: var(
       --xh-resizable-handle-bg,
@@ -123,31 +123,31 @@
   [data-scope='resizable'][data-part='handle']:is([data-edge='n'], [data-edge='s'])::after {
     inset-inline-start: 50%;
     inline-size: var(--xh-resizable-indicator-length, var(--xh-space-8));
-    block-size: var(--xh-resizable-indicator-thickness, var(--xh-stroke-thick));
+    block-size: var(--xh-resizable-indicator-thickness, var(--xh-stroke-strong));
     translate: -50% 0;
   }
 
   [data-scope='resizable'][data-part='handle'][data-edge='n']::after {
-    inset-block-start: var(--xh-resizable-indicator-inset, var(--xh-space-0_5));
+    inset-block-start: var(--xh-resizable-indicator-inset, 0);
   }
 
   [data-scope='resizable'][data-part='handle'][data-edge='s']::after {
-    inset-block-end: var(--xh-resizable-indicator-inset, var(--xh-space-0_5));
+    inset-block-end: var(--xh-resizable-indicator-inset, 0);
   }
 
   [data-scope='resizable'][data-part='handle']:is([data-edge='e'], [data-edge='w'])::after {
     inset-block-start: 50%;
-    inline-size: var(--xh-resizable-indicator-thickness, var(--xh-stroke-thick));
+    inline-size: var(--xh-resizable-indicator-thickness, var(--xh-stroke-strong));
     block-size: var(--xh-resizable-indicator-length, var(--xh-space-8));
     translate: 0 -50%;
   }
 
   [data-scope='resizable'][data-part='handle'][data-edge='e']::after {
-    inset-inline-end: var(--xh-resizable-indicator-inset, var(--xh-space-0_5));
+    inset-inline-end: var(--xh-resizable-indicator-inset, 0);
   }
 
   [data-scope='resizable'][data-part='handle'][data-edge='w']::after {
-    inset-inline-start: var(--xh-resizable-indicator-inset, var(--xh-space-0_5));
+    inset-inline-start: var(--xh-resizable-indicator-inset, 0);
   }
 
   /* 四个角：压在两条边的交点上，盖过相邻两条边（它们同时动两轴） */
@@ -190,30 +190,39 @@
     [data-edge='se'],
     [data-edge='sw']
   )::after {
-    inset: var(--xh-resizable-corner-inset, var(--xh-space-1));
+    inline-size: 50%;
+    block-size: 50%;
     border: 0 solid var(--xh-_resizable-indicator-color);
     border-radius: inherit;
     background: transparent;
   }
 
   [data-scope='resizable'][data-part='handle'][data-edge='nw']::after {
-    border-block-start-width: var(--xh-resizable-indicator-thickness, var(--xh-stroke-thick));
-    border-inline-start-width: var(--xh-resizable-indicator-thickness, var(--xh-stroke-thick));
+    inset-block-start: var(--xh-resizable-corner-inset, 0);
+    inset-inline-start: var(--xh-resizable-corner-inset, 0);
+    border-block-start-width: var(--xh-resizable-indicator-thickness, var(--xh-stroke-strong));
+    border-inline-start-width: var(--xh-resizable-indicator-thickness, var(--xh-stroke-strong));
   }
 
   [data-scope='resizable'][data-part='handle'][data-edge='ne']::after {
-    border-block-start-width: var(--xh-resizable-indicator-thickness, var(--xh-stroke-thick));
-    border-inline-end-width: var(--xh-resizable-indicator-thickness, var(--xh-stroke-thick));
+    inset-block-start: var(--xh-resizable-corner-inset, 0);
+    inset-inline-end: var(--xh-resizable-corner-inset, 0);
+    border-block-start-width: var(--xh-resizable-indicator-thickness, var(--xh-stroke-strong));
+    border-inline-end-width: var(--xh-resizable-indicator-thickness, var(--xh-stroke-strong));
   }
 
   [data-scope='resizable'][data-part='handle'][data-edge='sw']::after {
-    border-block-end-width: var(--xh-resizable-indicator-thickness, var(--xh-stroke-thick));
-    border-inline-start-width: var(--xh-resizable-indicator-thickness, var(--xh-stroke-thick));
+    inset-block-end: var(--xh-resizable-corner-inset, 0);
+    inset-inline-start: var(--xh-resizable-corner-inset, 0);
+    border-block-end-width: var(--xh-resizable-indicator-thickness, var(--xh-stroke-strong));
+    border-inline-start-width: var(--xh-resizable-indicator-thickness, var(--xh-stroke-strong));
   }
 
   [data-scope='resizable'][data-part='handle'][data-edge='se']::after {
-    border-block-end-width: var(--xh-resizable-indicator-thickness, var(--xh-stroke-thick));
-    border-inline-end-width: var(--xh-resizable-indicator-thickness, var(--xh-stroke-thick));
+    inset-block-end: var(--xh-resizable-corner-inset, 0);
+    inset-inline-end: var(--xh-resizable-corner-inset, 0);
+    border-block-end-width: var(--xh-resizable-indicator-thickness, var(--xh-stroke-strong));
+    border-inline-end-width: var(--xh-resizable-indicator-thickness, var(--xh-stroke-strong));
   }
 
   /* 没开放的边不显示把手：留着一个抓不动的区域只会让人反复去试 */

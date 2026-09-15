@@ -4998,7 +4998,7 @@
   background-image: none;
 }
 
-/* 把手的命中区仍以裁切框边界为中心，视觉短条与折角只向框内绘制。 */
+/* 把手的命中区仍以裁切框边界为中心，视觉短条与折角贴住边框并向框内绘制。 */
 [data-scope='image-cropper'][data-part='crop-handle'] {
   --xh-_image-cropper-handle-color: var(--xh-image-cropper-handle-bg, var(--xh-bg-surface));
 
@@ -5016,11 +5016,9 @@
 [data-scope='image-cropper'][data-part='crop-handle']::after {
   content: '';
   position: absolute;
-  border-radius: var(--xh-image-cropper-handle-radius, var(--xh-shape-circle));
+  box-sizing: border-box;
+  border-radius: var(--xh-image-cropper-handle-radius, var(--xh-shape-pill));
   background: var(--xh-_image-cropper-handle-color);
-  outline: var(--xh-stroke-thin) solid
-    var(--xh-image-cropper-handle-border, var(--xh-_image-cropper-handle-color));
-  outline-offset: calc(-1 * var(--xh-stroke-thin));
   pointer-events: none;
   transition:
     background var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
@@ -5108,31 +5106,31 @@
 [data-scope='image-cropper'][data-part='crop-handle']:is([data-position='n'], [data-position='s'])::after {
   left: 50%;
   inline-size: var(--xh-image-cropper-handle-length, var(--xh-space-8));
-  block-size: var(--xh-image-cropper-handle-thickness, var(--xh-stroke-thick));
+  block-size: var(--xh-image-cropper-handle-thickness, var(--xh-stroke-strong));
   translate: -50% 0;
 }
 
 [data-scope='image-cropper'][data-part='crop-handle'][data-position='n']::after {
-  bottom: 0;
+  top: 50%;
 }
 
 [data-scope='image-cropper'][data-part='crop-handle'][data-position='s']::after {
-  top: 0;
+  bottom: 50%;
 }
 
 [data-scope='image-cropper'][data-part='crop-handle']:is([data-position='e'], [data-position='w'])::after {
   top: 50%;
-  inline-size: var(--xh-image-cropper-handle-thickness, var(--xh-stroke-thick));
+  inline-size: var(--xh-image-cropper-handle-thickness, var(--xh-stroke-strong));
   block-size: var(--xh-image-cropper-handle-length, var(--xh-space-8));
   translate: 0 -50%;
 }
 
 [data-scope='image-cropper'][data-part='crop-handle'][data-position='e']::after {
-  left: 0;
+  right: 50%;
 }
 
 [data-scope='image-cropper'][data-part='crop-handle'][data-position='w']::after {
-  right: 0;
+  left: 50%;
 }
 
 [data-scope='image-cropper'][data-part='crop-handle'][data-position='nw'] {
@@ -5168,29 +5166,29 @@
 [data-scope='image-cropper'][data-part='crop-handle'][data-position='nw']::after {
   right: 0;
   bottom: 0;
-  border-block-start-width: var(--xh-image-cropper-handle-thickness, var(--xh-stroke-thick));
-  border-inline-start-width: var(--xh-image-cropper-handle-thickness, var(--xh-stroke-thick));
+  border-block-start-width: var(--xh-image-cropper-handle-thickness, var(--xh-stroke-strong));
+  border-inline-start-width: var(--xh-image-cropper-handle-thickness, var(--xh-stroke-strong));
 }
 
 [data-scope='image-cropper'][data-part='crop-handle'][data-position='ne']::after {
   bottom: 0;
   left: 0;
-  border-block-start-width: var(--xh-image-cropper-handle-thickness, var(--xh-stroke-thick));
-  border-inline-end-width: var(--xh-image-cropper-handle-thickness, var(--xh-stroke-thick));
+  border-block-start-width: var(--xh-image-cropper-handle-thickness, var(--xh-stroke-strong));
+  border-inline-end-width: var(--xh-image-cropper-handle-thickness, var(--xh-stroke-strong));
 }
 
 [data-scope='image-cropper'][data-part='crop-handle'][data-position='sw']::after {
   top: 0;
   right: 0;
-  border-block-end-width: var(--xh-image-cropper-handle-thickness, var(--xh-stroke-thick));
-  border-inline-start-width: var(--xh-image-cropper-handle-thickness, var(--xh-stroke-thick));
+  border-block-end-width: var(--xh-image-cropper-handle-thickness, var(--xh-stroke-strong));
+  border-inline-start-width: var(--xh-image-cropper-handle-thickness, var(--xh-stroke-strong));
 }
 
 [data-scope='image-cropper'][data-part='crop-handle'][data-position='se']::after {
   top: 0;
   left: 0;
-  border-block-end-width: var(--xh-image-cropper-handle-thickness, var(--xh-stroke-thick));
-  border-inline-end-width: var(--xh-image-cropper-handle-thickness, var(--xh-stroke-thick));
+  border-block-end-width: var(--xh-image-cropper-handle-thickness, var(--xh-stroke-strong));
+  border-inline-end-width: var(--xh-image-cropper-handle-thickness, var(--xh-stroke-strong));
 }
 /* stylelint-enable property-disallowed-list */
 
@@ -9397,7 +9395,7 @@
   display: none;
 }
 
-/* 把手完整落在容器内部，命中区覆盖对应边；真正的视觉指示条由伪元素绘制。 */
+/* 把手命中区留在容器内部并覆盖对应边；视觉指示条贴住容器边框，由伪元素绘制。 */
 [data-scope='resizable'][data-part='handle'] {
   --xh-_resizable-indicator-color: var(
     --xh-resizable-handle-bg,
@@ -9480,31 +9478,31 @@
 [data-scope='resizable'][data-part='handle']:is([data-edge='n'], [data-edge='s'])::after {
   inset-inline-start: 50%;
   inline-size: var(--xh-resizable-indicator-length, var(--xh-space-8));
-  block-size: var(--xh-resizable-indicator-thickness, var(--xh-stroke-thick));
+  block-size: var(--xh-resizable-indicator-thickness, var(--xh-stroke-strong));
   translate: -50% 0;
 }
 
 [data-scope='resizable'][data-part='handle'][data-edge='n']::after {
-  inset-block-start: var(--xh-resizable-indicator-inset, var(--xh-space-0_5));
+  inset-block-start: var(--xh-resizable-indicator-inset, 0);
 }
 
 [data-scope='resizable'][data-part='handle'][data-edge='s']::after {
-  inset-block-end: var(--xh-resizable-indicator-inset, var(--xh-space-0_5));
+  inset-block-end: var(--xh-resizable-indicator-inset, 0);
 }
 
 [data-scope='resizable'][data-part='handle']:is([data-edge='e'], [data-edge='w'])::after {
   inset-block-start: 50%;
-  inline-size: var(--xh-resizable-indicator-thickness, var(--xh-stroke-thick));
+  inline-size: var(--xh-resizable-indicator-thickness, var(--xh-stroke-strong));
   block-size: var(--xh-resizable-indicator-length, var(--xh-space-8));
   translate: 0 -50%;
 }
 
 [data-scope='resizable'][data-part='handle'][data-edge='e']::after {
-  inset-inline-end: var(--xh-resizable-indicator-inset, var(--xh-space-0_5));
+  inset-inline-end: var(--xh-resizable-indicator-inset, 0);
 }
 
 [data-scope='resizable'][data-part='handle'][data-edge='w']::after {
-  inset-inline-start: var(--xh-resizable-indicator-inset, var(--xh-space-0_5));
+  inset-inline-start: var(--xh-resizable-indicator-inset, 0);
 }
 
 /* 四个角：压在两条边的交点上，盖过相邻两条边（它们同时动两轴） */
@@ -9547,30 +9545,39 @@
   [data-edge='se'],
   [data-edge='sw']
 )::after {
-  inset: var(--xh-resizable-corner-inset, var(--xh-space-1));
+  inline-size: 50%;
+  block-size: 50%;
   border: 0 solid var(--xh-_resizable-indicator-color);
   border-radius: inherit;
   background: transparent;
 }
 
 [data-scope='resizable'][data-part='handle'][data-edge='nw']::after {
-  border-block-start-width: var(--xh-resizable-indicator-thickness, var(--xh-stroke-thick));
-  border-inline-start-width: var(--xh-resizable-indicator-thickness, var(--xh-stroke-thick));
+  inset-block-start: var(--xh-resizable-corner-inset, 0);
+  inset-inline-start: var(--xh-resizable-corner-inset, 0);
+  border-block-start-width: var(--xh-resizable-indicator-thickness, var(--xh-stroke-strong));
+  border-inline-start-width: var(--xh-resizable-indicator-thickness, var(--xh-stroke-strong));
 }
 
 [data-scope='resizable'][data-part='handle'][data-edge='ne']::after {
-  border-block-start-width: var(--xh-resizable-indicator-thickness, var(--xh-stroke-thick));
-  border-inline-end-width: var(--xh-resizable-indicator-thickness, var(--xh-stroke-thick));
+  inset-block-start: var(--xh-resizable-corner-inset, 0);
+  inset-inline-end: var(--xh-resizable-corner-inset, 0);
+  border-block-start-width: var(--xh-resizable-indicator-thickness, var(--xh-stroke-strong));
+  border-inline-end-width: var(--xh-resizable-indicator-thickness, var(--xh-stroke-strong));
 }
 
 [data-scope='resizable'][data-part='handle'][data-edge='sw']::after {
-  border-block-end-width: var(--xh-resizable-indicator-thickness, var(--xh-stroke-thick));
-  border-inline-start-width: var(--xh-resizable-indicator-thickness, var(--xh-stroke-thick));
+  inset-block-end: var(--xh-resizable-corner-inset, 0);
+  inset-inline-start: var(--xh-resizable-corner-inset, 0);
+  border-block-end-width: var(--xh-resizable-indicator-thickness, var(--xh-stroke-strong));
+  border-inline-start-width: var(--xh-resizable-indicator-thickness, var(--xh-stroke-strong));
 }
 
 [data-scope='resizable'][data-part='handle'][data-edge='se']::after {
-  border-block-end-width: var(--xh-resizable-indicator-thickness, var(--xh-stroke-thick));
-  border-inline-end-width: var(--xh-resizable-indicator-thickness, var(--xh-stroke-thick));
+  inset-block-end: var(--xh-resizable-corner-inset, 0);
+  inset-inline-end: var(--xh-resizable-corner-inset, 0);
+  border-block-end-width: var(--xh-resizable-indicator-thickness, var(--xh-stroke-strong));
+  border-inline-end-width: var(--xh-resizable-indicator-thickness, var(--xh-stroke-strong));
 }
 
 /* 没开放的边不显示把手：留着一个抓不动的区域只会让人反复去试 */

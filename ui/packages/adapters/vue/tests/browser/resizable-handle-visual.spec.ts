@@ -30,7 +30,7 @@ function mount(radius: string) {
 }
 
 describe('resizable 把手视觉', () => {
-  it('边缘命中区和短条都落在容器内部', () => {
+  it('边缘命中区留在容器内部，短条贴住边框并略微加粗', () => {
     const resizable = mount('12px')
     const rootRect = resizable.root.getBoundingClientRect()
     const eastRect = resizable.east.getBoundingClientRect()
@@ -42,17 +42,27 @@ describe('resizable 把手视觉', () => {
     expect(eastRect.left).toBeGreaterThanOrEqual(rootRect.left)
     expect(southRect.bottom).toBe(rootRect.bottom)
     expect(southRect.top).toBeGreaterThanOrEqual(rootRect.top)
-    expect(Number.parseFloat(eastIndicator.inlineSize)).toBe(2)
+    expect(eastRect.right - Number.parseFloat(eastIndicator.right)).toBeCloseTo(rootRect.right, 5)
+    expect(southRect.bottom - Number.parseFloat(southIndicator.bottom)).toBeCloseTo(rootRect.bottom, 5)
+    expect(Number.parseFloat(eastIndicator.inlineSize)).toBe(3)
     expect(Number.parseFloat(eastIndicator.blockSize)).toBe(32)
     expect(Number.parseFloat(southIndicator.inlineSize)).toBe(32)
-    expect(Number.parseFloat(southIndicator.blockSize)).toBe(2)
+    expect(Number.parseFloat(southIndicator.blockSize)).toBe(3)
+    expect(eastIndicator.borderRadius).toBe('9999px')
+    expect(southIndicator.borderRadius).toBe('9999px')
   })
 
   it('角把手继承容器对应拐角', () => {
     const rounded = mount('12px')
+    const rootRect = rounded.root.getBoundingClientRect()
+    const cornerRect = rounded.corner.getBoundingClientRect()
     const roundedCorner = getComputedStyle(rounded.corner)
     const roundedIndicator = getComputedStyle(rounded.corner, '::after')
 
+    expect(cornerRect.right - Number.parseFloat(roundedIndicator.right)).toBeCloseTo(rootRect.right, 5)
+    expect(cornerRect.bottom - Number.parseFloat(roundedIndicator.bottom)).toBeCloseTo(rootRect.bottom, 5)
+    expect(Number.parseFloat(roundedIndicator.inlineSize)).toBe(8)
+    expect(Number.parseFloat(roundedIndicator.blockSize)).toBe(8)
     expect(roundedCorner.borderBottomRightRadius).toBe('12px')
     expect(roundedIndicator.borderBottomRightRadius).toBe('12px')
 
@@ -61,7 +71,7 @@ describe('resizable 把手视觉', () => {
     expect(getComputedStyle(square.corner, '::after').borderBottomRightRadius).toBe('0px')
   })
 
-  it('悬停只增强内部指示条', async () => {
+  it('悬停只增强边框指示条', async () => {
     const resizable = mount('12px')
     const idle = getComputedStyle(resizable.east, '::after').backgroundColor
 

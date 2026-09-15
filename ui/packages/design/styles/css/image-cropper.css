@@ -106,7 +106,7 @@
     background-image: none;
   }
 
-  /* 把手的命中区仍以裁切框边界为中心，视觉短条与折角只向框内绘制。 */
+  /* 把手的命中区仍以裁切框边界为中心，视觉短条与折角贴住边框并向框内绘制。 */
   [data-scope='image-cropper'][data-part='crop-handle'] {
     --xh-_image-cropper-handle-color: var(--xh-image-cropper-handle-bg, var(--xh-bg-surface));
 
@@ -124,11 +124,9 @@
   [data-scope='image-cropper'][data-part='crop-handle']::after {
     content: '';
     position: absolute;
-    border-radius: var(--xh-image-cropper-handle-radius, var(--xh-shape-circle));
+    box-sizing: border-box;
+    border-radius: var(--xh-image-cropper-handle-radius, var(--xh-shape-pill));
     background: var(--xh-_image-cropper-handle-color);
-    outline: var(--xh-stroke-thin) solid
-      var(--xh-image-cropper-handle-border, var(--xh-_image-cropper-handle-color));
-    outline-offset: calc(-1 * var(--xh-stroke-thin));
     pointer-events: none;
     transition:
       background var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
@@ -216,31 +214,31 @@
   [data-scope='image-cropper'][data-part='crop-handle']:is([data-position='n'], [data-position='s'])::after {
     left: 50%;
     inline-size: var(--xh-image-cropper-handle-length, var(--xh-space-8));
-    block-size: var(--xh-image-cropper-handle-thickness, var(--xh-stroke-thick));
+    block-size: var(--xh-image-cropper-handle-thickness, var(--xh-stroke-strong));
     translate: -50% 0;
   }
 
   [data-scope='image-cropper'][data-part='crop-handle'][data-position='n']::after {
-    bottom: 0;
+    top: 50%;
   }
 
   [data-scope='image-cropper'][data-part='crop-handle'][data-position='s']::after {
-    top: 0;
+    bottom: 50%;
   }
 
   [data-scope='image-cropper'][data-part='crop-handle']:is([data-position='e'], [data-position='w'])::after {
     top: 50%;
-    inline-size: var(--xh-image-cropper-handle-thickness, var(--xh-stroke-thick));
+    inline-size: var(--xh-image-cropper-handle-thickness, var(--xh-stroke-strong));
     block-size: var(--xh-image-cropper-handle-length, var(--xh-space-8));
     translate: 0 -50%;
   }
 
   [data-scope='image-cropper'][data-part='crop-handle'][data-position='e']::after {
-    left: 0;
+    right: 50%;
   }
 
   [data-scope='image-cropper'][data-part='crop-handle'][data-position='w']::after {
-    right: 0;
+    left: 50%;
   }
 
   [data-scope='image-cropper'][data-part='crop-handle'][data-position='nw'] {
@@ -276,29 +274,29 @@
   [data-scope='image-cropper'][data-part='crop-handle'][data-position='nw']::after {
     right: 0;
     bottom: 0;
-    border-block-start-width: var(--xh-image-cropper-handle-thickness, var(--xh-stroke-thick));
-    border-inline-start-width: var(--xh-image-cropper-handle-thickness, var(--xh-stroke-thick));
+    border-block-start-width: var(--xh-image-cropper-handle-thickness, var(--xh-stroke-strong));
+    border-inline-start-width: var(--xh-image-cropper-handle-thickness, var(--xh-stroke-strong));
   }
 
   [data-scope='image-cropper'][data-part='crop-handle'][data-position='ne']::after {
     bottom: 0;
     left: 0;
-    border-block-start-width: var(--xh-image-cropper-handle-thickness, var(--xh-stroke-thick));
-    border-inline-end-width: var(--xh-image-cropper-handle-thickness, var(--xh-stroke-thick));
+    border-block-start-width: var(--xh-image-cropper-handle-thickness, var(--xh-stroke-strong));
+    border-inline-end-width: var(--xh-image-cropper-handle-thickness, var(--xh-stroke-strong));
   }
 
   [data-scope='image-cropper'][data-part='crop-handle'][data-position='sw']::after {
     top: 0;
     right: 0;
-    border-block-end-width: var(--xh-image-cropper-handle-thickness, var(--xh-stroke-thick));
-    border-inline-start-width: var(--xh-image-cropper-handle-thickness, var(--xh-stroke-thick));
+    border-block-end-width: var(--xh-image-cropper-handle-thickness, var(--xh-stroke-strong));
+    border-inline-start-width: var(--xh-image-cropper-handle-thickness, var(--xh-stroke-strong));
   }
 
   [data-scope='image-cropper'][data-part='crop-handle'][data-position='se']::after {
     top: 0;
     left: 0;
-    border-block-end-width: var(--xh-image-cropper-handle-thickness, var(--xh-stroke-thick));
-    border-inline-end-width: var(--xh-image-cropper-handle-thickness, var(--xh-stroke-thick));
+    border-block-end-width: var(--xh-image-cropper-handle-thickness, var(--xh-stroke-strong));
+    border-inline-end-width: var(--xh-image-cropper-handle-thickness, var(--xh-stroke-strong));
   }
   /* stylelint-enable property-disallowed-list */
 
