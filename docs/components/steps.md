@@ -93,21 +93,21 @@
 
 | 属性 | 类型 | 必填 | 说明 |
 | --- | --- | --- | --- |
-| `value` | `number` |  | 当前步序（0 起）。给定即受控：内部不再自改，只发 onValueChange。 |
+| `value` | `number` |  | 当前步序（0 起）。提供即受控：内部不再自行修改，只发 onValueChange。 |
 | `defaultValue` | `number` |  | 非受控初值，默认 0。 |
-| `collection` | `StepNode[]` |  | 步骤数据，标题、说明、状态与禁用的事实源。给了它，count 缺省即取它的长度。 缺省即回到「文本与状态都写在部件上」的老路。 |
-| `statuses` | `Record<number, StepStatus>` |  | 按下标覆盖单步状态，优先于 collection 与步序算出来的那档。 |
-| `tones` | `Record<number, Tone>` |  | 按下标给单步标语气，优先于 collection；被打回的那一步写 danger、要留意的写 warning。 落成 item 的 data-tone，那一步的标记、标题与连接线都改用这族颜色。 |
-| `count` | `number` |  | 总步数，是步序的上界与读屏"第 k 步，共 n 步"的分母。 缺省按 0 处理：此时 root 带 data-empty，步序被夹死在 0。 |
+| `collection` | `StepNode[]` |  | 步骤数据，标题、说明、状态与禁用的事实源。提供后 count 未提供时取它的长度。 未提供时回到文本与状态都写在部件上的方式。 |
+| `statuses` | `Record<number, StepStatus>` |  | 按下标覆盖单步状态，优先于 collection 与步序计算出的档位。 |
+| `tones` | `Record<number, Tone>` |  | 按下标给单步标记语气，优先于 collection；被驳回的步写 danger、需要留意的步写 warning。 写为 item 的 data-tone，该步的标记、标题与连接线都改用这族颜色。 |
+| `count` | `number` |  | 总步数，是步序的上界与读屏「第 k 步，共 n 步」的分母。 未提供时按 0 处理：此时 root 带 data-empty，步序被固定在 0。 |
 | `orientation` | `Orientation` |  | 方向键轴向，默认 horizontal；不同轴的方向键放行给页面滚动与读屏。 |
-| `linear` | `boolean` |  | 线性模式：只能回头看走过的步。未解锁（index &gt; step）的 trigger 一律禁用。 只拦跳转，goToNextStep 逐步前进照常可用。 |
-| `disabled` | `boolean` |  | 整组不可交互：trigger 全部退出 Tab 序列，指针与键盘都不认。 |
-| `loop` | `boolean` |  | 方向键走到尽头是否回绕，默认 false。 |
-| `dir` | `Direction` |  | 文字方向，默认 ltr；只影响水平轴上 ArrowLeft/ArrowRight 的前后语义。 |
+| `linear` | `boolean` |  | 线性模式：只能回到已走过的步。未解锁（index &gt; step）的 trigger 一律禁用。 只拦截跳转，goToNextStep 逐步前进照常可用。 |
+| `disabled` | `boolean` |  | 整组不可交互：trigger 全部退出 Tab 序列，指针与键盘都不响应。 |
+| `loop` | `boolean` |  | 方向键到达末尾是否回绕，默认 false。 |
+| `dir` | `Direction` |  | 文字方向，默认 ltr；只影响水平轴上 ArrowLeft / ArrowRight 的前后语义。 |
 | `translations` | `Partial<StepsTranslations>` |  |  |
-| `tone` | `Tone` |  | 语气：brand / neutral / success / warning / danger / info，决定用哪族颜色。 |
+| `tone` | `Tone` |  | 语气：brand / neutral / success / warning / danger / info，决定使用哪族颜色。 |
 | `size` | `Size` |  | 尺寸：sm / md / lg。 |
-| `onValueChange` | `(details: StepsValueChangeDetails) => void` |  | 步序变化意图回调；受控时是唯一出口，非受控随内部写入一并通知。 |
+| `onValueChange` | `(details: StepsValueChangeDetails) => void` |  | 步序变化意图回调；受控时是唯一出口，非受控时随内部写入一并通知。 |
 
 ### 事件
 
@@ -151,13 +151,13 @@
 
 | 成员 | 类型 | 说明 |
 | --- | --- | --- |
-| `value` | `number` | 当前步序，恒在 [0, count] 内：count 变小后停在越界步也读得到一个可用的值。 |
+| `value` | `number` | 当前步序，恒在 [0, count] 内：count 减小后停在越界步也能读到可用的值。 |
 | `count` | `number` |  |
-| `collection` | `readonly StepNodeMeta[]` | collection 推出的步骤元信息，按数据顺序排列；没给 collection 即空数组。 |
-| `complete` | `boolean` | 全部走完（value 走到 count）。此时没有任何一步是 current，作者据此渲染完成页。 |
+| `collection` | `readonly StepNodeMeta[]` | 由 collection 推导的步骤元信息，按数据顺序排列；未提供 collection 时为空数组。 |
+| `complete` | `boolean` | 全部完成（value 到达 count）。此时没有任何一步是 current，作者据此渲染完成页。 |
 | `focusedStep` | `number \| null` | 焦点在组外时为 null。 |
 | `getItemState` | `(props: StepsItemProps) => StepsItemState` |  |
-| `setValue` | `(next: number) => void` | 直接跳到某一步；越界会被夹回 [0, count]。 不认 linear：linear 只拦界面上的乱跳，不拦作者的命令式调用。 |
+| `setValue` | `(next: number) => void` | 直接跳到某一步；越界会被夹回 [0, count]。 不检查 linear：linear 只拦截界面上的跳转，不拦截作者的命令式调用。 |
 | `goToNextStep` | `() => void` |  |
 | `goToPrevStep` | `() => void` |  |
 | `getRootProps` | `() => T['element']` |  |
@@ -168,7 +168,7 @@
 | `getTitleProps` | `(props: StepsItemProps) => T['element']` |  |
 | `getDescriptionProps` | `(props: StepsItemProps) => T['element']` |  |
 | `getSeparatorProps` | `(props: StepsItemProps) => T['element']` |  |
-| `getContentProps` | `(props: StepsItemProps) => T['element']` | 面板按 index 与当前步配对；未命中的常挂并带 hidden。 |
+| `getContentProps` | `(props: StepsItemProps) => T['element']` | 面板按 index 与当前步配对；未命中的常驻并带 hidden。 |
 
 ## 无障碍
 

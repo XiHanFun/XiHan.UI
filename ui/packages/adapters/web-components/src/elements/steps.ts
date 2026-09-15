@@ -23,33 +23,33 @@ const BOOLEAN_CONVERTER = { fromAttribute: (v: string | null) => (v === null ? u
 
 const ITEM_SELECTOR = '[data-xh-part="item"]'
 
-/** 角色节点自报的步序；缺失或空串一律给 NaN（与任何一步都不相等，绝不冒充当前步）。 */
+/** 角色节点声明的步序；缺失或空串一律返回 NaN（与任何一步都不相等，不会冒充当前步）。 */
 function stepIndexOf(el: HTMLElement): number {
   const raw = el.getAttribute('value')
   return raw == null || raw === '' ? Number.NaN : Number(raw)
 }
 
 /**
- * `<xh-steps>` —— Light-DOM 行为宿主：作者写
- * root/list/item/trigger/indicator/title/description/separator/content 角色节点，
- * 元素跑 steps 机器并把 connect 产出打上去。
+ * `<xh-steps>`：Light-DOM 行为宿主：作者写
+ * root / list / item / trigger / indicator / title / description / separator / content 角色节点，
+ * 元素运行 steps 状态机并把 connect 产出接上。
  *
  * 身份写在 item 节点的 `value` 属性上（第几步，0 起），
- * trigger / indicator / title / description / separator 向上找自己的 item，不必各写一遍。
- * content 挂在 list 之外、够不到 item，因此自带 `value` 与 trigger 配对（与 `<xh-tabs>` 同一套写法）。
+ * trigger / indicator / title / description / separator 向上查找自己的 item，不必各写一遍。
+ * content 挂在 list 之外、无法到达 item，因此自带 `value` 与 trigger 配对（与 `<xh-tabs>` 同一写法）。
  *
- * 步序序列由作者渲染，元素不替作者生成节点：生成节点就等于收走模板控制权，
- * 图标、自定义序号、i18n 文案都再塞不进来。
+ * 步序序列由作者渲染，元素不替作者生成节点：生成节点等于收走模板控制权，
+ * 图标、自定义序号、i18n 文案都无法再加入。
  *
  * @customElement xh-steps
- * @attr {number} value - 受控步序（0 起）；缺省该属性即非受控
+ * @attr {number} value - 受控步序（0 起）；未提供该属性即非受控
  * @attr {number} default-value - 非受控初始步序，默认 0
- * @attr {number} count - 总步数；步序上界取它（等于它即"全部完成"）
+ * @attr {number} count - 总步数；步序上界取它（等于它即全部完成）
  * @attr {'horizontal'|'vertical'} orientation - 方向键轴向，默认 horizontal
- * @attr {boolean} linear - 线性模式：跳不到还没走到的步（那些 trigger 一律禁用）
- * @attr {boolean} disabled - 整组不可交互，连 Tab 停靠点都不留
- * @attr {boolean} loop - 方向键走到尽头回绕，默认关闭
- * @attr {'ltr'|'rtl'} dir - 文字方向，只影响水平轴上 ArrowLeft/ArrowRight 的前后语义，默认 ltr
+ * @attr {boolean} linear - 线性模式：无法跳到尚未到达的步（这些 trigger 一律禁用）
+ * @attr {boolean} disabled - 整组不可交互，不保留 Tab 停靠点
+ * @attr {boolean} loop - 方向键到达末尾回绕，默认关闭
+ * @attr {'ltr'|'rtl'} dir - 文字方向，只影响水平轴上 ArrowLeft / ArrowRight 的前后语义，默认 ltr
  * @attr {'brand'|'neutral'|'success'|'warning'|'danger'|'info'} tone - 语气
  * @attr {'sm'|'md'|'lg'} size - 尺寸
  * @fires value-change - 步序变化；detail 为 `{ value: number }`
@@ -57,7 +57,7 @@ function stepIndexOf(el: HTMLElement): number {
  * @csspart list - role=tablist 容器（方向键与 Tab 序列在此收口）
  * @csspart item - 单个步骤容器；作者在此写 value（身份）与可选 disabled
  * @csspart trigger - role=tab 的步骤按钮（roving tabindex 落在它身上）
- * @csspart indicator - 序号/对勾圆点，对读屏隐藏
+ * @csspart indicator - 序号 / 对勾圆点，对读屏隐藏
  * @csspart title - 步骤标题
  * @csspart description - 步骤说明
  * @csspart separator - 指向下一步的连接线，对读屏隐藏
@@ -132,9 +132,9 @@ export class XhStepsElement extends XhElement {
 
   /**
    * 取角色节点所属步骤的身份：value 与 disabled 都写在 item 节点上，
-   * trigger/indicator/title/description/separator 向上找自己的 item（item 自身 closest 命中的就是它自己）。
-   * 没有 item 包裹层时退回读节点自身，扁平结构也能用。
-   * 越出本宿主的 item 不算数——嵌套步骤条的内层节点不会认外层条目。
+   * trigger/indicator/title/description/separator 向上查找自己的 item（item 自身 closest 命中的就是它自己）。
+   * 没有 item 包裹层时退回读取节点自身，扁平结构也可使用。
+   * 越出本宿主的 item 不计：嵌套步骤条的内层节点不会识别外层条目。
    */
   private itemProps(el: HTMLElement): StepsItemProps {
     const owner = el.closest<HTMLElement>(ITEM_SELECTOR)

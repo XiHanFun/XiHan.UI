@@ -16,7 +16,7 @@ import { useSteps } from './use-steps'
 
 type StepsProps = StepsSchema['props']
 
-/** 默认插槽的载荷：当前步序、总步数、是否走完，以及跳步与前进后退的方法。 */
+/** 默认插槽的载荷：当前步序、总步数、是否完成，以及跳步与前进后退的方法。 */
 export type StepsRootSlotProps = Pick<
   StepsApi,
   'value' | 'count' | 'complete' | 'setValue' | 'goToNextStep' | 'goToPrevStep'

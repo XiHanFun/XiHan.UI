@@ -48285,7 +48285,7 @@
       "declarations": [
         {
           "kind": "class",
-          "description": "`<xh-steps>` —— Light-DOM 行为宿主：作者写\nroot/list/item/trigger/indicator/title/description/separator/content 角色节点，\n元素跑 steps 机器并把 connect 产出打上去。\n\n身份写在 item 节点的 `value` 属性上（第几步，0 起），\ntrigger / indicator / title / description / separator 向上找自己的 item，不必各写一遍。\ncontent 挂在 list 之外、够不到 item，因此自带 `value` 与 trigger 配对（与 `<xh-tabs>` 同一套写法）。\n\n步序序列由作者渲染，元素不替作者生成节点：生成节点就等于收走模板控制权，\n图标、自定义序号、i18n 文案都再塞不进来。",
+          "description": "`<xh-steps>`：Light-DOM 行为宿主：作者写\nroot / list / item / trigger / indicator / title / description / separator / content 角色节点，\n元素运行 steps 状态机并把 connect 产出接上。\n\n身份写在 item 节点的 `value` 属性上（第几步，0 起），\ntrigger / indicator / title / description / separator 向上查找自己的 item，不必各写一遍。\ncontent 挂在 list 之外、无法到达 item，因此自带 `value` 与 trigger 配对（与 `<xh-tabs>` 同一写法）。\n\n步序序列由作者渲染，元素不替作者生成节点：生成节点等于收走模板控制权，\n图标、自定义序号、i18n 文案都无法再加入。",
           "name": "XhStepsElement",
           "cssParts": [
             {
@@ -48305,7 +48305,7 @@
               "name": "trigger"
             },
             {
-              "description": "序号/对勾圆点，对读屏隐藏",
+              "description": "序号 / 对勾圆点，对读屏隐藏",
               "name": "indicator"
             },
             {
@@ -48497,7 +48497,7 @@
                   }
                 }
               ],
-              "description": "取角色节点所属步骤的身份：value 与 disabled 都写在 item 节点上，\ntrigger/indicator/title/description/separator 向上找自己的 item（item 自身 closest 命中的就是它自己）。\n没有 item 包裹层时退回读节点自身，扁平结构也能用。\n越出本宿主的 item 不算数——嵌套步骤条的内层节点不会认外层条目。"
+              "description": "取角色节点所属步骤的身份：value 与 disabled 都写在 item 节点上，\ntrigger/indicator/title/description/separator 向上查找自己的 item（item 自身 closest 命中的就是它自己）。\n没有 item 包裹层时退回读取节点自身，扁平结构也可使用。\n越出本宿主的 item 不计：嵌套步骤条的内层节点不会识别外层条目。"
             },
             {
               "kind": "method",
@@ -48543,7 +48543,7 @@
               "type": {
                 "text": "number | undefined"
               },
-              "description": "受控步序（0 起）；缺省该属性即非受控",
+              "description": "受控步序（0 起）；未提供该属性即非受控",
               "name": "value",
               "fieldName": "value"
             },
@@ -48559,7 +48559,7 @@
               "type": {
                 "text": "number | undefined"
               },
-              "description": "总步数；步序上界取它（等于它即\"全部完成\"）",
+              "description": "总步数；步序上界取它（等于它即全部完成）",
               "name": "count",
               "fieldName": "count"
             },
@@ -48575,7 +48575,7 @@
               "type": {
                 "text": "boolean | undefined"
               },
-              "description": "线性模式：跳不到还没走到的步（那些 trigger 一律禁用）",
+              "description": "线性模式：无法跳到尚未到达的步（这些 trigger 一律禁用）",
               "name": "linear",
               "fieldName": "linear"
             },
@@ -48583,7 +48583,7 @@
               "type": {
                 "text": "boolean | undefined"
               },
-              "description": "整组不可交互，连 Tab 停靠点都不留",
+              "description": "整组不可交互，不保留 Tab 停靠点",
               "name": "disabled",
               "fieldName": "disabled"
             },
@@ -48591,7 +48591,7 @@
               "type": {
                 "text": "boolean | undefined"
               },
-              "description": "方向键走到尽头回绕，默认关闭",
+              "description": "方向键到达末尾回绕，默认关闭",
               "name": "loop",
               "fieldName": "loop"
             },
@@ -48599,7 +48599,7 @@
               "type": {
                 "text": "Direction | undefined"
               },
-              "description": "文字方向，只影响水平轴上 ArrowLeft/ArrowRight 的前后语义，默认 ltr",
+              "description": "文字方向，只影响水平轴上 ArrowLeft / ArrowRight 的前后语义，默认 ltr",
               "name": "dir",
               "fieldName": "direction"
             },

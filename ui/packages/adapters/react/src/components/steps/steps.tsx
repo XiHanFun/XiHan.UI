@@ -20,27 +20,27 @@ import { useSteps } from './use-steps'
 
 type StepsProps = StepsSchema['props']
 
-/** 函数式 children 的载荷：当前步序、总步数、是否走完，以及跳步与前进后退的方法。 */
+/** 函数式 children 的载荷：当前步序、总步数、是否完成，以及跳步与前进后退的方法。 */
 export type StepsRootSlotProps = Pick<
   StepsApi,
   'value' | 'count' | 'complete' | 'setValue' | 'goToNextStep' | 'goToPrevStep'
 >
 
-/** 根上自有的那些取值；defaultValue 与 dir 与原生的同名属性含义不同，由这里接管。 */
+/** 根上自有的取值；defaultValue 与 dir 与原生的同名属性含义不同，由这里接管。 */
 type RootElementProps = Omit<ComponentPropsWithRef<'div'>, 'children' | 'defaultValue' | 'dir'>
 
 export interface XhStepsRootProps extends RootElementProps {
   value?: number
   defaultValue?: number
-  /** 总步数；缺省时步序夹死在 0，读屏那边也不报「共 n 步」。 */
+  /** 总步数；默认时步序固定在 0，读屏侧也不报告共 n 步。 */
   count?: number
   collection?: StepNode[]
   /** 逐步覆盖状态：下标 → 状态。 */
   statuses?: Record<number, StepStatus>
-  /** 逐步标语气：下标 → 语气；被打回的写 danger、要留意的写 warning。 */
+  /** 逐步标注语气：下标 → 语气；被驳回的写 danger、需要留意的写 warning。 */
   tones?: Record<number, Tone>
   orientation?: Orientation
-  /** 线性推进：没走到的那几步锁着，点不动也跳不过去。 */
+  /** 线性推进：尚未到达的步骤锁定，不可点击也不可跳过。 */
   linear?: boolean
   disabled?: boolean
   loop?: boolean
