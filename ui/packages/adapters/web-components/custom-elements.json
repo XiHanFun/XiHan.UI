@@ -585,7 +585,7 @@
       "declarations": [
         {
           "kind": "class",
-          "description": "`<xh-alert>` —— Light-DOM 行为宿主，把 alert 机器打到 root/indicator/content/title/description/\naction/close-trigger 角色节点，收起时用内联 style.display 隐藏 root。",
+          "description": "`<xh-alert>`：Light-DOM 行为宿主，把 alert 状态机接到 root / indicator / content / title / description /\naction / close-trigger 角色节点，收起时用内联 style.display 隐藏 root。",
           "name": "XhAlertElement",
           "cssParts": [
             {
@@ -597,7 +597,7 @@
               "name": "indicator"
             },
             {
-              "description": "文本列容器：把标题与说明摞成一列",
+              "description": "文本列容器：标题与说明纵向排列",
               "name": "content"
             },
             {
@@ -609,7 +609,7 @@
               "name": "description"
             },
             {
-              "description": "操作槽：圈出按钮区",
+              "description": "操作槽：划定按钮区",
               "name": "action"
             },
             {
@@ -727,7 +727,7 @@
               "type": {
                 "text": "boolean | undefined"
               },
-              "description": "关闭按钮是否可用，缺省为真",
+              "description": "关闭按钮是否可用，默认为真",
               "name": "closable",
               "fieldName": "closable"
             },
@@ -735,7 +735,7 @@
               "type": {
                 "text": "boolean | undefined"
               },
-              "description": "受控显隐；缺省该属性即非受控",
+              "description": "受控显隐；未提供该属性即非受控",
               "name": "open",
               "fieldName": "open"
             },
@@ -743,7 +743,7 @@
               "type": {
                 "text": "boolean | undefined"
               },
-              "description": "非受控初始显隐，缺省为显示",
+              "description": "非受控初始显隐，默认显示",
               "name": "default-open",
               "fieldName": "defaultOpen"
             }

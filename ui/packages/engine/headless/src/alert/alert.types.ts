@@ -11,7 +11,7 @@ export interface AlertOpenChangeDetails {
   open: boolean
 }
 
-/** 读屏用的文案。默认英文，与 dialog / toast 的 translations 同一套写法。 */
+/** 读屏文案。默认英文，与 dialog / toast 的 translations 写法一致。 */
 export interface AlertTranslations {
   close: string
 }
@@ -19,17 +19,17 @@ export interface AlertTranslations {
 export interface AlertSchema extends MachineSchema {
   props: {
     /**
-     * 语气：brand / neutral / success / warning / danger / info，决定用哪族颜色，默认 info。
-     * danger / warning 走 role="alert"，其余走 role="status"。
+     * 语气：brand / neutral / success / warning / danger / info，决定使用哪族颜色，默认 info。
+     * danger / warning 使用 role="alert"，其余使用 role="status"。
      */
     tone?: Tone
     /** 关闭按钮是否可用，默认 true。false 时该按钮同时被禁用与收起。 */
     closable?: boolean
-    /** 受控显隐；缺省该 prop 即非受控。 */
+    /** 受控显隐；未提供该 prop 即非受控。 */
     open?: boolean
     /** 非受控初始显隐，默认显示。 */
     defaultOpen?: boolean
-    /** open 变化意图回调；受控时是唯一出口，非受控随内部转移一并通知。 */
+    /** open 变化意图回调；受控时是唯一出口，非受控时随内部转移一并通知。 */
     onOpenChange?: (details: AlertOpenChangeDetails) => void
     translations?: Partial<AlertTranslations>
   }
@@ -56,11 +56,11 @@ export interface AlertApi<T extends PropTypes = PropTypes> {
   setOpen: (next: boolean) => void
   getRootProps: () => T['element']
   getIndicatorProps: () => T['element']
-  /** 文本列容器：把标题与说明摞成一列。 */
+  /** 文本列容器：标题与说明纵向排列。 */
   getContentProps: () => T['element']
   getTitleProps: () => T['element']
   getDescriptionProps: () => T['element']
-  /** 操作槽：圈出按钮区，按钮本身归作者。 */
+  /** 操作槽：划定按钮区，按钮本身由作者提供。 */
   getActionProps: () => T['element']
   getCloseTriggerProps: () => T['button']
 }

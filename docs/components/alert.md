@@ -96,11 +96,11 @@ icon 部件排在标题前面，颜色取当前语气的强调色；内容由作
 
 | 属性 | 类型 | 必填 | 说明 |
 | --- | --- | --- | --- |
-| `tone` | `Tone` |  | 语气：brand / neutral / success / warning / danger / info，决定用哪族颜色，默认 info。 danger / warning 走 role="alert"，其余走 role="status"。 |
+| `tone` | `Tone` |  | 语气：brand / neutral / success / warning / danger / info，决定使用哪族颜色，默认 info。 danger / warning 使用 role="alert"，其余使用 role="status"。 |
 | `closable` | `boolean` |  | 关闭按钮是否可用，默认 true。false 时该按钮同时被禁用与收起。 |
-| `open` | `boolean` |  | 受控显隐；缺省该 prop 即非受控。 |
+| `open` | `boolean` |  | 受控显隐；未提供该 prop 即非受控。 |
 | `defaultOpen` | `boolean` |  | 非受控初始显隐，默认显示。 |
-| `onOpenChange` | `(details: AlertOpenChangeDetails) => void` |  | open 变化意图回调；受控时是唯一出口，非受控随内部转移一并通知。 |
+| `onOpenChange` | `(details: AlertOpenChangeDetails) => void` |  | open 变化意图回调；受控时是唯一出口，非受控时随内部转移一并通知。 |
 | `translations` | `Partial<AlertTranslations>` |  |  |
 
 ### 事件
@@ -139,10 +139,10 @@ icon 部件排在标题前面，颜色取当前语气的强调色；内容由作
 | `setOpen` | `(next: boolean) => void` |  |
 | `getRootProps` | `() => T['element']` |  |
 | `getIndicatorProps` | `() => T['element']` |  |
-| `getContentProps` | `() => T['element']` | 文本列容器：把标题与说明摞成一列。 |
+| `getContentProps` | `() => T['element']` | 文本列容器：标题与说明纵向排列。 |
 | `getTitleProps` | `() => T['element']` |  |
 | `getDescriptionProps` | `() => T['element']` |  |
-| `getActionProps` | `() => T['element']` | 操作槽：圈出按钮区，按钮本身归作者。 |
+| `getActionProps` | `() => T['element']` | 操作槽：划定按钮区，按钮本身由作者提供。 |
 | `getCloseTriggerProps` | `() => T['button']` |  |
 
 ## 无障碍
