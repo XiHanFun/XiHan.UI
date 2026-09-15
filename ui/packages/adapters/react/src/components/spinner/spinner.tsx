@@ -14,7 +14,7 @@ import { SpinnerProvider, useSpinnerContext } from './context'
 import { useSpinner } from './use-spinner'
 
 export interface XhSpinnerProps extends ComponentPropsWithRef<'span'> {
-  /** 这一处的可及名字，写在 root 上。 */
+  /** 该处的可及名字，写在 root 上。 */
   label?: string
   size?: Size
   /** 形态：ring / arc / dots。 */
@@ -23,7 +23,7 @@ export interface XhSpinnerProps extends ComponentPropsWithRef<'span'> {
   translations?: Partial<SpinnerTranslations>
 }
 
-/** 转圈图形由皮肤画在 root 的伪元素上，这里不生成任何子节点。 */
+/** 旋转图形由皮肤绘制在 root 的伪元素上，这里不生成任何子节点。 */
 export function XhSpinner({
   label,
   size,
@@ -45,7 +45,7 @@ export function XhSpinner({
 
 export interface XhSpinnerLabelProps extends ComponentPropsWithRef<'span'> {}
 
-/** 可见文案节点。作者不写内容时显示解析后的 label，屏幕上看到的与读屏念的因此是同一段字。 */
+/** 可见文案节点。作者未写内容时显示解析后的 label，屏幕上看到的与读屏朗读的因此是同一段文字。 */
 export function XhSpinnerLabel({ children, ...rest }: XhSpinnerLabelProps): ReactNode {
   const ctx = useSpinnerContext()
   return (
