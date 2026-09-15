@@ -12,7 +12,7 @@
 
 ## 用法
 
-不传 open 即为非受控，defaultOpen 只给初始值，之后由组件自己维护开合
+不传 open 即为非受控，defaultOpen 只提供初始值，之后由组件自行维护开合
 
 <XhDemo src="collapsible/01-basic" />
 
@@ -26,31 +26,31 @@
 
 ### 受控
 
-传了 open 就由宿主说了算，组件自己不再改状态，只发 open-change 报告意图
+传入 open 后由宿主决定，组件自身不再修改状态，只发 open-change 报告意图
 
 <XhDemo src="collapsible/02-controlled" />
 
 ### 禁用
 
-disabled 把触发器整个关停，点击与键盘都不再改开合，已展开的内容维持原样
+disabled 把触发器整个关停，点击与键盘都不再改变开合，已展开的内容维持原样
 
 <XhDemo src="collapsible/03-disabled" />
 
 ### 尺寸
 
-size 换的是触发按钮的高度、内边距与字号，三档并排对照
+size 改变触发按钮的高度、内边距与字号，三档并排对照
 
 <XhDemo src="collapsible/04-size" />
 
 ### 自定义展开标记
 
-往指示符部件里塞自己的图形，转向仍由皮肤按 open 接管
+在指示符部件中放置自己的图形，转向仍由皮肤按 open 接管
 
 <XhDemo src="collapsible/05-marker" />
 
 ### 展开动画
 
-收起时节点不卸载，作者接管内容区的 display，用一条行高过渡就能平滑展开
+收起时节点不卸载，作者接管内容区的 display，用一条行高过渡即可平滑展开
 
 <XhDemo src="collapsible/06-transition" />
 

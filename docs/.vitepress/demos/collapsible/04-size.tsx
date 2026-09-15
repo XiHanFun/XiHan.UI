@@ -1,4 +1,4 @@
-// 尺寸 | size 换的是触发按钮的高度、内边距与字号，三档并排对照
+// 尺寸 | size 改变触发按钮的高度、内边距与字号，三档并排对照
 import type { ReactNode } from "react";
 import {
   XhCollapsibleContent,

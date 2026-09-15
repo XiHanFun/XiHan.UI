@@ -1,4 +1,4 @@
-<!-- 禁用 | disabled 把触发器整个关停，点击与键盘都不再改开合，已展开的内容维持原样 -->
+<!-- 禁用 | disabled 把触发器整个关停，点击与键盘都不再改变开合，已展开的内容维持原样 -->
 <script setup lang="ts">
 import {
   XhCollapsibleContent,
