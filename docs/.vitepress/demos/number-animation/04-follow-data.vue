@@ -1,4 +1,4 @@
-<!-- 跟着数据走 | 改 to 就从当前数字接着走向新终点，跑完停下之后再改也照样重新跑；active 翻假即停在当前值 -->
+<!-- 跟随数据变化 | 修改 to 即从当前数字继续变化到新终点，结束后再次修改照样重新运行；active 切换为假即停在当前值 -->
 <script setup lang="ts">
 import { XhButton, XhNumberAnimation } from "@xihan-ui/vue";
 import { ref } from "vue";
