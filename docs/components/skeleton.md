@@ -1,6 +1,6 @@
 # Skeleton 骨架屏
 
-内容还没到时，先按最终版面占位。
+内容尚未到达时，按最终版面占位。
 
 <div class="xh-resource-links">
   <a href="https://github.com/XiHanFun/XiHan.UI/tree/dev/ui/packages/engine/headless/src/skeleton" target="_blank" rel="noreferrer">Headless</a>
@@ -51,29 +51,29 @@ loading 期间容器报 aria-busy，翻成 false 后整块收起，位置让给�
 
 ### 何时不用
 
-- 加载极快：骨架闪一下比直接出现更烦人。
-- 版面完全不可预测：用[加载指示器](./spinner)。
-- 是一次动作的等待（提交中）：用按钮的载入态。
+- 加载极快时，骨架闪烁比直接出现更差。
+- 版面完全不可预测时，使用[加载指示器](./spinner)。
+- 一次动作的等待（提交中）使用按钮的载入态。
 
 ### 特性
 
-- `loading` 翻假即换成真内容。
+- `loading` 为假时替换为真实内容。
 - `shape` 决定骨块的形状（文本行、圆形、矩形）。
 - `animation` 在微光、呼吸和静止三档之间切换。
 
 ### 组合
 
-- 按最终版面用[栅格](./grid)或[弹性布局](./flex)摆骨块。
+- 按最终版面用[栅格](./grid)或[弹性布局](./flex)排列骨块。
 
 ### 最佳实践
 
-- 骨架的形状与真内容对上：行数、宽度、圆角都要接近，否则内容一到就整块跳。
-- 别做得比真内容还花哨。
+- 骨架的形状与真实内容对应：行数、宽度、圆角都要接近，否则内容到达时整块跳动。
+- 不做得比真实内容更复杂。
 
 ### 反模式
 
-- 一块巨大的灰色矩形代替所有内容。
-- 加载失败后骨架一直闪着。
+- 用一块巨大的灰色矩形代替所有内容。
+- 加载失败后骨架持续闪烁。
 
 ## API 参考
 
@@ -155,7 +155,7 @@ loading 期间容器报 aria-busy，翻成 false 后整块收起，位置让给�
 | 变量 | 部件 | CSS 属性 | 状态 | 缺省来源 | 说明 |
 | --- | --- | --- | --- | --- | --- |
 | `--xh-skeleton-bg` | `item` | `background-color` | `default` | `--xh-bg-subtle` | skeleton 的 item 部件 background-color 覆盖槽。 |
-| `--xh-skeleton-circle-radius` | `item` | `border-radius` | `shape=circle` | `--xh-shape-pill` | skeleton 的 item 部件 border-radius 覆盖槽。 |
+| `--xh-skeleton-circle-radius` | `item` | `border-radius` | `shape=circle` | `--xh-shape-circle` | skeleton 的 item 部件 border-radius 覆盖槽。 |
 | `--xh-skeleton-circle-size` | `item` | `inline-size` | `shape=circle` | `--xh-control-h-lg` | skeleton 的 item 部件 inline-size 覆盖槽。 |
 | `--xh-skeleton-duration` | `item` | `animation` | `default` | `--xh-shimmer-duration` | skeleton 的 item 部件 animation 覆盖槽。 |
 | `--xh-skeleton-gap` | `root` | `gap` | `default` | `--xh-space-3` | skeleton 的 root 部件 gap 覆盖槽。 |

@@ -12083,7 +12083,7 @@
   flex: none;
   inline-size: var(--xh-skeleton-circle-size, var(--xh-control-h-lg));
   aspect-ratio: 1;
-  border-radius: var(--xh-skeleton-circle-radius, var(--xh-shape-pill));
+  border-radius: var(--xh-skeleton-circle-radius, var(--xh-shape-circle));
 }
 
 /* 图片、卡片这类成块的占位：给个最小高度，撑开由作者决定 */
