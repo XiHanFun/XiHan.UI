@@ -1,4 +1,4 @@
-<!-- 自动开合与锁存 | 跑起来自动展开、结束自动收起；你手动开合过一次之后，阶段怎么变都不再自动 -->
+<!-- 自动开合与锁存 | 运行时自动展开、结束时自动收起；用户手动开合过一次之后，阶段如何变化都不再自动开合 -->
 <script setup lang="ts">
 import type { ToolCallPhase } from "@xihan-ui/headless";
 import {

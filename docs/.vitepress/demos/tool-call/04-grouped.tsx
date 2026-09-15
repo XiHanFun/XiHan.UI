@@ -1,4 +1,4 @@
-// 多次调用分组 | 外面套一层手风琴当分组头：计数用等宽数位，整组开合归手风琴，卡片各管各的
+// 多次调用分组 | 外层套一层手风琴作为分组头：计数使用等宽数位，整组开合归手风琴，卡片各自独立
 import type { ReactNode } from "react";
 import {
   XhAccordionContent,
