@@ -18,11 +18,11 @@ export interface AvatarSchema extends MachineSchema {
   props: {
     src?: string
     alt?: string
-    /** 尺寸：sm / md / lg，缺省 md；缺省档不输出 data-size */
+    /** 尺寸：sm / md / lg，默认 md；默认档不输出 data-size */
     size?: Size
-    /** 颜色：决定底色与回退字使用哪组状态色；缺席即不输出 data-tone，走皮肤的中性缺省 */
+    /** 颜色：决定底色与回退字使用哪组状态色；未提供时不输出 data-tone，使用皮肤的中性默认 */
     tone?: Tone
-    /** 状态落位时通知，过渡态 idle 不通知。 */
+    /** 状态落定时通知，过渡态 idle 不通知。 */
     onStatusChange?: (details: AvatarStatusChangeDetails) => void
   }
   context: Record<string, never>
@@ -49,5 +49,5 @@ export interface AvatarApi<T extends PropTypes = PropTypes> {
   getFallbackProps: () => T['element']
 }
 
-/** 读屏用的文案。本组件目前没有需要外露的文案，位先留着。 */
+/** 读屏文案。本组件目前没有需要外露的文案，保留该位。 */
 export interface AvatarTranslations {}
