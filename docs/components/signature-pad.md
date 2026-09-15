@@ -12,7 +12,7 @@
 
 ## 用法
 
-一块画布加一条笔迹路径就够了：按下落笔、移动成迹、抬笔收一笔
+一块画布加一条笔迹路径即可：按下落笔、移动成迹、抬起收笔
 
 <XhDemo src="signature-pad/01-basic" />
 
@@ -26,31 +26,31 @@
 
 ### 标题、基准线与清空
 
-基准线是纯画面（带 aria-hidden），清空按钮是原生 button，读屏念的是 translations 里那句
+基准线是纯画面（带 aria-hidden），清空按钮是原生 button，读屏朗读的是 translations 中的文案
 
 <XhDemo src="signature-pad/02-guide" />
 
 ### 参与表单
 
-给了 name 就带上表单影子，提交的是一份独立 SVG；表单重置会把画布清回空
+提供 name 后带上表单影子，提交的是一份独立 SVG；表单重置会把画布清空
 
 <XhDemo src="signature-pad/03-form" />
 
 ### 笔迹外形
 
-drawing 调笔宽与压感：thinning 越大，划得越快笔画越细，simulatePressure 决定压感取设备值还是按速度算
+drawing 调整笔宽与压感：thinning 越大，划得越快笔画越细，simulatePressure 决定压感取设备值还是按速度计算
 
 <XhDemo src="signature-pad/04-pen" />
 
 ### 只读与禁用
 
-只读画好的还看得见但改不动，禁用连清空按钮都按不动；两者都走原生 disabled，不是灰一层了事
+只读时已绘制的笔迹可见但不可修改，禁用时连清空按钮都不可按下；两者都使用原生 disabled，不只是视觉置灰
 
 <XhDemo src="signature-pad/05-readonly-disabled" />
 
 ### 取出签名
 
-签名定稿时 draw-end 带上一份可直接落库的 SVG；提交前用 empty 拦一道，空签名不该走出客户端
+签名定稿时 draw-end 带上一份可直接入库的 SVG；提交前用 empty 拦截一次，空签名不应离开客户端
 
 <XhDemo src="signature-pad/06-export" />
 

@@ -1,4 +1,4 @@
-// 只读与禁用 | 只读画好的还看得见但改不动，禁用连清空按钮都按不动；两者都走原生 disabled，不是灰一层了事
+// 只读与禁用 | 只读时已绘制的笔迹可见但不可修改，禁用时连清空按钮都不可按下；两者都使用原生 disabled，不只是视觉置灰
 import type { ReactNode } from "react";
 import {
   XhSignaturePadClearTrigger,

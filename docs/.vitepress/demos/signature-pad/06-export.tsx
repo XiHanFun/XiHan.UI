@@ -1,4 +1,4 @@
-// 取出签名 | 签名定稿时 draw-end 带上一份可直接落库的 SVG；提交前用 empty 拦一道，空签名不该走出客户端
+// 取出签名 | 签名定稿时 draw-end 带上一份可直接入库的 SVG；提交前用 empty 拦截一次，空签名不应离开客户端
 import type { ReactNode } from "react";
 import {
   XhSignaturePadClearTrigger,

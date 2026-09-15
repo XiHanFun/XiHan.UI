@@ -1,4 +1,4 @@
-// 标题、基准线与清空 | 基准线是纯画面（带 aria-hidden），清空按钮是原生 button，读屏念的是 translations 里那句
+// 标题、基准线与清空 | 基准线是纯画面（带 aria-hidden），清空按钮是原生 button，读屏朗读的是 translations 中的文案
 import type { ReactNode } from "react";
 import {
   XhSignaturePadClearTrigger,
