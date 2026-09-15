@@ -23,25 +23,25 @@ const STRING_CONVERTER = { fromAttribute: (v: string | null) => v ?? undefined }
 const BOOLEAN_CONVERTER = { fromAttribute: (v: string | null) => (v === null ? undefined : v !== 'false') }
 
 /**
- * `<xh-segmented>` —— Light-DOM 行为宿主：作者写 root 与若干 item 角色节点，
- * 元素跑 segmented 机器并把 connect 产出打上去。段须是原生 `<button>`
- * （Enter/Space 的激活由平台负责），身份取写在段上的 value 属性，禁用由段自报 aria-disabled。
+ * `<xh-segmented>`：Light-DOM 行为宿主：作者写 root 与若干 item 角色节点，
+ * 元素运行 segmented 状态机并把 connect 产出接上。段须是原生 `<button>`
+ * （Enter / Space 的激活由平台负责），身份取写在段上的 value 属性，禁用由段声明 aria-disabled。
  *
- * 一排互斥选项就是单选组：root 是 radiogroup，每段 role=radio 并显式报 aria-checked。
- * indicator 是那块会滑动的选中标记，位置由机器量好写成内联样式里的四个私有槽；
- * 它绝对定位，必须写在段之前，靠文档序让段压在它上面。
+ * 一排互斥选项即单选组：root 是 radiogroup，每段 role=radio 并显式报告 aria-checked。
+ * indicator 是滑动的选中标记，位置由状态机测量后写为内联样式中的四个私有槽；
+ * 它绝对定位，必须写在段之前，依靠文档序让段覆盖在它上面。
  *
  * @customElement xh-segmented
- * @attr {string} value - 受控选中值；缺省该属性即非受控
+ * @attr {string} value - 受控选中值；未提供该属性即非受控
  * @attr {string} default-value - 非受控的初始选中值
  * @attr {boolean} disabled - 整组禁用
- * @attr {boolean} read-only - 只读：选不动，方向键照常移焦点
+ * @attr {boolean} read-only - 只读：不可选择，方向键照常移动焦点
  * @attr {boolean} invalid - 校验失败态
  * @attr {boolean} required - 必填
- * @attr {string} name - 表单字段名；给定后隐藏输入才带 name 并参与提交
- * @attr {'horizontal'|'vertical'} orientation - 视觉排布，默认 horizontal；方向键四个恒响应，与它无关
- * @attr {'ltr'|'rtl'} dir - 文字方向，只改写左右方向键语义与指示器的起始缘；不写即从 DOM 现读祖先链上的方向
- * @attr {boolean} loop - 方向键走到尽头回绕，默认开启
+ * @attr {string} name - 表单字段名；提供后隐藏输入才带 name 并参与提交
+ * @attr {'horizontal'|'vertical'} orientation - 视觉排布，默认 horizontal；四个方向键恒响应，与它无关
+ * @attr {'ltr'|'rtl'} dir - 文字方向，只改写左右方向键语义与指示器的起始缘；未提供时从 DOM 读取祖先链上的方向
+ * @attr {boolean} loop - 方向键到达末尾回绕，默认开启
  * @attr {boolean} block - 撑满行宽，各段等分剩余空间
  * @attr {'brand'|'neutral'|'success'|'warning'|'danger'|'info'} tone - 语气
  * @attr {'sm'|'md'|'lg'} size - 尺寸
@@ -49,8 +49,8 @@ const BOOLEAN_CONVERTER = { fromAttribute: (v: string | null) => (v === null ? u
  * @csspart root - role=radiogroup 的容器（承载键盘收口与 Tab 兜底位）
  * @csspart item - 一段，须是原生 `<button>` 并自带 value 属性标识身份
  * @csspart item-text - 段内文本
- * @csspart indicator - 会滑动的选中标记，对读屏隐藏；无选中项时收起
- * @csspart hidden-input - 表单影子输入（必须是原生 input），整组只需一份；给了 name 却没写它，就没有任何东西参与提交
+ * @csspart indicator - 滑动的选中标记，对读屏隐藏；无选中项时收起
+ * @csspart hidden-input - 表单影子输入（必须是原生 input），整组只需一份；提供 name 却未编写它时，没有任何内容参与提交
  */
 export class XhSegmentedElement extends XhElement {
   static override partContract = { anatomy: segmentedAnatomy, meta: segmentedMeta }
@@ -95,7 +95,7 @@ export class XhSegmentedElement extends XhElement {
   // 整组禁用期间的段自身声明快照。connect 每帧都把 aria-disabled 写回段，整组禁用更是写满每一个，
   // 此时回读分不清「作者声明的」还是「自己上一帧写的」，组解禁后段就永远解不开。
   private readonly declaredDisabled = new WeakMap<HTMLElement, boolean>()
-  /** 上一帧是否整组禁用：解禁当帧 DOM 上还留着机器写回的 aria-disabled，读不得。 */
+  /** 上一帧是否整组禁用：解禁当帧 DOM 上仍保留着状态机写回的 aria-disabled，不可读取。 */
   private wasGroupDisabled = false
 
   private readonly notify = (details: SegmentedValueChangeDetails): void => {
