@@ -17,32 +17,32 @@ import { MachineController } from '../runtime/machine-controller'
 const STRING_CONVERTER = { fromAttribute: (v: string | null) => v ?? undefined }
 
 /**
- * `<xh-layout>` —— 页面骨架的 Light-DOM 行为宿主，跑 layout 机器并把 connect 产出打到
- * root/header/sider-backdrop/sider/content/footer/sider-trigger 角色节点。
+ * `<xh-layout>`：页面骨架的 Light-DOM 行为宿主，运行 layout 状态机并把 connect 产出接到
+ * root / header / sider-backdrop / sider / content / footer / sider-trigger 角色节点。
  *
- * 除 root 外的部件全部可缺省。各段一律不带 role：地标该不该标、标在哪一段，
- * 取决于这套骨架在页面里的位置，由作者自己声明。
+ * 除 root 外的部件全部可省略。各段一律不带 role：是否标注地标、标注在哪一段，
+ * 取决于这套骨架在页面中的位置，由作者自行声明。
  *
- * 侧栏宽度只写成 sider 上的内联 inline-size，宽度过渡由皮肤声明。
+ * 侧栏宽度只写为 sider 上的内联 inline-size，宽度过渡由皮肤声明。
  *
- * 固定定位只落 data-fixed 标记：钉住的实现（含滚动容器的分工）归皮肤。
+ * 固定定位只写 data-fixed 标记：固定的实现（含滚动容器的分工）归皮肤。
  *
  * @customElement xh-layout
- * @attr {boolean} sider-collapsed - 受控折叠态；缺省该属性即非受控
+ * @attr {boolean} sider-collapsed - 受控折叠态；未提供该属性即非受控
  * @attr {boolean} default-sider-collapsed - 非受控初始为折叠
  * @attr {string} sider-width - 展开时侧栏的宽度，任意 CSS 长度
  * @attr {string} sider-collapsed-width - 折叠时侧栏的宽度，任意 CSS 长度
- * @attr {'start'|'end'} sider-placement - 侧栏挂在行首还是行尾，缺省 start
- * @attr {'sm'|'md'|'lg'|'xl'} sider-breakpoint - 侧栏的自适应断点：视口窄于这一档时侧栏按折叠宽显示，折叠态不变
- * @attr {'inline'|'sheet'} sider-presentation - 侧栏呈现形态：inline 占一列，sheet 移出画外、展开时盖在内容之上；写了断点时只在未达档时成立
- * @attr {boolean} header-fixed - 头吸顶：滚动时头钉在滚动容器的上沿
- * @attr {boolean} sider-fixed - 侧栏吸附：滚动时侧栏钉在滚动容器的上沿，头也吸顶时让开头那一条
- * @attr {boolean} bordered - 在头、侧栏、脚与内容之间画分隔线
+ * @attr {'start'|'end'} sider-placement - 侧栏挂在行首还是行尾，默认 start
+ * @attr {'sm'|'md'|'lg'|'xl'} sider-breakpoint - 侧栏的自适应断点：视口窄于该档时侧栏按折叠宽显示，折叠态不变
+ * @attr {'inline'|'sheet'} sider-presentation - 侧栏呈现形态：inline 占一列，sheet 移出画外、展开时覆盖在内容之上；提供断点时只在未达该档时成立
+ * @attr {boolean} header-fixed - 头部吸顶：滚动时头部固定在滚动容器的上沿
+ * @attr {boolean} sider-fixed - 侧栏吸附：滚动时侧栏固定在滚动容器的上沿，头部也吸顶时让开头部的高度
+ * @attr {boolean} bordered - 在头部、侧栏、脚部与内容之间绘制分隔线
  * @fires sider-collapsed-change - 折叠态变化；detail 为 `{ collapsed: boolean }`
- * @fires sider-breakpoint - 断点跨过去时发，挂载时也发一次当前值；detail 为 `{ matched: boolean }`
+ * @fires sider-breakpoint - 跨过断点时发出，挂载时也发出一次当前值；detail 为 `{ matched: boolean }`
  * @csspart root - 骨架根容器，承载 data-sider-placement / data-sider-breakpoint / data-sider-presentation / data-collapsed / data-header-fixed / data-sider-fixed / data-bordered
  * @csspart header - 顶部横幅区，横贯整行；吸顶时带 data-fixed
- * @csspart sider-backdrop - 覆盖档铺在内容之上的遮罩，点它收起侧栏；占位档下带 hidden。写在 sider 之前
+ * @csspart sider-backdrop - 覆盖档铺在内容之上的遮罩，点击它收起侧栏；占位档下带 hidden。写在 sider 之前
  * @csspart sider - 侧栏，折叠时带 data-collapsed、宽度随之在两档之间切换；吸附时带 data-fixed；覆盖档带 data-presentation="sheet"
  * @csspart content - 主内容区
  * @csspart footer - 底部区，横贯整行
@@ -107,7 +107,7 @@ export class XhLayoutElement extends XhElement {
     this.config ??= createRuntimeConfig({ scope: this.layoutScope, idGenerator: this.idGen })
   }
 
-  /** 覆盖式侧栏的 Escape 层级判断必须在机器挂载前接入本元素所在 Document 的运行时。 */
+  /** 覆盖式侧栏的 Escape 层级判断必须在状态机挂载前接入本元素所在 Document 的运行时。 */
   private injectRefs(svc: Service<LayoutSchema>): void {
     this.ensureConfig()
     svc.refs.set('config', this.config)
