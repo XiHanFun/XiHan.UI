@@ -12,7 +12,7 @@
 
 ## 用法
 
-一条滑杆只推颜色的一路，默认是色相：值是整个颜色串，轨道画的是这一路从头走到尾的颜色
+一条滑杆只调节颜色的一个通道，默认是色相：值是整个颜色串，轨道绘制的是该通道从头到尾的颜色
 
 <XhDemo src="color-slider/01-basic" />
 
@@ -26,19 +26,19 @@
 
 ### 通道并排
 
-几条共用同一个值、各推自己那一路；开 alpha 让推色相时透明度不丢，就拼出一个 HSV 调色面板
+几条共用同一个值、各调节自己的通道；开启 alpha 使调节色相时透明度不丢失，即组成一个 HSV 调色面板
 
 <XhDemo src="color-slider/02-channels" />
 
 ### 红绿蓝与写法
 
-推 RGB 三路走 0-255；format 决定写回的写法，这里按 rgba() 输出
+调节 RGB 三通道使用 0-255；format 决定写回的写法，这里按 rgba() 输出
 
 <XhDemo src="color-slider/03-rgb" />
 
 ### 竖直与状态
 
-orientation 竖排时渐变自下而上；禁用整体压暗，只读留 Tab 位但推不动
+orientation 竖排时渐变自下而上；禁用整体压暗，只读保留 Tab 位但不可调节
 
 <XhDemo src="color-slider/04-states" />
 
