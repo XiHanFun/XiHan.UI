@@ -40447,7 +40447,7 @@
   /* 引导步骤的正文长度由作者定，矮视口下不限高气泡会整块伸出视口 */
   max-block-size: min(var(--xh-tour-max-h, var(--xh-overlay-max-h)), var(--xh-_tour-available-h));
   border: var(--xh-stroke-thin) solid var(--xh-tour-border, var(--xh-border-default));
-  border-radius: var(--xh-tour-radius, var(--xh-shape-surface));
+  border-radius: var(--xh-tour-radius, var(--xh-shape-overlay));
   background: var(--xh-tour-bg, var(--xh-bg-surface));
   color: var(--xh-tour-fg, var(--xh-fg-default));
   box-shadow: var(--xh-tour-shadow, var(--xh-elevation-sheet));
@@ -40547,7 +40547,7 @@
   border-radius: var(--xh-tour-action-radius, var(--xh-shape-control));
   font-size: var(--xh-text-secondary-size);
   cursor: pointer;
-  transition: scale var(--xh-motion-duration-micro) var(--xh-motion-ease-enter-strong);
+  transition: scale var(--xh-motion-duration-release) var(--xh-motion-ease-release);
 }
 
 [data-scope='tour'][data-part='prev-trigger'][hidden],
@@ -40596,6 +40596,8 @@
 [data-scope='tour'][data-part='skip-trigger']:active,
 [data-scope='tour'][data-part='prev-trigger']:active:not(:disabled) {
   scale: var(--xh-motion-scale-press);
+  transition-duration: var(--xh-motion-duration-press);
+  transition-timing-function: var(--xh-motion-ease-press);
 }
 
 /* 单体控件用原生 disabled（集合条目才用 [data-disabled]）：首步的上一步就是这个形态 */
@@ -40621,7 +40623,7 @@
   transition:
     background var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
     color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
-    scale var(--xh-motion-duration-micro) var(--xh-motion-ease-enter-strong);
+    scale var(--xh-motion-duration-release) var(--xh-motion-ease-release);
 }
 
 [data-scope='tour'][data-part='close-trigger'][hidden] {
@@ -40636,6 +40638,8 @@
 [data-scope='tour'][data-part='close-trigger']:active {
   background: var(--xh-tour-close-bg-active, var(--xh-bg-subtle-active));
   scale: var(--xh-motion-scale-press);
+  transition-duration: var(--xh-motion-duration-press);
+  transition-timing-function: var(--xh-motion-ease-press);
 }
 
 /* 箭头的底色与描边色，几何在 overlay-arrow.css。

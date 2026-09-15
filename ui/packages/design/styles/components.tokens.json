@@ -68189,7 +68189,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-shape-surface"
+        "--xh-shape-overlay"
       ],
       "visibility": "public",
       "description": "tour 的 content 部件 border-radius 覆盖槽。"

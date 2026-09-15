@@ -303,7 +303,7 @@
 | `--xh-tour-progress-indicator-gap` | `progress-indicator` | `gap` | `default` | `--xh-space-1` | tour 的 progress-indicator 部件 gap 覆盖槽。 |
 | `--xh-tour-px` | `content` | `padding-inline` | `default` | `--xh-surface-px-md` | tour 的 content 部件 padding-inline 覆盖槽。 |
 | `--xh-tour-py` | `content` | `padding-block` | `default` | `--xh-surface-py-md` | tour 的 content 部件 padding-block 覆盖槽。 |
-| `--xh-tour-radius` | `content` | `border-radius` | `default` | `--xh-shape-surface` | tour 的 content 部件 border-radius 覆盖槽。 |
+| `--xh-tour-radius` | `content` | `border-radius` | `default` | `--xh-shape-overlay` | tour 的 content 部件 border-radius 覆盖槽。 |
 | `--xh-tour-shadow` | `content` | `box-shadow` | `default` | `--xh-elevation-sheet` | tour 的 content 部件 box-shadow 覆盖槽。 |
 | `--xh-tour-skip-trigger-px` | `next-trigger`<br>`prev-trigger`<br>`skip-trigger` | `padding-inline` | `default` | `--xh-control-px-md` | tour 的 next-trigger、prev-trigger、skip-trigger 部件 padding-inline 覆盖槽。 |
 | `--xh-tour-spotlight-layer` | `spotlight` | `z-index` | `default` | `--xh-_layer` | tour 的 spotlight 部件 z-index 覆盖槽。 |
