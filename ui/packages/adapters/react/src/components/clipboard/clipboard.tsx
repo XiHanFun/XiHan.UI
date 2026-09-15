@@ -18,11 +18,11 @@ import { useClipboard } from './use-clipboard'
 
 type ClipboardProps = ClipboardSchema['props']
 
-/** 函数式 children 的载荷：复制状态、当前要复制的文本，以及走一次复制的句柄。 */
+/** 函数式 children 的载荷：复制状态、当前要复制的文本，以及执行一次复制的句柄。 */
 export interface ClipboardRootSlotProps extends Pick<ClipboardApi, 'status' | 'copied' | 'value' | 'copy'> {}
 
 export interface XhClipboardRootProps extends Omit<ComponentPropsWithRef<'div'>, 'children'> {
-  /** 属性缺席即没给要复制的文本，落回空串。 */
+  /** 属性缺席即未提供要复制的文本，回落为空串。 */
   value?: string
   timeout?: number
   disabled?: boolean
@@ -97,7 +97,7 @@ export function XhClipboardControl({ children, ...rest }: XhClipboardControlProp
 }
 
 export interface XhClipboardInputProps extends Omit<ComponentPropsWithRef<'input'>, 'value' | 'defaultValue' | 'children'> {}
-/** 自闭合的输入格，内容由 value 给，不收内容。 */
+/** 自闭合的输入格，内容由 value 给出，不接收内容。 */
 export function XhClipboardInput({ ...rest }: XhClipboardInputProps): ReactNode {
   const ctx = useClipboardContext()
   // 聚焦即全选挂的是 focus，它不冒泡：留在 React 的合成事件上收到的是冒泡的 focusin，
@@ -127,7 +127,7 @@ export function XhClipboardCopyTrigger({ children, ...rest }: XhClipboardCopyTri
 }
 
 export interface XhClipboardStatusProps extends ComponentPropsWithRef<'span'> {}
-/** 复制成功的播报区：读屏念得到，屏幕上不占位。不给内容时念 announcement。 */
+/** 复制成功的播报区：读屏可朗读，屏幕上不占位。未提供内容时朗读 announcement。 */
 export function XhClipboardStatus({ children, ...rest }: XhClipboardStatusProps): ReactNode {
   const ctx = useClipboardContext()
   return (
@@ -138,10 +138,10 @@ export function XhClipboardStatus({ children, ...rest }: XhClipboardStatusProps)
 }
 
 export interface XhClipboardIndicatorProps extends ComponentPropsWithRef<'span'> {
-  /** 这个标记属于哪一侧：true = 复制成功后的对钩，false（默认）= 平时的复制图标。 */
+  /** 该标记属于哪一侧：true = 复制成功后的对勾，false（默认）= 平时的复制图标。 */
   copied?: boolean
 }
-/** 节点常挂并叠在同一格，切换时保持按钮宽度。 */
+/** 节点常驻并叠在同一格，切换时保持按钮宽度。 */
 export function XhClipboardIndicator({ copied = false, children, ...rest }: XhClipboardIndicatorProps): ReactNode {
   const ctx = useClipboardContext()
   return (

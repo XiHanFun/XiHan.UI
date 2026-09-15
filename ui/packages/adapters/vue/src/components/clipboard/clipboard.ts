@@ -16,7 +16,7 @@ import { useClipboard } from './use-clipboard'
 
 type ClipboardProps = ClipboardSchema['props']
 
-/** 默认插槽的载荷：复制状态、当前要复制的文本，以及走一次复制的句柄。 */
+/** 默认插槽的载荷：复制状态、当前要复制的文本，以及执行一次复制的句柄。 */
 export type ClipboardRootSlotProps = Pick<ClipboardApi, 'status' | 'copied' | 'value' | 'copy'>
 
 export const XhClipboardRoot = defineComponent({
@@ -89,7 +89,7 @@ export const XhClipboardCopyTrigger = defineComponent({
   },
 })
 
-/** 复制成功的播报区：读屏念得到，屏幕上不占位。不给内容时念 announcement。 */
+/** 复制成功的播报区：读屏可朗读，屏幕上不占位。未提供内容时朗读 announcement。 */
 export const XhClipboardStatus = defineComponent({
   name: 'XhClipboardStatus',
   setup(_, { slots }) {
@@ -105,7 +105,7 @@ export const XhClipboardStatus = defineComponent({
 export const XhClipboardIndicator = defineComponent({
   name: 'XhClipboardIndicator',
   props: {
-    /** 这个标记属于哪一侧：true = 复制成功后的对钩，false（默认）= 平时的复制图标。 */
+    /** 该标记属于哪一侧：true = 复制成功后的对勾，false（默认）= 平时的复制图标。 */
     copied: Boolean,
   },
   setup(props, { slots }) {

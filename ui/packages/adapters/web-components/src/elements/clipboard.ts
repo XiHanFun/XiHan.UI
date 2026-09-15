@@ -17,29 +17,29 @@ const STRING_CONVERTER = { fromAttribute: (v: string | null) => v ?? undefined }
 const NUMBER_CONVERTER = { fromAttribute: (v: string | null) => (v == null || v === '' ? undefined : Number(v)) }
 
 /**
- * `<xh-clipboard>` —— Light-DOM 行为宿主，跑 clipboard 机器并把 connect 产出打到角色节点上。
+ * `<xh-clipboard>`：Light-DOM 行为宿主，运行 clipboard 状态机并把 connect 产出接到角色节点上。
  *
- * 复制走 `navigator.clipboard.writeText`（要求安全上下文）：在途为 copying，成功转 copied，
- * 失败回 idle 并派 `copy-error`。
+ * 复制使用 `navigator.clipboard.writeText`（要求安全上下文）：在途为 copying，成功转为 copied，
+ * 失败回到 idle 并派发 `copy-error`。
  *
- * 两个 indicator 都常挂，各自用 `copied` 属性声明所属状态，并共享同一格布局宽度。
+ * 两个 indicator 都常驻，各自用 `copied` 属性声明所属状态，并共享同一格布局宽度。
  *
  * @customElement xh-clipboard
- * @attr {string} value - 要复制的文本；缺省即复制空串
+ * @attr {string} value - 要复制的文本；未提供时复制空串
  * @attr {number} timeout - 复制成功后指示器保持的毫秒数，默认 3000；<=0 表示不自动回落
- * @attr {boolean} disabled - 禁用，复制按钮点不动；作者调 api.copy() 也不动
- * @attr {'solid'|'subtle'|'outline'|'ghost'} variant - 形态，决定复制按钮的颜色怎么用
+ * @attr {boolean} disabled - 禁用，复制按钮不可点击；作者调用 api.copy() 也无效
+ * @attr {'solid'|'subtle'|'outline'|'ghost'} variant - 形态，决定复制按钮的颜色使用方式
  * @attr {'brand'|'neutral'|'success'|'warning'|'danger'|'info'} tone - 语气
  * @attr {'sm'|'md'|'lg'} size - 尺寸
  * @fires status-change - 状态变化；detail 为 `{ status: 'copying' | 'copied' | 'idle' }`
- * @fires copy-error - 写入失败；detail 为 `{ error, value }`，此刻状态已经回到 idle
+ * @fires copy-error - 写入失败；detail 为 `{ error, value }`，此时状态已回到 idle
  * @csspart root - 组件根容器（承载 data-state / data-copied）
- * @csspart label - 标题，须是原生 `<label>`；`for` 恒写向 input
+ * @csspart label - 标题，须是原生 `<label>`；`for` 恒指向 input
  * @csspart control - 输入框与按钮的包裹层，只承载 data-state
  * @csspart input - 展示要复制文本的只读输入框，须是原生 `<input>`；聚焦即全选
  * @csspart copy-trigger - 复制按钮，须是原生 `<button>`
- * @csspart indicator - 状态标记；写 `copied` 属性的那个是成功侧，不写的是平时那侧
- * @csspart status - 复制成功的播报区，可选；视觉隐藏，不写内容即由宿主填 announcement
+ * @csspart indicator - 状态标记；写 `copied` 属性的是成功侧，未写的是常态侧
+ * @csspart status - 复制成功的播报区，可选；视觉隐藏，未写内容时由宿主填入 announcement
  */
 export class XhClipboardElement extends XhElement {
   static override partContract = { anatomy: clipboardAnatomy, meta: clipboardMeta }
