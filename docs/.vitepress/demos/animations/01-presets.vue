@@ -1,4 +1,4 @@
-<!-- 预设一览 | 十七个内置预设，进场一族从不在场进来，注意一族原地提醒；播完都回到静息态 -->
+<!-- 预设一览 | 十七个内置预设，进场一族从不在场进入，注意一族原地提醒；播完都回到静息态 -->
 <script setup lang="ts">
 import { BUILTIN_MOTION_NAMES, createMotionPlayer } from "@xihan-ui/animations";
 import { XhButton } from "@xihan-ui/vue";

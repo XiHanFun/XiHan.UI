@@ -1,4 +1,4 @@
-// 表单页 | 一张值表喂七种控件：字段、文本框、下拉、单选组、数字、标签输入、滑块、开关、复选框同框，校验与错误摘要统一走表单
+// 表单页 | 一张值表驱动多种控件：字段、文本框、下拉、单选组、数字、标签输入、滑块、开关、复选框同框，校验与错误摘要统一经表单
 import type { FormErrorPatch, FormSubmitDetails, FormValues, RadioGroupNode, SelectNode } from "@xihan-ui/headless";
 import type { CSSProperties, ReactNode } from "react";
 import {

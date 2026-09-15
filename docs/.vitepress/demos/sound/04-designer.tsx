@@ -1,4 +1,4 @@
-// 调音台 | 配方是纯数据：调参、试听、把代码抄进项目，中间没有任何音频文件
+// 调音台 | 配方是纯数据：调参、试听、把代码复制进项目，中间没有任何音频文件
 import type { OscillatorLayer, SoundSpec } from "@xihan-ui/sound";
 import type { ReactNode } from "react";
 import { XhButton, XhRadioGroupRoot } from "@xihan-ui/react";

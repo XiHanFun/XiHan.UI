@@ -1,4 +1,4 @@
-<!-- 对话页 | 一条回复里同时摆着思考过程、工具调用、流式正文、代码块与批准闸门，外面是消息流与提示输入框 -->
+<!-- 对话页 | 一条回复中同时放置思考过程、工具调用、流式正文、代码块与批准闸门，外层是消息流与提示输入框 -->
 <script setup lang="ts">
 import type { ApprovalScope, MarkdownBlock } from "@xihan-ui/headless";
 import { createStreamRenderer } from "@xihan-ui/markdown";

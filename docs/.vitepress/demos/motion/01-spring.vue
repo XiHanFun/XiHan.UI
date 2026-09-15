@@ -1,4 +1,4 @@
-<!-- 弹簧 | 感知参数调出物理参数，曲线是解析解直接采样的，右边的方块按同一条曲线走 -->
+<!-- 弹簧 | 感知参数换算为物理参数，曲线是解析解直接采样的，右侧的方块按同一条曲线运动 -->
 <script setup lang="ts">
 import { animate, createSpring, springToLinearEasing } from "@xihan-ui/motion";
 import { computed, onBeforeUnmount, ref, useTemplateRef } from "vue";

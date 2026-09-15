@@ -1,4 +1,4 @@
-// 给通知配声 | withToastSound 包一层现成服务，调用点一行都不用改；loading 不响，转成 success 那一刻才响
+// 为通知配声 | withToastSound 包一层现成服务，调用点无需修改；loading 不发声，转为 success 时才发声
 import type { ToastService } from "@xihan-ui/react";
 import type { ReactNode } from "react";
 import { createToastService, XhButton } from "@xihan-ui/react";
