@@ -1,4 +1,4 @@
-// 语气 | tone 决定点亮的星用哪族颜色，不写时沿用警示色
+// 语气 | tone 决定点亮的星使用哪族颜色，不写时沿用警示色
 import type { ReactNode } from "react";
 import { XhRatingControl, XhRatingItem, XhRatingLabel, XhRatingRoot } from "@xihan-ui/react";
 

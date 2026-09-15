@@ -1,4 +1,4 @@
-// 尺寸 | size 改星的大小与间距，不写即缺省中档
+// 尺寸 | size 改变星的大小与间距，不写即默认中档
 import type { ReactNode } from "react";
 import { XhRatingControl, XhRatingItem, XhRatingLabel, XhRatingRoot } from "@xihan-ui/react";
 

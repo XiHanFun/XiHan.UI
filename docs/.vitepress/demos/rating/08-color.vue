@@ -1,4 +1,4 @@
-<!-- 自定义颜色 | 点亮色与未点亮色各是一个组件令牌，写在行内即可脱开语气档 -->
+<!-- 自定义颜色 | 点亮色与未点亮色各是一个组件令牌，写在行内即可脱离语气档 -->
 <script setup lang="ts">
 import { XhRatingControl, XhRatingItem, XhRatingLabel, XhRatingRoot } from "@xihan-ui/vue";
 </script>

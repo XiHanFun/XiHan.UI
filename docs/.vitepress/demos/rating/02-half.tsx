@@ -1,4 +1,4 @@
-// 半星与悬停预览 | allow-half 让落点分左右半边；划过只发 hover-change，评分要点下去才改
+// 半星与悬停预览 | allow-half 使落点分左右半边；划过只发 hover-change，评分要点击后才改变
 import type { ReactNode } from "react";
 import { XhRatingControl, XhRatingItem, XhRatingLabel, XhRatingRoot } from "@xihan-ui/react";
 import { useState } from "react";

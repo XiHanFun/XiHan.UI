@@ -1,4 +1,4 @@
-// 基础用法 | 不传 value 即为非受控，组件自己维护评分；default-value 只决定初始那一档
+// 基础用法 | 不传 value 即为非受控，组件自行维护评分；default-value 只决定初始档位
 import type { ReactNode } from "react";
 import { XhRatingControl, XhRatingItem, XhRatingLabel, XhRatingRoot } from "@xihan-ui/react";
 

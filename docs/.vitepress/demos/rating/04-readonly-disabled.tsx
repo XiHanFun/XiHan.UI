@@ -1,4 +1,4 @@
-// 只读与禁用 | read-only 仍进 Tab 序列、读屏念得出但改不动；disabled 整条退出 Tab 序列
+// 只读与禁用 | read-only 仍进入 Tab 序列、读屏可朗读但不可修改；disabled 整条退出 Tab 序列
 import type { ReactNode } from "react";
 import { XhRatingControl, XhRatingItem, XhRatingLabel, XhRatingRoot } from "@xihan-ui/react";
 
