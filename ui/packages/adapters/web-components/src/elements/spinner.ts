@@ -15,16 +15,16 @@ import { XhElement } from '../element-base'
 const STRING_CONVERTER = { fromAttribute: (v: string | null) => v ?? undefined }
 
 /**
- * `<xh-spinner>` —— 加载指示器宿主，无状态机，把活区语义与可及名字打到角色节点上。
- * 转圈图形由皮肤画在 root 的伪元素上，元素不生成任何结构。
+ * `<xh-spinner>`：加载指示器宿主，无状态机，把活区语义与可及名接到角色节点上。
+ * 转圈图形由皮肤绘制在 root 的伪元素上，元素不生成任何结构。
  *
  * @customElement xh-spinner
- * @attr {string} label - 可及名字；label 角色节点显示的应当是同一段文案
- * @attr {'sm'|'md'|'lg'} size - 直径档位，缺省 md
- * @attr {'ring'|'arc'|'dots'} variant - 形态，缺省 ring
+ * @attr {string} label - 可及名；label 角色节点显示的应当是同一段文案
+ * @attr {'sm'|'md'|'lg'} size - 直径档位，默认 md
+ * @attr {'ring'|'arc'|'dots'} variant - 形态，默认 ring
  * @attr {'brand'|'neutral'|'success'|'warning'|'danger'|'info'} tone - 语气
- * @csspart root - role=status 的活区容器，承载 aria-live/aria-label/data-size/data-variant/data-tone
- * @csspart label - 可见文案节点，可省
+ * @csspart root - role=status 的活区容器，承载 aria-live / aria-label / data-size / data-variant / data-tone
+ * @csspart label - 可见文案节点，可省略
  */
 export class XhSpinnerElement extends XhElement {
   static override partContract = { anatomy: spinnerAnatomy, meta: spinnerMeta }

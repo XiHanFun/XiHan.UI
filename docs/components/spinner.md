@@ -102,9 +102,9 @@ tone 只换圆环起始边那一段颜色，轨道留在中性描边上，转到
 
 | 属性 | 类型 | 必填 | 说明 |
 | --- | --- | --- | --- |
-| `label` | `string` |  | 这一处的可及名字，写在 root 上。 label 部件显示的应当是同一段文案：aria-label 会盖过节点里的文字，两者不一致时 读屏念的与屏幕上看到的就对不上了。 |
-| `size` | `Size` |  | 直径档位，缺省 md；缺省档不输出 data-size。 |
-| `tone` | `Tone` |  | 语气：brand / neutral / success / warning / danger / info，决定用哪族颜色 |
+| `label` | `string` |  | 该处的可及名，写在 root 上。 label 部件显示的应当是同一段文案：aria-label 会覆盖节点中的文字，两者不一致时 读屏朗读的与屏幕上看到的不匹配。 |
+| `size` | `Size` |  | 直径档位，默认 md；默认档不输出 data-size。 |
+| `tone` | `Tone` |  | 语气：brand / neutral / success / warning / danger / info，决定使用哪族颜色 |
 | `translations` | `Partial<SpinnerTranslations>` |  |  |
 | `variant` | `SpinnerVariant` |  | 形态，默认 arc。 |
 

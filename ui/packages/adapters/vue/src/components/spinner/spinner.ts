@@ -13,7 +13,7 @@ import { withXhConfig } from '../../config/config'
 import { provideSpinner, useSpinnerContext } from './context'
 import { useSpinner } from './use-spinner'
 
-/** 转圈图形由皮肤画在 root 的伪元素上，这里不生成任何子节点。 */
+/** 旋转图形由皮肤绘制在 root 的伪元素上，这里不生成任何子节点。 */
 export const XhSpinner = defineComponent({
   name: 'XhSpinner',
   // 缺省值由 connect 给出；普通类型省略 default，Boolean 显式保留 undefined
@@ -31,7 +31,7 @@ export const XhSpinner = defineComponent({
   },
 })
 
-/** 可见文案节点。作者不写内容时显示解析后的 label，屏幕上看到的与读屏念的因此是同一段字。 */
+/** 可见文案节点。作者未写内容时显示解析后的 label，屏幕上看到的与读屏朗读的因此是同一段文字。 */
 export const XhSpinnerLabel = defineComponent({
   name: 'XhSpinnerLabel',
   setup(_, { slots }) {
