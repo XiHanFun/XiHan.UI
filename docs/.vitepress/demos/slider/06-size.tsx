@@ -1,4 +1,4 @@
-// 尺寸 | size 改轨道厚度与滑块直径，不写即缺省中档
+// 尺寸 | size 改变轨道厚度与滑块直径，不写即默认中档
 import type { ReactNode } from "react";
 import {
   XhSliderControl,

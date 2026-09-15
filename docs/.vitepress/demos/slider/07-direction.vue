@@ -1,4 +1,4 @@
-<!-- 文字方向 | dir 换成 rtl 后轨道从右往左填，左右两键的语义跟着对调；上下键与 Home、End 不受影响 -->
+<!-- 文字方向 | dir 换为 rtl 后轨道从右向左填充，左右两键的语义随之对调；上下键与 Home、End 不受影响 -->
 <script setup lang="ts">
 import {
   XhSliderControl,

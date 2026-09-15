@@ -1,4 +1,4 @@
-// 拖动时的值气泡 | value-text 挂在 thumb 里就跟着走位；推动那一刻由皮肤放它出面，气泡里的文字取自作者的格式化函数
+// 拖动时的值气泡 | value-text 挂在 thumb 中即随之移动；推动时由皮肤显示它，气泡中的文字取自作者的格式化函数
 import type { CSSProperties, ReactNode } from "react";
 import {
   XhSliderControl,

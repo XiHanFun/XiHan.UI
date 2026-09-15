@@ -1,4 +1,4 @@
-// 禁用与只读 | 禁用的拇指退出 Tab 序列、值也不再随表单提交；只读仍可聚焦与朗读，只是推不动
+// 禁用与只读 | 禁用的拇指退出 Tab 序列、值也不再随表单提交；只读仍可聚焦与朗读，只是不可推动
 import type { ReactNode } from "react";
 import {
   XhSliderControl,

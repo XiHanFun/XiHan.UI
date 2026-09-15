@@ -12,7 +12,7 @@
 
 ## 用法
 
-值恒是数组，单滑块即长度 1；方向键走一格 step，PageUp 与 PageDown 走 largeStep，Home 与 End 贴到端点
+值恒为数组，单滑块即长度 1；方向键移动一格 step，PageUp 与 PageDown 按 largeStep，Home 与 End 到达端点
 
 <XhDemo src="slider/01-basic" />
 
@@ -26,61 +26,61 @@
 
 ### 区间选择
 
-两个拇指互为对方的边界、永不交叉，minStepsBetweenThumbs 再给它们之间留出格数；getValueText 把值翻成读屏念得出的话
+两个拇指互为对方的边界、永不交叉，minStepsBetweenThumbs 再为它们之间留出格数；getValueText 把值转换为读屏可朗读的文本
 
 <XhDemo src="slider/02-range" />
 
 ### 竖向
 
-orientation 换成 vertical 后整条控件收成一块，键盘与拖动的方向跟着一起翻
+orientation 换为 vertical 后整条控件收为一块，键盘与拖动的方向随之翻转
 
 <XhDemo src="slider/03-vertical" />
 
 ### 禁用与只读
 
-禁用的拇指退出 Tab 序列、值也不再随表单提交；只读仍可聚焦与朗读，只是推不动
+禁用的拇指退出 Tab 序列、值也不再随表单提交；只读仍可聚焦与朗读，只是不可推动
 
 <XhDemo src="slider/04-disabled" />
 
 ### 颜色
 
-tone 决定已填轨道与滑块用哪族颜色，不写时沿用品牌色
+tone 决定已填轨道与滑块使用哪族颜色，不写时沿用品牌色
 
 <XhDemo src="slider/05-tone" />
 
 ### 尺寸
 
-size 改轨道厚度与滑块直径，不写即缺省中档
+size 改变轨道厚度与滑块直径，不写即默认中档
 
 <XhDemo src="slider/06-size" />
 
 ### 文字方向
 
-dir 换成 rtl 后轨道从右往左填，左右两键的语义跟着对调；上下键与 Home、End 不受影响
+dir 换为 rtl 后轨道从右向左填充，左右两键的语义随之对调；上下键与 Home、End 不受影响
 
 <XhDemo src="slider/07-direction" />
 
-### 滑块里的内容
+### 滑块中的内容
 
-thumb 是个普通容器，往里放什么都由作者说了算；放得下靠 --xh-slider-thumb-size 把直径撑开
+thumb 是一个普通容器，放置什么由作者决定；容纳空间依靠 --xh-slider-thumb-size 撑开直径
 
 <XhDemo src="slider/08-thumb-content" />
 
 ### 轨道刻度
 
-刻度分圆点与文案两层：圆点钉在轨道上、文案排在下方且点按跳值，落进已选区间的刻度分段上色；snapToMarks 让拖动/点按/键盘只认刻度落点
+刻度分圆点与文案两层：圆点固定在轨道上、文案排在下方且点击跳转到该值，落入已选区间的刻度分段上色；snapToMarks 使拖动/点击/键盘只落在刻度上
 
 <XhDemo src="slider/09-marks" />
 
 ### 拖动时的值气泡
 
-value-text 挂在 thumb 里就跟着走位；推动那一刻由皮肤放它出面，气泡里的文字取自作者的格式化函数
+value-text 挂在 thumb 中即随之移动；推动时由皮肤显示它，气泡中的文字取自作者的格式化函数
 
 <XhDemo src="slider/10-value-bubble" />
 
 ### 离散档位
 
-可选值不必是等距数值：让滑块在档位下标上走，宿主再把下标映射回自己的取值表，键盘与拖动都只落在档位上
+可选值不必是等距数值：让滑块在档位下标上移动，宿主再把下标映射回自己的取值表，键盘与拖动都只落在档位上
 
 <XhDemo src="slider/11-discrete-steps" />
 

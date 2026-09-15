@@ -1,4 +1,4 @@
-// 语气 | tone 决定已填轨道与滑块用哪族颜色，不写时沿用品牌色
+// 语气 | tone 决定已填轨道与滑块使用哪族颜色，不写时沿用品牌色
 import type { ReactNode } from "react";
 import {
   XhSliderControl,
