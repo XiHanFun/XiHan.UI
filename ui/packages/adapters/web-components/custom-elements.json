@@ -37975,7 +37975,7 @@
       "declarations": [
         {
           "kind": "class",
-          "description": "`<xh-pin-input>` —— Light-DOM 行为宿主：作者写 root/label/input（多个）/hidden-input 角色节点，\n元素跑 pin-input 机器并把 connect 产出打上去。\n\n每格是一个原生输入框：敲一个字符自动跳下一格，退格在空格上回退并清掉上一格，\n左右键与 Home/End 在格间移动，粘贴整串按格分发。不接受的字符直接丢弃，\n既不进值也不留在框里。整份值另由 hidden-input 随表单提交。\n\n按顺序录入：焦点落在第一个空格上，还轮不到的格子既点不进、也不是 Tab 停靠点；\n往回改已填的格子照走，填满之后哪一格都能改。read-only 与 disabled 不设这道限。",
+          "description": "`<xh-pin-input>`：Light-DOM 行为宿主：作者写 root / label / input（多个）/ hidden-input 角色节点，\n元素运行 pin-input 状态机并把 connect 产出接上。\n\n每格是一个原生输入框：输入一个字符自动跳到下一格，退格在空格上回退并清除上一格，\n左右键与 Home / End 在格间移动，粘贴整串按格分发。不接受的字符直接丢弃，\n既不进入值也不留在框中。整份值另由 hidden-input 随表单提交。\n\n按顺序录入：焦点落在第一个空格上，尚未轮到的格子既不可点击、也不是 Tab 停靠点；\n向回修改已填的格子照常可用，填满之后任何格都可以修改。read-only 与 disabled 不设该限制。",
           "name": "XhPinInputElement",
           "cssParts": [
             {
@@ -37983,15 +37983,15 @@
               "name": "root"
             },
             {
-              "description": "标题；`for` 恒写向首格，故须是原生 `<label>` 才点得动",
+              "description": "标题；`for` 恒指向首格，因此须是原生 `<label>` 才可点击",
               "name": "label"
             },
             {
-              "description": "连着的几格圈成一段（123-456 这种分段写法）；纯排版，不参与下标计算",
+              "description": "相邻的几格划为一段（123-456 这类分段写法）；纯排版，不参与下标计算",
               "name": "group"
             },
             {
-              "description": "一格一个的输入框，可自带 index 属性声明下标，缺省按文档序；aria-label 由内置文案给出",
+              "description": "一格一个的输入框，可自带 index 属性声明下标，默认按文档序；aria-label 由内置文案给出",
               "name": "input"
             },
             {
@@ -37999,7 +37999,7 @@
               "name": "separator"
             },
             {
-              "description": "type=hidden 的表单出口，值是拼好的整串",
+              "description": "type=hidden 的表单出口，值是拼接后的整串",
               "name": "hidden-input"
             }
           ],
@@ -38261,7 +38261,7 @@
               "type": {
                 "text": "string[] | undefined"
               },
-              "description": "受控值，逐字符摊进各格；缺省该属性即非受控",
+              "description": "受控值，逐字符分配到各格；未提供该属性即非受控",
               "name": "value",
               "fieldName": "value"
             },
@@ -38269,7 +38269,7 @@
               "type": {
                 "text": "string[] | undefined"
               },
-              "description": "非受控初值，同样逐字符摊开",
+              "description": "非受控初值，同样逐字符分配",
               "name": "default-value",
               "fieldName": "defaultValue"
             },
@@ -38285,7 +38285,7 @@
               "type": {
                 "text": "PinInputType | undefined"
               },
-              "description": "接受的字符类别，默认 numeric；同时决定移动端弹哪种键盘",
+              "description": "接受的字符类别，默认 numeric；同时决定移动端弹出的键盘类型",
               "name": "type",
               "fieldName": "type"
             },
@@ -38293,7 +38293,7 @@
               "type": {
                 "text": "string | undefined"
               },
-              "description": "自定义准入：一段正则源码，逐个字符整格匹配（自动加锚与 u 标志）。给了它就盖过 type 的准入表；写坏了退回 type",
+              "description": "自定义准入：一段正则源码，逐个字符整格匹配（自动加锚与 u 标志）。提供后覆盖 type 的准入表；无法编译时回退为 type",
               "name": "pattern",
               "fieldName": "pattern"
             },
@@ -38301,7 +38301,7 @@
               "type": {
                 "text": "boolean | undefined"
               },
-              "description": "遮蔽显示：每格转 type=password",
+              "description": "遮蔽显示：每格改为 type=password",
               "name": "mask",
               "fieldName": "mask"
             },
@@ -38309,7 +38309,7 @@
               "type": {
                 "text": "boolean | undefined"
               },
-              "description": "一次性验证码：补 autocomplete=one-time-code",
+              "description": "一次性验证码：补充 autocomplete=one-time-code",
               "name": "otp",
               "fieldName": "otp"
             },
@@ -38333,7 +38333,7 @@
               "type": {
                 "text": "boolean | undefined"
               },
-              "description": "只读：每格仍可聚焦、可复制，写不进",
+              "description": "只读：每格仍可聚焦、可复制，不可写入",
               "name": "read-only",
               "fieldName": "readOnly"
             },
@@ -38357,7 +38357,7 @@
               "type": {
                 "text": "boolean | undefined"
               },
-              "description": "填满即把焦点撤走",
+              "description": "填满即移走焦点",
               "name": "blur-on-complete",
               "fieldName": "blurOnComplete"
             },
@@ -38365,7 +38365,7 @@
               "type": {
                 "text": "string | undefined"
               },
-              "description": "表单字段名；给了隐藏输入才带 name",
+              "description": "表单字段名；提供后隐藏输入才带 name",
               "name": "name",
               "fieldName": "name"
             },

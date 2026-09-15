@@ -135,26 +135,26 @@ pattern 是一段正则源码，逐个字符整格匹配；写坏了退回 type 
 
 | 属性 | 类型 | 必填 | 说明 |
 | --- | --- | --- | --- |
-| `value` | `string[]` |  | 逐格的值。给定即受控：cell 直读 prop，写只发 onValueChange 不落内部值。 |
+| `value` | `string[]` |  | 逐格的值。提供即受控：cell 直读 prop，写入只发 onValueChange 不落内部值。 |
 | `defaultValue` | `string[]` |  |  |
-| `length` | `number` |  | 格数，默认 6。值的长度恒被归一到它。 |
-| `type` | `PinInputType` |  | 接受的字符类别，默认 numeric。同时决定移动端弹哪种键盘。 |
-| `pattern` | `string` |  | 自定义准入：一段正则源码，逐个字符整格匹配（内部自动加首尾锚与 u 标志， 所以写 `[0-9A-Fa-f]` 即可，不必自己写 `^...$`）。给了它就盖过 type 的准入表。 弹哪种键盘仍由 type 说了算——准入放宽到字母时记得把 type 一并改掉， 否则移动端弹的还是数字键盘，用户敲不进那些字符。 写坏了（编不成正则）退回 type 的准入表，不抛。 |
-| `mask` | `boolean` |  | 遮蔽显示：输入框转 type=password。 |
-| `otp` | `boolean` |  | 一次性验证码：补 autocomplete=one-time-code，短信验证码才能被系统自动填入。 |
+| `length` | `number` |  | 格数，默认 6。值的长度恒归一到它。 |
+| `type` | `PinInputType` |  | 接受的字符类别，默认 numeric。同时决定移动端弹出的键盘类型。 |
+| `pattern` | `string` |  | 自定义准入：一段正则源码，逐个字符整格匹配（内部自动加首尾锚与 u 标志， 因此写 `[0-9A-Fa-f]` 即可，不必自行写 `^...$`）。提供后覆盖 type 的准入表。 弹出的键盘类型仍由 type 决定：准入放宽到字母时需要把 type 一并修改， 否则移动端弹出的仍是数字键盘，用户无法输入这些字符。 无法编译为正则时回退为 type 的准入表，不抛错。 |
+| `mask` | `boolean` |  | 遮蔽显示：输入框改为 type=password。 |
+| `otp` | `boolean` |  | 一次性验证码：补充 autocomplete=one-time-code，短信验证码才能被系统自动填入。 |
 | `placeholder` | `string` |  | 空格子的占位字符。 |
 | `disabled` | `boolean` |  | 禁用：每格都带原生 disabled（不可聚焦、不可输入），隐藏输入不参与提交。 |
-| `readOnly` | `boolean` |  | 只读：每格仍可聚焦、可复制，写不进；隐藏输入照常参与提交。 |
+| `readOnly` | `boolean` |  | 只读：每格仍可聚焦、可复制，不可写入；隐藏输入照常参与提交。 |
 | `required` | `boolean` |  | 必填标注：每格都带原生 required。 |
 | `invalid` | `boolean` |  | 校验失败标注。 |
-| `blurOnComplete` | `boolean` |  | 填满即把焦点撤走，常用于"填满就自动提交"的表单。 |
-| `name` | `string` |  | 表单字段名；给了隐藏输入才带 name，整串值随表单一并提交。 |
-| `variant` | `ControlVariant` |  | 形态：outline / subtle / ghost，决定颜色怎么用。 |
-| `tone` | `Tone` |  | 语气：brand / neutral / success / warning / danger / info，决定用哪族颜色。 |
+| `blurOnComplete` | `boolean` |  | 填满即移走焦点，常用于填满后自动提交的表单。 |
+| `name` | `string` |  | 表单字段名；提供后隐藏输入才带 name，整串值随表单一并提交。 |
+| `variant` | `ControlVariant` |  | 形态：outline / subtle / ghost，决定颜色的使用方式。 |
+| `tone` | `Tone` |  | 语气：brand / neutral / success / warning / danger / info，决定使用哪族颜色。 |
 | `size` | `Size` |  | 尺寸：sm / md / lg。 |
 | `translations` | `Partial<PinInputTranslations>` |  |  |
-| `onValueChange` | `(details: PinInputValueChangeDetails) => void` |  | value 变化意图回调；受控时是唯一出口，非受控随内部写入一并通知。 |
-| `onValueComplete` | `(details: PinInputValueChangeDetails) => void` |  | 每格都填满的那一刻触发；值没真变时不重复触发。 |
+| `onValueChange` | `(details: PinInputValueChangeDetails) => void` |  | value 变化意图回调；受控时是唯一出口，非受控时随内部写入一并通知。 |
+| `onValueComplete` | `(details: PinInputValueChangeDetails) => void` |  | 每格都填满时触发；值未实际变化时不重复触发。 |
 
 ### 事件
 
@@ -191,9 +191,9 @@ pattern 是一段正则源码，逐个字符整格匹配；写坏了退回 type 
 | --- | --- | --- |
 | `value` | `string[]` | 逐格的值，长度恒等于 length。 |
 | `valueAsString` | `string` |  |
-| `complete` | `boolean` | 每格都填满了。作者据此点亮提交按钮。 |
+| `complete` | `boolean` | 每格都已填满。作者据此启用提交按钮。 |
 | `length` | `number` |  |
-| `focusedIndex` | `number` | 焦点该落在哪一格；焦点在组外时为 -1。按顺序录入时它不会越过第一个空格。 |
+| `focusedIndex` | `number` | 焦点应落在哪一格；焦点在组外时为 -1。按顺序录入时它不会越过第一个空格。 |
 | `disabled` | `boolean` |  |
 | `readOnly` | `boolean` |  |
 | `invalid` | `boolean` |  |
@@ -201,10 +201,10 @@ pattern 是一段正则源码，逐个字符整格匹配；写坏了退回 type 
 | `clear` | `() => void` |  |
 | `getRootProps` | `() => T['element']` |  |
 | `getLabelProps` | `() => T['label']` |  |
-| `getGroupProps` | `() => T['element']` | 连着的几格圈成一段（123-456 这种分段写法）；纯排版，不参与下标计算。 |
+| `getGroupProps` | `() => T['element']` | 相邻的几格划为一段（123-456 这类分段写法）；纯排版，不参与下标计算。 |
 | `getInputProps` | `(props: PinInputInputProps) => T['input']` |  |
-| `getSeparatorProps` | `() => T['element']` | 段与段之间的分隔；对读屏隐藏，念出来只会打断验证码。 |
-| `getHiddenInputProps` | `() => T['input']` | 整份验证码的表单出口：一份 type=hidden 的原生输入，随表单提交拼好的串。 |
+| `getSeparatorProps` | `() => T['element']` | 段与段之间的分隔；对读屏隐藏，朗读只会打断验证码。 |
+| `getHiddenInputProps` | `() => T['input']` | 整份验证码的表单出口：一份 type=hidden 的原生输入，随表单提交拼接后的串。 |
 
 ## 无障碍
 
