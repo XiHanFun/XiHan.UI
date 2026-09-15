@@ -20,10 +20,10 @@ import { spinArc } from './glyph'
 import { createServiceConfig } from './service-config'
 
 /**
- * 对话框正文。给串走 description 部件（读屏的 aria-describedby 由它接）；
- * 给渲染函数则整块摊在正文位，自己决定渲染什么。
+ * 对话框正文。传字符串时经 description 部件（读屏的 aria-describedby 由它承接）；
+ * 传渲染函数时整块展开在正文位，自行决定渲染内容。
  *
- * 不收裸 VNode：服务的宿主是常驻的，忙态一翻就整棵重渲，
+ * 不接收裸 VNode：服务的宿主是常驻的，忙态切换即整棵重渲，
  * 同一个 VNode 实例被复用时的行为未定义。
  */
 export type DialogBody = string | (() => VNodeChild)
@@ -36,9 +36,9 @@ export interface DialogActionError {
 export interface ConfirmOptions {
   title: string
   content?: DialogBody
-  /** 确认钮语气，默认 brand；危险操作传 danger。 */
+  /** 确认按钮语气，默认 brand；危险操作传 danger。 */
   tone?: Tone
-  /** 标题旁的类型徽记。不给则不出徽记。 */
+  /** 标题旁的类型徽记。未提供时不显示徽记。 */
   badge?: DialogServiceBadge
   okText?: MaybeRefOrGetter<string>
   cancelText?: MaybeRefOrGetter<string>
@@ -48,14 +48,14 @@ export interface ConfirmOptions {
   onActionError?: (error: DialogActionError) => void | Promise<void>
 }
 
-/** 单按钮告知框的入参：没有取消钮，徽记由预设档自己定，其余同 confirm。 */
+/** 单按钮告知框的入参：没有取消按钮，徽记由预设档决定，其余同 confirm。 */
 export type AlertOptions = Omit<ConfirmOptions, 'tone' | 'badge'>
 
-/** 取值型弹窗的入参。正文自己拼表单，确认时把那份值带回来。 */
+/** 取值型弹窗的入参。正文自行拼装表单，确认时把该份值带回。 */
 export interface PromptOptions<T extends object> extends Omit<ConfirmOptions, 'onOk' | 'content'> {
-  /** 每次打开建一份初值；服务用 reactive 包起来交给 body 与 onOk，两边同一份。 */
+  /** 每次打开建立一份初值；服务用 reactive 包装后交给 body 与 onOk，两边是同一份。 */
   initialValue: T
-  /** 用那份可写代理渲染表单主体。 */
+  /** 用该份可写代理渲染表单主体。 */
   body: (value: T) => VNodeChild
   /** 落焦到哪个节点，CSS 选择器。 */
   initialFocus?: string
@@ -64,26 +64,26 @@ export interface PromptOptions<T extends object> extends Omit<ConfirmOptions, 'o
 }
 
 export interface DialogServiceOptions {
-  /** 确认钮文案，缺省 OK。 */
+  /** 确认按钮文案，默认 OK。 */
   okText?: MaybeRefOrGetter<string>
-  /** 取消钮文案，缺省 Cancel。 */
+  /** 取消按钮文案，默认 Cancel。 */
   cancelText?: MaybeRefOrGetter<string>
   /** 动作失败时的安全提示，支持与按钮文案相同的响应式来源。 */
   actionErrorText?: MaybeRefOrGetter<string>
   /**
-   * 喂给对话框子树的全局配置（locale / translations / size / portalContainer）。
-   * 本服务自带宿主应用，接不到组件树里的 provideXhConfig，要让它跟应用同语言就从这里给；
-   * 传 ref/getter 即可运行期跟着切语言，也可以之后用 setConfig 推。
+   * 提供给对话框子树的全局配置（locale / translations / size / portalContainer）。
+   * 本服务自带宿主应用，无法接收组件树中的 provideXhConfig，需要与应用同语言时从这里提供；
+   * 传 ref/getter 即可在运行期跟随切换语言，也可以之后用 setConfig 推送。
    */
   config?: MaybeRefOrGetter<XhConfig>
-  /** 宿主容器；不给就在 body 下新建一个。 */
+  /** 宿主容器；未提供时在 body 下新建一个。 */
   target?: HTMLElement
 }
 
 export interface DialogService {
   /** 当前请求的动作异常，重试、关闭和切换请求时清空。 */
   readonly actionError: DialogActionError | null
-  /** 确认走 onOk 后 resolve true；取消/Esc resolve false。 */
+  /** 确认经 onOk 后 resolve true；取消/Esc resolve false。 */
   confirm: (options: ConfirmOptions) => Promise<boolean>
   info: (options: AlertOptions) => Promise<void>
   success: (options: AlertOptions) => Promise<void>
@@ -91,7 +91,7 @@ export interface DialogService {
   error: (options: AlertOptions) => Promise<void>
   /** 确认后 resolve 一份值的普通对象快照；取消 / Esc / 卸载 resolve null。 */
   prompt: <T extends object>(options: PromptOptions<T>) => Promise<T | null>
-  /** 换一份全局配置源。 */
+  /** 更换全局配置源。 */
   setConfig: (next: MaybeRefOrGetter<XhConfig> | undefined) => void
   /** 卸载宿主应用并移除容器。 */
   dispose: () => void
@@ -104,12 +104,12 @@ interface Spec extends DialogServiceControllerSpec {
   okText: MaybeRefOrGetter<string>
   cancelText: MaybeRefOrGetter<string>
   showCancel: boolean
-  /** 标题旁的类型徽记（预设档用），confirm 不带。 */
+  /** 标题旁的类型徽记（预设档使用），confirm 不带。 */
   badge?: DialogServiceBadge
   /** 返回 false 阻止本次确认；异常由独立错误状态报告。 */
   onOk?: () => unknown
   onActionError?: (error: DialogActionError) => void | Promise<void>
-  /** 取值型弹窗的正文与那份可写的值，两边同一个对象。 */
+  /** 取值型弹窗的正文与可写的值，两边是同一个对象。 */
   body?: (value: object) => VNodeChild
   value?: object
   initialFocus?: string

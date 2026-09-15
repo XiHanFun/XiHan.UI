@@ -24,33 +24,33 @@ export type { DialogSoundKey, SoundChoice } from '@xihan-ui/sound'
 const shared = createSharedSoundPlayerController()
 
 /**
- * 取共享播放器，没有就建一个默认的。
- * 播放器本身很轻，音频上下文要等第一次真的发声才建，取了不用不花代价。
+ * 取共享播放器，没有时建立一个默认的。
+ * 播放器本身很轻，音频上下文要等第一次真正发声才建立，取用后不使用不产生开销。
  */
 export function getSoundPlayer(): SoundPlayer {
   return shared.getPlayer()
 }
 
-/** 换成自己配置的播放器（换主题、接用户偏好）。自动建的那个会被销毁。 */
+/** 换为自行配置的播放器（更换主题、接入用户偏好）。自动建立的播放器会被销毁。 */
 export function setSoundPlayer(player: SoundPlayer): void {
   shared.setPlayer(player)
 }
 
 export interface ToastSoundOptions extends Omit<ToastSoundServiceOptions, 'player' | 'attachUnlock'> {
-  /** 用哪个播放器，默认共享播放器。 */
+  /** 使用哪个播放器，默认共享播放器。 */
   player?: SoundPlayer
 }
 
 /**
- * 给命令式通知服务配上声音：入队即发声，调用点一行都不用改。
+ * 为命令式通知服务配上声音：入队即发声，调用点无需修改。
  *
  * ```ts
  * export const toast = withToastSound(createToastService())
  * toast.success('已保存') // 视觉 + 听觉
  * ```
  *
- * `update` 只在改了类型且新类型不是 loading 时发声——上传完成那一刻该响，
- * 改个文案不该响。
+ * `update` 只在类型改变且新类型不是 loading 时发声：上传完成时应当发声，
+ * 修改文案不应发声。
  */
 export function withToastSound(service: ToastService, options: ToastSoundOptions = {}): ToastService {
   return withToastSoundService(service, {
@@ -65,8 +65,8 @@ export interface DialogSoundOptions extends Omit<DialogSoundServiceOptions, 'pla
 }
 
 /**
- * 给命令式确认框服务配上声音：弹出时发声，收场不发
- * （按钮那一下与随后的通知已经把结果说清楚了）。
+ * 为命令式确认框服务配上声音：弹出时发声，关闭时不发声
+ * （按钮的按下声与随后的通知已经表明了结果）。
  */
 export function withDialogSound(service: DialogService, options: DialogSoundOptions = {}): DialogService {
   return withDialogSoundService(service, {
@@ -83,10 +83,10 @@ export type SoundDirectiveValue = string | SoundDirectiveOptions | undefined
 const bound = new WeakMap<HTMLElement, { handler: () => void, options: ReturnType<typeof resolveSoundPressOptions> }>()
 
 /**
- * `v-sound` —— 给任意元素按下时配一声。
+ * `v-sound`：为任意元素按下时配一声。
  *
- * 挂在 click 上而不是 pointerdown：键盘敲 Enter / Space 激活也要响，
- * 而且点下去又拖开取消的那种不该响。
+ * 挂在 click 上而不是 pointerdown：键盘按 Enter / Space 激活也要发声，
+ * 而按下后拖开取消的操作不应发声。
  *
  * ```vue
  * <XhButton v-sound>提交</XhButton>

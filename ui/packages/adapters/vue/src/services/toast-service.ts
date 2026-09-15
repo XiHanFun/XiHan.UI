@@ -52,29 +52,29 @@ import { createServiceConfig } from './service-config'
 const parts = toastAnatomy.build()
 
 export interface ToastServiceOptions extends ToastServiceDefaults {
-  /** 那一摞落在哪儿，默认 'bottom'。 */
+  /** 堆叠区的位置，默认 'bottom'。 */
   placement?: ToastPlacement
-  /** 最多同时留几条，默认 3；超出先挤低优先级的，同级里挤最旧的。 */
+  /** 最多同时保留几条，默认 3；超出时先移除低优先级的，同级中移除最旧的。 */
   max?: number
-  /** 重复怎么算，默认 'id'；给 'content' 则同一句话合并成一条并计数。 */
+  /** 重复的判定方式，默认 'id'；传 'content' 则同一内容合并为一条并计数。 */
   dedupe?: NotificationDedupe
-  /** 摞内间距（px），默认 12。 */
+  /** 堆叠内间距（px），默认 12。 */
   gap?: number
-  /** toast 部件的文案（关闭钮的读屏名等）。 */
+  /** toast 部件的文案（关闭按钮的读屏名等）。 */
   toastTranslations?: MaybeRefOrGetter<Partial<ToastTranslations>>
   /**
-   * 喂给轻提示子树的全局配置（locale / translations / size / portalContainer）。
-   * 本服务自带宿主应用，接不到组件树里的 provideXhConfig，要让它跟应用同语言就从这里给；
-   * 传 ref/getter 即可运行期跟着切语言，也可以之后用 setConfig 推。
+   * 提供给轻提示子树的全局配置（locale / translations / size / portalContainer）。
+   * 本服务自带宿主应用，无法接收组件树中的 provideXhConfig，需要与应用同语言时从这里提供；
+   * 传 ref/getter 即可在运行期跟随切换语言，也可以之后用 setConfig 推送。
    */
   config?: MaybeRefOrGetter<XhConfig>
-  /** 宿主容器；不给就在 body 下新建一个。 */
+  /** 宿主容器；未提供时在 body 下新建一个。 */
   target?: HTMLElement
 }
 
 /**
- * create 的入参。`actionLabel` 是条子上那颗行内动作钮的文案，`onAction` 是按下它做什么——
- * 回调不进队列记录（那份要能被整份替换、序列化、比对），服务按 id 单独存一张表。
+ * create 的入参。`actionLabel` 是提示条上行内动作按钮的文案，`onAction` 是按下它执行的动作：
+ * 回调不进入队列记录（该记录要能被整份替换、序列化、比对），服务按 id 单独保存一张表。
  */
 export interface ToastCreateOptions extends ToastOptions {
   onAction?: () => void
@@ -83,7 +83,7 @@ export interface ToastCreateOptions extends ToastOptions {
 /** 语气糖的入参：只差 tone / loading，其余同 create。 */
 export type ToastMessageOptions = Omit<ToastCreateOptions, 'tone' | 'loading' | 'title'>
 
-/** promise 三态的文案：成功与失败可以给函数，拿到结果再拼话。 */
+/** promise 三态的文案：成功与失败可以传函数，拿到结果后再拼装文案。 */
 export interface ToastPromiseOptions<T> extends Omit<ToastMessageOptions, 'duration'> {
   loading: string
   success: string | ((value: T) => string)
@@ -91,10 +91,10 @@ export interface ToastPromiseOptions<T> extends Omit<ToastMessageOptions, 'durat
 }
 
 export interface ToastService {
-  /** 入队并返回 id；同 id 已存在则就地改写，合并掉的返回被并进的那一条。 */
+  /** 入队并返回 id；同 id 已存在则就地改写，被合并的返回被并入的那一条。 */
   create: (options?: ToastCreateOptions) => string
   update: (id: string, options: Partial<ToastOptions>) => void
-  /** 立刻从队列里删掉。条子自己的关闭按钮走的是退场窗口，有退场动画。 */
+  /** 立即从队列中删除。提示条自己的关闭按钮经退场窗口，带退场动画。 */
   dismiss: (id: string) => void
   dismissAll: () => void
   info: (message: string, options?: ToastMessageOptions) => string
@@ -104,14 +104,14 @@ export interface ToastService {
   /** 返回 id，之后用 update(id, { loading: false, tone: 'success', title: … }) 收尾。 */
   loading: (message: string, options?: ToastMessageOptions) => string
   /**
-   * 先弹一条 loading，Promise 落定后就地改写成 success / danger。
-   * 返回那一条的 id；Promise 的结果原样交回给调用方，拒绝也照旧拒绝。
+   * 先显示一条 loading，Promise 落定后就地改写为 success / danger。
+   * 返回该条的 id；Promise 的结果原样交回调用方，拒绝也照旧拒绝。
    */
   promise: <T>(input: Promise<T> | (() => Promise<T>), options: ToastPromiseOptions<T>) => Promise<T>
-  /** 把当下这一摞的计时全按住，'service' 这一路与指针、焦点并存。 */
+  /** 暂停当前堆叠的计时，'service' 这一路与指针、焦点并存。 */
   pauseAll: () => void
   resumeAll: () => void
-  /** 换一份全局配置源。 */
+  /** 更换全局配置源。 */
   setConfig: (next: MaybeRefOrGetter<XhConfig> | undefined) => void
   /** 卸载宿主应用并移除容器。 */
   dispose: () => void
@@ -261,7 +261,7 @@ export function createToastService(options: ToastServiceOptions = {}): ToastServ
   if (!mounted)
     controller.attach(null)
 
-  /** 入队一条；回调另存一张表，队列记录里只留文案。 */
+  /** 入队一条；回调另存一张表，队列记录中只保留文案。 */
   const create = (opts: ToastCreateOptions = {}): string => {
     const { onAction, ...record } = opts
     return controller.create(record, onAction)

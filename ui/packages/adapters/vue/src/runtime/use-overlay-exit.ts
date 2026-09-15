@@ -23,22 +23,22 @@ import { getCurrentInstance, isRef, onBeforeUnmount, onMounted, ref, toValue, wa
 export interface OverlayExitOptions {
   /**
    * 运行时配置；reduce 档下 presence 直接不申领租约。
-   * 服务端没有 DOM、也就没有退场可言，传 null 即退化成「可见与否跟着展开态」。
+   * 服务端没有 DOM、也就没有退场可言，传 null 即退化为可见与否跟随展开态。
    * 客户端必须等真实根节点才能确定 realm 时传 ref/getter；挂载后仍为空会明确失败。
    */
   config: MaybeRefOrGetter<RuntimeConfig | null>
-  /** 此刻逻辑上是否展开。 */
+  /** 当前逻辑上是否展开。 */
   isOpen: () => boolean
-  /** content 节点，退场动画从它身上探测。 */
+  /** content 节点，退场动画从它上面探测。 */
   contentRef: Ref<HTMLElement | null>
   /** 与 content 共同决定退出完成的其他真实视觉节点。 */
   additionalExitRefs?: Array<Ref<HTMLElement | null>>
-  /** Presence 建立后交给需要共用退出生命周期的 Headless 机器；卸载时回传 null。 */
+  /** Presence 建立后交给需要共用退出生命周期的 Headless 状态机；卸载时回传 null。 */
   onPresence?: (presence: PresenceHandle | null) => void
 }
 
 /**
- * 返回「此刻该不该可见」。作者把它盖到 content 的 `hidden` 上：
+ * 返回当前是否应当可见。作者把它覆盖到 content 的 `hidden` 上：
  * `{ ...api.getContentProps(), hidden: !visible.value || undefined }`。
  */
 export function useOverlayExit(options: OverlayExitOptions): Ref<boolean> {

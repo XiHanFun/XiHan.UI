@@ -9,15 +9,15 @@ import type { App } from 'vue'
 import { DIAGNOSTIC_CODES, reportDiagnostic } from '@xihan-ui/core'
 
 /**
- * 把命令式服务的宿主应用挂上去，挂不起来也不连累调用方。
+ * 挂载命令式服务的宿主应用，挂载失败也不影响调用方。
  *
- * 这几个服务是从路由守卫、请求拦截器这类地方懒建的——那些位置抛异常，
- * 后果不是「提示没弹出来」而是整次导航失败、整站白屏，而报错指向的是浮层部件，
- * 与真正的原因隔着十万八千里。一条轻提示、一根进度条都不该有这个权力。
+ * 这几个服务是从路由守卫、请求拦截器等位置懒建的：这些位置抛异常，
+ * 后果不是提示未弹出而是整次导航失败、整站白屏，而报错指向的是浮层部件，
+ * 与真正的原因相距甚远。一条轻提示、一根进度条都不应有这种权力。
  *
- * 挂不起来时发一条诊断并交回 false，由调用方整体惰化：状态一律不再改动。
- * 半挂载的树仍订阅着响应式状态，继续写它只会让那棵残骸一遍遍重渲，
- * 每次都吐一串「slot invoked outside of the render function」，把控制台淹掉。
+ * 挂载失败时发一条诊断并返回 false，由调用方整体惰化：状态一律不再改动。
+ * 半挂载的树仍订阅着响应式状态，继续写它只会让残留的树反复重渲，
+ * 每次都输出一串「slot invoked outside of the render function」，淹没控制台。
  */
 export function mountServiceHost(app: App, holder: HTMLElement, service: string): boolean {
   try {
