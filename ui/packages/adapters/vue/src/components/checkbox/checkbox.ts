@@ -27,7 +27,7 @@ export const XhCheckbox = defineComponent({
     readOnly: { type: Boolean, default: undefined },
     invalid: { type: Boolean, default: undefined },
     required: { type: Boolean, default: undefined },
-    /** 表单字段名；给了 hidden-input 才带 name 并参与提交 */
+    /** 表单字段名；提供后 hidden-input 才带 name 并参与提交 */
     name: { type: String },
     value: { type: String },
     tone: String as PropType<Tone>,
@@ -35,9 +35,9 @@ export const XhCheckbox = defineComponent({
     size: String as PropType<Size>,
   },
   slots: Object as SlotsType<{
-    /** 方框旁的文字；不写就只有一个方框。 */
+    /** 方框旁的文字；未写时只有一个方框。 */
     default?: () => VNode[]
-    /** 方框里的图形；不写由皮肤画勾。 */
+    /** 方框中的图形；未写时由皮肤绘制勾选标记。 */
     indicator?: () => VNode[]
   }>,
   // checked-change 携带 { checked }，update:checked 携带裸布尔
