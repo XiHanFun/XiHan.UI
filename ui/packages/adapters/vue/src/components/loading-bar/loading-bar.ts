@@ -16,7 +16,7 @@ import { useLoadingBar } from './use-loading-bar'
 
 type LoadingBarProps = LoadingBarSchema['props']
 
-/** 默认插槽的载荷：条子的阶段、进度值、是否露面与是否不确定进度。 */
+/** 默认插槽的载荷：进度条的阶段、进度值、是否显示与是否不确定进度。 */
 export type LoadingBarRootSlotProps = Pick<LoadingBarApi, 'phase' | 'value' | 'visible' | 'indeterminate'>
 
 export const XhLoadingBarRoot = defineComponent({

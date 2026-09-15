@@ -29,31 +29,31 @@ const HEIGHT_CONVERTER = {
 }
 
 /**
- * `<xh-loading-bar>` —— Light-DOM 行为宿主：作者写 root/track/range 角色节点，
- * 元素跑 loading-bar 机器并把 connect 产出打上去。
+ * `<xh-loading-bar>`：Light-DOM 行为宿主：作者写 root / track / range 角色节点，
+ * 元素运行 loading-bar 状态机并把 connect 产出接上。
  *
- * 两种模式泾渭分明：给了 `value` 就是确定进度，宽度照它显示、读屏拿得到 aria-valuenow；
- * 不给就走假进度——`loading` 置真时先跳到 `minimum`，随后按 `trickle-speed` 一拍一拍地爬，
- * 步长按剩余量取，因此越接近满格越慢且永远到不了 100；此时按规范**不报** aria-valuenow，
- * 属性缺席本身就是"进度未知"的表达。`loading` 转假时先冲到 100，走完淡出窗口才归零收起。
+ * 两种模式互不相干：提供 `value` 即为确定进度，宽度按它显示、读屏可以获取 aria-valuenow；
+ * 未提供时使用模拟进度：`loading` 置真时先跳到 `minimum`，随后按 `trickle-speed` 逐拍爬升，
+ * 步长按剩余量取，因此越接近满格越慢且永远到不了 100；此时按规范不报告 aria-valuenow，
+ * 属性缺席本身就是进度未知的表达。`loading` 转为假时先到达 100，走完淡出窗口才归零收起。
  *
- * 收起态只给 root 加 hidden 并压一条内联 display，作者写的结构一个都不卸载。
+ * 收起态只给 root 加 hidden 并写一条内联 display，作者编写的结构一个都不卸载。
  *
  * @customElement xh-loading-bar
- * @attr {number} value - 受控进度值（0-100）；给了即确定进度，内部爬升整个让位
+ * @attr {number} value - 受控进度值（0-100）；提供后即为确定进度，内部爬升整体让位
  * @attr {number} default-value - 非受控初值，默认 0
- * @attr {boolean} loading - 加载开关：属性在即开始，`loading="false"` 或摘掉即结束
- * @attr {string|number} height - 条子厚度：纯数字按像素，其余按 CSS 长度；默认 2px
- * @attr {'brand'|'neutral'|'success'|'warning'|'danger'|'info'} tone - 语气，决定进度段用哪族颜色；给了 color 就以 color 为准
- * @attr {boolean} trickle - 不确定进度时自行往前爬，默认开；`trickle="false"` 关掉
- * @attr {number} trickle-speed - 爬升节拍毫秒，默认 200；<=0 等同于关掉爬升
+ * @attr {boolean} loading - 加载开关：属性存在即开始，`loading="false"` 或移除即结束
+ * @attr {string|number} height - 进度条厚度：纯数字按像素，其余按 CSS 长度；默认 2px
+ * @attr {'brand'|'neutral'|'success'|'warning'|'danger'|'info'} tone - 语气，决定进度段使用哪族颜色；提供 color 时以 color 为准
+ * @attr {boolean} trickle - 不确定进度时自行向前爬升，默认开启；`trickle="false"` 关闭
+ * @attr {number} trickle-speed - 爬升节拍毫秒，默认 200；<=0 等同于关闭爬升
  * @attr {number} minimum - 起步值，默认 8
- * @attr {number} fade-duration - 冲到 100 之后的淡出窗口毫秒，默认 200
+ * @attr {number} fade-duration - 到达 100 之后的淡出窗口毫秒，默认 200
  * @fires value-change - 进度值变化；detail 为 `{ value: number }`
  * @csspart root - progressbar 本身（承载名字、值域、data-state 与收起态）
  * @csspart track - 背景槽
- * @csspart range - 进度段；宽度由元素写进内联样式，样式层别碰那条轴
- * @csspart peg - 进度段末端那道亮边（对读屏隐藏）
+ * @csspart range - 进度段；宽度由元素写入内联样式，样式层不应修改该轴
+ * @csspart peg - 进度段末端的亮边（对读屏隐藏）
  */
 export class XhLoadingBarElement extends XhElement {
   static override partContract = { anatomy: loadingBarAnatomy, meta: loadingBarMeta }
