@@ -143,7 +143,9 @@ describe('action Control 状态与命中区', () => {
     expect(ready!.matches(':focus-visible')).toBe(true)
     expect(getComputedStyle(ready!).outlineStyle).toBe('solid')
     expect(getComputedStyle(disabled!).cursor).toBe('not-allowed')
-    expect(Number(getComputedStyle(disabled!).opacity)).toBeLessThan(1)
+    // 禁用同时降级前景与表面，不靠 opacity
+    expect(getComputedStyle(disabled!).opacity).toBe('1')
+    expect(getComputedStyle(disabled!).color).not.toBe(getComputedStyle(ready!).color)
     expect(getComputedStyle(loading!).cursor).toBe('progress')
     expect(getComputedStyle(loading!).opacity).toBe('1')
   })

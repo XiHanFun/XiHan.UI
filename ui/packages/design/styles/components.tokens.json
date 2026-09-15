@@ -3583,7 +3583,6 @@
       ],
       "state": [
         "default",
-        "disabled",
         "focus-visible",
         "loading",
         "not([data-scope='button-group'] *)",
