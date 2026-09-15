@@ -31054,7 +31054,7 @@
   user-select: none;
   transition:
     color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
-    scale var(--xh-motion-duration-micro) var(--xh-motion-ease-enter-strong);
+    scale var(--xh-motion-duration-release) var(--xh-motion-ease-release);
 }
 
 /* 空条目使用两层同源星形：底层保持中性轮廓，上层按完整或半档裁出强调色。 */
@@ -31126,6 +31126,8 @@
    缩的是 inline-block 的这一个盒子，其余星不动，星带整体不移位。只读与禁用不压 */
 [data-scope='rating'][data-part='item']:not([data-disabled]):not([data-readonly]):active {
   scale: var(--xh-motion-scale-press);
+  transition-duration: var(--xh-motion-duration-press);
+  transition-timing-function: var(--xh-motion-ease-press);
 }
 
 /* 只读仍进得了 Tab 序列、读屏也念得出，只是改不动：收掉手型，别暗示"点这儿能改" */
