@@ -88,17 +88,17 @@ duration 定跑多久，easing 定快慢怎么分配；同一段距离四档并�
 
 | 属性 | 类型 | 必填 | 说明 |
 | --- | --- | --- | --- |
-| `from` | `number` |  | 起点，缺省 0。改写它会把显示值当场落到新起点，并从那里重跑这一轮。 |
-| `to` | `number` |  | 终点，缺省 0。改写它从当前显示值接着走向新终点，不跳回起点。 |
-| `duration` | `number` |  | 时长毫秒，缺省 1000；&lt;=0 即一步到位。 |
-| `easing` | `NumberAnimationEasing` |  | 缓动：曲线名（linear / standard / easeIn / easeOut / easeInOut …）或 cubic-bezier 串，缺省线性。 |
-| `precision` | `number` |  | 小数位，缺省 0。夹进 [0, 20]。 |
-| `separator` | `string` |  | 千位分隔符，缺省不分隔。 |
-| `active` | `boolean` |  | 是否在跑，缺省 true。翻假即停在当前值，翻真从当前值继续走向终点。 |
-| `size` | `Size` |  | 尺寸：sm / md / lg，只落成 root 的 data-size。 |
-| `tone` | `Tone` |  | 语气：brand / neutral / success / warning / danger / info，只落成 root 的 data-tone。 |
-| `live` | `NumberAnimationLive` |  | 读屏播报档位，缺省 off。 |
-| `onComplete` | `(details: NumberAnimationCompleteDetails) => void` |  | 走到终点时通知一次。中途被停掉不通知。 |
+| `from` | `number` |  | 起点，默认 0。改写它会把显示值立即落到新起点，并从那里重新运行本轮。 |
+| `to` | `number` |  | 终点，默认 0。改写它从当前显示值继续走向新终点，不跳回起点。 |
+| `duration` | `number` |  | 时长毫秒，默认 1000；&lt;=0 即一步到位。 |
+| `easing` | `NumberAnimationEasing` |  | 缓动：曲线名（linear / standard / easeIn / easeOut / easeInOut …）或 cubic-bezier 串，默认线性。 |
+| `precision` | `number` |  | 小数位，默认 0。夹进 [0, 20]。 |
+| `separator` | `string` |  | 千位分隔符，默认不分隔。 |
+| `active` | `boolean` |  | 是否运行，默认 true。变为假即停在当前值，变为真从当前值继续走向终点。 |
+| `size` | `Size` |  | 尺寸：sm / md / lg，只写为 root 的 data-size。 |
+| `tone` | `Tone` |  | 语气：brand / neutral / success / warning / danger / info，只写为 root 的 data-tone。 |
+| `live` | `NumberAnimationLive` |  | 读屏播报档位，默认 off。 |
+| `onComplete` | `(details: NumberAnimationCompleteDetails) => void` |  | 到达终点时通知一次。中途被停止不通知。 |
 
 ### 事件
 
@@ -106,7 +106,7 @@ duration 定跑多久，easing 定快慢怎么分配；同一段距离四档并�
 
 | 事件 | 载荷 | 说明 |
 | --- | --- | --- |
-| `complete` | `NumberAnimationCompleteDetails` | 走到终点；detail 为 `{ value: number }` |
+| `complete` | `NumberAnimationCompleteDetails` | 到达终点；detail 为 `{ value: number }` |
 
 ### 插槽
 
@@ -140,8 +140,8 @@ duration 定跑多久，easing 定快慢怎么分配；同一段距离四档并�
 | --- | --- | --- |
 | `phase` | `NumberAnimationPhase` |  |
 | `value` | `number` | 当前数值（未格式化）。 |
-| `text` | `string` | 当前数值按 precision 与 separator 铺好的文本，也就是根里该显示的字。 |
-| `running` | `boolean` | 是否还在跑。 |
+| `text` | `string` | 当前数值按 precision 与 separator 格式化的文本，即根中应显示的文字。 |
+| `running` | `boolean` | 是否仍在运行。 |
 | `getRootProps` | `() => T['element']` |  |
 
 ## 无障碍
