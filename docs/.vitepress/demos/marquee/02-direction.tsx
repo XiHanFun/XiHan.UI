@@ -1,4 +1,4 @@
-// 方向 | 四档：左右走横轴，上下走纵轴。轴另落成 data-orientation，竖着滚的窗口靠 --xh-marquee-block-size 定高
+// 方向 | 四档：左右沿横轴，上下沿纵轴。轴另写为 data-orientation，竖向滚动的窗口依靠 --xh-marquee-block-size 定高
 import type { CSSProperties, ReactNode } from "react";
 import { XhMarqueeContent, XhMarqueeRoot } from "@xihan-ui/react";
 

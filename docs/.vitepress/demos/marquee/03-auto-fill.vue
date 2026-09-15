@@ -1,4 +1,4 @@
-<!-- 重复铺满 | autoFill 在轨道里铺两份内容，走完一份第二份正好压在起点上，看不出接缝；不开则整段走完再回来 -->
+<!-- 重复铺满 | autoFill 在轨道中铺设两份内容，滚完一份时第二份正好位于起点，看不出接缝；不开启则整段滚完再回到起点 -->
 <script setup lang="ts">
 import { XhMarqueeContent, XhMarqueeRoot } from "@xihan-ui/vue";
 
