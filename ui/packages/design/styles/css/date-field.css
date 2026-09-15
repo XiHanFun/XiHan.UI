@@ -119,7 +119,7 @@
     padding-inline: var(--xh-date-field-control-px, var(--xh-_date-field-control-px));
     padding-block: 0;
     border: var(--xh-stroke-thin) solid var(--xh-date-field-control-border, var(--xh-_date-field-control-border));
-    border-radius: var(--xh-date-field-control-radius, var(--xh-shape-surface));
+    border-radius: var(--xh-date-field-control-radius, var(--xh-shape-control));
     outline: var(--xh-ring-width) solid transparent;
     outline-offset: var(--xh-ring-offset);
     background: var(--xh-date-field-control-bg, var(--xh-_date-field-control-bg));
@@ -272,7 +272,7 @@
     line-height: var(--xh-leading-none);
     cursor: pointer;
     user-select: none;
-    transition: background var(--xh-motion-duration-micro) var(--xh-motion-ease-enter), scale var(--xh-motion-duration-micro) var(--xh-motion-ease-enter-strong);
+    transition: background var(--xh-motion-duration-micro) var(--xh-motion-ease-enter), scale var(--xh-motion-duration-release) var(--xh-motion-ease-release);
   }
 
   /* 上面给了 display，UA 的 [hidden]{display:none} 已被盖掉，这里补回来 */
@@ -288,6 +288,8 @@
   [data-scope='date-field'][data-part='clear-trigger']:active {
     background: var(--xh-date-field-action-bg-active, var(--xh-bg-subtle-active));
     scale: var(--xh-motion-scale-press);
+    transition-duration: var(--xh-motion-duration-press);
+    transition-timing-function: var(--xh-motion-ease-press);
   }
 
   /* 按钮不占 Tab 位（tabindex=-1），留给程序化聚焦兜底，落焦时得看得见 */

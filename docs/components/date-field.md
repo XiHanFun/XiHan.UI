@@ -63,8 +63,8 @@
 
 ### 何时不用
 
-- 需要查看月份或星期信息：使用[日期选择器](./date-picker)。
-- 只要时间不要日期：用[时间字段](./time-field)。
+- 需要查看月份或星期信息时，使用[日期选择器](./date-picker)。
+- 只需要时间不需要日期时，使用[时间字段](./time-field)。
 
 ### 特性
 
@@ -79,8 +79,8 @@
 ### 组合
 
 - [日期选择器](./date-picker)与[日期范围选择器](./date-range-picker)的输入区就是这一套逐段输入，只是多了日历浮层。
-- 日期与时间分开录入时与[时间字段](./time-field)并排；只要一个字段就用 `granularity` 精确到分钟。
-- 在[表单](./form)里以 ISO 日期字符串参与校验与提交。
+- 日期与时间分开录入时与[时间字段](./time-field)并排；只用一个字段时通过 `granularity` 精确到分钟。
+- 在[表单](./form)中以 ISO 日期字符串参与校验与提交。
 
 ### 最佳实践
 
@@ -291,7 +291,7 @@
 | `--xh-date-field-control-h` | `control` | `block-size` | `default` | `--xh-_date-field-control-h` | date-field 的 control 部件 block-size 覆盖槽。 |
 | `--xh-date-field-control-min-w` | `control`<br>`root` | `min-inline-size` | `default` | `--xh-control-min-w` | date-field 的 control、root 部件 min-inline-size 覆盖槽。 |
 | `--xh-date-field-control-px` | `control` | `padding-inline` | `default` | `--xh-_date-field-control-px` | date-field 的 control 部件 padding-inline 覆盖槽。 |
-| `--xh-date-field-control-radius` | `control` | `border-radius` | `default` | `--xh-shape-surface` | date-field 的 control 部件 border-radius 覆盖槽。 |
+| `--xh-date-field-control-radius` | `control` | `border-radius` | `default` | `--xh-shape-control` | date-field 的 control 部件 border-radius 覆盖槽。 |
 | `--xh-date-field-control-shadow` | `control` | `box-shadow` | `default` | `--xh-_date-field-control-shadow` | date-field 的 control 部件 box-shadow 覆盖槽。 |
 | `--xh-date-field-font-size` | `control` | `font-size` | `default` | `--xh-_date-field-font-size` | date-field 的 control 部件 font-size 覆盖槽。 |
 | `--xh-date-field-gap` | `root` | `gap` | `default` | `--xh-space-1` | date-field 的 root 部件 gap 覆盖槽。 |
