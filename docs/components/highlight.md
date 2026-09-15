@@ -94,10 +94,10 @@ tone 决定命中片段用哪族颜色，没命中的文本不受影响
 
 | 属性 | 类型 | 必填 | 说明 |
 | --- | --- | --- | --- |
-| `caseSensitive` | `boolean` |  | 区分大小写，缺省不区分。 |
-| `keyword` | `string \| readonly string[]` |  | 关键词，一个或一组。空串会被丢掉。 |
-| `text` | `string` |  | 要显示的整段文本。命中位置按这个串逐字符算出来。 |
-| `tone` | `Tone` |  | 语气：brand / neutral / success / warning / danger / info，决定命中片段用哪族颜色。 |
+| `caseSensitive` | `boolean` |  | 区分大小写，默认不区分。 |
+| `keyword` | `string \| readonly string[]` |  | 关键词，一个或一组。空串会被丢弃。 |
+| `text` | `string` |  | 要显示的整段文本。命中位置按该串逐字符计算。 |
+| `tone` | `Tone` |  | 语气：brand / neutral / success / warning / danger / info，决定命中片段使用哪族颜色。 |
 
 ### connect API
 
@@ -105,10 +105,10 @@ tone 决定命中片段用哪族颜色，没命中的文本不受影响
 
 | 成员 | 类型 | 说明 |
 | --- | --- | --- |
-| `text` | `string` | 解析后的文本；没给时是空串。 |
-| `segments` | `readonly HighlightSegment[]` | 切好的片段，依次拼回去恒等于 text。 |
+| `text` | `string` | 解析后的文本；未提供时为空串。 |
+| `segments` | `readonly HighlightSegment[]` | 切分后的片段，依次拼接恒等于 text。 |
 | `getRootProps` | `() => T['element']` |  |
-| `getMarkProps` | `() => T['element']` | 铺到每个命中片段上的属性；每段都一样，命中的是哪个关键词不落到 DOM 上。 |
+| `getMarkProps` | `() => T['element']` | 铺到每个命中片段上的属性；每段相同，命中的是哪个关键词不写入 DOM。 |
 
 ## 无障碍
 

@@ -15,24 +15,24 @@ import { XhElement } from '../element-base'
 const STRING_CONVERTER = { fromAttribute: (v: string | null) => v ?? undefined }
 
 /**
- * `<xh-highlight>` —— Light-DOM 行为宿主，无状态机，把 text 按 keyword 切段铺进 root。
+ * `<xh-highlight>`：Light-DOM 行为宿主，无状态机，把 text 按 keyword 切段铺进 root。
  *
- * 作者写一个空的行内容器当 root：命中位置是按 text 这个串逐字符算的，
- * 切出来的片段作者自己写不出，故 root 的内容整份由本元素接管，写在里面的东西会被替换掉。
+ * 作者写一个空的行内容器作为 root：命中位置按 text 逐字符计算，
+ * 切出的片段作者无法自行编写，因此 root 的内容整份由本元素接管，写在其中的内容会被替换。
  *
- * 一处有多个关键词都命中时取最长的那个，重叠的命中只切出一段。
- * 关键词全程逐字符比对，不拼进正则：搜索框里敲进来的 `.` `*` `(` 都是普通字符。
+ * 同一位置有多个关键词都命中时取最长的一个，重叠的命中只切出一段。
+ * 关键词全程逐字符比较，不拼进正则：搜索框中输入的 `.` `*` `(` 都是普通字符。
  *
- * 多个关键词只能走 property（`el.keyword = ['a', 'b']`）：属性里的一个串就是一个关键词，
- * 按空格拆的话带空格的关键词就没法写了。
+ * 多个关键词只能通过 property 设置（`el.keyword = ['a', 'b']`）：属性中的一个串就是一个关键词，
+ * 按空格拆分会使带空格的关键词无法表达。
  *
  * @customElement xh-highlight
  * @attr {string} text - 要显示的整段文本
- * @attr {string} keyword - 一个关键词；一组关键词走 property
- * @attr {boolean} case-sensitive - 区分大小写，缺省不区分
- * @attr {'brand'|'neutral'|'success'|'warning'|'danger'|'info'} tone - 语气，决定命中片段用哪族颜色
- * @csspart root - 包住整段文本的容器，承载 data-case-sensitive 与 data-tone
- * @csspart mark - 命中关键词的那一小段，渲染成 `<mark>`
+ * @attr {string} keyword - 一个关键词；一组关键词通过 property 设置
+ * @attr {boolean} case-sensitive - 区分大小写，默认不区分
+ * @attr {'brand'|'neutral'|'success'|'warning'|'danger'|'info'} tone - 语气，决定命中片段使用哪族颜色
+ * @csspart root - 包裹整段文本的容器，承载 data-case-sensitive 与 data-tone
+ * @csspart mark - 命中关键词的片段，渲染为 `<mark>`
  */
 export class XhHighlightElement extends XhElement {
   static override partContract = { anatomy: highlightAnatomy, meta: highlightMeta }
@@ -71,8 +71,8 @@ export class XhHighlightElement extends XhElement {
   }
 
   /**
-   * 把切好的片段铺进 root：命中的建一个 `<mark>`，其余建文本节点。
-   * 片段没变就不重铺——每帧重建节点会把用户正在拖的选区弄没。
+   * 把切分的片段铺进 root：命中的建一个 `<mark>`，其余建文本节点。
+   * 片段未变时不重铺：每帧重建节点会丢失用户正在拖动的选区。
    */
   #paint(root: HTMLElement, api: HighlightApi): void {
     const key = JSON.stringify(api.segments)
