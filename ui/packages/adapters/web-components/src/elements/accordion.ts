@@ -18,24 +18,24 @@ import { MachineController } from '../runtime/machine-controller'
 const ITEM_SELECTOR = '[data-xh-part="item"]'
 
 /**
- * `<xh-accordion>` —— 手风琴行为宿主，条目身份写在 item 节点的 value 属性上。
+ * `<xh-accordion>`：手风琴行为宿主，条目身份写在 item 节点的 value 属性上。
  *
  * @customElement xh-accordion
  * @attr {'ltr'|'rtl'} dir - 文字方向，影响水平轴左右键语义
  * @attr {boolean} multiple - 允许多项同时展开
- * @attr {boolean} collapsible - 允许把最后一个展开项收起
- * @attr {boolean} loop - 方向键走到尽头回绕，默认关闭
+ * @attr {boolean} collapsible - 允许收起最后一个展开项
+ * @attr {boolean} loop - 方向键到达末尾回绕，默认关闭
  * @attr {boolean} disabled - 整组禁用
- * @attr {'plain'|'surface'|'bordered'} variant - 形态，缺省 plain
+ * @attr {'plain'|'surface'|'bordered'} variant - 形态，默认 plain
  * @attr {'horizontal'|'vertical'} orientation - 方向键轴向，默认 vertical
  * @attr {'brand'|'neutral'|'success'|'warning'|'danger'|'info'} tone - 语气
  * @attr {'sm'|'md'|'lg'} size - 尺寸
  * @fires value-change - 展开集合变化；detail 为 `{ value: string[] }`
  * @csspart root - 手风琴根容器
  * @csspart item - 单个条目容器，作者在此写 value 与可选 disabled
- * @csspart item-separator - 条目之间的细线，可缺省
+ * @csspart item-separator - 条目之间的细线，可省略
  * @csspart header - 条目标题
- * @csspart trigger - 展开/收起按钮
+ * @csspart trigger - 展开 / 收起按钮
  * @csspart content - 条目面板，收起时带 hidden
  * @csspart indicator - 展开方向指示符
  */

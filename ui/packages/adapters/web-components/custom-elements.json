@@ -8,7 +8,7 @@
       "declarations": [
         {
           "kind": "class",
-          "description": "`<xh-accordion>` —— 手风琴行为宿主，条目身份写在 item 节点的 value 属性上。",
+          "description": "`<xh-accordion>`：手风琴行为宿主，条目身份写在 item 节点的 value 属性上。",
           "name": "XhAccordionElement",
           "cssParts": [
             {
@@ -20,7 +20,7 @@
               "name": "item"
             },
             {
-              "description": "条目之间的细线，可缺省",
+              "description": "条目之间的细线，可省略",
               "name": "item-separator"
             },
             {
@@ -28,7 +28,7 @@
               "name": "header"
             },
             {
-              "description": "展开/收起按钮",
+              "description": "展开 / 收起按钮",
               "name": "trigger"
             },
             {
@@ -279,7 +279,7 @@
               "type": {
                 "text": "boolean | undefined"
               },
-              "description": "允许把最后一个展开项收起",
+              "description": "允许收起最后一个展开项",
               "name": "collapsible",
               "fieldName": "collapsible"
             },
@@ -287,7 +287,7 @@
               "type": {
                 "text": "boolean | undefined"
               },
-              "description": "方向键走到尽头回绕，默认关闭",
+              "description": "方向键到达末尾回绕，默认关闭",
               "name": "loop",
               "fieldName": "loop"
             },
@@ -303,7 +303,7 @@
               "type": {
                 "text": "AccordionVariant | undefined"
               },
-              "description": "形态，缺省 plain",
+              "description": "形态，默认 plain",
               "name": "variant",
               "fieldName": "variant"
             },

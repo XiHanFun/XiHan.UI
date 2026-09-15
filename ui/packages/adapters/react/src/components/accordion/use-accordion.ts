@@ -17,7 +17,7 @@ import { useMachine } from '../../runtime/use-machine'
 export interface AccordionContext {
   api: AccordionApi
   service: Service<AccordionSchema>
-  /** 每个面板各自开退场闸门，共用这一份运行期配置；服务端为 null，闸门退化成跟着展开态。 */
+  /** 每个面板各自建立退场闸门，共用这一份运行期配置；服务端为 null，闸门退化为跟随展开态。 */
   config: RuntimeConfig | null
 }
 
