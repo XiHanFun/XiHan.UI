@@ -18,7 +18,7 @@ import { useMachine } from '../../runtime/use-machine'
 export interface SignaturePadContext {
   service: Service<SignaturePadSchema>
   api: SignaturePadApi
-  /** 画布节点，机器在指针事件里拿它把屏幕坐标换算成画布坐标。 */
+  /** 画布节点，状态机在指针事件中用它把屏幕坐标换算为画布坐标。 */
   controlRef: RefObject<Element | null>
   /** 表单重置的锚点：接在根节点上。 */
   rootRef: RefObject<HTMLElement | null>

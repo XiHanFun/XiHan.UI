@@ -18,7 +18,7 @@ import { createVueIdGenerator } from '../../runtime/vue-id'
 export interface SignaturePadContext {
   api: ComputedRef<SignaturePadApi>
   service: Service<SignaturePadSchema>
-  /** 画布节点，机器在指针事件里拿它把屏幕坐标换算成画布坐标。 */
+  /** 画布节点，状态机在指针事件中用它把屏幕坐标换算为画布坐标。 */
   controlRef: Ref<Element | null>
 }
 
