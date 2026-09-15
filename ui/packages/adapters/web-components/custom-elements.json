@@ -24465,7 +24465,7 @@
       "declarations": [
         {
           "kind": "class",
-          "description": "`<xh-heatmap>` —— Light-DOM 行为宿主：作者写 root、grid、若干 row 与 cell 角色节点，\n元素跑 heatmap 机器并把 connect 产出打上去。\n\n网格由作者渲染，元素不生成节点：铺一整年不必手写三百多个格子，读 `grid` / `monthGrid` /\n`matrixGrid` 三个只读属性，照推导出来的行、列、月份段循环生成即可（三种形态各读其中一个）。\n每读一次都重算一遍，取一次存下来用。\n\n角色节点的身份一律取作者写在节点上的 value 属性，怎么解释由 variant 决定：\n日历形态里 row 与 week-day 上是行序 0-6（不写即网格之外那条月份行与它的行首占位）、\ncell 上是 ISO 日期、month-label 上是 YYYY-MM；月历形态里 month-block 上是 YYYY-MM、\nrow 上是月内周序（不写即块内那条星期名坐标轴）；矩阵形态里 row 与 row-label 上是行身份\n（不写即表头行与角落占位）、column-label 与 cell 上是列身份，格子的行身份从所在的行取。\nlegend-item 上是档位、legend-label 上是 low 或 high（两端那两个字，文案读 `legendText`）。\n\n数据、行列、档位下界与文案只能走 property（`el.value = [...]`）：HTML 属性装不下数组与函数。",
+          "description": "`<xh-heatmap>`：Light-DOM 行为宿主：作者写 root、grid、若干 row 与 cell 角色节点，\n元素运行 heatmap 状态机并把 connect 产出接上。\n\n网格由作者渲染，元素不生成节点：铺设一整年不必手写三百多个格子，读取 `grid` / `monthGrid` /\n`matrixGrid` 三个只读属性，按推导出的行、列、月份段循环生成即可（三种形态各读其中一个）。\n每次读取都重新计算，取一次后保存使用。\n\n角色节点的身份一律取作者写在节点上的 value 属性，解释方式由 variant 决定：\n日历形态中 row 与 week-day 上是行序 0-6（未写即网格之外的月份行与其行首占位）、\ncell 上是 ISO 日期、month-label 上是 YYYY-MM；月历形态中 month-block 上是 YYYY-MM、\nrow 上是月内周序（未写即块内的星期名坐标轴）；矩阵形态中 row 与 row-label 上是行身份\n（未写即表头行与角落占位）、column-label 与 cell 上是列身份，格子的行身份从所在的行取。\nlegend-item 上是档位、legend-label 上是 low 或 high（两端的文字，文案读取 `legendText`）。\n\n数据、行列、档位下界与文案只能通过 property 设置（`el.value = [...]`）：HTML 属性无法承载数组与函数。",
           "name": "XhHeatmapElement",
           "cssParts": [
             {
@@ -24477,15 +24477,15 @@
               "name": "grid"
             },
             {
-              "description": "月历形态里的一个自然月块",
+              "description": "月历形态中的一个自然月块",
               "name": "month-block"
             },
             {
-              "description": "一行；写了 value 即数据行，不写即坐标轴那一行",
+              "description": "一行；提供 value 即数据行，未提供即坐标轴行",
               "name": "row"
             },
             {
-              "description": "星期名，只给眼睛看",
+              "description": "星期名，只用于视觉",
               "name": "week-day"
             },
             {
@@ -24493,7 +24493,7 @@
               "name": "month-label"
             },
             {
-              "description": "矩阵的行名；不写 value 即表头行行首的角落占位",
+              "description": "矩阵的行名；未提供 value 即表头行行首的角落占位",
               "name": "row-label"
             },
             {
@@ -24501,11 +24501,11 @@
               "name": "column-label"
             },
             {
-              "description": "一格，身份取写在节点上的 value",
+              "description": "一格，身份取自节点上的 value",
               "name": "cell"
             },
             {
-              "description": "悬停或聚焦时显示的详情条，位置由元素量好写成内联样式",
+              "description": "悬停或聚焦时显示的详情条，位置由元素测量后写为内联样式",
               "name": "tooltip"
             },
             {
@@ -24513,11 +24513,11 @@
               "name": "legend"
             },
             {
-              "description": "对照条一端的那个字，value 是 low 或 high",
+              "description": "对照条一端的文字，value 是 low 或 high",
               "name": "legend-label"
             },
             {
-              "description": "对照条里的一格，value 是档位",
+              "description": "对照条中的一格，value 是档位",
               "name": "legend-item"
             }
           ],
@@ -24696,7 +24696,7 @@
               "type": {
                 "text": "HeatmapGrid"
               },
-              "description": "日历网格：七行星期 × 若干周列，另带月份段、星期名与档位标尺，作者照它铺节点。\n其余形态下是一张空网格。机器尚未建起时同样给空网格。",
+              "description": "日历网格：七行星期 × 若干周列，另带月份段、星期名与档位标尺，作者据此铺设节点。\n其余形态下是一张空网格。状态机尚未建立时同样返回空网格。",
               "readonly": true
             },
             {
@@ -24705,7 +24705,7 @@
               "type": {
                 "text": "HeatmapMonthGrid | null"
               },
-              "description": "月历网格：按自然月分块，块里逐周一行；不是 month 形态时为 null。",
+              "description": "月历网格：按自然月分块，块内逐周一行；非 month 形态时为 null。",
               "readonly": true
             },
             {
@@ -24714,7 +24714,7 @@
               "type": {
                 "text": "HeatmapMatrixGrid | null"
               },
-              "description": "矩阵网格：行列由作者给；不是 matrix 形态时为 null。",
+              "description": "矩阵网格：行列由作者提供；非 matrix 形态时为 null。",
               "readonly": true
             },
             {
@@ -24723,7 +24723,7 @@
               "type": {
                 "text": "{ low: string, high: string }"
               },
-              "description": "对照条两端要写的那两个字，照它填 legend-label 节点的文字。",
+              "description": "对照条两端的文字，据此填入 legend-label 节点。",
               "readonly": true
             },
             {
@@ -24749,7 +24749,7 @@
                   }
                 }
               ],
-              "description": "作者写在行上的身份，按形态翻成连接层认得的那一组坐标。"
+              "description": "作者写在行上的身份，按形态转换为连接层识别的坐标。"
             },
             {
               "kind": "method",
@@ -24771,7 +24771,7 @@
               }
             },
             {
-              "description": "详情该显示哪一格（悬停或聚焦）；收起时 detail 为 null",
+              "description": "详情应显示哪一格（悬停或聚焦）；收起时 detail 为 null",
               "name": "cell-active",
               "type": {
                 "text": "HeatmapCellDetails"
@@ -24783,7 +24783,7 @@
               "type": {
                 "text": "HeatmapVariant | undefined"
               },
-              "description": "形态；缺省 calendar",
+              "description": "形态；默认 calendar",
               "name": "variant",
               "fieldName": "variant"
             },
@@ -24807,7 +24807,7 @@
               "type": {
                 "text": "number | undefined"
               },
-              "description": "档数，缺省 5；给了 thresholds 则档数由它定",
+              "description": "档数，默认 5；提供 thresholds 时档数由它决定",
               "name": "levels",
               "fieldName": "levels"
             },
@@ -24815,7 +24815,7 @@
               "type": {
                 "text": "number | undefined"
               },
-              "description": "周首日，0 = 星期日，缺省 1",
+              "description": "周首日，0 = 星期日，默认 1",
               "name": "first-day-of-week",
               "fieldName": "firstDayOfWeek"
             },
@@ -24823,7 +24823,7 @@
               "type": {
                 "text": "string | undefined"
               },
-              "description": "月份名与星期名的书写 locale；不给按宿主语言，宿主也没有时按 en-US",
+              "description": "月份名与星期名的书写 locale；未提供时按宿主语言，宿主也没有时按 en-US",
               "name": "locale",
               "fieldName": "locale"
             },
@@ -24831,7 +24831,7 @@
               "type": {
                 "text": "Direction | undefined"
               },
-              "description": "文字方向；只作显式覆盖，不写时方向从 DOM 现读",
+              "description": "文字方向；只作显式覆盖，未提供时方向从 DOM 读取",
               "name": "dir",
               "fieldName": "direction"
             },
@@ -24847,7 +24847,7 @@
               "type": {
                 "text": "HeatmapPalette | undefined"
               },
-              "description": "色板，直接点名色阶满档的颜色；同时写了 tone 时听它的",
+              "description": "色板，直接指定色阶满档的颜色；同时提供 tone 时以色板为准",
               "name": "palette",
               "fieldName": "palette"
             },

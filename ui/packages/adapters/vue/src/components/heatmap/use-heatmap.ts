@@ -15,7 +15,7 @@ import { useMachine } from '../../runtime/use-machine'
 
 export interface HeatmapContext {
   api: ComputedRef<HeatmapApi>
-  /** 机器实例，供部件上报 DOM 侧的事实。 */
+  /** 状态机实例，供部件上报 DOM 侧的事实。 */
   service: Service<HeatmapSchema>
 }
 

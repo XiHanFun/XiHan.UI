@@ -40,48 +40,48 @@ function ancestorValue(el: HTMLElement, part: string): string | undefined {
 }
 
 /**
- * `<xh-heatmap>` —— Light-DOM 行为宿主：作者写 root、grid、若干 row 与 cell 角色节点，
- * 元素跑 heatmap 机器并把 connect 产出打上去。
+ * `<xh-heatmap>`：Light-DOM 行为宿主：作者写 root、grid、若干 row 与 cell 角色节点，
+ * 元素运行 heatmap 状态机并把 connect 产出接上。
  *
- * 网格由作者渲染，元素不生成节点：铺一整年不必手写三百多个格子，读 `grid` / `monthGrid` /
- * `matrixGrid` 三个只读属性，照推导出来的行、列、月份段循环生成即可（三种形态各读其中一个）。
- * 每读一次都重算一遍，取一次存下来用。
+ * 网格由作者渲染，元素不生成节点：铺设一整年不必手写三百多个格子，读取 `grid` / `monthGrid` /
+ * `matrixGrid` 三个只读属性，按推导出的行、列、月份段循环生成即可（三种形态各读其中一个）。
+ * 每次读取都重新计算，取一次后保存使用。
  *
- * 角色节点的身份一律取作者写在节点上的 value 属性，怎么解释由 variant 决定：
- * 日历形态里 row 与 week-day 上是行序 0-6（不写即网格之外那条月份行与它的行首占位）、
- * cell 上是 ISO 日期、month-label 上是 YYYY-MM；月历形态里 month-block 上是 YYYY-MM、
- * row 上是月内周序（不写即块内那条星期名坐标轴）；矩阵形态里 row 与 row-label 上是行身份
- * （不写即表头行与角落占位）、column-label 与 cell 上是列身份，格子的行身份从所在的行取。
- * legend-item 上是档位、legend-label 上是 low 或 high（两端那两个字，文案读 `legendText`）。
+ * 角色节点的身份一律取作者写在节点上的 value 属性，解释方式由 variant 决定：
+ * 日历形态中 row 与 week-day 上是行序 0-6（未写即网格之外的月份行与其行首占位）、
+ * cell 上是 ISO 日期、month-label 上是 YYYY-MM；月历形态中 month-block 上是 YYYY-MM、
+ * row 上是月内周序（未写即块内的星期名坐标轴）；矩阵形态中 row 与 row-label 上是行身份
+ * （未写即表头行与角落占位）、column-label 与 cell 上是列身份，格子的行身份从所在的行取。
+ * legend-item 上是档位、legend-label 上是 low 或 high（两端的文字，文案读取 `legendText`）。
  *
- * 数据、行列、档位下界与文案只能走 property（`el.value = [...]`）：HTML 属性装不下数组与函数。
+ * 数据、行列、档位下界与文案只能通过 property 设置（`el.value = [...]`）：HTML 属性无法承载数组与函数。
  *
  * @customElement xh-heatmap
- * @attr {'calendar'|'month'|'matrix'} variant - 形态；缺省 calendar
+ * @attr {'calendar'|'month'|'matrix'} variant - 形态；默认 calendar
  * @attr {string} start-date - 区间起点（含），ISO YYYY-MM-DD
  * @attr {string} end-date - 区间终点（含）
- * @attr {number} levels - 档数，缺省 5；给了 thresholds 则档数由它定
- * @attr {number} first-day-of-week - 周首日，0 = 星期日，缺省 1
- * @attr {string} locale - 月份名与星期名的书写 locale；不给按宿主语言，宿主也没有时按 en-US
- * @attr {'ltr'|'rtl'} dir - 文字方向；只作显式覆盖，不写时方向从 DOM 现读
+ * @attr {number} levels - 档数，默认 5；提供 thresholds 时档数由它决定
+ * @attr {number} first-day-of-week - 周首日，0 = 星期日，默认 1
+ * @attr {string} locale - 月份名与星期名的书写 locale；未提供时按宿主语言，宿主也没有时按 en-US
+ * @attr {'ltr'|'rtl'} dir - 文字方向；只作显式覆盖，未提供时方向从 DOM 读取
  * @attr {'brand'|'neutral'|'success'|'warning'|'danger'|'info'} tone - 语气
- * @attr {'green'|'blue'|'orange'|'purple'|'red'|'gray'} palette - 色板，直接点名色阶满档的颜色；同时写了 tone 时听它的
+ * @attr {'green'|'blue'|'orange'|'purple'|'red'|'gray'} palette - 色板，直接指定色阶满档的颜色；同时提供 tone 时以色板为准
  * @attr {'sm'|'md'|'lg'} size - 尺寸
  * @fires cell-focus - 焦点落到某一格；detail 为 `{ date, row, column, count, level, percent }`
- * @fires cell-active - 详情该显示哪一格（悬停或聚焦）；收起时 detail 为 null
+ * @fires cell-active - 详情应显示哪一格（悬停或聚焦）；收起时 detail 为 null
  * @csspart root - 承载三轴的最外层节点
  * @csspart grid - role=grid 的网格容器，键盘在它身上收口
- * @csspart month-block - 月历形态里的一个自然月块
- * @csspart row - 一行；写了 value 即数据行，不写即坐标轴那一行
- * @csspart week-day - 星期名，只给眼睛看
+ * @csspart month-block - 月历形态中的一个自然月块
+ * @csspart row - 一行；提供 value 即数据行，未提供即坐标轴行
+ * @csspart week-day - 星期名，只用于视觉
  * @csspart month-label - 月份名
- * @csspart row-label - 矩阵的行名；不写 value 即表头行行首的角落占位
+ * @csspart row-label - 矩阵的行名；未提供 value 即表头行行首的角落占位
  * @csspart column-label - 矩阵的列名
- * @csspart cell - 一格，身份取写在节点上的 value
- * @csspart tooltip - 悬停或聚焦时显示的详情条，位置由元素量好写成内联样式
+ * @csspart cell - 一格，身份取自节点上的 value
+ * @csspart tooltip - 悬停或聚焦时显示的详情条，位置由元素测量后写为内联样式
  * @csspart legend - 色阶对照条
- * @csspart legend-label - 对照条一端的那个字，value 是 low 或 high
- * @csspart legend-item - 对照条里的一格，value 是档位
+ * @csspart legend-label - 对照条一端的文字，value 是 low 或 high
+ * @csspart legend-item - 对照条中的一格，value 是档位
  */
 export class XhHeatmapElement extends XhElement {
   static override partContract = { anatomy: heatmapAnatomy, meta: heatmapMeta }
@@ -157,31 +157,31 @@ export class XhHeatmapElement extends XhElement {
   }
 
   /**
-   * 日历网格：七行星期 × 若干周列，另带月份段、星期名与档位标尺，作者照它铺节点。
-   * 其余形态下是一张空网格。机器尚未建起时同样给空网格。
+   * 日历网格：七行星期 × 若干周列，另带月份段、星期名与档位标尺，作者据此铺设节点。
+   * 其余形态下是一张空网格。状态机尚未建立时同样返回空网格。
    */
   get grid(): HeatmapGrid {
     return this.ctrl.service ? connectHeatmap(this.ctrl.service, wcNormalize).grid : buildHeatmapGrid()
   }
 
-  /** 月历网格：按自然月分块，块里逐周一行；不是 month 形态时为 null。 */
+  /** 月历网格：按自然月分块，块内逐周一行；非 month 形态时为 null。 */
   get monthGrid(): HeatmapMonthGrid | null {
     return this.ctrl.service ? connectHeatmap(this.ctrl.service, wcNormalize).monthGrid : null
   }
 
-  /** 矩阵网格：行列由作者给；不是 matrix 形态时为 null。 */
+  /** 矩阵网格：行列由作者提供；非 matrix 形态时为 null。 */
   get matrixGrid(): HeatmapMatrixGrid | null {
     return this.ctrl.service ? connectHeatmap(this.ctrl.service, wcNormalize).matrixGrid : null
   }
 
-  /** 对照条两端要写的那两个字，照它填 legend-label 节点的文字。 */
+  /** 对照条两端的文字，据此填入 legend-label 节点。 */
   get legendText(): { low: string, high: string } {
     return this.ctrl.service
       ? connectHeatmap(this.ctrl.service, wcNormalize).legendText
       : HEATMAP_LEGEND_TEXT
   }
 
-  /** 作者写在行上的身份，按形态翻成连接层认得的那一组坐标。 */
+  /** 作者写在行上的身份，按形态转换为连接层识别的坐标。 */
   private rowProps(el: HTMLElement, variant: HeatmapVariant): HeatmapRowProps {
     if (variant === 'matrix')
       return { row: normalizeHeatmapString(el.getAttribute('value')) }

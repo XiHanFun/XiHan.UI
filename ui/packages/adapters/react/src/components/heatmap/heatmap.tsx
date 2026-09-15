@@ -42,9 +42,9 @@ import { useHeatmap } from './use-heatmap'
 type HeatmapProps = HeatmapSchema['props']
 
 /**
- * 函数式 children 的载荷：三张网格模型与锚点、当前详情，外加挪锚点的动作。
- * 三形态通用的那一组（`focusedCell` / `anchorCell` / `setFocusedCell`）也在里面：
- * 矩阵形态下带 Date 的那一组恒为 null，自己铺矩阵时只有这一组读得出、挪得动锚点。
+ * 函数式 children 的载荷：三张网格模型与锚点、当前详情，以及移动锚点的动作。
+ * 三形态通用的一组（`focusedCell` / `anchorCell` / `setFocusedCell`）也包含在内：
+ * 矩阵形态下带 Date 的一组恒为 null，自行铺设矩阵时只有这一组能读取、移动锚点。
  */
 export type HeatmapRootSlotProps = Pick<
   HeatmapApi,
@@ -64,8 +64,8 @@ export type HeatmapRootSlotProps = Pick<
 >
 
 /**
- * 每一格的内容载荷：日期形态给日历那一格，矩阵形态给矩阵那一格。
- * 两者的坐标不同，用 `'date' in cell` 分辨。
+ * 每一格的内容载荷：日期形态给日历的格子，矩阵形态给矩阵的格子。
+ * 两者的坐标不同，用 `'date' in cell` 区分。
  */
 export type HeatmapCellSlotProps = HeatmapCellMeta | HeatmapMatrixCellMeta
 
@@ -81,7 +81,7 @@ export interface XhHeatmapRootProps extends Omit<ComponentPropsWithRef<'div'>, '
   endDate?: string
   /** 分几档色阶。 */
   levels?: number
-  /** 逐档的分界数值；给了它就不按数据自动分档。 */
+  /** 逐档的分界数值；提供后不按数据自动分档。 */
   thresholds?: number[]
   /** 一周从星期几起算。 */
   firstDayOfWeek?: number
@@ -93,11 +93,11 @@ export interface XhHeatmapRootProps extends Omit<ComponentPropsWithRef<'div'>, '
   translations?: Partial<HeatmapTranslations>
   /** 焦点落到某一格。 */
   onCellFocus?: HeatmapProps['onCellFocus']
-  /** 详情落在哪一格变了。 */
+  /** 详情所在的格子变化。 */
   onCellActive?: HeatmapProps['onCellActive']
-  /** 铺开网格时每一格的内容；不给就是空格子。 */
+  /** 铺开网格时每一格的内容；未提供时是空格子。 */
   renderCell?: (cell: HeatmapCellSlotProps) => ReactNode
-  /** 详情条的内容；给了它才铺出 tooltip 部件。 */
+  /** 详情条的内容；提供后才铺设 tooltip 部件。 */
   renderTooltip?: (details: HeatmapCellDetails | null) => ReactNode
   children?: SlotChildren<HeatmapRootSlotProps>
 }
@@ -173,7 +173,7 @@ XhHeatmapRoot.xhEvents = ['cell-focus', 'cell-active'] as const
 
 export interface XhHeatmapGridProps extends ComponentPropsWithRef<'div'> {}
 
-/** role=grid 的容器：键盘在这里收口，可及名字也长在它身上。 */
+/** role=grid 的容器：键盘在这里收口，可及名字也挂在它上面。 */
 export function XhHeatmapGrid({ children, ...rest }: XhHeatmapGridProps): ReactNode {
   const ctx = useHeatmapContext()
   // 网格自己得焦要把焦点转投给锚点那一格，DOM 的 focus 不冒泡，改装成原生监听器
@@ -193,7 +193,7 @@ export interface XhHeatmapMonthBlockProps extends Omit<ComponentPropsWithRef<'di
   value: string
 }
 
-/** 月历形态里的一个自然月块，块内的行从这里取月份身份。 */
+/** 月历形态中的一个自然月块，块内的行从这里取月份身份。 */
 export function XhHeatmapMonthBlock({ value, children, ...rest }: XhHeatmapMonthBlockProps): ReactNode {
   const ctx = useHeatmapContext()
   return (
@@ -213,10 +213,10 @@ export function XhHeatmapMonthBlock({ value, children, ...rest }: XhHeatmapMonth
 export interface XhHeatmapRowProps extends Omit<ComponentPropsWithRef<'div'>, 'value'> {
   /**
    * 行的身份。日历形态是行序 0-6，月历形态是月内第几周，矩阵形态是行身份；
-   * 不写即坐标轴那一行。
+   * 未写即坐标轴行。
    */
   value?: number | string
-  /** 月历形态：所属月份 YYYY-MM；写在月块里就不必再写一遍。 */
+  /** 月历形态：所属月份 YYYY-MM；写在月块中时不必再写一遍。 */
   month?: string
 }
 
@@ -246,7 +246,7 @@ export function XhHeatmapRow({ value, month, children, ...rest }: XhHeatmapRowPr
 }
 
 export interface XhHeatmapWeekDayProps extends Omit<ComponentPropsWithRef<'span'>, 'value'> {
-  /** 行序 0-6；不给即坐标轴那一行行首的占位。 */
+  /** 行序 0-6；未提供即坐标轴行行首的占位。 */
   value?: number | string
 }
 
@@ -270,7 +270,7 @@ export interface XhHeatmapMonthLabelProps extends Omit<ComponentPropsWithRef<'sp
   value: string
 }
 
-/** 月份名。日历形态里横跨这个月占的那几列，月历形态里是一块的标题。 */
+/** 月份名。日历形态中横跨该月所占的列，月历形态中是一块的标题。 */
 export function XhHeatmapMonthLabel({ value, children, ...rest }: XhHeatmapMonthLabelProps): ReactNode {
   const ctx = useHeatmapContext()
   return (
@@ -286,7 +286,7 @@ export function XhHeatmapMonthLabel({ value, children, ...rest }: XhHeatmapMonth
 }
 
 export interface XhHeatmapRowLabelProps extends Omit<ComponentPropsWithRef<'span'>, 'value'> {
-  /** 行身份；不写即表头行行首那个角落占位。 */
+  /** 行身份；未写即表头行行首的角落占位。 */
   value?: string
 }
 
@@ -328,11 +328,11 @@ export function XhHeatmapColumnLabel({ value, children, ...rest }: XhHeatmapColu
 export interface XhHeatmapCellProps extends Omit<ComponentPropsWithRef<'div'>, 'value'> {
   /** 日期形态是 ISO 日期，矩阵形态是列身份。 */
   value: string
-  /** 矩阵形态：行身份；写在行里就不必再写一遍。 */
+  /** 矩阵形态：行身份；写在行中时不必再写一遍。 */
   row?: string
 }
 
-/** 一格。数值与档位由 connect 回网格里查。 */
+/** 一格。数值与档位由 connect 查询网格。 */
 export function XhHeatmapCell({ value, row, children, ...rest }: XhHeatmapCellProps): ReactNode {
   const ctx = useHeatmapContext()
   const parentRow = useHeatmapRow()
@@ -353,7 +353,7 @@ export function XhHeatmapCell({ value, row, children, ...rest }: XhHeatmapCellPr
 
 export interface XhHeatmapTooltipProps extends ComponentPropsWithRef<'div'> {}
 
-/** 详情条：悬停或聚焦到某一格时显示，位置由连接层量好写成内联样式。 */
+/** 详情条：悬停或聚焦到某一格时显示，位置由连接层测量后写为内联样式。 */
 export function XhHeatmapTooltip({ children, ...rest }: XhHeatmapTooltipProps): ReactNode {
   const ctx = useHeatmapContext()
   return (
@@ -380,7 +380,7 @@ export interface XhHeatmapLegendLabelProps extends Omit<ComponentPropsWithRef<'s
   value: HeatmapLegendBound
 }
 
-/** 对照条一端的那个字。 */
+/** 对照条一端的文字。 */
 export function XhHeatmapLegendLabel({ value, children, ...rest }: XhHeatmapLegendLabelProps): ReactNode {
   const ctx = useHeatmapContext()
   return (
@@ -400,7 +400,7 @@ export interface XhHeatmapLegendItemProps extends Omit<ComponentPropsWithRef<'sp
   value: number | string
 }
 
-/** 对照条里的一格，与网格里同档的格子同色。 */
+/** 对照条中的一格，与网格中同档的格子同色。 */
 export function XhHeatmapLegendItem({ value, children, ...rest }: XhHeatmapLegendItemProps): ReactNode {
   const ctx = useHeatmapContext()
   return (
@@ -422,9 +422,9 @@ interface DefaultTreeProps {
 }
 
 /**
- * 没写 children 时按网格模型铺开的整套结构，作者只交数据。
- * 与手写部件产出的 DOM 完全一致，要改结构就自己写部件，行为不变。
- * 详情条只有给了 renderTooltip 才铺。
+ * 未写 children 时按网格模型铺开的整套结构，作者只提供数据。
+ * 与手写部件产出的 DOM 完全一致，需要修改结构时自行写部件，行为不变。
+ * 详情条只有提供 renderTooltip 时才铺设。
  */
 function DefaultTree({ api, renderCell, renderTooltip }: DefaultTreeProps): ReactNode {
   // 两端各一个字：一排色块自己说不出哪头是多
@@ -487,7 +487,7 @@ function DefaultTree({ api, renderCell, renderTooltip }: DefaultTreeProps): Reac
   )
 }
 
-/** 月历形态：网格里一个自然月一块，块内先一条星期名坐标轴，再逐周一行。 */
+/** 月历形态：网格中一个自然月一块，块内先一条星期名坐标轴，再逐周一行。 */
 function MonthTree({
   grid,
   renderCell,
@@ -515,7 +515,7 @@ function MonthTree({
   )
 }
 
-/** 矩阵形态：头一行是列名，其余每行行首一个行名、其后逐列一格。 */
+/** 矩阵形态：首行是列名，其余每行行首一个行名、其后逐列一格。 */
 function MatrixTree({
   grid,
   renderCell,
