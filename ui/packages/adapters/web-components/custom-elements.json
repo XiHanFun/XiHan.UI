@@ -24983,15 +24983,15 @@
       "declarations": [
         {
           "kind": "class",
-          "description": "`<xh-highlight>` —— Light-DOM 行为宿主，无状态机，把 text 按 keyword 切段铺进 root。\n\n作者写一个空的行内容器当 root：命中位置是按 text 这个串逐字符算的，\n切出来的片段作者自己写不出，故 root 的内容整份由本元素接管，写在里面的东西会被替换掉。\n\n一处有多个关键词都命中时取最长的那个，重叠的命中只切出一段。\n关键词全程逐字符比对，不拼进正则：搜索框里敲进来的 `.` `*` `(` 都是普通字符。\n\n多个关键词只能走 property（`el.keyword = ['a', 'b']`）：属性里的一个串就是一个关键词，\n按空格拆的话带空格的关键词就没法写了。",
+          "description": "`<xh-highlight>`：Light-DOM 行为宿主，无状态机，把 text 按 keyword 切段铺进 root。\n\n作者写一个空的行内容器作为 root：命中位置按 text 逐字符计算，\n切出的片段作者无法自行编写，因此 root 的内容整份由本元素接管，写在其中的内容会被替换。\n\n同一位置有多个关键词都命中时取最长的一个，重叠的命中只切出一段。\n关键词全程逐字符比较，不拼进正则：搜索框中输入的 `.` `*` `(` 都是普通字符。\n\n多个关键词只能通过 property 设置（`el.keyword = ['a', 'b']`）：属性中的一个串就是一个关键词，\n按空格拆分会使带空格的关键词无法表达。",
           "name": "XhHighlightElement",
           "cssParts": [
             {
-              "description": "包住整段文本的容器，承载 data-case-sensitive 与 data-tone",
+              "description": "包裹整段文本的容器，承载 data-case-sensitive 与 data-tone",
               "name": "root"
             },
             {
-              "description": "命中关键词的那一小段，渲染成 `<mark>`",
+              "description": "命中关键词的片段，渲染为 `<mark>`",
               "name": "mark"
             }
           ],
@@ -25083,7 +25083,7 @@
                   }
                 }
               ],
-              "description": "把切好的片段铺进 root：命中的建一个 `<mark>`，其余建文本节点。\n片段没变就不重铺——每帧重建节点会把用户正在拖的选区弄没。"
+              "description": "把切分的片段铺进 root：命中的建一个 `<mark>`，其余建文本节点。\n片段未变时不重铺：每帧重建节点会丢失用户正在拖动的选区。"
             }
           ],
           "attributes": [
@@ -25099,7 +25099,7 @@
               "type": {
                 "text": "string | readonly string[] | undefined"
               },
-              "description": "一个关键词；一组关键词走 property",
+              "description": "一个关键词；一组关键词通过 property 设置",
               "name": "keyword",
               "fieldName": "keyword"
             },
@@ -25107,7 +25107,7 @@
               "type": {
                 "text": "boolean | undefined"
               },
-              "description": "区分大小写，缺省不区分",
+              "description": "区分大小写，默认不区分",
               "name": "case-sensitive",
               "fieldName": "caseSensitive"
             },
@@ -25115,7 +25115,7 @@
               "type": {
                 "text": "Tone | undefined"
               },
-              "description": "语气，决定命中片段用哪族颜色",
+              "description": "语气，决定命中片段使用哪族颜色",
               "name": "tone",
               "fieldName": "tone"
             }

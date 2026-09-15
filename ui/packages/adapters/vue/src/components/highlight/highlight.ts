@@ -13,10 +13,10 @@ import { computed, defineComponent, h } from 'vue'
 import { vueNormalize } from '../../runtime/normalize-props'
 
 /**
- * 把 text 按 keyword 切段铺进一个 `<span>`：命中的片段渲染成 `<mark>`，其余是纯文本节点。
+ * 把 text 按 keyword 切段铺进一个 `<span>`：命中的片段渲染为 `<mark>`，其余是纯文本节点。
  *
- * 整段内容由 text 与 keyword 算出，组件不收默认插槽——命中位置是按 text 这个串
- * 逐字符算的，内容另有来源就对不上了。
+ * 整段内容由 text 与 keyword 计算得出，组件不接收默认插槽：命中位置是按 text 这个串
+ * 逐字符计算的，内容另有来源时无法对应。
  */
 export const XhHighlight = defineComponent({
   name: 'XhHighlight',
