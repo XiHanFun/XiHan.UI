@@ -1,4 +1,4 @@
-<!-- 周期选择 | granularity 决定输入行铺哪几段、浮层铺哪一档格子 -->
+<!-- 周期选择 | granularity 决定输入行铺设哪几段、浮层铺设哪一档格子 -->
 <script setup lang="ts">
 import type { CalendarGranularity, CalendarPeriod } from "@xihan-ui/headless";
 import { calendarPeriodOf, calendarPeriodValue } from "@xihan-ui/headless";
