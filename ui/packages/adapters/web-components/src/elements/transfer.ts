@@ -44,56 +44,56 @@ function stripNativeDisabled(el: HTMLElement): void {
 }
 
 /**
- * `<xh-transfer>` —— Light-DOM 行为宿主：作者写
- * root/source-panel/target-panel/panel-header/panel-title/panel-count/search/list/item/...
- * 角色节点，元素跑 transfer 机器并把 connect 产出打上去。
+ * `<xh-transfer>`：Light-DOM 行为宿主：作者写
+ * root / source-panel / target-panel / panel-header / panel-title / panel-count / search / list / item / ...
+ * 角色节点，元素运行 transfer 状态机并把 connect 产出接上。
  *
  * 条目全集由 `collection` 属性（property）给出，它是标签与禁用的唯一事实源；
- * **两侧面板各挂一份全集**，不属于本侧、或被搜索筛掉的那一份由元素打上 hidden，
- * 节点不卸载。条目身份取节点上的 `value` 属性，归哪一侧则取它落在哪个面板里。
+ * 两侧面板各挂一份全集，不属于本侧、或被搜索筛掉的条目由元素写上 hidden，
+ * 节点不卸载。条目身份取节点上的 `value` 属性，所属侧取它所在的面板。
  *
- * 过滤由本元素做，不是作者做：搜索串住在机器里，作者最多给一个 `filter` 谓词。
+ * 过滤由本元素完成，不由作者完成：搜索串存放在状态机中，作者最多提供一个 `filter` 谓词。
  *
- * 导航与勾选在事件那一刻按 data-scope+data-part 查活 DOM，依赖 connect 回写的 data-value，
- * 因此 wire 必须先于交互跑过（基类 updated 已保证）。
+ * 导航与勾选在事件发生时按 data-scope + data-part 查询 DOM，依赖 connect 回写的 data-value，
+ * 因此 wire 必须先于交互运行（基类 updated 已保证）。
  *
- * 集合类输入（collection / value / selection / filter）都表达不成属性，只能走 property：
+ * 集合类输入（collection / value / selection / filter）都无法表达为属性，只能通过 property 设置：
  * `el.collection = [...]`、`el.value = ['a']`。
  *
  * @customElement xh-transfer
  * @attr {string} name - 原生表单字段名，目标侧每个值提交一个同名字段
  * @attr {string} form - 原生表单 ID，显式指定时覆盖祖先表单归属
- * @attr {boolean} searchable - 每侧带一个搜索框；关掉时搜索框仍在 DOM 里但带 hidden
- * @attr {boolean} disabled - 整个控件禁用：条目转 aria-disabled，按钮与搜索框用原生 disabled
- * @attr {boolean} read-only - 只读：两侧照常浏览与搜索，但勾选改不动、也搬不动
+ * @attr {boolean} searchable - 每侧带一个搜索框；关闭时搜索框仍在 DOM 中但带 hidden
+ * @attr {boolean} disabled - 整个控件禁用：条目为 aria-disabled，按钮与搜索框使用原生 disabled
+ * @attr {boolean} read-only - 只读：两侧照常浏览与搜索，但勾选不可修改、也不可移动
  * @attr {boolean} invalid - 校验失败标注
- * @attr {boolean} loading - 条目还在取：两侧列表报 aria-busy，在途占位顶上来、空态占位让位
+ * @attr {boolean} loading - 条目加载中：两侧列表报告 aria-busy，显示在途占位、隐藏空态占位
  * @attr {'brand'|'neutral'|'success'|'warning'|'danger'|'info'} tone - 语气
  * @attr {'sm'|'md'|'lg'} size - 尺寸
- * @attr {boolean} one-way - 只能往右不能往回：往回搬那条路封死，右侧也不再接受勾选
- * @attr {boolean} loop - 列表内方向键走到尽头回绕，默认 true；写 loop="false" 关掉
- * @attr {'ltr'|'rtl'} dir - 文字方向，决定列表内哪个横向方向键是"搬向对面"，默认 ltr
+ * @attr {boolean} one-way - 只能向右不能向回：向回移动的路径关闭，右侧也不再接受勾选
+ * @attr {boolean} loop - 列表内方向键到达末尾回绕，默认 true；写 loop="false" 关闭
+ * @attr {'ltr'|'rtl'} dir - 文字方向，决定列表内哪个横向方向键是移向对面，默认 ltr
  * @fires value-change - 落在右侧的值变化；detail 为 `{ value: string[] }`
  * @fires selection-change - 勾选集合变化；detail 为 `{ value: string[] }`
- * @csspart root - 组件根容器（承载 data-disabled/data-one-way）
+ * @csspart root - 组件根容器（承载 data-disabled / data-one-way）
  * @csspart hidden-input - 宿主自动装配的重复字段出口，无需作者手写
  * @csspart source-panel - 左侧面板容器，其内的角色节点一律归左侧
  * @csspart target-panel - 右侧面板容器，其内的角色节点一律归右侧
- * @csspart panel-header - 面板头部容器（标题、计数、全选格的落脚处）
+ * @csspart panel-header - 面板头部容器（标题、计数、全选格的位置）
  * @csspart panel-title - 面板标题（本侧 list 与搜索框 aria-labelledby 的目标）
  * @csspart panel-count - 计数节点，只带 data-count / data-checked-count，文案由作者写
- * @csspart search - 本侧搜索框，须是原生 input；searchable 关掉时带 hidden
+ * @csspart search - 本侧搜索框，须是原生 input；searchable 关闭时带 hidden
  * @csspart list - role=listbox 容器，键盘在此收口，也是 roving tabindex 的兜底位
- * @csspart empty - 空态占位，须放在面板里当 list 的兄弟；本侧没有可见条目时由元素放它出面
- * @csspart loading - 在途占位，与空态占位同一个位置，取数期间顶上来
- * @csspart group - role=group 分组容器，须自带 value 属性标识身份；条目挂在它里面，两侧各挂一份
- * @csspart group-label - 分组标题（本组 aria-labelledby 的目标），须放在 group 里
- * @csspart item - role=option 条目，须自带 value 属性标识身份；禁用写在 collection 里，不写在节点上
+ * @csspart empty - 空态占位，须放在面板中作为 list 的兄弟；本侧没有可见条目时由元素显示它
+ * @csspart loading - 在途占位，与空态占位同一位置，加载期间显示
+ * @csspart group - role=group 分组容器，须自带 value 属性标识身份；条目挂在其中，两侧各挂一份
+ * @csspart group-label - 分组标题（本组 aria-labelledby 的目标），须放在 group 中
+ * @csspart item - role=option 条目，须自带 value 属性标识身份；禁用写在 collection 中，不写在节点上
  * @csspart item-text - 条目文本
- * @csspart item-checkbox - 条目勾选标记（aria-hidden）；oneWay 下右侧的那一份带 hidden
+ * @csspart item-checkbox - 条目勾选标记（aria-hidden）；oneWay 下右侧的一份带 hidden
  * @csspart select-all-trigger - 本侧全选格，须是原生 button；三态经 aria-checked 上报
- * @csspart to-target-trigger - 往右搬的按钮，须是原生 button；可及名字由 translations.toTarget 给
- * @csspart to-source-trigger - 往左搬的按钮，须是原生 button；oneWay 下恒为禁用；可及名字由 translations.toSource 给
+ * @csspart to-target-trigger - 向右移动的按钮，须是原生 button；可及名由 translations.toTarget 提供
+ * @csspart to-source-trigger - 向左移动的按钮，须是原生 button；oneWay 下恒为禁用；可及名由 translations.toSource 提供
  */
 export class XhTransferElement extends XhElement {
   static override partContract = { anatomy: transferAnatomy, meta: transferMeta }
@@ -235,8 +235,8 @@ export class XhTransferElement extends XhElement {
   }
 
   /**
-   * 某一侧此刻看得见的条目（先分侧、再套本侧的搜索串），顺序恒为 collection 原序。
-   * 作者据它自己渲染列表（分组、只渲可视区那一段都走这条）。机器尚未建起时给空数组。
+   * 某一侧当前可见的条目（先分侧、再套用本侧的搜索串），顺序恒为 collection 原序。
+   * 作者据此自行渲染列表（分组、只渲染可视区一段都经此路径）。状态机尚未建立时返回空数组。
    */
   visibleItems(side: TransferSide): readonly TransferItem[] {
     return this.ctrl.service ? connectTransfer(this.ctrl.service, wcNormalize).visibleItems(side) : []

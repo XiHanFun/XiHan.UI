@@ -8,31 +8,31 @@
 import type { Direction, MachineSchema, PropTypes, Size, Tone } from '@xihan-ui/core'
 
 /**
- * 哪一侧。source 是还没选进来的，target 是已经选进来的；
- * value 这个 prop 说的就是 target 侧那一批，与两侧的勾选（selection）是两回事。
+ * 所在侧。source 是尚未选入的，target 是已选入的；
+ * value 这个 prop 描述的即 target 侧的条目，与两侧的勾选（selection）是两个概念。
  */
 export type TransferSide = 'source' | 'target'
 
-/** 一侧的整体勾选态：全选 / 半选 / 一个没勾。select-all-trigger 的 aria-checked 由它翻译。 */
+/** 一侧的整体勾选态：全选 / 半选 / 未勾选。select-all-trigger 的 aria-checked 由它翻译。 */
 export type TransferCheckState = 'checked' | 'indeterminate' | 'unchecked'
 
 /**
- * 条目全集里的一条，是元信息的唯一事实源：标签与禁用都从这里读，作者的标记只管长相。
+ * 条目全集中的一条，是元信息的唯一事实源：标签与禁用都从这里读取，作者的标记只负责外观。
  * value 必须全集唯一：它同时是 DOM 身份（data-value）、value / selection 集合的元素，
- * 以及连接层按值找节点的键。
+ * 以及连接层按值查找节点的键。
  */
 export interface TransferItem {
   value: string
-  /** 展示名，也是搜索过滤的取字处。 */
+  /** 展示名，也是搜索过滤的取字来源。 */
   label: string
-  /** 条目禁用：勾不动、也搬不动，但它仍可聚焦、仍是方向键的起点。 */
+  /** 条目禁用：不可勾选、也不可移动，但它仍可聚焦、仍是方向键的起点。 */
   disabled?: boolean
 }
 
 /**
- * 搜索过滤谓词。过滤由组件做：作者只给怎么算匹配这一条规则，
- * 哪些条目隐去、方向键怎么走、全选与搬运算哪些全部由组件收口。
- * query 传进来时已 trim 过，且保证非空串（空搜索不调用谓词）。
+ * 搜索过滤谓词。过滤由组件完成：作者只提供匹配规则，
+ * 哪些条目隐藏、方向键如何移动、全选与移动计算哪些全部由组件收口。
+ * query 传入时已 trim，且保证非空串（空搜索不调用谓词）。
  */
 export type TransferFilter = (item: TransferItem, query: string) => boolean
 
@@ -42,18 +42,18 @@ export interface TransferValueChangeDetails {
 }
 
 export interface TransferSelectionChangeDetails {
-  /** 两侧合起来被勾中的值（一个值只可能在一侧，因此一个扁平集合就够了）。 */
+  /** 两侧合计被勾选的值（一个值只可能在一侧，因此一个扁平集合即可）。 */
   value: string[]
 }
 
-/** 面板级部件自报身份：它归哪一侧。两侧共用一套 part 名，靠这个值分开。 */
+/** 面板级部件声明身份：所属的侧。两侧共用一套 part 名，依靠该值区分。 */
 export interface TransferPanelProps {
   side: TransferSide
 }
 
 /**
- * 分组自报身份：值 + 它挂在哪一侧的面板里。
- * 两侧各挂一份同名分组，分组标题的 id 因此要连 side 一起派生。
+ * 分组声明身份：值 + 所在侧的面板。
+ * 两侧各挂一份同名分组，分组标题的 id 因此要连同 side 一起派生。
  */
 export interface TransferGroupProps {
   value: string
@@ -61,9 +61,9 @@ export interface TransferGroupProps {
 }
 
 /**
- * 条目自报家门：值 + 它挂在哪一侧的面板里；禁用与标签一律回 collection 里查。
- * 两侧面板各挂一份全集，不属于本侧的条目由连接层打上 hidden 而非卸载，
- * 所以同一个 value 会有两个节点，side 就是它们各自的身份。
+ * 条目的声明：值 + 所在侧的面板；禁用与标签一律从 collection 查询。
+ * 两侧面板各挂一份全集，不属于本侧的条目由连接层写上 hidden 而非卸载，
+ * 因此同一个 value 会有两个节点，side 即它们各自的身份。
  */
 export interface TransferItemProps {
   value: string
@@ -72,10 +72,10 @@ export interface TransferItemProps {
 
 export interface TransferSchema extends MachineSchema {
   props: {
-    /** 条目全集，元信息的唯一事实源。缺省为空。 */
+    /** 条目全集，元信息的唯一事实源。默认为空。 */
     collection?: TransferItem[]
     /**
-     * 落在 target 侧的值。给定即受控：cell 直读 prop，写只发 onValueChange 不落内部值。
+     * 落在 target 侧的值。提供即受控：cell 直读 prop，写入只发 onValueChange 不落内部值。
      */
     value?: string[]
     defaultValue?: string[]
@@ -83,73 +83,73 @@ export interface TransferSchema extends MachineSchema {
     name?: string
     /** 原生表单 ID；显式指定时覆盖祖先表单归属。 */
     form?: string
-    /** 两侧合起来被勾中的值（用于搬运）。给定即受控，语义同上。 */
+    /** 两侧合计被勾选的值（用于移动）。提供即受控，语义同上。 */
     selection?: string[]
     defaultSelection?: string[]
-    /** 每侧带一个搜索框；关掉时搜索框仍在 DOM 里但带 hidden，且搜索串一律按空处理。 */
+    /** 每侧带一个搜索框；关闭时搜索框仍在 DOM 中但带 hidden，且搜索串一律按空处理。 */
     searchable?: boolean
-    /** 自定义匹配规则；缺省是标签大小写不敏感包含。 */
+    /** 自定义匹配规则；默认为标签大小写不敏感包含。 */
     filter?: TransferFilter
-    /** 整个控件禁用：条目转 aria-disabled，三个按钮与搜索框用原生 disabled。 */
+    /** 整个控件禁用：条目为 aria-disabled，三个按钮与搜索框使用原生 disabled。 */
     disabled?: boolean
-    /** 只读：两侧照常浏览与搜索，但勾选改不动、也搬不动。禁用还额外收走键盘入口。 */
+    /** 只读：两侧照常浏览与搜索，但勾选不可修改、也不可移动。禁用还额外移除键盘入口。 */
     readOnly?: boolean
-    /** 校验失败：两侧列表报 aria-invalid，各角色节点带 data-invalid。 */
+    /** 校验失败：两侧列表报告 aria-invalid，各角色节点带 data-invalid。 */
     invalid?: boolean
-    /** 条目还在取：两侧列表报 aria-busy，在途占位顶上来、空态占位让位。 */
+    /** 条目加载中：两侧列表报告 aria-busy，显示在途占位、隐藏空态占位。 */
     loading?: boolean
-    /** 语气：brand / neutral / success / warning / danger / info，决定勾选标记用哪族颜色。 */
+    /** 语气：brand / neutral / success / warning / danger / info，决定勾选标记使用哪族颜色。 */
     tone?: Tone
     /** 尺寸：sm / md / lg，决定条目与勾选格的几何档位。 */
     size?: Size
-    /** 只能往右不能往回：往回搬那条路整个封死，target 侧也不再接受勾选。 */
+    /** 只能向右不能向回：向回移动的路径整体关闭，target 侧也不再接受勾选。 */
     oneWay?: boolean
-    /** 列表内方向键走到尽头是否回绕，默认 true。 */
+    /** 列表内方向键到达末尾是否回绕，默认 true。 */
     loop?: boolean
-    /** 文字方向，默认 ltr；决定列表内哪个横向方向键是"搬向对面"。 */
+    /** 文字方向，默认 ltr；决定列表内哪个横向方向键是移向对面。 */
     dir?: Direction
     translations?: Partial<TransferTranslations>
     onValueChange?: (details: TransferValueChangeDetails) => void
     onSelectionChange?: (details: TransferSelectionChangeDetails) => void
   }
   context: {
-    /** target 侧的值，恒为数组。受控（value 给定）时 cell 直读 prop。 */
+    /** target 侧的值，恒为数组。受控（value 提供）时 cell 直读 prop。 */
     value: string[]
-    /** 被勾中的值，恒为数组。受控（selection 给定）时 cell 直读 prop。 */
+    /** 被勾选的值，恒为数组。受控（selection 提供）时 cell 直读 prop。 */
     selection: string[]
-    /** 范围选的起点。Shift 那一段从它算起，跨到另一侧时作废。 */
+    /** 范围选的起点。Shift 的范围从它计算，跨到另一侧时作废。 */
     selectionAnchor: string | null
-    /** 按住 Shift 之前的那份勾选，每一下都从它重算，往回点才收得回来。 */
+    /** 按住 Shift 之前的勾选，每一次都从它重新计算，向回点击才能收回。 */
     selectionBaseline: string[] | null
-    /** 两侧各自的搜索串。不受控、不对外通知：它只影响"看得见什么"。 */
+    /** 两侧各自的搜索串。不受控、不对外通知：它只影响可见内容。 */
     sourceQuery: string
     targetQuery: string
     /**
      * 两侧各自的焦点锚点，焦点离开该侧即清空。
-     * 必须分两份：两个列表各是一个独立的 roving 分组，各自要留一个 Tab 停靠点。
+     * 必须分为两份：两个列表各是一个独立的 roving 分组，各自保留一个 Tab 停靠点。
      */
     sourceFocusedValue: string | null
     targetFocusedValue: string | null
   }
   computed: Record<string, never>
   refs: Record<string, never>
-  /** 没有开合、没有异步，机器只有一个状态，逻辑全在 context 与 actions。 */
+  /** 没有开合、没有异步，状态机只有一个状态，逻辑全在 context 与 actions。 */
   state: 'idle'
   event:
     | { type: 'FORM.RESET' }
-    /** 整体改写 target 侧集合（外部 setValue 走它）。 */
+    /** 整体改写 target 侧集合（外部 setValue 经过它）。 */
     | { type: 'VALUE.SET', value: string[] }
     /** 整体改写勾选集合。 */
     | { type: 'SELECTION.SET', value: string[] }
     /** 切换一个条目的勾选态。 */
     | { type: 'ITEM.TOGGLE', value: string, extend?: boolean }
-    /** 全选/取消全选某一侧（只动该侧可见且未禁用的那些）。 */
+    /** 全选 / 取消全选某一侧（只影响该侧可见且未禁用的条目）。 */
     | { type: 'SIDE.TOGGLE_ALL', side: TransferSide }
-    /** 把对面勾中的条目搬到 to 侧。 */
+    /** 把对面勾选的条目移到 to 侧。 */
     | { type: 'ITEMS.MOVE', to: TransferSide }
     | { type: 'SEARCH.SET', side: TransferSide, query: string }
     | { type: 'ITEM.FOCUS', side: TransferSide, value: string }
-    /** 焦点离开某一侧的列表，或持有焦点的条目被移出 DOM（浏览器此时不派 focusout）。 */
+    /** 焦点离开某一侧的列表，或持有焦点的条目被移出 DOM（浏览器此时不派发 focusout）。 */
     | { type: 'LIST.BLUR', side: TransferSide }
   tag: never
   guard: never
@@ -167,34 +167,34 @@ export interface TransferSchema extends MachineSchema {
 }
 
 export interface TransferApi<T extends PropTypes = PropTypes> {
-  /** 条目全集（作者给的那份，原样透出）。 */
+  /** 条目全集（作者提供的数据，原样透出）。 */
   collection: readonly TransferItem[]
   /** 落在 target 侧的值。 */
   value: string[]
-  /** 两侧合起来被勾中的值。 */
+  /** 两侧合计被勾选的值。 */
   selection: string[]
   disabled: boolean
   readOnly: boolean
   invalid: boolean
   oneWay: boolean
   searchable: boolean
-  /** 某一侧当下看得见的条目（分侧 + 搜索之后），顺序恒为 collection 原序。 */
+  /** 某一侧当前可见的条目（分侧 + 搜索之后），顺序恒为 collection 原序。 */
   visibleItems: (side: TransferSide) => readonly TransferItem[]
-  /** 某一侧此刻真正勾中的值（只算可见且未禁用的那些，与三态、搬运同一口径）。 */
+  /** 某一侧当前实际勾选的值（只计可见且未禁用的条目，与三态、移动同一口径）。 */
   checkedValues: (side: TransferSide) => string[]
   checkState: (side: TransferSide) => TransferCheckState
   query: (side: TransferSide) => string
-  /** 往 to 侧搬此刻可不可行：对面有勾中的可操作条目，且这条路没被 oneWay 封死。 */
+  /** 向 to 侧移动当前是否可行：对面有勾选的可操作条目，且该路径未被 oneWay 关闭。 */
   canMove: (to: TransferSide) => boolean
   isChecked: (value: string) => boolean
   sideOf: (value: string) => TransferSide
   setValue: (next: string[]) => void
   setSelection: (next: string[]) => void
   setQuery: (side: TransferSide, query: string) => void
-  /** 切换某一项的勾选。extend 为真时选中锚点到这一项那一段（同侧才成立）。 */
+  /** 切换某一项的勾选。extend 为真时选中锚点到该项的范围（同侧才成立）。 */
   toggle: (value: string, options?: { extend?: boolean }) => void
   toggleAll: (side: TransferSide) => void
-  /** 程序化搬运；焦点安排不在这里做，那要知道是哪个节点触发的。 */
+  /** 程序化移动；焦点安排不在这里处理，那需要知道触发的节点。 */
   move: (to: TransferSide) => void
   getRootProps: () => T['element']
   /** 单个目标值的原生出口；适配器按 value 数组逐项渲染，空集合不提交字段。 */
@@ -206,13 +206,13 @@ export interface TransferApi<T extends PropTypes = PropTypes> {
   getSearchProps: (props: TransferPanelProps) => T['input']
   getListProps: (props: TransferPanelProps) => T['element']
   getSelectAllTriggerProps: (props: TransferPanelProps) => T['button']
-  /** 空态占位：放在面板里、list 的兄弟；本侧一条可见条目都没有时露面，其余时候带 hidden。 */
+  /** 空态占位：放在面板中、list 的兄弟；本侧没有任何可见条目时显示，其余时候带 hidden。 */
   getEmptyProps: (props: TransferPanelProps) => T['element']
-  /** 在途占位：与空态占位同一个位置，两者不同屏——取数期间它顶上来，空态让位。 */
+  /** 在途占位：与空态占位同一位置，两者不同时显示：加载期间显示它，空态让位。 */
   getLoadingProps: (props: TransferPanelProps) => T['element']
-  /** 分组容器：role=group，条目挂在它里面；分组标题经 aria-labelledby 关联。 */
+  /** 分组容器：role=group，条目挂在其中；分组标题经 aria-labelledby 关联。 */
   getGroupProps: (props: TransferGroupProps) => T['element']
-  /** 分组标题：不是选项、不进导航，只作为本组的可及名字。 */
+  /** 分组标题：不是选项、不进入导航，只作为本组的可及名。 */
   getGroupLabelProps: (props: TransferGroupProps) => T['element']
   getItemProps: (props: TransferItemProps) => T['element']
   getItemTextProps: (props: TransferItemProps) => T['element']
@@ -221,14 +221,14 @@ export interface TransferApi<T extends PropTypes = PropTypes> {
   getToSourceTriggerProps: () => T['button']
 }
 
-/** 读屏用的文案。 */
+/** 读屏文案。 */
 export interface TransferTranslations {
   /**
-   * 「搬到右边」那颗钮的可访问名。它只画一枚箭头、没有可读文字，
-   * 缺了名字读屏就念不出这是什么，而这两颗钮是本组件唯一的操作出口，
-   * 所以这一句**总会发出去**。
+   * 移到右侧按钮的可访问名。它只绘制一个箭头、没有可读文字，
+   * 缺少名字时读屏无法朗读其含义，而这两个按钮是本组件唯一的操作出口，
+   * 因此该文案总会发出。
    */
   toTarget: string
-  /** 「搬回左边」那颗钮的可访问名，同样总会发出去。 */
+  /** 移回左侧按钮的可访问名，同样总会发出。 */
   toSource: string
 }

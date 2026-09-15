@@ -131,24 +131,24 @@ tone 换勾选标记的色族，size 换条目行与勾选格的几何档；两�
 
 | 属性 | 类型 | 必填 | 说明 |
 | --- | --- | --- | --- |
-| `collection` | `TransferItem[]` |  | 条目全集，元信息的唯一事实源。缺省为空。 |
-| `value` | `string[]` |  | 落在 target 侧的值。给定即受控：cell 直读 prop，写只发 onValueChange 不落内部值。 |
+| `collection` | `TransferItem[]` |  | 条目全集，元信息的唯一事实源。默认为空。 |
+| `value` | `string[]` |  | 落在 target 侧的值。提供即受控：cell 直读 prop，写入只发 onValueChange 不落内部值。 |
 | `defaultValue` | `string[]` |  |  |
 | `name` | `string` |  | 原生表单字段名；目标侧每个值提交一个同名字段。 |
 | `form` | `string` |  | 原生表单 ID；显式指定时覆盖祖先表单归属。 |
-| `selection` | `string[]` |  | 两侧合起来被勾中的值（用于搬运）。给定即受控，语义同上。 |
+| `selection` | `string[]` |  | 两侧合计被勾选的值（用于移动）。提供即受控，语义同上。 |
 | `defaultSelection` | `string[]` |  |  |
-| `searchable` | `boolean` |  | 每侧带一个搜索框；关掉时搜索框仍在 DOM 里但带 hidden，且搜索串一律按空处理。 |
-| `filter` | `TransferFilter` |  | 自定义匹配规则；缺省是标签大小写不敏感包含。 |
-| `disabled` | `boolean` |  | 整个控件禁用：条目转 aria-disabled，三个按钮与搜索框用原生 disabled。 |
-| `readOnly` | `boolean` |  | 只读：两侧照常浏览与搜索，但勾选改不动、也搬不动。禁用还额外收走键盘入口。 |
-| `invalid` | `boolean` |  | 校验失败：两侧列表报 aria-invalid，各角色节点带 data-invalid。 |
-| `loading` | `boolean` |  | 条目还在取：两侧列表报 aria-busy，在途占位顶上来、空态占位让位。 |
-| `tone` | `Tone` |  | 语气：brand / neutral / success / warning / danger / info，决定勾选标记用哪族颜色。 |
+| `searchable` | `boolean` |  | 每侧带一个搜索框；关闭时搜索框仍在 DOM 中但带 hidden，且搜索串一律按空处理。 |
+| `filter` | `TransferFilter` |  | 自定义匹配规则；默认为标签大小写不敏感包含。 |
+| `disabled` | `boolean` |  | 整个控件禁用：条目为 aria-disabled，三个按钮与搜索框使用原生 disabled。 |
+| `readOnly` | `boolean` |  | 只读：两侧照常浏览与搜索，但勾选不可修改、也不可移动。禁用还额外移除键盘入口。 |
+| `invalid` | `boolean` |  | 校验失败：两侧列表报告 aria-invalid，各角色节点带 data-invalid。 |
+| `loading` | `boolean` |  | 条目加载中：两侧列表报告 aria-busy，显示在途占位、隐藏空态占位。 |
+| `tone` | `Tone` |  | 语气：brand / neutral / success / warning / danger / info，决定勾选标记使用哪族颜色。 |
 | `size` | `Size` |  | 尺寸：sm / md / lg，决定条目与勾选格的几何档位。 |
-| `oneWay` | `boolean` |  | 只能往右不能往回：往回搬那条路整个封死，target 侧也不再接受勾选。 |
-| `loop` | `boolean` |  | 列表内方向键走到尽头是否回绕，默认 true。 |
-| `dir` | `Direction` |  | 文字方向，默认 ltr；决定列表内哪个横向方向键是"搬向对面"。 |
+| `oneWay` | `boolean` |  | 只能向右不能向回：向回移动的路径整体关闭，target 侧也不再接受勾选。 |
+| `loop` | `boolean` |  | 列表内方向键到达末尾是否回绕，默认 true。 |
+| `dir` | `Direction` |  | 文字方向，默认 ltr；决定列表内哪个横向方向键是移向对面。 |
 | `translations` | `Partial<TransferTranslations>` |  |  |
 | `onValueChange` | `(details: TransferValueChangeDetails) => void` |  |  |
 | `onSelectionChange` | `(details: TransferSelectionChangeDetails) => void` |  |  |
@@ -190,27 +190,27 @@ tone 换勾选标记的色族，size 换条目行与勾选格的几何档；两�
 
 | 成员 | 类型 | 说明 |
 | --- | --- | --- |
-| `collection` | `readonly TransferItem[]` | 条目全集（作者给的那份，原样透出）。 |
+| `collection` | `readonly TransferItem[]` | 条目全集（作者提供的数据，原样透出）。 |
 | `value` | `string[]` | 落在 target 侧的值。 |
-| `selection` | `string[]` | 两侧合起来被勾中的值。 |
+| `selection` | `string[]` | 两侧合计被勾选的值。 |
 | `disabled` | `boolean` |  |
 | `readOnly` | `boolean` |  |
 | `invalid` | `boolean` |  |
 | `oneWay` | `boolean` |  |
 | `searchable` | `boolean` |  |
-| `visibleItems` | `(side: TransferSide) => readonly TransferItem[]` | 某一侧当下看得见的条目（分侧 + 搜索之后），顺序恒为 collection 原序。 |
-| `checkedValues` | `(side: TransferSide) => string[]` | 某一侧此刻真正勾中的值（只算可见且未禁用的那些，与三态、搬运同一口径）。 |
+| `visibleItems` | `(side: TransferSide) => readonly TransferItem[]` | 某一侧当前可见的条目（分侧 + 搜索之后），顺序恒为 collection 原序。 |
+| `checkedValues` | `(side: TransferSide) => string[]` | 某一侧当前实际勾选的值（只计可见且未禁用的条目，与三态、移动同一口径）。 |
 | `checkState` | `(side: TransferSide) => TransferCheckState` |  |
 | `query` | `(side: TransferSide) => string` |  |
-| `canMove` | `(to: TransferSide) => boolean` | 往 to 侧搬此刻可不可行：对面有勾中的可操作条目，且这条路没被 oneWay 封死。 |
+| `canMove` | `(to: TransferSide) => boolean` | 向 to 侧移动当前是否可行：对面有勾选的可操作条目，且该路径未被 oneWay 关闭。 |
 | `isChecked` | `(value: string) => boolean` |  |
 | `sideOf` | `(value: string) => TransferSide` |  |
 | `setValue` | `(next: string[]) => void` |  |
 | `setSelection` | `(next: string[]) => void` |  |
 | `setQuery` | `(side: TransferSide, query: string) => void` |  |
-| `toggle` | `(value: string, options?: { extend?: boolean }) => void` | 切换某一项的勾选。extend 为真时选中锚点到这一项那一段（同侧才成立）。 |
+| `toggle` | `(value: string, options?: { extend?: boolean }) => void` | 切换某一项的勾选。extend 为真时选中锚点到该项的范围（同侧才成立）。 |
 | `toggleAll` | `(side: TransferSide) => void` |  |
-| `move` | `(to: TransferSide) => void` | 程序化搬运；焦点安排不在这里做，那要知道是哪个节点触发的。 |
+| `move` | `(to: TransferSide) => void` | 程序化移动；焦点安排不在这里处理，那需要知道触发的节点。 |
 | `getRootProps` | `() => T['element']` |  |
 | `getHiddenInputProps` | `(props: { value: string }) => T['input']` | 单个目标值的原生出口；适配器按 value 数组逐项渲染，空集合不提交字段。 |
 | `getPanelProps` | `(props: TransferPanelProps) => T['element']` |  |
@@ -220,10 +220,10 @@ tone 换勾选标记的色族，size 换条目行与勾选格的几何档；两�
 | `getSearchProps` | `(props: TransferPanelProps) => T['input']` |  |
 | `getListProps` | `(props: TransferPanelProps) => T['element']` |  |
 | `getSelectAllTriggerProps` | `(props: TransferPanelProps) => T['button']` |  |
-| `getEmptyProps` | `(props: TransferPanelProps) => T['element']` | 空态占位：放在面板里、list 的兄弟；本侧一条可见条目都没有时露面，其余时候带 hidden。 |
-| `getLoadingProps` | `(props: TransferPanelProps) => T['element']` | 在途占位：与空态占位同一个位置，两者不同屏——取数期间它顶上来，空态让位。 |
-| `getGroupProps` | `(props: TransferGroupProps) => T['element']` | 分组容器：role=group，条目挂在它里面；分组标题经 aria-labelledby 关联。 |
-| `getGroupLabelProps` | `(props: TransferGroupProps) => T['element']` | 分组标题：不是选项、不进导航，只作为本组的可及名字。 |
+| `getEmptyProps` | `(props: TransferPanelProps) => T['element']` | 空态占位：放在面板中、list 的兄弟；本侧没有任何可见条目时显示，其余时候带 hidden。 |
+| `getLoadingProps` | `(props: TransferPanelProps) => T['element']` | 在途占位：与空态占位同一位置，两者不同时显示：加载期间显示它，空态让位。 |
+| `getGroupProps` | `(props: TransferGroupProps) => T['element']` | 分组容器：role=group，条目挂在其中；分组标题经 aria-labelledby 关联。 |
+| `getGroupLabelProps` | `(props: TransferGroupProps) => T['element']` | 分组标题：不是选项、不进入导航，只作为本组的可及名。 |
 | `getItemProps` | `(props: TransferItemProps) => T['element']` |  |
 | `getItemTextProps` | `(props: TransferItemProps) => T['element']` |  |
 | `getItemCheckboxProps` | `(props: TransferItemProps) => T['element']` |  |
@@ -244,9 +244,9 @@ tone 换勾选标记的色族，size 换条目行与勾选格的几何档；两�
 | `Home` | focus in a list | 焦点移到本侧首个可停留条目 |
 | `End` | focus in a list | 焦点移到本侧末个可停留条目 |
 | `Space` / `Enter` / `Ctrl+Space` | focus on item, 本侧可勾选 | 切换焦点条目的勾选态，其余勾选不动；条目禁用、或已被搜索藏起来则不认 |
-| `Shift+ArrowDown` / `Shift+ArrowUp` | focus in a list, 本侧可勾选 | 焦点移到相邻条目并切换它的勾选态；往回走即把刚扩进来的那个摘掉 |
+| `Shift+ArrowDown` / `Shift+ArrowUp` | focus in a list, 本侧可勾选 | 焦点移到相邻条目并切换它的勾选态；反向移动即取消刚扩展进来的条目 |
 | `Ctrl+A` / `Cmd+A` | focus in a list, 本侧可勾选 | 勾中本侧全部可操作条目（可见且未禁用）；已经全勾则一并取消 |
-| `ArrowRight` / `ArrowLeft` | focus in a list, 该方向指向对面且对面搬得动 | 把本侧勾中的条目搬到对面（dir=rtl 时左右语义对调）；搬完焦点落到目的地那一侧的列表上。方向指向本侧、或此刻搬不动时这个键放行给页面 |
+| `ArrowRight` / `ArrowLeft` | focus in a list, 该方向指向对面且可以移动 | 把本侧勾选的条目移动到对面（dir=rtl 时左右语义对调）；移动完成后焦点落到目标侧的列表上。方向指向本侧、或当前无法移动时该键放行给页面 |
 | `Enter` / `Space` | focus on to-target-trigger / to-source-trigger | 把对面勾中的条目搬过来（原生按钮的激活行为）；搬完按钮多半随即变禁用，焦点改落到目的地那一侧的列表上 |
 | `Enter` / `Space` | focus on select-all-trigger | 全选/取消全选该侧可操作条目（原生按钮的激活行为）；三态经 aria-checked 上报，半选时是 mixed |
 
