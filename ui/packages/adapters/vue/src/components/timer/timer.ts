@@ -25,7 +25,7 @@ export type TimerRootSlotProps = Pick<
   | 'start' | 'pause' | 'resume' | 'reset'
 >
 
-/** 没写默认插槽时铺开的那几段：时、分、秒。要天或毫秒就自己写部件。 */
+/** 未写默认插槽时铺设的段：时、分、秒。需要天或毫秒时自行写部件。 */
 const DEFAULT_UNITS: readonly TimerUnit[] = ['hours', 'minutes', 'seconds']
 
 export const XhTimerRoot = defineComponent({
@@ -153,8 +153,8 @@ export const XhTimerControl = defineComponent({
 })
 
 /**
- * 没写默认插槽时铺开的整套结构：一个时间区，里面是时、分、秒三段与两个冒号。
- * 与手写部件产出的 DOM 完全一致，要改结构就写默认插槽，行为不变。
+ * 未写默认插槽时铺设的整套结构：一个时间区，其中是时、分、秒三段与两个冒号。
+ * 与手写部件产出的 DOM 完全一致，需要修改结构时写默认插槽，行为不变。
  */
 function renderDefaultTree(): VNode {
   const children: VNode[] = []

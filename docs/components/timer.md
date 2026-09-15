@@ -109,7 +109,7 @@ tick 每过一个 interval 发一次，complete 只在走到终点那一刻发�
 ### 反模式
 
 - 用它显示当前时刻：它只处理时长，不处理日历与时区。
-- 只给终点不给起点做倒计时：起点默认为 0，倒计时一启动就到点，屏幕上始终是 00:00。倒计时长需要写进 `startMs`。
+- 只提供终点而不提供起点做倒计时：起点默认为 0，倒计时一启动就到点，屏幕上始终是 00:00。倒计时长需要写进 `startMs`。
 - 挂载后再改 `autoStart` 期望它启动：该 prop 只在挂载时读取一次，起停请使用动作或 `control`。
 - 结束后没有任何反馈。
 - 结束后停在 00:00，既不归零也不提供下一步。
@@ -131,20 +131,20 @@ tick 每过一个 interval 发一次，complete 只在走到终点那一刻发�
 
 | 属性 | 类型 | 必填 | 说明 |
 | --- | --- | --- | --- |
-| `startMs` | `number` |  | 起始值毫秒，缺省 0。正计时从它往上走，倒计时从它往下走。 |
-| `targetMs` | `number` |  | 终点值毫秒。倒计时缺省 0；正计时不给它就一直走下去，没有终点也不会通知走完。 终点落在起点的反方向（倒计时给了比起点还大的终点）时这一轮长度为 0： 显示值停在起点上，一开跑就到点。 |
-| `countdown` | `boolean` |  | 倒着走，缺省假。 |
-| `value` | `number` |  | 受控剩余毫秒。给了它即进受控通道：它就是起点，方向锁成倒着走、终点锁成 0， startMs / targetMs / countdown 三个不再参与；改写它即把累计清零并从新值重新计时。 |
-| `active` | `boolean` |  | 受控开关，缺省真。给了它即进受控通道：翻假停在当前累计值，翻真从那里接着走。 受控时起停按钮不再改状态——状态由这个 prop 说了算。 |
-| `autoStart` | `boolean` |  | 挂载即开跑，缺省假。它只在挂载那一刻读一次，之后改它不再有作用。 |
-| `interval` | `number` |  | 刷新间隔毫秒，缺省 1000，下限一帧。 它只决定数字多久跳一次；到点由另一个精确落在终点上的定时器判定，不受它影响。 |
-| `format` | `string` |  | 文本模板，缺省 `HH:mm:ss`。D 天、H 时、m 分、s 秒、S 毫秒，重复字母的个数即最少位数。 |
-| `precision` | `number` |  | 取值粒度：0 到秒、1 到十分之一秒、2 到百分之一秒、3 到毫秒。缺省 3，即不量化。 |
-| `live` | `TimerLive` |  | 读屏播报档位，缺省 off。 |
+| `startMs` | `number` |  | 起始值毫秒，默认 0。正计时从它向上走，倒计时从它向下走。 |
+| `targetMs` | `number` |  | 终点值毫秒。倒计时默认 0；正计时未提供时持续运行，没有终点也不会通知完成。 终点落在起点的反方向（倒计时提供了比起点更大的终点）时本轮长度为 0： 显示值停在起点上，一开始运行即到期。 |
+| `countdown` | `boolean` |  | 倒计时，默认假。 |
+| `value` | `number` |  | 受控剩余毫秒。提供后即进入受控通道：它就是起点，方向锁定为倒计时、终点锁定为 0， startMs / targetMs / countdown 三者不再参与；改写它即把累计清零并从新值重新计时。 |
+| `active` | `boolean` |  | 受控开关，默认真。提供后即进入受控通道：变为假时停在当前累计值，变为真时从该处继续。 受控时起停按钮不再改变状态：状态由该 prop 决定。 |
+| `autoStart` | `boolean` |  | 挂载即开始运行，默认假。它只在挂载时读取一次，之后修改不再生效。 |
+| `interval` | `number` |  | 刷新间隔毫秒，默认 1000，下限一帧。 它只决定数字的跳动间隔；到期由另一个精确落在终点上的定时器判定，不受它影响。 |
+| `format` | `string` |  | 文本模板，默认 `HH:mm:ss`。D 天、H 时、m 分、s 秒、S 毫秒，重复字母的个数即最少位数。 |
+| `precision` | `number` |  | 取值粒度：0 到秒、1 到十分之一秒、2 到百分之一秒、3 到毫秒。默认 3，即不量化。 |
+| `live` | `TimerLive` |  | 读屏播报档位，默认 off。 |
 | `size` | `Size` |  | 尺寸：sm / md / lg。 |
 | `translations` | `Partial<TimerTranslations>` |  |  |
-| `onTick` | `(details: TimerTickDetails) => void` |  | 每一拍通知一次。到点那一拍只发 onComplete。 |
-| `onComplete` | `(details: TimerCompleteDetails) => void` |  | 走到终点通知一次；中途被暂停或归零不通知。 |
+| `onTick` | `(details: TimerTickDetails) => void` |  | 每一拍通知一次。到期的一拍只发 onComplete。 |
+| `onComplete` | `(details: TimerCompleteDetails) => void` |  | 到达终点时通知一次；中途被暂停或归零不通知。 |
 
 ### 事件
 
@@ -152,8 +152,8 @@ tick 每过一个 interval 发一次，complete 只在走到终点那一刻发�
 
 | 事件 | 载荷 | 说明 |
 | --- | --- | --- |
-| `tick` | `TimerTickDetails` | 走过一拍；detail 为 `{ value: number, elapsed: number }` |
-| `complete` | `TimerCompleteDetails` | 走到终点；detail 为 `{ value: number, elapsed: number }` |
+| `tick` | `TimerTickDetails` | 经过一拍；detail 为 `{ value: number, elapsed: number }` |
+| `complete` | `TimerCompleteDetails` | 到达终点；detail 为 `{ value: number, elapsed: number }` |
 
 ### 插槽
 
@@ -187,22 +187,22 @@ tick 每过一个 interval 发一次，complete 只在走到终点那一刻发�
 | 成员 | 类型 | 说明 |
 | --- | --- | --- |
 | `phase` | `TimerPhase` |  |
-| `value` | `number` | 当前该显示的毫秒，已夹在起点与终点之间并按 precision 量化。 |
-| `text` | `string` | 按模板铺好的文本，也就是不自己排每一段时该显示的字。 |
-| `controlled` | `boolean` | 走的是受控通道吗：给了 value 或 active 即是，此时起停按钮不改状态。 |
-| `elapsed` | `number` | 累计走了多少毫秒，与方向和起始值无关。 |
+| `value` | `number` | 当前应显示的毫秒，已夹在起点与终点之间并按 precision 量化。 |
+| `text` | `string` | 按模板格式化的文本，即不自行排列各段时应显示的文字。 |
+| `controlled` | `boolean` | 是否使用受控通道：提供了 value 或 active 即是，此时起停按钮不改变状态。 |
+| `elapsed` | `number` | 累计经过的毫秒，与方向和起始值无关。 |
 | `running` | `boolean` |  |
 | `paused` | `boolean` |  |
 | `completed` | `boolean` |  |
 | `countdown` | `boolean` |  |
 | `segments` | `TimerSegments` | 显示值拆开的五段。 |
 | `segmentText` | `(unit: TimerUnit) => string` | 某一段补零后的字面：天不补零，时分秒两位，毫秒三位。 |
-| `controlAction` | `TimerControlAction` | 起停按钮这一下要做的事。 |
-| `controlLabel` | `string` | 起停按钮的读屏名字，也是按钮里没写内容时该显示的字。 |
-| `start` | `() => void` | 从头开跑。 |
+| `controlAction` | `TimerControlAction` | 起停按钮本次的动作。 |
+| `controlLabel` | `string` | 起停按钮的读屏名字，也是按钮内未写内容时应显示的文字。 |
+| `start` | `() => void` | 从头开始运行。 |
 | `pause` | `() => void` |  |
 | `resume` | `() => void` |  |
-| `reset` | `() => void` | 归零并停下。 |
+| `reset` | `() => void` | 归零并停止。 |
 | `getRootProps` | `() => T['element']` |  |
 | `getDisplayProps` | `() => T['element']` |  |
 | `getItemProps` | `(props: TimerItemProps) => T['element']` |  |
