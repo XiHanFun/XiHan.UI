@@ -36,7 +36,7 @@ import { useMenubar } from './use-menubar'
 
 type MenubarProps = MenubarSchema['props']
 
-/** 在 ref 回调里把节点按 value 登记进菜单栏取值表，value 变更时迁移到新键，卸载时注销 */
+/** 在 ref 回调中把节点按 value 登记进菜单栏取值表，value 变更时迁移到新键，卸载时注销 */
 function useMenubarPart(register: MenubarPartRegistry, value: () => string): (el: HTMLElement | null) => void {
   const node = ref<HTMLElement | null>(null)
   watch(value, (next, prev) => {
@@ -52,7 +52,7 @@ function useMenubarPart(register: MenubarPartRegistry, value: () => string): (el
   }
 }
 
-/** 默认插槽的载荷：当前展开的那一项、有没有菜单展开着，与切换展开项的命令。 */
+/** 默认插槽的载荷：当前展开的菜单项、是否有菜单展开，以及切换展开项的命令。 */
 export type MenubarRootSlotProps = Pick<MenubarApi, 'value' | 'open' | 'setValue'>
 
 /** role=menubar 根节点：trigger 的 roving tabindex 作用域，各菜单浮层也挂在其内 */
@@ -115,7 +115,7 @@ export const XhMenubarTrigger = defineComponent({
     value: { type: String, required: true },
     // 缺省交给 connect 回 collection 里查，写死 false 会盖掉数据里的禁用
     disabled: { type: Boolean, default: undefined },
-    /** 借用作者的子节点当触发器，不再渲染自己的包裹元素；子节点须恰好一个。 */
+    /** 借用作者的子节点作为触发器，不再渲染自己的包裹元素；子节点须恰好一个。 */
     asChild: Boolean,
   },
   setup(props, { slots, attrs }) {
@@ -322,7 +322,7 @@ export const XhMenubarItemIndicator = defineComponent({
   },
 })
 
-/** 条目里的副文本，排在文字下一行 */
+/** 条目中的副文本，排在文字下一行 */
 export const XhMenubarItemDescription = defineComponent({
   name: 'XhMenubarItemDescription',
   setup(_, { slots }) {
@@ -332,7 +332,7 @@ export const XhMenubarItemDescription = defineComponent({
   },
 })
 
-/** 指向本张菜单锚点的箭头，纯装饰；须写在同一张菜单的 positioner 里 */
+/** 指向本菜单锚点的箭头，纯装饰；须写在同一菜单的 positioner 中 */
 export const XhMenubarArrow = defineComponent({
   name: 'XhMenubarArrow',
   setup() {
@@ -353,9 +353,9 @@ export const XhMenubarSeparator = defineComponent({
 })
 
 /**
- * 没写默认插槽时按 collection 铺开的整套结构，作者只交数据。
- * 一排入口排在前、各自那张菜单的浮层排在后，与手写部件产出的 DOM 完全一致；
- * 要改结构就写默认插槽，行为不变。
+ * 未写默认插槽时按 collection 铺开的整套结构，作者只提供数据。
+ * 一排入口排在前、各自菜单的浮层排在后，与手写部件产出的 DOM 完全一致；
+ * 需要修改结构时写默认插槽，行为不变。
  */
 function renderDefaultTree(
   collection: readonly MenubarNodeMeta[],
@@ -373,7 +373,7 @@ function renderDefaultTree(
   ]
 }
 
-/** 单个条目：文字在上，副文本在下，没给副文本就不铺那个部件。 */
+/** 单个条目：文字在上，副文本在下，未提供副文本时不铺设该部件。 */
 function renderNode(
   meta: MenubarNodeMeta,
   itemSlot?: (node: MenubarNodeMeta) => VNode[],
@@ -384,7 +384,7 @@ function renderNode(
   ])
 }
 
-/** content 的内容：分组段铺成 group，段首的分隔线落在 group 外面。 */
+/** content 的内容：分组段铺为 group，段首的分隔线落在 group 外面。 */
 function renderNodes(
   collection: readonly MenubarNodeMeta[],
   itemSlot?: (node: MenubarNodeMeta) => VNode[],
@@ -411,7 +411,7 @@ function renderNodes(
   })
 }
 
-/** XhMenubarSub 默认插槽拿到的东西。 */
+/** XhMenubarSub 默认插槽得到的载荷。 */
 export interface MenubarSubSlotProps {
   open: boolean
   setOpen: (next: boolean) => void
@@ -420,7 +420,7 @@ export interface MenubarSubSlotProps {
 export const XhMenubarSub = defineComponent({
   name: 'XhMenubarSub',
   props: {
-    /** 它在所属那张菜单里的条目身份。 */
+    /** 它在所属菜单中的条目身份。 */
     value: { type: String, required: true },
     disabled: { type: Boolean, default: undefined },
     placement: { type: String as PropType<Placement> },
@@ -429,11 +429,11 @@ export const XhMenubarSub = defineComponent({
     openOnHover: { type: Boolean, default: undefined },
     hoverOpenDelay: { type: Number },
     hoverCloseDelay: { type: Number },
-    /** 文字方向；缺省继承父层。子层被搬到浮层落点，继承不到父层的方向。 */
+    /** 文字方向；默认继承父层。子层被迁移到浮层落点，无法继承父层的方向。 */
     dir: { type: String as PropType<Direction> },
-    /** 语气；缺省继承父层。子层是浮层落点下的同级节点，CSS 私有槽继承不到。 */
+    /** 语气；默认继承父层。子层是浮层落点下的同级节点，CSS 私有槽无法继承。 */
     tone: { type: String as PropType<Tone> },
-    /** 尺寸；缺省继承父层，理由同 tone。 */
+    /** 尺寸；默认继承父层，理由同 tone。 */
     size: { type: String as PropType<Size> },
   },
   slots: Object as SlotsType<{

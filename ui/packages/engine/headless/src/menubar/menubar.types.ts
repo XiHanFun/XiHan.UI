@@ -8,10 +8,10 @@
 import type { Cleanup, Direction, Layer, MachineSchema, Orientation, Placement, PositionEnginePort, PositionResult, PropTypes, RuntimeConfig, Size, Tone, Typeahead } from '@xihan-ui/core'
 import type { PresenceHandle } from '@xihan-ui/core/presence'
 
-/** 展开菜单时的落焦端：'first'/'last' 从集合两端进，'none' 焦点留在 trigger 上。 */
+/** 展开菜单时的落焦端：'first'/'last' 从集合两端进入，'none' 焦点留在 trigger 上。 */
 export type MenubarFocusIntent = 'first' | 'last' | 'none'
 
-/** 适配器在挂载前填入 DOM 环境、定位引擎与元素 getter，缺省时相关副作用短路。 */
+/** 适配器在挂载前填入 DOM 环境、定位引擎与元素 getter，未提供时相关副作用短路。 */
 export interface MenubarRefs {
   config: RuntimeConfig | null
   /** 注册本层并返回撤销句柄，只在有菜单展开期间调用。 */
@@ -22,7 +22,7 @@ export interface MenubarRefs {
   detachedValues: Set<string>
   /** 当前行为层归属的菜单；最终关闭后保留到该菜单退出完成。 */
   layerValue: string | null
-  /** 浮层定位引擎；缺省即不产出位置结果。 */
+  /** 浮层定位引擎；未提供时不产出位置结果。 */
   position: PositionEnginePort | null
   /** 当前展开项的 trigger，定位锚点。 */
   getAnchorEl: () => HTMLElement | null
@@ -39,82 +39,82 @@ export interface MenubarRefs {
 }
 
 export interface MenubarValueChangeDetails {
-  /** 当前展开的那一项；都收起时为 null。 */
+  /** 当前展开的项；全部收起时为 null。 */
   value: string | null
 }
 
 export interface MenubarSelectDetails {
-  /** 条目所属的那张菜单（即 trigger 的 value）。 */
+  /** 条目所属的菜单（即 trigger 的 value）。 */
   menu: string
   /** 被选中的条目。 */
   value: string
 }
 
 /**
- * 菜单栏数据。顶层节点是一个入口，它的 items 是那张菜单里的条目。
- * 给了 collection，显示文本与禁用就以它为准。
+ * 菜单栏数据。顶层节点是一个入口，它的 items 是该菜单中的条目。
+ * 提供 collection 时，显示文本与禁用以它为准。
  *
  * 入口的 value 与条目的 value 各自在整条菜单栏内唯一：两者都是禁用回查的键，
- * 条目按 value 跨菜单摊平索引，重名的以先出现的为准。
+ * 条目按 value 跨菜单展平索引，重名的以先出现的为准。
  */
 export interface MenubarNode {
   value: string
-  /** 展示文本，也是菜单内连打检索的取字处；缺省退回 value。 */
+  /** 展示文本，也是菜单内连打检索的取字来源；默认回退为 value。 */
   label?: string
-  /** 副文本，落进 item-description 部件；只在条目上读。 */
+  /** 副文本，写入 item-description 部件；只在条目上读取。 */
   description?: string
   /** 禁用：方向键跳过它，但它仍可聚焦、仍是导航起点。 */
   disabled?: boolean
-  /** 所属分组的身份；相邻同值的条目并成一个 group。只在条目上读。 */
+  /** 所属分组的身份；相邻同值的条目合并为一个 group。只在条目上读取。 */
   group?: string
-  /** 本组的标题文本，写在组内任意一条上即可。只在条目上读。 */
+  /** 本组的标题文本，写在组内任意一条上即可。只在条目上读取。 */
   groupLabel?: string
-  /** 本条之前画一条分隔线；写在首条上不产出分隔线。只在条目上读。 */
+  /** 本条之前绘制一条分隔线；写在首条上不产出分隔线。只在条目上读取。 */
   separatorBefore?: boolean
-  /** 这张菜单里的条目；只在顶层节点上读。 */
+  /** 该菜单中的条目；只在顶层节点上读取。 */
   items?: MenubarNode[]
 }
 
-/** 单个节点的元信息，由 collection 推出，不含展开态与焦点态。 */
+/** 单个节点的元信息，由 collection 推导，不含展开态与焦点态。 */
 export interface MenubarNodeMeta {
   value: string
   /** node.label ?? node.value，恒为字符串。 */
   label: string
-  /** 副文本原样透传，没写即为 null。 */
+  /** 副文本原样透传，未提供时为 null。 */
   description: string | null
   disabled: boolean
-  /** 分组身份，没写即为 null。 */
+  /** 分组身份，未提供时为 null。 */
   group: string | null
-  /** 分组标题，没写即为 null。 */
+  /** 分组标题，未提供时为 null。 */
   groupLabel: string | null
-  /** 本条之前是否画分隔线。 */
+  /** 本条之前是否绘制分隔线。 */
   separatorBefore: boolean
-  /** 这张菜单里的条目元信息；条目自身恒为空数组。 */
+  /** 该菜单中的条目元信息；条目自身恒为空数组。 */
   items: readonly MenubarNodeMeta[]
 }
 
 /**
- * 触发器属性：值必报，禁用可由 collection 代为声明。
+ * 触发器属性：值必须声明，禁用可由 collection 代为声明。
  * connect 据此产出属性，不反查 DOM：它在 Vue 的 render 期求值，此时 DOM 尚不存在。
  */
 export interface MenubarTriggerProps {
   value: string
-  /** 逐条覆盖禁用；缺省时回 collection 里查，两处都没有即为不禁用。 */
+  /** 逐条覆盖禁用；未提供时从 collection 查询，两处都未声明即为不禁用。 */
   disabled?: boolean
 }
 
-/** positioner 与 content 靠该值与同一项的 trigger 配对。 */
+/** positioner 与 content 依靠该值与同一项的 trigger 配对。 */
 export interface MenubarContentProps {
   value: string
 }
 
 export interface MenubarItemProps {
   value: string
-  /** 逐条覆盖禁用；缺省时回 collection 里查，两处都没有即为不禁用。 */
+  /** 逐条覆盖禁用；未提供时从 collection 查询，两处都未声明即为不禁用。 */
   disabled?: boolean
 }
 
-/** 分组身份，group 与 group-label 靠该值配对。 */
+/** 分组身份，group 与 group-label 依靠该值配对。 */
 export interface MenubarGroupProps {
   value: string
 }
@@ -122,26 +122,26 @@ export interface MenubarGroupProps {
 export interface MenubarSchema extends MachineSchema {
   props: {
     /**
-     * 菜单栏数据，显示文本与禁用的事实源。给了它，入口与条目部件只需报 value。
-     * 缺省即回到「文本与禁用逐个写在部件上」的老路。
+     * 菜单栏数据，显示文本与禁用的事实源。提供后入口与条目部件只需声明 value。
+     * 未提供时回到文本与禁用逐个写在部件上的方式。
      */
     collection?: MenubarNode[]
-    /** 当前展开项，给定即受控；null 表示都收起。 */
+    /** 当前展开项，提供即受控；null 表示全部收起。 */
     value?: string | null
     defaultValue?: string | null
     /** 菜单栏排布轴，默认 horizontal。 */
     orientation?: Orientation
-    /** 方向键走到尽头是否回绕，默认 true。 */
+    /** 方向键到达末尾是否回绕，默认 true。 */
     loop?: boolean
     /** 文字方向，默认 ltr。 */
     dir?: Direction
     /** 整条菜单栏禁用，展开与选中都不发生。 */
     disabled?: boolean
-    /** 菜单内的连打检索，默认开。 */
+    /** 菜单内的连打检索，默认开启。 */
     typeahead?: boolean
     placement?: Placement
     offset?: number
-    /** 语气：brand / neutral / success / warning / danger / info，决定用哪族颜色。 */
+    /** 语气：brand / neutral / success / warning / danger / info，决定使用哪族颜色。 */
     tone?: Tone
     /** 尺寸：sm / md / lg。 */
     size?: Size
@@ -157,29 +157,29 @@ export interface MenubarSchema extends MachineSchema {
     /** 定位引擎回填的最新结果。 */
     position: PositionResult | null
     /**
-     * 逐菜单记住最后一次定位结果。一排入口共用一台机器一份 position，换菜单时它立刻归
-     * 新菜单所有——正在收起的那张若从共享份取坐标会当场归零，退场动画就在视口左上角播。
+     * 逐菜单记录最后一次定位结果。一排入口共用一台状态机一份 position，切换菜单时它立即归
+     * 新菜单所有：正在收起的菜单若从共享份取坐标会当场归零，退场动画会在视口左上角播放。
      */
     placements: Record<string, PositionResult>
     /**
-     * 正在一排入口间换张。原生菜单栏的成规：首次展开有进场、末次收起有退场，
-     * 相邻切换瞬时换张——快速掠过时若每张都播进出场，一串交叉淡变读起来就是闪烁；
+     * 正在一排入口间切换。原生菜单栏的惯例：首次展开有进场、末次收起有退场，
+     * 相邻切换瞬时切换：快速掠过时若每张都播放进出场，一串交叉淡变即表现为闪烁；
      * 且退场关键帧从不透明度 1 起跳，打断未播完的进场还会亮一下。
      */
     switching: boolean
     /**
-     * 换张交接：新菜单拿到坐标之前，上一张（最后一张已落位的）保持原样显示，
-     * 坐标一到同帧换掉。否则「旧的立刻消失、新的等定位」之间有一到几帧空档，
-     * 快速掠过就成了频闪——空档在快机器上恰好赶在绘制前闭合，在慢机器上闭不上。
+     * 切换交接：新菜单获得坐标之前，上一张（最后一张已落位的）保持原样显示，
+     * 坐标到达后同帧替换。否则旧的立即消失、新的等待定位之间有一到几帧空档，
+     * 快速掠过即形成频闪：空档在快机器上恰好在绘制前闭合，在慢机器上无法闭合。
      */
     handoffValue: string | null
     /** trigger 的 roving 锚点，焦点离开菜单栏即清空。 */
     focusedValue: string | null
-    /** 展开菜单内持有焦点的条目；换项与收起都清空。 */
+    /** 展开菜单内持有焦点的条目；切换项与收起都清空。 */
     focusedItem: string | null
     /** 本次展开的落焦端。'none' 即焦点留在 trigger 上。 */
     focusIntent: MenubarFocusIntent
-    /** 最近一次由掠过/聚焦自动展开的项，用于识别聚焦紧跟点击这一对手势。 */
+    /** 最近一次由掠过 / 聚焦自动展开的项，用于识别聚焦紧跟点击这一对手势。 */
     autoValue: string | null
     /** 收起时是否把焦点归还 trigger；Tab 与层外交互时为 false。 */
     returnFocus: boolean
@@ -188,27 +188,27 @@ export interface MenubarSchema extends MachineSchema {
   }
   computed: Record<string, never>
   refs: MenubarRefs
-  /** 状态只表示有无菜单展开，展开项看 context.value；由 value 的 watch 派 SYNC.* 转移。 */
+  /** 状态只表示是否有菜单展开，展开项参考 context.value；由 value 的 watch 派发 SYNC.* 转移。 */
   state: 'idle' | 'open'
   event:
     /** 点击 / Enter / Space：展开本项，已展开则收起。 */
     | { type: 'TRIGGER.TOGGLE', value: string }
-    /** 交叉轴方向键：展开本项并把焦点落到菜单首/末项。 */
+    /** 交叉轴方向键：展开本项并把焦点落到菜单首 / 末项。 */
     | { type: 'TRIGGER.OPEN', value: string, focus?: MenubarFocusIntent }
     /** 指针掠过 trigger：已有菜单展开时才切换。 */
     | { type: 'TRIGGER.POINTER', value: string }
-    /** trigger 拿到焦点：记 roving 锚点，已有菜单展开时一并切换展开项。 */
+    /** trigger 获得焦点：记录 roving 锚点，已有菜单展开时一并切换展开项。 */
     | { type: 'TRIGGER.FOCUS', value: string, disabled?: boolean }
-    /** 收起当前菜单。src 决定焦点归还与否。 */
+    /** 收起当前菜单。src 决定是否归还焦点。 */
     | { type: 'CLOSE', src?: 'esc' | 'tab' | 'interact-outside' }
-    /** 焦点离开菜单栏：清 roving 锚点并收起，不抢回焦点。 */
+    /** 焦点离开菜单栏：清除 roving 锚点并收起，不夺回焦点。 */
     | { type: 'MENUBAR.BLUR' }
     /** 程序化改写展开项。 */
     | { type: 'VALUE.SET', value: string | null }
     /** 适配器按菜单 value 注册或精确注销其视觉 Presence。 */
     | { type: 'PRESENCE.SET', value: string, presence: PresenceHandle, connected: boolean }
     | { type: 'ITEM.FOCUS', value: string }
-    /** 持有焦点的条目离开了 DOM：浏览器此时不派 focusout，机器读不到，由适配器如实上报。 */
+    /** 持有焦点的条目离开了 DOM：浏览器此时不派发 focusout，状态机无法感知，由适配器如实上报。 */
     | { type: 'ITEM.LOST' }
     | { type: 'ITEM.SELECT', value: string }
     // 状态同步影子事件，由 value 的 watch 派发
@@ -240,11 +240,11 @@ export interface MenubarSchema extends MachineSchema {
 }
 
 export interface MenubarApi<T extends PropTypes = PropTypes> {
-  /** 当前展开的那一项；都收起时为 null。 */
+  /** 当前展开的项；全部收起时为 null。 */
   value: string | null
-  /** collection 推出的入口元信息（各自带着它那张菜单的条目），按数据顺序排列；没给 collection 即空数组。 */
+  /** 由 collection 推导的入口元信息（各自附带该菜单的条目），按数据顺序排列；未提供 collection 时为空数组。 */
   collection: readonly MenubarNodeMeta[]
-  /** 有没有菜单展开着。 */
+  /** 是否有菜单展开。 */
   open: boolean
   /** trigger 的 roving 锚点；焦点不在菜单栏内时为 null。 */
   focusedValue: string | null
@@ -268,7 +268,7 @@ export interface MenubarApi<T extends PropTypes = PropTypes> {
   getArrowProps: (props: MenubarContentProps) => T['element']
 }
 
-/** 读屏用的文案，默认英文。 */
+/** 读屏文案，默认英文。 */
 export interface MenubarTranslations {
   /** 根节点的 aria-label，用于区分页面上的多条菜单栏。 */
   root: string

@@ -17,23 +17,23 @@ import { reactNormalize } from '../../runtime/normalize-props'
 import { useReactIdGenerator, useReactScope } from '../../runtime/react-id'
 import { useMachine } from '../../runtime/use-machine'
 
-/** 按 value 登记角色节点，浮层三件套据此取到当前展开那一项。 */
+/** 按 value 登记角色节点，浮层三件套据此取到当前展开的菜单项。 */
 export type MenubarPartRegistry = (value: string, el: HTMLElement | null) => void
 
 export interface MenubarContext {
   service: Service<MenubarSchema>
   api: MenubarApi
   rootRef: RefObject<HTMLElement | null>
-  /** 对应菜单的真实触发器；Portal 在提交期读取这只逻辑锚点。 */
+  /** 对应菜单的真实触发器；Portal 在提交期读取该逻辑锚点。 */
   getTrigger: (value: string) => HTMLElement | null
   registerTrigger: MenubarPartRegistry
   registerPositioner: MenubarPartRegistry
   registerContent: MenubarPartRegistry
   /** 子菜单经 Portal 分离后的逻辑父节点。 */
   tree: MenuTreeNode
-  /** 运行时配置；服务端没有 DOM 时为 null。每张菜单的退场闸门从它拿 reduce 档。 */
+  /** 运行时配置；服务端没有 DOM 时为 null。每个菜单的退场闸门从它读取 reduce 档。 */
   config: RuntimeConfig | null
-  /** 浮层搬到哪儿：全局配置 > 运行时配置 > body。 */
+  /** 浮层迁移到的位置：全局配置 > 运行时配置 > body。 */
   portalContainer: () => Element | null
 }
 

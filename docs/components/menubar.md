@@ -93,17 +93,17 @@
 
 | 属性 | 类型 | 必填 | 说明 |
 | --- | --- | --- | --- |
-| `collection` | `MenubarNode[]` |  | 菜单栏数据，显示文本与禁用的事实源。给了它，入口与条目部件只需报 value。 缺省即回到「文本与禁用逐个写在部件上」的老路。 |
-| `value` | `string \| null` |  | 当前展开项，给定即受控；null 表示都收起。 |
+| `collection` | `MenubarNode[]` |  | 菜单栏数据，显示文本与禁用的事实源。提供后入口与条目部件只需声明 value。 未提供时回到文本与禁用逐个写在部件上的方式。 |
+| `value` | `string \| null` |  | 当前展开项，提供即受控；null 表示全部收起。 |
 | `defaultValue` | `string \| null` |  |  |
 | `orientation` | `Orientation` |  | 菜单栏排布轴，默认 horizontal。 |
-| `loop` | `boolean` |  | 方向键走到尽头是否回绕，默认 true。 |
+| `loop` | `boolean` |  | 方向键到达末尾是否回绕，默认 true。 |
 | `dir` | `Direction` |  | 文字方向，默认 ltr。 |
 | `disabled` | `boolean` |  | 整条菜单栏禁用，展开与选中都不发生。 |
-| `typeahead` | `boolean` |  | 菜单内的连打检索，默认开。 |
+| `typeahead` | `boolean` |  | 菜单内的连打检索，默认开启。 |
 | `placement` | `Placement` |  |  |
 | `offset` | `number` |  |  |
-| `tone` | `Tone` |  | 语气：brand / neutral / success / warning / danger / info，决定用哪族颜色。 |
+| `tone` | `Tone` |  | 语气：brand / neutral / success / warning / danger / info，决定使用哪族颜色。 |
 | `size` | `Size` |  | 尺寸：sm / md / lg。 |
 | `translations` | `Partial<MenubarTranslations>` |  |  |
 | `onValueChange` | `(details: MenubarValueChangeDetails) => void` |  | value 变化回调。 |
@@ -153,9 +153,9 @@
 
 | 成员 | 类型 | 说明 |
 | --- | --- | --- |
-| `value` | `string \| null` | 当前展开的那一项；都收起时为 null。 |
-| `collection` | `readonly MenubarNodeMeta[]` | collection 推出的入口元信息（各自带着它那张菜单的条目），按数据顺序排列；没给 collection 即空数组。 |
-| `open` | `boolean` | 有没有菜单展开着。 |
+| `value` | `string \| null` | 当前展开的项；全部收起时为 null。 |
+| `collection` | `readonly MenubarNodeMeta[]` | 由 collection 推导的入口元信息（各自附带该菜单的条目），按数据顺序排列；未提供 collection 时为空数组。 |
+| `open` | `boolean` | 是否有菜单展开。 |
 | `focusedValue` | `string \| null` | trigger 的 roving 锚点；焦点不在菜单栏内时为 null。 |
 | `focusedItem` | `string \| null` | 展开菜单内持有焦点的条目；无锚点时为 null。 |
 | `orientation` | `Orientation` |  |
