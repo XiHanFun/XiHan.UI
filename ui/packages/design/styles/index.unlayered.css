@@ -15399,7 +15399,7 @@
   position: absolute;
   z-index: 1;
   border: var(--xh-stroke-thin) solid var(--xh-carousel-trigger-border, transparent);
-  border-radius: var(--xh-carousel-trigger-radius, var(--xh-shape-pill));
+  border-radius: var(--xh-carousel-trigger-radius, var(--xh-shape-circle));
   background: var(--xh-carousel-trigger-bg, var(--xh-bg-surface-raised));
   color: var(--xh-carousel-trigger-fg, var(--xh-fg-default));
   line-height: var(--xh-leading-none);
@@ -15409,7 +15409,7 @@
     border-color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
     box-shadow var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
     opacity var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
-    scale var(--xh-motion-duration-micro) var(--xh-motion-ease-enter-strong);
+    scale var(--xh-motion-duration-release) var(--xh-motion-ease-release);
 }
 
 [data-scope='carousel'][data-part='prev-trigger'],
@@ -15453,6 +15453,8 @@
   background: var(--xh-carousel-trigger-bg-active, var(--xh-bg-subtle-active));
   box-shadow: none;
   scale: var(--xh-motion-scale-press);
+  transition-duration: var(--xh-motion-duration-press);
+  transition-timing-function: var(--xh-motion-ease-press);
 }
 
 /* 两端到头时按钮是原生 disabled（不可聚焦、进不了 Tab 序列），所以这里必须用 :disabled；
@@ -15512,14 +15514,14 @@
   /* 圆点本身没有文字，按钮里的文案（页码）交给作者，默认不显示 */
   padding: 0;
   border: 0;
-  border-radius: var(--xh-carousel-indicator-radius, var(--xh-shape-pill));
+  border-radius: var(--xh-carousel-indicator-radius, var(--xh-shape-circle));
   background: transparent;
   font-size: 0;
   cursor: pointer;
   transition:
     inline-size var(--xh-motion-duration-micro) var(--xh-motion-ease-continuous),
     block-size var(--xh-motion-duration-micro) var(--xh-motion-ease-continuous),
-    scale var(--xh-motion-duration-micro) var(--xh-motion-ease-enter-strong);
+    scale var(--xh-motion-duration-release) var(--xh-motion-ease-release);
 }
 
 [data-scope='carousel'][data-part='indicator']::before {
@@ -15557,6 +15559,8 @@
 /* 底色被当前页与悬停占着，按下的回执只剩缩放 */
 [data-scope='carousel'][data-part='indicator']:active {
   scale: var(--xh-motion-scale-press);
+  transition-duration: var(--xh-motion-duration-press);
+  transition-timing-function: var(--xh-motion-ease-press);
 }
 
 /* 当前页：data-current 与 aria-current='true' 由连接层成对给出，
