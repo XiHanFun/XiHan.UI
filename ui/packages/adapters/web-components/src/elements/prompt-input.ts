@@ -24,18 +24,18 @@ const STRING_CONVERTER = { fromAttribute: (v: string | null) => v ?? undefined }
 const BOOLEAN_CONVERTER = { fromAttribute: (v: string | null) => (v === null ? undefined : v !== 'false') }
 
 /**
- * `<xh-prompt-input>` —— Light-DOM 行为宿主：跑 prompt-input 机器，把 connect 产出打到作者写的
- * root/input/submit-trigger 三类角色节点上，另有可选的 control。input 须是原生 `<textarea>`，
- * 值经 property 写、禁用走原生 disabled。生成期间发送按钮原位变停止，只换 `data-mode` 与 `aria-label`。
+ * `<xh-prompt-input>`：Light-DOM 行为宿主：运行 prompt-input 状态机，把 connect 产出接到作者编写的
+ * root / input / submit-trigger 三类角色节点上，另有可选的 control。input 须是原生 `<textarea>`，
+ * 值经 property 写入、禁用使用原生 disabled。生成期间发送按钮原位变为停止，只切换 `data-mode` 与 `aria-label`。
  *
  * @customElement xh-prompt-input
- * @attr {string} value - 受控值，缺省该属性即非受控
+ * @attr {string} value - 受控值，未提供该属性即非受控
  * @attr {string} default-value - 非受控初值
- * @attr {boolean} disabled - 禁用，输入框带原生 disabled，提交与停止一并吃掉
- * @attr {boolean} loading - 正在生成：发送按钮原位变停止，提交路径全部挡下
+ * @attr {boolean} disabled - 禁用，输入框带原生 disabled，提交与停止一并拦截
+ * @attr {boolean} loading - 正在生成：发送按钮原位变为停止，提交路径全部拦截
  * @attr {'enter'|'mod-enter'|'none'} submit-key - 按哪一档提交，默认 enter；none 档键盘不提交
- * @attr {boolean} allow-empty-submit - 允许空值提交，默认关；有附件时置真
- * @attr {boolean} clear-on-submit - 提交后清空，默认开；写 clear-on-submit="false" 关掉
+ * @attr {boolean} allow-empty-submit - 允许空值提交，默认关闭；有附件时置真
+ * @attr {boolean} clear-on-submit - 提交后清空，默认开启；写 clear-on-submit="false" 关闭
  * @attr {string} variant - 形态：outline / subtle / ghost
  * @attr {string} tone - 语气
  * @attr {string} size - 尺寸：sm / md / lg
@@ -44,9 +44,9 @@ const BOOLEAN_CONVERTER = { fromAttribute: (v: string | null) => (v === null ? u
  *   与原生表单提交同名，故不冒泡，请直接在 `<xh-prompt-input>` 元素上监听
  * @fires stop - 生成期间按下停止；无 detail
  * @csspart root - 承载 data-disabled / data-loading 与三视觉轴的容器
- * @csspart control - 可选的输入行：写了它，root 翻成竖排，输入框与按钮收进这一行
+ * @csspart control - 可选的输入行：提供后 root 改为纵向排列，输入框与按钮收进这一行
  * @csspart input - 输入框，须是原生 `<textarea>`
- * @csspart submit-trigger - 发送 / 停止按钮，留空时皮肤按 data-mode 画上箭头或停止方块
+ * @csspart submit-trigger - 发送 / 停止按钮，留空时皮肤按 data-mode 绘制箭头或停止方块
  */
 export class XhPromptInputElement extends XhElement {
   static override partContract = { anatomy: promptInputAnatomy, meta: promptInputMeta }
@@ -77,7 +77,7 @@ export class XhPromptInputElement extends XhElement {
   declare variant?: ControlVariant
   declare tone?: Tone
   declare size?: Size
-  /** 发送与停止按钮的无障碍名；给了 input 才会写输入框的 aria-label。 */
+  /** 发送与停止按钮的无障碍名；提供 input 时才写入输入框的 aria-label。 */
   declare translations?: Partial<PromptInputTranslations>
 
   private readonly emit = (type: string, detail?: unknown, bubbles = true): void => {
