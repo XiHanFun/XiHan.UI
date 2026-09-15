@@ -31084,15 +31084,9 @@
         "border-radius"
       ],
       "state": [
-        "default",
-        "is([data-position='nw'], [data-position='ne'], [data-position='sw'], [data-position='se'])",
-        "position=ne",
-        "position=nw",
-        "position=se",
-        "position=sw"
+        "default"
       ],
       "defaultToken": [
-        "--xh-shape-circle",
         "--xh-shape-pill"
       ],
       "visibility": "public",
@@ -47956,15 +47950,9 @@
         "border-radius"
       ],
       "state": [
-        "default",
-        "edge=ne",
-        "edge=nw",
-        "edge=se",
-        "edge=sw",
-        "is([data-edge='ne'], [data-edge='nw'], [data-edge='se'], [data-edge='sw'])"
+        "default"
       ],
       "defaultToken": [
-        "--xh-shape-circle",
         "--xh-shape-pill"
       ],
       "visibility": "public",

@@ -1,4 +1,5 @@
 import { afterEach, describe, expect, it } from 'vitest'
+import { userEvent } from 'vitest/browser'
 import '@xihan-ui/tokens/tokens.css'
 import '@xihan-ui/styles'
 
@@ -9,14 +10,14 @@ afterEach(() => {
   host = null
 })
 
-function mount(radius: string) {
+function mount(radius: string, shape: 'rect' | 'round' = 'rect') {
   host?.remove()
   host = document.createElement('div')
   host.innerHTML = `
     <div data-scope="image-cropper" data-part="root" style="--xh-_image-cropper-zoom: 1; inline-size: 320px">
-      <div data-scope="image-cropper" data-part="crop-area" style="position: relative; inline-size: 200px; block-size: 120px; border-radius: ${radius}">
+      <div data-scope="image-cropper" data-part="crop-area" data-shape="${shape}" style="position: relative; inline-size: 200px; block-size: 120px; border-radius: ${radius}">
         <span data-scope="image-cropper" data-part="crop-handle" data-position="n"></span>
-        <span data-scope="image-cropper" data-part="crop-handle" data-position="e"></span>
+        <span data-scope="image-cropper" data-part="crop-handle" data-position="e" tabindex="0"></span>
         <span data-scope="image-cropper" data-part="crop-handle" data-position="se" tabindex="0"></span>
       </div>
     </div>`
@@ -68,24 +69,38 @@ describe('image-cropper 把手视觉', () => {
     )
   })
 
-  it('角部折角始终使用圆弧，不跟随裁切框退化成直角', () => {
-    const rounded = mount('50%')
-    expect(getComputedStyle(rounded.corner, '::after').borderRadius).toBe('50%')
+  it('角部折角只圆对应的外侧拐角，矩形与圆形裁切各用自己的形状', () => {
+    const rounded = mount('50%', 'round')
+    const roundedIndicator = getComputedStyle(rounded.corner, '::after')
+    expect(roundedIndicator.borderTopLeftRadius).toBe('0px')
+    expect(roundedIndicator.borderBottomRightRadius).toBe('50%')
 
     const square = mount('0px')
-    expect(getComputedStyle(square.corner, '::after').borderRadius).toBe('50%')
+    const squareIndicator = getComputedStyle(square.corner, '::after')
+    expect(squareIndicator.borderTopLeftRadius).toBe('0px')
+    expect(squareIndicator.borderBottomRightRadius).toBe('4px')
   })
 
-  it('角部聚焦环围住圆弧指示器，不围透明命中盒', () => {
+  it('聚焦时高亮指示器本身，不给透明命中盒或伪元素画外框', async () => {
     const cropper = mount('0px')
-    cropper.corner.focus()
+    const edgeIdle = getComputedStyle(cropper.east, '::after').backgroundColor
+    const cornerIdle = getComputedStyle(cropper.corner, '::after').borderBottomColor
 
-    const handle = getComputedStyle(cropper.corner)
-    const indicator = getComputedStyle(cropper.corner, '::after')
+    await userEvent.tab()
+    await new Promise(resolve => setTimeout(resolve, 150))
+    const edgeIndicator = getComputedStyle(cropper.east, '::after')
+    expect(document.activeElement).toBe(cropper.east)
+    expect(getComputedStyle(cropper.east).outlineStyle).toBe('none')
+    expect(edgeIndicator.outlineStyle).toBe('none')
+    expect(edgeIndicator.backgroundColor).not.toBe(edgeIdle)
+
+    await userEvent.tab()
+    await new Promise(resolve => setTimeout(resolve, 150))
+    const cornerIndicator = getComputedStyle(cropper.corner, '::after')
     expect(document.activeElement).toBe(cropper.corner)
-    expect(handle.outlineStyle).toBe('none')
-    expect(indicator.outlineStyle).toBe('solid')
-    expect(indicator.outlineWidth).toBe('2px')
-    expect(indicator.borderRadius).toBe('50%')
+    expect(getComputedStyle(cropper.corner).outlineStyle).toBe('none')
+    expect(cornerIndicator.outlineStyle).toBe('none')
+    expect(cornerIndicator.borderBottomColor).not.toBe(cornerIdle)
+    expect(cornerIndicator.borderBottomRightRadius).toBe('4px')
   })
 })

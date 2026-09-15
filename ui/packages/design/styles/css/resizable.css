@@ -77,12 +77,9 @@
   }
 
   [data-scope='resizable'][data-part='handle']:focus-visible {
-    outline: none;
-  }
+    --xh-_resizable-indicator-color: var(--xh-ring-focus);
 
-  [data-scope='resizable'][data-part='handle']:focus-visible::after {
-    outline: var(--xh-ring-width) solid var(--xh-ring-focus);
-    outline-offset: var(--xh-ring-offset);
+    outline: none;
   }
 
   [data-scope='resizable'][data-part='handle'][hidden] {
@@ -163,21 +160,25 @@
   [data-scope='resizable'][data-part='handle'][data-edge='nw'] {
     inset-block-start: 0;
     inset-inline-start: 0;
+    border-start-start-radius: inherit;
   }
 
   [data-scope='resizable'][data-part='handle'][data-edge='ne'] {
     inset-block-start: 0;
     inset-inline-end: 0;
+    border-start-end-radius: inherit;
   }
 
   [data-scope='resizable'][data-part='handle'][data-edge='sw'] {
     inset-block-end: 0;
     inset-inline-start: 0;
+    border-end-start-radius: inherit;
   }
 
   [data-scope='resizable'][data-part='handle'][data-edge='se'] {
     inset-block-end: 0;
     inset-inline-end: 0;
+    border-end-end-radius: inherit;
   }
 
   [data-scope='resizable'][data-part='handle']:is(
@@ -189,7 +190,7 @@
     inline-size: 50%;
     block-size: 50%;
     border: 0 solid var(--xh-_resizable-indicator-color);
-    border-radius: var(--xh-resizable-handle-radius, var(--xh-shape-circle));
+    border-radius: inherit;
     background: transparent;
   }
 
