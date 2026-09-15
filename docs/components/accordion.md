@@ -139,16 +139,16 @@ plain 不画壳，surface 连成单一表面，bordered 逐条画边；三档只
 
 | 属性 | 类型 | 必填 | 说明 |
 | --- | --- | --- | --- |
-| `collection` | `AccordionNode[]` |  | 条目数据，标题文本、正文与禁用的事实源。给了它，条目部件只需报 value。 缺省即回到「文本写在部件里、禁用写在条目上」的老路。 |
-| `value` | `string[]` |  | 展开集合，给定即受控。 |
+| `collection` | `AccordionNode[]` |  | 条目数据，标题文本、正文与禁用的事实源。提供后条目部件只需声明 value。 未提供时回到文本写在部件中、禁用写在条目上的方式。 |
+| `value` | `string[]` |  | 展开集合，提供即受控。 |
 | `defaultValue` | `string[]` |  |  |
 | `multiple` | `boolean` |  | 允许多项同时展开；false 时展开一项即收起其余。 |
-| `collapsible` | `boolean` |  | 允许把最后一个展开项收起，默认 false。 |
-| `loop` | `boolean` |  | 方向键走到尽头是否回绕，默认 false。 |
-| `disabled` | `boolean` |  | 整组禁用：所有条目都不可切换，条目上写的 disabled 只能更严不能放宽。 |
-| `variant` | `AccordionVariant` |  | 变体：plain / surface / bordered，决定条目怎么与页面分开。缺省 plain。 |
+| `collapsible` | `boolean` |  | 允许收起最后一个展开项，默认 false。 |
+| `loop` | `boolean` |  | 方向键到达末尾是否回绕，默认 false。 |
+| `disabled` | `boolean` |  | 整组禁用：所有条目都不可切换，条目上的 disabled 只能收紧不能放宽。 |
+| `variant` | `AccordionVariant` |  | 变体：plain / surface / bordered，决定条目与页面的分隔方式。默认 plain。 |
 | `orientation` | `Orientation` |  | 方向键轴向，默认 vertical。 |
-| `dir` | `Direction` |  | 文字方向，默认 ltr；影响水平轴上 ArrowLeft/ArrowRight 的语义。 |
+| `dir` | `Direction` |  | 文字方向，默认 ltr；影响水平轴上 ArrowLeft / ArrowRight 的语义。 |
 | `tone` | `Tone` |  | 颜色：brand / neutral / success / warning / danger / info，决定使用哪组状态色。 |
 | `size` | `Size` |  | 尺寸：sm / md / lg。 |
 | `onValueChange` | `(details: AccordionValueChangeDetails) => void` |  | 展开集合变化回调。 |
@@ -186,7 +186,7 @@ plain 不画壳，surface 连成单一表面，bordered 逐条画边；三档只
 | 成员 | 类型 | 说明 |
 | --- | --- | --- |
 | `value` | `string[]` | 当前展开集合，单开模式下长度 ≤ 1。 |
-| `collection` | `readonly AccordionNodeMeta[]` | collection 推出的条目元信息，按数据顺序排列；没给 collection 即空数组。 |
+| `collection` | `readonly AccordionNodeMeta[]` | 由 collection 推导的条目元信息，按数据顺序排列；未提供 collection 时为空数组。 |
 | `setValue` | `(next: string[]) => void` |  |
 | `isOpen` | `(value: string) => boolean` |  |
 | `getRootProps` | `() => T['element']` |  |

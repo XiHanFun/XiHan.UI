@@ -75,7 +75,7 @@ export const XhAccordionItem = defineComponent({
   },
 })
 
-/** 条目之间的那条细线，纯视觉；不渲染它时条目直接相邻 */
+/** 条目之间的分隔线，纯视觉；不渲染它时条目直接相邻 */
 export const XhAccordionItemSeparator = defineComponent({
   name: 'XhAccordionItemSeparator',
   setup(_, { slots }) {
@@ -135,8 +135,8 @@ export const XhAccordionIndicator = defineComponent({
 })
 
 /**
- * 没写默认插槽时按 collection 铺开的整套结构，作者只交数据。
- * 与手写部件产出的 DOM 完全一致，要改结构就写默认插槽，行为不变。
+ * 未写默认插槽时按 collection 铺开的整套结构，作者只提供数据。
+ * 与手写部件产出的 DOM 完全一致，需要修改结构时写默认插槽，行为不变。
  * 正文默认取 node.content，写 content 插槽即由作者接管。
  */
 function renderDefaultTree(
