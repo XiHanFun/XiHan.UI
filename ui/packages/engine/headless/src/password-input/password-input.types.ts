@@ -50,7 +50,7 @@ export interface PasswordInputSchema extends MachineSchema {
     strength?: number
     /** 读屏文案覆盖；未提供的条目使用组件内建英文。 */
     translations?: Partial<PasswordInputTranslations>
-    /** 形态：outline / subtle / ghost，决定颜色的使用方式。 */
+    /** 形态：outline / subtle / ghost，决定底色与描边的绘制方式。默认 outline。 */
     variant?: ControlVariant
     /** 语气：brand / neutral / success / warning / danger / info，决定使用哪族颜色。 */
     tone?: Tone

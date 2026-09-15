@@ -66,6 +66,9 @@ export function connectPasswordInput<T extends PropTypes>(
       send({ type: 'CAPS_LOCK.SET', on })
   }
 
+  // 形态默认落 outline：不写时 root 如实投影，皮肤不再依赖缺省档
+  const variant = prop('variant') ?? 'outline'
+
   return {
     value,
     empty,
@@ -84,7 +87,7 @@ export function connectPasswordInput<T extends PropTypes>(
     getRootProps: () => normalize.element({
       ...parts.root.attrs,
       // 三个视觉轴只落在 root，子部件从这里继承皮肤声明的私有槽
-      'data-variant': prop('variant'),
+      'data-variant': variant,
       'data-tone': prop('tone'),
       'data-size': prop('size'),
       'data-disabled': dataAttr(disabled),

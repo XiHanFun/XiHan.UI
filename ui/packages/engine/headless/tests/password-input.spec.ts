@@ -209,6 +209,11 @@ describe('connectPasswordInput 默认形态', () => {
     expect(h.input.getAttribute('aria-describedby')).toBeNull()
   })
 
+  it('不写 variant 时 root 落 outline；写 subtle 如实落', () => {
+    expect(mount().root.getAttribute('data-variant')).toBe('outline')
+    expect(mount({ variant: 'subtle' }).root.getAttribute('data-variant')).toBe('subtle')
+  })
+
   it('translations 覆盖三句文案', () => {
     const h = mount({
       revealed: true,

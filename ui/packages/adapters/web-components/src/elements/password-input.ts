@@ -47,7 +47,7 @@ const NUMBER_CONVERTER = { fromAttribute: (v: string | null) => (v == null || v 
  * @attr {string} placeholder - 占位文案
  * @attr {string} auto-complete - 写到 input 上的 autocomplete，默认 current-password；注册表单要写 new-password
  * @attr {number} strength - 强度档位 0–4；提供后才显示强度条，打分算法归调用方
- * @attr {'outline'|'subtle'|'ghost'} variant - 视觉变体
+ * @attr {'outline'|'subtle'|'ghost'} variant - 形态：outline / subtle / ghost，默认 outline
  * @attr {'brand'|'neutral'|'success'|'warning'|'danger'|'info'} tone - 语气
  * @attr {'sm'|'md'|'lg'} size - 尺寸
  * @fires value-change - 值变化；detail 为 `{ value: string }`
