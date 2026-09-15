@@ -1,4 +1,4 @@
-<!-- 代码块交给代码视图 | markdown 块铺 html，代码块拿 source 交出去——照 html 渲会让同一段代码出现两次 -->
+<!-- 代码块交给代码视图 | markdown 块铺设 html，代码块取 source 交出：按 html 渲染会使同一段代码出现两次 -->
 <script setup lang="ts">
 import type { MarkdownBlock } from "@xihan-ui/headless";
 import { createStreamRenderer } from "@xihan-ui/markdown";

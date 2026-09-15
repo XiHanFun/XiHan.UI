@@ -26,25 +26,25 @@
 
 ### 流式增长
 
-只有生长中的那一块每帧重渲，定型的块 key 不变、节点原地留着，选区与滚动位置才保得住
+只有生长中的块每帧重渲，定型的块 key 不变、节点原地保留，选区与滚动位置才能保持
 
 <XhDemo src="markdown-stream/02-streaming" />
 
 ### 代码块交给代码视图
 
-markdown 块铺 html，代码块拿 source 交出去——照 html 渲会让同一段代码出现两次
+markdown 块铺设 html，代码块取 source 交出：按 html 渲染会使同一段代码出现两次
 
 <XhDemo src="markdown-stream/03-code-blocks" />
 
 ### 流式光标
 
-一块都还没来的时候光标就已经在了，caret 设成 false 可以整个关掉
+尚未收到任何块时光标就已存在，caret 设为 false 可以整个关闭
 
 <XhDemo src="markdown-stream/04-caret" />
 
 ### 尺寸
 
-size 换正文字号与块间距，三档共用同一份块列表
+size 改变正文字号与块间距，三档共用同一份块列表
 
 <XhDemo src="markdown-stream/05-size" />
 
