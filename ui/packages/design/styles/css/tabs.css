@@ -22,11 +22,11 @@
     --xh-_tabs-list-gap: var(--xh-space-0_5);
     --xh-_tabs-list-bg: var(--xh-bg-subtle);
     --xh-_tabs-list-p: var(--xh-space-1);
-    --xh-_tabs-list-radius: var(--xh-shape-pill);
+    --xh-_tabs-list-radius: var(--xh-shape-surface);
     --xh-_tabs-list-border-width: 0;
     --xh-_tabs-trigger-border-width: 0;
     --xh-_tabs-trigger-border: transparent;
-    --xh-_tabs-trigger-radius: var(--xh-shape-pill);
+    --xh-_tabs-trigger-radius: var(--xh-shape-control);
     --xh-_tabs-trigger-bg-active: var(--xh-_tone-subtle, var(--xh-bg-surface));
     --xh-_tabs-trigger-bg-active-hover: var(--xh-_tone-subtle-hover, var(--xh-bg-surface));
     --xh-_tabs-trigger-border-active: transparent;
@@ -96,9 +96,9 @@
     --xh-_tabs-list-gap: var(--xh-space-0_5);
     --xh-_tabs-list-bg: var(--xh-bg-subtle);
     --xh-_tabs-list-p: var(--xh-space-1);
-    --xh-_tabs-list-radius: var(--xh-shape-pill);
+    --xh-_tabs-list-radius: var(--xh-shape-surface);
     --xh-_tabs-list-border-width: 0;
-    --xh-_tabs-trigger-radius: var(--xh-shape-pill);
+    --xh-_tabs-trigger-radius: var(--xh-shape-control);
     --xh-_tabs-trigger-bg-active: var(--xh-_tone-subtle, var(--xh-bg-surface));
     --xh-_tabs-trigger-bg-active-hover: var(--xh-_tone-subtle-hover, var(--xh-bg-surface));
     --xh-_tabs-trigger-shadow-active: var(--xh-elevation-raised);
@@ -147,7 +147,7 @@
     transition:
       color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
       box-shadow var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
-      scale var(--xh-motion-duration-micro) var(--xh-motion-ease-enter-strong);
+      scale var(--xh-motion-duration-release) var(--xh-motion-ease-release);
   }
 
   /* 主标签带按可用宽度等分；窄到放不下文字时仍按原合同折行。 */
@@ -172,6 +172,8 @@
   /* 按下去要有回应：页签整块轻微下压，松手即弹回。选中页也压 */
   [data-scope='tabs'][data-part='trigger']:not([data-disabled]):active {
     scale: var(--xh-motion-scale-press);
+    transition-duration: var(--xh-motion-duration-press);
+    transition-timing-function: var(--xh-motion-ease-press);
   }
 
   [data-scope='tabs'][data-part='trigger'][data-state='active'] {
