@@ -41,7 +41,7 @@ export type CarouselRootSlotProps = Pick<
   | 'resume'
 >
 
-/** 根上自有的那些取值；dir 与原生的同名属性含义不同，由这里接管。 */
+/** 根上自有的取值；dir 与原生的同名属性含义不同，由这里接管。 */
 type RootElementProps = Omit<ComponentPropsWithRef<'div'>, 'children' | 'dir'>
 
 export interface XhCarouselRootProps extends RootElementProps {
@@ -51,10 +51,10 @@ export interface XhCarouselRootProps extends RootElementProps {
   slidesPerPage?: number
   slidesPerMove?: number
   orientation?: Orientation
-  /** 文字方向；只在作者显式给了才写，写死会切断从 RTL 祖先继承的方向。 */
+  /** 文字方向；只在作者显式提供时才写入，写死会切断从 RTL 祖先继承的方向。 */
   dir?: Direction
   loop?: boolean
-  /** 布尔或毫秒：true 用默认间隔，数值即间隔。 */
+  /** 布尔或毫秒：true 使用默认间隔，数值即间隔。 */
   autoplay?: boolean | number
   allowPointerDrag?: boolean
   spacing?: string
@@ -135,7 +135,7 @@ export function XhCarouselRoot({
 XhCarouselRoot.xhEvents = ['page-change'] as const
 
 export interface XhCarouselViewportProps extends ComponentPropsWithRef<'div'> {}
-/** 量幻灯片的那个盒子：轨道在它里面位移，手指也落在它上面。 */
+/** 测量幻灯片的盒子：轨道在其中位移，触摸也落在它上面。 */
 export function XhCarouselViewport({ children, ...rest }: XhCarouselViewportProps): ReactNode {
   const ctx = useCarouselContext()
   return (
@@ -156,7 +156,7 @@ export function XhCarouselList({ children, ...rest }: XhCarouselListProps): Reac
 }
 
 export interface XhCarouselItemProps extends ComponentPropsWithRef<'div'> {
-  /** 这一张的下标，0 基；兼收字符串。 */
+  /** 该张的下标，0 基；兼收字符串。 */
   index: number | string
 }
 export function XhCarouselItem({ index, children, ...rest }: XhCarouselItemProps): ReactNode {
@@ -193,7 +193,7 @@ export function XhCarouselNextTrigger({ children, ...rest }: XhCarouselNextTrigg
   )
 }
 
-/** 函数式 children 的载荷：用户按停了没有，不含悬停与焦点那两路的临时按住。 */
+/** 函数式 children 的载荷：用户是否已按下停止，不含悬停与焦点两路的临时暂停。 */
 export interface CarouselAutoplayTriggerSlotProps {
   stopped: boolean
 }
@@ -203,8 +203,8 @@ export interface XhCarouselAutoplayTriggerProps extends Omit<ComponentPropsWithR
 }
 
 /**
- * 播放 / 暂停开关。开了 autoplay 就该把它渲出来：
- * 自动翻页得有一处能停住，且停住之后不会被别的交互重新点着。
+ * 播放 / 暂停开关。开启 autoplay 后应当渲染它：
+ * 自动翻页必须有一处能够停止，且停止之后不会被其他交互重新启动。
  */
 export function XhCarouselAutoplayTrigger({ children, ...rest }: XhCarouselAutoplayTriggerProps): ReactNode {
   const ctx = useCarouselContext()

@@ -21,7 +21,7 @@ const BOOLEAN_CONVERTER = { fromAttribute: (v: string | null) => (v === null ? u
 
 /**
  * autoplay 布尔或毫秒两用：缺席 = undefined，`autoplay` / `autoplay="true"` = 默认间隔，
- * `autoplay="false"` = 关，`autoplay="3000"` = 3 秒一张，念不成数的串按开着处理。
+ * `autoplay="false"` = 关闭，`autoplay="3000"` = 3 秒一张，无法解析为数字的串按开启处理。
  */
 const AUTOPLAY_CONVERTER = {
   fromAttribute: (v: string | null): boolean | number | undefined => {
@@ -46,32 +46,32 @@ function declaredIndex(el: HTMLElement, position: number): number {
 }
 
 /**
- * `<xh-carousel>` —— 走马灯行为宿主。
+ * `<xh-carousel>`：走马灯行为宿主。
  *
- * 条目总数由 `slide-count` 声明，不从 DOM 数。指示点一页一个，页数由 `slide-count` 与
- * `slides-per-page` / `slides-per-move` 算出，由作者照着渲染节点，元素不生成节点。
- * 轨道位移写在 list 的内联 transform 上，样式层不得再碰那条轴。
+ * 条目总数由 `slide-count` 声明，不从 DOM 统计。指示点一页一个，页数由 `slide-count` 与
+ * `slides-per-page` / `slides-per-move` 计算，由作者按此渲染节点，元素不生成节点。
+ * 轨道位移写在 list 的内联 transform 上，样式层不得再修改该轴。
  *
  * @customElement xh-carousel
- * @attr {number} page - 受控页码，0 基；缺省该属性即非受控
+ * @attr {number} page - 受控页码，0 基；未提供该属性即非受控
  * @attr {number} default-page - 非受控初始页，默认 0
  * @attr {number} slide-count - 条目总数
- * @attr {number} slides-per-page - 一屏放几张，默认 1
- * @attr {number} slides-per-move - 一次翻几张，默认跟随 slides-per-page
+ * @attr {number} slides-per-page - 一屏显示的张数，默认 1
+ * @attr {number} slides-per-move - 一次翻动的张数，默认跟随 slides-per-page
  * @attr {'horizontal'|'vertical'} orientation - 轨道方向，默认 horizontal
  * @attr {'ltr'|'rtl'} dir - 文字方向；水平轴上同时决定位移方向
- * @attr {boolean} loop - 走到尽头回绕，默认关闭
- * @attr {boolean|number} autoplay - 自动播放：属性在即开，写数值即间隔毫秒
+ * @attr {boolean} loop - 到达末尾回绕，默认关闭
+ * @attr {boolean|number} autoplay - 自动播放：属性存在即开启，写数值即间隔毫秒
  * @attr {boolean} allow-pointer-drag - 允许指针拖拽切页，默认关闭
  * @attr {string} spacing - 张与张之间的间距（任意 CSS 长度）
  * @fires page-change - 页码变化；detail 为 `{ page: number }`
  * @csspart root - region 地标，承载 aria-roledescription="carousel" 与名字
  * @csspart viewport - 裁切窗口，兼作读屏活区
- * @csspart list - 被位移的轨道；transform 由元素写入，样式层别碰
- * @csspart item - 一张幻灯片，可自带 index 属性声明下标，缺省按文档序
- * @csspart prev-trigger - 上一张；首页且不回绕时转原生 disabled
- * @csspart next-trigger - 下一张；末页且不回绕时转原生 disabled
- * @csspart autoplay-trigger - 播放 / 暂停开关，承载 data-state="running" / "paused"；没配 autoplay 时转原生 disabled
+ * @csspart list - 被位移的轨道；transform 由元素写入，样式层不应修改
+ * @csspart item - 一张幻灯片，可自带 index 属性声明下标，默认按文档序
+ * @csspart prev-trigger - 上一张；首页且不回绕时为原生 disabled
+ * @csspart next-trigger - 下一张；末页且不回绕时为原生 disabled
+ * @csspart autoplay-trigger - 播放 / 暂停开关，承载 data-state="running" / "paused"；未配置 autoplay 时为原生 disabled
  * @csspart indicator-group - 指示点容器（role=group）
  * @csspart indicator - 一页一个的指示点，可自带 index 属性；当前页带 aria-current="true"
  */

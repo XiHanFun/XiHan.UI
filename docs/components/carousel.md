@@ -122,19 +122,19 @@ slidesPerMove 与 slidesPerPage 分开给：一屏露三张、一次只挪一张
 
 | 属性 | 类型 | 必填 | 说明 |
 | --- | --- | --- | --- |
-| `page` | `number` |  | 当前页，0 基。给定即受控：内部不再自改，只发 onPageChange。 页不是张：一页可能同时露出好几张（见 slidesPerPage）。 |
+| `page` | `number` |  | 当前页，0 基。提供即受控：内部不再自行修改，只发 onPageChange。 页不等于张：一页可能同时显示多张（见 slidesPerPage）。 |
 | `defaultPage` | `number` |  | 非受控初始页，默认 0。 |
-| `slideCount` | `number` |  | 条目总数，由作者声明，不从 DOM 数。 |
-| `slidesPerPage` | `number` |  | 一屏放几张，默认 1。 |
-| `slidesPerMove` | `number` |  | 一次翻几张，默认跟随 slidesPerPage（整屏翻页）。 |
-| `orientation` | `Orientation` |  | 轨道方向，默认 horizontal；方向键的轴跟着它走。 |
-| `dir` | `Direction` |  | 文字方向。水平轴上同时作用于排版与位移方向：rtl 下"下一张"在左手边， 轨道也要往正方向位移。纵向轨道不受它影响。 |
-| `loop` | `boolean` |  | 走到尽头是否回绕，默认 false。 |
-| `autoplay` | `boolean \| number` |  | 自动播放。true 用默认间隔，数值即毫秒间隔；缺省 / false / 非正数一律不自动播放。 指针悬停或轮播内任一节点获得焦点时按住计时，离开后从头计满一整个间隔再翻。 减弱动效档下不自动起播：给了间隔也停在 idle，要播得由用户按下播放开关。 |
-| `allowPointerDrag` | `boolean` |  | 允许指针拖拽切页，默认 false。鼠标、触摸、触控笔一并门控。 打开后沿轨道那一轴的原生滚动会让位给拖拽，关掉则完全没有拖拽、触摸走原生滚动。 |
-| `spacing` | `string` |  | 张与张之间的间距，任意 CSS 长度（如 '12px'）。落成条目自身的内边距，不影响位移算术。 |
+| `slideCount` | `number` |  | 条目总数，由作者声明，不从 DOM 统计。 |
+| `slidesPerPage` | `number` |  | 一屏显示的张数，默认 1。 |
+| `slidesPerMove` | `number` |  | 一次翻动的张数，默认跟随 slidesPerPage（整屏翻页）。 |
+| `orientation` | `Orientation` |  | 轨道方向，默认 horizontal；方向键的轴随之变化。 |
+| `dir` | `Direction` |  | 文字方向。水平轴上同时作用于排版与位移方向：rtl 下下一张在左侧， 轨道也向正方向位移。纵向轨道不受影响。 |
+| `loop` | `boolean` |  | 到达末尾是否回绕，默认 false。 |
+| `autoplay` | `boolean \| number` |  | 自动播放。true 使用默认间隔，数值即毫秒间隔；未提供 / false / 非正数一律不自动播放。 指针悬停或轮播内任一节点获得焦点时暂停计时，离开后重新计满一个完整间隔再翻页。 减弱动效档下不自动起播：提供间隔也停在 idle，需要由用户按下播放开关。 |
+| `allowPointerDrag` | `boolean` |  | 允许指针拖拽切页，默认 false。鼠标、触摸、触控笔一并门控。 开启后沿轨道轴的原生滚动让位给拖拽，关闭则完全没有拖拽、触摸使用原生滚动。 |
+| `spacing` | `string` |  | 张与张之间的间距，任意 CSS 长度（如 '12px'）。落为条目自身的内边距，不影响位移计算。 |
 | `translations` | `Partial<CarouselTranslations>` |  |  |
-| `onPageChange` | `(details: CarouselPageChangeDetails) => void` |  | 页码变化意图回调；受控时是唯一出口，非受控随内部写入一并通知。 |
+| `onPageChange` | `(details: CarouselPageChangeDetails) => void` |  | 页码变化意图回调；受控时是唯一出口，非受控时随内部写入一并通知。 |
 
 ### 事件
 
@@ -175,26 +175,26 @@ slidesPerMove 与 slidesPerPage 分开给：一屏露三张、一次只挪一张
 
 | 成员 | 类型 | 说明 |
 | --- | --- | --- |
-| `page` | `number` | 当前页，0 基；恒在 [0, max(totalPages-1, 0)] 内，slideCount 变小后也读得到一个可用的值。 |
+| `page` | `number` | 当前页，0 基；恒在 [0, max(totalPages-1, 0)] 内，slideCount 减小后也能读到可用的值。 |
 | `totalPages` | `number` |  |
-| `slideCount` | `number` | 归一后的条目总数（负数/小数/缺省都已收成非负整数）。 |
+| `slideCount` | `number` | 归一化后的条目总数（负数 / 小数 / 未提供都已收敛为非负整数）。 |
 | `slidesPerPage` | `number` |  |
 | `slidesPerMove` | `number` |  |
 | `orientation` | `Orientation` |  |
-| `slideRange` | `{ start: number, end: number }` | 当前页露出的条目下标区间，0 基闭区间；一张都没有时 end &lt; start。 |
+| `slideRange` | `{ start: number, end: number }` | 当前页显示的条目下标区间，0 基闭区间；没有条目时 end &lt; start。 |
 | `pageSnapPoints` | `number[]` | 每一页的首张下标序列，长度即总页数。 |
 | `canScrollPrev` | `boolean` |  |
 | `canScrollNext` | `boolean` |  |
-| `autoplaying` | `boolean` | 自动播放的计时正在走。 |
-| `paused` | `boolean` | 自动播放开着但被按住（悬停 / 焦点 / 调用方）。 |
-| `autoplayStopped` | `boolean` | 自动播放此刻是不是由用户按停的：计时没在走（idle），或调用方那一路按住了。 与 `paused` 的差别在于它不算悬停与焦点那两路——那两路一挪开就自己续上， 拿它去驱动播放 / 暂停开关的名字与图形，鼠标一碰按钮就会在两态之间跳。 |
+| `autoplaying` | `boolean` | 自动播放的计时进行中。 |
+| `paused` | `boolean` | 自动播放已开启但被暂停（悬停 / 焦点 / 调用方）。 |
+| `autoplayStopped` | `boolean` | 自动播放当前是否由用户停止：计时未进行（idle），或由调用方暂停。 与 `paused` 的差别在于它不计入悬停与焦点两路：这两路一离开即自动恢复， 若用它驱动播放 / 暂停开关的名字与图形，鼠标一碰按钮就会在两态之间跳动。 |
 | `dragging` | `boolean` |  |
 | `isInView` | `(index: number) => boolean` |  |
-| `setPage` | `(page: number) => void` | 页码会被收进合法区间（loop 时回绕），越界入参不会写出越界的页。 |
+| `setPage` | `(page: number) => void` | 页码会被收敛进合法区间（loop 时回绕），越界入参不会写出越界的页。 |
 | `goToPrev` | `() => void` |  |
 | `goToNext` | `() => void` |  |
-| `play` | `() => void` | 开始自动播放；autoplay prop 没给出正的间隔时无事发生。 |
-| `pause` | `() => void` | 按住计时（来源记为 api），与悬停 / 焦点叠加计数。 |
+| `play` | `() => void` | 开始自动播放；autoplay prop 未提供正的间隔时无操作。 |
+| `pause` | `() => void` | 暂停计时（来源记为 api），与悬停 / 焦点叠加计数。 |
 | `resume` | `() => void` |  |
 | `getRootProps` | `() => T['element']` |  |
 | `getViewportProps` | `() => T['element']` |  |
@@ -202,7 +202,7 @@ slidesPerMove 与 slidesPerPage 分开给：一屏露三张、一次只挪一张
 | `getItemProps` | `(props: CarouselItemProps) => T['element']` |  |
 | `getPrevTriggerProps` | `() => T['button']` |  |
 | `getNextTriggerProps` | `() => T['button']` |  |
-| `getAutoplayTriggerProps` | `() => T['button']` | 播放 / 暂停开关。没配自动播放（间隔为 0）时转原生 disabled。 |
+| `getAutoplayTriggerProps` | `() => T['button']` | 播放 / 暂停开关。未配置自动播放（间隔为 0）时为原生 disabled。 |
 | `getIndicatorGroupProps` | `() => T['element']` |  |
 | `getIndicatorProps` | `(props: CarouselIndicatorProps) => T['button']` |  |
 
