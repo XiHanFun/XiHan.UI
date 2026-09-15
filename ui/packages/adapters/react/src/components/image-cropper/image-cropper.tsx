@@ -25,7 +25,7 @@ type ImageCropperProps = ImageCropperSchema['props']
 
 function noop(): void {}
 
-/** 函数式 children 的载荷：裁切矩形与图片自然尺寸、缩放与旋转、两种拖动标记，以及改值改倍率与取结果。 */
+/** 函数式 children 的载荷：裁切矩形与图片自然尺寸、缩放与旋转、两种拖动标记，以及修改值、修改倍率与获取结果。 */
 export type ImageCropperRootSlotProps = Pick<
   ImageCropperApi,
   'value' | 'zoom' | 'rotation' | 'natural' | 'dragging' | 'resizing' | 'disabled' | 'readOnly'
@@ -53,11 +53,11 @@ export interface XhImageCropperRootProps extends Omit<ComponentPropsWithRef<'div
   shape?: ImageCropperShape
   disabled?: boolean
   readOnly?: boolean
-  /** 表单字段名；给了才参与提交。 */
+  /** 表单字段名；提供后才参与提交。 */
   name?: string
   translations?: ImageCropperProps['translations']
   onValueChange?: ImageCropperProps['onValueChange']
-  /** 一次指针拖动松手时发一次，一次方向键微调也发一次。 */
+  /** 一次指针拖动松手时触发一次，一次方向键微调也触发一次。 */
   onValueChangeEnd?: ImageCropperProps['onValueChangeEnd']
   onZoomChange?: ImageCropperProps['onZoomChange']
   onRotationChange?: ImageCropperProps['onRotationChange']
@@ -154,7 +154,7 @@ export function XhImageCropperRoot({
 XhImageCropperRoot.xhEvents = ['value-change'] as const
 
 export interface XhImageCropperViewportProps extends ComponentPropsWithRef<'div'> {}
-/** 量尺子的那个盒子：图片铺满它，裁切框的百分比坐标以它为准。 */
+/** 测量用的盒子：图片铺满它，裁切框的百分比坐标以它为准。 */
 export function XhImageCropperViewport({ children, ...rest }: XhImageCropperViewportProps): ReactNode {
   const ctx = useImageCropperContext()
   return (
@@ -171,7 +171,7 @@ export function XhImageCropperViewport({ children, ...rest }: XhImageCropperView
 }
 
 export interface XhImageCropperImageProps extends Omit<ComponentPropsWithRef<'img'>, 'children' | 'src' | 'alt'> {}
-/** 用原生 img：自然尺寸与 load 事件都归它。src 与 alt 由根上的同名 prop 写进来。 */
+/** 使用原生 img：自然尺寸与 load 事件都归它。src 与 alt 由根上的同名 prop 写入。 */
 export function XhImageCropperImage({ ...rest }: XhImageCropperImageProps): ReactNode {
   const ctx = useImageCropperContext()
   return <img {...mergeReactProps(ctx.api.getImageProps() as Record<string, unknown>, rest as Record<string, unknown>)} />
@@ -188,10 +188,10 @@ export function XhImageCropperCropArea({ children, ...rest }: XhImageCropperCrop
 }
 
 export interface XhImageCropperCropHandleProps extends ComponentPropsWithRef<'button'> {
-  /** 这个把手拉的是哪个方位。 */
+  /** 该把手拖动的方位。 */
   position: ImageCropperHandlePosition
 }
-/** 用原生 button：它天然可聚焦、天然在 Tab 序列里。 */
+/** 使用原生 button：它天然可聚焦、天然在 Tab 序列中。 */
 export function XhImageCropperCropHandle({ position, children, ...rest }: XhImageCropperCropHandleProps): ReactNode {
   const ctx = useImageCropperContext()
   return (
@@ -217,7 +217,7 @@ export function XhImageCropperGrid({ children, ...rest }: XhImageCropperGridProp
 }
 
 export interface XhImageCropperZoomSliderProps extends Omit<ComponentPropsWithRef<'input'>, 'value' | 'defaultValue' | 'type'> {}
-/** 用原生 range：拇指拖动、方向键步进与读屏播报都归它。 */
+/** 使用原生 range：拇指拖动、方向键步进与读屏播报都归它。 */
 export function XhImageCropperZoomSlider({ ...rest }: XhImageCropperZoomSliderProps): ReactNode {
   const ctx = useImageCropperContext()
   return (
@@ -248,7 +248,7 @@ export function XhImageCropperRotateSlider({ ...rest }: XhImageCropperRotateSlid
 }
 
 export interface XhImageCropperHiddenInputProps extends Omit<ComponentPropsWithRef<'input'>, 'value' | 'defaultValue' | 'type'> {}
-/** 表单出口：裁切矩形靠这份原生输入随表单提交，序列化成 `x,y,width,height`。 */
+/** 表单出口：裁切矩形依靠该原生输入随表单提交，序列化为 `x,y,width,height`。 */
 export function XhImageCropperHiddenInput({ ...rest }: XhImageCropperHiddenInputProps): ReactNode {
   const ctx = useImageCropperContext()
   return (

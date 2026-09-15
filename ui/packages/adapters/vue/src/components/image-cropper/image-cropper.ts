@@ -22,7 +22,7 @@ import { useImageCropper } from './use-image-cropper'
 
 type ImageCropperProps = ImageCropperSchema['props']
 
-/** 默认插槽的载荷：裁切矩形与图片自然尺寸、缩放与旋转、两种拖动标记，以及改值改倍率与取结果。 */
+/** 默认插槽的载荷：裁切矩形与图片自然尺寸、缩放与旋转、两种拖动标记，以及修改值、修改倍率与获取结果。 */
 export type ImageCropperRootSlotProps = Pick<
   ImageCropperApi,
   'value' | 'zoom' | 'rotation' | 'natural' | 'dragging' | 'resizing' | 'disabled' | 'readOnly'
@@ -142,7 +142,7 @@ export const XhImageCropperCropArea = defineComponent({
 export const XhImageCropperCropHandle = defineComponent({
   name: 'XhImageCropperCropHandle',
   props: {
-    /** 这个把手拉的是哪个方位，必填。 */
+    /** 该把手拖动的方位，必填。 */
     position: { type: String as PropType<ImageCropperHandlePosition>, required: true },
   },
   setup(props, { slots }) {
