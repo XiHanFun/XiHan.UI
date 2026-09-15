@@ -1,4 +1,4 @@
-// 竖排 | orientation 只改视觉排布，四个方向键与 Home/End 照样都能走
+// 竖排 | orientation 只改变视觉排布，四个方向键与 Home/End 照常可用
 import type { ReactNode } from "react";
 import { XhSegmentedRoot } from "@xihan-ui/react";
 

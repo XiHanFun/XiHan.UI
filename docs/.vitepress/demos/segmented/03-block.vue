@@ -1,4 +1,4 @@
-<!-- 撑满行宽 | block 让整组占满一行，各段等分剩余空间，长短不一的文字也排得齐 -->
+<!-- 撑满行宽 | block 使整组占满一行，各段等分剩余空间，长短不一的文字也能对齐 -->
 <script setup lang="ts">
 import { XhSegmentedRoot } from "@xihan-ui/vue";
 

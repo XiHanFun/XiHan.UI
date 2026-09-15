@@ -1,4 +1,4 @@
-// 表单 | 给了 name 才带上隐藏输入参与提交；宿主表单点重置，选中值回落到 default-value
+// 表单 | 提供 name 后才带上隐藏输入参与提交；宿主表单重置时，选中值回落到 default-value
 import type { FormEvent, ReactNode } from "react";
 import { XhSegmentedRoot } from "@xihan-ui/react";
 import { useState } from "react";

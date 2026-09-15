@@ -1,4 +1,4 @@
-// 尺寸 | size 换的是段的高度、内边距与字号，指示器跟着量出来的段走
+// 尺寸 | size 改变段的高度、内边距与字号，指示器跟随测量得出的段
 import type { ReactNode } from "react";
 import { XhSegmentedRoot } from "@xihan-ui/react";
 
