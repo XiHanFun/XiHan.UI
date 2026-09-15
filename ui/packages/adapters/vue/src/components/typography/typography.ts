@@ -14,7 +14,7 @@ import { withXhConfig } from '../../config/config'
 import { vueNormalize } from '../../runtime/normalize-props'
 import { provideTypography, useTypographyContext } from './context'
 
-/** 正文块容器，管段间距与最大行宽；缺省值由 connect 给出；普通类型省略 default，Boolean 显式保留 undefined */
+/** 正文块容器，管理段间距与最大行宽；默认值由 connect 给出；普通类型省略 default，Boolean 显式保留 undefined */
 export const XhTypographyRoot = defineComponent({
   name: 'XhTypographyRoot',
   props: {
@@ -30,8 +30,8 @@ export const XhTypographyRoot = defineComponent({
 })
 
 /**
- * 标题：level 只换字号档位，不决定标签。
- * as 决定渲染成哪个标签，默认 p；要进文档大纲就写 as="h2"。
+ * 标题：level 只切换字号档位，不决定标签。
+ * as 决定渲染为哪个标签，默认 p；需要进入文档大纲时写 as="h2"。
  */
 export const XhTypographyHeading = defineComponent({
   name: 'XhTypographyHeading',
@@ -58,8 +58,8 @@ export const XhTypographyParagraph = defineComponent({
 })
 
 /**
- * 行内文字：variant 换形态，tone 换语气色，weight 换字重。
- * as 决定渲染成哪个标签，默认 span；要 code / strong 的原生语义就自己写上去。
+ * 行内文字：variant 切换形态，tone 切换语气色，weight 切换字重。
+ * as 决定渲染为哪个标签，默认 span；需要 code / strong 的原生语义时自行写明。
  */
 export const XhTypographyText = defineComponent({
   name: 'XhTypographyText',
@@ -80,8 +80,8 @@ export const XhTypographyText = defineComponent({
 })
 
 /**
- * 富文本容器：外来的 HTML（Markdown 渲染结果）铺进来，样式按标签给。
- * as 决定渲染成哪个标签，默认 div。
+ * 富文本容器：外来的 HTML（Markdown 渲染结果）铺入其中，样式按标签给出。
+ * as 决定渲染为哪个标签，默认 div。
  */
 export const XhTypographyProse = defineComponent({
   name: 'XhTypographyProse',

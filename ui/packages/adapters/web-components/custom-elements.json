@@ -62612,15 +62612,15 @@
       "declarations": [
         {
           "kind": "class",
-          "description": "`<xh-typography>` —— Light-DOM 行为宿主，无状态机，把 connectTypography 产出打到各角色节点。\n\n标签全由作者写：`<h2 data-xh-part=\"heading\">`、`<p data-xh-part=\"paragraph\">`、\n`<span data-xh-part=\"text\">`、`<a data-xh-part=\"link\">`，皮肤认的是 data-scope + data-part。\n标题的字号档位取节点上的 `level`，行内文字的变体、颜色与字重取节点上的 `variant`、`tone` 与 `weight`。\n运行期改写这四个属性不触发重新接线，需作者自行 requestUpdate。",
+          "description": "`<xh-typography>`：Light-DOM 行为宿主，无状态机，把 connectTypography 产出接到各角色节点。\n\n标签全部由作者编写：`<h2 data-xh-part=\"heading\">`、`<p data-xh-part=\"paragraph\">`、\n`<span data-xh-part=\"text\">`、`<a data-xh-part=\"link\">`，皮肤识别的是 data-scope + data-part。\n标题的字号档位取节点上的 `level`，行内文字的变体、颜色与字重取节点上的 `variant`、`tone` 与 `weight`。\n运行期改写这四个属性不触发重新接线，需作者自行 requestUpdate。",
           "name": "XhTypographyElement",
           "cssParts": [
             {
-              "description": "正文块容器，管段间距与最大行宽，承载 data-size / data-align / data-weight",
+              "description": "正文块容器，管理段间距与最大行宽，承载 data-size / data-align / data-weight",
               "name": "root"
             },
             {
-              "description": "标题，写 level=\"1\"..\"6\" 换字号档位",
+              "description": "标题，写 level=\"1\"..\"6\" 切换字号档位",
               "name": "heading"
             },
             {
@@ -62636,7 +62636,7 @@
               "name": "link"
             },
             {
-              "description": "富文本容器，外来的 HTML 铺进来按标签上样式",
+              "description": "富文本容器，外来的 HTML 铺入其中按标签设置样式",
               "name": "prose"
             }
           ],
@@ -62693,7 +62693,7 @@
               "type": {
                 "text": "Size | undefined"
               },
-              "description": "尺寸，整块正文的字号与段间距跟着换档",
+              "description": "尺寸，整块正文的字号与段间距随之换档",
               "name": "size",
               "fieldName": "size"
             },
@@ -62701,7 +62701,7 @@
               "type": {
                 "text": "TypographyAlign | undefined"
               },
-              "description": "对齐，整块正文跟着换",
+              "description": "对齐，整块正文随之变化",
               "name": "align",
               "fieldName": "align"
             },
@@ -62709,7 +62709,7 @@
               "type": {
                 "text": "TypographyWeight | undefined"
               },
-              "description": "字重，整块正文跟着换",
+              "description": "字重，整块正文随之变化",
               "name": "weight",
               "fieldName": "weight"
             }

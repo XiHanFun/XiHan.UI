@@ -20,20 +20,20 @@ export type TypographyAlign = 'start' | 'center' | 'end' | 'justify'
 export type TypographyWeight = 'regular' | 'medium' | 'semibold' | 'bold'
 
 export interface TypographyProps {
-  /** 尺寸：sm / md / lg，整块正文的字号与段间距跟着换档。 */
+  /** 尺寸：sm / md / lg，整块正文的字号与段间距随之换档。 */
   size?: Size
-  /** 对齐：start / center / end / justify，整块正文跟着换。 */
+  /** 对齐：start / center / end / justify，整块正文随之变化。 */
   align?: TypographyAlign
-  /** 字重：regular / medium / semibold / bold，整块正文跟着换。 */
+  /** 字重：regular / medium / semibold / bold，整块正文随之变化。 */
   weight?: TypographyWeight
 }
 
-/** 标题自报字号档位，connect 据此产出属性。 */
+/** 标题声明字号档位，connect 据此产出属性。 */
 export interface TypographyHeadingProps {
   /**
-   * 字号档位 1-6，超出范围收到边界，给不出数字就不写这个属性。
-   * 只换字号，不决定标签——标签由作者写在自己的节点上。
-   * 收字符串是因为 WC 那侧的档位来自 DOM 属性。
+   * 字号档位 1-6，超出范围收敛到边界，无法得到数字时不写该属性。
+   * 只改变字号，不决定标签：标签由作者写在自己的节点上。
+   * 接受字符串是因为 WC 侧的档位来自 DOM 属性。
    */
   level?: TypographyLevel | string
 }
@@ -44,7 +44,7 @@ export interface TypographyTextProps {
   tone?: Tone
   /** 变体：muted 弱化 / strong 强调 / code 等宽。 */
   variant?: TypographyVariant
-  /** 字重：regular / medium / semibold / bold，只作用在这一段行内文字上。 */
+  /** 字重：regular / medium / semibold / bold，只作用于该段行内文字。 */
   weight?: TypographyWeight
 }
 
@@ -54,9 +54,9 @@ export interface TypographyApi<T extends PropTypes = PropTypes> {
   getParagraphProps: () => T['element']
   getTextProps: (props?: TypographyTextProps) => T['element']
   getLinkProps: () => T['element']
-  /** 富文本容器：外来的 HTML（Markdown 渲染结果）铺进来，样式按标签给。 */
+  /** 富文本容器：外来的 HTML（Markdown 渲染结果）铺入其中，样式按标签提供。 */
   getProseProps: () => T['element']
 }
 
-/** 读屏用的文案。本组件目前没有需要外露的文案，位先留着。 */
+/** 读屏文案。本组件目前没有需要外露的文案，保留该位。 */
 export interface TypographyTranslations {}
