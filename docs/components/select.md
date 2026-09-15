@@ -193,29 +193,29 @@ outline、subtle 和 ghost
 
 | 属性 | 类型 | 必填 | 说明 |
 | --- | --- | --- | --- |
-| `collection` | `SelectNode[]` |  | 条目数据，显示文本与禁用的事实源。给了它，条目部件只需报 value， 显示文本也不再从活 DOM 现查。缺省即回到「文本写在条目里、现查 DOM」的老路。 |
-| `value` | `string \| string[] \| null` |  | 选中值。裸串是单选的简写，null 是「受控且无选中」，缺省（undefined）才是非受控；内部一律按数组处理。 受控时 cell 直读 prop，写只发 onValueChange 不落内部值。 |
+| `collection` | `SelectNode[]` |  | 条目数据，显示文本与禁用的事实源。提供后条目部件只需声明 value， 显示文本也不再从 DOM 查询。未提供时回到文本写在条目中、从 DOM 查询的方式。 |
+| `value` | `string \| string[] \| null` |  | 选中值。裸串是单选的简写，null 是受控且无选中，未提供（undefined）才是非受控；内部一律按数组处理。 受控时 cell 直读 prop，写入只发 onValueChange 不落内部值。 |
 | `defaultValue` | `string \| string[] \| null` |  | 非受控初始选中值。与 value 同样接受裸串与 null。 |
 | `multiple` | `boolean` |  | 允许选中多项。单选时选完即收起，多选时保持展开继续选。 |
-| `open` | `boolean` |  | 展开态。给定即受控：内部不再自改，只发 onOpenChange。 |
+| `open` | `boolean` |  | 展开态。提供即受控：内部不再自行修改，只发 onOpenChange。 |
 | `defaultOpen` | `boolean` |  |  |
-| `disabled` | `boolean` |  | 整个控件禁用：trigger 用原生 disabled，隐藏 select 不参与提交。 |
-| `readOnly` | `boolean` |  | 只读：浮层照常展开与浏览，但选中值改不动、也清不掉。 |
+| `disabled` | `boolean` |  | 整个控件禁用：trigger 使用原生 disabled，隐藏 select 不参与提交。 |
+| `readOnly` | `boolean` |  | 只读：浮层照常展开与浏览，但选中值不可修改、也不可清空。 |
 | `invalid` | `boolean` |  | 校验错误态：trigger 标红并输出 aria-invalid。 |
-| `loading` | `boolean` |  | 条目还在取：列表报 aria-busy，在途占位顶上来、空态占位让位。 |
-| `translations` | `Partial<SelectTranslations>` |  | 读屏用的文案，默认英文。 |
-| `maxTagCount` | `number` |  | 多选标签最多摆几枚，其余折进 overflowCount、合成 +N 那一枚；缺省 3（SELECT_DEFAULT_MAX_TAG_COUNT）。 |
-| `required` | `boolean` |  | 原生表单校验：无选中值时提交被拦下。 |
-| `name` | `string` |  | 表单字段名。给定后隐藏 select 才带 name，选中值随表单一并提交。 |
+| `loading` | `boolean` |  | 条目加载中：列表报告 aria-busy，显示在途占位、隐藏空态占位。 |
+| `translations` | `Partial<SelectTranslations>` |  | 读屏文案，默认英文。 |
+| `maxTagCount` | `number` |  | 多选标签最多显示的数量，其余折叠进 overflowCount、合成 +N 标签；默认 3（SELECT_DEFAULT_MAX_TAG_COUNT）。 |
+| `required` | `boolean` |  | 原生表单校验：无选中值时提交被拦截。 |
+| `name` | `string` |  | 表单字段名。提供后隐藏 select 才带 name，选中值随表单一并提交。 |
 | `placeholder` | `string` |  | 无选中时 value-text 显示的占位文字。 |
 | `placement` | `Placement` |  |  |
 | `offset` | `number` |  |  |
-| `loop` | `boolean` |  | 方向键走到尽头是否回绕，默认 true。 |
+| `loop` | `boolean` |  | 方向键到达末尾是否回绕，默认 true。 |
 | `dir` | `Direction` |  | 文字方向，默认 ltr。 |
-| `variant` | `ControlVariant` |  | 形态：outline / subtle / ghost，决定触发器的描边与底色怎么用。 |
-| `tone` | `Tone` |  | 语气：brand / neutral / success / warning / danger / info，决定聚焦与选中强调用哪族颜色。 |
+| `variant` | `ControlVariant` |  | 形态：outline / subtle / ghost，决定触发器的描边与底色使用方式。 |
+| `tone` | `Tone` |  | 语气：brand / neutral / success / warning / danger / info，决定聚焦与选中强调使用哪族颜色。 |
 | `size` | `Size` |  | 尺寸：sm / md / lg，决定触发器高度、内边距与字号档位。 |
-| `onValueChange` | `(details: SelectValueChangeDetails) => void` |  | value 变化意图回调；受控时是唯一出口，非受控随内部写入一并通知。 |
+| `onValueChange` | `(details: SelectValueChangeDetails) => void` |  | value 变化意图回调；受控时是唯一出口，非受控时随内部写入一并通知。 |
 | `onOpenChange` | `(details: SelectOpenChangeDetails) => void` |  | open 变化意图回调；受控时是唯一出口，非受控时随内部转移一并通知。 |
 
 ### 事件
@@ -269,46 +269,46 @@ outline、subtle 和 ghost
 | 成员 | 类型 | 说明 |
 | --- | --- | --- |
 | `open` | `boolean` |  |
-| `collection` | `readonly SelectNodeMeta[]` | collection 推出的条目元信息，按数据顺序排列；没给 collection 即空数组。 |
+| `collection` | `readonly SelectNodeMeta[]` | 由 collection 推导的条目元信息，按数据顺序排列；未提供 collection 时为空数组。 |
 | `value` | `string[]` | 选中集合，按选中先后排列而非文档顺序。单选恒为长度 ≤ 1。 |
-| `valueText` | `string[]` | 选中项的文本，与 value 逐项等长对应；某项在 DOM 里查不到条目时该项退回值本身。 |
-| `displayText` | `string` | value-text 实际显示的文字：有选中取其文本（多选按半角逗号加空格连起来），否则取 placeholder。 |
+| `valueText` | `string[]` | 选中项的文本，与 value 逐项等长对应；某项在 DOM 中查询不到条目时该项回退为值本身。 |
+| `displayText` | `string` | value-text 实际显示的文字：有选中时取其文本（多选按半角逗号加空格连接），否则取 placeholder。 |
 | `multiple` | `boolean` | 是否允许多选。 |
 | `invalid` | `boolean` | 校验错误态。 |
 | `readOnly` | `boolean` | 只读态。 |
-| `canClear` | `boolean` | 此刻能否清空：有选中且既不禁用也不只读。 |
-| `tags` | `SelectTagMeta[]` | 可见标签（受 maxTagCount 截断），与 value/valueText 同序。 |
-| `overflowCount` | `number` | 被 maxTagCount 折起来的标签数。 |
-| `overflowText` | `string` | +N 那一枚显示的文字（translations.overflowTag 算出）；没有折起的标签时为空串。 |
+| `canClear` | `boolean` | 当前能否清空：有选中且既不禁用也不只读。 |
+| `tags` | `SelectTagMeta[]` | 可见标签（受 maxTagCount 截断），与 value / valueText 同序。 |
+| `overflowCount` | `number` | 被 maxTagCount 折叠的标签数。 |
+| `overflowText` | `string` | +N 标签显示的文字（由 translations.overflowTag 计算）；没有折叠的标签时为空串。 |
 | `highlightedValue` | `string \| null` | 高亮锚点；收起时为 null。 |
 | `setOpen` | `(next: boolean) => void` |  |
 | `setValue` | `(next: string \| string[]) => void` |  |
 | `clear` | `() => void` | 清空全部选中。 |
-| `deselect` | `(value: string) => void` | 摘掉一个选中值。 |
+| `deselect` | `(value: string) => void` | 移除一个选中值。 |
 | `getRootProps` | `() => T['element']` |  |
 | `getLabelProps` | `() => T['element']` |  |
-| `getControlProps` | `() => T['element']` | 触发器与清空按钮的收纳容器：两者在里面并排，有值时清空钮顶替展开指示符。 |
+| `getControlProps` | `() => T['element']` | 触发器与清空按钮的收纳容器：两者在其中并排，有值时清空按钮替代展开指示符。 |
 | `getTriggerProps` | `() => T['button']` |  |
 | `getValueTextProps` | `() => T['element']` |  |
 | `getIndicatorProps` | `() => T['element']` |  |
-| `getClearTriggerProps` | `() => T['button']` | 清空按钮：不占 Tab 位；清不了时整个藏掉；点按清空全部选中、不展开浮层，焦点送回 trigger。 |
-| `getTagListProps` | `() => T['element']` | 标签行：收着可见标签与 +N 那一枚，放在触发器里；无选中时整个 hidden。 |
-| `getTagProps` | `(props: SelectTagProps) => T['element']` | 标签：一个选中值一枚，就是库里 tag 的 root（data-scope="tag"）：语气、尺寸与禁用从本控件传下去，形态按控件的面派（outline / ghost / 缺省摆淡底标签，subtle 摆描边标签），另带 data-value 记它代表哪个值。放触发器里就是纯展示（不渲关闭钮），放外面配删除钮可删。 |
+| `getClearTriggerProps` | `() => T['button']` | 清空按钮：不占 Tab 位；无法清空时整体隐藏；点击清空全部选中、不展开浮层，焦点送回 trigger。 |
+| `getTagListProps` | `() => T['element']` | 标签行：收纳可见标签与 +N 标签，放在触发器中；无选中时整体 hidden。 |
+| `getTagProps` | `(props: SelectTagProps) => T['element']` | 标签：一个选中值一个，即库内 tag 的 root（data-scope="tag"）：语气、尺寸与禁用从本控件传下，形态按控件的面派生（outline / ghost / 默认使用淡底标签，subtle 使用描边标签），另带 data-value 记录代表的值。放在触发器中即纯展示（不渲染关闭按钮），放在外部配删除按钮可删除。 |
 | `getTagLabelProps` | `() => T['element']` | 标签文字所在的块（tag 的 label）：截断落在这一层；标签与 +N 共用。 |
-| `getOverflowTagProps` | `() => T['element']` | 被折起的标签合成的那一枚：同样是 tag 的 root，显示 overflowText、带 data-count；没有折起的标签时 hidden。 |
-| `getItemDeleteTriggerProps` | `(props: SelectTagProps) => T['button']` | 标签删除按钮：就是所在标签那份 tag 的 close-trigger（data-scope="tag"），可及名走 translations.deleteItem，禁用时留位、原生 disabled；点按摘掉所在标签的选中值；须放在标签里。 |
+| `getOverflowTagProps` | `() => T['element']` | 被折叠的标签合成的一个：同样是 tag 的 root，显示 overflowText、带 data-count；没有折叠的标签时 hidden。 |
+| `getItemDeleteTriggerProps` | `(props: SelectTagProps) => T['button']` | 标签删除按钮：即所在标签那份 tag 的 close-trigger（data-scope="tag"），可及名使用 translations.deleteItem，禁用时保留位置、原生 disabled；点击移除所在标签的选中值；须放在标签中。 |
 | `getPositionerProps` | `() => T['element']` |  |
 | `getContentProps` | `() => T['element']` | 浮层外壳：描边、底色、阴影与键盘收口都在它身上。 |
 | `getListProps` | `() => T['element']` | 列表框本体，滚动在这一层；role=listbox 与条目的拥有关系都归它。 |
-| `getFooterProps` | `() => T['element']` | 浮层底部的操作区，是 list 的兄弟；不在列表框的拥有关系里，也不参与方向键与连打检索。 |
-| `getEmptyProps` | `() => T['element']` | 空态占位：放在 content 里、list 的兄弟。 给了 collection 时由连接层按条数收放；条目手写时不写 hidden，露不露面归作者。 |
-| `getLoadingProps` | `() => T['element']` | 在途占位：与空态占位同一个位置，两者不同屏——取数期间它顶上来，空态让位。 给了 collection 时由连接层按条数收放；条目手写时只按 loading 收放。 |
-| `getGroupProps` | `(props: SelectGroupProps) => T['element']` | 分组容器：role=group，条目挂在它里面；分组标题经 aria-labelledby 关联。 |
-| `getGroupLabelProps` | `(props: SelectGroupProps) => T['element']` | 分组标题：不是选项、不进导航，只作为本组的可及名字。 |
+| `getFooterProps` | `() => T['element']` | 浮层底部的操作区，是 list 的兄弟；不在列表框的拥有关系中，也不参与方向键与连打检索。 |
+| `getEmptyProps` | `() => T['element']` | 空态占位：放在 content 中、list 的兄弟。 提供 collection 时由连接层按条数收放；条目手写时不写 hidden，是否显示由作者决定。 |
+| `getLoadingProps` | `() => T['element']` | 在途占位：与空态占位同一位置，两者不同时显示：加载期间显示它，空态让位。 提供 collection 时由连接层按条数收放；条目手写时只按 loading 收放。 |
+| `getGroupProps` | `(props: SelectGroupProps) => T['element']` | 分组容器：role=group，条目挂在其中；分组标题经 aria-labelledby 关联。 |
+| `getGroupLabelProps` | `(props: SelectGroupProps) => T['element']` | 分组标题：不是选项、不进入导航，只作为本组的可及名。 |
 | `getItemProps` | `(props: SelectItemProps) => T['element']` |  |
 | `getItemTextProps` | `(props: SelectItemProps) => T['element']` |  |
 | `getItemIndicatorProps` | `(props: SelectItemProps) => T['element']` |  |
-| `getHiddenSelectProps` | `() => T['select']` | 表单出口：一份视觉隐藏的原生 select，由根部件自行渲染（作者不必手写）。 选项由适配器按当前值补齐，原生提交与 required 校验据此拿到值。 |
+| `getHiddenSelectProps` | `() => T['select']` | 表单出口：一份视觉隐藏的原生 select，由根部件自行渲染（作者不必手写）。 选项由适配器按当前值补齐，原生提交与 required 校验据此获取值。 |
 
 ## 无障碍
 

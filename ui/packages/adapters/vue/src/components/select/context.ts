@@ -10,7 +10,7 @@ import type { ComputedRef, InjectionKey } from 'vue'
 import type { SelectContext } from './use-select'
 import { inject, provide } from 'vue'
 
-/** 条目自报的值与禁用，供 item-text / item-indicator 这类子部件复用同一份声明。 */
+/** 条目声明的值与禁用，供 item-text / item-indicator 等子部件复用同一份声明。 */
 export interface SelectItemContext {
   item: ComputedRef<SelectItemProps>
 }
@@ -40,7 +40,7 @@ export function useSelectItemContext(): SelectItemContext {
   return ctx
 }
 
-/** 分组自报的身份，供分组标题取到同一个值（标题的 id 由它派生）。 */
+/** 分组声明的身份，供分组标题取到同一个值（标题的 id 由它派生）。 */
 export interface SelectGroupContext {
   group: ComputedRef<SelectGroupProps>
 }
@@ -58,7 +58,7 @@ export function useSelectGroupContext(): SelectGroupContext {
   return ctx
 }
 
-/** 标签自报的值，供标签里的删除钮复用同一份声明。 */
+/** 标签声明的值，供标签中的删除按钮复用同一份声明。 */
 export interface SelectTagContext {
   value: () => string
 }

@@ -44068,11 +44068,11 @@
       "declarations": [
         {
           "kind": "class",
-          "description": "`<xh-select>` —— Light-DOM 行为宿主：用户写 root/trigger/value-text/positioner/content/item/...\n角色节点，元素跑 select 机器并把 connect 产出打上去。浮层定位引擎在本元素里建好、经 refs 注入机器，\n锚点取 trigger、被定位的浮层取 positioner。\n条目身份取用户写在 item 上的 value 属性，禁用由部件自报（aria-disabled）。\n\nvalue-text 的显示文字、overflow-tag 的 +N 与表单影子 hidden-select 的选项由元素代填，作者只需给出空节点；\nvalue-text / overflow-tag 里作者写了内容就归作者，元素不再改写。\n\ntag 与 overflow-tag 两个角色节点接的是库里 tag 的 root（DOM 上带 data-scope=\"tag\"，吃 tag 那份皮肤）：\n语气、尺寸与禁用从本元素传下去，形态按控件的面派（outline / ghost / 缺省摆淡底标签，subtle 摆描边标签）。\n节点里只有文字时元素替它包一层 tag 的 label（截断落在那一层），\n作者自己写了子节点就原样放行。item-delete-trigger 接的是所在标签那份 tag 的 close-trigger。",
+          "description": "`<xh-select>`：Light-DOM 行为宿主：作者写 root / trigger / value-text / positioner / content / item / ...\n角色节点，元素运行 select 状态机并把 connect 产出接上。浮层定位引擎在本元素中创建、经 refs 注入状态机，\n锚点取 trigger、被定位的浮层取 positioner。\n条目身份取作者写在 item 上的 value 属性，禁用由部件声明（aria-disabled）。\n\nvalue-text 的显示文字、overflow-tag 的 +N 与表单影子 hidden-select 的选项由元素填入，作者只需提供空节点；\nvalue-text / overflow-tag 中作者写了内容则由作者负责，元素不再改写。\n\ntag 与 overflow-tag 两个角色节点接线为库内 tag 的 root（DOM 上带 data-scope=\"tag\"，使用 tag 的皮肤）：\n语气、尺寸与禁用从本元素传下，形态按控件的面派生（outline / ghost / 默认使用淡底标签，subtle 使用描边标签）。\n节点中只有文字时元素为它包一层 tag 的 label（截断落在该层），\n作者自行写了子节点则原样保留。item-delete-trigger 接线为所在标签那份 tag 的 close-trigger。",
           "name": "XhSelectElement",
           "cssParts": [
             {
-              "description": "组件根容器（承载 data-state/data-disabled，也是表单影子的定位基准）",
+              "description": "组件根容器（承载 data-state / data-disabled，也是表单影子的定位基准）",
               "name": "root"
             },
             {
@@ -44080,11 +44080,11 @@
               "name": "label"
             },
             {
-              "description": "触发按钮（aria-haspopup=listbox/aria-expanded/aria-controls 所在），同时是定位锚点，须是原生 button",
+              "description": "触发按钮（aria-haspopup=listbox / aria-expanded / aria-controls 所在），同时是定位锚点，须是原生 button",
               "name": "trigger"
             },
             {
-              "description": "选中项文本的显示位；留空即由元素填入 displayText，作者写了内容则归作者",
+              "description": "选中项文本的显示位；留空即由元素填入 displayText，作者写了内容则由作者负责",
               "name": "value-text"
             },
             {
@@ -44092,31 +44092,31 @@
               "name": "indicator"
             },
             {
-              "description": "盒：触发器与清空按钮在里面并排，描边、底色、控件高度与聚焦环都长在它上面",
+              "description": "盒：触发器与清空按钮在其中并排，描边、底色、控件高度与聚焦环都绘制在它身上",
               "name": "control"
             },
             {
-              "description": "清空按钮：盒里 trigger 的兄弟节点，不占 Tab 位；清不了（无值 / 禁用 / 只读）时带 hidden，点完焦点送回 trigger；可及名走 translations.clearTrigger",
+              "description": "清空按钮：盒中 trigger 的兄弟节点，不占 Tab 位；无法清空（无值 / 禁用 / 只读）时带 hidden，点击后焦点送回 trigger；可及名使用 translations.clearTrigger",
               "name": "clear-trigger"
             },
             {
-              "description": "触发器里的标签行：可见标签与 overflow-tag 放在它里面；无选中时带 hidden，value-text 回来显示占位文字",
+              "description": "触发器中的标签行：可见标签与 overflow-tag 放在其中；无选中时带 hidden，value-text 恢复显示占位文字",
               "name": "tag-list"
             },
             {
-              "description": "多选标签，须自带 value 属性标识选中值；接的是 tag 的 root（data-scope=\"tag\"），语气、尺寸与禁用随本元素、形态按控件的面派；放触发器里是纯展示，放外面配 item-delete-trigger 可删",
+              "description": "多选标签，须自带 value 属性标识选中值；接线为 tag 的 root（data-scope=\"tag\"），语气、尺寸与禁用随本元素、形态按控件的面派生；放在触发器中即纯展示，放在外部配 item-delete-trigger 可删除",
               "name": "tag"
             },
             {
-              "description": "标签删除按钮，须放在 tag 里；接的是所在标签那份 tag 的 close-trigger（data-scope=\"tag\"），禁用时留位、原生 disabled；点按摘掉所在标签的选中值，可及名走 translations.deleteItem",
+              "description": "标签删除按钮，须放在 tag 中；接线为所在标签那份 tag 的 close-trigger（data-scope=\"tag\"），禁用时保留位置、原生 disabled；点击移除所在标签的选中值，可及名使用 translations.deleteItem",
               "name": "item-delete-trigger"
             },
             {
-              "description": "折起的标签合成的那一枚，同样接 tag 的 root，带 data-count：留空即由元素填入 +N（文字走 translations.overflowTag），作者写了内容则归作者；没有折起的标签时带 hidden",
+              "description": "折叠的标签合成的一个，同样接线为 tag 的 root，带 data-count：留空即由元素填入 +N（文字使用 translations.overflowTag），作者写了内容则由作者负责；没有折叠的标签时带 hidden",
               "name": "overflow-tag"
             },
             {
-              "description": "浮层定位容器，坐标由引擎写成内联样式",
+              "description": "浮层定位容器，坐标由引擎写为内联样式",
               "name": "positioner"
             },
             {
@@ -44124,27 +44124,27 @@
               "name": "content"
             },
             {
-              "description": "role=listbox 本体，条目放在它里面；滚动也在这一层",
+              "description": "role=listbox 本体，条目放在其中；滚动也在这一层",
               "name": "list"
             },
             {
-              "description": "浮层底部的操作区，是 list 的兄弟；不进列表框的拥有关系，方向键与连打检索也不认它",
+              "description": "浮层底部的操作区，是 list 的兄弟；不进入列表框的拥有关系，方向键与连打检索也不识别它",
               "name": "footer"
             },
             {
-              "description": "空态占位，须放在 content 里当 list 的兄弟；给了 collection 时由元素按条数收放，条目手写时归作者",
+              "description": "空态占位，须放在 content 中作为 list 的兄弟；提供 collection 时由元素按条数收放，条目手写时由作者负责",
               "name": "empty"
             },
             {
-              "description": "在途占位，与空态占位同一个位置，取数期间顶上来",
+              "description": "在途占位，与空态占位同一位置，加载期间显示",
               "name": "loading"
             },
             {
-              "description": "role=group 分组容器，须自带 value 属性标识身份；条目挂在它里面",
+              "description": "role=group 分组容器，须自带 value 属性标识身份；条目挂在其中",
               "name": "group"
             },
             {
-              "description": "分组标题（本组 aria-labelledby 的目标），须放在 group 里",
+              "description": "分组标题（本组 aria-labelledby 的目标），须放在 group 中",
               "name": "group-label"
             },
             {
@@ -44152,7 +44152,7 @@
               "name": "item"
             },
             {
-              "description": "条目文本（连打检索与 value-text 的取字处）",
+              "description": "条目文本（连打检索与 value-text 的取字来源）",
               "name": "item-text"
             },
             {
@@ -44160,7 +44160,7 @@
               "name": "item-indicator"
             },
             {
-              "description": "表单影子，须是原生 select 空壳；选项由元素按当前值补齐（多选时开原生 multiple），省略该节点即不参与表单",
+              "description": "表单影子，须是原生 select 空壳；选项由元素按当前值补齐（多选时开启原生 multiple），省略该节点即不参与表单",
               "name": "hidden-select"
             }
           ],
@@ -44368,7 +44368,7 @@
               "type": {
                 "text": "SelectSchema['props']['translations'] | undefined"
               },
-              "description": "读屏文案（clearTrigger 等）；对象进不了属性，只作为 property 暴露。"
+              "description": "读屏文案（clearTrigger 等）；对象无法表达为属性，只作为 property 暴露。"
             },
             {
               "kind": "field",
@@ -44476,7 +44476,7 @@
               "name": "declaredDisabled",
               "privacy": "private",
               "readonly": true,
-              "description": "作者声明的条目禁用，只认首见那一份；给了 collection 时用它，否则现读"
+              "description": "作者声明的条目禁用，只认首次见到的值；提供 collection 时使用它，否则现读"
             },
             {
               "kind": "field",
@@ -44550,7 +44550,7 @@
                   }
                 }
               ],
-              "description": "在机器挂载前建立 Presence，确保 default-open 的行为资源与视觉退场共享同一租约。"
+              "description": "在状态机挂载前建立 Presence，确保 default-open 的行为资源与视觉退场共享同一租约。"
             },
             {
               "kind": "field",
@@ -44593,7 +44593,7 @@
                   }
                 }
               ],
-              "description": "承载焦点的条目被移出 DOM 时上报 ITEM.LOST，让机器按当前数据重挑高亮锚点。\n判据是「焦点已不在列表内」且离场的正是持有锚点的那个条目。"
+              "description": "承载焦点的条目被移出 DOM 时上报 ITEM.LOST，让状态机按当前数据重新选择高亮锚点。\n判据是焦点已不在列表内且离场的正是持有锚点的条目。"
             },
             {
               "kind": "method",
@@ -44706,7 +44706,7 @@
               "type": {
                 "text": "SelectTagMeta[]"
               },
-              "description": "该摆出来的标签（值 + 显示文本），已按 max-tag-count 截断，与选中先后同序。\n作者据它渲染 tag 部件。机器尚未建起时给空数组。",
+              "description": "应显示的标签（值 + 显示文本），已按 max-tag-count 截断，与选中先后同序。\n作者据此渲染 tag 部件。状态机尚未建立时返回空数组。",
               "readonly": true
             },
             {
@@ -44715,7 +44715,7 @@
               "type": {
                 "text": "number"
               },
-              "description": "被 max-tag-count 折起来的标签数；+N 那一枚由元素填进 overflow-tag，这里只供作者读。机器尚未建起时为 0。",
+              "description": "被 max-tag-count 折叠的标签数；+N 标签由元素填入 overflow-tag，此处仅供作者读取。状态机尚未建立时为 0。",
               "readonly": true
             },
             {
@@ -44724,7 +44724,7 @@
               "type": {
                 "text": "string"
               },
-              "description": "overflow-tag 显示的文字（translations.overflowTag 算出）；没有折起的标签、或机器尚未建起时为空串。",
+              "description": "overflow-tag 显示的文字（由 translations.overflowTag 计算）；没有折叠的标签或状态机尚未建立时为空串。",
               "readonly": true
             },
             {
@@ -44759,7 +44759,7 @@
               "type": {
                 "text": "string | string[] | undefined"
               },
-              "description": "受控选中值；缺省该属性即非受控。多选集合请写 property，属性只递得进单值",
+              "description": "受控选中值；未提供该属性即非受控。多选集合通过 property 设置，属性只能传入单值",
               "name": "value",
               "fieldName": "value"
             },
@@ -44767,7 +44767,7 @@
               "type": {
                 "text": "string | string[] | undefined"
               },
-              "description": "非受控初始选中值。多选集合请写 property，属性只递得进单值",
+              "description": "非受控初始选中值。多选集合通过 property 设置，属性只能传入单值",
               "name": "default-value",
               "fieldName": "defaultValue"
             },
@@ -44775,7 +44775,7 @@
               "type": {
                 "text": "boolean | undefined"
               },
-              "description": "受控开合；缺省该属性即非受控",
+              "description": "受控开合；未提供该属性即非受控",
               "name": "open",
               "fieldName": "open"
             },
@@ -44791,7 +44791,7 @@
               "type": {
                 "text": "boolean | undefined"
               },
-              "description": "整个控件禁用：trigger 用原生 disabled，表单影子不参与提交",
+              "description": "整个控件禁用：trigger 使用原生 disabled，表单影子不参与提交",
               "name": "disabled",
               "fieldName": "disabled"
             },
@@ -44799,7 +44799,7 @@
               "type": {
                 "text": "boolean | undefined"
               },
-              "description": "只读：浮层照常展开、条目照常浏览，但选中值改不动、也清不掉",
+              "description": "只读：浮层照常展开、条目照常浏览，但选中值不可修改、也不可清空",
               "name": "read-only",
               "fieldName": "readOnly"
             },
@@ -44815,7 +44815,7 @@
               "type": {
                 "text": "boolean | undefined"
               },
-              "description": "条目还在取：列表报 aria-busy，在途占位顶上来、空态占位让位",
+              "description": "条目加载中：列表报告 aria-busy，显示在途占位、隐藏空态占位",
               "name": "loading",
               "fieldName": "loading"
             },
@@ -44823,7 +44823,7 @@
               "type": {
                 "text": "number | undefined"
               },
-              "description": "多选标签最多摆几个，其余折进 overflowCount 并合成 overflow-tag 那一枚；缺省 3",
+              "description": "多选标签最多显示的数量，其余折叠进 overflowCount 并合成 overflow-tag；默认 3",
               "name": "max-tag-count",
               "fieldName": "maxTagCount"
             },
@@ -44831,7 +44831,7 @@
               "type": {
                 "text": "boolean | undefined"
               },
-              "description": "原生表单校验：无选中值时提交被拦下；多选下的门槛是至少选中一项",
+              "description": "原生表单校验：无选中值时提交被拦截；多选下的条件是至少选中一项",
               "name": "required",
               "fieldName": "required"
             },
@@ -44839,7 +44839,7 @@
               "type": {
                 "text": "string | undefined"
               },
-              "description": "表单字段名；给定后表单影子才带 name 并参与提交",
+              "description": "表单字段名；提供后表单影子才带 name 并参与提交",
               "name": "name",
               "fieldName": "name"
             },
@@ -44855,7 +44855,7 @@
               "type": {
                 "text": "Placement | undefined"
               },
-              "description": "首选放置位，默认 bottom-start；避让后的实际位写在 data-placement 上",
+              "description": "首选放置位，默认 bottom-start；避让后的实际位置写在 data-placement 上",
               "name": "placement",
               "fieldName": "placement"
             },
@@ -44871,7 +44871,7 @@
               "type": {
                 "text": "boolean | undefined"
               },
-              "description": "方向键走到尽头回绕，默认 true；写 loop=\"false\" 关掉",
+              "description": "方向键到达末尾回绕，默认 true；写 loop=\"false\" 关闭",
               "name": "loop",
               "fieldName": "loop"
             },
@@ -44879,7 +44879,7 @@
               "type": {
                 "text": "boolean | undefined"
               },
-              "description": "多选：点中即在集合里增删该项，列表不收起；存在即开，关掉要摘属性（不同于 loop，写 multiple=\"false\" 仍是开）",
+              "description": "多选：点击即在集合中增删该项，列表不收起；属性存在即开启，关闭需移除属性（不同于 loop，写 multiple=\"false\" 仍为开启）",
               "name": "multiple",
               "fieldName": "multiple"
             },
