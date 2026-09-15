@@ -14,7 +14,7 @@
 
 ## 用法
 
-一排可摘标签，每一枚都是库里的 tag：整组只占一个 Tab 位，方向键走标签，Delete 或 Backspace 摘掉，那颗叉就是 tag 的 close-trigger
+一排可移除标签，每个都是库内的 tag：整组只占一个 Tab 位，方向键移动标签，Delete 或 Backspace 移除，关闭按钮就是 tag 的 close-trigger
 
 <XhDemo src="tag-group/01-basic" />
 
@@ -28,19 +28,19 @@
 
 ### 可选中
 
-selectionMode 决定点一枚是替换还是加选；Ctrl/Cmd + A 全选
+selectionMode 决定点击一个标签是替换还是加选；Ctrl/Cmd + A 全选
 
 <XhDemo src="tag-group/02-selection" />
 
 ### 尺寸
 
-size 打在组上逐枚落到每一枚标签上，走 tag 的三档，标签自己不写档位
+size 写在组上逐个落到每个标签上，使用 tag 的三档，标签自身不写档位
 
 <XhDemo src="tag-group/03-size" />
 
 ### 手写部件
 
-逐部件自己写，标签里就能塞头像、计数这类自带内容，摘除钮照旧归 cell 管；条目渲出来是 tag 的 root、文字是 tag 的 label，产出的结构与只交数据那一份完全一致，Tab 位与键盘也一样
+逐部件自行编写，标签中即可放置头像、计数等自带内容，移除按钮照常归 cell 管理；条目渲染为 tag 的 root、文字是 tag 的 label，产出的结构与只提供数据的一份完全一致，Tab 位与键盘也一样
 
 <XhDemo src="tag-group/04-parts" />
 
