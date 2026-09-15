@@ -1,6 +1,6 @@
 # Dialog 对话框 <Badge type="info" text="alpha" />
 
-浮在页面之上的一层，通常需要用户处理完才能回到下面。
+浮在页面之上的一层，通常需要用户处理完成后才能回到页面。
 
 <div class="xh-resource-links">
   <a href="https://github.com/XiHanFun/XiHan.UI/tree/dev/ui/packages/engine/headless/src/dialog" target="_blank" rel="noreferrer">Headless</a>
@@ -76,23 +76,23 @@ createDialogService 的 confirm 与单按钮预设：一行调用弹出，onOk �
 
 ### 何时使用
 
-- 需要用户做出决定且不能忽略（确认删除、填一段必要信息）。
+- 需要用户做出决定且不能忽略（确认删除、填写必要信息）。
 - 一段独立的子任务，完成后回到原处。
 
 ### 何时不用
 
-- 只是提示一条结果：用[轻提示](./toast)。
-- 内容是页面主流程的一部分：直接展开在页面里。
-- 内容很长或是一整个表单：用[抽屉](./drawer)或单独一页。
+- 只提示一条结果时，使用[轻提示](./toast)。
+- 内容是页面主流程的一部分时，直接展开在页面内。
+- 内容很长或是完整表单时，使用[抽屉](./drawer)或单独页面。
 
 ### 特性
 
 - `modal` 决定是否锁住下层：非模态不创建遮罩，页面仍可点击、聚焦和滚动；展开期间切换会同步更新这些约束。
 - 焦点进入时落在 `initialFocus`，关闭后归还触发器。
-- `closeOnEscape` 与 `closeOnInteractOutside` 各自可关——填了一半的表单不该点一下外面就没了。
-- 内容区可以内部滚动，标题栏可以拖动挪窗口。
+- `closeOnEscape` 与 `closeOnInteractOutside` 可分别关闭，避免填写中的表单因误点外部而丢失。
+- 内容区可以内部滚动，标题栏可以拖动移动窗口。
 - 关闭时内容立即失活并退出可访问树，内容与遮罩的有限退场动画全部完成后再释放模态资源，并发出 `onExitComplete` / `exit-complete`。重开撤销旧退出，卸载立即清理。
-- 另有命令式服务，业务代码一次调用即弹出。
+- 另有命令式服务，业务代码一次调用即可弹出。
 - 命令式服务与声明式组件共用 `Header / Body / Footer` 三段：标题和徽记在 Header，字符串、函数正文及取值表单在 Body，操作按钮在 Footer。长内容只滚动 Body，头尾保留在面板内。
 - 命令式服务的 `onOk` 返回 `false` 只阻止关闭；同步抛错或 Promise 拒绝会保持对话框打开，设置独立 `service.actionError` 并触发 `onActionError({ cause })`。`cause` 保留原始异常，不直接转成用户提示。
 - 失败提示通过服务的 `actionErrorText` 本地化：Vue 支持字符串/ref/getter，React 支持字符串/getter，Web Components 使用字符串，与各端按钮文案合同一致；提示位于 Body 的 `role=alert` 实时区。重试先清理旧异常，关闭或切换请求后旧 Promise 不再写回。
@@ -100,18 +100,18 @@ createDialogService 的 confirm 与单按钮预设：一行调用弹出，onOk �
 
 ### 组合
 
-- 内容区套[滚动区域](./scroll-area)；按钮行用[按钮组](./button-group)；确认类的轻量场景改用[弹出确认](./popconfirm)。
+- 内容区放[滚动区域](./scroll-area)；按钮行使用[按钮组](./button-group)；轻量确认场景改用[弹出确认](./popconfirm)。
 
 ### 最佳实践
 
-- 标题写这次要做什么，别写"提示"。
-- 确认按钮的文字写具体动作（"删除"），不写"确定"。
-- 破坏性操作用危险语气，并让取消是默认焦点。
+- 标题说明本次要做什么，不写“提示”。
+- 确认按钮的文字写具体动作（“删除”），不写“确定”。
+- 破坏性操作使用危险语气，并让取消成为默认焦点。
 
 ### 反模式
 
-- 对话框里再开对话框。
-- 点外面就关，而里面有未保存的输入。
+- 在对话框内再打开对话框。
+- 内部有未保存的输入却允许点击外部关闭。
 
 ## API 参考
 
@@ -281,7 +281,7 @@ createDialogService 的 confirm 与单按钮预设：一行调用弹出，onOk �
 | `--xh-dialog-footer-gap` | `footer` | `gap` | `default` | `--xh-control-gap-md` | dialog 的 footer 部件 gap 覆盖槽。 |
 | `--xh-dialog-footer-pt` | `footer` | `padding-block-start` | `default` | `--xh-space-2` | dialog 的 footer 部件 padding-block-start 覆盖槽。 |
 | `--xh-dialog-gap` | `content` | `gap` | `default` | `--xh-stack-gap-md` | dialog 的 content 部件 gap 覆盖槽。 |
-| `--xh-dialog-header-bg` | `content` | `background` | `default` | `--xh-material-glass-bg` | dialog 的 content 部件 background 覆盖槽。 |
+| `--xh-dialog-header-bg` | `content` | `background` | `default` | `--xh-material-elevated-bg` | dialog 的 content 部件 background 覆盖槽。 |
 | `--xh-dialog-header-gap` | `header` | `gap` | `default` | `--xh-stack-gap-sm` | dialog 的 header 部件 gap 覆盖槽。 |
 | `--xh-dialog-header-lens-depth` | `content` | `background` | `default` | `--xh-dialog-py` | dialog 的 content 部件 background 覆盖槽。 |
 | `--xh-dialog-header-pb` | `header` | `padding-block-end` | `default` | `--xh-space-2` | dialog 的 header 部件 padding-block-end 覆盖槽。 |
@@ -290,14 +290,14 @@ createDialogService 的 confirm 与单按钮预设：一行调用弹出，onOk �
 | `--xh-dialog-indicator-bg` | `indicator` | `background` | `default` | `--xh-_tone-subtle` | dialog 的 indicator 部件 background 覆盖槽。 |
 | `--xh-dialog-indicator-fg` | `indicator` | `color` | `default` | `--xh-_tone-fg` | dialog 的 indicator 部件 color 覆盖槽。 |
 | `--xh-dialog-indicator-mark-size` | `indicator` | `--xh-icon-size` | `default` | `--xh-dialog-indicator-size` | dialog 的 indicator 部件 --xh-icon-size 覆盖槽。 |
-| `--xh-dialog-indicator-radius` | `indicator` | `border-radius` | `default` | `--xh-shape-pill` | dialog 的 indicator 部件 border-radius 覆盖槽。 |
+| `--xh-dialog-indicator-radius` | `indicator` | `border-radius` | `default` | `--xh-shape-circle` | dialog 的 indicator 部件 border-radius 覆盖槽。 |
 | `--xh-dialog-indicator-size` | `indicator` | `--xh-icon-size`<br>`block-size`<br>`inline-size` | `default` | `--xh-glyph-size-md` | dialog 的 indicator 部件 --xh-icon-size、block-size、inline-size 覆盖槽。 |
 | `--xh-dialog-layer` | `positioner` | `z-index` | `default` | `--xh-_layer` | dialog 的 positioner 部件 z-index 覆盖槽。 |
 | `--xh-dialog-max-w` | `content` | `max-inline-size` | `default` | `--xh-_dialog-max-w` | dialog 的 content 部件 max-inline-size 覆盖槽。 |
 | `--xh-dialog-positioner-padding` | `positioner` | `padding-block-end`<br>`padding-block-start`<br>`padding-inline` | `default` | `--xh-space-4` | dialog 的 positioner 部件 padding-block-end、padding-block-start、padding-inline 覆盖槽。 |
 | `--xh-dialog-px` | `content` | `padding-inline` | `default` | `--xh-surface-px-md` | dialog 的 content 部件 padding-inline 覆盖槽。 |
 | `--xh-dialog-py` | `content` | `background`<br>`padding-block` | `default` | `--xh-surface-py-md` | dialog 的 content 部件 background、padding-block 覆盖槽。 |
-| `--xh-dialog-radius` | `content` | `border-radius` | `default` | `--xh-shape-surface` | dialog 的 content 部件 border-radius 覆盖槽。 |
+| `--xh-dialog-radius` | `content` | `border-radius` | `default` | `--xh-shape-overlay` | dialog 的 content 部件 border-radius 覆盖槽。 |
 | `--xh-dialog-separator` | `body`<br>`content`<br>`footer`<br>`header` | `border-block-end`<br>`border-block-start` | `has([data-scope='dialog'][data-part='body'])`<br>`has([data-scope='dialog'][data-part='footer'])` | `--xh-material-elevated-separator` | dialog 的 body、content、footer、header 部件 border-block-end、border-block-start 覆盖槽。 |
 | `--xh-dialog-shadow` | `content` | `box-shadow` | `default` | `--xh-material-elevated-shadow` | dialog 的 content 部件 box-shadow 覆盖槽。 |
 | `--xh-dialog-title-fg` | `title` | `color` | `default` | `--xh-fg-default` | dialog 的 title 部件 color 覆盖槽。 |

@@ -52,8 +52,8 @@ afterEach(() => {
   delete document.documentElement.dataset.motion
 })
 
-describe('dialog 的 M4 高层玻璃皮肤', () => {
-  it.each(['light', 'dark'] as const)('%s：正文、lens、分段边缘与模糊遮罩都消费公开材质槽', async (theme) => {
+describe('dialog 的 M4 高层实体面皮肤', () => {
+  it.each(['light', 'dark'] as const)('%s：正文、lens、分段边缘与模糊遮罩都消费公开材质槽，主阅读面不采样背景', async (theme) => {
     document.documentElement.dataset.theme = theme
     mount()
     await settle()
@@ -62,7 +62,7 @@ describe('dialog 的 M4 高层玻璃皮肤', () => {
     const backdrop = getComputedStyle(part('backdrop'))
     expect(content.borderTopWidth).toBe('1px')
     expect(content.backgroundImage).toContain('linear-gradient')
-    expect(content.backdropFilter).toContain('blur(32px)')
+    expect(content.backdropFilter).toBe('none')
     expect(content.boxShadow).toContain('2px 4px')
     expect(content.boxShadow).toContain('12px 28px')
     expect(content.boxShadow).toContain('32px 64px')

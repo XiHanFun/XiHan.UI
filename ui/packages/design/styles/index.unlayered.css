@@ -23304,8 +23304,8 @@
   padding-block: var(--xh-dialog-py, var(--xh-surface-py-md));
   padding-inline: var(--xh-dialog-px, var(--xh-surface-px-md));
   border: var(--xh-stroke-thin) solid var(--xh-dialog-border, var(--xh-material-elevated-border));
-  border-radius: var(--xh-dialog-radius, var(--xh-shape-surface));
-  /* M4 把正文区压到高遮蔽 tint；顶部从较通透的 M3 lens 平滑过渡，
+  border-radius: var(--xh-dialog-radius, var(--xh-shape-overlay));
+  /* M4 是不透明的 sheet 实体面；顶部 lens 与正文同一实体面，作者可用 --xh-dialog-header-bg 单独换头部底色，
      让标题保留空间感而不把长正文也放进透明区。两层都先留组件公开槽。 */
   background:
     linear-gradient(
@@ -23315,7 +23315,7 @@
     ),
     linear-gradient(
       to bottom,
-      var(--xh-dialog-content-lens-bg, var(--xh-dialog-header-bg, var(--xh-material-glass-bg))),
+      var(--xh-dialog-content-lens-bg, var(--xh-dialog-header-bg, var(--xh-material-elevated-bg))),
       var(
         --xh-dialog-bg,
         var(--xh-material-elevated-bg)
@@ -23401,7 +23401,7 @@
   place-items: center;
   inline-size: var(--xh-dialog-indicator-size, var(--xh-glyph-size-md));
   block-size: var(--xh-dialog-indicator-size, var(--xh-glyph-size-md));
-  border-radius: var(--xh-dialog-indicator-radius, var(--xh-shape-pill));
+  border-radius: var(--xh-dialog-indicator-radius, var(--xh-shape-circle));
   background: var(--xh-dialog-indicator-bg, var(--xh-_tone-subtle, var(--xh-bg-muted)));
   color: var(--xh-dialog-indicator-fg, var(--xh-_tone-fg, var(--xh-fg-default)));
 }
@@ -23499,7 +23499,7 @@
   transition:
     background var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
     color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
-    scale var(--xh-motion-duration-micro) var(--xh-motion-ease-enter-strong);
+    scale var(--xh-motion-duration-release) var(--xh-motion-ease-release);
 }
 
 [data-scope='dialog'][data-part='close-trigger'][hidden] {
@@ -23514,9 +23514,11 @@
 [data-scope='dialog'][data-part='close-trigger']:active {
   background: var(--xh-dialog-close-bg-active, var(--xh-bg-subtle-active));
   scale: var(--xh-motion-scale-press);
+  transition-duration: var(--xh-motion-duration-press);
+  transition-timing-function: var(--xh-motion-ease-press);
 }
 
-/* 内收的焦点环先落到实体隔离底，不直接压在随背景变化的玻璃上。 */
+/* 内收的焦点环先落到实体隔离底，不依赖正文底色。 */
 [data-scope='dialog'][data-part='close-trigger']:focus-visible {
   background: var(--xh-dialog-close-bg-focus, var(--xh-material-elevated-focus-surface));
   color: var(--xh-dialog-close-fg-focus, var(--xh-material-elevated-fg));
