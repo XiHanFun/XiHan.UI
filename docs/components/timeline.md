@@ -1,6 +1,6 @@
 # Timeline 时间线 <Badge type="info" text="alpha" />
 
-按时间顺序排开的一串事件，每条有标记、连接线与内容。
+按时间顺序排列的一串事件，每条有标记、连接线与内容。
 
 <div class="xh-resource-links">
   <a href="https://github.com/XiHanFun/XiHan.UI/tree/dev/ui/packages/engine/headless/src/timeline" target="_blank" rel="noreferrer">Headless</a>
@@ -62,29 +62,29 @@ label 与内容对置：逐条交替排布时时间戳仍停在同一侧，不�
 
 ### 何时不用
 
-- 表达"还要走几步"：用[步骤条](./steps)——时间线是回顾，步骤条是前瞻。
-- 事件之间没有时间关系：用[列表](./list)。
+- 表达后续步骤时，使用[步骤条](./steps)：时间线是回顾，步骤条是前瞻。
+- 事件之间没有时间关系时，使用[列表](./list)。
 
 ### 特性
 
 - 逐条可以有自己的语气（成功 / 失败 / 进行中）。
 - 内容可以固定在一侧，也可以左右交替。
 - 支持横排。
-- `label` 是与内容对置的那一列，装这一条的坐标（日期、版本号）；逐条交替排布时时间戳因此不跟着内容左右横跳。
+- `label` 是与内容对置的一列，承载该条的坐标（日期、版本号）；逐条交替排布时时间戳不随内容左右跳动。
 
 ### 组合
 
-- 时间位放[时间戳](./timestamp)；内容里放[卡片](./card)或[描述列表](./descriptions)。
+- 时间位放[时间戳](./timestamp)；内容内放[卡片](./card)或[描述列表](./descriptions)。
 
 ### 最佳实践
 
-- 顺序保持一致：要么恒为最新在上，要么恒为最早在上，别混。
-- 每条都写清楚时刻，只写"刚刚"在回溯时没有价值。
+- 顺序保持一致：始终最新在上，或始终最早在上，不混用。
+- 每条写明时刻，只写“刚刚”在回溯时没有价值。
 
 ### 反模式
 
-- 条数很多却不折叠：一条时间线拉出十屏。
-- 用颜色区分事件类型却不给文字。
+- 条数很多却不折叠，一条时间线占据十屏。
+- 用颜色区分事件类型却不提供文字。
 
 ## API 参考
 
@@ -183,7 +183,7 @@ label 与内容对置：逐条交替排布时时间戳仍停在同一侧，不�
 | `--xh-timeline-indicator-bg` | `indicator` | `background` | `default` | `--xh-_tone-soft` | timeline 的 indicator 部件 background 覆盖槽。 |
 | `--xh-timeline-indicator-fg` | `indicator` | `color` | `default` | `--xh-_tone-on` | timeline 的 indicator 部件 color 覆盖槽。 |
 | `--xh-timeline-indicator-font-size` | `indicator` | `font-size` | `default` | `--xh-_timeline-caption-font-size` | timeline 的 indicator 部件 font-size 覆盖槽。 |
-| `--xh-timeline-indicator-radius` | `indicator` | `border-radius` | `default` | `--xh-shape-pill` | timeline 的 indicator 部件 border-radius 覆盖槽。 |
+| `--xh-timeline-indicator-radius` | `indicator` | `border-radius` | `default` | `--xh-shape-circle` | timeline 的 indicator 部件 border-radius 覆盖槽。 |
 | `--xh-timeline-indicator-size` | `indicator`<br>`item` | `block-size`<br>`inline-size`<br>`margin-block-start` | `default` | `--xh-_timeline-dot-size` | timeline 的 indicator、item 部件 block-size、inline-size、margin-block-start 覆盖槽。 |
 | `--xh-timeline-item-gap` | `content`<br>`item`<br>`label` | `padding-block-end`<br>`padding-inline-end` | `@media (min-width: 768px)`<br>`default`<br>`has(> [data-scope='timeline'][data-part='label'])`<br>`orientation=horizontal` | `--xh-_timeline-item-gap` | timeline 的 content、item、label 部件 padding-block-end、padding-inline-end 覆盖槽。 |
 | `--xh-timeline-label-fg` | `label` | `color` | `default` | `--xh-fg-subtle` | timeline 的 label 部件 color 覆盖槽。 |
