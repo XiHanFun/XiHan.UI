@@ -27784,7 +27784,7 @@
   justify-content: center;
   padding: 0;
   border: var(--xh-stroke-thin) solid var(--xh-message-feed-scroll-to-end-trigger-border, var(--xh-border-default));
-  border-radius: var(--xh-message-feed-scroll-to-end-trigger-radius, var(--xh-shape-pill));
+  border-radius: var(--xh-message-feed-scroll-to-end-trigger-radius, var(--xh-shape-circle));
   background: var(--xh-message-feed-scroll-to-end-trigger-bg, var(--xh-bg-surface-raised));
   box-shadow: var(--xh-message-feed-scroll-to-end-trigger-shadow, var(--xh-elevation-raised));
   color: var(--xh-message-feed-scroll-to-end-trigger-fg, var(--xh-fg-default));
@@ -27795,7 +27795,7 @@
   cursor: pointer;
   transition:
     background var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
-    scale var(--xh-motion-duration-micro) var(--xh-motion-ease-enter-strong);
+    scale var(--xh-motion-duration-release) var(--xh-motion-ease-release);
 }
 
 [data-scope='message-feed'][data-part='scroll-to-end-trigger'][hidden] {
@@ -27813,6 +27813,8 @@
 
 [data-scope='message-feed'][data-part='scroll-to-end-trigger']:active {
   scale: var(--xh-motion-scale-press);
+  transition-duration: var(--xh-motion-duration-press);
+  transition-timing-function: var(--xh-motion-ease-press);
 }
 
 /* 没写内容就由皮肤画一枚向下的字形；作者往按钮里塞了自己的图形，这条规则即不命中 */

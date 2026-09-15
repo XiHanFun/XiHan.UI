@@ -38613,7 +38613,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-shape-pill"
+        "--xh-shape-circle"
       ],
       "visibility": "public",
       "description": "message-feed 的 scroll-to-end-trigger 部件 border-radius 覆盖槽。"
