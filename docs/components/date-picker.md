@@ -50,7 +50,7 @@
 
 ### 周期选择
 
-granularity 决定输入行铺哪几段、浮层铺哪一档格子
+granularity 决定输入行铺设哪几段、浮层铺设哪一档格子
 
 <XhDemo src="date-picker/06-granularity" />
 

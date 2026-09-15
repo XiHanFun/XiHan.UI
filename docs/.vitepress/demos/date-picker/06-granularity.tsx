@@ -1,4 +1,4 @@
-// 周期选择 | granularity 决定输入行铺哪几段、浮层铺哪一档格子
+// 周期选择 | granularity 决定输入行铺设哪几段、浮层铺设哪一档格子
 import type { CalendarGranularity, CalendarPeriod } from "@xihan-ui/headless";
 import type { CSSProperties, ReactNode } from "react";
 import { calendarPeriodOf, calendarPeriodValue } from "@xihan-ui/headless";
