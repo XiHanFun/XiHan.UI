@@ -22,7 +22,7 @@ import { computed, ref } from "vue";
 const value = ref<string[]>([]);
 const text = computed(() => (value.value[0] && value.value[1] ? `${value.value[0]} → ${value.value[1]}` : "（未填齐）"));
 
-// 判定与 min/max 裁掉的值同等对待：判真的格子仍可聚焦，只是选不中
+// 判定与 min/max 的界外值同等对待：判真的格子仍可聚焦，只是选不中
 function isTimeUnavailable(option: string, unit: TimePickerColumnUnit, index: TimeRangePickerEndIndex): boolean {
   if (unit !== "minute")
     return false;

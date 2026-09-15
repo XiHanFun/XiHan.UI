@@ -15,12 +15,14 @@
           <span data-xh-part="segment" segment="hour"></span>
           <span>:</span>
           <span data-xh-part="segment" segment="minute"></span>
+          <span data-xh-part="segment" segment="dayPeriod"></span>
         </div>
         <span data-xh-part="range-separator">-</span>
         <div data-xh-part="segment-group" index="1">
           <span data-xh-part="segment" segment="hour"></span>
           <span>:</span>
           <span data-xh-part="segment" segment="minute"></span>
+          <span data-xh-part="segment" segment="dayPeriod"></span>
         </div>
         <button data-xh-part="clear-trigger"></button>
         <button data-xh-part="trigger"></button>
@@ -32,11 +34,13 @@
             <div data-xh-part="column-group-label">开始</div>
             <div data-xh-part="column" unit="hour"></div>
             <div data-xh-part="column" unit="minute"></div>
+            <div data-xh-part="column" unit="dayPeriod"></div>
           </div>
           <div data-xh-part="column-group" index="1">
             <div data-xh-part="column-group-label">结束</div>
             <div data-xh-part="column" unit="hour"></div>
             <div data-xh-part="column" unit="minute"></div>
+            <div data-xh-part="column" unit="dayPeriod"></div>
           </div>
         </div>
       </div>
@@ -63,7 +67,7 @@
     return cell;
   }
 
-  // 两组各自该排哪几列、每列有哪些格由组件给：越界的、不合 step 的、被另一端顶住的，都已经不在里面
+  // 两组各自该排哪几列、每列有哪些格由组件给；区间约束只切换格子的禁用态，不删节点
   function paint() {
     content.querySelectorAll('[data-xh-part="column-group"]').forEach((group, index) => {
       const columns = picker.columnGroups[index].columns;
@@ -85,11 +89,11 @@
   picker.addEventListener("value-change", async (event) => {
     picker.value = event.detail.value;
     show(event.detail.value);
-    // 受控值要等元素这一轮更新把它送进机器，之后读到的两组列才是按新值裁过的
+    // 受控值要等元素这一轮更新把它送进机器，之后各格才会按新边界刷新禁用态
     await picker.updateComplete;
     paint();
   });
-  // 挑一格、敲一个数字都可能让别的列跟着收窄；浮层被搬走后事件不再经过元素，
+  // 挑一格、敲一个数字都可能让别的列刷新禁用态；浮层被搬走后事件不再经过元素，
   // 所以挂在 content 自己身上，等机器处理完这一下再重读一遍
   for (const type of ["click", "keydown"])
     content.addEventListener(type, () => queueMicrotask(paint));

@@ -653,6 +653,24 @@ describe('两条路写的是同一个值', () => {
     h.option(1, 'dayPeriod', '00').click()
     expect(h.value()).toEqual(['18:00', '18:00'])
   })
+
+  it('12 小时制下另一端形成边界时仍保留完整小时列，只把界外项标为禁用', () => {
+    const h = open({ defaultOpen: true, hourCycle: 12, defaultValue: ['', '03:00'] })
+    const hours = Array.from({ length: 12 }, (_, index) => String(index + 1).padStart(2, '0'))
+
+    expect(h.api().columnGroups[0].columns.find(column => column.unit === 'hour')?.options).toEqual(hours)
+    expect(h.option(0, 'hour', '04').getAttribute('aria-disabled')).toBe('true')
+    expect(h.option(0, 'hour', '12').getAttribute('aria-disabled')).toBe('false')
+
+    h.option(0, 'hour', '03').click()
+    expect(h.value()).toEqual(['', '03:00'])
+    expect(h.api().columnGroups[0].columns.find(column => column.unit === 'hour')?.options).toEqual(hours)
+
+    h.option(0, 'minute', '00').click()
+    expect(h.value()).toEqual(['03:00', '03:00'])
+    expect(h.api().columnGroups[1].columns.find(column => column.unit === 'hour')?.options).toEqual(hours)
+    expect(h.option(1, 'hour', '02').getAttribute('aria-disabled')).toBe('true')
+  })
 })
 
 describe('分段输入', () => {

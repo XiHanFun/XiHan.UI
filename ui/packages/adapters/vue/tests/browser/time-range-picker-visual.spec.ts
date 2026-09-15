@@ -51,16 +51,22 @@ function segmentGroup(index: 0 | 1) {
     h(XhTimeRangePickerSegment, { segment: 'hour' }),
     h('span', ':'),
     h(XhTimeRangePickerSegment, { segment: 'minute' }),
+    h(XhTimeRangePickerSegment, { segment: 'dayPeriod' }),
   ])
 }
 
 function columnGroup(index: 0 | 1, label: string) {
   return h(XhTimeRangePickerColumnGroup, { index }, () => [
     h(XhTimeRangePickerColumnGroupLabel, null, () => label),
-    h(XhTimeRangePickerColumn, { unit: 'hour' }, ({ options }: { options: string[] }) =>
-      options.map(value => h(XhTimeRangePickerItem, { key: value, value }))),
-    h(XhTimeRangePickerColumn, { unit: 'minute' }, ({ options }: { options: string[] }) =>
-      options.map(value => h(XhTimeRangePickerItem, { key: value, value }))),
+    h(XhTimeRangePickerColumn, { unit: 'hour' }, {
+      default: ({ options }: { options: string[] }) => options.map(value => h(XhTimeRangePickerItem, { key: value, value })),
+    }),
+    h(XhTimeRangePickerColumn, { unit: 'minute' }, {
+      default: ({ options }: { options: string[] }) => options.map(value => h(XhTimeRangePickerItem, { key: value, value })),
+    }),
+    h(XhTimeRangePickerColumn, { unit: 'dayPeriod' }, {
+      default: ({ options }: { options: string[] }) => options.map(value => h(XhTimeRangePickerItem, { key: value, value })),
+    }),
   ])
 }
 
@@ -171,15 +177,18 @@ describe('浮层里的两组时列', () => {
     }
   })
 
-  it('选中格只亮在自己那一组；终点组的时列被起点顶住，界外的时不再出现', async () => {
+  it('选中格只亮在自己那一组；终点组的界外时仍在原位但不可选', async () => {
     await mountPicker({ defaultOpen: true, defaultValue: ['09:30', ''] })
     await nextTick()
     expect(item(0, 'hour', '09').getAttribute('data-state')).toBe('checked')
     expect(item(1, 'hour', '09').getAttribute('data-state')).toBe('unchecked')
-    // 起点 09:30 之前的小时不再出现在终点组里
+    // 区间约束不删选项；起点 09:30 之前和作者 max 之后的小时留在原位并禁用。
     const endHours = [...parts('column-group')[1]!.querySelectorAll<HTMLElement>(`[data-part='column'][data-value='hour'] [data-part='item']`)]
       .map(el => el.getAttribute('data-value'))
-    expect(endHours).toEqual(['09', '10', '11'])
+    expect(endHours).toEqual(Array.from({ length: 24 }, (_, hour) => String(hour).padStart(2, '0')))
+    expect(item(1, 'hour', '08').getAttribute('aria-disabled')).toBe('true')
+    expect(item(1, 'hour', '09').getAttribute('aria-disabled')).toBe('false')
+    expect(item(1, 'hour', '12').getAttribute('aria-disabled')).toBe('true')
 
     await userEvent.click(item(1, 'hour', '10'))
     await userEvent.click(item(1, 'minute', '00'))
@@ -187,5 +196,36 @@ describe('浮层里的两组时列', () => {
     expect(values.at(-1)).toEqual(['09:30', '10:00'])
     expect(item(1, 'hour', '10').getAttribute('data-state')).toBe('checked')
     expect(item(0, 'hour', '10').getAttribute('data-state')).toBe('unchecked')
+  })
+
+  it('十二小时制在区间未填齐与填齐之间保持列数和面板几何稳定', async () => {
+    await mountPicker({
+      defaultOpen: true,
+      hourCycle: 12,
+      locale: 'zh-CN',
+      min: undefined,
+      max: undefined,
+      defaultValue: ['', '03:00'],
+    })
+    await nextTick()
+    const content = part('content')
+    const before = content.getBoundingClientRect()
+    const startHour = parts('column-group')[0]!.querySelector<HTMLElement>("[data-part='column'][data-value='hour']")!
+
+    expect(startHour.querySelectorAll("[data-part='item']")).toHaveLength(12)
+    expect(item(0, 'hour', '04').getAttribute('aria-disabled')).toBe('true')
+
+    await userEvent.click(item(0, 'hour', '03'))
+    await nextTick()
+    expect(startHour.querySelectorAll("[data-part='item']")).toHaveLength(12)
+    expect(part('content').getBoundingClientRect().height).toBeCloseTo(before.height, 0)
+
+    await userEvent.click(item(0, 'minute', '00'))
+    await nextTick()
+    expect(parts('column-group')[1]!.querySelectorAll("[data-part='column'][data-value='hour'] [data-part='item']")).toHaveLength(12)
+    expect(item(1, 'hour', '02').getAttribute('aria-disabled')).toBe('true')
+    const after = content.getBoundingClientRect()
+    expect(after.width).toBeCloseTo(before.width, 0)
+    expect(after.height).toBeCloseTo(before.height, 0)
   })
 })

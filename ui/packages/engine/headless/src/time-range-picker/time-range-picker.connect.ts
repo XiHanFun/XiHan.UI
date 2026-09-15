@@ -7,7 +7,7 @@
 
 import type { NavIntent, NormalizeProps, PropTypes, Service } from '@xihan-ui/core'
 import type { TimeDraft, TimeSegmentType } from '../time-field'
-import type { TimePickerColumnUnit } from '../time-picker'
+import type { TimePickerColumn, TimePickerColumnUnit } from '../time-picker'
 import type {
   TimeRangePickerApi,
   TimeRangePickerColumnGroup,
@@ -32,7 +32,7 @@ import {
   timeSegments,
   timeSegmentText,
 } from '../time-field'
-import { resolveTimeStep, timePickerItemValue } from '../time-picker'
+import { resolveTimeStep, timePickerColumns, timePickerItemValue } from '../time-picker'
 import {
   findTimeRangePickerColumn,
   timeRangePickerAnatomy,
@@ -142,14 +142,20 @@ export function connectTimeRangePicker<T extends PropTypes>(
       ? focusedSegment.segment
       : segments[0]!
 
-  // 列表是纯函数按当前值算出来的，connect 与机器读到的是同一份
+  // 渲染列只随精度、小时制与 step 改变，不能随着另一端的区间边界删减 DOM，
+  // 否则填写过程中列高、滚动位置和焦点节点都会跳。可选性另由 availableColumnGroups 判定。
+  const stableColumns = (): TimePickerColumn[] => timePickerColumns({ granularity, hourCycle, step })
   const columnGroups: readonly [TimeRangePickerColumnGroup, TimeRangePickerColumnGroup] = [
+    { index: 0, columns: stableColumns() },
+    { index: 1, columns: stableColumns() },
+  ]
+  const availableColumnGroups: readonly [TimeRangePickerColumnGroup, TimeRangePickerColumnGroup] = [
     { index: 0, columns: timeRangePickerColumnsAt({ prop, context }, 0) },
     { index: 1, columns: timeRangePickerColumnsAt({ prop, context }, 1) },
   ]
 
-  const optionsOf = (index: TimeRangePickerEndIndex, unit: TimePickerColumnUnit): readonly string[] =>
-    columnGroups[index].columns.find(column => column.unit === unit)?.options ?? []
+  const availableOptionsOf = (index: TimeRangePickerEndIndex, unit: TimePickerColumnUnit): readonly string[] =>
+    availableColumnGroups[index].columns.find(column => column.unit === unit)?.options ?? []
 
   /** 这一端这一列此刻选中的那个值（两位补零）；该段还空着时为 null。 */
   const selectedIn = (index: TimeRangePickerEndIndex, unit: TimePickerColumnUnit): string | null => {
@@ -159,13 +165,13 @@ export function connectTimeRangePicker<T extends PropTypes>(
 
   /**
    * 每列各自的 roving 锚点：焦点在本列就跟焦点走，否则停在本列选中的那一格。
-   * 两条都拿生成出来的列核对过，锚点指向被裁掉的值会让这一列没有 Tab 位。
+   * 两条都拿可选值集合核对过，锚点指向禁用值时不会让它占据 Tab 位。
    *
    * 都没有就是没有锚点（指针打开且这一段还空着）：不预落到首格，
    * 展开那一刻不能有格子看着像被选中，Tab 位与落焦此时归列容器（见 getColumnProps）。
    */
   const anchorOf = (index: TimeRangePickerEndIndex, unit: TimePickerColumnUnit): string | null => {
-    const options = optionsOf(index, unit)
+    const options = availableOptionsOf(index, unit)
     if (focusedColumn?.index === index && focusedColumn.unit === unit && focusedItem != null && options.includes(focusedItem))
       return focusedItem
     const selected = selectedIn(index, unit)
@@ -221,10 +227,10 @@ export function connectTimeRangePicker<T extends PropTypes>(
   const itemSelected = ({ index, unit, value: option }: { index: TimeRangePickerEndIndex, unit: TimePickerColumnUnit, value: string }): boolean =>
     selectedIn(index, unit) === option
 
-  // 落在 min/max 之外或被另一端顶住的值不在生成列表里；整个控件禁用时全列都不可选；
-  // 离散的不可选值由作者的钩子判，与界外同等对待
+  // 落在 min/max 之外或被另一端顶住的值仍留在稳定列中，但标为不可选；
+  // 整个控件禁用时全列都不可选，离散的不可选值由作者钩子判定。
   const itemDisabled = ({ index, unit, value: option }: { index: TimeRangePickerEndIndex, unit: TimePickerColumnUnit, value: string }): boolean =>
-    disabled || !optionsOf(index, unit).includes(option) || (prop('isTimeUnavailable')?.(option, unit, index) ?? false)
+    disabled || !availableOptionsOf(index, unit).includes(option) || (prop('isTimeUnavailable')?.(option, unit, index) ?? false)
 
   const segmentTextOf = (index: TimeRangePickerEndIndex, segment: TimeSegmentType): string =>
     timeSegmentText(drafts[index], segment, { hourCycle, locale })
@@ -265,7 +271,7 @@ export function connectTimeRangePicker<T extends PropTypes>(
   const indexOfColumn = (column: HTMLElement): TimeRangePickerEndIndex =>
     itemValue(column.parentElement?.closest<HTMLElement>(parts['column-group'].selector) ?? null) === '1' ? 1 : 0
 
-  /** 列内移动，走到尽头回绕；被裁掉的那些格自报 aria-disabled，自动跳过。 */
+  /** 列内移动，走到尽头回绕；界外格自报 aria-disabled，导航自动跳过。 */
   const moveInColumn = (content: HTMLElement, intent: NavIntent): void => {
     const column = focusedColumn ?? (columnGroups[0].columns[0] ? { index: 0 as const, unit: columnGroups[0].columns[0].unit } : null)
     if (column == null)
@@ -766,7 +772,7 @@ export function connectTimeRangePicker<T extends PropTypes>(
         // 单选与否必须显式说，省略只是没说
         'aria-multiselectable': 'false',
         'aria-disabled': disabled ? 'true' : 'false',
-        // 有锚点时 Tab 位归那一格；没有锚点（指针打开且这一段还空着，或整列被界裁空）时
+        // 有锚点时 Tab 位归那一格；没有锚点（指针打开且这一段还空着，或整列都不可选）时
         // 由列本身认领并接住焦点——它是 role=listbox 且有名字，否则这一列没有 Tab 停靠点
         'tabindex': active && anchorOf(index, unit) == null ? 0 : -1,
         'data-state': stateAttr,
