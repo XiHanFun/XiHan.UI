@@ -414,8 +414,8 @@ hourCycle 决定两组段位与时列的写法，上下午各成一段一列
 | `--xh-time-range-picker-content-fg` | `content` | `color` | `default` | `--xh-fg-default` | time-range-picker 的 content 部件 color 覆盖槽。 |
 | `--xh-time-range-picker-content-highlight` | `content` | `background` | `default` | `transparent` | time-range-picker 的 content 部件 background 覆盖槽。 |
 | `--xh-time-range-picker-content-max-h` | `content` | `max-block-size` | `default` | `--xh-viewport-h-lg` | time-range-picker 的 content 部件 max-block-size 覆盖槽。 |
-| `--xh-time-range-picker-content-px` | `content` | `padding-inline` | `default` | `--xh-space-1` | time-range-picker 的 content 部件 padding-inline 覆盖槽。 |
-| `--xh-time-range-picker-content-py` | `content` | `padding-block` | `default` | `--xh-space-1` | time-range-picker 的 content 部件 padding-block 覆盖槽。 |
+| `--xh-time-range-picker-content-px` | `content` | `padding-inline` | `default` | `--xh-space-2` | time-range-picker 的 content 部件 padding-inline 覆盖槽。 |
+| `--xh-time-range-picker-content-py` | `content` | `padding-block` | `default` | `--xh-space-2` | time-range-picker 的 content 部件 padding-block 覆盖槽。 |
 | `--xh-time-range-picker-content-radius` | `content` | `border-radius` | `default` | `--xh-shape-overlay` | time-range-picker 的 content 部件 border-radius 覆盖槽。 |
 | `--xh-time-range-picker-content-shadow` | `content` | `box-shadow` | `default` | `--xh-material-frosted-shadow` | time-range-picker 的 content 部件 box-shadow 覆盖槽。 |
 | `--xh-time-range-picker-control-bg` | `control` | `background` | `default` | `--xh-_time-range-picker-control-bg` | time-range-picker 的 control 部件 background 覆盖槽。 |

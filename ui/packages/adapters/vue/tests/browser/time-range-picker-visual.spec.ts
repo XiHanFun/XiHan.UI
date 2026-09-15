@@ -152,6 +152,16 @@ describe('浮层里的两组时列', () => {
     // 分隔线长在第二组的起始边上
     expect(Number.parseFloat(getComputedStyle(second!).borderInlineStartWidth)).toBeGreaterThan(0)
     expect(getComputedStyle(first!).borderInlineStartWidth).toBe('0px')
+
+    // 分隔线两侧与浮层四周使用同一档留白，不在右侧和底部突然收窄
+    const contentStyle = getComputedStyle(part('content'))
+    const secondStyle = getComputedStyle(second!)
+    const spacing = Number.parseFloat(secondStyle.marginInlineStart)
+    expect(Number.parseFloat(secondStyle.paddingInlineStart)).toBe(spacing)
+    expect(Number.parseFloat(contentStyle.paddingInlineStart)).toBe(spacing)
+    expect(Number.parseFloat(contentStyle.paddingInlineEnd)).toBe(spacing)
+    expect(Number.parseFloat(contentStyle.paddingBlockStart)).toBe(spacing)
+    expect(Number.parseFloat(contentStyle.paddingBlockEnd)).toBe(spacing)
   })
 
   it('选中格只亮在自己那一组；终点组的时列被起点顶住，界外的时不再出现', async () => {
