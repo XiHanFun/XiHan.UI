@@ -2925,7 +2925,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-shape-pill"
+        "--xh-shape-circle"
       ],
       "visibility": "public",
       "description": "back-top 的 trigger 部件 border-radius 覆盖槽。"
