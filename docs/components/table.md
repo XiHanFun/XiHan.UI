@@ -12,7 +12,7 @@
 
 ## 用法
 
-columns 是列号与列宽的唯一事实源，rows 是行序与行号的唯一事实源，标记只管长相
+columns 是列号与列宽的唯一事实源，rows 是行序与行号的唯一事实源，标记只负责外观
 
 <XhDemo src="table/01-basic" />
 
@@ -26,139 +26,139 @@ columns 是列号与列宽的唯一事实源，rows 是行序与行号的唯一�
 
 ### 排序
 
-列上标了 sortable 才认排序把手；按住 Shift 点是追加到排序链，裸点是整条链换成这一列
+列上标注 sortable 才识别排序按钮；按住 Shift 点击是追加到排序链，直接点击是整条链换为该列
 
 <XhDemo src="table/02-sort" />
 
 ### 多选
 
-selectionMode 默认 none，声明 multiple 才有选择机制；选择列也要在 columns 里占一条，否则右侧列号串位
+selectionMode 默认 none，声明 multiple 才有选择机制；选择列也要在 columns 中占一条，否则右侧列号错位
 
 <XhDemo src="table/03-selection" />
 
 ### 行展开
 
-行上标了 expandable 才认展开把手与左右方向键；详情行占一个真实行号，收起只加 hidden 不卸载内部节点
+行上标注 expandable 才识别展开按钮与左右方向键；详情行占一个真实行号，收起只加 hidden 不卸载内部节点
 
 <XhDemo src="table/04-expand" />
 
 ### 密度
 
-size 只落成 root 的 data-size，换的是单元格纵向内边距与字号；三档并排，差别在行高上
+size 只写为 root 的 data-size，改变的是单元格纵向内边距与字号；三档并排，差别在行高上
 
 <XhDemo src="table/05-size" />
 
 ### 空态与加载态
 
-两个状态节点常挂着只靠 hidden 显隐：表体为空且在取数时露加载态，取数完了没有行才露空态
+两个状态节点常驻只依靠 hidden 显隐：表体为空且在取数时显示加载态，取数完成后没有行才显示空态
 
 <XhDemo src="table/06-empty-loading" />
 
 ### 脚注合计
 
-footer 把行号空间的最后一行留给脚注；脚注单元格不属于任何数据行，也就没有选中与禁用可言
+footer 把行号空间的最后一行留给脚注；脚注单元格不属于任何数据行，也就没有选中与禁用
 
 <XhDemo src="table/07-footer" />
 
 ### 表头吸顶与列吸附
 
-root 自己就是那个滚动容器：stickyHeader 钉住表头，列上标 sticky 的钉住那一列
+root 自身就是滚动容器：stickyHeader 固定表头，列上标注 sticky 的固定该列
 
 <XhDemo src="table/08-sticky" />
 
 ### 单选
 
-selectionMode 给 single：选中集合最多一个元素，点已选中的那行再点一次就清空，焦点行按空格同理
+selectionMode 设为 single：选中集合最多一个元素，再次点击已选中的行即清空，焦点行按空格同理
 
 <XhDemo src="table/09-single-selection" />
 
 ### 跨列单元格
 
-colspan 从它自己那一列往后算，报成 aria-colspan；1 与省略同义，所以只在真跨了列时写
+colspan 从它自己的列向后计算，报告为 aria-colspan；1 与省略同义，因此只在真正跨列时写
 
 <XhDemo src="table/10-colspan" />
 
 ### 单元格就地编辑
 
-表体的方向键与 Home/End 是挂在 body 上的冒泡监听，可编辑控件上掐断冒泡这些键就回归输入框自己
+表体的方向键与 Home/End 是挂在 body 上的冒泡监听，可编辑控件上阻止冒泡后这些键就回归输入框自身
 
 <XhDemo src="table/11-editable-cell" />
 
 ### 多行表头与表头分组
 
-表头写几行就是几行；分组格的跨列数与两行表头的行号由标记自报，columns 仍只登记叶子列
+表头写几行就是几行；分组格的跨列数与两行表头的行号由标记声明，columns 仍只登记叶子列
 
 <XhDemo src="table/12-group-header" />
 
 ### 列过滤
 
-过滤把手是列标题里的一段内容，过滤结果就是宿主算好后传进来的那份 rows；表头是表体的兄弟，把手上的按键不会被表体收走
+过滤按钮是列标题中的一段内容，过滤结果就是宿主计算后传入的 rows；表头是表体的兄弟，按钮上的按键不会被表体接管
 
 <XhDemo src="table/13-column-filter" />
 
 ### 树形表格
 
-rows 按契约就是一条已摊平的可见行序列：层级三件套逐行自报，缩进落在首格的内边距上
+rows 按契约就是一条已摊平的可见行序列：层级三项逐行声明，缩进落在首格的内边距上
 
 <XhDemo src="table/14-tree-rows" />
 
-### 拖拽调列宽
+### 拖拽调整列宽
 
-列上标了 resizable 才认改宽把手；拖出表头仍跟手，方向键一次 8px、按住 Shift 一次 40px
+列上标注 resizable 才识别改宽把手；拖出表头仍跟随，方向键一次 8px、按住 Shift 一次 40px
 
 <XhDemo src="table/15-column-resize" />
 
-### 只渲窗口内的行
+### 只渲染窗口内的行
 
-全量 rows 照常交给 root（那只是行序与行号的元信息，不产生 DOM），标记里只渲可见那一段，首尾用两块空白撑出真实滚动高度
+全量 rows 照常交给 root（那只是行序与行号的元信息，不产生 DOM），标记中只渲染可见的一段，首尾用两块空白撑出真实滚动高度
 
 <XhDemo src="table/16-virtual-rows" />
 
 ### 放进滚动区
 
-表格交给滚动区的视口滚，两条自绘滚动条与吸顶表头、吸附列一起工作；表格自己不再定高
+表格交给滚动区的视口滚动，两条自绘滚动条与吸顶表头、吸附列一起工作；表格自身不再定高
 
 <XhDemo src="table/17-scroll-area" />
 
 ### 前缀列与分页序号
 
-prefix-columns 让库把序号/多选列插在最前面并占住列号；序号是分页全局序号，翻到第二页不会又从 1 开始
+prefix-columns 让库把序号/多选列插在最前面并占用列号；序号是分页全局序号，翻到第二页不会重新从 1 开始
 
 <XhDemo src="table/18-prefix-columns" />
 
-### 范围选
+### 范围选择
 
-按住 Shift 点勾选框选中一段；焦点落在表体里按 Ctrl/Cmd + A 全选。禁用行占着顺序位置但不被选进去
+按住 Shift 点击勾选框选中一段；焦点落在表体中按 Ctrl/Cmd + A 全选。禁用行占据顺序位置但不被选入
 
 <XhDemo src="table/19-range-selection" />
 
-### 拖拽换列位
+### 拖拽调整列位
 
-列上标了 reorderable 才认拖拽把手；也可以 Tab 到它用方向键挪，Home / End 到两头
+列上标注 reorderable 才识别拖拽把手；也可以 Tab 到它用方向键移动，Home / End 到两端
 
 <XhDemo src="table/20-column-drag" />
 
-### 拖拽换行位
+### 拖拽调整行位
 
-整行都是拖动源，按住拖到别处松手；也可以 Tab 进表体后按 Alt + 上下键挪。库只报新行序，写回归使用者
+整行都是拖动源，按住拖到目标位置松手；也可以 Tab 进表体后按 Alt + 上下键移动。库只报告新行序，写回归使用者
 
 <XhDemo src="table/21-row-drag" />
 
 ### 触屏拖动把手
 
-整行起手只认鼠标与笔；触屏要按住行首那个把手才拖得动，代价是那一小块地方不再跟着表格滚。键盘那一路照旧：Tab 进表体后 Alt + 上下键
+整行拖动只识别鼠标与笔；触屏要按住行首的把手才能拖动，代价是该小块区域不再随表格滚动。键盘路径照常：Tab 进表体后 Alt + 上下键
 
 <XhDemo src="table/22-row-drag-handle" />
 
 ### 树形表拖拽
 
-行声明了 parentId 就是树：拖到一行中段是放进这一行（换个父），拖到上下两端仍是插在它前后；键盘走 Alt + 上下键同层挪、Alt + 左右键改缩进。库报的是「搬到哪个父下面的第几位」外加重排好的整份行序，写回归宿主——按 ids 重排、再把那一行的 parentId 设成 parent，两件都做才对得上。许不许搬那一句归 allowRowDrop
+行声明了 parentId 即为树：拖到一行中段是放进该行（更换父节点），拖到上下两端仍是插在它前后；键盘使用 Alt + 上下键同层移动、Alt + 左右键改变缩进。库报告的是移动到哪个父节点下的第几位外加重排后的整份行序，写回归宿主：按 ids 重排、再把该行的 parentId 设为 parent，两件都做才一致。是否允许移动由 allowRowDrop 决定
 
 <XhDemo src="table/23-tree-row-drag" />
 
 ### 列设置与工具条
 
-工具条渲成表的兄弟排在表前（root 是 grid，工具条进不去它里面）；列设置区照 columnSettings 渲，藏起来的列也在其中，只剩最后一列显示着时那颗把手转禁用
+工具条渲染为表的兄弟排在表前（root 是 grid，工具条不能进入其中）；列设置区按 columnSettings 渲染，隐藏的列也在其中，只剩最后一列显示时该按钮转为禁用
 
 <XhDemo src="table/24-column-settings" />
 

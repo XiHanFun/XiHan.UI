@@ -1,4 +1,4 @@
-// 表头吸顶与列吸附 | root 自己就是那个滚动容器：stickyHeader 钉住表头，列上标 sticky 的钉住那一列
+// 表头吸顶与列吸附 | root 自身就是滚动容器：stickyHeader 固定表头，列上标注 sticky 的固定该列
 import type { ReactNode } from "react";
 import {
   XhTableBody,

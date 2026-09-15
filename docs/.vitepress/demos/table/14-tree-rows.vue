@@ -1,4 +1,4 @@
-<!-- 树形表格 | rows 按契约就是一条已摊平的可见行序列：层级三件套逐行自报，缩进落在首格的内边距上 -->
+<!-- 树形表格 | rows 按契约就是一条已摊平的可见行序列：层级三项逐行声明，缩进落在首格的内边距上 -->
 <script setup lang="ts">
 import { ChevronRightIcon } from "@xihan-ui/icons";
 import {

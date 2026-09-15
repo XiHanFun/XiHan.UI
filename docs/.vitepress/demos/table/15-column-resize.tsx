@@ -1,4 +1,4 @@
-// 拖拽调列宽 | 列上标了 resizable 才认改宽把手；拖出表头仍跟手，方向键一次 8px、按住 Shift 一次 40px
+// 拖拽调整列宽 | 列上标注 resizable 才识别改宽把手；拖出表头仍跟随，方向键一次 8px、按住 Shift 一次 40px
 import type { TableColumnPreference } from "@xihan-ui/headless";
 import type { ReactNode } from "react";
 import {

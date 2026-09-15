@@ -1,4 +1,4 @@
-<!-- 行展开 | 行上标了 expandable 才认展开把手与左右方向键；详情行占一个真实行号，收起只加 hidden 不卸载内部节点 -->
+<!-- 行展开 | 行上标注 expandable 才识别展开按钮与左右方向键；详情行占一个真实行号，收起只加 hidden 不卸载内部节点 -->
 <script setup lang="ts">
 import {
   XhTableBody,

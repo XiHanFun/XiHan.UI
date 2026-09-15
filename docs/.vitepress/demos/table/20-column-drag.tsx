@@ -1,4 +1,4 @@
-// 拖拽换列位 | 列上标了 reorderable 才认拖拽把手；也可以 Tab 到它用方向键挪，Home / End 到两头
+// 拖拽调整列位 | 列上标注 reorderable 才识别拖拽把手；也可以 Tab 到它用方向键移动，Home / End 到两端
 import type { TableColumnPreference } from "@xihan-ui/headless";
 import type { ReactNode } from "react";
 import {

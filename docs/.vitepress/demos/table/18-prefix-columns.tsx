@@ -1,4 +1,4 @@
-// 前缀列与分页序号 | prefix-columns 让库把序号/多选列插在最前面并占住列号；序号是分页全局序号，翻到第二页不会又从 1 开始
+// 前缀列与分页序号 | prefix-columns 让库把序号/多选列插在最前面并占用列号；序号是分页全局序号，翻到第二页不会重新从 1 开始
 import type { ReactNode } from "react";
 import {
   XhPaginationEllipsisTrigger,
