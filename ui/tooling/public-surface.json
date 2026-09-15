@@ -11829,6 +11829,7 @@
     "--xh-fg-info",
     "--xh-fg-muted",
     "--xh-fg-on-brand",
+    "--xh-fg-on-brand-subtle",
     "--xh-fg-scrollbar-thumb",
     "--xh-fg-scrollbar-thumb-active",
     "--xh-fg-scrollbar-thumb-hover",

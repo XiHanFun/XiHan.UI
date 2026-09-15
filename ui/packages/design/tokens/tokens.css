@@ -440,7 +440,7 @@
     --xh-bg-brand: var(--xh-color-brand-600);
     --xh-bg-brand-hover: var(--xh-color-brand-700);
     --xh-bg-brand-active: var(--xh-color-brand-800);
-    --xh-bg-brand-subtle: var(--xh-color-brand-100);
+    --xh-bg-brand-subtle: color-mix(in oklab, var(--xh-bg-brand) 12%, var(--xh-bg-surface));
     --xh-bg-brand-subtle-hover: color-mix(in oklab, var(--xh-bg-brand) 20%, var(--xh-bg-surface));
     --xh-bg-brand-subtle-active: color-mix(in oklab, var(--xh-bg-brand) 28%, var(--xh-bg-surface));
     --xh-bg-overlay: oklch(0 0 0 / 0.45);
@@ -450,6 +450,7 @@
     --xh-fg-subtle: var(--xh-color-neutral-550);
     --xh-fg-disabled: var(--xh-color-neutral-400);
     --xh-fg-on-brand: var(--xh-color-neutral-0);
+    --xh-fg-on-brand-subtle: color-mix(in oklab, var(--xh-bg-brand) 60%, var(--xh-fg-default));
     --xh-fg-brand: var(--xh-color-brand-600);
     --xh-fg-brand-strong: var(--xh-color-brand-700);
     --xh-fg-success: var(--xh-color-success-700);
@@ -536,7 +537,7 @@
     --xh-bg-brand: var(--xh-color-brand-500);
     --xh-bg-brand-hover: var(--xh-color-brand-400);
     --xh-bg-brand-active: var(--xh-color-brand-300);
-    --xh-bg-brand-subtle: var(--xh-color-brand-950);
+    --xh-bg-brand-subtle: color-mix(in oklab, var(--xh-bg-brand) 12%, var(--xh-bg-surface));
     --xh-bg-brand-subtle-hover: color-mix(in oklab, var(--xh-bg-brand) 20%, var(--xh-bg-surface));
     --xh-bg-brand-subtle-active: color-mix(in oklab, var(--xh-bg-brand) 28%, var(--xh-bg-surface));
     --xh-bg-overlay: oklch(0 0 0 / 0.6);
@@ -546,6 +547,7 @@
     --xh-fg-subtle: var(--xh-color-neutral-450);
     --xh-fg-disabled: var(--xh-color-neutral-600);
     --xh-fg-on-brand: var(--xh-color-neutral-950);
+    --xh-fg-on-brand-subtle: color-mix(in oklab, var(--xh-bg-brand) 60%, var(--xh-fg-default));
     --xh-fg-brand: var(--xh-color-brand-400);
     --xh-fg-brand-strong: var(--xh-color-brand-300);
     --xh-fg-success: var(--xh-color-success-500);
