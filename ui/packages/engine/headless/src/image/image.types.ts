@@ -19,15 +19,15 @@ export interface ImageSchema extends MachineSchema {
     src?: string
     alt?: string
     /**
-     * 加载超过这么久（毫秒）才让回退内容露面，默认 0（立刻露面）。
-     * Infinity 表示加载期间永不显示回退内容，只有失败才显。
+     * 加载超过该时长（毫秒）才显示回退内容，默认 0（立即显示）。
+     * Infinity 表示加载期间永不显示回退内容，只有失败才显示。
      */
     fallbackDelay?: number
-    /** 状态每次真正落位时通知一次；过渡态 idle 不通知。 */
+    /** 状态每次实际落定时通知一次；过渡态 idle 不通知。 */
     onStatusChange?: (details: ImageStatusChangeDetails) => void
   }
   context: {
-    /** 加载期间回退内容此刻该不该露面。进入 loading 时按 fallbackDelay 重置，到点由计时器翻开。 */
+    /** 加载期间回退内容当前是否应显示。进入 loading 时按 fallbackDelay 重置，到期由计时器置真。 */
     fallbackVisible: boolean
   }
   computed: Record<string, never>
@@ -39,7 +39,7 @@ export interface ImageSchema extends MachineSchema {
     // <img> 自己派发的 DOM 事件，由 connect 挂在 image 上回送
     | { type: 'IMAGE.LOAD' }
     | { type: 'IMAGE.ERROR' }
-    /** 回退延迟到点，让回退内容顶上。 */
+    /** 回退延迟到期，显示回退内容。 */
     | { type: 'after.fallbackDelay' }
   tag: never
   guard: 'hasSrc'
@@ -50,9 +50,9 @@ export interface ImageSchema extends MachineSchema {
 export interface ImageApi<T extends PropTypes = PropTypes> {
   status: ImageStatus
   loaded: boolean
-  /** 回退内容此刻是否该露面：加载失败恒为真，加载途中要看 fallbackDelay 是否已过。 */
+  /** 回退内容当前是否应显示：加载失败恒为真，加载途中取决于 fallbackDelay 是否已过。 */
   showFallback: boolean
-  /** 占位层此刻是否该露面：来源决议中与加载中为真，落位或失败后为假。 */
+  /** 占位层当前是否应显示：来源决议中与加载中为真，落定或失败后为假。 */
   showPlaceholder: boolean
   getRootProps: () => T['element']
   getImageProps: () => T['img']
@@ -61,5 +61,5 @@ export interface ImageApi<T extends PropTypes = PropTypes> {
   getFallbackProps: () => T['element']
 }
 
-/** 读屏用的文案。本组件目前没有需要外露的文案，位先留着。 */
+/** 读屏文案。本组件目前没有需要外露的文案，保留该位。 */
 export interface ImageTranslations {}

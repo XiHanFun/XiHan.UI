@@ -116,8 +116,8 @@ src 是响应式的：进入视口前不给地址，观察器命中再换上，�
 | --- | --- | --- | --- |
 | `src` | `string` |  |  |
 | `alt` | `string` |  |  |
-| `fallbackDelay` | `number` |  | 加载超过这么久（毫秒）才让回退内容露面，默认 0（立刻露面）。 Infinity 表示加载期间永不显示回退内容，只有失败才显。 |
-| `onStatusChange` | `(details: ImageStatusChangeDetails) => void` |  | 状态每次真正落位时通知一次；过渡态 idle 不通知。 |
+| `fallbackDelay` | `number` |  | 加载超过该时长（毫秒）才显示回退内容，默认 0（立即显示）。 Infinity 表示加载期间永不显示回退内容，只有失败才显示。 |
+| `onStatusChange` | `(details: ImageStatusChangeDetails) => void` |  | 状态每次实际落定时通知一次；过渡态 idle 不通知。 |
 
 ### 事件
 
@@ -162,8 +162,8 @@ src 是响应式的：进入视口前不给地址，观察器命中再换上，�
 | --- | --- | --- |
 | `status` | `ImageStatus` |  |
 | `loaded` | `boolean` |  |
-| `showFallback` | `boolean` | 回退内容此刻是否该露面：加载失败恒为真，加载途中要看 fallbackDelay 是否已过。 |
-| `showPlaceholder` | `boolean` | 占位层此刻是否该露面：来源决议中与加载中为真，落位或失败后为假。 |
+| `showFallback` | `boolean` | 回退内容当前是否应显示：加载失败恒为真，加载途中取决于 fallbackDelay 是否已过。 |
+| `showPlaceholder` | `boolean` | 占位层当前是否应显示：来源决议中与加载中为真，落定或失败后为假。 |
 | `getRootProps` | `() => T['element']` |  |
 | `getImageProps` | `() => T['img']` |  |
 | `getPlaceholderProps` | `() => T['element']` | 加载期间铺在图位上的占位层，纯装饰。 |
