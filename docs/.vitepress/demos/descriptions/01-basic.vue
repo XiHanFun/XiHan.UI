@@ -1,4 +1,4 @@
-<!-- 基础用法 | 标签与取值的配对靠 dl / dt / dd 表达，组件只给身份与排版；不传 columns 即每行一组 -->
+<!-- 基础用法 | 标签与取值的配对依靠 dl / dt / dd 表达，组件只提供身份与排版；不传 columns 即每行一组 -->
 <script setup lang="ts">
 import {
   XhDescriptionsItem,

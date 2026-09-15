@@ -12,7 +12,7 @@
 
 ## 用法
 
-标签与取值的配对靠 dl / dt / dd 表达，组件只给身份与排版；不传 columns 即每行一组
+标签与取值的配对依靠 dl / dt / dd 表达，组件只提供身份与排版；不传 columns 即每行一组
 
 <XhDemo src="descriptions/01-basic" />
 
@@ -26,7 +26,7 @@
 
 ### 列数
 
-columns 决定每行摆几组，一到六列；排版走 CSS Grid，不用表格
+columns 决定每行排几组，一到六列；排版使用 CSS Grid，不使用表格
 
 <XhDemo src="descriptions/02-columns" />
 
@@ -38,13 +38,13 @@ placement 决定标签在上还是在左，不传即在上
 
 ### 外框
 
-bordered 画一圈描边，并在格与格之间补上网格线
+bordered 绘制一圈描边，并在格与格之间补上网格线
 
 <XhDemo src="descriptions/04-bordered" />
 
 ### 尺寸
 
-size 换的是每格的内边距、组与组的间距与整体字号，不传 size 即默认档
+size 改变每格的内边距、组与组的间距与整体字号，不传 size 即默认档
 
 <XhDemo src="descriptions/05-size" />
 
