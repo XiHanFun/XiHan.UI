@@ -76,36 +76,36 @@ tone 决定用哪族颜色，与 variant 正交；这里固定 subtle 形态，�
 
 ### 何时使用
 
-- 用户知道确切时间，打字比翻列表快。
+- 用户知道确切时间，键入比浏览列表更快。
 - 需要 12 小时制并带上下午段位。
 
 ### 何时不用
 
-- 需要从固定的整点或半点里挑：用[时间选择器](./time-picker)。
-- 需要日期：用[日期字段](./date-field)。
+- 需要从固定的整点或半点中选择时，使用[时间选择器](./time-picker)。
+- 需要日期时，使用[日期字段](./date-field)。
 
 ### 特性
 
-- `hourCycle` 切 12 / 24 小时制，12 小时制时自动多一个上下午段位。
+- `hourCycle` 切换 12 / 24 小时制，12 小时制时自动增加上下午段位。
 - `granularity` 决定精确到分还是到秒。
 - `min` / `max` 越界时只标注不改写。
 - 标准组合包含标签、输入框、时间段和隐藏表单输入；聚焦只强调正在编辑的时间段。
-- 框内自带清空钮（`clear-trigger`）：有值才显形，点完焦点回到第一段。
+- 框内自带清空按钮（`clear-trigger`）：有值时才显示，点击后焦点回到第一段。
 - 聚焦环、边框和当前段位使用同一段短过渡，焦点进入与离开不会瞬时跳变。
 
 ### 组合
 
-- 外面套[表单字段](./field)；与[日期字段](./date-field)并排组成日期时间。
+- 外层放[表单字段](./field)；与[日期字段](./date-field)并排组成日期时间。
 
 ### 最佳实践
 
-- 明确时区归属：组件处理的是墙上时间，时区换算是宿主的事。
+- 明确时区归属：组件处理的是本地时间，时区换算由宿主负责。
 - 给参与表单提交的字段设置 `name`，并渲染隐藏输入部件。
-- 12 小时制下上下午段位不能省，否则用户输入的时间有二义。
+- 12 小时制下上下午段位不能省略，否则用户输入的时间有歧义。
 
 ### 反模式
 
-- 用文本输入收时间再解析。
+- 用文本输入接收时间再解析。
 
 ## API 参考
 
@@ -300,7 +300,7 @@ tone 决定用哪族颜色，与 variant 正交；这里固定 subtle 形态，�
 | `--xh-time-field-control-h` | `control` | `block-size` | `default` | `--xh-_time-field-control-h` | time-field 的 control 部件 block-size 覆盖槽。 |
 | `--xh-time-field-control-min-w` | `control`<br>`root` | `min-inline-size` | `default` | `--xh-control-min-w` | time-field 的 control、root 部件 min-inline-size 覆盖槽。 |
 | `--xh-time-field-control-px` | `control` | `padding-inline` | `default` | `--xh-_time-field-control-px` | time-field 的 control 部件 padding-inline 覆盖槽。 |
-| `--xh-time-field-control-radius` | `control` | `border-radius` | `default` | `--xh-shape-surface` | time-field 的 control 部件 border-radius 覆盖槽。 |
+| `--xh-time-field-control-radius` | `control` | `border-radius` | `default` | `--xh-shape-control` | time-field 的 control 部件 border-radius 覆盖槽。 |
 | `--xh-time-field-control-shadow` | `control` | `box-shadow` | `default` | `--xh-_time-field-control-shadow` | time-field 的 control 部件 box-shadow 覆盖槽。 |
 | `--xh-time-field-font-size` | `control` | `font-size` | `default` | `--xh-_time-field-font-size` | time-field 的 control 部件 font-size 覆盖槽。 |
 | `--xh-time-field-gap` | `root` | `gap` | `default` | `--xh-space-1` | time-field 的 root 部件 gap 覆盖槽。 |
