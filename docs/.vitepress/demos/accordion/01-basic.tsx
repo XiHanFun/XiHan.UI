@@ -1,4 +1,4 @@
-// 基础用法 | 默认单开：展开一项即收起其余，defaultValue 只给初始值，之后由组件自己维护
+// 基础用法 | 默认单开：展开一项即收起其余，defaultValue 只提供初始值，之后由组件自行维护
 import type { ReactNode } from "react";
 import { XhAccordionRoot } from "@xihan-ui/react";
 

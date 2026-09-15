@@ -1,4 +1,4 @@
-// 多项展开 | multiple 允许多项并存，展开集合恒为 string[]，受控绑定即可拿到它
+// 多项展开 | multiple 允许多项并存，展开集合恒为 string[]，受控绑定即可获取它
 import type { ReactNode } from "react";
 import { XhAccordionRoot } from "@xihan-ui/react";
 import { useState } from "react";

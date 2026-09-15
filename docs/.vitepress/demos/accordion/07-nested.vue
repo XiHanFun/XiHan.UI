@@ -1,4 +1,4 @@
-<!-- 嵌套 | content 里再放一组手风琴，内外两组各自维护展开集合，方向键也各管各的 -->
+<!-- 嵌套 | content 中再放一组手风琴，内外两组各自维护展开集合，方向键也各自独立 -->
 <script setup lang="ts">
 import {
   XhAccordionContent,

@@ -1,4 +1,4 @@
-<!-- 自定义展开图标 | indicator 是可选部件，不渲染它就没有默认字形；标记由作者按展开集合自己画 -->
+<!-- 自定义展开图标 | indicator 是可选部件，不渲染它就没有默认字形；标记由作者按展开集合自行绘制 -->
 <script setup lang="ts">
 import { MinusIcon, PlusIcon } from "@xihan-ui/icons";
 import {
