@@ -50,7 +50,7 @@ export type TreeSelectRootSlotProps = Pick<
   | 'clear'
 >
 
-/** 本节点持有焦点时，value 变更重报焦点节点，卸载时上报焦点丢失。 */
+/** 本节点持有焦点时，value 变更重新报告焦点节点，卸载时上报焦点丢失。 */
 function useNodeFocusReport(
   service: Service<TreeSelectSchema>,
   el: RefObject<HTMLElement | null>,
@@ -89,9 +89,9 @@ function useNodeFocusReport(
 export interface XhTreeSelectRootProps extends Omit<ComponentPropsWithRef<'div'>, 'children'> {
   collection?: TreeSelectNode[]
   loadChildren?: TreeSelectProps['loadChildren']
-  /** 标题文字。给了它就不必再写 label 部件。 */
+  /** 标题文字。提供后不必再写 label 部件。 */
   label?: ReactNode
-  /** 自动渲染树里是否带清空按钮；手写部件不看它，写了节点即可清。 */
+  /** 自动渲染树中是否带清空按钮；手写部件不使用它，写了节点即可清空。 */
   clearable?: boolean
   value?: string | string[]
   defaultValue?: string | string[]
@@ -254,7 +254,7 @@ export function XhTreeSelectLabel({ children, ...rest }: XhTreeSelectLabelProps)
 }
 
 export interface XhTreeSelectControlProps extends ComponentPropsWithRef<'div'> {}
-/** 描边、底色与聚焦环所在的那一层，触发按钮与尾部动作钮在里面并排。 */
+/** 描边、底色与聚焦环所在的层，触发按钮与尾部动作按钮在其中并排。 */
 export function XhTreeSelectControl({ children, ...rest }: XhTreeSelectControlProps): ReactNode {
   const ctx = useTreeSelectContext()
   return <div {...mergeReactProps(ctx.api.getControlProps() as Record<string, unknown>, rest as Record<string, unknown>)}>{children}</div>
@@ -281,7 +281,7 @@ export function XhTreeSelectTrigger({ children, ...rest }: XhTreeSelectTriggerPr
 }
 
 export interface XhTreeSelectValueTextProps extends ComponentPropsWithRef<'span'> {}
-/** 有内容用内容，否则显示选中项文本或 placeholder。 */
+/** 有内容时使用内容，否则显示选中项文本或 placeholder。 */
 export function XhTreeSelectValueText({ children, ...rest }: XhTreeSelectValueTextProps): ReactNode {
   const ctx = useTreeSelectContext()
   return (
@@ -304,10 +304,10 @@ export function XhTreeSelectClearTrigger({ children, ...rest }: XhTreeSelectClea
 }
 
 export interface XhTreeSelectPositionerProps extends ComponentPropsWithRef<'div'> {
-  /** 浮层挂到哪个容器；不给就按全局配置，再不给挂 body。 */
+  /** 浮层挂载的容器；未提供时按全局配置，再未提供时挂载到 body。 */
   container?: () => Element | null
 }
-/** 搬到浮层落点：留在原地的话，宿主祖先只要建了层叠上下文就能盖住浮层。 */
+/** 迁移到浮层落点：留在原地时，宿主祖先只要建立了层叠上下文就能遮住浮层。 */
 export function XhTreeSelectPositioner({ children, container, ...rest }: XhTreeSelectPositionerProps): ReactNode {
   const ctx = useTreeSelectContext()
   // 树的自绘条：与 content 同级、绝对定位不占布局，壳是这层已经 fixed 的 positioner。
@@ -550,7 +550,7 @@ function TreeSelectBranchFeedback(): ReactNode {
 }
 
 export interface XhTreeSelectEmptyProps extends ComponentPropsWithRef<'div'> {}
-/** 空态占位：写在 content 里、tree 的兄弟，不进 role=tree 的拥有关系。 */
+/** 空态占位：写在 content 中、tree 的兄弟，不进入 role=tree 的拥有关系。 */
 export function XhTreeSelectEmpty({ children, ...rest }: XhTreeSelectEmptyProps): ReactNode {
   const ctx = useTreeSelectContext()
   const content = useTreeSelectContentContext()
@@ -560,7 +560,7 @@ export function XhTreeSelectEmpty({ children, ...rest }: XhTreeSelectEmptyProps)
 }
 
 export interface XhTreeSelectLoadingProps extends ComponentPropsWithRef<'div'> {}
-/** 在途占位：与空态占位同一个位置，取数期间顶上来。 */
+/** 在途占位：与空态占位同一个位置，取数期间显示。 */
 export function XhTreeSelectLoading({ children, ...rest }: XhTreeSelectLoadingProps): ReactNode {
   const ctx = useTreeSelectContext()
   const content = useTreeSelectContentContext()
@@ -570,14 +570,14 @@ export function XhTreeSelectLoading({ children, ...rest }: XhTreeSelectLoadingPr
 }
 
 export interface XhTreeSelectFooterProps extends ComponentPropsWithRef<'div'> {}
-/** 浮层底部的操作区：写在 content 里、tree 的兄弟，走不到方向键与连打检索。 */
+/** 浮层底部的操作区：写在 content 中、tree 的兄弟，不参与方向键与连打检索。 */
 export function XhTreeSelectFooter({ children, ...rest }: XhTreeSelectFooterProps): ReactNode {
   const ctx = useTreeSelectContext()
   return <div {...mergeReactProps(ctx.api.getFooterProps() as Record<string, unknown>, rest as Record<string, unknown>)}>{children}</div>
 }
 
 export interface XhTreeSelectHiddenInputProps extends Omit<ComponentPropsWithRef<'input'>, 'value' | 'defaultValue' | 'type'> {}
-/** 表单出口，不写这个部件即不参与表单提交。 */
+/** 表单出口，未写该部件即不参与表单提交。 */
 export function XhTreeSelectHiddenInput({ ...rest }: XhTreeSelectHiddenInputProps): ReactNode {
   const ctx = useTreeSelectContext()
   return ctx.api.value.map(value => (
@@ -596,7 +596,7 @@ export function XhTreeSelectHiddenInput({ ...rest }: XhTreeSelectHiddenInputProp
 
 function noop(): void {}
 
-/** 按 collection 递归铺节点：带 children 的落成 branch，其余落成 item。 */
+/** 按 collection 递归铺设节点：带 children 的渲染为 branch，其余渲染为 item。 */
 function renderNodes(nodes: readonly TreeSelectNode[]): ReactNode[] {
   return nodes.map(node => (node.children || node.hasChildren)
     ? (
@@ -618,8 +618,8 @@ function renderNodes(nodes: readonly TreeSelectNode[]): ReactNode[] {
 }
 
 /**
- * 没写 children 时按 collection 铺开的整套结构，作者只交数据。
- * 与手写部件产出的 DOM 完全一致，要改结构就写 children，行为不变。
+ * 未写 children 时按 collection 铺开的整套结构，作者只提供数据。
+ * 与手写部件产出的 DOM 完全一致，需要修改结构时写 children，行为不变。
  */
 function DefaultTree(props: {
   collection: readonly TreeSelectNode[]

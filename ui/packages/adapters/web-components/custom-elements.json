@@ -60493,11 +60493,11 @@
       "declarations": [
         {
           "kind": "class",
-          "description": "`<xh-tree-select>` —— Light-DOM 行为宿主：作者写 root/trigger/positioner/content/tree\n与若干 item / branch 角色节点，元素跑 tree-select 机器并把 connect 产出打上去。\n浮层定位引擎在本元素里建好、经 refs 注入机器，锚点取 trigger、被定位的浮层取 positioner；\n节点身份取节点上的 value 属性。\n\n层级（aria-level / aria-posinset / aria-setsize）、禁用与显示文本都查 `collection` 这份树数据，\n不从 DOM 反推，故 collection 必须与标记同源。\n\nvalue-text 的显示文字由元素代填；作者在该节点里写了内容就归作者，元素不再改写。\n\n树数据与展开/选中集合都是数组，只走 property（`el.collection = [...]`）；\n单选的选中值可用 value 属性写成裸串。",
+          "description": "`<xh-tree-select>`：Light-DOM 行为宿主：作者写 root / trigger / positioner / content / tree\n与若干 item / branch 角色节点，元素运行 tree-select 状态机并把 connect 产出接上。\n浮层定位引擎在本元素中创建、经 refs 注入状态机，锚点取 trigger、被定位的浮层取 positioner；\n节点身份取节点上的 value 属性。\n\n层级（aria-level / aria-posinset / aria-setsize）、禁用与显示文本都查询 `collection` 这份树数据，\n不从 DOM 反推，因此 collection 必须与标记同源。\n\nvalue-text 的显示文字由元素填入；作者在该节点中写了内容则由作者负责，元素不再改写。\n\n树数据与展开 / 选中集合都是数组，只能通过 property 设置（`el.collection = [...]`）；\n单选的选中值可用 value 属性写为裸串。",
           "name": "XhTreeSelectElement",
           "cssParts": [
             {
-              "description": "组件根容器（承载 data-state/data-disabled/data-readonly/data-invalid）",
+              "description": "组件根容器（承载 data-state / data-disabled / data-readonly / data-invalid）",
               "name": "root"
             },
             {
@@ -60513,7 +60513,7 @@
               "name": "trigger"
             },
             {
-              "description": "选中项文本的显示位；留空即由元素填入 displayText，作者写了内容则归作者",
+              "description": "选中项文本的显示位；留空即由元素填入 displayText，作者写了内容则由作者负责",
               "name": "value-text"
             },
             {
@@ -60525,7 +60525,7 @@
               "name": "clear-trigger"
             },
             {
-              "description": "浮层定位容器，坐标由引擎写成内联样式",
+              "description": "浮层定位容器，坐标由引擎写为内联样式",
               "name": "positioner"
             },
             {
@@ -60549,11 +60549,11 @@
               "name": "item-indicator"
             },
             {
-              "description": "role=treeitem 分支，须自带 value 属性；它裹着自己的 branch-content",
+              "description": "role=treeitem 分支，须自带 value 属性；它包裹自己的 branch-content",
               "name": "branch"
             },
             {
-              "description": "分支可点行（点它只改选中值，展开归箭头与左右方向键）",
+              "description": "分支可点击行（点击只改变选中值，展开归箭头与左右方向键）",
               "name": "branch-control"
             },
             {
@@ -60593,11 +60593,11 @@
               "name": "empty"
             },
             {
-              "description": "在途占位，与空态占位同一个位置，取数期间顶上来",
+              "description": "在途占位，与空态占位同一位置，加载期间显示",
               "name": "loading"
             },
             {
-              "description": "浮层底部的操作区，写在 content 里、tree 的兄弟；不进树的拥有关系，方向键与连打检索也走不到",
+              "description": "浮层底部的操作区，写在 content 中、tree 的兄弟；不进入树的拥有关系，方向键与连打检索也无法到达",
               "name": "footer"
             },
             {
@@ -60798,7 +60798,7 @@
               "type": {
                 "text": "TreeSelectSchema['props']['translations'] | undefined"
               },
-              "description": "读屏文案（树容器兜底名字）；对象进不了属性，只作为 property 暴露。"
+              "description": "读屏文案（树容器的兜底名称）；对象无法表达为属性，只作为 property 暴露。"
             },
             {
               "kind": "field",
@@ -60999,7 +60999,7 @@
               "type": {
                 "text": "boolean"
               },
-              "description": "当前整树是否为空；机器尚未建起时为 false。",
+              "description": "当前整树是否为空；状态机尚未建立时为 false。",
               "readonly": true
             },
             {
@@ -61017,7 +61017,7 @@
               "privacy": "private",
               "readonly": true,
               "default": "new ScrollbarsController(this, { shell: () => this.getPart('positioner'), scrollable: () => this.getPart('content'), axes: ['vertical', 'horizontal'], props: () => ({ dir: this.direction }), })",
-              "description": "树的自绘条：与 content 同级挂在已经 fixed 的 positioner 上。\n两条轴都摆——深层节点靠缩进往行末推，横向溢出与纵向一样是常态；\n横条的正负按排版方向算，而组件不读计算样式，把作者写的那份显式交过去。"
+              "description": "树的自绘滚动条：与 content 同级挂在已经 fixed 的 positioner 上。\n两条轴都排布：深层节点依靠缩进向行末推，横向溢出与纵向一样是常态；\n横条的正负按排版方向计算，而组件不读取计算样式，把作者写的显式值交过去。"
             },
             {
               "kind": "field",
@@ -61151,7 +61151,7 @@
                   }
                 }
               ],
-              "description": "承载焦点的节点被移出 DOM 时上报 NODE.LOST，让机器按当前数据重挑锚点。\n判据是「焦点已不在浮层内」且离场的正是持有锚点的那个节点。"
+              "description": "承载焦点的节点被移出 DOM 时上报 NODE.LOST，让状态机按当前数据重新选择锚点。\n判据是焦点已不在浮层内且离场的正是持有锚点的节点。"
             },
             {
               "kind": "method",
@@ -61316,7 +61316,7 @@
               "type": {
                 "text": "string | string[] | undefined"
               },
-              "description": "受控选中值（单选简写）；缺省该属性即非受控，多选请用 property 传数组",
+              "description": "受控选中值（单选简写）；未提供该属性即非受控，多选通过 property 传入数组",
               "name": "value",
               "fieldName": "value"
             },
@@ -61332,7 +61332,7 @@
               "type": {
                 "text": "boolean | undefined"
               },
-              "description": "受控开合；缺省该属性即非受控",
+              "description": "受控开合；未提供该属性即非受控",
               "name": "open",
               "fieldName": "open"
             },
@@ -61348,7 +61348,7 @@
               "type": {
                 "text": "boolean | undefined"
               },
-              "description": "多选：选中后浮层不收起，焦点留在树里",
+              "description": "多选：选中后浮层不收起，焦点留在树中",
               "name": "multiple",
               "fieldName": "multiple"
             },
@@ -61356,7 +61356,7 @@
               "type": {
                 "text": "boolean | undefined"
               },
-              "description": "多选下父子级联勾选（整枝传导/半选/禁用冻结），默认 false",
+              "description": "多选下父子级联勾选（整枝传导 / 半选 / 禁用冻结），默认 false",
               "name": "cascade",
               "fieldName": "cascade"
             },
@@ -61372,7 +61372,7 @@
               "type": {
                 "text": "boolean | undefined"
               },
-              "description": "整个控件禁用：trigger 用原生 disabled，表单出口不参与提交",
+              "description": "整个控件禁用：trigger 使用原生 disabled，表单出口不参与提交",
               "name": "disabled",
               "fieldName": "disabled"
             },
@@ -61380,7 +61380,7 @@
               "type": {
                 "text": "boolean | undefined"
               },
-              "description": "只读：浮层照常展开、树照常浏览，但选中值改不动、也清不掉",
+              "description": "只读：浮层照常展开、树照常浏览，但选中值不可修改、也不可清空",
               "name": "read-only",
               "fieldName": "readOnly"
             },
@@ -61396,7 +61396,7 @@
               "type": {
                 "text": "boolean | undefined"
               },
-              "description": "节点还在取：树报 aria-busy，在途占位顶上来、空态占位让位",
+              "description": "节点加载中：树报告 aria-busy，显示在途占位、隐藏空态占位",
               "name": "loading",
               "fieldName": "loading"
             },
@@ -61436,7 +61436,7 @@
               "type": {
                 "text": "Placement | undefined"
               },
-              "description": "首选放置位，默认 bottom-start；避让后的实际位写在 data-placement 上",
+              "description": "首选放置位，默认 bottom-start；避让后的实际位置写在 data-placement 上",
               "name": "placement",
               "fieldName": "placement"
             },
@@ -61452,7 +61452,7 @@
               "type": {
                 "text": "boolean | undefined"
               },
-              "description": "上下键走到首尾回绕，默认关；写 loop=\"true\" 打开",
+              "description": "上下键到达首尾回绕，默认关闭；写 loop=\"true\" 开启",
               "name": "loop",
               "fieldName": "loop"
             },
@@ -61460,7 +61460,7 @@
               "type": {
                 "text": "Direction | undefined"
               },
-              "description": "文字方向，只对调左右方向键的展开/收起语义，默认 ltr",
+              "description": "文字方向，只对调左右方向键的展开 / 收起语义，默认 ltr",
               "name": "dir",
               "fieldName": "direction"
             },

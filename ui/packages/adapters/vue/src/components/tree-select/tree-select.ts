@@ -47,7 +47,7 @@ export type TreeSelectRootSlotProps = Pick<
   | 'clear'
 >
 
-/** 本节点持有焦点时，value 变更重报焦点节点，卸载时上报焦点丢失 */
+/** 本节点持有焦点时，value 变更重新报告焦点节点，卸载时上报焦点丢失 */
 function reportNodeFocus(ctx: TreeSelectContext, el: Ref<HTMLElement | null>, value: () => string): void {
   let registered: string | null = null
   watch(value, (next, prev) => {
@@ -89,9 +89,9 @@ export const XhTreeSelectRoot = defineComponent({
   props: {
     collection: { type: Array as PropType<TreeSelectNode[]> },
     loadChildren: { type: Function as PropType<TreeSelectProps['loadChildren']> },
-    /** 标题文字。给了它就不必再写 label 部件；要放别的内容改用 label 插槽。 */
+    /** 标题文字。提供后不必再写 label 部件；需要放置其他内容时改用 label 插槽。 */
     label: { type: String },
-    /** 自动渲染树里是否带清空按钮；手写部件不看它，写了节点即可清。 */
+    /** 自动渲染树中是否带清空按钮；手写部件不使用它，写了节点即可清空。 */
     clearable: Boolean,
     value: { type: [String, Array] as PropType<string | string[]> },
     defaultValue: { type: [String, Array] as PropType<string | string[]> },
@@ -549,7 +549,7 @@ export const XhTreeSelectHiddenInput = defineComponent({
   },
 })
 
-/** 按 collection 递归铺节点：带 children 的落成 branch，其余落成 item。 */
+/** 按 collection 递归铺设节点：带 children 的渲染为 branch，其余渲染为 item。 */
 function renderNodes(nodes: readonly TreeSelectNode[]): VNode[] {
   return nodes.map(node => (node.children || node.hasChildren)
     ? h(XhTreeSelectBranch, { key: node.value, value: node.value }, () => [
@@ -567,8 +567,8 @@ function renderNodes(nodes: readonly TreeSelectNode[]): VNode[] {
 }
 
 /**
- * 没写默认插槽时按 collection 铺开的整套结构，作者只交数据。
- * 与手写部件产出的 DOM 完全一致，要改结构就写默认插槽，行为不变。
+ * 未写默认插槽时按 collection 铺开的整套结构，作者只提供数据。
+ * 与手写部件产出的 DOM 完全一致，需要修改结构时写默认插槽，行为不变。
  */
 function renderDefaultTree(
   collection: readonly TreeSelectNode[],
