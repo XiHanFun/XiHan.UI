@@ -1,4 +1,4 @@
-<!-- 尺寸 | size 三档只换直径，回退字的字号跟着一起缩放；缺省档不输出 data-size -->
+<!-- 尺寸 | size 三档只改变直径，回退文字的字号随之缩放；默认档不输出 data-size -->
 <script setup lang="ts">
 import { XhAvatarFallback, XhAvatarImage, XhAvatarRoot } from "@xihan-ui/vue";
 </script>

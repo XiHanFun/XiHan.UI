@@ -1,4 +1,4 @@
-// 加载状态 | status-change 在状态落位时通知，过渡态 idle 不通知；没给地址等同于取不到，直接落 error 让回退接管
+// 加载状态 | status-change 在状态落位时通知，过渡态 idle 不通知；未提供地址等同于无法获取，直接落为 error 由回退接管
 import type { ReactNode } from "react";
 import { XhAvatarFallback, XhAvatarImage, XhAvatarRoot } from "@xihan-ui/react";
 import { useState } from "react";

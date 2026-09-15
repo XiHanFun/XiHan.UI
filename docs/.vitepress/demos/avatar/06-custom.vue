@@ -1,4 +1,4 @@
-<!-- 自定义直径与配色 | 三档之外的直径、底色、字色各是一个组件令牌；按人名分配颜色就是逐个实例覆盖 -->
+<!-- 自定义直径与配色 | 三档之外的直径、底色、字色各是一个组件令牌；按人名分配颜色即逐个实例覆盖 -->
 <script setup lang="ts">
 import { XhAvatarFallback, XhAvatarImage, XhAvatarRoot } from "@xihan-ui/vue";
 
