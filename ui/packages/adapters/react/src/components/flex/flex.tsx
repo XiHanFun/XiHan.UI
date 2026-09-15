@@ -17,8 +17,8 @@ import { FlexProvider, useFlexContext } from './context'
 export interface XhFlexSplitProps extends ComponentPropsWithRef<'span'> {}
 
 /**
- * 分隔符部件。写 split 时组件在每道缝里自动铺一个，
- * 手写它也铺得出同一种结构——两条路产出的 DOM 完全一致。
+ * 分隔符部件。写 split 时组件在每道缝隙中自动铺设一个，
+ * 手写它也能得到同一种结构：两条路径产出的 DOM 完全一致。
  */
 export function XhFlexSplit({ children, ...rest }: XhFlexSplitProps): ReactNode {
   const ctx = useFlexContext()
@@ -30,7 +30,7 @@ export function XhFlexSplit({ children, ...rest }: XhFlexSplitProps): ReactNode 
 }
 
 export interface XhFlexProps extends ComponentPropsWithRef<'div'> {
-  /** 主轴方向：horizontal 横排、vertical 竖排，缺省 horizontal。 */
+  /** 主轴方向：horizontal 横排、vertical 竖排，默认 horizontal。 */
   orientation?: Orientation
   /** 交叉轴对齐：start / center / end / stretch / baseline。 */
   align?: FlexAlign
@@ -38,25 +38,25 @@ export interface XhFlexProps extends ComponentPropsWithRef<'div'> {
   justify?: FlexJustify
   /** 子项间距档位：xs / sm / md / lg / xl。 */
   gap?: FlexGap
-  /** 一行放不下时折行。 */
+  /** 一行放不下时换行。 */
   wrap?: boolean
-  /** 容器按行内盒排版，宽度收到内容。 */
+  /** 容器按行内盒排版，宽度收缩到内容。 */
   inline?: boolean
-  /** 分隔符的内容：给了它，组件在每两个子项之间各铺一个分隔符部件。 */
+  /** 分隔符的内容：提供后，组件在每两个子项之间各铺设一个分隔符部件。 */
   split?: ReactNode
 }
 
 /**
- * 把 children 摊成一个个子项。
+ * 把 children 摊平为一个个子项。
  *
- * Children.toArray 已经丢掉 null / undefined / 布尔并把数组摊平，这里再滤掉
- * 只有空白的文本节点——它一个像素都不画，留着会插出两条挨在一起的分隔符。
+ * Children.toArray 已经丢弃 null / undefined / 布尔并把数组摊平，这里再滤除
+ * 只有空白的文本节点：它不渲染任何像素，保留会插出两条相邻的分隔符。
  */
 function flexItems(children: ReactNode): ReactNode[] {
   return Children.toArray(children).filter(node => typeof node !== 'string' || node.trim() !== '')
 }
 
-/** 在每两个子项之间铺一个分隔符部件。 */
+/** 在每两个子项之间铺设一个分隔符部件。 */
 function interleave(items: readonly ReactNode[], split: ReactNode): ReactNode[] {
   const out: ReactNode[] = []
   items.forEach((item, index) => {
@@ -67,7 +67,7 @@ function interleave(items: readonly ReactNode[], split: ReactNode): ReactNode[] 
   return out
 }
 
-/** 一维排布容器：六个排版参数落成根上的 data-*，换算成哪条 CSS 规则由皮肤定。 */
+/** 一维排布容器：六个排版参数写为根上的 data-*，换算为哪条 CSS 规则由皮肤决定。 */
 export function XhFlex({
   orientation,
   align,
