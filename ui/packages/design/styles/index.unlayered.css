@@ -15766,6 +15766,43 @@
    外扩走绝对定位的伪元素，盒子本身一动不动——放大盒子会把它旁边的东西挤开。
    用 ::after：::before 已经被兜底字形占着 */
 @media (pointer: coarse) {
+  /* 分页的视觉仍是 16/24px 短线，按钮盒改成首尾相接的 44px 分区。
+     直接用负 inset 外扩会让相邻页的命中区重叠，落点归属取决于绘制顺序；
+     这里让真实按钮盒承担命中，再把 ::before / ::after 的短线收回盒子中央。 */
+  [data-scope='carousel'][data-part='indicator-group'] {
+    gap: 0;
+  }
+
+  [data-scope='carousel'][data-part='indicator'] {
+    min-inline-size: var(--xh-carousel-indicator-target-size, 44px);
+    min-block-size: var(--xh-carousel-indicator-target-size, 44px);
+  }
+
+  [data-scope='carousel'][data-part='indicator']::before {
+    position: absolute;
+    inset-block-start: 50%;
+    inset-inline-start: 50%;
+    inline-size: var(--xh-carousel-indicator-size-current, var(--xh-space-6));
+    block-size: var(--xh-stroke-thick);
+    translate: -50% -50%;
+  }
+
+  [data-scope='carousel'][data-part='indicator']::after {
+    inset: 0;
+    background-size: var(--xh-carousel-indicator-size, var(--xh-space-4)) var(--xh-stroke-thick);
+  }
+
+  [data-scope='carousel'][data-part='indicator-group'][data-orientation='vertical']
+    > [data-scope='carousel'][data-part='indicator']::before {
+    inline-size: var(--xh-stroke-thick);
+    block-size: var(--xh-carousel-indicator-size-current, var(--xh-space-6));
+  }
+
+  [data-scope='carousel'][data-part='indicator-group'][data-orientation='vertical']
+    > [data-scope='carousel'][data-part='indicator']::after {
+    background-size: var(--xh-stroke-thick) var(--xh-carousel-indicator-size, var(--xh-space-4));
+  }
+
   [data-scope='carousel'][data-part='prev-trigger'],
   [data-scope='carousel'][data-part='next-trigger'],
   [data-scope='carousel'][data-part='autoplay-trigger'] {

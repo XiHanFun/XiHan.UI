@@ -5625,6 +5625,9 @@
               "name": "--xh-carousel-indicator-size-current"
             },
             {
+              "name": "--xh-carousel-indicator-target-size"
+            },
+            {
               "name": "--xh-carousel-trigger-bg"
             },
             {

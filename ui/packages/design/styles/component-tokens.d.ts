@@ -345,6 +345,7 @@ export type ComponentTokenName =
   | '--xh-carousel-indicator-radius'
   | '--xh-carousel-indicator-size'
   | '--xh-carousel-indicator-size-current'
+  | '--xh-carousel-indicator-target-size'
   | '--xh-carousel-trigger-bg'
   | '--xh-carousel-trigger-bg-active'
   | '--xh-carousel-trigger-bg-hover'
