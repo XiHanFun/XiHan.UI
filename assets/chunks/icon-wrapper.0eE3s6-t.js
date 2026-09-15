@@ -1,0 +1,1 @@
+import{B as e}from"./index.Dvd56iNz.js";import{d as a,c7 as r}from"./theme.C4bpqV2W.js";import{d as n,b as c,w as t,k as o,o as s,E as p}from"./framework.DkvuVDKz.js";const d=n({__name:"icon-wrapper",setup(l){return(i,m)=>(s(),c(o(r),null,{default:t(()=>[p(o(a),{icon:o(e)},null,8,["icon"])]),_:1}))}});export{d as default};

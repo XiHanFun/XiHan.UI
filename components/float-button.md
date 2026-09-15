@@ -17,11 +17,6 @@
 展开一组悬浮操作
 
 ```vue
-<!--
-  Copyright (c) 2021-Present XiHanFun and contributors.
-  Licensed under the MIT License. See LICENSE in the project root for license information.
--->
-
 <script setup lang="ts">
 import { MessageCircleIcon, SettingsIcon, ShareIcon } from "@xihan-ui/icons";
 import { XhFloatButtonList, XhFloatButtonRoot, XhFloatButtonTrigger, XhIcon } from "@xihan-ui/vue";
@@ -65,11 +60,6 @@ import { XhFloatButtonList, XhFloatButtonRoot, XhFloatButtonTrigger, XhIcon } fr
 指针进入时展开，键盘与触控仍可点击
 
 ```vue
-<!--
-  Copyright (c) 2021-Present XiHanFun and contributors.
-  Licensed under the MIT License. See LICENSE in the project root for license information.
--->
-
 <script setup lang="ts">
 import { MessageCircleIcon, ShareIcon } from "@xihan-ui/icons";
 import { XhFloatButtonList, XhFloatButtonRoot, XhFloatButtonTrigger, XhIcon } from "@xihan-ui/vue";
@@ -103,11 +93,6 @@ import { XhFloatButtonList, XhFloatButtonRoot, XhFloatButtonTrigger, XhIcon } fr
 设置浮动按钮的表面
 
 ```vue
-<!--
-  Copyright (c) 2021-Present XiHanFun and contributors.
-  Licensed under the MIT License. See LICENSE in the project root for license information.
--->
-
 <script setup lang="ts">
 import { XhFloatButtonList, XhFloatButtonRoot, XhFloatButtonTrigger } from "@xihan-ui/vue";
 
@@ -135,11 +120,6 @@ const variants = [undefined, "solid", "subtle", "outline", "ghost"] as const;
 使用小、中、大三档尺寸
 
 ```vue
-<!--
-  Copyright (c) 2021-Present XiHanFun and contributors.
-  Licensed under the MIT License. See LICENSE in the project root for license information.
--->
-
 <script setup lang="ts">
 import { XhFloatButtonList, XhFloatButtonRoot, XhFloatButtonTrigger } from "@xihan-ui/vue";
 
@@ -158,37 +138,6 @@ const sizes = ["sm", "md", "lg"] as const;
 <xh-float-button size="sm"><div data-xh-part="root" style="position: static"><button data-xh-part="trigger"></button><div data-xh-part="list"></div></div></xh-float-button>
 <xh-float-button size="md"><div data-xh-part="root" style="position: static"><button data-xh-part="trigger"></button><div data-xh-part="list"></div></div></xh-float-button>
 <xh-float-button size="lg"><div data-xh-part="root" style="position: static"><button data-xh-part="trigger"></button><div data-xh-part="list"></div></div></xh-float-button>
-```
-
-### 外形
-
-使用圆形或方形触发器
-
-```vue
-<!--
-  Copyright (c) 2021-Present XiHanFun and contributors.
-  Licensed under the MIT License. See LICENSE in the project root for license information.
--->
-
-<script setup lang="ts">
-import { XhFloatButtonList, XhFloatButtonRoot, XhFloatButtonTrigger } from "@xihan-ui/vue";
-</script>
-
-<template>
-  <XhFloatButtonRoot style="position: static" shape="circle">
-    <XhFloatButtonTrigger />
-    <XhFloatButtonList />
-  </XhFloatButtonRoot>
-  <XhFloatButtonRoot style="position: static" shape="square">
-    <XhFloatButtonTrigger />
-    <XhFloatButtonList />
-  </XhFloatButtonRoot>
-</template>
-```
-
-```html
-<xh-float-button shape="circle"><div data-xh-part="root" style="position: static"><button data-xh-part="trigger"></button><div data-xh-part="list"></div></div></xh-float-button>
-<xh-float-button shape="square"><div data-xh-part="root" style="position: static"><button data-xh-part="trigger"></button><div data-xh-part="list"></div></div></xh-float-button>
 ```
 
 ## 设计指引
@@ -253,7 +202,6 @@ import { XhFloatButtonList, XhFloatButtonRoot, XhFloatButtonTrigger } from "@xih
 | `onOpenChange` | `(details: CollapsibleOpenChangeDetails) => void` |  | open 变化意图；受控时是唯一出口，非受控时随内部转移一并通知。 |
 | `open` | `boolean` |  |  |
 | `placement` | `FloatButtonPlacement` |  | 钉在哪一角，默认 bottom-end。 |
-| `shape` | `FloatButtonShape` |  | 触发器外形，默认 circle。 |
 | `size` | `Size` |  | 尺寸：sm / md / lg，缺省与 lg 同档——悬浮钮要够得着，起步就比行内按钮大一号。 |
 | `tone` | `Tone` |  | 颜色：brand / neutral / success / warning / danger / info。 |
 | `translations` | `Partial<FloatButtonTranslations>` |  |  |
@@ -343,13 +291,11 @@ import { XhFloatButtonList, XhFloatButtonRoot, XhFloatButtonTrigger } from "@xih
 | --- | --- | --- |
 | `root` | `data-disabled` | ''（条件成立时才出现） |
 | `root` | `data-placement` | props.placement |
-| `root` | `data-shape` | props.shape |
 | `root` | `data-size` | props.size |
 | `root` | `data-state` | 'open' \| 'closed' |
 | `root` | `data-tone` | props.tone |
 | `root` | `data-variant` | props.variant |
 | `trigger` | `data-disabled` | ''（条件成立时才出现） |
-| `trigger` | `data-shape` | props.shape |
 | `trigger` | `data-state` | 'open' \| 'closed' |
 | `list` | `data-placement` | props.placement |
 | `list` | `data-state` | 'open' \| 'closed' |
@@ -370,7 +316,7 @@ import { XhFloatButtonList, XhFloatButtonRoot, XhFloatButtonTrigger } from "@xih
 | `--xh-float-button-gap` | `list`<br>`root` | `gap` | `default` | `--xh-space-2` | float-button 的 list、root 部件 gap 覆盖槽。 |
 | `--xh-float-button-icon-size` | `root` | `--xh-icon-size` | `default` | `--xh-glyph-size-text` | float-button 的 root 部件 --xh-icon-size 覆盖槽。 |
 | `--xh-float-button-layer` | `root` | `z-index` | `default` | `--xh-_layer` | float-button 的 root 部件 z-index 覆盖槽。 |
-| `--xh-float-button-radius` | `list`<br>`root`<br>`trigger` | `border-radius` | `default`<br>`shape=square` | `--xh-shape-control`<br>`--xh-shape-pill` | float-button 的 list、root、trigger 部件 border-radius 覆盖槽。 |
+| `--xh-float-button-radius` | `list`<br>`root`<br>`trigger` | `border-radius` | `default` | `--xh-shape-pill` | float-button 的 list、root、trigger 部件 border-radius 覆盖槽。 |
 | `--xh-float-button-shadow` | `list`<br>`trigger` | `box-shadow` | `default`<br>`not([data-scope])` | `--xh-_float-button-shadow` | float-button 的 list、trigger 部件 box-shadow 覆盖槽。 |
 | `--xh-float-button-size` | `list`<br>`trigger` | `block-size`<br>`inline-size` | `default` | `--xh-_float-button-size` | float-button 的 list、trigger 部件 block-size、inline-size 覆盖槽。 |
 <!-- xh-component-tokens:end -->

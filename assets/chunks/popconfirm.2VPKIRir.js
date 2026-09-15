@@ -1,0 +1,1 @@
+import{dv as t,dw as a}from"./theme.C4bpqV2W.js";import{d as n,b as s,w as e,k as r,o as p,E as f,a as m}from"./framework.DkvuVDKz.js";const u=n({__name:"popconfirm",setup(c){return(d,o)=>(p(),s(r(a),null,{default:e(()=>[f(r(t),null,{default:e(()=>[...o[0]||(o[0]=[m("删除这条记录",-1)])]),_:1})]),_:1}))}});export{u as default};

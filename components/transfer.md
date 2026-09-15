@@ -17,11 +17,6 @@
 collection 是条目全集的唯一事实源，value 只装落在右侧的那批
 
 ```vue
-<!--
-  Copyright (c) 2021-Present XiHanFun and contributors.
-  Licensed under the MIT License. See LICENSE in the project root for license information.
--->
-
 <script setup lang="ts">
 import {
   XhTransferItem,
@@ -219,11 +214,6 @@ const value = ref<string[]>(["read"]);
 searchable 给每侧配一个搜索框，筛剩下的才参与方向键、全选与搬运
 
 ```vue
-<!--
-  Copyright (c) 2021-Present XiHanFun and contributors.
-  Licensed under the MIT License. See LICENSE in the project root for license information.
--->
-
 <script setup lang="ts">
 import {
   XhTransferItem,
@@ -445,11 +435,6 @@ function filter(item: { value: string; label: string }, query: string) {
 禁用写在 items 上：勾不动也搬不动，但仍可聚焦、仍是方向键的起点
 
 ```vue
-<!--
-  Copyright (c) 2021-Present XiHanFun and contributors.
-  Licensed under the MIT License. See LICENSE in the project root for license information.
--->
-
 <script setup lang="ts">
 import {
   XhTransferItem,
@@ -606,11 +591,6 @@ const value = ref<string[]>(["owner"]);
 oneWay 把往回搬那条路整个封死，右侧不再接受勾选，往回的按钮也就不必写
 
 ```vue
-<!--
-  Copyright (c) 2021-Present XiHanFun and contributors.
-  Licensed under the MIT License. See LICENSE in the project root for license information.
--->
-
 <script setup lang="ts">
 import {
   XhTransferItem,
@@ -774,11 +754,6 @@ const value = ref<string[]>([]);
 条目里长什么样归作者：勾选格与文本各就各位，前后再各加一段自己的标记
 
 ```vue
-<!--
-  Copyright (c) 2021-Present XiHanFun and contributors.
-  Licensed under the MIT License. See LICENSE in the project root for license information.
--->
-
 <script setup lang="ts">
 import {
   XhTransferItem,
@@ -1015,11 +990,6 @@ const value = ref<string[]>(["he"]);
 本侧此刻看得见的条目由组件给出，据此分组渲染；group 是 role=group 的段落壳，段标题不入方向键也不入搬运
 
 ```vue
-<!--
-  Copyright (c) 2021-Present XiHanFun and contributors.
-  Licensed under the MIT License. See LICENSE in the project root for license information.
--->
-
 <script setup lang="ts">
 import {
   XhTransferGroup,
@@ -1237,16 +1207,205 @@ const value = ref<string[]>(["list"]);
 </script>
 ```
 
+### 范围选
+
+按住 Shift 点某一项，选中锚点到它那一段；锚点跨到另一侧时退化成普通勾选
+
+```vue
+<script setup lang="ts">
+import {
+  XhTransferItem,
+  XhTransferItemCheckbox,
+  XhTransferItemText,
+  XhTransferList,
+  XhTransferPanelCount,
+  XhTransferPanelHeader,
+  XhTransferPanelTitle,
+  XhTransferRoot,
+  XhTransferSourcePanel,
+  XhTransferTargetPanel,
+  XhTransferToSourceTrigger,
+  XhTransferToTargetTrigger,
+} from "@xihan-ui/vue";
+import { ref } from "vue";
+
+const items = [
+  { value: "read", label: "查看" },
+  { value: "create", label: "新建" },
+  { value: "update", label: "编辑" },
+  { value: "delete", label: "删除" },
+  { value: "export", label: "导出" },
+  { value: "audit", label: "审计" },
+];
+
+const value = ref<string[]>(["read"]);
+</script>
+
+<template>
+  <div style="inline-size: 100%; max-inline-size: 520px">
+    <p style="margin-block-end: 12px; color: var(--xh-fg-muted)">
+      点左侧第一项，再<strong>按住 Shift</strong> 点更下面的一项 —— 中间整段一起勾上。
+      两侧是各自独立的列表，锚点跨到另一侧时退化成普通勾选。
+    </p>
+    <XhTransferRoot v-model:value="value" :collection="items">
+      <XhTransferSourcePanel>
+        <XhTransferPanelHeader>
+          <XhTransferPanelTitle>待选权限</XhTransferPanelTitle>
+          <XhTransferPanelCount />
+        </XhTransferPanelHeader>
+        <XhTransferList>
+          <!-- 两侧各挂一份全集，不属于本侧的那一份由组件打上 hidden，不卸载节点 -->
+          <XhTransferItem
+            v-for="item in items"
+            :key="item.value"
+            :value="item.value"
+          >
+            <XhTransferItemCheckbox />
+            <XhTransferItemText>{{ item.label }}</XhTransferItemText>
+          </XhTransferItem>
+        </XhTransferList>
+      </XhTransferSourcePanel>
+
+      <XhTransferToTargetTrigger />
+      <XhTransferToSourceTrigger />
+
+      <XhTransferTargetPanel>
+        <XhTransferPanelHeader>
+          <XhTransferPanelTitle>已选权限</XhTransferPanelTitle>
+          <XhTransferPanelCount />
+        </XhTransferPanelHeader>
+        <XhTransferList>
+          <XhTransferItem
+            v-for="item in items"
+            :key="item.value"
+            :value="item.value"
+          >
+            <XhTransferItemCheckbox />
+            <XhTransferItemText>{{ item.label }}</XhTransferItemText>
+          </XhTransferItem>
+        </XhTransferList>
+      </XhTransferTargetPanel>
+    </XhTransferRoot>
+
+    <p style="margin-block-start: 12px; font-size: 13px">
+      已选：{{ value.length ? value.join("、") : "（无）" }}
+    </p>
+  </div>
+</template>
+```
+
+```html
+<div id="transfer-range" style="inline-size: 100%; max-inline-size: 520px">
+  <p style="margin-block-end: 12px; color: var(--xh-fg-muted)">
+    点左侧第一项，再<strong>按住 Shift</strong> 点更下面的一项 —— 中间整段一起勾上。
+    两侧是各自独立的列表，锚点跨到另一侧时退化成普通勾选。
+  </p>
+  <xh-transfer>
+    <div data-xh-part="root">
+      <div data-xh-part="source-panel">
+        <div data-xh-part="panel-header">
+          <span data-xh-part="panel-title">待选权限</span>
+          <span data-xh-part="panel-count"></span>
+        </div>
+        <!-- 两侧各挂一份全集，不属于本侧的那一份由元素打上 hidden，不卸载节点 -->
+        <div data-xh-part="list">
+          <div data-xh-part="item" value="read">
+            <span data-xh-part="item-checkbox"></span>
+            <span data-xh-part="item-text">查看</span>
+          </div>
+          <div data-xh-part="item" value="create">
+            <span data-xh-part="item-checkbox"></span>
+            <span data-xh-part="item-text">新建</span>
+          </div>
+          <div data-xh-part="item" value="update">
+            <span data-xh-part="item-checkbox"></span>
+            <span data-xh-part="item-text">编辑</span>
+          </div>
+          <div data-xh-part="item" value="delete">
+            <span data-xh-part="item-checkbox"></span>
+            <span data-xh-part="item-text">删除</span>
+          </div>
+          <div data-xh-part="item" value="export">
+            <span data-xh-part="item-checkbox"></span>
+            <span data-xh-part="item-text">导出</span>
+          </div>
+          <div data-xh-part="item" value="audit">
+            <span data-xh-part="item-checkbox"></span>
+            <span data-xh-part="item-text">审计</span>
+          </div>
+        </div>
+      </div>
+
+      <button data-xh-part="to-target-trigger"></button>
+      <button data-xh-part="to-source-trigger"></button>
+
+      <div data-xh-part="target-panel">
+        <div data-xh-part="panel-header">
+          <span data-xh-part="panel-title">已选权限</span>
+          <span data-xh-part="panel-count"></span>
+        </div>
+        <div data-xh-part="list">
+          <div data-xh-part="item" value="read">
+            <span data-xh-part="item-checkbox"></span>
+            <span data-xh-part="item-text">查看</span>
+          </div>
+          <div data-xh-part="item" value="create">
+            <span data-xh-part="item-checkbox"></span>
+            <span data-xh-part="item-text">新建</span>
+          </div>
+          <div data-xh-part="item" value="update">
+            <span data-xh-part="item-checkbox"></span>
+            <span data-xh-part="item-text">编辑</span>
+          </div>
+          <div data-xh-part="item" value="delete">
+            <span data-xh-part="item-checkbox"></span>
+            <span data-xh-part="item-text">删除</span>
+          </div>
+          <div data-xh-part="item" value="export">
+            <span data-xh-part="item-checkbox"></span>
+            <span data-xh-part="item-text">导出</span>
+          </div>
+          <div data-xh-part="item" value="audit">
+            <span data-xh-part="item-checkbox"></span>
+            <span data-xh-part="item-text">审计</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </xh-transfer>
+
+  <p id="transfer-range-out" style="margin-block-start: 12px; font-size: 13px">
+    已选：read
+  </p>
+</div>
+
+<script type="module">
+  const stage = document.getElementById("transfer-range");
+  const transfer = stage.querySelector("xh-transfer");
+  const out = document.getElementById("transfer-range-out");
+
+  transfer.collection = [
+    { value: "read", label: "查看" },
+    { value: "create", label: "新建" },
+    { value: "update", label: "编辑" },
+    { value: "delete", label: "删除" },
+    { value: "export", label: "导出" },
+    { value: "audit", label: "审计" },
+  ];
+
+  transfer.value = ["read"];
+  transfer.addEventListener("value-change", (event) => {
+    transfer.value = event.detail.value;
+    out.textContent = `已选：${event.detail.value.length ? event.detail.value.join("、") : "（无）"}`;
+  });
+</script>
+```
+
 ### 一万条只渲可视区
 
 面板插槽给的是本侧此刻看得见的全集，作者按滚动位置切一段挂出来，上下各留一个撑高块；全选、计数与搬运不读 DOM，照样管到窗口外
 
 ```vue
-<!--
-  Copyright (c) 2021-Present XiHanFun and contributors.
-  Licensed under the MIT License. See LICENSE in the project root for license information.
--->
-
 <script setup lang="ts">
 import {
   XhTransferItem,
@@ -1510,215 +1669,11 @@ const value = ref<string[]>(["sku-3"]);
 </script>
 ```
 
-### 范围选
-
-按住 Shift 点某一项，选中锚点到它那一段；锚点跨到另一侧时退化成普通勾选
-
-```vue
-<!--
-  Copyright (c) 2021-Present XiHanFun and contributors.
-  Licensed under the MIT License. See LICENSE in the project root for license information.
--->
-
-<script setup lang="ts">
-import {
-  XhTransferItem,
-  XhTransferItemCheckbox,
-  XhTransferItemText,
-  XhTransferList,
-  XhTransferPanelCount,
-  XhTransferPanelHeader,
-  XhTransferPanelTitle,
-  XhTransferRoot,
-  XhTransferSourcePanel,
-  XhTransferTargetPanel,
-  XhTransferToSourceTrigger,
-  XhTransferToTargetTrigger,
-} from "@xihan-ui/vue";
-import { ref } from "vue";
-
-const items = [
-  { value: "read", label: "查看" },
-  { value: "create", label: "新建" },
-  { value: "update", label: "编辑" },
-  { value: "delete", label: "删除" },
-  { value: "export", label: "导出" },
-  { value: "audit", label: "审计" },
-];
-
-const value = ref<string[]>(["read"]);
-</script>
-
-<template>
-  <div style="inline-size: 100%; max-inline-size: 520px">
-    <p style="margin-block-end: 12px; color: var(--xh-fg-muted)">
-      点左侧第一项，再<strong>按住 Shift</strong> 点更下面的一项 —— 中间整段一起勾上。
-      两侧是各自独立的列表，锚点跨到另一侧时退化成普通勾选。
-    </p>
-    <XhTransferRoot v-model:value="value" :collection="items">
-      <XhTransferSourcePanel>
-        <XhTransferPanelHeader>
-          <XhTransferPanelTitle>待选权限</XhTransferPanelTitle>
-          <XhTransferPanelCount />
-        </XhTransferPanelHeader>
-        <XhTransferList>
-          <!-- 两侧各挂一份全集，不属于本侧的那一份由组件打上 hidden，不卸载节点 -->
-          <XhTransferItem
-            v-for="item in items"
-            :key="item.value"
-            :value="item.value"
-          >
-            <XhTransferItemCheckbox />
-            <XhTransferItemText>{{ item.label }}</XhTransferItemText>
-          </XhTransferItem>
-        </XhTransferList>
-      </XhTransferSourcePanel>
-
-      <XhTransferToTargetTrigger />
-      <XhTransferToSourceTrigger />
-
-      <XhTransferTargetPanel>
-        <XhTransferPanelHeader>
-          <XhTransferPanelTitle>已选权限</XhTransferPanelTitle>
-          <XhTransferPanelCount />
-        </XhTransferPanelHeader>
-        <XhTransferList>
-          <XhTransferItem
-            v-for="item in items"
-            :key="item.value"
-            :value="item.value"
-          >
-            <XhTransferItemCheckbox />
-            <XhTransferItemText>{{ item.label }}</XhTransferItemText>
-          </XhTransferItem>
-        </XhTransferList>
-      </XhTransferTargetPanel>
-    </XhTransferRoot>
-
-    <p style="margin-block-start: 12px; font-size: 13px">
-      已选：{{ value.length ? value.join("、") : "（无）" }}
-    </p>
-  </div>
-</template>
-```
-
-```html
-<div id="transfer-range" style="inline-size: 100%; max-inline-size: 520px">
-  <p style="margin-block-end: 12px; color: var(--xh-fg-muted)">
-    点左侧第一项，再<strong>按住 Shift</strong> 点更下面的一项 —— 中间整段一起勾上。
-    两侧是各自独立的列表，锚点跨到另一侧时退化成普通勾选。
-  </p>
-  <xh-transfer>
-    <div data-xh-part="root">
-      <div data-xh-part="source-panel">
-        <div data-xh-part="panel-header">
-          <span data-xh-part="panel-title">待选权限</span>
-          <span data-xh-part="panel-count"></span>
-        </div>
-        <!-- 两侧各挂一份全集，不属于本侧的那一份由元素打上 hidden，不卸载节点 -->
-        <div data-xh-part="list">
-          <div data-xh-part="item" value="read">
-            <span data-xh-part="item-checkbox"></span>
-            <span data-xh-part="item-text">查看</span>
-          </div>
-          <div data-xh-part="item" value="create">
-            <span data-xh-part="item-checkbox"></span>
-            <span data-xh-part="item-text">新建</span>
-          </div>
-          <div data-xh-part="item" value="update">
-            <span data-xh-part="item-checkbox"></span>
-            <span data-xh-part="item-text">编辑</span>
-          </div>
-          <div data-xh-part="item" value="delete">
-            <span data-xh-part="item-checkbox"></span>
-            <span data-xh-part="item-text">删除</span>
-          </div>
-          <div data-xh-part="item" value="export">
-            <span data-xh-part="item-checkbox"></span>
-            <span data-xh-part="item-text">导出</span>
-          </div>
-          <div data-xh-part="item" value="audit">
-            <span data-xh-part="item-checkbox"></span>
-            <span data-xh-part="item-text">审计</span>
-          </div>
-        </div>
-      </div>
-
-      <button data-xh-part="to-target-trigger"></button>
-      <button data-xh-part="to-source-trigger"></button>
-
-      <div data-xh-part="target-panel">
-        <div data-xh-part="panel-header">
-          <span data-xh-part="panel-title">已选权限</span>
-          <span data-xh-part="panel-count"></span>
-        </div>
-        <div data-xh-part="list">
-          <div data-xh-part="item" value="read">
-            <span data-xh-part="item-checkbox"></span>
-            <span data-xh-part="item-text">查看</span>
-          </div>
-          <div data-xh-part="item" value="create">
-            <span data-xh-part="item-checkbox"></span>
-            <span data-xh-part="item-text">新建</span>
-          </div>
-          <div data-xh-part="item" value="update">
-            <span data-xh-part="item-checkbox"></span>
-            <span data-xh-part="item-text">编辑</span>
-          </div>
-          <div data-xh-part="item" value="delete">
-            <span data-xh-part="item-checkbox"></span>
-            <span data-xh-part="item-text">删除</span>
-          </div>
-          <div data-xh-part="item" value="export">
-            <span data-xh-part="item-checkbox"></span>
-            <span data-xh-part="item-text">导出</span>
-          </div>
-          <div data-xh-part="item" value="audit">
-            <span data-xh-part="item-checkbox"></span>
-            <span data-xh-part="item-text">审计</span>
-          </div>
-        </div>
-      </div>
-    </div>
-  </xh-transfer>
-
-  <p id="transfer-range-out" style="margin-block-start: 12px; font-size: 13px">
-    已选：read
-  </p>
-</div>
-
-<script type="module">
-  const stage = document.getElementById("transfer-range");
-  const transfer = stage.querySelector("xh-transfer");
-  const out = document.getElementById("transfer-range-out");
-
-  transfer.collection = [
-    { value: "read", label: "查看" },
-    { value: "create", label: "新建" },
-    { value: "update", label: "编辑" },
-    { value: "delete", label: "删除" },
-    { value: "export", label: "导出" },
-    { value: "audit", label: "审计" },
-  ];
-
-  transfer.value = ["read"];
-  transfer.addEventListener("value-change", (event) => {
-    transfer.value = event.detail.value;
-    out.textContent = `已选：${event.detail.value.length ? event.detail.value.join("、") : "（无）"}`;
-  });
-</script>
-```
-
 ### 整块换档
 
 面板高度、表头、条目行、勾选格与搬运按钮各是一个令牌，写在根上整块一起换档
 
 ```vue
-<!--
-  Copyright (c) 2021-Present XiHanFun and contributors.
-  Licensed under the MIT License. See LICENSE in the project root for license information.
--->
-
 <script setup lang="ts">
 import {
   XhTransferItem,
@@ -2053,11 +2008,6 @@ const loose = ref<string[]>(["read"]);
 tone 换勾选标记的色族，size 换条目行与勾选格的几何档；两轴打在根上，两侧面板一起走
 
 ```vue
-<!--
-  Copyright (c) 2021-Present XiHanFun and contributors.
-  Licensed under the MIT License. See LICENSE in the project root for license information.
--->
-
 <script setup lang="ts">
 import {
   XhTransferItem,

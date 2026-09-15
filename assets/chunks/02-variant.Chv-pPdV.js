@@ -1,0 +1,39 @@
+const a=`<!-- 层级 | default、secondary、tertiary 逐级增强表面，transparent 用于嵌套内容 -->
+<div style="display: flex; flex-wrap: wrap; gap: 16px">
+  <xh-card variant="default">
+    <div data-xh-part="root" style="inline-size: 200px">
+      <div data-xh-part="header">
+        <div data-xh-part="title">default</div>
+      </div>
+      <div data-xh-part="content">一段用来看表面层级的正文。</div>
+    </div>
+  </xh-card>
+
+  <xh-card variant="secondary">
+    <div data-xh-part="root" style="inline-size: 200px">
+      <div data-xh-part="header">
+        <div data-xh-part="title">secondary</div>
+      </div>
+      <div data-xh-part="content">一段用来看表面层级的正文。</div>
+    </div>
+  </xh-card>
+
+  <xh-card variant="tertiary">
+    <div data-xh-part="root" style="inline-size: 200px">
+      <div data-xh-part="header">
+        <div data-xh-part="title">tertiary</div>
+      </div>
+      <div data-xh-part="content">一段用来看表面层级的正文。</div>
+    </div>
+  </xh-card>
+
+  <xh-card variant="transparent">
+    <div data-xh-part="root" style="inline-size: 200px">
+      <div data-xh-part="header">
+        <div data-xh-part="title">transparent</div>
+      </div>
+      <div data-xh-part="content">一段用来看表面层级的正文。</div>
+    </div>
+  </xh-card>
+</div>
+`;export{a as default};

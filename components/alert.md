@@ -1,6 +1,6 @@
 来源：https://ui.docs.xihanfun.com/components/alert
 
-# Alert 警告提示 `alpha`
+# Alert 警告提示
 
 页面里常驻的一条提示：说明一件与当前上下文有关的事。
 
@@ -14,23 +14,20 @@
 
 ## 用法
 
-各部件按需摆放，标题与描述都是可选的
+在中性抬升表面中说明当前状态与影响
 
 ```vue
-<!--
-  Copyright (c) 2021-Present XiHanFun and contributors.
-  Licensed under the MIT License. See LICENSE in the project root for license information.
--->
-
 <script setup lang="ts">
-import { XhAlertDescription, XhAlertRoot, XhAlertTitle } from "@xihan-ui/vue";
+import { XhAlertContent, XhAlertDescription, XhAlertRoot, XhAlertTitle } from "@xihan-ui/vue";
 </script>
 
 <template>
   <div style="width: 100%; display: grid; gap: 12px">
     <XhAlertRoot>
-      <XhAlertTitle>部署已排队</XhAlertTitle>
-      <XhAlertDescription>构建完成后会自动发布。</XhAlertDescription>
+      <XhAlertContent>
+        <XhAlertTitle>部署已排队</XhAlertTitle>
+        <XhAlertDescription>构建完成后会自动发布。</XhAlertDescription>
+      </XhAlertContent>
     </XhAlertRoot>
   </div>
 </template>
@@ -40,8 +37,10 @@ import { XhAlertDescription, XhAlertRoot, XhAlertTitle } from "@xihan-ui/vue";
 <div style="width: 100%; display: grid; gap: 12px">
   <xh-alert>
     <div data-xh-part="root">
-      <div data-xh-part="title">部署已排队</div>
-      <div data-xh-part="description">构建完成后会自动发布。</div>
+      <div data-xh-part="content">
+        <div data-xh-part="title">部署已排队</div>
+        <div data-xh-part="description">构建完成后会自动发布。</div>
+      </div>
     </div>
   </xh-alert>
 </div>
@@ -51,7 +50,7 @@ import { XhAlertDescription, XhAlertRoot, XhAlertTitle } from "@xihan-ui/vue";
 
 加粗的是必需部件。
 
-`data-scope="alert"`：**`root`** · `indicator` · `content` · `title` · `description` · `action` · `close-trigger`
+`data-scope="alert"`：**`root`** · `indicator` · **`content`** · `title` · `description` · `action` · `close-trigger`
 
 ## 示例
 
@@ -60,20 +59,15 @@ import { XhAlertDescription, XhAlertRoot, XhAlertTitle } from "@xihan-ui/vue";
 tone 只改配色，语义仍由内容与 role 决定
 
 ```vue
-<!--
-  Copyright (c) 2021-Present XiHanFun and contributors.
-  Licensed under the MIT License. See LICENSE in the project root for license information.
--->
-
 <script setup lang="ts">
-import { XhAlertRoot, XhAlertTitle } from "@xihan-ui/vue";
+import { XhAlertContent, XhAlertRoot, XhAlertTitle } from "@xihan-ui/vue";
 </script>
 
 <template>
   <div style="width: 100%; display: grid; gap: 12px">
-    <XhAlertRoot tone="success"><XhAlertTitle>保存成功</XhAlertTitle></XhAlertRoot>
-    <XhAlertRoot tone="warning"><XhAlertTitle>配额即将用尽</XhAlertTitle></XhAlertRoot>
-    <XhAlertRoot tone="danger"><XhAlertTitle>发布失败</XhAlertTitle></XhAlertRoot>
+    <XhAlertRoot tone="success"><XhAlertContent><XhAlertTitle>保存成功</XhAlertTitle></XhAlertContent></XhAlertRoot>
+    <XhAlertRoot tone="warning"><XhAlertContent><XhAlertTitle>配额即将用尽</XhAlertTitle></XhAlertContent></XhAlertRoot>
+    <XhAlertRoot tone="danger"><XhAlertContent><XhAlertTitle>发布失败</XhAlertTitle></XhAlertContent></XhAlertRoot>
   </div>
 </template>
 ```
@@ -82,17 +76,17 @@ import { XhAlertRoot, XhAlertTitle } from "@xihan-ui/vue";
 <div style="width: 100%; display: grid; gap: 12px">
   <xh-alert tone="success">
     <div data-xh-part="root">
-      <div data-xh-part="title">保存成功</div>
+      <div data-xh-part="content"><div data-xh-part="title">保存成功</div></div>
     </div>
   </xh-alert>
   <xh-alert tone="warning">
     <div data-xh-part="root">
-      <div data-xh-part="title">配额即将用尽</div>
+      <div data-xh-part="content"><div data-xh-part="title">配额即将用尽</div></div>
     </div>
   </xh-alert>
   <xh-alert tone="danger">
     <div data-xh-part="root">
-      <div data-xh-part="title">发布失败</div>
+      <div data-xh-part="content"><div data-xh-part="title">发布失败</div></div>
     </div>
   </xh-alert>
 </div>
@@ -103,14 +97,10 @@ import { XhAlertRoot, XhAlertTitle } from "@xihan-ui/vue";
 closable 开启后才渲染关闭按钮；open 受控时由宿主决定去留
 
 ```vue
-<!--
-  Copyright (c) 2021-Present XiHanFun and contributors.
-  Licensed under the MIT License. See LICENSE in the project root for license information.
--->
-
 <script setup lang="ts">
 import {
   XhAlertCloseTrigger,
+  XhAlertContent,
   XhAlertRoot,
   XhAlertTitle,
   XhButton,
@@ -123,7 +113,7 @@ const open = ref(true);
 <template>
   <div style="width: 100%; display: grid; gap: 12px">
     <XhAlertRoot v-model:open="open" closable>
-      <XhAlertTitle>点右侧关闭</XhAlertTitle>
+      <XhAlertContent><XhAlertTitle>点右侧关闭</XhAlertTitle></XhAlertContent>
       <XhAlertCloseTrigger />
     </XhAlertRoot>
     <XhButton v-if="!open" size="sm" @click="open = true">再显示一次</XhButton>
@@ -135,7 +125,7 @@ const open = ref(true);
 <div style="width: 100%; display: grid; gap: 12px">
   <xh-alert id="alert-closable" open closable>
     <div data-xh-part="root">
-      <div data-xh-part="title">点右侧关闭</div>
+      <div data-xh-part="content"><div data-xh-part="title">点右侧关闭</div></div>
       <button data-xh-part="close-trigger"></button>
     </div>
   </xh-alert>
@@ -164,14 +154,10 @@ const open = ref(true);
 icon 部件排在标题前面，颜色取当前语气的强调色；内容由作者塞，字形与内联 svg 都行
 
 ```vue
-<!--
-  Copyright (c) 2021-Present XiHanFun and contributors.
-  Licensed under the MIT License. See LICENSE in the project root for license information.
--->
-
 <script setup lang="ts">
 import { CheckIcon } from "@xihan-ui/icons";
 import {
+  XhAlertContent,
   XhAlertDescription,
   XhAlertIndicator,
   XhAlertRoot,
@@ -185,8 +171,10 @@ import {
     <!-- 一个字形就够：图标是纯装饰，读屏不会念它 -->
     <XhAlertRoot tone="success">
       <XhAlertIndicator><XhIcon :icon="CheckIcon" /></XhAlertIndicator>
-      <XhAlertTitle>发布完成</XhAlertTitle>
-      <XhAlertDescription>三个节点都已切到新版本。</XhAlertDescription>
+      <XhAlertContent>
+        <XhAlertTitle>发布完成</XhAlertTitle>
+        <XhAlertDescription>三个节点都已切到新版本。</XhAlertDescription>
+      </XhAlertContent>
     </XhAlertRoot>
 
     <!-- 内联 svg 同样能塞进来，描边取 currentColor 就跟着语气走 -->
@@ -207,8 +195,10 @@ import {
           <path d="M12 16.5v.5" />
         </svg>
       </XhAlertIndicator>
-      <XhAlertTitle>发布失败</XhAlertTitle>
-      <XhAlertDescription>第 2 个节点健康检查未通过。</XhAlertDescription>
+      <XhAlertContent>
+        <XhAlertTitle>发布失败</XhAlertTitle>
+        <XhAlertDescription>第 2 个节点健康检查未通过。</XhAlertDescription>
+      </XhAlertContent>
     </XhAlertRoot>
   </div>
 </template>
@@ -220,8 +210,10 @@ import {
   <xh-alert tone="success">
     <div data-xh-part="root">
       <span data-xh-part="indicator"><svg viewBox="0 0 24 24" width="1em" height="1em" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 12.5L9.5 18L20 6"/></svg></span>
-      <div data-xh-part="title">发布完成</div>
-      <div data-xh-part="description">三个节点都已切到新版本。</div>
+      <div data-xh-part="content">
+        <div data-xh-part="title">发布完成</div>
+        <div data-xh-part="description">三个节点都已切到新版本。</div>
+      </div>
     </div>
   </xh-alert>
 
@@ -244,87 +236,55 @@ import {
           <path d="M12 16.5v.5" />
         </svg>
       </span>
-      <div data-xh-part="title">发布失败</div>
-      <div data-xh-part="description">第 2 个节点健康检查未通过。</div>
+      <div data-xh-part="content">
+        <div data-xh-part="title">发布失败</div>
+        <div data-xh-part="description">第 2 个节点健康检查未通过。</div>
+      </div>
     </div>
   </xh-alert>
 </div>
 ```
 
-### 自定义外观
+### 操作
 
-描边、底色、标题色、圆角各是一个组件令牌；描边槽位换成透明就只剩淡底，尺寸不变
+将与提示直接相关的短操作放在尾端
 
 ```vue
-<!--
-  Copyright (c) 2021-Present XiHanFun and contributors.
-  Licensed under the MIT License. See LICENSE in the project root for license information.
--->
-
 <script setup lang="ts">
-import { XhAlertDescription, XhAlertRoot, XhAlertTitle } from "@xihan-ui/vue";
+import {
+  XhAlertAction,
+  XhAlertContent,
+  XhAlertDescription,
+  XhAlertRoot,
+  XhAlertTitle,
+  XhButton,
+} from "@xihan-ui/vue";
 </script>
 
 <template>
-  <div style="width: 100%; display: grid; gap: 12px">
-    <!-- 只留淡底：描边换成透明，边框盒还在，不会因为掉了一圈线而跳动 -->
-    <XhAlertRoot tone="info" style="--xh-alert-border: transparent">
-      <XhAlertTitle>无描边</XhAlertTitle>
-      <XhAlertDescription>底色与内边距都还在。</XhAlertDescription>
-    </XhAlertRoot>
-
-    <!-- 只留描边：底色换成透明 -->
-    <XhAlertRoot tone="warning" style="--xh-alert-bg: transparent">
-      <XhAlertTitle>无底色</XhAlertTitle>
-      <XhAlertDescription>剩一圈线，衬在页面本来的底色上。</XhAlertDescription>
-    </XhAlertRoot>
-
-    <!-- 语气表以外的配色逐个实例给，圆角也是一个槽位 -->
-    <XhAlertRoot
-      style="
-        --xh-alert-bg: #f4f0ff;
-        --xh-alert-border: #c4b5fd;
-        --xh-alert-title-fg: #5b21b6;
-        --xh-alert-radius: var(--xh-radius-none);
-      "
-    >
-      <XhAlertTitle>自定配色</XhAlertTitle>
-      <XhAlertDescription>底色、描边、标题色、圆角各占一个槽位。</XhAlertDescription>
+  <div style="width: 100%">
+    <XhAlertRoot tone="warning">
+      <XhAlertContent>
+        <XhAlertTitle>配额即将用尽</XhAlertTitle>
+        <XhAlertDescription>本月还可处理 120 次请求。</XhAlertDescription>
+      </XhAlertContent>
+      <XhAlertAction><XhButton size="sm" variant="outline">查看用量</XhButton></XhAlertAction>
     </XhAlertRoot>
   </div>
 </template>
 ```
 
 ```html
-<div style="width: 100%; display: grid; gap: 12px">
-  <!-- 只留淡底：描边换成透明，边框盒还在，不会因为掉了一圈线而跳动 -->
-  <xh-alert tone="info" style="--xh-alert-border: transparent">
+<div style="width: 100%">
+  <xh-alert tone="warning">
     <div data-xh-part="root">
-      <div data-xh-part="title">无描边</div>
-      <div data-xh-part="description">底色与内边距都还在。</div>
-    </div>
-  </xh-alert>
-
-  <!-- 只留描边：底色换成透明 -->
-  <xh-alert tone="warning" style="--xh-alert-bg: transparent">
-    <div data-xh-part="root">
-      <div data-xh-part="title">无底色</div>
-      <div data-xh-part="description">剩一圈线，衬在页面本来的底色上。</div>
-    </div>
-  </xh-alert>
-
-  <!-- 语气表以外的配色逐个实例给，圆角也是一个槽位 -->
-  <xh-alert
-    style="
-      --xh-alert-bg: #f4f0ff;
-      --xh-alert-border: #c4b5fd;
-      --xh-alert-title-fg: #5b21b6;
-      --xh-alert-radius: var(--xh-radius-none);
-    "
-  >
-    <div data-xh-part="root">
-      <div data-xh-part="title">自定配色</div>
-      <div data-xh-part="description">底色、描边、标题色、圆角各占一个槽位。</div>
+      <div data-xh-part="content">
+        <div data-xh-part="title">配额即将用尽</div>
+        <div data-xh-part="description">本月还可处理 120 次请求。</div>
+      </div>
+      <div data-xh-part="action">
+        <xh-button size="sm" variant="outline"><button data-xh-part="root">查看用量</button></xh-button>
+      </div>
     </div>
   </xh-alert>
 </div>
@@ -345,7 +305,8 @@ import { XhAlertDescription, XhAlertRoot, XhAlertTitle } from "@xihan-ui/vue";
 
 ### 特性
 
-- 语气决定用哪族颜色，图标由作者放。
+- 默认使用中性抬升表面，语气只强调标题与图标；说明保持次级前景。
+- `content` 是标题与说明共用的必需文本列，操作和关闭入口排在尾端。
 - `closable` 给出关闭按钮，关闭态可受控。
 
 ### 组合
@@ -456,6 +417,8 @@ import { XhAlertDescription, XhAlertRoot, XhAlertTitle } from "@xihan-ui/vue";
 
 `@xihan-ui/styles/alert.css` 使用 `[data-scope="alert"][data-part="root"]` 部件选择器，位于 `xihan.components` 层。覆盖样式使用 `xihan.overrides`。
 
+`forced-colors: active` 下另有一套规则：颜色交给系统，边框与状态标记改用系统色关键字。
+
 ### 数据属性
 
 由 `connect` 生成；条件不成立时不输出无值属性。
@@ -474,7 +437,7 @@ import { XhAlertDescription, XhAlertRoot, XhAlertTitle } from "@xihan-ui/vue";
 | 变量 | 部件 | CSS 属性 | 状态 | 缺省来源 | 说明 |
 | --- | --- | --- | --- | --- | --- |
 | `--xh-alert-action-gap` | `action` | `gap` | `default` | `--xh-space-2` | alert 的 action 部件 gap 覆盖槽。 |
-| `--xh-alert-bg` | `root` | `background` | `default` | `--xh-_alert-tint` | alert 的 root 部件 background 覆盖槽。 |
+| `--xh-alert-bg` | `root` | `background` | `default` | `--xh-_alert-surface` | alert 的 root 部件 background 覆盖槽。 |
 | `--xh-alert-border` | `root` | `border` | `default` | `--xh-_alert-edge` | alert 的 root 部件 border 覆盖槽。 |
 | `--xh-alert-close-bg-active` | `close-trigger` | `background` | `active` | `--xh-_tone-subtle-active` | alert 的 close-trigger 部件 background 覆盖槽。 |
 | `--xh-alert-close-bg-hover` | `close-trigger` | `background` | `hover`<br>`not(:disabled)` | `--xh-_tone-subtle-hover` | alert 的 close-trigger 部件 background 覆盖槽。 |
@@ -487,15 +450,16 @@ import { XhAlertDescription, XhAlertRoot, XhAlertTitle } from "@xihan-ui/vue";
 | `--xh-alert-description-font-size` | `description` | `font-size` | `default` | `--xh-text-secondary-size` | alert 的 description 部件 font-size 覆盖槽。 |
 | `--xh-alert-fg` | `root` | `color` | `default` | `--xh-fg-default` | alert 的 root 部件 color 覆盖槽。 |
 | `--xh-alert-font-size` | `root` | `font-size` | `default` | `--xh-text-body-size` | alert 的 root 部件 font-size 覆盖槽。 |
-| `--xh-alert-gap` | `root` | `gap` | `default` | `--xh-space-3` | alert 的 root 部件 gap 覆盖槽。 |
-| `--xh-alert-icon-size` | `root` | `--xh-icon-size` | `default` | `--xh-glyph-size-text` | alert 的 root 部件 --xh-icon-size 覆盖槽。 |
-| `--xh-alert-indicator-box` | `indicator` | `inline-size` | `default` | `--xh-control-indicator-size` | alert 的 indicator 部件 inline-size 覆盖槽。 |
+| `--xh-alert-gap` | `root` | `gap` | `default` | `--xh-space-4` | alert 的 root 部件 gap 覆盖槽。 |
+| `--xh-alert-icon-size` | `root` | `--xh-icon-size` | `default` | `--xh-glyph-size-sm` | alert 的 root 部件 --xh-icon-size 覆盖槽。 |
 | `--xh-alert-indicator-fg` | `indicator` | `color` | `default` | `--xh-_tone-fg` | alert 的 indicator 部件 color 覆盖槽。 |
+| `--xh-alert-indicator-p` | `indicator` | `padding` | `default` | `--xh-space-1` | alert 的 indicator 部件 padding 覆盖槽。 |
 | `--xh-alert-leading` | `root` | `line-height` | `default` | `--xh-leading-normal` | alert 的 root 部件 line-height 覆盖槽。 |
 | `--xh-alert-px` | `root` | `padding-inline` | `default` | `--xh-surface-px-sm` | alert 的 root 部件 padding-inline 覆盖槽。 |
 | `--xh-alert-py` | `root` | `padding-block` | `default` | `--xh-surface-py-sm` | alert 的 root 部件 padding-block 覆盖槽。 |
 | `--xh-alert-radius` | `root` | `border-radius` | `default` | `--xh-shape-surface` | alert 的 root 部件 border-radius 覆盖槽。 |
-| `--xh-alert-title-fg` | `title` | `color` | `default` | `--xh-fg-default` | alert 的 title 部件 color 覆盖槽。 |
+| `--xh-alert-shadow` | `root` | `box-shadow` | `default` | `--xh-elevation-raised` | alert 的 root 部件 box-shadow 覆盖槽。 |
+| `--xh-alert-title-fg` | `title` | `color` | `default` | `--xh-_tone-fg` | alert 的 title 部件 color 覆盖槽。 |
 | `--xh-alert-title-font-size` | `title` | `font-size` | `default` | `--xh-text-label-size` | alert 的 title 部件 font-size 覆盖槽。 |
 | `--xh-alert-title-font-weight` | `title` | `font-weight` | `default` | `--xh-font-weight-semibold` | alert 的 title 部件 font-weight 覆盖槽。 |
 | `--xh-alert-title-leading` | `title` | `line-height` | `default` | `--xh-leading-tight` | alert 的 title 部件 line-height 覆盖槽。 |

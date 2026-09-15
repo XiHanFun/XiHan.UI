@@ -17,11 +17,6 @@
 从成员列表中选择一项
 
 ```vue
-<!--
-  Copyright (c) 2021-Present XiHanFun and contributors.
-  Licensed under the MIT License. See LICENSE in the project root for license information.
--->
-
 <script setup lang="ts">
 import {
   XhListboxContent,
@@ -116,11 +111,6 @@ const members = [
 允许选择多个选项
 
 ```vue
-<!--
-  Copyright (c) 2021-Present XiHanFun and contributors.
-  Licensed under the MIT License. See LICENSE in the project root for license information.
--->
-
 <script setup lang="ts">
 import { XhListboxRoot } from "@xihan-ui/vue";
 
@@ -174,11 +164,6 @@ const options = [
 按类别组织选项
 
 ```vue
-<!--
-  Copyright (c) 2021-Present XiHanFun and contributors.
-  Licensed under the MIT License. See LICENSE in the project root for license information.
--->
-
 <script setup lang="ts">
 import {
   XhListboxContent,
@@ -269,11 +254,6 @@ const groups = [
 固定高度显示长列表
 
 ```vue
-<!--
-  Copyright (c) 2021-Present XiHanFun and contributors.
-  Licensed under the MIT License. See LICENSE in the project root for license information.
--->
-
 <script setup lang="ts">
 import { XhListboxRoot } from "@xihan-ui/vue";
 
@@ -323,11 +303,6 @@ const tracks = Array.from({ length: 12 }, (_, index) => ({
 没有选项时显示简洁提示
 
 ```vue
-<!--
-  Copyright (c) 2021-Present XiHanFun and contributors.
-  Licensed under the MIT License. See LICENSE in the project root for license information.
--->
-
 <script setup lang="ts">
 import {
   XhListboxContent,
@@ -374,6 +349,11 @@ import {
 - 支持方向键导航、连续输入检索与范围选择。
 - 支持分组、禁用条目和定高滚动。
 - 提供空态、加载态与加载更多部件。
+
+### 组合
+
+- 收进浮层就是[选择器](./select)与[组合框](./combobox)的候选列表；常驻时直接铺在面板里。
+- 长列表接[虚拟滚动](./virtualizer)只渲可视区；两侧搬运的场景用[穿梭框](./transfer)。
 
 ### 最佳实践
 

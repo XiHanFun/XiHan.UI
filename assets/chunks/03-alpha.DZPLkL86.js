@@ -1,0 +1,20 @@
+const a=`<!-- 透明度 | 半透明颜色铺在棋盘格上，看得出这是带透明度的颜色；三种写法解析成同一个颜色 -->
+<div style="display: flex; align-items: center; gap: 12px; flex-wrap: wrap">
+  <span style="display: inline-flex; align-items: center; gap: 6px">
+    <xh-color-swatch value="#e11d48" size="lg"><span data-xh-part="root"></span></xh-color-swatch>
+    <code style="font-size: 12px">#e11d48</code>
+  </span>
+  <span style="display: inline-flex; align-items: center; gap: 6px">
+    <xh-color-swatch value="#e11d48bf" size="lg"><span data-xh-part="root"></span></xh-color-swatch>
+    <code style="font-size: 12px">#e11d48bf</code>
+  </span>
+  <span style="display: inline-flex; align-items: center; gap: 6px">
+    <xh-color-swatch value="rgba(225, 29, 72, 0.5)" size="lg"><span data-xh-part="root"></span></xh-color-swatch>
+    <code style="font-size: 12px">rgba(225, 29, 72, 0.5)</code>
+  </span>
+  <span style="display: inline-flex; align-items: center; gap: 6px">
+    <xh-color-swatch value="hsla(347, 77%, 50%, 0.25)" size="lg"><span data-xh-part="root"></span></xh-color-swatch>
+    <code style="font-size: 12px">hsla(347, 77%, 50%, 0.25)</code>
+  </span>
+</div>
+`;export{a as default};

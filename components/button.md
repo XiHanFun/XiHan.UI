@@ -17,11 +17,6 @@
 触发一次操作
 
 ```vue
-<!--
-  Copyright (c) 2021-Present XiHanFun and contributors.
-  Licensed under the MIT License. See LICENSE in the project root for license information.
--->
-
 <script setup lang="ts">
 import { XhButton } from "@xihan-ui/vue";
 </script>
@@ -50,11 +45,6 @@ import { XhButton } from "@xihan-ui/vue";
 设置按钮外观
 
 ```vue
-<!--
-  Copyright (c) 2021-Present XiHanFun and contributors.
-  Licensed under the MIT License. See LICENSE in the project root for license information.
--->
-
 <script setup lang="ts">
 import { XhButton } from "@xihan-ui/vue";
 </script>
@@ -87,11 +77,6 @@ import { XhButton } from "@xihan-ui/vue";
 小、中、大三档
 
 ```vue
-<!--
-  Copyright (c) 2021-Present XiHanFun and contributors.
-  Licensed under the MIT License. See LICENSE in the project root for license information.
--->
-
 <script setup lang="ts">
 import { XhButton } from "@xihan-ui/vue";
 </script>
@@ -120,11 +105,6 @@ import { XhButton } from "@xihan-ui/vue";
 在文字前后放置图标
 
 ```vue
-<!--
-  Copyright (c) 2021-Present XiHanFun and contributors.
-  Licensed under the MIT License. See LICENSE in the project root for license information.
--->
-
 <script setup lang="ts">
 import { ArrowRightIcon, PlusIcon } from "@xihan-ui/icons";
 import { XhButton, XhButtonLabel, XhButtonPrefix, XhButtonSuffix, XhIcon } from "@xihan-ui/vue";
@@ -170,11 +150,6 @@ import { XhButton, XhButtonLabel, XhButtonPrefix, XhButtonSuffix, XhIcon } from 
 紧凑的图标操作
 
 ```vue
-<!--
-  Copyright (c) 2021-Present XiHanFun and contributors.
-  Licensed under the MIT License. See LICENSE in the project root for license information.
--->
-
 <script setup lang="ts">
 import { HeartIcon, SearchIcon } from "@xihan-ui/icons";
 import { XhButton, XhIcon } from "@xihan-ui/vue";
@@ -224,11 +199,6 @@ import { XhButton, XhIcon } from "@xihan-ui/vue";
 保留按钮标签并阻止重复操作
 
 ```vue
-<!--
-  Copyright (c) 2021-Present XiHanFun and contributors.
-  Licensed under the MIT License. See LICENSE in the project root for license information.
--->
-
 <script setup lang="ts">
 import { LoaderIcon } from "@xihan-ui/icons";
 import { XhButton, XhButtonIndicator, XhButtonLabel, XhIcon } from "@xihan-ui/vue";
@@ -270,11 +240,6 @@ import { XhButton, XhButtonIndicator, XhButtonLabel, XhIcon } from "@xihan-ui/vu
 点击后显示加载状态
 
 ```vue
-<!--
-  Copyright (c) 2021-Present XiHanFun and contributors.
-  Licensed under the MIT License. See LICENSE in the project root for license information.
--->
-
 <script setup lang="ts">
 import { LoaderIcon } from "@xihan-ui/icons";
 import { XhButton, XhButtonIndicator, XhButtonLabel, XhIcon } from "@xihan-ui/vue";
@@ -322,11 +287,6 @@ async function save() {
 占满容器宽度
 
 ```vue
-<!--
-  Copyright (c) 2021-Present XiHanFun and contributors.
-  Licensed under the MIT License. See LICENSE in the project root for license information.
--->
-
 <script setup lang="ts">
 import { XhButton } from "@xihan-ui/vue";
 </script>
@@ -347,11 +307,6 @@ import { XhButton } from "@xihan-ui/vue";
 暂时不可执行的操作
 
 ```vue
-<!--
-  Copyright (c) 2021-Present XiHanFun and contributors.
-  Licensed under the MIT License. See LICENSE in the project root for license information.
--->
-
 <script setup lang="ts">
 import { XhButton } from "@xihan-ui/vue";
 </script>
@@ -376,11 +331,6 @@ import { XhButton } from "@xihan-ui/vue";
 保留原生导航能力
 
 ```vue
-<!--
-  Copyright (c) 2021-Present XiHanFun and contributors.
-  Licensed under the MIT License. See LICENSE in the project root for license information.
--->
-
 <script setup lang="ts">
 import { XhButton } from "@xihan-ui/vue";
 </script>
@@ -456,7 +406,6 @@ import { XhButton } from "@xihan-ui/vue";
 | `fullWidth` | `boolean` |  | 撑满行宽：表单末尾的提交按钮与移动端常用。 |
 | `iconOnly` | `boolean` |  | 只有图标：左右内距清零、宽高相等。宽度跟着当前尺寸档的高度走， 不必把档位写进行内样式。图标按钮没有可见文字，作者须自行给可及名。 |
 | `loading` | `boolean` |  | 加载态：用 aria-disabled + 拦截事件表达，保留焦点。 |
-| `shape` | `ButtonShape` |  | 圆角档：rounded 是常规控件圆角，pill 是胶囊，square 是直角。 缺省即跟着 --xh-shape-control 走，与不写这一项时逐值相同。 |
 | `size` | `Size` |  |  |
 | `tone` | `Tone` |  | 颜色：brand / neutral / success / warning / danger / info。 |
 | `type` | `'button' \| 'submit' \| 'reset'` |  |  |
@@ -516,7 +465,6 @@ import { XhButton } from "@xihan-ui/vue";
 | `root` | `data-full-width` | ''（条件成立时才出现） |
 | `root` | `data-icon-only` | ''（条件成立时才出现） |
 | `root` | `data-loading` | ''（条件成立时才出现） |
-| `root` | `data-shape` | props.shape |
 | `root` | `data-size` | props.size |
 | `root` | `data-tone` | props.tone |
 | `root` | `data-variant` | props.variant |

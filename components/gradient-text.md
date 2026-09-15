@@ -17,11 +17,6 @@
 使用默认品牌渐变
 
 ```vue
-<!--
-  Copyright (c) 2021-Present XiHanFun and contributors.
-  Licensed under the MIT License. See LICENSE in the project root for license information.
--->
-
 <script setup lang="ts">
 import { XhGradientText } from "@xihan-ui/vue";
 </script>
@@ -54,11 +49,6 @@ import { XhGradientText } from "@xihan-ui/vue";
 设置渐变两端颜色
 
 ```vue
-<!--
-  Copyright (c) 2021-Present XiHanFun and contributors.
-  Licensed under the MIT License. See LICENSE in the project root for license information.
--->
-
 <script setup lang="ts">
 import { XhGradientText } from "@xihan-ui/vue";
 
@@ -91,11 +81,6 @@ const gradients = [
 设置渐变方向
 
 ```vue
-<!--
-  Copyright (c) 2021-Present XiHanFun and contributors.
-  Licensed under the MIT License. See LICENSE in the project root for license information.
--->
-
 <script setup lang="ts">
 import { XhGradientText } from "@xihan-ui/vue";
 
@@ -130,11 +115,6 @@ const directions = [
 只为关键词添加渐变
 
 ```vue
-<!--
-  Copyright (c) 2021-Present XiHanFun and contributors.
-  Licensed under the MIT License. See LICENSE in the project root for license information.
--->
-
 <script setup lang="ts">
 import { XhGradientText } from "@xihan-ui/vue";
 </script>
@@ -163,11 +143,6 @@ import { XhGradientText } from "@xihan-ui/vue";
 使用预设语义颜色
 
 ```vue
-<!--
-  Copyright (c) 2021-Present XiHanFun and contributors.
-  Licensed under the MIT License. See LICENSE in the project root for license information.
--->
-
 <script setup lang="ts">
 import { XhGradientText } from "@xihan-ui/vue";
 

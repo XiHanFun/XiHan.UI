@@ -1,0 +1,16 @@
+const a=`<!-- 人读文字 | text 关掉只剩条；EAN 的守卫条照规范比数据条长 5X，不随文字走 -->
+<div style="display: flex; flex-wrap: wrap; gap: 16px; align-items: start">
+  <div style="display: grid; gap: 6px; justify-items: center">
+    <xh-bar-code format="ean13" value="590123412345">
+      <svg data-xh-part="root"></svg>
+    </xh-bar-code>
+    <span style="font-size: 12px">缺省印文字</span>
+  </div>
+  <div style="display: grid; gap: 6px; justify-items: center">
+    <xh-bar-code format="ean13" value="590123412345" text="false">
+      <svg data-xh-part="root"></svg>
+    </xh-bar-code>
+    <span style="font-size: 12px">text=false</span>
+  </div>
+</div>
+`;export{a as default};

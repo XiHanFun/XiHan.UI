@@ -9,11 +9,6 @@
 下面的示例都会真的出声，先把音量调小一点。
 
 ```vue
-<!--
-  Copyright (c) 2021-Present XiHanFun and contributors.
-  Licensed under the MIT License. See LICENSE in the project root for license information.
--->
-
 <script setup lang="ts">
 import type { SoundTheme } from "@xihan-ui/sound";
 import {
@@ -112,11 +107,6 @@ const ding: SoundSpec = {
 配方是纯数据，这带来三件事：主题可以整套替换、用户配置可以持久化再回放、调音界面可以直接编辑它——比如下面这个：
 
 ```vue
-<!--
-  Copyright (c) 2021-Present XiHanFun and contributors.
-  Licensed under the MIT License. See LICENSE in the project root for license information.
--->
-
 <script setup lang="ts">
 import type { OscillatorLayer, SoundSpec } from "@xihan-ui/sound";
 import { createSoundPlayer, glide, strike } from "@xihan-ui/sound";
@@ -299,11 +289,6 @@ await dialog.confirm({ title: "删除这条记录？" });
 ```
 
 ```vue
-<!--
-  Copyright (c) 2021-Present XiHanFun and contributors.
-  Licensed under the MIT License. See LICENSE in the project root for license information.
--->
-
 <script setup lang="ts">
 import type { ToastService } from "@xihan-ui/vue";
 import { createToastService, XhButton } from "@xihan-ui/vue";
@@ -320,7 +305,7 @@ onBeforeUnmount(() => toast?.dispose());
 
 function upload(): void {
   const id = use().loading("上传中");
-  setTimeout(() => use().update(id, { type: "success", title: "上传完成" }), 1200);
+  setTimeout(() => use().update(id, { loading: false, tone: "success", title: "上传完成" }), 1200);
 }
 </script>
 
@@ -329,8 +314,8 @@ function upload(): void {
     <XhButton variant="solid" @click="upload()">上传（静默转成功才响）</XhButton>
     <XhButton variant="outline" @click="use().success('已保存')">success</XhButton>
     <XhButton variant="outline" @click="use().warning('磁盘快满了')">warning</XhButton>
-    <XhButton variant="outline" @click="use().error('同步失败，稍后自动重试')">
-      error
+    <XhButton variant="outline" @click="use().danger('同步失败，稍后自动重试')">
+      danger
     </XhButton>
   </div>
 </template>
@@ -340,9 +325,9 @@ function upload(): void {
 
 | 调用 | 声音 |
 | --- | --- |
-| `toast.info/success/warning/error` | 同名语义声 |
+| `toast.info/success/warning/danger` | 同名语义声（`danger` 对应 `error` 那把声） |
 | `toast.loading` | 不发声（加载中只是过渡态） |
-| `toast.update(id, { type })` | 新类型的声音，`loading` 除外——上传完成那一刻该响，改文案不该响 |
+| `toast.update(id, { tone })` | 新语气的声音，`loading: true` 还开着时除外——上传完成那一刻该响，改文案不该响 |
 | `dialog.confirm` | `open` |
 | `dialog.info/success/warning/error` | 同名语义声 |
 | 关闭、消失 | 不发声 |
@@ -351,7 +336,7 @@ function upload(): void {
 
 ```ts
 withToastSound(createToastService(), {
-  sounds: { success: "complete", error: null },
+  sounds: { success: "complete", danger: null },
 });
 ```
 
@@ -362,11 +347,6 @@ withToastSound(createToastService(), {
 ### 给单个元素配声
 
 ```vue
-<!--
-  Copyright (c) 2021-Present XiHanFun and contributors.
-  Licensed under the MIT License. See LICENSE in the project root for license information.
--->
-
 <script setup lang="ts">
 import { XhButton } from "@xihan-ui/vue";
 import { vSound } from "@xihan-ui/vue/sound";

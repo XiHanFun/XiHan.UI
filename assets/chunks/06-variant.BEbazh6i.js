@@ -1,0 +1,1 @@
+import{eF as e}from"./theme.C4bpqV2W.js";import{d as r,o as t,c as o,E as a,k as n,F as s}from"./framework.DkvuVDKz.js";const _=r({__name:"06-variant",setup(l){return(c,i)=>(t(),o(s,null,[a(n(e),{label:"加载中"}),a(n(e),{variant:"ring",label:"加载中"}),a(n(e),{variant:"dots",label:"加载中"})],64))}});export{_ as default};

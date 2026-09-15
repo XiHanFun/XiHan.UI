@@ -17,11 +17,6 @@
 标签在上、数值在下；数值由你自己格式化好再塞进来，组件不做千分位也不做换算
 
 ```vue
-<!--
-  Copyright (c) 2021-Present XiHanFun and contributors.
-  Licensed under the MIT License. See LICENSE in the project root for license information.
--->
-
 <script setup lang="ts">
 import { XhStatisticLabel, XhStatisticRoot, XhStatisticValue } from "@xihan-ui/vue";
 </script>
@@ -56,11 +51,6 @@ import { XhStatisticLabel, XhStatisticRoot, XhStatisticValue } from "@xihan-ui/v
 prefix 与 suffix 和数值排在同一行、按基线对齐，比数值小一档
 
 ```vue
-<!--
-  Copyright (c) 2021-Present XiHanFun and contributors.
-  Licensed under the MIT License. See LICENSE in the project root for license information.
--->
-
 <script setup lang="ts">
 import { ArrowUpIcon } from "@xihan-ui/icons";
 import {
@@ -131,11 +121,6 @@ import {
 size 换的是标签、数值与前后缀的字号，不传 size 即默认档
 
 ```vue
-<!--
-  Copyright (c) 2021-Present XiHanFun and contributors.
-  Licensed under the MIT License. See LICENSE in the project root for license information.
--->
-
 <script setup lang="ts">
 import {
   XhStatisticLabel,
@@ -196,11 +181,6 @@ const sizes = [
 tone 决定数值与前后缀用哪族颜色，标签始终保持弱前景
 
 ```vue
-<!--
-  Copyright (c) 2021-Present XiHanFun and contributors.
-  Licensed under the MIT License. See LICENSE in the project root for license information.
--->
-
 <script setup lang="ts">
 import { ArrowUpIcon } from "@xihan-ui/icons";
 import {
@@ -290,11 +270,6 @@ const tones = ["brand", "neutral", "success", "warning", "danger", "info"] as co
 数值用等宽数字排版，反复换数时字宽不变，后面的单位不会左右挪
 
 ```vue
-<!--
-  Copyright (c) 2021-Present XiHanFun and contributors.
-  Licensed under the MIT License. See LICENSE in the project root for license information.
--->
-
 <script setup lang="ts">
 import {
   XhStatisticLabel,
@@ -355,11 +330,6 @@ function reroll() {
 trend 落成 trend 部件的 data-direction，箭头由皮肤画；与 tone 正交——跌也可以是好事
 
 ```vue
-<!--
-  Copyright (c) 2021-Present XiHanFun and contributors.
-  Licensed under the MIT License. See LICENSE in the project root for license information.
--->
-
 <script setup lang="ts">
 import {
   XhStatisticLabel,

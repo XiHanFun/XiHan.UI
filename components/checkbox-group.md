@@ -17,11 +17,6 @@
 从一组选项中选择任意多项
 
 ```vue
-<!--
-  Copyright (c) 2021-Present XiHanFun and contributors.
-  Licensed under the MIT License. See LICENSE in the project root for license information.
--->
-
 <script setup lang="ts">
 import { XhCheckboxGroupRoot } from "@xihan-ui/vue";
 
@@ -78,11 +73,6 @@ const items = [
 使用 itemValues 计算全选和半选状态
 
 ```vue
-<!--
-  Copyright (c) 2021-Present XiHanFun and contributors.
-  Licensed under the MIT License. See LICENSE in the project root for license information.
--->
-
 <script setup lang="ts">
 import {
   XhCheckboxGroupIndicator,
@@ -146,11 +136,6 @@ const itemValues = items.map(t => t.value);
 使用 orientation 设置排列方向
 
 ```vue
-<!--
-  Copyright (c) 2021-Present XiHanFun and contributors.
-  Licensed under the MIT License. See LICENSE in the project root for license information.
--->
-
 <script setup lang="ts">
 import { XhCheckboxGroupRoot } from "@xihan-ui/vue";
 import { ref } from "vue";
@@ -201,11 +186,6 @@ const items = [
 禁用项不可操作，只读项仍可聚焦
 
 ```vue
-<!--
-  Copyright (c) 2021-Present XiHanFun and contributors.
-  Licensed under the MIT License. See LICENSE in the project root for license information.
--->
-
 <script setup lang="ts">
 import { XhCheckboxGroupRoot } from "@xihan-ui/vue";
 
@@ -286,11 +266,6 @@ const partly = [
 primary 用于页面背景，secondary 用于卡片等已有表面
 
 ```vue
-<!--
-  Copyright (c) 2021-Present XiHanFun and contributors.
-  Licensed under the MIT License. See LICENSE in the project root for license information.
--->
-
 <script setup lang="ts">
 import { XhCheckboxGroupRoot } from "@xihan-ui/vue";
 
@@ -371,6 +346,11 @@ const items = [
 - 全选触发器自动计算全选与半选状态。
 - `orientation` 设置横向或纵向排列。
 - `variant="secondary"` 适合已有表面中的低强调选项。
+
+### 组合
+
+- 每一项就是一枚[复选框](./checkbox)，全选触发器是组里额外的一枚，半选态由组算出。
+- 在[表单](./form)里以整组的值数组作为一个字段参与校验与提交。
 
 ### 最佳实践
 

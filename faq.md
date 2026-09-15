@@ -10,7 +10,7 @@ BasicApp 的前端约定请看[基础应用前端手册](https://basicapp.docs.x
 
 ## 到底有多少个组件
 
-**128 个**。每个组件同时有无头内核、Vue/React 组件与自定义元素；127 个视觉组件另有默认皮肤，renderless Hotkeys 不伪造视觉层。本文档的[组件总览](./components/)按分类列全，每个组件一页。
+**134 个**。每个组件同时有无头内核、Vue/React 组件、自定义元素与默认皮肤。本文档的[组件总览](./components/)按分类列全，每个组件一页。
 
 ## 组件的 props 有哪些？文档里怎么没有
 
@@ -104,9 +104,9 @@ BasicApp 的前端约定请看[基础应用前端手册](https://basicapp.docs.x
 
 只要一页的话，把地址后缀成 `.md`——`https://ui.docs.xihanfun.com/components/button.md` 就是按钮那一页，示例已内联成代码块。每页正文右上角的「取本页 Markdown」指向的也是它。
 
-支持 Agent Skills 的工具另有一份现成的：仓库根的 `skills/xihan-ui/`，站点上是 [`/skills/xihan-ui/SKILL.md`](https://ui.docs.xihanfun.com/skills/xihan-ui/SKILL.md)。里面是判废表（哪些写法这套库不认、该换成什么）与四个取数脚本，脚本有检出读检出、没有就读站点。
+支持 Agent Skills 的工具可以直接读取仓库根的 `.agents/skills/`：[`component-design`](https://ui.docs.xihanfun.com/skills/component-design/SKILL.md) 负责设计与视觉，[`component-development`](https://ui.docs.xihanfun.com/skills/component-development/SKILL.md) 负责实现与仓库流程，[`framework-adapters`](https://ui.docs.xihanfun.com/skills/framework-adapters/SKILL.md) 负责三端接法。开发技能提供四个只读脚本；脚本严格读取当前检出，找不到仓库时直接报错，不会拿已发布站点的旧内容代替本地事实。
 
 ## 还有别的问题
 
 - 源码仓库：[GitHub](https://github.com/XiHanFun/XiHan.UI) · [Gitee](https://gitee.com/XiHanFun/XiHan.UI) · [GitCode](https://gitcode.com/XiHanFun/XiHan.UI)
-- 文档站的组件示例覆盖全部 128 个组件，且 Vue 与自定义元素两套写法并排，行为问题优先在那里复现
+- 文档站的组件示例覆盖全部 134 个组件，且 Vue 与自定义元素两套写法并排，行为问题优先在那里复现

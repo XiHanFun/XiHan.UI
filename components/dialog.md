@@ -17,11 +17,6 @@
 不传 open 即为非受控；Esc 或点遮罩关闭，关闭后焦点回到触发按钮
 
 ```vue
-<!--
-  Copyright (c) 2021-Present XiHanFun and contributors.
-  Licensed under the MIT License. See LICENSE in the project root for license information.
--->
-
 <script setup lang="ts">
 import {
   XhButton,
@@ -98,11 +93,6 @@ import {
 传了 open 就由宿主说了算，组件自己不再改状态；Esc、点遮罩、按叉都只回写 open
 
 ```vue
-<!--
-  Copyright (c) 2021-Present XiHanFun and contributors.
-  Licensed under the MIT License. See LICENSE in the project root for license information.
--->
-
 <script setup lang="ts">
 import {
   XhButton,
@@ -177,11 +167,6 @@ const open = ref(false);
 role=alertdialog 交给读屏更强的语气；关掉 Esc 与点遮罩后，只剩里面这两颗按钮能走出去
 
 ```vue
-<!--
-  Copyright (c) 2021-Present XiHanFun and contributors.
-  Licensed under the MIT License. See LICENSE in the project root for license information.
--->
-
 <script setup lang="ts">
 import {
   XhButton,
@@ -255,11 +240,6 @@ import {
 size 落成 content 的 data-size，只改面板的最大宽度；三档各自一个对话框，点开才看得出宽窄
 
 ```vue
-<!--
-  Copyright (c) 2021-Present XiHanFun and contributors.
-  Licensed under the MIT License. See LICENSE in the project root for license information.
--->
-
 <script setup lang="ts">
 import {
   XhButton,
@@ -376,11 +356,6 @@ const sizes = [
 header / body / footer 把面板切成三段：头与尾定在原处，只有正文那一段在滚
 
 ```vue
-<!--
-  Copyright (c) 2021-Present XiHanFun and contributors.
-  Licensed under the MIT License. See LICENSE in the project root for license information.
--->
-
 <script setup lang="ts">
 import {
   XhButton,
@@ -479,11 +454,6 @@ const clauses = Array.from({ length: 16 }, (_, i) => `第 ${i + 1} 条 条款正
 提交期间按钮转圈，Esc 与点遮罩这两条出口一并封住，落定之后才把 open 写回 false
 
 ```vue
-<!--
-  Copyright (c) 2021-Present XiHanFun and contributors.
-  Licensed under the MIT License. See LICENSE in the project root for license information.
--->
-
 <script setup lang="ts">
 import {
   XhButton,
@@ -619,11 +589,6 @@ function submit() {
 一次函数调用把描述符推进表里并展开对话框；拿回的对象随后可改标题、正文与按钮状态，表里就是当前所有实例
 
 ```vue
-<!--
-  Copyright (c) 2021-Present XiHanFun and contributors.
-  Licensed under the MIT License. See LICENSE in the project root for license information.
--->
-
 <script setup lang="ts">
 import {
   XhButton,
@@ -859,11 +824,6 @@ function submit(): void {
 指针按在标题上，顺着 DOM 找到 content 部件，把累计位移写进它的 translate；入场动画走的是 transform，两者互不覆盖
 
 ```vue
-<!--
-  Copyright (c) 2021-Present XiHanFun and contributors.
-  Licensed under the MIT License. See LICENSE in the project root for license information.
--->
-
 <script setup lang="ts">
 import {
   XhButton,
@@ -1027,11 +987,6 @@ function reset(details: { open: boolean }): void {
 createDialogService 的 confirm 与单按钮预设：一行调用弹出，onOk 返回 Promise 时确认钮自动 pending 并拦住关闭；多次调用排队顺次弹
 
 ```vue
-<!--
-  Copyright (c) 2021-Present XiHanFun and contributors.
-  Licensed under the MIT License. See LICENSE in the project root for license information.
--->
-
 <script setup lang="ts">
 import type { DialogService } from "@xihan-ui/vue";
 import { createDialogService, XhButton } from "@xihan-ui/vue";

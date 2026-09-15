@@ -1,0 +1,1 @@
+import{bT as a,bU as e,bV as s}from"./theme.C4bpqV2W.js";import{d as n,b as r,w as c,k as t,o as i,E as o}from"./framework.DkvuVDKz.js";const m=n({__name:"float-button",setup(u){return(l,p)=>(i(),r(t(s),{style:{position:"static"}},{default:c(()=>[o(t(a)),o(t(e))]),_:1}))}});export{m as default};

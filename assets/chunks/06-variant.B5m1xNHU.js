@@ -1,0 +1,11 @@
+const n=`<!-- 形态 | 默认渐隐弧，另有 ring 整圈与 dots 三点 -->
+<xh-spinner label="加载中">
+  <span data-xh-part="root"></span>
+</xh-spinner>
+<xh-spinner variant="ring" label="加载中">
+  <span data-xh-part="root"></span>
+</xh-spinner>
+<xh-spinner variant="dots" label="加载中">
+  <span data-xh-part="root"></span>
+</xh-spinner>
+`;export{n as default};

@@ -17,11 +17,6 @@
 输入框与选择面板共享同一份值；按 15 分钟列出选项并实时显示结果
 
 ```vue
-<!--
-  Copyright (c) 2021-Present XiHanFun and contributors.
-  Licensed under the MIT License. See LICENSE in the project root for license information.
--->
-
 <script setup lang="ts">
 import {
   XhTimePickerClearTrigger,
@@ -159,11 +154,6 @@ const value = ref("09:30");
 step=15 只裁浮层里的可选值（分列剩四格），段位上手打的分数不受它限制
 
 ```vue
-<!--
-  Copyright (c) 2021-Present XiHanFun and contributors.
-  Licensed under the MIT License. See LICENSE in the project root for license information.
--->
-
 <script setup lang="ts">
 import {
   XhTimePickerClearTrigger,
@@ -280,11 +270,6 @@ const value = ref("09:30");
 时列写的是显示值 01-12，落到哪个真实小时由上下午说了算：输入行里敲、浮层里挑都改它
 
 ```vue
-<!--
-  Copyright (c) 2021-Present XiHanFun and contributors.
-  Licensed under the MIT License. See LICENSE in the project root for license information.
--->
-
 <script setup lang="ts">
 import {
   XhTimePickerClearTrigger,
@@ -454,11 +439,6 @@ const value = ref("09:30");
 granularity 同时决定输入行显示几段、浮层里排几列
 
 ```vue
-<!--
-  Copyright (c) 2021-Present XiHanFun and contributors.
-  Licensed under the MIT License. See LICENSE in the project root for license information.
--->
-
 <script setup lang="ts">
 import {
   XhTimePickerClearTrigger,
@@ -698,11 +678,6 @@ const value = ref("");
 禁用整条退出 Tab 序，只读仍能展开浏览只是改不动值，invalid 只改标注
 
 ```vue
-<!--
-  Copyright (c) 2021-Present XiHanFun and contributors.
-  Licensed under the MIT License. See LICENSE in the project root for license information.
--->
-
 <script setup lang="ts">
 import {
   XhTimePickerColumn,
@@ -818,11 +793,6 @@ const states = [
 min / max 直接把界外的格从列里裁掉；分列还会随已选的时再裁一遍
 
 ```vue
-<!--
-  Copyright (c) 2021-Present XiHanFun and contributors.
-  Licensed under the MIT License. See LICENSE in the project root for license information.
--->
-
 <script setup lang="ts">
 import {
   XhTimePickerColumn,
@@ -949,11 +919,6 @@ const value = ref("");
 列表下面这排按钮是作者自己的节点，键盘事件在它这一层收口，不再上交给列表
 
 ```vue
-<!--
-  Copyright (c) 2021-Present XiHanFun and contributors.
-  Licensed under the MIT License. See LICENSE in the project root for license information.
--->
-
 <script setup lang="ts">
 import {
   XhButton,
@@ -1136,11 +1101,6 @@ function now() {
 列里渲染哪几格由作者决定，午休两格整段拿掉；手打进段位的时被吸到下一个可约小时
 
 ```vue
-<!--
-  Copyright (c) 2021-Present XiHanFun and contributors.
-  Licensed under the MIT License. See LICENSE in the project root for license information.
--->
-
 <script setup lang="ts">
 import {
   XhTimePickerColumn,
@@ -1277,11 +1237,6 @@ function snap(next: string) {
 variant 决定描边与底怎么画、tone 决定用哪族颜色、size 换几何档；三者只落在 root，浮层里的格子一并跟着换
 
 ```vue
-<!--
-  Copyright (c) 2021-Present XiHanFun and contributors.
-  Licensed under the MIT License. See LICENSE in the project root for license information.
--->
-
 <script setup lang="ts">
 import type { ControlVariant, Size, Tone } from "@xihan-ui/core";
 import {
@@ -1413,11 +1368,6 @@ const sizes: Size[] = ["sm", "md", "lg"];
 点输入行本来就展开，这个按钮不是必需的；要它是因为它才带 aria-haspopup / aria-expanded
 
 ```vue
-<!--
-  Copyright (c) 2021-Present XiHanFun and contributors.
-  Licensed under the MIT License. See LICENSE in the project root for license information.
--->
-
 <script setup lang="ts">
 import {
   XhTimePickerClearTrigger,
@@ -1542,11 +1492,6 @@ const value = ref("09:30");
 presets 在列旁边多排一列，点一条整份写进值并收起；时刻在组件外算好再传
 
 ```vue
-<!--
-  Copyright (c) 2021-Present XiHanFun and contributors.
-  Licensed under the MIT License. See LICENSE in the project root for license information.
--->
-
 <script setup lang="ts">
 import { timePickerPresetNow } from "@xihan-ui/headless";
 import {
@@ -1696,7 +1641,7 @@ const presets = computed(() => [
 
 ### 何时不用
 
-- 任意时间都可以、用户会直接打字：用[时间输入](./time-field)。
+- 任意时间都可以、用户会直接打字：用[时间字段](./time-field)。
 
 ### 特性
 
@@ -2011,7 +1956,7 @@ const presets = computed(() => [
 | `--xh-time-picker-column-divider` | `column`<br>`preset-group` | `border-inline-end`<br>`border-inline-start` | `default` | `--xh-material-frosted-separator` | time-picker 的 column、preset-group 部件 border-inline-end、border-inline-start 覆盖槽。 |
 | `--xh-time-picker-column-gap` | `column` | `gap` | `default` | `0` | time-picker 的 column 部件 gap 覆盖槽。 |
 | `--xh-time-picker-column-h` | `column` | `block-size` | `default` | `--xh-viewport-h-sm` | time-picker 的 column 部件 block-size 覆盖槽。 |
-| `--xh-time-picker-column-min-w` | `column` | `min-inline-size` | `default` | `3.5rem` | time-picker 的 column 部件 min-inline-size 覆盖槽。 |
+| `--xh-time-picker-column-min-w` | `column` | `min-inline-size` | `default` | `--xh-overlay-column-min-w` | time-picker 的 column 部件 min-inline-size 覆盖槽。 |
 | `--xh-time-picker-column-px` | `column` | `padding-inline` | `default` | `0` | time-picker 的 column 部件 padding-inline 覆盖槽。 |
 | `--xh-time-picker-content-backdrop` | `content` | `-webkit-backdrop-filter`<br>`backdrop-filter` | `default` | `none` | time-picker 的 content 部件 -webkit-backdrop-filter、backdrop-filter 覆盖槽。 |
 | `--xh-time-picker-content-bg` | `content` | `background` | `default` | `--xh-bg-surface` | time-picker 的 content 部件 background 覆盖槽。 |
@@ -2049,7 +1994,7 @@ const presets = computed(() => [
 | `--xh-time-picker-item-fg` | `item` | `color` | `default` | `--xh-fg-default` | time-picker 的 item 部件 color 覆盖槽。 |
 | `--xh-time-picker-item-fg-checked` | `item` | `color` | `state=checked` | `--xh-_time-picker-option-fg-selected` | time-picker 的 item 部件 color 覆盖槽。 |
 | `--xh-time-picker-item-font-size` | `item` | `font-size` | `default` | `--xh-_time-picker-font-size` | time-picker 的 item 部件 font-size 覆盖槽。 |
-| `--xh-time-picker-item-h` | `item` | `block-size` | `default` | `--xh-control-h-sm` | time-picker 的 item 部件 block-size 覆盖槽。 |
+| `--xh-time-picker-item-h` | `item` | `block-size` | `default` | `--xh-overlay-column-item-h` | time-picker 的 item 部件 block-size 覆盖槽。 |
 | `--xh-time-picker-item-px` | `item` | `padding-inline` | `default` | `--xh-space-0_5` | time-picker 的 item 部件 padding-inline 覆盖槽。 |
 | `--xh-time-picker-item-py` | `item` | `padding-block` | `default` | `0` | time-picker 的 item 部件 padding-block 覆盖槽。 |
 | `--xh-time-picker-item-radius` | `item` | `border-radius` | `default` | `--xh-shape-control` | time-picker 的 item 部件 border-radius 覆盖槽。 |

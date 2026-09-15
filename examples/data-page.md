@@ -5,11 +5,6 @@
 一张订单列表：搜索、状态、时间粒度三道筛选收窄同一份数据，表格排序与勾选各管各的，筛没了换空态，取数时换加载态。
 
 ```vue
-<!--
-  Copyright (c) 2021-Present XiHanFun and contributors.
-  Licensed under the MIT License. See LICENSE in the project root for license information.
--->
-
 <script setup lang="ts">
 import type { SelectNode } from "@xihan-ui/headless";
 import {

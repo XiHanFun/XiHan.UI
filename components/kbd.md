@@ -1,8 +1,8 @@
 来源：https://ui.docs.xihanfun.com/components/kbd
 
-# Kbd 键帽 `new`
+# Kbd 键盘按键
 
-显示一个键名，不注册键盘监听。`Mod` 在 Mac 上显示为 ⌘，其他平台显示为 Ctrl。
+显示单个键或快捷键组合；需要实际响应按键时，显式开启 `register`。`Mod` 在 Mac 上显示为 ⌘，其他平台显示为 Ctrl。
 
 <div class="xh-resource-links">
   <a href="https://github.com/XiHanFun/XiHan.UI/tree/dev/ui/packages/engine/headless/src/kbd" target="_blank" rel="noreferrer">Headless</a>
@@ -14,148 +14,158 @@
 
 ## 用法
 
-显示单个键名
+单键与组合键使用同一组件
 
 ```vue
-<!--
-  Copyright (c) 2021-Present XiHanFun and contributors.
-  Licensed under the MIT License. See LICENSE in the project root for license information.
--->
-
-<script setup lang="ts">
-import { XhKbd } from "@xihan-ui/vue";
-</script>
-
-<template>
-  <XhKbd value="Escape" />
-</template>
-```
-
-```html
-<xh-kbd value="Escape">
-  <kbd data-xh-part="root"></kbd>
-</xh-kbd>
-```
-
-## 组件结构
-
-加粗的是必需部件。
-
-`data-scope="kbd"`：**`root`**
-
-## 示例
-
-### 尺寸
-
-小、中、大三档
-
-```vue
-<!--
-  Copyright (c) 2021-Present XiHanFun and contributors.
-  Licensed under the MIT License. See LICENSE in the project root for license information.
--->
-
 <script setup lang="ts">
 import { XhKbd } from "@xihan-ui/vue";
 </script>
 
 <template>
   <div style="display: flex; align-items: center; gap: 12px">
-    <XhKbd value="S" size="sm" />
-    <XhKbd value="S" size="md" />
-    <XhKbd value="S" size="lg" />
+    <XhKbd :keys="['Escape']" />
+    <XhKbd :keys="['Mod', 'K']" />
   </div>
 </template>
 ```
 
 ```html
 <div style="display: flex; align-items: center; gap: 12px">
-  <xh-kbd value="S" size="sm"><kbd data-xh-part="root"></kbd></xh-kbd>
-  <xh-kbd value="S" size="md"><kbd data-xh-part="root"></kbd></xh-kbd>
-  <xh-kbd value="S" size="lg"><kbd data-xh-part="root"></kbd></xh-kbd>
+  <xh-kbd keys="Escape"><kbd data-xh-part="root"></kbd></xh-kbd>
+  <xh-kbd keys="Mod,K"><kbd data-xh-part="root"></kbd></xh-kbd>
 </div>
 ```
 
-### 禁用
+## 组件结构
 
-表示对应动作不可用
+加粗的是必需部件。
+
+`data-scope="kbd"`：**`root`** · `key`
+
+## 示例
+
+### 外观
+
+default 使用中性底，light 保持透明
 
 ```vue
-<!--
-  Copyright (c) 2021-Present XiHanFun and contributors.
-  Licensed under the MIT License. See LICENSE in the project root for license information.
--->
-
 <script setup lang="ts">
 import { XhKbd } from "@xihan-ui/vue";
 </script>
 
 <template>
-  <XhKbd value="Delete" disabled />
+  <div style="display: flex; gap: 12px">
+    <XhKbd :keys="['Enter']" />
+    <XhKbd :keys="['Enter']" variant="light" />
+  </div>
 </template>
 ```
 
 ```html
-<xh-kbd value="Delete" disabled><kbd data-xh-part="root"></kbd></xh-kbd>
+<div style="display: flex; gap: 12px">
+  <xh-kbd keys="Enter"><kbd data-xh-part="root"></kbd></xh-kbd>
+  <xh-kbd keys="Enter" variant="light"><kbd data-xh-part="root"></kbd></xh-kbd>
+</div>
 ```
 
-### 按下
+### 平台键名
 
-展示动作激活时的键帽状态
+常用按键与跨平台组合由 Headless 统一格式化
 
 ```vue
-<!--
-  Copyright (c) 2021-Present XiHanFun and contributors.
-  Licensed under the MIT License. See LICENSE in the project root for license information.
--->
-
 <script setup lang="ts">
 import { XhKbd } from "@xihan-ui/vue";
+
+const keys = [["Mod"], ["Shift"], ["ArrowUp"], ["Escape"], ["Mod", "Shift", "P"]];
 </script>
 
 <template>
-  <XhKbd value="Enter" pressed />
+  <div style="display: flex; flex-wrap: wrap; gap: 8px">
+    <XhKbd v-for="item in keys" :key="item.join('-')" :keys="item" />
+  </div>
 </template>
 ```
 
 ```html
-<xh-kbd value="Enter" pressed><kbd data-xh-part="root"></kbd></xh-kbd>
+<div style="display: flex; flex-wrap: wrap; gap: 8px">
+  <xh-kbd keys="Mod"><kbd data-xh-part="root"></kbd></xh-kbd>
+  <xh-kbd keys="Shift"><kbd data-xh-part="root"></kbd></xh-kbd>
+  <xh-kbd keys="ArrowUp"><kbd data-xh-part="root"></kbd></xh-kbd>
+  <xh-kbd keys="Escape"><kbd data-xh-part="root"></kbd></xh-kbd>
+  <xh-kbd keys="Mod,Shift,P"><kbd data-xh-part="root"></kbd></xh-kbd>
+</div>
+```
+
+### 快捷键注册
+
+可见提示显式开启 register 后响应按键
+
+```vue
+<script setup lang="ts">
+import { XhKbd } from "@xihan-ui/vue";
+import { ref } from "vue";
+
+const count = ref(0);
+</script>
+
+<template>
+  <div style="display: flex; align-items: center; gap: 12px">
+    <XhKbd :keys="['Mod', 'K']" register @hot-key="count += 1" />
+    <output>{{ count ? `已触发 ${count} 次` : "按下组合键" }}</output>
+  </div>
+</template>
+```
+
+```html
+<div style="display: flex; align-items: center; gap: 12px">
+  <xh-kbd id="registered-kbd" keys="Mod,K" register><kbd data-xh-part="root"></kbd></xh-kbd>
+  <output id="kbd-count">按下组合键</output>
+</div>
+<script type="module">
+  let count = 0;
+  document.querySelector("#registered-kbd")?.addEventListener("hot-key", () => {
+    count += 1;
+    document.querySelector("#kbd-count").textContent = `已触发 ${count} 次`;
+  });
+</script>
 ```
 
 ## 设计指引
 
 ### 何时使用
 
-- 表示单个键。
-- 展示按下或禁用状态。
+- 表示单个键或同时按下的组合键。
+- 在说明文字或操作旁提示键盘输入。
+- 让可见的快捷键提示同时承担注册行为。
 
 ### 何时不用
 
-- 快捷键组合使用[键帽组](./kbd-group)。
-- 快捷键监听使用[快捷键](./hotkeys)。
 - 代码和命令使用[代码视图](./code-view)。
+- 只注册、不需要任何可见提示的全局命令，应放在应用自己的命令系统中。
 
 ### 特性
 
-- 渲染原生 `kbd` 元素。
+- 单键和组合键都只渲染一个原生 `kbd` 表面。
+- 组合键名之间保留 4px 间隙，不显示加号。
 - 平台键名由 Headless 统一格式化。
-- `pressed` 只表示外部传入的按下状态。
-- 提供三档尺寸和 compact 密度。
+- 默认不监听；`register` 开启后支持全局或局部 `target`、动态 `enabled` 与 `preventDefault`。
+- 固定使用 24px 高度；`default` 使用中性底，`light` 保持透明。
 
 ### 组合
 
 - 可放在按钮、菜单项和说明文字中。
-- 多个键使用 KbdGroup。
+- `keys` 的顺序就是视觉顺序；RTL 文本中也保持物理键位顺序。
 
 ### 最佳实践
 
 - 跨平台快捷键使用 `Mod`。
-- 仅在动作激活时设置 `pressed`。
+- 同时按下的键放在同一份 `keys` 中，不要手工拼接加号或多个 Kbd。
+- 只有确实需要监听时才开启 `register`，避免展示文字意外接管浏览器快捷键。
 
 ### 反模式
 
 - 不要用 Kbd 代替按钮或菜单项。
-- 不要在 Kbd 上注册快捷键。
+- 不要把依次输入的按键序列当成同时按下的组合。
 
 ## API 参考
 
@@ -172,12 +182,23 @@ import { XhKbd } from "@xihan-ui/vue";
 
 | 属性 | 类型 | 必填 | 说明 |
 | --- | --- | --- | --- |
-| `disabled` | `boolean` |  | 这枚键所提示的动作是否不可用。 |
-| `platform` | `HotkeysPlatform` |  | 平台写法；auto 在适配器测出平台前按 other。 |
-| `pressed` | `boolean` |  | 这枚键是否正在被真实动作激活；纯展示默认静止。 |
-| `size` | `Size` |  | 尺寸：sm / md / lg。 |
-| `translations` | `Partial<KbdTranslations>` |  | 读屏键名覆盖。 |
-| `value` | `string` | 是 | 一枚键的声明，例如 Mod、Shift、Esc 或 S。 |
+| `enabled` | `boolean` |  | 已注册的监听是否生效，默认 true。 |
+| `keys` | `string[]` | 是 | 单键或组合键，例如 ['Escape']、['Mod', 'K']。 |
+| `onHotKey` | `(details: KbdTriggerDetails) => void` |  | 已注册组合被按下时触发。 |
+| `platform` | `KbdPlatform` |  | 平台键名；auto 在适配器探测前按非 Mac 输出。 |
+| `preventDefault` | `boolean` |  | 命中时是否阻止浏览器默认动作，默认 true。 |
+| `register` | `boolean` |  | 是否注册快捷键监听，默认 false。 |
+| `target` | `KbdTarget` |  | 监听目标，默认 document；局部监听传入返回 EventTarget 的函数。 |
+| `translations` | `Partial<KbdTranslations>` |  | 逐键名称和整组读屏文案。 |
+| `variant` | `KbdVariant` |  | 视觉外观，默认 default。 |
+
+### 事件
+
+自定义元素将载荷放在 `detail`；Vue 使用同名 emit。
+
+| 事件 | 载荷 | 说明 |
+| --- | --- | --- |
+| `hot-key` | `KbdTriggerDetails` | 组合被按出；detail 为 `{ keys: string[], event: KeyboardEvent }` |
 
 ### connect API
 
@@ -185,18 +206,27 @@ import { XhKbd } from "@xihan-ui/vue";
 
 | 成员 | 类型 | 说明 |
 | --- | --- | --- |
-| `segment` | `HotkeySegment` | 归一化后的键。 |
-| `label` | `string` | 键帽可见文本。 |
-| `platform` | `HotkeysResolvedPlatform` | 实际采用的平台写法。 |
+| `segments` | `readonly HotkeySegment[]` |  |
+| `platform` | `KbdResolvedPlatform` |  |
+| `register` | `boolean` |  |
+| `enabled` | `boolean` |  |
+| `target` | `KbdTarget` |  |
+| `resolveTarget` | `(documentTarget: EventTarget \| null) => EventTarget \| null` |  |
+| `matches` | `(event: KeyboardEvent) => boolean` |  |
+| `handleKeyDown` | `(event: KeyboardEvent) => void` |  |
 | `getRootProps` | `() => T['element']` |  |
+| `getKeyProps` | `(props: KbdKeyProps) => T['element']` |  |
 
 ## 无障碍
 
 ### 键盘
 
-规格出处：[W3C APG](https://html.spec.whatwg.org/multipage/text-level-semantics.html#the-kbd-element)
+规格出处：[W3C APG](https://www.w3.org/TR/uievents/#event-type-keydown)
 
-无键盘交互（不接收焦点，或焦点行为完全由原生元素提供）。
+| 按键 | 生效条件 | 行为 |
+| --- | --- | --- |
+| `keys 指定的组合` | register 开启、enabled 未关，且不在输入法组合期 | 触发 onHotKey；preventDefault 开启（默认）时同时拦下浏览器默认动作 |
+| `keys 指定的组合` | 组合里没有 Ctrl / Meta / Alt，且按键落在输入区里 | 不触发也不拦截，输入优先 |
 
 ### ARIA
 
@@ -204,10 +234,11 @@ import { XhKbd } from "@xihan-ui/vue";
 
 | 部件 | 属性 | 值 |
 | --- | --- | --- |
-| `root` | `aria-label` | props.translations?.keyName?.(segment.key) |
+| `root` | `aria-label` | props.translations?.hotkey?.(names) |
+| `key` | `aria-hidden` | 'true' |
 
-- 符号键通过 `aria-label` 提供可读名称。
-- 在 KbdGroup 内由整组统一朗读。
+- 整组只通过根元素的 `aria-label` 朗读一次，视觉键名不重复进入无障碍树。
+- 普通字符快捷键落在输入区时不会接管输入；带 Ctrl、Meta 或 Alt 的命令组合仍可响应。
 
 ## 样式参考
 
@@ -224,10 +255,10 @@ import { XhKbd } from "@xihan-ui/vue";
 | 部件 | 属性 | 值 |
 | --- | --- | --- |
 | `root` | `data-disabled` | ''（条件成立时才出现） |
-| `root` | `data-modifier` | ''（条件成立时才出现） |
-| `root` | `data-platform` | resolveHotkeysPlatform(props.platform) |
-| `root` | `data-pressed` | ''（条件成立时才出现） |
-| `root` | `data-size` | props.size |
+| `root` | `data-platform` | resolveKbdPlatform(props.platform) |
+| `root` | `data-register` | ''（条件成立时才出现） |
+| `root` | `data-variant` | props.variant |
+| `key` | `data-key` | segmentOf(value)?.key |
 
 <!-- xh-component-tokens:start -->
 ### CSS 变量
@@ -236,29 +267,23 @@ import { XhKbd } from "@xihan-ui/vue";
 
 | 变量 | 部件 | CSS 属性 | 状态 | 缺省来源 | 说明 |
 | --- | --- | --- | --- | --- | --- |
-| `--xh-kbd-bg` | `root` | `background-color` | `default` | `--xh-bg-subtle` | kbd 的 root 部件 background-color 覆盖槽。 |
-| `--xh-kbd-bg-disabled` | `root` | `background` | `disabled` | `--xh-bg-muted` | kbd 的 root 部件 background 覆盖槽。 |
-| `--xh-kbd-border` | `root` | `border` | `default` | `--xh-border-default` | kbd 的 root 部件 border 覆盖槽。 |
-| `--xh-kbd-fg` | `root` | `color` | `default` | `--xh-fg-default` | kbd 的 root 部件 color 覆盖槽。 |
+| `--xh-kbd-bg` | `root` | `background` | `default` | `--xh-bg-subtle` | kbd 的 root 部件 background 覆盖槽。 |
+| `--xh-kbd-border` | `root` | `border` | `default` | `transparent` | kbd 的 root 部件 border 覆盖槽。 |
+| `--xh-kbd-fg` | `root` | `color` | `default` | `--xh-fg-muted` | kbd 的 root 部件 color 覆盖槽。 |
 | `--xh-kbd-fg-disabled` | `root` | `color` | `disabled` | `--xh-fg-disabled` | kbd 的 root 部件 color 覆盖槽。 |
-| `--xh-kbd-fg-modifier` | `root` | `color` | `modifier` | `--xh-fg-muted` | kbd 的 root 部件 color 覆盖槽。 |
-| `--xh-kbd-font` | `root` | `font-family` | `default` | `--xh-font-family-mono` | kbd 的 root 部件 font-family 覆盖槽。 |
-| `--xh-kbd-font-size` | `root` | `font-size` | `default` | `--xh-_kbd-font-size` | kbd 的 root 部件 font-size 覆盖槽。 |
+| `--xh-kbd-font` | `root` | `font-family` | `default` | `inherit` | kbd 的 root 部件 font-family 覆盖槽。 |
+| `--xh-kbd-font-size` | `root` | `font-size` | `default` | `--xh-text-label-size` | kbd 的 root 部件 font-size 覆盖槽。 |
 | `--xh-kbd-font-weight` | `root` | `font-weight` | `default` | `--xh-font-weight-medium` | kbd 的 root 部件 font-weight 覆盖槽。 |
-| `--xh-kbd-h` | `root` | `block-size` | `default` | `--xh-_kbd-h` | kbd 的 root 部件 block-size 覆盖槽。 |
-| `--xh-kbd-min-w` | `root` | `min-inline-size` | `default` | `--xh-_kbd-h` | kbd 的 root 部件 min-inline-size 覆盖槽。 |
-| `--xh-kbd-px` | `root` | `padding-inline` | `default` | `--xh-_kbd-px` | kbd 的 root 部件 padding-inline 覆盖槽。 |
-| `--xh-kbd-py` | `root` | `padding-block` | `default` | `--xh-space-0` | kbd 的 root 部件 padding-block 覆盖槽。 |
+| `--xh-kbd-gap` | `root` | `gap` | `default` | `--xh-space-1` | kbd 的 root 部件 gap 覆盖槽。 |
+| `--xh-kbd-h` | `root` | `block-size` | `default` | `--xh-space-6` | kbd 的 root 部件 block-size 覆盖槽。 |
+| `--xh-kbd-min-w` | `root` | `min-inline-size` | `default` | `--xh-space-6` | kbd 的 root 部件 min-inline-size 覆盖槽。 |
+| `--xh-kbd-px` | `root` | `padding-inline` | `default` | `--xh-space-2` | kbd 的 root 部件 padding-inline 覆盖槽。 |
 | `--xh-kbd-radius` | `root` | `border-radius` | `default` | `--xh-shape-control` | kbd 的 root 部件 border-radius 覆盖槽。 |
-| `--xh-kbd-shadow` | `root` | `box-shadow` | `default` | `--xh-_kbd-shadow-rest` | kbd 的 root 部件 box-shadow 覆盖槽。 |
-| `--xh-kbd-shadow-pressed` | `root` | `box-shadow` | `active`<br>`disabled`<br>`is(button, a[href], [role='button'], [role='menuitem'], [role='option'])`<br>`not([data-disabled])`<br>`not([disabled], [aria-disabled='true'])`<br>`pressed` | `--xh-_kbd-shadow-pressed` | kbd 的 root 部件 box-shadow 覆盖槽。 |
 <!-- xh-component-tokens:end -->
 
 ### 动效
 
-`background-color` · `border-color` · `box-shadow` · `color` · `translate` 走 `transition` 过渡。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
-
-系统开启减弱动效时由令牌层统一收敛，皮肤不另作判断。
+本组件皮肤不含过渡与关键帧，也没有脚本驱动的动效：状态一变，外观立即到位。
 
 ### RTL
 

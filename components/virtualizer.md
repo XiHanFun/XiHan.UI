@@ -17,11 +17,6 @@
 一万条只渲可视区那几条，root 要有确定高度，条目的主轴尺寸由作者按 estimateSize 自己写
 
 ```vue
-<!--
-  Copyright (c) 2021-Present XiHanFun and contributors.
-  Licensed under the MIT License. See LICENSE in the project root for license information.
--->
-
 <script setup lang="ts">
 import {
   XhVirtualizerContent,
@@ -102,7 +97,7 @@ import {
 
   // 首批在监听挂上之前就算好了，直接从元素上取
   render(host.virtualItems);
-  host.addEventListener("change", (event) => {
+  host.addEventListener("range-change", (event) => {
     render(event.detail.virtualItems);
     range.textContent = `${event.detail.startIndex} – ${event.detail.endIndex}`;
   });
@@ -122,11 +117,6 @@ import {
 条目开了 measure 就把真实尺寸回喂给内核，estimateSize 只是首帧的起点，滚过一遍就收敛
 
 ```vue
-<!--
-  Copyright (c) 2021-Present XiHanFun and contributors.
-  Licensed under the MIT License. See LICENSE in the project root for license information.
--->
-
 <script setup lang="ts">
 import {
   XhVirtualizerContent,
@@ -225,7 +215,7 @@ const rows = Array.from({ length: 500 }, (_, i) => ({
 
   // 首批在监听挂上之前就算好了，直接从元素上取
   render(host.virtualItems, host.totalSize);
-  host.addEventListener("change", (event) => {
+  host.addEventListener("range-change", (event) => {
     render(event.detail.virtualItems, event.detail.totalSize);
   });
 </script>
@@ -236,11 +226,6 @@ const rows = Array.from({ length: 500 }, (_, i) => ({
 scrollToIndex 按 align 落位：start 贴上沿、center 居中、end 贴下沿，越界下标由内核夹住
 
 ```vue
-<!--
-  Copyright (c) 2021-Present XiHanFun and contributors.
-  Licensed under the MIT License. See LICENSE in the project root for license information.
--->
-
 <script setup lang="ts">
 import {
   XhVirtualizerContent,
@@ -336,7 +321,7 @@ import {
   }
 
   render(host.virtualItems);
-  host.addEventListener("change", (event) => {
+  host.addEventListener("range-change", (event) => {
     render(event.detail.virtualItems);
     start.textContent = event.detail.startIndex ?? "—";
   });
@@ -358,11 +343,6 @@ import {
 horizontal 把主轴换成行内轴：位移改写进行首侧，条目宽度由作者写，gap 由内核直接算进位移
 
 ```vue
-<!--
-  Copyright (c) 2021-Present XiHanFun and contributors.
-  Licensed under the MIT License. See LICENSE in the project root for license information.
--->
-
 <script setup lang="ts">
 import {
   XhVirtualizerContent,
@@ -452,7 +432,7 @@ import {
 
   // 首批在监听挂上之前就算好了，直接从元素上取
   render(host.virtualItems);
-  host.addEventListener("change", (event) => render(event.detail.virtualItems));
+  host.addEventListener("range-change", (event) => render(event.detail.virtualItems));
 </script>
 ```
 
@@ -461,11 +441,6 @@ import {
 滚动容器是视口，给它一个 id 交给滚动条即可；虚拟滚动只管渲哪几条，滚动条只管画滚动位置
 
 ```vue
-<!--
-  Copyright (c) 2021-Present XiHanFun and contributors.
-  Licensed under the MIT License. See LICENSE in the project root for license information.
--->
-
 <script setup lang="ts">
 import {
   XhScrollbarRoot,
@@ -558,7 +533,7 @@ import {
   }
 
   render(host.virtualItems);
-  host.addEventListener("change", (event) => render(event.detail.virtualItems));
+  host.addEventListener("range-change", (event) => render(event.detail.virtualItems));
 </script>
 ```
 
@@ -567,11 +542,6 @@ import {
 哨兵摆在内容层之后而不是条目之间：窗口外的条目根本没渲染，摆进去的哨兵永远进不了可视区
 
 ```vue
-<!--
-  Copyright (c) 2021-Present XiHanFun and contributors.
-  Licensed under the MIT License. See LICENSE in the project root for license information.
--->
-
 <script setup lang="ts">
 import {
   XhInfiniteScrollLoadMoreTrigger,
@@ -755,7 +725,7 @@ onBeforeUnmount(() => window.clearTimeout(timer));
 
   // 首批在监听挂上之前就算好了，直接从元素上取
   render(host.virtualItems);
-  host.addEventListener("change", (event) => render(event.detail.virtualItems));
+  host.addEventListener("range-change", (event) => render(event.detail.virtualItems));
 
   // 取下一页；这里用定时器代替真实请求
   scroll.addEventListener("load", () => {
@@ -830,7 +800,7 @@ onBeforeUnmount(() => window.clearTimeout(timer));
 | `horizontal` | `boolean` |  | 横向列表（主轴是行内轴），默认 false。 |
 | `gap` | `number` |  | 相邻两条之间的主轴间距（px），默认 0。位移由内核直接算进去，不靠外边距。 |
 | `getItemKey` | `(index: number) => string \| number` |  | 条目身份。默认即下标；列表会增删时给稳定 key，测量缓存才跟得住条目。 |
-| `onChange` | `(details: VirtualizerChangeDetails) => void` |  | 该渲什么变了。只在快照真的变了时回调，滚动但可见区间没变不会触发。 |
+| `onRangeChange` | `(details: VirtualizerRangeChangeDetails) => void` |  | 该渲的区间变了。只在快照真的变了时回调，滚动但可见区间没变不会触发。 |
 | `scrollMargin` | `number` |  | 列表起点距滚动容器起点的距离（px），默认 0。 列表上方还有别的内容（页头、筛选栏）时给它，否则区间会整体偏掉那一截。 |
 | `paddingStart` | `number` |  | 列表前后的内边距（px），默认 0。计进总长，第一条从 paddingStart 处起算。 |
 | `paddingEnd` | `number` |  |  |
@@ -842,7 +812,7 @@ onBeforeUnmount(() => window.clearTimeout(timer));
 
 | 事件 | 载荷 | 说明 |
 | --- | --- | --- |
-| `change` | `VirtualizerChangeDetails` | 该渲什么变了；detail 为 `{ virtualItems, totalSize, startIndex, endIndex }` |
+| `range-change` | `VirtualizerRangeChangeDetails` | 该渲的区间变了；detail 为 `{ virtualItems, totalSize, startIndex, endIndex }` |
 
 ### 插槽
 

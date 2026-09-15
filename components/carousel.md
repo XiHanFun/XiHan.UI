@@ -17,11 +17,6 @@
 张数由 slideCount 声明而不是从 DOM 数，页数与指示点数量都由它算出来
 
 ```vue
-<!--
-  Copyright (c) 2021-Present XiHanFun and contributors.
-  Licensed under the MIT License. See LICENSE in the project root for license information.
--->
-
 <script setup lang="ts">
 import {
   XhCarouselIndicator,
@@ -150,11 +145,6 @@ const slides = [
 传了 page 就由宿主说了算，组件只发 page-change 不自己改页码，宿主写回它才动
 
 ```vue
-<!--
-  Copyright (c) 2021-Present XiHanFun and contributors.
-  Licensed under the MIT License. See LICENSE in the project root for license information.
--->
-
 <script setup lang="ts">
 import {
   XhCarouselItem,
@@ -263,11 +253,6 @@ const page = ref(1);
 slidesPerPage 决定一屏露几张，一次翻几张缺省跟着它走，所以仍是整屏翻
 
 ```vue
-<!--
-  Copyright (c) 2021-Present XiHanFun and contributors.
-  Licensed under the MIT License. See LICENSE in the project root for license information.
--->
-
 <script setup lang="ts">
 import {
   XhCarouselIndicator,
@@ -365,11 +350,6 @@ const slides = ["一", "二", "三", "四", "五", "六"];
 autoplay 给毫秒即间隔；开了它就得渲播放开关，自动翻页必须能停住
 
 ```vue
-<!--
-  Copyright (c) 2021-Present XiHanFun and contributors.
-  Licensed under the MIT License. See LICENSE in the project root for license information.
--->
-
 <script setup lang="ts">
 import {
   XhCarouselAutoplayTrigger,
@@ -452,11 +432,6 @@ const slides = ["公告一", "公告二", "公告三"];
 orientation 换成 vertical 后轨道竖着位移，两端按钮落到上下两头，翻页认的是上下方向键
 
 ```vue
-<!--
-  Copyright (c) 2021-Present XiHanFun and contributors.
-  Licensed under the MIT License. See LICENSE in the project root for license information.
--->
-
 <script setup lang="ts">
 import {
   XhCarouselIndicator,
@@ -549,11 +524,6 @@ const slides = [
 allowPointerDrag 打开后按住轨道就能拖着走，松手落回整页；关掉则只有触摸的原生滚动
 
 ```vue
-<!--
-  Copyright (c) 2021-Present XiHanFun and contributors.
-  Licensed under the MIT License. See LICENSE in the project root for license information.
--->
-
 <script setup lang="ts">
 import {
   XhCarouselIndicator,
@@ -674,11 +644,6 @@ const slides = ["拖我", "再拖", "还能拖", "最后一张"];
 指示点上补一个原生 mouseenter 就是悬停切页，组件自带的点击翻页照旧
 
 ```vue
-<!--
-  Copyright (c) 2021-Present XiHanFun and contributors.
-  Licensed under the MIT License. See LICENSE in the project root for license information.
--->
-
 <script setup lang="ts">
 import {
   XhCarouselIndicator,
@@ -782,11 +747,6 @@ const slides = ["城市夜景", "海岸线", "雪山", "沙漠"];
 slidesPerMove 与 slidesPerPage 分开给：一屏露三张、一次只挪一张，页数按剩下的张数重新算
 
 ```vue
-<!--
-  Copyright (c) 2021-Present XiHanFun and contributors.
-  Licensed under the MIT License. See LICENSE in the project root for license information.
--->
-
 <script setup lang="ts">
 import {
   XhCarouselIndicator,
@@ -911,11 +871,6 @@ const slides = ["A", "B", "C", "D", "E", "F"];
 条目的内联样式只有尺寸与间距，位移之外的表现全归作者：把条目摞起来再按当前页调透明度与缩放，翻页、键盘与指示点一概照旧
 
 ```vue
-<!--
-  Copyright (c) 2021-Present XiHanFun and contributors.
-  Licensed under the MIT License. See LICENSE in the project root for license information.
--->
-
 <script setup lang="ts">
 import {
   XhCarouselIndicator,

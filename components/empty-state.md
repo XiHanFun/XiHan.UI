@@ -5,8 +5,9 @@
 没有数据时那一块：说清楚为什么空，以及可以做什么。
 
 空态与结果页共用一副骨架：图标、标题、说明、操作四段与整页结果完全一致，所以 404、403、500
-这类结果页也用本组件铺。`status` 只落成 root 的 `data-status`，皮肤据它给图标区上语气色，
-不改任何语义、不带插画资产。
+这类结果页也用本组件铺。`status` 只收这三个状态码、只落成 root 的 `data-status`，皮肤据它给
+图标区并进最接近的一族语气色，不改任何语义、不带插画资产；成功、警示、出错、提示这类通用结果
+走全库同一根 `tone` 轴。
 
 <div class="xh-resource-links">
   <a href="https://github.com/XiHanFun/XiHan.UI/tree/dev/ui/packages/engine/headless/src/empty-state" target="_blank" rel="noreferrer">Headless</a>
@@ -21,11 +22,6 @@
 图标、标题、说明、操作四个槽都可选，只有 root 是必须的
 
 ```vue
-<!--
-  Copyright (c) 2021-Present XiHanFun and contributors.
-  Licensed under the MIT License. See LICENSE in the project root for license information.
--->
-
 <script setup lang="ts">
 import {
   XhButton,
@@ -85,11 +81,6 @@ import {
 size 只换留白与字号，语义一点不动；不传即 md
 
 ```vue
-<!--
-  Copyright (c) 2021-Present XiHanFun and contributors.
-  Licensed under the MIT License. See LICENSE in the project root for license information.
--->
-
 <script setup lang="ts">
 import {
   XhEmptyStateDescription,
@@ -151,11 +142,6 @@ import {
 缺省 polite 让 root 成为活区，筛完就地播报；off 让它只是个普通容器
 
 ```vue
-<!--
-  Copyright (c) 2021-Present XiHanFun and contributors.
-  Licensed under the MIT License. See LICENSE in the project root for license information.
--->
-
 <script setup lang="ts">
 import {
   XhEmptyStateDescription,
@@ -231,11 +217,6 @@ function search(): void {
 同一套部件也承载 404、403 这类结果：status 给图标区上语气色，操作槽里放回退出口
 
 ```vue
-<!--
-  Copyright (c) 2021-Present XiHanFun and contributors.
-  Licensed under the MIT License. See LICENSE in the project root for license information.
--->
-
 <script setup lang="ts">
 import {
   XhButton,
@@ -335,14 +316,9 @@ const results = [
 
 ### 图标自带语气
 
-图标槽里放一枚带 tone 的图标，着色落在图标自己身上，不经过 status
+图标槽里放一枚带 tone 的图标，着色落在图标自己身上，不经过根上的 tone
 
 ```vue
-<!--
-  Copyright (c) 2021-Present XiHanFun and contributors.
-  Licensed under the MIT License. See LICENSE in the project root for license information.
--->
-
 <script setup lang="ts">
 import {
   XhButton,
@@ -544,16 +520,11 @@ const results = [
 </script>
 ```
 
-### 结果类型
+### 颜色
 
-status 只落成 data-status，皮肤据它给图标区上语气色；画什么图标仍由作者塞
+tone 给图标区上语气色，与全库同一根轴；画什么图标仍由作者塞
 
 ```vue
-<!--
-  Copyright (c) 2021-Present XiHanFun and contributors.
-  Licensed under the MIT License. See LICENSE in the project root for license information.
--->
-
 <script setup lang="ts">
 import { CheckIcon, InfoIcon, TriangleAlertIcon, XIcon } from "@xihan-ui/icons";
 import {
@@ -565,10 +536,10 @@ import {
 } from "@xihan-ui/vue";
 
 const results = [
-  { status: "success", glyph: CheckIcon, title: "全部导入成功", description: "128 条记录已入库。" },
-  { status: "warning", glyph: TriangleAlertIcon, title: "部分行被跳过", description: "有 6 行缺少必填字段。" },
-  { status: "error", glyph: XIcon, title: "导入没有完成", description: "这次改动已经整体回滚。" },
-  { status: "info", glyph: InfoIcon, title: "任务已排队", description: "前面还有 3 个任务在跑。" },
+  { tone: "success", glyph: CheckIcon, title: "全部导入成功", description: "128 条记录已入库。" },
+  { tone: "warning", glyph: TriangleAlertIcon, title: "部分行被跳过", description: "有 6 行缺少必填字段。" },
+  { tone: "danger", glyph: XIcon, title: "导入没有完成", description: "这次改动已经整体回滚。" },
+  { tone: "info", glyph: InfoIcon, title: "任务已排队", description: "前面还有 3 个任务在跑。" },
 ] as const;
 </script>
 
@@ -577,8 +548,8 @@ const results = [
     <!-- 随页面一起出现的静态结果，不是就地更新的活区，所以关掉播报 -->
     <XhEmptyStateRoot
       v-for="r in results"
-      :key="r.status"
-      :status="r.status"
+      :key="r.tone"
+      :tone="r.tone"
       live="off"
       size="sm"
       style="inline-size: 200px"
@@ -593,7 +564,7 @@ const results = [
 
 ```html
 <div style="display: flex; flex-wrap: wrap; align-items: flex-start; gap: 16px">
-  <xh-empty-state status="success" live="off" size="sm">
+  <xh-empty-state tone="success" live="off" size="sm">
     <div data-xh-part="root" style="inline-size: 200px">
       <span data-xh-part="indicator"><svg viewBox="0 0 24 24" width="1em" height="1em" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 12.5L9.5 18L20 6"/></svg></span>
       <p data-xh-part="title">全部导入成功</p>
@@ -601,7 +572,7 @@ const results = [
     </div>
   </xh-empty-state>
 
-  <xh-empty-state status="warning" live="off" size="sm">
+  <xh-empty-state tone="warning" live="off" size="sm">
     <div data-xh-part="root" style="inline-size: 200px">
       <span data-xh-part="indicator"><svg viewBox="0 0 24 24" width="1em" height="1em" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 4L21 20H3Z"/><path d="M12 10V14"/><path d="M12 17.5h.01"/></svg></span>
       <p data-xh-part="title">部分行被跳过</p>
@@ -609,7 +580,7 @@ const results = [
     </div>
   </xh-empty-state>
 
-  <xh-empty-state status="error" live="off" size="sm">
+  <xh-empty-state tone="danger" live="off" size="sm">
     <div data-xh-part="root" style="inline-size: 200px">
       <span data-xh-part="indicator"><svg viewBox="0 0 24 24" width="1em" height="1em" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 6L18 18"/><path d="M18 6L6 18"/></svg></span>
       <p data-xh-part="title">导入没有完成</p>
@@ -617,7 +588,7 @@ const results = [
     </div>
   </xh-empty-state>
 
-  <xh-empty-state status="info" live="off" size="sm">
+  <xh-empty-state tone="info" live="off" size="sm">
     <div data-xh-part="root" style="inline-size: 200px">
       <span data-xh-part="indicator"><svg viewBox="0 0 24 24" width="1em" height="1em" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 11V16.5"/><path d="M12 7.5h.01"/></svg></span>
       <p data-xh-part="title">任务已排队</p>
@@ -643,7 +614,7 @@ const results = [
 
 - 图标、标题、描述、操作四段都可选。
 - `live` 决定这块内容出现时读屏怎么播报——搜索结果变空时这一条很重要。
-- `status` 决定图标区并进哪一族语气色：三个状态码各并进最接近的一族，另有成功、警示、出错、提示四档。
+- `status` 只收 404 / 403 / 500 三个状态码，各并进最接近的一族语气色；`tone` 直接指定语气，两者都写时以 `tone` 为准。
 
 ### 组合
 
@@ -679,8 +650,8 @@ const results = [
 | --- | --- | --- | --- |
 | `live` | `EmptyStateLive` |  | 缺省 polite。 |
 | `size` | `Size` |  | 尺寸档位，只改留白与字号，不改语义。 |
-| `status` | `EmptyStateStatus` |  | 结果类型，只落成 root 的 data-status；图标画什么由作者塞进图标槽。 |
-| `tone` | `Tone` |  | 语气：brand / neutral / success / warning / danger / info，决定用哪族颜色。不给即维持中性。 |
+| `status` | `EmptyStateStatus` |  | 结果页的状态码，只落成 root 的 data-status；皮肤据它把图标区并进最接近的一族语气色，图标画什么由作者塞进图标槽。 |
+| `tone` | `Tone` |  | 语气：brand / neutral / success / warning / danger / info，决定图标区用哪族颜色；与 status 都写时以它为准。不给即维持中性。 |
 
 ### connect API
 

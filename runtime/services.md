@@ -91,7 +91,7 @@ import { createToastService } from "@xihan-ui/vue";
 const toast = createToastService({ placement: "top", max: 5 });
 
 toast.success("已保存");
-toast.error("保存失败，请重试", { duration: 8000 });
+toast.danger("保存失败，请重试", { duration: 8000 });
 ```
 
 | 方法 | 返回 | 说明 |
@@ -99,8 +99,8 @@ toast.error("保存失败，请重试", { duration: 8000 });
 | `create(options)` | `string`（id） | 入队；**同 id 已存在则就地改写** |
 | `update(id, options)` | — | 改写已在显示的那一条 |
 | `dismiss(id)` / `dismissAll()` | — | 手动收走 |
-| `info` / `success` / `warning` / `error` | `string`（id） | 类型糖，第一参是正文 |
-| `loading(message, options)` | `string`（id） | 返回 id，之后用 `update` 收尾 |
+| `info` / `success` / `warning` / `danger` | `string`（id） | 语气糖，第一参是正文 |
+| `loading(message, options)` | `string`（id） | 打开 `loading` 位弹一条，返回 id，之后用 `update` 收尾 |
 | `promise(input, options)` | `Promise<T>` | 先弹 loading，落定后就地改写成成功/失败 |
 | `pauseAll()` / `resumeAll()` | — | 整摞一起按住计时、再放开 |
 | `setConfig(next)` | — | 换一份全局配置源（切语言用） |
@@ -114,10 +114,10 @@ toast.error("保存失败，请重试", { duration: 8000 });
 const id = toast.loading("正在上传…");
 try {
   await upload(file);
-  toast.update(id, { type: "success", title: "上传完成" });
+  toast.update(id, { loading: false, tone: "success", title: "上传完成" });
 }
 catch {
-  toast.update(id, { type: "error", title: "上传失败" });
+  toast.update(id, { loading: false, tone: "danger", title: "上传失败" });
 }
 ```
 
@@ -147,11 +147,11 @@ toast.info("已删除 3 条记录", { duration: 8000, actionLabel: "撤销", onA
 
 ```ts
 const toast = createToastService({ dedupe: "content" });
-toast.error("同步失败");
-toast.error("同步失败"); // 界面上是「同步失败 ×2」
+toast.danger("同步失败");
+toast.danger("同步失败"); // 界面上是「同步失败 ×2」
 ```
 
-超出 `max` 时先挤低优先级的、同级里挤最旧的。优先级不给就按语气派生（`error` 最高、
+超出 `max` 时先挤低优先级的、同级里挤最旧的。优先级不给就按语气派生（`danger` 最高、
 `warning` 次之、其余持平），也可以逐条写 `priority`——**一条报错不该被随后的五条提示顶掉**。
 
 服务档的默认落位是 `top`，最多同时留 5 条，超出的挤掉最旧的。落位是整个服务的口径——
@@ -161,7 +161,7 @@ toast.error("同步失败"); // 界面上是「同步失败 ×2」
 多一颗叉就多一个「要不要点」的判断。确实需要留出口（比如 `duration: 0` 的常驻提示）就显式开：
 
 ```ts
-toast.error("导出失败，请重试", { duration: 0, closable: true });
+toast.danger("导出失败，请重试", { duration: 0, closable: true });
 ```
 
 ## 通知服务
@@ -172,7 +172,7 @@ import { createNotificationService } from "@xihan-ui/vue";
 const notify = createNotificationService({ placement: "bottom-end", max: 5 });
 
 notify.info("有新的审批", { description: "张三提交了一份请假单" });
-notify.error("同步失败", { description: "网络中断，稍后自动重试", duration: 0 });
+notify.danger("同步失败", { description: "网络中断，稍后自动重试", duration: 0 });
 ```
 
 | 方法 | 返回 | 说明 |
@@ -180,7 +180,7 @@ notify.error("同步失败", { description: "网络中断，稍后自动重试",
 | `create(options)` | `string`（id） | 入队；**同 id 已存在则就地改写** |
 | `update(id, options)` | — | 改写已在显示的那一条 |
 | `dismiss(id)` / `dismissAll()` | — | 手动收走 |
-| `info` / `success` / `warning` / `error` | `string`（id） | 类型糖，第一参是标题，正文写在 `options.description` |
+| `info` / `success` / `warning` / `danger` | `string`（id） | 语气糖，第一参是标题，正文写在 `options.description` |
 | `pauseAll()` / `resumeAll()` | — | 把当下这些卡片的计时一起按住、再放开 |
 | `setConfig(next)` | — | 换一份全局配置源（切语言用） |
 | `dispose()` | — | 卸载宿主应用并移除容器 |

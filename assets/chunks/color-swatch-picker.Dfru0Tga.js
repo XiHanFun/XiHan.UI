@@ -1,0 +1,1 @@
+import{aO as a}from"./theme.C4bpqV2W.js";import{d as o,b as l,k as t,o as r}from"./framework.DkvuVDKz.js";const b=o({__name:"color-swatch-picker",setup(s){const e=[{value:"#e11d48",label:"玫红"},{value:"#f59e0b",label:"琥珀"},{value:"#10b981",label:"翠绿"},{value:"#3b82f6",label:"天蓝"}];return(c,n)=>(r(),l(t(a),{swatches:e,"default-value":"#3b82f6",size:"sm"}))}});export{b as default};

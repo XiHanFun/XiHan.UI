@@ -1,3 +1,0 @@
-const d=`<!-- 按下 | 展示动作激活时的键帽状态 -->
-<xh-kbd value="Enter" pressed><kbd data-xh-part="root"></kbd></xh-kbd>
-`;export{d as default};

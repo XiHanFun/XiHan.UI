@@ -17,11 +17,6 @@
 root 持有状态，label 与 control 里的 input 各自向它取属性；不传 value 即为非受控，组件自己维护值
 
 ```vue
-<!--
-  Copyright (c) 2021-Present XiHanFun and contributors.
-  Licensed under the MIT License. See LICENSE in the project root for license information.
--->
-
 <script setup lang="ts">
 import {
   XhTextFieldControl,
@@ -68,11 +63,6 @@ import {
 传了 value 就由宿主说了算，组件自己不再改状态；变化经 value-change 报出来，写不写回由宿主定
 
 ```vue
-<!--
-  Copyright (c) 2021-Present XiHanFun and contributors.
-  Licensed under the MIT License. See LICENSE in the project root for license information.
--->
-
 <script setup lang="ts">
 import {
   XhTextFieldControl,
@@ -130,11 +120,6 @@ const nickname = ref("曦寒");
 Control 把输入框与清空按钮圈进同一个框，clearable 让清空按钮可用并把 Escape 接管过来，maxLength 同时落成原生 maxlength 与机器侧截断
 
 ```vue
-<!--
-  Copyright (c) 2021-Present XiHanFun and contributors.
-  Licensed under the MIT License. See LICENSE in the project root for license information.
--->
-
 <script setup lang="ts">
 import {
   XhTextFieldClearTrigger,
@@ -197,11 +182,6 @@ import {
 disabled 与 readOnly 都改不动值，invalid 只把 aria-invalid 标出来、不拦输入
 
 ```vue
-<!--
-  Copyright (c) 2021-Present XiHanFun and contributors.
-  Licensed under the MIT License. See LICENSE in the project root for license information.
--->
-
 <script setup lang="ts">
 import {
   XhTextFieldControl,
@@ -269,11 +249,6 @@ import {
 variant 决定底与描边怎么画：描边、淡色填底、无框；输入框没有实心档
 
 ```vue
-<!--
-  Copyright (c) 2021-Present XiHanFun and contributors.
-  Licensed under the MIT License. See LICENSE in the project root for license information.
--->
-
 <script setup lang="ts">
 import {
   XhTextFieldControl,
@@ -336,11 +311,6 @@ const variants = ["outline", "subtle", "ghost"] as const;
 tone 决定用哪族颜色，与 variant 正交；这里固定 subtle 形态，语气的底色差别不必聚焦就看得见
 
 ```vue
-<!--
-  Copyright (c) 2021-Present XiHanFun and contributors.
-  Licensed under the MIT License. See LICENSE in the project root for license information.
--->
-
 <script setup lang="ts">
 import {
   XhTextFieldControl,
@@ -431,11 +401,6 @@ const tones = ["brand", "neutral", "success", "warning", "danger", "info"] as co
 size 只改高度、内边距与字号，标签与清空按钮一起跟着换档；不写就是缺省档
 
 ```vue
-<!--
-  Copyright (c) 2021-Present XiHanFun and contributors.
-  Licensed under the MIT License. See LICENSE in the project root for license information.
--->
-
 <script setup lang="ts">
 import {
   XhTextFieldClearTrigger,
@@ -512,11 +477,6 @@ import {
 setValue 直接写值，只受禁用、只读与字数上限约束；clear 走清空意图，canClear 不成立时按兵不动
 
 ```vue
-<!--
-  Copyright (c) 2021-Present XiHanFun and contributors.
-  Licensed under the MIT License. See LICENSE in the project root for license information.
--->
-
 <script setup lang="ts">
 import {
   XhTextFieldControl,
@@ -600,11 +560,6 @@ import {
 写在 input 部件上的属性直接落到真正的输入框，自动填充与移动端键盘类型由它们决定
 
 ```vue
-<!--
-  Copyright (c) 2021-Present XiHanFun and contributors.
-  Licensed under the MIT License. See LICENSE in the project root for license information.
--->
-
 <script setup lang="ts">
 import {
   XhTextFieldControl,
@@ -674,11 +629,6 @@ import {
 值的变化走组件的 value-change，聚焦失焦这类原生事件直接写在 input 部件上
 
 ```vue
-<!--
-  Copyright (c) 2021-Present XiHanFun and contributors.
-  Licensed under the MIT License. See LICENSE in the project root for license information.
--->
-
 <script setup lang="ts">
 import {
   XhTextFieldControl,
@@ -761,11 +711,6 @@ function onValueChange(details: { value: string }) {
 前后缀与输入框同在 control 这一个框里排成一行，共用它的描边与底色
 
 ```vue
-<!--
-  Copyright (c) 2021-Present XiHanFun and contributors.
-  Licensed under the MIT License. See LICENSE in the project root for license information.
--->
-
 <script setup lang="ts">
 import {
   XhTextFieldControl,
@@ -827,11 +772,6 @@ const affix = "flex: none; color: var(--xh-fg-muted); pointer-events: none";
 写在 input 部件上的 type 盖过默认的 text，明暗由宿主的一个布尔翻转
 
 ```vue
-<!--
-  Copyright (c) 2021-Present XiHanFun and contributors.
-  Licensed under the MIT License. See LICENSE in the project root for license information.
--->
-
 <script setup lang="ts">
 import {
   XhTextFieldControl,
@@ -897,11 +837,6 @@ const visible = ref(false);
 beforeinput 直接写在 input 部件上，非法字符进不了框，值与框里的内容始终一致
 
 ```vue
-<!--
-  Copyright (c) 2021-Present XiHanFun and contributors.
-  Licensed under the MIT License. See LICENSE in the project root for license information.
--->
-
 <script setup lang="ts">
 import {
   XhTextFieldControl,
@@ -998,11 +933,6 @@ function noSpace(event: Event) {
 input 部件就是一个原生 input，拿到它的节点就能聚焦、全选、把光标挪到末尾
 
 ```vue
-<!--
-  Copyright (c) 2021-Present XiHanFun and contributors.
-  Licensed under the MIT License. See LICENSE in the project root for license information.
--->
-
 <script setup lang="ts">
 import {
   XhTextFieldControl,
@@ -1091,11 +1021,6 @@ function caretToEnd(): void {
 圆角槽换成只留外侧的一组值，中缝用负外边距叠掉一条描边，相邻控件拼成一体
 
 ```vue
-<!--
-  Copyright (c) 2021-Present XiHanFun and contributors.
-  Licensed under the MIT License. See LICENSE in the project root for license information.
--->
-
 <script setup lang="ts">
 import {
   XhButton,
@@ -1215,11 +1140,6 @@ const middleControl = "inline-size: 160px; margin-inline: -1px; --xh-text-field-
 input 部件写成 textarea 即多行宿主；autoSize 让高度跟内容走，对象形态钉行数上下限（顶到 maxRows 后内部滚动）
 
 ```vue
-<!--
-  Copyright (c) 2021-Present XiHanFun and contributors.
-  Licensed under the MIT License. See LICENSE in the project root for license information.
--->
-
 <script setup lang="ts">
 import {
   XhTextFieldControl,
@@ -1306,7 +1226,7 @@ const note = ref("");
 
 - 值来自一份已知清单：用[选择器](./select)或[组合框](./combobox)。
 - 输入的是数字并需要加减：用[数字字段](./number-field)。
-- 输入的是日期或时间：用[日期输入](./date-field)、[时间输入](./time-field)。
+- 输入的是日期或时间：用[日期字段](./date-field)、[时间字段](./time-field)。
 
 ### 特性
 
@@ -1348,7 +1268,7 @@ const note = ref("");
 
 ### 反模式
 
-- 用它收集固定格式的分段值（日期、验证码）：用[日期输入](./date-field)、[分格输入](./pin-input)。
+- 用它收集固定格式的分段值（日期、验证码）：用[日期字段](./date-field)、[分格输入](./pin-input)。
 - 输入时就报格式错误。
 
 ## API 参考

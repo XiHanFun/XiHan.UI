@@ -1,0 +1,6 @@
+const t=`<!-- 外观 | default 使用中性底，light 保持透明 -->
+<div style="display: flex; gap: 12px">
+  <xh-kbd keys="Enter"><kbd data-xh-part="root"></kbd></xh-kbd>
+  <xh-kbd keys="Enter" variant="light"><kbd data-xh-part="root"></kbd></xh-kbd>
+</div>
+`;export{t as default};

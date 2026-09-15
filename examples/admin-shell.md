@@ -5,11 +5,6 @@
 一副控制台外壳：头、侧栏、正文、脚四段各就各位，导航、面包屑、页头、工具条、通知角标与账户菜单在同一屏里。
 
 ```vue
-<!--
-  Copyright (c) 2021-Present XiHanFun and contributors.
-  Licensed under the MIT License. See LICENSE in the project root for license information.
--->
-
 <script setup lang="ts">
 import type { MenuNode, SideNavNode } from "@xihan-ui/headless";
 import {
@@ -23,7 +18,7 @@ import {
   XhBreadcrumbRoot,
   XhBreadcrumbSeparator,
   XhButton,
-  XhCardBody,
+  XhCardContent,
   XhCardHeader,
   XhCardRoot,
   XhCardTitle,
@@ -199,28 +194,28 @@ const lastCommand = ref("（无）");
       </XhToolbarRoot>
 
       <div class="shell__cards">
-        <XhCardRoot variant="outline">
+        <XhCardRoot variant="secondary">
           <XhCardHeader>
             <XhCardTitle>待发货</XhCardTitle>
           </XhCardHeader>
-          <XhCardBody>
+          <XhCardContent>
             <XhStatisticRoot>
               <XhStatisticLabel>较昨日 +12</XhStatisticLabel>
               <XhStatisticValue>128</XhStatisticValue>
             </XhStatisticRoot>
-          </XhCardBody>
+          </XhCardContent>
         </XhCardRoot>
 
-        <XhCardRoot variant="outline">
+        <XhCardRoot variant="secondary">
           <XhCardHeader>
             <XhCardTitle>待退款</XhCardTitle>
           </XhCardHeader>
-          <XhCardBody>
+          <XhCardContent>
             <XhStatisticRoot>
               <XhStatisticLabel>需人工复核</XhStatisticLabel>
               <XhStatisticValue>6</XhStatisticValue>
             </XhStatisticRoot>
-          </XhCardBody>
+          </XhCardContent>
         </XhCardRoot>
       </div>
 
@@ -515,12 +510,12 @@ const lastCommand = ref("（无）");
       </xh-toolbar>
 
       <div data-shell="cards">
-        <xh-card variant="outline">
+        <xh-card variant="secondary">
           <div data-xh-part="root">
             <div data-xh-part="header">
               <div data-xh-part="title">待发货</div>
             </div>
-            <div data-xh-part="body">
+            <div data-xh-part="content">
               <xh-statistic>
                 <div data-xh-part="root">
                   <span data-xh-part="label">较昨日 +12</span>
@@ -531,12 +526,12 @@ const lastCommand = ref("（无）");
           </div>
         </xh-card>
 
-        <xh-card variant="outline">
+        <xh-card variant="secondary">
           <div data-xh-part="root">
             <div data-xh-part="header">
               <div data-xh-part="title">待退款</div>
             </div>
-            <div data-xh-part="body">
+            <div data-xh-part="content">
               <xh-statistic>
                 <div data-xh-part="root">
                   <span data-xh-part="label">需人工复核</span>

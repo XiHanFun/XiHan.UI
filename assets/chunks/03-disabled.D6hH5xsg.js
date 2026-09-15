@@ -1,3 +1,0 @@
-const d=`<!-- 禁用 | 表示对应动作不可用 -->
-<xh-kbd value="Delete" disabled><kbd data-xh-part="root"></kbd></xh-kbd>
-`;export{d as default};

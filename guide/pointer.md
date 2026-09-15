@@ -61,7 +61,7 @@ session.dispose(); // 摘掉监听，重复调用是安全的
 
 ## 谁在用
 
-跟手期间的指针监听统一走这一层，14 个组件在用：`slider` · `splitter` · `scrollbar` · `color-picker` · `image-cropper` · `floating-panel` · `signature-pad` · `carousel` · `image-viewer` · `sortable` · `resizable` · `table` · `tabs` · `tree`。
+跟手期间的指针监听统一走这一层，15 个组件在用：`slider` · `splitter` · `scrollbar` · `color-picker` · `image-cropper` · `floating-panel` · `signature-pad` · `carousel` · `calendar` · `image-viewer` · `sortable` · `resizable` · `table` · `tabs` · `tree`。
 
 在状态机里的接法是把会话挂进拖动态的效应，效应拆卸时 `dispose`——状态一离开拖动态，监听自动摘干净：
 

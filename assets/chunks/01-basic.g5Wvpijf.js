@@ -1,0 +1,24 @@
+const a=`<!-- 基础用法 | 把颜色串画成一小块：颜色旁边写出串本身，看得见也读得出 -->
+<div style="display: flex; align-items: center; gap: 12px; flex-wrap: wrap">
+  <span style="display: inline-flex; align-items: center; gap: 6px">
+    <xh-color-swatch value="#e11d48"><span data-xh-part="root"></span></xh-color-swatch>
+    <code style="font-size: 12px">#e11d48</code>
+  </span>
+  <span style="display: inline-flex; align-items: center; gap: 6px">
+    <xh-color-swatch value="#f59e0b"><span data-xh-part="root"></span></xh-color-swatch>
+    <code style="font-size: 12px">#f59e0b</code>
+  </span>
+  <span style="display: inline-flex; align-items: center; gap: 6px">
+    <xh-color-swatch value="#10b981"><span data-xh-part="root"></span></xh-color-swatch>
+    <code style="font-size: 12px">#10b981</code>
+  </span>
+  <span style="display: inline-flex; align-items: center; gap: 6px">
+    <xh-color-swatch value="#3b82f6"><span data-xh-part="root"></span></xh-color-swatch>
+    <code style="font-size: 12px">#3b82f6</code>
+  </span>
+  <span style="display: inline-flex; align-items: center; gap: 6px">
+    <xh-color-swatch value="#8b5cf6"><span data-xh-part="root"></span></xh-color-swatch>
+    <code style="font-size: 12px">#8b5cf6</code>
+  </span>
+</div>
+`;export{a as default};

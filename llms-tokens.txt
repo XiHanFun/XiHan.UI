@@ -1,6 +1,6 @@
 # 曦寒视图组件 · 设计令牌
 
-共 416 支。取值是缺省档（浅色 · 舒适 · 基础对比度）下的值；
+共 419 支。取值是缺省档（浅色 · 舒适 · 基础对比度）下的值；
 「改写档」列出还有哪几份令牌源重新给过它——深色、紧凑、更高对比度、减弱动效、打印各是一档。
 
 覆盖时在 `:root` 上直接设同名令牌即可，这一层是公开面。带下划线前缀的 `--xh-_*` 是私有槽，不要在外面设。
@@ -241,6 +241,7 @@
 | `--xh-glyph-stroke-bold` | dimension | `2.5px` | — |
 | `--xh-glyph-baseline-shift` | dimension | `-0.125em` | — |
 | `--xh-glyph-mark-check` | icon | `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M4 12.5L9.5 18L20 6'/%3E%3C/svg%3E")` | — |
+| `--xh-glyph-mark-edit` | icon | `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M18.5 2.5L21.5 5.5L8 19L3.5 20.5L5 16Z'/%3E%3Cpath d='M16.4 4.6L19.4 7.6'/%3E%3C/svg%3E")` | — |
 | `--xh-glyph-mark-minus` | icon | `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M5 12H19'/%3E%3C/svg%3E")` | — |
 | `--xh-glyph-mark-plus` | icon | `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M12 5V19'/%3E%3Cpath d='M5 12H19'/%3E%3C/svg%3E")` | — |
 | `--xh-glyph-mark-close` | icon | `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M6 6L18 18'/%3E%3Cpath d='M18 6L6 18'/%3E%3C/svg%3E")` | — |
@@ -463,6 +464,8 @@
 | `--xh-overlay-arrow-size` | dimension | `var(--xh-space-2)` | — |
 | `--xh-overlay-min-w` | dimension | `12rem` | — |
 | `--xh-overlay-menu-min-w` | dimension | `10rem` | — |
+| `--xh-overlay-column-min-w` | dimension | `3.5rem` | — |
+| `--xh-overlay-column-item-h` | dimension | `calc(var(--xh-control-h-sm) - var(--xh-space-1))` | — |
 | `--xh-overlay-menu-max-h` | dimension | `20rem` | compact |
 | `--xh-overlay-max-w-sm` | dimension | `16rem` | — |
 | `--xh-overlay-max-w` | dimension | `20rem` | — |

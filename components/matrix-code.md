@@ -1,0 +1,746 @@
+来源：https://ui.docs.xihanfun.com/components/matrix-code
+
+# MatrixCode 二维码 `alpha`
+
+把一段文本画成二维码，`format` 选码制。
+
+<div class="xh-resource-links">
+  <a href="https://github.com/XiHanFun/XiHan.UI/tree/dev/ui/packages/engine/headless/src/matrix-code" target="_blank" rel="noreferrer">Headless</a>
+  <a href="https://github.com/XiHanFun/XiHan.UI/blob/dev/ui/packages/design/styles/css/matrix-code.css" target="_blank" rel="noreferrer">Styles</a>
+  <a href="https://github.com/XiHanFun/XiHan.UI/tree/dev/ui/packages/adapters/vue/src/components/matrix-code" target="_blank" rel="noreferrer">Vue</a>
+  <a href="https://github.com/XiHanFun/XiHan.UI/tree/dev/ui/packages/adapters/react/src/components/matrix-code" target="_blank" rel="noreferrer">React</a>
+  <a href="https://github.com/XiHanFun/XiHan.UI/blob/dev/ui/packages/adapters/web-components/src/elements/matrix-code.ts" target="_blank" rel="noreferrer">Web Components</a>
+</div>
+
+## 用法
+
+给 value 就画码，版本按内容长度自动选；缺省 M 级纠错、4 个模块的静区
+
+```vue
+<script setup lang="ts">
+import { XhMatrixCode } from "@xihan-ui/vue";
+</script>
+
+<template>
+  <XhMatrixCode value="https://ui.xihanfun.com" />
+</template>
+```
+
+```html
+<xh-matrix-code value="https://ui.xihanfun.com">
+  <svg data-xh-part="root"></svg>
+</xh-matrix-code>
+```
+
+## 组件结构
+
+加粗的是必需部件。
+
+`data-scope="matrix-code"`：**`root`** · `logo`
+
+## 示例
+
+### 码制
+
+qr 之外还有三种：工业打标用的 Data Matrix（rectangular 从矩形尺寸里挑）、运单证件用的 PDF417、票务用的 Aztec
+
+```vue
+<script setup lang="ts">
+import { XhMatrixCode } from "@xihan-ui/vue";
+
+const text = "SN-2026-0915-0001";
+</script>
+
+<template>
+  <div style="display: flex; flex-wrap: wrap; gap: 16px; align-items: end">
+    <div style="display: grid; gap: 6px; justify-items: center">
+      <XhMatrixCode :value="text" :pixel-size="120" />
+      <span style="font-size: 12px">qr</span>
+    </div>
+    <div style="display: grid; gap: 6px; justify-items: center">
+      <XhMatrixCode format="data-matrix" :value="text" :pixel-size="120" />
+      <span style="font-size: 12px">data-matrix</span>
+    </div>
+    <div style="display: grid; gap: 6px; justify-items: center">
+      <XhMatrixCode format="data-matrix" :value="text" rectangular :pixel-size="240" />
+      <span style="font-size: 12px">data-matrix · rectangular</span>
+    </div>
+    <div style="display: grid; gap: 6px; justify-items: center">
+      <XhMatrixCode format="pdf417" :value="text" :pixel-size="240" />
+      <span style="font-size: 12px">pdf417</span>
+    </div>
+    <div style="display: grid; gap: 6px; justify-items: center">
+      <XhMatrixCode format="aztec" :value="text" :pixel-size="120" />
+      <span style="font-size: 12px">aztec</span>
+    </div>
+  </div>
+</template>
+```
+
+```html
+<div style="display: flex; flex-wrap: wrap; gap: 16px; align-items: end">
+  <div style="display: grid; gap: 6px; justify-items: center">
+    <xh-matrix-code value="SN-2026-0915-0001" pixel-size="120">
+      <svg data-xh-part="root"></svg>
+    </xh-matrix-code>
+    <span style="font-size: 12px">qr</span>
+  </div>
+  <div style="display: grid; gap: 6px; justify-items: center">
+    <xh-matrix-code format="data-matrix" value="SN-2026-0915-0001" pixel-size="120">
+      <svg data-xh-part="root"></svg>
+    </xh-matrix-code>
+    <span style="font-size: 12px">data-matrix</span>
+  </div>
+  <div style="display: grid; gap: 6px; justify-items: center">
+    <xh-matrix-code format="data-matrix" value="SN-2026-0915-0001" rectangular pixel-size="240">
+      <svg data-xh-part="root"></svg>
+    </xh-matrix-code>
+    <span style="font-size: 12px">data-matrix · rectangular</span>
+  </div>
+  <div style="display: grid; gap: 6px; justify-items: center">
+    <xh-matrix-code format="pdf417" value="SN-2026-0915-0001" pixel-size="240">
+      <svg data-xh-part="root"></svg>
+    </xh-matrix-code>
+    <span style="font-size: 12px">pdf417</span>
+  </div>
+  <div style="display: grid; gap: 6px; justify-items: center">
+    <xh-matrix-code format="aztec" value="SN-2026-0915-0001" pixel-size="120">
+      <svg data-xh-part="root"></svg>
+    </xh-matrix-code>
+    <span style="font-size: 12px">aztec</span>
+  </div>
+</div>
+```
+
+### 纠错级别
+
+L / M / Q / H 依次能容忍更多污损，同样的内容也因此占更多模块
+
+```vue
+<script setup lang="ts">
+import { XhMatrixCode } from "@xihan-ui/vue";
+
+const levels = ["L", "M", "Q", "H"] as const;
+const text = "https://ui.xihanfun.com/components/matrix-code";
+</script>
+
+<template>
+  <div style="display: flex; flex-wrap: wrap; gap: 16px">
+    <div v-for="level in levels" :key="level" style="display: grid; gap: 6px; justify-items: center">
+      <XhMatrixCode :value="text" :level="level" :pixel-size="120" />
+      <span style="font-size: 12px">{{ level }}</span>
+    </div>
+  </div>
+</template>
+```
+
+```html
+<div style="display: flex; flex-wrap: wrap; gap: 16px">
+  <div style="display: grid; gap: 6px; justify-items: center">
+    <xh-matrix-code value="https://ui.xihanfun.com/components/matrix-code" level="L" pixel-size="120">
+      <svg data-xh-part="root"></svg>
+    </xh-matrix-code>
+    <span style="font-size: 12px">L</span>
+  </div>
+  <div style="display: grid; gap: 6px; justify-items: center">
+    <xh-matrix-code value="https://ui.xihanfun.com/components/matrix-code" level="M" pixel-size="120">
+      <svg data-xh-part="root"></svg>
+    </xh-matrix-code>
+    <span style="font-size: 12px">M</span>
+  </div>
+  <div style="display: grid; gap: 6px; justify-items: center">
+    <xh-matrix-code value="https://ui.xihanfun.com/components/matrix-code" level="Q" pixel-size="120">
+      <svg data-xh-part="root"></svg>
+    </xh-matrix-code>
+    <span style="font-size: 12px">Q</span>
+  </div>
+  <div style="display: grid; gap: 6px; justify-items: center">
+    <xh-matrix-code value="https://ui.xihanfun.com/components/matrix-code" level="H" pixel-size="120">
+      <svg data-xh-part="root"></svg>
+    </xh-matrix-code>
+    <span style="font-size: 12px">H</span>
+  </div>
+</div>
+```
+
+### 边长与静区
+
+pixelSize 是整块的像素边长；margin 的单位是模块数，静区含在里面不额外占地方
+
+```vue
+<script setup lang="ts">
+import { XhMatrixCode } from "@xihan-ui/vue";
+
+const text = "https://ui.xihanfun.com";
+</script>
+
+<template>
+  <div style="display: flex; flex-wrap: wrap; align-items: end; gap: 16px">
+    <div style="display: grid; gap: 6px; justify-items: center">
+      <XhMatrixCode :value="text" :pixel-size="96" />
+      <span style="font-size: 12px">96px · 静区 4</span>
+    </div>
+    <div style="display: grid; gap: 6px; justify-items: center">
+      <XhMatrixCode :value="text" :pixel-size="144" />
+      <span style="font-size: 12px">144px · 静区 4</span>
+    </div>
+    <!-- 静区归零后码面顶到边上；印刷或贴在深色底上时四周得自己再留白，否则扫不出来 -->
+    <div style="display: grid; gap: 6px; justify-items: center">
+      <XhMatrixCode :value="text" :pixel-size="144" :margin="0" />
+      <span style="font-size: 12px">144px · 静区 0</span>
+    </div>
+  </div>
+</template>
+```
+
+```html
+<div style="display: flex; flex-wrap: wrap; align-items: end; gap: 16px">
+  <div style="display: grid; gap: 6px; justify-items: center">
+    <xh-matrix-code value="https://ui.xihanfun.com" pixel-size="96">
+      <svg data-xh-part="root"></svg>
+    </xh-matrix-code>
+    <span style="font-size: 12px">96px · 静区 4</span>
+  </div>
+  <div style="display: grid; gap: 6px; justify-items: center">
+    <xh-matrix-code value="https://ui.xihanfun.com" pixel-size="144">
+      <svg data-xh-part="root"></svg>
+    </xh-matrix-code>
+    <span style="font-size: 12px">144px · 静区 4</span>
+  </div>
+  <!-- 静区归零后码面顶到边上；印刷或贴在深色底上时四周得自己再留白，否则扫不出来 -->
+  <div style="display: grid; gap: 6px; justify-items: center">
+    <xh-matrix-code value="https://ui.xihanfun.com" pixel-size="144" margin="0">
+      <svg data-xh-part="root"></svg>
+    </xh-matrix-code>
+    <span style="font-size: 12px">144px · 静区 0</span>
+  </div>
+</div>
+```
+
+### 可及名字
+
+缺省拿 value 当 aria-label；内容不是给人念的时候用 label 换一句人话
+
+```vue
+<script setup lang="ts">
+import { XhMatrixCode } from "@xihan-ui/vue";
+import { ref } from "vue";
+
+const text = ref("https://ui.xihanfun.com");
+</script>
+
+<template>
+  <div style="display: grid; gap: 12px; justify-items: start">
+    <input
+      v-model="text"
+      type="text"
+      aria-label="要编码的内容"
+      style="inline-size: 320px; max-inline-size: 100%"
+    >
+    <!-- 内容清空时不画码，读屏也读不到这块 -->
+    <XhMatrixCode :value="text" :pixel-size="140" label="曦寒 UI 文档站二维码" />
+  </div>
+</template>
+```
+
+```html
+<div style="display: grid; gap: 12px; justify-items: start">
+  <input
+    id="matrix-code-label-input"
+    type="text"
+    value="https://ui.xihanfun.com"
+    aria-label="要编码的内容"
+    style="inline-size: 320px; max-inline-size: 100%"
+  />
+  <!-- 内容清空时不画码，读屏也读不到这块 -->
+  <xh-matrix-code
+    id="matrix-code-label"
+    value="https://ui.xihanfun.com"
+    pixel-size="140"
+    label="曦寒 UI 文档站二维码"
+  >
+    <svg data-xh-part="root"></svg>
+  </xh-matrix-code>
+</div>
+
+<script type="module">
+  // 输入框里敲什么就编码什么
+  const input = document.getElementById("matrix-code-label-input");
+  const code = document.getElementById("matrix-code-label");
+  input.addEventListener("input", () => {
+    code.value = input.value;
+  });
+</script>
+```
+
+### 码点形状
+
+square / dot / rounded；三种形状的墨都盖住每个模块的格心，读码器按格心取样
+
+```vue
+<script setup lang="ts">
+import { XhMatrixCode } from "@xihan-ui/vue";
+
+const shapes = ["square", "dot", "rounded"] as const;
+const text = "https://ui.xihanfun.com/components/matrix-code";
+</script>
+
+<template>
+  <div style="display: flex; flex-wrap: wrap; gap: 16px">
+    <div
+      v-for="shape in shapes"
+      :key="shape"
+      style="display: grid; gap: 6px; justify-items: center"
+    >
+      <!-- 时序图形与校正图形不跟着变形：它们是透视校正的几何基准 -->
+      <XhMatrixCode :value="text" :module-shape="shape" :pixel-size="128" />
+      <span style="font-size: 12px">{{ shape }}</span>
+    </div>
+  </div>
+</template>
+```
+
+```html
+<div style="display: flex; flex-wrap: wrap; gap: 16px">
+  <!-- 时序图形与校正图形不跟着变形：它们是透视校正的几何基准 -->
+  <div style="display: grid; gap: 6px; justify-items: center">
+    <xh-matrix-code value="https://ui.xihanfun.com/components/matrix-code" module-shape="square" pixel-size="128">
+      <svg data-xh-part="root"></svg>
+    </xh-matrix-code>
+    <span style="font-size: 12px">square</span>
+  </div>
+  <div style="display: grid; gap: 6px; justify-items: center">
+    <xh-matrix-code value="https://ui.xihanfun.com/components/matrix-code" module-shape="dot" pixel-size="128">
+      <svg data-xh-part="root"></svg>
+    </xh-matrix-code>
+    <span style="font-size: 12px">dot</span>
+  </div>
+  <div style="display: grid; gap: 6px; justify-items: center">
+    <xh-matrix-code value="https://ui.xihanfun.com/components/matrix-code" module-shape="rounded" pixel-size="128">
+      <svg data-xh-part="root"></svg>
+    </xh-matrix-code>
+    <span style="font-size: 12px">rounded</span>
+  </div>
+</div>
+```
+
+### 码眼形状
+
+只作用于三个定位图形，7×7 的外环加内心结构保持不变，读码器靠它找码
+
+```vue
+<script setup lang="ts">
+import { XhMatrixCode } from "@xihan-ui/vue";
+
+const shapes = ["square", "rounded"] as const;
+const text = "https://ui.xihanfun.com/components/matrix-code";
+</script>
+
+<template>
+  <div style="display: flex; flex-wrap: wrap; gap: 16px">
+    <div
+      v-for="shape in shapes"
+      :key="shape"
+      style="display: grid; gap: 6px; justify-items: center"
+    >
+      <XhMatrixCode :value="text" :eye-shape="shape" :pixel-size="128" />
+      <span style="font-size: 12px">{{ shape }}</span>
+    </div>
+    <!-- 码点与码眼各挑各的，两条 path 分开出几何 -->
+    <div style="display: grid; gap: 6px; justify-items: center">
+      <XhMatrixCode :value="text" module-shape="dot" eye-shape="rounded" :pixel-size="128" />
+      <span style="font-size: 12px">dot + rounded</span>
+    </div>
+  </div>
+</template>
+```
+
+```html
+<div style="display: flex; flex-wrap: wrap; gap: 16px">
+  <div style="display: grid; gap: 6px; justify-items: center">
+    <xh-matrix-code value="https://ui.xihanfun.com/components/matrix-code" eye-shape="square" pixel-size="128">
+      <svg data-xh-part="root"></svg>
+    </xh-matrix-code>
+    <span style="font-size: 12px">square</span>
+  </div>
+  <div style="display: grid; gap: 6px; justify-items: center">
+    <xh-matrix-code value="https://ui.xihanfun.com/components/matrix-code" eye-shape="rounded" pixel-size="128">
+      <svg data-xh-part="root"></svg>
+    </xh-matrix-code>
+    <span style="font-size: 12px">rounded</span>
+  </div>
+  <!-- 码点与码眼各挑各的，两条 path 分开出几何 -->
+  <div style="display: grid; gap: 6px; justify-items: center">
+    <xh-matrix-code
+      value="https://ui.xihanfun.com/components/matrix-code"
+      module-shape="dot"
+      eye-shape="rounded"
+      pixel-size="128"
+    >
+      <svg data-xh-part="root"></svg>
+    </xh-matrix-code>
+    <span style="font-size: 12px">dot + rounded</span>
+  </div>
+</div>
+```
+
+### 中心 logo
+
+落位与尺寸由组件给出，那片模块先被底色挖空；放 logo 就把 level 提到 Q 或 H
+
+```vue
+<script setup lang="ts">
+import { XhMatrixCode, XhMatrixCodeLogo } from "@xihan-ui/vue";
+
+const text = "https://ui.xihanfun.com";
+</script>
+
+<template>
+  <div style="display: flex; flex-wrap: wrap; align-items: end; gap: 16px">
+    <div style="display: grid; gap: 6px; justify-items: center">
+      <!-- 挖掉的那片等于人为污损，L / M 那点纠错余量赔不起 -->
+      <XhMatrixCode :value="text" level="Q" :pixel-size="176" label="曦寒 UI 文档站二维码">
+        <XhMatrixCodeLogo>
+          <!-- 边长不超过整码的 1/5，写 100% 即铺满这块，溢出部分被它自己裁掉 -->
+          <rect x="0" y="0" width="100%" height="100%" rx="1" fill="#0f172a" />
+          <circle cx="50%" cy="50%" r="28%" fill="#ffffff" />
+        </XhMatrixCodeLogo>
+      </XhMatrixCode>
+      <span style="font-size: 12px">Q 级 + logo</span>
+    </div>
+    <div style="display: grid; gap: 6px; justify-items: center">
+      <XhMatrixCode :value="text" level="H" module-shape="rounded" eye-shape="rounded" :pixel-size="176" label="曦寒 UI 文档站二维码">
+        <XhMatrixCodeLogo>
+          <rect x="0" y="0" width="100%" height="100%" rx="1.5" fill="#1d4ed8" />
+        </XhMatrixCodeLogo>
+      </XhMatrixCode>
+      <span style="font-size: 12px">H 级 + 圆角</span>
+    </div>
+  </div>
+</template>
+```
+
+```html
+<div style="display: flex; flex-wrap: wrap; align-items: end; gap: 16px">
+  <div style="display: grid; gap: 6px; justify-items: center">
+    <!-- 挖掉的那片等于人为污损，L / M 那点纠错余量赔不起 -->
+    <xh-matrix-code
+      value="https://ui.xihanfun.com"
+      level="Q"
+      pixel-size="176"
+      label="曦寒 UI 文档站二维码"
+    >
+      <svg data-xh-part="root">
+        <svg data-xh-part="logo">
+          <!-- 边长不超过整码的 1/5，写 100% 即铺满这块，溢出部分被它自己裁掉 -->
+          <rect x="0" y="0" width="100%" height="100%" rx="1" fill="#0f172a" />
+          <circle cx="50%" cy="50%" r="28%" fill="#ffffff" />
+        </svg>
+      </svg>
+    </xh-matrix-code>
+    <span style="font-size: 12px">Q 级 + logo</span>
+  </div>
+
+  <div style="display: grid; gap: 6px; justify-items: center">
+    <xh-matrix-code
+      value="https://ui.xihanfun.com"
+      level="H"
+      module-shape="rounded"
+      eye-shape="rounded"
+      pixel-size="176"
+      label="曦寒 UI 文档站二维码"
+    >
+      <svg data-xh-part="root">
+        <svg data-xh-part="logo">
+          <rect x="0" y="0" width="100%" height="100%" rx="1.5" fill="#1d4ed8" />
+        </svg>
+      </svg>
+    </xh-matrix-code>
+    <span style="font-size: 12px">H 级 + 圆角</span>
+  </div>
+</div>
+```
+
+### 换色
+
+颜色不是 props，写三个 CSS 变量即可：码点必须比底色深且对比要足，反相码一部分读码器不认
+
+```vue
+<script setup lang="ts">
+import { XhMatrixCode } from "@xihan-ui/vue";
+
+const text = "https://ui.xihanfun.com";
+</script>
+
+<template>
+  <div style="display: flex; flex-wrap: wrap; gap: 16px">
+    <div style="display: grid; gap: 6px; justify-items: center">
+      <XhMatrixCode :value="text" :pixel-size="128" />
+      <span style="font-size: 12px">缺省</span>
+    </div>
+    <div style="display: grid; gap: 6px; justify-items: center">
+      <!-- 只换码点色，码眼跟着走 -->
+      <XhMatrixCode :value="text" :pixel-size="128" style="--xh-matrix-code-fg: #1d4ed8" />
+      <span style="font-size: 12px">深蓝码点</span>
+    </div>
+    <div style="display: grid; gap: 6px; justify-items: center">
+      <!-- 码眼单独挑一个色，挖空矩形跟着底色走，两处必须一致 -->
+      <XhMatrixCode
+        :value="text"
+        :pixel-size="128"
+        eye-shape="rounded"
+        style="--xh-matrix-code-bg: #fff7ed; --xh-matrix-code-fg: #431407; --xh-matrix-code-eye-fg: #c2410c"
+      />
+      <span style="font-size: 12px">暖底 + 独立码眼色</span>
+    </div>
+  </div>
+</template>
+```
+
+```html
+<div style="display: flex; flex-wrap: wrap; gap: 16px">
+  <div style="display: grid; gap: 6px; justify-items: center">
+    <xh-matrix-code value="https://ui.xihanfun.com" pixel-size="128">
+      <svg data-xh-part="root"></svg>
+    </xh-matrix-code>
+    <span style="font-size: 12px">缺省</span>
+  </div>
+
+  <div style="display: grid; gap: 6px; justify-items: center">
+    <!-- 只换码点色，码眼跟着走 -->
+    <xh-matrix-code value="https://ui.xihanfun.com" pixel-size="128">
+      <svg data-xh-part="root" style="--xh-matrix-code-fg: #1d4ed8"></svg>
+    </xh-matrix-code>
+    <span style="font-size: 12px">深蓝码点</span>
+  </div>
+
+  <div style="display: grid; gap: 6px; justify-items: center">
+    <!-- 码眼单独挑一个色，挖空矩形跟着底色走，两处必须一致 -->
+    <xh-matrix-code value="https://ui.xihanfun.com" pixel-size="128" eye-shape="rounded">
+      <svg
+        data-xh-part="root"
+        style="--xh-matrix-code-bg: #fff7ed; --xh-matrix-code-fg: #431407; --xh-matrix-code-eye-fg: #c2410c"
+      ></svg>
+    </xh-matrix-code>
+    <span style="font-size: 12px">暖底 + 独立码眼色</span>
+  </div>
+</div>
+```
+
+### GS1
+
+gs1 打开后最前面放 FNC1，读码器把内容当 GS1 元素串：变长 AI 后面用 GS（U+001D）隔开下一个；医药 UDI 用 GS1 DataMatrix，零售 2D 迁移用 GS1 QR
+
+```vue
+<script setup lang="ts">
+import { XhMatrixCode } from "@xihan-ui/vue";
+
+// GS 是控制字符，用码点写；(01) GTIN 定长 14 位、(17) 有效期定长 6 位、(10) 批号变长——它后面才需要分隔，(21) 序列号收尾
+const GS = String.fromCharCode(0x1D);
+const value = ["0109501101530003", "17250630", "10ABC123", GS, "21SN001"].join("");
+</script>
+
+<template>
+  <div style="display: flex; flex-wrap: wrap; gap: 16px; align-items: end">
+    <div style="display: grid; gap: 6px; justify-items: center">
+      <XhMatrixCode format="data-matrix" :value="value" gs1 :pixel-size="120" label="GS1 DataMatrix" />
+      <span style="font-size: 12px">GS1 DataMatrix</span>
+    </div>
+    <div style="display: grid; gap: 6px; justify-items: center">
+      <XhMatrixCode :value="value" gs1 :pixel-size="120" label="GS1 QR" />
+      <span style="font-size: 12px">GS1 QR</span>
+    </div>
+    <span style="font-size: 12px">(01)09501101530003 (17)250630 (10)ABC123 (21)SN001</span>
+  </div>
+</template>
+```
+
+```html
+<div style="display: flex; flex-wrap: wrap; gap: 16px; align-items: end">
+  <div style="display: grid; gap: 6px; justify-items: center">
+    <xh-matrix-code id="matrix-code-gs1-dm" format="data-matrix" gs1 pixel-size="120" label="GS1 DataMatrix">
+      <svg data-xh-part="root"></svg>
+    </xh-matrix-code>
+    <span style="font-size: 12px">GS1 DataMatrix</span>
+  </div>
+  <div style="display: grid; gap: 6px; justify-items: center">
+    <xh-matrix-code id="matrix-code-gs1-qr" gs1 pixel-size="120" label="GS1 QR">
+      <svg data-xh-part="root"></svg>
+    </xh-matrix-code>
+    <span style="font-size: 12px">GS1 QR</span>
+  </div>
+  <span style="font-size: 12px">(01)09501101530003 (17)250630 (10)ABC123 (21)SN001</span>
+</div>
+
+<script type="module">
+  // GS 是控制字符，写不进 HTML 特性，走 property 赋值
+  // (01) GTIN 定长 14 位、(17) 有效期定长 6 位、(10) 批号变长——它后面才需要分隔，(21) 序列号收尾
+  const GS = String.fromCharCode(0x1D);
+  const value = ["0109501101530003", "17250630", "10ABC123", GS, "21SN001"].join("");
+  for (const id of ["matrix-code-gs1-dm", "matrix-code-gs1-qr"])
+    document.getElementById(id).value = value;
+</script>
+```
+
+## 设计指引
+
+### 何时使用
+
+- 跨设备传递地址、配对码：`qr`。
+- 工业零件打标、电子元件、医药 UDI、追溯标签这类要在很小的面积上放码的地方：`data-matrix`。
+- 运单、证件、登机牌这类要放几百字节又只能横向扫描的地方：`pdf417`。
+- 车票、登机牌、票务这类要在低分辨率下也扫得出、边上留不出静区的地方：`aztec`。
+
+### 何时不用
+
+- 用户就在这台设备上：给一条可点的链接。
+- 内容很长：二维码会密到扫不出来，改成短链。
+- 只有几十个字符的货号、运单号，让扫描枪一枪读：用[条形码](./bar-code)。
+
+### 特性
+
+- `format` 四种码制：`qr`（缺省，ISO/IEC 18004）、`data-matrix`（ISO/IEC 16022，含 2024 版并入的矩形扩展）、`pdf417`（ISO/IEC 15438）、`aztec`（ISO/IEC 24778）；给了不认识的值不画码，根落到 error 态。
+- `gs1` 把码变成 GS1 QR / GS1 DataMatrix：最前面放 FNC1，变长 AI 之间用内容里的 GS（U+001D）分隔。
+- `level` 的取值域随码制：QR 四档 L / M / Q / H，越高越能容忍污损，同样的内容也因此占更多模块；PDF417 九档 0–8，缺省按数据量取规范推荐档；Aztec 是纠错码字至少占的百分比 5–95，缺省 33。给了码制不认的值不画码。
+- QR：`eyeShape` 换码眼形状；中心可以放 logo。
+- Data Matrix：纠错率随尺寸固定，没有级别可挑；`rectangular` 从矩形尺寸里挑，窄条标签放得下；没有码眼，L 形定位图形随码点形状一起换。
+- PDF417：`columns` 指定数据列数 1–30，缺省挑宽高比最接近 3:1 的一档；它是条不是点，不吃 `moduleShape`。
+- Aztec：牛眼居中，不需要静区，缺省 `margin` 为 0。
+- `moduleShape` 换码点形状；三种形状的墨都盖住每个模块的格心，读码器按格心取样。
+- `margin` 是静区，缺省按码制的规范值；`pixelSize` 是宽度，高按模块比例。
+- 配色可换。
+
+### 组合
+
+- 外面套[卡片](./card)；旁边配[剪贴板](./clipboard)给出文本形式的同一内容。
+
+### 最佳实践
+
+- 放 logo 就把纠错级别提到 Q 或 H，否则遮住的模块补不回来。
+- 静区不能省，贴边的码扫不出来；Data Matrix 只要一格，PDF417 两格，QR 要四格，Aztec 不需要。
+- 旁边同时给出文本或链接：不是所有人都能扫。
+- 对当前码制没有意义的选项（给 Data Matrix 传 `level`、给 QR 传 `rectangular`、给 PDF417 传 `moduleShape`）会往诊断通道报一条警告，按没给处理；别靠它们切换码制。
+
+### 反模式
+
+- 深色主题下直接反色：读码器默认深码点浅底，反色的码很多设备扫不出来。
+- 二维码印得太小。
+- 给 Data Matrix 放 logo：它没有可挑的纠错级别，挖掉的那块补不回来，组件会按没放处理。
+
+## API 参考
+
+### 产物
+
+| 层 | 值 |
+| --- | --- |
+| 自定义元素 | `<xh-matrix-code>` |
+| Vue 组件 | `XhMatrixCode` `XhMatrixCodeLogo` |
+| 状态机 | 无，`connect` 直接由 props 算属性 |
+| 皮肤 | `@xihan-ui/styles/matrix-code.css` |
+
+### Props
+
+| 属性 | 类型 | 必填 | 说明 |
+| --- | --- | --- | --- |
+| `columns` | `number` |  | PDF417 的数据列数 1–30，缺省在宽高比最接近 3:1 的那一档里挑。 只对 pdf417 有意义，给别的码制会往诊断通道报一条警告，按没给处理。 |
+| `eyeShape` | `MatrixCodeEyeShape` |  | 码眼形状，缺省 square。时序图形与校正图形不受它影响，一律保持方块——它们是透视校正的几何基准。 只对 qr 有意义，给别的码制会往诊断通道报一条警告，按没给处理。 |
+| `format` | `MatrixCodeFormat` |  | 码制，缺省 qr。给了不认识的值不画码，根落到 `error` 态。 |
+| `gs1` | `boolean` |  | GS1 模式：在最前面放 FNC1，读码器据此把内容当 GS1 元素串解释，即 GS1 QR / GS1 DataMatrix； 变长 AI 之间用内容里的 GS（U+001D）分隔。 |
+| `label` | `string` |  | 可及名字，缺省用 value；给了全空白的名字等于没给。 |
+| `level` | `MatrixCodeLevel` |  | 纠错级别，取值域随码制：qr 是 L / M / Q / H（缺省 M）；pdf417 是 0–8（缺省按数据量取规范推荐档）； aztec 是纠错码字至少占的百分比 5–95（缺省 33）。给了码制不认的值不画码，根落到 `error` 态。 data-matrix 没有级别可挑，给了会往诊断通道报一条警告，按没给处理。 |
+| `logo` | `boolean` |  | 码面正中是否留一块给 logo。 留出来的那片模块会被底色盖住，对读码器而言等于人为污损：放 logo 就把 level 提到 Q 或 H， L 与 M 那点纠错余量赔不起这一块。损伤量见 `logoDamage`；超出所选级别的余量时 会往诊断通道报一条 `matrix-code.logo-damage` 警告，码照画。 只对 qr 有意义：Data Matrix 的纠错余量随尺寸固定、没有可挑的级别，放 logo 会报一条警告并按没放处理。 |
+| `margin` | `number` |  | 静区宽度，单位是模块数，缺省按码制的规范值（qr 4、data-matrix 1）；静区含在 viewBox 里，不占额外尺寸。 |
+| `moduleShape` | `MatrixCodeModuleShape` |  | 码点形状，缺省 square。pdf417 是条不是点，给了会往诊断通道报一条警告，按没给处理。 |
+| `pixelSize` | `number` |  | 像素宽度，缺省 160；高按模块比例算出，正方形码宽高相等。两者都写成根上的内联尺寸。 |
+| `rectangular` | `boolean` |  | 从矩形尺寸（含矩形扩展 DMRE）里挑，缺省从正方形尺寸里挑。 只对 data-matrix 有意义，给别的码制会往诊断通道报一条警告，按没给处理。 |
+| `value` | `string` |  | 要编码的内容；空串不画码。QR 按 UTF-8 取字节走字节模式；Data Matrix 走 ASCII 模式，Latin-1 以外的字符按 UTF-8 并声明 ECI。 |
+
+### 状态
+
+公开状态写入 `data-state`。
+
+| 部件 | 取值 |
+| --- | --- |
+| `root` | 'empty' |
+
+### connect API
+
+`getXxxProps()` 返回对应部件的宿主属性。
+
+| 成员 | 类型 | 说明 |
+| --- | --- | --- |
+| `format` | `MatrixCodeFormat` | 解析后的码制。给了不认识的值时保持原样透出，好让错误信息与 data-format 都指着那个值。 |
+| `modules` | `readonly (readonly boolean[])[]` | 模块矩阵，[行][列]，true = 深色；没画出码时是空数组。 |
+| `version` | `number` | QR 实际用到的版本；别的码制与没画出码时为 0。 |
+| `columns` | `number` | 模块列数与行数，不含静区；正方形码两者相等，pdf417 的行数已含每个码字行占的 3 个模块高，没画出码时为 0。 |
+| `rows` | `number` |  |
+| `margin` | `number` | 解析后的静区宽度，单位是模块数。 |
+| `viewBox` | `string` | 根的 viewBox，含静区。 |
+| `path` | `string` | 除 QR 三个码眼以外的模块合成的那条 `&lt;path&gt;` 的 d；没画出码时是空串，此时不该生成 path 节点。 码眼永远不在这一条里，与形状无关。 |
+| `eyePath` | `string` | QR 三个码眼合成的那条 `&lt;path&gt;` 的 d；别的码制与没画出码时是空串，此时不该生成第二个 path 节点。 两条分开画与形状无关：码眼的颜色可以与码点不同，合成一条就没地方单独上色。 |
+| `logoArea` | `MatrixCodeLogoArea \| undefined` | logo 的落位与挖空矩形；没留位时为 undefined。 |
+| `logoDamage` | `MatrixCodeLogoDamage \| undefined` | 挖空对码面造成的损伤；没留 logo 位时为 undefined。 |
+| `state` | `MatrixCodeState` | 当前状态。 |
+| `error` | `string \| undefined` | 编码失败的原因；其余状态为 undefined。 |
+| `label` | `string \| undefined` | 解析后的可及名字；没给名字时为 undefined，此时根退出无障碍树。 |
+| `getRootProps` | `() => T['element']` |  |
+| `getLogoProps` | `() => T['element']` | 铺到 logo 部件上的落位；没留位时宽高都是 0，那块连同里面的图形一起不渲染。 |
+
+## 无障碍
+
+### 键盘
+
+规格出处：[W3C APG](https://www.w3.org/WAI/ARIA/apg/practices/names-and-descriptions/)
+
+无键盘交互（不接收焦点，或焦点行为完全由原生元素提供）。
+
+### ARIA
+
+以下属性由 `connect` 生成。
+
+| 部件 | 属性 | 值 |
+| --- | --- | --- |
+| `root` | `aria-hidden` | 'true' \| undefined |
+| `root` | `aria-label` | undefined \| props.label |
+| `root` | `role` | undefined \| 'img' |
+
+## 样式参考
+
+### 皮肤
+
+`@xihan-ui/styles/matrix-code.css` 使用 `[data-scope="matrix-code"][data-part="root"]` 部件选择器，位于 `xihan.components` 层。覆盖样式使用 `xihan.overrides`。
+
+### 数据属性
+
+由 `connect` 生成；条件不成立时不输出无值属性。
+
+| 部件 | 属性 | 值 |
+| --- | --- | --- |
+| `root` | `data-columns` | undefined \| String(columns) |
+| `root` | `data-format` | props.format |
+| `root` | `data-level` | 'M' \| String(pdfLevel) \| undefined |
+| `root` | `data-logo` | ''（条件成立时才出现） |
+| `root` | `data-rows` | undefined \| String(rows) |
+| `root` | `data-state` | 'empty' |
+| `root` | `data-version` | undefined \| String(version) |
+
+<!-- xh-component-tokens:start -->
+### CSS 变量
+
+本组件公开覆盖槽由独立皮肤的实际消费位生成；缺省来源、作用部件和状态均与 CSS 同源。
+
+| 变量 | 部件 | CSS 属性 | 状态 | 缺省来源 | 说明 |
+| --- | --- | --- | --- | --- | --- |
+| `--xh-matrix-code-bg` | `root` | `background`<br>`fill` | `default`<br>`xh-geom=logo-clear` | `--xh-color-neutral-0` | matrix-code 的 root 部件 background、fill 覆盖槽。 |
+| `--xh-matrix-code-eye-fg` | `root` | `fill` | `xh-geom=eyes` | `currentColor` | matrix-code 的 root 部件 fill 覆盖槽。 |
+| `--xh-matrix-code-fg` | `root` | `color` | `default` | `--xh-color-neutral-950` | matrix-code 的 root 部件 color 覆盖槽。 |
+| `--xh-matrix-code-placeholder-bg` | `root` | `background` | `state=empty`<br>`state=error` | `--xh-bg-subtle` | matrix-code 的 root 部件 background 覆盖槽。 |
+| `--xh-matrix-code-placeholder-border` | `root` | `box-shadow` | `state=empty`<br>`state=error` | `--xh-border-default` | matrix-code 的 root 部件 box-shadow 覆盖槽。 |
+| `--xh-matrix-code-radius` | `root` | `border-radius` | `default` | `--xh-shape-control` | matrix-code 的 root 部件 border-radius 覆盖槽。 |
+<!-- xh-component-tokens:end -->
+
+### 动效
+
+`background` · `box-shadow` 走 `transition` 过渡。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
+
+系统开启减弱动效时由令牌层统一收敛，皮肤不另作判断。

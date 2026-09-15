@@ -17,11 +17,6 @@
 等人批准不是在跑：闸门常驻在开关与详情之间，不会被折叠藏起来
 
 ```vue
-<!--
-  Copyright (c) 2021-Present XiHanFun and contributors.
-  Licensed under the MIT License. See LICENSE in the project root for license information.
--->
-
 <script setup lang="ts">
 import type { ToolCallPhase } from "@xihan-ui/headless";
 import {
@@ -144,11 +139,6 @@ const phases: ToolCallPhase[] = [
 跑起来自动展开、结束自动收起；你手动开合过一次之后，阶段怎么变都不再自动
 
 ```vue
-<!--
-  Copyright (c) 2021-Present XiHanFun and contributors.
-  Licensed under the MIT License. See LICENSE in the project root for license information.
--->
-
 <script setup lang="ts">
 import type { ToolCallPhase } from "@xihan-ui/headless";
 import {
@@ -260,11 +250,6 @@ onBeforeUnmount(() => window.clearTimeout(timer));
 详情收起时也看得见查了什么、跑了多久；两个时刻由宿主给，组件自己不读时钟
 
 ```vue
-<!--
-  Copyright (c) 2021-Present XiHanFun and contributors.
-  Licensed under the MIT License. See LICENSE in the project root for license information.
--->
-
 <script setup lang="ts">
 import {
   XhToolCallContent,
@@ -366,11 +351,6 @@ const calls = [
 外面套一层手风琴当分组头：计数用等宽数位，整组开合归手风琴，卡片各管各的
 
 ```vue
-<!--
-  Copyright (c) 2021-Present XiHanFun and contributors.
-  Licensed under the MIT License. See LICENSE in the project root for license information.
--->
-
 <script setup lang="ts">
 import {
   XhAccordionContent,
@@ -511,11 +491,6 @@ const calls = [
 三轴只改这块壳怎么与正文分开，阶段与展开逻辑不受影响
 
 ```vue
-<!--
-  Copyright (c) 2021-Present XiHanFun and contributors.
-  Licensed under the MIT License. See LICENSE in the project root for license information.
--->
-
 <script setup lang="ts">
 import {
   XhToolCallContent,
@@ -663,7 +638,7 @@ import {
 ### 何时不用
 
 - 展示的是「思考过程」而不是一次调用：用[思考过程](./reasoning)，两者共用同一台机器但正文形态不同。
-- 只想要一个状态色块：用[徽章](./badge)，配 `toneOfToolCallPhase(phase)` 取语气。
+- 只想要一个状态色块：用[徽标](./badge)，配 `toneOfToolCallPhase(phase)` 取语气。
 - 多次调用要一次只展开一张：外面套[手风琴](./accordion)，每格里装一张。
 
 ### 特性
@@ -685,9 +660,9 @@ import {
   「阶段不是参数在传」即可。富文本结果走[流式正文](./markdown-stream)。
 - 结果是代码改动时，详情那一格装[差异视图](./diff-view)；收起态的摘要取它的 `stats`
   折成 `+{added} −{removed} 文件名` 写进摘要位，减号用 U+2212 而不是连字符。
-  摘要要能悬停看全文就套[悬浮卡](./hover-card)，别自己往 body 上挂节点。
+  摘要要能悬停看全文就套[悬浮卡片](./hover-card)，别自己往 body 上挂节点。
 - 审批那一格装[审批](./approval)。
-- 复制不内建，与[剪贴板](./clipboard)组合；多张并排要方向键跳卡片就套[工具条](./toolbar)。
+- 复制不内建，与[剪贴板](./clipboard)组合；多张并排要方向键跳卡片就套[工具栏](./toolbar)。
 - 一轮里跑了好几次工具时，外面套一层[手风琴](./accordion)当分组：
   手风琴的开关里写「跑了 N 个工具」，计数那一段加 `font-variant-numeric: tabular-nums`
   免得数字跳动时左右挪；整组的开合由手风琴的 `aria-expanded` 承担，卡片各自只管自己那一张。

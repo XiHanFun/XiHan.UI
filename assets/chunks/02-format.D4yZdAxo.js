@@ -1,0 +1,40 @@
+const a=`<!-- 码制 | 零售商品用 EAN / UPC，外箱用 ITF-14，工业标签用 Code 39；定长数字码制的校验位可省，组件补上 -->
+<div style="display: flex; flex-wrap: wrap; gap: 16px; align-items: end">
+  <div style="display: grid; gap: 6px; justify-items: center">
+    <xh-bar-code format="ean13" value="400638133393" height="48">
+      <svg data-xh-part="root"></svg>
+    </xh-bar-code>
+    <span style="font-size: 12px">EAN-13</span>
+  </div>
+  <div style="display: grid; gap: 6px; justify-items: center">
+    <xh-bar-code format="ean8" value="9638507" height="48">
+      <svg data-xh-part="root"></svg>
+    </xh-bar-code>
+    <span style="font-size: 12px">EAN-8</span>
+  </div>
+  <div style="display: grid; gap: 6px; justify-items: center">
+    <xh-bar-code format="upca" value="03600029145" height="48">
+      <svg data-xh-part="root"></svg>
+    </xh-bar-code>
+    <span style="font-size: 12px">UPC-A</span>
+  </div>
+  <div style="display: grid; gap: 6px; justify-items: center">
+    <xh-bar-code format="upce" value="0425261" height="48">
+      <svg data-xh-part="root"></svg>
+    </xh-bar-code>
+    <span style="font-size: 12px">UPC-E</span>
+  </div>
+  <div style="display: grid; gap: 6px; justify-items: center">
+    <xh-bar-code format="itf14" value="1540014128876" height="48">
+      <svg data-xh-part="root"></svg>
+    </xh-bar-code>
+    <span style="font-size: 12px">ITF-14</span>
+  </div>
+  <div style="display: grid; gap: 6px; justify-items: center">
+    <xh-bar-code format="code39" value="XH-0915" height="48">
+      <svg data-xh-part="root"></svg>
+    </xh-bar-code>
+    <span style="font-size: 12px">Code 39</span>
+  </div>
+</div>
+`;export{a as default};

@@ -5,11 +5,6 @@
 一张新建工单的表：九个字段分成两组，值全在同一张表里，校验、错误摘要与重置由[表单](../components/form)统一管。
 
 ```vue
-<!--
-  Copyright (c) 2021-Present XiHanFun and contributors.
-  Licensed under the MIT License. See LICENSE in the project root for license information.
--->
-
 <script setup lang="ts">
 import type { RadioGroupNode, SelectNode } from "@xihan-ui/headless";
 import {

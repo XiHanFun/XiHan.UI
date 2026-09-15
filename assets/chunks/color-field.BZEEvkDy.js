@@ -1,0 +1,1 @@
+import{aA as t,aB as l,aC as r,aD as s}from"./theme.C4bpqV2W.js";import{d as i,b as n,w as a,k as e,o as d,E as o}from"./framework.DkvuVDKz.js";const p=i({__name:"color-field",setup(c){return(f,u)=>(d(),n(e(s),{"default-value":"#3b82f6",size:"sm"},{default:a(()=>[o(e(r),{style:{"inline-size":"9rem"}},{default:a(()=>[o(e(t)),o(e(l))]),_:1})]),_:1}))}});export{p as default};

@@ -1,0 +1,1 @@
+import{d8 as t,d9 as d,da as n,db as o,dc as u}from"./theme.C4bpqV2W.js";import{d as l,b as m,w as a,k as e,o as s,E as r}from"./framework.DkvuVDKz.js";const b=l({__name:"number-field",setup(i){return(c,f)=>(s(),m(e(u),{"default-value":"8",min:0},{default:a(()=>[r(e(o),null,{default:a(()=>[r(e(t)),r(e(d)),r(e(n))]),_:1})]),_:1}))}});export{b as default};

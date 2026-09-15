@@ -17,11 +17,6 @@
 条子贴在视口顶边（往页面最上方看）；不给 value 就是不确定进度，宽度自行往前爬，loading 翻 false 才冲到头并淡出
 
 ```vue
-<!--
-  Copyright (c) 2021-Present XiHanFun and contributors.
-  Licensed under the MIT License. See LICENSE in the project root for license information.
--->
-
 <script setup lang="ts">
 import {
   XhButton,
@@ -102,11 +97,6 @@ const value = ref(0);
 传了 value 就由宿主说了算，宽度照它显示，内部爬升不再插手；loading 仍然负责露面与收起
 
 ```vue
-<!--
-  Copyright (c) 2021-Present XiHanFun and contributors.
-  Licensed under the MIT License. See LICENSE in the project root for license information.
--->
-
 <script setup lang="ts">
 import {
   XhButton,
@@ -195,16 +185,11 @@ function advance(): void {
 </script>
 ```
 
-### 厚度与颜色
+### 厚度
 
-height 数字按像素、字符串按任意 CSS 长度；color 只改进度段的底色
+height 数字按像素、字符串按任意 CSS 长度；进度段的颜色走语气或皮肤槽，不走内联
 
 ```vue
-<!--
-  Copyright (c) 2021-Present XiHanFun and contributors.
-  Licensed under the MIT License. See LICENSE in the project root for license information.
--->
-
 <script setup lang="ts">
 import {
   XhButton,
@@ -218,7 +203,7 @@ const loading = ref(false);
 </script>
 
 <template>
-  <XhLoadingBarRoot :loading="loading" :height="6" color="#f97316">
+  <XhLoadingBarRoot :loading="loading" :height="6" tone="warning">
     <XhLoadingBarTrack>
       <XhLoadingBarRange />
     </XhLoadingBarTrack>
@@ -226,12 +211,12 @@ const loading = ref(false);
 
   <XhButton variant="solid" @click="loading = true">开始加载</XhButton>
   <XhButton variant="outline" @click="loading = false">结束加载</XhButton>
-  <span>6px 厚的橙色条子，仍然贴在视口顶边</span>
+  <span>6px 厚的警示色条子，仍然贴在视口顶边</span>
 </template>
 ```
 
 ```html
-<xh-loading-bar id="loading-bar-appearance" height="6" color="#f97316">
+<xh-loading-bar id="loading-bar-appearance" height="6" tone="warning">
   <div data-xh-part="root">
     <div data-xh-part="track">
       <div data-xh-part="range"></div>
@@ -249,7 +234,7 @@ const loading = ref(false);
   <xh-button variant="outline" data-loading="off">
     <button data-xh-part="root">结束加载</button>
   </xh-button>
-  <span>6px 厚的橙色条子，仍然贴在视口顶边</span>
+  <span>6px 厚的警示色条子，仍然贴在视口顶边</span>
 </div>
 
 <script type="module">
@@ -268,11 +253,6 @@ const loading = ref(false);
 trickle 为 false 时条子停在起步值 minimum 不动，往前走全靠宿主收尾
 
 ```vue
-<!--
-  Copyright (c) 2021-Present XiHanFun and contributors.
-  Licensed under the MIT License. See LICENSE in the project root for license information.
--->
-
 <script setup lang="ts">
 import {
   XhButton,
@@ -341,11 +321,6 @@ const loading = ref(false);
 tone 只换进度段的底色（取柔和档）；条子本身是 fixed，这里给它写死 absolute 并配一个相对定位的框子，六条才留在示例里而不是叠到页面顶边
 
 ```vue
-<!--
-  Copyright (c) 2021-Present XiHanFun and contributors.
-  Licensed under the MIT License. See LICENSE in the project root for license information.
--->
-
 <script setup lang="ts">
 import type { CSSProperties } from "vue";
 import {
@@ -488,11 +463,6 @@ const frameStyle: CSSProperties = {
 条子默认贴视口顶边，改写成 absolute 再套一个相对定位的框子，它就只贴这块卡片的上沿
 
 ```vue
-<!--
-  Copyright (c) 2021-Present XiHanFun and contributors.
-  Licensed under the MIT License. See LICENSE in the project root for license information.
--->
-
 <script setup lang="ts">
 import {
   XhButton,
@@ -631,8 +601,7 @@ function reload(): void {
 | `defaultValue` | `number` |  | 非受控初值，缺省 0。 |
 | `loading` | `boolean` |  | 加载开关：true 开始，false 结束（冲到 100 再淡出归零）。只由宿主写入，无配套回调。 |
 | `height` | `string \| number` |  | 条子厚度：数字按像素，字符串按任意 CSS 长度。缺省 2px。 |
-| `color` | `string` |  | 进度段颜色（任意 CSS 颜色）。不给就用皮肤的品牌色。 |
-| `tone` | `Tone` |  | 语气：brand / neutral / success / warning / danger / info，决定进度段用哪族颜色。给了 color 就以 color 为准。 |
+| `tone` | `Tone` |  | 语气：brand / neutral / success / warning / danger / info，决定进度段用哪族颜色。要用别的颜色改皮肤槽 --xh-loading-bar-range。 |
 | `trickle` | `boolean` |  | 不确定进度时自行往前爬，默认开。关掉即停在起步值等宿主收尾。 |
 | `trickleSpeed` | `number` |  | 爬升节拍毫秒，默认 200；&lt;=0 或非有限数等同于关掉爬升。 |
 | `minimum` | `number` |  | 起步值，默认 8：开始加载时先跳到这里。 |

@@ -1,0 +1,1 @@
+import{aK as r,aL as l,aM as s,aN as t}from"./theme.C4bpqV2W.js";import{d as i,b as n,w as a,k as e,o as d,E as o}from"./framework.DkvuVDKz.js";const p=i({__name:"color-slider",setup(c){return(u,f)=>(d(),n(e(t),{"default-value":"#3b82f6",size:"sm",style:{"inline-size":"160px"}},{default:a(()=>[o(e(s),null,{default:a(()=>[o(e(r)),o(e(l))]),_:1})]),_:1}))}});export{p as default};

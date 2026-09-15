@@ -17,11 +17,6 @@
 触发器打开全屏看片：滚轮缩放、拖拽平移、工具条给缩放/旋转/翻转/归零，Esc 或点遮罩关闭
 
 ```vue
-<!--
-  Copyright (c) 2021-Present XiHanFun and contributors.
-  Licensed under the MIT License. See LICENSE in the project root for license information.
--->
-
 <script setup lang="ts">
 import {
   XhImageViewerCloseTrigger,
@@ -125,11 +120,6 @@ const items = [{ src: "data:image/svg+xml,%3Csvg%20xmlns=%22http://www.w3.org/20
 多张图共用一个看片浮层：两侧按钮或方向键翻页、计数报「第几张」，缩放旋转在换图时归零
 
 ```vue
-<!--
-  Copyright (c) 2021-Present XiHanFun and contributors.
-  Licensed under the MIT License. See LICENSE in the project root for license information.
--->
-
 <script setup lang="ts">
 import {
   XhImageViewerCloseTrigger,
@@ -268,11 +258,6 @@ const items = [
 open 与 index 双受控；translations 换工具条的可及名与计数文案
 
 ```vue
-<!--
-  Copyright (c) 2021-Present XiHanFun and contributors.
-  Licensed under the MIT License. See LICENSE in the project root for license information.
--->
-
 <script setup lang="ts">
 import {
   XhButton,
@@ -400,11 +385,6 @@ const translations = {
 触屏上两指撑开放大、捏合缩小，单指平移；缩放夹在 minScale 与 maxScale 之间
 
 ```vue
-<!--
-  Copyright (c) 2021-Present XiHanFun and contributors.
-  Licensed under the MIT License. See LICENSE in the project root for license information.
--->
-
 <script setup lang="ts">
 import {
   XhImageViewerCloseTrigger,

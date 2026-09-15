@@ -17,11 +17,6 @@
 为滚动容器添加滚动条
 
 ```vue
-<!--
-  Copyright (c) 2021-Present XiHanFun and contributors.
-  Licensed under the MIT License. See LICENSE in the project root for license information.
--->
-
 <script setup lang="ts">
 import { XhScrollbarRoot, XhScrollbarThumb, XhScrollbarTrack } from "@xihan-ui/vue";
 import { ref } from "vue";
@@ -93,11 +88,6 @@ const items = ["项目概览", "组件规范", "设计令牌", "无障碍", "交
 让滑块可聚焦
 
 ```vue
-<!--
-  Copyright (c) 2021-Present XiHanFun and contributors.
-  Licensed under the MIT License. See LICENSE in the project root for license information.
--->
-
 <script setup lang="ts">
 import { XhScrollbarRoot, XhScrollbarThumb, XhScrollbarTrack } from "@xihan-ui/vue";
 import { ref } from "vue";
@@ -204,11 +194,6 @@ const cells = Array.from({ length: 24 }, (_, i) => `第 ${i + 1} 列`);
 同时显示横向和纵向滚动条
 
 ```vue
-<!--
-  Copyright (c) 2021-Present XiHanFun and contributors.
-  Licensed under the MIT License. See LICENSE in the project root for license information.
--->
-
 <script setup lang="ts">
 import { XhScrollbarCorner, XhScrollbarRoot, XhScrollbarThumb, XhScrollbarTrack } from "@xihan-ui/vue";
 import { ref } from "vue";
@@ -320,11 +305,6 @@ const rows = Array.from({ length: 30 }, (_, r) => Array.from({ length: 12 }, (_,
 设置滚动条的显示时机
 
 ```vue
-<!--
-  Copyright (c) 2021-Present XiHanFun and contributors.
-  Licensed under the MIT License. See LICENSE in the project root for license information.
--->
-
 <script setup lang="ts">
 import type { ScrollbarType } from "@xihan-ui/headless";
 import { XhScrollbarRoot, XhScrollbarThumb, XhScrollbarTrack } from "@xihan-ui/vue";

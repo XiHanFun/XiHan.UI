@@ -17,11 +17,6 @@
 切换点赞状态
 
 ```vue
-<!--
-  Copyright (c) 2021-Present XiHanFun and contributors.
-  Licensed under the MIT License. See LICENSE in the project root for license information.
--->
-
 <script setup lang="ts">
 import { HeartIcon } from "@xihan-ui/icons";
 import { XhIcon, XhToggle } from "@xihan-ui/vue";
@@ -59,11 +54,6 @@ import { XhIcon, XhToggle } from "@xihan-ui/vue";
 默认与幽灵外观
 
 ```vue
-<!--
-  Copyright (c) 2021-Present XiHanFun and contributors.
-  Licensed under the MIT License. See LICENSE in the project root for license information.
--->
-
 <script setup lang="ts">
 import { HeartIcon } from "@xihan-ui/icons";
 import { XhIcon, XhToggle } from "@xihan-ui/vue";
@@ -95,11 +85,6 @@ import { XhIcon, XhToggle } from "@xihan-ui/vue";
 为每个图标按钮提供可访问名称
 
 ```vue
-<!--
-  Copyright (c) 2021-Present XiHanFun and contributors.
-  Licensed under the MIT License. See LICENSE in the project root for license information.
--->
-
 <script setup lang="ts">
 import { BookmarkIcon, HeartIcon } from "@xihan-ui/icons";
 import { XhIcon, XhToggle } from "@xihan-ui/vue";
@@ -137,11 +122,6 @@ import { XhIcon, XhToggle } from "@xihan-ui/vue";
 提供三种尺寸
 
 ```vue
-<!--
-  Copyright (c) 2021-Present XiHanFun and contributors.
-  Licensed under the MIT License. See LICENSE in the project root for license information.
--->
-
 <script setup lang="ts">
 import { HeartIcon } from "@xihan-ui/icons";
 import { XhIcon, XhToggle } from "@xihan-ui/vue";
@@ -183,11 +163,6 @@ import { XhIcon, XhToggle } from "@xihan-ui/vue";
 保留禁用前的状态
 
 ```vue
-<!--
-  Copyright (c) 2021-Present XiHanFun and contributors.
-  Licensed under the MIT License. See LICENSE in the project root for license information.
--->
-
 <script setup lang="ts">
 import { HeartIcon } from "@xihan-ui/icons";
 import { XhIcon, XhToggle } from "@xihan-ui/vue";
@@ -214,11 +189,6 @@ import { XhIcon, XhToggle } from "@xihan-ui/vue";
 由外部状态控制按下值
 
 ```vue
-<!--
-  Copyright (c) 2021-Present XiHanFun and contributors.
-  Licensed under the MIT License. See LICENSE in the project root for license information.
--->
-
 <script setup lang="ts">
 import { HeartIcon } from "@xihan-ui/icons";
 import { XhIcon, XhToggle } from "@xihan-ui/vue";
@@ -268,6 +238,11 @@ const pressed = ref(false);
 - 支持受控和非受控状态。
 - 支持变体、颜色、尺寸、仅图标和全宽外观。
 - 禁用后保留当前按下状态。
+
+### 组合
+
+- 多枚互斥或并列时放进[切换按钮组](./toggle-group)；与普通[按钮](./button)混排在[工具栏](./toolbar)里。
+- 仅图标的切换按钮配[文字提示](./tooltip)说明作用。
 
 ### 最佳实践
 

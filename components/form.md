@@ -17,11 +17,6 @@
 提交并校验表单
 
 ```vue
-<!--
-  Copyright (c) 2021-Present XiHanFun and contributors.
-  Licensed under the MIT License. See LICENSE in the project root for license information.
--->
-
 <script setup lang="ts">
 import {
   XhFieldControl,
@@ -193,11 +188,6 @@ function validate(values: Record<string, unknown>) {
 在失焦或输入时校验
 
 ```vue
-<!--
-  Copyright (c) 2021-Present XiHanFun and contributors.
-  Licensed under the MIT License. See LICENSE in the project root for license information.
--->
-
 <script setup lang="ts">
 import {
   XhFieldControl,
@@ -333,11 +323,6 @@ function validate(values: Record<string, unknown>) {
 禁用与只读表单
 
 ```vue
-<!--
-  Copyright (c) 2021-Present XiHanFun and contributors.
-  Licensed under the MIT License. See LICENSE in the project root for license information.
--->
-
 <script setup lang="ts">
 import {
   XhFieldControl,
@@ -472,11 +457,6 @@ import {
 提交前检查用户名
 
 ```vue
-<!--
-  Copyright (c) 2021-Present XiHanFun and contributors.
-  Licensed under the MIT License. See LICENSE in the project root for license information.
--->
-
 <script setup lang="ts">
 import type { FormRules } from "@xihan-ui/headless";
 import {
@@ -613,11 +593,6 @@ const rules: FormRules = {
 配置字段校验规则
 
 ```vue
-<!--
-  Copyright (c) 2021-Present XiHanFun and contributors.
-  Licensed under the MIT License. See LICENSE in the project root for license information.
--->
-
 <script setup lang="ts">
 import type { FormRules, FormValidateMessages } from "@xihan-ui/headless";
 import {
@@ -792,11 +767,6 @@ const fields = [
 设置纵向、横向、行内或网格布局
 
 ```vue
-<!--
-  Copyright (c) 2021-Present XiHanFun and contributors.
-  Licensed under the MIT License. See LICENSE in the project root for license information.
--->
-
 <script setup lang="ts">
 import type { FormLayout } from "@xihan-ui/headless";
 import {
@@ -986,6 +956,12 @@ const rules = {
 - 错误汇总可跳转到对应字段。
 - 支持纵向、横向、行内和网格布局。
 - 嵌套字段与字段数组使用显式 `FormPath`。
+
+### 组合
+
+- 字段用[表单字段](./field)包住控件，成组的用[字段集](./fieldset)分区，数量可变的用[字段数组](./field-array)。
+- 提交与重置用[按钮](./button)；错误汇总放在表单顶部，可跳转到对应字段。
+- 分步填写时外面套一层[步骤条](./steps)。
 
 ### 最佳实践
 

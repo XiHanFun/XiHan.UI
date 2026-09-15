@@ -1,0 +1,600 @@
+来源：https://ui.docs.xihanfun.com/components/color-swatch-picker
+
+# ColorSwatchPicker 颜色色块选择器 `alpha`
+
+从一组固定颜色里挑一个：主题色、标签色、高亮色。
+每格是一颗 `role=radio` 的色块，整组是一个 `radiogroup`——它就是一个把选项画成颜色的[单选组](./radio-group)。
+只想自由调出任意颜色时用[颜色选择器](./color-picker)；它内嵌的预设色板用的就是这一件。
+
+<div class="xh-resource-links">
+  <a href="https://github.com/XiHanFun/XiHan.UI/tree/dev/ui/packages/engine/headless/src/color-swatch-picker" target="_blank" rel="noreferrer">Headless</a>
+  <a href="https://github.com/XiHanFun/XiHan.UI/blob/dev/ui/packages/design/styles/css/color-swatch-picker.css" target="_blank" rel="noreferrer">Styles</a>
+  <a href="https://github.com/XiHanFun/XiHan.UI/tree/dev/ui/packages/adapters/vue/src/components/color-swatch-picker" target="_blank" rel="noreferrer">Vue</a>
+  <a href="https://github.com/XiHanFun/XiHan.UI/tree/dev/ui/packages/adapters/react/src/components/color-swatch-picker" target="_blank" rel="noreferrer">React</a>
+  <a href="https://github.com/XiHanFun/XiHan.UI/blob/dev/ui/packages/adapters/web-components/src/elements/color-swatch-picker.ts" target="_blank" rel="noreferrer">Web Components</a>
+</div>
+
+## 用法
+
+交一组颜色数据就自动铺开；每格是一颗 radio，方向键在格子间移动并选中
+
+```vue
+<script setup lang="ts">
+import { XhColorSwatchPickerRoot } from "@xihan-ui/vue";
+import { ref } from "vue";
+
+const value = ref<string | null>("#3b82f6");
+const swatches = [
+  { value: "#e11d48", label: "玫红" },
+  { value: "#f59e0b", label: "琥珀" },
+  { value: "#10b981", label: "翠绿" },
+  { value: "#3b82f6", label: "天蓝" },
+  { value: "#8b5cf6", label: "紫罗兰" },
+  { value: "#64748b", label: "石板灰" },
+];
+</script>
+
+<template>
+  <div style="display: flex; flex-direction: column; gap: 8px">
+    <XhColorSwatchPickerRoot v-model:value="value" :swatches="swatches" label="主题色" name="theme" />
+    <span style="font-size: 13px">当前：<code>{{ value ?? "（未选）" }}</code></span>
+  </div>
+</template>
+```
+
+```html
+<!-- 自定义元素不替作者建节点：格子由作者手写，value 属性声明颜色串；名字交给 swatches 数据 -->
+<div style="display: flex; flex-direction: column; gap: 8px">
+  <xh-color-swatch-picker id="swatch-picker-basic" default-value="#3b82f6" name="theme">
+    <div data-xh-part="root">
+      <span data-xh-part="label">主题色</span>
+      <div data-xh-part="item" value="#e11d48">
+        <input data-xh-part="hidden-input" />
+        <span data-xh-part="swatch"></span>
+        <span data-xh-part="indicator"></span>
+      </div>
+      <div data-xh-part="item" value="#f59e0b">
+        <input data-xh-part="hidden-input" />
+        <span data-xh-part="swatch"></span>
+        <span data-xh-part="indicator"></span>
+      </div>
+      <div data-xh-part="item" value="#10b981">
+        <input data-xh-part="hidden-input" />
+        <span data-xh-part="swatch"></span>
+        <span data-xh-part="indicator"></span>
+      </div>
+      <div data-xh-part="item" value="#3b82f6">
+        <input data-xh-part="hidden-input" />
+        <span data-xh-part="swatch"></span>
+        <span data-xh-part="indicator"></span>
+      </div>
+      <div data-xh-part="item" value="#8b5cf6">
+        <input data-xh-part="hidden-input" />
+        <span data-xh-part="swatch"></span>
+        <span data-xh-part="indicator"></span>
+      </div>
+      <div data-xh-part="item" value="#64748b">
+        <input data-xh-part="hidden-input" />
+        <span data-xh-part="swatch"></span>
+        <span data-xh-part="indicator"></span>
+      </div>
+    </div>
+  </xh-color-swatch-picker>
+  <span style="font-size: 13px">当前：<code id="swatch-picker-basic-value">#3b82f6</code></span>
+</div>
+
+<script type="module">
+  // 读屏念的名字从数据里查，数据只走 property
+  const picker = document.getElementById("swatch-picker-basic");
+  picker.swatches = [
+    { value: "#e11d48", label: "玫红" },
+    { value: "#f59e0b", label: "琥珀" },
+    { value: "#10b981", label: "翠绿" },
+    { value: "#3b82f6", label: "天蓝" },
+    { value: "#8b5cf6", label: "紫罗兰" },
+    { value: "#64748b", label: "石板灰" },
+  ];
+  const readout = document.getElementById("swatch-picker-basic-value");
+  picker.addEventListener("value-change", (event) => {
+    readout.textContent = event.detail.value ?? "（未选）";
+  });
+</script>
+```
+
+## 组件结构
+
+加粗的是必需部件。
+
+`data-scope="color-swatch-picker"`：**`root`** · `label` · **`item`** · **`swatch`** · `indicator` · `hidden-input`
+
+## 示例
+
+### 手写格子
+
+不交数据也行：每格自己报 value，名字与禁用写在格子上；半透明颜色铺在棋盘格上
+
+```vue
+<script setup lang="ts">
+import { XhColorSwatchPickerItem, XhColorSwatchPickerLabel, XhColorSwatchPickerRoot } from "@xihan-ui/vue";
+import { ref } from "vue";
+
+const value = ref<string | null>("rgb(225, 29, 72)");
+</script>
+
+<template>
+  <div style="display: flex; flex-direction: column; gap: 8px">
+    <XhColorSwatchPickerRoot v-model:value="value">
+      <XhColorSwatchPickerLabel>高亮色</XhColorSwatchPickerLabel>
+      <XhColorSwatchPickerItem value="#e11d48" label="玫红" />
+      <XhColorSwatchPickerItem value="#e11d4880" label="半透明玫红" />
+      <XhColorSwatchPickerItem value="#f59e0b" label="琥珀" disabled />
+      <XhColorSwatchPickerItem value="hsl(217 91% 60%)" label="天蓝" />
+    </XhColorSwatchPickerRoot>
+    <span style="font-size: 13px">当前：<code>{{ value ?? "（未选）" }}</code></span>
+  </div>
+</template>
+```
+
+```html
+<!-- 受控值是 rgb 写法，与 #e11d48 那一格按颜色对上；禁用用 aria-disabled 声明 -->
+<div style="display: flex; flex-direction: column; gap: 8px">
+  <xh-color-swatch-picker id="swatch-picker-items" value="rgb(225, 29, 72)">
+    <div data-xh-part="root">
+      <span data-xh-part="label">高亮色</span>
+      <div data-xh-part="item" value="#e11d48" label="玫红">
+        <input data-xh-part="hidden-input" />
+        <span data-xh-part="swatch"></span>
+        <span data-xh-part="indicator"></span>
+      </div>
+      <div data-xh-part="item" value="#e11d4880" label="半透明玫红">
+        <input data-xh-part="hidden-input" />
+        <span data-xh-part="swatch"></span>
+        <span data-xh-part="indicator"></span>
+      </div>
+      <div data-xh-part="item" value="#f59e0b" label="琥珀" aria-disabled="true">
+        <input data-xh-part="hidden-input" />
+        <span data-xh-part="swatch"></span>
+        <span data-xh-part="indicator"></span>
+      </div>
+      <div data-xh-part="item" value="hsl(217 91% 60%)" label="天蓝">
+        <input data-xh-part="hidden-input" />
+        <span data-xh-part="swatch"></span>
+        <span data-xh-part="indicator"></span>
+      </div>
+    </div>
+  </xh-color-swatch-picker>
+  <span style="font-size: 13px">当前：<code id="swatch-picker-items-value">rgb(225, 29, 72)</code></span>
+</div>
+
+<script type="module">
+  // 受控：选中值由宿主写回元素
+  const picker = document.getElementById("swatch-picker-items");
+  const readout = document.getElementById("swatch-picker-items-value");
+  picker.addEventListener("value-change", (event) => {
+    picker.value = event.detail.value;
+    readout.textContent = event.detail.value ?? "（未选）";
+  });
+</script>
+```
+
+### 状态
+
+禁用整组置灰、只读只挡落值不挡焦点、无效把描边转成警示色
+
+```vue
+<script setup lang="ts">
+import { XhColorSwatchPickerRoot } from "@xihan-ui/vue";
+
+const swatches = [
+  { value: "#e11d48", label: "玫红" },
+  { value: "#f59e0b", label: "琥珀" },
+  { value: "#10b981", label: "翠绿" },
+  { value: "#3b82f6", label: "天蓝" },
+];
+</script>
+
+<template>
+  <div style="display: flex; flex-wrap: wrap; gap: 24px">
+    <XhColorSwatchPickerRoot :swatches="swatches" default-value="#10b981" label="禁用" disabled />
+    <XhColorSwatchPickerRoot :swatches="swatches" default-value="#10b981" label="只读" read-only />
+    <XhColorSwatchPickerRoot :swatches="swatches" label="必填未选" invalid required />
+  </div>
+</template>
+```
+
+```html
+<div style="display: flex; flex-wrap: wrap; gap: 24px">
+  <xh-color-swatch-picker default-value="#10b981" disabled>
+    <div data-xh-part="root">
+      <span data-xh-part="label">禁用</span>
+      <div data-xh-part="item" value="#e11d48" label="玫红">
+        <input data-xh-part="hidden-input" />
+        <span data-xh-part="swatch"></span>
+        <span data-xh-part="indicator"></span>
+      </div>
+      <div data-xh-part="item" value="#f59e0b" label="琥珀">
+        <input data-xh-part="hidden-input" />
+        <span data-xh-part="swatch"></span>
+        <span data-xh-part="indicator"></span>
+      </div>
+      <div data-xh-part="item" value="#10b981" label="翠绿">
+        <input data-xh-part="hidden-input" />
+        <span data-xh-part="swatch"></span>
+        <span data-xh-part="indicator"></span>
+      </div>
+      <div data-xh-part="item" value="#3b82f6" label="天蓝">
+        <input data-xh-part="hidden-input" />
+        <span data-xh-part="swatch"></span>
+        <span data-xh-part="indicator"></span>
+      </div>
+    </div>
+  </xh-color-swatch-picker>
+
+  <xh-color-swatch-picker default-value="#10b981" read-only>
+    <div data-xh-part="root">
+      <span data-xh-part="label">只读</span>
+      <div data-xh-part="item" value="#e11d48" label="玫红">
+        <input data-xh-part="hidden-input" />
+        <span data-xh-part="swatch"></span>
+        <span data-xh-part="indicator"></span>
+      </div>
+      <div data-xh-part="item" value="#f59e0b" label="琥珀">
+        <input data-xh-part="hidden-input" />
+        <span data-xh-part="swatch"></span>
+        <span data-xh-part="indicator"></span>
+      </div>
+      <div data-xh-part="item" value="#10b981" label="翠绿">
+        <input data-xh-part="hidden-input" />
+        <span data-xh-part="swatch"></span>
+        <span data-xh-part="indicator"></span>
+      </div>
+      <div data-xh-part="item" value="#3b82f6" label="天蓝">
+        <input data-xh-part="hidden-input" />
+        <span data-xh-part="swatch"></span>
+        <span data-xh-part="indicator"></span>
+      </div>
+    </div>
+  </xh-color-swatch-picker>
+
+  <xh-color-swatch-picker invalid required>
+    <div data-xh-part="root">
+      <span data-xh-part="label">必填未选</span>
+      <div data-xh-part="item" value="#e11d48" label="玫红">
+        <input data-xh-part="hidden-input" />
+        <span data-xh-part="swatch"></span>
+        <span data-xh-part="indicator"></span>
+      </div>
+      <div data-xh-part="item" value="#f59e0b" label="琥珀">
+        <input data-xh-part="hidden-input" />
+        <span data-xh-part="swatch"></span>
+        <span data-xh-part="indicator"></span>
+      </div>
+      <div data-xh-part="item" value="#10b981" label="翠绿">
+        <input data-xh-part="hidden-input" />
+        <span data-xh-part="swatch"></span>
+        <span data-xh-part="indicator"></span>
+      </div>
+      <div data-xh-part="item" value="#3b82f6" label="天蓝">
+        <input data-xh-part="hidden-input" />
+        <span data-xh-part="swatch"></span>
+        <span data-xh-part="indicator"></span>
+      </div>
+    </div>
+  </xh-color-swatch-picker>
+</div>
+```
+
+### 尺寸与语气
+
+格子边长跟着控件行高走三档；tone 决定选中环与选中标记用哪族颜色
+
+```vue
+<script setup lang="ts">
+import { XhColorSwatchPickerRoot } from "@xihan-ui/vue";
+
+const sizes = ["sm", "md", "lg"] as const;
+const tones = ["brand", "neutral", "success", "warning", "danger", "info"] as const;
+const swatches = [
+  { value: "#e11d48", label: "玫红" },
+  { value: "#f59e0b", label: "琥珀" },
+  { value: "#10b981", label: "翠绿" },
+  { value: "#3b82f6", label: "天蓝" },
+];
+</script>
+
+<template>
+  <div style="display: flex; flex-direction: column; gap: 16px">
+    <div style="display: flex; flex-wrap: wrap; gap: 24px; align-items: flex-start">
+      <XhColorSwatchPickerRoot
+        v-for="s in sizes"
+        :key="s"
+        :swatches="swatches"
+        :label="s"
+        :size="s"
+        default-value="#3b82f6"
+      />
+    </div>
+    <div style="display: flex; flex-wrap: wrap; gap: 24px">
+      <XhColorSwatchPickerRoot
+        v-for="t in tones"
+        :key="t"
+        :swatches="swatches"
+        :label="t"
+        :tone="t"
+        size="sm"
+        default-value="#f59e0b"
+      />
+    </div>
+  </div>
+</template>
+```
+
+```html
+<!-- 九组结构相同，只有 size / tone 不同：由脚本铺出来，免得同一段标记抄九遍 -->
+<div style="display: flex; flex-direction: column; gap: 16px">
+  <div id="swatch-picker-sizes" style="display: flex; flex-wrap: wrap; gap: 24px; align-items: flex-start"></div>
+  <div id="swatch-picker-tones" style="display: flex; flex-wrap: wrap; gap: 24px"></div>
+</div>
+
+<script type="module">
+  const swatches = [
+    { value: "#e11d48", label: "玫红" },
+    { value: "#f59e0b", label: "琥珀" },
+    { value: "#10b981", label: "翠绿" },
+    { value: "#3b82f6", label: "天蓝" },
+  ];
+  function item(value) {
+    const el = document.createElement("div");
+    el.setAttribute("data-xh-part", "item");
+    el.setAttribute("value", value);
+    for (const [tag, part] of [["input", "hidden-input"], ["span", "swatch"], ["span", "indicator"]]) {
+      const node = document.createElement(tag);
+      node.setAttribute("data-xh-part", part);
+      el.append(node);
+    }
+    return el;
+  }
+  function build(labelText, attrs, initial) {
+    const picker = document.createElement("xh-color-swatch-picker");
+    for (const [name, value] of Object.entries(attrs))
+      picker.setAttribute(name, value);
+    picker.setAttribute("default-value", initial);
+    const root = document.createElement("div");
+    root.setAttribute("data-xh-part", "root");
+    const label = document.createElement("span");
+    label.setAttribute("data-xh-part", "label");
+    label.textContent = labelText;
+    root.append(label, ...swatches.map(s => item(s.value)));
+    picker.append(root);
+    return picker;
+  }
+  // 读屏念的名字从数据里查，数据只走 property；升级后再交，免得落在升级前的实例上
+  function mount(host, picker) {
+    host.append(picker);
+    picker.swatches = swatches;
+  }
+  const sizes = document.getElementById("swatch-picker-sizes");
+  for (const size of ["sm", "md", "lg"])
+    mount(sizes, build(size, { size }, "#3b82f6"));
+  const tones = document.getElementById("swatch-picker-tones");
+  for (const tone of ["brand", "neutral", "success", "warning", "danger", "info"])
+    mount(tones, build(tone, { tone, size: "sm" }, "#f59e0b"));
+</script>
+```
+
+## 设计指引
+
+### 何时使用
+
+- 可选的颜色是有限的一组，且每个颜色都有它的含义（品牌色、状态色、日历分类色）。
+- 想让人一眼看到全部选项再挑，不用打开浮层。
+- 表单里要提交一个颜色串，且不需要自由调色。
+
+### 何时不用
+
+- 要自由调出任意颜色：用[颜色选择器](./color-picker)，它把这一组色板和取色面装在一起。
+- 只是展示一个颜色、不接选择：用[颜色色块](./color-swatch)。
+- 让人手输颜色串：用[颜色字段](./color-field)。
+- 选项不是颜色而是文字：那是[单选组](./radio-group)。
+
+### 特性
+
+- 选中按颜色比不按串比：`rgb(255, 0, 0)` 与 `#ff0000` 是同一格，受控 `value` 用哪种写法都能对上格子。
+- 与单选组同一套 roving tabindex：整组只占一个 Tab 位，四个方向键在格子间移焦点并选中，走到尽头回绕，禁用格跳过；Space 选中当前格。
+- 焦点从组外进来时落在已选中的那一格，一个都没选才落第一格。
+- `swatches` 给数据：可及名字与禁用从数据里查，格子部件只需报 `value`；不写默认内容时按数据自动铺开。
+- 每格的色块面由 Swatch 家族画：解析不出的串只剩棋盘格，半透明颜色铺在棋盘格上。
+- `readOnly` 时方向键照常移焦点但不落值；`disabled` 整组置灰，格子仍可聚焦。
+- 尺寸 sm / md / lg 三档：格子边长跟着控件行高走，与旁边的按钮、字段齐高。
+- 选中环与选中标记随 `data-tone` 走；标记自带一圈画布色描边，落在任何颜色上都看得出来。
+- 高对比模式下色块保住原色，选中环与标记换系统高亮色；打印时标记改画成实边。
+
+### 组合
+
+- 内嵌在[颜色选择器](./color-picker)的浮层里当预设色板。
+- 与[颜色字段](./color-field)并排：色板挑常用色，字段手输精确值。
+- 放进[表单字段](./field)里承接标题、说明与错误信息，`disabled` / `readOnly` / `invalid` / `required` 随字段下发。
+
+### 最佳实践
+
+- 每格给名字（`swatches[].label` 或部件的 `label`），读屏用户听到的应是「品牌红」而不是 `#e11d48`。
+- 色板的颜色数量控制在一眼能扫完的范围，再多就该换[颜色选择器](./color-picker)。
+- 选中值有初始值时用 `defaultValue`，让焦点进组时直接落在它上面。
+
+### 反模式
+
+- 拿它做多选：一格只能选中一个，要多选颜色请用[复选框组](./checkbox-group)配[颜色色块](./color-swatch)。
+- 把颜色写成 `red` 这类关键字：它们不在支持的写法里，那一格只会画成棋盘格。
+- 同一组里放两格同一个颜色的不同写法：它们会同时算作选中。
+
+## API 参考
+
+### 产物
+
+| 层 | 值 |
+| --- | --- |
+| 自定义元素 | `<xh-color-swatch-picker>` |
+| Vue 组件 | `XhColorSwatchPickerItem` `XhColorSwatchPickerLabel` `XhColorSwatchPickerRoot` |
+| 组合式函数 | `useColorSwatchPicker` |
+| 状态机 | `colorSwatchPickerMachine` |
+| 皮肤 | `@xihan-ui/styles/color-swatch-picker.css` |
+
+### Props
+
+| 属性 | 类型 | 必填 | 说明 |
+| --- | --- | --- | --- |
+| `swatches` | `ColorSwatchPickerNode[]` |  | 格子数据，可及名字与禁用的事实源。给了它，格子部件只需报 value。 缺省即回到「名字与禁用都写在格子部件上」的老路。 |
+| `value` | `string \| null` |  | 选中的颜色串。给定即受控：写只发 onValueChange 不落内部值。写法不同的同一个颜色也算选中。 |
+| `defaultValue` | `string \| null` |  |  |
+| `disabled` | `boolean` |  |  |
+| `readOnly` | `boolean` |  | 只读：选不动，但仍可聚焦、方向键照常移焦点，对比度不降。 |
+| `invalid` | `boolean` |  | 校验失败：只改呈现，不挡交互。 |
+| `required` | `boolean` |  | 必填：随表单校验一起用，只发无障碍属性，不自行拦提交。 |
+| `dir` | `Direction` |  | 文字方向，缺省 'ltr'；只改写左右两键的语义。 |
+| `name` | `string` |  | 表单字段名。 |
+| `size` | `Size` |  | 尺寸：sm / md / lg，换的是格子的边长与间距。 |
+| `tone` | `Tone` |  | 语气：决定选中环与选中标记用哪族颜色。 |
+| `translations` | `Partial<ColorSwatchPickerTranslations>` |  |  |
+| `onValueChange` | `(details: ColorSwatchPickerValueChangeDetails) => void` |  | value 变化回调。 |
+
+### 事件
+
+自定义元素将载荷放在 `detail`；Vue 使用同名 emit。
+
+| 事件 | 载荷 | 说明 |
+| --- | --- | --- |
+| `value-change` | `ColorSwatchPickerValueChangeDetails` | 选中值变化；detail 为 `{ value: string \| null }` |
+
+### 插槽
+
+仅列出带载荷的插槽。
+
+| Vue 组件 | 插槽 | 载荷 | 说明 |
+| --- | --- | --- | --- |
+| `XhColorSwatchPickerRoot` | `default` | `ColorSwatchPickerRootSlotProps` |  |
+| `XhColorSwatchPickerRoot` | `label` | — |  |
+
+### 状态
+
+以下名称仅用于内部状态机。
+
+**状态**：`idle`
+
+**事件**：`VALUE.SET` · `ITEM.SELECT` · `ITEM.FOCUS` · `GROUP.BLUR` · `FORM.RESET`
+
+### connect API
+
+`getXxxProps()` 返回对应部件的宿主属性。
+
+| 成员 | 类型 | 说明 |
+| --- | --- | --- |
+| `value` | `string \| null` |  |
+| `swatches` | `readonly ColorSwatchPickerNodeMeta[]` | swatches 推出的格子元信息，按数据顺序排列；没给 swatches 即空数组。 |
+| `focusedValue` | `string \| null` | 焦点在组外时为 null。 |
+| `isSelected` | `(value: string) => boolean` | 某个颜色串是不是当前选中的那一格：写法不同（`#f00` 与 `rgb(255,0,0)`）也算同一个。 |
+| `setValue` | `(next: string \| null) => void` |  |
+| `getRootProps` | `() => T['element']` |  |
+| `getLabelProps` | `() => T['element']` |  |
+| `getItemProps` | `(props: ColorSwatchPickerItemProps) => T['element']` | 一格：role=radio，颜色串是它的身份。 |
+| `getSwatchProps` | `(props: ColorSwatchPickerItemProps) => T['element']` | 格里的色块面：走 Swatch 家族画颜色，纯装饰。 |
+| `getIndicatorProps` | `(props: ColorSwatchPickerItemProps) => T['element']` | 选中标记（对号），纯装饰。 |
+| `getHiddenInputProps` | `(props: ColorSwatchPickerItemProps) => T['input']` | 格子对应的隐藏原生 radio 输入，用于表单提交。 |
+
+## 无障碍
+
+### 键盘
+
+规格出处：[W3C APG](https://www.w3.org/WAI/ARIA/apg/patterns/radio/#keyboardinteraction)
+
+| 按键 | 生效条件 | 行为 |
+| --- | --- | --- |
+| `Tab` / `Shift+Tab` | focus outside the group | 整组只占一个 Tab 位：焦点进入锚点格子（即选中的那格）；落到容器上时由容器转投锚点格子，锚点缺席或被禁用才落首个可停留格 |
+| `ArrowDown` / `ArrowRight` | focus in group, group not disabled | 焦点移到下一个可停留格并选中，末格回绕到首格；dir=rtl 时改由 ArrowLeft 承担 |
+| `ArrowUp` / `ArrowLeft` | focus in group, group not disabled | 焦点移到上一个可停留格并选中，首格回绕到末格；dir=rtl 时改由 ArrowRight 承担 |
+| `Space` | focus on item, item not disabled | 选中当前格 |
+
+### ARIA
+
+以下属性由 `connect` 生成。
+
+| 部件 | 属性 | 值 |
+| --- | --- | --- |
+| `root` | `aria-invalid` | 'true' \| 'false' |
+| `root` | `aria-label` | label.group |
+| `root` | `aria-labelledby` | `label` 部件的 id |
+| `root` | `aria-readonly` | 'true' \| 'false' |
+| `root` | `aria-required` | 'true' \| 'false' |
+| `root` | `role` | 'radiogroup' |
+| `item` | `aria-checked` | 'true' \| 'false' |
+| `item` | `aria-disabled` | 'true' \| 'false' |
+| `item` | `aria-label` | itemLabel(item) |
+| `item` | `role` | 'radio' |
+| `swatch` | `aria-hidden` | 'true' |
+| `indicator` | `aria-hidden` | 'true' |
+| `hidden-input` | `aria-hidden` | 'true' |
+
+- 根是 `role=radiogroup`，名字取 label 部件，没放时读 `translations.group`。
+- 每格是 `role=radio` 并显式输出 `aria-checked`；名字按 `label` → `swatches` 里的 `label` → `translations.swatch(value)` 依次取，光看颜色串听不出含义时务必给名字。
+- 禁用格用 `aria-disabled` 表达，仍可聚焦、仍是方向键的起点。
+- 每格内一份 `inert` 的隐藏原生 radio 承接表单提交，不进焦点序列与可访问树。
+
+## 样式参考
+
+### 皮肤
+
+`@xihan-ui/styles/color-swatch-picker.css` 使用 `[data-scope="color-swatch-picker"][data-part="root"]` 部件选择器，位于 `xihan.components` 层。覆盖样式使用 `xihan.overrides`。
+
+`forced-colors: active` 下另有一套规则：颜色交给系统，边框与状态标记改用系统色关键字。
+
+### 数据属性
+
+由 `connect` 生成；条件不成立时不输出无值属性。
+
+| 部件 | 属性 | 值 |
+| --- | --- | --- |
+| `root` | `data-disabled` | ''（条件成立时才出现） |
+| `root` | `data-invalid` | ''（条件成立时才出现） |
+| `root` | `data-readonly` | ''（条件成立时才出现） |
+| `root` | `data-required` | ''（条件成立时才出现） |
+| `root` | `data-size` | props.size |
+| `root` | `data-tone` | props.tone |
+| `swatch` | `data-xh-swatch` | '' |
+| `swatch` | `data-xh-swatch-size` | props.size |
+
+<!-- xh-component-tokens:start -->
+### CSS 变量
+
+本组件公开覆盖槽由独立皮肤的实际消费位生成；缺省来源、作用部件和状态均与 CSS 同源。
+
+| 变量 | 部件 | CSS 属性 | 状态 | 缺省来源 | 说明 |
+| --- | --- | --- | --- | --- | --- |
+| `--xh-color-swatch-picker-gap` | `root` | `gap` | `default` | `--xh-_color-swatch-picker-gap` | color-swatch-picker 的 root 部件 gap 覆盖槽。 |
+| `--xh-color-swatch-picker-icon-size` | `root` | `--xh-icon-size` | `default` | `--xh-_color-swatch-picker-mark` | color-swatch-picker 的 root 部件 --xh-icon-size 覆盖槽。 |
+| `--xh-color-swatch-picker-indicator-bg` | `indicator` | `background` | `default` | `--xh-_color-swatch-picker-accent` | color-swatch-picker 的 indicator 部件 background 覆盖槽。 |
+| `--xh-color-swatch-picker-indicator-border` | `indicator` | `border` | `default` | `--xh-bg-canvas` | color-swatch-picker 的 indicator 部件 border 覆盖槽。 |
+| `--xh-color-swatch-picker-indicator-fg` | `indicator` | `background-color`<br>`color` | `default`<br>`empty` | `--xh-_tone-on` | color-swatch-picker 的 indicator 部件 background-color、color 覆盖槽。 |
+| `--xh-color-swatch-picker-indicator-size` | `indicator` | `block-size`<br>`inline-size` | `default` | `--xh-_color-swatch-picker-indicator` | color-swatch-picker 的 indicator 部件 block-size、inline-size 覆盖槽。 |
+| `--xh-color-swatch-picker-item-radius` | `item`<br>`swatch` | `--xh-swatch-radius`<br>`border-radius` | `default` | `--xh-shape-control` | color-swatch-picker 的 item、swatch 部件 --xh-swatch-radius、border-radius 覆盖槽。 |
+| `--xh-color-swatch-picker-item-size` | `item` | `block-size`<br>`inline-size` | `default` | `--xh-_color-swatch-picker-cell` | color-swatch-picker 的 item 部件 block-size、inline-size 覆盖槽。 |
+| `--xh-color-swatch-picker-label-fg` | `label` | `color` | `default` | `--xh-fg-muted` | color-swatch-picker 的 label 部件 color 覆盖槽。 |
+| `--xh-color-swatch-picker-label-font-size` | `label` | `font-size` | `default` | `--xh-_color-swatch-picker-font-size` | color-swatch-picker 的 label 部件 font-size 覆盖槽。 |
+| `--xh-color-swatch-picker-label-font-weight` | `label` | `font-weight` | `default` | `--xh-text-label-weight` | color-swatch-picker 的 label 部件 font-weight 覆盖槽。 |
+| `--xh-color-swatch-picker-ring` | `item` | `outline` | `state=checked` | `--xh-_color-swatch-picker-accent` | color-swatch-picker 的 item 部件 outline 覆盖槽。 |
+| `--xh-color-swatch-picker-swatch-border` | `swatch` | `--xh-swatch-border` | `default` | `--xh-border-default` | color-swatch-picker 的 swatch 部件 --xh-swatch-border 覆盖槽。 |
+| `--xh-color-swatch-picker-swatch-border-hover` | `item`<br>`swatch` | `--xh-swatch-border` | `disabled`<br>`hover`<br>`not([data-disabled], [data-readonly])`<br>`readonly` | `--xh-border-strong` | color-swatch-picker 的 item、swatch 部件 --xh-swatch-border 覆盖槽。 |
+| `--xh-color-swatch-picker-swatch-border-invalid` | `swatch` | `--xh-swatch-border` | `invalid` | `--xh-border-invalid` | color-swatch-picker 的 swatch 部件 --xh-swatch-border 覆盖槽。 |
+<!-- xh-component-tokens:end -->
+
+### 动效
+
+`border-color` · `opacity` · `scale` 走 `transition` 过渡。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
+
+系统开启减弱动效时由令牌层统一收敛，皮肤不另作判断。
+
+### 响应式
+
+- 格子排成可换行的网格，一行摆不下时落到下一行；粗指针下命中区就是整格。
+
+### RTL
+
+- `dir="rtl"` 只对调左右方向键的语义，上下键不受影响；格子的排列顺序由文档方向决定。

@@ -17,11 +17,6 @@
 下载文本文件
 
 ```vue
-<!--
-  Copyright (c) 2021-Present XiHanFun and contributors.
-  Licensed under the MIT License. See LICENSE in the project root for license information.
--->
-
 <script setup lang="ts">
 import { DownloadIcon } from "@xihan-ui/icons";
 import { XhDownloadTrigger, XhIcon } from "@xihan-ui/vue";
@@ -58,11 +53,6 @@ const content = "XiHan.UI";
 点击后获取下载内容
 
 ```vue
-<!--
-  Copyright (c) 2021-Present XiHanFun and contributors.
-  Licensed under the MIT License. See LICENSE in the project root for license information.
--->
-
 <script setup lang="ts">
 import { DownloadIcon } from "@xihan-ui/icons";
 import { XhDownloadTrigger, XhIcon } from "@xihan-ui/vue";
@@ -101,11 +91,6 @@ async function createCsv() {
 下载 JSON 文件
 
 ```vue
-<!--
-  Copyright (c) 2021-Present XiHanFun and contributors.
-  Licensed under the MIT License. See LICENSE in the project root for license information.
--->
-
 <script setup lang="ts">
 import { DownloadIcon } from "@xihan-ui/icons";
 import { XhDownloadTrigger, XhIcon } from "@xihan-ui/vue";
@@ -143,11 +128,6 @@ const data = new Blob([JSON.stringify({ name: "XiHan.UI", version: "1.1.0" }, nu
 设置触发器外观
 
 ```vue
-<!--
-  Copyright (c) 2021-Present XiHanFun and contributors.
-  Licensed under the MIT License. See LICENSE in the project root for license information.
--->
-
 <script setup lang="ts">
 import { DownloadIcon } from "@xihan-ui/icons";
 import { XhDownloadTrigger, XhIcon } from "@xihan-ui/vue";
@@ -181,11 +161,6 @@ const labels = { solid: "实心", subtle: "浅色", outline: "线框", ghost: "�
 使用小、中、大三档尺寸
 
 ```vue
-<!--
-  Copyright (c) 2021-Present XiHanFun and contributors.
-  Licensed under the MIT License. See LICENSE in the project root for license information.
--->
-
 <script setup lang="ts">
 import { DownloadIcon } from "@xihan-ui/icons";
 import { XhDownloadTrigger, XhIcon } from "@xihan-ui/vue";
@@ -217,11 +192,6 @@ const sizes = ["sm", "md", "lg"] as const;
 禁止触发下载
 
 ```vue
-<!--
-  Copyright (c) 2021-Present XiHanFun and contributors.
-  Licensed under the MIT License. See LICENSE in the project root for license information.
--->
-
 <script setup lang="ts">
 import { DownloadIcon } from "@xihan-ui/icons";
 import { XhDownloadTrigger, XhIcon } from "@xihan-ui/vue";

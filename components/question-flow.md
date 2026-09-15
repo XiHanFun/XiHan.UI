@@ -17,11 +17,6 @@
 一次一题：单选选中后自动翻到下一题，多选等人点继续，末题上那颗按钮变成发送
 
 ```vue
-<!--
-  Copyright (c) 2021-Present XiHanFun and contributors.
-  Licensed under the MIT License. See LICENSE in the project root for license information.
--->
-
 <script setup lang="ts">
 import type { QuestionFlowQuestion } from "@xihan-ui/headless";
 import {
@@ -262,11 +257,6 @@ const sent = ref("");
 选项之外还能自己写一句，写了就算答过；关掉自动前进，每题都等人点继续
 
 ```vue
-<!--
-  Copyright (c) 2021-Present XiHanFun and contributors.
-  Licensed under the MIT License. See LICENSE in the project root for license information.
--->
-
 <script setup lang="ts">
 import type { QuestionFlowQuestion } from "@xihan-ui/headless";
 import {
@@ -460,11 +450,6 @@ const log = ref("");
 进度归宿主管：外面的按钮直接跳题，答案也一并受控，组件只发意图
 
 ```vue
-<!--
-  Copyright (c) 2021-Present XiHanFun and contributors.
-  Licensed under the MIT License. See LICENSE in the project root for license information.
--->
-
 <script setup lang="ts">
 import type { QuestionFlowAnswers, QuestionFlowQuestion } from "@xihan-ui/headless";
 import {
@@ -668,11 +653,6 @@ const answers = ref<QuestionFlowAnswers>({});
 size 换问句、选项行与页脚按钮的几何档，三档共用同一份问题
 
 ```vue
-<!--
-  Copyright (c) 2021-Present XiHanFun and contributors.
-  Licensed under the MIT License. See LICENSE in the project root for license information.
--->
-
 <script setup lang="ts">
 import type { QuestionFlowQuestion } from "@xihan-ui/headless";
 import {

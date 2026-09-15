@@ -17,11 +17,6 @@
 一块画布加一条笔迹路径就够了：按下落笔、移动成迹、抬笔收一笔
 
 ```vue
-<!--
-  Copyright (c) 2021-Present XiHanFun and contributors.
-  Licensed under the MIT License. See LICENSE in the project root for license information.
--->
-
 <script setup lang="ts">
 import { XhSignaturePadControl, XhSignaturePadPath, XhSignaturePadRoot } from "@xihan-ui/vue";
 </script>
@@ -60,11 +55,6 @@ import { XhSignaturePadControl, XhSignaturePadPath, XhSignaturePadRoot } from "@
 基准线是纯画面（带 aria-hidden），清空按钮是原生 button，读屏念的是 translations 里那句
 
 ```vue
-<!--
-  Copyright (c) 2021-Present XiHanFun and contributors.
-  Licensed under the MIT License. See LICENSE in the project root for license information.
--->
-
 <script setup lang="ts">
 import {
   XhSignaturePadClearTrigger,
@@ -117,11 +107,6 @@ import {
 给了 name 就带上表单影子，提交的是一份独立 SVG；表单重置会把画布清回空
 
 ```vue
-<!--
-  Copyright (c) 2021-Present XiHanFun and contributors.
-  Licensed under the MIT License. See LICENSE in the project root for license information.
--->
-
 <script setup lang="ts">
 import {
   XhSignaturePadClearTrigger,
@@ -202,11 +187,6 @@ import {
 drawing 调笔宽与压感：thinning 越大，划得越快笔画越细，simulatePressure 决定压感取设备值还是按速度算
 
 ```vue
-<!--
-  Copyright (c) 2021-Present XiHanFun and contributors.
-  Licensed under the MIT License. See LICENSE in the project root for license information.
--->
-
 <script setup lang="ts">
 import { XhSignaturePadControl, XhSignaturePadGuide, XhSignaturePadPath, XhSignaturePadRoot } from "@xihan-ui/vue";
 </script>
@@ -264,11 +244,6 @@ import { XhSignaturePadControl, XhSignaturePadGuide, XhSignaturePadPath, XhSigna
 只读画好的还看得见但改不动，禁用连清空按钮都按不动；两者都走原生 disabled，不是灰一层了事
 
 ```vue
-<!--
-  Copyright (c) 2021-Present XiHanFun and contributors.
-  Licensed under the MIT License. See LICENSE in the project root for license information.
--->
-
 <script setup lang="ts">
 import {
   XhSignaturePadClearTrigger,
@@ -332,11 +307,6 @@ import {
 签名定稿时 draw-end 带上一份可直接落库的 SVG；提交前用 empty 拦一道，空签名不该走出客户端
 
 ```vue
-<!--
-  Copyright (c) 2021-Present XiHanFun and contributors.
-  Licensed under the MIT License. See LICENSE in the project root for license information.
--->
-
 <script setup lang="ts">
 import {
   XhSignaturePadClearTrigger,
@@ -409,7 +379,7 @@ function onDrawEnd(details: { paths: string[]; svg: string }) {
 ### 何时不用
 
 - 要的是一份已有的签名图片：那是上传，用[文件上传](./file-upload)。
-- 要的是打字签名或姓名核对：那是一行文本，用[文本输入](./text-field)。
+- 要的是打字签名或姓名核对：那是一行文本，用[文本字段](./text-field)。
 - 要的是在图片上圈画批注：本组件只画自己那块画布，不承载底图。
 
 ### 特性
@@ -423,7 +393,7 @@ function onDrawEnd(details: { paths: string[]; svg: string }) {
 
 ### 组合
 
-- 与[字段](./field)搭配：标题、说明与错误提示交给字段，签名板只管画布。
+- 与[表单字段](./field)搭配：标题、说明与错误提示交给字段，签名板只管画布。
 - 放进[表单](./form)里，`name` 一给就跟着提交与重置走。
 - 与[对话框](./dialog)搭配做"签名确认"：确认按钮的可用状态读 `empty`。
 

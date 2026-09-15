@@ -17,11 +17,6 @@
 创建等宽列
 
 ```vue
-<!--
-  Copyright (c) 2021-Present XiHanFun and contributors.
-  Licensed under the MIT License. See LICENSE in the project root for license information.
--->
-
 <script setup lang="ts">
 import { XhGridItem, XhGridRoot } from "@xihan-ui/vue";
 
@@ -78,11 +73,6 @@ const metrics = [
 根据最小列宽自动排列
 
 ```vue
-<!--
-  Copyright (c) 2021-Present XiHanFun and contributors.
-  Licensed under the MIT License. See LICENSE in the project root for license information.
--->
-
 <script setup lang="ts">
 import { XhGridItem, XhGridRoot } from "@xihan-ui/vue";
 
@@ -123,11 +113,6 @@ const features = ["无头内核", "Vue", "React", "Web Components", "设计令�
 控制内容占用的列
 
 ```vue
-<!--
-  Copyright (c) 2021-Present XiHanFun and contributors.
-  Licensed under the MIT License. See LICENSE in the project root for license information.
--->
-
 <script setup lang="ts">
 import { XhGridItem, XhGridRoot } from "@xihan-ui/vue";
 
@@ -165,11 +150,6 @@ const itemStyle = "padding: 16px; border-radius: var(--xh-shape-surface); backgr
 设置栅格间距
 
 ```vue
-<!--
-  Copyright (c) 2021-Present XiHanFun and contributors.
-  Licensed under the MIT License. See LICENSE in the project root for license information.
--->
-
 <script setup lang="ts">
 import { XhGridItem, XhGridRoot } from "@xihan-ui/vue";
 
@@ -214,11 +194,6 @@ const groups = [
 在不同视口使用不同列数
 
 ```vue
-<!--
-  Copyright (c) 2021-Present XiHanFun and contributors.
-  Licensed under the MIT License. See LICENSE in the project root for license information.
--->
-
 <script setup lang="ts">
 import { XhGridItem, XhGridRoot } from "@xihan-ui/vue";
 

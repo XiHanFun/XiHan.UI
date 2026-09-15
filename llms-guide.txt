@@ -13,7 +13,7 @@
 
 依赖：`react` 与 `react-dom` 是 peer 依赖，下限 19。这一版只支持 React 19——机器要求「宿主提交完这一帧、DOM 落定之后再跑回调」，`flushSync` 与 `useSyncExternalStore` 的行为是这条契约的地基。
 
-铺开进度：128 个组件里已铺 128 个，组件面与 Vue 侧齐平。登记在 `ui/tooling/scripts/react-coverage.json`，十几张门禁按它决定该核哪些组件——登记多了会核到不存在的组件，登记少了是静默漏检，两侧都判失败。
+铺开进度：134 个组件里已铺 134 个，组件面与 Vue 侧齐平。登记在 `ui/tooling/scripts/react-coverage.json`，十几张门禁按它决定该核哪些组件——登记多了会核到不存在的组件，登记少了是静默漏检，两侧都判失败。
 
 ## 组件命名
 
@@ -113,7 +113,7 @@ const { api, service } = useDialog({ open, onOpenChange });
 | `flush` | `flushSync` 逼出一次提交，回调在 DOM 落定之后跑 |
 | `onMount` / `onCleanup` | `useLayoutEffect` 的挂载与清理 |
 
-`track` 是拉式的，这一条与 Vue 侧不同。Vue 的 `watch` 挂在响应式源上，源一动就通知；React 这边 props 的变化不经过任何可订阅的源，它就是下一次渲染函数的入参。推式实现在这里会永远收不到 props 变化——55 个机器里的 `track` 与 54 个 `watch` 块全部静默失效，而且不报错。
+`track` 是拉式的，这一条与 Vue 侧不同。Vue 的 `watch` 挂在响应式源上，源一动就通知；React 这边 props 的变化不经过任何可订阅的源，它就是下一次渲染函数的入参。推式实现在这里会永远收不到 props 变化——58 个机器里的 `track` 与 57 个 `watch` 块全部静默失效，而且不报错。
 
 `useMachine(machine, getProps, options)` 把它包起来。props 传的是 getter：每次渲染现取，机器读到的永远是这一帧的值。
 
@@ -223,7 +223,7 @@ import {
 } from "@xihan-ui/vue";
 ```
 
-只有一个部件的组件不带部件后缀（`XhButton`、`XhSwitch`、`XhBadge`）。全部 923 个导出组件按组件分组列在[组件参考](../components/)里。
+只有一个部件的组件不带部件后缀（`XhButton`、`XhSwitch`、`XhBadge`）。全部 1002 个导出组件按组件分组列在[组件参考](../components/)里。
 
 没有插件，不需要 `app.use()`。按名字 import 即可，`sideEffects: false` 让打包器摇掉没用到的部分。
 
@@ -442,7 +442,7 @@ import { setSoundPlayer, vSound, withToastSound } from "@xihan-ui/vue/sound";
 ```ts
 import { defineXhElements } from "@xihan-ui/web-components/define";
 
-defineXhElements(); // 注册全部 130 个 xh-* 元素
+defineXhElements(); // 注册全部 136 个 xh-* 元素
 ```
 
 主入口的 `import` 本身**不注册**，必须显式调这一行。注册是幂等的：同版本重复调直接返回；同标签不同版本、或标签已被非 XiHan.UI 代码占用，都会抛错而不是静默覆盖。无 `customElements` 的环境（SSR）静默跳过。
@@ -572,7 +572,7 @@ document.querySelector("xh-dialog")
 
 ## 自定义元素清单
 
-包内附带 `custom-elements.json`（CEM 格式），130 个元素的标签名、属性、事件、CSS part 都在里面。编辑器与框架的自定义元素支持可以直接读它拿到补全与类型提示。
+包内附带 `custom-elements.json`（CEM 格式），136 个元素的标签名、属性、事件、CSS part 都在里面。编辑器与框架的自定义元素支持可以直接读它拿到补全与类型提示。
 
 清单由构建生成，`pnpm gate:cem` 会重跑生成后比对——改了元素忘了重新生成会被拦下。
 
@@ -620,7 +620,7 @@ export const accordionKeyboard: KeyboardTable = {
 };
 ```
 
-每一行有稳定的 `id`、触发按键、生效前置条件、以及效果。全库共 **534 条**，散落在 128 个组件上。
+每一行有稳定的 `id`、触发按键、生效前置条件、以及效果。全库共 **590 条**，散落在 134 个组件上。
 
 规格表由三方共同消费：
 
@@ -1056,11 +1056,6 @@ export function connectAccordion<T extends PropTypes>(
 它建在 [动效原语](/guide/motion) 之上——减弱动效的降级由那一层统一兜住，这一层不另开通道。
 
 ```vue
-<!--
-  Copyright (c) 2021-Present XiHanFun and contributors.
-  Licensed under the MIT License. See LICENSE in the project root for license information.
--->
-
 <script setup lang="ts">
 import { BUILTIN_MOTION_NAMES, createMotionPlayer } from "@xihan-ui/animations";
 import { XhButton } from "@xihan-ui/vue";
@@ -1212,11 +1207,6 @@ motion.cancel(); // 全撤
 ## 错开起播
 
 ```vue
-<!--
-  Copyright (c) 2021-Present XiHanFun and contributors.
-  Licensed under the MIT License. See LICENSE in the project root for license information.
--->
-
 <script setup lang="ts">
 import type { StaggerFrom } from "@xihan-ui/animations";
 import { createMotionPlayer, splitText } from "@xihan-ui/animations";
@@ -2085,7 +2075,9 @@ export const DIAGNOSTIC_CODES = {
   wcMissingPart: "wc.missing-part", // 作者未渲染必需的角色节点
   wcUnknownPart: "wc.unknown-part", // 角色节点的 part 名不在组件解剖内
   wcWrongPartTag: "wc.wrong-part-tag", // 角色节点的标签不满足要求，原生语义会静默失效
-  qrCodeLogoDamage: "qr-code.logo-damage", // 中心 logo 挖掉的码字超出纠错级别能恢复的量
+  matrixCodeLogoDamage: "matrix-code.logo-damage", // 中心 logo 挖掉的码字超出纠错级别能恢复的量
+  matrixCodeOptionIgnored: "matrix-code.option-ignored", // 二维码收到一个对当前码制没有意义的选项，按没给处理
+  barCodeOptionIgnored: "bar-code.option-ignored", // 条形码收到一个对当前码制没有意义的选项，按没给处理
   stylesMissingSkin: "styles.missing-skin", // 页面上出现了组件，但它那份皮肤没被引入
   versionMismatch: "core.version-mismatch", // 适配器与 core 的版本不一致，锁步发版被打破
   ignoredSlot: "core.ignored-slot", // 作者给了默认插槽，但该组件不渲染插槽内容
@@ -2298,10 +2290,10 @@ const controlProps = useFieldControl();
 
 ## 哪些组件参与
 
-29 个：checkbox、cascader、checkbox-group、color-picker、combobox、date-field、date-picker、editable、field-array、
-file-upload、image-cropper、mention、number-field、password-input、pin-input、radio-group、rating、
-segmented、select、signature-pad、slider、switch、tags-input、text-field、time-field、
-time-picker、toggle-group、transfer、tree-select。
+34 个：checkbox、cascader、checkbox-group、color-field、color-picker、color-slider、color-swatch-picker、combobox、
+date-field、date-picker、date-range-picker、editable、field-array、file-upload、image-cropper、mention、number-field、
+password-input、pin-input、radio-group、rating、segmented、select、signature-pad、slider、switch、tags-input、
+text-field、time-field、time-picker、time-range-picker、toggle-group、transfer、tree-select。
 
 新加的表单组件忘了接重置会被门禁拦下：判据的分母是从源码里扫出来的（`types` 的 props 里有
 `name?:` 即表单字段，字段名既可以是标量字符串也可以是 `FormPath`），不是手写名单。
@@ -2504,7 +2496,7 @@ import { ArrowDownIcon } from "@xihan-ui/icons";
 
 有几处的部件里本来就装着别的东西，`:empty` 恒不命中，只能走通道一：checkbox-group 与 transfer 的全选格、field 与 fieldset 的必填星号。
 
-json-viewer 键名后面那个冒号不在这族里：它是 JSON 这个数据格式的语法字符，不是视觉标记。hotkeys 的 `⌘` `⇧` 键帽由 JS 渲染成文本，走它自己的 `translations`。
+json-viewer 键名后面那个冒号不在这族里：它是 JSON 这个数据格式的语法字符，不是视觉标记。Kbd 的 `⌘` `⇧` 键名由 JS 渲染成文本，走它自己的 `translations`。
 
 
 ## 把任意 SVG 目录转成图标集
@@ -2946,11 +2938,6 @@ toLinearEasing(t => t ** 2, 5); // 'linear(0, 0.0625, 0.25, 0.5625, 1)'
 弹簧走解析解，不是逐帧数值积分。给定质量、刚度、阻尼，任意时刻的位移可以 O(1) 直接算出来——所以它能被任意采样、能离线烘焙成 `linear()` 串交给 CSS，而不必每帧回主线程写样式。
 
 ```vue
-<!--
-  Copyright (c) 2021-Present XiHanFun and contributors.
-  Licensed under the MIT License. See LICENSE in the project root for license information.
--->
-
 <script setup lang="ts">
 import { animate, createSpring, springToLinearEasing } from "@xihan-ui/motion";
 import { computed, onBeforeUnmount, ref, useTemplateRef } from "vue";
@@ -3253,7 +3240,7 @@ session.dispose(); // 摘掉监听，重复调用是安全的
 
 ## 谁在用
 
-跟手期间的指针监听统一走这一层，14 个组件在用：`slider` · `splitter` · `scrollbar` · `color-picker` · `image-cropper` · `floating-panel` · `signature-pad` · `carousel` · `image-viewer` · `sortable` · `resizable` · `table` · `tabs` · `tree`。
+跟手期间的指针监听统一走这一层，15 个组件在用：`slider` · `splitter` · `scrollbar` · `color-picker` · `image-cropper` · `floating-panel` · `signature-pad` · `carousel` · `calendar` · `image-viewer` · `sortable` · `resizable` · `table` · `tabs` · `tree`。
 
 在状态机里的接法是把会话挂进拖动态的效应，效应拆卸时 `dispose`——状态一离开拖动态，监听自动摘干净：
 
@@ -3482,11 +3469,6 @@ engine.attach(virtual, floatingEl, { placement: "bottom-start" }, apply);
 下面的示例都会真的出声，先把音量调小一点。
 
 ```vue
-<!--
-  Copyright (c) 2021-Present XiHanFun and contributors.
-  Licensed under the MIT License. See LICENSE in the project root for license information.
--->
-
 <script setup lang="ts">
 import type { SoundTheme } from "@xihan-ui/sound";
 import {
@@ -3585,11 +3567,6 @@ const ding: SoundSpec = {
 配方是纯数据，这带来三件事：主题可以整套替换、用户配置可以持久化再回放、调音界面可以直接编辑它——比如下面这个：
 
 ```vue
-<!--
-  Copyright (c) 2021-Present XiHanFun and contributors.
-  Licensed under the MIT License. See LICENSE in the project root for license information.
--->
-
 <script setup lang="ts">
 import type { OscillatorLayer, SoundSpec } from "@xihan-ui/sound";
 import { createSoundPlayer, glide, strike } from "@xihan-ui/sound";
@@ -3772,11 +3749,6 @@ await dialog.confirm({ title: "删除这条记录？" });
 ```
 
 ```vue
-<!--
-  Copyright (c) 2021-Present XiHanFun and contributors.
-  Licensed under the MIT License. See LICENSE in the project root for license information.
--->
-
 <script setup lang="ts">
 import type { ToastService } from "@xihan-ui/vue";
 import { createToastService, XhButton } from "@xihan-ui/vue";
@@ -3793,7 +3765,7 @@ onBeforeUnmount(() => toast?.dispose());
 
 function upload(): void {
   const id = use().loading("上传中");
-  setTimeout(() => use().update(id, { type: "success", title: "上传完成" }), 1200);
+  setTimeout(() => use().update(id, { loading: false, tone: "success", title: "上传完成" }), 1200);
 }
 </script>
 
@@ -3802,8 +3774,8 @@ function upload(): void {
     <XhButton variant="solid" @click="upload()">上传（静默转成功才响）</XhButton>
     <XhButton variant="outline" @click="use().success('已保存')">success</XhButton>
     <XhButton variant="outline" @click="use().warning('磁盘快满了')">warning</XhButton>
-    <XhButton variant="outline" @click="use().error('同步失败，稍后自动重试')">
-      error
+    <XhButton variant="outline" @click="use().danger('同步失败，稍后自动重试')">
+      danger
     </XhButton>
   </div>
 </template>
@@ -3813,9 +3785,9 @@ function upload(): void {
 
 | 调用 | 声音 |
 | --- | --- |
-| `toast.info/success/warning/error` | 同名语义声 |
+| `toast.info/success/warning/danger` | 同名语义声（`danger` 对应 `error` 那把声） |
 | `toast.loading` | 不发声（加载中只是过渡态） |
-| `toast.update(id, { type })` | 新类型的声音，`loading` 除外——上传完成那一刻该响，改文案不该响 |
+| `toast.update(id, { tone })` | 新语气的声音，`loading: true` 还开着时除外——上传完成那一刻该响，改文案不该响 |
 | `dialog.confirm` | `open` |
 | `dialog.info/success/warning/error` | 同名语义声 |
 | 关闭、消失 | 不发声 |
@@ -3824,7 +3796,7 @@ function upload(): void {
 
 ```ts
 withToastSound(createToastService(), {
-  sounds: { success: "complete", error: null },
+  sounds: { success: "complete", danger: null },
 });
 ```
 
@@ -3835,11 +3807,6 @@ withToastSound(createToastService(), {
 ### 给单个元素配声
 
 ```vue
-<!--
-  Copyright (c) 2021-Present XiHanFun and contributors.
-  Licensed under the MIT License. See LICENSE in the project root for license information.
--->
-
 <script setup lang="ts">
 import { XhButton } from "@xihan-ui/vue";
 import { vSound } from "@xihan-ui/vue/sound";
@@ -4053,7 +4020,7 @@ CSS 的级联顺序由 `@layer` 声明的**首次出现顺序**决定，与 `@im
 
 下拉、日期、文本框这类控件默认带 `min-inline-size: var(--xh-control-min-w)`，缺省 `12rem`（约 192px）。控件放进 flex 或 grid 里天然会被压扁——压到只剩一个箭头就没法用了，先给一条底线比让它塌掉合理。
 
-16 份皮肤吃这条令牌（其中 file-upload 拿它当条目里文件名的下限，不是控件宽度）。窄栏场景（两列表单、抽屉里的设置项、表格上方的筛选行）会顶出容器：这条是底线不是宽度，容器再窄它也不让步。要么把它放开、要么给控件所在的栏留够宽度：
+20 份皮肤吃这条令牌（其中 file-upload 拿它当条目里文件名的下限，不是控件宽度）。窄栏场景（两列表单、抽屉里的设置项、表格上方的筛选行）会顶出容器：这条是底线不是宽度，容器再窄它也不让步。要么把它放开、要么给控件所在的栏留够宽度：
 
 ```css
 /* 全局：所有吃这条令牌的控件一起改 */
@@ -4782,10 +4749,10 @@ XiHan.UI 的公开面横跨五种介质，因为「丢掉自带皮肤自己写�
 | --- | --- | --- |
 | 包名 | 17 | 把代码从一个包挪到另一个包 = major |
 | `exports` 子路径 | 34 个 JS 入口 | 如 `@xihan-ui/vue/backgrounds`、`@xihan-ui/web-components/define`、`@xihan-ui/core/metadata`。没有 `./*` 通配，深路径引用（`.../dist/xxx.js`）被 Node 与打包器一并挡住，那些路径不是 API |
-| Vue 组件导出 `Xh*` | 927（128 个家族） | `XhButton`、`XhSelectRoot`、`XhSelectItemIndicator` |
-| Vue 组合式函数 `use<家族>` | 97 | `useSelect`、`useCombobox`。这是「不用我的部件、自己写标记」的唯一入口 |
+| Vue 组件导出 `Xh*` | 1006（134 个家族） | `XhButton`、`XhSelectRoot`、`XhSelectItemIndicator` |
+| Vue 组合式函数 `use<家族>` | 102 | `useSelect`、`useCombobox`。这是「不用我的部件、自己写标记」的唯一入口 |
 | Vue 指令 | 2 | `vBackground`（`@xihan-ui/vue/backgrounds`）、`vSound`（`@xihan-ui/vue/sound`），两个子入口各依赖一个可选 peer |
-| 无头内核 `connect*` | 128 | `connectAccordion` 及其参数顺序、返回的 getter 名 |
+| 无头内核 `connect*` | 134 | `connectAccordion` 及其参数顺序、返回的 getter 名 |
 | 无头内核 `*Machine` | 80 | 机器 schema 的形状 |
 | 类型 `*Props` / `*Api` / `*ChangeDetails` / `*Schema` | 145 / 120 / 103 / 80 | 删字段、改字段名、把可选改必填都是 major |
 | Vue prop 名与「没传」语义 | 373 个不同名字 / 1335 处声明 | 见下方专条 |
@@ -4801,20 +4768,20 @@ XiHan.UI 的公开面横跨五种介质，因为「丢掉自带皮肤自己写�
 | 类别 | 数量 | 说明 |
 | --- | --- | --- |
 | Vue 上下文类型 `*Context` / `*Callbacks` | 108 | 用于给透传的 `api` 标注类型。**只保证可读，不保证可构造**——往里加可选字段不算破坏，所以别写 `const c: SelectContext = { … }` 这种字面量赋值 |
-| `custom-elements.json`（CEM） | 1 份 / 130 个元素 | 已经进过清单的 `tagName` / `attribute` / `event` 条目不会消失；`cssProperties`（皮肤覆盖槽）与 `events` 的 `type`（detail 类型）由 `scripts/enrich-cem.mjs` 从皮肤与元素源码生成，`gate:cem` 校验同步。字段结构细节仍不承诺，补充算 minor |
+| `custom-elements.json`（CEM） | 1 份 / 136 个元素 | 已经进过清单的 `tagName` / `attribute` / `event` 条目不会消失；`cssProperties`（皮肤覆盖槽）与 `events` 的 `type`（detail 类型）由 `scripts/enrich-cem.mjs` 从皮肤与元素源码生成，`gate:cem` 校验同步。字段结构细节仍不承诺，补充算 minor |
 
 ### 排除
 
 | 类别 | 数量 | 为什么排除是安全的 |
 | --- | --- | --- |
-| `@xihan-ui/headless` 的内部算子与常量 | 625 | `clampRating`、`buildMonthGrid`、`colorPickerHexToRgba`、`CAROUSEL_AUTOPLAY_INTERVAL` 这类。它们是内核实现的一部分，改一次实现就得改一次签名。你需要的默认值应当从组件 props 的文档默认值读，不要 import 一个常量再自己比对 |
-| `@xihan-ui/headless` 的内部伴生类型 | 564 | `*Refs`（机器持有的 DOM 引用袋，42 个）、`ColorPickerHsva`、`CascaderLevel` 等，是上面那批函数的参数与返回类型 |
-| `xxxAnatomy` / `xxxMeta` / `xxxKeyboard` 三组导出对象 | 各 128 | **它们描述的 part 名单是受约束的（见第二节），但这三个对象本身的组织方式不是。** 想拿到部件名单，请以组件文档页的解剖表为准，不要 import 这些对象 |
-| Vue 的 `provide*` / `use*Context` 函数 | 109 | [Vue 适配器](../adapters/vue) 早已写明「父子组件之间的 provide / inject 是内部实现，不对外开放」。要下探请用 `use<家族>()` |
+| `@xihan-ui/headless` 的内部算子与常量 | 625 | `clampRating`、`buildMonthGrid`、`colorHexToRgba`、`CAROUSEL_AUTOPLAY_INTERVAL` 这类。它们是内核实现的一部分，改一次实现就得改一次签名。你需要的默认值应当从组件 props 的文档默认值读，不要 import 一个常量再自己比对 |
+| `@xihan-ui/headless` 的内部伴生类型 | 564 | `*Refs`（机器持有的 DOM 引用袋，45 个）、`ColorHsva`、`CascaderLevel` 等，是上面那批函数的参数与返回类型 |
+| `xxxAnatomy` / `xxxMeta` / `xxxKeyboard` 三组导出对象 | 各 134 | **它们描述的 part 名单是受约束的（见第二节），但这三个对象本身的组织方式不是。** 想拿到部件名单，请以组件文档页的解剖表为准，不要 import 这些对象 |
+| Vue 的 `provide*` / `use*Context` 函数 | 115 | [Vue 适配器](../adapters/vue) 早已写明「父子组件之间的 provide / inject 是内部实现，不对外开放」。要下探请用 `use<家族>()` |
 | Vue 的 `useTimelineItem` | 1 | 名字看着像组合式函数，实际是 inject 管道，与上一行同类 |
 | 适配器运行时底座 | Vue 3 个、WC 8 个 | `createVueRuntime` / `createVueIdGenerator` / `vueNormalize`；`createLitRuntime` / `createSpreader` / `defineElement` / `discoverParts` / `wcNormalize` / `MachineController` 等。这些是适配器与内核之间的接缝，签名依赖的类型没有从同一个包导出，实际也写不出调用 |
-| WC 的元素类导出 `Xh*Element` | 102 | 只作 `instanceof` 与手动 `customElements.define` 的便利品，**不支持 `extends`**（基类不导出、`wire()` 是 protected abstract）。要拿元素请用 `document.querySelector` |
-| WC 元素上的 `static partContract` | 128 | 部件校验的输入数据，实现细节 |
+| WC 的元素类导出 `Xh*Element` | 108 | 只作 `instanceof` 与手动 `customElements.define` 的便利品，**不支持 `extends`**（基类不导出、`wire()` 是 protected abstract）。要拿元素请用 `document.querySelector` |
+| WC 元素上的 `static partContract` | 134 | 部件校验的输入数据，实现细节 |
 | `dist/` 内部文件名 | — | `element-Bx4xCiT2.js` 这类打包 chunk 每次构建都可能变，永远不要 deep import |
 | `.d.ts` 的文件布局 | — | 类型从包入口拿，不要引具体 `.d.ts` 路径 |
 | `ui/tooling/`、`ui/apps/playground-*` | — | 不发布 |
@@ -4827,15 +4794,15 @@ XiHan.UI 的公开面横跨五种介质，因为「丢掉自带皮肤自己写�
 
 | 类别 | 数量 | 档位 |
 | --- | --- | --- |
-| `data-scope` 取值（组件身份） | 128 | **受约束**（新增第 129 个组件是 minor） |
-| `data-part` 取值（部件名） | 259 个不同名字 / 944 条「组件 × 部件」配对 | **受约束** |
+| `data-scope` 取值（组件身份） | 134 | **受约束**（新增第 135 个组件是 minor） |
+| `data-part` 取值（部件名） | 259 个不同名字 / 1008 条「组件 × 部件」配对 | **受约束** |
 | `data-xh-part`（WC 作者书写的角色声明） | 属性名 1 个，取值即上面 259 个 | **受约束** |
-| `meta.requiredParts`（必备部件） | 268 条 | **受约束**（加条目 = major），方向见下 |
+| `meta.requiredParts`（必备部件） | 294 条 | **受约束**（加条目 = major），方向见下 |
 
 `data-scope` 的取值与三处完全同名，不做任何转换：headless 目录名、自定义元素标签 `xh-<scope>`、皮肤文件 `<scope>.css`。改一个就是四处同时破坏。
 
 ::: warning `data-xh-part` 是 `data-xh-` 前缀里唯一的例外
-其余 `data-xh-*` 属性（`data-xh-scrollbar`、`data-xh-focus-guard`、`data-xh-inert-exempt` 等 32 个）是库自用标记，**排除**在承诺之外。但 `data-xh-part` 不是——它是 Web Components 适配器唯一的作者输入 API：你写 `data-xh-part="trigger"` 是**声明**，元素接线后往同一节点打上 `data-scope` + `data-part` 是**事实**。皮肤匹配后者，你永远不该手写后者。
+其余 `data-xh-*` 属性（`data-xh-scrollbar`、`data-xh-focus-guard`、`data-xh-inert-exempt` 等 34 个）是库自用标记，**排除**在承诺之外。但 `data-xh-part` 不是——它是 Web Components 适配器唯一的作者输入 API：你写 `data-xh-part="trigger"` 是**声明**，元素接线后往同一节点打上 `data-scope` + `data-part` 是**事实**。皮肤匹配后者，你永远不该手写后者。
 :::
 
 ### requiredParts 的方向是反的
@@ -4849,7 +4816,7 @@ XiHan.UI 的公开面横跨五种介质，因为「丢掉自带皮肤自己写�
 
 ## 三、`data-*` 状态属性
 
-`connect` 一共产出 219 个不同的 `data-*` 属性名、953 条「组件 × 属性」配对。分两类。
+`connect` 一共产出 220 个不同的 `data-*` 属性名、1034 条「组件 × 属性」配对。分两类。
 
 ### 受约束
 
@@ -4861,7 +4828,7 @@ XiHan.UI 的公开面横跨五种介质，因为「丢掉自带皮肤自己写�
 | `data-name` | 表单字段名（`form`） |
 | `data-index` | 条目序号（0 基） |
 
-**样式钩子**——自带皮肤自己就消费了 166 个属性名 / 733 条「皮肤 × 属性」配对（不含解剖的 `data-scope` / `data-part`），第三方皮肤照着抄的就是这一组：
+**样式钩子**——自带皮肤自己就消费了 165 个属性名 / 770 条「皮肤 × 属性」配对（不含解剖的 `data-scope` / `data-part`），第三方皮肤照着抄的就是这一组：
 
 | 属性 | 选中它的皮肤份数 |
 | --- | --- |
@@ -4882,7 +4849,7 @@ XiHan.UI 的公开面横跨五种介质，因为「丢掉自带皮肤自己写�
 份数低不等于用得少：`data-tone` 的规则集中写在 `tone.css` 一份文件里，浮层的 `data-placement`
 同样集中写在定位块里，逐份皮肤只在需要额外微调时才自己选中它们。属性名与取值的约束不看份数。
 
-**取值也受约束。** 属性名改了会打碎皮肤，取值改了同样打碎、而且更隐蔽——`[data-state='open']` 在取值改成 `expanded` 之后仍然是合法 CSS，只是永远不匹配。自带皮肤当前用到的 34 个 `data-state` 取值全部受约束：
+**取值也受约束。** 属性名改了会打碎皮肤，取值改了同样打碎、而且更隐蔽——`[data-state='open']` 在取值改成 `expanded` 之后仍然是合法 CSS，只是永远不匹配。自带皮肤当前用到的 33 个 `data-state` 取值全部受约束：
 
 ```
 open  closed  checked  unchecked  indeterminate  on
@@ -4913,11 +4880,11 @@ brand  neutral  success  warning  danger  info
 | `@layer` 名与声明顺序 | 5 | `xihan.reset` → `xihan.tokens` → `xihan.motion` → `xihan.components` → `xihan.overrides`。改名、调序、增删中间层全是 major。`xihan.overrides` 是**故意留空的**，专门给你覆盖用，不会被「清理未使用的层」删掉 |
 | 全局令牌 · 原语层 | 91 | `--xh-color-brand-500`、`--xh-space-4`、`--xh-radius-md`。皮肤里不该直接用它们，但接品牌轴必须写 `--xh-color-brand-*`，所以它们是公开的 |
 | 全局令牌 · 语义层 | 180 | `--xh-bg-brand`、`--xh-fg-on-brand`、`--xh-control-h-md`、`--xh-shape-control`。主题定制的正门，见 [设计令牌与主题](./theme) |
-| 组件覆盖槽 | 3652（覆盖 126 个组件） | `--xh-button-bg`、`--xh-button-h`、`--xh-dialog-max-w`。全部写成 `var(--xh-x-y, 默认值)` 形态，你在 `:root` 里设它就改了这个组件 |
+| 组件覆盖槽 | 3891（覆盖 133 个组件） | `--xh-button-bg`、`--xh-button-h`、`--xh-dialog-max-w`。全部写成 `var(--xh-x-y, 默认值)` 形态，你在 `:root` 里设它就改了这个组件 |
 | 语气轴槽 | 12 | `--xh-_tone`、`--xh-_tone-on`、`--xh-_tone-hover`、`--xh-_tone-subtle`、`--xh-_tone-border` 等。**这是自定义语气的唯一机制**——你写 `[data-tone='premium'] { --xh-_tone: gold; --xh-_tone-on: #000 }`，读这批槽的 58 份皮肤都会跟着走。虽然带下划线前缀，但按受约束处理 |
 | 关键帧名 | 69 | `xh-pop-in`、`xh-fade-out`、`xh-spinner-rotate`。关键帧逐皮肤自带，你在 `xihan.overrides` 层里重定义同名关键帧就换掉了那段动画（规范 §8.7 约束 3）——所以改名与删名同样是 major |
 | 跨包内联属性 | 4 | `--xh-_truncate-lines`、`--xh-_float-button-offset`、`--xh-_tour-spotlight-radius`、`--xh-_carousel-autoplay-duration`。由 headless 写进内联 `style`，皮肤必须读。**换整套皮肤时不读这些值，文本截断、浮动按钮贴边、引导目标圆角或轮播进度会失效，且不报任何错** |
-| `@xihan-ui/styles` 的 CSS 子路径 | 146 | `.`、`./index.css`、`./index.unlayered.css`，与 138 条 `.css`——127 份组件皮肤加 `./layers.css`、`./tone.css`、`./reset.css`、`./overlay-arrow.css`、`./visually-hidden.css`、`./undefined.css`、`./focus.css`、`./label.css`、`./description.css`、`./pointer.css`、`./forced-colors.css` |
+| `@xihan-ui/styles` 的 CSS 子路径 | 154 | `.`、`./index.css`、`./index.unlayered.css`，与 145 条 `.css`——134 份组件皮肤加 `./layers.css`、`./tone.css`、`./reset.css`、`./overlay-arrow.css`、`./visually-hidden.css`、`./undefined.css`、`./focus.css`、`./label.css`、`./description.css`、`./pointer.css`、`./forced-colors.css` |
 | `@xihan-ui/tokens` 的 CSS 子路径 | 2 | `./tokens.css`、`./tokens.json` |
 
 ### 排除
@@ -4929,7 +4896,7 @@ brand  neutral  success  warning  danger  info
 | `index.unlayered.css` 的内部结构 | — | 它是生成的扁平镜像，**不带 `@layer`**。走这个入口就没有 `xihan.overrides` 这个覆盖槽位，层名承诺不适用 |
 
 ::: warning 命名前缀不能反推归属
-`--xh-field-py` 长得像 `field` 组件的覆盖槽，实际是全局语义令牌，而且 `field.css` 自己都不用它。同理 `--xh-text-*`（13 个全局文本令牌）与 `text-field` 的 48 条组件槽同前缀，`--xh-color-*`（43 个原语调色板令牌）与 `color-picker` 的 70 条组件槽同前缀。判断一条属性属于哪一档，看它在不在上表列的那 416 个全局令牌里，不要按前缀猜。
+`--xh-field-py` 长得像 `field` 组件的覆盖槽，实际是全局语义令牌，而且 `field.css` 自己都不用它。同理 `--xh-text-*`（13 个全局文本令牌）与 `text-field` 的 48 条组件槽同前缀，`--xh-color-*`（43 个原语调色板令牌）与 `color-picker` 的 70 条组件槽同前缀。判断一条属性属于哪一档，看它在不在上表列的那 419 个全局令牌里，不要按前缀猜。
 :::
 
 ---
@@ -4938,15 +4905,15 @@ brand  neutral  success  warning  danger  info
 
 | 类别 | 数量 | 档位 |
 | --- | --- | --- |
-| 自定义元素标签 `xh-*` | 131（`defineXhElements()` 注册 130 + `xh-background`） | **受约束** |
+| 自定义元素标签 `xh-*` | 137（`defineXhElements()` 注册 136 + `xh-background`） | **受约束** |
 | 注册函数 | 2（`defineXhElements`、`defineXhBackground`） | **受约束** |
-| observed attribute | 1233 条声明 / 372 个不同名字 | **受约束**（具体元素上的具体属性名） |
-| attribute 名词汇表本身 | 372 | **只增不减**（新组件复用 `size` / `tone` / `dir` 不算破坏） |
-| `CustomEvent` 名 | 90 个名字 / 188 条「元素 × 事件」 | **受约束** |
-| 事件传播语义 | `bubbles: true, composed: true`（173 处中 171 处） | **受约束**——把冒泡改掉会让祖先节点上的事件委托静默失效。例外是名为 `submit` 的事件（`xh-prompt-input` / `xh-question-flow`）：与原生表单提交同名，一律不冒泡，免得被祖先 `<form>` 当成自己的提交 |
-| 事件 `detail` 形状 | 175 个 `*Details` 类型 | **受约束**，等同于 headless 的同名类型 |
-| `attribute: false` 的 JS 字段 | 192 条（涉及 68 个字段名） | **受约束**。`collection`、`translations`、`validate`、`filter` 这类只能用 JS 赋值，HTML 里表达不出来——**不是每个 property 都有对应 attribute** |
-| 命令式方法 | 82（分布在 42 个元素） | **受约束**，含参数与返回类型 |
+| observed attribute | 1338 条声明 / 379 个不同名字 | **受约束**（具体元素上的具体属性名） |
+| attribute 名词汇表本身 | 379 | **只增不减**（新组件复用 `size` / `tone` / `dir` 不算破坏） |
+| `CustomEvent` 名 | 91 个名字 / 201 条「元素 × 事件」 | **受约束** |
+| 事件传播语义 | `bubbles: true, composed: true`（186 处中 184 处） | **受约束**——把冒泡改掉会让祖先节点上的事件委托静默失效。例外是名为 `submit` 的事件（`xh-prompt-input` / `xh-question-flow`）：与原生表单提交同名，一律不冒泡，免得被祖先 `<form>` 当成自己的提交 |
+| 事件 `detail` 形状 | 184 个 `*Details` 类型 | **受约束**，等同于 headless 的同名类型 |
+| `attribute: false` 的 JS 字段 | 210 条（涉及 70 个字段名） | **受约束**。`collection`、`translations`、`validate`、`filter` 这类只能用 JS 赋值，HTML 里表达不出来——**不是每个 property 都有对应 attribute** |
+| 命令式方法 | 92（分布在 47 个元素） | **受约束**，含参数与返回类型 |
 
 命令式方法全清单：
 
@@ -4967,7 +4934,7 @@ brand  neutral  success  warning  danger  info
 
 几条与包结构有关的事实，也在承诺内：
 
-- 元素在 `@xihan-ui/web-components/define`，不在包主入口。`defineXhElements()` 是全有全无——调它就注册全部 130 个元素，没有逐个的 `defineXhButton()`。（补细粒度 define 是 minor；补完之后 `defineXhElements` 的「全量」语义就成了承诺。）
+- 元素在 `@xihan-ui/web-components/define`，不在包主入口。`defineXhElements()` 是全有全无——调它就注册全部 136 个元素，没有逐个的 `defineXhButton()`。（补细粒度 define 是 minor；补完之后 `defineXhElements` 的「全量」语义就成了承诺。）
 - `xh-background` 单独在 `@xihan-ui/web-components/backgrounds`，因为它依赖可选 peer。把它挪进 `./define` 会强制所有人装 WebGL 引擎，属于破坏性变更。
 - 元素全部是 **Light DOM**，没有 shadow root，`::part()` 永远不生效。CEM 里的 `cssParts` 条目在本包读作 `data-xh-part`，不是 shadow part。
 
@@ -5107,12 +5074,12 @@ Web Components 侧不构成额外约束：全部 Light DOM，不用 shadow DOM�
 
 | 包 | 说明 |
 | --- | --- |
-| `@xihan-ui/vue` | 927 个组件、97 个组合式函数 |
+| `@xihan-ui/vue` | 1006 个组件、102 个组合式函数 |
 | `@xihan-ui/react` | 组件与 hooks（铺开中，公开面随批次增长） |
-| `@xihan-ui/web-components` | 131 个自定义元素 |
+| `@xihan-ui/web-components` | 137 个自定义元素 |
 | `@xihan-ui/headless` | `connect*` / `*Machine` / 各类公开类型；内部算子在排除清单里 |
-| `@xihan-ui/styles` | 127 份组件皮肤、5 个层名 |
-| `@xihan-ui/tokens` | 416 个令牌名，外加 `./runtime` 的主题控制器与种子色 API |
+| `@xihan-ui/styles` | 134 份组件皮肤、5 个层名 |
+| `@xihan-ui/tokens` | 419 个令牌名，外加 `./runtime` 的主题控制器与种子色 API |
 | `@xihan-ui/icons` | 图标集 |
 | `@xihan-ui/core` | 只有被适配器与 headless 公开消费的那部分（`createAnatomy`、`createNormalizer`、归一化规则、状态机公开面），含 `data-value` 这条集合导航契约 |
 | `@xihan-ui/position` | `createPositionEngine` 与它的选项；其余 9 个导出是内部算子 |
@@ -5139,12 +5106,12 @@ Web Components 侧不构成额外约束：全部 Light DOM，不用 shadow DOM�
 ### 已经焊死的
 
 **六种介质的「改名 = major」现在有门禁兜着。** `pnpm gate:surface` 跑的 `check-public-surface`
-拿一份入库的基线（`ui/tooling/public-surface.json`，14262 个名字）比对当前状态：
+拿一份入库的基线（`ui/tooling/public-surface.json`，15158 个名字）比对当前状态：
 **基线里有而当前没有，就是删了或改名了，构建失败**。新增一律放行，因为那是 minor。
 
-覆盖：包名与 182 条子入口、7442 个导出名、128 个 `data-scope` 与 944 条部件配对、
-128 个组件的 1587 个 prop 名、221 种 `data-*`、34 个 `data-state` 取值、416 个令牌、
-5 个 `@layer` 名、3652 个组件覆盖槽、130 个自定义元素及其 attribute 与事件。
+覆盖：包名与 190 条子入口、7896 个导出名、134 个 `data-scope` 与 1008 条部件配对、
+134 个组件的 1722 个 prop 名、222 种 `data-*`、33 个 `data-state` 取值、419 个令牌、
+5 个 `@layer` 名、3891 个组件覆盖槽、136 个自定义元素及其 attribute 与事件。
 
 prop 名那一维是后补的：在它进来之前，改一个 prop 名（实测 `transfer` 的 `items` 改
 `collection`、`splitter` 的 `size` 改 `sizes`）其余门禁全程沉默。它的事实源是无头内核的
@@ -5172,7 +5139,7 @@ package.json 的 version 与其余不同，门禁直接失败。`check-wiring` �
 check 脚本不接进 `pnpm gate` 就等于没写，死引用同样被拦下。
 
 **三条视觉轴已收成联合类型**，`tone` / `size` / `variant` 不再是裸 `string`，
-写错值编译期就报错。**Vue 事件载荷也有类型了**，92 个组件的 `emits` 全是对象式，
+写错值编译期就报错。**Vue 事件载荷也有类型了**，98 个组件的 `emits` 全是对象式，
 产物 `.d.ts` 里 `(...args: any[]) => any` 一处不剩。
 
 ### 仍然只靠自觉的
@@ -5584,7 +5551,7 @@ import { createToastService } from "@xihan-ui/vue";
 const toast = createToastService({ placement: "top", max: 5 });
 
 toast.success("已保存");
-toast.error("保存失败，请重试", { duration: 8000 });
+toast.danger("保存失败，请重试", { duration: 8000 });
 ```
 
 | 方法 | 返回 | 说明 |
@@ -5592,8 +5559,8 @@ toast.error("保存失败，请重试", { duration: 8000 });
 | `create(options)` | `string`（id） | 入队；**同 id 已存在则就地改写** |
 | `update(id, options)` | — | 改写已在显示的那一条 |
 | `dismiss(id)` / `dismissAll()` | — | 手动收走 |
-| `info` / `success` / `warning` / `error` | `string`（id） | 类型糖，第一参是正文 |
-| `loading(message, options)` | `string`（id） | 返回 id，之后用 `update` 收尾 |
+| `info` / `success` / `warning` / `danger` | `string`（id） | 语气糖，第一参是正文 |
+| `loading(message, options)` | `string`（id） | 打开 `loading` 位弹一条，返回 id，之后用 `update` 收尾 |
 | `promise(input, options)` | `Promise<T>` | 先弹 loading，落定后就地改写成成功/失败 |
 | `pauseAll()` / `resumeAll()` | — | 整摞一起按住计时、再放开 |
 | `setConfig(next)` | — | 换一份全局配置源（切语言用） |
@@ -5607,10 +5574,10 @@ toast.error("保存失败，请重试", { duration: 8000 });
 const id = toast.loading("正在上传…");
 try {
   await upload(file);
-  toast.update(id, { type: "success", title: "上传完成" });
+  toast.update(id, { loading: false, tone: "success", title: "上传完成" });
 }
 catch {
-  toast.update(id, { type: "error", title: "上传失败" });
+  toast.update(id, { loading: false, tone: "danger", title: "上传失败" });
 }
 ```
 
@@ -5640,11 +5607,11 @@ toast.info("已删除 3 条记录", { duration: 8000, actionLabel: "撤销", onA
 
 ```ts
 const toast = createToastService({ dedupe: "content" });
-toast.error("同步失败");
-toast.error("同步失败"); // 界面上是「同步失败 ×2」
+toast.danger("同步失败");
+toast.danger("同步失败"); // 界面上是「同步失败 ×2」
 ```
 
-超出 `max` 时先挤低优先级的、同级里挤最旧的。优先级不给就按语气派生（`error` 最高、
+超出 `max` 时先挤低优先级的、同级里挤最旧的。优先级不给就按语气派生（`danger` 最高、
 `warning` 次之、其余持平），也可以逐条写 `priority`——**一条报错不该被随后的五条提示顶掉**。
 
 服务档的默认落位是 `top`，最多同时留 5 条，超出的挤掉最旧的。落位是整个服务的口径——
@@ -5654,7 +5621,7 @@ toast.error("同步失败"); // 界面上是「同步失败 ×2」
 多一颗叉就多一个「要不要点」的判断。确实需要留出口（比如 `duration: 0` 的常驻提示）就显式开：
 
 ```ts
-toast.error("导出失败，请重试", { duration: 0, closable: true });
+toast.danger("导出失败，请重试", { duration: 0, closable: true });
 ```
 
 ## 通知服务
@@ -5665,7 +5632,7 @@ import { createNotificationService } from "@xihan-ui/vue";
 const notify = createNotificationService({ placement: "bottom-end", max: 5 });
 
 notify.info("有新的审批", { description: "张三提交了一份请假单" });
-notify.error("同步失败", { description: "网络中断，稍后自动重试", duration: 0 });
+notify.danger("同步失败", { description: "网络中断，稍后自动重试", duration: 0 });
 ```
 
 | 方法 | 返回 | 说明 |
@@ -5673,7 +5640,7 @@ notify.error("同步失败", { description: "网络中断，稍后自动重试",
 | `create(options)` | `string`（id） | 入队；**同 id 已存在则就地改写** |
 | `update(id, options)` | — | 改写已在显示的那一条 |
 | `dismiss(id)` / `dismissAll()` | — | 手动收走 |
-| `info` / `success` / `warning` / `error` | `string`（id） | 类型糖，第一参是标题，正文写在 `options.description` |
+| `info` / `success` / `warning` / `danger` | `string`（id） | 语气糖，第一参是标题，正文写在 `options.description` |
 | `pauseAll()` / `resumeAll()` | — | 把当下这些卡片的计时一起按住、再放开 |
 | `setConfig(next)` | — | 换一份全局配置源（切语言用） |
 | `dispose()` | — | 卸载宿主应用并移除容器 |

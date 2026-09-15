@@ -17,11 +17,6 @@
 勾选与判定是原子的：批准的载荷带着批的是哪几项，不存在「已批准但范围还没同步」的窗口
 
 ```vue
-<!--
-  Copyright (c) 2021-Present XiHanFun and contributors.
-  Licensed under the MIT License. See LICENSE in the project root for license information.
--->
-
 <script setup lang="ts">
 import type { ApprovalScope } from "@xihan-ui/headless";
 import {
@@ -144,11 +139,6 @@ const decided = ref("");
 缺省不给默认超时值：替宿主定安全策略比不定更危险。到点落成拒绝，expired 只是显示态
 
 ```vue
-<!--
-  Copyright (c) 2021-Present XiHanFun and contributors.
-  Licensed under the MIT License. See LICENSE in the project root for license information.
--->
-
 <script setup lang="ts">
 import type { ApprovalStatus } from "@xihan-ui/headless";
 import {
@@ -257,11 +247,6 @@ onBeforeUnmount(() => window.clearTimeout(timer));
 备注与勾选同批取快照，随判定载荷一起发出；空着就不带这一格，它不参与「必选项勾满了没有」的判断
 
 ```vue
-<!--
-  Copyright (c) 2021-Present XiHanFun and contributors.
-  Licensed under the MIT License. See LICENSE in the project root for license information.
--->
-
 <script setup lang="ts">
 import {
   XhApprovalApproveTrigger,
@@ -331,11 +316,6 @@ const translations = { notePlaceholder: "补充一句（可不填）", note: "�
 variant 换这块闸门怎么与正文分开，size 换标题、条目与按钮的几何档；判定链一个字不动
 
 ```vue
-<!--
-  Copyright (c) 2021-Present XiHanFun and contributors.
-  Licensed under the MIT License. See LICENSE in the project root for license information.
--->
-
 <script setup lang="ts">
 import type { ApprovalScope } from "@xihan-ui/headless";
 import {
@@ -485,7 +465,7 @@ const rows = [
 
 ### 何时不用
 
-- 只是一句「确定吗」：用[气泡确认](./popconfirm)。
+- 只是一句「确定吗」：用[弹出确认](./popconfirm)。
 - 判定结果不影响任何执行：那不是闸门，是一个提示。
 
 ### 特性

@@ -17,11 +17,6 @@
 为控件添加标签与说明
 
 ```vue
-<!--
-  Copyright (c) 2021-Present XiHanFun and contributors.
-  Licensed under the MIT License. See LICENSE in the project root for license information.
--->
-
 <script setup lang="ts">
 import { XhFieldControl, XhFieldDescription, XhFieldLabel, XhFieldRoot } from "@xihan-ui/vue";
 </script>
@@ -60,11 +55,6 @@ import { XhFieldControl, XhFieldDescription, XhFieldLabel, XhFieldRoot } from "@
 显示字段错误
 
 ```vue
-<!--
-  Copyright (c) 2021-Present XiHanFun and contributors.
-  Licensed under the MIT License. See LICENSE in the project root for license information.
--->
-
 <script setup lang="ts">
 import {
   XhFieldControl,
@@ -126,11 +116,6 @@ const invalid = computed(() => email.value !== "" && !email.value.includes("@"))
 禁止编辑字段
 
 ```vue
-<!--
-  Copyright (c) 2021-Present XiHanFun and contributors.
-  Licensed under the MIT License. See LICENSE in the project root for license information.
--->
-
 <script setup lang="ts">
 import { XhFieldControl, XhFieldDescription, XhFieldLabel, XhFieldRoot } from "@xihan-ui/vue";
 </script>
@@ -161,11 +146,6 @@ import { XhFieldControl, XhFieldDescription, XhFieldLabel, XhFieldRoot } from "@
 将标签放在控件左侧
 
 ```vue
-<!--
-  Copyright (c) 2021-Present XiHanFun and contributors.
-  Licensed under the MIT License. See LICENSE in the project root for license information.
--->
-
 <script setup lang="ts">
 import {
   XhFieldControl,
@@ -234,6 +214,11 @@ import {
 - `disabled`、`readOnly`、`invalid` 和 `required` 可传递给内部控件。
 - 说明和错误信息可以同时显示。
 - `FieldControl` 默认将属性合并到唯一子节点。
+
+### 组合
+
+- 包住任何单一控件：[文本字段](./text-field)、[选择器](./select)、[开关](./switch)等会把字段状态接到真控件上。
+- 多个字段一起提交与校验时放进[表单](./form)；一组相关字段用[字段集](./fieldset)分区。
 
 ### 最佳实践
 

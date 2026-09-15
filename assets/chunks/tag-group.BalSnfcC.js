@@ -1,0 +1,1 @@
+import{f2 as a}from"./theme.C4bpqV2W.js";import{d as o,b as t,k as l,o as r}from"./framework.DkvuVDKz.js";const m=o({__name:"tag-group",setup(c){const e=[{value:"vue",label:"Vue"},{value:"react",label:"React"},{value:"wc",label:"Web Components"}];return(n,s)=>(r(),t(l(a),{collection:e,label:"技术栈",deletable:""}))}});export{m as default};

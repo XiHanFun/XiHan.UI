@@ -17,11 +17,6 @@
 分隔内容区域
 
 ```vue
-<!--
-  Copyright (c) 2021-Present XiHanFun and contributors.
-  Licensed under the MIT License. See LICENSE in the project root for license information.
--->
-
 <script setup lang="ts">
 import { XhSeparator } from "@xihan-ui/vue";
 </script>
@@ -60,11 +55,6 @@ import { XhSeparator } from "@xihan-ui/vue";
 分隔行内内容
 
 ```vue
-<!--
-  Copyright (c) 2021-Present XiHanFun and contributors.
-  Licensed under the MIT License. See LICENSE in the project root for license information.
--->
-
 <script setup lang="ts">
 import { XhSeparator } from "@xihan-ui/vue";
 </script>
@@ -91,11 +81,6 @@ import { XhSeparator } from "@xihan-ui/vue";
 在分隔线中显示标题
 
 ```vue
-<!--
-  Copyright (c) 2021-Present XiHanFun and contributors.
-  Licensed under the MIT License. See LICENSE in the project root for license information.
--->
-
 <script setup lang="ts">
 import { XhSeparator } from "@xihan-ui/vue";
 </script>
@@ -122,11 +107,6 @@ import { XhSeparator } from "@xihan-ui/vue";
 设置分隔线强度和线型
 
 ```vue
-<!--
-  Copyright (c) 2021-Present XiHanFun and contributors.
-  Licensed under the MIT License. See LICENSE in the project root for license information.
--->
-
 <script setup lang="ts">
 import { XhSeparator } from "@xihan-ui/vue";
 </script>

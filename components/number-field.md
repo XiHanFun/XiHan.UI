@@ -1,6 +1,6 @@
 来源：https://ui.docs.xihanfun.com/components/number-field
 
-# NumberField 数字字段 `alpha`
+# NumberField 数字字段
 
 带加减与区间约束的数值输入。
 
@@ -17,11 +17,6 @@
 加减按钮与输入框共用一份状态；值是原始输入串，不传 value 即为非受控
 
 ```vue
-<!--
-  Copyright (c) 2021-Present XiHanFun and contributors.
-  Licensed under the MIT License. See LICENSE in the project root for license information.
--->
-
 <script setup lang="ts">
 import {
   XhNumberFieldControl,
@@ -62,7 +57,7 @@ import {
 
 加粗的是必需部件。
 
-`data-scope="number-field"`：**`root`** · `label` · `control` · `prefix` · **`input`** · `suffix` · `increment-trigger` · `decrement-trigger`
+`data-scope="number-field"`：**`root`** · `label` · **`control`** · `prefix` · **`input`** · `suffix` · `increment-trigger` · `decrement-trigger`
 
 ## 示例
 
@@ -71,11 +66,6 @@ import {
 方向键走 step，PageUp 与 PageDown 走 largeStep，Home 与 End 取端点；贴到边界时对应按钮转灰
 
 ```vue
-<!--
-  Copyright (c) 2021-Present XiHanFun and contributors.
-  Licensed under the MIT License. See LICENSE in the project root for license information.
--->
-
 <script setup lang="ts">
 import {
   XhNumberFieldControl,
@@ -158,11 +148,6 @@ import {
 传了 value 就由宿主说了算；value-change 除了原始串还带一份 valueAsNumber
 
 ```vue
-<!--
-  Copyright (c) 2021-Present XiHanFun and contributors.
-  Licensed under the MIT License. See LICENSE in the project root for license information.
--->
-
 <script setup lang="ts">
 import {
   XhNumberFieldControl,
@@ -231,11 +216,6 @@ const asNumber = ref(3);
 两者都改不动值，禁用还会把加减按钮一并关掉、值也不再随表单提交
 
 ```vue
-<!--
-  Copyright (c) 2021-Present XiHanFun and contributors.
-  Licensed under the MIT License. See LICENSE in the project root for license information.
--->
-
 <script setup lang="ts">
 import {
   XhNumberFieldControl,
@@ -297,11 +277,6 @@ import {
 variant 只改皮肤怎么用颜色，加减与键盘行为三档完全一致
 
 ```vue
-<!--
-  Copyright (c) 2021-Present XiHanFun and contributors.
-  Licensed under the MIT License. See LICENSE in the project root for license information.
--->
-
 <script setup lang="ts">
 import {
   XhNumberFieldControl,
@@ -371,11 +346,6 @@ const variants = ["outline", "subtle", "ghost"] as const;
 tone 决定用哪族颜色，与 variant 正交；这里固定 outline 只看语气的差别
 
 ```vue
-<!--
-  Copyright (c) 2021-Present XiHanFun and contributors.
-  Licensed under the MIT License. See LICENSE in the project root for license information.
--->
-
 <script setup lang="ts">
 import {
   XhNumberFieldControl,
@@ -478,11 +448,6 @@ const tones = ["brand", "neutral", "success", "warning", "danger", "info"] as co
 输入框高度与加减按钮一起换档，不传 size 即默认档
 
 ```vue
-<!--
-  Copyright (c) 2021-Present XiHanFun and contributors.
-  Licensed under the MIT License. See LICENSE in the project root for license information.
--->
-
 <script setup lang="ts">
 import {
   XhNumberFieldControl,
@@ -555,16 +520,11 @@ const sizes = [
 
 ### 只用输入框
 
-加减钮是可选部件，不渲染它照样能改值：方向键走 step，PageUp 与 PageDown 走 largeStep
+control 仍是必需的输入壳；加减钮可以省略，键盘仍按 step 与 largeStep 改值
 
 ```vue
-<!--
-  Copyright (c) 2021-Present XiHanFun and contributors.
-  Licensed under the MIT License. See LICENSE in the project root for license information.
--->
-
 <script setup lang="ts">
-import { XhNumberFieldInput, XhNumberFieldLabel, XhNumberFieldRoot } from "@xihan-ui/vue";
+import { XhNumberFieldControl, XhNumberFieldInput, XhNumberFieldLabel, XhNumberFieldRoot } from "@xihan-ui/vue";
 </script>
 
 <template>
@@ -577,7 +537,9 @@ import { XhNumberFieldInput, XhNumberFieldLabel, XhNumberFieldRoot } from "@xiha
     :large-step="25"
   >
     <XhNumberFieldLabel>音量（0 – 100，每档 5）</XhNumberFieldLabel>
-    <XhNumberFieldInput style="inline-size: 96px; text-align: center" />
+    <XhNumberFieldControl>
+      <XhNumberFieldInput style="inline-size: 96px; text-align: center" />
+    </XhNumberFieldControl>
     <span>点进框里按上下键：{{ value === "" ? "（空）" : value }}</span>
   </XhNumberFieldRoot>
 </template>
@@ -594,7 +556,9 @@ import { XhNumberFieldInput, XhNumberFieldLabel, XhNumberFieldRoot } from "@xiha
 >
   <div data-xh-part="root">
     <label data-xh-part="label">音量（0 – 100，每档 5）</label>
-    <input data-xh-part="input" style="inline-size: 96px; text-align: center" />
+    <div data-xh-part="control">
+      <input data-xh-part="input" style="inline-size: 96px; text-align: center" />
+    </div>
     <span>点进框里按上下键：<span id="number-field-no-trigger-value">60</span></span>
   </div>
 </xh-number-field>
@@ -610,82 +574,11 @@ import { XhNumberFieldInput, XhNumberFieldLabel, XhNumberFieldRoot } from "@xiha
 </script>
 ```
 
-### 加减钮排布
-
-触发器位置由作者写模板决定：放进 control 即减在左、加在右、输入框居中的一体式，不写 control 则照旧三件并排
-
-```vue
-<!--
-  Copyright (c) 2021-Present XiHanFun and contributors.
-  Licensed under the MIT License. See LICENSE in the project root for license information.
--->
-
-<script setup lang="ts">
-import {
-  XhNumberFieldControl,
-  XhNumberFieldDecrementTrigger,
-  XhNumberFieldIncrementTrigger,
-  XhNumberFieldInput,
-  XhNumberFieldLabel,
-  XhNumberFieldRoot,
-} from "@xihan-ui/vue";
-</script>
-
-<template>
-  <XhNumberFieldRoot default-value="1" :min="0" :max="9">
-    <XhNumberFieldLabel>一体式（control）</XhNumberFieldLabel>
-    <XhNumberFieldControl>
-      <XhNumberFieldDecrementTrigger />
-      <XhNumberFieldInput />
-      <XhNumberFieldIncrementTrigger />
-    </XhNumberFieldControl>
-  </XhNumberFieldRoot>
-
-  <XhNumberFieldRoot default-value="1" :min="0" :max="9">
-    <XhNumberFieldLabel>三件并排（不写 control）</XhNumberFieldLabel>
-    <div style="display: flex; gap: 4px">
-      <XhNumberFieldDecrementTrigger />
-      <XhNumberFieldInput style="inline-size: 80px; text-align: center" />
-      <XhNumberFieldIncrementTrigger />
-    </div>
-  </XhNumberFieldRoot>
-</template>
-```
-
-```html
-<xh-number-field default-value="1" min="0" max="9">
-  <div data-xh-part="root">
-    <label data-xh-part="label">一体式（control）</label>
-    <div data-xh-part="control">
-      <button data-xh-part="decrement-trigger"></button>
-      <input data-xh-part="input" />
-      <button data-xh-part="increment-trigger"></button>
-    </div>
-  </div>
-</xh-number-field>
-
-<xh-number-field default-value="1" min="0" max="9">
-  <div data-xh-part="root">
-    <label data-xh-part="label">三件并排（不写 control）</label>
-    <div style="display: flex; gap: 4px">
-      <button data-xh-part="decrement-trigger"></button>
-      <input data-xh-part="input" style="inline-size: 80px; text-align: center" />
-      <button data-xh-part="increment-trigger"></button>
-    </div>
-  </div>
-</xh-number-field>
-```
-
 ### 校验态
 
 invalid 由宿主自己判定，不必挂在表单上；标出来之后值照样能改、加减钮照样能按
 
 ```vue
-<!--
-  Copyright (c) 2021-Present XiHanFun and contributors.
-  Licensed under the MIT License. See LICENSE in the project root for license information.
--->
-
 <script setup lang="ts">
 import {
   XhNumberFieldControl,
@@ -753,14 +646,9 @@ function onValueChange(details: { valueAsNumber: number }) {
 
 ### 框内单位与货币符号
 
-前后缀图标/文字直接流式插进 control：减在左、加在右、输入框居中，前后缀排在输入框两侧
+前后缀图标/文字直接流式插进 control，减、加按钮统一收在右侧
 
 ```vue
-<!--
-  Copyright (c) 2021-Present XiHanFun and contributors.
-  Licensed under the MIT License. See LICENSE in the project root for license information.
--->
-
 <script setup lang="ts">
 import {
   XhNumberFieldControl,
@@ -823,201 +711,11 @@ import {
 </xh-number-field>
 ```
 
-### 固定小数位
-
-步进本身带定点规整，宿主在离开输入框与松开加减钮时把值补齐到两位小数
-
-```vue
-<!--
-  Copyright (c) 2021-Present XiHanFun and contributors.
-  Licensed under the MIT License. See LICENSE in the project root for license information.
--->
-
-<script setup lang="ts">
-import {
-  XhNumberFieldControl,
-  XhNumberFieldDecrementTrigger,
-  XhNumberFieldIncrementTrigger,
-  XhNumberFieldInput,
-  XhNumberFieldLabel,
-  XhNumberFieldRoot,
-} from "@xihan-ui/vue";
-import { ref } from "vue";
-
-const price = ref("12.50");
-
-// 补齐两位小数；空值与非法值一律留空
-function pad() {
-  const n = Number(price.value);
-  price.value = price.value === "" || !Number.isFinite(n) ? "" : n.toFixed(2);
-}
-</script>
-
-<template>
-  <XhNumberFieldRoot v-model:value="price" :min="0" :max="999" :step="0.1">
-    <XhNumberFieldLabel>单价（每档 0.1）</XhNumberFieldLabel>
-    <XhNumberFieldControl>
-      <XhNumberFieldInput @blur="pad" />
-      <XhNumberFieldDecrementTrigger @pointerup="pad" />
-      <XhNumberFieldIncrementTrigger @pointerup="pad" />
-    </XhNumberFieldControl>
-    <span>当前：{{ price || "（空）" }}</span>
-  </XhNumberFieldRoot>
-</template>
-```
-
-```html
-<xh-number-field id="number-field-precision" value="12.50" min="0" max="999" step="0.1">
-  <div data-xh-part="root">
-    <label data-xh-part="label">单价（每档 0.1）</label>
-    <div data-xh-part="control">
-      <input data-xh-part="input" />
-      <button data-xh-part="decrement-trigger"></button>
-      <button data-xh-part="increment-trigger"></button>
-    </div>
-    <span>当前：<span id="number-field-precision-value">12.50</span></span>
-  </div>
-</xh-number-field>
-
-<script type="module">
-  // 值握在这里，组件报出变化后写回
-  const field = document.getElementById("number-field-precision");
-  const readout = document.getElementById("number-field-precision-value");
-
-  function setValue(next) {
-    field.value = next;
-    readout.textContent = next || "（空）";
-  }
-
-  // 补齐两位小数；空值与非法值一律留空
-  function pad() {
-    const n = Number(field.value);
-    setValue(field.value === "" || !Number.isFinite(n) ? "" : n.toFixed(2));
-  }
-
-  // 补齐排在本轮事件全部走完之后一拍，组件自己的失焦规范化先落地
-  const padLater = () => setTimeout(pad);
-
-  field.addEventListener("value-change", (event) => setValue(event.detail.value));
-  field.querySelector('[data-xh-part="input"]').addEventListener("blur", padLater);
-
-  for (const trigger of field.querySelectorAll('[data-xh-part$="-trigger"]')) {
-    trigger.addEventListener("pointerup", padLater);
-  }
-</script>
-```
-
-### 提交时机
-
-输入途中只动草稿，失焦或回车才把值交给业务模型；不合法就退回上一次提交的值
-
-```vue
-<!--
-  Copyright (c) 2021-Present XiHanFun and contributors.
-  Licensed under the MIT License. See LICENSE in the project root for license information.
--->
-
-<script setup lang="ts">
-import {
-  XhNumberFieldControl,
-  XhNumberFieldDecrementTrigger,
-  XhNumberFieldIncrementTrigger,
-  XhNumberFieldInput,
-  XhNumberFieldLabel,
-  XhNumberFieldRoot,
-} from "@xihan-ui/vue";
-import { ref } from "vue";
-
-// 草稿绑在组件上，模型只在提交那一刻更新
-const draft = ref("3");
-const model = ref(3);
-
-function commit() {
-  const n = Number(draft.value);
-  if (draft.value === "" || !Number.isFinite(n)) {
-    draft.value = String(model.value);
-    return;
-  }
-  model.value = n;
-  draft.value = String(n);
-}
-</script>
-
-<template>
-  <XhNumberFieldRoot v-model:value="draft" :min="1" :max="99">
-    <XhNumberFieldLabel>数量</XhNumberFieldLabel>
-    <XhNumberFieldControl>
-      <XhNumberFieldInput @blur="commit" @keydown.enter="commit" />
-      <XhNumberFieldDecrementTrigger />
-      <XhNumberFieldIncrementTrigger />
-    </XhNumberFieldControl>
-    <span>草稿：{{ draft || "（空）" }} · 已提交：{{ model }}</span>
-  </XhNumberFieldRoot>
-</template>
-```
-
-```html
-<xh-number-field id="number-field-change-timing" value="3" min="1" max="99">
-  <div data-xh-part="root">
-    <label data-xh-part="label">数量</label>
-    <div data-xh-part="control">
-      <input data-xh-part="input" />
-      <button data-xh-part="decrement-trigger"></button>
-      <button data-xh-part="increment-trigger"></button>
-    </div>
-    <span>
-      草稿：<span id="number-field-change-timing-draft">3</span> ·
-      已提交：<span id="number-field-change-timing-model">3</span>
-    </span>
-  </div>
-</xh-number-field>
-
-<script type="module">
-  // 草稿绑在组件上，模型只在提交那一刻更新
-  const field = document.getElementById("number-field-change-timing");
-  const draftText = document.getElementById("number-field-change-timing-draft");
-  const modelText = document.getElementById("number-field-change-timing-model");
-  const input = field.querySelector('[data-xh-part="input"]');
-
-  let model = 3;
-
-  function setDraft(next) {
-    field.value = next;
-    draftText.textContent = next || "（空）";
-  }
-
-  function commit() {
-    const n = Number(field.value);
-    if (field.value === "" || !Number.isFinite(n)) {
-      setDraft(String(model));
-      return;
-    }
-    model = n;
-    setDraft(String(n));
-    modelText.textContent = String(model);
-  }
-
-  field.addEventListener("value-change", (event) => setDraft(event.detail.value));
-
-  // 提交排在本轮事件全部走完之后一拍，组件自己的失焦规范化先落地
-  input.addEventListener("blur", () => setTimeout(commit));
-
-  input.addEventListener("keydown", (event) => {
-    if (event.key === "Enter") commit();
-  });
-</script>
-```
-
 ### 自定义换算
 
 parse 把显示串读成数、format 把数写回显示串；两个方向必须互逆，否则按一下加号值就会漂
 
 ```vue
-<!--
-  Copyright (c) 2021-Present XiHanFun and contributors.
-  Licensed under the MIT License. See LICENSE in the project root for license information.
--->
-
 <script setup lang="ts">
 import {
   XhNumberFieldControl,
@@ -1144,7 +842,7 @@ const formatWeight = (value: number) => `${value} kg`;
 ### 何时不用
 
 - 用户更关心相对位置而非精确值：用[滑块](./slider)。
-- 值实际是编号或电话（不参与运算）：用[文本输入框](./text-field)，数字字段的千分位与步进会碍事。
+- 值实际是编号或电话（不参与运算）：用[文本字段](./text-field)，数字字段的千分位与步进会碍事。
 
 ### 特性
 
@@ -1153,15 +851,16 @@ const formatWeight = (value: number) => `${value} kg`;
 - `parse` / `format` 一对，用来接固定小数位、千分位、货币符号或自定义换算。
 - 越界的值在失焦规范化时被夹回区间。
 - `prefix` / `suffix` 在框内摆货币符、单位或图标，两段对读屏隐藏。
-- `control` 是输入、前后缀与两颗动作共用的唯一视觉盒；默认无可见描边、带轻阴影，悬停与聚焦由
-  整体盒统一反馈。两侧动作占满控件高度，常态和悬停保持透明，按下时才显示动作反馈。
+- `control` 是必需部件，也是输入、前后缀与两颗动作共用的唯一视觉盒；默认无可见描边、带轻阴影，悬停与聚焦由
+  整体盒统一反馈。减、加两颗动作依次收在右侧并占满控件高度，常态和悬停保持透明，按下时才显示动作反馈。
+- `outline` 延续默认层级投影，`subtle` 与 `ghost` 使用扁平表面；三档都由统一输入壳承担交互反馈。
 - comfortable 下 `sm` / `md` / `lg` 控件高为 32 / 36 / 40px；compact 下分别为 28 / 32 / 36px。
-  两侧动作区宽度跟随密度档，数字使用等宽字形，前缀、数值和后缀共用中线。
+  右侧动作区宽度跟随密度档，数字使用等宽字形，前缀、数值和后缀共用中线。
 - 粗指针环境会把真实加减按钮与控件高度扩到 comfortable 48px、compact 44px；命中区由 flex
   子项本身承担，不用伪元素伸进输入区，两颗按钮及输入区互不重叠。
 - Tab 只停在 `spinbutton` 输入框，聚焦环由整个 `control` 统一绘制；加减钮退出 Tab 序列，但仍可由
   指针和公开 API 操作。到达 `min` / `max` 时只禁用对应方向，`disabled` / `readOnly` 才同时锁住两侧。
-- 两侧动作与输入之间使用全高柔和分隔线；位置使用逻辑属性，RTL 下自动换边。
+- 输入与右侧动作组之间使用一条半高、垂直居中的柔和分隔线；位置使用逻辑属性，RTL 下自动换边。
 
 ### 组合
 
@@ -1181,7 +880,8 @@ const formatWeight = (value: number) => `${value} kg`;
   或 `0` 开始。业务校验和错误文案由表单层明确提供。
 - 长按当前按固定节奏重复：默认先等 300ms，再每 50ms 步进一次；尚未提供加速曲线。
 - 输入使用 `type="text"` 与 `inputmode="decimal"`，组件不接管滚轮，避免页面滚动时意外改值。
-- 当前标准组合是水平排列的减号、输入与加号；上下堆叠动作尚未纳入既有 anatomy，不能只靠皮肤伪造。
+- 当前结构是 `control` 内水平排列的可选减号、必需输入与可选加号；不支持脱离 `control` 的三件并排，
+  也不提供上下堆叠动作。
 
 ### 反模式
 
@@ -1269,7 +969,7 @@ const formatWeight = (value: number) => `${value} kg`;
 | `decrement` | `() => void` |  |
 | `getRootProps` | `() => T['element']` |  |
 | `getLabelProps` | `() => T['label']` |  |
-| `getControlProps` | `() => T['element']` | 输入框与加减钮的包裹层：皮肤把视觉盒画在它身上，减在左、加在右、输入框居中。 |
+| `getControlProps` | `() => T['element']` | 必需的唯一输入壳：皮肤把视觉盒画在它身上，输入在左，减、加动作依次收在右侧。 |
 | `getPrefixProps` | `() => T['element']` | 输入框前的装饰段（货币符、单位、图标）；对读屏隐藏，不参与名字链。 |
 | `getInputProps` | `() => T['input']` |  |
 | `getSuffixProps` | `() => T['element']` | 输入框后的装饰段；对读屏隐藏，不参与名字链。 |
@@ -1366,42 +1066,24 @@ const formatWeight = (value: number) => `${value} kg`;
 | `--xh-number-field-icon-size` | `root` | `--xh-icon-size` | `default`<br>`size=lg`<br>`size=sm` | `--xh-glyph-size-lg`<br>`--xh-glyph-size-md`<br>`--xh-glyph-size-sm` | number-field 的 root 部件 --xh-icon-size 覆盖槽。 |
 | `--xh-number-field-input-align` | `control`<br>`input` | `text-align` | `default` | `center` | number-field 的 control、input 部件 text-align 覆盖槽。 |
 | `--xh-number-field-input-autofill-bg` | `control`<br>`input` | `box-shadow` | `-webkit-autofill`<br>`autofill` | `--xh-bg-canvas` | number-field 的 control、input 部件 box-shadow 覆盖槽。 |
-| `--xh-number-field-input-autofill-fg` | `input` | `-webkit-text-fill-color` | `-webkit-autofill`<br>`autofill` | `--xh-fg-default` | number-field 的 input 部件 -webkit-text-fill-color 覆盖槽。 |
-| `--xh-number-field-input-bg` | `input` | `background` | `default` | `--xh-_number-field-bg` | number-field 的 input 部件 background 覆盖槽。 |
-| `--xh-number-field-input-bg-disabled` | `input` | `background` | `disabled` | `--xh-bg-subtle` | number-field 的 input 部件 background 覆盖槽。 |
-| `--xh-number-field-input-bg-hover` | `input` | `background` | `hover`<br>`invalid`<br>`not(:disabled, [readonly], [data-invalid])` | `--xh-_number-field-bg-hover` | number-field 的 input 部件 background 覆盖槽。 |
-| `--xh-number-field-input-bg-readonly` | `input` | `background` | `default` | `--xh-bg-subtle` | number-field 的 input 部件 background 覆盖槽。 |
-| `--xh-number-field-input-border` | `input` | `border` | `default` | `--xh-_number-field-border` | number-field 的 input 部件 border 覆盖槽。 |
-| `--xh-number-field-input-border-focus` | `input` | `border-color` | `focus-visible` | `--xh-_number-field-border-focus` | number-field 的 input 部件 border-color 覆盖槽。 |
-| `--xh-number-field-input-border-hover` | `input` | `border-color` | `hover`<br>`invalid`<br>`not(:disabled, [readonly], [data-invalid])` | `--xh-_number-field-border-hover` | number-field 的 input 部件 border-color 覆盖槽。 |
-| `--xh-number-field-input-border-invalid` | `input` | `border-color` | `invalid` | `--xh-border-invalid` | number-field 的 input 部件 border-color 覆盖槽。 |
-| `--xh-number-field-input-fg` | `input` | `color` | `default` | `--xh-fg-default` | number-field 的 input 部件 color 覆盖槽。 |
-| `--xh-number-field-input-font-size` | `input` | `font-size` | `default` | `--xh-_number-field-font-size` | number-field 的 input 部件 font-size 覆盖槽。 |
-| `--xh-number-field-input-h` | `input` | `block-size` | `default` | `--xh-_number-field-h` | number-field 的 input 部件 block-size 覆盖槽。 |
+| `--xh-number-field-input-autofill-fg` | `control`<br>`input` | `-webkit-text-fill-color` | `-webkit-autofill`<br>`autofill` | `--xh-fg-default` | number-field 的 control、input 部件 -webkit-text-fill-color 覆盖槽。 |
+| `--xh-number-field-input-fg` | `control`<br>`input` | `color` | `default` | `--xh-fg-default` | number-field 的 control、input 部件 color 覆盖槽。 |
+| `--xh-number-field-input-font-size` | `control`<br>`input` | `font-size` | `default` | `--xh-_number-field-font-size` | number-field 的 control、input 部件 font-size 覆盖槽。 |
 | `--xh-number-field-input-px` | `control`<br>`input` | `padding-inline` | `default` | `--xh-_number-field-px` | number-field 的 control、input 部件 padding-inline 覆盖槽。 |
-| `--xh-number-field-input-radius` | `input` | `border-radius` | `default` | `--xh-_number-field-radius` | number-field 的 input 部件 border-radius 覆盖槽。 |
-| `--xh-number-field-input-shadow` | `input` | `box-shadow` | `-webkit-autofill`<br>`autofill`<br>`default` | `--xh-_number-field-shadow` | number-field 的 input 部件 box-shadow 覆盖槽。 |
 | `--xh-number-field-input-w` | `control`<br>`input` | `inline-size` | `default` | `5em` | number-field 的 control、input 部件 inline-size 覆盖槽。 |
 | `--xh-number-field-label-fg` | `label` | `color` | `default` | `--xh-fg-default` | number-field 的 label 部件 color 覆盖槽。 |
 | `--xh-number-field-label-fg-disabled` | `label` | `color` | `disabled` | `--xh-fg-subtle` | number-field 的 label 部件 color 覆盖槽。 |
 | `--xh-number-field-label-font-size` | `label` | `font-size` | `default` | `--xh-_number-field-label-font-size` | number-field 的 label 部件 font-size 覆盖槽。 |
 | `--xh-number-field-label-font-weight` | `label` | `font-weight` | `default` | `--xh-text-label-weight` | number-field 的 label 部件 font-weight 覆盖槽。 |
-| `--xh-number-field-placeholder-fg` | `input` | `color` | `placeholder` | `--xh-fg-subtle` | number-field 的 input 部件 color 覆盖槽。 |
+| `--xh-number-field-placeholder-fg` | `control`<br>`input` | `color` | `placeholder` | `--xh-fg-subtle` | number-field 的 control、input 部件 color 覆盖槽。 |
 | `--xh-number-field-touch-target-size` | `control`<br>`decrement-trigger`<br>`increment-trigger` | `min-block-size`<br>`min-inline-size` | `@media (pointer: coarse)` | `--xh-control-box-lg` | number-field 的 control、decrement-trigger、increment-trigger 部件 min-block-size、min-inline-size 覆盖槽。 |
-| `--xh-number-field-trigger-bg` | `decrement-trigger`<br>`increment-trigger` | `background` | `default` | `--xh-_number-field-trigger-bg` | number-field 的 decrement-trigger、increment-trigger 部件 background 覆盖槽。 |
 | `--xh-number-field-trigger-bg-active` | `control`<br>`decrement-trigger`<br>`increment-trigger` | `background` | `active`<br>`not(:disabled)` | `--xh-_number-field-trigger-bg-active` | number-field 的 control、decrement-trigger、increment-trigger 部件 background 覆盖槽。 |
-| `--xh-number-field-trigger-bg-disabled` | `decrement-trigger`<br>`increment-trigger` | `background` | `disabled` | `--xh-bg-muted` | number-field 的 decrement-trigger、increment-trigger 部件 background 覆盖槽。 |
-| `--xh-number-field-trigger-bg-hover` | `decrement-trigger`<br>`increment-trigger` | `background` | `hover`<br>`not(:disabled)` | `--xh-_number-field-trigger-bg-hover` | number-field 的 decrement-trigger、increment-trigger 部件 background 覆盖槽。 |
-| `--xh-number-field-trigger-border` | `decrement-trigger`<br>`increment-trigger` | `border` | `default` | `--xh-_number-field-trigger-border` | number-field 的 decrement-trigger、increment-trigger 部件 border 覆盖槽。 |
-| `--xh-number-field-trigger-border-disabled` | `decrement-trigger`<br>`increment-trigger` | `border-color` | `disabled` | `--xh-border-subtle` | number-field 的 decrement-trigger、increment-trigger 部件 border-color 覆盖槽。 |
-| `--xh-number-field-trigger-border-hover` | `decrement-trigger`<br>`increment-trigger` | `border-color` | `hover`<br>`not(:disabled)` | `--xh-_number-field-trigger-border-hover` | number-field 的 decrement-trigger、increment-trigger 部件 border-color 覆盖槽。 |
-| `--xh-number-field-trigger-divider` | `control`<br>`decrement-trigger`<br>`increment-trigger`<br>`input` | `border-inline-start` | `has(~ [data-part='input'])`<br>`is([data-part='decrement-trigger'], [data-part='increment-trigger'])` | `--xh-material-soft-separator` | number-field 的 control、decrement-trigger、increment-trigger、input 部件 border-inline-start 覆盖槽。 |
-| `--xh-number-field-trigger-divider-h` | `control`<br>`decrement-trigger`<br>`increment-trigger`<br>`input` | `block-size` | `has(~ [data-part='input'])`<br>`is([data-part='decrement-trigger'], [data-part='increment-trigger'])` | `--xh-_number-field-divider-h` | number-field 的 control、decrement-trigger、increment-trigger、input 部件 block-size 覆盖槽。 |
+| `--xh-number-field-trigger-divider` | `control`<br>`decrement-trigger`<br>`input` | `border-inline-start` | `has([data-part='input'])` | `--xh-material-soft-separator` | number-field 的 control、decrement-trigger、input 部件 border-inline-start 覆盖槽。 |
+| `--xh-number-field-trigger-divider-h` | `control`<br>`decrement-trigger`<br>`input` | `block-size`<br>`inset-block-start` | `has([data-part='input'])` | `--xh-_number-field-divider-h` | number-field 的 control、decrement-trigger、input 部件 block-size、inset-block-start 覆盖槽。 |
 | `--xh-number-field-trigger-fg` | `control`<br>`decrement-trigger`<br>`increment-trigger` | `color` | `default` | `--xh-fg-default` | number-field 的 control、decrement-trigger、increment-trigger 部件 color 覆盖槽。 |
 | `--xh-number-field-trigger-fg-hover` | `control`<br>`decrement-trigger`<br>`increment-trigger` | `color` | `hover`<br>`not(:disabled)` | `--xh-fg-default` | number-field 的 control、decrement-trigger、increment-trigger 部件 color 覆盖槽。 |
-| `--xh-number-field-trigger-font-size` | `decrement-trigger`<br>`increment-trigger` | `font-size` | `default` | `--xh-_number-field-trigger-font-size` | number-field 的 decrement-trigger、increment-trigger 部件 font-size 覆盖槽。 |
-| `--xh-number-field-trigger-radius` | `decrement-trigger`<br>`increment-trigger` | `border-radius` | `default` | `--xh-shape-control` | number-field 的 decrement-trigger、increment-trigger 部件 border-radius 覆盖槽。 |
-| `--xh-number-field-trigger-size` | `decrement-trigger`<br>`increment-trigger` | `block-size`<br>`inline-size` | `default` | `--xh-control-action-size` | number-field 的 decrement-trigger、increment-trigger 部件 block-size、inline-size 覆盖槽。 |
+| `--xh-number-field-trigger-font-size` | `control`<br>`decrement-trigger`<br>`increment-trigger` | `font-size` | `default` | `--xh-_number-field-trigger-font-size` | number-field 的 control、decrement-trigger、increment-trigger 部件 font-size 覆盖槽。 |
+| `--xh-number-field-trigger-size` | `control`<br>`decrement-trigger`<br>`increment-trigger` | `block-size`<br>`inline-size` | `default` | `--xh-control-action-size` | number-field 的 control、decrement-trigger、increment-trigger 部件 block-size、inline-size 覆盖槽。 |
 <!-- xh-component-tokens:end -->
 
 ### 动效

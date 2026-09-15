@@ -17,11 +17,6 @@
 复制安装命令
 
 ```vue
-<!--
-  Copyright (c) 2021-Present XiHanFun and contributors.
-  Licensed under the MIT License. See LICENSE in the project root for license information.
--->
-
 <script setup lang="ts">
 import { CheckIcon, ClipboardIcon } from "@xihan-ui/icons";
 import {
@@ -79,11 +74,6 @@ const command = "pnpm add @xihan-ui/vue @xihan-ui/styles";
 内容已在页面中展示时，只保留复制按钮
 
 ```vue
-<!--
-  Copyright (c) 2021-Present XiHanFun and contributors.
-  Licensed under the MIT License. See LICENSE in the project root for license information.
--->
-
 <script setup lang="ts">
 import { CheckIcon, ClipboardIcon } from "@xihan-ui/icons";
 import { XhClipboardCopyTrigger, XhClipboardIndicator, XhClipboardRoot, XhIcon } from "@xihan-ui/vue";
@@ -115,11 +105,6 @@ import { XhClipboardCopyTrigger, XhClipboardIndicator, XhClipboardRoot, XhIcon }
 设置复制按钮的外观
 
 ```vue
-<!--
-  Copyright (c) 2021-Present XiHanFun and contributors.
-  Licensed under the MIT License. See LICENSE in the project root for license information.
--->
-
 <script setup lang="ts">
 import { XhClipboardCopyTrigger, XhClipboardIndicator, XhClipboardRoot } from "@xihan-ui/vue";
 
@@ -149,11 +134,6 @@ const labels = { solid: "实心", subtle: "浅色", outline: "线框", ghost: "�
 使用小、中、大三档尺寸
 
 ```vue
-<!--
-  Copyright (c) 2021-Present XiHanFun and contributors.
-  Licensed under the MIT License. See LICENSE in the project root for license information.
--->
-
 <script setup lang="ts">
 import {
   XhClipboardControl,
@@ -199,7 +179,7 @@ const sizes = ["sm", "md", "lg"] as const;
 ### 何时不用
 
 - 复制富文本或图片。
-- 内容需要先编辑时，使用[文本输入](./text-field)。
+- 内容需要先编辑时，使用[文本字段](./text-field)。
 
 ### 特性
 

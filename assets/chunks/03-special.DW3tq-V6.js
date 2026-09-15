@@ -1,0 +1,9 @@
+const d=`<!-- 平台键名 | 常用按键与跨平台组合由 Headless 统一格式化 -->
+<div style="display: flex; flex-wrap: wrap; gap: 8px">
+  <xh-kbd keys="Mod"><kbd data-xh-part="root"></kbd></xh-kbd>
+  <xh-kbd keys="Shift"><kbd data-xh-part="root"></kbd></xh-kbd>
+  <xh-kbd keys="ArrowUp"><kbd data-xh-part="root"></kbd></xh-kbd>
+  <xh-kbd keys="Escape"><kbd data-xh-part="root"></kbd></xh-kbd>
+  <xh-kbd keys="Mod,Shift,P"><kbd data-xh-part="root"></kbd></xh-kbd>
+</div>
+`;export{d as default};

@@ -17,11 +17,6 @@
 组织应用的主要导航入口
 
 ```vue
-<!--
-  Copyright (c) 2021-Present XiHanFun and contributors.
-  Licensed under the MIT License. See LICENSE in the project root for license information.
--->
-
 <script setup lang="ts">
 import type { SideNavNode } from "@xihan-ui/headless";
 import { HomeIcon, ShoppingCartIcon, UsersIcon } from "@xihan-ui/icons";
@@ -188,11 +183,6 @@ const collection: SideNavNode[] = [
 以图标保留入口，子级在浮层中展开
 
 ```vue
-<!--
-  Copyright (c) 2021-Present XiHanFun and contributors.
-  Licensed under the MIT License. See LICENSE in the project root for license information.
--->
-
 <script setup lang="ts">
 import type { SideNavNode } from "@xihan-ui/headless";
 import { SettingsIcon, ShoppingCartIcon, UsersIcon } from "@xihan-ui/icons";
@@ -353,11 +343,6 @@ const icons = {
 适配不同密度的应用侧栏
 
 ```vue
-<!--
-  Copyright (c) 2021-Present XiHanFun and contributors.
-  Licensed under the MIT License. See LICENSE in the project root for license information.
--->
-
 <script setup lang="ts">
 import type { SideNavNode } from "@xihan-ui/headless";
 import {
@@ -518,11 +503,6 @@ const rows = [
 保留不可用入口的位置与说明
 
 ```vue
-<!--
-  Copyright (c) 2021-Present XiHanFun and contributors.
-  Licensed under the MIT License. See LICENSE in the project root for license information.
--->
-
 <script setup lang="ts">
 import type { SideNavNode } from "@xihan-ui/headless";
 import {

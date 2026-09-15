@@ -17,11 +17,6 @@
 投放区自己就是一个大按钮，隐藏输入是必备部件，缺了它选不了文件
 
 ```vue
-<!--
-  Copyright (c) 2021-Present XiHanFun and contributors.
-  Licensed under the MIT License. See LICENSE in the project root for license information.
--->
-
 <script setup lang="ts">
 import {
   XhFileUploadDropzone,
@@ -115,11 +110,6 @@ import {
 accept / maxFiles / maxFileSize 越界的当场被拒，file-reject 逐个报出理由
 
 ```vue
-<!--
-  Copyright (c) 2021-Present XiHanFun and contributors.
-  Licensed under the MIT License. See LICENSE in the project root for license information.
--->
-
 <script setup lang="ts">
 import {
   XhFileUploadClearTrigger,
@@ -275,11 +265,6 @@ const translations = {
 传了 files 就由宿主说了算，组件自己不再落值，只发 files-change 报告意图
 
 ```vue
-<!--
-  Copyright (c) 2021-Present XiHanFun and contributors.
-  Licensed under the MIT License. See LICENSE in the project root for license information.
--->
-
 <script setup lang="ts">
 import {
   XhButton,
@@ -406,11 +391,6 @@ function onFilesChange(details: { files: File[] }) {
 disabled 把投放区、触发器与隐藏输入一并关停，拖拽进来也不再收
 
 ```vue
-<!--
-  Copyright (c) 2021-Present XiHanFun and contributors.
-  Licensed under the MIT License. See LICENSE in the project root for license information.
--->
-
 <script setup lang="ts">
 import {
   XhFileUploadDropzone,
@@ -457,11 +437,6 @@ import {
 defaultFiles 给出挂载时就在的那几份，之后列表照旧由组件自己保管，删除与清空都照常
 
 ```vue
-<!--
-  Copyright (c) 2021-Present XiHanFun and contributors.
-  Licensed under the MIT License. See LICENSE in the project root for license information.
--->
-
 <script setup lang="ts">
 import {
   XhFileUploadClearTrigger,
@@ -577,11 +552,6 @@ const initialFiles = [
 directory 让隐藏输入改收目录，选中目录下的文件一次性全进来，数量上限要跟着放开
 
 ```vue
-<!--
-  Copyright (c) 2021-Present XiHanFun and contributors.
-  Licensed under the MIT License. See LICENSE in the project root for license information.
--->
-
 <script setup lang="ts">
 import {
   XhFileUploadDropzone,
@@ -671,11 +641,6 @@ const noLimit = Number.POSITIVE_INFINITY;
 item-preview 是个空方框，作者往里塞什么都行；塞进去的图会被裁成方格，一行摆几张由外层网格定
 
 ```vue
-<!--
-  Copyright (c) 2021-Present XiHanFun and contributors.
-  Licensed under the MIT License. See LICENSE in the project root for license information.
--->
-
 <script setup lang="ts">
 import {
   XhFileUploadDropzone,
@@ -797,11 +762,6 @@ onBeforeUnmount(() => {
 组件只管 accept 与大小数量这几条通用规则，别的规矩由宿主在受控列表里再筛一道：这里同名文件只留最先来的那份
 
 ```vue
-<!--
-  Copyright (c) 2021-Present XiHanFun and contributors.
-  Licensed under the MIT License. See LICENSE in the project root for license information.
--->
-
 <script setup lang="ts">
 import {
   XhFileUploadDropzone,
@@ -948,11 +908,6 @@ function onFileAccept(details: { files: File[] }) {
 给一个 upload 实现组件就是上传器：收下即开传（auto-upload 可关成手动），进度、成败与返回地址都在每条的传输快照里，失败一键重试
 
 ```vue
-<!--
-  Copyright (c) 2021-Present XiHanFun and contributors.
-  Licensed under the MIT License. See LICENSE in the project root for license information.
--->
-
 <script setup lang="ts">
 import type { FileUploadRequest, FileUploadResult } from "@xihan-ui/vue";
 import {
@@ -1181,11 +1136,6 @@ function upload(request: FileUploadRequest): Promise<FileUploadResult> {
 条目里放什么由作者定：一条普通的 a[download] 就是下载口；想自己接管就换成按钮，在处理器里怎么取都行
 
 ```vue
-<!--
-  Copyright (c) 2021-Present XiHanFun and contributors.
-  Licensed under the MIT License. See LICENSE in the project root for license information.
--->
-
 <script setup lang="ts">
 import {
   XhFileUploadDropzone,
@@ -1323,11 +1273,6 @@ const action = {
 remote-files 装编辑表单里已存在的附件：与本地文件同列渲染（allFiles 远程在前）、占 max-files 名额，删除走 remote-files-change 由宿主落库
 
 ```vue
-<!--
-  Copyright (c) 2021-Present XiHanFun and contributors.
-  Licensed under the MIT License. See LICENSE in the project root for license information.
--->
-
 <script setup lang="ts">
 import type { FileUploadRemoteFile } from "@xihan-ui/vue";
 import {

@@ -17,11 +17,6 @@
 逐段输入并实时获得标准时间值；有值时可以一键清空
 
 ```vue
-<!--
-  Copyright (c) 2021-Present XiHanFun and contributors.
-  Licensed under the MIT License. See LICENSE in the project root for license information.
--->
-
 <script setup lang="ts">
 import {
   XhTimeFieldClearTrigger,
@@ -102,11 +97,6 @@ const value = ref("09:30");
 hour-cycle=12 多出一个上午/下午段，值本身仍是 24 小时的串
 
 ```vue
-<!--
-  Copyright (c) 2021-Present XiHanFun and contributors.
-  Licensed under the MIT License. See LICENSE in the project root for license information.
--->
-
 <script setup lang="ts">
 import {
   XhTimeFieldControl,
@@ -175,11 +165,6 @@ const value = ref("13:45");
 granularity=second 让秒段显出来并参与值，空段按上下键从该段边界起步
 
 ```vue
-<!--
-  Copyright (c) 2021-Present XiHanFun and contributors.
-  Licensed under the MIT License. See LICENSE in the project root for license information.
--->
-
 <script setup lang="ts">
 import {
   XhTimeFieldControl,
@@ -246,11 +231,6 @@ const value = ref("");
 禁用整组退出 Tab 序；越界只做标注，08:00 原样留着不被改写
 
 ```vue
-<!--
-  Copyright (c) 2021-Present XiHanFun and contributors.
-  Licensed under the MIT License. See LICENSE in the project root for license information.
--->
-
 <script setup lang="ts">
 import {
   XhTimeFieldControl,
@@ -323,11 +303,6 @@ import {
 variant 只改分段框的底色与描边用法，分段结构与键盘行为都不变
 
 ```vue
-<!--
-  Copyright (c) 2021-Present XiHanFun and contributors.
-  Licensed under the MIT License. See LICENSE in the project root for license information.
--->
-
 <script setup lang="ts">
 import {
   XhTimeFieldControl,
@@ -404,11 +379,6 @@ const variants = ["outline", "subtle", "ghost"] as const;
 tone 决定用哪族颜色，与 variant 正交；这里固定 subtle 形态，只看语气这一轴
 
 ```vue
-<!--
-  Copyright (c) 2021-Present XiHanFun and contributors.
-  Licensed under the MIT License. See LICENSE in the project root for license information.
--->
-
 <script setup lang="ts">
 import {
   XhTimeFieldControl,
@@ -524,11 +494,6 @@ const tones = ["brand", "neutral", "success", "warning", "danger", "info"] as co
 不传 size 即默认档；行高、内边距与字号一起换档，标题也跟着变
 
 ```vue
-<!--
-  Copyright (c) 2021-Present XiHanFun and contributors.
-  Licensed under the MIT License. See LICENSE in the project root for license information.
--->
-
 <script setup lang="ts">
 import {
   XhTimeFieldControl,
@@ -609,11 +574,6 @@ const sizes = [
 值由宿主持有，按钮直接写值；框内自带清空钮，有值才显形，点完焦点回到第一段
 
 ```vue
-<!--
-  Copyright (c) 2021-Present XiHanFun and contributors.
-  Licensed under the MIT License. See LICENSE in the project root for license information.
--->
-
 <script setup lang="ts">
 import {
   XhButton,
@@ -735,11 +695,6 @@ function now() {
 值交给宿主持有，写回来的时间被吸附到清单里的一格，上下键与数字键因此都落在清单上
 
 ```vue
-<!--
-  Copyright (c) 2021-Present XiHanFun and contributors.
-  Licensed under the MIT License. See LICENSE in the project root for license information.
--->
-
 <script setup lang="ts">
 import {
   XhTimeFieldControl,
@@ -840,7 +795,7 @@ function snap(next: string) {
 ### 何时不用
 
 - 需要从固定的整点或半点里挑：用[时间选择器](./time-picker)。
-- 需要日期：用[日期输入](./date-field)。
+- 需要日期：用[日期字段](./date-field)。
 
 ### 特性
 
@@ -853,7 +808,7 @@ function snap(next: string) {
 
 ### 组合
 
-- 外面套[表单字段](./field)；与[日期输入](./date-field)并排组成日期时间。
+- 外面套[表单字段](./field)；与[日期字段](./date-field)并排组成日期时间。
 
 ### 最佳实践
 

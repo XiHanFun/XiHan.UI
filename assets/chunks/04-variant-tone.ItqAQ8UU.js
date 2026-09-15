@@ -1,0 +1,43 @@
+const a=`<!-- 变体 | 设置编辑框外观 -->
+<div style="display: flex; flex-direction: column; gap: 12px">
+  <xh-editable variant="outline" default-value="曦寒" placeholder="未填写">
+    <div data-xh-part="root">
+      <label data-xh-part="label">描边</label>
+      <div data-xh-part="control">
+        <span data-xh-part="preview"></span>
+        <input data-xh-part="input" />
+        <button data-xh-part="edit-trigger" aria-label="编辑"></button>
+        <button data-xh-part="submit-trigger" aria-label="确认"></button>
+        <button data-xh-part="cancel-trigger" aria-label="取消"></button>
+      </div>
+    </div>
+  </xh-editable>
+
+  <xh-editable variant="subtle" default-value="曦寒" placeholder="未填写">
+    <div data-xh-part="root">
+      <label data-xh-part="label">浅色</label>
+      <div data-xh-part="control">
+        <span data-xh-part="preview"></span>
+        <input data-xh-part="input" />
+        <button data-xh-part="edit-trigger" aria-label="编辑"></button>
+        <button data-xh-part="submit-trigger" aria-label="确认"></button>
+        <button data-xh-part="cancel-trigger" aria-label="取消"></button>
+      </div>
+    </div>
+  </xh-editable>
+
+  <xh-editable variant="ghost" default-value="曦寒" placeholder="未填写">
+    <div data-xh-part="root">
+      <label data-xh-part="label">幽灵</label>
+      <div data-xh-part="control">
+        <span data-xh-part="preview"></span>
+        <input data-xh-part="input" />
+        <button data-xh-part="edit-trigger" aria-label="编辑"></button>
+        <button data-xh-part="submit-trigger" aria-label="确认"></button>
+        <button data-xh-part="cancel-trigger" aria-label="取消"></button>
+      </div>
+    </div>
+  </xh-editable>
+
+</div>
+`;export{a as default};

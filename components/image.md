@@ -17,11 +17,6 @@
 图片与回退内容始终同挂 DOM、靠 hidden 互斥显隐，换人时盒子不塌也不跳
 
 ```vue
-<!--
-  Copyright (c) 2021-Present XiHanFun and contributors.
-  Licensed under the MIT License. See LICENSE in the project root for license information.
--->
-
 <script setup lang="ts">
 import { XhImageFallback, XhImageImage, XhImageRoot } from "@xihan-ui/vue";
 
@@ -70,11 +65,6 @@ const cover
 地址写坏和压根没给 src 是同一个落点，status-change 把三态报出来，root 上的 data-state 也有一份
 
 ```vue
-<!--
-  Copyright (c) 2021-Present XiHanFun and contributors.
-  Licensed under the MIT License. See LICENSE in the project root for license information.
--->
-
 <script setup lang="ts">
 import { XhImageFallback, XhImageImage, XhImageRoot } from "@xihan-ui/vue";
 import { reactive } from "vue";
@@ -175,11 +165,6 @@ const status = reactive<Record<string, string>>({
 同一个组件既当封面图也当缩略图：宽高比由 --xh-image-ratio 定，画面怎么填由 --xh-image-fit 定
 
 ```vue
-<!--
-  Copyright (c) 2021-Present XiHanFun and contributors.
-  Licensed under the MIT License. See LICENSE in the project root for license information.
--->
-
 <script setup lang="ts">
 import { XhImageFallback, XhImageImage, XhImageRoot } from "@xihan-ui/vue";
 
@@ -271,11 +256,6 @@ const portrait
 fallback-delay 决定回退内容多久才露面，Infinity 表示加载期间一直不露面、只有失败才显；写在 image 部件上的原生属性照常落到底层图片元素上
 
 ```vue
-<!--
-  Copyright (c) 2021-Present XiHanFun and contributors.
-  Licensed under the MIT License. See LICENSE in the project root for license information.
--->
-
 <script setup lang="ts">
 import { XhImageFallback, XhImageImage, XhImageRoot } from "@xihan-ui/vue";
 
@@ -365,11 +345,6 @@ const untilFailed = Number.POSITIVE_INFINITY;
 状态一落位就报出来：加载中给占位、失败给提示与重试入口，两套内容共用同一个回退部件
 
 ```vue
-<!--
-  Copyright (c) 2021-Present XiHanFun and contributors.
-  Licensed under the MIT License. See LICENSE in the project root for license information.
--->
-
 <script setup lang="ts">
 import { XhImageFallback, XhImageImage, XhImageRoot } from "@xihan-ui/vue";
 import { ref } from "vue";
@@ -444,11 +419,6 @@ const src = ref("https://example.invalid/photo.png");
 缩略图的点击与键盘自己接，放大层是一个对话框，里面再放一份独立的图片实例
 
 ```vue
-<!--
-  Copyright (c) 2021-Present XiHanFun and contributors.
-  Licensed under the MIT License. See LICENSE in the project root for license information.
--->
-
 <script setup lang="ts">
 import {
   XhDialogCloseTrigger,
@@ -721,11 +691,6 @@ const itemStyle = {
 图与图之间不必互相认识：宿主拿着地址数组与当前下标，预览层里只放一份图片实例
 
 ```vue
-<!--
-  Copyright (c) 2021-Present XiHanFun and contributors.
-  Licensed under the MIT License. See LICENSE in the project root for license information.
--->
-
 <script setup lang="ts">
 import {
   XhButton,
@@ -955,11 +920,6 @@ function step(delta: number): void {
 src 是响应式的：进入视口前不给地址，观察器命中再换上，机器立刻走一遍完整加载
 
 ```vue
-<!--
-  Copyright (c) 2021-Present XiHanFun and contributors.
-  Licensed under the MIT License. See LICENSE in the project root for license information.
--->
-
 <script setup lang="ts">
 import { XhImageFallback, XhImageImage, XhImageRoot } from "@xihan-ui/vue";
 import { onBeforeUnmount, onMounted, ref } from "vue";

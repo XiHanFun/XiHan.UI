@@ -1,0 +1,37 @@
+const e=`// 基础用法 | 在正文里敲 @ 才开候选，选中的那条被插到光标处，前后文一字不动
+import type { ReactNode } from "react";
+import { XhMentionRoot } from "@xihan-ui/react";
+import { useState } from "react";
+
+const people = [
+  { value: "lilei", label: "李雷" },
+  { value: "hanmeimei", label: "韩梅梅" },
+  { value: "poly", label: "Poly" },
+  { value: "ghost", label: "幽灵（已离职）", disabled: true },
+];
+
+export default function Demo(): ReactNode {
+  const [text, setText] = useState("");
+  const [query, setQuery] = useState<string | null>(null);
+
+  // 过滤是调用方的活儿：组件只把 @ 到光标之间那段交出来
+  const q = (query ?? "").trim().toLowerCase();
+  const filtered = q === ""
+    ? people
+    : people.filter(p => p.value.includes(q) || p.label.toLowerCase().includes(q));
+
+  return (
+    <>
+      <XhMentionRoot
+        value={text}
+        onValueChange={details => setText(details.value)}
+        collection={filtered}
+        placeholder="写点什么，输入 @ 提及同事"
+        translations={{ input: "正文", content: "提及谁" }}
+        onQueryChange={details => setQuery(details.query)}
+      />
+      <p>{\`正文：\${text || "（空）"}\`}</p>
+    </>
+  );
+}
+`;export{e as default};

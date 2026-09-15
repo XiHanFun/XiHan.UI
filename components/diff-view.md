@@ -17,11 +17,6 @@
 两个入口归一到同一个模型：这里用新旧两版全文算，着色在建模时一次算好
 
 ```vue
-<!--
-  Copyright (c) 2021-Present XiHanFun and contributors.
-  Licensed under the MIT License. See LICENSE in the project root for license information.
--->
-
 <script setup lang="ts">
 import { createHighlighter } from "@xihan-ui/code-highlight";
 import { computeTextDiff } from "@xihan-ui/headless";
@@ -100,11 +95,6 @@ const model = computed(() =>
 并排两列都发格子，空的那一侧照发；远离变更的连续上下文折成一格，点开即展开
 
 ```vue
-<!--
-  Copyright (c) 2021-Present XiHanFun and contributors.
-  Licensed under the MIT License. See LICENSE in the project root for license information.
--->
-
 <script setup lang="ts">
 import { computeTextDiff } from "@xihan-ui/headless";
 import { XhDiffViewBody, XhDiffViewHeader, XhDiffViewRoot, XhDiffViewSummary, XhDiffViewViewport } from "@xihan-ui/vue";
@@ -324,11 +314,6 @@ const expanded = ref<string[]>([]);
 开 wrap 让长行原地折行；配对的删改行之间再比一次词，只有真正动过的那几段上底色
 
 ```vue
-<!--
-  Copyright (c) 2021-Present XiHanFun and contributors.
-  Licensed under the MIT License. See LICENSE in the project root for license information.
--->
-
 <script setup lang="ts">
 import { createHighlighter } from "@xihan-ui/code-highlight";
 import { computeTextDiff } from "@xihan-ui/headless";
@@ -452,11 +437,6 @@ const model = computed(() =>
 超过 maxLines 的部分被砍掉，提示条把砍了多少行说给读的人
 
 ```vue
-<!--
-  Copyright (c) 2021-Present XiHanFun and contributors.
-  Licensed under the MIT License. See LICENSE in the project root for license information.
--->
-
 <script setup lang="ts">
 import { computeTextDiff } from "@xihan-ui/headless";
 import {
@@ -532,11 +512,6 @@ const model = computed(() => computeTextDiff(before, after, { maxLines: 6 }));
 size 换字号、行高与行号槽的宽度，三档并列对照
 
 ```vue
-<!--
-  Copyright (c) 2021-Present XiHanFun and contributors.
-  Licensed under the MIT License. See LICENSE in the project root for license information.
--->
-
 <script setup lang="ts">
 import { computeTextDiff } from "@xihan-ui/headless";
 import { XhDiffViewBody, XhDiffViewHeader, XhDiffViewRoot, XhDiffViewViewport } from "@xihan-ui/vue";
@@ -652,7 +627,7 @@ const model = computed(() => computeTextDiff(before, after));
 
 ### 组合
 
-- 单栏与并排的切换用[开关组](./toggle-group)；增删统计已有成品位，不必再自己拼
+- 单栏与并排的切换用[切换按钮组](./toggle-group)；增删统计已有成品位，不必再自己拼
   （只要数字不要版式时仍可用 `diffStats(model)`）。
 - 装进[工具调用](./tool-call)的详情区，展示这次调用改了什么。
 - 要做「AI 提议的编辑逐条取舍 + 应用」：用[表格](./table)的选择机制承载行级取舍，

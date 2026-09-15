@@ -1,0 +1,10 @@
+const e=`<!-- 基础用法 | 按真实卡片的封面与文字节奏占位 -->
+<xh-skeleton>
+  <div data-xh-part="root" style="inline-size: 260px">
+    <div data-xh-part="item" shape="rect" style="--xh-skeleton-rect-block-size: 120px"></div>
+    <div data-xh-part="item" style="inline-size: 60%"></div>
+    <div data-xh-part="item" style="inline-size: 80%"></div>
+    <div data-xh-part="item" style="inline-size: 40%"></div>
+  </div>
+</xh-skeleton>
+`;export{e as default};

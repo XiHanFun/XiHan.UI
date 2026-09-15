@@ -1,0 +1,27 @@
+const a=`<!-- 提交方式 | 使用失焦或回车提交 -->
+<xh-editable default-value="失焦即提交" placeholder="未填写" submit-mode="blur">
+  <div data-xh-part="root">
+    <label data-xh-part="label">submitMode = blur</label>
+    <div data-xh-part="control">
+      <span data-xh-part="preview"></span>
+      <input data-xh-part="input" />
+      <button data-xh-part="edit-trigger" aria-label="编辑"></button>
+      <button data-xh-part="submit-trigger" aria-label="确认"></button>
+      <button data-xh-part="cancel-trigger" aria-label="取消"></button>
+    </div>
+  </div>
+</xh-editable>
+
+<xh-editable default-value="回车才提交" placeholder="未填写" submit-mode="enter">
+  <div data-xh-part="root">
+    <label data-xh-part="label">submitMode = enter</label>
+    <div data-xh-part="control">
+      <span data-xh-part="preview"></span>
+      <input data-xh-part="input" />
+      <button data-xh-part="edit-trigger" aria-label="编辑"></button>
+      <button data-xh-part="submit-trigger" aria-label="确认"></button>
+      <button data-xh-part="cancel-trigger" aria-label="取消"></button>
+    </div>
+  </div>
+</xh-editable>
+`;export{a as default};

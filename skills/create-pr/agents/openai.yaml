@@ -1,0 +1,7 @@
+interface:
+  display_name: "XiHan.UI 创建 PR"
+  short_description: "按仓库模板准备、检查并创建 XiHan.UI Pull Request"
+  default_prompt: "使用 $xihan-ui-create-pr 为当前分支准备并创建 Pull Request。"
+
+policy:
+  allow_implicit_invocation: true

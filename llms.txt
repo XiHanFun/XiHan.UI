@@ -6,10 +6,10 @@
 
 ## 机读资产
 
-- [llms-full.txt](https://ui.docs.xihanfun.com/llms-full.txt): 全部 171 页正文，示例已内联为代码块
-- [llms-components.txt](https://ui.docs.xihanfun.com/llms-components.txt): 129 页组件参考
+- [llms-full.txt](https://ui.docs.xihanfun.com/llms-full.txt): 全部 177 页正文，示例已内联为代码块
+- [llms-components.txt](https://ui.docs.xihanfun.com/llms-components.txt): 135 页组件参考
 - [llms-guide.txt](https://ui.docs.xihanfun.com/llms-guide.txt): 29 页核心概念、适配器与运行时
-- [llms-tokens.txt](https://ui.docs.xihanfun.com/llms-tokens.txt): 416 支设计令牌的名字、类型与缺省取值
+- [llms-tokens.txt](https://ui.docs.xihanfun.com/llms-tokens.txt): 419 支设计令牌的名字、类型与缺省取值
 - 每页 Markdown：把站点地址后缀成 `.md`，如 https://ui.docs.xihanfun.com/components/button.md
 
 ## 开始
@@ -80,11 +80,13 @@
 - [Avatar 头像](https://ui.docs.xihanfun.com/components/avatar): 一个人或一个组织的圆形标识：优先显示图片，取不到就回退到文字或图标。
 - [BackTop 回到顶部](https://ui.docs.xihanfun.com/components/back-top): 滚动超过指定距离后显示返回入口。
 - [Badge 徽标](https://ui.docs.xihanfun.com/components/badge): 提醒你注意某个东西：它有几条未读、处在什么状态、是不是新的。
+- [BarCode 条形码](https://ui.docs.xihanfun.com/components/bar-code): 把一段文本画成一维条形码，`format` 选码制。
 - [Breadcrumb 面包屑](https://ui.docs.xihanfun.com/components/breadcrumb): 显示当前页面在信息层级中的位置。
 - [ButtonGroup 按钮组](https://ui.docs.xihanfun.com/components/button-group): 将一组相关操作组合为连续的按钮控件。
 - [Button 按钮](https://ui.docs.xihanfun.com/components/button): 用于触发即时操作。
-- [Calendar 日历](https://ui.docs.xihanfun.com/components/calendar): 以天、周、月、季度或年为周期浏览并选择，也可以在日期格中展示日程内容。
-- [Card 卡片](https://ui.docs.xihanfun.com/components/card): 一块有边界的内容容器：封面、标题、正文与页脚各占一段。
+- [CalendarPicker 日历选择器](https://ui.docs.xihanfun.com/components/calendar-picker): 以天、周、月、季度或年为周期浏览并选择一个或多个日期，也可以在日期格中展示日程内容。
+- [CalendarRangePicker 日历范围选择器](https://ui.docs.xihanfun.com/components/calendar-range-picker): 在日历网格里先落起点再落终点，挑出一段连续的天、周、月、季度或年。
+- [Card 卡片](https://ui.docs.xihanfun.com/components/card): 一块用于组织相关内容与操作的中性表面。
 - [Carousel 走马灯](https://ui.docs.xihanfun.com/components/carousel): 在同一块区域里轮播若干张内容，一次显示一屏。
 - [Cascader 级联选择](https://ui.docs.xihanfun.com/components/cascader): 用于从多层分类中选择完整路径。
 - [CheckboxGroup 复选框组](https://ui.docs.xihanfun.com/components/checkbox-group): 从一组选项中选择任意多项。
@@ -92,12 +94,17 @@
 - [Clipboard 剪贴板](https://ui.docs.xihanfun.com/components/clipboard): 用于复制纯文本并反馈复制状态。
 - [CodeView 代码视图](https://ui.docs.xihanfun.com/components/code-view): 一段代码的逐行呈现：行号、指定行高亮、超长折叠、文件名，可选语法着色，支持流式追加时的未闭合状态。
 - [Collapsible 折叠区域](https://ui.docs.xihanfun.com/components/collapsible): 一块可以展开收起的内容，只有一块。
-- [ColorPicker 颜色选择器](https://ui.docs.xihanfun.com/components/color-picker): 用于选择并编辑颜色。
+- [ColorField 颜色字段](https://ui.docs.xihanfun.com/components/color-field): 一个能手打颜色串的单行框：旁边一块当前颜色的色块，框里的字是草稿，回车或失焦收下，收下后按 `format` 重写成规范写法。
+- [ColorPicker 颜色选择器](https://ui.docs.xihanfun.com/components/color-picker): 在色域里自由挑一个颜色：触发钮里一块当前色，浮层里是取色面、色相与透明度两条滑块、数值框、屏幕取色与预设色板。
+- [ColorSlider 颜色滑块](https://ui.docs.xihanfun.com/components/color-slider): 一条只推颜色某一路的滑杆：色相、饱和度、明度、透明度，或红、绿、蓝。
+- [ColorSwatchPicker 颜色色块选择器](https://ui.docs.xihanfun.com/components/color-swatch-picker): 从一组固定颜色里挑一个：主题色、标签色、高亮色。
+- [ColorSwatch 颜色色块](https://ui.docs.xihanfun.com/components/color-swatch): 把一个颜色画成一小块给人看：主题色一览、图例里的一格、当前选中的颜色。
 - [Combobox 组合框](https://ui.docs.xihanfun.com/components/combobox): 将输入框与候选列表结合，用于搜索并选择选项。
 - [Command 命令面板](https://ui.docs.xihanfun.com/components/command): 一块盖在页面上的检索面板：打字筛出命令，方向键选，回车执行。
 - [ContextMenu 右键菜单](https://ui.docs.xihanfun.com/components/context-menu): 通过右键或长按在指针位置打开命令菜单。
 - [DateField 日期字段](https://ui.docs.xihanfun.com/components/date-field): 按年、月、日逐段输入日期，适合已经知道目标日期、无需浏览日历的场景。
 - [DatePicker 日期选择器](https://ui.docs.xihanfun.com/components/date-picker): 将可键入的分段日期框、日历触发器和选择浮层组合成一个字段。
+- [DateRangePicker 日期范围选择器](https://ui.docs.xihanfun.com/components/date-range-picker): 将起止两组可键入的分段日期框、范围分隔符、日历触发器和范围日历浮层组合成一个字段。
 - [Descriptions 描述列表](https://ui.docs.xihanfun.com/components/descriptions): 成对的标签与值，按列排开。
 - [Dialog 对话框](https://ui.docs.xihanfun.com/components/dialog): 浮在页面之上的一层，通常需要用户处理完才能回到下面。
 - [DiffView 差异视图](https://ui.docs.xihanfun.com/components/diff-view): 一份改动的逐行呈现：并排或单栏、双侧行号、变更类型的读屏文字，以及远离变更处的折叠。
@@ -117,7 +124,6 @@
 - [Grid 栅格](https://ui.docs.xihanfun.com/components/grid): 按行列排列内容。
 - [Heatmap 热力图](https://ui.docs.xihanfun.com/components/heatmap): 按网格铺开的强度图：一格是一个观测点，颜色深浅表示它的数值落在第几档。
 - [Highlight 文本高亮](https://ui.docs.xihanfun.com/components/highlight): 把一段文本里命中关键词的片段标出来。
-- [Hotkeys 快捷键](https://ui.docs.xihanfun.com/components/hotkeys): 用于注册全局或局部键盘快捷键，不渲染 DOM。
 - [HoverCard 悬浮卡片](https://ui.docs.xihanfun.com/components/hover-card): 指针停留一会儿才出现的信息卡：预览一个对象，不打断当前动作。
 - [IconWrapper 图标块](https://ui.docs.xihanfun.com/components/icon-wrapper): 为图标提供统一的背景容器。
 - [Icon 图标](https://ui.docs.xihanfun.com/components/icon): 用于显示矢量图标。
@@ -128,8 +134,7 @@
 - [InfiniteScroll 无限滚动](https://ui.docs.xihanfun.com/components/infinite-scroll): 取下一页的通用触发器，滚动只是默认的触发方式。
 - [InputGroup 输入组](https://ui.docs.xihanfun.com/components/input-group): 用于在同一输入表面中组合前缀、输入控件和后缀。
 - [JsonViewer JSON 视图](https://ui.docs.xihanfun.com/components/json-viewer): 把一份 JSON 摊成可展开的树：键名、值与值类型各自成一块，对象与数组可以逐层收起。
-- [KbdGroup 键帽组](https://ui.docs.xihanfun.com/components/kbd-group): 显示一组快捷键，不注册键盘监听。
-- [Kbd 键帽](https://ui.docs.xihanfun.com/components/kbd): 显示一个键名，不注册键盘监听。
+- [Kbd 键盘按键](https://ui.docs.xihanfun.com/components/kbd): 显示单个键或快捷键组合；需要实际响应按键时，显式开启 `register`。
 - [Layout 布局](https://ui.docs.xihanfun.com/components/layout): 用于构建带页头、侧栏、内容和页脚的页面骨架。
 - [List 列表](https://ui.docs.xihanfun.com/components/list): 一列同构的条目，每条可以有媒体位、标题、描述与操作位。
 - [Listbox 列表框](https://ui.docs.xihanfun.com/components/listbox): 用于展示一组常驻选项，并允许用户选择其中一项或多项。
@@ -138,6 +143,7 @@
 - [MarkdownStream 流式正文](https://ui.docs.xihanfun.com/components/markdown-stream): 把已经渲好的 Markdown 块列表投影成带稳定 key 的正文结构，按块的种类分流。
 - [Marquee 跑马灯](https://ui.docs.xihanfun.com/components/marquee): 内容沿一条轴循环滚动。
 - [Masonry 瀑布流](https://ui.docs.xihanfun.com/components/masonry): 将等宽、不等高的内容排列为瀑布流。
+- [MatrixCode 二维码](https://ui.docs.xihanfun.com/components/matrix-code): 把一段文本画成二维码，`format` 选码制。
 - [Mention 提及](https://ui.docs.xihanfun.com/components/mention): 在正文里打一个前缀字符就弹出候选，选中后把引用插进文本。
 - [Menu 菜单](https://ui.docs.xihanfun.com/components/menu): 从触发器打开一组操作命令。
 - [Menubar 菜单栏](https://ui.docs.xihanfun.com/components/menubar): 用于桌面应用的横向命令菜单栏。
@@ -154,7 +160,6 @@
 - [Popover 气泡卡片](https://ui.docs.xihanfun.com/components/popover): 由点击触发、贴着触发器的一小块浮层，里面可以放任意内容与交互。
 - [Progress 进度条](https://ui.docs.xihanfun.com/components/progress): 表示一件事完成了多少。
 - [PromptInput 提示输入框](https://ui.docs.xihanfun.com/components/prompt-input): 会话界面的输入框：值、输入法、能不能提交，以及发送与停止共用的那一颗按钮。
-- [QrCode 二维码](https://ui.docs.xihanfun.com/components/qr-code): 把一段文本画成二维码。
 - [QuestionFlow 澄清问卷](https://ui.docs.xihanfun.com/components/question-flow): 动手之前先问几句：一次一题，人逐题作答，答完一起提交。
 - [RadioGroup 单选组](https://ui.docs.xihanfun.com/components/radio-group): 一组互斥选项共一个值，所有选项同时可见。
 - [Rating 评分](https://ui.docs.xihanfun.com/components/rating): 用一排图案表示一个离散的分值。
@@ -183,10 +188,11 @@
 - [TextField 文本字段](https://ui.docs.xihanfun.com/components/text-field): 单行或多行的自由文本输入。
 - [TimeField 时间字段](https://ui.docs.xihanfun.com/components/time-field): 按时、分、秒逐段输入时间，适合已经知道目标时间、无需打开选择面板的场景。
 - [TimePicker 时间选择器](https://ui.docs.xihanfun.com/components/time-picker): 将可键入的分段时间框、时钟触发器和分列选择浮层组合成一个字段。
+- [TimeRangePicker 时间范围选择器](https://ui.docs.xihanfun.com/components/time-range-picker): 将起止两组可键入的分段时间框、范围分隔符、时钟触发器和两组并排的分列选择浮层组合成一个字段。
 - [Timeline 时间线](https://ui.docs.xihanfun.com/components/timeline): 按时间顺序排开的一串事件，每条有标记、连接线与内容。
 - [Timer 计时器](https://ui.docs.xihanfun.com/components/timer): 一段可正可倒的计时：能起、能停、能接着走、能归零。
 - [Timestamp 时间戳](https://ui.docs.xihanfun.com/components/timestamp): 把一个时刻渲染成文本，绝对或相对。
-- [Toast 轻提示](https://ui.docs.xihanfun.com/components/toast): 一条会自己消失的短反馈：一枚状态字形加一句话，横排一行、贴着文字收缩。
+- [Toast 轻提示](https://ui.docs.xihanfun.com/components/toast): 一条会自己消失的短反馈：状态字形、标题与可选的一行补充说明。
 - [ToggleGroup 切换按钮组](https://ui.docs.xihanfun.com/components/toggle-group): 将多个切换按钮组合为单选或多选控件。
 - [Toggle 切换按钮](https://ui.docs.xihanfun.com/components/toggle): 在按下和未按下状态之间切换的按钮。
 - [ToolCall 工具调用](https://ui.docs.xihanfun.com/components/tool-call): 一次工具调用的卡片：阶段、参数与结果，跑起来自动展开、结束自动收起，用户动手过一次就不再自动。

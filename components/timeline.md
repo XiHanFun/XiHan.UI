@@ -17,11 +17,6 @@
 一条竖向的事件流：每条一个圆点，圆点之间连一截线，末条的线自动收掉
 
 ```vue
-<!--
-  Copyright (c) 2021-Present XiHanFun and contributors.
-  Licensed under the MIT License. See LICENSE in the project root for license information.
--->
-
 <script setup lang="ts">
 import {
   XhTimelineConnector,
@@ -120,11 +115,6 @@ const events = [
 tone 写在条目上，只给这一条的圆点上色；不写 tone 的条目是中性圆点
 
 ```vue
-<!--
-  Copyright (c) 2021-Present XiHanFun and contributors.
-  Licensed under the MIT License. See LICENSE in the project root for license information.
--->
-
 <script setup lang="ts">
 import {
   XhTimelineConnector,
@@ -220,11 +210,6 @@ const events = [
 placement 决定内容落在线的哪一侧；alternate 是逐条交替，线走中间
 
 ```vue
-<!--
-  Copyright (c) 2021-Present XiHanFun and contributors.
-  Licensed under the MIT License. See LICENSE in the project root for license information.
--->
-
 <script setup lang="ts">
 import {
   XhTimelineConnector,
@@ -375,11 +360,6 @@ const events = [
 orientation="horizontal" 把事件从左往右摆，连线随之转成横的一条
 
 ```vue
-<!--
-  Copyright (c) 2021-Present XiHanFun and contributors.
-  Licensed under the MIT License. See LICENSE in the project root for license information.
--->
-
 <script setup lang="ts">
 import {
   XhTimelineConnector,
@@ -457,11 +437,6 @@ const events = [
 size 换的是圆点直径、条目间距与字号，不传 size 即默认档
 
 ```vue
-<!--
-  Copyright (c) 2021-Present XiHanFun and contributors.
-  Licensed under the MIT License. See LICENSE in the project root for license information.
--->
-
 <script setup lang="ts">
 import {
   XhTimelineConnector,
@@ -587,11 +562,6 @@ const events = [
 label 与内容对置：逐条交替排布时时间戳仍停在同一侧，不跟着内容左右横跳
 
 ```vue
-<!--
-  Copyright (c) 2021-Present XiHanFun and contributors.
-  Licensed under the MIT License. See LICENSE in the project root for license information.
--->
-
 <script setup lang="ts">
 import {
   XhTimelineConnector,

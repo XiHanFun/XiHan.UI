@@ -1,0 +1,1 @@
+import{B as e}from"./index.Dvd56iNz.js";import{d as a,c7 as n}from"./theme.C4bpqV2W.js";import{d as r,o as c,b as t,w as s,E as p,k as o}from"./framework.DkvuVDKz.js";const d=r({__name:"01-basic",setup(l){return(i,m)=>(c(),t(o(n),null,{default:s(()=>[p(o(a),{icon:o(e)},null,8,["icon"])]),_:1}))}});export{d as default};

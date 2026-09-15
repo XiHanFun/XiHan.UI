@@ -17,11 +17,6 @@
 拖动任务调整顺序
 
 ```vue
-<!--
-  Copyright (c) 2021-Present XiHanFun and contributors.
-  Licensed under the MIT License. See LICENSE in the project root for license information.
--->
-
 <script setup lang="ts">
 import { XhSortableDropIndicator, XhSortableItem, XhSortableItemDragTrigger, XhSortableLiveRegion, XhSortableRoot } from "@xihan-ui/vue";
 import { ref } from "vue";
@@ -83,11 +78,6 @@ const ids = ref(["规划", "设计", "实现", "发布"]);
 调整标签顺序
 
 ```vue
-<!--
-  Copyright (c) 2021-Present XiHanFun and contributors.
-  Licensed under the MIT License. See LICENSE in the project root for license information.
--->
-
 <script setup lang="ts">
 import { XhSortableDropIndicator, XhSortableItem, XhSortableItemDragTrigger, XhSortableLiveRegion, XhSortableRoot } from "@xihan-ui/vue";
 import { ref } from "vue";
@@ -140,11 +130,6 @@ const ids = ref(["概览", "订单", "库存", "报表"]);
 在换行布局中排序
 
 ```vue
-<!--
-  Copyright (c) 2021-Present XiHanFun and contributors.
-  Licensed under the MIT License. See LICENSE in the project root for license information.
--->
-
 <script setup lang="ts">
 import { XhSortableDropIndicator, XhSortableItem, XhSortableItemDragTrigger, XhSortableLiveRegion, XhSortableRoot } from "@xihan-ui/vue";
 import { ref } from "vue";
@@ -199,11 +184,6 @@ const ids = ref(["颜色", "排版", "间距", "圆角", "阴影", "动效"]);
 固定单个项目的位置
 
 ```vue
-<!--
-  Copyright (c) 2021-Present XiHanFun and contributors.
-  Licensed under the MIT License. See LICENSE in the project root for license information.
--->
-
 <script setup lang="ts">
 import { XhSortableItem, XhSortableItemDragTrigger, XhSortableLiveRegion, XhSortableRoot } from "@xihan-ui/vue";
 import { ref } from "vue";
@@ -274,6 +254,17 @@ const ids = ref(["固定项", "设计", "实现", "发布"]);
 
 - 可在项目中放置独立拖拽手柄。
 - 可与[表格](./table)组合为列排序面板。
+
+### 最佳实践
+
+- 拖拽手柄放在项目的固定位置，与项目内的其他控件分开。
+- 拖放结束后立刻持久化 `ids`，失败时回滚并提示。
+- 项目高度尽量一致，让位动画才读得出落点。
+
+### 反模式
+
+- 用整个项目当手柄，项目里的按钮与链接就点不到了。
+- 拖动中改变列表长度或过滤条件。
 
 ## API 参考
 

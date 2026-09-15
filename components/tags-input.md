@@ -17,11 +17,6 @@
 框里打字按 Enter 落一个标签；标签由作者按当前值渲染，每个标签自带 value 标识身份，预览与删除钮就是库里的 tag
 
 ```vue
-<!--
-  Copyright (c) 2021-Present XiHanFun and contributors.
-  Licensed under the MIT License. See LICENSE in the project root for license information.
--->
-
 <script setup lang="ts">
 import {
   XhTagsInputControl,
@@ -146,11 +141,6 @@ const tags = ref<string[]>(["Vue", "TypeScript"]);
 add-on-paste 让粘进来的一串按分隔符拆成多个标签；顶到 max 后再打再粘都进不去
 
 ```vue
-<!--
-  Copyright (c) 2021-Present XiHanFun and contributors.
-  Licensed under the MIT License. See LICENSE in the project root for license information.
--->
-
 <script setup lang="ts">
 import {
   XhTagsInputClearTrigger,
@@ -271,11 +261,6 @@ const tags = ref<string[]>(["Vue"]);
 editable 打开后双击任一标签改写它：Enter 提交、Escape 撤销，改成空白等于删掉这个标签
 
 ```vue
-<!--
-  Copyright (c) 2021-Present XiHanFun and contributors.
-  Licensed under the MIT License. See LICENSE in the project root for license information.
--->
-
 <script setup lang="ts">
 import {
   XhTagsInputControl,
@@ -409,11 +394,6 @@ const tags = ref<string[]>(["前端", "组件库", "无障碍"]);
 disabled 整个控件退出 Tab 序列、标签一起置灰；read-only 仍可聚焦浏览，但加不进也删不掉，删除钮留在原地按不动、标签不置灰
 
 ```vue
-<!--
-  Copyright (c) 2021-Present XiHanFun and contributors.
-  Licensed under the MIT License. See LICENSE in the project root for license information.
--->
-
 <script setup lang="ts">
 import {
   XhTagsInputControl,
@@ -509,11 +489,6 @@ import {
 variant 只改控件的颜色槽位，标签的形态按控件的面派：subtle 控件里是描边标签，其余是淡底标签；落标签与删标签的行为三档一致
 
 ```vue
-<!--
-  Copyright (c) 2021-Present XiHanFun and contributors.
-  Licensed under the MIT License. See LICENSE in the project root for license information.
--->
-
 <script setup lang="ts">
 import {
   XhTagsInputControl,
@@ -638,11 +613,6 @@ const variants = ["outline", "subtle", "ghost"] as const;
 tone 决定用哪族颜色，与 variant 正交；这里固定 outline 只看语气的差别
 
 ```vue
-<!--
-  Copyright (c) 2021-Present XiHanFun and contributors.
-  Licensed under the MIT License. See LICENSE in the project root for license information.
--->
-
 <script setup lang="ts">
 import {
   XhTagsInputControl,
@@ -813,11 +783,6 @@ const tones = ["brand", "neutral", "success", "warning", "danger", "info"] as co
 控件高度、胶囊与输入文字一起换档，不传 size 即默认档
 
 ```vue
-<!--
-  Copyright (c) 2021-Present XiHanFun and contributors.
-  Licensed under the MIT License. See LICENSE in the project root for license information.
--->
-
 <script setup lang="ts">
 import {
   XhTagsInputControl,
@@ -946,11 +911,6 @@ const sizes = [
 写了 name 与 hidden-input 才参与提交，整份标签按断词符拼成一串；框里没内容时回车留给表单
 
 ```vue
-<!--
-  Copyright (c) 2021-Present XiHanFun and contributors.
-  Licensed under the MIT License. See LICENSE in the project root for license information.
--->
-
 <script setup lang="ts">
 import {
   XhButton,
@@ -1098,11 +1058,6 @@ function onSubmit(event: Event) {
 给了 value 就由宿主说了算：组件只发变更意图，写回什么形状在这里定
 
 ```vue
-<!--
-  Copyright (c) 2021-Present XiHanFun and contributors.
-  Licensed under the MIT License. See LICENSE in the project root for license information.
--->
-
 <script setup lang="ts">
 import {
   XhTagsInputControl,
@@ -1236,11 +1191,6 @@ function onValueChange(details: { value: string[] }) {
 根插槽给出 addValue 与 atMax：输入框之外再开一条加标签的路，上限一样管得住
 
 ```vue
-<!--
-  Copyright (c) 2021-Present XiHanFun and contributors.
-  Licensed under the MIT License. See LICENSE in the project root for license information.
--->
-
 <script setup lang="ts">
 import {
   XhButton,
@@ -1407,11 +1357,6 @@ const tags = ref<string[]>(["文档"]);
 输入部件平时收起，按「添加」才露面并聚焦；打字时给候选，选中即落标签，失焦按 blur-behavior 收尾
 
 ```vue
-<!--
-  Copyright (c) 2021-Present XiHanFun and contributors.
-  Licensed under the MIT License. See LICENSE in the project root for license information.
--->
-
 <script setup lang="ts">
 import { PlusIcon } from "@xihan-ui/icons";
 import {
@@ -1681,11 +1626,6 @@ function options(text: string): string[] {
 组件里存的是标识那一份，显示哪一份由作者定：条目文本渲染 label，提交仍按标识拼串
 
 ```vue
-<!--
-  Copyright (c) 2021-Present XiHanFun and contributors.
-  Licensed under the MIT License. See LICENSE in the project root for license information.
--->
-
 <script setup lang="ts">
 import {
   XhTagsInputControl,

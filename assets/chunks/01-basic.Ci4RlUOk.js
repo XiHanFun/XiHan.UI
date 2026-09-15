@@ -1,0 +1,6 @@
+const d=`<!-- 基础用法 | 单键与组合键使用同一组件 -->
+<div style="display: flex; align-items: center; gap: 12px">
+  <xh-kbd keys="Escape"><kbd data-xh-part="root"></kbd></xh-kbd>
+  <xh-kbd keys="Mod,K"><kbd data-xh-part="root"></kbd></xh-kbd>
+</div>
+`;export{d as default};

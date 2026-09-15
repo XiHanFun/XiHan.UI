@@ -1,1 +1,0 @@
-import{j as t}from"./jsx-runtime.BjG_zV1W.js";import{X as i,a as r,b as o}from"./statistic.H8B-yG5U.js";import"./jsx-runtime.WmPRW3nq.js";import"./theme.C7zwwLoT.js";import"./framework.DkvuVDKz.js";import"./config.zjQNv5ZK.js";import"./index.CVfUds7h.js";function h(){return t.jsxs(i,{children:[t.jsx(r,{children:"本月新增用户"}),t.jsx(o,{children:"12,480"})]})}export{h as default};

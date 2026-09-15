@@ -17,11 +17,6 @@
 输入日期
 
 ```vue
-<!--
-  Copyright (c) 2021-Present XiHanFun and contributors.
-  Licensed under the MIT License. See LICENSE in the project root for license information.
--->
-
 <script setup lang="ts">
 import {
   XhDateFieldControl,
@@ -91,11 +86,6 @@ import {
 根据 locale 调整日期顺序
 
 ```vue
-<!--
-  Copyright (c) 2021-Present XiHanFun and contributors.
-  Licensed under the MIT License. See LICENSE in the project root for license information.
--->
-
 <script setup lang="ts">
 import {
   XhDateFieldControl,
@@ -178,11 +168,6 @@ import {
 限制可输入日期
 
 ```vue
-<!--
-  Copyright (c) 2021-Present XiHanFun and contributors.
-  Licensed under the MIT License. See LICENSE in the project root for license information.
--->
-
 <script setup lang="ts">
 import {
   XhDateFieldControl,
@@ -272,11 +257,6 @@ import {
 禁用、只读与校验失败
 
 ```vue
-<!--
-  Copyright (c) 2021-Present XiHanFun and contributors.
-  Licensed under the MIT License. See LICENSE in the project root for license information.
--->
-
 <script setup lang="ts">
 import {
   XhDateFieldControl,
@@ -391,11 +371,6 @@ import {
 设置输入框外观
 
 ```vue
-<!--
-  Copyright (c) 2021-Present XiHanFun and contributors.
-  Licensed under the MIT License. See LICENSE in the project root for license information.
--->
-
 <script setup lang="ts">
 import {
   XhDateFieldControl,
@@ -490,11 +465,6 @@ const variants = ["outline", "subtle", "ghost"] as const;
 输入精确到分钟的日期
 
 ```vue
-<!--
-  Copyright (c) 2021-Present XiHanFun and contributors.
-  Licensed under the MIT License. See LICENSE in the project root for license information.
--->
-
 <script setup lang="ts">
 import {
   XhDateFieldControl,
@@ -558,7 +528,7 @@ import {
 ### 何时不用
 
 - 需要查看月份或星期信息：使用[日期选择器](./date-picker)。
-- 只要时间不要日期：用[时间输入](./time-field)。
+- 只要时间不要日期：用[时间字段](./time-field)。
 
 ### 特性
 
@@ -569,6 +539,12 @@ import {
 - 标准组合包含标签、输入框、日期段和隐藏表单输入；支持受控值与原生表单提交。
 - 聚焦只强调正在编辑的日期段，错误段使用独立的危险色反馈。
 - 清空按钮默认收起，输入任一段后出现；点按后回到第一段，聚焦边界平滑过渡。
+
+### 组合
+
+- [日期选择器](./date-picker)与[日期范围选择器](./date-range-picker)的输入区就是这一套逐段输入，只是多了日历浮层。
+- 日期与时间分开录入时与[时间字段](./time-field)并排；只要一个字段就用 `granularity` 精确到分钟。
+- 在[表单](./form)里以 ISO 日期字符串参与校验与提交。
 
 ### 最佳实践
 

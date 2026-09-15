@@ -17,11 +17,6 @@
 水平排列内容
 
 ```vue
-<!--
-  Copyright (c) 2021-Present XiHanFun and contributors.
-  Licensed under the MIT License. See LICENSE in the project root for license information.
--->
-
 <script setup lang="ts">
 import { XhFlex } from "@xihan-ui/vue";
 </script>
@@ -64,11 +59,6 @@ import { XhFlex } from "@xihan-ui/vue";
 设置水平或垂直排列
 
 ```vue
-<!--
-  Copyright (c) 2021-Present XiHanFun and contributors.
-  Licensed under the MIT License. See LICENSE in the project root for license information.
--->
-
 <script setup lang="ts">
 import { XhFlex } from "@xihan-ui/vue";
 
@@ -105,11 +95,6 @@ const itemStyle = "padding: 8px 14px; border-radius: var(--xh-shape-control); ba
 对齐内容并分配剩余空间
 
 ```vue
-<!--
-  Copyright (c) 2021-Present XiHanFun and contributors.
-  Licensed under the MIT License. See LICENSE in the project root for license information.
--->
-
 <script setup lang="ts">
 import { XhFlex } from "@xihan-ui/vue";
 </script>
@@ -148,11 +133,6 @@ import { XhFlex } from "@xihan-ui/vue";
 使用预设间距
 
 ```vue
-<!--
-  Copyright (c) 2021-Present XiHanFun and contributors.
-  Licensed under the MIT License. See LICENSE in the project root for license information.
--->
-
 <script setup lang="ts">
 import { XhFlex } from "@xihan-ui/vue";
 
@@ -208,11 +188,6 @@ const groups = [
 换行排列或随文字排布
 
 ```vue
-<!--
-  Copyright (c) 2021-Present XiHanFun and contributors.
-  Licensed under the MIT License. See LICENSE in the project root for license information.
--->
-
 <script setup lang="ts">
 import { XhFlex } from "@xihan-ui/vue";
 
@@ -253,11 +228,6 @@ const tagStyle = "padding: 4px 10px; border-radius: var(--xh-shape-pill); backgr
 在相邻内容之间添加分隔符
 
 ```vue
-<!--
-  Copyright (c) 2021-Present XiHanFun and contributors.
-  Licensed under the MIT License. See LICENSE in the project root for license information.
--->
-
 <script setup lang="ts">
 import { XhFlex } from "@xihan-ui/vue";
 

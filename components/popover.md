@@ -17,11 +17,6 @@
 点击展开，Escape 或点外部关闭；positioner 负责摆位，content 才是浮层本体
 
 ```vue
-<!--
-  Copyright (c) 2021-Present XiHanFun and contributors.
-  Licensed under the MIT License. See LICENSE in the project root for license information.
--->
-
 <script setup lang="ts">
 import {
   XhPopoverArrow,
@@ -86,11 +81,6 @@ import {
 placement 是请求值，空间不够时定位引擎会自动翻面；offset 调的是浮层与触发器的距离
 
 ```vue
-<!--
-  Copyright (c) 2021-Present XiHanFun and contributors.
-  Licensed under the MIT License. See LICENSE in the project root for license information.
--->
-
 <script setup lang="ts">
 import {
   XhPopoverArrow,
@@ -169,11 +159,6 @@ const cases = [
 传了 open 就由宿主说了算；这里额外关掉点外部关闭，只有按钮与 Escape 能收起
 
 ```vue
-<!--
-  Copyright (c) 2021-Present XiHanFun and contributors.
-  Licensed under the MIT License. See LICENSE in the project root for license information.
--->
-
 <script setup lang="ts">
 import {
   XhButton,
@@ -264,11 +249,6 @@ const open = ref(false);
 三档换的是浮层的内边距与字号，不写 size 即缺省档；逐个点开触发器看差别
 
 ```vue
-<!--
-  Copyright (c) 2021-Present XiHanFun and contributors.
-  Licensed under the MIT License. See LICENSE in the project root for license information.
--->
-
 <script setup lang="ts">
 import {
   XhPopoverArrow,
@@ -353,11 +333,6 @@ const sizes = [
 标题、说明与两颗按钮拼成一次就地确认；两颗按钮按下后都只是把浮层收起
 
 ```vue
-<!--
-  Copyright (c) 2021-Present XiHanFun and contributors.
-  Licensed under the MIT License. See LICENSE in the project root for license information.
--->
-
 <script setup lang="ts">
 import {
   XhButton,
@@ -452,11 +427,6 @@ function confirm(setOpen: (next: boolean) => void) {
 浮层自己不限高，给里面的容器设上限并开滚动，标题与关闭按钮就不跟着滚
 
 ```vue
-<!--
-  Copyright (c) 2021-Present XiHanFun and contributors.
-  Licensed under the MIT License. See LICENSE in the project root for license information.
--->
-
 <script setup lang="ts">
 import {
   XhPopoverArrow,
@@ -544,11 +514,6 @@ const versions = Array.from({ length: 18 }, (_, i) => ({
 modal 让焦点陷在浮层里：Tab 到末尾回绕，旁边那颗按钮这时接不到焦点
 
 ```vue
-<!--
-  Copyright (c) 2021-Present XiHanFun and contributors.
-  Licensed under the MIT License. See LICENSE in the project root for license information.
--->
-
 <script setup lang="ts">
 import {
   XhButton,
@@ -649,11 +614,6 @@ const picked = ref("收件箱");
 open-change 带一份 { open }，报的是这次要落到的状态；非受控时内部开合也照发一次
 
 ```vue
-<!--
-  Copyright (c) 2021-Present XiHanFun and contributors.
-  Licensed under the MIT License. See LICENSE in the project root for license information.
--->
-
 <script setup lang="ts">
 import {
   XhPopoverArrow,
@@ -721,127 +681,11 @@ function onOpenChange(details: { open: boolean }) {
 </script>
 ```
 
-### 书写方向
-
-start / end 是逻辑对齐不是左右：RTL 下 bottom-start 贴的是锚点右缘，块轴上的对齐不受影响
-
-```vue
-<!--
-  Copyright (c) 2021-Present XiHanFun and contributors.
-  Licensed under the MIT License. See LICENSE in the project root for license information.
--->
-
-<script setup lang="ts">
-import {
-  XhButton,
-  XhPopoverContent,
-  XhPopoverPositioner,
-  XhPopoverRoot,
-  XhPopoverTitle,
-  XhPopoverTrigger,
-} from "@xihan-ui/vue";
-import { ref } from "vue";
-
-const dir = ref<"ltr" | "rtl">("rtl");
-</script>
-
-<template>
-  <div style="display: grid; gap: 12px; justify-items: start">
-    <XhButton size="sm" variant="outline" @click="dir = dir === 'ltr' ? 'rtl' : 'ltr'">
-      当前方向：{{ dir }}（点一下切换）
-    </XhButton>
-
-    <div :dir="dir" style="display: flex; gap: 24px">
-      <XhPopoverRoot :dir="dir" placement="bottom-start">
-        <XhPopoverTrigger>
-          <XhButton size="sm">bottom-start</XhButton>
-        </XhPopoverTrigger>
-        <XhPopoverPositioner>
-          <XhPopoverContent>
-            <XhPopoverTitle>start</XhPopoverTitle>
-            <p style="margin: 0">LTR 贴左缘，RTL 贴右缘</p>
-          </XhPopoverContent>
-        </XhPopoverPositioner>
-      </XhPopoverRoot>
-
-      <XhPopoverRoot :dir="dir" placement="bottom-end">
-        <XhPopoverTrigger>
-          <XhButton size="sm">bottom-end</XhButton>
-        </XhPopoverTrigger>
-        <XhPopoverPositioner>
-          <XhPopoverContent>
-            <XhPopoverTitle>end</XhPopoverTitle>
-            <p style="margin: 0">与 start 恰好相反</p>
-          </XhPopoverContent>
-        </XhPopoverPositioner>
-      </XhPopoverRoot>
-    </div>
-  </div>
-</template>
-```
-
-```html
-<div style="display: grid; gap: 12px; justify-items: start">
-  <xh-button size="sm" variant="outline">
-    <button data-xh-part="root" id="popover-rtl-toggle">
-      当前方向：rtl（点一下切换）
-    </button>
-  </xh-button>
-
-  <div id="popover-rtl-stage" dir="rtl" style="display: flex; gap: 24px">
-    <xh-popover dir="rtl" placement="bottom-start">
-      <button data-xh-part="trigger">bottom-start</button>
-      <div data-xh-part="positioner">
-        <div data-xh-part="content">
-          <h3 data-xh-part="title">start</h3>
-          <p data-xh-part="description" style="margin: 0">LTR 贴左缘，RTL 贴右缘</p>
-        </div>
-      </div>
-    </xh-popover>
-
-    <xh-popover dir="rtl" placement="bottom-end">
-      <button data-xh-part="trigger">bottom-end</button>
-      <div data-xh-part="positioner">
-        <div data-xh-part="content">
-          <h3 data-xh-part="title">end</h3>
-          <p data-xh-part="description" style="margin: 0">与 start 恰好相反</p>
-        </div>
-      </div>
-    </xh-popover>
-  </div>
-</div>
-
-<script type="module">
-  // 方向同时写给排版容器与两台浮层：前者管文字流向，后者管 start / end 落在哪一缘
-  const stage = document.getElementById("popover-rtl-stage");
-  const toggle = document.getElementById("popover-rtl-toggle");
-  let dir = "rtl";
-
-  function apply() {
-    stage.setAttribute("dir", dir);
-    for (const popover of stage.querySelectorAll("xh-popover")) {
-      popover.setAttribute("dir", dir);
-    }
-    toggle.textContent = "当前方向：" + dir + "（点一下切换）";
-  }
-
-  toggle.addEventListener("click", () => {
-    dir = dir === "ltr" ? "rtl" : "ltr";
-    apply();
-  });
-</script>
-```
-
 ### 浮层与触发器同宽
 
 量出触发器的实际宽度写进 content 的行内样式，同时解掉最大宽度上限；触发器换了文案宽度也跟着走
 
 ```vue
-<!--
-  Copyright (c) 2021-Present XiHanFun and contributors.
-  Licensed under the MIT License. See LICENSE in the project root for license information.
--->
-
 <script setup lang="ts">
 import {
   XhButton,
@@ -950,16 +794,117 @@ onBeforeUnmount(() => observer?.disconnect());
 </script>
 ```
 
+### 书写方向
+
+start / end 是逻辑对齐不是左右：RTL 下 bottom-start 贴的是锚点右缘，块轴上的对齐不受影响
+
+```vue
+<script setup lang="ts">
+import {
+  XhButton,
+  XhPopoverContent,
+  XhPopoverPositioner,
+  XhPopoverRoot,
+  XhPopoverTitle,
+  XhPopoverTrigger,
+} from "@xihan-ui/vue";
+import { ref } from "vue";
+
+const dir = ref<"ltr" | "rtl">("rtl");
+</script>
+
+<template>
+  <div style="display: grid; gap: 12px; justify-items: start">
+    <XhButton size="sm" variant="outline" @click="dir = dir === 'ltr' ? 'rtl' : 'ltr'">
+      当前方向：{{ dir }}（点一下切换）
+    </XhButton>
+
+    <div :dir="dir" style="display: flex; gap: 24px">
+      <XhPopoverRoot :dir="dir" placement="bottom-start">
+        <XhPopoverTrigger>
+          <XhButton size="sm">bottom-start</XhButton>
+        </XhPopoverTrigger>
+        <XhPopoverPositioner>
+          <XhPopoverContent>
+            <XhPopoverTitle>start</XhPopoverTitle>
+            <p style="margin: 0">LTR 贴左缘，RTL 贴右缘</p>
+          </XhPopoverContent>
+        </XhPopoverPositioner>
+      </XhPopoverRoot>
+
+      <XhPopoverRoot :dir="dir" placement="bottom-end">
+        <XhPopoverTrigger>
+          <XhButton size="sm">bottom-end</XhButton>
+        </XhPopoverTrigger>
+        <XhPopoverPositioner>
+          <XhPopoverContent>
+            <XhPopoverTitle>end</XhPopoverTitle>
+            <p style="margin: 0">与 start 恰好相反</p>
+          </XhPopoverContent>
+        </XhPopoverPositioner>
+      </XhPopoverRoot>
+    </div>
+  </div>
+</template>
+```
+
+```html
+<div style="display: grid; gap: 12px; justify-items: start">
+  <xh-button size="sm" variant="outline">
+    <button data-xh-part="root" id="popover-rtl-toggle">
+      当前方向：rtl（点一下切换）
+    </button>
+  </xh-button>
+
+  <div id="popover-rtl-stage" dir="rtl" style="display: flex; gap: 24px">
+    <xh-popover dir="rtl" placement="bottom-start">
+      <button data-xh-part="trigger">bottom-start</button>
+      <div data-xh-part="positioner">
+        <div data-xh-part="content">
+          <h3 data-xh-part="title">start</h3>
+          <p data-xh-part="description" style="margin: 0">LTR 贴左缘，RTL 贴右缘</p>
+        </div>
+      </div>
+    </xh-popover>
+
+    <xh-popover dir="rtl" placement="bottom-end">
+      <button data-xh-part="trigger">bottom-end</button>
+      <div data-xh-part="positioner">
+        <div data-xh-part="content">
+          <h3 data-xh-part="title">end</h3>
+          <p data-xh-part="description" style="margin: 0">与 start 恰好相反</p>
+        </div>
+      </div>
+    </xh-popover>
+  </div>
+</div>
+
+<script type="module">
+  // 方向同时写给排版容器与两台浮层：前者管文字流向，后者管 start / end 落在哪一缘
+  const stage = document.getElementById("popover-rtl-stage");
+  const toggle = document.getElementById("popover-rtl-toggle");
+  let dir = "rtl";
+
+  function apply() {
+    stage.setAttribute("dir", dir);
+    for (const popover of stage.querySelectorAll("xh-popover")) {
+      popover.setAttribute("dir", dir);
+    }
+    toggle.textContent = "当前方向：" + dir + "（点一下切换）";
+  }
+
+  toggle.addEventListener("click", () => {
+    dir = dir === "ltr" ? "rtl" : "ltr";
+    apply();
+  });
+</script>
+```
+
 ### 落在指针位置
 
 触发器缩成一个像素、按点击坐标固定摆放，浮层就钉在刚点到的那一点上；再点一下换个落点
 
 ```vue
-<!--
-  Copyright (c) 2021-Present XiHanFun and contributors.
-  Licensed under the MIT License. See LICENSE in the project root for license information.
--->
-
 <script setup lang="ts">
 import {
   XhPopoverArrow,

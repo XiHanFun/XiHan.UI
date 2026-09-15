@@ -1,0 +1,1 @@
+import{ea as a}from"./theme.C4bpqV2W.js";import{d as o,b as l,k as t,o as n}from"./framework.DkvuVDKz.js";const p=o({__name:"segmented",setup(r){const e=[{value:"day",label:"日"},{value:"week",label:"周"},{value:"month",label:"月"}];return(s,c)=>(n(),l(t(a),{collection:e,"default-value":"week","aria-label":"时间粒度"}))}});export{p as default};

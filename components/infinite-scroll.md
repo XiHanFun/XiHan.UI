@@ -17,11 +17,6 @@
 哨兵滚进可视区就派 load，取完把 loading 写回 false
 
 ```vue
-<!--
-  Copyright (c) 2021-Present XiHanFun and contributors.
-  Licensed under the MIT License. See LICENSE in the project root for license information.
--->
-
 <script setup lang="ts">
 import { XhInfiniteScrollRoot, XhInfiniteScrollSentinel } from "@xihan-ui/vue";
 import { ref } from "vue";
@@ -154,11 +149,6 @@ function onLoad(): void {
 distance 把可视区沿块轴向外扩，哨兵还没露头就先取下一页
 
 ```vue
-<!--
-  Copyright (c) 2021-Present XiHanFun and contributors.
-  Licensed under the MIT License. See LICENSE in the project root for license information.
--->
-
 <script setup lang="ts">
 import { XhInfiniteScrollRoot, XhInfiniteScrollSentinel } from "@xihan-ui/vue";
 import { ref } from "vue";
@@ -305,11 +295,6 @@ function onLoad(): void {
 最后一页取完把 disabled 打开，哨兵不再被观察，load 也不再派
 
 ```vue
-<!--
-  Copyright (c) 2021-Present XiHanFun and contributors.
-  Licensed under the MIT License. See LICENSE in the project root for license information.
--->
-
 <script setup lang="ts">
 import { XhInfiniteScrollRoot, XhInfiniteScrollSentinel } from "@xihan-ui/vue";
 import { ref } from "vue";
@@ -462,11 +447,6 @@ function onLoad(): void {
 phase / loading / disabled 由组件交给宿主，加载提示与结束语都由宿主自己摆
 
 ```vue
-<!--
-  Copyright (c) 2021-Present XiHanFun and contributors.
-  Licensed under the MIT License. See LICENSE in the project root for license information.
--->
-
 <script setup lang="ts">
 import { XhInfiniteScrollRoot, XhInfiniteScrollSentinel } from "@xihan-ui/vue";
 import { ref } from "vue";
@@ -609,11 +589,6 @@ function onLoad(): void {
 与哨兵同一条通路：读屏在虚拟光标模式下不产生滚动事件，这颗按钮是它的键盘等价入口
 
 ```vue
-<!--
-  Copyright (c) 2021-Present XiHanFun and contributors.
-  Licensed under the MIT License. See LICENSE in the project root for license information.
--->
-
 <script setup lang="ts">
 import {
   XhInfiniteScrollLoadMoreTrigger,

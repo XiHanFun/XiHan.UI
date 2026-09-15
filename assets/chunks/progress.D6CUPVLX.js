@@ -1,0 +1,1 @@
+import{dz as e}from"./theme.C4bpqV2W.js";import{d as r,c as a,E as s,k as o,o as t}from"./framework.DkvuVDKz.js";const n={style:{display:"grid",gap:"12px","inline-size":"220px"}},l=r({__name:"progress",setup(c){return(p,i)=>(t(),a("div",n,[s(o(e),{value:30}),s(o(e),{value:72,tone:"success"})]))}});export{l as default};

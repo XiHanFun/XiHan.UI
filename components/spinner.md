@@ -1,6 +1,6 @@
 来源：https://ui.docs.xihanfun.com/components/spinner
 
-# Spinner 加载指示器 `alpha`
+# Spinner 加载指示器
 
 一个不确定时长的等待标记。
 
@@ -17,11 +17,6 @@
 root 是 role=status 的活区，转圈图形由皮肤画在伪元素上；label 给出这一处在等什么
 
 ```vue
-<!--
-  Copyright (c) 2021-Present XiHanFun and contributors.
-  Licensed under the MIT License. See LICENSE in the project root for license information.
--->
-
 <script setup lang="ts">
 import { XhSpinner } from "@xihan-ui/vue";
 </script>
@@ -50,11 +45,6 @@ import { XhSpinner } from "@xihan-ui/vue";
 size 只换直径，缺省档 md 不输出 data-size
 
 ```vue
-<!--
-  Copyright (c) 2021-Present XiHanFun and contributors.
-  Licensed under the MIT License. See LICENSE in the project root for license information.
--->
-
 <script setup lang="ts">
 import { XhSpinner } from "@xihan-ui/vue";
 </script>
@@ -83,11 +73,6 @@ import { XhSpinner } from "@xihan-ui/vue";
 label 部件不写内容时显示解析后的 label，屏幕上看到的与读屏念的因此是同一段字
 
 ```vue
-<!--
-  Copyright (c) 2021-Present XiHanFun and contributors.
-  Licensed under the MIT License. See LICENSE in the project root for license information.
--->
-
 <script setup lang="ts">
 import { XhSpinner, XhSpinnerLabel } from "@xihan-ui/vue";
 </script>
@@ -143,11 +128,6 @@ import { XhSpinner, XhSpinnerLabel } from "@xihan-ui/vue";
 tone 只换圆环起始边那一段颜色，轨道留在中性描边上，转到哪儿才看得出来
 
 ```vue
-<!--
-  Copyright (c) 2021-Present XiHanFun and contributors.
-  Licensed under the MIT License. See LICENSE in the project root for license information.
--->
-
 <script setup lang="ts">
 import { XhSpinner } from "@xihan-ui/vue";
 
@@ -212,11 +192,6 @@ const tones = ["brand", "neutral", "success", "warning", "danger", "info"] as co
 转圈浮在内容上方，容器同时报 aria-busy，看得见的与念得出的是同一件事
 
 ```vue
-<!--
-  Copyright (c) 2021-Present XiHanFun and contributors.
-  Licensed under the MIT License. See LICENSE in the project root for license information.
--->
-
 <script setup lang="ts">
 import { XhSpinner } from "@xihan-ui/vue";
 import { ref } from "vue";
@@ -313,164 +288,18 @@ const overlayStyle = [
 </script>
 ```
 
-### 换掉转圈图形
-
-内置圆环画在伪元素上，把直径与描边归零它就不占位；自绘的图形写进 root 里
-
-```vue
-<!--
-  Copyright (c) 2021-Present XiHanFun and contributors.
-  Licensed under the MIT License. See LICENSE in the project root for license information.
--->
-
-<script setup lang="ts">
-import { XhIcon, XhSpinner, XhSpinnerLabel } from "@xihan-ui/vue";
-
-// 三个公开令牌一起归零：圆环既不占位也不留间距，间距改由插槽里的内容自己给
-const noRing = [
-  "--xh-spinner-size: 0",
-  "--xh-spinner-thickness: 0",
-  "--xh-spinner-gap: 0",
-].join("; ");
-
-const ArcIcon = {
-  name: "arc",
-  viewBox: "0 0 24 24",
-  attrs: {
-    "fill": "none",
-    "stroke": "currentColor",
-    "stroke-width": "2.5",
-    "stroke-linecap": "round",
-  },
-  nodes: [
-    { tag: "path", attrs: { d: "M12 3A9 9 0 1 1 5.64 5.64" } },
-    { tag: "path", attrs: { d: "M12 8.5A3.5 3.5 0 0 1 15.5 12" } },
-  ],
-} as const;
-
-// 三个点错开相位地明灭：延迟各差几个错峰步长，看起来就是一串跑动的点
-const dots = [0, 4, 8];
-
-function dotStyle(step: number): string {
-  return [
-    "inline-size: 6px",
-    "block-size: 6px",
-    "border-radius: var(--xh-radius-full)",
-    "background: var(--xh-bg-brand)",
-    `animation: xh-fade-in var(--xh-spin-duration) var(--xh-motion-ease-sweep) calc(var(--xh-motion-stagger-step) * ${step}) infinite alternate`,
-  ].join("; ");
-}
-</script>
-
-<template>
-  <!-- 自绘图形：转动复用皮肤里的 xh-spin 关键帧，图形本身随便画 -->
-  <XhSpinner label="正在同步仓库" :style="noRing">
-    <XhIcon
-      :icon="ArcIcon"
-      size="lg"
-      style="
-        --xh-icon-fg: var(--xh-bg-brand);
-        animation: xh-spin var(--xh-spin-duration) var(--xh-motion-ease-loop) infinite;
-      "
-    />
-    <XhSpinnerLabel style="margin-inline-start: 8px" />
-  </XhSpinner>
-
-  <!-- 点阵：图形不必是一个整体，几个方块也能当指示器 -->
-  <XhSpinner label="正在生成摘要" :style="noRing">
-    <span style="display: inline-flex; gap: 4px">
-      <span v-for="step in dots" :key="step" :style="dotStyle(step)" />
-    </span>
-    <XhSpinnerLabel style="margin-inline-start: 8px" />
-  </XhSpinner>
-</template>
-```
-
-```html
-<!-- 自绘图形：转动复用皮肤里的 xh-spin 关键帧，图形本身随便画 -->
-<xh-spinner label="正在同步仓库">
-  <span
-    data-xh-part="root"
-    style="--xh-spinner-size: 0; --xh-spinner-thickness: 0; --xh-spinner-gap: 0"
-  >
-    <xh-icon
-      id="spinner-graphic-arc"
-      size="lg"
-      style="
-        display: inline-flex;
-        --xh-icon-fg: var(--xh-bg-brand);
-        animation: xh-spin var(--xh-spin-duration) var(--xh-motion-ease-loop) infinite;
-      "
-    >
-      <svg data-xh-part="root"><g data-xh-part="glyph"></g></svg>
-    </xh-icon>
-    <span data-xh-part="label" style="margin-inline-start: 8px">正在同步仓库</span>
-  </span>
-</xh-spinner>
-
-<!-- 点阵：图形不必是一个整体，几个方块也能当指示器 -->
-<xh-spinner label="正在生成摘要">
-  <span
-    data-xh-part="root"
-    style="--xh-spinner-size: 0; --xh-spinner-thickness: 0; --xh-spinner-gap: 0"
-  >
-    <span id="spinner-graphic-dots" style="display: inline-flex; gap: 4px"></span>
-    <span data-xh-part="label" style="margin-inline-start: 8px">正在生成摘要</span>
-  </span>
-</xh-spinner>
-
-<script type="module">
-  // 图标记录是对象，只走 property
-  document.getElementById("spinner-graphic-arc").icon = {
-    name: "arc",
-    viewBox: "0 0 24 24",
-    attrs: {
-      "fill": "none",
-      "stroke": "currentColor",
-      "stroke-width": "2.5",
-      "stroke-linecap": "round",
-    },
-    nodes: [
-      { tag: "path", attrs: { d: "M12 3A9 9 0 1 1 5.64 5.64" } },
-      { tag: "path", attrs: { d: "M12 8.5A3.5 3.5 0 0 1 15.5 12" } },
-    ],
-  };
-
-  // 三个点错开相位地明灭：延迟各差几个错峰步长，看起来就是一串跑动的点
-  const dots = document.getElementById("spinner-graphic-dots");
-  dots.replaceChildren(
-    ...[0, 4, 8].map((step) => {
-      const dot = document.createElement("span");
-      dot.style.cssText = [
-        "inline-size: 6px",
-        "block-size: 6px",
-        "border-radius: var(--xh-radius-full)",
-        "background: var(--xh-bg-brand)",
-        `animation: xh-fade-in var(--xh-spin-duration) var(--xh-motion-ease-sweep) calc(var(--xh-motion-stagger-step) * ${step}) infinite alternate`,
-      ].join("; ");
-      return dot;
-    }),
-  );
-</script>
-```
-
 ### 变体
 
-ring 整圈、arc 一段弧、dots 三点；缺省档 ring 不输出 data-variant
+默认渐隐弧，另有 ring 整圈与 dots 三点
 
 ```vue
-<!--
-  Copyright (c) 2021-Present XiHanFun and contributors.
-  Licensed under the MIT License. See LICENSE in the project root for license information.
--->
-
 <script setup lang="ts">
 import { XhSpinner } from "@xihan-ui/vue";
 </script>
 
 <template>
   <XhSpinner label="加载中" />
-  <XhSpinner variant="arc" label="加载中" />
+  <XhSpinner variant="ring" label="加载中" />
   <XhSpinner variant="dots" label="加载中" />
 </template>
 ```
@@ -479,7 +308,7 @@ import { XhSpinner } from "@xihan-ui/vue";
 <xh-spinner label="加载中">
   <span data-xh-part="root"></span>
 </xh-spinner>
-<xh-spinner variant="arc" label="加载中">
+<xh-spinner variant="ring" label="加载中">
   <span data-xh-part="root"></span>
 </xh-spinner>
 <xh-spinner variant="dots" label="加载中">
@@ -503,8 +332,8 @@ import { XhSpinner } from "@xihan-ui/vue";
 ### 特性
 
 - 可以配可见文案，也可以只靠 `translations` 给读屏用。
-- 可以盖住等待中的内容（遮罩形态）。
-- 转圈图形可换。
+- 可以与宿主遮罩组合，盖住等待中的内容。
+- 默认使用渐隐弧；也可显式选择整圈轨道或三点。
 
 ### 组合
 
@@ -539,7 +368,7 @@ import { XhSpinner } from "@xihan-ui/vue";
 | `size` | `Size` |  | 直径档位，缺省 md；缺省档不输出 data-size。 |
 | `tone` | `Tone` |  | 语气：brand / neutral / success / warning / danger / info，决定用哪族颜色 |
 | `translations` | `Partial<SpinnerTranslations>` |  |  |
-| `variant` | `SpinnerVariant` |  | 形态，缺省 ring；缺省档不输出 data-variant。 |
+| `variant` | `SpinnerVariant` |  | 形态，默认 arc。 |
 
 ### connect API
 
@@ -595,12 +424,12 @@ import { XhSpinner } from "@xihan-ui/vue";
 | 变量 | 部件 | CSS 属性 | 状态 | 缺省来源 | 说明 |
 | --- | --- | --- | --- | --- | --- |
 | `--xh-spinner-duration` | `root` | `animation` | `default`<br>`variant=dots` | `--xh-spin-duration` | spinner 的 root 部件 animation 覆盖槽。 |
-| `--xh-spinner-fg` | `root` | `background`<br>`border-block-start-color`<br>`border-color` | `@media (prefers-reduced-motion: reduce)`<br>`@media print`<br>`default`<br>`motion=reduce`<br>`tone`<br>`variant=arc`<br>`variant=dots`<br>`where([data-motion='reduce'])` | `--xh-_tone`<br>`--xh-bg-brand` | spinner 的 root 部件 background、border-block-start-color、border-color 覆盖槽。 |
+| `--xh-spinner-fg` | `root` | `background`<br>`border-block-start-color`<br>`border-color` | `@media (prefers-reduced-motion: reduce)`<br>`@media print`<br>`default`<br>`motion=reduce`<br>`tone`<br>`variant=arc`<br>`variant=dots`<br>`where([data-motion='reduce'])` | `--xh-_tone`<br>`currentColor` | spinner 的 root 部件 background、border-block-start-color、border-color 覆盖槽。 |
 | `--xh-spinner-gap` | `root` | `gap` | `default` | `--xh-control-gap-md` | spinner 的 root 部件 gap 覆盖槽。 |
 | `--xh-spinner-label-fg` | `label` | `color` | `default` | `--xh-fg-muted` | spinner 的 label 部件 color 覆盖槽。 |
 | `--xh-spinner-label-size` | `label` | `font-size` | `default` | `--xh-text-secondary-size` | spinner 的 label 部件 font-size 覆盖槽。 |
 | `--xh-spinner-radius` | `root` | `border-radius` | `@media (forced-colors: active)`<br>`default`<br>`variant=arc`<br>`variant=dots` | `--xh-shape-pill` | spinner 的 root 部件 border-radius 覆盖槽。 |
-| `--xh-spinner-size` | `root` | `block-size`<br>`inline-size` | `default` | `--xh-glyph-size-md` | spinner 的 root 部件 block-size、inline-size 覆盖槽。 |
+| `--xh-spinner-size` | `root` | `block-size`<br>`inline-size` | `default` | `--xh-glyph-size-lg` | spinner 的 root 部件 block-size、inline-size 覆盖槽。 |
 | `--xh-spinner-thickness` | `root` | `-webkit-mask`<br>`border`<br>`mask` | `@media (forced-colors: active)`<br>`default`<br>`variant=arc`<br>`variant=dots` | `--xh-stroke-thick` | spinner 的 root 部件 -webkit-mask、border、mask 覆盖槽。 |
 | `--xh-spinner-track` | `root` | `border` | `default` | `--xh-border-default` | spinner 的 root 部件 border 覆盖槽。 |
 <!-- xh-component-tokens:end -->

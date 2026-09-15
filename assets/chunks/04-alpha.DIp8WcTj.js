@@ -1,0 +1,32 @@
+const a=`<!-- 透明度 | alpha 开启后值串带透明度，浮层里多一条透明度滑块；两条滑块共用同一份工作色，推色相不会把透明度归 1 -->
+<xh-color-picker default-value="rgba(0, 169, 142, 0.6)" format="rgba" alpha>
+  <div data-xh-part="root">
+    <label data-xh-part="label">蒙版颜色</label>
+    <div data-xh-part="control">
+      <button data-xh-part="trigger">
+        <span data-xh-part="swatch"></span>
+        <span data-xh-part="value-text"></span>
+      </button>
+    </div>
+    <div data-xh-part="positioner">
+      <div data-xh-part="content">
+        <div data-xh-part="saturation-area">
+          <div data-xh-part="area-thumb"></div>
+        </div>
+        <div data-xh-part="hue-slider">
+          <div data-xh-part="control">
+            <div data-xh-part="track"></div>
+            <div data-xh-part="thumb"></div>
+          </div>
+        </div>
+        <div data-xh-part="alpha-slider">
+          <div data-xh-part="control">
+            <div data-xh-part="track"></div>
+            <div data-xh-part="thumb"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</xh-color-picker>
+`;export{a as default};

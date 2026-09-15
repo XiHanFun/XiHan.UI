@@ -1,6 +1,6 @@
 来源：https://ui.docs.xihanfun.com/components/skeleton
 
-# Skeleton 骨架屏 `alpha`
+# Skeleton 骨架屏
 
 内容还没到时，先按最终版面占位。
 
@@ -14,23 +14,19 @@
 
 ## 用法
 
-容器竖着码放骨架条，形状缺省是一行文字
+按真实卡片的封面与文字节奏占位
 
 ```vue
-<!--
-  Copyright (c) 2021-Present XiHanFun and contributors.
-  Licensed under the MIT License. See LICENSE in the project root for license information.
--->
-
 <script setup lang="ts">
 import { XhSkeletonItem, XhSkeletonRoot } from "@xihan-ui/vue";
 </script>
 
 <template>
   <XhSkeletonRoot style="inline-size: 260px">
-    <XhSkeletonItem />
-    <XhSkeletonItem />
-    <XhSkeletonItem />
+    <XhSkeletonItem shape="rect" style="--xh-skeleton-rect-block-size: 120px" />
+    <XhSkeletonItem style="inline-size: 60%" />
+    <XhSkeletonItem style="inline-size: 80%" />
+    <XhSkeletonItem style="inline-size: 40%" />
   </XhSkeletonRoot>
 </template>
 ```
@@ -38,9 +34,10 @@ import { XhSkeletonItem, XhSkeletonRoot } from "@xihan-ui/vue";
 ```html
 <xh-skeleton>
   <div data-xh-part="root" style="inline-size: 260px">
-    <div data-xh-part="item"></div>
-    <div data-xh-part="item"></div>
-    <div data-xh-part="item"></div>
+    <div data-xh-part="item" shape="rect" style="--xh-skeleton-rect-block-size: 120px"></div>
+    <div data-xh-part="item" style="inline-size: 60%"></div>
+    <div data-xh-part="item" style="inline-size: 80%"></div>
+    <div data-xh-part="item" style="inline-size: 40%"></div>
   </div>
 </xh-skeleton>
 ```
@@ -58,11 +55,6 @@ import { XhSkeletonItem, XhSkeletonRoot } from "@xihan-ui/vue";
 容器的 shape 是这一组的默认形状，单根骨架条自带 shape 就按自己的来
 
 ```vue
-<!--
-  Copyright (c) 2021-Present XiHanFun and contributors.
-  Licensed under the MIT License. See LICENSE in the project root for license information.
--->
-
 <script setup lang="ts">
 import { XhSkeletonItem, XhSkeletonRoot } from "@xihan-ui/vue";
 </script>
@@ -108,11 +100,6 @@ import { XhSkeletonItem, XhSkeletonRoot } from "@xihan-ui/vue";
 loading 期间容器报 aria-busy，翻成 false 后整块收起，位置让给真内容
 
 ```vue
-<!--
-  Copyright (c) 2021-Present XiHanFun and contributors.
-  Licensed under the MIT License. See LICENSE in the project root for license information.
--->
-
 <script setup lang="ts">
 import { XhSkeletonItem, XhSkeletonRoot } from "@xihan-ui/vue";
 import { ref } from "vue";
@@ -166,88 +153,55 @@ const loading = ref(true);
 </script>
 ```
 
-### 按版面占位
+### 动效
 
-骨架条的宽高由内联样式与组件令牌定，占位形状贴着真内容将来的样子
+在微光、呼吸和静止三档之间选择
 
 ```vue
-<!--
-  Copyright (c) 2021-Present XiHanFun and contributors.
-  Licensed under the MIT License. See LICENSE in the project root for license information.
--->
-
 <script setup lang="ts">
+import type { SkeletonAnimation } from "@xihan-ui/headless";
 import { XhSkeletonItem, XhSkeletonRoot } from "@xihan-ui/vue";
+
+const animations: SkeletonAnimation[] = ["shimmer", "pulse", "none"];
 </script>
 
 <template>
-  <!-- 卡片位：一块封面加两行正文，末行收窄，看起来像一段还没排出来的字 -->
-  <XhSkeletonRoot style="inline-size: 240px">
-    <XhSkeletonItem
-      shape="rect"
-      style="--xh-skeleton-rect-block-size: 120px"
-    />
-    <XhSkeletonItem />
-    <XhSkeletonItem style="inline-size: 60%" />
-  </XhSkeletonRoot>
-
-  <!-- 控件位：圆点直径与两个按钮的宽高各自定死，加载结束后位置不会跳 -->
-  <XhSkeletonRoot
-    style="inline-size: 240px; flex-direction: row; align-items: center"
-  >
-    <XhSkeletonItem
-      shape="circle"
-      style="--xh-skeleton-circle-size: 28px"
-    />
-    <XhSkeletonItem
-      shape="rect"
-      style="inline-size: 96px; --xh-skeleton-rect-block-size: 32px"
-    />
-    <XhSkeletonItem
-      shape="rect"
-      style="inline-size: 64px; --xh-skeleton-rect-block-size: 32px"
-    />
-  </XhSkeletonRoot>
+  <div style="display: flex; flex-wrap: wrap; gap: 20px">
+    <div v-for="animation in animations" :key="animation" style="display: grid; gap: 8px">
+      <span>{{ animation }}</span>
+      <XhSkeletonRoot :animation="animation" style="inline-size: 140px">
+        <XhSkeletonItem shape="rect" style="--xh-skeleton-rect-block-size: 64px" />
+        <XhSkeletonItem style="inline-size: 70%" />
+      </XhSkeletonRoot>
+    </div>
+  </div>
 </template>
 ```
 
 ```html
-<!-- 卡片位：一块封面加两行正文，末行收窄，看起来像一段还没排出来的字 -->
-<xh-skeleton>
-  <div data-xh-part="root" style="inline-size: 240px">
-    <div
-      data-xh-part="item"
-      shape="rect"
-      style="--xh-skeleton-rect-block-size: 120px"
-    ></div>
-    <div data-xh-part="item"></div>
-    <div data-xh-part="item" style="inline-size: 60%"></div>
-  </div>
-</xh-skeleton>
-
-<!-- 控件位：圆点直径与两个按钮的宽高各自定死，加载结束后位置不会跳 -->
-<xh-skeleton>
-  <div
-    data-xh-part="root"
-    style="inline-size: 240px; flex-direction: row; align-items: center"
-  >
-    <div
-      data-xh-part="item"
-      shape="circle"
-      style="--xh-skeleton-circle-size: 28px"
-    ></div>
-    <div
-      data-xh-part="item"
-      shape="rect"
-      style="inline-size: 96px; --xh-skeleton-rect-block-size: 32px"
-    ></div>
-    <div
-      data-xh-part="item"
-      shape="rect"
-      style="inline-size: 64px; --xh-skeleton-rect-block-size: 32px"
-    ></div>
-  </div>
-</xh-skeleton>
+<div style="display: flex; flex-wrap: wrap; gap: 20px">
+  <xh-skeleton animation="shimmer">
+    <div data-xh-part="root" style="inline-size: 140px">
+      <span>shimmer</span>
+      <div data-xh-part="item" shape="rect" style="--xh-skeleton-rect-block-size: 64px"></div>
+      <div data-xh-part="item" style="inline-size: 70%"></div>
+    </div>
+  </xh-skeleton>
+  <xh-skeleton animation="pulse">
+    <div data-xh-part="root" style="inline-size: 140px">
+      <span>pulse</span>
+      <div data-xh-part="item" shape="rect" style="--xh-skeleton-rect-block-size: 64px"></div>
+      <div data-xh-part="item" style="inline-size: 70%"></div>
+    </div>
+  </xh-skeleton>
+  <xh-skeleton animation="none">
+    <div data-xh-part="root" style="inline-size: 140px">
+      <span>none</span>
+      <div data-xh-part="item" shape="rect" style="--xh-skeleton-rect-block-size: 64px"></div>
+      <div data-xh-part="item" style="inline-size: 70%"></div>
+    </div>
+  </xh-skeleton>
+</div>
 ```
 
 ## 设计指引
@@ -266,7 +220,8 @@ import { XhSkeletonItem, XhSkeletonRoot } from "@xihan-ui/vue";
 ### 特性
 
 - `loading` 翻假即换成真内容。
-- `variant` 决定骨块的形状（文本行、圆形、矩形）。
+- `shape` 决定骨块的形状（文本行、圆形、矩形）。
+- `animation` 在微光、呼吸和静止三档之间切换。
 
 ### 组合
 
@@ -365,13 +320,13 @@ import { XhSkeletonItem, XhSkeletonRoot } from "@xihan-ui/vue";
 | `--xh-skeleton-circle-radius` | `item` | `border-radius` | `shape=circle` | `--xh-shape-pill` | skeleton 的 item 部件 border-radius 覆盖槽。 |
 | `--xh-skeleton-circle-size` | `item` | `inline-size` | `shape=circle` | `--xh-control-h-lg` | skeleton 的 item 部件 inline-size 覆盖槽。 |
 | `--xh-skeleton-duration` | `item` | `animation` | `default` | `--xh-shimmer-duration` | skeleton 的 item 部件 animation 覆盖槽。 |
-| `--xh-skeleton-gap` | `root` | `gap` | `default` | `--xh-space-2` | skeleton 的 root 部件 gap 覆盖槽。 |
+| `--xh-skeleton-gap` | `root` | `gap` | `default` | `--xh-space-3` | skeleton 的 root 部件 gap 覆盖槽。 |
 | `--xh-skeleton-pulse-duration` | `item`<br>`root` | `animation` | `animation=pulse` | `--xh-shimmer-duration` | skeleton 的 item、root 部件 animation 覆盖槽。 |
 | `--xh-skeleton-radius` | `item` | `border-radius` | `default` | `--xh-shape-control` | skeleton 的 item 部件 border-radius 覆盖槽。 |
 | `--xh-skeleton-rect-block-size` | `item` | `min-block-size` | `shape=rect` | `--xh-control-h-lg` | skeleton 的 item 部件 min-block-size 覆盖槽。 |
 | `--xh-skeleton-rect-radius` | `item` | `border-radius` | `shape=rect` | `--xh-shape-surface` | skeleton 的 item 部件 border-radius 覆盖槽。 |
 | `--xh-skeleton-sheen` | `item` | `background-image` | `default` | `--xh-bg-surface-raised` | skeleton 的 item 部件 background-image 覆盖槽。 |
-| `--xh-skeleton-text-block-size` | `item` | `block-size` | `shape=text` | `--xh-text-body-size` | skeleton 的 item 部件 block-size 覆盖槽。 |
+| `--xh-skeleton-text-block-size` | `item` | `block-size` | `shape=text` | `--xh-text-caption-size` | skeleton 的 item 部件 block-size 覆盖槽。 |
 | `--xh-skeleton-text-radius` | `item` | `border-radius` | `shape=text` | `--xh-shape-pill` | skeleton 的 item 部件 border-radius 覆盖槽。 |
 <!-- xh-component-tokens:end -->
 

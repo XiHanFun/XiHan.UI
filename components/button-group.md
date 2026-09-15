@@ -17,11 +17,6 @@
 组合相关操作
 
 ```vue
-<!--
-  Copyright (c) 2021-Present XiHanFun and contributors.
-  Licensed under the MIT License. See LICENSE in the project root for license information.
--->
-
 <script setup lang="ts">
 import { XhButton, XhButtonGroup } from "@xihan-ui/vue";
 
@@ -64,11 +59,6 @@ const views = ["照片", "视频", "更多"];
 设置整组外观
 
 ```vue
-<!--
-  Copyright (c) 2021-Present XiHanFun and contributors.
-  Licensed under the MIT License. See LICENSE in the project root for license information.
--->
-
 <script setup lang="ts">
 import { XhButton, XhButtonGroup } from "@xihan-ui/vue";
 
@@ -135,11 +125,6 @@ const views = ["日", "周", "月"];
 设置整组尺寸
 
 ```vue
-<!--
-  Copyright (c) 2021-Present XiHanFun and contributors.
-  Licensed under the MIT License. See LICENSE in the project root for license information.
--->
-
 <script setup lang="ts">
 import { XhButton, XhButtonGroup } from "@xihan-ui/vue";
 
@@ -207,11 +192,6 @@ const views = ["日", "周", "月"];
 水平或垂直排列
 
 ```vue
-<!--
-  Copyright (c) 2021-Present XiHanFun and contributors.
-  Licensed under the MIT License. See LICENSE in the project root for license information.
--->
-
 <script setup lang="ts">
 import { XhButton, XhButtonGroup } from "@xihan-ui/vue";
 
@@ -268,11 +248,6 @@ const actions = ["复制", "剪切", "粘贴"];
 组合图标按钮与文字按钮
 
 ```vue
-<!--
-  Copyright (c) 2021-Present XiHanFun and contributors.
-  Licensed under the MIT License. See LICENSE in the project root for license information.
--->
-
 <script setup lang="ts">
 import { EllipsisIcon, ImageIcon, VideoIcon } from "@xihan-ui/icons";
 import {
@@ -347,11 +322,6 @@ import {
 按钮等分可用宽度
 
 ```vue
-<!--
-  Copyright (c) 2021-Present XiHanFun and contributors.
-  Licensed under the MIT License. See LICENSE in the project root for license information.
--->
-
 <script setup lang="ts">
 import { XhButton, XhButtonGroup } from "@xihan-ui/vue";
 </script>
@@ -382,11 +352,6 @@ import { XhButton, XhButtonGroup } from "@xihan-ui/vue";
 禁用整组按钮
 
 ```vue
-<!--
-  Copyright (c) 2021-Present XiHanFun and contributors.
-  Licensed under the MIT License. See LICENSE in the project root for license information.
--->
-
 <script setup lang="ts">
 import { XhButton, XhButtonGroup } from "@xihan-ui/vue";
 </script>
@@ -415,11 +380,6 @@ import { XhButton, XhButtonGroup } from "@xihan-ui/vue";
 省略分隔线部件
 
 ```vue
-<!--
-  Copyright (c) 2021-Present XiHanFun and contributors.
-  Licensed under the MIT License. See LICENSE in the project root for license information.
--->
-
 <script setup lang="ts">
 import { XhButton, XhButtonGroup } from "@xihan-ui/vue";
 </script>

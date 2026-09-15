@@ -17,11 +17,6 @@
 在页码之间导航
 
 ```vue
-<!--
-  Copyright (c) 2021-Present XiHanFun and contributors.
-  Licensed under the MIT License. See LICENSE in the project root for license information.
--->
-
 <script setup lang="ts">
 import {
   XhPaginationEllipsisTrigger,
@@ -108,11 +103,6 @@ import {
 适配不同的界面密度
 
 ```vue
-<!--
-  Copyright (c) 2021-Present XiHanFun and contributors.
-  Licensed under the MIT License. See LICENSE in the project root for license information.
--->
-
 <script setup lang="ts">
 import {
   XhPaginationEllipsisTrigger,
@@ -244,11 +234,6 @@ const sizes = [
 只显示上一页、当前页与下一页
 
 ```vue
-<!--
-  Copyright (c) 2021-Present XiHanFun and contributors.
-  Licensed under the MIT License. See LICENSE in the project root for license information.
--->
-
 <script setup lang="ts">
 import {
   XhPaginationNextTrigger,
@@ -310,11 +295,6 @@ const page = ref(2);
 输入页码后按 Enter 跳转
 
 ```vue
-<!--
-  Copyright (c) 2021-Present XiHanFun and contributors.
-  Licensed under the MIT License. See LICENSE in the project root for license information.
--->
-
 <script setup lang="ts">
 import {
   XhPaginationEllipsisTrigger,
@@ -388,11 +368,6 @@ import {
 调整每页展示数量
 
 ```vue
-<!--
-  Copyright (c) 2021-Present XiHanFun and contributors.
-  Licensed under the MIT License. See LICENSE in the project root for license information.
--->
-
 <script setup lang="ts">
 import {
   XhPaginationEllipsisTrigger,
@@ -500,11 +475,6 @@ const translations = {
 查看被折叠的页码
 
 ```vue
-<!--
-  Copyright (c) 2021-Present XiHanFun and contributors.
-  Licensed under the MIT License. See LICENSE in the project root for license information.
--->
-
 <script setup lang="ts">
 import {
   XhPaginationContent,

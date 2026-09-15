@@ -17,11 +17,6 @@
 创建纵向滚动区域
 
 ```vue
-<!--
-  Copyright (c) 2021-Present XiHanFun and contributors.
-  Licensed under the MIT License. See LICENSE in the project root for license information.
--->
-
 <script setup lang="ts">
 import {
   XhScrollAreaContent,
@@ -81,11 +76,6 @@ const items = ["项目概览", "组件规范", "设计令牌", "无障碍", "交
 同时显示横向和纵向滚动条
 
 ```vue
-<!--
-  Copyright (c) 2021-Present XiHanFun and contributors.
-  Licensed under the MIT License. See LICENSE in the project root for license information.
--->
-
 <script setup lang="ts">
 import {
   XhScrollAreaContent,
@@ -155,11 +145,6 @@ const rows = Array.from({ length: 10 }, (_, index) => `ORD-${String(index + 1).p
 只启用横向滚动
 
 ```vue
-<!--
-  Copyright (c) 2021-Present XiHanFun and contributors.
-  Licensed under the MIT License. See LICENSE in the project root for license information.
--->
-
 <script setup lang="ts">
 import {
   XhScrollAreaContent,
@@ -224,11 +209,6 @@ const cards = ["概览", "分析", "报告", "成员", "设置", "发布"];
 提示还有更多内容
 
 ```vue
-<!--
-  Copyright (c) 2021-Present XiHanFun and contributors.
-  Licensed under the MIT License. See LICENSE in the project root for license information.
--->
-
 <script setup lang="ts">
 import {
   XhScrollAreaContent,

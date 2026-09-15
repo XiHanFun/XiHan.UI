@@ -17,11 +17,6 @@
 添加和删除重复字段
 
 ```vue
-<!--
-  Copyright (c) 2021-Present XiHanFun and contributors.
-  Licensed under the MIT License. See LICENSE in the project root for license information.
--->
-
 <script setup lang="ts">
 import {
   XhFieldArrayAddTrigger,
@@ -135,11 +130,6 @@ function setAt(index: number, next: string) {
 设置最少和最多行数
 
 ```vue
-<!--
-  Copyright (c) 2021-Present XiHanFun and contributors.
-  Licensed under the MIT License. See LICENSE in the project root for license information.
--->
-
 <script setup lang="ts">
 import {
   XhFieldArrayAddTrigger,
@@ -242,11 +232,6 @@ function setAt(index: number, next: string) {
 上移或下移字段
 
 ```vue
-<!--
-  Copyright (c) 2021-Present XiHanFun and contributors.
-  Licensed under the MIT License. See LICENSE in the project root for license information.
--->
-
 <script setup lang="ts">
 import {
   XhFieldArrayAddTrigger,
@@ -358,11 +343,6 @@ function setAt(index: number, next: string) {
 每行包含多个输入框
 
 ```vue
-<!--
-  Copyright (c) 2021-Present XiHanFun and contributors.
-  Licensed under the MIT License. See LICENSE in the project root for license information.
--->
-
 <script setup lang="ts">
 import {
   XhFieldArrayAddTrigger,
@@ -509,6 +489,11 @@ function patch(index: number, key: keyof Header, next: string) {
 - `createItem` 设置新增行的初始值。
 - 每行可以包含一个或多个字段。
 - 在 Form 中会同步迁移数组子字段的值、规则和错误。
+
+### 组合
+
+- 每一行里放[表单字段](./field)，行内多个字段用行布局排开；整组挂在[表单](./form)下由它迁移值、规则与错误。
+- 行序也可以交给[排序](./sortable)拖拽调整；`movable` 只给上移、下移两颗按钮。
 
 ### 最佳实践
 

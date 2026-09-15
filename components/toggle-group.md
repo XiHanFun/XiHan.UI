@@ -17,11 +17,6 @@
 同时切换多个文本格式
 
 ```vue
-<!--
-  Copyright (c) 2021-Present XiHanFun and contributors.
-  Licensed under the MIT License. See LICENSE in the project root for license information.
--->
-
 <script setup lang="ts">
 import { BoldIcon, ItalicIcon, StrikethroughIcon, UnderlineIcon } from "@xihan-ui/icons";
 import { XhIcon, XhToggleGroupItem, XhToggleGroupRoot } from "@xihan-ui/vue";
@@ -61,11 +56,6 @@ import { XhIcon, XhToggleGroupItem, XhToggleGroupRoot } from "@xihan-ui/vue";
 由外部状态控制选中值
 
 ```vue
-<!--
-  Copyright (c) 2021-Present XiHanFun and contributors.
-  Licensed under the MIT License. See LICENSE in the project root for license information.
--->
-
 <script setup lang="ts">
 import { XhToggleGroupRoot } from "@xihan-ui/vue";
 import { ref } from "vue";
@@ -105,11 +95,6 @@ const options = [
 同时选择多个格式
 
 ```vue
-<!--
-  Copyright (c) 2021-Present XiHanFun and contributors.
-  Licensed under the MIT License. See LICENSE in the project root for license information.
--->
-
 <script setup lang="ts">
 import { XhToggleGroupRoot } from "@xihan-ui/vue";
 
@@ -140,11 +125,6 @@ const formats = [
 禁用单个选项
 
 ```vue
-<!--
-  Copyright (c) 2021-Present XiHanFun and contributors.
-  Licensed under the MIT License. See LICENSE in the project root for license information.
--->
-
 <script setup lang="ts">
 import { XhToggleGroupRoot } from "@xihan-ui/vue";
 
@@ -175,11 +155,6 @@ const aligns = [
 水平或垂直排列
 
 ```vue
-<!--
-  Copyright (c) 2021-Present XiHanFun and contributors.
-  Licensed under the MIT License. See LICENSE in the project root for license information.
--->
-
 <script setup lang="ts">
 import { XhToggleGroupRoot } from "@xihan-ui/vue";
 
@@ -218,11 +193,6 @@ const options = [
 选项等分可用宽度
 
 ```vue
-<!--
-  Copyright (c) 2021-Present XiHanFun and contributors.
-  Licensed under the MIT License. See LICENSE in the project root for license information.
--->
-
 <script setup lang="ts">
 import { XhToggleGroupRoot } from "@xihan-ui/vue";
 
@@ -257,11 +227,6 @@ const options = [
 提供三种尺寸
 
 ```vue
-<!--
-  Copyright (c) 2021-Present XiHanFun and contributors.
-  Licensed under the MIT License. See LICENSE in the project root for license information.
--->
-
 <script setup lang="ts">
 import { XhToggleGroupRoot } from "@xihan-ui/vue";
 
@@ -308,11 +273,6 @@ const options = [
 设置整组外观
 
 ```vue
-<!--
-  Copyright (c) 2021-Present XiHanFun and contributors.
-  Licensed under the MIT License. See LICENSE in the project root for license information.
--->
-
 <script setup lang="ts">
 import { XhToggleGroupRoot } from "@xihan-ui/vue";
 
@@ -375,11 +335,6 @@ const variants = ["solid", "subtle", "outline", "ghost"] as const;
 省略分隔线部件
 
 ```vue
-<!--
-  Copyright (c) 2021-Present XiHanFun and contributors.
-  Licensed under the MIT License. See LICENSE in the project root for license information.
--->
-
 <script setup lang="ts">
 import { BoldIcon, ItalicIcon, UnderlineIcon } from "@xihan-ui/icons";
 import { XhIcon, XhToggleGroupItem, XhToggleGroupRoot } from "@xihan-ui/vue";
@@ -426,6 +381,11 @@ import { XhIcon, XhToggleGroupItem, XhToggleGroupRoot } from "@xihan-ui/vue";
 - 使用 roving tabindex 管理组内键盘导航。
 - `disallowEmpty` 可阻止清空最后一个选中项。
 - `collection` 可统一提供标签和禁用状态。
+
+### 组合
+
+- 每一项就是一枚[切换按钮](./toggle)；放进[工具栏](./toolbar)与其他按钮组成一排。
+- 需要面板关联的换[标签页](./tabs)；样式上更像分段控件的换[分段控制器](./segmented)。
 
 ### 最佳实践
 

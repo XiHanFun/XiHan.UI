@@ -17,11 +17,6 @@
 拖动裁切区域或调整把手
 
 ```vue
-<!--
-  Copyright (c) 2021-Present XiHanFun and contributors.
-  Licensed under the MIT License. See LICENSE in the project root for license information.
--->
-
 <script setup lang="ts">
 import {
   XhImageCropperCropArea,
@@ -99,11 +94,6 @@ const handles = ["nw", "n", "ne", "e", "se", "s", "sw", "w"] as const;
 以 16:9 裁切封面
 
 ```vue
-<!--
-  Copyright (c) 2021-Present XiHanFun and contributors.
-  Licensed under the MIT License. See LICENSE in the project root for license information.
--->
-
 <script setup lang="ts">
 import {
   XhImageCropperCropArea,
@@ -169,11 +159,6 @@ const handles = ["nw", "ne", "se", "sw"] as const;
 以 1:1 裁切头像
 
 ```vue
-<!--
-  Copyright (c) 2021-Present XiHanFun and contributors.
-  Licensed under the MIT License. See LICENSE in the project root for license information.
--->
-
 <script setup lang="ts">
 import {
   XhImageCropperCropArea,
@@ -238,11 +223,6 @@ const handles = ["nw", "ne", "se", "sw"] as const;
 使用内置滑块调整视图
 
 ```vue
-<!--
-  Copyright (c) 2021-Present XiHanFun and contributors.
-  Licensed under the MIT License. See LICENSE in the project root for license information.
--->
-
 <script setup lang="ts">
 import {
   XhImageCropperCropArea,
@@ -321,11 +301,6 @@ const handles = ["nw", "ne", "se", "sw"] as const;
 禁用后不可调整
 
 ```vue
-<!--
-  Copyright (c) 2021-Present XiHanFun and contributors.
-  Licensed under the MIT License. See LICENSE in the project root for license information.
--->
-
 <script setup lang="ts">
 import {
   XhImageCropperCropArea,
@@ -393,7 +368,7 @@ const handles = ["nw", "ne", "se", "sw"] as const;
 ### 何时不用
 
 - 仅展示图片：使用[图片](./image)。
-- 仅浏览或缩放图片：使用[图片查看器](./image-viewer)。
+- 仅浏览或缩放图片：使用[图片预览](./image-viewer)。
 - 仅选择文件：使用[文件上传](./file-upload)。
 
 ### 特性
@@ -404,6 +379,11 @@ const handles = ["nw", "ne", "se", "sw"] as const;
 - 支持固定宽高比、圆形遮罩、缩放和旋转。
 - 支持受控裁切区域和原生表单提交。
 - `onValueChangeEnd` 在一次调整结束时触发。
+
+### 组合
+
+- 前面接[文件上传](./file-upload)拿到源图，后面把结果交给[头像](./avatar)或[图片](./image)预览。
+- 放进[对话框](./dialog)里做裁切弹窗；缩放与旋转的控制用[滑块](./slider)与[按钮](./button)。
 
 ### 最佳实践
 

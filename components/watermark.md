@@ -17,11 +17,6 @@
 为内容添加文字水印
 
 ```vue
-<!--
-  Copyright (c) 2021-Present XiHanFun and contributors.
-  Licensed under the MIT License. See LICENSE in the project root for license information.
--->
-
 <script setup lang="ts">
 import { XhWatermarkContent, XhWatermarkRoot } from "@xihan-ui/vue";
 </script>
@@ -64,11 +59,6 @@ import { XhWatermarkContent, XhWatermarkRoot } from "@xihan-ui/vue";
 显示归属和时间信息
 
 ```vue
-<!--
-  Copyright (c) 2021-Present XiHanFun and contributors.
-  Licensed under the MIT License. See LICENSE in the project root for license information.
--->
-
 <script setup lang="ts">
 import { XhWatermarkContent, XhWatermarkRoot } from "@xihan-ui/vue";
 
@@ -111,11 +101,6 @@ zhaifanhua@gmail.com
 设置角度、间距、字号和透明度
 
 ```vue
-<!--
-  Copyright (c) 2021-Present XiHanFun and contributors.
-  Licensed under the MIT License. See LICENSE in the project root for license information.
--->
-
 <script setup lang="ts">
 import { XhWatermarkContent, XhWatermarkRoot } from "@xihan-ui/vue";
 
@@ -215,11 +200,6 @@ const looks = [
 设置水印前景色
 
 ```vue
-<!--
-  Copyright (c) 2021-Present XiHanFun and contributors.
-  Licensed under the MIT License. See LICENSE in the project root for license information.
--->
-
 <script setup lang="ts">
 import { XhWatermarkContent, XhWatermarkRoot } from "@xihan-ui/vue";
 </script>

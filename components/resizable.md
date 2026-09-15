@@ -17,11 +17,6 @@
 从右侧、底部或右下角调整尺寸
 
 ```vue
-<!--
-  Copyright (c) 2021-Present XiHanFun and contributors.
-  Licensed under the MIT License. See LICENSE in the project root for license information.
--->
-
 <script setup lang="ts">
 import { XhResizableHandle, XhResizableRoot } from "@xihan-ui/vue";
 import { ref } from "vue";
@@ -74,11 +69,6 @@ const EDGES = ["e", "s", "se"] as const;
 从任意边缘或角点调整尺寸
 
 ```vue
-<!--
-  Copyright (c) 2021-Present XiHanFun and contributors.
-  Licensed under the MIT License. See LICENSE in the project root for license information.
--->
-
 <script setup lang="ts">
 import { XhResizableHandle, XhResizableRoot } from "@xihan-ui/vue";
 import { ref } from "vue";
@@ -118,11 +108,6 @@ const EDGES = ["n", "ne", "e", "se", "s", "sw", "w", "nw"] as const;
 设置宽高比和步进
 
 ```vue
-<!--
-  Copyright (c) 2021-Present XiHanFun and contributors.
-  Licensed under the MIT License. See LICENSE in the project root for license information.
--->
-
 <script setup lang="ts">
 import { XhResizableHandle, XhResizableRoot } from "@xihan-ui/vue";
 import { ref } from "vue";
@@ -229,11 +214,6 @@ const snapped = ref({ width: 240, height: 120 });
 禁止调整尺寸
 
 ```vue
-<!--
-  Copyright (c) 2021-Present XiHanFun and contributors.
-  Licensed under the MIT License. See LICENSE in the project root for license information.
--->
-
 <script setup lang="ts">
 import { XhResizableHandle, XhResizableRoot } from "@xihan-ui/vue";
 </script>
@@ -288,6 +268,17 @@ import { XhResizableHandle, XhResizableRoot } from "@xihan-ui/vue";
 ### 组合
 
 - 可在内部放置[滚动区域](./scroll-area)。
+
+### 最佳实践
+
+- 给出合理的最小与最大尺寸，别让内容被压到不可读。
+- 记住用户调整后的尺寸，下次打开时还原。
+- 把手要留足命中区，粗指针下用伪元素扩展。
+
+### 反模式
+
+- 每一帧调整都去请求服务端或重排整页。
+- 把手只在悬停时才出现，键盘用户找不到入口。
 
 ## API 参考
 

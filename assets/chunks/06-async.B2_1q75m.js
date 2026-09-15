@@ -1,0 +1,98 @@
+const e=`// 异步加载子节点 | 展开那一刻才去要数据：先摆一行禁用的占位，取回来就地换掉，收起再展开不重复请求
+import type { ReactNode } from "react";
+import {
+  XhTreeBranch,
+  XhTreeBranchContent,
+  XhTreeBranchControl,
+  XhTreeBranchText,
+  XhTreeBranchTrigger,
+  XhTreeItem,
+  XhTreeItemIndicator,
+  XhTreeItemText,
+  XhTreeLabel,
+  XhTreeRoot,
+  XhTreeTree,
+} from "@xihan-ui/react";
+import { useRef, useState } from "react";
+
+interface Node {
+  value: string;
+  label: string;
+  disabled?: boolean;
+  children?: Node[];
+}
+
+// 占位行也是一个真节点：它得在 collection 里，方向键才走得到它
+function pending(owner: string): Node[] {
+  return [{ value: \`\${owner}-pending\`, label: "加载中…", disabled: true }];
+}
+
+const initial: Node[] = [
+  { value: "rd", label: "研发中心", children: pending("rd") },
+  { value: "ops", label: "运维中心", children: pending("ops") },
+  { value: "biz", label: "业务中心", children: pending("biz") },
+];
+
+const staff: Record<string, string[]> = {
+  rd: ["赵一", "钱二"],
+  ops: ["孙三"],
+  biz: ["李四", "周五", "吴六"],
+};
+
+export default function Demo(): ReactNode {
+  const [collection, setCollection] = useState<Node[]>(initial);
+  const [expanded, setExpanded] = useState<string[]>([]);
+  const loaded = useRef(new Set<string>());
+
+  function fetchChildren(value: string): void {
+    if (loaded.current.has(value))
+      return;
+    loaded.current.add(value);
+    window.setTimeout(() => {
+      const names = staff[value];
+      if (!names)
+        return;
+      setCollection(current => current.map(node => (node.value === value
+        ? {
+            ...node,
+            children: names.map((name, index) => ({ value: \`\${value}-\${index}\`, label: name })),
+          }
+        : node)));
+    }, 800);
+  }
+
+  function onExpandedValueChange(details: { value: string[] }): void {
+    setExpanded(details.value);
+    for (const value of details.value) fetchChildren(value);
+  }
+
+  return (
+    <XhTreeRoot
+      collection={collection}
+      expandedValue={expanded}
+      style={{ inlineSize: "100%", maxInlineSize: "320px" }}
+      onExpandedValueChange={onExpandedValueChange}
+    >
+      <XhTreeLabel>组织架构</XhTreeLabel>
+      <XhTreeTree>
+        {collection.map(node => (
+          <XhTreeBranch key={node.value} value={node.value}>
+            <XhTreeBranchControl>
+              <XhTreeBranchTrigger />
+              <XhTreeBranchText>{node.label}</XhTreeBranchText>
+            </XhTreeBranchControl>
+            <XhTreeBranchContent>
+              {node.children?.map(child => (
+                <XhTreeItem key={child.value} value={child.value}>
+                  <XhTreeItemIndicator />
+                  <XhTreeItemText>{child.label}</XhTreeItemText>
+                </XhTreeItem>
+              ))}
+            </XhTreeBranchContent>
+          </XhTreeBranch>
+        ))}
+      </XhTreeTree>
+    </XhTreeRoot>
+  );
+}
+`;export{e as default};

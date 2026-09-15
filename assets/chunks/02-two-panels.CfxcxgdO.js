@@ -1,0 +1,96 @@
+const e=`<!-- 并排两个月 | visible-count=2：起止常跨月，并排看两页才好挑；翻页时整窗一起走 -->
+<div id="calendar-range-picker-two-panels-mount"></div>
+<span style="font-size: 13px">区间：<span id="calendar-range-picker-two-panels-value">2026-09-28 → 2026-10-06</span></span>
+
+<!-- 结构先收在模板里：必需的格子要在元素接线前就位，所以网格填好了才入页 -->
+<template id="calendar-range-picker-two-panels-template">
+  <xh-calendar-range-picker locale="zh-CN" visible-count="2" default-focused-value="2026-09-28" fixed-weeks>
+    <div data-xh-part="root">
+      <div data-xh-part="header">
+        <button data-xh-part="prev-trigger" aria-label="上个月"></button>
+        <!-- 两张面板各有自己的标题，翻页按钮只有一对 -->
+        <div data-xh-part="heading" index="0"></div>
+        <div data-xh-part="heading" index="1"></div>
+        <button data-xh-part="next-trigger" aria-label="下个月"></button>
+      </div>
+      <div style="display: flex; gap: 16px">
+        <div data-xh-part="grid" index="0">
+          <div data-xh-part="grid-head"><div data-xh-part="week-row"></div></div>
+          <div data-xh-part="grid-body"></div>
+        </div>
+        <div data-xh-part="grid" index="1">
+          <div data-xh-part="grid-head"><div data-xh-part="week-row"></div></div>
+          <div data-xh-part="grid-body"></div>
+        </div>
+      </div>
+    </div>
+  </xh-calendar-range-picker>
+</template>
+
+<script type="module">
+  const fragment = document
+    .getElementById("calendar-range-picker-two-panels-template")
+    .content.cloneNode(true);
+  const calendar = fragment.querySelector("xh-calendar-range-picker");
+  const headings = [...fragment.querySelectorAll('[data-xh-part="heading"]')];
+  const grids = [...fragment.querySelectorAll('[data-xh-part="grid"]')];
+  const readout = document.getElementById("calendar-range-picker-two-panels-value");
+  calendar.defaultValue = ["2026-09-28", "2026-10-06"];
+
+  let painted = "";
+
+  function paintHead(grid) {
+    const head = grid.querySelector('[data-xh-part="grid-head"] [data-xh-part="week-row"]');
+    head.replaceChildren(
+      ...calendar.weekDays.map((day) => {
+        const cell = document.createElement("span");
+        cell.dataset.xhPart = "week-day";
+        cell.setAttribute("value", day.value);
+        cell.textContent = day.label;
+        return cell;
+      }),
+    );
+  }
+
+  // 视窗整体翻页才重画：两张面板各铺各的月，格子归所在的那张 grid
+  function paintBody() {
+    const panels = calendar.panels;
+    const key = panels.map((p) => p.startValue).join("|");
+    if (key === painted) {
+      return;
+    }
+    painted = key;
+    panels.forEach((panel, index) => {
+      headings[index].textContent = panel.headingLabel;
+      const body = grids[index].querySelector('[data-xh-part="grid-body"]');
+      body.replaceChildren(
+        ...panel.weeks.map((week) => {
+          const row = document.createElement("div");
+          row.dataset.xhPart = "week-row";
+          for (const day of week) {
+            const cell = document.createElement("div");
+            cell.dataset.xhPart = "cell";
+            cell.setAttribute("value", day.start);
+            const trigger = document.createElement("div");
+            trigger.dataset.xhPart = "cell-trigger";
+            trigger.textContent = day.day;
+            cell.append(trigger);
+            row.append(cell);
+          }
+          return row;
+        }),
+      );
+    });
+  }
+
+  document.getElementById("calendar-range-picker-two-panels-mount").append(fragment);
+  grids.forEach(paintHead);
+  paintBody();
+
+  calendar.addEventListener("focused-value-change", paintBody);
+  calendar.addEventListener("value-change", (event) => {
+    const [start, end] = event.detail.value;
+    readout.textContent = start && end ? \`\${start} → \${end}\` : "（未选）";
+  });
+<\/script>
+`;export{e as default};

@@ -1,0 +1,1 @@
+import{F as o,G as n}from"./theme.C4bpqV2W.js";import{d as r,b as s,w as a,k as t,o as d,E as u,a as f}from"./framework.DkvuVDKz.js";const i=r({__name:"badge",setup(l){return(p,e)=>(d(),s(t(n),{count:8,tone:"danger",label:"8 条未读"},{default:a(()=>[u(t(o),{variant:"outline"},{default:a(()=>[...e[0]||(e[0]=[f("收件箱",-1)])]),_:1})]),_:1}))}});export{i as default};

@@ -1,0 +1,50 @@
+const e=`<!-- 精度到秒 | granularity 同时决定输入行显示几段、浮层里排几列 -->
+<script setup lang="ts">
+import {
+  XhTimePickerClearTrigger,
+  XhTimePickerColumn,
+  XhTimePickerContent,
+  XhTimePickerControl,
+  XhTimePickerItem,
+  XhTimePickerLabel,
+  XhTimePickerPositioner,
+  XhTimePickerRoot,
+  XhTimePickerSegment,
+  XhTimePickerSegmentGroup,
+} from "@xihan-ui/vue";
+import { ref } from "vue";
+
+const value = ref("");
+<\/script>
+
+<template>
+  <XhTimePickerRoot v-model:value="value" granularity="second">
+    <XhTimePickerLabel>执行时刻</XhTimePickerLabel>
+    <XhTimePickerControl>
+      <XhTimePickerSegmentGroup>
+        <XhTimePickerSegment segment="hour" />
+        <span>:</span>
+        <XhTimePickerSegment segment="minute" />
+        <span>:</span>
+        <XhTimePickerSegment segment="second" />
+      </XhTimePickerSegmentGroup>
+      <XhTimePickerClearTrigger />
+    </XhTimePickerControl>
+    <XhTimePickerPositioner>
+      <XhTimePickerContent>
+        <XhTimePickerColumn v-slot="{ options }" unit="hour">
+          <XhTimePickerItem v-for="o in options" :key="o" :value="o" />
+        </XhTimePickerColumn>
+        <XhTimePickerColumn v-slot="{ options }" unit="minute">
+          <XhTimePickerItem v-for="o in options" :key="o" :value="o" />
+        </XhTimePickerColumn>
+        <XhTimePickerColumn v-slot="{ options }" unit="second">
+          <XhTimePickerItem v-for="o in options" :key="o" :value="o" />
+        </XhTimePickerColumn>
+      </XhTimePickerContent>
+    </XhTimePickerPositioner>
+  </XhTimePickerRoot>
+
+  <span style="font-size: 13px">当前值：{{ value || "（空）" }}</span>
+</template>
+`;export{e as default};

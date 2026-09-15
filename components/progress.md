@@ -17,11 +17,6 @@
 value 与 max 共同决定百分比
 
 ```vue
-<!--
-  Copyright (c) 2021-Present XiHanFun and contributors.
-  Licensed under the MIT License. See LICENSE in the project root for license information.
--->
-
 <script setup lang="ts">
 import { XhProgress } from "@xihan-ui/vue";
 </script>
@@ -76,11 +71,6 @@ import { XhProgress } from "@xihan-ui/vue";
 进度条自身只画轨道与进度，百分比文字由使用者摆
 
 ```vue
-<!--
-  Copyright (c) 2021-Present XiHanFun and contributors.
-  Licensed under the MIT License. See LICENSE in the project root for license information.
--->
-
 <script setup lang="ts">
 import { XhProgress } from "@xihan-ui/vue";
 import { ref } from "vue";
@@ -148,11 +138,6 @@ const value = ref(64);
 max 不是 100 时按 value/max 折算，用于「已完成 3/8 步」这类场景
 
 ```vue
-<!--
-  Copyright (c) 2021-Present XiHanFun and contributors.
-  Licensed under the MIT License. See LICENSE in the project root for license information.
--->
-
 <script setup lang="ts">
 import { XhProgress } from "@xihan-ui/vue";
 </script>
@@ -190,11 +175,6 @@ import { XhProgress } from "@xihan-ui/vue";
 tone 决定进度段用哪族颜色，不写时沿用品牌色
 
 ```vue
-<!--
-  Copyright (c) 2021-Present XiHanFun and contributors.
-  Licensed under the MIT License. See LICENSE in the project root for license information.
--->
-
 <script setup lang="ts">
 import { XhProgress } from "@xihan-ui/vue";
 
@@ -286,11 +266,6 @@ const tones = ["brand", "neutral", "success", "warning", "danger", "info"] as co
 size 只改轨道厚度，不写即缺省中档
 
 ```vue
-<!--
-  Copyright (c) 2021-Present XiHanFun and contributors.
-  Licensed under the MIT License. See LICENSE in the project root for license information.
--->
-
 <script setup lang="ts">
 import { XhProgress } from "@xihan-ui/vue";
 </script>
@@ -355,11 +330,6 @@ import { XhProgress } from "@xihan-ui/vue";
 轨道色、进度段色与轨道厚度各是一个组件令牌，纯色与渐变都塞得进去
 
 ```vue
-<!--
-  Copyright (c) 2021-Present XiHanFun and contributors.
-  Licensed under the MIT License. See LICENSE in the project root for license information.
--->
-
 <script setup lang="ts">
 import { XhProgress } from "@xihan-ui/vue";
 </script>
@@ -426,11 +396,6 @@ import { XhProgress } from "@xihan-ui/vue";
 variant="circle" 把同一份进度画成环，尺寸档改的是直径
 
 ```vue
-<!--
-  Copyright (c) 2021-Present XiHanFun and contributors.
-  Licensed under the MIT License. See LICENSE in the project root for license information.
--->
-
 <script setup lang="ts">
 import { XhProgress } from "@xihan-ui/vue";
 </script>
@@ -480,11 +445,6 @@ import { XhProgress } from "@xihan-ui/vue";
 variant="dashboard" 在环上留一个缺口，gapDegree 与 gapPosition 决定它多大、朝哪
 
 ```vue
-<!--
-  Copyright (c) 2021-Present XiHanFun and contributors.
-  Licensed under the MIT License. See LICENSE in the project root for license information.
--->
-
 <script setup lang="ts">
 import { XhProgress } from "@xihan-ui/vue";
 </script>
@@ -544,11 +504,6 @@ import { XhProgress } from "@xihan-ui/vue";
 组件只负责把内容摆到环心，写什么由使用者决定
 
 ```vue
-<!--
-  Copyright (c) 2021-Present XiHanFun and contributors.
-  Licensed under the MIT License. See LICENSE in the project root for license information.
--->
-
 <script setup lang="ts">
 import { CheckIcon } from "@xihan-ui/icons";
 import { XhIcon, XhProgress } from "@xihan-ui/vue";
@@ -618,11 +573,6 @@ import { XhIcon, XhProgress } from "@xihan-ui/vue";
 直径、颜色与端点走令牌，线宽走 strokeWidth：它改的是几何，半径跟着往里收
 
 ```vue
-<!--
-  Copyright (c) 2021-Present XiHanFun and contributors.
-  Licensed under the MIT License. See LICENSE in the project root for license information.
--->
-
 <script setup lang="ts">
 import { XhProgress } from "@xihan-ui/vue";
 </script>

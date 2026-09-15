@@ -1,0 +1,1 @@
+import{j as e,m as s,r as n}from"./jsx-runtime.DVGPA3uI.js";import{w as m}from"./config.CIinjCLh.js";import{qE as i}from"./theme.C4bpqV2W.js";function g({variant:r,tone:o,size:p,children:t,...a}){return e.jsx("span",{...s(i(m("icon-wrapper",{variant:r,tone:o,size:p}),n).getRootProps(),a),children:t})}export{g as X};

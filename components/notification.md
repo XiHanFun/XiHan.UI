@@ -17,11 +17,6 @@
 create 入队并返回 id，队列里的每条由作者渲染成一条通知；退场窗口走完只收起不删，宿主在 status-change 里把它移出队列
 
 ```vue
-<!--
-  Copyright (c) 2021-Present XiHanFun and contributors.
-  Licensed under the MIT License. See LICENSE in the project root for license information.
--->
-
 <script setup lang="ts">
 import {
   XhButton,
@@ -50,13 +45,13 @@ const itemTranslations = { close: "关闭" };
       variant="outline"
       @click="
         create({
-          type: 'error',
+          tone: 'danger',
           title: '同步失败',
           description: '网络中断，稍后自动重试',
         })
       "
     >
-      弹一条 error
+      弹一条 danger
     </XhButton>
     <span>队列：{{ count }} 条</span>
 
@@ -66,7 +61,8 @@ const itemTranslations = { close: "关闭" };
           :id="item.id"
           :title="item.title"
           :description="item.description"
-          :type="item.type"
+          :tone="item.tone"
+          :loading="item.loading"
           :duration="item.duration"
           :remove-delay="item.removeDelay"
           :closable="item.closable"
@@ -92,8 +88,8 @@ const itemTranslations = { close: "关闭" };
     <xh-button variant="solid" data-create="save">
       <button data-xh-part="root">弹一条</button>
     </xh-button>
-    <xh-button variant="outline" data-create="error">
-      <button data-xh-part="root">弹一条 error</button>
+    <xh-button variant="outline" data-create="danger">
+      <button data-xh-part="root">弹一条 danger</button>
     </xh-button>
     <span>队列：<span id="notification-basic-count">0</span> 条</span>
 
@@ -139,7 +135,8 @@ const itemTranslations = { close: "关闭" };
       }
       node.titleText = item.title;
       node.description = item.description;
-      node.type = item.type;
+      node.tone = item.tone;
+      node.loading = item.loading;
       node.duration = item.duration;
       node.removeDelay = item.removeDelay;
       node.closable = item.closable;
@@ -151,8 +148,8 @@ const itemTranslations = { close: "关闭" };
 
   const messages = {
     save: { title: "草稿已保存", description: "内容已同步到云端" },
-    error: {
-      type: "error",
+    danger: {
+      tone: "danger",
       title: "同步失败",
       description: "网络中断，稍后自动重试",
     },
@@ -179,11 +176,6 @@ const itemTranslations = { close: "关闭" };
 placement 决定这一摞贴视口的哪个角，换的只是 group 上的 data-placement，队列本身不动
 
 ```vue
-<!--
-  Copyright (c) 2021-Present XiHanFun and contributors.
-  Licensed under the MIT License. See LICENSE in the project root for license information.
--->
-
 <script setup lang="ts">
 import {
   XhButton,
@@ -234,7 +226,8 @@ const itemTranslations = { close: "关闭" };
           :id="item.id"
           :title="item.title"
           :description="item.description"
-          :type="item.type"
+          :tone="item.tone"
+          :loading="item.loading"
           :duration="item.duration"
           :remove-delay="item.removeDelay"
           :closable="item.closable"
@@ -319,7 +312,8 @@ const itemTranslations = { close: "关闭" };
       }
       node.titleText = item.title;
       node.description = item.description;
-      node.type = item.type;
+      node.tone = item.tone;
+      node.loading = item.loading;
       node.duration = item.duration;
       node.removeDelay = item.removeDelay;
       node.closable = item.closable;
@@ -353,11 +347,6 @@ const itemTranslations = { close: "关闭" };
 同一个 id 再 create 一次是原地改写而不是新弹一条，位置不动；loading 不自动消失，换成 success 才开始倒计时
 
 ```vue
-<!--
-  Copyright (c) 2021-Present XiHanFun and contributors.
-  Licensed under the MIT License. See LICENSE in the project root for license information.
--->
-
 <script setup lang="ts">
 import {
   XhButton,
@@ -379,7 +368,7 @@ const itemTranslations = { close: "关闭" };
 function startUpload(create: Create, update: Update): void {
   create({
     id: "upload",
-    type: "loading",
+    loading: true,
     title: "正在上传",
     description: "3 个文件排队中",
   });
@@ -388,7 +377,8 @@ function startUpload(create: Create, update: Update): void {
   // 同一个 id 再 create 一次同样是就地改写
   window.setTimeout(create, 2400, {
     id: "upload",
-    type: "success",
+    loading: false,
+    tone: "success",
     title: "上传完成",
     description: "3 个文件已入库",
   });
@@ -407,7 +397,8 @@ function startUpload(create: Create, update: Update): void {
           :id="item.id"
           :title="item.title"
           :description="item.description"
-          :type="item.type"
+          :tone="item.tone"
+          :loading="item.loading"
           :duration="item.duration"
           :remove-delay="item.removeDelay"
           :closable="item.closable"
@@ -474,7 +465,8 @@ function startUpload(create: Create, update: Update): void {
       }
       node.titleText = item.title;
       node.description = item.description;
-      node.type = item.type;
+      node.tone = item.tone;
+      node.loading = item.loading;
       node.duration = item.duration;
       node.removeDelay = item.removeDelay;
       node.closable = item.closable;
@@ -486,7 +478,7 @@ function startUpload(create: Create, update: Update): void {
   notification.querySelector("[data-start]").addEventListener("click", () => {
     notification.create({
       id: "upload",
-      type: "loading",
+      loading: true,
       title: "正在上传",
       description: "3 个文件排队中",
     });
@@ -498,7 +490,8 @@ function startUpload(create: Create, update: Update): void {
     window.setTimeout(() => {
       notification.create({
         id: "upload",
-        type: "success",
+        loading: false,
+        tone: "success",
         title: "上传完成",
         description: "3 个文件已入库",
       });
@@ -512,11 +505,6 @@ function startUpload(create: Create, update: Update): void {
 max 限制每个位置同时显示几条，超出挤掉最旧的；dismissAll 把队列直接倒掉，不走退场窗口
 
 ```vue
-<!--
-  Copyright (c) 2021-Present XiHanFun and contributors.
-  Licensed under the MIT License. See LICENSE in the project root for license information.
--->
-
 <script setup lang="ts">
 import {
   XhButton,
@@ -561,7 +549,8 @@ function nextTitle(): string {
           :id="item.id"
           :title="item.title"
           :description="item.description"
-          :type="item.type"
+          :tone="item.tone"
+          :loading="item.loading"
           :duration="item.duration"
           :remove-delay="item.removeDelay"
           :closable="item.closable"
@@ -634,7 +623,8 @@ function nextTitle(): string {
       }
       node.titleText = item.title;
       node.description = item.description;
-      node.type = item.type;
+      node.tone = item.tone;
+      node.loading = item.loading;
       node.duration = item.duration;
       node.removeDelay = item.removeDelay;
       node.closable = item.closable;
@@ -663,11 +653,6 @@ function nextTitle(): string {
 create 返回的就是队列身份 id，存下来随时 dismiss 掉那一条；dismiss 直接移出队列，不走退场窗口
 
 ```vue
-<!--
-  Copyright (c) 2021-Present XiHanFun and contributors.
-  Licensed under the MIT License. See LICENSE in the project root for license information.
--->
-
 <script setup lang="ts">
 import {
   XhButton,
@@ -689,7 +674,7 @@ const itemTranslations = { close: "关闭" };
 
 function start(create: Create): void {
   pending.value = create({
-    type: "loading",
+    loading: true,
     title: "正在导出",
     description: "loading 不自动消失，等宿主来收",
   });
@@ -734,7 +719,8 @@ function settle(
           :id="item.id"
           :title="item.title"
           :description="item.description"
-          :type="item.type"
+          :tone="item.tone"
+          :loading="item.loading"
           :duration="item.duration"
           :remove-delay="item.removeDelay"
           :closable="item.closable"
@@ -813,7 +799,8 @@ function settle(
       }
       node.titleText = item.title;
       node.description = item.description;
-      node.type = item.type;
+      node.tone = item.tone;
+      node.loading = item.loading;
       node.duration = item.duration;
       node.removeDelay = item.removeDelay;
       node.closable = item.closable;
@@ -831,7 +818,7 @@ function settle(
 
   start.addEventListener("click", () => {
     pending = notification.create({
-      type: "loading",
+      loading: true,
       title: "正在导出",
       description: "loading 不自动消失，等宿主来收",
     });
@@ -851,11 +838,6 @@ function settle(
 单条通知自带 placement 就盖掉 notification 的默认落位；placements 报出眼下有条目的位置，一个位置一摞
 
 ```vue
-<!--
-  Copyright (c) 2021-Present XiHanFun and contributors.
-  Licensed under the MIT License. See LICENSE in the project root for license information.
--->
-
 <script setup lang="ts">
 import {
   XhButton,
@@ -907,7 +889,8 @@ function pop(create: Create, placement: string, label: string): void {
           :id="item.id"
           :title="item.title"
           :description="item.description"
-          :type="item.type"
+          :tone="item.tone"
+          :loading="item.loading"
           :duration="item.duration"
           :remove-delay="item.removeDelay"
           :closable="item.closable"
@@ -986,7 +969,8 @@ function pop(create: Create, placement: string, label: string): void {
         }
         node.titleText = item.title;
         node.description = item.description;
-        node.type = item.type;
+        node.tone = item.tone;
+        node.loading = item.loading;
         node.duration = item.duration;
         node.removeDelay = item.removeDelay;
         node.closable = item.closable;
@@ -1168,10 +1152,10 @@ function pop(create: Create, placement: string, label: string): void {
 | `group` | `data-count` | group.length |
 | `group` | `data-empty` | ''（条件成立时才出现） |
 | `group` | `data-placement` | props.placement |
+| `item` | `data-loading` | ''（条件成立时才出现） |
 | `item` | `data-paused` | ''（条件成立时才出现） |
-| `item` | `data-severity` | props.type |
 | `item` | `data-state` | toStatus(state.get()) |
-| `item` | `data-tone` | toneOf(type) |
+| `item` | `data-tone` | props.tone |
 | `item-progress` | `data-state` | toStatus(state.get()) |
 | `item-close-trigger` | `data-disabled` | ''（条件成立时才出现） |
 
@@ -1201,7 +1185,7 @@ function pop(create: Create, placement: string, label: string): void {
 | `--xh-notification-description-fg` | `item-description` | `color` | `default` | `--xh-fg-muted` | notification 的 item-description 部件 color 覆盖槽。 |
 | `--xh-notification-description-font-size` | `item-description` | `font-size` | `default` | `--xh-text-secondary-size` | notification 的 item-description 部件 font-size 覆盖槽。 |
 | `--xh-notification-icon-size` | `item` | `--xh-icon-size` | `default` | `--xh-control-indicator-size` | notification 的 item 部件 --xh-icon-size 覆盖槽。 |
-| `--xh-notification-indicator-fg` | `item`<br>`item-indicator` | `color` | `default`<br>`severity=loading` | `--xh-_tone-fg`<br>`--xh-fg-muted` | notification 的 item、item-indicator 部件 color 覆盖槽。 |
+| `--xh-notification-indicator-fg` | `item-indicator` | `color` | `default` | `--xh-_tone-fg` | notification 的 item-indicator 部件 color 覆盖槽。 |
 | `--xh-notification-indicator-size` | `item-indicator` | `--xh-icon-size`<br>`inline-size` | `default` | `--xh-glyph-size-md` | notification 的 item-indicator 部件 --xh-icon-size、inline-size 覆盖槽。 |
 | `--xh-notification-inset` | `group` | `padding-block-end`<br>`padding-block-start`<br>`padding-inline` | `default` | `--xh-space-6` | notification 的 group 部件 padding-block-end、padding-block-start、padding-inline 覆盖槽。 |
 | `--xh-notification-item-bg` | `item` | `background` | `default` | `--xh-bg-surface-raised` | notification 的 item 部件 background 覆盖槽。 |

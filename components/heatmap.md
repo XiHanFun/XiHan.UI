@@ -17,11 +17,6 @@
 一整年铺成周列 × 星期行的方格阵，颜色深浅表示当天数值落在第几档
 
 ```vue
-<!--
-  Copyright (c) 2021-Present XiHanFun and contributors.
-  Licensed under the MIT License. See LICENSE in the project root for license information.
--->
-
 <script setup lang="ts">
 import type { HeatmapDatum } from "@xihan-ui/headless";
 import { formatHeatmapDate } from "@xihan-ui/headless";
@@ -160,11 +155,6 @@ const activity = buildYear(2024);
 tone 决定用哪族颜色，色阶两端跟着换，格子的分档不变
 
 ```vue
-<!--
-  Copyright (c) 2021-Present XiHanFun and contributors.
-  Licensed under the MIT License. See LICENSE in the project root for license information.
--->
-
 <script setup lang="ts">
 import { XhHeatmapRoot } from "@xihan-ui/vue";
 
@@ -283,11 +273,6 @@ const activity = [
 palette 直接按颜色点名，六个色板只换色阶满档那一端，分档与空格底都不动
 
 ```vue
-<!--
-  Copyright (c) 2021-Present XiHanFun and contributors.
-  Licensed under the MIT License. See LICENSE in the project root for license information.
--->
-
 <script setup lang="ts">
 import type { HeatmapPalette } from "@xihan-ui/headless";
 import { XhHeatmapRoot } from "@xihan-ui/vue";
@@ -415,11 +400,6 @@ const palettes: HeatmapPalette[] = ["green", "blue", "orange", "purple", "red", 
 size 换格子边长与行首星期名的留白，一屏能放下的周数跟着变
 
 ```vue
-<!--
-  Copyright (c) 2021-Present XiHanFun and contributors.
-  Licensed under the MIT License. See LICENSE in the project root for license information.
--->
-
 <script setup lang="ts">
 import type { HeatmapDatum } from "@xihan-ui/headless";
 import { formatHeatmapDate } from "@xihan-ui/headless";
@@ -563,11 +543,6 @@ const activity = buildYear(2024);
 levels 决定分几档，图例与格子共用同一条色阶
 
 ```vue
-<!--
-  Copyright (c) 2021-Present XiHanFun and contributors.
-  Licensed under the MIT License. See LICENSE in the project root for license information.
--->
-
 <script setup lang="ts">
 import { XhHeatmapRoot } from "@xihan-ui/vue";
 
@@ -685,11 +660,6 @@ const activity = [
 焦点落到某一天时报出日期与计数，键盘用户与鼠标用户看到同一份明细
 
 ```vue
-<!--
-  Copyright (c) 2021-Present XiHanFun and contributors.
-  Licensed under the MIT License. See LICENSE in the project root for license information.
--->
-
 <script setup lang="ts">
 import { XhHeatmapRoot } from "@xihan-ui/vue";
 import { ref } from "vue";
@@ -824,11 +794,6 @@ const readout = ref("（把焦点移到某一格）");
 按自然月分块，每块是一张真月历，1 号落在它真实的星期几上
 
 ```vue
-<!--
-  Copyright (c) 2021-Present XiHanFun and contributors.
-  Licensed under the MIT License. See LICENSE in the project root for license information.
--->
-
 <script setup lang="ts">
 import { XhHeatmapRoot } from "@xihan-ui/vue";
 
@@ -957,11 +922,6 @@ const activity = [
 行列都由作者给，数据按行列定位而不按日期：星期 × 时段的活跃度
 
 ```vue
-<!--
-  Copyright (c) 2021-Present XiHanFun and contributors.
-  Licensed under the MIT License. See LICENSE in the project root for license information.
--->
-
 <script setup lang="ts">
 import { XhHeatmapRoot } from "@xihan-ui/vue";
 
@@ -1088,11 +1048,6 @@ const traffic = [
 指针悬停与键盘聚焦走同一条路：详情条跟着那一格走，Escape 收起
 
 ```vue
-<!--
-  Copyright (c) 2021-Present XiHanFun and contributors.
-  Licensed under the MIT License. See LICENSE in the project root for license information.
--->
-
 <script setup lang="ts">
 import type { HeatmapCellDetails, HeatmapDatum } from "@xihan-ui/headless";
 import { formatHeatmapDate } from "@xihan-ui/headless";
@@ -1242,11 +1197,6 @@ const translations = { cellLabel: readout };
 一排按钮换的是区间，网格、月份段、色阶与锚点全按新区间从头算
 
 ```vue
-<!--
-  Copyright (c) 2021-Present XiHanFun and contributors.
-  Licensed under the MIT License. See LICENSE in the project root for license information.
--->
-
 <script setup lang="ts">
 import type { HeatmapDatum } from "@xihan-ui/headless";
 import { formatHeatmapDate } from "@xihan-ui/headless";
@@ -1441,11 +1391,6 @@ const activity = computed(() => buildRange(active.value.start, active.value.end)
 总天数、空白天数与占比、最大值、平均值都从网格模型直接读，不必自己再遍历一遍数据
 
 ```vue
-<!--
-  Copyright (c) 2021-Present XiHanFun and contributors.
-  Licensed under the MIT License. See LICENSE in the project root for license information.
--->
-
 <script setup lang="ts">
 import type { HeatmapDatum } from "@xihan-ui/headless";
 import { buildHeatmapGrid, formatHeatmapDate } from "@xihan-ui/headless";
@@ -1617,7 +1562,7 @@ const stats = computed(() => {
 
 ### 何时不用
 
-- 要挑日期、选区间：用[日历](./calendar)，它才有选中语义与表单出口。
+- 要挑日期、选区间：用[日历选择器](./calendar-picker)或[日历范围选择器](./calendar-range-picker)，它们才有选中语义与表单出口。
 - 要读准确数字、要排序筛选：用[表格](./table)。
 - 只报一个总量或同比：用[统计数值](./statistic)。
 
@@ -1665,8 +1610,8 @@ const stats = computed(() => {
 
 ### 组合
 
-- 详情条不引浮层引擎，也就不参与浮层的层级与关闭协议：它按 root 的内边距盒绝对定位，跟着网格一起横向滚动，摆上边还是摆下边按格子的行序定，因此始终压在网格自己身上。条比一格宽得多，格子末缘之前的地方比起始缘之后多时它就改从末缘往回长，不越过滚动容器的末缘——否则整年铺开时后三分之一的格子悬停出来的条会被裁掉，横向滚动条还会跟着一伸一缩。挑的是两侧空间大的那一边，与条自己多宽无关（条的宽在量落点那一刻还拿不到：内容马上要换，收起时又是 `display:none`）；容器窄到条比大的那一侧还宽时，条仍会被裁掉一截，两侧都摆不下是没有解的。要一条会翻转、会避让视口的真浮层，请自己在格子上挂[提示](./tooltip)。
-- 与[日历](./calendar)并排：一个看分布、一个挑日期。
+- 详情条不引浮层引擎，也就不参与浮层的层级与关闭协议：它按 root 的内边距盒绝对定位，跟着网格一起横向滚动，摆上边还是摆下边按格子的行序定，因此始终压在网格自己身上。条比一格宽得多，格子末缘之前的地方比起始缘之后多时它就改从末缘往回长，不越过滚动容器的末缘——否则整年铺开时后三分之一的格子悬停出来的条会被裁掉，横向滚动条还会跟着一伸一缩。挑的是两侧空间大的那一边，与条自己多宽无关（条的宽在量落点那一刻还拿不到：内容马上要换，收起时又是 `display:none`）；容器窄到条比大的那一侧还宽时，条仍会被裁掉一截，两侧都摆不下是没有解的。要一条会翻转、会避让视口的真浮层，请自己在格子上挂[文字提示](./tooltip)。
+- 与[日历选择器](./calendar-picker)并排：一个看分布、一个挑日期。
 
 ### 最佳实践
 

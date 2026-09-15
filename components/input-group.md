@@ -17,11 +17,6 @@
 为输入框添加固定前缀
 
 ```vue
-<!--
-  Copyright (c) 2021-Present XiHanFun and contributors.
-  Licensed under the MIT License. See LICENSE in the project root for license information.
--->
-
 <script setup lang="ts">
 import {
   XhInputGroupItem,
@@ -80,11 +75,6 @@ import {
 将关联操作放在输入框末端
 
 ```vue
-<!--
-  Copyright (c) 2021-Present XiHanFun and contributors.
-  Licensed under the MIT License. See LICENSE in the project root for license information.
--->
-
 <script setup lang="ts">
 import {
   XhButton,
@@ -129,11 +119,6 @@ import {
 使用主要或次级输入表面
 
 ```vue
-<!--
-  Copyright (c) 2021-Present XiHanFun and contributors.
-  Licensed under the MIT License. See LICENSE in the project root for license information.
--->
-
 <script setup lang="ts">
 import {
   XhInputGroupItem,
@@ -202,11 +187,6 @@ import {
 添加协议和域名后缀
 
 ```vue
-<!--
-  Copyright (c) 2021-Present XiHanFun and contributors.
-  Licensed under the MIT License. See LICENSE in the project root for license information.
--->
-
 <script setup lang="ts">
 import {
   XhInputGroupItem,
@@ -264,6 +244,11 @@ import {
 - 支持 `primary` 与 `secondary` 两种视觉变体。
 - 前后缀不参与交互，控件保留自身语义。
 - 支持 `sm`、`md` 和 `lg` 三种尺寸。
+
+### 组合
+
+- 中间放[文本字段](./text-field)、[数字字段](./number-field)或[选择器](./select)这类单一控件，前后缀是静态的 `item`。
+- 紧邻的动作用[按钮](./button)放在组尾；整组放进[表单字段](./field)获得标签与错误信息。
 
 ### 最佳实践
 

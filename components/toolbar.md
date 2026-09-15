@@ -17,11 +17,6 @@
 集中常用编辑操作
 
 ```vue
-<!--
-  Copyright (c) 2021-Present XiHanFun and contributors.
-  Licensed under the MIT License. See LICENSE in the project root for license information.
--->
-
 <script setup lang="ts">
 import { BoldIcon, ClipboardIcon, CopyIcon, ItalicIcon, UnderlineIcon } from "@xihan-ui/icons";
 import {
@@ -128,11 +123,6 @@ function toggle(value: string) {
 将相关操作收在一起
 
 ```vue
-<!--
-  Copyright (c) 2021-Present XiHanFun and contributors.
-  Licensed under the MIT License. See LICENSE in the project root for license information.
--->
-
 <script setup lang="ts">
 import {
   XhToolbarGroup,
@@ -186,11 +176,6 @@ import {
 按纵向排列工具
 
 ```vue
-<!--
-  Copyright (c) 2021-Present XiHanFun and contributors.
-  Licensed under the MIT License. See LICENSE in the project root for license information.
--->
-
 <script setup lang="ts">
 import { MaximizeIcon, ZoomInIcon, ZoomOutIcon } from "@xihan-ui/icons";
 import {
@@ -236,11 +221,6 @@ import {
 为悬浮工具条提供完整表面
 
 ```vue
-<!--
-  Copyright (c) 2021-Present XiHanFun and contributors.
-  Licensed under the MIT License. See LICENSE in the project root for license information.
--->
-
 <script setup lang="ts">
 import {
   XhToolbarGroup,

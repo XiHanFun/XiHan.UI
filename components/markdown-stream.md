@@ -17,11 +17,6 @@
 块列表由宿主用流式渲染器得到，组件只按 key 铺开、按种类分流
 
 ```vue
-<!--
-  Copyright (c) 2021-Present XiHanFun and contributors.
-  Licensed under the MIT License. See LICENSE in the project root for license information.
--->
-
 <script setup lang="ts">
 import type { MarkdownBlock } from "@xihan-ui/headless";
 import { createStreamRenderer } from "@xihan-ui/markdown";
@@ -92,11 +87,6 @@ const blocks = shallowRef<readonly MarkdownBlock[]>(
 只有生长中的那一块每帧重渲，定型的块 key 不变、节点原地留着，选区与滚动位置才保得住
 
 ```vue
-<!--
-  Copyright (c) 2021-Present XiHanFun and contributors.
-  Licensed under the MIT License. See LICENSE in the project root for license information.
--->
-
 <script setup lang="ts">
 import type { MarkdownBlock } from "@xihan-ui/headless";
 import { createStreamRenderer } from "@xihan-ui/markdown";
@@ -187,11 +177,6 @@ onBeforeUnmount(() => {
 markdown 块铺 html，代码块拿 source 交出去——照 html 渲会让同一段代码出现两次
 
 ```vue
-<!--
-  Copyright (c) 2021-Present XiHanFun and contributors.
-  Licensed under the MIT License. See LICENSE in the project root for license information.
--->
-
 <script setup lang="ts">
 import type { MarkdownBlock } from "@xihan-ui/headless";
 import { createStreamRenderer } from "@xihan-ui/markdown";
@@ -289,11 +274,6 @@ const blocks = shallowRef<readonly MarkdownBlock[]>(
 一块都还没来的时候光标就已经在了，caret 设成 false 可以整个关掉
 
 ```vue
-<!--
-  Copyright (c) 2021-Present XiHanFun and contributors.
-  Licensed under the MIT License. See LICENSE in the project root for license information.
--->
-
 <script setup lang="ts">
 import type { MarkdownBlock } from "@xihan-ui/headless";
 import { XhMarkdownStreamContent, XhMarkdownStreamRoot } from "@xihan-ui/vue";
@@ -367,11 +347,6 @@ const cases: { label: string; blocks: readonly MarkdownBlock[]; caret: boolean }
 size 换正文字号与块间距，三档共用同一份块列表
 
 ```vue
-<!--
-  Copyright (c) 2021-Present XiHanFun and contributors.
-  Licensed under the MIT License. See LICENSE in the project root for license information.
--->
-
 <script setup lang="ts">
 import type { MarkdownBlock } from "@xihan-ui/headless";
 import { createStreamRenderer } from "@xihan-ui/markdown";

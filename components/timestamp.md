@@ -17,11 +17,6 @@
 渲染成 &lt;time datetime>：文本给人看，datetime 给机器读，两者取自同一个墙钟
 
 ```vue
-<!--
-  Copyright (c) 2021-Present XiHanFun and contributors.
-  Licensed under the MIT License. See LICENSE in the project root for license information.
--->
-
 <script setup lang="ts">
 import { XhTimestamp } from "@xihan-ui/vue";
 
@@ -82,11 +77,6 @@ const stamp = new Date(2026, 7, 11, 9, 30, 5).getTime();
 date 只到日、datetime 到秒、relative 说成「几分钟前」；datetime 属性的精度跟着走
 
 ```vue
-<!--
-  Copyright (c) 2021-Present XiHanFun and contributors.
-  Licensed under the MIT License. See LICENSE in the project root for license information.
--->
-
 <script setup lang="ts">
 import { XhTimestamp } from "@xihan-ui/vue";
 
@@ -139,11 +129,6 @@ const types = ["date", "datetime", "relative"] as const;
 记号是 YYYY / YY / MM / M / DD / D / HH / H / mm / m / ss / s，只改看到的文本，datetime 不跟着变
 
 ```vue
-<!--
-  Copyright (c) 2021-Present XiHanFun and contributors.
-  Licensed under the MIT License. See LICENSE in the project root for license information.
--->
-
 <script setup lang="ts">
 import { XhTimestamp } from "@xihan-ui/vue";
 
@@ -206,11 +191,6 @@ const patterns = [
 just now / n minutes ago 四档，超过三十天退回绝对日期；locale 只换用词，不给则跟随浏览器语言
 
 ```vue
-<!--
-  Copyright (c) 2021-Present XiHanFun and contributors.
-  Licensed under the MIT License. See LICENSE in the project root for license information.
--->
-
 <script setup lang="ts">
 import { XhTimestamp } from "@xihan-ui/vue";
 

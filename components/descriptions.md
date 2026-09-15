@@ -17,11 +17,6 @@
 标签与取值的配对靠 dl / dt / dd 表达，组件只给身份与排版；不传 columns 即每行一组
 
 ```vue
-<!--
-  Copyright (c) 2021-Present XiHanFun and contributors.
-  Licensed under the MIT License. See LICENSE in the project root for license information.
--->
-
 <script setup lang="ts">
 import {
   XhDescriptionsItem,
@@ -79,11 +74,6 @@ const order = [
 columns 决定每行摆几组，一到六列；排版走 CSS Grid，不用表格
 
 ```vue
-<!--
-  Copyright (c) 2021-Present XiHanFun and contributors.
-  Licensed under the MIT License. See LICENSE in the project root for license information.
--->
-
 <script setup lang="ts">
 import {
   XhDescriptionsItem,
@@ -148,11 +138,6 @@ const rows = [
 placement 决定标签在上还是在左，不传即在上
 
 ```vue
-<!--
-  Copyright (c) 2021-Present XiHanFun and contributors.
-  Licensed under the MIT License. See LICENSE in the project root for license information.
--->
-
 <script setup lang="ts">
 import {
   XhDescriptionsItem,
@@ -229,11 +214,6 @@ const placements = [
 bordered 画一圈描边，并在格与格之间补上网格线
 
 ```vue
-<!--
-  Copyright (c) 2021-Present XiHanFun and contributors.
-  Licensed under the MIT License. See LICENSE in the project root for license information.
--->
-
 <script setup lang="ts">
 import {
   XhDescriptionsItem,
@@ -288,11 +268,6 @@ const rows = [
 size 换的是每格的内边距、组与组的间距与整体字号，不传 size 即默认档
 
 ```vue
-<!--
-  Copyright (c) 2021-Present XiHanFun and contributors.
-  Licensed under the MIT License. See LICENSE in the project root for license information.
--->
-
 <script setup lang="ts">
 import {
   XhDescriptionsItem,
@@ -382,11 +357,6 @@ const sizes = [
 一格写 span 横跨几列，上限是当前列数；长文本字段因此不必另开一份描述列表
 
 ```vue
-<!--
-  Copyright (c) 2021-Present XiHanFun and contributors.
-  Licensed under the MIT License. See LICENSE in the project root for license information.
--->
-
 <script setup lang="ts">
 import {
   XhDescriptionsItem,

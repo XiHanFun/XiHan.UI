@@ -17,11 +17,6 @@
 按层级选择完整地区路径
 
 ```vue
-<!--
-  Copyright (c) 2021-Present XiHanFun and contributors.
-  Licensed under the MIT License. See LICENSE in the project root for license information.
--->
-
 <script setup lang="ts">
 import {
   XhCascaderColumn,
@@ -215,11 +210,6 @@ const regions = [
 选择多个分类路径
 
 ```vue
-<!--
-  Copyright (c) 2021-Present XiHanFun and contributors.
-  Licensed under the MIT License. See LICENSE in the project root for license information.
--->
-
 <script setup lang="ts">
 import {
   XhCascaderClearTrigger,
@@ -370,11 +360,6 @@ const picked = ref<string[][]>([["fruit", "apple"]]);
 清晰标记必填错误
 
 ```vue
-<!--
-  Copyright (c) 2021-Present XiHanFun and contributors.
-  Licensed under the MIT License. See LICENSE in the project root for license information.
--->
-
 <script setup lang="ts">
 import {
   XhCascaderClearTrigger,
@@ -529,11 +514,6 @@ const invalid = computed(() => dept.value.length === 0);
 展开分支时加载下一层数据
 
 ```vue
-<!--
-  Copyright (c) 2021-Present XiHanFun and contributors.
-  Licensed under the MIT License. See LICENSE in the project root for license information.
--->
-
 <script setup lang="ts">
 import {
   XhCascaderColumn,
@@ -753,11 +733,6 @@ function load(value: string) {
 按完整路径筛选选项
 
 ```vue
-<!--
-  Copyright (c) 2021-Present XiHanFun and contributors.
-  Licensed under the MIT License. See LICENSE in the project root for license information.
--->
-
 <script setup lang="ts">
 import {
   XhCascaderColumn,

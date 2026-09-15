@@ -17,11 +17,6 @@
 滚动后固定工具栏
 
 ```vue
-<!--
-  Copyright (c) 2021-Present XiHanFun and contributors.
-  Licensed under the MIT License. See LICENSE in the project root for license information.
--->
-
 <script setup lang="ts">
 import { XhAffixContent, XhAffixRoot } from "@xihan-ui/vue";
 import { ref } from "vue";
@@ -117,11 +112,6 @@ const scrollEl = ref<HTMLElement | null>(null);
 避让固定页头
 
 ```vue
-<!--
-  Copyright (c) 2021-Present XiHanFun and contributors.
-  Licensed under the MIT License. See LICENSE in the project root for license information.
--->
-
 <script setup lang="ts">
 import { XhAffixContent, XhAffixRoot } from "@xihan-ui/vue";
 import { ref } from "vue";
@@ -241,11 +231,6 @@ const scrollEl = ref<HTMLElement | null>(null);
 将操作栏固定在底部
 
 ```vue
-<!--
-  Copyright (c) 2021-Present XiHanFun and contributors.
-  Licensed under the MIT License. See LICENSE in the project root for license information.
--->
-
 <script setup lang="ts">
 import { XhAffixContent, XhAffixRoot } from "@xihan-ui/vue";
 import { ref } from "vue";
@@ -339,11 +324,6 @@ const scrollEl = ref<HTMLElement | null>(null);
 根据当前状态更新内容
 
 ```vue
-<!--
-  Copyright (c) 2021-Present XiHanFun and contributors.
-  Licensed under the MIT License. See LICENSE in the project root for license information.
--->
-
 <script setup lang="ts">
 import { XhAffixContent, XhAffixRoot } from "@xihan-ui/vue";
 import { ref } from "vue";

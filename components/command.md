@@ -17,11 +17,6 @@
 交一份命令清单，过滤、归组与空态都由组件包办
 
 ```vue
-<!--
-  Copyright (c) 2021-Present XiHanFun and contributors.
-  Licensed under the MIT License. See LICENSE in the project root for license information.
--->
-
 <script setup lang="ts">
 import type { CommandNode, CommandSelectDetails } from "@xihan-ui/headless";
 import { XhCommandRoot } from "@xihan-ui/vue";
@@ -147,11 +142,6 @@ function run(details: CommandSelectDetails) {
 Mod+K 打开，命中的字由文本高亮标出来，行尾挂各命令自己的快捷键
 
 ```vue
-<!--
-  Copyright (c) 2021-Present XiHanFun and contributors.
-  Licensed under the MIT License. See LICENSE in the project root for license information.
--->
-
 <script setup lang="ts">
 import type { CommandNode } from "@xihan-ui/headless";
 import {
@@ -166,8 +156,7 @@ import {
   XhCommandList,
   XhCommandRoot,
   XhHighlight,
-  XhHotkeys,
-  XhKbdGroup,
+  XhKbd,
 } from "@xihan-ui/vue";
 import { ref } from "vue";
 
@@ -191,8 +180,7 @@ const groups = [
 <template>
   <!-- 唤起的入口：监听装在整篇文档上，面板收着也按得出来 -->
   <div style="display: flex; align-items: center; gap: 8px">
-    <XhKbdGroup :keys="['Mod', 'K']" />
-    <XhHotkeys :keys="['Mod', 'K']" @hot-key="open = true" />
+    <XhKbd :keys="['Mod', 'K']" register @hot-key="open = true" />
     <span>按一下唤起命令面板</span>
   </div>
 
@@ -216,7 +204,7 @@ const groups = [
                   <!-- 检索串就是高亮的关键词，用户看得见这条为什么被选出来 -->
                   <XhHighlight :text="command.label!" :keyword="inputValue" />
                 </XhCommandItemText>
-                <XhKbdGroup v-if="command.hotkey" :keys="command.hotkey" size="sm" />
+                <XhKbd v-if="command.hotkey" :keys="command.hotkey" />
               </XhCommandItem>
             </template>
           </XhCommandGroup>
@@ -232,10 +220,9 @@ const groups = [
 ```html
 <!-- 唤起的入口：监听装在整篇文档上，面板收着也按得出来 -->
 <div style="display: flex; align-items: center; gap: 8px">
-  <xh-kbd-group keys="Mod,K">
-    <span data-xh-part="root"></span>
-  </xh-kbd-group>
-  <xh-hotkeys id="command-hotkey-trigger" keys="Mod,K"></xh-hotkeys>
+  <xh-kbd id="command-hotkey-trigger" keys="Mod,K" register>
+    <kbd data-xh-part="root"></kbd>
+  </xh-kbd>
   <span>按一下唤起命令面板</span>
 </div>
 
@@ -251,17 +238,17 @@ const groups = [
             <span data-xh-part="item-text">
               <xh-highlight text="新建文档"><span data-xh-part="root"></span></xh-highlight>
             </span>
-            <xh-kbd-group keys="Mod,N" size="sm">
-              <span data-xh-part="root"></span>
-            </xh-kbd-group>
+            <xh-kbd keys="Mod,N">
+              <kbd data-xh-part="root"></kbd>
+            </xh-kbd>
           </div>
           <div data-xh-part="item" value="save">
             <span data-xh-part="item-text">
               <xh-highlight text="保存"><span data-xh-part="root"></span></xh-highlight>
             </span>
-            <xh-kbd-group keys="Mod,S" size="sm">
-              <span data-xh-part="root"></span>
-            </xh-kbd-group>
+            <xh-kbd keys="Mod,S">
+              <kbd data-xh-part="root"></kbd>
+            </xh-kbd>
           </div>
           <div data-xh-part="item" value="search">
             <span data-xh-part="item-text">
@@ -321,11 +308,6 @@ const groups = [
 variant 只落在 backdrop 那一层：opaque 压一层底、blur 糊掉背后、transparent 只挡点击
 
 ```vue
-<!--
-  Copyright (c) 2021-Present XiHanFun and contributors.
-  Licensed under the MIT License. See LICENSE in the project root for license information.
--->
-
 <script setup lang="ts">
 import type { CommandNode } from "@xihan-ui/headless";
 import { XhCommandRoot } from "@xihan-ui/vue";
@@ -438,11 +420,6 @@ const commands: CommandNode[] = [
 filter 关掉：交进来的 collection 就是此刻该显示的那几条，筛选归服务端；取数期间 loading 让在途占位顶上来、列表压暗一档，空态让位
 
 ```vue
-<!--
-  Copyright (c) 2021-Present XiHanFun and contributors.
-  Licensed under the MIT License. See LICENSE in the project root for license information.
--->
-
 <script setup lang="ts">
 import type { CommandNode } from "@xihan-ui/headless";
 import {
@@ -615,7 +592,7 @@ function onSelect(details: { label: string }) {
 ### 何时不用
 
 - 只是从一份清单里选一个值填进表单：用[组合框](./combobox)或[选择器](./select)。
-- 只是右键菜单或按钮菜单：用[上下文菜单](./context-menu)或[菜单](./menu)。
+- 只是右键菜单或按钮菜单：用[右键菜单](./context-menu)或[菜单](./menu)。
 - 面板里要放表单、要分步骤：那是[对话框](./dialog)。
 
 ### 特性
@@ -634,9 +611,9 @@ function onSelect(details: { label: string }) {
 
 ### 组合
 
-- 唤起用[快捷键](./hotkeys)：把 `mod+k` 绑到 `setOpen(true)` 上。
+- 唤起可用[键盘按键](./kbd)：把 `Mod + K` 显示出来并开启 `register`，回调中执行 `setOpen(true)`。
 - 条目文字里标出命中的那几个字用[文本高亮](./highlight)，检索串就是它的关键词。
-- 行尾的快捷键提示用[键帽组](./kbd-group)，与负责唤起的[快捷键](./hotkeys)显式共享同一份 keys。
+- 行尾的快捷键提示和注册行为共用同一个 Kbd，避免展示与实际绑定不一致。
 
 ### 最佳实践
 
