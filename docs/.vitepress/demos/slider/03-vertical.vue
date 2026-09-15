@@ -1,4 +1,4 @@
-<!-- 竖向 | orientation 换成 vertical 后整条控件收成一块，键盘与拖动的方向跟着一起翻 -->
+<!-- 竖向 | orientation 换为 vertical 后整条控件收为一块，键盘与拖动的方向随之翻转 -->
 <script setup lang="ts">
 import {
   XhSliderControl,
