@@ -23,7 +23,7 @@ export type PromptInputRootSlotProps = Pick<
   'value' | 'isComposing' | 'canSubmit' | 'loading' | 'disabled' | 'setValue' | 'submit' | 'stop'
 >
 
-/** 根上自有的那些取值；defaultValue 与 onSubmit 与原生的同名属性含义不同，由这里接管。 */
+/** 根上自有的取值；defaultValue 与 onSubmit 与原生的同名属性含义不同，由这里接管。 */
 type RootElementProps = Omit<ComponentPropsWithRef<'div'>, 'children' | 'defaultValue' | 'onSubmit'>
 
 export interface XhPromptInputRootProps extends RootElementProps {
@@ -31,11 +31,11 @@ export interface XhPromptInputRootProps extends RootElementProps {
   value?: string
   defaultValue?: string
   disabled?: boolean
-  /** 生成中：提交钮原位翻成停止。 */
+  /** 生成中：提交按钮原位切换为停止。 */
   loading?: boolean
   /** 哪个键提交：enter / mod-enter / none。 */
   submitKey?: PromptInputSubmitKey
-  /** 空草稿也许提交。 */
+  /** 空草稿也允许提交。 */
   allowEmptySubmit?: boolean
   /** 提交之后清空草稿。 */
   clearOnSubmit?: boolean
@@ -106,7 +106,7 @@ export function XhPromptInputRoot({
 XhPromptInputRoot.xhEvents = ['value-change', 'submit', 'stop'] as const
 
 export interface XhPromptInputControlProps extends ComponentPropsWithRef<'div'> {}
-/** 渲了这一层，输入框与按钮并排收在它里面，root 翻成竖排。 */
+/** 渲染这一层后，输入框与按钮并排收在其中，root 切换为竖排。 */
 export function XhPromptInputControl({ children, ...rest }: XhPromptInputControlProps): ReactNode {
   const ctx = usePromptInputContext()
   return (
@@ -117,7 +117,7 @@ export function XhPromptInputControl({ children, ...rest }: XhPromptInputControl
 }
 
 export interface XhPromptInputInputProps extends Omit<ComponentPropsWithRef<'textarea'>, 'value' | 'defaultValue' | 'children'> {}
-/** 渲染原生 textarea，换行与撤销栈交给浏览器；自动长高是皮肤的两行 CSS。 */
+/** 渲染原生 textarea，换行与撤销栈交给浏览器；自动增高是皮肤的两行 CSS。 */
 export function XhPromptInputInput({ ...rest }: XhPromptInputInputProps): ReactNode {
   const ctx = usePromptInputContext()
   return (
@@ -134,7 +134,7 @@ export function XhPromptInputInput({ ...rest }: XhPromptInputInputProps): ReactN
 }
 
 export interface XhPromptInputSubmitTriggerProps extends ComponentPropsWithRef<'button'> {}
-/** 生成期间原位切换为停止，只改 data-mode 与 aria-label。 */
+/** 生成期间原位切换为停止，只改变 data-mode 与 aria-label。 */
 export function XhPromptInputSubmitTrigger({ children, ...rest }: XhPromptInputSubmitTriggerProps): ReactNode {
   const ctx = usePromptInputContext()
   return (
