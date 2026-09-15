@@ -1,4 +1,4 @@
-<!-- 前缀与行尾 | 行里放什么由标记说了算：文字前塞图标、文字后塞操作，方向指示也可以挪到行尾去 -->
+<!-- 前缀与行尾 | 行中放置什么由标记决定：文字前放图标、文字后放操作，方向指示也可以移到行尾 -->
 <script setup lang="ts">
 import { FileIcon, FolderIcon } from "@xihan-ui/icons";
 import {

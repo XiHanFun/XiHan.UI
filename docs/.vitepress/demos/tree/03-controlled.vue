@@ -1,4 +1,4 @@
-<!-- 受控 | 传了 expandedValue / selection 就由宿主说了算，组件只发事件不落内部值，宿主写回它才动 -->
+<!-- 受控 | 传入 expandedValue / selection 后由宿主决定，组件只发事件不落内部值，宿主写回后才变化 -->
 <script setup lang="ts">
 import {
   XhButton,

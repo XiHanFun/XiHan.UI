@@ -1,4 +1,4 @@
-// 范围选 | 按住 Shift 点某一项，选中锚点到它那一段；按可见序取，折叠起来的子节点选不进去
+// 范围选择 | 按住 Shift 点击某一项，选中锚点到它的一段；按可见序取值，折叠的子节点不会被选入
 import type { ReactNode } from "react";
 import {
   XhTreeBranch,

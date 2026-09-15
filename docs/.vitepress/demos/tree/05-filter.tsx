@@ -1,4 +1,4 @@
-// 关键词过滤 | collection 换一份树就换一棵：标记跟着数据重铺，过滤剩下的分支顺手全展开
+// 关键词过滤 | collection 换一份树即换一棵：标记跟随数据重新铺设，过滤后剩余的分支一并全部展开
 import type { ReactNode } from "react";
 import {
   XhTreeBranch,
