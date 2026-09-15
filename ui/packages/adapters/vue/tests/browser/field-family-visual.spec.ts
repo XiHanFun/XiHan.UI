@@ -126,7 +126,7 @@ describe('字段族默认视觉盒', () => {
     mount()
     const expected = exterior(control('text-field'))
     expect(expected.height).toBe(36)
-    expect(expected.radius).toBe('12px')
+    expect(expected.radius).toBe('4px')
     for (const family of FAMILIES)
       expect(exterior(control(family))).toEqual(expected)
   })
