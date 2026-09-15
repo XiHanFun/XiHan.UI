@@ -31,6 +31,17 @@ function mount(options: { pressed?: boolean, size?: 'lg' | 'md' | 'sm', variant?
   }
 }
 
+
+/** 语义形状令牌在该元素上解到的像素值。 */
+function shapePx(element: HTMLElement, token: string): number {
+  const probe = document.createElement('div')
+  probe.style.borderTopLeftRadius = `var(${token})`
+  element.append(probe)
+  const value = Number.parseFloat(getComputedStyle(probe).borderTopLeftRadius)
+  probe.remove()
+  return value
+}
+
 describe('toolbar 默认视觉', () => {
   it('不写变体与显式 plain 都不画外框', () => {
     const plain = mount()
@@ -62,7 +73,7 @@ describe('toolbar 默认视觉', () => {
     expect(Number.parseFloat(style.borderTopWidth)).toBe(0)
     expect(Number.parseFloat(style.paddingInlineStart)).toBeGreaterThan(0)
     expect(style.boxShadow).not.toBe('none')
-    expect(Number.parseFloat(style.borderRadius)).toBeGreaterThanOrEqual(surface.root.offsetHeight / 2)
+    expect(Number.parseFloat(style.borderRadius)).toBe(shapePx(surface.root, '--xh-shape-surface'))
   })
 
   it('默认分组由连续操作段组成', () => {

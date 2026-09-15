@@ -67136,8 +67136,7 @@
         "orientation=vertical"
       ],
       "defaultToken": [
-        "--xh-shape-control",
-        "--xh-shape-pill"
+        "--xh-shape-control"
       ],
       "visibility": "public",
       "description": "toolbar 的 group、item 部件 border-end-end-radius、border-end-start-radius、border-radius、border-start-end-radius、border-start-start-radius 覆盖槽。"
@@ -67192,7 +67191,6 @@
         "variant=surface"
       ],
       "defaultToken": [
-        "--xh-shape-pill",
         "--xh-shape-surface"
       ],
       "visibility": "public",
