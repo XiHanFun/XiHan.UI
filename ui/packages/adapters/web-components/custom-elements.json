@@ -30759,15 +30759,15 @@
       "declarations": [
         {
           "kind": "class",
-          "description": "`<xh-marquee>` —— Light-DOM 行为宿主，无状态机，把 connectMarquee 产出打到 root 与 content 上。\n\n作者写一个 root 窗口，里面写一条 content 轨道，内容放进轨道里。\n滚动整段在皮肤里：横竖各一条",
+          "description": "`<xh-marquee>`：Light-DOM 行为宿主，无状态机，把 connectMarquee 产出接到 root 与 content 上。\n\n作者写一个 root 窗口，其中写一条 content 轨道，内容放进轨道。\n滚动整段在皮肤中：横竖各一条",
           "name": "XhMarqueeElement",
           "cssParts": [
             {
-              "description": "只露出一段的窗口，承载 data-direction / data-orientation / data-pause-on-hover / data-paused / data-auto-fill",
+              "description": "只显示一段的窗口，承载 data-direction / data-orientation / data-pause-on-hover / data-paused / data-auto-fill",
               "name": "root"
             },
             {
-              "description": "在窗口里走的轨道，动画挂在它身上",
+              "description": "在窗口中移动的轨道，动画挂在它身上",
               "name": "content"
             }
           ],
@@ -30842,7 +30842,7 @@
               "type": {
                 "text": "MarqueeDirection | undefined"
               },
-              "description": "滚动方向，缺省 left",
+              "description": "滚动方向，默认 left",
               "name": "direction",
               "fieldName": "direction"
             },
@@ -30850,7 +30850,7 @@
               "type": {
                 "text": "number | undefined"
               },
-              "description": "每秒滚过的像素数，写成 root 上的 --xh-marquee-speed",
+              "description": "每秒滚过的像素数，写为 root 上的 --xh-marquee-speed",
               "name": "speed",
               "fieldName": "speed"
             },
@@ -30866,7 +30866,7 @@
               "type": {
                 "text": "boolean | undefined"
               },
-              "description": "受控暂停：停在当前位置，比 pause-on-hover 优先",
+              "description": "受控暂停：停在当前位置，优先于 pause-on-hover",
               "name": "paused",
               "fieldName": "paused"
             },
@@ -30874,7 +30874,7 @@
               "type": {
                 "text": "boolean | undefined"
               },
-              "description": "轨道里铺两份内容，走完一份正好接上第二份",
+              "description": "轨道中铺两份内容，走完一份正好接上第二份",
               "name": "auto-fill",
               "fieldName": "autoFill"
             }
