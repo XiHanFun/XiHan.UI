@@ -34672,7 +34672,7 @@
       "declarations": [
         {
           "kind": "class",
-          "description": "`<xh-notification>` —— Light-DOM 行为宿主：作者写 root 与若干 group 角色节点，\n元素跑 notification 机器并把 connect 产出打上去。每个 group 用 `placement` 属性声明自己是哪个位置，\n不写就落在队列的 placement 上。\n\n单条通知的节点由作者按队列渲染（读 `items` 或听 `items-change`），元素不替作者生成：\n生成节点就等于收走模板控制权，图标、进度条、i18n 文案都再塞不进来。\n每条渲染成一个 `<xh-notification-item>`，它走完退场会冒泡一条 status-change，本元素据此把记录删掉。",
+          "description": "`<xh-notification>`：Light-DOM 行为宿主：作者写 root 与若干 group 角色节点，\n元素运行 notification 状态机并把 connect 产出接上。每个 group 用 `placement` 属性声明所在位置，\n未写时落在队列的 placement 上。\n\n单条通知的节点由作者按队列渲染（读取 `items` 或监听 `items-change`），元素不替作者生成：\n生成节点等于收走模板控制权，图标、进度条、i18n 文案都无法再加入。\n每条渲染为一个 `<xh-notification-item>`，它走完退场会冒泡一条 status-change，本元素据此删除记录。",
           "name": "XhNotificationElement",
           "cssParts": [
             {
@@ -34680,7 +34680,7 @@
               "name": "root"
             },
             {
-              "description": "role=region 的地标，某一个位置上的那一摞；可自带 placement 属性，承载 data-placement / data-count / data-empty 与间距",
+              "description": "role=region 的地标，某一个位置上的一组；可自带 placement 属性，承载 data-placement / data-count / data-empty 与间距",
               "name": "group"
             }
           ],
@@ -34813,7 +34813,7 @@
                   "text": "NotificationApi"
                 }
               },
-              "description": "命令式入口共用的取法。机器要到进文档（hostConnected）才建：\n还没进文档就发通知是调用方的时序问题，明说好过把这条通知静默丢掉。"
+              "description": "命令式入口共用的取法。状态机在进入文档（hostConnected）后才建立：\n尚未进入文档就发通知是调用方的时序问题，明确报错好过把通知静默丢弃。"
             },
             {
               "kind": "method",
@@ -34832,7 +34832,7 @@
                   }
                 }
               ],
-              "description": "入队并返回 id；同 id 已存在则就地改写，位置不动（处理中转已完成走的就是这条）。"
+              "description": "入队并返回 id；同 id 已存在则就地改写，位置不变（处理中转为已完成即使用此路径）。"
             },
             {
               "kind": "method",
@@ -34856,7 +34856,7 @@
                   }
                 }
               ],
-              "description": "刻意不叫 `update`：那是 Lit 自己的渲染生命周期钩子，占用它会让宿主每次重渲\n都拐进这里来（还带着一个 changedProperties 当 id），组件当场不工作。\nVue 侧没有这层基类，composable 上仍叫 `update`。"
+              "description": "刻意不命名为 `update`：那是 Lit 自身的渲染生命周期钩子，占用它会使宿主每次重渲\n都进入此处（并把 changedProperties 当作 id），组件将无法工作。\nVue 侧没有这层基类，composable 上仍命名为 `update`。"
             },
             {
               "kind": "method",
@@ -34890,7 +34890,7 @@
               "type": {
                 "text": "ResolvedNotification[]"
               },
-              "description": "max 之内、按加入先后排列的可见条目，已补齐默认值，可直接摊给 `<xh-notification-item>`。",
+              "description": "max 之内、按加入先后排列的可见条目，已补齐默认值，可直接展开给 `<xh-notification-item>`。",
               "readonly": true
             },
             {
@@ -34932,7 +34932,7 @@
               "name": "onItemStatus",
               "privacy": "private",
               "readonly": true,
-              "description": "单条通知走完退场会冒泡上来：记录该从队列里删掉了。\n认元素名而不是只认事件名——avatar 之类的部件也派 status-change，且完全可能就摆在通知内部。"
+              "description": "单条通知退场完成后会冒泡上来：记录应从队列中删除。\n识别元素名而不是只识别事件名：avatar 之类的部件也派发 status-change，且完全可能位于通知内部。"
             },
             {
               "kind": "method",
@@ -34967,7 +34967,7 @@
               "type": {
                 "text": "number | undefined"
               },
-              "description": "每个位置最多同时留几条，超出先挤低优先级的、同级里挤最旧的；默认 5，给 Infinity 即不限",
+              "description": "每个位置最多同时保留几条，超出时先移除低优先级、同级中移除最旧的；默认 5，提供 Infinity 即不限",
               "name": "max",
               "fieldName": "max"
             },
@@ -34975,7 +34975,7 @@
               "type": {
                 "text": "NotificationDedupe | undefined"
               },
-              "description": "重复怎么算，默认 id；content 则同一句话合并成一条并计数",
+              "description": "重复的处理方式，默认 id；content 则同一内容合并为一条并计数",
               "name": "dedupe",
               "fieldName": "dedupe"
             },
@@ -34983,7 +34983,7 @@
               "type": {
                 "text": "number | undefined"
               },
-              "description": "同一摞内的间距（px），默认 16",
+              "description": "同一组内的间距（px），默认 16",
               "name": "gap",
               "fieldName": "gap"
             },
@@ -34991,7 +34991,7 @@
               "type": {
                 "text": "number | undefined"
               },
-              "description": "单条没写 duration 时的默认停留毫秒",
+              "description": "单条未写 duration 时的默认停留毫秒",
               "name": "duration",
               "fieldName": "duration"
             },
@@ -34999,7 +34999,7 @@
               "type": {
                 "text": "number | undefined"
               },
-              "description": "单条没写 remove-delay 时的默认退场窗口毫秒",
+              "description": "单条未写 remove-delay 时的默认退场窗口毫秒",
               "name": "remove-delay",
               "fieldName": "removeDelay"
             },
@@ -35007,7 +35007,7 @@
               "type": {
                 "text": "boolean | undefined"
               },
-              "description": "页面切到后台时按住计时，逐条下发",
+              "description": "页面切到后台时暂停计时，逐条下发",
               "name": "pause-on-page-idle",
               "fieldName": "pauseOnPageIdle"
             }
@@ -35152,7 +35152,7 @@
         },
         {
           "kind": "class",
-          "description": "`<xh-notification-item>` —— 单条通知卡片：作者写 item/item-indicator/item-title/\nitem-description/item-action-trigger/item-close-trigger 角色节点，\n元素跑生命周期机器并把 connect 产出打上去。\n\nitem 承载 role 与 aria-live：默认 status + polite（排队等读屏的空隙），\ntone=\"danger\" 换成 alert + assertive（打断当前朗读）。指针停在卡片上、\n或焦点落进卡片内部都会把倒计时按住，离开才接着走剩下的那一段。\n\n退场窗口走完只把卡片收起、不删节点：作者写在里面的内容归作者，\n什么时候把这条从队列里删掉是 `<xh-notification>` 的事（它收本元素冒泡上去的 status-change）。",
+          "description": "`<xh-notification-item>`：单条通知卡片：作者写 item / item-indicator / item-title /\nitem-description / item-action-trigger / item-close-trigger 角色节点，\n元素运行生命周期状态机并把 connect 产出接上。\n\nitem 承载 role 与 aria-live：默认 status + polite（排队等待读屏的空隙），\ntone=\"danger\" 换为 alert + assertive（打断当前朗读）。指针停在卡片上、\n或焦点落进卡片内部都会暂停倒计时，离开后继续剩余部分。\n\n退场窗口结束时只把卡片收起、不删除节点：作者写在其中的内容归作者，\n何时把该条从队列中删除是 `<xh-notification>` 的职责（它接收本元素冒泡的 status-change）。",
           "name": "XhNotificationItemElement",
           "cssParts": [
             {
@@ -35160,7 +35160,7 @@
               "name": "item"
             },
             {
-              "description": "语气指示符；留空即由皮肤按卡片上的语气画一枚兜底字形，卡片加载中则换成转圈",
+              "description": "语气指示符；留空即由皮肤按卡片上的语气绘制兜底字形，卡片加载中则换为转圈",
               "name": "item-indicator"
             },
             {
@@ -35172,7 +35172,7 @@
               "name": "item-description"
             },
             {
-              "description": "操作按钮：先发 action 再进入退场",
+              "description": "操作按钮：先发出 action 再进入退场",
               "name": "item-action-trigger"
             },
             {
@@ -35180,7 +35180,7 @@
               "name": "item-progress"
             },
             {
-              "description": "关闭按钮；closable=false 时转原生 disabled 并收起",
+              "description": "关闭按钮；closable=false 时为原生 disabled 并收起",
               "name": "item-close-trigger"
             }
           ],
@@ -35367,7 +35367,7 @@
           ],
           "events": [
             {
-              "description": "生命周期落位；detail 为 `{ id: string, status: 'dismissing'|'unmounted' }`",
+              "description": "生命周期落定；detail 为 `{ id: string, status: 'dismissing'|'unmounted' }`",
               "name": "status-change",
               "type": {
                 "text": "ToastStatusChangeDetails"
@@ -35386,7 +35386,7 @@
               "type": {
                 "text": "string | undefined"
               },
-              "description": "队列身份，`<xh-notification>` 按它寻址；不给就用实例自己的 scope id",
+              "description": "队列身份，`<xh-notification>` 按它寻址；未提供时使用实例自身的 scope id",
               "name": "id",
               "fieldName": "itemId"
             },
@@ -35394,7 +35394,7 @@
               "type": {
                 "text": "string | undefined"
               },
-              "description": "标题文案；作者没在 item-title 部件里写内容时由元素填入",
+              "description": "标题文案；作者未在 item-title 部件中写内容时由元素填入",
               "name": "title",
               "fieldName": "titleText"
             },
@@ -35402,7 +35402,7 @@
               "type": {
                 "text": "string | undefined"
               },
-              "description": "补充说明；作者没在 item-description 部件里写内容时由元素填入",
+              "description": "补充说明；作者未在 item-description 部件中写内容时由元素填入",
               "name": "description",
               "fieldName": "description"
             },
@@ -35410,7 +35410,7 @@
               "type": {
                 "text": "NotificationTone | undefined"
               },
-              "description": "语气，默认 info；danger 走 alert + assertive",
+              "description": "语气，默认 info；danger 使用 alert + assertive",
               "name": "tone",
               "fieldName": "tone"
             },
@@ -35418,7 +35418,7 @@
               "type": {
                 "text": "boolean | undefined"
               },
-              "description": "事情还没完：图标换成转圈，且不自动消失",
+              "description": "事情尚未完成：图标换为转圈，且不自动消失",
               "name": "loading",
               "fieldName": "loading"
             },
@@ -35426,7 +35426,7 @@
               "type": {
                 "text": "number | undefined"
               },
-              "description": "停留毫秒，默认 5000；<=0 即关掉自动消失",
+              "description": "停留毫秒，默认 5000；<=0 即关闭自动消失",
               "name": "duration",
               "fieldName": "duration"
             },
@@ -35442,7 +35442,7 @@
               "type": {
                 "text": "boolean | undefined"
               },
-              "description": "是否给可用的关闭按钮，默认 true；写 closable=\"false\" 关掉",
+              "description": "是否提供可用的关闭按钮，默认 true；写 closable=\"false\" 关闭",
               "name": "closable",
               "fieldName": "closable"
             },
@@ -35450,7 +35450,7 @@
               "type": {
                 "text": "boolean | undefined"
               },
-              "description": "页面切到后台时按住计时，默认关",
+              "description": "页面切到后台时暂停计时，默认关闭",
               "name": "pause-on-page-idle",
               "fieldName": "pauseOnPageIdle"
             },
@@ -35458,7 +35458,7 @@
               "type": {
                 "text": "boolean | undefined"
               },
-              "description": "由宿主整摞一起按住计时，默认关；与指针、焦点那几路并存",
+              "description": "由宿主整组一起暂停计时，默认关闭；与指针、焦点等来源并存",
               "name": "paused",
               "fieldName": "paused"
             }

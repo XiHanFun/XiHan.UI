@@ -14,7 +14,7 @@ import { vueNormalize } from '../../runtime/normalize-props'
 import { useMachine } from '../../runtime/use-machine'
 import { useNotificationContextOptional } from './context'
 
-/** props 收 ref/getter 时每帧现取，文案之类的量可以运行期换。 */
+/** props 接收 ref/getter 时每帧现取，文案等值可以在运行期更换。 */
 export function useNotification(
   props: MaybeRefOrGetter<NotificationSchema['props']>,
   onItemsChange?: NotificationSchema['props']['onItemsChange'],
@@ -32,8 +32,8 @@ export function useNotification(
 }
 
 /**
- * 单条卡片。生命周期复用 toast 那台机器——那是「会自己消失的卡片」这一通用行为。
- * 退场走完由这里回队列删记录：队列在外层，卡片自己不认识它。
+ * 单条卡片。生命周期复用 toast 的状态机：那是会自动消失的卡片这一通用行为。
+ * 退场完成后由这里通知队列删除记录：队列在外层，卡片自身不知道它。
  */
 export function useNotificationItem(
   props: ToastSchema['props'],
