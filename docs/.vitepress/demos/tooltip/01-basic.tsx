@@ -1,4 +1,4 @@
-// 基础用法 | 悬停或聚焦触发器即出；指针停在提示上也不收起
+// 基础用法 | 悬停或聚焦触发器即显示；指针停在提示上也不收起
 import type { ReactNode } from "react";
 import {
   XhTooltipArrow,

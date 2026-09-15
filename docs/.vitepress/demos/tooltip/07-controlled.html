@@ -1,4 +1,4 @@
-<!-- 受控 | 传了 open 就由宿主说了算；悬停、聚焦、Escape 都只发意图，最终写不写由外面这份状态决定 -->
+<!-- 受控 | 传入 open 后由宿主决定；悬停、聚焦、Escape 都只发意图，最终是否写回由外部的这份状态决定 -->
 <div style="display: flex; align-items: center; gap: 16px">
   <xh-tooltip id="tooltip-controlled" open="false" placement="bottom" open-delay="0">
     <button data-xh-part="trigger">把指针停上来</button>

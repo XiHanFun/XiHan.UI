@@ -1,4 +1,4 @@
-<!-- 长文案 | 提示到了宽度上限就换行，不会拉成一条横线；上限是 content 上的 --xh-tooltip-max-w 槽位 -->
+<!-- 长文案 | 提示到达宽度上限后换行，不会拉成一条横线；上限是 content 上的 --xh-tooltip-max-w 槽位 -->
 <script setup lang="ts">
 import {
   XhTooltipArrow,
