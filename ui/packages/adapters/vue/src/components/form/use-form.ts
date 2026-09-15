@@ -27,7 +27,7 @@ export interface FormCallbacks {
 
 export interface FormContext {
   api: ComputedRef<FormApi>
-  /** 机器实例，供部件上报 DOM 侧的事实。 */
+  /** 状态机实例，供部件上报 DOM 侧的事实。 */
   service: Service<FormSchema>
   /** `<form>` 节点，字段容器的查询范围与落焦起点。 */
   rootRef: Ref<HTMLElement | null>
