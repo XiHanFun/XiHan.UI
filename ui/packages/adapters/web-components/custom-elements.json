@@ -26650,7 +26650,7 @@
       "declarations": [
         {
           "kind": "class",
-          "description": "`<xh-image-viewer>` —— Light-DOM 行为宿主，跑 image-viewer 机器：\n模态看片浮层，滚轮缩放、拖拽平移、旋转翻转与多图翻页。",
+          "description": "`<xh-image-viewer>`：Light-DOM 行为宿主，运行 image-viewer 状态机：\n模态图片查看浮层，滚轮缩放、拖拽平移、旋转翻转与多图翻页。",
           "name": "XhImageViewerElement",
           "cssParts": [
             {
@@ -26666,7 +26666,7 @@
               "name": "positioner"
             },
             {
-              "description": "看片容器（role=dialog + aria-modal；方向键翻页在这里）",
+              "description": "查看容器（role=dialog + aria-modal；方向键翻页在这里）",
               "name": "content"
             },
             {
@@ -26674,7 +26674,7 @@
               "name": "viewport"
             },
             {
-              "description": "当前那张图（src/alt/transform 由元素代填）",
+              "description": "当前图片（src / alt / transform 由元素填入）",
               "name": "image"
             },
             {
@@ -26718,7 +26718,7 @@
               "name": "next-trigger"
             },
             {
-              "description": "「第 n / 共 m」计数（元素代填）",
+              "description": "「第 n / 共 m」计数（由元素填入）",
               "name": "counter"
             },
             {
@@ -26859,7 +26859,7 @@
               "type": {
                 "text": "ImageViewerItem[] | undefined"
               },
-              "description": "图片清单。看单张就给长度 1 的数组。"
+              "description": "图片清单。查看单张时提供长度为 1 的数组。"
             },
             {
               "kind": "field",
@@ -26868,7 +26868,7 @@
               "type": {
                 "text": "Partial<ImageViewerTranslations> | undefined"
               },
-              "description": "工具条按钮的可及名与计数文案；connect 每帧重写，只能从这里给。"
+              "description": "工具条按钮的可及名与计数文案；connect 每帧重写，只能从此处提供。"
             },
             {
               "kind": "field",
@@ -27053,7 +27053,7 @@
               "type": {
                 "text": "boolean | undefined"
               },
-              "description": "受控开合；缺省该属性即非受控",
+              "description": "受控开合；未提供该属性即非受控",
               "name": "open",
               "fieldName": "open"
             },
@@ -27085,7 +27085,7 @@
               "type": {
                 "text": "boolean | undefined"
               },
-              "description": "前后翻页到头回绕，默认 true；写 loop=\"false\" 关掉",
+              "description": "前后翻页到头回绕，默认 true；写 loop=\"false\" 关闭",
               "name": "loop",
               "fieldName": "loop"
             },
@@ -27125,7 +27125,7 @@
               "type": {
                 "text": "boolean | undefined"
               },
-              "description": "点遮罩关闭，默认 true",
+              "description": "点击遮罩关闭，默认 true",
               "name": "close-on-interact-outside",
               "fieldName": "closeOnInteractOutside"
             },
@@ -27141,7 +27141,7 @@
               "type": {
                 "text": "OverlayBackdropVariant | undefined"
               },
-              "description": "遮罩形态：只换 backdrop 的底色与模糊",
+              "description": "遮罩形态：只影响 backdrop 的底色与模糊",
               "name": "variant",
               "fieldName": "variant"
             }

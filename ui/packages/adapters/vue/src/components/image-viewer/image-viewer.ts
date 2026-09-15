@@ -117,7 +117,7 @@ export const XhImageViewerTrigger = defineComponent({
   // 直通属性自己合：Vue 默认把作者的处理器排在部件的后面，这里改成作者先跑
   inheritAttrs: false,
   props: {
-    /** 借用作者的子节点当触发器，不再渲染自己的包裹元素；子节点须恰好一个。 */
+    /** 借用作者的子节点作为触发器，不再渲染自己的包裹元素；子节点须恰好一个。 */
     asChild: Boolean,
   },
   setup(props, { slots, attrs }) {
@@ -194,7 +194,7 @@ export const XhImageViewerToolbar = defineComponent({
   },
 })
 
-/** 工具条按钮共用的组件工厂：没写插槽内容就空着，皮肤据 :empty 画兜底图标；给了文字的（1:1）填文字。 */
+/** 工具条按钮共用的组件工厂：未写插槽内容时留空，皮肤据 :empty 绘制兜底图标；提供文字的（1:1）填入文字。 */
 function toolTrigger(name: string, getProps: (api: ReturnType<typeof useImageViewerContext>['api']['value']) => Record<string, unknown>, fallback?: string): ReturnType<typeof defineComponent> {
   return defineComponent({
     name,

@@ -23,30 +23,30 @@ const NUMBER_CONVERTER = { fromAttribute: (v: string | null) => (v === null ? un
 const STRING_CONVERTER = { fromAttribute: (v: string | null) => v ?? undefined }
 
 /**
- * `<xh-image-viewer>` —— Light-DOM 行为宿主，跑 image-viewer 机器：
- * 模态看片浮层，滚轮缩放、拖拽平移、旋转翻转与多图翻页。
+ * `<xh-image-viewer>`：Light-DOM 行为宿主，运行 image-viewer 状态机：
+ * 模态图片查看浮层，滚轮缩放、拖拽平移、旋转翻转与多图翻页。
  *
  * @customElement xh-image-viewer
- * @attr {boolean} open - 受控开合；缺省该属性即非受控
+ * @attr {boolean} open - 受控开合；未提供该属性即非受控
  * @attr {boolean} default-open - 非受控初始为打开
  * @attr {number} index - 受控下标（0 起）
  * @attr {number} default-index - 非受控初始下标，默认 0
- * @attr {boolean} loop - 前后翻页到头回绕，默认 true；写 loop="false" 关掉
+ * @attr {boolean} loop - 前后翻页到头回绕，默认 true；写 loop="false" 关闭
  * @attr {number} zoom-step - 缩放步长（加法），默认 0.5
  * @attr {number} min-scale - 缩放下限，默认 0.25
  * @attr {number} max-scale - 缩放上限，默认 8
  * @attr {boolean} close-on-escape - Esc 关闭，默认 true
- * @attr {boolean} close-on-interact-outside - 点遮罩关闭，默认 true
+ * @attr {boolean} close-on-interact-outside - 点击遮罩关闭，默认 true
  * @attr {boolean} restore-focus - 关闭后把焦点归还触发元素，默认 true
- * @attr {'opaque'|'blur'|'transparent'} variant - 遮罩形态：只换 backdrop 的底色与模糊
+ * @attr {'opaque'|'blur'|'transparent'} variant - 遮罩形态：只影响 backdrop 的底色与模糊
  * @fires open-change - open 状态变化；detail 为 `{ open: boolean }`
  * @fires index-change - 下标变化；detail 为 `{ index: number }`
  * @csspart trigger - 触发按钮
  * @csspart backdrop - 遮罩层
  * @csspart positioner - 浮层定位容器
- * @csspart content - 看片容器（role=dialog + aria-modal；方向键翻页在这里）
+ * @csspart content - 查看容器（role=dialog + aria-modal；方向键翻页在这里）
  * @csspart viewport - 手势视口（滚轮缩放、拖拽平移）
- * @csspart image - 当前那张图（src/alt/transform 由元素代填）
+ * @csspart image - 当前图片（src / alt / transform 由元素填入）
  * @csspart toolbar - 工具条容器
  * @csspart zoom-in-trigger - 放大
  * @csspart zoom-out-trigger - 缩小
@@ -57,7 +57,7 @@ const STRING_CONVERTER = { fromAttribute: (v: string | null) => v ?? undefined }
  * @csspart reset-trigger - 变换归零
  * @csspart prev-trigger - 上一张
  * @csspart next-trigger - 下一张
- * @csspart counter - 「第 n / 共 m」计数（元素代填）
+ * @csspart counter - 「第 n / 共 m」计数（由元素填入）
  * @csspart close-trigger - 关闭
  */
 export class XhImageViewerElement extends XhPortalHostElement {
@@ -97,9 +97,9 @@ export class XhImageViewerElement extends XhPortalHostElement {
   declare closeOnInteractOutside?: boolean
   declare restoreFocus?: boolean
   declare variant?: OverlayBackdropVariant
-  /** 图片清单。看单张就给长度 1 的数组。 */
+  /** 图片清单。查看单张时提供长度为 1 的数组。 */
   declare collection?: ImageViewerItem[]
-  /** 工具条按钮的可及名与计数文案；connect 每帧重写，只能从这里给。 */
+  /** 工具条按钮的可及名与计数文案；connect 每帧重写，只能从此处提供。 */
   declare translations?: Partial<ImageViewerTranslations>
 
   private readonly idGen: IdGenerator = createCounterIdGenerator()

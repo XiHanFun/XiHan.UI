@@ -93,22 +93,22 @@ open 与 index 双受控；translations 换工具条的可及名与计数文案
 
 | 属性 | 类型 | 必填 | 说明 |
 | --- | --- | --- | --- |
-| `collection` | `ImageViewerItem[]` |  | 图片清单。看单张就给长度 1 的数组。缺省为空，此时打开也只有工具条与空视口。 |
+| `collection` | `ImageViewerItem[]` |  | 图片清单。查看单张时提供长度 1 的数组。默认为空，此时打开也只有工具条与空视口。 |
 | `open` | `boolean` |  |  |
 | `defaultOpen` | `boolean` |  |  |
-| `index` | `number` |  | 当前下标（0 起）。给定即受控：内部不再自改，只发 onIndexChange。 |
+| `index` | `number` |  | 当前下标（0 起）。提供即受控：内部不再自行修改，只发 onIndexChange。 |
 | `defaultIndex` | `number` |  | 非受控初值，默认 0。 |
 | `loop` | `boolean` |  | 前后翻页到头是否回绕，默认 true。 |
 | `zoomStep` | `number` |  | 缩放步长（加法），默认 0.5。 |
 | `minScale` | `number` |  | 缩放下限，默认 0.25。 |
 | `maxScale` | `number` |  | 缩放上限，默认 8。 |
 | `closeOnEscape` | `boolean` |  |  |
-| `closeOnInteractOutside` | `boolean` |  | 点遮罩（内容之外）关闭，默认 true。 |
+| `closeOnInteractOutside` | `boolean` |  | 点击遮罩（内容之外）关闭，默认 true。 |
 | `restoreFocus` | `boolean` |  |  |
-| `variant` | `OverlayBackdropVariant` |  | 遮罩形态：opaque / blur / transparent。落在 backdrop 上，只换那一层的底色与模糊。 |
+| `variant` | `OverlayBackdropVariant` |  | 遮罩形态：opaque / blur / transparent。写在 backdrop 上，只影响该层的底色与模糊。 |
 | `translations` | `Partial<ImageViewerTranslations>` |  |  |
 | `onOpenChange` | `(details: ImageViewerOpenChangeDetails) => void` |  | open 变化意图回调；受控时是唯一出口，非受控时随内部转移一并通知。 |
-| `onIndexChange` | `(details: ImageViewerIndexChangeDetails) => void` |  | 下标变化意图回调；受控时是唯一出口，非受控随内部写入一并通知。 |
+| `onIndexChange` | `(details: ImageViewerIndexChangeDetails) => void` |  | 下标变化意图回调；受控时是唯一出口，非受控时随内部写入一并通知。 |
 
 ### 事件
 
@@ -159,14 +159,14 @@ open 与 index 双受控；translations 换工具条的可及名与计数文案
 | `open` | `boolean` |  |
 | `index` | `number` | 当前下标，恒在 [0, count - 1] 内；清单为空时为 0。 |
 | `count` | `number` |  |
-| `currentItem` | `ImageViewerItem \| null` | 当前那张图；清单为空时为 null。 |
+| `currentItem` | `ImageViewerItem \| null` | 当前图片；清单为空时为 null。 |
 | `transform` | `ImageViewerTransform` |  |
 | `panning` | `boolean` | 正在拖拽平移。 |
-| `imageStatus` | `ImageViewerImageStatus` | 当前那张大图的取图相位；换图与重开都回到 loading。 |
-| `canPrev` | `boolean` | 往前还翻得动（loop 且多于一张时恒为 true）。 |
+| `imageStatus` | `ImageViewerImageStatus` | 当前大图的加载相位；切换图片与重新打开都回到 loading。 |
+| `canPrev` | `boolean` | 向前仍可翻页（loop 且多于一张时恒为 true）。 |
 | `canNext` | `boolean` |  |
 | `setOpen` | `(next: boolean) => void` |  |
-| `setIndex` | `(next: number) => void` | 直接跳到某一张；越界会被夹回 [0, count - 1]。换图变换归零。 |
+| `setIndex` | `(next: number) => void` | 直接跳到某一张；越界会被夹回 [0, count - 1]。切换图片时变换归零。 |
 | `next` | `() => void` |  |
 | `prev` | `() => void` |  |
 | `zoomIn` | `() => void` |  |
@@ -176,14 +176,14 @@ open 与 index 双受控；translations 换工具条的可及名与计数文案
 | `rotateRight` | `() => void` |  |
 | `flipHorizontal` | `() => void` |  |
 | `flipVertical` | `() => void` |  |
-| `reset` | `() => void` | 变换整体归零（缩放/旋转/翻转/平移）。 |
+| `reset` | `() => void` | 变换整体归零（缩放 / 旋转 / 翻转 / 平移）。 |
 | `getTriggerProps` | `() => T['button']` |  |
 | `getBackdropProps` | `() => T['element']` |  |
 | `getPositionerProps` | `() => T['element']` |  |
 | `getContentProps` | `() => T['element']` |  |
 | `getViewportProps` | `() => T['element']` |  |
 | `getImageProps` | `() => T['img']` |  |
-| `getToolbarProps` | `() => T['element']` | 底部那条控件带，装缩放、旋转、翻转与归零这几颗钮。 它报的是 `role=group`：一组有名字的控件，每颗钮各占一个 Tab 位。 不报 `role=toolbar`——那个角色承诺条内靠方向键走位，而左右方向键与 Home/End 在这台上是翻页；要那套走位就往这条带里放一个 Toolbar 组件。 |
+| `getToolbarProps` | `() => T['element']` | 底部的控件带，放置缩放、旋转、翻转与归零按钮。 它报告 `role=group`：一组有名字的控件，每个按钮各占一个 Tab 位。 不报告 `role=toolbar`：该角色承诺条内依靠方向键移动，而左右方向键与 Home/End 在这里是翻页；需要该移动方式时在这条带中放置一个 Toolbar 组件。 |
 | `getZoomInTriggerProps` | `() => T['button']` |  |
 | `getZoomOutTriggerProps` | `() => T['button']` |  |
 | `getRotateLeftTriggerProps` | `() => T['button']` |  |

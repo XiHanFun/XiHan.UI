@@ -67,7 +67,7 @@ export interface XhImageViewerRootProps {
   children?: SlotChildren<ImageViewerRootSlotProps>
 }
 
-/** 根不产出自己的元素：状态与命令经 children 载荷交出去，供浮层外的按钮（如缩略图）使用。 */
+/** 根不产出自己的元素：状态与命令经 children 载荷交出，供浮层外的按钮（如缩略图）使用。 */
 export function XhImageViewerRoot({ children, ...props }: XhImageViewerRootProps): ReactNode {
   const ctx = useImageViewer(withXhConfig('image-viewer', props) as ImageViewerProps)
   const api = ctx.api
@@ -113,11 +113,11 @@ export function XhImageViewerTrigger({ children, asChild, ...rest }: XhImageView
 }
 
 export interface XhImageViewerContentProps extends ComponentPropsWithRef<'div'> {
-  /** 浮层挂到哪个容器；不给就按全局配置，再不给挂 body。 */
+  /** 浮层挂载的容器；未提供时按全局配置，再未提供时挂载到 body。 */
   container?: () => Element | null
 }
 
-/** 遮罩与定位层跟内容一起搬到浮层落点：留在原地的话，宿主祖先建了层叠上下文就能盖住浮层。 */
+/** 遮罩与定位层随内容一起迁移到浮层落点：留在原地时，宿主祖先建立了层叠上下文就能遮住浮层。 */
 export function XhImageViewerContent({ children, container, ...rest }: XhImageViewerContentProps): ReactNode {
   const ctx = useImageViewerContext()
   if (!ctx.rendered)
@@ -144,8 +144,8 @@ export function XhImageViewerContent({ children, container, ...rest }: XhImageVi
 export interface XhImageViewerViewportProps extends ComponentPropsWithRef<'div'> {}
 
 /**
- * 图片的可视窗口。滚轮缩放要 preventDefault 拦掉页面滚动，而 React 把 wheel 委派在根容器上
- * 且登记为被动监听器，那条路上的 preventDefault 是空操作——装成本节点上的原生监听器才拦得住。
+ * 图片的可视窗口。滚轮缩放要 preventDefault 拦截页面滚动，而 React 把 wheel 委派在根容器上
+ * 且登记为被动监听器，该路径上的 preventDefault 是空操作：装为本节点上的原生监听器才能拦截。
  */
 export function XhImageViewerViewport({ children, ...rest }: XhImageViewerViewportProps): ReactNode {
   const ctx = useImageViewerContext()
@@ -180,8 +180,8 @@ export interface XhImageViewerToolTriggerProps extends ComponentPropsWithRef<'bu
 type ToolTrigger = (props: XhImageViewerToolTriggerProps) => ReactNode
 
 /**
- * 工具条按钮共用的组件工厂：没写内容就空着，皮肤据 :empty 画兜底图标；
- * 给了文字的（1:1）填文字。
+ * 工具条按钮共用的组件工厂：未写内容时留空，皮肤据 :empty 绘制兜底图标；
+ * 提供文字的（1:1）填入文字。
  */
 function toolTrigger(
   name: string,
@@ -213,7 +213,7 @@ export const XhImageViewerCloseTrigger: ToolTrigger = toolTrigger('XhImageViewer
 
 export interface XhImageViewerCounterProps extends ComponentPropsWithRef<'div'> {}
 
-/** 第几张 / 共几张；作者没写内容时用「n / m」的缺省文本兜底。 */
+/** 第几张 / 共几张；作者未写内容时使用「n / m」的默认文本兜底。 */
 export function XhImageViewerCounter({ children, ...rest }: XhImageViewerCounterProps): ReactNode {
   const ctx = useImageViewerContext()
   const api = ctx.api
