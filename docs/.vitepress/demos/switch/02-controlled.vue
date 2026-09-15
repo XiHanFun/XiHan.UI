@@ -1,4 +1,4 @@
-<!-- 受控 | 传了 checked 就由宿主说了算，组件自己不再改状态；变化意图从 checked-change 出来，写回才落位 -->
+<!-- 受控 | 传入 checked 后由宿主决定，组件自身不再修改状态；变化意图经 checked-change 发出，写回后才落位 -->
 <script setup lang="ts">
 import { XhSwitch } from "@xihan-ui/vue";
 import { ref } from "vue";

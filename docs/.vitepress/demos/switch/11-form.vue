@@ -1,4 +1,4 @@
-<!-- 随表单提交 | 给了 name 才生出表单影子：开着才提交，值缺省是 on，与原生复选框一致 -->
+<!-- 随表单提交 | 提供 name 后才生成表单影子：开启时才提交，值默认为 on，与原生复选框一致 -->
 <script setup lang="ts">
 import { XhButton, XhSwitch } from "@xihan-ui/vue";
 import { ref } from "vue";

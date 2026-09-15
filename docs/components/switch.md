@@ -12,7 +12,7 @@
 
 ## 用法
 
-不传 checked 即为非受控，开关自己维护状态
+不传 checked 即为非受控，开关自行维护状态
 
 <XhDemo src="switch/01-basic" />
 
@@ -26,31 +26,31 @@
 
 ### 受控
 
-传了 checked 就由宿主说了算，组件自己不再改状态；变化意图从 checked-change 出来，写回才落位
+传入 checked 后由宿主决定，组件自身不再修改状态；变化意图经 checked-change 发出，写回后才落位
 
 <XhDemo src="switch/02-controlled" />
 
 ### 禁用
 
-disabled 同时挡住指针与键盘，状态机收不到 TOGGLE
+disabled 同时阻止指针与键盘，状态机收不到 TOGGLE
 
 <XhDemo src="switch/03-disabled" />
 
 ### 颜色
 
-tone 决定选中态轨道用哪族颜色，所以这里都置为开
+tone 决定选中态轨道使用哪族颜色，因此这里都设为开
 
 <XhDemo src="switch/04-tone" />
 
 ### 尺寸
 
-size 同时缩放轨道与滑块，不写就是缺省档
+size 同时缩放轨道与滑块，不写即默认档
 
 <XhDemo src="switch/05-size" />
 
 ### 事件
 
-checked-change 带一份 { checked }，非受控时内部转移也照发一次
+checked-change 带一份 { checked }，非受控时内部转移也照常触发一次
 
 <XhDemo src="switch/06-event" />
 
@@ -62,13 +62,13 @@ checked-change 带一份 { checked }，非受控时内部转移也照发一次
 
 ### 轨道内文案与滑块标记
 
-轨道的子节点全由作者决定，data-state 同时打在轨道与滑块上
+轨道的子节点全部由作者决定，data-state 同时写在轨道与滑块上
 
 <XhDemo src="switch/08-content" />
 
 ### 异步提交
 
-受控开关在回执到达前不落位；loading 让提交期呈现为「处理中」而非禁用——交互挂起、滑块转圈、仍可聚焦
+受控开关在回执到达前不落位；loading 使提交期呈现为处理中而非禁用：交互挂起、滑块显示加载、仍可聚焦
 
 <XhDemo src="switch/09-async" />
 
@@ -80,7 +80,7 @@ checked-change 带一份 { checked }，非受控时内部转移也照发一次
 
 ### 随表单提交
 
-给了 name 才生出表单影子：开着才提交，值缺省是 on，与原生复选框一致
+提供 name 后才生成表单影子：开启时才提交，值默认为 on，与原生复选框一致
 
 <XhDemo src="switch/11-form" />
 
