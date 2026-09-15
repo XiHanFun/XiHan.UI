@@ -9615,7 +9615,7 @@
   align-items: stretch;
   padding: var(--xh-segmented-track-padding, var(--xh-space-0_5));
   border: var(--xh-stroke-thin) solid var(--xh-segmented-border, var(--xh-border-subtle));
-  border-radius: var(--xh-segmented-radius, var(--xh-shape-control));
+  border-radius: var(--xh-segmented-radius, var(--xh-shape-surface));
   background: var(--xh-segmented-bg, var(--xh-bg-subtle));
   font-size: var(--xh-segmented-font-size, var(--xh-_segmented-font-size));
 }
@@ -9726,7 +9726,7 @@
   transition:
     color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
     background-color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
-    scale var(--xh-motion-duration-micro) var(--xh-motion-ease-enter-strong);
+    scale var(--xh-motion-duration-release) var(--xh-motion-ease-release);
 }
 
 /* 选中态：单选是 role=radio + aria-checked，样式一律读 data-state，不读 ARIA。
@@ -9752,7 +9752,9 @@
 
 /* 按下去要有回应：整段轻微下压，松手即弹回。选中段也压，只读段不压 */
 [data-scope='segmented'][data-part='item']:not([data-disabled]):not([data-readonly]):active {
-  scale: var(--xh-segmented-item-press-scale, var(--xh-motion-scale-press));
+  scale: var(--xh-motion-scale-press);
+  transition-duration: var(--xh-motion-duration-press);
+  transition-timing-function: var(--xh-motion-ease-press);
 }
 
 /* 只读：值改不动，但对比度不降，光标也不摆出"禁止"的样子 */

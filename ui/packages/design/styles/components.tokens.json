@@ -48536,28 +48536,6 @@
       "description": "segmented 的 item 部件 block-size 覆盖槽。"
     },
     {
-      "name": "--xh-segmented-item-press-scale",
-      "component": "segmented",
-      "part": [
-        "item"
-      ],
-      "property": [
-        "scale"
-      ],
-      "state": [
-        "active",
-        "disabled",
-        "not([data-disabled])",
-        "not([data-readonly])",
-        "readonly"
-      ],
-      "defaultToken": [
-        "--xh-motion-scale-press"
-      ],
-      "visibility": "public",
-      "description": "segmented 的 item 部件 scale 覆盖槽。"
-    },
-    {
       "name": "--xh-segmented-item-px",
       "component": "segmented",
       "part": [
@@ -48606,7 +48584,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-shape-control"
+        "--xh-shape-surface"
       ],
       "visibility": "public",
       "description": "segmented 的 root 部件 border-radius 覆盖槽。"
