@@ -15,19 +15,19 @@ import { XhElement } from '../element-base'
 const STRING_CONVERTER = { fromAttribute: (v: string | null) => v ?? undefined }
 
 /**
- * `<xh-descriptions>` —— Light-DOM 行为宿主，无状态机，把 connectDescriptions 产出打到各角色节点。
- * 排版走 CSS Grid，columns 落成列数。
+ * `<xh-descriptions>`：Light-DOM 行为宿主，无状态机，把 connectDescriptions 产出接到各角色节点。
+ * 排版使用 CSS Grid，columns 写为列数。
  *
- * 标签由作者定，root 写 `<dl>`、label 写 `<dt>`、value 写 `<dd>` 时标签与取值天然成对；
- * 组件不补 role，也不用 `<table>`——这是一份描述列表，不是数据表。
+ * 标签由作者决定，root 写 `<dl>`、label 写 `<dt>`、value 写 `<dd>` 时标签与取值天然成对；
+ * 组件不补 role，也不使用 `<table>`：这是一份描述列表，不是数据表。
  *
  * @customElement xh-descriptions
- * @attr {1|2|3|4|5|6} columns - 每行摆几组，如实落成根上的 data-columns；不写即每行一组
- * @attr {boolean} bordered - 画外框，并在格与格之间画网格线
- * @attr {'top'|'left'} placement - 标签在上还是在左；不写即在上
+ * @attr {1|2|3|4|5|6} columns - 每行放置几组，如实写为根上的 data-columns；未提供时每行一组
+ * @attr {boolean} bordered - 绘制外框，并在格与格之间绘制网格线
+ * @attr {'top'|'left'} placement - 标签在上还是在左；未提供时在上
  * @attr {'sm'|'md'|'lg'} size - 尺寸，决定每格的内边距、组与组的间距与整体字号
  * @csspart root - 网格容器，承载 data-columns / data-placement / data-size / data-bordered
- * @csspart item - 一组「标签 + 取值」，占网格里的一格；作者在此写 span（这一格横跨几列，窄档不认）
+ * @csspart item - 一组标签与取值，占网格中的一格；作者在此写 span（该格横跨的列数，窄档不采用）
  * @csspart label - 标签
  * @csspart value - 取值
  */

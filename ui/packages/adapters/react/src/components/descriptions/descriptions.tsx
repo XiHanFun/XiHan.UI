@@ -15,19 +15,19 @@ import { reactNormalize } from '../../runtime/normalize-props'
 import { DescriptionsProvider, useDescriptionsContext } from './context'
 
 export interface XhDescriptionsRootProps extends ComponentPropsWithRef<'dl'> {
-  /** 每行摆几组，一到六列；不写即每行一组。 */
+  /** 每行排几组，一到六列；未写即每行一组。 */
   columns?: DescriptionsColumns
-  /** 外框：给整份描述画一圈描边，并在格与格之间画网格线。 */
+  /** 外框：为整份描述绘制描边，并在格与格之间绘制网格线。 */
   bordered?: boolean
-  /** 标签的位置：top / left；不写即标签在上。 */
+  /** 标签的位置：top / left；未写即标签在上。 */
   placement?: DescriptionsPlacement
   /** 尺寸：sm / md / lg。 */
   size?: Size
-  /** 根渲染成哪个标签，默认 dl。 */
+  /** 根渲染为哪个标签，默认 dl。 */
   as?: ElementType
 }
 
-/** 一组只读的「标签 + 取值」：三个轴与一个开关只落在这一层，各格从这里继承。 */
+/** 一组只读的标签与取值：三个轴与一个开关只落在这一层，各格从这里继承。 */
 export function XhDescriptionsRoot({
   columns,
   bordered,
@@ -50,13 +50,13 @@ export function XhDescriptionsRoot({
 }
 
 export interface XhDescriptionsItemProps extends ComponentPropsWithRef<'div'> {
-  /** 每一格渲染成哪个标签，默认 div。 */
+  /** 每一格渲染为哪个标签，默认 div。 */
   as?: ElementType
-  /** 这一格横跨几列，不写即占一列；上限是根上的 columns。 */
+  /** 该格横跨几列，未写即占一列；上限是根上的 columns。 */
   span?: number
 }
 
-/** 一组「标签 + 取值」包一层，让它成为网格里的一格。 */
+/** 一组标签与取值包一层，使其成为网格中的一格。 */
 export function XhDescriptionsItem({ as = 'div', span, children, ...rest }: XhDescriptionsItemProps): ReactNode {
   const ctx = useDescriptionsContext()
   const Tag = as as 'div'
@@ -68,7 +68,7 @@ export function XhDescriptionsItem({ as = 'div', span, children, ...rest }: XhDe
 }
 
 export interface XhDescriptionsLabelProps extends ComponentPropsWithRef<'dt'> {
-  /** 标签渲染成哪个标签，默认 dt。 */
+  /** 标签渲染为哪个标签，默认 dt。 */
   as?: ElementType
 }
 
@@ -83,7 +83,7 @@ export function XhDescriptionsLabel({ as = 'dt', children, ...rest }: XhDescript
 }
 
 export interface XhDescriptionsValueProps extends ComponentPropsWithRef<'dd'> {
-  /** 取值渲染成哪个标签，默认 dd。 */
+  /** 取值渲染为哪个标签，默认 dd。 */
   as?: ElementType
 }
 
