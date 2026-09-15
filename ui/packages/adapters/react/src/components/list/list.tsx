@@ -15,15 +15,15 @@ import { reactNormalize } from '../../runtime/normalize-props'
 import { ListProvider, useListContext } from './context'
 
 export interface XhListRootProps extends ComponentPropsWithRef<'ul'> {
-  /** 外框：给整份列表画一圈描边与圆角。 */
+  /** 外框：为整份列表绘制描边与圆角。 */
   bordered?: boolean
-  /** 指针悬停时条目换底色。 */
+  /** 指针悬停时条目更换底色。 */
   hoverable?: boolean
-  /** 条目之间画分隔线。 */
+  /** 条目之间绘制分隔线。 */
   split?: boolean
   /** 尺寸：sm / md / lg。 */
   size?: Size
-  /** 根渲染成哪个标签，默认 ul；换成 div 即不进读屏的列表语义。 */
+  /** 根渲染为哪个标签，默认 ul；换为 div 即不进入读屏的列表语义。 */
   as?: ElementType
 }
 
@@ -50,7 +50,7 @@ export function XhListRoot({
 }
 
 export interface XhListItemProps extends ComponentPropsWithRef<'li'> {
-  /** 条目渲染成哪个标签，默认 li；根换成 div 时这里一并换掉。 */
+  /** 条目渲染为哪个标签，默认 li；根换为 div 时这里一并更换。 */
   as?: ElementType
 }
 
@@ -65,7 +65,7 @@ export function XhListItem({ as = 'li', children, ...rest }: XhListItemProps): R
 }
 
 export interface XhListItemMediaProps extends ComponentPropsWithRef<'div'> {}
-/** 媒体位排在条目最前，内容由作者塞（头像、图标、缩略图都行）。 */
+/** 媒体位排在条目最前，内容由作者放置（头像、图标、缩略图均可）。 */
 export function XhListItemMedia({ children, ...rest }: XhListItemMediaProps): ReactNode {
   const ctx = useListContext()
   return <div {...mergeReactProps(ctx.api.getItemMediaProps() as Record<string, unknown>, rest as Record<string, unknown>)}>{children}</div>
@@ -78,7 +78,7 @@ export function XhListItemContent({ children, ...rest }: XhListItemContentProps)
 }
 
 export interface XhListItemTitleProps extends ComponentPropsWithRef<'div'> {}
-/** 标题渲染为 div 而不是 hN：它只做视觉主次，不往文档大纲里插一级标题。 */
+/** 标题渲染为 div 而不是 hN：它只做视觉主次，不向文档大纲插入一级标题。 */
 export function XhListItemTitle({ children, ...rest }: XhListItemTitleProps): ReactNode {
   const ctx = useListContext()
   return <div {...mergeReactProps(ctx.api.getItemTitleProps() as Record<string, unknown>, rest as Record<string, unknown>)}>{children}</div>
