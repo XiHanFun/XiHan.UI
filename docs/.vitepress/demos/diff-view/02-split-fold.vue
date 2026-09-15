@@ -1,4 +1,4 @@
-<!-- 并排与折叠 | 并排两列都发格子，空的那一侧照发；远离变更的连续上下文折成一格，点开即展开 -->
+<!-- 并排与折叠 | 并排两列都发出格子，空的一侧照发；远离变更的连续上下文折为一格，点击即展开 -->
 <script setup lang="ts">
 import { computeTextDiff } from "@xihan-ui/headless";
 import { XhDiffViewBody, XhDiffViewHeader, XhDiffViewRoot, XhDiffViewSummary, XhDiffViewViewport } from "@xihan-ui/vue";

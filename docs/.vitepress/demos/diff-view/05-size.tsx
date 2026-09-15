@@ -1,4 +1,4 @@
-// 尺寸 | size 换字号、行高与行号槽的宽度，三档并列对照
+// 尺寸 | size 改变字号、行高与行号槽的宽度，三档并列对照
 import type { ReactNode } from "react";
 import { computeTextDiff } from "@xihan-ui/headless";
 import { XhDiffViewBody, XhDiffViewHeader, XhDiffViewRoot, XhDiffViewViewport } from "@xihan-ui/react";
