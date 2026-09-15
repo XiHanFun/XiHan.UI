@@ -1,4 +1,4 @@
-// 受控 | 传了 open 就由宿主说了算；Escape、点面板外、按叉都只回写 open，不自己改状态
+// 受控 | 传入 open 后由宿主决定；Escape、点击面板外、按关闭按钮都只回写 open，不自行修改状态
 import type { ReactNode } from "react";
 import {
   XhButton,

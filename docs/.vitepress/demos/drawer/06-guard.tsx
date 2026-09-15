@@ -1,4 +1,4 @@
-// 关闭前拦截 | 受控时组件不自改状态：Escape、点面板外、按叉都只发一次收起意图，写不写由宿主定
+// 关闭前拦截 | 受控时组件不自行修改状态：Escape、点击面板外、按关闭按钮都只发一次收起意图，是否写回由宿主决定
 import type { ReactNode } from "react";
 import {
   XhButton,

@@ -1,4 +1,4 @@
-<!-- 尺寸 | size 落成 content 的 data-size，只改面板贴边方向上的厚度；三档各自一个抽屉，点开才看得出厚薄 -->
+<!-- 尺寸 | size 写为 content 的 data-size，只改变面板贴边方向上的厚度；三档各自一个抽屉，打开后才可见厚度差异 -->
 <script setup lang="ts">
 import {
   XhButton,
