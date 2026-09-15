@@ -19,7 +19,7 @@ import { useMachine } from '../../runtime/use-machine'
 import { useOverlay } from '../../runtime/use-overlay'
 
 export interface CascaderContext extends OverlayWiring {
-  /** 机器实例，供部件上报 DOM 侧的事实（如条目卸载带走了焦点）。 */
+  /** 状态机实例，供部件上报 DOM 侧的事实（如条目卸载带走了焦点）。 */
   service: Service<CascaderSchema>
   api: CascaderApi
   rootRef: RefObject<HTMLDivElement | null>

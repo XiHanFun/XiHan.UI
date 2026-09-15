@@ -40,7 +40,7 @@ import { useCascader } from './use-cascader'
 
 type CascaderProps = CascaderSchema['props']
 
-/** 函数式 children 的载荷：级联的展开态、选中态与列数据，以及改动它们的方法。 */
+/** 函数式 children 的载荷：级联的展开态、选中态与列数据，以及修改它们的方法。 */
 export type CascaderRootSlotProps = Pick<
   CascaderApi,
   | 'open'
@@ -63,7 +63,7 @@ export type CascaderRootSlotProps = Pick<
   | 'clear'
 >
 
-/** 根上自有的那些取值；dir 与 defaultValue 与原生的同名属性含义不同，由这里接管。 */
+/** 根上自有的取值；dir 与 defaultValue 与原生的同名属性含义不同，由这里接管。 */
 type RootElementProps = Omit<ComponentPropsWithRef<'div'>, 'children' | 'defaultValue' | 'dir'>
 
 export interface XhCascaderRootProps extends RootElementProps {
@@ -203,7 +203,7 @@ export function XhCascaderLabel({ children, ...rest }: XhCascaderLabelProps): Re
 }
 
 export interface XhCascaderControlProps extends ComponentPropsWithRef<'div'> {}
-/** 描边、底色与聚焦环所在的那一层，触发按钮与尾部动作钮在里面并排。 */
+/** 描边、底色与聚焦环所在的层，触发按钮与尾部动作按钮在其中并排。 */
 export function XhCascaderControl({ children, ...rest }: XhCascaderControlProps): ReactNode {
   const ctx = useCascaderContext()
   return <div {...mergeReactProps(ctx.api.getControlProps() as Record<string, unknown>, rest as Record<string, unknown>)}>{children}</div>
@@ -230,7 +230,7 @@ export function XhCascaderTrigger({ children, ...rest }: XhCascaderTriggerProps)
 }
 
 export interface XhCascaderValueTextProps extends ComponentPropsWithRef<'span'> {}
-/** 有内容用内容，否则显示整条路径或 placeholder。 */
+/** 有内容时使用内容，否则显示整条路径或 placeholder。 */
 export function XhCascaderValueText({ children, ...rest }: XhCascaderValueTextProps): ReactNode {
   const ctx = useCascaderContext()
   return (
@@ -253,10 +253,10 @@ export function XhCascaderClearTrigger({ children, ...rest }: XhCascaderClearTri
 }
 
 export interface XhCascaderPositionerProps extends ComponentPropsWithRef<'div'> {
-  /** 浮层挂到哪个容器；不给就按全局配置，再不给挂 body。 */
+  /** 浮层挂载的容器；未提供时按全局配置，再未提供时挂载到 body。 */
   container?: () => Element | null
 }
-/** 搬到浮层落点：留在原地的话，宿主祖先只要建了层叠上下文就能盖住浮层。 */
+/** 迁移到浮层落点：留在原地时，宿主祖先只要建立了层叠上下文就能遮住浮层。 */
 export function XhCascaderPositioner({ children, container, ...rest }: XhCascaderPositionerProps): ReactNode {
   const ctx = useCascaderContext()
   // 列区的自绘条：与 content 同级、绝对定位不占布局，壳是这层已经 fixed 的 positioner。
@@ -284,7 +284,7 @@ export function XhCascaderPositioner({ children, container, ...rest }: XhCascade
 }
 
 export interface XhCascaderContentProps extends ComponentPropsWithRef<'div'> {
-  /** 空态占位的内容；不给就按视图取「无匹配」或「无数据」。 */
+  /** 空态占位的内容；未提供时按视图取无匹配或无数据文案。 */
   empty?: ReactNode
 }
 
@@ -349,7 +349,7 @@ export function XhCascaderContent({ children, empty, ...rest }: XhCascaderConten
 }
 
 export interface XhCascaderLoadingProps extends ComponentPropsWithRef<'div'> {}
-/** 在途占位：当前视图无候选时顶上来；无 children 则读取 Cascader translations.loading。 */
+/** 在途占位：当前视图无候选时显示；无 children 则读取 Cascader translations.loading。 */
 export function XhCascaderLoading({ children, ...rest }: XhCascaderLoadingProps): ReactNode {
   const ctx = useCascaderContext()
   const content = useCascaderContentContext()
@@ -364,17 +364,17 @@ export function XhCascaderLoading({ children, ...rest }: XhCascaderLoadingProps)
 }
 
 export interface XhCascaderInputProps extends Omit<ComponentPropsWithRef<'input'>, 'value' | 'defaultValue'> {}
-/** 搜索框放在 content 顶部；没开 searchable 时连接层给 hidden。 */
+/** 搜索框放在 content 顶部；未开启 searchable 时连接层写 hidden。 */
 export function XhCascaderInput({ ...rest }: XhCascaderInputProps): ReactNode {
   const ctx = useCascaderContext()
   return <input {...mergeReactProps(ctx.api.getInputProps() as Record<string, unknown>, rest as Record<string, unknown>)} />
 }
 
 export interface XhCascaderSearchListProps extends ComponentPropsWithRef<'div'> {
-  /** 每条候选的自定义内容；不给就把整条路径连缀成一行。 */
+  /** 每条候选的自定义内容；未提供时把整条路径连缀为一行。 */
   renderItem?: (result: CascaderSearchResult) => ReactNode
 }
-/** 候选整组自动铺：整条路径连缀成一行。 */
+/** 候选整组自动铺设：整条路径连缀为一行。 */
 export function XhCascaderSearchList({ renderItem, ...rest }: XhCascaderSearchListProps): ReactNode {
   const ctx = useCascaderContext()
   const api = ctx.api
@@ -393,7 +393,7 @@ export interface XhCascaderColumnProps extends ComponentPropsWithRef<'div'> {
   /** 层号，兼收字符串。 */
   level: number | string
 }
-/** 展开路径变短时本列收起，节点常挂不卸载。 */
+/** 展开路径变短时本列收起，节点常驻不卸载。 */
 export function XhCascaderColumn({ level, children, ...rest }: XhCascaderColumnProps): ReactNode {
   const ctx = useCascaderContext()
   return (
@@ -411,7 +411,7 @@ export function XhCascaderColumn({ level, children, ...rest }: XhCascaderColumnP
 export interface XhCascaderGroupProps extends ComponentPropsWithRef<'div'> {
   value: string
 }
-/** 分组容器：写在列里，条目照常挂在它下面。 */
+/** 分组容器：写在列中，条目照常挂在它下面。 */
 export function XhCascaderGroup({ value, children, ...rest }: XhCascaderGroupProps): ReactNode {
   const ctx = useCascaderContext()
   const group = useMemo(() => ({ value }), [value])
@@ -503,8 +503,8 @@ export function XhCascaderItemIndicator({ children, ...rest }: XhCascaderItemInd
 
 export interface XhCascaderFooterProps extends ComponentPropsWithRef<'div'> {}
 /**
- * 浮层底部的操作区：写在 content 里、与列并列，横跨全部列；
- * 列表框语义在每一列上，放在这里的按钮既不进列的拥有关系，也走不到方向键。
+ * 浮层底部的操作区：写在 content 中、与列并列，横跨全部列；
+ * 列表框语义在每一列上，放在这里的按钮既不进入列的拥有关系，也不参与方向键导航。
  */
 export function XhCascaderFooter({ children, ...rest }: XhCascaderFooterProps): ReactNode {
   const ctx = useCascaderContext()

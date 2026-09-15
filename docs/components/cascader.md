@@ -102,34 +102,34 @@
 
 | 属性 | 类型 | 必填 | 说明 |
 | --- | --- | --- | --- |
-| `collection` | `CascaderNode[]` |  | 树数据，层级元信息与显示文本的唯一事实源。缺省为空树。 |
-| `value` | `CascaderValue` |  | 选中路径。给定即受控：cell 直读 prop，写只发 onValueChange 不落内部值。 单条路径是简写，内部一律归一成路径集合。 |
+| `collection` | `CascaderNode[]` |  | 树数据，层级元信息与显示文本的唯一事实源。默认为空树。 |
+| `value` | `CascaderValue` |  | 选中路径。提供即受控：cell 直读 prop，写入只发 onValueChange 不落内部值。 单条路径是简写，内部一律归一为路径集合。 |
 | `defaultValue` | `CascaderValue` |  |  |
 | `name` | `string` |  | 原生字段名，每条选中路径提交一项 JSON 字符串数组。 |
 | `form` | `string` |  | 关联的原生表单 ID；指定后覆盖祖先表单归属。 |
-| `open` | `boolean` |  | 展开态。给定即受控：内部不再自改，只发 onOpenChange。 |
+| `open` | `boolean` |  | 展开态。提供即受控：内部不再自行修改，只发 onOpenChange。 |
 | `defaultOpen` | `boolean` |  |  |
-| `expandTrigger` | `CascaderExpandTrigger` |  | 子列由什么展开，默认 click。 |
-| `changeOnSelect` | `boolean` |  | 中间层（分支）也能落值。关掉时点分支只展开子列，不改选中值。 |
-| `multiple` | `boolean` |  | 多选：选中是路径集合，选中后浮层不收起、焦点留在列里以便接着挑。 |
+| `expandTrigger` | `CascaderExpandTrigger` |  | 子列的展开方式，默认 click。 |
+| `changeOnSelect` | `boolean` |  | 中间层（分支）也可以落值。关闭时点击分支只展开子列，不改变选中值。 |
+| `multiple` | `boolean` |  | 多选：选中为路径集合，选中后浮层不收起、焦点留在列中以便继续选择。 |
 | `searchable` | `boolean` |  | 开启搜索：input 部件可用，输入后整条路径连缀过滤、候选替换列视图。 |
-| `cascade` | `boolean` |  | 多选下父子级联勾选：点分支整枝传导、子全勾父勾、部分勾中半选， 禁用子树整棵冻结。默认 false（按路径原样翻转）；单选下无效。 |
-| `checkedStrategy` | `CascadeStrategy` |  | 级联下对外值的收敛策略，默认 child（只收叶）；parent = 最高整枝，all = 全部勾中节点。 |
-| `disabled` | `boolean` |  | 整个控件禁用：trigger 用原生 disabled，浮层展不开。 |
-| `readOnly` | `boolean` |  | 只读：浮层照常展开与浏览，但选中值改不动、也清不掉。 |
-| `invalid` | `boolean` |  | 校验失败：trigger 报 aria-invalid，各角色节点带 data-invalid。 |
-| `loading` | `boolean` |  | 候选还在取：浮层报 aria-busy；当前视图无候选时在途占位顶上来。 |
+| `cascade` | `boolean` |  | 多选下父子级联勾选：点击分支整枝传导、子全勾父勾、部分勾选半选， 禁用子树整棵冻结。默认 false（按路径原样切换）；单选下无效。 |
+| `checkedStrategy` | `CascadeStrategy` |  | 级联下对外值的收敛策略，默认 child（只收叶）；parent = 最高整枝，all = 全部勾选节点。 |
+| `disabled` | `boolean` |  | 整个控件禁用：trigger 使用原生 disabled，浮层不可展开。 |
+| `readOnly` | `boolean` |  | 只读：浮层照常展开与浏览，但选中值不可修改、也不可清空。 |
+| `invalid` | `boolean` |  | 校验失败：trigger 报告 aria-invalid，各角色节点带 data-invalid。 |
+| `loading` | `boolean` |  | 候选加载中：浮层报告 aria-busy；当前视图无候选时显示在途占位。 |
 | `translations` | `Partial<CascaderTranslations>` |  | 空态占位的文案覆盖，默认英文。 |
-| `variant` | `ControlVariant` |  | 形态：outline / subtle / ghost，决定触发框的描边与底色怎么用。 |
-| `tone` | `Tone` |  | 语气：brand / neutral / success / warning / danger / info，决定聚焦与选中用哪族颜色。 |
+| `variant` | `ControlVariant` |  | 形态：outline / subtle / ghost，决定触发框的描边与底色使用方式。 |
+| `tone` | `Tone` |  | 语气：brand / neutral / success / warning / danger / info，决定聚焦与选中使用哪族颜色。 |
 | `size` | `Size` |  | 尺寸：sm / md / lg，决定触发框与条目的几何档位。 |
 | `placeholder` | `string` |  | 无选中时 value-text 显示的占位文字。 |
 | `separator` | `string` |  | 路径回显的连接符，默认 ' / '。 |
 | `placement` | `Placement` |  |  |
 | `offset` | `number` |  |  |
-| `loop` | `boolean` |  | 列内上下键走到首尾是否回绕，默认 true。 |
-| `dir` | `Direction` |  | 文字方向，默认 ltr；只对调左右方向键的「进子列/回上一列」语义。 |
-| `onValueChange` | `(details: CascaderValueChangeDetails) => void` |  | value 变化意图回调；受控时是唯一出口，非受控随内部写入一并通知。 |
+| `loop` | `boolean` |  | 列内上下键到达首尾是否回绕，默认 true。 |
+| `dir` | `Direction` |  | 文字方向，默认 ltr；只对调左右方向键的进入子列 / 返回上一列语义。 |
+| `onValueChange` | `(details: CascaderValueChangeDetails) => void` |  | value 变化意图回调；受控时是唯一出口，非受控时随内部写入一并通知。 |
 | `onOpenChange` | `(details: CascaderOpenChangeDetails) => void` |  | open 变化意图回调；受控时是唯一出口，非受控时随内部转移一并通知。 |
 
 ### 事件
@@ -181,34 +181,34 @@
 | 成员 | 类型 | 说明 |
 | --- | --- | --- |
 | `open` | `boolean` |  |
-| `collection` | `readonly CascaderNode[]` | 作者给的原始树数据。 |
-| `columns` | `readonly CascaderColumn[]` | 当下并排开着的列（含每列的条目）：列数 = 展开路径走得通的段数 + 1。 |
-| `levels` | `readonly CascaderLevel[]` | 按深度摊开的静态列，与展开路径无关；不该露面的条目由连接层加 hidden 收起。 |
-| `value` | `string[][]` | 选中路径集合；单选下长度 ≤ 1，形状不随模式变。 |
-| `valuePath` | `string[] \| null` | 单选便利读法：选中的那一条路径，无选中时为 null。 |
-| `valueText` | `string \| null` | 选中路径的显示文字（整条路径用分隔符连起来；多选各条之间用逗号）；无选中时为 null。 |
-| `displayText` | `string` | value-text 实际显示的文字：有选中取路径文本，否则取 placeholder。 |
-| `activePath` | `string[]` | 展开路径：并排开着哪几列由它决定。 |
-| `focusedPath` | `string[] \| null` | 焦点锚点；收起、或它已不在任何可见列里时为 null。 |
+| `collection` | `readonly CascaderNode[]` | 作者提供的原始树数据。 |
+| `columns` | `readonly CascaderColumn[]` | 当前并排打开的列（含每列的条目）：列数 = 展开路径可走通的段数 + 1。 |
+| `levels` | `readonly CascaderLevel[]` | 按深度展开的静态列，与展开路径无关；不应显示的条目由连接层加 hidden 收起。 |
+| `value` | `string[][]` | 选中路径集合；单选下长度 ≤ 1，形状不随模式变化。 |
+| `valuePath` | `string[] \| null` | 单选便利读法：选中的路径，无选中时为 null。 |
+| `valueText` | `string \| null` | 选中路径的显示文字（整条路径用分隔符连接；多选各条之间用逗号）；无选中时为 null。 |
+| `displayText` | `string` | value-text 实际显示的文字：有选中时取路径文本，否则取 placeholder。 |
+| `activePath` | `string[]` | 展开路径：并排打开哪几列由它决定。 |
+| `focusedPath` | `string[] \| null` | 焦点锚点；收起、或它已不在任何可见列中时为 null。 |
 | `multiple` | `boolean` |  |
 | `disabled` | `boolean` |  |
 | `readOnly` | `boolean` |  |
 | `invalid` | `boolean` |  |
-| `canClear` | `boolean` | 清空按钮此刻可不可按。 |
-| `isSelected` | `(value: string) => boolean` | 该条目是否是某条选中路径的末项。 |
-| `isIndeterminate` | `(value: string) => boolean` | 级联模式下该分支是否半选（有效叶后代有勾有不勾）；非级联恒 false。 |
-| `isActive` | `(value: string) => boolean` | 该条目是否落在展开路径上（它的子列开着，或它自己就是最后一站）。 |
-| `isVisible` | `(value: string) => boolean` | 该条目此刻是否落在某个可见列里。 |
-| `searching` | `boolean` | 正处在搜索视图（开了 searchable 且输入非空）：列视图让位给候选列表。 |
-| `inputValue` | `string` | 搜索框里的原始串。 |
+| `canClear` | `boolean` | 清空按钮当前是否可按。 |
+| `isSelected` | `(value: string) => boolean` | 该条目是否为某条选中路径的末项。 |
+| `isIndeterminate` | `(value: string) => boolean` | 级联模式下该分支是否半选（有效叶后代部分勾选）；非级联恒为 false。 |
+| `isActive` | `(value: string) => boolean` | 该条目是否落在展开路径上（它的子列已打开，或它自身即为最后一站）。 |
+| `isVisible` | `(value: string) => boolean` | 该条目当前是否落在某个可见列中。 |
+| `searching` | `boolean` | 正处于搜索视图（开启 searchable 且输入非空）：列视图让位给候选列表。 |
+| `inputValue` | `string` | 搜索框中的原始串。 |
 | `searchResults` | `readonly CascaderSearchResult[]` | 过滤后的候选：整条路径连缀匹配，带 pathKey 与禁用标记。 |
-| `searchHighlightIndex` | `number` | 候选里的虚拟高亮下标，恒落在一条可选候选上；没有候选或整批禁用为 -1。 |
+| `searchHighlightIndex` | `number` | 候选中的虚拟高亮下标，恒落在一条可选候选上；没有候选或整批禁用时为 -1。 |
 | `translations` | `CascaderTranslations` | 空态占位的文案：实例覆盖并入默认后的完整一份。 |
 | `setInputValue` | `(next: string) => void` |  |
 | `setOpen` | `(next: boolean) => void` |  |
 | `setValue` | `(next: string[][]) => void` |  |
 | `setActivePath` | `(next: string[]) => void` |  |
-| `select` | `(path: string[]) => void` | 选中一条路径，与点条目同一语义（分支是否落值仍看 changeOnSelect）。 |
+| `select` | `(path: string[]) => void` | 选中一条路径，与点击条目同一语义（分支是否落值仍取决于 changeOnSelect）。 |
 | `clear` | `() => void` |  |
 | `getRootProps` | `() => T['element']` |  |
 | `getHiddenInputProps` | `(props: { path: readonly string[] }) => T['input']` | 每条路径独立编码，适配器按 value 渲染重复同名字段。 |
@@ -220,14 +220,14 @@
 | `getClearTriggerProps` | `() => T['button']` |  |
 | `getPositionerProps` | `() => T['element']` |  |
 | `getContentProps` | `() => T['element']` |  |
-| `getInputProps` | `() => T['input']` | 搜索框：放在 content 顶部；输入即过滤，上下键走候选、Enter 选中、Escape 先清词。 |
+| `getInputProps` | `() => T['input']` | 搜索框：放在 content 顶部；输入即过滤，上下键移动候选、Enter 选中、Escape 先清除输入。 |
 | `getSearchListProps` | `() => T['element']` | 候选列表容器；不在搜索视图时带 hidden。 |
-| `getSearchItemProps` | `(props: CascaderSearchItemProps) => T['element']` | 一条候选：身份是整条路径；点按选中（与点列内条目同一语义）。 |
-| `getEmptyProps` | `() => T['element']` | 空态占位：当前视图没有条目（搜索无候选，或根列没有条目）时露面，其余时候带 hidden。 |
-| `getLoadingProps` | `() => T['element']` | 在途占位：当前视图无候选且正在取数时顶上来；已有候选或祖先列时只保留 aria-busy。 适配器自动提供缺省部件，作者显式写部件即可替换它。 |
-| `getFooterProps` | `() => T['element']` | 浮层底部的操作区：放在 content 里、与列并列，不入任何一列的拥有关系，方向键也走不到。 |
-| `getGroupProps` | `(props: CascaderGroupProps) => T['element']` | 分组容器：role=group，条目挂在它里面；分组标题经 aria-labelledby 关联。 |
-| `getGroupLabelProps` | `(props: CascaderGroupProps) => T['element']` | 分组标题：不是条目、不进导航，只作为本组的可及名字。 |
+| `getSearchItemProps` | `(props: CascaderSearchItemProps) => T['element']` | 一条候选：身份是整条路径；点击选中（与点击列内条目同一语义）。 |
+| `getEmptyProps` | `() => T['element']` | 空态占位：当前视图没有条目（搜索无候选，或根列没有条目）时显示，其余时候带 hidden。 |
+| `getLoadingProps` | `() => T['element']` | 在途占位：当前视图无候选且正在取数时显示；已有候选或祖先列时只保留 aria-busy。 适配器自动提供默认部件，作者显式编写部件即可替换它。 |
+| `getFooterProps` | `() => T['element']` | 浮层底部的操作区：放在 content 中、与列并列，不进入任何一列的拥有关系，方向键也无法到达。 |
+| `getGroupProps` | `(props: CascaderGroupProps) => T['element']` | 分组容器：role=group，条目挂在其中；分组标题经 aria-labelledby 关联。 |
+| `getGroupLabelProps` | `(props: CascaderGroupProps) => T['element']` | 分组标题：不是条目、不进入导航，只作为本组的可及名。 |
 | `getColumnProps` | `(props: CascaderColumnProps) => T['element']` |  |
 | `getItemProps` | `(props: CascaderItemProps) => T['element']` |  |
 | `getItemTextProps` | `(props: CascaderItemProps) => T['element']` |  |

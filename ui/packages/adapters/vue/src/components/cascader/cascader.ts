@@ -31,7 +31,7 @@ import { useCascader } from './use-cascader'
 
 type CascaderProps = CascaderSchema['props']
 
-/** 本条目持有焦点时，value 变更重报焦点条目，卸载时上报焦点丢失 */
+/** 本条目持有焦点时，value 变更重新报告焦点条目，卸载时上报焦点丢失 */
 function reportItemFocus(
   ctx: CascaderContext,
   el: Ref<HTMLElement | null>,
@@ -61,7 +61,7 @@ function reportItemFocus(
   })
 }
 
-/** 默认插槽的载荷：级联的展开态、选中态与列数据，以及改动它们的方法。 */
+/** 默认插槽的载荷：级联的展开态、选中态与列数据，以及修改它们的方法。 */
 export type CascaderRootSlotProps = Pick<
   CascaderApi,
   | 'open'

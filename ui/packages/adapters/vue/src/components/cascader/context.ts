@@ -10,12 +10,12 @@ import type { ComputedRef, InjectionKey, Ref } from 'vue'
 import type { CascaderContext } from './use-cascader'
 import { inject, provide } from 'vue'
 
-/** 条目自报的值，供 item-text / item-indicator 复用同一份声明；所在列、路径、禁用与标签回 collection 里查。 */
+/** 条目声明的值，供 item-text / item-indicator 复用同一份声明；所在列、路径、禁用与标签查询 collection。 */
 export interface CascaderItemContext {
   item: ComputedRef<CascaderItemProps>
 }
 
-/** 分组自报的身份，供分组标题取到同一个值（标题的 id 由它派生）。 */
+/** 分组声明的身份，供分组标题取到同一个值（标题的 id 由它派生）。 */
 export interface CascaderGroupContext {
   group: ComputedRef<CascaderGroupProps>
 }
