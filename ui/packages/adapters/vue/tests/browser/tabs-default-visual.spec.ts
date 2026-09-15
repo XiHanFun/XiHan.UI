@@ -33,6 +33,17 @@ function paint(el: HTMLElement, property: string): string {
   return getComputedStyle(el).getPropertyValue(property)
 }
 
+
+/** 语义形状令牌在该元素上解到的像素值。 */
+function shapePx(element: HTMLElement, token: string): number {
+  const probe = document.createElement('div')
+  probe.style.borderTopLeftRadius = `var(${token})`
+  element.append(probe)
+  const value = Number.parseFloat(getComputedStyle(probe).borderTopLeftRadius)
+  probe.remove()
+  return value
+}
+
 describe('tabs 默认视觉', () => {
   it('不写变体与显式 segment 画成同一套主标签带', () => {
     const plain = mount()
@@ -54,8 +65,12 @@ describe('tabs 默认视觉', () => {
     expect(Number.parseFloat(plainPaint.listPadding)).toBeGreaterThan(0)
     expect(plainPaint.activeBackground).not.toBe('rgba(0, 0, 0, 0)')
     expect(plainPaint.activeShadow).not.toBe('none')
-    expect(Number.parseFloat(getComputedStyle(plain.list).borderRadius)).toBeGreaterThanOrEqual(plain.list.offsetHeight / 2)
-    expect(Number.parseFloat(getComputedStyle(plain.active).borderRadius)).toBeGreaterThanOrEqual(plain.active.offsetHeight / 2)
+    // 标签带是 surface 面，标签本体是 control；内层圆角不超过外层圆角减去衬距
+    const listRadius = Number.parseFloat(getComputedStyle(plain.list).borderRadius)
+    const triggerRadius = Number.parseFloat(getComputedStyle(plain.active).borderRadius)
+    expect(listRadius).toBe(shapePx(plain.list, '--xh-shape-surface'))
+    expect(triggerRadius).toBe(shapePx(plain.list, '--xh-shape-control'))
+    expect(triggerRadius).toBeLessThanOrEqual(listRadius - Number.parseFloat(plainPaint.listPadding))
     expect(plain.active.offsetWidth).toBe(plain.inactive.offsetWidth)
   })
 
