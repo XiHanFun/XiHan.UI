@@ -1136,7 +1136,7 @@ const TABLE = [
   ['docs/guide/versioning.md', /新增第 (\d+) 个组件是 minor/, '组件数加一'],
   ['docs/guide/versioning.md', /\| `custom-elements.json`（CEM） \| 1 份 \/ (\d+) 个元素/, '自定义元素数'],
   ['docs/guide/versioning.md', /注册 (\d+) \+ `xh-background`/, '自定义元素数'],
-  ['docs/guide/versioning.md', /调它就注册全部 (\d+) 个元素/, '自定义元素数'],
+  ['docs/guide/versioning.md', /调用即注册全部 (\d+) 个元素/, '自定义元素数'],
   ['docs/guide/versioning.md', /看它在不在上表列的那 (\d+) 个全局令牌里/, '全局令牌数'],
   ['docs/index.md', /键盘规格表，共 (\d+) 条/, '键盘规格条数'],
   ['docs/introduction.md', /当前提供 \*\*(\d+) 个组件\*\*/, '组件数'],
@@ -1151,9 +1151,9 @@ const TABLE = [
   ['docs/installation.md', /pnpm gate {9}# (\d+) 项结构门禁/, 'gate串里的结构检查数'],
   ['docs/installation.md', /全量是 (\d+) 份皮肤加令牌/, '皮肤份数'],
 
-  ['docs/guide/a11y.md', /全库共 \*\*(\d+) 条\*\*/, '键盘规格条数'],
-  ['docs/guide/a11y.md', /散落在 (\d+) 个组件上/, '组件数'],
-  ['docs/guide/testing.md', /`pnpm gate` 跑 (\d+) 项结构检查/, 'gate串里的结构检查数'],
+  ['docs/guide/a11y.md', /全库共 (\d+) 条，分布在/, '键盘规格条数'],
+  ['docs/guide/a11y.md', /分布在 (\d+) 个组件上/, '组件数'],
+  ['docs/guide/testing.md', /`pnpm gate` 运行 (\d+) 项结构检查/, 'gate串里的结构检查数'],
   ['docs/guide/testing.md', /另有分层依赖检查与([\d一二三四五六七八九十]+)项单独的门禁/, '单独的gate脚本数'],
   ['docs/guide/testing.md', /^(\d+) 条产物各有上限/m, '体积预算条数'],
   ['docs/guide/forms.md', /^(\d+) 个：checkbox、/m, '表单字段组件数'],
@@ -1162,7 +1162,7 @@ const TABLE = [
   ['docs/guide/styling.md', /^(\d+) 份皮肤消费这条令牌/m, '吃控件最小宽度令牌的皮肤数'],
   ['docs/guide/styling.md', /派生 (\d+) 档原语/, '品牌原语档数'],
   ['docs/guide/backgrounds.md', /^(\d+) 个：`aurora`/m, '内置背景效果数'],
-  ['docs/guide/backgrounds.md', /这 (\d+) 个\*\*不自动注册\*\*/, '内置背景效果数'],
+  ['docs/guide/backgrounds.md', /这 (\d+) 个不自动注册/, '内置背景效果数'],
   ['docs/guide/backgrounds.md', /registerBuiltinEffects\(\);? \/\/ (\d+) 个内置效果全部注册/, '内置背景效果数'],
   ['docs/guide/backgrounds.md', /一定带上全部 (\d+) 个效果/, '内置背景效果数'],
   ['docs/guide/sound.md', /内置 (\d+) 个语义名/, '内置音效语义数'],
@@ -1292,7 +1292,7 @@ const TABLE = [
   ['docs/guide/versioning.md', /^(\d+) 个包中 \d+ 个出 JS/m, '公开包数'],
   ['docs/guide/versioning.md', /^\| 包名 \| (\d+) \|/m, '公开包数'],
   ['docs/guide/versioning.md', /下面两张表覆盖全部 (\d+) 个包/, '公开包数'],
-  ['docs/guide/versioning.md', /守着 (\d+) 包锁步/, '公开包数'],
+  ['docs/guide/versioning.md', /保证 (\d+) 包锁步/, '公开包数'],
   ['docs/guide/versioning.md', /「(\d+) 个包必须同版本」/, '公开包数'],
   ['docs/guide/versioning.md', /门禁保证 (\d+) 个 package\.json 同版本/, '公开包数'],
   ['docs/guide/versioning.md', /不是全部 (\d+) 个 \|/, '公开包数'],
@@ -1320,7 +1320,7 @@ const TABLE = [
   // 自带皮肤真正消费的 data-*：剥掉 CSS 注释后数，排除解剖那两个
   ['docs/guide/versioning.md', /一共产出 (\d+) 个不同的 `data-\*` 属性名/, 'connect产出的属性名数'],
   ['docs/guide/versioning.md', /属性名、(\d+) 条「组件 × 属性」配对/, 'connect组件属性配对数'],
-  ['docs/guide/versioning.md', /自带皮肤自己就消费了 (\d+) 个属性名/, '皮肤消费的属性名数'],
+  ['docs/guide/versioning.md', /自带皮肤消费了 (\d+) 个属性名/, '皮肤消费的属性名数'],
   ['docs/guide/versioning.md', /个属性名 \/ (\d+) 条「皮肤 × 属性」配对/, '皮肤属性配对数'],
 
   // 其余「当前状态是 X」式陈述
@@ -1336,7 +1336,7 @@ const TABLE = [
   ['README_cn.md', /运行时第三方依赖只有 `([^`]+)`/, '运行时第三方依赖名'],
   ['docs/faq.md', /另有 breadcrumb ([\d一二三四五六七八九十两]+)条步骤重放豁免/, 'a11y重放豁免条数'],
   ['docs/guide/a11y.md', /当前共([\d一二三四五六七八九十两]+)条/, 'a11y存量违规条数'],
-  ['docs/guide/a11y.md', /只剩([\d一二三四五六七八九十两]+)个组件在真机里推不到用例终态/, 'a11y重放豁免条数'],
+  ['docs/guide/a11y.md', /只有([\d一二三四五六七八九十两]+)个组件在真实浏览器中无法推进到用例终态/, 'a11y重放豁免条数'],
 
   // 名单式登记：正文抄的是一整份清单，第四项把捕获到的那段归一成与真值同形的串再比
   ['docs/guide/diagnostics.md', /```ts\nexport const DIAGNOSTIC_CODES = \{\n([\s\S]*?)\n\};?\n```/, '诊断码名单', codePairs],
@@ -1351,8 +1351,8 @@ const TABLE = [
   ['docs/guide/versioning.md', /\| Vue 的 `provide\*` \/ `use\*Context` 函数 \| (\d+) \|/, 'Vue内部注入函数数'],
   ['docs/guide/versioning.md', /，(\d+) 个组件的 `emits` 全是对象式/, '对象式emits的组件数'],
   ['docs/guide/versioning.md', /\| `@xihan-ui\/styles` 的 CSS 子路径 \| (\d+) \|/, 'styles子路径键数'],
-  ['docs/guide/versioning.md', /，与 (\d+) 条 `\.css`——/, '皮肤份数'],
-  ['docs/guide/versioning.md', /条 `\.css`——(\d+) 份组件皮肤加/, '组件皮肤份数'],
+  ['docs/guide/versioning.md', /，与 (\d+) 条 `\.css`：/, '皮肤份数'],
+  ['docs/guide/versioning.md', /条 `\.css`：(\d+) 份组件皮肤加/, '组件皮肤份数'],
 ]
 
 /** 刻意的约数：不参与对账，但登记项必须仍能在文件里命中，免得留下一条早已不存在的豁免。 */

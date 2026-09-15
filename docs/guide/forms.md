@@ -1,45 +1,39 @@
 # 表单参与与重置
 
-复合控件的值攥在自己的机器里，浏览器看不见。要让它随 `<form>` 一起提交、一起重置，靠两件事：
-一份**表单影子**（把值映射成原生输入）和一条**重置事件**（把宿主表单的 `reset` 翻译进机器）。
+复合控件的值保存在自己的状态机中，浏览器不可见。要让它随 `<form>` 一起提交、一起重置，依靠两件事：一份表单影子（把值映射为原生输入）和一条重置事件（把宿主表单的 `reset` 转换进状态机）。
 
 ## 表单影子
 
-给了 `name` 才生出影子，不给就整条不参与提交——既有 DOM 一个字节不变。
+提供 `name` 才生成影子，未提供时整个组件不参与提交，既有 DOM 不变。
 
 ```vue
 <XhSwitch name="notify" default-checked />
 ```
 
-提交出去是 `notify=on`。值可以换：`<XhSwitch name="theme" value="dark" />` 提交 `theme=dark`。
+提交结果是 `notify=on`。值可以更换：`<XhSwitch name="theme" value="dark" />` 提交 `theme=dark`。
 
-三种形态，按组件的值形状分：
+三种形态，按组件的值形状划分：
 
-| 形态 | 谁在用 | 说明 |
+| 形态 | 使用者 | 说明 |
 | --- | --- | --- |
-| 单个 `hidden-input` | color-picker、combobox、tree-select、checkbox、switch、rating…… | 多值的按逗号拼成一串 |
-| 一值一个影子输入 | checkbox-group、radio-group | 与原生 checkbox / radio 同构，靠 `checked` 表达选中 |
-| 隐藏 `<select>` | select | 多选直接开原生 `multiple` |
+| 单个 `hidden-input` | color-picker、combobox、tree-select、checkbox、switch、rating 等 | 多值按逗号拼接为一串 |
+| 一值一个影子输入 | checkbox-group、radio-group | 与原生 checkbox / radio 同构，依靠 `checked` 表达选中 |
+| 隐藏 `<select>` | select | 多选直接开启原生 `multiple` |
 
-**勾选类控件的语义与原生一致**：没勾就整条不进 `FormData`，不是提交一个空值。checkbox 的半选
-（`indeterminate`）按未勾处理——原生里它也只是外观，提交与否看 `checked`。
+勾选类控件的语义与原生一致：未勾选时整个字段不进入 `FormData`，不是提交空值。checkbox 的半选（`indeterminate`）按未勾选处理，原生中它也只是外观，是否提交由 `checked` 决定。
 
-影子在两个适配器里的来路不同：
+影子在各适配器中的来源不同：
 
-- **Vue**：单体控件（checkbox、switch）由组件自己渲染，给了 `name` 才有那个节点；有子部件的组件
-  由作者写上对应部件，例如 `<XhComboboxHiddenInput />`。
-- **Web Components**：一律由作者写 `data-xh-part="hidden-input"` 的原生节点，元素只负责往上铺属性。
+- Vue：单体控件（checkbox、switch）由组件自行渲染，提供 `name` 后才有该节点；有子部件的组件由作者写出对应部件，例如 `<XhComboboxHiddenInput />`。
+- Web Components：一律由作者编写 `data-xh-part="hidden-input"` 的原生节点，元素只负责写入属性。
 
-::: tip 为什么 `type=hidden` 能放进 `<button>`
-checkbox 与 switch 的根是 `<button>`，而 HTML 的内容模型禁止 button 有交互内容后代。
-`<input type="hidden">` 不在其列——规范里 input 那条写的是「type 属性**不处于 Hidden 状态时**」，
-所以这样嵌是合法的。
+::: tip 为什么 `type=hidden` 可以放进 `<button>`
+checkbox 与 switch 的根是 `<button>`，HTML 的内容模型禁止 button 含有交互内容后代。`<input type="hidden">` 不在此列：规范中 input 的条目写明“type 属性不处于 Hidden 状态时”才算交互内容，因此这种嵌套是合法的。
 :::
 
 ## 表单重置
 
-带 `name` 的组件都认表单重置。点 `<button type="reset">`（或调 `form.reset()`），它们各自回到
-自己的默认值，和旁边的原生输入框一起。
+带 `name` 的组件都响应表单重置。点击 `<button type="reset">`（或调用 `form.reset()`）时，它们各自回到自己的默认值，与旁边的原生输入框一致。
 
 重置桥按事件目标的原生 HTMLElement 品牌与 `form` 节点名识别表单，不依赖顶层 `HTMLFormElement` 构造器。因此组件与表单位于 iframe 中，或表单从另一 Window adopt 到当前 Document 后，仍会跟随所属表单重置；普通元素派发的同名事件不会冒充表单。
 
@@ -55,40 +49,29 @@ checkbox 与 switch 的根是 `<button>`，而 HTML 的内容模型禁止 button
 
 几条要点：
 
-**落点按当下的 props 重算**，不是挂载那一刻冻结的值。宿主把 `defaultValue` 换掉（比如切去编辑
-另一条记录），重置就回到新的那一份——与原生 `reset()` 回到「当下的 default」一致。
+- 落点按当前的 props 重新计算，不是挂载时冻结的值。宿主更换 `defaultValue`（例如切换到编辑另一条记录）后，重置回到新的默认值，与原生 `reset()` 回到当前 default 一致。
+- 受控组件只发出意图。组件不自行修改状态，只调用一次 `onValueChange`（或 `onCheckedChange`），由宿主写回。
 
-**受控组件只发意图。** 组件不会自改状态，只调一次 `onValueChange`（或 `onCheckedChange`），
-由宿主写回。
+::: warning 受控组件要响应重置，必须显式传 `defaultValue`
+这是本库与“受控 reset 是空操作”的分歧点，也是最容易出错的一条。
 
-::: warning 受控组件要拿到重置，必须显式传 `defaultValue`
-这是本库与「受控 reset 是纯空操作」的分歧点，也是最容易踩的一条。
-
-组件内部那句 `?? 兜底` 把「宿主声明的默认值」和「组件的空值」写在同一个表达式里
-（radio-group 是 `null`、rating 是 `0`、tags-input 是空数组）。受控且没写 `defaultValue` 时，
-组件**一动不动、一条意图都不发**——否则那个空值会被当成默认值发给宿主，重置就成了「把你的数据抹掉」。
+组件内部的 `?? 兜底` 把宿主声明的默认值和组件的空值写在同一个表达式中（radio-group 是 `null`、rating 是 `0`、tags-input 是空数组）。受控且未写 `defaultValue` 时，组件不做任何动作、不发出任何意图；否则该空值会被当作默认值发给宿主，重置就变成了清空数据。
 :::
 
-**重置被拦下就不动。** 表单那侧 `event.preventDefault()` 之后，同表单的原生控件也没还原，
-组件单方面还原会拼出半份默认值。
+- 重置被拦截时不动作。表单侧 `event.preventDefault()` 之后，同表单的原生控件也未还原，组件单方面还原会产生半份默认值。
+- 归属在事件发生时计算。监听挂在组件所在的根节点上而不是 `<form>` 上（表单会被条件渲染替换、组件也会被移动），用 `closest('form')` 比对，因此嵌套表单不会误伤。
 
-**归属在事件那一刻现算。** 监听挂在组件所在的根节点上而不是那个 `<form>` 上（表单会被条件渲染
-换掉、组件也会被搬走），用 `closest('form')` 比对，因此嵌套表单不会误伤。
+不在任何表单内、无 DOM 的服务端、作者未写影子输入，三种情形都不需要特别处理：归属判定不命中、服务端不挂载副作用、锚点是组件根节点而不是影子输入。
 
-不在任何表单里、无 DOM 的服务端、作者没写影子输入——三种情形都不需要特别处理：归属判定不命中、
-服务端根本不挂副作用、锚点是组件根节点而不是影子输入。
+## 控件在薄封装内
 
-## 控件在薄封装里
+`XhFieldControl` 默认把接线属性（`id` 与各条 `aria-*`）合并到它唯一的子节点上。子节点是组件时，合并到的是组件的根，而薄封装的根往往是 `div`。
 
-`XhFieldControl` 默认把接线属性（`id` 与各条 `aria-*`）合到它唯一的子节点上。子节点是个组件时，合的是**组件的根**——而薄封装的根往往是 `div`。
+标签的 `for` 只对可标注元素生效（`input` / `select` / `textarea` / `button` 等），指向 `div` 时没有任何效果，且不报错。
 
-标签的 `for` 只对可标注元素生效（`input` / `select` / `textarea` / `button` 等），指到 `div` 上什么也不会发生，而且**不报错**。
+点击标题这一半由库处理：`for` 未落到实处时，字段会把焦点送给控件内第一个可 tab 的节点，无论封装是库内的还是自行编写的。读屏能否读出名称是另一半，取决于以下两种写法。
 
-点标题这一半库替它兜住了：`for` 没落到实处时，字段会把焦点送给控件里第一个可 tab 的节点——不管那层封装是库里的还是自己写的。读屏念不念得出名字是另一半，取决于下面两种写法。
-
-两种写法：
-
-**一、控件的根就是可聚焦元素**——什么都不用做，默认路径正确：
+一、控件的根就是可聚焦元素：不需要额外处理，默认路径正确：
 
 ```vue
 <XhFieldControl>
@@ -96,7 +79,7 @@ checkbox 与 switch 的根是 `<button>`，而 HTML 的内容模型禁止 button
 </XhFieldControl>
 ```
 
-**二、控件藏在封装里**——关掉 `asChild`，让封装内部自取：
+二、控件位于封装内：关闭 `asChild`，让封装内部自行获取：
 
 ```vue
 <XhFieldControl :as-child="false">
@@ -109,21 +92,17 @@ checkbox 与 switch 的根是 `<button>`，而 HTML 的内容模型禁止 button
 import { useFieldControl } from "@xihan-ui/vue";
 
 const controlProps = useFieldControl();
-// 绑到真正可聚焦的那个节点上
+// 绑定到真正可聚焦的节点上
 ```
 
-`useFieldControl` 在字段外调用返回空对象，封装照样能单独用。不关 `asChild` 的话属性会被合两遍——一遍在封装根、一遍在真控件，页面上会出现两个相同的 `id`。
+`useFieldControl` 在字段外调用返回空对象，封装仍可单独使用。不关闭 `asChild` 时属性会被合并两次，一次在封装根、一次在真控件，页面上会出现两个相同的 `id`。
 
-**库自己的控件不用管这一层。** select、text-field、date-picker 这些封装内部已经把两份接线取到了真正可聚焦的那个部件上：说明与校验状态一份，字段的标签一份。直接套进 `XhFieldControl` 就行，`asChild` 保持默认。
+库自身的控件不需要处理这一层。select、text-field、date-picker 等封装内部已经把两份接线取到真正可聚焦的部件上：说明与校验状态一份，字段的标签一份。直接放入 `XhFieldControl` 即可，`asChild` 保持默认。
 
-标签那份是**并进**不是覆盖——字段的标签排在最前，控件自己那截（下拉的当前值这类）跟在后面，两边都念得到。控件自带的 `aria-labelledby` 指的是它自己的 `label` 部件，用字段的标签时那个部件根本没渲染，只留它就是一条悬空引用：按 accname 规则跳过，名字又回退不到 `for`（`for` 指的是封装根那个 `div`），焦点所在的控件于是一个名字都没有。
+标签那份是并入而不是覆盖：字段的标签排在最前，控件自己的部分（下拉的当前值等）跟在后面，两者都能读出。控件自带的 `aria-labelledby` 指向它自己的 `label` 部件，使用字段的标签时该部件未渲染，只保留它会形成悬空引用：按 accname 规则跳过，名称又无法回退到 `for`（`for` 指向封装根的 `div`），焦点所在的控件就没有名称。
 
-## 哪些组件参与
+## 参与的组件
 
-34 个：checkbox、cascader、checkbox-group、color-field、color-picker、color-slider、color-swatch-picker、combobox、
-date-field、date-picker、date-range-picker、editable、field-array、file-upload、image-cropper、mention、number-field、
-password-input、pin-input、radio-group、rating、segmented、select、signature-pad、slider、switch、tags-input、
-text-field、time-field、time-picker、time-range-picker、toggle-group、transfer、tree-select。
+34 个：checkbox、cascader、checkbox-group、color-field、color-picker、color-slider、color-swatch-picker、combobox、date-field、date-picker、date-range-picker、editable、field-array、file-upload、image-cropper、mention、number-field、password-input、pin-input、radio-group、rating、segmented、select、signature-pad、slider、switch、tags-input、text-field、time-field、time-picker、time-range-picker、toggle-group、transfer、tree-select。
 
-新加的表单组件忘了接重置会被门禁拦下：判据的分母是从源码里扫出来的（`types` 的 props 里有
-`name?:` 即表单字段，字段名既可以是标量字符串也可以是 `FormPath`），不是手写名单。
+新增的表单组件未接入重置会被门禁拦截：判据的分母从源码扫描得出（`types` 的 props 中有 `name?:` 即表单字段，字段名可以是标量字符串或 `FormPath`），不是手写名单。

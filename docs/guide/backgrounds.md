@@ -1,13 +1,13 @@
 # 背景层
 
-`@xihan-ui/backgrounds` 是一层 WebGL2 背景效果与数据驱动粒子点云，框架无关、零第三方依赖。它是**可选**的：适配器把它声明为 optional peer，不用视觉效果的应用不会因为装了 `@xihan-ui/vue` 而多出一个 WebGL 引擎。
+`@xihan-ui/backgrounds` 是一层 WebGL2 背景效果与数据驱动粒子点云，框架无关、零第三方依赖。它是可选的：适配器把它声明为 optional peer，不使用视觉效果的应用不会因为安装了 `@xihan-ui/vue` 而多出一个 WebGL 引擎。
 
 WebGL2 缺席时自动降级成 CSS 静态背景，不报错、不留白。
 
 ## 两条主线
 
-1. **程序化效果**——传一个效果对象与一份参数，把它铺在任意元素的背景上；
-2. **点云**——图片、文字、SVG、参数方程都能采样成点云，交给 `particles` 效果显示，两份点云之间自动形变过渡。
+1. 程序化效果：传入一个效果对象与一份参数，铺在任意元素的背景上；
+2. 点云：图片、文字、SVG、参数方程都能采样成点云，交给 `particles` 效果显示，两份点云之间自动形变过渡。
 
 ## 内置效果
 
@@ -15,13 +15,13 @@ WebGL2 缺席时自动降级成 CSS 静态背景，不报错、不留白。
 
 每个效果自带参数规格（数值、布尔、枚举、颜色四类），可以据此自动生成调参面板。
 
-这 14 个**不自动注册**。按名字取用前要先注册；直接传效果对象则不需要，见下。
+这 14 个不自动注册。按名字取用前需要先注册；直接传效果对象则不需要，见下文。
 
 ## 基础用法
 
-两条路，按场景选。
+两条路径，按场景选择。
 
-**传效果对象**——不经过注册表，没引到的效果会被打包器摇掉。只用一两个效果时选它：
+传效果对象：不经过注册表，未引用的效果会被打包器摇掉。只使用少量效果时选它：
 
 ```ts
 import { auroraEffect, createBackgroundSurface, nebulaEffect } from "@xihan-ui/backgrounds";
@@ -30,7 +30,7 @@ const surface = createBackgroundSurface(el, {
   effect: auroraEffect,
   params: { speed: 1.6 },
   quality: "high",
-  pointer: true, // 自动绑指针事件，想自己喂坐标就关掉
+  pointer: true, // 自动绑定指针事件，需要自行提供坐标时关闭
   autoplay: true,
   respectReducedMotion: true, // 系统开启减弱动态效果时冻结时间轴
   pauseOffscreen: true, // 滚出视口时暂停绘制
@@ -42,34 +42,34 @@ surface.pause();
 surface.destroy();
 ```
 
-**按名字**——适合参数存在配置里、由界面下拉切换。名字要先注册：
+按名字：适合参数保存在配置中、由界面下拉切换。名字需要先注册：
 
 ```ts
 import { auroraEffect, createBackgroundSurface, nebulaEffect, registerBuiltinEffects, registerEffects } from "@xihan-ui/backgrounds";
 
 registerBuiltinEffects(); // 14 个内置效果全部注册
-registerEffects([auroraEffect, nebulaEffect]); // 或者只注册用到的这两个
+registerEffects([auroraEffect, nebulaEffect]); // 或只注册用到的效果
 
 createBackgroundSurface(el, { effect: "aurora" });
 ```
 
-内置效果不自动注册，是因为注册表一旦静态引上这 14 个，任何用到 `createBackgroundSurface` 的应用都会把它们全打进包——实测约 35 kB（gzip 约 8.6 kB），占整包四成。没注册就按名字取会抛错，错误信息会点名该调哪个函数、以及那个效果的导出名叫什么。合法的内置名字可以从 `BUILTIN_EFFECT_NAMES` 取，它是纯字符串清单，引它不会把效果对象带进包。
+内置效果不自动注册，是因为注册表一旦静态引用这 14 个，任何使用 `createBackgroundSurface` 的应用都会把它们全部打进包：实测约 35 kB（gzip 约 8.6 kB），占整包四成。未注册即按名字取用会抛错，错误信息会指明应调用的函数与该效果的导出名。合法的内置名字可以从 `BUILTIN_EFFECT_NAMES` 获取，它是纯字符串清单，引用它不会把效果对象带进包。
 
-后两个选项默认开着，是让这层在真实页面里不成为负担的关键：看不见的画面不烧 GPU，声明了「减弱动态效果」的用户不会被动画晃到。
+后两个选项默认开启，是这层在真实页面中不成为负担的关键：不可见的画面不消耗 GPU，声明了减弱动态效果的用户不会受到动画干扰。
 
 ## 宿主的定位
 
-`target` 传容器元素时，画布是绝对定位的，所以容器必须是它的定位祖先。库的做法是：
+`target` 传容器元素时，画布是绝对定位的，因此容器必须是它的定位祖先。库的处理：
 
-- 容器自己已有定位（内联写的、类名写的都算）——**一个字都不动**；
-- 容器量出来是 `static`——写一句内联 `position: relative` 兜底；
-- 容器还没进文档——**先不挂画布、也不写定位**。此时 `getComputedStyle` 什么都算不出来，写下去会压过你用类名写的定位且撤不回来。等容器进文档拿到盒子，库再来定这一次。
+- 容器已有定位（内联或类名）：不做任何修改；
+- 容器计算为 `static`：写一句内联 `position: relative` 兜底；
+- 容器尚未进入文档：先不挂画布、也不写定位。此时 `getComputedStyle` 无法计算，写入会覆盖类名中的定位且无法撤回。等容器进入文档得到盒子后，库再判定一次。
 
-所以容器的定位写在类名里是安全的，不必为了这层背景改成内联样式。
+因此容器的定位写在类名中是安全的，不必为这层背景改为内联样式。
 
 ## 在 Vue 里用
 
-Vue 侧的适配放在**单独的子入口** `@xihan-ui/vue/backgrounds`，三种用法从轻到重：
+Vue 侧的适配放在单独的子入口 `@xihan-ui/vue/backgrounds`，三种用法从轻到重：
 
 ```vue
 <script setup lang="ts">
@@ -80,7 +80,7 @@ const visual = useBackground({ effect: fluidEffect });
 </script>
 
 <template>
-  <!-- 1. 指令：给任意元素或组件的根元素铺一层背景，一个字都不用改组件 -->
+  <!-- 1. 指令：给任意元素或组件的根元素铺一层背景，不修改组件 -->
   <XhButton v-background="auroraEffect">提交</XhButton>
   <div v-background="{ effect: auroraEffect, params: { speed: 1.6 } }" />
 
@@ -89,16 +89,16 @@ const visual = useBackground({ effect: fluidEffect });
     <h1>标题浮在效果上</h1>
   </XhBackground>
 
-  <!-- 3. 组合式函数：自己拿画面实例，接自定义调度或调参面板 -->
+  <!-- 3. 组合式函数：获取画面实例，接自定义调度或调参面板 -->
   <div :ref="visual.attach" />
 </template>
 ```
 
-Vue 子入口**不替你注册**内置效果。要在模板里写字符串名（`v-background="'aurora'"`、`effect="nebula"`），先在应用入口调一次 `registerBuiltinEffects()` 或 `registerEffects([...])`。
+Vue 子入口不自动注册内置效果。要在模板中写字符串名（`v-background="'aurora'"`、`effect="nebula"`），先在应用入口调用一次 `registerBuiltinEffects()` 或 `registerEffects([...])`。
 
 ## 在 React 里用
 
-React 侧的适配同样在**单独的子入口** `@xihan-ui/react/backgrounds`，两种用法：
+React 侧的适配同样在单独的子入口 `@xihan-ui/react/backgrounds`，两种用法：
 
 ```tsx
 import { fluidEffect, nebulaEffect } from "@xihan-ui/backgrounds";
@@ -114,22 +114,22 @@ function Cover() {
         <h1>标题浮在效果上</h1>
       </XhBackground>
 
-      {/* 2. 钩子：自己拿画面实例，接自定义调度或调参面板 */}
+      {/* 2. 钩子：获取画面实例，接自定义调度或调参面板 */}
       <div ref={visual.ref} />
     </>
   );
 }
 ```
 
-没有 Vue 那份的第三种。`v-background` 靠指令这层介质挂到别人的元素上，React 没有这层介质——把 `useBackground` 返回的 `ref` 挂到元素上就是同一件事，挂到别人的组件上也一样，只要那个组件把 `ref` 转给自己的根元素。
+没有 Vue 侧的第三种用法。`v-background` 依靠指令这层介质挂到其他元素上，React 没有这层介质：把 `useBackground` 返回的 `ref` 挂到元素上即为同一件事，挂到其他组件上同理，只要该组件把 `ref` 转发给自己的根元素。
 
-`visual.ref` 的身份跨渲染是稳的，直接写 `ref={visual.ref}` 即可；`visual.surface` 是个 ref 对象，读 `.current` 拿画面实例，没有元素挂着时是 `null`。
+`visual.ref` 的身份跨渲染稳定，直接写 `ref={visual.ref}` 即可；`visual.surface` 是 ref 对象，读 `.current` 获取画面实例，没有元素挂载时为 `null`。
 
-React 子入口同样**不替你注册**内置效果。要按名字写（`effect="aurora"`），先在应用入口调一次 `registerBuiltinEffects()` 或 `registerEffects([...])`。
+React 子入口同样不自动注册内置效果。要按名字写（`effect="aurora"`），先在应用入口调用一次 `registerBuiltinEffects()` 或 `registerEffects([...])`。
 
 ## 在自定义元素里用
 
-同样是单独注册，不引这一行就不会把引擎打进包里：
+同样单独注册，不引用这一行就不会把引擎打进包：
 
 ```ts
 import { defineXhBackground } from "@xihan-ui/web-components/backgrounds";
@@ -137,11 +137,12 @@ import { defineXhBackground } from "@xihan-ui/web-components/backgrounds";
 defineXhBackground();
 ```
 
-`defineXhBackground()` 会把内置效果一并注册进注册表，所以 `<xh-background effect="aurora">` 直接可用；代价是这条入口一定带上全部 14 个效果。
+`defineXhBackground()` 会把内置效果一并注册进注册表，因此 `<xh-background effect="aurora">` 直接可用；代价是这条入口一定带上全部 14 个效果。
 
 ## 点云
 
-把任意东西采样成点，再让粒子摆成那个形状：
+把任意内容采样成点，再让粒子排列成该形状：
+
 
 ```ts
 import { imageToCloud, shapeCloud, svgToCloud, textToCloud } from "@xihan-ui/backgrounds";
