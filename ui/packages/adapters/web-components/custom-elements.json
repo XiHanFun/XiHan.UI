@@ -57783,7 +57783,7 @@
       "declarations": [
         {
           "kind": "class",
-          "description": "`<xh-tool-call>` —— Light-DOM 行为宿主：跑 tool-call 机器，把 connect 产出打到作者写的\n角色节点上。跑起来自动展开、结束自动收起；用户手动开合过一次即永久停用自动开合。\n\n参数与结果的内容一律由作者写，元素不替作者生成节点。",
+          "description": "`<xh-tool-call>`：Light-DOM 行为宿主：运行 tool-call 状态机，把 connect 产出接到作者编写的\n角色节点上。运行时自动展开、结束时自动收起；用户手动开合过一次即永久停用自动开合。\n\n参数与结果的内容一律由作者编写，元素不替作者生成节点。",
           "name": "XhToolCallElement",
           "cssParts": [
             {
@@ -57803,7 +57803,7 @@
               "name": "name"
             },
             {
-              "description": "一行参数摘要，收起时也看得见这次查的是什么",
+              "description": "一行参数摘要，收起时也可见本次调用的内容",
               "name": "summary"
             },
             {
@@ -57811,11 +57811,11 @@
               "name": "status"
             },
             {
-              "description": "跑了多久，同上",
+              "description": "运行时长，同上",
               "name": "duration"
             },
             {
-              "description": "审批闸门的常驻位，只在等人批准时显示",
+              "description": "审批闸门的常驻位，只在等待批准时显示",
               "name": "approval"
             },
             {
@@ -58009,7 +58009,7 @@
                   "text": "ToolCallProps"
                 }
               },
-              "description": "视图属性另走一路：本族两个组件共用一台机器，走机器 props 的话文案会全取到 tool-call 那一格。"
+              "description": "视图属性另经一条路径：本族两个组件共用一台状态机，经状态机 props 的话文案会全部取到 tool-call 的桶。"
             },
             {
               "kind": "method",
@@ -58036,7 +58036,7 @@
               "type": {
                 "text": "ToolCallPhase | undefined"
               },
-              "description": "走到哪一步：input-streaming / input-available / awaiting-approval / output-available / output-error",
+              "description": "所处阶段：input-streaming / input-available / awaiting-approval / output-available / output-error",
               "name": "phase",
               "fieldName": "phase"
             },
@@ -58044,7 +58044,7 @@
               "type": {
                 "text": "number | undefined"
               },
-              "description": "这次调用开始的毫秒时间戳",
+              "description": "本次调用开始的毫秒时间戳",
               "name": "start-time",
               "fieldName": "startTime"
             },
@@ -58052,7 +58052,7 @@
               "type": {
                 "text": "number | undefined"
               },
-              "description": "这次调用结束的毫秒时间戳；还在跑或流被中止时它会缺席",
+              "description": "本次调用结束的毫秒时间戳；仍在运行或流被中止时它会缺席",
               "name": "end-time",
               "fieldName": "endTime"
             },
@@ -58060,7 +58060,7 @@
               "type": {
                 "text": "boolean | undefined"
               },
-              "description": "受控开合，缺省该属性即非受控",
+              "description": "受控开合，未提供该属性即非受控",
               "name": "open",
               "fieldName": "open"
             },
@@ -58076,7 +58076,7 @@
               "type": {
                 "text": "boolean | undefined"
               },
-              "description": "跟着阶段自动开合，默认开；写 auto-disclosure=\"false\" 关掉",
+              "description": "随阶段自动开合，默认开启；写 auto-disclosure=\"false\" 关闭",
               "name": "auto-disclosure",
               "fieldName": "autoDisclosure"
             },
@@ -58092,7 +58092,7 @@
               "type": {
                 "text": "ControlVariant | undefined"
               },
-              "description": "形态：描边（缺省档）/ 底色分区 / 无壳内联",
+              "description": "形态：描边（默认档）/ 底色分区 / 无壳内联",
               "name": "variant",
               "fieldName": "variant"
             },

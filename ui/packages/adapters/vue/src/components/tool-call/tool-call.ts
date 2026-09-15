@@ -17,7 +17,7 @@ import { useToolCall } from './use-tool-call'
 
 type MachineProps = ToolCallSchema['props']
 
-/** 默认插槽的载荷：开合、阶段与在不在跑，一句可播报的状态文本，以及跑了多久。 */
+/** 默认插槽的载荷：开合、阶段与是否运行中，一句可播报的状态文本，以及运行时长。 */
 export type ToolCallRootSlotProps = Pick<ToolCallApi, 'open' | 'phase' | 'running' | 'disabled' | 'statusText' | 'durationMs' | 'setOpen'>
 
 export const XhToolCallRoot = defineComponent({

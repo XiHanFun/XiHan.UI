@@ -23,20 +23,20 @@ const BOOLEAN_CONVERTER = { fromAttribute: (v: string | null) => (v === null ? u
 const NUMBER_CONVERTER = { fromAttribute: (v: string | null) => (v == null || v === '' ? undefined : Number(v)) }
 
 /**
- * `<xh-tool-call>` —— Light-DOM 行为宿主：跑 tool-call 机器，把 connect 产出打到作者写的
- * 角色节点上。跑起来自动展开、结束自动收起；用户手动开合过一次即永久停用自动开合。
+ * `<xh-tool-call>`：Light-DOM 行为宿主：运行 tool-call 状态机，把 connect 产出接到作者编写的
+ * 角色节点上。运行时自动展开、结束时自动收起；用户手动开合过一次即永久停用自动开合。
  *
- * 参数与结果的内容一律由作者写，元素不替作者生成节点。
+ * 参数与结果的内容一律由作者编写，元素不替作者生成节点。
  *
  * @customElement xh-tool-call
- * @attr {string} phase - 走到哪一步：input-streaming / input-available / awaiting-approval / output-available / output-error
- * @attr {number} start-time - 这次调用开始的毫秒时间戳
- * @attr {number} end-time - 这次调用结束的毫秒时间戳；还在跑或流被中止时它会缺席
- * @attr {boolean} open - 受控开合，缺省该属性即非受控
+ * @attr {string} phase - 所处阶段：input-streaming / input-available / awaiting-approval / output-available / output-error
+ * @attr {number} start-time - 本次调用开始的毫秒时间戳
+ * @attr {number} end-time - 本次调用结束的毫秒时间戳；仍在运行或流被中止时它会缺席
+ * @attr {boolean} open - 受控开合，未提供该属性即非受控
  * @attr {boolean} default-open - 非受控初值
- * @attr {boolean} auto-disclosure - 跟着阶段自动开合，默认开；写 auto-disclosure="false" 关掉
+ * @attr {boolean} auto-disclosure - 随阶段自动开合，默认开启；写 auto-disclosure="false" 关闭
  * @attr {boolean} disabled - 禁用折叠开关
- * @attr {'outline'|'subtle'|'ghost'} variant - 形态：描边（缺省档）/ 底色分区 / 无壳内联
+ * @attr {'outline'|'subtle'|'ghost'} variant - 形态：描边（默认档）/ 底色分区 / 无壳内联
  * @attr {string} tone - 语气
  * @attr {string} size - 尺寸：sm / md / lg
  * @fires open-change - 开合变化；detail 为 `{ open: boolean, source: 'user' | 'auto' | 'api' }`
@@ -44,10 +44,10 @@ const NUMBER_CONVERTER = { fromAttribute: (v: string | null) => (v == null || v 
  * @csspart trigger - 折叠开关，承载 aria-expanded / aria-controls
  * @csspart indicator - 纯装饰指示，对读屏隐藏
  * @csspart name - 工具名，排在开关内因而计入它的可访问名
- * @csspart summary - 一行参数摘要，收起时也看得见这次查的是什么
+ * @csspart summary - 一行参数摘要，收起时也可见本次调用的内容
  * @csspart status - 阶段文字，同上
- * @csspart duration - 跑了多久，同上
- * @csspart approval - 审批闸门的常驻位，只在等人批准时显示
+ * @csspart duration - 运行时长，同上
+ * @csspart approval - 审批闸门的常驻位，只在等待批准时显示
  * @csspart content - 详情区，role=region 且由开关命名
  * @csspart input - 调用参数
  * @csspart output - 调用结果
@@ -111,7 +111,7 @@ export class XhToolCallElement extends XhElement {
     onOpenChange: this.notify,
   }))
 
-  /** 视图属性另走一路：本族两个组件共用一台机器，走机器 props 的话文案会全取到 tool-call 那一格。 */
+  /** 视图属性另经一条路径：本族两个组件共用一台状态机，经状态机 props 的话文案会全部取到 tool-call 的桶。 */
   private viewProps(): ToolCallProps {
     return {
       phase: this.phase,

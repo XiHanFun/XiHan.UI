@@ -18,20 +18,20 @@ import { useToolCall } from './use-tool-call'
 
 type MachineProps = ToolCallSchema['props']
 
-/** 函数式 children 的载荷：开合、阶段与在不在跑，一句可播报的状态文本，以及跑了多久。 */
+/** 函数式 children 的载荷：开合、阶段与是否运行中，一句可播报的状态文本，以及运行时长。 */
 export type ToolCallRootSlotProps = Pick<ToolCallApi, 'open' | 'phase' | 'running' | 'disabled' | 'statusText' | 'durationMs' | 'setOpen'>
 
 export interface XhToolCallRootProps extends Omit<ComponentPropsWithRef<'div'>, 'children'> {
-  /** 这次调用走到哪一步，默认 input-available。 */
+  /** 本次调用所处的步骤，默认 input-available。 */
   phase?: ToolCallPhase
-  /** 这次调用开始的时刻，毫秒时间戳。 */
+  /** 本次调用开始的时刻，毫秒时间戳。 */
   startTime?: number
-  /** 这次调用结束的时刻，可能缺席。 */
+  /** 本次调用结束的时刻，可能缺席。 */
   endTime?: number
   /** 给定即受控。 */
   open?: boolean
   defaultOpen?: boolean
-  /** 跑起来自动展开、跑完自动收起，用户动过手就锁住。 */
+  /** 运行时自动展开、结束时自动收起，用户手动操作过即锁定。 */
   autoDisclosure?: boolean
   disabled?: boolean
   /** 形态：outline 描边、subtle 底色分区、ghost 无壳内联。 */
@@ -132,14 +132,14 @@ export function XhToolCallLabel({ children, ...rest }: XhToolCallLabelProps): Re
 }
 
 export interface XhToolCallSummaryProps extends ComponentPropsWithRef<'span'> {}
-/** 一行参数摘要，收起时也看得见这次查的是什么。 */
+/** 一行参数摘要，收起时也能看到本次查询的内容。 */
 export function XhToolCallSummary({ children, ...rest }: XhToolCallSummaryProps): ReactNode {
   const ctx = useToolCallContext()
   return <span {...mergeReactProps(ctx.api.getSummaryProps() as Record<string, unknown>, rest as Record<string, unknown>)}>{children}</span>
 }
 
 export interface XhToolCallStatusProps extends ComponentPropsWithRef<'span'> {}
-/** 不给内容时念阶段对应的那一句。 */
+/** 未提供内容时朗读阶段对应的文案。 */
 export function XhToolCallStatus({ children, ...rest }: XhToolCallStatusProps): ReactNode {
   const ctx = useToolCallContext()
   return (
@@ -150,14 +150,14 @@ export function XhToolCallStatus({ children, ...rest }: XhToolCallStatusProps): 
 }
 
 export interface XhToolCallDurationProps extends ComponentPropsWithRef<'span'> {}
-/** 时长文案由作者现场代入：模板串里的秒数是宿主的事，连接层不做插值。 */
+/** 时长文案由作者现场代入：模板串中的秒数由宿主处理，连接层不做插值。 */
 export function XhToolCallDuration({ children, ...rest }: XhToolCallDurationProps): ReactNode {
   const ctx = useToolCallContext()
   return <span {...mergeReactProps(ctx.api.getDurationProps() as Record<string, unknown>, rest as Record<string, unknown>)}>{children}</span>
 }
 
 export interface XhToolCallApprovalProps extends ComponentPropsWithRef<'div'> {}
-/** 常驻在开关与详情之间：审批闸门不该被折叠藏起来。 */
+/** 常驻在开关与详情之间：审批闸门不应被折叠隐藏。 */
 export function XhToolCallApproval({ children, ...rest }: XhToolCallApprovalProps): ReactNode {
   const ctx = useToolCallContext()
   return <div {...mergeReactProps(ctx.api.getApprovalProps() as Record<string, unknown>, rest as Record<string, unknown>)}>{children}</div>
@@ -197,7 +197,7 @@ export function XhToolCallOutput({ children, ...rest }: XhToolCallOutputProps): 
 }
 
 export interface XhToolCallErrorProps extends ComponentPropsWithRef<'div'> {}
-/** 流被中止时未拿到结果的调用会被收尾成出错但拿不到原因，这一格要容忍空内容。 */
+/** 流被中止时未获得结果的调用会被收尾为出错但没有原因，该格要容忍空内容。 */
 export function XhToolCallError({ children, ...rest }: XhToolCallErrorProps): ReactNode {
   const ctx = useToolCallContext()
   return <div {...mergeReactProps(ctx.api.getErrorProps() as Record<string, unknown>, rest as Record<string, unknown>)}>{children}</div>
