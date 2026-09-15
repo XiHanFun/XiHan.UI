@@ -1,4 +1,4 @@
-// 横排 | orientation="horizontal" 把事件从左往右摆，连线随之转成横的一条
+// 横排 | orientation="horizontal" 把事件从左向右排列，连线随之转为横向
 import type { ReactNode } from "react";
 import {
   XhTimelineConnector,
