@@ -1,4 +1,4 @@
-// 远程检索 | filter 关掉：交进来的 collection 就是此刻该显示的那几条，筛选归服务端；取数期间 loading 让在途占位顶上来、列表压暗一档，空态让位
+// 远程检索 | filter 关闭：传入的 collection 就是当前应显示的条目，筛选归服务端；取数期间 loading 显示在途占位、列表压暗一档，空态让位
 import type { CommandNode } from "@xihan-ui/headless";
 import type { ReactNode } from "react";
 import {

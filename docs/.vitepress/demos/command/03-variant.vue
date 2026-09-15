@@ -1,4 +1,4 @@
-<!-- 遮罩形态 | variant 只落在 backdrop 那一层：opaque 压一层底、blur 糊掉背后、transparent 只挡点击 -->
+<!-- 遮罩形态 | variant 只落在 backdrop 层：opaque 压一层底色、blur 模糊背后、transparent 只阻挡点击 -->
 <script setup lang="ts">
 import type { CommandNode } from "@xihan-ui/headless";
 import { XhCommandRoot } from "@xihan-ui/vue";
