@@ -20,7 +20,7 @@ import { useDialog } from './use-dialog'
 
 type DialogProps = DialogSchema['props']
 
-/** 函数式 children 的载荷：展开态与改展开的动作。 */
+/** 函数式 children 的载荷：展开态与修改展开的动作。 */
 export interface DialogRootSlotProps extends Pick<DialogApi, 'open' | 'setOpen'> {}
 
 export interface XhDialogRootProps {
@@ -63,7 +63,7 @@ export function XhDialogTrigger({ children, asChild, ...rest }: XhDialogTriggerP
 }
 
 export interface XhDialogContentProps extends ComponentPropsWithRef<'div'> {
-  /** 浮层挂到哪个容器；不给就按全局配置，再不给挂 body。 */
+  /** 浮层挂载的容器；未提供时按全局配置，再未提供时挂载到 body。 */
   container?: () => Element | null
 }
 
@@ -107,7 +107,7 @@ export function XhDialogHeader({ children, ...rest }: XhDialogHeaderProps): Reac
 }
 
 export interface XhDialogIndicatorProps extends ComponentPropsWithRef<'span'> {}
-/** 语气徽记：不给内容就由皮肤按节点上的 data-tone 画兜底字形，塞了节点即整枚换掉。 */
+/** 语气徽记：未提供内容时由皮肤按节点上的 data-tone 绘制兜底字形，放入节点即整个替换。 */
 export function XhDialogIndicator({ children, ...rest }: XhDialogIndicatorProps): ReactNode {
   const ctx = useDialogContext()
   return <span {...mergeReactProps(ctx.api.getIndicatorProps() as Record<string, unknown>, rest as Record<string, unknown>)}>{children}</span>

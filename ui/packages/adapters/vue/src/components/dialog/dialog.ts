@@ -19,7 +19,7 @@ import { useDialog } from './use-dialog'
 
 type DialogProps = DialogSchema['props']
 
-/** 默认插槽的载荷：展开态与改展开的动作。 */
+/** 默认插槽的载荷：展开态与修改展开的动作。 */
 export type DialogRootSlotProps = Pick<DialogApi, 'open' | 'setOpen'>
 
 export const XhDialogRoot = /* @__PURE__ */ defineComponent({
@@ -62,7 +62,7 @@ export const XhDialogTrigger = /* @__PURE__ */ defineComponent({
   // 直通属性自己合：Vue 默认把作者的处理器排在部件的后面，这里改成作者先跑
   inheritAttrs: false,
   props: {
-    /** 借用作者的子节点当触发器，不再渲染自己的包裹元素；子节点须恰好一个。 */
+    /** 借用作者的子节点作为触发器，不再渲染自己的包裹元素；子节点须恰好一个。 */
     asChild: Boolean,
   },
   setup(props, { slots, attrs }) {
@@ -123,7 +123,7 @@ export const XhDialogHeader = /* @__PURE__ */ defineComponent({
   },
 })
 
-/** 语气徽记：不给内容就由皮肤按节点上的 data-tone 画兜底字形，塞了节点即整枚换掉。 */
+/** 语气徽记：未提供内容时由皮肤按节点上的 data-tone 绘制兜底字形，放入节点即整个替换。 */
 export const XhDialogIndicator = /* @__PURE__ */ defineComponent({
   name: 'XhDialogIndicator',
   setup(_, { slots }) {
