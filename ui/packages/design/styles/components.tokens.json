@@ -61657,10 +61657,13 @@
       "name": "--xh-time-range-picker-column-group-label-py",
       "component": "time-range-picker",
       "part": [
+        "column-group",
         "column-group-label"
       ],
       "property": [
-        "padding-block"
+        "block-size",
+        "padding-block",
+        "padding-block-start"
       ],
       "state": [
         "default"
@@ -61669,7 +61672,27 @@
         "--xh-space-1"
       ],
       "visibility": "public",
-      "description": "time-range-picker 的 column-group-label 部件 padding-block 覆盖槽。"
+      "description": "time-range-picker 的 column-group、column-group-label 部件 block-size、padding-block、padding-block-start 覆盖槽。"
+    },
+    {
+      "name": "--xh-time-range-picker-column-group-py",
+      "component": "time-range-picker",
+      "part": [
+        "column-group",
+        "column-group-label"
+      ],
+      "property": [
+        "block-size",
+        "padding-block-start"
+      ],
+      "state": [
+        "default"
+      ],
+      "defaultToken": [
+        "--xh-time-range-picker-column-group-label-py"
+      ],
+      "visibility": "public",
+      "description": "time-range-picker 的 column-group、column-group-label 部件 block-size、padding-block-start 覆盖槽。"
     },
     {
       "name": "--xh-time-range-picker-column-h",

@@ -162,6 +162,13 @@ describe('浮层里的两组时列', () => {
     expect(Number.parseFloat(contentStyle.paddingInlineEnd)).toBe(spacing)
     expect(Number.parseFloat(contentStyle.paddingBlockStart)).toBe(spacing)
     expect(Number.parseFloat(contentStyle.paddingBlockEnd)).toBe(spacing)
+
+    // 每组的末端必须由最后一列收口，不能在分钟列后再残留一段隐形列宽。
+    for (const group of [first!, second!]) {
+      const columns = [...group.querySelectorAll<HTMLElement>("[data-part='column']:not([hidden])")]
+      const lastColumn = columns.at(-1)!
+      expect(group.getBoundingClientRect().right).toBeCloseTo(lastColumn.getBoundingClientRect().right, 0)
+    }
   })
 
   it('选中格只亮在自己那一组；终点组的时列被起点顶住，界外的时不再出现', async () => {
