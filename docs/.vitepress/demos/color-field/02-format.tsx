@@ -1,4 +1,4 @@
-// 写法与透明度 | 手打的任何写法收下后都按 format 重写；开 alpha 才保留透明度，配合 rgba 写法一眼看得出
+// 写法与透明度 | 手动输入的任何写法提交后都按 format 重写；开启 alpha 才保留透明度，配合 rgba 写法一目了然
 import type { ReactNode } from "react";
 import {
   XhColorFieldControl,
