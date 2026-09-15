@@ -18,7 +18,7 @@ import { useApproval } from './use-approval'
 
 type Props = ApprovalSchema['props']
 
-/** 函数式 children 的载荷：判定状态、能不能批，以及三个动作入口。 */
+/** 函数式 children 的载荷：判定状态、是否可批准，以及三个动作入口。 */
 export type ApprovalRootSlotProps = Pick<
   ApprovalApi,
   'status' | 'settled' | 'loading' | 'grantedScopes' | 'note' | 'canApprove' | 'announcement' | 'approve' | 'deny' | 'setGrantedScopes' | 'setNote'
@@ -31,12 +31,12 @@ export interface ApprovalScopeSlotProps {
 }
 
 export interface XhApprovalRootProps extends Omit<ComponentPropsWithRef<'div'>, 'children'> {
-  /** 这一轮请求的身份。变了即重入待决，并按新时长重起计时。 */
+  /** 本轮请求的身份。变化即重新进入待决，并按新时长重新计时。 */
   requestId?: string
   /** 给定即受控。 */
   status?: ApprovalStatus
   defaultStatus?: ApprovalStatus
-  /** 多久没人答就按拒绝收口；缺省不给默认值。 */
+  /** 多长时间无人应答即按拒绝收口；默认不提供默认值。 */
   timeoutMs?: number
   scopes?: readonly ApprovalScope[]
   grantedScopes?: readonly string[]
@@ -44,11 +44,11 @@ export interface XhApprovalRootProps extends Omit<ComponentPropsWithRef<'div'>, 
   /** 附在判定上的一句自由文本，给定即受控。 */
   note?: string
   defaultNote?: string
-  /** 判定在途：只挡重复批准，不挡拒绝。 */
+  /** 判定在途：只阻止重复批准，不阻止拒绝。 */
   loading?: boolean
-  /** Escape 判为拒绝，默认开。 */
+  /** Escape 判为拒绝，默认开启。 */
   denyOnEscape?: boolean
-  /** 卸载时若仍待决就按拒绝派发一次，默认关。 */
+  /** 卸载时若仍待决则按拒绝派发一次，默认关闭。 */
   denyOnUnmount?: boolean
   /** 播报档位，默认 polite。 */
   live?: 'polite' | 'assertive'
@@ -146,7 +146,7 @@ export function XhApprovalDescription({ children, ...rest }: XhApprovalDescripti
 }
 
 export interface XhApprovalLiveRegionProps extends ComponentPropsWithRef<'div'> {}
-/** 不给内容时念状态对应的那一句。 */
+/** 未提供内容时朗读状态对应的文案。 */
 export function XhApprovalLiveRegion({ children, ...rest }: XhApprovalLiveRegionProps): ReactNode {
   const ctx = useApprovalContext()
   return (
@@ -163,10 +163,10 @@ export function XhApprovalGroup({ children, ...rest }: XhApprovalGroupProps): Re
 }
 
 export interface XhApprovalItemProps extends Omit<ComponentPropsWithRef<'div'>, 'children'> {
-  /** 这一项授权范围的取值。 */
+  /** 该项授权范围的取值。 */
   scopeValue: string
   scopeLabel?: string
-  /** 必选项：没勾满就批不了。 */
+  /** 必选项：未全部勾选时无法批准。 */
   scopeRequired?: boolean
   scopeDisabled?: boolean
   children?: SlotChildren<ApprovalScopeSlotProps>
@@ -227,7 +227,7 @@ export function XhApprovalItemText({ scopeValue, children, ...rest }: XhApproval
 }
 
 export interface XhApprovalNoteProps extends Omit<ComponentPropsWithRef<'input'>, 'value' | 'defaultValue' | 'children'> {}
-/** 自闭合的输入格，内容由 value 给，不收内容。 */
+/** 自闭合的输入格，内容由 value 给出，不接收内容。 */
 export function XhApprovalNote({ ...rest }: XhApprovalNoteProps): ReactNode {
   const ctx = useApprovalContext()
   return (
@@ -244,14 +244,14 @@ export function XhApprovalNote({ ...rest }: XhApprovalNoteProps): ReactNode {
 }
 
 export interface XhApprovalTimerProps extends ComponentPropsWithRef<'div'> {}
-/** 对读屏隐藏：逐秒变化的数字进活区会不停打断。 */
+/** 对读屏隐藏：逐秒变化的数字进入活区会不断打断朗读。 */
 export function XhApprovalTimer({ children, ...rest }: XhApprovalTimerProps): ReactNode {
   const ctx = useApprovalContext()
   return <div {...mergeReactProps(ctx.api.getTimerProps() as Record<string, unknown>, rest as Record<string, unknown>)}>{children}</div>
 }
 
 export interface XhApprovalResultProps extends ComponentPropsWithRef<'div'> {}
-/** 判定落定后才露出；文字由播报区念，这一格对读屏隐藏。 */
+/** 判定落定后才显示；文字由播报区朗读，该格对读屏隐藏。 */
 export function XhApprovalResult({ children, ...rest }: XhApprovalResultProps): ReactNode {
   const ctx = useApprovalContext()
   return <div {...mergeReactProps(ctx.api.getResultProps() as Record<string, unknown>, rest as Record<string, unknown>)}>{children}</div>
