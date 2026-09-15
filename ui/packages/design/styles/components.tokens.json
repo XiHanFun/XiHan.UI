@@ -6413,7 +6413,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-shape-pill"
+        "--xh-shape-circle"
       ],
       "visibility": "public",
       "description": "carousel 的 indicator 部件 border-radius 覆盖槽。"
@@ -6578,7 +6578,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-shape-pill"
+        "--xh-shape-circle"
       ],
       "visibility": "public",
       "description": "carousel 的 autoplay-trigger、next-trigger、prev-trigger 部件 border-radius 覆盖槽。"
