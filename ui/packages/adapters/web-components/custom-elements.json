@@ -24252,7 +24252,7 @@
       "declarations": [
         {
           "kind": "class",
-          "description": "`<xh-grid>` —— Light-DOM 行为宿主，无状态机，把 connectGrid 产出打到 root 与各 item 角色节点。\n列数、间距档位与两条对齐轴原样落成 data-*，排布规则写在皮肤里。\n列数可以逐档写：`cols='{\"base\":1,\"md\":3}'` 落成 data-cols 与 data-cols-md，\n窄视口分一列、宽到 md 断点后分三列。\n\n每一格的跨列与错列写在 item 角色节点自己的 `span` / `offset` 属性上：\nspan 收 1 至 12、offset 收 1 至 11，范围外的值按没写算；两者同样收 JSON 对象逐档写\n（`span='{\"base\":1,\"md\":6}'`）。\n运行期改写这两个属性不触发重新接线，需作者自行 requestUpdate。\n\n根上不写 role：容器只做排布，里面装的是列表还是一组卡片由作者自己声明。",
+          "description": "`<xh-grid>`：Light-DOM 行为宿主，无状态机，把 connectGrid 产出接到 root 与各 item 角色节点。\n列数、间距档位与两条对齐轴原样写为 data-*，排布规则写在皮肤中。\n列数可以逐档书写：`cols='{\"base\":1,\"md\":3}'` 写为 data-cols 与 data-cols-md，\n窄视口分一列、达到 md 断点后分三列。\n\n每一格的跨列与错列写在 item 角色节点自己的 `span` / `offset` 属性上：\nspan 接受 1 至 12、offset 接受 1 至 11，范围外的值按未写处理；两者同样接受 JSON 对象逐档书写\n（`span='{\"base\":1,\"md\":6}'`）。\n运行期改写这两个属性不触发重新接线，需作者自行 requestUpdate。\n\n根上不写 role：容器只做排布，其中放置的是列表还是一组卡片由作者自行声明。",
           "name": "XhGridElement",
           "cssParts": [
             {
@@ -24260,7 +24260,7 @@
               "name": "root"
             },
             {
-              "description": "一格，承载自报的 data-span / data-offset（及各自逐档的 -sm/-md/-lg/-xl）",
+              "description": "一格，承载声明的 data-span / data-offset（及各自逐档的 -sm/-md/-lg/-xl）",
               "name": "item"
             }
           ],
@@ -24362,7 +24362,7 @@
               "type": {
                 "text": "GridColumnCount | ColsByBreakpoint | undefined"
               },
-              "description": "列数（1 至 12 的整数），不写或超出范围按一列排；写 JSON 对象则逐档给列数（base / sm / md / lg / xl）",
+              "description": "列数（1 至 12 的整数），未提供或超出范围按一列排列；写 JSON 对象则逐档提供列数（base / sm / md / lg / xl）",
               "name": "cols",
               "fieldName": "cols"
             },
@@ -24370,7 +24370,7 @@
               "type": {
                 "text": "number | undefined"
               },
-              "description": "行数（1 至 12 的整数），不写则行数由内容撑出来",
+              "description": "行数（1 至 12 的整数），未提供时行数由内容撑出",
               "name": "rows",
               "fieldName": "rows"
             },
@@ -24378,7 +24378,7 @@
               "type": {
                 "text": "string | undefined"
               },
-              "description": "每列最少多宽；写了它列数改由容器宽度除以这个下限得出",
+              "description": "每列的最小宽度；提供后列数改由容器宽度除以该下限得出",
               "name": "min-col-width",
               "fieldName": "minColWidth"
             },
@@ -24394,7 +24394,7 @@
               "type": {
                 "text": "string | undefined"
               },
-              "description": "只改行间距，不写则跟着 gap 走",
+              "description": "只改行间距，未提供时跟随 gap",
               "name": "row-gap",
               "fieldName": "rowGap"
             },
@@ -24402,7 +24402,7 @@
               "type": {
                 "text": "string | undefined"
               },
-              "description": "只改列间距，不写则跟着 gap 走",
+              "description": "只改列间距，未提供时跟随 gap",
               "name": "column-gap",
               "fieldName": "columnGap"
             },
@@ -24410,7 +24410,7 @@
               "type": {
                 "text": "string | undefined"
               },
-              "description": "每一项在自己那格里的块向对齐",
+              "description": "每一项在所在格中的块向对齐",
               "name": "align",
               "fieldName": "align"
             },
@@ -24418,7 +24418,7 @@
               "type": {
                 "text": "string | undefined"
               },
-              "description": "每一项在自己那格里的行内对齐",
+              "description": "每一项在所在格中的行内对齐",
               "name": "justify-items",
               "fieldName": "justifyItems"
             }
