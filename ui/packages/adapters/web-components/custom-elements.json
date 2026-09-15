@@ -45192,11 +45192,11 @@
       "declarations": [
         {
           "kind": "class",
-          "description": "`<xh-separator>` —— Light-DOM 行为宿主，无状态机，把 connectSeparator 产出打到三个角色节点上。\n\n只写 root 就是一条线；在 root 里摆「line · content · line」三个节点，就是带分节文字的那一档。",
+          "description": "`<xh-separator>`：Light-DOM 行为宿主，无状态机，把 connectSeparator 产出接到三个角色节点上。\n\n只写 root 即为一条线；在 root 中放置 line · content · line 三个节点，即为带分节文字的档位。",
           "name": "XhSeparatorElement",
           "cssParts": [
             {
-              "description": "承载 role/aria-orientation/data-orientation 的分隔节点；有分节文字时它是容器",
+              "description": "承载 role / aria-orientation / data-orientation 的分隔节点；有分节文字时它是容器",
               "name": "root"
             },
             {
@@ -45204,7 +45204,7 @@
               "name": "line"
             },
             {
-              "description": "夹在两条线中间的分节文字",
+              "description": "位于两条线之间的分节文字",
               "name": "content"
             }
           ],
@@ -45295,7 +45295,7 @@
               "type": {
                 "text": "string | undefined"
               },
-              "description": "线怎么画：默认线 / 弱线 / 强线",
+              "description": "线的绘制方式：默认线 / 弱线 / 强线",
               "name": "variant",
               "fieldName": "variant"
             },
@@ -45303,7 +45303,7 @@
               "type": {
                 "text": "boolean | undefined"
               },
-              "description": "画成虚线",
+              "description": "绘制为虚线",
               "name": "dashed",
               "fieldName": "dashed"
             },
@@ -45311,7 +45311,7 @@
               "type": {
                 "text": "string | undefined"
               },
-              "description": "分节文字落在哪一侧，缺省居中",
+              "description": "分节文字的位置，默认居中",
               "name": "align",
               "fieldName": "align"
             }

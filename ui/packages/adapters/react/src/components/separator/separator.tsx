@@ -18,19 +18,19 @@ interface SeparatorOwnProps {
   orientation?: 'horizontal' | 'vertical'
   /** 装饰性分隔：仅视觉分组，不进无障碍树。 */
   decorative?: boolean
-  /** 线怎么画，缺省 default。 */
+  /** 线的绘制方式，默认 default。 */
   variant?: SeparatorVariant
-  /** 画成虚线。 */
+  /** 绘制为虚线。 */
   dashed?: boolean
-  /** 分节文字落在哪一侧，缺省居中。 */
+  /** 分节文字所在的一侧，默认居中。 */
   align?: SeparatorAlign
 }
 
 export interface XhSeparatorRootProps extends ComponentPropsWithRef<'div'>, SeparatorOwnProps {}
 
 /**
- * 分隔本身。children 为空时它就是那条线；放进 XhSeparatorLine 与 XhSeparatorContent
- * 之后它改当容器，线由 line 画。
+ * 分隔本身。children 为空时它就是那条线；放入 XhSeparatorLine 与 XhSeparatorContent
+ * 之后它改作容器，线由 line 绘制。
  */
 export function XhSeparatorRoot({
   orientation = 'horizontal',
@@ -54,7 +54,7 @@ export function XhSeparatorRoot({
 /** 线是纯装饰，不承载内容。 */
 export interface XhSeparatorLineProps extends Omit<ComponentPropsWithRef<'div'>, 'children'> {}
 
-/** 分节文字两侧的那条线，纯装饰。 */
+/** 分节文字两侧的线，纯装饰。 */
 export function XhSeparatorLine(props: XhSeparatorLineProps): ReactNode {
   const ctx = useSeparatorContext()
   return (
@@ -77,9 +77,9 @@ export function XhSeparatorContent({ children, ...rest }: XhSeparatorContentProp
 export interface XhSeparatorProps extends XhSeparatorRootProps {}
 
 /**
- * 一步到位的写法：不给 children 就是一条线；给了就自动排成「线 · 文字 · 线」三段。
+ * 一步到位的写法：未提供 children 即为一条线；提供后自动排为线、文字、线三段。
  *
- * 要往分节文字里塞自定义结构（比如一枚图标加一段字）时改用
+ * 需要在分节文字中放置自定义结构（例如一个图标加一段文字）时改用
  * XhSeparatorRoot + XhSeparatorLine + XhSeparatorContent。
  */
 export function XhSeparator({ children, ...rest }: XhSeparatorProps): ReactNode {
