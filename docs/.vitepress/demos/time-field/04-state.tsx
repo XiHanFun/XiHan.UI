@@ -1,4 +1,4 @@
-// 禁用与越界 | 禁用整组退出 Tab 序；越界只做标注，08:00 原样留着不被改写
+// 禁用与越界 | 禁用整组退出 Tab 序列；越界只做标注，08:00 原样保留不被改写
 import type { ReactNode } from "react";
 import {
   XhTimeFieldControl,

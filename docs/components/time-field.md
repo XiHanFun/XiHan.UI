@@ -32,43 +32,43 @@ hour-cycle=12 多出一个上午/下午段，值本身仍是 24 小时的串
 
 ### 精度到秒
 
-granularity=second 让秒段显出来并参与值，空段按上下键从该段边界起步
+granularity=second 使秒段显示并参与值，空段按上下键从该段边界起步
 
 <XhDemo src="time-field/03-granularity" />
 
 ### 禁用与越界
 
-禁用整组退出 Tab 序；越界只做标注，08:00 原样留着不被改写
+禁用整组退出 Tab 序列；越界只做标注，08:00 原样保留不被改写
 
 <XhDemo src="time-field/04-state" />
 
 ### 变体
 
-variant 只改分段框的底色与描边用法，分段结构与键盘行为都不变
+variant 只改变分段框的底色与描边用法，分段结构与键盘行为都不变
 
 <XhDemo src="time-field/05-variant" />
 
 ### 颜色
 
-tone 决定用哪族颜色，与 variant 正交；这里固定 subtle 形态，只看语气这一轴
+tone 决定使用哪族颜色，与 variant 正交；这里固定 subtle 形态，只查看语气这一轴
 
 <XhDemo src="time-field/06-tone" />
 
 ### 尺寸
 
-不传 size 即默认档；行高、内边距与字号一起换档，标题也跟着变
+不传 size 即默认档；行高、内边距与字号一起换档，标题也随之变化
 
 <XhDemo src="time-field/07-size" />
 
 ### 外部写值与清空
 
-值由宿主持有，按钮直接写值；框内自带清空钮，有值才显形，点完焦点回到第一段
+值由宿主持有，按钮直接写值；框内自带清空按钮，有值时才显示，点击后焦点回到第一段
 
 <XhDemo src="time-field/08-actions" />
 
 ### 可选值白名单
 
-值交给宿主持有，写回来的时间被吸附到清单里的一格，上下键与数字键因此都落在清单上
+值交给宿主持有，写回的时间被吸附到清单中的一格，上下键与数字键因此都落在清单上
 
 <XhDemo src="time-field/09-whitelist" />
 

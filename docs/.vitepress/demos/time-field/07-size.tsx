@@ -1,4 +1,4 @@
-// 尺寸 | 不传 size 即默认档；行高、内边距与字号一起换档，标题也跟着变
+// 尺寸 | 不传 size 即默认档；行高、内边距与字号一起换档，标题也随之变化
 import type { Size } from "@xihan-ui/core";
 import type { ReactNode } from "react";
 import {
