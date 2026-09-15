@@ -18,27 +18,27 @@ import { useCheckbox } from './use-checkbox'
 
 type CheckboxProps = CheckboxSchema['props']
 
-/** value、checked 与 defaultChecked 在原生 button 上另有含义，这里由机器接管。 */
+/** value、checked 与 defaultChecked 在原生 button 上另有含义，这里由状态机接管。 */
 type ButtonProps = Omit<ComponentPropsWithRef<'button'>, 'value' | 'defaultChecked' | 'onChange'>
 
 export interface XhCheckboxProps extends ButtonProps {
-  /** 三态：true / false / 'indeterminate'。半选只能由外部给，点击不会切进去。 */
+  /** 三态：true / false / 'indeterminate'。半选只能由外部提供，点击不会切换到该态。 */
   checked?: CheckboxCheckedState
   defaultChecked?: CheckboxCheckedState
   disabled?: boolean
   readOnly?: boolean
   invalid?: boolean
   required?: boolean
-  /** 表单字段名；给了 hidden-input 才带 name 并参与提交 */
+  /** 表单字段名；提供后 hidden-input 才带 name 并参与提交 */
   name?: string
   value?: string
   tone?: Tone
   variant?: CheckboxVariant
   size?: Size
   onCheckedChange?: CheckboxProps['onCheckedChange']
-  /** 方框里的图形；不写由皮肤画勾。 */
+  /** 方框中的图形；未写时由皮肤绘制勾选标记。 */
   indicator?: ReactNode
-  /** 方框旁的文字；不写就只有一个方框。 */
+  /** 方框旁的文字；未写时只有一个方框。 */
   children?: ReactNode
 }
 

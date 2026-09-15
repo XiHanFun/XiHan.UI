@@ -15,13 +15,13 @@ import { MachineController } from '../runtime/machine-controller'
 const BOOLEAN_CONVERTER = { fromAttribute: (v: string | null) => (v === null ? undefined : v !== 'false') }
 
 /**
- * `<xh-checkbox>` —— Light-DOM 行为宿主，跑 checkbox 机器并把 connect 产出打到 root/indicator 角色节点。
+ * `<xh-checkbox>`：Light-DOM 行为宿主，运行 checkbox 状态机并把 connect 产出接到 root / indicator 角色节点。
  *
  * @customElement xh-checkbox
- * @attr {boolean|'indeterminate'} checked - 受控选中；写 indeterminate 为半选，缺省该属性即非受控
+ * @attr {boolean|'indeterminate'} checked - 受控选中；写 indeterminate 为半选，未提供该属性即非受控
  * @attr {boolean|'indeterminate'} default-checked - 非受控初值
  * @attr {boolean} disabled - 禁用
- * @attr {boolean} read-only - 只读：勾不动，但仍可聚焦、仍参与提交
+ * @attr {boolean} read-only - 只读：不可勾选，但仍可聚焦、仍参与提交
  * @attr {boolean} invalid - 校验失败态
  * @attr {boolean} required - 必填
  * @attr {'brand'|'neutral'|'success'|'warning'|'danger'|'info'} tone - 语气
@@ -30,9 +30,9 @@ const BOOLEAN_CONVERTER = { fromAttribute: (v: string | null) => (v === null ? u
  * @fires checked-change - checked 状态变化；detail 为 `{ checked: boolean }`
  * @csspart root - role=checkbox 的按钮（承载 aria-checked / data-state）
  * @csspart indicator - 选中标记
- * @attr {string} name - 表单字段名；给了 hidden-input 才参与提交
+ * @attr {string} name - 表单字段名；提供后 hidden-input 才参与提交
  * @csspart hidden-input - type=hidden 的表单出口，省略该节点即不参与表单
- * @csspart label - 可选：包住 root 与 text 的 <label>，点文字即切换
+ * @csspart label - 可选：包裹 root 与 text 的 <label>，点击文字即切换
  * @csspart text - 可选：控件旁的文字
  */
 export class XhCheckboxElement extends XhElement {

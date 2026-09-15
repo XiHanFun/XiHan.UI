@@ -109,15 +109,15 @@
 | `checked` | `CheckboxCheckedState` |  |  |
 | `defaultChecked` | `CheckboxCheckedState` |  |  |
 | `disabled` | `boolean` |  |  |
-| `readOnly` | `boolean` |  | 只读：勾不动，但仍可聚焦、仍参与提交，对比度不降。 |
-| `invalid` | `boolean` |  | 校验失败：只改呈现，不挡交互。 |
-| `required` | `boolean` |  | 必填：随表单校验一起用，只发无障碍属性，不自行拦提交。 |
-| `name` | `string` |  | 表单字段名；给了 hidden-input 才带 name 并参与提交。 |
-| `value` | `string` |  | 提交出去的值，缺省 'on'，与原生复选框一致。 |
-| `tone` | `Tone` |  | 语气：brand / neutral / success / warning / danger / info，决定选中态用哪族颜色。 |
-| `variant` | `CheckboxVariant` |  | 视觉变体：primary / secondary。缺省 primary。 |
-| `size` | `Size` |  | 尺寸：sm / md / lg，决定方框边长与勾的字号档位。 |
-| `onCheckedChange` | `(details: CheckboxCheckedChangeDetails) => void` |  | checked 变化意图回调；受控时是唯一出口，非受控随内部转移一并通知。 |
+| `readOnly` | `boolean` |  | 只读：不可勾选，但仍可聚焦、仍参与提交，对比度不降低。 |
+| `invalid` | `boolean` |  | 校验失败：只改变呈现，不阻止交互。 |
+| `required` | `boolean` |  | 必填：随表单校验一起使用，只发无障碍属性，不自行拦截提交。 |
+| `name` | `string` |  | 表单字段名；提供后 hidden-input 才带 name 并参与提交。 |
+| `value` | `string` |  | 提交的值，默认 'on'，与原生复选框一致。 |
+| `tone` | `Tone` |  | 语气：brand / neutral / success / warning / danger / info，决定选中态使用哪族颜色。 |
+| `variant` | `CheckboxVariant` |  | 视觉变体：primary / secondary。默认 primary。 |
+| `size` | `Size` |  | 尺寸：sm / md / lg，决定方框边长与勾选符号的字号档位。 |
+| `onCheckedChange` | `(details: CheckboxCheckedChangeDetails) => void` |  | checked 变化意图回调；受控时是唯一出口，非受控时随内部转移一并通知。 |
 
 ### 事件
 
@@ -133,8 +133,8 @@
 
 | Vue 组件 | 插槽 | 载荷 | 说明 |
 | --- | --- | --- | --- |
-| `XhCheckbox` | `default` | — | 方框旁的文字；不写就只有一个方框。 |
-| `XhCheckbox` | `indicator` | — | 方框里的图形；不写由皮肤画勾。 |
+| `XhCheckbox` | `default` | — | 方框旁的文字；未写时只有一个方框。 |
+| `XhCheckbox` | `indicator` | — | 方框中的图形；未写时由皮肤绘制勾选标记。 |
 
 ### 状态
 
@@ -165,8 +165,8 @@
 | `setChecked` | `(next: boolean) => void` | 半选只能由 checked prop 给出，这里只接受全选 / 全不选。 |
 | `getRootProps` | `() => T['button']` |  |
 | `getIndicatorProps` | `() => T['element']` |  |
-| `getHiddenInputProps` | `() => T['input']` | 表单影子：勾上才提交，半选按未勾处理。给了 name 才带 name。 |
-| `getLabelProps` | `() => T['label']` | 包住方框与文字的 &lt;label&gt;：点文字即切换，方框的可及名从文字来。只在带文字时渲染。 |
+| `getHiddenInputProps` | `() => T['input']` | 表单影子：勾选后才提交，半选按未勾选处理。提供 name 后才带 name。 |
+| `getLabelProps` | `() => T['label']` | 包裹方框与文字的 &lt;label&gt;：点击文字即切换，方框的可及名来自文字。只在带文字时渲染。 |
 | `getTextProps` | `() => T['element']` | 方框旁的文字。 |
 
 ## 无障碍
