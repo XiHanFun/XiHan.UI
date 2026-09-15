@@ -1,10 +1,10 @@
 # 快速上手
 
-同一个对话框，写三遍。三种写法跑的是同一个状态机、同一份 `connect`，差别只在谁负责把属性挂到 DOM 上。
+同一个对话框的三种写法。三种写法运行同一个状态机、同一份 `connect`，差别只在由谁把属性写到 DOM 上。
 
 ## 用法一：Vue 组件
 
-最省事的一种。组件按部件拆开，每个部件是一个 Vue 组件，你只管嵌套。
+最直接的一种。组件按部件拆分，每个部件是一个 Vue 组件，按结构嵌套即可。
 
 ```vue
 <script setup lang="ts">
@@ -35,11 +35,11 @@ import {
 </template>
 ```
 
-打开后自动生效的行为：焦点陷入内容区、`Esc` 或点遮罩关闭、关闭后焦点回到触发按钮、页面滚动被锁、外部内容对读屏隐藏。这些都不需要你写。
+打开后自动生效的行为：焦点捕获在内容区、`Esc` 或点击遮罩关闭、关闭后焦点回到触发按钮、页面滚动锁定、外部内容对读屏隐藏。这些行为不需要额外编写。
 
 ### 受控与非受控
 
-值类组件一律「受控优先」：传了受控属性就以外部为准，只传 `default*` 则由组件自持。
+值类组件一律受控优先：传入受控属性时以外部为准，只传 `default*` 时由组件自行持有。
 
 ```vue
 <script setup lang="ts">
@@ -54,7 +54,7 @@ const wifi = ref(true);
   <!-- 受控：v-model 双向绑定 -->
   <XhSwitch v-model:checked="wifi" aria-label="Wi-Fi" />
 
-  <!-- 非受控：只给初值，之后组件自己管 -->
+  <!-- 非受控：只给初值，之后由组件持有 -->
   <XhSwitch :default-checked="false" aria-label="非受控开关" />
 
   <XhAccordionRoot v-model:value="panels" multiple>
@@ -68,17 +68,17 @@ const wifi = ref(true);
       <XhAccordionHeader>
         <XhAccordionTrigger>第二节</XhAccordionTrigger>
       </XhAccordionHeader>
-      <XhAccordionContent>方向键只在标题间搬焦点，永不进内容区。</XhAccordionContent>
+      <XhAccordionContent>方向键只在标题间移动焦点，不进入内容区。</XhAccordionContent>
     </XhAccordionItem>
   </XhAccordionRoot>
 </template>
 ```
 
-每个值类组件同时发两个事件：`value-change` 带完整明细对象（如 `{ value }`），`update:value` 带裸值供 `v-model` 用。
+每个值类组件同时发出两个事件：`value-change` 携带完整明细对象（如 `{ value }`），`update:value` 携带裸值供 `v-model` 使用。
 
 ## 用法二：Vue 组合式函数
 
-不想要现成的 DOM 结构时，直接拿 `api`，自己决定渲染成什么标签。
+不需要现成的 DOM 结构时，直接使用 `api`，自行决定渲染的标签。
 
 ```vue
 <script setup lang="ts">
@@ -103,11 +103,11 @@ const items = [
 </template>
 ```
 
-`api` 上的每个 `getXxxProps()` 返回该部件此刻应有的全部属性：`data-scope` / `data-part`、`id` 与 `aria-*` 关联、`data-state` 等状态属性、以及事件处理器。你只需要 `v-bind` 上去。
+`api` 上的每个 `getXxxProps()` 返回该部件当前应有的全部属性：`data-scope` / `data-part`、`id` 与 `aria-*` 关联、`data-state` 等状态属性，以及事件处理器。用 `v-bind` 绑定即可。
 
 ## 用法三：原生自定义元素
 
-结构完全由你手写，用 `data-xh-part` 标出哪个节点担任哪个角色。元素是 **Light DOM 行为宿主**——它不渲染任何结构，只往你写的节点上挂属性和事件。
+结构完全由作者编写，用 `data-xh-part` 标出节点的角色。元素是 Light DOM 行为宿主：它不渲染任何结构，只向作者编写的节点写入属性和事件。
 
 ```html
 <xh-dialog>
@@ -130,9 +130,9 @@ import "@xihan-ui/styles";
 defineXhElements();
 ```
 
-必备部件漏写不会静默失败：Web Components 适配器会在诊断通道上报 `wc.missing-part`（error）；写了解剖之外的 part 名则上报 `wc.unknown-part`（warn）。每个组件的必备部件在[组件参考](./components/)里加粗标出。
+缺少必备部件不会静默失败：Web Components 适配器会在诊断通道报告 `wc.missing-part`（error）；写了解剖之外的 part 名则报告 `wc.unknown-part`（warn）。每个组件的必备部件在[组件参考](./components/)中加粗标出。
 
-## 加上主题
+## 接入主题
 
 三种用法共用同一套七轴视觉环境运行时，皮肤与 Portal 都消费同一组已解析属性：
 
@@ -158,12 +158,12 @@ visual.subscribe(state => console.log(state.mode, state.density, state.motion, s
 
 七个维度分别是色彩模式、品牌、密度、书写方向、对比度、动效与透明材质，详见[设计令牌与主题](./guide/theme)。
 
-## 接下来读什么
+## 延伸阅读
 
-理解这套设计只需要三篇：
+理解这套设计的三篇核心文档：
 
-1. [解剖与部件契约](./guide/anatomy)——`data-scope` / `data-part` 是全库的地基，皮肤、测试、诊断都建在它上面；
-2. [状态机运行时](./guide/machine)——组件的行为长什么样，受控值是怎么接的；
-3. [connect 与属性产出](./guide/connect)——从机器状态到 DOM 属性的那一步。
+1. [解剖与部件契约](./guide/anatomy)：`data-scope` / `data-part` 是全库的基础，皮肤、测试、诊断都建立在它之上；
+2. [状态机运行时](./guide/machine)：组件行为的定义方式与受控值的接入；
+3. [connect 与属性产出](./guide/connect)：从状态机状态到 DOM 属性。
 
-然后按需求挑：[Vue 适配器](./adapters/vue)、[Web Components 适配器](./adapters/web-components)、[皮肤与样式分层](./guide/styling)、[无障碍与键盘规格](./guide/a11y)。
+按需求继续阅读：[Vue 适配器](./adapters/vue)、[Web Components 适配器](./adapters/web-components)、[皮肤与样式分层](./guide/styling)、[无障碍与键盘规格](./guide/a11y)。
