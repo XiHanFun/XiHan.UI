@@ -40,6 +40,8 @@ export function connectEditable<T extends PropTypes>(
   const autoResize = !!prop('autoResize')
   const maxLength = prop('maxLength')
   const stateAttr = editing ? 'edit' : 'preview'
+  // 形态默认落 outline：不写时 root 如实投影，皮肤不再依赖缺省档
+  const variant = prop('variant') ?? 'outline'
   const previewActivates = interactive && activationMode !== 'none'
 
   // -1 这档不能删：退出编辑态要把焦点还回预览区，没有 tabindex 就 focus 不上去
@@ -79,7 +81,7 @@ export function connectEditable<T extends PropTypes>(
       'role': 'group',
       'aria-labelledby': ids.label,
       // 三个视觉轴只落在 root，子部件从这里继承皮肤声明的私有槽
-      'data-variant': prop('variant'),
+      'data-variant': variant,
       'data-tone': prop('tone'),
       'data-size': prop('size'),
       'data-state': stateAttr,

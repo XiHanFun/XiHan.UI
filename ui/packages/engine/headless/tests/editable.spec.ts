@@ -299,6 +299,11 @@ describe('editableMachine 写值', () => {
 })
 
 describe('connectEditable 结构与标注', () => {
+  it('不写 variant 时 root 落 outline；写 subtle 如实落', () => {
+    expect((makeService().api().getRootProps() as Dict)['data-variant']).toBe('outline')
+    expect((makeService({ variant: 'subtle' }).api().getRootProps() as Dict)['data-variant']).toBe('subtle')
+  })
+
   it('root 是有名字的 group，状态位齐全', () => {
     const api = makeService().api()
     const root = api.getRootProps() as Dict
