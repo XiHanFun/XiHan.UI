@@ -1,4 +1,4 @@
-<!-- 倒着走 | countdown 让它从起始值往下走，终点缺省是 0；走到终点就停在那里不再往下 -->
+<!-- 倒计时 | countdown 使它从起始值递减，终点默认是 0；到达终点即停在该处不再递减 -->
 <script setup lang="ts">
 import { XhTimerRoot } from "@xihan-ui/vue";
 
