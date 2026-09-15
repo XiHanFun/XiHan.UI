@@ -2541,7 +2541,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-shape-pill"
+        "--xh-shape-circle"
       ],
       "visibility": "public",
       "description": "avatar 的 root 部件 border-radius 覆盖槽。"
