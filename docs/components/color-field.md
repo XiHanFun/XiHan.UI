@@ -97,21 +97,21 @@
 
 | 属性 | 类型 | 必填 | 说明 |
 | --- | --- | --- | --- |
-| `value` | `string` |  | 受控的颜色串；给了就由宿主说了算，机器不自改。空串表示没有颜色。 |
-| `defaultValue` | `string` |  | 非受控初值，缺省空串。 |
-| `format` | `ColorFormat` |  | 值串的写法，默认 hex。手打的任何写法收下后都按它重写。 |
-| `alpha` | `boolean` |  | 带透明度，默认关。关掉时收下的颜色恒不透明。 |
+| `value` | `string` |  | 受控的颜色串；提供后由宿主决定，状态机不自行修改。空串表示没有颜色。 |
+| `defaultValue` | `string` |  | 非受控初值，默认空串。 |
+| `format` | `ColorFormat` |  | 值串的写法，默认 hex。手动输入的任何写法接受后都按它重写。 |
+| `alpha` | `boolean` |  | 带透明度，默认关闭。关闭时接受的颜色恒为不透明。 |
 | `placeholder` | `string` |  |  |
 | `disabled` | `boolean` |  |  |
 | `readOnly` | `boolean` |  |  |
 | `required` | `boolean` |  |  |
 | `invalid` | `boolean` |  |  |
-| `name` | `string` |  | 表单字段名；给了才参与提交（经表单影子，输入框里的半截字不会被提交）。 |
-| `clearable` | `boolean` |  | 开启清空能力：有值时显出清空按钮、Escape 接管。关掉时按钮带 hidden 收起。 |
-| `variant` | `ControlVariant` |  | 形态：outline / subtle / ghost，决定输入框的底与描边怎么画。 |
-| `tone` | `Tone` |  | 语气：brand / neutral / success / warning / danger / info，决定聚焦强调用哪族颜色。 |
+| `name` | `string` |  | 表单字段名；提供后才参与提交（经表单影子，输入框中未提交的草稿不会被提交）。 |
+| `clearable` | `boolean` |  | 开启清空能力：有值时显示清空按钮、Escape 接管。关闭时按钮带 hidden 收起。 |
+| `variant` | `ControlVariant` |  | 形态：outline / subtle / ghost，决定输入框的底色与描边绘制方式。 |
+| `tone` | `Tone` |  | 语气：brand / neutral / success / warning / danger / info，决定聚焦强调使用哪族颜色。 |
 | `size` | `Size` |  | 尺寸：sm / md / lg，决定输入框、色块与清空按钮的几何档位。 |
-| `translations` | `Partial<ColorFieldTranslations>` |  | 读屏文案；缺省英文。 |
+| `translations` | `Partial<ColorFieldTranslations>` |  | 读屏文案；默认英文。 |
 | `onValueChange` | `(details: ColorFieldValueChangeDetails) => void` |  |  |
 
 ### 事件
@@ -120,7 +120,7 @@
 
 | 事件 | 载荷 | 说明 |
 | --- | --- | --- |
-| `value-change` | `ColorFieldValueChangeDetails` | 收下的值变化；detail 为 `{ value: string }`，打字途中不发 |
+| `value-change` | `ColorFieldValueChangeDetails` | 已接受的值变化；detail 为 `{ value: string }`，输入途中不发出 |
 
 ### 插槽
 
@@ -146,28 +146,28 @@
 
 | 成员 | 类型 | 说明 |
 | --- | --- | --- |
-| `value` | `string` | 当前值串（与 onValueChange 送出的是同一个）；空串表示没有颜色。 |
+| `value` | `string` | 当前值串（与 onValueChange 发出的是同一个）；空串表示没有颜色。 |
 | `empty` | `boolean` | 值为空串。 |
-| `text` | `string` | 输入框此刻该显示的字：有草稿显示草稿，否则显示值本身。 |
-| `editing` | `boolean` | 正在编辑：框里有一份还没收下的草稿。 |
-| `draftInvalid` | `boolean` | 上一次收下失败，草稿留在框里。 |
-| `rgba` | `ColorRgba` | 值解析出来的颜色；空串或解析不出时是兜底黑，此时看 empty / valid。 |
-| `valid` | `boolean` | 值串本身解析得了（空串不算有效）。 |
+| `text` | `string` | 输入框当前应显示的文字：有草稿显示草稿，否则显示值本身。 |
+| `editing` | `boolean` | 正在编辑：框中有一份尚未接受的草稿。 |
+| `draftInvalid` | `boolean` | 上一次接受失败，草稿留在框中。 |
+| `rgba` | `ColorRgba` | 值解析出的颜色；空串或不可解析时为兜底黑，此时参考 empty / valid。 |
+| `valid` | `boolean` | 值串本身可解析（空串不算有效）。 |
 | `disabled` | `boolean` |  |
 | `readOnly` | `boolean` |  |
-| `invalid` | `boolean` | 作者标的 invalid，或草稿收不下。 |
+| `invalid` | `boolean` | 作者标记的 invalid，或草稿不可接受。 |
 | `clearable` | `boolean` |  |
-| `canClear` | `boolean` | 清空按钮此刻是否可用（开了 clearable、可编辑、且有值）。 |
-| `setValue` | `(next: string) => void` | 直接写值：空串清空，解析不出的串原地不动；只受 disabled/readOnly 约束。 |
-| `clear` | `() => void` | 走清空意图，受 canClear 约束；无条件清空请用 setValue('')。 |
-| `commit` | `() => void` | 把框里的草稿收下（与回车 / 失焦同一条路）。 |
+| `canClear` | `boolean` | 清空按钮当前是否可用（开启 clearable、可编辑、且有值）。 |
+| `setValue` | `(next: string) => void` | 直接写值：空串清空，不可解析的串保持不变；只受 disabled / readOnly 约束。 |
+| `clear` | `() => void` | 发起清空意图，受 canClear 约束；无条件清空使用 setValue('')。 |
+| `commit` | `() => void` | 接受框中的草稿（与回车 / 失焦同一路径）。 |
 | `getRootProps` | `() => T['element']` |  |
-| `getControlProps` | `() => T['element']` | 视觉盒；描边、底色与聚焦环画在这个节点上，色块、输入框与清空按钮排在它里面。 |
+| `getControlProps` | `() => T['element']` | 视觉盒；描边、底色与聚焦环绘制在该节点上，色块、输入框与清空按钮排列在其中。 |
 | `getLabelProps` | `() => T['label']` |  |
-| `getSwatchProps` | `() => T['element']` | 当前颜色的色块：纯装饰，颜色已在输入框里；空值或无效时只画棋盘格。 |
+| `getSwatchProps` | `() => T['element']` | 当前颜色的色块：纯装饰，颜色已在输入框中；空值或无效时只绘制棋盘格。 |
 | `getInputProps` | `() => T['input']` |  |
 | `getClearTriggerProps` | `() => T['button']` |  |
-| `getHiddenInputProps` | `() => T['input']` | 表单影子：提交的是收下的值，框里的半截字不会被提交。给了 name 才带 name。 |
+| `getHiddenInputProps` | `() => T['input']` | 表单影子：提交的是已接受的值，框中的草稿不会被提交。提供 name 后才带 name。 |
 
 ## 无障碍
 
