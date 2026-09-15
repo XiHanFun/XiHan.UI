@@ -94,10 +94,10 @@ size 换的是条目的内边距、图文间距与两行文字的字号，不传
 
 | 属性 | 类型 | 必填 | 说明 |
 | --- | --- | --- | --- |
-| `bordered` | `boolean` |  | 外框：给整份列表画一圈描边与圆角。 |
-| `hoverable` | `boolean` |  | 指针悬停时条目换底色。 |
+| `bordered` | `boolean` |  | 外框：给整份列表绘制描边与圆角。 |
+| `hoverable` | `boolean` |  | 指针悬停时条目切换底色。 |
 | `size` | `Size` |  | 尺寸：sm / md / lg。 |
-| `split` | `boolean` |  | 条目之间画分隔线。 |
+| `split` | `boolean` |  | 条目之间绘制分隔线。 |
 
 ### connect API
 

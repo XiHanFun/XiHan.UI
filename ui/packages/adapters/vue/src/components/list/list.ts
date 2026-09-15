@@ -21,7 +21,7 @@ export const XhListRoot = defineComponent({
     hoverable: Boolean,
     split: Boolean,
     size: { type: String as PropType<Size> },
-    /** 根渲染成哪个标签，默认 ul；换成 div 即不进读屏的列表语义。 */
+    /** 根渲染为哪个标签，默认 ul；换为 div 即不进入读屏的列表语义。 */
     as: { type: String, default: 'ul' },
   },
   setup(props, { slots }) {
@@ -41,7 +41,7 @@ export const XhListRoot = defineComponent({
 export const XhListItem = defineComponent({
   name: 'XhListItem',
   props: {
-    /** 条目渲染成哪个标签，默认 li；根换成 div 时这里一并换掉。 */
+    /** 条目渲染为哪个标签，默认 li；根换为 div 时这里一并更换。 */
     as: { type: String, default: 'li' },
   },
   setup(props, { slots }) {

@@ -15,21 +15,21 @@ import { XhElement } from '../element-base'
 const STRING_CONVERTER = { fromAttribute: (v: string | null) => v ?? undefined }
 
 /**
- * `<xh-list>` —— Light-DOM 行为宿主，无状态机，把 connectList 产出打到各角色节点。
- * 除 root 外的部件全部可缺省：空列表、只有一行标题的条目都是合法形态。
+ * `<xh-list>`：Light-DOM 行为宿主，无状态机，把 connectList 产出接到各角色节点。
+ * 除 root 外的部件全部可省略：空列表、只有一行标题的条目都是合法形态。
  *
- * 标签由作者定：root 写 `<ul>`/`<ol>` 就进读屏的列表语义，写 `<div>` 就只是一摞盒子；
+ * 标签由作者决定：root 写 `<ul>` / `<ol>` 即进入读屏的列表语义，写 `<div>` 则只是一组盒子；
  * item 同理。组件不补 role。
  *
  * @customElement xh-list
- * @attr {boolean} bordered - 给整份列表画一圈描边与圆角
- * @attr {boolean} hoverable - 指针悬停时条目换底色
- * @attr {boolean} split - 条目之间画分隔线
+ * @attr {boolean} bordered - 给整份列表绘制描边与圆角
+ * @attr {boolean} hoverable - 指针悬停时条目切换底色
+ * @attr {boolean} split - 条目之间绘制分隔线
  * @attr {'sm'|'md'|'lg'} size - 尺寸，决定条目的内边距、图文间距与两行文字的字号
  * @csspart root - 列表根容器，承载 data-size / data-bordered / data-hoverable / data-split
  * @csspart item - 一条条目
  * @csspart item-media - 条目最前的媒体位，放头像、图标或缩略图
- * @csspart item-content - 条目的文字区，装标题与说明
+ * @csspart item-content - 条目的文字区，放置标题与说明
  * @csspart item-title - 条目标题
  * @csspart item-description - 条目标题下的说明
  * @csspart item-action - 条目末尾的操作位
