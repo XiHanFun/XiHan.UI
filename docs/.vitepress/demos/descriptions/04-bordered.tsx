@@ -1,4 +1,4 @@
-// 外框 | bordered 画一圈描边，并在格与格之间补上网格线
+// 外框 | bordered 绘制一圈描边，并在格与格之间补上网格线
 import type { ReactNode } from "react";
 import {
   XhDescriptionsItem,

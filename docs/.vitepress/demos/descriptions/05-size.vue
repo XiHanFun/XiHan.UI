@@ -1,4 +1,4 @@
-<!-- 尺寸 | size 换的是每格的内边距、组与组的间距与整体字号，不传 size 即默认档 -->
+<!-- 尺寸 | size 改变每格的内边距、组与组的间距与整体字号，不传 size 即默认档 -->
 <script setup lang="ts">
 import {
   XhDescriptionsItem,
