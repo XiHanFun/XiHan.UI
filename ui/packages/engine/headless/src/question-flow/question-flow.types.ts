@@ -16,7 +16,7 @@ export type QuestionFlowType = 'single' | 'multiple'
 /** 一个可选项。 */
 export interface QuestionFlowOption {
   value: string
-  /** 展示文本；缺省退回 value。 */
+  /** 展示文本；默认回退为 value。 */
   label?: string
   disabled?: boolean
 }
@@ -24,12 +24,12 @@ export interface QuestionFlowOption {
 /** 一道题。 */
 export interface QuestionFlowQuestion {
   id: string
-  /** 题干。它同时是选项组的可访问名；不写就退到 translations 的兜底文案。 */
+  /** 题干。它同时是选项组的可访问名；未提供时回退为 translations 的兜底文案。 */
   prompt?: string
-  /** single = 互斥单选（radiogroup），multiple = 多选（group + checkbox）。缺省 single。 */
+  /** single = 互斥单选（radiogroup），multiple = 多选（group + checkbox）。默认 single。 */
   type?: QuestionFlowType
   options: readonly QuestionFlowOption[]
-  /** 允许不作答就走下一题。 */
+  /** 允许不作答直接进入下一题。 */
   optional?: boolean
 }
 
@@ -39,7 +39,7 @@ export type QuestionFlowAnswers = Readonly<Record<string, readonly string[]>>
 /** 每题一份自由文本，键是题 id。 */
 export type QuestionFlowNotes = Readonly<Record<string, string>>
 
-/** 当前题量出来的几何（px），offset 是它在轨道里的起始位移。 */
+/** 当前题测得的几何（px），offset 是它在轨道中的起始位移。 */
 export interface QuestionFlowViewport {
   blockSize: number
   offset: number
@@ -63,56 +63,56 @@ export interface QuestionFlowSkipDetails {
 }
 
 export interface QuestionFlowSubmitDetails {
-  /** 提交那一刻的答案快照。 */
+  /** 提交时的答案快照。 */
   answers: QuestionFlowAnswers
-  /** 提交那一刻的自由文本快照。 */
+  /** 提交时的自由文本快照。 */
   notes: QuestionFlowNotes
 }
 
-/** 部件自报它属于哪一题。connect 据此产出属性，不反查 DOM。 */
+/** 部件声明所属的题目。connect 据此产出属性，不反查 DOM。 */
 export interface QuestionFlowQuestionProps {
   id: string
 }
 
-/** 选项自报家门：属于哪一题、值是什么；禁用可由数据代为声明。 */
+/** 选项声明的身份：所属题目与值；禁用可由数据代为声明。 */
 export interface QuestionFlowItemProps {
   questionId: string
   value: string
-  /** 逐条覆盖禁用；缺省时回 questions 里查。 */
+  /** 逐条覆盖禁用；未提供时从 questions 查询。 */
   disabled?: boolean
 }
 
-/** 适配器在挂载前填入的 DOM 取值口。 */
+/** 适配器在挂载前填入的 DOM 取值器。 */
 export interface QuestionFlowRefs {
-  /** 题目轨道：量当前题几何时的查询容器与参照系。 */
+  /** 题目轨道：测量当前题几何时的查询容器与参照系。 */
   getTrackEl: () => HTMLElement | null
 }
 
 export interface QuestionFlowSchema extends MachineSchema {
   props: {
     questions?: readonly QuestionFlowQuestion[]
-    /** 当前题下标。给定即受控：内部不再自改，只发 onIndexChange。 */
+    /** 当前题下标。提供即受控：内部不再自行修改，只发 onIndexChange。 */
     index?: number
     defaultIndex?: number
-    /** 答案表。给定即受控。 */
+    /** 答案表。提供即受控。 */
     answers?: QuestionFlowAnswers
     defaultAnswers?: QuestionFlowAnswers
-    /** 自由文本表。给定即受控。 */
+    /** 自由文本表。提供即受控。 */
     notes?: QuestionFlowNotes
     defaultNotes?: QuestionFlowNotes
-    /** 答题状态。给定即受控。 */
+    /** 答题状态。提供即受控。 */
     status?: QuestionFlowStatus
     defaultStatus?: QuestionFlowStatus
     /**
-     * 单选选中后自动走下一题，默认开。
-     * **它只走下一题，末题上不会替人按发送。**
+     * 单选选中后自动进入下一题，默认开启。
+     * 它只进入下一题，末题上不会替用户提交。
      */
     autoAdvance?: boolean
-    /** 自动前进前等多久（毫秒），默认 480。非有限值或负数不起计时器。 */
+    /** 自动前进前等待的时长（毫秒），默认 480。非有限值或负数不启动计时器。 */
     autoAdvanceDelay?: number
-    /** 允许跳过，默认开。关掉后跳过按钮收起，SKIP 事件也不再生效。 */
+    /** 允许跳过，默认开启。关闭后跳过按钮收起，SKIP 事件也不再生效。 */
     allowSkip?: boolean
-    /** 选项组内漫游走到尽头是否回绕，默认 true。 */
+    /** 选项组内漫游到达末尾是否回绕，默认 true。 */
     loop?: boolean
     variant?: ControlVariant
     tone?: Tone
@@ -125,13 +125,13 @@ export interface QuestionFlowSchema extends MachineSchema {
     onSubmit?: (details: QuestionFlowSubmitDetails) => void
   }
   context: {
-    /** 当前题下标；读出来的原值可能越界，取用前一律夹到题数范围内。 */
+    /** 当前题下标；读出的原值可能越界，使用前一律夹到题数范围内。 */
     index: number
     answers: QuestionFlowAnswers
     notes: QuestionFlowNotes
-    /** 当前题量出来的几何；量不到时为 null。不受控、不对外通知。 */
+    /** 当前题测得的几何；无法测量时为 null。不受控、不对外通知。 */
     viewport: QuestionFlowViewport | null
-    /** 等着自动前进的那一题；没有待办时为 null。 */
+    /** 等待自动前进的题目；没有待办时为 null。 */
     pendingAdvance: string | null
   }
   computed: Record<string, never>
@@ -145,9 +145,9 @@ export interface QuestionFlowSchema extends MachineSchema {
     | { type: 'PREV' }
     | { type: 'SKIP' }
     | { type: 'SUBMIT' }
-    /** 重量当前题的几何：尺寸观察器与使用者的 measure() 都发它。 */
+    /** 重新测量当前题的几何：尺寸观察器与使用者的 measure() 都发出它。 */
     | { type: 'VIEWPORT.MEASURE' }
-    /** 自动前进到点。只声明在答题态上，迟到的定时事件落地即静默丢弃。 */
+    /** 自动前进到期。只声明在答题态上，迟到的定时事件落地即静默丢弃。 */
     | { type: 'after.autoAdvance' }
     // 受控回写：宿主改 status 后由 watch 派发，无条件跳转、不再通知
     | { type: 'CONTROLLED.ANSWERING' }
@@ -171,22 +171,22 @@ export interface QuestionFlowSchema extends MachineSchema {
 
 export interface QuestionFlowApi<T extends PropTypes = PropTypes> {
   status: QuestionFlowStatus
-  /** 已经交卷了。 */
+  /** 已提交。 */
   submitted: boolean
   /** 夹到题数范围内的当前题下标。 */
   index: number
   /** 题数。 */
   count: number
-  /** 当前题；一道题都没有时为 undefined。 */
+  /** 当前题；没有题目时为 undefined。 */
   current: QuestionFlowQuestion | undefined
   isFirst: boolean
   isLast: boolean
-  /** 当前题答得能往下走了吗：选了选项、写了自由文本，或这题本就可跳过。 */
+  /** 当前题是否可以进入下一题：已选选项、已填自由文本，或该题本身可跳过。 */
   canAdvance: boolean
   allowSkip: boolean
-  /** 给眼睛看的 N / M。它对读屏隐藏，进度由播报区念。 */
+  /** 视觉上的 N / M。它对读屏隐藏，进度由播报区朗读。 */
   counter: string
-  /** 念给读屏的那一句：答题中念进度，交卷后念结果。 */
+  /** 读屏朗读的语句：答题中朗读进度，提交后朗读结果。 */
   announcement: string
   answers: QuestionFlowAnswers
   notes: QuestionFlowNotes
@@ -201,7 +201,7 @@ export interface QuestionFlowApi<T extends PropTypes = PropTypes> {
   submit: () => void
   toggleOption: (questionId: string, value: string) => void
   setNote: (questionId: string, value: string) => void
-  /** 重量一遍当前题的几何。换题与题目增删都会自动重量，容器尺寸变化由尺寸观察器接住。 */
+  /** 重新测量当前题的几何。换题与题目增删都会自动重新测量，容器尺寸变化由尺寸观察器接管。 */
   measure: () => void
   getRootProps: () => T['element']
   getViewportProps: () => T['element']
@@ -224,27 +224,27 @@ export interface QuestionFlowApi<T extends PropTypes = PropTypes> {
 }
 
 export interface QuestionFlowTranslations {
-  /** 题目区的可访问名；题干在场时由题干命名，这一句只在题干缺席时兜底。 */
+  /** 题目区的可访问名；题干存在时由题干命名，该文案只在题干缺席时兜底。 */
   prompt: string
   /** 选项组的可访问名；同样只在题干缺席时兜底。 */
   options: string
-  /** 自由文本那一格的可访问名。 */
+  /** 自由文本字段的可访问名。 */
   note: string
-  /** 自由文本那一格的占位文字；不给就不产出 placeholder。 */
+  /** 自由文本字段的占位文字；未提供时不产出 placeholder。 */
   notePlaceholder: string
-  /** 上一题那颗按钮的可访问名。它通常只画一枚箭头，所以这一句**总会发出去**。 */
+  /** 上一题按钮的可访问名。它通常只绘制一个箭头，因此该文案总会发出。 */
   prev: string
-  /** 下一题那颗按钮的可访问名，同样总会发出去。 */
+  /** 下一题按钮的可访问名，同样总会发出。 */
   next: string
-  /** 跳过键的可访问名。**不给就不产出 aria-label**——它一般带可见文字，盖掉反而更糟。 */
+  /** 跳过键的可访问名。未提供时不产出 aria-label：它一般带可见文字，覆盖反而更差。 */
   skip: string
-  /** 不是末题时提交键的可访问名。**不给就不产出 aria-label**——同跳过键，它带可见文字。 */
+  /** 不是末题时提交键的可访问名。未提供时不产出 aria-label：同跳过键，它带可见文字。 */
   continue: string
-  /** 末题时同一颗提交键的可访问名，同样不给就不产出。 */
+  /** 末题时同一个提交键的可访问名，同样未提供时不产出。 */
   send: string
   /** 进度播报，形如 `Question 2 of 3`。 */
   progress: (current: number, total: number) => string
-  /** 交卷后播报的那一句。 */
+  /** 提交后播报的语句。 */
   submitted: string
 }
 
@@ -257,7 +257,7 @@ export function clampQuestionIndex(index: number, count: number): number {
   return Math.min(Math.max(Math.trunc(index), 0), count - 1)
 }
 
-/** 这一题答得能往下走了吗：选了选项、写了自由文本，或它本就可跳过。 */
+/** 该题是否可以进入下一题：已选选项、已填自由文本，或它本身可跳过。 */
 export function canAdvanceQuestion(
   question: QuestionFlowQuestion | undefined,
   answers: QuestionFlowAnswers,

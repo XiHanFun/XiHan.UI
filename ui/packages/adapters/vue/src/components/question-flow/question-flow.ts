@@ -117,7 +117,7 @@ export const XhQuestionFlowRoot = defineComponent({
   },
 })
 
-/** 定高并裁切的那一格；高度由机器量好写进内联样式的私有槽。 */
+/** 定高并裁切的格子；高度由状态机测量后写入内联样式的私有槽。 */
 export const XhQuestionFlowViewport = defineComponent({
   name: 'XhQuestionFlowViewport',
   setup(_, { slots }) {
@@ -126,7 +126,7 @@ export const XhQuestionFlowViewport = defineComponent({
   },
 })
 
-/** 纵向排布全部题目的轨道，同时是量测的参照系。 */
+/** 纵向排布全部题目的轨道，同时是测量的参照系。 */
 export const XhQuestionFlowTrack = defineComponent({
   name: 'XhQuestionFlowTrack',
   setup(_, { slots }) {

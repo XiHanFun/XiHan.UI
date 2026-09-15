@@ -100,18 +100,18 @@ size 换问句、选项行与页脚按钮的几何档，三档共用同一份问
 | 属性 | 类型 | 必填 | 说明 |
 | --- | --- | --- | --- |
 | `questions` | `readonly QuestionFlowQuestion[]` |  |  |
-| `index` | `number` |  | 当前题下标。给定即受控：内部不再自改，只发 onIndexChange。 |
+| `index` | `number` |  | 当前题下标。提供即受控：内部不再自行修改，只发 onIndexChange。 |
 | `defaultIndex` | `number` |  |  |
-| `answers` | `QuestionFlowAnswers` |  | 答案表。给定即受控。 |
+| `answers` | `QuestionFlowAnswers` |  | 答案表。提供即受控。 |
 | `defaultAnswers` | `QuestionFlowAnswers` |  |  |
-| `notes` | `QuestionFlowNotes` |  | 自由文本表。给定即受控。 |
+| `notes` | `QuestionFlowNotes` |  | 自由文本表。提供即受控。 |
 | `defaultNotes` | `QuestionFlowNotes` |  |  |
-| `status` | `QuestionFlowStatus` |  | 答题状态。给定即受控。 |
+| `status` | `QuestionFlowStatus` |  | 答题状态。提供即受控。 |
 | `defaultStatus` | `QuestionFlowStatus` |  |  |
-| `autoAdvance` | `boolean` |  | 单选选中后自动走下一题，默认开。 **它只走下一题，末题上不会替人按发送。** |
-| `autoAdvanceDelay` | `number` |  | 自动前进前等多久（毫秒），默认 480。非有限值或负数不起计时器。 |
-| `allowSkip` | `boolean` |  | 允许跳过，默认开。关掉后跳过按钮收起，SKIP 事件也不再生效。 |
-| `loop` | `boolean` |  | 选项组内漫游走到尽头是否回绕，默认 true。 |
+| `autoAdvance` | `boolean` |  | 单选选中后自动进入下一题，默认开启。 它只进入下一题，末题上不会替用户提交。 |
+| `autoAdvanceDelay` | `number` |  | 自动前进前等待的时长（毫秒），默认 480。非有限值或负数不启动计时器。 |
+| `allowSkip` | `boolean` |  | 允许跳过，默认开启。关闭后跳过按钮收起，SKIP 事件也不再生效。 |
+| `loop` | `boolean` |  | 选项组内漫游到达末尾是否回绕，默认 true。 |
 | `variant` | `ControlVariant` |  |  |
 | `tone` | `Tone` |  |  |
 | `size` | `Size` |  |  |
@@ -170,16 +170,16 @@ size 换问句、选项行与页脚按钮的几何档，三档共用同一份问
 | 成员 | 类型 | 说明 |
 | --- | --- | --- |
 | `status` | `QuestionFlowStatus` |  |
-| `submitted` | `boolean` | 已经交卷了。 |
+| `submitted` | `boolean` | 已提交。 |
 | `index` | `number` | 夹到题数范围内的当前题下标。 |
 | `count` | `number` | 题数。 |
-| `current` | `QuestionFlowQuestion \| undefined` | 当前题；一道题都没有时为 undefined。 |
+| `current` | `QuestionFlowQuestion \| undefined` | 当前题；没有题目时为 undefined。 |
 | `isFirst` | `boolean` |  |
 | `isLast` | `boolean` |  |
-| `canAdvance` | `boolean` | 当前题答得能往下走了吗：选了选项、写了自由文本，或这题本就可跳过。 |
+| `canAdvance` | `boolean` | 当前题是否可以进入下一题：已选选项、已填自由文本，或该题本身可跳过。 |
 | `allowSkip` | `boolean` |  |
-| `counter` | `string` | 给眼睛看的 N / M。它对读屏隐藏，进度由播报区念。 |
-| `announcement` | `string` | 念给读屏的那一句：答题中念进度，交卷后念结果。 |
+| `counter` | `string` | 视觉上的 N / M。它对读屏隐藏，进度由播报区朗读。 |
+| `announcement` | `string` | 读屏朗读的语句：答题中朗读进度，提交后朗读结果。 |
 | `answers` | `QuestionFlowAnswers` |  |
 | `notes` | `QuestionFlowNotes` |  |
 | `answersOf` | `(questionId: string) => readonly string[]` |  |
@@ -193,7 +193,7 @@ size 换问句、选项行与页脚按钮的几何档，三档共用同一份问
 | `submit` | `() => void` |  |
 | `toggleOption` | `(questionId: string, value: string) => void` |  |
 | `setNote` | `(questionId: string, value: string) => void` |  |
-| `measure` | `() => void` | 重量一遍当前题的几何。换题与题目增删都会自动重量，容器尺寸变化由尺寸观察器接住。 |
+| `measure` | `() => void` | 重新测量当前题的几何。换题与题目增删都会自动重新测量，容器尺寸变化由尺寸观察器接管。 |
 | `getRootProps` | `() => T['element']` |  |
 | `getViewportProps` | `() => T['element']` |  |
 | `getTrackProps` | `() => T['element']` |  |
