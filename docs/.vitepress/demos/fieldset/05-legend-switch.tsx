@@ -1,4 +1,4 @@
-// 总开关放进 legend | 按 HTML 规范，首个 legend 里的控件不受 fieldset[disabled] 连坐，总开关因此始终可点
+// 总开关放进 legend | 按 HTML 规范，首个 legend 中的控件不受 fieldset[disabled] 连带影响，总开关因此始终可点击
 import type { ReactNode } from "react";
 import { XhFieldsetDescription, XhFieldsetLegend, XhFieldsetRoot } from "@xihan-ui/react";
 import { useState } from "react";

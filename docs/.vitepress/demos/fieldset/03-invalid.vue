@@ -1,4 +1,4 @@
-<!-- 无效态 | invalid 一翻，错误文案接进描述链并显出；它带 role=alert，翻转那一刻读屏立即播报 -->
+<!-- 无效态 | invalid 切换后，错误文案接入描述链并显示；它带 role=alert，切换时读屏立即播报 -->
 <script setup lang="ts">
 import {
   XhFieldsetDescription,
