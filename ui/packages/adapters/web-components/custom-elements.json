@@ -46020,7 +46020,7 @@
       "declarations": [
         {
           "kind": "class",
-          "description": "`<xh-signature-pad>` —— Light-DOM 行为宿主：作者写 root / control / path 三个必需角色节点\n（可再写 label、guide、clear-trigger 与 hidden-input），元素跑 signature-pad 机器并把 connect 产出打上去。\n\ncontrol 必须是 `<svg>`，guide 是它里面的 `<line>`、path 是它里面的 `<path>`：\n笔迹是一条填充轮廓，粗细随压感变，描边给不出这个效果。viewBox 由元素按第一笔落下时\n量到的画布尺寸写上去，作者不要自己写。\n\n画布本身不接键盘。签名天然依赖指针，要求签名的流程必须另给一条不依赖指针的替代路径。\n\n笔迹外形（drawing）与读屏文案（translations）是对象，只走 property。\n清空与取 SVG 另有 `clear()` / `toSvg()` 两个方法。",
+          "description": "`<xh-signature-pad>`：Light-DOM 行为宿主：作者写 root / control / path 三个必需角色节点\n（可再写 label、guide、clear-trigger 与 hidden-input），元素运行 signature-pad 状态机并把 connect 产出接上。\n\ncontrol 必须是 `<svg>`，guide 是其中的 `<line>`、path 是其中的 `<path>`：\n笔迹是一条填充轮廓，粗细随压感变化，描边无法实现该效果。viewBox 由元素按第一笔落下时\n测得的画布尺寸写入，作者不应自行编写。\n\n画布本身不接受键盘。签名天然依赖指针，要求签名的流程必须另提供一条不依赖指针的替代路径。\n\n笔迹外形（drawing）与读屏文案（translations）是对象，只能通过 property 设置。\n清空与获取 SVG 另有 `clear()` / `toSvg()` 两个方法。",
           "name": "XhSignaturePadElement",
           "cssParts": [
             {
@@ -46032,15 +46032,15 @@
               "name": "label"
             },
             {
-              "description": "role=img 的画布，必须是 `<svg>`，指针落笔全在它身上",
+              "description": "role=img 的画布，必须是 `<svg>`，指针落笔全部在它身上",
               "name": "control"
             },
             {
-              "description": "基准线，必须是 control 里的 `<line>`；落位由连接层按百分比给出",
+              "description": "基准线，必须是 control 中的 `<line>`；落位由连接层按百分比给出",
               "name": "guide"
             },
             {
-              "description": "全部笔迹，必须是 control 里的 `<path>`；每一笔是它的一条子路径",
+              "description": "全部笔迹，必须是 control 中的 `<path>`；每一笔是它的一条子路径",
               "name": "path"
             },
             {
@@ -46048,7 +46048,7 @@
               "name": "clear-trigger"
             },
             {
-              "description": "签没签的活区域（role=status）；节点里没写字时由元素填内建文案",
+              "description": "签名状态的活区域（role=status）；节点中未写文字时由元素填入内建文案",
               "name": "status"
             },
             {
@@ -46209,7 +46209,7 @@
                   "text": "SignaturePadApi"
                 }
               },
-              "description": "命令式入口共用的取法；机器要到进文档（hostConnected）才建，未建则抛。"
+              "description": "命令式入口共用的取法；状态机在进入文档（hostConnected）后才建立，未建立则抛错。"
             },
             {
               "kind": "method",
@@ -46219,7 +46219,7 @@
                   "text": "void"
                 }
               },
-              "description": "抹掉全部笔迹，与点清空按钮同一条路径（照样发 draw / draw-end）。"
+              "description": "清除全部笔迹，与点击清空按钮同一路径（照常触发 draw / draw-end）。"
             },
             {
               "kind": "method",
@@ -46237,7 +46237,7 @@
               "type": {
                 "text": "boolean"
               },
-              "description": "一笔都没画。提交前拦空签名读它。",
+              "description": "是否未绘制任何笔迹。提交前拦截空签名时读取。",
               "readonly": true
             },
             {
@@ -46246,7 +46246,7 @@
               "privacy": "private",
               "readonly": true,
               "default": "new WeakMap<HTMLElement, boolean>()",
-              "description": "状态文本是否归元素填：节点非空即判为作者自己写了内容。\n首次见到时定死，之后不再回读——回读分不出内容是作者写的还是上一帧自己写的。"
+              "description": "状态文本是否归元素填入：节点非空即判定为作者自己写了内容。\n首次见到时固定，之后不再回读：回读无法区分内容是作者写的还是上一帧自己写的。"
             },
             {
               "kind": "method",
@@ -46285,14 +46285,14 @@
           ],
           "events": [
             {
-              "description": "笔迹变了就通知一次（含清空与表单重置）；detail 为 `{ paths: string[], path: string }`",
+              "description": "笔迹变化时通知一次（含清空与表单重置）；detail 为 `{ paths: string[], path: string }`",
               "name": "draw",
               "type": {
                 "text": "SignaturePadDrawDetails"
               }
             },
             {
-              "description": "签名定稿时通知一次（抬笔、清空、表单重置）；detail 为 `{ paths: string[], svg: string }`，svg 可直接落库",
+              "description": "签名定稿时通知一次（抬笔、清空、表单重置）；detail 为 `{ paths: string[], svg: string }`，svg 可直接存储",
               "name": "draw-end",
               "type": {
                 "text": "SignaturePadDrawEndDetails"
@@ -46304,7 +46304,7 @@
               "type": {
                 "text": "boolean | undefined"
               },
-              "description": "整块不可交互：落笔不认，清空按钮也按不动",
+              "description": "整块不可交互：不响应落笔，清空按钮也不可按下",
               "name": "disabled",
               "fieldName": "disabled"
             },
@@ -46312,7 +46312,7 @@
               "type": {
                 "text": "boolean | undefined"
               },
-              "description": "只读：画好的签名照常显示，但改不动",
+              "description": "只读：已绘制的签名照常显示，但不可修改",
               "name": "read-only",
               "fieldName": "readOnly"
             },
@@ -46328,7 +46328,7 @@
               "type": {
                 "text": "boolean | undefined"
               },
-              "description": "校验未通过的标记，只改外观与表单影子上的 aria-invalid",
+              "description": "校验未通过的标记，只改变外观与表单影子上的 aria-invalid",
               "name": "invalid",
               "fieldName": "invalid"
             },
@@ -46336,7 +46336,7 @@
               "type": {
                 "text": "string | undefined"
               },
-              "description": "表单字段名；给了表单影子才带 name 并参与提交",
+              "description": "表单字段名；提供后表单影子才带 name 并参与提交",
               "name": "name",
               "fieldName": "name"
             }

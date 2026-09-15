@@ -30,7 +30,7 @@ export interface XhSignaturePadRootProps extends Omit<ComponentPropsWithRef<'div
   readOnly?: boolean
   required?: boolean
   invalid?: boolean
-  /** 表单字段名；给了才参与提交。 */
+  /** 表单字段名；提供后才参与提交。 */
   name?: string
   drawing?: SignaturePadDrawingOptions
   translations?: Partial<SignaturePadTranslations>
@@ -91,7 +91,7 @@ export function XhSignaturePadRoot({
 XhSignaturePadRoot.xhEvents = ['draw', 'draw-end'] as const
 
 export interface XhSignaturePadLabelProps extends ComponentPropsWithRef<'span'> {}
-/** 不用原生 label：画布是 svg、不是可被 label 关联的表单控件，名字经 aria-labelledby 挂过去。 */
+/** 不使用原生 label：画布是 svg、不是可被 label 关联的表单控件，名字经 aria-labelledby 关联。 */
 export function XhSignaturePadLabel({ children, ...rest }: XhSignaturePadLabelProps): ReactNode {
   const ctx = useSignaturePadContext()
   return (
@@ -103,8 +103,8 @@ export function XhSignaturePadLabel({ children, ...rest }: XhSignaturePadLabelPr
 
 export interface XhSignaturePadControlProps extends ComponentPropsWithRef<'svg'> {}
 /**
- * 那块接指针的画布。笔迹与基准线都是这棵 svg 子树里的图元，命名空间由它带下去；
- * viewBox 由连接层按钉住的尺寸给。
+ * 接收指针的画布。笔迹与基准线都是这棵 svg 子树中的图元，命名空间由它向下传递；
+ * viewBox 由连接层按固定的尺寸给出。
  */
 export function XhSignaturePadControl({ children, ...rest }: XhSignaturePadControlProps): ReactNode {
   const ctx = useSignaturePadContext()
@@ -145,7 +145,7 @@ export function XhSignaturePadClearTrigger({ children, ...rest }: XhSignaturePad
 }
 
 export interface XhSignaturePadStatusProps extends ComponentPropsWithRef<'span'> {}
-/** 把"签没签"念给读屏的活区域；作者不写内容就用内建那句话。 */
+/** 向读屏朗读是否已签名的活区域；作者未写内容时使用内建文案。 */
 export function XhSignaturePadStatus({ children, ...rest }: XhSignaturePadStatusProps): ReactNode {
   const ctx = useSignaturePadContext()
   return (
@@ -156,7 +156,7 @@ export function XhSignaturePadStatus({ children, ...rest }: XhSignaturePadStatus
 }
 
 export interface XhSignaturePadHiddenInputProps extends Omit<ComponentPropsWithRef<'input'>, 'value' | 'defaultValue' | 'type'> {}
-/** 签名的表单出口，序列化成一份 SVG。 */
+/** 签名的表单出口，序列化为一份 SVG。 */
 export function XhSignaturePadHiddenInput({ ...rest }: XhSignaturePadHiddenInputProps): ReactNode {
   const ctx = useSignaturePadContext()
   return (

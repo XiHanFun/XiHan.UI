@@ -129,15 +129,15 @@ drawing 调笔宽与压感：thinning 越大，划得越快笔画越细，simula
 
 | 属性 | 类型 | 必填 | 说明 |
 | --- | --- | --- | --- |
-| `disabled` | `boolean` |  | 整块不可交互：落笔不认，清空按钮也按不动。 |
-| `readOnly` | `boolean` |  | 只读：画好的签名照常显示，但改不动。 |
+| `disabled` | `boolean` |  | 整块不可交互：不响应落笔，清空按钮也不可按下。 |
+| `readOnly` | `boolean` |  | 只读：已绘制的签名照常显示，但不可修改。 |
 | `required` | `boolean` |  |  |
-| `invalid` | `boolean` |  | 校验未通过的标记，只改外观与表单影子上的 aria-invalid。 |
-| `name` | `string` |  | 表单字段名；给了表单影子才带 name 并参与提交。 |
-| `drawing` | `SignaturePadDrawingOptions` |  | 笔迹外形。缺省即 4px 恒定粗细。 |
+| `invalid` | `boolean` |  | 校验未通过的标记，只改变外观与表单影子上的 aria-invalid。 |
+| `name` | `string` |  | 表单字段名；提供后表单影子才带 name 并参与提交。 |
+| `drawing` | `SignaturePadDrawingOptions` |  | 笔迹外形。默认为 4px 恒定粗细。 |
 | `translations` | `Partial<SignaturePadTranslations>` |  |  |
 | `onDraw` | `(details: SignaturePadDrawDetails) => void` |  | 每收进一个点通知一次，清空与表单重置时也通知一次（路径为空）。 |
-| `onDrawEnd` | `(details: SignaturePadDrawEndDetails) => void` |  | 签名定稿时通知一次并带上可直接提交的 SVG：抬笔、清空、表单重置这三条路径都发。 |
+| `onDrawEnd` | `(details: SignaturePadDrawEndDetails) => void` |  | 签名定稿时通知一次并附带可直接提交的 SVG：抬笔、清空、表单重置三条路径都发出。 |
 
 ### 事件
 
@@ -145,8 +145,8 @@ drawing 调笔宽与压感：thinning 越大，划得越快笔画越细，simula
 
 | 事件 | 载荷 | 说明 |
 | --- | --- | --- |
-| `draw` | `SignaturePadDrawDetails` | 笔迹变了就通知一次（含清空与表单重置）；detail 为 `{ paths: string[], path: string }` |
-| `draw-end` | `SignaturePadDrawEndDetails` | 签名定稿时通知一次（抬笔、清空、表单重置）；detail 为 `{ paths: string[], svg: string }`，svg 可直接落库 |
+| `draw` | `SignaturePadDrawDetails` | 笔迹变化时通知一次（含清空与表单重置）；detail 为 `{ paths: string[], path: string }` |
+| `draw-end` | `SignaturePadDrawEndDetails` | 签名定稿时通知一次（抬笔、清空、表单重置）；detail 为 `{ paths: string[], svg: string }`，svg 可直接存储 |
 
 ### 插槽
 
@@ -173,11 +173,11 @@ drawing 调笔宽与压感：thinning 越大，划得越快笔画越细，simula
 | 成员 | 类型 | 说明 |
 | --- | --- | --- |
 | `paths` | `readonly string[]` | 逐笔的填充轮廓 d 串，按落笔先后排列。 |
-| `empty` | `boolean` | 一笔都没画。 |
+| `empty` | `boolean` | 没有任何笔迹。 |
 | `drawing` | `boolean` | 笔正落在画布上。 |
 | `disabled` | `boolean` |  |
 | `readOnly` | `boolean` |  |
-| `statusText` | `string` | 签没签的那句话，写进 status 部件；适配器在作者没自己写文字时把它填进节点。 |
+| `statusText` | `string` | 是否已签名的文案，写入 status 部件；适配器在作者未自行编写文字时把它填入节点。 |
 | `toSvg` | `() => string` | 当前签名的独立 SVG 文档，与表单影子提交的是同一份；空签名为空串。 |
 | `clear` | `() => void` |  |
 | `getRootProps` | `() => T['element']` |  |
@@ -186,7 +186,7 @@ drawing 调笔宽与压感：thinning 越大，划得越快笔画越细，simula
 | `getGuideProps` | `() => T['element']` |  |
 | `getPathProps` | `() => T['element']` |  |
 | `getClearTriggerProps` | `() => T['button']` |  |
-| `getStatusProps` | `() => T['element']` | 状态出口：一块 role=status 的活区域，签上与清空都会播报一次。 |
+| `getStatusProps` | `() => T['element']` | 状态出口：一块 role=status 的活区域，签名与清空都会播报一次。 |
 | `getHiddenInputProps` | `() => T['input']` | 表单出口：一份视觉隐藏的原生输入，随表单提交当前签名。 |
 
 ## 无障碍
