@@ -12,7 +12,7 @@
 
 ## 用法
 
-root 持有状态，label 与 control 里的 input 各自向它取属性；不传 value 即为非受控，组件自己维护值
+root 持有状态，label 与 control 中的 input 各自向它取属性；不传 value 即为非受控，组件自行维护值
 
 <XhDemo src="text-field/01-basic" />
 
@@ -26,43 +26,43 @@ root 持有状态，label 与 control 里的 input 各自向它取属性；不�
 
 ### 受控
 
-传了 value 就由宿主说了算，组件自己不再改状态；变化经 value-change 报出来，写不写回由宿主定
+传入 value 后由宿主决定，组件自身不再修改状态；变化经 value-change 报告，是否写回由宿主决定
 
 <XhDemo src="text-field/02-controlled" />
 
 ### 可清空与字数上限
 
-Control 把输入框与清空按钮圈进同一个框，clearable 让清空按钮可用并把 Escape 接管过来，maxLength 同时落成原生 maxlength 与机器侧截断
+Control 把输入框与清空按钮圈进同一个框，clearable 使清空按钮可用并接管 Escape，maxLength 同时写为原生 maxlength 与状态机侧截断
 
 <XhDemo src="text-field/03-clearable" />
 
 ### 禁用与校验态
 
-disabled 与 readOnly 都改不动值，invalid 只把 aria-invalid 标出来、不拦输入
+disabled 与 readOnly 都不可修改值，invalid 只标注 aria-invalid、不拦截输入
 
 <XhDemo src="text-field/04-states" />
 
 ### 变体
 
-variant 决定底与描边怎么画：描边、淡色填底、无框；输入框没有实心档
+variant 决定底色与描边的绘制方式：描边、淡色填底、无框；输入框没有实心档
 
 <XhDemo src="text-field/05-variant" />
 
 ### 颜色
 
-tone 决定用哪族颜色，与 variant 正交；这里固定 subtle 形态，语气的底色差别不必聚焦就看得见
+tone 决定使用哪族颜色，与 variant 正交；这里固定 subtle 形态，语气的底色差别不必聚焦即可看到
 
 <XhDemo src="text-field/06-tone" />
 
 ### 尺寸
 
-size 只改高度、内边距与字号，标签与清空按钮一起跟着换档；不写就是缺省档
+size 只改变高度、内边距与字号，标签与清空按钮一起换档；不写即默认档
 
 <XhDemo src="text-field/07-size" />
 
 ### 程序化改值
 
-setValue 直接写值，只受禁用、只读与字数上限约束；clear 走清空意图，canClear 不成立时按兵不动
+setValue 直接写值，只受禁用、只读与字数上限约束；clear 执行清空意图，canClear 不成立时不做任何处理
 
 <XhDemo src="text-field/08-programmatic" />
 
@@ -74,7 +74,7 @@ setValue 直接写值，只受禁用、只读与字数上限约束；clear 走�
 
 ### 事件
 
-值的变化走组件的 value-change，聚焦失焦这类原生事件直接写在 input 部件上
+值的变化经组件的 value-change，聚焦失焦等原生事件直接写在 input 部件上
 
 <XhDemo src="text-field/10-events" />
 
@@ -86,31 +86,31 @@ setValue 直接写值，只受禁用、只读与字数上限约束；clear 走�
 
 ### 密码与明暗切换
 
-写在 input 部件上的 type 盖过默认的 text，明暗由宿主的一个布尔翻转
+写在 input 部件上的 type 覆盖默认的 text，明暗由宿主的一个布尔切换
 
 <XhDemo src="text-field/12-password" />
 
 ### 限制可输入的字符
 
-beforeinput 直接写在 input 部件上，非法字符进不了框，值与框里的内容始终一致
+beforeinput 直接写在 input 部件上，非法字符无法进入框，值与框中的内容始终一致
 
 <XhDemo src="text-field/13-filter" />
 
 ### 聚焦与选区
 
-input 部件就是一个原生 input，拿到它的节点就能聚焦、全选、把光标挪到末尾
+input 部件就是一个原生 input，取得它的节点即可聚焦、全选、把光标移到末尾
 
 <XhDemo src="text-field/14-focus" />
 
 ### 输入组
 
-圆角槽换成只留外侧的一组值，中缝用负外边距叠掉一条描边，相邻控件拼成一体
+圆角槽换为只保留外侧的一组值，中缝用负外边距叠掉一条描边，相邻控件拼为一体
 
 <XhDemo src="text-field/15-input-group" />
 
-### 多行与自动长高
+### 多行与自动增高
 
-input 部件写成 textarea 即多行宿主；autoSize 让高度跟内容走，对象形态钉行数上下限（顶到 maxRows 后内部滚动）
+input 部件写为 textarea 即多行宿主；autoSize 使高度跟随内容，对象形态固定行数上下限（达到 maxRows 后内部滚动）
 
 <XhDemo src="text-field/16-multiline" />
 

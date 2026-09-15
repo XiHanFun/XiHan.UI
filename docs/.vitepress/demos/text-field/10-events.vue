@@ -1,4 +1,4 @@
-<!-- 事件 | 值的变化走组件的 value-change，聚焦失焦这类原生事件直接写在 input 部件上 -->
+<!-- 事件 | 值的变化经组件的 value-change，聚焦失焦等原生事件直接写在 input 部件上 -->
 <script setup lang="ts">
 import {
   XhTextFieldControl,
