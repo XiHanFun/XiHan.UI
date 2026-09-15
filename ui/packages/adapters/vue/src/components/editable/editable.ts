@@ -16,7 +16,7 @@ import { useEditable } from './use-editable'
 
 type EditableProps = EditableSchema['props']
 
-/** 默认插槽的载荷：当下的值与预览文字、编辑态，以及写值、进入编辑、提交、撤销的命令。 */
+/** 默认插槽的载荷：当前的值与预览文字、编辑态，以及写值、进入编辑、提交、撤销的命令。 */
 export type EditableRootSlotProps = Pick<
   EditableApi,
   'value' | 'displayValue' | 'editing' | 'empty' | 'setValue' | 'edit' | 'submit' | 'cancel'

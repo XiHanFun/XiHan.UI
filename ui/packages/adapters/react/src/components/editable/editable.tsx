@@ -18,7 +18,7 @@ import { useEditable } from './use-editable'
 
 type EditableProps = EditableSchema['props']
 
-/** 函数式 children 的载荷：当下的值与预览文字、编辑态，以及写值、进入编辑、提交、撤销的命令。 */
+/** 函数式 children 的载荷：当前的值与预览文字、编辑态，以及写值、进入编辑、提交、撤销的命令。 */
 export type EditableRootSlotProps = Pick<
   EditableApi,
   'value' | 'displayValue' | 'editing' | 'empty' | 'setValue' | 'edit' | 'submit' | 'cancel'
@@ -35,7 +35,7 @@ export interface XhEditableRootProps extends Omit<ComponentPropsWithRef<'div'>, 
   readOnly?: boolean
   invalid?: boolean
   maxLength?: number
-  /** 表单字段名；给了才参与提交。 */
+  /** 表单字段名；提供后才参与提交。 */
   name?: string
   submitMode?: EditableSubmitMode
   activationMode?: EditableActivationMode
@@ -137,7 +137,7 @@ export function XhEditableLabel({ children, ...rest }: XhEditableLabelProps): Re
 }
 
 export interface XhEditableControlProps extends ComponentPropsWithRef<'div'> {}
-/** 预览区、输入框与三颗按钮的容器，只作排版落点。 */
+/** 预览区、输入框与三个按钮的容器，只作排版落点。 */
 export function XhEditableControl({ children, ...rest }: XhEditableControlProps): ReactNode {
   const ctx = useEditableContext()
   return (
@@ -150,8 +150,8 @@ export function XhEditableControl({ children, ...rest }: XhEditableControlProps)
 export interface XhEditablePreviewProps extends ComponentPropsWithRef<'span'> {}
 
 /**
- * 预览区。有内容用内容，否则显示当前值、值为空时显示 placeholder。
- * connect 挂的 onFocus 是不冒泡的 DOM focus，改装成原生监听器，与另外两家同一条到达路径。
+ * 预览区。有内容时使用内容，否则显示当前值、值为空时显示 placeholder。
+ * connect 挂载的 onFocus 是不冒泡的 DOM focus，改装为原生监听器，与另外两个适配器同一条到达路径。
  */
 export function XhEditablePreview({ children, ...rest }: XhEditablePreviewProps): ReactNode {
   const ctx = useEditableContext()

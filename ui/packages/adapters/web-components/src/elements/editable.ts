@@ -29,33 +29,33 @@ const NUMBER_CONVERTER = { fromAttribute: (v: string | null) => (v == null || v 
 const BOOLEAN_CONVERTER = { fromAttribute: (v: string | null) => (v === null ? undefined : v !== 'false') }
 
 /**
- * `<xh-editable>` —— Light-DOM 行为宿主：作者写 root/label/control/preview/input
- * 与三颗按钮的角色节点，元素跑 editable 机器并把 connect 产出打上去。
+ * `<xh-editable>`：Light-DOM 行为宿主：作者写 root / label / control / preview / input
+ * 与三个按钮的角色节点，元素运行 editable 状态机并把 connect 产出接上。
  *
- * 预览态显示 preview、编辑态显示 input，另一个带 hidden 收起而不卸载：两边都是作者写的节点，
- * 替他删掉他就再也拿不回来，输入法状态与他挂在节点上的东西也一并没了。
+ * 预览态显示 preview、编辑态显示 input，另一个带 hidden 收起而不卸载：两者都是作者编写的节点，
+ * 替作者删除后无法恢复，输入法状态与挂在节点上的数据也一并丢失。
  *
- * preview 的文字默认由元素填（值，或值为空时的 placeholder）；作者自己写了内容就归作者，
- * 元素不再改写——首次见到该节点时定，之后不回读（读到的会是自己上一帧写的）。
+ * preview 的文字默认由元素填入（值，或值为空时的 placeholder）；作者自行写了内容则由作者负责，
+ * 元素不再改写：首次见到该节点时确定，之后不回读（读到的会是自己上一帧写入的内容）。
  *
- * label 的 `for` 恒写向 input 的 id，所以 label 角色节点必须是原生 `<label>`、
- * input 角色节点必须是原生 `<input>`：任一边换成 `<div>`，读屏就念不出这个控件的名字。
+ * label 的 `for` 恒指向 input 的 id，因此 label 角色节点必须是原生 `<label>`、
+ * input 角色节点必须是原生 `<input>`：任一边换为 `<div>`，读屏就无法朗读该控件的名字。
  *
  * @customElement xh-editable
- * @attr {string} value - 受控值；缺省该属性即非受控
+ * @attr {string} value - 受控值；未提供该属性即非受控
  * @attr {string} default-value - 非受控初值
- * @attr {boolean} edit - 受控编辑态；缺省该属性即非受控
- * @attr {boolean} default-edit - 非受控初始即编辑态（挂载后焦点搬进输入框）
- * @attr {string} placeholder - 值为空时预览区显示它，输入框也拿它当占位
- * @attr {boolean} disabled - 禁用：进不了编辑态，输入框带原生 disabled
- * @attr {boolean} read-only - 只读：进不了编辑态，但已在编辑态时仍能退出
+ * @attr {boolean} edit - 受控编辑态；未提供该属性即非受控
+ * @attr {boolean} default-edit - 非受控初始即编辑态（挂载后焦点移入输入框）
+ * @attr {string} placeholder - 值为空时预览区显示它，输入框也将其用作占位
+ * @attr {boolean} disabled - 禁用：无法进入编辑态，输入框带原生 disabled
+ * @attr {boolean} read-only - 只读：无法进入编辑态，但已在编辑态时仍能退出
  * @attr {boolean} invalid - 校验失败标注
- * @attr {number} max-length - 字符数上限；同时落成原生 maxlength 与机器侧截断
- * @attr {string} name - 表单字段名；给了输入框才参与提交
- * @attr {'blur'|'enter'|'both'|'none'} submit-mode - 编辑态怎么收尾，默认 both
- * @attr {'click'|'dblclick'|'focus'|'none'} activation-mode - 预览区怎么进编辑态，默认 click
- * @attr {boolean} select-on-focus - 进编辑态时全选，默认开；写 select-on-focus="false" 关掉
- * @attr {boolean} auto-resize - 输入框宽度跟着内容走（落成原生 size）
+ * @attr {number} max-length - 字符数上限；同时落为原生 maxlength 与状态机侧截断
+ * @attr {string} name - 表单字段名；提供后输入框才参与提交
+ * @attr {'blur'|'enter'|'both'|'none'} submit-mode - 编辑态的收尾方式，默认 both
+ * @attr {'click'|'dblclick'|'focus'|'none'} activation-mode - 预览区进入编辑态的方式，默认 click
+ * @attr {boolean} select-on-focus - 进入编辑态时全选，默认开启；写 select-on-focus="false" 关闭
+ * @attr {boolean} auto-resize - 输入框宽度跟随内容（落为原生 size）
  * @attr {'outline'|'subtle'|'ghost'} variant - 视觉变体
  * @attr {'brand'|'neutral'|'success'|'warning'|'danger'|'info'} tone - 语气
  * @attr {'sm'|'md'|'lg'} size - 尺寸
@@ -64,11 +64,11 @@ const BOOLEAN_CONVERTER = { fromAttribute: (v: string | null) => (v === null ? u
  * @fires value-revert - 撤销；detail 为 `{ value: string, discardedValue: string }`
  * @fires edit-change - 编辑态变化；detail 为 `{ edit: boolean }`
  * @csspart root - role=group 容器，承载 data-state / data-disabled / data-readonly / data-invalid / data-empty
- * @csspart label - 标题；`for` 恒写向 input，故须是原生 `<label>`
- * @csspart preview - 预览态的文字；留空即由元素填入显示值，作者写了内容则归作者
- * @csspart input - 编辑态的输入框，须是原生 `<input>`；键盘交互全在它身上
- * @csspart control - 预览区、输入框与三颗按钮的共同落点，预览与输入轮流上场
- * @csspart edit-trigger - 进编辑态的按钮；编辑态收起，不可编辑时置灰
+ * @csspart label - 标题；`for` 恒指向 input，因此须是原生 `<label>`
+ * @csspart preview - 预览态的文字；留空即由元素填入显示值，作者写了内容则由作者负责
+ * @csspart input - 编辑态的输入框，须是原生 `<input>`；键盘交互全部在它身上
+ * @csspart control - 预览区、输入框与三个按钮的共同落点，预览与输入轮流显示
+ * @csspart edit-trigger - 进入编辑态的按钮；编辑态收起，不可编辑时置灰
  * @csspart submit-trigger - 提交按钮；预览态收起
  * @csspart cancel-trigger - 撤销按钮；预览态收起
  */
@@ -187,8 +187,8 @@ export class XhEditableElement extends XhElement {
   }
 
   /**
-   * 角色节点提前发现一次：default-edit 时机器在 hostConnected 当场进编辑态并排下焦点搬运，
-   * 而常规发现要等首次 updated——那一刻 partMap 还空着，输入框取不到，焦点就再也搬不进去。
+   * 角色节点提前发现一次：default-edit 时状态机在 hostConnected 当场进入编辑态并安排焦点迁移，
+   * 而常规发现要等首次 updated：此时 partMap 仍为空，输入框无法取到，焦点就无法移入。
    */
   override connectedCallback(): void {
     this.refreshParts()
@@ -196,9 +196,9 @@ export class XhEditableElement extends XhElement {
   }
 
   /**
-   * 预览区的文字由元素填（值，或值为空时的 placeholder）。
-   * 作者若自己写了内容（自定义渲染），首次见到时就定为归作者，之后一概不碰——
-   * 每帧回读分不清"作者写的"还是"上一帧自己写的"，一旦写过就再也让不回去。
+   * 预览区的文字由元素填入（值，或值为空时的 placeholder）。
+   * 作者若自己写了内容（自定义渲染），首次见到时就判定归作者，之后一概不修改：
+   * 每帧回读无法区分作者写的还是上一帧自己写的，一旦写过就无法交还。
    */
   private fillPreviewText(el: HTMLElement, text: string): void {
     let owned = this.ownsPreviewText.get(el)
