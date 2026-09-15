@@ -10,17 +10,17 @@ import type { CodeToken, HighlighterPort, PropTypes, Size } from '@xihan-ui/core
 /** 语言未知时的取值。 */
 export const CODE_VIEW_FALLBACK_LANG = 'plaintext'
 
-/** 行号槽宽按位数分档，超过这个位数一律按它算。 */
+/** 行号槽宽度按位数分档，超过该位数一律按它计算。 */
 export const CODE_VIEW_MAX_DIGITS = 7
 
-/** parseLineRanges 一次最多展开这么多行号，防一个写错的区间把整页算死。 */
+/** parseLineRanges 一次最多展开的行号数，防止一个写错的区间导致整页计算过载。 */
 export const CODE_VIEW_MAX_HIGHLIGHT_LINES = 10_000
 
-/** 切好的一行。 */
+/** 切分后的一行。 */
 export interface CodeLine {
   /**
-   * 该行的完整文本，**不含结尾换行**——逐行块级元素时浏览器在块边界本身就补一个换行，
-   * 文本里再留一个会让框选复制拿到双倍空行。
+   * 该行的完整文本，不含结尾换行：逐行块级元素时浏览器在块边界本身补一个换行，
+   * 文本中再保留一个会使框选复制得到双倍空行。
    * 无损契约：`lines.map(l => l.text).join('\n') === code`。
    */
   readonly text: string
@@ -32,67 +32,67 @@ export interface CodeViewClampToggleDetails {
   clamped: boolean
 }
 
-/** 逐行取属性时的自报家门，index 是 0 基行下标。 */
+/** 逐行取属性时的声明，index 是 0 基行下标。 */
 export interface CodeViewLineProps {
   index: number
 }
 
 export interface CodeViewProps {
   code: string
-  /** 围栏语言标注，空白一律落 plaintext。 */
+  /** 围栏语言标注，空白一律落为 plaintext。 */
   lang?: string
-  /** 文件名，渲染在 header 里；渲染出来之后它就是 pre 的可访问名。 */
+  /** 文件名，渲染在 header 中；渲染之后它即为 pre 的可访问名。 */
   filename?: string
   /**
-   * 作者渲染了 filename 部件时置真，由适配器统计而不是看 filename 有没有值。
-   * 为假时 pre 用 translations.code 兜底——指向一个没渲出来的 id 会让读屏读空。
+   * 作者渲染了 filename 部件时置真，由适配器统计而不是判断 filename 是否有值。
+   * 为假时 pre 用 translations.code 兜底：指向未渲染的 id 会使读屏读空。
    */
   labelled?: boolean
   /** 代码是否已闭合，未闭合时按行数预撑高度且默认不着色。 */
   complete?: boolean
-  /** 长行自动换行，默认关（长行横向滚动）。 */
+  /** 长行自动换行，默认关闭（长行横向滚动）。 */
   wrap?: boolean
   /** 渲染行号槽。 */
   lineNumbers?: boolean
-  /** 首行的行号，默认 1；摘录与 patch 片段要用。 */
+  /** 首行的行号，默认 1；摘录与 patch 片段需要使用。 */
   startLine?: number
-  /** 要高亮的行号，写成 `'3,7-9'` 或行号数组；非法片段丢弃不报错。 */
+  /** 要高亮的行号，写为 `'3,7-9'` 或行号数组；非法片段丢弃不报错。 */
   highlightLines?: string | readonly number[]
-  /** 超过这么多行才算可折叠。 */
+  /** 超过该行数才视为可折叠。 */
   clamp?: number
-  /** 折叠态，纯受控——没有 defaultClamped，要非受控就套 collapsible。 */
+  /** 折叠态，纯受控：没有 defaultClamped，需要非受控时套用 collapsible。 */
   clamped?: boolean
   /**
-   * 着色实现。不给就是纯文本，给了也允许它返回 null（语言不认识之类），同样退回纯文本。
+   * 着色实现。未提供时为纯文本，提供后也允许返回 null（语言未识别等），同样回退为纯文本。
    * 未闭合的块默认不着色，见 {@link highlightWhileStreaming}。
    */
   highlighter?: HighlighterPort
   /**
-   * 块还没闭合时也着色，默认 false。
-   * 默认关是因为半截代码的词法本来就不稳——引号、括号随时会配上，
-   * 每来一个 token 整块变一次色，看着比不着色更糟。
+   * 块尚未闭合时也着色，默认 false。
+   * 默认关闭是因为未闭合代码的词法本身不稳定：引号、括号随时会配对，
+   * 每到一个 token 整块变一次色，比不着色更差。
    */
   highlightWhileStreaming?: boolean
   /** 尺寸：sm / md / lg。 */
   size?: Size
   translations?: Partial<CodeViewTranslations>
-  /** 折叠态翻面的意图回调；clamped 是纯受控的，落不落由宿主决定。 */
+  /** 折叠态切换的意图回调；clamped 是纯受控的，是否落定由宿主决定。 */
   onClampToggle?: (details: CodeViewClampToggleDetails) => void
 }
 
 export interface CodeViewApi<T extends PropTypes = PropTypes> {
   lang: string
   lineCount: number
-  /** 逐行切好的文本与记号片段。 */
+  /** 逐行切分后的文本与记号片段。 */
   lines: readonly CodeLine[]
   /** 每行的行号，与 lines 同序。 */
   lineNumberAt: (index: number) => number
-  /** 是否渲染行号槽；适配器据此决定要不要建那个节点。 */
+  /** 是否渲染行号槽；适配器据此决定是否创建该节点。 */
   lineNumbers: boolean
-  /** 折叠可用：给了正数 clamp 且行数确实超过它。 */
+  /** 折叠可用：提供了正数 clamp 且行数确实超过它。 */
   foldable: boolean
   clamped: boolean
-  /** 发一次折叠意图；与当前态相同时不发。 */
+  /** 发出一次折叠意图；与当前态相同时不发。 */
   setClamped: (next: boolean) => void
   getRootProps: () => T['element']
   getHeaderProps: () => T['element']
@@ -116,15 +116,15 @@ export interface CodeViewTranslations {
   collapse: string
 }
 
-/** 按 \n 切分数出代码行数：空串为 1 行，结尾换行多算一行。 */
+/** 按 \n 切分统计代码行数：空串为 1 行，结尾换行多计一行。 */
 export function countCodeViewLines(code: string): number {
   return code.split('\n').length
 }
 
 /**
- * 把 `'3,7-9'` 这样的写法或行号数组归一成升序去重的行号表。
- * 非法片段一律丢弃不报错——一个高亮参数写错不该让代码渲不出来。
- * 展开总数封顶在 {@link CODE_VIEW_MAX_HIGHLIGHT_LINES}。
+ * 把 `'3,7-9'` 这类写法或行号数组归一为升序去重的行号表。
+ * 非法片段一律丢弃不报错：一个高亮参数写错不应导致代码无法渲染。
+ * 展开总数上限为 {@link CODE_VIEW_MAX_HIGHLIGHT_LINES}。
  */
 export function parseLineRanges(spec: string | readonly number[] | undefined): readonly number[] {
   if (spec === undefined)
@@ -175,11 +175,11 @@ export function parseLineRanges(spec: string | readonly number[] | undefined): r
 }
 
 /**
- * 把整段代码与它的记号流切成逐行结构。
+ * 把整段代码与它的记号流切分为逐行结构。
  *
- * 词法器是单趟不回溯的，一个记号可以横跨多行（未闭合的字符串与块注释就是这样），
- * 所以「一个记号一个 span」的渲染方式切不出行——行号与高亮行必须在这里算。
- * 行文本一律取自 `code` 本身，记号流短了就用 plain 片段补齐，无损契约不受着色实现影响。
+ * 词法器是单趟不回溯的，一个记号可以横跨多行（未闭合的字符串与块注释即是如此），
+ * 因此一个记号一个 span 的渲染方式无法切分出行：行号与高亮行必须在这里计算。
+ * 行文本一律取自 `code` 本身，记号流不足时用 plain 片段补齐，无损契约不受着色实现影响。
  */
 export function splitCodeLines(code: string, tokens: readonly CodeToken[] = []): readonly CodeLine[] {
   const texts = code.split('\n')
@@ -189,7 +189,7 @@ export function splitCodeLines(code: string, tokens: readonly CodeToken[] = []):
   let cursor = 0
   let offset = 0
 
-  /** 从记号流上消费 n 个字符；collect 为假时只前进不收片段，用来吃掉行尾换行。 */
+  /** 从记号流上消费 n 个字符；collect 为假时只前进不收集片段，用于消费行尾换行。 */
   const take = (n: number, collect: boolean): { frags: CodeToken[], taken: number } => {
     const frags: CodeToken[] = []
     let taken = 0

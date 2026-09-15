@@ -22,34 +22,34 @@ const BOOLEAN_CONVERTER = { fromAttribute: (v: string | null) => (v === null ? u
 const NUMBER_CONVERTER = { fromAttribute: (v: string | null) => (v == null || v === '' ? undefined : Number(v)) }
 
 /**
- * `<xh-code-view>` —— Light-DOM 行为宿主，无状态机：wire 时算出 connectCodeView 的产出，
- * 打到作者写的角色节点上，并把逐行结构铺进 code 角色节点。
+ * `<xh-code-view>`：Light-DOM 行为宿主，无状态机：wire 时计算 connectCodeView 的产出，
+ * 接到作者编写的角色节点上，并把逐行结构铺进 code 角色节点。
  *
- * 行是算出来的派生数据，作者写不出 N 个节点，故 code 部件的内容由本元素接管；
+ * 行是计算得出的派生数据，作者无法编写 N 个节点，因此 code 部件的内容由本元素接管；
  * 其余各处一律不替作者生成节点。复制按钮由 `<xh-clipboard>` 组合提供。
  *
  * @customElement xh-code-view
  * @attr {string} code - 代码原文
  * @attr {string} code-lang - 围栏语言标注，空白时按 plaintext 处理
- * @attr {string} filename - 文件名；作者写了 filename 角色节点时它就是 pre 的可访问名
+ * @attr {string} filename - 文件名；作者写了 filename 角色节点时它即为 pre 的可访问名
  * @attr {boolean} complete - 代码是否已闭合，未闭合默认不着色
- * @attr {boolean} wrap - 长行自动换行，默认关（长行横向滚动）
+ * @attr {boolean} wrap - 长行自动换行，默认关闭（长行横向滚动）
  * @attr {boolean} line-numbers - 显示行号槽
  * @attr {number} start-line - 首行的行号，默认 1
- * @attr {string} highlight-lines - 要高亮的行号，写成 `3,7-9`
- * @attr {number} clamp - 超过这么多行才算可折叠
+ * @attr {string} highlight-lines - 要高亮的行号，写为 `3,7-9`
+ * @attr {number} clamp - 超过该行数才视为可折叠
  * @attr {boolean} clamped - 折叠态，纯受控
- * @attr {boolean} highlight-while-streaming - 未闭合时也着色，默认关
+ * @attr {boolean} highlight-while-streaming - 未闭合时也着色，默认关闭
  * @attr {string} size - 尺寸：sm / md / lg
- * @fires clamp-toggle - 折叠态翻面的意图；detail 为 `{ clamped: boolean }`
+ * @fires clamp-toggle - 折叠态切换的意图；detail 为 `{ clamped: boolean }`
  * @csspart root - 外壳，承载 data-lang / data-complete / data-clamped / data-digits
- * @csspart header - 文件名与语言角标那一行
- * @csspart filename - 文件名，渲了它就是 pre 的可访问名
+ * @csspart header - 文件名与语言角标所在的行
+ * @csspart filename - 文件名，渲染后即为 pre 的可访问名
  * @csspart lang-label - 语言角标，纯装饰且对读屏隐藏
- * @csspart pre - 横向滚动容器；tabindex=0，高度按行数写进内联样式
- * @csspart code - 全部行的容器，内容由本元素铺
+ * @csspart pre - 横向滚动容器；tabindex=0，高度按行数写入内联样式
+ * @csspart code - 全部行的容器，内容由本元素铺设
  * @csspart line - 一行，承载 data-line-number / data-highlighted
- * @csspart line-number - 行号槽，皮肤用 attr() 画，对读屏隐藏
+ * @csspart line-number - 行号槽，皮肤用 attr() 绘制，对读屏隐藏
  * @csspart line-content - 该行的正文与记号
  * @csspart token - 着色生效时的一个记号，承载 data-kind
  * @csspart fold-trigger - 展开或收起，承载 aria-expanded / aria-controls
@@ -92,7 +92,7 @@ export class XhCodeViewElement extends XhElement {
   /** 可访问名与折叠按钮的文案。 */
   declare translations?: Partial<CodeViewTranslations>
 
-  /** 换一个着色实现（典型是接 Shiki）；置 null 关掉着色。只走 property，属性表达不了对象。 */
+  /** 替换着色实现（典型是接入 Shiki）；置 null 关闭着色。对象只能通过 property 设置。 */
   declare highlighter?: HighlighterPort | null
 
   private readonly idGen: IdGenerator = createCounterIdGenerator()
@@ -167,7 +167,7 @@ export class XhCodeViewElement extends XhElement {
 
   /**
    * 把逐行结构铺进 code 部件。
-   * 内容没变就不重铺——每次更新都重建节点会把用户正在拖的选区弄没。
+   * 内容未变时不重铺：每次更新都重建节点会丢失用户正在拖动的选区。
    */
   #paint(api: CodeViewApi): void {
     const host = this.getPart('code')

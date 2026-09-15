@@ -16,7 +16,7 @@ import { renderSlot } from '../../runtime/slot-content'
 import { CodeViewProvider, useCodeViewContext } from './context'
 import { useCodeView, useDefaultHighlighter } from './use-code-view'
 
-/** 函数式 children 的载荷：语言、行数与折叠状态，以及翻面折叠的句柄。 */
+/** 函数式 children 的载荷：语言、行数与折叠状态，以及切换折叠的句柄。 */
 export type CodeViewRootSlotProps = Pick<CodeViewApi, 'lang' | 'lineCount' | 'lines' | 'foldable' | 'clamped' | 'setClamped'>
 
 /** 逐行 children 的载荷。 */
@@ -24,41 +24,41 @@ export interface CodeViewLineSlotProps {
   line: CodeLine
   /** 0 基行下标。 */
   index: number
-  /** 这一行显示的行号，等于 startLine + index。 */
+  /** 该行显示的行号，等于 startLine + index。 */
   number: number
 }
 
-/** 根上自有的那些取值；lang 是围栏语言标注、不是原生的文档语言，由这里接管。 */
+/** 根上自有的取值；lang 是围栏语言标注、不是原生的文档语言，由这里接管。 */
 type RootElementProps = Omit<ComponentPropsWithRef<'div'>, 'children' | 'lang'>
 
 export interface XhCodeViewRootProps extends RootElementProps {
   code?: string
-  /** 围栏语言标注，空白一律落 plaintext。 */
+  /** 围栏语言标注，空白一律回落 plaintext。 */
   lang?: string
-  /** 文件名，渲染在 header 里；渲出 filename 部件后它就是 pre 的可访问名。 */
+  /** 文件名，渲染在 header 中；渲染 filename 部件后它就是 pre 的可访问名。 */
   filename?: string
   /** 代码是否已闭合，未闭合时按行数预撑高度且默认不着色。 */
   complete?: boolean
-  /** 长行自动换行，默认关（长行横向滚动）。 */
+  /** 长行自动换行，默认关闭（长行横向滚动）。 */
   wrap?: boolean
   /** 渲染行号槽。 */
   lineNumbers?: boolean
   /** 首行的行号，默认 1。 */
   startLine?: number
-  /** 要高亮的行号，写成 `'3,7-9'` 或行号数组。 */
+  /** 要高亮的行号，写为 `'3,7-9'` 或行号数组。 */
   highlightLines?: string | readonly number[]
-  /** 超过这么多行才算可折叠。 */
+  /** 超过该行数才视为可折叠。 */
   clamp?: number
-  /** 折叠态，纯受控——没有 defaultClamped，要非受控就套 collapsible。 */
+  /** 折叠态，纯受控：没有 defaultClamped，需要非受控时包裹 collapsible。 */
   clamped?: boolean
-  /** 换一个着色实现（典型是接 Shiki）；显式给 null 则关掉着色。 */
+  /** 替换着色实现（典型是接入 Shiki）；显式传 null 则关闭着色。 */
   highlighter?: HighlighterPort | null
-  /** 块还没闭合时也着色，默认关。 */
+  /** 块尚未闭合时也着色，默认关闭。 */
   highlightWhileStreaming?: boolean
   /** 尺寸：sm / md / lg。 */
   size?: Size
   translations?: Partial<CodeViewTranslations>
-  /** 折叠态翻面的意图；clamped 是纯受控的，落不落由宿主决定。 */
+  /** 切换折叠态的意图；clamped 是纯受控的，是否落实由宿主决定。 */
   onClampToggle?: CodeViewProps['onClampToggle']
   children?: SlotChildren<CodeViewRootSlotProps>
 }
@@ -130,7 +130,7 @@ export function XhCodeViewHeader({ children, ...rest }: XhCodeViewHeaderProps): 
 }
 
 export interface XhCodeViewFilenameProps extends ComponentPropsWithRef<'span'> {
-  /** 不写 children 时显示它。 */
+  /** 未写 children 时显示它。 */
   filename?: string
 }
 export function XhCodeViewFilename({ children, filename, ...rest }: XhCodeViewFilenameProps): ReactNode {
@@ -156,17 +156,17 @@ export function XhCodeViewLangLabel({ children, ...rest }: XhCodeViewLangLabelPr
 }
 
 export interface XhCodeViewPreProps extends ComponentPropsWithRef<'pre'> {}
-/** 用 pre 保留代码里的空白与换行。 */
+/** 用 pre 保留代码中的空白与换行。 */
 export function XhCodeViewPre({ children, ...rest }: XhCodeViewPreProps): ReactNode {
   const ctx = useCodeViewContext()
   return <pre {...mergeReactProps(ctx.api.getPreProps() as Record<string, unknown>, rest as Record<string, unknown>)}>{children}</pre>
 }
 
 export interface XhCodeViewCodeProps extends Omit<ComponentPropsWithRef<'code'>, 'children'> {
-  /** 逐行接管这一行的正文；不给就按着色结果铺。 */
+  /** 逐行接管该行的正文；未提供时按着色结果铺设。 */
   children?: SlotChildren<CodeViewLineSlotProps>
 }
-/** 行是算出来的派生结构，作者写不出 N 个节点，由组件铺。 */
+/** 行是计算得出的派生结构，作者无法写出 N 个节点，由组件铺设。 */
 export function XhCodeViewCode({ children, ...rest }: XhCodeViewCodeProps): ReactNode {
   const ctx = useCodeViewContext()
   const { api } = ctx
