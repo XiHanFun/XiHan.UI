@@ -1,4 +1,4 @@
-// 受控通道 | 给了 value 与 active 就走受控分支：value 改写即重新计时，active 翻假停在当前剩余量、翻真接着走
+// 受控通道 | 提供 value 与 active 后进入受控分支：value 改写即重新计时，active 切换为假停在当前剩余量、切换为真继续运行
 import type { ReactNode } from "react";
 import { XhButton, XhTimerDisplay, XhTimerRoot } from "@xihan-ui/react";
 import { useState } from "react";

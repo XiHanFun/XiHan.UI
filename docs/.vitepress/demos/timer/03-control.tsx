@@ -1,4 +1,4 @@
-// 起停与归零 | 自己写部件：control 是一个原生按钮，按一下就按当前状态走一步（开始 / 暂停 / 继续 / 重来）
+// 起停与归零 | 自行编写部件：control 是一个原生按钮，按一下即按当前状态前进一步（开始 / 暂停 / 继续 / 重来）
 import type { ReactNode } from "react";
 import {
   XhTimerControl,
