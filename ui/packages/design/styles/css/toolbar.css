@@ -75,7 +75,7 @@
     --xh-_toolbar-root-bg: var(--xh-bg-surface);
     --xh-_toolbar-root-bg-disabled: var(--xh-bg-muted);
 
-    border-radius: var(--xh-toolbar-radius, var(--xh-shape-pill));
+    border-radius: var(--xh-toolbar-radius, var(--xh-shape-surface));
     box-shadow: var(--xh-toolbar-shadow, var(--xh-elevation-raised));
   }
 
@@ -160,7 +160,7 @@
     transition:
       background var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
       color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
-      scale var(--xh-motion-duration-micro) var(--xh-motion-ease-enter-strong);
+      scale var(--xh-motion-duration-release) var(--xh-motion-ease-release);
   }
 
   [data-scope='toolbar'][data-part='item']:not([data-disabled]):hover {
@@ -170,6 +170,8 @@
   [data-scope='toolbar'][data-part='item']:not([data-disabled]):active {
     background: var(--xh-toolbar-item-bg-active, var(--xh-bg-subtle-active));
     scale: var(--xh-motion-scale-press);
+    transition-duration: var(--xh-motion-duration-press);
+    transition-timing-function: var(--xh-motion-ease-press);
   }
 
   [data-scope='toolbar'][data-part='item'][aria-pressed='true'] {
@@ -229,26 +231,26 @@
 
   [data-scope='toolbar'][data-part='group'][data-orientation='horizontal']
     > [data-scope='toolbar'][data-part='item']:first-of-type {
-    border-start-start-radius: var(--xh-toolbar-item-radius, var(--xh-shape-pill));
-    border-end-start-radius: var(--xh-toolbar-item-radius, var(--xh-shape-pill));
+    border-start-start-radius: var(--xh-toolbar-item-radius, var(--xh-shape-control));
+    border-end-start-radius: var(--xh-toolbar-item-radius, var(--xh-shape-control));
   }
 
   [data-scope='toolbar'][data-part='group'][data-orientation='horizontal']
     > [data-scope='toolbar'][data-part='item']:last-of-type {
-    border-start-end-radius: var(--xh-toolbar-item-radius, var(--xh-shape-pill));
-    border-end-end-radius: var(--xh-toolbar-item-radius, var(--xh-shape-pill));
+    border-start-end-radius: var(--xh-toolbar-item-radius, var(--xh-shape-control));
+    border-end-end-radius: var(--xh-toolbar-item-radius, var(--xh-shape-control));
   }
 
   [data-scope='toolbar'][data-part='group'][data-orientation='vertical']
     > [data-scope='toolbar'][data-part='item']:first-of-type {
-    border-start-start-radius: var(--xh-toolbar-item-radius, var(--xh-shape-pill));
-    border-start-end-radius: var(--xh-toolbar-item-radius, var(--xh-shape-pill));
+    border-start-start-radius: var(--xh-toolbar-item-radius, var(--xh-shape-control));
+    border-start-end-radius: var(--xh-toolbar-item-radius, var(--xh-shape-control));
   }
 
   [data-scope='toolbar'][data-part='group'][data-orientation='vertical']
     > [data-scope='toolbar'][data-part='item']:last-of-type {
-    border-end-start-radius: var(--xh-toolbar-item-radius, var(--xh-shape-pill));
-    border-end-end-radius: var(--xh-toolbar-item-radius, var(--xh-shape-pill));
+    border-end-start-radius: var(--xh-toolbar-item-radius, var(--xh-shape-control));
+    border-end-end-radius: var(--xh-toolbar-item-radius, var(--xh-shape-control));
   }
 
   /* 分隔线取控件高度的一半；横排工具条里画竖线，竖排工具条里画横线。 */
