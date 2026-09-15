@@ -414,6 +414,17 @@ describe('connectCombobox 属性输出', () => {
   })
 })
 
+describe('connectCombobox 形态轴', () => {
+  it('不写 variant 时 root 与 positioner 落 outline；写 subtle 如实落', () => {
+    const fallback = mount()
+    expect(fallback.root.getAttribute('data-variant')).toBe('outline')
+    expect(fallback.positioner.getAttribute('data-variant')).toBe('outline')
+    const subtle = mount({ variant: 'subtle' })
+    expect(subtle.root.getAttribute('data-variant')).toBe('subtle')
+    expect(subtle.positioner.getAttribute('data-variant')).toBe('subtle')
+  })
+})
+
 describe('焦点恒在输入框（aria-activedescendant 模型）', () => {
   it('方向键展开并移高亮，焦点一步都不离开输入框', () => {
     const h = mount()

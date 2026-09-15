@@ -155,7 +155,7 @@ export interface ComboboxSchema extends MachineSchema {
     /** 文字方向，默认 ltr。只改写浮层在行内轴上 start 与 end 的落点。 */
     dir?: Direction
     offset?: number
-    /** 形态：outline / subtle / ghost，决定输入行的描边与底色使用方式。 */
+    /** 形态：outline / subtle / ghost，决定输入行的描边与底色使用方式。默认 outline。 */
     variant?: ControlVariant
     /** 语气：brand / neutral / success / warning / danger / info，决定聚焦与选中强调使用哪族颜色。 */
     tone?: Tone
