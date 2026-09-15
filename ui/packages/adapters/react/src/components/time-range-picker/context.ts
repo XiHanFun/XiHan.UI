@@ -10,9 +10,9 @@ import type { TimeRangePickerContext } from './use-time-range-picker'
 import { createContext, useContext } from 'react'
 
 const Ctx = createContext<TimeRangePickerContext | undefined>(undefined)
-/** 段位容器与时列外壳自报的端号：0 是起点那组，1 是终点那组；没有容器时落到起点那组。 */
+/** 段位容器与时列外壳声明的端号：0 是起点组，1 是终点组；没有容器时落到起点组。 */
 const EndCtx = createContext<TimeRangePickerEndIndex>(0)
-/** 列自报的单位，供列内选项取到自己归哪一列。 */
+/** 列声明的单位，供列内选项取到自己所属的列。 */
 const ColumnCtx = createContext<TimePickerColumnUnit | undefined>(undefined)
 
 export const TimeRangePickerProvider = Ctx

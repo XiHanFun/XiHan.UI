@@ -65,62 +65,62 @@ function declaredEnd(el: HTMLElement, position: number): TimeRangePickerEndIndex
 }
 
 /**
- * `<xh-time-range-picker>` —— Light-DOM 行为宿主：作者写 root/label/control/segment-group（两个）/segment（多个）/
- * range-separator/trigger/clear-trigger/positioner/content/column-group（两个）/column（多个）/item（多个）/
- * hidden-input（两个）角色节点，元素跑 time-range-picker 机器并把 connect 产出打上去。
- * 浮层定位引擎在本元素里建好、经 refs 注入机器，锚点取 control（浮层因此与整个输入行对齐），被定位的浮层取 positioner。
+ * `<xh-time-range-picker>`：Light-DOM 行为宿主：作者写 root / label / control / segment-group（两个）/ segment（多个）/
+ * range-separator / trigger / clear-trigger / positioner / content / column-group（两个）/ column（多个）/ item（多个）/
+ * hidden-input（两个）角色节点，元素运行 time-range-picker 状态机并把 connect 产出接上。
+ * 浮层定位引擎在本元素中创建、经 refs 注入状态机，锚点取 control（浮层因此与整个输入行对齐），被定位的浮层取 positioner。
  *
  * 起止两端各一组：segment-group、column-group 与 hidden-input 都写两个，文档序在前的是起点、在后的是终点，
- * 也可以自带 index 属性显式声明；段位、列与格子按所在的组认领哪一端。
+ * 也可以自带 index 属性显式声明；段位、列与格子按所在的组归属到对应的端。
  *
- * 两条改值的路写同一份值：输入行里逐段敲（每段是 role=spinbutton，上下键加减、数字直输自动跳段，方向键不跨组），
- * 浮层里按列挑（每列是一个 listbox，上下键在列内走、左右键换列——跨组也换、Enter 选中）。
+ * 两条改值路径写入同一份值：输入行中逐段输入（每段是 role=spinbutton，上下键加减、数字直接输入自动跳段，方向键不跨组），
+ * 浮层中按列选择（每列是一个 listbox，上下键在列内移动、左右键换列（跨组也换）、Enter 选中）。
  *
- * 段与格子上的文字由元素填；作者自己写了内容的不碰。
+ * 段与格子上的文字由元素填入；作者自行写了内容的不修改。
  *
  * @customElement xh-time-range-picker
- * @prop {string[]} value - 受控的区间两端 [start, end]（数组只走 property），每端是 ISO 时间串；空缺的一端用空串占位；缺省即非受控
+ * @prop {string[]} value - 受控的区间两端 [start, end]（数组只能通过 property 设置），每端是 ISO 时间串；空缺的一端用空串占位；未提供即非受控
  * @prop {string[]} default-value - 非受控初始区间
- * @attr {boolean} open - 受控开合；缺省该属性即非受控
+ * @attr {boolean} open - 受控开合；未提供该属性即非受控
  * @attr {boolean} default-open - 非受控初始为展开
- * @attr {string} min - 下界（含）：裁掉浮层里落在界外的可选值，并把已填的越界值标注出来；终点那组还以起点为下界
- * @attr {string} max - 上界（含），同上；起点那组还以终点为上界
- * @attr {string} locale - BCP 47 语言标记，决定上午/下午文字与默认小时制
- * @attr {'12'|'24'} hour-cycle - 小时制；不写则按 locale 推断，再没有就用 24
+ * @attr {string} min - 下界（含）：裁掉浮层中落在界外的可选值，并把已填的越界值标注出来；终点组还以起点为下界
+ * @attr {string} max - 上界（含），同上；起点组还以终点为上界
+ * @attr {string} locale - BCP 47 语言标记，决定上午 / 下午文字与默认小时制
+ * @attr {'12'|'24'} hour-cycle - 小时制；未提供时按 locale 推断，仍没有时使用 24
  * @attr {'hour'|'minute'|'second'} granularity - 值精确到哪一段，默认 minute
  * @attr {number} step - 分列的步进（分钟），默认 1
- * @prop {TimeRangePickerPreset[]} presets - 快捷选项（数组只走 property）：给了就在浮层里多出一列
- * @attr {boolean} disabled - 禁用：段整组退出 Tab 序列，触发器用原生 disabled，隐藏输入不参与提交
- * @attr {boolean} read-only - 只读：浮层照常展开与浏览，但值改不动也清不掉
- * @attr {boolean} invalid - 校验失败标注；不给也会自己判：任一端越界、或终点早于起点
- * @attr {boolean} required - 必填标注，落到每段的 aria-required 上
- * @attr {string} name - 起点那份隐藏输入的表单字段名；给了才带 name
- * @attr {string} end-name - 终点那份隐藏输入的表单字段名；不给即终点不参与提交
+ * @prop {TimeRangePickerPreset[]} presets - 快捷选项（数组只能通过 property 设置）：提供后浮层中多出一列
+ * @attr {boolean} disabled - 禁用：段整组退出 Tab 序列，触发器使用原生 disabled，隐藏输入不参与提交
+ * @attr {boolean} read-only - 只读：浮层照常展开与浏览，但值不可修改也不可清空
+ * @attr {boolean} invalid - 校验失败标注；未提供时也会自行判定：任一端越界，或终点早于起点
+ * @attr {boolean} required - 必填标注，写入每段的 aria-required
+ * @attr {string} name - 起点隐藏输入的表单字段名；提供后才带 name
+ * @attr {string} end-name - 终点隐藏输入的表单字段名；未提供时终点不参与提交
  * @attr {'outline'|'subtle'|'ghost'} variant - 视觉变体
  * @attr {'brand'|'neutral'|'success'|'warning'|'danger'|'info'} tone - 语气
  * @attr {'sm'|'md'|'lg'} size - 尺寸
- * @attr {string} placement - 首选放置位，默认 bottom-start；避让后的实际位写在 data-placement 上
+ * @attr {string} placement - 首选放置位，默认 bottom-start；避让后的实际位置写在 data-placement 上
  * @attr {number} offset - 浮层与锚点的间距（px）
- * @attr {'ltr'|'rtl'} dir - 文字方向，翻转浮层在行内轴上 start 与 end 的落点；只在显式给了才写到定位层上
- * @fires value-change - 两端变化；detail 为 `{ value: string[] }`，只填了终点时是 `['', end]`
+ * @attr {'ltr'|'rtl'} dir - 文字方向，翻转浮层在行内轴上 start 与 end 的落点；只在显式提供时才写到定位层上
+ * @fires value-change - 两端变化；detail 为 `{ value: string[] }`，只填终点时为 `['', end]`
  * @fires open-change - open 状态变化；detail 为 `{ open: boolean }`
- * @csspart root - 组件根容器（承载 data-state/data-disabled/data-readonly/data-invalid/data-empty）
- * @csspart label - 标题；点它会把焦点送到第一段
+ * @csspart root - 组件根容器（承载 data-state / data-disabled / data-readonly / data-invalid / data-empty）
+ * @csspart label - 标题；点击它把焦点送到第一段
  * @csspart control - role=group 的输入行，同时是浮层的定位锚点
- * @csspart segment-group - 一端的段位容器（role=group），起止各一个，可自带 index 属性（0 / 1），缺省按文档序
- * @csspart segment - 一段一个的 spinbutton，可自带 segment 属性声明身份，缺省按所在组内的文档序
+ * @csspart segment-group - 一端的段位容器（role=group），起止各一个，可自带 index 属性（0 / 1），默认按文档序
+ * @csspart segment - 一段一个的 spinbutton，可自带 segment 属性声明身份，默认按所在组内的文档序
  * @csspart range-separator - 起止两组段位之间的视觉分隔，退出可访问树
- * @csspart trigger - 展开/收起按钮，须是原生 button
- * @csspart clear-trigger - 清空按钮，须是原生 button；不占 Tab 位，可及名走 translations.clearTrigger；没值即收起
- * @csspart positioner - 浮层定位容器，坐标由引擎写成内联样式
+ * @csspart trigger - 展开 / 收起按钮，须是原生 button
+ * @csspart clear-trigger - 清空按钮，须是原生 button；不占 Tab 位，可及名使用 translations.clearTrigger；无值时收起
+ * @csspart positioner - 浮层定位容器，坐标由引擎写为内联样式
  * @csspart content - 浮层容器（消解层与焦点域的根节点），收起时带 hidden
- * @csspart preset-group - 快捷选项列（role=listbox）；没给 presets 时带 hidden
- * @csspart preset - 一条快捷选项（role=option），须自带 value 属性（与 presets 数据里的 value 逐字对上）
- * @csspart column-group - 一端的时列外壳（role=group），起止各一个，可自带 index 属性（0 / 1），缺省按文档序
- * @csspart column-group-label - 时列外壳顶上的小标题（「开始」「结束」），纯视觉
- * @csspart column - role=listbox 的一列，可自带 unit 属性声明单位，缺省按所在组内的文档序
+ * @csspart preset-group - 快捷选项列（role=listbox）；未提供 presets 时带 hidden
+ * @csspart preset - 一条快捷选项（role=option），须自带 value 属性（与 presets 数据中的 value 逐字一致）
+ * @csspart column-group - 一端的时列外壳（role=group），起止各一个，可自带 index 属性（0 / 1），默认按文档序
+ * @csspart column-group-label - 时列外壳顶部的小标题（「开始」「结束」），纯视觉
+ * @csspart column - role=listbox 的一列，可自带 unit 属性声明单位，默认按所在组内的文档序
  * @csspart item - role=option 的一格，须自带 value 属性（两位补零的显示串；上下午列写 '00' / '01'）
- * @csspart hidden-input - type=hidden 的表单出口，起止各一份，可自带 index 属性，缺省按文档序；值是完整 ISO 串
+ * @csspart hidden-input - type=hidden 的表单出口，起止各一份，可自带 index 属性，默认按文档序；值是完整 ISO 串
  */
 export class XhTimeRangePickerElement extends XhPortalHostElement {
   /** 本实例的 Portal 容器；显式解析失败不回退配置默认。 */
@@ -325,9 +325,9 @@ export class XhTimeRangePickerElement extends XhPortalHostElement {
   }
 
   /**
-   * 起止两组各自此刻该排哪几列、每列有哪些可选值——落在 min/max 之外的、不合 step 的、
-   * 被另一端顶住的、以及随已选的时（分）收窄掉的那些都已经不在里面。作者据它渲染两组列与格子。
-   * 机器尚未建起时两组都是空数组。
+   * 起止两组各自当前应排列的列及每列的可选值：落在 min/max 之外的、不符合 step 的、
+   * 被另一端限制的、以及随已选的时（分）收窄后排除的值都已剔除。作者据此渲染两组列与格子。
+   * 状态机尚未建立时两组都是空数组。
    */
   get columnGroups(): readonly TimeRangePickerColumnGroup[] {
     return this.ctrl.service

@@ -42,7 +42,7 @@ type TimeRangePickerProps = TimeRangePickerSchema['props']
 
 function noop(): void {}
 
-/** 函数式 children 的载荷：浮层开合与两端、值状态标志、此刻的段与两组时列，以及开合、写值、清空的动作。 */
+/** 函数式 children 的载荷：浮层开合与两端、值状态标志、当前的段与两组时列，以及开合、写值、清空的动作。 */
 export type TimeRangePickerRootSlotProps = Pick<
   TimeRangePickerApi,
   | 'open'
@@ -60,17 +60,17 @@ export type TimeRangePickerRootSlotProps = Pick<
   | 'clear'
 >
 
-/** 时列外壳函数式 children 的载荷：这一端此刻该排哪几列。 */
+/** 时列外壳函数式 children 的载荷：该端当前应排列的列。 */
 export interface TimeRangePickerColumnGroupSlotProps {
   columns: readonly TimePickerColumn[]
 }
 
-/** 列函数式 children 的载荷：这一列此刻的可选值。 */
+/** 列函数式 children 的载荷：该列当前的可选值。 */
 export interface TimeRangePickerColumnSlotProps {
   options: TimePickerColumn['options']
 }
 
-/** 快捷选项列函数式 children 的载荷：逐条的投影，作者据此自己铺条目。 */
+/** 快捷选项列函数式 children 的载荷：逐条的投影，作者据此自行铺设条目。 */
 export interface TimeRangePickerPresetsSlotProps {
   presets: readonly TimeRangePickerPresetState[]
 }
@@ -87,7 +87,7 @@ export interface XhTimeRangePickerRootProps extends Omit<ComponentPropsWithRef<'
   hourCycle?: TimeHourCycle
   granularity?: TimeGranularity
   step?: number
-  /** 快捷选项；给了就在浮层里多出一列，时刻要在自己那儿算好再传。 */
+  /** 快捷选项；提供后浮层中多出一列，时刻要在调用方计算后再传入。 */
   presets?: TimeRangePickerPreset[]
   disabled?: boolean
   /** 两组段位与时列各自的读屏名字。 */
@@ -97,14 +97,14 @@ export interface XhTimeRangePickerRootProps extends Omit<ComponentPropsWithRef<'
   invalid?: boolean
   required?: boolean
   name?: string
-  /** 终点那份隐藏输入的表单名；不给即终点不参与提交。 */
+  /** 终点隐藏输入的表单名；未提供时终点不参与提交。 */
   endName?: string
   variant?: ControlVariant
   tone?: Tone
   size?: Size
   placement?: Placement
   offset?: number
-  /** 文字方向；浮层搬到落点后继承不到作者子树上的方向，要 RTL 就显式给。 */
+  /** 文字方向；浮层迁移到落点后无法继承作者子树上的方向，需要 RTL 时显式提供。 */
   dir?: Direction
   onValueChange?: TimeRangePickerProps['onValueChange']
   onOpenChange?: TimeRangePickerProps['onOpenChange']
@@ -206,7 +206,7 @@ export function XhTimeRangePickerRoot({
 XhTimeRangePickerRoot.xhEvents = ['value-change', 'open-change'] as const
 
 export interface XhTimeRangePickerLabelProps extends ComponentPropsWithRef<'label'> {}
-/** 仍用原生 label 保持表单语义，点标题聚焦第一段由连接层的 click 接管。 */
+/** 仍使用原生 label 保持表单语义，点击标题聚焦第一段由连接层的 click 接管。 */
 export function XhTimeRangePickerLabel({ children, ...rest }: XhTimeRangePickerLabelProps): ReactNode {
   const ctx = useTimeRangePickerContext()
   return <label {...mergeReactProps(ctx.api.getLabelProps() as Record<string, unknown>, rest as Record<string, unknown>)}>{children}</label>
@@ -246,10 +246,10 @@ export function XhTimeRangePickerSegmentGroup({ index = 0, children, ...rest }: 
 }
 
 export interface XhTimeRangePickerSegmentProps extends ComponentPropsWithRef<'span'> {
-  /** 段的身份由作者声明；属于哪一端跟着所在的段位容器走。 */
+  /** 段的身份由作者声明；属于哪一端跟随所在的段位容器。 */
   segment: TimeSegmentType
 }
-/** 有内容用内容，否则显示该段的文字，空段为占位串。 */
+/** 有内容时使用内容，否则显示该段的文字，空段为占位串。 */
 export function XhTimeRangePickerSegment({ segment, children, ...rest }: XhTimeRangePickerSegmentProps): ReactNode {
   const ctx = useTimeRangePickerContext()
   const index = useTimeRangePickerEndContext()
@@ -301,10 +301,10 @@ export function XhTimeRangePickerClearTrigger({ children, ...rest }: XhTimeRange
 }
 
 export interface XhTimeRangePickerPositionerProps extends ComponentPropsWithRef<'div'> {
-  /** 浮层挂到哪个容器；不给就按全局配置，再不给挂 body。 */
+  /** 浮层挂载的容器；未提供时按全局配置，再未提供时挂载到 body。 */
   container?: () => Element | null
 }
-/** 搬到浮层落点：留在原地的话，宿主祖先只要建了层叠上下文就能盖住浮层。 */
+/** 迁移到浮层落点：留在原地时，宿主祖先只要建立了层叠上下文就能遮住浮层。 */
 export function XhTimeRangePickerPositioner({ children, container, ...rest }: XhTimeRangePickerPositionerProps): ReactNode {
   const ctx = useTimeRangePickerContext()
   return (
@@ -344,7 +344,7 @@ export function XhTimeRangePickerContent({ children, ...rest }: XhTimeRangePicke
 }
 
 export interface XhTimeRangePickerPresetGroupProps extends Omit<ComponentPropsWithRef<'div'>, 'children'> {
-  /** 自己铺条目；不写就按 presets 数据自动铺，两者产出的 DOM 一致。 */
+  /** 自行铺设条目；未写时按 presets 数据自动铺设，两者产出的 DOM 一致。 */
   children?: SlotChildren<TimeRangePickerPresetsSlotProps>
 }
 export function XhTimeRangePickerPresetGroup({ children, ...rest }: XhTimeRangePickerPresetGroupProps): ReactNode {
@@ -365,10 +365,10 @@ export function XhTimeRangePickerPresetGroup({ children, ...rest }: XhTimeRangeP
 }
 
 export interface XhTimeRangePickerPresetProps extends Omit<ComponentPropsWithRef<'div'>, 'value'> {
-  /** 这一条的身份，与 presets 数据里的 value 逐字对上。 */
+  /** 该条目的身份，与 presets 数据中的 value 逐字对应。 */
   value: string
 }
-/** 有内容用内容，否则用数据里的 label。 */
+/** 有内容时使用内容，否则使用数据中的 label。 */
 export function XhTimeRangePickerPreset({ value, children, ...rest }: XhTimeRangePickerPresetProps): ReactNode {
   const ctx = useTimeRangePickerContext()
   const api = ctx.api
@@ -429,7 +429,7 @@ export interface XhTimeRangePickerItemProps extends Omit<ComponentPropsWithRef<'
   /** 两位补零的显示串（'09' / '30'）；上下午列写 '00' / '01'。 */
   value: string
 }
-/** 有内容用内容，否则显示这一格该显示的文字（上下午列按 locale 译成「上午 / 下午」）。 */
+/** 有内容时使用内容，否则显示该格应显示的文字（上下午列按 locale 译为「上午 / 下午」）。 */
 export function XhTimeRangePickerItem({ value, children, ...rest }: XhTimeRangePickerItemProps): ReactNode {
   const ctx = useTimeRangePickerContext()
   const index = useTimeRangePickerEndContext()
@@ -445,7 +445,7 @@ export function XhTimeRangePickerItem({ value, children, ...rest }: XhTimeRangeP
 }
 
 export interface XhTimeRangePickerHiddenInputProps extends Omit<ComponentPropsWithRef<'input'>, 'value' | 'defaultValue' | 'type'> {
-  /** 写在段位容器外面时用它指明属于哪一端；写在容器里面不必给，跟着容器走。 */
+  /** 写在段位容器外面时用它指明属于哪一端；写在容器内时不必提供，跟随容器。 */
   index?: number | string
 }
 export function XhTimeRangePickerHiddenInput({ index, ...rest }: XhTimeRangePickerHiddenInputProps): ReactNode {
