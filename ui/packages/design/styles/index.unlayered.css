@@ -42212,7 +42212,7 @@
   line-height: var(--xh-leading-none);
   cursor: pointer;
   user-select: none;
-  transition: background var(--xh-motion-duration-micro) var(--xh-motion-ease-enter), scale var(--xh-motion-duration-micro) var(--xh-motion-ease-enter-strong);
+  transition: background var(--xh-motion-duration-micro) var(--xh-motion-ease-enter), scale var(--xh-motion-duration-release) var(--xh-motion-ease-release);
 }
 
 [data-scope='tree-select'][data-part='clear-trigger'][hidden] {
@@ -42227,6 +42227,8 @@
 [data-scope='tree-select'][data-part='clear-trigger']:active {
   background: var(--xh-tree-select-action-bg-active, var(--xh-bg-subtle-active));
   scale: var(--xh-motion-scale-press);
+  transition-duration: var(--xh-motion-duration-press);
+  transition-timing-function: var(--xh-motion-ease-press);
 }
 
 [data-scope='tree-select'][data-part='content'] {
@@ -42244,7 +42246,7 @@
   padding-block: var(--xh-tree-select-content-py, var(--xh-space-1));
   padding-inline: var(--xh-tree-select-content-px, var(--xh-space-1));
   border: var(--xh-stroke-thin) solid var(--xh-tree-select-content-border, var(--xh-material-frosted-border));
-  border-radius: var(--xh-tree-select-content-radius, var(--xh-shape-surface));
+  border-radius: var(--xh-tree-select-content-radius, var(--xh-shape-overlay));
   background: var(--xh-tree-select-content-bg, var(--xh-material-frosted-bg));
   color: var(--xh-tree-select-content-fg, var(--xh-material-frosted-fg));
   box-shadow: var(--xh-tree-select-content-shadow, var(--xh-material-frosted-shadow));
