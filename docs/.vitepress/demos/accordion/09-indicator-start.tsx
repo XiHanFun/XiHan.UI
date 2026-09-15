@@ -1,4 +1,4 @@
-// 指示器在前 | 指示器写在标题之前就落到起始缘，标题拿 auto 外边距吃掉余量
+// 指示器在前 | 指示器写在标题之前即落到起始缘，标题用 auto 外边距占据余量
 import type { ReactNode } from "react";
 import {
   XhAccordionContent,

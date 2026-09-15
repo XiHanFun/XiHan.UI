@@ -1,4 +1,4 @@
-// 允许全收 | 单开模式下最后一项默认收不起来，加 collapsible 才能把它也收上
+// 允许全部收起 | 单开模式下最后一项默认无法收起，加 collapsible 后才能收起
 import type { ReactNode } from "react";
 import { XhAccordionRoot } from "@xihan-ui/react";
 

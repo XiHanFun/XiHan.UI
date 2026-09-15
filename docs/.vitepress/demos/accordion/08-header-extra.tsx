@@ -1,4 +1,4 @@
-// 标题栏附加信息 | 标题栏里的节点全归作者，把计数与指示器包成一组排在末尾
+// 标题栏附加信息 | 标题栏中的节点全部归作者，把计数与指示器包为一组排在末尾
 import type { ReactNode } from "react";
 import {
   XhAccordionContent,

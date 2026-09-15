@@ -1,4 +1,4 @@
-// 指示器与禁用 | indicator 的朝向由 data-state 驱动，禁用项点不动、方向键也跳过它
+// 指示器与禁用 | indicator 的朝向由 data-state 驱动，禁用项不可点击、方向键也跳过它
 import type { ReactNode } from "react";
 import { XhAccordionRoot } from "@xihan-ui/react";
 

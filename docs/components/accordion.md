@@ -12,7 +12,7 @@
 
 ## 用法
 
-默认单开：展开一项即收起其余，defaultValue 只给初始值，之后由组件自己维护
+默认单开：展开一项即收起其余，defaultValue 只提供初始值，之后由组件自行维护
 
 <XhDemo src="accordion/01-basic" />
 
@@ -26,19 +26,19 @@
 
 ### 多项展开
 
-multiple 允许多项并存，展开集合恒为 string[]，受控绑定即可拿到它
+multiple 允许多项并存，展开集合恒为 string[]，受控绑定即可获取它
 
 <XhDemo src="accordion/02-multiple" />
 
-### 允许全收
+### 允许全部收起
 
-单开模式下最后一项默认收不起来，加 collapsible 才能把它也收上
+单开模式下最后一项默认无法收起，加 collapsible 后才能收起
 
 <XhDemo src="accordion/03-collapsible" />
 
 ### 指示器与禁用
 
-indicator 的朝向由 data-state 驱动，禁用项点不动、方向键也跳过它
+indicator 的朝向由 data-state 驱动，禁用项不可点击、方向键也跳过它
 
 <XhDemo src="accordion/04-indicator" />
 
@@ -50,25 +50,25 @@ tone 落在展开态的标题上，六种颜色各预置一项展开做对照
 
 ### 尺寸
 
-size 换的是标题栏的高度、内边距与字号，三档并排对照
+size 改变标题栏的高度、内边距与字号，三档并排对照
 
 <XhDemo src="accordion/06-size" />
 
 ### 嵌套
 
-content 里再放一组手风琴，内外两组各自维护展开集合，方向键也各管各的
+content 中再放一组手风琴，内外两组各自维护展开集合，方向键也各自独立
 
 <XhDemo src="accordion/07-nested" />
 
 ### 标题栏附加信息
 
-标题栏里的节点全归作者，把计数与指示器包成一组排在末尾
+标题栏中的节点全部归作者，把计数与指示器包为一组排在末尾
 
 <XhDemo src="accordion/08-header-extra" />
 
 ### 指示器在前
 
-指示器写在标题之前就落到起始缘，标题拿 auto 外边距吃掉余量
+指示器写在标题之前即落到起始缘，标题用 auto 外边距占据余量
 
 <XhDemo src="accordion/09-indicator-start" />
 
@@ -80,13 +80,13 @@ trigger 只包住指示器，标题文字留在 header 里，点标题不再展�
 
 ### 自定义展开图标
 
-indicator 是可选部件，不渲染它就没有默认字形；标记由作者按展开集合自己画
+indicator 是可选部件，不渲染它就没有默认字形；标记由作者按展开集合自行绘制
 
 <XhDemo src="accordion/11-custom-icon" />
 
 ### 变体
 
-plain 不画壳，surface 连成单一表面，bordered 逐条画边；三档只改怎么与页面分开
+plain 不绘制外壳，surface 连成单一表面，bordered 逐条绘制边框；三档只改变与页面分开的方式
 
 <XhDemo src="accordion/12-variant" />
 
