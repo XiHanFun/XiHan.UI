@@ -1,9 +1,10 @@
 #!/usr/bin/env node
-// 门禁：文档示例只使用可控 SVG 媒体，结构占位块不靠文字撑形状。
+// 门禁：品牌资产保留作者原图，文档示例只使用可控 SVG 媒体，结构占位块不靠文字撑形状。
 //
-// 组件文档会被直接浏览和复制。PNG/JPG 一类具体图片既不能随主题调整，也会把视觉注意力
-// 从组件本身带走；Flex/Grid/Layout 等结构预览若用“模块 A / 文件 / 编辑器”撑盒子，字体
-// 与文案长度还会反过来决定布局。媒体统一使用 SVG，纯结构用 data-demo-block 的淡色空块。
+// Logo 是用户提供的品牌真源，不能由示例规范改写。除此之外，组件文档会被直接浏览和复制：
+// PNG/JPG 一类具体图片既不能随主题调整，也会把视觉注意力从组件本身带走；Flex/Grid/Layout
+// 等结构预览若用“模块 A / 文件 / 编辑器”撑盒子，字体与文案长度还会反过来决定布局。
+// 示例媒体统一使用 SVG，纯结构用 data-demo-block 的淡色空块。
 import { readdir, readFile, stat } from 'node:fs/promises'
 import { extname, relative } from 'node:path'
 
@@ -38,6 +39,13 @@ function lineOf(source, index) {
   return source.slice(0, index).split('\n').length
 }
 
+function isBrandLogoReference(name, reference) {
+  return (
+    ((name === '.vitepress/config.ts' || name === 'index.md') && reference === '/images/logo.png')
+    || ((name === '../ui/README.md' || name === '../ui/README_cn.md') && reference === '![logo](../assets/logo.png)')
+  )
+}
+
 const problems = []
 let files = 0
 let blocks = 0
@@ -48,10 +56,14 @@ for (const root of ROOTS) {
     const source = await readFile(file, 'utf8')
     const name = relative(DOCS, file).replaceAll('\\', '/')
 
-    for (const match of source.matchAll(RASTER))
-      problems.push(`${name}:${lineOf(source, match.index)}  ${match[0]} —— 文档媒体改用 SVG`)
-    for (const match of source.matchAll(RASTER_MARKDOWN))
-      problems.push(`${name}:${lineOf(source, match.index)}  ${match[0]} —— Markdown 媒体改用 SVG`)
+    for (const match of source.matchAll(RASTER)) {
+      if (!isBrandLogoReference(name, match[0]))
+        problems.push(`${name}:${lineOf(source, match.index)}  ${match[0]} —— 文档示例媒体改用 SVG`)
+    }
+    for (const match of source.matchAll(RASTER_MARKDOWN)) {
+      if (!isBrandLogoReference(name, match[0]))
+        problems.push(`${name}:${lineOf(source, match.index)}  ${match[0]} —— Markdown 示例媒体改用 SVG`)
+    }
 
     if (STRUCTURAL_DEMOS.test(name)) {
       for (const match of source.matchAll(LEGACY_BLOCK_MARKER))
@@ -72,12 +84,21 @@ for (const root of ROOTS) {
   }
 }
 
-for (const asset of ['logo.svg', 'demo-avatar.svg']) {
+for (const asset of ['demo-avatar.svg']) {
   try {
     await readFile(`${DOCS}/public/images/${asset}`, 'utf8')
   }
   catch {
     problems.push(`public/images/${asset}:1  缺少统一 SVG 资产`)
+  }
+}
+
+for (const asset of [`${DOCS}/public/images/logo.png`, '../assets/logo.png']) {
+  try {
+    await stat(asset)
+  }
+  catch {
+    problems.push(`${asset}:1  缺少用户提供的品牌 Logo 原图`)
   }
 }
 
@@ -92,4 +113,4 @@ if (problems.length) {
   process.exit(1)
 }
 
-console.log(`[check-doc-media-placeholders] 通过：${files} 份文档源没有位图引用，${blocks} 个结构占位块不含可见文字`)
+console.log(`[check-doc-media-placeholders] 通过：${files} 份文档源没有品牌 Logo 之外的位图引用，${blocks} 个结构占位块不含可见文字`)
