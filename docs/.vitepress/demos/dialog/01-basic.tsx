@@ -1,4 +1,4 @@
-// 基础用法 | 不传 open 即为非受控；Esc 或点遮罩关闭，关闭后焦点回到触发按钮
+// 基础用法 | 不传 open 即为非受控；Esc 或点击遮罩关闭，关闭后焦点回到触发按钮
 import type { ReactNode } from "react";
 import {
   XhButton,

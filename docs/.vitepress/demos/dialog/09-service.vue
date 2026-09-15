@@ -1,4 +1,4 @@
-<!-- 命令式服务 | createDialogService 的 confirm 与单按钮预设：一行调用弹出，onOk 返回 Promise 时确认钮自动 pending 并拦住关闭；多次调用排队顺次弹 -->
+<!-- 命令式服务 | createDialogService 的 confirm 与单按钮预设：一行调用弹出，onOk 返回 Promise 时确认按钮自动 pending 并阻止关闭；多次调用排队依次弹出 -->
 <script setup lang="ts">
 import type { DialogService } from "@xihan-ui/vue";
 import { createDialogService, XhButton } from "@xihan-ui/vue";

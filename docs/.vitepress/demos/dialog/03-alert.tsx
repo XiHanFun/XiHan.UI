@@ -1,4 +1,4 @@
-// 警示对话框 | role=alertdialog 交给读屏更强的语气；关掉 Esc 与点遮罩后，只剩里面这两颗按钮能走出去
+// 警示对话框 | role=alertdialog 交给读屏更强的语气；关闭 Esc 与点击遮罩后，只剩内部两个按钮可以离开
 import type { ReactNode } from "react";
 import {
   XhButton,

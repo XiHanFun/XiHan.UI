@@ -12,7 +12,7 @@
 
 ## 用法
 
-不传 open 即为非受控；Esc 或点遮罩关闭，关闭后焦点回到触发按钮
+不传 open 即为非受控；Esc 或点击遮罩关闭，关闭后焦点回到触发按钮
 
 <XhDemo src="dialog/01-basic" />
 
@@ -26,49 +26,49 @@
 
 ### 受控
 
-传了 open 就由宿主说了算，组件自己不再改状态；Esc、点遮罩、按叉都只回写 open
+传入 open 后由宿主决定，组件自身不再修改状态；Esc、点击遮罩、按关闭按钮都只回写 open
 
 <XhDemo src="dialog/02-controlled" />
 
 ### 警示对话框
 
-role=alertdialog 交给读屏更强的语气；关掉 Esc 与点遮罩后，只剩里面这两颗按钮能走出去
+role=alertdialog 交给读屏更强的语气；关闭 Esc 与点击遮罩后，只剩内部两个按钮可以离开
 
 <XhDemo src="dialog/03-alert" />
 
 ### 尺寸
 
-size 落成 content 的 data-size，只改面板的最大宽度；三档各自一个对话框，点开才看得出宽窄
+size 写为 content 的 data-size，只改变面板的最大宽度；三档各自一个对话框，打开后才可见宽窄差异
 
 <XhDemo src="dialog/04-size" />
 
 ### 头尾固定、正文滚动
 
-header / body / footer 把面板切成三段：头与尾定在原处，只有正文那一段在滚
+header / body / footer 把面板切为三段：头与尾固定在原处，只有正文一段滚动
 
 <XhDemo src="dialog/05-scroll" />
 
 ### 异步确认
 
-提交期间按钮转圈，Esc 与点遮罩这两条出口一并封住，落定之后才把 open 写回 false
+提交期间按钮显示加载，Esc 与点击遮罩两条出口一并封闭，落定之后才把 open 写回 false
 
 <XhDemo src="dialog/06-async" />
 
 ### 命令式确认框
 
-一次函数调用把描述符推进表里并展开对话框；拿回的对象随后可改标题、正文与按钮状态，表里就是当前所有实例
+一次函数调用把描述符推入表中并展开对话框；返回的对象随后可修改标题、正文与按钮状态，表中即当前所有实例
 
 <XhDemo src="dialog/07-imperative" />
 
-### 拖动标题栏挪窗口
+### 拖动标题栏移动窗口
 
-指针按在标题上，顺着 DOM 找到 content 部件，把累计位移写进它的 translate；入场动画走的是 transform，两者互不覆盖
+指针按在标题上，沿 DOM 找到 content 部件，把累计位移写进它的 translate；入场动画使用 transform，两者互不覆盖
 
 <XhDemo src="dialog/08-draggable" />
 
 ### 命令式服务
 
-createDialogService 的 confirm 与单按钮预设：一行调用弹出，onOk 返回 Promise 时确认钮自动 pending 并拦住关闭；多次调用排队顺次弹
+createDialogService 的 confirm 与单按钮预设：一行调用弹出，onOk 返回 Promise 时确认按钮自动 pending 并阻止关闭；多次调用排队依次弹出
 
 <XhDemo src="dialog/09-service" />
 

@@ -1,4 +1,4 @@
-<!-- 异步确认 | 提交期间按钮转圈，Esc 与点遮罩这两条出口一并封住，落定之后才把 open 写回 false -->
+<!-- 异步确认 | 提交期间按钮显示加载，Esc 与点击遮罩两条出口一并封闭，落定之后才把 open 写回 false -->
 <script setup lang="ts">
 import {
   XhButton,

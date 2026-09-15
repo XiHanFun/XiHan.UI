@@ -1,4 +1,4 @@
-// 拖动标题栏挪窗口 | 指针按在标题上，顺着 DOM 找到 content 部件，把累计位移写进它的 translate；入场动画走的是 transform，两者互不覆盖
+// 拖动标题栏移动窗口 | 指针按在标题上，沿 DOM 找到 content 部件，把累计位移写进它的 translate；入场动画使用 transform，两者互不覆盖
 import type { PointerEvent, ReactNode } from "react";
 import {
   XhButton,
