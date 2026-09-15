@@ -49,12 +49,12 @@ primitive  ──►  semantic  ──►  组件私有槽
 | --- | ---: | --- |
 | `--xh-shape-inset` | 4px | 嵌在控件里的内层：菜单项、标签内部、微型状态块 |
 | `--xh-shape-control` | 4px | 控件本体：Button、Input、Select Trigger、Toggle、分页按钮 |
-| `--xh-shape-surface` | 8px | 成面的静态容器：Card、Alert、Panel、列表容器 |
+| `--xh-shape-surface` | 8px | 成面的静态容器：Card、Alert、Panel、列表容器、Segmented 与 Tabs 轨道 |
 | `--xh-shape-overlay` | 12px | 脱离文档流的浮层：Popover、Menu、Dialog、Drawer、Toast |
 | `--xh-shape-circle` | 50% | 正圆：头像、圆形图标按钮、单选指示器 |
-| `--xh-shape-pill` | 9999px | 胶囊：Badge、Tag、Segmented 轨道等具有胶囊身份的对象 |
+| `--xh-shape-pill` | 9999px | 胶囊：Badge、Tag 等状态 chip，以及轨道、指示条、手柄、滚动条滑块等一维对象 |
 
-普通按钮、字段、卡片与浮层不使用 pill；内层圆角不超过外层圆角减去内边距；相连控件消除相接侧圆角。亮色、暗色与紧凑密度不改变形状身份。
+普通按钮、字段、卡片与浮层不使用 pill；内层圆角不超过外层圆角减去内边距；相连控件消除相接侧圆角。亮色、暗色与紧凑密度不改变形状身份。正方盒取 circle，不用 pill 冒充圆。
 
 ## 点击触感
 
@@ -65,7 +65,7 @@ primitive  ──►  semantic  ──►  组件私有槽
 | 按下 | `--xh-motion-duration-press`（120ms） | `--xh-motion-ease-press` | scale 1 → `--xh-motion-scale-press`（0.97），背景进入 active |
 | 释放 | `--xh-motion-duration-release`（200ms） | `--xh-motion-ease-release` | scale 回到 1，背景回到 hover / rest |
 
-Menu Item、Listbox Item、Tree Node、Table Row 等集合项使用同一节奏，但只切换表面，不缩放整条。减少动效时 `--xh-motion-scale-press` 归 1、两段时长归 1ms，颜色反馈保留。
+Menu Item、Listbox Item、Tree Node、Table Row 等集合项与 Accordion / Collapsible 等 disclosure trigger 使用同一节奏，但只切换表面，不缩放整条，也不允许零反馈。减少动效时 `--xh-motion-scale-press` 归 1、两段时长归 1ms，颜色反馈保留。
 
 ## 七轴视觉环境运行时
 
@@ -163,10 +163,10 @@ React / Vue 的 `XhConfigProvider` / `provideXhConfig` 通过 `config.visualEnvi
 
 | 编号 | 令牌 | 用途 | 光学 |
 | --- | --- | --- | --- |
-| M0 solid | `--xh-material-solid-*` | 普通静态容器 | 实体底色，无高光、无投影 |
-| M1 soft | `--xh-material-soft-*` | Card、Prompt Input 等内容面，次级操作 | 实体底色，细微顶光与两段接触投影，无背景模糊 |
-| M2 frosted | `--xh-material-frosted-*` | Popover、Menu、Floating Panel、悬浮动作等瞬态浮层 | 0.88 不透明度，16px 模糊，108% 饱和度，1px 可见边界 |
-| M4 elevated | `--xh-material-elevated-*` | Dialog、Drawer 等模态主阅读面（sheet） | 完全不透明，无背景模糊，三层高层投影 |
+| M0 solid | `--xh-material-solid-*` | 静态内容面缺省：border-default 描边 + surface 底 + 无影；字段静息同为描边式 | 实体底色，无高光、无投影 |
+| M1 soft | `--xh-material-soft-*` | Button soft、Tag、Popconfirm 动作等次级操作；不用于 Card 与字段 | 实体底色，细微顶光与两段接触投影，无背景模糊 |
+| M2 frosted | `--xh-material-frosted-*` | 短列表、菜单、tooltip、气泡等需要透景的锚定瞬态浮层；含网格或多列的锚定面板改用 solid + border-default + `--xh-elevation-floating` | 0.88 不透明度，16px 模糊，108% 饱和度，1px 可见边界 |
+| M4 elevated | `--xh-material-elevated-*` | Dialog、Drawer、Command、Tour、Toast、Notification 等模态与强反馈面（sheet），必有 1px 描边 | 完全不透明，无背景模糊，三层高层投影 |
 
 | 后缀 | 用途 |
 | --- | --- |
