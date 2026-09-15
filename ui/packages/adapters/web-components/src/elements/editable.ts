@@ -56,7 +56,7 @@ const BOOLEAN_CONVERTER = { fromAttribute: (v: string | null) => (v === null ? u
  * @attr {'click'|'dblclick'|'focus'|'none'} activation-mode - 预览区进入编辑态的方式，默认 click
  * @attr {boolean} select-on-focus - 进入编辑态时全选，默认开启；写 select-on-focus="false" 关闭
  * @attr {boolean} auto-resize - 输入框宽度跟随内容（落为原生 size）
- * @attr {'outline'|'subtle'|'ghost'} variant - 视觉变体
+ * @attr {'outline'|'subtle'|'ghost'} variant - 形态：outline / subtle / ghost，默认 outline
  * @attr {'brand'|'neutral'|'success'|'warning'|'danger'|'info'} tone - 语气
  * @attr {'sm'|'md'|'lg'} size - 尺寸
  * @fires value-change - 编辑途中的值变化；detail 为 `{ value: string }`

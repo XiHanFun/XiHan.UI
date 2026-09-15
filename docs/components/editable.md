@@ -110,7 +110,7 @@
 | `activationMode` | `EditableActivationMode` |  | 预览区的激活方式，默认 click。 |
 | `selectOnFocus` | `boolean` |  | 进入编辑态时全选已有内容，默认开启。关闭则光标停在原处。 |
 | `autoResize` | `boolean` |  | 输入框宽度跟随内容：连接层把字符数写为原生 size 属性。 |
-| `variant` | `ControlVariant` |  | 形态：outline / subtle / ghost，决定预览态与编辑态共用 control 的底色与描边。 |
+| `variant` | `ControlVariant` |  | 形态：outline / subtle / ghost，决定底色与描边的绘制方式。默认 outline。 |
 | `tone` | `Tone` |  | 语气：brand / neutral / success / warning / danger / info，决定 control 的聚焦描边与焦点环颜色。 |
 | `size` | `Size` |  | 尺寸：sm / md / lg，决定 control、预览区、输入框与三个动作按钮的几何档位。 |
 | `onValueChange` | `(details: EditableValueChangeDetails) => void` |  | 值变化意图回调；编辑途中每次输入都发出，受控时是唯一出口。 |
