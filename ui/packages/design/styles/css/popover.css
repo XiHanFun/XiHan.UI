@@ -113,7 +113,7 @@
     padding-block: var(--xh-popover-py, var(--xh-_popover-pad));
     padding-inline: var(--xh-popover-px, var(--xh-_popover-pad));
     border: var(--xh-stroke-thin) solid var(--xh-popover-border, var(--xh-material-frosted-border));
-    border-radius: var(--xh-popover-radius, var(--xh-shape-surface));
+    border-radius: var(--xh-popover-radius, var(--xh-shape-overlay));
     /* 顶光只占内侧一像素；透明 tint 是底层，正文自己保持不透明。 */
     background:
       linear-gradient(
@@ -204,7 +204,7 @@
     transition:
       background var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
       color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
-      scale var(--xh-motion-duration-micro) var(--xh-motion-ease-enter-strong);
+      scale var(--xh-motion-duration-release) var(--xh-motion-ease-release);
   }
 
   [data-scope='popover'][data-part='close-trigger'][hidden] {
@@ -219,6 +219,8 @@
   [data-scope='popover'][data-part='close-trigger']:active {
     background: var(--xh-popover-close-bg-active, var(--xh-bg-subtle-active));
     scale: var(--xh-motion-scale-press);
+    transition-duration: var(--xh-motion-duration-press);
+    transition-timing-function: var(--xh-motion-ease-press);
   }
 
   /* 品牌环往内收时先落在这一小块实体隔离底上，不直接与不断变化的模糊背景比对。 */
