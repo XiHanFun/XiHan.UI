@@ -15,19 +15,19 @@ import { useAffix } from './use-affix'
 
 type AffixProps = AffixSchema['props']
 
-/** 函数式 children 的载荷：此刻是不是吸住了。 */
+/** 函数式 children 的载荷：当前是否处于吸附状态。 */
 export interface AffixRootSlotProps extends Pick<AffixApi, 'affixed'> {}
 
 export interface XhAffixRootProps extends Omit<ComponentPropsWithRef<'div'>, 'children'> {
   offsetTop?: number
   offsetBottom?: number
-  /** 滚动容器取值器，缺省即整页滚动；挂载效应执行时求值。 */
+  /** 滚动容器取值器，默认即整页滚动；挂载效应执行时求值。 */
   target?: () => HTMLElement | null
   onAffixChange?: AffixProps['onAffixChange']
   children?: SlotChildren<AffixRootSlotProps>
 }
 
-/** 根节点是占位盒：content 吸住时脱流，它留在原位撑住那块空间。 */
+/** 根节点是占位盒：content 吸附时脱离文档流，它留在原位撑住该空间。 */
 export function XhAffixRoot({
   offsetTop,
   offsetBottom,
@@ -55,7 +55,7 @@ export function XhAffixRoot({
 XhAffixRoot.xhEvents = ['affix-change'] as const
 
 export interface XhAffixContentProps extends ComponentPropsWithRef<'div'> {}
-/** 吸住时脱离常规流钉在可视区边上，落位由机器量好写进内联样式。 */
+/** 吸附时脱离常规流固定在可视区边缘，位置由状态机测量后写入内联样式。 */
 export function XhAffixContent({ children, ...rest }: XhAffixContentProps): ReactNode {
   const ctx = useAffixContext()
   return (
