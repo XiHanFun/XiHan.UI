@@ -18,7 +18,7 @@ import { useFileUpload } from './use-file-upload'
 
 type FileUploadProps = FileUploadSchema['props']
 
-/** 默认插槽的载荷：文件清单与传输快照、投放区与数量状态，与增删清空、开传、拉起选择器等命令。 */
+/** 默认插槽的载荷：文件清单与传输快照、投放区与数量状态，以及增删清空、开始上传、拉起选择器等命令。 */
 export type FileUploadRootSlotProps = Pick<
   FileUploadApi,
   | 'acceptedFiles'
@@ -132,7 +132,7 @@ export const XhFileUploadTrigger = defineComponent({
   // 直通属性自己合：Vue 默认把作者的处理器排在部件的后面，这里改成作者先跑
   inheritAttrs: false,
   props: {
-    /** 借用作者的子节点当触发器，不再渲染自己的包裹元素；子节点须恰好一个。 */
+    /** 借用作者的子节点作为触发器，不再渲染自己的包裹元素；子节点须恰好一个。 */
     asChild: Boolean,
   },
   setup(props, { slots, attrs }) {
@@ -170,9 +170,9 @@ export const XhFileUploadList = defineComponent({
 export const XhFileUploadItem = defineComponent({
   name: 'XhFileUploadItem',
   props: {
-    /** 这一行显示哪个文件（本地或远程附件）。 */
+    /** 该行显示哪个文件（本地或远程附件）。 */
     file: { type: Object as PropType<FileUploadFile> },
-    /** 改用下标从 allFiles（远程在前、本地在后）里取文件，兼收字符串以支持模板里写 index="0"。 */
+    /** 改用下标从 allFiles（远程在前、本地在后）中取文件，兼收字符串以支持模板中写 index="0"。 */
     index: { type: [Number, String] as PropType<number | string> },
   },
   setup(props, { slots }) {

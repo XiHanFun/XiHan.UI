@@ -10,7 +10,7 @@ import type { FileUploadContext } from './use-file-upload'
 import { createContext, useContext } from 'react'
 
 const Ctx = createContext<FileUploadContext | undefined>(undefined)
-/** 条目自报的文件，供 item-name / item-size-text / 删除按钮这些子部件复用同一份声明。 */
+/** 条目声明的文件，供 item-name / item-size-text / 删除按钮等子部件复用同一份声明。 */
 const ItemCtx = createContext<FileUploadItemProps | undefined>(undefined)
 
 export const FileUploadProvider = Ctx

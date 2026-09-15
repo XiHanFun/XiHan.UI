@@ -20,7 +20,7 @@ import { useFileUpload } from './use-file-upload'
 
 type FileUploadProps = FileUploadSchema['props']
 
-/** 函数式 children 的载荷：文件清单与传输快照、投放区与数量状态，与增删清空、开传、拉起选择器等命令。 */
+/** 函数式 children 的载荷：文件清单与传输快照、投放区与数量状态，以及增删清空、开始上传、拉起选择器等命令。 */
 export type FileUploadRootSlotProps = Pick<
   FileUploadApi,
   | 'acceptedFiles'
@@ -48,9 +48,9 @@ export interface XhFileUploadRootProps extends Omit<ComponentPropsWithRef<'div'>
   /** 受控的服务器已有附件。 */
   remoteFiles?: FileUploadRemoteFile[]
   defaultRemoteFiles?: FileUploadRemoteFile[]
-  /** 传输实现；不给就只收文件不上传。 */
+  /** 传输实现；未提供时只接收文件不上传。 */
   upload?: FileUploadProps['upload']
-  /** 选中即开传，默认开。 */
+  /** 选中即开始上传，默认开启。 */
   autoUpload?: boolean
   accept?: string | string[]
   maxFiles?: number
@@ -58,11 +58,11 @@ export interface XhFileUploadRootProps extends Omit<ComponentPropsWithRef<'div'>
   minFileSize?: number
   disabled?: boolean
   invalid?: boolean
-  /** 表单字段名；给了影子输入才带 name。 */
+  /** 表单字段名；提供后影子输入才带 name。 */
   name?: string
-  /** 收不收拖放，默认收。 */
+  /** 是否接受拖放，默认接受。 */
   allowDrop?: boolean
-  /** 选整个目录。 */
+  /** 选择整个目录。 */
   directory?: boolean
   capture?: 'user' | 'environment'
   translations?: Partial<FileUploadTranslations>
@@ -205,7 +205,7 @@ export function XhFileUploadTrigger({ children, asChild, ...rest }: XhFileUpload
 
 export interface XhFileUploadHiddenInputProps extends Omit<ComponentPropsWithRef<'input'>, 'type'> {}
 
-/** 选择框入口：机器打开它靠这份原生输入，对键盘与读屏不可见。 */
+/** 选择框入口：状态机打开它依靠该原生输入，对键盘与读屏不可见。 */
 export function XhFileUploadHiddenInput({ ...rest }: XhFileUploadHiddenInputProps): ReactNode {
   const ctx = useFileUploadContext()
   return <input {...mergeReactProps(ctx.api.getHiddenInputProps() as Record<string, unknown>, rest as Record<string, unknown>)} />
@@ -223,9 +223,9 @@ export function XhFileUploadList({ children, ...rest }: XhFileUploadListProps): 
 }
 
 export interface XhFileUploadItemProps extends ComponentPropsWithRef<'div'> {
-  /** 这一行显示哪个文件（本地或远程附件）。 */
+  /** 该行显示哪个文件（本地或远程附件）。 */
   file?: FileUploadFile
-  /** 改用下标从 allFiles（远程在前、本地在后）里取文件，兼收字符串。 */
+  /** 改用下标从 allFiles（远程在前、本地在后）中取文件，兼收字符串。 */
   index?: number | string
 }
 
@@ -256,7 +256,7 @@ export function XhFileUploadItem({ file, index, children, ...rest }: XhFileUploa
 
 export interface XhFileUploadItemNameProps extends ComponentPropsWithRef<'span'> {}
 
-/** 没给内容就显示文件名。 */
+/** 未提供内容时显示文件名。 */
 export function XhFileUploadItemName({ children, ...rest }: XhFileUploadItemNameProps): ReactNode {
   const ctx = useFileUploadContext()
   const item = useFileUploadItemContext()
@@ -269,7 +269,7 @@ export function XhFileUploadItemName({ children, ...rest }: XhFileUploadItemName
 
 export interface XhFileUploadItemSizeTextProps extends ComponentPropsWithRef<'span'> {}
 
-/** 没给内容就显示格式化后的文件大小。 */
+/** 未提供内容时显示格式化后的文件大小。 */
 export function XhFileUploadItemSizeText({ children, ...rest }: XhFileUploadItemSizeTextProps): ReactNode {
   const ctx = useFileUploadContext()
   const item = useFileUploadItemContext()
@@ -294,7 +294,7 @@ export function XhFileUploadItemPreview({ children, ...rest }: XhFileUploadItemP
 
 export interface XhFileUploadItemProgressProps extends ComponentPropsWithRef<'div'> {}
 
-/** 这一条的传输进度条，纯装饰；进度比例写在私有槽上供皮肤算宽度。 */
+/** 该条的传输进度条，纯装饰；进度比例写在私有槽上供皮肤计算宽度。 */
 export function XhFileUploadItemProgress({ children, ...rest }: XhFileUploadItemProgressProps): ReactNode {
   const ctx = useFileUploadContext()
   const item = useFileUploadItemContext()
