@@ -116,7 +116,7 @@ const title: string = "XiHan.UI";
 const description: string = "框架无关的设计系统运行时与组件库";
 const keywords: string
   = "曦寒,曦寒懿,视图组件,组件库,设计系统,Vue,Web Components,官方文档,开源,XiHanFun,XiHan.UI";
-const logo: string = "/images/logo.png";
+const logo: string = "/images/logo.svg";
 const head: HeadConfig[] = [
   ["meta", { name: "author", content: "XiHanFun" }],
   [

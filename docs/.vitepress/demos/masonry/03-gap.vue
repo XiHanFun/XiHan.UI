@@ -2,7 +2,12 @@
 <script setup lang="ts">
 import { XhMasonry } from "@xihan-ui/vue";
 
-const items = ["设计", "开发", "测试", "发布"];
+const items = [
+  { id: 1, tone: "brand", height: "48px" },
+  { id: 2, tone: "info", height: "58px" },
+  { id: 3, tone: "success", height: "68px" },
+  { id: 4, tone: "warning", height: "78px" },
+] as const;
 const gaps = ["sm", "lg"] as const;
 </script>
 
@@ -12,12 +17,12 @@ const gaps = ["sm", "lg"] as const;
       <div style="margin-block-end: 8px; color: var(--xh-fg-muted); font-size: 13px">{{ gap }}</div>
       <XhMasonry :columns="2" :gap="gap">
         <div
-          v-for="(item, index) in items"
-          :key="item"
-          :style="`padding: ${12 + index * 5}px 12px; border-radius: var(--xh-shape-control); background: var(--xh-bg-brand-subtle); color: var(--xh-fg-brand)`"
-        >
-          {{ item }}
-        </div>
+          v-for="item in items"
+          :key="item.id"
+          data-demo-block
+          :data-tone="item.tone"
+          :style="{ '--xh-demo-block-block-size': item.height, '--xh-demo-block-radius': 'var(--xh-shape-control)' }"
+        />
       </XhMasonry>
     </div>
   </div>

@@ -13,7 +13,7 @@ const boxStyle = {
 
 export default function Demo(): ReactNode {
   // 一开始给个取不到的地址，重试时换成能取到的
-  const [src, setSrc] = useState("https://example.invalid/photo.png");
+  const [src, setSrc] = useState("https://example.invalid/photo.svg");
 
   return (
     <XhImageRoot src={src} alt="风景照" style={boxStyle}>

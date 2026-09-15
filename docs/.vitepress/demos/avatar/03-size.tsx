@@ -7,15 +7,15 @@ export default function Demo(): ReactNode {
     <>
       {/* 有图的一行：图片铺满 root，跟着三档一起缩放 */}
       <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
-        <XhAvatarRoot size="sm" src="/images/logo.png" alt="曦寒">
+        <XhAvatarRoot size="sm" src="/images/demo-avatar.svg" alt="曦寒">
           <XhAvatarImage />
           <XhAvatarFallback>曦</XhAvatarFallback>
         </XhAvatarRoot>
-        <XhAvatarRoot src="/images/logo.png" alt="曦寒">
+        <XhAvatarRoot src="/images/demo-avatar.svg" alt="曦寒">
           <XhAvatarImage />
           <XhAvatarFallback>曦</XhAvatarFallback>
         </XhAvatarRoot>
-        <XhAvatarRoot size="lg" src="/images/logo.png" alt="曦寒">
+        <XhAvatarRoot size="lg" src="/images/demo-avatar.svg" alt="曦寒">
           <XhAvatarImage />
           <XhAvatarFallback>曦</XhAvatarFallback>
         </XhAvatarRoot>

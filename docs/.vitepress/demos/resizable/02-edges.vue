@@ -13,9 +13,10 @@ const EDGES = ["n", "ne", "e", "se", "s", "sw", "w", "nw"] as const;
     :edges="[...EDGES]"
     :min-width="120"
     :min-height="80"
+    aria-label="支持全部边缘的占位区块"
     style="border-radius: var(--xh-shape-surface); background: var(--xh-bg-subtle); padding: 16px"
   >
-    <span>从任意边缘调整</span>
+    <span data-demo-block data-tone="info" style="--xh-demo-block-block-size: 100%; --xh-demo-block-min-block-size: 100%" />
     <XhResizableHandle v-for="edge in EDGES" :key="edge" :edge="edge" />
   </XhResizableRoot>
 </template>

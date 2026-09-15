@@ -19,7 +19,7 @@ const inner = [
 <template>
   <XhSplitterRoot :panels="outer" style="inline-size: min(640px, 100%); block-size: 240px">
     <XhSplitterPanel :index="0" style="background: var(--xh-bg-subtle)">
-      <p style="padding: 12px">文件</p>
+      <span data-demo-block data-tone="neutral" style="--xh-demo-block-block-size: calc(100% - 24px); margin: 12px" />
     </XhSplitterPanel>
     <XhSplitterResizeTrigger :index="0" />
     <XhSplitterPanel :index="1">
@@ -29,11 +29,11 @@ const inner = [
         style="inline-size: 100%; block-size: 100%"
       >
         <XhSplitterPanel :index="0" style="background: var(--xh-bg-brand-subtle)">
-          <p style="padding: 12px">编辑器</p>
+          <span data-demo-block data-tone="brand" style="--xh-demo-block-block-size: calc(100% - 24px); margin: 12px" />
         </XhSplitterPanel>
         <XhSplitterResizeTrigger :index="0" />
         <XhSplitterPanel :index="1" style="background: var(--xh-bg-subtle)">
-          <p style="padding: 12px">控制台</p>
+          <span data-demo-block data-tone="info" style="--xh-demo-block-block-size: calc(100% - 24px); margin: 12px" />
         </XhSplitterPanel>
       </XhSplitterRoot>
     </XhSplitterPanel>

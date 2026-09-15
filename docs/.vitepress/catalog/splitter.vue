@@ -8,9 +8,21 @@ const panels = [
 </script>
 
 <template>
-  <XhSplitterRoot :panels="panels" style="inline-size: 240px; block-size: 140px">
-    <XhSplitterPanel :index="0" style="padding: 12px; background: var(--xh-bg-subtle)">文件</XhSplitterPanel>
+  <XhSplitterRoot :panels="panels" aria-label="双栏分隔预览" style="inline-size: 240px; block-size: 140px">
+    <XhSplitterPanel
+      :index="0"
+      data-demo-block
+      data-tone="neutral"
+      aria-label="侧栏区块"
+      style="--xh-demo-block-block-size: 100%; --xh-demo-block-radius: 0"
+    />
     <XhSplitterResizeTrigger :index="0" />
-    <XhSplitterPanel :index="1" style="padding: 12px; background: var(--xh-bg-brand-subtle)">编辑器</XhSplitterPanel>
+    <XhSplitterPanel
+      :index="1"
+      data-demo-block
+      data-tone="brand"
+      aria-label="主内容区块"
+      style="--xh-demo-block-block-size: 100%; --xh-demo-block-radius: 0"
+    />
   </XhSplitterRoot>
 </template>

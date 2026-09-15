@@ -2,17 +2,22 @@
 <script setup lang="ts">
 import { XhMasonry } from "@xihan-ui/vue";
 
-const items = ["概览", "组件", "主题", "发布"];
+const items = [
+  { id: 1, tone: "brand", height: "64px" },
+  { id: 2, tone: "info", height: "76px" },
+  { id: 3, tone: "success", height: "88px" },
+  { id: 4, tone: "warning", height: "100px" },
+] as const;
 </script>
 
 <template>
   <XhMasonry :columns="{ base: 1, sm: 2, md: 3 }" gap="sm" style="inline-size: min(720px, 100%)">
     <div
-      v-for="(item, index) in items"
-      :key="item"
-      :style="`padding: ${16 + index * 6}px 16px; border-radius: var(--xh-shape-surface); background: var(--xh-bg-subtle)`"
-    >
-      {{ item }}
-    </div>
+      v-for="item in items"
+      :key="item.id"
+      data-demo-block
+      :data-tone="item.tone"
+      :style="{ '--xh-demo-block-block-size': item.height }"
+    />
   </XhMasonry>
 </template>

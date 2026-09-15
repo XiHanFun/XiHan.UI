@@ -111,7 +111,7 @@ const lastCommand = ref("（无）");
         <!-- 触发器是作者写的内容，菜单只接管展开与键盘 -->
         <XhMenuRoot :collection="account" @select="lastCommand = `账户 · ${$event.value}`">
           <template #trigger>
-            <XhAvatarRoot src="/images/logo.png" alt="曦寒">
+            <XhAvatarRoot src="/images/demo-avatar.svg" alt="曦寒">
               <XhAvatarImage />
               <XhAvatarFallback>曦</XhAvatarFallback>
             </XhAvatarRoot>

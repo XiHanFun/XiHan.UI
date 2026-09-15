@@ -10,9 +10,10 @@ const dimensions = ref({ width: 180, height: 96 });
     v-model:dimensions="dimensions"
     :min-width="140"
     :min-height="72"
+    aria-label="可调区块预览"
     style="display: grid; place-items: center; border-radius: var(--xh-shape-surface); background: var(--xh-bg-subtle)"
   >
-    <span>可调区域</span>
+    <span data-demo-block data-tone="brand" aria-hidden="true" style="--xh-demo-block-inline-size: 64%; --xh-demo-block-block-size: 48px" />
     <XhResizableHandle edge="se" />
   </XhResizableRoot>
 </template>

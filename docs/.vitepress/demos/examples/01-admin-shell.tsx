@@ -169,7 +169,7 @@ export default function Demo(): ReactNode {
           <XhMenuRoot
             collection={account}
             trigger={(
-              <XhAvatarRoot src="/images/logo.png" alt="曦寒">
+              <XhAvatarRoot src="/images/demo-avatar.svg" alt="曦寒">
                 <XhAvatarImage />
                 <XhAvatarFallback>曦</XhAvatarFallback>
               </XhAvatarRoot>

@@ -1,18 +1,25 @@
 <!-- 基础用法 | 构建应用页面骨架 -->
 <script setup lang="ts">
 import { XhLayoutContent, XhLayoutFooter, XhLayoutHeader, XhLayoutRoot, XhLayoutSider } from "@xihan-ui/vue";
+
+const tones = ["brand", "info", "success"] as const;
 </script>
 
 <template>
-  <XhLayoutRoot bordered sider-breakpoint="sm" style="inline-size: min(720px, 100%); block-size: 280px; border-radius: var(--xh-shape-surface); overflow: hidden">
-    <XhLayoutHeader><strong>XiHan Admin</strong></XhLayoutHeader>
+  <XhLayoutRoot bordered sider-breakpoint="sm" aria-label="应用页面布局占位区块" style="inline-size: min(720px, 100%); block-size: 280px; border-radius: var(--xh-shape-surface); overflow: hidden">
+    <XhLayoutHeader>
+      <span data-demo-block="line" data-tone="brand" style="--xh-demo-block-inline-size: 112px" />
+    </XhLayoutHeader>
     <XhLayoutSider>
-      <div style="display: grid; gap: 12px"><span>概览</span><span>用户</span><span>设置</span></div>
+      <div style="display: grid; gap: 12px">
+        <span v-for="tone in tones" :key="tone" data-demo-block="line" :data-tone="tone" />
+      </div>
     </XhLayoutSider>
     <XhLayoutContent>
-      <strong>欢迎回来</strong>
-      <p style="color: var(--xh-fg-muted)">这里是今日的项目概览。</p>
+      <span data-demo-block data-tone="info" style="--xh-demo-block-block-size: 112px" />
     </XhLayoutContent>
-    <XhLayoutFooter>© 2026 XiHan.UI</XhLayoutFooter>
+    <XhLayoutFooter>
+      <span data-demo-block="line" data-tone="neutral" style="--xh-demo-block-inline-size: 80px" />
+    </XhLayoutFooter>
   </XhLayoutRoot>
 </template>

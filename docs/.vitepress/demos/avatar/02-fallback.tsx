@@ -5,7 +5,7 @@ import { XhAvatarFallback, XhAvatarImage, XhAvatarRoot } from "@xihan-ui/react";
 export default function Demo(): ReactNode {
   return (
     <>
-      <XhAvatarRoot src="/images/does-not-exist.png" alt="取不到的图">
+      <XhAvatarRoot src="/images/does-not-exist.svg" alt="取不到的图">
         <XhAvatarImage />
         <XhAvatarFallback>回退</XhAvatarFallback>
       </XhAvatarRoot>

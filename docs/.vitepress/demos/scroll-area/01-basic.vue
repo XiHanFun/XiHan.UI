@@ -9,14 +9,31 @@ import {
   XhScrollAreaViewport,
 } from "@xihan-ui/vue";
 
-const items = ["项目概览", "组件规范", "设计令牌", "无障碍", "交互状态", "主题配置", "构建流程", "发布记录", "迁移指南", "常见问题"];
+const items = [
+  { id: 1, tone: "brand", width: "76%" },
+  { id: 2, tone: "info", width: "58%" },
+  { id: 3, tone: "success", width: "84%" },
+  { id: 4, tone: "warning", width: "66%" },
+  { id: 5, tone: "danger", width: "72%" },
+  { id: 6, tone: "neutral", width: "54%" },
+  { id: 7, tone: "brand", width: "80%" },
+  { id: 8, tone: "info", width: "62%" },
+  { id: 9, tone: "success", width: "74%" },
+  { id: 10, tone: "warning", width: "56%" },
+] as const;
 </script>
 
 <template>
-  <XhScrollAreaRoot type="always" style="block-size: 180px; inline-size: min(360px, 100%); border-radius: var(--xh-shape-surface); background: var(--xh-bg-subtle)">
+  <XhScrollAreaRoot type="always" aria-label="纵向滚动占位区块" style="block-size: 180px; inline-size: min(360px, 100%); border-radius: var(--xh-shape-surface); background: var(--xh-bg-subtle)">
     <XhScrollAreaViewport>
       <XhScrollAreaContent style="padding: 12px 16px">
-        <div v-for="item in items" :key="item" style="padding-block: 7px">{{ item }}</div>
+        <span
+          v-for="item in items"
+          :key="item.id"
+          data-demo-block="line"
+          :data-tone="item.tone"
+          :style="{ '--xh-demo-block-inline-size': item.width, 'marginBlock': '14px' }"
+        />
       </XhScrollAreaContent>
     </XhScrollAreaViewport>
     <XhScrollAreaScrollbar orientation="vertical">

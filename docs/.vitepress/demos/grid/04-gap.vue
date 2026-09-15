@@ -17,7 +17,9 @@ const groups = [
         <XhGridItem
           v-for="item in 3"
           :key="item"
-          style="block-size: 32px; border-radius: var(--xh-shape-control); background: var(--xh-bg-brand-subtle)"
+          data-demo-block
+          data-tone="brand"
+          style="block-size: 32px; --xh-demo-block-radius: var(--xh-shape-control)"
         />
       </XhGridRoot>
     </div>

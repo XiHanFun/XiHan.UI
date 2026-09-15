@@ -1,0 +1,20 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128" role="img" aria-labelledby="title desc">
+  <title id="title">抽象头像</title>
+  <desc id="desc">由柔和蓝紫色几何图形组成的头像占位图</desc>
+  <defs>
+    <linearGradient id="base" x1="18" y1="12" x2="112" y2="118" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#dbeafe" />
+      <stop offset="0.5" stop-color="#e0e7ff" />
+      <stop offset="1" stop-color="#fce7f3" />
+    </linearGradient>
+    <linearGradient id="shape" x1="36" y1="28" x2="94" y2="104" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#2563eb" />
+      <stop offset="0.55" stop-color="#7c3aed" />
+      <stop offset="1" stop-color="#db2777" />
+    </linearGradient>
+  </defs>
+  <rect width="128" height="128" rx="32" fill="url(#base)" />
+  <circle cx="64" cy="50" r="22" fill="url(#shape)" opacity="0.92" />
+  <path d="M25 112c5-26 19-40 39-40s34 14 39 40" fill="url(#shape)" opacity="0.78" />
+  <circle cx="98" cy="30" r="10" fill="#fbbf24" opacity="0.9" />
+</svg>

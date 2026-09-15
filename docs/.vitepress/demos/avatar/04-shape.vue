@@ -5,13 +5,13 @@ import { XhAvatarFallback, XhAvatarImage, XhAvatarRoot } from "@xihan-ui/vue";
 
 <template>
   <div style="display: flex; align-items: center; gap: 12px">
-    <XhAvatarRoot src="/images/logo.png" alt="曦寒">
+    <XhAvatarRoot src="/images/demo-avatar.svg" alt="曦寒">
       <XhAvatarImage />
       <XhAvatarFallback>曦</XhAvatarFallback>
     </XhAvatarRoot>
 
     <XhAvatarRoot
-      src="/images/logo.png"
+      src="/images/demo-avatar.svg"
       alt="曦寒"
       style="--xh-avatar-radius: var(--xh-radius-md)"
     >
@@ -20,7 +20,7 @@ import { XhAvatarFallback, XhAvatarImage, XhAvatarRoot } from "@xihan-ui/vue";
     </XhAvatarRoot>
 
     <XhAvatarRoot
-      src="/images/logo.png"
+      src="/images/demo-avatar.svg"
       alt="曦寒"
       style="--xh-avatar-radius: var(--xh-radius-none)"
     >

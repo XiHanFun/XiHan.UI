@@ -34,7 +34,7 @@ const untilFailed = Number.POSITIVE_INFINITY;
 
   <!-- Infinity：加载途中什么都不显，只有失败才换人 -->
   <XhImageRoot
-    src="https://example.invalid/shot.png"
+    src="https://example.invalid/shot.svg"
     alt="只在失败时顶上回退内容"
     :fallback-delay="untilFailed"
     style="--xh-image-w: 140px; --xh-image-ratio: 4 / 3;"

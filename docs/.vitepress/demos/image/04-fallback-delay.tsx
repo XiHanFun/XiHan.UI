@@ -36,7 +36,7 @@ export default function Demo(): ReactNode {
 
       {/* Infinity：加载途中什么都不显，只有失败才换人 */}
       <XhImageRoot
-        src="https://example.invalid/shot.png"
+        src="https://example.invalid/shot.svg"
         alt="只在失败时顶上回退内容"
         fallbackDelay={untilFailed}
         style={boxStyle}

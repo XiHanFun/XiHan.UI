@@ -1,17 +1,21 @@
 // 顺序排列 | 按文档顺序逐列填充
-import type { ReactNode } from "react";
+import type { CSSProperties, ReactNode } from "react";
 import { XhMasonry } from "@xihan-ui/react";
 
-const steps = ["创建项目", "配置主题", "添加组件", "连接数据", "运行测试", "发布应用"];
+const steps = [
+  { id: 1, tone: "brand", height: "56px" },
+  { id: 2, tone: "info", height: "72px" },
+  { id: 3, tone: "success", height: "88px" },
+  { id: 4, tone: "warning", height: "56px" },
+  { id: 5, tone: "danger", height: "72px" },
+  { id: 6, tone: "neutral", height: "88px" },
+] as const;
 
 export default function Demo(): ReactNode {
   return (
     <XhMasonry columns={3} gap="sm" sequential style={{ inlineSize: "min(640px, 100%)" }}>
-      {steps.map((step, index) => (
-        <div key={step} style={{ padding: `${14 + (index % 3) * 8}px 14px`, borderRadius: "var(--xh-shape-surface)", background: "var(--xh-bg-subtle)" }}>
-          <strong>{index + 1}</strong>
-          <div style={{ marginBlockStart: "6px" }}>{step}</div>
-        </div>
+      {steps.map(step => (
+        <div key={step.id} data-demo-block data-tone={step.tone} style={{ "--xh-demo-block-block-size": step.height } as CSSProperties} />
       ))}
     </XhMasonry>
   );

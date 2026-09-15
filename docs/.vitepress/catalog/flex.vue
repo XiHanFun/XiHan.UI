@@ -3,11 +3,11 @@ import { XhFlex } from "@xihan-ui/vue";
 </script>
 
 <template>
-  <XhFlex align="center" gap="sm">
-    <span style="display: grid; inline-size: 36px; block-size: 36px; place-items: center; border-radius: var(--xh-shape-pill); background: var(--xh-bg-brand-subtle); color: var(--xh-fg-brand-strong); font-weight: 600">林</span>
-    <XhFlex orientation="vertical" gap="xs">
-      <strong>林晓</strong>
-      <span style="color: var(--xh-fg-muted); font-size: 13px">产品设计师</span>
+  <XhFlex align="center" gap="sm" aria-label="横向与纵向弹性布局预览">
+    <span data-demo-block="square" data-tone="brand" aria-hidden="true" />
+    <XhFlex orientation="vertical" gap="xs" aria-hidden="true" style="inline-size: 96px">
+      <span data-demo-block="line" data-tone="neutral" style="--xh-demo-block-inline-size: 88px" />
+      <span data-demo-block="line" data-tone="info" style="--xh-demo-block-inline-size: 64px" />
     </XhFlex>
   </XhFlex>
 </template>

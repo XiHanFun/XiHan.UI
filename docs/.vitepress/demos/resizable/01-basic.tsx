@@ -1,5 +1,5 @@
 // 基础用法 | 从右侧、底部或右下角调整尺寸
-import type { ReactNode } from "react";
+import type { CSSProperties, ReactNode } from "react";
 import { XhResizableHandle, XhResizableRoot } from "@xihan-ui/react";
 import { useState } from "react";
 
@@ -16,14 +16,14 @@ export default function Demo(): ReactNode {
         minWidth={120}
         minHeight={80}
         maxWidth={480}
+        aria-label="可调整尺寸的占位区块"
         style={{
           borderRadius: "var(--xh-shape-surface)",
           background: "var(--xh-bg-subtle)",
           padding: "16px",
         }}
       >
-        <strong>预览区域</strong>
-        <p style={{ color: "var(--xh-fg-muted)" }}>拖动边缘调整画布大小。</p>
+        <span data-demo-block data-tone="warning" style={{ "--xh-demo-block-block-size": "100%", "--xh-demo-block-min-block-size": "100%" } as CSSProperties} />
         {EDGES.map(edge => (
           <XhResizableHandle key={edge} edge={edge} />
         ))}

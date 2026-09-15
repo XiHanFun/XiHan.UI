@@ -9,7 +9,7 @@ import {
   XhScrollAreaViewport,
 } from "@xihan-ui/vue";
 
-const cards = ["概览", "分析", "报告", "成员", "设置", "发布"];
+const cards = ["brand", "info", "success", "warning", "danger", "neutral"] as const;
 </script>
 
 <template>
@@ -21,20 +21,16 @@ const cards = ["概览", "分析", "报告", "成员", "设置", "发布"];
     <XhScrollAreaViewport>
       <XhScrollAreaContent style="display: flex; gap: 10px; padding: 10px 12px">
         <div
-          v-for="card in cards"
-          :key="card"
+          v-for="tone in cards"
+          :key="tone"
+          data-demo-block
+          :data-tone="tone"
           style="
             flex: none;
-            display: grid;
-            place-items: center;
             inline-size: 96px;
             block-size: 64px;
-            border-radius: var(--xh-shape-surface);
-            background: var(--xh-bg-subtle);
           "
-        >
-          {{ card }}
-        </div>
+        />
       </XhScrollAreaContent>
     </XhScrollAreaViewport>
     <XhScrollAreaScrollbar orientation="horizontal">

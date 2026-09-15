@@ -9,7 +9,7 @@ import {
   XhScrollAreaViewport,
 } from "@xihan-ui/react";
 
-const cards = ["概览", "分析", "报告", "成员", "设置", "发布"];
+const cards = ["brand", "info", "success", "warning", "danger", "neutral"] as const;
 
 export default function Demo(): ReactNode {
   return (
@@ -20,21 +20,17 @@ export default function Demo(): ReactNode {
     >
       <XhScrollAreaViewport>
         <XhScrollAreaContent style={{ display: "flex", gap: "10px", padding: "10px 12px" }}>
-          {cards.map(card => (
+          {cards.map(tone => (
             <div
-              key={card}
+              key={tone}
+              data-demo-block
+              data-tone={tone}
               style={{
                 flex: "none",
-                display: "grid",
-                placeItems: "center",
                 inlineSize: "96px",
                 blockSize: "64px",
-                borderRadius: "var(--xh-shape-surface)",
-                background: "var(--xh-bg-subtle)",
               }}
-            >
-              {card}
-            </div>
+            />
           ))}
         </XhScrollAreaContent>
       </XhScrollAreaViewport>
