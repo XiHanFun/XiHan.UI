@@ -12,7 +12,7 @@
 
 ## 用法
 
-默认由状态图标、文本列和悬停显示的关闭按钮组成；duration 给 0 即不自动消失
+默认由状态图标、文本列和悬停显示的关闭按钮组成；duration 设为 0 即不自动消失
 
 <XhDemo src="toast/01-basic" />
 
@@ -26,19 +26,19 @@
 
 ### 颜色
 
-卡片保持中性，tone 只改变标题与状态字形；danger 使用 assertive 实时区，loading 另有一位，转圈且不自动消失
+卡片保持中性，tone 只改变标题与状态字形；danger 使用 assertive 实时区，loading 另有一档，显示加载且不自动消失
 
 <XhDemo src="toast/02-tone" />
 
 ### 计时与暂停
 
-duration 走完自动退场；指针停在条子上或焦点进到条子里都会把计时按住，离开才接着走剩下那一段
+duration 结束后自动退场；指针停在提示条上或焦点进入提示条内都会暂停计时，离开后继续剩余部分
 
 <XhDemo src="toast/03-pause" />
 
 ### 操作按钮
 
-action-trigger 按下时先发 action 事件，再让这条进入退场；closable 决定还要不要那颗叉
+action-trigger 按下时先发 action 事件，再使该条进入退场；closable 决定是否保留关闭按钮
 
 <XhDemo src="toast/04-action" />
 
@@ -50,7 +50,7 @@ description 提供一行简短上下文；需要长时间阅读的内容改用 N
 
 ### 全局服务
 
-轻提示没有容器组件，那一摞由 createToastService 渲染；模块作用域随处可调（请求拦截器、store）
+轻提示没有容器组件，堆叠区由 createToastService 渲染；模块作用域随处可调用（请求拦截器、store）
 
 <XhDemo src="toast/06-service" />
 

@@ -1,4 +1,4 @@
-// 基础用法 | 默认由状态图标、文本列和悬停显示的关闭按钮组成；duration 给 0 即不自动消失
+// 基础用法 | 默认由状态图标、文本列和悬停显示的关闭按钮组成；duration 设为 0 即不自动消失
 import type { ReactNode } from "react";
 import {
   XhButton,

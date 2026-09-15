@@ -1,4 +1,4 @@
-// 语气 | 卡片保持中性，tone 只改变标题与状态字形；danger 使用 assertive 实时区，loading 另有一位，转圈且不自动消失
+// 语气 | 卡片保持中性，tone 只改变标题与状态字形；danger 使用 assertive 实时区，loading 另有一档，显示加载且不自动消失
 import type { ReactNode } from "react";
 import {
   XhToastContent,

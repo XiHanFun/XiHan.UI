@@ -1,4 +1,4 @@
-// 全局服务 | 轻提示没有容器组件，那一摞由 createToastService 渲染；模块作用域随处可调（请求拦截器、store）
+// 全局服务 | 轻提示没有容器组件，堆叠区由 createToastService 渲染；模块作用域随处可调用（请求拦截器、store）
 import type { ToastService } from "@xihan-ui/react";
 import type { ReactNode } from "react";
 import { createToastService, XhButton } from "@xihan-ui/react";

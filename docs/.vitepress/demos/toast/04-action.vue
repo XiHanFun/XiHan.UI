@@ -1,4 +1,4 @@
-<!-- 操作按钮 | action-trigger 按下时先发 action 事件，再让这条进入退场；closable 决定还要不要那颗叉 -->
+<!-- 操作按钮 | action-trigger 按下时先发 action 事件，再使该条进入退场；closable 决定是否保留关闭按钮 -->
 <script setup lang="ts">
 import {
   XhButton,
