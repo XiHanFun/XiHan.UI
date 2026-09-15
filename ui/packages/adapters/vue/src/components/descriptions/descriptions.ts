@@ -22,7 +22,7 @@ export const XhDescriptionsRoot = defineComponent({
     bordered: Boolean,
     placement: { type: String as PropType<DescriptionsPlacement> },
     size: { type: String as PropType<Size> },
-    /** 根渲染成哪个标签，默认 dl。 */
+    /** 根渲染为哪个标签，默认 dl。 */
     as: { type: String, default: 'dl' },
   },
   setup(props, { slots }) {
@@ -43,9 +43,9 @@ export const XhDescriptionsRoot = defineComponent({
 export const XhDescriptionsItem = defineComponent({
   name: 'XhDescriptionsItem',
   props: {
-    /** 每一格渲染成哪个标签，默认 div。 */
+    /** 每一格渲染为哪个标签，默认 div。 */
     as: { type: String, default: 'div' },
-    /** 这一格横跨几列，不写即占一列；上限是根上的 columns。 */
+    /** 该格横跨几列，未写即占一列；上限是根上的 columns。 */
     span: { type: Number },
   },
   setup(props, { slots }) {
@@ -61,7 +61,7 @@ export const XhDescriptionsItem = defineComponent({
 export const XhDescriptionsLabel = defineComponent({
   name: 'XhDescriptionsLabel',
   props: {
-    /** 标签渲染成哪个标签，默认 dt。 */
+    /** 标签渲染为哪个标签，默认 dt。 */
     as: { type: String, default: 'dt' },
   },
   setup(props, { slots }) {
@@ -73,7 +73,7 @@ export const XhDescriptionsLabel = defineComponent({
 export const XhDescriptionsValue = defineComponent({
   name: 'XhDescriptionsValue',
   props: {
-    /** 取值渲染成哪个标签，默认 dd。 */
+    /** 取值渲染为哪个标签，默认 dd。 */
     as: { type: String, default: 'dd' },
   },
   setup(props, { slots }) {

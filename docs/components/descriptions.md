@@ -102,9 +102,9 @@ size 换的是每格的内边距、组与组的间距与整体字号，不传 si
 
 | 属性 | 类型 | 必填 | 说明 |
 | --- | --- | --- | --- |
-| `bordered` | `boolean` |  | 外框：给整份描述画一圈描边，并在格与格之间画网格线。 |
-| `columns` | `DescriptionsColumns` |  | 每行摆几组，一到六列；不写即每行一组。 |
-| `placement` | `DescriptionsPlacement` |  | 标签的位置：top / left；不写即标签在上。 |
+| `bordered` | `boolean` |  | 外框：给整份描述绘制描边，并在格与格之间绘制网格线。 |
+| `columns` | `DescriptionsColumns` |  | 每行放置几组，一到六列；未提供时每行一组。 |
+| `placement` | `DescriptionsPlacement` |  | 标签的位置：top / left；未提供时标签在上。 |
 | `size` | `Size` |  | 尺寸：sm / md / lg。 |
 
 ### connect API

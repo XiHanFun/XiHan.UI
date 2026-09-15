@@ -7,35 +7,35 @@
 
 import type { PropTypes, Size } from '@xihan-ui/core'
 
-/** 每行摆几组「标签 + 取值」。皮肤逐档给出列数，一到六列。 */
+/** 每行放置几组标签与取值。皮肤逐档给出列数，一到六列。 */
 export type DescriptionsColumns = 1 | 2 | 3 | 4 | 5 | 6
 
 /** 标签相对取值的位置：top 标签在上、left 标签在左。 */
 export type DescriptionsPlacement = 'top' | 'left'
 
-/** 尺寸档位，只改每格的内边距、组与组的间距与整体字号。 */
+/** 尺寸档位，只影响每格的内边距、组与组的间距与整体字号。 */
 
 export interface DescriptionsProps {
-  /** 每行摆几组，一到六列；不写即每行一组。 */
+  /** 每行放置几组，一到六列；未提供时每行一组。 */
   columns?: DescriptionsColumns
-  /** 外框：给整份描述画一圈描边，并在格与格之间画网格线。 */
+  /** 外框：给整份描述绘制描边，并在格与格之间绘制网格线。 */
   bordered?: boolean
-  /** 标签的位置：top / left；不写即标签在上。 */
+  /** 标签的位置：top / left；未提供时标签在上。 */
   placement?: DescriptionsPlacement
   /** 尺寸：sm / md / lg。 */
   size?: Size
 }
 
 /**
- * 一格自报家门。
+ * 一格的声明。
  * connect 在 Vue 的 render 期求值，此时 DOM 尚不存在，不得反查 DOM。
  */
 export interface DescriptionsItemProps {
   /**
-   * 这一格横跨几列，不写即占一列。
-   * 小于 1 按 1 算，超过当前列数按列数算——跨出网格的格子会另起一行，比截断更难看。
-   * 这个数落成 `--xh-_descriptions-item-span`，由皮肤逐档决定认不认：
-   * 一行只摆得下一组的窄档不认，那一档每格都占满整行。
+   * 该格横跨的列数，未提供时占一列。
+   * 小于 1 按 1 计算，超过当前列数按列数计算：跨出网格的格子会另起一行，比截断更差。
+   * 该数值写入 `--xh-_descriptions-item-span`，由皮肤逐档决定是否采用：
+   * 一行只放得下一组的窄档不采用，该档每格都占满整行。
    */
   span?: number
 }
@@ -47,5 +47,5 @@ export interface DescriptionsApi<T extends PropTypes = PropTypes> {
   getValueProps: () => T['element']
 }
 
-/** 读屏用的文案。本组件目前没有需要外露的文案，位先留着。 */
+/** 读屏文案。本组件目前没有需要外露的文案，保留该位。 */
 export interface DescriptionsTranslations {}
