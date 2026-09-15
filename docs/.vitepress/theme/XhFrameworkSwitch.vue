@@ -32,38 +32,45 @@ onMounted(restoreDemoFramework);
   display: inline-flex;
   align-items: center;
   flex-shrink: 0;
-  gap: 2px;
-  padding: 3px;
-  border-radius: 999px;
-  background: var(--vp-c-bg-soft);
+  gap: var(--xh-space-0_5);
+  padding: var(--xh-space-0_5);
+  border-radius: var(--xh-shape-pill);
+  background: var(--xh-bg-subtle);
 }
 .xh-framework__item {
   min-width: 54px;
-  height: 28px;
-  padding: 0 12px;
+  height: var(--xh-control-h-sm);
+  padding-inline: var(--xh-control-px-sm);
   border: 0;
-  border-radius: 999px;
-  color: var(--vp-c-text-1);
+  border-radius: var(--xh-shape-pill);
+  color: var(--xh-fg-default);
   background: transparent;
-  font-size: 12px;
-  font-weight: 500;
-  line-height: 28px;
+  font-size: var(--xh-font-size-xs);
+  font-weight: var(--xh-font-weight-medium);
+  line-height: var(--xh-control-h-sm);
   cursor: pointer;
   transition:
-    color 150ms ease,
-    background-color 150ms ease,
-    box-shadow 150ms ease;
+    color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
+    background-color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
+    box-shadow var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
+    scale var(--xh-motion-duration-release) var(--xh-motion-ease-release);
 }
 .xh-framework__item:hover {
-  color: var(--vp-c-text-1);
+  color: var(--xh-fg-default);
+  background: var(--xh-bg-subtle-hover);
 }
 .xh-framework__item:focus-visible {
-  outline: 2px solid var(--vp-c-brand-1);
-  outline-offset: 2px;
+  outline: var(--xh-ring-width) solid var(--xh-ring-focus);
+  outline-offset: var(--xh-ring-offset);
+}
+.xh-framework__item:active {
+  scale: var(--xh-motion-scale-press);
+  transition-duration: var(--xh-motion-duration-press);
+  transition-timing-function: var(--xh-motion-ease-press);
 }
 .xh-framework__item--active {
-  color: var(--vp-c-text-1);
-  background: var(--vp-c-bg-elv);
-  box-shadow: var(--xh-doc-shadow-control);
+  color: var(--xh-fg-brand-strong);
+  background: var(--xh-bg-surface-raised);
+  box-shadow: var(--xh-elevation-raised);
 }
 </style>
