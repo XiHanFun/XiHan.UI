@@ -1,4 +1,4 @@
-// 尺寸 | size 只改轨道厚度，不写即缺省中档
+// 尺寸 | size 只改变轨道厚度，不写即默认中档
 import type { ReactNode } from "react";
 import { XhProgress } from "@xihan-ui/react";
 

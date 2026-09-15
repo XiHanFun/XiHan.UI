@@ -1,4 +1,4 @@
-// 环心文字 | 组件只负责把内容摆到环心，写什么由使用者决定
+// 环心文字 | 组件只负责把内容放置到环心，写什么由使用者决定
 import type { ReactNode } from "react";
 import { CheckIcon } from "@xihan-ui/icons";
 import { XhIcon, XhProgress } from "@xihan-ui/react";

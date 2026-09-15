@@ -1,4 +1,4 @@
-<!-- 尺寸 | size 只改轨道厚度，不写即缺省中档 -->
+<!-- 尺寸 | size 只改变轨道厚度，不写即默认中档 -->
 <script setup lang="ts">
 import { XhProgress } from "@xihan-ui/vue";
 </script>

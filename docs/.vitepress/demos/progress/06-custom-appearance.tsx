@@ -1,4 +1,4 @@
-// 自定义外观 | 轨道色、进度段色与轨道厚度各是一个组件令牌，纯色与渐变都塞得进去
+// 自定义外观 | 轨道色、进度段色与轨道厚度各是一个组件令牌，纯色与渐变都可以使用
 import type { CSSProperties, ReactNode } from "react";
 import { XhProgress } from "@xihan-ui/react";
 

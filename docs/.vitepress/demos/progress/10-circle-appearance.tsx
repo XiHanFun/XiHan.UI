@@ -1,4 +1,4 @@
-// 环的外观 | 直径、颜色与端点走令牌，线宽走 strokeWidth：它改的是几何，半径跟着往里收
+// 环的外观 | 直径、颜色与端点经令牌，线宽经 strokeWidth：它改变的是几何，半径随之向内收缩
 import type { CSSProperties, ReactNode } from "react";
 import { XhProgress } from "@xihan-ui/react";
 
