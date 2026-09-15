@@ -1,4 +1,4 @@
-// 摘要与耗时 | 详情收起时也看得见查了什么、跑了多久；两个时刻由宿主给，组件自己不读时钟
+// 摘要与耗时 | 详情收起时也能看到查询内容与运行时长；两个时刻由宿主提供，组件自身不读取时钟
 import type { ReactNode } from "react";
 import {
   XhToolCallContent,
