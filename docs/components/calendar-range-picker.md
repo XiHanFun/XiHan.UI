@@ -12,7 +12,7 @@
 
 ## 用法
 
-先落起点再落终点，也可以按住拖过去；两端都落定才写值，Escape 撤掉起点
+先落下起点再落下终点，也可以按住拖动经过；两端都落定才写值，Escape 撤销起点
 
 <XhDemo src="calendar-range-picker/01-basic" />
 
@@ -26,19 +26,19 @@
 
 ### 并排两个月
 
-visible-count=2：起止常跨月，并排看两页才好挑；翻页时整窗一起走
+visible-count=2：起止常跨月，并排查看两页更便于选择；翻页时整个窗口一起移动
 
 <XhDemo src="calendar-range-picker/02-two-panels" />
 
-### 不可用的日子
+### 不可用的日期
 
-allows-non-contiguous-ranges 允许区间跨过周末，只是那些日子不铺轨道；isDateUnavailable 拿得到起点，据此限制区间长度
+allows-non-contiguous-ranges 允许区间跨过周末，只是这些日期不铺设轨道；isDateUnavailable 可得到起点，据此限制区间长度
 
 <XhDemo src="calendar-range-picker/03-unavailable" />
 
-### 按周挑
+### 按周选择
 
-granularity=week：一行一个整周，格子直接铺进网格；值是两端那两周的周首日；月、季度与年同理
+granularity=week：一行一个整周，格子直接铺进网格；值是两端两周的周首日；月、季度与年同理
 
 <XhDemo src="calendar-range-picker/04-granularity" />
 

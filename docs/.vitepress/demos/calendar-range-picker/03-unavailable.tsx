@@ -1,4 +1,4 @@
-// 不可用的日子 | allows-non-contiguous-ranges 允许区间跨过周末，只是那些日子不铺轨道；isDateUnavailable 拿得到起点，据此限制区间长度
+// 不可用的日期 | allows-non-contiguous-ranges 允许区间跨过周末，只是这些日期不铺设轨道；isDateUnavailable 可得到起点，据此限制区间长度
 import type { ReactNode } from "react";
 import {
   XhCalendarRangePickerCell,

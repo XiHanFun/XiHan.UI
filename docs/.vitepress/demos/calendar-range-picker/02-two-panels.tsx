@@ -1,4 +1,4 @@
-// 并排两个月 | visible-count=2：起止常跨月，并排看两页才好挑；翻页时整窗一起走
+// 并排两个月 | visible-count=2：起止常跨月，并排查看两页更便于选择；翻页时整个窗口一起移动
 import type { ReactNode } from "react";
 import {
   XhCalendarRangePickerCell,

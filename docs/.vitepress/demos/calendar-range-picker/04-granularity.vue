@@ -1,4 +1,4 @@
-<!-- 按周挑 | granularity=week：一行一个整周，格子直接铺进网格；值是两端那两周的周首日；月、季度与年同理 -->
+<!-- 按周选择 | granularity=week：一行一个整周，格子直接铺进网格；值是两端两周的周首日；月、季度与年同理 -->
 <script setup lang="ts">
 import {
   XhCalendarRangePickerCell,
