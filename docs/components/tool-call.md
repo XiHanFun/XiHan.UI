@@ -106,19 +106,19 @@
 
 | 属性 | 类型 | 必填 | 说明 |
 | --- | --- | --- | --- |
-| `running` | `boolean` |  | 这次调用正在跑。适配器用 isToolCallRunning(phase) 折出来，作者只写 phase。 |
+| `running` | `boolean` |  | 本次调用正在运行。适配器用 isToolCallRunning(phase) 折叠得出，作者只写 phase。 |
 | `open` | `boolean` |  |  |
 | `defaultOpen` | `boolean` |  |  |
-| `autoDisclosure` | `boolean` |  | 跑起来自动展开、结束自动收起，默认开；用户手动开合过一次即永久停用。 |
+| `autoDisclosure` | `boolean` |  | 运行时自动展开、结束时自动收起，默认开启；用户手动开合过一次即永久停用。 |
 | `disabled` | `boolean` |  |  |
 | `onOpenChange` | `(details: ToolCallOpenChangeDetails) => void` |  |  |
-| `endTime` | `number` |  | 这次调用结束的时刻。**可能缺席**：还在跑，或者流被中止时兜底收尾不写这一个。 |
-| `phase` | `ToolCallPhase` |  | 这次调用走到哪一步，默认 input-available。 |
+| `endTime` | `number` |  | 本次调用结束的时刻。可能缺席：仍在运行，或流被中止时兜底收尾不写该字段。 |
+| `phase` | `ToolCallPhase` |  | 本次调用所处的阶段，默认 input-available。 |
 | `size` | `Size` |  |  |
-| `startTime` | `number` |  | 这次调用开始的时刻，毫秒时间戳。 |
+| `startTime` | `number` |  | 本次调用开始的时刻，毫秒时间戳。 |
 | `tone` | `Tone` |  |  |
 | `translations` | `Partial<ToolCallTranslations>` |  |  |
-| `variant` | `ControlVariant` |  | 形态：outline 描边（缺省档）、subtle 底色分区、ghost 无壳内联。 |
+| `variant` | `ControlVariant` |  | 形态：outline 描边（默认档）、subtle 底色分区、ghost 无壳内联。 |
 
 ### 事件
 
@@ -171,12 +171,12 @@
 | --- | --- | --- |
 | `open` | `boolean` |  |
 | `phase` | `ToolCallPhase` |  |
-| `running` | `boolean` | 这一档算不算在跑。 |
-| `settled` | `boolean` | 这一档算不算已经落定：跑完了，或者跑砸了。 |
-| `errored` | `boolean` | 这一档算不算跑砸了。 |
+| `running` | `boolean` | 该档是否视为运行中。 |
+| `settled` | `boolean` | 该档是否视为已落定：运行完成，或失败。 |
+| `errored` | `boolean` | 该档是否视为失败。 |
 | `disabled` | `boolean` |  |
-| `statusText` | `string` | 读屏用的一句话，由宿主写进会话级的那一个播报区。 |
-| `durationMs` | `number \| undefined` | 跑了多久，毫秒；两个时刻任一缺席即 undefined。 |
+| `statusText` | `string` | 读屏文案，由宿主写入会话级的播报区。 |
+| `durationMs` | `number \| undefined` | 运行时长，毫秒；两个时刻任一缺席即 undefined。 |
 | `setOpen` | `(next: boolean) => void` |  |
 | `getRootProps` | `() => T['element']` |  |
 | `getTriggerProps` | `() => T['button']` |  |

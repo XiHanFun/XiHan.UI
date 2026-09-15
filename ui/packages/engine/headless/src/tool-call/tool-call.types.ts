@@ -8,10 +8,10 @@
 import type { ControlVariant, MachineSchema, PropTypes, Size, Tone } from '@xihan-ui/core'
 
 /**
- * 一次工具调用走到哪一步。
+ * 一次工具调用所处的阶段。
  *
- * 前两档与最后两档和 AI 协议里的工具状态四值同形，中间多出 `awaiting-approval` 一档：
- * 协议层的审批只改审批状态、不改工具状态，没有这一档的话「在等人批准」会被当成「在跑」。
+ * 前两档与最后两档和 AI 协议中的工具状态四值同形，中间多出 `awaiting-approval` 一档：
+ * 协议层的审批只改变审批状态、不改变工具状态，没有该档时等待批准会被视为运行中。
  */
 export type ToolCallPhase
   = | 'input-streaming'
@@ -20,17 +20,17 @@ export type ToolCallPhase
     | 'output-available'
     | 'output-error'
 
-/** 这一档算不算「正在跑」。等人批准是在等，不是在跑。 */
+/** 该档是否视为运行中。等待批准是等待，不是运行。 */
 export function isToolCallRunning(phase: ToolCallPhase): boolean {
   return phase === 'input-streaming'
 }
 
-/** 这一档算不算已经落定。等人批准与还在跑都没落定，出错也是一种落定。 */
+/** 该档是否视为已落定。等待批准与运行中都未落定，出错也是一种落定。 */
 export function isToolCallSettled(phase: ToolCallPhase): boolean {
   return phase === 'output-available' || phase === 'output-error'
 }
 
-/** 这一档算不算跑砸了。 */
+/** 该档是否视为失败。 */
 export function isToolCallErrored(phase: ToolCallPhase): boolean {
   return phase === 'output-error'
 }
@@ -53,17 +53,17 @@ export function toneOfToolCallPhase(phase: ToolCallPhase): Tone {
 
 export interface ToolCallOpenChangeDetails {
   open: boolean
-  /** 这一次开合是谁引起的：用户点的、阶段变化自动的，还是程序调的。 */
+  /** 本次开合的来源：用户点击、阶段变化自动、或程序调用。 */
   source: 'user' | 'auto' | 'api'
 }
 
 export interface ToolCallSchema extends MachineSchema {
   props: {
-    /** 这次调用正在跑。适配器用 isToolCallRunning(phase) 折出来，作者只写 phase。 */
+    /** 本次调用正在运行。适配器用 isToolCallRunning(phase) 折叠得出，作者只写 phase。 */
     running?: boolean
     open?: boolean
     defaultOpen?: boolean
-    /** 跑起来自动展开、结束自动收起，默认开；用户手动开合过一次即永久停用。 */
+    /** 运行时自动展开、结束时自动收起，默认开启；用户手动开合过一次即永久停用。 */
     autoDisclosure?: boolean
     disabled?: boolean
     onOpenChange?: (details: ToolCallOpenChangeDetails) => void
@@ -76,9 +76,9 @@ export interface ToolCallSchema extends MachineSchema {
     | { type: 'TOGGLE' }
     | { type: 'OPEN' }
     | { type: 'CLOSE' }
-    /** 跑起来了。只在 auto 分支上有转移，进了 held 就再也够不着。 */
+    /** 开始运行。只在 auto 分支上有转移，进入 held 后不再触及。 */
     | { type: 'PHASE.ACTIVE' }
-    /** 跑完了。同上。 */
+    /** 运行完成。同上。 */
     | { type: 'PHASE.SETTLE' }
     // 受控回写：宿主改 open 后由 watch 派发，无条件跳转、不再通知
     | { type: 'CONTROLLED.OPEN' }
@@ -89,15 +89,15 @@ export interface ToolCallSchema extends MachineSchema {
   effect: never
 }
 
-/** 视图属性，走 connect 的第二参：它们与机器无关，也不该经全局文案的机器名分桶。 */
+/** 视图属性，经 connect 的第二个参数传入：它们与状态机无关，也不应经全局文案的状态机名分类。 */
 export interface ToolCallProps {
-  /** 这次调用走到哪一步，默认 input-available。 */
+  /** 本次调用所处的阶段，默认 input-available。 */
   phase?: ToolCallPhase
-  /** 这次调用开始的时刻，毫秒时间戳。 */
+  /** 本次调用开始的时刻，毫秒时间戳。 */
   startTime?: number
-  /** 这次调用结束的时刻。**可能缺席**：还在跑，或者流被中止时兜底收尾不写这一个。 */
+  /** 本次调用结束的时刻。可能缺席：仍在运行，或流被中止时兜底收尾不写该字段。 */
   endTime?: number
-  /** 形态：outline 描边（缺省档）、subtle 底色分区、ghost 无壳内联。 */
+  /** 形态：outline 描边（默认档）、subtle 底色分区、ghost 无壳内联。 */
   variant?: ControlVariant
   tone?: Tone
   size?: Size
@@ -107,16 +107,16 @@ export interface ToolCallProps {
 export interface ToolCallApi<T extends PropTypes = PropTypes> {
   open: boolean
   phase: ToolCallPhase
-  /** 这一档算不算在跑。 */
+  /** 该档是否视为运行中。 */
   running: boolean
-  /** 这一档算不算已经落定：跑完了，或者跑砸了。 */
+  /** 该档是否视为已落定：运行完成，或失败。 */
   settled: boolean
-  /** 这一档算不算跑砸了。 */
+  /** 该档是否视为失败。 */
   errored: boolean
   disabled: boolean
-  /** 读屏用的一句话，由宿主写进会话级的那一个播报区。 */
+  /** 读屏文案，由宿主写入会话级的播报区。 */
   statusText: string
-  /** 跑了多久，毫秒；两个时刻任一缺席即 undefined。 */
+  /** 运行时长，毫秒；两个时刻任一缺席即 undefined。 */
   durationMs: number | undefined
   setOpen: (next: boolean) => void
   getRootProps: () => T['element']
@@ -134,24 +134,24 @@ export interface ToolCallApi<T extends PropTypes = PropTypes> {
 }
 
 export interface ToolCallTranslations {
-  /** 参数还在传。 */
+  /** 参数仍在传输。 */
   inputStreaming: string
-  /** 参数齐了，等着跑。 */
+  /** 参数已齐，等待运行。 */
   inputAvailable: string
-  /** 等人批准。 */
+  /** 等待批准。 */
   awaitingApproval: string
   /** 已完成。 */
   outputAvailable: string
-  /** 出错了。 */
+  /** 出错。 */
   outputError: string
   /**
-   * 跑了多久，形如 `Ran for {seconds}s`。
+   * 运行时长，形如 `Ran for {seconds}s`。
    * 模板串由调用方现场代入，连接层不做插值。
    */
   ranFor: string
 }
 
-/** 两个时刻算时长；任一缺席、或倒着走，都算不出来。 */
+/** 由两个时刻计算时长；任一缺席、或倒序，都无法计算。 */
 export function toolCallDuration(startTime?: number, endTime?: number): number | undefined {
   if (startTime === undefined || endTime === undefined)
     return undefined
