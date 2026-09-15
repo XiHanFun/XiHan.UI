@@ -7,15 +7,15 @@
 
 import type { ControlVariant, PropTypes, Size, Tone } from '@xihan-ui/core'
 
-/** 视图属性，走 connect 的第二参。机器属性与 tool-call 共用一组。 */
+/** 视图属性，经 connect 的第二个参数传入。状态机属性与 tool-call 共用一组。 */
 export interface ReasoningProps {
-  /** 还在思考。适配器把它折成机器的 running。 */
+  /** 仍在思考。适配器把它折叠为状态机的 running。 */
   streaming?: boolean
   /** 开始思考的时刻，毫秒时间戳。 */
   startTime?: number
-  /** 思考结束的时刻。**可能缺席**：流被中止时兜底收尾不写这一个。 */
+  /** 思考结束的时刻。可能缺席：流被中止时兜底收尾不写该字段。 */
   endTime?: number
-  /** 形态：outline 描边、subtle 底色分区（缺省档）、ghost 无壳内联。 */
+  /** 形态：outline 描边、subtle 底色分区（默认档）、ghost 无壳内联。 */
   variant?: ControlVariant
   tone?: Tone
   size?: Size
@@ -26,9 +26,9 @@ export interface ReasoningApi<T extends PropTypes = PropTypes> {
   open: boolean
   streaming: boolean
   disabled: boolean
-  /** 想了多久，毫秒；两个时刻任一缺席即 undefined。 */
+  /** 思考时长，毫秒；两个时刻任一缺席即 undefined。 */
   durationMs: number | undefined
-  /** 当前该显示哪句状态文案，已按 streaming 与时长选好。 */
+  /** 当前应显示的状态文案，已按 streaming 与时长选定。 */
   statusText: string
   setOpen: (next: boolean) => void
   getRootProps: () => T['element']
@@ -41,18 +41,18 @@ export interface ReasoningApi<T extends PropTypes = PropTypes> {
 }
 
 export interface ReasoningTranslations {
-  /** 折叠区的名字，算不出时长时也用它。 */
+  /** 折叠区的名字，无法计算时长时也使用它。 */
   label: string
-  /** 还在想的时候显示什么。 */
+  /** 仍在思考时显示的文案。 */
   thinking: string
   /**
-   * 想完之后显示什么，形如 `Thought for {seconds}s`。
-   * `{seconds}` 换成秒数，保留一位小数；串里没有这个占位符就原样显示。
+   * 思考完成后显示的文案，形如 `Thought for {seconds}s`。
+   * `{seconds}` 替换为秒数，保留一位小数；串中没有该占位符时原样显示。
    */
   thoughtFor: string
 }
 
-/** 两个时刻算时长；任一缺席、或倒着走，都算不出来。 */
+/** 由两个时刻计算时长；任一缺席、或倒序，都无法计算。 */
 export function reasoningDuration(startTime?: number, endTime?: number): number | undefined {
   if (startTime === undefined || endTime === undefined)
     return undefined
@@ -61,10 +61,10 @@ export function reasoningDuration(startTime?: number, endTime?: number): number 
 }
 
 /**
- * 当前该显示哪句状态文案。
+ * 当前应显示的状态文案。
  *
- * 还在想就是「在想」那一句；想完且算得出时长，把秒数代进模板串；
- * 时长算不出来（流被中止、没写结束时刻）回落折叠区的名字。
+ * 仍在思考时是思考中文案；已完成且可计算时长时，把秒数代入模板串；
+ * 时长无法计算（流被中止、未写结束时刻）时回退为折叠区的名字。
  */
 export function reasoningStatusText(
   streaming: boolean,

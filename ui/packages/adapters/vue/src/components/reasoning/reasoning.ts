@@ -16,7 +16,7 @@ import { useReasoning } from './use-reasoning'
 
 type MachineProps = ToolCallSchema['props']
 
-/** 默认插槽的载荷：开合、还在不在想、想了多久，以及当前该显示哪句状态文案。 */
+/** 默认插槽的载荷：开合、是否仍在思考、思考时长，以及当前应显示的状态文案。 */
 export type ReasoningRootSlotProps = Pick<ReasoningApi, 'open' | 'streaming' | 'disabled' | 'durationMs' | 'statusText' | 'setOpen'>
 
 export const XhReasoningRoot = defineComponent({

@@ -95,13 +95,13 @@ open 交给宿主：外面一颗钮统一开合几段思考，自动开合让位
 
 | 属性 | 类型 | 必填 | 说明 |
 | --- | --- | --- | --- |
-| `endTime` | `number` |  | 思考结束的时刻。**可能缺席**：流被中止时兜底收尾不写这一个。 |
+| `endTime` | `number` |  | 思考结束的时刻。可能缺席：流被中止时兜底收尾不写该字段。 |
 | `size` | `Size` |  |  |
 | `startTime` | `number` |  | 开始思考的时刻，毫秒时间戳。 |
-| `streaming` | `boolean` |  | 还在思考。适配器把它折成机器的 running。 |
+| `streaming` | `boolean` |  | 仍在思考。适配器把它折叠为状态机的 running。 |
 | `tone` | `Tone` |  |  |
 | `translations` | `Partial<ReasoningTranslations>` |  |  |
-| `variant` | `ControlVariant` |  | 形态：outline 描边、subtle 底色分区（缺省档）、ghost 无壳内联。 |
+| `variant` | `ControlVariant` |  | 形态：outline 描边、subtle 底色分区（默认档）、ghost 无壳内联。 |
 
 ### 事件
 
@@ -139,8 +139,8 @@ open 交给宿主：外面一颗钮统一开合几段思考，自动开合让位
 | `open` | `boolean` |  |
 | `streaming` | `boolean` |  |
 | `disabled` | `boolean` |  |
-| `durationMs` | `number \| undefined` | 想了多久，毫秒；两个时刻任一缺席即 undefined。 |
-| `statusText` | `string` | 当前该显示哪句状态文案，已按 streaming 与时长选好。 |
+| `durationMs` | `number \| undefined` | 思考时长，毫秒；两个时刻任一缺席即 undefined。 |
+| `statusText` | `string` | 当前应显示的状态文案，已按 streaming 与时长选定。 |
 | `setOpen` | `(next: boolean) => void` |  |
 | `getRootProps` | `() => T['element']` |  |
 | `getTriggerProps` | `() => T['button']` |  |

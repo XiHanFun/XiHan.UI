@@ -17,11 +17,11 @@ import { useReasoning } from './use-reasoning'
 
 type MachineProps = ToolCallSchema['props']
 
-/** 函数式 children 的载荷：开合、还在不在想、想了多久，以及当前该显示哪句状态文案。 */
+/** 函数式 children 的载荷：开合、是否仍在思考、思考时长，以及当前应显示的状态文案。 */
 export type ReasoningRootSlotProps = Pick<ReasoningApi, 'open' | 'streaming' | 'disabled' | 'durationMs' | 'statusText' | 'setOpen'>
 
 export interface XhReasoningRootProps extends Omit<ComponentPropsWithRef<'div'>, 'children'> {
-  /** 还在思考。折成机器的「在跑」。 */
+  /** 仍在思考。映射为状态机的运行中。 */
   streaming?: boolean
   /** 开始思考的时刻，毫秒时间戳。 */
   startTime?: number
@@ -30,7 +30,7 @@ export interface XhReasoningRootProps extends Omit<ComponentPropsWithRef<'div'>,
   /** 给定即受控。 */
   open?: boolean
   defaultOpen?: boolean
-  /** 想起来自动展开、想完自动收起，用户动过手就锁住。 */
+  /** 开始思考时自动展开、思考完成时自动收起，用户手动操作过即锁定。 */
   autoDisclosure?: boolean
   disabled?: boolean
   /** 形态：outline 描边、subtle 底色分区、ghost 无壳内联。 */
@@ -118,7 +118,7 @@ export function XhReasoningTrigger({ children, ...rest }: XhReasoningTriggerProp
 }
 
 export interface XhReasoningIconProps extends ComponentPropsWithRef<'span'> {}
-/** 状态图形位：跟着在不在想换色，对读屏隐藏。 */
+/** 状态图形位：随是否在思考换色，对读屏隐藏。 */
 export function XhReasoningIcon({ children, ...rest }: XhReasoningIconProps): ReactNode {
   const ctx = useReasoningContext()
   return <span {...mergeReactProps(ctx.api.getIconProps() as Record<string, unknown>, rest as Record<string, unknown>)}>{children}</span>
@@ -131,7 +131,7 @@ export function XhReasoningIndicator({ children, ...rest }: XhReasoningIndicator
 }
 
 export interface XhReasoningLabelProps extends ComponentPropsWithRef<'span'> {}
-/** 不给内容时显示当前状态那一句。 */
+/** 未提供内容时显示当前状态的文案。 */
 export function XhReasoningLabel({ children, ...rest }: XhReasoningLabelProps): ReactNode {
   const ctx = useReasoningContext()
   return (

@@ -41923,7 +41923,7 @@
       "declarations": [
         {
           "kind": "class",
-          "description": "`<xh-reasoning>` —— Light-DOM 行为宿主：把思考过程收进一个折叠区。\n自动开合整套复用 tool-call 的机器，它不认解剖、只认在不在跑与四个叶态；\n全局文案另按 reasoning 分桶取，不经机器名。",
+          "description": "`<xh-reasoning>`：Light-DOM 行为宿主：把思考过程收进一个折叠区。\n自动开合整套复用 tool-call 的状态机，它不识别解剖、只识别是否运行中与四个叶态；\n全局文案另按 reasoning 分类获取，不经状态机名。",
           "name": "XhReasoningElement",
           "cssParts": [
             {
@@ -41947,7 +41947,7 @@
               "name": "label"
             },
             {
-              "description": "想了多久，同上",
+              "description": "思考时长，同上",
               "name": "duration"
             },
             {
@@ -42070,7 +42070,7 @@
               "type": {
                 "text": "number | undefined"
               },
-              "description": "两个时刻算出来的思考时长，任一缺席或倒着走都是 undefined。",
+              "description": "由两个时刻计算的思考时长，任一缺席或顺序倒置时为 undefined。",
               "readonly": true
             },
             {
@@ -42079,7 +42079,7 @@
               "type": {
                 "text": "string"
               },
-              "description": "当前该显示哪句状态文案：作者把它写进 label 那个角色节点。",
+              "description": "当前应显示的状态文案：作者将其写入 label 角色节点。",
               "readonly": true
             },
             {
@@ -42173,7 +42173,7 @@
               "type": {
                 "text": "boolean | undefined"
               },
-              "description": "还在思考：跟着它自动展开，写完自动收起",
+              "description": "仍在思考：随它自动展开，完成后自动收起",
               "name": "streaming",
               "fieldName": "streaming"
             },
@@ -42197,7 +42197,7 @@
               "type": {
                 "text": "boolean | undefined"
               },
-              "description": "受控开合，缺省该属性即非受控",
+              "description": "受控开合，未提供该属性即非受控",
               "name": "open",
               "fieldName": "open"
             },
@@ -42213,7 +42213,7 @@
               "type": {
                 "text": "boolean | undefined"
               },
-              "description": "跟着思考状态自动开合，默认开；写 auto-disclosure=\"false\" 关掉",
+              "description": "随思考状态自动开合，默认开启；写 auto-disclosure=\"false\" 关闭",
               "name": "auto-disclosure",
               "fieldName": "autoDisclosure"
             },
@@ -42229,7 +42229,7 @@
               "type": {
                 "text": "ControlVariant | undefined"
               },
-              "description": "形态：描边 / 底色分区（缺省档）/ 无壳内联",
+              "description": "形态：描边 / 底色分区（默认档）/ 无壳内联",
               "name": "variant",
               "fieldName": "variant"
             },
