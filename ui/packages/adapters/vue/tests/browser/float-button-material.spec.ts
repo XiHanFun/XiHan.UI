@@ -97,23 +97,23 @@ afterEach(async () => {
   await cdp().send('Emulation.setEmulatedMedia', { media: '', features: [] })
 })
 
-describe('float-button 的 M3 通透玻璃皮肤', () => {
-  it.each(THEMES)('%s：默认触发器从 material.glass 同源消费背景、边缘、高光、柔影与磨砂', async (theme) => {
+describe('float-button 的 M2 磨砂皮肤', () => {
+  it.each(THEMES)('%s：默认触发器从 material.frosted 同源消费背景、边缘、高光、柔影与磨砂', async (theme) => {
     document.documentElement.dataset.theme = theme
     await mount()
 
     const element = trigger()
     const style = getComputedStyle(element)
     expect(element.closest('[data-part=\'root\']')!.hasAttribute('data-variant')).toBe(false)
-    expect(style.backgroundColor).toBe(resolve(element, 'background-color', 'var(--xh-material-glass-bg)'))
-    expect(style.borderTopColor).toBe(resolve(element, 'border-top-color', 'var(--xh-material-glass-border)'))
-    expect(style.color).toBe(resolve(element, 'color', 'var(--xh-material-glass-fg)'))
-    expect(style.boxShadow).toBe(resolve(element, 'box-shadow', 'var(--xh-material-glass-shadow)'))
-    expect(style.backdropFilter).toBe(resolve(element, 'backdrop-filter', 'var(--xh-material-glass-backdrop)'))
-    expect(style.backgroundImage).toBe(resolve(element, 'background-image', 'linear-gradient(to bottom, var(--xh-material-glass-highlight) 0 var(--xh-stroke-thin), transparent var(--xh-stroke-thin))'))
+    expect(style.backgroundColor).toBe(resolve(element, 'background-color', 'var(--xh-material-frosted-bg)'))
+    expect(style.borderTopColor).toBe(resolve(element, 'border-top-color', 'var(--xh-material-frosted-border)'))
+    expect(style.color).toBe(resolve(element, 'color', 'var(--xh-material-frosted-fg)'))
+    expect(style.boxShadow).toBe(resolve(element, 'box-shadow', 'var(--xh-material-frosted-shadow)'))
+    expect(style.backdropFilter).toBe(resolve(element, 'backdrop-filter', 'var(--xh-material-frosted-backdrop)'))
+    expect(style.backgroundImage).toBe(resolve(element, 'background-image', 'linear-gradient(to bottom, var(--xh-material-frosted-highlight) 0 var(--xh-stroke-thin), transparent var(--xh-stroke-thin))'))
   })
 
-  it.each(THEMES)('%s：原生动作项与触发器共享玻璃面、尺寸和键盘焦点', async (theme) => {
+  it.each(THEMES)('%s：原生动作项与触发器共享磨砂面、尺寸和键盘焦点', async (theme) => {
     document.documentElement.dataset.theme = theme
     await mount()
     await userEvent.click(trigger())
@@ -147,14 +147,14 @@ describe('float-button 的 M3 通透玻璃皮肤', () => {
     const style = getComputedStyle(element)
     const after = element.getBoundingClientRect()
     expect(element.matches(':focus-visible')).toBe(true)
-    expect(style.backgroundColor).toBe(resolve(element, 'background-color', 'var(--xh-material-glass-focus-surface)'))
+    expect(style.backgroundColor).toBe(resolve(element, 'background-color', 'var(--xh-material-frosted-focus-surface)'))
     expect(style.outlineColor).toBe(resolve(element, 'outline-color', 'var(--xh-ring-focus)'))
     expect(style.outlineStyle).toBe('solid')
     expect(after.width).toBe(before.width)
     expect(after.height).toBe(before.height)
   })
 
-  it.each(THEMES)('%s：增强对比让玻璃实体化，边界、焦点与键盘环仍独立可见', async (theme) => {
+  it.each(THEMES)('%s：增强对比让磨砂实体化，边界、焦点与键盘环仍独立可见', async (theme) => {
     document.documentElement.dataset.theme = theme
     document.documentElement.dataset.contrast = 'more'
     await mount()
@@ -163,7 +163,8 @@ describe('float-button 的 M3 通透玻璃皮肤', () => {
     const rest = getComputedStyle(element)
     expect(alpha(rest.backgroundColor)).toBe(255)
     expect(rest.backdropFilter).toBe('none')
-    expect(rest.boxShadow).toBe('none')
+    // M2 在增强对比下只实体化并加强边界，浮层投影保留
+    expect(rest.boxShadow).toBe(resolve(element, 'box-shadow', 'var(--xh-material-frosted-shadow)'))
     expect(rest.borderTopStyle).toBe('solid')
     await focus(element)
     const focused = getComputedStyle(element)
@@ -171,7 +172,7 @@ describe('float-button 的 M3 通透玻璃皮肤', () => {
     expect(focused.outlineColor).toBe(resolve(element, 'outline-color', 'var(--xh-ring-focus)'))
   })
 
-  it.each(THEMES)('%s：系统减少透明度时关闭 blur、实体化背景，保留 M3 深度投影与实体焦点面', async (theme) => {
+  it.each(THEMES)('%s：系统减少透明度时关闭 blur、实体化背景，保留 M2 浮层投影与实体焦点面', async (theme) => {
     await cdp().send('Emulation.setEmulatedMedia', {
       media: '',
       features: [{ name: 'prefers-reduced-transparency', value: 'reduce' }],
@@ -184,13 +185,13 @@ describe('float-button 的 M3 通透玻璃皮肤', () => {
     const rest = getComputedStyle(element)
     expect(alpha(rest.backgroundColor)).toBe(255)
     expect(rest.backdropFilter).toBe('none')
-    expect(rest.boxShadow).toBe(resolve(element, 'box-shadow', 'var(--xh-material-glass-shadow)'))
+    expect(rest.boxShadow).toBe(resolve(element, 'box-shadow', 'var(--xh-material-frosted-shadow)'))
     await focus(element)
     expect(getComputedStyle(element).backgroundColor)
-      .toBe(resolve(element, 'background-color', 'var(--xh-material-glass-focus-surface)'))
+      .toBe(resolve(element, 'background-color', 'var(--xh-material-frosted-focus-surface)'))
   })
 
-  it('forced-colors：玻璃光学效果退出，触发器和键盘焦点仍由系统色可见呈现', async () => {
+  it('forced-colors：磨砂光学效果退出，触发器和键盘焦点仍由系统色可见呈现', async () => {
     await cdp().send('Emulation.setEmulatedMedia', {
       media: '',
       features: [{ name: 'forced-colors', value: 'active' }],
@@ -200,8 +201,8 @@ describe('float-button 的 M3 通透玻璃皮肤', () => {
 
     const element = trigger()
     const rest = getComputedStyle(element)
-    expect(rest.getPropertyValue('--xh-material-glass-bg').trim()).toBe('Canvas')
-    expect(rest.getPropertyValue('--xh-material-glass-fg').trim()).toBe('CanvasText')
+    expect(rest.getPropertyValue('--xh-material-frosted-bg').trim()).toBe('Canvas')
+    expect(rest.getPropertyValue('--xh-material-frosted-fg').trim()).toBe('CanvasText')
     expect(rest.backdropFilter).toBe('none')
     expect(rest.boxShadow).toBe('none')
     expect(alpha(rest.backgroundColor)).toBe(255)

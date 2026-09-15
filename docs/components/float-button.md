@@ -61,7 +61,7 @@
 - 支持点击或悬停展开；键盘与触控始终使用点击。
 - Escape、层外点击和再次触发均可收起。
 - 收起后动作项退出 Tab 序列。
-- 默认使用通透玻璃表面，显式变体使用对应语义表面。
+- 默认使用磨砂浮动表面，显式变体使用对应语义表面。
 - 原生按钮动作项自动继承触发器的尺寸与外观。
 
 ### 组合
@@ -218,7 +218,7 @@
 | `--xh-float-button-gap` | `list`<br>`root` | `gap` | `default` | `--xh-space-2` | float-button 的 list、root 部件 gap 覆盖槽。 |
 | `--xh-float-button-icon-size` | `root` | `--xh-icon-size` | `default` | `--xh-glyph-size-text` | float-button 的 root 部件 --xh-icon-size 覆盖槽。 |
 | `--xh-float-button-layer` | `root` | `z-index` | `default` | `--xh-_layer` | float-button 的 root 部件 z-index 覆盖槽。 |
-| `--xh-float-button-radius` | `list`<br>`root`<br>`trigger` | `border-radius` | `default` | `--xh-shape-pill` | float-button 的 list、root、trigger 部件 border-radius 覆盖槽。 |
+| `--xh-float-button-radius` | `list`<br>`root`<br>`trigger` | `border-radius` | `default` | `--xh-shape-circle` | float-button 的 list、root、trigger 部件 border-radius 覆盖槽。 |
 | `--xh-float-button-shadow` | `list`<br>`trigger` | `box-shadow` | `default`<br>`not([data-scope])` | `--xh-_float-button-shadow` | float-button 的 list、trigger 部件 box-shadow 覆盖槽。 |
 | `--xh-float-button-size` | `list`<br>`trigger` | `block-size`<br>`inline-size` | `default` | `--xh-_float-button-size` | float-button 的 list、trigger 部件 block-size、inline-size 覆盖槽。 |
 <!-- xh-component-tokens:end -->
