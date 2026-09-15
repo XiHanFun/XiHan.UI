@@ -221,6 +221,7 @@
 | `control` | `data-empty` | ''（条件成立时才出现） |
 | `control` | `data-invalid` | ''（条件成立时才出现） |
 | `control` | `data-readonly` | ''（条件成立时才出现） |
+| `control` | `data-variant` | props.variant |
 | `control` | `data-xh-field-chrome` | '' |
 | `control` | `data-xh-field-size` | props.size |
 | `swatch` | `data-disabled` | ''（条件成立时才出现） |
@@ -254,21 +255,21 @@
 | `--xh-color-field-action-font-size` | `clear-trigger` | `font-size` | `default` | `--xh-_color-field-action-font-size` | color-field 的 clear-trigger 部件 font-size 覆盖槽。 |
 | `--xh-color-field-action-radius` | `clear-trigger` | `border-radius` | `default` | `--xh-shape-inset` | color-field 的 clear-trigger 部件 border-radius 覆盖槽。 |
 | `--xh-color-field-action-size` | `clear-trigger` | `block-size`<br>`inline-size`<br>`min-inline-size` | `default`<br>`xh-action-profile=field-inset` | `--xh-_action-profile-visual-size` | color-field 的 clear-trigger 部件 block-size、inline-size、min-inline-size 覆盖槽。 |
-| `--xh-color-field-control-bg` | `control` | `background-color` | `xh-field-chrome` | `--xh-_color-field-bg` | color-field 的 control 部件 background-color 覆盖槽。 |
-| `--xh-color-field-control-bg-disabled` | `control` | `background-color` | `disabled`<br>`xh-field-chrome` | `--xh-bg-subtle` | color-field 的 control 部件 background-color 覆盖槽。 |
-| `--xh-color-field-control-bg-hover` | `control` | `background-color` | `disabled`<br>`hover`<br>`invalid`<br>`loading`<br>`not([data-disabled])`<br>`not([data-invalid])`<br>`not([data-loading])`<br>`not([data-readonly])`<br>`readonly`<br>`xh-field-chrome` | `--xh-_color-field-bg-hover` | color-field 的 control 部件 background-color 覆盖槽。 |
-| `--xh-color-field-control-bg-readonly` | `control` | `background-color` | `readonly`<br>`xh-field-chrome` | `--xh-bg-subtle` | color-field 的 control 部件 background-color 覆盖槽。 |
-| `--xh-color-field-control-border` | `control` | `border` | `xh-field-chrome` | `--xh-_color-field-border` | color-field 的 control 部件 border 覆盖槽。 |
-| `--xh-color-field-control-border-focus` | `control` | `border-color` | `disabled`<br>`focus-within`<br>`not([data-disabled])`<br>`xh-field-chrome` | `--xh-_color-field-border-focus` | color-field 的 control 部件 border-color 覆盖槽。 |
-| `--xh-color-field-control-border-hover` | `control` | `border-color` | `disabled`<br>`hover`<br>`invalid`<br>`loading`<br>`not([data-disabled])`<br>`not([data-invalid])`<br>`not([data-loading])`<br>`not([data-readonly])`<br>`readonly`<br>`xh-field-chrome` | `--xh-_color-field-border-hover` | color-field 的 control 部件 border-color 覆盖槽。 |
-| `--xh-color-field-control-border-invalid` | `control` | `border-color` | `invalid`<br>`xh-field-chrome` | `--xh-border-invalid` | color-field 的 control 部件 border-color 覆盖槽。 |
+| `--xh-color-field-control-bg` | `control` | `background-color` | `xh-field-chrome` | `--xh-_field-variant-bg-rest` | color-field 的 control 部件 background-color 覆盖槽。 |
+| `--xh-color-field-control-bg-disabled` | `control` | `background-color` | `disabled`<br>`xh-field-chrome` | `--xh-_field-variant-bg-disabled` | color-field 的 control 部件 background-color 覆盖槽。 |
+| `--xh-color-field-control-bg-hover` | `control` | `background-color` | `disabled`<br>`hover`<br>`invalid`<br>`loading`<br>`not([data-disabled])`<br>`not([data-invalid])`<br>`not([data-loading])`<br>`not([data-readonly])`<br>`readonly`<br>`xh-field-chrome` | `--xh-_field-variant-bg-hover` | color-field 的 control 部件 background-color 覆盖槽。 |
+| `--xh-color-field-control-bg-readonly` | `control` | `background-color` | `readonly`<br>`xh-field-chrome` | `--xh-_field-variant-bg-read-only` | color-field 的 control 部件 background-color 覆盖槽。 |
+| `--xh-color-field-control-border` | `control` | `border` | `xh-field-chrome` | `--xh-_field-variant-border-rest` | color-field 的 control 部件 border 覆盖槽。 |
+| `--xh-color-field-control-border-focus` | `control` | `border-color` | `disabled`<br>`focus-within`<br>`not([data-disabled])`<br>`xh-field-chrome` | `--xh-_field-variant-border-focus` | color-field 的 control 部件 border-color 覆盖槽。 |
+| `--xh-color-field-control-border-hover` | `control` | `border-color` | `disabled`<br>`hover`<br>`invalid`<br>`loading`<br>`not([data-disabled])`<br>`not([data-invalid])`<br>`not([data-loading])`<br>`not([data-readonly])`<br>`readonly`<br>`xh-field-chrome` | `--xh-_field-variant-border-hover` | color-field 的 control 部件 border-color 覆盖槽。 |
+| `--xh-color-field-control-border-invalid` | `control` | `border-color` | `invalid`<br>`xh-field-chrome` | `--xh-_field-variant-border-invalid` | color-field 的 control 部件 border-color 覆盖槽。 |
 | `--xh-color-field-control-fg` | `control` | `color` | `xh-field-chrome` | `--xh-fg-default` | color-field 的 control 部件 color 覆盖槽。 |
 | `--xh-color-field-control-gap` | `control` | `gap` | `xh-field-chrome` | `--xh-_color-field-gap` | color-field 的 control 部件 gap 覆盖槽。 |
 | `--xh-color-field-control-h` | `control` | `block-size`<br>`min-block-size` | `has([data-xh-field-input][data-xh-field-layout='multi-tag'])`<br>`has([data-xh-field-input][data-xh-field-layout='single-line'])`<br>`has([data-xh-field-input][data-xh-field-layout='textarea'])`<br>`xh-field-chrome`<br>`xh-field-input`<br>`xh-field-layout=multi-tag`<br>`xh-field-layout=single-line`<br>`xh-field-layout=textarea` | `--xh-_color-field-h` | color-field 的 control 部件 block-size、min-block-size 覆盖槽。 |
 | `--xh-color-field-control-min-w` | `control`<br>`root` | `min-inline-size` | `default`<br>`xh-field-chrome` | `--xh-control-min-w` | color-field 的 control、root 部件 min-inline-size 覆盖槽。 |
 | `--xh-color-field-control-px` | `control` | `padding-inline` | `xh-field-chrome` | `--xh-_color-field-px` | color-field 的 control 部件 padding-inline 覆盖槽。 |
 | `--xh-color-field-control-radius` | `control` | `border-radius` | `xh-field-chrome` | `--xh-shape-control` | color-field 的 control 部件 border-radius 覆盖槽。 |
-| `--xh-color-field-control-shadow` | `control` | `box-shadow` | `xh-field-chrome` | `--xh-_color-field-shadow` | color-field 的 control 部件 box-shadow 覆盖槽。 |
+| `--xh-color-field-control-shadow` | `control` | `box-shadow` | `xh-field-chrome` | `none` | color-field 的 control 部件 box-shadow 覆盖槽。 |
 | `--xh-color-field-gap` | `root` | `gap` | `default` | `--xh-space-1` | color-field 的 root 部件 gap 覆盖槽。 |
 | `--xh-color-field-icon-size` | `root` | `--xh-icon-size` | `default`<br>`size=lg`<br>`size=sm` | `--xh-glyph-size-lg`<br>`--xh-glyph-size-md`<br>`--xh-glyph-size-sm` | color-field 的 root 部件 --xh-icon-size 覆盖槽。 |
 | `--xh-color-field-input-autofill-bg` | `input` | `box-shadow` | `-webkit-autofill`<br>`autofill`<br>`xh-field-input` | `--xh-bg-canvas` | color-field 的 input 部件 box-shadow 覆盖槽。 |

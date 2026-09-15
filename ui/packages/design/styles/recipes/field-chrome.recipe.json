@@ -1,8 +1,10 @@
 {
-  "$description": "Field Chrome 家族配方：字段视觉盒、装饰段与原生输入共用一套尺寸、布局、状态和输入能力规则。组件只映射公开覆盖槽。",
+  "$description": "Field Chrome 家族配方：字段视觉盒、装饰段与原生输入共用一套尺寸、布局、形态、状态和输入能力规则。组件只映射公开覆盖槽。",
   "version": 1,
   "sizes": ["sm", "md", "lg"],
   "layouts": ["single-line", "textarea", "multi-tag"],
+  "variants": ["outline", "subtle", "ghost"],
+  "defaultVariant": "outline",
   "states": ["rest", "hover", "focus", "invalid", "readOnly", "disabled", "loading"],
   "sizeValues": {
     "sm": {
@@ -52,55 +54,133 @@
   },
   "stateValues": {
     "rest": {
-      "backgroundColor": "var(--xh-bg-canvas)",
       "color": "var(--xh-fg-default)",
-      "borderColor": "transparent",
-      "shadow": "var(--xh-elevation-raised)",
+      "shadow": "none",
       "cursor": "text"
     },
     "hover": {
-      "backgroundColor": "color-mix(in oklab, var(--xh-bg-subtle) 45%, var(--xh-bg-canvas))",
       "color": "var(--xh-fg-default)",
-      "borderColor": "var(--xh-border-default)",
-      "shadow": "var(--xh-elevation-raised)",
+      "shadow": "none",
       "cursor": "text"
     },
     "focus": {
-      "backgroundColor": "var(--xh-bg-canvas)",
       "color": "var(--xh-fg-default)",
-      "borderColor": "var(--xh-border-control-focus)",
-      "shadow": "var(--xh-elevation-raised)",
+      "shadow": "none",
       "cursor": "text",
       "ringColor": "var(--xh-ring-focus)"
     },
     "invalid": {
-      "backgroundColor": "var(--xh-bg-canvas)",
       "color": "var(--xh-fg-default)",
-      "borderColor": "var(--xh-border-invalid)",
-      "shadow": "var(--xh-elevation-raised)",
+      "shadow": "none",
       "cursor": "text",
       "ringColor": "var(--xh-ring-invalid)"
     },
     "readOnly": {
-      "backgroundColor": "var(--xh-bg-subtle)",
       "color": "var(--xh-fg-default)",
-      "borderColor": "transparent",
       "shadow": "none",
       "cursor": "default"
     },
     "disabled": {
-      "backgroundColor": "var(--xh-bg-subtle)",
       "color": "var(--xh-fg-disabled)",
-      "borderColor": "transparent",
       "shadow": "none",
       "cursor": "not-allowed"
     },
     "loading": {
-      "backgroundColor": "var(--xh-bg-canvas)",
       "color": "var(--xh-fg-muted)",
-      "borderColor": "transparent",
-      "shadow": "var(--xh-elevation-raised)",
+      "shadow": "none",
       "cursor": "progress"
+    }
+  },
+  "variantValues": {
+    "outline": {
+      "rest": {
+        "backgroundColor": "var(--xh-bg-canvas)",
+        "borderColor": "var(--xh-border-control)"
+      },
+      "hover": {
+        "backgroundColor": "color-mix(in oklab, var(--xh-bg-subtle) 45%, var(--xh-bg-canvas))",
+        "borderColor": "var(--xh-border-control-hover)"
+      },
+      "focus": {
+        "backgroundColor": "var(--xh-bg-canvas)",
+        "borderColor": "var(--xh-border-control-focus)"
+      },
+      "invalid": {
+        "backgroundColor": "var(--xh-bg-canvas)",
+        "borderColor": "var(--xh-border-invalid)"
+      },
+      "readOnly": {
+        "backgroundColor": "var(--xh-bg-subtle)",
+        "borderColor": "var(--xh-border-control)"
+      },
+      "disabled": {
+        "backgroundColor": "var(--xh-bg-subtle)",
+        "borderColor": "var(--xh-border-default)"
+      },
+      "loading": {
+        "backgroundColor": "var(--xh-bg-canvas)",
+        "borderColor": "var(--xh-border-control)"
+      }
+    },
+    "subtle": {
+      "rest": {
+        "backgroundColor": "var(--xh-_tone-subtle, var(--xh-bg-subtle))",
+        "borderColor": "transparent"
+      },
+      "hover": {
+        "backgroundColor": "var(--xh-_tone-subtle-hover, var(--xh-bg-subtle-hover))",
+        "borderColor": "var(--xh-border-control)"
+      },
+      "focus": {
+        "backgroundColor": "var(--xh-_tone-subtle, var(--xh-bg-subtle))",
+        "borderColor": "var(--xh-border-control-focus)"
+      },
+      "invalid": {
+        "backgroundColor": "var(--xh-_tone-subtle, var(--xh-bg-subtle))",
+        "borderColor": "var(--xh-border-invalid)"
+      },
+      "readOnly": {
+        "backgroundColor": "var(--xh-bg-subtle)",
+        "borderColor": "transparent"
+      },
+      "disabled": {
+        "backgroundColor": "var(--xh-bg-subtle)",
+        "borderColor": "var(--xh-border-default)"
+      },
+      "loading": {
+        "backgroundColor": "var(--xh-_tone-subtle, var(--xh-bg-subtle))",
+        "borderColor": "transparent"
+      }
+    },
+    "ghost": {
+      "rest": {
+        "backgroundColor": "transparent",
+        "borderColor": "transparent"
+      },
+      "hover": {
+        "backgroundColor": "color-mix(in oklab, var(--xh-bg-subtle) 45%, transparent)",
+        "borderColor": "var(--xh-border-control)"
+      },
+      "focus": {
+        "backgroundColor": "transparent",
+        "borderColor": "var(--xh-border-control-focus)"
+      },
+      "invalid": {
+        "backgroundColor": "transparent",
+        "borderColor": "var(--xh-border-invalid)"
+      },
+      "readOnly": {
+        "backgroundColor": "var(--xh-bg-subtle)",
+        "borderColor": "transparent"
+      },
+      "disabled": {
+        "backgroundColor": "var(--xh-bg-subtle)",
+        "borderColor": "var(--xh-border-default)"
+      },
+      "loading": {
+        "backgroundColor": "transparent",
+        "borderColor": "transparent"
+      }
     }
   },
   "nativeInput": {

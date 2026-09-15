@@ -13,7 +13,8 @@
     --xh-color-field-skin: 1;
   }
 
-  /* 组件层只把既有公开槽映射到家族合同；色块吃 Swatch 家族，只在这里补一条与输入框的间距。 */
+  /* 组件层只把既有公开槽映射到家族合同；形态三档由家族按 control 上的 data-variant 生成，皮肤不再声明；
+     色块吃 Swatch 家族，只在这里补一条与输入框的间距。 */
   [data-scope='color-field'][data-part='root'] {
     --xh-_color-field-h: var(--xh-control-h-md);
     --xh-_color-field-px: var(--xh-control-px-md);
@@ -21,12 +22,6 @@
     --xh-_color-field-font-size: var(--xh-control-font-md);
     --xh-_color-field-label-font-size: var(--xh-control-font-md);
     --xh-_color-field-action-font-size: var(--xh-control-caption-md);
-    --xh-_color-field-bg: var(--xh-bg-canvas);
-    --xh-_color-field-bg-hover: color-mix(in oklab, var(--xh-bg-subtle) 45%, var(--xh-_color-field-bg));
-    --xh-_color-field-border: transparent;
-    --xh-_color-field-border-hover: var(--xh-border-default);
-    --xh-_color-field-border-focus: var(--xh-_tone, var(--xh-border-control-focus));
-    --xh-_color-field-shadow: var(--xh-elevation-raised);
 
     --xh-icon-size: var(--xh-color-field-icon-size, var(--xh-glyph-size-md));
 
@@ -61,32 +56,6 @@
     --xh-icon-size: var(--xh-color-field-icon-size, var(--xh-glyph-size-lg));
   }
 
-  [data-scope='color-field'][data-part='root'][data-variant='outline'] {
-    --xh-_color-field-bg: var(--xh-bg-canvas);
-    --xh-_color-field-border: var(--xh-border-control);
-    --xh-_color-field-border-hover: var(--xh-border-control-hover);
-    --xh-_color-field-border-focus: var(--xh-_tone, var(--xh-border-control-focus));
-    --xh-_color-field-shadow: none;
-  }
-
-  [data-scope='color-field'][data-part='root'][data-variant='subtle'] {
-    --xh-_color-field-bg: var(--xh-_tone-subtle, var(--xh-bg-subtle));
-    --xh-_color-field-bg-hover: var(--xh-_tone-subtle-hover, var(--xh-bg-subtle-hover));
-    --xh-_color-field-border: transparent;
-    --xh-_color-field-border-hover: var(--xh-_tone-border, var(--xh-border-control-hover));
-    --xh-_color-field-border-focus: var(--xh-_tone, var(--xh-border-control-focus));
-    --xh-_color-field-shadow: none;
-  }
-
-  [data-scope='color-field'][data-part='root'][data-variant='ghost'] {
-    --xh-_color-field-bg: transparent;
-    --xh-_color-field-bg-hover: var(--xh-_tone-subtle, var(--xh-bg-subtle));
-    --xh-_color-field-border: transparent;
-    --xh-_color-field-border-hover: var(--xh-_tone-border, var(--xh-border-control-hover));
-    --xh-_color-field-border-focus: var(--xh-_tone, var(--xh-border-control-focus));
-    --xh-_color-field-shadow: none;
-  }
-
   [data-scope='color-field'][data-part='label'] {
     color: var(--xh-color-field-label-fg, var(--xh-fg-default));
     font-size: var(--xh-color-field-label-font-size, var(--xh-_color-field-label-font-size));
@@ -103,18 +72,18 @@
     --xh-field-control-gap: var(--xh-color-field-control-gap, var(--xh-_color-field-gap));
     --xh-field-control-min-inline-size: var(--xh-color-field-control-min-w, var(--xh-control-min-w));
     --xh-field-control-radius: var(--xh-color-field-control-radius, var(--xh-shape-control));
-    --xh-field-bg-rest: var(--xh-color-field-control-bg, var(--xh-_color-field-bg));
-    --xh-field-bg-hover: var(--xh-color-field-control-bg-hover, var(--xh-_color-field-bg-hover));
-    --xh-field-bg-read-only: var(--xh-color-field-control-bg-readonly, var(--xh-bg-subtle));
-    --xh-field-bg-disabled: var(--xh-color-field-control-bg-disabled, var(--xh-bg-subtle));
+    --xh-field-bg-rest: var(--xh-color-field-control-bg, var(--xh-_field-variant-bg-rest));
+    --xh-field-bg-hover: var(--xh-color-field-control-bg-hover, var(--xh-_field-variant-bg-hover));
+    --xh-field-bg-read-only: var(--xh-color-field-control-bg-readonly, var(--xh-_field-variant-bg-read-only));
+    --xh-field-bg-disabled: var(--xh-color-field-control-bg-disabled, var(--xh-_field-variant-bg-disabled));
     --xh-field-fg-rest: var(--xh-color-field-control-fg, var(--xh-fg-default));
-    --xh-field-border-rest: var(--xh-color-field-control-border, var(--xh-_color-field-border));
-    --xh-field-border-hover: var(--xh-color-field-control-border-hover, var(--xh-_color-field-border-hover));
-    --xh-field-border-focus: var(--xh-color-field-control-border-focus, var(--xh-_color-field-border-focus));
-    --xh-field-border-invalid: var(--xh-color-field-control-border-invalid, var(--xh-border-invalid));
+    --xh-field-border-rest: var(--xh-color-field-control-border, var(--xh-_field-variant-border-rest));
+    --xh-field-border-hover: var(--xh-color-field-control-border-hover, var(--xh-_field-variant-border-hover));
+    --xh-field-border-focus: var(--xh-color-field-control-border-focus, var(--xh-_field-variant-border-focus));
+    --xh-field-border-invalid: var(--xh-color-field-control-border-invalid, var(--xh-_field-variant-border-invalid));
     --xh-field-ring-focus: var(--xh-ring-focus);
     --xh-field-ring-invalid: var(--xh-ring-invalid);
-    --xh-field-shadow-rest: var(--xh-color-field-control-shadow, var(--xh-_color-field-shadow));
+    --xh-field-shadow-rest: var(--xh-color-field-control-shadow, none);
   }
 
   /* 当前颜色的色块：棋盘格、颜色层、描边与尺寸档由 Swatch 家族画（节点带 data-xh-swatch），

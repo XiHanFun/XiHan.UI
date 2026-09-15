@@ -18,19 +18,64 @@
     padding-inline: var(--xh-field-control-padding-inline, var(--xh-_field-size-padding-inline));
     padding-block: 0;
     --xh-icon-size: var(--xh-field-glyph-size, var(--xh-_field-size-glyph-size));
-    border: var(--xh-stroke-thin) solid var(--xh-field-border-rest, transparent);
+    --xh-_field-variant-bg-rest: var(--xh-bg-canvas);
+    --xh-_field-variant-border-rest: var(--xh-border-control);
+    --xh-_field-variant-bg-hover: color-mix(in oklab, var(--xh-bg-subtle) 45%, var(--xh-bg-canvas));
+    --xh-_field-variant-border-hover: var(--xh-border-control-hover);
+    --xh-_field-variant-border-focus: var(--xh-border-control-focus);
+    --xh-_field-variant-border-invalid: var(--xh-border-invalid);
+    --xh-_field-variant-bg-read-only: var(--xh-bg-subtle);
+    --xh-_field-variant-bg-disabled: var(--xh-bg-subtle);
+    --xh-_field-variant-border-disabled: var(--xh-border-default);
+    border: var(--xh-stroke-thin) solid var(--xh-field-border-rest, var(--xh-_field-variant-border-rest));
     border-radius: var(--xh-field-control-radius, var(--xh-shape-control));
     outline: var(--xh-ring-width) solid transparent;
     outline-offset: var(--xh-ring-offset);
-    background-color: var(--xh-field-bg-rest, var(--xh-bg-canvas));
+    background-color: var(--xh-field-bg-rest, var(--xh-_field-variant-bg-rest));
     color: var(--xh-field-fg-rest, var(--xh-fg-default));
-    box-shadow: var(--xh-field-shadow-rest, var(--xh-elevation-raised));
+    box-shadow: var(--xh-field-shadow-rest, none);
     cursor: var(--xh-field-cursor-rest, text);
     transition:
       background-color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
       border-color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
       box-shadow var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
       outline-color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
+  }
+
+  [data-xh-field-chrome][data-variant='outline'] {
+    --xh-_field-variant-bg-rest: var(--xh-bg-canvas);
+    --xh-_field-variant-border-rest: var(--xh-border-control);
+    --xh-_field-variant-bg-hover: color-mix(in oklab, var(--xh-bg-subtle) 45%, var(--xh-bg-canvas));
+    --xh-_field-variant-border-hover: var(--xh-border-control-hover);
+    --xh-_field-variant-border-focus: var(--xh-border-control-focus);
+    --xh-_field-variant-border-invalid: var(--xh-border-invalid);
+    --xh-_field-variant-bg-read-only: var(--xh-bg-subtle);
+    --xh-_field-variant-bg-disabled: var(--xh-bg-subtle);
+    --xh-_field-variant-border-disabled: var(--xh-border-default);
+  }
+
+  [data-xh-field-chrome][data-variant='subtle'] {
+    --xh-_field-variant-bg-rest: var(--xh-_tone-subtle, var(--xh-bg-subtle));
+    --xh-_field-variant-border-rest: transparent;
+    --xh-_field-variant-bg-hover: var(--xh-_tone-subtle-hover, var(--xh-bg-subtle-hover));
+    --xh-_field-variant-border-hover: var(--xh-border-control);
+    --xh-_field-variant-border-focus: var(--xh-border-control-focus);
+    --xh-_field-variant-border-invalid: var(--xh-border-invalid);
+    --xh-_field-variant-bg-read-only: var(--xh-bg-subtle);
+    --xh-_field-variant-bg-disabled: var(--xh-bg-subtle);
+    --xh-_field-variant-border-disabled: var(--xh-border-default);
+  }
+
+  [data-xh-field-chrome][data-variant='ghost'] {
+    --xh-_field-variant-bg-rest: transparent;
+    --xh-_field-variant-border-rest: transparent;
+    --xh-_field-variant-bg-hover: color-mix(in oklab, var(--xh-bg-subtle) 45%, transparent);
+    --xh-_field-variant-border-hover: var(--xh-border-control);
+    --xh-_field-variant-border-focus: var(--xh-border-control-focus);
+    --xh-_field-variant-border-invalid: var(--xh-border-invalid);
+    --xh-_field-variant-bg-read-only: var(--xh-bg-subtle);
+    --xh-_field-variant-bg-disabled: var(--xh-bg-subtle);
+    --xh-_field-variant-border-disabled: var(--xh-border-default);
   }
 
   [data-xh-field-chrome][data-xh-field-size='sm'] {
@@ -85,19 +130,18 @@
   }
 
   [data-xh-field-chrome]:not([data-disabled]):not([data-readonly]):not([data-invalid]):not([data-loading]):hover {
-    background-color: var(--xh-field-bg-hover, color-mix(in oklab, var(--xh-bg-subtle) 45%, var(--xh-bg-canvas)));
-    border-color: var(--xh-field-border-hover, var(--xh-border-default));
+    background-color: var(--xh-field-bg-hover, var(--xh-_field-variant-bg-hover));
+    border-color: var(--xh-field-border-hover, var(--xh-_field-variant-border-hover));
   }
 
   [data-xh-field-chrome]:focus-within:not([data-disabled]) {
-    border-color: var(--xh-field-border-focus, var(--xh-border-control-focus));
+    border-color: var(--xh-field-border-focus, var(--xh-_field-variant-border-focus));
     outline: var(--xh-ring-width) solid var(--xh-field-ring-focus, var(--xh-ring-focus));
     outline-offset: var(--xh-ring-offset);
   }
 
   [data-xh-field-chrome][data-readonly] {
-    background-color: var(--xh-field-bg-read-only, var(--xh-bg-subtle));
-    box-shadow: var(--xh-field-shadow-read-only, none);
+    background-color: var(--xh-field-bg-read-only, var(--xh-_field-variant-bg-read-only));
     cursor: var(--xh-field-cursor-read-only, default);
   }
 
@@ -107,7 +151,7 @@
   }
 
   [data-xh-field-chrome][data-invalid] {
-    border-color: var(--xh-field-border-invalid, var(--xh-border-invalid));
+    border-color: var(--xh-field-border-invalid, var(--xh-_field-variant-border-invalid));
   }
 
   [data-xh-field-chrome][data-invalid]:focus-within:not([data-disabled]) {
@@ -115,9 +159,9 @@
   }
 
   [data-xh-field-chrome][data-disabled] {
-    background-color: var(--xh-field-bg-disabled, var(--xh-bg-subtle));
+    background-color: var(--xh-field-bg-disabled, var(--xh-_field-variant-bg-disabled));
     color: var(--xh-field-fg-disabled, var(--xh-fg-disabled));
-    box-shadow: var(--xh-field-shadow-disabled, none);
+    border-color: var(--xh-field-border-disabled, var(--xh-_field-variant-border-disabled));
     cursor: var(--xh-field-cursor-disabled, not-allowed);
   }
 

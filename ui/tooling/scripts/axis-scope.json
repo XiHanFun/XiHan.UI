@@ -67,7 +67,6 @@
     "size"
   ],
   "color-field": [
-    "variant",
     "size"
   ],
   "color-picker": [
@@ -333,7 +332,6 @@
     "size"
   ],
   "text-field": [
-    "variant",
     "size"
   ],
   "time-field": [
