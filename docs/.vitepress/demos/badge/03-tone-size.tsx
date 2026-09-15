@@ -1,4 +1,4 @@
-// 语气与尺寸 | tone 决定用哪族颜色——角标现实里主要是未读红点与在线/离线点；size 换的是圆点直径、两位数时的最小宽度与字号
+// 语气与尺寸 | tone 决定使用哪族颜色：角标实际以未读红点与在线/离线点为主；size 改变圆点直径、两位数时的最小宽度与字号
 import type { ReactNode } from "react";
 import { XhBadge, XhButton } from "@xihan-ui/react";
 

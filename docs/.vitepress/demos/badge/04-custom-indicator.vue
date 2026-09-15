@@ -1,4 +1,4 @@
-<!-- 自定义角标内容 | 拆成 Root + Indicator 两件：角标里能自己排版，插槽拿得到算好的计数；不写内容才回落那串数字，showZero 让 0 留在原地 -->
+<!-- 自定义角标内容 | 拆为 Root + Indicator 两件：角标内可自行排版，插槽可得到计算好的计数；不写内容才回落为数字，showZero 让 0 保留显示 -->
 <script setup lang="ts">
 import {
   XhAvatarFallback,
