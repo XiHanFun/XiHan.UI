@@ -133,17 +133,17 @@ view="text" 直接出缩进过的 JSON 原文：整块可框选可复制，且�
 
 | 属性 | 类型 | 必填 | 说明 |
 | --- | --- | --- | --- |
-| `value` | `unknown` |  | 要展示的值，任意形状。缺省即空视图（一行也不摊）。 |
-| `view` | `JsonViewerView` |  | 展示形态，默认 tree。 text 档直接出 JSON 原文：整块可框选可复制，且不受 maxStringLength / maxItems 折减—— 要的就是与后端下发的那份一字不差。展开集合与键盘导航在这一档上不起作用。 |
-| `variant` | `JsonViewerVariant` |  | 外框形态：surface 带描边与底色（缺省），plain 去掉描边与底色，只留内容。 |
-| `expandedValue` | `string[]` |  | 展开集合（元素是行路径）。给定即受控：cell 直读 prop，写只发 onExpandedValueChange 不落内部值。 |
-| `defaultExpandedValue` | `string[]` |  | 非受控初值；不给就按 defaultExpandedDepth 现算。 |
+| `value` | `unknown` |  | 要展示的值，任意形状。未提供时为空视图（不展开任何行）。 |
+| `view` | `JsonViewerView` |  | 展示形态，默认 tree。 text 档直接输出 JSON 原文：整块可框选可复制，且不受 maxStringLength / maxItems 折减： 目的是与后端下发的内容完全一致。展开集合与键盘导航在该档上不生效。 |
+| `variant` | `JsonViewerVariant` |  | 外框形态：surface 带描边与底色（默认），plain 去掉描边与底色，只保留内容。 |
+| `expandedValue` | `string[]` |  | 展开集合（元素是行路径）。提供即受控：cell 直读 prop，写入只发 onExpandedValueChange 不落内部值。 |
+| `defaultExpandedValue` | `string[]` |  | 非受控初值；未提供时按 defaultExpandedDepth 计算。 |
 | `defaultExpandedDepth` | `number` |  | 初始展开到第几层（层级号不超过它的分支全部展开），默认 1，即只展开根行。 |
-| `maxStringLength` | `number` |  | 字符串值超过这么多字符就截断并补省略号；不给即不截断。 |
-| `maxItems` | `number` |  | 同一层最多摊出这么多成员，其余收成一行占位；不给即全摊。 |
+| `maxStringLength` | `number` |  | 字符串值超过该字符数即截断并补省略号；未提供时不截断。 |
+| `maxItems` | `number` |  | 同一层最多展开该数量的成员，其余收为一行占位；未提供时全部展开。 |
 | `sortKeys` | `boolean` |  | 对象键按字典序排列；数组顺序不受影响。 |
-| `loop` | `boolean` |  | 上下键走到首尾是否回绕，默认 false。 |
-| `dir` | `Direction` |  | 文字方向，只对调左右方向键的展开/收起语义；不给即从 DOM 现读。 |
+| `loop` | `boolean` |  | 上下键到达首尾是否回绕，默认 false。 |
+| `dir` | `Direction` |  | 文字方向，只对调左右方向键的展开 / 收起语义；未提供时从 DOM 读取。 |
 | `size` | `Size` |  | 尺寸：sm / md / lg。 |
 | `translations` | `Partial<JsonViewerTranslations>` |  |  |
 | `onExpandedValueChange` | `(details: JsonViewerExpandedValueChangeDetails) => void` |  |  |
@@ -178,21 +178,21 @@ view="text" 直接出缩进过的 JSON 原文：整块可框选可复制，且�
 
 | 成员 | 类型 | 说明 |
 | --- | --- | --- |
-| `visibleNodes` | `readonly JsonViewerNode[]` | 当前可见行序列（收起分支的子行不在其中）。 方向键、Home/End 都在它上面走，适配器也按它铺 DOM。 |
+| `visibleNodes` | `readonly JsonViewerNode[]` | 当前可见行序列（收起分支的子行不在其中）。 方向键、Home/End 都在它上面移动，适配器也按它铺设 DOM。 |
 | `expandedValue` | `string[]` |  |
-| `focusedValue` | `string \| null` | roving tabindex 的锚点行：焦点在树内时就是当前行，焦点离开后仍留着（Tab 回来落回它）； 它已随分支收起而不再可见时为 null。 |
-| `isFocusWithin` | `boolean` | 焦点此刻在不在树内。行的高亮标记跟它走，锚点不跟。 |
+| `focusedValue` | `string \| null` | roving tabindex 的锚点行：焦点在树内时即当前行，焦点离开后仍保留（Tab 回来时落回它）； 它已随分支收起而不再可见时为 null。 |
+| `isFocusWithin` | `boolean` | 焦点当前是否在树内。行的高亮标记随它变化，锚点不随之变化。 |
 | `isExpanded` | `(value: string) => boolean` |  |
-| `previewText` | `(node: JsonViewerNode) => string` | 分支收起摘要的显示文字（如 `{…} 3`），只给眼睛看；叶子行返回空串。 |
-| `valueText` | `(node: JsonViewerNode) => string` | 值的显示文字；截断占位行返回「其余 N 项」那句话。 |
+| `previewText` | `(node: JsonViewerNode) => string` | 分支收起摘要的显示文字（如 `{…} 3`），只用于视觉；叶子行返回空串。 |
+| `valueText` | `(node: JsonViewerNode) => string` | 值的显示文字；截断占位行返回其余 N 项的文案。 |
 | `setExpandedValue` | `(next: string[]) => void` |  |
 | `expand` | `(value: string) => void` |  |
 | `collapse` | `(value: string) => void` |  |
 | `toggle` | `(value: string) => void` |  |
 | `view` | `JsonViewerView` | 当前生效的展示形态。 |
-| `isEmpty` | `boolean` | 摊不出任何一行——value 没给或给的是 undefined。空态部件跟着它显隐。 |
-| `emptyText` | `string` | 空态的兜底文案，作者没往空态部件里写内容时铺的就是它。 |
-| `text` | `string` | 缩进过的 JSON 原文；键序与环路记号与树档一致。text 档之外也取得到，方便作者做「复制原文」。 |
+| `isEmpty` | `boolean` | 无法展开任何一行：value 未提供或为 undefined。空态部件随它显隐。 |
+| `emptyText` | `string` | 空态的兜底文案，作者未向空态部件写入内容时铺设它。 |
+| `text` | `string` | 缩进后的 JSON 原文；键序与环路记号与树档一致。text 档之外也可获取，便于作者实现复制原文。 |
 | `getRootProps` | `() => T['element']` |  |
 | `getTreeProps` | `() => T['element']` |  |
 | `getTextProps` | `() => T['element']` |  |
