@@ -46,7 +46,7 @@
 
 ### 何时使用
 
-- 用于长页面或独立滚动区域。
+- 长页面或独立滚动区域。
 
 ### 何时不用
 
@@ -57,7 +57,7 @@
 
 - `visibilityHeight` 设置显示阈值。
 - `behavior` 支持平滑或立即返回。
-- 默认使用悬浮玻璃表面，也可通过 `variant` 调整外观。
+- 默认使用磨砂浮动表面，也可通过 `variant` 调整外观。
 - 减少动效、减少透明度与强制色模式会自动降级。
 
 ### 组合
@@ -67,11 +67,11 @@
 ### 最佳实践
 
 - 避开固定工具条和移动端手势区。
-- 保持默认的按需显示，不要在页面顶部常驻。
+- 保持默认的按需显示，不在页面顶部常驻。
 
 ### 反模式
 
-- 不要在短页面或已有返回入口的位置重复使用。
+- 在短页面或已有返回入口的位置重复使用。
 
 ## API 参考
 
@@ -195,7 +195,7 @@
 | `--xh-back-top-inset-block` | `root` | `inset-block-end` | `default` | `--xh-space-8` | back-top 的 root 部件 inset-block-end 覆盖槽。 |
 | `--xh-back-top-inset-inline` | `root` | `inset-inline-end` | `default` | `--xh-space-8` | back-top 的 root 部件 inset-inline-end 覆盖槽。 |
 | `--xh-back-top-layer` | `root` | `z-index` | `default` | `--xh-layer-sticky` | back-top 的 root 部件 z-index 覆盖槽。 |
-| `--xh-back-top-radius` | `trigger` | `border-radius` | `default` | `--xh-shape-pill` | back-top 的 trigger 部件 border-radius 覆盖槽。 |
+| `--xh-back-top-radius` | `trigger` | `border-radius` | `default` | `--xh-shape-circle` | back-top 的 trigger 部件 border-radius 覆盖槽。 |
 | `--xh-back-top-shadow` | `trigger` | `box-shadow` | `default` | `--xh-_back-top-shadow` | back-top 的 trigger 部件 box-shadow 覆盖槽。 |
 | `--xh-back-top-size` | `trigger` | `block-size`<br>`inline-size` | `default` | `--xh-_back-top-size` | back-top 的 trigger 部件 block-size、inline-size 覆盖槽。 |
 <!-- xh-component-tokens:end -->
