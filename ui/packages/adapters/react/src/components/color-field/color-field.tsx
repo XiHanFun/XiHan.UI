@@ -30,14 +30,14 @@ export interface XhColorFieldRootProps extends Omit<ComponentPropsWithRef<'div'>
   defaultValue?: string
   /** 值串的写法：hex / rgba / hsla，默认 hex。 */
   format?: ColorFormat
-  /** 带透明度，默认关。 */
+  /** 带透明度，默认关闭。 */
   alpha?: boolean
   placeholder?: string
   disabled?: boolean
   readOnly?: boolean
   required?: boolean
   invalid?: boolean
-  /** 表单字段名；给了才参与提交。 */
+  /** 表单字段名；提供后才参与提交。 */
   name?: string
   clearable?: boolean
   variant?: ControlVariant
@@ -142,7 +142,7 @@ export function XhColorFieldControl({ children, ...rest }: XhColorFieldControlPr
 
 export interface XhColorFieldSwatchProps extends ComponentPropsWithRef<'span'> {}
 
-/** 当前颜色的色块：色块面家族画棋盘格与描边，颜色由连接层写进私有槽。 */
+/** 当前颜色的色块：色块面家族绘制棋盘格与描边，颜色由连接层写入私有槽。 */
 export function XhColorFieldSwatch(props: XhColorFieldSwatchProps): ReactNode {
   const ctx = useColorFieldContext()
   return <span {...mergeReactProps(ctx.api.getSwatchProps() as Record<string, unknown>, props as Record<string, unknown>)} />

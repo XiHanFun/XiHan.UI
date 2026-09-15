@@ -12,42 +12,42 @@ import { wcNormalize } from '../dom/normalize'
 import { XhElement } from '../element-base'
 import { MachineController } from '../runtime/machine-controller'
 
-/** 属性缺席翻成 undefined，缺省值由机器决定。 */
+/** 属性缺席转换为 undefined，默认值由状态机决定。 */
 const STRING_CONVERTER = { fromAttribute: (v: string | null) => v ?? undefined }
-/** 布尔属性：出现即 true，写 "false" 才是 false；缺席不覆盖机器默认值。 */
+/** 布尔属性：出现即 true，写 "false" 才是 false；缺席不覆盖状态机默认值。 */
 const BOOLEAN_CONVERTER = { fromAttribute: (v: string | null) => (v === null ? undefined : v !== 'false') }
 
 /**
- * `<xh-color-field>` —— Light-DOM 行为宿主，跑 color-field 机器并把 connect 产出打到
- * root/label/control/swatch/input/clear-trigger/hidden-input 等角色节点。
+ * `<xh-color-field>`：Light-DOM 行为宿主，运行 color-field 状态机并把 connect 产出接到
+ * root / label / control / swatch / input / clear-trigger / hidden-input 等角色节点。
  *
- * 一个能手打颜色串的字段：框里的字是草稿，回车或失焦收下，解析得了就按 format 重写成值，
- * 解析不了留在框里并标成无效；旁边的色块经色块面家族画当前颜色。
+ * 一个可手动输入颜色串的字段：框中的文字是草稿，回车或失焦时接受，可解析时按 format 重写为值，
+ * 不可解析时留在框中并标为无效；旁边的色块经色块面家族绘制当前颜色。
  *
  * @customElement xh-color-field
- * @attr {string} value - 受控的颜色串；缺省该属性即非受控。空串表示没有颜色
- * @attr {string} default-value - 非受控初值，缺省空串
- * @attr {'hex'|'rgba'|'hsla'} format - 值串的写法，默认 hex；手打的任何写法收下后都按它重写
- * @attr {boolean} alpha - 带透明度，默认关；关掉时收下的颜色恒不透明
+ * @attr {string} value - 受控的颜色串；未提供该属性即非受控。空串表示没有颜色
+ * @attr {string} default-value - 非受控初值，默认空串
+ * @attr {'hex'|'rgba'|'hsla'} format - 值串的写法，默认 hex；手动输入的任何写法接受后都按它重写
+ * @attr {boolean} alpha - 带透明度，默认关闭；关闭时接受的颜色恒为不透明
  * @attr {string} placeholder - 占位文案
- * @attr {boolean} disabled - 禁用：不可聚焦、写不进
- * @attr {boolean} read-only - 只读：仍可聚焦与复制，写不进
+ * @attr {boolean} disabled - 禁用：不可聚焦、不可写入
+ * @attr {boolean} read-only - 只读：仍可聚焦与复制，不可写入
  * @attr {boolean} required - 必填标注
  * @attr {boolean} invalid - 校验失败标注
- * @attr {string} name - 表单字段名；给了才参与提交（经表单影子，框里的半截字不会被提交）
- * @attr {boolean} clearable - 开启清空：有值时清空按钮显出，Escape 接管
+ * @attr {string} name - 表单字段名；提供后才参与提交（经表单影子，框中的草稿不会被提交）
+ * @attr {boolean} clearable - 开启清空：有值时显示清空按钮，Escape 接管
  * @attr {'outline'|'subtle'|'ghost'} variant - 视觉变体
  * @attr {'brand'|'neutral'|'success'|'warning'|'danger'|'info'} tone - 语气
  * @attr {'sm'|'md'|'lg'} size - 尺寸
- * @prop {object} translations - 读屏文案（只走 property）：clearTrigger 是清空按钮的名字
- * @fires value-change - 收下的值变化；detail 为 `{ value: string }`，打字途中不发
+ * @prop {object} translations - 读屏文案（只能通过 property 设置）：clearTrigger 是清空按钮的名字
+ * @fires value-change - 已接受的值变化；detail 为 `{ value: string }`，输入途中不发出
  * @csspart root - 承载 data-disabled / data-readonly / data-invalid / data-empty / data-editing 的容器
- * @csspart control - 视觉盒；写了它就由它画描边、底色与聚焦环，色块、输入框与清空按钮排在它里面
- * @csspart label - 标题；`for` 恒写向 input，故须是原生 `<label>` 才点得动
- * @csspart swatch - 当前颜色的色块；颜色由元素写进私有槽，空值或无效时只画棋盘格
- * @csspart input - 真正的输入框，须是原生 `<input>`；键盘交互全在它身上
- * @csspart clear-trigger - 清空按钮，须是原生 button；不占 Tab 位，名字取 translations.clearTrigger；清不了时收起
- * @csspart hidden-input - 表单影子；提交的是收下的值
+ * @csspart control - 视觉盒；提供后由它绘制描边、底色与聚焦环，色块、输入框与清空按钮排列在其中
+ * @csspart label - 标题；`for` 恒指向 input，因此须是原生 `<label>` 才可点击
+ * @csspart swatch - 当前颜色的色块；颜色由元素写入私有槽，空值或无效时只绘制棋盘格
+ * @csspart input - 实际的输入框，须是原生 `<input>`；键盘交互全部在它身上
+ * @csspart clear-trigger - 清空按钮，须是原生 button；不占 Tab 位，名字取 translations.clearTrigger；无法清空时收起
+ * @csspart hidden-input - 表单影子；提交的是已接受的值
  */
 export class XhColorFieldElement extends XhElement {
   static override partContract = { anatomy: colorFieldAnatomy, meta: colorFieldMeta }
@@ -127,29 +127,29 @@ export class XhColorFieldElement extends XhElement {
     }
   }
 
-  /** 清空此刻可不可行（开了 clearable、可编辑、且有值）。机器尚未建起时为 false。 */
+  /** 当前是否可以清空（开启 clearable、可编辑且有值）。状态机尚未建立时为 false。 */
   get canClear(): boolean {
     return this.ctrl.service ? connectColorField(this.ctrl.service, wcNormalize).canClear : false
   }
 
-  /** 框里正有一份还没收下的草稿。机器尚未建起时为 false。 */
+  /** 输入框中存在尚未提交的草稿。状态机尚未建立时为 false。 */
   get editing(): boolean {
     return this.ctrl.service ? connectColorField(this.ctrl.service, wcNormalize).editing : false
   }
 
-  /** 从外面写值：空串清空，解析不出的串原地不动；只受禁用、只读约束。机器尚未建起时是空操作。 */
+  /** 从外部写值：空串清空，无法解析的串保持原值；只受禁用、只读约束。状态机尚未建立时为空操作。 */
   setValue(next: string): void {
     if (this.ctrl.service)
       connectColorField(this.ctrl.service, wcNormalize).setValue(next)
   }
 
-  /** 走清空意图，canClear 不成立时按兵不动；无条件清空请用 setValue('')。 */
+  /** 执行清空意图，canClear 不成立时不做任何处理；无条件清空请使用 setValue('')。 */
   clear(): void {
     if (this.ctrl.service)
       connectColorField(this.ctrl.service, wcNormalize).clear()
   }
 
-  /** 把框里的草稿收下（与回车 / 失焦同一条路）。 */
+  /** 提交输入框中的草稿（与回车 / 失焦同一路径）。 */
   commit(): void {
     if (this.ctrl.service)
       connectColorField(this.ctrl.service, wcNormalize).commit()

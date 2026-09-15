@@ -31,7 +31,7 @@ export const XhColorFieldRoot = defineComponent({
     defaultValue: { type: String },
     /** 值串的写法：hex / rgba / hsla，默认 hex。 */
     format: { type: String as PropType<ColorFormat> },
-    /** 带透明度，默认关。 */
+    /** 带透明度，默认关闭。 */
     alpha: { type: Boolean, default: undefined },
     placeholder: { type: String },
     disabled: { type: Boolean, default: undefined },
@@ -93,7 +93,7 @@ export const XhColorFieldControl = defineComponent({
   },
 })
 
-/** 当前颜色的色块：色块面家族画棋盘格与描边，颜色由连接层写进私有槽。 */
+/** 当前颜色的色块：色块面家族绘制棋盘格与描边，颜色由连接层写入私有槽。 */
 export const XhColorFieldSwatch = defineComponent({
   name: 'XhColorFieldSwatch',
   setup() {
