@@ -100,9 +100,9 @@ trend 落成 trend 部件的 data-direction，箭头由皮肤画；与 tone 正�
 
 | 属性 | 类型 | 必填 | 说明 |
 | --- | --- | --- | --- |
-| `size` | `Size` |  | 尺寸：sm / md / lg，只落成 root 的 data-size。 |
-| `tone` | `Tone` |  | 语气：brand / neutral / success / warning / danger / info，只落成 root 的 data-tone。 |
-| `trend` | `StatisticTrend` |  | 涨跌：up / down / flat，落成 trend 部件的 data-direction，皮肤据它出兜底箭头。 与 tone 正交，方向与颜色互不联动——跌也可以是好事（差错率、退货率）。 |
+| `size` | `Size` |  | 尺寸：sm / md / lg，只写为 root 的 data-size。 |
+| `tone` | `Tone` |  | 语气：brand / neutral / success / warning / danger / info，只写为 root 的 data-tone。 |
+| `trend` | `StatisticTrend` |  | 涨跌：up / down / flat，写为 trend 部件的 data-direction，皮肤据此绘制兜底箭头。 与 tone 正交，方向与颜色互不联动：下跌也可以是正面信息（差错率、退货率）。 |
 
 ### connect API
 
@@ -110,7 +110,7 @@ trend 落成 trend 部件的 data-direction，箭头由皮肤画；与 tone 正�
 
 | 成员 | 类型 | 说明 |
 | --- | --- | --- |
-| `trend` | `StatisticTrend` | 当前涨跌方向；没给即 undefined。 |
+| `trend` | `StatisticTrend` | 当前涨跌方向；未提供时为 undefined。 |
 | `getRootProps` | `() => T['element']` |  |
 | `getLabelProps` | `() => T['element']` |  |
 | `getValueProps` | `() => T['element']` |  |
