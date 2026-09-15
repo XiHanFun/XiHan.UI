@@ -14,7 +14,7 @@
 
 ## 用法
 
-一组字段收进原生 fieldset：legend 是这一组的名字，说明文案自动派生 id 并接进 aria-describedby
+一组字段收进原生 fieldset：legend 是该组的名字，说明文案自动派生 id 并接入 aria-describedby
 
 <XhDemo src="fieldset/01-basic" />
 
@@ -28,25 +28,25 @@
 
 ### 整组禁用
 
-disabled 落成原生 fieldset[disabled]，组内每个控件一并停掉，不必逐个写 disabled
+disabled 写为原生 fieldset[disabled]，组内每个控件一并禁用，不必逐个写 disabled
 
 <XhDemo src="fieldset/02-disabled" />
 
 ### 无效态
 
-invalid 一翻，错误文案接进描述链并显出；它带 role=alert，翻转那一刻读屏立即播报
+invalid 切换后，错误文案接入描述链并显示；它带 role=alert，切换时读屏立即播报
 
 <XhDemo src="fieldset/03-invalid" />
 
 ### 必填标记
 
-required 落成 data-required，皮肤据此给组标题加星号；星号只是视觉冗余，必填这件事要一并写进文案
+required 写为 data-required，皮肤据此为组标题加星号；星号只是视觉冗余，必填这一信息要一并写进文案
 
 <XhDemo src="fieldset/04-required" />
 
 ### 总开关放进 legend
 
-按 HTML 规范，首个 legend 里的控件不受 fieldset[disabled] 连坐，总开关因此始终可点
+按 HTML 规范，首个 legend 中的控件不受 fieldset[disabled] 连带影响，总开关因此始终可点击
 
 <XhDemo src="fieldset/05-legend-switch" />
 
