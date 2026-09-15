@@ -1,4 +1,4 @@
-// 尺寸 | sm / md / lg 三档换的是边长与棋盘格粒度，圆角恒是内嵌档
+// 尺寸 | sm / md / lg 三档改变边长与棋盘格粒度，圆角恒为内嵌档
 import type { ReactNode } from "react";
 import { XhColorSwatch } from "@xihan-ui/react";
 

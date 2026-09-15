@@ -1,4 +1,4 @@
-// 图例与无效值 | label 给读屏一个有含义的名字；解析不出的串只剩棋盘格并标成无效
+// 图例与无效值 | label 为读屏提供有含义的名字；无法解析的串只剩棋盘格并标为无效
 import type { ReactNode } from "react";
 import { XhColorSwatch } from "@xihan-ui/react";
 

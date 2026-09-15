@@ -1,4 +1,4 @@
-// 基础用法 | 把颜色串画成一小块：颜色旁边写出串本身，看得见也读得出
+// 基础用法 | 把颜色串绘制为一小块：颜色旁边写出串本身，可见也可读
 import type { ReactNode } from "react";
 import { XhColorSwatch } from "@xihan-ui/react";
 
