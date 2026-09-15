@@ -1,4 +1,4 @@
-// 基础用法 | 一个标签就是 root 加一段 label 文字；不写 closable 就没有关闭钮
+// 基础用法 | 一个标签就是 root 加一段 label 文字；不写 closable 就没有关闭按钮
 import type { ReactNode } from "react";
 import { XhTagLabel, XhTagRoot } from "@xihan-ui/react";
 

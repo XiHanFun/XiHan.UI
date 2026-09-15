@@ -1,4 +1,4 @@
-<!-- 形态 | variant 决定颜色怎么用：实心填底、淡色填底、只描边 -->
+<!-- 形态 | variant 决定颜色的使用方式：实心填底、淡色填底、只描边 -->
 <script setup lang="ts">
 import { XhTagLabel, XhTagRoot } from "@xihan-ui/vue";
 

@@ -12,7 +12,7 @@
 
 ## 用法
 
-一个标签就是 root 加一段 label 文字；不写 closable 就没有关闭钮
+一个标签就是 root 加一段 label 文字；不写 closable 就没有关闭按钮
 
 <XhDemo src="tag/01-basic" />
 
@@ -26,37 +26,37 @@
 
 ### 变体
 
-variant 决定颜色怎么用：实心填底、淡色填底、只描边
+variant 决定颜色的使用方式：实心填底、淡色填底、只描边
 
 <XhDemo src="tag/02-variant" />
 
 ### 颜色
 
-tone 决定用哪族颜色；语气只换色相，形态与尺寸不受影响
+tone 决定使用哪族颜色；语气只更换色相，形态与尺寸不受影响
 
 <XhDemo src="tag/03-tone" />
 
 ### 可关闭
 
-closable 给出关闭钮；open 受控时去留由宿主决定，可访问名逐枚带上标签文字，摘掉一枚后焦点交给下一枚
+closable 提供关闭按钮；open 受控时去留由宿主决定，可访问名逐个带上标签文字，移除一个后焦点交给下一个
 
 <XhDemo src="tag/04-closable" />
 
 ### 禁用
 
-disabled 让标签留在原地却摘不掉：关闭钮仍占着位置，标签宽度不因禁用跳变
+disabled 使标签留在原地但不可移除：关闭按钮仍占据位置，标签宽度不因禁用跳变
 
 <XhDemo src="tag/05-disabled" />
 
 ### 尺寸
 
-size 换内边距、间距、字号与行框，不写就是缺省档；同一档有没有关闭钮都一样高，关闭钮三档同一个尺寸
+size 改变内边距、间距、字号与行框，不写即默认档；同一档有无关闭按钮高度相同，关闭按钮三档同一个尺寸
 
 <XhDemo src="tag/06-size" />
 
 ### 只读
 
-readOnly 只锁关闭钮：叉留在原地但按不动，标签本身不置灰；与 disabled 的区别只在标签本体的颜色
+readOnly 只锁定关闭按钮：按钮留在原地但不可按下，标签本身不置灰；与 disabled 的区别只在标签本体的颜色
 
 <XhDemo src="tag/07-read-only" />
 

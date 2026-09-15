@@ -1,4 +1,4 @@
-// 语气 | tone 决定用哪族颜色；语气只换色相，形态与尺寸不受影响
+// 语气 | tone 决定使用哪族颜色；语气只更换色相，形态与尺寸不受影响
 import type { ReactNode } from "react";
 import { XhTagLabel, XhTagRoot } from "@xihan-ui/react";
 
