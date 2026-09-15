@@ -33837,7 +33837,7 @@
   transition:
     background var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
     box-shadow var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
-    scale var(--xh-motion-duration-micro) var(--xh-motion-ease-enter-strong);
+    scale var(--xh-motion-duration-release) var(--xh-motion-ease-release);
 }
 
 /* 内收环压在实体轨道上，直接取轨道的配对前景；只读 checked 已换中性底，退回默认品牌环。 */
@@ -33890,6 +33890,8 @@
    轨道宽高由私有槽定死，文字在外层 label 里，缩它不改布局。只读与禁用不压 */
 [data-scope='switch'][data-part='root']:not([data-disabled]):not([data-readonly]):not([data-loading]):active {
   scale: var(--xh-motion-scale-press);
+  transition-duration: var(--xh-motion-duration-press);
+  transition-timing-function: var(--xh-motion-ease-press);
 }
 
 [data-scope='switch'][data-part='root'][data-disabled] {
@@ -33933,7 +33935,7 @@
   inline-size: var(--xh-_switch-thumb-size);
   block-size: var(--xh-_switch-thumb-size);
   border: var(--xh-stroke-thin) solid var(--xh-switch-thumb-border, var(--xh-material-soft-border));
-  border-radius: var(--xh-switch-thumb-radius, var(--xh-shape-pill));
+  border-radius: var(--xh-switch-thumb-radius, var(--xh-shape-circle));
   background:
     linear-gradient(
       to bottom,

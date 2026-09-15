@@ -54288,7 +54288,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-shape-pill"
+        "--xh-shape-circle"
       ],
       "visibility": "public",
       "description": "switch 的 thumb 部件 border-radius 覆盖槽。"
