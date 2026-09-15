@@ -119,21 +119,21 @@ allowClear 缺省就开：点中当前那一档清回“还没评”，键盘在
 
 | 属性 | 类型 | 必填 | 说明 |
 | --- | --- | --- | --- |
-| `value` | `number` |  | 受控评分。给定即受控：内部不再自行落值，只发 onValueChange。 |
-| `defaultValue` | `number` |  | 非受控初值，缺省 0（还没评）。 |
+| `value` | `number` |  | 受控评分。提供即受控：内部不再自行落值，只发 onValueChange。 |
+| `defaultValue` | `number` |  | 非受控初值，默认 0（尚未评分）。 |
 | `count` | `number` |  | 星星颗数，默认 5。 |
-| `allowHalf` | `boolean` |  | 允许半颗星：档位从 1 变成 0.5。 |
-| `allowClear` | `boolean` |  | 再点当前档位即清零，键盘在最低档再往下走一步同样清零；默认开。 |
-| `disabled` | `boolean` |  | 整个不可交互：退出 Tab 序列，指针与键盘都不认。 |
-| `readOnly` | `boolean` |  | 只读：仍可聚焦、仍能被读屏念出，但改不动，也不给悬停预览。 |
+| `allowHalf` | `boolean` |  | 允许半颗星：档位从 1 变为 0.5。 |
+| `allowClear` | `boolean` |  | 再次点击当前档位即清零，键盘在最低档再向下一步同样清零；默认开启。 |
+| `disabled` | `boolean` |  | 完全不可交互：退出 Tab 序列，指针与键盘都不响应。 |
+| `readOnly` | `boolean` |  | 只读：仍可聚焦、仍能被读屏朗读，但不可修改，也不提供悬停预览。 |
 | `required` | `boolean` |  |  |
-| `name` | `string` |  | 表单字段名；给了表单影子才带 name 并参与提交。 |
-| `dir` | `Direction` |  | 文字方向，缺省 'ltr'。只改写左右方向键与"指针落在哪半边"的语义。 |
-| `tone` | `Tone` |  | 语气：brand / neutral / success / warning / danger / info，决定用哪族颜色。 |
+| `name` | `string` |  | 表单字段名；提供后表单影子才带 name 并参与提交。 |
+| `dir` | `Direction` |  | 文字方向，默认 'ltr'。只改写左右方向键与指针落在哪半边的语义。 |
+| `tone` | `Tone` |  | 语气：brand / neutral / success / warning / danger / info，决定使用哪族颜色。 |
 | `size` | `Size` |  | 尺寸：sm / md / lg。 |
 | `translations` | `Partial<RatingTranslations>` |  |  |
 | `onValueChange` | `(details: RatingValueChangeDetails) => void` |  |  |
-| `onHoverChange` | `(details: RatingHoverChangeDetails) => void` |  | 悬停预览变化；指针离开时带 null。它不代表值变了。 |
+| `onHoverChange` | `(details: RatingHoverChangeDetails) => void` |  | 悬停预览变化；指针离开时带 null。它不代表值已变化。 |
 
 ### 事件
 
@@ -175,12 +175,12 @@ allowClear 缺省就开：点中当前那一档清回“还没评”，键盘在
 
 | 成员 | 类型 | 说明 |
 | --- | --- | --- |
-| `value` | `number` | 已归一化的评分：非法与越界的宿主输入在这里就被夹回来了。 |
+| `value` | `number` | 已归一化的评分：非法与越界的宿主输入在这里被夹回。 |
 | `hoveredValue` | `number \| null` | 指针预览值；没有预览（或不可交互）时为 null。 |
-| `highlightedValue` | `number` | 当前该点亮到哪：有预览就是预览值，否则就是评分。样式与 data-highlighted 用的都是它。 |
-| `valueText` | `string` | 分值文本：当前该点亮到的那个数，指针预览期间跟着预览值走。 |
+| `highlightedValue` | `number` | 当前应点亮到的位置：有预览时是预览值，否则是评分。样式与 data-highlighted 使用的都是它。 |
+| `valueText` | `string` | 分值文本：当前应点亮到的数值，指针预览期间跟随预览值。 |
 | `count` | `number` |  |
-| `empty` | `boolean` | 还没评（value 为 0）。 |
+| `empty` | `boolean` | 尚未评分（value 为 0）。 |
 | `disabled` | `boolean` |  |
 | `readOnly` | `boolean` |  |
 | `items` | `readonly number[]` | 1..count 的序号表，作者直接遍历它渲染星星。 |
@@ -189,7 +189,7 @@ allowClear 缺省就开：点中当前那一档清回“还没评”，键盘在
 | `getRootProps` | `() => T['element']` |  |
 | `getLabelProps` | `() => T['element']` |  |
 | `getControlProps` | `() => T['element']` |  |
-| `getValueTextProps` | `() => T['element']` | 分值文本：写在 root 里、control 的兄弟；aria-hidden，读屏走星星自己的可及名。 |
+| `getValueTextProps` | `() => T['element']` | 分值文本：写在 root 中、control 的兄弟；aria-hidden，读屏使用星星自身的可及名。 |
 | `getItemProps` | `(props: RatingItemProps) => T['element']` |  |
 | `getHiddenInputProps` | `() => T['input']` | 表单出口：一份视觉隐藏的原生输入，随表单提交当前评分。 |
 
@@ -201,7 +201,7 @@ allowClear 缺省就开：点中当前那一档清回“还没评”，键盘在
 
 | 按键 | 生效条件 | 行为 |
 | --- | --- | --- |
-| `Tab` / `Shift+Tab` | focus outside the control | 整条评分带只占一个 Tab 位：焦点进入锚点那颗星，无锚点时进入容器并由它转投首颗 |
+| `Tab` / `Shift+Tab` | focus outside the control | 整条评分带只占一个 Tab 位：焦点进入锚点星，无锚点时进入容器并由它转移到首颗 |
 | `ArrowRight` / `ArrowUp` | focus in control, not disabled/readOnly | 加一档（allowHalf 时半颗），到顶停在 count；dir=rtl 时改由 ArrowLeft 承担 |
 | `ArrowLeft` / `ArrowDown` | focus in control, not disabled/readOnly | 减一档，到底停在最小档，不会退回"还没评"；dir=rtl 时改由 ArrowRight 承担 |
 | `Home` | focus in control, not disabled/readOnly | 取最小档（allowHalf 时是半颗，否则一颗） |

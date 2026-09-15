@@ -37,10 +37,10 @@ export type RatingRootSlotProps = Pick<
   | 'setValue'
 >
 
-/** 条目函数式 children 的载荷：这一颗星的选中、点亮与半亮状态。 */
+/** 条目函数式 children 的载荷：该颗星的选中、点亮与半亮状态。 */
 export type RatingItemSlotProps = RatingItemState
 
-/** 根上自有的那些取值；dir 与原生的同名属性含义不同，由这里接管。 */
+/** 根上自有的取值；dir 与原生的同名属性含义不同，由这里接管。 */
 type RootElementProps = Omit<ComponentPropsWithRef<'div'>, 'defaultValue' | 'dir' | 'children' | 'onChange'>
 
 export interface XhRatingRootProps extends RootElementProps {
@@ -50,22 +50,22 @@ export interface XhRatingRootProps extends RootElementProps {
   defaultValue?: number
   /** 星星颗数，默认 5。 */
   count?: number
-  /** 允许半颗星：档位从 1 变成 0.5。 */
+  /** 允许半颗星：档位从 1 变为 0.5。 */
   allowHalf?: boolean
-  /** 再点当前档位即清零，默认开。 */
+  /** 再次点击当前档位即清零，默认开启。 */
   allowClear?: boolean
   disabled?: boolean
   readOnly?: boolean
   required?: boolean
-  /** 表单字段名；给了表单影子才带 name 并参与提交。 */
+  /** 表单字段名；提供后表单影子才带 name 并参与提交。 */
   name?: string
-  /** 文字方向，缺省 ltr。 */
+  /** 文字方向，默认 ltr。 */
   dir?: Direction
   tone?: Tone
   size?: Size
   translations?: Partial<RatingTranslations>
   onValueChange?: RatingProps['onValueChange']
-  /** 悬停预览变化；指针离开时带 null。它不代表值变了。 */
+  /** 悬停预览变化；指针离开时带 null。它不代表值已变化。 */
   onHoverChange?: RatingProps['onHoverChange']
   children?: SlotChildren<RatingRootSlotProps>
 }
@@ -171,7 +171,7 @@ export function XhRatingControl({ children, ...rest }: XhRatingControlProps): Re
 
 export interface XhRatingValueTextProps extends ComponentPropsWithRef<'span'> {}
 
-/** 分值文本：写在 root 里、control 的兄弟；没给内容就填当前该点亮到的那个数。 */
+/** 分值文本：写在 root 中、control 的兄弟；未提供内容时填入当前应点亮到的数值。 */
 export function XhRatingValueText({ children, ...rest }: XhRatingValueTextProps): ReactNode {
   const ctx = useRatingContext()
   return (
@@ -182,7 +182,7 @@ export function XhRatingValueText({ children, ...rest }: XhRatingValueTextProps)
 }
 
 export interface XhRatingItemProps extends Omit<ComponentPropsWithRef<'span'>, 'value' | 'children'> {
-  /** 星序号，兼收字符串；往下传前统一归成数字。 */
+  /** 星序号，兼收字符串；向下传递前统一归为数字。 */
   value: number | string
   children?: SlotChildren<RatingItemSlotProps>
 }
@@ -239,7 +239,7 @@ export function XhRatingItem({ value, children, ...rest }: XhRatingItemProps): R
 
 export interface XhRatingHiddenInputProps extends Omit<ComponentPropsWithRef<'input'>, 'value' | 'defaultValue' | 'type'> {}
 
-/** 表单出口：评分随这份原生输入提交，对键盘与读屏不可见。 */
+/** 表单出口：评分随该原生输入提交，对键盘与读屏不可见。 */
 export function XhRatingHiddenInput({ ...rest }: XhRatingHiddenInputProps): ReactNode {
   const ctx = useRatingContext()
   return (

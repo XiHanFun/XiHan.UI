@@ -21,33 +21,33 @@ const NUMBER_CONVERTER = { fromAttribute: (v: string | null) => (v == null || v 
 const BOOLEAN_CONVERTER = { fromAttribute: (v: string | null) => (v === null ? undefined : v !== 'false') }
 
 /**
- * `<xh-rating>` —— Light-DOM 行为宿主：作者写 root/label/control 与若干 item 角色节点
- * （可选再写一个 hidden-input 参与表单提交），元素跑 rating 机器并把 connect 产出打上去。
+ * `<xh-rating>`：Light-DOM 行为宿主：作者写 root / label / control 与若干 item 角色节点
+ * （可选再写一个 hidden-input 参与表单提交），元素运行 rating 状态机并把 connect 产出接上。
  *
- * 每颗星用 value 属性自报自己是第几颗（1 起），导航与选中都以它认人；
- * 键盘挂在 control 上（它才是那条 role=radiogroup 的星星带），指针预览挂在每颗星上。
+ * 每颗星用 value 属性声明自身是第几颗（1 起），导航与选中都以它识别；
+ * 键盘挂在 control 上（它才是 role=radiogroup 的星星带），指针预览挂在每颗星上。
  *
  * @customElement xh-rating
- * @attr {number} value - 受控评分；缺省该属性即非受控
- * @attr {number} default-value - 非受控初值，缺省 0（还没评）
+ * @attr {number} value - 受控评分；未提供该属性即非受控
+ * @attr {number} default-value - 非受控初值，默认 0（尚未评分）
  * @attr {number} count - 星星颗数，默认 5
- * @attr {boolean} allow-half - 允许半颗星：档位从 1 变成 0.5
- * @attr {boolean} allow-clear - 再点当前档位清零，键盘最低档再往下也清；默认开，写 "false" 关
- * @attr {boolean} disabled - 整个不可交互：整条带子退出 Tab 序列，指针与键盘都不认
- * @attr {boolean} read-only - 只读：仍可聚焦与朗读，但改不动，也没有悬停预览
+ * @attr {boolean} allow-half - 允许半颗星：档位从 1 变为 0.5
+ * @attr {boolean} allow-clear - 再次点击当前档位清零，键盘最低档再向下也清零；默认开启，写 "false" 关闭
+ * @attr {boolean} disabled - 完全不可交互：整条评分带退出 Tab 序列，指针与键盘都不响应
+ * @attr {boolean} read-only - 只读：仍可聚焦与朗读，但不可修改，也没有悬停预览
  * @attr {boolean} required - 必填标注；表单影子据此参与原生校验
- * @attr {string} name - 表单字段名；给了表单影子才带 name 并参与提交
- * @attr {'ltr'|'rtl'} dir - 文字方向，只改写左右方向键与"指针落在哪半边"的语义，默认 ltr
+ * @attr {string} name - 表单字段名；提供后表单影子才带 name 并参与提交
+ * @attr {'ltr'|'rtl'} dir - 文字方向，只改写左右方向键与指针落在哪半边的语义，默认 ltr
  * @attr {'brand'|'neutral'|'success'|'warning'|'danger'|'info'} tone - 语气
  * @attr {'sm'|'md'|'lg'} size - 尺寸
  * @fires value-change - 评分变化；detail 为 `{ value: number }`
  * @fires hover-change - 悬停预览变化；detail 为 `{ value: number | null }`，指针离开时带 null
  * @csspart root - 承载 data-disabled / data-readonly / data-empty 的外壳
  * @csspart label - 评分带标题（aria-labelledby 目标）
- * @csspart control - role=radiogroup 的星星带，键盘交互全在它身上
+ * @csspart control - role=radiogroup 的星星带，键盘交互全部在它身上
  * @csspart item - role=radio 的一颗星，作者用 value 属性声明它是第几颗；
  *   点亮看 data-highlighted，半亮看 data-half
- * @csspart value-text - 分值文本（aria-hidden），须放在 root 里当 control 的兄弟；留空即由元素填入当前分值，作者写了内容则归作者
+ * @csspart value-text - 分值文本（aria-hidden），须放在 root 中作为 control 的兄弟；留空即由元素填入当前分值，作者写了内容则由作者负责
  * @csspart hidden-input - 表单影子输入（必须是原生 input）
  */
 export class XhRatingElement extends XhElement {
