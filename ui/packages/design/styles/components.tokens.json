@@ -12339,7 +12339,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-shape-surface"
+        "--xh-shape-overlay"
       ],
       "visibility": "public",
       "description": "color-picker 的 content 部件 border-radius 覆盖槽。"
@@ -13178,7 +13178,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-shape-pill"
+        "--xh-shape-circle"
       ],
       "visibility": "public",
       "description": "color-picker 的 area-thumb 部件 border-radius 覆盖槽。"

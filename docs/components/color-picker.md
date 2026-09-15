@@ -1,8 +1,6 @@
 # ColorPicker 颜色选择器 <Badge type="info" text="alpha" />
 
-在色域里自由挑一个颜色：触发钮里一块当前色，浮层里是取色面、色相与透明度两条滑块、数值框、屏幕取色与预设色板。
-它是颜色家族的组合件——两条滑块就是[颜色滑块](./color-slider)、预设色板就是[颜色色块选择器](./color-swatch-picker)，
-触发钮里的色块与[颜色色块](./color-swatch)同一族；只要其中一件就别用整台取色器。
+在色域中自由选取一个颜色：触发按钮显示当前色，浮层内包含取色面、色相与透明度两条滑块、数值框、屏幕取色与预设色板。它是颜色家族的组合件：两条滑块是[颜色滑块](./color-slider)，预设色板是[颜色色块选择器](./color-swatch-picker)，触发按钮内的色块与[颜色色块](./color-swatch)同族；只需要其中一件时不使用完整的选择器。
 
 <div class="xh-resource-links">
   <a href="https://github.com/XiHanFun/XiHan.UI/tree/dev/ui/packages/engine/headless/src/color-picker" target="_blank" rel="noreferrer">Headless</a>
@@ -54,45 +52,45 @@ alpha 开启后值串带透明度，浮层里多一条透明度滑块；两条�
 
 ### 何时使用
 
-- 用户要自定义主题色、标注色或画布颜色，且不限于几个固定选项。
-- 既要看着挑（取色面、滑块）又要精确输入（十六进制、分量框）。
-- 要从屏幕上取色。
+- 用户需要自定义主题色、标注色或画布颜色，且不限于固定选项。
+- 既需要可视化挑选（取色面、滑块）也需要精确输入（十六进制、分量框）。
+- 需要从屏幕取色。
 
 ### 何时不用
 
-- 只从几个固定颜色里挑一个：用[颜色色块选择器](./color-swatch-picker)。
-- 只调一路（色相、透明度）：用[颜色滑块](./color-slider)。
-- 用户知道颜色串、直接打进去：用[颜色字段](./color-field)。
-- 只是展示一个颜色：用[颜色色块](./color-swatch)。
+- 只从几个固定颜色中选一个时，使用[颜色色块选择器](./color-swatch-picker)。
+- 只调整一个通道（色相、透明度）时，使用[颜色滑块](./color-slider)。
+- 用户已知颜色串并直接输入时，使用[颜色字段](./color-field)。
+- 只展示一个颜色时，使用[颜色色块](./color-swatch)。
 
 ### 特性
 
-- 工作色恒是 HSVA：取色面两轴是饱和度与明度，纯黑与灰度处的色相靠锚保住，拖到黑再拉回来色相不丢。
-- `format` 决定值串写法（hex / rgba / hsla），`alpha` 决定带不带透明度；关掉时透明度那条滑块与输入框整条禁用。
-- 色相与透明度两条滑块是内嵌的颜色滑块：整份工作色交给它们，推色相不会把透明度归 1；键盘（方向键、PageUp/PageDown、Home/End、Shift 大步）与拖动都在滑块自己那一份。
-- 预设色板是内嵌的色块选择器：方向键在格子间走并选中，当前颜色的那一格按颜色比（写法不同也对得上）。
-- 数值框打字只留草稿，收得下当场落值；收不下保留原字并报输入错误，回车一并拦住表单提交。
-- 屏幕取色走浮层里的按钮，环境不提供 EyeDropper 时自始禁用；取到的颜色与色板、外部 setValue 同一条落值路径。
-- 格式、输入、颜色解析与屏幕取色四路错误相互独立，修一路不擦另一路。
-- 受控 `value` 与 `open`：宿主不写回界面不动，回调照发；表单出口经 `hidden-input` 提交当前值串。
+- 工作色始终是 HSVA：取色面两轴是饱和度与明度，纯黑与灰度处的色相由锚点保持，拖到黑色再拉回时色相不丢失。
+- `format` 决定值串写法（hex / rgba / hsla），`alpha` 决定是否带透明度；关闭时透明度滑块与输入框整体禁用。
+- 色相与透明度两条滑块是内嵌的颜色滑块：整份工作色交给它们，调整色相不会把透明度归 1；键盘（方向键、PageUp / PageDown、Home / End、Shift 大步）与拖动都由滑块自身处理。
+- 预设色板是内嵌的色块选择器：方向键在格子间移动并选中，当前颜色所在格按颜色比较（写法不同也能匹配）。
+- 数值框输入只保留草稿，可解析时立即取值；不可解析时保留原文并报输入错误，回车同时拦截表单提交。
+- 屏幕取色通过浮层内的按钮触发，环境不提供 EyeDropper 时始终禁用；取到的颜色与色板、外部 setValue 走同一条取值路径。
+- 格式、输入、颜色解析与屏幕取色四路错误相互独立，修正一路不影响其他路。
+- 受控 `value` 与 `open`：宿主不写回时界面不变化，回调照常发出；表单出口经 `hidden-input` 提交当前值串。
 
 ### 组合
 
-- 三个挂载点 `hue-slider` / `alpha-slider` / `swatch-picker` 同时充当内嵌组件的根节点，里面摆的是[颜色滑块](./color-slider)与[颜色色块选择器](./color-swatch-picker)自己的部件；不写子节点时自动铺开最简结构。
-- 放进[表单字段](./field)里承接标题、说明与错误信息，`disabled` / `readOnly` 随字段下发。
-- 与[颜色字段](./color-field)并排：取色器挑颜色，字段里看得见并能微调那个值。
+- 三个挂载点 `hue-slider` / `alpha-slider` / `swatch-picker` 同时充当内嵌组件的根节点，内部放置的是[颜色滑块](./color-slider)与[颜色色块选择器](./color-swatch-picker)自己的部件；不写子节点时自动铺开最简结构。
+- 放入[表单字段](./field)承接标题、说明与错误信息，`disabled` / `readOnly` 随字段下发。
+- 与[颜色字段](./color-field)并排：选择器挑颜色，字段显示并微调该值。
 
 ### 最佳实践
 
-- 给 `swatches` 放几个常用色，多数人从这里就选完了。
-- 触发钮里同时放色块与值串，读屏与肉眼各有一路。
-- 需要精确输入时放数值框；只放一个十六进制框比四个分量框更省地方。
+- 通过 `swatches` 提供常用色，多数用户从这里即可完成选择。
+- 触发按钮内同时放色块与值串，读屏与视觉各有一路。
+- 需要精确输入时放数值框；一个十六进制框比四个分量框更节省空间。
 
 ### 反模式
 
-- 只显示颜色不显示数值：颜色不能是唯一的信息通道。
+- 只显示颜色不显示数值，颜色不能是唯一的信息通道。
 - 有对比度要求的场景不提供校验反馈。
-- 关掉 `alpha` 还摆一条透明度滑块：整条是禁用的，留着只会让人疑惑。
+- 关闭 `alpha` 后仍保留透明度滑块，整条禁用的控件只会造成困惑。
 
 ## API 参考
 
@@ -248,11 +246,11 @@ alpha 开启后值串带透明度，浮层里多一条透明度滑块；两条�
 | `channel-input` | `aria-label` | label.input(channel) |
 | `eye-dropper-trigger` | `aria-label` | label.eyeDropperTrigger |
 
-- 触发钮是原生按钮，`aria-haspopup="dialog"`，名字由标题加当前值串合成；浮层是非模态 `role="dialog"`。
-- 取色面的拇指是 `role="slider"`：`aria-valuenow` 报饱和度，明度写进 `aria-valuetext`。
-- 两条滑块的名字与带单位的播报文本取自 `translations.channel` / `channelValueText`，交给内嵌滑块念出。
-- 色板是 `role="radiogroup"`，每格 `role="radio"`；整组名字取 `translations.swatchGroup`，每格念 `translations.swatch(value)`。
-- Escape 收起浮层并把焦点归还触发钮。
+- 触发按钮是原生按钮，`aria-haspopup="dialog"`，名称由标题与当前值串合成；浮层是非模态 `role="dialog"`。
+- 取色面的拇指是 `role="slider"`：`aria-valuenow` 报告饱和度，明度写入 `aria-valuetext`。
+- 两条滑块的名称与带单位的播报文本取自 `translations.channel` / `channelValueText`，由内嵌滑块读出。
+- 色板是 `role="radiogroup"`，每格 `role="radio"`；整组名称取 `translations.swatchGroup`，每格读 `translations.swatch(value)`。
+- Escape 收起浮层并把焦点归还触发按钮。
 
 ## 样式参考
 
@@ -314,7 +312,7 @@ alpha 开启后值串带透明度，浮层里多一条透明度滑块；两条�
 | `--xh-color-picker-content-highlight` | `content` | `background` | `default` | `--xh-material-frosted-highlight` | color-picker 的 content 部件 background 覆盖槽。 |
 | `--xh-color-picker-content-px` | `content` | `padding-inline` | `default` | `--xh-space-3` | color-picker 的 content 部件 padding-inline 覆盖槽。 |
 | `--xh-color-picker-content-py` | `content` | `padding-block` | `default` | `--xh-space-3` | color-picker 的 content 部件 padding-block 覆盖槽。 |
-| `--xh-color-picker-content-radius` | `content` | `border-radius` | `default` | `--xh-shape-surface` | color-picker 的 content 部件 border-radius 覆盖槽。 |
+| `--xh-color-picker-content-radius` | `content` | `border-radius` | `default` | `--xh-shape-overlay` | color-picker 的 content 部件 border-radius 覆盖槽。 |
 | `--xh-color-picker-content-shadow` | `content` | `box-shadow` | `default` | `--xh-material-frosted-shadow` | color-picker 的 content 部件 box-shadow 覆盖槽。 |
 | `--xh-color-picker-content-w` | `content` | `inline-size` | `default` | `--xh-overlay-min-w` | color-picker 的 content 部件 inline-size 覆盖槽。 |
 | `--xh-color-picker-control-bg` | `control` | `background` | `default` | `--xh-bg-canvas` | color-picker 的 control 部件 background 覆盖槽。 |
@@ -360,7 +358,7 @@ alpha 开启后值串带透明度，浮层里多一条透明度滑块；两条�
 | `--xh-color-picker-swatch-radius` | `swatch` | `--xh-swatch-radius` | `default` | `--xh-shape-inset` | color-picker 的 swatch 部件 --xh-swatch-radius 覆盖槽。 |
 | `--xh-color-picker-swatch-size` | `swatch` | `--xh-swatch-size` | `default` | `--xh-_swatch-size` | color-picker 的 swatch 部件 --xh-swatch-size 覆盖槽。 |
 | `--xh-color-picker-thumb-border` | `area-thumb` | `border` | `default` | `--xh-color-neutral-0` | color-picker 的 area-thumb 部件 border 覆盖槽。 |
-| `--xh-color-picker-thumb-radius` | `area-thumb` | `border-radius` | `default` | `--xh-shape-pill` | color-picker 的 area-thumb 部件 border-radius 覆盖槽。 |
+| `--xh-color-picker-thumb-radius` | `area-thumb` | `border-radius` | `default` | `--xh-shape-circle` | color-picker 的 area-thumb 部件 border-radius 覆盖槽。 |
 | `--xh-color-picker-thumb-scale-dragging` | `area-thumb` | `scale` | `dragging` | `--xh-motion-scale-drag` | color-picker 的 area-thumb 部件 scale 覆盖槽。 |
 | `--xh-color-picker-thumb-shadow` | `area-thumb` | `box-shadow` | `default` | `--xh-elevation-raised` | color-picker 的 area-thumb 部件 box-shadow 覆盖槽。 |
 | `--xh-color-picker-thumb-size` | `area-thumb` | `block-size`<br>`inline-size`<br>`margin-block-start`<br>`margin-inline-start` | `default` | `14px` | color-picker 的 area-thumb 部件 block-size、inline-size、margin-block-start、margin-inline-start 覆盖槽。 |
@@ -381,11 +379,11 @@ alpha 开启后值串带透明度，浮层里多一条透明度滑块；两条�
 
 ### 响应式
 
-- 浮层的宽度与高度分别被可用空间夹住，窄视口下面板不会伸出屏幕，装不下时在面板内滚动。
-- 粗指针下命中区就是取色面、滑块整条与色板整格。
+- 浮层的宽度与高度分别受可用空间约束，窄视口下面板不会超出屏幕，容纳不下时在面板内滚动。
+- 粗指针下命中区是取色面、滑块整条与色板整格。
 
 ### RTL
 
 皮肤用逻辑属性排布（`inline-start` 一族），`dir="rtl"` 下自动镜像；另有按 `dir` 分支的规则。
 
-- `dir="rtl"` 只对调横轴（取色面的饱和度、两条滑块）上左右两键与指针的语义，上下两键恒是屏幕向上变大。
+- `dir="rtl"` 只对调横轴（取色面的饱和度、两条滑块）上左右方向键与指针的语义，上下方向键始终是屏幕向上为增大。
