@@ -62403,11 +62403,11 @@
       "declarations": [
         {
           "kind": "class",
-          "description": "`<xh-truncate>` —— 省略行为宿主：把一段文字夹在给定行数内，并如实报出它有没有被裁掉。\n\n量测在机器的效应里跑：挂载后推迟一拍量一次，此后跟着盒子尺寸与盒内文字的变化重量。\n结论落成 root 上的 data-overflowing，浮层不在这里做——要不要套一层提示由作者按这个属性决定。\n开了 tooltip 则另给一条不用浮层的路：真被裁了才把整段文字写进 root 的 title，交给平台的原生提示。\n\n行数写在 root 的内联 style 里（自定义属性只有这一条路能同时落到两个适配器上），\n于是 root 的内联 style 归本元素管，作者自己的内联样式写在外层元素上。",
+          "description": "`<xh-truncate>`：省略行为宿主：把一段文字限制在给定行数内，并如实报告是否被裁剪。\n\n测量在状态机的效应中运行：挂载后推迟一拍测量一次，此后随盒子尺寸与盒内文字的变化重新测量。\n结论写为 root 上的 data-overflowing，浮层不在这里处理：是否附加提示由作者按该属性决定。\n开启 tooltip 则另提供一条不使用浮层的路径：实际裁剪时才把整段文字写进 root 的 title，交给平台的原生提示。\n\n行数写在 root 的内联 style 中（自定义属性只有这一条路径能同时落到各适配器上），\n因此 root 的内联 style 归本元素管理，作者自己的内联样式写在外层元素上。",
           "name": "XhTruncateElement",
           "cssParts": [
             {
-              "description": "夹字的盒子，承载 data-lines / data-multiline / data-expandable / data-state / data-overflowing",
+              "description": "截断文字的盒子，承载 data-lines / data-multiline / data-expandable / data-state / data-overflowing",
               "name": "root"
             }
           ],
@@ -62533,7 +62533,7 @@
               }
             },
             {
-              "description": "溢出结论翻面；detail 为 `{ overflowing: boolean }`",
+              "description": "溢出结论翻转；detail 为 `{ overflowing: boolean }`",
               "name": "overflow-change",
               "type": {
                 "text": "TruncateOverflowChangeDetails"
@@ -62545,7 +62545,7 @@
               "type": {
                 "text": "number | undefined"
               },
-              "description": "夹几行，1 为单行，默认 1",
+              "description": "截断行数，1 为单行，默认 1",
               "name": "lines",
               "fieldName": "lines"
             },
@@ -62553,7 +62553,7 @@
               "type": {
                 "text": "boolean | undefined"
               },
-              "description": "点一下铺开全文",
+              "description": "点击展开全文",
               "name": "expandable",
               "fieldName": "expandable"
             },
@@ -62561,7 +62561,7 @@
               "type": {
                 "text": "boolean | undefined"
               },
-              "description": "受控展开；缺省该属性即非受控",
+              "description": "受控展开；未提供该属性即非受控",
               "name": "open",
               "fieldName": "open"
             },
@@ -62569,7 +62569,7 @@
               "type": {
                 "text": "boolean | undefined"
               },
-              "description": "非受控初始为铺开",
+              "description": "非受控初始为展开",
               "name": "default-open",
               "fieldName": "defaultOpen"
             },
@@ -62577,7 +62577,7 @@
               "type": {
                 "text": "boolean | undefined"
               },
-              "description": "真被裁了才把整段文字交给平台的原生提示",
+              "description": "实际裁掉内容时才把整段文字交给平台的原生提示",
               "name": "tooltip",
               "fieldName": "tooltip"
             }

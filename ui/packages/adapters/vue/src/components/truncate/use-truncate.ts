@@ -19,11 +19,11 @@ export type TruncateNotifiers = Pick<TruncateSchema['props'], 'onOpenChange' | '
 export interface TruncateContext {
   api: ComputedRef<TruncateApi>
   service: Service<TruncateSchema>
-  /** 夹字的那个盒子：溢出与文字都量它。 */
+  /** 限制文字的盒子：溢出与文字都测量它。 */
   rootRef: Ref<HTMLElement | null>
 }
 
-/** 量测与监听都在机器的效应里跑，DOM 取值口经 refs 交进去。 */
+/** 测量与监听都在状态机的效应中运行，DOM 取值口经 refs 交入。 */
 export function useTruncate(
   props: TruncateSchema['props'],
   notify?: TruncateNotifiers,
