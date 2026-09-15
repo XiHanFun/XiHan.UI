@@ -19,7 +19,7 @@ import { useTabs } from './use-tabs'
 
 type TabsProps = TabsSchema['props']
 
-/** 根上自有的那些取值；defaultValue 与 dir 与原生的同名属性含义不同，由这里接管。 */
+/** 根上自有的取值；defaultValue 与 dir 与原生的同名属性含义不同，由这里接管。 */
 type RootElementProps = Omit<ComponentPropsWithRef<'div'>, 'children' | 'defaultValue' | 'dir'>
 
 export interface XhTabsRootProps extends RootElementProps {
@@ -28,23 +28,23 @@ export interface XhTabsRootProps extends RootElementProps {
   defaultValue?: string | null
   orientation?: Orientation
   dir?: Direction
-  /** automatic：方向键走到哪就选中哪；manual：方向键只搬焦点，Enter / Space 才选中。 */
+  /** automatic：方向键移动到哪个标签即选中哪个；manual：方向键只移动焦点，Enter / Space 才选中。 */
   activationMode?: TabsActivationMode
   loop?: boolean
   variant?: TabsVariant
   tone?: Tone
   size?: Size
-  /** 标签可以拖着换位。整个标签都是拖动源，不另出把手。 */
+  /** 标签可以拖动换位。整个标签都是拖动源，不另设把手。 */
   reorderable?: boolean
-  /** 标签可关闭：焦点落在标签上按 Delete / Backspace 即发 tab-close。 */
+  /** 标签可关闭：焦点落在标签上按 Delete / Backspace 即触发 tab-close。 */
   closable?: boolean
   translations?: TabsProps['translations']
   onValueChange?: TabsProps['onValueChange']
-  /** 换位是通知，标签序的真源在使用者的数据里。 */
+  /** 换位是通知，标签序的真源在使用者的数据中。 */
   onTabMove?: TabsProps['onTabMove']
-  /** 关闭同理：库不持有标签序，只发意图。 */
+  /** 关闭同理：库不持有标签序，只发出意图。 */
   onTabClose?: TabsProps['onTabClose']
-  /** 每块面板的内容；不给就是空面板。 */
+  /** 每块面板的内容；未提供时为空面板。 */
   renderPanel?: (node: TabsNodeMeta) => ReactNode
   children?: ReactNode
 }
@@ -124,7 +124,7 @@ export function XhTabsList({ children, ...rest }: XhTabsListProps): ReactNode {
 }
 
 export interface XhTabsIndicatorProps extends ComponentPropsWithRef<'div'> {}
-/** 选中标签下的滑条：位置由机器量好写进内联样式；住在 list 里，以 list 为定位参照系。 */
+/** 选中标签下的滑条：位置由状态机测量后写入内联样式；位于 list 中，以 list 为定位参照系。 */
 export function XhTabsIndicator({ children, ...rest }: XhTabsIndicatorProps): ReactNode {
   const ctx = useTabsContext()
   return <div {...mergeReactProps(ctx.api.getIndicatorProps() as Record<string, unknown>, rest as Record<string, unknown>)}>{children}</div>
@@ -141,8 +141,8 @@ export interface XhTabsLiveRegionProps extends ComponentPropsWithRef<'div'> {}
 /**
  * 拖动过程的读屏播报区，视觉上不可见。
  *
- * 放在 root 里、与 list 部件平级。它必须在拖动开始之前就在 DOM 上——
- * 读屏不播报后插入的节点，等到拖起才渲出来等于没有。
+ * 放在 root 中、与 list 部件平级。它必须在拖动开始之前就在 DOM 上：
+ * 读屏不播报后插入的节点，等到拖起才渲染等于没有。
  */
 export function XhTabsLiveRegion({ ...rest }: XhTabsLiveRegionProps): ReactNode {
   const ctx = useTabsContext()
@@ -155,7 +155,7 @@ export function XhTabsLiveRegion({ ...rest }: XhTabsLiveRegionProps): ReactNode 
 
 export interface XhTabsTriggerProps extends Omit<ComponentPropsWithRef<'button'>, 'value'> {
   value: string
-  /** 缺省交给 connect 回 collection 里查，写死 false 会盖掉数据里的禁用。 */
+  /** 默认交给 connect 查询 collection，写死 false 会覆盖数据中的禁用。 */
   disabled?: boolean
 }
 export function XhTabsTrigger({ value, disabled, children, ...rest }: XhTabsTriggerProps): ReactNode {
@@ -210,9 +210,9 @@ export interface XhTabsTabDragTriggerProps extends Omit<ComponentPropsWithRef<'s
   value: string
 }
 /**
- * 标签拖拽把手。放在标签里，自带 touch-action: none，按下即拖，不等激活距离。
- * 对读屏隐藏、也不占 Tab 位；键盘换位由标签带上的 Alt + 方向键承担。
- * 整个标签起手那一路照旧可用，把手是叠加的第二个入口。
+ * 标签拖拽把手。放在标签中，自带 touch-action: none，按下即拖动，不等待激活距离。
+ * 对读屏隐藏、也不占 Tab 位；键盘换位由标签上的 Alt + 方向键承担。
+ * 整个标签拖动的路径照常可用，把手是叠加的第二个入口。
  */
 export function XhTabsTabDragTrigger({ value, children, ...rest }: XhTabsTabDragTriggerProps): ReactNode {
   const ctx = useTabsContext()
@@ -241,8 +241,8 @@ export function XhTabsContent({ value, children, ...rest }: XhTabsContentProps):
 }
 
 /**
- * 没写 children 时按 collection 铺开的整套结构，作者只交数据。
- * 与手写部件产出的 DOM 完全一致，要改结构就写 children，行为不变。
+ * 未写 children 时按 collection 铺开的整套结构，作者只提供数据。
+ * 与手写部件产出的 DOM 完全一致，需要修改结构时写 children，行为不变。
  */
 function DefaultTree(props: {
   collection: readonly TabsNodeMeta[]

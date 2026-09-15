@@ -31,9 +31,9 @@ export const XhTabsRoot = defineComponent({
     variant: { type: String as PropType<TabsVariant> },
     tone: { type: String as PropType<Tone> },
     size: { type: String as PropType<Size> },
-    /** 标签可以拖着换位。整个标签都是拖动源，不另出把手。 */
+    /** 标签可以拖动换位。整个标签都是拖动源，不另设把手。 */
     reorderable: Boolean,
-    /** 标签可关闭：焦点落在标签上按 Delete / Backspace 即发 tab-close。 */
+    /** 标签可关闭：焦点落在标签上按 Delete / Backspace 即触发 tab-close。 */
     closable: Boolean,
     translations: { type: Object as PropType<TabsProps['translations']> },
   },
@@ -82,7 +82,7 @@ export const XhTabsList = defineComponent({
   },
 })
 
-/** 选中标签下的滑条：位置由机器量好写进内联样式；住在 list 里，以 list 为定位参照系 */
+/** 选中标签下的滑条：位置由状态机测量后写入内联样式；位于 list 中，以 list 为定位参照系 */
 export const XhTabsIndicator = defineComponent({
   name: 'XhTabsIndicator',
   setup() {
@@ -103,8 +103,8 @@ export const XhTabsSeparator = defineComponent({
 /**
  * 拖动过程的读屏播报区，视觉上不可见。
  *
- * 放在 root 里、与 list 部件平级。它必须在拖动开始**之前**就在 DOM 上——
- * 读屏不播报后插入的节点，等到拖起才渲出来等于没有。
+ * 放在 root 中、与 list 部件平级。它必须在拖动开始之前就在 DOM 上：
+ * 读屏不播报后插入的节点，等到拖起才渲染等于没有。
  */
 export const XhTabsLiveRegion = defineComponent({
   name: 'XhTabsLiveRegion',
@@ -154,9 +154,9 @@ export const XhTabsTrigger = defineComponent({
 })
 
 /**
- * 标签拖拽把手。放在标签里，自带 touch-action: none，按下即拖，不等激活距离。
- * 对读屏隐藏、也不占 Tab 位；键盘换位由标签带上的 Alt + 方向键承担。
- * 整个标签起手那一路照旧可用，把手是叠加的第二个入口。
+ * 标签拖拽把手。放在标签中，自带 touch-action: none，按下即拖动，不等待激活距离。
+ * 对读屏隐藏、也不占 Tab 位；键盘换位由标签上的 Alt + 方向键承担。
+ * 整个标签拖动的路径照常可用，把手是叠加的第二个入口。
  */
 export const XhTabsTabDragTrigger = defineComponent({
   name: 'XhTabsTabDragTrigger',
@@ -190,9 +190,9 @@ export const XhTabsContent = defineComponent({
 })
 
 /**
- * 没写默认插槽时按 collection 铺开的整套结构，作者只交数据。
- * 与手写部件产出的 DOM 完全一致，要改结构就写默认插槽，行为不变。
- * 面板内容走 panel 插槽，没写就是空面板。
+ * 未写默认插槽时按 collection 铺开的整套结构，作者只提供数据。
+ * 与手写部件产出的 DOM 完全一致，需要修改结构时写默认插槽，行为不变。
+ * 面板内容经 panel 插槽，未写时为空面板。
  */
 function renderDefaultTree(
   collection: readonly TabsNodeMeta[],

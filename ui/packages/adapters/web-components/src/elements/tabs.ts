@@ -20,7 +20,7 @@ const STRING_CONVERTER = { fromAttribute: (v: string | null) => v ?? undefined }
 // 三态布尔：缺席=undefined（用默认值）、="false"=false、其余=true。
 const BOOLEAN_CONVERTER = { fromAttribute: (v: string | null) => (v === null ? undefined : v !== 'false') }
 
-/** 换位事件的 detail：从机器 props 上的回调取，不在适配器里另抄一份类型。 */
+/** 换位事件的 detail：从状态机 props 上的回调取，不在适配器中另抄一份类型。 */
 type TabsMoveDetails = Parameters<NonNullable<TabsSchema['props']['onTabMove']>>[0]
 type TabsCloseDetails = Parameters<NonNullable<TabsSchema['props']['onTabClose']>>[0]
 
@@ -28,38 +28,38 @@ type TabsCloseDetails = Parameters<NonNullable<TabsSchema['props']['onTabClose']
 const TRIGGER_SELECTOR = '[data-xh-part="trigger"]'
 
 /**
- * `<xh-tabs>` —— Light-DOM 行为宿主，跑 tabs 机器并把 connect 产出打到 root/list/trigger/content
- * 角色节点上。条目身份取作者写在 trigger/content 上的 value 属性，trigger 的禁用由部件自报。
+ * `<xh-tabs>`：Light-DOM 行为宿主，运行 tabs 状态机并把 connect 产出接到 root / list / trigger / content
+ * 角色节点上。条目身份取作者写在 trigger / content 上的 value 属性，trigger 的禁用由部件声明。
  *
- * 读屏文案 `translations` 是对象，属性表达不了，只能走 property（`el.translations = {...}`）。
+ * 读屏文案 `translations` 是对象，属性无法表达，只能通过 property 设置（`el.translations = {...}`）。
  *
- * 打开 reorderable 后标签可以拖着换位：整个标签都是拖动源。拖动中被拖的标签原地不动，
- * 只落 data-dragging；落点画在参照标签上，data-drop 为 before/after 即插在这个标签前后。触屏那一路走 tab-drag-trigger 把手。
- * 键盘走 Alt + 主轴方向键（横排是左右、竖排是上下，横排 rtl 下左右对调），一按就是一次完整提交。
- * 顺序不由元素保管：换位只发 tab-move，标签序由使用方写回自己的数据源。
+ * 开启 reorderable 后标签可以拖动换位：整个标签都是拖动源。拖动中被拖的标签原地不动，
+ * 只写 data-dragging；落点绘制在参照标签上，data-drop 为 before / after 即插在该标签前后。触屏路径经 tab-drag-trigger 把手。
+ * 键盘使用 Alt + 主轴方向键（横向是左右、纵向是上下，横向 rtl 下左右对调），按一次即一次完整提交。
+ * 顺序不由元素保管：换位只发出 tab-move，标签序由使用方写回自己的数据源。
  *
  * @customElement xh-tabs
- * @attr {string} value - 受控选中值；缺省该属性即非受控
+ * @attr {string} value - 受控选中值；未提供该属性即非受控
  * @attr {string} default-value - 非受控的初始选中值
  * @attr {'horizontal'|'vertical'} orientation - 方向键轴向，默认 horizontal
- * @attr {'ltr'|'rtl'} dir - 文字方向，只影响水平轴上 ArrowLeft/ArrowRight 的前后语义，默认 ltr
- * @attr {'automatic'|'manual'} activation-mode - 方向键移动焦点是否顺带切换选中，默认 automatic
- * @attr {boolean} loop - 方向键走到尽头回绕，默认开启
+ * @attr {'ltr'|'rtl'} dir - 文字方向，只影响水平轴上 ArrowLeft / ArrowRight 的前后语义，默认 ltr
+ * @attr {'automatic'|'manual'} activation-mode - 方向键移动焦点是否同时切换选中，默认 automatic
+ * @attr {boolean} loop - 方向键到达末尾回绕，默认开启
  * @attr {'line'|'card'|'segment'} variant - 视觉变体，默认 segment
  * @attr {'brand'|'neutral'|'success'|'warning'|'danger'|'info'} tone - 语气
  * @attr {'sm'|'md'|'lg'} size - 尺寸
- * @attr {boolean} reorderable - 标签可以拖着换位，默认关
+ * @attr {boolean} reorderable - 标签可以拖动换位，默认关闭
  * @fires value-change - 选中值变化；detail 为 `{ value: string | null }`
- * @fires tab-move - 标签换了位；detail 为 `{ value, from, to, values }`，values 是重排好的整份标签序
- * @fires tab-close - 标签被关闭；detail 为 `{ value, values }`，values 是关掉这一条之后余下的标签序
+ * @fires tab-move - 标签换位；detail 为 `{ value, from, to, values }`，values 是重排后的整份标签序
+ * @fires tab-close - 标签被关闭；detail 为 `{ value, values }`，values 是关闭该标签之后剩余的标签序
  * @csspart root - 组件根容器（承载 data-orientation）
  * @csspart list - role=tablist 容器（方向键与 Tab 序列在此收口）
- * @csspart live-region - 视觉隐藏的播报区，拖动过程的读屏文案写在这里；写在 root 里、与 list 部件平级（root 自己不带角色，它落不进 role=tablist 的子节点集合）
- * @csspart indicator - 选中标签下的滑条，须住在 list 里；对读屏隐藏，位置由机器量好写成内联样式
+ * @csspart live-region - 视觉隐藏的播报区，拖动过程的读屏文案写在这里；写在 root 中、与 list 部件平级（root 自身不带角色，无法进入 role=tablist 的子节点集合）
+ * @csspart indicator - 选中标签下的滑条，须位于 list 中；对读屏隐藏，位置由状态机测量后写为内联样式
  * @csspart separator - 标签之间的细分隔线，对读屏隐藏
  * @csspart trigger - role=tab 的标签按钮，须自带 value 属性标识身份
  * @csspart content - role=tabpanel 的面板，须自带 value 属性与 trigger 配对；未选中时 hidden
- * @csspart tab-drag-trigger - 标签拖拽把手，触屏那一路的入口（自带 touch-action: none，按下即拖）；对读屏隐藏且不占 Tab 位，键盘那一路由标签带上的 Alt + 方向键承担
+ * @csspart tab-drag-trigger - 标签拖拽把手，触屏路径的入口（自带 touch-action: none，按下即拖动）；对读屏隐藏且不占 Tab 位，键盘路径由标签带上的 Alt + 方向键承担
  */
 export class XhTabsElement extends XhElement {
   static override partContract = { anatomy: tabsAnatomy, meta: tabsMeta }
@@ -120,7 +120,7 @@ export class XhTabsElement extends XhElement {
     { onBuilt: svc => svc.refs.set('getListEl', () => this.getPart('list')) },
   )
 
-  /** 作者声明的条目禁用，只认首见那一份；给了 collection 时用它，否则现读 */
+  /** 作者声明的条目禁用，只认首次见到的值；提供 collection 时使用它，否则现读 */
   private readonly declaredDisabled = createDeclaredDisabled()
 
   private machineProps(): Partial<TabsSchema['props']> {
@@ -159,8 +159,8 @@ export class XhTabsElement extends XhElement {
   }
 
   /**
-   * 取把手所属标签的身份：向上找本宿主内最近的 trigger，没有包裹层时退回读节点自身。
-   * 越出本宿主的 trigger 不算数——嵌套 xh-tabs 的内层把手不会认外层的标签。
+   * 取把手所属标签的身份：向上查找本宿主内最近的 trigger，没有包裹层时退回读取节点自身。
+   * 越出本宿主的 trigger 不计：嵌套 xh-tabs 的内层把手不会识别外层的标签。
    */
   /** 把手所属的那个 trigger 节点；把手自己就写在 trigger 上时即它本身。 */
   private triggerElOf(el: HTMLElement): HTMLElement {
