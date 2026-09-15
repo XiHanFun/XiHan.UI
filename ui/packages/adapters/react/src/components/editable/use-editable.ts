@@ -17,13 +17,13 @@ import { useMachine } from '../../runtime/use-machine'
 
 export interface EditableContext {
   api: EditableApi
-  /** 机器实例，供部件上报 DOM 侧的事实。 */
+  /** 状态机实例，供部件上报 DOM 侧的事实。 */
   service: Service<EditableSchema>
   /** 表单重置的锚点：接在根节点上。 */
   rootRef: RefObject<HTMLElement | null>
-  /** 输入框节点，进编辑态后焦点搬进它。 */
+  /** 输入框节点，进入编辑态后焦点移入它。 */
   inputRef: RefObject<HTMLElement | null>
-  /** 预览区节点，退出编辑态后焦点还给它。 */
+  /** 预览区节点，退出编辑态后焦点交还给它。 */
   previewRef: RefObject<HTMLElement | null>
 }
 

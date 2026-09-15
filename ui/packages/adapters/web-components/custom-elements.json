@@ -19702,7 +19702,7 @@
       "declarations": [
         {
           "kind": "class",
-          "description": "`<xh-editable>` —— Light-DOM 行为宿主：作者写 root/label/control/preview/input\n与三颗按钮的角色节点，元素跑 editable 机器并把 connect 产出打上去。\n\n预览态显示 preview、编辑态显示 input，另一个带 hidden 收起而不卸载：两边都是作者写的节点，\n替他删掉他就再也拿不回来，输入法状态与他挂在节点上的东西也一并没了。\n\npreview 的文字默认由元素填（值，或值为空时的 placeholder）；作者自己写了内容就归作者，\n元素不再改写——首次见到该节点时定，之后不回读（读到的会是自己上一帧写的）。\n\nlabel 的 `for` 恒写向 input 的 id，所以 label 角色节点必须是原生 `<label>`、\ninput 角色节点必须是原生 `<input>`：任一边换成 `<div>`，读屏就念不出这个控件的名字。",
+          "description": "`<xh-editable>`：Light-DOM 行为宿主：作者写 root / label / control / preview / input\n与三个按钮的角色节点，元素运行 editable 状态机并把 connect 产出接上。\n\n预览态显示 preview、编辑态显示 input，另一个带 hidden 收起而不卸载：两者都是作者编写的节点，\n替作者删除后无法恢复，输入法状态与挂在节点上的数据也一并丢失。\n\npreview 的文字默认由元素填入（值，或值为空时的 placeholder）；作者自行写了内容则由作者负责，\n元素不再改写：首次见到该节点时确定，之后不回读（读到的会是自己上一帧写入的内容）。\n\nlabel 的 `for` 恒指向 input 的 id，因此 label 角色节点必须是原生 `<label>`、\ninput 角色节点必须是原生 `<input>`：任一边换为 `<div>`，读屏就无法朗读该控件的名字。",
           "name": "XhEditableElement",
           "cssParts": [
             {
@@ -19710,23 +19710,23 @@
               "name": "root"
             },
             {
-              "description": "标题；`for` 恒写向 input，故须是原生 `<label>`",
+              "description": "标题；`for` 恒指向 input，因此须是原生 `<label>`",
               "name": "label"
             },
             {
-              "description": "预览态的文字；留空即由元素填入显示值，作者写了内容则归作者",
+              "description": "预览态的文字；留空即由元素填入显示值，作者写了内容则由作者负责",
               "name": "preview"
             },
             {
-              "description": "编辑态的输入框，须是原生 `<input>`；键盘交互全在它身上",
+              "description": "编辑态的输入框，须是原生 `<input>`；键盘交互全部在它身上",
               "name": "input"
             },
             {
-              "description": "预览区、输入框与三颗按钮的共同落点，预览与输入轮流上场",
+              "description": "预览区、输入框与三个按钮的共同落点，预览与输入轮流显示",
               "name": "control"
             },
             {
-              "description": "进编辑态的按钮；编辑态收起，不可编辑时置灰",
+              "description": "进入编辑态的按钮；编辑态收起，不可编辑时置灰",
               "name": "edit-trigger"
             },
             {
@@ -20017,7 +20017,7 @@
                   }
                 }
               ],
-              "description": "预览区的文字由元素填（值，或值为空时的 placeholder）。\n作者若自己写了内容（自定义渲染），首次见到时就定为归作者，之后一概不碰——\n每帧回读分不清\"作者写的\"还是\"上一帧自己写的\"，一旦写过就再也让不回去。"
+              "description": "预览区的文字由元素填入（值，或值为空时的 placeholder）。\n作者若自己写了内容（自定义渲染），首次见到时就判定归作者，之后一概不修改：\n每帧回读无法区分作者写的还是上一帧自己写的，一旦写过就无法交还。"
             },
             {
               "kind": "method",
@@ -20065,7 +20065,7 @@
               "type": {
                 "text": "string | undefined"
               },
-              "description": "受控值；缺省该属性即非受控",
+              "description": "受控值；未提供该属性即非受控",
               "name": "value",
               "fieldName": "value"
             },
@@ -20081,7 +20081,7 @@
               "type": {
                 "text": "boolean | undefined"
               },
-              "description": "受控编辑态；缺省该属性即非受控",
+              "description": "受控编辑态；未提供该属性即非受控",
               "name": "edit",
               "fieldName": "edit"
             },
@@ -20089,7 +20089,7 @@
               "type": {
                 "text": "boolean | undefined"
               },
-              "description": "非受控初始即编辑态（挂载后焦点搬进输入框）",
+              "description": "非受控初始即编辑态（挂载后焦点移入输入框）",
               "name": "default-edit",
               "fieldName": "defaultEdit"
             },
@@ -20097,7 +20097,7 @@
               "type": {
                 "text": "string | undefined"
               },
-              "description": "值为空时预览区显示它，输入框也拿它当占位",
+              "description": "值为空时预览区显示它，输入框也将其用作占位",
               "name": "placeholder",
               "fieldName": "placeholder"
             },
@@ -20105,7 +20105,7 @@
               "type": {
                 "text": "boolean | undefined"
               },
-              "description": "禁用：进不了编辑态，输入框带原生 disabled",
+              "description": "禁用：无法进入编辑态，输入框带原生 disabled",
               "name": "disabled",
               "fieldName": "disabled"
             },
@@ -20113,7 +20113,7 @@
               "type": {
                 "text": "boolean | undefined"
               },
-              "description": "只读：进不了编辑态，但已在编辑态时仍能退出",
+              "description": "只读：无法进入编辑态，但已在编辑态时仍能退出",
               "name": "read-only",
               "fieldName": "readOnly"
             },
@@ -20129,7 +20129,7 @@
               "type": {
                 "text": "number | undefined"
               },
-              "description": "字符数上限；同时落成原生 maxlength 与机器侧截断",
+              "description": "字符数上限；同时落为原生 maxlength 与状态机侧截断",
               "name": "max-length",
               "fieldName": "maxLength"
             },
@@ -20137,7 +20137,7 @@
               "type": {
                 "text": "string | undefined"
               },
-              "description": "表单字段名；给了输入框才参与提交",
+              "description": "表单字段名；提供后输入框才参与提交",
               "name": "name",
               "fieldName": "name"
             },
@@ -20145,7 +20145,7 @@
               "type": {
                 "text": "EditableSubmitMode | undefined"
               },
-              "description": "编辑态怎么收尾，默认 both",
+              "description": "编辑态的收尾方式，默认 both",
               "name": "submit-mode",
               "fieldName": "submitMode"
             },
@@ -20153,7 +20153,7 @@
               "type": {
                 "text": "EditableActivationMode | undefined"
               },
-              "description": "预览区怎么进编辑态，默认 click",
+              "description": "预览区进入编辑态的方式，默认 click",
               "name": "activation-mode",
               "fieldName": "activationMode"
             },
@@ -20161,7 +20161,7 @@
               "type": {
                 "text": "boolean | undefined"
               },
-              "description": "进编辑态时全选，默认开；写 select-on-focus=\"false\" 关掉",
+              "description": "进入编辑态时全选，默认开启；写 select-on-focus=\"false\" 关闭",
               "name": "select-on-focus",
               "fieldName": "selectOnFocus"
             },
@@ -20169,7 +20169,7 @@
               "type": {
                 "text": "boolean | undefined"
               },
-              "description": "输入框宽度跟着内容走（落成原生 size）",
+              "description": "输入框宽度跟随内容（落为原生 size）",
               "name": "auto-resize",
               "fieldName": "autoResize"
             },

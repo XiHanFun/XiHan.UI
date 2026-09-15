@@ -26,11 +26,11 @@ export interface EditableCallbacks {
 
 export interface EditableContext {
   api: ComputedRef<EditableApi>
-  /** 机器实例，供部件上报 DOM 侧的事实。 */
+  /** 状态机实例，供部件上报 DOM 侧的事实。 */
   service: Service<EditableSchema>
-  /** 输入框节点，进编辑态后焦点搬进它。 */
+  /** 输入框节点，进入编辑态后焦点移入它。 */
   inputRef: Ref<HTMLElement | null>
-  /** 预览区节点，退出编辑态后焦点还给它。 */
+  /** 预览区节点，退出编辑态后焦点交还给它。 */
   previewRef: Ref<HTMLElement | null>
 }
 
