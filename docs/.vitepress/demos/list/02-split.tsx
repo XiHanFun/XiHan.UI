@@ -1,4 +1,4 @@
-// 分隔线 | split 在条目之间画一条线，第一条上面不画
+// 分隔线 | split 在条目之间绘制一条线，第一条上方不绘制
 import type { ReactNode } from "react";
 import { XhListItem, XhListItemContent, XhListItemTitle, XhListRoot } from "@xihan-ui/react";
 

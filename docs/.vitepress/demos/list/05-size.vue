@@ -1,4 +1,4 @@
-<!-- 尺寸 | size 换的是条目的内边距、图文间距与两行文字的字号，不传 size 即默认档 -->
+<!-- 尺寸 | size 改变条目的内边距、图文间距与两行文字的字号，不传 size 即默认档 -->
 <script setup lang="ts">
 import {
   XhListItem,
