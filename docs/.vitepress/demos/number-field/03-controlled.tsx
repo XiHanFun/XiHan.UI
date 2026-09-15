@@ -1,4 +1,4 @@
-// 受控 | 传了 value 就由宿主说了算；value-change 除了原始串还带一份 valueAsNumber
+// 受控 | 传入 value 后由宿主决定；value-change 除原始串外还带一份 valueAsNumber
 import type { ReactNode } from "react";
 import {
   XhNumberFieldControl,

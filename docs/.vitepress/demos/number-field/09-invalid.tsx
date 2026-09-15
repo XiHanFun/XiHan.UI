@@ -1,4 +1,4 @@
-// 校验态 | invalid 由宿主自己判定，不必挂在表单上；标出来之后值照样能改、加减钮照样能按
+// 校验态 | invalid 由宿主自行判定，不必挂在表单上；标注之后值照常可以修改、加减按钮照常可以按下
 import type { ReactNode } from "react";
 import {
   XhNumberFieldControl,
