@@ -15,15 +15,15 @@ import { XhElement } from '../element-base'
 const STRING_CONVERTER = { fromAttribute: (v: string | null) => v ?? undefined }
 
 /**
- * `<xh-empty-state>` —— 空状态行为宿主，无状态机，把 connectEmptyState 产出的属性打到角色节点上。
+ * `<xh-empty-state>`：空状态行为宿主，无状态机，把 connectEmptyState 产出的属性接到角色节点上。
  *
- * root 缺省是 role=status 的活区：节点应当常挂、用 hidden 收起，
- * 整块插进文档的活区读屏通常不播报。首屏静态占位写 live="off"。
+ * root 默认是 role=status 的活区：节点应当常驻、用 hidden 收起，
+ * 整块插入文档的活区读屏通常不播报。首屏静态占位写 live="off"。
  *
  * @customElement xh-empty-state
  * @attr {'sm'|'md'|'lg'} size - 尺寸档位，写到 root 的 data-size 上
  * @attr {'polite'|'off'} live - 播报方式，off 时 root 不带 role
- * @attr {'404'|'403'|'500'} status - 结果页的状态码，写到 root 的 data-status 上；通用结果走 tone
+ * @attr {'404'|'403'|'500'} status - 结果页的状态码，写到 root 的 data-status 上；通用结果使用 tone
  * @attr {'brand'|'neutral'|'success'|'warning'|'danger'|'info'} tone - 语气，写到 root 的 data-tone 上
  * @csspart root - 承载 role 与 data-size / data-status / data-tone 的容器
  * @csspart media - 装饰插画，对读屏隐藏；与 indicator 二选一

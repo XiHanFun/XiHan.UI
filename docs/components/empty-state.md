@@ -106,10 +106,10 @@ tone 给图标区上语气色，与全库同一根轴；画什么图标仍由作
 
 | 属性 | 类型 | 必填 | 说明 |
 | --- | --- | --- | --- |
-| `live` | `EmptyStateLive` |  | 缺省 polite。 |
-| `size` | `Size` |  | 尺寸档位，只改留白与字号，不改语义。 |
-| `status` | `EmptyStateStatus` |  | 结果页的状态码，只落成 root 的 data-status；皮肤据它把图标区并进最接近的一族语气色，图标画什么由作者塞进图标槽。 |
-| `tone` | `Tone` |  | 语气：brand / neutral / success / warning / danger / info，决定图标区用哪族颜色；与 status 都写时以它为准。不给即维持中性。 |
+| `live` | `EmptyStateLive` |  | 默认 polite。 |
+| `size` | `Size` |  | 尺寸档位，只影响留白与字号，不改变语义。 |
+| `status` | `EmptyStateStatus` |  | 结果页的状态码，只写为 root 的 data-status；皮肤据此把图标区并入最接近的一族语气色，图标内容由作者放入图标槽。 |
+| `tone` | `Tone` |  | 语气：brand / neutral / success / warning / danger / info，决定图标区使用哪族颜色；与 status 都提供时以它为准。未提供时保持中性。 |
 
 ### connect API
 
@@ -117,9 +117,9 @@ tone 给图标区上语气色，与全库同一根轴；画什么图标仍由作
 
 | 成员 | 类型 | 说明 |
 | --- | --- | --- |
-| `live` | `EmptyStateLive` | 生效的播报方式，缺省补齐后的值。 |
+| `live` | `EmptyStateLive` | 生效的播报方式，默认值补齐后的结果。 |
 | `getRootProps` | `() => T['element']` |  |
-| `getMediaProps` | `() => T['element']` | 插画槽：按自己的尺寸档量，与字形槽二选一。 |
+| `getMediaProps` | `() => T['element']` | 插画槽：按自身的尺寸档测量，与字形槽二选一。 |
 | `getIndicatorProps` | `() => T['element']` |  |
 | `getTitleProps` | `() => T['element']` |  |
 | `getDescriptionProps` | `() => T['element']` |  |
