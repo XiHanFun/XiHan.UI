@@ -38782,7 +38782,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-shape-surface"
+        "--xh-shape-overlay"
       ],
       "visibility": "public",
       "description": "navigation-menu 的 content、viewport 部件 border-radius 覆盖槽。"
