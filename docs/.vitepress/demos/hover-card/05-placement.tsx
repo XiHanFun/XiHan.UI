@@ -1,4 +1,4 @@
-// 朝向与间距 | placement 是请求值，空间不够时定位引擎会自动翻面；offset 调的是卡片与触发器的距离
+// 朝向与间距 | placement 是请求值，空间不足时定位引擎会自动翻面；offset 调整卡片与触发器的距离
 import type { ReactNode } from "react";
 import {
   XhHoverCardArrow,
