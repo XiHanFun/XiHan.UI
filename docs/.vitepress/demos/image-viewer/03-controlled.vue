@@ -1,4 +1,4 @@
-<!-- 受控与文案 | open 与 index 双受控；translations 换工具条的可及名与计数文案 -->
+<!-- 受控与文案 | open 与 index 双受控；translations 更换工具条的可及名与计数文案 -->
 <script setup lang="ts">
 import {
   XhButton,

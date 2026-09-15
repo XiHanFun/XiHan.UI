@@ -1,4 +1,4 @@
-<!-- 双指缩放 | 触屏上两指撑开放大、捏合缩小，单指平移；缩放夹在 minScale 与 maxScale 之间 -->
+<!-- 双指缩放 | 触屏上两指张开放大、捏合缩小，单指平移；缩放限制在 minScale 与 maxScale 之间 -->
 <script setup lang="ts">
 import {
   XhImageViewerCloseTrigger,

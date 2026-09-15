@@ -1,4 +1,4 @@
-// 相册与翻页 | 多张图共用一个看片浮层：两侧按钮或方向键翻页、计数报「第几张」，缩放旋转在换图时归零
+// 相册与翻页 | 多张图片共用一个查看浮层：两侧按钮或方向键翻页、计数报告第几张，缩放旋转在换图时归零
 import type { ReactNode } from "react";
 import {
   XhImageViewerCloseTrigger,
