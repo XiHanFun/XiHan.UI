@@ -1,4 +1,4 @@
-// 基础用法 | 点触发器就地问一句，确认与取消都收起浮层；展开时焦点先落在取消上
+// 基础用法 | 点击触发器就地询问，确认与取消都收起浮层；展开时焦点先落在取消上
 import type { ReactNode } from "react";
 import {
   XhPopconfirmArrow,

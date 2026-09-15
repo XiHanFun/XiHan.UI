@@ -1,4 +1,4 @@
-// 异步确认 | 确认回调返回 Promise 即挂起确认门：浮层等兑现才收起、确认按钮转圈且再点无效，落空（reject）留在原地；不必再手动受控拦收起
+// 异步确认 | 确认回调返回 Promise 即挂起确认门：浮层等待兑现后再收起、确认按钮显示加载且再次点击无效，拒绝（reject）时保持打开；不必再手动受控拦截收起
 import type { ReactNode } from "react";
 import {
   XhPopconfirmCancelTrigger,

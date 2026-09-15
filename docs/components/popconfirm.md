@@ -12,7 +12,7 @@
 
 ## 用法
 
-点触发器就地问一句，确认与取消都收起浮层；展开时焦点先落在取消上
+点击触发器就地询问，确认与取消都收起浮层；展开时焦点先落在取消上
 
 <XhDemo src="popconfirm/01-basic" />
 
@@ -26,25 +26,25 @@
 
 ### 放置位
 
-placement 是首选位，位置不够时引擎自己避让，实际落点写在 data-placement 上
+placement 是首选位，空间不足时引擎自行避让，实际落点写在 data-placement 上
 
 <XhDemo src="popconfirm/02-placement" />
 
 ### 尺寸
 
-size 换的是面板的内边距与最大宽度，三个档位落在 content 上
+size 改变面板的内边距与最大宽度，三个档位落在 content 上
 
 <XhDemo src="popconfirm/03-size" />
 
 ### 颜色
 
-在 content 上写 data-tone，确认按钮跟着换色；语气是共享的一层，不是本组件的 prop
+在 content 上写 data-tone，确认按钮随之换色；语气是共享的一层，不是本组件的 prop
 
 <XhDemo src="popconfirm/04-tone" />
 
 ### 异步确认
 
-确认回调返回 Promise 即挂起确认门：浮层等兑现才收起、确认按钮转圈且再点无效，落空（reject）留在原地；不必再手动受控拦收起
+确认回调返回 Promise 即挂起确认门：浮层等待兑现后再收起、确认按钮显示加载且再次点击无效，拒绝（reject）时保持打开；不必再手动受控拦截收起
 
 <XhDemo src="popconfirm/05-async-confirm" />
 
