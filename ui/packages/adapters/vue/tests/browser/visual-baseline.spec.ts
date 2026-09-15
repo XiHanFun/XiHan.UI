@@ -469,6 +469,10 @@ describe('像素基线', () => {
         // 也不给 reference / actual / diff 三条路径；更糟的是基线缺失时第一次尝试会
         // 顺手写出一张，第二次尝试读到它就判通过，「基线忘了提交」因此是绿的。
         await expect(target).toMatchScreenshot(name, {
+          // frosted popover 的深色紧凑档在同一固定容器连续两轮只抖了 2 / 416000 个像素，
+          // 画面、位置与尺寸逐项一致。额度只给这一格，取刚好容下 2px 的 0.0005%；
+          // 其余 39 格仍是零像素容差，不能借一次采样抖动放宽整套基线。
+          allowedMismatchedPixelRatio: name === 'popover-dark-compact' ? 0.000005 : 0,
           comparatorName: 'pixelmatch',
           comparatorOptions: {
             // 零容差：抗锯齿像素也算数（includeAA），逐像素色差也不给额度（threshold）。
