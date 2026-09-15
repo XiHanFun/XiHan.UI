@@ -1,7 +1,6 @@
 # ColorSlider 颜色滑块 <Badge type="info" text="alpha" />
 
-一条只推颜色某一路的滑杆：色相、饱和度、明度、透明度，或红、绿、蓝。值是整个颜色串，轨道画的是这一路从头走到尾会变成什么颜色，拇指填的是当下那一档。
-把几条并排就是一个自己拼出来的调色面板；[颜色选择器](./color-picker)浮层里的色相带与透明度带就是它。
+只调整颜色某一个通道的滑杆：色相、饱和度、明度、透明度，或红、绿、蓝。值是完整的颜色串，轨道显示该通道从最小值到最大值的颜色变化，拇指填充当前值对应的颜色。多条并排即可组成自定义的调色面板；[颜色选择器](./color-picker)浮层内的色相带与透明度带就是它。
 
 <div class="xh-resource-links">
   <a href="https://github.com/XiHanFun/XiHan.UI/tree/dev/ui/packages/engine/headless/src/color-slider" target="_blank" rel="noreferrer">Headless</a>
@@ -47,41 +46,41 @@ orientation 竖排时渐变自下而上；禁用整体压暗，只读留 Tab 位
 
 ### 何时使用
 
-- 用户只需要调颜色的某一个分量：透明度、明暗、色相。
-- 把几条并排，按 HSV 或 RGB 自己拼一个内嵌的调色面板，不要浮层。
-- 要在页面上常驻、随时可拖的颜色调节，而不是点开再选。
+- 用户只需要调整颜色的一个分量：透明度、明暗、色相。
+- 多条并排，按 HSV 或 RGB 组成内嵌的调色面板，不使用浮层。
+- 需要在页面上常驻、随时可拖动的颜色调节。
 
 ### 何时不用
 
-- 用户要在色域里自由取色：用[颜色选择器](./color-picker)，它带二维取色区。
-- 只是从几个固定颜色里挑一个：用[颜色色块选择器](./color-swatch-picker)。
-- 推的是一个普通数值：用[滑块](./slider)。
+- 用户需要在色域中自由取色时，使用[颜色选择器](./color-picker)，它带二维取色区。
+- 只从几个固定颜色中选一个时，使用[颜色色块选择器](./color-swatch-picker)。
+- 调整的是普通数值时，使用[滑块](./slider)。
 
 ### 特性
 
 - `channel` 七选一：`hue`（0-360）、`saturation` / `brightness` / `alpha`（0-100）、`red` / `green` / `blue`（0-255）；步长 1，PageUp / PageDown 走 10。
-- 值恒是整个颜色串，`format` 决定写法（hex / rgba / hsla）；`alpha` 决定串里带不带透明度，缺省时推透明度那一路带、其余不带——与一条透明度滑块并排时显式开它，否则推色相会把透明度归 1。
-- 轨道渐变由连接层按当前颜色现算：其余分量不动，只让本通道从 min 走到 max；透明度那一路从全透明走到实色，棋盘格垫在底下。
-- 灰度与纯黑处色相无定义，把明度推到 0 再拉回来，色相靠锚保住不塌成 0。
-- 拖动、键盘、RTL 掉头与竖直排布整份取自内嵌的[滑块](./slider)；`onValueChange` 拖动中连发，`onValueChangeEnd` 松手只发一次。
-- 拇指按未取整的工作色定位，比按整格算的更贴当前颜色；`aria-valuetext` 带单位播报。
-- 尺寸 sm / md / lg 换的是拇指直径与颜色带厚度；禁用整体压暗，只读留 Tab 位但推不动，`invalid` 只换拇指描边（面要保住当前颜色）。
+- 值始终是完整颜色串，`format` 决定写法（hex / rgba / hsla）；`alpha` 决定串中是否带透明度，默认调整透明度通道时带、其余不带。与透明度滑块并排时显式开启它，否则调整色相会把透明度归 1。
+- 轨道渐变由连接层按当前颜色实时计算：其余分量不变，只让本通道从 min 走到 max；透明度通道从全透明走到实色，底部垫棋盘格。
+- 灰度与纯黑处色相无定义，把明度调到 0 再拉回时色相由锚点保持，不塌为 0。
+- 拖动、键盘、RTL 方向与竖直排布全部取自内嵌的[滑块](./slider)；`onValueChange` 在拖动中连续发出，`onValueChangeEnd` 在松手时只发一次。
+- 拇指按未取整的工作色定位，比按整格计算更贴近当前颜色；`aria-valuetext` 带单位播报。
+- 尺寸 sm / md / lg 改变拇指直径与颜色带厚度；禁用整体压暗，只读保留 Tab 位但不可调整，`invalid` 只改变拇指描边，保留当前颜色的面。
 
 ### 组合
 
-- 放进[表单字段](./field)里：标签、说明与错误由字段渲出来并经 aria-describedby 念到拇指上，禁用 / 只读 / 无效三轴随字段下发。
-- 与[颜色色块](./color-swatch)并排：色块显示整个颜色，滑块推其中一路。
+- 放入[表单字段](./field)：标签、说明与错误由字段渲染并经 aria-describedby 关联到拇指，禁用 / 只读 / 无效三轴随字段下发。
+- 与[颜色色块](./color-swatch)并排：色块显示完整颜色，滑块调整其中一个通道。
 
 ### 最佳实践
 
-- 并排多条时共用同一个值，每条只改自己那一路；开 `alpha` 让透明度在别的通道推动时不丢。
-- 给 `label` 部件或 `translations.label`：一条渐变带自己说不出它调的是什么。
-- 需要落库时监听 `onValueChangeEnd`，拖动途中的连发只用来预览。
+- 多条并排时共用同一个值，每条只改自己的通道；开启 `alpha` 让透明度在其他通道调整时不丢失。
+- 提供 `label` 部件或 `translations.label`，渐变带本身无法说明调整的是什么。
+- 需要持久化时监听 `onValueChangeEnd`，拖动过程中的连续回调只用于预览。
 
 ### 反模式
 
-- 拿它调普通数值：渐变、单位与区间都按颜色通道定死，改不成别的尺。
-- 传颜色关键字（`red`）：不在支持的写法里，会被当成无效值原地不动。
+- 用它调整普通数值：渐变、单位与区间都按颜色通道固定。
+- 传颜色关键字（`red`）：不在支持的写法内，会被视为无效值并保持不变。
 
 ## API 参考
 
@@ -235,7 +234,7 @@ orientation 竖排时渐变自下而上；禁用整体压暗，只读留 Tab 位
 | `--xh-color-slider-thumb-bg` | `thumb` | `background` | `default` | `--xh-_color-slider-thumb-color` | color-slider 的 thumb 部件 background 覆盖槽。 |
 | `--xh-color-slider-thumb-border` | `thumb` | `border` | `default` | `--xh-bg-surface` | color-slider 的 thumb 部件 border 覆盖槽。 |
 | `--xh-color-slider-thumb-border-invalid` | `thumb` | `border-color` | `invalid` | `--xh-border-invalid` | color-slider 的 thumb 部件 border-color 覆盖槽。 |
-| `--xh-color-slider-thumb-radius` | `thumb` | `border-radius` | `default` | `--xh-shape-pill` | color-slider 的 thumb 部件 border-radius 覆盖槽。 |
+| `--xh-color-slider-thumb-radius` | `thumb` | `border-radius` | `default` | `--xh-shape-circle` | color-slider 的 thumb 部件 border-radius 覆盖槽。 |
 | `--xh-color-slider-thumb-scale-dragging` | `thumb` | `scale` | `dragging` | `--xh-motion-scale-drag` | color-slider 的 thumb 部件 scale 覆盖槽。 |
 | `--xh-color-slider-thumb-shadow` | `thumb` | `box-shadow` | `default` | `--xh-elevation-raised` | color-slider 的 thumb 部件 box-shadow 覆盖槽。 |
 | `--xh-color-slider-thumb-shadow-dragging` | `thumb` | `box-shadow` | `dragging` | `--xh-elevation-lifted` | color-slider 的 thumb 部件 box-shadow 覆盖槽。 |

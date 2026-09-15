@@ -19354,7 +19354,7 @@
   inline-size: var(--xh-_thumb-size);
   block-size: var(--xh-_thumb-size);
   border: var(--xh-stroke-thick) solid var(--xh-color-slider-thumb-border, var(--xh-bg-surface));
-  border-radius: var(--xh-color-slider-thumb-radius, var(--xh-shape-pill));
+  border-radius: var(--xh-color-slider-thumb-radius, var(--xh-shape-circle));
   background: var(--xh-color-slider-thumb-bg, var(--xh-_color-slider-thumb-color));
   box-shadow: var(--xh-color-slider-thumb-shadow, var(--xh-elevation-raised));
   cursor: grab;
