@@ -1,4 +1,4 @@
-// 发送失败的错误态 | 判定谁算出错是宿主的事：属性直接落到真元素上，整框换色靠覆盖公开变量，原因由活区播报
+// 发送失败的错误态 | 判定是否出错由宿主决定：属性直接落到真实元素上，整框换色依靠覆盖公开变量，原因由活区播报
 import type { PromptInputSubmitDetails } from "@xihan-ui/headless";
 import type { CSSProperties, ReactNode } from "react";
 import { XhPromptInputInput, XhPromptInputRoot, XhPromptInputSubmitTrigger } from "@xihan-ui/react";

@@ -1,4 +1,4 @@
-<!-- 三档提交按键 | enter 档回车就发、mod-enter 档只有 Ctrl/Cmd+Enter 发、none 档两种按法都换行，提交只剩发送按钮 -->
+<!-- 三档提交按键 | enter 档回车即发送、mod-enter 档只有 Ctrl/Cmd+Enter 发送、none 档两种按法都换行，提交只剩发送按钮 -->
 <script setup lang="ts">
 import { XhPromptInputInput, XhPromptInputRoot, XhPromptInputSubmitTrigger } from "@xihan-ui/vue";
 import { ref } from "vue";

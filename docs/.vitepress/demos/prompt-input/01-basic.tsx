@@ -1,4 +1,4 @@
-// 基础用法 | Enter 提交、Shift+Enter 换行；输入法组合中的 Enter 一律放行，那一下是在确认候选词
+// 基础用法 | Enter 提交、Shift+Enter 换行；输入法组合中的 Enter 一律放行，该按键是在确认候选词
 import type { ReactNode } from "react";
 import { XhPromptInputInput, XhPromptInputRoot, XhPromptInputSubmitTrigger } from "@xihan-ui/react";
 import { useState } from "react";

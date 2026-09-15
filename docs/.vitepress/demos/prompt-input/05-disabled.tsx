@@ -1,4 +1,4 @@
-// 禁用与空值 | disabled 罩住整框并走原生 disabled；输入为空或只有空白时发送按钮转灰，但位置留着不收起
+// 禁用与空值 | disabled 覆盖整框并使用原生 disabled；输入为空或只有空白时发送按钮转灰，但位置保留不收起
 import type { ReactNode } from "react";
 import { XhPromptInputInput, XhPromptInputRoot, XhPromptInputSubmitTrigger } from "@xihan-ui/react";
 
