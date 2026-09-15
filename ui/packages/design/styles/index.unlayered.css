@@ -19587,13 +19587,15 @@
   border-radius: var(--xh-color-swatch-picker-item-radius, var(--xh-shape-control));
   outline: none;
   cursor: pointer;
-  transition: scale var(--xh-motion-duration-micro) var(--xh-motion-ease-enter-strong);
+  transition: scale var(--xh-motion-duration-release) var(--xh-motion-ease-release);
 }
 
 /* 这一格的底色就是它要展示的那个颜色，换底等于把展示物盖掉，交互回执只能落在别处：
    指到哪一格看描边，按下去看下压。置灰与只读的都不压 */
 [data-scope='color-swatch-picker'][data-part='item']:not([data-disabled], [data-readonly]):active {
   scale: var(--xh-motion-scale-press);
+  transition-duration: var(--xh-motion-duration-press);
+  transition-timing-function: var(--xh-motion-ease-press);
 }
 
 /* 正被选中的那一格：环画在盒子外面，不挤占色块本身的面积 */
