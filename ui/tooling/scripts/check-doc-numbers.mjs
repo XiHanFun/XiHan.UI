@@ -1159,7 +1159,7 @@ const TABLE = [
   ['docs/guide/forms.md', /^(\d+) 个：checkbox、/m, '表单字段组件数'],
   ['docs/guide/position.md', /\| (\d+) 种：四个方向/, 'placement取值数'],
   ['docs/guide/pointer.md', /这一层，(\d+) 个组件在用/, '用指针原语的组件数'],
-  ['docs/guide/styling.md', /^(\d+) 份皮肤吃这条令牌/m, '吃控件最小宽度令牌的皮肤数'],
+  ['docs/guide/styling.md', /^(\d+) 份皮肤消费这条令牌/m, '吃控件最小宽度令牌的皮肤数'],
   ['docs/guide/styling.md', /派生 (\d+) 档原语/, '品牌原语档数'],
   ['docs/guide/backgrounds.md', /^(\d+) 个：`aurora`/m, '内置背景效果数'],
   ['docs/guide/backgrounds.md', /这 (\d+) 个\*\*不自动注册\*\*/, '内置背景效果数'],
