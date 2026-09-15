@@ -41343,6 +41343,13 @@
     justify-self: stretch;
   }
 
+  /* 单向组合的唯一动作跨过两行，中心才与两侧面板的中心重合。 */
+  [data-scope='transfer'][data-part='root'][data-one-way]
+    > [data-scope='transfer'][data-part='to-target-trigger'] {
+    grid-row: 1 / 3;
+    align-self: center;
+  }
+
   /* 并排时目标面板在行尾侧，箭头改回朝行尾与朝行首。
      盒的量法与窄档那两条逐字相同：兜底字形的盒必须按 --xh-icon-size 量，
      作者换成自己的图标才和皮肤画的一样大 */

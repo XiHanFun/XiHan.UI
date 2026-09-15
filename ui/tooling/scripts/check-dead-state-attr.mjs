@@ -172,7 +172,6 @@ const HOOKS = {
   'timer:data-countdown': '正计时还是倒计时，数字的排版两者一致',
   'timestamp:data-format': '按日期、时间还是两者一起渲染，换的是文本不是外观',
   'tour:data-last': '走到末步。末步换的是按钮文案不是外观',
-  'transfer:data-one-way': '单向还是双向。少一组钮由 hidden 承载',
 }
 
 /** 去掉注释，注释里的选择器不算数。 */
