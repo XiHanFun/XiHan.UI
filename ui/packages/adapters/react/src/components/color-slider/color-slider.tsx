@@ -31,25 +31,25 @@ export interface XhColorSliderRootProps extends RootElementProps {
   value?: string
   /** 非受控初值。 */
   defaultValue?: string
-  /** 推的是哪一路：hue / saturation / brightness / alpha / red / green / blue，默认 hue。 */
+  /** 调节的通道：hue / saturation / brightness / alpha / red / green / blue，默认 hue。 */
   channel?: ColorChannel
   /** 值串的写法：hex / rgba / hsla，默认 hex。 */
   format?: ColorFormat
-  /** 值串带不带透明度；缺省时推透明度那一路带、其余不带。 */
+  /** 值串是否带透明度；默认时调节透明度通道带、其余不带。 */
   alpha?: boolean
   orientation?: Orientation
-  /** 文字方向，缺省 ltr。 */
+  /** 文字方向，默认 ltr。 */
   dir?: Direction
   disabled?: boolean
   readOnly?: boolean
   invalid?: boolean
   size?: Size
-  /** 表单字段名；给了表单影子才带 name 并参与提交。 */
+  /** 表单字段名；提供后表单影子才带 name 并参与提交。 */
   name?: string
   translations?: Partial<ColorSliderTranslations>
-  /** 每次推动都发；拖动过程中会连续发很多次。 */
+  /** 每次调节都触发；拖动过程中会连续触发多次。 */
   onValueChange?: ColorSliderProps['onValueChange']
-  /** 只在一次操作结束时发一次，适合拿来发请求。 */
+  /** 只在一次操作结束时触发一次，适合用于发起请求。 */
   onValueChangeEnd?: ColorSliderProps['onValueChangeEnd']
   children?: SlotChildren<ColorSliderRootSlotProps>
 }
@@ -172,7 +172,7 @@ export function XhColorSliderThumb({ children, ...rest }: XhColorSliderThumbProp
 
 export interface XhColorSliderValueTextProps extends ComponentPropsWithRef<'span'> {}
 
-/** 值气泡：没给内容就填本通道的当前数值。 */
+/** 值气泡：未提供内容时填入本通道的当前数值。 */
 export function XhColorSliderValueText({ children, ...rest }: XhColorSliderValueTextProps): ReactNode {
   const ctx = useColorSliderContext()
   return (

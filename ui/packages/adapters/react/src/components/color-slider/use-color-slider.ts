@@ -18,7 +18,7 @@ import { useMachine } from '../../runtime/use-machine'
 export interface ColorSliderContext {
   api: ColorSliderApi
   service: Service<ColorSliderSchema>
-  /** 轨道节点，内嵌滑杆在指针事件里拿它量矩形。 */
+  /** 轨道节点，内嵌滑杆在指针事件中读取它的矩形。 */
   trackRef: RefObject<HTMLElement | null>
   /** 表单重置的锚点：接在根节点上。 */
   rootRef: RefObject<HTMLElement | null>

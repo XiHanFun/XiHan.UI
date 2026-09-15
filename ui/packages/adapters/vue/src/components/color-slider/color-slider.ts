@@ -28,11 +28,11 @@ export const XhColorSliderRoot = defineComponent({
     /** 颜色值串；缺席即非受控。 */
     value: { type: String },
     defaultValue: { type: String },
-    /** 推的是哪一路：hue / saturation / brightness / alpha / red / green / blue，默认 hue。 */
+    /** 调节的通道：hue / saturation / brightness / alpha / red / green / blue，默认 hue。 */
     channel: { type: String as PropType<ColorChannel> },
     /** 值串的写法：hex / rgba / hsla，默认 hex。 */
     format: { type: String as PropType<ColorFormat> },
-    /** 值串带不带透明度；缺省时推透明度那一路带、其余不带。 */
+    /** 值串是否带透明度；默认时调节透明度通道带、其余不带。 */
     alpha: { type: Boolean, default: undefined },
     orientation: { type: String as PropType<Orientation> },
     dir: { type: String as PropType<Direction> },

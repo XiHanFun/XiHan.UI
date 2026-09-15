@@ -10595,7 +10595,7 @@
       "declarations": [
         {
           "kind": "class",
-          "description": "`<xh-color-slider>` —— Light-DOM 行为宿主，跑 color-slider 机器并内嵌一台 slider 机器，\n把 connect 产出打到 root/label/control/track/thumb/value-text/hidden-input 等角色节点。\n\n一条滑杆只推颜色的一路（色相 / 饱和度 / 明度 / 透明度 / 红 / 绿 / 蓝），值是整个颜色串；\n轨道的渐变按当前颜色现算写成内联样式，作者只画轨道的形状。",
+          "description": "`<xh-color-slider>`：Light-DOM 行为宿主，运行 color-slider 状态机并内嵌一台 slider 状态机，\n把 connect 产出接到 root / label / control / track / thumb / value-text / hidden-input 等角色节点。\n\n一条滑杆只推动颜色的一个通道（色相 / 饱和度 / 明度 / 透明度 / 红 / 绿 / 蓝），值是整个颜色串；\n轨道的渐变按当前颜色计算并写为内联样式，作者只绘制轨道的形状。",
           "name": "XhColorSliderElement",
           "cssParts": [
             {
@@ -10603,23 +10603,23 @@
               "name": "root"
             },
             {
-              "description": "标签，名字经拇指上的 aria-labelledby 挂过去",
+              "description": "标签，名字经拇指上的 aria-labelledby 关联",
               "name": "label"
             },
             {
-              "description": "可按下的整条区域：按下即跳，拖动跟手",
+              "description": "可按下的整条区域：按下即跳转，拖动跟随",
               "name": "control"
             },
             {
-              "description": "轨道；渐变由元素写成内联 background-image",
+              "description": "轨道；渐变由元素写为内联 background-image",
               "name": "track"
             },
             {
-              "description": "role=slider 的拇指，位置由元素写成内联样式",
+              "description": "role=slider 的拇指，位置由元素写为内联样式",
               "name": "thumb"
             },
             {
-              "description": "值气泡；空着时由元素填本通道的当前数值",
+              "description": "值气泡；为空时由元素填入本通道的当前数值",
               "name": "value-text"
             },
             {
@@ -10752,7 +10752,7 @@
               "type": {
                 "text": "Partial<ColorSliderTranslations>"
               },
-              "description": "读屏文案（只走 property）"
+              "description": "读屏文案（只能通过 property 设置）"
             },
             {
               "kind": "field",
@@ -10888,7 +10888,7 @@
           ],
           "events": [
             {
-              "description": "颜色变化；detail 为 `{ value: string }`，拖动过程中会连续发",
+              "description": "颜色变化；detail 为 `{ value: string }`，拖动过程中连续发出",
               "name": "value-change",
               "type": {
                 "text": "ColorSliderValueChangeDetails"
@@ -10907,7 +10907,7 @@
               "type": {
                 "text": "string | undefined"
               },
-              "description": "受控的颜色值串；缺省该属性即非受控",
+              "description": "受控的颜色值串；未提供该属性即非受控",
               "name": "value",
               "fieldName": "value"
             },
@@ -10923,7 +10923,7 @@
               "type": {
                 "text": "ColorChannel | undefined"
               },
-              "description": "推的是哪一路，默认 hue",
+              "description": "推动的通道，默认 hue",
               "name": "channel",
               "fieldName": "channel"
             },
@@ -10939,7 +10939,7 @@
               "type": {
                 "text": "boolean | undefined"
               },
-              "description": "值串带不带透明度；缺省时推透明度那一路带、其余不带",
+              "description": "值串是否带透明度；未提供时推动透明度通道带、其余不带",
               "name": "alpha",
               "fieldName": "alpha"
             },
@@ -10971,7 +10971,7 @@
               "type": {
                 "text": "boolean | undefined"
               },
-              "description": "只读：拇指仍可聚焦，推不动",
+              "description": "只读：拇指仍可聚焦，不可推动",
               "name": "read-only",
               "fieldName": "readOnly"
             },
@@ -10995,7 +10995,7 @@
               "type": {
                 "text": "string | undefined"
               },
-              "description": "表单字段名；给了表单影子才带 name 并参与提交",
+              "description": "表单字段名；提供后表单影子才带 name 并参与提交",
               "name": "name",
               "fieldName": "name"
             }

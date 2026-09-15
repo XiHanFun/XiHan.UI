@@ -18,7 +18,7 @@ import { createVueIdGenerator } from '../../runtime/vue-id'
 export interface ColorSliderContext {
   api: ComputedRef<ColorSliderApi>
   service: Service<ColorSliderSchema>
-  /** 轨道节点，内嵌滑杆在指针事件里拿它量矩形。 */
+  /** 轨道节点，内嵌滑杆在指针事件中读取它的矩形。 */
   trackRef: Ref<HTMLElement | null>
 }
 

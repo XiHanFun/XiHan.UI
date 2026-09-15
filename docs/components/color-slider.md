@@ -98,22 +98,22 @@ orientation 竖排时渐变自下而上；禁用整体压暗，只读留 Tab 位
 
 | 属性 | 类型 | 必填 | 说明 |
 | --- | --- | --- | --- |
-| `value` | `string` |  | 颜色值串。给定即受控：cell 直读 prop，写只发 onValueChange 不落内部值。 |
+| `value` | `string` |  | 颜色值串。提供即受控：cell 直读 prop，写入只发 onValueChange 不落内部值。 |
 | `defaultValue` | `string` |  |  |
-| `channel` | `ColorChannel` |  | 推的是哪一路：色相 / 饱和度 / 明度 / 透明度 / 红 / 绿 / 蓝，默认 hue。 |
-| `format` | `ColorFormat` |  | 值串的写法，默认 hex。改它只改对外的序列化，工作色恒是 HSVA。 |
-| `hsva` | `ColorHsva` |  | 受控的工作色。给定时本通道以外的分量、灰度处的色相都以它为准，不再从值串反解： 取色器把同一份工作色交给几条并排的滑块，推色相那条时饱和度与明度不会被值串抹掉。 单独用一条滑块时不必给，滑块自己记着锚。 |
-| `alpha` | `boolean` |  | 值串带不带透明度。默认跟着通道走：推透明度那一路时带，其余不带。 显式给 true 时别的通道也保留透明度（与一条透明度滑块并排时要开它，否则推色相会把透明度归 1）。 |
+| `channel` | `ColorChannel` |  | 推动的通道：色相 / 饱和度 / 明度 / 透明度 / 红 / 绿 / 蓝，默认 hue。 |
+| `format` | `ColorFormat` |  | 值串的写法，默认 hex。修改它只改变对外的序列化，工作色恒为 HSVA。 |
+| `hsva` | `ColorHsva` |  | 受控的工作色。提供时本通道以外的分量、灰度处的色相都以它为准，不再从值串反解： 取色器把同一份工作色交给多条并排的滑块，推动色相时饱和度与明度不会被值串抹除。 单独使用一条滑块时不必提供，滑块自行记录锚点。 |
+| `alpha` | `boolean` |  | 值串是否带透明度。默认随通道决定：推动透明度通道时带，其余不带。 显式提供 true 时其他通道也保留透明度（与一条透明度滑块并排时需开启，否则推动色相会把透明度归 1）。 |
 | `orientation` | `Orientation` |  |  |
 | `dir` | `Direction` |  | 文字方向。只改写水平轨道上左右两键与指针的语义。 |
 | `disabled` | `boolean` |  |  |
 | `readOnly` | `boolean` |  |  |
 | `invalid` | `boolean` |  |  |
 | `size` | `Size` |  | 尺寸：sm / md / lg，决定拇指直径与轨道厚度。 |
-| `name` | `string` |  | 表单字段名；给了表单影子才带 name 并参与提交。 |
+| `name` | `string` |  | 表单字段名；提供后表单影子才带 name 并参与提交。 |
 | `translations` | `Partial<ColorSliderTranslations>` |  |  |
-| `onValueChange` | `(details: ColorSliderValueChangeDetails) => void` |  | value 变化意图回调；受控时是唯一出口，非受控随内部写入一并通知。拖动过程中会连续发。 |
-| `onValueChangeEnd` | `(details: ColorSliderValueChangeDetails) => void` |  | 只在一次操作结束时发一次，适合拿来发请求。 |
+| `onValueChange` | `(details: ColorSliderValueChangeDetails) => void` |  | value 变化意图回调；受控时是唯一出口，非受控时随内部写入一并通知。拖动过程中连续发出。 |
+| `onValueChangeEnd` | `(details: ColorSliderValueChangeDetails) => void` |  | 只在一次操作结束时发出一次，适合用于发起请求。 |
 
 ### 事件
 
@@ -121,7 +121,7 @@ orientation 竖排时渐变自下而上；禁用整体压暗，只读留 Tab 位
 
 | 事件 | 载荷 | 说明 |
 | --- | --- | --- |
-| `value-change` | `ColorSliderValueChangeDetails` | 颜色变化；detail 为 `{ value: string }`，拖动过程中会连续发 |
+| `value-change` | `ColorSliderValueChangeDetails` | 颜色变化；detail 为 `{ value: string }`，拖动过程中连续发出 |
 | `value-change-end` | `ColorSliderValueChangeDetails` | 一次推动结束；detail 为 `{ value: string }` |
 
 ### 插槽
@@ -148,26 +148,26 @@ orientation 竖排时渐变自下而上；禁用整体压暗，只读留 Tab 位
 
 | 成员 | 类型 | 说明 |
 | --- | --- | --- |
-| `value` | `string` | 当前值串（与 onValueChange 送出的是同一个）。 |
+| `value` | `string` | 当前值串（与 onValueChange 发出的是同一个）。 |
 | `channel` | `ColorChannel` |  |
-| `channelValue` | `number` | 本通道此刻的对外数值（色相是角度，饱和度 / 明度 / 透明度是百分数，红绿蓝是 0-255）。 |
-| `percent` | `number` | 值在轨道上的位置，0-1。按未取整的工作色算，比滑杆按整格算的那一份更贴当前颜色。 |
+| `channelValue` | `number` | 本通道当前的对外数值（色相为角度，饱和度 / 明度 / 透明度为百分数，红绿蓝为 0-255）。 |
+| `percent` | `number` | 值在轨道上的位置，0-1。按未取整的工作色计算，比滑杆按整格计算的值更贴近当前颜色。 |
 | `min` | `number` |  |
 | `max` | `number` |  |
 | `hsva` | `ColorHsva` |  |
 | `rgba` | `ColorRgba` |  |
 | `disabled` | `boolean` |  |
 | `readOnly` | `boolean` |  |
-| `dragging` | `boolean` | 指针正拖着拇指。 |
+| `dragging` | `boolean` | 指针正在拖动拇指。 |
 | `setValue` | `(next: string) => void` |  |
 | `setChannelValue` | `(next: number) => void` | 直接把本通道推到某个对外数值。 |
 | `getRootProps` | `() => T['element']` |  |
 | `getLabelProps` | `() => T['label']` |  |
 | `getControlProps` | `() => T['element']` |  |
-| `getTrackProps` | `() => T['element']` | 轨道：渐变由连接层按当前颜色现算写成内联 background-image。 |
+| `getTrackProps` | `() => T['element']` | 轨道：渐变由连接层按当前颜色计算并写为内联 background-image。 |
 | `getThumbProps` | `() => T['element']` |  |
 | `getValueTextProps` | `() => T['element']` |  |
-| `getHiddenInputProps` | `() => T['input']` | 表单影子：值随表单提交。给了 name 才带 name，不给就不参与提交。 |
+| `getHiddenInputProps` | `() => T['input']` | 表单影子：值随表单提交。提供 name 后才带 name，未提供时不参与提交。 |
 
 ## 无障碍
 
