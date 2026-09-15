@@ -1,4 +1,4 @@
-// 媒体位与操作位 | 一条条目最全的形态：媒体、标题、说明、操作四个位都摆上
+// 媒体位与操作位 | 条目最完整的形态：媒体、标题、说明、操作四个位都放置
 import type { ReactNode } from "react";
 import {
   XhListItem,

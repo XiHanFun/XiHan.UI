@@ -12,7 +12,7 @@
 
 ## 用法
 
-根与条目的标签由使用者定，这里写成 ul 与 li；条目里只写用得上的那几个位
+根与条目的标签由使用者决定，这里写为 ul 与 li；条目中只写用得到的位
 
 <XhDemo src="list/01-basic" />
 
@@ -26,25 +26,25 @@
 
 ### 分隔线
 
-split 在条目之间画一条线，第一条上面不画
+split 在条目之间绘制一条线，第一条上方不绘制
 
 <XhDemo src="list/02-split" />
 
 ### 外框与悬停
 
-bordered 给整份列表画一圈描边，hoverable 让条目在指针悬停时换底色
+bordered 为整份列表绘制一圈描边，hoverable 使条目在指针悬停时更换底色
 
 <XhDemo src="list/03-bordered-hoverable" />
 
 ### 媒体位与操作位
 
-一条条目最全的形态：媒体、标题、说明、操作四个位都摆上
+条目最完整的形态：媒体、标题、说明、操作四个位都放置
 
 <XhDemo src="list/04-media-action" />
 
 ### 尺寸
 
-size 换的是条目的内边距、图文间距与两行文字的字号，不传 size 即默认档
+size 改变条目的内边距、图文间距与两行文字的字号，不传 size 即默认档
 
 <XhDemo src="list/05-size" />
 
