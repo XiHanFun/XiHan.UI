@@ -1,4 +1,4 @@
-<!-- 受控当前题 | 进度归宿主管：外面的按钮直接跳题，答案也一并受控，组件只发意图 -->
+<!-- 受控当前题 | 进度由宿主管理：外部按钮直接跳题，答案也一并受控，组件只发意图 -->
 <script setup lang="ts">
 import type { QuestionFlowAnswers, QuestionFlowQuestion } from "@xihan-ui/headless";
 import {

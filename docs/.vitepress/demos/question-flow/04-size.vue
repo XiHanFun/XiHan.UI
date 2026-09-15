@@ -1,4 +1,4 @@
-<!-- 尺寸 | size 换问句、选项行与页脚按钮的几何档，三档共用同一份问题 -->
+<!-- 尺寸 | size 改变问句、选项行与页脚按钮的几何档，三档共用同一份问题 -->
 <script setup lang="ts">
 import type { QuestionFlowQuestion } from "@xihan-ui/headless";
 import {

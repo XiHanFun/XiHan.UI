@@ -1,4 +1,4 @@
-// 基础用法 | 一次一题：单选选中后自动翻到下一题，多选等人点继续，末题上那颗按钮变成发送
+// 基础用法 | 一次一题：单选选中后自动进入下一题，多选等待用户点击继续，末题的按钮变为发送
 import type { QuestionFlowQuestion } from "@xihan-ui/headless";
 import type { ReactNode } from "react";
 import {
