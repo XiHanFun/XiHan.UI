@@ -143,15 +143,15 @@ checked-change 带一份 { checked }，非受控时内部转移也照发一次
 | `checked` | `boolean` |  |  |
 | `defaultChecked` | `boolean` |  |  |
 | `disabled` | `boolean` |  |  |
-| `readOnly` | `boolean` |  | 只读：拨不动，但仍可聚焦、仍参与提交，对比度不降。 |
-| `invalid` | `boolean` |  | 校验失败：只改呈现，不挡交互。 |
-| `required` | `boolean` |  | 必填：随表单校验一起用，只发无障碍属性，不自行拦提交。 |
+| `readOnly` | `boolean` |  | 只读：不可切换，但仍可聚焦、仍参与提交，对比度不降低。 |
+| `invalid` | `boolean` |  | 校验失败：只改变呈现，不阻止交互。 |
+| `required` | `boolean` |  | 必填：随表单校验一起使用，只发无障碍属性，不自行拦截提交。 |
 | `loading` | `boolean` |  | 提交中：交互挂起、滑块转圈，但不呈现为禁用（仍可聚焦、对比度不降）。 |
-| `name` | `string` |  | 表单字段名；给了 hidden-input 才带 name 并参与提交。 |
-| `value` | `string` |  | 提交出去的值，缺省 'on'，与原生复选框一致。 |
-| `tone` | `Tone` |  | 语气：brand / neutral / success / warning / danger / info，决定选中态轨道用哪族颜色。 |
+| `name` | `string` |  | 表单字段名；提供后 hidden-input 才带 name 并参与提交。 |
+| `value` | `string` |  | 提交的值，默认 'on'，与原生复选框一致。 |
+| `tone` | `Tone` |  | 语气：brand / neutral / success / warning / danger / info，决定选中态轨道使用哪族颜色。 |
 | `size` | `Size` |  | 尺寸：sm / md / lg，决定轨道与滑块的几何档位。 |
-| `onCheckedChange` | `(details: SwitchCheckedChangeDetails) => void` |  | checked 变化意图回调；受控时是唯一出口，非受控随内部转移一并通知。 |
+| `onCheckedChange` | `(details: SwitchCheckedChangeDetails) => void` |  | checked 变化意图回调；受控时是唯一出口，非受控时随内部转移一并通知。 |
 
 ### 事件
 
@@ -191,8 +191,8 @@ checked-change 带一份 { checked }，非受控时内部转移也照发一次
 | `setChecked` | `(next: boolean) => void` |  |
 | `getRootProps` | `() => T['button']` |  |
 | `getThumbProps` | `() => T['element']` |  |
-| `getHiddenInputProps` | `() => T['input']` | 表单影子：勾上才提交。给了 name 才带 name，不给就不参与提交。 |
-| `getLabelProps` | `() => T['label']` | 包住轨道与文字的 &lt;label&gt;：点文字即切换，轨道的可及名从文字来。只在带文字时渲染。 |
+| `getHiddenInputProps` | `() => T['input']` | 表单影子：开启后才提交。提供 name 后才带 name，未提供时不参与提交。 |
+| `getLabelProps` | `() => T['label']` | 包裹轨道与文字的 &lt;label&gt;：点击文字即切换，轨道的可及名来自文字。只在带文字时渲染。 |
 | `getTextProps` | `() => T['element']` | 轨道旁的文字。 |
 
 ## 无障碍

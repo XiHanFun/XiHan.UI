@@ -27,7 +27,7 @@ export const XhSwitch = defineComponent({
     invalid: { type: Boolean, default: undefined },
     required: { type: Boolean, default: undefined },
     loading: { type: Boolean, default: undefined },
-    /** 表单字段名；给了 hidden-input 才带 name 并参与提交 */
+    /** 表单字段名；提供后 hidden-input 才带 name 并参与提交 */
     name: { type: String },
     value: { type: String },
     tone: String as PropType<Tone>,
