@@ -1,4 +1,4 @@
-// 随内容长高 | 输入框的高度跟着内容走，rows 定的是起始行数；不手动拖拽，也不写死高度
+// 随内容增高 | 输入框的高度跟随内容，rows 决定起始行数；不手动拖拽，也不写死高度
 import type { ReactNode } from "react";
 import { XhPromptInputInput, XhPromptInputRoot, XhPromptInputSubmitTrigger } from "@xihan-ui/react";
 

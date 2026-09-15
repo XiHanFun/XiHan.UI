@@ -1,4 +1,4 @@
-// 聚焦与选中 | 输入部件就是一个原生 textarea，拿到它的节点就能聚焦、全选、失焦；发完一条把焦点送回去，接着敲下一条
+// 聚焦与选中 | 输入部件就是一个原生 textarea，取得它的节点即可聚焦、全选、失焦；发送后把焦点送回，继续输入下一条
 import type { PromptInputSubmitDetails } from "@xihan-ui/headless";
 import type { ReactNode } from "react";
 import {

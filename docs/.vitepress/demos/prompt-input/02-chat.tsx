@@ -1,4 +1,4 @@
-// 与消息流合成一个对话 | 发送键原位变停止；提交后粘底跟到最新一条，生成期间还能接着改下一句
+// 与消息流组成一个对话 | 发送键原位变为停止；提交后粘底跟随到最新一条，生成期间仍可继续编辑下一句
 import type { PromptInputSubmitDetails } from "@xihan-ui/headless";
 import type { ReactNode } from "react";
 import {

@@ -12,7 +12,7 @@
 
 ## 用法
 
-Enter 提交、Shift+Enter 换行；输入法组合中的 Enter 一律放行，那一下是在确认候选词
+Enter 提交、Shift+Enter 换行；输入法组合中的 Enter 一律放行，该按键是在确认候选词
 
 <XhDemo src="prompt-input/01-basic" />
 
@@ -24,57 +24,57 @@ Enter 提交、Shift+Enter 换行；输入法组合中的 Enter 一律放行，�
 
 ## 示例
 
-### 与消息流合成一个对话
+### 与消息流组成一个对话
 
-发送键原位变停止；提交后粘底跟到最新一条，生成期间还能接着改下一句
+发送键原位变为停止；提交后粘底跟随到最新一条，生成期间仍可继续编辑下一句
 
 <XhDemo src="prompt-input/02-chat" />
 
 ### 竖排布局与兜底字形
 
-写一层输入行，root 就翻成竖排：输入行在上、动作行在下；按钮留空时皮肤按身份画上箭头或停止方块
+写一层输入行，root 即切换为竖排：输入行在上、动作行在下；按钮留空时皮肤按身份绘制箭头或停止方块
 
 <XhDemo src="prompt-input/03-layout" />
 
 ### 三档提交按键
 
-enter 档回车就发、mod-enter 档只有 Ctrl/Cmd+Enter 发、none 档两种按法都换行，提交只剩发送按钮
+enter 档回车即发送、mod-enter 档只有 Ctrl/Cmd+Enter 发送、none 档两种按法都换行，提交只剩发送按钮
 
 <XhDemo src="prompt-input/04-submit-key" />
 
 ### 禁用与空值
 
-disabled 罩住整框并走原生 disabled；输入为空或只有空白时发送按钮转灰，但位置留着不收起
+disabled 覆盖整框并使用原生 disabled；输入为空或只有空白时发送按钮转灰，但位置保留不收起
 
 <XhDemo src="prompt-input/05-disabled" />
 
-### 框里的附加节点
+### 框内的附加节点
 
-root 里除三件外还能放自己的按钮与计数；值的读写归宿主，原生属性照旧直接落到输入框上
+root 中除三件部件外还可放置自己的按钮与计数；值的读写归宿主，原生属性照常直接落到输入框上
 
 <XhDemo src="prompt-input/06-extras" />
 
-### 随内容长高
+### 随内容增高
 
-输入框的高度跟着内容走，rows 定的是起始行数；不手动拖拽，也不写死高度
+输入框的高度跟随内容，rows 决定起始行数；不手动拖拽，也不写死高度
 
 <XhDemo src="prompt-input/07-autosize" />
 
 ### 聚焦与选中
 
-输入部件就是一个原生 textarea，拿到它的节点就能聚焦、全选、失焦；发完一条把焦点送回去，接着敲下一条
+输入部件就是一个原生 textarea，取得它的节点即可聚焦、全选、失焦；发送后把焦点送回，继续输入下一条
 
 <XhDemo src="prompt-input/08-focus" />
 
 ### 发送失败的错误态
 
-判定谁算出错是宿主的事：属性直接落到真元素上，整框换色靠覆盖公开变量，原因由活区播报
+判定是否出错由宿主决定：属性直接落到真实元素上，整框换色依靠覆盖公开变量，原因由活区播报
 
 <XhDemo src="prompt-input/09-invalid" />
 
 ### 颜色
 
-tone 换聚焦描边与发送钮用哪族颜色，输入与提交那条链不受影响
+tone 切换聚焦描边与发送按钮使用哪族颜色，输入与提交链路不受影响
 
 <XhDemo src="prompt-input/10-tone" />
 

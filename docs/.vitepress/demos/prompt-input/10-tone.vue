@@ -1,4 +1,4 @@
-<!-- 语气 | tone 换聚焦描边与发送钮用哪族颜色，输入与提交那条链不受影响 -->
+<!-- 语气 | tone 切换聚焦描边与发送按钮使用哪族颜色，输入与提交链路不受影响 -->
 <script setup lang="ts">
 import { XhPromptInputInput, XhPromptInputRoot, XhPromptInputSubmitTrigger } from "@xihan-ui/vue";
 
