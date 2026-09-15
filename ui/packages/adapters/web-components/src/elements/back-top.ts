@@ -17,21 +17,21 @@ const STRING_CONVERTER = { fromAttribute: (v: string | null) => v ?? undefined }
 const NUMBER_CONVERTER = { fromAttribute: (v: string | null) => (v == null || v === '' ? undefined : Number(v)) }
 
 /**
- * `<xh-back-top>` —— 回到顶部行为宿主：滚动量过线时露出按钮，点它滚回顶部。
+ * `<xh-back-top>`：回到顶部行为宿主：滚动量过线时显示按钮，点击滚回顶部。
  *
- * 作者须把 trigger 写成 `<button>`：激活与 Tab 停靠由平台提供，元素不接管任何按键。
- * 收起时整个 root 带 hidden，按钮一并退出 Tab 序列与无障碍树——
- * 靠不透明度藏起来的按钮仍然可聚焦、仍然被读屏念到。
+ * 作者须把 trigger 写为 `<button>`：激活与 Tab 停靠由平台提供，元素不接管任何按键。
+ * 收起时整个 root 带 hidden，按钮一并退出 Tab 序列与无障碍树：
+ * 依靠不透明度隐藏的按钮仍然可聚焦、仍然被读屏朗读。
  *
  * @customElement xh-back-top
- * @attr {number} visibility-height - 滚过这么多像素按钮才露面，默认 200
+ * @attr {number} visibility-height - 滚动超过该像素数后按钮才显示，默认 200
  * @attr {'auto'|'smooth'} behavior - 滚回顶部的方式，默认 smooth
- * @attr {'solid'|'subtle'|'outline'|'ghost'} variant - 形态，决定底色、描边与前景怎么用
+ * @attr {'solid'|'subtle'|'outline'|'ghost'} variant - 形态，决定底色、描边与前景的使用方式
  * @attr {'brand'|'neutral'|'success'|'warning'|'danger'|'info'} tone - 语气
  * @attr {'sm'|'md'|'lg'} size - 尺寸
- * @fires visibility-change - 露面与否变化；detail 为 `{ visible: boolean }`
+ * @fires visibility-change - 显隐变化；detail 为 `{ visible: boolean }`
  * @csspart root - 定位壳，承载 data-state（visible / hidden）/ data-variant / data-tone / data-size；收起时带 hidden
- * @csspart trigger - 按钮，须写成 `<button>`；可及名字由 translations.trigger 给
+ * @csspart trigger - 按钮，须写为 `<button>`；可及名由 translations.trigger 提供
  */
 export class XhBackTopElement extends XhElement {
   static override partContract = { anatomy: backTopAnatomy, meta: backTopMeta }

@@ -17,7 +17,7 @@ export interface BackTopContext {
   service: Service<BackTopSchema>
 }
 
-/** getTargetEl 返回滚动容器，null 即整页滚动；滚动量的观察在机器的效应里跑。 */
+/** getTargetEl 返回滚动容器，null 即整页滚动；滚动量的观察在状态机的效应中运行。 */
 export function useBackTop(
   props: BackTopSchema['props'],
   getTargetEl: () => HTMLElement | null = () => null,

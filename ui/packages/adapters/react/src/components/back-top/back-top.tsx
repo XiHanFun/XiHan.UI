@@ -17,7 +17,7 @@ import { useBackTop } from './use-back-top'
 
 type BackTopProps = BackTopSchema['props']
 
-/** 函数式 children 的载荷：按钮此刻露不露面。 */
+/** 函数式 children 的载荷：按钮当前是否显示。 */
 export interface BackTopRootSlotProps extends Pick<BackTopApi, 'visible'> {}
 
 export interface XhBackTopRootProps extends Omit<ComponentPropsWithRef<'div'>, 'children'> {
@@ -27,13 +27,13 @@ export interface XhBackTopRootProps extends Omit<ComponentPropsWithRef<'div'>, '
   variant?: ActionVariant
   tone?: Tone
   size?: Size
-  /** 滚动容器取值器，缺省即整页滚动；挂载效应执行时求值。 */
+  /** 滚动容器取值器，默认即整页滚动；挂载效应执行时求值。 */
   target?: () => HTMLElement | null
   onVisibilityChange?: BackTopProps['onVisibilityChange']
   children?: SlotChildren<BackTopRootSlotProps>
 }
 
-/** 根节点是定位壳：把按钮钉在视口一角，收起时整块让位。 */
+/** 根节点是定位壳：把按钮固定在视口一角，收起时整块让位。 */
 export function XhBackTopRoot({
   visibilityHeight,
   behavior,
