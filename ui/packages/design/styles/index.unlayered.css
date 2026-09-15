@@ -17526,7 +17526,7 @@
   padding-inline: var(--xh-clipboard-copy-trigger-px, var(--xh-_clipboard-px));
   padding-block: 0;
   border: var(--xh-stroke-thin) solid var(--xh-clipboard-copy-trigger-border, var(--xh-_clipboard-copy-trigger-border));
-  border-radius: var(--xh-clipboard-copy-trigger-radius, var(--xh-shape-pill));
+  border-radius: var(--xh-clipboard-copy-trigger-radius, var(--xh-shape-control));
   /* 使用者令牌排在变体之前：写了覆盖钩子就以它为准，没写才按 data-variant 那一档取值 */
   background: var(--xh-clipboard-copy-trigger-bg, var(--xh-_clipboard-copy-trigger-bg));
   color: var(--xh-clipboard-copy-trigger-fg, var(--xh-_clipboard-copy-trigger-fg));
