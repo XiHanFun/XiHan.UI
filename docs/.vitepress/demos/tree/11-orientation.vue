@@ -1,4 +1,4 @@
-<!-- 末端横排 | leaf-orientation 按结构判据横排「子节点全是叶子」的那层；要指定哪一层横排就在节点上标 childrenOrientation，它比树级值优先，标 vertical 也压得住 -->
+<!-- 末端横排 | leaf-orientation 按结构判据横排子节点全为叶子的层；要指定哪一层横排就在节点上标注 childrenOrientation，它比树级值优先，标注 vertical 也可覆盖 -->
 <script setup lang="ts">
 import {
   XhTreeBranch,

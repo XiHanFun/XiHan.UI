@@ -1,4 +1,4 @@
-<!-- 多选 | multiple 关着是单选，打开后点击与确认键都变成切换，选中集合形状不变仍是数组 -->
+<!-- 多选 | multiple 关闭时是单选，开启后点击与确认键都变为切换，选中集合形状不变仍是数组 -->
 <script setup lang="ts">
 import {
   XhTreeBranch,

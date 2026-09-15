@@ -12,7 +12,7 @@
 
 ## 用法
 
-collection 是层级元信息的唯一事实源，标记只管长相；缩进由子层容器自己顶着
+collection 是层级元信息的唯一事实源，标记只负责外观；缩进由子层容器自行撑开
 
 <XhDemo src="tree/01-basic" />
 
@@ -26,73 +26,73 @@ collection 是层级元信息的唯一事实源，标记只管长相；缩进由
 
 ### 多选
 
-multiple 关着是单选，打开后点击与确认键都变成切换，选中集合形状不变仍是数组
+multiple 关闭时是单选，开启后点击与确认键都变为切换，选中集合形状不变仍是数组
 
 <XhDemo src="tree/02-multiple" />
 
 ### 受控
 
-传了 expandedValue / selection 就由宿主说了算，组件只发事件不落内部值，宿主写回它才动
+传入 expandedValue / selection 后由宿主决定，组件只发事件不落内部值，宿主写回后才变化
 
 <XhDemo src="tree/03-controlled" />
 
-### 点行不展开与禁用节点
+### 点击行不展开与禁用节点
 
-expandOnClick 关掉后只有箭头与左右方向键能改展开态；禁用节点仍可聚焦，只是确认键不认它
+expandOnClick 关闭后只有箭头与左右方向键能改变展开态；禁用节点仍可聚焦，只是确认键不响应它
 
 <XhDemo src="tree/04-expand-on-click" />
 
 ### 关键词过滤
 
-collection 换一份树就换一棵：标记跟着数据重铺，过滤剩下的分支顺手全展开
+collection 换一份树即换一棵：标记跟随数据重新铺设，过滤后剩余的分支一并全部展开
 
 <XhDemo src="tree/05-filter" />
 
 ### 异步加载子节点
 
-展开那一刻才去要数据：先摆一行禁用的占位，取回来就地换掉，收起再展开不重复请求
+展开时才请求数据：先放置一行禁用的占位，取回后就地替换，收起再展开不重复请求
 
 <XhDemo src="tree/06-async" />
 
 ### 前缀与行尾
 
-行里放什么由标记说了算：文字前塞图标、文字后塞操作，方向指示也可以挪到行尾去
+行中放置什么由标记决定：文字前放图标、文字后放操作，方向指示也可以移到行尾
 
 <XhDemo src="tree/07-prefix-suffix" />
 
-### 只让叶子进选中集合
+### 只让叶子进入选中集合
 
-选中受控就由宿主定夺：分支的值直接不写回，点目录只剩展开收起这一个效果
+选中受控后由宿主决定：分支的值直接不写回，点击目录只剩展开收起这一个效果
 
 <XhDemo src="tree/08-leaf-only" />
 
 ### 级联勾选
 
-multiple 加 cascade 内建父子传导：点分支整枝勾上、子全勾父勾、部分勾中半选；勾选框是行里的一段标记，勾选态与半选态都由组件报出
+multiple 加 cascade 内建父子传导：点击分支整枝勾选、子全勾则父勾、部分勾选为半选；勾选框是行中的一段标记，勾选态与半选态都由组件报告
 
 <XhDemo src="tree/09-checkable" />
 
-### 拖拽搬家
+### 拖拽移动
 
-整个节点都是拖动源：按住拖到别处松手，也可以 Tab 进树里用 Alt + 上下键在同层挪、Alt + 左右键改层级。三档落点（插在前 / 插在后 / 放进目录里）连同指示线、自我后代守卫与读屏播报都归库；树仍不拥有数据，宿主只管按库报的 value、parent、index 把数组搬一下，外加一条 allowDrop 说这次许不许
+整个节点都是拖动源：按住拖到目标位置松手，也可以 Tab 进树后用 Alt + 上下键在同层移动、Alt + 左右键改变层级。三档落点（插在前 / 插在后 / 放进目录）连同指示线、自我后代守卫与读屏播报都归库；树仍不拥有数据，宿主只需按库报告的 value、parent、index 调整数组，外加一条 allowDrop 决定本次是否允许
 
 <XhDemo src="tree/10-drag-move" />
 
 ### 末端横排
 
-leaf-orientation 按结构判据横排「子节点全是叶子」的那层；要指定哪一层横排就在节点上标 childrenOrientation，它比树级值优先，标 vertical 也压得住
+leaf-orientation 按结构判据横排子节点全为叶子的层；要指定哪一层横排就在节点上标注 childrenOrientation，它比树级值优先，标注 vertical 也可覆盖
 
 <XhDemo src="tree/11-orientation" />
 
-### 范围选
+### 范围选择
 
-按住 Shift 点某一项，选中锚点到它那一段；按可见序取，折叠起来的子节点选不进去
+按住 Shift 点击某一项，选中锚点到它的一段；按可见序取值，折叠的子节点不会被选入
 
 <XhDemo src="tree/12-range-selection" />
 
 ### 变体
 
-variant="plain" 去掉外框与底色，树直接落在页面上；缺省 surface 保持带框的样子
+variant="plain" 去掉外框与底色，树直接落在页面上；默认 surface 保持带框的外观
 
 <XhDemo src="tree/13-variant" />
 

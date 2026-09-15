@@ -1,4 +1,4 @@
-// 形态 | variant="plain" 去掉外框与底色，树直接落在页面上；缺省 surface 保持带框的样子
+// 形态 | variant="plain" 去掉外框与底色，树直接落在页面上；默认 surface 保持带框的外观
 import type { ReactNode } from "react";
 import {
   XhTreeBranch,

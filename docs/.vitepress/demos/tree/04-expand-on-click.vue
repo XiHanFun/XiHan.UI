@@ -1,4 +1,4 @@
-<!-- 点行不展开与禁用节点 | expandOnClick 关掉后只有箭头与左右方向键能改展开态；禁用节点仍可聚焦，只是确认键不认它 -->
+<!-- 点击行不展开与禁用节点 | expandOnClick 关闭后只有箭头与左右方向键能改变展开态；禁用节点仍可聚焦，只是确认键不响应它 -->
 <script setup lang="ts">
 import {
   XhTreeBranch,
