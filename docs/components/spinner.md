@@ -59,32 +59,32 @@ tone 只换圆环起始边那一段颜色，轨道留在中性描边上，转到
 ### 何时使用
 
 - 时长未知且没有版面可占位。
-- 局部区域在取数据，或按钮上的在途标记。
+- 局部区域正在获取数据，或按钮上的在途标记。
 
 ### 何时不用
 
-- 版面可预测：用[骨架屏](./skeleton)，它让用户提前看到结构。
-- 进度确定：用[进度条](./progress)。
-- 整页导航：用[加载条](./loading-bar)。
+- 版面可预测时，使用[骨架屏](./skeleton)，它让用户提前看到结构。
+- 进度确定时，使用[进度条](./progress)。
+- 整页导航时，使用[加载条](./loading-bar)。
 
 ### 特性
 
-- 可以配可见文案，也可以只靠 `translations` 给读屏用。
+- 可以配可见文案，也可以只通过 `translations` 提供给读屏。
 - 可以与宿主遮罩组合，盖住等待中的内容。
 - 默认使用渐隐弧；也可显式选择整圈轨道或三点。
 
 ### 组合
 
-- 放进[按钮](./button)的 `indicator` 部件；盖住[卡片](./card)或[表格](./table)。
+- 放入[按钮](./button)的 `indicator` 部件；覆盖[卡片](./card)或[表格](./table)。
 
 ### 最佳实践
 
-- 等待超过几秒就配上文字说明在做什么。
-- 遮罩形态下要挡住交互，否则用户会重复点击。
+- 等待超过几秒时配上文字说明正在做什么。
+- 遮罩形态下阻止交互，否则用户会重复点击。
 
 ### 反模式
 
-- 一个页面里同时转好几个圈。
+- 一个页面内同时显示多个加载指示器。
 - 用它代替可预测版面的骨架屏。
 
 ## API 参考
@@ -166,7 +166,7 @@ tone 只换圆环起始边那一段颜色，轨道留在中性描边上，转到
 | `--xh-spinner-gap` | `root` | `gap` | `default` | `--xh-control-gap-md` | spinner 的 root 部件 gap 覆盖槽。 |
 | `--xh-spinner-label-fg` | `label` | `color` | `default` | `--xh-fg-muted` | spinner 的 label 部件 color 覆盖槽。 |
 | `--xh-spinner-label-size` | `label` | `font-size` | `default` | `--xh-text-secondary-size` | spinner 的 label 部件 font-size 覆盖槽。 |
-| `--xh-spinner-radius` | `root` | `border-radius` | `@media (forced-colors: active)`<br>`default`<br>`variant=arc`<br>`variant=dots` | `--xh-shape-pill` | spinner 的 root 部件 border-radius 覆盖槽。 |
+| `--xh-spinner-radius` | `root` | `border-radius` | `@media (forced-colors: active)`<br>`default`<br>`variant=arc`<br>`variant=dots` | `--xh-shape-circle` | spinner 的 root 部件 border-radius 覆盖槽。 |
 | `--xh-spinner-size` | `root` | `block-size`<br>`inline-size` | `default` | `--xh-glyph-size-lg` | spinner 的 root 部件 block-size、inline-size 覆盖槽。 |
 | `--xh-spinner-thickness` | `root` | `-webkit-mask`<br>`border`<br>`mask` | `@media (forced-colors: active)`<br>`default`<br>`variant=arc`<br>`variant=dots` | `--xh-stroke-thick` | spinner 的 root 部件 -webkit-mask、border、mask 覆盖槽。 |
 | `--xh-spinner-track` | `root` | `border` | `default` | `--xh-border-default` | spinner 的 root 部件 border 覆盖槽。 |
