@@ -1,6 +1,6 @@
 # FloatingPanel 浮动面板 <Badge type="info" text="alpha" />
 
-一块浮在页面上、能搬走、能改大小、能收拢与铺满的非模态面板。页面照常可读可点，面板停在用户放它的地方。
+浮在页面上、可移动、可调整大小、可收拢与铺满的非模态面板。页面照常可读可点，面板停留在用户放置的位置。
 
 <div class="xh-resource-links">
   <a href="https://github.com/XiHanFun/XiHan.UI/tree/dev/ui/packages/engine/headless/src/floating-panel" target="_blank" rel="noreferrer">Headless</a>
@@ -58,47 +58,47 @@ open 与 position 都交给外面握着：面板只报意图，值写回来才�
 
 ### 何时使用
 
-- 长时间挂着的辅助界面：调试面板、图层属性、正在进行的通话、播放器。
-- 用户需要一边看页面一边改东西，弹窗那种"必须先处理完"的语气不合适。
-- 位置和大小要由用户自己定，并且值得记下来（`onPositionChange` / `onDimensionsChange` / `onWindowStateChange` 就是为此留的）。
+- 长时间存在的辅助界面：调试面板、图层属性、进行中的通话、播放器。
+- 用户需要一边查看页面一边修改内容，弹窗“必须先处理”的语气不合适。
+- 位置和大小由用户决定并值得保存（`onPositionChange` / `onDimensionsChange` / `onWindowStateChange` 为此提供）。
 
 ### 何时不用
 
-- 必须先处理完才能继续：用[对话框](./dialog)，它会陷住焦点、锁住背景。
-- 从边上滑出的一整块面板：用[抽屉](./drawer)。
-- 挂在某个元素旁边、点别处就收：用[气泡卡片](./popover)。
-- 只是把一块区域分成可拖的几片：用[分栏](./splitter)。
+- 必须先处理完才能继续时，使用[对话框](./dialog)，它会捕获焦点、锁定背景。
+- 从边缘滑出的整块面板使用[抽屉](./drawer)。
+- 挂在某个元素旁、点击他处即收起时，使用[气泡卡片](./popover)。
+- 只是把一块区域分成可拖动的几片时，使用[分栏](./splitter)。
 
 ### 特性
 
 - 三种形态：常规、收拢（只留标题栏）、铺满（占满视口），由 `windowState` 一个值表达，可受控。
-- 位置与尺寸各自成对（`position` / `defaultPosition`、`dimensions` / `defaultDimensions`），两态齐全。
-- 八个改尺把手在节点上自报守的是哪条边，西边与北边的把手会同时改位置。
-- 默认皮肤使用 M3 桌面玻璃面：描边、顶边高光、投影与光学采样同出一张配方；高对比、减少透明、强制色与打印时原位收敛为实体面，标题栏按钮键盘聚焦时先铺实体隔离底。
-- 键盘全程可达：拖拽把手上方向键平移、Shift 快移、Enter / Space 送回初始落点；改尺把手上方向键推边；Esc 关闭。
-- `minSize` / `maxSize` 在每一处入口都生效——拖、推、`setDimensions` 走的是同一个夹取函数。
-- 内建默认矩形挂载时按视口夹一次：先收尺寸再推落点，窄屏上面板与右侧那几个改尺把手不会落在屏外。写了 `defaultPosition` / `defaultDimensions` 就照写的来。
+- 位置与尺寸各自成对（`position` / `defaultPosition`、`dimensions` / `defaultDimensions`），受控与非受控齐全。
+- 八个调整尺寸的把手在节点上声明各自守护的边，西边与北边的把手会同时改变位置。
+- 默认皮肤使用 M2 磨砂面：描边、顶边高光、投影与光学采样同出一份配方；高对比、减少透明、强制色与打印时原位收敛为实体面，标题栏按钮键盘聚焦时先铺实体隔离底。
+- 键盘全程可达：拖拽把手上方向键平移、Shift 快速移动、Enter / Space 送回初始位置；调整把手上方向键推动边缘；Esc 关闭。
+- `minSize` / `maxSize` 在每一处入口都生效：拖动、键盘推动、`setDimensions` 使用同一个夹取函数。
+- 内建默认矩形在挂载时按视口夹取一次：先收尺寸再调位置，窄屏上面板与右侧的调整把手不会落在屏幕外。提供 `defaultPosition` / `defaultDimensions` 时按提供的值。
 
 ### 组合
 
-- 标题栏里放[按钮组](./button-group)承载三个形态按钮与关闭按钮。
-- 正文放[滚动区域](./scroll-area)：面板被改小后正文自己滚，而不是把面板撑破。
+- 标题栏放[按钮组](./button-group)承载三个形态按钮与关闭按钮。
+- 正文放[滚动区域](./scroll-area)：面板缩小后正文自行滚动，不撑破面板。
 
 ### 最佳实践
 
-- 位置与尺寸值得存下来：拖动途中回调每帧都发，落存储前先节流。
-- 面板被搬到视口外之后，**再点触发按钮不会把它挪回来**——重新展开只是在同一个坐标上再展开一次。真正能收回来的只有两条：焦点落在拖拽把手上按 Enter / Space（送回初始落点），或者受控接管 `position`、在打开时写回一个视口内的坐标。产品线要"永远拖不出屏幕"就得走后一条。
-- 面板关闭或被搬走后，焦点会掉回 `<body>`：本组件不接管焦点归还，作者应在关闭后把焦点送回触发按钮。
-- 同屏挂多块面板时给它们不同的初始落点，否则会叠成一摞、只有最上面那块点得到。
-- 位置不做视口夹取：组件一次也不量视口，`onPositionChange` 里发出来的坐标就是指针算出来的原值。
-- 面板的落位是视口坐标（`position: fixed` + `left` / `top`）。Vue 侧定位层会被搬到统一的浮层落点，祖先怎么写都不影响；**Web Components 侧搬不动**（角色节点作者写在哪就在哪），把 `<xh-floating-panel>` 放进带 `transform` / `filter` / `backdrop-filter` / `contain: paint` 的容器里，那个祖先会抢走包含块，面板会落到错误的位置——展开时元素会投一条 `overlay.stacking-trap` 诊断。
-- Web Components 侧"能不能搬"这个开关的属性名是 `panel-draggable` 而不是 `draggable`：`draggable` 是 HTML 全局属性，占用它会把宿主元素变成原生拖放源，`dragstart` 一起浏览器就派 `pointercancel`，指针拖动当场中止。property 名同样是 `panelDraggable`；Vue 侧不受影响，仍是 `draggable`。
+- 位置与尺寸值得保存：拖动途中每帧都发回调，写入存储前先节流。
+- 面板被移到视口外后，再点触发按钮不会把它移回：重新展开只是在同一坐标上再次展开。能收回的只有两条路径：焦点落在拖拽把手上按 Enter / Space（送回初始位置），或受控接管 `position` 并在打开时写回视口内的坐标。要求“永远拖不出屏幕”时使用后者。
+- 面板关闭或被移走后，焦点会回到 `<body>`：本组件不接管焦点归还，作者应在关闭后把焦点送回触发按钮。
+- 同屏多块面板时给它们不同的初始位置，否则会叠在一起，只有最上面一块可以点击。
+- 位置不做视口夹取：组件不测量视口，`onPositionChange` 发出的坐标就是指针计算的原值。
+- 面板的位置是视口坐标（`position: fixed` + `left` / `top`）。Vue 侧定位层会被移到统一的浮层落点，祖先的写法不影响；Web Components 侧不移动（角色节点写在哪就在哪），把 `<xh-floating-panel>` 放进带 `transform` / `filter` / `backdrop-filter` / `contain: paint` 的容器时，该祖先会成为包含块，面板会落到错误的位置；展开时元素会发出 `overlay.stacking-trap` 诊断。
+- Web Components 侧“是否可移动”的属性名是 `panel-draggable` 而不是 `draggable`：`draggable` 是 HTML 全局属性，占用它会把宿主元素变成原生拖放源，`dragstart` 触发后浏览器派发 `pointercancel`，指针拖动立即中止。property 名同样是 `panelDraggable`；Vue 侧不受影响，仍是 `draggable`。
 
 ### 反模式
 
-- 拿它当对话框用来确认删除：非模态面板允许用户绕开，重要的确认必须挡住去路。
-- 一屏挂五六块浮动面板：它们互相遮挡，用户先要整理桌面才能干活。
-- 把面板做成不可关闭也不可收拢：浮层挡住的正是用户要看的内容。
+- 用它确认删除：非模态面板允许用户绕开，重要的确认必须阻断。
+- 一屏挂五六块浮动面板：互相遮挡，用户需要先整理才能工作。
+- 面板既不可关闭也不可收拢：浮层遮住的正是用户要看的内容。
 
 ## API 参考
 
@@ -246,13 +246,13 @@ open 与 position 都交给外面握着：面板只报意图，值写回来才�
 | `window-state-trigger` | `aria-pressed` | 'true' \| 'false' |
 | `close-trigger` | `aria-label` | label.close |
 
-- 面板是 `role="dialog"` 且 `aria-modal="false"`：它不夺走焦点，页面其余部分照常可达。
-- 标题部件的 id 恒被 `aria-labelledby` 指向，因此**面板一定要写标题**，否则读屏只能念出"对话框"。
-- 拖拽把手、八个改尺把手、三个形态按钮、关闭按钮都只有图标，可及名一律走 `translations`。
-- 八个改尺把手是 `role="separator"`：`aria-valuenow` 报它推的那根轴的像素值（左右两侧与四角报宽度、上下两条报高度），`aria-valuetext` 把宽高一并念出来。不给 `maxSize` 时 `aria-valuemax` 缺席，播报以 `aria-valuetext` 为准。
-- 拖拽把手是原生按钮，它的激活键（Enter / Space）有实义：把面板送回初始落点。按钮不响应自己的激活键是反模式。
-- 把手在推不动时用 `aria-disabled` 而不是原生 `disabled`：后者会把它逐出 Tab 序列，键盘用户连"这里能搬"都读不到。改尺把手同理恒带 `tabindex="0"`。
-- 收拢时正文带上 `hidden`，其中的可聚焦元素一并退出 Tab 序列——只压高度的话读屏与 Tab 照样进得去。
+- 面板是 `role="dialog"` 且 `aria-modal="false"`：它不夺取焦点，页面其余部分照常可达。
+- 标题部件的 id 始终被 `aria-labelledby` 指向，因此面板必须写标题，否则读屏只能读出“对话框”。
+- 拖拽把手、八个调整把手、三个形态按钮、关闭按钮都只有图标，可访问名称一律来自 `translations`。
+- 八个调整把手是 `role="separator"`：`aria-valuenow` 报告它推动的轴的像素值（左右两侧与四角报宽度、上下两条报高度），`aria-valuetext` 把宽高一并读出。未提供 `maxSize` 时 `aria-valuemax` 缺席，播报以 `aria-valuetext` 为准。
+- 拖拽把手是原生按钮，激活键（Enter / Space）有实际含义：把面板送回初始位置。
+- 把手不可推动时使用 `aria-disabled` 而不是原生 `disabled`：后者会把它移出 Tab 序列，键盘用户无法得知此处可移动。调整把手同理始终带 `tabindex="0"`。
+- 收拢时正文带 `hidden`，其中的可聚焦元素一并退出 Tab 序列；只压缩高度时读屏与 Tab 仍可进入。
 
 ## 样式参考
 
@@ -293,30 +293,30 @@ open 与 position 都交给外面握着：面板只报意图，值写回来才�
 | --- | --- | --- | --- | --- | --- |
 | `--xh-floating-panel-action-bg-active` | `close-trigger`<br>`window-state-trigger` | `background` | `active`<br>`state=on` | `--xh-bg-subtle-active` | floating-panel 的 close-trigger、window-state-trigger 部件 background 覆盖槽。 |
 | `--xh-floating-panel-action-bg-hover` | `close-trigger`<br>`window-state-trigger` | `background` | `hover` | `--xh-bg-subtle-hover` | floating-panel 的 close-trigger、window-state-trigger 部件 background 覆盖槽。 |
-| `--xh-floating-panel-action-fg` | `close-trigger`<br>`window-state-trigger` | `color` | `default` | `--xh-material-glass-fg-muted` | floating-panel 的 close-trigger、window-state-trigger 部件 color 覆盖槽。 |
+| `--xh-floating-panel-action-fg` | `close-trigger`<br>`window-state-trigger` | `color` | `default` | `--xh-material-frosted-fg-muted` | floating-panel 的 close-trigger、window-state-trigger 部件 color 覆盖槽。 |
 | `--xh-floating-panel-action-fg-active` | `window-state-trigger` | `color` | `state=on` | `--xh-fg-default` | floating-panel 的 window-state-trigger 部件 color 覆盖槽。 |
 | `--xh-floating-panel-action-fg-hover` | `close-trigger`<br>`window-state-trigger` | `color` | `hover` | `--xh-fg-default` | floating-panel 的 close-trigger、window-state-trigger 部件 color 覆盖槽。 |
 | `--xh-floating-panel-action-radius` | `window-state-trigger` | `border-radius` | `default` | `--xh-shape-control` | floating-panel 的 window-state-trigger 部件 border-radius 覆盖槽。 |
 | `--xh-floating-panel-action-size` | `window-state-trigger` | `block-size`<br>`inline-size` | `default` | `--xh-control-h-sm` | floating-panel 的 window-state-trigger 部件 block-size、inline-size 覆盖槽。 |
-| `--xh-floating-panel-bg` | `content` | `background` | `default` | `--xh-material-glass-bg` | floating-panel 的 content 部件 background 覆盖槽。 |
+| `--xh-floating-panel-bg` | `content` | `background` | `default` | `--xh-material-frosted-bg` | floating-panel 的 content 部件 background 覆盖槽。 |
 | `--xh-floating-panel-body-px` | `body` | `padding-inline` | `default` | `--xh-surface-px-sm` | floating-panel 的 body 部件 padding-inline 覆盖槽。 |
 | `--xh-floating-panel-body-py` | `body` | `padding-block` | `default` | `--xh-surface-py-sm` | floating-panel 的 body 部件 padding-block 覆盖槽。 |
-| `--xh-floating-panel-border` | `content` | `border` | `default` | `--xh-material-glass-border` | floating-panel 的 content 部件 border 覆盖槽。 |
+| `--xh-floating-panel-border` | `content` | `border` | `default` | `--xh-material-frosted-border` | floating-panel 的 content 部件 border 覆盖槽。 |
 | `--xh-floating-panel-close-radius` | `close-trigger` | `border-radius` | `default` | `--xh-shape-control` | floating-panel 的 close-trigger 部件 border-radius 覆盖槽。 |
 | `--xh-floating-panel-close-size` | `close-trigger` | `block-size`<br>`inline-size` | `default` | `--xh-control-h-sm` | floating-panel 的 close-trigger 部件 block-size、inline-size 覆盖槽。 |
 | `--xh-floating-panel-corner-size` | `positioner`<br>`resize-trigger` | `height`<br>`width` | `edge=ne`<br>`edge=nw`<br>`edge=se`<br>`edge=sw` | `--xh-space-4` | floating-panel 的 positioner、resize-trigger 部件 height、width 覆盖槽。 |
-| `--xh-floating-panel-fg` | `content` | `color` | `default` | `--xh-material-glass-fg` | floating-panel 的 content 部件 color 覆盖槽。 |
+| `--xh-floating-panel-fg` | `content` | `color` | `default` | `--xh-material-frosted-fg` | floating-panel 的 content 部件 color 覆盖槽。 |
 | `--xh-floating-panel-handle-size` | `positioner`<br>`resize-trigger` | `height`<br>`width` | `edge=e`<br>`edge=n`<br>`edge=s`<br>`edge=w` | `--xh-space-2` | floating-panel 的 positioner、resize-trigger 部件 height、width 覆盖槽。 |
-| `--xh-floating-panel-header-bg` | `header` | `background` | `default` | `--xh-material-glass-bg` | floating-panel 的 header 部件 background 覆盖槽。 |
-| `--xh-floating-panel-header-border` | `header` | `border-block-end` | `default` | `--xh-material-glass-separator` | floating-panel 的 header 部件 border-block-end 覆盖槽。 |
+| `--xh-floating-panel-header-bg` | `header` | `background` | `default` | `--xh-material-frosted-bg` | floating-panel 的 header 部件 background 覆盖槽。 |
+| `--xh-floating-panel-header-border` | `header` | `border-block-end` | `default` | `--xh-material-frosted-separator` | floating-panel 的 header 部件 border-block-end 覆盖槽。 |
 | `--xh-floating-panel-header-gap` | `header` | `gap` | `default` | `--xh-control-gap-sm` | floating-panel 的 header 部件 gap 覆盖槽。 |
 | `--xh-floating-panel-header-px` | `header` | `padding-inline` | `default` | `--xh-space-3` | floating-panel 的 header 部件 padding-inline 覆盖槽。 |
 | `--xh-floating-panel-header-py` | `header` | `padding-block` | `default` | `--xh-space-2` | floating-panel 的 header 部件 padding-block 覆盖槽。 |
 | `--xh-floating-panel-icon-size` | `content`<br>`root` | `--xh-icon-size` | `default` | `--xh-glyph-size-text` | floating-panel 的 content、root 部件 --xh-icon-size 覆盖槽。 |
 | `--xh-floating-panel-layer` | `positioner` | `z-index` | `default` | `--xh-layer-drawer` | floating-panel 的 positioner 部件 z-index 覆盖槽。 |
-| `--xh-floating-panel-radius` | `content` | `border-radius` | `default` | `--xh-shape-surface` | floating-panel 的 content 部件 border-radius 覆盖槽。 |
-| `--xh-floating-panel-shadow` | `content` | `box-shadow` | `default` | `--xh-material-glass-shadow` | floating-panel 的 content 部件 box-shadow 覆盖槽。 |
-| `--xh-floating-panel-title-fg` | `title` | `color` | `default` | `--xh-material-glass-fg` | floating-panel 的 title 部件 color 覆盖槽。 |
+| `--xh-floating-panel-radius` | `content` | `border-radius` | `default` | `--xh-shape-overlay` | floating-panel 的 content 部件 border-radius 覆盖槽。 |
+| `--xh-floating-panel-shadow` | `content` | `box-shadow` | `default` | `--xh-material-frosted-shadow` | floating-panel 的 content 部件 box-shadow 覆盖槽。 |
+| `--xh-floating-panel-title-fg` | `title` | `color` | `default` | `--xh-material-frosted-fg` | floating-panel 的 title 部件 color 覆盖槽。 |
 | `--xh-floating-panel-title-font-size` | `title` | `font-size` | `default` | `--xh-text-label-size` | floating-panel 的 title 部件 font-size 覆盖槽。 |
 | `--xh-floating-panel-title-font-weight` | `title` | `font-weight` | `default` | `--xh-text-label-weight` | floating-panel 的 title 部件 font-weight 覆盖槽。 |
 | `--xh-floating-panel-trigger-bg` | `trigger` | `background` | `default` | `--xh-bg-surface` | floating-panel 的 trigger 部件 background 覆盖槽。 |
@@ -339,6 +339,6 @@ open 与 position 都交给外面握着：面板只报意图，值写回来才�
 
 皮肤用逻辑属性排布（`inline-start` 一族），`dir="rtl"` 下自动镜像。
 
-- 面板的坐标、八个把手的方位、方向键推动的方向**都是屏幕方位，不随 `dir` 翻转**。`w` 把手在 RTL 下仍长在物理左侧，按右方向键面板仍往屏幕右边走——指针位移本来就是屏幕坐标，跟着 `dir` 翻会让手上的方向与面板的动向对不上。
-- 因此皮肤里改尺把手那一段刻意写物理的 `inset` / `width` / `height`，连接层写的也是 `left` / `top`。**不要**把它们改成 `inset-inline-*`：把手会跑到对面，手往右拖却从左边收。
-- 面板内的正文照常跟随文档方向：标题栏的排布、正文的书写方向都由外面的 `dir` 决定，本组件一个字都不管。
+- 面板的坐标、八个把手的方位、方向键推动的方向都是屏幕方位，不随 `dir` 翻转。`w` 把手在 RTL 下仍位于物理左侧，按右方向键面板仍向屏幕右侧移动；指针位移本身就是屏幕坐标，跟随 `dir` 翻转会让手的方向与面板的动向不一致。
+- 因此皮肤中调整把手的规则刻意使用物理的 `inset` / `width` / `height`，连接层写的也是 `left` / `top`。不要改成 `inset-inline-*`：把手会跑到对侧，向右拖动却从左侧收缩。
+- 面板内的正文照常跟随文档方向：标题栏的排布、正文的书写方向都由外部的 `dir` 决定，本组件不干预。

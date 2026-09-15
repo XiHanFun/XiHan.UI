@@ -27902,7 +27902,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-material-glass-fg-muted"
+        "--xh-material-frosted-fg-muted"
       ],
       "visibility": "public",
       "description": "floating-panel 的 close-trigger、window-state-trigger 部件 color 覆盖槽。"
@@ -27994,7 +27994,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-material-glass-bg"
+        "--xh-material-frosted-bg"
       ],
       "visibility": "public",
       "description": "floating-panel 的 content 部件 background 覆盖槽。"
@@ -28048,7 +28048,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-material-glass-border"
+        "--xh-material-frosted-border"
       ],
       "visibility": "public",
       "description": "floating-panel 的 content 部件 border 覆盖槽。"
@@ -28126,7 +28126,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-material-glass-fg"
+        "--xh-material-frosted-fg"
       ],
       "visibility": "public",
       "description": "floating-panel 的 content 部件 color 覆盖槽。"
@@ -28167,7 +28167,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-material-glass-bg"
+        "--xh-material-frosted-bg"
       ],
       "visibility": "public",
       "description": "floating-panel 的 header 部件 background 覆盖槽。"
@@ -28185,7 +28185,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-material-glass-separator"
+        "--xh-material-frosted-separator"
       ],
       "visibility": "public",
       "description": "floating-panel 的 header 部件 border-block-end 覆盖槽。"
@@ -28294,7 +28294,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-shape-surface"
+        "--xh-shape-overlay"
       ],
       "visibility": "public",
       "description": "floating-panel 的 content 部件 border-radius 覆盖槽。"
@@ -28312,7 +28312,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-material-glass-shadow"
+        "--xh-material-frosted-shadow"
       ],
       "visibility": "public",
       "description": "floating-panel 的 content 部件 box-shadow 覆盖槽。"
@@ -28330,7 +28330,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-material-glass-fg"
+        "--xh-material-frosted-fg"
       ],
       "visibility": "public",
       "description": "floating-panel 的 title 部件 color 覆盖槽。"

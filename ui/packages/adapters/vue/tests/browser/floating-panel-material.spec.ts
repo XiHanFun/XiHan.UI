@@ -97,8 +97,8 @@ afterEach(async () => {
   await cdp().send('Emulation.setEmulatedMedia', { media: '', features: [] })
 })
 
-describe('floating-panel 的 M3 桌面玻璃皮肤', () => {
-  it.each(THEMES)('%s：内容面、标题栏和操作文本消费同一张玻璃配方', async (theme) => {
+describe('floating-panel 的 M2 桌面磨砂皮肤', () => {
+  it.each(THEMES)('%s：内容面、标题栏和操作文本消费同一张磨砂配方', async (theme) => {
     document.documentElement.dataset.theme = theme
     await mount()
 
@@ -106,15 +106,15 @@ describe('floating-panel 的 M3 桌面玻璃皮肤', () => {
     const header = part('header')
     const action = part('close-trigger')
     const style = getComputedStyle(content)
-    expect(style.backgroundColor).toBe(resolve(content, 'background-color', 'var(--xh-material-glass-bg)'))
-    expect(style.backgroundImage).toContain(resolve(content, 'background-image', 'linear-gradient(to bottom, var(--xh-material-glass-highlight) 0 var(--xh-stroke-thin), transparent var(--xh-stroke-thin))'))
-    expect(style.borderTopColor).toBe(resolve(content, 'border-top-color', 'var(--xh-material-glass-border)'))
-    expect(style.color).toBe(resolve(content, 'color', 'var(--xh-material-glass-fg)'))
-    expect(style.boxShadow).toBe(resolve(content, 'box-shadow', 'var(--xh-material-glass-shadow)'))
-    expect(style.backdropFilter).toBe(resolve(content, 'backdrop-filter', 'var(--xh-material-glass-backdrop)'))
-    expect(getComputedStyle(header).backgroundColor).toBe(resolve(header, 'background-color', 'var(--xh-material-glass-bg)'))
-    expect(getComputedStyle(header).borderBottomColor).toBe(resolve(header, 'border-bottom-color', 'var(--xh-material-glass-separator)'))
-    expect(getComputedStyle(action).color).toBe(resolve(action, 'color', 'var(--xh-material-glass-fg-muted)'))
+    expect(style.backgroundColor).toBe(resolve(content, 'background-color', 'var(--xh-material-frosted-bg)'))
+    expect(style.backgroundImage).toContain(resolve(content, 'background-image', 'linear-gradient(to bottom, var(--xh-material-frosted-highlight) 0 var(--xh-stroke-thin), transparent var(--xh-stroke-thin))'))
+    expect(style.borderTopColor).toBe(resolve(content, 'border-top-color', 'var(--xh-material-frosted-border)'))
+    expect(style.color).toBe(resolve(content, 'color', 'var(--xh-material-frosted-fg)'))
+    expect(style.boxShadow).toBe(resolve(content, 'box-shadow', 'var(--xh-material-frosted-shadow)'))
+    expect(style.backdropFilter).toBe(resolve(content, 'backdrop-filter', 'var(--xh-material-frosted-backdrop)'))
+    expect(getComputedStyle(header).backgroundColor).toBe(resolve(header, 'background-color', 'var(--xh-material-frosted-bg)'))
+    expect(getComputedStyle(header).borderBottomColor).toBe(resolve(header, 'border-bottom-color', 'var(--xh-material-frosted-separator)'))
+    expect(getComputedStyle(action).color).toBe(resolve(action, 'color', 'var(--xh-material-frosted-fg-muted)'))
   })
 
   it.each(THEMES)('%s：标题栏按钮键盘聚焦先铺实体隔离底，几何不变', async (theme) => {
@@ -128,7 +128,7 @@ describe('floating-panel 的 M3 桌面玻璃皮肤', () => {
     await focus(action)
     const style = getComputedStyle(action)
     expect(action.matches(':focus-visible')).toBe(true)
-    expect(style.backgroundColor).toBe(resolve(action, 'background-color', 'var(--xh-material-glass-focus-surface)'))
+    expect(style.backgroundColor).toBe(resolve(action, 'background-color', 'var(--xh-material-frosted-focus-surface)'))
     expect(style.outlineStyle).toBe('solid')
     expect(style.width).toBe(width)
     expect(style.height).toBe(height)
@@ -143,13 +143,14 @@ describe('floating-panel 的 M3 桌面玻璃皮肤', () => {
     const rest = getComputedStyle(content)
     expect(alpha(rest.backgroundColor)).toBe(255)
     expect(rest.backdropFilter).toBe('none')
-    expect(rest.boxShadow).toBe('none')
+    // M2 在增强对比下只实体化并加强边界，浮层投影保留
+    expect(rest.boxShadow).toBe(resolve(content, 'box-shadow', 'var(--xh-material-frosted-shadow)'))
     expect(rest.borderTopStyle).toBe('solid')
     await focus(part('window-state-trigger'))
     expect(getComputedStyle(part('window-state-trigger')).outlineStyle).toBe('solid')
   })
 
-  it('减少透明度：令牌关闭光学采样，保留原有 M3 深度与实体表面', async () => {
+  it('减少透明度：令牌关闭光学采样，保留原有 M2 深度与实体表面', async () => {
     await cdp().send('Emulation.setEmulatedMedia', {
       media: '',
       features: [{ name: 'prefers-reduced-transparency', value: 'reduce' }],
@@ -161,7 +162,7 @@ describe('floating-panel 的 M3 桌面玻璃皮肤', () => {
     const style = getComputedStyle(content)
     expect(alpha(style.backgroundColor)).toBe(255)
     expect(style.backdropFilter).toBe('none')
-    expect(style.boxShadow).toBe(resolve(content, 'box-shadow', 'var(--xh-material-glass-shadow)'))
+    expect(style.boxShadow).toBe(resolve(content, 'box-shadow', 'var(--xh-material-frosted-shadow)'))
     expect(style.borderTopWidth).toBe('1px')
   })
 
@@ -174,8 +175,8 @@ describe('floating-panel 的 M3 桌面玻璃皮肤', () => {
     await mount()
 
     const style = getComputedStyle(part('content'))
-    expect(style.getPropertyValue('--xh-material-glass-bg').trim()).toBe('Canvas')
-    expect(style.getPropertyValue('--xh-material-glass-fg').trim()).toBe('CanvasText')
+    expect(style.getPropertyValue('--xh-material-frosted-bg').trim()).toBe('Canvas')
+    expect(style.getPropertyValue('--xh-material-frosted-fg').trim()).toBe('CanvasText')
     expect(alpha(style.backgroundColor)).toBe(255)
     expect(style.backgroundImage).toBe('none')
     expect(style.backdropFilter).toBe('none')
@@ -183,7 +184,7 @@ describe('floating-panel 的 M3 桌面玻璃皮肤', () => {
     expect(style.borderTopWidth).toBe('1px')
   })
 
-  it('打印：令牌取消玻璃滤镜与投影，面板仍保留实体结构', async () => {
+  it('打印：令牌取消磨砂滤镜与投影，面板仍保留实体结构', async () => {
     await cdp().send('Emulation.setEmulatedMedia', { media: 'print', features: [] })
     await mount()
 

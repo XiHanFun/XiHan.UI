@@ -2861,7 +2861,7 @@
   color: var(--xh-floating-panel-trigger-fg, var(--xh-fg-default));
   font-size: var(--xh-text-label-size);
   cursor: pointer;
-  transition: scale var(--xh-motion-duration-micro) var(--xh-motion-ease-enter-strong);
+  transition: scale var(--xh-motion-duration-release) var(--xh-motion-ease-release);
 }
 
 [data-scope='floating-panel'][data-part='trigger'][hidden] {
@@ -2870,6 +2870,8 @@
 
 [data-scope='floating-panel'][data-part='trigger']:active:not(:disabled) {
   scale: var(--xh-motion-scale-press);
+  transition-duration: var(--xh-motion-duration-press);
+  transition-timing-function: var(--xh-motion-ease-press);
 }
 
 /* 把手的粗细：八个把手共用这两档，声明在这里往下继承。 */
@@ -2906,21 +2908,21 @@
   display: flex;
   flex-direction: column;
   overflow: hidden;
-  /* 默认态是 M3 desktop surface：背景、边缘、高光、投影与光学采样同出一张配方。
-     作者既有的面板槽仍排在外层；没有覆写时才落进这套玻璃令牌。 */
-  border: var(--xh-stroke-thin) solid var(--xh-floating-panel-border, var(--xh-material-glass-border));
-  border-radius: var(--xh-floating-panel-radius, var(--xh-shape-surface));
+  /* 默认态是 M2 磨砂面：背景、边缘、高光、投影与光学采样同出一张配方。
+     作者既有的面板槽仍排在外层；没有覆写时才落进这套磨砂令牌。 */
+  border: var(--xh-stroke-thin) solid var(--xh-floating-panel-border, var(--xh-material-frosted-border));
+  border-radius: var(--xh-floating-panel-radius, var(--xh-shape-overlay));
   background:
     linear-gradient(
       to bottom,
-      var(--xh-material-glass-highlight) 0 var(--xh-stroke-thin),
+      var(--xh-material-frosted-highlight) 0 var(--xh-stroke-thin),
       transparent var(--xh-stroke-thin)
     ),
-    var(--xh-floating-panel-bg, var(--xh-material-glass-bg));
-  color: var(--xh-floating-panel-fg, var(--xh-material-glass-fg));
-  box-shadow: var(--xh-floating-panel-shadow, var(--xh-material-glass-shadow));
-  -webkit-backdrop-filter: var(--xh-material-glass-backdrop);
-  backdrop-filter: var(--xh-material-glass-backdrop);
+    var(--xh-floating-panel-bg, var(--xh-material-frosted-bg));
+  color: var(--xh-floating-panel-fg, var(--xh-material-frosted-fg));
+  box-shadow: var(--xh-floating-panel-shadow, var(--xh-material-frosted-shadow));
+  -webkit-backdrop-filter: var(--xh-material-frosted-backdrop);
+  backdrop-filter: var(--xh-material-frosted-backdrop);
   /* 铺满那一档要把投影整个撤掉，海拔的这一跳跟着过渡走 */
   transition: box-shadow var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
 }
@@ -2955,8 +2957,8 @@
   gap: var(--xh-floating-panel-header-gap, var(--xh-control-gap-sm));
   padding-block: var(--xh-floating-panel-header-py, var(--xh-space-2));
   padding-inline: var(--xh-floating-panel-header-px, var(--xh-space-3));
-  border-block-end: var(--xh-stroke-thin) solid var(--xh-floating-panel-header-border, var(--xh-material-glass-separator));
-  background: var(--xh-floating-panel-header-bg, var(--xh-material-glass-bg));
+  border-block-end: var(--xh-stroke-thin) solid var(--xh-floating-panel-header-border, var(--xh-material-frosted-separator));
+  background: var(--xh-floating-panel-header-bg, var(--xh-material-frosted-bg));
 }
 
 [data-scope='floating-panel'][data-part='header'][hidden] {
@@ -2972,7 +2974,7 @@
   line-height: var(--xh-leading-tight);
   white-space: nowrap;
   text-overflow: ellipsis;
-  color: var(--xh-floating-panel-title-fg, var(--xh-material-glass-fg));
+  color: var(--xh-floating-panel-title-fg, var(--xh-material-frosted-fg));
 }
 
 /* 拖拽把手铺满标题栏剩下的横向空间：只给一小块纹理的话很难抓住 */
@@ -3086,12 +3088,12 @@
   justify-content: center;
   border: 0;
   background: transparent;
-  color: var(--xh-floating-panel-action-fg, var(--xh-material-glass-fg-muted));
+  color: var(--xh-floating-panel-action-fg, var(--xh-material-frosted-fg-muted));
   cursor: pointer;
   transition:
     background var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
     color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
-    scale var(--xh-motion-duration-micro) var(--xh-motion-ease-enter-strong);
+    scale var(--xh-motion-duration-release) var(--xh-motion-ease-release);
 }
 
 /* 两颗钮同高同圆角，尺寸与圆角槽按各自角色命名 */
@@ -3122,6 +3124,8 @@
 [data-scope='floating-panel'][data-part='close-trigger']:active {
   background: var(--xh-floating-panel-action-bg-active, var(--xh-bg-subtle-active));
   scale: var(--xh-motion-scale-press);
+  transition-duration: var(--xh-motion-duration-press);
+  transition-timing-function: var(--xh-motion-ease-press);
 }
 
 /* 当前形态的那个按钮压着不放，用户一眼看得出面板正处于哪一档。
@@ -3138,12 +3142,12 @@
   --xh-_ring-color: currentColor;
 }
 
-/* 玻璃会透入宿主背景，键盘焦点先落到配方给出的实体隔离底；
+/* 磨砂面会透入宿主背景，键盘焦点先落到配方给出的实体隔离底；
    高对比、减透明、强制色与打印都由同一令牌在原位收敛。 */
 [data-scope='floating-panel'][data-part='window-state-trigger']:focus-visible,
 [data-scope='floating-panel'][data-part='close-trigger']:focus-visible {
-  background: var(--xh-material-glass-focus-surface);
-  color: var(--xh-material-glass-fg);
+  background: var(--xh-material-frosted-focus-surface);
+  color: var(--xh-material-frosted-fg);
   transition-property: color, scale;
 }
 
@@ -3154,7 +3158,7 @@
 }
 
 @media (forced-colors: active) {
-  /* 强制色不会绘制背景图层；直接撤掉顶边装饰，边界与文字改由 glass 的系统色令牌接手。 */
+  /* 强制色不会绘制背景图层；直接撤掉顶边装饰，边界与文字改由 frosted 的系统色令牌接手。 */
   [data-scope='floating-panel'][data-part='content'] {
     background-image: none;
   }
