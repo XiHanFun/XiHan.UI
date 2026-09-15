@@ -189,7 +189,7 @@
     transition:
       background var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
       color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
-      scale var(--xh-motion-duration-micro) var(--xh-motion-ease-enter-strong);
+      scale var(--xh-motion-duration-release) var(--xh-motion-ease-release);
   }
 
   [data-scope='question-flow'][data-part='item'][hidden] {
@@ -202,6 +202,8 @@
 
   [data-scope='question-flow'][data-part='item']:active {
     scale: var(--xh-motion-scale-press);
+    transition-duration: var(--xh-motion-duration-press);
+    transition-timing-function: var(--xh-motion-ease-press);
   }
 
   /* 当前题的选项按位次错开开幕，换题时随 data-current 重跑。
@@ -289,7 +291,7 @@
   [data-scope='question-flow'][data-part='item-indicator'][data-select-mode='single']:empty::before {
     inline-size: var(--xh-question-flow-dot-size, calc(var(--xh-question-flow-indicator-size, var(--xh-_question-flow-indicator)) / 2));
     block-size: var(--xh-question-flow-dot-size, calc(var(--xh-question-flow-indicator-size, var(--xh-_question-flow-indicator)) / 2));
-    border-radius: var(--xh-question-flow-dot-radius, var(--xh-shape-pill));
+    border-radius: var(--xh-question-flow-dot-radius, var(--xh-shape-circle));
     -webkit-mask: none;
     mask: none;
   }
@@ -373,7 +375,7 @@
     transition:
       background var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
       color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
-      scale var(--xh-motion-duration-micro) var(--xh-motion-ease-enter-strong);
+      scale var(--xh-motion-duration-release) var(--xh-motion-ease-release);
   }
 
   [data-scope='question-flow'][data-part='prev-trigger'][hidden],
@@ -390,6 +392,8 @@
   [data-scope='question-flow'][data-part='prev-trigger']:active:not(:disabled),
   [data-scope='question-flow'][data-part='next-trigger']:active:not(:disabled) {
     scale: var(--xh-motion-scale-press);
+    transition-duration: var(--xh-motion-duration-press);
+    transition-timing-function: var(--xh-motion-ease-press);
   }
 
   [data-scope='question-flow'][data-part='prev-trigger']:disabled,
@@ -457,7 +461,7 @@
       border-color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
       box-shadow var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
       color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
-      scale var(--xh-motion-duration-micro) var(--xh-motion-ease-enter-strong);
+      scale var(--xh-motion-duration-release) var(--xh-motion-ease-release);
   }
 
   /* 面是实心的，环色与面同族，画在面里就看不出来；环改取面自己的前景色——
@@ -483,6 +487,8 @@
 
   [data-scope='question-flow'][data-part='skip-trigger']:active:not(:disabled) {
     scale: var(--xh-motion-scale-press);
+    transition-duration: var(--xh-motion-duration-press);
+    transition-timing-function: var(--xh-motion-ease-press);
   }
 
   /* 内顶高光把实心块顶出一道边，与跳过那颗的描边同一档厚度 */
@@ -501,6 +507,8 @@
   [data-scope='question-flow'][data-part='submit-trigger']:active:not(:disabled) {
     background: var(--xh-question-flow-submit-bg-active, var(--xh-_tone-active, var(--xh-bg-brand-active)));
     scale: var(--xh-motion-scale-press);
+    transition-duration: var(--xh-motion-duration-press);
+    transition-timing-function: var(--xh-motion-ease-press);
   }
 
   [data-scope='question-flow'][data-part='skip-trigger']:disabled,

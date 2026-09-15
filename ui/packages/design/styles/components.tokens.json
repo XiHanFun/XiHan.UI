@@ -45490,7 +45490,7 @@
         "select-mode=single"
       ],
       "defaultToken": [
-        "--xh-shape-pill"
+        "--xh-shape-circle"
       ],
       "visibility": "public",
       "description": "question-flow 的 item-indicator 部件 border-radius 覆盖槽。"
