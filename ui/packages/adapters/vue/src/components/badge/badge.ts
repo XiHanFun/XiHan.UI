@@ -19,23 +19,23 @@ const badgeProps = {
   size: String as PropType<Size>,
   /** 挂在哪个角上，默认 top-end。 */
   placement: String as PropType<BadgePlacement>,
-  /** 计数：给了它角标就自己出数字，超过 max 写成「max+」。 */
+  /** 计数：提供后角标自行显示数字，超过 max 时显示为「max+」。 */
   count: { type: Number },
   /** 计数上限，默认 99。 */
   max: { type: Number },
-  /** 计数为 0 时是否照样显示，默认不显示。 */
+  /** 计数为 0 时是否仍然显示，默认不显示。 */
   showZero: { type: Boolean, default: undefined },
-  /** 只出一个点，不出数字。 */
+  /** 只显示一个点，不显示数字。 */
   dot: { type: Boolean, default: undefined },
-  /** 读屏怎么念这枚角标，例如「3 条未读」。 */
+  /** 读屏朗读该角标的方式，例如「3 条未读」。 */
   label: { type: String },
 } as const
 
 /**
- * 锚点：被标记的那个东西（按钮、头像、标签页）写进默认插槽，角标另起一层贴在它的角上。
+ * 锚点：被标记的元素（按钮、头像、标签页）写进默认插槽，角标另起一层贴在它的角上。
  *
- * 角标是挂在别的元素角上的一枚标记，不是可以单独摆的药丸——
- * 行内的状态药丸请用 tag。
+ * 角标是挂在其他元素角上的标记，不是可以单独放置的药丸：
+ * 行内的状态药丸请使用 tag。
  */
 export const XhBadgeRoot = defineComponent({
   name: 'XhBadgeRoot',
@@ -49,7 +49,7 @@ export const XhBadgeRoot = defineComponent({
   },
 })
 
-/** 角标本身，绝对定位在锚点的某个角上。不给内容就用算好的计数文本。 */
+/** 角标本身，绝对定位在锚点的某个角上。未提供内容时使用计算得出的计数文本。 */
 export const XhBadgeIndicator = defineComponent({
   name: 'XhBadgeIndicator',
   slots: Object as SlotsType<{ default?: (props: { text: string }) => VNode[] }>,
@@ -64,9 +64,9 @@ export const XhBadgeIndicator = defineComponent({
 })
 
 /**
- * 一步到位的写法：默认插槽放被标记的东西，角标自动跟上。
+ * 一步到位的写法：默认插槽放被标记的元素，角标自动跟随。
  *
- * 要往角标里塞自定义内容（比如一枚小图标）时改用 XhBadgeRoot + XhBadgeIndicator。
+ * 需要在角标中放置自定义内容（例如一个小图标）时改用 XhBadgeRoot + XhBadgeIndicator。
  */
 export const XhBadge = defineComponent({
   name: 'XhBadge',
