@@ -27,8 +27,11 @@ describe('action Control Family Recipe', () => {
     expect(css).toContain('min-inline-size: 44px')
     expect(css).toContain('min-block-size: 44px')
     expect(css).toContain('@media (forced-colors: active)')
-    expect(css).toContain('scale var(--xh-motion-duration-micro)')
+    expect(css).toContain('scale var(--xh-motion-duration-release) var(--xh-motion-ease-release)')
     expect(css).toContain('var(--xh-motion-scale-press)')
+    const pressed = css.slice(css.indexOf(':not([data-loading]):active {'), css.indexOf('[data-xh-action-control][data-disabled]'))
+    expect(pressed).toContain('transition-duration: var(--xh-motion-duration-press);')
+    expect(pressed).toContain('transition-timing-function: var(--xh-motion-ease-press);')
   })
 
   it('三种显示策略完整，粗指针不依赖 hover', async () => {
@@ -50,6 +53,9 @@ describe('action Control Family Recipe', () => {
     // hover 的前景与 rest 默认都取 fg-default，但组件仍可只覆盖 hover，不能被编译优化吞掉。
     expect(css).toContain('color: var(--xh-action-fg-hover, var(--xh-fg-default));')
     expect(css).toContain('opacity: var(--xh-action-opacity-loading, 1);')
+    // disabled 同时降级前景与表面，不再只靠 opacity
+    expect(css).toContain('color: var(--xh-action-fg-disabled, var(--xh-fg-disabled));')
+    expect(css).toContain('opacity: var(--xh-action-opacity-disabled, 1);')
     expect(css).toContain('cursor: var(--xh-action-cursor-focus-visible, pointer);')
   })
 
@@ -81,7 +87,7 @@ describe('action Control Family Recipe', () => {
 
   it('button 独立皮肤直接引用 Family Recipe，且不再复制通用状态与粗指针规则', async () => {
     const css = await readFile(BUTTON, 'utf8')
-    expect(css.startsWith('/* 独立 Button 皮肤')).toBe(true)
+    expect(css).toContain('/* 独立 Button 皮肤')
     expect(css).toContain('@import \'../family/action-control.css\';')
     expect(css).not.toContain('@media (pointer: coarse)')
     expect(css).not.toMatch(/\[data-scope='button'\]\[data-part='root'\]:not\(\[data-disabled\]\):not\(\[data-loading\]\):(hover|active)/)

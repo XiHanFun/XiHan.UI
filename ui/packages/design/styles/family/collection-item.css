@@ -45,9 +45,15 @@
     cursor: var(--xh-_collection-cursor);
     opacity: var(--xh-_collection-opacity);
     transition:
-      background-color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
+      background-color var(--xh-motion-duration-release) var(--xh-motion-ease-release),
       color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
       outline-color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
+  }
+
+  /* 按下段：换面收进按下时长与曲线；释放回到 rest 规则的时长。组件皮肤只负责给出 active 面。 */
+  [data-xh-collection-item]:not([aria-disabled='true'], [aria-busy='true'], [data-error]):active {
+    transition-duration: var(--xh-motion-duration-press);
+    transition-timing-function: var(--xh-motion-ease-press);
   }
 
   [data-xh-collection-item][data-xh-collection-size='sm'] {
