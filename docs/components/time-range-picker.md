@@ -52,42 +52,42 @@ hourCycle 决定两组段位与时列的写法，上下午各成一段一列
 
 ### 何时使用
 
-- 用户需要挑一段起止时间：营业时段、预约时段、会议起止。
+- 用户需要选择一段起止时间：营业时段、预约时段、会议起止。
 - 可选时间是离散的（每 15 分钟一档），或需要限制可选时段。
 
 ### 何时不用
 
-- 只选一个时刻：用[时间选择器](./time-picker)。
-- 任意时间都可以、用户会直接打字：用两个[时间字段](./time-field)。
-- 起止跨天、要连日期一起挑：用[日期范围选择器](./date-range-picker)。
+- 只选一个时刻时，使用[时间选择器](./time-picker)。
+- 任意时间都可以、用户直接键入时，使用两个[时间字段](./time-field)。
+- 起止跨天、需要连同日期一起选择时，使用[日期范围选择器](./date-range-picker)。
 
 ### 特性
 
-- 值恒为区间两端 `[start, end]`，按位存放：只填了终点时是 `['', 终点]`，受控回写按同一份下标认领。
-- 起止各一组段位，`range-separator` 隔在中间；方向键换段不跨组，`name` 与 `endName` 各自决定两份隐藏输入参不参与提交。
-- 浮层里起止两组时列并排，左右键跨组换列；选中一格只改那一端对应的段，浮层不收起。
-- 终点那组以起点为下界、起点那组以终点为上界：另一端一填全，界外的格就从列里裁掉。
-- `step` 分列设定各列的步长；`min` / `max` 直接把界外的格从列里裁掉；`isTimeUnavailable` 逐格判断可选性，第三个参数是哪一端。
-- `presets` 提供「上午」「全天」这类整段快捷项，值用 ISO 8601 的区间写法拼两端，点一下两端整份写进值并收起。
+- 值始终为区间两端 `[start, end]`，按位存放：只填了终点时是 `['', 终点]`，受控回写按同一下标对应。
+- 起止各一组段位，`range-separator` 隔在中间；方向键换段不跨组，`name` 与 `endName` 各自决定两份隐藏输入是否参与提交。
+- 浮层内起止两组时间列并排，左右键跨组换列；选中一格只改对应端的段，浮层不收起。
+- 终点组以起点为下界、起点组以终点为上界：另一端填满后，界外的格从列中裁掉。
+- `step` 分列设定各列的步长；`min` / `max` 直接把界外的格从列中裁掉；`isTimeUnavailable` 逐格判断可选性，第三个参数是哪一端。
+- `presets` 提供“上午”“全天”等整段快捷项，值使用 ISO 8601 的区间写法拼接两端，点击后两端整份写入值并收起。
 - 终点早于起点、任一端越界时整个字段标为不合法，也可以用 `invalid` 显式声明。
-- 触发器打开空值时焦点直接落到起点那组的第一项；从输入段打开时继续保留键入焦点，展开后落到正在编辑那一端的时列。
+- 触发器打开空值时焦点直接落到起点组的第一项；从输入段打开时继续保留键入焦点，展开后落到正在编辑一端的时间列。
 
 ### 组合
 
-- 输入行内嵌两组[时间字段](./time-field)同构的段位，逐段键入与加减走它。
+- 输入行内嵌两组与[时间字段](./time-field)同构的段位，逐段键入与加减由它负责。
 - 与[日期范围选择器](./date-range-picker)配合组成日期时间区间。
 
 ### 最佳实践
 
-- 使用明确的字段标签，两组段位各自报「开始时间」「结束时间」。
-- 起止段组之间必须渲染 `range-separator`，不要依赖空白区分两端。
-- 浮层里两组时列各带一个小标题（`column-group-label`），眼睛才分得清哪一组是起点。
-- 常用时段优先提供快捷项，时刻在自己的 computed / memo 里算好再传。
+- 使用明确的字段标签，两组段位各自报告“开始时间”“结束时间”。
+- 起止段组之间必须渲染 `range-separator`，不依赖空白区分两端。
+- 浮层内两组时间列各带一个小标题（`column-group-label`），便于分辨起点与终点。
+- 常用时段优先提供快捷项，时刻在 computed / memo 中计算后再传入。
 
 ### 反模式
 
-- 用两个时间选择器拼一个区间：两端之间没有互相裁剪，也没人替你校验先后。
-- 步长设成 1 分钟：一列六十格，两组就是一百二十格，滚起来没有尽头。
+- 用两个时间选择器拼接一个区间：两端之间没有互相裁剪，也不校验先后顺序。
+- 步长设为 1 分钟：一列六十格，两组一百二十格，滚动过长。
 
 ## API 参考
 
@@ -416,7 +416,7 @@ hourCycle 决定两组段位与时列的写法，上下午各成一段一列
 | `--xh-time-range-picker-content-max-h` | `content` | `max-block-size` | `default` | `--xh-viewport-h-lg` | time-range-picker 的 content 部件 max-block-size 覆盖槽。 |
 | `--xh-time-range-picker-content-px` | `content` | `padding-inline` | `default` | `--xh-space-1` | time-range-picker 的 content 部件 padding-inline 覆盖槽。 |
 | `--xh-time-range-picker-content-py` | `content` | `padding-block` | `default` | `--xh-space-1` | time-range-picker 的 content 部件 padding-block 覆盖槽。 |
-| `--xh-time-range-picker-content-radius` | `content` | `border-radius` | `default` | `--xh-shape-surface` | time-range-picker 的 content 部件 border-radius 覆盖槽。 |
+| `--xh-time-range-picker-content-radius` | `content` | `border-radius` | `default` | `--xh-shape-overlay` | time-range-picker 的 content 部件 border-radius 覆盖槽。 |
 | `--xh-time-range-picker-content-shadow` | `content` | `box-shadow` | `default` | `--xh-material-frosted-shadow` | time-range-picker 的 content 部件 box-shadow 覆盖槽。 |
 | `--xh-time-range-picker-control-bg` | `control` | `background` | `default` | `--xh-_time-range-picker-control-bg` | time-range-picker 的 control 部件 background 覆盖槽。 |
 | `--xh-time-range-picker-control-bg-disabled` | `control` | `background` | `disabled` | `--xh-bg-subtle` | time-range-picker 的 control 部件 background 覆盖槽。 |
@@ -431,7 +431,7 @@ hourCycle 决定两组段位与时列的写法，上下午各成一段一列
 | `--xh-time-range-picker-control-h` | `control` | `block-size` | `default` | `--xh-_time-range-picker-control-h` | time-range-picker 的 control 部件 block-size 覆盖槽。 |
 | `--xh-time-range-picker-control-min-w` | `control`<br>`root` | `min-inline-size` | `default` | `--xh-control-min-w` | time-range-picker 的 control、root 部件 min-inline-size 覆盖槽。 |
 | `--xh-time-range-picker-control-px` | `control` | `padding-inline` | `default` | `--xh-_time-range-picker-control-px` | time-range-picker 的 control 部件 padding-inline 覆盖槽。 |
-| `--xh-time-range-picker-control-radius` | `control` | `border-radius` | `default` | `--xh-shape-surface` | time-range-picker 的 control 部件 border-radius 覆盖槽。 |
+| `--xh-time-range-picker-control-radius` | `control` | `border-radius` | `default` | `--xh-shape-control` | time-range-picker 的 control 部件 border-radius 覆盖槽。 |
 | `--xh-time-range-picker-control-shadow` | `control` | `box-shadow` | `default` | `--xh-_time-range-picker-control-shadow` | time-range-picker 的 control 部件 box-shadow 覆盖槽。 |
 | `--xh-time-range-picker-font-size` | `control` | `font-size` | `default` | `--xh-_time-range-picker-font-size` | time-range-picker 的 control 部件 font-size 覆盖槽。 |
 | `--xh-time-range-picker-gap` | `root` | `gap` | `default` | `--xh-space-1` | time-range-picker 的 root 部件 gap 覆盖槽。 |
