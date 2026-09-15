@@ -30,7 +30,7 @@ export type RatingRootSlotProps = Pick<
   | 'setValue'
 >
 
-/** 条目默认插槽的载荷：这一颗星的选中、点亮与半亮状态。 */
+/** 条目默认插槽的载荷：该颗星的选中、点亮与半亮状态。 */
 export type RatingItemSlotProps = RatingItemState
 
 export const XhRatingRoot = defineComponent({

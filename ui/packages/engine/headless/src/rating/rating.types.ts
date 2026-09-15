@@ -8,7 +8,7 @@
 import type { Direction, MachineSchema, PropTypes, Size, Tone } from '@xihan-ui/core'
 
 export interface RatingValueChangeDetails {
-  /** 已经钉到合法档位并夹进 [0, count] 的评分；0 表示还没评。 */
+  /** 已对齐到合法档位并夹进 [0, count] 的评分；0 表示尚未评分。 */
   value: number
 }
 
@@ -18,7 +18,7 @@ export interface RatingHoverChangeDetails {
 }
 
 /**
- * 条目自报家门：它代表第几颗星（1 起）。
+ * 条目的声明：代表第几颗星（1 起）。
  * connect 在 Vue 的 render 期求值，此时 DOM 尚不存在，不得反查 DOM。
  */
 export interface RatingItemProps {
@@ -28,9 +28,9 @@ export interface RatingItemProps {
 /** 单个条目的呈现状态；自绘星形时按它取图案。 */
 export interface RatingItemState {
   value: number
-  /** 真实值落在这颗星上（读屏念出的那一颗）。悬停预览不改它。 */
+  /** 真实值落在这颗星上（读屏朗读的那一颗）。悬停预览不改变它。 */
   checked: boolean
-  /** 这颗星该点亮。悬停期间跟预览值走。 */
+  /** 这颗星应点亮。悬停期间跟随预览值。 */
   highlighted: boolean
   /** 这颗星只亮一半。 */
   half: boolean
@@ -38,38 +38,38 @@ export interface RatingItemState {
 
 export interface RatingSchema extends MachineSchema {
   props: {
-    /** 受控评分。给定即受控：内部不再自行落值，只发 onValueChange。 */
+    /** 受控评分。提供即受控：内部不再自行落值，只发 onValueChange。 */
     value?: number
-    /** 非受控初值，缺省 0（还没评）。 */
+    /** 非受控初值，默认 0（尚未评分）。 */
     defaultValue?: number
     /** 星星颗数，默认 5。 */
     count?: number
-    /** 允许半颗星：档位从 1 变成 0.5。 */
+    /** 允许半颗星：档位从 1 变为 0.5。 */
     allowHalf?: boolean
-    /** 再点当前档位即清零，键盘在最低档再往下走一步同样清零；默认开。 */
+    /** 再次点击当前档位即清零，键盘在最低档再向下一步同样清零；默认开启。 */
     allowClear?: boolean
-    /** 整个不可交互：退出 Tab 序列，指针与键盘都不认。 */
+    /** 完全不可交互：退出 Tab 序列，指针与键盘都不响应。 */
     disabled?: boolean
-    /** 只读：仍可聚焦、仍能被读屏念出，但改不动，也不给悬停预览。 */
+    /** 只读：仍可聚焦、仍能被读屏朗读，但不可修改，也不提供悬停预览。 */
     readOnly?: boolean
     required?: boolean
-    /** 表单字段名；给了表单影子才带 name 并参与提交。 */
+    /** 表单字段名；提供后表单影子才带 name 并参与提交。 */
     name?: string
-    /** 文字方向，缺省 'ltr'。只改写左右方向键与"指针落在哪半边"的语义。 */
+    /** 文字方向，默认 'ltr'。只改写左右方向键与指针落在哪半边的语义。 */
     dir?: Direction
-    /** 语气：brand / neutral / success / warning / danger / info，决定用哪族颜色。 */
+    /** 语气：brand / neutral / success / warning / danger / info，决定使用哪族颜色。 */
     tone?: Tone
     /** 尺寸：sm / md / lg。 */
     size?: Size
     translations?: Partial<RatingTranslations>
     onValueChange?: (details: RatingValueChangeDetails) => void
-    /** 悬停预览变化；指针离开时带 null。它不代表值变了。 */
+    /** 悬停预览变化；指针离开时带 null。它不代表值已变化。 */
     onHoverChange?: (details: RatingHoverChangeDetails) => void
   }
   context: {
-    /** 评分。受控（value 给定）时 cell 直读 prop，写只发 onValueChange 不改内部值。 */
+    /** 评分。受控（value 提供）时 cell 直读 prop，写入只发 onValueChange 不修改内部值。 */
     value: number
-    /** 指针预览值，只影响点亮范围，绝不写进 value。指针离开即清空。 */
+    /** 指针预览值，只影响点亮范围，不写入 value。指针离开即清空。 */
     hoveredValue: number | null
     /** 焦点所在的星序号（1 起），焦点离开评分带即清空。只服务 roving tabindex 与键盘起点。 */
     focusedValue: number | null
@@ -104,16 +104,16 @@ export interface RatingSchema extends MachineSchema {
 }
 
 export interface RatingApi<T extends PropTypes = PropTypes> {
-  /** 已归一化的评分：非法与越界的宿主输入在这里就被夹回来了。 */
+  /** 已归一化的评分：非法与越界的宿主输入在这里被夹回。 */
   value: number
   /** 指针预览值；没有预览（或不可交互）时为 null。 */
   hoveredValue: number | null
-  /** 当前该点亮到哪：有预览就是预览值，否则就是评分。样式与 data-highlighted 用的都是它。 */
+  /** 当前应点亮到的位置：有预览时是预览值，否则是评分。样式与 data-highlighted 使用的都是它。 */
   highlightedValue: number
-  /** 分值文本：当前该点亮到的那个数，指针预览期间跟着预览值走。 */
+  /** 分值文本：当前应点亮到的数值，指针预览期间跟随预览值。 */
   valueText: string
   count: number
-  /** 还没评（value 为 0）。 */
+  /** 尚未评分（value 为 0）。 */
   empty: boolean
   disabled: boolean
   readOnly: boolean
@@ -124,20 +124,20 @@ export interface RatingApi<T extends PropTypes = PropTypes> {
   getRootProps: () => T['element']
   getLabelProps: () => T['element']
   getControlProps: () => T['element']
-  /** 分值文本：写在 root 里、control 的兄弟；aria-hidden，读屏走星星自己的可及名。 */
+  /** 分值文本：写在 root 中、control 的兄弟；aria-hidden，读屏使用星星自身的可及名。 */
   getValueTextProps: () => T['element']
   getItemProps: (props: RatingItemProps) => T['element']
   /** 表单出口：一份视觉隐藏的原生输入，随表单提交当前评分。 */
   getHiddenInputProps: () => T['input']
 }
 
-/** 读屏用的文案，默认英文。 */
+/** 读屏文案，默认英文。 */
 export interface RatingTranslations {
   /**
-   * 一颗星的可及名，入参是它的分值与总档数。
+   * 一颗星的可及名，入参为它的分值与总档数。
    *
-   * 这一句**总会发出去**：星星那一格里画的是符号，亮着与暗着画的还不是同一个，
-   * 名字交给内容就会随高亮在两个符号之间来回变。
+   * 该文案总会发出：星星格内绘制的是符号，点亮与未点亮绘制的还不是同一个，
+   * 名字交给内容时会随高亮在两个符号之间来回变化。
    */
   item: (value: number, count: number) => string
 }

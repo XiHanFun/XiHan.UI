@@ -41458,7 +41458,7 @@
       "declarations": [
         {
           "kind": "class",
-          "description": "`<xh-rating>` —— Light-DOM 行为宿主：作者写 root/label/control 与若干 item 角色节点\n（可选再写一个 hidden-input 参与表单提交），元素跑 rating 机器并把 connect 产出打上去。\n\n每颗星用 value 属性自报自己是第几颗（1 起），导航与选中都以它认人；\n键盘挂在 control 上（它才是那条 role=radiogroup 的星星带），指针预览挂在每颗星上。",
+          "description": "`<xh-rating>`：Light-DOM 行为宿主：作者写 root / label / control 与若干 item 角色节点\n（可选再写一个 hidden-input 参与表单提交），元素运行 rating 状态机并把 connect 产出接上。\n\n每颗星用 value 属性声明自身是第几颗（1 起），导航与选中都以它识别；\n键盘挂在 control 上（它才是 role=radiogroup 的星星带），指针预览挂在每颗星上。",
           "name": "XhRatingElement",
           "cssParts": [
             {
@@ -41470,7 +41470,7 @@
               "name": "label"
             },
             {
-              "description": "role=radiogroup 的星星带，键盘交互全在它身上",
+              "description": "role=radiogroup 的星星带，键盘交互全部在它身上",
               "name": "control"
             },
             {
@@ -41478,7 +41478,7 @@
               "name": "item"
             },
             {
-              "description": "分值文本（aria-hidden），须放在 root 里当 control 的兄弟；留空即由元素填入当前分值，作者写了内容则归作者",
+              "description": "分值文本（aria-hidden），须放在 root 中作为 control 的兄弟；留空即由元素填入当前分值，作者写了内容则由作者负责",
               "name": "value-text"
             },
             {
@@ -41770,7 +41770,7 @@
               "type": {
                 "text": "number | undefined"
               },
-              "description": "受控评分；缺省该属性即非受控",
+              "description": "受控评分；未提供该属性即非受控",
               "name": "value",
               "fieldName": "value"
             },
@@ -41778,7 +41778,7 @@
               "type": {
                 "text": "number | undefined"
               },
-              "description": "非受控初值，缺省 0（还没评）",
+              "description": "非受控初值，默认 0（尚未评分）",
               "name": "default-value",
               "fieldName": "defaultValue"
             },
@@ -41794,7 +41794,7 @@
               "type": {
                 "text": "boolean | undefined"
               },
-              "description": "允许半颗星：档位从 1 变成 0.5",
+              "description": "允许半颗星：档位从 1 变为 0.5",
               "name": "allow-half",
               "fieldName": "allowHalf"
             },
@@ -41802,7 +41802,7 @@
               "type": {
                 "text": "boolean | undefined"
               },
-              "description": "再点当前档位清零，键盘最低档再往下也清；默认开，写 \"false\" 关",
+              "description": "再次点击当前档位清零，键盘最低档再向下也清零；默认开启，写 \"false\" 关闭",
               "name": "allow-clear",
               "fieldName": "allowClear"
             },
@@ -41810,7 +41810,7 @@
               "type": {
                 "text": "boolean | undefined"
               },
-              "description": "整个不可交互：整条带子退出 Tab 序列，指针与键盘都不认",
+              "description": "完全不可交互：整条评分带退出 Tab 序列，指针与键盘都不响应",
               "name": "disabled",
               "fieldName": "disabled"
             },
@@ -41818,7 +41818,7 @@
               "type": {
                 "text": "boolean | undefined"
               },
-              "description": "只读：仍可聚焦与朗读，但改不动，也没有悬停预览",
+              "description": "只读：仍可聚焦与朗读，但不可修改，也没有悬停预览",
               "name": "read-only",
               "fieldName": "readOnly"
             },
@@ -41834,7 +41834,7 @@
               "type": {
                 "text": "string | undefined"
               },
-              "description": "表单字段名；给了表单影子才带 name 并参与提交",
+              "description": "表单字段名；提供后表单影子才带 name 并参与提交",
               "name": "name",
               "fieldName": "name"
             },
@@ -41842,7 +41842,7 @@
               "type": {
                 "text": "Direction | undefined"
               },
-              "description": "文字方向，只改写左右方向键与\"指针落在哪半边\"的语义，默认 ltr",
+              "description": "文字方向，只改写左右方向键与指针落在哪半边的语义，默认 ltr",
               "name": "dir",
               "fieldName": "direction"
             },
