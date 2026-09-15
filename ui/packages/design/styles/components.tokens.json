@@ -9884,7 +9884,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-shape-pill"
+        "--xh-shape-control"
       ],
       "visibility": "public",
       "description": "clipboard 的 copy-trigger 部件 border-radius 覆盖槽。"
