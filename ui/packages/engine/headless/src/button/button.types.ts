@@ -18,29 +18,29 @@ export interface ButtonProps {
   tone?: Tone
   size?: Size
   /**
-   * 只有图标：左右内距清零、宽高相等。宽度跟着当前尺寸档的高度走，
-   * 不必把档位写进行内样式。图标按钮没有可见文字，作者须自行给可及名。
+   * 仅图标：左右内边距清零、宽高相等。宽度跟随当前尺寸档的高度，
+   * 不必把档位写进行内样式。图标按钮没有可见文字，作者须自行提供可及名。
    */
   iconOnly?: boolean
   /**
    * 作者写在根节点上的可及名（aria-label / aria-labelledby）。
-   * 宿主只把它们转告连接层，用来判断图标按钮有没有名字；属性本身仍由宿主写进根节点。
+   * 宿主只把它们转告连接层，用于判断图标按钮是否有名字；属性本身仍由宿主写入根节点。
    */
   ariaLabel?: string
   ariaLabelledby?: string
   /** 撑满行宽：表单末尾的提交按钮与移动端常用。 */
   fullWidth?: boolean
   /**
-   * 渲染成哪个标签，默认 button。
-   * 写成 a 时不再产出 type 与原生 disabled（两者在链接上无效），禁用改由 aria-disabled 表达，
-   * 点击仍被拦下。作者自行给 href。
+   * 渲染的标签，默认 button。
+   * 写为 a 时不再产出 type 与原生 disabled（两者在链接上无效），禁用改由 aria-disabled 表达，
+   * 点击仍被拦截。href 由作者自行提供。
    */
   as?: ButtonElement
 }
 
 /** 圆角档。 */
 
-/** 根节点渲染成哪个标签。 */
+/** 根节点渲染的标签。 */
 export type ButtonElement = 'button' | 'a'
 
 export interface ButtonApi<T extends PropTypes = PropTypes> {
@@ -53,5 +53,5 @@ export interface ButtonApi<T extends PropTypes = PropTypes> {
   getSuffixProps: () => T['element']
 }
 
-/** 读屏用的文案。本组件目前没有需要外露的文案，位先留着。 */
+/** 读屏文案。本组件目前没有需要外露的文案，保留该位。 */
 export interface ButtonTranslations {}

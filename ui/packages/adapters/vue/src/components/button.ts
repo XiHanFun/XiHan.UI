@@ -14,7 +14,7 @@ import { withXhConfig } from '../config/config'
 import { vueNormalize } from '../runtime/normalize-props'
 import { useButtonGroupDisabled } from './button-group/context'
 
-/** 从实际调用推出 api 形状，免得再写一遍 normalize 的类型参数。 */
+/** 从实际调用推导 api 形状，避免再写一遍 normalize 的类型参数。 */
 type VueButtonApi = ReturnType<typeof connectButton<PropTypes>>
 
 const ButtonKey: InjectionKey<Ref<VueButtonApi>> = Symbol('XhButton')
@@ -37,7 +37,7 @@ export const XhButton = defineComponent({
     variant: String as PropType<ButtonProps['variant']>,
     tone: String as PropType<ButtonProps['tone']>,
     size: String as PropType<ButtonProps['size']>,
-    /** 渲染成哪个标签，默认 button；写成 a 时作者自行给 href。 */
+    /** 渲染为哪个标签，默认 button；写为 a 时作者自行提供 href。 */
     as: { type: String as PropType<ButtonProps['as']>, default: 'button' },
   },
   setup(props, { slots }) {
@@ -82,7 +82,7 @@ export const XhButtonSuffix = defineComponent({
   },
 })
 
-/** 载入态的转圈标记；皮肤给它挂了旋转动画，作者只需摆位置。 */
+/** 载入态的旋转标记；皮肤为它挂载旋转动画，作者只需放置位置。 */
 export const XhButtonIndicator = defineComponent({
   name: 'XhButtonIndicator',
   setup(_, { slots }) {

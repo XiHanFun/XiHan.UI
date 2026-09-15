@@ -3447,7 +3447,7 @@
       "declarations": [
         {
           "kind": "class",
-          "description": "`<xh-button>` —— 按钮行为宿主，无状态机，宿主属性即 button props。",
+          "description": "`<xh-button>`：按钮行为宿主，无状态机，宿主属性即 button props。",
           "name": "XhButtonElement",
           "cssParts": [
             {
@@ -3570,7 +3570,7 @@
               "type": {
                 "text": "boolean | undefined"
               },
-              "description": "禁用（原生 disabled，丢焦点）",
+              "description": "禁用（原生 disabled，失去焦点）",
               "name": "disabled",
               "fieldName": "disabled"
             },
@@ -3578,7 +3578,7 @@
               "type": {
                 "text": "boolean | undefined"
               },
-              "description": "只有图标：左右内距清零、宽高相等；作者须自行给可及名",
+              "description": "仅图标：左右内边距清零、宽高相等；作者须自行提供可及名",
               "name": "icon-only",
               "fieldName": "iconOnly"
             },
@@ -3626,7 +3626,7 @@
               "type": {
                 "text": "ButtonProps['as'] | undefined"
               },
-              "description": "根节点写成哪个标签，默认 button；写 a 时不再产出 type 与原生 disabled",
+              "description": "根节点渲染的标签，默认 button；写 a 时不再产出 type 与原生 disabled",
               "name": "as",
               "fieldName": "as"
             }

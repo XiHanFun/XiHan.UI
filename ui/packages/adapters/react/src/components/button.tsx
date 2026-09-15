@@ -16,7 +16,7 @@ import { useNativeEvents } from '../runtime/native-events'
 import { reactNormalize } from '../runtime/normalize-props'
 import { useButtonGroupDisabled } from './button-group/context'
 
-/** 从实际调用推出 api 形状，免得再写一遍 normalize 的类型参数。 */
+/** 从实际调用推导 api 形状，避免再写一遍 normalize 的类型参数。 */
 type ReactButtonApi = ReturnType<typeof connectButton<PropTypes>>
 
 const ButtonCtx = createContext<ReactButtonApi | undefined>(undefined)
@@ -37,7 +37,7 @@ export interface XhButtonProps extends Omit<ComponentPropsWithRef<'button'>, 'ty
   variant?: ButtonProps['variant']
   tone?: ButtonProps['tone']
   size?: ButtonProps['size']
-  /** 渲染成哪个标签，默认 button；写成 a 时作者自行给 href。 */
+  /** 渲染为哪个标签，默认 button；写为 a 时作者自行提供 href。 */
   as?: ButtonProps['as']
   href?: ComponentPropsWithRef<'a'>['href']
   target?: ComponentPropsWithRef<'a'>['target']
@@ -110,7 +110,7 @@ export function XhButtonSuffix({ children, ...rest }: XhButtonSuffixProps): Reac
 }
 
 export interface XhButtonIndicatorProps extends ComponentPropsWithRef<'span'> {}
-/** 载入态的转圈标记；皮肤给它挂了旋转动画，作者只需摆位置。 */
+/** 载入态的旋转标记；皮肤为它挂载旋转动画，作者只需放置位置。 */
 export function XhButtonIndicator({ children, ...rest }: XhButtonIndicatorProps): ReactNode {
   const api = useButtonApi()
   return <span {...mergeReactProps(api.getIndicatorProps() as Record<string, unknown>, rest as Record<string, unknown>)}>{children}</span>
