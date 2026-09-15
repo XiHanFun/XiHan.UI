@@ -40,7 +40,7 @@ import { useTable } from './use-table'
 
 type TableProps = TableSchema['props']
 
-/** 本行持有焦点时，value 变更重报焦点行，卸载时上报表体失焦 */
+/** 本行持有焦点时，value 变更重新报告焦点行，卸载时上报表体失焦 */
 function reportRowFocus(ctx: TableContext, el: Ref<HTMLElement | null>, value: () => string): void {
   watch(value, (next, prev) => {
     if (next === prev)
@@ -94,8 +94,8 @@ export type TableRootSlotProps = Pick<
 >
 
 /**
- * 工具条插槽的载荷：对**整张表**下手的那几样——列设置、排序链与整表状态。
- * 逐行的东西（可见行、行号、逐行查询）不在其中：工具条摆在表外，够不着某一行。
+ * 工具条插槽的载荷：作用于整张表的项：列设置、排序链与整表状态。
+ * 逐行的内容（可见行、行号、逐行查询）不在其中：工具条放在表外，无法触及某一行。
  */
 export type TableToolbarSlotProps = Pick<
   TableApi,
@@ -126,9 +126,9 @@ export const XhTableRoot = /* @__PURE__ */ defineComponent({
     selection: { type: [Array, String] as PropType<TableSelection> },
     defaultSelection: { type: [Array, String] as PropType<TableSelection> },
     selectionMode: { type: String as PropType<TableSelectionMode> },
-    /** 要哪几列前缀列（序号 / 多选 / 展开），按给定顺序插在最前面并占住列号。 */
+    /** 需要哪几列前缀列（序号 / 多选 / 展开），按给定顺序插入最前面并占用列号。 */
     prefixColumns: { type: Array as PropType<TableColumnKind[]> },
-    /** 当前页码与每页条数：只用来算序号，不参与切片。 */
+    /** 当前页码与每页条数：只用于计算序号，不参与切片。 */
     /** 列偏好：给定即受控。持久化归使用者，库只负责把它算进生效列。 */
     columnPreference: { type: Object as PropType<TableColumnPreference> },
     defaultColumnPreference: { type: Object as PropType<TableColumnPreference> },
@@ -143,9 +143,9 @@ export const XhTableRoot = /* @__PURE__ */ defineComponent({
     borderless: Boolean,
     ruled: Boolean,
     footer: Boolean,
-    /** 行可以拖着换位。整行都是拖动源，不另出把手。 */
+    /** 行可以拖动换位。整行都是拖动源，不另设把手。 */
     rowReorderable: Boolean,
-    /** 这一次搬家许不许。收到的是折算好的落点（搬到哪个父下面的第几位）。不给即都许。 */
+    /** 本次移动是否允许。收到的是折算后的落点（移动到哪个父节点下的第几位）。未提供时全部允许。 */
     allowRowDrop: { type: Function as PropType<TableProps['allowRowDrop']> },
     loop: { type: Boolean, default: undefined },
     dir: { type: String as PropType<Direction> },
@@ -168,8 +168,8 @@ export const XhTableRoot = /* @__PURE__ */ defineComponent({
   slots: Object as SlotsType<{
     default?: (props: TableRootSlotProps) => VNode[]
     /**
-     * 工具条槽：搜索、筛选、密度与列设置这些对整张表下手的控件写在这儿。
-     * 它渲成 root 的兄弟排在表前——root 是 grid 系角色，子节点只能是 row 与 rowgroup。
+     * 工具条槽：搜索、筛选、密度与列设置等作用于整张表的控件写在这里。
+     * 它渲染为 root 的兄弟排在表前：root 是 grid 系角色，子节点只能是 row 与 rowgroup。
      */
     toolbar?: (props: TableToolbarSlotProps) => VNode[]
   }>,
@@ -257,9 +257,9 @@ export const XhTableRoot = /* @__PURE__ */ defineComponent({
 })
 
 /**
- * 工具条：搜索、筛选、密度与列设置这些对整张表下手的控件摆在这儿。
- * 写在 XhTableRoot 的 toolbar 插槽里——它渲成 root 的兄弟，不进 role=grid 的子节点。
- * 不带 role：要方向键 roving 就往里放一个 XhToolbarRoot。
+ * 工具条：搜索、筛选、密度与列设置等作用于整张表的控件放在这里。
+ * 写在 XhTableRoot 的 toolbar 插槽中：它渲染为 root 的兄弟，不进入 role=grid 的子节点。
+ * 不带 role：需要方向键 roving 时在其中放置一个 XhToolbarRoot。
  */
 export const XhTableToolbar = /* @__PURE__ */ defineComponent({
   name: 'XhTableToolbar',
@@ -269,7 +269,7 @@ export const XhTableToolbar = /* @__PURE__ */ defineComponent({
   },
 })
 
-/** 列设置区：一列一行，渲什么照 root 插槽载荷里的 columnSettings 走。 */
+/** 列设置区：一列一行，渲染内容按 root 插槽载荷中的 columnSettings 决定。 */
 export const XhTableColumnList = /* @__PURE__ */ defineComponent({
   name: 'XhTableColumnList',
   setup(_, { slots }) {
@@ -279,13 +279,13 @@ export const XhTableColumnList = /* @__PURE__ */ defineComponent({
 })
 
 /**
- * 一列的显隐把手（复选形态，勾着＝这一列显示着）。
- * 列身份优先取自己的 value；不给就跟着所在的列标题走（表头里的那一路）。
+ * 一列的显隐控件（复选形态，勾选表示该列显示）。
+ * 列身份优先取自己的 value；未提供时跟随所在的列标题（表头中的路径）。
  */
 export const XhTableColumnVisibilityTrigger = /* @__PURE__ */ defineComponent({
   name: 'XhTableColumnVisibilityTrigger',
   props: {
-    /** 列 id。写在列设置区里必给；写在列标题里可省，跟着那一列走。 */
+    /** 列 id。写在列设置区中时必须提供；写在列标题中时可省略，跟随该列。 */
     value: { type: String },
   },
   setup(props, { slots }) {
@@ -341,7 +341,7 @@ export const XhTableFooter = /* @__PURE__ */ defineComponent({
 export const XhTableRow = /* @__PURE__ */ defineComponent({
   name: 'XhTableRow',
   props: {
-    /** 行 id：数据行必给，表头行与脚注行省略。 */
+    /** 行 id：数据行必须提供，表头行与脚注行省略。 */
     value: { type: String },
   },
   setup(props, { slots }) {
@@ -391,7 +391,7 @@ export const XhTableCell = /* @__PURE__ */ defineComponent({
   props: {
     /** 列 id。 */
     value: { type: String, required: true },
-    /** 跨列数，从 value 那一列往后算。 */
+    /** 跨列数，从 value 所在列向后计算。 */
     colspan: { type: [String, Number] as PropType<string | number> },
   },
   setup(props, { slots }) {
@@ -448,7 +448,7 @@ export const XhTableSortTrigger = /* @__PURE__ */ defineComponent({
   },
 })
 
-/** 列宽把手。放在表头格里，只有 resizable 的列渲它。 */
+/** 列宽把手。放在表头格中，只有 resizable 的列渲染它。 */
 export const XhTableColumnResizeTrigger = /* @__PURE__ */ defineComponent({
   name: 'XhTableColumnResizeTrigger',
   setup(_, { slots }) {
@@ -462,7 +462,7 @@ export const XhTableColumnResizeTrigger = /* @__PURE__ */ defineComponent({
   },
 })
 
-/** 列拖拽把手。放在表头格里，只有可拖的列渲它。 */
+/** 列拖拽把手。放在表头格中，只有可拖动的列渲染它。 */
 export const XhTableColumnDragTrigger = /* @__PURE__ */ defineComponent({
   name: 'XhTableColumnDragTrigger',
   setup(_, { slots }) {
@@ -477,10 +477,10 @@ export const XhTableColumnDragTrigger = /* @__PURE__ */ defineComponent({
 })
 
 /**
- * 行拖拽把手。放在数据行里，自带 touch-action: none，按下即拖，不等激活距离。
+ * 行拖拽把手。放在数据行中，自带 touch-action: none，按下即拖动，不等待激活距离。
  * 对读屏隐藏、也不占 Tab 位；键盘换位由表体上的 Alt + 上下键承担，
- * 树形表下另有 Alt + 左右键改缩进层级。
- * 整行起手那一路照旧可用，把手是叠加的第二个入口。
+ * 树形表下另有 Alt + 左右键改变缩进层级。
+ * 整行拖动的路径照常可用，把手是叠加的第二个入口。
  */
 export const XhTableRowDragTrigger = /* @__PURE__ */ defineComponent({
   name: 'XhTableRowDragTrigger',

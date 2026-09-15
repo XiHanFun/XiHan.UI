@@ -49187,11 +49187,11 @@
       "declarations": [
         {
           "kind": "class",
-          "description": "`<xh-table>` —— Light-DOM 行为宿主：作者写 root/caption/header/body/footer 与若干\nrow / column-header / cell 角色节点，元素跑 table 机器并把 connect 产出打上去。\n身份取自节点上的 value 属性：行系部件上是行 id，列系部件上是列 id。\n\n行号（aria-rowindex / aria-rowcount）与列号（aria-colindex / aria-colcount）查 `rows` 与\n`columns` 两份定义，不从 DOM 反推，故两份定义必须与标记同源。\n\n同一个 row 部件写在 header / body / footer 里语义不同（表头行、数据行、脚注行），\n元素按祖先链现查区段，作者无需换用别的部件名。\n\n两份定义与三个集合都是数组/对象，只走 property（`el.rows = [...]`）；\n落点校验 `allowRowDrop`（函数）同理。\n\n打开 row-reorderable 后行可以拖着换位：整行都是拖动源。落点画在参照行上——\ndata-drop 为 before/after 是插在这一行前后；rows 带 parentId 的树形表另有 inside，\n是放进这一行底下，只有可展开或已经有孩子的行给这一档。触屏那一路走 row-drag-trigger 把手。\n键盘走 Alt + 方向键：上下在同层挪一位，左右在树形表下改缩进层级（rtl 下左右对调）。",
+          "description": "`<xh-table>`：Light-DOM 行为宿主：作者写 root / caption / header / body / footer 与若干\nrow / column-header / cell 角色节点，元素运行 table 状态机并把 connect 产出接上。\n身份取自节点上的 value 属性：行系部件上是行 id，列系部件上是列 id。\n\n行号（aria-rowindex / aria-rowcount）与列号（aria-colindex / aria-colcount）查询 `rows` 与\n`columns` 两份定义，不从 DOM 反推，因此两份定义必须与标记同源。\n\n同一个 row 部件写在 header / body / footer 中语义不同（表头行、数据行、脚注行），\n元素按祖先链查询区段，作者无需换用其他部件名。\n\n两份定义与三个集合都是数组 / 对象，只能通过 property 设置（`el.rows = [...]`）；\n落点校验 `allowRowDrop`（函数）同理。\n\n开启 row-reorderable 后行可以拖动换位：整行都是拖动源。落点绘制在参照行上：\ndata-drop 为 before / after 是插在该行前后；rows 带 parentId 的树形表另有 inside，\n是放进该行下方，只有可展开或已有子行的行提供该档。触屏路径经 row-drag-trigger 把手。\n键盘使用 Alt + 方向键：上下在同层移动一位，左右在树形表下改变缩进层级（rtl 下左右对调）。",
           "name": "XhTableElement",
           "cssParts": [
             {
-              "description": "role=grid 容器（rows 里有可展开的行时为 treegrid），报行列总数与多选声明",
+              "description": "role=grid 容器（rows 中有可展开的行时为 treegrid），报告行列总数与多选声明",
               "name": "root"
             },
             {
@@ -49199,15 +49199,15 @@
               "name": "caption"
             },
             {
-              "description": "工具条：搜索、筛选、密度与列设置这些对整张表下手的控件摆在这儿；须写在 root 之外（root 是 role=grid），不带 role，要方向键 roving 就往里放一个 xh-toolbar",
+              "description": "工具条：搜索、筛选、密度与列设置这些作用于整张表的控件放置在此；须写在 root 之外（root 是 role=grid），不带 role，需要方向键 roving 时向其中放置一个 xh-toolbar",
               "name": "toolbar"
             },
             {
-              "description": "列设置区（role=group），一列一行；渲什么照 columnSettings 走，藏起来的列也在其中",
+              "description": "列设置区（role=group），一列一行；渲染内容按 columnSettings，隐藏的列也在其中",
               "name": "column-list"
             },
             {
-              "description": "一列的显隐把手（role=checkbox，勾着＝这一列显示着），须自带 value 属性标识列身份；只剩最后一列显示着时转 aria-disabled",
+              "description": "一列的显隐把手（role=checkbox，勾选 = 该列显示），须自带 value 属性标识列身份；只剩最后一列显示时为 aria-disabled",
               "name": "column-visibility-trigger"
             },
             {
@@ -49239,23 +49239,23 @@
               "name": "select-all-trigger"
             },
             {
-              "description": "行选择把手（aria-hidden 且不占 Tab 位，键盘那一路由 Space 承担）",
+              "description": "行选择把手（aria-hidden 且不占 Tab 位，键盘路径由 Space 承担）",
               "name": "row-select-trigger"
             },
             {
-              "description": "排序把手，自占一个 Tab 位；按住 Shift 点是追加到排序链",
+              "description": "排序把手，自占一个 Tab 位；按住 Shift 点击是追加到排序链",
               "name": "sort-trigger"
             },
             {
-              "description": "列宽把手，自占一个 Tab 位；方向键改一步、按住 Shift 是大步",
+              "description": "列宽把手，自占一个 Tab 位；方向键调整一步、按住 Shift 是大步",
               "name": "column-resize-trigger"
             },
             {
-              "description": "列拖拽把手，自占一个 Tab 位；方向键移一位、Home/End 移到可拖区段首末",
+              "description": "列拖拽把手，自占一个 Tab 位；方向键移动一位、Home / End 移到可拖动区段首末",
               "name": "column-drag-trigger"
             },
             {
-              "description": "行拖拽把手，触屏那一路的入口（自带 touch-action: none，按下即拖）；对读屏隐藏且不占 Tab 位，键盘那一路由表体上的 Alt + 方向键承担",
+              "description": "行拖拽把手，触屏路径的入口（自带 touch-action: none，按下即拖动）；对读屏隐藏且不占 Tab 位，键盘路径由表体上的 Alt + 方向键承担",
               "name": "row-drag-trigger"
             },
             {
@@ -49263,23 +49263,23 @@
               "name": "live-region"
             },
             {
-              "description": "展开把手（aria-hidden 且不占 Tab 位，键盘那一路由左右方向键承担）",
+              "description": "展开把手（aria-hidden 且不占 Tab 位，键盘路径由左右方向键承担）",
               "name": "expand-trigger"
             },
             {
-              "description": "role=row 详情行，须自带 value 属性与它所属的数据行配对，内部须放一个 cell 承载详情；收起时 data-state=closed",
+              "description": "role=row 详情行，须自带 value 属性与所属的数据行配对，内部须放一个 cell 承载详情；收起时 data-state=closed",
               "name": "expanded-row"
             },
             {
-              "description": "空态节点，表体为空且不在加载时显形",
+              "description": "空态节点，表体为空且不在加载时显示",
               "name": "empty"
             },
             {
-              "description": "加载态节点，表体为空且正在加载时显形",
+              "description": "加载态节点，表体为空且正在加载时显示",
               "name": "loading"
             },
             {
-              "description": "取下一页的按钮，摆在表尾；点了做什么归作者，取数在途时自动停用",
+              "description": "取下一页的按钮，放在表尾；点击后的行为由作者决定，取数在途时自动停用",
               "name": "load-more-trigger"
             }
           ],
@@ -49373,7 +49373,7 @@
               "type": {
                 "text": "TableColumnKind[]"
               },
-              "description": "要哪几列前缀列，按给定顺序插在最前面"
+              "description": "需要的前缀列，按给定顺序插在最前面"
             },
             {
               "kind": "field",
@@ -49382,7 +49382,7 @@
               "type": {
                 "text": "TableColumnPreference"
               },
-              "description": "列偏好（显隐/顺序/宽/冻结），给定即受控"
+              "description": "列偏好（显隐 / 顺序 / 宽度 / 冻结），提供即受控"
             },
             {
               "kind": "field",
@@ -49489,7 +49489,7 @@
               "type": {
                 "text": "(move: TableRowMoveDetails) => boolean"
               },
-              "description": "这一次搬家许不许，收到的是折算好的落点；不给即都许"
+              "description": "本次移动是否允许，收到的是折算后的落点；未提供时全部允许"
             },
             {
               "kind": "field",
@@ -49583,7 +49583,7 @@
                   "text": "TableApi"
                 }
               },
-              "description": "命令式入口共用的取法；机器要到进文档（hostConnected）才建，未建则抛。"
+              "description": "命令式入口共用的取法；状态机在进入文档（hostConnected）后才建立，未建立则抛错。"
             },
             {
               "kind": "field",
@@ -49591,7 +49591,7 @@
               "type": {
                 "text": "readonly TableColumnSetting[]"
               },
-              "description": "列设置区照它渲：作者定义的那些列，按偏好排过序，藏起来的也在其中。\n生效列滤掉了藏起来的那些，而设置区正是把它们放回来的地方。",
+              "description": "列设置区据此渲染：作者定义的列按偏好排序，隐藏的列也包含在内。\n生效列已滤除隐藏的列，设置区正是恢复它们的位置。",
               "readonly": true
             },
             {
@@ -49616,7 +49616,7 @@
                   }
                 }
               ],
-              "description": "改一列的冻结档。false 是不冻结，true 等于 'start'。"
+              "description": "修改一列的冻结档。false 是不冻结，true 等于 'start'。"
             },
             {
               "kind": "method",
@@ -49635,7 +49635,7 @@
                   }
                 }
               ],
-              "description": "承载焦点的行被移出 DOM 时上报 TABLE.BLUR，让机器重挑焦点锚点。"
+              "description": "承载焦点的行被移出 DOM 时上报 TABLE.BLUR，让状态机重新选择焦点锚点。"
             },
             {
               "kind": "method",
@@ -49660,7 +49660,7 @@
                   }
                 }
               ],
-              "description": "取角色节点自报的身份：行系部件上是行 id，列系部件上是列 id。\n行内的把手与装饰节点向上找本宿主内最近的容器，没有则读节点自身。"
+              "description": "取角色节点声明的身份：行系部件上是行 id，列系部件上是列 id。\n行内的操作按钮与装饰节点向上查找本宿主内最近的容器，没有则读取节点自身。"
             },
             {
               "kind": "method",
@@ -49707,7 +49707,7 @@
                   "text": "HTMLElement"
                 }
               },
-              "description": "播报区节点。第一次用时建出来挂在元素末尾，之后一直复用——\n读屏不播报后插入的节点，等到拾起才建等于没有。"
+              "description": "播报区节点。第一次使用时建立并挂在元素末尾，之后一直复用：\n读屏不播报后插入的节点，等到拾起才建立等于没有。"
             },
             {
               "kind": "method",
@@ -49766,7 +49766,7 @@
               }
             },
             {
-              "description": "行换了位置；detail 为 `{ id, parent, index, ids }`，parent 为 null 即根层，index 是在那一层的落位（已算过先摘后插），ids 是重排好的整份行序",
+              "description": "行换位；detail 为 `{ id, parent, index, ids }`，parent 为 null 即根层，index 是在该层的落位（已经过先移除后插入的修正），ids 是重排后的整份行序",
               "name": "row-move",
               "type": {
                 "text": "TableRowMoveDetails"
@@ -49778,7 +49778,7 @@
               "type": {
                 "text": "TableSelectionMode | undefined"
               },
-              "description": "选择模式，默认 none（不声明就没有选择这回事）",
+              "description": "选择模式，默认 none（未声明则没有选择机制）",
               "name": "selection-mode",
               "fieldName": "selectionMode"
             },
@@ -49786,7 +49786,7 @@
               "type": {
                 "text": "boolean | undefined"
               },
-              "description": "数据在路上：root 报 aria-busy，表体为空时加载态节点显形",
+              "description": "数据加载中：root 报告 aria-busy，表体为空时加载态节点显示",
               "name": "loading",
               "fieldName": "loading"
             },
@@ -49794,7 +49794,7 @@
               "type": {
                 "text": "boolean | undefined"
               },
-              "description": "显式声明表体为空；缺省按 rows 是否为空推导，写 empty=\"false\" 强制不空",
+              "description": "显式声明表体为空；未提供时按 rows 是否为空推导，写 empty=\"false\" 强制不为空",
               "name": "empty",
               "fieldName": "empty"
             },
@@ -49802,7 +49802,7 @@
               "type": {
                 "text": "boolean | undefined"
               },
-              "description": "表头吸顶，只落 data-fixed（布尔）；列冻结另走 data-frozen",
+              "description": "表头吸顶，只写 data-fixed（布尔）；列冻结使用 data-frozen",
               "name": "sticky-header",
               "fieldName": "stickyHeader"
             },
@@ -49818,7 +49818,7 @@
               "type": {
                 "text": "boolean | undefined"
               },
-              "description": "去掉外框，只留行间横线",
+              "description": "去掉外框，只保留行间横线",
               "name": "borderless",
               "fieldName": "borderless"
             },
@@ -49834,7 +49834,7 @@
               "type": {
                 "text": "boolean | undefined"
               },
-              "description": "表格带脚注行：行号空间的最后一行留给它，aria-rowcount 也算上",
+              "description": "表格带脚注行：行号空间的最后一行留给它，aria-rowcount 也计入",
               "name": "footer",
               "fieldName": "footer"
             },
@@ -49842,7 +49842,7 @@
               "type": {
                 "text": "boolean | undefined"
               },
-              "description": "行可以拖着换位：整行都是拖动源；触屏那一路走 row-drag-trigger 把手",
+              "description": "行可以拖动换位：整行都是拖动源；触屏路径经 row-drag-trigger 把手",
               "name": "row-reorderable",
               "fieldName": "rowReorderable"
             },
@@ -49850,7 +49850,7 @@
               "type": {
                 "text": "boolean | undefined"
               },
-              "description": "上下键走到首尾回绕，默认关；写 loop=\"true\" 打开",
+              "description": "上下键到达首尾回绕，默认关闭；写 loop=\"true\" 开启",
               "name": "loop",
               "fieldName": "loop"
             },
@@ -49858,7 +49858,7 @@
               "type": {
                 "text": "Direction | undefined"
               },
-              "description": "文字方向，只对调左右方向键的展开/收起语义，默认 ltr",
+              "description": "文字方向，只对调左右方向键的展开 / 收起语义，默认 ltr",
               "name": "dir",
               "fieldName": "direction"
             },
@@ -49866,7 +49866,7 @@
               "type": {
                 "text": "Size | undefined"
               },
-              "description": "密度：只换单元格的纵向内边距与字号，列宽不受影响",
+              "description": "密度：只影响单元格的纵向内边距与字号，列宽不受影响",
               "name": "size",
               "fieldName": "size"
             },
