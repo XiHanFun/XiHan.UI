@@ -17,14 +17,14 @@ import { useToast } from './use-toast'
 
 type ToastProps = ToastSchema['props']
 
-/** 函数式 children 的载荷：这一条的身份、状态、计时剩余与生命周期方法。 */
+/** 函数式 children 的载荷：该条的身份、状态、计时剩余与生命周期方法。 */
 export type ToastRootSlotProps = Pick<
   ToastApi,
   'id' | 'status' | 'tone' | 'loading' | 'paused' | 'remaining' | 'dismiss' | 'pause' | 'resume'
 >
 
 export interface XhToastRootProps extends Omit<ComponentPropsWithRef<'div'>, 'children'> {
-  /** 队列身份，不是 DOM id；不给则回落到实例的 scope id。 */
+  /** 队列身份，不是 DOM id；未提供时回落到实例的 scope id。 */
   id?: string
   title?: string
   description?: string
@@ -34,7 +34,7 @@ export interface XhToastRootProps extends Omit<ComponentPropsWithRef<'div'>, 'ch
   removeDelay?: number
   closable?: boolean
   pauseOnPageIdle?: boolean
-  /** 由宿主整摞一起按住计时；与指针、焦点那几路并存，最后一个松开才继续走。 */
+  /** 由宿主整组一起暂停计时；与指针、焦点等路径并存，最后一个释放后才继续。 */
   paused?: boolean
   translations?: ToastProps['translations']
   onStatusChange?: ToastProps['onStatusChange']
@@ -101,7 +101,7 @@ export function XhToastRoot({
 XhToastRoot.xhEvents = ['status-change', 'action'] as const
 
 export interface XhToastIndicatorProps extends ComponentPropsWithRef<'span'> {}
-/** 语气指示符：不给内容就由皮肤按节点上的 data-tone 画兜底字形，data-loading 时换成转圈。 */
+/** 语气指示符：未提供内容时由皮肤按节点上的 data-tone 绘制兜底字形，data-loading 时换为加载指示。 */
 export function XhToastIndicator({ children, ...rest }: XhToastIndicatorProps): ReactNode {
   const ctx = useToastContext()
   return <span {...mergeReactProps(ctx.api.getIndicatorProps() as Record<string, unknown>, rest as Record<string, unknown>)}>{children}</span>
