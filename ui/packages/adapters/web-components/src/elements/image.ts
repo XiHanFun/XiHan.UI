@@ -16,22 +16,22 @@ const STRING_CONVERTER = { fromAttribute: (v: string | null) => v ?? undefined }
 const NUMBER_CONVERTER = { fromAttribute: (v: string | null) => (v == null || v === '' ? undefined : Number(v)) }
 
 /**
- * `<xh-image>` —— Light-DOM 行为宿主：作者写 root/image/fallback 角色节点，
- * 元素跑 image 机器并把 connect 产出打上去。图片来源由宿主的 src/alt 写进 image 节点，
- * 加载成败经 image 自己的 load/error 回送给机器；两个节点都常挂，靠 hidden 互斥显隐。
+ * `<xh-image>`：Light-DOM 行为宿主：作者写 root / image / fallback 角色节点，
+ * 元素运行 image 状态机并把 connect 产出接上。图片来源由宿主的 src / alt 写入 image 节点，
+ * 加载成败经 image 自身的 load / error 回送给状态机；两个节点都常驻，依靠 hidden 互斥显隐。
  *
- * 与头像不同的是回退内容有个延迟门槛：`fallback-delay` 之内不显示回退内容，
- * 走缓存的快图直接从空位切到图片，不会闪一下占位。
+ * 与头像不同的是回退内容有一个延迟门槛：`fallback-delay` 之内不显示回退内容，
+ * 缓存命中的图片直接从空位切换到图片，不会闪现占位。
  *
  * @customElement xh-image
- * @attr {string} src - 图片地址；缺省该属性即没有来源，直接落回退态
+ * @attr {string} src - 图片地址；未提供该属性即没有来源，直接落到回退态
  * @attr {string} alt - 图片替代文本，原样写到 image 节点上
- * @attr {number} fallback-delay - 加载超过这么多毫秒才让回退内容露面，默认 0（立刻露面）
+ * @attr {number} fallback-delay - 加载超过该毫秒数才显示回退内容，默认 0（立即显示）
  * @fires status-change - 加载状态变化；detail 为 `{ status: 'loading' | 'loaded' | 'error' }`
  * @csspart root - 图片根容器（承载 data-state）
- * @csspart image - 图片节点，必须是原生 img；src/alt 由宿主写入（作者别自己写，会被覆盖或清掉），未就绪时带 hidden
- * @csspart placeholder - 加载期间铺在图位上的占位层；图片落位或失败后带 hidden
- * @csspart fallback - 回退内容（占位图、骨架屏、图标）；加载失败恒显，加载途中要看延迟门槛
+ * @csspart image - 图片节点，必须是原生 img；src / alt 由宿主写入（作者不应自行编写，会被覆盖或清除），未就绪时带 hidden
+ * @csspart placeholder - 加载期间铺在图位上的占位层；图片落定或失败后带 hidden
+ * @csspart fallback - 回退内容（占位图、骨架屏、图标）；加载失败恒显示，加载途中取决于延迟门槛
  */
 export class XhImageElement extends XhElement {
   static override partContract = { anatomy: imageAnatomy, meta: imageMeta }
@@ -64,17 +64,17 @@ export class XhImageElement extends XhElement {
   }
 
   /**
-   * 图片早在监听器挂上之前就已就绪时补一次上报：load 已经派发完，机器再也等不到，
-   * 状态会永远停在 loading——图片明明在手边，台前却一直是回退内容。两处会撞上：
-   * 作者把同一个 src 也写进了 img 标记（升级前浏览器就加载完了），
-   * 以及元素在 DOM 中被移动导致机器重建（状态从头走一遍，而 src 没变的 img 不会重新加载）。
+   * 图片在监听器挂载之前就已就绪时补一次上报：load 已经派发完毕，状态机无法再收到，
+   * 状态会永远停在 loading：图片已就绪，前台却一直显示回退内容。两种情况会触发：
+   * 作者把同一个 src 也写进了 img 标记（升级前浏览器就已加载完成），
+   * 以及元素在 DOM 中被移动导致状态机重建（状态从头开始，而 src 未变的 img 不会重新加载）。
    *
-   * 三个条件缺一不可：complete 排除还在路上的请求；naturalWidth 排除加载失败——失败与
-   * "压根没发起请求"在这里分不开，不去猜，留在 loading 上照样只显示回退内容；
-   * currentSrc 与 src 相等排除换图那一瞬，此刻旧图仍是 complete 的，误报会把旧图当新图显出来。
+   * 三个条件缺一不可：complete 排除仍在加载的请求；naturalWidth 排除加载失败：失败与
+   * 未发起请求在这里无法区分，不做推测，停留在 loading 上照样只显示回退内容；
+   * currentSrc 与 src 相等排除换图的瞬间，此时旧图仍是 complete 的，误报会把旧图当作新图显示。
    *
-   * 只在 loading 补报：idle 期间补会被随后落地的来源决议一脚踢回 loading。
-   * 报完即进 loaded，下一帧不再命中，不会闭成回路。
+   * 只在 loading 补报：idle 期间补报会被随后落地的来源决议重新置回 loading。
+   * 报告后即进入 loaded，下一帧不再命中，不会形成循环。
    */
   private syncSettledImage(status: ImageStatus): void {
     if (status !== 'loading')

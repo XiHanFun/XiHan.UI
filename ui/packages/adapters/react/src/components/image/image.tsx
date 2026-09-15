@@ -16,14 +16,14 @@ import { useImage } from './use-image'
 
 type ImageProps = ImageSchema['props']
 
-/** 函数式 children 的载荷：加载状态、是否已加载完，以及回退内容此刻该不该露面。 */
+/** 函数式 children 的载荷：加载状态、是否已加载完成，以及回退内容当前是否应当显示。 */
 export type ImageRootSlotProps = Pick<ImageApi, 'status' | 'loaded' | 'showFallback' | 'showPlaceholder'>
 
 export interface XhImageRootProps extends Omit<ComponentPropsWithRef<'div'>, 'children'> {
-  /** 缺席即无来源，落回退态。 */
+  /** 缺席即无来源，回落到回退态。 */
   src?: string
   alt?: string
-  /** 加载途中回退内容押后露面的毫秒数；走缓存的快图在这一段里就到了，回退内容一次都不闪。 */
+  /** 加载途中回退内容推迟显示的毫秒数；经缓存的快速图片在这段时间内即到达，回退内容不会闪现。 */
   fallbackDelay?: number
   /** 状态落位时通知。 */
   onStatusChange?: ImageProps['onStatusChange']
@@ -56,7 +56,7 @@ export function XhImageRoot({
 
 XhImageRoot.xhEvents = ['status-change'] as const
 
-/** 图片节点常挂，靠 hidden 显隐；src / alt 由 connect 写上。 */
+/** 图片节点常驻，依靠 hidden 显隐；src / alt 由 connect 写入。 */
 export interface XhImageImageProps extends Omit<ComponentPropsWithRef<'img'>, 'children' | 'src' | 'alt'> {}
 
 export function XhImageImage(props: XhImageImageProps): ReactNode {
@@ -87,7 +87,7 @@ export function XhImageImage(props: XhImageImageProps): ReactNode {
 
 export interface XhImagePlaceholderProps extends ComponentPropsWithRef<'div'> {}
 
-/** 占位层：图片落位或失败即让位，节点常挂、靠 hidden 显隐。 */
+/** 占位层：图片落位或失败即让位，节点常驻、依靠 hidden 显隐。 */
 export function XhImagePlaceholder({ children, ...rest }: XhImagePlaceholderProps): ReactNode {
   const ctx = useImageContext()
   return (
@@ -99,7 +99,7 @@ export function XhImagePlaceholder({ children, ...rest }: XhImagePlaceholderProp
 
 export interface XhImageFallbackProps extends ComponentPropsWithRef<'div'> {}
 
-/** 回退位：失败时恒露面，加载途中要等 fallbackDelay 过去；节点常挂、靠 hidden 显隐。 */
+/** 回退位：失败时恒显示，加载途中要等 fallbackDelay 过去；节点常驻、依靠 hidden 显隐。 */
 export function XhImageFallback({ children, ...rest }: XhImageFallbackProps): ReactNode {
   const ctx = useImageContext()
   return (

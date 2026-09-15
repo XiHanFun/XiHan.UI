@@ -14,7 +14,7 @@ import { useImage } from './use-image'
 
 type ImageProps = ImageSchema['props']
 
-/** 默认插槽的载荷：加载状态、是否已加载完，以及回退内容此刻该不该露面。 */
+/** 默认插槽的载荷：加载状态、是否已加载完成，以及回退内容当前是否应当显示。 */
 export type ImageRootSlotProps = Pick<ImageApi, 'status' | 'loaded' | 'showFallback' | 'showPlaceholder'>
 
 export const XhImageRoot = defineComponent({
