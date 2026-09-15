@@ -1,4 +1,4 @@
-// 流式光标 | 一块都还没来的时候光标就已经在了，caret 设成 false 可以整个关掉
+// 流式光标 | 尚未收到任何块时光标就已存在，caret 设为 false 可以整个关闭
 import type { MarkdownBlock } from "@xihan-ui/headless";
 import type { ReactNode } from "react";
 import { XhMarkdownStreamContent, XhMarkdownStreamRoot } from "@xihan-ui/react";

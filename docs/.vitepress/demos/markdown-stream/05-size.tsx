@@ -1,4 +1,4 @@
-// 尺寸 | size 换正文字号与块间距，三档共用同一份块列表
+// 尺寸 | size 改变正文字号与块间距，三档共用同一份块列表
 import type { MarkdownBlock } from "@xihan-ui/headless";
 import type { ReactNode } from "react";
 import { createStreamRenderer } from "@xihan-ui/markdown";
