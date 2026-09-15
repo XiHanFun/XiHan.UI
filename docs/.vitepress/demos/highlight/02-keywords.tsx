@@ -1,4 +1,4 @@
-// 一组关键词 | 传数组即可；同一处多个关键词都命中时取最长的那个，重叠只切出一段
+// 一组关键词 | 传入数组即可；同一位置多个关键词都命中时取最长的一个，重叠只切出一段
 import type { ReactNode } from "react";
 import { XhHighlight } from "@xihan-ui/react";
 
