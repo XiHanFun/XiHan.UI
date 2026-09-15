@@ -1,4 +1,4 @@
-<!-- 受控 | 传了 page 就由宿主说了算，组件只发 page-change 不自己改页码，宿主写回它才动 -->
+<!-- 受控 | 传入 page 后由宿主决定，组件只发 page-change 不自行修改页码，宿主写回后才变化 -->
 <div id="carousel-controlled" style="inline-size: 100%; display: grid; gap: 12px">
   <xh-carousel id="carousel-controlled-host" slide-count="3" page="1">
     <div data-xh-part="root">

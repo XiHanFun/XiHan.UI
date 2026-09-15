@@ -1,4 +1,4 @@
-<!-- 指针拖拽 | allowPointerDrag 打开后按住轨道就能拖着走，松手落回整页；关掉则只有触摸的原生滚动 -->
+<!-- 指针拖拽 | allowPointerDrag 开启后按住轨道即可拖动，松手落回整页；关闭则只有触摸的原生滚动 -->
 <script setup lang="ts">
 import {
   XhCarouselIndicator,

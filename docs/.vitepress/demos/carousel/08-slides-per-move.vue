@@ -1,4 +1,4 @@
-<!-- 一次挪一张 | slidesPerMove 与 slidesPerPage 分开给：一屏露三张、一次只挪一张，页数按剩下的张数重新算 -->
+<!-- 一次移动一张 | slidesPerMove 与 slidesPerPage 分开提供：一屏显示三张、一次只移动一张，页数按剩余张数重新计算 -->
 <script setup lang="ts">
 import {
   XhCarouselIndicator,

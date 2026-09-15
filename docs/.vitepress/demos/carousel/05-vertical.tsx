@@ -1,4 +1,4 @@
-// 纵向轨道 | orientation 换成 vertical 后轨道竖着位移，两端按钮落到上下两头，翻页认的是上下方向键
+// 纵向轨道 | orientation 换为 vertical 后轨道竖向位移，两端按钮落到上下两端，翻页识别上下方向键
 import type { ReactNode } from "react";
 import {
   XhCarouselIndicator,

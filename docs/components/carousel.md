@@ -12,7 +12,7 @@
 
 ## 用法
 
-张数由 slideCount 声明而不是从 DOM 数，页数与指示点数量都由它算出来
+张数由 slideCount 声明而不是从 DOM 计数，页数与指示点数量都由它计算
 
 <XhDemo src="carousel/01-basic" />
 
@@ -26,49 +26,49 @@
 
 ### 受控
 
-传了 page 就由宿主说了算，组件只发 page-change 不自己改页码，宿主写回它才动
+传入 page 后由宿主决定，组件只发 page-change 不自行修改页码，宿主写回后才变化
 
 <XhDemo src="carousel/02-controlled" />
 
 ### 一屏多张
 
-slidesPerPage 决定一屏露几张，一次翻几张缺省跟着它走，所以仍是整屏翻
+slidesPerPage 决定一屏显示几张，一次翻几张默认跟随它，因此仍是整屏翻页
 
 <XhDemo src="carousel/03-slides-per-page" />
 
 ### 自动播放与暂停
 
-autoplay 给毫秒即间隔；开了它就得渲播放开关，自动翻页必须能停住
+autoplay 传毫秒即间隔；开启后必须渲染播放开关，自动翻页必须能够停止
 
 <XhDemo src="carousel/04-autoplay" />
 
 ### 纵向轨道
 
-orientation 换成 vertical 后轨道竖着位移，两端按钮落到上下两头，翻页认的是上下方向键
+orientation 换为 vertical 后轨道竖向位移，两端按钮落到上下两端，翻页识别上下方向键
 
 <XhDemo src="carousel/05-vertical" />
 
 ### 指针拖拽
 
-allowPointerDrag 打开后按住轨道就能拖着走，松手落回整页；关掉则只有触摸的原生滚动
+allowPointerDrag 开启后按住轨道即可拖动，松手落回整页；关闭则只有触摸的原生滚动
 
 <XhDemo src="carousel/06-pointer-drag" />
 
 ### 指示点悬停切页
 
-指示点上补一个原生 mouseenter 就是悬停切页，组件自带的点击翻页照旧
+指示点上补一个原生 mouseenter 即为悬停切页，组件自带的点击翻页照常
 
 <XhDemo src="carousel/07-indicator-hover" />
 
-### 一次挪一张
+### 一次移动一张
 
-slidesPerMove 与 slidesPerPage 分开给：一屏露三张、一次只挪一张，页数按剩下的张数重新算
+slidesPerMove 与 slidesPerPage 分开提供：一屏显示三张、一次只移动一张，页数按剩余张数重新计算
 
 <XhDemo src="carousel/08-slides-per-move" />
 
-### 换过渡效果
+### 更换过渡效果
 
-条目的内联样式只有尺寸与间距，位移之外的表现全归作者：把条目摞起来再按当前页调透明度与缩放，翻页、键盘与指示点一概照旧
+条目的内联样式只有尺寸与间距，位移之外的表现全部归作者：把条目叠放后按当前页调整透明度与缩放，翻页、键盘与指示点一概照常
 
 <XhDemo src="carousel/09-effect" />
 

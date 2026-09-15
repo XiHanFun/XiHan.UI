@@ -1,4 +1,4 @@
-// 自动播放与暂停 | autoplay 给毫秒即间隔；开了它就得渲播放开关，自动翻页必须能停住
+// 自动播放与暂停 | autoplay 传毫秒即间隔；开启后必须渲染播放开关，自动翻页必须能够停止
 import type { ReactNode } from "react";
 import {
   XhCarouselAutoplayTrigger,
