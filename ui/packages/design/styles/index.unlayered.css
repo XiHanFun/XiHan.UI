@@ -2079,7 +2079,7 @@
   cursor: pointer;
   transition:
     background var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
-    scale var(--xh-motion-duration-micro) var(--xh-motion-ease-enter-strong);
+    scale var(--xh-motion-duration-release) var(--xh-motion-ease-release);
 }
 
 /* 行级删除把手：命中区取行内动作按钮尺寸，圆角取控件圆角 */
@@ -2117,6 +2117,8 @@
 [data-scope='field-array'][data-part='move-down-trigger']:not([aria-disabled='true']):active {
   background: var(--xh-field-array-trigger-bg-active, var(--xh-bg-subtle-active));
   scale: var(--xh-motion-scale-press);
+  transition-duration: var(--xh-motion-duration-press);
+  transition-timing-function: var(--xh-motion-ease-press);
 }
 
 /* 删除把手悬停转危险色：它是这一行里唯一不可撤销的动作 */
@@ -2154,7 +2156,7 @@
   transition:
     background var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
     border-color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
-    scale var(--xh-motion-duration-micro) var(--xh-motion-ease-enter-strong);
+    scale var(--xh-motion-duration-release) var(--xh-motion-ease-release);
 }
 
 [data-scope='field-array'][data-part='add-trigger'][hidden] {
@@ -2169,6 +2171,8 @@
 [data-scope='field-array'][data-part='add-trigger']:not([aria-disabled='true']):active {
   background: var(--xh-field-array-add-bg-active, var(--xh-bg-subtle-active));
   scale: var(--xh-motion-scale-press);
+  transition-duration: var(--xh-motion-duration-press);
+  transition-timing-function: var(--xh-motion-ease-press);
 }
 
 [data-scope='field-array'][data-part='add-trigger'][aria-disabled='true'] {
