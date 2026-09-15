@@ -8,32 +8,32 @@
 import type { Direction, MachineSchema, Orientation, PropTypes, Size } from '@xihan-ui/core'
 
 /**
- * 条目自报家门：值与禁用由作者在部件上声明，connect 据此产出属性。
+ * 条目的声明：值与禁用由作者在部件上声明，connect 据此产出属性。
  * connect 在 Vue 的 render 期求值，此时 DOM 尚不存在，不得反查 DOM。
- * 工具条只发身份标记、Tab 停靠位与 aria-disabled，条目的角色、按下态与点击行为归条目自己。
+ * 工具条只发身份标记、Tab 停靠位与 aria-disabled，条目的角色、按下态与点击行为归条目自身。
  */
 export interface ToolbarItemProps {
   value: string
   disabled?: boolean
 }
 
-/** 视觉变体：plain 是缺省档，surface 提供附着式工具面。 */
+/** 视觉变体：plain 是默认档，surface 提供附着式工具面。 */
 export type ToolbarVariant = 'plain' | 'surface'
 
 export interface ToolbarSchema extends MachineSchema {
   props: {
     /**
-     * 主轴，默认 horizontal。它决定 root 的 aria-orientation、方向键收哪一对键
+     * 主轴，默认 horizontal。它决定 root 的 aria-orientation、方向键接管哪一对键
      * （另一轴原样放行给页面），以及分隔线的朝向（恒与主轴垂直）。
      */
     orientation?: Orientation
     /** 文字方向，默认 ltr；只改写水平主轴上左右方向键的语义。 */
     dir?: Direction
-    /** 方向键走到尽头是否回绕，默认 true。 */
+    /** 方向键到达末尾是否回绕，默认 true。 */
     loop?: boolean
-    /** 整条禁用：条目全部转 aria-disabled，方向键不再接管。 */
+    /** 整条禁用：条目全部为 aria-disabled，方向键不再接管。 */
     disabled?: boolean
-    /** 变体：plain / surface，决定工具条自己画不画一块面。缺省 plain。 */
+    /** 变体：plain / surface，决定工具条是否绘制一块面。默认 plain。 */
     variant?: ToolbarVariant
     /** 尺寸：sm / md / lg，同时调整排布与默认条目尺寸。 */
     size?: Size
@@ -41,19 +41,19 @@ export interface ToolbarSchema extends MachineSchema {
   context: {
     /**
      * 焦点位于工具条内时的瞬态锚点，焦点离开即清空。
-     * 焦点模型是 roving tabindex，整条只留一个 Tab 停靠点；锚点只有焦点这一个来源。
-     * 锚点为空时由 root 兜底进 Tab 序列，它的 onFocus 再把焦点转投给第一个可停留条目。
+     * 焦点模型是 roving tabindex，整条只保留一个 Tab 停靠点；锚点只有焦点这一个来源。
+     * 锚点为空时由 root 兜底进入 Tab 序列，它的 onFocus 再把焦点转交给第一个可停留条目。
      */
     focusedValue: string | null
   }
   computed: Record<string, never>
   refs: Record<string, never>
-  /** 焦点锚点不编码进状态，机器因此只有一个状态，逻辑全在 context 与 actions。 */
+  /** 焦点锚点不编码进状态，状态机因此只有一个状态，逻辑全在 context 与 actions。 */
   state: 'idle'
   event:
-    /** 焦点落到某个条目上（方向键搬过去的，或指针/程序直接聚焦的）。 */
+    /** 焦点落到某个条目上（方向键移动，或指针 / 程序直接聚焦）。 */
     | { type: 'ITEM.FOCUS', value: string }
-    /** 焦点离开整条工具条，或持有焦点的条目被移出 DOM（浏览器此时不派 focusout，由适配器如实上报）。 */
+    /** 焦点离开整条工具条，或持有焦点的条目被移出 DOM（浏览器此时不派发 focusout，由适配器如实上报）。 */
     | { type: 'TOOLBAR.BLUR' }
   tag: never
   guard: never
@@ -66,7 +66,7 @@ export interface ToolbarApi<T extends PropTypes = PropTypes> {
   focusedValue: string | null
   /** 生效的主轴。 */
   orientation: Orientation
-  /** 分隔线的朝向：恒与主轴垂直（横排工具条里的分隔线是竖线）。 */
+  /** 分隔线的朝向：恒与主轴垂直（横向工具条中的分隔线是竖线）。 */
   separatorOrientation: Orientation
   disabled: boolean
   getRootProps: () => T['element']
@@ -75,5 +75,5 @@ export interface ToolbarApi<T extends PropTypes = PropTypes> {
   getSeparatorProps: () => T['element']
 }
 
-/** 读屏用的文案。本组件目前没有需要外露的文案，位先留着。 */
+/** 读屏文案。本组件目前没有需要外露的文案，保留该位。 */
 export interface ToolbarTranslations {}

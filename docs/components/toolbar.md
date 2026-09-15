@@ -94,11 +94,11 @@
 
 | 属性 | 类型 | 必填 | 说明 |
 | --- | --- | --- | --- |
-| `orientation` | `Orientation` |  | 主轴，默认 horizontal。它决定 root 的 aria-orientation、方向键收哪一对键 （另一轴原样放行给页面），以及分隔线的朝向（恒与主轴垂直）。 |
+| `orientation` | `Orientation` |  | 主轴，默认 horizontal。它决定 root 的 aria-orientation、方向键接管哪一对键 （另一轴原样放行给页面），以及分隔线的朝向（恒与主轴垂直）。 |
 | `dir` | `Direction` |  | 文字方向，默认 ltr；只改写水平主轴上左右方向键的语义。 |
-| `loop` | `boolean` |  | 方向键走到尽头是否回绕，默认 true。 |
-| `disabled` | `boolean` |  | 整条禁用：条目全部转 aria-disabled，方向键不再接管。 |
-| `variant` | `ToolbarVariant` |  | 变体：plain / surface，决定工具条自己画不画一块面。缺省 plain。 |
+| `loop` | `boolean` |  | 方向键到达末尾是否回绕，默认 true。 |
+| `disabled` | `boolean` |  | 整条禁用：条目全部为 aria-disabled，方向键不再接管。 |
+| `variant` | `ToolbarVariant` |  | 变体：plain / surface，决定工具条是否绘制一块面。默认 plain。 |
 | `size` | `Size` |  | 尺寸：sm / md / lg，同时调整排布与默认条目尺寸。 |
 
 ### 插槽
@@ -125,7 +125,7 @@
 | --- | --- | --- |
 | `focusedValue` | `string \| null` | 焦点锚点；焦点不在工具条内时为 null。 |
 | `orientation` | `Orientation` | 生效的主轴。 |
-| `separatorOrientation` | `Orientation` | 分隔线的朝向：恒与主轴垂直（横排工具条里的分隔线是竖线）。 |
+| `separatorOrientation` | `Orientation` | 分隔线的朝向：恒与主轴垂直（横向工具条中的分隔线是竖线）。 |
 | `disabled` | `boolean` |  |
 | `getRootProps` | `() => T['element']` |  |
 | `getGroupProps` | `() => T['element']` |  |
