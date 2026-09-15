@@ -23744,7 +23744,7 @@
   transition:
     background var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
     border-color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
-    scale var(--xh-motion-duration-micro) var(--xh-motion-ease-enter-strong);
+    scale var(--xh-motion-duration-release) var(--xh-motion-ease-release);
 }
 
 [data-scope='drawer'][data-part='trigger'][hidden] {
@@ -23772,6 +23772,8 @@
 [data-scope='drawer'][data-part='trigger']:active:not(:disabled) {
   background: var(--xh-drawer-trigger-bg-active, var(--xh-bg-subtle-active));
   scale: var(--xh-motion-scale-press);
+  transition-duration: var(--xh-motion-duration-press);
+  transition-timing-function: var(--xh-motion-ease-press);
 }
 
 /* trigger 是单体控件，禁用走原生 disabled */
@@ -23920,14 +23922,14 @@
 /* 只圆朝向页面那两个角：贴住视口的那条边圆角是看不见的，圆了反而露出底下的页面 */
 [data-scope='drawer'][data-part='content'][data-side='left'] {
   inset-inline-start: 0;
-  border-start-end-radius: var(--xh-drawer-radius, var(--xh-shape-surface));
-  border-end-end-radius: var(--xh-drawer-radius, var(--xh-shape-surface));
+  border-start-end-radius: var(--xh-drawer-radius, var(--xh-shape-overlay));
+  border-end-end-radius: var(--xh-drawer-radius, var(--xh-shape-overlay));
 }
 
 [data-scope='drawer'][data-part='content'][data-side='right'] {
   inset-inline-end: 0;
-  border-start-start-radius: var(--xh-drawer-radius, var(--xh-shape-surface));
-  border-end-start-radius: var(--xh-drawer-radius, var(--xh-shape-surface));
+  border-start-start-radius: var(--xh-drawer-radius, var(--xh-shape-overlay));
+  border-end-start-radius: var(--xh-drawer-radius, var(--xh-shape-overlay));
 }
 
 /* 上下：满宽、定高 */
@@ -23940,14 +23942,14 @@
 
 [data-scope='drawer'][data-part='content'][data-side='top'] {
   inset-block-start: 0;
-  border-end-start-radius: var(--xh-drawer-radius, var(--xh-shape-surface));
-  border-end-end-radius: var(--xh-drawer-radius, var(--xh-shape-surface));
+  border-end-start-radius: var(--xh-drawer-radius, var(--xh-shape-overlay));
+  border-end-end-radius: var(--xh-drawer-radius, var(--xh-shape-overlay));
 }
 
 [data-scope='drawer'][data-part='content'][data-side='bottom'] {
   inset-block-end: 0;
-  border-start-start-radius: var(--xh-drawer-radius, var(--xh-shape-surface));
-  border-start-end-radius: var(--xh-drawer-radius, var(--xh-shape-surface));
+  border-start-start-radius: var(--xh-drawer-radius, var(--xh-shape-overlay));
+  border-start-end-radius: var(--xh-drawer-radius, var(--xh-shape-overlay));
 }
 
 /* 展开期间面板整块推到一屏之外再推回来：只在开着的这一档挂，
@@ -24072,7 +24074,7 @@
   transition:
     background var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
     color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
-    scale var(--xh-motion-duration-micro) var(--xh-motion-ease-enter-strong);
+    scale var(--xh-motion-duration-release) var(--xh-motion-ease-release);
 }
 
 [data-scope='drawer'][data-part='close-trigger'][hidden] {
@@ -24087,6 +24089,8 @@
 [data-scope='drawer'][data-part='close-trigger']:active {
   background: var(--xh-drawer-close-bg-active, var(--xh-bg-subtle-active));
   scale: var(--xh-motion-scale-press);
+  transition-duration: var(--xh-motion-duration-press);
+  transition-timing-function: var(--xh-motion-ease-press);
 }
 
 /* 没写内容就由皮肤画兜底字形；作者往部件里塞了自己的图形，这几条即不命中 */
