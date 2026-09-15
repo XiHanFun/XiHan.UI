@@ -16,23 +16,23 @@ import { XhElement } from '../element-base'
 const BOOLEAN_CONVERTER = { fromAttribute: (v: string | null) => (v === null ? undefined : v !== 'false') }
 
 /**
- * `<xh-fieldset>` —— Light-DOM 行为宿主，无状态机，把 connectFieldset 产出的属性打到
- * root/legend/description/error-text 角色节点上：说明与错误文案的 id 自动接进 root 的描述链。
+ * `<xh-fieldset>`：Light-DOM 行为宿主，无状态机，把 connectFieldset 产出的属性接到
+ * root / legend / description / error-text 角色节点上：说明与错误文案的 id 自动接入 root 的描述链。
  *
- * root 必须是原生 `<fieldset>`、legend 必须是原生 `<legend>` 且写成 root 的首个子节点——
- * 整组禁用连坐组内控件与"legend 即组名"都是浏览器给的，写成 div 两样都静默失效。
+ * root 必须是原生 `<fieldset>`、legend 必须是原生 `<legend>` 且写为 root 的首个子节点：
+ * 整组禁用连带组内控件与 legend 即组名都由浏览器提供，写为 div 时两者都静默失效。
  *
- * 每个实例自带一份 scope 派生 part id，同页多个字段集各出各的 id。
+ * 每个实例自带一份 scope 派生 part id，同页多个字段集各自分配 id。
  *
  * @customElement xh-fieldset
- * @attr {boolean} disabled - 整组禁用：root 落原生 disabled，组内表单控件一并停掉
- * @attr {boolean} invalid - 校验失败态：错误文案接入描述链并显出
- * @attr {boolean} required - 必填标记，只落 data-required 供皮肤给组标题加星号
- * @csspart root - 原生 `<fieldset>`，承载原生 disabled 与 data-disabled/data-invalid/data-required
- * @csspart legend - 原生 `<legend>`，这一组的名字；须是 root 的首个子节点
- * @csspart description - 常驻说明文案，恒在 root 的描述链里
- * @csspart field-group - 把并排的几个字段圈成一段；纯排版
- * @csspart actions - 组末尾那一行按钮；纯排版
+ * @attr {boolean} disabled - 整组禁用：root 写原生 disabled，组内表单控件一并禁用
+ * @attr {boolean} invalid - 校验失败态：错误文案接入描述链并显示
+ * @attr {boolean} required - 必填标记，只写 data-required 供皮肤给组标题加星号
+ * @csspart root - 原生 `<fieldset>`，承载原生 disabled 与 data-disabled / data-invalid / data-required
+ * @csspart legend - 原生 `<legend>`，该组的名字；须是 root 的首个子节点
+ * @csspart description - 常驻说明文案，恒在 root 的描述链中
+ * @csspart field-group - 把并排的几个字段划为一段；纯排版
+ * @csspart actions - 组末尾的按钮行；纯排版
  * @csspart error-text - 错误文案（role=status，排队播报不打断）；非 invalid 时带 hidden 收起，节点不卸载
  */
 export class XhFieldsetElement extends XhElement {

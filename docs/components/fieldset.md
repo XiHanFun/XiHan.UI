@@ -110,10 +110,10 @@ required 落成 data-required，皮肤据此给组标题加星号；星号只是
 
 | 属性 | 类型 | 必填 | 说明 |
 | --- | --- | --- | --- |
-| `disabled` | `boolean` |  | 整组禁用。root 是原生 `&lt;fieldset&gt;`，这一条落成原生 disabled 属性， 浏览器会把组内每个表单控件一并停掉（首个 `&lt;legend&gt;` 里的控件按 HTML 规范除外）。 |
-| `invalid` | `boolean` |  | 校验失败态：root 上落 data-invalid，错误文案接入描述链并显出。 |
-| `required` | `boolean` |  | 必填标记：落成 data-required，供皮肤给组标题加星号，校验仍归宿主。 不产出 aria-required —— 该属性在 group 角色上不被支持，写了也不进无障碍树。 |
-| `translations` | `Partial<FieldsetTranslations>` |  | 文案覆盖。本组件当前没有外露文案，位先留着，接全局配置的通道由适配器铺好。 |
+| `disabled` | `boolean` |  | 整组禁用。root 是原生 `&lt;fieldset&gt;`，该条落为原生 disabled 属性， 浏览器会把组内每个表单控件一并禁用（首个 `&lt;legend&gt;` 中的控件按 HTML 规范除外）。 |
+| `invalid` | `boolean` |  | 校验失败态：root 上写 data-invalid，错误文案接入描述链并显示。 |
+| `required` | `boolean` |  | 必填标记：落为 data-required，供皮肤给组标题加星号，校验仍由宿主负责。 不产出 aria-required：该属性在 group 角色上不受支持，写入也不进入无障碍树。 |
+| `translations` | `Partial<FieldsetTranslations>` |  | 文案覆盖。本组件当前没有外露文案，保留该位，接全局配置的通道由适配器铺设。 |
 
 ### connect API
 
@@ -127,8 +127,8 @@ required 落成 data-required，皮肤据此给组标题加星号；星号只是
 | `getRootProps` | `() => T['element']` |  |
 | `getLegendProps` | `() => T['element']` |  |
 | `getDescriptionProps` | `() => T['element']` |  |
-| `getFieldGroupProps` | `() => T['element']` | 把并排的几个字段圈成一段；纯排版，不承担分组语义（组名与描述归 root）。 |
-| `getActionsProps` | `() => T['element']` | 组末尾那一行按钮；纯排版。 |
+| `getFieldGroupProps` | `() => T['element']` | 把并排的几个字段划为一段；纯排版，不承担分组语义（组名与描述归 root）。 |
+| `getActionsProps` | `() => T['element']` | 组末尾的按钮行；纯排版。 |
 | `getErrorTextProps` | `() => T['element']` |  |
 
 ## 无障碍
