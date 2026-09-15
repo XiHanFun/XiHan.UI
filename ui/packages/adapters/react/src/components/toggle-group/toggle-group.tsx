@@ -24,7 +24,7 @@ export interface XhToggleGroupRootProps extends Omit<ComponentPropsWithRef<'div'
   defaultValue?: ToggleGroupValue
   multiple?: boolean
   disabled?: boolean
-  /** 不许把值清空：单选点当前项不取消，多选摘不掉最后一个。 */
+  /** 不允许把值清空：单选点击当前项不取消，多选无法移除最后一个。 */
   disallowEmpty?: boolean
   variant?: ActionVariant
   tone?: Tone
@@ -35,10 +35,10 @@ export interface XhToggleGroupRootProps extends Omit<ComponentPropsWithRef<'div'
   orientation?: Orientation
   dir?: Direction
   loop?: boolean
-  /** roving tabindex，默认开；关掉后每个条目自成一个 Tab 停靠点。 */
+  /** roving tabindex，默认开启；关闭后每个条目自成一个 Tab 停靠点。 */
   rovingFocus?: boolean
   onValueChange?: ToggleGroupProps['onValueChange']
-  /** 每个条目的自定义内容；不给就用 collection 里的 label。 */
+  /** 每个条目的自定义内容；未提供时使用 collection 中的 label。 */
   renderItem?: (node: ToggleGroupNodeMeta) => ReactNode
   children?: ReactNode
 }
@@ -113,10 +113,10 @@ XhToggleGroupRoot.xhEvents = ['value-change'] as const
 
 export interface XhToggleGroupItemProps extends Omit<ComponentPropsWithRef<'button'>, 'value'> {
   value: string
-  /** 缺省交给 connect 回 collection 里查，写死 false 会盖掉数据里的禁用。 */
+  /** 默认交给 connect 查询 collection，写死 false 会覆盖数据中的禁用。 */
   disabled?: boolean
 }
-/** 用原生 button，Enter / Space 的激活交给平台。 */
+/** 使用原生 button，Enter / Space 的激活交给平台。 */
 export function XhToggleGroupItem({ value, disabled, children, ...rest }: XhToggleGroupItemProps): ReactNode {
   const ctx = useToggleGroupContext()
   const itemEl = useRef<HTMLElement | null>(null)
@@ -158,16 +158,16 @@ export function XhToggleGroupItem({ value, disabled, children, ...rest }: XhTogg
 }
 
 export interface XhToggleGroupHiddenInputProps extends ComponentPropsWithRef<'input'> {}
-/** 表单出口：整组只有一份，给了 name 才参与提交。 */
+/** 表单出口：整组只有一份，提供 name 后才参与提交。 */
 export function XhToggleGroupHiddenInput({ ...rest }: XhToggleGroupHiddenInputProps): ReactNode {
   const ctx = useToggleGroupContext()
   return <input {...mergeReactProps(ctx.api.getHiddenInputProps() as Record<string, unknown>, rest as Record<string, unknown>)} />
 }
 
 /**
- * 没写 children 时按 collection 铺开的整套结构，作者只交数据。
- * 与手写部件产出的 DOM 完全一致，要改结构就写 children，行为不变。
- * 条目底下没有文本部件，文字直接落在条目里。
+ * 未写 children 时按 collection 铺开的整套结构，作者只提供数据。
+ * 与手写部件产出的 DOM 完全一致，需要修改结构时写 children，行为不变。
+ * 条目下没有文本部件，文字直接落在条目中。
  */
 function renderDefaultTree(
   collection: readonly ToggleGroupNodeMeta[],

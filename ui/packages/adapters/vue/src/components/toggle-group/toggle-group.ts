@@ -140,7 +140,7 @@ export const XhToggleGroupItem = defineComponent({
   },
 })
 
-/** 表单出口：整组只有一份，给了 name 才参与提交。 */
+/** 表单出口：整组只有一份，提供 name 后才参与提交。 */
 export const XhToggleGroupHiddenInput = defineComponent({
   name: 'XhToggleGroupHiddenInput',
   setup() {
@@ -150,9 +150,9 @@ export const XhToggleGroupHiddenInput = defineComponent({
 })
 
 /**
- * 没写默认插槽时按 collection 铺开的整套结构，作者只交数据。
- * 与手写部件产出的 DOM 完全一致，要改结构就写默认插槽，行为不变。
- * 条目底下没有文本部件，文字直接落在条目里。
+ * 未写默认插槽时按 collection 铺开的整套结构，作者只提供数据。
+ * 与手写部件产出的 DOM 完全一致，需要修改结构时写默认插槽，行为不变。
+ * 条目下没有文本部件，文字直接落在条目中。
  */
 function renderDefaultTree(
   collection: readonly ToggleGroupNodeMeta[],

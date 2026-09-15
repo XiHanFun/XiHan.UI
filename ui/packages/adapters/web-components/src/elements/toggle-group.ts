@@ -23,32 +23,32 @@ const STRING_CONVERTER = { fromAttribute: (v: string | null) => v ?? undefined }
 const BOOLEAN_CONVERTER = { fromAttribute: (v: string | null) => (v === null ? undefined : v !== 'false') }
 
 /**
- * `<xh-toggle-group>` —— Light-DOM 行为宿主：作者写 root 与若干 item 角色节点，
- * 元素跑 toggle-group 机器并把 connect 产出打上去。条目须是原生 `<button>`
- * （Enter/Space 的激活由平台负责），身份取写在条目上的 value 属性，禁用由条目自报 aria-disabled。
+ * `<xh-toggle-group>`：Light-DOM 行为宿主：作者写 root 与若干 item 角色节点，
+ * 元素运行 toggle-group 状态机并把 connect 产出接上。条目须是原生 `<button>`
+ * （Enter / Space 的激活由平台负责），身份取写在条目上的 value 属性，禁用由条目声明 aria-disabled。
  *
  * 单选（默认）与多选是两套 ARIA：单选 root=radiogroup、条目 role=radio + aria-checked；
  * 多选 root=group、条目保持原生按钮 + aria-pressed。
  *
- * 受控值的多选形态只能走 property（`el.value = ['a','b']`）：HTML 属性只装得下一个字符串。
+ * 受控值的多选形态只能通过 property 设置（`el.value = ['a','b']`）：HTML 属性只能承载一个字符串。
  *
  * @customElement xh-toggle-group
- * @attr {string} value - 受控选中值（属性形式只表达单值）；缺省该属性即非受控
+ * @attr {string} value - 受控选中值（属性形式只能表达单值）；未提供该属性即非受控
  * @attr {string} default-value - 非受控的初始选中值
  * @attr {boolean} multiple - 允许多项同时选中，默认关闭
  * @attr {boolean} disabled - 整组禁用
- * @attr {boolean} disallow-empty - 不许把值点空（最后一个选中项摘不掉）
- * @attr {'solid'|'subtle'|'outline'|'ghost'} variant - 变体，决定段的底色与描边怎么用
+ * @attr {boolean} disallow-empty - 不允许清空值（最后一个选中项不可移除）
+ * @attr {'solid'|'subtle'|'outline'|'ghost'} variant - 变体，决定段的底色与描边使用方式
  * @attr {'brand'|'neutral'|'success'|'warning'|'danger'|'info'} tone - 颜色
  * @attr {'sm'|'md'|'lg'} size - 尺寸
  * @attr {boolean} full-width - 撑满行宽，每段等分剩余空间
  * @attr {boolean} separators - 是否自动在相邻条目之间生成分隔线，默认 true
- * @attr {string} name - 表单字段名；给了它隐藏输入才带 name 并参与提交
- * @attr {'horizontal'|'vertical'} orientation - 视觉排布，默认 horizontal；方向键四个恒响应，与它无关
+ * @attr {string} name - 表单字段名；提供后隐藏输入才带 name 并参与提交
+ * @attr {'horizontal'|'vertical'} orientation - 视觉排布，默认 horizontal；四个方向键恒响应，与它无关
  * @attr {'ltr'|'rtl'} dir - 文字方向，只改写左右方向键语义，默认 ltr
- * @attr {boolean} loop - 方向键走到尽头回绕，默认开启
- * @attr {boolean} roving-focus - roving tabindex，默认开启；关掉后每个条目各占一个 Tab 位
- * @fires value-change - 选中值变化；detail 为 `{ value: string | string[] | null }`（形态跟着 multiple 走）
+ * @attr {boolean} loop - 方向键到达末尾回绕，默认开启
+ * @attr {boolean} roving-focus - roving tabindex，默认开启；关闭后每个条目各占一个 Tab 位
+ * @fires value-change - 选中值变化；detail 为 `{ value: string | string[] | null }`（形态随 multiple 决定）
  * @csspart root - role=radiogroup / group 的容器（承载键盘收口与 Tab 兜底位）
  * @csspart item - 开关按钮，须是原生 `<button>` 并自带 value 属性标识身份
  * @csspart hidden-input - 表单出口，可选；须是原生 `<input>`
@@ -101,7 +101,7 @@ export class XhToggleGroupElement extends XhElement {
   // 整组禁用期间的条目自身声明快照。connect 每帧都把 aria-disabled 写回条目，整组禁用更是写满每一个，
   // 此时回读分不清「作者声明的」还是「自己上一帧写的」，组解禁后条目就永远解不开。
   private readonly declaredDisabled = new WeakMap<HTMLElement, boolean>()
-  /** 上一帧是否整组禁用：解禁当帧 DOM 上还留着机器写回的 aria-disabled，读不得。 */
+  /** 上一帧是否整组禁用：解禁当帧 DOM 上仍保留着状态机写回的 aria-disabled，不可读取。 */
   private wasGroupDisabled = false
 
   private readonly notify = (details: ToggleGroupValueChangeDetails): void => {
