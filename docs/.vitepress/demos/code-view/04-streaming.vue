@@ -1,4 +1,4 @@
-<!-- 流式追加 | 代码还在写的时候默认不着色：半截代码的词法本来就不稳，每来一个字符整块变色比不着色更糟 -->
+<!-- 流式追加 | 代码仍在写入时默认不着色：不完整代码的词法本就不稳定，每来一个字符整块变色比不着色更差 -->
 <script setup lang="ts">
 import { XhCodeViewCode, XhCodeViewPre, XhCodeViewRoot } from "@xihan-ui/vue";
 import { onBeforeUnmount, onMounted, ref } from "vue";

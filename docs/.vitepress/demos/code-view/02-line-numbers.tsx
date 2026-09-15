@@ -1,4 +1,4 @@
-// 行号与高亮行 | 行号由皮肤画上去，复制代码不会带上它；高亮行按行号写，与 startLine 对齐
+// 行号与高亮行 | 行号由皮肤绘制，复制代码不会带上它；高亮行按行号写，与 startLine 对齐
 import type { ReactNode } from "react";
 import { XhCodeViewCode, XhCodeViewPre, XhCodeViewRoot } from "@xihan-ui/react";
 

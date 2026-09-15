@@ -1,4 +1,4 @@
-// 流式期间也着色 | 未闭合默认不着色；真要看着色就打开 highlight-while-streaming，同一段半截代码的两种呈现摆在一起
+// 流式期间也着色 | 未闭合默认不着色；确需着色时开启 highlight-while-streaming，同一段不完整代码的两种呈现并排对照
 import type { ReactNode } from "react";
 import { XhCodeViewCode, XhCodeViewPre, XhCodeViewRoot } from "@xihan-ui/react";
 

@@ -1,4 +1,4 @@
-// 尺寸 | size 换字号、行高与内边距三档，行号槽与折叠钮跟着一起走
+// 尺寸 | size 切换字号、行高与内边距三档，行号槽与折叠按钮随之变化
 import type { ReactNode } from "react";
 import {
   XhCodeViewCode,

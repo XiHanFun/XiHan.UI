@@ -1,4 +1,4 @@
-<!-- 头部内建复制 | 复制交给剪贴板：把它放进头部条，用几个槽把描边按钮压成安静形态，1500 毫秒后自己回落 -->
+<!-- 头部内建复制 | 复制交给剪贴板：把它放进头部条，用几个槽把描边按钮压为安静形态，1500 毫秒后自动回落 -->
 <script setup lang="ts">
 import { CheckIcon, CopyIcon } from "@xihan-ui/icons";
 import {

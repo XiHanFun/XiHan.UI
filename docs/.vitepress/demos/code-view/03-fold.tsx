@@ -1,4 +1,4 @@
-// 折叠超长代码 | clamped 是纯受控的：组件只发意图，落不落由宿主决定，好让「全部展开」这类操作统一持有
+// 折叠超长代码 | clamped 是纯受控的：组件只发意图，是否落实由宿主决定，便于全部展开这类操作统一持有
 import type { ReactNode } from "react";
 import { XhCodeViewCode, XhCodeViewFoldTrigger, XhCodeViewPre, XhCodeViewRoot } from "@xihan-ui/react";
 import { useState } from "react";
