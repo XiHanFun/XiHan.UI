@@ -1,4 +1,4 @@
-// 尺寸与裁切 | 同一个组件既当封面图也当缩略图：宽高比由 --xh-image-ratio 定，画面怎么填由 --xh-image-fit 定
+// 尺寸与裁切 | 同一个组件既作封面图也作缩略图：宽高比由 --xh-image-ratio 决定，画面填充方式由 --xh-image-fit 决定
 import type { CSSProperties, ReactNode } from "react";
 import { XhImageFallback, XhImageImage, XhImageRoot } from "@xihan-ui/react";
 

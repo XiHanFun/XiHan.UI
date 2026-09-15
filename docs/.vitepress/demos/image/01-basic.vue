@@ -1,4 +1,4 @@
-<!-- 基础用法 | 图片与回退内容始终同挂 DOM、靠 hidden 互斥显隐，换人时盒子不塌也不跳 -->
+<!-- 基础用法 | 图片与回退内容始终同时挂载在 DOM 中、依靠 hidden 互斥显隐，切换时盒子不塌陷也不跳动 -->
 <script setup lang="ts">
 import { XhImageFallback, XhImageImage, XhImageRoot } from "@xihan-ui/vue";
 

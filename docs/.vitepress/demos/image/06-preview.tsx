@@ -1,4 +1,4 @@
-// 点开看大图 | 缩略图的点击与键盘自己接，放大层是一个对话框，里面再放一份独立的图片实例
+// 点击查看大图 | 缩略图的点击与键盘自行接管，放大层是一个对话框，其中再放一份独立的图片实例
 import type { CSSProperties, KeyboardEvent, ReactNode } from "react";
 import {
   XhDialogCloseTrigger,
