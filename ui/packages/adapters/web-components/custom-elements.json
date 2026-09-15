@@ -8187,7 +8187,7 @@
       "declarations": [
         {
           "kind": "class",
-          "description": "`<xh-code-view>` —— Light-DOM 行为宿主，无状态机：wire 时算出 connectCodeView 的产出，\n打到作者写的角色节点上，并把逐行结构铺进 code 角色节点。\n\n行是算出来的派生数据，作者写不出 N 个节点，故 code 部件的内容由本元素接管；\n其余各处一律不替作者生成节点。复制按钮由 `<xh-clipboard>` 组合提供。",
+          "description": "`<xh-code-view>`：Light-DOM 行为宿主，无状态机：wire 时计算 connectCodeView 的产出，\n接到作者编写的角色节点上，并把逐行结构铺进 code 角色节点。\n\n行是计算得出的派生数据，作者无法编写 N 个节点，因此 code 部件的内容由本元素接管；\n其余各处一律不替作者生成节点。复制按钮由 `<xh-clipboard>` 组合提供。",
           "name": "XhCodeViewElement",
           "cssParts": [
             {
@@ -8195,11 +8195,11 @@
               "name": "root"
             },
             {
-              "description": "文件名与语言角标那一行",
+              "description": "文件名与语言角标所在的行",
               "name": "header"
             },
             {
-              "description": "文件名，渲了它就是 pre 的可访问名",
+              "description": "文件名，渲染后即为 pre 的可访问名",
               "name": "filename"
             },
             {
@@ -8207,11 +8207,11 @@
               "name": "lang-label"
             },
             {
-              "description": "横向滚动容器；tabindex=0，高度按行数写进内联样式",
+              "description": "横向滚动容器；tabindex=0，高度按行数写入内联样式",
               "name": "pre"
             },
             {
-              "description": "全部行的容器，内容由本元素铺",
+              "description": "全部行的容器，内容由本元素铺设",
               "name": "code"
             },
             {
@@ -8219,7 +8219,7 @@
               "name": "line"
             },
             {
-              "description": "行号槽，皮肤用 attr() 画，对读屏隐藏",
+              "description": "行号槽，皮肤用 attr() 绘制，对读屏隐藏",
               "name": "line-number"
             },
             {
@@ -8369,7 +8369,7 @@
               "type": {
                 "text": "HighlighterPort | null | undefined"
               },
-              "description": "换一个着色实现（典型是接 Shiki）；置 null 关掉着色。只走 property，属性表达不了对象。"
+              "description": "替换着色实现（典型是接入 Shiki）；置 null 关闭着色。对象只能通过 property 设置。"
             },
             {
               "kind": "field",
@@ -8450,7 +8450,7 @@
                   }
                 }
               ],
-              "description": "把逐行结构铺进 code 部件。\n内容没变就不重铺——每次更新都重建节点会把用户正在拖的选区弄没。"
+              "description": "把逐行结构铺进 code 部件。\n内容未变时不重铺：每次更新都重建节点会丢失用户正在拖动的选区。"
             }
           ],
           "events": [
@@ -8459,7 +8459,7 @@
               "type": {
                 "text": "CustomEvent"
               },
-              "description": "折叠态翻面的意图；detail 为 `{ clamped: boolean }`"
+              "description": "折叠态切换的意图；detail 为 `{ clamped: boolean }`"
             }
           ],
           "attributes": [
@@ -8483,7 +8483,7 @@
               "type": {
                 "text": "string | undefined"
               },
-              "description": "文件名；作者写了 filename 角色节点时它就是 pre 的可访问名",
+              "description": "文件名；作者写了 filename 角色节点时它即为 pre 的可访问名",
               "name": "filename",
               "fieldName": "filename"
             },
@@ -8499,7 +8499,7 @@
               "type": {
                 "text": "boolean | undefined"
               },
-              "description": "长行自动换行，默认关（长行横向滚动）",
+              "description": "长行自动换行，默认关闭（长行横向滚动）",
               "name": "wrap",
               "fieldName": "wrap"
             },
@@ -8523,7 +8523,7 @@
               "type": {
                 "text": "string | undefined"
               },
-              "description": "要高亮的行号，写成 `3,7-9`",
+              "description": "要高亮的行号，写为 `3,7-9`",
               "name": "highlight-lines",
               "fieldName": "highlightLines"
             },
@@ -8531,7 +8531,7 @@
               "type": {
                 "text": "number | undefined"
               },
-              "description": "超过这么多行才算可折叠",
+              "description": "超过该行数才视为可折叠",
               "name": "clamp",
               "fieldName": "clamp"
             },
@@ -8547,7 +8547,7 @@
               "type": {
                 "text": "boolean | undefined"
               },
-              "description": "未闭合时也着色，默认关",
+              "description": "未闭合时也着色，默认关闭",
               "name": "highlight-while-streaming",
               "fieldName": "highlightWhileStreaming"
             },

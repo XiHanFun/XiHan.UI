@@ -16,9 +16,9 @@ import { createVueIdGenerator } from '../../runtime/vue-id'
 export interface CodeViewContext {
   api: ComputedRef<CodeViewApi>
   /**
-   * 作者渲出来的 filename 部件份数，由 XhCodeViewFilename 自己登记。
-   * pre 的可访问名据此决定指过去还是用文案兜底——看 filename 这个 prop 有没有值是不够的，
-   * 传了值却没写节点时 aria-labelledby 会指向一个不存在的 id。
+   * 作者渲染的 filename 部件数量，由 XhCodeViewFilename 自行登记。
+   * pre 的可访问名据此决定指向它还是使用文案兜底：只检查 filename 这个 prop 是否有值并不够，
+   * 传了值却未写节点时 aria-labelledby 会指向一个不存在的 id。
    */
   filenameCount: Ref<number>
 }

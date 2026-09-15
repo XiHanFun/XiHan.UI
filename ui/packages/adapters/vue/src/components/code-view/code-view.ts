@@ -17,7 +17,7 @@ import { useCodeView } from './use-code-view'
 
 const defaultHighlighter = createCodeViewHighlighterResource(() => import('@xihan-ui/code-highlight'))
 
-/** 默认插槽的载荷：语言、行数与折叠状态，以及翻面折叠的句柄。 */
+/** 默认插槽的载荷：语言、行数与折叠状态，以及切换折叠的句柄。 */
 export type CodeViewRootSlotProps = Pick<CodeViewApi, 'lang' | 'lineCount' | 'lines' | 'foldable' | 'clamped' | 'setClamped'>
 
 /** 逐行插槽的载荷。 */
@@ -25,7 +25,7 @@ export interface CodeViewLineSlotProps {
   line: CodeLine
   /** 0 基行下标。 */
   index: number
-  /** 这一行显示的行号，等于 startLine + index。 */
+  /** 该行显示的行号，等于 startLine + index。 */
   number: number
 }
 
@@ -45,7 +45,7 @@ export const XhCodeViewRoot = defineComponent({
     clamp: { type: Number },
     // 纯受控：没有 defaultClamped，要非受控就套 collapsible
     clamped: { type: Boolean, default: undefined },
-    /** 换一个着色实现（典型是接 Shiki）；显式给 null 则关掉着色。 */
+    /** 替换着色实现（典型是接入 Shiki）；显式传 null 则关闭着色。 */
     highlighter: { type: Object as PropType<HighlighterPort | null> },
     highlightWhileStreaming: { type: Boolean, default: undefined },
     size: { type: String as PropType<Size> },
@@ -142,7 +142,7 @@ export const XhCodeViewHeader = defineComponent({
 export const XhCodeViewFilename = defineComponent({
   name: 'XhCodeViewFilename',
   props: {
-    /** 不给就取 XhCodeViewRoot 上的 filename。 */
+    /** 未提供时取 XhCodeViewRoot 上的 filename。 */
     filename: { type: String },
   },
   setup(props, { slots }) {
