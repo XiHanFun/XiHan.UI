@@ -26582,7 +26582,7 @@
   cursor: pointer;
   transition:
     background-color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
-    scale var(--xh-motion-duration-micro) var(--xh-motion-ease-enter-strong);
+    scale var(--xh-motion-duration-release) var(--xh-motion-ease-release);
 }
 
 [data-scope='listbox'][data-part='load-more-trigger'][hidden] {
@@ -26595,6 +26595,8 @@
 
 [data-scope='listbox'][data-part='load-more-trigger']:active {
   scale: var(--xh-motion-scale-press);
+  transition-duration: var(--xh-motion-duration-press);
+  transition-timing-function: var(--xh-motion-ease-press);
 }
 
 /* 取数在途与整列禁用两档都点不动：手势指示与前景色一起收回 */
