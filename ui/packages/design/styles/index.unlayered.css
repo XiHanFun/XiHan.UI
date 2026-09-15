@@ -14726,7 +14726,7 @@
   cursor: pointer;
   transition:
     color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
-    scale var(--xh-motion-duration-micro) var(--xh-motion-ease-enter-strong);
+    scale var(--xh-motion-duration-release) var(--xh-motion-ease-release);
 }
 
 [data-scope='calendar-range-picker'][data-part='heading-year-trigger'][hidden],
@@ -14743,6 +14743,8 @@
 [data-scope='calendar-range-picker'][data-part='heading-year-trigger']:active:not(:disabled),
 [data-scope='calendar-range-picker'][data-part='heading-month-trigger']:active:not(:disabled) {
   scale: var(--xh-motion-scale-press);
+  transition-duration: var(--xh-motion-duration-press);
+  transition-timing-function: var(--xh-motion-ease-press);
 }
 
 /* 到顶那一层（年视图的年那一截）只作标题显示：不再是可点的东西，光标也别装成能点 */
@@ -14768,7 +14770,7 @@
   cursor: pointer;
   transition:
     background var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
-    scale var(--xh-motion-duration-micro) var(--xh-motion-ease-enter-strong);
+    scale var(--xh-motion-duration-release) var(--xh-motion-ease-release);
 }
 
 [data-scope='calendar-range-picker'][data-part='prev-year-trigger'][hidden],
@@ -14792,6 +14794,8 @@
 [data-scope='calendar-range-picker'][data-part='next-year-trigger']:active:not(:disabled),
 [data-scope='calendar-range-picker'][data-part='next-trigger']:active:not(:disabled) {
   scale: var(--xh-motion-scale-press);
+  transition-duration: var(--xh-motion-duration-press);
+  transition-timing-function: var(--xh-motion-ease-press);
 }
 
 /* 翻月是单体控件，禁用走原生 :disabled（连接层输出的正是原生 disabled） */
@@ -14954,28 +14958,28 @@
    摆了周序号格的行里，行首那一格排在它后面 */
 [data-scope='calendar-range-picker'][data-part='week-row'] > [data-part='cell'][data-in-range]:first-child::before,
 [data-scope='calendar-range-picker'][data-part='week-row'] > [data-part='week-number'] + [data-part='cell'][data-in-range]::before {
-  border-start-start-radius: var(--xh-calendar-range-picker-range-row-radius, var(--xh-shape-control));
-  border-end-start-radius: var(--xh-calendar-range-picker-range-row-radius, var(--xh-shape-control));
+  border-start-start-radius: var(--xh-calendar-range-picker-range-row-radius, var(--xh-shape-inset));
+  border-end-start-radius: var(--xh-calendar-range-picker-range-row-radius, var(--xh-shape-inset));
 }
 
 [data-scope='calendar-range-picker'][data-part='week-row'] > [data-part='cell'][data-in-range]:last-child::before {
-  border-start-end-radius: var(--xh-calendar-range-picker-range-row-radius, var(--xh-shape-control));
-  border-end-end-radius: var(--xh-calendar-range-picker-range-row-radius, var(--xh-shape-control));
+  border-start-end-radius: var(--xh-calendar-range-picker-range-row-radius, var(--xh-shape-inset));
+  border-end-end-radius: var(--xh-calendar-range-picker-range-row-radius, var(--xh-shape-inset));
 }
 
 [data-scope='calendar-range-picker'][data-part='cell'][data-in-range][data-range-start]::before {
-  border-start-start-radius: var(--xh-calendar-range-picker-range-cap-radius, var(--xh-shape-pill));
-  border-end-start-radius: var(--xh-calendar-range-picker-range-cap-radius, var(--xh-shape-pill));
+  border-start-start-radius: var(--xh-calendar-range-picker-range-cap-radius, var(--xh-shape-inset));
+  border-end-start-radius: var(--xh-calendar-range-picker-range-cap-radius, var(--xh-shape-inset));
 }
 
 [data-scope='calendar-range-picker'][data-part='cell'][data-in-range][data-range-end]::before {
-  border-start-end-radius: var(--xh-calendar-range-picker-range-cap-radius, var(--xh-shape-pill));
-  border-end-end-radius: var(--xh-calendar-range-picker-range-cap-radius, var(--xh-shape-pill));
+  border-start-end-radius: var(--xh-calendar-range-picker-range-cap-radius, var(--xh-shape-inset));
+  border-end-end-radius: var(--xh-calendar-range-picker-range-cap-radius, var(--xh-shape-inset));
 }
 
 /* 粗粒度的格子之间有间隙，底色本就接不成一条，每一格各自收圆 */
 [data-scope='calendar-range-picker'][data-part='grid']:is([data-view='week'], [data-view='month'], [data-view='quarter'], [data-view='year']) > [data-part='cell'][data-in-range]::before {
-  border-radius: var(--xh-calendar-range-picker-cell-radius, var(--xh-shape-pill));
+  border-radius: var(--xh-calendar-range-picker-cell-radius, var(--xh-shape-inset));
 }
 
 [data-scope='calendar-range-picker'][data-part='cell-trigger'] {
@@ -14989,7 +14993,7 @@
   aspect-ratio: 1;
   min-inline-size: var(--xh-calendar-range-picker-cell-size, var(--xh-control-h-sm));
   border: var(--xh-stroke-thin) solid transparent;
-  border-radius: var(--xh-calendar-range-picker-cell-radius, var(--xh-shape-pill));
+  border-radius: var(--xh-calendar-range-picker-cell-radius, var(--xh-shape-inset));
   color: var(--xh-calendar-range-picker-cell-fg, var(--xh-fg-default));
   font-size: var(--xh-calendar-range-picker-cell-font-size, var(--xh-text-body-size));
   font-weight: var(--xh-calendar-range-picker-cell-font-weight, var(--xh-font-weight-medium));
@@ -14999,7 +15003,7 @@
   transition:
     background var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
     color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
-    scale var(--xh-motion-duration-micro) var(--xh-motion-ease-enter-strong);
+    scale var(--xh-motion-duration-release) var(--xh-motion-ease-release);
 }
 
 [data-scope='calendar-range-picker'][data-part='cell-trigger'][hidden] {
@@ -15025,6 +15029,8 @@
 /* 按下微缩：缩放走 transform 通道，一格自己缩不推动整张网格；已选中的格照样压 */
 [data-scope='calendar-range-picker'][data-part='cell-trigger']:not([data-disabled]):active {
   scale: var(--xh-motion-scale-press);
+  transition-duration: var(--xh-motion-duration-press);
+  transition-timing-function: var(--xh-motion-ease-press);
 }
 
 /* 今天用淡强调面，选中仍用后面的实心强调面；两个状态叠加时不会混成同一种反馈。 */

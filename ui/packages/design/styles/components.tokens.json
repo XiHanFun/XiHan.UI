@@ -5139,7 +5139,7 @@
         "view=year"
       ],
       "defaultToken": [
-        "--xh-shape-pill"
+        "--xh-shape-inset"
       ],
       "visibility": "public",
       "description": "calendar-range-picker 的 cell、cell-trigger、grid 部件 border-radius 覆盖槽。"
@@ -5589,7 +5589,7 @@
         "range-start"
       ],
       "defaultToken": [
-        "--xh-shape-pill"
+        "--xh-shape-inset"
       ],
       "visibility": "public",
       "description": "calendar-range-picker 的 cell 部件 border-end-end-radius、border-end-start-radius、border-start-end-radius、border-start-start-radius 覆盖槽。"
@@ -5614,7 +5614,7 @@
         "last-child"
       ],
       "defaultToken": [
-        "--xh-shape-control"
+        "--xh-shape-inset"
       ],
       "visibility": "public",
       "description": "calendar-range-picker 的 cell、week-number、week-row 部件 border-end-end-radius、border-end-start-radius、border-start-end-radius、border-start-start-radius 覆盖槽。"
