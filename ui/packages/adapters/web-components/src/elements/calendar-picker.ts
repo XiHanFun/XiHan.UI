@@ -37,53 +37,53 @@ function declaredIndex(el: Element | null | undefined, fallback = 0): number {
 }
 
 /**
- * `<xh-calendar-picker>` —— 日历选择器行为宿主：挑一天或多天。
+ * `<xh-calendar-picker>`：日历选择器行为宿主：选择一天或多天。
  *
- * 网格由作者渲染，元素不生成节点：读 `weeks` / `weekDays` / `headingLabel` 三个只读属性，
- * 听 `focused-value-change` 重画（须在收到事件的同一拍内完成）。日期身份取 cell 上的
+ * 网格由作者渲染，元素不生成节点：读取 `weeks` / `weekDays` / `headingLabel` 三个只读属性，
+ * 监听 `focused-value-change` 重绘（须在收到事件的同一拍内完成）。日期身份取 cell 上的
  * `value`（ISO 串），cell-trigger 跟随所在 cell；表头列取 week-day 上的 `value`（列序 0-6）。
- * 翻月按钮的可及名字由作者给。
+ * 翻月按钮的可及名由作者提供。
  *
  * @customElement xh-calendar-picker
- * @attr {string} value - 受控选中值（单选简写，ISO 串）；缺省即非受控，多选用 property
+ * @attr {string} value - 受控选中值（单选简写，ISO 串）；未提供即非受控，多选使用 property
  * @attr {string} default-value - 非受控初始选中值
  * @attr {'single'|'multiple'} selection-mode - 选择模式，默认 single；区间选择是 `<xh-calendar-range-picker>`
  * @attr {string} focused-value - 受控聚焦日（ISO 串），同时决定展示哪个月
- * @attr {string} default-focused-value - 非受控初始聚焦日；缺省时退回首个选中值，再退回今天
- * @attr {string} min - 可选范围下界（含当天），界外的日子转 aria-disabled 但仍可聚焦
+ * @attr {string} default-focused-value - 非受控初始聚焦日；未提供时回退为首个选中值，再回退为今天
+ * @attr {string} min - 可选范围下界（含当天），界外的日期为 aria-disabled 但仍可聚焦
  * @attr {string} max - 可选范围上界（含当天）
- * @attr {string} locale - 决定周首日与文案；不给按宿主语言，宿主也没有时按 en-US
- * @attr {string} time-zone - 判定今天与格式化用的时区，默认宿主本地时区
- * @attr {boolean} disabled - 整张禁用：翻月按钮转原生 disabled，格子全转 aria-disabled
- * @attr {boolean} read-only - 只读：翻月与移动焦点照常，只是选不动值
+ * @attr {string} locale - 决定周首日与文案；未提供时按宿主语言，宿主也没有时按 en-US
+ * @attr {string} time-zone - 判定今天与格式化使用的时区，默认宿主本地时区
+ * @attr {boolean} disabled - 整张禁用：翻月按钮为原生 disabled，格子全部为 aria-disabled
+ * @attr {boolean} read-only - 只读：翻月与移动焦点照常，只是不可选择值
  * @attr {boolean} invalid - 校验失败：根带 data-invalid
- * @prop {Partial<CalendarPickerTranslations>} translations - 读屏文案（今天），只走 property
+ * @prop {Partial<CalendarPickerTranslations>} translations - 读屏文案（今天），只能通过 property 设置
  * @attr {'narrow'|'short'} weekday-format - 表头缩写粒度，默认 short
  * @attr {boolean} fixed-weeks - 恒渲染六行
  * @attr {'day'|'week'|'month'|'quarter'|'year'} granularity - 选择粒度，默认 day；与 selection-mode 正交
- * @attr {'day'|'week'|'month'|'quarter'|'year'} active-view - 受控：面板此刻钻到了哪一层；缺省跟着 granularity
- * @attr {'day'|'week'|'month'|'quarter'|'year'} default-active-view - 非受控初值，缺省同 granularity
- * @attr {number} visible-count - 并排展示几页
+ * @attr {'day'|'week'|'month'|'quarter'|'year'} active-view - 受控：面板当前所在的层级；未提供时跟随 granularity
+ * @attr {'day'|'week'|'month'|'quarter'|'year'} default-active-view - 非受控初值，默认同 granularity
+ * @attr {number} visible-count - 并排展示的页数
  * @fires value-change - 选中集合变化；detail 为 `{ value: string[] }`
  * @fires focused-value-change - 聚焦日变化；detail 为 `{ focusedValue: string }`
- * @fires active-view-change - 钻到了另一层；detail 为 `{ activeView: 'day'|'week'|'month'|'quarter'|'year' }`
+ * @fires active-view-change - 切换到另一层级；detail 为 `{ activeView: 'day'|'week'|'month'|'quarter'|'year' }`
  * @csspart root - 组件根容器
  * @csspart header - 标题栏外壳
- * @csspart prev-year-trigger - 快速往前翻一大步（日视图一年、粗粒度十页）；可选
- * @csspart prev-trigger - 上一月；越过 min 时转原生 disabled
- * @csspart next-trigger - 下一月；越过 max 时转原生 disabled
- * @csspart next-year-trigger - 快速往后翻一大步；可选
+ * @csspart prev-year-trigger - 快速向前翻一大步（日视图一年、粗粒度十页）；可选
+ * @csspart prev-trigger - 上一月；越过 min 时为原生 disabled
+ * @csspart next-trigger - 下一月；越过 max 时为原生 disabled
+ * @csspart next-year-trigger - 快速向后翻一大步；可选
  * @csspart heading - 展示月标题（grid 的 aria-labelledby 目标）
- * @csspart heading-year-trigger - 标题里年那一截，点它钻到十年格；文字由元素填。年视图下已到顶，转原生 disabled；可选
- * @csspart heading-month-trigger - 标题里月那一截，点它钻到月格；只有日视图有这一截，其余层带 hidden；可选
+ * @csspart heading-year-trigger - 标题中的年，点击切换到十年格；文字由元素填入。年视图下已到顶层，为原生 disabled；可选
+ * @csspart heading-month-trigger - 标题中的月，点击切换到月格；只有日视图有该部分，其余层级带 hidden；可选
  * @csspart grid - role=grid 容器，键盘在此收口
- * @csspart grid-head - role=rowgroup 表头组，里面套一个 week-row
+ * @csspart grid-head - role=rowgroup 表头组，其中包含一个 week-row
  * @csspart week-day - role=columnheader 列头，须自带 value 属性标明列序 0-6
  * @csspart grid-body - role=rowgroup 日期组
  * @csspart week-row - role=row 周行，表头与日期行共用
- * @csspart week-number - 行首的周序号格（role=rowheader），须自带 value 属性（行首那天）；可选
- * @csspart cell - role=gridcell 日期格，承载 aria-selected；须自带 value 属性（ISO 串）标明是哪一天
- * @csspart cell-trigger - 可点可聚焦层，承载 aria-disabled 与 roving tabindex
+ * @csspart week-number - 行首的周序号格（role=rowheader），须自带 value 属性（行首日期）；可选
+ * @csspart cell - role=gridcell 日期格，承载 aria-selected；须自带 value 属性（ISO 串）标明日期
+ * @csspart cell-trigger - 可点击可聚焦层，承载 aria-disabled 与 roving tabindex
  */
 export class XhCalendarPickerElement extends XhElement {
   static override partContract = { anatomy: calendarPickerAnatomy, meta: calendarPickerMeta }
@@ -187,12 +187,12 @@ export class XhCalendarPickerElement extends XhElement {
     }
   }
 
-  /** 视窗里的各张面板（visibleCount 张连续月），标题与格子都在里面；多面板时按 index 各画各的。机器尚未建起时给空数组。 */
+  /** 视窗内的各张面板（visibleCount 张连续月），标题与格子都包含在内；多面板时按 index 各自渲染。状态机尚未建立时返回空数组。 */
   get panels(): CalendarPanel[] {
     return this.ctrl.service ? connectCalendarPicker(this.ctrl.service, wcNormalize).panels : []
   }
 
-  /** 当前展示月的日期矩阵，作者照它重画网格。机器尚未建起时给空数组。 */
+  /** 当前展示月的日期矩阵，作者据此渲染网格。状态机尚未建立时返回空数组。 */
   get weeks(): CalendarDay[][] {
     return this.ctrl.service ? connectCalendarPicker(this.ctrl.service, wcNormalize).weeks : []
   }
@@ -207,7 +207,7 @@ export class XhCalendarPickerElement extends XhElement {
     return this.ctrl.service ? connectCalendarPicker(this.ctrl.service, wcNormalize).weekDays : []
   }
 
-  /** 展示月标题文案，作者写进 heading 节点。 */
+  /** 展示月标题文案，作者写入 heading 节点。 */
   get headingLabel(): string {
     return this.ctrl.service ? connectCalendarPicker(this.ctrl.service, wcNormalize).headingLabel : ''
   }

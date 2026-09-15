@@ -15,10 +15,10 @@ import { useReactScope } from '../../runtime/react-id'
 import { useMachine } from '../../runtime/use-machine'
 
 export interface CalendarPickerContext {
-  /** 机器实例，供部件上报 DOM 侧的事实。 */
+  /** 状态机实例，供部件上报 DOM 侧的事实。 */
   service: Service<CalendarPickerSchema>
   api: CalendarPickerApi
-  /** 首个网格的节点：跨月重渲后机器按它现查焦点该落在哪一格。 */
+  /** 首个网格的节点：跨月重渲后状态机据此现查焦点应落在哪一格。 */
   gridRef: RefObject<HTMLElement | null>
   rootRef: RefObject<HTMLElement | null>
 }
