@@ -15,6 +15,10 @@ const OPTIONS = [
   { value: 'gamma', label: 'Gamma', disabled: true },
 ]
 
+function isTransparentColor(value: string): boolean {
+  return value === 'transparent' || /(?:,\s*0|\/\s*0)\)$/.test(value)
+}
+
 async function mountSelect(size: 'sm' | 'md' | 'lg' = 'md'): Promise<HTMLElement[]> {
   host = document.createElement('div')
   document.body.append(host)
@@ -96,12 +100,18 @@ describe('select 使用 Collection Item', () => {
     expect(getComputedStyle(selected!).fontWeight).toBe(getComputedStyle(plain!).fontWeight)
 
     const width = selected!.getBoundingClientRect().width
-    const rest = getComputedStyle(selected!).backgroundColor
-    await userEvent.hover(selected!)
-    expect(getComputedStyle(selected!).backgroundColor).not.toBe(rest)
-    selected!.focus()
+    const rest = getComputedStyle(plain!).backgroundColor
+    await userEvent.hover(plain!)
+    await nextTick()
+    expect(plain!.hasAttribute('data-highlighted')).toBe(true)
+    expect(getComputedStyle(plain!).backgroundColor).not.toBe(rest)
+    expect(isTransparentColor(getComputedStyle(plain!).outlineColor)).toBe(true)
+
+    await userEvent.keyboard('{ArrowDown}')
+    await nextTick()
+    expect(document.activeElement).toBe(selected)
     expect(selected!.matches(':focus-visible')).toBe(true)
-    expect(getComputedStyle(selected!).outlineColor).not.toBe('rgba(0, 0, 0, 0)')
+    expect(isTransparentColor(getComputedStyle(selected!).outlineColor)).toBe(false)
     expect(selected!.getBoundingClientRect().width).toBe(width)
     expect(getComputedStyle(disabled!).cursor).toBe('not-allowed')
   })
