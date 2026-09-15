@@ -1,4 +1,4 @@
-// 可清空与字数上限 | Control 把输入框与清空按钮圈进同一个框，clearable 让清空按钮可用并把 Escape 接管过来，maxLength 同时落成原生 maxlength 与机器侧截断
+// 可清空与字数上限 | Control 把输入框与清空按钮圈进同一个框，clearable 使清空按钮可用并接管 Escape，maxLength 同时写为原生 maxlength 与状态机侧截断
 import type { ReactNode } from "react";
 import {
   XhTextFieldClearTrigger,

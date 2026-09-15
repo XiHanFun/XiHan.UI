@@ -1,4 +1,4 @@
-// 受控 | 传了 value 就由宿主说了算，组件自己不再改状态；变化经 value-change 报出来，写不写回由宿主定
+// 受控 | 传入 value 后由宿主决定，组件自身不再修改状态；变化经 value-change 报告，是否写回由宿主决定
 import type { ReactNode } from "react";
 import { XhTextFieldControl, XhTextFieldInput, XhTextFieldLabel, XhTextFieldRoot } from "@xihan-ui/react";
 import { useState } from "react";

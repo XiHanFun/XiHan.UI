@@ -1,4 +1,4 @@
-<!-- 限制可输入的字符 | beforeinput 直接写在 input 部件上，非法字符进不了框，值与框里的内容始终一致 -->
+<!-- 限制可输入的字符 | beforeinput 直接写在 input 部件上，非法字符无法进入框，值与框中的内容始终一致 -->
 <script setup lang="ts">
 import {
   XhTextFieldControl,

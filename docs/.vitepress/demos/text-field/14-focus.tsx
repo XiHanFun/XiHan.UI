@@ -1,4 +1,4 @@
-// 聚焦与选区 | input 部件就是一个原生 input，拿到它的节点就能聚焦、全选、把光标挪到末尾
+// 聚焦与选区 | input 部件就是一个原生 input，取得它的节点即可聚焦、全选、把光标移到末尾
 import type { ReactNode } from "react";
 import {
   XhTextFieldControl,

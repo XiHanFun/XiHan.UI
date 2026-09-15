@@ -1,4 +1,4 @@
-// 输入组 | 圆角槽换成只留外侧的一组值，中缝用负外边距叠掉一条描边，相邻控件拼成一体
+// 输入组 | 圆角槽换为只保留外侧的一组值，中缝用负外边距叠掉一条描边，相邻控件拼为一体
 import type { CSSProperties, ReactNode } from "react";
 import {
   XhButton,

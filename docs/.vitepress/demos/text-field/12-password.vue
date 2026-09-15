@@ -1,4 +1,4 @@
-<!-- 密码与明暗切换 | 写在 input 部件上的 type 盖过默认的 text，明暗由宿主的一个布尔翻转 -->
+<!-- 密码与明暗切换 | 写在 input 部件上的 type 覆盖默认的 text，明暗由宿主的一个布尔切换 -->
 <script setup lang="ts">
 import {
   XhTextFieldControl,

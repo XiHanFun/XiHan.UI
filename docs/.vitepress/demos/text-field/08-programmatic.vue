@@ -1,4 +1,4 @@
-<!-- 程序化改值 | setValue 直接写值，只受禁用、只读与字数上限约束；clear 走清空意图，canClear 不成立时按兵不动 -->
+<!-- 程序化改值 | setValue 直接写值，只受禁用、只读与字数上限约束；clear 执行清空意图，canClear 不成立时不做任何处理 -->
 <script setup lang="ts">
 import {
   XhTextFieldControl,
