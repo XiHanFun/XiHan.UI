@@ -33,22 +33,22 @@ const BOOLEAN_CONVERTER = { fromAttribute: (v: string | null) => (v === null ? u
 const NUMBER_CONVERTER = { fromAttribute: (v: string | null) => (v == null || v === '' ? undefined : Number(v)) }
 
 /**
- * `<xh-question-flow>` —— Light-DOM 行为宿主：一次一题的澄清问卷。
+ * `<xh-question-flow>`：Light-DOM 行为宿主：一次一题的澄清问卷。
  *
- * 题目栈纵向排在 track 里，viewport 定高并裁切，当前题由量出来的位移推进视口。
+ * 题目栈纵向排在 track 中，viewport 定高并裁切，当前题由测得的位移推进视口。
  * 题与选项的身份写在作者自己的节点上（`question-id` 与 `option-value`），
- * **不用 value**——那是表单属性，写上去会与本组件无关的表单语义搅在一起。
+ * 不使用 value：那是表单属性，写上后会与本组件无关的表单语义混淆。
  * 选项须是原生 `<button>`：指针激活由平台负责。
  *
  * @customElement xh-question-flow
- * @attr {number} index - 受控的当前题下标；缺省该属性即非受控
+ * @attr {number} index - 受控的当前题下标；未提供该属性即非受控
  * @attr {number} default-index - 非受控的初始下标，默认 0
  * @attr {string} status - 受控答题状态：answering / submitted
  * @attr {string} default-status - 非受控初值，默认 answering
- * @attr {boolean} auto-advance - 单选选中后自动走下一题，默认开；它只走下一题，末题上不会替人按发送
- * @attr {number} auto-advance-delay - 自动前进前等多久（毫秒），默认 480
- * @attr {boolean} allow-skip - 允许跳过，默认开；关掉后跳过键整颗收起
- * @attr {boolean} loop - 选项组内漫游走到尽头回绕，默认开启
+ * @attr {boolean} auto-advance - 单选选中后自动进入下一题，默认开启；它只进入下一题，末题上不会替用户提交
+ * @attr {number} auto-advance-delay - 自动前进前等待的时长（毫秒），默认 480
+ * @attr {boolean} allow-skip - 允许跳过，默认开启；关闭后跳过键整体收起
+ * @attr {boolean} loop - 选项组内漫游到达末尾回绕，默认开启
  * @attr {'outline'|'subtle'|'ghost'} variant - 形态
  * @attr {'brand'|'neutral'|'success'|'warning'|'danger'|'info'} tone - 语气
  * @attr {'sm'|'md'|'lg'} size - 尺寸
@@ -58,7 +58,7 @@ const NUMBER_CONVERTER = { fromAttribute: (v: string | null) => (v == null || v 
  * @fires skip - 跳过一题；detail 为 `{ index, questionId }`
  * @fires submit - 交卷；detail 为 `{ answers, notes }`
  * @csspart root - 问卷本体，三个视觉轴都落在它上面
- * @csspart viewport - 定高并裁切的那一格
+ * @csspart viewport - 定高并裁切的格
  * @csspart track - 纵向排布全部题目的轨道
  * @csspart question - 一题的整块，role=group；非当前题 aria-hidden 且 inert
  * @csspart prompt - 题干，同时是选项组的可访问名
@@ -66,14 +66,14 @@ const NUMBER_CONVERTER = { fromAttribute: (v: string | null) => (v == null || v 
  * @csspart item - 一个选项，须是原生 `<button>` 并自带 option-value 属性标识身份
  * @csspart item-indicator - 记号，对读屏隐藏
  * @csspart item-text - 选项文字，排在选项内因而构成它的可及名
- * @csspart note - 这一题的自由文本，须是原生 `<input>`
+ * @csspart note - 该题的自由文本，须是原生 `<input>`
  * @csspart footer - 排布步进与动作的页脚
  * @csspart prev-trigger - 上一题
- * @csspart counter - 给眼睛看的 N / M，对读屏隐藏
+ * @csspart counter - 视觉上的 N / M，对读屏隐藏
  * @csspart next-trigger - 下一题
- * @csspart skip-trigger - 跳过；allow-skip 关掉时整颗收起
- * @csspart submit-trigger - 继续 / 发送同一颗按钮
- * @csspart result - 交卷后才露出的结果条，对读屏隐藏
+ * @csspart skip-trigger - 跳过；allow-skip 关闭时整体收起
+ * @csspart submit-trigger - 继续 / 发送共用同一个按钮
+ * @csspart result - 提交后才显示的结果条，对读屏隐藏
  * @csspart live-region - 进度播报的活区
  */
 export class XhQuestionFlowElement extends XhElement {
@@ -112,7 +112,7 @@ export class XhQuestionFlowElement extends XhElement {
   declare variant?: ControlVariant
   declare tone?: Tone
   declare size?: Size
-  /** 题目数据；不给就一道题都没有。 */
+  /** 题目数据；未提供时没有任何题目。 */
   declare questions?: readonly QuestionFlowQuestion[]
   declare answers?: QuestionFlowAnswers
   declare defaultAnswers?: QuestionFlowAnswers
@@ -171,7 +171,7 @@ export class XhQuestionFlowElement extends XhElement {
     return el.getAttribute('question-id') ?? ''
   }
 
-  /** 一个选项的自报家门，全部取自作者写在节点上的属性。 */
+  /** 一个选项的声明，全部取自作者写在节点上的属性。 */
   private optionOf(el: HTMLElement): QuestionFlowItemProps {
     return {
       questionId: this.questionIdOf(el),

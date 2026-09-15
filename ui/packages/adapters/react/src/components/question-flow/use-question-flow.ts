@@ -19,7 +19,7 @@ type Props = QuestionFlowSchema['props']
 export interface QuestionFlowContext {
   service: Service<QuestionFlowSchema>
   api: QuestionFlowApi
-  /** 题目轨道：量当前题几何时的查询容器与参照系。 */
+  /** 题目轨道：测量当前题几何时的查询容器与参照系。 */
   trackRef: RefObject<HTMLElement | null>
 }
 

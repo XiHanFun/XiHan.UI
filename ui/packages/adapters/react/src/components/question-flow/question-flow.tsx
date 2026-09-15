@@ -40,7 +40,7 @@ export interface QuestionFlowOptionSlotProps {
   selected: boolean
 }
 
-/** 根上自有的那些取值；onSubmit 与原生的同名事件含义不同，由这里接管。 */
+/** 根上自有的取值；onSubmit 与原生的同名事件含义不同，由这里接管。 */
 type RootElementProps = Omit<ComponentPropsWithRef<'div'>, 'children' | 'onSubmit'>
 
 export interface XhQuestionFlowRootProps extends RootElementProps {
@@ -53,13 +53,13 @@ export interface XhQuestionFlowRootProps extends RootElementProps {
   defaultNotes?: QuestionFlowNotes
   status?: QuestionFlowStatus
   defaultStatus?: QuestionFlowStatus
-  /** 单选选中后自动走下一题。 */
+  /** 单选选中后自动进入下一题。 */
   autoAdvance?: boolean
-  /** 自动走下一题前等多久。 */
+  /** 自动进入下一题前的等待时间。 */
   autoAdvanceDelay?: number
-  /** 允许跳过当前题，默认允许；关掉即整颗跳过钮收起。 */
+  /** 允许跳过当前题，默认允许；关闭后整个跳过按钮收起。 */
   allowSkip?: boolean
-  /** 选项组里方向键走到首尾是否回绕，默认 true。 */
+  /** 选项组中方向键到达首尾是否回绕，默认 true。 */
   loop?: boolean
   variant?: ControlVariant
   tone?: Tone
@@ -157,7 +157,7 @@ export function XhQuestionFlowRoot({
 XhQuestionFlowRoot.xhEvents = ['index-change', 'answers-change', 'notes-change', 'skip', 'submit'] as const
 
 export interface XhQuestionFlowViewportProps extends ComponentPropsWithRef<'div'> {}
-/** 定高并裁切的那一格；高度由机器量好写进内联样式的私有槽。 */
+/** 定高并裁切的格子；高度由状态机测量后写入内联样式的私有槽。 */
 export function XhQuestionFlowViewport({ children, ...rest }: XhQuestionFlowViewportProps): ReactNode {
   const ctx = useQuestionFlowContext()
   return (
@@ -168,7 +168,7 @@ export function XhQuestionFlowViewport({ children, ...rest }: XhQuestionFlowView
 }
 
 export interface XhQuestionFlowTrackProps extends ComponentPropsWithRef<'div'> {}
-/** 纵向排布全部题目的轨道，同时是量测的参照系。 */
+/** 纵向排布全部题目的轨道，同时是测量的参照系。 */
 export function XhQuestionFlowTrack({ children, ...rest }: XhQuestionFlowTrackProps): ReactNode {
   const ctx = useQuestionFlowContext()
   return (
@@ -238,11 +238,11 @@ export function XhQuestionFlowGroup({ questionId, children, ...rest }: XhQuestio
 export interface XhQuestionFlowItemProps extends Omit<ComponentPropsWithRef<'button'>, 'children'> {
   questionId: string
   optionValue: string
-  /** 缺省交给 connect 回 questions 里查，写死 false 会盖掉数据里的禁用。 */
+  /** 默认交给 connect 查询 questions，写死 false 会覆盖数据中的禁用。 */
   optionDisabled?: boolean
   children?: SlotChildren<QuestionFlowOptionSlotProps>
 }
-/** 用原生 button，指针激活由平台负责。 */
+/** 使用原生 button，指针激活由平台负责。 */
 export function XhQuestionFlowItem({
   questionId,
   optionValue,
@@ -301,7 +301,7 @@ export function XhQuestionFlowItemText({
 export interface XhQuestionFlowNoteProps extends Omit<ComponentPropsWithRef<'input'>, 'children' | 'value' | 'defaultValue' | 'type'> {
   questionId: string
 }
-/** 自闭合的输入格，内容由 value 给，不收 children。 */
+/** 自闭合的输入格，内容由 value 给出，不接收 children。 */
 export function XhQuestionFlowNote({ questionId, ...rest }: XhQuestionFlowNoteProps): ReactNode {
   const ctx = useQuestionFlowContext()
   return (
@@ -335,7 +335,7 @@ export function XhQuestionFlowPrevTrigger({ children, ...rest }: XhQuestionFlowP
 }
 
 export interface XhQuestionFlowCounterProps extends ComponentPropsWithRef<'span'> {}
-/** 不给内容时显示 N / M；这一格对读屏隐藏，进度由播报区念。 */
+/** 未提供内容时显示 N / M；该格对读屏隐藏，进度由播报区朗读。 */
 export function XhQuestionFlowCounter({ children, ...rest }: XhQuestionFlowCounterProps): ReactNode {
   const ctx = useQuestionFlowContext()
   return (
@@ -366,7 +366,7 @@ export function XhQuestionFlowSkipTrigger({ children, ...rest }: XhQuestionFlowS
 }
 
 export interface XhQuestionFlowSubmitTriggerProps extends ComponentPropsWithRef<'button'> {}
-/** 一颗按钮两个身份：不是末题时继续，末题时发送，原位换 data-mode 与可访问名。 */
+/** 一个按钮两个身份：不是末题时继续，末题时发送，原位切换 data-mode 与可访问名。 */
 export function XhQuestionFlowSubmitTrigger({ children, ...rest }: XhQuestionFlowSubmitTriggerProps): ReactNode {
   const ctx = useQuestionFlowContext()
   return (
@@ -377,7 +377,7 @@ export function XhQuestionFlowSubmitTrigger({ children, ...rest }: XhQuestionFlo
 }
 
 export interface XhQuestionFlowResultProps extends ComponentPropsWithRef<'div'> {}
-/** 交卷之后才露出；文字由播报区念，这一格对读屏隐藏。 */
+/** 提交之后才显示；文字由播报区朗读，该格对读屏隐藏。 */
 export function XhQuestionFlowResult({ children, ...rest }: XhQuestionFlowResultProps): ReactNode {
   const ctx = useQuestionFlowContext()
   return (
@@ -388,7 +388,7 @@ export function XhQuestionFlowResult({ children, ...rest }: XhQuestionFlowResult
 }
 
 export interface XhQuestionFlowLiveRegionProps extends ComponentPropsWithRef<'div'> {}
-/** 不给内容时念进度，交卷后念结果。 */
+/** 未提供内容时朗读进度，提交后朗读结果。 */
 export function XhQuestionFlowLiveRegion({ children, ...rest }: XhQuestionFlowLiveRegionProps): ReactNode {
   const ctx = useQuestionFlowContext()
   return (

@@ -26,7 +26,7 @@ export interface QuestionFlowCallbacks {
 
 export interface QuestionFlowContext {
   api: ComputedRef<QuestionFlowApi>
-  /** 题目轨道：量当前题几何时的查询容器与参照系。 */
+  /** 题目轨道：测量当前题几何时的查询容器与参照系。 */
   trackRef: Ref<HTMLElement | null>
 }
 
