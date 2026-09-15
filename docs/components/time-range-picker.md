@@ -239,8 +239,8 @@ hourCycle 决定两组段位与时列的写法，上下午各成一段一列
 | --- | --- | --- |
 | `ArrowDown` / `ArrowUp` | focus in trigger, closed, not disabled | 展开浮层，焦点落到起点那组的时列（已选的时仍可选就停在它上面，否则停在首格） |
 | `Enter` / `Space` | focus in trigger, not disabled | 按钮的默认激活即展开/收起（不额外拦键，否则会一开一关） |
-| `ArrowDown` | open, focus in 某一列 | 列内下移一格，到尾回绕；被 min/max 或另一端裁掉的格自动跳过 |
-| `ArrowUp` | open, focus in 某一列 | 列内上移一格，到头回绕；被 min/max 或另一端裁掉的格自动跳过 |
+| `ArrowDown` | open, focus in 某一列 | 列内下移一格，到尾回绕；被 min/max 或另一端禁用的格自动跳过 |
+| `ArrowUp` | open, focus in 某一列 | 列内上移一格，到头回绕；被 min/max 或另一端禁用的格自动跳过 |
 | `Home` | open, focus in 某一列 | 焦点移到本列首格 |
 | `End` | open, focus in 某一列 | 焦点移到本列末格 |
 | `ArrowRight` | open | 换到下一列并落在该列的锚点上；起点那组的末列再往右进终点那组，已在最后一列则不动，不回绕 |
