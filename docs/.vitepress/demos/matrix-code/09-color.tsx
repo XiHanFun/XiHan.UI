@@ -1,4 +1,4 @@
-// 换色 | 颜色不是 props，写三个 CSS 变量即可：码点必须比底色深且对比要足，反相码一部分读码器不认
+// 换色 | 颜色不是 props，写三个 CSS 变量即可：码点必须比底色深且对比充足，反相码部分读码器不识别
 import type { CSSProperties, ReactNode } from "react";
 import { XhMatrixCode } from "@xihan-ui/react";
 

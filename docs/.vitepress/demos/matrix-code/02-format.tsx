@@ -1,4 +1,4 @@
-// 码制 | qr 之外还有三种：工业打标用的 Data Matrix（rectangular 从矩形尺寸里挑）、运单证件用的 PDF417、票务用的 Aztec
+// 码制 | qr 之外还有三种：工业打标用的 Data Matrix（rectangular 从矩形尺寸中选择）、运单证件用的 PDF417、票务用的 Aztec
 import type { ReactNode } from "react";
 import { XhMatrixCode } from "@xihan-ui/react";
 

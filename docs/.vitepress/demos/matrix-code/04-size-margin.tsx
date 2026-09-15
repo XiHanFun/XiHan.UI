@@ -1,4 +1,4 @@
-// 边长与静区 | pixelSize 是整块的像素边长；margin 的单位是模块数，静区含在里面不额外占地方
+// 边长与静区 | pixelSize 是整块的像素边长；margin 的单位是模块数，静区含在其中不额外占用空间
 import type { ReactNode } from "react";
 import { XhMatrixCode } from "@xihan-ui/react";
 

@@ -1,4 +1,4 @@
-<!-- 中心 logo | 落位与尺寸由组件给出，那片模块先被底色挖空；放 logo 就把 level 提到 Q 或 H -->
+<!-- 中心 logo | 落位与尺寸由组件给出，该片模块先被底色挖空；放置 logo 后把 level 提到 Q 或 H -->
 <script setup lang="ts">
 import { XhMatrixCode, XhMatrixCodeLogo } from "@xihan-ui/vue";
 

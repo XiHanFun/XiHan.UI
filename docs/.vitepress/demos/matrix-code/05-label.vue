@@ -1,4 +1,4 @@
-<!-- 可及名字 | 缺省拿 value 当 aria-label；内容不是给人念的时候用 label 换一句人话 -->
+<!-- 可及名字 | 默认使用 value 作为 aria-label；内容不适合朗读时用 label 替换为可读文案 -->
 <script setup lang="ts">
 import { XhMatrixCode } from "@xihan-ui/vue";
 import { ref } from "vue";

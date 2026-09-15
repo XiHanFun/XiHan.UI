@@ -12,7 +12,7 @@
 
 ## 用法
 
-给 value 就画码，版本按内容长度自动选；缺省 M 级纠错、4 个模块的静区
+提供 value 即绘制码，版本按内容长度自动选择；默认 M 级纠错、4 个模块的静区
 
 <XhDemo src="matrix-code/01-basic" />
 
@@ -26,55 +26,55 @@
 
 ### 码制
 
-qr 之外还有三种：工业打标用的 Data Matrix（rectangular 从矩形尺寸里挑）、运单证件用的 PDF417、票务用的 Aztec
+qr 之外还有三种：工业打标用的 Data Matrix（rectangular 从矩形尺寸中选择）、运单证件用的 PDF417、票务用的 Aztec
 
 <XhDemo src="matrix-code/02-format" />
 
 ### 纠错级别
 
-L / M / Q / H 依次能容忍更多污损，同样的内容也因此占更多模块
+L / M / Q / H 依次能容忍更多污损，同样的内容也因此占用更多模块
 
 <XhDemo src="matrix-code/03-level" />
 
 ### 边长与静区
 
-pixelSize 是整块的像素边长；margin 的单位是模块数，静区含在里面不额外占地方
+pixelSize 是整块的像素边长；margin 的单位是模块数，静区含在其中不额外占用空间
 
 <XhDemo src="matrix-code/04-size-margin" />
 
 ### 可及名字
 
-缺省拿 value 当 aria-label；内容不是给人念的时候用 label 换一句人话
+默认使用 value 作为 aria-label；内容不适合朗读时用 label 替换为可读文案
 
 <XhDemo src="matrix-code/05-label" />
 
 ### 码点形状
 
-square / dot / rounded；三种形状的墨都盖住每个模块的格心，读码器按格心取样
+square / dot / rounded；三种形状的墨迹都覆盖每个模块的格心，读码器按格心取样
 
 <XhDemo src="matrix-code/06-module-shape" />
 
 ### 码眼形状
 
-只作用于三个定位图形，7×7 的外环加内心结构保持不变，读码器靠它找码
+只作用于三个定位图形，7×7 的外环加内心结构保持不变，读码器依靠它定位码
 
 <XhDemo src="matrix-code/07-eye-shape" />
 
 ### 中心 logo
 
-落位与尺寸由组件给出，那片模块先被底色挖空；放 logo 就把 level 提到 Q 或 H
+落位与尺寸由组件给出，该片模块先被底色挖空；放置 logo 后把 level 提到 Q 或 H
 
 <XhDemo src="matrix-code/08-logo" />
 
 ### 换色
 
-颜色不是 props，写三个 CSS 变量即可：码点必须比底色深且对比要足，反相码一部分读码器不认
+颜色不是 props，写三个 CSS 变量即可：码点必须比底色深且对比充足，反相码部分读码器不识别
 
 <XhDemo src="matrix-code/09-color" />
 
 ### GS1
 
-gs1 打开后最前面放 FNC1，读码器把内容当 GS1 元素串：变长 AI 后面用 GS（U+001D）隔开下一个；医药 UDI 用 GS1 DataMatrix，零售 2D 迁移用 GS1 QR
+gs1 开启后最前面放置 FNC1，读码器把内容视为 GS1 元素串：变长 AI 后面用 GS（U+001D）与下一个隔开；医药 UDI 用 GS1 DataMatrix，零售 2D 迁移用 GS1 QR
 
 <XhDemo src="matrix-code/10-gs1" />
 

@@ -1,4 +1,4 @@
-<!-- GS1 | gs1 打开后最前面放 FNC1，读码器把内容当 GS1 元素串：变长 AI 后面用 GS（U+001D）隔开下一个；医药 UDI 用 GS1 DataMatrix，零售 2D 迁移用 GS1 QR -->
+<!-- GS1 | gs1 开启后最前面放置 FNC1，读码器把内容视为 GS1 元素串：变长 AI 后面用 GS（U+001D）与下一个隔开；医药 UDI 用 GS1 DataMatrix，零售 2D 迁移用 GS1 QR -->
 <script setup lang="ts">
 import { XhMatrixCode } from "@xihan-ui/vue";
 
