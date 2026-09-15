@@ -21,26 +21,26 @@ import { useTagGroup } from './use-tag-group'
 
 type TagGroupProps = TagGroupSchema['props']
 
-/** 函数式 children 的载荷：选中集合、选择模式与焦点锚点，以及判定选中与整份赋值、单选、切换、摘除的命令。 */
+/** 函数式 children 的载荷：选中集合、选择模式与焦点锚点，以及判定选中与整份赋值、单选、切换、移除的命令。 */
 export type TagGroupRootSlotProps = Pick<
   TagGroupApi,
   'value' | 'selectionMode' | 'focusedValue' | 'isSelected' | 'setValue' | 'select' | 'toggle' | 'deleteItem'
 >
 
-/** 根上自有的那些取值；defaultValue 与 dir 与原生的同名属性含义不同，由这里接管。 */
+/** 根上自有的取值；defaultValue 与 dir 与原生的同名属性含义不同，由这里接管。 */
 type RootElementProps = Omit<ComponentPropsWithRef<'div'>, 'children' | 'defaultValue' | 'dir'>
 
 export interface XhTagGroupRootProps extends RootElementProps {
   collection?: TagGroupNode[]
-  /** 标题内容。给了它就不必再写 label 部件。 */
+  /** 标题内容。提供后不必再写 label 部件。 */
   label?: ReactNode
   value?: string | string[]
   defaultValue?: string | string[]
   selectionMode?: TagGroupSelectionMode
-  /** 整组开放摘除；条目自己写了的以条目为准。 */
+  /** 整组开放移除；条目自身写了的以条目为准。 */
   deletable?: boolean
   disabled?: boolean
-  /** 只读：标签照常浏览与聚焦，但选中值改不动、也摘不掉。 */
+  /** 只读：标签照常浏览与聚焦，但选中值不可修改、也不可移除。 */
   readOnly?: boolean
   loop?: boolean
   dir?: Direction
@@ -51,14 +51,14 @@ export interface XhTagGroupRootProps extends RootElementProps {
   size?: Size
   translations?: Partial<TagGroupTranslations>
   onValueChange?: TagGroupProps['onValueChange']
-  /** 只报「用户要摘这一枚」，条目的去留由宿主改自己的数据。 */
+  /** 只报告用户要移除该标签，条目的去留由宿主修改自己的数据。 */
   onItemDelete?: TagGroupProps['onItemDelete']
-  /** 每个条目的自定义内容；不给就用 collection 里的 label。 */
+  /** 每个条目的自定义内容；未提供时使用 collection 中的 label。 */
   renderItem?: (node: TagGroupNodeMeta) => ReactNode
   children?: SlotChildren<TagGroupRootSlotProps>
 }
 
-/** 一排可选、可摘的标签。回传值恒为数组，单选时长度 ≤ 1。 */
+/** 一排可选、可移除的标签。回传值恒为数组，单选时长度 ≤ 1。 */
 export function XhTagGroupRoot({
   collection,
   label,
@@ -135,7 +135,7 @@ export function XhTagGroupLabel({ children, ...rest }: XhTagGroupLabelProps): Re
 
 export interface XhTagGroupListProps extends ComponentPropsWithRef<'div'> {}
 
-/** 标签本体所在的那一层：键盘在这里收口，方向键、连打与摘除都落在它身上。 */
+/** 标签本体所在的层：键盘在这里收口，方向键、连打与移除都落在它上面。 */
 export function XhTagGroupList({ children, ...rest }: XhTagGroupListProps): ReactNode {
   const ctx = useTagGroupContext()
   // list 自身得焦时把焦点转交给锚点标签，收的是不冒泡的 DOM focus：合成事件挂在
@@ -151,12 +151,12 @@ export function XhTagGroupList({ children, ...rest }: XhTagGroupListProps): Reac
 
 export interface XhTagGroupItemProps extends Omit<ComponentPropsWithRef<'span'>, 'value'> {
   value: string
-  /** 缺省交给 connect 回 collection 里查，写死 false 会盖掉数据里的声明。 */
+  /** 默认交给 connect 查询 collection，写死 false 会覆盖数据中的声明。 */
   disabled?: boolean
   deletable?: boolean
 }
 
-/** 一枚标签：渲出来是 tag 的 root（data-scope="tag"），组把行角色、Tab 停靠点、选中与锚点叠在它上面。用 span 才能随文排，选中与摘除的键盘路径都在 list 上。 */
+/** 一个标签：渲染为 tag 的 root（data-scope="tag"），组把行角色、Tab 停靠点、选中与锚点叠加在它上面。使用 span 才能随文排列，选中与移除的键盘路径都在 list 上。 */
 export function XhTagGroupItem({ value, disabled, deletable, children, ...rest }: XhTagGroupItemProps): ReactNode {
   const ctx = useTagGroupContext()
   const item = useMemo(() => ({ value, disabled, deletable }), [value, disabled, deletable])
@@ -205,7 +205,7 @@ export function XhTagGroupItem({ value, disabled, deletable, children, ...rest }
 
 export interface XhTagGroupCellProps extends ComponentPropsWithRef<'span'> {}
 
-/** 标签里那一格：摘除钮可聚焦，只有落在 gridcell 下面才是合法嵌套。 */
+/** 标签中的格子：移除按钮可聚焦，只有位于 gridcell 下才是合法嵌套。 */
 export function XhTagGroupCell({ children, ...rest }: XhTagGroupCellProps): ReactNode {
   const ctx = useTagGroupContext()
   const { item } = useTagGroupItemContext()
@@ -214,7 +214,7 @@ export function XhTagGroupCell({ children, ...rest }: XhTagGroupCellProps): Reac
 
 export interface XhTagGroupItemTextProps extends ComponentPropsWithRef<'span'> {}
 
-/** 标签文字：渲出来是 tag 的 label。 */
+/** 标签文字：渲染为 tag 的 label。 */
 export function XhTagGroupItemText({ children, ...rest }: XhTagGroupItemTextProps): ReactNode {
   const ctx = useTagGroupContext()
   const { item } = useTagGroupItemContext()
@@ -223,7 +223,7 @@ export function XhTagGroupItemText({ children, ...rest }: XhTagGroupItemTextProp
 
 export interface XhTagGroupItemDeleteTriggerProps extends ComponentPropsWithRef<'button'> {}
 
-/** 摘除钮：渲出来是所在标签那份 tag 的 close-trigger，不占 Tab 位；整组没开放摘除时收起，不留一个按不动的叉。 */
+/** 移除按钮：渲染为所在标签那份 tag 的 close-trigger，不占 Tab 位；整组未开放移除时收起，不保留一个不可按下的关闭按钮。 */
 export function XhTagGroupItemDeleteTrigger({ children, ...rest }: XhTagGroupItemDeleteTriggerProps): ReactNode {
   const ctx = useTagGroupContext()
   const { item } = useTagGroupItemContext()
@@ -231,8 +231,8 @@ export function XhTagGroupItemDeleteTrigger({ children, ...rest }: XhTagGroupIte
 }
 
 /**
- * 没写 children 时按 collection 铺开的整套结构，作者只交数据。
- * 与手写部件产出的 DOM 完全一致，要改结构就写 children，行为不变。
+ * 未写 children 时按 collection 铺开的整套结构，作者只提供数据。
+ * 与手写部件产出的 DOM 完全一致，需要修改结构时写 children，行为不变。
  */
 function DefaultTree(props: {
   collection: readonly TagGroupNodeMeta[]
