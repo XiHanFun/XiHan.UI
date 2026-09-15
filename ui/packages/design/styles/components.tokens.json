@@ -48950,7 +48950,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-shape-surface"
+        "--xh-shape-overlay"
       ],
       "visibility": "public",
       "description": "select 的 content 部件 border-radius 覆盖槽。"
@@ -49211,7 +49211,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-shape-surface"
+        "--xh-shape-control"
       ],
       "visibility": "public",
       "description": "select 的 control 部件 border-radius 覆盖槽。"
