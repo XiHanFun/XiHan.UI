@@ -1,4 +1,4 @@
-// 延时 | openDelay 默认 700ms，closeDelay 默认 300ms——那段收起等待正是留给指针从触发器走到卡片上的通行时间
+// 延时 | openDelay 默认 700ms，closeDelay 默认 300ms：收起等待正是留给指针从触发器移动到卡片上的通行时间
 import type { ReactNode } from "react";
 import {
   XhHoverCardArrow,
