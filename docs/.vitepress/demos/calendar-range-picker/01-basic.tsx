@@ -1,4 +1,4 @@
-// 基础用法 | 先落起点再落终点，也可以按住拖过去；两端都落定才写值，Escape 撤掉起点
+// 基础用法 | 先落下起点再落下终点，也可以按住拖动经过；两端都落定才写值，Escape 撤销起点
 import type { ReactNode } from "react";
 import {
   XhCalendarRangePickerCell,
