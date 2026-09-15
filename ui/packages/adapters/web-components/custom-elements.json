@@ -50161,7 +50161,7 @@
       "declarations": [
         {
           "kind": "class",
-          "description": "`<xh-tabs>` —— Light-DOM 行为宿主，跑 tabs 机器并把 connect 产出打到 root/list/trigger/content\n角色节点上。条目身份取作者写在 trigger/content 上的 value 属性，trigger 的禁用由部件自报。\n\n读屏文案 `translations` 是对象，属性表达不了，只能走 property（`el.translations = {...}`）。\n\n打开 reorderable 后标签可以拖着换位：整个标签都是拖动源。拖动中被拖的标签原地不动，\n只落 data-dragging；落点画在参照标签上，data-drop 为 before/after 即插在这个标签前后。触屏那一路走 tab-drag-trigger 把手。\n键盘走 Alt + 主轴方向键（横排是左右、竖排是上下，横排 rtl 下左右对调），一按就是一次完整提交。\n顺序不由元素保管：换位只发 tab-move，标签序由使用方写回自己的数据源。",
+          "description": "`<xh-tabs>`：Light-DOM 行为宿主，运行 tabs 状态机并把 connect 产出接到 root / list / trigger / content\n角色节点上。条目身份取作者写在 trigger / content 上的 value 属性，trigger 的禁用由部件声明。\n\n读屏文案 `translations` 是对象，属性无法表达，只能通过 property 设置（`el.translations = {...}`）。\n\n开启 reorderable 后标签可以拖动换位：整个标签都是拖动源。拖动中被拖的标签原地不动，\n只写 data-dragging；落点绘制在参照标签上，data-drop 为 before / after 即插在该标签前后。触屏路径经 tab-drag-trigger 把手。\n键盘使用 Alt + 主轴方向键（横向是左右、纵向是上下，横向 rtl 下左右对调），按一次即一次完整提交。\n顺序不由元素保管：换位只发出 tab-move，标签序由使用方写回自己的数据源。",
           "name": "XhTabsElement",
           "cssParts": [
             {
@@ -50173,11 +50173,11 @@
               "name": "list"
             },
             {
-              "description": "视觉隐藏的播报区，拖动过程的读屏文案写在这里；写在 root 里、与 list 部件平级（root 自己不带角色，它落不进 role=tablist 的子节点集合）",
+              "description": "视觉隐藏的播报区，拖动过程的读屏文案写在这里；写在 root 中、与 list 部件平级（root 自身不带角色，无法进入 role=tablist 的子节点集合）",
               "name": "live-region"
             },
             {
-              "description": "选中标签下的滑条，须住在 list 里；对读屏隐藏，位置由机器量好写成内联样式",
+              "description": "选中标签下的滑条，须位于 list 中；对读屏隐藏，位置由状态机测量后写为内联样式",
               "name": "indicator"
             },
             {
@@ -50193,7 +50193,7 @@
               "name": "content"
             },
             {
-              "description": "标签拖拽把手，触屏那一路的入口（自带 touch-action: none，按下即拖）；对读屏隐藏且不占 Tab 位，键盘那一路由标签带上的 Alt + 方向键承担",
+              "description": "标签拖拽把手，触屏路径的入口（自带 touch-action: none，按下即拖动）；对读屏隐藏且不占 Tab 位，键盘路径由标签带上的 Alt + 方向键承担",
               "name": "tab-drag-trigger"
             }
           ],
@@ -50352,7 +50352,7 @@
               "name": "declaredDisabled",
               "privacy": "private",
               "readonly": true,
-              "description": "作者声明的条目禁用，只认首见那一份；给了 collection 时用它，否则现读"
+              "description": "作者声明的条目禁用，只认首次见到的值；提供 collection 时使用它，否则现读"
             },
             {
               "kind": "method",
@@ -50422,14 +50422,14 @@
               }
             },
             {
-              "description": "标签换了位；detail 为 `{ value, from, to, values }`，values 是重排好的整份标签序",
+              "description": "标签换位；detail 为 `{ value, from, to, values }`，values 是重排后的整份标签序",
               "name": "tab-move",
               "type": {
                 "text": "TabsMoveDetails"
               }
             },
             {
-              "description": "标签被关闭；detail 为 `{ value, values }`，values 是关掉这一条之后余下的标签序",
+              "description": "标签被关闭；detail 为 `{ value, values }`，values 是关闭该标签之后剩余的标签序",
               "name": "tab-close",
               "type": {
                 "text": "TabsCloseDetails"
@@ -50441,7 +50441,7 @@
               "type": {
                 "text": "string | undefined"
               },
-              "description": "受控选中值；缺省该属性即非受控",
+              "description": "受控选中值；未提供该属性即非受控",
               "name": "value",
               "fieldName": "value"
             },
@@ -50465,7 +50465,7 @@
               "type": {
                 "text": "Direction | undefined"
               },
-              "description": "文字方向，只影响水平轴上 ArrowLeft/ArrowRight 的前后语义，默认 ltr",
+              "description": "文字方向，只影响水平轴上 ArrowLeft / ArrowRight 的前后语义，默认 ltr",
               "name": "dir",
               "fieldName": "direction"
             },
@@ -50473,7 +50473,7 @@
               "type": {
                 "text": "TabsActivationMode | undefined"
               },
-              "description": "方向键移动焦点是否顺带切换选中，默认 automatic",
+              "description": "方向键移动焦点是否同时切换选中，默认 automatic",
               "name": "activation-mode",
               "fieldName": "activationMode"
             },
@@ -50481,7 +50481,7 @@
               "type": {
                 "text": "boolean | undefined"
               },
-              "description": "方向键走到尽头回绕，默认开启",
+              "description": "方向键到达末尾回绕，默认开启",
               "name": "loop",
               "fieldName": "loop"
             },
@@ -50513,7 +50513,7 @@
               "type": {
                 "text": "boolean | undefined"
               },
-              "description": "标签可以拖着换位，默认关",
+              "description": "标签可以拖动换位，默认关闭",
               "name": "reorderable",
               "fieldName": "reorderable"
             },
