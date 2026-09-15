@@ -14,17 +14,17 @@ import { mergeReactProps } from '../../runtime/merge-props'
 import { reactNormalize } from '../../runtime/normalize-props'
 
 export interface XhColorSwatchProps extends ComponentPropsWithRef<'span'> {
-  /** 要展示的颜色串：#rgb / #rrggbb(aa) / rgb() / hsl()，不认颜色关键字。 */
+  /** 要展示的颜色串：#rgb / #rrggbb(aa) / rgb() / hsl()，不识别颜色关键字。 */
   value?: string
   size?: Size
-  /** 读屏怎么念这块颜色，例如「品牌红」；不给就念颜色串。 */
+  /** 读屏朗读该颜色的方式，例如「品牌红」；未提供时朗读颜色串。 */
   label?: string
 }
 
 /**
- * 颜色色块：把一个颜色画成一小块给人看，不接交互。
+ * 颜色色块：把一个颜色绘制为一小块供人查看，不接受交互。
  *
- * 只有 root 一个部件，颜色经家族配方铺在棋盘格上；要挑颜色请用 XhColorSwatchPicker。
+ * 只有 root 一个部件，颜色经家族配方铺在棋盘格上；需要选择颜色请使用 XhColorSwatchPicker。
  */
 export function XhColorSwatch({ value, size, label, ...rest }: XhColorSwatchProps): ReactNode {
   const configured = withXhConfig('color-swatch', { value, size, label } as ColorSwatchProps)
