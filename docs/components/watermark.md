@@ -91,14 +91,14 @@
 
 | 属性 | 类型 | 必填 | 说明 |
 | --- | --- | --- | --- |
-| `fontFamily` | `string` |  | 印文字用的字体，缺省 `sans-serif`。 图样是一张当遮罩用的 SVG，取不到页面里的字体，所以要在这里把字体名写全 （例如 `'PingFang SC, sans-serif'`）；写的字体在运行环境里不存在时由平台自己回退。 |
-| `fontSize` | `number` |  | 字号，单位像素，缺省 14。 |
-| `gap` | `number` |  | 两块图样之间留的空白，单位像素，缺省 24。 |
-| `image` | `string` |  | 印在文字上方的图片，只收 `data:image/` 开头的内联图片。 图样是当遮罩用的，遮罩只取图样的透明度：印出来是这张图的剪影，颜色仍由 `--xh-watermark-fg` 给。外部地址一律不收——SVG 当图片用时取不到外部资源， 收了也印不出东西。 |
-| `imageSize` | `WatermarkImageSize` |  | 图片的像素尺寸，缺省 64 × 64。 |
-| `opacity` | `number` |  | 印子的深浅，0 到 1，缺省 0.15。 |
-| `rotate` | `number` |  | 倾斜角度，单位度，缺省 -22。 |
-| `text` | `string \| string[]` |  | 水印文字。给数组就是多行，单个字符串里的换行同样断行； 去掉空白行——它只让图样长高，印不出任何东西。 |
+| `fontFamily` | `string` |  | 印文字使用的字体，默认 `sans-serif`。 图样是一张用作遮罩的 SVG，无法获取页面中的字体，因此需要在这里把字体名写全 （例如 `'PingFang SC, sans-serif'`）；书写的字体在运行环境中不存在时由平台自行回退。 |
+| `fontSize` | `number` |  | 字号，单位像素，默认 14。 |
+| `gap` | `number` |  | 两块图样之间的空白，单位像素，默认 24。 |
+| `image` | `string` |  | 印在文字上方的图片，只接受 `data:image/` 开头的内联图片。 图样用作遮罩，遮罩只取图样的透明度：印出的是该图的剪影，颜色仍由 `--xh-watermark-fg` 提供。外部地址一律不接受：SVG 作为图片使用时无法获取外部资源， 接受也无法印出内容。 |
+| `imageSize` | `WatermarkImageSize` |  | 图片的像素尺寸，默认 64 × 64。 |
+| `opacity` | `number` |  | 印记的深浅，0 到 1，默认 0.15。 |
+| `rotate` | `number` |  | 倾斜角度，单位度，默认 -22。 |
+| `text` | `string \| string[]` |  | 水印文字。提供数组即多行，单个字符串中的换行同样断行； 空白行会被去除：它只使图样增高，不印出任何内容。 |
 
 ### connect API
 
@@ -106,9 +106,9 @@
 
 | 成员 | 类型 | 说明 |
 | --- | --- | --- |
-| `lines` | `readonly string[]` | 归一化后的文字行；没有可印的文字时是空数组。 |
+| `lines` | `readonly string[]` | 归一化后的文字行；没有可印的文字时为空数组。 |
 | `tile` | `WatermarkTile` | 图样尺寸，即平铺步距；没有图样时宽高都是 0。 |
-| `image` | `string` | 图样的 data URI；没有图样时是空串。 |
+| `image` | `string` | 图样的 data URI；没有图样时为空串。 |
 | `state` | `WatermarkState` |  |
 | `getRootProps` | `() => T['element']` |  |
 | `getContentProps` | `() => T['element']` |  |

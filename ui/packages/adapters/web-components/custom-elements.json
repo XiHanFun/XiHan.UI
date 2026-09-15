@@ -63279,15 +63279,15 @@
       "declarations": [
         {
           "kind": "class",
-          "description": "`<xh-watermark>` —— Light-DOM 行为宿主，无状态机，把 connectWatermark 产出打到 root 与 content 上。\n\n图样是一张按 props 算出来的 SVG，整段百分号编码成 data URI 写进 root 的内联 CSS 变量；\n铺成一层盖在内容之上的伪元素归皮肤管，因此印子不进无障碍树、不吃点击、也选不中。\n\n多行水印用 text 属性里的换行，或把 text 当 property 传一个字符串数组。\n没有可印的文字时 root 落 data-state=\"empty\"，皮肤整层不画。\n\n给了文字时 root 的内联 style 归本元素管，作者自己的内联样式请写在宿主元素上。",
+          "description": "`<xh-watermark>`：Light-DOM 行为宿主，无状态机，把 connectWatermark 产出接到 root 与 content 上。\n\n图样是一张按 props 计算的 SVG，整段百分号编码为 data URI 写进 root 的内联 CSS 变量；\n铺为一层覆盖在内容之上的伪元素归皮肤管理，因此印记不进入无障碍树、不接收点击、也不可选中。\n\n多行水印用 text 属性中的换行，或把 text 作为 property 传入一个字符串数组。\n没有可印的文字时 root 写 data-state=\"empty\"，皮肤整层不绘制。\n\n提供文字时 root 的内联 style 归本元素管理，作者自己的内联样式写在宿主元素上。",
           "name": "XhWatermarkElement",
           "cssParts": [
             {
-              "description": "盖水印的那块地，承载 data-state 与图样、步距两个变量",
+              "description": "覆盖水印的区域，承载 data-state 与图样、步距两个变量",
               "name": "root"
             },
             {
-              "description": "被盖住的那段内容",
+              "description": "被覆盖的内容",
               "name": "content"
             }
           ],
@@ -63371,7 +63371,7 @@
               "type": {
                 "text": "WatermarkImageSize | undefined"
               },
-              "description": "图片尺寸是个对象，只走 property，不设特性。"
+              "description": "图片尺寸是对象，只能通过 property 设置，不设置特性。"
             },
             {
               "kind": "method",
@@ -63397,7 +63397,7 @@
               "type": {
                 "text": "number | undefined"
               },
-              "description": "倾斜角度（度），缺省 -22",
+              "description": "倾斜角度（度），默认 -22",
               "name": "rotate",
               "fieldName": "rotate"
             },
@@ -63405,7 +63405,7 @@
               "type": {
                 "text": "number | undefined"
               },
-              "description": "两块图样之间的空白（像素），缺省 24",
+              "description": "两块图样之间的空白（像素），默认 24",
               "name": "gap",
               "fieldName": "gap"
             },
@@ -63413,7 +63413,7 @@
               "type": {
                 "text": "number | undefined"
               },
-              "description": "字号（像素），缺省 14",
+              "description": "字号（像素），默认 14",
               "name": "font-size",
               "fieldName": "fontSize"
             },
@@ -63421,7 +63421,7 @@
               "type": {
                 "text": "number | undefined"
               },
-              "description": "印子的深浅，0 到 1，缺省 0.15",
+              "description": "印记的深浅，0 到 1，默认 0.15",
               "name": "opacity",
               "fieldName": "opacity"
             },
@@ -63429,7 +63429,7 @@
               "type": {
                 "text": "string | undefined"
               },
-              "description": "印文字用的字体，缺省 sans-serif；图样取不到页面字体，字体名要写全",
+              "description": "印文字使用的字体，默认 sans-serif；图样无法获取页面字体，字体名需要写全",
               "name": "font-family",
               "fieldName": "fontFamily"
             },
@@ -63437,7 +63437,7 @@
               "type": {
                 "text": "string | undefined"
               },
-              "description": "印在文字上方的图片，只收 data:image/ 开头的内联图片；印出来是剪影",
+              "description": "印在文字上方的图片，只接受 data:image/ 开头的内联图片；印出的是剪影",
               "name": "image",
               "fieldName": "image"
             }
