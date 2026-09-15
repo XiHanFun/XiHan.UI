@@ -1,4 +1,4 @@
-// 语气 | tone 决定用哪族颜色，与 variant 正交；这里固定 subtle 形态，语气的底色差别不必聚焦就看得见
+// 语气 | tone 决定使用哪族颜色，与 variant 正交；这里固定 subtle 形态，语气的底色差别不必聚焦即可看到
 import type { ReactNode } from "react";
 import {
   XhPasswordInputControl,

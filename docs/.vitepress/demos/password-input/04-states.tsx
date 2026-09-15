@@ -1,4 +1,4 @@
-// 禁用与校验态 | disabled 连明暗一起停掉，read-only 只锁值、明暗照切，invalid 只标注不拦输入
+// 禁用与校验态 | disabled 连明暗切换一起停止，read-only 只锁定值、明暗照常切换，invalid 只标注不拦截输入
 import type { ReactNode } from "react";
 import {
   XhPasswordInputControl,

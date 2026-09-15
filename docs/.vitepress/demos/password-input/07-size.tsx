@@ -1,4 +1,4 @@
-// 尺寸 | size 只改高度、内边距与字号，标签、切换钮与大写锁定提示一起跟着换档；不写就是缺省档
+// 尺寸 | size 只改变高度、内边距与字号，标签、切换按钮与大写锁定提示一起换档；不写即默认档
 import type { ReactNode } from "react";
 import {
   XhPasswordInputControl,

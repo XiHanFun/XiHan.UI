@@ -1,4 +1,4 @@
-// 受控 | 值与明暗都能受控：传了就由宿主说了算，组件只把意图报出来，写不写回由宿主定
+// 受控 | 值与明暗都可受控：传入后由宿主决定，组件只报告意图，是否写回由宿主决定
 import type { ReactNode } from "react";
 import {
   XhPasswordInputControl,

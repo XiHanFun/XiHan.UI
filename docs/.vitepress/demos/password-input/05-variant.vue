@@ -1,4 +1,4 @@
-<!-- 形态 | variant 决定底与描边怎么画：描边、淡色填底、无框；密码框没有实心档 -->
+<!-- 形态 | variant 决定底色与描边的绘制方式：描边、淡色填底、无框；密码框没有实心档 -->
 <script setup lang="ts">
 import {
   XhPasswordInputControl,
