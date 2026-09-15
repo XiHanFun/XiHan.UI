@@ -585,6 +585,11 @@ describe('dateFieldMachine', () => {
 })
 
 describe('connectDateField 结构与 ARIA', () => {
+  it('不写 variant 时 root 落 outline；写 subtle 如实落', () => {
+    expect(open({ locale: 'zh-CN' }).root.getAttribute('data-variant')).toBe('outline')
+    expect(open({ locale: 'zh-CN', variant: 'subtle' }).root.getAttribute('data-variant')).toBe('subtle')
+  })
+
   it('control 是 group 并由 label 命名，段位是 spinbutton', () => {
     const m = open({ locale: 'zh-CN' })
     expect(m.control.getAttribute('role')).toBe('group')

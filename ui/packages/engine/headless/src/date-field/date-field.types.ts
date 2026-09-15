@@ -134,7 +134,7 @@ export interface DateFieldSchema extends MachineSchema {
     placeholder?: { readonly [K in DateSegmentType]?: string }
     /** 各段的读屏名字，逐段覆盖内置默认。段是 spinbutton，没有名字时读屏只能朗读一串数字。 */
     translations?: DateFieldTranslations
-    /** 形态：outline / subtle / ghost，决定描边与底色的使用方式。 */
+    /** 形态：outline / subtle / ghost，决定底色与描边的绘制方式。默认 outline。 */
     variant?: ControlVariant
     /** 语气：brand / neutral / success / warning / danger / info，决定聚焦与强调使用哪族颜色。 */
     tone?: Tone
