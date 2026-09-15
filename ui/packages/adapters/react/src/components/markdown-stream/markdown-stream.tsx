@@ -16,27 +16,27 @@ import { renderSlot } from '../../runtime/slot-content'
 import { MarkdownStreamProvider, useMarkdownStreamContext } from './context'
 import { useMarkdownStream } from './use-markdown-stream'
 
-/** 函数式 children 的载荷：块列表与流式状态，以及写好之后要播报的那句话。 */
+/** 函数式 children 的载荷：块列表与流式状态，以及完成后要播报的文案。 */
 export type MarkdownStreamRootSlotProps = Pick<MarkdownStreamApi, 'blocks' | 'streaming' | 'announcement'>
 
-/** 逐块 children 的载荷。作者据此把代码块与公式块接管过去。 */
+/** 逐块 children 的载荷。作者据此接管代码块与公式块。 */
 export interface MarkdownStreamBlockSlotProps {
   block: MarkdownBlock
   /** 0 基块下标。 */
   index: number
 }
 
-/** 根上自有的那些取值。 */
+/** 根上自有的取值。 */
 type RootElementProps = Omit<ComponentPropsWithRef<'div'>, 'children'>
 
 export interface XhMarkdownStreamRootProps extends RootElementProps {
   /** 已渲染好的块列表。 */
   blocks?: readonly MarkdownBlock[]
-  /** 这一段正文是否仍在增长，只落 data-streaming。 */
+  /** 该段正文是否仍在增长，只写 data-streaming。 */
   streaming?: boolean
   /** 播报档位，默认 off。 */
   announce?: 'off' | 'polite' | 'assertive'
-  /** 画不画流式光标，默认画。 */
+  /** 是否绘制流式光标，默认绘制。 */
   caret?: boolean
   /** 尺寸：sm / md / lg。 */
   size?: Size
@@ -67,10 +67,10 @@ export function XhMarkdownStreamRoot({
 }
 
 export interface XhMarkdownStreamContentProps extends Omit<ComponentPropsWithRef<'div'>, 'children'> {
-  /** 逐块接管这一块的正文；不给就按块类型铺。 */
+  /** 逐块接管该块的正文；未提供时按块类型铺设。 */
   children?: SlotChildren<MarkdownStreamBlockSlotProps>
 }
-/** 块是数据铺出来的，作者写不出 N 个节点，由组件铺。 */
+/** 块是数据铺设出来的，作者无法写出 N 个节点，由组件铺设。 */
 export function XhMarkdownStreamContent({ children, ...rest }: XhMarkdownStreamContentProps): ReactNode {
   const ctx = useMarkdownStreamContext()
   const { api } = ctx
