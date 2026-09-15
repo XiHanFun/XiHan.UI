@@ -12,7 +12,8 @@
     --xh-text-field-skin: 1;
   }
 
-  /* 组件层只把既有公开槽映射到家族合同，并保留 label/count 等 TextField 专属结构。 */
+  /* 组件层只把既有公开槽映射到家族合同，并保留 label/count 等 TextField 专属结构；
+     形态三档由家族按 control 上的 data-variant 生成，皮肤不再声明。 */
   [data-scope='text-field'][data-part='root'] {
     --xh-_text-field-h: var(--xh-control-h-md);
     --xh-_text-field-px: var(--xh-control-px-md);
@@ -20,12 +21,6 @@
     --xh-_text-field-font-size: var(--xh-control-font-md);
     --xh-_text-field-label-font-size: var(--xh-control-font-md);
     --xh-_text-field-action-font-size: var(--xh-control-caption-md);
-    --xh-_text-field-bg: var(--xh-bg-canvas);
-    --xh-_text-field-bg-hover: color-mix(in oklab, var(--xh-bg-subtle) 45%, var(--xh-_text-field-bg));
-    --xh-_text-field-border: transparent;
-    --xh-_text-field-border-hover: var(--xh-border-default);
-    --xh-_text-field-border-focus: var(--xh-_tone, var(--xh-border-control-focus));
-    --xh-_text-field-shadow: var(--xh-elevation-raised);
 
     --xh-icon-size: var(--xh-text-field-icon-size, var(--xh-glyph-size-md));
 
@@ -60,32 +55,6 @@
     --xh-icon-size: var(--xh-text-field-icon-size, var(--xh-glyph-size-lg));
   }
 
-  [data-scope='text-field'][data-part='root'][data-variant='outline'] {
-    --xh-_text-field-bg: var(--xh-bg-canvas);
-    --xh-_text-field-border: var(--xh-border-control);
-    --xh-_text-field-border-hover: var(--xh-border-control-hover);
-    --xh-_text-field-border-focus: var(--xh-_tone, var(--xh-border-control-focus));
-    --xh-_text-field-shadow: none;
-  }
-
-  [data-scope='text-field'][data-part='root'][data-variant='subtle'] {
-    --xh-_text-field-bg: var(--xh-_tone-subtle, var(--xh-bg-subtle));
-    --xh-_text-field-bg-hover: var(--xh-_tone-subtle-hover, var(--xh-bg-subtle-hover));
-    --xh-_text-field-border: transparent;
-    --xh-_text-field-border-hover: var(--xh-_tone-border, var(--xh-border-control-hover));
-    --xh-_text-field-border-focus: var(--xh-_tone, var(--xh-border-control-focus));
-    --xh-_text-field-shadow: none;
-  }
-
-  [data-scope='text-field'][data-part='root'][data-variant='ghost'] {
-    --xh-_text-field-bg: transparent;
-    --xh-_text-field-bg-hover: color-mix(in oklab, var(--xh-bg-subtle) 45%, transparent);
-    --xh-_text-field-border: transparent;
-    --xh-_text-field-border-hover: var(--xh-_tone-border, var(--xh-border-control-hover));
-    --xh-_text-field-border-focus: var(--xh-_tone, var(--xh-border-control-focus));
-    --xh-_text-field-shadow: none;
-  }
-
   [data-scope='text-field'][data-part='label'] {
     color: var(--xh-text-field-label-fg, var(--xh-fg-default));
     font-size: var(--xh-text-field-label-font-size, var(--xh-_text-field-label-font-size));
@@ -102,18 +71,18 @@
     --xh-field-control-gap: var(--xh-text-field-control-gap, var(--xh-_text-field-gap));
     --xh-field-control-min-inline-size: var(--xh-text-field-control-min-w, var(--xh-control-min-w));
     --xh-field-control-radius: var(--xh-text-field-control-radius, var(--xh-shape-control));
-    --xh-field-bg-rest: var(--xh-text-field-control-bg, var(--xh-_text-field-bg));
-    --xh-field-bg-hover: var(--xh-text-field-control-bg-hover, var(--xh-_text-field-bg-hover));
-    --xh-field-bg-read-only: var(--xh-text-field-control-bg-readonly, var(--xh-bg-subtle));
-    --xh-field-bg-disabled: var(--xh-text-field-control-bg-disabled, var(--xh-bg-subtle));
+    --xh-field-bg-rest: var(--xh-text-field-control-bg, var(--xh-_field-variant-bg-rest));
+    --xh-field-bg-hover: var(--xh-text-field-control-bg-hover, var(--xh-_field-variant-bg-hover));
+    --xh-field-bg-read-only: var(--xh-text-field-control-bg-readonly, var(--xh-_field-variant-bg-read-only));
+    --xh-field-bg-disabled: var(--xh-text-field-control-bg-disabled, var(--xh-_field-variant-bg-disabled));
     --xh-field-fg-rest: var(--xh-text-field-control-fg, var(--xh-fg-default));
-    --xh-field-border-rest: var(--xh-text-field-control-border, var(--xh-_text-field-border));
-    --xh-field-border-hover: var(--xh-text-field-control-border-hover, var(--xh-_text-field-border-hover));
-    --xh-field-border-focus: var(--xh-text-field-control-border-focus, var(--xh-_text-field-border-focus));
-    --xh-field-border-invalid: var(--xh-text-field-control-border-invalid, var(--xh-border-invalid));
+    --xh-field-border-rest: var(--xh-text-field-control-border, var(--xh-_field-variant-border-rest));
+    --xh-field-border-hover: var(--xh-text-field-control-border-hover, var(--xh-_field-variant-border-hover));
+    --xh-field-border-focus: var(--xh-text-field-control-border-focus, var(--xh-_field-variant-border-focus));
+    --xh-field-border-invalid: var(--xh-text-field-control-border-invalid, var(--xh-_field-variant-border-invalid));
     --xh-field-ring-focus: var(--xh-ring-focus);
     --xh-field-ring-invalid: var(--xh-ring-invalid);
-    --xh-field-shadow-rest: var(--xh-text-field-control-shadow, var(--xh-_text-field-shadow));
+    --xh-field-shadow-rest: var(--xh-text-field-control-shadow, none);
   }
 
   [data-scope='text-field'][data-part='prefix'],

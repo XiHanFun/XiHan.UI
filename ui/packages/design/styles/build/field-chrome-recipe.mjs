@@ -11,9 +11,14 @@ const OUTPUT = join(ROOT, 'family', 'field-chrome.css')
 const SIZES = ['sm', 'md', 'lg']
 const LAYOUTS = ['single-line', 'textarea', 'multi-tag']
 const STATES = ['rest', 'hover', 'focus', 'invalid', 'readOnly', 'disabled', 'loading']
+const VARIANTS = ['outline', 'subtle', 'ghost']
+const DEFAULT_VARIANT = 'outline'
 const SIZE_FIELDS = ['controlHeight', 'paddingInline', 'gap', 'fontSize', 'glyphSize']
 const LAYOUT_FIELDS = ['alignItems', 'blockSize', 'minBlockSize', 'paddingBlock', 'flexWrap']
-const STATE_FIELDS = ['backgroundColor', 'color', 'borderColor', 'shadow', 'cursor']
+// color / shadow / cursor 不随形态变，留在 stateValues；backgroundColor / borderColor 随形态变，进 variantValues。
+const STATE_FIELDS = ['color', 'shadow', 'cursor']
+const VARIANT_FIELDS = ['backgroundColor', 'borderColor']
+const ALL_FIELDS = ['backgroundColor', 'color', 'borderColor', 'shadow', 'cursor']
 const NATIVE_FIELDS = ['placeholderColor', 'autofillBackground', 'autofillForeground', 'textareaPaddingBlock', 'ime']
 const FORCED_FIELDS = ['backgroundColor', 'color', 'borderColor', 'outlineColor']
 const STATE_SLOT = {
@@ -79,10 +84,13 @@ export function assertFieldChromeRecipe(source) {
     'version',
     'sizes',
     'layouts',
+    'variants',
+    'defaultVariant',
     'states',
     'sizeValues',
     'layoutValues',
     'stateValues',
+    'variantValues',
     'nativeInput',
     'motion',
     'compact',
@@ -94,6 +102,9 @@ export function assertFieldChromeRecipe(source) {
     throw new Error('[field-chrome-recipe] root.version 必须为 1')
   assertList(source.sizes, SIZES, 'root.sizes')
   assertList(source.layouts, LAYOUTS, 'root.layouts')
+  assertList(source.variants, VARIANTS, 'root.variants')
+  if (source.defaultVariant !== DEFAULT_VARIANT)
+    throw new Error(`[field-chrome-recipe] root.defaultVariant 必须为 ${DEFAULT_VARIANT}`)
   assertList(source.states, STATES, 'root.states')
 
   assertExactKeys(source.sizeValues, SIZES, 'root.sizeValues')
@@ -109,6 +120,14 @@ export function assertFieldChromeRecipe(source) {
     const fields = state === 'focus' || state === 'invalid' ? [...STATE_FIELDS, 'ringColor'] : STATE_FIELDS
     assertFields(source.stateValues[state], fields, `stateValues.${state}`)
   }
+
+  assertExactKeys(source.variantValues, VARIANTS, 'root.variantValues')
+  for (const variant of VARIANTS) {
+    assertExactKeys(source.variantValues[variant], STATES, `variantValues.${variant}`)
+    for (const state of STATES)
+      assertFields(source.variantValues[variant][state], VARIANT_FIELDS, `variantValues.${variant}.${state}`)
+  }
+  assertVariantMatrix(source)
 
   assertFields(source.nativeInput, NATIVE_FIELDS, 'root.nativeInput')
   if (source.nativeInput.ime !== 'preserve-native-composition')
@@ -132,14 +151,86 @@ export function assertFieldChromeRecipe(source) {
     assertFields(source.forcedColors[state], FORCED_FIELDS, `forcedColors.${state}`)
 }
 
+// 形态矩阵不变量：字段不是抬起面、聚焦与失效描边不随形态、disabled/readOnly 三档同面。
+function assertVariantMatrix(source) {
+  const ELEVATION = /--xh-(?:elevation|shadow)-/
+  for (const state of STATES) {
+    if (source.stateValues[state].shadow !== 'none')
+      throw new Error(`[field-chrome-recipe] stateValues.${state}.shadow 必须为 none：字段不是抬起面`)
+    for (const field of Object.keys(source.stateValues[state])) {
+      if (ELEVATION.test(source.stateValues[state][field]))
+        throw new Error(`[field-chrome-recipe] stateValues.${state}.${field} 不得消费海拔令牌`)
+    }
+  }
+  for (const variant of VARIANTS) {
+    const value = source.variantValues[variant]
+    for (const state of STATES) {
+      for (const field of VARIANT_FIELDS) {
+        if (ELEVATION.test(value[state][field]))
+          throw new Error(`[field-chrome-recipe] variantValues.${variant}.${state}.${field} 不得消费海拔令牌`)
+      }
+    }
+    if (value.focus.borderColor !== 'var(--xh-border-control-focus)')
+      throw new Error(`[field-chrome-recipe] variantValues.${variant}.focus.borderColor 必须为 var(--xh-border-control-focus)`)
+    if (value.invalid.borderColor !== 'var(--xh-border-invalid)')
+      throw new Error(`[field-chrome-recipe] variantValues.${variant}.invalid.borderColor 必须为 var(--xh-border-invalid)`)
+    if (value.disabled.backgroundColor !== 'var(--xh-bg-subtle)' || value.disabled.borderColor !== 'var(--xh-border-default)')
+      throw new Error(`[field-chrome-recipe] variantValues.${variant}.disabled 必须为 bg-subtle + border-default`)
+    if (value.readOnly.borderColor !== value.rest.borderColor)
+      throw new Error(`[field-chrome-recipe] variantValues.${variant}.readOnly.borderColor 必须与 rest 相同`)
+    if (value.readOnly.backgroundColor !== 'var(--xh-bg-subtle)')
+      throw new Error(`[field-chrome-recipe] variantValues.${variant}.readOnly.backgroundColor 必须为 var(--xh-bg-subtle)`)
+  }
+  const outline = source.variantValues.outline
+  if (outline.rest.backgroundColor !== 'var(--xh-bg-canvas)' || outline.rest.borderColor !== 'var(--xh-border-control)')
+    throw new Error('[field-chrome-recipe] variantValues.outline.rest 必须为 bg-canvas + border-control')
+  for (const variant of ['subtle', 'ghost']) {
+    const value = source.variantValues[variant]
+    if (value.rest.borderColor !== 'transparent')
+      throw new Error(`[field-chrome-recipe] variantValues.${variant}.rest.borderColor 必须为 transparent`)
+    if (value.hover.borderColor !== 'var(--xh-border-control)')
+      throw new Error(`[field-chrome-recipe] variantValues.${variant}.hover.borderColor 必须浮出 var(--xh-border-control)`)
+  }
+}
+
+function variantSlot(field, state) {
+  return `--xh-_field-variant-${STATE_SLOT[field]}-${kebab(state)}`
+}
+
+// rest 全量输出；其余状态只输出「任一形态在该状态与自身 rest 不同」的字段，未被消费的槽不声明。
+function consumedVariantFields(source, state) {
+  if (state === 'rest')
+    return VARIANT_FIELDS
+  return VARIANT_FIELDS.filter(field => VARIANTS.some((variant) => {
+    const value = source.variantValues[variant]
+    return value[state][field] !== value.rest[field]
+  }))
+}
+
+function variantOutputs(source, variant, indent = '    ') {
+  const lines = []
+  for (const state of STATES) {
+    for (const field of consumedVariantFields(source, state))
+      lines.push(`${indent}${variantSlot(field, state)}: ${source.variantValues[variant][state][field]};`)
+  }
+  return lines.join('\n')
+}
+
 function stateValue(source, state, field) {
+  if (VARIANT_FIELDS.includes(field))
+    return `var(--xh-field-${STATE_SLOT[field]}-${kebab(state)}, var(${variantSlot(field, state)}))`
   return `var(--xh-field-${STATE_SLOT[field]}-${kebab(state)}, ${source.stateValues[state][field]})`
 }
 
 function stateDeclarations(source, state) {
   const value = source.stateValues[state]
   const base = source.stateValues.rest
-  const fields = state === 'rest' ? STATE_FIELDS : STATE_FIELDS.filter(field => value[field] !== base[field])
+  const variantFields = consumedVariantFields(source, state)
+  const fields = ALL_FIELDS.filter((field) => {
+    if (VARIANT_FIELDS.includes(field))
+      return variantFields.includes(field)
+    return state === 'rest' || value[field] !== base[field]
+  })
   return fields.map(field => `    ${CSS_PROPERTY[field]}: ${stateValue(source, state, field)};`).join('\n')
 }
 
@@ -183,6 +274,7 @@ export function compileFieldChromeRecipe(source) {
     '    padding-inline: var(--xh-field-control-padding-inline, var(--xh-_field-size-padding-inline));',
     '    padding-block: 0;',
     '    --xh-icon-size: var(--xh-field-glyph-size, var(--xh-_field-size-glyph-size));',
+    variantOutputs(source, DEFAULT_VARIANT),
     `    border: var(--xh-stroke-thin) solid ${stateValue(source, 'rest', 'borderColor')};`,
     '    border-radius: var(--xh-field-control-radius, var(--xh-shape-control));',
     '    outline: var(--xh-ring-width) solid transparent;',
@@ -197,6 +289,10 @@ export function compileFieldChromeRecipe(source) {
     `      box-shadow ${source.motion.duration} ${source.motion.easing},`,
     `      outline-color ${source.motion.duration} ${source.motion.easing};`,
   ].join('\n'))
+
+  // 三档都输出（含 outline），显式 data-variant='outline' 与缺省基础规则同值。
+  for (const variant of VARIANTS)
+    rule(`[data-xh-field-chrome][data-variant='${variant}']`, variantOutputs(source, variant))
 
   for (const size of SIZES) {
     const value = source.sizeValues[size]
@@ -322,12 +418,12 @@ export async function emitFieldChromeRecipe(options = {}) {
     await mkdir(dirname(outputPath), { recursive: true })
     await writeFile(outputPath, css, 'utf8')
   }
-  return { bytes: Buffer.byteLength(css), layouts: LAYOUTS.length, sizes: SIZES.length, states: STATES.length }
+  return { bytes: Buffer.byteLength(css), layouts: LAYOUTS.length, sizes: SIZES.length, variants: VARIANTS.length, states: STATES.length }
 }
 
 if (process.argv[1] && resolve(process.argv[1]) === fileURLToPath(import.meta.url)) {
   emitFieldChromeRecipe()
-    .then(result => console.log(`[field-chrome-recipe] ${result.layouts} layouts × ${result.sizes} sizes × ${result.states} states -> ${result.bytes} bytes`))
+    .then(result => console.log(`[field-chrome-recipe] ${result.layouts} layouts × ${result.sizes} sizes × ${result.variants} variants × ${result.states} states -> ${result.bytes} bytes`))
     .catch((error) => {
       console.error(error)
       process.exit(1)

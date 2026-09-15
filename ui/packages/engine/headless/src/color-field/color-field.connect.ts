@@ -67,7 +67,7 @@ export function connectColorField<T extends PropTypes>(
       ...parts.root.attrs,
       // Action Control 的显示策略只读取命名空间宿主，不反查 color-field anatomy。
       'data-xh-action-owner': '',
-      // 三个视觉轴只落在 root，子部件从这里继承皮肤声明的私有槽
+      // variant/tone/size 落在 root；control 再带一份 data-variant 给 Field Chrome 家族选择器
       'data-variant': prop('variant'),
       'data-tone': prop('tone'),
       'data-size': prop('size'),
@@ -83,6 +83,7 @@ export function connectColorField<T extends PropTypes>(
       ...parts.control.attrs,
       'data-xh-field-chrome': '',
       'data-xh-field-size': prop('size') ?? 'md',
+      'data-variant': prop('variant'),
       'data-disabled': dataAttr(disabled),
       'data-readonly': dataAttr(readOnly),
       'data-invalid': dataAttr(invalid),
