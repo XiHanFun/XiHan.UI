@@ -2586,7 +2586,6 @@ export type ComponentTokenName =
   | '--xh-segmented-item-font-weight'
   | '--xh-segmented-item-gap'
   | '--xh-segmented-item-h'
-  | '--xh-segmented-item-press-scale'
   | '--xh-segmented-item-px'
   | '--xh-segmented-item-radius'
   | '--xh-segmented-radius'
