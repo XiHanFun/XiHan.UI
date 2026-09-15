@@ -288,7 +288,7 @@
 | `--xh-side-nav-popout-max-w` | `branch-content` | `max-inline-size` | `popout` | `--xh-overlay-max-w` | side-nav 的 branch-content 部件 max-inline-size 覆盖槽。 |
 | `--xh-side-nav-popout-min-w` | `branch-content` | `min-inline-size` | `popout` | `--xh-overlay-menu-min-w` | side-nav 的 branch-content 部件 min-inline-size 覆盖槽。 |
 | `--xh-side-nav-popout-p` | `branch-content` | `padding` | `popout` | `--xh-space-1` | side-nav 的 branch-content 部件 padding 覆盖槽。 |
-| `--xh-side-nav-popout-radius` | `branch-content` | `border-radius` | `popout` | `--xh-shape-surface` | side-nav 的 branch-content 部件 border-radius 覆盖槽。 |
+| `--xh-side-nav-popout-radius` | `branch-content` | `border-radius` | `popout` | `--xh-shape-overlay` | side-nav 的 branch-content 部件 border-radius 覆盖槽。 |
 | `--xh-side-nav-popout-shadow` | `branch-content` | `box-shadow` | `popout` | `--xh-elevation-floating` | side-nav 的 branch-content 部件 box-shadow 覆盖槽。 |
 | `--xh-side-nav-row-bg-active` | `link` | `background` | `current`<br>`disabled`<br>`not([data-disabled])` | `--xh-_side-nav-accent-bg` | side-nav 的 link 部件 background 覆盖槽。 |
 | `--xh-side-nav-row-bg-hover` | `branch-trigger`<br>`link` | `background` | `disabled`<br>`highlighted`<br>`is(:hover, [data-highlighted])`<br>`not([data-disabled])` | `--xh-bg-subtle` | side-nav 的 branch-trigger、link 部件 background 覆盖槽。 |
