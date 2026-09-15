@@ -20,7 +20,7 @@ export function useMenuContext(): MenuContext {
   return ctx
 }
 
-/** 条目自报的值与禁用，供 item-text / item-indicator / item-description 复用同一份声明。 */
+/** 条目声明的值与禁用，供 item-text / item-indicator / item-description 复用同一份声明。 */
 const ItemCtx = createContext<MenuItemProps | undefined>(undefined)
 
 export const MenuItemProvider = ItemCtx
@@ -32,7 +32,7 @@ export function useMenuItemContext(): MenuItemProps {
   return item
 }
 
-/** 分组自报的身份，供分组标题取到同一个值（标题的 id 由它派生）。 */
+/** 分组声明的身份，供分组标题取到同一个值（标题的 id 由它派生）。 */
 const GroupCtx = createContext<MenuGroupProps | undefined>(undefined)
 
 export const MenuGroupProvider = GroupCtx
@@ -44,7 +44,7 @@ export function useMenuGroupContext(): MenuGroupProps {
   return group
 }
 
-/** 子菜单触发条目要同时够到父菜单与本子菜单，这里存父层句柄与它在父层里的身份。 */
+/** 子菜单触发条目要同时访问父菜单与本子菜单，这里保存父层句柄与它在父层中的身份。 */
 export interface MenuSubHandle {
   parent: MenuContext
   value: string

@@ -93,22 +93,22 @@
 
 | 属性 | 类型 | 必填 | 说明 |
 | --- | --- | --- | --- |
-| `collection` | `MenuNode[]` |  | 条目数据，显示文本与禁用的事实源。给了它，条目部件只需报 value。 缺省即回到「文本与禁用都写在条目部件上」的老路。 |
-| `open` | `boolean` |  | 展开态，给定即受控；受控下内部不自改，只发 onOpenChange。 |
+| `collection` | `MenuNode[]` |  | 条目数据，显示文本与禁用的事实源。提供后条目部件只需声明 value。 未提供时回到文本与禁用都写在条目部件上的方式。 |
+| `open` | `boolean` |  | 展开态，提供即受控；受控下内部不自行修改，只发 onOpenChange。 |
 | `defaultOpen` | `boolean` |  |  |
 | `placement` | `Placement` |  |  |
 | `offset` | `number` |  |  |
-| `loop` | `boolean` |  | 方向键走到尽头是否回绕，默认 true。 |
+| `loop` | `boolean` |  | 方向键到达末尾是否回绕，默认 true。 |
 | `dir` | `Direction` |  | 文字方向，默认 ltr。 |
-| `tone` | `Tone` |  | 语气：brand / neutral / success / warning / danger / info，决定条目高亮用哪族颜色。 |
+| `tone` | `Tone` |  | 语气：brand / neutral / success / warning / danger / info，决定条目高亮使用哪族颜色。 |
 | `size` | `Size` |  | 尺寸：sm / md / lg，决定条目高度、内边距与字号档位。 |
-| `typeahead` | `boolean` |  | 首字符连打检索，默认开。 |
-| `disabled` | `boolean` |  | 整张菜单禁用：触发器不再展开，条目全转 aria-disabled。 |
+| `typeahead` | `boolean` |  | 首字符连打检索，默认开启。 |
+| `disabled` | `boolean` |  | 整张菜单禁用：触发器不再展开，条目全部为 aria-disabled。 |
 | `translations` | `Partial<MenuTranslations>` |  |  |
-| `submenu` | `boolean` |  | 本菜单是另一张菜单的子菜单：触发器渲染成父菜单的条目形态 （经 getSubmenuTriggerProps），缺省落位换到侧向，悬停触发缺省打开。 |
-| `openOnHover` | `boolean` |  | 悬停触发：进触发器延时展开、经安全三角离开才收。子菜单缺省开，普通菜单缺省关。 |
+| `submenu` | `boolean` |  | 本菜单是另一张菜单的子菜单：触发器渲染为父菜单的条目形态 （经 getSubmenuTriggerProps），默认落位改为侧向，悬停触发默认开启。 |
+| `openOnHover` | `boolean` |  | 悬停触发：进入触发器延时展开、经安全三角离开才收起。子菜单默认开启，普通菜单默认关闭。 |
 | `hoverOpenDelay` | `number` |  | 悬停到展开的延时（ms），默认 100。 |
-| `hoverCloseDelay` | `number` |  | 离开到收起的延时（ms），也是安全三角里的停滞上限，默认 300。 |
+| `hoverCloseDelay` | `number` |  | 离开到收起的延时（ms），也是安全三角中的停滞上限，默认 300。 |
 | `onOpenChange` | `(details: MenuOpenChangeDetails) => void` |  | open 变化回调。 |
 | `onSelect` | `(details: MenuSelectDetails) => void` |  | 条目被选中；菜单随之关闭。 |
 
@@ -159,7 +159,7 @@
 | --- | --- | --- |
 | `open` | `boolean` |  |
 | `disabled` | `boolean` | 整张菜单是否禁用。 |
-| `collection` | `readonly MenuNodeMeta[]` | collection 推出的条目元信息，按数据顺序排列；没给 collection 即空数组。 |
+| `collection` | `readonly MenuNodeMeta[]` | 由 collection 推导的条目元信息，按数据顺序排列；未提供 collection 时为空数组。 |
 | `focusedValue` | `string \| null` | 焦点锚点；收起时为 null。 |
 | `setOpen` | `(next: boolean) => void` |  |
 | `getTriggerProps` | `() => T['button']` |  |
@@ -169,7 +169,7 @@
 | `getItemTextProps` | `(props: MenuItemProps) => T['element']` |  |
 | `getItemIndicatorProps` | `(props: MenuItemProps) => T['element']` |  |
 | `getItemDescriptionProps` | `(props: MenuItemProps) => T['element']` |  |
-| `getSubmenuTriggerProps` | `(props: MenuItemProps) => T['element']` | 子菜单触发条目（submenu 模式）：既是父菜单里的一条 item（value 是它在父菜单 里的身份，父层的方向键与高亮照常认它），又是本子菜单的触发器（aria-haspopup、 悬停/点按/右方向键展开）。父层的选中会跳过带 aria-haspopup 的条目。 |
+| `getSubmenuTriggerProps` | `(props: MenuItemProps) => T['element']` | 子菜单触发条目（submenu 模式）：既是父菜单中的一条 item（value 是它在父菜单 中的身份，父层的方向键与高亮照常识别它），又是本子菜单的触发器（aria-haspopup、 悬停 / 点击 / 右方向键展开）。父层的选中会跳过带 aria-haspopup 的条目。 |
 | `getSeparatorProps` | `() => T['element']` |  |
 | `getGroupProps` | `(props: MenuGroupProps) => T['element']` |  |
 | `getGroupLabelProps` | `(props: MenuGroupProps) => T['element']` |  |

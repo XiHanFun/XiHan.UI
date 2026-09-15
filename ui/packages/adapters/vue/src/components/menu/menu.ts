@@ -21,7 +21,7 @@ import { useMenu, useMenuWithParent } from './use-menu'
 
 type MenuProps = MenuSchema['props']
 
-/** 默认插槽的载荷：展开态与改展开的动作。 */
+/** 默认插槽的载荷：展开态与修改展开的动作。 */
 export type MenuRootSlotProps = Pick<MenuApi, 'open' | 'setOpen'>
 
 export const XhMenuRoot = /* @__PURE__ */ defineComponent({
@@ -44,8 +44,8 @@ export const XhMenuRoot = /* @__PURE__ */ defineComponent({
     hoverOpenDelay: { type: Number },
     hoverCloseDelay: { type: Number },
     /**
-     * 只交 collection 时，触发器插槽给的那个节点直接当触发器用，不再外包一颗 <button>。
-     * 摆部件的写法有 XhMenuTrigger 自己的 asChild，这个 prop 是给代铺那条路的同一个能力。
+     * 只提供 collection 时，触发器插槽给出的节点直接作为触发器使用，不再外包一个 <button>。
+     * 放置部件的写法有 XhMenuTrigger 自己的 asChild，该 prop 是自动铺设路径的同一能力。
      */
     triggerAsChild: Boolean,
   },
@@ -81,7 +81,7 @@ export const XhMenuTrigger = /* @__PURE__ */ defineComponent({
   // 直通属性自己合：Vue 默认把作者的处理器排在部件的后面，这里改成作者先跑
   inheritAttrs: false,
   props: {
-    /** 借用作者的子节点当触发器，不再渲染自己的包裹元素；子节点须恰好一个。 */
+    /** 借用作者的子节点作为触发器，不再渲染自己的包裹元素；子节点须恰好一个。 */
     asChild: Boolean,
   },
   setup(props, { slots, attrs }) {
@@ -178,17 +178,17 @@ export const XhMenuItem = /* @__PURE__ */ defineComponent({
   },
 })
 
-/** 默认插槽的载荷：本层子菜单的展开态与改展开的动作。 */
+/** 默认插槽的载荷：本层子菜单的展开态与修改展开的动作。 */
 export type MenuSubSlotProps = Pick<MenuApi, 'open' | 'setOpen'>
 
 /**
- * 子菜单：内部再跑一台 menu 机器（submenu 模式），触发条目由 XhMenuSubTrigger
- * 渲染成「父菜单条目 + 本子菜单触发器」的双重身份。本身不渲染节点。
+ * 子菜单：内部再运行一台 menu 状态机（submenu 模式），触发条目由 XhMenuSubTrigger
+ * 渲染为父菜单条目与本子菜单触发器的双重身份。本身不渲染节点。
  */
 export const XhMenuSub = /* @__PURE__ */ defineComponent({
   name: 'XhMenuSub',
   props: {
-    /** 它在父菜单里的条目身份。 */
+    /** 它在父菜单中的条目身份。 */
     value: { type: String, required: true },
     disabled: { type: Boolean, default: undefined },
     collection: { type: Array as PropType<MenuNode[]> },
@@ -197,11 +197,11 @@ export const XhMenuSub = /* @__PURE__ */ defineComponent({
     loop: { type: Boolean, default: undefined },
     openOnHover: { type: Boolean, default: undefined },
     hoverOpenDelay: { type: Number },
-    /** 文字方向；缺省继承父层。子层被搬到浮层落点，继承不到父层的方向。 */
+    /** 文字方向；默认继承父层。子层被迁移到浮层落点，无法继承父层的方向。 */
     dir: { type: String as PropType<Direction> },
-    /** 语气；缺省继承父层。子层是浮层落点下的同级节点，CSS 私有槽继承不到。 */
+    /** 语气；默认继承父层。子层是浮层落点下的同级节点，CSS 私有槽无法继承。 */
     tone: { type: String as PropType<Tone> },
-    /** 尺寸；缺省继承父层，理由同 tone。 */
+    /** 尺寸；默认继承父层，理由同 tone。 */
     size: { type: String as PropType<Size> },
     hoverCloseDelay: { type: Number },
   },
@@ -251,7 +251,7 @@ export const XhMenuSubTrigger = /* @__PURE__ */ defineComponent({
   },
 })
 
-/** 条目里的文字载体：连打检索取它，图标与副文本的文字因此不进检索串 */
+/** 条目中的文字载体：连打检索取它，图标与副文本的文字因此不进入检索串 */
 export const XhMenuItemText = /* @__PURE__ */ defineComponent({
   name: 'XhMenuItemText',
   setup(_, { slots }) {
@@ -261,7 +261,7 @@ export const XhMenuItemText = /* @__PURE__ */ defineComponent({
   },
 })
 
-/** 条目里的标记位（勾选、图标），纯装饰 */
+/** 条目中的标记位（勾选、图标），纯装饰 */
 export const XhMenuItemIndicator = /* @__PURE__ */ defineComponent({
   name: 'XhMenuItemIndicator',
   setup(_, { slots }) {
@@ -271,7 +271,7 @@ export const XhMenuItemIndicator = /* @__PURE__ */ defineComponent({
   },
 })
 
-/** 条目里的副文本，排在文字下一行 */
+/** 条目中的副文本，排在文字下一行 */
 export const XhMenuItemDescription = /* @__PURE__ */ defineComponent({
   name: 'XhMenuItemDescription',
   setup(_, { slots }) {
@@ -320,9 +320,9 @@ export const XhMenuArrow = /* @__PURE__ */ defineComponent({
 })
 
 /**
- * 没写默认插槽时按 collection 铺开的整套结构，作者只交数据。
- * 与手写部件产出的 DOM 完全一致，要改结构就写默认插槽，行为不变。
- * 触发器内容归作者，由 trigger 插槽承载；条目内容缺省是 label，可由 item 插槽接管。
+ * 未写默认插槽时按 collection 铺开的整套结构，作者只提供数据。
+ * 与手写部件产出的 DOM 完全一致，需要修改结构时写默认插槽，行为不变。
+ * 触发器内容归作者，由 trigger 插槽承载；条目内容默认是 label，可由 item 插槽接管。
  */
 function renderDefaultTree(
   collection: readonly MenuNodeMeta[],

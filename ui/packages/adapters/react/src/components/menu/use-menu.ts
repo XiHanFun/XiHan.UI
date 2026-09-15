@@ -21,7 +21,7 @@ import { useOverlay } from '../../runtime/use-overlay'
 export interface MenuContext extends OverlayWiring {
   service: Service<MenuSchema>
   api: MenuApi
-  /** 定位锚点，普通菜单是 trigger、子菜单是那条触发条目。 */
+  /** 定位锚点，普通菜单是 trigger、子菜单是对应的触发条目。 */
   triggerRef: RefObject<HTMLElement | null>
   /** 被定位的浮层壳。 */
   positionerRef: RefObject<HTMLElement | null>

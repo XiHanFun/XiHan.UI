@@ -32212,15 +32212,15 @@
       "declarations": [
         {
           "kind": "class",
-          "description": "`<xh-menu>` —— Light-DOM 行为宿主：用户写 trigger/positioner/content/item/group/... 角色节点，\n元素跑 menu 机器并把 connect 产出打上去。浮层定位引擎在本元素里建好、经 refs 注入机器，\n锚点取 trigger、被定位的浮层取 positioner；机器只认端口，不认识具体引擎。\n条目身份取用户写在 item 上的 value 属性，禁用由部件自报（aria-disabled）。",
+          "description": "`<xh-menu>`：Light-DOM 行为宿主：作者写 trigger / positioner / content / item / group / ... 角色节点，\n元素运行 menu 状态机并把 connect 产出接上。浮层定位引擎在本元素中创建、经 refs 注入状态机，\n锚点取 trigger、被定位的浮层取 positioner；状态机只识别端口，不识别具体引擎。\n条目身份取作者写在 item 上的 value 属性，禁用由部件声明（aria-disabled）。",
           "name": "XhMenuElement",
           "cssParts": [
             {
-              "description": "触发按钮（aria-haspopup/aria-expanded/aria-controls 所在），同时是定位锚点",
+              "description": "触发按钮（aria-haspopup / aria-expanded / aria-controls 所在），同时是定位锚点",
               "name": "trigger"
             },
             {
-              "description": "浮层定位容器，坐标由引擎写成内联样式",
+              "description": "浮层定位容器，坐标由引擎写为内联样式",
               "name": "positioner"
             },
             {
@@ -32232,19 +32232,19 @@
               "name": "item"
             },
             {
-              "description": "条目里的文字载体，连打检索取它",
+              "description": "条目中的文字载体，连打检索取自它",
               "name": "item-text"
             },
             {
-              "description": "条目里的标记位，对读屏隐藏",
+              "description": "条目中的标记位，对读屏隐藏",
               "name": "item-indicator"
             },
             {
-              "description": "条目里的副文本",
+              "description": "条目中的副文本",
               "name": "item-description"
             },
             {
-              "description": "分隔线（role=separator，不入方向键导航）",
+              "description": "分隔线（role=separator，不进入方向键导航）",
               "name": "separator"
             },
             {
@@ -32558,7 +32558,7 @@
               "name": "declaredDisabled",
               "privacy": "private",
               "readonly": true,
-              "description": "作者声明的条目禁用，只认首见那一份；给了 collection 时用它，否则现读"
+              "description": "作者声明的条目禁用，只认首次见到的值；提供 collection 时使用它，否则现读"
             },
             {
               "kind": "method",
@@ -32685,7 +32685,7 @@
                   }
                 }
               ],
-              "description": "承载焦点的条目被移出 DOM 时浏览器不派 focusout，锚点会停在一个已消失的值上：\n没有条目认领 tabindex=0、方向键也失去起点。这里替 DOM 把焦点离场如实上报，\n机器就地按当前活条目重挑锚点。"
+              "description": "承载焦点的条目被移出 DOM 时浏览器不派发 focusout，锚点会停在一个已消失的值上：\n没有条目认领 tabindex=0、方向键也失去起点。这里替 DOM 把焦点离场如实上报，\n状态机就地按当前活动条目重新选择锚点。"
             },
             {
               "kind": "method",
@@ -32744,7 +32744,7 @@
               "type": {
                 "text": "boolean | undefined"
               },
-              "description": "受控开合；缺省该属性即非受控",
+              "description": "受控开合；未提供该属性即非受控",
               "name": "open",
               "fieldName": "open"
             },
@@ -32760,7 +32760,7 @@
               "type": {
                 "text": "Placement | undefined"
               },
-              "description": "首选放置位，默认 bottom-start；避让后的实际位写在 data-placement 上",
+              "description": "首选放置位，默认 bottom-start；避让后的实际位置写在 data-placement 上",
               "name": "placement",
               "fieldName": "placement"
             },
@@ -32776,7 +32776,7 @@
               "type": {
                 "text": "boolean | undefined"
               },
-              "description": "方向键走到尽头回绕，默认 true；写 loop=\"false\" 关掉",
+              "description": "方向键到达末尾回绕，默认 true；写 loop=\"false\" 关闭",
               "name": "loop",
               "fieldName": "loop"
             },
@@ -32808,7 +32808,7 @@
               "type": {
                 "text": "boolean | undefined"
               },
-              "description": "首字符连打检索，默认开；写 typeahead=\"false\" 关掉",
+              "description": "首字符连打检索，默认开启；写 typeahead=\"false\" 关闭",
               "name": "typeahead",
               "fieldName": "typeahead"
             },
@@ -32816,7 +32816,7 @@
               "type": {
                 "text": "boolean | undefined"
               },
-              "description": "整张菜单禁用：触发器不再展开，条目全转 aria-disabled",
+              "description": "整张菜单禁用：触发器不再展开，条目全部为 aria-disabled",
               "name": "disabled",
               "fieldName": "disabled"
             },
