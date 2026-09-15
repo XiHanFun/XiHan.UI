@@ -70,6 +70,8 @@ export function connectCombobox<T extends PropTypes>(
   const empty = open && itemCount === 0
   const canClear = interactive && (inputValue !== '' || value.length > 0)
   const stateAttr = open ? 'open' : 'closed'
+  // 形态默认落 outline：不写时 root 与 positioner 如实投影同一常量，皮肤不再依赖缺省档
+  const variant = prop('variant') ?? 'outline'
   // 位置由引擎写进 context，这里只读结果，不量 DOM、不调引擎
   const position = context.get('position')
   const placement = position?.placement ?? prop('placement') ?? COMBOBOX_DEFAULT_PLACEMENT
@@ -159,7 +161,7 @@ export function connectCombobox<T extends PropTypes>(
     getRootProps: () => normalize.element({
       ...parts.root.attrs,
       'data-state': stateAttr,
-      'data-variant': prop('variant'),
+      'data-variant': variant,
       'data-tone': prop('tone'),
       'data-size': prop('size'),
       'data-disabled': dataAttr(disabled),
@@ -365,7 +367,7 @@ export function connectCombobox<T extends PropTypes>(
       // 定位层被搬到 portal 落点，继承不到作者子树上的方向；作者没给就不写，交给落点处的继承
       'dir': prop('dir'),
       // 视觉轴在浮层这一侧再打一次：positioner 被搬到 portal 落点，继承不到根上的私有槽
-      'data-variant': prop('variant'),
+      'data-variant': variant,
       'data-tone': prop('tone'),
       'data-size': prop('size'),
       'data-state': stateAttr,
