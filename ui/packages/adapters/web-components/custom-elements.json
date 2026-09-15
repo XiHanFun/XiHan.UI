@@ -26013,7 +26013,7 @@
       "declarations": [
         {
           "kind": "class",
-          "description": "`<xh-image-cropper>` —— Light-DOM 行为宿主：作者写 root/viewport/image/crop-area\n与可选的 crop-handle、grid、hidden-input 角色节点，元素跑 image-cropper 机器并把 connect 产出打上去。\n\n裁切矩形以源图的自然像素记录，坐标换算取 viewport 的矩形——矩形在指针事件发生的那一刻才量，\n连接期一律不碰 DOM；自然尺寸由 image 部件的 load 事件报进来，所以图片必须写成原生 `<img>`。\n视口的尺寸要由图片撑出来（图片铺满视口），裁切框的百分比坐标才对得上。\n\n每个把手必须用 position 属性写明自己拉的是哪个方位（`position=\"se\"`），八个合法值是\n`nw|n|ne|e|se|s|sw|w`；写不出合法方位的把手不接行为，控制台留一条诊断。\n缩放与旋转同时作用在图片与裁切框上，两者始终贴合。",
+          "description": "`<xh-image-cropper>`：Light-DOM 行为宿主：作者写 root / viewport / image / crop-area\n与可选的 crop-handle、grid、hidden-input 角色节点，元素运行 image-cropper 状态机并把 connect 产出接上。\n\n裁切矩形以源图的自然像素记录，坐标换算取 viewport 的矩形：矩形在指针事件发生时才测量，\n连接期一律不涉及 DOM；自然尺寸由 image 部件的 load 事件报告，因此图片必须写为原生 `<img>`。\n视口的尺寸要由图片撑出（图片铺满视口），裁切框的百分比坐标才能对应。\n\n每个把手必须用 position 属性写明拉动的方位（`position=\"se\"`），八个合法值是\n`nw|n|ne|e|se|s|sw|w`；无法解析出合法方位的把手不接行为，控制台留一条诊断。\n缩放与旋转同时作用在图片与裁切框上，两者始终贴合。",
           "name": "XhImageCropperElement",
           "cssParts": [
             {
@@ -26021,11 +26021,11 @@
               "name": "root"
             },
             {
-              "description": "量坐标的那个盒子，图片铺满它、裁切框绝对定位在它里面",
+              "description": "测量坐标的盒子，图片铺满它、裁切框绝对定位在其中",
               "name": "viewport"
             },
             {
-              "description": "源图，须是原生 `<img>`；自然尺寸与加载完成都由它报出来，src / alt 由宿主写入（作者别自己写，会被覆盖或清掉）",
+              "description": "源图，须是原生 `<img>`；自然尺寸与加载完成都由它报告，src / alt 由宿主写入（作者不应自行编写，会被覆盖或清除）",
               "name": "image"
             },
             {
@@ -26037,7 +26037,7 @@
               "name": "crop-handle"
             },
             {
-              "description": "裁切框里的构图参考线，纯装饰",
+              "description": "裁切框中的构图参考线，纯装饰",
               "name": "grid"
             },
             {
@@ -26362,7 +26362,7 @@
                   }
                 }
               ],
-              "description": "把手自报的方位。作者在节点上写 position=\"se\"，与 Vue 侧的 `:position` 是同一份声明；\n写不出合法方位（没写、写错）时返回 null，由调用方决定怎么处理。"
+              "description": "把手声明的方位。作者在节点上写 position=\"se\"，与 Vue 侧的 `:position` 是同一份声明；\n无法得到合法方位（未写、写错）时返回 null，由调用方决定处理方式。"
             },
             {
               "kind": "method",
@@ -26377,14 +26377,14 @@
           ],
           "events": [
             {
-              "description": "裁切矩形变化（拖动途中会连发）；detail 为 `{ value: { x, y, width, height } }`",
+              "description": "裁切矩形变化（拖动途中连续发出）；detail 为 `{ value: { x, y, width, height } }`",
               "name": "value-change",
               "type": {
                 "text": "ImageCropperValueChangeDetails"
               }
             },
             {
-              "description": "一次指针拖动松手发一次，一次方向键微调也发一次；detail 为 `{ value: { x, y, width, height } }`",
+              "description": "一次指针拖动松开时发出一次，一次方向键微调也发出一次；detail 为 `{ value: { x, y, width, height } }`",
               "name": "value-change-end",
               "type": {
                 "text": "ImageCropperValueChangeEndDetails"
@@ -26418,7 +26418,7 @@
               "type": {
                 "text": "string | undefined"
               },
-              "description": "图片替代文本，原样写到 image 部件上；不给即落空串，读屏跳过这张图",
+              "description": "图片替代文本，原样写到 image 部件上；未提供时写空串，读屏跳过该图片",
               "name": "alt",
               "fieldName": "alt"
             },
@@ -26426,7 +26426,7 @@
               "type": {
                 "text": "ImageCropperRect | undefined"
               },
-              "description": "受控裁切矩形，写成 \"x,y,width,height\"；缺省该属性即非受控",
+              "description": "受控裁切矩形，写为 \"x,y,width,height\"；未提供该属性即非受控",
               "name": "value",
               "fieldName": "value"
             },
@@ -26434,7 +26434,7 @@
               "type": {
                 "text": "ImageCropperRect | undefined"
               },
-              "description": "非受控初值，同样是四个逗号分隔的数；缺省时图片加载完取整张图",
+              "description": "非受控初值，同样是四个逗号分隔的数；未提供时图片加载完成后取整张图",
               "name": "default-value",
               "fieldName": "defaultValue"
             },
@@ -26442,7 +26442,7 @@
               "type": {
                 "text": "number | undefined"
               },
-              "description": "宽高比（宽 ÷ 高）；不写即不锁比例",
+              "description": "宽高比（宽 ÷ 高）；未提供时不锁定比例",
               "name": "aspect-ratio",
               "fieldName": "aspectRatio"
             },
@@ -26466,7 +26466,7 @@
               "type": {
                 "text": "number | undefined"
               },
-              "description": "受控缩放倍率；缺省该属性即非受控",
+              "description": "受控缩放倍率；未提供该属性即非受控",
               "name": "zoom",
               "fieldName": "zoom"
             },
@@ -26482,7 +26482,7 @@
               "type": {
                 "text": "number | undefined"
               },
-              "description": "受控旋转角度，单位度；缺省该属性即非受控",
+              "description": "受控旋转角度，单位度；未提供该属性即非受控",
               "name": "rotation",
               "fieldName": "rotation"
             },
@@ -26554,7 +26554,7 @@
               "type": {
                 "text": "boolean | undefined"
               },
-              "description": "禁用：裁切框与把手退出 Tab 序列、改不动、不参与表单提交",
+              "description": "禁用：裁切框与把手退出 Tab 序列、不可修改、不参与表单提交",
               "name": "disabled",
               "fieldName": "disabled"
             },
@@ -26562,7 +26562,7 @@
               "type": {
                 "text": "boolean | undefined"
               },
-              "description": "只读：仍可聚焦与被读屏念出，改不动",
+              "description": "只读：仍可聚焦与被读屏朗读，不可修改",
               "name": "read-only",
               "fieldName": "readOnly"
             },
@@ -26570,7 +26570,7 @@
               "type": {
                 "text": "string | undefined"
               },
-              "description": "表单字段名；给了才参与提交，值序列化成 \"x,y,width,height\"",
+              "description": "表单字段名；提供后才参与提交，值序列化为 \"x,y,width,height\"",
               "name": "name",
               "fieldName": "name"
             }

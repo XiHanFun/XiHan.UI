@@ -16,7 +16,7 @@ import { useMachine } from '../../runtime/use-machine'
 export interface ImageCropperContext {
   api: ComputedRef<ImageCropperApi>
   service: Service<ImageCropperSchema>
-  /** 视口节点，机器在指针事件里拿它量矩形。 */
+  /** 视口节点，状态机在指针事件中读取它的矩形。 */
   viewportRef: Ref<HTMLElement | null>
 }
 

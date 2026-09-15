@@ -57,28 +57,28 @@ const HANDLE_POSITIONS: Record<ImageCropperHandlePosition, true> = {
 }
 
 /**
- * `<xh-image-cropper>` —— Light-DOM 行为宿主：作者写 root/viewport/image/crop-area
- * 与可选的 crop-handle、grid、hidden-input 角色节点，元素跑 image-cropper 机器并把 connect 产出打上去。
+ * `<xh-image-cropper>`：Light-DOM 行为宿主：作者写 root / viewport / image / crop-area
+ * 与可选的 crop-handle、grid、hidden-input 角色节点，元素运行 image-cropper 状态机并把 connect 产出接上。
  *
- * 裁切矩形以源图的自然像素记录，坐标换算取 viewport 的矩形——矩形在指针事件发生的那一刻才量，
- * 连接期一律不碰 DOM；自然尺寸由 image 部件的 load 事件报进来，所以图片必须写成原生 `<img>`。
- * 视口的尺寸要由图片撑出来（图片铺满视口），裁切框的百分比坐标才对得上。
+ * 裁切矩形以源图的自然像素记录，坐标换算取 viewport 的矩形：矩形在指针事件发生时才测量，
+ * 连接期一律不涉及 DOM；自然尺寸由 image 部件的 load 事件报告，因此图片必须写为原生 `<img>`。
+ * 视口的尺寸要由图片撑出（图片铺满视口），裁切框的百分比坐标才能对应。
  *
- * 每个把手必须用 position 属性写明自己拉的是哪个方位（`position="se"`），八个合法值是
- * `nw|n|ne|e|se|s|sw|w`；写不出合法方位的把手不接行为，控制台留一条诊断。
+ * 每个把手必须用 position 属性写明拉动的方位（`position="se"`），八个合法值是
+ * `nw|n|ne|e|se|s|sw|w`；无法解析出合法方位的把手不接行为，控制台留一条诊断。
  * 缩放与旋转同时作用在图片与裁切框上，两者始终贴合。
  *
  * @customElement xh-image-cropper
  * @attr {string} src - 图片地址，原样写到 image 部件上
- * @attr {string} alt - 图片替代文本，原样写到 image 部件上；不给即落空串，读屏跳过这张图
- * @attr {string} value - 受控裁切矩形，写成 "x,y,width,height"；缺省该属性即非受控
- * @attr {string} default-value - 非受控初值，同样是四个逗号分隔的数；缺省时图片加载完取整张图
- * @attr {number} aspect-ratio - 宽高比（宽 ÷ 高）；不写即不锁比例
+ * @attr {string} alt - 图片替代文本，原样写到 image 部件上；未提供时写空串，读屏跳过该图片
+ * @attr {string} value - 受控裁切矩形，写为 "x,y,width,height"；未提供该属性即非受控
+ * @attr {string} default-value - 非受控初值，同样是四个逗号分隔的数；未提供时图片加载完成后取整张图
+ * @attr {number} aspect-ratio - 宽高比（宽 ÷ 高）；未提供时不锁定比例
  * @attr {number} min-width - 裁切框最小宽度，自然像素，默认 0
  * @attr {number} min-height - 裁切框最小高度，自然像素，默认 0
- * @attr {number} zoom - 受控缩放倍率；缺省该属性即非受控
+ * @attr {number} zoom - 受控缩放倍率；未提供该属性即非受控
  * @attr {number} default-zoom - 非受控初始缩放倍率，默认 1
- * @attr {number} rotation - 受控旋转角度，单位度；缺省该属性即非受控
+ * @attr {number} rotation - 受控旋转角度，单位度；未提供该属性即非受控
  * @attr {number} default-rotation - 非受控初始旋转角度，默认 0
  * @attr {number} min-zoom - 缩放滑杆下限，默认 1
  * @attr {number} max-zoom - 缩放滑杆上限，默认 3
@@ -87,19 +87,19 @@ const HANDLE_POSITIONS: Record<ImageCropperHandlePosition, true> = {
  * @attr {number} max-rotation - 旋转滑杆上限，默认 180
  * @attr {number} rotation-step - 旋转滑杆步长，默认 1
  * @attr {'rect'|'round'} shape - 裁切框外形，默认 rect
- * @attr {boolean} disabled - 禁用：裁切框与把手退出 Tab 序列、改不动、不参与表单提交
- * @attr {boolean} read-only - 只读：仍可聚焦与被读屏念出，改不动
- * @attr {string} name - 表单字段名；给了才参与提交，值序列化成 "x,y,width,height"
- * @fires value-change - 裁切矩形变化（拖动途中会连发）；detail 为 `{ value: { x, y, width, height } }`
- * @fires value-change-end - 一次指针拖动松手发一次，一次方向键微调也发一次；detail 为 `{ value: { x, y, width, height } }`
+ * @attr {boolean} disabled - 禁用：裁切框与把手退出 Tab 序列、不可修改、不参与表单提交
+ * @attr {boolean} read-only - 只读：仍可聚焦与被读屏朗读，不可修改
+ * @attr {string} name - 表单字段名；提供后才参与提交，值序列化为 "x,y,width,height"
+ * @fires value-change - 裁切矩形变化（拖动途中连续发出）；detail 为 `{ value: { x, y, width, height } }`
+ * @fires value-change-end - 一次指针拖动松开时发出一次，一次方向键微调也发出一次；detail 为 `{ value: { x, y, width, height } }`
  * @fires zoom-change - 缩放倍率变化；detail 为 `{ zoom: number }`
  * @fires rotation-change - 旋转角度变化；detail 为 `{ rotation: number }`
  * @csspart root - 承载 data-disabled / data-readonly / data-dragging / data-resizing / data-shape 的容器
- * @csspart viewport - 量坐标的那个盒子，图片铺满它、裁切框绝对定位在它里面
- * @csspart image - 源图，须是原生 `<img>`；自然尺寸与加载完成都由它报出来，src / alt 由宿主写入（作者别自己写，会被覆盖或清掉）
+ * @csspart viewport - 测量坐标的盒子，图片铺满它、裁切框绝对定位在其中
+ * @csspart image - 源图，须是原生 `<img>`；自然尺寸与加载完成都由它报告，src / alt 由宿主写入（作者不应自行编写，会被覆盖或清除）
  * @csspart crop-area - role=application 的裁切框，可聚焦，方向键平移
  * @csspart crop-handle - 改尺寸的把手，须是原生 `<button>` 并自带 position 属性标识方位
- * @csspart grid - 裁切框里的构图参考线，纯装饰
+ * @csspart grid - 裁切框中的构图参考线，纯装饰
  * @csspart zoom-slider - 缩放滑杆，须是原生 `<input type="range">`；min / max / step / value 由宿主写入
  * @csspart rotate-slider - 旋转滑杆，须是原生 `<input type="range">`；min / max / step / value 由宿主写入
  * @csspart hidden-input - 表单影子（须是原生 input）
@@ -230,8 +230,8 @@ export class XhImageCropperElement extends XhElement {
   }
 
   /**
-   * 把手自报的方位。作者在节点上写 position="se"，与 Vue 侧的 `:position` 是同一份声明；
-   * 写不出合法方位（没写、写错）时返回 null，由调用方决定怎么处理。
+   * 把手声明的方位。作者在节点上写 position="se"，与 Vue 侧的 `:position` 是同一份声明；
+   * 无法得到合法方位（未写、写错）时返回 null，由调用方决定处理方式。
    */
   private handlePosition(el: HTMLElement): ImageCropperHandlePosition | null {
     const raw = el.getAttribute('position')
