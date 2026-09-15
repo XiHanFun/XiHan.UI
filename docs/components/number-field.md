@@ -160,14 +160,14 @@ parse 把显示串读成数、format 把数写回显示串；两个方向必须�
 | `readOnly` | `boolean` |  |  |
 | `required` | `boolean` |  |  |
 | `invalid` | `boolean` |  |  |
-| `name` | `string` |  | 表单字段名；给了才参与提交。 |
+| `name` | `string` |  | 表单字段名；提供后才参与提交。 |
 | `changeDelay` | `number` |  | 按住加减按钮多久开始连发，默认 300ms。 |
 | `changeInterval` | `number` |  | 连发间隔，默认 50ms。 |
-| `variant` | `ControlVariant` |  | 形态：outline / subtle / ghost，决定输入框与加减钮的底与描边怎么画。 |
-| `tone` | `Tone` |  | 语气：brand / neutral / success / warning / danger / info，决定聚焦强调用哪族颜色。 |
-| `size` | `Size` |  | 尺寸：sm / md / lg，决定输入框与加减钮的几何档位。 |
-| `parse` | `(text: string) => number` |  | 显示串 → 数。默认按 `Number()` 读（'12abc' 判为非法），给了它就换成它—— 千位分隔符、单位后缀、百分号这类都靠这条读回来。读不出数返回 `NaN`。 与 `format` 必须互逆：`format` 出来的串要能被 `parse` 读回同一个数， 否则按一下加号值就会漂。 |
-| `format` | `(value: number) => string` |  | 数 → 显示串。默认 `String(n)`。**只在组件自己改写显示时用**——步进、取端点、 失焦规范化这三处；用户正在打字时一律不碰，否则光标会被打断。 |
+| `variant` | `ControlVariant` |  | 形态：outline / subtle / ghost，决定输入框与加减按钮的底色与描边绘制方式。 |
+| `tone` | `Tone` |  | 语气：brand / neutral / success / warning / danger / info，决定聚焦强调使用哪族颜色。 |
+| `size` | `Size` |  | 尺寸：sm / md / lg，决定输入框与加减按钮的几何档位。 |
+| `parse` | `(text: string) => number` |  | 显示串 → 数。默认按 `Number()` 读取（'12abc' 判为非法），提供后替换为它： 千位分隔符、单位后缀、百分号等都依靠它读回。无法读出数时返回 `NaN`。 与 `format` 必须互逆：`format` 输出的串要能被 `parse` 读回同一个数， 否则按一次加号值会漂移。 |
+| `format` | `(value: number) => string` |  | 数 → 显示串。默认 `String(n)`。只在组件自行改写显示时使用：步进、取端点、 失焦规范化三处；用户正在输入时一律不触碰，否则光标会被打断。 |
 | `onValueChange` | `(details: NumberFieldValueChangeDetails) => void` |  |  |
 
 ### 事件
@@ -215,7 +215,7 @@ parse 把显示串读成数、format 把数写回显示串；两个方向必须�
 | `decrement` | `() => void` |  |
 | `getRootProps` | `() => T['element']` |  |
 | `getLabelProps` | `() => T['label']` |  |
-| `getControlProps` | `() => T['element']` | 必需的唯一输入壳：皮肤把视觉盒画在它身上，输入在左，减、加动作依次收在右侧。 |
+| `getControlProps` | `() => T['element']` | 必需的唯一输入壳：皮肤把视觉盒绘制在它身上，输入在左，减、加动作依次收在右侧。 |
 | `getPrefixProps` | `() => T['element']` | 输入框前的装饰段（货币符、单位、图标）；对读屏隐藏，不参与名字链。 |
 | `getInputProps` | `() => T['input']` |  |
 | `getSuffixProps` | `() => T['element']` | 输入框后的装饰段；对读屏隐藏，不参与名字链。 |

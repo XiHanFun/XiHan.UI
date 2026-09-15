@@ -18,40 +18,40 @@ const NUMBER_CONVERTER = { fromAttribute: (v: string | null) => (v == null || v 
 const BOOLEAN_CONVERTER = { fromAttribute: (v: string | null) => (v === null ? undefined : v !== 'false') }
 
 /**
- * `<xh-number-field>` —— Light-DOM 行为宿主：作者写 root/label/input/加减按钮四类角色节点，
- * 元素跑 number-field 机器并把 connect 产出打上去。
+ * `<xh-number-field>`：Light-DOM 行为宿主：作者写 root / label / input / 加减按钮四类角色节点，
+ * 元素运行 number-field 状态机并把 connect 产出接上。
  *
- * 键盘全在 input 上（ArrowUp/Down 步进、PageUp/Down 大步进、Home/End 取端点），
- * 两个按钮对读屏隐藏——它们只是指针用户的快捷方式，暴露出来等于把同一个控件报两遍。
+ * 键盘全部在 input 上（ArrowUp / Down 步进、PageUp / Down 大步进、Home / End 取端点），
+ * 两个按钮对读屏隐藏：它们只是指针用户的快捷方式，暴露出来等于把同一个控件报告两遍。
  *
  * @customElement xh-number-field
- * @attr {string} value - 受控值（原始输入串）；缺省该属性即非受控
+ * @attr {string} value - 受控值（原始输入串）；未提供该属性即非受控
  * @attr {string} default-value - 非受控初值
- * @attr {number} min - 下界；给了 Home 才接管
- * @attr {number} max - 上界；给了 End 才接管
+ * @attr {number} min - 下界；提供后 Home 才接管
+ * @attr {number} max - 上界；提供后 End 才接管
  * @attr {number} step - 方向键与按钮的步长，默认 1
- * @attr {number} large-step - PageUp/PageDown 的步长，默认 10 倍 step
- * @attr {boolean} disabled - 禁用：不可聚焦、推不动
- * @attr {boolean} read-only - 只读：仍可聚焦与复制，推不动
+ * @attr {number} large-step - PageUp / PageDown 的步长，默认 10 倍 step
+ * @attr {boolean} disabled - 禁用：不可聚焦、不可推动
+ * @attr {boolean} read-only - 只读：仍可聚焦与复制，不可推动
  * @attr {boolean} required - 必填标注
  * @attr {boolean} invalid - 校验失败标注
- * @attr {string} name - 表单字段名；给了才参与提交
- * @attr {number} change-delay - 按住加减按钮多久开始连发，默认 300ms
+ * @attr {string} name - 表单字段名；提供后才参与提交
+ * @attr {number} change-delay - 按住加减按钮多久后开始连发，默认 300ms
  * @attr {number} change-interval - 连发间隔，默认 50ms
  * @attr {'outline'|'subtle'|'ghost'} variant - 视觉变体
  * @attr {'brand'|'neutral'|'success'|'warning'|'danger'|'info'} tone - 语气
  * @attr {'sm'|'md'|'lg'} size - 尺寸
- * @prop {(text: string) => number} parse - 显示串 → 数（千位分隔符、单位后缀这类靠它读回来）；只走 property
- * @prop {(value: number) => string} format - 数 → 显示串，只在步进/取端点/失焦规范化时用；只走 property
+ * @prop {(text: string) => number} parse - 显示串 → 数（千位分隔符、单位后缀等依靠它读回）；只能通过 property 设置
+ * @prop {(value: number) => string} format - 数 → 显示串，只在步进 / 取端点 / 失焦规范化时使用；只能通过 property 设置
  * @fires value-change - 值变化；detail 为 `{ value: string, valueAsNumber: number }`
  * @csspart root - 承载 data-disabled / data-readonly / data-invalid / data-empty 的容器
- * @csspart label - 标题；`for` 恒写向 input，故须是原生 `<label>` 才点得动
- * @csspart control - 输入框与加减钮的包裹层；皮肤把视觉盒画在它身上，输入在左，减、加动作依次收在右侧
+ * @csspart label - 标题；`for` 恒指向 input，因此须是原生 `<label>` 才可点击
+ * @csspart control - 输入框与加减按钮的包裹层；皮肤把视觉盒绘制在它身上，输入在左，减、加动作依次收在右侧
  * @csspart prefix - 输入框前的装饰段（货币符、单位、图标）；对读屏隐藏
- * @csspart input - role=spinbutton 的输入框，键盘交互全在它身上
+ * @csspart input - role=spinbutton 的输入框，键盘交互全部在它身上
  * @csspart suffix - 输入框后的装饰段；对读屏隐藏
- * @csspart increment-trigger - 加一步；贴住 max 时转 disabled
- * @csspart decrement-trigger - 减一步；贴住 min 时转 disabled
+ * @csspart increment-trigger - 加一步；到达 max 时为 disabled
+ * @csspart decrement-trigger - 减一步；到达 min 时为 disabled
  */
 export class XhNumberFieldElement extends XhElement {
   static override partContract = { anatomy: numberFieldAnatomy, meta: numberFieldMeta }
