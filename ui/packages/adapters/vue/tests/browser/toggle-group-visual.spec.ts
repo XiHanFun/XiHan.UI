@@ -49,8 +49,19 @@ afterEach(async () => {
   await userEvent.hover(document.querySelector<HTMLElement>('[data-test-park-pointer]')!)
 })
 
+
+/** 语义形状令牌在该元素上解到的像素值。 */
+function shapePx(element: HTMLElement, token: string): number {
+  const probe = document.createElement('div')
+  probe.style.borderTopLeftRadius = `var(${token})`
+  element.append(probe)
+  const value = Number.parseFloat(getComputedStyle(probe).borderTopLeftRadius)
+  probe.remove()
+  return value
+}
+
 describe('切换按钮组视觉', () => {
-  it('默认使用胶囊端点、淡色选中态和覆盖接缝的半高分隔线', () => {
+  it('默认使用 control 圆角端点、淡色选中态和覆盖接缝的半高分隔线', () => {
     mount()
     const root = host!.querySelector<HTMLElement>(`[data-scope='toggle-group'][data-part='root']`)!
     const items = [...root.querySelectorAll<HTMLElement>(`[data-part='item']`)]
@@ -58,9 +69,12 @@ describe('切换按钮组视觉', () => {
     const rootHeight = root.getBoundingClientRect().height
 
     expect(separators).toHaveLength(2)
-    expect(Number.parseFloat(getComputedStyle(items[0]!).borderStartStartRadius)).toBeGreaterThanOrEqual(rootHeight / 2)
+    const control = shapePx(root, '--xh-shape-control')
+    expect(control).toBeGreaterThan(0)
+    expect(control).toBeLessThan(rootHeight / 2)
+    expect(Number.parseFloat(getComputedStyle(items[0]!).borderStartStartRadius)).toBe(control)
     expect(getComputedStyle(items[1]!).borderRadius).toBe('0px')
-    expect(Number.parseFloat(getComputedStyle(items[2]!).borderEndEndRadius)).toBeGreaterThanOrEqual(rootHeight / 2)
+    expect(Number.parseFloat(getComputedStyle(items[2]!).borderEndEndRadius)).toBe(control)
     expect(getComputedStyle(items[0]!).backgroundColor).not.toBe(getComputedStyle(items[1]!).backgroundColor)
     expect(items[0]!.getBoundingClientRect().right).toBeCloseTo(items[1]!.getBoundingClientRect().left, 4)
     expect(items[1]!.getBoundingClientRect().right).toBeCloseTo(items[2]!.getBoundingClientRect().left, 4)
