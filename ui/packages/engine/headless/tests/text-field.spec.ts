@@ -165,6 +165,16 @@ describe('connectTextField 结构与标注', () => {
     expect(root['data-xh-action-owner']).toBe('')
   })
 
+  it('不写 variant 时 root 与 control 都落 outline；写 subtle 如实落', () => {
+    const fallback = makeService().api()
+    expect((fallback.getRootProps() as Dict)['data-variant']).toBe('outline')
+    expect((fallback.getControlProps() as Dict)['data-variant']).toBe('outline')
+
+    const subtle = makeService({ variant: 'subtle' }).api()
+    expect((subtle.getRootProps() as Dict)['data-variant']).toBe('subtle')
+    expect((subtle.getControlProps() as Dict)['data-variant']).toBe('subtle')
+  })
+
   it('只投影 Field Chrome 稳定角色、布局与尺寸，皮肤不反查组件 anatomy', () => {
     const single = makeService({ size: 'sm' }).api()
     expect(single.getControlProps()).toMatchObject({

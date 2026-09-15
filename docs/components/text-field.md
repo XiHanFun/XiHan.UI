@@ -135,7 +135,7 @@ input 部件写为 textarea 即多行宿主；autoSize 使高度跟随内容，�
 - 自动高度把一个隐藏 textarea 临时挂到输入框所属 Document，以复制后的排版与宽度计算值取得真实内容高度和单行高度，换算 `minRows` / `maxRows`；`line-height: normal` 不按字号推测。`content-box` 与 `border-box` 分别按自己的声明盒计算内距和边框。测量要求 textarea 已连接到带 Window 的 Document，且当前只接受 `writing-mode: horizontal-tb`；其他书写模式会明确失败，不把物理纵向滚动尺寸误当逻辑块尺寸。
 - `prefix` / `suffix` 在框内放置货币符、单位或图标，两段对读屏隐藏。
 - 默认皮肤把控件接入 Field Chrome：Headless 在真实视觉盒、输入、装饰段上分别投影 `data-xh-field-chrome`、`data-xh-field-input`、`data-xh-field-affix`，单行与 textarea 由 `data-xh-field-layout` 区分。旧 `data-multiline` / `data-auto-resize` 视觉钩子已删除，自定义皮肤应读取新的家族角色，不提供双写兼容。
-- 默认字段为描边式实体面：`--xh-bg-canvas` 底、`--xh-border-control` 描边、control 圆角、无阴影，等价于 `outline`；`subtle` 为中性填充、`ghost` 为透明底，两者在悬停与聚焦时浮出描边，聚焦描边一律 `--xh-border-control-focus`。
+- 默认即 `outline`：`--xh-bg-canvas` 底、`--xh-border-control` 描边、control 圆角、无阴影，不写 `variant` 时 root 与 control 都落 `data-variant="outline"`；`subtle` 为中性填充、`ghost` 为透明底，两者在悬停与聚焦时浮出描边，聚焦描边一律 `--xh-border-control-focus`。
 - 清空按钮复用 Action Control 的 `field-inset` profile 和 `has-value` 显示策略；粗指针命中区、pressed / focus / forced-colors 均由家族配方提供，适配器不另行计算尺寸或可见性。
 - 开启 `clearable` 后，清空按钮在空值时收起，只在有值且可编辑时出现；字段聚焦边界平滑过渡。
 - `showCount` 显示字数部件，数字取 `count` 与 `maxLength`，达到上限时换色。
@@ -185,7 +185,7 @@ input 部件写为 textarea 即多行宿主；autoSize 使高度跟随内容，�
 | `clearable` | `boolean` |  | 开启清空能力：有值时显示清空按钮、Escape 接管。关闭时按钮带 hidden 收起。 |
 | `showCount` | `boolean` |  | 显示字数部件：关闭时 count 部件带 hidden 收起。 |
 | `autoSize` | `boolean \| TextFieldAutoSize` |  | 多行宿主的自动高度：按横向书写的真实行盒随内容增高；对象形态固定行数上下限。 |
-| `variant` | `ControlVariant` |  | 形态：outline / subtle / ghost，决定输入框的底色与描边绘制方式。 |
+| `variant` | `ControlVariant` |  | 形态：outline / subtle / ghost，决定底色与描边的绘制方式。默认 outline。 |
 | `tone` | `Tone` |  | 语气：brand / neutral / success / warning / danger / info，决定聚焦强调使用哪族颜色。 |
 | `size` | `Size` |  | 尺寸：sm / md / lg，决定输入框与清空按钮的几何档位。 |
 | `translations` | `Partial<TextFieldTranslations>` |  | 读屏文案；默认英文。 |

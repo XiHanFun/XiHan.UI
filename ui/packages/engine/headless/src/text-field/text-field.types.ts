@@ -58,7 +58,7 @@ export interface TextFieldSchema extends MachineSchema {
     showCount?: boolean
     /** 多行宿主的自动高度：按横向书写的真实行盒随内容增高；对象形态固定行数上下限。 */
     autoSize?: boolean | TextFieldAutoSize
-    /** 形态：outline / subtle / ghost，决定输入框的底色与描边绘制方式。 */
+    /** 形态：outline / subtle / ghost，决定底色与描边的绘制方式。默认 outline。 */
     variant?: ControlVariant
     /** 语气：brand / neutral / success / warning / danger / info，决定聚焦强调使用哪族颜色。 */
     tone?: Tone
