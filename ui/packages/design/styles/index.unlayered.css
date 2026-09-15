@@ -35943,7 +35943,7 @@
   cursor: pointer;
   transition:
     background var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
-    scale var(--xh-motion-duration-micro) var(--xh-motion-ease-enter-strong);
+    scale var(--xh-motion-duration-release) var(--xh-motion-ease-release);
 }
 
 /* 没值可清时连接层只打 hidden；上面那条 display 会盖掉 UA 规则，少了这条按钮就一直杵着 */
@@ -35959,6 +35959,8 @@
 [data-scope='tags-input'][data-part='clear-trigger']:active {
   background: var(--xh-tags-input-action-bg-active, var(--xh-bg-subtle-active));
   scale: var(--xh-motion-scale-press);
+  transition-duration: var(--xh-motion-duration-press);
+  transition-timing-function: var(--xh-motion-ease-press);
 }
 
 /* 按钮不占 Tab 位（tabindex=-1），正常操作走不到这里；
