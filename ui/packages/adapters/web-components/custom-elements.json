@@ -27649,7 +27649,7 @@
       "declarations": [
         {
           "kind": "class",
-          "description": "`<xh-input-group>` —— Light-DOM 行为宿主，无状态机，把 connectInputGroup 产出打到各角色节点。\n\n组内每一段是作者自己的控件，不是本组件的角色节点：中缝合并、首尾圆角与层叠顺序\n由皮肤按根的身份给。item 可缺省：一组只有控件、没有固定前后缀时就没有它。",
+          "description": "`<xh-input-group>`：Light-DOM 行为宿主，无状态机，把 connectInputGroup 产出接到各角色节点。\n\n组内每一段是作者自己的控件，不是本组件的角色节点：中缝合并、首尾圆角与层叠顺序\n由皮肤按根的身份提供。item 可省略：一组只有控件、没有固定前后缀时就没有它。",
           "name": "XhInputGroupElement",
           "cssParts": [
             {
@@ -27657,7 +27657,7 @@
               "name": "root"
             },
             {
-              "description": "前后缀块，内容由作者写",
+              "description": "前后缀块，内容由作者编写",
               "name": "item"
             }
           ],
@@ -27713,7 +27713,7 @@
               "type": {
                 "text": "Size | undefined"
               },
-              "description": "尺寸，决定 item 的高度、内衬与字号；不写时跟着组内控件的档走",
+              "description": "尺寸，决定 item 的高度、内衬与字号；未提供时跟随组内控件的档位",
               "name": "size",
               "fieldName": "size"
             }

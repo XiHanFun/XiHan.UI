@@ -92,8 +92,8 @@
 
 | 属性 | 类型 | 必填 | 说明 |
 | --- | --- | --- | --- |
-| `size` | `Size` |  | 尺寸：sm / md / lg，落到根上供皮肤写进 item 的高度、内衬与字号槽位。 不写时档位由组内控件自己的 data-size 决定，组里没有带档的控件就走 md。 |
-| `variant` | `InputGroupVariant` |  | 视觉变体：primary / secondary。缺省 primary。 |
+| `size` | `Size` |  | 尺寸：sm / md / lg，写入根上供皮肤填入 item 的高度、内衬与字号槽位。 未提供时档位由组内控件自身的 data-size 决定，组内没有带档位的控件时使用 md。 |
+| `variant` | `InputGroupVariant` |  | 视觉变体：primary / secondary。默认 primary。 |
 
 ### connect API
 

@@ -12,16 +12,16 @@ import { wcNormalize } from '../dom/normalize'
 import { XhElement } from '../element-base'
 
 /**
- * `<xh-input-group>` —— Light-DOM 行为宿主，无状态机，把 connectInputGroup 产出打到各角色节点。
+ * `<xh-input-group>`：Light-DOM 行为宿主，无状态机，把 connectInputGroup 产出接到各角色节点。
  *
  * 组内每一段是作者自己的控件，不是本组件的角色节点：中缝合并、首尾圆角与层叠顺序
- * 由皮肤按根的身份给。item 可缺省：一组只有控件、没有固定前后缀时就没有它。
+ * 由皮肤按根的身份提供。item 可省略：一组只有控件、没有固定前后缀时就没有它。
  *
  * @customElement xh-input-group
  * @attr {'primary'|'secondary'} variant - 视觉变体；secondary 使用低强调表面且不绘制阴影
- * @attr {'sm'|'md'|'lg'} size - 尺寸，决定 item 的高度、内衬与字号；不写时跟着组内控件的档走
+ * @attr {'sm'|'md'|'lg'} size - 尺寸，决定 item 的高度、内衬与字号；未提供时跟随组内控件的档位
  * @csspart root - 组容器，承载 data-size
- * @csspart item - 前后缀块，内容由作者写
+ * @csspart item - 前后缀块，内容由作者编写
  */
 export class XhInputGroupElement extends XhElement {
   static override partContract = { anatomy: inputGroupAnatomy, meta: inputGroupMeta }
