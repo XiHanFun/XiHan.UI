@@ -42373,7 +42373,7 @@
       "declarations": [
         {
           "kind": "class",
-          "description": "`<xh-resizable>` —— Light-DOM 行为宿主：作者写 root 与八向 handle 角色节点，\n元素跑 resizable 机器并把 connect 产出打上去。\n\n每个 handle 用 `edge` 属性写明自己是哪条边（`n` / `ne` / `e` / `se` / `s` / `sw` / `w` / `nw`），\n与 Vue 侧的 `:edge` 是同一份声明。\n\n尺寸由元素每帧写进 root 的内联 `inline-size` / `block-size`，作者的样式表不要再碰这两条轴。\n**推西边与北边时容器的起点会动**，那段位移写成 root 的 `left` / `top`——皮肤已给\n`position: relative`，开箱即对；把 root 改成 `static` 会让这两个方向只变尺寸不移位。\n\n键盘全在把手上：方向键按屏幕方向推一步（推东边时右键变宽、推西边时右键变窄，与拖动同义），\n按住 Shift 走大步，Home / End 推到这条边能到的两端。",
+          "description": "`<xh-resizable>`：Light-DOM 行为宿主：作者写 root 与八向 handle 角色节点，\n元素运行 resizable 状态机并把 connect 产出接上。\n\n每个 handle 用 `edge` 属性写明对应的边（`n` / `ne` / `e` / `se` / `s` / `sw` / `w` / `nw`），\n与 Vue 侧的 `:edge` 是同一份声明。\n\n尺寸由元素每帧写入 root 的内联 `inline-size` / `block-size`，作者的样式表不应再修改这两条轴。\n推动西边与北边时容器的起点会移动，该段位移写为 root 的 `left` / `top`：皮肤已提供\n`position: relative`，默认即正确；把 root 改为 `static` 会使这两个方向只改变尺寸不移动位置。\n\n键盘全部在把手上：方向键按屏幕方向推动一步（推动东边时右键变宽、推动西边时右键变窄，与拖动同义），\n按住 Shift 走大步，Home / End 推动到该边可达的两端。",
           "name": "XhResizableElement",
           "cssParts": [
             {
@@ -42381,7 +42381,7 @@
               "name": "root"
             },
             {
-              "description": "role=separator 的把手，指针与键盘交互全在它身上",
+              "description": "role=separator 的把手，指针与键盘交互全部在它身上",
               "name": "handle"
             }
           ],
@@ -42600,7 +42600,7 @@
                   }
                 }
               ],
-              "description": "把手自报的边。没写就落东南角——那是文档流里最常见的那个。"
+              "description": "把手声明的边。未写时落到东南角：那是文档流中最常见的一个。"
             },
             {
               "kind": "method",
@@ -42615,14 +42615,14 @@
           ],
           "events": [
             {
-              "description": "尺寸变化（拖动途中会连发）；detail 为 `{ dimensions }`",
+              "description": "尺寸变化（拖动途中连续发出）；detail 为 `{ dimensions }`",
               "name": "dimensions-change",
               "type": {
                 "text": "ResizableDimensionsChangeDetails"
               }
             },
             {
-              "description": "一次调整收尾发一次；detail 为 `{ dimensions, edge }`",
+              "description": "一次调整收尾时发出一次；detail 为 `{ dimensions, edge }`",
               "name": "dimensions-change-end",
               "type": {
                 "text": "ResizableDimensionsChangeEndDetails"
@@ -42634,7 +42634,7 @@
               "type": {
                 "text": "ResizableDimensions | undefined"
               },
-              "description": "受控尺寸，写成 `宽x高`（如 `320x200`）；缺省该属性即非受控",
+              "description": "受控尺寸，写为 `宽x高`（如 `320x200`）；未提供该属性即非受控",
               "name": "dimensions",
               "fieldName": "dimensions"
             },
@@ -42642,7 +42642,7 @@
               "type": {
                 "text": "ResizableDimensions | undefined"
               },
-              "description": "非受控初值，同样写成 `宽x高`",
+              "description": "非受控初值，同样写为 `宽x高`",
               "name": "default-dimensions",
               "fieldName": "defaultDimensions"
             },
@@ -42666,7 +42666,7 @@
               "type": {
                 "text": "number | undefined"
               },
-              "description": "宽度上限；不给即不封顶",
+              "description": "宽度上限；未提供时不封顶",
               "name": "max-width",
               "fieldName": "maxWidth"
             },
@@ -42674,7 +42674,7 @@
               "type": {
                 "text": "number | undefined"
               },
-              "description": "高度上限；不给即不封顶",
+              "description": "高度上限；未提供时不封顶",
               "name": "max-height",
               "fieldName": "maxHeight"
             },
@@ -42682,7 +42682,7 @@
               "type": {
                 "text": "number | undefined"
               },
-              "description": "宽高比（宽 ÷ 高）。给了就锁死，四个角以宽为准",
+              "description": "宽高比（宽 ÷ 高）。提供后锁定，四个角以宽为准",
               "name": "aspect-ratio",
               "fieldName": "aspectRatio"
             },
@@ -42698,7 +42698,7 @@
               "type": {
                 "text": "number | undefined"
               },
-              "description": "方向键一次推多远（px），默认 8",
+              "description": "方向键一次推动的距离（px），默认 8",
               "name": "keyboard-step",
               "fieldName": "keyboardStep"
             },
@@ -42714,7 +42714,7 @@
               "type": {
                 "text": "ResizeEdge[] | undefined"
               },
-              "description": "开放哪几条边，逗号分隔（如 `e,s,se`）；默认八向全开",
+              "description": "开放的边，逗号分隔（如 `e,s,se`）；默认八向全部开启",
               "name": "edges",
               "fieldName": "edges"
             },
@@ -42722,7 +42722,7 @@
               "type": {
                 "text": "boolean | undefined"
               },
-              "description": "禁用：把手退出 Tab 序列，按下也不进调整",
+              "description": "禁用：把手退出 Tab 序列，按下也不进入调整",
               "name": "disabled",
               "fieldName": "disabled"
             },

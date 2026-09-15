@@ -39,19 +39,19 @@ export interface XhResizableRootProps extends Omit<ComponentPropsWithRef<'div'>,
   aspectRatio?: number
   /** 指针拖动的吸附步长。 */
   step?: number
-  /** 方向键一步走多少。 */
+  /** 方向键一步移动多少。 */
   keyboardStep?: number
-  /** PageUp / PageDown 一步走多少。 */
+  /** PageUp / PageDown 一步移动多少。 */
   keyboardLargeStep?: number
-  /** 开放哪几条边；不给就是八向全开。 */
+  /** 开放哪几条边；未提供时八向全开。 */
   edges?: ResizeEdge[]
   disabled?: boolean
-  /** 文字方向，缺省 ltr。 */
+  /** 文字方向，默认 ltr。 */
   dir?: Direction
   translations?: Partial<ResizableTranslations>
-  /** 每次调整都发；拖动过程中会连续发很多次。 */
+  /** 每次调整都触发；拖动过程中会连续触发多次。 */
   onDimensionsChange?: ResizableProps['onDimensionsChange']
-  /** 只在一次调整收尾时发一次，存尺寸用它。 */
+  /** 只在一次调整结束时触发一次，保存尺寸时使用它。 */
   onDimensionsChangeEnd?: ResizableProps['onDimensionsChangeEnd']
   children?: SlotChildren<ResizableRootSlotProps>
 }
@@ -119,15 +119,15 @@ export function XhResizableRoot({
 XhResizableRoot.xhEvents = ['dimensions-change', 'dimensions-change-end'] as const
 
 export interface XhResizableHandleProps extends ComponentPropsWithRef<'span'> {
-  /** 这个把手管哪条边。 */
+  /** 该把手负责哪条边。 */
   edge: ResizeEdge
 }
 
 /**
  * 一条边上的把手。
  *
- * 推西边与北边时容器的起点会动，那段位移写成 root 的 left / top——皮肤已给
- * `position: relative`，开箱即对。
+ * 推动西边与北边时容器的起点会移动，该段位移写为 root 的 left / top：皮肤已提供
+ * `position: relative`，默认即正确。
  */
 export function XhResizableHandle({ edge, children, ...rest }: XhResizableHandleProps): ReactNode {
   const ctx = useResizableContext()
