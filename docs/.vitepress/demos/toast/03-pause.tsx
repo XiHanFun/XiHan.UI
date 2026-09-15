@@ -1,4 +1,4 @@
-// 计时与暂停 | duration 走完自动退场；指针停在条子上或焦点进到条子里都会把计时按住，离开才接着走剩下那一段
+// 计时与暂停 | duration 结束后自动退场；指针停在提示条上或焦点进入提示条内都会暂停计时，离开后继续剩余部分
 import type { ReactNode } from "react";
 import {
   XhButton,
