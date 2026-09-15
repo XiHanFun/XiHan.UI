@@ -96,14 +96,14 @@
 
 | 属性 | 类型 | 必填 | 说明 |
 | --- | --- | --- | --- |
-| `align` | `GridAlign` |  | 每一项在自己那格里的块向对齐：start / center / end / stretch / baseline，不写则铺满格高。 |
-| `cols` | `GridCols` |  | 列数：1 至 12 的整数，不写按一列排；范围外的值也按一列排。 各列等宽，且每列的下限是 0，长内容不会把自己那列撑宽。 也收断点对象 `{ base, sm, md, lg, xl }`，逐档写各自的列数，没写的档沿用比它窄的那一档。 |
-| `columnGap` | `GridGap` |  | 只改列间距，档位同 gap；不写则跟着 gap 走。 |
-| `gap` | `GridGap` |  | 行列间距档位：xs / sm / md / lg / xl，不写则不留间距。档位换算成多少由皮肤定。 |
-| `justifyItems` | `GridJustifyItems` |  | 每一项在自己那格里的行内对齐：start / center / end / stretch，不写则铺满格宽。 |
-| `minColWidth` | `GridMinColWidth` |  | 每列最少多宽：xs / sm / md / lg 四档，各指一个列宽下限令牌。写了它，列数改由容器宽度 除以这个下限得出（放得下几列就几列），`cols` 那条轨道表不再生效。不收裸像素值。 |
-| `rowGap` | `GridGap` |  | 只改行间距，档位同 gap；不写则跟着 gap 走。 |
-| `rows` | `GridRowCount` |  | 行数：1 至 12 的整数，不写则行数由内容自己撑出来；范围外的值也按不写算。 写了就把这几行排成显式轨道，超出的项落进隐式行。 |
+| `align` | `GridAlign` |  | 每一项在所在格中的块向对齐：start / center / end / stretch / baseline，未提供时铺满格高。 |
+| `cols` | `GridCols` |  | 列数：1 至 12 的整数，未提供时按一列排列；范围外的值也按一列排列。 各列等宽，且每列的下限是 0，长内容不会把所在列撑宽。 也接受断点对象 `{ base, sm, md, lg, xl }`，逐档写各自的列数，未写的档沿用更窄的一档。 |
+| `columnGap` | `GridGap` |  | 只改列间距，档位同 gap；未提供时跟随 gap。 |
+| `gap` | `GridGap` |  | 行列间距档位：xs / sm / md / lg / xl，未提供时不留间距。档位对应的数值由皮肤决定。 |
+| `justifyItems` | `GridJustifyItems` |  | 每一项在所在格中的行内对齐：start / center / end / stretch，未提供时铺满格宽。 |
+| `minColWidth` | `GridMinColWidth` |  | 每列的最小宽度：xs / sm / md / lg 四档，各对应一个列宽下限令牌。提供后列数改由容器宽度 除以该下限得出（放得下几列即几列），`cols` 的轨道表不再生效。不接受裸像素值。 |
+| `rowGap` | `GridGap` |  | 只改行间距，档位同 gap；未提供时跟随 gap。 |
+| `rows` | `GridRowCount` |  | 行数：1 至 12 的整数，未提供时行数由内容撑出；范围外的值按未提供处理。 提供后把这几行排为显式轨道，超出的项落入隐式行。 |
 
 ### connect API
 
