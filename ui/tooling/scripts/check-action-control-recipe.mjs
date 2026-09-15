@@ -3,7 +3,7 @@ import { emitActionControlRecipe } from '../../packages/design/styles/build/acti
 
 try {
   const result = await emitActionControlRecipe({ check: true })
-  console.log(`[check-action-control-recipe] 通过：${result.profiles} profiles × ${result.states} states，生成物 ${result.bytes} bytes`)
+  console.log(`[check-action-control-recipe] 通过：${result.profiles} profiles × ${result.states} states × ${result.variants} variants，生成物 ${result.bytes} bytes`)
 }
 catch (error) {
   console.error(error)

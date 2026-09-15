@@ -25,15 +25,59 @@ function action(): HTMLButtonElement {
   return element
 }
 
-function rawAction(profile: 'text' | 'icon' | 'field-inset' | 'floating', size: 'xs' | 'sm' | 'md' | 'lg'): HTMLButtonElement {
+type Profile = 'text' | 'icon' | 'field-inset' | 'floating' | 'row' | 'disclosure-trigger'
+type Variant = 'solid' | 'subtle' | 'outline' | 'ghost'
+
+function rawAction(profile: Profile, size: 'xs' | 'sm' | 'md' | 'lg', parent: HTMLElement = host!): HTMLButtonElement {
   const element = document.createElement('button')
-  element.textContent = profile === 'text' ? 'Action' : ''
+  element.textContent = profile === 'icon' || profile === 'field-inset' || profile === 'floating' ? '' : 'Action'
   element.setAttribute('data-xh-action-control', '')
   element.setAttribute('data-xh-action-profile', profile)
   element.setAttribute('data-xh-action-size', size)
   element.setAttribute('data-xh-action-display', 'always')
-  host!.append(element)
+  parent.append(element)
   return element
+}
+
+/** 把语义令牌解析成与 getComputedStyle 同格式的颜色值，避免直接比对带 var() 链的自定义属性。 */
+function resolveColor(token: string, scope: HTMLElement = host!): string {
+  const probe = document.createElement('span')
+  probe.style.backgroundColor = `var(${token})`
+  scope.append(probe)
+  const value = getComputedStyle(probe).backgroundColor
+  probe.remove()
+  return value
+}
+
+/** 令过渡即时完成：这里断言的是稳定态的颜色与几何，不是过渡中间帧。 */
+function freezeMotion(): void {
+  host!.style.setProperty('--xh-motion-duration-micro', '0ms')
+  host!.style.setProperty('--xh-motion-duration-press', '0ms')
+  host!.style.setProperty('--xh-motion-duration-release', '0ms')
+}
+
+async function press(element: HTMLElement): Promise<void> {
+  const rect = element.getBoundingClientRect()
+  await cdp().send('Input.dispatchMouseEvent', {
+    type: 'mousePressed',
+    x: rect.left + rect.width / 2,
+    y: rect.top + rect.height / 2,
+    button: 'left',
+    buttons: 1,
+    clickCount: 1,
+  })
+}
+
+async function release(element: HTMLElement): Promise<void> {
+  const rect = element.getBoundingClientRect()
+  await cdp().send('Input.dispatchMouseEvent', {
+    type: 'mouseReleased',
+    x: rect.left + rect.width / 2,
+    y: rect.top + rect.height / 2,
+    button: 'left',
+    buttons: 0,
+    clickCount: 1,
+  })
 }
 
 afterEach(async () => {
@@ -68,6 +112,26 @@ describe('action Control 四 profile', () => {
     }
   })
 
+  it.each([
+    { density: 'comfortable' as const, minimum: [24, 32, 36, 40] },
+    { density: 'compact' as const, minimum: [24, 28, 32, 36] },
+  ])('$density：row / disclosure-trigger 铺满容器宽度，高度不低于视觉尺寸', ({ density, minimum }) => {
+    mount(() => h('div'), density)
+    const container = document.createElement('div')
+    container.style.inlineSize = '320px'
+    host!.append(container)
+    const sizes = ['xs', 'sm', 'md', 'lg'] as const
+    for (const profile of ['row', 'disclosure-trigger'] as const) {
+      sizes.forEach((size, index) => {
+        const element = rawAction(profile, size, container)
+        const rect = element.getBoundingClientRect()
+        expect(rect.width, `${profile}/${size} 宽度由容器给`).toBe(320)
+        expect(rect.height, `${profile}/${size} 高度不低于视觉尺寸`).toBeGreaterThanOrEqual(minimum[index]!)
+        expect(getComputedStyle(element).display).toBe('flex')
+      })
+    }
+  })
+
   it('rTL 沿逻辑行内轴排列，DOM 顺序和可访问顺序不倒置', () => {
     mount(() => h(XhButton, null, () => [
       h('span', { 'data-test-prefix': '' }, 'P'),
@@ -91,25 +155,87 @@ describe('action Control 状态与命中区', () => {
     await userEvent.hover(button)
     expect(getComputedStyle(button).color).toBe(expected)
 
-    const rect = button.getBoundingClientRect()
-    await cdp().send('Input.dispatchMouseEvent', {
-      type: 'mousePressed',
-      x: rect.left + rect.width / 2,
-      y: rect.top + rect.height / 2,
-      button: 'left',
-      buttons: 1,
-      clickCount: 1,
-    })
+    await press(button)
     expect(button.matches(':active')).toBe(true)
     expect(getComputedStyle(button).color).toBe(expected)
-    await cdp().send('Input.dispatchMouseEvent', {
-      type: 'mouseReleased',
-      x: rect.left + rect.width / 2,
-      y: rect.top + rect.height / 2,
-      button: 'left',
-      buttons: 0,
-      clickCount: 1,
-    })
+    await release(button)
+  })
+
+  it('形态矩阵由 data-xh-action-variant 选择，无属性等价 subtle', () => {
+    document.documentElement.dataset.theme = 'light'
+    mount(() => h('div'))
+    const variants: Variant[] = ['solid', 'subtle', 'outline', 'ghost']
+    const elements = Object.fromEntries(variants.map((variant) => {
+      const element = rawAction('text', 'md')
+      element.setAttribute('data-xh-action-variant', variant)
+      return [variant, element]
+    })) as Record<Variant, HTMLButtonElement>
+    const bare = rawAction('text', 'md')
+
+    expect(getComputedStyle(elements.solid).backgroundColor).toBe(resolveColor('--xh-bg-brand'))
+    expect(getComputedStyle(elements.solid).color).toBe(resolveColor('--xh-fg-on-brand'))
+    expect(getComputedStyle(elements.subtle).backgroundColor).toBe(resolveColor('--xh-bg-subtle'))
+    expect(getComputedStyle(elements.outline).backgroundColor).toBe('rgba(0, 0, 0, 0)')
+    expect(getComputedStyle(elements.outline).borderTopColor).toBe(resolveColor('--xh-border-control'))
+    expect(getComputedStyle(elements.ghost).backgroundColor).toBe('rgba(0, 0, 0, 0)')
+    expect(getComputedStyle(elements.ghost).borderTopColor).toBe('rgba(0, 0, 0, 0)')
+
+    const bareStyle = getComputedStyle(bare)
+    const subtleStyle = getComputedStyle(elements.subtle)
+    for (const property of ['backgroundColor', 'color', 'borderTopColor'] as const)
+      expect(bareStyle[property], `无属性 ${property} 应与 subtle 一致`).toBe(subtleStyle[property])
+  })
+
+  it('ghost 悬停与按下按承载面取阶梯：画布 100 → 200，容器下发淡底 200 → 300', async () => {
+    document.documentElement.dataset.theme = 'light'
+    mount(() => h('div'))
+    freezeMotion()
+    const canvas = document.createElement('div')
+    const tinted = document.createElement('div')
+    tinted.style.setProperty('--xh-action-host-bg-hover', 'var(--xh-bg-subtle-hover)')
+    tinted.style.setProperty('--xh-action-host-bg-pressed', 'var(--xh-bg-subtle-active)')
+    host!.append(canvas, tinted)
+    const onCanvas = rawAction('text', 'md', canvas)
+    const onTinted = rawAction('text', 'md', tinted)
+    for (const element of [onCanvas, onTinted])
+      element.setAttribute('data-xh-action-variant', 'ghost')
+
+    expect(getComputedStyle(onCanvas).backgroundColor).toBe('rgba(0, 0, 0, 0)')
+    await userEvent.hover(onCanvas)
+    expect(getComputedStyle(onCanvas).backgroundColor).toBe(resolveColor('--xh-bg-subtle'))
+    await press(onCanvas)
+    expect(onCanvas.matches(':active')).toBe(true)
+    expect(getComputedStyle(onCanvas).backgroundColor).toBe(resolveColor('--xh-bg-subtle-hover'))
+    expect(getComputedStyle(onCanvas).scale).toBe('0.97')
+    await release(onCanvas)
+
+    await userEvent.hover(onTinted)
+    expect(getComputedStyle(onTinted).backgroundColor).toBe(resolveColor('--xh-bg-subtle-hover'))
+    await press(onTinted)
+    expect(getComputedStyle(onTinted).backgroundColor).toBe(resolveColor('--xh-bg-subtle-active'))
+    await release(onTinted)
+  })
+
+  it('row 与 disclosure-trigger 按下只换面不缩放', async () => {
+    document.documentElement.dataset.theme = 'light'
+    mount(() => h('div'))
+    freezeMotion()
+    const container = document.createElement('div')
+    container.style.inlineSize = '320px'
+    host!.append(container)
+    for (const profile of ['row', 'disclosure-trigger'] as const) {
+      const element = rawAction(profile, 'md', container)
+      element.setAttribute('data-xh-action-variant', 'ghost')
+      const before = element.getBoundingClientRect()
+      await press(element)
+      expect(element.matches(':active'), `${profile} 没进入 :active`).toBe(true)
+      expect(getComputedStyle(element).scale, `${profile} 按下不缩放`).toBe('none')
+      expect(getComputedStyle(element).backgroundColor, `${profile} 按下换到 pressed 面`).toBe(resolveColor('--xh-bg-subtle-hover'))
+      const during = element.getBoundingClientRect()
+      expect(during.width).toBeCloseTo(before.width, 4)
+      expect(during.height).toBeCloseTo(before.height, 4)
+      await release(element)
+    }
   })
 
   it('未映射品牌、描边或海拔时保持平面中性底', async () => {

@@ -1,58 +1,124 @@
 {
-  "$description": "Action Control 家族配方：四种视觉 profile 共用一套平面状态、显示策略、点击触感与输入能力规则。disabled 同时降级前景与表面，不靠 opacity；组件只投影稳定角色，需要品牌实心、描边或海拔时显式映射。",
-  "version": 1,
-  "order": ["text", "icon", "field-inset", "floating"],
+  "$description": "Action Control 家族配方：六种视觉 profile 共用一套平面状态、显示策略、点击触感与输入能力规则；颜色由 solid / subtle / outline / ghost 四种形态矩阵给出，无 data-xh-action-variant 时等价 subtle。ghost / outline 的悬停与按下面取承载面阶梯：容器用 --xh-action-host-bg-hover / --xh-action-host-bg-pressed 下发，缺省按画布承载（100 → 200）。disabled 同时降级前景与表面，不靠 opacity；组件只投影稳定角色，海拔与高光仍由组件显式映射。",
+  "version": 2,
+  "order": ["text", "icon", "field-inset", "floating", "row", "disclosure-trigger"],
   "sizes": ["xs", "sm", "md", "lg"],
   "displays": ["always", "has-value", "hover-focus"],
+  "variants": ["solid", "subtle", "outline", "ghost"],
+  "defaultVariant": "subtle",
   "profiles": {
     "text": {
       "description": "普通文字动作；标签决定行内宽度，视觉尺寸决定块轴高度。",
-      "layout": { "square": false, "radius": "var(--xh-shape-control)" },
+      "layout": { "square": false, "fill": false, "justify": "center", "press": "scale", "radius": "var(--xh-shape-control)" },
       "sizes": {
-        "xs": { "visualSize": "24px", "paddingInline": "var(--xh-space-1)", "gap": "var(--xh-space-1)", "glyphSize": "var(--xh-glyph-size-sm)", "fontSize": "var(--xh-control-font-sm)" },
-        "sm": { "visualSize": "var(--xh-control-h-sm)", "paddingInline": "var(--xh-control-px-sm)", "gap": "var(--xh-control-gap-sm)", "glyphSize": "var(--xh-glyph-size-sm)", "fontSize": "var(--xh-control-font-sm)" },
-        "md": { "visualSize": "var(--xh-control-h-md)", "paddingInline": "var(--xh-control-px-md)", "gap": "var(--xh-control-gap-md)", "glyphSize": "var(--xh-glyph-size-md)", "fontSize": "var(--xh-control-font-md)" },
-        "lg": { "visualSize": "var(--xh-control-h-lg)", "paddingInline": "var(--xh-control-px-lg)", "gap": "var(--xh-control-gap-lg)", "glyphSize": "var(--xh-glyph-size-lg)", "fontSize": "var(--xh-control-font-lg)" }
+        "xs": { "visualSize": "24px", "paddingInline": "var(--xh-space-1)", "paddingBlock": "0", "gap": "var(--xh-space-1)", "glyphSize": "var(--xh-glyph-size-sm)", "fontSize": "var(--xh-control-font-sm)" },
+        "sm": { "visualSize": "var(--xh-control-h-sm)", "paddingInline": "var(--xh-control-px-sm)", "paddingBlock": "0", "gap": "var(--xh-control-gap-sm)", "glyphSize": "var(--xh-glyph-size-sm)", "fontSize": "var(--xh-control-font-sm)" },
+        "md": { "visualSize": "var(--xh-control-h-md)", "paddingInline": "var(--xh-control-px-md)", "paddingBlock": "0", "gap": "var(--xh-control-gap-md)", "glyphSize": "var(--xh-glyph-size-md)", "fontSize": "var(--xh-control-font-md)" },
+        "lg": { "visualSize": "var(--xh-control-h-lg)", "paddingInline": "var(--xh-control-px-lg)", "paddingBlock": "0", "gap": "var(--xh-control-gap-lg)", "glyphSize": "var(--xh-glyph-size-lg)", "fontSize": "var(--xh-control-font-lg)" }
       }
     },
     "icon": {
       "description": "icon-only 与 close 动作；视觉盒为正方形，作者内容完整替换图形。",
-      "layout": { "square": true, "radius": "var(--xh-shape-control)" },
+      "layout": { "square": true, "fill": false, "justify": "center", "press": "scale", "radius": "var(--xh-shape-control)" },
       "sizes": {
-        "xs": { "visualSize": "24px", "paddingInline": "0", "gap": "0", "glyphSize": "var(--xh-glyph-size-sm)", "fontSize": "var(--xh-control-font-sm)" },
-        "sm": { "visualSize": "var(--xh-control-h-sm)", "paddingInline": "0", "gap": "0", "glyphSize": "var(--xh-glyph-size-sm)", "fontSize": "var(--xh-control-font-sm)" },
-        "md": { "visualSize": "var(--xh-control-h-md)", "paddingInline": "0", "gap": "0", "glyphSize": "var(--xh-glyph-size-md)", "fontSize": "var(--xh-control-font-md)" },
-        "lg": { "visualSize": "var(--xh-control-h-lg)", "paddingInline": "0", "gap": "0", "glyphSize": "var(--xh-glyph-size-lg)", "fontSize": "var(--xh-control-font-lg)" }
+        "xs": { "visualSize": "24px", "paddingInline": "0", "paddingBlock": "0", "gap": "0", "glyphSize": "var(--xh-glyph-size-sm)", "fontSize": "var(--xh-control-font-sm)" },
+        "sm": { "visualSize": "var(--xh-control-h-sm)", "paddingInline": "0", "paddingBlock": "0", "gap": "0", "glyphSize": "var(--xh-glyph-size-sm)", "fontSize": "var(--xh-control-font-sm)" },
+        "md": { "visualSize": "var(--xh-control-h-md)", "paddingInline": "0", "paddingBlock": "0", "gap": "0", "glyphSize": "var(--xh-glyph-size-md)", "fontSize": "var(--xh-control-font-md)" },
+        "lg": { "visualSize": "var(--xh-control-h-lg)", "paddingInline": "0", "paddingBlock": "0", "gap": "0", "glyphSize": "var(--xh-glyph-size-lg)", "fontSize": "var(--xh-control-font-lg)" }
       }
     },
     "field-inset": {
       "description": "字段内部的 clear、reveal、increment/decrement；视觉盒紧凑，粗指针命中区不缩。",
-      "layout": { "square": true, "radius": "var(--xh-shape-inset)" },
+      "layout": { "square": true, "fill": false, "justify": "center", "press": "scale", "radius": "var(--xh-shape-inset)" },
       "sizes": {
-        "xs": { "visualSize": "24px", "paddingInline": "0", "gap": "0", "glyphSize": "12px", "fontSize": "var(--xh-control-caption-sm)" },
-        "sm": { "visualSize": "24px", "paddingInline": "0", "gap": "0", "glyphSize": "14px", "fontSize": "var(--xh-control-caption-sm)" },
-        "md": { "visualSize": "var(--xh-control-h-sm)", "paddingInline": "0", "gap": "0", "glyphSize": "var(--xh-glyph-size-sm)", "fontSize": "var(--xh-control-caption-md)" },
-        "lg": { "visualSize": "var(--xh-control-h-md)", "paddingInline": "0", "gap": "0", "glyphSize": "var(--xh-glyph-size-md)", "fontSize": "var(--xh-control-caption-lg)" }
+        "xs": { "visualSize": "24px", "paddingInline": "0", "paddingBlock": "0", "gap": "0", "glyphSize": "12px", "fontSize": "var(--xh-control-caption-sm)" },
+        "sm": { "visualSize": "24px", "paddingInline": "0", "paddingBlock": "0", "gap": "0", "glyphSize": "14px", "fontSize": "var(--xh-control-caption-sm)" },
+        "md": { "visualSize": "var(--xh-control-h-sm)", "paddingInline": "0", "paddingBlock": "0", "gap": "0", "glyphSize": "var(--xh-glyph-size-sm)", "fontSize": "var(--xh-control-caption-md)" },
+        "lg": { "visualSize": "var(--xh-control-h-md)", "paddingInline": "0", "paddingBlock": "0", "gap": "0", "glyphSize": "var(--xh-glyph-size-md)", "fontSize": "var(--xh-control-caption-lg)" }
       }
     },
     "floating": {
       "description": "浮在页面或媒体上的独立动作；视觉盒与图形光学档均大于内嵌控制。",
-      "layout": { "square": true, "radius": "var(--xh-shape-circle)" },
+      "layout": { "square": true, "fill": false, "justify": "center", "press": "scale", "radius": "var(--xh-shape-circle)" },
       "sizes": {
-        "xs": { "visualSize": "var(--xh-control-box-sm)", "paddingInline": "0", "gap": "0", "glyphSize": "var(--xh-glyph-size-sm)", "fontSize": "var(--xh-control-font-sm)" },
-        "sm": { "visualSize": "var(--xh-control-box-md)", "paddingInline": "0", "gap": "0", "glyphSize": "var(--xh-glyph-size-md)", "fontSize": "var(--xh-control-font-md)" },
-        "md": { "visualSize": "var(--xh-control-box-lg)", "paddingInline": "0", "gap": "0", "glyphSize": "var(--xh-glyph-size-lg)", "fontSize": "var(--xh-control-font-lg)" },
-        "lg": { "visualSize": "calc(var(--xh-control-box-lg) + var(--xh-space-2))", "paddingInline": "0", "gap": "0", "glyphSize": "var(--xh-glyph-size-xl)", "fontSize": "var(--xh-control-font-lg)" }
+        "xs": { "visualSize": "var(--xh-control-box-sm)", "paddingInline": "0", "paddingBlock": "0", "gap": "0", "glyphSize": "var(--xh-glyph-size-sm)", "fontSize": "var(--xh-control-font-sm)" },
+        "sm": { "visualSize": "var(--xh-control-box-md)", "paddingInline": "0", "paddingBlock": "0", "gap": "0", "glyphSize": "var(--xh-glyph-size-md)", "fontSize": "var(--xh-control-font-md)" },
+        "md": { "visualSize": "var(--xh-control-box-lg)", "paddingInline": "0", "paddingBlock": "0", "gap": "0", "glyphSize": "var(--xh-glyph-size-lg)", "fontSize": "var(--xh-control-font-lg)" },
+        "lg": { "visualSize": "calc(var(--xh-control-box-lg) + var(--xh-space-2))", "paddingInline": "0", "paddingBlock": "0", "gap": "0", "glyphSize": "var(--xh-glyph-size-xl)", "fontSize": "var(--xh-control-font-lg)" }
+      }
+    },
+    "row": {
+      "description": "铺满一行的动作或可选条目（取下一页、折叠代码、审批项）：宽度由容器给，高度随内容，只换面不缩放。",
+      "layout": { "square": false, "fill": true, "justify": "start", "press": "surface", "radius": "var(--xh-shape-control)" },
+      "sizes": {
+        "xs": { "visualSize": "24px", "paddingInline": "var(--xh-space-1)", "paddingBlock": "var(--xh-list-option-py-sm)", "gap": "var(--xh-space-1)", "glyphSize": "var(--xh-glyph-size-sm)", "fontSize": "var(--xh-control-font-sm)" },
+        "sm": { "visualSize": "var(--xh-control-h-sm)", "paddingInline": "var(--xh-control-px-sm)", "paddingBlock": "var(--xh-list-option-py-sm)", "gap": "var(--xh-control-gap-sm)", "glyphSize": "var(--xh-glyph-size-sm)", "fontSize": "var(--xh-control-font-sm)" },
+        "md": { "visualSize": "var(--xh-control-h-md)", "paddingInline": "var(--xh-control-px-md)", "paddingBlock": "var(--xh-list-option-py-md)", "gap": "var(--xh-control-gap-md)", "glyphSize": "var(--xh-glyph-size-md)", "fontSize": "var(--xh-control-font-md)" },
+        "lg": { "visualSize": "var(--xh-control-h-lg)", "paddingInline": "var(--xh-control-px-lg)", "paddingBlock": "var(--xh-list-option-py-lg)", "gap": "var(--xh-control-gap-lg)", "glyphSize": "var(--xh-glyph-size-lg)", "fontSize": "var(--xh-control-font-lg)" }
+      }
+    },
+    "disclosure-trigger": {
+      "description": "展开 / 收起的整行触发条（accordion、collapsible、reasoning、tool-call）：文本靠起始端、指示器靠末端，只换面不缩放。",
+      "layout": { "square": false, "fill": true, "justify": "space-between", "press": "surface", "radius": "var(--xh-shape-control)" },
+      "sizes": {
+        "xs": { "visualSize": "24px", "paddingInline": "var(--xh-space-2)", "paddingBlock": "var(--xh-space-2)", "gap": "var(--xh-space-1)", "glyphSize": "var(--xh-glyph-size-sm)", "fontSize": "var(--xh-control-font-sm)" },
+        "sm": { "visualSize": "var(--xh-control-h-sm)", "paddingInline": "var(--xh-space-3)", "paddingBlock": "var(--xh-space-3)", "gap": "var(--xh-control-gap-sm)", "glyphSize": "var(--xh-glyph-size-sm)", "fontSize": "var(--xh-control-font-sm)" },
+        "md": { "visualSize": "var(--xh-control-h-md)", "paddingInline": "var(--xh-space-4)", "paddingBlock": "var(--xh-space-4)", "gap": "var(--xh-control-gap-md)", "glyphSize": "var(--xh-glyph-size-md)", "fontSize": "var(--xh-control-font-md)" },
+        "lg": { "visualSize": "var(--xh-control-h-lg)", "paddingInline": "var(--xh-space-5)", "paddingBlock": "var(--xh-space-5)", "gap": "var(--xh-control-gap-lg)", "glyphSize": "var(--xh-glyph-size-lg)", "fontSize": "var(--xh-control-font-lg)" }
       }
     }
   },
   "states": {
-    "rest": { "backgroundColor": "var(--xh-bg-subtle)", "color": "var(--xh-fg-default)", "borderColor": "transparent", "highlight": "transparent", "shadow": "none", "opacity": "1", "cursor": "pointer", "scale": "none" },
-    "hover": { "backgroundColor": "var(--xh-bg-subtle-hover)", "color": "var(--xh-fg-default)", "borderColor": "transparent", "highlight": "transparent", "shadow": "none", "opacity": "1", "cursor": "pointer", "scale": "none" },
-    "pressed": { "backgroundColor": "var(--xh-bg-subtle-active)", "color": "var(--xh-fg-default)", "borderColor": "transparent", "highlight": "transparent", "shadow": "none", "opacity": "1", "cursor": "pointer", "scale": "var(--xh-motion-scale-press)" },
-    "focus-visible": { "backgroundColor": "var(--xh-bg-subtle)", "color": "var(--xh-fg-default)", "borderColor": "transparent", "highlight": "transparent", "shadow": "none", "opacity": "1", "cursor": "pointer", "scale": "none", "ringColor": "var(--xh-ring-focus)" },
-    "disabled": { "backgroundColor": "var(--xh-bg-subtle)", "color": "var(--xh-fg-disabled)", "borderColor": "transparent", "highlight": "transparent", "shadow": "none", "opacity": "1", "cursor": "not-allowed", "scale": "none" },
-    "loading": { "backgroundColor": "var(--xh-bg-subtle)", "color": "var(--xh-fg-default)", "borderColor": "transparent", "highlight": "transparent", "shadow": "none", "opacity": "1", "cursor": "progress", "scale": "none" }
+    "rest": { "highlight": "transparent", "shadow": "none", "opacity": "1", "cursor": "pointer", "scale": "none" },
+    "hover": { "highlight": "transparent", "shadow": "none", "opacity": "1", "cursor": "pointer", "scale": "none" },
+    "pressed": { "highlight": "transparent", "shadow": "none", "opacity": "1", "cursor": "pointer", "scale": "var(--xh-motion-scale-press)" },
+    "focus-visible": { "highlight": "transparent", "shadow": "none", "opacity": "1", "cursor": "pointer", "scale": "none", "ringColor": "var(--xh-ring-focus)" },
+    "disabled": { "highlight": "transparent", "shadow": "none", "opacity": "1", "cursor": "not-allowed", "scale": "none" },
+    "loading": { "highlight": "transparent", "shadow": "none", "opacity": "1", "cursor": "progress", "scale": "none" }
+  },
+  "host": {
+    "$description": "ghost / outline 的承载面阶梯：容器在自己身上声明这两支即可下发；缺省是画布承载。",
+    "hover": "var(--xh-bg-subtle)",
+    "pressed": "var(--xh-bg-subtle-hover)"
+  },
+  "matrix": {
+    "solid": {
+      "rest": { "backgroundColor": "var(--xh-_tone, var(--xh-bg-brand))", "color": "var(--xh-_tone-on, var(--xh-fg-on-brand))", "borderColor": "transparent" },
+      "hover": { "backgroundColor": "var(--xh-_tone-hover, var(--xh-bg-brand-hover))", "color": "var(--xh-_tone-on, var(--xh-fg-on-brand))", "borderColor": "transparent" },
+      "pressed": { "backgroundColor": "var(--xh-_tone-active, var(--xh-bg-brand-active))", "color": "var(--xh-_tone-on, var(--xh-fg-on-brand))", "borderColor": "transparent" },
+      "focus-visible": { "backgroundColor": "var(--xh-_tone, var(--xh-bg-brand))", "color": "var(--xh-_tone-on, var(--xh-fg-on-brand))", "borderColor": "transparent" },
+      "disabled": { "backgroundColor": "var(--xh-bg-subtle)", "color": "var(--xh-fg-disabled)", "borderColor": "transparent" },
+      "loading": { "backgroundColor": "var(--xh-_tone, var(--xh-bg-brand))", "color": "var(--xh-_tone-on, var(--xh-fg-on-brand))", "borderColor": "transparent" }
+    },
+    "subtle": {
+      "rest": { "backgroundColor": "var(--xh-_tone-subtle, var(--xh-bg-subtle))", "color": "var(--xh-_tone-fg, var(--xh-fg-default))", "borderColor": "transparent" },
+      "hover": { "backgroundColor": "var(--xh-_tone-subtle-hover, var(--xh-bg-subtle-hover))", "color": "var(--xh-_tone-fg, var(--xh-fg-default))", "borderColor": "transparent" },
+      "pressed": { "backgroundColor": "var(--xh-_tone-subtle-active, var(--xh-bg-subtle-active))", "color": "var(--xh-_tone-fg, var(--xh-fg-default))", "borderColor": "transparent" },
+      "focus-visible": { "backgroundColor": "var(--xh-_tone-subtle, var(--xh-bg-subtle))", "color": "var(--xh-_tone-fg, var(--xh-fg-default))", "borderColor": "transparent" },
+      "disabled": { "backgroundColor": "var(--xh-bg-subtle)", "color": "var(--xh-fg-disabled)", "borderColor": "transparent" },
+      "loading": { "backgroundColor": "var(--xh-_tone-subtle, var(--xh-bg-subtle))", "color": "var(--xh-_tone-fg, var(--xh-fg-default))", "borderColor": "transparent" }
+    },
+    "outline": {
+      "rest": { "backgroundColor": "transparent", "color": "var(--xh-_tone-fg, var(--xh-fg-default))", "borderColor": "var(--xh-_tone-border-control, var(--xh-border-control))" },
+      "hover": { "backgroundColor": "var(--xh-_tone-subtle, var(--xh-action-host-bg-hover, var(--xh-bg-subtle)))", "color": "var(--xh-_tone-fg, var(--xh-fg-default))", "borderColor": "var(--xh-_tone-border-control, var(--xh-border-control-hover))" },
+      "pressed": { "backgroundColor": "var(--xh-_tone-subtle-hover, var(--xh-action-host-bg-pressed, var(--xh-bg-subtle-hover)))", "color": "var(--xh-_tone-fg, var(--xh-fg-default))", "borderColor": "var(--xh-_tone-border-control, var(--xh-border-control-hover))" },
+      "focus-visible": { "backgroundColor": "transparent", "color": "var(--xh-_tone-fg, var(--xh-fg-default))", "borderColor": "var(--xh-_tone-border-control, var(--xh-border-control))" },
+      "disabled": { "backgroundColor": "transparent", "color": "var(--xh-fg-disabled)", "borderColor": "var(--xh-border-subtle)" },
+      "loading": { "backgroundColor": "transparent", "color": "var(--xh-_tone-fg, var(--xh-fg-default))", "borderColor": "var(--xh-_tone-border-control, var(--xh-border-control))" }
+    },
+    "ghost": {
+      "rest": { "backgroundColor": "transparent", "color": "var(--xh-_tone-fg, var(--xh-fg-default))", "borderColor": "transparent" },
+      "hover": { "backgroundColor": "var(--xh-_tone-subtle, var(--xh-action-host-bg-hover, var(--xh-bg-subtle)))", "color": "var(--xh-_tone-fg, var(--xh-fg-default))", "borderColor": "transparent" },
+      "pressed": { "backgroundColor": "var(--xh-_tone-subtle-hover, var(--xh-action-host-bg-pressed, var(--xh-bg-subtle-hover)))", "color": "var(--xh-_tone-fg, var(--xh-fg-default))", "borderColor": "transparent" },
+      "focus-visible": { "backgroundColor": "transparent", "color": "var(--xh-_tone-fg, var(--xh-fg-default))", "borderColor": "transparent" },
+      "disabled": { "backgroundColor": "transparent", "color": "var(--xh-fg-disabled)", "borderColor": "transparent" },
+      "loading": { "backgroundColor": "transparent", "color": "var(--xh-_tone-fg, var(--xh-fg-default))", "borderColor": "transparent" }
+    }
+  },
+  "darkBrandSolid": {
+    "$description": "深色主题下无 tone 或 tone=brand 的实心面固定用深品牌面与浅字，不随 --xh-bg-brand 翻成黑字。",
+    "backgroundColor": { "rest": "var(--xh-action-brand-solid)", "hover": "var(--xh-action-brand-solid-hover)", "pressed": "var(--xh-action-brand-solid-active)" },
+    "color": "var(--xh-action-on-brand-solid)"
   },
   "coarsePointer": { "minimumTarget": "44px" },
   "motion": {
@@ -64,7 +130,7 @@
     "releaseDuration": "var(--xh-motion-duration-release)",
     "releaseEasing": "var(--xh-motion-ease-release)"
   },
-  "compact": { "strategy": "semantic-token-remap", "tokens": ["--xh-control-h-sm", "--xh-control-h-md", "--xh-control-h-lg", "--xh-control-box-sm", "--xh-control-box-md", "--xh-control-box-lg", "--xh-control-px-sm", "--xh-control-px-md", "--xh-control-px-lg", "--xh-control-gap-md", "--xh-control-gap-lg"] },
+  "compact": { "strategy": "semantic-token-remap", "tokens": ["--xh-control-h-sm", "--xh-control-h-md", "--xh-control-h-lg", "--xh-control-box-sm", "--xh-control-box-md", "--xh-control-box-lg", "--xh-control-px-sm", "--xh-control-px-md", "--xh-control-px-lg", "--xh-control-gap-md", "--xh-control-gap-lg", "--xh-list-option-py-sm", "--xh-list-option-py-md", "--xh-list-option-py-lg"] },
   "direction": { "axis": "logical", "flow": "row" },
   "forcedColors": {
     "rest": { "backgroundColor": "ButtonFace", "color": "ButtonText", "borderColor": "ButtonText", "outlineColor": "Highlight" },

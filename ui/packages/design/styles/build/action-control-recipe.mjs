@@ -8,13 +8,22 @@ const ROOT = dirname(dirname(fileURLToPath(import.meta.url)))
 const SOURCE = join(ROOT, 'recipes', 'action-control.recipe.json')
 const OUTPUT = join(ROOT, 'family', 'action-control.css')
 
-const PROFILES = ['text', 'icon', 'field-inset', 'floating']
+const PROFILES = ['text', 'icon', 'field-inset', 'floating', 'row', 'disclosure-trigger']
 const SIZES = ['xs', 'sm', 'md', 'lg']
 const DISPLAYS = ['always', 'has-value', 'hover-focus']
 const STATES = ['rest', 'hover', 'pressed', 'focus-visible', 'disabled', 'loading']
-const SIZE_FIELDS = ['visualSize', 'paddingInline', 'gap', 'glyphSize', 'fontSize']
-const STATE_FIELDS = ['backgroundColor', 'color', 'borderColor', 'highlight', 'shadow', 'opacity', 'cursor', 'scale']
+const VARIANTS = ['solid', 'subtle', 'outline', 'ghost']
+const SIZE_FIELDS = ['visualSize', 'paddingInline', 'paddingBlock', 'gap', 'glyphSize', 'fontSize']
+/* 颜色三通道由形态矩阵给出；states 只留与形态无关的通道。 */
+const COLOR_FIELDS = ['backgroundColor', 'color', 'borderColor']
+const STATE_FIELDS = ['highlight', 'shadow', 'opacity', 'cursor', 'scale']
 const FORCED_FIELDS = ['backgroundColor', 'color', 'borderColor', 'outlineColor']
+const LAYOUT_JUSTIFY = ['center', 'start', 'space-between']
+const LAYOUT_PRESS = ['scale', 'surface']
+/* 承载面阶梯只对静息透明的形态有意义：ghost / outline 的悬停与按下面按容器下发的阶梯取值。 */
+const HOST_LADDER_VARIANTS = ['outline', 'ghost']
+/* 深色实心只覆盖非禁用态：disabled 仍走中性面。 */
+const DARK_SOLID_STATES = ['rest', 'hover', 'pressed', 'focus-visible', 'loading']
 const STATE_SLOT = {
   backgroundColor: 'bg',
   color: 'fg',
@@ -82,8 +91,13 @@ export function assertActionControlRecipe(source) {
     'order',
     'sizes',
     'displays',
+    'variants',
+    'defaultVariant',
     'profiles',
     'states',
+    'host',
+    'matrix',
+    'darkBrandSolid',
     'coarsePointer',
     'motion',
     'compact',
@@ -91,20 +105,34 @@ export function assertActionControlRecipe(source) {
     'forcedColors',
   ], 'root')
   assertString(source.$description, 'root.$description')
-  if (source.version !== 1)
-    throw new Error('[action-control-recipe] root.version 必须为 1')
+  if (source.version !== 2)
+    throw new Error('[action-control-recipe] root.version 必须为 2')
   assertList(source.order, PROFILES, 'root.order')
   assertList(source.sizes, SIZES, 'root.sizes')
   assertList(source.displays, DISPLAYS, 'root.displays')
+  assertList(source.variants, VARIANTS, 'root.variants')
+  if (!VARIANTS.includes(source.defaultVariant))
+    throw new Error(`[action-control-recipe] root.defaultVariant 必须是 ${VARIANTS.join(' / ')} 之一`)
 
   assertExactKeys(source.profiles, PROFILES, 'root.profiles')
   for (const profile of PROFILES) {
     const value = source.profiles[profile]
     assertExactKeys(value, ['description', 'layout', 'sizes'], `profiles.${profile}`)
     assertString(value.description, `profiles.${profile}.description`)
-    assertExactKeys(value.layout, ['square', 'radius'], `profiles.${profile}.layout`)
+    assertExactKeys(value.layout, ['square', 'fill', 'justify', 'press', 'radius'], `profiles.${profile}.layout`)
     if (typeof value.layout.square !== 'boolean')
       throw new Error(`[action-control-recipe] profiles.${profile}.layout.square 必须是布尔值`)
+    if (typeof value.layout.fill !== 'boolean')
+      throw new Error(`[action-control-recipe] profiles.${profile}.layout.fill 必须是布尔值`)
+    if (!LAYOUT_JUSTIFY.includes(value.layout.justify))
+      throw new Error(`[action-control-recipe] profiles.${profile}.layout.justify 必须是 ${LAYOUT_JUSTIFY.join(' / ')} 之一`)
+    if (!LAYOUT_PRESS.includes(value.layout.press))
+      throw new Error(`[action-control-recipe] profiles.${profile}.layout.press 必须是 ${LAYOUT_PRESS.join(' / ')} 之一`)
+    /* 只有铺满一行的档才只换面不缩放；离散动作控件一律按压缩放。 */
+    if ((value.layout.press === 'surface') !== (value.layout.fill === true))
+      throw new Error(`[action-control-recipe] profiles.${profile}.layout.press 为 surface 当且仅当 fill 为 true`)
+    if (value.layout.square && value.layout.fill)
+      throw new Error(`[action-control-recipe] profiles.${profile}.layout.square 与 fill 互斥`)
     assertString(value.layout.radius, `profiles.${profile}.layout.radius`)
     assertExactKeys(value.sizes, SIZES, `profiles.${profile}.sizes`)
     for (const size of SIZES) {
@@ -119,6 +147,28 @@ export function assertActionControlRecipe(source) {
   assertExactKeys(source.states, STATES, 'root.states')
   for (const state of STATES)
     assertFields(source.states[state], state === 'focus-visible' ? [...STATE_FIELDS, 'ringColor'] : STATE_FIELDS, `states.${state}`)
+
+  assertFields(source.host, ['$description', 'hover', 'pressed'], 'root.host')
+  /* variants 是有序名单，matrix 是每形态 × 每状态的颜色三通道。 */
+  assertExactKeys(source.matrix, VARIANTS, 'root.matrix')
+  for (const variant of VARIANTS) {
+    assertExactKeys(source.matrix[variant], STATES, `matrix.${variant}`)
+    for (const state of STATES)
+      assertFields(source.matrix[variant][state], COLOR_FIELDS, `matrix.${variant}.${state}`)
+    if (!HOST_LADDER_VARIANTS.includes(variant))
+      continue
+    /* 承载面缺省与 host 块同源：两处写得不一样，容器下发的阶梯就和画布缺省对不上。 */
+    for (const state of ['hover', 'pressed']) {
+      const expected = `var(--xh-action-host-bg-${state}, ${source.host[state]})`
+      if (!source.matrix[variant][state].backgroundColor.includes(expected))
+        throw new Error(`[action-control-recipe] matrix.${variant}.${state}.backgroundColor 必须包含 ${expected}`)
+    }
+  }
+  assertExactKeys(source.darkBrandSolid, ['$description', 'backgroundColor', 'color'], 'root.darkBrandSolid')
+  assertString(source.darkBrandSolid.$description, 'root.darkBrandSolid.$description')
+  assertFields(source.darkBrandSolid.backgroundColor, ['rest', 'hover', 'pressed'], 'root.darkBrandSolid.backgroundColor')
+  assertString(source.darkBrandSolid.color, 'root.darkBrandSolid.color')
+
   assertExactKeys(source.forcedColors, STATES, 'root.forcedColors')
   for (const state of STATES)
     assertFields(source.forcedColors[state], FORCED_FIELDS, `forcedColors.${state}`)
@@ -144,15 +194,38 @@ export function assertActionControlRecipe(source) {
     throw new Error('[action-control-recipe] direction 只能声明 logical/row；物理方向不属于 Action Control')
 }
 
+/* 颜色通道的公开桥接槽名不变（--xh-action-bg-hover 等），缺省改指形态矩阵的私有槽。 */
 function stateValue(source, state, field) {
-  return `var(--xh-action-${STATE_SLOT[field]}-${state}, ${source.states[state][field]})`
+  const slot = STATE_SLOT[field]
+  if (COLOR_FIELDS.includes(field))
+    return `var(--xh-action-${slot}-${state}, var(--xh-_action-variant-${slot}-${state}))`
+  return `var(--xh-action-${slot}-${state}, ${source.states[state][field]})`
+}
+
+function variantDeclarations(source, variant) {
+  const lines = []
+  for (const state of STATES) {
+    for (const field of COLOR_FIELDS)
+      lines.push(`    --xh-_action-variant-${STATE_SLOT[field]}-${state}: ${source.matrix[variant][state][field]};`)
+  }
+  return lines.join('\n')
+}
+
+function darkBrandSolidDeclarations(source) {
+  const { backgroundColor, color } = source.darkBrandSolid
+  return [
+    ...DARK_SOLID_STATES.map(state =>
+      `    --xh-_action-variant-bg-${state}: ${backgroundColor[state] ?? backgroundColor.rest};`,
+    ),
+    ...DARK_SOLID_STATES.map(state => `    --xh-_action-variant-fg-${state}: ${color};`),
+  ].join('\n')
 }
 
 function stateDeclarations(source, state, focus = false) {
   const value = source.states[state]
   // 默认值相同不代表状态槽可以省略：组件可能只覆盖 hover/focus/loading 某一档。
   // 每个状态都完整发出桥接声明，保证 recipe JSON 中登记的状态槽全部真实可消费。
-  const lines = STATE_FIELDS.map((field) => {
+  const lines = [...COLOR_FIELDS, ...STATE_FIELDS].map((field) => {
     const property = field === 'highlight' ? '--xh-_action-current-highlight' : CSS_PROPERTY[field]
     return `    ${property}: ${stateValue(source, state, field)};`
   })
@@ -174,6 +247,12 @@ function forcedDeclarations(source, state, extra = []) {
   ].join('\n')
 }
 
+function profileSelector(profiles) {
+  return profiles.length === 1
+    ? `[data-xh-action-control][data-xh-action-profile='${profiles[0]}']`
+    : `[data-xh-action-control]:is(${profiles.map(profile => `[data-xh-action-profile='${profile}']`).join(', ')})`
+}
+
 export function compileActionControlRecipe(source) {
   assertActionControlRecipe(source)
   const selectors = new Set()
@@ -187,9 +266,12 @@ export function compileActionControlRecipe(source) {
     }
     target.push(`${indent}${selector} {\n${body}\n${indent}}`)
   }
+  const layoutOf = profile => source.profiles[profile].layout
 
+  /* 无 data-xh-action-variant 时等价 defaultVariant：矩阵私有槽先在根规则落默认形态。 */
   rule('[data-xh-action-control]', [
     `    --xh-_action-current-highlight: ${stateValue(source, 'rest', 'highlight')};`,
+    variantDeclarations(source, source.defaultVariant),
     '',
     '    position: relative;',
     '    display: inline-flex;',
@@ -224,6 +306,16 @@ export function compileActionControlRecipe(source) {
     `      scale ${source.motion.releaseDuration} ${source.motion.releaseEasing};`,
   ].join('\n'))
 
+  /* 形态由元素自身的 data-xh-action-variant 选择；四条都发，默认形态也有可读的落点。 */
+  for (const variant of VARIANTS)
+    rule(`[data-xh-action-control][data-xh-action-variant='${variant}']`, variantDeclarations(source, variant))
+
+  /* 深色主题下无 tone 或 tone=brand 的实心面固定用深品牌面与浅字；focus-visible / loading 与 rest 同面。 */
+  rule(
+    ':is([data-theme=\'dark\'] *, [data-theme=\'dark\'])[data-xh-action-control][data-xh-action-variant=\'solid\']:is(:not([data-tone]), [data-tone=\'brand\'])',
+    darkBrandSolidDeclarations(source),
+  )
+
   /* text 是尺寸基线；icon 共用其光学档，field/floating 只覆写真正不同的通道。 */
   for (const size of SIZES) {
     const value = source.profiles.text.sizes[size]
@@ -245,6 +337,19 @@ export function compileActionControlRecipe(source) {
       ...(value.layout.square
         ? ['    flex: none;', '    inline-size: var(--xh-action-visual-size, var(--xh-_action-profile-visual-size));']
         : []),
+      /* 铺满一行的档：宽度由容器给，高度随内容与块轴内距走，最小高度仍守视觉尺寸。 */
+      ...(value.layout.fill
+        ? [
+            '    display: flex;',
+            `    justify-content: ${value.layout.justify};`,
+            '    inline-size: 100%;',
+            '    block-size: auto;',
+            '    min-block-size: var(--xh-action-visual-size, var(--xh-_action-profile-visual-size));',
+            '    padding-block: var(--xh-action-padding-block, var(--xh-_action-profile-padding-block));',
+            '    white-space: normal;',
+            '    text-align: start;',
+          ]
+        : value.layout.justify === 'center' ? [] : [`    justify-content: ${value.layout.justify};`]),
     ].join('\n'))
     if (profile === 'text')
       continue
@@ -268,6 +373,10 @@ export function compileActionControlRecipe(source) {
     `    transition-duration: ${source.motion.pressDuration};`,
     `    transition-timing-function: ${source.motion.pressEasing};`,
   ].join('\n'))
+  /* 只换面的档：按下不缩放，必须排在通用 :active 之后才能覆盖。 */
+  const surfaceProfiles = PROFILES.filter(profile => layoutOf(profile).press === 'surface')
+  if (surfaceProfiles.length > 0)
+    rule(`${profileSelector(surfaceProfiles)}:not([data-disabled]):not([data-loading]):active`, '    scale: none;')
   rule('[data-xh-action-control][data-disabled]', stateDeclarations(source, 'disabled'))
   rule('[data-xh-action-control][data-loading][aria-disabled=\'true\']', stateDeclarations(source, 'loading'))
 
@@ -287,8 +396,9 @@ export function compileActionControlRecipe(source) {
   )
   chunks.push(`  @media (hover: hover) and (pointer: fine) {\n${fine.join('\n\n')}\n  }`)
 
+  /* 非正方档只扩块轴命中区，正方档扩双轴。 */
   const coarse = []
-  rule('[data-xh-action-control][data-xh-action-profile=\'text\']::after', [
+  rule(`${profileSelector(PROFILES.filter(profile => !layoutOf(profile).square))}::after`, [
     '      content: \'\';',
     '      position: absolute;',
     '      inset-block-start: 50%;',
@@ -298,7 +408,7 @@ export function compileActionControlRecipe(source) {
     '      block-size: 100%;',
     '      translate: -50% -50%;',
   ].join('\n'), 'coarse', coarse, '    ')
-  rule('[data-xh-action-control]:is([data-xh-action-profile=\'icon\'], [data-xh-action-profile=\'field-inset\'], [data-xh-action-profile=\'floating\'])::after', [
+  rule(`${profileSelector(PROFILES.filter(profile => layoutOf(profile).square))}::after`, [
     '      content: \'\';',
     '      position: absolute;',
     '      inset-block-start: 50%;',
@@ -344,12 +454,12 @@ export async function emitActionControlRecipe(options = {}) {
     await mkdir(dirname(outputPath), { recursive: true })
     await writeFile(outputPath, css, 'utf8')
   }
-  return { bytes: Buffer.byteLength(css), profiles: PROFILES.length, states: STATES.length }
+  return { bytes: Buffer.byteLength(css), profiles: PROFILES.length, states: STATES.length, variants: VARIANTS.length }
 }
 
 if (process.argv[1] && resolve(process.argv[1]) === fileURLToPath(import.meta.url)) {
   emitActionControlRecipe()
-    .then(result => console.log(`[action-control-recipe] ${result.profiles} profiles × ${result.states} states -> ${result.bytes} bytes`))
+    .then(result => console.log(`[action-control-recipe] ${result.profiles} profiles × ${result.states} states × ${result.variants} variants -> ${result.bytes} bytes`))
     .catch((error) => {
       console.error(error)
       process.exit(1)
