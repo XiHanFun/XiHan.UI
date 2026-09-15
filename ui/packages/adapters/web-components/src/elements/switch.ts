@@ -15,13 +15,13 @@ import { MachineController } from '../runtime/machine-controller'
 const BOOLEAN_CONVERTER = { fromAttribute: (v: string | null) => (v === null ? undefined : v !== 'false') }
 
 /**
- * `<xh-switch>` —— Light-DOM 行为宿主，跑 switch 机器并把 connect 产出打到 root/thumb 角色节点。
+ * `<xh-switch>`：Light-DOM 行为宿主，运行 switch 状态机并把 connect 产出接到 root / thumb 角色节点。
  *
  * @customElement xh-switch
- * @attr {boolean} checked - 受控开合；缺省该属性即非受控
+ * @attr {boolean} checked - 受控开合；未提供该属性即非受控
  * @attr {boolean} default-checked - 非受控初始为选中
  * @attr {boolean} disabled - 禁用
- * @attr {boolean} read-only - 只读：拨不动，但仍可聚焦、仍参与提交
+ * @attr {boolean} read-only - 只读：不可切换，但仍可聚焦、仍参与提交
  * @attr {boolean} invalid - 校验失败态
  * @attr {boolean} required - 必填
  * @attr {boolean} loading - 提交中：交互挂起、滑块转圈，仍可聚焦（aria-busy）
@@ -30,9 +30,9 @@ const BOOLEAN_CONVERTER = { fromAttribute: (v: string | null) => (v === null ? u
  * @fires checked-change - checked 状态变化；detail 为 `{ checked: boolean }`
  * @csspart root - role=switch 的按钮（承载 aria-checked / data-state）
  * @csspart thumb - 滑块
- * @attr {string} name - 表单字段名；给了 hidden-input 才参与提交
+ * @attr {string} name - 表单字段名；提供后 hidden-input 才参与提交
  * @csspart hidden-input - type=hidden 的表单出口，省略该节点即不参与表单
- * @csspart label - 可选：包住 root 与 text 的 <label>，点文字即切换
+ * @csspart label - 可选：包裹 root 与 text 的 <label>，点击文字即切换
  * @csspart text - 可选：控件旁的文字
  */
 export class XhSwitchElement extends XhElement {

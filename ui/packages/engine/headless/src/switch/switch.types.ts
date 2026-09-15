@@ -16,23 +16,23 @@ export interface SwitchSchema extends MachineSchema {
     checked?: boolean
     defaultChecked?: boolean
     disabled?: boolean
-    /** 只读：拨不动，但仍可聚焦、仍参与提交，对比度不降。 */
+    /** 只读：不可切换，但仍可聚焦、仍参与提交，对比度不降低。 */
     readOnly?: boolean
-    /** 校验失败：只改呈现，不挡交互。 */
+    /** 校验失败：只改变呈现，不阻止交互。 */
     invalid?: boolean
-    /** 必填：随表单校验一起用，只发无障碍属性，不自行拦提交。 */
+    /** 必填：随表单校验一起使用，只发无障碍属性，不自行拦截提交。 */
     required?: boolean
     /** 提交中：交互挂起、滑块转圈，但不呈现为禁用（仍可聚焦、对比度不降）。 */
     loading?: boolean
-    /** 表单字段名；给了 hidden-input 才带 name 并参与提交。 */
+    /** 表单字段名；提供后 hidden-input 才带 name 并参与提交。 */
     name?: string
-    /** 提交出去的值，缺省 'on'，与原生复选框一致。 */
+    /** 提交的值，默认 'on'，与原生复选框一致。 */
     value?: string
-    /** 语气：brand / neutral / success / warning / danger / info，决定选中态轨道用哪族颜色。 */
+    /** 语气：brand / neutral / success / warning / danger / info，决定选中态轨道使用哪族颜色。 */
     tone?: Tone
     /** 尺寸：sm / md / lg，决定轨道与滑块的几何档位。 */
     size?: Size
-    /** checked 变化意图回调；受控时是唯一出口，非受控随内部转移一并通知。 */
+    /** checked 变化意图回调；受控时是唯一出口，非受控时随内部转移一并通知。 */
     onCheckedChange?: (details: SwitchCheckedChangeDetails) => void
   }
   context: Record<string, never>
@@ -58,13 +58,13 @@ export interface SwitchApi<T extends PropTypes = PropTypes> {
   setChecked: (next: boolean) => void
   getRootProps: () => T['button']
   getThumbProps: () => T['element']
-  /** 表单影子：勾上才提交。给了 name 才带 name，不给就不参与提交。 */
+  /** 表单影子：开启后才提交。提供 name 后才带 name，未提供时不参与提交。 */
   getHiddenInputProps: () => T['input']
-  /** 包住轨道与文字的 <label>：点文字即切换，轨道的可及名从文字来。只在带文字时渲染。 */
+  /** 包裹轨道与文字的 <label>：点击文字即切换，轨道的可及名来自文字。只在带文字时渲染。 */
   getLabelProps: () => T['label']
   /** 轨道旁的文字。 */
   getTextProps: () => T['element']
 }
 
-/** 读屏用的文案。本组件目前没有需要外露的文案，位先留着。 */
+/** 读屏文案。本组件目前没有需要外露的文案，保留该位。 */
 export interface SwitchTranslations {}

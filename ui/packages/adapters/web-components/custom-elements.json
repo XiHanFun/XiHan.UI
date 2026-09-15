@@ -48785,7 +48785,7 @@
       "declarations": [
         {
           "kind": "class",
-          "description": "`<xh-switch>` —— Light-DOM 行为宿主，跑 switch 机器并把 connect 产出打到 root/thumb 角色节点。",
+          "description": "`<xh-switch>`：Light-DOM 行为宿主，运行 switch 状态机并把 connect 产出接到 root / thumb 角色节点。",
           "name": "XhSwitchElement",
           "cssParts": [
             {
@@ -48801,7 +48801,7 @@
               "name": "hidden-input"
             },
             {
-              "description": "可选：包住 root 与 text 的 <label>，点文字即切换",
+              "description": "可选：包裹 root 与 text 的 <label>，点击文字即切换",
               "name": "label"
             },
             {
@@ -48992,7 +48992,7 @@
               "type": {
                 "text": "boolean | undefined"
               },
-              "description": "受控开合；缺省该属性即非受控",
+              "description": "受控开合；未提供该属性即非受控",
               "name": "checked",
               "fieldName": "checked"
             },
@@ -49016,7 +49016,7 @@
               "type": {
                 "text": "boolean | undefined"
               },
-              "description": "只读：拨不动，但仍可聚焦、仍参与提交",
+              "description": "只读：不可切换，但仍可聚焦、仍参与提交",
               "name": "read-only",
               "fieldName": "readOnly"
             },
@@ -49064,7 +49064,7 @@
               "type": {
                 "text": "string | undefined"
               },
-              "description": "表单字段名；给了 hidden-input 才参与提交",
+              "description": "表单字段名；提供后 hidden-input 才参与提交",
               "name": "name",
               "fieldName": "name"
             },

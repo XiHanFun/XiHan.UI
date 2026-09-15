@@ -18,7 +18,7 @@ import { useSwitch } from './use-switch'
 
 type SwitchProps = SwitchSchema['props']
 
-/** value 与 defaultChecked 在原生 button 上另有含义，这里由机器接管。 */
+/** value 与 defaultChecked 在原生 button 上另有含义，这里由状态机接管。 */
 type ButtonProps = Omit<ComponentPropsWithRef<'button'>, 'value' | 'defaultChecked' | 'onChange'>
 
 export interface XhSwitchProps extends ButtonProps {
@@ -29,7 +29,7 @@ export interface XhSwitchProps extends ButtonProps {
   invalid?: boolean
   required?: boolean
   loading?: boolean
-  /** 表单字段名；给了 hidden-input 才带 name 并参与提交 */
+  /** 表单字段名；提供后 hidden-input 才带 name 并参与提交 */
   name?: string
   value?: string
   tone?: Tone
