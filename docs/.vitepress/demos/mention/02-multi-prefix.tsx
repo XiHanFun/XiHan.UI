@@ -1,4 +1,4 @@
-// 多种前缀 | @ 提人、# 打标签共用一个输入框，query-change 会报回是哪个前缀触发的
+// 多种前缀 | @ 提及成员、# 添加标签共用一个输入框，query-change 会报告是哪个前缀触发的
 import type { ReactNode } from "react";
 import { XhMentionRoot } from "@xihan-ui/react";
 import { useState } from "react";

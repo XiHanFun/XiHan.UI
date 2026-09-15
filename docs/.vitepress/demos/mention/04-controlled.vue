@@ -1,4 +1,4 @@
-<!-- 受控正文与选中回调 | 正文由宿主持有，select 事件报回插进去的是哪一条，用来攒收件人名单 -->
+<!-- 受控正文与选中回调 | 正文由宿主持有，select 事件报告插入的是哪一条，用于收集收件人名单 -->
 <script setup lang="ts">
 import { XhMentionRoot } from "@xihan-ui/vue";
 import { computed, ref } from "vue";

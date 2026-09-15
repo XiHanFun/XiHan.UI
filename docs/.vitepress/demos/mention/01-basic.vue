@@ -1,4 +1,4 @@
-<!-- 基础用法 | 在正文里敲 @ 才开候选，选中的那条被插到光标处，前后文一字不动 -->
+<!-- 基础用法 | 在正文中输入 @ 才打开候选，选中的条目被插入光标处，前后文不变 -->
 <script setup lang="ts">
 import { XhMentionRoot } from "@xihan-ui/vue";
 import { computed, ref } from "vue";
