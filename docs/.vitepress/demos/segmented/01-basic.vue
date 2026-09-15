@@ -1,4 +1,4 @@
-<!-- 基础用法 | 一排互斥选项：root 是 radiogroup、每段是 radio；整组只占一个 Tab 位，进组后四个方向键都能走 -->
+<!-- 基础用法 | 一排互斥选项：root 是 radiogroup、每段是 radio；整组只占一个 Tab 位，进组后四个方向键都可移动 -->
 <script setup lang="ts">
 import { XhSegmentedRoot } from "@xihan-ui/vue";
 

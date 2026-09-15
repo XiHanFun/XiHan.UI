@@ -1,4 +1,4 @@
-<!-- 语气 | tone 决定指示器与选中段文字用哪族颜色，六种语气各一组 -->
+<!-- 语气 | tone 决定指示器与选中段文字使用哪族颜色，六种语气各一组 -->
 <script setup lang="ts">
 import { XhSegmentedRoot } from "@xihan-ui/vue";
 

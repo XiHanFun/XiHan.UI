@@ -1,4 +1,4 @@
-// 禁用 | 单段禁用仍可聚焦、仍是方向键的起点，只是走不到它上面；整组禁用则谁都改不动
+// 禁用 | 单段禁用仍可聚焦、仍是方向键的起点，只是无法选中它；整组禁用则全部不可修改
 import type { ReactNode } from "react";
 import { XhSegmentedRoot } from "@xihan-ui/react";
 

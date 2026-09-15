@@ -12,7 +12,7 @@
 
 ## 用法
 
-一排互斥选项：root 是 radiogroup、每段是 radio；整组只占一个 Tab 位，进组后四个方向键都能走
+一排互斥选项：root 是 radiogroup、每段是 radio；整组只占一个 Tab 位，进组后四个方向键都可移动
 
 <XhDemo src="segmented/01-basic" />
 
@@ -26,43 +26,43 @@
 
 ### 受控
 
-传了 value 就由宿主说了算；值可以是 null，表示一段都没选中
+传入 value 后由宿主决定；值可以是 null，表示没有任何一段选中
 
 <XhDemo src="segmented/02-controlled" />
 
 ### 撑满行宽
 
-block 让整组占满一行，各段等分剩余空间，长短不一的文字也排得齐
+block 使整组占满一行，各段等分剩余空间，长短不一的文字也能对齐
 
 <XhDemo src="segmented/03-block" />
 
 ### 竖排
 
-orientation 只改视觉排布，四个方向键与 Home/End 照样都能走
+orientation 只改变视觉排布，四个方向键与 Home/End 照常可用
 
 <XhDemo src="segmented/04-vertical" />
 
 ### 禁用
 
-单段禁用仍可聚焦、仍是方向键的起点，只是走不到它上面；整组禁用则谁都改不动
+单段禁用仍可聚焦、仍是方向键的起点，只是无法选中它；整组禁用则全部不可修改
 
 <XhDemo src="segmented/05-disabled" />
 
 ### 颜色
 
-tone 决定指示器与选中段文字用哪族颜色，六种语气各一组
+tone 决定指示器与选中段文字使用哪族颜色，六种语气各一组
 
 <XhDemo src="segmented/06-tone" />
 
 ### 尺寸
 
-size 换的是段的高度、内边距与字号，指示器跟着量出来的段走
+size 改变段的高度、内边距与字号，指示器跟随测量得出的段
 
 <XhDemo src="segmented/07-size" />
 
 ### 表单
 
-给了 name 才带上隐藏输入参与提交；宿主表单点重置，选中值回落到 default-value
+提供 name 后才带上隐藏输入参与提交；宿主表单重置时，选中值回落到 default-value
 
 <XhDemo src="segmented/08-form" />
 
