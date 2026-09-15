@@ -30,7 +30,7 @@ export const XhPopoverRoot = defineComponent({
     defaultOpen: Boolean,
     placement: { type: String as PropType<Placement> },
     offset: { type: Number },
-    /** 文字方向；浮层搬到落点后继承不到作者子树上的方向，要 RTL 就显式给。 */
+    /** 文字方向；浮层迁移到落点后无法继承作者子树上的方向，需要 RTL 时显式提供。 */
     dir: { type: String as PropType<Direction> },
     modal: { type: Boolean, default: false },
     closeOnEscape: { type: Boolean, default: true },
@@ -62,7 +62,7 @@ export const XhPopoverTrigger = defineComponent({
   // 直通属性自己合：Vue 默认把作者的处理器排在部件的后面，这里改成作者先跑
   inheritAttrs: false,
   props: {
-    /** 借用作者的子节点当触发器，不再渲染自己的包裹元素；子节点须恰好一个。 */
+    /** 借用作者的子节点作为触发器，不再渲染自己的包裹元素；子节点须恰好一个。 */
     asChild: Boolean,
   },
   setup(props, { slots, attrs }) {

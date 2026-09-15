@@ -39018,15 +39018,15 @@
       "declarations": [
         {
           "kind": "class",
-          "description": "`<xh-popover>` —— Light-DOM 行为宿主：用户写 trigger/positioner/content/... 角色节点，\n元素跑 popover 机器并把 connect 产出打上去。浮层定位引擎在本元素里建好、经 refs 注入机器，\n锚点取 trigger、被定位的浮层取 positioner；机器只认端口，不认识具体引擎。",
+          "description": "`<xh-popover>`：Light-DOM 行为宿主：作者写 trigger / positioner / content / ... 角色节点，\n元素运行 popover 状态机并把 connect 产出接上。浮层定位引擎在本元素中创建、经 refs 注入状态机，\n锚点取 trigger、被定位的浮层取 positioner；状态机只识别端口，不识别具体引擎。",
           "name": "XhPopoverElement",
           "cssParts": [
             {
-              "description": "触发按钮（aria-haspopup/aria-expanded/aria-controls 所在），同时是定位锚点",
+              "description": "触发按钮（aria-haspopup / aria-expanded / aria-controls 所在），同时是定位锚点",
               "name": "trigger"
             },
             {
-              "description": "浮层定位容器，坐标由引擎写成内联样式",
+              "description": "浮层定位容器，坐标由引擎写为内联样式",
               "name": "positioner"
             },
             {
@@ -39156,7 +39156,7 @@
               "type": {
                 "text": "Partial<PopoverTranslations> | undefined"
               },
-              "description": "关闭按钮的无障碍名；connect 每帧重写 aria-label，作者自己写在节点上会被盖掉，只能从这里给。"
+              "description": "关闭按钮的无障碍名；connect 每帧重写 aria-label，作者写在节点上的值会被覆盖，只能从此处提供。"
             },
             {
               "kind": "field",
@@ -39275,7 +39275,7 @@
                   }
                 }
               ],
-              "description": "机器挂载前建立 Presence，让行为资源与视觉退场从第一轮展开起共用生命周期。"
+              "description": "状态机挂载前建立 Presence，让行为资源与视觉退场从第一轮展开起共用生命周期。"
             },
             {
               "kind": "field",
@@ -39326,7 +39326,7 @@
               "type": {
                 "text": "boolean | undefined"
               },
-              "description": "受控开合；缺省该属性即非受控",
+              "description": "受控开合；未提供该属性即非受控",
               "name": "open",
               "fieldName": "open"
             },
@@ -39342,7 +39342,7 @@
               "type": {
                 "text": "Placement | undefined"
               },
-              "description": "首选放置位，默认 bottom；避让后的实际位写在 data-placement 上",
+              "description": "首选放置位，默认 bottom；避让后的实际位置写在 data-placement 上",
               "name": "placement",
               "fieldName": "placement"
             },
@@ -39358,7 +39358,7 @@
               "type": {
                 "text": "Direction | undefined"
               },
-              "description": "文字方向，翻转浮层在行内轴上 start 与 end 的落点；只在显式给了才写到定位层上",
+              "description": "文字方向，翻转浮层在行内轴上 start 与 end 的落点；只在显式提供时才写到定位层上",
               "name": "dir",
               "fieldName": "direction"
             },
@@ -39366,7 +39366,7 @@
               "type": {
                 "text": "boolean | undefined"
               },
-              "description": "模态浮层陷住焦点并回绕 Tab，默认 false",
+              "description": "模态浮层陷入焦点并回绕 Tab，默认 false",
               "name": "modal",
               "fieldName": "modal"
             },
@@ -39374,7 +39374,7 @@
               "type": {
                 "text": "boolean | undefined"
               },
-              "description": "Esc 关闭，默认 true；写 close-on-escape=\"false\" 关掉",
+              "description": "Esc 关闭，默认 true；写 close-on-escape=\"false\" 关闭",
               "name": "close-on-escape",
               "fieldName": "closeOnEscape"
             },
@@ -39382,7 +39382,7 @@
               "type": {
                 "text": "boolean | undefined"
               },
-              "description": "层外交互关闭，默认 true；写 \"false\" 关掉",
+              "description": "层外交互关闭，默认 true；写 \"false\" 关闭",
               "name": "close-on-interact-outside",
               "fieldName": "closeOnInteractOutside"
             },
