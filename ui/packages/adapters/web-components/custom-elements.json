@@ -2419,15 +2419,15 @@
       "declarations": [
         {
           "kind": "class",
-          "description": "`<xh-badge>` —— 角标宿主，无状态机。\n\n被标记的东西写进 root，角标本身写进 indicator；角标是挂在别的元素角上的一枚标记，\n行内的状态药丸请用 `<xh-tag>`。",
+          "description": "`<xh-badge>`：角标宿主，无状态机。\n\n被标记的对象写入 root，角标本身写入 indicator；角标是挂在其他元素角上的标记，\n行内的状态药丸使用 `<xh-tag>`。",
           "name": "XhBadgeElement",
           "cssParts": [
             {
-              "description": "锚点：被标记的那个东西放进它里面",
+              "description": "锚点：被标记的对象放置在其中",
               "name": "root"
             },
             {
-              "description": "角标本身，绝对定位在 root 的某个角上",
+              "description": "角标本身，绝对定位在 root 的某个角",
               "name": "indicator"
             }
           ],
@@ -2529,7 +2529,7 @@
               "type": {
                 "text": "BadgePlacement | undefined"
               },
-              "description": "挂在哪个角上，默认 top-end",
+              "description": "挂在哪个角，默认 top-end",
               "name": "placement",
               "fieldName": "placement"
             },
@@ -2553,7 +2553,7 @@
               "type": {
                 "text": "number | undefined"
               },
-              "description": "计数：给了它徽标就自己出数字，超过 max 写成「max+」；节点已有内容时以内容为准",
+              "description": "计数：提供后徽标自行显示数字，超过 max 时显示为「max+」；节点已有内容时以内容为准",
               "name": "count",
               "fieldName": "count"
             },
@@ -2577,7 +2577,7 @@
               "type": {
                 "text": "boolean | undefined"
               },
-              "description": "只出一个点，不出数字",
+              "description": "只显示圆点，不显示数字",
               "name": "dot",
               "fieldName": "dot"
             },
@@ -2585,7 +2585,7 @@
               "type": {
                 "text": "string | undefined"
               },
-              "description": "读屏怎么念这枚角标，例如「3 条未读」",
+              "description": "读屏朗读该角标的方式，例如「3 条未读」",
               "name": "label",
               "fieldName": "label"
             }
