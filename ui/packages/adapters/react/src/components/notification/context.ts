@@ -12,7 +12,7 @@ import { createContext, useContext } from 'react'
 export interface NotificationContext {
   api: NotificationApi
   service: Service<NotificationSchema>
-  /** 入队并返回 id；同 id 已存在则就地改写，位置不动。 */
+  /** 入队并返回 id；同 id 已存在则就地改写，位置不变。 */
   create: (options?: NotificationOptions) => string
   update: (id: string, options: Partial<NotificationOptions>) => void
   dismiss: (id: string) => void
@@ -37,7 +37,7 @@ export function useNotificationContext(): NotificationContext {
   return ctx
 }
 
-/** 不在队列里时返回 undefined，单张卡片照样能单独用。 */
+/** 不在队列内时返回 undefined，单张卡片仍可单独使用。 */
 export function useNotificationContextOptional(): NotificationContext | undefined {
   return useContext(Ctx)
 }

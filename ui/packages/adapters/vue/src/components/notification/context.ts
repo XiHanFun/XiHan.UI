@@ -11,7 +11,7 @@ import { inject, provide } from 'vue'
 
 export interface NotificationContext {
   api: ComputedRef<NotificationApi>
-  /** 入队并返回 id；同 id 已存在则就地改写，位置不动。 */
+  /** 入队并返回 id；同 id 已存在则就地改写，位置不变。 */
   create: (options?: NotificationOptions) => string
   update: (id: string, options: Partial<NotificationOptions>) => void
   dismiss: (id: string) => void

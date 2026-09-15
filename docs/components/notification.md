@@ -109,14 +109,14 @@ create 返回的就是队列身份 id，存下来随时 dismiss 掉那一条；d
 
 | 属性 | 类型 | 必填 | 说明 |
 | --- | --- | --- | --- |
-| `items` | `NotificationRecord[]` |  | 受控队列：给了就由宿主说了算，内部写入只发 onItemsChange。 |
+| `items` | `NotificationRecord[]` |  | 受控队列：提供后由宿主决定，内部写入只发 onItemsChange。 |
 | `defaultItems` | `NotificationRecord[]` |  |  |
 | `placement` | `NotificationPlacement` |  | 默认落位，默认 bottom-end。 |
-| `max` | `number` |  | 每个位置最多同时留几条，超出先挤低优先级、同级里挤最旧的。默认 5；给 Infinity 即不限。 |
-| `dedupe` | `NotificationDedupe` |  | 重复怎么算，默认 'id'。 |
-| `gap` | `number` |  | 同一摞内的间距（px），默认 16。 |
-| `duration` | `number` |  | 单条没写 duration 时的默认停留毫秒。 |
-| `removeDelay` | `number` |  | 单条没写 removeDelay 时的默认退场窗口毫秒。 |
+| `max` | `number` |  | 每个位置最多同时保留几条，超出时先移除低优先级、同级中移除最旧的。默认 5；提供 Infinity 即不限。 |
+| `dedupe` | `NotificationDedupe` |  | 重复的处理方式，默认 'id'。 |
+| `gap` | `number` |  | 同一组内的间距（px），默认 16。 |
+| `duration` | `number` |  | 单条未写 duration 时的默认停留毫秒。 |
+| `removeDelay` | `number` |  | 单条未写 removeDelay 时的默认退场窗口毫秒。 |
 | `pauseOnPageIdle` | `boolean` |  | 页面切到后台时暂停计时，逐条下发给 toast。 |
 | `translations` | `Partial<NotificationTranslations>` |  |  |
 | `onItemsChange` | `(details: NotificationItemsChangeDetails) => void` |  |  |
@@ -164,7 +164,7 @@ create 返回的就是队列身份 id，存下来随时 dismiss 掉那一条；d
 | `placements` | `NotificationPlacement[]` | 当前有条目的位置，按九宫格固定顺序。作者据此决定渲染哪几个 group。 |
 | `count` | `number` |  |
 | `getItemsByPlacement` | `(placement: NotificationPlacement) => ResolvedNotification[]` |  |
-| `create` | `(options?: NotificationOptions) => string` | 入队并返回 id；同 id 已存在则就地改写，位置不动。 |
+| `create` | `(options?: NotificationOptions) => string` | 入队并返回 id；同 id 已存在则就地改写，位置不变。 |
 | `update` | `(id: string, options: Partial<NotificationOptions>) => void` |  |
 | `dismiss` | `(id: string) => void` |  |
 | `dismissAll` | `() => void` |  |

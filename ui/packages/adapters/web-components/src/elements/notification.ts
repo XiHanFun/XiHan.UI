@@ -42,9 +42,9 @@ const NUMBER_CONVERTER = { fromAttribute: (v: string | null) => (v == null || v 
 const BOOLEAN_CONVERTER = { fromAttribute: (v: string | null) => (v === null ? undefined : v !== 'false') }
 
 /**
- * 这一摞对应哪个位置。属性缺席就交 undefined，由 connect 回落到队列的 placement。
- * 写坏了照原样交出去：它与九个位没有一个对得上，这摞就一直是空的——
- * 空得明显好过悄悄冒充另一个位置，把通知摆到作者没想到的角落。
+ * 该堆叠对应哪个位置。属性缺席时交 undefined，由 connect 回落到队列的 placement。
+ * 写错时照原样交出：它与九个位置没有一个匹配，该堆叠就一直为空：
+ * 明显的空白好过静默冒充另一个位置，把通知放到作者未预期的角落。
  */
 function groupPlacement(el: HTMLElement): NotificationPlacement | undefined {
   const raw = el.getAttribute('placement')
@@ -52,25 +52,25 @@ function groupPlacement(el: HTMLElement): NotificationPlacement | undefined {
 }
 
 /**
- * `<xh-notification>` —— Light-DOM 行为宿主：作者写 root 与若干 group 角色节点，
- * 元素跑 notification 机器并把 connect 产出打上去。每个 group 用 `placement` 属性声明自己是哪个位置，
- * 不写就落在队列的 placement 上。
+ * `<xh-notification>`：Light-DOM 行为宿主：作者写 root 与若干 group 角色节点，
+ * 元素运行 notification 状态机并把 connect 产出接上。每个 group 用 `placement` 属性声明所在位置，
+ * 未写时落在队列的 placement 上。
  *
- * 单条通知的节点由作者按队列渲染（读 `items` 或听 `items-change`），元素不替作者生成：
- * 生成节点就等于收走模板控制权，图标、进度条、i18n 文案都再塞不进来。
- * 每条渲染成一个 `<xh-notification-item>`，它走完退场会冒泡一条 status-change，本元素据此把记录删掉。
+ * 单条通知的节点由作者按队列渲染（读取 `items` 或监听 `items-change`），元素不替作者生成：
+ * 生成节点等于收走模板控制权，图标、进度条、i18n 文案都无法再加入。
+ * 每条渲染为一个 `<xh-notification-item>`，它走完退场会冒泡一条 status-change，本元素据此删除记录。
  *
  * @customElement xh-notification
  * @attr {'top-start'|'top'|'top-end'|'middle-start'|'middle'|'middle-end'|'bottom-start'|'bottom'|'bottom-end'} placement - 默认落位，默认 bottom-end
- * @attr {number} max - 每个位置最多同时留几条，超出先挤低优先级的、同级里挤最旧的；默认 5，给 Infinity 即不限
- * @attr {'id'|'content'} dedupe - 重复怎么算，默认 id；content 则同一句话合并成一条并计数
- * @attr {number} gap - 同一摞内的间距（px），默认 16
- * @attr {number} duration - 单条没写 duration 时的默认停留毫秒
- * @attr {number} remove-delay - 单条没写 remove-delay 时的默认退场窗口毫秒
- * @attr {boolean} pause-on-page-idle - 页面切到后台时按住计时，逐条下发
+ * @attr {number} max - 每个位置最多同时保留几条，超出时先移除低优先级、同级中移除最旧的；默认 5，提供 Infinity 即不限
+ * @attr {'id'|'content'} dedupe - 重复的处理方式，默认 id；content 则同一内容合并为一条并计数
+ * @attr {number} gap - 同一组内的间距（px），默认 16
+ * @attr {number} duration - 单条未写 duration 时的默认停留毫秒
+ * @attr {number} remove-delay - 单条未写 remove-delay 时的默认退场窗口毫秒
+ * @attr {boolean} pause-on-page-idle - 页面切到后台时暂停计时，逐条下发
  * @fires items-change - 队列变化；detail 为 `{ items: NotificationRecord[] }`
  * @csspart root - 队列的作用域包装（display: contents，不占布局），承载 data-count / data-empty
- * @csspart group - role=region 的地标，某一个位置上的那一摞；可自带 placement 属性，承载 data-placement / data-count / data-empty 与间距
+ * @csspart group - role=region 的地标，某一个位置上的一组；可自带 placement 属性，承载 data-placement / data-count / data-empty 与间距
  */
 export class XhNotificationElement extends XhElement {
   static override partContract = { anatomy: notificationAnatomy, meta: notificationMeta }
@@ -126,8 +126,8 @@ export class XhNotificationElement extends XhElement {
   }
 
   /**
-   * 命令式入口共用的取法。机器要到进文档（hostConnected）才建：
-   * 还没进文档就发通知是调用方的时序问题，明说好过把这条通知静默丢掉。
+   * 命令式入口共用的取法。状态机在进入文档（hostConnected）后才建立：
+   * 尚未进入文档就发通知是调用方的时序问题，明确报错好过把通知静默丢弃。
    */
   private commands(): NotificationApi {
     if (!this.ctrl.service)
@@ -135,15 +135,15 @@ export class XhNotificationElement extends XhElement {
     return connectNotification(this.ctrl.service, wcNormalize)
   }
 
-  /** 入队并返回 id；同 id 已存在则就地改写，位置不动（处理中转已完成走的就是这条）。 */
+  /** 入队并返回 id；同 id 已存在则就地改写，位置不变（处理中转为已完成即使用此路径）。 */
   create(options: NotificationOptions = {}): string {
     return this.commands().create(options)
   }
 
   /**
-   * 刻意不叫 `update`：那是 Lit 自己的渲染生命周期钩子，占用它会让宿主每次重渲
-   * 都拐进这里来（还带着一个 changedProperties 当 id），组件当场不工作。
-   * Vue 侧没有这层基类，composable 上仍叫 `update`。
+   * 刻意不命名为 `update`：那是 Lit 自身的渲染生命周期钩子，占用它会使宿主每次重渲
+   * 都进入此处（并把 changedProperties 当作 id），组件将无法工作。
+   * Vue 侧没有这层基类，composable 上仍命名为 `update`。
    */
   updateItem(id: string, options: Partial<NotificationOptions>): void {
     this.commands().update(id, options)
@@ -157,7 +157,7 @@ export class XhNotificationElement extends XhElement {
     this.commands().dismissAll()
   }
 
-  /** max 之内、按加入先后排列的可见条目，已补齐默认值，可直接摊给 `<xh-notification-item>`。 */
+  /** max 之内、按加入先后排列的可见条目，已补齐默认值，可直接展开给 `<xh-notification-item>`。 */
   get visibleNotifications(): ResolvedNotification[] {
     return this.commands().visibleNotifications
   }
@@ -176,8 +176,8 @@ export class XhNotificationElement extends XhElement {
   }
 
   /**
-   * 单条通知走完退场会冒泡上来：记录该从队列里删掉了。
-   * 认元素名而不是只认事件名——avatar 之类的部件也派 status-change，且完全可能就摆在通知内部。
+   * 单条通知退场完成后会冒泡上来：记录应从队列中删除。
+   * 识别元素名而不是只识别事件名：avatar 之类的部件也派发 status-change，且完全可能位于通知内部。
    */
   private readonly onItemStatus = (event: Event): void => {
     const target = event.target as Element | null
@@ -220,37 +220,37 @@ export class XhNotificationElement extends XhElement {
 const ITEM_CONTRACT = { anatomy: notificationAnatomy, meta: { component: 'notification', requiredParts: ['item'] } }
 
 /**
- * `<xh-notification-item>` —— 单条通知卡片：作者写 item/item-indicator/item-title/
- * item-description/item-action-trigger/item-close-trigger 角色节点，
- * 元素跑生命周期机器并把 connect 产出打上去。
+ * `<xh-notification-item>`：单条通知卡片：作者写 item / item-indicator / item-title /
+ * item-description / item-action-trigger / item-close-trigger 角色节点，
+ * 元素运行生命周期状态机并把 connect 产出接上。
  *
- * item 承载 role 与 aria-live：默认 status + polite（排队等读屏的空隙），
- * tone="danger" 换成 alert + assertive（打断当前朗读）。指针停在卡片上、
- * 或焦点落进卡片内部都会把倒计时按住，离开才接着走剩下的那一段。
+ * item 承载 role 与 aria-live：默认 status + polite（排队等待读屏的空隙），
+ * tone="danger" 换为 alert + assertive（打断当前朗读）。指针停在卡片上、
+ * 或焦点落进卡片内部都会暂停倒计时，离开后继续剩余部分。
  *
- * 退场窗口走完只把卡片收起、不删节点：作者写在里面的内容归作者，
- * 什么时候把这条从队列里删掉是 `<xh-notification>` 的事（它收本元素冒泡上去的 status-change）。
+ * 退场窗口结束时只把卡片收起、不删除节点：作者写在其中的内容归作者，
+ * 何时把该条从队列中删除是 `<xh-notification>` 的职责（它接收本元素冒泡的 status-change）。
  *
  * @customElement xh-notification-item
- * @attr {string} id - 队列身份，`<xh-notification>` 按它寻址；不给就用实例自己的 scope id
- * @attr {string} title - 标题文案；作者没在 item-title 部件里写内容时由元素填入
- * @attr {string} description - 补充说明；作者没在 item-description 部件里写内容时由元素填入
- * @attr {'info'|'success'|'warning'|'danger'} tone - 语气，默认 info；danger 走 alert + assertive
- * @attr {boolean} loading - 事情还没完：图标换成转圈，且不自动消失
- * @attr {number} duration - 停留毫秒，默认 5000；<=0 即关掉自动消失
+ * @attr {string} id - 队列身份，`<xh-notification>` 按它寻址；未提供时使用实例自身的 scope id
+ * @attr {string} title - 标题文案；作者未在 item-title 部件中写内容时由元素填入
+ * @attr {string} description - 补充说明；作者未在 item-description 部件中写内容时由元素填入
+ * @attr {'info'|'success'|'warning'|'danger'} tone - 语气，默认 info；danger 使用 alert + assertive
+ * @attr {boolean} loading - 事情尚未完成：图标换为转圈，且不自动消失
+ * @attr {number} duration - 停留毫秒，默认 5000；<=0 即关闭自动消失
  * @attr {number} remove-delay - 退场窗口毫秒，默认 200，留给退场动画
- * @attr {boolean} closable - 是否给可用的关闭按钮，默认 true；写 closable="false" 关掉
- * @attr {boolean} pause-on-page-idle - 页面切到后台时按住计时，默认关
- * @attr {boolean} paused - 由宿主整摞一起按住计时，默认关；与指针、焦点那几路并存
- * @fires status-change - 生命周期落位；detail 为 `{ id: string, status: 'dismissing'|'unmounted' }`
+ * @attr {boolean} closable - 是否提供可用的关闭按钮，默认 true；写 closable="false" 关闭
+ * @attr {boolean} pause-on-page-idle - 页面切到后台时暂停计时，默认关闭
+ * @attr {boolean} paused - 由宿主整组一起暂停计时，默认关闭；与指针、焦点等来源并存
+ * @fires status-change - 生命周期落定；detail 为 `{ id: string, status: 'dismissing'|'unmounted' }`
  * @fires action - 操作按钮被按下；detail 为 `{ id: string }`
  * @csspart item - role=status（danger 时 alert）的卡片，承载 data-tone / data-loading / data-state / data-paused
- * @csspart item-indicator - 语气指示符；留空即由皮肤按卡片上的语气画一枚兜底字形，卡片加载中则换成转圈
+ * @csspart item-indicator - 语气指示符；留空即由皮肤按卡片上的语气绘制兜底字形，卡片加载中则换为转圈
  * @csspart item-title - 标题，aria-labelledby 的目标
  * @csspart item-description - 补充说明，aria-describedby 的目标
- * @csspart item-action-trigger - 操作按钮：先发 action 再进入退场
+ * @csspart item-action-trigger - 操作按钮：先发出 action 再进入退场
  * @csspart item-progress - 倒计时条；不自动消失时收起
- * @csspart item-close-trigger - 关闭按钮；closable=false 时转原生 disabled 并收起
+ * @csspart item-close-trigger - 关闭按钮；closable=false 时为原生 disabled 并收起
  */
 export class XhNotificationItemElement extends XhElement {
   static override partContract = ITEM_CONTRACT

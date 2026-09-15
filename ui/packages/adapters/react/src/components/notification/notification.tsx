@@ -40,7 +40,7 @@ export interface NotificationRootSlotProps {
   dismissAll: () => void
 }
 
-/** 根上自有的那些取值。 */
+/** 根上自有的取值。 */
 type RootElementProps = Omit<ComponentPropsWithRef<'div'>, 'children'>
 
 export interface XhNotificationRootProps extends RootElementProps {
@@ -109,13 +109,13 @@ export function XhNotificationRoot({
 
 XhNotificationRoot.xhEvents = ['items-change'] as const
 
-/** 函数式 children 的载荷：这一组里逐条铺开的通知。 */
+/** 函数式 children 的载荷：该组中逐条铺开的通知。 */
 export interface NotificationGroupSlotProps {
   item: ResolvedNotification
 }
 
 export interface XhNotificationGroupProps extends Omit<ComponentPropsWithRef<'div'>, 'children'> {
-  /** 不写就用 notification 的 placement；写了就只收这个位置上的条目。 */
+  /** 未写时使用 notification 的 placement；写了则只接收该位置上的条目。 */
   placement?: NotificationPlacement
   children?: SlotChildren<NotificationGroupSlotProps>
 }
@@ -135,7 +135,7 @@ export function XhNotificationGroup({ placement, children, ...rest }: XhNotifica
   )
 }
 
-/** 函数式 children 的载荷：这张卡片自己的那份 api。 */
+/** 函数式 children 的载荷：该卡片自己的 api。 */
 export interface NotificationItemSlotProps {
   item: NotificationItemApi
 }
@@ -150,7 +150,7 @@ export interface XhNotificationItemProps {
   removeDelay?: number
   closable?: boolean
   pauseOnPageIdle?: boolean
-  /** 由宿主整摞一起按住计时；与指针、焦点那几路并存，最后一个松开才继续走。 */
+  /** 由宿主整组一起暂停计时；与指针、焦点等路径并存，最后一个释放后才继续。 */
   paused?: boolean
   translations?: NotificationProps['translations']
   onStatusChange?: ToastSchema['props']['onStatusChange']
@@ -158,7 +158,7 @@ export interface XhNotificationItemProps {
   children?: SlotChildren<NotificationItemSlotProps>
 }
 
-/** 单条卡片。生命周期复用 toast 那台机器：会自己消失的卡片，这一行为与消息来源无关。 */
+/** 单条卡片。生命周期复用 toast 的状态机：会自动消失的卡片，该行为与消息来源无关。 */
 export function XhNotificationItem({ children, ...props }: XhNotificationItemProps): ReactNode {
   // 桶名写 notification 而不是 toast：卡片跑的虽然是 toast 那台机器，
   // 但它的文案该跟着通知走
@@ -179,7 +179,7 @@ export function XhNotificationItem({ children, ...props }: XhNotificationItemPro
 XhNotificationItem.xhEvents = ['status-change', 'action'] as const
 
 export interface XhNotificationItemIndicatorProps extends ComponentPropsWithRef<'span'> {}
-/** 语气指示符：不给内容就由皮肤按节点上的 data-tone 画兜底字形，data-loading 时换成转圈。 */
+/** 语气指示符：未提供内容时由皮肤按节点上的 data-tone 绘制兜底字形，data-loading 时换为加载指示。 */
 export function XhNotificationItemIndicator({ children, ...rest }: XhNotificationItemIndicatorProps): ReactNode {
   const ctx = useNotificationItemContext()
   return <span {...mergeReactProps(ctx.api.getItemIndicatorProps() as Record<string, unknown>, rest as Record<string, unknown>)}>{children}</span>

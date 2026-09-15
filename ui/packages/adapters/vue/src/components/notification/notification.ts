@@ -71,7 +71,7 @@ export const XhNotificationRoot = defineComponent({
   },
 })
 
-/** 默认插槽的载荷：这一组里逐条铺开的通知。 */
+/** 默认插槽的载荷：该组中逐条铺开的通知。 */
 export interface NotificationGroupSlotProps {
   item: ResolvedNotification
 }
@@ -103,7 +103,7 @@ export const XhNotificationGroup = defineComponent({
   },
 })
 
-/** 单条卡片。生命周期复用 toast 那台机器：会自己消失的卡片，这一行为与消息来源无关。 */
+/** 单条卡片。生命周期复用 toast 的状态机：会自动消失的卡片，该行为与消息来源无关。 */
 export const XhNotificationItem = defineComponent({
   name: 'XhNotificationItem',
   // 缺省值由 connect 决定；普通类型省略 default，Boolean 显式保留 undefined
@@ -145,7 +145,7 @@ export const XhNotificationItem = defineComponent({
   },
 })
 
-/** 语气指示符。作者不写内容时由皮肤按 data-tone 画一枚兜底字形，data-loading 时换成转圈。 */
+/** 语气指示符。作者未写内容时由皮肤按 data-tone 绘制兜底字形，data-loading 时换为加载指示。 */
 export const XhNotificationItemIndicator = defineComponent({
   name: 'XhNotificationItemIndicator',
   setup(_, { slots }) {
