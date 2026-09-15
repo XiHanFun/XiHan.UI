@@ -97,8 +97,8 @@
 
 ### 组合
 
-- 每一项就是一枚[切换按钮](./toggle)；放进[工具栏](./toolbar)与其他按钮组成一排。
-- 需要面板关联的换[标签页](./tabs)；样式上更像分段控件的换[分段控制器](./segmented)。
+- 每一项就是一个[切换按钮](./toggle)；放入[工具栏](./toolbar)与其他按钮组成一排。
+- 需要面板关联时使用[标签页](./tabs)；需要分段控件形态时使用[分段控制器](./segmented)。
 
 ### 最佳实践
 
@@ -265,7 +265,7 @@
 | `--xh-toggle-group-item-gap` | `item` | `gap` | `default` | `--xh-_toggle-group-gap` | toggle-group 的 item 部件 gap 覆盖槽。 |
 | `--xh-toggle-group-item-h` | `item` | `block-size` | `default` | `--xh-_toggle-group-h` | toggle-group 的 item 部件 block-size 覆盖槽。 |
 | `--xh-toggle-group-item-px` | `item` | `padding-inline` | `default` | `--xh-_toggle-group-px` | toggle-group 的 item 部件 padding-inline 覆盖槽。 |
-| `--xh-toggle-group-item-radius` | `item`<br>`root` | `border-end-end-radius`<br>`border-end-start-radius`<br>`border-radius`<br>`border-start-end-radius`<br>`border-start-start-radius` | `first-child`<br>`first-of-type`<br>`last-child`<br>`last-of-type`<br>`orientation=horizontal`<br>`orientation=vertical`<br>`variant=outline` | `--xh-shape-pill` | toggle-group 的 item、root 部件 border-end-end-radius、border-end-start-radius、border-radius、border-start-end-radius、border-start-start-radius 覆盖槽。 |
+| `--xh-toggle-group-item-radius` | `item`<br>`root` | `border-end-end-radius`<br>`border-end-start-radius`<br>`border-radius`<br>`border-start-end-radius`<br>`border-start-start-radius` | `first-child`<br>`first-of-type`<br>`last-child`<br>`last-of-type`<br>`orientation=horizontal`<br>`orientation=vertical`<br>`variant=outline` | `--xh-shape-control` | toggle-group 的 item、root 部件 border-end-end-radius、border-end-start-radius、border-radius、border-start-end-radius、border-start-start-radius 覆盖槽。 |
 | `--xh-toggle-group-item-shadow` | `item` | `box-shadow` | `state=on` | `--xh-_toggle-group-highlight` | toggle-group 的 item 部件 box-shadow 覆盖槽。 |
 | `--xh-toggle-group-outline-color` | `root` | `border` | `variant=outline` | `--xh-_tone-border-control` | toggle-group 的 root 部件 border 覆盖槽。 |
 | `--xh-toggle-group-separator-color` | `root` | `background` | `xh-toggle-group-separator` | `--xh-fg-default` | toggle-group 的 root 部件 background 覆盖槽。 |

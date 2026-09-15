@@ -38925,7 +38925,7 @@
   --xh-_toggle-group-item-highlight-on: none;
 
   position: relative;
-  border-radius: var(--xh-toggle-group-item-radius, var(--xh-shape-pill));
+  border-radius: var(--xh-toggle-group-item-radius, var(--xh-shape-control));
 }
 
 [data-scope='toggle-group'][data-part='root'][data-variant='outline']::after {
@@ -39041,26 +39041,26 @@
    角画在条目上，槽名也带 item 段，与同文件其余条目槽同段 */
 [data-scope='toggle-group'][data-part='root'][data-orientation='horizontal']
   > [data-scope='toggle-group'][data-part='item']:first-child {
-  border-start-start-radius: var(--xh-toggle-group-item-radius, var(--xh-shape-pill));
-  border-end-start-radius: var(--xh-toggle-group-item-radius, var(--xh-shape-pill));
+  border-start-start-radius: var(--xh-toggle-group-item-radius, var(--xh-shape-control));
+  border-end-start-radius: var(--xh-toggle-group-item-radius, var(--xh-shape-control));
 }
 
 [data-scope='toggle-group'][data-part='root'][data-orientation='horizontal']
   > [data-scope='toggle-group'][data-part='item']:last-child {
-  border-start-end-radius: var(--xh-toggle-group-item-radius, var(--xh-shape-pill));
-  border-end-end-radius: var(--xh-toggle-group-item-radius, var(--xh-shape-pill));
+  border-start-end-radius: var(--xh-toggle-group-item-radius, var(--xh-shape-control));
+  border-end-end-radius: var(--xh-toggle-group-item-radius, var(--xh-shape-control));
 }
 
 [data-scope='toggle-group'][data-part='root'][data-orientation='vertical']
   > [data-scope='toggle-group'][data-part='item']:first-child {
-  border-start-start-radius: var(--xh-toggle-group-item-radius, var(--xh-shape-pill));
-  border-start-end-radius: var(--xh-toggle-group-item-radius, var(--xh-shape-pill));
+  border-start-start-radius: var(--xh-toggle-group-item-radius, var(--xh-shape-control));
+  border-start-end-radius: var(--xh-toggle-group-item-radius, var(--xh-shape-control));
 }
 
 [data-scope='toggle-group'][data-part='root'][data-orientation='vertical']
   > [data-scope='toggle-group'][data-part='item']:last-child {
-  border-end-start-radius: var(--xh-toggle-group-item-radius, var(--xh-shape-pill));
-  border-end-end-radius: var(--xh-toggle-group-item-radius, var(--xh-shape-pill));
+  border-end-start-radius: var(--xh-toggle-group-item-radius, var(--xh-shape-control));
+  border-end-end-radius: var(--xh-toggle-group-item-radius, var(--xh-shape-control));
 }
 
 [data-scope='toggle-group'][data-part='item']:not([data-disabled]):hover {
@@ -39181,26 +39181,26 @@
    条目是原生 button，分隔线不是。没有分隔线时这两条与上面按子节点认的那几条同值 */
 [data-scope='toggle-group'][data-part='root'][data-orientation='horizontal']
   > [data-scope='toggle-group'][data-part='item']:first-of-type {
-  border-start-start-radius: var(--xh-toggle-group-item-radius, var(--xh-shape-pill));
-  border-end-start-radius: var(--xh-toggle-group-item-radius, var(--xh-shape-pill));
+  border-start-start-radius: var(--xh-toggle-group-item-radius, var(--xh-shape-control));
+  border-end-start-radius: var(--xh-toggle-group-item-radius, var(--xh-shape-control));
 }
 
 [data-scope='toggle-group'][data-part='root'][data-orientation='horizontal']
   > [data-scope='toggle-group'][data-part='item']:last-of-type {
-  border-start-end-radius: var(--xh-toggle-group-item-radius, var(--xh-shape-pill));
-  border-end-end-radius: var(--xh-toggle-group-item-radius, var(--xh-shape-pill));
+  border-start-end-radius: var(--xh-toggle-group-item-radius, var(--xh-shape-control));
+  border-end-end-radius: var(--xh-toggle-group-item-radius, var(--xh-shape-control));
 }
 
 [data-scope='toggle-group'][data-part='root'][data-orientation='vertical']
   > [data-scope='toggle-group'][data-part='item']:first-of-type {
-  border-start-start-radius: var(--xh-toggle-group-item-radius, var(--xh-shape-pill));
-  border-start-end-radius: var(--xh-toggle-group-item-radius, var(--xh-shape-pill));
+  border-start-start-radius: var(--xh-toggle-group-item-radius, var(--xh-shape-control));
+  border-start-end-radius: var(--xh-toggle-group-item-radius, var(--xh-shape-control));
 }
 
 [data-scope='toggle-group'][data-part='root'][data-orientation='vertical']
   > [data-scope='toggle-group'][data-part='item']:last-of-type {
-  border-end-start-radius: var(--xh-toggle-group-item-radius, var(--xh-shape-pill));
-  border-end-end-radius: var(--xh-toggle-group-item-radius, var(--xh-shape-pill));
+  border-end-start-radius: var(--xh-toggle-group-item-radius, var(--xh-shape-control));
+  border-end-end-radius: var(--xh-toggle-group-item-radius, var(--xh-shape-control));
 }
 
 /* 连接层把它写成 type=hidden，UA 自己就不渲染；这里的视觉隐藏是给元素升级前那一瞬兜底
