@@ -1,7 +1,6 @@
 # ColorField 颜色字段 <Badge type="info" text="alpha" />
 
-一个能手打颜色串的单行框：旁边一块当前颜色的色块，框里的字是草稿，回车或失焦收下，收下后按 `format` 重写成规范写法。
-它是[文本字段](./text-field)那一族的成员，接的是「我知道要什么颜色、直接打进去」这条路；要在色域里挑，用[颜色选择器](./color-picker)。
+可以手动输入颜色串的单行框，旁边显示当前颜色的色块。框内文字是草稿，回车或失焦时提交，提交后按 `format` 重写为规范写法。它属于[文本字段](./text-field)家族，面向已知颜色值直接输入的场景；需要在色域中挑选时使用[颜色选择器](./color-picker)。
 
 <div class="xh-resource-links">
   <a href="https://github.com/XiHanFun/XiHan.UI/tree/dev/ui/packages/engine/headless/src/color-field" target="_blank" rel="noreferrer">Headless</a>
@@ -47,40 +46,40 @@
 
 ### 何时使用
 
-- 用户手里有一个颜色串（设计稿上的 `#3b82f6`、`rgb()`），要直接填进表单。
-- 主题设置、标注色、图表配色这类要精确到值的地方。
-- 与[颜色选择器](./color-picker)并排：选完能看见并微调那个值。
+- 用户持有颜色串（设计稿上的 `#3b82f6`、`rgb()`），需要直接填入表单。
+- 主题设置、标注色、图表配色等需要精确到值的场景。
+- 与[颜色选择器](./color-picker)并排，选完后可以查看并微调该值。
 
 ### 何时不用
 
-- 用户不知道颜色串、要看着挑：用[颜色选择器](./color-picker)。
-- 只是从几个固定颜色里选一个：用[颜色色块选择器](./color-swatch-picker)。
-- 只展示不编辑：用[颜色色块](./color-swatch)。
+- 用户不知道颜色串、需要看着挑选时，使用[颜色选择器](./color-picker)。
+- 只从几个固定颜色中选一个时，使用[颜色色块选择器](./color-swatch-picker)。
+- 只展示不编辑时，使用[颜色色块](./color-swatch)。
 
 ### 特性
 
-- 认 `#rgb` / `#rrggbb(aa)`、`rgb()` / `rgba()`、`hsl()` / `hsla()`，不认颜色关键字；收下后按 `format`（hex / rgba / hsla）重写，`alpha` 决定带不带透明度。
-- 打字只留草稿：值、色块与 `onValueChange` 都不动，`data-editing` 标出正在编辑；回车或失焦收下，Escape 放弃草稿回到规范文本。
-- 收不下的草稿留在框里并标成无效（`aria-invalid`、`data-invalid`），让人看见自己打的是什么；再改动就摘掉标记。
-- 空串是合法的「没有颜色」：`clearable` 开清空按钮与 Escape 清空，空值时色块只画棋盘格。
-- 表单出口经 `hidden-input`：提交的是收下的值，框里的半截字不会被提交；`name` 给了才参与提交。
-- 视觉盒走 Field Chrome，色块走 Swatch 家族，清空按钮走 Action Control 的 field-inset 档，与文本字段同一副面孔。
+- 支持 `#rgb` / `#rrggbb(aa)`、`rgb()` / `rgba()`、`hsl()` / `hsla()`，不支持颜色关键字；提交后按 `format`（hex / rgba / hsla）重写，`alpha` 决定是否带透明度。
+- 输入过程只保留草稿：值、色块与 `onValueChange` 都不变化，`data-editing` 标记正在编辑；回车或失焦提交，Escape 放弃草稿并回到规范文本。
+- 无法提交的草稿留在框内并标记为无效（`aria-invalid`、`data-invalid`），用户可以看到自己的输入；再次修改时移除标记。
+- 空串是合法的“无颜色”：`clearable` 开启清空按钮与 Escape 清空，空值时色块只绘制棋盘格。
+- 表单出口经 `hidden-input`：提交的是已确认的值，框内未提交的草稿不会随表单提交；提供 `name` 后才参与提交。
+- 视觉盒使用 Field Chrome，色块使用 Swatch 家族，清空按钮使用 Action Control 的 field-inset 档，与文本字段外观一致。
 
 ### 组合
 
-- 放进[表单字段](./field)里：标签、说明与错误由字段渲出来并经 aria-describedby 念到输入框上，禁用 / 只读 / 必填 / 无效四轴随字段下发。
-- 与[颜色滑块](./color-slider)并排：滑块推一路、字段看整串，两者共用一个值。
+- 放入[表单字段](./field)：标签、说明与错误由字段渲染并经 aria-describedby 关联到输入框，禁用 / 只读 / 必填 / 无效四轴随字段下发。
+- 与[颜色滑块](./color-slider)并排：滑块调整一个通道，字段显示完整颜色串，两者共用一个值。
 
 ### 最佳实践
 
-- 给 `placeholder` 提示期望的写法（`#rrggbb`），减少收不下的次数。
-- 需要透明度时同时开 `alpha` 并把 `format` 设成 `rgba` 或 `hsla`，hex 的第四对不是所有人都认得。
-- 在 `onValueChange` 里拿值，别去读输入框：框里可能是还没收下的草稿。
+- 通过 `placeholder` 提示期望的写法（`#rrggbb`），减少提交失败。
+- 需要透明度时同时开启 `alpha` 并把 `format` 设为 `rgba` 或 `hsla`，hex 的第四对字符不易辨识。
+- 在 `onValueChange` 中取值，不读取输入框：框内可能是尚未提交的草稿。
 
 ### 反模式
 
-- 把它当自由文本框：收不下的字不会成为值，也不会随表单提交。
-- 传颜色关键字（`red`）作初值：解析不出的串会被当成无效值原地不动。
+- 将它当作自由文本框：无法解析的输入不会成为值，也不会随表单提交。
+- 传颜色关键字（`red`）作为初值：无法解析的串会被视为无效值并保持不变。
 
 ## API 参考
 
@@ -268,7 +267,7 @@
 | `--xh-color-field-control-h` | `control` | `block-size`<br>`min-block-size` | `has([data-xh-field-input][data-xh-field-layout='multi-tag'])`<br>`has([data-xh-field-input][data-xh-field-layout='single-line'])`<br>`has([data-xh-field-input][data-xh-field-layout='textarea'])`<br>`xh-field-chrome`<br>`xh-field-input`<br>`xh-field-layout=multi-tag`<br>`xh-field-layout=single-line`<br>`xh-field-layout=textarea` | `--xh-_color-field-h` | color-field 的 control 部件 block-size、min-block-size 覆盖槽。 |
 | `--xh-color-field-control-min-w` | `control`<br>`root` | `min-inline-size` | `default`<br>`xh-field-chrome` | `--xh-control-min-w` | color-field 的 control、root 部件 min-inline-size 覆盖槽。 |
 | `--xh-color-field-control-px` | `control` | `padding-inline` | `xh-field-chrome` | `--xh-_color-field-px` | color-field 的 control 部件 padding-inline 覆盖槽。 |
-| `--xh-color-field-control-radius` | `control` | `border-radius` | `xh-field-chrome` | `--xh-shape-surface` | color-field 的 control 部件 border-radius 覆盖槽。 |
+| `--xh-color-field-control-radius` | `control` | `border-radius` | `xh-field-chrome` | `--xh-shape-control` | color-field 的 control 部件 border-radius 覆盖槽。 |
 | `--xh-color-field-control-shadow` | `control` | `box-shadow` | `xh-field-chrome` | `--xh-_color-field-shadow` | color-field 的 control 部件 box-shadow 覆盖槽。 |
 | `--xh-color-field-gap` | `root` | `gap` | `default` | `--xh-space-1` | color-field 的 root 部件 gap 覆盖槽。 |
 | `--xh-color-field-icon-size` | `root` | `--xh-icon-size` | `default`<br>`size=lg`<br>`size=sm` | `--xh-glyph-size-lg`<br>`--xh-glyph-size-md`<br>`--xh-glyph-size-sm` | color-field 的 root 部件 --xh-icon-size 覆盖槽。 |

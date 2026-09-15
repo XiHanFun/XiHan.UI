@@ -18608,7 +18608,7 @@
   --xh-field-control-padding-inline: var(--xh-color-field-control-px, var(--xh-_color-field-px));
   --xh-field-control-gap: var(--xh-color-field-control-gap, var(--xh-_color-field-gap));
   --xh-field-control-min-inline-size: var(--xh-color-field-control-min-w, var(--xh-control-min-w));
-  --xh-field-control-radius: var(--xh-color-field-control-radius, var(--xh-shape-surface));
+  --xh-field-control-radius: var(--xh-color-field-control-radius, var(--xh-shape-control));
   --xh-field-bg-rest: var(--xh-color-field-control-bg, var(--xh-_color-field-bg));
   --xh-field-bg-hover: var(--xh-color-field-control-bg-hover, var(--xh-_color-field-bg-hover));
   --xh-field-bg-read-only: var(--xh-color-field-control-bg-readonly, var(--xh-bg-subtle));
