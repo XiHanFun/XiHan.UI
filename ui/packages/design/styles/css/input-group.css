@@ -32,7 +32,7 @@
     display: inline-flex;
     box-sizing: border-box;
     align-items: stretch;
-    border-radius: var(--xh-input-group-radius, var(--xh-shape-surface));
+    border-radius: var(--xh-input-group-radius, var(--xh-shape-control));
     background: var(--xh-input-group-bg, var(--xh-_input-group-bg));
     box-shadow: var(--xh-input-group-shadow, var(--xh-_input-group-shadow));
 
