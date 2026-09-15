@@ -1,4 +1,4 @@
-// 原文视图 | view="text" 直接出缩进过的 JSON 原文：整块可框选可复制，且不受 maxStringLength / maxItems 折减
+// 原文视图 | view="text" 直接输出缩进后的 JSON 原文：整块可框选可复制，且不受 maxStringLength / maxItems 折减
 import type { ReactNode } from "react";
 import { XhJsonViewerRoot } from "@xihan-ui/react";
 import { useState } from "react";

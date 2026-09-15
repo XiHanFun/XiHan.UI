@@ -1,4 +1,4 @@
-<!-- 大数据 | maxItems 把超长数组折成一行占位，maxStringLength 截掉过长的字符串，一份大 JSON 不会把页面压住 -->
+<!-- 大数据 | maxItems 把超长数组折为一行占位，maxStringLength 截断过长的字符串，一份大 JSON 不会拖慢页面 -->
 <script setup lang="ts">
 import { XhJsonViewerRoot } from "@xihan-ui/vue";
 

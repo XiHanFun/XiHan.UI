@@ -1,4 +1,4 @@
-<!-- 基础用法 | 一份 JSON 摊成可展开的树：键名与值各自成块，六种类型各自上色，默认只展开根行 -->
+<!-- 基础用法 | 一份 JSON 展开为可折叠的树：键名与值各自成块，六种类型各自上色，默认只展开根行 -->
 <script setup lang="ts">
 import { XhJsonViewerRoot } from "@xihan-ui/vue";
 

@@ -1,4 +1,4 @@
-<!-- 默认展开层数 | defaultExpandedDepth 决定初次摊到第几层：1 只展开根行，3 连孙层一起铺开 -->
+<!-- 默认展开层数 | defaultExpandedDepth 决定初次展开到第几层：1 只展开根行，3 连孙层一起铺开 -->
 <script setup lang="ts">
 import { XhJsonViewerRoot } from "@xihan-ui/vue";
 

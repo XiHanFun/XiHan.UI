@@ -12,7 +12,7 @@
 
 ## 用法
 
-一份 JSON 摊成可展开的树：键名与值各自成块，六种类型各自上色，默认只展开根行
+一份 JSON 展开为可折叠的树：键名与值各自成块，六种类型各自上色，默认只展开根行
 
 <XhDemo src="json-viewer/01-basic" />
 
@@ -26,49 +26,49 @@
 
 ### 默认展开层数
 
-defaultExpandedDepth 决定初次摊到第几层：1 只展开根行，3 连孙层一起铺开
+defaultExpandedDepth 决定初次展开到第几层：1 只展开根行，3 连孙层一起铺开
 
 <XhDemo src="json-viewer/02-depth" />
 
 ### 受控展开
 
-传了 expandedValue 就由宿主说了算，组件只发 expanded-value-change 不落内部值，写回它才动
+传入 expandedValue 后由宿主决定，组件只发 expanded-value-change 不落内部值，写回后才变化
 
 <XhDemo src="json-viewer/03-controlled" />
 
 ### 大数据
 
-maxItems 把超长数组折成一行占位，maxStringLength 截掉过长的字符串，一份大 JSON 不会把页面压住
+maxItems 把超长数组折为一行占位，maxStringLength 截断过长的字符串，一份大 JSON 不会拖慢页面
 
 <XhDemo src="json-viewer/04-large" />
 
 ### 键排序
 
-sortKeys 让对象键按字典序排，数组顺序不动；接口返回的字段顺序不稳定时用它
+sortKeys 使对象键按字典序排列，数组顺序不变；接口返回的字段顺序不稳定时使用它
 
 <XhDemo src="json-viewer/05-sort-keys" />
 
 ### 循环引用
 
-值出现在自己的祖先链上就停下并标成 [Circular]，不会无限递归；共享引用不算环，照样摊开
+值出现在自己的祖先链上即停止并标为 [Circular]，不会无限递归；共享引用不算环，照常展开
 
 <XhDemo src="json-viewer/06-circular" />
 
 ### 尺寸
 
-size 三档只换字号与层级缩进，行的结构与配色都不变
+size 三档只改变字号与层级缩进，行的结构与配色都不变
 
 <XhDemo src="json-viewer/07-size" />
 
 ### 原文视图
 
-view="text" 直接出缩进过的 JSON 原文：整块可框选可复制，且不受 maxStringLength / maxItems 折减
+view="text" 直接输出缩进后的 JSON 原文：整块可框选可复制，且不受 maxStringLength / maxItems 折减
 
 <XhDemo src="json-viewer/08-text" />
 
 ### 空态与形态
 
-一行也摊不出来时空态那一格站出来说话；variant="plain" 去掉外框与底色
+一行都无法展开时显示空态格；variant="plain" 去掉外框与底色
 
 <XhDemo src="json-viewer/09-empty" />
 

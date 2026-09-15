@@ -1,4 +1,4 @@
-<!-- 受控展开 | 传了 expandedValue 就由宿主说了算，组件只发 expanded-value-change 不落内部值，写回它才动 -->
+<!-- 受控展开 | 传入 expandedValue 后由宿主决定，组件只发 expanded-value-change 不落内部值，写回后才变化 -->
 <script setup lang="ts">
 import { JSON_VIEWER_ROOT_PATH, jsonExpandedPathsToDepth } from "@xihan-ui/headless";
 import { XhButton, XhJsonViewerRoot } from "@xihan-ui/vue";
