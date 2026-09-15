@@ -32,7 +32,7 @@ export const XhAnchorRoot = defineComponent({
     translations: { type: Object as PropType<Partial<AnchorTranslations>> },
     tone: { type: String as PropType<Tone> },
     size: { type: String as PropType<Size> },
-    /** 判定线所依附的滚动容器，缺省挂在窗口上；经 refs 交给观察器。 */
+    /** 判定线所依附的滚动容器，默认挂在窗口上；经 refs 交给观察器。 */
     scrollElement: { type: Object as PropType<HTMLElement | null> },
   },
   // value-change 携带 { value }，update:value 携带裸值
@@ -88,7 +88,7 @@ export const XhAnchorLink = defineComponent({
   },
 })
 
-/** 链接里的文字载体：链接内另有图标时，省略号只裁这一段 */
+/** 链接中的文字载体：链接内另有图标时，省略号只裁剪这一段 */
 export const XhAnchorLinkText = defineComponent({
   name: 'XhAnchorLinkText',
   setup(_, { slots }) {
@@ -97,7 +97,7 @@ export const XhAnchorLinkText = defineComponent({
   },
 })
 
-/** 指示条容器，位置由机器算好写入内联样式；渲染为 li 以 list 为定位参照系 */
+/** 指示条容器，位置由状态机计算后写入内联样式；渲染为 li 以 list 为定位参照系 */
 export const XhAnchorIndicator = defineComponent({
   name: 'XhAnchorIndicator',
   setup() {

@@ -91,14 +91,14 @@
 | --- | --- | --- | --- |
 | `value` | `string \| null` |  | 当前激活的锚点 id，给定即受控。 |
 | `defaultValue` | `string \| null` |  |  |
-| `collection` | `readonly string[]` |  | 目标区块的 id 清单，按文档序给；不给则按渲染出来的 link 现查。 |
+| `collection` | `readonly string[]` |  | 目标区块的 id 清单，按文档序提供；未提供时按渲染出的 link 查询。 |
 | `offset` | `number` |  | 判定线距滚动容器视口顶边的距离（px），默认 0。 |
-| `bounds` | `number` |  | 压线判定的容差（px），默认 1；区块顶边落在判定线下方这个距离内仍算越过。 |
-| `smooth` | `boolean` |  | 点链接时平滑滚动到目标，默认 false。 |
+| `bounds` | `number` |  | 压线判定的容差（px），默认 1；区块顶边落在判定线下方该距离内仍视为越过。 |
+| `smooth` | `boolean` |  | 点击链接时平滑滚动到目标，默认 false。 |
 | `dir` | `Direction` |  | 文字方向，作用于排版与指示条的起始缘。 |
 | `orientation` | `Orientation` |  | 列表轴向，默认 vertical，只影响样式。 |
 | `translations` | `Partial<AnchorTranslations>` |  |  |
-| `tone` | `Tone` |  | 语气：brand / neutral / success / warning / danger / info，决定用哪族颜色。 |
+| `tone` | `Tone` |  | 语气：brand / neutral / success / warning / danger / info，决定使用哪族颜色。 |
 | `size` | `Size` |  | 尺寸：sm / md / lg。 |
 | `onValueChange` | `(details: AnchorValueChangeDetails) => void` |  | value 变化意图回调。 |
 
@@ -126,7 +126,7 @@
 
 | 成员 | 类型 | 说明 |
 | --- | --- | --- |
-| `value` | `string \| null` | 当前激活的锚点 id；一个都没越过判定线时为 null。 |
+| `value` | `string \| null` | 当前激活的锚点 id；没有区块越过判定线时为 null。 |
 | `isActive` | `(value: string) => boolean` |  |
 | `setValue` | `(next: string \| null) => void` |  |
 | `getRootProps` | `() => T['element']` |  |

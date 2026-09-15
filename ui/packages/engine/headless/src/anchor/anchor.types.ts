@@ -7,27 +7,27 @@
 
 import type { Direction, MachineSchema, Orientation, PropTypes, Size, Tone } from '@xihan-ui/core'
 
-/** 读屏用的文案，默认英文。 */
+/** 读屏文案，默认英文。 */
 export interface AnchorTranslations {
   /** 根节点的 aria-label，用于区分页面上的多个 nav 地标。 */
   root: string
 }
 
 export interface AnchorValueChangeDetails {
-  /** 当前激活的锚点 id；一个都没越过判定线时为 null。 */
+  /** 当前激活的锚点 id；没有区块越过判定线时为 null。 */
   value: string | null
 }
 
 /**
- * 链接指向哪个区块，由作者在部件上声明。
+ * 链接指向的区块，由作者在部件上声明。
  * connect 据此产出属性，不反查 DOM：它在 Vue 的 render 期求值，此时 DOM 尚不存在。
  */
 export interface AnchorLinkProps {
-  /** 目标区块的元素 id，href 由 connect 派生成 `#id`。 */
+  /** 目标区块的元素 id，href 由 connect 派生为 `#id`。 */
   value: string
 }
 
-/** 指示条相对 list 的位置与尺寸（px），起始缘按逻辑方向算。 */
+/** 指示条相对 list 的位置与尺寸（px），起始缘按逻辑方向计算。 */
 export interface AnchorIndicatorRect {
   blockStart: number
   blockSize: number
@@ -35,7 +35,7 @@ export interface AnchorIndicatorRect {
   inlineSize: number
 }
 
-/** 结算"当前是哪一节"的输入：一个目标区块量好的顶边位置。 */
+/** 结算当前区块的输入：一个目标区块测得的顶边位置。 */
 export interface AnchorTargetOffset {
   /** 目标区块的元素 id。 */
   value: string
@@ -43,7 +43,7 @@ export interface AnchorTargetOffset {
   top: number
 }
 
-/** 适配器在挂载前填入的 DOM 取值口。 */
+/** 适配器在挂载前填入的 DOM 取值器。 */
 export interface AnchorRefs {
   /** 判定线所依附的滚动容器，返回 null 即挂在窗口上。 */
   getScrollEl: () => HTMLElement | null
@@ -56,20 +56,20 @@ export interface AnchorSchema extends MachineSchema {
     /** 当前激活的锚点 id，给定即受控。 */
     value?: string | null
     defaultValue?: string | null
-    /** 目标区块的 id 清单，按文档序给；不给则按渲染出来的 link 现查。 */
+    /** 目标区块的 id 清单，按文档序提供；未提供时按渲染出的 link 查询。 */
     collection?: readonly string[]
     /** 判定线距滚动容器视口顶边的距离（px），默认 0。 */
     offset?: number
-    /** 压线判定的容差（px），默认 1；区块顶边落在判定线下方这个距离内仍算越过。 */
+    /** 压线判定的容差（px），默认 1；区块顶边落在判定线下方该距离内仍视为越过。 */
     bounds?: number
-    /** 点链接时平滑滚动到目标，默认 false。 */
+    /** 点击链接时平滑滚动到目标，默认 false。 */
     smooth?: boolean
     /** 文字方向，作用于排版与指示条的起始缘。 */
     dir?: Direction
     /** 列表轴向，默认 vertical，只影响样式。 */
     orientation?: Orientation
     translations?: Partial<AnchorTranslations>
-    /** 语气：brand / neutral / success / warning / danger / info，决定用哪族颜色。 */
+    /** 语气：brand / neutral / success / warning / danger / info，决定使用哪族颜色。 */
     tone?: Tone
     /** 尺寸：sm / md / lg。 */
     size?: Size
@@ -79,17 +79,17 @@ export interface AnchorSchema extends MachineSchema {
   context: {
     /** 当前激活的锚点 id。 */
     value: string | null
-    /** 指示条的量测结果；没有激活项或量不到时为 null。 */
+    /** 指示条的测量结果；没有激活项或无法测量时为 null。 */
     indicator: AnchorIndicatorRect | null
   }
   computed: Record<string, never>
   refs: AnchorRefs
-  /** scrolling 是平滑滚动进行中的短暂锁，其间不采信观察器结果。 */
+  /** scrolling 是平滑滚动进行中的短暂锁定，其间不采信观察器结果。 */
   state: 'idle' | 'scrolling'
   event:
-    /** 观察器结算出的当前区块；null 表示一节都还没越过判定线。 */
+    /** 观察器结算的当前区块；null 表示没有区块越过判定线。 */
     | { type: 'SPY.RESOLVE', value: string | null }
-    /** 用户点了某条链接。 */
+    /** 用户点击了某条链接。 */
     | { type: 'LINK.CLICK', value: string }
     /** 程序化改写。 */
     | { type: 'VALUE.SET', value: string | null }
@@ -102,7 +102,7 @@ export interface AnchorSchema extends MachineSchema {
 }
 
 export interface AnchorApi<T extends PropTypes = PropTypes> {
-  /** 当前激活的锚点 id；一个都没越过判定线时为 null。 */
+  /** 当前激活的锚点 id；没有区块越过判定线时为 null。 */
   value: string | null
   isActive: (value: string) => boolean
   setValue: (next: string | null) => void

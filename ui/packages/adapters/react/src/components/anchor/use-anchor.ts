@@ -16,7 +16,7 @@ import { useMachine } from '../../runtime/use-machine'
 export interface AnchorContext {
   api: AnchorApi
   service: Service<AnchorSchema>
-  /** list 节点：链接集合的查询容器，同时是指示条量测的参照系。 */
+  /** list 节点：链接集合的查询容器，同时是指示条测量的参照系。 */
   listRef: RefObject<HTMLElement | null>
 }
 
