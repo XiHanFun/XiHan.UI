@@ -1,4 +1,4 @@
-<!-- 通道并排 | 几条共用同一个值、各推自己那一路；开 alpha 让推色相时透明度不丢，就拼出一个 HSV 调色面板 -->
+<!-- 通道并排 | 几条共用同一个值、各调节自己的通道；开启 alpha 使调节色相时透明度不丢失，即组成一个 HSV 调色面板 -->
 <script setup lang="ts">
 import type { ColorChannel } from "@xihan-ui/headless";
 import {

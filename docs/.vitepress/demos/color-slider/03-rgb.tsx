@@ -1,4 +1,4 @@
-// 红绿蓝与写法 | 推 RGB 三路走 0-255；format 决定写回的写法，这里按 rgba() 输出
+// 红绿蓝与写法 | 调节 RGB 三通道使用 0-255；format 决定写回的写法，这里按 rgba() 输出
 import type { ColorChannel } from "@xihan-ui/headless";
 import type { ReactNode } from "react";
 import {
