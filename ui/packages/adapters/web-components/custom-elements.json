@@ -19126,7 +19126,7 @@
       "declarations": [
         {
           "kind": "class",
-          "description": "`<xh-drawer>` —— Light-DOM 行为宿主，跑 drawer 机器并把 connect 产出打到角色节点上，\n关闭时用内联 style.display 隐藏浮层子树。\n\n键盘与 ARIA 契约同 dialog；side 决定滑入方向，以 data-side 落在 root 与 content 上供样式取用。",
+          "description": "`<xh-drawer>`：Light-DOM 行为宿主，运行 drawer 状态机并把 connect 产出接到角色节点上，\n关闭时用内联 style.display 隐藏浮层子树。\n\n键盘与 ARIA 契约同 dialog；side 决定滑入方向，以 data-side 写在 root 与 content 上供样式取用。",
           "name": "XhDrawerElement",
           "cssParts": [
             {
@@ -19146,11 +19146,11 @@
               "name": "positioner"
             },
             {
-              "description": "抽屉面板（role/aria-modal/焦点陷阱所在，另带 data-side / data-size）",
+              "description": "抽屉面板（role / aria-modal / 焦点陷阱所在，另带 data-side / data-size）",
               "name": "content"
             },
             {
-              "description": "面板头：标题与说明所在的那一段，不跟着正文滚",
+              "description": "面板头：标题与说明所在的段，不随正文滚动",
               "name": "header"
             },
             {
@@ -19162,11 +19162,11 @@
               "name": "description"
             },
             {
-              "description": "正文：面板里唯一会滚的一段",
+              "description": "正文：面板中唯一会滚动的段",
               "name": "body"
             },
             {
-              "description": "面板尾：动作按钮所在的那一段，不跟着正文滚",
+              "description": "面板尾：动作按钮所在的段，不随正文滚动",
               "name": "footer"
             },
             {
@@ -19465,7 +19465,7 @@
               "type": {
                 "text": "boolean | undefined"
               },
-              "description": "受控开合；缺省该属性即非受控",
+              "description": "受控开合；未提供该属性即非受控",
               "name": "open",
               "fieldName": "open"
             },
@@ -19481,7 +19481,7 @@
               "type": {
                 "text": "boolean | undefined"
               },
-              "description": "模态（陷焦点、锁滚动、遮罩交互外关闭），默认 true",
+              "description": "模态（陷入焦点、锁定滚动、遮罩交互外关闭），默认 true",
               "name": "modal",
               "fieldName": "modal"
             },
@@ -19489,7 +19489,7 @@
               "type": {
                 "text": "boolean | undefined"
               },
-              "description": "局部抽屉：遮罩与定位层从 fixed 换成 absolute，只罩住最近的定位祖先而不是盖满整屏。 本元素是 Light DOM、作者写在哪浮层就在哪，所以「挂到哪个容器」这件事本身不需要属性——写上它是为了让皮肤按容器画",
+              "description": "局部抽屉：遮罩与定位层从 fixed 改为 absolute，只覆盖最近的定位祖先而不是整屏。 本元素是 Light DOM，浮层位于作者书写的位置，因此挂载容器本身不需要属性；写上它是为了让皮肤按容器绘制",
               "name": "contained",
               "fieldName": "contained"
             },
@@ -19497,7 +19497,7 @@
               "type": {
                 "text": "DrawerSchema['props']['side'] | undefined"
               },
-              "description": "从哪条边滑出，默认 right",
+              "description": "滑出的边，默认 right",
               "name": "side",
               "fieldName": "side"
             },
@@ -19520,7 +19520,7 @@
               "type": {
                 "text": "boolean | undefined"
               },
-              "description": "点击浮层外关闭；默认跟随 modal，alertdialog 恒不关",
+              "description": "点击浮层外关闭；默认跟随 modal，alertdialog 恒不关闭",
               "name": "close-on-interact-outside",
               "fieldName": "closeOnInteractOutside"
             },
@@ -19536,7 +19536,7 @@
               "type": {
                 "text": "Size | undefined"
               },
-              "description": "尺寸：横放时换面板宽度、竖放时换面板高度",
+              "description": "尺寸：横向放置时影响面板宽度、纵向放置时影响面板高度",
               "name": "size",
               "fieldName": "size"
             },
@@ -19544,7 +19544,7 @@
               "type": {
                 "text": "OverlayBackdropVariant | undefined"
               },
-              "description": "遮罩形态：只换 backdrop 的底色与模糊",
+              "description": "遮罩形态：只影响 backdrop 的底色与模糊",
               "name": "variant",
               "fieldName": "variant"
             }

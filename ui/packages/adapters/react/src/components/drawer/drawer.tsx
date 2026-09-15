@@ -35,14 +35,14 @@ export interface XhDrawerRootProps extends Omit<ComponentPropsWithRef<'div'>, 'c
   size?: Size
   variant?: OverlayBackdropVariant
   /**
-   * 浮层挂到哪个容器；不给就按全局配置，再不给挂 body。
-   * 给了它就是局部抽屉：遮罩与定位层从 fixed 换成 absolute，只罩住那个容器而不是盖满整屏。
-   * 那个容器要自己带 position（relative 之类），否则 absolute 会往上找到别的定位祖先。
+   * 浮层挂载的容器；未提供时按全局配置，再未提供时挂载到 body。
+   * 提供后即为局部抽屉：遮罩与定位层从 fixed 换为 absolute，只覆盖该容器而不是整屏。
+   * 该容器要自带 position（relative 等），否则 absolute 会向上找到其他定位祖先。
    */
   container?: () => Element | null
   /**
-   * 只把画法改成局部（遮罩与定位层从 fixed 换成 absolute），不管搬到哪儿。
-   * 给了 container 就默认为真，不必再写一遍；两个都不给即铺满视口。
+   * 只把绘制方式改为局部（遮罩与定位层从 fixed 换为 absolute），不改变迁移位置。
+   * 提供 container 后默认为真，不必再写一遍；两个都未提供即铺满视口。
    */
   contained?: boolean
   translations?: DrawerProps['translations']
