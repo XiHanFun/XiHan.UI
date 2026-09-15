@@ -28417,7 +28417,7 @@
       "declarations": [
         {
           "kind": "class",
-          "description": "`<xh-kbd>` —— 单键、组合键与可选快捷键监听的统一入口。",
+          "description": "`<xh-kbd>`：单键、组合键与可选快捷键监听的统一入口。",
           "name": "XhKbdElement",
           "cssParts": [
             {
@@ -28425,7 +28425,7 @@
               "name": "root"
             },
             {
-              "description": "一枚可见键名",
+              "description": "一个可见键名",
               "name": "key"
             }
           ],
@@ -28569,7 +28569,7 @@
           ],
           "events": [
             {
-              "description": "组合被按出；detail 为 `{ keys: string[], event: KeyboardEvent }`",
+              "description": "组合被按下；detail 为 `{ keys: string[], event: KeyboardEvent }`",
               "name": "hot-key",
               "type": {
                 "text": "KbdTriggerDetails"
@@ -28589,7 +28589,7 @@
               "type": {
                 "text": "KbdPlatform | undefined"
               },
-              "description": "平台写法，缺省挂载后实测",
+              "description": "平台写法，默认挂载后实测",
               "name": "platform",
               "fieldName": "platform"
             },

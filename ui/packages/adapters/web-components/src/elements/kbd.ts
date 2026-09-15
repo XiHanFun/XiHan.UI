@@ -15,17 +15,17 @@ const BOOLEAN_CONVERTER = { fromAttribute: (v: string | null) => (v === null ? u
 const ARRAY_CONVERTER = { fromAttribute: (v: string | null) => (v == null ? undefined : v.split(',').map(s => s.trim()).filter(Boolean)) }
 
 /**
- * `<xh-kbd>` —— 单键、组合键与可选快捷键监听的统一入口。
+ * `<xh-kbd>`：单键、组合键与可选快捷键监听的统一入口。
  * @customElement xh-kbd
  * @attr {string} keys - 按键组合，逗号分隔
- * @attr {'auto'|'mac'|'other'} platform - 平台写法，缺省挂载后实测
+ * @attr {'auto'|'mac'|'other'} platform - 平台写法，默认挂载后实测
  * @attr {'default'|'light'} variant - 外观，默认 default
  * @attr {boolean} register - 是否注册快捷键监听，默认 false
  * @attr {boolean} prevent-default - 命中后是否阻止默认动作，默认 true
  * @attr {boolean} enabled - 已注册监听是否生效，默认 true
- * @fires hot-key - 组合被按出；detail 为 `{ keys: string[], event: KeyboardEvent }`
+ * @fires hot-key - 组合被按下；detail 为 `{ keys: string[], event: KeyboardEvent }`
  * @csspart root - 原生 kbd 表面与整组可读名称
- * @csspart key - 一枚可见键名
+ * @csspart key - 一个可见键名
  */
 export class XhKbdElement extends XhElement {
   static override partContract = { anatomy: kbdAnatomy, meta: kbdMeta }
