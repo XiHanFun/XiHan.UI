@@ -149,7 +149,7 @@ pattern 是一段正则源码，逐个字符整格匹配；写法无效时退回
 | `invalid` | `boolean` |  | 校验失败标注。 |
 | `blurOnComplete` | `boolean` |  | 填满即移走焦点，常用于填满后自动提交的表单。 |
 | `name` | `string` |  | 表单字段名；提供后隐藏输入才带 name，整串值随表单一并提交。 |
-| `variant` | `ControlVariant` |  | 形态：outline / subtle / ghost，决定颜色的使用方式。 |
+| `variant` | `ControlVariant` |  | 形态：outline / subtle / ghost，决定底色与描边的绘制方式。默认 outline。 |
 | `tone` | `Tone` |  | 语气：brand / neutral / success / warning / danger / info，决定使用哪族颜色。 |
 | `size` | `Size` |  | 尺寸：sm / md / lg。 |
 | `translations` | `Partial<PinInputTranslations>` |  |  |

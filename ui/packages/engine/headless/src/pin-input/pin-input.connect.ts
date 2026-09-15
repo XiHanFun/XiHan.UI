@@ -99,6 +99,9 @@ export function connectPinInput<T extends PropTypes>(
     advance(el, index + [...chars].length)
   }
 
+  // 形态默认落 outline：不写时 root 如实投影，皮肤不再依赖缺省档
+  const variant = prop('variant') ?? 'outline'
+
   return {
     value,
     valueAsString,
@@ -117,7 +120,7 @@ export function connectPinInput<T extends PropTypes>(
       'role': 'group',
       'aria-labelledby': ids.label,
       // 三个视觉轴只落在 root 上，格子从这里继承皮肤声明的私有槽
-      'data-variant': prop('variant'),
+      'data-variant': variant,
       'data-tone': prop('tone'),
       'data-size': prop('size'),
       'data-disabled': dataAttr(disabled),
