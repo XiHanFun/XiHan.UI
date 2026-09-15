@@ -1,4 +1,4 @@
-// 基础用法 | 一条竖向的事件流：每条一个圆点，圆点之间连一截线，末条的线自动收掉
+// 基础用法 | 一条竖向的事件流：每条一个圆点，圆点之间连一段线，末条的线自动收起
 import type { ReactNode } from "react";
 import {
   XhTimelineConnector,

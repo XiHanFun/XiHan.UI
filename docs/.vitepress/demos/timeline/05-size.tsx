@@ -1,4 +1,4 @@
-// 尺寸 | size 换的是圆点直径、条目间距与字号，不传 size 即默认档
+// 尺寸 | size 改变圆点直径、条目间距与字号，不传 size 即默认档
 import type { ReactNode } from "react";
 import {
   XhTimelineConnector,

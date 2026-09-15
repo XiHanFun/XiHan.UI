@@ -12,7 +12,7 @@
 
 ## 用法
 
-一条竖向的事件流：每条一个圆点，圆点之间连一截线，末条的线自动收掉
+一条竖向的事件流：每条一个圆点，圆点之间连一段线，末条的线自动收起
 
 <XhDemo src="timeline/01-basic" />
 
@@ -26,31 +26,31 @@
 
 ### 逐条语气
 
-tone 写在条目上，只给这一条的圆点上色；不写 tone 的条目是中性圆点
+tone 写在条目上，只为该条的圆点上色；不写 tone 的条目是中性圆点
 
 <XhDemo src="timeline/02-tone" />
 
-### 内容在哪一侧
+### 内容所在的一侧
 
-placement 决定内容落在线的哪一侧；alternate 是逐条交替，线走中间
+placement 决定内容落在线的哪一侧；alternate 是逐条交替，线位于中间
 
 <XhDemo src="timeline/03-placement" />
 
 ### 横排
 
-orientation="horizontal" 把事件从左往右摆，连线随之转成横的一条
+orientation="horizontal" 把事件从左向右排列，连线随之转为横向
 
 <XhDemo src="timeline/04-horizontal" />
 
 ### 尺寸
 
-size 换的是圆点直径、条目间距与字号，不传 size 即默认档
+size 改变圆点直径、条目间距与字号，不传 size 即默认档
 
 <XhDemo src="timeline/05-size" />
 
 ### 坐标列
 
-label 与内容对置：逐条交替排布时时间戳仍停在同一侧，不跟着内容左右横跳
+label 与内容对置：逐条交替排布时时间戳仍停在同一侧，不随内容左右跳动
 
 <XhDemo src="timeline/06-label" />
 

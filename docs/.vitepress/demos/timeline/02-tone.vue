@@ -1,4 +1,4 @@
-<!-- 逐条语气 | tone 写在条目上，只给这一条的圆点上色；不写 tone 的条目是中性圆点 -->
+<!-- 逐条语气 | tone 写在条目上，只为该条的圆点上色；不写 tone 的条目是中性圆点 -->
 <script setup lang="ts">
 import {
   XhTimelineConnector,
