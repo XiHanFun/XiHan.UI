@@ -15,15 +15,15 @@ import { reactNormalize } from '../../runtime/normalize-props'
 import { slotPaints } from '../../runtime/slot-content'
 
 export interface XhProgressProps extends ComponentPropsWithRef<'div'> {
-  /** 当前进度值，越界会被夹到 [0, max]。 */
+  /** 当前进度值，越界会被夹取到 [0, max]。 */
   value?: number
-  /** 进度未知：条子改为往复动画，读屏那侧不报数。 */
+  /** 进度未知：进度条改为往复动画，读屏侧不播报数值。 */
   indeterminate?: boolean
   /** 满值上限，默认 100。 */
   max?: number
-  /** 形态，默认 line。circle 画整环，dashboard 在环上留一个缺口。 */
+  /** 形态，默认 line。circle 绘制整环，dashboard 在环上留一个缺口。 */
   variant?: ProgressVariant
-  /** 环的线宽，走 viewBox 单位，默认 6；只对环形生效。 */
+  /** 环的线宽，使用 viewBox 单位，默认 6；只对环形生效。 */
   strokeWidth?: number
   /** 缺口角度，默认 75；只对 dashboard 生效。 */
   gapDegree?: number
@@ -31,18 +31,18 @@ export interface XhProgressProps extends ComponentPropsWithRef<'div'> {
   gapPosition?: ProgressGapPosition
   /** 读屏播报的文字，覆盖默认的数值播报。 */
   valueText?: string
-  /** 语气：决定用哪族颜色。 */
+  /** 语气：决定使用哪族颜色。 */
   tone?: Tone
-  /** 尺寸：线形改轨道厚度，环形改直径。 */
+  /** 尺寸：线形改变轨道厚度，环形改变直径。 */
   size?: Size
-  /** 报的是进度还是量，默认 progress。 */
+  /** 报告的是进度还是量，默认 progress。 */
   semantics?: ProgressSemantics
 }
 
 /**
- * 进度条。线形渲成一条轨道加一截进度，环形把同一份进度画进一个 svg。
+ * 进度条。线形渲染为一条轨道加一段进度，环形把同一份进度绘制进一个 svg。
  *
- * children 是环心那一块的内容，只在环形下渲染。
+ * children 是环心区域的内容，只在环形下渲染。
  */
 export function XhProgress({
   value,

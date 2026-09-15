@@ -128,15 +128,15 @@ variant="dashboard" 在环上留一个缺口，gapDegree 与 gapPosition 决定�
 | --- | --- | --- | --- |
 | `gapDegree` | `number` |  | 缺口角度，默认 75。只对 dashboard 生效。 |
 | `gapPosition` | `ProgressGapPosition` |  | 缺口朝向，默认 bottom。只对 dashboard 生效。 |
-| `indeterminate` | `boolean` |  | 进度未知：条子改为往复动画，读屏那侧不报数。 置真时 aria-valuenow 整个不发——ARIA 规定不确定进度以该属性缺席表达。 |
-| `max` | `number` |  | 满值上限，默认 100；非有限值或不为正时回落 100。 |
-| `semantics` | `ProgressSemantics` |  | 报的是进度还是量，默认 progress。meter 档发 role="meter"，且 indeterminate 不再生效。 |
-| `size` | `Size` |  | 尺寸：sm / md / lg。线形改轨道厚度，环形改直径 |
-| `strokeWidth` | `number` |  | 环的线宽，走 viewBox 单位（整个环画在 100×100 里），默认 6。 只对 circle / dashboard 生效——它改的是几何（半径跟着往里收），所以是 prop 不是令牌； 线形的厚度仍走 --xh-progress-thickness。 |
-| `tone` | `Tone` |  | 语气：brand / neutral / success / warning / danger / info，决定用哪族颜色 |
+| `indeterminate` | `boolean` |  | 进度未知：进度条改为往复动画，读屏侧不报数。 置真时 aria-valuenow 整体不发出：ARIA 规定不确定进度以该属性缺席表达。 |
+| `max` | `number` |  | 满值上限，默认 100；非有限值或不为正时回退为 100。 |
+| `semantics` | `ProgressSemantics` |  | 报告的是进度还是量，默认 progress。meter 档发出 role="meter"，且 indeterminate 不再生效。 |
+| `size` | `Size` |  | 尺寸：sm / md / lg。线形影响轨道厚度，环形影响直径 |
+| `strokeWidth` | `number` |  | 环的线宽，使用 viewBox 单位（整个环绘制在 100×100 中），默认 6。 只对 circle / dashboard 生效：它修改的是几何（半径随之向内收缩），因此是 prop 而不是令牌； 线形的厚度仍使用 --xh-progress-thickness。 |
+| `tone` | `Tone` |  | 语气：brand / neutral / success / warning / danger / info，决定使用哪族颜色 |
 | `value` | `number` |  | 当前进度值，越界会被夹到 [0, max]；非有限值按 0 处理。 |
-| `valueText` | `string` |  | 读屏播报的文字，覆盖默认的数值播报（进度不是百分比时用，如「第 3 步，共 8 步」）。 |
-| `variant` | `ProgressVariant` |  | 形态，默认 line。circle 画整环，dashboard 在环上留一个缺口。 |
+| `valueText` | `string` |  | 读屏播报的文字，覆盖默认的数值播报（进度不是百分比时使用，如「第 3 步，共 8 步」）。 |
+| `variant` | `ProgressVariant` |  | 形态，默认 line。circle 绘制整环，dashboard 在环上留出一个缺口。 |
 
 ### 状态
 
@@ -161,7 +161,7 @@ variant="dashboard" 在环上留一个缺口，gapDegree 与 gapPosition 决定�
 | `getCanvasProps` | `() => T['element']` | 承载环的 &lt;svg&gt;；线形不渲染它。 |
 | `getTrackProps` | `() => T['element']` |  |
 | `getRangeProps` | `() => T['element']` |  |
-| `getLabelProps` | `() => T['element']` | 环心那一块：落位归皮肤，写什么归作者。线形用不到。 |
+| `getLabelProps` | `() => T['element']` | 环心区域：落位归皮肤，内容归作者。线形不使用。 |
 
 ## 无障碍
 
