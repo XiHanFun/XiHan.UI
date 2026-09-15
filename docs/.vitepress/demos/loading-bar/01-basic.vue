@@ -1,4 +1,4 @@
-<!-- 基础用法 | 条子贴在视口顶边（往页面最上方看）；不给 value 就是不确定进度，宽度自行往前爬，loading 翻 false 才冲到头并淡出 -->
+<!-- 基础用法 | 进度条贴在视口顶边（见页面最上方）；不提供 value 即为不确定进度，宽度自行向前爬升，loading 切换为 false 后才到达终点并淡出 -->
 <script setup lang="ts">
 import {
   XhButton,

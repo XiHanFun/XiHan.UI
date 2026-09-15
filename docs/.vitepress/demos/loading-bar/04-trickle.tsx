@@ -1,4 +1,4 @@
-// 关掉爬升 | trickle 为 false 时条子停在起步值 minimum 不动，往前走全靠宿主收尾
+// 关闭爬升 | trickle 为 false 时进度条停在起步值 minimum 不动，向前推进全部由宿主收尾
 import type { ReactNode } from "react";
 import {
   XhButton,

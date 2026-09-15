@@ -1,4 +1,4 @@
-<!-- 厚度 | height 数字按像素、字符串按任意 CSS 长度；进度段的颜色走语气或皮肤槽，不走内联 -->
+<!-- 厚度 | height 数字按像素、字符串按任意 CSS 长度；进度段的颜色经语气或皮肤槽，不使用内联 -->
 <script setup lang="ts">
 import {
   XhButton,
