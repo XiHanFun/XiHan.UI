@@ -13,7 +13,7 @@ import { useReactScope } from '../../runtime/react-id'
 import { useMachine } from '../../runtime/use-machine'
 
 export interface ListboxContext {
-  /** 机器实例，供部件上报 DOM 侧的事实（如条目卸载带走了焦点）。 */
+  /** 状态机实例，供部件上报 DOM 侧的事实（如条目卸载带走了焦点）。 */
   service: Service<ListboxSchema>
   api: ListboxApi
 }

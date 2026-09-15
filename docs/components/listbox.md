@@ -100,20 +100,20 @@
 
 | 属性 | 类型 | 必填 | 说明 |
 | --- | --- | --- | --- |
-| `collection` | `ListboxNode[]` |  | 条目数据，显示文本与禁用的事实源。给了它，条目部件只需报 value。 缺省即回到「文本与禁用都写在条目部件上」的老路。 |
-| `value` | `string \| string[]` |  | 选中值，给定即受控；单选可写成裸串，内部归一成数组。 |
+| `collection` | `ListboxNode[]` |  | 条目数据，显示文本与禁用的事实源。提供后条目部件只需声明 value。 未提供时回到文本与禁用都写在条目部件上的方式。 |
+| `value` | `string \| string[]` |  | 选中值，提供即受控；单选可写为裸串，内部归一为数组。 |
 | `defaultValue` | `string \| string[]` |  |  |
 | `selectionMode` | `ListboxSelectionMode` |  | 选择模式，默认 single。 |
 | `disabled` | `boolean` |  | 整个列表禁用，键盘与点击都不再改选中值。 |
-| `readOnly` | `boolean` |  | 只读：条目照常浏览与聚焦，但选中值改不动。禁用则连焦点带都退出。 |
-| `loading` | `boolean` |  | 条目还在取：列表报 aria-busy，在途占位顶上来，空态占位让位。 |
-| `invalid` | `boolean` |  | 校验失败：列表报 aria-invalid，各角色节点带 data-invalid。 |
-| `tone` | `Tone` |  | 语气：brand / neutral / success / warning / danger / info，决定勾选标记用哪族颜色。 |
+| `readOnly` | `boolean` |  | 只读：条目照常浏览与聚焦，但选中值不可修改。禁用则连同焦点一起退出。 |
+| `loading` | `boolean` |  | 条目加载中：列表报告 aria-busy，显示在途占位，隐藏空态占位。 |
+| `invalid` | `boolean` |  | 校验失败：列表报告 aria-invalid，各角色节点带 data-invalid。 |
+| `tone` | `Tone` |  | 语气：brand / neutral / success / warning / danger / info，决定勾选标记使用哪族颜色。 |
 | `size` | `Size` |  | 尺寸：sm / md / lg，决定条目的几何档位。 |
-| `loop` | `boolean` |  | 方向键走到尽头是否回绕，默认 true。 |
+| `loop` | `boolean` |  | 方向键到达末尾是否回绕，默认 true。 |
 | `dir` | `Direction` |  | 文字方向，默认 ltr。 |
 | `orientation` | `Orientation` |  | 方向键轴向，默认 vertical。 |
-| `typeahead` | `boolean` |  | 连打检索，默认开。 |
+| `typeahead` | `boolean` |  | 连打检索，默认开启。 |
 | `onValueChange` | `(details: ListboxValueChangeDetails) => void` |  | value 变化意图回调。 |
 
 ### 事件
@@ -149,7 +149,7 @@
 | 成员 | 类型 | 说明 |
 | --- | --- | --- |
 | `value` | `string[]` | 选中集合；单选模式下长度 ≤ 1。 |
-| `collection` | `readonly ListboxNodeMeta[]` | collection 推出的条目元信息，按数据顺序排列；没给 collection 即空数组。 |
+| `collection` | `readonly ListboxNodeMeta[]` | 由 collection 推导的条目元信息，按数据顺序排列；未提供 collection 时为空数组。 |
 | `selectionMode` | `ListboxSelectionMode` | 生效的选择模式。 |
 | `focusedValue` | `string \| null` | 焦点锚点；焦点不在列表内时为 null。 |
 | `disabled` | `boolean` |  |
@@ -158,14 +158,14 @@
 | `loading` | `boolean` |  |
 | `isSelected` | `(value: string) => boolean` |  |
 | `setValue` | `(next: string[]) => void` |  |
-| `select` | `(value: string) => void` | 只留这一个；加选用 toggle。 |
+| `select` | `(value: string) => void` | 只保留该条目；加选使用 toggle。 |
 | `toggle` | `(value: string) => void` |  |
 | `getRootProps` | `() => T['element']` |  |
 | `getLabelProps` | `() => T['element']` |  |
 | `getContentProps` | `() => T['element']` |  |
-| `getEmptyProps` | `() => T['element']` | 空态占位：放在 root 里、content 的兄弟。 给了 collection 时由连接层按条数收放；条目手写时不写 hidden，露不露面归作者。 |
-| `getLoadingProps` | `() => T['element']` | 在途占位：与空态占位同一个位置，两者不同屏——取数期间它顶上来，空态让位。 给了 collection 时由连接层按条数收放；条目手写时只按 loading 收放。 |
-| `getLoadMoreTriggerProps` | `() => T['element']` | 取下一页的入口：库不知道还有没有下一页，露不露面与点了做什么都归作者， 连接层只保证取数在途与整列禁用两档点不动。 |
+| `getEmptyProps` | `() => T['element']` | 空态占位：放在 root 中、content 的兄弟。 提供 collection 时由连接层按条数收放；条目手写时不写 hidden，是否显示由作者决定。 |
+| `getLoadingProps` | `() => T['element']` | 在途占位：与空态占位同一位置，两者不同时显示：加载期间显示它，空态让位。 提供 collection 时由连接层按条数收放；条目手写时只按 loading 收放。 |
+| `getLoadMoreTriggerProps` | `() => T['element']` | 取下一页的入口：库不知道是否还有下一页，是否显示与点击后的行为都由作者决定， 连接层只保证取数在途与整列禁用两档不可点击。 |
 | `getGroupProps` | `(props: ListboxGroupProps) => T['element']` |  |
 | `getGroupLabelProps` | `(props: ListboxGroupProps) => T['element']` |  |
 | `getItemProps` | `(props: ListboxItemProps) => T['element']` |  |
@@ -187,7 +187,7 @@
 | `End` | focus in listbox | 焦点移到末个可停留条目 |
 | `Enter` / `Space` | focus on item, selectionMode 为 single 或 extended | 只选中焦点条目，替换原有选中；条目自报禁用则不认 |
 | `Space` / `Enter` / `Ctrl+Space` | focus on item, 可多选（multiple；extended 下须按住 Ctrl/Cmd） | 切换焦点条目的选中态，其余选中不动 |
-| `Shift+ArrowDown` / `Shift+ArrowUp` | focus in listbox, 可多选 | 焦点移到相邻条目并切换它的选中态；往回走即把刚扩进来的那个摘掉 |
+| `Shift+ArrowDown` / `Shift+ArrowUp` | focus in listbox, 可多选 | 焦点移到相邻条目并切换它的选中态；反向移动即取消刚扩展进来的条目 |
 | `Ctrl+A` / `Cmd+A` | focus in listbox, 可多选 | 选中全部可选条目；已经全选则把它们一并取消（禁用但已选中的不动） |
 | `单个可打印字符` | focus in listbox, typeahead 未关 | 连打检索把焦点移到首字母匹配的条目，不改选中值 |
 
