@@ -569,6 +569,17 @@ describe('selectMachine 多选', () => {
   })
 })
 
+describe('selectSelect 形态轴', () => {
+  it('不写 variant 时 root 与 positioner 落 outline；写 subtle 如实落', () => {
+    const fallback = mount()
+    expect(fallback.root.getAttribute('data-variant')).toBe('outline')
+    expect(fallback.positioner.getAttribute('data-variant')).toBe('outline')
+    const subtle = mount({ variant: 'subtle' })
+    expect(subtle.root.getAttribute('data-variant')).toBe('subtle')
+    expect(subtle.positioner.getAttribute('data-variant')).toBe('subtle')
+  })
+})
+
 describe('selectSelect 显示文本与表单出口', () => {
   it('无选中显示 placeholder 并给出 data-placeholder', () => {
     const h = mount({ placeholder: '请选择' })

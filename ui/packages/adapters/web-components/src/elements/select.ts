@@ -55,7 +55,7 @@ const BOOLEAN_CONVERTER = { fromAttribute: (v: string | null) => (v === null ? u
  * @attr {boolean} loop - 方向键到达末尾回绕，默认 true；写 loop="false" 关闭
  * @attr {boolean} multiple - 多选：点击即在集合中增删该项，列表不收起；属性存在即开启，关闭需移除属性（不同于 loop，写 multiple="false" 仍为开启）
  * @attr {'ltr'|'rtl'} dir - 文字方向，默认 ltr
- * @attr {'outline'|'subtle'|'ghost'} variant - 视觉变体
+ * @attr {'outline'|'subtle'|'ghost'} variant - 形态：outline / subtle / ghost，默认 outline
  * @attr {'brand'|'neutral'|'success'|'warning'|'danger'|'info'} tone - 语气
  * @attr {'sm'|'md'|'lg'} size - 尺寸
  * @fires value-change - 选中值变化；detail 为 `{ value: string[] }`

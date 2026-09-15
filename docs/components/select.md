@@ -212,7 +212,7 @@ outline、subtle 和 ghost
 | `offset` | `number` |  |  |
 | `loop` | `boolean` |  | 方向键到达末尾是否回绕，默认 true。 |
 | `dir` | `Direction` |  | 文字方向，默认 ltr。 |
-| `variant` | `ControlVariant` |  | 形态：outline / subtle / ghost，决定触发器的描边与底色使用方式。 |
+| `variant` | `ControlVariant` |  | 形态：outline / subtle / ghost，决定触发器的描边与底色使用方式。默认 outline。 |
 | `tone` | `Tone` |  | 语气：brand / neutral / success / warning / danger / info，决定聚焦与选中强调使用哪族颜色。 |
 | `size` | `Size` |  | 尺寸：sm / md / lg，决定触发器高度、内边距与字号档位。 |
 | `onValueChange` | `(details: SelectValueChangeDetails) => void` |  | value 变化意图回调；受控时是唯一出口，非受控时随内部写入一并通知。 |

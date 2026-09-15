@@ -71,7 +71,9 @@ export function connectSelect<T extends PropTypes>(
   const disabled = !!prop('disabled')
   const deleteItemLabel = prop('translations')?.deleteItem ?? ((label: string) => `Delete ${label}`)
   const readOnly = !!prop('readOnly')
-  const tagAxes = { variant: tagVariantForControl(prop('variant')), tone: prop('tone'), size: prop('size'), disabled, readOnly }
+  // 形态默认落 outline：不写时 root 与 positioner 如实投影，皮肤不再依赖缺省档；标签的形态也从这个常量派
+  const variant = prop('variant') ?? 'outline'
+  const tagAxes = { variant: tagVariantForControl(variant), tone: prop('tone'), size: prop('size'), disabled, readOnly }
   // 标签与 +N 套的是库里的 tag：语气、尺寸、禁用与只读从本控件传下去，形态按控件的面派。
   // 显隐受控在这里——标签在不在只看选中值在不在，不建机器。
   // 值标签一枚一份，关闭钮即删除钮：受控 open 下按它只发 onOpenChange，摘值从这里回到机器；
@@ -180,7 +182,7 @@ export function connectSelect<T extends PropTypes>(
     getRootProps: () => normalize.element({
       ...parts.root.attrs,
       'data-state': stateAttr,
-      'data-variant': prop('variant'),
+      'data-variant': variant,
       'data-tone': prop('tone'),
       'data-size': prop('size'),
       'data-disabled': dataAttr(disabled),
@@ -329,7 +331,7 @@ export function connectSelect<T extends PropTypes>(
       // 定位层被搬到 portal 落点，继承不到作者子树上的方向；作者没给就不写，交给落点处的继承
       'dir': prop('dir'),
       // 视觉轴在浮层这一侧再打一次：positioner 被搬到 portal 落点，继承不到根上的私有槽
-      'data-variant': prop('variant'),
+      'data-variant': variant,
       'data-tone': prop('tone'),
       'data-size': prop('size'),
       'data-state': stateAttr,
