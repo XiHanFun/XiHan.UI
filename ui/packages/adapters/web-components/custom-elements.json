@@ -46595,7 +46595,7 @@
       "declarations": [
         {
           "kind": "class",
-          "description": "`<xh-slider>` —— Light-DOM 行为宿主：作者写 root/label/control/track/range/thumb\n与拇指内的 hidden-input 角色节点，元素跑 slider 机器并把 connect 产出打上去。\n\n键盘全在拇指上（方向键步进、PageUp/PageDown 大步进、Home/End 取端点），\n指针拖动挂在 control 上（拇指常浮出轨道，只挂 track 会抓不住拇指本身），\n值与坐标的换算取 track 的矩形——矩形在事件发生的那一刻才量，连接期一律不碰 DOM。\n\n多滑块时每个拇指要用 index 属性写明自己是第几个（`index=\"1\"`），\n拇指内的 hidden-input 按所在拇指的下标取值，不必另写。",
+          "description": "`<xh-slider>`：Light-DOM 行为宿主：作者写 root / label / control / track / range / thumb\n与拇指内的 hidden-input 角色节点，元素运行 slider 状态机并把 connect 产出接上。\n\n键盘全部在拇指上（方向键步进、PageUp / PageDown 大步进、Home / End 取端点），\n指针拖动挂在 control 上（拇指常浮出轨道，只挂 track 会无法抓住拇指本身），\n值与坐标的换算取 track 的矩形：矩形在事件发生时才测量，连接期一律不涉及 DOM。\n\n多滑块时每个拇指要用 index 属性写明序号（`index=\"1\"`），\n拇指内的 hidden-input 按所在拇指的下标取值，不必另写。",
           "name": "XhSliderElement",
           "cssParts": [
             {
@@ -46623,19 +46623,19 @@
               "name": "tick-group"
             },
             {
-              "description": "刻度点（纯装饰），须自带 value 属性；落进已选区间带 data-passed",
+              "description": "刻度点（纯装饰），须自带 value 属性；落入已选区间时带 data-passed",
               "name": "tick"
             },
             {
-              "description": "刻度文案，须自带 value 属性；点按把最近的滑块跳到这一档",
+              "description": "刻度文案，须自带 value 属性；点击把最近的滑块跳到该档",
               "name": "tick-label"
             },
             {
-              "description": "role=slider 的拇指，键盘交互全在它身上；多滑块须写 index 属性",
+              "description": "role=slider 的拇指，键盘交互全部在它身上；多滑块须写 index 属性",
               "name": "thumb"
             },
             {
-              "description": "拇指内的值气泡（aria-hidden）；留空即由元素填入该拇指的值文本，作者写了内容则归作者",
+              "description": "拇指内的值气泡（aria-hidden）；留空即由元素填入该拇指的值文本，作者写了内容则由作者负责",
               "name": "value-text"
             },
             {
@@ -46723,7 +46723,7 @@
               "type": {
                 "text": "SliderSchema['props']['marks'] | undefined"
               },
-              "description": "刻度表；数组进不了属性，只作为 property 暴露。"
+              "description": "刻度表；数组无法表达为属性，只作为 property 暴露。"
             },
             {
               "kind": "field",
@@ -46919,7 +46919,7 @@
                   }
                 }
               ],
-              "description": "拇指自报的下标。多滑块时作者在节点上写 index=\"1\"，与 Vue 侧的 `:index` 是同一份声明；\n写不出数字（没写、写错）时退回 0，单滑块因此不必写。"
+              "description": "拇指声明的下标。多滑块时作者在节点上写 index=\"1\"，与 Vue 侧的 `:index` 是同一份声明；\n无法得到数字（未写、写错）时退回 0，单滑块因此不必写。"
             },
             {
               "kind": "field",
@@ -46991,14 +46991,14 @@
           ],
           "events": [
             {
-              "description": "值变化（拖动途中会连发）；detail 为 `{ value: number[] }`",
+              "description": "值变化（拖动途中连续发出）；detail 为 `{ value: number[] }`",
               "name": "value-change",
               "type": {
                 "text": "SliderValueTextDetails"
               }
             },
             {
-              "description": "一次操作收尾发一次；detail 为 `{ value: number[], index: number }`",
+              "description": "一次操作收尾时发出一次；detail 为 `{ value: number[], index: number }`",
               "name": "value-change-end",
               "type": {
                 "text": "SliderValueChangeEndDetails"
@@ -47010,7 +47010,7 @@
               "type": {
                 "text": "number[] | undefined"
               },
-              "description": "受控值，逗号分隔（如 \"20,80\"）；缺省该属性即非受控",
+              "description": "受控值，逗号分隔（如 \"20,80\"）；未提供该属性即非受控",
               "name": "value",
               "fieldName": "value"
             },
@@ -47018,7 +47018,7 @@
               "type": {
                 "text": "number[] | undefined"
               },
-              "description": "非受控初值，同样逗号分隔；缺省时是单滑块停在 min",
+              "description": "非受控初值，同样逗号分隔；未提供时是单滑块停在 min",
               "name": "default-value",
               "fieldName": "defaultValue"
             },
@@ -47050,7 +47050,7 @@
               "type": {
                 "text": "number | undefined"
               },
-              "description": "PageUp/PageDown 的步长，默认 10 倍 step",
+              "description": "PageUp / PageDown 的步长，默认 10 倍 step",
               "name": "large-step",
               "fieldName": "largeStep"
             },
@@ -47058,7 +47058,7 @@
               "type": {
                 "text": "number | undefined"
               },
-              "description": "相邻滑块至少隔几格，默认 0",
+              "description": "相邻滑块至少相隔的格数，默认 0",
               "name": "min-steps-between-thumbs",
               "fieldName": "minStepsBetweenThumbs"
             },
@@ -47066,7 +47066,7 @@
               "type": {
                 "text": "boolean | undefined"
               },
-              "description": "只认刻度落点：拖动、点按与键盘都吸到最近/下一档刻度；刻度表经 marks property 赋",
+              "description": "只接受刻度落点：拖动、点击与键盘都吸附到最近 / 下一档刻度；刻度表经 marks property 赋值",
               "name": "snap-to-marks",
               "fieldName": "snapToMarks"
             },
@@ -47090,7 +47090,7 @@
               "type": {
                 "text": "boolean | undefined"
               },
-              "description": "禁用：拇指退出 Tab 序列、推不动、不参与表单提交",
+              "description": "禁用：拇指退出 Tab 序列、不可推动、不参与表单提交",
               "name": "disabled",
               "fieldName": "disabled"
             },
@@ -47098,7 +47098,7 @@
               "type": {
                 "text": "boolean | undefined"
               },
-              "description": "只读：仍可聚焦与被读屏念出，推不动",
+              "description": "只读：仍可聚焦与被读屏朗读，不可推动",
               "name": "read-only",
               "fieldName": "readOnly"
             },
@@ -47130,7 +47130,7 @@
               "type": {
                 "text": "string | undefined"
               },
-              "description": "表单字段名；给了才参与提交，多滑块逐个同名 append",
+              "description": "表单字段名；提供后才参与提交，多滑块逐个同名 append",
               "name": "name",
               "fieldName": "name"
             }

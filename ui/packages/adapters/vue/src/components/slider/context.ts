@@ -9,7 +9,7 @@ import type { ComputedRef, InjectionKey } from 'vue'
 import type { SliderContext } from './use-slider'
 import { inject, provide } from 'vue'
 
-/** 拇指自报的下标，供它内部的隐藏输入复用同一份声明。 */
+/** 拇指声明的下标，供它内部的隐藏输入复用同一份声明。 */
 export interface SliderThumbContext {
   index: ComputedRef<number>
 }

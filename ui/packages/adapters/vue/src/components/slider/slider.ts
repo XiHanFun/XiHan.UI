@@ -23,7 +23,7 @@ export type SliderRootSlotProps = Pick<
   'value' | 'thumbs' | 'range' | 'dragging' | 'setValue' | 'setThumbValue'
 >
 
-/** tick 插槽的载荷：这一档刻度的呈现数据。 */
+/** tick 插槽的载荷：该档刻度的呈现数据。 */
 export interface SliderTickGroupTickSlotProps {
   tick: SliderMarkMeta
 }

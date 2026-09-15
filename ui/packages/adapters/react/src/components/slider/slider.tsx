@@ -28,16 +28,16 @@ export type SliderRootSlotProps = Pick<
   'value' | 'thumbs' | 'range' | 'dragging' | 'setValue' | 'setThumbValue'
 >
 
-/** 刻度函数式 children 的载荷：这一档刻度的呈现数据。 */
+/** 刻度函数式 children 的载荷：该档刻度的呈现数据。 */
 export interface SliderTickSlotProps {
   tick: SliderMarkMeta
 }
 
-/** 根上自有的那些取值；dir 与原生的同名属性含义不同，由这里接管。 */
+/** 根上自有的取值；dir 与原生的同名属性含义不同，由这里接管。 */
 type RootElementProps = Omit<ComponentPropsWithRef<'div'>, 'defaultValue' | 'dir' | 'children'>
 
 export interface XhSliderRootProps extends RootElementProps {
-  /** 受控值；值恒是数组，单滑块即长度 1。给定即受控。 */
+  /** 受控值；值恒为数组，单滑块即长度 1。给定即受控。 */
   value?: number[]
   /** 非受控初值。 */
   defaultValue?: number[]
@@ -46,14 +46,14 @@ export interface XhSliderRootProps extends RootElementProps {
   step?: number
   /** PageUp / PageDown 的步长，默认 10 倍 step。 */
   largeStep?: number
-  /** 相邻滑块至少隔几格，默认 0。 */
+  /** 相邻滑块至少间隔几格，默认 0。 */
   minStepsBetweenThumbs?: number
-  /** 刻度表：轨道上的圆点与文案，点文案即跳值。 */
+  /** 刻度表：轨道上的圆点与文案，点击文案即跳转到该值。 */
   marks?: SliderMark[]
-  /** 只认刻度落点：拖动、点按与键盘都吸到最近的刻度。 */
+  /** 只接受刻度落点：拖动、点按与键盘都吸附到最近的刻度。 */
   snapToMarks?: boolean
   orientation?: Orientation
-  /** 文字方向，缺省 ltr。 */
+  /** 文字方向，默认 ltr。 */
   dir?: Direction
   disabled?: boolean
   readOnly?: boolean
@@ -62,11 +62,11 @@ export interface XhSliderRootProps extends RootElementProps {
   size?: Size
   /** 表单字段名；多滑块时逐个 append。 */
   name?: string
-  /** 把值翻成人话，产出写进拇指的 aria-valuetext。 */
+  /** 把值转换为可读文本，产出写入拇指的 aria-valuetext。 */
   getValueText?: SliderProps['getValueText']
-  /** 每次推动都发；拖动过程中会连续发很多次。 */
+  /** 每次推动都触发；拖动过程中会连续触发多次。 */
   onValueChange?: SliderProps['onValueChange']
-  /** 只在一次操作结束时发一次，适合拿来发请求。 */
+  /** 只在一次操作结束时触发一次，适合用于发起请求。 */
   onValueChangeEnd?: SliderProps['onValueChangeEnd']
   children?: SlotChildren<SliderRootSlotProps>
 }
@@ -156,7 +156,7 @@ export function XhSliderLabel({ children, ...rest }: XhSliderLabelProps): ReactN
 
 export interface XhSliderControlProps extends ComponentPropsWithRef<'div'> {}
 
-/** 按下即跳的那一层：拇指常浮出轨道，指针接在这里才抓得住它。 */
+/** 按下即跳转的层：拇指常浮出轨道，指针接在这里才能抓住它。 */
 export function XhSliderControl({ children, ...rest }: XhSliderControlProps): ReactNode {
   const ctx = useSliderContext()
   return (
@@ -168,7 +168,7 @@ export function XhSliderControl({ children, ...rest }: XhSliderControlProps): Re
 
 export interface XhSliderTrackProps extends ComponentPropsWithRef<'div'> {}
 
-/** 轨道节点交给机器，矩形在指针事件里现量。 */
+/** 轨道节点交给状态机，矩形在指针事件中现测。 */
 export function XhSliderTrack({ children, ...rest }: XhSliderTrackProps): ReactNode {
   const ctx = useSliderContext()
   return (
@@ -196,11 +196,11 @@ export function XhSliderRange({ children, ...rest }: XhSliderRangeProps): ReactN
 }
 
 export interface XhSliderTickGroupProps extends Omit<ComponentPropsWithRef<'div'>, 'children'> {
-  /** 逐档刻度的文案接管口；不给就填刻度自带的 label。 */
+  /** 逐档刻度的文案接管口；未提供时填入刻度自带的 label。 */
   tick?: SlotChildren<SliderTickSlotProps>
 }
 
-/** 刻度整组自动铺：圆点 + 文案（点文案跳值）。 */
+/** 刻度整组自动铺设：圆点 + 文案（点击文案跳转）。 */
 export function XhSliderTickGroup({ tick, ...rest }: XhSliderTickGroupProps): ReactNode {
   const ctx = useSliderContext()
   const api = ctx.api
@@ -240,7 +240,7 @@ export function XhSliderThumb({ index = 0, children, ...rest }: XhSliderThumbPro
 
 export interface XhSliderValueTextProps extends ComponentPropsWithRef<'span'> {}
 
-/** 值气泡：写在拇指里，没给内容就填这一个拇指的值文本。 */
+/** 值气泡：写在拇指中，未提供内容时填入该拇指的值文本。 */
 export function XhSliderValueText({ children, ...rest }: XhSliderValueTextProps): ReactNode {
   const ctx = useSliderContext()
   const index = useSliderThumbContext()
@@ -258,7 +258,7 @@ export function XhSliderValueText({ children, ...rest }: XhSliderValueTextProps)
 
 export interface XhSliderHiddenInputProps extends Omit<ComponentPropsWithRef<'input'>, 'value' | 'defaultValue' | 'type'> {}
 
-/** 表单出口：值随这份原生输入提交，多滑块时逐个同名 append。 */
+/** 表单出口：值随该原生输入提交，多滑块时逐个同名 append。 */
 export function XhSliderHiddenInput({ ...rest }: XhSliderHiddenInputProps): ReactNode {
   const ctx = useSliderContext()
   const index = useSliderThumbContext()
