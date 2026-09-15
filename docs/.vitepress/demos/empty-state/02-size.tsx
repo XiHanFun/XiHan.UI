@@ -1,4 +1,4 @@
-// 尺寸 | size 只换留白与字号，语义一点不动；不传即 md
+// 尺寸 | size 只改变留白与字号，语义不变；不传即 md
 import type { ReactNode } from "react";
 import {
   XhEmptyStateDescription,

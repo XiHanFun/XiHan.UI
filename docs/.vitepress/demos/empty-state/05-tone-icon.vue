@@ -1,4 +1,4 @@
-<!-- 图标自带语气 | 图标槽里放一枚带 tone 的图标，着色落在图标自己身上，不经过根上的 tone -->
+<!-- 图标自带语气 | 图标槽中放置一个带 tone 的图标，着色落在图标自身上，不经过根上的 tone -->
 <script setup lang="ts">
 import {
   XhButton,

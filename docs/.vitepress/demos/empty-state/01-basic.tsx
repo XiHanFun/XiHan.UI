@@ -1,4 +1,4 @@
-// 基础用法 | 图标、标题、说明、操作四个槽都可选，只有 root 是必须的
+// 基础用法 | 图标、标题、说明、操作四个槽都可选，只有 root 是必需的
 import type { ReactNode } from "react";
 import {
   XhButton,

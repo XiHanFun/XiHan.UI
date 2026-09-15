@@ -1,4 +1,4 @@
-// 用作结果页 | 同一套部件也承载 404、403 这类结果：status 给图标区上语气色，操作槽里放回退出口
+// 用作结果页 | 同一套部件也承载 404、403 等结果：status 为图标区上语气色，操作槽中放置回退出口
 import type { ReactNode } from "react";
 import {
   XhButton,

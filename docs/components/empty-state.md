@@ -14,7 +14,7 @@
 
 ## 用法
 
-图标、标题、说明、操作四个槽都可选，只有 root 是必须的
+图标、标题、说明、操作四个槽都可选，只有 root 是必需的
 
 <XhDemo src="empty-state/01-basic" />
 
@@ -28,31 +28,31 @@
 
 ### 尺寸
 
-size 只换留白与字号，语义一点不动；不传即 md
+size 只改变留白与字号，语义不变；不传即 md
 
 <XhDemo src="empty-state/02-size" />
 
 ### 播报方式
 
-缺省 polite 让 root 成为活区，筛完就地播报；off 让它只是个普通容器
+默认 polite 使 root 成为活区，筛选完成后就地播报；off 使它只是一个普通容器
 
 <XhDemo src="empty-state/03-live" />
 
 ### 用作结果页
 
-同一套部件也承载 404、403 这类结果：status 给图标区上语气色，操作槽里放回退出口
+同一套部件也承载 404、403 等结果：status 为图标区上语气色，操作槽中放置回退出口
 
 <XhDemo src="empty-state/04-result" />
 
 ### 图标自带语气
 
-图标槽里放一枚带 tone 的图标，着色落在图标自己身上，不经过根上的 tone
+图标槽中放置一个带 tone 的图标，着色落在图标自身上，不经过根上的 tone
 
 <XhDemo src="empty-state/05-tone-icon" />
 
 ### 颜色
 
-tone 给图标区上语气色，与全库同一根轴；画什么图标仍由作者塞
+tone 为图标区上语气色，与全库同一根轴；绘制什么图标仍由作者放置
 
 <XhDemo src="empty-state/06-tone" />
 
