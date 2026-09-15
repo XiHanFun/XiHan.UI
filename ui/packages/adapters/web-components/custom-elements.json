@@ -58593,15 +58593,15 @@
       "declarations": [
         {
           "kind": "class",
-          "description": "`<xh-tooltip>` —— Light-DOM 行为宿主：用户写 trigger/positioner/content/arrow 角色节点，\n元素跑 tooltip 机器并把 connect 产出打上去。浮层坐标由本元素建的定位引擎算出，\n经 refs 交给机器的定位效应；引擎或角色节点缺席时机器照常转移，只是不产出坐标。",
+          "description": "`<xh-tooltip>`：Light-DOM 行为宿主：作者写 trigger / positioner / content / arrow 角色节点，\n元素运行 tooltip 状态机并把 connect 产出接上。浮层坐标由本元素创建的定位引擎计算，\n经 refs 交给状态机的定位效应；引擎或角色节点缺席时状态机照常转移，只是不产出坐标。",
           "name": "XhTooltipElement",
           "cssParts": [
             {
-              "description": "悬停/聚焦的锚点按钮（aria-describedby 指向 content）",
+              "description": "悬停 / 聚焦的锚点按钮（aria-describedby 指向 content）",
               "name": "trigger"
             },
             {
-              "description": "浮层定位容器（坐标写成内联样式，落定朝向在 data-placement）",
+              "description": "浮层定位容器（坐标写为内联样式，落定朝向在 data-placement）",
               "name": "positioner"
             },
             {
@@ -58863,7 +58863,7 @@
               "type": {
                 "text": "boolean | undefined"
               },
-              "description": "受控开合；缺省该属性即非受控",
+              "description": "受控开合；未提供该属性即非受控",
               "name": "open",
               "fieldName": "open"
             },
@@ -58879,7 +58879,7 @@
               "type": {
                 "text": "Placement | undefined"
               },
-              "description": "请求的浮层朝向（top/right/bottom/left，可带 -start/-end 后缀），默认 bottom；空间不足时由引擎避让",
+              "description": "请求的浮层朝向（top / right / bottom / left，可带 -start / -end 后缀），默认 bottom；空间不足时由引擎避让",
               "name": "placement",
               "fieldName": "placement"
             },
@@ -58895,7 +58895,7 @@
               "type": {
                 "text": "Direction | undefined"
               },
-              "description": "文字方向，翻转浮层在行内轴上 start 与 end 的落点；只在显式给了才写到定位层上",
+              "description": "文字方向，翻转浮层在行内轴上 start 与 end 的落点；只在显式提供时才写到定位层上",
               "name": "dir",
               "fieldName": "direction"
             },
@@ -58919,7 +58919,7 @@
               "type": {
                 "text": "boolean | undefined"
               },
-              "description": "只关掉提示，被包裹的控件仍可用",
+              "description": "只关闭提示，被包裹的控件仍可用",
               "name": "disabled",
               "fieldName": "disabled"
             },

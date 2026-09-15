@@ -25,11 +25,11 @@ export interface TooltipContext {
   triggerRef: Ref<HTMLElement | null>
   /** 被定位的浮层。 */
   positionerRef: Ref<HTMLElement | null>
-  /** 浮层本体，退场动画从它身上探测。 */
+  /** 浮层本体，退场动画从它上面探测。 */
   contentRef: Ref<HTMLElement | null>
-  /** 此刻该不该可见：退场动画播完之前仍为真。 */
+  /** 当前是否应当可见：退场动画播完之前仍为真。 */
   visible: Ref<boolean>
-  /** 浮层搬到哪儿：全局配置的容器 > 运行时的浮层落点 > body。 */
+  /** 浮层迁移到的位置：全局配置的容器 > 运行时的浮层落点 > body。 */
   portalTarget: ComputedRef<string | Element>
 }
 

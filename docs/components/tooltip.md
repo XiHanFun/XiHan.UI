@@ -126,14 +126,14 @@ disabled 只关掉提示本身，被包裹的触发器照样可点、可聚焦
 | `open` | `boolean` |  |  |
 | `defaultOpen` | `boolean` |  |  |
 | `placement` | `Placement` |  | 请求的浮层朝向，默认 bottom；空间不足时由定位引擎避让。 |
-| `dir` | `Direction` |  | 文字方向，缺省 ltr。只改写浮层在行内轴上 start 与 end 的落点。 |
+| `dir` | `Direction` |  | 文字方向，默认 ltr。只改写浮层在行内轴上 start 与 end 的落点。 |
 | `offset` | `number` |  | 浮层与锚点的间距（px）。 |
 | `openDelay` | `number` |  | 悬停进入到展开的等待毫秒，默认 700。 |
 | `closeDelay` | `number` |  | 悬停移出到收起的等待毫秒，默认 300。 |
 | `disabled` | `boolean` |  | 只关闭提示本身，不影响被包裹控件的可用性。 |
 | `tone` | `Tone` |  | 语气：brand / neutral / success / warning / danger / info，决定提示的底色与其上的文字色。 |
 | `size` | `Size` |  | 尺寸：sm / md / lg，决定内边距与字号档位。 |
-| `onOpenChange` | `(details: TooltipOpenChangeDetails) => void` |  | open 变化意图回调；受控时是唯一出口，非受控随内部转移一并通知。 |
+| `onOpenChange` | `(details: TooltipOpenChangeDetails) => void` |  | open 变化意图回调；受控时是唯一出口，非受控时随内部转移一并通知。 |
 
 ### 事件
 

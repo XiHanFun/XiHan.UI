@@ -28,7 +28,7 @@ export interface XhTooltipRootProps {
   defaultOpen?: boolean
   placement?: Placement
   offset?: number
-  /** 文字方向；浮层搬到落点后继承不到作者子树上的方向，要 RTL 就显式给。 */
+  /** 文字方向；浮层迁移到落点后无法继承作者子树上的方向，需要 RTL 时显式提供。 */
   dir?: Direction
   openDelay?: number
   closeDelay?: number
@@ -68,10 +68,10 @@ export function XhTooltipTrigger({ children, asChild, ...rest }: XhTooltipTrigge
 }
 
 export interface XhTooltipPositionerProps extends ComponentPropsWithRef<'div'> {
-  /** 浮层挂到哪个容器；不给就按全局配置，再不给挂 body。 */
+  /** 浮层挂载的容器；未提供时按全局配置，再未提供时挂载到 body。 */
   container?: () => Element | null
 }
-/** 搬到浮层落点：留在原地的话，宿主祖先只要建了层叠上下文就能盖住浮层。 */
+/** 迁移到浮层落点：留在原地时，宿主祖先只要建立了层叠上下文就能遮住浮层。 */
 export function XhTooltipPositioner({ children, container, ...rest }: XhTooltipPositionerProps): ReactNode {
   const ctx = useTooltipContext()
   return (

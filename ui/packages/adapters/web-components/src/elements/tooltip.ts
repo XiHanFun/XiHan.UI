@@ -31,24 +31,24 @@ const NUMBER_CONVERTER = {
 }
 
 /**
- * `<xh-tooltip>` —— Light-DOM 行为宿主：用户写 trigger/positioner/content/arrow 角色节点，
- * 元素跑 tooltip 机器并把 connect 产出打上去。浮层坐标由本元素建的定位引擎算出，
- * 经 refs 交给机器的定位效应；引擎或角色节点缺席时机器照常转移，只是不产出坐标。
+ * `<xh-tooltip>`：Light-DOM 行为宿主：作者写 trigger / positioner / content / arrow 角色节点，
+ * 元素运行 tooltip 状态机并把 connect 产出接上。浮层坐标由本元素创建的定位引擎计算，
+ * 经 refs 交给状态机的定位效应；引擎或角色节点缺席时状态机照常转移，只是不产出坐标。
  *
  * @customElement xh-tooltip
- * @attr {boolean} open - 受控开合；缺省该属性即非受控
+ * @attr {boolean} open - 受控开合；未提供该属性即非受控
  * @attr {boolean} default-open - 非受控初始为展开
- * @attr {string} placement - 请求的浮层朝向（top/right/bottom/left，可带 -start/-end 后缀），默认 bottom；空间不足时由引擎避让
+ * @attr {string} placement - 请求的浮层朝向（top / right / bottom / left，可带 -start / -end 后缀），默认 bottom；空间不足时由引擎避让
  * @attr {number} offset - 浮层与锚点的间距（px），默认 8
- * @attr {'ltr'|'rtl'} dir - 文字方向，翻转浮层在行内轴上 start 与 end 的落点；只在显式给了才写到定位层上
+ * @attr {'ltr'|'rtl'} dir - 文字方向，翻转浮层在行内轴上 start 与 end 的落点；只在显式提供时才写到定位层上
  * @attr {number} open-delay - 悬停进入到展开的等待毫秒，默认 700
  * @attr {number} close-delay - 悬停移出到收起的等待毫秒，默认 300
- * @attr {boolean} disabled - 只关掉提示，被包裹的控件仍可用
+ * @attr {boolean} disabled - 只关闭提示，被包裹的控件仍可用
  * @attr {'brand'|'neutral'|'success'|'warning'|'danger'|'info'} tone - 语气
  * @attr {'sm'|'md'|'lg'} size - 尺寸
  * @fires open-change - open 状态变化；detail 为 `{ open: boolean }`
- * @csspart trigger - 悬停/聚焦的锚点按钮（aria-describedby 指向 content）
- * @csspart positioner - 浮层定位容器（坐标写成内联样式，落定朝向在 data-placement）
+ * @csspart trigger - 悬停 / 聚焦的锚点按钮（aria-describedby 指向 content）
+ * @csspart positioner - 浮层定位容器（坐标写为内联样式，落定朝向在 data-placement）
  * @csspart content - role=tooltip 的提示内容（收起时 hidden）
  * @csspart arrow - 指向锚点的箭头，装饰性
  */
@@ -173,9 +173,9 @@ export class XhTooltipElement extends XhPortalHostElement {
   }
 
   /**
-   * 机器在 hostConnected 就挂载，初始即展开（open / default-open）时定位效应当场执行；
-   * 而基类要到首次 updated 才发现角色节点，refs 的 getter 此刻取到 null，引擎静默跳过，
-   * 之后状态不变就没有第二次机会——浮层会停在 0,0。故连接时先自行发现一次。
+   * 状态机在 hostConnected 就挂载，初始即展开（open / default-open）时定位效应当场执行；
+   * 而基类要到首次 updated 才发现角色节点，refs 的 getter 此时取到 null，引擎静默跳过，
+   * 之后状态不变就没有第二次机会：浮层会停在 0,0。因此连接时先自行发现一次。
    */
   override connectedCallback(): void {
     this.refreshParts()
