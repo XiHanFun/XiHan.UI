@@ -10,7 +10,7 @@ import type { ComputedRef, InjectionKey } from 'vue'
 import type { RadioGroupContext } from './use-radio-group'
 import { inject, provide } from 'vue'
 
-/** 条目自报的值与禁用，供 item-text / indicator 这类子部件复用同一份声明。 */
+/** 条目声明的值与禁用，供 item-text / indicator 等子部件复用同一份声明。 */
 export interface RadioGroupItemContext {
   item: ComputedRef<RadioGroupItemProps>
 }
