@@ -90,11 +90,11 @@
 
 | 属性 | 类型 | 必填 | 说明 |
 | --- | --- | --- | --- |
-| `align` | `SeparatorAlign` |  | 分节文字落在哪一侧，缺省居中；缺省档不输出 data-align。 |
-| `dashed` | `boolean` |  | 画成虚线；实线段与空白段的长度走 --xh-separator-dash-length / -dash-gap 两个槽。 |
+| `align` | `SeparatorAlign` |  | 分节文字的位置，默认居中；默认档不输出 data-align。 |
+| `dashed` | `boolean` |  | 绘制为虚线；实线段与空白段的长度使用 --xh-separator-dash-length / -dash-gap 两个槽。 |
 | `decorative` | `boolean` |  | 装饰性分隔：仅视觉分组，root 通过 role=none + aria-hidden 完整退出无障碍树。 |
 | `orientation` | `'horizontal' \| 'vertical'` |  |  |
-| `variant` | `SeparatorVariant` |  | 线怎么画，缺省 default；缺省档不输出 data-variant。 |
+| `variant` | `SeparatorVariant` |  | 线的绘制方式，默认 default；默认档不输出 data-variant。 |
 
 ### connect API
 

@@ -22,8 +22,8 @@ const separatorProps = {
 } as const
 
 /**
- * 分隔本身。默认插槽为空时它就是那条线；放进 XhSeparatorLine 与 XhSeparatorContent
- * 之后它改当容器，线由 line 画。
+ * 分隔本身。默认插槽为空时它就是那条线；放入 XhSeparatorLine 与 XhSeparatorContent
+ * 之后它改作容器，线由 line 绘制。
  */
 export const XhSeparatorRoot = defineComponent({
   name: 'XhSeparatorRoot',
@@ -35,7 +35,7 @@ export const XhSeparatorRoot = defineComponent({
   },
 })
 
-/** 分节文字两侧的那条线，纯装饰。 */
+/** 分节文字两侧的线，纯装饰。 */
 export const XhSeparatorLine = defineComponent({
   name: 'XhSeparatorLine',
   setup() {
@@ -54,9 +54,9 @@ export const XhSeparatorContent = defineComponent({
 })
 
 /**
- * 一步到位的写法：不给插槽就是一条线；给了插槽就自动排成「线 · 文字 · 线」三段。
+ * 一步到位的写法：未提供插槽即为一条线；提供插槽后自动排为线、文字、线三段。
  *
- * 要往分节文字里塞自定义结构（比如一枚图标加一段字）时改用
+ * 需要在分节文字中放置自定义结构（例如一个图标加一段文字）时改用
  * XhSeparatorRoot + XhSeparatorLine + XhSeparatorContent。
  */
 export const XhSeparator = defineComponent({

@@ -11,19 +11,19 @@ import { wcNormalize } from '../dom/normalize'
 import { XhElement } from '../element-base'
 
 /**
- * `<xh-separator>` —— Light-DOM 行为宿主，无状态机，把 connectSeparator 产出打到三个角色节点上。
+ * `<xh-separator>`：Light-DOM 行为宿主，无状态机，把 connectSeparator 产出接到三个角色节点上。
  *
- * 只写 root 就是一条线；在 root 里摆「line · content · line」三个节点，就是带分节文字的那一档。
+ * 只写 root 即为一条线；在 root 中放置 line · content · line 三个节点，即为带分节文字的档位。
  *
  * @customElement xh-separator
  * @attr {'horizontal'|'vertical'} orientation - 朝向，默认 horizontal
  * @attr {boolean} decorative - 装饰性分隔，仅视觉分组（role=none，退出无障碍树）
- * @attr {'default'|'subtle'|'strong'} variant - 线怎么画：默认线 / 弱线 / 强线
- * @attr {boolean} dashed - 画成虚线
- * @attr {'start'|'center'|'end'} align - 分节文字落在哪一侧，缺省居中
- * @csspart root - 承载 role/aria-orientation/data-orientation 的分隔节点；有分节文字时它是容器
+ * @attr {'default'|'subtle'|'strong'} variant - 线的绘制方式：默认线 / 弱线 / 强线
+ * @attr {boolean} dashed - 绘制为虚线
+ * @attr {'start'|'center'|'end'} align - 分节文字的位置，默认居中
+ * @csspart root - 承载 role / aria-orientation / data-orientation 的分隔节点；有分节文字时它是容器
  * @csspart line - 分节文字两侧的线，纯装饰
- * @csspart content - 夹在两条线中间的分节文字
+ * @csspart content - 位于两条线之间的分节文字
  */
 export class XhSeparatorElement extends XhElement {
   static override partContract = { anatomy: separatorAnatomy, meta: separatorMeta }
