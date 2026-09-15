@@ -97,7 +97,7 @@
     transition:
       background var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
       box-shadow var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
-      scale var(--xh-motion-duration-micro) var(--xh-motion-ease-enter-strong);
+      scale var(--xh-motion-duration-release) var(--xh-motion-ease-release);
   }
 
   /* 悬停换底色的同时把这块面抬起一档：只换底色的回执在一颗按钮上太轻 */
@@ -111,6 +111,8 @@
     background: var(--xh-signature-pad-clear-bg-active, var(--xh-bg-subtle-active));
     box-shadow: none;
     scale: var(--xh-motion-scale-press);
+    transition-duration: var(--xh-motion-duration-press);
+    transition-timing-function: var(--xh-motion-ease-press);
   }
 
   /* 空画布时按钮照常可按（收起它会让焦点掉回 body），只把它压淡一档 */
