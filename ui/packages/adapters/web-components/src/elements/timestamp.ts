@@ -14,24 +14,24 @@ import { XhElement } from '../element-base'
 const STRING_CONVERTER = { fromAttribute: (v: string | null) => v ?? undefined }
 
 /**
- * `<xh-timestamp>` —— Light-DOM 行为宿主，无状态机，把 connectTimestamp 产出打到 root 角色节点。
+ * `<xh-timestamp>`：Light-DOM 行为宿主，无状态机，把 connectTimestamp 产出接到 root 角色节点。
  *
- * 作者写一个空的 `<time data-xh-part="root"></time>`：datetime 与显示文本都是算出来的，
- * 两者取自同一个墙钟，元素不做时区换算。作者若自己在这个节点里写了文本，那份文本原样留着，
- * 元素只覆盖自己上一次铺进去的那一份。
+ * 作者写一个空的 `<time data-xh-part="root"></time>`：datetime 与显示文本都是计算得出的，
+ * 两者取自同一个墙钟，元素不做时区换算。作者若自行在该节点中写了文本，该文本原样保留，
+ * 元素只覆盖自己上一次铺入的内容。
  *
- * 认不出的时刻落 `data-state="invalid"`，此时不写 datetime——
- * 与其给机器一个瞎编的时间戳，不如什么都不给。
+ * 无法识别的时刻写 `data-state="invalid"`，此时不写 datetime：
+ * 与其提供一个错误的机读时间戳，不如不提供。
  *
- * 数字时间戳只能走 property（`el.value = 1786000000000`）：属性里的一串数字与年份写法分不开。
+ * 数字时间戳只能通过 property 设置（`el.value = 1786000000000`）：属性中的一串数字与年份写法无法区分。
  *
  * @customElement xh-timestamp
  * @attr {string} value - 要显示的时刻；只写年月日的串按本地零点解读
- * @attr {'date'|'datetime'|'relative'} type - 呈现方式，缺省 datetime
- * @attr {string} format - 自定义格式串，记号是 YYYY / YY / MM / M / DD / D / HH / H / mm / m / ss / s
- * @attr {string} locale - BCP 47 语言标记，zh 开头用中文用词、其余英文；不给按宿主语言，宿主也没有时按 en-US。只换给人看的文本
- * @attr {string} now - 算相对说法时的参照时刻，缺省取当前时刻
- * @csspart root - 那个 `<time>`，承载 datetime / data-format / data-state / data-relative
+ * @attr {'date'|'datetime'|'relative'} type - 呈现方式，默认 datetime
+ * @attr {string} format - 自定义格式串，记号为 YYYY / YY / MM / M / DD / D / HH / H / mm / m / ss / s
+ * @attr {string} locale - BCP 47 语言标记，zh 开头使用中文用词、其余英文；未提供时按宿主语言，宿主也没有时按 en-US。只切换面向用户的文本
+ * @attr {string} now - 计算相对表述时的参照时刻，默认取当前时刻
+ * @csspart root - `<time>` 节点，承载 datetime / data-format / data-state / data-relative
  */
 export class XhTimestampElement extends XhElement {
   static override partContract = {
