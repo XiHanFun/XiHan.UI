@@ -36,12 +36,15 @@ async function mountSelect(size: 'sm' | 'md' | 'lg' = 'md'): Promise<HTMLElement
   return [...document.querySelectorAll<HTMLElement>('[data-scope=\'select\'][data-part=\'item\']')]
 }
 
-function rawItem(state?: string): HTMLElement {
+function rawItem({ context = 'overlay', attrs = {} }: { context?: 'overlay' | 'page', attrs?: Record<string, string> } = {}): HTMLElement {
   const item = document.createElement('div')
   item.setAttribute('data-xh-collection-item', '')
   item.setAttribute('data-xh-collection-size', 'md')
-  if (state)
-    item.setAttribute(`data-xh-collection-${state}`, '')
+  item.setAttribute('data-xh-collection-context', context)
+  for (const [name, value] of Object.entries(attrs))
+    item.setAttribute(name, value)
+  // 裸条目只断言换面的终值，不等待家族的释放过渡
+  item.style.transition = 'none'
   for (const slot of ['prefix', 'text', 'description', 'shortcut', 'suffix', 'indicator']) {
     const child = document.createElement('span')
     child.dataset.xhCollectionSlot = slot
@@ -50,6 +53,16 @@ function rawItem(state?: string): HTMLElement {
   }
   host!.append(item)
   return item
+}
+
+/** 读取某个令牌在当前主题下的计算色：探针元素只写 background-color，和条目在同一个文档里求值。 */
+function tokenColor(token: string): string {
+  const probe = document.createElement('div')
+  probe.style.backgroundColor = `var(${token})`
+  host!.append(probe)
+  const value = getComputedStyle(probe).backgroundColor
+  probe.remove()
+  return value
 }
 
 afterEach(async () => {
@@ -114,9 +127,32 @@ describe('select 使用 Collection Item', () => {
     expect(isTransparentColor(getComputedStyle(selected!).outlineColor)).toBe(false)
     expect(selected!.getBoundingClientRect().width).toBe(width)
     expect(getComputedStyle(disabled!).cursor).toBe('not-allowed')
+
+    // overlay 的选中项悬停仍走中性 hover 面，不铺品牌淡底
+    selected!.style.transition = 'none'
+    await userEvent.hover(selected!)
+    await nextTick()
+    expect(getComputedStyle(selected!).backgroundColor).toBe(tokenColor('--xh-bg-subtle'))
+    expect(getComputedStyle(indicator).visibility).toBe('visible')
+
+    // 按下：白底阶梯 hover 100 → pressed 200，面由家族 pressed 规则给出，只换面不缩放
+    plain!.style.transition = 'none'
+    await userEvent.hover(plain!)
+    await nextTick()
+    const hoverBg = getComputedStyle(plain!).backgroundColor
+    let pressedBg = ''
+    let pressedTransform = ''
+    plain!.addEventListener('pointerdown', () => {
+      pressedBg = getComputedStyle(plain!).backgroundColor
+      pressedTransform = getComputedStyle(plain!).transform
+    }, { once: true })
+    await userEvent.click(plain!)
+    expect(pressedBg).not.toBe(hoverBg)
+    expect(pressedBg).toBe(tokenColor('--xh-bg-subtle-hover'))
+    expect(pressedTransform).toBe('none')
   })
 
-  it('六列、open-path/loading/error 与 separator 共享命名空间且互不借用 selected', async () => {
+  it('overlay 裸条目：open-path 与 hover 同档、loading/error/separator 命名空间', async () => {
     await mountSelect()
     const item = rawItem()
     const width = item.getBoundingClientRect().width
@@ -127,9 +163,13 @@ describe('select 使用 Collection Item', () => {
     expect(description.getBoundingClientRect().top).toBeGreaterThanOrEqual(text.getBoundingClientRect().bottom)
     expect(indicator.getBoundingClientRect().right).toBeCloseTo(item.getBoundingClientRect().right - Number.parseFloat(getComputedStyle(item).paddingInlineEnd), 0)
 
+    await userEvent.hover(item)
+    const hoverBg = getComputedStyle(item).backgroundColor
+    await userEvent.hover(document.querySelector<HTMLElement>('[data-test-park-pointer]')!)
     item.dataset.inPath = ''
     const openPathBg = getComputedStyle(item).backgroundColor
     expect(openPathBg).not.toBe('rgba(0, 0, 0, 0)')
+    expect(openPathBg).toBe(hoverBg)
     expect(getComputedStyle(item).fontWeight).toBe('400')
     expect(item.getBoundingClientRect().width).toBe(width)
     delete item.dataset.inPath
@@ -146,5 +186,32 @@ describe('select 使用 Collection Item', () => {
     expect(Number.parseFloat(separatorStyle.marginBlockStart)).toBeGreaterThanOrEqual(0)
     expect(Number.parseFloat(separatorStyle.marginInlineStart)).toBeGreaterThanOrEqual(0)
     expect(Number.parseFloat(separatorStyle.height)).toBeGreaterThan(0)
+  })
+
+  it('page 上下文：选中 = 品牌淡底 + 前导对号，current = 指示条，宽度不变', async () => {
+    await mountSelect()
+    const item = rawItem({ context: 'page' })
+    const indicator = item.querySelector<HTMLElement>('[data-xh-collection-slot=\'indicator\']')!
+    const width = item.getBoundingClientRect().width
+    expect(getComputedStyle(indicator).visibility).toBe('hidden')
+
+    item.setAttribute('aria-selected', 'true')
+    expect(getComputedStyle(item).backgroundColor).toBe(tokenColor('--xh-bg-brand-subtle'))
+    expect(getComputedStyle(item).color).toBe(tokenColor('--xh-fg-on-brand-subtle'))
+    expect(getComputedStyle(indicator).visibility).toBe('visible')
+    // 前导标记：对号贴着起始侧内边距
+    expect(indicator.getBoundingClientRect().left).toBeCloseTo(item.getBoundingClientRect().left + Number.parseFloat(getComputedStyle(item).paddingInlineStart), 0)
+    expect(getComputedStyle(item).fontWeight).toBe('400')
+    expect(item.getBoundingClientRect().width).toBe(width)
+    expect(getComputedStyle(item, '::before').content).toBe('none')
+
+    item.dataset.current = ''
+    const bar = getComputedStyle(item, '::before')
+    expect(bar.width).toBe('2px')
+    expect(bar.backgroundColor).toBe(tokenColor('--xh-fg-on-brand-subtle'))
+    expect(item.getBoundingClientRect().width).toBe(width)
+
+    await userEvent.hover(item)
+    expect(getComputedStyle(item).backgroundColor).toBe(tokenColor('--xh-bg-brand-subtle-hover'))
   })
 })

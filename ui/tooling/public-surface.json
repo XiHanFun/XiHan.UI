@@ -11640,6 +11640,7 @@
     "data-xh-action-owner",
     "data-xh-action-profile",
     "data-xh-action-size",
+    "data-xh-collection-context",
     "data-xh-collection-item",
     "data-xh-collection-size",
     "data-xh-collection-slot",

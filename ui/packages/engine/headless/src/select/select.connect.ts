@@ -448,9 +448,10 @@ export function connectSelect<T extends PropTypes>(
     getItemProps: item => normalize.element({
       ...parts.item.attrs,
       ...itemStateAttrs(item),
-      // Collection Item 家族只读取稳定角色与状态事实；三端适配器原样 spread，不复制视觉判定。
+      // Collection Item 家族只读取稳定角色、上下文与状态事实；Select 的条目是浮层瞬态集合，选中只画行尾对号。
       'data-xh-collection-item': '',
       'data-xh-collection-size': prop('size') ?? 'md',
+      'data-xh-collection-context': 'overlay',
       // 导航、检索与选中都以此为条目身份
       [ITEM_VALUE_ATTR]: item.value,
       'role': 'option',

@@ -1,9 +1,24 @@
 {
-  "$description": "Collection Item 家族配方：尺寸节奏、内容列与状态矩阵只有这一份生成真源；组件只投影角色与事实。",
-  "version": 1,
+  "$description": "Collection Item 家族配方：尺寸节奏、内容列、上下文与状态矩阵只有这一份生成真源；组件只投影角色、上下文与状态事实。浮层集合（overlay）选中 = 透明底 + 行尾对号；页内持久集合（page）选中 = 品牌淡底行面 + 前导对号，导航当前页（current）= 品牌淡底行面 + 起始侧 2px 指示条。page 选中态的说明行保留 muted 前景，与正文维持层级；分类依据见设计真源 §7.2「浮层瞬态 vs 页内持久」。",
+  "version": 2,
   "sizes": ["sm", "md", "lg"],
   "columns": ["prefix", "text", "description", "shortcut", "suffix", "indicator"],
-  "states": ["rest", "hover", "keyboard-highlight", "selected", "selected+highlight", "open-path", "checked", "disabled", "loading", "error"],
+  "contexts": ["overlay", "page"],
+  "states": ["rest", "hover", "keyboard-highlight", "pressed", "open-path", "checked", "disabled", "loading", "error"],
+  "contextStates": {
+    "overlay": ["selected", "selected+hover", "selected+highlight", "selected+pressed"],
+    "page": ["selected", "selected+hover", "selected+highlight", "selected+pressed", "current", "current+hover", "current+highlight", "current+pressed"]
+  },
+  "markers": {
+    "$description": "标记类型按上下文固定：overlay 对号在行尾；page 对号在行首（前导标记），current 另画起始侧 2px 品牌指示条。",
+    "overlay": { "glyph": "trailing", "current": "none" },
+    "page": { "glyph": "leading", "current": "bar" },
+    "bar": {
+      "thickness": "var(--xh-stroke-thick)",
+      "blockInset": "var(--xh-space-1)",
+      "radius": "var(--xh-shape-pill)"
+    }
+  },
   "sizeValues": {
     "sm": {
       "blockPadding": "var(--xh-list-option-py-sm)",
@@ -58,8 +73,8 @@
       "cursor": "pointer",
       "opacity": "1"
     },
-    "selected": {
-      "backgroundColor": "transparent",
+    "pressed": {
+      "backgroundColor": "var(--xh-bg-subtle-hover)",
       "color": "var(--xh-material-frosted-fg)",
       "descriptionColor": "var(--xh-material-frosted-fg-muted)",
       "indicatorColor": "var(--xh-fg-brand)",
@@ -68,18 +83,8 @@
       "cursor": "pointer",
       "opacity": "1"
     },
-    "selected+highlight": {
-      "backgroundColor": "var(--xh-bg-subtle)",
-      "color": "var(--xh-material-frosted-fg)",
-      "descriptionColor": "var(--xh-material-frosted-fg-muted)",
-      "indicatorColor": "var(--xh-fg-brand)",
-      "outlineColor": "var(--xh-ring-focus)",
-      "fontWeight": "var(--xh-font-weight-regular)",
-      "cursor": "pointer",
-      "opacity": "1"
-    },
     "open-path": {
-      "backgroundColor": "color-mix(in oklab, var(--xh-fg-brand) 10%, transparent)",
+      "backgroundColor": "var(--xh-bg-subtle)",
       "color": "var(--xh-material-frosted-fg)",
       "descriptionColor": "var(--xh-material-frosted-fg-muted)",
       "indicatorColor": "var(--xh-fg-brand)",
@@ -129,13 +134,139 @@
       "opacity": "1"
     }
   },
+  "contextValues": {
+    "overlay": {
+      "selected": {
+        "backgroundColor": "transparent",
+        "color": "var(--xh-material-frosted-fg)",
+        "descriptionColor": "var(--xh-material-frosted-fg-muted)",
+        "indicatorColor": "var(--xh-fg-brand)",
+        "outlineColor": "transparent",
+        "fontWeight": "var(--xh-font-weight-regular)",
+        "cursor": "pointer",
+        "opacity": "1"
+      },
+      "selected+hover": {
+        "backgroundColor": "var(--xh-bg-subtle)",
+        "color": "var(--xh-material-frosted-fg)",
+        "descriptionColor": "var(--xh-material-frosted-fg-muted)",
+        "indicatorColor": "var(--xh-fg-brand)",
+        "outlineColor": "transparent",
+        "fontWeight": "var(--xh-font-weight-regular)",
+        "cursor": "pointer",
+        "opacity": "1"
+      },
+      "selected+highlight": {
+        "backgroundColor": "var(--xh-bg-subtle)",
+        "color": "var(--xh-material-frosted-fg)",
+        "descriptionColor": "var(--xh-material-frosted-fg-muted)",
+        "indicatorColor": "var(--xh-fg-brand)",
+        "outlineColor": "var(--xh-ring-focus)",
+        "fontWeight": "var(--xh-font-weight-regular)",
+        "cursor": "pointer",
+        "opacity": "1"
+      },
+      "selected+pressed": {
+        "backgroundColor": "var(--xh-bg-subtle-hover)",
+        "color": "var(--xh-material-frosted-fg)",
+        "descriptionColor": "var(--xh-material-frosted-fg-muted)",
+        "indicatorColor": "var(--xh-fg-brand)",
+        "outlineColor": "transparent",
+        "fontWeight": "var(--xh-font-weight-regular)",
+        "cursor": "pointer",
+        "opacity": "1"
+      }
+    },
+    "page": {
+      "selected": {
+        "backgroundColor": "var(--xh-bg-brand-subtle)",
+        "color": "var(--xh-fg-on-brand-subtle)",
+        "descriptionColor": "var(--xh-material-frosted-fg-muted)",
+        "indicatorColor": "var(--xh-fg-on-brand-subtle)",
+        "outlineColor": "transparent",
+        "fontWeight": "var(--xh-font-weight-regular)",
+        "cursor": "pointer",
+        "opacity": "1"
+      },
+      "selected+hover": {
+        "backgroundColor": "var(--xh-bg-brand-subtle-hover)",
+        "color": "var(--xh-fg-on-brand-subtle)",
+        "descriptionColor": "var(--xh-material-frosted-fg-muted)",
+        "indicatorColor": "var(--xh-fg-on-brand-subtle)",
+        "outlineColor": "transparent",
+        "fontWeight": "var(--xh-font-weight-regular)",
+        "cursor": "pointer",
+        "opacity": "1"
+      },
+      "selected+highlight": {
+        "backgroundColor": "var(--xh-bg-brand-subtle-hover)",
+        "color": "var(--xh-fg-on-brand-subtle)",
+        "descriptionColor": "var(--xh-material-frosted-fg-muted)",
+        "indicatorColor": "var(--xh-fg-on-brand-subtle)",
+        "outlineColor": "var(--xh-ring-focus)",
+        "fontWeight": "var(--xh-font-weight-regular)",
+        "cursor": "pointer",
+        "opacity": "1"
+      },
+      "selected+pressed": {
+        "backgroundColor": "var(--xh-bg-brand-subtle-active)",
+        "color": "var(--xh-fg-on-brand-subtle)",
+        "descriptionColor": "var(--xh-material-frosted-fg-muted)",
+        "indicatorColor": "var(--xh-fg-on-brand-subtle)",
+        "outlineColor": "transparent",
+        "fontWeight": "var(--xh-font-weight-regular)",
+        "cursor": "pointer",
+        "opacity": "1"
+      },
+      "current": {
+        "backgroundColor": "var(--xh-bg-brand-subtle)",
+        "color": "var(--xh-fg-on-brand-subtle)",
+        "descriptionColor": "var(--xh-material-frosted-fg-muted)",
+        "indicatorColor": "var(--xh-fg-on-brand-subtle)",
+        "outlineColor": "transparent",
+        "fontWeight": "var(--xh-font-weight-regular)",
+        "cursor": "pointer",
+        "opacity": "1"
+      },
+      "current+hover": {
+        "backgroundColor": "var(--xh-bg-brand-subtle-hover)",
+        "color": "var(--xh-fg-on-brand-subtle)",
+        "descriptionColor": "var(--xh-material-frosted-fg-muted)",
+        "indicatorColor": "var(--xh-fg-on-brand-subtle)",
+        "outlineColor": "transparent",
+        "fontWeight": "var(--xh-font-weight-regular)",
+        "cursor": "pointer",
+        "opacity": "1"
+      },
+      "current+highlight": {
+        "backgroundColor": "var(--xh-bg-brand-subtle-hover)",
+        "color": "var(--xh-fg-on-brand-subtle)",
+        "descriptionColor": "var(--xh-material-frosted-fg-muted)",
+        "indicatorColor": "var(--xh-fg-on-brand-subtle)",
+        "outlineColor": "var(--xh-ring-focus)",
+        "fontWeight": "var(--xh-font-weight-regular)",
+        "cursor": "pointer",
+        "opacity": "1"
+      },
+      "current+pressed": {
+        "backgroundColor": "var(--xh-bg-brand-subtle-active)",
+        "color": "var(--xh-fg-on-brand-subtle)",
+        "descriptionColor": "var(--xh-material-frosted-fg-muted)",
+        "indicatorColor": "var(--xh-fg-on-brand-subtle)",
+        "outlineColor": "transparent",
+        "fontWeight": "var(--xh-font-weight-regular)",
+        "cursor": "pointer",
+        "opacity": "1"
+      }
+    }
+  },
   "separator": {
     "blockMargin": "var(--xh-space-1)",
     "inlineMargin": "var(--xh-control-px-md)",
     "color": "var(--xh-material-frosted-separator)"
   },
   "motion": {
-    "$description": "集合项与离散控件同节奏：按下 120ms 切到 active 面，释放 200ms 回到 hover / rest；只换面，不缩放整条。",
+    "$description": "集合项与离散控件同节奏：按下 120ms 切到 pressed 面，释放 200ms 回到 hover / rest；只换面，不缩放整条。pressed 面由配方给出，组件皮肤不再自写 :active。",
     "duration": "var(--xh-motion-duration-micro)",
     "easing": "var(--xh-motion-ease-enter)",
     "pressDuration": "var(--xh-motion-duration-press)",
@@ -148,15 +279,32 @@
     "flow": "row"
   },
   "forcedColors": {
-    "rest": { "backgroundColor": "Canvas", "color": "CanvasText", "outlineColor": "transparent" },
-    "hover": { "backgroundColor": "Highlight", "color": "HighlightText", "outlineColor": "transparent" },
-    "keyboard-highlight": { "backgroundColor": "Canvas", "color": "CanvasText", "outlineColor": "Highlight" },
-    "selected": { "backgroundColor": "Canvas", "color": "CanvasText", "outlineColor": "transparent" },
-    "selected+highlight": { "backgroundColor": "Canvas", "color": "CanvasText", "outlineColor": "Highlight" },
-    "open-path": { "backgroundColor": "Canvas", "color": "CanvasText", "outlineColor": "Highlight" },
-    "checked": { "backgroundColor": "Canvas", "color": "CanvasText", "outlineColor": "transparent" },
-    "disabled": { "backgroundColor": "Canvas", "color": "GrayText", "outlineColor": "transparent" },
-    "loading": { "backgroundColor": "Canvas", "color": "CanvasText", "outlineColor": "Highlight" },
-    "error": { "backgroundColor": "Canvas", "color": "CanvasText", "outlineColor": "Highlight" }
+    "rest": { "backgroundColor": "Canvas", "color": "CanvasText", "outlineColor": "transparent", "markerColor": "ButtonText" },
+    "hover": { "backgroundColor": "Highlight", "color": "HighlightText", "outlineColor": "transparent", "markerColor": "HighlightText" },
+    "keyboard-highlight": { "backgroundColor": "Canvas", "color": "CanvasText", "outlineColor": "Highlight", "markerColor": "Highlight" },
+    "pressed": { "backgroundColor": "Highlight", "color": "HighlightText", "outlineColor": "transparent", "markerColor": "HighlightText" },
+    "open-path": { "backgroundColor": "Canvas", "color": "CanvasText", "outlineColor": "Highlight", "markerColor": "Highlight" },
+    "checked": { "backgroundColor": "Canvas", "color": "CanvasText", "outlineColor": "transparent", "markerColor": "Highlight" },
+    "disabled": { "backgroundColor": "Canvas", "color": "GrayText", "outlineColor": "transparent", "markerColor": "GrayText" },
+    "loading": { "backgroundColor": "Canvas", "color": "CanvasText", "outlineColor": "Highlight", "markerColor": "Highlight" },
+    "error": { "backgroundColor": "Canvas", "color": "CanvasText", "outlineColor": "Highlight", "markerColor": "Highlight" }
+  },
+  "forcedContextColors": {
+    "overlay": {
+      "selected": { "backgroundColor": "Canvas", "color": "CanvasText", "outlineColor": "transparent", "markerColor": "Highlight" },
+      "selected+hover": { "backgroundColor": "Highlight", "color": "HighlightText", "outlineColor": "transparent", "markerColor": "HighlightText" },
+      "selected+highlight": { "backgroundColor": "Canvas", "color": "CanvasText", "outlineColor": "Highlight", "markerColor": "Highlight" },
+      "selected+pressed": { "backgroundColor": "Highlight", "color": "HighlightText", "outlineColor": "transparent", "markerColor": "HighlightText" }
+    },
+    "page": {
+      "selected": { "backgroundColor": "Highlight", "color": "HighlightText", "outlineColor": "transparent", "markerColor": "HighlightText" },
+      "selected+hover": { "backgroundColor": "Highlight", "color": "HighlightText", "outlineColor": "transparent", "markerColor": "HighlightText" },
+      "selected+highlight": { "backgroundColor": "Highlight", "color": "HighlightText", "outlineColor": "HighlightText", "markerColor": "HighlightText" },
+      "selected+pressed": { "backgroundColor": "Highlight", "color": "HighlightText", "outlineColor": "transparent", "markerColor": "HighlightText" },
+      "current": { "backgroundColor": "Highlight", "color": "HighlightText", "outlineColor": "transparent", "markerColor": "HighlightText" },
+      "current+hover": { "backgroundColor": "Highlight", "color": "HighlightText", "outlineColor": "transparent", "markerColor": "HighlightText" },
+      "current+highlight": { "backgroundColor": "Highlight", "color": "HighlightText", "outlineColor": "HighlightText", "markerColor": "HighlightText" },
+      "current+pressed": { "backgroundColor": "Highlight", "color": "HighlightText", "outlineColor": "transparent", "markerColor": "HighlightText" }
+    }
   }
 }

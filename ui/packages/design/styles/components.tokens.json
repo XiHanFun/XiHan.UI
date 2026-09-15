@@ -49649,7 +49649,8 @@
         "highlighted",
         "hover",
         "is(:focus-visible, [data-highlighted])",
-        "not([aria-disabled='true'], [aria-busy='true'], [data-error])"
+        "not([aria-disabled='true'], [aria-busy='true'], [data-error])",
+        "xh-collection-context=overlay"
       ],
       "defaultToken": [
         "--xh-bg-subtle"
@@ -49668,11 +49669,12 @@
       ],
       "state": [
         "active",
-        "disabled",
-        "not([data-disabled])"
+        "error",
+        "not([aria-disabled='true'], [aria-busy='true'], [data-error])",
+        "xh-collection-context=overlay"
       ],
       "defaultToken": [
-        "--xh-bg-subtle-active"
+        "--xh-bg-subtle-hover"
       ],
       "visibility": "public",
       "description": "select 的 item 部件 background-color 覆盖槽。"
@@ -49687,7 +49689,14 @@
         "color"
       ],
       "state": [
+        "active",
+        "error",
+        "highlighted",
+        "hover",
+        "is(:focus-visible, [data-highlighted])",
+        "not([aria-disabled='true'], [aria-busy='true'], [data-error])",
         "state=checked",
+        "xh-collection-context=overlay",
         "xh-collection-slot=indicator"
       ],
       "defaultToken": [
@@ -49706,12 +49715,14 @@
         "color"
       ],
       "state": [
+        "active",
         "default",
         "error",
         "highlighted",
         "hover",
         "is(:focus-visible, [data-highlighted])",
-        "not([aria-disabled='true'], [aria-busy='true'], [data-error])"
+        "not([aria-disabled='true'], [aria-busy='true'], [data-error])",
+        "xh-collection-context=overlay"
       ],
       "defaultToken": [
         "--xh-material-frosted-fg"
@@ -49729,9 +49740,13 @@
         "color"
       ],
       "state": [
-        "default",
+        "active",
+        "error",
         "highlighted",
-        "is(:focus-visible, [data-highlighted])"
+        "hover",
+        "is(:focus-visible, [data-highlighted])",
+        "not([aria-disabled='true'], [aria-busy='true'], [data-error])",
+        "xh-collection-context=overlay"
       ],
       "defaultToken": [
         "--xh-select-item-fg"
@@ -49767,9 +49782,13 @@
         "font-weight"
       ],
       "state": [
-        "default",
+        "active",
+        "error",
         "highlighted",
-        "is(:focus-visible, [data-highlighted])"
+        "hover",
+        "is(:focus-visible, [data-highlighted])",
+        "not([aria-disabled='true'], [aria-busy='true'], [data-error])",
+        "xh-collection-context=overlay"
       ],
       "defaultToken": [
         "--xh-font-weight-regular"
@@ -49813,7 +49832,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-control-indicator-size"
+        "--xh-icon-size"
       ],
       "visibility": "public",
       "description": "select 的 item-indicator 部件 block-size、inline-size 覆盖槽。"

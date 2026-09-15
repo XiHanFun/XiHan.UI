@@ -64,3 +64,26 @@ it('renderless 组件不要求伪造空皮肤', async () => {
   const manifest = await buildComponentTokenManifest(paths)
   assert.deepEqual(manifest.tokens, [])
 })
+
+it('家族上下文声明只投影到投影了该 data-xh-collection-context 的组件', async () => {
+  const paths = await fixture(`
+    [data-scope='sample'][data-part='item'] {
+      --xh-collection-fg-selected: var(--xh-sample-fg-selected, var(--xh-space-1));
+    }
+  `)
+  const familyStylesDir = join(paths.stylesDir, '..', 'family')
+  await mkdir(familyStylesDir)
+  await writeFile(join(familyStylesDir, 'collection-item.css'), `
+    [data-xh-collection-item][data-selected] {
+      --xh-_collection-fg: var(--xh-collection-fg-selected, red);
+      color: var(--xh-_collection-fg);
+    }
+    [data-xh-collection-item][data-xh-collection-context='page'][data-selected] {
+      --xh-_collection-fg: var(--xh-collection-fg-selected, blue);
+      color: var(--xh-_collection-fg);
+    }
+  `)
+  // sample 没有 connect，不投影任何上下文：page 的状态事实不得混进公开槽的 manifest
+  const manifest = await buildComponentTokenManifest({ ...paths, familyStylesDir })
+  assert.deepEqual(manifest.tokens.map(token => token.state), [['selected']])
+})
