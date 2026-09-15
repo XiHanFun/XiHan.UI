@@ -1,4 +1,4 @@
-// 语气 | tone 给图标区上语气色，与全库同一根轴；画什么图标仍由作者塞
+// 语气 | tone 为图标区上语气色，与全库同一根轴；绘制什么图标仍由作者放置
 import type { ReactNode } from "react";
 import { CheckIcon, InfoIcon, TriangleAlertIcon, XIcon } from "@xihan-ui/icons";
 import {
