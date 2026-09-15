@@ -5293,7 +5293,7 @@
   transition:
     background var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
     border-color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
-    scale var(--xh-motion-duration-micro) var(--xh-motion-ease-enter-strong);
+    scale var(--xh-motion-duration-release) var(--xh-motion-ease-release);
 }
 
 [data-scope='infinite-scroll'][data-part='load-more-trigger']:hover {
@@ -5304,6 +5304,8 @@
 [data-scope='infinite-scroll'][data-part='load-more-trigger']:active {
   background: var(--xh-infinite-scroll-load-more-bg-active, var(--xh-bg-subtle-active));
   scale: var(--xh-motion-scale-press);
+  transition-duration: var(--xh-motion-duration-press);
+  transition-timing-function: var(--xh-motion-ease-press);
 }
 
 /* 声明过 display 就盖掉了 UA 的 [hidden]{display:none}，作者要藏哨兵时得自己补回来 */
