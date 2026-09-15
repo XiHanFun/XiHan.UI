@@ -15,7 +15,7 @@ import { renderSlot } from '../../runtime/slot-content'
 import { LogProvider, useLogContext } from './context'
 import { useLog } from './use-log'
 
-/** 函数式 children 的载荷：行数与载入态、粘底状态与按钮的露面情况，以及滚到底部的句柄。 */
+/** 函数式 children 的载荷：行数与载入态、粘底状态与按钮的显示情况，以及滚动到底部的句柄。 */
 export type LogRootSlotProps = Pick<
   LogApi,
   | 'rows'
@@ -26,13 +26,13 @@ export type LogRootSlotProps = Pick<
   | 'scrollToBottom'
 >
 
-/** 根上自有的那些取值。 */
+/** 根上自有的取值。 */
 type RootElementProps = Omit<ComponentPropsWithRef<'div'>, 'children'>
 
 export interface XhLogRootProps extends RootElementProps {
-  /** 视口按多少行定高；缺省时高度由皮肤给。 */
+  /** 视口按多少行定高；默认时高度由皮肤给出。 */
   rows?: number
-  /** 行还在路上：日志区报 aria-busy，根落 data-loading。 */
+  /** 行仍在加载：日志区报告 aria-busy，根写 data-loading。 */
   loading?: boolean
   /** 尺寸：sm / md / lg。 */
   size?: Size
@@ -71,7 +71,7 @@ export function XhLogRoot({
 XhLogRoot.xhEvents = ['stick-change'] as const
 
 export interface XhLogViewportProps extends ComponentPropsWithRef<'div'> {}
-/** 把视口节点交给机器，由粘底句柄监听滚动。 */
+/** 把视口节点交给状态机，由粘底句柄监听滚动。 */
 export function XhLogViewport({ children, ...rest }: XhLogViewportProps): ReactNode {
   const ctx = useLogContext()
   return (
@@ -88,7 +88,7 @@ export function XhLogViewport({ children, ...rest }: XhLogViewportProps): ReactN
 }
 
 export interface XhLogContentProps extends ComponentPropsWithRef<'div'> {}
-/** 把内容节点交给机器，由粘底句柄观察尺寸。 */
+/** 把内容节点交给状态机，由粘底句柄观察尺寸。 */
 export function XhLogContent({ children, ...rest }: XhLogContentProps): ReactNode {
   const ctx = useLogContext()
   return (
@@ -105,10 +105,10 @@ export function XhLogContent({ children, ...rest }: XhLogContentProps): ReactNod
 }
 
 export interface XhLogLineProps extends ComponentPropsWithRef<'div'> {
-  /** 这一行的级别，落成行上的 data-level。 */
+  /** 该行的级别，写为行上的 data-level。 */
   level?: LogLevel
 }
-/** 一行的文本与标注由作者写在 children 里。 */
+/** 一行的文本与标注由作者写在 children 中。 */
 export function XhLogLine({ level, children, ...rest }: XhLogLineProps): ReactNode {
   const ctx = useLogContext()
   return (
@@ -119,7 +119,7 @@ export function XhLogLine({ level, children, ...rest }: XhLogLineProps): ReactNo
 }
 
 export interface XhLogScrollToEndTriggerProps extends ComponentPropsWithRef<'button'> {}
-/** 收起时走 hidden 属性，节点不卸载；不给内容则由皮肤画兜底字形。 */
+/** 收起时使用 hidden 属性，节点不卸载；未提供内容时由皮肤绘制兜底字形。 */
 export function XhLogScrollToEndTrigger({ children, ...rest }: XhLogScrollToEndTriggerProps): ReactNode {
   const ctx = useLogContext()
   return (
@@ -130,7 +130,7 @@ export function XhLogScrollToEndTrigger({ children, ...rest }: XhLogScrollToEndT
 }
 
 export interface XhLogLiveRegionProps extends ComponentPropsWithRef<'div'> {}
-/** 内容由宿主写入，念哪一句、什么时候念都归宿主定。 */
+/** 内容由宿主写入，朗读哪句、何时朗读都由宿主决定。 */
 export function XhLogLiveRegion({ children, ...rest }: XhLogLiveRegionProps): ReactNode {
   const ctx = useLogContext()
   return (

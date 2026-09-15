@@ -113,11 +113,11 @@ loading 让日志区报 aria-busy 并把指针换成忙碌态；「正在拉取�
 
 | 属性 | 类型 | 必填 | 说明 |
 | --- | --- | --- | --- |
-| `threshold` | `number` |  | 距底多少 px 视为在底，缺省用粘底原语的默认值。 |
-| `onStickChange` | `(details: LogStickChangeDetails) => void` |  | 粘底状态变化时通知宿主。 |
-| `loading` | `boolean` |  | 行还在路上：日志区报 aria-busy，根落 data-loading。 |
-| `rows` | `number` |  | 视口按多少行定高；缺省时高度由皮肤给。 |
-| `size` | `Size` |  | 尺寸：sm / md / lg。改的是行文字号与内衬，行高不随档变。 |
+| `threshold` | `number` |  | 距底部多少 px 视为在底部，默认使用贴底原语的默认值。 |
+| `onStickChange` | `(details: LogStickChangeDetails) => void` |  | 贴底状态变化时通知宿主。 |
+| `loading` | `boolean` |  | 行仍在传输中：日志区报告 aria-busy，根写 data-loading。 |
+| `rows` | `number` |  | 视口按多少行定高；未提供时高度由皮肤决定。 |
+| `size` | `Size` |  | 尺寸：sm / md / lg。影响行文字号与内衬，行高不随档位变化。 |
 | `translations` | `Partial<LogTranslations>` |  |  |
 
 ### 事件
@@ -126,7 +126,7 @@ loading 让日志区报 aria-busy 并把指针换成忙碌态；「正在拉取�
 
 | 事件 | 载荷 | 说明 |
 | --- | --- | --- |
-| `stick-change` | `LogStickChangeDetails` | 粘底状态变化；detail 为 `{ atBottom: boolean, sticking: boolean }` |
+| `stick-change` | `LogStickChangeDetails` | 贴底状态变化；detail 为 `{ atBottom: boolean, sticking: boolean }` |
 
 ### 插槽
 
@@ -159,9 +159,9 @@ loading 让日志区报 aria-busy 并把指针换成忙碌态；「正在拉取�
 | `rows` | `number \| undefined` | 取整后的行数；rows 缺席或不是正数时为 undefined。 |
 | `loading` | `boolean` |  |
 | `atBottom` | `boolean` | 当前滚动位置是否落在底部阈值内。 |
-| `sticking` | `boolean` | 新行进来时是否自动跟到底。 |
+| `sticking` | `boolean` | 新行到达时是否自动跟随到底部。 |
 | `showScrollToEndTrigger` | `boolean` | 是否显示回到底部按钮，不在底部时为 true。 |
-| `scrollToBottom` | `() => void` | 滚到底部并恢复粘附。 |
+| `scrollToBottom` | `() => void` | 滚动到底部并恢复贴附。 |
 | `getRootProps` | `() => T['element']` |  |
 | `getViewportProps` | `() => T['element']` |  |
 | `getContentProps` | `() => T['element']` |  |

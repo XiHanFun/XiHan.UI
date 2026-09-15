@@ -22,7 +22,7 @@ export interface LogContext {
   contentRef: Ref<HTMLElement | null>
 }
 
-/** 机器只收 onStickChange，rows / loading / translations 是纯视图属性，直接进 connect。 */
+/** 状态机只接收 onStickChange，rows / loading / translations 是纯视图属性，直接进入 connect。 */
 export function useLog(
   props: LogProps,
   onStickChange?: LogSchema['props']['onStickChange'],
