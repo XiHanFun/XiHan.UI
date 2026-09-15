@@ -1,4 +1,4 @@
-// 码点形状 | square / dot / rounded；三种形状的墨都盖住每个模块的格心，读码器按格心取样
+// 码点形状 | square / dot / rounded；三种形状的墨迹都覆盖每个模块的格心，读码器按格心取样
 import type { ReactNode } from "react";
 import { XhMatrixCode } from "@xihan-ui/react";
 
