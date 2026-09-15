@@ -1,4 +1,4 @@
-<!-- 框内单位与货币符号 | 前后缀图标/文字直接流式插进 control，减、加按钮统一收在右侧 -->
+<!-- 框内单位与货币符号 | 前后缀图标/文字直接以流式插入 control，减、加按钮统一收在右侧 -->
 <script setup lang="ts">
 import {
   XhNumberFieldControl,

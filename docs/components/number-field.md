@@ -26,31 +26,31 @@
 
 ### 区间与步长
 
-方向键走 step，PageUp 与 PageDown 走 largeStep，Home 与 End 取端点；贴到边界时对应按钮转灰
+方向键按 step，PageUp 与 PageDown 按 largeStep，Home 与 End 取端点；到达边界时对应按钮转灰
 
 <XhDemo src="number-field/02-range" />
 
 ### 受控
 
-传了 value 就由宿主说了算；value-change 除了原始串还带一份 valueAsNumber
+传入 value 后由宿主决定；value-change 除原始串外还带一份 valueAsNumber
 
 <XhDemo src="number-field/03-controlled" />
 
 ### 禁用与只读
 
-两者都改不动值，禁用还会把加减按钮一并关掉、值也不再随表单提交
+两者都不可修改值，禁用还会把加减按钮一并关闭、值也不再随表单提交
 
 <XhDemo src="number-field/04-disabled" />
 
 ### 变体
 
-variant 只改皮肤怎么用颜色，加减与键盘行为三档完全一致
+variant 只改变皮肤使用颜色的方式，加减与键盘行为三档完全一致
 
 <XhDemo src="number-field/05-variant" />
 
 ### 颜色
 
-tone 决定用哪族颜色，与 variant 正交；这里固定 outline 只看语气的差别
+tone 决定使用哪族颜色，与 variant 正交；这里固定 outline 只查看语气的差别
 
 <XhDemo src="number-field/06-tone" />
 
@@ -62,25 +62,25 @@ tone 决定用哪族颜色，与 variant 正交；这里固定 outline 只看语
 
 ### 只用输入框
 
-control 仍是必需的输入壳；加减钮可以省略，键盘仍按 step 与 largeStep 改值
+control 仍是必需的输入外壳；加减按钮可以省略，键盘仍按 step 与 largeStep 修改值
 
 <XhDemo src="number-field/08-no-trigger" />
 
 ### 校验态
 
-invalid 由宿主自己判定，不必挂在表单上；标出来之后值照样能改、加减钮照样能按
+invalid 由宿主自行判定，不必挂在表单上；标注之后值照常可以修改、加减按钮照常可以按下
 
 <XhDemo src="number-field/09-invalid" />
 
 ### 框内单位与货币符号
 
-前后缀图标/文字直接流式插进 control，减、加按钮统一收在右侧
+前后缀图标/文字直接以流式插入 control，减、加按钮统一收在右侧
 
 <XhDemo src="number-field/10-affix" />
 
 ### 自定义换算
 
-parse 把显示串读成数、format 把数写回显示串；两个方向必须互逆，否则按一下加号值就会漂
+parse 把显示串读为数值、format 把数值写回显示串；两个方向必须互逆，否则按一下加号值就会漂移
 
 <XhDemo src="number-field/11-parse-format" />
 

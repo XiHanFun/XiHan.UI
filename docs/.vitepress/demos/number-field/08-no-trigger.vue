@@ -1,4 +1,4 @@
-<!-- 只用输入框 | control 仍是必需的输入壳；加减钮可以省略，键盘仍按 step 与 largeStep 改值 -->
+<!-- 只用输入框 | control 仍是必需的输入外壳；加减按钮可以省略，键盘仍按 step 与 largeStep 修改值 -->
 <script setup lang="ts">
 import { XhNumberFieldControl, XhNumberFieldInput, XhNumberFieldLabel, XhNumberFieldRoot } from "@xihan-ui/vue";
 </script>

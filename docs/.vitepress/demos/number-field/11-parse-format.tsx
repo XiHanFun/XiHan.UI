@@ -1,4 +1,4 @@
-// 自定义换算 | parse 把显示串读成数、format 把数写回显示串；两个方向必须互逆，否则按一下加号值就会漂
+// 自定义换算 | parse 把显示串读为数值、format 把数值写回显示串；两个方向必须互逆，否则按一下加号值就会漂移
 import type { ReactNode } from "react";
 import {
   XhNumberFieldControl,
