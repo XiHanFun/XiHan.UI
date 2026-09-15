@@ -22,7 +22,7 @@ import { useSideNav } from './use-side-nav'
 
 type SideNavProps = SideNavSchema['props']
 
-/** 函数式 children 的载荷：选中项、展开集合、折叠与浮层状态、逐节点的状态判定，与选中、展开、折叠、弹出等命令。 */
+/** 函数式 children 的载荷：选中项、展开集合、折叠与浮层状态、逐节点的状态判定，以及选中、展开、折叠、弹出等命令。 */
 export type SideNavRootSlotProps = Pick<
   SideNavApi,
   | 'value'
@@ -41,7 +41,7 @@ export type SideNavRootSlotProps = Pick<
   | 'closePopout'
 >
 
-/** 根上自有的那些取值；defaultValue 与 dir 与原生的同名属性含义不同，由这里接管。 */
+/** 根上自有的取值；defaultValue 与 dir 与原生的同名属性含义不同，由这里接管。 */
 type RootElementProps = Omit<ComponentPropsWithRef<'nav'>, 'children' | 'defaultValue' | 'dir'>
 
 export interface XhSideNavRootProps extends RootElementProps {
@@ -144,7 +144,7 @@ export function XhSideNavItem({ children, ...rest }: XhSideNavItemProps): ReactN
 }
 
 export interface XhSideNavGroupProps extends Omit<ComponentPropsWithRef<'li'>, 'value'> {
-  /** 分组身份，与 group-label 靠它配对。 */
+  /** 分组身份，与 group-label 依靠它配对。 */
   value: string
 }
 export function XhSideNavGroup({ value, children, ...rest }: XhSideNavGroupProps): ReactNode {

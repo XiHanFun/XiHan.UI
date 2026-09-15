@@ -13,25 +13,25 @@ export interface SideNavRefs {
   config: RuntimeConfig | null
   /** 注册弹出层并返回撤销句柄；只在弹出期间调用，层不常驻栈。 */
   registerLayer: ((value: string) => { layer: Layer, dispose: Cleanup }) | null
-  /** 浮层定位引擎；缺省即不产出位置结果。 */
+  /** 浮层定位引擎；未提供时不产出位置结果。 */
   position: PositionEnginePort | null
   /** 当前弹出分支的触发按钮（定位锚点）。 */
   getPopoutAnchorEl: (value: string) => HTMLElement | null
-  /** 当前弹出分支的定位层（引擎写坐标的那一层，作者已把它搬到浮层落点）。 */
+  /** 当前弹出分支的定位层（引擎写入坐标的层，作者已把它移到浮层落点）。 */
   getPopoutPositionerEl: (value: string) => HTMLElement | null
   /** 当前弹出分支的子层容器（消解层节点与焦点域容器）。 */
   getPopoutContentEl: (value: string) => HTMLElement | null
-  /** 每个顶层分支自己的视觉 Presence，切枝与并行退场按身份精确配对。 */
+  /** 每个顶层分支各自的视觉 Presence，切换分支与并行退场按身份精确配对。 */
   presences: Map<string, PresenceHandle>
   /** 根级资源管理器交给 popout 状态效应的会话入口。 */
   openPopoutLayer: (value: string, intent: 'first' | 'none') => void
   /** 逻辑关闭只标记会话退场；真实释放由对应 Presence 完成。 */
   closePopoutLayer: (value: string) => void
-  /** Presence 注册/注销变化通知资源管理器重绑或立即结清。 */
+  /** Presence 注册 / 注销变化通知资源管理器重新绑定或立即结清。 */
   syncPopoutPresence: (value: string, presence: PresenceHandle, connected: boolean) => void
 }
 
-/** 读屏用的文案，默认英文。 */
+/** 读屏文案，默认英文。 */
 export interface SideNavTranslations {
   /** 根节点的 aria-label，用于区分同页的多个 nav 地标。 */
   root: string
@@ -39,21 +39,21 @@ export interface SideNavTranslations {
 
 /**
  * 一条入口。children 是数组即为分支（内嵌展开的子级）；
- * 叶子是去处：给 href 渲染成链接，不给则是命令入口（选中走 onValueChange）。
+ * 叶子是目标：提供 href 渲染为链接，未提供则是命令入口（选中经 onValueChange）。
  */
 export interface SideNavNode {
   value: string
-  /** 入口文本；缺省退回 value，也是连打检索的取字处。 */
+  /** 入口文本；默认回退为 value，也是连打检索的取字来源。 */
   label?: string
   /** 入口禁用：方向键跳过它，但它仍可聚焦。不向下传导给子级。 */
   disabled?: boolean
-  /** 直达去处；只对叶子有意义。 */
+  /** 直达目标；只对叶子有意义。 */
   href?: string
   children?: SideNavNode[]
 }
 
 export interface SideNavValueChangeDetails {
-  /** 选中的那条叶子；尚未选中为 null。 */
+  /** 选中的叶子；尚未选中时为 null。 */
   value: string | null
 }
 
@@ -64,51 +64,51 @@ export interface SideNavExpandedValueChangeDetails {
 
 export interface SideNavSchema extends MachineSchema {
   props: {
-    /** 入口树，层级与文本的唯一事实源。缺省为空。 */
+    /** 入口树，层级与文本的唯一事实源。默认为空。 */
     collection?: SideNavNode[]
-    /** 选中的叶子（单选）。给定即受控：cell 直读 prop，写只发 onValueChange。 */
+    /** 选中的叶子（单选）。提供即受控：cell 直读 prop，写入只发 onValueChange。 */
     value?: string | null
     defaultValue?: string | null
-    /** 展开集合。给定即受控，语义同上。 */
+    /** 展开集合。提供即受控，语义同上。 */
     expandedValue?: string[]
     defaultExpandedValue?: string[]
     /** 同层手风琴：展开一枝时收起同层其余分支，默认 false（可多开）。 */
     accordion?: boolean
     /**
-     * 折叠成图标栏：内嵌展开整体收起、文字由皮肤藏掉，只剩图标一列。
-     * 顶层分支换装浮层弹出：悬停/点按/右方向键在旁侧弹出子级面板。
+     * 折叠为图标栏：内嵌展开整体收起、文字由皮肤隐藏，只剩图标一列。
+     * 顶层分支改为浮层弹出：悬停 / 点击 / 右方向键在旁侧弹出子级面板。
      */
     collapsed?: boolean
-    /** 折叠态下顶层分支是否弹出子级面板，默认 true；关掉即回到纯图标栏。 */
+    /** 折叠态下顶层分支是否弹出子级面板，默认 true；关闭即回到纯图标栏。 */
     collapsedPopout?: boolean
     /** 整个侧栏禁用。 */
     disabled?: boolean
-    /** 上下键走到首尾是否回绕，默认 false。 */
+    /** 上下键到达首尾是否回绕，默认 false。 */
     loop?: boolean
-    /** 文字方向，默认 ltr；只对调左右方向键的「展开/收起」语义。 */
+    /** 文字方向，默认 ltr；只对调左右方向键的展开 / 收起语义。 */
     dir?: Direction
-    /** 语气：brand / neutral / success / warning / danger / info，决定用哪族颜色。 */
+    /** 语气：brand / neutral / success / warning / danger / info，决定使用哪族颜色。 */
     tone?: Tone
     /** 尺寸：sm / md / lg。 */
     size?: Size
     translations?: Partial<SideNavTranslations>
-    /** 选中意图回调；受控时是唯一出口，非受控随内部写入一并通知。 */
+    /** 选中意图回调；受控时是唯一出口，非受控时随内部写入一并通知。 */
     onValueChange?: (details: SideNavValueChangeDetails) => void
     /** 展开集合变化意图回调；语义同上。 */
     onExpandedValueChange?: (details: SideNavExpandedValueChangeDetails) => void
   }
   context: {
-    /** 选中的叶子。受控（value 给定）时 cell 直读 prop。 */
+    /** 选中的叶子。受控（value 提供）时 cell 直读 prop。 */
     value: string | null
-    /** 展开集合。受控（expandedValue 给定）时 cell 直读 prop。 */
+    /** 展开集合。受控（expandedValue 提供）时 cell 直读 prop。 */
     expandedValue: string[]
     /** roving tabindex 的锚点。 */
     focusedValue: string | null
-    /** 折叠态下正弹出子级面板的顶层分支；没弹出为 null。 */
+    /** 折叠态下正在弹出子级面板的顶层分支；未弹出时为 null。 */
     popoutValue: string | null
-    /** 逐分支的弹出面板定位结果，由定位效应回填到正弹出的那一枝名下；收起中的那枝靠它留在原地播退场。 */
+    /** 逐分支的弹出面板定位结果，由定位效应回填到正在弹出的分支名下；收起中的分支依靠它留在原地播放退场。 */
     popoutPlacements: Record<string, PositionResult>
-    /** 本次弹出的落焦端：'first' 进面板第一行，'none' 不落焦（指针路径）。 */
+    /** 本次弹出的落焦端：'first' 进入面板第一行，'none' 不落焦（指针路径）。 */
     popoutIntent: 'first' | 'none'
     /** 弹出关闭时是否把焦点归还触发按钮；悬停离开与层外交互不归还。 */
     popoutReturnFocus: boolean
@@ -119,7 +119,7 @@ export interface SideNavSchema extends MachineSchema {
   state: 'idle' | 'popout'
   event:
     | { type: 'VALUE.SET', value: string | null }
-    /** 点叶子：落选中并通知。 */
+    /** 点击叶子：落选中并通知。 */
     | { type: 'LINK.SELECT', value: string }
     | { type: 'EXPANDED.SET', value: string[] }
     | { type: 'BRANCH.EXPAND', value: string }
@@ -127,7 +127,7 @@ export interface SideNavSchema extends MachineSchema {
     | { type: 'BRANCH.TOGGLE', value: string }
     | { type: 'NODE.FOCUS', value: string }
     | { type: 'FOCUS.CLEAR' }
-    /** 弹出某顶层分支的子级面板；已开着别的分支时先关再开。 */
+    /** 弹出某顶层分支的子级面板；已打开其他分支时先关闭再打开。 */
     | { type: 'POPOUT.OPEN', value: string, focus?: 'first' | 'none' }
     | { type: 'POPOUT.CLOSE', src?: 'esc' | 'interact-outside' | 'hover' | 'select' | 'keyboard' }
     /** 适配器按顶层分支 value 注册或精确注销视觉 Presence。 */
@@ -157,21 +157,21 @@ export interface SideNavNodeProps {
 }
 
 export interface SideNavApi<T extends PropTypes = PropTypes> {
-  /** 选中的叶子；尚未选中为 null。 */
+  /** 选中的叶子；尚未选中时为 null。 */
   value: string | null
   expandedValue: string[]
-  /** 折叠成图标栏；顶层分支改为浮层弹出子级面板。 */
+  /** 折叠为图标栏；顶层分支改为浮层弹出子级面板。 */
   collapsed: boolean
-  /** 折叠态下正弹出子级面板的顶层分支；没弹出为 null。 */
+  /** 折叠态下正在弹出子级面板的顶层分支；未弹出时为 null。 */
   popoutValue: string | null
   /** 弹出某顶层分支的子级面板（仅折叠态有效）。 */
   openPopout: (value: string) => void
   closePopout: () => void
-  /** roving tabindex 的锚点；无可见锚点为 null。 */
+  /** roving tabindex 的锚点；无可见锚点时为 null。 */
   focusedValue: string | null
   isSelected: (value: string) => boolean
   isExpanded: (value: string) => boolean
-  /** 选中项的祖先分支：展开高亮「当前所在的那一枝」。 */
+  /** 选中项的祖先分支：展开高亮当前所在的分支。 */
   isActiveBranch: (value: string) => boolean
   select: (value: string) => void
   setValue: (next: string | null) => void
@@ -180,24 +180,24 @@ export interface SideNavApi<T extends PropTypes = PropTypes> {
   collapse: (value: string) => void
   getRootProps: () => T['element']
   getListProps: () => T['element']
-  /** 叶子行的列表项容器：链接与分支一样是列表的一条，作者把 link 裹在它里面。 */
+  /** 叶子行的列表项容器：链接与分支一样是列表的一条，作者把 link 包在其中。 */
   getItemProps: () => T['element']
   getGroupProps: (props: SideNavNodeProps) => T['element']
   getGroupLabelProps: (props: SideNavNodeProps) => T['element']
   getBranchProps: (props: SideNavNodeProps) => T['element']
   getBranchTriggerProps: (props: SideNavNodeProps) => T['button']
-  /** 行文字的载体：折叠成图标栏时由皮肤整个藏掉，不会裁出半个字。 */
+  /** 行文字的载体：折叠为图标栏时由皮肤整体隐藏，不会裁出半个字。 */
   getBranchTextProps: () => T['element']
   getBranchIndicatorProps: (props: SideNavNodeProps) => T['element']
-  /** 该分支在折叠态下是否以浮层面板出现；决定作者要不要渲染定位层。 */
+  /** 该分支在折叠态下是否以浮层面板出现；决定作者是否需要渲染定位层。 */
   isPopoutPanel: (value: string) => boolean
   /**
-   * 弹出面板的定位层。吃引擎坐标、承载层号，作者须把它搬到浮层落点，
-   * 免得祖先的层叠上下文把面板困住。非弹出分支不渲染这一层。
+   * 弹出面板的定位层。使用引擎坐标、承载层号，作者须把它移到浮层落点，
+   * 避免祖先的层叠上下文困住面板。非弹出分支不渲染这一层。
    */
   getPopoutPositionerProps: (props: SideNavNodeProps) => T['element']
   getBranchContentProps: (props: SideNavNodeProps) => T['element']
   getLinkProps: (props: SideNavNodeProps) => T['element']
-  /** 链接文字的载体：折叠时由皮肤整个藏掉。 */
+  /** 链接文字的载体：折叠时由皮肤整体隐藏。 */
   getLinkTextProps: () => T['element']
 }

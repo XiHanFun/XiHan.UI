@@ -45370,11 +45370,11 @@
       "declarations": [
         {
           "kind": "class",
-          "description": "`<xh-side-nav>` —— Light-DOM 行为宿主：管理后台侧栏导航。\n作者写 root/list 与若干 branch / link 角色节点，元素跑 side-nav 机器并把 connect 产出打上去。\n节点身份取自节点上的 value 属性；href 与禁用查 `collection` 这份树数据。",
+          "description": "`<xh-side-nav>`：Light-DOM 行为宿主：管理后台侧栏导航。\n作者写 root / list 与若干 branch / link 角色节点，元素运行 side-nav 状态机并把 connect 产出接上。\n节点身份取自节点上的 value 属性；href 与禁用查询 `collection` 这份树数据。",
           "name": "XhSideNavElement",
           "cssParts": [
             {
-              "description": "nav 地标根容器（aria-label 由 translations.root 给）",
+              "description": "nav 地标根容器（aria-label 由 translations.root 提供）",
               "name": "root"
             },
             {
@@ -45382,7 +45382,7 @@
               "name": "list"
             },
             {
-              "description": "叶子行的列表项（li），裹住一个 link",
+              "description": "叶子行的列表项（li），包裹一个 link",
               "name": "item"
             },
             {
@@ -45394,15 +45394,15 @@
               "name": "group-label"
             },
             {
-              "description": "分支行容器，须自带 value 属性；它裹着自己的 branch-content",
+              "description": "分支行容器，须自带 value 属性；它包裹自己的 branch-content",
               "name": "branch"
             },
             {
-              "description": "展开/收起按钮（aria-expanded / aria-controls）；落在选中路径上输出 data-in-path",
+              "description": "展开 / 收起按钮（aria-expanded / aria-controls）；落在选中路径上输出 data-in-path",
               "name": "branch-trigger"
             },
             {
-              "description": "行文字载体，折叠成图标栏时裁到看不见但仍参与播报，是按钮在图标栏里的可及名",
+              "description": "行文字载体，折叠为图标栏时裁剪到不可见但仍参与播报，是按钮在图标栏中的可及名",
               "name": "branch-text"
             },
             {
@@ -45410,7 +45410,7 @@
               "name": "branch-indicator"
             },
             {
-              "description": "折叠态弹出面板的定位层，坐标写在它身上；平铺态不用渲染",
+              "description": "折叠态弹出面板的定位层，坐标写在它身上；平铺态不需渲染",
               "name": "positioner"
             },
             {
@@ -45418,11 +45418,11 @@
               "name": "branch-content"
             },
             {
-              "description": "去处链接，须自带 value 属性；选中输出 aria-current=\"page\" 与 data-current",
+              "description": "目标链接，须自带 value 属性；选中时输出 aria-current=\"page\" 与 data-current",
               "name": "link"
             },
             {
-              "description": "链接文字载体，折叠成图标栏时裁到看不见但仍参与播报，是链接在图标栏里的可及名",
+              "description": "链接文字载体，折叠为图标栏时裁剪到不可见但仍参与播报，是链接在图标栏中的可及名",
               "name": "link-text"
             }
           ],
@@ -45835,7 +45835,7 @@
               "type": {
                 "text": "string | undefined"
               },
-              "description": "受控选中的叶子；缺省该属性即非受控",
+              "description": "受控选中的叶子；未提供该属性即非受控",
               "name": "value",
               "fieldName": "value"
             },
@@ -45851,7 +45851,7 @@
               "type": {
                 "text": "boolean | undefined"
               },
-              "description": "同层手风琴：展开一枝收起同层其余，默认 false",
+              "description": "同层手风琴：展开一枝收起同层其余分支，默认 false",
               "name": "accordion",
               "fieldName": "accordion"
             },
@@ -45859,7 +45859,7 @@
               "type": {
                 "text": "boolean | undefined"
               },
-              "description": "折叠成图标栏（内嵌展开整体收起、文字由皮肤藏掉；顶层分支换装浮层弹出）",
+              "description": "折叠为图标栏（内嵌展开整体收起、文字由皮肤隐藏；顶层分支改为浮层弹出）",
               "name": "collapsed",
               "fieldName": "collapsed"
             },
@@ -45883,7 +45883,7 @@
               "type": {
                 "text": "boolean | undefined"
               },
-              "description": "上下键走到首尾回绕，默认关",
+              "description": "上下键到达首尾回绕，默认关闭",
               "name": "loop",
               "fieldName": "loop"
             },
@@ -45891,7 +45891,7 @@
               "type": {
                 "text": "SideNavSchema['props']['dir'] | undefined"
               },
-              "description": "文字方向，只对调左右方向键的展开/收起语义，默认 ltr",
+              "description": "文字方向，只对调左右方向键的展开 / 收起语义，默认 ltr",
               "name": "dir",
               "fieldName": "direction"
             },

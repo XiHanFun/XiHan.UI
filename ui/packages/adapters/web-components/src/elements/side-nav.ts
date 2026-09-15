@@ -28,36 +28,36 @@ const BRANCH_SELECTOR = '[data-xh-part="branch"]'
 const GROUP_SELECTOR = '[data-xh-part="group"]'
 
 /**
- * `<xh-side-nav>` —— Light-DOM 行为宿主：管理后台侧栏导航。
- * 作者写 root/list 与若干 branch / link 角色节点，元素跑 side-nav 机器并把 connect 产出打上去。
- * 节点身份取自节点上的 value 属性；href 与禁用查 `collection` 这份树数据。
+ * `<xh-side-nav>`：Light-DOM 行为宿主：管理后台侧栏导航。
+ * 作者写 root / list 与若干 branch / link 角色节点，元素运行 side-nav 状态机并把 connect 产出接上。
+ * 节点身份取自节点上的 value 属性；href 与禁用查询 `collection` 这份树数据。
  *
  * @customElement xh-side-nav
- * @attr {string} value - 受控选中的叶子；缺省该属性即非受控
+ * @attr {string} value - 受控选中的叶子；未提供该属性即非受控
  * @attr {string} default-value - 非受控初始选中
- * @attr {boolean} accordion - 同层手风琴：展开一枝收起同层其余，默认 false
- * @attr {boolean} collapsed - 折叠成图标栏（内嵌展开整体收起、文字由皮肤藏掉；顶层分支换装浮层弹出）
+ * @attr {boolean} accordion - 同层手风琴：展开一枝收起同层其余分支，默认 false
+ * @attr {boolean} collapsed - 折叠为图标栏（内嵌展开整体收起、文字由皮肤隐藏；顶层分支改为浮层弹出）
  * @attr {boolean} collapsed-popout - 折叠态下顶层分支是否弹出子级面板，默认 true
  * @attr {boolean} disabled - 整个侧栏禁用
- * @attr {boolean} loop - 上下键走到首尾回绕，默认关
- * @attr {'ltr'|'rtl'} dir - 文字方向，只对调左右方向键的展开/收起语义，默认 ltr
+ * @attr {boolean} loop - 上下键到达首尾回绕，默认关闭
+ * @attr {'ltr'|'rtl'} dir - 文字方向，只对调左右方向键的展开 / 收起语义，默认 ltr
  * @attr {'brand'|'neutral'|'success'|'warning'|'danger'|'info'} tone - 语气
  * @attr {'sm'|'md'|'lg'} size - 尺寸
  * @fires value-change - 选中变化；detail 为 `{ value: string | null }`
  * @fires expanded-value-change - 展开集合变化；detail 为 `{ value: string[] }`
- * @csspart root - nav 地标根容器（aria-label 由 translations.root 给）
+ * @csspart root - nav 地标根容器（aria-label 由 translations.root 提供）
  * @csspart list - 顶层列表容器（ul），直接子节点只能是 item 与 branch
- * @csspart item - 叶子行的列表项（li），裹住一个 link
+ * @csspart item - 叶子行的列表项（li），包裹一个 link
  * @csspart group - role=group 分组，须自带 value 属性
  * @csspart group-label - 分组标题（aria-labelledby 目标）
- * @csspart branch - 分支行容器，须自带 value 属性；它裹着自己的 branch-content
- * @csspart branch-trigger - 展开/收起按钮（aria-expanded / aria-controls）；落在选中路径上输出 data-in-path
- * @csspart branch-text - 行文字载体，折叠成图标栏时裁到看不见但仍参与播报，是按钮在图标栏里的可及名
+ * @csspart branch - 分支行容器，须自带 value 属性；它包裹自己的 branch-content
+ * @csspart branch-trigger - 展开 / 收起按钮（aria-expanded / aria-controls）；落在选中路径上输出 data-in-path
+ * @csspart branch-text - 行文字载体，折叠为图标栏时裁剪到不可见但仍参与播报，是按钮在图标栏中的可及名
  * @csspart branch-indicator - 展开方向指示符（aria-hidden）
- * @csspart positioner - 折叠态弹出面板的定位层，坐标写在它身上；平铺态不用渲染
+ * @csspart positioner - 折叠态弹出面板的定位层，坐标写在它身上；平铺态不需渲染
  * @csspart branch-content - 内嵌子层容器，收起时隐藏
- * @csspart link - 去处链接，须自带 value 属性；选中输出 aria-current="page" 与 data-current
- * @csspart link-text - 链接文字载体，折叠成图标栏时裁到看不见但仍参与播报，是链接在图标栏里的可及名
+ * @csspart link - 目标链接，须自带 value 属性；选中时输出 aria-current="page" 与 data-current
+ * @csspart link-text - 链接文字载体，折叠为图标栏时裁剪到不可见但仍参与播报，是链接在图标栏中的可及名
  */
 export class XhSideNavElement extends XhPortalHostElement {
   /** 本实例的 Portal 容器；显式解析失败不回退配置默认。 */

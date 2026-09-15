@@ -19,7 +19,7 @@ import { useSideNav } from './use-side-nav'
 
 type SideNavProps = SideNavSchema['props']
 
-/** 默认插槽的载荷：选中项、展开集合、折叠与浮层状态、逐节点的状态判定，与选中、展开、折叠、弹出等命令。 */
+/** 默认插槽的载荷：选中项、展开集合、折叠与浮层状态、逐节点的状态判定，以及选中、展开、折叠、弹出等命令。 */
 export type SideNavRootSlotProps = Pick<
   SideNavApi,
   | 'value'
@@ -119,7 +119,7 @@ export const XhSideNavItem = defineComponent({
 export const XhSideNavGroup = defineComponent({
   name: 'XhSideNavGroup',
   props: {
-    /** 分组身份，与 group-label 靠它配对。 */
+    /** 分组身份，与 group-label 依靠它配对。 */
     value: { type: String, required: true },
   },
   setup(props, { slots }) {
