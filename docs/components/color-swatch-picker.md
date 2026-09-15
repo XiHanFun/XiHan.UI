@@ -103,17 +103,17 @@
 
 | 属性 | 类型 | 必填 | 说明 |
 | --- | --- | --- | --- |
-| `swatches` | `ColorSwatchPickerNode[]` |  | 格子数据，可及名字与禁用的事实源。给了它，格子部件只需报 value。 缺省即回到「名字与禁用都写在格子部件上」的老路。 |
-| `value` | `string \| null` |  | 选中的颜色串。给定即受控：写只发 onValueChange 不落内部值。写法不同的同一个颜色也算选中。 |
+| `swatches` | `ColorSwatchPickerNode[]` |  | 格子数据，可及名与禁用的事实源。提供后格子部件只需声明 value。 未提供时回到名字与禁用都写在格子部件上的方式。 |
+| `value` | `string \| null` |  | 选中的颜色串。提供即受控：写入只发 onValueChange 不落内部值。写法不同的同一颜色也视为选中。 |
 | `defaultValue` | `string \| null` |  |  |
 | `disabled` | `boolean` |  |  |
-| `readOnly` | `boolean` |  | 只读：选不动，但仍可聚焦、方向键照常移焦点，对比度不降。 |
-| `invalid` | `boolean` |  | 校验失败：只改呈现，不挡交互。 |
-| `required` | `boolean` |  | 必填：随表单校验一起用，只发无障碍属性，不自行拦提交。 |
-| `dir` | `Direction` |  | 文字方向，缺省 'ltr'；只改写左右两键的语义。 |
+| `readOnly` | `boolean` |  | 只读：不可选择，但仍可聚焦、方向键照常移动焦点，对比度不降低。 |
+| `invalid` | `boolean` |  | 校验失败：只改变呈现，不阻止交互。 |
+| `required` | `boolean` |  | 必填：随表单校验一起使用，只发无障碍属性，不自行拦截提交。 |
+| `dir` | `Direction` |  | 文字方向，默认 'ltr'；只改写左右两键的语义。 |
 | `name` | `string` |  | 表单字段名。 |
-| `size` | `Size` |  | 尺寸：sm / md / lg，换的是格子的边长与间距。 |
-| `tone` | `Tone` |  | 语气：决定选中环与选中标记用哪族颜色。 |
+| `size` | `Size` |  | 尺寸：sm / md / lg，影响格子的边长与间距。 |
+| `tone` | `Tone` |  | 语气：决定选中环与选中标记使用哪族颜色。 |
 | `translations` | `Partial<ColorSwatchPickerTranslations>` |  |  |
 | `onValueChange` | `(details: ColorSwatchPickerValueChangeDetails) => void` |  | value 变化回调。 |
 
@@ -149,14 +149,14 @@
 | 成员 | 类型 | 说明 |
 | --- | --- | --- |
 | `value` | `string \| null` |  |
-| `swatches` | `readonly ColorSwatchPickerNodeMeta[]` | swatches 推出的格子元信息，按数据顺序排列；没给 swatches 即空数组。 |
+| `swatches` | `readonly ColorSwatchPickerNodeMeta[]` | 由 swatches 推导的格子元信息，按数据顺序排列；未提供 swatches 时为空数组。 |
 | `focusedValue` | `string \| null` | 焦点在组外时为 null。 |
-| `isSelected` | `(value: string) => boolean` | 某个颜色串是不是当前选中的那一格：写法不同（`#f00` 与 `rgb(255,0,0)`）也算同一个。 |
+| `isSelected` | `(value: string) => boolean` | 某个颜色串是否为当前选中的格：写法不同（`#f00` 与 `rgb(255,0,0)`）也视为同一颜色。 |
 | `setValue` | `(next: string \| null) => void` |  |
 | `getRootProps` | `() => T['element']` |  |
 | `getLabelProps` | `() => T['element']` |  |
 | `getItemProps` | `(props: ColorSwatchPickerItemProps) => T['element']` | 一格：role=radio，颜色串是它的身份。 |
-| `getSwatchProps` | `(props: ColorSwatchPickerItemProps) => T['element']` | 格里的色块面：走 Swatch 家族画颜色，纯装饰。 |
+| `getSwatchProps` | `(props: ColorSwatchPickerItemProps) => T['element']` | 格内的色块面：使用 Swatch 家族绘制颜色，纯装饰。 |
 | `getIndicatorProps` | `(props: ColorSwatchPickerItemProps) => T['element']` | 选中标记（对号），纯装饰。 |
 | `getHiddenInputProps` | `(props: ColorSwatchPickerItemProps) => T['input']` | 格子对应的隐藏原生 radio 输入，用于表单提交。 |
 

@@ -14,39 +14,39 @@ import { wcNormalize } from '../dom/normalize'
 import { XhElement } from '../element-base'
 import { MachineController } from '../runtime/machine-controller'
 
-/** 属性缺席翻成 undefined，缺省值由机器决定。 */
+/** 属性缺席转换为 undefined，默认值由状态机决定。 */
 const STRING_CONVERTER = { fromAttribute: (v: string | null) => v ?? undefined }
-/** 布尔属性：出现即 true，写 "false" 才是 false；缺席不覆盖机器默认值。 */
+/** 布尔属性：出现即 true，写 "false" 才是 false；缺席不覆盖状态机默认值。 */
 const BOOLEAN_CONVERTER = { fromAttribute: (v: string | null) => (v === null ? undefined : v !== 'false') }
 
 /**
- * `<xh-color-swatch-picker>` —— Light-DOM 行为宿主，跑 color-swatch-picker 机器并把 connect 产出打到
- * root/label/item/swatch/indicator/hidden-input 等角色节点。
+ * `<xh-color-swatch-picker>`：Light-DOM 行为宿主，运行 color-swatch-picker 状态机并把 connect 产出接到
+ * root / label / item / swatch / indicator / hidden-input 等角色节点。
  *
- * 从若干固定颜色里挑一个：与单选组同一套 roving tabindex，方向键移焦点并选中，Space 选中；
- * 每格的色块面经 Swatch 家族画，颜色由元素写进私有槽。
+ * 从若干固定颜色中选择一个：与单选组同一套 roving tabindex，方向键移动焦点并选中，Space 选中；
+ * 每格的色块面经 Swatch 家族绘制，颜色由元素写入私有槽。
  *
  * @customElement xh-color-swatch-picker
- * @attr {string} value - 受控选中的颜色串；缺省该属性即非受控。写法不同的同一个颜色也算选中
+ * @attr {string} value - 受控选中的颜色串；未提供该属性即非受控。写法不同的同一颜色也视为选中
  * @attr {string} default-value - 非受控初始选中值
  * @attr {boolean} disabled - 整组禁用
- * @attr {boolean} read-only - 只读：选不动，方向键照常移焦点
+ * @attr {boolean} read-only - 只读：不可选择，方向键照常移动焦点
  * @attr {boolean} invalid - 校验失败态
  * @attr {boolean} required - 必填
  * @attr {'ltr'|'rtl'} dir - 文字方向，只改写左右方向键语义，默认 ltr
- * @attr {string} name - 表单字段名；给定后隐藏输入才带 name 并参与提交
- * @attr {'sm'|'md'|'lg'} size - 尺寸：换的是格子的边长与间距
- * @attr {'brand'|'neutral'|'success'|'warning'|'danger'|'info'} tone - 语气：决定选中环与选中标记用哪族颜色
- * @prop {ColorSwatchPickerNode[]} swatches - 格子数据（只走 property）：可及名字与禁用的事实源，格子部件只需报 value
- * @prop {object} translations - 读屏文案（只走 property）：group 是整组的名字，swatch(value) 是一格的名字
+ * @attr {string} name - 表单字段名；提供后隐藏输入才带 name 并参与提交
+ * @attr {'sm'|'md'|'lg'} size - 尺寸：影响格子的边长与间距
+ * @attr {'brand'|'neutral'|'success'|'warning'|'danger'|'info'} tone - 语气：决定选中环与选中标记使用哪族颜色
+ * @prop {ColorSwatchPickerNode[]} swatches - 格子数据（只能通过 property 设置）：可及名与禁用的事实源，格子部件只需声明 value
+ * @prop {object} translations - 读屏文案（只能通过 property 设置）：group 是整组的名字，swatch(value) 是一格的名字
  * @fires value-change - 选中值变化；detail 为 `{ value: string | null }`
- * @prop {string|null} selectedValue - 只读：此刻选中的颜色串（受控与非受控都读机器）
- * @prop {ColorSwatchPickerNodeMeta[]} swatchMeta - 只读：swatches 推出的格子元信息，名字与禁用已定案
+ * @prop {string|null} selectedValue - 只读：当前选中的颜色串（受控与非受控都读取状态机）
+ * @prop {ColorSwatchPickerNodeMeta[]} swatchMeta - 只读：由 swatches 推导的格子元信息，名字与禁用已确定
  * @prop {string|null} focusedValue - 只读：焦点锚点的格子串，焦点在组外时为 null
  * @csspart root - role=radiogroup 容器（承载 roving tabindex 的兜底位）
  * @csspart label - 组标题（aria-labelledby 目标）
- * @csspart item - role=radio 的一格，作者用 value 属性声明颜色串、可用 label 属性给名字
- * @csspart swatch - 格里的色块面；颜色由元素写进私有槽，解析不出的串只画棋盘格
+ * @csspart item - role=radio 的一格，作者用 value 属性声明颜色串、可用 label 属性提供名字
+ * @csspart swatch - 格内的色块面；颜色由元素写入私有槽，无法解析的串只绘制棋盘格
  * @csspart indicator - 格子的选中标记
  * @csspart hidden-input - 格子的表单影子输入（必须是原生 input）
  */
@@ -83,7 +83,7 @@ export class XhColorSwatchPickerElement extends XhElement {
 
   // 整组禁用期间的格子自身声明快照：connect 每帧把 aria-disabled 写回格子，回读分不清作者声明与自己的写回
   private readonly declaredDisabled = new WeakMap<HTMLElement, boolean>()
-  /** 上一帧是否整组禁用：解禁当帧 DOM 上还留着机器写回的 aria-disabled，读不得。 */
+  /** 上一帧是否整组禁用：解禁当帧 DOM 上仍保留着状态机写回的 aria-disabled，不可读取。 */
   private wasGroupDisabled = false
 
   private readonly notify = (details: ColorSwatchPickerValueChangeDetails): void => {
@@ -127,27 +127,27 @@ export class XhColorSwatchPickerElement extends XhElement {
     }
   }
 
-  /** 此刻选中的颜色串；机器尚未建起时为 null。 */
+  /** 当前选中的颜色串；状态机尚未建立时为 null。 */
   get selectedValue(): string | null {
     return this.ctrl.service ? connectColorSwatchPicker(this.ctrl.service, wcNormalize).value : null
   }
 
-  /** swatches 推出的格子元信息：名字与禁用都已定案。机器尚未建起时为空表。 */
+  /** 由 swatches 推导的格子元信息：名字与禁用都已确定。状态机尚未建立时为空表。 */
   get swatchMeta(): readonly ColorSwatchPickerNodeMeta[] {
     return this.ctrl.service ? connectColorSwatchPicker(this.ctrl.service, wcNormalize).swatches : []
   }
 
-  /** 焦点锚点的格子串，焦点在组外时为 null。机器尚未建起时为 null。 */
+  /** 焦点锚点的格子串，焦点在组外时为 null。状态机尚未建立时为 null。 */
   get focusedValue(): string | null {
     return this.ctrl.service ? connectColorSwatchPicker(this.ctrl.service, wcNormalize).focusedValue : null
   }
 
-  /** 某个颜色串是否算选中：按颜色比不按串比。机器尚未建起时为 false。 */
+  /** 某个颜色串是否视为选中：按颜色比较而非按串比较。状态机尚未建立时为 false。 */
   isSelected(candidate: string): boolean {
     return this.ctrl.service ? connectColorSwatchPicker(this.ctrl.service, wcNormalize).isSelected(candidate) : false
   }
 
-  /** 从外面写选中值；null 即清空。机器尚未建起时是空操作。 */
+  /** 从外部写入选中值；null 即清空。状态机尚未建立时为空操作。 */
   setValue(next: string | null): void {
     if (this.ctrl.service)
       connectColorSwatchPicker(this.ctrl.service, wcNormalize).setValue(next)

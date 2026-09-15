@@ -26,13 +26,13 @@ export type ColorSwatchPickerRootSlotProps = Pick<
   'value' | 'swatches' | 'focusedValue' | 'isSelected' | 'setValue'
 >
 
-/** 根上自有的那些取值；defaultValue 与 dir 与原生的同名属性含义不同，由这里接管。 */
+/** 根上自有的取值；defaultValue 与 dir 与原生的同名属性含义不同，由这里接管。 */
 type RootElementProps = Omit<ComponentPropsWithRef<'div'>, 'children' | 'defaultValue' | 'dir'>
 
 export interface XhColorSwatchPickerRootProps extends RootElementProps {
-  /** 格子数据；不写 children 时按它自动铺开。 */
+  /** 格子数据；未写 children 时按它自动铺开。 */
   swatches?: ColorSwatchPickerNode[]
-  /** 标题文字。给了它就不必再写 label 部件。 */
+  /** 标题文字。提供后不必再写 label 部件。 */
   label?: ReactNode
   value?: string | null
   defaultValue?: string | null
@@ -125,13 +125,13 @@ export function XhColorSwatchPickerLabel({ children, ...rest }: XhColorSwatchPic
 
 export interface XhColorSwatchPickerItemProps extends Omit<ComponentPropsWithRef<'div'>, 'value'> {
   value: string
-  /** 读屏怎么念这一格；缺省交给 connect 回 swatches 里查，都没有就念颜色串。 */
+  /** 读屏朗读该格子的方式；默认交给 connect 查询 swatches，都没有时朗读颜色串。 */
   label?: string
-  /** 缺省交给 connect 回 swatches 里查，写死 false 会盖掉数据里的禁用。 */
+  /** 默认交给 connect 查询 swatches，写死 false 会覆盖数据中的禁用。 */
   disabled?: boolean
 }
 
-/** 一格：色块面、选中标记与表单影子由格子自行装配，不暴露成独立部件。 */
+/** 一格：色块面、选中标记与表单影子由格子自行装配，不暴露为独立部件。 */
 export function XhColorSwatchPickerItem({ value, label, disabled, children, ...rest }: XhColorSwatchPickerItemProps): ReactNode {
   const ctx = useColorSwatchPickerContext()
   const item = useMemo(() => ({ value, label, disabled }), [value, label, disabled])
@@ -181,8 +181,8 @@ export function XhColorSwatchPickerItem({ value, label, disabled, children, ...r
 function noop(): void {}
 
 /**
- * 没写 children 时按 swatches 铺开的整套结构，作者只交数据。
- * 与手写部件产出的 DOM 完全一致，要改结构就写 children，行为不变。
+ * 未写 children 时按 swatches 铺开的整套结构，作者只提供数据。
+ * 与手写部件产出的 DOM 完全一致，需要修改结构时写 children，行为不变。
  */
 function DefaultTree(props: { swatches: readonly ColorSwatchPickerNodeMeta[], label?: ReactNode }): ReactNode {
   return (

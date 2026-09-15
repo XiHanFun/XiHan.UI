@@ -17,7 +17,7 @@ import { createVueIdGenerator } from '../../runtime/vue-id'
 
 export interface ColorSwatchPickerContext {
   api: ComputedRef<ColorSwatchPickerApi>
-  /** 机器实例，供部件上报 DOM 侧的事实（如格子卸载带走了焦点）。 */
+  /** 状态机实例，供部件上报 DOM 侧的事实（如格子卸载带走了焦点）。 */
   service: Service<ColorSwatchPickerSchema>
 }
 

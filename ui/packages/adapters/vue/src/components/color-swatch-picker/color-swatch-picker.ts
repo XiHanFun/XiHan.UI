@@ -25,9 +25,9 @@ export type ColorSwatchPickerRootSlotProps = Pick<
 export const XhColorSwatchPickerRoot = defineComponent({
   name: 'XhColorSwatchPickerRoot',
   props: {
-    /** 格子数据；不写默认插槽时按它自动铺开。 */
+    /** 格子数据；未写默认插槽时按它自动铺开。 */
     swatches: { type: Array as PropType<ColorSwatchPickerNode[]> },
-    /** 标题文字。给了它就不必再写 label 部件；要放别的内容改用 label 插槽。 */
+    /** 标题文字。提供后不必再写 label 部件；需要放置其他内容时改用 label 插槽。 */
     label: { type: String },
     value: { type: String as PropType<string | null> },
     defaultValue: { type: String as PropType<string | null> },
@@ -92,7 +92,7 @@ export const XhColorSwatchPickerItem = defineComponent({
   name: 'XhColorSwatchPickerItem',
   props: {
     value: { type: String, required: true },
-    /** 读屏怎么念这一格；缺省交给 connect 回 swatches 里查，都没有就念颜色串。 */
+    /** 读屏朗读该格子的方式；默认交给 connect 查询 swatches，都没有时朗读颜色串。 */
     label: { type: String },
     // 缺省交给 connect 回 swatches 里查，写死 false 会盖掉数据里的禁用
     disabled: { type: Boolean, default: undefined },
@@ -129,8 +129,8 @@ export const XhColorSwatchPickerItem = defineComponent({
 })
 
 /**
- * 没写默认插槽时按 swatches 铺开的整套结构，作者只交数据。
- * 与手写部件产出的 DOM 完全一致，要改结构就写默认插槽，行为不变。
+ * 未写默认插槽时按 swatches 铺开的整套结构，作者只提供数据。
+ * 与手写部件产出的 DOM 完全一致，需要修改结构时写默认插槽，行为不变。
  */
 function renderDefaultTree(
   swatches: readonly ColorSwatchPickerNodeMeta[],
