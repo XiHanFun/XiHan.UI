@@ -18,7 +18,7 @@ import { useTagsInput } from './use-tags-input'
 
 type TagsInputProps = TagsInputSchema['props']
 
-/** 计数部件默认插槽的载荷：当前个数、上限与顶到上限、越界两个标志。 */
+/** 计数部件默认插槽的载荷：当前个数、上限与已达上限、越界两个标志。 */
 export type TagsInputCountSlotProps = Pick<TagsInputApi, 'count' | 'max' | 'atMax' | 'overflow'>
 
 /** 默认插槽的载荷：标签集合与输入文本、数量与越界标志、光标与编辑锚点，以及增删改与清空的动作。 */
@@ -174,7 +174,7 @@ export const XhTagsInputItem = defineComponent({
   },
 })
 
-/** 标签的预览：渲的是库里 tag 的 root（data-scope="tag"），就地编辑时由 tag 收起。 */
+/** 标签的预览：渲染为库内 tag 的 root（data-scope="tag"），就地编辑时由 tag 收起。 */
 export const XhTagsInputItemPreview = defineComponent({
   name: 'XhTagsInputItemPreview',
   setup(_, { slots }) {
@@ -184,7 +184,7 @@ export const XhTagsInputItemPreview = defineComponent({
   },
 })
 
-/** 标签文字：渲的是 tag 的 label，截断落在这一层。 */
+/** 标签文字：渲染为 tag 的 label，截断落在这一层。 */
 export const XhTagsInputItemText = defineComponent({
   name: 'XhTagsInputItemText',
   setup(_, { slots }) {
@@ -194,7 +194,7 @@ export const XhTagsInputItemText = defineComponent({
   },
 })
 
-/** 删除钮：渲的是所在标签那份 tag 的 close-trigger，不占 Tab 位；禁用与只读时留位、原生 disabled。 */
+/** 删除按钮：渲染为所在标签那份 tag 的 close-trigger，不占 Tab 位；禁用与只读时保留位置、原生 disabled。 */
 export const XhTagsInputItemDeleteTrigger = defineComponent({
   name: 'XhTagsInputItemDeleteTrigger',
   setup(_, { slots }) {
@@ -221,7 +221,7 @@ export const XhTagsInputClearTrigger = defineComponent({
   },
 })
 
-/** 计数：不写内容时渲「已用 / 上限」，没设上限就只渲已用。 */
+/** 计数：未写内容时渲染「已用 / 上限」，未设上限时只渲染已用。 */
 export const XhTagsInputCount = defineComponent({
   name: 'XhTagsInputCount',
   slots: Object as SlotsType<{

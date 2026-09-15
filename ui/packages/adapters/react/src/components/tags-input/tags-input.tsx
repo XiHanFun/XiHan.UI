@@ -22,11 +22,11 @@ import { useTagsInput } from './use-tags-input'
 
 type TagsInputProps = TagsInputSchema['props']
 
-/** 服务端没有提交这一步，layout effect 换成永不执行的 useEffect，避开 React 的警告。 */
+/** 服务端没有提交这一步，layout effect 替换为永不执行的 useEffect，避开 React 的警告。 */
 
 function noop(): void {}
 
-/** 计数部件函数式 children 的载荷：当前个数、上限与顶到上限、越界两个标志。 */
+/** 计数部件函数式 children 的载荷：当前个数、上限与已达上限、越界两个标志。 */
 export type TagsInputCountSlotProps = Pick<TagsInputApi, 'count' | 'max' | 'atMax' | 'overflow'>
 
 /** 函数式 children 的载荷：标签集合与输入文本、数量与越界标志、光标与编辑锚点，以及增删改与清空的动作。 */
@@ -62,7 +62,7 @@ export interface XhTagsInputRootProps extends Omit<ComponentPropsWithRef<'div'>,
   required?: boolean
   invalid?: boolean
   showCount?: boolean
-  /** 表单字段名；给了隐藏输入才带 name 并参与提交。 */
+  /** 表单字段名；提供后隐藏输入才带 name 并参与提交。 */
   name?: string
   placeholder?: string
   delimiter?: string
@@ -167,7 +167,7 @@ export function XhTagsInputRoot({
 XhTagsInputRoot.xhEvents = ['value-change', 'input-value-change'] as const
 
 export interface XhTagsInputLabelProps extends ComponentPropsWithRef<'label'> {}
-/** 用原生 label，getLabelProps 的 for 指向输入框。 */
+/** 使用原生 label，getLabelProps 的 for 指向输入框。 */
 export function XhTagsInputLabel({ children, ...rest }: XhTagsInputLabelProps): ReactNode {
   const ctx = useTagsInputContext()
   return (
@@ -178,7 +178,7 @@ export function XhTagsInputLabel({ children, ...rest }: XhTagsInputLabelProps): 
 }
 
 export interface XhTagsInputControlProps extends ComponentPropsWithRef<'div'> {}
-/** 一排标签加一个输入框的容器，读屏把它当一个整体。 */
+/** 一排标签加一个输入框的容器，读屏把它视为一个整体。 */
 export function XhTagsInputControl({ children, ...rest }: XhTagsInputControlProps): ReactNode {
   const ctx = useTagsInputContext()
   return (
@@ -209,7 +209,7 @@ export interface XhTagsInputItemProps extends Omit<ComponentPropsWithRef<'div'>,
   value: string
 }
 
-/** 一枚标签：预览与就地编辑框都挂在它里面，靠 hidden 互斥。 */
+/** 一个标签：预览与就地编辑框都挂在其中，依靠 hidden 互斥。 */
 export function XhTagsInputItem({ value, children, ...rest }: XhTagsInputItemProps): ReactNode {
   const ctx = useTagsInputContext()
   const item = useMemo(() => ({ value }), [value])
@@ -253,7 +253,7 @@ export function XhTagsInputItem({ value, children, ...rest }: XhTagsInputItemPro
 }
 
 export interface XhTagsInputItemPreviewProps extends ComponentPropsWithRef<'span'> {}
-/** 标签的预览：渲的是库里 tag 的 root（data-scope="tag"），就地编辑时由 tag 收起。 */
+/** 标签的预览：渲染为库内 tag 的 root（data-scope="tag"），就地编辑时由 tag 收起。 */
 export function XhTagsInputItemPreview({ children, ...rest }: XhTagsInputItemPreviewProps): ReactNode {
   const ctx = useTagsInputContext()
   const item = useTagsInputItemContext()
@@ -265,7 +265,7 @@ export function XhTagsInputItemPreview({ children, ...rest }: XhTagsInputItemPre
 }
 
 export interface XhTagsInputItemTextProps extends ComponentPropsWithRef<'span'> {}
-/** 标签文字：渲的是 tag 的 label，截断落在这一层。 */
+/** 标签文字：渲染为 tag 的 label，截断落在这一层。 */
 export function XhTagsInputItemText({ children, ...rest }: XhTagsInputItemTextProps): ReactNode {
   const ctx = useTagsInputContext()
   const item = useTagsInputItemContext()
@@ -277,7 +277,7 @@ export function XhTagsInputItemText({ children, ...rest }: XhTagsInputItemTextPr
 }
 
 export interface XhTagsInputItemDeleteTriggerProps extends ComponentPropsWithRef<'button'> {}
-/** 删除钮：渲的是所在标签那份 tag 的 close-trigger，不占 Tab 位；禁用与只读时留位、原生 disabled。 */
+/** 删除按钮：渲染为所在标签那份 tag 的 close-trigger，不占 Tab 位；禁用与只读时保留位置、原生 disabled。 */
 export function XhTagsInputItemDeleteTrigger({ children, ...rest }: XhTagsInputItemDeleteTriggerProps): ReactNode {
   const ctx = useTagsInputContext()
   const item = useTagsInputItemContext()
@@ -312,7 +312,7 @@ export interface XhTagsInputCountProps extends Omit<ComponentPropsWithRef<'span'
   children?: SlotChildren<TagsInputCountSlotProps>
 }
 
-/** 计数：不写内容时渲「已用 / 上限」，没设上限就只渲已用。 */
+/** 计数：未写内容时渲染「已用 / 上限」，未设上限时只渲染已用。 */
 export function XhTagsInputCount({ children, ...rest }: XhTagsInputCountProps): ReactNode {
   const ctx = useTagsInputContext()
   const api = ctx.api
@@ -328,7 +328,7 @@ export function XhTagsInputCount({ children, ...rest }: XhTagsInputCountProps): 
 }
 
 export interface XhTagsInputHiddenInputProps extends Omit<ComponentPropsWithRef<'input'>, 'value' | 'defaultValue' | 'type'> {}
-/** 整份标签集合的表单出口，按断词符拼成一串。 */
+/** 整份标签集合的表单出口，按断词符拼接为一串。 */
 export function XhTagsInputHiddenInput({ ...rest }: XhTagsInputHiddenInputProps): ReactNode {
   const ctx = useTagsInputContext()
   return (

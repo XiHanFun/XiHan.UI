@@ -142,25 +142,25 @@ tone 决定用哪族颜色，与 variant 正交；这里固定 outline 只看语
 
 | 属性 | 类型 | 必填 | 说明 |
 | --- | --- | --- | --- |
-| `value` | `string[]` |  | 受控标签集合；给了就由宿主说了算，机器不自改，只发 onValueChange。 |
+| `value` | `string[]` |  | 受控标签集合；提供后由宿主决定，状态机不自行修改，只发 onValueChange。 |
 | `defaultValue` | `string[]` |  | 非受控初始标签集合。 |
 | `inputValue` | `string` |  | 受控输入文本；与 value 各自独立受控。 |
 | `defaultInputValue` | `string` |  | 非受控初始输入文本。 |
-| `max` | `number` |  | 最多几个标签。缺省不限；写 0 表示一个也不许加。 |
-| `allowOverflow` | `boolean` |  | 允许越过 max。 关（默认）：顶到上限后这一次输入整体不生效，文本原样留在框里，绝不悄悄吞掉。 开：照加不误，只在 root / control 上打出 data-overflowing 供样式与提示使用。 |
+| `max` | `number` |  | 标签数量上限。默认不限；写 0 表示不允许添加任何标签。 |
+| `allowOverflow` | `boolean` |  | 允许超过 max。 关闭（默认）：到达上限后本次输入整体不生效，文本原样留在框中，不静默丢弃。 开启：照常添加，只在 root / control 上输出 data-overflowing 供样式与提示使用。 |
 | `disabled` | `boolean` |  |  |
 | `readOnly` | `boolean` |  |  |
-| `required` | `boolean` |  | 必填标注：经 aria-required 上报，星号由外面的字段壳画。 |
+| `required` | `boolean` |  | 必填标注：经 aria-required 上报，星号由外层的字段壳绘制。 |
 | `invalid` | `boolean` |  |  |
-| `showCount` | `boolean` |  | 显出计数部件：关掉时 count 部件带 hidden 收起。 |
-| `name` | `string` |  | 表单字段名；给了 hidden-input 才带 name，此时整份标签按 delimiter 拼成一串提交。 |
+| `showCount` | `boolean` |  | 显示计数部件：关闭时 count 部件带 hidden 收起。 |
+| `name` | `string` |  | 表单字段名；提供后 hidden-input 才带 name，此时整份标签按 delimiter 拼接为一串提交。 |
 | `placeholder` | `string` |  |  |
-| `delimiter` | `string` |  | 断词符，默认逗号。打字打出它即断词成标签，粘贴时也按它拆。 显式给空串即关掉断词：此时只有 Enter 能把文本变成标签。 |
-| `addOnPaste` | `boolean` |  | 粘贴时接管：按 delimiter 拆成多个标签。默认关（交给浏览器照常粘进框里）。 |
-| `editable` | `boolean` |  | 允许双击标签就地改。默认关。 |
-| `blurBehavior` | `TagsInputBlurBehavior \| null` |  | 焦点离开整个组件时怎么处置输入框里的残留文本。 |
-| `variant` | `ControlVariant` |  | 形态：outline / subtle / ghost，决定颜色怎么用。 |
-| `tone` | `Tone` |  | 语气：brand / neutral / success / warning / danger / info，决定用哪族颜色。 |
+| `delimiter` | `string` |  | 断词符，默认逗号。输入它即断词为标签，粘贴时也按它拆分。 显式提供空串即关闭断词：此时只有 Enter 能把文本变为标签。 |
+| `addOnPaste` | `boolean` |  | 粘贴时接管：按 delimiter 拆分为多个标签。默认关闭（交给浏览器照常粘贴进框中）。 |
+| `editable` | `boolean` |  | 允许双击标签就地修改。默认关闭。 |
+| `blurBehavior` | `TagsInputBlurBehavior \| null` |  | 焦点离开整个组件时输入框中残留文本的处置方式。 |
+| `variant` | `ControlVariant` |  | 形态：outline / subtle / ghost，决定颜色的使用方式。 |
+| `tone` | `Tone` |  | 语气：brand / neutral / success / warning / danger / info，决定使用哪族颜色。 |
 | `size` | `Size` |  | 尺寸：sm / md / lg。 |
 | `translations` | `Partial<TagsInputTranslations>` |  |  |
 | `onValueChange` | `(details: TagsInputValueChangeDetails) => void` |  |  |
@@ -201,38 +201,38 @@ tone 决定用哪族颜色，与 variant 正交；这里固定 outline 只看语
 | 成员 | 类型 | 说明 |
 | --- | --- | --- |
 | `value` | `string[]` |  |
-| `count` | `number` | 标签个数，等于 value.length；作者常拿它做"3 / 5"这类计数提示。 |
+| `count` | `number` | 标签个数，等于 value.length；作者常用它做「3 / 5」这类计数提示。 |
 | `inputValue` | `string` |  |
-| `empty` | `boolean` | 一个标签都没有。 |
+| `empty` | `boolean` | 没有任何标签。 |
 | `disabled` | `boolean` |  |
 | `readOnly` | `boolean` |  |
 | `required` | `boolean` |  |
 | `invalid` | `boolean` |  |
-| `max` | `number \| undefined` | 标签个数的上限；没设 max 时是 undefined，此时只渲当前个数。 |
-| `showCount` | `boolean` | 计数部件此刻是否显出（开了 showCount）。 |
-| `atMax` | `boolean` | 已顶到 max：再加进不去（allowOverflow 开时只是提示，不拦）。 |
-| `overflow` | `boolean` | 已经越过 max（只有 allowOverflow 开着才可能为真）。 |
-| `highlightedValue` | `string \| null` | 光标停着的标签；没在标签间走时为 null。 |
+| `max` | `number \| undefined` | 标签个数的上限；未设 max 时为 undefined，此时只渲染当前个数。 |
+| `showCount` | `boolean` | 计数部件当前是否显示（开启了 showCount）。 |
+| `atMax` | `boolean` | 已到达 max：无法再添加（allowOverflow 开启时只是提示，不拦截）。 |
+| `overflow` | `boolean` | 已超过 max（只有 allowOverflow 开启时才可能为真）。 |
+| `highlightedValue` | `string \| null` | 光标停留的标签；不在标签间移动时为 null。 |
 | `editedValue` | `string \| null` | 正被就地改写的标签；不在编辑态时为 null。 |
-| `canClear` | `boolean` | 清空按钮此刻是否可用（可编辑，且标签或输入文本至少有一样）。 |
+| `canClear` | `boolean` | 清空按钮当前是否可用（可编辑，且标签或输入文本至少有一项）。 |
 | `setValue` | `(next: string[]) => void` | 整份替换，去重去空白，不受 max 约束。 |
 | `addValue` | `(next: string) => void` | 追加一个标签，受 max 与 allowOverflow 约束。 |
 | `deleteValue` | `(value: string) => void` |  |
 | `clear` | `() => void` |  |
 | `setInputValue` | `(next: string) => void` |  |
-| `highlight` | `(value: string \| null) => void` | 把光标挪到某个标签上；传 null 即交回输入框。 |
-| `edit` | `(value: string) => void` | 进入就地编辑；未开 editable 时被守卫挡下。 |
+| `highlight` | `(value: string \| null) => void` | 把光标移到某个标签上；传 null 即交回输入框。 |
+| `edit` | `(value: string) => void` | 进入就地编辑；未开启 editable 时被守卫拦截。 |
 | `getRootProps` | `() => T['element']` |  |
 | `getLabelProps` | `() => T['label']` |  |
 | `getControlProps` | `() => T['element']` |  |
 | `getInputProps` | `() => T['input']` |  |
 | `getItemProps` | `(item: TagsInputItemProps) => T['element']` |  |
-| `getItemPreviewProps` | `(item: TagsInputItemProps) => T['element']` | 标签的预览：就是库里 tag 的 root（data-scope="tag"），就地编辑时收起；双击进编辑态。 |
-| `getItemTextProps` | `(item: TagsInputItemProps) => T['element']` | 标签文字：tag 的 label，截断落在这一层。 |
-| `getItemDeleteTriggerProps` | `(item: TagsInputItemProps) => T['button']` | 删除钮：所在标签那份 tag 的 close-trigger，不占 Tab 位；禁用与只读时留位、原生 disabled。 |
+| `getItemPreviewProps` | `(item: TagsInputItemProps) => T['element']` | 标签的预览：即库内 tag 的 root（data-scope="tag"），就地编辑时收起；双击进入编辑态。 |
+| `getItemTextProps` | `(item: TagsInputItemProps) => T['element']` | 标签文字：tag 的 label，截断落在该层。 |
+| `getItemDeleteTriggerProps` | `(item: TagsInputItemProps) => T['button']` | 删除按钮：所在标签那份 tag 的 close-trigger，不占 Tab 位；禁用与只读时保留位置、原生 disabled。 |
 | `getItemInputProps` | `(item: TagsInputItemProps) => T['input']` |  |
 | `getClearTriggerProps` | `() => T['button']` |  |
-| `getCountProps` | `() => T['element']` | 计数部件：承载 count / max 两个数字，没开 showCount 时带 hidden 收起。 |
+| `getCountProps` | `() => T['element']` | 计数部件：承载 count / max 两个数字，未开启 showCount 时带 hidden 收起。 |
 | `getHiddenInputProps` | `() => T['input']` |  |
 
 ## 无障碍
@@ -253,7 +253,7 @@ tone 决定用哪族颜色，与 variant 正交；这里固定 outline 只看语
 | `Home` | 已有标签被高亮 | 跳到第一个标签 |
 | `End` | 已有标签被高亮 | 交回输入框 |
 | `Escape` | 已有标签被高亮 | 取消高亮，光标交回输入框；没在标签间走时不接管该键 |
-| `Enter` | 已有标签被高亮, editable 开着 | 就地编辑这个标签，焦点进编辑框并整段选中 |
+| `Enter` | 已有标签被高亮, editable 开启 | 就地编辑这个标签，焦点进编辑框并整段选中 |
 | `Enter` | focus in item-input（就地编辑中） | 提交改写；改成空白等于删掉这个标签，改成另一个已有标签则并成一个。焦点交回输入框 |
 | `Escape` | focus in item-input（就地编辑中） | 撤销这次改写，标签保持原样，焦点交回输入框 |
 

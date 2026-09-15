@@ -78,7 +78,7 @@ export const tagsInputKeyboard: KeyboardTable = {
     {
       id: 'tags-input.kbd.edit',
       keys: ['Enter'],
-      when: '已有标签被高亮, editable 开着',
+      when: '已有标签被高亮, editable 开启',
       does: '就地编辑这个标签，焦点进编辑框并整段选中',
     },
     {

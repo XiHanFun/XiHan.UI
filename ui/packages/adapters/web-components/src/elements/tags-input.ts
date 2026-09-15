@@ -33,54 +33,54 @@ const ARRAY_CONVERTER = {
 }
 
 /**
- * `<xh-tags-input>` —— Light-DOM 行为宿主：作者写 root/label/control/input/item 一族与
- * clear-trigger/hidden-input 角色节点，元素跑 tags-input 机器并把 connect 产出打上去。
+ * `<xh-tags-input>`：Light-DOM 行为宿主：作者写 root / label / control / input / item 一族与
+ * clear-trigger / hidden-input 角色节点，元素运行 tags-input 状态机并把 connect 产出接上。
  *
  * 标签节点由作者按当前值渲染（每个标签一个 item，身份取节点上的 value 属性）；
- * 元素自己不生成结构，值变了要由作者那一侧增删节点，改完 MutationObserver 会自动重新接线。
+ * 元素自身不生成结构，值变化时由作者侧增删节点，修改后 MutationObserver 会自动重新接线。
  *
- * label 的 `for` 恒写向 input 的 id，所以 label 必须是原生 `<label>`、input 必须是原生 `<input>`。
- * 就地编辑框（item-input）与预览（item-preview）互斥收起而不是卸载，作者写的节点不会被替他删掉。
+ * label 的 `for` 恒指向 input 的 id，因此 label 必须是原生 `<label>`、input 必须是原生 `<input>`。
+ * 就地编辑框（item-input）与预览（item-preview）互斥收起而不是卸载，作者编写的节点不会被替作者删除。
  *
- * item-preview / item-text / item-delete-trigger 三个角色节点接的是库里 tag 的 root / label / close-trigger
- * （DOM 上带 data-scope="tag"，吃 tag 那份皮肤）：语气、尺寸、禁用与只读从本元素传下去，
- * 形态按控件的面派（outline / ghost / 缺省摆淡底标签，subtle 摆描边标签）。
+ * item-preview / item-text / item-delete-trigger 三个角色节点接线为库内 tag 的 root / label / close-trigger
+ * （DOM 上带 data-scope="tag"，使用 tag 的皮肤）：语气、尺寸、禁用与只读从本元素传下，
+ * 形态按控件的面派生（outline / ghost / 默认使用淡底标签，subtle 使用描边标签）。
  *
  * @customElement xh-tags-input
- * @attr {string} value - 受控标签集合，按逗号拆；缺省该属性即非受控，别的分隔符请用 property
- * @attr {string} default-value - 非受控初始标签集合，同样按逗号拆
+ * @attr {string} value - 受控标签集合，按逗号拆分；未提供该属性即非受控，其他分隔符通过 property 设置
+ * @attr {string} default-value - 非受控初始标签集合，同样按逗号拆分
  * @attr {string} input-value - 受控输入文本
  * @attr {string} default-input-value - 非受控初始输入文本
- * @attr {number} max - 最多几个标签；写 0 即一个也不许加
- * @attr {boolean} allow-overflow - 允许越过 max，越过后打出 data-overflowing
+ * @attr {number} max - 标签数量上限；写 0 即不允许添加任何标签
+ * @attr {boolean} allow-overflow - 允许超过 max，超过后输出 data-overflowing
  * @attr {boolean} disabled - 禁用：输入框与各按钮都不可用
- * @attr {boolean} read-only - 只读：仍可聚焦与复制，加删改都走不通
- * @attr {boolean} required - 必填标注：经 aria-required 上报，星号由外面的字段壳画
- * @attr {boolean} show-count - 显出计数部件；关掉时该部件收起
+ * @attr {boolean} read-only - 只读：仍可聚焦与复制，增删改都不可用
+ * @attr {boolean} required - 必填标注：经 aria-required 上报，星号由外层的字段壳绘制
+ * @attr {boolean} show-count - 显示计数部件；关闭时该部件收起
  * @attr {boolean} invalid - 校验失败标注
- * @attr {string} name - 表单字段名；给了 hidden-input 才参与提交（按 delimiter 拼成一串）
+ * @attr {string} name - 表单字段名；提供后 hidden-input 才参与提交（按 delimiter 拼接为一串）
  * @attr {string} placeholder - 输入框占位文案
- * @attr {string} delimiter - 断词符，默认逗号；显式写空串即关掉断词
- * @attr {boolean} add-on-paste - 粘贴时按 delimiter 拆成多个标签
- * @attr {boolean} editable - 允许双击标签就地改
- * @attr {'add'|'clear'} blur-behavior - 焦点离开整个组件时怎么处置残留文本
+ * @attr {string} delimiter - 断词符，默认逗号；显式写空串即关闭断词
+ * @attr {boolean} add-on-paste - 粘贴时按 delimiter 拆分为多个标签
+ * @attr {boolean} editable - 允许双击标签就地修改
+ * @attr {'add'|'clear'} blur-behavior - 焦点离开整个组件时残留文本的处置方式
  * @attr {'outline'|'subtle'|'ghost'} variant - 视觉变体
  * @attr {'brand'|'neutral'|'success'|'warning'|'danger'|'info'} tone - 语气
  * @attr {'sm'|'md'|'lg'} size - 尺寸
  * @fires value-change - 标签集合变化；detail 为 `{ value: string[] }`
  * @fires input-value-change - 输入文本变化；detail 为 `{ inputValue: string }`
  * @csspart root - 承载 data-disabled / data-readonly / data-invalid / data-empty / data-at-max / data-overflowing
- * @csspart label - 标题；`for` 恒写向 input，故须是原生 `<label>` 才点得动
- * @csspart control - role=group 的框，点它的空白处即聚焦输入框
- * @csspart input - 真正的输入框，须是原生 `<input>`；键盘交互全在它身上
+ * @csspart label - 标题；`for` 恒指向 input，因此须是原生 `<label>` 才可点击
+ * @csspart control - role=group 的框，点击其空白处即聚焦输入框
+ * @csspart input - 实际的输入框，须是原生 `<input>`；键盘交互全部在它身上
  * @csspart item - 一个标签一个，须自带 value 属性标识身份
- * @csspart item-preview - 标签平常那一套（文本 + 删除按钮）；接的是 tag 的 root（data-scope="tag"），就地编辑时收起
- * @csspart item-text - 标签文本；接的是 tag 的 label，截断落在这一层
- * @csspart item-delete-trigger - 删除按钮，须是原生 `<button>`；接的是所在标签那份 tag 的 close-trigger（data-scope="tag"），不占 Tab 位、自带 aria-label，禁用与只读时留位、原生 disabled
+ * @csspart item-preview - 标签的常态部分（文本 + 删除按钮）；接线为 tag 的 root（data-scope="tag"），就地编辑时收起
+ * @csspart item-text - 标签文本；接线为 tag 的 label，截断落在该层
+ * @csspart item-delete-trigger - 删除按钮，须是原生 `<button>`；接线为所在标签那份 tag 的 close-trigger（data-scope="tag"），不占 Tab 位、自带 aria-label，禁用与只读时保留位置、原生 disabled
  * @csspart item-input - 就地编辑框，须是原生 `<input>`；不编辑时收起
- * @csspart clear-trigger - 清空按钮；没东西可清时收起（hidden）
- * @csspart count - 标签个数；文本由元素按「已用 / 上限」填，作者写了自己的内容即不覆盖；没开 show-count 时收起
- * @csspart hidden-input - type=hidden 的表单出口，值是按 delimiter 拼好的整串
+ * @csspart clear-trigger - 清空按钮；没有可清空的内容时收起（hidden）
+ * @csspart count - 标签个数；文本由元素按「已用 / 上限」填入，作者写了自己的内容即不覆盖；未开启 show-count 时收起
+ * @csspart hidden-input - type=hidden 的表单出口，值是按 delimiter 拼接后的整串
  */
 export class XhTagsInputElement extends XhElement {
   // item-preview / item-text / item-delete-trigger 接的是 tag 的 root / label / close-trigger：三个作者名都归 tag 那套 scope 管，不在本元素的解剖里
@@ -136,7 +136,7 @@ export class XhTagsInputElement extends XhElement {
   declare variant?: ControlVariant
   declare tone?: Tone
   declare size?: Size
-  /** 删除钮、就地编辑框与清空钮的无障碍名。 */
+  /** 删除按钮、就地编辑框与清空按钮的无障碍名。 */
   declare translations?: TagsInputSchema['props']['translations']
 
   private readonly notifyValue = (details: TagsInputValueChangeDetails): void => {
@@ -193,12 +193,12 @@ export class XhTagsInputElement extends XhElement {
   }
 
   /**
-   * 承载焦点的标签被移出 DOM 时浏览器不派 focusout（Chrome 如此），机器读不到这件事：
-   * 就地编辑框会连同标签一起消失，机器却还停在 editing，光标锚点指着一个已经不存在的标签，
-   * 从此既进不了编辑框、也回不到输入框。这里替 DOM 把焦点离场如实上报。
+   * 承载焦点的标签被移出 DOM 时浏览器不派发 focusout（Chrome 如此），状态机无法得知：
+   * 就地编辑框会连同标签一起消失，状态机却仍停在 editing，光标锚点指向一个已经不存在的标签，
+   * 从此既无法进入编辑框、也无法回到输入框。这里替 DOM 把焦点离场如实上报。
    *
-   * 判据在这一侧只能按锚点值判，不能按"当下正持有焦点"：回调是在节点已经离开文档之后调的，
-   * 那时 activeElement 早退回 body 了。Vue 那一侧有 onBeforeUnmount（节点还在），故按焦点判。
+   * 判据在这一侧只能按锚点值判断，不能按当前是否持有焦点：回调是在节点已经离开文档之后调用的，
+   * 此时 activeElement 早已退回 body。Vue 侧有 onBeforeUnmount（节点仍在），故按焦点判断。
    */
   protected override onPartsReleased(nodes: readonly HTMLElement[]): void {
     const { context, getStatus, send } = this.ctrl.service
