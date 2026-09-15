@@ -13,8 +13,8 @@ import { vueNormalize } from '../../runtime/normalize-props'
 import { provideWatermark, useWatermarkContext } from './context'
 
 /**
- * 盖水印的那块地。图样由 connect 算成一张 SVG，写成根上的内联 CSS 变量，
- * 由皮肤铺成一层盖在内容之上的伪元素——印子因此不进无障碍树、不吃点击、也选不中。
+ * 水印覆盖的区域。图样由 connect 计算为一张 SVG，写为根上的内联 CSS 变量，
+ * 由皮肤铺为一层覆盖在内容之上的伪元素：印记因此不进入无障碍树、不接收点击、也不可选中。
  */
 export const XhWatermarkRoot = defineComponent({
   name: 'XhWatermarkRoot',
@@ -36,7 +36,7 @@ export const XhWatermarkRoot = defineComponent({
   },
 })
 
-/** 被盖住的那段内容。 */
+/** 被覆盖的内容。 */
 export const XhWatermarkContent = defineComponent({
   name: 'XhWatermarkContent',
   setup(_, { slots }) {
