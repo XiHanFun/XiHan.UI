@@ -51331,7 +51331,7 @@
       "declarations": [
         {
           "kind": "class",
-          "description": "`<xh-tag>` —— Light-DOM 行为宿主：作者写 root、label、close-trigger 角色节点，\n元素跑 tag 机器并把 connect 产出打上去。关闭钮须是原生 `<button>`\n（Enter/Space 的激活由平台负责），收起时用内联 style.display 隐藏 root。",
+          "description": "`<xh-tag>`：Light-DOM 行为宿主：作者写 root、label、close-trigger 角色节点，\n元素运行 tag 状态机并把 connect 产出接上。关闭按钮须是原生 `<button>`\n（Enter / Space 的激活由平台负责），收起时用内联 style.display 隐藏 root。",
           "name": "XhTagElement",
           "cssParts": [
             {
@@ -51343,7 +51343,7 @@
               "name": "label"
             },
             {
-              "description": "关闭钮，须是原生 `<button>`",
+              "description": "关闭按钮，须是原生 `<button>`",
               "name": "close-trigger"
             }
           ],
@@ -51485,7 +51485,7 @@
               "type": {
                 "text": "TagVariant | undefined"
               },
-              "description": "形态，决定颜色怎么用",
+              "description": "形态，决定颜色的使用方式",
               "name": "variant",
               "fieldName": "variant"
             },
@@ -51493,7 +51493,7 @@
               "type": {
                 "text": "Tone | undefined"
               },
-              "description": "语气，决定用哪族颜色",
+              "description": "语气，决定使用哪族颜色",
               "name": "tone",
               "fieldName": "tone"
             },
@@ -51509,7 +51509,7 @@
               "type": {
                 "text": "boolean | undefined"
               },
-              "description": "是否给出关闭钮，缺省为假；为假时该钮同时被禁用与收起",
+              "description": "是否提供关闭按钮，默认为假；为假时该按钮同时被禁用与收起",
               "name": "closable",
               "fieldName": "closable"
             },
@@ -51517,7 +51517,7 @@
               "type": {
                 "text": "boolean | undefined"
               },
-              "description": "标签禁用，关闭钮留在原地但按不动",
+              "description": "标签禁用，关闭按钮保留位置但不可按下",
               "name": "disabled",
               "fieldName": "disabled"
             },
@@ -51525,7 +51525,7 @@
               "type": {
                 "text": "boolean | undefined"
               },
-              "description": "只读，关闭钮留在原地但按不动，标签本身不置灰",
+              "description": "只读，关闭按钮保留位置但不可按下，标签本身不置灰",
               "name": "read-only",
               "fieldName": "readOnly"
             },
@@ -51533,7 +51533,7 @@
               "type": {
                 "text": "boolean | undefined"
               },
-              "description": "受控显隐；缺省该属性即非受控",
+              "description": "受控显隐；未提供该属性即非受控",
               "name": "open",
               "fieldName": "open"
             },
@@ -51541,7 +51541,7 @@
               "type": {
                 "text": "boolean | undefined"
               },
-              "description": "非受控初始显隐，缺省为显示",
+              "description": "非受控初始显隐，默认显示",
               "name": "default-open",
               "fieldName": "defaultOpen"
             }

@@ -22,12 +22,12 @@ export interface XhTagRootProps extends ComponentPropsWithRef<'span'> {
   variant?: TagVariant
   tone?: Tone
   size?: Size
-  /** 是否给出关闭钮；不传由 connect 决定缺省，传 false 才真的关掉。 */
+  /** 是否提供关闭按钮；未传时由 connect 决定默认，传 false 才真正关闭。 */
   closable?: boolean
   disabled?: boolean
-  /** 只读：关闭钮留在原地但按不动，标签本身不置灰。 */
+  /** 只读：关闭按钮留在原地但不可按下，标签本身不置灰。 */
   readOnly?: boolean
-  /** 受控显隐；缺省该 prop 即非受控。 */
+  /** 受控显隐；省略该 prop 即非受控。 */
   open?: boolean
   /** 非受控初始显隐，默认显示。 */
   defaultOpen?: boolean
@@ -36,11 +36,11 @@ export interface XhTagRootProps extends ComponentPropsWithRef<'span'> {
 }
 
 /**
- * 标签随文排，根用 span 才能落在一行文字里。
+ * 标签随文排列，根使用 span 才能位于一行文字中。
  *
- * 挂载那一刻给没给关闭钮，决定这一枚跑不跑机器：不给关闭钮时 OPEN / CLOSE 两条路都走不到，
- * 展开态恒等于 `open ?? defaultOpen ?? true`。判据取挂载那一刻的值，之后不再改——
- * React 的 hook 不能按条件调，两条路各自是一个组件。
+ * 挂载时是否提供关闭按钮，决定该标签是否运行状态机：不提供关闭按钮时 OPEN / CLOSE 两条路径都不可达，
+ * 展开态恒等于 `open ?? defaultOpen ?? true`。判据取挂载时的值，之后不再改变：
+ * React 的 hook 不能按条件调用，两条路径各自是一个组件。
  */
 export function XhTagRoot(props: XhTagRootProps): ReactNode {
   const [runsMachine] = useState(() => !!props.closable)
@@ -49,7 +49,7 @@ export function XhTagRoot(props: XhTagRootProps): ReactNode {
 
 XhTagRoot.xhEvents = ['open-change'] as const
 
-/** 跑机器的那一路。 */
+/** 运行状态机的路径。 */
 function MachineTagRoot({
   variant,
   tone,
@@ -79,7 +79,7 @@ function MachineTagRoot({
   return renderTagRoot(ctx, rest as Record<string, unknown>, children)
 }
 
-/** 不建机器的那一路。 */
+/** 不建立状态机的路径。 */
 function StaticTagRoot({
   variant,
   tone,
@@ -109,7 +109,7 @@ function StaticTagRoot({
   return renderTagRoot(ctx, rest as Record<string, unknown>, children)
 }
 
-/** 两条路共用的这一层结构；不含 hook，直接调用不占一层组件。 */
+/** 两条路径共用的结构；不含 hook，直接调用不占一层组件。 */
 function renderTagRoot(ctx: TagContext, rest: Record<string, unknown>, children: ReactNode): ReactNode {
   // children 里只有文字时替它包一层 label：截断规则挂在 label 上，
   // 直接摊在 root 上的文字过长会把关闭钮挤出去。作者自己写了节点就原样放行
@@ -125,7 +125,7 @@ function renderTagRoot(ctx: TagContext, rest: Record<string, unknown>, children:
 
 export interface XhTagLabelProps extends ComponentPropsWithRef<'span'> {}
 
-/** 标签文字所在的块，横向空间不够时由皮肤截断。 */
+/** 标签文字所在的块，横向空间不足时由皮肤截断。 */
 export function XhTagLabel({ children, ...rest }: XhTagLabelProps): ReactNode {
   const ctx = useTagContext()
   return (
@@ -137,7 +137,7 @@ export function XhTagLabel({ children, ...rest }: XhTagLabelProps): ReactNode {
 
 export interface XhTagCloseTriggerProps extends ComponentPropsWithRef<'button'> {}
 
-/** 关闭钮：用原生 button，Enter / Space 的激活交给平台。 */
+/** 关闭按钮：使用原生 button，Enter / Space 的激活交给平台。 */
 export function XhTagCloseTrigger({ children, ...rest }: XhTagCloseTriggerProps): ReactNode {
   const ctx = useTagContext()
   return (

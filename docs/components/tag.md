@@ -119,15 +119,15 @@ readOnly 只锁关闭钮：叉留在原地但按不动，标签本身不置灰�
 
 | 属性 | 类型 | 必填 | 说明 |
 | --- | --- | --- | --- |
-| `variant` | `TagVariant` |  | 形态：solid / subtle / outline / ghost，决定颜色怎么用。 |
-| `tone` | `Tone` |  | 语气：brand / neutral / success / warning / danger / info，决定用哪族颜色。 |
+| `variant` | `TagVariant` |  | 形态：solid / subtle / outline / ghost，决定颜色的使用方式。 |
+| `tone` | `Tone` |  | 语气：brand / neutral / success / warning / danger / info，决定使用哪族颜色。 |
 | `size` | `Size` |  | 尺寸：sm / md / lg。 |
-| `closable` | `boolean` |  | 是否给出关闭钮，默认 false。false 时该钮同时被禁用与收起。 |
-| `disabled` | `boolean` |  | 标签禁用：关闭钮不可用，点击不改显隐。 |
-| `readOnly` | `boolean` |  | 只读：关闭钮留在原地但按不动，标签本身不置灰。 |
-| `open` | `boolean` |  | 受控显隐；缺省该 prop 即非受控。 |
+| `closable` | `boolean` |  | 是否提供关闭按钮，默认 false。false 时该按钮同时被禁用与收起。 |
+| `disabled` | `boolean` |  | 标签禁用：关闭按钮不可用，点击不改变显隐。 |
+| `readOnly` | `boolean` |  | 只读：关闭按钮保留位置但不可按下，标签本身不置灰。 |
+| `open` | `boolean` |  | 受控显隐；未提供该 prop 即非受控。 |
 | `defaultOpen` | `boolean` |  | 非受控初始显隐，默认显示。 |
-| `onOpenChange` | `(details: TagOpenChangeDetails) => void` |  | open 变化意图回调；受控时是唯一出口，非受控随内部转移一并通知。 |
+| `onOpenChange` | `(details: TagOpenChangeDetails) => void` |  | open 变化意图回调；受控时是唯一出口，非受控时随内部转移一并通知。 |
 | `translations` | `Partial<TagTranslations>` |  |  |
 
 ### 事件
@@ -176,7 +176,7 @@ readOnly 只锁关闭钮：叉留在原地但按不动，标签本身不置灰�
 
 | 按键 | 生效条件 | 行为 |
 | --- | --- | --- |
-| `Enter` / `Space` | focus 在 close-trigger 上，且 closable 且未禁用、非只读 | 收起标签并通知 open=false；关闭钮是原生 button，这两个键由平台翻成 click |
+| `Enter` / `Space` | focus 在 close-trigger 上，且 closable 且未禁用、非只读 | 收起标签并通知 open=false；关闭按钮是原生 button，这两个键由平台转换为 click |
 
 ### ARIA
 

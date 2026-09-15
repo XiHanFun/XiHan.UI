@@ -14,34 +14,34 @@ export interface TagOpenChangeDetails {
   open: boolean
 }
 
-/** 读屏用的文案，默认英文。 */
+/** 读屏文案，默认英文。 */
 export interface TagTranslations {
   /**
-   * 关闭钮的 aria-label：钮里通常只有一个叉，读屏念不出摘掉的是哪一个标签。
-   * 缺省 'Delete'，与 select、tags-input 里同一个动作用同一个词。
+   * 关闭按钮的 aria-label：按钮内通常只有一个叉，读屏无法朗读移除的是哪一个标签。
+   * 默认 'Delete'，与 select、tags-input 中同一动作使用同一个词。
    */
   close: string
 }
 
 export interface TagSchema extends MachineSchema {
   props: {
-    /** 形态：solid / subtle / outline / ghost，决定颜色怎么用。 */
+    /** 形态：solid / subtle / outline / ghost，决定颜色的使用方式。 */
     variant?: TagVariant
-    /** 语气：brand / neutral / success / warning / danger / info，决定用哪族颜色。 */
+    /** 语气：brand / neutral / success / warning / danger / info，决定使用哪族颜色。 */
     tone?: Tone
     /** 尺寸：sm / md / lg。 */
     size?: Size
-    /** 是否给出关闭钮，默认 false。false 时该钮同时被禁用与收起。 */
+    /** 是否提供关闭按钮，默认 false。false 时该按钮同时被禁用与收起。 */
     closable?: boolean
-    /** 标签禁用：关闭钮不可用，点击不改显隐。 */
+    /** 标签禁用：关闭按钮不可用，点击不改变显隐。 */
     disabled?: boolean
-    /** 只读：关闭钮留在原地但按不动，标签本身不置灰。 */
+    /** 只读：关闭按钮保留位置但不可按下，标签本身不置灰。 */
     readOnly?: boolean
-    /** 受控显隐；缺省该 prop 即非受控。 */
+    /** 受控显隐；未提供该 prop 即非受控。 */
     open?: boolean
     /** 非受控初始显隐，默认显示。 */
     defaultOpen?: boolean
-    /** open 变化意图回调；受控时是唯一出口，非受控随内部转移一并通知。 */
+    /** open 变化意图回调；受控时是唯一出口，非受控时随内部转移一并通知。 */
     onOpenChange?: (details: TagOpenChangeDetails) => void
     translations?: Partial<TagTranslations>
   }
