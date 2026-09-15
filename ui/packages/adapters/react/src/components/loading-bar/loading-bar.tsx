@@ -17,17 +17,17 @@ import { useLoadingBar } from './use-loading-bar'
 
 type LoadingBarProps = LoadingBarSchema['props']
 
-/** 函数式 children 的载荷：条子的阶段、进度值、是否露面与是否不确定进度。 */
+/** 函数式 children 的载荷：进度条的阶段、进度值、是否显示与是否不确定进度。 */
 export type LoadingBarRootSlotProps = Pick<LoadingBarApi, 'phase' | 'value' | 'visible' | 'indeterminate'>
 
-/** 根上自有的那些取值；defaultValue 与原生的同名属性含义不同，由这里接管。 */
+/** 根上自有的取值；defaultValue 与原生的同名属性含义不同，由这里接管。 */
 type RootElementProps = Omit<ComponentPropsWithRef<'div'>, 'children' | 'defaultValue'>
 
 export interface XhLoadingBarRootProps extends RootElementProps {
   value?: number
   defaultValue?: number
   loading?: boolean
-  /** 条子厚度：数字按像素，字符串按任意 CSS 长度。 */
+  /** 进度条厚度：数字按像素，字符串按任意 CSS 长度。 */
   height?: string | number
   tone?: Tone
   trickle?: boolean
@@ -92,14 +92,14 @@ export function XhLoadingBarTrack({ children, ...rest }: XhLoadingBarTrackProps)
 }
 
 export interface XhLoadingBarRangeProps extends ComponentPropsWithRef<'div'> {}
-/** 宽度与颜色由连接层写进内联样式。 */
+/** 宽度与颜色由连接层写入内联样式。 */
 export function XhLoadingBarRange({ children, ...rest }: XhLoadingBarRangeProps): ReactNode {
   const ctx = useLoadingBarContext()
   return <div {...mergeReactProps(ctx.api.getRangeProps() as Record<string, unknown>, rest as Record<string, unknown>)}>{children}</div>
 }
 
 export interface XhLoadingBarPegProps extends ComponentPropsWithRef<'div'> {}
-/** 进度段末端那道亮边，纯装饰；不渲染它时条子照旧成立。 */
+/** 进度段末端的亮边，纯装饰；不渲染它时进度条照常成立。 */
 export function XhLoadingBarPeg({ children, ...rest }: XhLoadingBarPegProps): ReactNode {
   const ctx = useLoadingBarContext()
   return <div {...mergeReactProps(ctx.api.getPegProps() as Record<string, unknown>, rest as Record<string, unknown>)}>{children}</div>

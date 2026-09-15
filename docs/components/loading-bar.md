@@ -101,17 +101,17 @@ tone 只换进度段的底色（取柔和档）；条子本身是 fixed，这里
 
 | 属性 | 类型 | 必填 | 说明 |
 | --- | --- | --- | --- |
-| `value` | `number` |  | 受控进度值（0-100）。给了它就是确定进度：宽度照它显示，内部爬升停止。 |
-| `defaultValue` | `number` |  | 非受控初值，缺省 0。 |
-| `loading` | `boolean` |  | 加载开关：true 开始，false 结束（冲到 100 再淡出归零）。只由宿主写入，无配套回调。 |
-| `height` | `string \| number` |  | 条子厚度：数字按像素，字符串按任意 CSS 长度。缺省 2px。 |
-| `tone` | `Tone` |  | 语气：brand / neutral / success / warning / danger / info，决定进度段用哪族颜色。要用别的颜色改皮肤槽 --xh-loading-bar-range。 |
-| `trickle` | `boolean` |  | 不确定进度时自行往前爬，默认开。关掉即停在起步值等宿主收尾。 |
-| `trickleSpeed` | `number` |  | 爬升节拍毫秒，默认 200；&lt;=0 或非有限数等同于关掉爬升。 |
-| `minimum` | `number` |  | 起步值，默认 8：开始加载时先跳到这里。 |
-| `fadeDuration` | `number` |  | 冲到 100 之后留给淡出的窗口毫秒，默认 200。窗口走完才归零并收起。 |
+| `value` | `number` |  | 受控进度值（0-100）。提供后即为确定进度：宽度按它显示，内部爬升停止。 |
+| `defaultValue` | `number` |  | 非受控初值，默认 0。 |
+| `loading` | `boolean` |  | 加载开关：true 开始，false 结束（到达 100 后淡出归零）。只由宿主写入，无配套回调。 |
+| `height` | `string \| number` |  | 进度条厚度：数字按像素，字符串按任意 CSS 长度。默认 2px。 |
+| `tone` | `Tone` |  | 语气：brand / neutral / success / warning / danger / info，决定进度段使用哪族颜色。需要其他颜色时修改皮肤槽 --xh-loading-bar-range。 |
+| `trickle` | `boolean` |  | 不确定进度时自行向前爬升，默认开启。关闭则停在起步值等待宿主收尾。 |
+| `trickleSpeed` | `number` |  | 爬升节拍毫秒，默认 200；&lt;=0 或非有限数等同于关闭爬升。 |
+| `minimum` | `number` |  | 起步值，默认 8：开始加载时先跳到该值。 |
+| `fadeDuration` | `number` |  | 到达 100 之后留给淡出的窗口毫秒，默认 200。窗口结束才归零并收起。 |
 | `translations` | `Partial<LoadingBarTranslations>` |  |  |
-| `onValueChange` | `(details: LoadingBarValueChangeDetails) => void` |  | 进度值变化。不确定进度下每爬一步、冲到 100、归零各通知一次。 |
+| `onValueChange` | `(details: LoadingBarValueChangeDetails) => void` |  | 进度值变化。不确定进度下每爬升一步、到达 100、归零各通知一次。 |
 
 ### 事件
 
@@ -154,12 +154,12 @@ tone 只换进度段的底色（取柔和档）；条子本身是 fixed，这里
 | --- | --- | --- |
 | `phase` | `LoadingBarPhase` |  |
 | `value` | `number` | 当前显示的进度值（0-100，已夹取），也是 range 的宽度百分比。 |
-| `visible` | `boolean` | 条子是否露面：idle 之外都露面。 |
-| `indeterminate` | `boolean` | 不确定进度：没给 value，宽度自行爬升，不输出 aria-valuenow。 |
+| `visible` | `boolean` | 进度条是否显示：idle 之外都显示。 |
+| `indeterminate` | `boolean` | 不确定进度：未提供 value，宽度自行爬升，不输出 aria-valuenow。 |
 | `getRootProps` | `() => T['element']` |  |
 | `getTrackProps` | `() => T['element']` |  |
 | `getRangeProps` | `() => T['element']` |  |
-| `getPegProps` | `() => T['element']` | 进度段末端那道亮边。纯装饰，作者不渲染它时条子照旧成立。 |
+| `getPegProps` | `() => T['element']` | 进度段末端的亮边。纯装饰，作者不渲染它时进度条照常成立。 |
 
 ## 无障碍
 
