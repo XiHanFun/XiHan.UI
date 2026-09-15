@@ -1,4 +1,4 @@
-// 外部触发的输入会话 | 输入部件平时收起，按「添加」才露面并聚焦；打字时给候选，选中即落标签，失焦按 blur-behavior 收尾
+// 外部触发的输入会话 | 输入部件平时收起，按添加后才显示并聚焦；输入时提供候选，选中即落下标签，失焦按 blur-behavior 收尾
 import type { ReactNode } from "react";
 import { PlusIcon } from "@xihan-ui/icons";
 import {

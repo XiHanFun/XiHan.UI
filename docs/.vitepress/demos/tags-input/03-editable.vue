@@ -1,4 +1,4 @@
-<!-- 就地编辑 | editable 打开后双击任一标签改写它：Enter 提交、Escape 撤销，改成空白等于删掉这个标签 -->
+<!-- 就地编辑 | editable 开启后双击任一标签改写它：Enter 提交、Escape 撤销，改为空白等于删除该标签 -->
 <script setup lang="ts">
 import {
   XhTagsInputControl,

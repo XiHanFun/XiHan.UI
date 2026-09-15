@@ -1,4 +1,4 @@
-// 入库前统一改写 | 给了 value 就由宿主说了算：组件只发变更意图，写回什么形状在这里定
+// 入库前统一改写 | 提供 value 后由宿主决定：组件只发变更意图，写回什么形状在这里决定
 import type { ReactNode } from "react";
 import {
   XhTagsInputControl,

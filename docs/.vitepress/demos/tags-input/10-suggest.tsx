@@ -1,4 +1,4 @@
-// 候选词一键添加 | 根插槽给出 addValue 与 atMax：输入框之外再开一条加标签的路，上限一样管得住
+// 候选词一键添加 | 根插槽给出 addValue 与 atMax：输入框之外再开一条添加标签的路径，上限同样受控
 import type { ReactNode } from "react";
 import {
   XhButton,

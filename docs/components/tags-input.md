@@ -12,7 +12,7 @@
 
 ## 用法
 
-框里打字按 Enter 落一个标签；标签由作者按当前值渲染，每个标签自带 value 标识身份，预览与删除钮就是库里的 tag
+在框中输入后按 Enter 落下一个标签；标签由作者按当前值渲染，每个标签自带 value 标识身份，预览与删除按钮就是库内的 tag
 
 <XhDemo src="tags-input/01-basic" />
 
@@ -26,31 +26,31 @@
 
 ### 上限与粘贴拆分
 
-add-on-paste 让粘进来的一串按分隔符拆成多个标签；顶到 max 后再打再粘都进不去
+add-on-paste 使粘贴进来的一串按分隔符拆为多个标签；达到 max 后再输入再粘贴都不能加入
 
 <XhDemo src="tags-input/02-max-paste" />
 
 ### 就地编辑
 
-editable 打开后双击任一标签改写它：Enter 提交、Escape 撤销，改成空白等于删掉这个标签
+editable 开启后双击任一标签改写它：Enter 提交、Escape 撤销，改为空白等于删除该标签
 
 <XhDemo src="tags-input/03-editable" />
 
 ### 禁用与只读
 
-disabled 整个控件退出 Tab 序列、标签一起置灰；read-only 仍可聚焦浏览，但加不进也删不掉，删除钮留在原地按不动、标签不置灰
+disabled 整个控件退出 Tab 序列、标签一起置灰；read-only 仍可聚焦浏览，但不能加入也不能删除，删除按钮留在原地不可按下、标签不置灰
 
 <XhDemo src="tags-input/04-disabled-readonly" />
 
 ### 变体
 
-variant 只改控件的颜色槽位，标签的形态按控件的面派：subtle 控件里是描边标签，其余是淡底标签；落标签与删标签的行为三档一致
+variant 只改变控件的颜色槽位，标签的形态按控件的面派生：subtle 控件中是描边标签，其余是淡底标签；落下标签与删除标签的行为三档一致
 
 <XhDemo src="tags-input/05-variant" />
 
 ### 颜色
 
-tone 决定用哪族颜色，与 variant 正交；这里固定 outline 只看语气的差别
+tone 决定使用哪族颜色，与 variant 正交；这里固定 outline 只查看语气的差别
 
 <XhDemo src="tags-input/06-tone" />
 
@@ -62,31 +62,31 @@ tone 决定用哪族颜色，与 variant 正交；这里固定 outline 只看语
 
 ### 随表单提交
 
-写了 name 与 hidden-input 才参与提交，整份标签按断词符拼成一串；框里没内容时回车留给表单
+写了 name 与 hidden-input 才参与提交，整份标签按断词符拼接为一串；框中没有内容时回车留给表单
 
 <XhDemo src="tags-input/08-form" />
 
 ### 入库前统一改写
 
-给了 value 就由宿主说了算：组件只发变更意图，写回什么形状在这里定
+提供 value 后由宿主决定：组件只发变更意图，写回什么形状在这里决定
 
 <XhDemo src="tags-input/09-normalize" />
 
 ### 候选词一键添加
 
-根插槽给出 addValue 与 atMax：输入框之外再开一条加标签的路，上限一样管得住
+根插槽给出 addValue 与 atMax：输入框之外再开一条添加标签的路径，上限同样受控
 
 <XhDemo src="tags-input/10-suggest" />
 
 ### 外部触发的输入会话
 
-输入部件平时收起，按「添加」才露面并聚焦；打字时给候选，选中即落标签，失焦按 blur-behavior 收尾
+输入部件平时收起，按添加后才显示并聚焦；输入时提供候选，选中即落下标签，失焦按 blur-behavior 收尾
 
 <XhDemo src="tags-input/11-custom-input" />
 
-### 标签用对象
+### 标签使用对象
 
-组件里存的是标识那一份，显示哪一份由作者定：条目文本渲染 label，提交仍按标识拼串
+组件中保存的是标识，显示哪一份由作者决定：条目文本渲染 label，提交仍按标识拼接
 
 <XhDemo src="tags-input/12-option-value" />
 

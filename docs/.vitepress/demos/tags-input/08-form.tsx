@@ -1,4 +1,4 @@
-// 随表单提交 | 写了 name 与 hidden-input 才参与提交，整份标签按断词符拼成一串；框里没内容时回车留给表单
+// 随表单提交 | 写了 name 与 hidden-input 才参与提交，整份标签按断词符拼接为一串；框中没有内容时回车留给表单
 import type { FormEvent, ReactNode } from "react";
 import {
   XhButton,
