@@ -90,7 +90,7 @@ loading 期间容器报 aria-busy，翻成 false 后整块收起，位置让给�
 
 | 属性 | 类型 | 必填 | 说明 |
 | --- | --- | --- | --- |
-| `animation` | `SkeletonAnimation` |  | 动效档，默认 'shimmer'；缺省档不输出 data-animation。 |
+| `animation` | `SkeletonAnimation` |  | 动效档，默认 'shimmer'；默认档不输出 data-animation。 |
 | `loading` | `boolean` |  | 是否还在加载，默认 true。 |
 | `shape` | `SkeletonShape` |  | 容器内骨架条的默认形状，默认 'text'。 |
 

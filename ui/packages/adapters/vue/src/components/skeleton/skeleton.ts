@@ -11,7 +11,7 @@ import { defineComponent, h } from 'vue'
 import { provideSkeleton, useSkeletonContext } from './context'
 import { useSkeleton } from './use-skeleton'
 
-/** 骨架容器：加载期间报 aria-busy，加载结束后整块收起。 */
+/** 骨架容器：加载期间报告 aria-busy，加载结束后整块收起。 */
 export const XhSkeletonRoot = defineComponent({
   name: 'XhSkeletonRoot',
   props: {
@@ -26,7 +26,7 @@ export const XhSkeletonRoot = defineComponent({
   },
 })
 
-/** 单根骨架条：纯装饰，不进无障碍树；形状缺省跟容器，给了 shape 就按自己的来。 */
+/** 单根骨架条：纯装饰，不进入无障碍树；形状默认跟随容器，提供 shape 时按自己的形状。 */
 export const XhSkeletonItem = defineComponent({
   name: 'XhSkeletonItem',
   props: {

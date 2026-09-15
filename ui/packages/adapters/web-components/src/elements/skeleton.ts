@@ -17,24 +17,24 @@ const BOOLEAN_CONVERTER = { fromAttribute: (v: string | null) => (v === null ? u
 /** 允许的形状名，作者写错时落回容器的默认值。 */
 const SHAPES: readonly string[] = ['text', 'circle', 'rect']
 
-/** 读单根骨架条自报的形状。 */
+/** 读取单根骨架条声明的形状。 */
 function itemShape(el: HTMLElement): SkeletonShape | undefined {
   const raw = el.getAttribute('shape')
   return raw != null && SHAPES.includes(raw) ? raw as SkeletonShape : undefined
 }
 
 /**
- * `<xh-skeleton>` —— 骨架屏宿主，无状态机，把 connectSkeleton 产出的属性打到角色节点上。
+ * `<xh-skeleton>`：骨架屏宿主，无状态机，把 connectSkeleton 产出的属性接到角色节点上。
  *
- * 骨架条自报形状：在 item 节点上写 `shape`。运行期改写这个属性不触发重新接线，
+ * 骨架条声明形状：在 item 节点上写 `shape`。运行期改写该属性不触发重新接线，
  * 需作者自行 requestUpdate。
  *
  * @customElement xh-skeleton
- * @attr {boolean} loading - 是否还在加载，写 "false" 结束加载态
+ * @attr {boolean} loading - 是否仍在加载，写 "false" 结束加载态
  * @attr {'text'|'circle'|'rect'} shape - 容器内骨架条的默认形状
- * @attr {'shimmer'|'pulse'|'none'} animation - 动效档，缺省 shimmer
+ * @attr {'shimmer'|'pulse'|'none'} animation - 动效档，默认 shimmer
  * @csspart root - 骨架容器，加载期间带 aria-busy，结束后带 hidden，承载 data-animation
- * @csspart item - 单根骨架条，加载期间带 aria-hidden，不进无障碍树
+ * @csspart item - 单根骨架条，加载期间带 aria-hidden，不进入无障碍树
  */
 export class XhSkeletonElement extends XhElement {
   static override partContract = { anatomy: skeletonAnatomy, meta: skeletonMeta }
