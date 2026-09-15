@@ -26,30 +26,30 @@ const STRING_CONVERTER = { fromAttribute: (v: string | null) => v ?? undefined }
 const NUMBER_CONVERTER = { fromAttribute: (v: string | null) => (v == null || v === '' ? undefined : Number(v)) }
 
 /**
- * `<xh-message-feed>` —— Light-DOM 行为宿主：作者写 root/viewport/list/item 等角色节点，
- * 元素把 connectMessageFeed 的产出打上去。
+ * `<xh-message-feed>`：Light-DOM 行为宿主：作者写 root / viewport / list / item 等角色节点，
+ * 元素把 connectMessageFeed 的产出接上。
  *
  * 条目的身份与序号写在作者自己的节点上：`item-id`、`item-index`、可选的 `item-role`
- * 与 `item-streaming`。**不用 id**——那是 HTML 全局属性，写上去会留在 DOM 里，
- * 而 Vue 侧的同名 prop 不会，两端就分叉了。
+ * 与 `item-streaming`。不使用 id：那是 HTML 全局属性，写上后会保留在 DOM 中，
+ * 而 Vue 侧的同名 prop 不会，两端就会分叉。
  *
- * 消息内容一律由作者写，元素不替作者生成任何节点。
+ * 消息内容一律由作者编写，元素不替作者生成任何节点。
  *
  * @customElement xh-message-feed
- * @attr {number} count - 消息总数，aria-setsize 取它；不从 DOM 数
- * @attr {string} status - 这一轮的运行态：idle / submitted / streaming / error
- * @attr {number} threshold - 距底多少 px 视为在底
- * @attr {boolean} loop - 走到首尾是否回绕，默认关
+ * @attr {number} count - 消息总数，aria-setsize 取它；不从 DOM 统计
+ * @attr {string} status - 本轮的运行态：idle / submitted / streaming / error
+ * @attr {number} threshold - 距底部多少 px 视为在底部
+ * @attr {boolean} loop - 到达首尾是否回绕，默认关闭
  * @attr {string} size - 尺寸：sm / md / lg
- * @fires stick-change - 粘底状态变化；detail 为 `{ atBottom: boolean, sticking: boolean }`
+ * @fires stick-change - 贴底状态变化；detail 为 `{ atBottom: boolean, sticking: boolean }`
  * @fires item-focus - 锚点变化；detail 为 `{ id: string | null }`
  * @csspart root - 组件根容器，承载容器兜底的 Tab 位与键盘模型
  * @csspart viewport - 滚动容器，只有几何
  * @csspart list - 内容包裹层，条目必须是它的直接子节点
  * @csspart item - 一条消息，role=article + aria-posinset / aria-setsize
- * @csspart item-label - 作者名那一格，渲了它就成为该条消息的可访问名
+ * @csspart item-label - 作者名所在的格，渲染后即成为该条消息的可访问名
  * @csspart scroll-to-end-trigger - 回到底部
- * @csspart live-region - 视觉隐藏的原子播报区，一份会话只该有一个
+ * @csspart live-region - 视觉隐藏的原子播报区，一份会话只应有一个
  */
 export class XhMessageFeedElement extends XhElement {
   static override partContract = { anatomy: messageFeedAnatomy, meta: messageFeedMeta }
@@ -116,7 +116,7 @@ export class XhMessageFeedElement extends XhElement {
     svc.refs.set('getContentEl', () => this.getPart('list'))
   }
 
-  /** 一条消息的自报家门，全部取自作者写在节点上的 item-* 属性。 */
+  /** 一条消息的声明，全部取自作者写在节点上的 item-* 属性。 */
   private itemProps(el: HTMLElement, fallbackIndex: number): MessageFeedItemProps {
     const index = Number(el.getAttribute('item-index'))
     const role = el.getAttribute('item-role')
@@ -130,7 +130,7 @@ export class XhMessageFeedElement extends XhElement {
     }
   }
 
-  /** 滚到底部并恢复粘附。机器要等 hostConnected 才建，还没进 DOM 时如实什么都不做。 */
+  /** 滚动到底部并恢复粘附。状态机在 hostConnected 后才建立，尚未进入 DOM 时不做任何处理。 */
   scrollToBottom(): void {
     const service = this.ctrl.service as Service<MessageFeedSchema> | undefined
     service?.send({ type: 'SCROLL_TO_BOTTOM' })

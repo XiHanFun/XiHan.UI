@@ -118,10 +118,10 @@ stick-change 报到底，宿主据此去取下一页；先往上翻一段再滚�
 
 | 属性 | 类型 | 必填 | 说明 |
 | --- | --- | --- | --- |
-| `count` | `number` |  | 消息总数，由宿主声明，不从 DOM 数；aria-setsize 取它。 |
-| `status` | `MessageFeedStatus` |  | 这一轮的运行态，只落 data-state，机器不读它。 |
-| `threshold` | `number` |  | 距底多少 px 视为在底，缺省用粘底原语的默认值。 |
-| `loop` | `boolean` |  | 走到首尾是否回绕，默认 false——会话是线性的。 |
+| `count` | `number` |  | 消息总数，由宿主声明，不从 DOM 统计；aria-setsize 取它。 |
+| `status` | `MessageFeedStatus` |  | 本轮的运行态，只写 data-state，状态机不读取它。 |
+| `threshold` | `number` |  | 距底部多少 px 视为在底部，默认使用贴底原语的默认值。 |
+| `loop` | `boolean` |  | 到达首尾是否回绕，默认 false：会话是线性的。 |
 | `size` | `Size` |  | 尺寸：sm / md / lg。 |
 | `translations` | `Partial<MessageFeedTranslations>` |  |  |
 | `onStickChange` | `(details: MessageFeedStickChangeDetails) => void` |  |  |
@@ -133,7 +133,7 @@ stick-change 报到底，宿主据此去取下一页；先往上翻一段再滚�
 
 | 事件 | 载荷 | 说明 |
 | --- | --- | --- |
-| `stick-change` | `MessageFeedStickChangeDetails` | 粘底状态变化；detail 为 `{ atBottom: boolean, sticking: boolean }` |
+| `stick-change` | `MessageFeedStickChangeDetails` | 贴底状态变化；detail 为 `{ atBottom: boolean, sticking: boolean }` |
 | `item-focus` | `MessageFeedItemFocusDetails` | 锚点变化；detail 为 `{ id: string \| null }` |
 
 ### 插槽
@@ -169,10 +169,10 @@ stick-change 报到底，宿主据此去取下一页；先往上翻一段再滚�
 | `atBottom` | `boolean` |  |
 | `sticking` | `boolean` |  |
 | `focusedId` | `string \| null` | roving tabindex 的锚点。 |
-| `showScrollToEndTrigger` | `boolean` | 是否显示回到底部按钮：只看在不在底，不看粘附意图。 |
+| `showScrollToEndTrigger` | `boolean` | 是否显示回到底部按钮：只判断是否在底部，不判断贴附意图。 |
 | `scrollToBottom` | `() => void` |  |
-| `scrollToItem` | `(id: string) => void` | 把某条消息滚进可视区；那条不在活 DOM 里时什么都不做。 |
-| `focusItem` | `(id: string) => void` | 把焦点落到某条消息上；那条不在活 DOM 里时什么都不做。 |
+| `scrollToItem` | `(id: string) => void` | 把某条消息滚进可视区；该条不在 DOM 中时不做任何事。 |
+| `focusItem` | `(id: string) => void` | 把焦点落到某条消息上；该条不在 DOM 中时不做任何事。 |
 | `getRootProps` | `() => T['element']` |  |
 | `getViewportProps` | `() => T['element']` |  |
 | `getListProps` | `() => T['element']` |  |

@@ -19,12 +19,12 @@ export function useMessageFeedContext(): MessageFeedContext {
   return ctx
 }
 
-/** 条目把自己的身份传给 item-label：标签自己不必再写一遍 id。 */
+/** 条目把自己的身份传给 item-label：标签自身不必再写一遍 id。 */
 export interface MessageFeedItemContext {
   id: string
   /**
-   * 登记一份渲出来的 item-label，返回撤销登记的函数。
-   * 条目的可访问名据此决定指过去还是用文案兜底——指向一个没渲出来的 id 会让读屏读空。
+   * 登记一份已渲染的 item-label，返回撤销登记的函数。
+   * 条目的可访问名据此决定指向它还是使用文案兜底：指向一个未渲染的 id 会使读屏读空。
    */
   registerLabel: () => () => void
 }

@@ -11,12 +11,12 @@ import { inject, provide } from 'vue'
 
 const KEY: InjectionKey<MessageFeedContext> = Symbol.for('xh-message-feed')
 
-/** 条目把自己的身份传给 item-label：标签自己不必再写一遍 id。 */
+/** 条目把自己的身份传给 item-label：标签自身不必再写一遍 id。 */
 export interface MessageFeedItemContext {
   id: () => string
   /**
-   * 这条消息里作者渲出来的 item-label 份数，由标签自己登记。
-   * 条目的可访问名据此决定指过去还是用文案兜底——指向一个没渲出来的 id 会让读屏读空。
+   * 该条消息中作者渲染的 item-label 数量，由标签自行登记。
+   * 条目的可访问名据此决定指向它还是使用文案兜底：指向一个未渲染的 id 会使读屏读空。
    */
   labelCount: Ref<number>
 }
