@@ -1,6 +1,6 @@
 # Avatar 头像 <Badge type="info" text="alpha" />
 
-一个人或一个组织的圆形标识：优先显示图片，取不到就回退到文字或图标。
+表示一个人或一个组织的圆形标识：优先显示图片，无法加载时回退到文字或图标。
 
 <div class="xh-resource-links">
   <a href="https://github.com/XiHanFun/XiHan.UI/tree/dev/ui/packages/engine/headless/src/avatar" target="_blank" rel="noreferrer">Headless</a>
@@ -70,33 +70,33 @@ tone 换淡底与回退字的配色组；不写 tone 就是中性缺省，直径
 
 ### 何时使用
 
-- 列表、评论、成员选择里标识身份。
+- 在列表、评论、成员选择中标识身份。
 
 ### 何时不用
 
-- 标识的是一个功能或分类：用[图标块](./icon-wrapper)。
-- 就是一张图：用[图片](./image)。
+- 标识功能或分类时，使用[图标块](./icon-wrapper)。
+- 只是展示一张图片时，使用[图片](./image)。
 
 ### 特性
 
-- 加载状态会回调；失败时自动落到 `fallback`。
-- 直径与配色都是组件令牌，可以逐实例覆盖。
-- `tone` 换淡底与回退字的配色族；没写它时用中性缺省。
-- 状态点与角标由作者挂在外面，组件不预设。
+- 加载状态通过回调通知；失败时自动显示 `fallback`。
+- 直径与配色都是组件令牌，可逐实例覆盖。
+- `tone` 切换淡底与回退文字的配色族；未设置时使用中性默认值。
+- 状态点与角标由作者挂在外部，组件不预设。
 
 ### 组合
 
-- 成组时套[头像组](./avatar-group)；角标用[徽标](./badge)。
+- 成组展示时使用[头像组](./avatar-group)；角标使用[徽标](./badge)。
 
 ### 最佳实践
 
-- 回退内容要有意义：姓名缩写比一个通用小人图标信息量大得多。
-- `alt` 写人名，别写"头像"。
+- 回退内容应有意义：姓名缩写比通用人形图标携带更多信息。
+- `alt` 写人名，不写“头像”。
 
 ### 反模式
 
-- 只靠图片、不给回退：图挂了就是一个空洞。
-- 用头像颜色编码身份而不给文字。
+- 只提供图片、不提供回退：图片失效后会留下空洞。
+- 只用头像颜色编码身份而不提供文字。
 
 ## API 参考
 
@@ -195,7 +195,7 @@ tone 换淡底与回退字的配色组；不写 tone 就是中性缺省，直径
 | `--xh-avatar-fg` | `root` | `color` | `default`<br>`tone` | `--xh-_tone-fg`<br>`--xh-fg-muted` | avatar 的 root 部件 color 覆盖槽。 |
 | `--xh-avatar-font-size` | `root` | `font-size` | `default`<br>`size=lg`<br>`size=sm` | `--xh-control-caption-lg`<br>`--xh-control-caption-sm`<br>`--xh-text-secondary-size` | avatar 的 root 部件 font-size 覆盖槽。 |
 | `--xh-avatar-font-weight` | `root` | `font-weight` | `default` | `--xh-font-weight-medium` | avatar 的 root 部件 font-weight 覆盖槽。 |
-| `--xh-avatar-radius` | `root` | `border-radius` | `default` | `--xh-shape-pill` | avatar 的 root 部件 border-radius 覆盖槽。 |
+| `--xh-avatar-radius` | `root` | `border-radius` | `default` | `--xh-shape-circle` | avatar 的 root 部件 border-radius 覆盖槽。 |
 | `--xh-avatar-size` | `root` | `block-size`<br>`inline-size` | `default`<br>`size=lg`<br>`size=sm` | `--xh-control-h-lg`<br>`--xh-control-h-md`<br>`--xh-control-h-sm` | avatar 的 root 部件 block-size、inline-size 覆盖槽。 |
 <!-- xh-component-tokens:end -->
 
