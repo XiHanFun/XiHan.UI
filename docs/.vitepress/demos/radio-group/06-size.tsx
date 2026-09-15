@@ -1,4 +1,4 @@
-// 尺寸 | size 改条目间距与字号，不写即缺省中档
+// 尺寸 | size 改变条目间距与字号，不写即默认中档
 import type { ReactNode } from "react";
 import { XhRadioGroupRoot } from "@xihan-ui/react";
 

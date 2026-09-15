@@ -1,4 +1,4 @@
-<!-- 尺寸 | size 改条目间距与字号，不写即缺省中档 -->
+<!-- 尺寸 | size 改变条目间距与字号，不写即默认中档 -->
 <script setup lang="ts">
 import { XhRadioGroupRoot } from "@xihan-ui/vue";
 

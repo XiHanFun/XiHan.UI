@@ -26,7 +26,7 @@
 
 ### 受控
 
-传了 value 就由宿主说了算；值可以是 null，表示一项都没选中
+传入 value 后由宿主决定；值可以是 null，表示没有任何一项选中
 
 <XhDemo src="radio-group/02-controlled" />
 
@@ -38,25 +38,25 @@ orientation 只影响排版与 aria-orientation，方向键四个方向照样都
 
 ### 禁用
 
-单项禁用后点不动，方向键也跳过它；整组禁用则每一项都跟着禁用
+单项禁用后不可点击，方向键也跳过它；整组禁用则每一项都随之禁用
 
 <XhDemo src="radio-group/04-disabled" />
 
 ### 颜色
 
-tone 决定选中圆点用哪族颜色，六种语气各一组
+tone 决定选中圆点使用哪族颜色，六种语气各一组
 
 <XhDemo src="radio-group/05-tone" />
 
 ### 尺寸
 
-size 改条目间距与字号，不写即缺省中档
+size 改变条目间距与字号，不写即默认中档
 
 <XhDemo src="radio-group/06-size" />
 
 ### 数据驱动
 
-自家字段叫什么由数据定，映射成条目的值、文本与禁用即可
+数据字段的命名由数据决定，映射为条目的值、文本与禁用即可
 
 <XhDemo src="radio-group/07-options" />
 

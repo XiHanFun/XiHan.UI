@@ -1,4 +1,4 @@
-// 数据驱动 | 自家字段叫什么由数据定，映射成条目的值、文本与禁用即可
+// 数据驱动 | 数据字段的命名由数据决定，映射为条目的值、文本与禁用即可
 import type { ReactNode } from "react";
 import { XhRadioGroupRoot } from "@xihan-ui/react";
 import { useMemo, useState } from "react";

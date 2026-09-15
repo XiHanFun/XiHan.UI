@@ -1,4 +1,4 @@
-// 语气 | tone 决定选中圆点用哪族颜色，六种语气各一组
+// 语气 | tone 决定选中圆点使用哪族颜色，六种语气各一组
 import type { ReactNode } from "react";
 import { XhRadioGroupRoot } from "@xihan-ui/react";
 

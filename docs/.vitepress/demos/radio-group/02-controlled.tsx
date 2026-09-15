@@ -1,4 +1,4 @@
-// 受控 | 传了 value 就由宿主说了算；值可以是 null，表示一项都没选中
+// 受控 | 传入 value 后由宿主决定；值可以是 null，表示没有任何一项选中
 import type { ReactNode } from "react";
 import {
   XhRadioGroupItem,
