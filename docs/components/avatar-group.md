@@ -1,6 +1,6 @@
 # AvatarGroup 头像组 <Badge type="info" text="alpha" />
 
-把若干头像叠成一排，超出上限的收成一个计数。
+将若干头像叠成一排，超出上限的部分收为一个计数。
 
 <div class="xh-resource-links">
   <a href="https://github.com/XiHanFun/XiHan.UI/tree/dev/ui/packages/engine/headless/src/avatar-group" target="_blank" rel="noreferrer">Headless</a>
@@ -46,31 +46,31 @@
 
 ### 何时使用
 
-- 表示"这几个人参与了这件事"，且个体身份不需要逐一确认。
+- 表示一组参与者，且不需要逐一确认个体身份。
 
 ### 何时不用
 
-- 需要逐个识别或操作：排成[列表](./list)。
-- 只有一个人。
+- 需要逐个识别或操作时，排成[列表](./list)。
+- 只有一个人时，直接使用头像。
 
 ### 特性
 
-- `max` 决定显示几个，其余落进 `overflow-item` 计数。
-- 尺寸写在组上，组内头像一并跟着换。
+- `max` 决定显示数量，其余进入 `overflow-item` 计数。
+- 尺寸写在组上，组内头像一并跟随。
 
 ### 组合
 
-- 里面放[头像](./avatar)；溢出计数点开可以是一张[气泡卡片](./popover)里的完整名单。
+- 组内放置[头像](./avatar)；溢出计数可以打开一张[气泡卡片](./popover)显示完整名单。
 
 ### 最佳实践
 
-- 溢出计数要能点开看到完整名单。
-- 每个头像都配[文字提示](./tooltip)给出姓名。
+- 溢出计数应能打开查看完整名单。
+- 每个头像配[文字提示](./tooltip)给出姓名。
 
 ### 反模式
 
-- 叠得太密以致看不出有几个人。
-- 上限设得太大，一排头像占满整行。
+- 叠放过密，无法分辨人数。
+- 上限过大，一排头像占满整行。
 
 ## API 参考
 
@@ -125,7 +125,7 @@
 | `--xh-avatar-group-overflow-item-bg` | `overflow-item` | `background` | `default` | `--xh-bg-muted` | avatar-group 的 overflow-item 部件 background 覆盖槽。 |
 | `--xh-avatar-group-overflow-item-fg` | `overflow-item` | `color` | `default` | `--xh-fg-muted` | avatar-group 的 overflow-item 部件 color 覆盖槽。 |
 | `--xh-avatar-group-overlap` | `root` | `margin-inline-start` | `default`<br>`size=lg`<br>`size=sm` | `--xh-space-2`<br>`--xh-space-2_5`<br>`--xh-space-3` | avatar-group 的 root 部件 margin-inline-start 覆盖槽。 |
-| `--xh-avatar-group-radius` | `overflow-item` | `border-radius` | `default` | `--xh-shape-pill` | avatar-group 的 overflow-item 部件 border-radius 覆盖槽。 |
+| `--xh-avatar-group-radius` | `overflow-item` | `border-radius` | `default` | `--xh-shape-circle` | avatar-group 的 overflow-item 部件 border-radius 覆盖槽。 |
 | `--xh-avatar-group-ring` | `root` | `box-shadow` | `default` | `--xh-bg-surface` | avatar-group 的 root 部件 box-shadow 覆盖槽。 |
 | `--xh-avatar-group-size` | `overflow-item`<br>`root` | `--xh-avatar-size`<br>`block-size`<br>`inline-size` | `default`<br>`size=lg`<br>`size=sm` | `--xh-control-h-lg`<br>`--xh-control-h-md`<br>`--xh-control-h-sm` | avatar-group 的 overflow-item、root 部件 --xh-avatar-size、block-size、inline-size 覆盖槽。 |
 <!-- xh-component-tokens:end -->

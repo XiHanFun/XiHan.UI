@@ -84,7 +84,7 @@
     justify-content: center;
     inline-size: var(--xh-_avatar-group-size);
     block-size: var(--xh-_avatar-group-size);
-    border-radius: var(--xh-avatar-group-radius, var(--xh-shape-pill));
+    border-radius: var(--xh-avatar-group-radius, var(--xh-shape-circle));
     background: var(--xh-avatar-group-overflow-item-bg, var(--xh-bg-muted));
     color: var(--xh-avatar-group-overflow-item-fg, var(--xh-fg-muted));
     font-size: var(--xh-_avatar-group-font-size);
