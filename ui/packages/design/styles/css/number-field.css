@@ -31,7 +31,7 @@
     --xh-number-field-trigger-size: var(--xh-_number-field-trigger-size);
 
     /* 盒子的圆角 */
-    --xh-_number-field-radius: var(--xh-shape-surface);
+    --xh-_number-field-radius: var(--xh-shape-control);
 
     /* 盒内那道分隔线的长度：取控件高的一半，线的上下各留一截空白，不与控件等高。
        按控件高算而不是按钮高算：钮三档同宽高，只有控件跟着尺寸档变，
@@ -291,7 +291,7 @@
     touch-action: manipulation;
     transition:
       background var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
-      scale var(--xh-motion-duration-micro) var(--xh-motion-ease-enter-strong);
+      scale var(--xh-motion-duration-release) var(--xh-motion-ease-release);
   }
 
   /* DOM 顺序不承担视觉位置：既有用法即使把减钮写在 input 前面，默认仍统一收进右侧动作组。 */
@@ -337,6 +337,8 @@
   [data-scope='number-field'][data-part='control'] [data-part='decrement-trigger']:active:not(:disabled) {
     background: var(--xh-number-field-trigger-bg-active, var(--xh-_number-field-trigger-bg-active));
     scale: var(--xh-motion-scale-press);
+    transition-duration: var(--xh-motion-duration-press);
+    transition-timing-function: var(--xh-motion-ease-press);
   }
 
   /* 焦点落到盒内按钮时 control 已经 focus-within 起了环，按钮自己再画一圈就是框里套框 */
