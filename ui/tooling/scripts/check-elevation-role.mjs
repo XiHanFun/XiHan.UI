@@ -4,7 +4,7 @@
 // 四档角色：raised = 静态抬起面（卡片、分段控制器的滑块、静止的滑杆拇指）；
 // lifted = 被指针拎起、正跟着手走的东西（拖动中的滑杆拇指），比 raised 高一档、不到 floating；
 // floating = 锚定浮层（下拉、菜单、popover、hover-card、tooltip，它们 portal 到同一落点，投影同深）；
-// sheet = 遮罩式与通知（dialog / drawer / toast / tour / floating-panel / float-button / back-top）。
+// sheet = 遮罩式与通知（dialog / drawer / toast / tour）；浮动面板与悬浮动作走 M2 frosted。
 // 皮肤直接引 --xh-shadow-* 原语或给 box-shadow 写字面值，海拔就脱离了层级阶梯。
 //
 // 允许：组件槽包着角色令牌 / 私有槽 / none / 0 / inset 描边式阴影（focus ring 与分割线那种）。
@@ -20,8 +20,6 @@ const ROLE = /--xh-elevation-(raised|lifted|floating|sheet)\b/
 const MATERIAL_SOFT = /--xh-material-soft-shadow\b/
 // M2 是锚定浮层的材质配方，海拔等价于 floating；单列名字才能拦住组件退回普通实体投影。
 const MATERIAL_FROSTED = /--xh-material-frosted-(?:compact-)?shadow\b/
-// M3 是可移动的桌面玻璃面；它与 M2/M4 一样必须逐部件登记，不能绕过材质角色检查。
-const MATERIAL_GLASS = /--xh-material-glass-shadow\b/
 // M4 是 sheet 级遮罩式高层面；当前只允许 Dialog/content 消费，后续迁移必须逐件登记。
 const MATERIAL_ELEVATED = /--xh-material-elevated-shadow\b/
 /**
@@ -43,7 +41,7 @@ const SLOTTED = /^var\((?:--xh-[a-z][a-z0-9-]*,\s*var\()+--xh-elevation-(?:raise
  * 但一个部件只要登了记，它用到的每一档都得在数组里，包括 raised。
  */
 const EXPECTED = {
-  'back-top': { root: ['glass'] },
+  'back-top': { root: ['frosted'] },
   'button': { root: ['soft', 'raised'] },
   'card': { root: ['raised'] },
   'checkbox': { root: ['soft', 'raised'] },
@@ -58,8 +56,8 @@ const EXPECTED = {
   'date-range-picker': { content: ['frosted'] },
   'dialog': { content: ['sheet'] },
   'drawer': { content: ['sheet'] },
-  'float-button': { root: ['glass'] },
-  'floating-panel': { content: ['glass'] },
+  'float-button': { root: ['frosted'] },
+  'floating-panel': { content: ['frosted'] },
   'heatmap': { tooltip: ['floating'] },
   'hover-card': { content: ['frosted'] },
   // 覆盖档的侧栏是盖在内容之上、带遮罩的一面，与抽屉同档；占位档的侧栏不画投影
@@ -73,7 +71,7 @@ const EXPECTED = {
   'pagination': { content: ['floating'] },
   'popconfirm': { 'content': ['frosted'], 'confirm-trigger': ['soft', 'raised'], 'cancel-trigger': ['soft'] },
   'popover': { content: ['frosted'] },
-  'prompt-input': { root: ['glass'] },
+  'prompt-input': { root: ['soft'] },
   'select': { content: ['frosted'] },
   'side-nav': { 'branch-content': ['floating'] },
   // 拇指静止时是 raised，带 data-dragging 的那一档走 lifted：跟着手走的元素抬高一档，
@@ -113,19 +111,16 @@ for (const file of files) {
       checked++
       // 这条规则落在哪个部件上：取选择器里最后一个 data-part，那才是被样式作用的那个
       const part = [...selector.matchAll(/\[data-part='([a-z0-9-]+)'\]/g)].map(m => m[1]).at(-1)
-      const isGlass = MATERIAL_GLASS.test(value)
       const isElevated = MATERIAL_ELEVATED.test(value)
       if (isElevated && (comp !== 'dialog' || part !== 'content')) {
-        problems.push(`${file}  ${selector.slice(0, 60)}  M4 Elevated Glass 尚未登记给 ${comp} 的 ${part ?? '未知部件'}`)
+        problems.push(`${file}  ${selector.slice(0, 60)}  M4 Elevated sheet 尚未登记给 ${comp} 的 ${part ?? '未知部件'}`)
         continue
       }
       const role = MATERIAL_SOFT.test(value)
         ? 'soft'
         : MATERIAL_FROSTED.test(value)
           ? 'frosted'
-          : isGlass
-            ? 'glass'
-            : isElevated
+          : isElevated
               ? 'sheet'
               : value.match(ROLE)?.[1]
       if (!role) {
@@ -133,7 +128,7 @@ for (const file of files) {
         continue
       }
       if (decl[1] === 'box-shadow' && !SLOTTED.test(value)
-        && !/^var\(--xh-[a-z][a-z0-9-]*,\s*var\(--xh-material-(?:soft|frosted(?:-compact)?|glass|elevated)-shadow\)\)$/.test(value)) {
+        && !/^var\(--xh-[a-z][a-z0-9-]*,\s*var\(--xh-material-(?:soft|frosted(?:-compact)?|elevated)-shadow\)\)$/.test(value)) {
         problems.push(`${file}  ${selector.slice(0, 60)}  box-shadow: ${value.slice(0, 60)}  —— 没给使用者留 --xh-<组件>-…-shadow 槽`)
       }
       if (!part)
@@ -173,7 +168,7 @@ if (problems.length) {
   console.error('[check-elevation-role] ✗ 海拔没按角色走：')
   for (const p of problems)
     console.error(`  ${p}`)
-  console.error('静态抬起面 raised · M1 内容面 soft · M2 锚定浮层 frosted · M3 桌面玻璃 glass · 遮罩式与通知 sheet；原语 --xh-shadow-* 只该由令牌层引用。')
+  console.error('静态抬起面 raised · M1 内容面 soft · M2 锚定浮层 frosted · 遮罩式与通知 sheet；原语 --xh-shadow-* 只该由令牌层引用。')
   process.exit(1)
 }
 

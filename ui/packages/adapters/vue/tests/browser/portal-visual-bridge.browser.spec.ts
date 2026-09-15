@@ -38,6 +38,6 @@ describe('portal 视觉环境桥', () => {
     expect(shell!.getAttribute('data-transparency')).toBe('reduce')
     expect(shell!.style.getPropertyValue('--business-color')).toBe('rebeccapurple')
     expect(getComputedStyle(shell!).getPropertyValue('--business-color')).toBe('rebeccapurple')
-    expect(getComputedStyle(shell!).getPropertyValue('--xh-material-glass-backdrop')).toBe('none')
+    expect(getComputedStyle(shell!).getPropertyValue('--xh-material-frosted-backdrop')).toBe('none')
   })
 })

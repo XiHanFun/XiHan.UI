@@ -13,25 +13,25 @@ function fixture(theme: 'light' | 'dark', parent?: HTMLElement) {
   boundary.dataset.theme = theme
   const surface = document.createElement('section')
   // 仅提供作用域边界，未引入任何组件皮肤或运行时。
-  surface.dataset.scope = 'material-glass-test'
+  surface.dataset.scope = 'material-frosted-test'
   surface.style.cssText = `
     position:relative; padding:16px; width:240px;
-    background:var(--xh-material-glass-bg);
-    color:var(--xh-material-glass-fg);
-    border:1px solid var(--xh-material-glass-border);
-    box-shadow:var(--xh-material-glass-shadow);
-    backdrop-filter:var(--xh-material-glass-backdrop);
+    background:var(--xh-material-frosted-bg);
+    color:var(--xh-material-frosted-fg);
+    border:1px solid var(--xh-material-frosted-border);
+    box-shadow:var(--xh-material-frosted-shadow);
+    backdrop-filter:var(--xh-material-frosted-backdrop);
     transition-property:opacity;
     transition-duration:var(--xh-motion-duration-enter);`
   const muted = document.createElement('span')
-  muted.style.color = 'var(--xh-material-glass-fg-muted)'
+  muted.style.color = 'var(--xh-material-frosted-fg-muted)'
   muted.textContent = '次要说明'
   const highlight = document.createElement('i')
-  highlight.style.cssText = 'position:absolute;inset:0 0 auto;height:1px;background:var(--xh-material-glass-highlight);pointer-events:none'
+  highlight.style.cssText = 'position:absolute;inset:0 0 auto;height:1px;background:var(--xh-material-frosted-highlight);pointer-events:none'
   const separator = document.createElement('hr')
-  separator.style.cssText = 'border:0;border-block-start:1px solid var(--xh-material-glass-separator)'
+  separator.style.cssText = 'border:0;border-block-start:1px solid var(--xh-material-frosted-separator)'
   const focusSurface = document.createElement('button')
-  focusSurface.style.cssText = 'background:var(--xh-material-glass-focus-surface);color:inherit'
+  focusSurface.style.cssText = 'background:var(--xh-material-frosted-focus-surface);color:inherit'
   focusSurface.textContent = '操作'
   surface.append('主要文字', muted, highlight, separator, focusSurface)
   boundary.append(surface)
@@ -71,12 +71,12 @@ afterEach(async () => {
   await cdp().send('Emulation.setEmulatedMedia', { media: '', features: [] })
 })
 
-describe('m3 通透玻璃令牌在浏览器中的组合', () => {
-  it.each(['light', 'dark'] as const)('%s：九项材质消费有效，76%% 遮蔽与 24px 磨砂成立', (theme) => {
+describe('m2 磨砂令牌在浏览器中的组合', () => {
+  it.each(['light', 'dark'] as const)('%s：九项材质消费有效，88%% 遮蔽与 16px 磨砂成立', (theme) => {
     const view = fixture(theme)
     const style = recipe(view)
-    expect(rgba(style.background)[3]).toBeCloseTo(255 * 0.76, 0)
-    expect(style.backdrop).toBe('blur(24px) saturate(1.12)')
+    expect(rgba(style.background)[3]).toBeCloseTo(255 * 0.88, 0)
+    expect(style.backdrop).toBe('blur(16px) saturate(1.08)')
     expect(rgba(style.border)[3]).toBeGreaterThan(0)
     expect(rgba(style.highlight)[3]).toBeGreaterThan(0)
     expect(rgba(style.separator)[3]).toBeGreaterThan(0)
@@ -109,7 +109,6 @@ describe('m3 通透玻璃令牌在浏览器中的组合', () => {
     const expected = recipe(combined)
     expect(rgba(expected.background)[3]).toBe(255)
     expect(expected.backdrop).toBe('none')
-    expect(expected.shadow).toBe('none')
     expect(rgba(expected.highlight)[3]).toBe(0)
     expect(recipe(nested)).toEqual(expected)
   })
@@ -179,7 +178,7 @@ describe('m3 通透玻璃令牌在浏览器中的组合', () => {
     const view = fixture(theme)
     view.boundary.dataset.contrast = 'more'
     const sibling = document.createElement('section')
-    sibling.style.background = 'var(--xh-material-glass-bg)'
+    sibling.style.background = 'var(--xh-material-frosted-bg)'
     view.boundary.append(sibling)
     const siblingBefore = getComputedStyle(sibling).backgroundColor
     view.surface.dataset.contrast = 'default'
@@ -194,7 +193,7 @@ describe('m3 通透玻璃令牌在浏览器中的组合', () => {
     it.each(['light', 'dark'] as const)(`%s/${contrast}：公开 border-subtle 覆盖传到同源材质边框`, (theme) => {
       const view = fixture(theme)
       view.boundary.dataset.contrast = contrast
-      const originalGlassBorder = recipe(view).border
+      const originalFrostedBorder = recipe(view).border
       const soft = document.createElement('section')
       soft.style.border = '1px solid var(--xh-material-soft-border)'
       const softSeparator = document.createElement('hr')
@@ -212,8 +211,8 @@ describe('m3 通透玻璃令牌在浏览器中的组合', () => {
         expect(recipe(view).separator).toBe(expected)
       }
       else {
-        // 默认 M3 边框本来是独立的透明边缘色，不误绑定到通用分隔线。
-        expect(recipe(view).border).toBe(originalGlassBorder)
+        // 默认 M2 边框本来是独立的透明边缘色，不误绑定到通用分隔线。
+        expect(recipe(view).border).toBe(originalFrostedBorder)
       }
     })
   }
@@ -241,10 +240,10 @@ describe('m3 通透玻璃令牌在浏览器中的组合', () => {
     const view = fixture(theme)
     const style = recipe(view)
     const tokens = getComputedStyle(view.surface)
-    expect(tokens.getPropertyValue('--xh-material-glass-bg').trim()).toBe('Canvas')
-    expect(tokens.getPropertyValue('--xh-material-glass-fg').trim()).toBe('CanvasText')
-    expect(tokens.getPropertyValue('--xh-material-glass-fg-muted').trim()).toBe('CanvasText')
-    expect(tokens.getPropertyValue('--xh-material-glass-highlight').trim()).toBe('transparent')
+    expect(tokens.getPropertyValue('--xh-material-frosted-bg').trim()).toBe('Canvas')
+    expect(tokens.getPropertyValue('--xh-material-frosted-fg').trim()).toBe('CanvasText')
+    expect(tokens.getPropertyValue('--xh-material-frosted-fg-muted').trim()).toBe('CanvasText')
+    expect(tokens.getPropertyValue('--xh-material-frosted-highlight').trim()).toBe('Canvas')
     expect(style.backdrop).toBe('none')
     expect(style.shadow).toBe('none')
     expect(rgba(style.background)[3]).toBe(255)

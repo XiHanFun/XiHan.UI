@@ -221,8 +221,8 @@ function assertSource(source) {
   if (JSON.stringify(source.profiles.solid.light) !== JSON.stringify(source.profiles.solid.dark))
     throw new Error('[material-recipes] M0 必须保持主题无关，不能在 mode 边界复制实体配方')
   // order 只决定生成 JSON 与 CSS 的稳定序列，不能被解释成 M0→M4 的等级顺序。
-  if (ids.join(',') !== 'M4,M3,M0,M1,M2')
-    throw new Error(`[material-recipes] 输出兼容序必须是 M4,M3,M0,M1,M2，当前为 ${ids.join(',')}`)
+  if (ids.join(',') !== 'M4,M0,M1,M2')
+    throw new Error(`[material-recipes] 输出兼容序必须是 M4,M0,M1,M2，当前为 ${ids.join(',')}`)
   const modes = ['contrast-more', 'transparency-reduce', 'forced-colors', 'print']
   if (Object.keys(source.auxiliary).sort().join(',') !== [...modes].sort().join(','))
     throw new Error(`[material-recipes] auxiliary 必须且只能声明：${modes.join(', ')}`)
