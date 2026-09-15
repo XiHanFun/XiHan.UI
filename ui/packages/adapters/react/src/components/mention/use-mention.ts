@@ -19,16 +19,16 @@ import { useMachine } from '../../runtime/use-machine'
 import { useOverlay } from '../../runtime/use-overlay'
 
 export interface MentionContext extends OverlayWiring {
-  /** 机器实例，供部件直接上报 DOM 侧事实。 */
+  /** 状态机实例，供部件直接上报 DOM 侧事实。 */
   service: Service<MentionSchema>
   api: MentionApi
   /** 表单重置的锚点：接在根节点上。 */
   rootRef: RefObject<HTMLElement | null>
-  /** 输入宿主，textarea 或 input；由 XhMentionInput 的 as 决定渲染成哪个。 */
+  /** 输入宿主，textarea 或 input；由 XhMentionInput 的 as 决定渲染为哪个。 */
   inputRef: RefObject<MentionInputEl | null>
   positionerRef: RefObject<HTMLElement | null>
   contentRef: RefObject<HTMLElement | null>
-  /** 上报候选集合可能变了；同一拍里多次调用只上报一次。 */
+  /** 上报候选集合可能已变化；同一拍内多次调用只上报一次。 */
   syncItems: () => void
 }
 

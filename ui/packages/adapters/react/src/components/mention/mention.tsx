@@ -34,18 +34,18 @@ export type MentionRootSlotProps = Pick<
   | 'close'
 >
 
-/** 根上自有的那些取值；defaultValue、dir 与 onSelect 与原生的同名属性含义不同，由这里接管。 */
+/** 根上自有的取值；defaultValue、dir 与 onSelect 与原生的同名属性含义不同，由这里接管。 */
 type RootElementProps = Omit<ComponentPropsWithRef<'div'>, 'children' | 'defaultValue' | 'dir' | 'onSelect'>
 
 export interface XhMentionRootProps extends RootElementProps {
-  /** 开候选的前缀字符，缺省 '@'；给数组即多种前缀并存。 */
+  /** 打开候选的前缀字符，默认 '@'；传数组即多种前缀并存。 */
   triggerPrefix?: string | string[]
   collection?: MentionNode[]
   value?: string
   defaultValue?: string
   disabled?: boolean
   loading?: boolean
-  /** 表单字段名；给了输入框才带 name，整段正文随表单一并提交。 */
+  /** 表单字段名；提供后输入框才带 name，整段正文随表单一并提交。 */
   name?: string
   readOnly?: boolean
   invalid?: boolean
@@ -53,7 +53,7 @@ export interface XhMentionRootProps extends RootElementProps {
   loop?: boolean
   placement?: Placement
   offset?: number
-  /** 文字方向；浮层搬到落点后继承不到作者子树上的方向，要 RTL 就显式给。 */
+  /** 文字方向；浮层迁移到落点后无法继承作者子树上的方向，需要 RTL 时显式提供。 */
   dir?: Direction
   translations?: MentionTranslations
   variant?: ControlVariant
@@ -63,9 +63,9 @@ export interface XhMentionRootProps extends RootElementProps {
   onQueryChange?: MentionProps['onQueryChange']
   onSelect?: MentionProps['onSelect']
   onOpenChange?: MentionProps['onOpenChange']
-  /** 铺开 collection 时每条候选的内容；不给就用 collection 里的 label。 */
+  /** 铺开 collection 时每条候选的内容；未提供时使用 collection 中的 label。 */
   renderItem?: (node: MentionNodeMeta) => ReactNode
-  /** 铺开 collection 时空态里那句话；不写走内建英文。 */
+  /** 铺开 collection 时空态中的文案；未写时使用内建英文。 */
   empty?: ReactNode
   children?: SlotChildren<MentionRootSlotProps>
 }
@@ -161,14 +161,14 @@ export function XhMentionRoot({
 XhMentionRoot.xhEvents = ['value-change', 'query-change', 'select', 'open-change'] as const
 
 export interface XhMentionLabelProps extends ComponentPropsWithRef<'label'> {}
-/** 用原生 label，connect 给的 for 恒写向输入框。 */
+/** 使用原生 label，connect 给出的 for 恒指向输入框。 */
 export function XhMentionLabel({ children, ...rest }: XhMentionLabelProps): ReactNode {
   const ctx = useMentionContext()
   return <label {...mergeReactProps(ctx.api.getLabelProps() as Record<string, unknown>, rest as Record<string, unknown>)}>{children}</label>
 }
 
 export interface XhMentionInputProps extends Omit<ComponentPropsWithRef<'input'>, 'value' | 'defaultValue'> {}
-/** 单行输入框；正文写在它身上，候选浮层贴着它落位。 */
+/** 单行输入框；正文写在它上面，候选浮层贴着它落位。 */
 export function XhMentionInput({ ...rest }: XhMentionInputProps): ReactNode {
   const ctx = useMentionContext()
   // 字段的说明与校验状态要落在真控件上，不能停在封装根的 div 上
@@ -185,10 +185,10 @@ export function XhMentionInput({ ...rest }: XhMentionInputProps): ReactNode {
 }
 
 export interface XhMentionPositionerProps extends ComponentPropsWithRef<'div'> {
-  /** 浮层挂到哪个容器；不给就按全局配置，再不给挂 body。 */
+  /** 浮层挂载的容器；未提供时按全局配置，再未提供时挂载到 body。 */
   container?: () => Element | null
 }
-/** 搬到浮层落点：留在原地的话，宿主祖先只要建了层叠上下文就能盖住浮层。 */
+/** 迁移到浮层落点：留在原地时，宿主祖先只要建立了层叠上下文就能遮住浮层。 */
 export function XhMentionPositioner({ children, container, ...rest }: XhMentionPositionerProps): ReactNode {
   const ctx = useMentionContext()
   // 候选列表的自绘条：与 content 同级、绝对定位不占布局，壳是这层已经 fixed 的 positioner
@@ -231,14 +231,14 @@ export function XhMentionContent({ children, ...rest }: XhMentionContentProps): 
 }
 
 export interface XhMentionEmptyProps extends ComponentPropsWithRef<'div'> {}
-/** 一条候选都没有时显出的空态；与候选面板同级，不进 role=listbox。 */
+/** 没有任何候选时显示的空态；与候选面板同级，不进入 role=listbox。 */
 export function XhMentionEmpty({ children, ...rest }: XhMentionEmptyProps): ReactNode {
   const ctx = useMentionContext()
   return <div {...mergeReactProps(ctx.api.getEmptyProps() as Record<string, unknown>, rest as Record<string, unknown>)}>{children}</div>
 }
 
 export interface XhMentionLoadingProps extends ComponentPropsWithRef<'div'> {}
-/** 候选还在取时顶上来的在途占位；与候选面板同级。 */
+/** 候选仍在获取时显示的在途占位；与候选面板同级。 */
 export function XhMentionLoading({ children, ...rest }: XhMentionLoadingProps): ReactNode {
   const ctx = useMentionContext()
   return <div {...mergeReactProps(ctx.api.getLoadingProps() as Record<string, unknown>, rest as Record<string, unknown>)}>{children}</div>
@@ -246,7 +246,7 @@ export function XhMentionLoading({ children, ...rest }: XhMentionLoadingProps): 
 
 export interface XhMentionItemProps extends Omit<ComponentPropsWithRef<'div'>, 'value'> {
   value: string
-  /** 缺省交给 connect 回 collection 里查，写死 false 会盖掉数据里的禁用。 */
+  /** 默认交给 connect 查询 collection，写死 false 会覆盖数据中的禁用。 */
   disabled?: boolean
 }
 export function XhMentionItem({ value, disabled, children, ...rest }: XhMentionItemProps): ReactNode {
@@ -278,9 +278,9 @@ export function XhMentionItemText({ children, ...rest }: XhMentionItemTextProps)
 }
 
 /**
- * 没写 children 时按 collection 铺开的整套结构，作者只交数据。
- * 与手写部件产出的 DOM 完全一致，要改结构就写 children，行为不变。
- * 过滤仍归调用方：collection 就是此刻该显示的那几条候选。
+ * 未写 children 时按 collection 铺开的整套结构，作者只提供数据。
+ * 与手写部件产出的 DOM 完全一致，需要修改结构时写 children，行为不变。
+ * 过滤仍归调用方：collection 就是当前应显示的候选。
  */
 function DefaultTree(props: {
   collection: readonly MentionNodeMeta[]

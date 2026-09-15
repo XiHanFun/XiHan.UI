@@ -10,7 +10,7 @@ import type { ComputedRef, InjectionKey } from 'vue'
 import type { MentionContext } from './use-mention'
 import { inject, provide } from 'vue'
 
-/** 候选自报的值与禁用，供 item-text 复用同一份声明。 */
+/** 候选声明的值与禁用，供 item-text 复用同一份声明。 */
 export interface MentionItemContext {
   item: ComputedRef<MentionItemProps>
 }

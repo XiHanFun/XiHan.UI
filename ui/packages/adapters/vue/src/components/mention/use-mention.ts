@@ -19,18 +19,18 @@ import { useOverlayExit } from '../../runtime/use-overlay-exit'
 import { createVueIdGenerator } from '../../runtime/vue-id'
 
 export interface MentionContext {
-  /** 机器实例，供部件直接上报 DOM 侧事实。 */
+  /** 状态机实例，供部件直接上报 DOM 侧事实。 */
   service: Service<MentionSchema>
   api: ComputedRef<MentionApi>
-  /** 单行输入框，由 XhMentionInput 渲出来。 */
+  /** 单行输入框，由 XhMentionInput 渲染。 */
   inputRef: Ref<MentionInputEl | null>
   positionerRef: Ref<HTMLElement | null>
   contentRef: Ref<HTMLElement | null>
-  /** 此刻该不该渲染：退场动画播完之前仍为真。 */
+  /** 当前是否应当渲染：退场动画播完之前仍为真。 */
   visible: Ref<boolean>
-  /** 浮层搬到哪儿：全局配置的容器 > 运行时的浮层落点 > body。 */
+  /** 浮层迁移到的位置：全局配置的容器 > 运行时的浮层落点 > body。 */
   portalTarget: ComputedRef<string | Element>
-  /** 上报候选集合可能变了；同一拍里多次调用只上报一次。 */
+  /** 上报候选集合可能已变化；同一拍内多次调用只上报一次。 */
   syncItems: () => void
 }
 

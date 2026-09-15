@@ -36,49 +36,49 @@ const NUMBER_CONVERTER = { fromAttribute: (v: string | null) => (v === null ? un
 const BOOLEAN_CONVERTER = { fromAttribute: (v: string | null) => (v === null ? undefined : v !== 'false') }
 
 /**
- * `<xh-mention>` —— Light-DOM 行为宿主：作者写 root/input/positioner/content/item 角色节点，
- * 元素跑 mention 机器并把 connect 产出打上去。浮层定位引擎在本元素里建好、经 refs 注入机器，
- * 锚点就是输入框本身（浮层贴着整个输入框，不跟着光标走）。
+ * `<xh-mention>`：Light-DOM 行为宿主：作者写 root / input / positioner / content / item 角色节点，
+ * 元素运行 mention 状态机并把 connect 产出接上。浮层定位引擎在本元素中创建、经 refs 注入状态机，
+ * 锚点即输入框本身（浮层贴近整个输入框，不跟随光标）。
  *
- * 与组合框的分水岭有两条。其一，浮层由「光标处的前缀字符」开合：前缀必须紧跟在行首或空白之后，
- * 邮箱地址里的 @ 因此不会误触发；前缀到光标之间那段就是查询串。其二，选中候选不是替换整个值，
- * 而是把那段查询串换成候选文本、前后文一字不动，光标随后落在插入内容之后。
+ * 与组合框的差别有两条。其一，浮层由光标处的前缀字符开合：前缀必须紧跟在行首或空白之后，
+ * 邮箱地址中的 @ 因此不会误触发；前缀到光标之间的片段即查询串。其二，选中候选不是替换整个值，
+ * 而是把该段查询串替换为候选文本、前后文不变，光标随后落在插入内容之后。
  *
- * input 部件是单行 `<input>`，元素往上打 role=combobox 与 aria-expanded；
+ * input 部件是单行 `<input>`，元素在其上写 role=combobox 与 aria-expanded；
  * 候选身份经 aria-controls、aria-autocomplete 与 aria-activedescendant 上报。
  *
- * 过滤不由本元素做：查询串变化时派发 query-change，作者据此增删 item 节点。
+ * 过滤不由本元素完成：查询串变化时派发 query-change，作者据此增删 item 节点。
  *
  * @customElement xh-mention
- * @attr {string} trigger-prefix - 开候选的前缀字符，默认 '@'；多种前缀并存请用 property 传数组
- * @attr {string} value - 受控正文；缺省该属性即非受控
+ * @attr {string} trigger-prefix - 打开候选的前缀字符，默认 '@'；多种前缀并存时通过 property 传入数组
+ * @attr {string} value - 受控正文；未提供该属性即非受控
  * @attr {string} default-value - 非受控初始正文
- * @attr {boolean} disabled - 整个控件禁用：输入框用原生 disabled，候选一概不开
- * @attr {boolean} loading - 候选还在取：候选面板报 aria-busy，在途占位顶上来、空态占位让位
- * @attr {boolean} read-only - 只读：仍可聚焦与复制，写不进，候选也不开
+ * @attr {boolean} disabled - 整个控件禁用：输入框使用原生 disabled，候选一概不打开
+ * @attr {boolean} loading - 候选加载中：候选面板报告 aria-busy，显示在途占位、隐藏空态占位
+ * @attr {boolean} read-only - 只读：仍可聚焦与复制，不可写入，候选也不打开
  * @attr {boolean} invalid - 校验失败标注
- * @attr {string} placeholder - 输入框占位文字；不写就保留作者标在 input 部件上的那份
- * @attr {string} name - 表单字段名；给了输入框才带 name，整段正文随表单一并提交
- * @attr {boolean} loop - 方向键走到尽头回绕，默认 true；写 loop="false" 关掉
- * @attr {string} placement - 首选放置位，默认 bottom-start；避让后的实际位写在 data-placement 上
+ * @attr {string} placeholder - 输入框占位文字；未提供时保留作者标注在 input 部件上的值
+ * @attr {string} name - 表单字段名；提供后输入框才带 name，整段正文随表单一并提交
+ * @attr {boolean} loop - 方向键到达末尾回绕，默认 true；写 loop="false" 关闭
+ * @attr {string} placement - 首选放置位，默认 bottom-start；避让后的实际位置写在 data-placement 上
  * @attr {number} offset - 浮层与输入框的间距（px）
- * @attr {'ltr'|'rtl'} dir - 文字方向，翻转浮层在行内轴上 start 与 end 的落点；只在显式给了才写到定位层上
+ * @attr {'ltr'|'rtl'} dir - 文字方向，翻转浮层在行内轴上 start 与 end 的落点；只在显式提供时才写到定位层上
  * @attr {'outline'|'subtle'|'ghost'} variant - 视觉变体
  * @attr {'brand'|'neutral'|'success'|'warning'|'danger'|'info'} tone - 语气
  * @attr {'sm'|'md'|'lg'} size - 尺寸
  * @fires value-change - 正文变化；detail 为 `{ value: string }`
- * @fires query-change - 查询串变化；detail 为 `{ query, prefix }`，作者据此过滤候选；收起时报 null
- * @fires select - 候选被插进正文；detail 为 `{ value, label, prefix }`
+ * @fires query-change - 查询串变化；detail 为 `{ query, prefix }`，作者据此过滤候选；收起时报告 null
+ * @fires select - 候选被插入正文；detail 为 `{ value, label, prefix }`
  * @fires open-change - 浮层开合；detail 为 `{ open: boolean }`
- * @csspart root - 组件根容器（承载 data-state/data-disabled 与三个视觉轴）
- * @csspart label - 标题；`for` 恒写向输入框，故须是原生 `<label>` 才点得动
- * @csspart input - 单行输入框，须写成 `<input>`；没给 translations.input 时名字取自 label 部件
- * @csspart positioner - 浮层定位容器，坐标由引擎写成内联样式
+ * @csspart root - 组件根容器（承载 data-state / data-disabled 与三个视觉轴）
+ * @csspart label - 标题；`for` 恒指向输入框，因此须是原生 `<label>` 才可点击
+ * @csspart input - 单行输入框，须写为 `<input>`；未提供 translations.input 时名字取自 label 部件
+ * @csspart positioner - 浮层定位容器，坐标由引擎写为内联样式
  * @csspart content - role=listbox 容器（消解层的根节点），收起时带 hidden
- * @csspart empty - 一条候选都没有时显出的空态；须与 content 同级（listbox 里只许放 option）
- * @csspart loading - 在途占位，与空态占位同一个位置，取数期间顶上来
+ * @csspart empty - 没有任何候选时显示的空态；须与 content 同级（listbox 内只允许放置 option）
+ * @csspart loading - 在途占位，与空态占位同一位置，加载期间显示
  * @csspart item - role=option 候选，须自带 value 属性标识身份；禁用写 aria-disabled="true"
- * @csspart item-text - 候选文本，也是插回正文的取字处
+ * @csspart item-text - 候选文本，也是插回正文的取字来源
  */
 export class XhMentionElement extends XhPortalHostElement {
   /** 本实例的 Portal 容器；显式解析失败不回退配置默认。 */
@@ -174,7 +174,7 @@ export class XhMentionElement extends XhPortalHostElement {
     scrollable: () => this.getPart('content'),
   })
 
-  /** 作者声明的条目禁用，只认首见那一份；给了 collection 时用它，否则现读 */
+  /** 作者声明的条目禁用，只认首次见到的值；提供 collection 时使用它，否则现读 */
   private readonly declaredDisabled = createDeclaredDisabled()
   private inheritedControl: FormControlState | undefined
 
@@ -257,7 +257,7 @@ export class XhMentionElement extends XhPortalHostElement {
     svc.refs.set('getInputEl', () => this.getPart('input') as MentionInputEl | null)
   }
 
-  /** 提前发现一次角色节点：机器挂载当场就要读得到输入框与候选容器。 */
+  /** 提前发现一次角色节点：状态机挂载当场就要读取到输入框与候选容器。 */
   override connectedCallback(): void {
     this.refreshParts()
     super.connectedCallback()
