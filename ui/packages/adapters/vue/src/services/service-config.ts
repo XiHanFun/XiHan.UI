@@ -13,9 +13,9 @@ import { shallowRef, toValue } from 'vue'
 import { provideXhConfig } from '../config/config'
 
 export interface ServiceConfigSource {
-  /** 在宿主组件的 setup 里调一次。 */
+  /** 在宿主组件的 setup 中调用一次。 */
   provide: () => void
-  /** 换一份配置源；下一帧起服务子树读新值。 */
+  /** 更换配置源；下一帧起服务子树读取新值。 */
   set: (next: MaybeRefOrGetter<XhConfig> | undefined) => void
 }
 

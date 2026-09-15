@@ -23,11 +23,11 @@ export type XhVisualEnvironmentConfig = BindVisualRoot<VisualEnvironmentControll
 
 export interface XhConfig extends XhConfigBase {
   /**
-   * 浮层默认挂到哪个容器；返回 null 即挂 body。
-   * 应用级默认，实例上写了容器的以实例为准。
+   * 浮层默认挂载的容器；返回 null 即挂载到 body。
+   * 应用级默认，实例上写了容器时以实例为准。
    */
   portalContainer?: () => Element | null
-  /** 本次 provide 的七轴视觉环境；root 必须显式给出，不猜测组件 DOM。 */
+  /** 本次 provide 的七轴视觉环境；root 必须显式给出，不推测组件 DOM。 */
   visualEnvironment?: XhVisualEnvironmentConfig
 }
 
@@ -37,15 +37,15 @@ const VISUAL_KEY: InjectionKey<ComputedRef<VisualEnvironmentController | undefin
 /**
  * 本层与外层逐键合并。
  *
- * 键缺席与写成 undefined 都算「这一层没说」，一律回落外层——子树注入只想改文案时，
- * 不该把外层的 locale 与 portalContainer 一并抹掉。
+ * 键缺席与写为 undefined 都视为本层未声明，一律回落外层：子树注入只需要改文案时，
+ * 不应把外层的 locale 与 portalContainer 一并清除。
  */
 export function mergeXhConfig(base: XhConfig | undefined, over: XhConfig): XhConfig {
   return mergeBase(base, over)
 }
 
 /**
- * 注入一份配置，作用于本组件子树。传 ref/getter 即可运行时切语言，组件跟着重渲。
+ * 注入一份配置，作用于本组件子树。传 ref/getter 即可在运行时切换语言，组件随之重渲。
  *
  * 嵌套注入按键合并，不整份遮蔽：内层只写了 translations 时，外层的 locale 仍然生效。
  */
@@ -90,19 +90,19 @@ export function provideXhConfig(config: MaybeRefOrGetter<XhConfig>): void {
   })
 }
 
-/** 读当前作用域的全局配置（已与外层合并）；没注入时得到空对象。 */
+/** 读取当前作用域的全局配置（已与外层合并）；未注入时得到空对象。 */
 export function useXhConfig(): ComputedRef<XhConfig> {
   const injected = inject(KEY, undefined)
   return computed(() => toValue(injected) ?? {})
 }
 
 /**
- * 把全局配置垫进组件 props：translations 按键合并（实例键胜出），
- * locale 与 size 在实例没给时回落全局。没注入配置时原样返回，零开销。
+ * 把全局配置合入组件 props：translations 按键合并（实例键优先），
+ * locale 与 size 在实例未提供时回落全局。未注入配置时原样返回，零开销。
  * 只能在 setup 期调用。
  *
- * 跑机器的组件不必逐个调它——useMachine 那一处已经把 locale 与 size 并进去了；
- * 这个函数管两件那里管不到的事：按组件名分桶的 translations，以及没有机器的那十几个组件。
+ * 运行状态机的组件不必逐个调用它：useMachine 已经把 locale 与 size 合并进去；
+ * 本函数负责两件那里无法覆盖的事：按组件名分桶的 translations，以及没有状态机的组件。
  */
 export function withXhConfig<T extends object>(component: keyof XhTranslationOverrides, props: T): T {
   const injected = inject(KEY, undefined)

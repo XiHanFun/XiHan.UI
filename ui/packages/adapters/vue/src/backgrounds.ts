@@ -48,8 +48,8 @@ export interface UseBackgroundOptions {
 export interface UseBackgroundReturn {
   readonly surface: ShallowRef<BackgroundSurface | null>
   /**
-   * 挂载点。直接当模板 ref 用：`<div :ref="visual.attach">`，
-   * 渲染器会在元素进出 DOM 时把元素或 null 交进来。
+   * 挂载点。直接作为模板 ref 使用：`<div :ref="visual.attach">`，
+   * 渲染器会在元素进出 DOM 时把元素或 null 传入。
    */
   attach: (element: Element | null) => void
   setEffect: (effect: BackgroundEffect | string) => void
@@ -61,11 +61,11 @@ export interface UseBackgroundReturn {
 }
 
 /**
- * 建一张受 Vue 生命周期管理的视觉画面。
+ * 建立一张受 Vue 生命周期管理的视觉画面。
  *
- * 用**函数式 ref** 而不是监听一个模板 ref：元素由渲染器直接交到手上，
- * 不经过响应式与调度队列，因此不受 flush 时序影响，元素换了也一定收得到。
- * 组件卸载时自动销毁；在 setup 之外调用则需自己调 destroy。
+ * 使用函数式 ref 而不是监听一个模板 ref：元素由渲染器直接交付，
+ * 不经过响应式与调度队列，因此不受 flush 时序影响，元素更换后也一定能收到。
+ * 组件卸载时自动销毁；在 setup 之外调用则需自行调用 destroy。
  */
 export function useBackground(options: UseBackgroundOptions): UseBackgroundReturn {
   const surface = shallowRef<BackgroundSurface | null>(null)
@@ -104,8 +104,8 @@ export function useBackground(options: UseBackgroundOptions): UseBackgroundRetur
 }
 
 /**
- * `<XhBackground>` —— 独立视觉组件。默认插槽的内容浮在效果之上；
- * 画布铺满根元素且 pointer-events: none，不会挡住插槽里的交互。
+ * `<XhBackground>`：独立视觉组件。默认插槽的内容浮在效果之上；
+ * 画布铺满根元素且 pointer-events: none，不会遮挡插槽中的交互。
  */
 export const XhBackground = defineComponent({
   name: 'XhBackground',
@@ -113,15 +113,15 @@ export const XhBackground = defineComponent({
     effect: { type: [Object, String] as PropType<BackgroundEffect | string>, required: true },
     params: { type: Object as PropType<Record<string, ParamValue>>, default: undefined },
     quality: { type: String as PropType<BackgroundQuality>, default: undefined },
-    /** 数据驱动点云。效果的粒子通道是 cloud 模式时才有意义。 */
+    /** 数据驱动点云。效果的粒子通道为 cloud 模式时才有意义。 */
     cloud: { type: Object as PropType<PointCloud | null>, default: null },
-    /** 换点云时的形变时长（秒）。 */
+    /** 更换点云时的形变时长（秒）。 */
     morphDuration: { type: Number, default: undefined },
     pointer: { type: Boolean, default: true },
     autoplay: { type: Boolean, default: true },
     respectReducedMotion: { type: Boolean, default: true },
     pauseOffscreen: { type: Boolean, default: true },
-    /** 渲染成什么标签。 */
+    /** 渲染为哪个标签。 */
     as: { type: String, default: 'div' },
   },
   setup(props, { slots, expose }) {
@@ -141,9 +141,9 @@ export const XhBackground = defineComponent({
     let appliedAutoplay = props.autoplay
 
     /**
-     * 把当前 props 推到画面上。在渲染函数里调用而不是挂 watcher：
-     * 渲染函数一定会随 props 变化重跑，且这里读到的参数值同时建立了依赖追踪，
-     * 调用方原地改参数对象里的某一项也收得到。
+     * 把当前 props 推送到画面上。在渲染函数中调用而不是挂 watcher：
+     * 渲染函数一定会随 props 变化重新运行，且这里读到的参数值同时建立了依赖追踪，
+     * 调用方就地修改参数对象中的某一项也能收到。
      */
     function sync(): void {
       const surface = api.surface.value
@@ -214,9 +214,9 @@ function toOptions(value: BackgroundDirectiveValue): UseBackgroundOptions {
 const mounted = new WeakMap<HTMLElement, { surface: BackgroundSurface, effect: BackgroundEffect | string }>()
 
 /**
- * `v-background` —— 给任意元素铺一层视觉背景。
+ * `v-background`：为任意元素铺设一层视觉背景。
  *
- * 用在组件上时，Vue 会把指令落到该组件的单一根元素上，所以给现成组件加背景不需要改组件：
+ * 用在组件上时，Vue 会把指令落到该组件的单一根元素上，因此为现成组件添加背景不需要修改组件：
  *
  * ```vue
  * <XhButton v-background="fluidEffect">提交</XhButton>
