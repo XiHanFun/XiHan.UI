@@ -1,4 +1,4 @@
-<!-- 状态透出 | phase / loading / disabled 由组件交给宿主，加载提示与结束语都由宿主自己摆 -->
+<!-- 状态透出 | phase / loading / disabled 由组件交给宿主，加载提示与结束语都由宿主自行放置 -->
 <script setup lang="ts">
 import { XhInfiniteScrollRoot, XhInfiniteScrollSentinel } from "@xihan-ui/vue";
 import { ref } from "vue";

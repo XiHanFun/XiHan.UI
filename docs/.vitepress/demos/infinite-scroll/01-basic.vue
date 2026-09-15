@@ -1,4 +1,4 @@
-<!-- 基础用法 | 哨兵滚进可视区就派 load，取完把 loading 写回 false -->
+<!-- 基础用法 | 哨兵滚进可视区即派发 load，取数完成后把 loading 写回 false -->
 <script setup lang="ts">
 import { XhInfiniteScrollRoot, XhInfiniteScrollSentinel } from "@xihan-ui/vue";
 import { ref } from "vue";

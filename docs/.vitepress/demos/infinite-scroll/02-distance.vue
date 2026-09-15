@@ -1,4 +1,4 @@
-<!-- 提前量 | distance 把可视区沿块轴向外扩，哨兵还没露头就先取下一页 -->
+<!-- 提前量 | distance 把可视区沿块轴向外扩展，哨兵尚未出现就先取下一页 -->
 <script setup lang="ts">
 import { XhInfiniteScrollRoot, XhInfiniteScrollSentinel } from "@xihan-ui/vue";
 import { ref } from "vue";
