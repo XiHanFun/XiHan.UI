@@ -12,7 +12,7 @@ const Ctx = createContext<FieldContext | undefined>(undefined)
 
 export const FieldProvider = Ctx
 
-/** 不在字段里时返回 undefined，薄封装照样能单独用。 */
+/** 不在字段内时返回 undefined，薄封装仍可单独使用。 */
 export function useOptionalFieldContext(): FieldContext | undefined {
   return useContext(Ctx)
 }

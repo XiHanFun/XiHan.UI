@@ -39,10 +39,10 @@ export const XhFieldLabel = defineComponent({
   },
 })
 
-/** 默认插槽的载荷：控件节点该挂的那组属性，作者把它交给自己渲染的控件。 */
+/** 默认插槽的载荷：控件节点应挂载的那组属性，作者把它交给自己渲染的控件。 */
 export type FieldControlSlotProps = Record<string, unknown>
 
-/** 去掉角色标记，只留接线属性（id 与 aria-*）。 */
+/** 去掉角色标记，只保留接线属性（id 与 aria-*）。 */
 export function wiringOnly(controlProps: Record<string, unknown>): Record<string, unknown> {
   const rest: Record<string, unknown> = {}
   for (const [key, value] of Object.entries(controlProps)) {
@@ -56,10 +56,10 @@ export const XhFieldControl = defineComponent({
   name: 'XhFieldControl',
   props: {
     /**
-     * 把接线属性合到唯一的子节点上，缺省开。
+     * 把接线属性合并到唯一的子节点上，默认开启。
      *
-     * 子节点是薄封装（根不是可聚焦元素）时关掉它：属性只经插槽载荷交出去，
-     * 由封装内部调 useFieldControl 绑到真控件上。
+     * 子节点是薄封装（根不是可聚焦元素）时关闭它：属性只经插槽载荷交出，
+     * 由封装内部调用 useFieldControl 绑定到真实控件上。
      */
     asChild: { type: Boolean, default: true },
   },

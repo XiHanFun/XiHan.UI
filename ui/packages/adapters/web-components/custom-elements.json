@@ -20967,23 +20967,23 @@
       "declarations": [
         {
           "kind": "class",
-          "description": "`<xh-field>` —— Light-DOM 行为宿主，无状态机，把 connectField 产出的 id 与 aria-* 打到\nlabel/control/description/error-text 角色节点上，自动对齐 `for` 与描述链。控件本身由作者渲染。\n\n每个实例自带一份 scope 派生 part id，同页多个 field 各出各的 id。",
+          "description": "`<xh-field>`：Light-DOM 行为宿主，无状态机，把 connectField 产出的 id 与 aria-* 接到\nlabel / control / description / error-text 角色节点上，自动对齐 `for` 与描述链。控件本身由作者渲染。\n\n每个实例自带一份 scope 派生 part id，同页多个 field 各自分配 id。",
           "name": "XhFieldElement",
           "cssParts": [
             {
-              "description": "承载 data-disabled/data-invalid/data-required 的容器",
+              "description": "承载 data-disabled / data-invalid / data-required 的容器",
               "name": "root"
             },
             {
-              "description": "标题；`for` 恒写向控件，故须是原生 `<label>` 才点得动控件",
+              "description": "标题；`for` 恒指向控件，因此须是原生 `<label>` 才能点击聚焦控件",
               "name": "label"
             },
             {
-              "description": "真正的输入控件本身（id 与 aria-* 落在这里，别标在外层包裹节点上）",
+              "description": "实际的输入控件本身（id 与 aria-* 写在这里，不标注在外层包裹节点上）",
               "name": "control"
             },
             {
-              "description": "常驻说明文案，恒在控件的描述链里",
+              "description": "常驻说明文案，恒在控件的描述链中",
               "name": "description"
             },
             {
@@ -21097,7 +21097,7 @@
               "type": {
                 "text": "boolean | undefined"
               },
-              "description": "校验失败态：控件 aria-invalid=true，错误文案接入描述链并显出",
+              "description": "校验失败态：控件 aria-invalid=true，错误文案接入描述链并显示",
               "name": "invalid",
               "fieldName": "invalid"
             },
@@ -21113,7 +21113,7 @@
               "type": {
                 "text": "boolean | undefined"
               },
-              "description": "禁用标注，只落 data-disabled，不代作者写原生 disabled",
+              "description": "禁用标注，只写 data-disabled，不代作者写原生 disabled",
               "name": "disabled",
               "fieldName": "disabled"
             },
@@ -21129,7 +21129,7 @@
               "type": {
                 "text": "string | undefined"
               },
-              "description": "接管控件 id；缺省该属性即由 scope 派生。刻意不叫 id： 宿主的 id 是 `<xh-field>` 自己的 DOM id，挪去当控件 id 会让两个节点撞同一个 id",
+              "description": "接管控件 id；未提供该属性即由 scope 派生。刻意不命名为 id： 宿主的 id 是 `<xh-field>` 自己的 DOM id，移作控件 id 会使两个节点使用同一个 id",
               "name": "control-id",
               "fieldName": "controlId"
             }
