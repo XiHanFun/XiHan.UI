@@ -17,12 +17,12 @@ type ColumnsByBreakpoint = Exclude<MasonryColumns, number>
 /** 列数的档位名，base 在前，其余自窄到宽。 */
 const COLUMN_TIERS = ['base', 'sm', 'md', 'lg', 'xl'] as const
 
-/** 模板里写 columns="3" 拿到的是字符串，交给算法前统一转成数字。 */
+/** 模板中写 columns="3" 得到的是字符串，交给算法前统一转为数字。 */
 function count(value: number | string | undefined): number | undefined {
   return value == null ? undefined : Number(value)
 }
 
-/** 列数：整数与字符串按单个数走；断点对象逐档转数字，没写的档不带进去。 */
+/** 列数：整数与字符串按单个数处理；断点对象逐档转数字，未写的档不带入。 */
 function columnsOf(value: number | string | ColumnsByBreakpoint | undefined): MasonryColumns | undefined {
   if (value == null || typeof value !== 'object')
     return count(value)
@@ -36,10 +36,10 @@ function columnsOf(value: number | string | ColumnsByBreakpoint | undefined): Ma
 }
 
 /**
- * 把默认插槽摊成一个个项。
+ * 把默认插槽摊平为一个个项。
  *
- * `v-for` 产出的是一个片段而不是若干节点，不摊平就整段算一项，一列里会塞进所有内容；
- * `v-if` 为假留下的注释节点与模板缩进留下的空白文本一个像素都不画，留着会占掉一个格位。
+ * `v-for` 产出的是一个片段而不是若干节点，不摊平就整段算一项，一列中会放入所有内容；
+ * `v-if` 为假留下的注释节点与模板缩进留下的空白文本不渲染任何像素，保留会占用一个格位。
  */
 function masonryItems(nodes: readonly VNode[]): VNode[] {
   const items: VNode[] = []
@@ -73,13 +73,13 @@ export const XhMasonry = defineComponent({
   },
   setup(props, { slots }) {
     const rootEl = ref<HTMLElement | null>(null)
-    /** 容器自身的宽度，换档看它。 */
+    /** 容器自身的宽度，换档依据它。 */
     const width = ref(0)
-    /** 按作者写的项序排好的实测高度。 */
+    /** 按作者写的项序排列的实测高度。 */
     const heights = ref<number[]>([])
 
     let observer: ResizeObserver | null = null
-    /** 当前挂着观察器的节点，与新一轮比对后才决定要不要重挂。 */
+    /** 当前挂载观察器的节点，与新一轮比对后才决定是否重新挂载。 */
     let observed: HTMLElement[] = []
 
     /** Headless 只产出测量快照；是否写入 Vue ref 仍由适配器决定。 */
@@ -90,7 +90,7 @@ export const XhMasonry = defineComponent({
         heights.value = [...measurement.heights]
     }
 
-    /** 量一遍容器宽度与每一项的高度。量到的与上一遍一样就不写，否则量一次重排一次没完。 */
+    /** 测量一遍容器宽度与每一项的高度。测得的与上一遍一样则不写入，否则每测一次重排一次无法终止。 */
     const measure = (): void => {
       const el = rootEl.value
       if (!el)
@@ -98,7 +98,7 @@ export const XhMasonry = defineComponent({
       publishMeasurement(measureMasonry(el))
     }
 
-    /** 项增删后把观察器挂到新的一批节点上，再量一遍。节点没变就不重挂：重挂会白白多跑一轮回调。 */
+    /** 项增删后把观察器挂载到新的一批节点上，再测量一遍。节点未变则不重新挂载：重新挂载会多运行一轮回调。 */
     const sync = (): void => {
       const el = rootEl.value
       if (!el)

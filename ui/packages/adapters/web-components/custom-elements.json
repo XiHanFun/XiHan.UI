@@ -30918,7 +30918,7 @@
       "declarations": [
         {
           "kind": "class",
-          "description": "`<xh-masonry>` —— Light-DOM 行为宿主，无状态机。作者写一个 root、若干 column 空容器，\n以及一批 item；元素量出容器宽度与每一项的高度，算出各项落在第几列，再把项搬进对应的列里。\n\n列由作者写，因为元素不生成结构：请按最宽那一档需要的列数写足 column 节点，\n当前档位用不上的那几列会被收起。项写在 root 里即可，写在哪儿都会被搬进列里，\n所以 column 节点必须是空容器，别在里面另放内容。\n\n项的先后取「首次见到的顺序」——静态标记就是作者写的顺序；运行期新增的项排在末尾，\n需要精确插到中间时请整块重建这批项。\n\n浏览器没有 ResizeObserver 时只在每次接线那一刻量，之后不再跟随尺寸变化。",
+          "description": "`<xh-masonry>`：Light-DOM 行为宿主，无状态机。作者写一个 root、若干 column 空容器，\n以及一批 item；元素测量容器宽度与每一项的高度，计算各项落在第几列，再把项移入对应的列。\n\n列由作者编写，因为元素不生成结构：按最宽档位需要的列数写足 column 节点，\n当前档位用不到的列会被收起。项写在 root 中即可，无论位置都会被移入列中，\n因此 column 节点必须是空容器，不在其中另放内容。\n\n项的先后取首次见到的顺序：静态标记即作者书写的顺序；运行期新增的项排在末尾，\n需要精确插入中间时整块重建这批项。\n\n浏览器没有 ResizeObserver 时只在每次接线时测量，之后不再跟随尺寸变化。",
           "name": "XhMasonryElement",
           "cssParts": [
             {
@@ -30926,11 +30926,11 @@
               "name": "root"
             },
             {
-              "description": "一列，承载 data-index；须是空容器，项由元素搬进来",
+              "description": "一列，承载 data-index；须是空容器，项由元素移入",
               "name": "column"
             },
             {
-              "description": "一项，承载 data-index（作者写的原序）与 data-column（落在第几列）",
+              "description": "一项，承载 data-index（作者书写的原序）与 data-column（落在第几列）",
               "name": "item"
             }
           ],
@@ -31084,7 +31084,7 @@
               "type": {
                 "text": "MasonryColumns | undefined"
               },
-              "description": "分几列，不写按三列；写 JSON 对象则逐档给列数（base / sm / md / lg / xl），按容器自身宽度换档",
+              "description": "列数，未提供时按三列；写 JSON 对象则逐档提供列数（base / sm / md / lg / xl），按容器自身宽度换档",
               "name": "columns",
               "fieldName": "columns"
             },
@@ -31100,7 +31100,7 @@
               "type": {
                 "text": "boolean | undefined"
               },
-              "description": "按文档序逐列填，不写则最短列优先",
+              "description": "按文档序逐列填充，未提供时最短列优先",
               "name": "sequential",
               "fieldName": "sequential"
             }

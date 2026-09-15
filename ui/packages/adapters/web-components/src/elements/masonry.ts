@@ -20,9 +20,9 @@ const STRING_CONVERTER = { fromAttribute: (v: string | null) => v ?? undefined }
 const BOOLEAN_CONVERTER = { fromAttribute: (v: string | null) => (v === null ? undefined : v !== 'false') }
 
 /**
- * 列数写整数就是各档同一个列数（`columns="3"`），写 JSON 对象就是逐档的列数
- * （`columns='{"base":1,"md":3}'`）。解析不出对象时当没写：落一个半截对象进去，
- * 缺的那几档会安静地退回缺省列数，而作者看不出是哪里写坏了。
+ * 列数写整数即各档同一个列数（`columns="3"`），写 JSON 对象即逐档的列数
+ * （`columns='{"base":1,"md":3}'`）。无法解析为对象时视为未写：传入一个不完整的对象，
+ * 缺失的档会静默退回默认列数，而作者无法察觉是哪里写错了。
  */
 const COLUMNS_CONVERTER = {
   fromAttribute: (v: string | null) => {
@@ -43,25 +43,25 @@ const COLUMNS_CONVERTER = {
 }
 
 /**
- * `<xh-masonry>` —— Light-DOM 行为宿主，无状态机。作者写一个 root、若干 column 空容器，
- * 以及一批 item；元素量出容器宽度与每一项的高度，算出各项落在第几列，再把项搬进对应的列里。
+ * `<xh-masonry>`：Light-DOM 行为宿主，无状态机。作者写一个 root、若干 column 空容器，
+ * 以及一批 item；元素测量容器宽度与每一项的高度，计算各项落在第几列，再把项移入对应的列。
  *
- * 列由作者写，因为元素不生成结构：请按最宽那一档需要的列数写足 column 节点，
- * 当前档位用不上的那几列会被收起。项写在 root 里即可，写在哪儿都会被搬进列里，
- * 所以 column 节点必须是空容器，别在里面另放内容。
+ * 列由作者编写，因为元素不生成结构：按最宽档位需要的列数写足 column 节点，
+ * 当前档位用不到的列会被收起。项写在 root 中即可，无论位置都会被移入列中，
+ * 因此 column 节点必须是空容器，不在其中另放内容。
  *
- * 项的先后取「首次见到的顺序」——静态标记就是作者写的顺序；运行期新增的项排在末尾，
- * 需要精确插到中间时请整块重建这批项。
+ * 项的先后取首次见到的顺序：静态标记即作者书写的顺序；运行期新增的项排在末尾，
+ * 需要精确插入中间时整块重建这批项。
  *
- * 浏览器没有 ResizeObserver 时只在每次接线那一刻量，之后不再跟随尺寸变化。
+ * 浏览器没有 ResizeObserver 时只在每次接线时测量，之后不再跟随尺寸变化。
  *
  * @customElement xh-masonry
- * @attr {number|string} columns - 分几列，不写按三列；写 JSON 对象则逐档给列数（base / sm / md / lg / xl），按容器自身宽度换档
+ * @attr {number|string} columns - 列数，未提供时按三列；写 JSON 对象则逐档提供列数（base / sm / md / lg / xl），按容器自身宽度换档
  * @attr {'xs'|'sm'|'md'|'lg'|'xl'} gap - 列与列、项与项之间的间距档位，逐档对应一个间距令牌
- * @attr {boolean} sequential - 按文档序逐列填，不写则最短列优先
+ * @attr {boolean} sequential - 按文档序逐列填充，未提供时最短列优先
  * @csspart root - 排布容器，承载 data-gap / data-sequential
- * @csspart column - 一列，承载 data-index；须是空容器，项由元素搬进来
- * @csspart item - 一项，承载 data-index（作者写的原序）与 data-column（落在第几列）
+ * @csspart column - 一列，承载 data-index；须是空容器，项由元素移入
+ * @csspart item - 一项，承载 data-index（作者书写的原序）与 data-column（落在第几列）
  */
 export class XhMasonryElement extends XhElement {
   static override partContract = { anatomy: masonryAnatomy, meta: masonryMeta }
