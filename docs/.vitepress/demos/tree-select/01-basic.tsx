@@ -1,4 +1,4 @@
-// 基础用法 | 收起时整个控件只占触发器一个 Tab 位，展开那一刻焦点真的进树、落在已选中的那行上
+// 基础用法 | 收起时整个控件只占触发器一个 Tab 位，展开时焦点真正进入树、落在已选中的行上
 import type { ReactNode } from "react";
 import {
   XhTreeSelectBranch,

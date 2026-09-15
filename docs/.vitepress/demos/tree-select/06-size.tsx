@@ -1,4 +1,4 @@
-// 尺寸 | size 换掉行高、内边距与字号，不写就是缺省档
+// 尺寸 | size 更换行高、内边距与字号，不写即默认档
 import type { ReactNode } from "react";
 import {
   XhTreeSelectBranch,

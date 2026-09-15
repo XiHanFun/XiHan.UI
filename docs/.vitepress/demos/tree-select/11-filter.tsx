@@ -1,4 +1,4 @@
-// 浮层内关键词过滤 | 输入框是树的兄弟节点，树的键盘处理器挂在 tree 上，打字不会被连打检索收走；换掉 collection 可见行与方向键顺序跟着重算
+// 浮层内关键词过滤 | 输入框是树的兄弟节点，树的键盘处理器挂在 tree 上，输入不会被连打检索接管；更换 collection 后可见行与方向键顺序随之重算
 import type { ReactNode } from "react";
 import {
   XhTreeSelectBranch,

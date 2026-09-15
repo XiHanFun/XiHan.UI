@@ -1,4 +1,4 @@
-<!-- 禁用、只读与校验失败 | disabled 连键盘入口都没有；readOnly 照常展开浏览但值改不动也清不掉；invalid 只报校验态，交互一切照旧 -->
+<!-- 禁用、只读与校验失败 | disabled 连键盘入口都没有；readOnly 照常展开浏览但值不可修改也不可清空；invalid 只报告校验态，交互一切照常 -->
 <script setup lang="ts">
 import {
   XhTreeSelectBranch,

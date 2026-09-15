@@ -1,4 +1,4 @@
-<!-- 浮层里的操作区 | footer 写在 content 里、tree 的兄弟：它不进 role=tree 的拥有关系，方向键也走不到；在浮层内点按钮不算点在外面，浮层不会因此收起 -->
+<!-- 浮层中的操作区 | footer 写在 content 中、tree 的兄弟：它不进入 role=tree 的拥有关系，方向键也无法到达；在浮层内点击按钮不算点击外部，浮层不会因此收起 -->
 <script setup lang="ts">
 import {
   XhTreeSelectBranch,
