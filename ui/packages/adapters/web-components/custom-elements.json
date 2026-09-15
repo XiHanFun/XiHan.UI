@@ -9557,11 +9557,11 @@
       "declarations": [
         {
           "kind": "class",
-          "description": "`<xh-color-picker>` —— Light-DOM 行为宿主：作者写 root/label/trigger/value-text/swatch/\npositioner/content/saturation-area/area-thumb/hue-slider/alpha-slider/channel-input/swatch-picker\n等角色节点，元素跑 color-picker 机器并把 connect 产出打上去。浮层定位引擎在本元素里建好、经 refs 注入机器，\n锚点取 trigger，被定位的浮层取 positioner。\n\n工作色恒是 HSVA（取色区两轴为饱和度与明度），对外的值串按 format 序列化。\nformat 只在落值那一刻起作用，单独改它不重排已有的值串——要让当前颜色改按新写法产出，\n换过 format 再调一次 `setValue(当前值)`。取色区与滑块轨道的矩形只在指针事件那一刻才量。\n\n色相 / 透明度两条颜色滑块与预设色板是内嵌组件：hue-slider / alpha-slider / swatch-picker 三个挂载点\n同时充当它们的根节点，挂载点里作者写的是 color-slider 的 control / track / thumb / label / value-text /\nhidden-input 与 color-swatch-picker 的 item / swatch / indicator / hidden-input，接线后各带自己的\ndata-scope；色板的格子用 value 属性写明颜色。数值框用 channel 属性写明自己调哪一路（`channel=\"r\"`）。",
+          "description": "`<xh-color-picker>`：Light-DOM 行为宿主：作者写 root / label / trigger / value-text / swatch /\npositioner / content / saturation-area / area-thumb / hue-slider / alpha-slider / channel-input / swatch-picker\n等角色节点，元素运行 color-picker 状态机并把 connect 产出接上。浮层定位引擎在本元素中创建、经 refs 注入状态机，\n锚点取 trigger，被定位的浮层取 positioner。\n\n工作色恒为 HSVA（取色区两轴为饱和度与明度），对外的值串按 format 序列化。\nformat 只在落值时起作用，单独修改它不重排已有的值串：需要当前颜色按新写法产出时，\n更换 format 后再调用一次 `setValue(当前值)`。取色区与滑块轨道的矩形只在指针事件时测量。\n\n色相 / 透明度两条颜色滑块与预设色板是内嵌组件：hue-slider / alpha-slider / swatch-picker 三个挂载点\n同时充当它们的根节点，挂载点中作者编写的是 color-slider 的 control / track / thumb / label / value-text /\nhidden-input 与 color-swatch-picker 的 item / swatch / indicator / hidden-input，接线后各带自己的\ndata-scope；色板的格子用 value 属性写明颜色。数值框用 channel 属性写明所调的通道（`channel=\"r\"`）。",
           "name": "XhColorPickerElement",
           "cssParts": [
             {
-              "description": "组件根容器（承载 data-state/data-disabled/data-readonly）",
+              "description": "组件根容器（承载 data-state / data-disabled / data-readonly）",
               "name": "root"
             },
             {
@@ -9577,15 +9577,15 @@
               "name": "trigger"
             },
             {
-              "description": "当前值串的显示位；留空即由元素填入，作者写了内容则归作者",
+              "description": "当前值串的显示位；留空即由元素填入，作者写了内容则由作者负责",
               "name": "value-text"
             },
             {
-              "description": "当前颜色的色块（aria-hidden，背景由连接层写成内联样式）",
+              "description": "当前颜色的色块（aria-hidden，背景由连接层写为内联样式）",
               "name": "swatch"
             },
             {
-              "description": "浮层定位容器，坐标由引擎写成内联样式",
+              "description": "浮层定位容器，坐标由引擎写为内联样式",
               "name": "positioner"
             },
             {
@@ -9597,15 +9597,15 @@
               "name": "saturation-area"
             },
             {
-              "description": "role=slider 的取色区拇指，两条轴的位置由连接层写成内联样式",
+              "description": "role=slider 的取色区拇指，两条轴的位置由连接层写为内联样式",
               "name": "area-thumb"
             },
             {
-              "description": "色相滑块的挂载点，同时是那条滑块的根节点；里面写 color-slider 的 control / track / thumb",
+              "description": "色相滑块的挂载点，同时是该滑块的根节点；其中写 color-slider 的 control / track / thumb",
               "name": "hue-slider"
             },
             {
-              "description": "透明度滑块的挂载点，同上；alpha 关掉时整条禁用",
+              "description": "透明度滑块的挂载点，同上；alpha 关闭时整条禁用",
               "name": "alpha-slider"
             },
             {
@@ -9617,11 +9617,11 @@
               "name": "eye-dropper-trigger"
             },
             {
-              "description": "预设色板的挂载点，同时是色板的根节点（role=radiogroup）；里面写 color-swatch-picker 的 item / swatch / indicator / hidden-input，每格自带 value 属性",
+              "description": "预设色板的挂载点，同时是色板的根节点（role=radiogroup）；其中写 color-swatch-picker 的 item / swatch / indicator / hidden-input，每格自带 value 属性",
               "name": "swatch-picker"
             },
             {
-              "description": "type=hidden 的表单出口，值是当前颜色串；作者不写这个部件就不参与提交",
+              "description": "type=hidden 的表单出口，值是当前颜色串；作者未编写该部件时不参与提交",
               "name": "hidden-input"
             }
           ],
@@ -10048,7 +10048,7 @@
                   "text": "ReturnType<typeof connectColorPicker> | null"
                 }
               },
-              "description": "命令式入口共用的取法；机器要到进文档（hostConnected）才建，还没建时给 null，调用方退回空操作。"
+              "description": "命令式入口共用的取法；状态机在进入文档（hostConnected）后才建立，尚未建立时返回 null，调用方退回空操作。"
             },
             {
               "kind": "method",
@@ -10066,7 +10066,7 @@
                   }
                 }
               ],
-              "description": "写一个新颜色，与点预设色板同一条路径（照常发 value-change）。\n入参按当前 format 重新序列化后落值，所以换过 format 再把原值写回来，值串就改按新写法产出。"
+              "description": "写入一个新颜色，与点击预设色板同一路径（照常触发 value-change）。\n入参按当前 format 重新序列化后落值，因此更换 format 后再写回原值，值串会按新格式产出。"
             },
             {
               "kind": "field",
@@ -10074,7 +10074,7 @@
               "type": {
                 "text": "ColorPickerErrors"
               },
-              "description": "格式、输入、颜色解析与屏幕取色四路错误；机器未建立时均为空。",
+              "description": "格式、输入、颜色解析与屏幕取色四路错误；状态机尚未建立时均为空。",
               "readonly": true
             },
             {
@@ -10085,7 +10085,7 @@
                   "text": "void"
                 }
               },
-              "description": "清掉四路显式错误；屏幕取色重试也会自动先清它自己那一路。"
+              "description": "清除四路显式错误；屏幕取色重试时也会自动先清除该路错误。"
             },
             {
               "kind": "field",
@@ -10237,7 +10237,7 @@
               "type": {
                 "text": "string | undefined"
               },
-              "description": "受控颜色值串；缺省该属性即非受控",
+              "description": "受控颜色值串；未提供该属性即非受控",
               "name": "value",
               "fieldName": "value"
             },
@@ -10261,7 +10261,7 @@
               "type": {
                 "text": "boolean | undefined"
               },
-              "description": "受控开合；缺省该属性即非受控",
+              "description": "受控开合；未提供该属性即非受控",
               "name": "open",
               "fieldName": "open"
             },
@@ -10277,7 +10277,7 @@
               "type": {
                 "text": "boolean | undefined"
               },
-              "description": "禁用：触发器与按钮走原生 disabled，取色区与滑杆退出 Tab 序列",
+              "description": "禁用：触发器与按钮使用原生 disabled，取色区与滑杆退出 Tab 序列",
               "name": "disabled",
               "fieldName": "disabled"
             },
@@ -10285,7 +10285,7 @@
               "type": {
                 "text": "boolean | undefined"
               },
-              "description": "只读：浮层照开，进去只是改不动",
+              "description": "只读：浮层照常打开，其中内容不可修改",
               "name": "read-only",
               "fieldName": "readOnly"
             },
@@ -10293,7 +10293,7 @@
               "type": {
                 "text": "boolean | undefined"
               },
-              "description": "带透明度，默认关；关掉时透明度那条滑杆与输入框整条禁用",
+              "description": "带透明度，默认关闭；关闭时透明度滑杆与输入框整条禁用",
               "name": "alpha",
               "fieldName": "alpha"
             },
@@ -10325,7 +10325,7 @@
               "type": {
                 "text": "Placement | undefined"
               },
-              "description": "首选放置位，默认 bottom-start；避让后的实际位写在 data-placement 上",
+              "description": "首选放置位，默认 bottom-start；避让后的实际位置写在 data-placement 上",
               "name": "placement",
               "fieldName": "placement"
             },
@@ -10341,7 +10341,7 @@
               "type": {
                 "text": "string | undefined"
               },
-              "description": "表单字段名；给了 hidden-input 才带 name 并参与提交",
+              "description": "表单字段名；提供后 hidden-input 才带 name 并参与提交",
               "name": "name",
               "fieldName": "name"
             }
