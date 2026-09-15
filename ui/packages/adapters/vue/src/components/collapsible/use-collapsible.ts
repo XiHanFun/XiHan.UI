@@ -19,7 +19,7 @@ import { createVueIdGenerator } from '../../runtime/vue-id'
 export interface CollapsibleContext {
   api: ComputedRef<CollapsibleApi>
   contentRef: Ref<HTMLElement | null>
-  /** 收起动画播完之前保持为真：真正的收起由它落成内联 display。 */
+  /** 收起动画播完之前保持为真：真正的收起由它写为内联 display。 */
   visible: Ref<boolean>
 }
 

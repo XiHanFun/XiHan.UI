@@ -16,20 +16,20 @@ import { createOverlayExit } from '../overlay-exit'
 import { MachineController } from '../runtime/machine-controller'
 
 /**
- * `<xh-collapsible>` —— Light-DOM 行为宿主，跑 collapsible 机器打到 root/trigger/content/indicator
+ * `<xh-collapsible>`：Light-DOM 行为宿主，运行 collapsible 状态机并接到 root / trigger / content / indicator
  * 角色节点，收起时用内联 style.display 隐藏 content。
  *
  * @customElement xh-collapsible
- * @attr {boolean} open - 受控开合；缺省该属性即非受控
+ * @attr {boolean} open - 受控开合；未提供该属性即非受控
  * @attr {boolean} default-open - 非受控初始为展开
  * @attr {boolean} disabled - 禁用 trigger 切换
  * @attr {'brand'|'neutral'|'success'|'warning'|'danger'|'info'} tone - 语气
  * @attr {'sm'|'md'|'lg'} size - 尺寸
- * @attr {'ltr'|'rtl'} dir - 文字方向，写到 root 上；不给则继承祖先
+ * @attr {'ltr'|'rtl'} dir - 文字方向，写到 root 上；未提供时继承祖先
  * @fires open-change - open 状态变化；detail 为 `{ open: boolean }`
  * @csspart root - 披露根容器
- * @csspart header - 触发器与其同排内容住的那一行，可缺省
- * @csspart trigger - 触发按钮（aria-expanded/aria-controls 所在）
+ * @csspart header - 触发器与其同排内容所在的行，可省略
+ * @csspart trigger - 触发按钮（aria-expanded / aria-controls 所在）
  * @csspart content - 可折叠内容（收起时隐藏）
  * @csspart indicator - 开合方向标记（展开时转向）
  */
