@@ -99,6 +99,12 @@ describe('input-group 单一输入表面', () => {
     expect(isTransparentColor(nestedControl.borderTopColor)).toBe(true)
     expect(isTransparentColor(nestedControl.backgroundColor)).toBe(true)
     expect(getComputedStyle(input).outlineStyle).toBe('none')
+    expect(nestedControl.transitionDuration.split(', ').every(value => value === '0s')).toBe(true)
+
+    input.blur()
+    expect(isTransparentColor(getComputedStyle(control('primary')).borderTopColor)).toBe(true)
+    await new Promise(resolve => setTimeout(resolve, 150))
+    expect(isTransparentColor(getComputedStyle(control('primary')).borderTopColor)).toBe(true)
 
     const after = root.getBoundingClientRect()
     expect(after.width).toBe(before.width)
