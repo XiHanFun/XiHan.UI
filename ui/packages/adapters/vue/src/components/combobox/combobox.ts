@@ -27,7 +27,7 @@ import { useCombobox } from './use-combobox'
 
 type ComboboxProps = ComboboxSchema['props']
 
-/** 默认插槽的载荷：展开状态、选中值、输入串、高亮候选、空态，与改这些的命令。 */
+/** 默认插槽的载荷：展开状态、选中值、输入串、高亮候选、空态，以及修改它们的命令。 */
 export type ComboboxRootSlotProps = Pick<
   ComboboxApi,
   'open' | 'value' | 'inputValue' | 'highlightedValue' | 'empty' | 'isSelected' | 'setOpen' | 'setValue' | 'setInputValue' | 'clear'
@@ -38,9 +38,9 @@ export const XhComboboxRoot = defineComponent({
   // 有 connect 兜底的 prop：普通类型省略 default，Boolean 显式保留 undefined
   props: {
     collection: { type: Array as PropType<ComboboxNode[]> },
-    /** 标题文字。给了它就不必再写 label 部件；要放别的内容改用 label 插槽。 */
+    /** 标题文字。提供后不必再写 label 部件；需要放置其他内容时改用 label 插槽。 */
     label: { type: String },
-    /** 无匹配时的提示语。给了它就不必再写 empty 部件；要放别的内容改用 empty 插槽。 */
+    /** 无匹配时的提示语。提供后不必再写 empty 部件；需要放置其他内容时改用 empty 插槽。 */
     empty: { type: String },
     value: { type: [String, Array] as PropType<string | string[]> },
     defaultValue: { type: [String, Array] as PropType<string | string[]> },
@@ -48,7 +48,7 @@ export const XhComboboxRoot = defineComponent({
     defaultInputValue: { type: String },
     open: { type: Boolean, default: undefined },
     defaultOpen: Boolean,
-    /** 表单字段名；给了 hidden-input 才带 name 并参与提交 */
+    /** 表单字段名；提供后 hidden-input 才带 name 并参与提交 */
     name: { type: String },
     form: { type: String },
     multiple: Boolean,
@@ -58,7 +58,7 @@ export const XhComboboxRoot = defineComponent({
     loading: Boolean,
     loop: { type: Boolean, default: undefined },
     placeholder: { type: String },
-    /** 自动铺开时是否渲染清空钮；手写部件模式不看它，写了节点即可清 */
+    /** 自动铺开时是否渲染清空按钮；手写部件模式不使用它，写了节点即可清空 */
     clearable: Boolean,
     translations: { type: Object as PropType<ComboboxProps['translations']> },
     allowCustomValue: Boolean,
@@ -66,7 +66,7 @@ export const XhComboboxRoot = defineComponent({
     inputBehavior: { type: String as PropType<ComboboxInputBehavior> },
     placement: { type: String as PropType<Placement> },
     offset: { type: Number },
-    /** 文字方向；浮层搬到落点后继承不到作者子树上的方向，要 RTL 就显式给。 */
+    /** 文字方向；浮层迁移到落点后无法继承作者子树上的方向，需要 RTL 时显式提供。 */
     dir: { type: String as PropType<Direction> },
     variant: { type: String as PropType<ControlVariant> },
     tone: { type: String as PropType<Tone> },
@@ -164,8 +164,8 @@ export const XhComboboxInput = defineComponent({
   name: 'XhComboboxInput',
   props: {
     /**
-     * 输入框渲染成哪个标签，默认 input。
-     * 写 textarea 即多行宿主：connect 随之撤掉 type、role 与 aria-expanded。
+     * 输入框渲染为哪个标签，默认 input。
+     * 写 textarea 即多行宿主：connect 随之撤销 type、role 与 aria-expanded。
      */
     as: { type: String as PropType<ComboboxInputHost>, default: 'input' },
   },
@@ -328,9 +328,9 @@ export const XhComboboxLoading = defineComponent({
 })
 
 /**
- * 没写默认插槽时按 collection 铺开的整套结构，作者只交数据。
- * 与手写部件产出的 DOM 完全一致，要改结构就写默认插槽，行为不变。
- * 过滤仍归调用方：collection 就是此刻该显示的那几条候选。
+ * 未写默认插槽时按 collection 铺开的整套结构，作者只提供数据。
+ * 与手写部件产出的 DOM 完全一致，需要修改结构时写默认插槽，行为不变。
+ * 过滤仍归调用方：collection 就是当前应显示的候选。
  */
 function renderDefaultTree(
   collection: readonly ComboboxNodeMeta[],
