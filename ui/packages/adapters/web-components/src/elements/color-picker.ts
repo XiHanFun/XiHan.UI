@@ -63,54 +63,54 @@ const STRING_LIST_CONVERTER = {
 }
 
 /**
- * `<xh-color-picker>` —— Light-DOM 行为宿主：作者写 root/label/trigger/value-text/swatch/
- * positioner/content/saturation-area/area-thumb/hue-slider/alpha-slider/channel-input/swatch-picker
- * 等角色节点，元素跑 color-picker 机器并把 connect 产出打上去。浮层定位引擎在本元素里建好、经 refs 注入机器，
+ * `<xh-color-picker>`：Light-DOM 行为宿主：作者写 root / label / trigger / value-text / swatch /
+ * positioner / content / saturation-area / area-thumb / hue-slider / alpha-slider / channel-input / swatch-picker
+ * 等角色节点，元素运行 color-picker 状态机并把 connect 产出接上。浮层定位引擎在本元素中创建、经 refs 注入状态机，
  * 锚点取 trigger，被定位的浮层取 positioner。
  *
- * 工作色恒是 HSVA（取色区两轴为饱和度与明度），对外的值串按 format 序列化。
- * format 只在落值那一刻起作用，单独改它不重排已有的值串——要让当前颜色改按新写法产出，
- * 换过 format 再调一次 `setValue(当前值)`。取色区与滑块轨道的矩形只在指针事件那一刻才量。
+ * 工作色恒为 HSVA（取色区两轴为饱和度与明度），对外的值串按 format 序列化。
+ * format 只在落值时起作用，单独修改它不重排已有的值串：需要当前颜色按新写法产出时，
+ * 更换 format 后再调用一次 `setValue(当前值)`。取色区与滑块轨道的矩形只在指针事件时测量。
  *
  * 色相 / 透明度两条颜色滑块与预设色板是内嵌组件：hue-slider / alpha-slider / swatch-picker 三个挂载点
- * 同时充当它们的根节点，挂载点里作者写的是 color-slider 的 control / track / thumb / label / value-text /
+ * 同时充当它们的根节点，挂载点中作者编写的是 color-slider 的 control / track / thumb / label / value-text /
  * hidden-input 与 color-swatch-picker 的 item / swatch / indicator / hidden-input，接线后各带自己的
- * data-scope；色板的格子用 value 属性写明颜色。数值框用 channel 属性写明自己调哪一路（`channel="r"`）。
+ * data-scope；色板的格子用 value 属性写明颜色。数值框用 channel 属性写明所调的通道（`channel="r"`）。
  *
  * @customElement xh-color-picker
- * @attr {string} value - 受控颜色值串；缺省该属性即非受控
+ * @attr {string} value - 受控颜色值串；未提供该属性即非受控
  * @attr {string} default-value - 非受控初值，默认 #000000
  * @attr {'hex'|'rgba'|'hsla'} format - 值串写法，默认 hex
- * @attr {boolean} open - 受控开合；缺省该属性即非受控
+ * @attr {boolean} open - 受控开合；未提供该属性即非受控
  * @attr {boolean} default-open - 非受控初始为展开
- * @attr {boolean} disabled - 禁用：触发器与按钮走原生 disabled，取色区与滑杆退出 Tab 序列
- * @attr {boolean} read-only - 只读：浮层照开，进去只是改不动
- * @attr {boolean} alpha - 带透明度，默认关；关掉时透明度那条滑杆与输入框整条禁用
+ * @attr {boolean} disabled - 禁用：触发器与按钮使用原生 disabled，取色区与滑杆退出 Tab 序列
+ * @attr {boolean} read-only - 只读：浮层照常打开，其中内容不可修改
+ * @attr {boolean} alpha - 带透明度，默认关闭；关闭时透明度滑杆与输入框整条禁用
  * @attr {string} swatches - 预设色板，逗号分隔（如 "#ff0000,#00ff00"）
  * @attr {'sm'|'md'|'lg'} size - 尺寸
  * @attr {'ltr'|'rtl'} dir - 文字方向，只改写横轴上左右两键与指针的语义，默认 ltr
- * @attr {string} placement - 首选放置位，默认 bottom-start；避让后的实际位写在 data-placement 上
+ * @attr {string} placement - 首选放置位，默认 bottom-start；避让后的实际位置写在 data-placement 上
  * @attr {number} offset - 浮层与锚点的间距（px）
- * @attr {string} name - 表单字段名；给了 hidden-input 才带 name 并参与提交
+ * @attr {string} name - 表单字段名；提供后 hidden-input 才带 name 并参与提交
  * @fires value-change - 颜色变化；detail 为 `{ value: string }`
  * @fires open-change - open 状态变化；detail 为 `{ open: boolean }`
  * @fires color-error - 格式、输入、颜色解析或屏幕取色失败；detail 为判别式错误对象
- * @csspart root - 组件根容器（承载 data-state/data-disabled/data-readonly）
+ * @csspart root - 组件根容器（承载 data-state / data-disabled / data-readonly）
  * @csspart label - 组标题（触发器 aria-labelledby 的目标之一）
  * @csspart control - 触发按钮的收纳容器：描边、底色与聚焦环都落在这一层
  * @csspart trigger - 触发按钮，须是原生 button；同时是浮层的定位锚点
- * @csspart value-text - 当前值串的显示位；留空即由元素填入，作者写了内容则归作者
- * @csspart swatch - 当前颜色的色块（aria-hidden，背景由连接层写成内联样式）
- * @csspart positioner - 浮层定位容器，坐标由引擎写成内联样式
+ * @csspart value-text - 当前值串的显示位；留空即由元素填入，作者写了内容则由作者负责
+ * @csspart swatch - 当前颜色的色块（aria-hidden，背景由连接层写为内联样式）
+ * @csspart positioner - 浮层定位容器，坐标由引擎写为内联样式
  * @csspart content - role=dialog 容器（焦点域与消解层的根节点），收起时带 hidden
  * @csspart saturation-area - 二维取色区，横轴饱和度、纵轴明度；底色是当前色相
- * @csspart area-thumb - role=slider 的取色区拇指，两条轴的位置由连接层写成内联样式
- * @csspart hue-slider - 色相滑块的挂载点，同时是那条滑块的根节点；里面写 color-slider 的 control / track / thumb
- * @csspart alpha-slider - 透明度滑块的挂载点，同上；alpha 关掉时整条禁用
+ * @csspart area-thumb - role=slider 的取色区拇指，两条轴的位置由连接层写为内联样式
+ * @csspart hue-slider - 色相滑块的挂载点，同时是该滑块的根节点；其中写 color-slider 的 control / track / thumb
+ * @csspart alpha-slider - 透明度滑块的挂载点，同上；alpha 关闭时整条禁用
  * @csspart channel-input - 数值输入框，须是原生 input 且自带 channel 属性（hex / r / g / b / a）
  * @csspart eye-dropper-trigger - 屏幕取色按钮，须是原生 button；环境不支持时自动禁用
- * @csspart swatch-picker - 预设色板的挂载点，同时是色板的根节点（role=radiogroup）；里面写 color-swatch-picker 的 item / swatch / indicator / hidden-input，每格自带 value 属性
- * @csspart hidden-input - type=hidden 的表单出口，值是当前颜色串；作者不写这个部件就不参与提交
+ * @csspart swatch-picker - 预设色板的挂载点，同时是色板的根节点（role=radiogroup）；其中写 color-swatch-picker 的 item / swatch / indicator / hidden-input，每格自带 value 属性
+ * @csspart hidden-input - type=hidden 的表单出口，值是当前颜色串；作者未编写该部件时不参与提交
  */
 export class XhColorPickerElement extends XhPortalHostElement {
   /** 本实例的 Portal 容器；显式解析失败不回退配置默认。 */
@@ -340,33 +340,33 @@ export class XhColorPickerElement extends XhPortalHostElement {
     svc.refs.set('getAreaEl', () => this.getPart('saturation-area'))
   }
 
-  /** 提前发现一次角色节点，让 default-open 时机器在 hostConnected 里就取得到 content。 */
+  /** 提前发现一次角色节点，使 default-open 时状态机在 hostConnected 中就能取到 content。 */
   override connectedCallback(): void {
     this.refreshParts()
     super.connectedCallback()
   }
 
   /**
-   * 命令式入口共用的取法；机器要到进文档（hostConnected）才建，还没建时给 null，调用方退回空操作。
+   * 命令式入口共用的取法；状态机在进入文档（hostConnected）后才建立，尚未建立时返回 null，调用方退回空操作。
    */
   private api(): ReturnType<typeof connectColorPicker> | null {
     return this.ctrl.service ? connectColorPicker(this.services(), wcNormalize) : null
   }
 
   /**
-   * 写一个新颜色，与点预设色板同一条路径（照常发 value-change）。
-   * 入参按当前 format 重新序列化后落值，所以换过 format 再把原值写回来，值串就改按新写法产出。
+   * 写入一个新颜色，与点击预设色板同一路径（照常触发 value-change）。
+   * 入参按当前 format 重新序列化后落值，因此更换 format 后再写回原值，值串会按新格式产出。
    */
   setValue(next: string): void {
     this.api()?.setValue(next)
   }
 
-  /** 格式、输入、颜色解析与屏幕取色四路错误；机器未建立时均为空。 */
+  /** 格式、输入、颜色解析与屏幕取色四路错误；状态机尚未建立时均为空。 */
   get errors(): ColorPickerErrors {
     return this.api()?.errors ?? { format: null, input: null, parse: null, eyeDropper: null }
   }
 
-  /** 清掉四路显式错误；屏幕取色重试也会自动先清它自己那一路。 */
+  /** 清除四路显式错误；屏幕取色重试时也会自动先清除该路错误。 */
   clearError(): void {
     this.api()?.clearError()
   }

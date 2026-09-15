@@ -37,18 +37,18 @@ export interface ColorPickerContext {
   triggerRef: Ref<HTMLElement | null>
   positionerRef: Ref<HTMLElement | null>
   contentRef: Ref<HTMLElement | null>
-  /** 此刻该不该渲染：退场动画播完之前仍为真。 */
+  /** 当前是否应当渲染：退场动画播完之前仍为真。 */
   visible: Ref<boolean>
-  /** 二维取色区，机器在指针事件里拿它量矩形。 */
+  /** 二维取色区，状态机在指针事件中读取它的矩形。 */
   areaRef: Ref<HTMLElement | null>
   /**
-   * 三件内嵌组件各自的上下文：挂载点部件把它们 provide 下去，
-   * 作者在挂载点里摆的就是 XhColorSlider* / XhColorSwatchPicker* 那些普通部件。
+   * 三个内嵌组件各自的上下文：挂载点部件把它们 provide 下去，
+   * 作者在挂载点中放置的就是 XhColorSlider* / XhColorSwatchPicker* 普通部件。
    */
   hueSlider: ColorSliderContext
   alphaSlider: ColorSliderContext
   swatchPicker: ColorSwatchPickerContext
-  /** 浮层搬到哪儿：全局配置的 portalContainer > body。 */
+  /** 浮层迁移到的位置：全局配置的 portalContainer > body。 */
   portalTarget: ComputedRef<string | Element>
 }
 

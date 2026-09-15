@@ -39,13 +39,13 @@ export interface ColorPickerContext extends OverlayWiring {
   triggerRef: RefObject<HTMLElement | null>
   /** 被定位的浮层壳。 */
   positionerRef: RefObject<HTMLElement | null>
-  /** 浮层本体，退场动画从它身上探测。 */
+  /** 浮层本体，退场动画从它上面探测。 */
   contentRef: RefObject<HTMLElement | null>
-  /** 二维取色区，机器在指针事件里拿它量矩形。 */
+  /** 二维取色区，状态机在指针事件中读取它的矩形。 */
   areaRef: RefObject<HTMLElement | null>
   /**
-   * 三件内嵌组件各自的上下文：挂载点部件把它们 provide 下去，
-   * 作者在挂载点里摆的就是 XhColorSlider* / XhColorSwatchPicker* 那些普通部件。
+   * 三个内嵌组件各自的上下文：挂载点部件把它们 provide 下去，
+   * 作者在挂载点中放置的就是 XhColorSlider* / XhColorSwatchPicker* 普通部件。
    */
   hueSlider: ColorSliderContext
   alphaSlider: ColorSliderContext

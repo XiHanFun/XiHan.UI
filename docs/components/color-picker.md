@@ -108,24 +108,24 @@ alpha 开启后值串带透明度，浮层里多一条透明度滑块；两条�
 
 | 属性 | 类型 | 必填 | 说明 |
 | --- | --- | --- | --- |
-| `value` | `string` |  | 颜色值串。给定即受控：cell 直读 prop，写只发 onValueChange 不落内部值。 |
+| `value` | `string` |  | 颜色值串。提供即受控：cell 直读 prop，写入只发 onValueChange 不落内部值。 |
 | `defaultValue` | `string` |  |  |
-| `format` | `ColorFormat` |  | 值串的写法，默认 hex。改它只改对外的序列化，工作色恒是 HSVA。 |
-| `open` | `boolean` |  | 展开态。给定即受控：内部不再自改，只发 onOpenChange。 |
+| `format` | `ColorFormat` |  | 值串的写法，默认 hex。修改它只改变对外的序列化，工作色恒为 HSVA。 |
+| `open` | `boolean` |  | 展开态。提供即受控：内部不再自行修改，只发 onOpenChange。 |
 | `defaultOpen` | `boolean` |  |  |
-| `disabled` | `boolean` |  | 整个控件禁用：trigger 与两个按钮走原生 disabled，取色区与滑杆退出 Tab 序列。 |
-| `readOnly` | `boolean` |  | 只读：浮层照开（看得见当前颜色），但任何改值的动作都不发生。 |
-| `swatches` | `string[]` |  | 预设色板：交给内嵌的色块选择器铺格，选中的那一格按颜色比。 |
-| `name` | `string` |  | 表单字段名；给了表单影子才带 name 并参与提交。 |
-| `alpha` | `boolean` |  | 带透明度，默认关。关掉时值串恒不透明，透明度那条滑杆与输入框整条禁用。 |
+| `disabled` | `boolean` |  | 整个控件禁用：trigger 与两个按钮使用原生 disabled，取色区与滑杆退出 Tab 序列。 |
+| `readOnly` | `boolean` |  | 只读：浮层照常展开（可查看当前颜色），但任何改值的动作都不发生。 |
+| `swatches` | `string[]` |  | 预设色板：交给内嵌的色块选择器铺格，选中的格按颜色比较。 |
+| `name` | `string` |  | 表单字段名；提供后表单影子才带 name 并参与提交。 |
+| `alpha` | `boolean` |  | 带透明度，默认关闭。关闭时值串恒为不透明，透明度滑杆与输入框整条禁用。 |
 | `size` | `Size` |  | 尺寸：sm / md / lg。 |
 | `dir` | `Direction` |  | 文字方向。只改写横轴（取色区的饱和度、通道滑杆）上左右两键与指针的语义。 |
 | `placement` | `Placement` |  |  |
 | `offset` | `number` |  |  |
 | `translations` | `Partial<ColorPickerTranslations>` |  |  |
-| `onValueChange` | `(details: ColorPickerValueChangeDetails) => void` |  | value 变化意图回调；受控时是唯一出口，非受控随内部写入一并通知。 |
-| `onOpenChange` | `(details: ColorPickerOpenChangeDetails) => void` |  | open 变化意图回调；受控时是唯一出口，非受控随内部转移一并通知。 |
-| `onColorError` | `(details: ColorPickerErrorDetails) => void` |  | 格式、文本、颜色解析或屏幕取色失败；与 value/open 事件独立。 |
+| `onValueChange` | `(details: ColorPickerValueChangeDetails) => void` |  | value 变化意图回调；受控时是唯一出口，非受控时随内部写入一并通知。 |
+| `onOpenChange` | `(details: ColorPickerOpenChangeDetails) => void` |  | open 变化意图回调；受控时是唯一出口，非受控时随内部转移一并通知。 |
+| `onColorError` | `(details: ColorPickerErrorDetails) => void` |  | 格式、文本、颜色解析或屏幕取色失败；与 value / open 事件独立。 |
 
 ### 事件
 
@@ -169,25 +169,25 @@ alpha 开启后值串带透明度，浮层里多一条透明度滑块；两条�
 | 成员 | 类型 | 说明 |
 | --- | --- | --- |
 | `open` | `boolean` |  |
-| `value` | `string` | 当前值串（与 onValueChange 送出的是同一个）。 |
+| `value` | `string` | 当前值串（与 onValueChange 发出的是同一个）。 |
 | `rgba` | `ColorRgba` |  |
-| `hsva` | `ColorHsva` | 工作色。取色区与色相滑杆读的都是它。 |
+| `hsva` | `ColorHsva` | 工作色。取色区与色相滑杆读取的都是它。 |
 | `format` | `ColorFormat` |  |
 | `alpha` | `boolean` |  |
 | `disabled` | `boolean` |  |
 | `readOnly` | `boolean` |  |
-| `dragging` | `boolean` | 指针正拖着某一处。 |
+| `dragging` | `boolean` | 指针正在拖动某一部位。 |
 | `picking` | `boolean` | 屏幕取色正在进行。 |
 | `eyeDropperSupported` | `boolean` |  |
 | `errors` | `ColorPickerErrors` | 格式、文本、颜色解析与屏幕取色四路互不覆盖的错误。 |
-| `swatches` | `string[]` | 预设色板（原样透传 swatches prop，缺省是空数组）。 |
-| `hueSlider` | `ColorSliderApi<T>` | 色相那条颜色滑块的 api：部件属性与取值都从这里拿，DOM 带 data-scope="color-slider"。 |
-| `alphaSlider` | `ColorSliderApi<T>` | 透明度那条颜色滑块的 api。 |
+| `swatches` | `string[]` | 预设色板（原样透传 swatches prop，默认为空数组）。 |
+| `hueSlider` | `ColorSliderApi<T>` | 色相颜色滑块的 api：部件属性与取值都从这里获取，DOM 带 data-scope="color-slider"。 |
+| `alphaSlider` | `ColorSliderApi<T>` | 透明度颜色滑块的 api。 |
 | `swatchPicker` | `ColorSwatchPickerApi<T>` | 预设色板的 api，DOM 带 data-scope="color-swatch-picker"。 |
-| `inputText` | `(channel: ColorPickerInputChannel) => string` | 某个数值框此刻该显示的字（有草稿显示草稿，否则显示规范文本）。 |
+| `inputText` | `(channel: ColorPickerInputChannel) => string` | 某个数值框当前应显示的文字（有草稿显示草稿，否则显示规范文本）。 |
 | `setOpen` | `(next: boolean) => void` |  |
 | `setValue` | `(next: string) => void` |  |
-| `clearError` | `() => void` | 清掉四路显式错误；屏幕取色重试也会先清它自己那一路。 |
+| `clearError` | `() => void` | 清除四路显式错误；屏幕取色重试也会先清除自己那一路。 |
 | `getRootProps` | `() => T['element']` |  |
 | `getLabelProps` | `() => T['label']` |  |
 | `getControlProps` | `() => T['element']` |  |
@@ -198,12 +198,12 @@ alpha 开启后值串带透明度，浮层里多一条透明度滑块；两条�
 | `getContentProps` | `() => T['element']` |  |
 | `getSaturationAreaProps` | `() => T['element']` |  |
 | `getAreaThumbProps` | `() => T['element']` |  |
-| `getHueSliderProps` | `() => T['element']` | 色相滑块的挂载点，同时充当那条滑块的根节点：滑块 root 的状态标记照抄在它身上。 |
+| `getHueSliderProps` | `() => T['element']` | 色相滑块的挂载点，同时充当该滑块的根节点：滑块 root 的状态标记同步写在它身上。 |
 | `getAlphaSliderProps` | `() => T['element']` | 透明度滑块的挂载点，同上。 |
 | `getChannelInputProps` | `(props: ColorPickerInputProps) => T['input']` |  |
 | `getEyeDropperTriggerProps` | `() => T['button']` |  |
 | `getSwatchPickerProps` | `() => T['element']` | 预设色板的挂载点，同时充当色板的根节点（role=radiogroup 与键盘处理都在它身上）。 |
-| `getHiddenInputProps` | `() => T['input']` | 表单影子：值随表单提交。给了 name 才带 name，不给就不参与提交。 |
+| `getHiddenInputProps` | `() => T['input']` | 表单影子：值随表单提交。提供 name 后才带 name，未提供时不参与提交。 |
 
 ## 无障碍
 

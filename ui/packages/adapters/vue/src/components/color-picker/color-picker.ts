@@ -30,7 +30,7 @@ import { useColorPicker } from './use-color-picker'
 
 type ColorPickerProps = ColorPickerSchema['props']
 
-/** 默认插槽的载荷：展开态、当前颜色的各式表示、预设色板、屏幕取色状态，以及改展开与改值两个动作。 */
+/** 默认插槽的载荷：展开态、当前颜色的各种表示、预设色板、屏幕取色状态，以及修改展开与修改值两个动作。 */
 export type ColorPickerRootSlotProps = Pick<
   ColorPickerApi,
   'open' | 'value' | 'rgba' | 'hsva' | 'swatches' | 'picking' | 'eyeDropperSupported' | 'errors' | 'setOpen' | 'setValue' | 'clearError'
@@ -206,9 +206,9 @@ export const XhColorPickerAreaThumb = defineComponent({
 })
 
 /**
- * 色相滑块的挂载点，同时充当那条滑块的根节点：里面摆的是 XhColorSlider* 那些普通部件
+ * 色相滑块的挂载点，同时充当该滑块的根节点：其中放置的是 XhColorSlider* 普通部件
  * （control / track / thumb / label / value-text），DOM 带 data-scope="color-slider"。
- * 不写默认插槽时铺开最简结构：一条轨道加一枚拇指。
+ * 未写默认插槽时铺开最简结构：一条轨道加一个拇指。
  */
 export const XhColorPickerHueSlider = defineComponent({
   name: 'XhColorPickerHueSlider',
@@ -219,7 +219,7 @@ export const XhColorPickerHueSlider = defineComponent({
   },
 })
 
-/** 透明度滑块的挂载点，同上；alpha 关掉时整条禁用。 */
+/** 透明度滑块的挂载点，同上；alpha 关闭时整条禁用。 */
 export const XhColorPickerAlphaSlider = defineComponent({
   name: 'XhColorPickerAlphaSlider',
   setup(_, { slots }) {
@@ -229,7 +229,7 @@ export const XhColorPickerAlphaSlider = defineComponent({
   },
 })
 
-/** 没写默认插槽时的滑块内部：control 里一条 track 与一枚 thumb，与手写部件产出的 DOM 一致。 */
+/** 未写默认插槽时的滑块内部：control 中一条 track 与一个 thumb，与手写部件产出的 DOM 一致。 */
 function renderSliderTree(): VNode[] {
   return [h(XhColorSliderControl, null, () => [h(XhColorSliderTrack), h(XhColorSliderThumb)])]
 }
@@ -237,7 +237,7 @@ function renderSliderTree(): VNode[] {
 export const XhColorPickerChannelInput = defineComponent({
   name: 'XhColorPickerChannelInput',
   props: {
-    /** 这个框编辑的是哪一路：hex 是整串，r/g/b 是分量，a 是透明度百分数；缺省或不识别时按 hex 处理。 */
+    /** 该输入框编辑的通道：hex 是整串，r/g/b 是分量，a 是透明度百分数；默认或无法识别时按 hex 处理。 */
     channel: { type: String as PropType<ColorPickerInputChannel> },
   },
   setup(props) {
@@ -257,9 +257,9 @@ export const XhColorPickerEyeDropperTrigger = defineComponent({
 })
 
 /**
- * 预设色板的挂载点，同时充当色板的根节点（role=radiogroup、方向键与 roving tabindex 都在它身上）：
- * 里面摆的是 XhColorSwatchPickerItem，DOM 带 data-scope="color-swatch-picker"。
- * 不写默认插槽时按 swatches 自动铺开格子。
+ * 预设色板的挂载点，同时充当色板的根节点（role=radiogroup、方向键与 roving tabindex 都在它上面）：
+ * 其中放置的是 XhColorSwatchPickerItem，DOM 带 data-scope="color-swatch-picker"。
+ * 未写默认插槽时按 swatches 自动铺开格子。
  */
 export const XhColorPickerSwatchPicker = defineComponent({
   name: 'XhColorPickerSwatchPicker',
