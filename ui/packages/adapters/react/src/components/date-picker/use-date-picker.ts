@@ -26,7 +26,7 @@ import { useMachine } from '../../runtime/use-machine'
 import { useOverlay } from '../../runtime/use-overlay'
 
 export interface DatePickerContext extends OverlayWiring {
-  /** 四台机器的把手，供部件上报 DOM 侧的事实。 */
+  /** 四台状态机的句柄，供部件上报 DOM 侧的事实。 */
   services: DatePickerServices
   api: DatePickerApi
   /** 表单重置的锚点：接在根节点上。 */
@@ -34,7 +34,7 @@ export interface DatePickerContext extends OverlayWiring {
   controlRef: RefObject<HTMLElement | null>
   positionerRef: RefObject<HTMLElement | null>
   contentRef: RefObject<HTMLElement | null>
-  /** 首个网格的节点：跨月重渲后日历机器按它现查焦点该落在哪一格。 */
+  /** 首个网格的节点：跨月重渲后日历状态机据此现查焦点应落在哪一格。 */
   gridRef: RefObject<HTMLElement | null>
 }
 

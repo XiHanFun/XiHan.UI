@@ -10,9 +10,9 @@ import type { DatePickerContext } from './use-date-picker'
 import { createContext, useContext } from 'react'
 
 const Ctx = createContext<DatePickerContext | undefined>(undefined)
-/** 格子自报的那一天，供 cell-trigger 复用同一份声明（作者只写一次 value）。 */
+/** 格子声明的那一天，供 cell-trigger 复用同一份声明（作者只写一次 value）。 */
 const CellCtx = createContext<CalendarCellProps | undefined>(undefined)
-/** 日历没自报面板号时的落点，与单面板时一致。 */
+/** 日历未声明面板号时的落点，与单面板时一致。 */
 const PanelCtx = createContext<number>(0)
 
 export const DatePickerProvider = Ctx
