@@ -94,15 +94,15 @@
 
 | 属性 | 类型 | 必填 | 说明 |
 | --- | --- | --- | --- |
-| `value` | `string` |  | 要复制的文本；缺省即复制空串。 |
+| `value` | `string` |  | 要复制的文本；未提供时复制空串。 |
 | `timeout` | `number` |  | 复制成功后指示器保持多久（毫秒），默认 3000；&lt;=0 或非有限数表示不自动回落。 |
-| `disabled` | `boolean` |  | 禁用：复制按钮点不动，作者调 api.copy() 也不动（守卫在机器层）。 |
+| `disabled` | `boolean` |  | 禁用：复制按钮不可点击，作者调用 api.copy() 也无效（守卫在状态机层）。 |
 | `variant` | `ActionVariant` |  | 变体：solid / subtle / outline / ghost。 |
 | `tone` | `Tone` |  | 颜色：brand / neutral / success / warning / danger / info。 |
 | `size` | `Size` |  | 尺寸：sm / md / lg。 |
 | `translations` | `Partial<ClipboardTranslations>` |  |  |
-| `onStatusChange` | `(details: ClipboardStatusChangeDetails) => void` |  | 状态每次落位时通知一次；挂载那一刻的 idle 是初始态，不通知。 |
-| `onCopyError` | `(details: ClipboardCopyErrorDetails) => void` |  | 写入失败时通知；此时状态已经回到 idle。 |
+| `onStatusChange` | `(details: ClipboardStatusChangeDetails) => void` |  | 状态每次落定时通知一次；挂载时的 idle 是初始态，不通知。 |
+| `onCopyError` | `(details: ClipboardCopyErrorDetails) => void` |  | 写入失败时通知；此时状态已回到 idle。 |
 
 ### 事件
 
@@ -111,7 +111,7 @@
 | 事件 | 载荷 | 说明 |
 | --- | --- | --- |
 | `status-change` | `ClipboardStatusChangeDetails` | 状态变化；detail 为 `{ status: 'copying' \| 'copied' \| 'idle' }` |
-| `copy-error` | `ClipboardCopyErrorDetails` | 写入失败；detail 为 `{ error, value }`，此刻状态已经回到 idle |
+| `copy-error` | `ClipboardCopyErrorDetails` | 写入失败；detail 为 `{ error, value }`，此时状态已回到 idle |
 
 ### 插槽
 
@@ -151,17 +151,17 @@
 | --- | --- | --- |
 | `status` | `ClipboardStatus` |  |
 | `disabled` | `boolean` |  |
-| `announcement` | `string` | 播报区不给内容时念的那一句；没到已复制这一档时是空串。 |
-| `copied` | `boolean` | 已经复制成功且还在停留窗口内。指示器与样式的唯一判据。 |
-| `value` | `string` | 当前要复制的文本（prop 缺省时是空串）。 |
-| `copy` | `() => void` | 走一次复制意图，与点按钮同一条路。 |
+| `announcement` | `string` | 播报区未提供内容时朗读的语句；未达到已复制档时为空串。 |
+| `copied` | `boolean` | 已复制成功且仍在停留窗口内。指示器与样式的唯一判据。 |
+| `value` | `string` | 当前要复制的文本（prop 未提供时为空串）。 |
+| `copy` | `() => void` | 发起一次复制意图，与点击按钮走同一路径。 |
 | `getRootProps` | `() => T['element']` |  |
 | `getLabelProps` | `() => T['label']` |  |
 | `getControlProps` | `() => T['element']` |  |
 | `getInputProps` | `() => T['input']` |  |
 | `getCopyTriggerProps` | `() => T['button']` |  |
 | `getIndicatorProps` | `(props: ClipboardIndicatorProps) => T['element']` |  |
-| `getStatusProps` | `() => T['element']` | 复制成功的播报区，视觉隐藏；不给内容时念 announcement。 |
+| `getStatusProps` | `() => T['element']` | 复制成功的播报区，视觉隐藏；未提供内容时朗读 announcement。 |
 
 ## 无障碍
 

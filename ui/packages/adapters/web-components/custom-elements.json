@@ -7831,7 +7831,7 @@
       "declarations": [
         {
           "kind": "class",
-          "description": "`<xh-clipboard>` —— Light-DOM 行为宿主，跑 clipboard 机器并把 connect 产出打到角色节点上。\n\n复制走 `navigator.clipboard.writeText`（要求安全上下文）：在途为 copying，成功转 copied，\n失败回 idle 并派 `copy-error`。\n\n两个 indicator 都常挂，各自用 `copied` 属性声明所属状态，并共享同一格布局宽度。",
+          "description": "`<xh-clipboard>`：Light-DOM 行为宿主，运行 clipboard 状态机并把 connect 产出接到角色节点上。\n\n复制使用 `navigator.clipboard.writeText`（要求安全上下文）：在途为 copying，成功转为 copied，\n失败回到 idle 并派发 `copy-error`。\n\n两个 indicator 都常驻，各自用 `copied` 属性声明所属状态，并共享同一格布局宽度。",
           "name": "XhClipboardElement",
           "cssParts": [
             {
@@ -7839,7 +7839,7 @@
               "name": "root"
             },
             {
-              "description": "标题，须是原生 `<label>`；`for` 恒写向 input",
+              "description": "标题，须是原生 `<label>`；`for` 恒指向 input",
               "name": "label"
             },
             {
@@ -7855,11 +7855,11 @@
               "name": "copy-trigger"
             },
             {
-              "description": "状态标记；写 `copied` 属性的那个是成功侧，不写的是平时那侧",
+              "description": "状态标记；写 `copied` 属性的是成功侧，未写的是常态侧",
               "name": "indicator"
             },
             {
-              "description": "复制成功的播报区，可选；视觉隐藏，不写内容即由宿主填 announcement",
+              "description": "复制成功的播报区，可选；视觉隐藏，未写内容时由宿主填入 announcement",
               "name": "status"
             }
           ],
@@ -7992,7 +7992,7 @@
               }
             },
             {
-              "description": "写入失败；detail 为 `{ error, value }`，此刻状态已经回到 idle",
+              "description": "写入失败；detail 为 `{ error, value }`，此时状态已回到 idle",
               "name": "copy-error",
               "type": {
                 "text": "ClipboardCopyErrorDetails"
@@ -8004,7 +8004,7 @@
               "type": {
                 "text": "string | undefined"
               },
-              "description": "要复制的文本；缺省即复制空串",
+              "description": "要复制的文本；未提供时复制空串",
               "name": "value",
               "fieldName": "value"
             },
@@ -8020,7 +8020,7 @@
               "type": {
                 "text": "boolean | undefined"
               },
-              "description": "禁用，复制按钮点不动；作者调 api.copy() 也不动",
+              "description": "禁用，复制按钮不可点击；作者调用 api.copy() 也无效",
               "name": "disabled",
               "fieldName": "disabled"
             },
@@ -8028,7 +8028,7 @@
               "type": {
                 "text": "ActionVariant | undefined"
               },
-              "description": "形态，决定复制按钮的颜色怎么用",
+              "description": "形态，决定复制按钮的颜色使用方式",
               "name": "variant",
               "fieldName": "variant"
             },
