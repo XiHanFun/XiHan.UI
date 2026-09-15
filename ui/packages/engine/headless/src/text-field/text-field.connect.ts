@@ -39,6 +39,8 @@ export function connectTextField<T extends PropTypes>(
   const atLimit = isAtLimit(value, maxLength)
   const autoSize = prop('autoSize') ?? false
   const showCount = !!prop('showCount')
+  // 形态默认落 outline：不写时 root 与 control 都如实投影，皮肤不再依赖缺省档
+  const variant = prop('variant') ?? 'outline'
   const count = [...value].length
   // 与机器里 canClear 守卫同义。两处都要：这里决定按钮长什么样，那里挡住绕过 DOM 的调用
   const canClear = clearable && editable && !empty
@@ -64,7 +66,7 @@ export function connectTextField<T extends PropTypes>(
       // Action Control 的显示策略只读取命名空间宿主，不反查 text-field anatomy。
       'data-xh-action-owner': '',
       // variant/tone/size 落在 root；control 再带一份 data-variant 给 Field Chrome 家族选择器
-      'data-variant': prop('variant'),
+      'data-variant': variant,
       'data-tone': prop('tone'),
       'data-size': prop('size'),
       'data-disabled': dataAttr(disabled),
@@ -79,7 +81,7 @@ export function connectTextField<T extends PropTypes>(
       ...parts.control.attrs,
       'data-xh-field-chrome': '',
       'data-xh-field-size': prop('size') ?? 'md',
-      'data-variant': prop('variant'),
+      'data-variant': variant,
       'data-disabled': dataAttr(disabled),
       'data-readonly': dataAttr(readOnly),
       'data-invalid': dataAttr(invalid),

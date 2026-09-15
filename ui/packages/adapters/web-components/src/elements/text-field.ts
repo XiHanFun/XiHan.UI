@@ -43,7 +43,7 @@ const BOOLEAN_CONVERTER = { fromAttribute: (v: string | null) => (v === null ? u
  * @attr {boolean} clearable - 开启清空：有值时显示清空按钮，Escape 接管
  * @attr {boolean} show-count - 显示字数部件；关闭时该部件收起
  * @attr {boolean} auto-size - 多行宿主（input 部件写为 textarea）的自动高度；行数界限对象经 autoSize property 赋值
- * @attr {'outline'|'subtle'|'ghost'} variant - 视觉变体
+ * @attr {'outline'|'subtle'|'ghost'} variant - 形态：outline / subtle / ghost，默认 outline
  * @attr {'brand'|'neutral'|'success'|'warning'|'danger'|'info'} tone - 语气
  * @attr {'sm'|'md'|'lg'} size - 尺寸
  * @prop {object} translations - 读屏文案（只能通过 property 设置）：clearTrigger 是清空按钮的名字
