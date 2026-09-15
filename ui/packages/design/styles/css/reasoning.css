@@ -75,7 +75,7 @@
     cursor: pointer;
     transition:
       background var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
-      scale var(--xh-motion-duration-micro) var(--xh-motion-ease-enter-strong);
+      scale var(--xh-motion-duration-release) var(--xh-motion-ease-release);
   }
 
   [data-scope='reasoning'][data-part='trigger'][hidden] {
@@ -88,6 +88,8 @@
 
   [data-scope='reasoning'][data-part='trigger']:active:not(:disabled) {
     scale: var(--xh-motion-scale-press);
+    transition-duration: var(--xh-motion-duration-press);
+    transition-timing-function: var(--xh-motion-ease-press);
   }
 
   [data-scope='reasoning'][data-part='trigger']:disabled {
