@@ -34,23 +34,23 @@ function buildNode(doc: Document, node: IconNode): SVGElement {
 }
 
 /**
- * `<xh-icon>` —— 图标宿主，无状态机，把命名与档位打到 root 上，把图元铺进 glyph 空壳。
+ * `<xh-icon>`：图标宿主，无状态机，把命名与档位写到 root 上，把图元铺进 glyph 空壳。
  *
- * 作者在 `<svg data-xh-part="root">` 里留一个空的 `<g data-xh-part="glyph"></g>` 即授权本元素
- * 在其内部铺图元；不写 glyph 时元素一个节点都不动，几何归作者（手写内联 SVG 或 `<use>`），
- * 命名与档位照常打在 root 上。
+ * 作者在 `<svg data-xh-part="root">` 中留一个空的 `<g data-xh-part="glyph"></g>` 即授权本元素
+ * 在其内部铺设图元；未写 glyph 时元素不修改任何节点，几何归作者（手写内联 SVG 或 `<use>`），
+ * 命名与档位照常写在 root 上。
  *
- * 图标记录是对象，只走 property：`el.icon = checkIcon`。
+ * 图标记录是对象，只能通过 property 设置：`el.icon = checkIcon`。
  *
  * @customElement xh-icon
- * @attr {string} label - 可及名字；非空白时输出 role=img + aria-label，否则输出 aria-hidden=true
- * @attr {'text'|'sm'|'md'|'lg'|'xl'|'2xl'|'3xl'|'4xl'} size - 直径档位，缺省 md；text 跟着相邻文字的字号走
- * @attr {'light'|'regular'|'bold'} weight - 描边粗细档位，缺省 regular
+ * @attr {string} label - 可及名；非空白时输出 role=img + aria-label，否则输出 aria-hidden=true
+ * @attr {'text'|'sm'|'md'|'lg'|'xl'|'2xl'|'3xl'|'4xl'} size - 直径档位，默认 md；text 跟随相邻文字的字号
+ * @attr {'light'|'regular'|'bold'} weight - 描边粗细档位，默认 regular
  * @attr {'brand'|'neutral'|'success'|'warning'|'danger'|'info'} tone - 颜色
- * @attr {'90'|'180'|'270'} rotate - 旋转档位，不转就不写
- * @attr {'horizontal'|'vertical'|'both'} flip - 翻转轴，不翻就不写
- * @csspart root - 根 `<svg>`，承载 viewBox/data-icon/命名属性/data-size/data-weight/data-tone/data-rotate/data-flip
- * @csspart glyph - 作者留出的空 `<g>`，图元铺在它内部
+ * @attr {'90'|'180'|'270'} rotate - 旋转档位，不旋转时不写
+ * @attr {'horizontal'|'vertical'|'both'} flip - 翻转轴，不翻转时不写
+ * @csspart root - 根 `<svg>`，承载 viewBox / data-icon / 命名属性 / data-size / data-weight / data-tone / data-rotate / data-flip
+ * @csspart glyph - 作者留出的空 `<g>`，图元铺设在其内部
  */
 export class XhIconElement extends XhElement {
   static override partContract = {
@@ -128,10 +128,10 @@ export class XhIconElement extends XhElement {
 
   /**
    * 把记录的图元铺进 glyph。
-   * 本元素其余各处都不替作者生成节点，这里是唯一的例外：图元是算出来的派生数据，作者没法自己写，
-   * 且铺设范围被限死在作者显式留出的那个空壳里。
-   * 内容判据是记录的引用相等——记录是模块级常量，同一个图标永远是同一个对象。
-   * childElementCount 那一条兜住外部代码清空过 glyph 的情形。
+   * 本元素其余各处都不替作者生成节点，这里是唯一的例外：图元是计算得出的派生数据，作者无法自行编写，
+   * 且铺设范围限定在作者显式留出的空壳中。
+   * 内容判据是记录的引用相等：记录是模块级常量，同一个图标永远是同一个对象。
+   * childElementCount 一条覆盖外部代码清空过 glyph 的情形。
    */
   #paint(host: Element | null, owned: boolean, record: IconRecord | undefined): void {
     if (!host || !record) {

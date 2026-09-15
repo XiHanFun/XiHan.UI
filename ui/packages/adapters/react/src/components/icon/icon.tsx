@@ -16,8 +16,8 @@ import { reactNormalize } from '../../runtime/normalize-props'
 import { slotPaints } from '../../runtime/slot-content'
 
 /**
- * 把一个图元节点建成元素，递归到底。
- * 标签大小写原样保留；SVG 呈现属性先转成 React 属性名，落到 DOM 后仍是标准连字符写法。
+ * 把一个图元节点建为元素，递归到底。
+ * 标签大小写原样保留；SVG 呈现属性先转为 React 属性名，落到 DOM 后仍是标准连字符写法。
  */
 function renderNode(node: IconNode, key: number): ReactElement {
   return createElement(
@@ -28,23 +28,23 @@ function renderNode(node: IconNode, key: number): ReactElement {
 }
 
 export interface XhIconProps extends Omit<ComponentPropsWithRef<'svg'>, 'rotate'> {
-  /** 要画的图标，传的是记录本身而不是名字。 */
+  /** 要绘制的图标，传入的是记录本身而不是名字。 */
   icon?: IconRecord
-  /** 可及名字；给了非空白文本就是有名字的图像，缺席或全空白算装饰。 */
+  /** 可及名字；提供非空白文本时是有名字的图像，缺席或全空白视为装饰。 */
   label?: string
   size?: IconSize
   weight?: IconWeight
   tone?: Tone
-  /** 旋转档位：90 / 180 / 270，不是这三档的一律不写出。 */
+  /** 旋转档位：90 / 180 / 270，不属于这三档的一律不写出。 */
   rotate?: IconRotate | string
   flip?: IconFlip
 }
 
 /**
- * 根 svg 加一层 g 空壳，图元铺在空壳里。
+ * 根 svg 加一层 g 空壳，图元铺在空壳中。
  *
- * children 给出了内容时改由它填充根，元素不再生成 glyph 与图元；
- * 判据是 children 里有真会画出东西的节点，而不是 children 存不存在——
+ * children 给出内容时改由它填充根，元素不再生成 glyph 与图元；
+ * 判据是 children 中有真正会渲染出内容的节点，而不是 children 是否存在：
  * 条件渲染落空时留下的空白与布尔值不算内容。
  */
 export function XhIcon({

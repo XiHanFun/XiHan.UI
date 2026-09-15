@@ -104,13 +104,13 @@
 
 | 属性 | 类型 | 必填 | 说明 |
 | --- | --- | --- | --- |
-| `flip` | `IconFlip` |  | 翻转轴：horizontal / vertical / both，不翻就不写。旋转与翻转同写时两者叠加。 |
-| `icon` | `IconRecord` |  | 要画的图标。传的是记录本身而不是名字： 名字要走运行期查表，查表就必须把全表静态引进来，摇树全废。 |
-| `label` | `string` |  | 可及名字。 给了非空白文本 = 这个图标是页面上唯一说出这件事的东西，输出 role="img" + aria-label； 缺席或全空白 = 装饰，输出 aria-hidden="true"。没有第三种形态。 |
-| `rotate` | `IconRotate \| string` |  | 旋转档位：90 / 180 / 270，不转就不写。 收字符串是因为 WC 那侧的档位来自 DOM 属性；不是这三档的值一律不写出。 |
-| `size` | `IconSize` |  | 直径档位，缺省 md；缺省档不输出 data-size。 |
+| `flip` | `IconFlip` |  | 翻转轴：horizontal / vertical / both，不翻转时不写。旋转与翻转同时提供时两者叠加。 |
+| `icon` | `IconRecord` |  | 要绘制的图标。传入的是记录本身而不是名字： 名字需要运行期查表，查表就必须把全表静态引入，摇树完全失效。 |
+| `label` | `string` |  | 可及名。 提供非空白文本 = 该图标是页面上唯一表达该信息的元素，输出 role="img" + aria-label； 缺席或全空白 = 装饰，输出 aria-hidden="true"。没有第三种形态。 |
+| `rotate` | `IconRotate \| string` |  | 旋转档位：90 / 180 / 270，不旋转时不写。 接受字符串是因为 WC 侧的档位来自 DOM 属性；不是这三档的值一律不写出。 |
+| `size` | `IconSize` |  | 直径档位，默认 md；默认档不输出 data-size。 |
 | `tone` | `Tone` |  | 颜色：brand / neutral / success / warning / danger / info。 |
-| `weight` | `IconWeight` |  | 描边粗细档位，缺省 regular；缺省档不输出 data-weight。 |
+| `weight` | `IconWeight` |  | 描边粗细档位，默认 regular；默认档不输出 data-weight。 |
 
 ### connect API
 
@@ -118,10 +118,10 @@
 
 | 成员 | 类型 | 说明 |
 | --- | --- | --- |
-| `label` | `string \| undefined` | 解析后的可及名字；装饰态为 undefined。 |
-| `decorative` | `boolean` | 是否装饰态（label 没给或全空白）。 |
-| `nodes` | `readonly IconNode[]` | 要铺进 glyph 的图元树；没传 icon 时是空数组。 |
-| `content` | `IconRecord \| undefined` | 当前铺设内容的身份。就是 icon 本身：记录是模块级常量，引用相等即内容相等。 不用字符串签名——签名要遍历整棵树再拼串，每次 wire 都付一遍。 |
+| `label` | `string \| undefined` | 解析后的可及名；装饰态为 undefined。 |
+| `decorative` | `boolean` | 是否装饰态（label 未提供或全空白）。 |
+| `nodes` | `readonly IconNode[]` | 要铺进 glyph 的图元树；未传 icon 时为空数组。 |
+| `content` | `IconRecord \| undefined` | 当前铺设内容的身份。即 icon 本身：记录是模块级常量，引用相等即内容相等。 不用字符串签名：签名要遍历整棵树再拼串，每次 wire 都要付出一次。 |
 | `getRootProps` | `() => T['element']` |  |
 | `getGlyphProps` | `() => T['element']` |  |
 
