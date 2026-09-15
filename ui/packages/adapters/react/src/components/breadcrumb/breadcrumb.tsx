@@ -15,15 +15,15 @@ import { useBreadcrumb } from './use-breadcrumb'
 
 export interface XhBreadcrumbRootProps extends Omit<ComponentPropsWithRef<'nav'>, 'dir'> {
   collection?: readonly BreadcrumbNode[]
-  /** 最多展开几层，超出的中间层折成一个省略位。 */
+  /** 最多展开几层，超出的中间层折叠为一个省略位。 */
   maxItems?: number
   dir?: Direction
   translations?: Partial<BreadcrumbTranslations>
   tone?: Tone
   size?: Size
-  /** 分隔符的内容；不给时由皮肤绘制默认箭头。 */
+  /** 分隔符的内容；未提供时由皮肤绘制默认箭头。 */
   renderSeparator?: () => ReactNode
-  /** 省略位的内容，拿得到被折起的那几层；不给就是一个省略号。 */
+  /** 省略位的内容，可得到被折叠的层；未提供时为一个省略号。 */
   renderEllipsis?: (nodes: readonly BreadcrumbNodeMeta[]) => ReactNode
 }
 
@@ -56,7 +56,7 @@ export function XhBreadcrumbRoot({
 }
 
 export interface XhBreadcrumbListProps extends ComponentPropsWithRef<'ol'> {}
-/** 渲染为 ol，把层级路径表达成有序列表。 */
+/** 渲染为 ol，把层级路径表达为有序列表。 */
 export function XhBreadcrumbList({ children, ...rest }: XhBreadcrumbListProps): ReactNode {
   const ctx = useBreadcrumbContext()
   return <ol {...mergeReactProps(ctx.api.getListProps() as Record<string, unknown>, rest as Record<string, unknown>)}>{children}</ol>
@@ -69,7 +69,7 @@ export function XhBreadcrumbItem({ children, ...rest }: XhBreadcrumbItemProps): 
 }
 
 export interface XhBreadcrumbLinkProps extends ComponentPropsWithRef<'a'> {
-  /** 当前页那一条。 */
+  /** 当前页的条目。 */
   current?: boolean
 }
 /** href 由作者写，这里只补当前页标记与点击守卫；当前页同样渲染为 `<a>`。 */
@@ -83,7 +83,7 @@ export function XhBreadcrumbLink({ current, children, ...rest }: XhBreadcrumbLin
 }
 
 export interface XhBreadcrumbLinkIconProps extends ComponentPropsWithRef<'span'> {}
-/** 链接里的图标位，与文字并排；纯装饰。 */
+/** 链接中的图标位，与文字并排；纯装饰。 */
 export function XhBreadcrumbLinkIcon({ children, ...rest }: XhBreadcrumbLinkIconProps): ReactNode {
   const ctx = useBreadcrumbContext()
   return <span {...mergeReactProps(ctx.api.getLinkIconProps() as Record<string, unknown>, rest as Record<string, unknown>)}>{children}</span>
@@ -103,9 +103,9 @@ export function XhBreadcrumbEllipsis({ children, ...rest }: XhBreadcrumbEllipsis
 }
 
 /**
- * 没写 children 时按 collection 铺开的整套结构，作者只交数据。
- * 与手写部件产出的 DOM 完全一致，要改结构就写 children，行为不变。
- * 层与层之间铺分隔符，被折掉的那一段铺成一个省略位。
+ * 未写 children 时按 collection 铺开的整套结构，作者只提供数据。
+ * 与手写部件产出的 DOM 完全一致，需要修改结构时写 children，行为不变。
+ * 层与层之间铺分隔符，被折叠的一段铺为一个省略位。
  */
 function DefaultTree(props: {
   items: readonly BreadcrumbItem[]

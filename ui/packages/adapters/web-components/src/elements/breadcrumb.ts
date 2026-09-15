@@ -22,21 +22,21 @@ function authorFlag(el: HTMLElement, name: string): boolean {
 }
 
 /**
- * `<xh-breadcrumb>` —— 面包屑行为宿主，无状态机，把 connectBreadcrumb 产出的 aria-* 打到角色节点上。
+ * `<xh-breadcrumb>`：面包屑行为宿主，无状态机，把 connectBreadcrumb 产出的 aria-* 接到角色节点上。
  *
  * 标签要求：root 为 `<nav>`，list 为 `<ol>`，item / separator / ellipsis 为 `<li>`，link 为 `<a>`。
  * 运行期改写 link 上的 `current` 属性不触发重新接线，需作者自行 requestUpdate。
  *
  * @customElement xh-breadcrumb
- * @attr {number} max-items - 最多展开几层，超出的中间层由 api.items 折成一个省略位
- * @attr {'ltr'|'rtl'} dir - 文字方向，写到 root 上；不给则继承祖先
+ * @attr {number} max-items - 最多展开的层数，超出的中间层由 api.items 折叠为一个省略位
+ * @attr {'ltr'|'rtl'} dir - 文字方向，写到 root 上；未提供时继承祖先
  * @attr {'brand'|'neutral'|'success'|'warning'|'danger'|'info'} tone - 语气
  * @attr {'sm'|'md'|'lg'} size - 尺寸
  * @csspart root - nav 地标，承载 aria-label
  * @csspart list - ol 容器
  * @csspart item - li 条目
- * @csspart link - a 链接；写 current 属性的那条得到 aria-current="page" 并拦住点击
- * @csspart link-icon - 链接里的图标位，对读屏隐藏
+ * @csspart link - a 链接；写 current 属性的条目得到 aria-current="page" 并拦截点击
+ * @csspart link-icon - 链接中的图标位，对读屏隐藏
  * @csspart separator - li 分隔符，对读屏隐藏
  * @csspart ellipsis - li 折叠占位，对读屏隐藏
  */

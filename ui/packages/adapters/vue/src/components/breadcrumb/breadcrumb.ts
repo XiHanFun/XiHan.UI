@@ -73,7 +73,7 @@ export const XhBreadcrumbLink = defineComponent({
   },
 })
 
-/** 链接里的图标位，与文字并排；纯装饰 */
+/** 链接中的图标位，与文字并排；纯装饰 */
 export const XhBreadcrumbLinkIcon = defineComponent({
   name: 'XhBreadcrumbLinkIcon',
   setup(_, { slots }) {
@@ -100,8 +100,8 @@ export const XhBreadcrumbEllipsis = defineComponent({
 })
 
 /**
- * 没写默认插槽时按 collection 铺开的整套结构，作者只交数据。
- * 与手写部件产出的 DOM 完全一致，要改结构就写默认插槽，行为不变。
+ * 未写默认插槽时按 collection 铺开的整套结构，作者只提供数据。
+ * 与手写部件产出的 DOM 完全一致，需要修改结构时写默认插槽，行为不变。
  * 分隔符与省略位的内容默认是文字，写同名插槽即由作者接管。
  */
 function renderDefaultTree(
@@ -112,7 +112,7 @@ function renderDefaultTree(
   return [h(XhBreadcrumbList, null, () => renderItems(items, separatorSlot, ellipsisSlot))]
 }
 
-/** ol 里那一串：层与层之间铺分隔符，被折掉的那一段铺成一个省略位。 */
+/** ol 中的序列：层与层之间铺分隔符，被折叠的一段铺为一个省略位。 */
 function renderItems(
   items: readonly BreadcrumbItem[],
   separatorSlot?: () => VNode[],
