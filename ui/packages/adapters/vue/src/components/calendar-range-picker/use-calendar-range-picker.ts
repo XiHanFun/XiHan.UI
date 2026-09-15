@@ -17,10 +17,10 @@ import { createVueIdGenerator } from '../../runtime/vue-id'
 
 export interface CalendarRangePickerContext {
   api: ComputedRef<CalendarRangePickerApi>
-  /** 机器实例，供部件上报 DOM 侧的事实。 */
+  /** 状态机实例，供部件上报 DOM 侧的事实。 */
   service: Service<CalendarRangePickerSchema>
   gridRef: Ref<HTMLElement | null>
-  /** 根节点：区间挑到一半时，指针在它之外松开就地收口。 */
+  /** 根节点：区间选择到一半时，指针在它之外松开就地收口。 */
   rootRef: Ref<HTMLElement | null>
 }
 
