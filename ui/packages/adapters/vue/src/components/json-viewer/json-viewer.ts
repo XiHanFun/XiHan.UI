@@ -27,7 +27,7 @@ function renderRows(
 
 /**
  * 一行：标量是 item（键名 + 值），对象与数组是 branch（控制行 + 子层）。
- * 没有键名的行（根行、截断占位）不渲染键名部件，免得多出一个空盒子。
+ * 没有键名的行（根行、截断占位）不渲染键名部件，避免多出一个空盒子。
  */
 function renderRow(
   api: JsonViewerApi,
@@ -72,7 +72,7 @@ export const XhJsonViewerRoot = defineComponent({
     // 任意形状都收，类型检查交给使用方
     value: { type: null as unknown as PropType<unknown>, default: undefined as unknown },
     view: { type: String as PropType<JsonViewerView> },
-    /** 外框形态：surface 带描边与底色（缺省），plain 只留内容。 */
+    /** 外框形态：surface 带描边与底色（默认），plain 只保留内容。 */
     variant: { type: String as PropType<JsonViewerVariant> },
     expandedValue: { type: Array as PropType<string[]> },
     defaultExpandedValue: { type: Array as PropType<string[]> },

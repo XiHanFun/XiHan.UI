@@ -37,7 +37,7 @@ function JsonRows({ api, groups, parent }: RowsProps): ReactNode {
     : <JsonItem key={node.value} api={api} node={node} />))
 }
 
-/** 标量行：键名加值。没有键名的行（截断占位）不渲染键名部件，免得多出一个空盒子。 */
+/** 标量行：键名加值。没有键名的行（截断占位）不渲染键名部件，避免多出一个空盒子。 */
 function JsonItem({ api, node }: { api: JsonViewerApi, node: JsonViewerNode }): ReactNode {
   const ref = { value: node.value }
   // 行的聚焦上报不冒泡，改装成原生监听器
@@ -76,7 +76,7 @@ function JsonBranch({ api, groups, node }: BranchProps): ReactNode {
   )
 }
 
-/** 树档的滚动层：整棵树铺在它里面，键盘也在它身上收口。 */
+/** 树档的滚动层：整棵树铺在其中，键盘也在它上面收口。 */
 function JsonViewerTree({ api, keepLayer }: { api: JsonViewerApi, keepLayer: (el: HTMLElement | null) => void }): ReactNode {
   // 容器的 onFocus 是 DOM 的 focus（不冒泡，只在容器自己得焦时接管）。React 的同名合成事件
   // 挂的是冒泡的 focusin，行得焦也会把它叫起来，那一下会把焦点从行抢回锚点上。
@@ -90,15 +90,15 @@ function JsonViewerTree({ api, keepLayer }: { api: JsonViewerApi, keepLayer: (el
   )
 }
 
-/** 根上自有的那些取值；行由组件按数据铺，不收 children，dir 与原生的同名属性含义不同，由这里接管。 */
+/** 根上自有的取值；行由组件按数据铺设，不接收 children，dir 与原生的同名属性含义不同，由这里接管。 */
 type RootElementProps = Omit<ComponentPropsWithRef<'div'>, 'children' | 'dir'>
 
 export interface XhJsonViewerRootProps extends RootElementProps {
   /** 要展示的值，任意形状。 */
   value?: unknown
-  /** 展示形态：tree 摊成可折叠的行，text 直接出 JSON 原文。 */
+  /** 展示形态：tree 展开为可折叠的行，text 直接输出 JSON 原文。 */
   view?: JsonViewerView
-  /** 外框形态：surface 带描边与底色（缺省），plain 只留内容。 */
+  /** 外框形态：surface 带描边与底色（默认），plain 只保留内容。 */
   variant?: JsonViewerVariant
   expandedValue?: string[]
   defaultExpandedValue?: string[]
@@ -111,11 +111,11 @@ export interface XhJsonViewerRootProps extends RootElementProps {
   size?: Size
   translations?: Partial<JsonViewerTranslations>
   onExpandedValueChange?: JsonViewerProps['onExpandedValueChange']
-  /** 空态那一格的内容；不写即铺 translations 里的兜底文案。 */
+  /** 空态格子的内容；未写时铺设 translations 中的兜底文案。 */
   empty?: ReactNode
 }
 
-/** 行是按数据摊出来的，作者写不出也不必写：整棵树由组件自己铺。 */
+/** 行是按数据展开的，作者无法写出也不必写：整棵树由组件自行铺设。 */
 export function XhJsonViewerRoot({
   value,
   view,

@@ -15,7 +15,7 @@ import { useMachine } from '../../runtime/use-machine'
 
 export interface JsonViewerContext {
   api: ComputedRef<JsonViewerApi>
-  /** 机器实例，供调用方直接送事件（如从外部展开某一条路径）。 */
+  /** 状态机实例，供调用方直接发送事件（如从外部展开某一条路径）。 */
   service: Service<JsonViewerSchema>
 }
 

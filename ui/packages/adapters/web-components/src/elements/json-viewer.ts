@@ -68,48 +68,48 @@ function setText(el: HTMLElement, text: string): void {
     el.textContent = text
 }
 
-/** 此刻在场的那一档滚动层：树档是 tree，原文档是 text，两者都是 root 的直接子节点。 */
+/** 当前在场的滚动层：树档是 tree，原文档是 text，两者都是 root 的直接子节点。 */
 function scrollLayerOf(root: HTMLElement | null): HTMLElement | null {
   return root?.querySelector<HTMLElement>(':scope > [data-part="tree"], :scope > [data-part="text"]') ?? null
 }
 
 /**
- * `<xh-json-viewer>` —— Light-DOM 行为宿主：作者只写一个 root 角色节点，
- * 元素跑 json-viewer 机器，把 value 摊成的每一行铺进 root 里。
+ * `<xh-json-viewer>`：Light-DOM 行为宿主：作者只写一个 root 角色节点，
+ * 元素运行 json-viewer 状态机，把 value 展平成的每一行铺进 root。
  *
- * 行是按数据算出来的，作者写不出也不必写：树容器与每一行由本元素建，
- * root 的内容整份由本元素接管（写在里面的东西会被替换掉）。
+ * 行按数据计算得出，作者无法编写也不必编写：树容器与每一行由本元素创建，
+ * root 的内容整份由本元素接管（写在其中的内容会被替换）。
  *
- * 收起的分支整棵子层不进 DOM——一份大 JSON 全铺出来会把页面压住。
+ * 收起的分支整棵子层不进入 DOM：一份大 JSON 全部铺开会拖慢页面。
  *
- * 属性里的 value 是一段 JSON 文本（解析不了就当一个字符串值展示）；
- * 直接喂对象走 property（`el.value = { … }`）。
- * expandedValue / defaultExpandedValue / translations 没有对应属性，只能走 property。
+ * 属性中的 value 是一段 JSON 文本（无法解析时按一个字符串值展示）；
+ * 直接传入对象通过 property 设置（`el.value = { … }`）。
+ * expandedValue / defaultExpandedValue / translations 没有对应属性，只能通过 property 设置。
  *
  * @customElement xh-json-viewer
- * @attr {string} value - 要展示的值，写成一段 JSON 文本；对象与数组走 property
+ * @attr {string} value - 要展示的值，写为一段 JSON 文本；对象与数组通过 property 设置
  * @attr {number} default-expanded-depth - 初始展开到第几层，默认 1（只展开根行）
- * @attr {number} max-string-length - 字符串值超过这么多字符就截断
- * @attr {number} max-items - 同一层最多摊出这么多成员，其余收成一行占位
+ * @attr {number} max-string-length - 字符串值超过该字符数即截断
+ * @attr {number} max-items - 同一层最多展开该数量的成员，其余收为一行占位
  * @attr {boolean} sort-keys - 对象键按字典序排列
- * @attr {boolean} loop - 上下键走到首尾回绕，默认关闭
- * @attr {'ltr'|'rtl'} dir - 文字方向，只对调左右方向键的展开/收起语义；不写即从 DOM 现读
+ * @attr {boolean} loop - 上下键到达首尾回绕，默认关闭
+ * @attr {'ltr'|'rtl'} dir - 文字方向，只对调左右方向键的展开 / 收起语义；未提供时从 DOM 读取
  * @attr {'sm'|'md'|'lg'} size - 尺寸
- * @attr {'plain'|'surface'} variant - 外框形态：surface 带描边与底色（缺省），plain 只留内容
+ * @attr {'plain'|'surface'} variant - 外框形态：surface 带描边与底色（默认），plain 只保留内容
  * @fires expanded-value-change - 展开集合变化；detail 为 `{ value: string[] }`
- * @csspart root - 组件根容器，由作者写出；承载 data-size 与 data-variant
+ * @csspart root - 组件根容器，由作者编写；承载 data-size 与 data-variant
  * @csspart tree - role=tree 的树容器（键盘在此收口，焦点在树外时它兜底占 Tab 位）
  * @csspart item - 标量行，role=treeitem，带 data-value-type
  * @csspart item-key - 标量行的键名
  * @csspart item-value - 标量行的值
- * @csspart branch - 对象/数组行，role=treeitem，带 aria-expanded 与 data-state
- * @csspart branch-control - 分支那一行本身（点它切换展开态）
+ * @csspart branch - 对象 / 数组行，role=treeitem，带 aria-expanded 与 data-state
+ * @csspart branch-control - 分支行本身（点击切换展开态）
  * @csspart branch-trigger - 展开箭头（aria-hidden，不占 Tab 位）
  * @csspart branch-indicator - 箭头字形，随 data-state 转向
  * @csspart branch-text - 分支的键名
  * @csspart preview - 收起摘要（如 `{…} 3`），对读屏隐藏
  * @csspart branch-content - role=group 的子层容器，只在展开时存在
- * @csspart empty - 一行也摊不出来时的占位，铺 translations.empty 那句话；有行可摊时带 hidden
+ * @csspart empty - 无法展开任何一行时的占位，铺设 translations.empty 的文案；有行可展开时带 hidden
  */
 export class XhJsonViewerElement extends XhElement {
   static override partContract = { anatomy: jsonViewerAnatomy, meta: jsonViewerMeta }
@@ -155,9 +155,9 @@ export class XhJsonViewerElement extends XhElement {
   private readonly ctrl = new MachineController<JsonViewerSchema>(this, jsonViewerMachine, () => this.machineProps())
 
   /**
-   * 两档的自绘条：与滚动层同级挂在根上。两档互斥，交此刻在场的那个——
-   * 两个容器都归本元素建，身上没有 data-xh-part，从 root 里现查。
-   * 两条轴都摆：深层缩进往行首方向推、长字符串往行尾伸。
+   * 两档的自绘滚动条：与滚动层同级挂在根上。两档互斥，交给当前在场的一档：
+   * 两个容器都由本元素建立，不带 data-xh-part，从 root 中现查。
+   * 两条轴都排布：深层缩进向行首方向推、长字符串向行尾延伸。
    */
   private readonly bars = new ScrollbarsController(this, {
     shell: () => this.getPart('root'),
@@ -197,9 +197,9 @@ export class XhJsonViewerElement extends XhElement {
   private readonly rows = new Map<string, JsonRow>()
 
   /**
-   * root 被移出本宿主时，铺在它里面的行也一并离场。浏览器此时不派 focusout，
-   * 机器会一直认为焦点还在树内，行重新铺回来时高亮仍挂在那一行上。
-   * 这里替 DOM 把焦点离场如实上报（锚点留着，重新铺回来时仍落回那一行）。
+   * root 被移出本宿主时，铺在其中的行也一并离场。浏览器此时不派发 focusout，
+   * 状态机会一直认为焦点仍在树内，行重新铺回时高亮仍挂在该行上。
+   * 这里替 DOM 把焦点离场如实上报（锚点保留，重新铺回时仍落回该行）。
    */
   protected override onPartsReleased(nodes: readonly HTMLElement[]): void {
     const { context, getStatus, send } = this.ctrl.service
@@ -348,9 +348,9 @@ export class XhJsonViewerElement extends XhElement {
   }
 
   /**
-   * 把条子接到此刻在场的那一档容器上。
-   * 机器的追踪器在本轮渲染之前就跑完了，这一轮换掉的容器它看不见；
-   * 换了档就再催一轮，下一轮的追踪器才把滚动监听与容器标记挪过去。
+   * 把滚动条接到当前在场的容器上。
+   * 状态机的追踪器在本轮渲染之前就已运行完毕，本轮更换的容器它无法看到；
+   * 换档后再推动一轮，下一轮的追踪器才把滚动监听与容器标记迁移过去。
    */
   private syncBars(): void {
     this.bars.wire()
@@ -362,9 +362,9 @@ export class XhJsonViewerElement extends XhElement {
   }
 
   /**
-   * root 里只留这一档的容器：摘走另一档，作者写在里面的东西也一并清掉。
-   * 自绘条同样挂在 root 上，按 scope 认出来留着——整份 replaceChildren 会把条子一起抹掉。
-   * 已经就位的节点一个都不碰：移动一个节点等于把它摘下来再插回去，焦点在树里会掉回 body。
+   * root 中只保留该档的容器：移除另一档，作者写在其中的内容也一并清除。
+   * 自绘滚动条同样挂在 root 上，按 scope 识别后保留：整份 replaceChildren 会把滚动条一起清除。
+   * 已经就位的节点一律不动：移动一个节点等于把它移除再插回，焦点在树内会回落到 body。
    */
   private adopt(root: HTMLElement, keep: HTMLElement, drop: HTMLElement | undefined): void {
     drop?.remove()

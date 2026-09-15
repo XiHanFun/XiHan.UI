@@ -27787,11 +27787,11 @@
       "declarations": [
         {
           "kind": "class",
-          "description": "`<xh-json-viewer>` —— Light-DOM 行为宿主：作者只写一个 root 角色节点，\n元素跑 json-viewer 机器，把 value 摊成的每一行铺进 root 里。\n\n行是按数据算出来的，作者写不出也不必写：树容器与每一行由本元素建，\nroot 的内容整份由本元素接管（写在里面的东西会被替换掉）。\n\n收起的分支整棵子层不进 DOM——一份大 JSON 全铺出来会把页面压住。\n\n属性里的 value 是一段 JSON 文本（解析不了就当一个字符串值展示）；\n直接喂对象走 property（`el.value = { … }`）。\nexpandedValue / defaultExpandedValue / translations 没有对应属性，只能走 property。",
+          "description": "`<xh-json-viewer>`：Light-DOM 行为宿主：作者只写一个 root 角色节点，\n元素运行 json-viewer 状态机，把 value 展平成的每一行铺进 root。\n\n行按数据计算得出，作者无法编写也不必编写：树容器与每一行由本元素创建，\nroot 的内容整份由本元素接管（写在其中的内容会被替换）。\n\n收起的分支整棵子层不进入 DOM：一份大 JSON 全部铺开会拖慢页面。\n\n属性中的 value 是一段 JSON 文本（无法解析时按一个字符串值展示）；\n直接传入对象通过 property 设置（`el.value = { … }`）。\nexpandedValue / defaultExpandedValue / translations 没有对应属性，只能通过 property 设置。",
           "name": "XhJsonViewerElement",
           "cssParts": [
             {
-              "description": "组件根容器，由作者写出；承载 data-size 与 data-variant",
+              "description": "组件根容器，由作者编写；承载 data-size 与 data-variant",
               "name": "root"
             },
             {
@@ -27811,11 +27811,11 @@
               "name": "item-value"
             },
             {
-              "description": "对象/数组行，role=treeitem，带 aria-expanded 与 data-state",
+              "description": "对象 / 数组行，role=treeitem，带 aria-expanded 与 data-state",
               "name": "branch"
             },
             {
-              "description": "分支那一行本身（点它切换展开态）",
+              "description": "分支行本身（点击切换展开态）",
               "name": "branch-control"
             },
             {
@@ -27839,7 +27839,7 @@
               "name": "branch-content"
             },
             {
-              "description": "一行也摊不出来时的占位，铺 translations.empty 那句话；有行可摊时带 hidden",
+              "description": "无法展开任何一行时的占位，铺设 translations.empty 的文案；有行可展开时带 hidden",
               "name": "empty"
             }
           ],
@@ -27986,7 +27986,7 @@
               "privacy": "private",
               "readonly": true,
               "default": "new ScrollbarsController(this, { shell: () => this.getPart('root'), scrollable: () => scrollLayerOf(this.getPart('root')), axes: ['vertical', 'horizontal'], props: () => ({ dir: this.direction }), })",
-              "description": "两档的自绘条：与滚动层同级挂在根上。两档互斥，交此刻在场的那个——\n两个容器都归本元素建，身上没有 data-xh-part，从 root 里现查。\n两条轴都摆：深层缩进往行首方向推、长字符串往行尾伸。"
+              "description": "两档的自绘滚动条：与滚动层同级挂在根上。两档互斥，交给当前在场的一档：\n两个容器都由本元素建立，不带 data-xh-part，从 root 中现查。\n两条轴都排布：深层缩进向行首方向推、长字符串向行尾延伸。"
             },
             {
               "kind": "field",
@@ -28058,7 +28058,7 @@
                   }
                 }
               ],
-              "description": "root 被移出本宿主时，铺在它里面的行也一并离场。浏览器此时不派 focusout，\n机器会一直认为焦点还在树内，行重新铺回来时高亮仍挂在那一行上。\n这里替 DOM 把焦点离场如实上报（锚点留着，重新铺回来时仍落回那一行）。"
+              "description": "root 被移出本宿主时，铺在其中的行也一并离场。浏览器此时不派发 focusout，\n状态机会一直认为焦点仍在树内，行重新铺回时高亮仍挂在该行上。\n这里替 DOM 把焦点离场如实上报（锚点保留，重新铺回时仍落回该行）。"
             },
             {
               "kind": "method",
@@ -28170,7 +28170,7 @@
                   "text": "void"
                 }
               },
-              "description": "把条子接到此刻在场的那一档容器上。\n机器的追踪器在本轮渲染之前就跑完了，这一轮换掉的容器它看不见；\n换了档就再催一轮，下一轮的追踪器才把滚动监听与容器标记挪过去。"
+              "description": "把滚动条接到当前在场的容器上。\n状态机的追踪器在本轮渲染之前就已运行完毕，本轮更换的容器它无法看到；\n换档后再推动一轮，下一轮的追踪器才把滚动监听与容器标记迁移过去。"
             },
             {
               "kind": "method",
@@ -28201,7 +28201,7 @@
                   }
                 }
               ],
-              "description": "root 里只留这一档的容器：摘走另一档，作者写在里面的东西也一并清掉。\n自绘条同样挂在 root 上，按 scope 认出来留着——整份 replaceChildren 会把条子一起抹掉。\n已经就位的节点一个都不碰：移动一个节点等于把它摘下来再插回去，焦点在树里会掉回 body。"
+              "description": "root 中只保留该档的容器：移除另一档，作者写在其中的内容也一并清除。\n自绘滚动条同样挂在 root 上，按 scope 识别后保留：整份 replaceChildren 会把滚动条一起清除。\n已经就位的节点一律不动：移动一个节点等于把它移除再插回，焦点在树内会回落到 body。"
             }
           ],
           "events": [
@@ -28218,7 +28218,7 @@
               "type": {
                 "text": "unknown | undefined"
               },
-              "description": "要展示的值，写成一段 JSON 文本；对象与数组走 property",
+              "description": "要展示的值，写为一段 JSON 文本；对象与数组通过 property 设置",
               "name": "value",
               "fieldName": "value"
             },
@@ -28234,7 +28234,7 @@
               "type": {
                 "text": "number | undefined"
               },
-              "description": "字符串值超过这么多字符就截断",
+              "description": "字符串值超过该字符数即截断",
               "name": "max-string-length",
               "fieldName": "maxStringLength"
             },
@@ -28242,7 +28242,7 @@
               "type": {
                 "text": "number | undefined"
               },
-              "description": "同一层最多摊出这么多成员，其余收成一行占位",
+              "description": "同一层最多展开该数量的成员，其余收为一行占位",
               "name": "max-items",
               "fieldName": "maxItems"
             },
@@ -28258,7 +28258,7 @@
               "type": {
                 "text": "boolean | undefined"
               },
-              "description": "上下键走到首尾回绕，默认关闭",
+              "description": "上下键到达首尾回绕，默认关闭",
               "name": "loop",
               "fieldName": "loop"
             },
@@ -28266,7 +28266,7 @@
               "type": {
                 "text": "Direction | undefined"
               },
-              "description": "文字方向，只对调左右方向键的展开/收起语义；不写即从 DOM 现读",
+              "description": "文字方向，只对调左右方向键的展开 / 收起语义；未提供时从 DOM 读取",
               "name": "dir",
               "fieldName": "direction"
             },
@@ -28282,7 +28282,7 @@
               "type": {
                 "text": "JsonViewerVariant | undefined"
               },
-              "description": "外框形态：surface 带描边与底色（缺省），plain 只留内容",
+              "description": "外框形态：surface 带描边与底色（默认），plain 只保留内容",
               "name": "variant",
               "fieldName": "variant"
             },
