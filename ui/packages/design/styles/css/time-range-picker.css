@@ -430,8 +430,8 @@
     position: relative;
     display: flex;
     align-items: stretch;
-    padding-block: var(--xh-time-range-picker-content-py, var(--xh-space-1));
-    padding-inline: var(--xh-time-range-picker-content-px, var(--xh-space-1));
+    padding-block: var(--xh-time-range-picker-content-py, var(--xh-space-2));
+    padding-inline: var(--xh-time-range-picker-content-px, var(--xh-space-2));
     /* 行内轴的上限是落位后的可用宽度：两组时列并排，秒与上下午都开时八列合计会越过最窄视口，
        放不下时面板内自己横滚，每一列保持自己的宽度不被压 */
     max-inline-size: var(--xh-_time-range-picker-available-w);

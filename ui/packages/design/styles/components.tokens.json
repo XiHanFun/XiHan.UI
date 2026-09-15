@@ -61847,7 +61847,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-space-1"
+        "--xh-space-2"
       ],
       "visibility": "public",
       "description": "time-range-picker 的 content 部件 padding-inline 覆盖槽。"
@@ -61865,7 +61865,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-space-1"
+        "--xh-space-2"
       ],
       "visibility": "public",
       "description": "time-range-picker 的 content 部件 padding-block 覆盖槽。"
