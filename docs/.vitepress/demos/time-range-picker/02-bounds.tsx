@@ -1,4 +1,4 @@
-// 可选时段 | min/max 把界外的格从两组列中裁掉，另一端填满后再各自收窄一次
+// 可选时段 | min/max 与另一端边界把界外格标为禁用，两组列的结构与滚动位置保持稳定
 import type { ReactNode } from "react";
 import {
   XhTimeRangePickerClearTrigger,

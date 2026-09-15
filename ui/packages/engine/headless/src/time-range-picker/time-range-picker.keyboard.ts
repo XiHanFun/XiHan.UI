@@ -17,8 +17,8 @@ export const timeRangePickerKeyboard: KeyboardTable = {
   rows: [
     { id: 'time-range-picker.kbd.open', keys: ['ArrowDown', 'ArrowUp'], when: 'focus in trigger, closed, not disabled', does: '展开浮层，焦点落到起点那组的时列（已选的时仍可选就停在它上面，否则停在首格）' },
     { id: 'time-range-picker.kbd.toggle', keys: ['Enter', 'Space'], when: 'focus in trigger, not disabled', does: '按钮的默认激活即展开/收起（不额外拦键，否则会一开一关）' },
-    { id: 'time-range-picker.kbd.item-next', keys: ['ArrowDown'], when: 'open, focus in 某一列', does: '列内下移一格，到尾回绕；被 min/max 或另一端裁掉的格自动跳过' },
-    { id: 'time-range-picker.kbd.item-prev', keys: ['ArrowUp'], when: 'open, focus in 某一列', does: '列内上移一格，到头回绕；被 min/max 或另一端裁掉的格自动跳过' },
+    { id: 'time-range-picker.kbd.item-next', keys: ['ArrowDown'], when: 'open, focus in 某一列', does: '列内下移一格，到尾回绕；被 min/max 或另一端禁用的格自动跳过' },
+    { id: 'time-range-picker.kbd.item-prev', keys: ['ArrowUp'], when: 'open, focus in 某一列', does: '列内上移一格，到头回绕；被 min/max 或另一端禁用的格自动跳过' },
     { id: 'time-range-picker.kbd.item-first', keys: ['Home'], when: 'open, focus in 某一列', does: '焦点移到本列首格' },
     { id: 'time-range-picker.kbd.item-last', keys: ['End'], when: 'open, focus in 某一列', does: '焦点移到本列末格' },
     { id: 'time-range-picker.kbd.column-next', keys: ['ArrowRight'], when: 'open', does: '换到下一列并落在该列的锚点上；起点那组的末列再往右进终点那组，已在最后一列则不动，不回绕' },

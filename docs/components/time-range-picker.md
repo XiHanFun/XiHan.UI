@@ -26,7 +26,7 @@
 
 ### 可选时段
 
-min/max 把界外的格从两组列中裁掉，另一端填满后再各自收窄一次
+min/max 与另一端边界把界外格标为禁用，两组列的结构与滚动位置保持稳定
 
 <XhDemo src="time-range-picker/02-bounds" />
 
@@ -66,8 +66,8 @@ hourCycle 决定两组段位与时列的写法，上下午各成一段一列
 - 值始终为区间两端 `[start, end]`，按位存放：只填了终点时是 `['', 终点]`，受控回写按同一下标对应。
 - 起止各一组段位，`range-separator` 隔在中间；方向键换段不跨组，`name` 与 `endName` 各自决定两份隐藏输入是否参与提交。
 - 浮层内起止两组时间列并排，左右键跨组换列；选中一格只改对应端的段，浮层不收起。
-- 终点组以起点为下界、起点组以终点为上界：另一端填满后，界外的格从列中裁掉。
-- `step` 分列设定各列的步长；`min` / `max` 直接把界外的格从列中裁掉；`isTimeUnavailable` 逐格判断可选性，第三个参数是哪一端。
+- 终点组以起点为下界、起点组以终点为上界：另一端填满后，界外的格留在原位并标为禁用，列高、滚动位置与焦点节点不跳。
+- `step` 分列设定各列的步长；`min` / `max` 与 `isTimeUnavailable` 只改变格子的可选性，第三个参数是哪一端。
 - `presets` 提供“上午”“全天”等整段快捷项，值使用 ISO 8601 的区间写法拼接两端，点击后两端整份写入值并收起。
 - 终点早于起点、任一端越界时整个字段标为不合法，也可以用 `invalid` 显式声明。
 - 触发器打开空值时焦点直接落到起点组的第一项；从输入段打开时继续保留键入焦点，展开后落到正在编辑一端的时间列。
@@ -109,7 +109,7 @@ hourCycle 决定两组段位与时列的写法，上下午各成一段一列
 | `defaultValue` | `string[]` |  |  |
 | `open` | `boolean` |  | 展开态。提供即受控：内部不再自行修改，只发 onOpenChange。 |
 | `defaultOpen` | `boolean` |  |  |
-| `min` | `string` |  | 下界（含）。裁掉浮层中落在界外的可选值，并把已填的越界值标注出来（不改写它）。终点组还以起点为下界。 |
+| `min` | `string` |  | 下界（含）。把浮层中落在界外的选项标为禁用，并把已填的越界值标注出来（不改写它）。终点组还以起点为下界。 |
 | `max` | `string` |  | 上界（含）。同上。起点组还以终点为上界。 |
 | `locale` | `string` |  | BCP 47 语言标记。决定上午 / 下午的文字，以及未显式提供 hourCycle 时的小时制。 |
 | `hourCycle` | `TimeHourCycle` |  | 小时制。未提供时按 locale 推断，locale 也没有时使用 24。 |
@@ -128,7 +128,7 @@ hourCycle 决定两组段位与时列的写法，上下午各成一段一列
 | `placement` | `Placement` |  |  |
 | `dir` | `Direction` |  | 文字方向，默认 ltr。只改写浮层在行内轴上 start 与 end 的落点。 |
 | `offset` | `number` |  |  |
-| `isTimeUnavailable` | `(value: string, unit: TimePickerColumnUnit, index: TimeRangePickerEndIndex) => boolean` |  | 逐值可选性。接收两位补零的值、所属的列与端：同一个 '30' 在分钟列与秒列含义不同， 起点与终点也可以各有规则。与 min / max 裁掉的值同等处理：判定为真的格子仍可聚焦，只是不可选中。 |
+| `isTimeUnavailable` | `(value: string, unit: TimePickerColumnUnit, index: TimeRangePickerEndIndex) => boolean` |  | 逐值可选性。接收两位补零的值、所属的列与端：同一个 '30' 在分钟列与秒列含义不同， 起点与终点也可以各有规则。与 min / max 的界外值同等处理：判定为真的格子仍可聚焦，只是不可选中。 |
 | `translations` | `Partial<TimeRangePickerTranslations>` |  | 段位与两端读屏名的覆盖；未提供时使用内置英文语义名。 |
 | `onValueChange` | `(details: TimeRangePickerValueChangeDetails) => void` |  | value 变化意图回调；受控时是唯一出口，非受控时随内部写入一并通知。 |
 | `onOpenChange` | `(details: TimeRangePickerOpenChangeDetails) => void` |  | open 变化意图回调；受控时是唯一出口，非受控时随内部转移一并通知。 |
@@ -199,7 +199,7 @@ hourCycle 决定两组段位与时列的写法，上下午各成一段一列
 | `step` | `number` | 实际生效的分列步进。 |
 | `segments` | `TimeSegmentType[]` | 两组段位各自当前参与显示的段，文档序；两组相同。未列入的段由 connect 写上 hidden 收起。 |
 | `focusedSegment` | `TimeRangePickerSegmentRef \| null` | 焦点所在的段；焦点在分段输入外时为 null。 |
-| `columnGroups` | `readonly [TimeRangePickerColumnGroup, TimeRangePickerColumnGroup]` | 起止两组时列：每组应排列的列及每列的可选值（已按 step、min / max 与另一端裁剪）。作者据此渲染浮层。 |
+| `columnGroups` | `readonly [TimeRangePickerColumnGroup, TimeRangePickerColumnGroup]` | 起止两组时列：每组应排列的稳定列及完整选项（已按 step 取样）。界外项由 isItemDisabled 标记，作者据此渲染浮层。 |
 | `focusedColumn` | `TimeRangePickerColumnRef \| null` |  |
 | `focusedItem` | `string \| null` |  |
 | `presets` | `readonly TimeRangePickerPresetState[]` | 快捷选项逐条的状态，数据顺序。未提供 presets 时为空数组。 |

@@ -127,7 +127,7 @@ export interface TimeRangePickerSchema extends MachineSchema {
     /** 展开态。提供即受控：内部不再自行修改，只发 onOpenChange。 */
     open?: boolean
     defaultOpen?: boolean
-    /** 下界（含）。裁掉浮层中落在界外的可选值，并把已填的越界值标注出来（不改写它）。终点组还以起点为下界。 */
+    /** 下界（含）。把浮层中落在界外的选项标为禁用，并把已填的越界值标注出来（不改写它）。终点组还以起点为下界。 */
     min?: string
     /** 上界（含）。同上。起点组还以终点为上界。 */
     max?: string
@@ -169,7 +169,7 @@ export interface TimeRangePickerSchema extends MachineSchema {
     offset?: number
     /**
      * 逐值可选性。接收两位补零的值、所属的列与端：同一个 '30' 在分钟列与秒列含义不同，
-     * 起点与终点也可以各有规则。与 min / max 裁掉的值同等处理：判定为真的格子仍可聚焦，只是不可选中。
+     * 起点与终点也可以各有规则。与 min / max 的界外值同等处理：判定为真的格子仍可聚焦，只是不可选中。
      */
     isTimeUnavailable?: (value: string, unit: TimePickerColumnUnit, index: TimeRangePickerEndIndex) => boolean
     /** 段位与两端读屏名的覆盖；未提供时使用内置英文语义名。 */
@@ -291,7 +291,7 @@ export interface TimeRangePickerApi<T extends PropTypes = PropTypes> {
   segments: TimeSegmentType[]
   /** 焦点所在的段；焦点在分段输入外时为 null。 */
   focusedSegment: TimeRangePickerSegmentRef | null
-  /** 起止两组时列：每组应排列的列及每列的可选值（已按 step、min / max 与另一端裁剪）。作者据此渲染浮层。 */
+  /** 起止两组时列：每组应排列的稳定列及完整选项（已按 step 取样）。界外项由 isItemDisabled 标记，作者据此渲染浮层。 */
   columnGroups: readonly [TimeRangePickerColumnGroup, TimeRangePickerColumnGroup]
   focusedColumn: TimeRangePickerColumnRef | null
   focusedItem: string | null
