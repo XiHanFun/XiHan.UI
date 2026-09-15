@@ -24120,7 +24120,7 @@
       "declarations": [
         {
           "kind": "class",
-          "description": "`<xh-gradient-text>` —— Light-DOM 行为宿主，无状态机，把 connectGradientText 产出打到 root 角色节点。\n\n两端颜色写成 root 上的内联 CSS 变量，渐变怎么画、缺省用哪族颜色都在皮肤里；\n走向按档位落成 data-direction，皮肤逐档换算成 `to <边或角>`。\n\n给了 from 或 to 时 root 的内联 style 归本元素管，作者自己的内联样式请写在宿主元素上。",
+          "description": "`<xh-gradient-text>`：Light-DOM 行为宿主，无状态机，把 connectGradientText 产出接到 root 角色节点。\n\n两端颜色写为 root 上的内联 CSS 变量，渐变的绘制方式、默认使用哪族颜色都在皮肤中；\n走向按档位写为 data-direction，皮肤逐档换算为 `to <边或角>`。\n\n提供 from 或 to 时 root 的内联 style 归本元素管理，作者自己的内联样式写在宿主元素上。",
           "name": "XhGradientTextElement",
           "cssParts": [
             {
@@ -24190,7 +24190,7 @@
               "type": {
                 "text": "string | undefined"
               },
-              "description": "起点颜色，写成 root 上的 --xh-gradient-text-from",
+              "description": "起点颜色，写为 root 上的 --xh-gradient-text-from",
               "name": "from",
               "fieldName": "from"
             },
@@ -24198,7 +24198,7 @@
               "type": {
                 "text": "string | undefined"
               },
-              "description": "终点颜色，写成 root 上的 --xh-gradient-text-to",
+              "description": "终点颜色，写为 root 上的 --xh-gradient-text-to",
               "name": "to",
               "fieldName": "to"
             },
@@ -24206,7 +24206,7 @@
               "type": {
                 "text": "GradientTextDirection | undefined"
               },
-              "description": "渐变走向档位，缺省 to-right",
+              "description": "渐变走向档位，默认 to-right",
               "name": "direction",
               "fieldName": "direction"
             },
