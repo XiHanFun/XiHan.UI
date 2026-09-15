@@ -15,7 +15,7 @@ import { useAnchor } from './use-anchor'
 
 type AnchorProps = AnchorSchema['props']
 
-/** 根上自有的那些取值；dir 与 defaultValue 与原生的同名属性含义不同，由这里接管。 */
+/** 根上自有的取值；dir 与 defaultValue 与原生的同名属性含义不同，由这里接管。 */
 type RootElementProps = Omit<ComponentPropsWithRef<'nav'>, 'defaultValue' | 'dir'>
 
 export interface XhAnchorRootProps extends RootElementProps {
@@ -30,7 +30,7 @@ export interface XhAnchorRootProps extends RootElementProps {
   translations?: Partial<AnchorTranslations>
   tone?: Tone
   size?: Size
-  /** 判定线所依附的滚动容器取值器，缺省挂在窗口上；挂载效应执行时求值。 */
+  /** 判定线所依附的滚动容器取值器，默认挂在窗口上；挂载效应执行时求值。 */
   scrollElement?: () => HTMLElement | null
   onValueChange?: AnchorProps['onValueChange']
   children?: ReactNode
@@ -112,14 +112,14 @@ export function XhAnchorLink({ value, children, ...rest }: XhAnchorLinkProps): R
 }
 
 export interface XhAnchorLinkTextProps extends ComponentPropsWithRef<'span'> {}
-/** 链接里的文字载体：链接内另有图标时，省略号只裁这一段。 */
+/** 链接中的文字载体：链接内另有图标时，省略号只裁剪这一段。 */
 export function XhAnchorLinkText({ children, ...rest }: XhAnchorLinkTextProps): ReactNode {
   const ctx = useAnchorContext()
   return <span {...mergeReactProps(ctx.api.getLinkTextProps() as Record<string, unknown>, rest as Record<string, unknown>)}>{children}</span>
 }
 
 export interface XhAnchorIndicatorProps extends ComponentPropsWithRef<'li'> {}
-/** 指示条容器，位置由机器算好写入内联样式；渲染为 li 以 list 为定位参照系。 */
+/** 指示条容器，位置由状态机计算后写入内联样式；渲染为 li 以 list 为定位参照系。 */
 export function XhAnchorIndicator({ ...rest }: XhAnchorIndicatorProps): ReactNode {
   const ctx = useAnchorContext()
   return <li {...mergeReactProps(ctx.api.getIndicatorProps() as Record<string, unknown>, rest as Record<string, unknown>)} />
