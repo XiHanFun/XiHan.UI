@@ -32,7 +32,7 @@ export type TreeRootSlotProps = Pick<
   | 'select'
 >
 
-/** 本节点持有焦点时，value 变更重报焦点节点，卸载时上报整树失焦 */
+/** 本节点持有焦点时，value 变更重新报告焦点节点，卸载时上报整树失焦 */
 function reportNodeFocus(ctx: TreeContext, el: Ref<HTMLElement | null>, value: () => string): void {
   watch(value, (next, prev) => {
     if (next === prev)
@@ -59,14 +59,14 @@ export const XhTreeRoot = defineComponent({
   // 有 connect 兜底的 prop：普通类型省略 default，Boolean 显式保留 undefined
   props: {
     collection: { type: Array as PropType<TreeNode[]> },
-    /** 外框形态：surface 带描边与底色（缺省），plain 只留行。 */
+    /** 外框形态：surface 带描边与底色（默认），plain 只保留行。 */
     variant: { type: String as PropType<TreeProps['variant']> },
     expandedValue: { type: Array as PropType<string[]> },
     defaultExpandedValue: { type: Array as PropType<string[]> },
     selection: { type: Array as PropType<string[]> },
     defaultSelection: { type: Array as PropType<string[]> },
     multiple: { type: Boolean, default: undefined },
-    /** 末端那一层怎么排，默认 vertical；horizontal 让子节点全是叶子的那层并排铺开。 */
+    /** 末端层的排布方式，默认 vertical；horizontal 使子节点全为叶子的层并排铺开。 */
     leafOrientation: { type: String as PropType<TreeProps['leafOrientation']> },
     cascade: Boolean,
     checkedStrategy: { type: String as PropType<TreeProps['checkedStrategy']> },
@@ -76,9 +76,9 @@ export const XhTreeRoot = defineComponent({
     loop: { type: Boolean, default: undefined },
     typeahead: { type: Boolean, default: undefined },
     dir: { type: String as PropType<Direction> },
-    /** 节点可以拖着搬家。整个节点都是拖动源，不另出把手。 */
+    /** 节点可以拖动移动。整个节点都是拖动源，不另设把手。 */
     nodeDraggable: Boolean,
-    /** 这一次搬家许不许。收到的是折算好的落点（搬到哪个父下面的第几位）。不给即都许。 */
+    /** 本次移动是否允许。收到的是折算后的落点（移动到哪个父节点下的第几位）。未提供时全部允许。 */
     allowDrop: { type: Function as PropType<TreeProps['allowDrop']> },
     translations: { type: Object as PropType<TreeProps['translations']> },
   },
@@ -161,8 +161,8 @@ export const XhTreeLoading = defineComponent({
 /**
  * 拖动过程的读屏播报区，视觉上不可见。
  *
- * 放在 root 里、与 tree 部件平级。它必须在拖动开始**之前**就在 DOM 上——
- * 读屏不播报后插入的节点，等到拾起才渲出来等于没有。
+ * 放在 root 中、与 tree 部件平级。它必须在拖动开始之前就在 DOM 上：
+ * 读屏不播报后插入的节点，等到拾起才渲染等于没有。
  */
 export const XhTreeLiveRegion = defineComponent({
   name: 'XhTreeLiveRegion',
@@ -205,9 +205,9 @@ export const XhTreeItemText = defineComponent({
 })
 
 /**
- * 节点拖拽把手。放在节点里，自带 touch-action: none，按下即拖，不等激活距离。
- * 对读屏隐藏、也不占 Tab 位；键盘搬家由树上的 Alt + 方向键承担。
- * 整个节点起手那一路照旧可用，把手是叠加的第二个入口。
+ * 节点拖拽把手。放在节点中，自带 touch-action: none，按下即拖动，不等待激活距离。
+ * 对读屏隐藏、也不占 Tab 位；键盘移动由树上的 Alt + 方向键承担。
+ * 整个节点拖动的路径照常可用，把手是叠加的第二个入口。
  */
 export const XhTreeNodeDragTrigger = defineComponent({
   name: 'XhTreeNodeDragTrigger',

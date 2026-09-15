@@ -20,7 +20,7 @@ import { useTree } from './use-tree'
 
 type TreeProps = TreeSchema['props']
 
-/** 服务端没有提交这一步，layout effect 换成永不执行的 useEffect，避开 React 的警告。 */
+/** 服务端没有提交这一步，layout effect 替换为永不执行的 useEffect，避开 React 的警告。 */
 
 /** 函数式 children 的载荷：可见行序列与展开、选中、焦点状态，以及按值判定与展开、收起、选中的动作。 */
 export type TreeRootSlotProps = Pick<
@@ -37,7 +37,7 @@ export type TreeRootSlotProps = Pick<
   | 'select'
 >
 
-/** 本节点持有焦点时，value 变更重报焦点节点，卸载时上报整树失焦。 */
+/** 本节点持有焦点时，value 变更重新报告焦点节点，卸载时上报整树失焦。 */
 function useNodeFocusReport(
   service: Service<TreeSchema>,
   el: RefObject<HTMLElement | null>,
@@ -69,14 +69,14 @@ function useNodeFocusReport(
 
 export interface XhTreeRootProps extends Omit<ComponentPropsWithRef<'div'>, 'children'> {
   collection?: TreeNode[]
-  /** 外框形态：surface 带描边与底色（缺省），plain 只留行。 */
+  /** 外框形态：surface 带描边与底色（默认），plain 只保留行。 */
   variant?: TreeVariant
   expandedValue?: string[]
   defaultExpandedValue?: string[]
   selection?: string[]
   defaultSelection?: string[]
   multiple?: boolean
-  /** 末端那一层怎么排，默认 vertical；horizontal 让子节点全是叶子的那层并排铺开。 */
+  /** 末端层的排布方式，默认 vertical；horizontal 使子节点全为叶子的层并排铺开。 */
   leafOrientation?: Orientation
   cascade?: boolean
   checkedStrategy?: CascadeStrategy
@@ -86,14 +86,14 @@ export interface XhTreeRootProps extends Omit<ComponentPropsWithRef<'div'>, 'chi
   loop?: boolean
   typeahead?: boolean
   dir?: Direction
-  /** 节点可以拖着搬家。整个节点都是拖动源，不另出把手。 */
+  /** 节点可以拖动移动。整个节点都是拖动源，不另设把手。 */
   nodeDraggable?: boolean
-  /** 这一次搬家许不许。收到的是折算好的落点（搬到哪个父下面的第几位）。不给即都许。 */
+  /** 本次移动是否允许。收到的是折算后的落点（移动到哪个父节点下的第几位）。未提供时全部允许。 */
   allowDrop?: TreeProps['allowDrop']
   translations?: TreeProps['translations']
   onExpandedValueChange?: TreeProps['onExpandedValueChange']
   onSelectionChange?: TreeProps['onSelectionChange']
-  /** 搬家是通知，节点顺序的真源在使用者的数据里。 */
+  /** 移动是通知，节点顺序的真源在使用者的数据中。 */
   onNodeMove?: TreeProps['onNodeMove']
   children?: SlotChildren<TreeRootSlotProps>
 }
@@ -191,14 +191,14 @@ export function XhTreeTree({ children, ...rest }: XhTreeTreeProps): ReactNode {
 }
 
 export interface XhTreeEmptyProps extends ComponentPropsWithRef<'div'> {}
-/** 空态占位：写在 root 里、tree 的兄弟，不进 role=tree 的拥有关系。 */
+/** 空态占位：写在 root 中、tree 的兄弟，不进入 role=tree 的拥有关系。 */
 export function XhTreeEmpty({ children, ...rest }: XhTreeEmptyProps): ReactNode {
   const ctx = useTreeContext()
   return <div {...mergeReactProps(ctx.api.getEmptyProps() as Record<string, unknown>, rest as Record<string, unknown>)}>{children}</div>
 }
 
 export interface XhTreeLoadingProps extends ComponentPropsWithRef<'div'> {}
-/** 在途占位：与空态占位同一个位置，取数期间顶上来。 */
+/** 在途占位：与空态占位同一个位置，取数期间显示。 */
 export function XhTreeLoading({ children, ...rest }: XhTreeLoadingProps): ReactNode {
   const ctx = useTreeContext()
   return <div {...mergeReactProps(ctx.api.getLoadingProps() as Record<string, unknown>, rest as Record<string, unknown>)}>{children}</div>
@@ -208,8 +208,8 @@ export interface XhTreeLiveRegionProps extends ComponentPropsWithRef<'div'> {}
 /**
  * 拖动过程的读屏播报区，视觉上不可见。
  *
- * 放在 root 里、与 tree 部件平级。它必须在拖动开始**之前**就在 DOM 上——
- * 读屏不播报后插入的节点，等到拾起才渲出来等于没有。
+ * 放在 root 中、与 tree 部件平级。它必须在拖动开始之前就在 DOM 上：
+ * 读屏不播报后插入的节点，等到拾起才渲染等于没有。
  */
 export function XhTreeLiveRegion({ children, ...rest }: XhTreeLiveRegionProps): ReactNode {
   const ctx = useTreeContext()
@@ -255,9 +255,9 @@ export function XhTreeItemText({ children, ...rest }: XhTreeItemTextProps): Reac
 
 export interface XhTreeNodeDragTriggerProps extends ComponentPropsWithRef<'span'> {}
 /**
- * 节点拖拽把手。放在节点里，自带 touch-action: none，按下即拖，不等激活距离。
- * 对读屏隐藏、也不占 Tab 位；键盘搬家由树上的 Alt + 方向键承担。
- * 整个节点起手那一路照旧可用，把手是叠加的第二个入口。
+ * 节点拖拽把手。放在节点中，自带 touch-action: none，按下即拖动，不等待激活距离。
+ * 对读屏隐藏、也不占 Tab 位；键盘移动由树上的 Alt + 方向键承担。
+ * 整个节点拖动的路径照常可用，把手是叠加的第二个入口。
  */
 export function XhTreeNodeDragTrigger({ children, ...rest }: XhTreeNodeDragTriggerProps): ReactNode {
   const ctx = useTreeContext()
