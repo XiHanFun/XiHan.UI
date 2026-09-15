@@ -22853,7 +22853,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-shape-pill"
+        "--xh-shape-control"
       ],
       "visibility": "public",
       "description": "download-trigger 的 root 部件 border-radius 覆盖槽。"

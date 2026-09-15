@@ -1790,7 +1790,7 @@
   padding-inline: var(--xh-download-trigger-px, var(--xh-control-px-md));
   padding-block: 0;
   border: var(--xh-stroke-thin) solid var(--xh-download-trigger-border, var(--xh-_download-trigger-border));
-  border-radius: var(--xh-download-trigger-radius, var(--xh-shape-pill));
+  border-radius: var(--xh-download-trigger-radius, var(--xh-shape-control));
   background: var(--xh-download-trigger-bg, var(--xh-_download-trigger-bg));
   color: var(--xh-download-trigger-fg, var(--xh-_download-trigger-fg));
   /* 表单控件不继承页面字体，只给字号会让按钮用 UA 默认字族 */

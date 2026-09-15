@@ -234,7 +234,7 @@
 | `--xh-download-trigger-loading-duration` | `root` | `animation` | `default` | `--xh-spin-duration` | download-trigger 的 root 部件 animation 覆盖槽。 |
 | `--xh-download-trigger-loading-fg` | `root` | `border-block-start-color`<br>`border-color` | `@media (prefers-reduced-motion: reduce)`<br>`default`<br>`motion=reduce`<br>`where([data-motion='reduce'])` | `--xh-_download-trigger-fg` | download-trigger 的 root 部件 border-block-start-color、border-color 覆盖槽。 |
 | `--xh-download-trigger-px` | `root` | `padding-inline` | `default`<br>`size=lg`<br>`size=sm` | `--xh-control-px-lg`<br>`--xh-control-px-md`<br>`--xh-control-px-sm` | download-trigger 的 root 部件 padding-inline 覆盖槽。 |
-| `--xh-download-trigger-radius` | `root` | `border-radius` | `default` | `--xh-shape-pill` | download-trigger 的 root 部件 border-radius 覆盖槽。 |
+| `--xh-download-trigger-radius` | `root` | `border-radius` | `default` | `--xh-shape-control` | download-trigger 的 root 部件 border-radius 覆盖槽。 |
 | `--xh-download-trigger-shadow-hover` | `root` | `box-shadow` | `hover`<br>`loading`<br>`not([data-loading])` | `--xh-_download-trigger-shadow-hover` | download-trigger 的 root 部件 box-shadow 覆盖槽。 |
 <!-- xh-component-tokens:end -->
 
