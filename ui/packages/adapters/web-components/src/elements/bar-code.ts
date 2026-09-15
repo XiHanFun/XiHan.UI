@@ -27,27 +27,27 @@ function makeGeom(doc: Document, tag: string, name: string): Element {
 }
 
 /**
- * `<xh-bar-code>` —— 条形码宿主，无状态机，`format` 选码制，把命名与档位打到 root 上，把几何铺进 root。
+ * `<xh-bar-code>`：条形码宿主，无状态机，`format` 选择码制，把命名与档位写到 root 上，把几何铺进 root。
  *
- * 作者写一个空的 `<svg data-xh-part="root"></svg>`，几何由本元素生成：条空序列是算出来的派生数据，
- * 作者没法自己写。序列在 connectBarCode 里算一遍，这里只取现成的 path 与文字。
+ * 作者写一个空的 `<svg data-xh-part="root"></svg>`，几何由本元素生成：条空序列是计算得出的派生数据，
+ * 作者无法自行编写。序列在 connectBarCode 中计算一次，这里只取现成的 path 与文字。
  *
- * 几何恒是一条 `<path>`（全部条，含守卫条的延长段与承载条）加若干 `<text>`（人读文字，每段一个）。
+ * 几何恒为一条 `<path>`（全部条，含守卫条的延长段与承载条）加若干 `<text>`（人读文字，每段一个）。
  *
- * 内容不合码制规则（字符不在字符集、位数不对、校验位对不上）或码制不认识时不画任何条，
- * root 上落 `data-state="error"`：画出来的码扫得开，但扫出的内容是错的。
+ * 内容不符合码制规则（字符不在字符集、位数不对、校验位不匹配）或码制未知时不绘制任何条，
+ * root 上写 `data-state="error"`：绘制出的码可以扫描，但扫出的内容是错误的。
  *
  * @customElement xh-bar-code
- * @attr {'code128'|'ean13'|'ean8'|'upca'|'upce'|'itf14'|'code39'} format - 码制，缺省 code128
- * @attr {string} value - 要编码的内容；定长数字码制收不带或带校验位的两种长度
- * @attr {boolean} gs1 - GS1-128：起始符后放 FNC1，内容里的 GS 编成分隔；只对 code128 有意义
- * @attr {boolean} text - 条下面是否印人读文字，缺省印
- * @attr {boolean} checksum - 附 mod 43 校验字符；只对 code39 有意义
- * @attr {number} bar-width - 最窄条的像素宽，缺省 2
- * @attr {number} height - 条的像素高，缺省 64
- * @attr {number} margin - 两侧静区（模块数），缺省按码制的规范值
- * @attr {boolean} bearer-bars - 上下承载条，缺省画；只对 itf14 有意义
- * @attr {string} label - 可及名字，缺省用 value
+ * @attr {'code128'|'ean13'|'ean8'|'upca'|'upce'|'itf14'|'code39'} format - 码制，默认 code128
+ * @attr {string} value - 要编码的内容；定长数字码制接受不带或带校验位的两种长度
+ * @attr {boolean} gs1 - GS1-128：起始符后放置 FNC1，内容中的 GS 编码为分隔；只对 code128 有意义
+ * @attr {boolean} text - 条下方是否打印人读文字，默认打印
+ * @attr {boolean} checksum - 附加 mod 43 校验字符；只对 code39 有意义
+ * @attr {number} bar-width - 最窄条的像素宽度，默认 2
+ * @attr {number} height - 条的像素高度，默认 64
+ * @attr {number} margin - 两侧静区（模块数），默认按码制的规范值
+ * @attr {boolean} bearer-bars - 上下承载条，默认绘制；只对 itf14 有意义
+ * @attr {string} label - 可及名，默认使用 value
  * @csspart root - 根 `<svg>`，承载 viewBox / role=img / aria-label / data-format / data-modules / data-state
  */
 export class XhBarCodeElement extends XhElement {

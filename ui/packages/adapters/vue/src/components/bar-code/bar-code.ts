@@ -12,9 +12,9 @@ import { computed, defineComponent, h } from 'vue'
 import { vueNormalize } from '../../runtime/normalize-props'
 
 /**
- * 整张码画成一个 `<svg>`，`format` 选码制：全部条合成一条 `<path>`，人读文字每段一个 `<text>`，
- * 静区靠 viewBox 留出。条空序列由 connect 算一遍，这里只取现成的 path 与文字；
- * 没有可画的内容时不生成任何几何节点。
+ * 整张码绘制为一个 `<svg>`，`format` 选择码制：全部条合成一条 `<path>`，人读文字每段一个 `<text>`，
+ * 静区依靠 viewBox 留出。条空序列由 connect 计算一次，这里只取现成的 path 与文字；
+ * 没有可绘制的内容时不生成任何几何节点。
  */
 export const XhBarCode = defineComponent({
   name: 'XhBarCode',
