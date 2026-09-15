@@ -18,7 +18,7 @@ import { createVueIdGenerator } from '../../runtime/vue-id'
 export interface SortableContext {
   api: ComputedRef<SortableApi>
   service: Service<SortableSchema>
-  /** 容器节点，机器在拾起时拿它找项、量矩形。 */
+  /** 容器节点，状态机在拾起时用它查找项、测量矩形。 */
   rootRef: Ref<HTMLElement | null>
 }
 

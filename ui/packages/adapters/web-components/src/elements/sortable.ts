@@ -31,33 +31,33 @@ const ID_LIST_CONVERTER = {
 }
 
 /**
- * `<xh-sortable>` —— Light-DOM 行为宿主：作者写 root/item/item-drag-trigger/live-region 角色节点，
- * 元素跑 sortable 机器并把 connect 产出打上去。
+ * `<xh-sortable>`：Light-DOM 行为宿主：作者写 root / item / item-drag-trigger / live-region 角色节点，
+ * 元素运行 sortable 状态机并把 connect 产出接上。
  *
- * 顺序的唯一真源是 `ids`，DOM 里项的先后必须与它一致——几何按 DOM 量，事件按 `ids` 算。
- * 每个 item 与它的 item-drag-trigger 都要用 `item-id` 属性写明自己是哪一项（与 Vue 侧的 `:item-id` 同一份声明）。
- * 单独禁掉某一项写 `item-disabled`。不给 item-drag-trigger 时整项可拖。
+ * 顺序的唯一真源是 `ids`，DOM 中项的先后必须与它一致：几何按 DOM 测量，事件按 `ids` 计算。
+ * 每个 item 与它的 item-drag-trigger 都要用 `item-id` 属性写明所属的项（与 Vue 侧的 `:item-id` 同一份声明）。
+ * 单独禁用某一项写 `item-disabled`。未提供 item-drag-trigger 时整项可拖动。
  *
- * 拖动落点走乐观投影：拖动过程中其余项实时让位，松手即定。让位与跟手的位移由元素每帧
- * 写进内联 transform，作者的样式表不要再碰这条属性。
+ * 拖动落点采用乐观投影：拖动过程中其余项实时让位，松手即确定。让位与跟手的位移由元素每帧
+ * 写入内联 transform，作者的样式表不应再修改该属性。
  *
- * 键盘全在手柄上：空格或回车拾起、方向键挪一格、再按空格放下、Esc 取消。
- * 拖动中的 Tab 会被拦下——焦点一旦移走，这一场就没有出口了。
+ * 键盘全部在手柄上：空格或回车拾起、方向键移动一格、再按空格放下、Esc 取消。
+ * 拖动中的 Tab 会被拦截：焦点一旦移走，本场拖动就没有出口。
  *
  * @customElement xh-sortable
  * @attr {string} ids - 顺序真源，逗号分隔的项标识（如 "a,b,c"）
- * @attr {'horizontal'|'vertical'|'both'} orientation - 排序轴，默认 vertical；换行网格用 both
+ * @attr {'horizontal'|'vertical'|'both'} orientation - 排序轴，默认 vertical；换行网格使用 both
  * @attr {'ltr'|'rtl'} dir - 文字方向，只对调水平排布下左右两键的语义，默认 ltr
- * @attr {boolean} disabled - 禁用：手柄退出 Tab 序列，按下也不进拖动
- * @attr {number} activation-distance - 按下之后走多远才算开始拖，默认 5；给 0 表示按下即拖
- * @attr {boolean} auto-scroll - 拖到容器边缘时自动滚动，默认开
- * @fires sort - 顺序变化；detail 为 `{ from, to, id, ids }`，其中 ids 已重排好
+ * @attr {boolean} disabled - 禁用：手柄退出 Tab 序列，按下也不进入拖动
+ * @attr {number} activation-distance - 按下之后移动多远才视为开始拖动，默认 5；提供 0 表示按下即拖动
+ * @attr {boolean} auto-scroll - 拖到容器边缘时自动滚动，默认开启
+ * @fires sort - 顺序变化；detail 为 `{ from, to, id, ids }`，其中 ids 已重排
  * @fires drag-start - 拾起；detail 为 `{ id, from, mode }`
  * @fires drag-end - 收尾（含取消）；detail 为 `{ id, from, to, mode, canceled }`
  * @csspart root - 承载 data-orientation / data-disabled / data-dragging 的容器
- * @csspart item - 一项；位移由内联 transform 给出，被拖的那项带 data-dragging
- * @csspart item-drag-trigger - role=button 的拖拽手柄，指针与键盘交互全在它身上
- * @csspart drop-indicator - 落点线；拖动中画在松手后这一项会插进去的那条缝上，位置由内联样式给出，节点排在末项之后
+ * @csspart item - 一项；位移由内联 transform 给出，被拖动的项带 data-dragging
+ * @csspart item-drag-trigger - role=button 的拖拽手柄，指针与键盘交互全部在它身上
+ * @csspart drop-indicator - 落点线；拖动中绘制在松手后该项将插入的缝隙上，位置由内联样式给出，节点排在末项之后
  * @csspart live-region - 视觉隐藏的播报区，拖动过程的读屏文案写在这里
  */
 export class XhSortableElement extends XhElement {
@@ -129,11 +129,11 @@ export class XhSortableElement extends XhElement {
   }
 
   /**
-   * 部件自报的项标识。作者在节点上写 item-id="a"，与 Vue 侧的 `:id` 是同一份声明；
-   * 没写就落空串——connect 那边找不到对应项，会当作不可拖的普通节点。
+   * 部件声明的项标识。作者在节点上写 item-id="a"，与 Vue 侧的 `:id` 是同一份声明；
+   * 未写时为空串：connect 找不到对应项，会当作不可拖动的普通节点。
    *
-   * 不用 `id`：那是 HTML 全局属性，写上去会留在 DOM 里（Vue 侧的同名 prop 不会），
-   * 而且同一项的外壳与手柄同名时会造出两个相同的 DOM id。
+   * 不使用 `id`：那是 HTML 全局属性，写上后会留在 DOM 中（Vue 侧的同名 prop 不会），
+   * 而且同一项的外壳与手柄同名时会产生两个相同的 DOM id。
    */
   private partId(el: HTMLElement): string {
     return el.getAttribute('item-id') ?? ''
