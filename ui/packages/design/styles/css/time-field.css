@@ -116,7 +116,7 @@
     padding-inline: var(--xh-time-field-control-px, var(--xh-_time-field-control-px));
     padding-block: 0;
     border: var(--xh-stroke-thin) solid var(--xh-time-field-control-border, var(--xh-_time-field-control-border));
-    border-radius: var(--xh-time-field-control-radius, var(--xh-shape-surface));
+    border-radius: var(--xh-time-field-control-radius, var(--xh-shape-control));
     outline: var(--xh-ring-width) solid transparent;
     outline-offset: var(--xh-ring-offset);
     background: var(--xh-time-field-control-bg, var(--xh-_time-field-control-bg));
@@ -278,7 +278,7 @@
     user-select: none;
     transition:
       background var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
-      scale var(--xh-motion-duration-micro) var(--xh-motion-ease-enter-strong);
+      scale var(--xh-motion-duration-release) var(--xh-motion-ease-release);
   }
 
   /* 没值时连接层给的是 hidden 属性；上面那条 display 会把 UA 规则盖掉 */
@@ -294,6 +294,8 @@
   [data-scope='time-field'][data-part='clear-trigger']:active {
     background: var(--xh-time-field-action-bg-active, var(--xh-bg-subtle-active));
     scale: var(--xh-motion-scale-press);
+    transition-duration: var(--xh-motion-duration-press);
+    transition-timing-function: var(--xh-motion-ease-press);
   }
 
   /* 按钮不占 Tab 位（tabindex=-1），这条是给程序化聚焦兜底：落焦时得看得见 */
