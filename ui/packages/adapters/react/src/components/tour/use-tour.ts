@@ -24,7 +24,7 @@ export interface TourContext extends OverlayWiring {
   spotlightRef: RefObject<HTMLElement | null>
   positionerRef: RefObject<HTMLElement | null>
   contentRef: RefObject<HTMLElement | null>
-  /** 作者是否要画遮罩。 */
+  /** 作者是否要绘制遮罩。 */
   showBackdrop: boolean
 }
 

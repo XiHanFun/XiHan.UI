@@ -18,7 +18,7 @@ import { useTour } from './use-tour'
 
 type TourProps = TourSchema['props']
 
-/** 函数式 children 的载荷：引导的开合与步序状态，以及开关、走步、放弃与校准位置的动作。 */
+/** 函数式 children 的载荷：引导的开合与步序状态，以及开关、切换步骤、放弃与校准位置的动作。 */
 export type TourRootSlotProps = Pick<
   TourApi,
   | 'open'
@@ -46,7 +46,7 @@ export interface XhTourRootProps extends Omit<ComponentPropsWithRef<'div'>, 'chi
   defaultOpen?: boolean
   placement?: Placement
   offset?: number
-  /** 文字方向；浮层搬到落点后继承不到作者子树上的方向，要 RTL 就显式给。 */
+  /** 文字方向；浮层迁移到落点后无法继承作者子树上的方向，需要 RTL 时显式提供。 */
   dir?: Direction
   closeOnEscape?: boolean
   closeOnInteractOutside?: boolean
@@ -176,7 +176,7 @@ export function XhTourSpotlight({ ...rest }: XhTourSpotlightProps): ReactNode {
 }
 
 export interface XhTourPositionerProps extends ComponentPropsWithRef<'div'> {}
-/** 搬到浮层落点：留在原地的话，宿主祖先只要建了层叠上下文就能盖住浮层。 */
+/** 迁移到浮层落点：留在原地时，宿主祖先只要建立了层叠上下文就能遮住浮层。 */
 export function XhTourPositioner({ children, ...rest }: XhTourPositionerProps): ReactNode {
   const ctx = useTourContext()
   return (
@@ -251,7 +251,7 @@ export function XhTourProgressText({ children, ...rest }: XhTourProgressTextProp
 }
 
 export interface XhTourProgressIndicatorProps extends ComponentPropsWithRef<'div'> {}
-/** 圆点组：不给 children 就按步数铺出圆点，作者给了就照作者的来。 */
+/** 圆点组：未提供 children 时按步数铺设圆点，作者提供后按作者的内容。 */
 export function XhTourProgressIndicator({ children, ...rest }: XhTourProgressIndicatorProps): ReactNode {
   const ctx = useTourContext()
   const api = ctx.api

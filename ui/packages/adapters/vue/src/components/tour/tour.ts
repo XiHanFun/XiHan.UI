@@ -17,7 +17,7 @@ import { useTour } from './use-tour'
 
 type TourProps = TourSchema['props']
 
-/** 默认插槽的载荷：引导的开合与步序状态，以及开关、走步、放弃与校准位置的动作。 */
+/** 默认插槽的载荷：引导的开合与步序状态，以及开关、切换步骤、放弃与校准位置的动作。 */
 export type TourRootSlotProps = Pick<
   TourApi,
   | 'open'
@@ -46,7 +46,7 @@ export const XhTourRoot = defineComponent({
     defaultOpen: { type: Boolean, default: undefined },
     placement: { type: String as PropType<Placement> },
     offset: { type: Number },
-    /** 文字方向；浮层搬到落点后继承不到作者子树上的方向，要 RTL 就显式给。 */
+    /** 文字方向；浮层迁移到落点后无法继承作者子树上的方向，需要 RTL 时显式提供。 */
     dir: { type: String as PropType<Direction> },
     closeOnEscape: { type: Boolean, default: undefined },
     closeOnInteractOutside: { type: Boolean, default: undefined },
@@ -207,7 +207,7 @@ export const XhTourProgressText = defineComponent({
   },
 })
 
-/** 圆点组：不给默认插槽就按步数铺出圆点，作者给了就照作者的来。 */
+/** 圆点组：未提供默认插槽时按步数铺设圆点，作者提供后按作者的内容。 */
 export const XhTourProgressIndicator = defineComponent({
   name: 'XhTourProgressIndicator',
   setup(_, { slots }) {

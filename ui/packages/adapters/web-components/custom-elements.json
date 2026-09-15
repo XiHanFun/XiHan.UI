@@ -59009,11 +59009,11 @@
       "declarations": [
         {
           "kind": "class",
-          "description": "`<xh-tour>` —— Light-DOM 行为宿主：用户写 root/backdrop/spotlight/positioner/content/... 角色节点，\n元素跑 tour 机器并把 connect 产出打上去。浮层定位引擎在本元素里建好、经 refs 注入机器，\n锚点是每一步 target 选择器查出来的页面节点（由机器解析），被定位的浮层取 positioner。",
+          "description": "`<xh-tour>`：Light-DOM 行为宿主：作者写 root / backdrop / spotlight / positioner / content / ... 角色节点，\n元素运行 tour 状态机并把 connect 产出接上。浮层定位引擎在本元素中创建、经 refs 注入状态机，\n锚点是每一步 target 选择器查询到的页面节点（由状态机解析），被定位的浮层取 positioner。",
           "name": "XhTourElement",
           "cssParts": [
             {
-              "description": "引导根节点（data-state/data-step 所在）",
+              "description": "引导根节点（data-state / data-step 所在）",
               "name": "root"
             },
             {
@@ -59021,11 +59021,11 @@
               "name": "backdrop"
             },
             {
-              "description": "挖洞的高亮框，位置尺寸由内联 style 给出；居中步带 hidden",
+              "description": "挖空的高亮框，位置尺寸由内联 style 给出；居中步带 hidden",
               "name": "spotlight"
             },
             {
-              "description": "浮层定位容器；锚定步坐标由引擎写成内联样式，居中步交给样式表摆",
+              "description": "浮层定位容器；锚定步坐标由引擎写为内联样式，居中步交给样式表摆放",
               "name": "positioner"
             },
             {
@@ -59033,15 +59033,15 @@
               "name": "content"
             },
             {
-              "description": "标题（aria-labelledby 目标）；作者没写内容时由元素填当前步的 title",
+              "description": "标题（aria-labelledby 目标）；作者未写内容时由元素填入当前步的 title",
               "name": "title"
             },
             {
-              "description": "描述（aria-describedby 目标）；作者没写内容时填当前步的 description",
+              "description": "描述（aria-describedby 目标）；作者未写内容时填入当前步的 description",
               "name": "description"
             },
             {
-              "description": "\"第 m 步，共 n 步\"（aria-live=polite）；作者没写内容时由元素填",
+              "description": "「第 m 步，共 n 步」（aria-live=polite）；作者未写内容时由元素填入",
               "name": "progress-text"
             },
             {
@@ -59049,7 +59049,7 @@
               "name": "progress-indicator"
             },
             {
-              "description": "一步一个的圆点，可自带 index 属性；走过的带 data-complete，当前那颗带 data-current",
+              "description": "一步一个的圆点，可自带 index 属性；已走过的带 data-complete，当前的带 data-current",
               "name": "progress-dot"
             },
             {
@@ -59057,15 +59057,15 @@
               "name": "prev-trigger"
             },
             {
-              "description": "下一步（末步带 data-last，语义是\"完成\"）",
+              "description": "下一步（末步带 data-last，语义是完成）",
               "name": "next-trigger"
             },
             {
-              "description": "跳过（发 skip 事件后关闭）",
+              "description": "跳过（发出 skip 事件后关闭）",
               "name": "skip-trigger"
             },
             {
-              "description": "关闭（只关，不算放弃）",
+              "description": "关闭（只关闭，不视为放弃）",
               "name": "close-trigger"
             },
             {
@@ -59215,7 +59215,7 @@
               "type": {
                 "text": "Partial<TourTranslations> | undefined"
               },
-              "description": "关闭按钮的无障碍名与进度文案；connect 每帧重写，作者写在节点上会被盖掉，只能从这里给。"
+              "description": "关闭按钮的无障碍名与进度文案；connect 每帧重写，作者写在节点上的值会被覆盖，只能从此处提供。"
             },
             {
               "kind": "field",
@@ -59368,7 +59368,7 @@
                   "text": "OverlayExit"
                 }
               },
-              "description": "退场闸门建一次，并在机器挂载前把同一份 Presence 交给 Headless。"
+              "description": "退场闸门建立一次，并在状态机挂载前把同一份 Presence 交给 Headless。"
             },
             {
               "kind": "field",
@@ -59417,7 +59417,7 @@
                   }
                 }
               ],
-              "description": "标题、描述与进度文案的文字只有步骤清单里才有，作者在标记里写不出来（每步都不一样），\n由元素填。作者若自己写了内容（自定义渲染），首次见到时就定为归作者，之后一概不碰——\n每帧回读分不清\"作者写的\"还是\"上一帧自己写的\"，一旦写过就再也让不回去。"
+              "description": "标题、描述与进度文案的文字只有步骤清单中才有，作者在标记中无法写出（每步都不同），\n由元素填入。作者若自己写了内容（自定义渲染），首次见到时就判定归作者，之后一概不修改：\n每帧回读无法区分作者写的还是上一帧自己写的，一旦写过就无法交还。"
             },
             {
               "kind": "method",
@@ -59437,7 +59437,7 @@
                   "text": "void"
                 }
               },
-              "description": "重量高亮框与浮层位置：目标节点被外部改动（换位、变尺寸）后调它校准。"
+              "description": "重新测量高亮框与浮层位置：目标节点被外部改动（换位、变尺寸）后调用以校准。"
             },
             {
               "kind": "method",
@@ -59493,7 +59493,7 @@
               "type": {
                 "text": "boolean | undefined"
               },
-              "description": "受控开合；缺省该属性即非受控",
+              "description": "受控开合；未提供该属性即非受控",
               "name": "open",
               "fieldName": "open"
             },
@@ -59509,7 +59509,7 @@
               "type": {
                 "text": "number | undefined"
               },
-              "description": "受控步序（0 起）；缺省该属性即非受控",
+              "description": "受控步序（0 起）；未提供该属性即非受控",
               "name": "value",
               "fieldName": "value"
             },
@@ -59525,7 +59525,7 @@
               "type": {
                 "text": "Placement | undefined"
               },
-              "description": "整份引导的首选放置位，默认 bottom；单步可用自己的 placement 覆盖",
+              "description": "整份引导的首选放置位，默认 bottom；单步可用自身的 placement 覆盖",
               "name": "placement",
               "fieldName": "placement"
             },
@@ -59541,7 +59541,7 @@
               "type": {
                 "text": "Direction | undefined"
               },
-              "description": "文字方向，翻转浮层在行内轴上 start 与 end 的落点；只在显式给了才写到定位层上",
+              "description": "文字方向，翻转浮层在行内轴上 start 与 end 的落点；只在显式提供时才写到定位层上",
               "name": "dir",
               "fieldName": "direction"
             },
@@ -59549,7 +59549,7 @@
               "type": {
                 "text": "boolean | undefined"
               },
-              "description": "Esc 放弃引导，默认 true；写 close-on-escape=\"false\" 关掉",
+              "description": "Esc 放弃引导，默认 true；写 close-on-escape=\"false\" 关闭",
               "name": "close-on-escape",
               "fieldName": "closeOnEscape"
             },
@@ -59557,7 +59557,7 @@
               "type": {
                 "text": "boolean | undefined"
               },
-              "description": "层外交互关闭，默认 false；写 \"true\" 打开",
+              "description": "层外交互关闭，默认 false；写 \"true\" 开启",
               "name": "close-on-interact-outside",
               "fieldName": "closeOnInteractOutside"
             },
@@ -59565,7 +59565,7 @@
               "type": {
                 "text": "boolean | undefined"
               },
-              "description": "画遮罩，默认 true；写 show-backdrop=\"false\" 关掉",
+              "description": "绘制遮罩，默认 true；写 show-backdrop=\"false\" 关闭",
               "name": "show-backdrop",
               "fieldName": "showBackdrop"
             },
@@ -59581,7 +59581,7 @@
               "type": {
                 "text": "boolean | undefined"
               },
-              "description": "展开与换步时自动把目标滚进视口（nearest），默认 true；写 auto-scroll=\"false\" 关掉",
+              "description": "展开与换步时自动把目标滚进视口（nearest），默认 true；写 auto-scroll=\"false\" 关闭",
               "name": "auto-scroll",
               "fieldName": "autoScroll"
             }
