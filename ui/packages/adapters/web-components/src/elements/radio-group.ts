@@ -17,21 +17,21 @@ import { MachineController } from '../runtime/machine-controller'
 const BOOLEAN_CONVERTER = { fromAttribute: (v: string | null) => (v === null ? undefined : v !== 'false') }
 
 /**
- * `<xh-radio-group>` —— Light-DOM 行为宿主：用户写 root/label 与若干 item 角色节点，
- * 每个 item 内自带 hidden-input/indicator/item-text，元素跑 radio-group 机器并把 connect 产出打上去。
- * 条目身份取自条目节点上的 value 属性；导航与选中在事件那一刻按 data-scope+data-part 查活 DOM，
- * 依赖 connect 回写的 data-value，因此 wire 必须先于交互跑过（基类 updated 已保证）。
+ * `<xh-radio-group>`：Light-DOM 行为宿主：作者写 root / label 与若干 item 角色节点，
+ * 每个 item 内自带 hidden-input / indicator / item-text，元素运行 radio-group 状态机并把 connect 产出接上。
+ * 条目身份取自条目节点上的 value 属性；导航与选中在事件发生时按 data-scope + data-part 查询 DOM，
+ * 依赖 connect 回写的 data-value，因此 wire 必须先于交互运行（基类 updated 已保证）。
  *
  * @customElement xh-radio-group
- * @attr {string} value - 受控选中值；缺省该属性即非受控
+ * @attr {string} value - 受控选中值；未提供该属性即非受控
  * @attr {string} default-value - 非受控初始选中值
  * @attr {boolean} disabled - 整组禁用
- * @attr {boolean} read-only - 只读：选不动，方向键照常移焦点
+ * @attr {boolean} read-only - 只读：不可选择，方向键照常移动焦点
  * @attr {boolean} invalid - 校验失败态
  * @attr {boolean} required - 必填
  * @attr {'horizontal'|'vertical'} orientation - 视觉排布，默认 vertical
  * @attr {'ltr'|'rtl'} dir - 文字方向，只改写左右方向键语义，默认 ltr
- * @attr {string} name - 表单字段名；给定后隐藏输入才带 name 并参与提交
+ * @attr {string} name - 表单字段名；提供后隐藏输入才带 name 并参与提交
  * @attr {'brand'|'neutral'|'success'|'warning'|'danger'|'info'} tone - 语气
  * @attr {'sm'|'md'|'lg'} size - 尺寸
  * @fires value-change - 选中值变化；detail 为 `{ value: string | null }`
@@ -77,7 +77,7 @@ export class XhRadioGroupElement extends XhElement {
 
   // 整组禁用期间的条目自身声明快照：connect 每帧把 aria-disabled 写回条目，回读分不清作者声明与自己的写回
   private readonly declaredDisabled = new WeakMap<HTMLElement, boolean>()
-  /** 上一帧是否整组禁用：解禁当帧 DOM 上还留着机器写回的 aria-disabled，读不得。 */
+  /** 上一帧是否整组禁用：解禁当帧 DOM 上仍保留着状态机写回的 aria-disabled，不可读取。 */
   private wasGroupDisabled = false
 
   private readonly notify = (details: RadioGroupValueChangeDetails): void => {

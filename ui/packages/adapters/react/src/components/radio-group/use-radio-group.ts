@@ -17,7 +17,7 @@ import { useMachine } from '../../runtime/use-machine'
 
 export interface RadioGroupContext {
   api: RadioGroupApi
-  /** 机器实例，供条目上报 DOM 侧的事实（如条目卸载带走了焦点）。 */
+  /** 状态机实例，供条目上报 DOM 侧的事实（如条目卸载带走了焦点）。 */
   service: Service<RadioGroupSchema>
   /** 表单重置的锚点：接在根节点上。 */
   rootRef: RefObject<HTMLElement | null>

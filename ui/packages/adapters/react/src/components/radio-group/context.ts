@@ -10,7 +10,7 @@ import type { RadioGroupContext } from './use-radio-group'
 import { createContext, useContext } from 'react'
 
 const Ctx = createContext<RadioGroupContext | undefined>(undefined)
-/** 条目自报的值与禁用，供 item-text 复用同一份声明。 */
+/** 条目声明的值与禁用，供 item-text 复用同一份声明。 */
 const ItemCtx = createContext<RadioGroupItemProps | undefined>(undefined)
 
 export const RadioGroupProvider = Ctx

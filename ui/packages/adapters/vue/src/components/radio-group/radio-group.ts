@@ -20,7 +20,7 @@ export const XhRadioGroupRoot = defineComponent({
   name: 'XhRadioGroupRoot',
   props: {
     collection: { type: Array as PropType<RadioGroupNode[]> },
-    /** 标题文字。给了它就不必再写 label 部件；要放别的内容改用 label 插槽。 */
+    /** 标题文字。提供后不必再写 label 部件；需要放置其他内容时改用 label 插槽。 */
     label: { type: String },
     value: { type: String as PropType<string | null> },
     defaultValue: { type: String as PropType<string | null> },
@@ -119,8 +119,8 @@ export const XhRadioGroupItemText = defineComponent({
 })
 
 /**
- * 没写默认插槽时按 collection 铺开的整套结构，作者只交数据。
- * 与手写部件产出的 DOM 完全一致，要改结构就写默认插槽，行为不变。
+ * 未写默认插槽时按 collection 铺开的整套结构，作者只提供数据。
+ * 与手写部件产出的 DOM 完全一致，需要修改结构时写默认插槽，行为不变。
  */
 function renderDefaultTree(
   collection: readonly RadioGroupNodeMeta[],
