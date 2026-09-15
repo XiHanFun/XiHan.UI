@@ -12935,6 +12935,8 @@
 
 [data-scope='approval'][data-part='item']:active {
   scale: var(--xh-motion-scale-press);
+  transition-duration: var(--xh-motion-duration-press);
+  transition-timing-function: var(--xh-motion-ease-press);
 }
 
 [data-scope='approval'][data-part='item'][data-disabled] {
@@ -13101,7 +13103,7 @@
     background var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
     border-color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
     box-shadow var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
-    scale var(--xh-motion-duration-micro) var(--xh-motion-ease-enter-strong);
+    scale var(--xh-motion-duration-release) var(--xh-motion-ease-release);
 }
 
 [data-scope='approval'][data-part='approve-trigger'][hidden],
@@ -13135,6 +13137,8 @@
 
 [data-scope='approval'][data-part='approve-trigger']:not([aria-disabled='true']):not(:disabled):active {
   scale: var(--xh-motion-scale-press);
+  transition-duration: var(--xh-motion-duration-press);
+  transition-timing-function: var(--xh-motion-ease-press);
 }
 
 /* 待决时用 aria-disabled 而不是原生 disabled：保住可聚焦，让读屏念得到为什么按不动。
@@ -13160,6 +13164,8 @@
 
 [data-scope='approval'][data-part='deny-trigger']:not([aria-disabled='true']):not(:disabled):active {
   scale: var(--xh-motion-scale-press);
+  transition-duration: var(--xh-motion-duration-press);
+  transition-timing-function: var(--xh-motion-ease-press);
 }
 
 /* 拒绝钮只有落定后才真的按不动，那一档走原生 disabled：描边退回中性，不再像个能按的出口。
