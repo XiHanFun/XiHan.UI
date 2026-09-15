@@ -16,13 +16,13 @@ import { MachineController } from '../runtime/machine-controller'
 const STRING_CONVERTER = { fromAttribute: (v: string | null) => v ?? undefined }
 
 /**
- * `<xh-avatar>` —— 头像行为宿主，src/alt 写进 image 节点，加载成败回送机器，image 与 fallback 互斥显隐。
+ * `<xh-avatar>`：头像行为宿主，src / alt 写入 image 节点，加载成败回送状态机，image 与 fallback 互斥显隐。
  *
  * @customElement xh-avatar
- * @attr {string} src - 图片地址；缺省即直接落回退态
+ * @attr {string} src - 图片地址；未提供时直接落到回退态
  * @attr {string} alt - 图片替代文本，原样写到 image 节点上
- * @attr {'sm'|'md'|'lg'} size - 尺寸档位，缺省 md
- * @attr {'brand'|'neutral'|'success'|'warning'|'danger'|'info'} tone - 语气：换淡底与回退字的配色族
+ * @attr {'sm'|'md'|'lg'} size - 尺寸档位，默认 md
+ * @attr {'brand'|'neutral'|'success'|'warning'|'danger'|'info'} tone - 语气：切换淡底与回退字的配色族
  * @fires status-change - 加载状态变化；detail 为 `{ status: 'loading' | 'loaded' | 'error' }`
  * @csspart root - 头像根容器，承载 data-state/data-size/data-tone
  * @csspart image - 图片节点，必须是原生 img；src/alt 由宿主写入，未就绪时带 hidden

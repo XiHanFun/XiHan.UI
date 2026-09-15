@@ -1964,7 +1964,7 @@
       "declarations": [
         {
           "kind": "class",
-          "description": "`<xh-avatar>` —— 头像行为宿主，src/alt 写进 image 节点，加载成败回送机器，image 与 fallback 互斥显隐。",
+          "description": "`<xh-avatar>`：头像行为宿主，src / alt 写入 image 节点，加载成败回送状态机，image 与 fallback 互斥显隐。",
           "name": "XhAvatarElement",
           "cssParts": [
             {
@@ -2093,7 +2093,7 @@
               "type": {
                 "text": "string | undefined"
               },
-              "description": "图片地址；缺省即直接落回退态",
+              "description": "图片地址；未提供时直接落到回退态",
               "name": "src",
               "fieldName": "src"
             },
@@ -2109,7 +2109,7 @@
               "type": {
                 "text": "Size | undefined"
               },
-              "description": "尺寸档位，缺省 md",
+              "description": "尺寸档位，默认 md",
               "name": "size",
               "fieldName": "size"
             },
@@ -2117,7 +2117,7 @@
               "type": {
                 "text": "Tone | undefined"
               },
-              "description": "语气：换淡底与回退字的配色族",
+              "description": "语气：切换淡底与回退字的配色族",
               "name": "tone",
               "fieldName": "tone"
             }

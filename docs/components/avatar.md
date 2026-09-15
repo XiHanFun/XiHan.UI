@@ -116,9 +116,9 @@ tone 换淡底与回退字的配色组；不写 tone 就是中性缺省，直径
 | --- | --- | --- | --- |
 | `src` | `string` |  |  |
 | `alt` | `string` |  |  |
-| `size` | `Size` |  | 尺寸：sm / md / lg，缺省 md；缺省档不输出 data-size |
-| `tone` | `Tone` |  | 颜色：决定底色与回退字使用哪组状态色；缺席即不输出 data-tone，走皮肤的中性缺省 |
-| `onStatusChange` | `(details: AvatarStatusChangeDetails) => void` |  | 状态落位时通知，过渡态 idle 不通知。 |
+| `size` | `Size` |  | 尺寸：sm / md / lg，默认 md；默认档不输出 data-size |
+| `tone` | `Tone` |  | 颜色：决定底色与回退字使用哪组状态色；未提供时不输出 data-tone，使用皮肤的中性默认 |
+| `onStatusChange` | `(details: AvatarStatusChangeDetails) => void` |  | 状态落定时通知，过渡态 idle 不通知。 |
 
 ### 事件
 

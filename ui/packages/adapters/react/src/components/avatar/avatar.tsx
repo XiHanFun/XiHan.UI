@@ -46,7 +46,7 @@ export function XhAvatarRoot({
 
 XhAvatarRoot.xhEvents = ['status-change'] as const
 
-/** 图片节点常挂，靠 hidden 显隐；src / alt 由 connect 写上。 */
+/** 图片节点常驻，依靠 hidden 显隐；src / alt 由 connect 写入。 */
 export interface XhAvatarImageProps extends Omit<ComponentPropsWithRef<'img'>, 'children' | 'src' | 'alt'> {}
 
 export function XhAvatarImage(props: XhAvatarImageProps): ReactNode {
@@ -77,7 +77,7 @@ export function XhAvatarImage(props: XhAvatarImageProps): ReactNode {
 
 export interface XhAvatarFallbackProps extends ComponentPropsWithRef<'span'> {}
 
-/** 回退位：图片没就绪时顶在台前，节点常挂、靠 hidden 显隐。 */
+/** 回退位：图片未就绪时显示在前台，节点常驻、依靠 hidden 显隐。 */
 export function XhAvatarFallback({ children, ...rest }: XhAvatarFallbackProps): ReactNode {
   const ctx = useAvatarContext()
   return (
