@@ -5291,7 +5291,7 @@
       "declarations": [
         {
           "kind": "class",
-          "description": "`<xh-carousel>` —— 走马灯行为宿主。\n\n条目总数由 `slide-count` 声明，不从 DOM 数。指示点一页一个，页数由 `slide-count` 与\n`slides-per-page` / `slides-per-move` 算出，由作者照着渲染节点，元素不生成节点。\n轨道位移写在 list 的内联 transform 上，样式层不得再碰那条轴。",
+          "description": "`<xh-carousel>`：走马灯行为宿主。\n\n条目总数由 `slide-count` 声明，不从 DOM 统计。指示点一页一个，页数由 `slide-count` 与\n`slides-per-page` / `slides-per-move` 计算，由作者按此渲染节点，元素不生成节点。\n轨道位移写在 list 的内联 transform 上，样式层不得再修改该轴。",
           "name": "XhCarouselElement",
           "cssParts": [
             {
@@ -5303,23 +5303,23 @@
               "name": "viewport"
             },
             {
-              "description": "被位移的轨道；transform 由元素写入，样式层别碰",
+              "description": "被位移的轨道；transform 由元素写入，样式层不应修改",
               "name": "list"
             },
             {
-              "description": "一张幻灯片，可自带 index 属性声明下标，缺省按文档序",
+              "description": "一张幻灯片，可自带 index 属性声明下标，默认按文档序",
               "name": "item"
             },
             {
-              "description": "上一张；首页且不回绕时转原生 disabled",
+              "description": "上一张；首页且不回绕时为原生 disabled",
               "name": "prev-trigger"
             },
             {
-              "description": "下一张；末页且不回绕时转原生 disabled",
+              "description": "下一张；末页且不回绕时为原生 disabled",
               "name": "next-trigger"
             },
             {
-              "description": "播放 / 暂停开关，承载 data-state=\"running\" / \"paused\"；没配 autoplay 时转原生 disabled",
+              "description": "播放 / 暂停开关，承载 data-state=\"running\" / \"paused\"；未配置 autoplay 时为原生 disabled",
               "name": "autoplay-trigger"
             },
             {
@@ -5496,7 +5496,7 @@
               "type": {
                 "text": "number | undefined"
               },
-              "description": "受控页码，0 基；缺省该属性即非受控",
+              "description": "受控页码，0 基；未提供该属性即非受控",
               "name": "page",
               "fieldName": "page"
             },
@@ -5520,7 +5520,7 @@
               "type": {
                 "text": "number | undefined"
               },
-              "description": "一屏放几张，默认 1",
+              "description": "一屏显示的张数，默认 1",
               "name": "slides-per-page",
               "fieldName": "slidesPerPage"
             },
@@ -5528,7 +5528,7 @@
               "type": {
                 "text": "number | undefined"
               },
-              "description": "一次翻几张，默认跟随 slides-per-page",
+              "description": "一次翻动的张数，默认跟随 slides-per-page",
               "name": "slides-per-move",
               "fieldName": "slidesPerMove"
             },
@@ -5552,7 +5552,7 @@
               "type": {
                 "text": "boolean | undefined"
               },
-              "description": "走到尽头回绕，默认关闭",
+              "description": "到达末尾回绕，默认关闭",
               "name": "loop",
               "fieldName": "loop"
             },
@@ -5560,7 +5560,7 @@
               "type": {
                 "text": "boolean | number | undefined"
               },
-              "description": "自动播放：属性在即开，写数值即间隔毫秒",
+              "description": "自动播放：属性存在即开启，写数值即间隔毫秒",
               "name": "autoplay",
               "fieldName": "autoplay"
             },

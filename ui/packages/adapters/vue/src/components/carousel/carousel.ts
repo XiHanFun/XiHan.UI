@@ -144,10 +144,10 @@ export const XhCarouselNextTrigger = defineComponent({
 })
 
 /**
- * 播放 / 暂停开关。开了 autoplay 就该把它渲出来：
- * 自动翻页得有一处能停住，且停住之后不会被别的交互重新点着。
+ * 播放 / 暂停开关。开启 autoplay 后应当渲染它：
+ * 自动翻页必须有一处能够停止，且停止之后不会被其他交互重新启动。
  *
- * 插槽拿到的 `stopped` 是「用户按停了没有」，不含悬停与焦点那两路的临时按住。
+ * 插槽得到的 `stopped` 是用户是否已按下停止，不含悬停与焦点两路的临时暂停。
  */
 export const XhCarouselAutoplayTrigger = defineComponent({
   name: 'XhCarouselAutoplayTrigger',
