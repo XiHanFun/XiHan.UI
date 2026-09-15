@@ -27,13 +27,13 @@ export interface HoverCardContext {
   positionerRef: Ref<HTMLElement | null>
   /** 消解层节点，也是判定焦点是否仍在卡片内的依据。 */
   contentRef: Ref<HTMLElement | null>
-  /** title 部件；作者没放它时卡片的可及名指回 trigger。 */
+  /** title 部件；作者未放置它时卡片的可及名指回 trigger。 */
   titleRef: Ref<HTMLElement | null>
-  /** description 部件；作者没放它时不发 aria-describedby。 */
+  /** description 部件；作者未放置它时不发 aria-describedby。 */
   descriptionRef: Ref<HTMLElement | null>
-  /** 此刻该不该渲染：退场动画播完之前仍为真。 */
+  /** 当前是否应当渲染：退场动画播完之前仍为真。 */
   visible: Ref<boolean>
-  /** 浮层搬到哪儿：全局配置的 portalContainer > body。 */
+  /** 浮层迁移到的位置：全局配置的 portalContainer > body。 */
   portalTarget: ComputedRef<string | Element>
 }
 

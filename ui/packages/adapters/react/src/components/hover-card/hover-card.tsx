@@ -33,9 +33,9 @@ export interface XhHoverCardRootProps extends Omit<ComponentPropsWithRef<'div'>,
   openDelay?: number
   /** 指针离开到收起的等待毫秒。 */
   closeDelay?: number
-  /** 文字方向；浮层搬到落点后继承不到作者子树上的方向，要 RTL 就显式给。 */
+  /** 文字方向；浮层迁移到落点后无法继承作者子树上的方向，需要 RTL 时显式提供。 */
   dir?: Direction
-  /** 只关掉卡片本身，trigger 元素照常可聚焦。 */
+  /** 只关闭卡片本身，trigger 元素照常可聚焦。 */
   disabled?: boolean
   size?: Size
   onOpenChange?: HoverCardProps['onOpenChange']
@@ -101,10 +101,10 @@ export function XhHoverCardTrigger({ children, asChild, ...rest }: XhHoverCardTr
 }
 
 export interface XhHoverCardPositionerProps extends ComponentPropsWithRef<'div'> {
-  /** 浮层挂到哪个容器；不给就按全局配置，再不给挂 body。 */
+  /** 浮层挂载的容器；未提供时按全局配置，再未提供时挂载到 body。 */
   container?: () => Element | null
 }
-/** 搬到浮层落点：留在原地的话，宿主祖先只要建了层叠上下文就能盖住浮层。 */
+/** 迁移到浮层落点：留在原地时，宿主祖先只要建立了层叠上下文就能遮住浮层。 */
 export function XhHoverCardPositioner({ children, container, ...rest }: XhHoverCardPositionerProps): ReactNode {
   const ctx = useHoverCardContext()
   // 卡片内容的自绘条：与 content 同级、绝对定位不占布局，壳是这层已经 fixed 的 positioner

@@ -24,9 +24,9 @@ export interface HoverCardContext extends OverlayWiring {
   triggerRef: RefObject<HTMLElement | null>
   /** 被定位的浮层壳。 */
   positionerRef: RefObject<HTMLElement | null>
-  /** 浮层本体，退场动画从它身上探测。 */
+  /** 浮层本体，退场动画从它上面探测。 */
   contentRef: RefObject<HTMLElement | null>
-  /** title 部件的落位口：它在不在场决定卡片的名字指向 title 还是 trigger。 */
+  /** title 部件的落位口：它是否在场决定卡片的名字指向 title 还是 trigger。 */
   setTitleEl: RefCallback<HTMLElement>
   /** description 部件的落位口：它不在场时不发 aria-describedby。 */
   setDescriptionEl: RefCallback<HTMLElement>

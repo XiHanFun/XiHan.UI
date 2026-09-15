@@ -25162,7 +25162,7 @@
       "declarations": [
         {
           "kind": "class",
-          "description": "`<xh-hover-card>` —— Light-DOM 行为宿主：作者写 root/trigger/positioner/content/arrow 角色节点，\n元素跑 hover-card 机器并把 connect 产出打上去。\n\n它是 popover 的悬停变体：指针停在 trigger 上够久才展开，离开 trigger 或 content 够久才收起——\n那段收起等待同时是指针从 trigger 走到 content 的通行时间，两者之间隔着 offset 也走得过去。\n与 tooltip 相反，卡片内容是可交互、可聚焦的一块面板：Tab 走得进去，Escape 收得掉，\n但从不陷焦点、不锁滚动，展开时也不抢焦点。",
+          "description": "`<xh-hover-card>`：Light-DOM 行为宿主：作者写 root / trigger / positioner / content / arrow 角色节点，\n元素运行 hover-card 状态机并把 connect 产出接上。\n\n它是 popover 的悬停变体：指针在 trigger 上停留足够久才展开，离开 trigger 或 content 足够久才收起：\n该段收起等待同时是指针从 trigger 移到 content 的通行时间，两者之间隔着 offset 也能通过。\n与 tooltip 相反，卡片内容是可交互、可聚焦的面板：Tab 可以进入，Escape 可以收起，\n但从不陷入焦点、不锁定滚动，展开时也不夺取焦点。",
           "name": "XhHoverCardElement",
           "cssParts": [
             {
@@ -25170,11 +25170,11 @@
               "name": "root"
             },
             {
-              "description": "悬停/聚焦的锚点（aria-expanded/aria-controls 所在），同时是定位锚点",
+              "description": "悬停 / 聚焦的锚点（aria-expanded / aria-controls 所在），同时是定位锚点",
               "name": "trigger"
             },
             {
-              "description": "浮层定位容器，坐标由引擎写成内联样式",
+              "description": "浮层定位容器，坐标由引擎写为内联样式",
               "name": "positioner"
             },
             {
@@ -25182,7 +25182,7 @@
               "name": "content"
             },
             {
-              "description": "标题（aria-labelledby 目标；缺席时可及名指回 trigger）",
+              "description": "标题（aria-labelledby 目标；缺席时可及名指向 trigger）",
               "name": "title"
             },
             {
@@ -25442,7 +25442,7 @@
               "type": {
                 "text": "boolean | undefined"
               },
-              "description": "受控开合；缺省该属性即非受控",
+              "description": "受控开合；未提供该属性即非受控",
               "name": "open",
               "fieldName": "open"
             },
@@ -25458,7 +25458,7 @@
               "type": {
                 "text": "Placement | undefined"
               },
-              "description": "请求的浮层朝向（top/right/bottom/left，可带 -start/-end 后缀），默认 bottom；空间不足时由引擎避让",
+              "description": "请求的浮层朝向（top / right / bottom / left，可带 -start / -end 后缀），默认 bottom；空间不足时由引擎避让",
               "name": "placement",
               "fieldName": "placement"
             },
@@ -25490,7 +25490,7 @@
               "type": {
                 "text": "Direction | undefined"
               },
-              "description": "文字方向，只在显式给了才写到 root 上",
+              "description": "文字方向，只在显式提供时才写到 root 上",
               "name": "dir",
               "fieldName": "direction"
             },
@@ -25498,7 +25498,7 @@
               "type": {
                 "text": "boolean | undefined"
               },
-              "description": "只关掉卡片，trigger 本身仍可点、可聚焦",
+              "description": "只关闭卡片，trigger 本身仍可点击、可聚焦",
               "name": "disabled",
               "fieldName": "disabled"
             },

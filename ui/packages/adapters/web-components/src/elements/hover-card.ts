@@ -32,30 +32,30 @@ const NUMBER_CONVERTER = {
 const BOOLEAN_CONVERTER = { fromAttribute: (v: string | null) => (v === null ? undefined : v !== 'false') }
 
 /**
- * `<xh-hover-card>` —— Light-DOM 行为宿主：作者写 root/trigger/positioner/content/arrow 角色节点，
- * 元素跑 hover-card 机器并把 connect 产出打上去。
+ * `<xh-hover-card>`：Light-DOM 行为宿主：作者写 root / trigger / positioner / content / arrow 角色节点，
+ * 元素运行 hover-card 状态机并把 connect 产出接上。
  *
- * 它是 popover 的悬停变体：指针停在 trigger 上够久才展开，离开 trigger 或 content 够久才收起——
- * 那段收起等待同时是指针从 trigger 走到 content 的通行时间，两者之间隔着 offset 也走得过去。
- * 与 tooltip 相反，卡片内容是可交互、可聚焦的一块面板：Tab 走得进去，Escape 收得掉，
- * 但从不陷焦点、不锁滚动，展开时也不抢焦点。
+ * 它是 popover 的悬停变体：指针在 trigger 上停留足够久才展开，离开 trigger 或 content 足够久才收起：
+ * 该段收起等待同时是指针从 trigger 移到 content 的通行时间，两者之间隔着 offset 也能通过。
+ * 与 tooltip 相反，卡片内容是可交互、可聚焦的面板：Tab 可以进入，Escape 可以收起，
+ * 但从不陷入焦点、不锁定滚动，展开时也不夺取焦点。
  *
  * @customElement xh-hover-card
- * @attr {boolean} open - 受控开合；缺省该属性即非受控
+ * @attr {boolean} open - 受控开合；未提供该属性即非受控
  * @attr {boolean} default-open - 非受控初始为展开
- * @attr {string} placement - 请求的浮层朝向（top/right/bottom/left，可带 -start/-end 后缀），默认 bottom；空间不足时由引擎避让
+ * @attr {string} placement - 请求的浮层朝向（top / right / bottom / left，可带 -start / -end 后缀），默认 bottom；空间不足时由引擎避让
  * @attr {number} offset - 浮层与锚点的间距（px），默认 8
  * @attr {number} open-delay - 悬停进入到展开的等待毫秒，默认 700
  * @attr {number} close-delay - 指针移出到收起的等待毫秒，默认 300
- * @attr {'ltr'|'rtl'} dir - 文字方向，只在显式给了才写到 root 上
- * @attr {boolean} disabled - 只关掉卡片，trigger 本身仍可点、可聚焦
+ * @attr {'ltr'|'rtl'} dir - 文字方向，只在显式提供时才写到 root 上
+ * @attr {boolean} disabled - 只关闭卡片，trigger 本身仍可点击、可聚焦
  * @attr {'sm'|'md'|'lg'} size - 尺寸
  * @fires open-change - open 状态变化；detail 为 `{ open: boolean }`
  * @csspart root - 承载 data-state / data-disabled / dir 的容器
- * @csspart trigger - 悬停/聚焦的锚点（aria-expanded/aria-controls 所在），同时是定位锚点
- * @csspart positioner - 浮层定位容器，坐标由引擎写成内联样式
+ * @csspart trigger - 悬停 / 聚焦的锚点（aria-expanded / aria-controls 所在），同时是定位锚点
+ * @csspart positioner - 浮层定位容器，坐标由引擎写为内联样式
  * @csspart content - role=dialog 的卡片内容（消解层的根节点），收起时带 hidden
- * @csspart title - 标题（aria-labelledby 目标；缺席时可及名指回 trigger）
+ * @csspart title - 标题（aria-labelledby 目标；缺席时可及名指向 trigger）
  * @csspart description - 说明（aria-describedby 目标）
  * @csspart arrow - 指向锚点的箭头（aria-hidden，data-placement 随实际放置位翻转）
  */
@@ -183,9 +183,9 @@ export class XhHoverCardElement extends XhPortalHostElement {
   }
 
   /**
-   * 角色节点提前发现一次：default-open 时机器在 hostConnected 当场进入可见态，
-   * 定位副作用同步取一次 trigger/positioner——而常规发现要等首次 updated，
-   * 那一刻 partMap 还空着，引擎挂不上，浮层会停在容器左上角。
+   * 角色节点提前发现一次：default-open 时状态机在 hostConnected 当场进入可见态，
+   * 定位副作用同步取一次 trigger/positioner：而常规发现要等首次 updated，
+   * 此时 partMap 仍为空，引擎无法挂载，浮层会停在容器左上角。
    */
   override connectedCallback(): void {
     this.refreshParts()
