@@ -1,4 +1,4 @@
-// 候选里的自定义内容 | 手写各部件即可在候选行里放头像与职位；插回正文的那段字取自 item-text
+// 候选中的自定义内容 | 手写各部件即可在候选行中放置头像与职位；插回正文的文字取自 item-text
 import type { ReactNode } from "react";
 import {
   XhAvatarFallback,

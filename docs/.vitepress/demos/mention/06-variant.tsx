@@ -1,4 +1,4 @@
-// 形态 | variant 换正文框的描边与底色，候选面板不受影响
+// 形态 | variant 更换正文框的描边与底色，候选面板不受影响
 import type { ReactNode } from "react";
 import { XhMentionRoot } from "@xihan-ui/react";
 import { useState } from "react";
