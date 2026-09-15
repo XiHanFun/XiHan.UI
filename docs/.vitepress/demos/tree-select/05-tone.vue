@@ -1,4 +1,4 @@
-<!-- 语气 | tone 决定用哪族颜色，与 variant 正交，这里统一用 subtle 形态 -->
+<!-- 语气 | tone 决定使用哪族颜色，与 variant 正交，这里统一使用 subtle 形态 -->
 <script setup lang="ts">
 import {
   XhTreeSelectBranch,

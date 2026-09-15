@@ -1,4 +1,4 @@
-// 形态 | variant 只换触发框的描边与底色，浮层与树的长相不跟着变
+// 形态 | variant 只更换触发框的描边与底色，浮层与树的外观不随之变化
 import type { ReactNode } from "react";
 import {
   XhTreeSelectBranch,

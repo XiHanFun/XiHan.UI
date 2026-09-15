@@ -12,7 +12,7 @@
 
 ## 用法
 
-收起时整个控件只占触发器一个 Tab 位，展开那一刻焦点真的进树、落在已选中的那行上
+收起时整个控件只占触发器一个 Tab 位，展开时焦点真正进入树、落在已选中的行上
 
 <XhDemo src="tree-select/01-basic" />
 
@@ -26,37 +26,37 @@
 
 ### 选中与展开双受控
 
-两份集合都由宿主持有：组件只发事件，宿主写回它才动，回显的就是写回的那两份
+两份集合都由宿主持有：组件只发事件，宿主写回后才变化，回显的就是写回的两份
 
 <XhDemo src="tree-select/02-controlled" />
 
 ### 多选与表单
 
-multiple 下确认键是切换、浮层不收起；写了 hidden-input 才随表单提交，多个值按逗号拼成一串
+multiple 下确认键是切换、浮层不收起；写了 hidden-input 才随表单提交，多个值按逗号拼接为一串
 
 <XhDemo src="tree-select/03-multiple" />
 
 ### 变体
 
-variant 只换触发框的描边与底色，浮层与树的长相不跟着变
+variant 只更换触发框的描边与底色，浮层与树的外观不随之变化
 
 <XhDemo src="tree-select/04-variant" />
 
 ### 颜色
 
-tone 决定用哪族颜色，与 variant 正交，这里统一用 subtle 形态
+tone 决定使用哪族颜色，与 variant 正交，这里统一使用 subtle 形态
 
 <XhDemo src="tree-select/05-tone" />
 
 ### 尺寸
 
-size 换掉行高、内边距与字号，不写就是缺省档
+size 更换行高、内边距与字号，不写即默认档
 
 <XhDemo src="tree-select/06-size" />
 
 ### 禁用、只读与校验失败
 
-disabled 连键盘入口都没有；readOnly 照常展开浏览但值改不动也清不掉；invalid 只报校验态，交互一切照旧
+disabled 连键盘入口都没有；readOnly 照常展开浏览但值不可修改也不可清空；invalid 只报告校验态，交互一切照常
 
 <XhDemo src="tree-select/07-state" />
 
@@ -66,33 +66,33 @@ disabled 连键盘入口都没有；readOnly 照常展开浏览但值改不动�
 
 <XhDemo src="tree-select/08-async" />
 
-### 浮层里的操作区
+### 浮层中的操作区
 
-footer 写在 content 里、tree 的兄弟：它不进 role=tree 的拥有关系，方向键也走不到；在浮层内点按钮不算点在外面，浮层不会因此收起
+footer 写在 content 中、tree 的兄弟：它不进入 role=tree 的拥有关系，方向键也无法到达；在浮层内点击按钮不算点击外部，浮层不会因此收起
 
 <XhDemo src="tree-select/09-action" />
 
 ### 级联勾选与回显策略
 
-multiple 加 cascade 内建父子传导：点分支整枝勾上、子全勾父勾、部分勾中半选；对外值按 checked-strategy 收敛，parent 档整组选满只报组名
+multiple 加 cascade 内建父子传导：点击分支整枝勾选、子全勾则父勾、部分勾选为半选；对外值按 checked-strategy 收敛，parent 档整组选满只报告组名
 
 <XhDemo src="tree-select/10-checkable" />
 
 ### 浮层内关键词过滤
 
-输入框是树的兄弟节点，树的键盘处理器挂在 tree 上，打字不会被连打检索收走；换掉 collection 可见行与方向键顺序跟着重算
+输入框是树的兄弟节点，树的键盘处理器挂在 tree 上，输入不会被连打检索接管；更换 collection 后可见行与方向键顺序随之重算
 
 <XhDemo src="tree-select/11-filter" />
 
-### 只挑文件不挑目录
+### 只选文件不选目录
 
-选中值与展开态双受控：目录的值不写回，紧跟着那一次收起意图也一并吞掉，点目录就只剩展开收起
+选中值与展开态双受控：目录的值不写回，紧随其后的收起意图也一并忽略，点击目录只剩展开收起
 
 <XhDemo src="tree-select/12-file-picker" />
 
-### 只交数据自动渲染
+### 只提供数据自动渲染
 
-Vue 不写默认插槽时按 collection 铺开整套部件：带 children 的节点落成 branch、其余落成 item，文本与禁用都查数据；label 给标题，clearable 带上清空钮（手写部件不看它），产出的 DOM 与手写全套部件完全一致；Web Components 没有自动铺树，节点部件照常手写、只报 value
+Vue 未写默认插槽时按 collection 铺开整套部件：带 children 的节点渲染为 branch、其余渲染为 item，文本与禁用都查询数据；label 提供标题，clearable 带上清空按钮（手写部件不使用它），产出的 DOM 与手写全套部件完全一致；Web Components 没有自动铺树，节点部件照常手写、只报告 value
 
 <XhDemo src="tree-select/13-collection" />
 
