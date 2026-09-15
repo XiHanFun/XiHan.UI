@@ -57,44 +57,44 @@ const EDGES: readonly FloatingPanelResizeEdge[] = ['n', 'ne', 'e', 'se', 's', 's
 const WINDOW_STATES: readonly FloatingPanelWindowState[] = ['default', 'minimized', 'maximized']
 
 /**
- * `<xh-floating-panel>` —— Light-DOM 行为宿主：作者写 root / positioner / content 等角色节点，
- * 元素跑 floating-panel 机器并把 connect 产出打上去。
+ * `<xh-floating-panel>`：Light-DOM 行为宿主：作者写 root / positioner / content 等角色节点，
+ * 元素运行 floating-panel 状态机并把 connect 产出接上。
  *
- * 面板的落位与尺寸由元素每帧写进 positioner 的内联样式（position/left/top/width/height），
- * 作者的样式表不要再碰这五个属性。收起态用内联 display 收住 positioner，正文收拢时同样收住。
+ * 面板的落位与尺寸由元素每帧写入 positioner 的内联样式（position / left / top / width / height），
+ * 作者的样式表不应再修改这五个属性。收起态用内联 display 隐藏 positioner，正文收拢时同样隐藏。
  *
- * 改尺把手要在节点上写明守哪条边（`edge="se"`），形态按钮要写明切到哪个形态（`window-state="minimized"`），
+ * 改尺把手要在节点上写明对应的边（`edge="se"`），形态按钮要写明切换到的形态（`window-state="minimized"`），
  * 与 Vue 侧的 `:edge` / `:window-state` 是同一份声明。
  *
  * 位置与尺寸的属性形式是逗号分隔的一对数（`default-position="24,24"`、`default-dimensions="360,240"`）；
- * 也可以直接喂 property（`el.position = { x: 24, y: 24 }`）。
+ * 也可以直接通过 property 设置（`el.position = { x: 24, y: 24 }`）。
  *
  * @customElement xh-floating-panel
- * @attr {boolean} open - 受控开合；缺省该属性即非受控
+ * @attr {boolean} open - 受控开合；未提供该属性即非受控
  * @attr {boolean} default-open - 非受控初始为展开
- * @attr {string} position - 受控落点，写成 "x,y"（px，相对视口）
+ * @attr {string} position - 受控落点，写为 "x,y"（px，相对视口）
  * @attr {string} default-position - 非受控初始落点，默认 "24,24"
- * @attr {string} dimensions - 受控尺寸，写成 "宽,高"（px）
+ * @attr {string} dimensions - 受控尺寸，写为 "宽,高"（px）
  * @attr {string} default-dimensions - 非受控初始尺寸，默认 "360,240"
  * @attr {string} min-size - 尺寸下限，默认 "160,120"
- * @attr {string} max-size - 尺寸上限，不写即不封顶
+ * @attr {string} max-size - 尺寸上限，未提供时不封顶
  * @attr {'default'|'minimized'|'maximized'} window-state - 受控形态
  * @attr {'default'|'minimized'|'maximized'} default-window-state - 非受控初始形态，默认 default
- * @attr {boolean} panel-draggable - 允不允许搬动面板，默认开启；铺满形态下恒不可搬。不叫 draggable：那是 HTML 全局属性，写上去宿主会变成原生拖放源
- * @attr {boolean} resizable - 允不允许改尺寸，默认开启；只有常规形态下才改得动
- * @attr {boolean} disabled - 禁用：搬不动、改不了尺寸、切不了形态；开合与关闭不受影响
+ * @attr {boolean} panel-draggable - 是否允许移动面板，默认开启；铺满形态下恒不可移动。不命名为 draggable：那是 HTML 全局属性，写上后宿主会变成原生拖放源
+ * @attr {boolean} resizable - 是否允许改尺寸，默认开启；只有常规形态下可以改尺寸
+ * @attr {boolean} disabled - 禁用：不可移动、不可改尺寸、不可切换形态；开合与关闭不受影响
  * @fires open-change - 展开态变化；detail 为 `{ open: boolean }`
- * @fires position-change - 落点变化（拖动途中会连发）；detail 为 `{ position: { x, y } }`
- * @fires dimensions-change - 尺寸变化（改尺途中会连发）；detail 为 `{ dimensions: { width, height } }`
+ * @fires position-change - 落点变化（拖动途中连续发出）；detail 为 `{ position: { x, y } }`
+ * @fires dimensions-change - 尺寸变化（改尺途中连续发出）；detail 为 `{ dimensions: { width, height } }`
  * @fires window-state-change - 形态变化；detail 为 `{ windowState: 'default' | 'minimized' | 'maximized' }`
  * @csspart root - 面板与触发器共同的容器
  * @csspart trigger - 打开面板的按钮
- * @csspart positioner - 承载落位与尺寸的定位容器，收起时被内联 display 收住
+ * @csspart positioner - 承载落位与尺寸的定位容器，收起时由内联 display 隐藏
  * @csspart content - role=dialog 的面板本体（Esc 收口所在）
- * @csspart header - 标题栏：标题、拖拽把手与几个按钮排在这里
+ * @csspart header - 标题栏：标题、拖拽把手与各按钮排列在此
  * @csspart title - 标题（aria-labelledby 目标）
  * @csspart drag-trigger - 拖拽把手，须是原生 `<button>`
- * @csspart resize-trigger - 改尺把手，自带 edge 属性；接线后是 `role="separator"`，别写成 `<button>`
+ * @csspart resize-trigger - 改尺把手，自带 edge 属性；接线后是 `role="separator"`，不写为 `<button>`
  * @csspart window-state-trigger - 形态按钮，须是原生 `<button>` 并自带 window-state 属性
  * @csspart close-trigger - 关闭按钮
  * @csspart body - 正文，收拢时带 hidden
@@ -205,13 +205,13 @@ export class XhFloatingPanelElement extends XhElement {
     this.config = createRuntimeConfig({ scope: this.panelScope, idGenerator: this.idGen })
   }
 
-  /** 把手自报守的是哪条边；没写或写错时按右下角处理，那是最常见的那一个。 */
+  /** 把手声明的边；未写或写错时按右下角处理，那是最常见的一个。 */
   private edgeOf(el: HTMLElement): FloatingPanelResizeEdge {
     const raw = el.getAttribute('edge') as FloatingPanelResizeEdge | null
     return raw && EDGES.includes(raw) ? raw : 'se'
   }
 
-  /** 形态按钮自报切到哪个形态；没写或写错时按常规处理。 */
+  /** 形态按钮声明切换到的形态；未写或写错时按常规处理。 */
   private windowStateOf(el: HTMLElement): FloatingPanelWindowState {
     const raw = el.getAttribute('window-state') as FloatingPanelWindowState | null
     return raw && WINDOW_STATES.includes(raw) ? raw : 'default'

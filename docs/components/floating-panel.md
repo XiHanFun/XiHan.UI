@@ -116,23 +116,23 @@ open 与 position 都交给外面握着：面板只报意图，值写回来才�
 
 | 属性 | 类型 | 必填 | 说明 |
 | --- | --- | --- | --- |
-| `open` | `boolean` |  | 展开态。给定即受控：内部不再自改，只发 onOpenChange。 |
+| `open` | `boolean` |  | 展开态。提供即受控：内部不再自行修改，只发 onOpenChange。 |
 | `defaultOpen` | `boolean` |  |  |
-| `position` | `FloatingPanelPosition` |  | 面板左上角坐标（px，相对视口）。给定即受控。 |
+| `position` | `FloatingPanelPosition` |  | 面板左上角坐标（px，相对视口）。提供即受控。 |
 | `defaultPosition` | `FloatingPanelPosition` |  |  |
-| `dimensions` | `FloatingPanelSize` |  | 面板尺寸（px）。给定即受控。 |
+| `dimensions` | `FloatingPanelSize` |  | 面板尺寸（px）。提供即受控。 |
 | `defaultDimensions` | `FloatingPanelSize` |  |  |
 | `minSize` | `FloatingPanelSize` |  | 尺寸下限，默认 160×120。 |
-| `maxSize` | `FloatingPanelSize` |  | 尺寸上限，不给即不封顶。与 minSize 冲突时以 minSize 为准。 |
-| `windowState` | `FloatingPanelWindowState` |  | 形态。给定即受控。 |
+| `maxSize` | `FloatingPanelSize` |  | 尺寸上限，未提供时不封顶。与 minSize 冲突时以 minSize 为准。 |
+| `windowState` | `FloatingPanelWindowState` |  | 形态。提供即受控。 |
 | `defaultWindowState` | `FloatingPanelWindowState` |  |  |
-| `draggable` | `boolean` |  | 允不允许搬动面板，默认 true；铺满形态下恒不可搬。 |
-| `resizable` | `boolean` |  | 允不允许改尺寸，默认 true；只有常规形态下才改得动。 |
-| `disabled` | `boolean` |  | 禁用：搬不动、改不了尺寸、切不了形态；开合与关闭不受影响。 |
+| `draggable` | `boolean` |  | 是否允许移动面板，默认 true；铺满形态下恒不可移动。 |
+| `resizable` | `boolean` |  | 是否允许改尺寸，默认 true；只有常规形态下可以改尺寸。 |
+| `disabled` | `boolean` |  | 禁用：不可移动、不可改尺寸、不可切换形态；开合与关闭不受影响。 |
 | `translations` | `Partial<FloatingPanelTranslations>` |  |  |
-| `onOpenChange` | `(details: FloatingPanelOpenChangeDetails) => void` |  | open 变化意图回调；受控时是唯一出口，非受控随内部转移一并通知。 |
-| `onPositionChange` | `(details: FloatingPanelPositionChangeDetails) => void` |  | 位置变化意图回调；拖动过程中会连续发很多次。 |
-| `onDimensionsChange` | `(details: FloatingPanelDimensionsChangeDetails) => void` |  | 尺寸变化意图回调；改尺过程中会连续发很多次。 |
+| `onOpenChange` | `(details: FloatingPanelOpenChangeDetails) => void` |  | open 变化意图回调；受控时是唯一出口，非受控时随内部转移一并通知。 |
+| `onPositionChange` | `(details: FloatingPanelPositionChangeDetails) => void` |  | 位置变化意图回调；拖动过程中连续发出。 |
+| `onDimensionsChange` | `(details: FloatingPanelDimensionsChangeDetails) => void` |  | 尺寸变化意图回调；改尺过程中连续发出。 |
 | `onWindowStateChange` | `(details: FloatingPanelWindowStateChangeDetails) => void` |  |  |
 
 ### 事件
@@ -142,8 +142,8 @@ open 与 position 都交给外面握着：面板只报意图，值写回来才�
 | 事件 | 载荷 | 说明 |
 | --- | --- | --- |
 | `open-change` | `FloatingPanelOpenChangeDetails` | 展开态变化；detail 为 `{ open: boolean }` |
-| `position-change` | `FloatingPanelPositionChangeDetails` | 落点变化（拖动途中会连发）；detail 为 `{ position: { x, y } }` |
-| `dimensions-change` | `FloatingPanelDimensionsChangeDetails` | 尺寸变化（改尺途中会连发）；detail 为 `{ dimensions: { width, height } }` |
+| `position-change` | `FloatingPanelPositionChangeDetails` | 落点变化（拖动途中连续发出）；detail 为 `{ position: { x, y } }` |
+| `dimensions-change` | `FloatingPanelDimensionsChangeDetails` | 尺寸变化（改尺途中连续发出）；detail 为 `{ dimensions: { width, height } }` |
 | `window-state-change` | `FloatingPanelWindowStateChangeDetails` | 形态变化；detail 为 `{ windowState: 'default' \| 'minimized' \| 'maximized' }` |
 
 ### 插槽
@@ -182,14 +182,14 @@ open 与 position 都交给外面握着：面板只报意图，值写回来才�
 | `windowState` | `FloatingPanelWindowState` |  |
 | `position` | `FloatingPanelPosition` |  |
 | `dimensions` | `FloatingPanelSize` |  |
-| `dragging` | `boolean` | 正在被指针搬动。 |
+| `dragging` | `boolean` | 正在被指针移动。 |
 | `resizing` | `boolean` | 正在被指针改尺。 |
 | `disabled` | `boolean` |  |
-| `canDrag` | `boolean` | 眼下搬不搬得动：作者允许、未禁用、且不是铺满形态。 |
-| `canResize` | `boolean` | 眼下改不改得了尺寸：作者允许、未禁用、且是常规形态。 |
+| `canDrag` | `boolean` | 当前是否可移动：作者允许、未禁用、且不是铺满形态。 |
+| `canResize` | `boolean` | 当前是否可改尺寸：作者允许、未禁用、且是常规形态。 |
 | `setOpen` | `(next: boolean) => void` |  |
 | `setPosition` | `(next: FloatingPanelPosition) => void` |  |
-| `setDimensions` | `(next: FloatingPanelSize) => void` | 尺寸会被夹进 minSize / maxSize 之后才落地。 |
+| `setDimensions` | `(next: FloatingPanelSize) => void` | 尺寸会被夹进 minSize / maxSize 之后才落定。 |
 | `setWindowState` | `(next: FloatingPanelWindowState) => void` |  |
 | `getRootProps` | `() => T['element']` |  |
 | `getTriggerProps` | `() => T['button']` |  |
@@ -198,7 +198,7 @@ open 与 position 都交给外面握着：面板只报意图，值写回来才�
 | `getHeaderProps` | `() => T['element']` |  |
 | `getTitleProps` | `() => T['element']` |  |
 | `getDragTriggerProps` | `() => T['button']` |  |
-| `getResizeTriggerProps` | `(props: FloatingPanelResizeTriggerProps) => T['element']` | 把手是 role=separator 的元素而不是按钮：方向键推边，激活键在这里没有语义。 |
+| `getResizeTriggerProps` | `(props: FloatingPanelResizeTriggerProps) => T['element']` | 把手是 role=separator 的元素而不是按钮：方向键推动边，激活键在这里没有语义。 |
 | `getWindowStateTriggerProps` | `(props: FloatingPanelWindowStateTriggerProps) => T['button']` |  |
 | `getCloseTriggerProps` | `() => T['button']` |  |
 | `getBodyProps` | `() => T['element']` |  |
@@ -214,7 +214,7 @@ open 与 position 都交给外面握着：面板只报意图，值写回来才�
 | `Escape` | focus in content, 面板展开 | 关闭面板；面板不是模态的，焦点在页面别处时这一键不归它管 |
 | `ArrowUp` / `ArrowDown` / `ArrowLeft` / `ArrowRight` | focus on drag-trigger, 未禁用、draggable 开启且不是铺满形态 | 把整块面板往该方向平移 10px |
 | `Shift+ArrowUp` / `Shift+ArrowDown` / `Shift+ArrowLeft` / `Shift+ArrowRight` | focus on drag-trigger, 未禁用、draggable 开启且不是铺满形态 | 同上，一下走 50px |
-| `Enter` / `Space` | focus on drag-trigger, 未禁用、draggable 开启且不是铺满形态 | 把面板送回初始落点（defaultPosition，没给就是按视口夹过的 24,24）；面板被拖出视口后靠这一键收回来 |
+| `Enter` / `Space` | focus on drag-trigger, 未禁用、draggable 开启且不是铺满形态 | 把面板送回初始落点（defaultPosition，未提供时是按视口夹取后的 24,24）；面板被拖出视口后依靠该键收回 |
 | `ArrowUp` / `ArrowDown` / `ArrowLeft` / `ArrowRight` | focus on resize-trigger, 未禁用、resizable 开启且是常规形态 | 把这个把手守的那条边往该方向推 10px；推不动的那根轴上不拦键（上下把手放行左右键） |
 | `Shift+ArrowUp` / `Shift+ArrowDown` / `Shift+ArrowLeft` / `Shift+ArrowRight` | focus on resize-trigger, 未禁用、resizable 开启且是常规形态 | 同上，一下推 50px |
 

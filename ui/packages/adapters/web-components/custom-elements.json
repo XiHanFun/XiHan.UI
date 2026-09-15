@@ -22882,7 +22882,7 @@
       "declarations": [
         {
           "kind": "class",
-          "description": "`<xh-floating-panel>` —— Light-DOM 行为宿主：作者写 root / positioner / content 等角色节点，\n元素跑 floating-panel 机器并把 connect 产出打上去。\n\n面板的落位与尺寸由元素每帧写进 positioner 的内联样式（position/left/top/width/height），\n作者的样式表不要再碰这五个属性。收起态用内联 display 收住 positioner，正文收拢时同样收住。\n\n改尺把手要在节点上写明守哪条边（`edge=\"se\"`），形态按钮要写明切到哪个形态（`window-state=\"minimized\"`），\n与 Vue 侧的 `:edge` / `:window-state` 是同一份声明。\n\n位置与尺寸的属性形式是逗号分隔的一对数（`default-position=\"24,24\"`、`default-dimensions=\"360,240\"`）；\n也可以直接喂 property（`el.position = { x: 24, y: 24 }`）。",
+          "description": "`<xh-floating-panel>`：Light-DOM 行为宿主：作者写 root / positioner / content 等角色节点，\n元素运行 floating-panel 状态机并把 connect 产出接上。\n\n面板的落位与尺寸由元素每帧写入 positioner 的内联样式（position / left / top / width / height），\n作者的样式表不应再修改这五个属性。收起态用内联 display 隐藏 positioner，正文收拢时同样隐藏。\n\n改尺把手要在节点上写明对应的边（`edge=\"se\"`），形态按钮要写明切换到的形态（`window-state=\"minimized\"`），\n与 Vue 侧的 `:edge` / `:window-state` 是同一份声明。\n\n位置与尺寸的属性形式是逗号分隔的一对数（`default-position=\"24,24\"`、`default-dimensions=\"360,240\"`）；\n也可以直接通过 property 设置（`el.position = { x: 24, y: 24 }`）。",
           "name": "XhFloatingPanelElement",
           "cssParts": [
             {
@@ -22894,7 +22894,7 @@
               "name": "trigger"
             },
             {
-              "description": "承载落位与尺寸的定位容器，收起时被内联 display 收住",
+              "description": "承载落位与尺寸的定位容器，收起时由内联 display 隐藏",
               "name": "positioner"
             },
             {
@@ -22902,7 +22902,7 @@
               "name": "content"
             },
             {
-              "description": "标题栏：标题、拖拽把手与几个按钮排在这里",
+              "description": "标题栏：标题、拖拽把手与各按钮排列在此",
               "name": "header"
             },
             {
@@ -22914,7 +22914,7 @@
               "name": "drag-trigger"
             },
             {
-              "description": "改尺把手，自带 edge 属性；接线后是 `role=\"separator\"`，别写成 `<button>`",
+              "description": "改尺把手，自带 edge 属性；接线后是 `role=\"separator\"`，不写为 `<button>`",
               "name": "resize-trigger"
             },
             {
@@ -23185,7 +23185,7 @@
                   }
                 }
               ],
-              "description": "把手自报守的是哪条边；没写或写错时按右下角处理，那是最常见的那一个。"
+              "description": "把手声明的边；未写或写错时按右下角处理，那是最常见的一个。"
             },
             {
               "kind": "method",
@@ -23204,7 +23204,7 @@
                   }
                 }
               ],
-              "description": "形态按钮自报切到哪个形态；没写或写错时按常规处理。"
+              "description": "形态按钮声明切换到的形态；未写或写错时按常规处理。"
             },
             {
               "kind": "method",
@@ -23226,14 +23226,14 @@
               }
             },
             {
-              "description": "落点变化（拖动途中会连发）；detail 为 `{ position: { x, y } }`",
+              "description": "落点变化（拖动途中连续发出）；detail 为 `{ position: { x, y } }`",
               "name": "position-change",
               "type": {
                 "text": "FloatingPanelPositionChangeDetails"
               }
             },
             {
-              "description": "尺寸变化（改尺途中会连发）；detail 为 `{ dimensions: { width, height } }`",
+              "description": "尺寸变化（改尺途中连续发出）；detail 为 `{ dimensions: { width, height } }`",
               "name": "dimensions-change",
               "type": {
                 "text": "FloatingPanelDimensionsChangeDetails"
@@ -23252,7 +23252,7 @@
               "type": {
                 "text": "boolean | undefined"
               },
-              "description": "受控开合；缺省该属性即非受控",
+              "description": "受控开合；未提供该属性即非受控",
               "name": "open",
               "fieldName": "open"
             },
@@ -23268,7 +23268,7 @@
               "type": {
                 "text": "FloatingPanelPosition | undefined"
               },
-              "description": "受控落点，写成 \"x,y\"（px，相对视口）",
+              "description": "受控落点，写为 \"x,y\"（px，相对视口）",
               "name": "position",
               "fieldName": "position"
             },
@@ -23284,7 +23284,7 @@
               "type": {
                 "text": "FloatingPanelSize | undefined"
               },
-              "description": "受控尺寸，写成 \"宽,高\"（px）",
+              "description": "受控尺寸，写为 \"宽,高\"（px）",
               "name": "dimensions",
               "fieldName": "dimensions"
             },
@@ -23308,7 +23308,7 @@
               "type": {
                 "text": "FloatingPanelSize | undefined"
               },
-              "description": "尺寸上限，不写即不封顶",
+              "description": "尺寸上限，未提供时不封顶",
               "name": "max-size",
               "fieldName": "maxSize"
             },
@@ -23332,7 +23332,7 @@
               "type": {
                 "text": "boolean | undefined"
               },
-              "description": "允不允许搬动面板，默认开启；铺满形态下恒不可搬。不叫 draggable：那是 HTML 全局属性，写上去宿主会变成原生拖放源",
+              "description": "是否允许移动面板，默认开启；铺满形态下恒不可移动。不命名为 draggable：那是 HTML 全局属性，写上后宿主会变成原生拖放源",
               "name": "panel-draggable",
               "fieldName": "panelDraggable"
             },
@@ -23340,7 +23340,7 @@
               "type": {
                 "text": "boolean | undefined"
               },
-              "description": "允不允许改尺寸，默认开启；只有常规形态下才改得动",
+              "description": "是否允许改尺寸，默认开启；只有常规形态下可以改尺寸",
               "name": "resizable",
               "fieldName": "resizable"
             },
@@ -23348,7 +23348,7 @@
               "type": {
                 "text": "boolean | undefined"
               },
-              "description": "禁用：搬不动、改不了尺寸、切不了形态；开合与关闭不受影响",
+              "description": "禁用：不可移动、不可改尺寸、不可切换形态；开合与关闭不受影响",
               "name": "disabled",
               "fieldName": "disabled"
             }

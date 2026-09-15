@@ -20,13 +20,13 @@ import { useOverlayExit } from '../../runtime/use-overlay-exit'
 export interface FloatingPanelContext {
   api: FloatingPanelApi
   service: Service<FloatingPanelSchema>
-  /** 面板节点，跟手期间机器取它的文档挂指针监听。 */
+  /** 面板节点，拖动期间状态机取它的文档挂载指针监听。 */
   contentRef: RefObject<HTMLElement | null>
-  /** 定位层节点，进退场动画挂在它身上。 */
+  /** 定位层节点，进退场动画挂在它上面。 */
   positionerRef: RefObject<HTMLElement | null>
-  /** 定位层此刻该不该可见：退场动画播完之前仍为真。 */
+  /** 定位层当前是否应当可见：退场动画播完之前仍为真。 */
   visible: boolean
-  /** 浮层搬到哪儿：全局配置 > 运行时配置 > body。 */
+  /** 浮层迁移到的位置：全局配置 > 运行时配置 > body。 */
   portalContainer: () => Element | null
 }
 
