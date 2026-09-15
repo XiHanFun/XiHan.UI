@@ -91,13 +91,13 @@
 
 | 属性 | 类型 | 必填 | 说明 |
 | --- | --- | --- | --- |
-| `lines` | `number` |  | 夹几行，1 为单行，默认 1。 |
-| `expandable` | `boolean` |  | 点一下铺开全文。 |
-| `open` | `boolean` |  | 受控展开；缺省即非受控。 |
+| `lines` | `number` |  | 截断行数，1 为单行，默认 1。 |
+| `expandable` | `boolean` |  | 点击展开全文。 |
+| `open` | `boolean` |  | 受控展开；未提供时非受控。 |
 | `defaultOpen` | `boolean` |  | 非受控时的初始展开态。 |
-| `tooltip` | `boolean` |  | 真被裁掉了才把整段文字交给平台的原生提示。 |
-| `onOpenChange` | `(details: TruncateOpenChangeDetails) => void` |  | open 变化意图回调；受控时是唯一出口，非受控随内部转移一并通知。 |
-| `onOverflowChange` | `(details: TruncateOverflowChangeDetails) => void` |  | 量出来的溢出结论翻面时回调。 |
+| `tooltip` | `boolean` |  | 实际裁掉内容时才把整段文字交给平台的原生提示。 |
+| `onOpenChange` | `(details: TruncateOpenChangeDetails) => void` |  | open 变化意图回调；受控时是唯一出口，非受控时随内部转移一并通知。 |
+| `onOverflowChange` | `(details: TruncateOverflowChangeDetails) => void` |  | 测得的溢出结论翻转时回调。 |
 
 ### 事件
 
@@ -106,7 +106,7 @@
 | 事件 | 载荷 | 说明 |
 | --- | --- | --- |
 | `open-change` | `TruncateOpenChangeDetails` | 展开状态变化；detail 为 `{ open: boolean }` |
-| `overflow-change` | `TruncateOverflowChangeDetails` | 溢出结论翻面；detail 为 `{ overflowing: boolean }` |
+| `overflow-change` | `TruncateOverflowChangeDetails` | 溢出结论翻转；detail 为 `{ overflowing: boolean }` |
 
 ### 插槽
 
@@ -138,9 +138,9 @@
 
 | 成员 | 类型 | 说明 |
 | --- | --- | --- |
-| `open` | `boolean` | 此刻是不是铺开了全文。 |
-| `overflowing` | `boolean` | 夹住的那一版有没有被裁掉内容。作者据此决定要不要套一层提示。 |
-| `setOpen` | `(next: boolean) => void` | 程序化展开 / 收回，与点一下走同一条路。 |
+| `open` | `boolean` | 当前是否已展开全文。 |
+| `overflowing` | `boolean` | 截断版本是否裁掉了内容。作者据此决定是否附加提示。 |
+| `setOpen` | `(next: boolean) => void` | 程序化展开 / 收起，与点击走同一路径。 |
 | `measure` | `() => void` | 手动测量一次，用于观察器无法感知的布局变化。 |
 | `getRootProps` | `() => T['element']` |  |
 

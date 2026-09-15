@@ -13,13 +13,13 @@ import { useTruncate } from './use-truncate'
 
 type TruncateProps = TruncateSchema['props']
 
-/** 默认插槽的载荷：展开态与量出来的溢出与否，以及展开与重量一次的方法。 */
+/** 默认插槽的载荷：展开态与测得的是否溢出，以及展开与重新测量的方法。 */
 export type TruncateSlotProps = Pick<TruncateApi, 'open' | 'overflowing' | 'setOpen' | 'measure'>
 
 /**
- * 一段夹住的文字：单行收成省略号，多行按行数裁。
- * 溢出与否是量出来的，落在 data-overflowing 上，也经默认插槽的 overflowing 交出去——
- * 要不要再套一层提示由作者决定，这里不做浮层。
+ * 一段受限的文字：单行收为省略号，多行按行数裁剪。
+ * 是否溢出由测量得出，写在 data-overflowing 上，也经默认插槽的 overflowing 交出：
+ * 是否再附加提示由作者决定，这里不处理浮层。
  */
 export const XhTruncate = defineComponent({
   name: 'XhTruncate',
