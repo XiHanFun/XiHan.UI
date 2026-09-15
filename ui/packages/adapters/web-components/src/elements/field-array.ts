@@ -22,7 +22,7 @@ const STRING_CONVERTER = { fromAttribute: (v: string | null) => v ?? undefined }
 // 三态布尔：缺席=undefined（走缺省）、="false"=false、其余=true。
 const BOOLEAN_CONVERTER = { fromAttribute: (v: string | null) => (v === null ? undefined : v !== 'false') }
 
-/** 作者写在行上的下标。缺席或写坏了就退回文档序——把行按顺序排下来本身就是声明。 */
+/** 作者写在行上的下标。缺席或写错时退回文档序：把行按顺序排列本身就是声明。 */
 function declaredIndex(el: HTMLElement, position: number): number {
   const raw = el.getAttribute('index')
   if (raw == null || raw.trim() === '')
@@ -32,34 +32,34 @@ function declaredIndex(el: HTMLElement, position: number): number {
 }
 
 /**
- * `<xh-field-array>` —— Light-DOM 行为宿主：作者写 root/item/item-content/item-action 与
+ * `<xh-field-array>`：Light-DOM 行为宿主：作者写 root / item / item-content / item-action 与
  * add-trigger、item-delete-trigger、move-up-trigger、move-down-trigger 角色节点，
- * 元素跑 field-array 机器并把 connect 产出打上去。
+ * 元素运行 field-array 状态机并把 connect 产出接上。
  *
- * 值是宿主自己的数据数组，元素只管增删与换序这套动作，行里放什么控件由作者写进 item-content。
- * 行节点由作者按当前值渲染（一行一个 item，身份取节点上的 index 属性，缺省按文档序），
- * 值变了要由作者那一侧增删行节点，改完 MutationObserver 会自动重新接线。
+ * 值是宿主自己的数据数组，元素只负责增删与换序这套动作，行中放置的控件由作者写进 item-content。
+ * 行节点由作者按当前值渲染（一行一个 item，身份取节点上的 index 属性，默认按文档序），
+ * 值变化时由作者侧增删行节点，修改后 MutationObserver 会自动重新接线。
  *
- * 数据数组、造行工厂与读屏文案都表达不成属性，三者只作为 property 暴露。
+ * 数据数组、造行工厂与读屏文案都无法表达为属性，三者只作为 property 暴露。
  *
  * @customElement xh-field-array
- * @attr {number} min - 最少几行；到了就按不动删除把手
- * @attr {number} max - 最多几行；到了就按不动新增把手
- * @attr {boolean} movable - 出不出换序把手；关时两个换序把手一律收起
- * @attr {boolean} disabled - 禁用：新增、删除、换序三路都按不动
- * @attr {boolean} read-only - 只读：行数改不动，行里的控件由作者自己置只读
- * @attr {boolean} invalid - 校验失败标注；落到根与每一行上
+ * @attr {number} min - 最少行数；到达后删除把手不可按下
+ * @attr {number} max - 最多行数；到达后新增把手不可按下
+ * @attr {boolean} movable - 是否显示换序把手；关闭时两个换序把手一律收起
+ * @attr {boolean} disabled - 禁用：新增、删除、换序三路都不可按下
+ * @attr {boolean} read-only - 只读：行数不可修改，行内的控件由作者自行设置只读
+ * @attr {boolean} invalid - 校验失败标注；写在根与每一行上
  * @attr {string} name - 整份数组的表单字段名；嵌套 Form 时自动使用同一条 FormPath 真源
  * @fires value-change - 数据数组变化；detail 为 `{ value: unknown[] }`
  * @csspart root - 整份列表的容器，承载 data-disabled / data-empty / data-at-min / data-at-max / data-movable
- * @csspart item - 一行一个，可自带 index 属性声明下标，缺省按文档序
+ * @csspart item - 一行一个，可自带 index 属性声明下标，默认按文档序
  * @csspart item-label - 一行前面的行号或名目；纯标注
- * @csspart item-content - 一行里放作者自己控件的位置
- * @csspart item-action - 一行里放把手的位置
- * @csspart add-trigger - 新增把手，须是原生 `<button>`；到上限转 aria-disabled 但仍可聚焦；名字取自身内容
- * @csspart item-delete-trigger - 删除把手，须是原生 `<button>`；到下限转 aria-disabled；自带 aria-label
- * @csspart move-up-trigger - 上移把手，须是原生 `<button>`；首行转 aria-disabled；自带 aria-label
- * @csspart move-down-trigger - 下移把手，须是原生 `<button>`；末行转 aria-disabled；自带 aria-label
+ * @csspart item-content - 一行中放置作者自己控件的位置
+ * @csspart item-action - 一行中放置把手的位置
+ * @csspart add-trigger - 新增把手，须是原生 `<button>`；到上限时为 aria-disabled 但仍可聚焦；名字取自身内容
+ * @csspart item-delete-trigger - 删除把手，须是原生 `<button>`；到下限时为 aria-disabled；自带 aria-label
+ * @csspart move-up-trigger - 上移把手，须是原生 `<button>`；首行为 aria-disabled；自带 aria-label
+ * @csspart move-down-trigger - 下移把手，须是原生 `<button>`；末行为 aria-disabled；自带 aria-label
  */
 export class XhFieldArrayElement extends XhElement {
   static override partContract = { anatomy: fieldArrayAnatomy, meta: fieldArrayMeta }

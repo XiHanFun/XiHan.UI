@@ -10,7 +10,7 @@ import type { FieldArrayContext } from './use-field-array'
 import { createContext, useContext } from 'react'
 
 const Ctx = createContext<FieldArrayContext | undefined>(undefined)
-/** 行自报的下标，供 item-content / item-action 与三个把手复用同一份声明。 */
+/** 行声明的下标，供 item-content / item-action 与三个操作按钮复用同一份声明。 */
 const ItemCtx = createContext<FieldArrayItemProps | undefined>(undefined)
 
 export const FieldArrayProvider = Ctx

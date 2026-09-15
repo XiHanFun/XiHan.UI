@@ -101,7 +101,7 @@ export const XhFieldArrayItem = defineComponent({
   },
 })
 
-/** 行前的行号或名目；纯标注，不与行里的控件建 for 关联。 */
+/** 行前的行号或名目；纯标注，不与行内的控件建立 for 关联。 */
 export const XhFieldArrayItemLabel = defineComponent({
   name: 'XhFieldArrayItemLabel',
   setup(_, { slots }) {

@@ -20557,7 +20557,7 @@
       "declarations": [
         {
           "kind": "class",
-          "description": "`<xh-field-array>` —— Light-DOM 行为宿主：作者写 root/item/item-content/item-action 与\nadd-trigger、item-delete-trigger、move-up-trigger、move-down-trigger 角色节点，\n元素跑 field-array 机器并把 connect 产出打上去。\n\n值是宿主自己的数据数组，元素只管增删与换序这套动作，行里放什么控件由作者写进 item-content。\n行节点由作者按当前值渲染（一行一个 item，身份取节点上的 index 属性，缺省按文档序），\n值变了要由作者那一侧增删行节点，改完 MutationObserver 会自动重新接线。\n\n数据数组、造行工厂与读屏文案都表达不成属性，三者只作为 property 暴露。",
+          "description": "`<xh-field-array>`：Light-DOM 行为宿主：作者写 root / item / item-content / item-action 与\nadd-trigger、item-delete-trigger、move-up-trigger、move-down-trigger 角色节点，\n元素运行 field-array 状态机并把 connect 产出接上。\n\n值是宿主自己的数据数组，元素只负责增删与换序这套动作，行中放置的控件由作者写进 item-content。\n行节点由作者按当前值渲染（一行一个 item，身份取节点上的 index 属性，默认按文档序），\n值变化时由作者侧增删行节点，修改后 MutationObserver 会自动重新接线。\n\n数据数组、造行工厂与读屏文案都无法表达为属性，三者只作为 property 暴露。",
           "name": "XhFieldArrayElement",
           "cssParts": [
             {
@@ -20565,7 +20565,7 @@
               "name": "root"
             },
             {
-              "description": "一行一个，可自带 index 属性声明下标，缺省按文档序",
+              "description": "一行一个，可自带 index 属性声明下标，默认按文档序",
               "name": "item"
             },
             {
@@ -20573,27 +20573,27 @@
               "name": "item-label"
             },
             {
-              "description": "一行里放作者自己控件的位置",
+              "description": "一行中放置作者自己控件的位置",
               "name": "item-content"
             },
             {
-              "description": "一行里放把手的位置",
+              "description": "一行中放置把手的位置",
               "name": "item-action"
             },
             {
-              "description": "新增把手，须是原生 `<button>`；到上限转 aria-disabled 但仍可聚焦；名字取自身内容",
+              "description": "新增把手，须是原生 `<button>`；到上限时为 aria-disabled 但仍可聚焦；名字取自身内容",
               "name": "add-trigger"
             },
             {
-              "description": "删除把手，须是原生 `<button>`；到下限转 aria-disabled；自带 aria-label",
+              "description": "删除把手，须是原生 `<button>`；到下限时为 aria-disabled；自带 aria-label",
               "name": "item-delete-trigger"
             },
             {
-              "description": "上移把手，须是原生 `<button>`；首行转 aria-disabled；自带 aria-label",
+              "description": "上移把手，须是原生 `<button>`；首行为 aria-disabled；自带 aria-label",
               "name": "move-up-trigger"
             },
             {
-              "description": "下移把手，须是原生 `<button>`；末行转 aria-disabled；自带 aria-label",
+              "description": "下移把手，须是原生 `<button>`；末行为 aria-disabled；自带 aria-label",
               "name": "move-down-trigger"
             }
           ],
@@ -20800,7 +20800,7 @@
               "type": {
                 "text": "number | undefined"
               },
-              "description": "最少几行；到了就按不动删除把手",
+              "description": "最少行数；到达后删除把手不可按下",
               "name": "min",
               "fieldName": "min"
             },
@@ -20808,7 +20808,7 @@
               "type": {
                 "text": "number | undefined"
               },
-              "description": "最多几行；到了就按不动新增把手",
+              "description": "最多行数；到达后新增把手不可按下",
               "name": "max",
               "fieldName": "max"
             },
@@ -20816,7 +20816,7 @@
               "type": {
                 "text": "boolean | undefined"
               },
-              "description": "出不出换序把手；关时两个换序把手一律收起",
+              "description": "是否显示换序把手；关闭时两个换序把手一律收起",
               "name": "movable",
               "fieldName": "movable"
             },
@@ -20824,7 +20824,7 @@
               "type": {
                 "text": "boolean | undefined"
               },
-              "description": "禁用：新增、删除、换序三路都按不动",
+              "description": "禁用：新增、删除、换序三路都不可按下",
               "name": "disabled",
               "fieldName": "disabled"
             },
@@ -20832,7 +20832,7 @@
               "type": {
                 "text": "boolean | undefined"
               },
-              "description": "只读：行数改不动，行里的控件由作者自己置只读",
+              "description": "只读：行数不可修改，行内的控件由作者自行设置只读",
               "name": "read-only",
               "fieldName": "readOnly"
             },
@@ -20840,7 +20840,7 @@
               "type": {
                 "text": "boolean | undefined"
               },
-              "description": "校验失败标注；落到根与每一行上",
+              "description": "校验失败标注；写在根与每一行上",
               "name": "invalid",
               "fieldName": "invalid"
             },
