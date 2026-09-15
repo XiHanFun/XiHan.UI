@@ -67,7 +67,7 @@
     cursor: pointer;
     transition:
       color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
-      scale var(--xh-motion-duration-micro) var(--xh-motion-ease-enter-strong);
+      scale var(--xh-motion-duration-release) var(--xh-motion-ease-release);
   }
 
   [data-scope='calendar-picker'][data-part='heading-year-trigger'][hidden],
@@ -84,6 +84,8 @@
   [data-scope='calendar-picker'][data-part='heading-year-trigger']:active:not(:disabled),
   [data-scope='calendar-picker'][data-part='heading-month-trigger']:active:not(:disabled) {
     scale: var(--xh-motion-scale-press);
+    transition-duration: var(--xh-motion-duration-press);
+    transition-timing-function: var(--xh-motion-ease-press);
   }
 
   /* 到顶那一层（年视图的年那一截）只作标题显示：不再是可点的东西，光标也别装成能点 */
@@ -109,7 +111,7 @@
     cursor: pointer;
     transition:
       background var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
-      scale var(--xh-motion-duration-micro) var(--xh-motion-ease-enter-strong);
+      scale var(--xh-motion-duration-release) var(--xh-motion-ease-release);
   }
 
   [data-scope='calendar-picker'][data-part='prev-year-trigger'][hidden],
@@ -133,6 +135,8 @@
   [data-scope='calendar-picker'][data-part='next-year-trigger']:active:not(:disabled),
   [data-scope='calendar-picker'][data-part='next-trigger']:active:not(:disabled) {
     scale: var(--xh-motion-scale-press);
+    transition-duration: var(--xh-motion-duration-press);
+    transition-timing-function: var(--xh-motion-ease-press);
   }
 
   /* 翻月是单体控件，禁用走原生 :disabled（连接层输出的正是原生 disabled） */
@@ -286,7 +290,7 @@
     aspect-ratio: 1;
     min-inline-size: var(--xh-calendar-picker-cell-size, var(--xh-control-h-sm));
     border: var(--xh-stroke-thin) solid transparent;
-    border-radius: var(--xh-calendar-picker-cell-radius, var(--xh-shape-pill));
+    border-radius: var(--xh-calendar-picker-cell-radius, var(--xh-shape-inset));
     color: var(--xh-calendar-picker-cell-fg, var(--xh-fg-default));
     font-size: var(--xh-calendar-picker-cell-font-size, var(--xh-text-body-size));
     font-weight: var(--xh-calendar-picker-cell-font-weight, var(--xh-font-weight-medium));
@@ -296,7 +300,7 @@
     transition:
       background var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
       color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
-      scale var(--xh-motion-duration-micro) var(--xh-motion-ease-enter-strong);
+      scale var(--xh-motion-duration-release) var(--xh-motion-ease-release);
   }
 
   [data-scope='calendar-picker'][data-part='cell-trigger'][hidden] {
@@ -322,6 +326,8 @@
   /* 按下微缩：缩放走 transform 通道，一格自己缩不推动整张网格；已选中的格照样压 */
   [data-scope='calendar-picker'][data-part='cell-trigger']:not([data-disabled]):active {
     scale: var(--xh-motion-scale-press);
+    transition-duration: var(--xh-motion-duration-press);
+    transition-timing-function: var(--xh-motion-ease-press);
   }
 
   /* 今天用淡强调面，选中仍用后面的实心强调面；两个状态叠加时不会混成同一种反馈。 */
