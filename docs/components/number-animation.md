@@ -180,9 +180,9 @@ duration 定跑多久，easing 定快慢怎么分配；同一段距离四档并�
 <!-- xh-component-tokens:start -->
 ### CSS 变量
 
-本组件公开覆盖槽由独立皮肤的实际消费位生成；缺省来源、作用部件和状态均与 CSS 同源。
+本组件公开覆盖槽由独立皮肤的实际消费位生成；默认来源、作用部件和状态均与 CSS 同源。
 
-| 变量 | 部件 | CSS 属性 | 状态 | 缺省来源 | 说明 |
+| 变量 | 部件 | CSS 属性 | 状态 | 默认来源 | 说明 |
 | --- | --- | --- | --- | --- | --- |
 | `--xh-number-animation-fg` | `root` | `color` | `default` | `--xh-_tone-fg` | number-animation 的 root 部件 color 覆盖槽。 |
 | `--xh-number-animation-font-size` | `root` | `font-size` | `default` | `--xh-_number-animation-size` | number-animation 的 root 部件 font-size 覆盖槽。 |

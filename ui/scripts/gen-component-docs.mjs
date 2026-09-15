@@ -1061,7 +1061,7 @@ function renderComponent(entry, category) {
     push('')
   }
 
-  // 可覆盖令牌的名字、部件、属性、状态与缺省来源全部来自 CSS 生成 manifest。
+  // 可覆盖令牌的名字、部件、属性、状态与默认来源全部来自 CSS 生成 manifest。
   if (componentTokenDocs)
     push(...componentTokenDocs.split('\n'), '')
 
@@ -1117,7 +1117,7 @@ function renderComponent(entry, category) {
       push(`皮肤按视口分档：${sk.viewportQueries.map(code).join(' · ')}。`, '')
     if (sk?.inputQueries.length) {
       push(
-        `皮肤另按输入能力分档：${sk.inputQueries.map(code).join(' · ')}——`
+        `皮肤另按输入能力分档：${sk.inputQueries.map(code).join(' · ')}：`
         + '同一份皮肤在触屏与带指针的设备上不一样，与视口宽度无关。',
         '',
       )

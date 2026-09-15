@@ -136,9 +136,9 @@ tone 决定命中片段用哪族颜色，没命中的文本不受影响
 <!-- xh-component-tokens:start -->
 ### CSS 变量
 
-本组件公开覆盖槽由独立皮肤的实际消费位生成；缺省来源、作用部件和状态均与 CSS 同源。
+本组件公开覆盖槽由独立皮肤的实际消费位生成；默认来源、作用部件和状态均与 CSS 同源。
 
-| 变量 | 部件 | CSS 属性 | 状态 | 缺省来源 | 说明 |
+| 变量 | 部件 | CSS 属性 | 状态 | 默认来源 | 说明 |
 | --- | --- | --- | --- | --- | --- |
 | `--xh-highlight-mark-bg` | `mark`<br>`root` | `background` | `default`<br>`tone` | `--xh-_tone-subtle`<br>`--xh-bg-brand-subtle` | highlight 的 mark、root 部件 background 覆盖槽。 |
 | `--xh-highlight-mark-fg` | `mark`<br>`root` | `color` | `default`<br>`tone` | `--xh-_tone-fg`<br>`--xh-fg-brand-strong` | highlight 的 mark、root 部件 color 覆盖槽。 |

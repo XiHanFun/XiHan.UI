@@ -165,9 +165,9 @@ label 与内容对置：逐条交替排布时时间戳仍停在同一侧，不�
 <!-- xh-component-tokens:start -->
 ### CSS 变量
 
-本组件公开覆盖槽由独立皮肤的实际消费位生成；缺省来源、作用部件和状态均与 CSS 同源。
+本组件公开覆盖槽由独立皮肤的实际消费位生成；默认来源、作用部件和状态均与 CSS 同源。
 
-| 变量 | 部件 | CSS 属性 | 状态 | 缺省来源 | 说明 |
+| 变量 | 部件 | CSS 属性 | 状态 | 默认来源 | 说明 |
 | --- | --- | --- | --- | --- | --- |
 | `--xh-timeline-connector-bg` | `connector` | `background` | `default` | `--xh-border-default` | timeline 的 connector 部件 background 覆盖槽。 |
 | `--xh-timeline-connector-min-length` | `connector`<br>`item`<br>`label` | `min-block-size`<br>`min-inline-size` | `@media (min-width: 768px)`<br>`default`<br>`has(> [data-scope='timeline'][data-part='label'])`<br>`orientation=horizontal` | `--xh-space-4` | timeline 的 connector、item、label 部件 min-block-size、min-inline-size 覆盖槽。 |

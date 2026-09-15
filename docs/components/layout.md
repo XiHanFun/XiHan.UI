@@ -192,9 +192,9 @@
 <!-- xh-component-tokens:start -->
 ### CSS 变量
 
-本组件公开覆盖槽由独立皮肤的实际消费位生成；缺省来源、作用部件和状态均与 CSS 同源。
+本组件公开覆盖槽由独立皮肤的实际消费位生成；默认来源、作用部件和状态均与 CSS 同源。
 
-| 变量 | 部件 | CSS 属性 | 状态 | 缺省来源 | 说明 |
+| 变量 | 部件 | CSS 属性 | 状态 | 默认来源 | 说明 |
 | --- | --- | --- | --- | --- | --- |
 | `--xh-layout-bg` | `root` | `background` | `default` | `--xh-bg-page` | layout 的 root 部件 background 覆盖槽。 |
 | `--xh-layout-border` | `footer`<br>`header`<br>`root`<br>`sider` | `border-block-end`<br>`border-block-start`<br>`border-inline-end`<br>`border-inline-start` | `bordered`<br>`placement=end`<br>`placement=start` | `--xh-border-default` | layout 的 footer、header、root、sider 部件 border-block-end、border-block-start、border-inline-end、border-inline-start 覆盖槽。 |

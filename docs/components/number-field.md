@@ -285,9 +285,9 @@ parse 把显示串读成数、format 把数写回显示串；两个方向必须�
 <!-- xh-component-tokens:start -->
 ### CSS 变量
 
-本组件公开覆盖槽由独立皮肤的实际消费位生成；缺省来源、作用部件和状态均与 CSS 同源。
+本组件公开覆盖槽由独立皮肤的实际消费位生成；默认来源、作用部件和状态均与 CSS 同源。
 
-| 变量 | 部件 | CSS 属性 | 状态 | 缺省来源 | 说明 |
+| 变量 | 部件 | CSS 属性 | 状态 | 默认来源 | 说明 |
 | --- | --- | --- | --- | --- | --- |
 | `--xh-number-field-affix-fg` | `prefix`<br>`suffix` | `color` | `default` | `--xh-fg-muted` | number-field 的 prefix、suffix 部件 color 覆盖槽。 |
 | `--xh-number-field-affix-fg-disabled` | `prefix`<br>`suffix` | `color` | `disabled` | `--xh-fg-disabled` | number-field 的 prefix、suffix 部件 color 覆盖槽。 |
@@ -340,7 +340,7 @@ parse 把显示串读成数、format 把数写回显示串；两个方向必须�
 
 ### 响应式
 
-皮肤另按输入能力分档：`pointer: coarse`——同一份皮肤在触屏与带指针的设备上不一样，与视口宽度无关。
+皮肤另按输入能力分档：`pointer: coarse`：同一份皮肤在触屏与带指针的设备上不一样，与视口宽度无关。
 
 ### RTL
 

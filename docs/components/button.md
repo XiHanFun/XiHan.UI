@@ -208,9 +208,9 @@
 <!-- xh-component-tokens:start -->
 ### CSS 变量
 
-本组件公开覆盖槽由独立皮肤的实际消费位生成；缺省来源、作用部件和状态均与 CSS 同源。
+本组件公开覆盖槽由独立皮肤的实际消费位生成；默认来源、作用部件和状态均与 CSS 同源。
 
-| 变量 | 部件 | CSS 属性 | 状态 | 缺省来源 | 说明 |
+| 变量 | 部件 | CSS 属性 | 状态 | 默认来源 | 说明 |
 | --- | --- | --- | --- | --- | --- |
 | `--xh-button-bg` | `root` | `background-color` | `default`<br>`focus-visible`<br>`loading`<br>`not([data-scope='button-group'] *)`<br>`not([data-variant])`<br>`variant`<br>`variant=solid` | `--xh-_tone`<br>`--xh-bg-brand` | button 的 root 部件 background-color 覆盖槽。 |
 | `--xh-button-bg-active` | `root` | `background-color` | `active`<br>`disabled`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])` | `--xh-bg-brand-active` | button 的 root 部件 background-color 覆盖槽。 |

@@ -412,9 +412,9 @@ Vue 不写默认插槽时按 collection 铺开整套部件：带 children 的节
 <!-- xh-component-tokens:start -->
 ### CSS 变量
 
-本组件公开覆盖槽由独立皮肤的实际消费位生成；缺省来源、作用部件和状态均与 CSS 同源。
+本组件公开覆盖槽由独立皮肤的实际消费位生成；默认来源、作用部件和状态均与 CSS 同源。
 
-| 变量 | 部件 | CSS 属性 | 状态 | 缺省来源 | 说明 |
+| 变量 | 部件 | CSS 属性 | 状态 | 默认来源 | 说明 |
 | --- | --- | --- | --- | --- | --- |
 | `--xh-tree-select-action-bg` | `clear-trigger` | `background` | `default` | `transparent` | tree-select 的 clear-trigger 部件 background 覆盖槽。 |
 | `--xh-tree-select-action-bg-active` | `clear-trigger` | `background` | `active` | `--xh-bg-subtle-active` | tree-select 的 clear-trigger 部件 background 覆盖槽。 |

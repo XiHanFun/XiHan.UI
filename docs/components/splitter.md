@@ -205,9 +205,9 @@
 <!-- xh-component-tokens:start -->
 ### CSS 变量
 
-本组件公开覆盖槽由独立皮肤的实际消费位生成；缺省来源、作用部件和状态均与 CSS 同源。
+本组件公开覆盖槽由独立皮肤的实际消费位生成；默认来源、作用部件和状态均与 CSS 同源。
 
-| 变量 | 部件 | CSS 属性 | 状态 | 缺省来源 | 说明 |
+| 变量 | 部件 | CSS 属性 | 状态 | 默认来源 | 说明 |
 | --- | --- | --- | --- | --- | --- |
 | `--xh-splitter-disabled-opacity` | `root` | `opacity` | `disabled` | `0.6` | splitter 的 root 部件 opacity 覆盖槽。 |
 | `--xh-splitter-radius` | `root` | `border-radius` | `default` | `--xh-shape-surface` | splitter 的 root 部件 border-radius 覆盖槽。 |

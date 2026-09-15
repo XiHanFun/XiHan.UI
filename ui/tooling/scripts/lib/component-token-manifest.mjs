@@ -437,9 +437,9 @@ export function renderComponentTokenDocs(tokens, options = {}) {
     COMPONENT_TOKEN_DOCS_START,
     `${'#'.repeat(headingLevel)} CSS 变量`,
     '',
-    '本组件公开覆盖槽由独立皮肤的实际消费位生成；缺省来源、作用部件和状态均与 CSS 同源。',
+    '本组件公开覆盖槽由独立皮肤的实际消费位生成；默认来源、作用部件和状态均与 CSS 同源。',
     '',
-    '| 变量 | 部件 | CSS 属性 | 状态 | 缺省来源 | 说明 |',
+    '| 变量 | 部件 | CSS 属性 | 状态 | 默认来源 | 说明 |',
     '| --- | --- | --- | --- | --- | --- |',
   ]
   for (const token of tokens) {

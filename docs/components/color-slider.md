@@ -221,9 +221,9 @@ orientation 竖排时渐变自下而上；禁用整体压暗，只读留 Tab 位
 <!-- xh-component-tokens:start -->
 ### CSS 变量
 
-本组件公开覆盖槽由独立皮肤的实际消费位生成；缺省来源、作用部件和状态均与 CSS 同源。
+本组件公开覆盖槽由独立皮肤的实际消费位生成；默认来源、作用部件和状态均与 CSS 同源。
 
-| 变量 | 部件 | CSS 属性 | 状态 | 缺省来源 | 说明 |
+| 变量 | 部件 | CSS 属性 | 状态 | 默认来源 | 说明 |
 | --- | --- | --- | --- | --- | --- |
 | `--xh-color-slider-checker` | `track` | `background-image` | `channel=alpha` | `--xh-color-neutral-300` | color-slider 的 track 部件 background-image 覆盖槽。 |
 | `--xh-color-slider-checker-base` | `track` | `background-color` | `channel=alpha` | `--xh-bg-surface` | color-slider 的 track 部件 background-color 覆盖槽。 |

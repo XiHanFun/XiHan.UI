@@ -285,9 +285,9 @@ name 才让它参与提交，auto-complete 写成 new-password 密码管理器�
 <!-- xh-component-tokens:start -->
 ### CSS 变量
 
-本组件公开覆盖槽由独立皮肤的实际消费位生成；缺省来源、作用部件和状态均与 CSS 同源。
+本组件公开覆盖槽由独立皮肤的实际消费位生成；默认来源、作用部件和状态均与 CSS 同源。
 
-| 变量 | 部件 | CSS 属性 | 状态 | 缺省来源 | 说明 |
+| 变量 | 部件 | CSS 属性 | 状态 | 默认来源 | 说明 |
 | --- | --- | --- | --- | --- | --- |
 | `--xh-password-input-caps-lock-fg` | `caps-lock-indicator` | `color` | `default` | `--xh-fg-muted` | password-input 的 caps-lock-indicator 部件 color 覆盖槽。 |
 | `--xh-password-input-caps-lock-fg-disabled` | `caps-lock-indicator`<br>`control` | `color` | `disabled` | `--xh-fg-disabled` | password-input 的 caps-lock-indicator、control 部件 color 覆盖槽。 |

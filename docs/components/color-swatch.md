@@ -148,9 +148,9 @@ label 给读屏一个有含义的名字；解析不出的串只剩棋盘格并�
 <!-- xh-component-tokens:start -->
 ### CSS 变量
 
-本组件公开覆盖槽由独立皮肤的实际消费位生成；缺省来源、作用部件和状态均与 CSS 同源。
+本组件公开覆盖槽由独立皮肤的实际消费位生成；默认来源、作用部件和状态均与 CSS 同源。
 
-| 变量 | 部件 | CSS 属性 | 状态 | 缺省来源 | 说明 |
+| 变量 | 部件 | CSS 属性 | 状态 | 默认来源 | 说明 |
 | --- | --- | --- | --- | --- | --- |
 | `--xh-color-swatch-border` | `root` | `--xh-swatch-border` | `default` | `--xh-border-default` | color-swatch 的 root 部件 --xh-swatch-border 覆盖槽。 |
 | `--xh-color-swatch-border-invalid` | `root` | `--xh-swatch-border` | `invalid` | `--xh-border-invalid` | color-swatch 的 root 部件 --xh-swatch-border 覆盖槽。 |

@@ -257,9 +257,9 @@
 <!-- xh-component-tokens:start -->
 ### CSS 变量
 
-本组件公开覆盖槽由独立皮肤的实际消费位生成；缺省来源、作用部件和状态均与 CSS 同源。
+本组件公开覆盖槽由独立皮肤的实际消费位生成；默认来源、作用部件和状态均与 CSS 同源。
 
-| 变量 | 部件 | CSS 属性 | 状态 | 缺省来源 | 说明 |
+| 变量 | 部件 | CSS 属性 | 状态 | 默认来源 | 说明 |
 | --- | --- | --- | --- | --- | --- |
 | `--xh-form-field-gap` | `field-group` | `gap` | `default` | `--xh-space-1` | form 的 field-group 部件 gap 覆盖槽。 |
 | `--xh-form-field-invalid-border` | `field-group` | `border-inline-start` | `invalid` | `--xh-border-invalid` | form 的 field-group 部件 border-inline-start 覆盖槽。 |

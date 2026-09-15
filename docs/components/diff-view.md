@@ -257,9 +257,9 @@ size 换字号、行高与行号槽的宽度，三档并列对照
 <!-- xh-component-tokens:start -->
 ### CSS 变量
 
-本组件公开覆盖槽由独立皮肤的实际消费位生成；缺省来源、作用部件和状态均与 CSS 同源。
+本组件公开覆盖槽由独立皮肤的实际消费位生成；默认来源、作用部件和状态均与 CSS 同源。
 
-| 变量 | 部件 | CSS 属性 | 状态 | 缺省来源 | 说明 |
+| 变量 | 部件 | CSS 属性 | 状态 | 默认来源 | 说明 |
 | --- | --- | --- | --- | --- | --- |
 | `--xh-diff-view-added-bg` | `row` | `background` | `change=added` | `--xh-diff-added-bg` | diff-view 的 row 部件 background 覆盖槽。 |
 | `--xh-diff-view-added-fg` | `inline-change`<br>`line-content`<br>`line-number`<br>`row`<br>`summary` | `background`<br>`box-shadow`<br>`color` | `change=added` | `--xh-diff-added-fg` | diff-view 的 inline-change、line-content、line-number、row、summary 部件 background、box-shadow、color 覆盖槽。 |

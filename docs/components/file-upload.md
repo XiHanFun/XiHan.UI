@@ -303,9 +303,9 @@ remote-files 装编辑表单里已存在的附件：与本地文件同列渲染�
 <!-- xh-component-tokens:start -->
 ### CSS 变量
 
-本组件公开覆盖槽由独立皮肤的实际消费位生成；缺省来源、作用部件和状态均与 CSS 同源。
+本组件公开覆盖槽由独立皮肤的实际消费位生成；默认来源、作用部件和状态均与 CSS 同源。
 
-| 变量 | 部件 | CSS 属性 | 状态 | 缺省来源 | 说明 |
+| 变量 | 部件 | CSS 属性 | 状态 | 默认来源 | 说明 |
 | --- | --- | --- | --- | --- | --- |
 | `--xh-file-upload-clear-bg-active` | `clear-trigger` | `background` | `active`<br>`not(:disabled)` | `--xh-bg-subtle-active` | file-upload 的 clear-trigger 部件 background 覆盖槽。 |
 | `--xh-file-upload-clear-bg-hover` | `clear-trigger` | `background` | `hover`<br>`not(:disabled)` | `--xh-bg-subtle-hover` | file-upload 的 clear-trigger 部件 background 覆盖槽。 |

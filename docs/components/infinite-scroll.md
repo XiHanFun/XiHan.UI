@@ -182,9 +182,9 @@ phase / loading / disabled 由组件交给宿主，加载提示与结束语都�
 <!-- xh-component-tokens:start -->
 ### CSS 变量
 
-本组件公开覆盖槽由独立皮肤的实际消费位生成；缺省来源、作用部件和状态均与 CSS 同源。
+本组件公开覆盖槽由独立皮肤的实际消费位生成；默认来源、作用部件和状态均与 CSS 同源。
 
-| 变量 | 部件 | CSS 属性 | 状态 | 缺省来源 | 说明 |
+| 变量 | 部件 | CSS 属性 | 状态 | 默认来源 | 说明 |
 | --- | --- | --- | --- | --- | --- |
 | `--xh-infinite-scroll-load-more-bg` | `load-more-trigger` | `background` | `default` | `--xh-bg-canvas` | infinite-scroll 的 load-more-trigger 部件 background 覆盖槽。 |
 | `--xh-infinite-scroll-load-more-bg-active` | `load-more-trigger` | `background` | `active` | `--xh-bg-subtle-active` | infinite-scroll 的 load-more-trigger 部件 background 覆盖槽。 |

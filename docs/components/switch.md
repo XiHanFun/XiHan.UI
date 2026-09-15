@@ -252,9 +252,9 @@ checked-change 带一份 { checked }，非受控时内部转移也照发一次
 <!-- xh-component-tokens:start -->
 ### CSS 变量
 
-本组件公开覆盖槽由独立皮肤的实际消费位生成；缺省来源、作用部件和状态均与 CSS 同源。
+本组件公开覆盖槽由独立皮肤的实际消费位生成；默认来源、作用部件和状态均与 CSS 同源。
 
-| 变量 | 部件 | CSS 属性 | 状态 | 缺省来源 | 说明 |
+| 变量 | 部件 | CSS 属性 | 状态 | 默认来源 | 说明 |
 | --- | --- | --- | --- | --- | --- |
 | `--xh-switch-bg` | `root` | `background` | `default` | `--xh-bg-subtle-active` | switch 的 root 部件 background 覆盖槽。 |
 | `--xh-switch-bg-checked` | `root` | `background` | `state=checked` | `--xh-_switch-accent` | switch 的 root 部件 background 覆盖槽。 |
@@ -294,7 +294,7 @@ checked-change 带一份 { checked }，非受控时内部转移也照发一次
 
 ### 响应式
 
-皮肤另按输入能力分档：`hover: hover` · `pointer: coarse`——同一份皮肤在触屏与带指针的设备上不一样，与视口宽度无关。
+皮肤另按输入能力分档：`hover: hover` · `pointer: coarse`：同一份皮肤在触屏与带指针的设备上不一样，与视口宽度无关。
 
 ### RTL
 

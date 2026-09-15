@@ -504,9 +504,9 @@ prefix-columns 让库把序号/多选列插在最前面并占住列号；序号�
 <!-- xh-component-tokens:start -->
 ### CSS 变量
 
-本组件公开覆盖槽由独立皮肤的实际消费位生成；缺省来源、作用部件和状态均与 CSS 同源。
+本组件公开覆盖槽由独立皮肤的实际消费位生成；默认来源、作用部件和状态均与 CSS 同源。
 
-| 变量 | 部件 | CSS 属性 | 状态 | 缺省来源 | 说明 |
+| 变量 | 部件 | CSS 属性 | 状态 | 默认来源 | 说明 |
 | --- | --- | --- | --- | --- | --- |
 | `--xh-table-bg` | `root` | `background` | `default` | `--xh-bg-surface` | table 的 root 部件 background 覆盖槽。 |
 | `--xh-table-border` | `footer`<br>`header`<br>`root` | `border`<br>`border-block-end`<br>`border-block-start` | `bordered`<br>`default` | `--xh-border-default` | table 的 footer、header、root 部件 border、border-block-end、border-block-start 覆盖槽。 |

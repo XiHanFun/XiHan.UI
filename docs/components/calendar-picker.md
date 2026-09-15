@@ -212,9 +212,9 @@ cell-trigger 的内容全由作者写，日号之外还能塞自己的标记
 <!-- xh-component-tokens:start -->
 ### CSS 变量
 
-本组件公开覆盖槽由独立皮肤的实际消费位生成；缺省来源、作用部件和状态均与 CSS 同源。
+本组件公开覆盖槽由独立皮肤的实际消费位生成；默认来源、作用部件和状态均与 CSS 同源。
 
-| 变量 | 部件 | CSS 属性 | 状态 | 缺省来源 | 说明 |
+| 变量 | 部件 | CSS 属性 | 状态 | 默认来源 | 说明 |
 | --- | --- | --- | --- | --- | --- |
 | `--xh-calendar-picker-cell-bg-hover` | `cell-trigger` | `background` | `disabled`<br>`hover`<br>`not([data-disabled], [data-selected])`<br>`selected` | `--xh-bg-subtle-hover` | calendar-picker 的 cell-trigger 部件 background 覆盖槽。 |
 | `--xh-calendar-picker-cell-bg-selected` | `cell-trigger` | `background` | `selected` | `--xh-bg-brand` | calendar-picker 的 cell-trigger 部件 background 覆盖槽。 |

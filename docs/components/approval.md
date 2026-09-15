@@ -275,9 +275,9 @@ variant 换这块闸门怎么与正文分开，size 换标题、条目与按钮�
 <!-- xh-component-tokens:start -->
 ### CSS 变量
 
-本组件公开覆盖槽由独立皮肤的实际消费位生成；缺省来源、作用部件和状态均与 CSS 同源。
+本组件公开覆盖槽由独立皮肤的实际消费位生成；默认来源、作用部件和状态均与 CSS 同源。
 
-| 变量 | 部件 | CSS 属性 | 状态 | 缺省来源 | 说明 |
+| 变量 | 部件 | CSS 属性 | 状态 | 默认来源 | 说明 |
 | --- | --- | --- | --- | --- | --- |
 | `--xh-approval-action-font-size` | `approve-trigger`<br>`deny-trigger`<br>`footer`<br>`root` | `font-size` | `default`<br>`loading` | `--xh-text-label-size` | approval 的 approve-trigger、deny-trigger、footer、root 部件 font-size 覆盖槽。 |
 | `--xh-approval-action-font-weight` | `approve-trigger`<br>`deny-trigger` | `font-weight` | `default` | `--xh-text-label-weight` | approval 的 approve-trigger、deny-trigger 部件 font-weight 覆盖槽。 |

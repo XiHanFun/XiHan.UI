@@ -293,9 +293,9 @@ size 换问句、选项行与页脚按钮的几何档，三档共用同一份问
 <!-- xh-component-tokens:start -->
 ### CSS 变量
 
-本组件公开覆盖槽由独立皮肤的实际消费位生成；缺省来源、作用部件和状态均与 CSS 同源。
+本组件公开覆盖槽由独立皮肤的实际消费位生成；默认来源、作用部件和状态均与 CSS 同源。
 
-| 变量 | 部件 | CSS 属性 | 状态 | 缺省来源 | 说明 |
+| 变量 | 部件 | CSS 属性 | 状态 | 默认来源 | 说明 |
 | --- | --- | --- | --- | --- | --- |
 | `--xh-question-flow-action-font-size` | `skip-trigger`<br>`submit-trigger` | `font-size` | `default` | `--xh-text-label-size` | question-flow 的 skip-trigger、submit-trigger 部件 font-size 覆盖槽。 |
 | `--xh-question-flow-action-font-weight` | `skip-trigger`<br>`submit-trigger` | `font-weight` | `default` | `--xh-text-label-weight` | question-flow 的 skip-trigger、submit-trigger 部件 font-weight 覆盖槽。 |

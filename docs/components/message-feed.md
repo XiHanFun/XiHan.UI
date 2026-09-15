@@ -240,9 +240,9 @@ stick-change 报到底，宿主据此去取下一页；先往上翻一段再滚�
 <!-- xh-component-tokens:start -->
 ### CSS 变量
 
-本组件公开覆盖槽由独立皮肤的实际消费位生成；缺省来源、作用部件和状态均与 CSS 同源。
+本组件公开覆盖槽由独立皮肤的实际消费位生成；默认来源、作用部件和状态均与 CSS 同源。
 
-| 变量 | 部件 | CSS 属性 | 状态 | 缺省来源 | 说明 |
+| 变量 | 部件 | CSS 属性 | 状态 | 默认来源 | 说明 |
 | --- | --- | --- | --- | --- | --- |
 | `--xh-message-feed-gap` | `list` | `gap` | `default` | `--xh-_message-feed-gap` | message-feed 的 list 部件 gap 覆盖槽。 |
 | `--xh-message-feed-icon-size` | `root` | `--xh-icon-size` | `default` | `--xh-glyph-size-text` | message-feed 的 root 部件 --xh-icon-size 覆盖槽。 |

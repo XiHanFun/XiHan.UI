@@ -268,9 +268,9 @@ view="text" 直接出缩进过的 JSON 原文：整块可框选可复制，且�
 <!-- xh-component-tokens:start -->
 ### CSS 变量
 
-本组件公开覆盖槽由独立皮肤的实际消费位生成；缺省来源、作用部件和状态均与 CSS 同源。
+本组件公开覆盖槽由独立皮肤的实际消费位生成；默认来源、作用部件和状态均与 CSS 同源。
 
-| 变量 | 部件 | CSS 属性 | 状态 | 缺省来源 | 说明 |
+| 变量 | 部件 | CSS 属性 | 状态 | 默认来源 | 说明 |
 | --- | --- | --- | --- | --- | --- |
 | `--xh-json-viewer-bg` | `empty`<br>`text`<br>`tree` | `background` | `default` | `--xh-_json-viewer-bg` | json-viewer 的 empty、text、tree 部件 background 覆盖槽。 |
 | `--xh-json-viewer-boolean-fg` | `item-value` | `color` | `value-type=boolean` | `--xh-syntax-keyword` | json-viewer 的 item-value 部件 color 覆盖槽。 |

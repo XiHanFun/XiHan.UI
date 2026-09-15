@@ -287,9 +287,9 @@ open 与 position 都交给外面握着：面板只报意图，值写回来才�
 <!-- xh-component-tokens:start -->
 ### CSS 变量
 
-本组件公开覆盖槽由独立皮肤的实际消费位生成；缺省来源、作用部件和状态均与 CSS 同源。
+本组件公开覆盖槽由独立皮肤的实际消费位生成；默认来源、作用部件和状态均与 CSS 同源。
 
-| 变量 | 部件 | CSS 属性 | 状态 | 缺省来源 | 说明 |
+| 变量 | 部件 | CSS 属性 | 状态 | 默认来源 | 说明 |
 | --- | --- | --- | --- | --- | --- |
 | `--xh-floating-panel-action-bg-active` | `close-trigger`<br>`window-state-trigger` | `background` | `active`<br>`state=on` | `--xh-bg-subtle-active` | floating-panel 的 close-trigger、window-state-trigger 部件 background 覆盖槽。 |
 | `--xh-floating-panel-action-bg-hover` | `close-trigger`<br>`window-state-trigger` | `background` | `hover` | `--xh-bg-subtle-hover` | floating-panel 的 close-trigger、window-state-trigger 部件 background 覆盖槽。 |
