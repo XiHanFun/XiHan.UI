@@ -1,4 +1,4 @@
-// 自定义准入字符 | pattern 是一段正则源码，逐个字符整格匹配；写坏了退回 type 的准入表
+// 自定义准入字符 | pattern 是一段正则源码，逐个字符整格匹配；写法无效时退回 type 的准入表
 import type { ReactNode } from "react";
 import { XhPinInputInput, XhPinInputLabel, XhPinInputRoot } from "@xihan-ui/react";
 

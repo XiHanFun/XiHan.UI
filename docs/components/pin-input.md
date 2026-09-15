@@ -12,7 +12,7 @@
 
 ## 用法
 
-每格都是原生输入框，敲一个字符自动跳下一格；粘贴整串会从落点那一格起按格铺开
+每格都是原生输入框，输入一个字符自动跳到下一格；粘贴整串会从落点格起按格铺开
 
 <XhDemo src="pin-input/01-basic" />
 
@@ -26,31 +26,31 @@
 
 ### 一次性验证码
 
-otp 补上 autocomplete=one-time-code，隐藏输入把拼好的整串交给表单，填满那一刻发 value-complete
+otp 补上 autocomplete=one-time-code，隐藏输入把拼接后的整串交给表单，填满时发出 value-complete
 
 <XhDemo src="pin-input/02-otp" />
 
 ### 遮蔽与字符类别
 
-mask 把每格转成密码框，type 决定哪类字符进得来，其余按键既不进值也不留在框里
+mask 把每格转为密码框，type 决定哪类字符可以输入，其余按键既不进入值也不留在框中
 
 <XhDemo src="pin-input/03-mask" />
 
 ### 禁用与校验失败
 
-disabled 让每格都带原生 disabled 且不参与提交，invalid 只做标注、照样能改
+disabled 使每格都带原生 disabled 且不参与提交，invalid 只做标注、照常可以修改
 
 <XhDemo src="pin-input/04-disabled" />
 
 ### 变体
 
-variant 只改每格的颜色槽位，跳格与粘贴铺开的行为三档一致
+variant 只改变每格的颜色槽位，跳格与粘贴铺开的行为三档一致
 
 <XhDemo src="pin-input/05-variant" />
 
 ### 颜色
 
-tone 决定用哪族颜色，与 variant 正交；这里固定 outline 只看语气的差别
+tone 决定使用哪族颜色，与 variant 正交；这里固定 outline 只查看语气的差别
 
 <XhDemo src="pin-input/06-tone" />
 
@@ -62,25 +62,25 @@ tone 决定用哪族颜色，与 variant 正交；这里固定 outline 只看语
 
 ### 分组排布
 
-格子由作者逐个写出，中间插什么都行；下标接着排，跳格与整串粘贴仍按文档序走
+格子由作者逐个写出，中间可插入任意内容；下标接续排列，跳格与整串粘贴仍按文档序进行
 
 <XhDemo src="pin-input/08-grouped" />
 
 ### 填满才可提交
 
-每格都有字才算填满，作者据此点亮提交按钮；重填一次清空整组
+每格都有字符才算填满，作者据此启用提交按钮；重填一次清空整组
 
 <XhDemo src="pin-input/09-complete" />
 
 ### 只读
 
-格子带上原生 readonly，值走受控且宿主不回写：能聚焦、能选中复制，改不动
+格子带上原生 readonly，值受控且宿主不回写：可聚焦、可选中复制，不可修改
 
 <XhDemo src="pin-input/10-readonly" />
 
 ### 自定义准入字符
 
-pattern 是一段正则源码，逐个字符整格匹配；写坏了退回 type 的准入表
+pattern 是一段正则源码，逐个字符整格匹配；写法无效时退回 type 的准入表
 
 <XhDemo src="pin-input/11-pattern" />
 

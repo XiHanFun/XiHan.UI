@@ -1,4 +1,4 @@
-<!-- 遮蔽与字符类别 | mask 把每格转成密码框，type 决定哪类字符进得来，其余按键既不进值也不留在框里 -->
+<!-- 遮蔽与字符类别 | mask 把每格转为密码框，type 决定哪类字符可以输入，其余按键既不进入值也不留在框中 -->
 <script setup lang="ts">
 import { XhPinInputInput, XhPinInputLabel, XhPinInputRoot } from "@xihan-ui/vue";
 </script>

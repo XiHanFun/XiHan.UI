@@ -1,4 +1,4 @@
-// 填满才可提交 | 每格都有字才算填满，作者据此点亮提交按钮；重填一次清空整组
+// 填满才可提交 | 每格都有字符才算填满，作者据此启用提交按钮；重填一次清空整组
 import type { ReactNode } from "react";
 import { XhPinInputInput, XhPinInputLabel, XhPinInputRoot } from "@xihan-ui/react";
 import { useState } from "react";
