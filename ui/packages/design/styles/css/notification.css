@@ -169,7 +169,7 @@
     padding-block: var(--xh-notification-item-py, var(--xh-surface-pad-lg));
     padding-inline: var(--xh-notification-item-px, var(--xh-surface-pad-lg));
     border: var(--xh-stroke-thin) solid var(--xh-notification-item-border, var(--xh-border-default));
-    border-radius: var(--xh-notification-item-radius, var(--xh-shape-surface));
+    border-radius: var(--xh-notification-item-radius, var(--xh-shape-overlay));
     background: var(--xh-notification-item-bg, var(--xh-bg-surface-raised));
     color: var(--xh-notification-item-fg, var(--xh-fg-default));
     box-shadow: var(--xh-notification-item-shadow, var(--xh-elevation-sheet));
@@ -373,7 +373,7 @@
     cursor: pointer;
     transition:
       background var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
-      scale var(--xh-motion-duration-micro) var(--xh-motion-ease-enter-strong);
+      scale var(--xh-motion-duration-release) var(--xh-motion-ease-release);
   }
 
   [data-scope='notification'][data-part='item-action-trigger'][hidden] {
@@ -387,6 +387,8 @@
   [data-scope='notification'][data-part='item-action-trigger']:active:not(:disabled) {
     background: var(--xh-notification-action-bg-active, var(--xh-bg-subtle-active));
     scale: var(--xh-motion-scale-press);
+    transition-duration: var(--xh-motion-duration-press);
+    transition-timing-function: var(--xh-motion-ease-press);
   }
 
   /* 钉在右上角的内衬处，不参与网格排布——留在流里它会变成正文下面的第三行 */
@@ -409,7 +411,7 @@
     transition:
       background var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
       color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
-      scale var(--xh-motion-duration-micro) var(--xh-motion-ease-enter-strong);
+      scale var(--xh-motion-duration-release) var(--xh-motion-ease-release);
   }
 
   /* closable=false 时连接层同时给了 hidden 与 disabled，这条是它真正收起的那一半：
@@ -426,6 +428,8 @@
   [data-scope='notification'][data-part='item-close-trigger']:active {
     background: var(--xh-notification-close-bg-active, var(--xh-bg-subtle-active));
     scale: var(--xh-motion-scale-press);
+    transition-duration: var(--xh-motion-duration-press);
+    transition-timing-function: var(--xh-motion-ease-press);
   }
 
   /* 单体控件用原生 disabled。常规路径下它与 hidden 同时出现看不见，
