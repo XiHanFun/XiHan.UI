@@ -14,7 +14,7 @@ import { useLayout } from './use-layout'
 type LayoutProps = LayoutSchema['props']
 
 export interface XhLayoutRootProps extends ComponentPropsWithRef<'div'> {
-  /** 受控折叠态：给了值就由宿主说了算。 */
+  /** 受控折叠态：提供值后由宿主决定。 */
   siderCollapsed?: boolean
   /** 非受控初始折叠态。 */
   defaultSiderCollapsed?: boolean
@@ -22,23 +22,23 @@ export interface XhLayoutRootProps extends ComponentPropsWithRef<'div'> {
   siderWidth?: string
   /** 折叠时侧栏的宽度，任意 CSS 长度。 */
   siderCollapsedWidth?: string
-  /** 侧栏挂在行首还是行尾，缺省 start。 */
+  /** 侧栏挂在行首还是行尾，默认 start。 */
   siderPlacement?: LayoutSiderPlacement
-  /** 侧栏的自适应断点：视口窄于这一档时侧栏按折叠宽显示。 */
+  /** 侧栏的自适应断点：视口窄于该档时侧栏按折叠宽度显示。 */
   siderBreakpoint?: LayoutBreakpoint
-  /** 侧栏呈现形态，缺省 inline；sheet 是覆盖档。 */
+  /** 侧栏呈现形态，默认 inline；sheet 是覆盖档。 */
   siderPresentation?: LayoutSiderPresentation
-  /** 头吸顶：只落标记，钉住的实现归皮肤。 */
+  /** 头部吸顶：只写标记，固定的实现归皮肤。 */
   headerFixed?: boolean
-  /** 侧栏吸附：只落标记，钉住的实现归皮肤。 */
+  /** 侧栏吸附：只写标记，固定的实现归皮肤。 */
   siderFixed?: boolean
-  /** 在头、侧栏、脚与内容之间画分隔线。 */
+  /** 在头部、侧栏、脚部与内容之间绘制分隔线。 */
   bordered?: boolean
   onSiderCollapsedChange?: LayoutProps['onSiderCollapsedChange']
   onSiderBreakpoint?: LayoutProps['onSiderBreakpoint']
 }
 
-/** 各段一律渲染成 div：地标（banner / navigation / main / contentinfo）由作者自己标。 */
+/** 各段一律渲染为 div：地标（banner / navigation / main / contentinfo）由作者自行标注。 */
 export function XhLayoutRoot({ children, ...props }: XhLayoutRootProps): ReactNode {
   const ctx = useLayout(props as LayoutProps)
   return (
@@ -63,7 +63,7 @@ export function XhLayoutHeader({ children, ...rest }: XhLayoutHeaderProps): Reac
 
 export interface XhLayoutSiderBackdropProps extends ComponentPropsWithRef<'div'> {}
 
-/** 覆盖档铺在内容之上的遮罩：点它收起侧栏。写在 XhLayoutSider 之前，两层同一个层号。 */
+/** 覆盖档铺在内容之上的遮罩：点击它收起侧栏。写在 XhLayoutSider 之前，两层同一个层号。 */
 export function XhLayoutSiderBackdrop({ children, ...rest }: XhLayoutSiderBackdropProps): ReactNode {
   const ctx = useLayoutContext()
   return (
@@ -108,7 +108,7 @@ export function XhLayoutFooter({ children, ...rest }: XhLayoutFooterProps): Reac
 
 export interface XhLayoutSiderTriggerProps extends ComponentPropsWithRef<'button'> {}
 
-/** 折叠把手渲染成原生 button：Enter / Space 的激活交给平台。 */
+/** 折叠把手渲染为原生 button：Enter / Space 的激活交给平台。 */
 export function XhLayoutSiderTrigger({ children, ...rest }: XhLayoutSiderTriggerProps): ReactNode {
   const ctx = useLayoutContext()
   return (

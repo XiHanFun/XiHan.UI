@@ -14,7 +14,7 @@ import { useLayout } from './use-layout'
 
 type LayoutProps = LayoutSchema['props']
 
-/** 各段一律渲染成 div：地标（banner / navigation / main / contentinfo）由作者自己标。 */
+/** 各段一律渲染为 div：地标（banner / navigation / main / contentinfo）由作者自行标注。 */
 export const XhLayoutRoot = defineComponent({
   name: 'XhLayoutRoot',
   // 有 connect 兜底的 prop：普通类型省略 default，Boolean 显式保留 undefined

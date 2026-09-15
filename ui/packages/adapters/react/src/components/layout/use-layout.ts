@@ -19,7 +19,7 @@ export interface LayoutContext {
   service: Service<LayoutSchema>
 }
 
-/** 把手要用 aria-controls 指向侧栏，两者的 id 必须同源，所以显式建 scope。 */
+/** 把手要用 aria-controls 指向侧栏，两者的 id 必须同源，因此显式建立 scope。 */
 export function useLayout(props: LayoutSchema['props']): LayoutContext {
   const idGenerator = useReactIdGenerator()
   const scope = useMemo(() => createScope(null, idGenerator), [idGenerator])
