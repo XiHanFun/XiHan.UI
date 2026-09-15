@@ -105,32 +105,32 @@ hourCycle 决定两组段位与时列的写法，上下午各成一段一列
 
 | 属性 | 类型 | 必填 | 说明 |
 | --- | --- | --- | --- |
-| `value` | `string[]` |  | 受控的区间两端 `[start, end]`；空缺的一端用空串占位。给定即受控：cell 直读 prop，写只发 onValueChange 不落内部值。 |
+| `value` | `string[]` |  | 受控的区间两端 `[start, end]`；空缺的一端用空串占位。提供即受控：cell 直读 prop，写入只发 onValueChange 不落内部值。 |
 | `defaultValue` | `string[]` |  |  |
-| `open` | `boolean` |  | 展开态。给定即受控：内部不再自改，只发 onOpenChange。 |
+| `open` | `boolean` |  | 展开态。提供即受控：内部不再自行修改，只发 onOpenChange。 |
 | `defaultOpen` | `boolean` |  |  |
-| `min` | `string` |  | 下界（含）。裁掉浮层里落在界外的可选值，并把已填的越界值标注出来（不改写它）。终点那组还以起点为下界。 |
-| `max` | `string` |  | 上界（含）。同上。起点那组还以终点为上界。 |
-| `locale` | `string` |  | BCP 47 语言标记。决定上午/下午的文字，以及未显式给 hourCycle 时的小时制。 |
-| `hourCycle` | `TimeHourCycle` |  | 小时制。不给则按 locale 推断，locale 也没有时用 24。 |
-| `granularity` | `TimeGranularity` |  | 值精确到哪一段，默认 minute。它同时决定两组分段输入各显示几段、浮层里各排几列。 |
-| `step` | `number` |  | 分列的步进（分钟），默认 1。只影响浮层里的可选值，不限制手打进去的分数。 |
-| `presets` | `TimeRangePickerPreset[]` |  | 快捷选项（「上午」「全天」这类）。给了就在浮层里多出一列，点一下两端整份写进值并收起。 时刻要算好再传：连接层每帧求值，把「此刻」放进渲染期会每帧算出一个新答案。 解析不了、不是恰好两端、任一端落在 min/max 之外或终点早于起点的那条自动按不下去。 |
-| `disabled` | `boolean` |  | 禁用：两组分段输入整组退出 Tab 序列、触发器用原生 disabled，隐藏输入不参与提交。 |
-| `readOnly` | `boolean` |  | 只读：浮层照常展开、列表照常浏览，但值改不动也清不掉。 |
-| `invalid` | `boolean` |  | 校验失败标注。不给也会自己判：任一端越界、或终点早于起点。 |
-| `required` | `boolean` |  | 必填标注（落到每段的 aria-required 上）。 |
-| `name` | `string` |  | 起点那份隐藏输入的表单字段名；给了才带 name。 |
-| `endName` | `string` |  | 终点那份隐藏输入的表单字段名；不给即终点不参与提交。 |
-| `variant` | `ControlVariant` |  | 形态：outline / subtle / ghost，决定输入行的描边与底色怎么用。 |
-| `tone` | `Tone` |  | 语气：brand / neutral / success / warning / danger / info，决定聚焦与选中强调用哪族颜色。 |
-| `size` | `Size` |  | 尺寸：sm / md / lg，输入行与浮层里的格子一并换档。 |
+| `min` | `string` |  | 下界（含）。裁掉浮层中落在界外的可选值，并把已填的越界值标注出来（不改写它）。终点组还以起点为下界。 |
+| `max` | `string` |  | 上界（含）。同上。起点组还以终点为上界。 |
+| `locale` | `string` |  | BCP 47 语言标记。决定上午 / 下午的文字，以及未显式提供 hourCycle 时的小时制。 |
+| `hourCycle` | `TimeHourCycle` |  | 小时制。未提供时按 locale 推断，locale 也没有时使用 24。 |
+| `granularity` | `TimeGranularity` |  | 值精确到哪一段，默认 minute。它同时决定两组分段输入各显示几段、浮层中各排几列。 |
+| `step` | `number` |  | 分列的步进（分钟），默认 1。只影响浮层中的可选值，不限制手动输入的分钟数。 |
+| `presets` | `TimeRangePickerPreset[]` |  | 快捷选项（「上午」「全天」等）。提供后浮层中多出一列，点击即两端整份写入值并收起。 时刻需计算后传入：连接层每帧求值，把当前时刻放进渲染期会每帧得出一个新结果。 无法解析、不是恰好两端、任一端落在 min / max 之外或终点早于起点的选项自动不可按下。 |
+| `disabled` | `boolean` |  | 禁用：两组分段输入整组退出 Tab 序列、触发器使用原生 disabled，隐藏输入不参与提交。 |
+| `readOnly` | `boolean` |  | 只读：浮层照常展开、列表照常浏览，但值不可修改也不可清空。 |
+| `invalid` | `boolean` |  | 校验失败标注。未提供时也会自行判定：任一端越界，或终点早于起点。 |
+| `required` | `boolean` |  | 必填标注（写入每段的 aria-required）。 |
+| `name` | `string` |  | 起点隐藏输入的表单字段名；提供后才带 name。 |
+| `endName` | `string` |  | 终点隐藏输入的表单字段名；未提供时终点不参与提交。 |
+| `variant` | `ControlVariant` |  | 形态：outline / subtle / ghost，决定输入行的描边与底色使用方式。 |
+| `tone` | `Tone` |  | 语气：brand / neutral / success / warning / danger / info，决定聚焦与选中强调使用哪族颜色。 |
+| `size` | `Size` |  | 尺寸：sm / md / lg，输入行与浮层中的格子一并换档。 |
 | `placement` | `Placement` |  |  |
-| `dir` | `Direction` |  | 文字方向，缺省 ltr。只改写浮层在行内轴上 start 与 end 的落点。 |
+| `dir` | `Direction` |  | 文字方向，默认 ltr。只改写浮层在行内轴上 start 与 end 的落点。 |
 | `offset` | `number` |  |  |
-| `isTimeUnavailable` | `(value: string, unit: TimePickerColumnUnit, index: TimeRangePickerEndIndex) => boolean` |  | 逐值可选性。收两位补零的值、它所属的列与端——同一个 '30' 在分钟列与秒列不是一回事， 起点与终点也可以各有各的规则。与 min/max 裁掉的值同等对待：判真的格子仍可聚焦，只是选不中。 |
-| `translations` | `Partial<TimeRangePickerTranslations>` |  | 段位与两端读屏名的覆盖；不给就用内置英文语义名。 |
-| `onValueChange` | `(details: TimeRangePickerValueChangeDetails) => void` |  | value 变化意图回调；受控时是唯一出口，非受控随内部写入一并通知。 |
+| `isTimeUnavailable` | `(value: string, unit: TimePickerColumnUnit, index: TimeRangePickerEndIndex) => boolean` |  | 逐值可选性。接收两位补零的值、所属的列与端：同一个 '30' 在分钟列与秒列含义不同， 起点与终点也可以各有规则。与 min / max 裁掉的值同等处理：判定为真的格子仍可聚焦，只是不可选中。 |
+| `translations` | `Partial<TimeRangePickerTranslations>` |  | 段位与两端读屏名的覆盖；未提供时使用内置英文语义名。 |
+| `onValueChange` | `(details: TimeRangePickerValueChangeDetails) => void` |  | value 变化意图回调；受控时是唯一出口，非受控时随内部写入一并通知。 |
 | `onOpenChange` | `(details: TimeRangePickerOpenChangeDetails) => void` |  | open 变化意图回调；受控时是唯一出口，非受控时随内部转移一并通知。 |
 
 ### 事件
@@ -139,7 +139,7 @@ hourCycle 决定两组段位与时列的写法，上下午各成一段一列
 
 | 事件 | 载荷 | 说明 |
 | --- | --- | --- |
-| `value-change` | `TimeRangePickerValueChangeDetails` | 两端变化；detail 为 `{ value: string[] }`，只填了终点时是 `['', end]` |
+| `value-change` | `TimeRangePickerValueChangeDetails` | 两端变化；detail 为 `{ value: string[] }`，只填终点时为 `['', end]` |
 | `open-change` | `TimeRangePickerOpenChangeDetails` | open 状态变化；detail 为 `{ open: boolean }` |
 
 ### 插槽
@@ -150,8 +150,8 @@ hourCycle 决定两组段位与时列的写法，上下午各成一段一列
 | --- | --- | --- | --- |
 | `XhTimeRangePickerColumn` | `default` | `TimeRangePickerColumnSlotProps` |  |
 | `XhTimeRangePickerColumnGroup` | `default` | `TimeRangePickerColumnGroupSlotProps` |  |
-| `XhTimeRangePickerPreset` | `default` | — | 条目内容；不写就用数据里的 label。 |
-| `XhTimeRangePickerPresetGroup` | `default` | `TimeRangePickerPresetsSlotProps` | 自己铺条目；不写就按 presets 数据自动铺，两者产出的 DOM 一致。 |
+| `XhTimeRangePickerPreset` | `default` | — | 条目内容；未写时使用数据中的 label。 |
+| `XhTimeRangePickerPresetGroup` | `default` | `TimeRangePickerPresetsSlotProps` | 自行铺设条目；未写时按 presets 数据自动铺设，两者产出的 DOM 一致。 |
 | `XhTimeRangePickerRoot` | `default` | `TimeRangePickerRootSlotProps` |  |
 
 ### 状态
@@ -185,29 +185,29 @@ hourCycle 决定两组段位与时列的写法，上下午各成一段一列
 | 成员 | 类型 | 说明 |
 | --- | --- | --- |
 | `open` | `boolean` |  |
-| `value` | `string[]` | 区间两端，按位存放；空缺的一端是空串，尾部的空缺裁掉。 |
-| `start` | `string \| null` | 起点的 ISO 时间串；还没填全时为 null。 |
-| `end` | `string \| null` | 终点的 ISO 时间串；还没填全时为 null。 |
-| `empty` | `boolean` | 两端都还没填全。 |
-| `outOfRange` | `boolean` | 任一端已填全但落在 min/max 之外。只是标注，不改写值。 |
-| `reversed` | `boolean` | 两端都填全了但终点早于起点。只是标注，不改写值。 |
+| `value` | `string[]` | 区间两端，按位存放；空缺的一端为空串，尾部的空缺裁掉。 |
+| `start` | `string \| null` | 起点的 ISO 时间串；尚未填全时为 null。 |
+| `end` | `string \| null` | 终点的 ISO 时间串；尚未填全时为 null。 |
+| `empty` | `boolean` | 两端都尚未填全。 |
+| `outOfRange` | `boolean` | 任一端已填全但落在 min / max 之外。只是标注，不改写值。 |
+| `reversed` | `boolean` | 两端都已填全但终点早于起点。只是标注，不改写值。 |
 | `disabled` | `boolean` |  |
 | `readOnly` | `boolean` |  |
-| `invalid` | `boolean` | 与根节点的 data-invalid 同一口径：作者标的、越界的、终点早于起点的都算。 |
-| `hourCycle` | `TimeHourCycle` | 实际生效的小时制（prop 没给时由 locale 推出来的那个）。 |
+| `invalid` | `boolean` | 与根节点的 data-invalid 同一口径：作者标记的、越界的、终点早于起点的都计入。 |
+| `hourCycle` | `TimeHourCycle` | 实际生效的小时制（prop 未提供时由 locale 推断的值）。 |
 | `granularity` | `TimeGranularity` |  |
 | `step` | `number` | 实际生效的分列步进。 |
-| `segments` | `TimeSegmentType[]` | 两组段位各自此刻参与显示的段，文档序；两组相同。未列入的段由 connect 打上 hidden 收起。 |
+| `segments` | `TimeSegmentType[]` | 两组段位各自当前参与显示的段，文档序；两组相同。未列入的段由 connect 写上 hidden 收起。 |
 | `focusedSegment` | `TimeRangePickerSegmentRef \| null` | 焦点所在的段；焦点在分段输入外时为 null。 |
-| `columnGroups` | `readonly [TimeRangePickerColumnGroup, TimeRangePickerColumnGroup]` | 起止两组时列：每组该排哪几列、每列有哪些可选值（已按 step、min/max 与另一端裁过）。作者据此渲染浮层。 |
+| `columnGroups` | `readonly [TimeRangePickerColumnGroup, TimeRangePickerColumnGroup]` | 起止两组时列：每组应排列的列及每列的可选值（已按 step、min / max 与另一端裁剪）。作者据此渲染浮层。 |
 | `focusedColumn` | `TimeRangePickerColumnRef \| null` |  |
 | `focusedItem` | `string \| null` |  |
-| `presets` | `readonly TimeRangePickerPresetState[]` | 快捷选项逐条的样子，数据顺序。没给 presets 时为空数组。 |
-| `canClear` | `boolean` | 清空按钮此刻可不可按。 |
-| `getSegmentText` | `(props: TimeRangePickerSegmentProps) => string` | 某一端某一段该显示的文字（空段是占位串）。两个适配器都拿它填文本，保证同构。 |
-| `getItemText` | `(props: TimeRangePickerItemTextProps) => string` | 某一格该显示的文字。数字列就是格子自己的值，上下午列按 locale 给出「上午 / 下午」。 两个适配器都拿它填文本，保证同构。 |
+| `presets` | `readonly TimeRangePickerPresetState[]` | 快捷选项逐条的状态，数据顺序。未提供 presets 时为空数组。 |
+| `canClear` | `boolean` | 清空按钮当前是否可按。 |
+| `getSegmentText` | `(props: TimeRangePickerSegmentProps) => string` | 某一端某一段应显示的文字（空段是占位串）。各适配器都用它填充文本，保证同构。 |
+| `getItemText` | `(props: TimeRangePickerItemTextProps) => string` | 某一格应显示的文字。数字列即格子自身的值，上下午列按 locale 给出「上午 / 下午」。 各适配器都用它填充文本，保证同构。 |
 | `isItemSelected` | `(props: TimeRangePickerItemProps) => boolean` |  |
-| `isItemDisabled` | `(props: TimeRangePickerItemProps) => boolean` | 落在 min/max 之外、被另一端顶住（或整个控件禁用）：仍在列表里，但不可选、方向键跳过。 |
+| `isItemDisabled` | `(props: TimeRangePickerItemProps) => boolean` | 落在 min / max 之外、被另一端限制（或整个控件禁用）：仍在列表中，但不可选、方向键跳过。 |
 | `setOpen` | `(next: boolean) => void` |  |
 | `setValue` | `(next: string[]) => void` | 整份写入两端。 |
 | `clear` | `() => void` |  |
@@ -221,10 +221,10 @@ hourCycle 决定两组段位与时列的写法，上下午各成一段一列
 | `getClearTriggerProps` | `() => T['button']` |  |
 | `getPositionerProps` | `() => T['element']` |  |
 | `getContentProps` | `() => T['element']` |  |
-| `getPresetGroupProps` | `() => T['element']` | 快捷选项列（role=listbox）；没给 presets 时带 hidden。 |
-| `getPresetProps` | `(props: TimeRangePickerPresetProps) => T['element']` | 一条快捷选项（role=option）：点按把两端整份写进值并收起浮层。 |
+| `getPresetGroupProps` | `() => T['element']` | 快捷选项列（role=listbox）；未提供 presets 时带 hidden。 |
+| `getPresetProps` | `(props: TimeRangePickerPresetProps) => T['element']` | 一条快捷选项（role=option）：点击把两端整份写入值并收起浮层。 |
 | `getColumnGroupProps` | `(props: TimeRangePickerEndProps) => T['element']` | 一端的时列外壳：起止各一个并排，data-index 区分，各报「开始时间」「结束时间」。 |
-| `getColumnGroupLabelProps` | `(props: TimeRangePickerEndProps) => T['element']` | 时列外壳顶上的小标题（「开始」「结束」），纯视觉，退出可访问树。 |
+| `getColumnGroupLabelProps` | `(props: TimeRangePickerEndProps) => T['element']` | 时列外壳顶部的小标题（「开始」「结束」），纯视觉，退出可访问树。 |
 | `getColumnProps` | `(props: TimeRangePickerColumnProps) => T['element']` |  |
 | `getItemProps` | `(props: TimeRangePickerItemProps) => T['element']` |  |
 | `getHiddenInputProps` | `(props: TimeRangePickerEndProps) => T['input']` | 表单出口：起止各一份 type=hidden 的原生输入，随表单提交各自的 ISO 串。 |
@@ -259,7 +259,7 @@ hourCycle 决定两组段位与时列的写法，上下午各成一段一列
 | `0-9` | focus in 数字段, not disabled/readOnly | 把数字并进本段；本段再吃不下第二位时自动跳到本组下一段 |
 | `Backspace` / `Delete` | focus in 某一段, not disabled/readOnly | 清掉本段；小时被清时上下午段仍保留原来的上午/下午 |
 | `a` / `p` | focus in 上下午段, 12 小时制, not disabled/readOnly | a 取上午、p 取下午（不区分大小写） |
-| `Alt+ArrowDown` | focus in 某一段, closed, not disabled | 展开浮层并把焦点送进正在编辑那一端的时列；触发钮是可选部件，键盘那条入口不能只挂在它身上 |
+| `Alt+ArrowDown` | focus in 某一段, closed, not disabled | 展开浮层并把焦点移入正在编辑一端的时列；触发按钮是可选部件，键盘入口不能只挂在它上面 |
 | `Enter` | focus in 某一段, open | 收起浮层。段位里敲出来的值不触发「选完即收」（那时人还在打字），这是那条路的收口手势 |
 
 ### ARIA
