@@ -70,35 +70,35 @@ header / body / footer 把面板切成三段：头与尾定在原处，只有正
 
 ### 何时使用
 
-- 内容比对话框长（一整张表单、一份详情），但仍属于当前上下文。
+- 内容比对话框长（完整表单、详情），但仍属于当前上下文。
 - 窄屏上的导航或筛选面板。
 
 ### 何时不用
 
-- 只是确认一件事：用[对话框](./dialog)或[弹出确认](./popconfirm)。
-- 内容需要与页面主体对照着看：并排展开，别遮住。
+- 只确认一件事时，使用[对话框](./dialog)或[弹出确认](./popconfirm)。
+- 内容需要与页面主体对照查看时，并排展开，不遮挡。
 
 ### 特性
 
-- `side` 决定从哪一边出来；`contained` 让它只占据某个容器而不是整个视口。
+- `side` 决定滑出方向；`contained` 让它只占据某个容器而不是整个视口。
 - `modal=false` 时不渲染遮罩，定位层也不截获页面指针；页面可以与抽屉并行交互。展开期间切换 `modal`，滚动锁、背景失活与焦点陷阱会同步切换。
-- 可以拖边缘改厚度。
+- 可以拖动边缘调整厚度。
 - 关闭时内容立即失活并退出可访问树；面板与遮罩全部完成退场后释放模态资源并发出 `onExitComplete` / `exit-complete`。退场中重开不会被旧完成关闭，卸载立即清理。
-- 关闭前可以拦截（有未保存改动时先问一句）。
+- 关闭前可以拦截，例如有未保存改动时先确认。
 
 ### 组合
 
-- 里面放[表单](./form)、[侧栏导航](./side-nav)；内容区套[滚动区域](./scroll-area)。
+- 内部放[表单](./form)、[侧栏导航](./side-nav)；内容区使用[滚动区域](./scroll-area)。
 
 ### 最佳实践
 
-- 提交与取消固定在底部，别让用户滚到最下面才找得到。
-- 有未保存改动时拦下关闭。
+- 提交与取消固定在底部，用户不需要滚动到底部查找。
+- 有未保存改动时拦截关闭。
 
 ### 反模式
 
-- 抽屉里再开抽屉。
-- 在宽屏上用抽屉装本可以直接展开的内容。
+- 在抽屉内再打开抽屉。
+- 在宽屏上用抽屉承载可以直接展开的内容。
 
 ## API 参考
 
@@ -275,7 +275,7 @@ header / body / footer 把面板切成三段：头与尾定在原处，只有正
 | `--xh-drawer-layer` | `content`<br>`positioner` | `z-index` | `default` | `--xh-_layer` | drawer 的 content、positioner 部件 z-index 覆盖槽。 |
 | `--xh-drawer-px` | `content` | `padding-inline` | `contained`<br>`default` | `--xh-surface-px-md` | drawer 的 content 部件 padding-inline 覆盖槽。 |
 | `--xh-drawer-py` | `content` | `padding-block-end`<br>`padding-block-start` | `contained`<br>`default` | `--xh-surface-py-md` | drawer 的 content 部件 padding-block-end、padding-block-start 覆盖槽。 |
-| `--xh-drawer-radius` | `content` | `border-end-end-radius`<br>`border-end-start-radius`<br>`border-start-end-radius`<br>`border-start-start-radius` | `side=bottom`<br>`side=left`<br>`side=right`<br>`side=top` | `--xh-shape-surface` | drawer 的 content 部件 border-end-end-radius、border-end-start-radius、border-start-end-radius、border-start-start-radius 覆盖槽。 |
+| `--xh-drawer-radius` | `content` | `border-end-end-radius`<br>`border-end-start-radius`<br>`border-start-end-radius`<br>`border-start-start-radius` | `side=bottom`<br>`side=left`<br>`side=right`<br>`side=top` | `--xh-shape-overlay` | drawer 的 content 部件 border-end-end-radius、border-end-start-radius、border-start-end-radius、border-start-start-radius 覆盖槽。 |
 | `--xh-drawer-shadow` | `content` | `box-shadow` | `default` | `--xh-elevation-sheet` | drawer 的 content 部件 box-shadow 覆盖槽。 |
 | `--xh-drawer-size` | `content` | `block-size`<br>`inline-size` | `side=bottom`<br>`side=left`<br>`side=right`<br>`side=top` | `--xh-_drawer-size` | drawer 的 content 部件 block-size、inline-size 覆盖槽。 |
 | `--xh-drawer-title-fg` | `title` | `color` | `default` | `--xh-fg-default` | drawer 的 title 部件 color 覆盖槽。 |
