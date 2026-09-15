@@ -1,4 +1,4 @@
-// 基础用法 | 一排叠放的头像：后一枚压在前一枚上，被压住的边由一圈底色分开
+// 基础用法 | 一排叠放的头像：后一个压在前一个上，被压住的边由一圈底色分开
 import type { ReactNode } from "react";
 import { XhAvatarFallback, XhAvatarGroupRoot, XhAvatarRoot } from "@xihan-ui/react";
 
