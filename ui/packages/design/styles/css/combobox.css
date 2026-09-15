@@ -351,7 +351,7 @@
     line-height: var(--xh-leading-none);
     cursor: pointer;
     user-select: none;
-    transition: background var(--xh-motion-duration-micro) var(--xh-motion-ease-enter), scale var(--xh-motion-duration-micro) var(--xh-motion-ease-enter-strong);
+    transition: background var(--xh-motion-duration-micro) var(--xh-motion-ease-enter), scale var(--xh-motion-duration-release) var(--xh-motion-ease-release);
   }
 
 
@@ -413,6 +413,8 @@
   [data-scope='combobox'][data-part='clear-trigger']:active:not(:disabled) {
     background: var(--xh-combobox-action-bg-active, var(--xh-bg-subtle-active));
     scale: var(--xh-motion-scale-press);
+    transition-duration: var(--xh-motion-duration-press);
+    transition-timing-function: var(--xh-motion-ease-press);
   }
 
   /* 两个按钮都在盒里，盒的 :focus-within 已经画了一圈；这里再画一圈就是框里套框 */
@@ -446,7 +448,7 @@
     padding-block: var(--xh-combobox-content-py, var(--xh-space-1));
     padding-inline: var(--xh-combobox-content-px, var(--xh-space-1));
     border: var(--xh-stroke-thin) solid var(--xh-combobox-content-border, var(--xh-material-frosted-border));
-    border-radius: var(--xh-combobox-content-radius, var(--xh-shape-surface));
+    border-radius: var(--xh-combobox-content-radius, var(--xh-shape-overlay));
     background: var(--xh-combobox-content-bg, var(--xh-material-frosted-bg));
     color: var(--xh-combobox-content-fg, var(--xh-material-frosted-fg));
     box-shadow: var(--xh-combobox-content-shadow, var(--xh-material-frosted-shadow));
