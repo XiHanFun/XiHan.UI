@@ -1,4 +1,4 @@
-<!-- 分组排布 | 格子由作者逐个写出，中间插什么都行；下标接着排，跳格与整串粘贴仍按文档序走 -->
+<!-- 分组排布 | 格子由作者逐个写出，中间可插入任意内容；下标接续排列，跳格与整串粘贴仍按文档序进行 -->
 <script setup lang="ts">
 import { XhPinInputInput, XhPinInputLabel, XhPinInputRoot } from "@xihan-ui/vue";
 </script>

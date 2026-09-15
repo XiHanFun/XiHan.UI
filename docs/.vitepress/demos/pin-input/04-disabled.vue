@@ -1,4 +1,4 @@
-<!-- 禁用与校验失败 | disabled 让每格都带原生 disabled 且不参与提交，invalid 只做标注、照样能改 -->
+<!-- 禁用与校验失败 | disabled 使每格都带原生 disabled 且不参与提交，invalid 只做标注、照常可以修改 -->
 <script setup lang="ts">
 import { XhPinInputInput, XhPinInputLabel, XhPinInputRoot } from "@xihan-ui/vue";
 </script>

@@ -1,4 +1,4 @@
-// 一次性验证码 | otp 补上 autocomplete=one-time-code，隐藏输入把拼好的整串交给表单，填满那一刻发 value-complete
+// 一次性验证码 | otp 补上 autocomplete=one-time-code，隐藏输入把拼接后的整串交给表单，填满时发出 value-complete
 import type { ReactNode } from "react";
 import {
   XhPinInputHiddenInput,

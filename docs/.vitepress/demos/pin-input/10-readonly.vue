@@ -1,4 +1,4 @@
-<!-- 只读 | 格子带上原生 readonly，值走受控且宿主不回写：能聚焦、能选中复制，改不动 -->
+<!-- 只读 | 格子带上原生 readonly，值受控且宿主不回写：可聚焦、可选中复制，不可修改 -->
 <script setup lang="ts">
 import { XhPinInputInput, XhPinInputLabel, XhPinInputRoot } from "@xihan-ui/vue";
 

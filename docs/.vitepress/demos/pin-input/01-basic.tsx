@@ -1,4 +1,4 @@
-// 基础用法 | 每格都是原生输入框，敲一个字符自动跳下一格；粘贴整串会从落点那一格起按格铺开
+// 基础用法 | 每格都是原生输入框，输入一个字符自动跳到下一格；粘贴整串会从落点格起按格铺开
 import type { ReactNode } from "react";
 import { XhPinInputInput, XhPinInputLabel, XhPinInputRoot } from "@xihan-ui/react";
 
