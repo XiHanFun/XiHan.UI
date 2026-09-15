@@ -3,14 +3,22 @@ import { XhLayoutContent, XhLayoutHeader, XhLayoutRoot, XhLayoutSider } from "@x
 </script>
 
 <template>
-  <XhLayoutRoot bordered sider-width="72px" style="inline-size: 240px; block-size: 150px; border-radius: var(--xh-shape-surface); overflow: hidden; font-size: 12px">
-    <XhLayoutHeader><strong>XiHan Admin</strong></XhLayoutHeader>
+  <XhLayoutRoot bordered sider-width="72px" aria-label="页头、侧栏与内容区布局预览" style="inline-size: 240px; block-size: 150px; border-radius: var(--xh-shape-surface); overflow: hidden">
+    <XhLayoutHeader>
+      <span data-demo-block="line" data-tone="brand" aria-hidden="true" style="--xh-demo-block-inline-size: 72px" />
+    </XhLayoutHeader>
     <XhLayoutSider>
-      <div style="display: grid; gap: 8px"><span>概览</span><span>用户</span><span>设置</span></div>
+      <div aria-hidden="true" style="display: grid; gap: 8px">
+        <span data-demo-block="line" data-tone="neutral" />
+        <span data-demo-block="line" data-tone="info" />
+        <span data-demo-block="line" data-tone="success" />
+      </div>
     </XhLayoutSider>
     <XhLayoutContent>
-      <strong>欢迎回来</strong>
-      <p style="margin: 4px 0 0; color: var(--xh-fg-muted)">今日概览</p>
+      <div aria-hidden="true" style="display: grid; gap: 8px">
+        <span data-demo-block data-tone="brand" style="--xh-demo-block-block-size: 48px" />
+        <span data-demo-block="line" data-tone="warning" style="--xh-demo-block-inline-size: 72%" />
+      </div>
     </XhLayoutContent>
   </XhLayoutRoot>
 </template>

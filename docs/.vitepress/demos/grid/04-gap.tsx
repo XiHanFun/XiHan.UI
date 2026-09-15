@@ -15,7 +15,7 @@ export default function Demo(): ReactNode {
         <div key={group.gap}>
           <div style={{ marginBlockEnd: "6px", color: "var(--xh-fg-muted)", fontSize: "13px" }}>{group.label}</div>
           <XhGridRoot cols={3} gap={group.gap}>
-            {[1, 2, 3].map(item => <XhGridItem key={item} style={{ blockSize: "32px", borderRadius: "var(--xh-shape-control)", background: "var(--xh-bg-brand-subtle)" }} />)}
+            {[1, 2, 3].map(item => <XhGridItem key={item} data-demo-block data-tone="brand" style={{ blockSize: "32px" }} />)}
           </XhGridRoot>
         </div>
       ))}

@@ -16,11 +16,11 @@ const panels = [{ id: "aside" }, { id: "main" }];
     style="inline-size: min(480px, 100%); block-size: 140px"
   >
     <XhSplitterPanel :index="0" style="background: var(--xh-bg-subtle)">
-      <p style="padding: 12px">侧栏</p>
+      <span data-demo-block data-tone="neutral" style="--xh-demo-block-block-size: calc(100% - 24px); margin: 12px" />
     </XhSplitterPanel>
     <XhSplitterResizeTrigger :index="0" />
     <XhSplitterPanel :index="1" style="background: var(--xh-bg-brand-subtle)">
-      <p style="padding: 12px">正文</p>
+      <span data-demo-block data-tone="brand" style="--xh-demo-block-block-size: calc(100% - 24px); margin: 12px" />
     </XhSplitterPanel>
   </XhSplitterRoot>
 </template>

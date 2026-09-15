@@ -1,19 +1,18 @@
 // 响应式列 | 在不同视口使用不同列数
-import type { CSSProperties, ReactNode } from "react";
+import type { ReactNode } from "react";
 import { XhGridItem, XhGridRoot } from "@xihan-ui/react";
 
-const sections = ["概览", "分析", "报告", "设置"];
-const itemStyle: CSSProperties = {
-  padding: "20px",
-  borderRadius: "var(--xh-shape-surface)",
-  background: "var(--xh-bg-subtle)",
-  textAlign: "center",
-};
+const sections = [
+  { id: 1, tone: "brand" },
+  { id: 2, tone: "info" },
+  { id: 3, tone: "success" },
+  { id: 4, tone: "warning" },
+] as const;
 
 export default function Demo(): ReactNode {
   return (
     <XhGridRoot cols={{ base: 1, sm: 2, lg: 4 }} gap="sm" style={{ inlineSize: "min(720px, 100%)" }}>
-      {sections.map(section => <XhGridItem key={section} style={itemStyle}>{section}</XhGridItem>)}
+      {sections.map(section => <XhGridItem key={section.id} data-demo-block data-tone={section.tone} />)}
     </XhGridRoot>
   );
 }

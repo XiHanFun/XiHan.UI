@@ -9,7 +9,8 @@ import {
   XhScrollAreaViewport,
 } from "@xihan-ui/vue";
 
-const rows = ["概览", "组件", "指南", "示例", "设计令牌", "无障碍", "主题", "动效", "国际化", "发布记录", "迁移指南", "常见问题"];
+const tones = ["brand", "info", "success", "warning", "danger", "neutral"] as const;
+const rows = Array.from({ length: 12 }, (_, index) => ({ id: index + 1, tone: tones[index % tones.length], width: `${56 + (index % 4) * 8}%` }));
 </script>
 
 <template>
@@ -20,9 +21,7 @@ const rows = ["概览", "组件", "指南", "示例", "设计令牌", "无障碍
   >
     <XhScrollAreaViewport>
       <XhScrollAreaContent style="padding: 12px 16px">
-        <p v-for="row in rows" :key="row" style="margin: 0; line-height: 30px">
-          {{ row }}
-        </p>
+        <span v-for="row in rows" :key="row.id" data-demo-block="line" :data-tone="row.tone" :style="{ '--xh-demo-block-inline-size': row.width, 'marginBlock': '15px' }" />
       </XhScrollAreaContent>
     </XhScrollAreaViewport>
     <XhScrollAreaScrollbar orientation="vertical">

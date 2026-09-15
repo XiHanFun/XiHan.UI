@@ -15,6 +15,8 @@ const props = defineProps<{
 const previews = import.meta.glob<{ default: Component }>("../catalog/*.vue");
 const load = previews[`../catalog/${props.src}.vue`];
 const demo = load ? defineAsyncComponent(load) : undefined;
+const placeholderTones = ["brand", "info", "success", "warning", "danger"] as const;
+const placeholderTone = placeholderTones[props.src.length % placeholderTones.length];
 const root = ref<HTMLElement | null>(null);
 const visible = ref(false);
 let observer: IntersectionObserver | undefined;
@@ -45,7 +47,12 @@ onBeforeUnmount(() => observer?.disconnect());
       <div v-if="visible && demo && !renderless" class="xh-component-card__demo">
         <component :is="demo" />
       </div>
-      <span v-else class="xh-component-card__placeholder">{{ name.slice(0, 1) }}</span>
+      <span
+        v-else
+        class="xh-component-card__placeholder"
+        data-demo-block
+        :data-tone="placeholderTone"
+      />
     </div>
     <a class="xh-component-card__link" :href="withBase(href)">
       <strong>{{ name }}</strong>
@@ -98,14 +105,9 @@ onBeforeUnmount(() => observer?.disconnect());
 }
 
 .xh-component-card__placeholder {
-  display: grid;
-  place-items: center;
-  width: var(--xh-control-h-lg);
-  height: var(--xh-control-h-lg);
-  border-radius: var(--xh-shape-control);
-  background: var(--xh-bg-subtle);
-  color: var(--xh-fg-muted);
-  font-weight: var(--xh-font-weight-semibold);
+  --xh-demo-block-inline-size: var(--xh-space-8);
+  --xh-demo-block-block-size: var(--xh-space-6);
+  --xh-demo-block-radius: var(--xh-shape-control);
 }
 
 .xh-component-card__link {

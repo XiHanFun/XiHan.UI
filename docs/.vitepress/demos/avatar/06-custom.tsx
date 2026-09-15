@@ -15,7 +15,7 @@ export default function Demo(): ReactNode {
       {/* 直径与字号一起给，回退字才不会在大头像里显小 */}
       <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
         <XhAvatarRoot
-          src="/images/logo.png"
+          src="/images/demo-avatar.svg"
           alt="曦寒"
           style={{ "--xh-avatar-size": "56px", "--xh-avatar-font-size": "20px" } as CSSProperties}
         >

@@ -112,12 +112,12 @@ let decls = 0
 
 const demosPrefix = `${DEMOS.split('\\').join('/')}/`
 
-// 文档壳自己的配色与投影槽不属于组件库令牌，但同样必须先声明后引用。
-// 只收明确的 --xh-doc-* 命名空间，组件示例里的 --xh-* 仍按库公开面严格校验。
+// 文档壳与示例占位配方自己的槽不属于组件库令牌，但同样必须先声明后引用。
+// 只收明确的 --xh-doc-* / --xh-demo-* 命名空间，组件示例里的其余 --xh-* 仍按库公开面严格校验。
 const docLocalDeclared = new Set()
 for await (const file of walk(DOCS)) {
   const src = await readFile(file, 'utf8')
-  for (const [, name] of src.matchAll(/(--xh-doc-[a-z0-9_-]+)\s*:/g))
+  for (const [, name] of src.matchAll(/(--xh-(?:doc|demo)-[a-z0-9_-]+)\s*:/g))
     docLocalDeclared.add(name)
 }
 

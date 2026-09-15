@@ -25,7 +25,7 @@ const status = reactive<Record<string, string>>({
   </XhImageRoot>
 
   <XhImageRoot
-    src="https://example.invalid/broken.png"
+    src="https://example.invalid/broken.svg"
     alt="地址写坏的图"
     style="--xh-image-w: 160px; --xh-image-ratio: 16 / 9;"
     @status-change="(d: { status: string }) => (status.broken = d.status)"

@@ -2,16 +2,17 @@
 <script setup lang="ts">
 import { XhLayoutContent, XhLayoutFooter, XhLayoutHeader, XhLayoutRoot, XhLayoutSider } from "@xihan-ui/vue";
 
-const rows = Array.from({ length: 12 }, (_, index) => `内容区 ${String(index + 1).padStart(2, "0")}`);
+const tones = ["brand", "info", "success", "warning", "danger", "neutral"] as const;
+const rows = Array.from({ length: 12 }, (_, index) => ({ id: index + 1, tone: tones[index % tones.length] }));
 </script>
 
 <template>
   <div style="inline-size: min(640px, 100%); block-size: 260px; overflow: auto; border-radius: var(--xh-shape-surface); background: var(--xh-bg-page)">
     <XhLayoutRoot header-fixed sider-fixed bordered style="--xh-layout-scrollport-h: 260px">
-      <XhLayoutHeader><strong>控制台</strong></XhLayoutHeader>
-      <XhLayoutSider>导航</XhLayoutSider>
-      <XhLayoutContent><p v-for="row in rows" :key="row" style="margin-block: 0 16px">{{ row }}</p></XhLayoutContent>
-      <XhLayoutFooter>© 2026 XiHan.UI</XhLayoutFooter>
+      <XhLayoutHeader><span data-demo-block="line" data-tone="brand" style="--xh-demo-block-inline-size: 96px" /></XhLayoutHeader>
+      <XhLayoutSider><span data-demo-block data-tone="info" style="--xh-demo-block-block-size: 100%; --xh-demo-block-min-block-size: 100%" /></XhLayoutSider>
+      <XhLayoutContent><span v-for="row in rows" :key="row.id" data-demo-block="line" :data-tone="row.tone" style="margin-block: 16px" /></XhLayoutContent>
+      <XhLayoutFooter><span data-demo-block="line" data-tone="neutral" style="--xh-demo-block-inline-size: 80px" /></XhLayoutFooter>
     </XhLayoutRoot>
   </div>
 </template>

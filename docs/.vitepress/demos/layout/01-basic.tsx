@@ -1,23 +1,24 @@
 // 基础用法 | 构建应用页面骨架
-import type { ReactNode } from "react";
+import type { CSSProperties, ReactNode } from "react";
 import { XhLayoutContent, XhLayoutFooter, XhLayoutHeader, XhLayoutRoot, XhLayoutSider } from "@xihan-ui/react";
 
 export default function Demo(): ReactNode {
   return (
-    <XhLayoutRoot bordered siderBreakpoint="sm" style={{ inlineSize: "min(720px, 100%)", blockSize: "280px", borderRadius: "var(--xh-shape-surface)", overflow: "hidden" }}>
-      <XhLayoutHeader><strong>XiHan Admin</strong></XhLayoutHeader>
+    <XhLayoutRoot bordered siderBreakpoint="sm" aria-label="应用页面布局占位区块" style={{ inlineSize: "min(720px, 100%)", blockSize: "280px", borderRadius: "var(--xh-shape-surface)", overflow: "hidden" }}>
+      <XhLayoutHeader>
+        <span data-demo-block="line" data-tone="brand" style={{ "--xh-demo-block-inline-size": "112px" } as CSSProperties} />
+      </XhLayoutHeader>
       <XhLayoutSider>
         <div style={{ display: "grid", gap: "12px" }}>
-          <span>概览</span>
-          <span>用户</span>
-          <span>设置</span>
+          {["brand", "info", "success"].map(tone => <span key={tone} data-demo-block="line" data-tone={tone} />)}
         </div>
       </XhLayoutSider>
       <XhLayoutContent>
-        <strong>欢迎回来</strong>
-        <p style={{ color: "var(--xh-fg-muted)" }}>这里是今日的项目概览。</p>
+        <span data-demo-block data-tone="info" style={{ "--xh-demo-block-block-size": "112px" } as CSSProperties} />
       </XhLayoutContent>
-      <XhLayoutFooter>© 2026 XiHan.UI</XhLayoutFooter>
+      <XhLayoutFooter>
+        <span data-demo-block="line" data-tone="neutral" style={{ "--xh-demo-block-inline-size": "80px" } as CSSProperties} />
+      </XhLayoutFooter>
     </XhLayoutRoot>
   );
 }

@@ -14,7 +14,7 @@ const groups = [
     <XhFlex v-for="group in groups" :key="group.gap" align="center" gap="md">
       <span style="inline-size: 48px; color: var(--xh-fg-muted)">{{ group.label }}</span>
       <XhFlex :gap="group.gap">
-        <span v-for="item in 3" :key="item" style="inline-size: 28px; block-size: 28px; border-radius: var(--xh-shape-control); background: var(--xh-bg-brand-subtle)" />
+        <span v-for="item in 3" :key="item" data-demo-block="square" data-tone="brand" style="inline-size: 28px; block-size: 28px" />
       </XhFlex>
     </XhFlex>
   </XhFlex>

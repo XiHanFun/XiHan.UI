@@ -1,5 +1,5 @@
 // 禁用 | 禁止调整面板比例
-import type { ReactNode } from "react";
+import type { CSSProperties, ReactNode } from "react";
 import {
   XhSplitterPanel,
   XhSplitterResizeTrigger,
@@ -16,11 +16,11 @@ export default function Demo(): ReactNode {
       style={{ inlineSize: "min(480px, 100%)", blockSize: "140px" }}
     >
       <XhSplitterPanel index={0} style={{ background: "var(--xh-bg-subtle)" }}>
-        <p style={{ padding: "12px" }}>侧栏</p>
+        <span data-demo-block data-tone="neutral" style={{ "--xh-demo-block-block-size": "calc(100% - 24px)", "margin": "12px" } as CSSProperties} />
       </XhSplitterPanel>
       <XhSplitterResizeTrigger index={0} />
       <XhSplitterPanel index={1} style={{ background: "var(--xh-bg-brand-subtle)" }}>
-        <p style={{ padding: "12px" }}>正文</p>
+        <span data-demo-block data-tone="brand" style={{ "--xh-demo-block-block-size": "calc(100% - 24px)", "margin": "12px" } as CSSProperties} />
       </XhSplitterPanel>
     </XhSplitterRoot>
   );

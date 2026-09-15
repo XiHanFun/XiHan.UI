@@ -7,12 +7,16 @@ import { XhFlex } from "@xihan-ui/vue";
   <XhFlex
     align="center"
     justify="between"
+    aria-label="两端对齐占位区块"
     style="inline-size: min(360px, 100%); padding: 16px; border-radius: var(--xh-shape-surface); background: var(--xh-bg-subtle)"
   >
     <XhFlex align="center" gap="sm">
-      <span style="display: grid; inline-size: 36px; block-size: 36px; place-items: center; border-radius: var(--xh-shape-pill); background: var(--xh-bg-brand-subtle); color: var(--xh-fg-brand)">周</span>
-      <XhFlex orientation="vertical" gap="xs"><strong>周宁</strong><small style="color: var(--xh-fg-muted)">在线</small></XhFlex>
+      <span data-demo-block="square" data-tone="brand" />
+      <XhFlex orientation="vertical" gap="xs">
+        <span data-demo-block="line" data-tone="info" style="--xh-demo-block-inline-size: 88px" />
+        <span data-demo-block="line" data-tone="neutral" style="--xh-demo-block-inline-size: 48px" />
+      </XhFlex>
     </XhFlex>
-    <span style="color: var(--xh-fg-brand)">项目负责人</span>
+    <span data-demo-block="line" data-tone="success" style="--xh-demo-block-inline-size: 64px" />
   </XhFlex>
 </template>

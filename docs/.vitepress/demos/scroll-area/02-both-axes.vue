@@ -10,23 +10,25 @@ import {
   XhScrollAreaViewport,
 } from "@xihan-ui/vue";
 
-const rows = Array.from({ length: 10 }, (_, index) => `ORD-${String(index + 1).padStart(4, "0")} · 华东区域 · 企业版年度订阅 · 已完成`);
+const tones = ["brand", "info", "success", "warning", "danger", "neutral"] as const;
+const rows = Array.from({ length: 10 }, (_, index) => ({ id: index + 1, tone: tones[index % tones.length] }));
 </script>
 
 <template>
   <XhScrollAreaRoot
     type="always"
+    aria-label="双轴滚动占位区块"
     style="block-size: 160px; inline-size: min(420px, 100%); border-radius: var(--xh-shape-surface); background: var(--xh-bg-subtle)"
   >
     <XhScrollAreaViewport>
       <XhScrollAreaContent style="padding: 12px 16px">
-        <p
+        <span
           v-for="row in rows"
-          :key="row"
-          style="margin: 0; line-height: 28px; white-space: nowrap"
-        >
-          {{ row }}
-        </p>
+          :key="row.id"
+          data-demo-block="line"
+          :data-tone="row.tone"
+          style="--xh-demo-block-inline-size: 560px; margin-block: 14px"
+        />
       </XhScrollAreaContent>
     </XhScrollAreaViewport>
     <XhScrollAreaScrollbar orientation="vertical">

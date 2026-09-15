@@ -70,3 +70,28 @@
   background: var(--xh-bg-muted);
   color: var(--xh-fg-disabled);
 }
+
+/* 纯结构示例不再用“区块 A / 文件 / 编辑器”一类文字撑尺寸。
+   data-tone 选择不同淡色，尺寸由示例通过公开的 --xh-demo-block-* 槽声明。 */
+[data-demo-block] {
+  display: block;
+  box-sizing: border-box;
+  inline-size: var(--xh-demo-block-inline-size, 100%);
+  min-inline-size: var(--xh-space-4);
+  block-size: var(--xh-demo-block-block-size, var(--xh-control-h-md));
+  min-block-size: var(--xh-demo-block-min-block-size, var(--xh-space-4));
+  border: var(--xh-stroke-thin) solid var(--xh-tone-border, var(--xh-border-subtle));
+  border-radius: var(--xh-demo-block-radius, var(--xh-shape-surface));
+  background: var(--xh-tone-subtle, var(--xh-bg-subtle));
+}
+
+[data-demo-block='line'] {
+  --xh-demo-block-block-size: var(--xh-space-2);
+  --xh-demo-block-radius: var(--xh-shape-pill);
+}
+
+[data-demo-block='square'] {
+  --xh-demo-block-inline-size: var(--xh-control-h-md);
+  --xh-demo-block-block-size: var(--xh-control-h-md);
+  --xh-demo-block-radius: var(--xh-shape-control);
+}

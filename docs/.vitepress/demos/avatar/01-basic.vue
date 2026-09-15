@@ -4,7 +4,7 @@ import { XhAvatarFallback, XhAvatarImage, XhAvatarRoot } from "@xihan-ui/vue";
 </script>
 
 <template>
-  <XhAvatarRoot src="/images/logo.png" alt="曦寒">
+  <XhAvatarRoot src="/images/demo-avatar.svg" alt="曦寒">
     <XhAvatarImage />
     <XhAvatarFallback>曦</XhAvatarFallback>
   </XhAvatarRoot>

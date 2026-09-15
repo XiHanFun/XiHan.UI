@@ -4,8 +4,8 @@ import { XhAvatarFallback, XhAvatarImage, XhAvatarRoot } from "@xihan-ui/react";
 import { useState } from "react";
 
 const cases = [
-  { key: "ok", src: "/images/logo.png", alt: "曦寒", text: "曦", note: "地址有效" },
-  { key: "bad", src: "/images/does-not-exist.png", alt: "取不到的图", text: "回退", note: "地址取不到" },
+  { key: "ok", src: "/images/demo-avatar.svg", alt: "曦寒", text: "曦", note: "地址有效" },
+  { key: "bad", src: "/images/does-not-exist.svg", alt: "取不到的图", text: "回退", note: "地址取不到" },
   { key: "none", src: undefined, alt: undefined, text: "无图", note: "没给地址" },
 ];
 

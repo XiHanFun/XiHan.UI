@@ -1,5 +1,5 @@
 // 垂直与折叠 | 垂直调整并折叠面板
-import type { ReactNode } from "react";
+import type { CSSProperties, ReactNode } from "react";
 import {
   XhSplitterPanel,
   XhSplitterResizeTrigger,
@@ -20,15 +20,15 @@ export default function Demo(): ReactNode {
       style={{ inlineSize: "min(480px, 100%)", blockSize: "240px" }}
     >
       <XhSplitterPanel index={0} style={{ background: "var(--xh-bg-subtle)" }}>
-        <p style={{ padding: "12px" }}>预览</p>
+        <span data-demo-block data-tone="brand" style={{ "--xh-demo-block-block-size": "calc(100% - 24px)", "margin": "12px" } as CSSProperties} />
       </XhSplitterPanel>
       <XhSplitterResizeTrigger index={0} />
       <XhSplitterPanel index={1} style={{ background: "var(--xh-bg-brand-subtle)" }}>
-        <p style={{ padding: "12px" }}>编辑器</p>
+        <span data-demo-block data-tone="info" style={{ "--xh-demo-block-block-size": "calc(100% - 24px)", "margin": "12px" } as CSSProperties} />
       </XhSplitterPanel>
       <XhSplitterResizeTrigger index={1} />
       <XhSplitterPanel index={2} style={{ background: "var(--xh-bg-subtle)" }}>
-        <p style={{ padding: "12px" }}>控制台</p>
+        <span data-demo-block data-tone="success" style={{ "--xh-demo-block-block-size": "calc(100% - 24px)", "margin": "12px" } as CSSProperties} />
       </XhSplitterPanel>
     </XhSplitterRoot>
   );

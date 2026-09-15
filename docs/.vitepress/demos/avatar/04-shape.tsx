@@ -6,13 +6,13 @@ export default function Demo(): ReactNode {
   return (
     <>
       <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
-        <XhAvatarRoot src="/images/logo.png" alt="曦寒">
+        <XhAvatarRoot src="/images/demo-avatar.svg" alt="曦寒">
           <XhAvatarImage />
           <XhAvatarFallback>曦</XhAvatarFallback>
         </XhAvatarRoot>
 
         <XhAvatarRoot
-          src="/images/logo.png"
+          src="/images/demo-avatar.svg"
           alt="曦寒"
           style={{ "--xh-avatar-radius": "var(--xh-radius-md)" } as CSSProperties}
         >
@@ -21,7 +21,7 @@ export default function Demo(): ReactNode {
         </XhAvatarRoot>
 
         <XhAvatarRoot
-          src="/images/logo.png"
+          src="/images/demo-avatar.svg"
           alt="曦寒"
           style={{ "--xh-avatar-radius": "var(--xh-radius-none)" } as CSSProperties}
         >

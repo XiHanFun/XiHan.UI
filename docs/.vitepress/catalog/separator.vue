@@ -3,11 +3,15 @@ import { XhSeparator } from "@xihan-ui/vue";
 </script>
 
 <template>
-  <div style="inline-size: 220px; font-size: 13px">
-    <strong>账户设置</strong>
-    <p style="margin: 4px 0 10px; color: var(--xh-fg-muted)">管理个人资料与登录方式。</p>
+  <div aria-label="分隔两组内容的预览" style="inline-size: 220px">
+    <div aria-hidden="true" style="display: grid; gap: 8px; padding-block: 8px">
+      <span data-demo-block="line" data-tone="brand" style="--xh-demo-block-inline-size: 72%" />
+      <span data-demo-block="line" data-tone="neutral" />
+    </div>
     <XhSeparator />
-    <strong style="display: block; margin-block-start: 10px">通知设置</strong>
-    <p style="margin: 4px 0 0; color: var(--xh-fg-muted)">选择需要接收的消息。</p>
+    <div aria-hidden="true" style="display: grid; gap: 8px; padding-block: 8px">
+      <span data-demo-block="line" data-tone="success" style="--xh-demo-block-inline-size: 64%" />
+      <span data-demo-block="line" data-tone="info" />
+    </div>
   </div>
 </template>

@@ -35,7 +35,7 @@ export default function Demo(): ReactNode {
       </XhImageRoot>
 
       <XhImageRoot
-        src="https://example.invalid/broken.png"
+        src="https://example.invalid/broken.svg"
         alt="地址写坏的图"
         style={boxStyle}
         onStatusChange={report("broken")}
