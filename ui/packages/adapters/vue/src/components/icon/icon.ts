@@ -14,18 +14,18 @@ import { slotPaints } from '../../runtime/slot-content'
 import { useIcon } from './use-icon'
 
 /**
- * 把一个图元节点建成 VNode，递归到底。
- * 标签与属性名逐字透传（连字符与大小写都保留），命名空间由 Vue 从父 `<svg>` 往下带。
+ * 把一个图元节点建为 VNode，递归到底。
+ * 标签与属性名逐字透传（连字符与大小写都保留），命名空间由 Vue 从父 `<svg>` 向下传递。
  */
 function renderNode(node: IconNode): VNode {
   return h(node.tag, node.attrs as Record<string, unknown> | undefined, node.children?.map(renderNode))
 }
 
 /**
- * 根 `<svg>` 加一层 `<g>` 空壳，图元铺在空壳里。
- * 默认插槽给出了内容时改由插槽内容填充根，元素不再生成 glyph 与图元；
- * 判据是插槽产出里有真会画出东西的节点：既不是插槽函数存不存在（宿主可能恒传一个插槽），
- * 也不是产出数组非空（`v-if` 为假时产出里还剩一个注释节点）。
+ * 根 `<svg>` 加一层 `<g>` 空壳，图元铺在空壳中。
+ * 默认插槽给出内容时改由插槽内容填充根，元素不再生成 glyph 与图元；
+ * 判据是插槽产出中有真正会渲染出内容的节点：既不是插槽函数是否存在（宿主可能恒传一个插槽），
+ * 也不是产出数组非空（`v-if` 为假时产出中还剩一个注释节点）。
  */
 export const XhIcon = defineComponent({
   name: 'XhIcon',
