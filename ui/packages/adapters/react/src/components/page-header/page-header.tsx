@@ -17,9 +17,9 @@ import { PageHeaderProvider, usePageHeaderContext } from './context'
 export interface XhPageHeaderRootProps extends ComponentPropsWithRef<'div'> {
   /** 尺寸：sm / md / lg，决定标题字号与整块的上下留白。 */
   size?: Size
-  /** 底部画一条分隔线，把页头与下面的内容分开。 */
+  /** 底部绘制一条分隔线，把页头与下方的内容分开。 */
   bordered?: boolean
-  /** 形态：plain / surface / raised。不写即不画面，与写 plain 同一个样子。 */
+  /** 形态：plain / surface / raised。未写即不绘制面，与写 plain 相同。 */
   variant?: PageHeaderVariant
 }
 
@@ -40,7 +40,7 @@ export function XhPageHeaderRoot({ size, bordered, variant, children, ...rest }:
 
 export interface XhPageHeaderBreadcrumbProps extends ComponentPropsWithRef<'div'> {}
 
-/** 面包屑位：整行排在标题之上，装什么归作者。 */
+/** 面包屑位：整行排在标题之上，放置的内容归作者。 */
 export function XhPageHeaderBreadcrumb({ children, ...rest }: XhPageHeaderBreadcrumbProps): ReactNode {
   const ctx = usePageHeaderContext()
   return (
@@ -63,13 +63,13 @@ export function XhPageHeaderMedia({ children, ...rest }: XhPageHeaderMediaProps)
 }
 
 export interface XhPageHeaderBackTriggerProps extends ComponentPropsWithRef<'button'> {
-  /** 渲染成哪个标签，默认 button。 */
+  /** 渲染为哪个标签，默认 button。 */
   as?: ElementType
 }
 
 /**
- * 返回位：组件只给身份与位置，按钮本身归作者。
- * 不自动补 type="button"，落在表单里需自行声明。
+ * 返回位：组件只提供身份与位置，按钮本身归作者。
+ * 不自动补 type="button"，位于表单中时需自行声明。
  */
 export function XhPageHeaderBackTrigger({ as = 'button', children, ...rest }: XhPageHeaderBackTriggerProps): ReactNode {
   const ctx = usePageHeaderContext()
@@ -82,11 +82,11 @@ export function XhPageHeaderBackTrigger({ as = 'button', children, ...rest }: Xh
 }
 
 export interface XhPageHeaderTitleProps extends ComponentPropsWithRef<'div'> {
-  /** 渲染成哪个标签，默认 div；这一块在页面大纲里确实是标题时写 h1（或 hN）。 */
+  /** 渲染为哪个标签，默认 div；该块在页面大纲中确实是标题时写 h1（或 hN）。 */
   as?: ElementType
 }
 
-/** 标题默认渲染为 div：它只做视觉主次，组件自己不往文档大纲里插一级标题。 */
+/** 标题默认渲染为 div：它只做视觉主次，组件自身不向文档大纲插入一级标题。 */
 export function XhPageHeaderTitle({ as = 'div', children, ...rest }: XhPageHeaderTitleProps): ReactNode {
   const ctx = usePageHeaderContext()
   const Tag = as as 'div'
@@ -111,7 +111,7 @@ export function XhPageHeaderDescription({ children, ...rest }: XhPageHeaderDescr
 
 export interface XhPageHeaderExtraProps extends ComponentPropsWithRef<'div'> {}
 
-/** 操作槽只排版，按钮由作者放进来。 */
+/** 操作槽只排版，按钮由作者放入。 */
 export function XhPageHeaderExtra({ children, ...rest }: XhPageHeaderExtraProps): ReactNode {
   const ctx = usePageHeaderContext()
   return (
@@ -123,7 +123,7 @@ export function XhPageHeaderExtra({ children, ...rest }: XhPageHeaderExtraProps)
 
 export interface XhPageHeaderFooterProps extends ComponentPropsWithRef<'div'> {}
 
-/** 页脚整行另起，装描述、标签页或一组摘要。 */
+/** 页脚整行另起，放置描述、标签页或一组摘要。 */
 export function XhPageHeaderFooter({ children, ...rest }: XhPageHeaderFooterProps): ReactNode {
   const ctx = usePageHeaderContext()
   return (
