@@ -1,4 +1,4 @@
-// 一屏多张 | slidesPerPage 决定一屏露几张，一次翻几张缺省跟着它走，所以仍是整屏翻
+// 一屏多张 | slidesPerPage 决定一屏显示几张，一次翻几张默认跟随它，因此仍是整屏翻页
 import type { ReactNode } from "react";
 import {
   XhCarouselIndicator,

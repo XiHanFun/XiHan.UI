@@ -1,4 +1,4 @@
-<!-- 基础用法 | 张数由 slideCount 声明而不是从 DOM 数，页数与指示点数量都由它算出来 -->
+<!-- 基础用法 | 张数由 slideCount 声明而不是从 DOM 计数，页数与指示点数量都由它计算 -->
 <script setup lang="ts">
 import {
   XhCarouselIndicator,
