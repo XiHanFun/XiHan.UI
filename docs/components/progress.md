@@ -1,6 +1,6 @@
 # Progress 进度条 <Badge type="info" text="alpha" />
 
-表示一件事完成了多少。线形、环形与仪表盘三种画法。
+表示一件事的完成程度。线形、环形与仪表盘三种形态。
 
 <div class="xh-resource-links">
   <a href="https://github.com/XiHanFun/XiHan.UI/tree/dev/ui/packages/engine/headless/src/progress" target="_blank" rel="noreferrer">Headless</a>
@@ -82,20 +82,20 @@ variant="dashboard" 在环上留一个缺口，gapDegree 与 gapPosition 决定�
 
 ### 何时使用
 
-- 上传、导出、批处理这类有确定完成度的过程。
-- 用容量、配额这类比例值。
+- 上传、导出、批处理等有确定完成度的过程。
+- 容量、配额等比例值。
 
 ### 何时不用
 
-- 完成度未知：用[加载指示器](./spinner)或[加载条](./loading-bar)的爬升模式。
-- 表示的是步骤而不是比例：用[步骤条](./steps)。
+- 完成度未知时，使用[加载指示器](./spinner)或[加载条](./loading-bar)的爬升模式。
+- 表示步骤而不是比例时，使用[步骤条](./steps)。
 
 ### 特性
 
 - `variant` 三档：线形、环形、仪表盘；仪表盘的缺口角度与位置可调。
-- `indeterminate` 表达"进行中但不知道还剩多少"。
-- `valueText` 决定读屏念出的是什么——"3 个文件中的第 2 个"比"66%"有用得多。
-- 环心可以放文字。
+- `indeterminate` 表达进行中但剩余量未知。
+- `valueText` 决定读屏读出的内容：“3 个文件中的第 2 个”比“66%”更有用。
+- 环心可以放置文字。
 
 ### 组合
 
@@ -103,12 +103,12 @@ variant="dashboard" 在环上留一个缺口，gapDegree 与 gapPosition 决定�
 
 ### 最佳实践
 
-- 长任务给出剩余时间或剩余数量，光有百分比很难判断还要等多久。
-- 到 100% 后要有明确的完成态，别停在满格不动。
+- 长任务给出剩余时间或剩余数量，只有百分比难以判断等待时长。
+- 到 100% 后要有明确的完成态，不停留在满格。
 
 ### 反模式
 
-- 进度会倒退。
+- 进度倒退。
 - 用假进度条掩盖未知的等待。
 
 ## API 参考
