@@ -37,16 +37,16 @@ export const XhDrawerRoot = defineComponent({
     size: { type: String as PropType<Size> },
     variant: { type: String as PropType<OverlayBackdropVariant> },
     /**
-     * 挂到哪个容器（CSS 选择器或元素）。给了它就是局部抽屉：
-     * 浮层搬进那个容器，遮罩与定位层从 fixed 换成 absolute，只罩住它而不是盖满整屏。
+     * 挂载的容器（CSS 选择器或元素）。提供后即为局部抽屉：
+     * 浮层迁移进该容器，遮罩与定位层从 fixed 换为 absolute，只覆盖它而不是整屏。
      *
-     * 那个容器要自己带 position（relative 之类），否则 absolute 会往上找到别的定位祖先。
-     * 不给则问全局配置的 portalContainer，再没有才落 body。
+     * 该容器要自带 position（relative 等），否则 absolute 会向上找到其他定位祖先。
+     * 未提供时查询全局配置的 portalContainer，再没有才落到 body。
      */
     container: { type: [String, Object] as PropType<string | Element> },
     /**
-     * 只把画法改成局部（遮罩与定位层从 fixed 换成 absolute），不管搬到哪儿。
-     * 给了 container 就默认为真，不必再写一遍；两个都不给即铺满视口。
+     * 只把绘制方式改为局部（遮罩与定位层从 fixed 换为 absolute），不改变迁移位置。
+     * 提供 container 后默认为真，不必再写一遍；两个都未提供即铺满视口。
      */
     contained: { type: Boolean, default: undefined },
     translations: { type: Object as PropType<DrawerProps['translations']> },
@@ -83,7 +83,7 @@ export const XhDrawerTrigger = defineComponent({
   // 直通属性自己合：Vue 默认把作者的处理器排在部件的后面，这里改成作者先跑
   inheritAttrs: false,
   props: {
-    /** 借用作者的子节点当触发器，不再渲染自己的包裹元素；子节点须恰好一个。 */
+    /** 借用作者的子节点作为触发器，不再渲染自己的包裹元素；子节点须恰好一个。 */
     asChild: Boolean,
   },
   setup(props, { slots, attrs }) {

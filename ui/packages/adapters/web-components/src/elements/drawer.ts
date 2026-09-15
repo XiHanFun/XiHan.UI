@@ -22,36 +22,36 @@ const BOOLEAN_CONVERTER = { fromAttribute: (v: string | null) => (v === null ? u
 const STRING_CONVERTER = { fromAttribute: (v: string | null) => v ?? undefined }
 
 /**
- * `<xh-drawer>` —— Light-DOM 行为宿主，跑 drawer 机器并把 connect 产出打到角色节点上，
+ * `<xh-drawer>`：Light-DOM 行为宿主，运行 drawer 状态机并把 connect 产出接到角色节点上，
  * 关闭时用内联 style.display 隐藏浮层子树。
  *
- * 键盘与 ARIA 契约同 dialog；side 决定滑入方向，以 data-side 落在 root 与 content 上供样式取用。
+ * 键盘与 ARIA 契约同 dialog；side 决定滑入方向，以 data-side 写在 root 与 content 上供样式取用。
  *
  * @customElement xh-drawer
- * @attr {boolean} open - 受控开合；缺省该属性即非受控
+ * @attr {boolean} open - 受控开合；未提供该属性即非受控
  * @attr {boolean} default-open - 非受控初始为打开
- * @attr {boolean} modal - 模态（陷焦点、锁滚动、遮罩交互外关闭），默认 true
- * @attr {boolean} contained - 局部抽屉：遮罩与定位层从 fixed 换成 absolute，只罩住最近的定位祖先而不是盖满整屏。
- *   本元素是 Light DOM、作者写在哪浮层就在哪，所以「挂到哪个容器」这件事本身不需要属性——写上它是为了让皮肤按容器画
- * @attr {'top'|'right'|'bottom'|'left'} side - 从哪条边滑出，默认 right
+ * @attr {boolean} modal - 模态（陷入焦点、锁定滚动、遮罩交互外关闭），默认 true
+ * @attr {boolean} contained - 局部抽屉：遮罩与定位层从 fixed 改为 absolute，只覆盖最近的定位祖先而不是整屏。
+ *   本元素是 Light DOM，浮层位于作者书写的位置，因此挂载容器本身不需要属性；写上它是为了让皮肤按容器绘制
+ * @attr {'top'|'right'|'bottom'|'left'} side - 滑出的边，默认 right
  * @attr {'dialog'|'alertdialog'} role - 语义角色，默认 dialog
  * @attr {boolean} close-on-escape - Esc 关闭，默认 true
- * @attr {boolean} close-on-interact-outside - 点击浮层外关闭；默认跟随 modal，alertdialog 恒不关
+ * @attr {boolean} close-on-interact-outside - 点击浮层外关闭；默认跟随 modal，alertdialog 恒不关闭
  * @attr {boolean} restore-focus - 关闭后把焦点归还触发元素，默认 true
- * @attr {'sm'|'md'|'lg'} size - 尺寸：横放时换面板宽度、竖放时换面板高度
- * @attr {'opaque'|'blur'|'transparent'} variant - 遮罩形态：只换 backdrop 的底色与模糊
+ * @attr {'sm'|'md'|'lg'} size - 尺寸：横向放置时影响面板宽度、纵向放置时影响面板高度
+ * @attr {'opaque'|'blur'|'transparent'} variant - 遮罩形态：只影响 backdrop 的底色与模糊
  * @fires open-change - open 状态变化；detail 为 `{ open: boolean }`
  * @fires exit-complete - 退出完成且本层资源已释放
  * @csspart root - 留在页面原地的容器，承载 data-side / data-size / data-state
  * @csspart trigger - 触发按钮
  * @csspart backdrop - 遮罩层
  * @csspart positioner - 浮层定位容器（贴边布局写在它身上）
- * @csspart content - 抽屉面板（role/aria-modal/焦点陷阱所在，另带 data-side / data-size）
- * @csspart header - 面板头：标题与说明所在的那一段，不跟着正文滚
+ * @csspart content - 抽屉面板（role / aria-modal / 焦点陷阱所在，另带 data-side / data-size）
+ * @csspart header - 面板头：标题与说明所在的段，不随正文滚动
  * @csspart title - 标题（aria-labelledby 目标）
  * @csspart description - 描述（aria-describedby 目标）
- * @csspart body - 正文：面板里唯一会滚的一段
- * @csspart footer - 面板尾：动作按钮所在的那一段，不跟着正文滚
+ * @csspart body - 正文：面板中唯一会滚动的段
+ * @csspart footer - 面板尾：动作按钮所在的段，不随正文滚动
  * @csspart close-trigger - 关闭按钮
  */
 export class XhDrawerElement extends XhPortalHostElement {

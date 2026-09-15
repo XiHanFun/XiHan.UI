@@ -24,7 +24,7 @@ export interface DrawerContext {
   rendered: Ref<boolean>
   contentRef: Ref<HTMLElement | null>
   backdropRef: Ref<HTMLElement | null>
-  /** 浮层搬到哪儿：实例给的容器 > 全局配置 > 单一落点。 */
+  /** 浮层迁移到的位置：实例提供的容器 > 全局配置 > 单一落点。 */
   portalTarget: ComputedRef<string | Element>
 }
 
