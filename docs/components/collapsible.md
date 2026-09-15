@@ -111,8 +111,8 @@ tone 落在触发按钮的展开态上，六种颜色各展开一份做对照
 | `disabled` | `boolean` |  |  |
 | `tone` | `Tone` |  | 颜色：brand / neutral / success / warning / danger / info，决定使用哪组状态色。 |
 | `size` | `Size` |  | 尺寸：sm / md / lg。 |
-| `dir` | `Direction` |  | 文字方向，只作用于排版；作者没给就不写。 |
-| `onOpenChange` | `(details: CollapsibleOpenChangeDetails) => void` |  | open 变化意图回调；受控时是唯一出口，非受控随内部转移一并通知。 |
+| `dir` | `Direction` |  | 文字方向，只作用于排版；作者未提供时不写入。 |
+| `onOpenChange` | `(details: CollapsibleOpenChangeDetails) => void` |  | open 变化意图回调；受控时是唯一出口，非受控时随内部转移一并通知。 |
 
 ### 事件
 

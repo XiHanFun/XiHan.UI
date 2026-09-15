@@ -20,7 +20,7 @@ export interface CollapsibleContext {
   api: CollapsibleApi
   service: Service<CollapsibleSchema>
   contentRef: RefObject<HTMLElement | null>
-  /** 收起动画播完之前保持为真：真正的收起由它落成内联 display。 */
+  /** 收起动画播完之前保持为真：真正的收起由它写为内联 display。 */
   visible: boolean
 }
 

@@ -43,7 +43,7 @@ export const XhCollapsibleRoot = defineComponent({
   },
 })
 
-/** 触发器与其同排内容住的那一行；只写触发器时可以不用它 */
+/** 触发器与其同排内容所在的行；只写触发器时可以省略它 */
 export const XhCollapsibleHeader = defineComponent({
   name: 'XhCollapsibleHeader',
   setup(_, { slots }) {
@@ -57,7 +57,7 @@ export const XhCollapsibleTrigger = defineComponent({
   // 直通属性自己合：Vue 默认把作者的处理器排在部件的后面，这里改成作者先跑
   inheritAttrs: false,
   props: {
-    /** 借用作者的子节点当触发器，不再渲染自己的包裹元素；子节点须恰好一个。 */
+    /** 借用作者的子节点作为触发器，不再渲染自己的包裹元素；子节点须恰好一个。 */
     asChild: Boolean,
   },
   setup(props, { slots, attrs }) {

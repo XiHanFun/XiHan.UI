@@ -16,7 +16,7 @@ import { useCollapsible } from './use-collapsible'
 
 type CollapsibleProps = CollapsibleSchema['props']
 
-/** 根上自有的那些取值；dir 与原生的同名属性含义不同，由这里接管。 */
+/** 根上自有的取值；dir 与原生的同名属性含义不同，由这里接管。 */
 type RootElementProps = Omit<ComponentPropsWithRef<'div'>, 'dir'>
 
 export interface XhCollapsibleRootProps extends RootElementProps {
@@ -54,7 +54,7 @@ export function XhCollapsibleRoot({
 XhCollapsibleRoot.xhEvents = ['open-change'] as const
 
 export interface XhCollapsibleHeaderProps extends ComponentPropsWithRef<'div'> {}
-/** 触发器与其同排内容住的那一行；只写触发器时可以不用它。 */
+/** 触发器与其同排内容所在的行；只写触发器时可以省略它。 */
 export function XhCollapsibleHeader({ children, ...rest }: XhCollapsibleHeaderProps): ReactNode {
   const ctx = useCollapsibleContext()
   return <div {...mergeReactProps(ctx.api.getHeaderProps() as Record<string, unknown>, rest as Record<string, unknown>)}>{children}</div>

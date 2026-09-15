@@ -20,9 +20,9 @@ export interface CollapsibleSchema extends MachineSchema {
     tone?: Tone
     /** 尺寸：sm / md / lg。 */
     size?: Size
-    /** 文字方向，只作用于排版；作者没给就不写。 */
+    /** 文字方向，只作用于排版；作者未提供时不写入。 */
     dir?: Direction
-    /** open 变化意图回调；受控时是唯一出口，非受控随内部转移一并通知。 */
+    /** open 变化意图回调；受控时是唯一出口，非受控时随内部转移一并通知。 */
     onOpenChange?: (details: CollapsibleOpenChangeDetails) => void
   }
   context: Record<string, never>
@@ -52,5 +52,5 @@ export interface CollapsibleApi<T extends PropTypes = PropTypes> {
   getIndicatorProps: () => T['element']
 }
 
-/** 读屏用的文案。本组件目前没有需要外露的文案，位先留着。 */
+/** 读屏文案。本组件目前没有需要外露的文案，保留该位。 */
 export interface CollapsibleTranslations {}
