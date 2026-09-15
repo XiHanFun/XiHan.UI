@@ -15213,7 +15213,7 @@
   overflow: visible;
   padding: var(--xh-card-p, var(--xh-space-4));
   border: var(--xh-stroke-thin) solid var(--xh-card-border, transparent);
-  border-radius: var(--xh-card-radius, var(--xh-shape-overlay));
+  border-radius: var(--xh-card-radius, var(--xh-shape-surface));
   background: var(--xh-card-bg, var(--xh-bg-surface));
   color: var(--xh-card-fg, var(--xh-fg-default));
   box-shadow: var(--xh-card-shadow, var(--xh-elevation-raised));
