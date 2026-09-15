@@ -21428,7 +21428,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-material-glass-bg"
+        "--xh-material-elevated-bg"
       ],
       "visibility": "public",
       "description": "dialog 的 content 部件 background 覆盖槽。"
@@ -21590,7 +21590,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-shape-pill"
+        "--xh-shape-circle"
       ],
       "visibility": "public",
       "description": "dialog 的 indicator 部件 border-radius 覆盖槽。"
@@ -21721,7 +21721,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-shape-surface"
+        "--xh-shape-overlay"
       ],
       "visibility": "public",
       "description": "dialog 的 content 部件 border-radius 覆盖槽。"
