@@ -1,4 +1,4 @@
-<!-- 基础用法 | 勾选与判定是原子的：批准的载荷带着批的是哪几项，不存在「已批准但范围还没同步」的窗口 -->
+<!-- 基础用法 | 勾选与判定是原子的：批准的载荷带着批准的项，不存在已批准但范围尚未同步的窗口 -->
 <script setup lang="ts">
 import type { ApprovalScope } from "@xihan-ui/headless";
 import {

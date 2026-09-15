@@ -1,4 +1,4 @@
-// 附一句备注 | 备注与勾选同批取快照，随判定载荷一起发出；空着就不带这一格，它不参与「必选项勾满了没有」的判断
+// 附加备注 | 备注与勾选同批取快照，随判定载荷一起发出；留空时不带该字段，它不参与必选项是否勾满的判断
 import type { ReactNode } from "react";
 import {
   XhApprovalApproveTrigger,
