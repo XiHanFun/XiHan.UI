@@ -1,4 +1,4 @@
-<!-- 基础用法 | 挂载即从 from 走到 to，三个尺寸档只改字号；不写 size 就跟着上下文的字号走 -->
+<!-- 基础用法 | 挂载即从 from 变化到 to，三个尺寸档只改变字号；不写 size 即跟随上下文的字号 -->
 <script setup lang="ts">
 import { XhNumberAnimation } from "@xihan-ui/vue";
 </script>
