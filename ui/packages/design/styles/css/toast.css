@@ -370,7 +370,7 @@
     cursor: pointer;
     transition:
       background var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
-      scale var(--xh-motion-duration-micro) var(--xh-motion-ease-enter-strong);
+      scale var(--xh-motion-duration-release) var(--xh-motion-ease-release);
   }
 
   [data-scope='toast'][data-part='action-trigger'][hidden] {
@@ -384,6 +384,8 @@
   [data-scope='toast'][data-part='action-trigger']:active:not(:disabled) {
     background: var(--xh-toast-action-bg-active, var(--xh-bg-subtle-active));
     scale: var(--xh-motion-scale-press);
+    transition-duration: var(--xh-motion-duration-press);
+    transition-timing-function: var(--xh-motion-ease-press);
   }
 
   /*
@@ -430,7 +432,7 @@
       background var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
       color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
       opacity var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
-      scale var(--xh-motion-duration-micro) var(--xh-motion-ease-enter-strong);
+      scale var(--xh-motion-duration-release) var(--xh-motion-ease-release);
   }
 
   @media (hover: hover) {
@@ -467,6 +469,8 @@
   [data-scope='toast'][data-part='close-trigger']:active {
     background: var(--xh-toast-close-bg-active, var(--xh-bg-subtle-active));
     scale: var(--xh-motion-scale-press);
+    transition-duration: var(--xh-motion-duration-press);
+    transition-timing-function: var(--xh-motion-ease-press);
   }
 
   /* 单体控件用原生 disabled。常规路径下它与 hidden 同时出现看不见，
