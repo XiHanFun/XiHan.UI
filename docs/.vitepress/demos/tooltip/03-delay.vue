@@ -1,4 +1,4 @@
-<!-- 延时 | openDelay 默认 700ms 用来防误触，closeDelay 默认 300ms 留出指针走位的余地；聚焦不走这两段等待 -->
+<!-- 延时 | openDelay 默认 700ms 用于防误触，closeDelay 默认 300ms 留出指针移动的余地；聚焦不经这两段等待 -->
 <script setup lang="ts">
 import {
   XhTooltipContent,

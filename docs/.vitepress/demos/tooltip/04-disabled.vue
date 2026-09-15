@@ -1,4 +1,4 @@
-<!-- 禁用 | disabled 只关掉提示本身，被包裹的触发器照样可点、可聚焦 -->
+<!-- 禁用 | disabled 只关闭提示本身，被包裹的触发器照常可点击、可聚焦 -->
 <script setup lang="ts">
 import {
   XhTooltipContent,

@@ -12,7 +12,7 @@
 
 ## 用法
 
-悬停或聚焦触发器即出；指针停在提示上也不收起
+悬停或聚焦触发器即显示；指针停在提示上也不收起
 
 <XhDemo src="tooltip/01-basic" />
 
@@ -26,43 +26,43 @@
 
 ### 朝向
 
-placement 是请求值，空间不够时由定位引擎避让；箭头跟着最终落定的那一面走
+placement 是请求值，空间不足时由定位引擎避让；箭头跟随最终落定的一面
 
 <XhDemo src="tooltip/02-placement" />
 
 ### 延时
 
-openDelay 默认 700ms 用来防误触，closeDelay 默认 300ms 留出指针走位的余地；聚焦不走这两段等待
+openDelay 默认 700ms 用于防误触，closeDelay 默认 300ms 留出指针移动的余地；聚焦不经这两段等待
 
 <XhDemo src="tooltip/03-delay" />
 
 ### 禁用
 
-disabled 只关掉提示本身，被包裹的触发器照样可点、可聚焦
+disabled 只关闭提示本身，被包裹的触发器照常可点击、可聚焦
 
 <XhDemo src="tooltip/04-disabled" />
 
 ### 颜色
 
-六种语气换的是浮层实心底与其上的文字色，箭头一并跟着走；把指针停在触发器上（或用 Tab 聚焦）看差别
+六种语气更换浮层实心底与其上的文字色，箭头一并随之变化；把指针停在触发器上（或用 Tab 聚焦）查看差别
 
 <XhDemo src="tooltip/05-tone" />
 
 ### 尺寸
 
-三档换的是浮层的内边距与字号，不写 size 即缺省档；把指针停在触发器上（或用 Tab 聚焦）看差别
+三档改变浮层的内边距与字号，不写 size 即默认档；把指针停在触发器上（或用 Tab 聚焦）查看差别
 
 <XhDemo src="tooltip/06-size" />
 
 ### 受控
 
-传了 open 就由宿主说了算；悬停、聚焦、Escape 都只发意图，最终写不写由外面这份状态决定
+传入 open 后由宿主决定；悬停、聚焦、Escape 都只发意图，最终是否写回由外部的这份状态决定
 
 <XhDemo src="tooltip/07-controlled" />
 
 ### 长文案
 
-提示到了宽度上限就换行，不会拉成一条横线；上限是 content 上的 --xh-tooltip-max-w 槽位
+提示到达宽度上限后换行，不会拉成一条横线；上限是 content 上的 --xh-tooltip-max-w 槽位
 
 <XhDemo src="tooltip/08-long-text" />
 

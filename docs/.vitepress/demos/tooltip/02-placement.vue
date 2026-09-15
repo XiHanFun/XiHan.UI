@@ -1,4 +1,4 @@
-<!-- 朝向 | placement 是请求值，空间不够时由定位引擎避让；箭头跟着最终落定的那一面走 -->
+<!-- 朝向 | placement 是请求值，空间不足时由定位引擎避让；箭头跟随最终落定的一面 -->
 <script setup lang="ts">
 import {
   XhTooltipArrow,
