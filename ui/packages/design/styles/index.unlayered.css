@@ -24440,7 +24440,7 @@
   touch-action: manipulation;
   transition:
     background var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
-    scale var(--xh-motion-duration-micro) var(--xh-motion-ease-enter-strong);
+    scale var(--xh-motion-duration-release) var(--xh-motion-ease-release);
 }
 
 /* 每个状态的第一颗动作把整组推到逻辑末端；取消钮紧跟确认钮。 */
@@ -24505,6 +24505,8 @@
 [data-scope='editable'][data-part='cancel-trigger']:active:not(:disabled) {
   background: var(--xh-editable-trigger-bg-active, var(--xh-_editable-trigger-bg-active));
   scale: var(--xh-motion-scale-press);
+  transition-duration: var(--xh-motion-duration-press);
+  transition-timing-function: var(--xh-motion-ease-press);
 }
 
 /* control 已由 :focus-within 画出整框焦点环，内部动作不再叠第二圈。 */
