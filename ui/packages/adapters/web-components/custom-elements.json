@@ -34125,11 +34125,11 @@
       "declarations": [
         {
           "kind": "class",
-          "description": "`<xh-navigation-menu>` —— Light-DOM 行为宿主：作者写\nroot/list/item/trigger/content/link/indicator/viewport 角色节点，\n元素跑 navigation-menu 机器并把 connect 产出打上去。\n\n与 `<xh-menu>` 的分野：这里的条目是链接不是命令，因此不做 roving tabindex——\n每个 trigger 都留在 Tab 序列里，面板紧跟在 trigger 之后，Tab 才走得进去。\n\n标签由作者写，且必须写对：root 是 `<nav>`（地标语义只有标签给得了），list 是 `<ul>`，\nitem 与 indicator 都是 `<li>`（`<ul>` 里只放得下 `<li>`），trigger 是 `<button>`，\nlink 是 `<a>`。面板（content）写在同一个 item 里、紧跟 trigger 之后。",
+          "description": "`<xh-navigation-menu>`：Light-DOM 行为宿主：作者写\nroot / list / item / trigger / content / link / indicator / viewport 角色节点，\n元素运行 navigation-menu 状态机并把 connect 产出接上。\n\n与 `<xh-menu>` 的差别：这里的条目是链接不是命令，因此不做 roving tabindex：\n每个 trigger 都保留在 Tab 序列中，面板紧跟在 trigger 之后，Tab 才能进入。\n\n标签由作者编写，且必须正确：root 是 `<nav>`（地标语义只能由标签提供），list 是 `<ul>`，\nitem 与 indicator 都是 `<li>`（`<ul>` 中只能放置 `<li>`），trigger 是 `<button>`，\nlink 是 `<a>`。面板（content）写在同一个 item 中、紧跟 trigger 之后。",
           "name": "XhNavigationMenuElement",
           "cssParts": [
             {
-              "description": "nav 地标，承载 aria-label；指针离开/焦点离场/Escape 三条收起出口都在这儿",
+              "description": "nav 地标，承载 aria-label；指针离开 / 焦点离场 / Escape 三条收起出口都在这里",
               "name": "root"
             },
             {
@@ -34145,7 +34145,7 @@
               "name": "trigger"
             },
             {
-              "description": "入口里的方向标记，须自带 value 属性与所在 trigger 配对；对读屏隐藏",
+              "description": "入口中的方向标记，须自带 value 属性与所在 trigger 配对；对读屏隐藏",
               "name": "trigger-indicator"
             },
             {
@@ -34153,15 +34153,15 @@
               "name": "content"
             },
             {
-              "description": "面板里的链接；指向当前页面的那条写 current 属性，得到 aria-current=\"page\"",
+              "description": "面板中的链接；指向当前页面的条目写 current 属性，得到 aria-current=\"page\"",
               "name": "link"
             },
             {
-              "description": "指示条，须写成 `<li>` 并住在 list 里；对读屏隐藏，位置由机器量好写成内联样式",
+              "description": "指示条，须写为 `<li>` 并位于 list 中；对读屏隐藏，位置由状态机测量后写为内联样式",
               "name": "indicator"
             },
             {
-              "description": "可选的共享面板外壳，放在 root 里；都收起时 hidden",
+              "description": "可选的共享面板外壳，放在 root 中；全部收起时 hidden",
               "name": "viewport"
             }
           ],
@@ -34469,7 +34469,7 @@
               "type": {
                 "text": "string | undefined"
               },
-              "description": "受控展开项；缺省该属性即非受控",
+              "description": "受控展开项；未提供该属性即非受控",
               "name": "value",
               "fieldName": "value"
             },
@@ -34493,7 +34493,7 @@
               "type": {
                 "text": "number | undefined"
               },
-              "description": "悬停/聚焦到展开的等待毫秒，默认 200",
+              "description": "悬停 / 聚焦到展开的等待毫秒，默认 200",
               "name": "delay-duration",
               "fieldName": "delayDuration"
             },
@@ -34501,7 +34501,7 @@
               "type": {
                 "text": "number | undefined"
               },
-              "description": "收起之后的静默毫秒，默认 300；窗口内再碰 trigger 直接展开",
+              "description": "收起之后的静默毫秒，默认 300；窗口内再次触及 trigger 直接展开",
               "name": "skip-delay-duration",
               "fieldName": "skipDelayDuration"
             },
@@ -34509,7 +34509,7 @@
               "type": {
                 "text": "Direction | undefined"
               },
-              "description": "文字方向，只影响水平轴上 ArrowLeft/ArrowRight 的前后语义",
+              "description": "文字方向，只影响水平轴上 ArrowLeft / ArrowRight 的前后语义",
               "name": "dir",
               "fieldName": "direction"
             },
@@ -34517,7 +34517,7 @@
               "type": {
                 "text": "boolean | undefined"
               },
-              "description": "方向键走到尽头回绕，默认开启；写 loop=\"false\" 关掉",
+              "description": "方向键到达末尾回绕，默认开启；写 loop=\"false\" 关闭",
               "name": "loop",
               "fieldName": "loop"
             },
@@ -34525,7 +34525,7 @@
               "type": {
                 "text": "boolean | undefined"
               },
-              "description": "整套导航禁用：入口全转 aria-disabled，面板不再展开",
+              "description": "整套导航禁用：入口全部为 aria-disabled，面板不再展开",
               "name": "disabled",
               "fieldName": "disabled"
             },

@@ -20,7 +20,7 @@ import { useNavigationMenu } from './use-navigation-menu'
 
 type NavigationMenuProps = NavigationMenuSchema['props']
 
-/** 根上自有的那些取值；defaultValue 与 dir 与原生的同名属性含义不同，由这里接管。 */
+/** 根上自有的取值；defaultValue 与 dir 与原生的同名属性含义不同，由这里接管。 */
 type RootElementProps = Omit<ComponentPropsWithRef<'nav'>, 'children' | 'defaultValue' | 'dir'>
 
 export interface XhNavigationMenuRootProps extends RootElementProps {
@@ -37,7 +37,7 @@ export interface XhNavigationMenuRootProps extends RootElementProps {
   tone?: Tone
   size?: Size
   onValueChange?: NavigationMenuProps['onValueChange']
-  /** 每张面板的内容；只交 collection 时由它承载。 */
+  /** 每张面板的内容；只提供 collection 时由它承载。 */
   renderPanel?: (node: NavigationMenuNodeMeta) => ReactNode
   children?: ReactNode
 }
@@ -131,7 +131,7 @@ export function XhNavigationMenuItem({ children, ...rest }: XhNavigationMenuItem
 
 export interface XhNavigationMenuTriggerProps extends Omit<ComponentPropsWithRef<'button'>, 'value'> {
   value: string
-  /** 缺省交给 connect 回 collection 里查，写死 false 会盖掉数据里的禁用。 */
+  /** 默认交给 connect 查询 collection，写死 false 会覆盖数据中的禁用。 */
   disabled?: boolean
 }
 export function XhNavigationMenuTrigger({ value, disabled, children, ...rest }: XhNavigationMenuTriggerProps): ReactNode {
@@ -158,7 +158,7 @@ export interface XhNavigationMenuTriggerIndicatorProps extends Omit<ComponentPro
   value: string
   disabled?: boolean
 }
-/** 入口里表示「底下还有一张面板」的标记，展开时转向；身份与所在 trigger 同一份声明。 */
+/** 入口中表示下方还有面板的标记，展开时转向；身份与所在 trigger 同一份声明。 */
 export function XhNavigationMenuTriggerIndicator({ value, disabled, children, ...rest }: XhNavigationMenuTriggerIndicatorProps): ReactNode {
   const ctx = useNavigationMenuContext()
   return (
@@ -234,7 +234,7 @@ export function XhNavigationMenuLink({ current, children, ...rest }: XhNavigatio
 }
 
 export interface XhNavigationMenuIndicatorProps extends ComponentPropsWithRef<'li'> {}
-/** 指示条容器，位置由机器算好写入内联样式；渲染为 li 以 list 为定位参照系。 */
+/** 指示条容器，位置由状态机计算后写入内联样式；渲染为 li 以 list 为定位参照系。 */
 export function XhNavigationMenuIndicator({ ...rest }: XhNavigationMenuIndicatorProps): ReactNode {
   const ctx = useNavigationMenuContext()
   return <li {...mergeReactProps(ctx.api.getIndicatorProps() as Record<string, unknown>, rest as Record<string, unknown>)} />
@@ -248,9 +248,9 @@ export function XhNavigationMenuViewport({ children, ...rest }: XhNavigationMenu
 }
 
 /**
- * 没写 children 时按 collection 铺开的整套结构，作者只交数据。
- * 一项一个 li：带 href 的铺成直达链接，其余铺成 trigger 加面板，面板内容由 renderPanel 给。
- * 与手写部件产出的 DOM 完全一致，要改结构就写 children，行为不变。
+ * 未写 children 时按 collection 铺开的整套结构，作者只提供数据。
+ * 一项一个 li：带 href 的铺为直达链接，其余铺为 trigger 加面板，面板内容由 renderPanel 提供。
+ * 与手写部件产出的 DOM 完全一致，需要修改结构时写 children，行为不变。
  */
 function DefaultTree(props: {
   collection: readonly NavigationMenuNodeMeta[]

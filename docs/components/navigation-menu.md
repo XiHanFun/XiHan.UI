@@ -90,17 +90,17 @@
 
 | 属性 | 类型 | 必填 | 说明 |
 | --- | --- | --- | --- |
-| `collection` | `NavigationMenuNode[]` |  | 入口数据，入口文本与禁用的事实源。给了它，trigger 部件只需报 value。 缺省即回到「文本与禁用都写在部件上」的老路。 |
-| `value` | `string \| null` |  | 当前展开项，给定即受控；null 表示都收起。 |
+| `collection` | `NavigationMenuNode[]` |  | 入口数据，入口文本与禁用的事实源。提供后 trigger 部件只需声明 value。 未提供时回到文本与禁用都写在部件上的方式。 |
+| `value` | `string \| null` |  | 当前展开项，提供即受控；null 表示全部收起。 |
 | `defaultValue` | `string \| null` |  |  |
 | `orientation` | `Orientation` |  | 方向键轴向，默认 horizontal。 |
-| `delayDuration` | `number` |  | 悬停/聚焦到 trigger 后等多久才展开，默认 200ms。 |
-| `skipDelayDuration` | `number` |  | 收起之后的静默窗口，默认 300ms；窗口内再碰任意 trigger 直接展开。 |
+| `delayDuration` | `number` |  | 悬停 / 聚焦到 trigger 后等待多久才展开，默认 200ms。 |
+| `skipDelayDuration` | `number` |  | 收起之后的静默窗口，默认 300ms；窗口内再次触及任意 trigger 直接展开。 |
 | `dir` | `Direction` |  | 文字方向，默认 ltr。 |
-| `loop` | `boolean` |  | 方向键走到尽头是否回绕，默认 true。 |
-| `disabled` | `boolean` |  | 整套导航禁用：所有入口都转 aria-disabled，面板不再展开。 |
+| `loop` | `boolean` |  | 方向键到达末尾是否回绕，默认 true。 |
+| `disabled` | `boolean` |  | 整套导航禁用：所有入口都为 aria-disabled，面板不再展开。 |
 | `translations` | `Partial<NavigationMenuTranslations>` |  |  |
-| `tone` | `Tone` |  | 语气：brand / neutral / success / warning / danger / info，决定用哪族颜色。 |
+| `tone` | `Tone` |  | 语气：brand / neutral / success / warning / danger / info，决定使用哪族颜色。 |
 | `size` | `Size` |  | 尺寸：sm / md / lg。 |
 | `onValueChange` | `(details: NavigationMenuValueChangeDetails) => void` |  | value 变化回调。 |
 
@@ -139,9 +139,9 @@
 
 | 成员 | 类型 | 说明 |
 | --- | --- | --- |
-| `value` | `string \| null` | 当前展开的那一项；都收起时为 null。 |
-| `collection` | `readonly NavigationMenuNodeMeta[]` | collection 推出的入口元信息，按数据顺序排列；没给 collection 即空数组。 |
-| `open` | `boolean` | 有没有面板展开着。 |
+| `value` | `string \| null` | 当前展开的项；全部收起时为 null。 |
+| `collection` | `readonly NavigationMenuNodeMeta[]` | 由 collection 推导的入口元信息，按数据顺序排列；未提供 collection 时为空数组。 |
+| `open` | `boolean` | 是否有面板展开。 |
 | `isOpen` | `(value: string) => boolean` |  |
 | `setValue` | `(next: string \| null) => void` |  |
 | `getRootProps` | `() => T['element']` |  |

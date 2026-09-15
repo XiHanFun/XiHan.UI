@@ -8,62 +8,62 @@
 import type { Cleanup, Direction, Layer, MachineSchema, Orientation, PropTypes, RuntimeConfig, Size, Tone } from '@xihan-ui/core'
 import type { PresenceHandle } from '@xihan-ui/core/presence'
 
-/** 读屏用的文案，默认英文。 */
+/** 读屏文案，默认英文。 */
 export interface NavigationMenuTranslations {
   /** 根节点的 aria-label，用于区分同页的多个 nav 地标。 */
   root: string
 }
 
 export interface NavigationMenuValueChangeDetails {
-  /** 当前展开的那一项；都收起时为 null。 */
+  /** 当前展开的项；全部收起时为 null。 */
   value: string | null
 }
 
-/** 入口数据。给了 collection，入口文本、禁用与直达去处就以它为准。 */
+/** 入口数据。提供 collection 时，入口文本、禁用与直达目标以它为准。 */
 export interface NavigationMenuNode {
   value: string
-  /** 入口文本；缺省退回 value。 */
+  /** 入口文本；默认回退为 value。 */
   label?: string
   /** 入口禁用：方向键跳过它，但它仍可聚焦、仍是导航起点。 */
   disabled?: boolean
-  /** 直达去处。给了它这一项就是一条链接，没有面板。 */
+  /** 直达目标。提供后该项即为一条链接，没有面板。 */
   href?: string
   /** 指向当前页面的直达入口：输出 aria-current="page"。 */
   current?: boolean
 }
 
-/** 单个入口的元信息，由 collection 推出，不含展开态。 */
+/** 单个入口的元信息，由 collection 推导，不含展开态。 */
 export interface NavigationMenuNodeMeta {
   value: string
   /** node.label ?? node.value，恒为字符串。 */
   label: string
   disabled: boolean
-  /** 直达去处；缺省即这一项带面板。 */
+  /** 直达目标；未提供时该项带面板。 */
   href?: string
   current: boolean
 }
 
 /**
- * 触发器属性：身份必报，禁用可由 collection 代为声明。
+ * 触发器属性：身份必须声明，禁用可由 collection 代为声明。
  * connect 据此产出属性，不反查 DOM：它在 Vue 的 render 期求值，此时 DOM 尚不存在。
  */
 export interface NavigationMenuTriggerProps {
   value: string
-  /** 逐条覆盖禁用；缺省时回 collection 里查，两处都没有即为不禁用。 */
+  /** 逐条覆盖禁用；未提供时从 collection 查询，两处都未声明即为不禁用。 */
   disabled?: boolean
 }
 
 export interface NavigationMenuContentProps {
-  /** 与同一项的 trigger 靠该值配对。 */
+  /** 与同一项的 trigger 依靠该值配对。 */
   value: string
 }
 
 export interface NavigationMenuLinkProps {
-  /** 指向当前页面的那一条：输出 aria-current="page"。 */
+  /** 指向当前页面的条目：输出 aria-current="page"。 */
   current?: boolean
 }
 
-/** 指示条相对 list 的位置与尺寸（px）；起始缘按逻辑方向算，RTL 从右边缘量起。 */
+/** 指示条相对 list 的位置与尺寸（px）；起始缘按逻辑方向计算，RTL 从右边缘测量。 */
 export interface NavigationMenuIndicatorRect {
   blockStart: number
   blockSize: number
@@ -71,18 +71,18 @@ export interface NavigationMenuIndicatorRect {
   inlineSize: number
 }
 
-/** 适配器在挂载前填入 DOM 侧的取值口，缺省时量不到指示条的位置、也不入层栈。 */
+/** 适配器在挂载前填入 DOM 侧的取值器，未提供时无法测量指示条的位置、也不进入层栈。 */
 export interface NavigationMenuRefs {
   /** trigger 集合的查询容器，同时是指示条定位的参照系。 */
   getListEl: () => HTMLElement | null
   config: RuntimeConfig | null
   /** 注册本层并返回撤销句柄，只在有面板展开期间调用。 */
   registerLayer: (() => { layer: Layer, dispose: Cleanup }) | null
-  /** 在场的层的撤销句柄，由 syncLayer 自行记账；没有层时为 null。 */
+  /** 在场的层的撤销句柄，由 syncLayer 自行记录；没有层时为 null。 */
   layerDispose: Cleanup | null
-  /** 每个面板各自的视觉 presence；按 value 精确配对，切项时不串用退场信号。 */
+  /** 每个面板各自的视觉 presence；按 value 精确配对，切换项时不混用退场信号。 */
   presences: Map<string, PresenceHandle>
-  /** 已明确卸载的面板；区别于适配器首帧尚未来得及登记 Presence。 */
+  /** 已明确卸载的面板；区别于适配器首帧尚未登记 Presence。 */
   detachedValues: Set<string>
   /** 当前行为层归属的面板；逻辑关闭后保留到该面板真实退场完成。 */
   layerValue: string | null
@@ -93,27 +93,27 @@ export interface NavigationMenuRefs {
 export interface NavigationMenuSchema extends MachineSchema {
   props: {
     /**
-     * 入口数据，入口文本与禁用的事实源。给了它，trigger 部件只需报 value。
-     * 缺省即回到「文本与禁用都写在部件上」的老路。
+     * 入口数据，入口文本与禁用的事实源。提供后 trigger 部件只需声明 value。
+     * 未提供时回到文本与禁用都写在部件上的方式。
      */
     collection?: NavigationMenuNode[]
-    /** 当前展开项，给定即受控；null 表示都收起。 */
+    /** 当前展开项，提供即受控；null 表示全部收起。 */
     value?: string | null
     defaultValue?: string | null
     /** 方向键轴向，默认 horizontal。 */
     orientation?: Orientation
-    /** 悬停/聚焦到 trigger 后等多久才展开，默认 200ms。 */
+    /** 悬停 / 聚焦到 trigger 后等待多久才展开，默认 200ms。 */
     delayDuration?: number
-    /** 收起之后的静默窗口，默认 300ms；窗口内再碰任意 trigger 直接展开。 */
+    /** 收起之后的静默窗口，默认 300ms；窗口内再次触及任意 trigger 直接展开。 */
     skipDelayDuration?: number
     /** 文字方向，默认 ltr。 */
     dir?: Direction
-    /** 方向键走到尽头是否回绕，默认 true。 */
+    /** 方向键到达末尾是否回绕，默认 true。 */
     loop?: boolean
-    /** 整套导航禁用：所有入口都转 aria-disabled，面板不再展开。 */
+    /** 整套导航禁用：所有入口都为 aria-disabled，面板不再展开。 */
     disabled?: boolean
     translations?: Partial<NavigationMenuTranslations>
-    /** 语气：brand / neutral / success / warning / danger / info，决定用哪族颜色。 */
+    /** 语气：brand / neutral / success / warning / danger / info，决定使用哪族颜色。 */
     tone?: Tone
     /** 尺寸：sm / md / lg。 */
     size?: Size
@@ -123,11 +123,11 @@ export interface NavigationMenuSchema extends MachineSchema {
   context: {
     /** 当前展开项，受控时 cell 直读 prop。 */
     value: string | null
-    /** 等待展开的那一项，延时跑完才落到 value 上。 */
+    /** 等待展开的项，延时结束后才落到 value 上。 */
     pendingValue: string | null
-    /** 最近一次由悬停/聚焦自动展开的项，用于判定紧随其后的激活是保持展开还是收起。 */
+    /** 最近一次由悬停 / 聚焦自动展开的项，用于判定紧随其后的激活是保持展开还是收起。 */
     autoValue: string | null
-    /** 指示条的量测结果；都收起或量不到时为 null。 */
+    /** 指示条的测量结果；全部收起或无法测量时为 null。 */
     indicator: NavigationMenuIndicatorRect | null
     /** 逻辑已经关闭，但最后一个面板仍在视觉退场。 */
     exitPending: boolean
@@ -135,8 +135,8 @@ export interface NavigationMenuSchema extends MachineSchema {
   computed: Record<string, never>
   refs: NavigationMenuRefs
   /**
-   * 三个状态只管计时，展开与否看 context.value：
-   * - idle 没有计时器在跑
+   * 三个状态只负责计时，是否展开参考 context.value：
+   * - idle 没有计时器在运行
    * - opening 展开延时进行中，落点记在 pendingValue 上
    * - skipping 刚收起，静默窗口进行中
    */
@@ -144,9 +144,9 @@ export interface NavigationMenuSchema extends MachineSchema {
   event:
     /** 指针进入某个 trigger。 */
     | { type: 'TRIGGER.POINTER', value: string }
-    /** 某个 trigger 获得焦点；静默窗口内不认这一路。 */
+    /** 某个 trigger 获得焦点；静默窗口内不响应这一路径。 */
     | { type: 'TRIGGER.FOCUS', value: string }
-    /** 显式激活：点击、Enter、Space。不走延时。 */
+    /** 显式激活：点击、Enter、Space。不经延时。 */
     | { type: 'TRIGGER.TOGGLE', value: string }
     /** 收起：指针离开整个导航、Escape、焦点离场、选中面板里的链接。 */
     | { type: 'DISMISS' }
@@ -174,11 +174,11 @@ export interface NavigationMenuSchema extends MachineSchema {
 }
 
 export interface NavigationMenuApi<T extends PropTypes = PropTypes> {
-  /** 当前展开的那一项；都收起时为 null。 */
+  /** 当前展开的项；全部收起时为 null。 */
   value: string | null
-  /** collection 推出的入口元信息，按数据顺序排列；没给 collection 即空数组。 */
+  /** 由 collection 推导的入口元信息，按数据顺序排列；未提供 collection 时为空数组。 */
   collection: readonly NavigationMenuNodeMeta[]
-  /** 有没有面板展开着。 */
+  /** 是否有面板展开。 */
   open: boolean
   isOpen: (value: string) => boolean
   setValue: (next: string | null) => void

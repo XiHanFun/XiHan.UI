@@ -102,7 +102,7 @@ export const XhNavigationMenuTrigger = defineComponent({
 })
 
 // 面板常挂，靠 hidden 显隐，不做懒挂载
-/** 入口里表示"底下还有一张面板"的标记，展开时转向；身份与所在 trigger 同一份声明 */
+/** 入口中表示下方还有面板的标记，展开时转向；身份与所在 trigger 同一份声明 */
 export const XhNavigationMenuTriggerIndicator = defineComponent({
   name: 'XhNavigationMenuTriggerIndicator',
   props: {
@@ -185,7 +185,7 @@ export const XhNavigationMenuLink = defineComponent({
   },
 })
 
-/** 指示条容器，位置由机器算好写入内联样式；渲染为 li 以 list 为定位参照系 */
+/** 指示条容器，位置由状态机计算后写入内联样式；渲染为 li 以 list 为定位参照系 */
 export const XhNavigationMenuIndicator = defineComponent({
   name: 'XhNavigationMenuIndicator',
   setup() {
@@ -204,9 +204,9 @@ export const XhNavigationMenuViewport = defineComponent({
 })
 
 /**
- * 没写默认插槽时按 collection 铺开的整套结构，作者只交数据。
- * 一项一个 li：带 href 的铺成直达链接，其余铺成 trigger 加面板，面板内容由 panel 插槽给。
- * 与手写部件产出的 DOM 完全一致，要改结构就写默认插槽，行为不变。
+ * 未写默认插槽时按 collection 铺开的整套结构，作者只提供数据。
+ * 一项一个 li：带 href 的铺为直达链接，其余铺为 trigger 加面板，面板内容由 panel 插槽提供。
+ * 与手写部件产出的 DOM 完全一致，需要修改结构时写默认插槽，行为不变。
  */
 function renderDefaultTree(
   collection: readonly NavigationMenuNodeMeta[],
