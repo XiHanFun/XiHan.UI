@@ -75,9 +75,9 @@
 
 ### 何时不用
 
-- 选项固定且不多：用[选择器](./select)。
-- 只是在正文里插入引用：用[提及](./mention)。
-- 输入一组自由标签：用[标签输入](./tags-input)。
+- 选项固定且不多时，使用[选择器](./select)。
+- 在正文中插入引用时，使用[提及](./mention)。
+- 输入一组自由标签时，使用[标签输入](./tags-input)。
 
 ### 特性
 
@@ -360,7 +360,7 @@
 | `--xh-combobox-content-min-w` | `content` | `min-inline-size` | `default` | `--xh-overlay-min-w` | combobox 的 content 部件 min-inline-size 覆盖槽。 |
 | `--xh-combobox-content-px` | `content` | `padding-inline` | `default` | `--xh-space-1` | combobox 的 content 部件 padding-inline 覆盖槽。 |
 | `--xh-combobox-content-py` | `content` | `padding-block` | `default` | `--xh-space-1` | combobox 的 content 部件 padding-block 覆盖槽。 |
-| `--xh-combobox-content-radius` | `content` | `border-radius` | `default` | `--xh-shape-surface` | combobox 的 content 部件 border-radius 覆盖槽。 |
+| `--xh-combobox-content-radius` | `content` | `border-radius` | `default` | `--xh-shape-overlay` | combobox 的 content 部件 border-radius 覆盖槽。 |
 | `--xh-combobox-content-shadow` | `content` | `box-shadow` | `default` | `--xh-material-frosted-shadow` | combobox 的 content 部件 box-shadow 覆盖槽。 |
 | `--xh-combobox-control-bg` | `control` | `background` | `default` | `--xh-_combobox-control-bg` | combobox 的 control 部件 background 覆盖槽。 |
 | `--xh-combobox-control-bg-disabled` | `control` | `background` | `disabled` | `--xh-bg-subtle` | combobox 的 control 部件 background 覆盖槽。 |
