@@ -13,16 +13,16 @@ import { XhElement } from '../element-base'
 import { MachineController } from '../runtime/machine-controller'
 
 /**
- * `<xh-toggle>` —— Light-DOM 行为宿主，跑 toggle 机器并把 connect 产出打到 root 角色节点。
+ * `<xh-toggle>`：Light-DOM 行为宿主，运行 toggle 状态机并把 connect 产出接到 root 角色节点。
  *
  * @customElement xh-toggle
- * @attr {boolean} pressed - 受控按下态；缺省该属性即非受控
+ * @attr {boolean} pressed - 受控按下态；未提供该属性即非受控
  * @attr {boolean} default-pressed - 非受控初始为按下
  * @attr {boolean} disabled - 禁用
  * @attr {'solid'|'subtle'|'outline'|'ghost'} variant - 视觉变体
  * @attr {'brand'|'neutral'|'success'|'warning'|'danger'|'info'} tone - 颜色
  * @attr {'sm'|'md'|'lg'} size - 尺寸
- * @attr {boolean} icon-only - 只有图标：左右内距清零、宽高相等；作者须自行给可及名
+ * @attr {boolean} icon-only - 仅图标：左右内边距清零、宽高相等；作者须自行提供可及名
  * @attr {boolean} full-width - 撑满行宽
  * @fires pressed-change - pressed 状态变化；detail 为 `{ pressed: boolean }`
  * @csspart root - role=button 的按钮（承载 aria-pressed / data-state）
