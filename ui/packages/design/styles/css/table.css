@@ -327,7 +327,7 @@
     block-size: var(--xh-table-trigger-size, var(--xh-control-indicator-size));
     border-radius: var(--xh-table-trigger-radius, var(--xh-shape-control));
     cursor: pointer;
-    transition: scale var(--xh-motion-duration-micro) var(--xh-motion-ease-enter-strong);
+    transition: scale var(--xh-motion-duration-release) var(--xh-motion-ease-release);
   }
 
   [data-scope='table'][data-part='select-all-trigger'][hidden],
@@ -343,6 +343,8 @@
   [data-scope='table'][data-part='column-visibility-trigger']:active:not([data-disabled]),
   [data-scope='table'][data-part='expand-trigger']:active:not([data-disabled]) {
     scale: var(--xh-motion-scale-press);
+    transition-duration: var(--xh-motion-duration-press);
+    transition-timing-function: var(--xh-motion-ease-press);
   }
 
   /* 三个勾选把手：未选中时只剩一个空框，勾选标记靠 visibility 显隐，
@@ -419,7 +421,7 @@
     /* 这条整份改写上面那份共用过渡，按压的 scale 要一起带回来 */
     transition:
       rotate var(--xh-motion-duration-micro) var(--xh-motion-ease-enter-strong),
-      scale var(--xh-motion-duration-micro) var(--xh-motion-ease-enter-strong);
+      scale var(--xh-motion-duration-release) var(--xh-motion-ease-release);
   }
 
   [data-scope='table'][data-part='expand-trigger'][data-state='open'] {
@@ -849,7 +851,7 @@
     cursor: pointer;
     transition:
       background-color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
-      scale var(--xh-motion-duration-micro) var(--xh-motion-ease-enter-strong);
+      scale var(--xh-motion-duration-release) var(--xh-motion-ease-release);
   }
 
   [data-scope='table'][data-part='load-more-trigger'][hidden] {
@@ -862,6 +864,8 @@
 
   [data-scope='table'][data-part='load-more-trigger']:active {
     scale: var(--xh-motion-scale-press);
+    transition-duration: var(--xh-motion-duration-press);
+    transition-timing-function: var(--xh-motion-ease-press);
   }
 
   /* 取数在途那一段点不动：手势指示与前景色一起收回 */
