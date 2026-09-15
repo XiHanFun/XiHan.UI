@@ -141,11 +141,13 @@ XiHan.UI 是 pnpm + Turborepo 管理的多包组件库。组件行为由框架�
 ### 样式
 
 - 统一设计真源是 `.agents/skills/component-design/references/component-design.md`。
-- 普通 control 使用 4px 圆角，surface 8px，overlay 12px；pill 只用于具有胶囊身份的组件。
-- 离散 Action Control 使用统一按压反馈：120ms 缩放到 0.97，释放 200ms 回到 1。
+- 普通 control 使用 4px 圆角，surface 8px（含 Segmented / Tabs 轨道），overlay 12px；pill 只给状态 chip 与一维对象，正方盒取 circle。
+- 定尺离散 Action Control 使用统一按压反馈：120ms 缩放到 0.97 并换底，释放 200ms 回到 1；行级与 disclosure trigger 只换面，不允许零反馈。
 - 禁止 glass 材质及兼容别名；透明浮层只允许使用 frosted 柔和模糊材质。
+- 边界只由描边承担：根面取描边（outline，缺省）/ 淡底（subtle）/ 无壳（ghost）之一；raised 必带 border-default；`--xh-border-subtle` 只作内部分隔。字段静息为 canvas 底 + `--xh-border-control` + 无影。
+- 只有 Button 缺省品牌实心；交互阶梯按承载面（白底 hover 100 → pressed 200，淡底 hover 200 → pressed 300）；`--xh-bg-brand-subtle` 专属选中 / 当前。
 - 不写颜色、间距、圆角、阴影和动效散值；新增槽必须被真实消费并进入生成物。
-- 亮色、暗色、standard/compact、RTL、粗指针、reduced motion、reduced transparency、forced colors 和 print 必须一起审查。
+- 亮色、暗色、comfortable/compact、RTL、粗指针、reduced motion、reduced transparency、forced colors 和 print 必须一起审查。
 
 ## 测试
 

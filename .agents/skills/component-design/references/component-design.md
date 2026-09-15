@@ -103,12 +103,12 @@ Vue、React、Web Components 只负责：
 
 | 家族 | 典型组件 | 必须复用的规则 |
 | --- | --- | --- |
-| Action Control | Button、Toggle、分页按钮、图标按钮 | 高度、内边距、图标间距、按压、焦点、禁用、加载 |
-| Field Chrome | Input、Select Trigger、Date Field、Combobox | 字段表面、placeholder、前后缀、清空、focus、invalid |
-| Collection Item | Menu Item、Listbox Item、Tree Node、Table Row | highlighted、selected、pressed、disabled、缩进、指示器 |
-| Surface | Card、Alert、Empty State、Panel | 标题、说明、正文、操作区、内边距、层级 |
-| Overlay | Popover、Menu、Dialog、Drawer、Tooltip | Portal、定位、遮罩、边界、进退场、焦点归还 |
-| Feedback | Toast、Notification、Progress、Skeleton | 状态语气、计时、暂停、消除、加载和即时反馈 |
+| Action Control | Button、Toggle、ToggleGroup item、分页按钮、图标按钮、Toolbar item、Segmented item、Tabs trigger、各类 trigger | 高度、内边距、图标随档、缺省语气（§7.2）、按承载面的交互阶梯（§7.2）、按压（§9.1）、焦点、禁用、加载 |
+| Field Chrome | Input、Textarea、Select Trigger、Date/Time Field、Combobox、Cascader、TagsInput、PinInput、PromptInput | 静息描边外壳（§8.3）、`outline\|subtle\|ghost` 三档 × rest/hover/focus/invalid/disabled/readOnly/loading 七态、placeholder、前后缀、清空、标签与说明排版（§6.4） |
+| Collection Item | Menu Item、Listbox Item、Tree Node、Table Row、Transfer Item、SideNav Link | highlighted、按集合语境的 selected/current 标记（§7.3）、pressed 只换面（§9.2）、disabled、缩进、指示器 |
+| Surface | Card、Alert、Panel、CodeView、DiffView、Log、JsonViewer、ToolCall、Reasoning、Approval、QuestionFlow、Accordion/Toolbar/PageHeader 的 outline 档、Tree/Listbox/Transfer/List/Descriptions/Table 容器面 | 边界三选一（§8.3）、raised 逐部件登记（§8）、标题/说明排版（§6.4）、内衬只走 `--xh-surface-*`、层级 |
+| Overlay | Popover、Menu、Select content、Dialog、Drawer、Tooltip、NavigationMenu content、日期/时间面板 | Portal、定位、遮罩、材质按内容判定（§8.4）、进退场按锚定关系（§9.5）、浮层滚动面（§6.6）、焦点归还 |
+| Feedback | Toast、Notification、Progress、Skeleton | 状态语气、sheet 面描边（§8.4）、计时、暂停、消除、加载和即时反馈 |
 
 新增 Family Recipe 必须满足以下任一条件：
 
@@ -116,6 +116,21 @@ Vue、React、Web Components 只负责：
 - 单个组件具有不可共享但稳定的结构身份，并经过专项评审。
 
 禁止多个组件复制相同状态样式后再各自维护。
+
+### 4.1 部件归族表
+
+一个组件可以横跨多个家族，但每个部件只能有一个主要身份；下表为门禁登记与家族比对的依据。
+
+| 部件 | 家族 | 备注 |
+| --- | --- | --- |
+| Segmented / Tabs segment 的轨道 | Surface（淡底面） | 形状 surface；见 §6.3 |
+| Segmented / Tabs segment 的滑块 indicator | raised 部件 | 白色抬起面 + border-default；见 §7.3 |
+| Toggle、ToggleGroup item、Toolbar `aria-pressed` 项 | Action Control（无滑块开关） | 选中 = 品牌淡底；见 §7.3 |
+| Tabs line trigger、Anchor link、SideNav link、NavigationMenu trigger | Collection Item（导航当前） | 当前 = 指示条 / 字色；见 §7.3 |
+| Pagination item、Steps indicator、Calendar cell | Action Control（格状当前） | 当前 = 实心品牌；见 §7.3 |
+| Accordion / Collapsible / Reasoning / ToolCall trigger、CodeView fold-trigger、DiffView gap-trigger | disclosure trigger | 只换面，不缩放；见 §9.2 |
+| FloatButton、BackTop、Carousel 翻页、Log/MessageFeed 回底、ImageViewer 翻页 | Action Control `floating` profile | 形状 circle；见 §6.3 |
+| Tag、Badge、ToolCall status、Approval result、QuestionFlow result | 状态 chip | 形状 pill；见 §6.3 |
 
 ## 5. 样式确定方法
 
@@ -139,9 +154,9 @@ Vue、React、Web Components 只负责：
 只允许使用以下公共轴：
 
 - `size`：sm、md、lg。
-- `variant`：结构形态，不表达业务状态。
+- `variant`：结构形态，不表达业务状态。输入类与容器类共用 `ControlVariant = outline | subtle | ghost`，可按下的表面在其上多一档 `solid`（`ActionVariant`）。缺省等价于 `outline`，Headless 默认值必须落 `variant: 'outline'`，不允许存在「不传 variant」的第四种形态。三档的面定义见 §8.3：outline = 描边、subtle = 淡底、ghost = 无壳。有框/无框只走这一条轴：废弃 `bordered`、`borderless`、`plain | surface`、`primary | secondary` 等私有轴（`surface ≡ outline`、`plain ≡ ghost`；Card 的 `secondary` → `subtle`、`tertiary` → `ghost`）。Tabs 的缺省 `variant` 为 `line`。
 - `tone`：neutral、brand、info、success、warning、danger。
-- `density`：standard、compact，由环境统一控制。
+- `density`：comfortable、compact，由环境统一控制；comfortable 是基线。
 - `orientation`：horizontal、vertical，仅结构确实支持两种方向时提供。
 
 禁止用 `type`、`color`、`status`、`danger` 等多套 props 重复表达同一视觉结果。
@@ -151,16 +166,17 @@ Vue、React、Web Components 只负责：
 从低到高：
 
 ```text
-canvas → solid/soft → raised → floating/frosted → sheet
+canvas → solid（描边面）/ subtle（淡底面）→ raised → floating / frosted → sheet
 ```
 
-- 页面背景使用 canvas。
-- 普通静态内容使用 solid 或 soft。
-- Card 和可抬起区域使用 raised。
-- 锚定瞬态浮层使用 floating；确实需要透景时使用 frosted。
-- Dialog、Drawer、Toast 等强反馈或模态面使用 sheet。
+- 页面背景使用 canvas；亮色保持白页白卡，层级差交给描边，subtle 阶梯不动。
+- 静态内容面缺省使用 solid：`--xh-border-default` 描边 + `--xh-bg-surface` + 无影（§8.3）。
+- 淡底面使用 subtle：`--xh-bg-subtle` + 透明边位 + 无影；淡底与描边互斥、淡底与阴影互斥。
+- raised 只给 Card 与「可抬起 / 可拖起」的部件（Segmented / Tabs segment 滑块、Slider / Switch thumb、Button soft），逐部件登记；raised 面必须带 `--xh-border-default` 描边，影只是加成，亮色 raised 背景不分档。
+- 锚定瞬态浮层按内容判定：短列表 / 菜单 / tooltip 用 frosted；含网格或多列的锚定面板用 floating（§8.4）。
+- Dialog、Drawer、Command、Toast、Notification、Tour 等模态与强反馈面统一 sheet（`--xh-material-elevated-*`）。
 
-同一页面不允许用更多阴影表达同一级别。层级优先通过间距、背景差和边框确定，阴影只表达真实抬升。
+同一页面不允许用更多阴影表达同一级别。层级优先通过描边和间距确定，背景差只在暗色下补充，阴影只表达真实抬升；`--xh-border-subtle` 只作内部分隔，不作任何根面外边。
 
 ### 5.4 第四步：确定状态
 
@@ -172,6 +188,8 @@ hover → active/pressed → focus-visible → selected/open
 ```
 
 不能只完成默认状态。任何状态缺失都视为组件未完成。
+
+selected / current 的标记方式不由组件自定，按 §7.3 的「语义 → 标记」表取唯一一种；open / in-path 与家族 hover 同档，不占独立灰阶。
 
 ### 5.5 第五步：确定环境变化
 
@@ -207,7 +225,7 @@ hover → active/pressed → focus-visible → selected/open
 
 | 密度 | sm | md | lg |
 | --- | ---: | ---: | ---: |
-| standard | 32px | 36px | 40px |
+| comfortable | 32px | 36px | 40px |
 | compact | 28px | 32px | 36px |
 
 - md 是默认尺寸。
@@ -215,33 +233,74 @@ hover → active/pressed → focus-visible → selected/open
 - 图标按钮视觉盒遵循同一高度。
 - 粗指针命中区至少 44×44px；可以用伪元素扩展，不能改变布局盒。
 
-### 6.3 小圆角
+### 6.3 形状身份
 
-| 角色 | 圆角 | 用途 |
+| 角色 | 圆角 | 给谁 |
 | --- | ---: | --- |
-| inset | 4px | 内嵌项、微型状态块 |
-| control | 4px | Button、Input、Select Trigger、Toggle |
-| surface | 8px | Card、Alert、Panel、列表容器 |
+| inset | 4px | 嵌在 control 内的小块：checkbox 系方框、菜单项、字段内 field-inset 钮、table 行选择框、select-all 方框、色块 item |
+| control | 4px | 一切在 chrome 内或随文的按钮与字段：Button、Input、Select Trigger、Toggle、分页按钮、close/clear trigger、kbd、tooltip、rating item、tabs / steps trigger |
+| surface | 8px | Card、Alert、Panel、列表容器、Segmented 与 Tabs segment 的轨道 |
 | overlay | 12px | Popover、Menu、Dialog、Drawer、Toast |
-| circle | 50% | 头像、圆形图标按钮、单选指示器 |
-| pill | 9999px | Badge、Tag、胶囊轨道 |
+| circle | 50% | 宽高相等的圆形对象：avatar、icon-wrapper、radio / question-flow 单选指示器及内点、switch / slider / color thumb、steps / timeline indicator、spinner 与全部加载环、色块选中徽标、skeleton circle；以及悬浮于内容之上的单图标动作（FloatButton、BackTop、Carousel 翻页、Log / MessageFeed 回底、ImageViewer 翻页，走 Action Control `floating` profile） |
+| pill | 9999px | 仅两类身份：(a) 状态 chip：Badge、Tag、ToolCall status、Approval result、QuestionFlow result；(b) 一维对象：switch 轨道、slider / progress / strength / upload 的 track 与 range、tick、hairline separator、tabs / anchor / navigation-menu 滑动指示条、resize / drag 手柄、scrollbar thumb、sortable 落点线、skeleton text、位置指示点的当前拉长态 |
 
 强制规则：
 
 - 普通按钮、字段、卡片和浮层不得使用 pill。
+- 正方盒（inline-size 与 block-size 同槽）必须取 circle，不得用 pill 冒充圆。
+- 位置指示点（Carousel indicator、Tour progress-dot）统一为一种语言：8px 圆点（circle），当前项拉长为 20px 胶囊（pill）。
+- 序号状态圆点（Steps / Timeline indicator）取 circle；可点分页按钮（Pagination item）取 control，二者不互相对齐。
 - 组件不得写 6px、10px 等独立圆角。
-- 内层圆角不得大于外层圆角减去内边距。
+- 内层圆角不得大于外层圆角减去内边距（surface 8px 轨道内 2/4px 内距，滑块 ≥ 4px 满足）。
 - 相连控件消除相接侧圆角，不使用负 margin 伪造连接。
 - 亮色、暗色和 compact 不改变形状身份。
+- 取 circle / pill 的新部件必须在 check-shape-scale 的身份表登记。
 
 ### 6.4 排版
 
-- 正文和控件默认使用 14px。
-- 标题、正文、说明、占位和标签必须使用语义排版令牌。
+- 正文和控件默认使用 14px；控件字号随 size 档，标签字号不随档。
+- 标题、正文、说明、占位和标签必须使用语义排版令牌，并按下表取角色：
+
+| 角色 | 字号 / 字重 / 颜色 | 与相邻元素的间距 |
+| --- | --- | --- |
+| 字段标签（单字段与复合单字段：Slider、Rating、Signature、Color*） | `--xh-text-label-size` 14 / `--xh-text-label-weight` 500 / `--xh-fg-default` | 贴控件 `--xh-space-1` |
+| 集合标题（RadioGroup、CheckboxGroup、Listbox、Tree、TagGroup、Descriptions） | 14 / 500 / `--xh-fg-muted` | 与集合 `--xh-space-2` |
+| 说明 / helper | `--xh-text-secondary-size` 13 / `--xh-fg-muted` / `--xh-leading-normal` | 与控件 `--xh-space-1` |
+| 错误文案 | 13 / `--xh-fg-danger` | 与控件 `--xh-space-1` |
+| Surface / Feedback / 浮层内标题 | 14 / `--xh-font-weight-semibold` | — |
+| 页面级面板标题（Dialog、Drawer、Tour） | heading-3 | — |
+| 次级标注（计数、快捷键、时间戳、序号） | `--xh-text-caption-size` 12 | — |
+
+- 必填星号与错误文案是公共层规则：`--xh-glyph-mark-required` + `--xh-space-1` + `--xh-fg-danger`，自带标签的字段不得各画一套。
+- 禁用标签色统一 `--xh-fg-subtle`；单行标签 `--xh-leading-none`。
 - 层级通过字号、字重、行高和间距共同表达，不能只调颜色。
 - 不使用极小字号换取信息密度。
 - 单行控件文字必须垂直居中；多行内容使用正文行高。
 - 标题、标签和按钮不写多余句号。
+
+### 6.5 图标尺寸
+
+- 控件内图标随 size 档：sm 16 / md 20 / lg 24（`--xh-glyph-size-sm/md/lg`）；Action Control、Field Chrome、Collection Item 三份配方按档下发，皮肤缺省值只能是 `var(--xh-<comp>-icon-size, var(--xh-glyph-size-md))` 并随 `data-size` 换档。
+- `--xh-glyph-size-text`（随文 1em）只允许在纯行内文字组件（Tag、Kbd、Breadcrumb、Typography、Highlight）里使用。
+- Feedback 指示符（Alert、Toast、Notification）统一 `--xh-glyph-size-md`。
+- 配方内不写 12px / 14px 等字面图标尺寸；xs 视觉盒与 field-inset 字形走 `--xh-control-action-size` / `--xh-control-indicator-sm` / `--xh-glyph-size-sm`。
+
+### 6.6 组件内滚动
+
+滚动条形态只有两档，按滚动面身份固定：
+
+| 档 | 适用面 | 表达 |
+| --- | --- | --- |
+| 自绘条（Scrollbar 组件接线） | Overlay 家族所有 positioner 下的 content / list / column；定高小列表（Listbox content、Transfer list、时间列、Cascader column） | `type` 默认 `scroll-hover`（静止隐形、悬停 / 滚动淡入），浮层 4px、页内 6px，壳上 `--xh-scrollbar-track-bg: transparent`，宿主不写 `scrollbar-gutter` |
+| 原生细条 | 页内结构容器：Table、Tree、Transfer 面板、Virtualizer viewport、Dialog / Drawer / FloatingPanel body、Layout sider / content、SideNav popout、Log / MessageFeed 视口、日历年网格、Typography pre、作者自建滚动容器 | 统一细条规则住在 reset 层：`:where([data-scope][data-part], [data-xh-scroll])` 上 `scrollbar-width: thin` + `scrollbar-color: var(--xh-fg-scrollbar-thumb) var(--xh-bg-scrollbar-track)`；皮肤不得手写 `scrollbar-width` / `scrollbar-color`；作者容器与文档示例加 `data-xh-scroll` |
+
+边界行为：
+
+- `overscroll-behavior: contain` 只给 Overlay 家族滚动面、模态 body 与粘底视口；页内结构容器保持 auto。
+- `scrollbar-gutter: stable` 只给内容高度动态变化的容器（Log、MessageFeed、Dialog / Drawer body），并带 `:not([data-xh-scrollbar])` 守卫。
+- 边缘渐隐只在 ScrollArea 的 fade 变体与 Marquee 提供；粘底只由 Core `createStickToBottom` 提供。
+- 滑块色阶维持 15 / 25 / 35% 三级；文档站页面滚动条与组件滚动条同一 `type`，不另写覆写。
+- 声明了 `--xh-scrollbar-track-bg` 却未接线为宿主的皮肤视为死声明。
 
 ## 7. 颜色
 
@@ -249,33 +308,55 @@ hover → active/pressed → focus-visible → selected/open
 
 - 背景：canvas、surface、surface-raised、subtle、overlay。
 - 前景：default、muted、subtle、disabled、inverse。
-- 品牌：brand、brand-foreground、brand-subtle、brand-subtle-foreground。
+- 品牌：brand / fg-on-brand、brand-subtle / fg-on-brand-subtle。brand-subtle 为 12% 品牌拼色（与 tone subtle 同曲线 12 / 20 / 28），专属「选中 / 当前」语义，不再用于 today、completed、open 等未选中语义。
 - 状态：info、success、warning、danger、neutral。
-- 边界：default、control、control-hover、control-focus、danger。
+- 边界：default（一切根面外边与 raised 面描边）、subtle（仅内部分隔线与分隔伪元素）、strong（仅 contrast-more 与刻意登记的强调边）、control / control-hover / control-focus（字段与焦点边）、danger。
 
 每个实色和柔和语气必须提供匹配的 foreground；组件不得自行计算文字颜色。
 
 ### 7.2 使用规则
 
-1. 页面主体保持中性，品牌色只用于主要动作、选择、焦点和关键进度。
-2. 状态色表达任务结果，不表达空间层级。
-3. danger 动作与 error 状态分开定义，不共用业务语义。
-4. hover、active、selected 从当前语义面派生，不切换到无关颜色。
-5. disabled 不能只降低 opacity，必须同时调整前景或背景并关闭交互。
-6. 错误、选择、加载和警告不能只靠颜色，必须有图标、形状、文案或结构通道。
-7. 暗色不是简单反相；overlay 必须能从 canvas 和 surface 中辨认。
-8. 所有背景/前景组合必须通过对比度门禁。
+1. 页面主体保持中性，品牌色只用于主要动作、选中 / 当前、焦点和关键进度。
+2. 缺省语气：只有 Button 缺省为品牌实心（`solid`）；其余按钮形触发器（Toggle、ToggleGroup item、Clipboard、DownloadTrigger、FloatButton、BackTop、Pagination 非当前、Toolbar item、Tabs trigger、Segmented item、Accordion / Collapsible / Menu / Menubar / NavigationMenu trigger、Carousel / Calendar / ImageViewer 控制、所有 field-inset 动作）缺省中性，只有写了 `data-tone` 才切到语气淡底。
+3. 交互阶梯按承载面而不是按家族：坐在 canvas / surface 白底上的控件 hover `--xh-bg-subtle`（100）→ pressed `--xh-bg-subtle-hover`（200）；坐在 subtle 淡底（轨道、淡底容器）上的控件 hover `--xh-bg-subtle-hover`（200）→ pressed `--xh-bg-subtle-active`（300）；300 只留给 pressed。承载面通过 `--xh-action-bg-hover / -pressed` 向内下发。
+4. 品牌淡底上的阶梯：rest `--xh-bg-brand-subtle`（12%）→ hover `--xh-bg-brand-subtle-hover`（20%）→ pressed `--xh-bg-brand-subtle-active`（28%）；前景一律 `--xh-fg-on-brand-subtle`。
+5. 焦点边框一律 `--xh-border-control-focus`，不随 tone；焦点环 `--xh-ring-focus` 不随 tone。
+6. 状态色表达任务结果，不表达空间层级。
+7. danger 动作与 error 状态分开定义，不共用业务语义。
+8. hover、active、selected 从当前语义面派生，不切换到无关颜色；open / in-path 与所在家族的 hover 同档。
+9. disabled 不能只降低 opacity，必须同时调整前景或背景并关闭交互；字段 disabled = `--xh-border-default` + `--xh-bg-subtle` + `--xh-fg-disabled`，readOnly 只换 `--xh-bg-subtle` 不动描边。
+10. 错误、选择、加载和警告不能只靠颜色，必须有图标、形状、文案或结构通道。
+11. 暗色不是简单反相；overlay 必须能从 canvas 和 surface 中辨认。
+12. 所有背景 / 前景组合必须通过对比度门禁；令牌提交附亮 / 暗 × 淡底 / 前景 / 指示条对比度表。
+
+### 7.3 选中与当前态
+
+按语义分类，每类只允许一种标记；配方通过 `data-xh-collection-context='overlay|page'` 与 `data-current` 区分，皮肤只投影：
+
+| 语义 | 对象 | 唯一标记 | 叠加态 | forced-colors |
+| --- | --- | --- | --- | --- |
+| 浮层瞬态集合的选中 | Select、Combobox、TreeSelect、Cascader、时间列、Mention | 透明底 + 行尾对号（`--xh-glyph-mark-check`，`--xh-fg-brand`）；正文颜色与字重保持 rest | highlighted = 家族 hover 档；selected + highlighted = hover 档 + 对号 | Highlight / HighlightText |
+| 页内持久集合的选中 | Tree、Listbox、Table row、Transfer、TagGroup、SideNav 当前项 | `--xh-bg-brand-subtle` 行面 + `--xh-fg-on-brand-subtle` + 前导勾选部件或 2px 指示条（`--xh-stroke-thick`，pill，`--xh-fg-brand`） | selected + hover = 20%、selected + pressed = 28% | Highlight / HighlightText |
+| 导航当前页 | Tabs line、Anchor、NavigationMenu、Breadcrumb | 2px 指示条 + 字色 `--xh-fg-brand-strong` + `--xh-font-weight-medium`；无指示条部件时只靠字色与字重；Breadcrumb 当前页为不可点位置，保留 `--xh-fg-default` + medium | — | ButtonText |
+| 格状当前 | Pagination item、Steps indicator、Calendar 选中格 | 实心 `--xh-bg-brand` + `--xh-fg-on-brand`，不加粗 | pressed = `--xh-bg-brand-active` | Highlight / HighlightText |
+| 开关型（有滑块） | Segmented、Tabs segment | 轨道 `--xh-bg-subtle`（surface 形状）内的白色抬起 indicator：`--xh-bg-surface-raised` + `--xh-border-default` 描边 + `--xh-elevation-raised`，字 `--xh-fg-default` | — | ButtonText 边 |
+| 开关型（无滑块） | Toggle、ToggleGroup item、Toolbar `aria-pressed` | `--xh-bg-brand-subtle` + `--xh-fg-on-brand-subtle` | hover 20% → pressed 28%；`solid` 变体才允许品牌实心 | Highlight / HighlightText |
+| 展开路径 / 打开中（不是选中） | Menu / Menubar / NavigationMenu trigger open、Cascader in-path、SideNav in-path、Date / Time trigger open | 与所在家族 hover 同档的中性面，不用品牌色、不加粗；非颜色通道由 chevron 转向与子面板承担 | — | — |
+
+- `--xh-bg-brand-subtle` 退出 today、completed、open 语义：Calendar today 改 inset 1px `--xh-fg-brand` 环 + 品牌字；Steps completed 改中性面 + 品牌对号。
+- 集合行不允许零按压反馈；pressed 只换面（§9.2）。
 
 ## 8. 材质
 
 | 材质 | 用途 | 强制表达 |
 | --- | --- | --- |
-| solid | 普通静态容器 | 实体背景 + 必要边界 |
-| soft | 次级操作、轻量状态 | 柔和淡底，不加无意义阴影 |
-| raised | Card、可抬起区域 | 轻影；只有可交互时允许 hover 抬升 |
-| floating | 普通瞬态浮层 | overlay 背景 + 明确边界 + 中等海拔 |
-| frosted | 需要透景的瞬态浮层 | 柔和半透明面 + blur + 边界 + 海拔 |
-| sheet | Dialog、Drawer、Toast | 稳定实体面 + 强层级海拔 |
+| solid | 静态内容面缺省（Surface 家族根面、outline 档容器、Collection 容器面） | `--xh-material-solid-border`（= border-default）描边 + `--xh-material-solid-bg`（= surface）+ `box-shadow: none`；内部分隔用 `--xh-material-solid-separator`（= border-subtle） |
+| subtle | 淡底面（Segmented / Tabs segment 轨道、Kbd、`subtle` 档容器、Card subtle） | `--xh-bg-subtle` + `--xh-stroke-thin solid transparent` 占位边 + 无影 |
+| soft | 次级操作（Button soft、Tag、Popconfirm 动作等已登记消费者） | 柔和淡底，不加无意义阴影；不用于字段与内容面 |
+| raised | Card 与可抬起 / 可拖起部件，逐部件登记 | solid 描边 + solid 底 + `--xh-elevation-raised`；描边必须在，影只是加成；只有可交互时允许 hover 抬升 |
+| floating | 含网格或多列的锚定面板（NavigationMenu content、Date / Time / DateRange / TimeRange picker content） | solid 底 + `--xh-border-default` + `--xh-elevation-floating`，不透景 |
+| frosted | 短列表 / 菜单 / tooltip 等需要透景的锚定瞬态浮层 | `--xh-material-frosted-*` 四件套（bg + backdrop + border + shadow） |
+| sheet | Dialog、Drawer、Command、Tour、Toast、Notification | `--xh-material-elevated-border` + `--xh-material-elevated-bg` + `--xh-material-elevated-shadow` 三件套，必有 1px 描边 |
 
 ### 8.1 Frosted
 
@@ -293,13 +374,35 @@ hover → active/pressed → focus-visible → selected/open
 - 不允许将非法的 `glass` 值自动映射为 frosted。
 - 发现旧 glass 消费者时必须显式迁移，并按公开面变化提供 changeset。
 
+### 8.3 边界三选一
+
+边界只由描边承担，阴影与淡底不作为边界。任何根面 / 主面只能取下表之一：
+
+| 形态 | variant | border | background | box-shadow |
+| --- | --- | --- | --- | --- |
+| 描边 | outline（缺省） | `--xh-stroke-thin solid --xh-border-default`；字段用 `--xh-border-control` | `--xh-bg-surface`；字段用 `--xh-bg-canvas` | none（Card 加 `--xh-elevation-raised`） |
+| 淡底 | subtle | `--xh-stroke-thin solid transparent` | `--xh-bg-subtle`（有 tone 时 `--xh-tone-subtle`） | none |
+| 无壳 | ghost | 不写 | 不写 | 不写；只允许分隔线 |
+
+- `--xh-border-subtle` / `--xh-border-strong` 不得出现在根面 `border` 简写里，只能出现在 `border-block-start / inline-start` 类分隔线与 `::after` 分隔伪元素中。
+- 字段静息形态 = 描边：`--xh-bg-canvas` + `--xh-border-control` + `--xh-shape-control` + 无影；hover 升 `--xh-border-control-hover`，focus-within 换 `--xh-border-control-focus` + `--xh-ring-focus`，invalid 用 `--xh-border-invalid` + `--xh-ring-invalid`。字段家族不消费 `--xh-elevation-raised`。
+- 字段的 `subtle` / `ghost` 只限有壳容器内（InputGroup、Command 面板、Toolbar）使用，hover / focus 必须浮出 `--xh-border-control`。
+- 刻意例外（须登记）：浮层面板内嵌搜索（Command、Cascader 搜索框）允许 `border-block-end` 下划线式；PromptInput 允许 `--xh-shape-surface` 8px，但静息描边仍为 `--xh-border-control`、不用 soft。
+- Form 内外字段同形；InputGroup 组壳画 outline 描边，子字段压平为透明。
+
+### 8.4 浮层材质判据
+
+- 内容为短列表、菜单、tooltip、气泡 → frosted 四件套；reduced-transparency 下退回同语义实体面。
+- 内容含网格或多列（日历、时间列、导航大面板）→ floating（solid + border-default + elevation-floating）。
+- 模态与强反馈面 → sheet 三件套；任何浮层不得只靠 box-shadow 分层，content / item 部件必须有非透明 border 或 material-*-border。
+
 完整细则见《交互触感与柔和模糊材质规范》。
 
 ## 9. 统一点击触感
 
-### 9.1 离散操作控件
+### 9.1 离散动作控件
 
-Button、Toggle、图标按钮、分页按钮、工具栏按钮和同类 trigger 必须使用同一配方：
+按压缩放只给「定尺的独立动作控件」：inline-size 由 Action Control profile（text / icon / field-inset / floating）决定的按钮、把手、方框、轨道、星、日历格、色块。它们必须投影 `data-xh-action-control` 并使用同一配方，同时换底：
 
 | 阶段 | 时长 | 结果 | 缓动 |
 | --- | ---: | --- | --- |
@@ -312,13 +415,14 @@ Button、Toggle、图标按钮、分页按钮、工具栏按钮和同类 trigger
 - 不允许组件自行设置 0.94、0.96、0.98 等缩放。
 - 业务事件不能等待动画结束；按下首帧必须先于异步 loading 状态可见。
 
-### 9.2 集合项
+### 9.2 行级与 disclosure trigger
 
-Menu Item、Listbox Item、Tree Node、Table Row 等大面积条目：
+主体规则含 `inline-size: 100%`、`flex: 1`、含文本的 grid / flex 或高度随内容多行的部件——Menu Item、Listbox Item、Tree Node、Table Row、SideNav link、Accordion / Collapsible / Reasoning / ToolCall trigger、CodeView fold-trigger、DiffView gap-trigger、Tabs trigger、Segmented item、NavigationMenu / Menubar trigger、load-more trigger：
 
 - 使用相同的 120ms 按下、200ms 释放节奏。
-- 通过 active 背景和前景反馈。
-- 不缩放整个条目，避免文字发虚和边界漂移。
+- 只换面：active 背景（或 line 档无底时换前景），不缩放整个条目。
+- 集合行投影 `data-xh-collection-item`，disclosure trigger 登记 `disclosure-trigger` profile；不允许零反馈。
+- Space / Enter 与粗指针触屏由 Headless / pointer 会话投影 `data-pressed`，皮肤 `:is(:active, [data-pressed])`。
 
 ### 9.3 状态叠加
 
@@ -331,6 +435,24 @@ Menu Item、Listbox Item、Tree Node、Table Row 等大面积条目：
 | pending | 首次反馈后锁定重复操作，不持续缩放 |
 | disabled | 无 hover、pressed、scale 和业务事件 |
 | reduced motion | 取消 scale/translate，保留即时换面 |
+
+### 9.4 Disclosure
+
+- Surface 级 disclosure（Accordion、Collapsible、Reasoning、ToolCall）内容统一 `grid-template-rows: 0fr → 1fr`；入场 `--xh-motion-duration-enter` + `--xh-motion-ease-enter-strong`，退场 `--xh-motion-duration-exit` + `--xh-motion-ease-exit`；指示器旋转与内容同档。
+- 密集树形 disclosure（Tree、TreeSelect、JsonViewer、SideNav 内联子层）不动高度，只旋转指示器 `--xh-motion-duration-micro`。
+- 关键帧集中在 `family/motion.css`，皮肤只引用。
+
+### 9.5 浮层进出场
+
+按锚定关系三分：
+
+| 关系 | 关键帧 | 组件 |
+| --- | --- | --- |
+| 锚定列表 / 菜单 | `xh-overlay-slide-in / out` | Menu、Select、Combobox、Cascader、ContextMenu、Menubar、Mention、TreeSelect、Date / Time picker、Tooltip（入场 `--xh-motion-duration-enter`） |
+| 锚定面板 | `xh-overlay-pop-in` / `xh-pop-out` | Popover、HoverCard、Popconfirm、Tour、Command |
+| 无锚定弹出 | `xh-pop-in / out` | NavigationMenu、SideNav popout、FloatingPanel、FloatButton 列表、Pagination 弹层 |
+
+遮罩与全屏面 `xh-fade-in / out`；Dialog / Notification = 位移 md + scale-enter；Drawer 入场 `--xh-motion-duration-slide` + `--xh-motion-ease-slide`，退场 `--xh-motion-duration-exit` + `--xh-motion-ease-exit`。皮肤内不得重定义共享关键帧。
 
 ## 10. Anatomy
 
@@ -454,7 +576,12 @@ Menu Item、Listbox Item、Tree Node、Table Row 等大面积条目：
 - 第一个示例必须用最少结构展示核心用途。
 - 一个示例只证明一个意图。
 - 不为覆盖 API 保留重复或低质量示例。
-- 组件总览使用独立极简预览。
+- 组件总览使用独立极简预览，并遵守：
+  - 一律 md 默认档、默认 variant；`size="sm|lg"` 只允许以尺寸本身为身份的组件（ColorSwatch、Icon、NumberAnimation）并登记；tone 只在组件核心用途即语气时（Alert、Toast、Notification、Badge、Progress）允许一个非 neutral 值。
+  - 预览根不写 inline-size 散值，宽度由卡片以 CSS 变量下发（常规与单行输入类两档）；禁止内联 font-size / padding / gap 字面值，只引令牌。
+  - 禁止裸 `overflow: auto | scroll` 容器，需要滚动的用 ScrollArea 或加 `data-xh-scroll`；文字用 span / div，不用 p / li / a。
+  - 卡片不缩放（无 `transform: scale`），预览底色 `--xh-bg-page`，并打 `data-theme / data-density / dir` 舞台属性、受示例隔离样式保护。
+  - 浮层类展示已打开的静态面板，不能只剩触发钮；trigger 走 Action Control 默认档。
 - 复杂业务组合放到模式页，不塞进基础组件专页。
 - 示例必须覆盖 Vue、React、Web Components；确实不适用时登记原因。
 
@@ -491,7 +618,7 @@ Props、事件、插槽、anatomy、键盘表、状态属性、CSS 变量和 CEM
 - 键盘、焦点、表单和原生事件。
 - 所有标准状态和状态叠加。
 - 单行、多行、空、超长、异步和嵌套内容。
-- standard/compact、light/dark、LTR/RTL。
+- comfortable/compact、light/dark、LTR/RTL。
 - pointer、keyboard、coarse pointer。
 - reduced motion、reduced transparency、forced colors、print。
 - 进入、退出、卸载和回调次数。
@@ -513,7 +640,14 @@ Props、事件、插槽、anatomy、键盘表、状态属性、CSS 变量和 CEM
 - [ ] anatomy、状态、事件和键盘表完整。
 - [ ] 三个适配器契约一致。
 - [ ] 使用 4/8/12px 小圆角体系。
-- [ ] 离散操作和集合项接入统一点击反馈。
+- [ ] 根面边界取描边 / 淡底 / 无壳之一；raised 已逐部件登记且带 border-default。
+- [ ] 字段静息为描边式，variant 缺省落 outline。
+- [ ] selected / current 按 §7.3 语义表取唯一标记；open / in-path 与 hover 同档。
+- [ ] 交互阶梯按承载面取档；缺省语气正确（只有 Button 品牌实心）。
+- [ ] 形状按 §6.3 身份表取值，正方盒未用 pill。
+- [ ] 滚动面按 §6.6 归档，无手写 scrollbar-* 与死 track-bg。
+- [ ] 标签 / 说明 / 标题 / 图标按 §6.4、§6.5 角色取值。
+- [ ] 离散动作控件缩放换底；行级与 disclosure trigger 只换面，无零反馈。
 - [ ] 未使用 glass；frosted 使用范围正确。
 - [ ] 正常、交互、禁用、加载、错误和退出状态齐全。
 - [ ] 亮暗、密度、RTL、指针和无障碍环境通过。
@@ -529,6 +663,15 @@ Props、事件、插槽、anatomy、键盘表、状态属性、CSS 变量和 CEM
 - 禁止同一语义存在多套 prop、事件、状态属性或令牌名。
 - 禁止普通 control、Card 和 Overlay 使用 pill。
 - 禁止组件写未登记的间距、圆角、颜色、阴影和动效散值。
+- 禁止用阴影或淡底充当边界；禁止 `--xh-border-subtle` / `--xh-border-strong` 作根面外边。
+- 禁止字段静息消费 raised 阴影或透明边。
+- 禁止用 `bordered` / `borderless` / `plain|surface` / `primary|secondary` 等私有轴表达有框无框。
+- 禁止 `--xh-bg-brand-subtle` 用于未选中语义（today、completed、open）。
+- 禁止 hover 与 pressed 同档，或在白底上 hover 直接落 200。
+- 禁止除 Button 外的触发器缺省品牌实心。
+- 禁止正方盒取 pill、禁止分页点两种语言。
+- 禁止整行 / disclosure trigger 缩放，禁止集合行零按压反馈。
+- 禁止皮肤手写 scrollbar-width / scrollbar-color，禁止总览预览缩放、内联 px 与裸 overflow。
 - 禁止 glass 材质及其兼容别名。
 - 禁止点击波纹和组件私有按压参数。
 - 禁止只用颜色表达状态。
