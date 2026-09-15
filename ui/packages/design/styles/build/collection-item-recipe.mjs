@@ -10,10 +10,15 @@ const OUTPUT = join(ROOT, 'family', 'collection-item.css')
 
 const SIZES = ['sm', 'md', 'lg']
 const COLUMNS = ['prefix', 'text', 'description', 'shortcut', 'suffix', 'indicator']
-const STATES = ['rest', 'hover', 'keyboard-highlight', 'selected', 'selected+highlight', 'open-path', 'checked', 'disabled', 'loading', 'error']
+const CONTEXTS = ['overlay', 'page']
+const STATES = ['rest', 'hover', 'keyboard-highlight', 'pressed', 'open-path', 'checked', 'disabled', 'loading', 'error']
+const CONTEXT_STATES = {
+  overlay: ['selected', 'selected+hover', 'selected+highlight', 'selected+pressed'],
+  page: ['selected', 'selected+hover', 'selected+highlight', 'selected+pressed', 'current', 'current+hover', 'current+highlight', 'current+pressed'],
+}
 const SIZE_FIELDS = ['blockPadding', 'inlinePadding', 'gap', 'fontSize', 'glyphSize']
 const STATE_FIELDS = ['backgroundColor', 'color', 'descriptionColor', 'indicatorColor', 'outlineColor', 'fontWeight', 'cursor', 'opacity']
-const FORCED_FIELDS = ['backgroundColor', 'color', 'outlineColor']
+const FORCED_FIELDS = ['backgroundColor', 'color', 'outlineColor', 'markerColor']
 const STATE_SLOT = {
   backgroundColor: 'bg',
   color: 'fg',
@@ -23,6 +28,18 @@ const STATE_SLOT = {
   fontWeight: 'font-weight',
   cursor: 'cursor',
   opacity: 'opacity',
+  markerColor: 'indicator-fg',
+}
+const MARKER_GLYPHS = ['trailing', 'leading']
+const MARKER_CURRENTS = ['none', 'bar']
+/** 上下文态的主体：selected 读 aria 事实，current 读状态词汇表里的 data-current。 */
+const SUBJECT = { selected: '[aria-selected=\'true\']', current: '[data-current]' }
+const GUARD = ':not([aria-disabled=\'true\'], [aria-busy=\'true\'], [data-error])'
+/** 叠加态的后缀：hover / highlight / pressed 与基础态使用同一组选择器。 */
+const OVERLAY_SUFFIX = {
+  hover: ':hover',
+  highlight: ':is(:focus-visible, [data-highlighted])',
+  pressed: ':active',
 }
 
 const stateName = state => state.replace('+', '-')
@@ -72,26 +89,50 @@ function assertFields(value, fields, path) {
     assertString(value[field], `${path}.${field}`)
 }
 
+function assertOneOf(value, allowed, path) {
+  if (!allowed.includes(value))
+    fail(`${path} 必须是 ${allowed.join(' | ')} 之一`)
+}
+
 export function assertCollectionItemRecipe(source) {
   assertExactKeys(source, [
     '$description',
     'version',
     'sizes',
     'columns',
+    'contexts',
     'states',
+    'contextStates',
+    'markers',
     'sizeValues',
     'stateValues',
+    'contextValues',
     'separator',
     'motion',
     'direction',
     'forcedColors',
+    'forcedContextColors',
   ], 'root')
   assertString(source.$description, 'root.$description')
-  if (source.version !== 1)
-    fail('root.version 必须为 1')
+  if (source.version !== 2)
+    fail('root.version 必须为 2')
   assertList(source.sizes, SIZES, 'root.sizes')
   assertList(source.columns, COLUMNS, 'root.columns')
+  assertList(source.contexts, CONTEXTS, 'root.contexts')
   assertList(source.states, STATES, 'root.states')
+
+  assertExactKeys(source.contextStates, CONTEXTS, 'root.contextStates')
+  for (const context of CONTEXTS)
+    assertList(source.contextStates[context], CONTEXT_STATES[context], `contextStates.${context}`)
+
+  assertExactKeys(source.markers, ['$description', ...CONTEXTS, 'bar'], 'root.markers')
+  assertString(source.markers.$description, 'markers.$description')
+  for (const context of CONTEXTS) {
+    assertFields(source.markers[context], ['glyph', 'current'], `markers.${context}`)
+    assertOneOf(source.markers[context].glyph, MARKER_GLYPHS, `markers.${context}.glyph`)
+    assertOneOf(source.markers[context].current, MARKER_CURRENTS, `markers.${context}.current`)
+  }
+  assertFields(source.markers.bar, ['thickness', 'blockInset', 'radius'], 'markers.bar')
 
   assertExactKeys(source.sizeValues, SIZES, 'root.sizeValues')
   for (const size of SIZES)
@@ -100,6 +141,13 @@ export function assertCollectionItemRecipe(source) {
   assertExactKeys(source.stateValues, STATES, 'root.stateValues')
   for (const state of STATES)
     assertFields(source.stateValues[state], STATE_FIELDS, `stateValues.${state}`)
+
+  assertExactKeys(source.contextValues, CONTEXTS, 'root.contextValues')
+  for (const context of CONTEXTS) {
+    assertExactKeys(source.contextValues[context], CONTEXT_STATES[context], `contextValues.${context}`)
+    for (const state of CONTEXT_STATES[context])
+      assertFields(source.contextValues[context][state], STATE_FIELDS, `contextValues.${context}.${state}`)
+  }
 
   assertFields(source.separator, ['blockMargin', 'inlineMargin', 'color'], 'root.separator')
   if (source.separator.blockMargin.startsWith('-') || source.separator.inlineMargin.startsWith('-'))
@@ -112,18 +160,41 @@ export function assertCollectionItemRecipe(source) {
   assertExactKeys(source.forcedColors, STATES, 'root.forcedColors')
   for (const state of STATES)
     assertFields(source.forcedColors[state], FORCED_FIELDS, `forcedColors.${state}`)
+
+  assertExactKeys(source.forcedContextColors, CONTEXTS, 'root.forcedContextColors')
+  for (const context of CONTEXTS) {
+    assertExactKeys(source.forcedContextColors[context], CONTEXT_STATES[context], `forcedContextColors.${context}`)
+    for (const state of CONTEXT_STATES[context])
+      assertFields(source.forcedContextColors[context][state], FORCED_FIELDS, `forcedContextColors.${context}.${state}`)
+  }
+}
+
+function stateVarsFrom(values, state, indent) {
+  return STATE_FIELDS
+    .map(field => `${indent}--xh-_collection-${STATE_SLOT[field]}: var(--xh-collection-${STATE_SLOT[field]}-${stateName(state)}, ${values[field]});`)
+    .join('\n')
 }
 
 function stateVars(source, state, indent = '    ') {
-  return STATE_FIELDS
-    .map(field => `${indent}--xh-_collection-${STATE_SLOT[field]}: var(--xh-collection-${STATE_SLOT[field]}-${stateName(state)}, ${source.stateValues[state][field]});`)
+  return stateVarsFrom(source.stateValues[state], state, indent)
+}
+
+function contextStateVars(source, context, state, indent = '    ') {
+  return stateVarsFrom(source.contextValues[context][state], state, indent)
+}
+
+function forcedVarsFrom(values, indent) {
+  return FORCED_FIELDS
+    .map(field => `${indent}--xh-_collection-${STATE_SLOT[field]}: ${values[field]};`)
     .join('\n')
 }
 
 function forcedStateVars(source, state, indent = '      ') {
-  return FORCED_FIELDS
-    .map(field => `${indent}--xh-_collection-${STATE_SLOT[field]}: ${source.forcedColors[state][field]};`)
-    .join('\n')
+  return forcedVarsFrom(source.forcedColors[state], indent)
+}
+
+function forcedContextVars(source, context, state, indent = '      ') {
+  return forcedVarsFrom(source.forcedContextColors[context][state], indent)
 }
 
 function sizeVars(source, size) {
@@ -137,9 +208,21 @@ function sizeVars(source, size) {
   ].join('\n')
 }
 
+/** 上下文态选择器：基底 (0,4,0)，叠加 hover / highlight / pressed 各升一级并保持基础态的源序。 */
+function contextSelector(context, state) {
+  const [subject, overlay] = state.split('+')
+  const base = `[data-xh-collection-item][data-xh-collection-context='${context}']${SUBJECT[subject]}${GUARD}`
+  return overlay ? `${base}${OVERLAY_SUFFIX[overlay]}` : base
+}
+
+function contextRules(source, render) {
+  return CONTEXTS.flatMap(context => CONTEXT_STATES[context].map(state => render(context, state))).join('\n\n')
+}
+
 export function compileCollectionItemRecipe(source) {
   assertCollectionItemRecipe(source)
   const rest = stateVars(source, 'rest')
+  const { markers } = source
   const output = applyFileHeader(OUTPUT, `/* AUTO-GENERATED by build/collection-item-recipe.mjs — do not edit. */
 @layer xihan.components {
   [data-xh-collection-item] {
@@ -174,12 +257,6 @@ ${rest}
       background-color ${source.motion.releaseDuration} ${source.motion.releaseEasing},
       color ${source.motion.duration} ${source.motion.easing},
       outline-color ${source.motion.duration} ${source.motion.easing};
-  }
-
-  /* 按下段：换面收进按下时长与曲线；释放回到 rest 规则的时长。组件皮肤只负责给出 active 面。 */
-  [data-xh-collection-item]:not([aria-disabled='true'], [aria-busy='true'], [data-error]):active {
-    transition-duration: ${source.motion.pressDuration};
-    transition-timing-function: ${source.motion.pressEasing};
   }
 
 ${SIZES.map(size => `  [data-xh-collection-item][data-xh-collection-size='${size}'] {
@@ -227,32 +304,63 @@ ${sizeVars(source, size)}
     margin-inline-start: var(--xh-collection-gap, var(--xh-_collection-gap));
   }
 
-  [data-xh-collection-item][aria-selected='true'] {
-${stateVars(source, 'selected')}
+  /* page 上下文：对号是前导标记（${markers.page.glyph}），指示条（${markers.page.current}）挂在起始侧。 */
+  [data-xh-collection-item][data-xh-collection-context='page'] {
+    position: relative;
+    grid-template-columns:
+      [indicator] max-content
+      [prefix] max-content
+      [text] minmax(0, 1fr)
+      [shortcut] max-content
+      [suffix] max-content;
+  }
+
+  [data-xh-collection-item][data-xh-collection-context='page'] [data-xh-collection-slot='indicator'] {
+    margin-inline-start: 0;
+    margin-inline-end: var(--xh-collection-gap, var(--xh-_collection-gap));
   }
 
   [data-xh-collection-item][data-in-path] {
 ${stateVars(source, 'open-path')}
   }
 
-  [data-xh-collection-item]:not([aria-disabled='true'], [aria-busy='true'], [data-error]):hover {
+  [data-xh-collection-item]${GUARD}:hover {
 ${stateVars(source, 'hover')}
   }
 
-  [data-xh-collection-item]:not([aria-disabled='true'], [aria-busy='true'], [data-error]):is(:focus-visible, [data-highlighted]) {
+  [data-xh-collection-item]${GUARD}:is(:focus-visible, [data-highlighted]) {
 ${stateVars(source, 'keyboard-highlight')}
   }
 
-  [data-xh-collection-item][aria-selected='true']:is(:focus-visible, [data-highlighted]) {
-${stateVars(source, 'selected+highlight')}
+  /* 按下段：pressed 面与按下时长、曲线一起给出；排在 hover 与高亮之后，同特指度才不会被它们盖掉。 */
+  [data-xh-collection-item]${GUARD}:active {
+${stateVars(source, 'pressed')}
+
+    transition-duration: ${source.motion.pressDuration};
+    transition-timing-function: ${source.motion.pressEasing};
+  }
+
+${contextRules(source, (context, state) => `  ${contextSelector(context, state)} {
+${contextStateVars(source, context, state)}
+  }`)}
+
+  [data-xh-collection-item]:is([aria-selected='true'], [data-state='checked']) [data-xh-collection-slot='indicator'] {
+    visibility: visible;
   }
 
   [data-xh-collection-item][data-state='checked'] {
     --xh-_collection-indicator-fg: var(--xh-collection-indicator-fg-checked, ${source.stateValues.checked.indicatorColor});
   }
 
-  [data-xh-collection-item][data-state='checked'] [data-xh-collection-slot='indicator'] {
-    visibility: visible;
+  [data-xh-collection-item][data-xh-collection-context='page'][data-current]::before {
+    content: '';
+    position: absolute;
+    inset-block: ${markers.bar.blockInset};
+    inset-inline-start: 0;
+    inline-size: ${markers.bar.thickness};
+    border-radius: ${markers.bar.radius};
+    background-color: var(--xh-_collection-indicator-fg);
+    pointer-events: none;
   }
 
   [data-xh-collection-item][aria-disabled='true'] {
@@ -295,28 +403,28 @@ ${stateVars(source, 'error')}
 ${forcedStateVars(source, 'rest')}
     }
 
-    [data-xh-collection-item][aria-selected='true'] {
-${forcedStateVars(source, 'selected')}
-    }
-
     [data-xh-collection-item][data-in-path] {
 ${forcedStateVars(source, 'open-path')}
     }
 
-    [data-xh-collection-item]:not([aria-disabled='true'], [aria-busy='true'], [data-error]):hover {
+    [data-xh-collection-item]${GUARD}:hover {
 ${forcedStateVars(source, 'hover')}
     }
 
-    [data-xh-collection-item]:not([aria-disabled='true'], [aria-busy='true'], [data-error]):is(:focus-visible, [data-highlighted]) {
+    [data-xh-collection-item]${GUARD}:is(:focus-visible, [data-highlighted]) {
 ${forcedStateVars(source, 'keyboard-highlight')}
     }
 
-    [data-xh-collection-item][aria-selected='true']:is(:focus-visible, [data-highlighted]) {
-${forcedStateVars(source, 'selected+highlight')}
+    [data-xh-collection-item]${GUARD}:active {
+${forcedStateVars(source, 'pressed')}
     }
 
+${contextRules(source, (context, state) => `    ${contextSelector(context, state)} {
+${forcedContextVars(source, context, state)}
+    }`)}
+
     [data-xh-collection-item][data-state='checked'] {
-      --xh-_collection-indicator-fg: ${source.forcedColors.checked.color};
+      --xh-_collection-indicator-fg: ${source.forcedColors.checked.markerColor};
     }
 
     [data-xh-collection-item][aria-disabled='true'] {
@@ -341,6 +449,8 @@ ${forcedStateVars(source, 'error')}
     fail('open-path / selected 不能通过加粗表达')
   if (/margin-(?:block|inline)(?:-start|-end)?:\s*-/.test(output))
     fail('separator 与列节奏不允许负 margin')
+  if (/\[data-xh-collection-context='overlay'\]\[data-current\]/.test(output))
+    fail('current 只属于 page 上下文')
   return output
 }
 
@@ -361,6 +471,7 @@ export async function emitCollectionItemRecipe(options = {}) {
   return {
     bytes: Buffer.byteLength(css),
     columns: source.columns.length,
+    contexts: source.contexts.length,
     sizes: source.sizes.length,
     states: source.states.length,
   }
@@ -368,7 +479,7 @@ export async function emitCollectionItemRecipe(options = {}) {
 
 if (process.argv[1] && fileURLToPath(import.meta.url) === process.argv[1]) {
   emitCollectionItemRecipe()
-    .then(result => console.log(`[collection-item-recipe] 已生成 ${result.sizes} sizes × ${result.states} states × ${result.columns} columns，${result.bytes} bytes`))
+    .then(result => console.log(`[collection-item-recipe] 已生成 ${result.sizes} sizes × ${result.contexts} contexts × ${result.states} states × ${result.columns} columns，${result.bytes} bytes`))
     .catch((error) => {
       console.error(error)
       process.exit(1)

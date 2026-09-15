@@ -614,7 +614,7 @@
   }
 
   [data-scope='select'][data-part='item'] {
-    /* 公开 Select 槽只映射到家族合同；网格、尺寸与状态选择器不在组件皮肤复制。 */
+    /* 公开 Select 槽只映射到家族合同；网格、尺寸与状态选择器不在组件皮肤复制。pressed 面与 selected 各态由家族按 overlay 上下文给出。 */
     --xh-collection-block-padding: var(--xh-select-item-py, var(--xh-_select-item-py));
     --xh-collection-inline-padding: var(--xh-select-item-px, var(--xh-_select-item-px));
     --xh-collection-gap: var(--xh-select-item-gap, var(--xh-_select-gap));
@@ -625,25 +625,33 @@
     --xh-collection-fg-keyboard-highlight: var(--xh-select-item-fg, var(--xh-material-frosted-fg));
     --xh-collection-fg-selected: var(--xh-select-item-fg-selected, var(--xh-select-item-fg, var(--xh-material-frosted-fg)));
     --xh-collection-fg-selected-highlight: var(--xh-select-item-fg-selected, var(--xh-select-item-fg, var(--xh-material-frosted-fg)));
+    --xh-collection-fg-selected-hover: var(--xh-select-item-fg-selected, var(--xh-select-item-fg, var(--xh-material-frosted-fg)));
+    --xh-collection-fg-selected-pressed: var(--xh-select-item-fg-selected, var(--xh-select-item-fg, var(--xh-material-frosted-fg)));
+    --xh-collection-fg-pressed: var(--xh-select-item-fg, var(--xh-material-frosted-fg));
     --xh-collection-font-weight-selected: var(--xh-select-item-font-weight-selected, var(--xh-font-weight-regular));
     --xh-collection-font-weight-selected-highlight: var(--xh-select-item-font-weight-selected, var(--xh-font-weight-regular));
+    --xh-collection-font-weight-selected-hover: var(--xh-select-item-font-weight-selected, var(--xh-font-weight-regular));
+    --xh-collection-font-weight-selected-pressed: var(--xh-select-item-font-weight-selected, var(--xh-font-weight-regular));
     --xh-collection-bg-hover: var(--xh-select-item-bg-hover, var(--xh-bg-subtle));
     --xh-collection-bg-keyboard-highlight: var(--xh-select-item-bg-hover, var(--xh-bg-subtle));
     --xh-collection-bg-selected-highlight: var(--xh-select-item-bg-hover, var(--xh-bg-subtle));
+    --xh-collection-bg-selected-hover: var(--xh-select-item-bg-hover, var(--xh-bg-subtle));
+    --xh-collection-bg-pressed: var(--xh-select-item-bg-pressed, var(--xh-bg-subtle-hover));
+    --xh-collection-bg-selected-pressed: var(--xh-select-item-bg-pressed, var(--xh-bg-subtle-hover));
     /* data-highlighted 同时覆盖指针与键盘路径；指针只换面，焦点环在 :focus-visible 下再接回。 */
     --xh-collection-outline-keyboard-highlight: transparent;
     --xh-collection-outline-selected-highlight: transparent;
     --xh-collection-indicator-fg-rest: var(--xh-select-item-check-fg, var(--xh-_select-accent));
     --xh-collection-indicator-fg-checked: var(--xh-select-item-check-fg, var(--xh-_select-accent));
+    --xh-collection-indicator-fg-selected: var(--xh-select-item-check-fg, var(--xh-_select-accent));
+    --xh-collection-indicator-fg-selected-hover: var(--xh-select-item-check-fg, var(--xh-_select-accent));
+    --xh-collection-indicator-fg-selected-highlight: var(--xh-select-item-check-fg, var(--xh-_select-accent));
+    --xh-collection-indicator-fg-selected-pressed: var(--xh-select-item-check-fg, var(--xh-_select-accent));
 
     /* 行高留出文字的上下伸展空间，行内那层 overflow:hidden 才不会把字削掉 */
     line-height: var(--xh-select-item-leading, var(--xh-leading-normal));
     white-space: nowrap;
     user-select: none;
-  }
-
-  [data-scope='select'][data-part='item']:not([data-disabled]):active {
-    background-color: var(--xh-select-item-bg-pressed, var(--xh-bg-subtle-active));
   }
 
   /* 键盘焦点出现时底色立即到位，环不会压在背景过渡的中间帧上。 */
@@ -671,8 +679,8 @@
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    inline-size: var(--xh-select-item-indicator-size, var(--xh-control-indicator-size));
-    block-size: var(--xh-select-item-indicator-size, var(--xh-control-indicator-size));
+    inline-size: var(--xh-select-item-indicator-size, var(--xh-icon-size, var(--xh-glyph-size-text)));
+    block-size: var(--xh-select-item-indicator-size, var(--xh-icon-size, var(--xh-glyph-size-text)));
   }
 
   /* 同上：没写内容就由皮肤画勾 */

@@ -23,7 +23,8 @@
 //    状态属性驱动。这一支不能靠 :active——手指按住不动时 :active 会被滚动接管等原因
 //    提前撤掉，而等待期恰恰是最需要回执的那几百毫秒；也不比缩放，因为这类触发区往往是
 //    作者的整块内容，缩放它会把作者自己的排版一起抖起来。改比底色。
-// ③ 列表行的即时换面：显式登记 feedback: 'surface'，只检查本部件的换底与过渡，禁止改变按压几何。
+// ③ 列表行的即时换面：显式登记 feedback: 'surface'，换底可由本部件或（投影了 data-xh-collection-item 时）
+//    家族配方的 pressed 面给出，禁止改变按压几何。
 import { readdir, readFile } from 'node:fs/promises'
 import { join } from 'node:path'
 
@@ -163,7 +164,7 @@ const PRESSABLE = {
 const NO_PRESS = {
   // 网格在拖着挑区间时才换手型：按下的回执落在格子上，网格自己不是可按的东西
   'calendar-range-picker:grid': '拖着挑区间时整张网格保持手型，按压回执由格子承担',
-  // 列表族条目：一行文字，按下的回执走高亮档（悬停中性灰、展开路径品牌淡底）
+  // 列表族条目：一行文字，按下的回执走高亮档（悬停中性灰、展开路径与悬停同档中性灰）
   'listbox:item': '列表行的按下回执走高亮档，缩放会抖动整列',
   'combobox:item': '列表行的按下回执走高亮档，缩放会抖动整列',
   'command:item': '列表行的按下回执走高亮档，缩放会抖动整列',
@@ -382,8 +383,10 @@ function checkPart(name, part, css, familyCss = '') {
 /** 列表行用换面表达按下，几何保持不变；只有显式登记的部件走这条合同。 */
 function checkSurfacePart(name, part, css, familyCss = '') {
   const active = new RegExp(`${partSelector(part)}[^{]*:active(?::not\\([^)]*\\))?\\s*\\{([^}]*)\\}`)
+  // 投影了 data-xh-collection-item 的部件（familyCss 非空）可以由家族配方的 pressed 面给出换底
   const match = css.match(active)
-  const surface = match?.[1].match(/(?:^|;)\s*background(?:-color)?\s*:\s*([^;]+)/)
+    ?? (familyCss ? familyCss.match(/\[data-xh-collection-item\][^{]*:active\s*\{([^}]*)\}/) : null)
+  const surface = match?.[1].match(/(?:^|;)\s*(?:background(?:-color)?|--xh-_collection-bg)\s*:\s*([^;]+)/)
   if (!surface || /^(?:none|transparent)$/.test(surface[1].trim()))
     problems.push(`${name} 的 ${part} 没有明确的 :active 换面`)
   if (match && /(?:^|;)\s*(?:scale|translate|transform)\s*:/.test(match[1]))

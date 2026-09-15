@@ -31715,12 +31715,6 @@
     outline-color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
 }
 
-/* 按下段：换面收进按下时长与曲线；释放回到 rest 规则的时长。组件皮肤只负责给出 active 面。 */
-[data-xh-collection-item]:not([aria-disabled='true'], [aria-busy='true'], [data-error]):active {
-  transition-duration: var(--xh-motion-duration-press);
-  transition-timing-function: var(--xh-motion-ease-press);
-}
-
 [data-xh-collection-item][data-xh-collection-size='sm'] {
   --xh-_collection-block-padding: var(--xh-list-option-py-sm);
   --xh-_collection-inline-padding: var(--xh-control-px-sm);
@@ -31786,19 +31780,24 @@
   margin-inline-start: var(--xh-collection-gap, var(--xh-_collection-gap));
 }
 
-[data-xh-collection-item][aria-selected='true'] {
-  --xh-_collection-bg: var(--xh-collection-bg-selected, transparent);
-  --xh-_collection-fg: var(--xh-collection-fg-selected, var(--xh-material-frosted-fg));
-  --xh-_collection-description-fg: var(--xh-collection-description-fg-selected, var(--xh-material-frosted-fg-muted));
-  --xh-_collection-indicator-fg: var(--xh-collection-indicator-fg-selected, var(--xh-fg-brand));
-  --xh-_collection-outline: var(--xh-collection-outline-selected, transparent);
-  --xh-_collection-font-weight: var(--xh-collection-font-weight-selected, var(--xh-font-weight-regular));
-  --xh-_collection-cursor: var(--xh-collection-cursor-selected, pointer);
-  --xh-_collection-opacity: var(--xh-collection-opacity-selected, 1);
+/* page 上下文：对号是前导标记（leading），指示条（bar）挂在起始侧。 */
+[data-xh-collection-item][data-xh-collection-context='page'] {
+  position: relative;
+  grid-template-columns:
+    [indicator] max-content
+    [prefix] max-content
+    [text] minmax(0, 1fr)
+    [shortcut] max-content
+    [suffix] max-content;
+}
+
+[data-xh-collection-item][data-xh-collection-context='page'] [data-xh-collection-slot='indicator'] {
+  margin-inline-start: 0;
+  margin-inline-end: var(--xh-collection-gap, var(--xh-_collection-gap));
 }
 
 [data-xh-collection-item][data-in-path] {
-  --xh-_collection-bg: var(--xh-collection-bg-open-path, color-mix(in oklab, var(--xh-fg-brand) 10%, transparent));
+  --xh-_collection-bg: var(--xh-collection-bg-open-path, var(--xh-bg-subtle));
   --xh-_collection-fg: var(--xh-collection-fg-open-path, var(--xh-material-frosted-fg));
   --xh-_collection-description-fg: var(--xh-collection-description-fg-open-path, var(--xh-material-frosted-fg-muted));
   --xh-_collection-indicator-fg: var(--xh-collection-indicator-fg-open-path, var(--xh-fg-brand));
@@ -31830,7 +31829,44 @@
   --xh-_collection-opacity: var(--xh-collection-opacity-keyboard-highlight, 1);
 }
 
-[data-xh-collection-item][aria-selected='true']:is(:focus-visible, [data-highlighted]) {
+/* 按下段：pressed 面与按下时长、曲线一起给出；排在 hover 与高亮之后，同特指度才不会被它们盖掉。 */
+[data-xh-collection-item]:not([aria-disabled='true'], [aria-busy='true'], [data-error]):active {
+  --xh-_collection-bg: var(--xh-collection-bg-pressed, var(--xh-bg-subtle-hover));
+  --xh-_collection-fg: var(--xh-collection-fg-pressed, var(--xh-material-frosted-fg));
+  --xh-_collection-description-fg: var(--xh-collection-description-fg-pressed, var(--xh-material-frosted-fg-muted));
+  --xh-_collection-indicator-fg: var(--xh-collection-indicator-fg-pressed, var(--xh-fg-brand));
+  --xh-_collection-outline: var(--xh-collection-outline-pressed, transparent);
+  --xh-_collection-font-weight: var(--xh-collection-font-weight-pressed, var(--xh-font-weight-regular));
+  --xh-_collection-cursor: var(--xh-collection-cursor-pressed, pointer);
+  --xh-_collection-opacity: var(--xh-collection-opacity-pressed, 1);
+
+  transition-duration: var(--xh-motion-duration-press);
+  transition-timing-function: var(--xh-motion-ease-press);
+}
+
+[data-xh-collection-item][data-xh-collection-context='overlay'][aria-selected='true']:not([aria-disabled='true'], [aria-busy='true'], [data-error]) {
+  --xh-_collection-bg: var(--xh-collection-bg-selected, transparent);
+  --xh-_collection-fg: var(--xh-collection-fg-selected, var(--xh-material-frosted-fg));
+  --xh-_collection-description-fg: var(--xh-collection-description-fg-selected, var(--xh-material-frosted-fg-muted));
+  --xh-_collection-indicator-fg: var(--xh-collection-indicator-fg-selected, var(--xh-fg-brand));
+  --xh-_collection-outline: var(--xh-collection-outline-selected, transparent);
+  --xh-_collection-font-weight: var(--xh-collection-font-weight-selected, var(--xh-font-weight-regular));
+  --xh-_collection-cursor: var(--xh-collection-cursor-selected, pointer);
+  --xh-_collection-opacity: var(--xh-collection-opacity-selected, 1);
+}
+
+[data-xh-collection-item][data-xh-collection-context='overlay'][aria-selected='true']:not([aria-disabled='true'], [aria-busy='true'], [data-error]):hover {
+  --xh-_collection-bg: var(--xh-collection-bg-selected-hover, var(--xh-bg-subtle));
+  --xh-_collection-fg: var(--xh-collection-fg-selected-hover, var(--xh-material-frosted-fg));
+  --xh-_collection-description-fg: var(--xh-collection-description-fg-selected-hover, var(--xh-material-frosted-fg-muted));
+  --xh-_collection-indicator-fg: var(--xh-collection-indicator-fg-selected-hover, var(--xh-fg-brand));
+  --xh-_collection-outline: var(--xh-collection-outline-selected-hover, transparent);
+  --xh-_collection-font-weight: var(--xh-collection-font-weight-selected-hover, var(--xh-font-weight-regular));
+  --xh-_collection-cursor: var(--xh-collection-cursor-selected-hover, pointer);
+  --xh-_collection-opacity: var(--xh-collection-opacity-selected-hover, 1);
+}
+
+[data-xh-collection-item][data-xh-collection-context='overlay'][aria-selected='true']:not([aria-disabled='true'], [aria-busy='true'], [data-error]):is(:focus-visible, [data-highlighted]) {
   --xh-_collection-bg: var(--xh-collection-bg-selected-highlight, var(--xh-bg-subtle));
   --xh-_collection-fg: var(--xh-collection-fg-selected-highlight, var(--xh-material-frosted-fg));
   --xh-_collection-description-fg: var(--xh-collection-description-fg-selected-highlight, var(--xh-material-frosted-fg-muted));
@@ -31841,12 +31877,122 @@
   --xh-_collection-opacity: var(--xh-collection-opacity-selected-highlight, 1);
 }
 
+[data-xh-collection-item][data-xh-collection-context='overlay'][aria-selected='true']:not([aria-disabled='true'], [aria-busy='true'], [data-error]):active {
+  --xh-_collection-bg: var(--xh-collection-bg-selected-pressed, var(--xh-bg-subtle-hover));
+  --xh-_collection-fg: var(--xh-collection-fg-selected-pressed, var(--xh-material-frosted-fg));
+  --xh-_collection-description-fg: var(--xh-collection-description-fg-selected-pressed, var(--xh-material-frosted-fg-muted));
+  --xh-_collection-indicator-fg: var(--xh-collection-indicator-fg-selected-pressed, var(--xh-fg-brand));
+  --xh-_collection-outline: var(--xh-collection-outline-selected-pressed, transparent);
+  --xh-_collection-font-weight: var(--xh-collection-font-weight-selected-pressed, var(--xh-font-weight-regular));
+  --xh-_collection-cursor: var(--xh-collection-cursor-selected-pressed, pointer);
+  --xh-_collection-opacity: var(--xh-collection-opacity-selected-pressed, 1);
+}
+
+[data-xh-collection-item][data-xh-collection-context='page'][aria-selected='true']:not([aria-disabled='true'], [aria-busy='true'], [data-error]) {
+  --xh-_collection-bg: var(--xh-collection-bg-selected, var(--xh-bg-brand-subtle));
+  --xh-_collection-fg: var(--xh-collection-fg-selected, var(--xh-fg-on-brand-subtle));
+  --xh-_collection-description-fg: var(--xh-collection-description-fg-selected, var(--xh-material-frosted-fg-muted));
+  --xh-_collection-indicator-fg: var(--xh-collection-indicator-fg-selected, var(--xh-fg-on-brand-subtle));
+  --xh-_collection-outline: var(--xh-collection-outline-selected, transparent);
+  --xh-_collection-font-weight: var(--xh-collection-font-weight-selected, var(--xh-font-weight-regular));
+  --xh-_collection-cursor: var(--xh-collection-cursor-selected, pointer);
+  --xh-_collection-opacity: var(--xh-collection-opacity-selected, 1);
+}
+
+[data-xh-collection-item][data-xh-collection-context='page'][aria-selected='true']:not([aria-disabled='true'], [aria-busy='true'], [data-error]):hover {
+  --xh-_collection-bg: var(--xh-collection-bg-selected-hover, var(--xh-bg-brand-subtle-hover));
+  --xh-_collection-fg: var(--xh-collection-fg-selected-hover, var(--xh-fg-on-brand-subtle));
+  --xh-_collection-description-fg: var(--xh-collection-description-fg-selected-hover, var(--xh-material-frosted-fg-muted));
+  --xh-_collection-indicator-fg: var(--xh-collection-indicator-fg-selected-hover, var(--xh-fg-on-brand-subtle));
+  --xh-_collection-outline: var(--xh-collection-outline-selected-hover, transparent);
+  --xh-_collection-font-weight: var(--xh-collection-font-weight-selected-hover, var(--xh-font-weight-regular));
+  --xh-_collection-cursor: var(--xh-collection-cursor-selected-hover, pointer);
+  --xh-_collection-opacity: var(--xh-collection-opacity-selected-hover, 1);
+}
+
+[data-xh-collection-item][data-xh-collection-context='page'][aria-selected='true']:not([aria-disabled='true'], [aria-busy='true'], [data-error]):is(:focus-visible, [data-highlighted]) {
+  --xh-_collection-bg: var(--xh-collection-bg-selected-highlight, var(--xh-bg-brand-subtle-hover));
+  --xh-_collection-fg: var(--xh-collection-fg-selected-highlight, var(--xh-fg-on-brand-subtle));
+  --xh-_collection-description-fg: var(--xh-collection-description-fg-selected-highlight, var(--xh-material-frosted-fg-muted));
+  --xh-_collection-indicator-fg: var(--xh-collection-indicator-fg-selected-highlight, var(--xh-fg-on-brand-subtle));
+  --xh-_collection-outline: var(--xh-collection-outline-selected-highlight, var(--xh-ring-focus));
+  --xh-_collection-font-weight: var(--xh-collection-font-weight-selected-highlight, var(--xh-font-weight-regular));
+  --xh-_collection-cursor: var(--xh-collection-cursor-selected-highlight, pointer);
+  --xh-_collection-opacity: var(--xh-collection-opacity-selected-highlight, 1);
+}
+
+[data-xh-collection-item][data-xh-collection-context='page'][aria-selected='true']:not([aria-disabled='true'], [aria-busy='true'], [data-error]):active {
+  --xh-_collection-bg: var(--xh-collection-bg-selected-pressed, var(--xh-bg-brand-subtle-active));
+  --xh-_collection-fg: var(--xh-collection-fg-selected-pressed, var(--xh-fg-on-brand-subtle));
+  --xh-_collection-description-fg: var(--xh-collection-description-fg-selected-pressed, var(--xh-material-frosted-fg-muted));
+  --xh-_collection-indicator-fg: var(--xh-collection-indicator-fg-selected-pressed, var(--xh-fg-on-brand-subtle));
+  --xh-_collection-outline: var(--xh-collection-outline-selected-pressed, transparent);
+  --xh-_collection-font-weight: var(--xh-collection-font-weight-selected-pressed, var(--xh-font-weight-regular));
+  --xh-_collection-cursor: var(--xh-collection-cursor-selected-pressed, pointer);
+  --xh-_collection-opacity: var(--xh-collection-opacity-selected-pressed, 1);
+}
+
+[data-xh-collection-item][data-xh-collection-context='page'][data-current]:not([aria-disabled='true'], [aria-busy='true'], [data-error]) {
+  --xh-_collection-bg: var(--xh-collection-bg-current, var(--xh-bg-brand-subtle));
+  --xh-_collection-fg: var(--xh-collection-fg-current, var(--xh-fg-on-brand-subtle));
+  --xh-_collection-description-fg: var(--xh-collection-description-fg-current, var(--xh-material-frosted-fg-muted));
+  --xh-_collection-indicator-fg: var(--xh-collection-indicator-fg-current, var(--xh-fg-on-brand-subtle));
+  --xh-_collection-outline: var(--xh-collection-outline-current, transparent);
+  --xh-_collection-font-weight: var(--xh-collection-font-weight-current, var(--xh-font-weight-regular));
+  --xh-_collection-cursor: var(--xh-collection-cursor-current, pointer);
+  --xh-_collection-opacity: var(--xh-collection-opacity-current, 1);
+}
+
+[data-xh-collection-item][data-xh-collection-context='page'][data-current]:not([aria-disabled='true'], [aria-busy='true'], [data-error]):hover {
+  --xh-_collection-bg: var(--xh-collection-bg-current-hover, var(--xh-bg-brand-subtle-hover));
+  --xh-_collection-fg: var(--xh-collection-fg-current-hover, var(--xh-fg-on-brand-subtle));
+  --xh-_collection-description-fg: var(--xh-collection-description-fg-current-hover, var(--xh-material-frosted-fg-muted));
+  --xh-_collection-indicator-fg: var(--xh-collection-indicator-fg-current-hover, var(--xh-fg-on-brand-subtle));
+  --xh-_collection-outline: var(--xh-collection-outline-current-hover, transparent);
+  --xh-_collection-font-weight: var(--xh-collection-font-weight-current-hover, var(--xh-font-weight-regular));
+  --xh-_collection-cursor: var(--xh-collection-cursor-current-hover, pointer);
+  --xh-_collection-opacity: var(--xh-collection-opacity-current-hover, 1);
+}
+
+[data-xh-collection-item][data-xh-collection-context='page'][data-current]:not([aria-disabled='true'], [aria-busy='true'], [data-error]):is(:focus-visible, [data-highlighted]) {
+  --xh-_collection-bg: var(--xh-collection-bg-current-highlight, var(--xh-bg-brand-subtle-hover));
+  --xh-_collection-fg: var(--xh-collection-fg-current-highlight, var(--xh-fg-on-brand-subtle));
+  --xh-_collection-description-fg: var(--xh-collection-description-fg-current-highlight, var(--xh-material-frosted-fg-muted));
+  --xh-_collection-indicator-fg: var(--xh-collection-indicator-fg-current-highlight, var(--xh-fg-on-brand-subtle));
+  --xh-_collection-outline: var(--xh-collection-outline-current-highlight, var(--xh-ring-focus));
+  --xh-_collection-font-weight: var(--xh-collection-font-weight-current-highlight, var(--xh-font-weight-regular));
+  --xh-_collection-cursor: var(--xh-collection-cursor-current-highlight, pointer);
+  --xh-_collection-opacity: var(--xh-collection-opacity-current-highlight, 1);
+}
+
+[data-xh-collection-item][data-xh-collection-context='page'][data-current]:not([aria-disabled='true'], [aria-busy='true'], [data-error]):active {
+  --xh-_collection-bg: var(--xh-collection-bg-current-pressed, var(--xh-bg-brand-subtle-active));
+  --xh-_collection-fg: var(--xh-collection-fg-current-pressed, var(--xh-fg-on-brand-subtle));
+  --xh-_collection-description-fg: var(--xh-collection-description-fg-current-pressed, var(--xh-material-frosted-fg-muted));
+  --xh-_collection-indicator-fg: var(--xh-collection-indicator-fg-current-pressed, var(--xh-fg-on-brand-subtle));
+  --xh-_collection-outline: var(--xh-collection-outline-current-pressed, transparent);
+  --xh-_collection-font-weight: var(--xh-collection-font-weight-current-pressed, var(--xh-font-weight-regular));
+  --xh-_collection-cursor: var(--xh-collection-cursor-current-pressed, pointer);
+  --xh-_collection-opacity: var(--xh-collection-opacity-current-pressed, 1);
+}
+
+[data-xh-collection-item]:is([aria-selected='true'], [data-state='checked']) [data-xh-collection-slot='indicator'] {
+  visibility: visible;
+}
+
 [data-xh-collection-item][data-state='checked'] {
   --xh-_collection-indicator-fg: var(--xh-collection-indicator-fg-checked, var(--xh-fg-brand));
 }
 
-[data-xh-collection-item][data-state='checked'] [data-xh-collection-slot='indicator'] {
-  visibility: visible;
+[data-xh-collection-item][data-xh-collection-context='page'][data-current]::before {
+  content: '';
+  position: absolute;
+  inset-block: var(--xh-space-1);
+  inset-inline-start: 0;
+  inline-size: var(--xh-stroke-thick);
+  border-radius: var(--xh-shape-pill);
+  background-color: var(--xh-_collection-indicator-fg);
+  pointer-events: none;
 }
 
 [data-xh-collection-item][aria-disabled='true'] {
@@ -31910,58 +32056,144 @@
     --xh-_collection-bg: Canvas;
     --xh-_collection-fg: CanvasText;
     --xh-_collection-outline: transparent;
-  }
-
-  [data-xh-collection-item][aria-selected='true'] {
-    --xh-_collection-bg: Canvas;
-    --xh-_collection-fg: CanvasText;
-    --xh-_collection-outline: transparent;
+    --xh-_collection-indicator-fg: ButtonText;
   }
 
   [data-xh-collection-item][data-in-path] {
     --xh-_collection-bg: Canvas;
     --xh-_collection-fg: CanvasText;
     --xh-_collection-outline: Highlight;
+    --xh-_collection-indicator-fg: Highlight;
   }
 
   [data-xh-collection-item]:not([aria-disabled='true'], [aria-busy='true'], [data-error]):hover {
     --xh-_collection-bg: Highlight;
     --xh-_collection-fg: HighlightText;
     --xh-_collection-outline: transparent;
+    --xh-_collection-indicator-fg: HighlightText;
   }
 
   [data-xh-collection-item]:not([aria-disabled='true'], [aria-busy='true'], [data-error]):is(:focus-visible, [data-highlighted]) {
     --xh-_collection-bg: Canvas;
     --xh-_collection-fg: CanvasText;
     --xh-_collection-outline: Highlight;
+    --xh-_collection-indicator-fg: Highlight;
   }
 
-  [data-xh-collection-item][aria-selected='true']:is(:focus-visible, [data-highlighted]) {
+  [data-xh-collection-item]:not([aria-disabled='true'], [aria-busy='true'], [data-error]):active {
+    --xh-_collection-bg: Highlight;
+    --xh-_collection-fg: HighlightText;
+    --xh-_collection-outline: transparent;
+    --xh-_collection-indicator-fg: HighlightText;
+  }
+
+  [data-xh-collection-item][data-xh-collection-context='overlay'][aria-selected='true']:not([aria-disabled='true'], [aria-busy='true'], [data-error]) {
+    --xh-_collection-bg: Canvas;
+    --xh-_collection-fg: CanvasText;
+    --xh-_collection-outline: transparent;
+    --xh-_collection-indicator-fg: Highlight;
+  }
+
+  [data-xh-collection-item][data-xh-collection-context='overlay'][aria-selected='true']:not([aria-disabled='true'], [aria-busy='true'], [data-error]):hover {
+    --xh-_collection-bg: Highlight;
+    --xh-_collection-fg: HighlightText;
+    --xh-_collection-outline: transparent;
+    --xh-_collection-indicator-fg: HighlightText;
+  }
+
+  [data-xh-collection-item][data-xh-collection-context='overlay'][aria-selected='true']:not([aria-disabled='true'], [aria-busy='true'], [data-error]):is(:focus-visible, [data-highlighted]) {
     --xh-_collection-bg: Canvas;
     --xh-_collection-fg: CanvasText;
     --xh-_collection-outline: Highlight;
+    --xh-_collection-indicator-fg: Highlight;
+  }
+
+  [data-xh-collection-item][data-xh-collection-context='overlay'][aria-selected='true']:not([aria-disabled='true'], [aria-busy='true'], [data-error]):active {
+    --xh-_collection-bg: Highlight;
+    --xh-_collection-fg: HighlightText;
+    --xh-_collection-outline: transparent;
+    --xh-_collection-indicator-fg: HighlightText;
+  }
+
+  [data-xh-collection-item][data-xh-collection-context='page'][aria-selected='true']:not([aria-disabled='true'], [aria-busy='true'], [data-error]) {
+    --xh-_collection-bg: Highlight;
+    --xh-_collection-fg: HighlightText;
+    --xh-_collection-outline: transparent;
+    --xh-_collection-indicator-fg: HighlightText;
+  }
+
+  [data-xh-collection-item][data-xh-collection-context='page'][aria-selected='true']:not([aria-disabled='true'], [aria-busy='true'], [data-error]):hover {
+    --xh-_collection-bg: Highlight;
+    --xh-_collection-fg: HighlightText;
+    --xh-_collection-outline: transparent;
+    --xh-_collection-indicator-fg: HighlightText;
+  }
+
+  [data-xh-collection-item][data-xh-collection-context='page'][aria-selected='true']:not([aria-disabled='true'], [aria-busy='true'], [data-error]):is(:focus-visible, [data-highlighted]) {
+    --xh-_collection-bg: Highlight;
+    --xh-_collection-fg: HighlightText;
+    --xh-_collection-outline: HighlightText;
+    --xh-_collection-indicator-fg: HighlightText;
+  }
+
+  [data-xh-collection-item][data-xh-collection-context='page'][aria-selected='true']:not([aria-disabled='true'], [aria-busy='true'], [data-error]):active {
+    --xh-_collection-bg: Highlight;
+    --xh-_collection-fg: HighlightText;
+    --xh-_collection-outline: transparent;
+    --xh-_collection-indicator-fg: HighlightText;
+  }
+
+  [data-xh-collection-item][data-xh-collection-context='page'][data-current]:not([aria-disabled='true'], [aria-busy='true'], [data-error]) {
+    --xh-_collection-bg: Highlight;
+    --xh-_collection-fg: HighlightText;
+    --xh-_collection-outline: transparent;
+    --xh-_collection-indicator-fg: HighlightText;
+  }
+
+  [data-xh-collection-item][data-xh-collection-context='page'][data-current]:not([aria-disabled='true'], [aria-busy='true'], [data-error]):hover {
+    --xh-_collection-bg: Highlight;
+    --xh-_collection-fg: HighlightText;
+    --xh-_collection-outline: transparent;
+    --xh-_collection-indicator-fg: HighlightText;
+  }
+
+  [data-xh-collection-item][data-xh-collection-context='page'][data-current]:not([aria-disabled='true'], [aria-busy='true'], [data-error]):is(:focus-visible, [data-highlighted]) {
+    --xh-_collection-bg: Highlight;
+    --xh-_collection-fg: HighlightText;
+    --xh-_collection-outline: HighlightText;
+    --xh-_collection-indicator-fg: HighlightText;
+  }
+
+  [data-xh-collection-item][data-xh-collection-context='page'][data-current]:not([aria-disabled='true'], [aria-busy='true'], [data-error]):active {
+    --xh-_collection-bg: Highlight;
+    --xh-_collection-fg: HighlightText;
+    --xh-_collection-outline: transparent;
+    --xh-_collection-indicator-fg: HighlightText;
   }
 
   [data-xh-collection-item][data-state='checked'] {
-    --xh-_collection-indicator-fg: CanvasText;
+    --xh-_collection-indicator-fg: Highlight;
   }
 
   [data-xh-collection-item][aria-disabled='true'] {
     --xh-_collection-bg: Canvas;
     --xh-_collection-fg: GrayText;
     --xh-_collection-outline: transparent;
+    --xh-_collection-indicator-fg: GrayText;
   }
 
   [data-xh-collection-item][aria-busy='true'] {
     --xh-_collection-bg: Canvas;
     --xh-_collection-fg: CanvasText;
     --xh-_collection-outline: Highlight;
+    --xh-_collection-indicator-fg: Highlight;
   }
 
   [data-xh-collection-item][data-error] {
     --xh-_collection-bg: Canvas;
     --xh-_collection-fg: CanvasText;
     --xh-_collection-outline: Highlight;
+    --xh-_collection-indicator-fg: Highlight;
   }
 
   [data-xh-collection-separator] {
@@ -32574,7 +32806,7 @@
 }
 
 [data-scope='select'][data-part='item'] {
-  /* 公开 Select 槽只映射到家族合同；网格、尺寸与状态选择器不在组件皮肤复制。 */
+  /* 公开 Select 槽只映射到家族合同；网格、尺寸与状态选择器不在组件皮肤复制。pressed 面与 selected 各态由家族按 overlay 上下文给出。 */
   --xh-collection-block-padding: var(--xh-select-item-py, var(--xh-_select-item-py));
   --xh-collection-inline-padding: var(--xh-select-item-px, var(--xh-_select-item-px));
   --xh-collection-gap: var(--xh-select-item-gap, var(--xh-_select-gap));
@@ -32585,25 +32817,33 @@
   --xh-collection-fg-keyboard-highlight: var(--xh-select-item-fg, var(--xh-material-frosted-fg));
   --xh-collection-fg-selected: var(--xh-select-item-fg-selected, var(--xh-select-item-fg, var(--xh-material-frosted-fg)));
   --xh-collection-fg-selected-highlight: var(--xh-select-item-fg-selected, var(--xh-select-item-fg, var(--xh-material-frosted-fg)));
+  --xh-collection-fg-selected-hover: var(--xh-select-item-fg-selected, var(--xh-select-item-fg, var(--xh-material-frosted-fg)));
+  --xh-collection-fg-selected-pressed: var(--xh-select-item-fg-selected, var(--xh-select-item-fg, var(--xh-material-frosted-fg)));
+  --xh-collection-fg-pressed: var(--xh-select-item-fg, var(--xh-material-frosted-fg));
   --xh-collection-font-weight-selected: var(--xh-select-item-font-weight-selected, var(--xh-font-weight-regular));
   --xh-collection-font-weight-selected-highlight: var(--xh-select-item-font-weight-selected, var(--xh-font-weight-regular));
+  --xh-collection-font-weight-selected-hover: var(--xh-select-item-font-weight-selected, var(--xh-font-weight-regular));
+  --xh-collection-font-weight-selected-pressed: var(--xh-select-item-font-weight-selected, var(--xh-font-weight-regular));
   --xh-collection-bg-hover: var(--xh-select-item-bg-hover, var(--xh-bg-subtle));
   --xh-collection-bg-keyboard-highlight: var(--xh-select-item-bg-hover, var(--xh-bg-subtle));
   --xh-collection-bg-selected-highlight: var(--xh-select-item-bg-hover, var(--xh-bg-subtle));
+  --xh-collection-bg-selected-hover: var(--xh-select-item-bg-hover, var(--xh-bg-subtle));
+  --xh-collection-bg-pressed: var(--xh-select-item-bg-pressed, var(--xh-bg-subtle-hover));
+  --xh-collection-bg-selected-pressed: var(--xh-select-item-bg-pressed, var(--xh-bg-subtle-hover));
   /* data-highlighted 同时覆盖指针与键盘路径；指针只换面，焦点环在 :focus-visible 下再接回。 */
   --xh-collection-outline-keyboard-highlight: transparent;
   --xh-collection-outline-selected-highlight: transparent;
   --xh-collection-indicator-fg-rest: var(--xh-select-item-check-fg, var(--xh-_select-accent));
   --xh-collection-indicator-fg-checked: var(--xh-select-item-check-fg, var(--xh-_select-accent));
+  --xh-collection-indicator-fg-selected: var(--xh-select-item-check-fg, var(--xh-_select-accent));
+  --xh-collection-indicator-fg-selected-hover: var(--xh-select-item-check-fg, var(--xh-_select-accent));
+  --xh-collection-indicator-fg-selected-highlight: var(--xh-select-item-check-fg, var(--xh-_select-accent));
+  --xh-collection-indicator-fg-selected-pressed: var(--xh-select-item-check-fg, var(--xh-_select-accent));
 
   /* 行高留出文字的上下伸展空间，行内那层 overflow:hidden 才不会把字削掉 */
   line-height: var(--xh-select-item-leading, var(--xh-leading-normal));
   white-space: nowrap;
   user-select: none;
-}
-
-[data-scope='select'][data-part='item']:not([data-disabled]):active {
-  background-color: var(--xh-select-item-bg-pressed, var(--xh-bg-subtle-active));
 }
 
 /* 键盘焦点出现时底色立即到位，环不会压在背景过渡的中间帧上。 */
@@ -32631,8 +32871,8 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  inline-size: var(--xh-select-item-indicator-size, var(--xh-control-indicator-size));
-  block-size: var(--xh-select-item-indicator-size, var(--xh-control-indicator-size));
+  inline-size: var(--xh-select-item-indicator-size, var(--xh-icon-size, var(--xh-glyph-size-text)));
+  block-size: var(--xh-select-item-indicator-size, var(--xh-icon-size, var(--xh-glyph-size-text)));
 }
 
 /* 同上：没写内容就由皮肤画勾 */

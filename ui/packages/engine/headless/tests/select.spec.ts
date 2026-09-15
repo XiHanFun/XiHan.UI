@@ -629,15 +629,17 @@ describe('selectSelect 显示文本与表单出口', () => {
     expect(h.item('banana').getAttribute('data-state')).toBe('unchecked')
   })
 
-  it('条目把 Collection Item 角色、尺寸与选择事实投影给三端', () => {
+  it('条目把 Collection Item 角色、尺寸、上下文与选择事实投影给三端', () => {
     const h = mount({ defaultValue: 'apple', size: 'lg' }, { disabledItems: ['banana'] })
     expect(h.item('apple').dataset).toMatchObject({
       xhCollectionItem: '',
       xhCollectionSize: 'lg',
+      xhCollectionContext: 'overlay',
     })
     expect(h.item('banana').dataset).toMatchObject({
       xhCollectionItem: '',
       xhCollectionSize: 'lg',
+      xhCollectionContext: 'overlay',
       disabled: '',
     })
     expect(h.item('apple').getAttribute('data-state')).toBe('checked')

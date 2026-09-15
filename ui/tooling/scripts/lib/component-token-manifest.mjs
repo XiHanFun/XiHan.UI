@@ -310,6 +310,13 @@ export async function buildComponentTokenManifest(options = {}) {
     return new Set([...expression.matchAll(/['"]([a-z-]+)['"]/g)].map(match => match[1]))
   }
 
+  /* 与 actionProfiles 同形：Collection Item 家族按组件投影的 data-xh-collection-context 过滤上下文声明。 */
+  async function collectionContexts(component) {
+    const source = await readFile(join(HEADLESS_DIR, component, `${component}.connect.ts`), 'utf8').catch(() => '')
+    const expression = /['"]data-xh-collection-context['"]\s*:\s*([^,\n]+)/.exec(source)?.[1] ?? ''
+    return new Set([...expression.matchAll(/['"]([a-z-]+)['"]/g)].map(match => match[1]))
+  }
+
   for (const sourceComponent of componentIds.slice().sort(compareText)) {
     // renderless family 没有 data-scope 或视觉槽，不应伪造一份空皮肤来满足生成器。
     if (renderless.has(sourceComponent))
@@ -329,9 +336,13 @@ export async function buildComponentTokenManifest(options = {}) {
       calls: varCalls(declaration.value),
     }))
     const supportedActionProfiles = await actionProfiles(sourceComponent)
+    const supportedCollectionContexts = await collectionContexts(sourceComponent)
     const applicableFamilyDeclarations = familyDeclarations.filter((declaration) => {
       const profiles = [...declaration.selector.matchAll(/data-xh-action-profile=['"]([a-z-]+)['"]/g)].map(match => match[1])
-      return profiles.length === 0 || profiles.some(profile => supportedActionProfiles.has(profile))
+      if (profiles.length > 0 && !profiles.some(profile => supportedActionProfiles.has(profile)))
+        return false
+      const contexts = [...declaration.selector.matchAll(/data-xh-collection-context=['"]([a-z-]+)['"]/g)].map(match => match[1])
+      return contexts.length === 0 || contexts.some(context => supportedCollectionContexts.has(context))
     })
     const consumers = new Map()
     for (const declaration of [...declarations, ...applicableFamilyDeclarations]) {

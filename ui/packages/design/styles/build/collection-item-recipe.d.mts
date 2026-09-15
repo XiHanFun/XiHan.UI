@@ -9,6 +9,7 @@ export function emitCollectionItemRecipe(options?: {
 }): Promise<{
   bytes: number
   columns: number
+  contexts: number
   sizes: number
   states: number
 }>
