@@ -14,13 +14,13 @@ export interface TooltipOpenChangeDetails {
 
 /**
  * 适配器在挂载前填入 DOM 环境、定位引擎与元素 getter。
- * 各项皆可缺省，缺省时机器照常转移，只是不定位、不入层栈。
+ * 各项皆可省略，省略时状态机照常转移，只是不定位、不进入层栈。
  */
 export interface TooltipRefs {
   config: RuntimeConfig | null
   /** 注册本层并返回撤销句柄，只在浮层可见期间调用。 */
   registerLayer: (() => { layer: Layer, dispose: Cleanup }) | null
-  /** 视觉退场与行为资源共享的 Presence；缺省时关闭立即释放。 */
+  /** 视觉退场与行为资源共享的 Presence；未提供时关闭立即释放。 */
   presence: PresenceHandle | null
   position: PositionEnginePort | null
   /** 锚点元素（trigger）。 */
@@ -35,7 +35,7 @@ export interface TooltipSchema extends MachineSchema {
     defaultOpen?: boolean
     /** 请求的浮层朝向，默认 bottom；空间不足时由定位引擎避让。 */
     placement?: Placement
-    /** 文字方向，缺省 ltr。只改写浮层在行内轴上 start 与 end 的落点。 */
+    /** 文字方向，默认 ltr。只改写浮层在行内轴上 start 与 end 的落点。 */
     dir?: Direction
     /** 浮层与锚点的间距（px）。 */
     offset?: number
@@ -49,13 +49,13 @@ export interface TooltipSchema extends MachineSchema {
     tone?: Tone
     /** 尺寸：sm / md / lg，决定内边距与字号档位。 */
     size?: Size
-    /** open 变化意图回调；受控时是唯一出口，非受控随内部转移一并通知。 */
+    /** open 变化意图回调；受控时是唯一出口，非受控时随内部转移一并通知。 */
     onOpenChange?: (details: TooltipOpenChangeDetails) => void
   }
   context: {
     /** 定位引擎回传的最新结果；无引擎时恒为 null。 */
     position: PositionResult | null
-    /** 本次展开是否由聚焦触发：聚焦态的提示不被纯鼠标移出收走。 */
+    /** 本次展开是否由聚焦触发：聚焦态的提示不被纯鼠标移出收起。 */
     focusOpened: boolean
   }
   computed: Record<string, never>
@@ -95,5 +95,5 @@ export interface TooltipApi<T extends PropTypes = PropTypes> {
   getArrowProps: () => T['element']
 }
 
-/** 读屏用的文案。本组件目前没有需要外露的文案，位先留着。 */
+/** 读屏文案。本组件目前没有需要外露的文案，保留该位。 */
 export interface TooltipTranslations {}

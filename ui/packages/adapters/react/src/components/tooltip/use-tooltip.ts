@@ -24,7 +24,7 @@ export interface TooltipContext extends OverlayWiring {
   triggerRef: RefObject<HTMLElement | null>
   /** 被定位的浮层。 */
   positionerRef: RefObject<HTMLElement | null>
-  /** 浮层本体，退场动画从它身上探测。 */
+  /** 浮层本体，退场动画从它上面探测。 */
   contentRef: RefObject<HTMLElement | null>
 }
 
