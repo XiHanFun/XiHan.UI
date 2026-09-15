@@ -17,7 +17,7 @@ import { createVueIdGenerator } from '../../runtime/vue-id'
 
 export interface CalendarPickerContext {
   api: ComputedRef<CalendarPickerApi>
-  /** 机器实例，供部件上报 DOM 侧的事实。 */
+  /** 状态机实例，供部件上报 DOM 侧的事实。 */
   service: Service<CalendarPickerSchema>
   gridRef: Ref<HTMLElement | null>
   rootRef: Ref<HTMLElement | null>

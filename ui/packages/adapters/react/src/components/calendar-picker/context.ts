@@ -10,7 +10,7 @@ import type { CalendarPickerContext } from './use-calendar-picker'
 import { createContext, useContext } from 'react'
 
 const Ctx = createContext<CalendarPickerContext | undefined>(undefined)
-/** 格子自报的那一天，供 cell-trigger 复用同一份声明（作者只写一次 value）。 */
+/** 格子声明的那一天，供 cell-trigger 复用同一份声明（作者只写一次 value）。 */
 const CellCtx = createContext<CalendarCellProps | undefined>(undefined)
 
 export const CalendarPickerProvider = Ctx

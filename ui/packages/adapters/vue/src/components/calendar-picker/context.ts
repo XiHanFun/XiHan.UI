@@ -10,7 +10,7 @@ import type { ComputedRef, InjectionKey } from 'vue'
 import type { CalendarPickerContext } from './use-calendar-picker'
 import { inject, provide } from 'vue'
 
-/** 格子自报的那一天，供 cell-trigger 复用同一份声明（作者只写一次 value）。 */
+/** 格子声明的那一天，供 cell-trigger 复用同一份声明（作者只写一次 value）。 */
 export interface CalendarPickerCellContext {
   cell: ComputedRef<CalendarCellProps>
 }
