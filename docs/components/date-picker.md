@@ -63,9 +63,9 @@ granularity 决定输入行铺哪几段、浮层铺哪一档格子
 
 ### 何时不用
 
-- 用户已知确切日期且只需要键盘输入：使用[日期字段](./date-field)。
-- 要挑的是一段起止：用[日期范围选择器](./date-range-picker)。
-- 只要时间：用[时间选择器](./time-picker)。
+- 用户已知确切日期且只需要键盘输入时，使用[日期字段](./date-field)。
+- 选择一段起止时，使用[日期范围选择器](./date-range-picker)。
+- 只需要时间时，使用[时间选择器](./time-picker)。
 
 ### 特性
 
@@ -84,8 +84,8 @@ granularity 决定输入行铺哪几段、浮层铺哪一档格子
 
 ### 组合
 
-- 浮层里内嵌[日历选择器](./calendar-picker)，翻月、钻层与键盘导航都在它身上。
-- 输入行内嵌[日期字段](./date-field)的段位，逐段键入与加减走它。
+- 浮层内嵌[日历选择器](./calendar-picker)，翻月、层级切换与键盘导航由它负责。
+- 输入行内嵌[日期字段](./date-field)的段位，逐段键入与加减由它负责。
 
 ### 最佳实践
 
@@ -93,7 +93,7 @@ granularity 决定输入行铺哪几段、浮层铺哪一档格子
 - 标准输入行应同时包含清空按钮与日历图标触发器；二者按值互斥显示。参与表单时同时渲染隐藏输入。
 - 默认只展开一个日历面板；需要多面板时显式传 `visibleCount`。
 - 需要统一查询值时，使用 `calendarPeriodValue(granularity, 'single', value)` 得到周期首尾与回显键。
-- 快速选年可在 `year` 网格中渲染受范围约束的年份集合；网格使用三列紧凑布局与内部滚动，不再靠十年翻页堆叠大块空白。
+- 快速选年可在 `year` 网格中渲染受范围约束的年份集合；网格使用三列紧凑布局与内部滚动。
 - 不可用日期应同时提供原因。
 - 常用日期优先提供快捷项。
 
@@ -101,7 +101,7 @@ granularity 决定输入行铺哪几段、浮层铺哪一档格子
 
 - 未经说明就预先选择今天。
 - 让浮层遮挡当前输入值。
-- 用多选模拟区间：中间的日子不会自动补齐，也没有拖选与预览。
+- 用多选模拟区间：中间的日期不会自动补齐，也没有拖选与预览。
 
 ## API 参考
 
@@ -382,7 +382,7 @@ granularity 决定输入行铺哪几段、浮层铺哪一档格子
 | `--xh-date-picker-content-highlight` | `content` | `background` | `default` | `transparent` | date-picker 的 content 部件 background 覆盖槽。 |
 | `--xh-date-picker-content-px` | `content` | `padding-inline` | `@media (width < 768px)`<br>`default` | `--xh-space-2` | date-picker 的 content 部件 padding-inline 覆盖槽。 |
 | `--xh-date-picker-content-py` | `content` | `padding-block` | `default` | `--xh-space-2` | date-picker 的 content 部件 padding-block 覆盖槽。 |
-| `--xh-date-picker-content-radius` | `content` | `border-radius` | `default` | `--xh-shape-surface` | date-picker 的 content 部件 border-radius 覆盖槽。 |
+| `--xh-date-picker-content-radius` | `content` | `border-radius` | `default` | `--xh-shape-overlay` | date-picker 的 content 部件 border-radius 覆盖槽。 |
 | `--xh-date-picker-content-shadow` | `content` | `box-shadow` | `default` | `--xh-material-frosted-shadow` | date-picker 的 content 部件 box-shadow 覆盖槽。 |
 | `--xh-date-picker-control-bg` | `control` | `background` | `default` | `--xh-_date-picker-control-bg` | date-picker 的 control 部件 background 覆盖槽。 |
 | `--xh-date-picker-control-bg-disabled` | `control` | `background` | `disabled` | `--xh-bg-subtle` | date-picker 的 control 部件 background 覆盖槽。 |
@@ -397,7 +397,7 @@ granularity 决定输入行铺哪几段、浮层铺哪一档格子
 | `--xh-date-picker-control-h` | `control` | `block-size` | `default` | `--xh-_date-picker-control-h` | date-picker 的 control 部件 block-size 覆盖槽。 |
 | `--xh-date-picker-control-min-w` | `control`<br>`root` | `min-inline-size` | `default` | `--xh-control-min-w` | date-picker 的 control、root 部件 min-inline-size 覆盖槽。 |
 | `--xh-date-picker-control-px` | `control` | `padding-inline` | `default` | `--xh-_date-picker-control-px` | date-picker 的 control 部件 padding-inline 覆盖槽。 |
-| `--xh-date-picker-control-radius` | `control` | `border-radius` | `default` | `--xh-shape-surface` | date-picker 的 control 部件 border-radius 覆盖槽。 |
+| `--xh-date-picker-control-radius` | `control` | `border-radius` | `default` | `--xh-shape-control` | date-picker 的 control 部件 border-radius 覆盖槽。 |
 | `--xh-date-picker-control-shadow` | `control` | `box-shadow` | `default` | `--xh-_date-picker-control-shadow` | date-picker 的 control 部件 box-shadow 覆盖槽。 |
 | `--xh-date-picker-font-size` | `segment-group` | `font-size` | `default` | `--xh-_date-picker-font-size` | date-picker 的 segment-group 部件 font-size 覆盖槽。 |
 | `--xh-date-picker-gap` | `root` | `gap` | `default` | `--xh-space-1` | date-picker 的 root 部件 gap 覆盖槽。 |
