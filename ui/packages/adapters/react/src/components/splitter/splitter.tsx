@@ -32,24 +32,24 @@ export interface SplitterRootSlotProps {
 }
 
 export interface XhSplitterRootProps extends Omit<ComponentPropsWithRef<'div'>, 'children' | 'dir'> {
-  /** 受控布局，恒是百分比数组；给定即受控。 */
+  /** 受控布局，恒为百分比数组；给定即受控。 */
   sizes?: number[]
   /** 非受控初值。 */
   defaultSizes?: number[]
-  /** 逐块的约束：最小、最大与能不能折叠。 */
+  /** 逐块的约束：最小、最大与是否可折叠。 */
   panels?: SplitterPanelProps[]
   orientation?: Orientation
-  /** 文字方向，缺省 ltr。 */
+  /** 文字方向，默认 ltr。 */
   dir?: Direction
   disabled?: boolean
-  /** 方向键一步走几个百分点。 */
+  /** 方向键一步移动几个百分点。 */
   step?: number
-  /** PageUp / PageDown 一步走几个百分点。 */
+  /** PageUp / PageDown 一步移动几个百分点。 */
   largeStep?: number
   translations?: Partial<SplitterTranslations>
-  /** 每次调整都发；拖动过程中会连续发很多次。 */
+  /** 每次调整都触发；拖动过程中会连续触发多次。 */
   onSizesChange?: SplitterProps['onSizesChange']
-  /** 只在一次操作收尾时发一次。 */
+  /** 只在一次操作结束时触发一次。 */
   onSizesChangeEnd?: SplitterProps['onSizesChangeEnd']
   children?: SlotChildren<SplitterRootSlotProps>
 }
@@ -131,7 +131,7 @@ export function XhSplitterPanel({ index = 0, children, ...rest }: XhSplitterPane
 }
 
 export interface XhSplitterResizeTriggerProps extends ComponentPropsWithRef<'div'> {
-  /** 第几条分隔条；它坐在第 index 与第 index+1 块面板之间，调整的是前一块。兼收字符串。 */
+  /** 第几条分隔条；它位于第 index 与第 index+1 块面板之间，调整的是前一块。兼收字符串。 */
   index?: number | string
 }
 

@@ -47788,7 +47788,7 @@
       "declarations": [
         {
           "kind": "class",
-          "description": "`<xh-splitter>` —— Light-DOM 行为宿主：作者写 root/panel/resize-trigger 角色节点，\n元素跑 splitter 机器并把 connect 产出打上去。\n\n面板尺寸是百分比，总和恒为 100；每块的尺寸由元素每帧写进内联样式（flex-basis），\n作者的样式表不要再碰这条轴。\n\n拖拽挂在分隔条上（按下—跟手—松手），像素与百分比的换算取 root 的矩形——\n矩形在拖拽开始那一刻才量，连接期一律不碰 DOM。\n键盘全在分隔条上：方向键按 step 推、Shift+方向键按 largeStep 推、\nHome/End 取该面板眼下能到的两端、Enter 折叠或展开可折叠的面板。\n拖动途中按 Escape 放弃这一场，布局退回按下那一刻。\n\n面板与分隔条都要用 index 属性写明自己是第几个（`index=\"1\"`）；\n第 index 条分隔条坐在第 index 与第 index+1 块面板之间，调整的是前一块。",
+          "description": "`<xh-splitter>`：Light-DOM 行为宿主：作者写 root / panel / resize-trigger 角色节点，\n元素运行 splitter 状态机并把 connect 产出接上。\n\n面板尺寸是百分比，总和恒为 100；每块的尺寸由元素每帧写入内联样式（flex-basis），\n作者的样式表不应再修改该轴。\n\n拖拽挂在分隔条上（按下、跟随、松开），像素与百分比的换算取 root 的矩形：\n矩形在拖拽开始时才测量，连接期一律不涉及 DOM。\n键盘全部在分隔条上：方向键按 step 推动、Shift + 方向键按 largeStep 推动、\nHome / End 取该面板当前可达的两端、Enter 折叠或展开可折叠的面板。\n拖动途中按 Escape 放弃本场，布局退回按下时刻。\n\n面板与分隔条都要用 index 属性写明序号（`index=\"1\"`）；\n第 index 条分隔条位于第 index 与第 index+1 块面板之间，调整的是前一块。",
           "name": "XhSplitterElement",
           "cssParts": [
             {
@@ -47800,7 +47800,7 @@
               "name": "panel"
             },
             {
-              "description": "role=separator 的分隔条，指针与键盘交互全在它身上",
+              "description": "role=separator 的分隔条，指针与键盘交互全部在它身上",
               "name": "resize-trigger"
             }
           ],
@@ -47974,7 +47974,7 @@
                   }
                 }
               ],
-              "description": "部件自报的下标。作者在节点上写 index=\"1\"，与 Vue 侧的 `:index` 是同一份声明；\n写不出数字（没写、写错）时退回 0。"
+              "description": "部件声明的下标。作者在节点上写 index=\"1\"，与 Vue 侧的 `:index` 是同一份声明；\n无法得到数字（未写、写错）时退回 0。"
             },
             {
               "kind": "method",
@@ -47989,14 +47989,14 @@
           ],
           "events": [
             {
-              "description": "布局变化（拖动途中会连发）；detail 为 `{ sizes: number[] }`",
+              "description": "布局变化（拖动途中连续发出）；detail 为 `{ sizes: number[] }`",
               "name": "sizes-change",
               "type": {
                 "text": "SplitterSizesChangeDetails"
               }
             },
             {
-              "description": "一次拖拽收尾发一次；detail 为 `{ sizes: number[], index: number }`",
+              "description": "一次拖拽收尾时发出一次；detail 为 `{ sizes: number[], index: number }`",
               "name": "sizes-change-end",
               "type": {
                 "text": "SplitterSizesChangeEndDetails"
@@ -48008,7 +48008,7 @@
               "type": {
                 "text": "number[] | undefined"
               },
-              "description": "受控布局，逗号分隔的百分比（如 \"30,70\"）；缺省该属性即非受控",
+              "description": "受控布局，逗号分隔的百分比（如 \"30,70\"）；未提供该属性即非受控",
               "name": "sizes",
               "fieldName": "sizes"
             },
@@ -48016,7 +48016,7 @@
               "type": {
                 "text": "number[] | undefined"
               },
-              "description": "非受控初值，同样逗号分隔；缺省时按面板数等分",
+              "description": "非受控初值，同样逗号分隔；未提供时按面板数等分",
               "name": "default-sizes",
               "fieldName": "defaultSizes"
             },
@@ -48048,7 +48048,7 @@
               "type": {
                 "text": "boolean | undefined"
               },
-              "description": "禁用：分隔条退出 Tab 序列、拖不动也推不动",
+              "description": "禁用：分隔条退出 Tab 序列、不可拖动也不可推动",
               "name": "disabled",
               "fieldName": "disabled"
             },

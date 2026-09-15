@@ -98,7 +98,7 @@ export const XhSplitterPanel = defineComponent({
 export const XhSplitterResizeTrigger = defineComponent({
   name: 'XhSplitterResizeTrigger',
   props: {
-    /** 第几条分隔条；它坐在第 index 与第 index+1 块面板之间，调整的是前一块。 */
+    /** 第几条分隔条；它位于第 index 与第 index+1 块面板之间，调整的是前一块。 */
     ...INDEX_PROP,
   },
   setup(props, { slots }) {
