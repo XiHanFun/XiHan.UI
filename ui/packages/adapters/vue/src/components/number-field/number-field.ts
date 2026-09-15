@@ -17,7 +17,7 @@ import { useNumberField } from './use-number-field'
 
 type NumberFieldProps = NumberFieldSchema['props']
 
-/** 默认插槽的载荷：原始输入串与其数值、增减是否还走得动，以及写值、增减的命令。 */
+/** 默认插槽的载荷：原始输入串与其数值、增减是否仍可进行，以及写值、增减的命令。 */
 export type NumberFieldRootSlotProps = Pick<
   NumberFieldApi,
   'value' | 'valueAsNumber' | 'empty' | 'canIncrement' | 'canDecrement' | 'setValue' | 'increment' | 'decrement'

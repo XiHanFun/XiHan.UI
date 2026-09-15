@@ -35762,7 +35762,7 @@
       "declarations": [
         {
           "kind": "class",
-          "description": "`<xh-number-field>` —— Light-DOM 行为宿主：作者写 root/label/input/加减按钮四类角色节点，\n元素跑 number-field 机器并把 connect 产出打上去。\n\n键盘全在 input 上（ArrowUp/Down 步进、PageUp/Down 大步进、Home/End 取端点），\n两个按钮对读屏隐藏——它们只是指针用户的快捷方式，暴露出来等于把同一个控件报两遍。",
+          "description": "`<xh-number-field>`：Light-DOM 行为宿主：作者写 root / label / input / 加减按钮四类角色节点，\n元素运行 number-field 状态机并把 connect 产出接上。\n\n键盘全部在 input 上（ArrowUp / Down 步进、PageUp / Down 大步进、Home / End 取端点），\n两个按钮对读屏隐藏：它们只是指针用户的快捷方式，暴露出来等于把同一个控件报告两遍。",
           "name": "XhNumberFieldElement",
           "cssParts": [
             {
@@ -35770,11 +35770,11 @@
               "name": "root"
             },
             {
-              "description": "标题；`for` 恒写向 input，故须是原生 `<label>` 才点得动",
+              "description": "标题；`for` 恒指向 input，因此须是原生 `<label>` 才可点击",
               "name": "label"
             },
             {
-              "description": "输入框与加减钮的包裹层；皮肤把视觉盒画在它身上，输入在左，减、加动作依次收在右侧",
+              "description": "输入框与加减按钮的包裹层；皮肤把视觉盒绘制在它身上，输入在左，减、加动作依次收在右侧",
               "name": "control"
             },
             {
@@ -35782,7 +35782,7 @@
               "name": "prefix"
             },
             {
-              "description": "role=spinbutton 的输入框，键盘交互全在它身上",
+              "description": "role=spinbutton 的输入框，键盘交互全部在它身上",
               "name": "input"
             },
             {
@@ -35790,11 +35790,11 @@
               "name": "suffix"
             },
             {
-              "description": "加一步；贴住 max 时转 disabled",
+              "description": "加一步；到达 max 时为 disabled",
               "name": "increment-trigger"
             },
             {
-              "description": "减一步；贴住 min 时转 disabled",
+              "description": "减一步；到达 min 时为 disabled",
               "name": "decrement-trigger"
             }
           ],
@@ -35959,7 +35959,7 @@
               "type": {
                 "text": "(text: string) => number"
               },
-              "description": "显示串 → 数（千位分隔符、单位后缀这类靠它读回来）；只走 property"
+              "description": "显示串 → 数（千位分隔符、单位后缀等依靠它读回）；只能通过 property 设置"
             },
             {
               "kind": "field",
@@ -35968,7 +35968,7 @@
               "type": {
                 "text": "(value: number) => string"
               },
-              "description": "数 → 显示串，只在步进/取端点/失焦规范化时用；只走 property"
+              "description": "数 → 显示串，只在步进 / 取端点 / 失焦规范化时使用；只能通过 property 设置"
             },
             {
               "kind": "field",
@@ -36044,7 +36044,7 @@
               "type": {
                 "text": "string | undefined"
               },
-              "description": "受控值（原始输入串）；缺省该属性即非受控",
+              "description": "受控值（原始输入串）；未提供该属性即非受控",
               "name": "value",
               "fieldName": "value"
             },
@@ -36060,7 +36060,7 @@
               "type": {
                 "text": "number | undefined"
               },
-              "description": "下界；给了 Home 才接管",
+              "description": "下界；提供后 Home 才接管",
               "name": "min",
               "fieldName": "min"
             },
@@ -36068,7 +36068,7 @@
               "type": {
                 "text": "number | undefined"
               },
-              "description": "上界；给了 End 才接管",
+              "description": "上界；提供后 End 才接管",
               "name": "max",
               "fieldName": "max"
             },
@@ -36084,7 +36084,7 @@
               "type": {
                 "text": "number | undefined"
               },
-              "description": "PageUp/PageDown 的步长，默认 10 倍 step",
+              "description": "PageUp / PageDown 的步长，默认 10 倍 step",
               "name": "large-step",
               "fieldName": "largeStep"
             },
@@ -36092,7 +36092,7 @@
               "type": {
                 "text": "boolean | undefined"
               },
-              "description": "禁用：不可聚焦、推不动",
+              "description": "禁用：不可聚焦、不可推动",
               "name": "disabled",
               "fieldName": "disabled"
             },
@@ -36100,7 +36100,7 @@
               "type": {
                 "text": "boolean | undefined"
               },
-              "description": "只读：仍可聚焦与复制，推不动",
+              "description": "只读：仍可聚焦与复制，不可推动",
               "name": "read-only",
               "fieldName": "readOnly"
             },
@@ -36124,7 +36124,7 @@
               "type": {
                 "text": "string | undefined"
               },
-              "description": "表单字段名；给了才参与提交",
+              "description": "表单字段名；提供后才参与提交",
               "name": "name",
               "fieldName": "name"
             },
@@ -36132,7 +36132,7 @@
               "type": {
                 "text": "number | undefined"
               },
-              "description": "按住加减按钮多久开始连发，默认 300ms",
+              "description": "按住加减按钮多久后开始连发，默认 300ms",
               "name": "change-delay",
               "fieldName": "changeDelay"
             },

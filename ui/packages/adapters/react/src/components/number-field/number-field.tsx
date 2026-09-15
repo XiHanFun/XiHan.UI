@@ -19,13 +19,13 @@ import { useNumberField } from './use-number-field'
 
 type NumberFieldProps = NumberFieldSchema['props']
 
-/** 函数式 children 的载荷：原始输入串与其数值、增减是否还走得动，以及写值、增减的命令。 */
+/** 函数式 children 的载荷：原始输入串与其数值、增减是否仍可进行，以及写值、增减的命令。 */
 export type NumberFieldRootSlotProps = Pick<
   NumberFieldApi,
   'value' | 'valueAsNumber' | 'empty' | 'canIncrement' | 'canDecrement' | 'setValue' | 'increment' | 'decrement'
 >
 
-/** 根上自有的那些取值；defaultValue 与原生的同名属性含义不同，由这里接管。 */
+/** 根上自有的取值；defaultValue 与原生的同名属性含义不同，由这里接管。 */
 type RootElementProps = Omit<ComponentPropsWithRef<'div'>, 'children' | 'defaultValue'>
 
 export interface XhNumberFieldRootProps extends RootElementProps {
@@ -40,7 +40,7 @@ export interface XhNumberFieldRootProps extends RootElementProps {
   readOnly?: boolean
   required?: boolean
   invalid?: boolean
-  /** 表单字段名；给了才参与提交。 */
+  /** 表单字段名；提供后才参与提交。 */
   name?: string
   changeDelay?: number
   changeInterval?: number
@@ -135,7 +135,7 @@ export function XhNumberFieldLabel({ children, ...rest }: XhNumberFieldLabelProp
 }
 
 export interface XhNumberFieldControlProps extends ComponentPropsWithRef<'div'> {}
-/** 视觉盒：输入框与加减钮都放进来，皮肤把描边、底色、聚焦环画在它身上。 */
+/** 视觉盒：输入框与加减按钮都放入其中，皮肤把描边、底色、聚焦环绘制在它上面。 */
 export function XhNumberFieldControl({ children, ...rest }: XhNumberFieldControlProps): ReactNode {
   const ctx = useNumberFieldContext()
   return (
@@ -189,7 +189,7 @@ export interface XhNumberFieldIncrementTriggerProps extends ComponentPropsWithRe
 
 /**
  * 加号。pointerleave 是按住连发的三条收尾出口之一，React 的合成 onPointerLeave 由
- * pointerout 模拟出来、收不到直接派到节点上的 pointerleave，改装成原生监听器才与另外两家
+ * pointerout 模拟得出、无法收到直接派发到节点上的 pointerleave，改装为原生监听器才与另外两个适配器
  * 同一条到达路径。
  */
 export function XhNumberFieldIncrementTrigger({ children, ...rest }: XhNumberFieldIncrementTriggerProps): ReactNode {
