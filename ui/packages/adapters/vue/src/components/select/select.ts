@@ -19,7 +19,7 @@ import { useSelect } from './use-select'
 
 type SelectProps = SelectSchema['props']
 
-/** 默认插槽的载荷：展开态、选中集合与显示文字、可见标签与被折起的个数及其文字，以及改展开、改值、清空、摘值四个动作。 */
+/** 默认插槽的载荷：展开态、选中集合与显示文字、可见标签与被折叠的个数及其文字，以及修改展开、修改值、清空、移除值四个动作。 */
 export type SelectRootSlotProps = Pick<
   SelectApi,
   'open' | 'value' | 'displayText' | 'tags' | 'overflowCount' | 'overflowText' | 'setOpen' | 'setValue' | 'clear' | 'deselect'
@@ -30,7 +30,7 @@ export const XhSelectRoot = /* @__PURE__ */ defineComponent({
   // 有 connect 兜底的 prop：普通类型省略 default，Boolean 显式保留 undefined
   props: {
     collection: { type: Array as PropType<SelectNode[]> },
-    /** 标题文字。给了它就不必再写 label 部件；要放别的内容改用 label 插槽。 */
+    /** 标题文字。提供后不必再写 label 部件；需要放置其他内容时改用 label 插槽。 */
     label: { type: String },
     value: { type: [String, Array] as PropType<string | string[] | null> },
     defaultValue: { type: [String, Array] as PropType<string | string[] | null> },
@@ -38,9 +38,9 @@ export const XhSelectRoot = /* @__PURE__ */ defineComponent({
     open: { type: Boolean, default: undefined },
     defaultOpen: Boolean,
     disabled: { type: Boolean, default: undefined },
-    /** 只读：浮层照常展开与浏览，但选中值改不动、也清不掉。 */
+    /** 只读：浮层照常展开与浏览，但选中值不可修改、也不可清空。 */
     readOnly: { type: Boolean, default: undefined },
-    /** 自动渲染树里是否带清空按钮；手写部件不看它，写了节点即可清。 */
+    /** 自动渲染树中是否带清空按钮；手写部件不使用它，写了节点即可清空。 */
     clearable: Boolean,
     invalid: { type: Boolean, default: undefined },
     loading: { type: Boolean, default: undefined },
@@ -201,9 +201,9 @@ export const XhSelectTagLabel = /* @__PURE__ */ defineComponent({
 })
 
 /**
- * 标签内容：只有文字时替它包一层 label——截断规则挂在 label 上，直接摊在 root 上的文字过长会把
- * 删除钮挤出去；作者自己写了节点就原样放行。与 XhTagRoot 同一条规矩。
- * 库自己填的文字（+N，没有折起时是空串）恒包 label，三家适配器渲出同一棵树。
+ * 标签内容：只有文字时替它包一层 label：截断规则挂在 label 上，直接展开在 root 上的文字过长会把
+ * 删除按钮挤出；作者自己写了节点则原样放行。与 XhTagRoot 同一规则。
+ * 库自身填入的文字（+N，没有折叠时是空串）恒包 label，三个适配器渲染出同一棵树。
  */
 function tagChildren(content: VNode[] | string | undefined): VNode[] | string | undefined {
   if (typeof content === 'string')
@@ -211,7 +211,7 @@ function tagChildren(content: VNode[] | string | undefined): VNode[] | string | 
   return slotIsPlainText(content) ? [h(XhSelectTagLabel, null, () => content)] : content
 }
 
-/** 一个选中值一枚，就是库里 tag 的 root（data-scope="tag"）：语气、尺寸与禁用从 select 传下去，形态按控件的面派；触发器里纯展示，触发器外配 XhSelectItemDeleteTrigger 可删。 */
+/** 一个选中值一个标签，即库内 tag 的 root（data-scope="tag"）：语气、尺寸与禁用从 select 传下，形态按控件的面派生；触发器内纯展示，触发器外配合 XhSelectItemDeleteTrigger 可删除。 */
 export const XhSelectTag = /* @__PURE__ */ defineComponent({
   name: 'XhSelectTag',
   props: {
@@ -226,7 +226,7 @@ export const XhSelectTag = /* @__PURE__ */ defineComponent({
   },
 })
 
-/** 折起的标签合成的那一枚：同样是 tag 的 root；有插槽用插槽，否则显示 +N。没有折起的标签时连接层给 hidden。 */
+/** 折叠的标签合成的一个标签：同样是 tag 的 root；有插槽时使用插槽，否则显示 +N。没有折叠的标签时连接层写 hidden。 */
 export const XhSelectOverflowTag = /* @__PURE__ */ defineComponent({
   name: 'XhSelectOverflowTag',
   setup(_, { slots }) {
@@ -239,7 +239,7 @@ export const XhSelectOverflowTag = /* @__PURE__ */ defineComponent({
   },
 })
 
-/** 标签里的删除钮：就是所在标签那份 tag 的 close-trigger（data-scope="tag"），可及名走 translations.deleteItem；点按摘掉所在标签的选中值。 */
+/** 标签中的删除按钮：即所在标签那份 tag 的 close-trigger（data-scope="tag"），可及名使用 translations.deleteItem；点按移除所在标签的选中值。 */
 export const XhSelectItemDeleteTrigger = /* @__PURE__ */ defineComponent({
   name: 'XhSelectItemDeleteTrigger',
   setup(_, { slots }) {
@@ -401,8 +401,8 @@ export const XhSelectItemIndicator = /* @__PURE__ */ defineComponent({
 })
 
 /**
- * 没写默认插槽时按 collection 铺开的整套结构，作者只交数据。
- * 与手写部件产出的 DOM 完全一致，要改结构就写默认插槽，行为不变。
+ * 未写默认插槽时按 collection 铺开的整套结构，作者只提供数据。
+ * 与手写部件产出的 DOM 完全一致，需要修改结构时写默认插槽，行为不变。
  */
 function renderDefaultTree(
   collection: readonly SelectNodeMeta[],

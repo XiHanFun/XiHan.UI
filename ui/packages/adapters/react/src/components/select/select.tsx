@@ -32,18 +32,18 @@ import { useSelect } from './use-select'
 
 type SelectProps = SelectSchema['props']
 
-/** 函数式 children 的载荷：展开态、选中集合与显示文字、可见标签与被折起的个数及其文字，以及四个动作。 */
+/** 函数式 children 的载荷：展开态、选中集合与显示文字、可见标签与被折叠的个数及其文字，以及四个动作。 */
 export type SelectRootSlotProps = Pick<
   SelectApi,
   'open' | 'value' | 'displayText' | 'tags' | 'overflowCount' | 'overflowText' | 'setOpen' | 'setValue' | 'clear' | 'deselect'
 >
 
-/** 根上自有的那些取值；defaultValue 与 dir 与原生的同名属性含义不同，由这里接管。 */
+/** 根上自有的取值；defaultValue 与 dir 与原生的同名属性含义不同，由这里接管。 */
 type RootElementProps = Omit<ComponentPropsWithRef<'div'>, 'children' | 'defaultValue' | 'dir'>
 
 export interface XhSelectRootProps extends RootElementProps {
   collection?: SelectNode[]
-  /** 标题文字。给了它就不必再写 label 部件。 */
+  /** 标题文字。提供后不必再写 label 部件。 */
   label?: ReactNode
   value?: string | string[] | null
   defaultValue?: string | string[] | null
@@ -51,9 +51,9 @@ export interface XhSelectRootProps extends RootElementProps {
   open?: boolean
   defaultOpen?: boolean
   disabled?: boolean
-  /** 只读：浮层照常展开与浏览，但选中值改不动、也清不掉。 */
+  /** 只读：浮层照常展开与浏览，但选中值不可修改、也不可清空。 */
   readOnly?: boolean
-  /** 自动渲染树里是否带清空按钮；手写部件不看它，写了节点即可清。 */
+  /** 自动渲染树中是否带清空按钮；手写部件不使用它，写了节点即可清空。 */
   clearable?: boolean
   invalid?: boolean
   loading?: boolean
@@ -71,7 +71,7 @@ export interface XhSelectRootProps extends RootElementProps {
   size?: Size
   onValueChange?: SelectProps['onValueChange']
   onOpenChange?: SelectProps['onOpenChange']
-  /** 每个条目的自定义内容；不给就用 collection 里的 label。 */
+  /** 每个条目的自定义内容；未提供时使用 collection 中的 label。 */
   renderItem?: (node: SelectNodeMeta) => ReactNode
   children?: SlotChildren<SelectRootSlotProps>
 }
@@ -189,7 +189,7 @@ export function XhSelectLabel({ children, ...rest }: XhSelectLabelProps): ReactN
 }
 
 export interface XhSelectControlProps extends ComponentPropsWithRef<'div'> {}
-/** 盒：触发器与清空按钮在里面并排，描边、底色与聚焦环都长在它上面。 */
+/** 控件盒：触发器与清空按钮在其中并排，描边、底色与聚焦环都落在它上面。 */
 export function XhSelectControl({ children, ...rest }: XhSelectControlProps): ReactNode {
   const ctx = useSelectContext()
   return <div {...mergeReactProps(ctx.api.getControlProps() as Record<string, unknown>, rest as Record<string, unknown>)}>{children}</div>
@@ -216,7 +216,7 @@ export function XhSelectTrigger({ children, ...rest }: XhSelectTriggerProps): Re
 }
 
 export interface XhSelectValueTextProps extends ComponentPropsWithRef<'span'> {}
-/** 有内容用内容，否则显示选中项文本或 placeholder。 */
+/** 有内容时使用内容，否则显示选中项文本或 placeholder。 */
 export function XhSelectValueText({ children, ...rest }: XhSelectValueTextProps): ReactNode {
   const ctx = useSelectContext()
   return (
@@ -233,14 +233,14 @@ export function XhSelectIndicator({ children, ...rest }: XhSelectIndicatorProps)
 }
 
 export interface XhSelectClearTriggerProps extends ComponentPropsWithRef<'button'> {}
-/** 节点常挂，清不了时靠 hidden 藏掉。 */
+/** 节点常驻，不可清空时依靠 hidden 隐藏。 */
 export function XhSelectClearTrigger({ children, ...rest }: XhSelectClearTriggerProps): ReactNode {
   const ctx = useSelectContext()
   return <button {...mergeReactProps(ctx.api.getClearTriggerProps() as Record<string, unknown>, rest as Record<string, unknown>)}>{children}</button>
 }
 
 export interface XhSelectTagListProps extends ComponentPropsWithRef<'span'> {}
-/** 标签行：可见标签与 +N 那一枚在里面并排；无选中时连接层给 hidden，value-text 回来显示占位文字。 */
+/** 标签行：可见标签与 +N 标签在其中并排；无选中时连接层写 hidden，value-text 恢复显示占位文字。 */
 export function XhSelectTagList({ children, ...rest }: XhSelectTagListProps): ReactNode {
   const ctx = useSelectContext()
   return <span {...mergeReactProps(ctx.api.getTagListProps() as Record<string, unknown>, rest as Record<string, unknown>)}>{children}</span>
@@ -254,9 +254,9 @@ export function XhSelectTagLabel({ children, ...rest }: XhSelectTagLabelProps): 
 }
 
 /**
- * 标签内容：只有文字时替它包一层 label——截断规则挂在 label 上，直接摊在 root 上的文字过长会把
- * 删除钮挤出去；作者自己写了节点就原样放行。与 XhTagRoot 同一条规矩。
- * 库自己填的文字（+N，没有折起时是空串）恒包 label，三家适配器渲出同一棵树。
+ * 标签内容：只有文字时替它包一层 label：截断规则挂在 label 上，直接展开在 root 上的文字过长会把
+ * 删除按钮挤出；作者自己写了节点则原样放行。与 XhTagRoot 同一规则。
+ * 库自身填入的文字（+N，没有折叠时是空串）恒包 label，三个适配器渲染出同一棵树。
  */
 function tagChildren(children: ReactNode): ReactNode {
   return typeof children === 'string' || slotIsPlainText(children) ? <XhSelectTagLabel>{children}</XhSelectTagLabel> : children
@@ -266,7 +266,7 @@ export interface XhSelectTagProps extends ComponentPropsWithRef<'span'> {
   /** 它代表哪个选中值。 */
   value: string
 }
-/** 一个选中值一枚，就是库里 tag 的 root（data-scope="tag"）：语气、尺寸与禁用从 select 传下去，形态按控件的面派；触发器里纯展示，触发器外配 XhSelectItemDeleteTrigger 可删。 */
+/** 一个选中值一个标签，即库内 tag 的 root（data-scope="tag"）：语气、尺寸与禁用从 select 传下，形态按控件的面派生；触发器内纯展示，触发器外配合 XhSelectItemDeleteTrigger 可删除。 */
 export function XhSelectTag({ value, children, ...rest }: XhSelectTagProps): ReactNode {
   const ctx = useSelectContext()
   return (
@@ -277,7 +277,7 @@ export function XhSelectTag({ value, children, ...rest }: XhSelectTagProps): Rea
 }
 
 export interface XhSelectOverflowTagProps extends ComponentPropsWithRef<'span'> {}
-/** 折起的标签合成的那一枚：同样是 tag 的 root；有内容用内容，否则显示 +N。没有折起的标签时连接层给 hidden。 */
+/** 折叠的标签合成的一个标签：同样是 tag 的 root；有内容时使用内容，否则显示 +N。没有折叠的标签时连接层写 hidden。 */
 export function XhSelectOverflowTag({ children, ...rest }: XhSelectOverflowTagProps): ReactNode {
   const ctx = useSelectContext()
   return (
@@ -288,7 +288,7 @@ export function XhSelectOverflowTag({ children, ...rest }: XhSelectOverflowTagPr
 }
 
 export interface XhSelectItemDeleteTriggerProps extends ComponentPropsWithRef<'button'> {}
-/** 标签里的删除钮：就是所在标签那份 tag 的 close-trigger（data-scope="tag"），可及名走 translations.deleteItem；点按摘掉所在标签的选中值。 */
+/** 标签中的删除按钮：即所在标签那份 tag 的 close-trigger（data-scope="tag"），可及名使用 translations.deleteItem；点按移除所在标签的选中值。 */
 export function XhSelectItemDeleteTrigger({ children, ...rest }: XhSelectItemDeleteTriggerProps): ReactNode {
   const ctx = useSelectContext()
   const value = useSelectTagContext()
@@ -296,10 +296,10 @@ export function XhSelectItemDeleteTrigger({ children, ...rest }: XhSelectItemDel
 }
 
 export interface XhSelectPositionerProps extends ComponentPropsWithRef<'div'> {
-  /** 浮层挂到哪个容器；不给就按全局配置，再不给挂 body。 */
+  /** 浮层挂载的容器；未提供时按全局配置，再未提供时挂载到 body。 */
   container?: () => Element | null
 }
-/** 搬到浮层落点：留在原地的话，宿主祖先只要建了层叠上下文就能盖住浮层。 */
+/** 迁移到浮层落点：留在原地时，宿主祖先只要建立了层叠上下文就能遮住浮层。 */
 export function XhSelectPositioner({ children, container, ...rest }: XhSelectPositionerProps): ReactNode {
   const ctx = useSelectContext()
   return (
@@ -339,7 +339,7 @@ export function XhSelectContent({ children, ...rest }: XhSelectContentProps): Re
 }
 
 export interface XhSelectListProps extends ComponentPropsWithRef<'div'> {}
-/** 列表框本体：条目放这里面。滚动也在这一层，底部操作区因此不随条目滚走。 */
+/** 列表框本体：条目放在其中。滚动也在这一层，底部操作区因此不随条目滚动。 */
 export function XhSelectList({ children, ...rest }: XhSelectListProps): ReactNode {
   const ctx = useSelectContext()
   return <div {...mergeReactProps(ctx.api.getListProps() as Record<string, unknown>, rest as Record<string, unknown>)}>{children}</div>
@@ -366,7 +366,7 @@ export function XhSelectLoading({ children, ...rest }: XhSelectLoadingProps): Re
 export interface XhSelectGroupProps extends ComponentPropsWithRef<'div'> {
   value: string
 }
-/** 分组容器：条目照常挂在它里面，role=group 是列表框允许拥有的两种子节点之一。 */
+/** 分组容器：条目照常挂在其中，role=group 是列表框允许拥有的两种子节点之一。 */
 export function XhSelectGroup({ value, children, ...rest }: XhSelectGroupProps): ReactNode {
   const ctx = useSelectContext()
   const group = useMemo(() => ({ value }), [value])
@@ -386,7 +386,7 @@ export function XhSelectGroupLabel({ children, ...rest }: XhSelectGroupLabelProp
 
 export interface XhSelectItemProps extends Omit<ComponentPropsWithRef<'div'>, 'value'> {
   value: string
-  /** 缺省交给 connect 回 collection 里查，写死 false 会盖掉数据里的禁用。 */
+  /** 默认交给 connect 查询 collection，写死 false 会覆盖数据中的禁用。 */
   disabled?: boolean
 }
 export function XhSelectItem({ value, disabled, children, ...rest }: XhSelectItemProps): ReactNode {
@@ -453,8 +453,8 @@ export function XhSelectItemIndicator({ children, ...rest }: XhSelectItemIndicat
 }
 
 /**
- * 没写 children 时按 collection 铺开的整套结构，作者只交数据。
- * 与手写部件产出的 DOM 完全一致，要改结构就写 children，行为不变。
+ * 未写 children 时按 collection 铺开的整套结构，作者只提供数据。
+ * 与手写部件产出的 DOM 完全一致，需要修改结构时写 children，行为不变。
  */
 function DefaultTree(props: {
   collection: readonly SelectNodeMeta[]
