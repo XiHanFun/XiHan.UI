@@ -10,7 +10,7 @@ import type { ComputedRef, InjectionKey } from 'vue'
 import type { ScrollAreaContext } from './use-scroll-area'
 import { inject, provide } from 'vue'
 
-/** 滚动条自报的轴向，供它内部的滑块复用同一份声明。 */
+/** 滚动条声明的轴向，供它内部的滑块复用同一份声明。 */
 export interface ScrollAreaScrollbarContext {
   scrollbar: ComputedRef<ScrollAreaScrollbarProps>
 }

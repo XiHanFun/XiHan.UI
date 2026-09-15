@@ -15,7 +15,7 @@ import { renderSlot } from '../../runtime/slot-content'
 import { ScrollAreaProvider, ScrollAreaScrollbarProvider, useScrollAreaContext, useScrollAreaScrollbarContext } from './context'
 import { useScrollArea } from './use-scroll-area'
 
-/** 函数式 children 的载荷：两条轴的滚动条状态、正被拖动的那条轴，以及右下角补丁该不该显形。 */
+/** 函数式 children 的载荷：两条轴的滚动条状态、正被拖动的轴，以及右下角补丁是否应当显示。 */
 export type ScrollAreaRootSlotProps = Pick<ScrollAreaApi, 'vertical' | 'horizontal' | 'draggingAxis' | 'cornerVisible'>
 
 export interface XhScrollAreaRootProps extends Omit<ComponentPropsWithRef<'div'>, 'children' | 'dir'> {
@@ -24,9 +24,9 @@ export interface XhScrollAreaRootProps extends Omit<ComponentPropsWithRef<'div'>
   orientation?: ScrollAreaOrientation
   variant?: ScrollAreaVariant
   size?: Size
-  /** 文字方向，缺省 ltr。 */
+  /** 文字方向，默认 ltr。 */
   dir?: Direction
-  /** 触屏（粗指针）上也画自绘滚动条；缺省交给原生滚动。 */
+  /** 触屏（粗指针）上也绘制自绘滚动条；默认交给原生滚动。 */
   forceVisible?: boolean
   children?: SlotChildren<ScrollAreaRootSlotProps>
 }
@@ -70,7 +70,7 @@ export function XhScrollAreaRoot({
 
 export interface XhScrollAreaViewportProps extends ComponentPropsWithRef<'div'> {}
 
-/** 视口节点交给两台机器，尺寸与滚动量在效应与事件里现量。 */
+/** 视口节点交给两台状态机，尺寸与滚动量在效应与事件中现测。 */
 export function XhScrollAreaViewport({ children, ...rest }: XhScrollAreaViewportProps): ReactNode {
   const ctx = useScrollAreaContext()
   return (
@@ -104,11 +104,11 @@ export function XhScrollAreaContent({ children, ...rest }: XhScrollAreaContentPr
 }
 
 export interface XhScrollAreaScrollbarProps extends ComponentPropsWithRef<'div'> {
-  /** 这条滚动条管哪条轴。 */
+  /** 该滚动条管理哪条轴。 */
   orientation?: Orientation
 }
 
-/** 某条轴的滚动条挂载点，同时是那条 scrollbar 的根；里面照 scrollbar 的写法摆轨道、滑块与交叉口。 */
+/** 某条轴的滚动条挂载点，同时是该 scrollbar 的根；其中按 scrollbar 的写法放置轨道、滑块与交叉口。 */
 export function XhScrollAreaScrollbar({ orientation = 'vertical', children, ...rest }: XhScrollAreaScrollbarProps): ReactNode {
   const ctx = useScrollAreaContext()
   return (
@@ -129,7 +129,7 @@ export function XhScrollAreaScrollbar({ orientation = 'vertical', children, ...r
 
 export interface XhScrollAreaTrackProps extends ComponentPropsWithRef<'div'> {}
 
-/** 轨道节点交给机器，长度在按下滑块时现量。 */
+/** 轨道节点交给状态机，长度在按下滑块时现测。 */
 export function XhScrollAreaTrack({ children, ...rest }: XhScrollAreaTrackProps): ReactNode {
   const ctx = useScrollAreaContext()
   const orientation = useScrollAreaScrollbarContext()
@@ -165,7 +165,7 @@ export function XhScrollAreaThumb({ children, ...rest }: XhScrollAreaThumbProps)
 
 export interface XhScrollAreaCornerProps extends ComponentPropsWithRef<'div'> {}
 
-/** 交叉口补丁，写在竖条的挂载点里；两条都在场时才显形。 */
+/** 交叉口补丁，写在竖条的挂载点中；两条都在场时才显示。 */
 export function XhScrollAreaCorner({ children, ...rest }: XhScrollAreaCornerProps): ReactNode {
   const ctx = useScrollAreaContext()
   return (
