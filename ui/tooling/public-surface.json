@@ -12037,6 +12037,7 @@
     "--xh-shadow-md",
     "--xh-shadow-sm",
     "--xh-shadow-xl",
+    "--xh-shape-circle",
     "--xh-shape-control",
     "--xh-shape-inset",
     "--xh-shape-overlay",

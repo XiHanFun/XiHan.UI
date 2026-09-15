@@ -79,7 +79,7 @@ describe('tooltip 紧凑反白 M2', () => {
     expect(content.color).not.toContain('/ 0.')
     expect(content.backdropFilter || content.getPropertyValue('-webkit-backdrop-filter')).toContain('blur(8px)')
     expect(content.borderTopWidth).toBe('1px')
-    expect(content.borderRadius).toBe('6px')
+    expect(content.borderRadius).toBe('4px')
     expect(content.boxShadow).not.toBe('none')
     expect(arrow.backgroundColor).toBe(surface.backgroundColor)
     expect(arrow.opacity).toBe(surface.opacity)

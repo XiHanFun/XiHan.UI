@@ -10,7 +10,7 @@
 //
 // 箭头交给定位引擎的量是 JS 手写字面量，皮肤画的尺寸来自令牌：两边各改各的不会有任何判据报错，
 // 只是钳位偏了——箭头在两端极限位置压进圆角或探出浮层。这里把令牌解到像素，
-// 与 JS 常量对账：交叉轴宽度 = 边长·√2，端距 = 圆角 --xh-shape-surface。
+// 与 JS 常量对账：交叉轴宽度 = 边长·√2，端距 = 浮层圆角 --xh-shape-overlay。
 import { readdir, readFile } from 'node:fs/promises'
 import { join } from 'node:path'
 
@@ -139,14 +139,14 @@ else {
 const tokens = JSON.parse(await readFile(TOKENS, 'utf8'))
 const overlayTs = await readFile(OVERLAY_TS, 'utf8')
 const arrowPx = resolvePx(tokens, '--xh-overlay-arrow-size')
-const radiusPx = resolvePx(tokens, '--xh-shape-surface')
+const radiusPx = resolvePx(tokens, '--xh-shape-overlay')
 const jsSize = evalConst(overlayTs, 'OVERLAY_ARROW_SIZE')
 const jsPadding = evalConst(overlayTs, 'OVERLAY_ARROW_PADDING')
 
 if (arrowPx == null)
   errors.push(`${TOKENS} 的 --xh-overlay-arrow-size 解不到像素字面量`)
 if (radiusPx == null)
-  errors.push(`${TOKENS} 的 --xh-shape-surface 解不到像素字面量`)
+  errors.push(`${TOKENS} 的 --xh-shape-overlay 解不到像素字面量`)
 if (jsSize == null)
   errors.push(`${OVERLAY_TS} 的 OVERLAY_ARROW_SIZE 读不到或求不出值`)
 if (jsPadding == null)
@@ -154,7 +154,7 @@ if (jsPadding == null)
 if (arrowPx != null && jsSize != null && Math.abs(jsSize - arrowPx * Math.SQRT2) >= 0.01)
   errors.push(`OVERLAY_ARROW_SIZE = ${jsSize}，但 --xh-overlay-arrow-size = ${arrowPx}px，对角线应为 ${arrowPx}·√2 = ${(arrowPx * Math.SQRT2).toFixed(4)}`)
 if (radiusPx != null && jsPadding != null && jsPadding !== radiusPx)
-  errors.push(`OVERLAY_ARROW_PADDING = ${jsPadding}，但 --xh-shape-surface = ${radiusPx}px，端距要等于圆角`)
+  errors.push(`OVERLAY_ARROW_PADDING = ${jsPadding}，但 --xh-shape-overlay = ${radiusPx}px，端距要等于浮层圆角`)
 
 // 共享皮肤的方块要吃统一尺寸槽并转 45°，否则 JS 按对角线算的钳位对不上画出来的形状
 const sharedCss = await readFile(join(STYLES, SHARED), 'utf8')

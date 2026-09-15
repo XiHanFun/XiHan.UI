@@ -413,23 +413,34 @@
     }
   },
   "shape": {
+    "$description": "形状身份。inset / control / surface / overlay 是 4 / 8 / 12px 的小圆角阶梯；circle 与 pill 是形状身份，不进入阶梯。",
     "inset": {
+      "$description": "嵌在控件里的内层：菜单项、标签内部、微型状态块。",
       "$type": "dimension",
       "$value": "{radius.sm}"
     },
     "control": {
+      "$description": "控件本体：Button、Input、Select Trigger、Toggle、分页按钮。",
+      "$type": "dimension",
+      "$value": "{radius.sm}"
+    },
+    "surface": {
+      "$description": "成面的静态容器：Card、Alert、Panel、列表容器。",
       "$type": "dimension",
       "$value": "{radius.md}"
     },
-    "surface": {
+    "overlay": {
+      "$description": "脱离文档流的浮层：Popover、Menu、Dialog、Drawer、Toast。",
       "$type": "dimension",
       "$value": "{radius.lg}"
     },
-    "overlay": {
+    "circle": {
+      "$description": "正圆：头像、圆形图标按钮、单选指示器。",
       "$type": "dimension",
-      "$value": "calc({radius.lg} * 2)"
+      "$value": "50%"
     },
     "pill": {
+      "$description": "胶囊：Badge、Tag、Segmented 轨道等具有胶囊身份的对象。",
       "$type": "dimension",
       "$value": "{radius.full}"
     }
