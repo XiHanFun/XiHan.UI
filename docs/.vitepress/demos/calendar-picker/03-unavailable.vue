@@ -1,4 +1,4 @@
-<!-- 不可选的日子 | isDateUnavailable 与 min / max 都只挡落值不挡聚焦：方向键照样走得过去 -->
+<!-- 不可选的日期 | isDateUnavailable 与 min / max 都只阻止落值不阻止聚焦：方向键照常可以经过 -->
 <script setup lang="ts">
 import {
   XhCalendarPickerCell,

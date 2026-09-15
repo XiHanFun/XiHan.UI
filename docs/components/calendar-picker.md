@@ -26,19 +26,19 @@
 
 ### 多选
 
-selection-mode=multiple：点一下加进去，再点一下摘掉，集合按日期升序
+selection-mode=multiple：点击一次加入，再点击一次移除，集合按日期升序
 
 <XhDemo src="calendar-picker/02-multiple" />
 
-### 不可选的日子
+### 不可选的日期
 
-isDateUnavailable 与 min / max 都只挡落值不挡聚焦：方向键照样走得过去
+isDateUnavailable 与 min / max 都只阻止落值不阻止聚焦：方向键照常可以经过
 
 <XhDemo src="calendar-picker/03-unavailable" />
 
-### 格子里放内容
+### 格子内放置内容
 
-cell-trigger 的内容全由作者写，日号之外还能塞自己的标记
+cell-trigger 的内容全部由作者编写，日号之外还可放置自己的标记
 
 <XhDemo src="calendar-picker/04-cell-content" />
 

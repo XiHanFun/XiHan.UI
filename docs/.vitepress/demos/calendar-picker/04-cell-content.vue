@@ -1,4 +1,4 @@
-<!-- 格子里放内容 | cell-trigger 的内容全由作者写，日号之外还能塞自己的标记 -->
+<!-- 格子内放置内容 | cell-trigger 的内容全部由作者编写，日号之外还可放置自己的标记 -->
 <script setup lang="ts">
 import {
   XhCalendarPickerCell,
