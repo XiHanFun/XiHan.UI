@@ -147,7 +147,7 @@ export interface SelectSchema extends MachineSchema {
     loop?: boolean
     /** 文字方向，默认 ltr。 */
     dir?: Direction
-    /** 形态：outline / subtle / ghost，决定触发器的描边与底色使用方式。 */
+    /** 形态：outline / subtle / ghost，决定触发器的描边与底色使用方式。默认 outline。 */
     variant?: ControlVariant
     /** 语气：brand / neutral / success / warning / danger / info，决定聚焦与选中强调使用哪族颜色。 */
     tone?: Tone
