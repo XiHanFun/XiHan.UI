@@ -25,35 +25,35 @@ export type TimerRootSlotProps = Pick<
   | 'start' | 'pause' | 'resume' | 'reset'
 >
 
-/** 没写 children 时铺开的那几段：时、分、秒。要天或毫秒就自己写部件。 */
+/** 未写 children 时铺设的段：时、分、秒。需要天或毫秒时自行写部件。 */
 const DEFAULT_UNITS: readonly TimerUnit[] = ['hours', 'minutes', 'seconds']
 
 export interface XhTimerRootProps extends Omit<ComponentPropsWithRef<'div'>, 'children'> {
-  /** 起始值毫秒，缺省 0。 */
+  /** 起始值毫秒，默认 0。 */
   startMs?: number
-  /** 终点值毫秒。倒计时缺省 0；正计时不给它就一直走下去。 */
+  /** 终点值毫秒。倒计时默认 0；正计时未提供时一直运行。 */
   targetMs?: number
-  /** 倒着走，缺省假。 */
+  /** 倒计时，默认假。 */
   countdown?: boolean
-  /** 受控剩余毫秒。给了它即进受控通道。 */
+  /** 受控剩余毫秒。提供后即进入受控通道。 */
   value?: number
-  /** 受控开关，缺省真。给了它即进受控通道。 */
+  /** 受控开关，默认真。提供后即进入受控通道。 */
   active?: boolean
-  /** 挂载即开跑，缺省假。 */
+  /** 挂载即开始运行，默认假。 */
   autoStart?: boolean
-  /** 刷新间隔毫秒，缺省 1000，下限一帧。 */
+  /** 刷新间隔毫秒，默认 1000，下限一帧。 */
   interval?: number
-  /** 文本模板，缺省 `HH:mm:ss`。 */
+  /** 文本模板，默认 `HH:mm:ss`。 */
   format?: string
-  /** 取值粒度：0 到秒、3 到毫秒，缺省 3。 */
+  /** 取值粒度：0 到秒、3 到毫秒，默认 3。 */
   precision?: number
-  /** 读屏播报档位，缺省 off。 */
+  /** 读屏播报档位，默认 off。 */
   live?: TimerLive
   size?: Size
   translations?: Partial<TimerTranslations>
-  /** 每一拍通知一次。到点那一拍只发 onComplete。 */
+  /** 每一拍通知一次。到期的一拍只触发 onComplete。 */
   onTick?: TimerProps['onTick']
-  /** 走到终点通知一次。 */
+  /** 到达终点时通知一次。 */
   onComplete?: TimerProps['onComplete']
   children?: SlotChildren<TimerRootSlotProps>
 }
@@ -136,13 +136,13 @@ export function XhTimerDisplay({ children, ...rest }: XhTimerDisplayProps): Reac
 }
 
 export interface XhTimerItemProps extends Omit<ComponentPropsWithRef<'span'>, 'children'> {
-  /** 这一段是哪个单位。 */
+  /** 该段的单位。 */
   unit: TimerUnit
 }
 
 /**
- * 一段数字。这一段的数字恒由组件写，作者只声明它是哪一段：写在条目里的内容留不住，
- * 下一拍就会被新的数字盖掉。
+ * 一段数字。该段的数字恒由组件写入，作者只声明它是哪一段：写在条目中的内容不会保留，
+ * 下一拍就会被新的数字覆盖。
  */
 export function XhTimerItem({ unit, ...rest }: XhTimerItemProps): ReactNode {
   const ctx = useTimerContext()
@@ -156,7 +156,7 @@ export function XhTimerItem({ unit, ...rest }: XhTimerItemProps): ReactNode {
 
 export interface XhTimerSeparatorProps extends ComponentPropsWithRef<'span'> {}
 
-/** 两段之间的记号，缺省是冒号。 */
+/** 两段之间的记号，默认是冒号。 */
 export function XhTimerSeparator({ children, ...rest }: XhTimerSeparatorProps): ReactNode {
   const ctx = useTimerContext()
   return (
@@ -168,7 +168,7 @@ export function XhTimerSeparator({ children, ...rest }: XhTimerSeparatorProps): 
 
 export interface XhTimerControlProps extends ComponentPropsWithRef<'button'> {}
 
-/** 起停按钮：用原生 button，激活交给平台；没写内容时把当前动作的名字写上去。 */
+/** 起停按钮：使用原生 button，激活交给平台；未写内容时写入当前动作的名字。 */
 export function XhTimerControl({ children, ...rest }: XhTimerControlProps): ReactNode {
   const ctx = useTimerContext()
   const { api } = ctx
@@ -180,8 +180,8 @@ export function XhTimerControl({ children, ...rest }: XhTimerControlProps): Reac
 }
 
 /**
- * 没写 children 时铺开的整套结构：一个时间区，里面是时、分、秒三段与两个冒号。
- * 与手写部件产出的 DOM 完全一致，要改结构就自己写部件，行为不变。
+ * 未写 children 时铺设的整套结构：一个时间区，其中是时、分、秒三段与两个冒号。
+ * 与手写部件产出的 DOM 完全一致，需要修改结构时自行写部件，行为不变。
  */
 function DefaultTree(): ReactNode {
   const nodes: ReactNode[] = []

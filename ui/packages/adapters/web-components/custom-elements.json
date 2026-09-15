@@ -55795,7 +55795,7 @@
       "declarations": [
         {
           "kind": "class",
-          "description": "`<xh-timer>` —— Light-DOM 行为宿主：作者写 root、display、若干 item 与 separator，\n需要起停就再写一个 control。元素跑 timer 机器，把 connect 产出打到角色节点上，\n并把每一段的数字写进对应的 item。\n\n时间只从单调时钟的两个时刻相减而来，一拍都不累加；`interval` 只决定数字多久跳一次，\n到点另有一个精确落在终点上的定时器判定，终点不落在整拍上也不会走过头。\n\n每个 item 用 `unit` 属性声明自己是哪一段（days / hours / minutes / seconds / milliseconds）。\n它是作者的声明、不是机器写回的状态，改它本身不会另排一次接线——停着时改完要等下一次\n属性变更或起跑才生效。\n\ncontrol 里的文字归作者写（多半是个图标），元素只按当前状态换它的 `data-action` 与读屏名字。",
+          "description": "`<xh-timer>`：Light-DOM 行为宿主：作者写 root、display、若干 item 与 separator，\n需要起停时再写一个 control。元素运行 timer 状态机，把 connect 产出接到角色节点上，\n并把每一段的数字写进对应的 item。\n\n时间只由单调时钟的两个时刻相减得出，不逐拍累加；`interval` 只决定数字的跳动间隔，\n到期另有一个精确落在终点上的定时器判定，终点不落在整拍上也不会越过。\n\n每个 item 用 `unit` 属性声明所属的段（days / hours / minutes / seconds / milliseconds）。\n它是作者的声明、不是状态机写回的状态，修改它本身不会另排一次接线：停止时修改后要等下一次\n属性变更或开始运行才生效。\n\ncontrol 中的文字由作者编写（通常是一个图标），元素只按当前状态切换它的 `data-action` 与读屏名。",
           "name": "XhTimerElement",
           "cssParts": [
             {
@@ -55803,11 +55803,11 @@
               "name": "root"
             },
             {
-              "description": "时间区，role=timer 并带着整段时间的读屏名字",
+              "description": "时间区，role=timer 并带整段时间的读屏名",
               "name": "display"
             },
             {
-              "description": "一段数字，须自带 unit 属性说明它是哪一段；文字归元素写",
+              "description": "一段数字，须自带 unit 属性说明所属的段；文字由元素写入",
               "name": "item"
             },
             {
@@ -55815,7 +55815,7 @@
               "name": "separator"
             },
             {
-              "description": "起停按钮，须是原生 `<button>`；按当前状态换 data-action",
+              "description": "起停按钮，须是原生 `<button>`；按当前状态切换 data-action",
               "name": "control"
             }
           ],
@@ -55982,7 +55982,7 @@
                   }
                 }
               ],
-              "description": "没进 DOM 时机器还没起来，此刻谈不上起停，送过去只会被丢弃并在开发期报一声。"
+              "description": "未进入 DOM 时状态机尚未建立，此时无从起停，发送过去只会被丢弃并在开发期报告一次。"
             },
             {
               "kind": "method",
@@ -55992,7 +55992,7 @@
                   "text": "void"
                 }
               },
-              "description": "起停四个动作也给到元素上，作者不必自己去点那个按钮。"
+              "description": "起停四个动作同样暴露在元素上，作者不必自行点击按钮。"
             },
             {
               "kind": "method",
@@ -56034,14 +56034,14 @@
           ],
           "events": [
             {
-              "description": "走过一拍；detail 为 `{ value: number, elapsed: number }`",
+              "description": "经过一拍；detail 为 `{ value: number, elapsed: number }`",
               "name": "tick",
               "type": {
                 "text": "TimerTickDetails"
               }
             },
             {
-              "description": "走到终点；detail 为 `{ value: number, elapsed: number }`",
+              "description": "到达终点；detail 为 `{ value: number, elapsed: number }`",
               "name": "complete",
               "type": {
                 "text": "TimerCompleteDetails"
@@ -56053,7 +56053,7 @@
               "type": {
                 "text": "number | undefined"
               },
-              "description": "起始值毫秒，缺省 0；正着走从它往上，倒着走从它往下",
+              "description": "起始值毫秒，默认 0；正计时从它向上，倒计时从它向下",
               "name": "start-ms",
               "fieldName": "startMs"
             },
@@ -56061,7 +56061,7 @@
               "type": {
                 "text": "number | undefined"
               },
-              "description": "终点值毫秒；倒计时缺省 0，正计时不写即没有终点",
+              "description": "终点值毫秒；倒计时默认 0，正计时未提供时没有终点",
               "name": "target-ms",
               "fieldName": "targetMs"
             },
@@ -56069,7 +56069,7 @@
               "type": {
                 "text": "boolean | undefined"
               },
-              "description": "倒着走，缺省关闭",
+              "description": "倒计时，默认关闭",
               "name": "countdown",
               "fieldName": "countdown"
             },
@@ -56077,7 +56077,7 @@
               "type": {
                 "text": "number | undefined"
               },
-              "description": "受控剩余毫秒；给了它即进受控通道，起点锁成它、方向锁成倒着走、终点锁成 0",
+              "description": "受控剩余毫秒；提供后即进入受控通道，起点锁定为它、方向锁定为倒计时、终点锁定为 0",
               "name": "value",
               "fieldName": "value"
             },
@@ -56085,7 +56085,7 @@
               "type": {
                 "text": "boolean | undefined"
               },
-              "description": "受控开关，缺省真；给了它即进受控通道，起停按钮不再改状态",
+              "description": "受控开关，默认真；提供后即进入受控通道，起停按钮不再改变状态",
               "name": "active",
               "fieldName": "active"
             },
@@ -56093,7 +56093,7 @@
               "type": {
                 "text": "boolean | undefined"
               },
-              "description": "挂载即开跑，缺省关闭；只在挂载那一刻读一次",
+              "description": "挂载即开始运行，默认关闭；只在挂载时读取一次",
               "name": "auto-start",
               "fieldName": "autoStart"
             },
@@ -56101,7 +56101,7 @@
               "type": {
                 "text": "number | undefined"
               },
-              "description": "刷新间隔毫秒，缺省 1000，下限一帧",
+              "description": "刷新间隔毫秒，默认 1000，下限一帧",
               "name": "interval",
               "fieldName": "interval"
             },
@@ -56109,7 +56109,7 @@
               "type": {
                 "text": "string | undefined"
               },
-              "description": "文本模板，缺省 HH:mm:ss；D 天、H 时、m 分、s 秒、S 毫秒",
+              "description": "文本模板，默认 HH:mm:ss；D 天、H 时、m 分、s 秒、S 毫秒",
               "name": "format",
               "fieldName": "format"
             },
@@ -56117,7 +56117,7 @@
               "type": {
                 "text": "number | undefined"
               },
-              "description": "取值粒度：0 到秒、3 到毫秒，缺省 3（不量化）",
+              "description": "取值粒度：0 到秒、3 到毫秒，默认 3（不量化）",
               "name": "precision",
               "fieldName": "precision"
             },
@@ -56125,7 +56125,7 @@
               "type": {
                 "text": "TimerLive | undefined"
               },
-              "description": "时间区的读屏播报档位，缺省 off",
+              "description": "时间区的读屏播报档位，默认 off",
               "name": "live",
               "fieldName": "live"
             },

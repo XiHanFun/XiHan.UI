@@ -15,7 +15,7 @@ import { useMachine } from '../../runtime/use-machine'
 
 export interface TimerContext {
   api: ComputedRef<TimerApi>
-  /** 机器实例，供组合式调用方直接送事件。 */
+  /** 状态机实例，供组合式调用方直接发送事件。 */
   service: Service<TimerSchema>
 }
 
