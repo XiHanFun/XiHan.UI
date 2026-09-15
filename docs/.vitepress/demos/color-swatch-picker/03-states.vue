@@ -1,4 +1,4 @@
-<!-- 状态 | 禁用整组置灰、只读只挡落值不挡焦点、无效把描边转成警示色 -->
+<!-- 状态 | 禁用整组置灰、只读只阻止落值不阻止焦点、无效把描边转为警示色 -->
 <script setup lang="ts">
 import { XhColorSwatchPickerRoot } from "@xihan-ui/vue";
 

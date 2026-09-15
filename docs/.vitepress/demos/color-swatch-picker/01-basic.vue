@@ -1,4 +1,4 @@
-<!-- 基础用法 | 交一组颜色数据就自动铺开；每格是一颗 radio，方向键在格子间移动并选中 -->
+<!-- 基础用法 | 提供一组颜色数据即自动铺开；每格是一个 radio，方向键在格子间移动并选中 -->
 <script setup lang="ts">
 import { XhColorSwatchPickerRoot } from "@xihan-ui/vue";
 import { ref } from "vue";
