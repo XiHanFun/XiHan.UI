@@ -22,7 +22,7 @@ import { ScrollbarsController } from '../runtime/scrollbars-controller'
 const NUMBER_CONVERTER = { fromAttribute: (v: string | null) => (v == null || v === '' ? undefined : Number(v)) }
 const STRING_CONVERTER = { fromAttribute: (v: string | null) => v ?? undefined }
 
-/** 页码按钮自报的页数；缺失或空串一律给 NaN（见 wire 里的说明）。 */
+/** 页码按钮声明的页数；缺失或空串一律返回 NaN（见 wire 中的说明）。 */
 function itemPage(el: HTMLElement): number {
   const raw = el.getAttribute('value')
   return raw == null || raw === '' ? Number.NaN : Number(raw)
@@ -43,46 +43,46 @@ interface PageSizeNodes {
 }
 
 /**
- * `<xh-pagination>` —— Light-DOM 行为宿主：作者写 root/prev-trigger/item/ellipsis-trigger/next-trigger
- * 角色节点，元素跑 pagination 机器并把 connect 产出打上去。
+ * `<xh-pagination>`：Light-DOM 行为宿主：作者写 root / prev-trigger / item / ellipsis-trigger / next-trigger
+ * 角色节点，元素运行 pagination 状态机并把 connect 产出接上。
  *
- * root 必须是 `<nav>`：分页器是"跳到某一页"的导航地标，元素只往上打 aria-label，
- * 地标语义得由标签自己给。页码按钮须自带 `value` 属性标明是第几页。
+ * root 必须是 `<nav>`：分页器是跳到某一页的导航地标，元素只在其上写 aria-label，
+ * 地标语义需要由标签自身提供。页码按钮须自带 `value` 属性标明页码。
  *
- * 页码序列（几号页、哪里该出省略号）由作者照 `pages` 渲染，元素不替作者生成节点：
- * 生成节点就等于收走模板控制权，外层 `<li>` 壳、图标、i18n 文案都再塞不进来。序列本身
- * 从元素上取（`pages` / `pageItems`），不必自己按当前页与总页数推一遍。
+ * 页码序列（哪些页、哪里应显示省略号）由作者按 `pages` 渲染，元素不替作者生成节点：
+ * 生成节点等于收走模板控制权，外层 `<li>` 壳、图标、i18n 文案都无法再加入。序列本身
+ * 从元素上获取（`pages` / `pageItems`），不必自行按当前页与总页数推导。
  *
- * 取数口是现算的，读到的恒是此刻那一份。什么时候重读：`page-change` 与 `page-size-change`
- * 两条事件覆盖了运行期会改动序列的全部输入，在它们的处理器里重读即可；改 `count` /
- * `sibling-count` 这类作者自己写的属性，写完当场重读，不必等事件。受控（写了 `page` 属性）时
- * 得先把新页码写回 `page` 再读——受控下当前页住在属性里，不写回读到的还是上一页那份序列。
+ * 取数接口是实时计算的，读到的恒为当前的一份。重读时机：`page-change` 与 `page-size-change`
+ * 两条事件覆盖了运行期会改动序列的全部输入，在它们的处理器中重读即可；修改 `count` /
+ * `sibling-count` 这类作者自己书写的属性时，写完立即重读，不必等待事件。受控（写了 `page` 属性）时
+ * 需要先把新页码写回 `page` 再读取：受控下当前页存放在属性中，不写回时读到的仍是上一页的序列。
  *
  * @customElement xh-pagination
  * @attr {number} count - 总条数（不是总页数）
  * @attr {number} page-size - 每页条数，默认 10
- * @attr {number} page - 受控页码；缺省该属性即非受控
+ * @attr {number} page - 受控页码；未提供该属性即非受控
  * @attr {number} default-page - 非受控初始页，默认 1
- * @attr {number} sibling-count - 当前页两侧各显示几页，默认 1
- * @attr {'ltr'|'rtl'} dir - 文字方向，只影响排版；上一页/下一页的语义不随之翻转
+ * @attr {number} sibling-count - 当前页两侧各显示的页数，默认 1
+ * @attr {'ltr'|'rtl'} dir - 文字方向，只影响排版；上一页 / 下一页的语义不随之翻转
  * @attr {'brand'|'neutral'|'success'|'warning'|'danger'|'info'} tone - 语气
  * @attr {'sm'|'md'|'lg'} size - 尺寸
  * @fires page-change - 页码变化；detail 为 `{ page: number, pageSize: number }`
  * @fires page-size-change - 每页条数变化；detail 为 `{ pageSize: number, page: number }`，页码是换算后的
- * @attr {string} placement - 省略位摊开后的落点，默认 bottom-start
+ * @attr {string} placement - 省略位展开后的落点，默认 bottom-start
  * @attr {number} offset - 浮层与省略位之间的间距（px），默认 8
- * @attr {number} open-delay - 指针停在省略位多久才摊开（ms），默认 200
+ * @attr {number} open-delay - 指针停在省略位多久后才展开（ms），默认 200
  * @attr {number} close-delay - 指针离开后多久收起（ms），默认 300
  * @attr {number} default-page-size - 非受控初始每页条数，默认 10
  * @prop {number[]} pageSizeOptions - 可选的每页条数档位，默认 [10, 20, 50, 100]
  * @csspart root - nav 地标，承载 aria-label 与 data-empty
- * @csspart summary - 信息区容器；文本由作者放，缺省文案取 api.summaryText
- * @csspart jumper - 跳页输入框（input），敲页码按回车即跳
- * @csspart prev-trigger - 上一页；首页时转原生 disabled
- * @csspart next-trigger - 下一页；末页时转原生 disabled
+ * @csspart summary - 信息区容器；文本由作者放置，默认文案取 api.summaryText
+ * @csspart jumper - 跳页输入框（input），输入页码按回车即跳转
+ * @csspart prev-trigger - 上一页；首页时为原生 disabled
+ * @csspart next-trigger - 下一页；末页时为原生 disabled
  * @csspart item - 页码按钮，须自带 value 属性；当前页带 aria-current="page" 与 data-current
- * @csspart ellipsis-trigger - 折进去那几页的入口，须自带 side 属性（start / end）；承载 data-side 与 aria-expanded
- * @csspart page-size-select - 每页条数控制器的挂载点，写一个空 `<div>` 即可；里头那套下拉的角色节点由元素自己建
+ * @csspart ellipsis-trigger - 被折叠页码的入口，须自带 side 属性（start / end）；承载 data-side 与 aria-expanded
+ * @csspart page-size-select - 每页条数控制器的挂载点，写一个空 `<div>` 即可；其中的下拉角色节点由元素自行创建
  */
 export class XhPaginationElement extends XhPortalHostElement {
   /** 本实例的 Portal 容器；显式解析失败不回退配置默认。 */
@@ -194,7 +194,7 @@ export class XhPaginationElement extends XhPortalHostElement {
     this.config = createRuntimeConfig({ scope: this.paginationScope, idGenerator: this.idGen })
   }
 
-  /** 在机器挂载前建立 Presence，让省略位行为资源与真实退场共享租约。 */
+  /** 在状态机挂载前建立 Presence，让省略位行为资源与真实退场共享租约。 */
   private ensureExit(open: boolean): OverlayExit {
     this.ensureConfig()
     this.exit ??= createOverlayExit({
@@ -219,7 +219,7 @@ export class XhPaginationElement extends XhPortalHostElement {
     return [...this.ellipsisPortal.roots, ...this.pageSizePortal.roots]
   }
 
-  /** 此刻摊开的是哪个省略位的节点——它是定位锚点。 */
+  /** 当前展开的省略位节点：它是定位锚点。 */
   private openEllipsisEl(side: PaginationEllipsisSide | null): HTMLElement | null {
     if (!side)
       return null
@@ -291,8 +291,8 @@ export class XhPaginationElement extends XhPortalHostElement {
   }
 
   /**
-   * 取数口与命令共用的取法。机器要到进文档（hostConnected）才建，
-   * 而这些都是公开面，作者拿到元素随时可能读、可能调——还没进文档时如实给空，不抛错。
+   * 取数口与命令共用的取法。状态机在进入文档（hostConnected）后才建立，
+   * 而这些都是公开面，作者拿到元素后随时可能读取、调用：尚未进入文档时如实返回空值，不抛错。
    */
   private api(): PaginationApi | null {
     const root = this.ctrl.service as Service<PaginationSchema> | undefined
@@ -301,69 +301,69 @@ export class XhPaginationElement extends XhPortalHostElement {
   }
 
   /**
-   * 页码序列：页码与省略位交替的一串，作者照它渲染 item 与 ellipsis-trigger。
-   * 机器尚未建起时给空数组。
+   * 页码序列：页码与省略位交替的序列，作者据此渲染 item 与 ellipsis-trigger。
+   * 状态机尚未建立时返回空数组。
    */
   get pages(): PaginationPage[] {
     return this.api()?.pages ?? []
   }
 
   /**
-   * 同一串序列，但省略位带着被折叠的是哪几页——摊开省略号照它铺面板。
-   * 机器尚未建起时给空数组。
+   * 同一序列，但省略位附带被折叠的页码：展开省略号时据此铺设面板。
+   * 状态机尚未建立时返回空数组。
    */
   get pageItems(): PaginationPageItem[] {
     return this.api()?.pageItems ?? []
   }
 
   /**
-   * 此刻显示的是第几页，已夹进合法区间（`page` 属性是受控入参，可能缺席或越界，这里是结果）。
-   * 机器尚未建起时给 1：页码没有第 0 页，1 也正是无数据时的取值。
+   * 当前显示的页码，已夹取到合法区间（`page` 属性是受控入参，可能缺席或越界；此处是结果）。
+   * 状态机尚未建立时返回 1：页码没有第 0 页，1 也正是无数据时的取值。
    */
   get currentPage(): number {
     return this.api()?.page ?? 1
   }
 
   /**
-   * 此刻每页几条（`page-size` 属性缺席时非受控的那份住在机器里，只有这里读得到）。
-   * 机器尚未建起时给 0。
+   * 当前每页条数（`page-size` 属性缺席时非受控的值保存在状态机中，只能从此处读取）。
+   * 状态机尚未建立时返回 0。
    */
   get currentPageSize(): number {
     return this.api()?.pageSize ?? 0
   }
 
-  /** 总页数，由总条数与每页条数算出。无数据是 0 页，不是 1 页空页。 */
+  /** 总页数，由总条数与每页条数计算。无数据时为 0 页，而不是 1 页空页。 */
   get totalPages(): number {
     return this.api()?.totalPages ?? 0
   }
 
-  /** 当前页对应的条目区间，1 基闭区间（"第 x-y 条"里的 x 与 y）。无数据时两端都是 0。 */
+  /** 当前页对应的条目区间，1 基闭区间（"第 x-y 条"中的 x 与 y）。无数据时两端都是 0。 */
   get pageRange(): PaginationEntryRange {
     return this.api()?.pageRange ?? { start: 0, end: 0 }
   }
 
   /**
-   * 跳到某一页，越界页码夹回合法区间。
-   * 受控（写了 `page` 属性）时只发 page-change，页码归宿主写回。机器尚未建起时不动。
+   * 跳转到某一页，越界页码夹取到合法区间。
+   * 受控（写了 `page` 属性）时只触发 page-change，页码由宿主写回。状态机尚未建立时为空操作。
    */
   setPage(page: number): void {
     this.api()?.setPage(page)
   }
 
   /**
-   * 换每页条数：页码跟着换算，让改档前第一条仍留在页内。
-   * 受控时语义同 setPage。机器尚未建起时不动。
+   * 更换每页条数：页码随之换算，使更换前的第一条仍留在页内。
+   * 受控时语义同 setPage。状态机尚未建立时为空操作。
    */
   setPageSize(pageSize: number): void {
     this.api()?.setPageSize(pageSize)
   }
 
-  /** 按当前页从整份数据里切出这一页。机器尚未建起时给空数组。 */
+  /** 按当前页从整份数据中切出本页。状态机尚未建立时返回空数组。 */
   slice<V>(data: readonly V[]): V[] {
     return this.api()?.slice(data) ?? []
   }
 
-  /** 收起摊开的那个省略位。机器尚未建起时不动。 */
+  /** 收起已展开的省略位。状态机尚未建立时为空操作。 */
   closeEllipsis(): void {
     this.api()?.closeEllipsis()
   }
@@ -446,10 +446,10 @@ export class XhPaginationElement extends XhPortalHostElement {
   }
 
   /**
-   * 内嵌下拉的角色节点由元素自己建：作者只写 page-size-select 那一格挂载点。
+   * 内嵌下拉的角色节点由元素自行建立：作者只写 page-size-select 的挂载点。
    *
-   * 建出来的节点一律不打 data-xh-part——打了会被 discoverParts 收进 partMap，
-   * 而它们归 select 的 scope 管，本就不在分页的解剖里。
+   * 建立的节点一律不写 data-xh-part：写了会被 discoverParts 收进 partMap，
+   * 而它们归 select 的 scope 管理，本就不在分页的解剖中。
    */
   private ensurePageSizeNodes(): PageSizeNodes | null {
     const mount = this.getPart('page-size-select')
@@ -507,7 +507,7 @@ export class XhPaginationElement extends XhPortalHostElement {
     this.pageSizeMount = null
   }
 
-  /** 把内嵌下拉那份 api 打到自建的节点上；档位表变了只补差额。 */
+  /** 把内嵌下拉的 api 接到自建的节点上；档位表变化时只补差额。 */
   private wirePageSizeSelect(select: SelectApi): void {
     const nodes = this.ensurePageSizeNodes()
     if (!nodes)

@@ -20,21 +20,21 @@ import { createVueIdGenerator } from '../../runtime/vue-id'
 
 export interface PaginationContext {
   api: ComputedRef<PaginationApi>
-  /** 摊开的那个省略位，定位锚点。 */
+  /** 展开的省略位，定位锚点。 */
   ellipsisRef: Ref<HTMLElement | null>
   /** 被定位的浮层。 */
   positionerRef: Ref<HTMLElement | null>
   /** 消解层节点。 */
   contentRef: Ref<HTMLElement | null>
-  /** 此刻该不该渲染：退场动画播完之前仍为真。 */
+  /** 当前是否应当渲染：退场动画播完之前仍为真。 */
   visible: Ref<boolean>
-  /** 浮层搬到哪儿：全局配置的 portalContainer > body。 */
+  /** 浮层迁移到的位置：全局配置的 portalContainer > body。 */
   portalTarget: ComputedRef<string | Element>
-  /** 每页条数那个下拉的触发器，它是那一层的定位锚点。 */
+  /** 每页条数下拉的触发器，它是该层的定位锚点。 */
   pageSizeTriggerRef: Ref<HTMLElement | null>
   pageSizePositionerRef: Ref<HTMLElement | null>
   pageSizeContentRef: Ref<HTMLElement | null>
-  /** 下拉那一层此刻该不该渲染；与省略位那层各走各的闸门。 */
+  /** 下拉层当前是否应当渲染；与省略位层各自使用独立的闸门。 */
   pageSizeVisible: Ref<boolean>
 }
 
