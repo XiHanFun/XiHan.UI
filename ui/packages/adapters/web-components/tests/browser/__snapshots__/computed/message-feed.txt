@@ -182,10 +182,10 @@ padding-bottom: 0px
 padding-left: 0px
 row-gap: normal
 column-gap: normal
-border-top-left-radius: 9999px
-border-top-right-radius: 9999px
-border-bottom-right-radius: 9999px
-border-bottom-left-radius: 9999px
+border-top-left-radius: 50%
+border-top-right-radius: 50%
+border-bottom-right-radius: 50%
+border-bottom-left-radius: 50%
 border-top-width: 1px
 border-right-width: 1px
 border-bottom-width: 1px
@@ -201,7 +201,7 @@ font-weight: 400
 color: oklch(0.145 0.005 258)
 background-color: oklch(1 0 0)
 transition-property: background, scale
-transition-duration: 0.12s, 0.12s
+transition-duration: 0.12s, 0.2s
 transition-timing-function: cubic-bezier(0, 0, 0.2, 1), cubic-bezier(0.23, 1, 0.32, 1)
 animation-name: none
 animation-duration: 0s

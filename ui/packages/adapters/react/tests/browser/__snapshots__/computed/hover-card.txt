@@ -42,10 +42,10 @@ padding-bottom: 12px
 padding-left: 12px
 row-gap: 8px
 column-gap: 8px
-border-top-left-radius: 8px
-border-top-right-radius: 8px
-border-bottom-right-radius: 8px
-border-bottom-left-radius: 8px
+border-top-left-radius: 12px
+border-top-right-radius: 12px
+border-bottom-right-radius: 12px
+border-bottom-left-radius: 12px
 border-top-width: 1px
 border-right-width: 1px
 border-bottom-width: 1px

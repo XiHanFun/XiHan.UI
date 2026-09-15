@@ -146,7 +146,7 @@ padding-right: 0px
 padding-bottom: 16px
 padding-left: 0px
 row-gap: 8px
-column-gap: 12px
+column-gap: normal
 border-top-left-radius: 0px
 border-top-right-radius: 0px
 border-bottom-right-radius: 0px

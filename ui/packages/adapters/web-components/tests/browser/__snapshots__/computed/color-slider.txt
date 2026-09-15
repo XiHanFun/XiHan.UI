@@ -147,10 +147,10 @@ padding-bottom: 0px
 padding-left: 0px
 row-gap: normal
 column-gap: normal
-border-top-left-radius: 9999px
-border-top-right-radius: 9999px
-border-bottom-right-radius: 9999px
-border-bottom-left-radius: 9999px
+border-top-left-radius: 50%
+border-top-right-radius: 50%
+border-bottom-right-radius: 50%
+border-bottom-left-radius: 50%
 border-top-width: 2px
 border-right-width: 2px
 border-bottom-width: 2px
@@ -163,7 +163,7 @@ min-height: 0px
 font-size: 16px
 line-height: normal
 font-weight: 400
-color: oklch(0.145 0.005 258)
+color: rgb(0, 0, 0)
 background-color: rgb(0, 0, 0)
 transition-property: scale, box-shadow
 transition-duration: 0.12s, 0.12s
@@ -173,7 +173,7 @@ animation-duration: 0s
 animation-timing-function: ease
 outline-width: 3px
 outline-offset: 0px
-outline-color: oklch(0.145 0.005 258)
+outline-color: rgb(0, 0, 0)
 
 [track]
 padding-top: 0px
@@ -217,10 +217,10 @@ padding-bottom: 2px
 padding-left: 8px
 row-gap: normal
 column-gap: normal
-border-top-left-radius: 8px
-border-top-right-radius: 8px
-border-bottom-right-radius: 8px
-border-bottom-left-radius: 8px
+border-top-left-radius: 4px
+border-top-right-radius: 4px
+border-bottom-right-radius: 4px
+border-bottom-left-radius: 4px
 border-top-width: 0px
 border-right-width: 0px
 border-bottom-width: 0px

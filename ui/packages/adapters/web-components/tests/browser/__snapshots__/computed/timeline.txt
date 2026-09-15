@@ -112,10 +112,10 @@ padding-bottom: 0px
 padding-left: 0px
 row-gap: normal
 column-gap: normal
-border-top-left-radius: 9999px
-border-top-right-radius: 9999px
-border-bottom-right-radius: 9999px
-border-bottom-left-radius: 9999px
+border-top-left-radius: 50%
+border-top-right-radius: 50%
+border-bottom-right-radius: 50%
+border-bottom-left-radius: 50%
 border-top-width: 0px
 border-right-width: 0px
 border-bottom-width: 0px
