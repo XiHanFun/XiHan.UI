@@ -51,7 +51,7 @@
 
     /* 一整圈是轨道色，只有起始边换成前景色，转起来才看得出方向 */
     border-block-start-color: var(--xh-spinner-fg, currentColor);
-    border-radius: var(--xh-spinner-radius, var(--xh-shape-pill));
+    border-radius: var(--xh-spinner-radius, var(--xh-shape-circle));
     animation: xh-spinner-rotate var(--xh-spinner-duration, var(--xh-spin-duration)) var(--xh-motion-ease-loop) infinite;
   }
 
@@ -201,7 +201,7 @@
     [data-scope='spinner'][data-part='root'][data-variant='dots']::before {
       border: var(--xh-spinner-thickness, var(--xh-stroke-thick)) solid CanvasText;
       border-block-start-color: Highlight;
-      border-radius: var(--xh-spinner-radius, var(--xh-shape-pill));
+      border-radius: var(--xh-spinner-radius, var(--xh-shape-circle));
       background-image: none;
     }
   }
