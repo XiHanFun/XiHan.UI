@@ -1,6 +1,6 @@
 # Slider 滑块 <Badge type="info" text="alpha" />
 
-在一个连续或离散的区间里拖出一个值或一段范围。
+在连续或离散的区间内拖出一个值或一段范围。
 
 <div class="xh-resource-links">
   <a href="https://github.com/XiHanFun/XiHan.UI/tree/dev/ui/packages/engine/headless/src/slider" target="_blank" rel="noreferrer">Headless</a>
@@ -93,15 +93,15 @@ value-text 挂在 thumb 里就跟着走位；推动那一刻由皮肤放它出�
 
 ### 何时不用
 
-- 需要精确输入：用[数字字段](./number-field)，或两者并排。
-- 档位只有三四个：用[单选组](./radio-group)或[切换按钮组](./toggle-group)。
+- 需要精确输入时，使用[数字字段](./number-field)，或两者并排。
+- 档位只有三四个时，使用[单选组](./radio-group)或[切换按钮组](./toggle-group)。
 
 ### 特性
 
 - 单值与区间共用一套结构，区间时 `minStepsBetweenThumbs` 防止两头交叉。
-- `marks` 画刻度，`snapToMarks` 让值吸附到刻度上。
-- 两个回调：拖动途中连着发，松手发一次——写存储用后者。
-- `getValueText` 决定读屏念出的是什么，别让它只念数字。
+- `marks` 绘制刻度，`snapToMarks` 让值吸附到刻度。
+- 两个回调：拖动途中连续发出，松手时发出一次；持久化使用后者。
+- `getValueText` 决定读屏读出的内容，不只读数字。
 
 ### 组合
 
@@ -109,13 +109,13 @@ value-text 挂在 thumb 里就跟着走位；推动那一刻由皮肤放它出�
 
 ### 最佳实践
 
-- 两端标出最小与最大值，用户才知道自己在哪。
+- 两端标出最小与最大值，用户才能知道当前位置。
 - 拖动时用值气泡显示当前值，松手后收起。
 
 ### 反模式
 
-- 区间很大却不给数字输入：拖到某个精确值几乎不可能。
-- 在移动端把滑块做得又细又短。
+- 区间很大却不提供数字输入，拖到精确值几乎不可能。
+- 在移动端把滑块做得过细过短。
 
 ## API 参考
 
@@ -282,7 +282,7 @@ value-text 挂在 thumb 里就跟着走位；推动那一刻由皮肤放它出�
 | `--xh-slider-thumb-bg` | `thumb` | `background` | `default` | `--xh-_tone` | slider 的 thumb 部件 background 覆盖槽。 |
 | `--xh-slider-thumb-bg-invalid` | `thumb` | `background` | `invalid` | `--xh-border-invalid` | slider 的 thumb 部件 background 覆盖槽。 |
 | `--xh-slider-thumb-border` | `thumb` | `border` | `default` | `--xh-bg-surface` | slider 的 thumb 部件 border 覆盖槽。 |
-| `--xh-slider-thumb-radius` | `thumb` | `border-radius` | `default` | `--xh-shape-pill` | slider 的 thumb 部件 border-radius 覆盖槽。 |
+| `--xh-slider-thumb-radius` | `thumb` | `border-radius` | `default` | `--xh-shape-circle` | slider 的 thumb 部件 border-radius 覆盖槽。 |
 | `--xh-slider-thumb-scale-dragging` | `thumb` | `scale` | `dragging` | `--xh-motion-scale-drag` | slider 的 thumb 部件 scale 覆盖槽。 |
 | `--xh-slider-thumb-shadow` | `thumb` | `box-shadow` | `default` | `--xh-elevation-raised` | slider 的 thumb 部件 box-shadow 覆盖槽。 |
 | `--xh-slider-thumb-shadow-dragging` | `thumb` | `box-shadow` | `dragging` | `--xh-elevation-lifted` | slider 的 thumb 部件 box-shadow 覆盖槽。 |
