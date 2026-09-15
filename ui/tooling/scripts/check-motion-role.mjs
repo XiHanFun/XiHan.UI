@@ -7,7 +7,7 @@
 //
 // 两档的分界按被动的属性算：
 //   move  —— 元素被推到新位置或尺寸被推到新值（inset-* / inline-size / translate / transform…）→ continuous
-//   shape —— 元素原地形变（scale / rotate）→ enter-strong
+//   shape —— 元素原地形变（scale / rotate）→ enter-strong；按压缩放的释放段走统一点击时间线的 release
 //
 // 逐项判，不逐条判：一条 transition 可以列多项，`inset-block-start` 与 `scale` 同列时两项各判各的。
 import { readdir, readFile } from 'node:fs/promises'
@@ -51,8 +51,8 @@ const MOVE = new Set([
 /** 原地形变的属性。 */
 const SHAPE = new Set(['scale', 'rotate'])
 
-/** 各角色要求的语义档。move 有两档，按位移的尺度分。 */
-const REQUIRED = { move: '--xh-motion-ease-continuous', shape: '--xh-motion-ease-enter-strong' }
+/** 各角色要求的语义档。move 有两档，按位移的尺度分；shape 另允许统一点击时间线的 release 档（按压缩放的释放段）。 */
+const REQUIRED = { move: ['--xh-motion-ease-continuous'], shape: ['--xh-motion-ease-enter-strong', '--xh-motion-ease-release'] }
 
 /**
  * 位移以百分比或视口尺度计、或一端在可视区外的那些项，走 --xh-motion-ease-slide
@@ -144,15 +144,15 @@ for (const file of files) {
       const slide = role === 'move' && key in SLIDE_REQUIRED
       if (slide)
         seen.add(key)
-      const want = slide ? '--xh-motion-ease-slide' : REQUIRED[role]
-      if (ease === want)
+      const want = slide ? ['--xh-motion-ease-slide'] : REQUIRED[role]
+      if (want.includes(ease))
         continue
 
       const at = `${file}:${line}  ${item}`
       if (!ease)
-        problems.push(`${at}\n    —— 几何类过渡没写曲线，${role === 'move' ? '被推到新位置' : '原地形变'}要显式走 ${want}`)
+        problems.push(`${at}\n    —— 几何类过渡没写曲线，${role === 'move' ? '被推到新位置' : '原地形变'}要显式走 ${want.join(' / ')}`)
       else
-        problems.push(`${at}\n    —— ${prop} 是${role === 'move' ? '位置/尺寸' : '形变'}类，曲线该是 ${want}，写的是 ${ease}${ease === '--xh-motion-ease-enter' ? '（那一档只给不透明度与色彩）' : ''}`)
+        problems.push(`${at}\n    —— ${prop} 是${role === 'move' ? '位置/尺寸' : '形变'}类，曲线该是 ${want.join(' / ')}，写的是 ${ease}${ease === '--xh-motion-ease-enter' ? '（那一档只给不透明度与色彩）' : ''}`)
     }
   }
 }
@@ -173,4 +173,4 @@ if (problems.length) {
   process.exit(1)
 }
 
-console.log(`[check-motion-role] 通过：${files.length} 份皮肤 · ${checked} 项几何类过渡各按角色走 -continuous / -enter-strong（例外登记 ${seen.size} 处）`)
+console.log(`[check-motion-role] 通过：${files.length} 份皮肤 · ${checked} 项几何类过渡各按角色走 -continuous / -enter-strong / -release（例外登记 ${seen.size} 处）`)

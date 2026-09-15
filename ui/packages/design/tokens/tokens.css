@@ -244,6 +244,8 @@
     --xh-motion-duration-micro: var(--xh-duration-fast);
     --xh-motion-duration-slide: var(--xh-duration-slow);
     --xh-motion-duration-nudge: var(--xh-duration-normal);
+    --xh-motion-duration-press: var(--xh-duration-fast);
+    --xh-motion-duration-release: var(--xh-duration-normal);
     --xh-motion-stagger-step: calc(var(--xh-duration-normal) / 5);
     --xh-motion-ease-continuous: var(--xh-ease-standard);
     --xh-motion-ease-loop: linear;
@@ -252,6 +254,8 @@
     --xh-motion-ease-exit: var(--xh-ease-in);
     --xh-motion-ease-slide: var(--xh-ease-out-fluid);
     --xh-motion-ease-sweep: var(--xh-ease-in-out);
+    --xh-motion-ease-press: var(--xh-ease-standard);
+    --xh-motion-ease-release: var(--xh-ease-out-strong);
     --xh-motion-ease-settle: var(--xh-ease-out-back);
     --xh-motion-distance-sm: var(--xh-space-1);
     --xh-motion-distance-md: var(--xh-space-2);
@@ -832,6 +836,8 @@
       --xh-motion-duration-micro: 1ms;
       --xh-motion-duration-slide: 1ms;
       --xh-motion-duration-nudge: 1ms;
+      --xh-motion-duration-press: 1ms;
+      --xh-motion-duration-release: 1ms;
       --xh-motion-stagger-step: 0ms;
       --xh-motion-distance-sm: 0px;
       --xh-motion-distance-md: 0px;
@@ -849,6 +855,8 @@
     --xh-motion-duration-micro: 1ms;
     --xh-motion-duration-slide: 1ms;
     --xh-motion-duration-nudge: 1ms;
+    --xh-motion-duration-press: 1ms;
+    --xh-motion-duration-release: 1ms;
     --xh-motion-stagger-step: 0ms;
     --xh-motion-distance-sm: 0px;
     --xh-motion-distance-md: 0px;
