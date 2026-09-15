@@ -382,6 +382,9 @@
               "name": "--xh-accordion-trigger-fg"
             },
             {
+              "name": "--xh-accordion-trigger-fg-disabled"
+            },
+            {
               "name": "--xh-accordion-trigger-fg-open"
             },
             {

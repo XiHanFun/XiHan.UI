@@ -273,6 +273,24 @@
       "description": "accordion 的 trigger 部件 color 覆盖槽。"
     },
     {
+      "name": "--xh-accordion-trigger-fg-disabled",
+      "component": "accordion",
+      "part": [
+        "trigger"
+      ],
+      "property": [
+        "color"
+      ],
+      "state": [
+        "disabled"
+      ],
+      "defaultToken": [
+        "--xh-fg-disabled"
+      ],
+      "visibility": "public",
+      "description": "accordion 的 trigger 部件 color 覆盖槽。"
+    },
+    {
       "name": "--xh-accordion-trigger-fg-open",
       "component": "accordion",
       "part": [
