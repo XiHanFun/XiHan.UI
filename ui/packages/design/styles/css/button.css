@@ -42,9 +42,9 @@
     --xh-action-padding-inline: var(--xh-button-px, var(--xh-_button-group-px, var(--xh-_action-profile-padding-inline)));
     --xh-action-gap: var(--xh-button-gap, var(--xh-_button-group-gap, var(--xh-_action-profile-gap)));
     --xh-action-font-size: var(--xh-button-font-size, var(--xh-_button-group-font-size, var(--xh-_action-profile-font-size)));
-    /* 圆角只有一个身份：与 toggle / button-group 同为胶囊，按钮不再有 shape 轴；成组时由按钮组接管相接侧，
-       要换档写 --xh-button-radius */
-    --xh-_button-radius: var(--xh-_button-group-radius, var(--xh-shape-pill));
+    /* 圆角只有一个身份：普通 control 的 4px，与 toggle / button-group 一致，按钮没有 shape 轴；
+       成组时由按钮组接管相接侧，要换档写 --xh-button-radius */
+    --xh-_button-radius: var(--xh-_button-group-radius, var(--xh-shape-control));
     --xh-icon-size: var(--xh-button-icon-size, var(--xh-_action-profile-glyph-size));
 
     font-weight: var(--xh-button-font-weight, var(--xh-text-label-weight));
@@ -78,6 +78,8 @@
 
   [data-scope='button'][data-part='root'][data-variant='outline'] {
     --xh-action-bg-rest: transparent;
+    --xh-action-bg-disabled: transparent;
+    --xh-action-border-disabled: var(--xh-border-subtle);
     --xh-action-bg-hover: var(--xh-_tone-subtle, var(--xh-bg-subtle));
     --xh-action-bg-pressed: var(--xh-_tone-subtle-hover, var(--xh-bg-subtle-active));
     --xh-action-fg-rest: var(--xh-_tone-fg, var(--xh-fg-default));
@@ -91,6 +93,7 @@
 
   [data-scope='button'][data-part='root'][data-variant='ghost'] {
     --xh-action-bg-rest: transparent;
+    --xh-action-bg-disabled: transparent;
     --xh-action-bg-hover: var(--xh-_tone-subtle, var(--xh-bg-subtle));
     --xh-action-bg-pressed: var(--xh-_tone-subtle-hover, var(--xh-bg-subtle-active));
     --xh-action-fg-rest: var(--xh-_tone-fg, var(--xh-fg-default));
@@ -128,7 +131,8 @@
     --xh-button-fg: var(--xh-action-on-brand-solid);
   }
 
-  /* 默认按钮与 solid 都是品牌主动作，焦点、禁用和载入不能退回灰色家族缺省面。
+  /* 默认按钮与 solid 都是品牌主动作，焦点和载入不能退回灰色家族缺省面；
+     禁用由家族统一给出中性面与 fg-disabled，不靠 opacity 压暗品牌面。
      ButtonGroup 的 solid 段从容器继承同名公开槽，仍由一份规则得到相同状态。 */
   [data-scope='button'][data-part='root']:not([data-variant]):not([data-scope='button-group'] *),
   [data-scope='button'][data-part='root'][data-variant='solid'],
@@ -137,19 +141,14 @@
     --xh-_button-primary-bg: var(--xh-button-bg, var(--xh-_tone, var(--xh-bg-brand)));
     --xh-_button-primary-fg: var(--xh-button-fg, var(--xh-_tone-on, var(--xh-fg-on-brand)));
     --xh-action-bg-focus-visible: var(--xh-_button-primary-bg);
-    --xh-action-bg-disabled: var(--xh-_button-primary-bg);
     --xh-action-bg-loading: var(--xh-_button-primary-bg);
     --xh-action-fg-focus-visible: var(--xh-_button-primary-fg);
-    --xh-action-fg-disabled: var(--xh-_button-primary-fg);
     --xh-action-fg-loading: var(--xh-_button-primary-fg);
     --xh-action-border-focus-visible: transparent;
-    --xh-action-border-disabled: transparent;
     --xh-action-border-loading: transparent;
     --xh-action-highlight-focus-visible: transparent;
-    --xh-action-highlight-disabled: transparent;
     --xh-action-highlight-loading: transparent;
     --xh-action-shadow-focus-visible: none;
-    --xh-action-shadow-disabled: none;
     --xh-action-shadow-loading: none;
   }
 

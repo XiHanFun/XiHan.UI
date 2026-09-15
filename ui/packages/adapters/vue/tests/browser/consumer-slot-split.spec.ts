@@ -287,15 +287,15 @@ describe('行内文字的两档前景色', () => {
 // 这一组把每一处的缺省逐个钉到它该落的那个令牌上。
 
 describe('缺省落点', () => {
-  it('按钮：单独一枚是胶囊圆角，组内中间段是直角', async () => {
+  it('按钮：单独一枚是 control 圆角，组内中间段是直角', async () => {
     await mount(() => h('div', null, [buttonGroup(), h(XhButton, null, () => '单独一枚')]))
-    expect(styleOf('button', 'root', 'border-top-left-radius', 3)).toBe(tokenAs('border-top-left-radius', '--xh-shape-pill'))
+    expect(styleOf('button', 'root', 'border-top-left-radius', 3)).toBe(tokenAs('border-top-left-radius', '--xh-shape-control'))
     expect(styleOf('button', 'root', 'border-top-left-radius', 1)).toBe('0px')
   })
 
-  it('开关组：首段是胶囊圆角，选中段使用品牌浅底', async () => {
+  it('开关组：首段是 control 圆角，选中段使用品牌浅底', async () => {
     await mount(() => toggleGroup())
-    expect(styleOf('toggle-group', 'item', 'border-top-left-radius', 0)).toBe(tokenAs('border-top-left-radius', '--xh-shape-pill'))
+    expect(styleOf('toggle-group', 'item', 'border-top-left-radius', 0)).toBe(tokenAs('border-top-left-radius', '--xh-shape-control'))
     expect(styleOf('toggle-group', 'item', 'background-color', 0)).toBe(tokenAs('background-color', '--xh-bg-brand-subtle'))
   })
 
