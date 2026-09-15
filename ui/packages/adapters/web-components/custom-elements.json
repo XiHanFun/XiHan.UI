@@ -13959,7 +13959,7 @@
       "declarations": [
         {
           "kind": "class",
-          "description": "`<xh-context-menu>` —— Light-DOM 行为宿主：作者写 root/trigger/positioner/content 与若干\nitem / group / separator 角色节点，元素跑 context-menu 机器并把 connect 产出打上去。\n\n与 `<xh-menu>` 的差别只在入口与锚点：这里由触发区上的右键（触摸端长按 700ms、\n键盘 ContextMenu / Shift+F10）打开，浮层钉在光标坐标上——锚点是虚拟的一点，\n不是某个元素，因此没有 getAnchorEl。展开着再右键只挪坐标，不先关再开。\n\n条目身份取作者写在 item 上的 value 属性，禁用由部件自报（aria-disabled）。",
+          "description": "`<xh-context-menu>`：Light-DOM 行为宿主：作者写 root / trigger / positioner / content 与若干\nitem / group / separator 角色节点，元素运行 context-menu 状态机并把 connect 产出接上。\n\n与 `<xh-menu>` 的差别只在入口与锚点：这里由触发区上的右键（触摸端长按 700ms、\n键盘 ContextMenu / Shift+F10）打开，浮层固定在光标坐标上：锚点是虚拟的一点，\n不是某个元素，因此没有 getAnchorEl。展开期间再次右键只移动坐标，不先关闭再打开。\n\n条目身份取作者写在 item 上的 value 属性，禁用由部件声明（aria-disabled）。",
           "name": "XhContextMenuElement",
           "cssParts": [
             {
@@ -13967,11 +13967,11 @@
               "name": "root"
             },
             {
-              "description": "右键触发区（aria-haspopup/aria-controls 所在，自带 Tab 位供键盘开启）",
+              "description": "右键触发区（aria-haspopup / aria-controls 所在，自带 Tab 位供键盘打开）",
               "name": "trigger"
             },
             {
-              "description": "浮层定位容器，坐标由引擎写成内联样式",
+              "description": "浮层定位容器，坐标由引擎写为内联样式",
               "name": "positioner"
             },
             {
@@ -13983,7 +13983,7 @@
               "name": "item"
             },
             {
-              "description": "条目文本（连打检索的取字处）",
+              "description": "条目文本（连打检索的取字来源）",
               "name": "item-text"
             },
             {
@@ -13995,7 +13995,7 @@
               "name": "item-description"
             },
             {
-              "description": "分隔线（role=separator，不入方向键导航）",
+              "description": "分隔线（role=separator，不进入方向键导航）",
               "name": "separator"
             },
             {
@@ -14098,7 +14098,7 @@
               "type": {
                 "text": "ContextMenuSchema['props']['translations'] | undefined"
               },
-              "description": "读屏文案（菜单名字）；对象进不了属性，只作为 property 暴露。"
+              "description": "读屏文案（菜单名称）；对象无法表达为属性，只作为 property 暴露。"
             },
             {
               "kind": "field",
@@ -14277,7 +14277,7 @@
               "name": "declaredDisabled",
               "privacy": "private",
               "readonly": true,
-              "description": "作者声明的条目禁用，只认首见那一份；给了 collection 时用它，否则现读"
+              "description": "作者声明的条目禁用，只认首次见到的值；提供 collection 时使用它，否则现读"
             },
             {
               "kind": "method",
@@ -14350,7 +14350,7 @@
                   }
                 }
               ],
-              "description": "承载焦点的条目被移出 DOM 时浏览器不派 focusout，锚点会停在一个已消失的值上：\n没有条目认领 tabindex=0、方向键也失去起点。这里替 DOM 把焦点离场如实上报，\n机器就地按当前活条目重挑锚点。"
+              "description": "承载焦点的条目被移出 DOM 时浏览器不派发 focusout，锚点会停在一个已消失的值上：\n没有条目认领 tabindex=0、方向键也失去起点。这里替 DOM 把焦点离场如实上报，\n状态机就地按当前活动条目重新选择锚点。"
             },
             {
               "kind": "method",
@@ -14408,7 +14408,7 @@
               "type": {
                 "text": "boolean | undefined"
               },
-              "description": "受控开合；缺省该属性即非受控",
+              "description": "受控开合；未提供该属性即非受控",
               "name": "open",
               "fieldName": "open"
             },
@@ -14424,7 +14424,7 @@
               "type": {
                 "text": "Placement | undefined"
               },
-              "description": "相对光标的首选放置位，默认 bottom-start；避让后的实际位写在 data-placement 上",
+              "description": "相对光标的首选放置位，默认 bottom-start；避让后的实际位置写在 data-placement 上",
               "name": "placement",
               "fieldName": "placement"
             },
@@ -14440,7 +14440,7 @@
               "type": {
                 "text": "boolean | undefined"
               },
-              "description": "方向键走到尽头回绕，默认 true；写 loop=\"false\" 关掉",
+              "description": "方向键到达末尾回绕，默认 true；写 loop=\"false\" 关闭",
               "name": "loop",
               "fieldName": "loop"
             },
@@ -14448,7 +14448,7 @@
               "type": {
                 "text": "boolean | undefined"
               },
-              "description": "连打检索，默认开；写 typeahead=\"false\" 关掉",
+              "description": "连打检索，默认开启；写 typeahead=\"false\" 关闭",
               "name": "typeahead",
               "fieldName": "typeahead"
             },

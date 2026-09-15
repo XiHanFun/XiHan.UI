@@ -48,11 +48,11 @@ type ContextMenuProps = ContextMenuSchema['props']
 /** 函数式 children 的载荷：右键菜单的展开态与锚点坐标，以及开合、按坐标展开的命令。 */
 export type ContextMenuRootSlotProps = Pick<ContextMenuApi, 'open' | 'point' | 'setOpen' | 'openAt'>
 
-/** 子菜单函数式 children 的载荷：这一层子菜单自己的展开态与开合命令。 */
+/** 子菜单函数式 children 的载荷：该层子菜单自己的展开态与开合命令。 */
 export type ContextMenuSubSlotProps = Pick<MenuApi, 'open' | 'setOpen'>
 
 export interface XhContextMenuRootProps extends Omit<ComponentPropsWithRef<'div'>, 'children' | 'dir' | 'onSelect'> {
-  /** 条目数据；给了它就不必逐条摆部件。 */
+  /** 条目数据；提供后不必逐条放置部件。 */
   collection?: ContextMenuNode[]
   open?: boolean
   defaultOpen?: boolean
@@ -61,15 +61,15 @@ export interface XhContextMenuRootProps extends Omit<ComponentPropsWithRef<'div'
   loop?: boolean
   typeahead?: boolean
   translations?: ContextMenuProps['translations']
-  /** 文字方向；浮层搬到落点后继承不到作者子树上的方向，要 RTL 就显式给。 */
+  /** 文字方向；浮层迁移到落点后无法继承作者子树上的方向，需要 RTL 时显式提供。 */
   dir?: Direction
   /** 触摸与触控笔长按到弹出的毫秒数。 */
   longPressDelay?: number
   tone?: Tone
   size?: Size
-  /** 触发区里放什么；只交 collection 时由它承载。 */
+  /** 触发区中放置的内容；只提供 collection 时由它承载。 */
   trigger?: ReactNode
-  /** 每个条目的自定义内容；不给就用 collection 里的 label。 */
+  /** 每个条目的自定义内容；未提供时使用 collection 中的 label。 */
   renderItem?: (node: ContextMenuNodeMeta) => ReactNode
   onOpenChange?: ContextMenuProps['onOpenChange']
   onSelect?: ContextMenuProps['onSelect']
@@ -134,7 +134,7 @@ export function XhContextMenuRoot({
 XhContextMenuRoot.xhEvents = ['open-change', 'select'] as const
 
 export interface XhContextMenuTriggerProps extends ComponentPropsWithRef<'div'>, AsChildProps {}
-/** 触发区渲染为 div，语义由 connect 打上的 ARIA 属性给出。 */
+/** 触发区渲染为 div，语义由 connect 写入的 ARIA 属性给出。 */
 export function XhContextMenuTrigger({ children, asChild, ...rest }: XhContextMenuTriggerProps): ReactNode {
   const ctx = useContextMenuContext()
   const props = mergePartProps(
@@ -148,10 +148,10 @@ export function XhContextMenuTrigger({ children, asChild, ...rest }: XhContextMe
 }
 
 export interface XhContextMenuPositionerProps extends ComponentPropsWithRef<'div'> {
-  /** 浮层挂到哪个容器；不给就按全局配置，再不给挂 body。 */
+  /** 浮层挂载的容器；未提供时按全局配置，再未提供时挂载到 body。 */
   container?: () => Element | null
 }
-/** 搬到浮层落点：留在原地的话，宿主祖先只要建了层叠上下文就能盖住浮层。 */
+/** 迁移到浮层落点：留在原地时，宿主祖先只要建立了层叠上下文就能遮住浮层。 */
 export function XhContextMenuPositioner({ children, container, ...rest }: XhContextMenuPositionerProps): ReactNode {
   const ctx = useContextMenuContext()
   // 条目列表的自绘条：与 content 同级、绝对定位不占布局，壳是这层已经 fixed 的 positioner
@@ -199,7 +199,7 @@ export function XhContextMenuContent({ children, ...rest }: XhContextMenuContent
 
 export interface XhContextMenuItemProps extends Omit<ComponentPropsWithRef<'div'>, 'value'> {
   value: string
-  /** 缺省交给 connect 回 collection 里查，写死 false 会盖掉数据里的禁用。 */
+  /** 默认交给 connect 查询 collection，写死 false 会覆盖数据中的禁用。 */
   disabled?: boolean
 }
 export function XhContextMenuItem({ value, disabled, children, ...rest }: XhContextMenuItemProps): ReactNode {
@@ -252,7 +252,7 @@ export function XhContextMenuItem({ value, disabled, children, ...rest }: XhCont
 }
 
 export interface XhContextMenuItemTextProps extends ComponentPropsWithRef<'span'> {}
-/** 条目里的文字载体：连打检索取它，标记位与副文本的文字因此不进检索串。 */
+/** 条目中的文字载体：连打检索取它，标记位与副文本的文字因此不进入检索串。 */
 export function XhContextMenuItemText({ children, ...rest }: XhContextMenuItemTextProps): ReactNode {
   const ctx = useContextMenuContext()
   const item = useContextMenuItemContext()
@@ -260,7 +260,7 @@ export function XhContextMenuItemText({ children, ...rest }: XhContextMenuItemTe
 }
 
 export interface XhContextMenuItemIndicatorProps extends ComponentPropsWithRef<'span'> {}
-/** 条目里的标记位（勾选、图标），纯装饰。 */
+/** 条目中的标记位（勾选、图标），纯装饰。 */
 export function XhContextMenuItemIndicator({ children, ...rest }: XhContextMenuItemIndicatorProps): ReactNode {
   const ctx = useContextMenuContext()
   const item = useContextMenuItemContext()
@@ -268,7 +268,7 @@ export function XhContextMenuItemIndicator({ children, ...rest }: XhContextMenuI
 }
 
 export interface XhContextMenuItemDescriptionProps extends ComponentPropsWithRef<'span'> {}
-/** 条目里的副文本，排在文字下一行。 */
+/** 条目中的副文本，排在文字下一行。 */
 export function XhContextMenuItemDescription({ children, ...rest }: XhContextMenuItemDescriptionProps): ReactNode {
   const ctx = useContextMenuContext()
   const item = useContextMenuItemContext()
@@ -308,7 +308,7 @@ export function XhContextMenuArrow({ children, ...rest }: XhContextMenuArrowProp
 }
 
 export interface XhContextMenuSubProps {
-  /** 它在父右键菜单里的条目身份。 */
+  /** 它在父右键菜单中的条目身份。 */
   value: string
   disabled?: boolean
   collection?: MenuNode[]
@@ -318,19 +318,19 @@ export interface XhContextMenuSubProps {
   openOnHover?: boolean
   hoverOpenDelay?: number
   hoverCloseDelay?: number
-  /** 文字方向；缺省继承父层。子层被搬到浮层落点，继承不到父层的方向。 */
+  /** 文字方向；默认继承父层。子层被迁移到浮层落点，无法继承父层的方向。 */
   dir?: Direction
-  /** 语气；缺省继承父层。子层是浮层落点下的同级节点，CSS 私有槽继承不到。 */
+  /** 语气；默认继承父层。子层是浮层落点下的同级节点，CSS 私有槽无法继承。 */
   tone?: Tone
-  /** 尺寸；缺省继承父层，理由同 tone。 */
+  /** 尺寸；默认继承父层，理由同 tone。 */
   size?: Size
   children?: SlotChildren<ContextMenuSubSlotProps>
 }
 
 /**
- * 右键菜单里的子菜单：子层跑一台 submenu 模式的 menu 机器，触发条目由
- * XhContextMenuSubTrigger 渲染成「父层条目 + 子层触发器」的双重身份。
- * 子层内部用 XhMenu 系部件。本身不渲染节点。
+ * 右键菜单中的子菜单：子层运行一台 submenu 模式的 menu 状态机，触发条目由
+ * XhContextMenuSubTrigger 渲染为父层条目与子层触发器的双重身份。
+ * 子层内部使用 XhMenu 系部件。本身不渲染节点。
  */
 export function XhContextMenuSub({ value, disabled, children, ...props }: XhContextMenuSubProps): ReactNode {
   const parent = useContextMenuContext()
@@ -391,7 +391,7 @@ export function XhContextMenuSubTrigger({ children, ...rest }: XhContextMenuSubT
   )
 }
 
-/** 单个条目：标记位排在文字前面，没给标记位就不铺那个部件。 */
+/** 单个条目：标记位排在文字前面，未提供标记位时不铺设该部件。 */
 function renderItemNode(
   meta: ContextMenuNodeMeta,
   renderItem?: (node: ContextMenuNodeMeta) => ReactNode,
@@ -405,7 +405,7 @@ function renderItemNode(
   )
 }
 
-/** content 的内容：分组段铺成 group，段首的分隔线落在 group 外面。 */
+/** content 的内容：分组段铺为 group，段首的分隔线落在 group 外面。 */
 function renderNodes(
   collection: readonly ContextMenuNodeMeta[],
   renderItem?: (node: ContextMenuNodeMeta) => ReactNode,
@@ -441,8 +441,8 @@ function renderNodes(
 }
 
 /**
- * 没写 children 时按 collection 铺开的整套结构，作者只交数据。
- * 与手写部件产出的 DOM 完全一致，要改结构就写 children，行为不变。
+ * 未写 children 时按 collection 铺开的整套结构，作者只提供数据。
+ * 与手写部件产出的 DOM 完全一致，需要修改结构时写 children，行为不变。
  */
 function DefaultTree(props: {
   collection: readonly ContextMenuNodeMeta[]

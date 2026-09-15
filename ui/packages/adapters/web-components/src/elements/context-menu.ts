@@ -28,22 +28,22 @@ const NUMBER_CONVERTER = { fromAttribute: (v: string | null) => (v === null ? un
 const BOOLEAN_CONVERTER = { fromAttribute: (v: string | null) => (v === null ? undefined : v !== 'false') }
 
 /**
- * `<xh-context-menu>` —— Light-DOM 行为宿主：作者写 root/trigger/positioner/content 与若干
- * item / group / separator 角色节点，元素跑 context-menu 机器并把 connect 产出打上去。
+ * `<xh-context-menu>`：Light-DOM 行为宿主：作者写 root / trigger / positioner / content 与若干
+ * item / group / separator 角色节点，元素运行 context-menu 状态机并把 connect 产出接上。
  *
  * 与 `<xh-menu>` 的差别只在入口与锚点：这里由触发区上的右键（触摸端长按 700ms、
- * 键盘 ContextMenu / Shift+F10）打开，浮层钉在光标坐标上——锚点是虚拟的一点，
- * 不是某个元素，因此没有 getAnchorEl。展开着再右键只挪坐标，不先关再开。
+ * 键盘 ContextMenu / Shift+F10）打开，浮层固定在光标坐标上：锚点是虚拟的一点，
+ * 不是某个元素，因此没有 getAnchorEl。展开期间再次右键只移动坐标，不先关闭再打开。
  *
- * 条目身份取作者写在 item 上的 value 属性，禁用由部件自报（aria-disabled）。
+ * 条目身份取作者写在 item 上的 value 属性，禁用由部件声明（aria-disabled）。
  *
  * @customElement xh-context-menu
- * @attr {boolean} open - 受控开合；缺省该属性即非受控
+ * @attr {boolean} open - 受控开合；未提供该属性即非受控
  * @attr {boolean} default-open - 非受控初始为展开
- * @attr {string} placement - 相对光标的首选放置位，默认 bottom-start；避让后的实际位写在 data-placement 上
+ * @attr {string} placement - 相对光标的首选放置位，默认 bottom-start；避让后的实际位置写在 data-placement 上
  * @attr {number} offset - 浮层与光标的间距（px），默认 0
- * @attr {boolean} loop - 方向键走到尽头回绕，默认 true；写 loop="false" 关掉
- * @attr {boolean} typeahead - 连打检索，默认开；写 typeahead="false" 关掉
+ * @attr {boolean} loop - 方向键到达末尾回绕，默认 true；写 loop="false" 关闭
+ * @attr {boolean} typeahead - 连打检索，默认开启；写 typeahead="false" 关闭
  * @attr {'ltr'|'rtl'} dir - 文字方向，默认 ltr
  * @attr {number} long-press-delay - 触摸端长按触发时长（ms），默认 700
  * @attr {'brand'|'neutral'|'success'|'warning'|'danger'|'info'} tone - 语气
@@ -51,14 +51,14 @@ const BOOLEAN_CONVERTER = { fromAttribute: (v: string | null) => (v === null ? u
  * @fires open-change - open 状态变化；detail 为 `{ open: boolean }`
  * @fires select - 条目被选中（菜单随之关闭）；detail 为 `{ value: string }`
  * @csspart root - 组件根容器（承载 data-state）
- * @csspart trigger - 右键触发区（aria-haspopup/aria-controls 所在，自带 Tab 位供键盘开启）
- * @csspart positioner - 浮层定位容器，坐标由引擎写成内联样式
+ * @csspart trigger - 右键触发区（aria-haspopup / aria-controls 所在，自带 Tab 位供键盘打开）
+ * @csspart positioner - 浮层定位容器，坐标由引擎写为内联样式
  * @csspart content - role=menu 容器（焦点域与消解层的根节点，键盘在此收口），收起时带 hidden
  * @csspart item - role=menuitem 条目，须自带 value 属性标识身份；禁用写 aria-disabled="true"
- * @csspart item-text - 条目文本（连打检索的取字处）
+ * @csspart item-text - 条目文本（连打检索的取字来源）
  * @csspart item-indicator - 条目标记位（勾选符号 / 图标 / 快捷键提示），aria-hidden
  * @csspart item-description - 条目副文本，排在文字下一行
- * @csspart separator - 分隔线（role=separator，不入方向键导航）
+ * @csspart separator - 分隔线（role=separator，不进入方向键导航）
  * @csspart group - role=group 分组容器，须自带 value 属性标识身份
  * @csspart group-label - 分组标题（本组 aria-labelledby 的目标）
  * @csspart arrow - 指向锚点的箭头（aria-hidden，data-placement 随实际放置位翻转）
@@ -95,7 +95,7 @@ export class XhContextMenuElement extends XhPortalHostElement {
   declare offset?: number
   declare loop?: boolean
   declare typeahead?: boolean
-  /** 读屏文案（菜单名字）；对象进不了属性，只作为 property 暴露。 */
+  /** 读屏文案（菜单名称）；对象无法表达为属性，只作为 property 暴露。 */
   declare translations?: ContextMenuSchema['props']['translations']
   declare direction?: Direction
   declare longPressDelay?: number
@@ -203,7 +203,7 @@ export class XhContextMenuElement extends XhPortalHostElement {
     scrollable: () => this.getPart('content'),
   })
 
-  /** 作者声明的条目禁用，只认首见那一份；给了 collection 时用它，否则现读 */
+  /** 作者声明的条目禁用，只认首次见到的值；提供 collection 时使用它，否则现读 */
   private readonly declaredDisabled = createDeclaredDisabled()
 
   private machineProps(): Partial<ContextMenuSchema['props']> {
@@ -271,10 +271,10 @@ export class XhContextMenuElement extends XhPortalHostElement {
   }
 
   /**
-   * 角色节点提前发现一次：default-open 时机器在 hostConnected 当场进入展开态，
-   * 进入那一刻的 entry 同步查 content 里的条目挑焦点锚点——而常规发现要等首次 updated，
-   * 那一刻 partMap 还空着，锚点会留空，于是没有条目认领 tabindex=0，键盘进不去菜单。
-   * 定位是 flush 推迟的（那时 partMap 已就位），这里只为锚点补上时机。
+   * 角色节点提前发现一次：default-open 时状态机在 hostConnected 当场进入展开态，
+   * 进入时的 entry 同步查询 content 中的条目选择焦点锚点：而常规发现要等首次 updated，
+   * 此时 partMap 仍为空，锚点会留空，于是没有条目认领 tabindex=0，键盘无法进入菜单。
+   * 定位由 flush 推迟（届时 partMap 已就位），这里只为锚点补上时机。
    */
   override connectedCallback(): void {
     setMenuSubmenuOwner(this, this.submenuOwner)
@@ -283,9 +283,9 @@ export class XhContextMenuElement extends XhPortalHostElement {
   }
 
   /**
-   * 承载焦点的条目被移出 DOM 时浏览器不派 focusout，锚点会停在一个已消失的值上：
+   * 承载焦点的条目被移出 DOM 时浏览器不派发 focusout，锚点会停在一个已消失的值上：
    * 没有条目认领 tabindex=0、方向键也失去起点。这里替 DOM 把焦点离场如实上报，
-   * 机器就地按当前活条目重挑锚点。
+   * 状态机就地按当前活动条目重新选择锚点。
    */
   protected override onPartsReleased(nodes: readonly HTMLElement[]): void {
     const { context, getStatus, send } = this.ctrl.service
