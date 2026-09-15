@@ -25,7 +25,7 @@ import { useFloatingPanel } from './use-floating-panel'
 
 type FloatingPanelProps = FloatingPanelSchema['props']
 
-/** 函数式 children 的载荷：开合、形态与矩形，以及改这四样的动作。 */
+/** 函数式 children 的载荷：开合、形态与矩形，以及修改这四项的动作。 */
 export interface FloatingPanelRootSlotProps extends Pick<
   FloatingPanelApi,
   'open' | 'windowState' | 'position' | 'dimensions' | 'dragging' | 'resizing' | 'canDrag' | 'canResize'
@@ -127,7 +127,7 @@ XhFloatingPanelRoot.xhEvents = [
 ] as const
 
 export interface XhFloatingPanelTriggerProps extends ComponentPropsWithRef<'button'> {}
-/** 用原生 button，激活交给平台。 */
+/** 使用原生 button，激活交给平台。 */
 export function XhFloatingPanelTrigger({ children, ...rest }: XhFloatingPanelTriggerProps): ReactNode {
   const ctx = useFloatingPanelContext()
   return (
@@ -138,10 +138,10 @@ export function XhFloatingPanelTrigger({ children, ...rest }: XhFloatingPanelTri
 }
 
 export interface XhFloatingPanelPositionerProps extends ComponentPropsWithRef<'div'> {
-  /** 浮层挂到哪个容器；不给就按全局配置，再不给挂 body。 */
+  /** 浮层挂载的容器；未提供时按全局配置，再未提供时挂载到 body。 */
   container?: () => Element | null
 }
-/** 搬到浮层落点：留在原地的话，宿主祖先只要建了层叠上下文就能盖住浮层。 */
+/** 迁移到浮层落点：留在原地时，宿主祖先只要建立了层叠上下文就能遮住浮层。 */
 export function XhFloatingPanelPositioner({ children, container, ...rest }: XhFloatingPanelPositionerProps): ReactNode {
   const ctx = useFloatingPanelContext()
   return (
@@ -163,7 +163,7 @@ export function XhFloatingPanelPositioner({ children, container, ...rest }: XhFl
 }
 
 export interface XhFloatingPanelContentProps extends ComponentPropsWithRef<'div'> {}
-/** 节点交给机器：跟手期间的指针监听要挂在它所在的那个文档上。 */
+/** 节点交给状态机：拖动期间的指针监听要挂载在它所在的文档上。 */
 export function XhFloatingPanelContent({ children, ...rest }: XhFloatingPanelContentProps): ReactNode {
   const ctx = useFloatingPanelContext()
   return (
@@ -210,10 +210,10 @@ export function XhFloatingPanelDragTrigger({ children, ...rest }: XhFloatingPane
 }
 
 export interface XhFloatingPanelResizeTriggerProps extends ComponentPropsWithRef<'div'> {
-  /** 这个把手守哪条边：n / e / s / w 四条边与 ne / nw / se / sw 四个角。 */
+  /** 该把手负责哪条边：n / e / s / w 四条边与 ne / nw / se / sw 四个角。 */
   edge: FloatingPanelResizeEdge
 }
-/** 把手是 role=separator 的元素而不是按钮：方向键推边，按钮的激活键在这里没有语义。 */
+/** 把手是 role=separator 的元素而不是按钮：方向键推动边，按钮的激活键在这里没有语义。 */
 export function XhFloatingPanelResizeTrigger({ edge, children, ...rest }: XhFloatingPanelResizeTriggerProps): ReactNode {
   const ctx = useFloatingPanelContext()
   return (
@@ -229,7 +229,7 @@ export function XhFloatingPanelResizeTrigger({ edge, children, ...rest }: XhFloa
 }
 
 export interface XhFloatingPanelWindowStateTriggerProps extends ComponentPropsWithRef<'button'> {
-  /** 按下它切到哪个形态；已经在该形态时再按一次回到常规。 */
+  /** 按下它切换到哪个形态；已处于该形态时再按一次回到常规。 */
   windowState: FloatingPanelWindowState
 }
 export function XhFloatingPanelWindowStateTrigger({

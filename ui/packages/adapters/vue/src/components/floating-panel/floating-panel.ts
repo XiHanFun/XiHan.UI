@@ -23,7 +23,7 @@ import { useFloatingPanel } from './use-floating-panel'
 
 type FloatingPanelProps = FloatingPanelSchema['props']
 
-/** 默认插槽的载荷：开合、形态与矩形，以及改这四样的动作。 */
+/** 默认插槽的载荷：开合、形态与矩形，以及修改这四项的动作。 */
 export type FloatingPanelRootSlotProps = Pick<
   FloatingPanelApi,
   'open' | 'windowState' | 'position' | 'dimensions' | 'dragging' | 'resizing' | 'canDrag' | 'canResize'
@@ -180,7 +180,7 @@ export const XhFloatingPanelDragTrigger = defineComponent({
 export const XhFloatingPanelResizeTrigger = defineComponent({
   name: 'XhFloatingPanelResizeTrigger',
   props: {
-    /** 这个把手守哪条边：n / e / s / w 四条边与 ne / nw / se / sw 四个角。 */
+    /** 该把手负责哪条边：n / e / s / w 四条边与 ne / nw / se / sw 四个角。 */
     edge: { type: String as PropType<FloatingPanelResizeEdge>, required: true },
   },
   setup(props, { slots }) {
@@ -197,7 +197,7 @@ export const XhFloatingPanelResizeTrigger = defineComponent({
 export const XhFloatingPanelWindowStateTrigger = defineComponent({
   name: 'XhFloatingPanelWindowStateTrigger',
   props: {
-    /** 按下它切到哪个形态；已经在该形态时再按一次回到常规。 */
+    /** 按下它切换到哪个形态；已处于该形态时再按一次回到常规。 */
     windowState: { type: String as PropType<FloatingPanelWindowState>, required: true },
   },
   setup(props, { slots }) {
