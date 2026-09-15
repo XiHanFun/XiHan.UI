@@ -25052,7 +25052,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-shape-surface"
+        "--xh-shape-control"
       ],
       "visibility": "public",
       "description": "field 的 control 部件 border-radius 覆盖槽。"

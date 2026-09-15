@@ -87,7 +87,7 @@
     block-size: var(--xh-field-control-h, var(--xh-control-h-md));
     padding-inline: var(--xh-field-control-px, var(--xh-control-px-md));
     border: var(--xh-stroke-thin) solid var(--xh-field-control-border, transparent);
-    border-radius: var(--xh-field-control-radius, var(--xh-shape-surface));
+    border-radius: var(--xh-field-control-radius, var(--xh-shape-control));
     outline: var(--xh-ring-width) solid transparent;
     outline-offset: var(--xh-ring-offset);
     background: var(--xh-field-control-bg, var(--xh-bg-canvas));

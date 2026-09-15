@@ -51,8 +51,8 @@
 
 ### 何时不用
 
-- 无需可见标签的紧凑控件：直接提供 `aria-label`。
-- 需要管理整张表单的值和提交：使用[表单](./form)。
+- 不需要可见标签的紧凑控件直接提供 `aria-label`。
+- 需要管理整张表单的值和提交时，使用[表单](./form)。
 
 ### 特性
 
@@ -63,8 +63,8 @@
 
 ### 组合
 
-- 包住任何单一控件：[文本字段](./text-field)、[选择器](./select)、[开关](./switch)等会把字段状态接到真控件上。
-- 多个字段一起提交与校验时放进[表单](./form)；一组相关字段用[字段集](./fieldset)分区。
+- 包裹任何单一控件：[文本字段](./text-field)、[选择器](./select)、[开关](./switch)等会把字段状态接到实际控件上。
+- 多个字段一起提交与校验时放入[表单](./form)；一组相关字段使用[字段集](./fieldset)分区。
 
 ### 最佳实践
 
@@ -189,7 +189,7 @@
 | `--xh-field-control-font-size` | `control` | `font-size` | `default` | `--xh-text-body-size` | field 的 control 部件 font-size 覆盖槽。 |
 | `--xh-field-control-h` | `control`<br>`label`<br>`root` | `block-size`<br>`padding-block` | `default`<br>`layout=horizontal` | `--xh-control-h-md` | field 的 control、label、root 部件 block-size、padding-block 覆盖槽。 |
 | `--xh-field-control-px` | `control` | `padding-inline` | `default` | `--xh-control-px-md` | field 的 control 部件 padding-inline 覆盖槽。 |
-| `--xh-field-control-radius` | `control` | `border-radius` | `default` | `--xh-shape-surface` | field 的 control 部件 border-radius 覆盖槽。 |
+| `--xh-field-control-radius` | `control` | `border-radius` | `default` | `--xh-shape-control` | field 的 control 部件 border-radius 覆盖槽。 |
 | `--xh-field-control-ring` | `control` | `outline` | `focus-visible` | `--xh-ring-focus` | field 的 control 部件 outline 覆盖槽。 |
 | `--xh-field-control-shadow` | `control` | `box-shadow` | `default` | `--xh-elevation-raised` | field 的 control 部件 box-shadow 覆盖槽。 |
 | `--xh-field-description-fg` | `description` | `color` | `default` | `--xh-fg-muted` | field 的 description 部件 color 覆盖槽。 |
