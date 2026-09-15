@@ -150,9 +150,9 @@ loading 期间容器报 aria-busy，翻成 false 后整块收起，位置让给�
 <!-- xh-component-tokens:start -->
 ### CSS 变量
 
-本组件公开覆盖槽由独立皮肤的实际消费位生成；缺省来源、作用部件和状态均与 CSS 同源。
+本组件公开覆盖槽由独立皮肤的实际消费位生成；默认来源、作用部件和状态均与 CSS 同源。
 
-| 变量 | 部件 | CSS 属性 | 状态 | 缺省来源 | 说明 |
+| 变量 | 部件 | CSS 属性 | 状态 | 默认来源 | 说明 |
 | --- | --- | --- | --- | --- | --- |
 | `--xh-skeleton-bg` | `item` | `background-color` | `default` | `--xh-bg-subtle` | skeleton 的 item 部件 background-color 覆盖槽。 |
 | `--xh-skeleton-circle-radius` | `item` | `border-radius` | `shape=circle` | `--xh-shape-circle` | skeleton 的 item 部件 border-radius 覆盖槽。 |

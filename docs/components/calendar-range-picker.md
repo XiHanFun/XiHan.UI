@@ -220,9 +220,9 @@ granularity=week：一行一个整周，格子直接铺进网格；值是两端�
 <!-- xh-component-tokens:start -->
 ### CSS 变量
 
-本组件公开覆盖槽由独立皮肤的实际消费位生成；缺省来源、作用部件和状态均与 CSS 同源。
+本组件公开覆盖槽由独立皮肤的实际消费位生成；默认来源、作用部件和状态均与 CSS 同源。
 
-| 变量 | 部件 | CSS 属性 | 状态 | 缺省来源 | 说明 |
+| 变量 | 部件 | CSS 属性 | 状态 | 默认来源 | 说明 |
 | --- | --- | --- | --- | --- | --- |
 | `--xh-calendar-range-picker-cell-bg-hover` | `cell-trigger` | `background` | `disabled`<br>`hover`<br>`in-range`<br>`not([data-disabled], [data-selected], [data-in-range])`<br>`selected` | `--xh-bg-subtle-hover` | calendar-range-picker 的 cell-trigger 部件 background 覆盖槽。 |
 | `--xh-calendar-range-picker-cell-bg-selected` | `cell-trigger` | `background` | `in-range`<br>`is([data-range-start], [data-range-end])`<br>`not([data-in-range])`<br>`not([data-outside-month])`<br>`outside-month`<br>`range-end`<br>`range-start`<br>`selected` | `--xh-bg-brand` | calendar-range-picker 的 cell-trigger 部件 background 覆盖槽。 |

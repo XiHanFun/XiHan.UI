@@ -223,9 +223,9 @@ gs1 打开后最前面放 FNC1，读码器把内容当 GS1 元素串：变长 AI
 <!-- xh-component-tokens:start -->
 ### CSS 变量
 
-本组件公开覆盖槽由独立皮肤的实际消费位生成；缺省来源、作用部件和状态均与 CSS 同源。
+本组件公开覆盖槽由独立皮肤的实际消费位生成；默认来源、作用部件和状态均与 CSS 同源。
 
-| 变量 | 部件 | CSS 属性 | 状态 | 缺省来源 | 说明 |
+| 变量 | 部件 | CSS 属性 | 状态 | 默认来源 | 说明 |
 | --- | --- | --- | --- | --- | --- |
 | `--xh-matrix-code-bg` | `root` | `background`<br>`fill` | `default`<br>`xh-geom=logo-clear` | `--xh-color-neutral-0` | matrix-code 的 root 部件 background、fill 覆盖槽。 |
 | `--xh-matrix-code-eye-fg` | `root` | `fill` | `xh-geom=eyes` | `currentColor` | matrix-code 的 root 部件 fill 覆盖槽。 |
