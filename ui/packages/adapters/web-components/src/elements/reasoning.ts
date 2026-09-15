@@ -23,19 +23,19 @@ const BOOLEAN_CONVERTER = { fromAttribute: (v: string | null) => (v === null ? u
 const NUMBER_CONVERTER = { fromAttribute: (v: string | null) => (v == null || v === '' ? undefined : Number(v)) }
 
 /**
- * `<xh-reasoning>` —— Light-DOM 行为宿主：把思考过程收进一个折叠区。
- * 自动开合整套复用 tool-call 的机器，它不认解剖、只认在不在跑与四个叶态；
- * 全局文案另按 reasoning 分桶取，不经机器名。
+ * `<xh-reasoning>`：Light-DOM 行为宿主：把思考过程收进一个折叠区。
+ * 自动开合整套复用 tool-call 的状态机，它不识别解剖、只识别是否运行中与四个叶态；
+ * 全局文案另按 reasoning 分类获取，不经状态机名。
  *
  * @customElement xh-reasoning
- * @attr {boolean} streaming - 还在思考：跟着它自动展开，写完自动收起
+ * @attr {boolean} streaming - 仍在思考：随它自动展开，完成后自动收起
  * @attr {number} start-time - 开始思考的毫秒时间戳
  * @attr {number} end-time - 思考结束的毫秒时间戳；流被中止时它会缺席
- * @attr {boolean} open - 受控开合，缺省该属性即非受控
+ * @attr {boolean} open - 受控开合，未提供该属性即非受控
  * @attr {boolean} default-open - 非受控初值
- * @attr {boolean} auto-disclosure - 跟着思考状态自动开合，默认开；写 auto-disclosure="false" 关掉
+ * @attr {boolean} auto-disclosure - 随思考状态自动开合，默认开启；写 auto-disclosure="false" 关闭
  * @attr {boolean} disabled - 禁用折叠开关
- * @attr {'outline'|'subtle'|'ghost'} variant - 形态：描边 / 底色分区（缺省档）/ 无壳内联
+ * @attr {'outline'|'subtle'|'ghost'} variant - 形态：描边 / 底色分区（默认档）/ 无壳内联
  * @attr {string} tone - 语气
  * @attr {string} size - 尺寸：sm / md / lg
  * @fires open-change - 开合变化；detail 为 `{ open: boolean, source: 'user' | 'auto' | 'api' }`
@@ -44,7 +44,7 @@ const NUMBER_CONVERTER = { fromAttribute: (v: string | null) => (v == null || v 
  * @csspart icon - 状态图形位，承载 data-streaming，对读屏隐藏
  * @csspart indicator - 纯装饰指示，对读屏隐藏
  * @csspart label - 折叠区的名字，排在开关内因而计入它的可访问名
- * @csspart duration - 想了多久，同上
+ * @csspart duration - 思考时长，同上
  * @csspart content - 思考正文，role=region 且由开关命名
  */
 export class XhReasoningElement extends XhElement {
@@ -79,13 +79,13 @@ export class XhReasoningElement extends XhElement {
   /** 折叠区的名字与两句时长文案。 */
   declare translations?: Partial<ReasoningTranslations>
 
-  /** 两个时刻算出来的思考时长，任一缺席或倒着走都是 undefined。 */
+  /** 由两个时刻计算的思考时长，任一缺席或顺序倒置时为 undefined。 */
   get durationMs(): number | undefined {
     const props = this.configured('reasoning', this.viewProps())
     return reasoningDuration(props.startTime, props.endTime)
   }
 
-  /** 当前该显示哪句状态文案：作者把它写进 label 那个角色节点。 */
+  /** 当前应显示的状态文案：作者将其写入 label 角色节点。 */
   get statusText(): string {
     const props = this.configured('reasoning', this.viewProps())
     return reasoningStatusText(
