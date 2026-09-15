@@ -10,12 +10,12 @@ import type { ComputedRef, InjectionKey } from 'vue'
 import type { ComboboxContext } from './use-combobox'
 import { inject, provide } from 'vue'
 
-/** 候选自报的值与禁用，供 item-text / item-indicator 这类子部件复用同一份声明。 */
+/** 候选声明的值与禁用，供 item-text / item-indicator 等子部件复用同一份声明。 */
 export interface ComboboxItemContext {
   item: ComputedRef<ComboboxItemProps>
 }
 
-/** 分组自报的身份，供分组标题取到同一个值（标题的 id 由它派生）。 */
+/** 分组声明的身份，供分组标题取到同一个值（标题的 id 由它派生）。 */
 export interface ComboboxItemGroupContext {
   group: ComputedRef<ComboboxGroupProps>
 }

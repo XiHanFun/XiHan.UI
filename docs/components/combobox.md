@@ -121,33 +121,33 @@
 
 | 属性 | 类型 | 必填 | 说明 |
 | --- | --- | --- | --- |
-| `collection` | `ComboboxNode[]` |  | 候选数据，显示文本与禁用的事实源。过滤仍归调用方：交进来的就是此刻该显示的那几条。 给了它，条目部件只需报 value，显示文本也不再从活 DOM 现查。 缺省即回到「文本写在条目里、现查 DOM」的老路。 |
-| `value` | `string \| string[]` |  | 选中值。给定即受控：cell 直读 prop，写只发 onValueChange 不落内部值。 单选写成裸串是简写，内部一律归一成数组。 |
+| `collection` | `ComboboxNode[]` |  | 候选数据，显示文本与禁用的事实源。过滤仍由调用方完成：传入的即当前应显示的候选。 提供后条目部件只需声明 value，显示文本也不再从 DOM 查询。 未提供时回到文本写在条目中、从 DOM 查询的方式。 |
+| `value` | `string \| string[]` |  | 选中值。提供即受控：cell 直读 prop，写入只发 onValueChange 不落内部值。 单选写为裸串是简写，内部一律归一为数组。 |
 | `defaultValue` | `string \| string[]` |  |  |
-| `inputValue` | `string` |  | 输入框里的字符串。给定即受控，与选中值各自独立。 过滤不由组件做：调用方拿这个串去筛条目，把筛完的结果重新渲染进来。 |
+| `inputValue` | `string` |  | 输入框中的字符串。提供即受控，与选中值各自独立。 过滤不由组件完成：调用方用该串筛选条目，把筛选结果重新渲染进来。 |
 | `defaultInputValue` | `string` |  |  |
-| `open` | `boolean` |  | 展开态。给定即受控：内部不再自改，只发 onOpenChange。 |
+| `open` | `boolean` |  | 展开态。提供即受控：内部不再自行修改，只发 onOpenChange。 |
 | `defaultOpen` | `boolean` |  |  |
 | `name` | `string` |  | 表单字段名；hidden-input 按选中值逐个生成同名字段，不使用分隔符编码。 |
 | `form` | `string` |  | 原生表单 ID；显式关联外部表单，提交与 reset 使用同一所有者。 |
 | `multiple` | `boolean` |  |  |
-| `disabled` | `boolean` |  | 整个控件禁用：输入框与两个按钮都用原生 disabled。 |
+| `disabled` | `boolean` |  | 整个控件禁用：输入框与两个按钮都使用原生 disabled。 |
 | `readOnly` | `boolean` |  | 只读：文字可选可复制，但展开、选中、清空一概不发生。 |
-| `invalid` | `boolean` |  | 校验失败：输入框报 aria-invalid，各角色节点带 data-invalid。 |
-| `loading` | `boolean` |  | 候选还在取：列表报 aria-busy，在途占位顶上来、空态占位让位。 |
-| `loop` | `boolean` |  | 方向键走到尽头是否回绕，默认 true。 |
+| `invalid` | `boolean` |  | 校验失败：输入框报告 aria-invalid，各角色节点带 data-invalid。 |
+| `loading` | `boolean` |  | 候选加载中：列表报告 aria-busy，显示在途占位、隐藏空态占位。 |
+| `loop` | `boolean` |  | 方向键到达末尾是否回绕，默认 true。 |
 | `placeholder` | `string` |  | 输入框占位文字。 |
-| `translations` | `Partial<ComboboxTranslations>` |  | 读屏文案；不给的键走英文缺省。 |
-| `allowCustomValue` | `boolean` |  | 允许提交候选列表里没有的值（回车与失焦时把输入串本身收成选中值）。 |
-| `openOnClick` | `boolean` |  | 点输入框即展开，默认 false（只有触发按钮与方向键展开）。 |
+| `translations` | `Partial<ComboboxTranslations>` |  | 读屏文案；未提供的键使用英文默认值。 |
+| `allowCustomValue` | `boolean` |  | 允许提交候选列表中没有的值（回车与失焦时把输入串本身收为选中值）。 |
+| `openOnClick` | `boolean` |  | 点击输入框即展开，默认 false（只有触发按钮与方向键展开）。 |
 | `inputBehavior` | `ComboboxInputBehavior` |  | 输入行为，默认 none。 |
 | `placement` | `Placement` |  |  |
-| `dir` | `Direction` |  | 文字方向，缺省 ltr。只改写浮层在行内轴上 start 与 end 的落点。 |
+| `dir` | `Direction` |  | 文字方向，默认 ltr。只改写浮层在行内轴上 start 与 end 的落点。 |
 | `offset` | `number` |  |  |
-| `variant` | `ControlVariant` |  | 形态：outline / subtle / ghost，决定输入行的描边与底色怎么用。 |
-| `tone` | `Tone` |  | 语气：brand / neutral / success / warning / danger / info，决定聚焦与选中强调用哪族颜色。 |
+| `variant` | `ControlVariant` |  | 形态：outline / subtle / ghost，决定输入行的描边与底色使用方式。 |
+| `tone` | `Tone` |  | 语气：brand / neutral / success / warning / danger / info，决定聚焦与选中强调使用哪族颜色。 |
 | `size` | `Size` |  | 尺寸：sm / md / lg，决定输入行高度、内边距与字号档位。 |
-| `onValueChange` | `(details: ComboboxValueChangeDetails) => void` |  | value 变化意图回调；受控时是唯一出口，非受控随内部写入一并通知。 |
+| `onValueChange` | `(details: ComboboxValueChangeDetails) => void` |  | value 变化意图回调；受控时是唯一出口，非受控时随内部写入一并通知。 |
 | `onInputValueChange` | `(details: ComboboxInputValueChangeDetails) => void` |  | 输入串变化回调：调用方据此重新过滤候选。 |
 | `onOpenChange` | `(details: ComboboxOpenChangeDetails) => void` |  | open 变化意图回调；受控时是唯一出口，非受控时随内部转移一并通知。 |
 
@@ -202,17 +202,17 @@
 | 成员 | 类型 | 说明 |
 | --- | --- | --- |
 | `open` | `boolean` |  |
-| `collection` | `readonly ComboboxNodeMeta[]` | collection 推出的候选元信息，按数据顺序排列；没给 collection 即空数组。 |
-| `value` | `string[]` | 选中集合；单选模式下长度 ≤ 1，形状不随模式变。 |
-| `inputValue` | `string` | 输入框里的字符串。 |
+| `collection` | `readonly ComboboxNodeMeta[]` | 由 collection 推导的候选元信息，按数据顺序排列；未提供 collection 时为空数组。 |
+| `value` | `string[]` | 选中集合；单选模式下长度 ≤ 1，形状不随模式变化。 |
+| `inputValue` | `string` | 输入框中的字符串。 |
 | `valueText` | `string \| null` | 单选选中项的显示文本；无选中或多选时为 null。 |
 | `highlightedValue` | `string \| null` | 高亮候选；收起时为 null。焦点不在它身上，只经 aria-activedescendant 上报。 |
 | `multiple` | `boolean` |  |
 | `disabled` | `boolean` |  |
 | `readOnly` | `boolean` |  |
 | `invalid` | `boolean` |  |
-| `empty` | `boolean` | 候选为空（已结算且条数为 0）且当前展开：empty 角色节点据此显形。 |
-| `canClear` | `boolean` | 清空按钮此刻可不可按。 |
+| `empty` | `boolean` | 候选为空（已结算且条数为 0）且当前展开：empty 角色节点据此显示。 |
+| `canClear` | `boolean` | 清空按钮当前是否可按。 |
 | `isSelected` | `(value: string) => boolean` |  |
 | `setOpen` | `(next: boolean) => void` |  |
 | `setValue` | `(next: string[]) => void` |  |
@@ -221,7 +221,7 @@
 | `getRootProps` | `() => T['element']` |  |
 | `getLabelProps` | `() => T['label']` |  |
 | `getControlProps` | `() => T['element']` |  |
-| `getInputProps` | `(props?: ComboboxInputProps) => T['input']` | 不传参即单行 input，产出与加此参数前逐字相同。 |
+| `getInputProps` | `(props?: ComboboxInputProps) => T['input']` | 不传参即单行 input，产出与增加此参数前逐字相同。 |
 | `getTriggerProps` | `() => T['button']` |  |
 | `getClearTriggerProps` | `() => T['button']` |  |
 | `getPositionerProps` | `() => T['element']` |  |
@@ -232,7 +232,7 @@
 | `getItemTextProps` | `(props: ComboboxItemProps) => T['element']` |  |
 | `getItemIndicatorProps` | `(props: ComboboxItemProps) => T['element']` |  |
 | `getEmptyProps` | `() => T['element']` |  |
-| `getLoadingProps` | `() => T['element']` | 在途占位：与空态占位同一个位置，两者不同屏——取数期间它顶上来，空态让位。 与 content 是兄弟，同样不进 role=listbox。 |
+| `getLoadingProps` | `() => T['element']` | 在途占位：与空态占位同一位置，两者不同时显示：加载期间显示它，空态让位。 与 content 是兄弟，同样不进入 role=listbox。 |
 | `getHiddenInputProps` | `(props: { value: string }) => T['input']` | 单值表单出口；按 api.value 逐个调用并生成同名 input，零选中不生成提交项。 |
 
 ## 无障碍
@@ -252,7 +252,7 @@
 | `End` | open | 高亮移到末个可选候选；收起态不接管，光标照常跳到行尾 |
 | `Enter` | open, 有高亮且未禁用 | 选中高亮候选：单选把输入串换成它的文本并收起，多选把它并入集合、清空输入串且不收起 |
 | `Enter` | open, 无高亮且 allowCustomValue | 把输入串本身收成选中值 |
-| `Escape` | open | 先摘掉高亮；高亮已空时才收起列表，选中值不变 |
+| `Escape` | open | 先清除高亮；高亮已空时才收起列表，选中值不变 |
 | `Alt+ArrowUp` | open | 收起列表，选中值不变 |
 | `Tab` / `Shift+Tab` | open | 收起列表且不拦按键，焦点按 Tab 序列自然离开 |
 | `Backspace` | multiple, 输入串为空且已有选中 | 删掉最后一个已选项 |

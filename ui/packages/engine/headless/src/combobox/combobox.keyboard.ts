@@ -23,7 +23,7 @@ export const comboboxKeyboard: KeyboardTable = {
     { id: 'combobox.kbd.last', keys: ['End'], when: 'open', does: '高亮移到末个可选候选；收起态不接管，光标照常跳到行尾' },
     { id: 'combobox.kbd.select', keys: ['Enter'], when: 'open, 有高亮且未禁用', does: '选中高亮候选：单选把输入串换成它的文本并收起，多选把它并入集合、清空输入串且不收起' },
     { id: 'combobox.kbd.custom', keys: ['Enter'], when: 'open, 无高亮且 allowCustomValue', does: '把输入串本身收成选中值' },
-    { id: 'combobox.kbd.escape', keys: ['Escape'], when: 'open', does: '先摘掉高亮；高亮已空时才收起列表，选中值不变' },
+    { id: 'combobox.kbd.escape', keys: ['Escape'], when: 'open', does: '先清除高亮；高亮已空时才收起列表，选中值不变' },
     { id: 'combobox.kbd.close-alt', keys: ['Alt+ArrowUp'], when: 'open', does: '收起列表，选中值不变' },
     { id: 'combobox.kbd.tab', keys: ['Tab', 'Shift+Tab'], when: 'open', does: '收起列表且不拦按键，焦点按 Tab 序列自然离开' },
     { id: 'combobox.kbd.remove-last', keys: ['Backspace'], when: 'multiple, 输入串为空且已有选中', does: '删掉最后一个已选项' },

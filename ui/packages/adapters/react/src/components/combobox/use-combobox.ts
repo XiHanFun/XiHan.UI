@@ -19,17 +19,17 @@ import { useMachine } from '../../runtime/use-machine'
 import { useOverlay } from '../../runtime/use-overlay'
 
 export interface ComboboxContext extends OverlayWiring {
-  /** 机器实例，供部件直接上报 DOM 侧事实。 */
+  /** 状态机实例，供部件直接上报 DOM 侧事实。 */
   service: Service<ComboboxSchema>
   api: ComboboxApi
   /** 表单重置的锚点：接在根节点上。 */
   rootRef: RefObject<HTMLElement | null>
   controlRef: RefObject<HTMLElement | null>
-  /** 输入宿主，input 或 textarea；由 XhComboboxInput 的 as 决定渲染成哪个。 */
+  /** 输入宿主，input 或 textarea；由 XhComboboxInput 的 as 决定渲染为哪个。 */
   inputRef: RefObject<ComboboxInputEl | null>
   positionerRef: RefObject<HTMLElement | null>
   contentRef: RefObject<HTMLElement | null>
-  /** 上报候选集合可能变了；同一拍里多次调用只上报一次。 */
+  /** 上报候选集合可能已变化；同一拍内多次调用只上报一次。 */
   syncItems: () => void
 }
 

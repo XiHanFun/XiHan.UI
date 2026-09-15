@@ -37,59 +37,59 @@ const NUMBER_CONVERTER = { fromAttribute: (v: string | null) => (v === null ? un
 const BOOLEAN_CONVERTER = { fromAttribute: (v: string | null) => (v === null ? undefined : v !== 'false') }
 
 /**
- * `<xh-combobox>` —— Light-DOM 行为宿主：作者写 root/label/control/input/trigger/positioner/content/item/...
- * 角色节点，元素跑 combobox 机器并把 connect 产出打上去。浮层定位引擎在本元素里建好、经 refs 注入机器，
+ * `<xh-combobox>`：Light-DOM 行为宿主：作者写 root / label / control / input / trigger / positioner / content / item / ...
+ * 角色节点，元素运行 combobox 状态机并把 connect 产出接上。浮层定位引擎在本元素中创建、经 refs 注入状态机，
  * 锚点取 control（浮层因此与整个输入行对齐），被定位的浮层取 positioner。
  *
- * 焦点自始至终在 input 上：候选不可聚焦、也不进 Tab 序列，高亮经 aria-activedescendant 报给读屏。
+ * 焦点自始至终在 input 上：候选不可聚焦、也不进入 Tab 序列，高亮经 aria-activedescendant 报告给读屏。
  *
- * 过滤不由本元素做：输入串变化时派发 input-value-change，作者据此增删 item 节点；
- * 元素每次接线完都会把当前候选条数与悬空高亮重新结算一遍，空态节点（empty）据此显形。
+ * 过滤不由本元素完成：输入串变化时派发 input-value-change，作者据此增删 item 节点；
+ * 元素每次接线完成后都会把当前候选条数与悬空高亮重新结算一次，空态节点（empty）据此显示。
  *
  * @customElement xh-combobox
- * @attr {string} value - 受控选中值（单选简写）；缺省该属性即非受控，多选请用 property 传数组
+ * @attr {string} value - 受控选中值（单选简写）；未提供该属性即非受控，多选通过 property 传入数组
  * @attr {string} default-value - 非受控初始选中值
- * @attr {string} input-value - 受控输入串；缺省该属性即非受控
+ * @attr {string} input-value - 受控输入串；未提供该属性即非受控
  * @attr {string} default-input-value - 非受控初始输入串
- * @attr {boolean} open - 受控开合；缺省该属性即非受控
+ * @attr {boolean} open - 受控开合；未提供该属性即非受控
  * @attr {boolean} default-open - 非受控初始为展开
- * @attr {boolean} multiple - 多选：选中后列表不收起、输入串清空以便接着筛
- * @attr {boolean} disabled - 整个控件禁用：输入框与两个按钮都用原生 disabled
+ * @attr {boolean} multiple - 多选：选中后列表不收起、输入串清空以便继续筛选
+ * @attr {boolean} disabled - 整个控件禁用：输入框与两个按钮都使用原生 disabled
  * @attr {boolean} read-only - 只读：文字可选可复制，但展开、选中、清空一概不发生
  * @attr {boolean} invalid - 校验失败标注
- * @attr {boolean} loading - 候选还在取：列表报 aria-busy，在途占位顶上来、空态占位让位
- * @attr {boolean} loop - 方向键走到尽头回绕，默认 true；写 loop="false" 关掉
+ * @attr {boolean} loading - 候选加载中：列表报告 aria-busy，显示在途占位、隐藏空态占位
+ * @attr {boolean} loop - 方向键到达末尾回绕，默认 true；写 loop="false" 关闭
  * @attr {string} placeholder - 输入框占位文字
- * @attr {boolean} allow-custom-value - 允许提交候选列表里没有的值
- * @attr {boolean} open-on-click - 点输入框即展开，默认 false
+ * @attr {boolean} allow-custom-value - 允许提交候选列表中没有的值
+ * @attr {boolean} open-on-click - 点击输入框即展开，默认 false
  * @attr {'none'|'autohighlight'|'autocomplete'} input-behavior - 输入行为，默认 none
- * @attr {string} placement - 首选放置位，默认 bottom-start；避让后的实际位写在 data-placement 上
+ * @attr {string} placement - 首选放置位，默认 bottom-start；避让后的实际位置写在 data-placement 上
  * @attr {number} offset - 浮层与锚点的间距（px）
- * @attr {'ltr'|'rtl'} dir - 文字方向，翻转浮层在行内轴上 start 与 end 的落点；只在显式给了才写到定位层上
+ * @attr {'ltr'|'rtl'} dir - 文字方向，翻转浮层在行内轴上 start 与 end 的落点；只在显式提供时才写到定位层上
  * @attr {'outline'|'subtle'|'ghost'} variant - 视觉变体
  * @attr {'brand'|'neutral'|'success'|'warning'|'danger'|'info'} tone - 语气
  * @attr {'sm'|'md'|'lg'} size - 尺寸
  * @fires value-change - 选中集合变化；detail 为 `{ value: string[] }`
  * @fires input-value-change - 输入串变化；detail 为 `{ inputValue: string }`，作者据此过滤候选
  * @fires open-change - open 状态变化；detail 为 `{ open: boolean }`
- * @csspart root - 组件根容器（承载 data-state/data-disabled/data-readonly/data-invalid）
- * @csspart label - 标题，须是原生 label（connect 给的 for 只在它身上生效）
+ * @csspart root - 组件根容器（承载 data-state / data-disabled / data-readonly / data-invalid）
+ * @csspart label - 标题，须是原生 label（connect 提供的 for 只在它身上生效）
  * @csspart control - 输入行容器，同时是浮层的定位锚点
  * @csspart input - 输入框，整个组合框唯一的 Tab 停靠点；写 input 时带 role=combobox，写 textarea 时保留它自带的 textbox 角色
- * @csspart trigger - 展开/收起按钮，须是原生 button；不占 Tab 位，可及名字由作者给；旁边的清空钮一出现皮肤就让它让位
+ * @csspart trigger - 展开 / 收起按钮，须是原生 button；不占 Tab 位，可及名由作者提供；旁边的清空按钮出现时皮肤让它让位
  * @csspart clear-trigger - 清空按钮，须是原生 button；不占 Tab 位，读屏按 aria-label 找到它
- * @csspart positioner - 浮层定位容器，坐标由引擎写成内联样式
+ * @csspart positioner - 浮层定位容器，坐标由引擎写为内联样式
  * @csspart content - role=listbox 容器（消解层的根节点），收起时带 hidden
  * @csspart item - role=option 候选，须自带 value 属性标识身份；禁用写 aria-disabled="true"
- * @csspart item-text - 候选文本（选中后回填输入框的取字处）
+ * @csspart item-text - 候选文本（选中后回填输入框的取字来源）
  * @csspart item-indicator - 候选选中标记（aria-hidden）
  * @csspart group - role=group 分组容器，须自带 value 属性标识身份
  * @csspart group-label - 分组标题（本组 aria-labelledby 的目标）
  * @attr {string} name - 表单字段名；每个选中值提交为一个同名字段
  * @attr {string} form - 显式关联的原生表单 ID，提交与 reset 使用同一所有者
  * @csspart hidden-input - type=hidden 的表单出口，省略该节点即不参与表单
- * @csspart empty - 无匹配项提示；须放在 positioner 里当 content 的兄弟（列表内只允许 option 与 group）
- * @csspart loading - 在途占位，与空态占位同一个位置，取数期间顶上来
+ * @csspart empty - 无匹配项提示；须放在 positioner 中作为 content 的兄弟（列表内只允许 option 与 group）
+ * @csspart loading - 在途占位，与空态占位同一位置，加载期间显示
  */
 export class XhComboboxElement extends XhPortalHostElement {
   /** 本实例的 Portal 容器；显式解析失败不回退配置默认。 */
@@ -197,7 +197,7 @@ export class XhComboboxElement extends XhPortalHostElement {
     scrollable: () => this.getPart('content'),
   })
 
-  /** 作者声明的条目禁用，只认首见那一份；给了 collection 时用它，否则现读 */
+  /** 作者声明的条目禁用，只认首次见到的值；提供 collection 时使用它，否则现读 */
   private readonly declaredDisabled = createDeclaredDisabled()
   private readonly hiddenInputs = createRepeatedHiddenInputs(this.spreader)
   private inheritedControl: FormControlState | undefined
@@ -290,8 +290,8 @@ export class XhComboboxElement extends XhPortalHostElement {
   }
 
   /**
-   * 提前发现一次角色节点：机器在 hostConnected 当场要按选中值去 content 里现查显示文本并回填输入框，
-   * default-open 时还要同场挑出高亮。
+   * 提前发现一次角色节点：状态机在 hostConnected 当场要按选中值到 content 中现查显示文本并回填输入框，
+   * default-open 时还要同场选出高亮。
    */
   override connectedCallback(): void {
     this.refreshParts()

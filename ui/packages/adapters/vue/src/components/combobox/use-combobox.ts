@@ -19,19 +19,19 @@ import { useOverlayExit } from '../../runtime/use-overlay-exit'
 import { createVueIdGenerator } from '../../runtime/vue-id'
 
 export interface ComboboxContext {
-  /** 机器实例，供部件直接上报 DOM 侧事实。 */
+  /** 状态机实例，供部件直接上报 DOM 侧事实。 */
   service: Service<ComboboxSchema>
   api: ComputedRef<ComboboxApi>
   controlRef: Ref<HTMLElement | null>
-  /** 输入宿主，input 或 textarea；由 XhComboboxInput 的 as 决定渲染成哪个。 */
+  /** 输入宿主，input 或 textarea；由 XhComboboxInput 的 as 决定渲染为哪个。 */
   inputRef: Ref<ComboboxInputEl | null>
   positionerRef: Ref<HTMLElement | null>
   contentRef: Ref<HTMLElement | null>
-  /** 此刻该不该渲染：退场动画播完之前仍为真。 */
+  /** 当前是否应当渲染：退场动画播完之前仍为真。 */
   visible: Ref<boolean>
-  /** 上报候选集合可能变了；同一拍里多次调用只上报一次。 */
+  /** 上报候选集合可能已变化；同一拍内多次调用只上报一次。 */
   syncItems: () => void
-  /** 浮层搬到哪儿：全局配置的 portalContainer > body。 */
+  /** 浮层迁移到的位置：全局配置的 portalContainer > body。 */
   portalTarget: ComputedRef<string | Element>
 }
 
