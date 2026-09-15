@@ -1,4 +1,4 @@
-// 尺寸 | 三档换的是浮层的内边距与字号，不写 size 即缺省档；逐个点开触发器看差别
+// 尺寸 | 三档改变浮层的内边距与字号，不写 size 即默认档；逐个点开触发器查看差别
 import type { ReactNode } from "react";
 import {
   XhPopoverArrow,

@@ -12,7 +12,7 @@
 
 ## 用法
 
-点击展开，Escape 或点外部关闭；positioner 负责摆位，content 才是浮层本体
+点击展开，Escape 或点击外部关闭；positioner 负责定位，content 才是浮层本体
 
 <XhDemo src="popover/01-basic" />
 
@@ -26,49 +26,49 @@
 
 ### 朝向与间距
 
-placement 是请求值，空间不够时定位引擎会自动翻面；offset 调的是浮层与触发器的距离
+placement 是请求值，空间不足时定位引擎会自动翻面；offset 调整浮层与触发器的距离
 
 <XhDemo src="popover/02-placement" />
 
 ### 受控
 
-传了 open 就由宿主说了算；这里额外关掉点外部关闭，只有按钮与 Escape 能收起
+传入 open 后由宿主决定；这里额外关闭点击外部关闭，只有按钮与 Escape 能收起
 
 <XhDemo src="popover/03-controlled" />
 
 ### 尺寸
 
-三档换的是浮层的内边距与字号，不写 size 即缺省档；逐个点开触发器看差别
+三档改变浮层的内边距与字号，不写 size 即默认档；逐个点开触发器查看差别
 
 <XhDemo src="popover/04-size" />
 
 ### 确认气泡
 
-标题、说明与两颗按钮拼成一次就地确认；两颗按钮按下后都只是把浮层收起
+标题、说明与两个按钮组成一次就地确认；两个按钮按下后都只是收起浮层
 
 <XhDemo src="popover/05-confirm" />
 
 ### 长内容滚动
 
-浮层自己不限高，给里面的容器设上限并开滚动，标题与关闭按钮就不跟着滚
+浮层自身不限高，为内部容器设置上限并开启滚动，标题与关闭按钮就不随内容滚动
 
 <XhDemo src="popover/06-scroll" />
 
 ### 模态浮层
 
-modal 让焦点陷在浮层里：Tab 到末尾回绕，旁边那颗按钮这时接不到焦点
+modal 使焦点限制在浮层内：Tab 到末尾回绕，旁边的按钮此时无法获得焦点
 
 <XhDemo src="popover/07-modal" />
 
 ### 事件
 
-open-change 带一份 { open }，报的是这次要落到的状态；非受控时内部开合也照发一次
+open-change 带一份 { open }，报告的是本次要进入的状态；非受控时内部开合也照常触发一次
 
 <XhDemo src="popover/08-event" />
 
 ### 浮层与触发器同宽
 
-量出触发器的实际宽度写进 content 的行内样式，同时解掉最大宽度上限；触发器换了文案宽度也跟着走
+测量触发器的实际宽度写进 content 的行内样式，同时解除最大宽度上限；触发器更换文案后宽度随之变化
 
 <XhDemo src="popover/09-trigger-width" />
 
@@ -80,7 +80,7 @@ start / end 是逻辑对齐不是左右：RTL 下 bottom-start 贴的是锚点�
 
 ### 落在指针位置
 
-触发器缩成一个像素、按点击坐标固定摆放，浮层就钉在刚点到的那一点上；再点一下换个落点
+触发器缩为一个像素、按点击坐标固定放置，浮层就固定在刚点击的位置；再点一次更换落点
 
 <XhDemo src="popover/11-point-anchor" />
 
