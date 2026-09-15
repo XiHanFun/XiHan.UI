@@ -1,4 +1,4 @@
-// 超时按拒绝收口 | 缺省不给默认超时值：替宿主定安全策略比不定更危险。到点落成拒绝，expired 只是显示态
+// 超时按拒绝收口 | 默认不提供超时值：替宿主制定安全策略比不制定更危险。到期落为拒绝，expired 只是显示态
 import type { ApprovalStatus } from "@xihan-ui/headless";
 import type { ReactNode } from "react";
 import {
