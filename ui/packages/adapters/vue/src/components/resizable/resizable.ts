@@ -76,8 +76,8 @@ export const XhResizableRoot = defineComponent({
 /**
  * 一条边上的把手。
  *
- * 推西边与北边时容器的起点会动，那段位移写成 root 的 left / top——皮肤已给
- * `position: relative`，开箱即对。把 root 改成 static 会让这两个方向只变尺寸不移位。
+ * 推动西边与北边时容器的起点会移动，该段位移写为 root 的 left / top：皮肤已提供
+ * `position: relative`，默认即正确。把 root 改为 static 会使这两个方向只改变尺寸不移动位置。
  */
 export const XhResizableHandle = defineComponent({
   name: 'XhResizableHandle',

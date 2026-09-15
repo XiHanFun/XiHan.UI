@@ -18,7 +18,7 @@ import { createVueIdGenerator } from '../../runtime/vue-id'
 export interface ResizableContext {
   api: ComputedRef<ResizableApi>
   service: Service<ResizableSchema>
-  /** 容器节点，机器在按下时拿它量矩形。 */
+  /** 容器节点，状态机在按下时读取它的矩形。 */
   rootRef: Ref<HTMLElement | null>
 }
 

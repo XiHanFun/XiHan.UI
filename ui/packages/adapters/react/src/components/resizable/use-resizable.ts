@@ -17,7 +17,7 @@ import { useMachine } from '../../runtime/use-machine'
 export interface ResizableContext {
   api: ResizableApi
   service: Service<ResizableSchema>
-  /** 容器节点，机器在按下时拿它量矩形。 */
+  /** 容器节点，状态机在按下时读取它的矩形。 */
   rootRef: RefObject<HTMLElement | null>
 }
 

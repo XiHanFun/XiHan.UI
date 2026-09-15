@@ -38,37 +38,37 @@ const EDGES_CONVERTER = {
 }
 
 /**
- * `<xh-resizable>` —— Light-DOM 行为宿主：作者写 root 与八向 handle 角色节点，
- * 元素跑 resizable 机器并把 connect 产出打上去。
+ * `<xh-resizable>`：Light-DOM 行为宿主：作者写 root 与八向 handle 角色节点，
+ * 元素运行 resizable 状态机并把 connect 产出接上。
  *
- * 每个 handle 用 `edge` 属性写明自己是哪条边（`n` / `ne` / `e` / `se` / `s` / `sw` / `w` / `nw`），
+ * 每个 handle 用 `edge` 属性写明对应的边（`n` / `ne` / `e` / `se` / `s` / `sw` / `w` / `nw`），
  * 与 Vue 侧的 `:edge` 是同一份声明。
  *
- * 尺寸由元素每帧写进 root 的内联 `inline-size` / `block-size`，作者的样式表不要再碰这两条轴。
- * **推西边与北边时容器的起点会动**，那段位移写成 root 的 `left` / `top`——皮肤已给
- * `position: relative`，开箱即对；把 root 改成 `static` 会让这两个方向只变尺寸不移位。
+ * 尺寸由元素每帧写入 root 的内联 `inline-size` / `block-size`，作者的样式表不应再修改这两条轴。
+ * 推动西边与北边时容器的起点会移动，该段位移写为 root 的 `left` / `top`：皮肤已提供
+ * `position: relative`，默认即正确；把 root 改为 `static` 会使这两个方向只改变尺寸不移动位置。
  *
- * 键盘全在把手上：方向键按屏幕方向推一步（推东边时右键变宽、推西边时右键变窄，与拖动同义），
- * 按住 Shift 走大步，Home / End 推到这条边能到的两端。
+ * 键盘全部在把手上：方向键按屏幕方向推动一步（推动东边时右键变宽、推动西边时右键变窄，与拖动同义），
+ * 按住 Shift 走大步，Home / End 推动到该边可达的两端。
  *
  * @customElement xh-resizable
- * @attr {string} dimensions - 受控尺寸，写成 `宽x高`（如 `320x200`）；缺省该属性即非受控
- * @attr {string} default-dimensions - 非受控初值，同样写成 `宽x高`
+ * @attr {string} dimensions - 受控尺寸，写为 `宽x高`（如 `320x200`）；未提供该属性即非受控
+ * @attr {string} default-dimensions - 非受控初值，同样写为 `宽x高`
  * @attr {number} min-width - 宽度下限
  * @attr {number} min-height - 高度下限
- * @attr {number} max-width - 宽度上限；不给即不封顶
- * @attr {number} max-height - 高度上限；不给即不封顶
- * @attr {number} aspect-ratio - 宽高比（宽 ÷ 高）。给了就锁死，四个角以宽为准
+ * @attr {number} max-width - 宽度上限；未提供时不封顶
+ * @attr {number} max-height - 高度上限；未提供时不封顶
+ * @attr {number} aspect-ratio - 宽高比（宽 ÷ 高）。提供后锁定，四个角以宽为准
  * @attr {number} step - 吸附步进：宽高各自落到最近的整数倍
- * @attr {number} keyboard-step - 方向键一次推多远（px），默认 8
+ * @attr {number} keyboard-step - 方向键一次推动的距离（px），默认 8
  * @attr {number} keyboard-large-step - 按住 Shift 时的步长（px），默认 40
- * @attr {string} edges - 开放哪几条边，逗号分隔（如 `e,s,se`）；默认八向全开
- * @attr {boolean} disabled - 禁用：把手退出 Tab 序列，按下也不进调整
+ * @attr {string} edges - 开放的边，逗号分隔（如 `e,s,se`）；默认八向全部开启
+ * @attr {boolean} disabled - 禁用：把手退出 Tab 序列，按下也不进入调整
  * @attr {'ltr'|'rtl'} dir - 文字方向，只对调水平位移与左右两键的正负，默认 ltr
- * @fires dimensions-change - 尺寸变化（拖动途中会连发）；detail 为 `{ dimensions }`
- * @fires dimensions-change-end - 一次调整收尾发一次；detail 为 `{ dimensions, edge }`
+ * @fires dimensions-change - 尺寸变化（拖动途中连续发出）；detail 为 `{ dimensions }`
+ * @fires dimensions-change-end - 一次调整收尾时发出一次；detail 为 `{ dimensions, edge }`
  * @csspart root - 承载 data-resizing / data-edge / data-disabled 的容器，尺寸写在它的内联样式上
- * @csspart handle - role=separator 的把手，指针与键盘交互全在它身上
+ * @csspart handle - role=separator 的把手，指针与键盘交互全部在它身上
  */
 export class XhResizableElement extends XhElement {
   static override partContract = { anatomy: resizableAnatomy, meta: resizableMeta }
@@ -154,7 +154,7 @@ export class XhResizableElement extends XhElement {
     svc.refs.set('getRootEl', () => this.getPart('root'))
   }
 
-  /** 把手自报的边。没写就落东南角——那是文档流里最常见的那个。 */
+  /** 把手声明的边。未写时落到东南角：那是文档流中最常见的一个。 */
   private edgeOf(el: HTMLElement): ResizeEdge {
     return (el.getAttribute('edge') as ResizeEdge | null) ?? 'se'
   }

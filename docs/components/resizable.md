@@ -94,22 +94,22 @@
 
 | 属性 | 类型 | 必填 | 说明 |
 | --- | --- | --- | --- |
-| `dimensions` | `ResizableDimensions` |  | 受控尺寸。给了就由外面说了算，内部只发意图。 |
+| `dimensions` | `ResizableDimensions` |  | 受控尺寸。提供后由外部决定，内部只发意图。 |
 | `defaultDimensions` | `ResizableDimensions` |  |  |
 | `minWidth` | `number` |  |  |
 | `minHeight` | `number` |  |  |
 | `maxWidth` | `number` |  |  |
 | `maxHeight` | `number` |  |  |
-| `aspectRatio` | `number` |  | 宽高比（宽 ÷ 高）。给了就锁死；四条边各按自己那一轴算另一轴，四个角以宽为准。 |
+| `aspectRatio` | `number` |  | 宽高比（宽 ÷ 高）。提供后锁定；四条边各按自身的轴计算另一轴，四个角以宽为准。 |
 | `step` | `number` |  | 吸附步进：宽高各自落到最近的整数倍。 |
-| `keyboardStep` | `number` |  | 方向键一次推多远（px），默认 8。 |
+| `keyboardStep` | `number` |  | 方向键一次推动的距离（px），默认 8。 |
 | `keyboardLargeStep` | `number` |  | 按住 Shift 时的步长（px），默认 40。 |
-| `edges` | `ResizeEdge[]` |  | 允许哪几条边可调，默认八向全开。 只给东南两向就是「只能往右下角撑大」，那是文档流里最常见的形态。 |
+| `edges` | `ResizeEdge[]` |  | 允许调整的边，默认八向全部开启。 只提供东南两向即只能向右下角撑大，那是文档流中最常见的形态。 |
 | `disabled` | `boolean` |  |  |
 | `dir` | `Direction` |  |  |
 | `translations` | `Partial<ResizableTranslations>` |  |  |
-| `onDimensionsChange` | `(details: ResizableDimensionsChangeDetails) => void` |  | 尺寸变化意图。拖动途中连着发。 |
-| `onDimensionsChangeEnd` | `(details: ResizableDimensionsChangeEndDetails) => void` |  | 一次调整收尾发一次。存尺寸用它，别用 onDimensionsChange。 |
+| `onDimensionsChange` | `(details: ResizableDimensionsChangeDetails) => void` |  | 尺寸变化意图。拖动途中连续发出。 |
+| `onDimensionsChangeEnd` | `(details: ResizableDimensionsChangeEndDetails) => void` |  | 一次调整收尾时发出一次。保存尺寸使用它，不使用 onDimensionsChange。 |
 
 ### 事件
 
@@ -117,8 +117,8 @@
 
 | 事件 | 载荷 | 说明 |
 | --- | --- | --- |
-| `dimensions-change` | `ResizableDimensionsChangeDetails` | 尺寸变化（拖动途中会连发）；detail 为 `{ dimensions }` |
-| `dimensions-change-end` | `ResizableDimensionsChangeEndDetails` | 一次调整收尾发一次；detail 为 `{ dimensions, edge }` |
+| `dimensions-change` | `ResizableDimensionsChangeDetails` | 尺寸变化（拖动途中连续发出）；detail 为 `{ dimensions }` |
+| `dimensions-change-end` | `ResizableDimensionsChangeEndDetails` | 一次调整收尾时发出一次；detail 为 `{ dimensions, edge }` |
 
 ### 插槽
 
@@ -147,11 +147,11 @@
 | --- | --- | --- |
 | `dimensions` | `ResizableDimensions` |  |
 | `offset` | `ResizableOffset` |  |
-| `resizing` | `boolean` | 正在调整（拖动中）。键盘推一步不算。 |
+| `resizing` | `boolean` | 正在调整（拖动中）。键盘推动一步不计。 |
 | `activeEdge` | `ResizeEdge \| null` |  |
 | `disabled` | `boolean` |  |
-| `edgeEnabled` | `(edge: ResizeEdge) => boolean` | 这条边是否开放。 |
-| `setDimensions` | `(dimensions: ResizableDimensions) => void` | 整份赋值：先过约束再落地。 |
+| `edgeEnabled` | `(edge: ResizeEdge) => boolean` | 该边是否开放。 |
+| `setDimensions` | `(dimensions: ResizableDimensions) => void` | 整份赋值：先经约束再落定。 |
 | `getRootProps` | `() => T['element']` |  |
 | `getHandleProps` | `(props: { edge: ResizeEdge }) => T['element']` |  |
 
@@ -163,11 +163,11 @@
 
 | 按键 | 生效条件 | 行为 |
 | --- | --- | --- |
-| `ArrowRight` / `ArrowDown` | focus in handle, not disabled | 按屏幕方向推这条边一步（默认 8px）——推东边是变宽、推西边是变窄，与拖动同义。按的是屏幕方向，rtl 下两键不对调——那时改由「行尾侧」这条边落在屏幕左边来体现 |
+| `ArrowRight` / `ArrowDown` | focus in handle, not disabled | 按屏幕方向推动该边一步（默认 8px）：推东边是变宽、推西边是变窄，与拖动同义。按的是屏幕方向，rtl 下两键不对调：此时改由行尾侧的边落在屏幕左边来体现 |
 | `ArrowLeft` / `ArrowUp` | focus in handle, not disabled | 往反方向推一步，规则同上 |
 | `Shift+ArrowRight` / `Shift+ArrowLeft` / `Shift+ArrowUp` / `Shift+ArrowDown` | focus in handle, not disabled | 按大步长推（默认 40px） |
 | `Home` | focus in handle, not disabled | 把这条边推到它眼下能到的最小尺寸 |
-| `End` | focus in handle, not disabled | 推到最大尺寸；没给上限时不动 |
+| `End` | focus in handle, not disabled | 推到最大尺寸；未提供上限时不动 |
 | `Escape` | 调整中 | 放弃这一次调整，尺寸与位移退回按下那一刻；收尾回调不发 |
 
 ### ARIA
