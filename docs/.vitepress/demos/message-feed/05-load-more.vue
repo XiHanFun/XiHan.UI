@@ -1,4 +1,4 @@
-<!-- 触底加载更多 | stick-change 报到底，宿主据此去取下一页；先往上翻一段再滚回底部，取回来的消息接在后面 -->
+<!-- 触底加载更多 | stick-change 报告到达底部，宿主据此获取下一页；先向上翻一段再滚回底部，取回的消息接在后面 -->
 <script setup lang="ts">
 import {
   XhMessageFeedItem,

@@ -1,4 +1,4 @@
-// 跳到指定的一条 | 消息 id 就是锚点：Vue 侧用 root 插槽给的 scrollToItem / focusItem，自定义元素侧按同一个 id 取节点自己滚
+// 跳到指定的一条 | 消息 id 就是锚点：Vue 侧使用 root 插槽提供的 scrollToItem / focusItem，自定义元素侧按同一个 id 取节点自行滚动
 import type { ReactNode } from "react";
 import {
   XhButton,

@@ -1,4 +1,4 @@
-<!-- 按角色分侧 | 条目上带 data-role，左右分侧与气泡在使用者这一侧写，组件不预设这层外观 -->
+<!-- 按角色分侧 | 条目上带 data-role，左右分侧与气泡在使用者一侧编写，组件不预设这层外观 -->
 <script setup lang="ts">
 import {
   XhMessageFeedItem,

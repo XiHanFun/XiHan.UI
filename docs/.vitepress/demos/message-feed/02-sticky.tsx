@@ -1,4 +1,4 @@
-// 粘底跟随与播报 | 新消息长出来时自动到底，往上翻就解除；一轮结束在播报区念一句
+// 粘底跟随与播报 | 新消息增长时自动到底部，向上翻即解除；一轮结束后在播报区朗读一句
 import type { ReactNode } from "react";
 import {
   XhMessageFeedItem,
