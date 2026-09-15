@@ -1,6 +1,6 @@
 # FileUpload 文件上传 <Badge type="info" text="alpha" />
 
-选择文件、拖放文件，并把已选与已传的文件列出来。
+选择文件、拖放文件，并列出已选与已上传的文件。
 
 <div class="xh-resource-links">
   <a href="https://github.com/XiHanFun/XiHan.UI/tree/dev/ui/packages/engine/headless/src/file-upload" target="_blank" rel="noreferrer">Headless</a>
@@ -88,33 +88,33 @@ remote-files 装编辑表单里已存在的附件：与本地文件同列渲染�
 
 ### 何时使用
 
-- 任何需要用户提交文件的地方。
-- 需要预览、限制类型与大小、或选整个目录。
+- 需要用户提交文件的场景。
+- 需要预览、限制类型与大小，或选择整个目录。
 
 ### 何时不用
 
-- 只是展示已有附件、不允许新增：用[列表](./list)。
+- 只展示已有附件、不允许新增时，使用[列表](./list)。
 
 ### 特性
 
-- `maxFiles` / `maxFileSize` / `minFileSize` 越界的当场被拒，`onFileReject` 逐个报出理由。
-- `autoUpload` 决定选完就传还是等提交。
-- `remoteFiles` 用来回显服务器上已有的附件，与本次新选的并列在同一个列表里。
-- 上传生命周期（完成、失败）各有回调；宿主还可以插入自定的准入判断。
+- 超出 `maxFiles` / `maxFileSize` / `minFileSize` 的文件立即被拒绝，`onFileReject` 逐个报告原因。
+- `autoUpload` 决定选择后立即上传还是等待提交。
+- `remoteFiles` 回显服务器上已有的附件，与本次新选的文件并列在同一个列表中。
+- 上传生命周期（完成、失败）各有回调；宿主还可以插入自定义的准入判断。
 
 ### 组合
 
-- 外面套[表单字段](./field)；缩略图墙用[图片](./image)与[图片预览](./image-viewer)。
+- 外层放[表单字段](./field)；缩略图墙使用[图片](./image)与[图片预览](./image-viewer)。
 
 ### 最佳实践
 
-- 在界面上写清楚允许的类型与大小上限，别等用户选完才拒。
-- 拒收要说明是哪个文件、为什么。
+- 在界面上说明允许的类型与大小上限，不等用户选择后才拒绝。
+- 拒绝时说明是哪个文件、原因是什么。
 
 ### 反模式
 
-- 只拦前端不拦后端。
-- 上传中不给进度也不能取消。
+- 只在前端校验，不在后端校验。
+- 上传中不显示进度也不能取消。
 
 ## API 参考
 
