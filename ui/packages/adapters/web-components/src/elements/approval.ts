@@ -28,41 +28,41 @@ const BOOLEAN_CONVERTER = { fromAttribute: (v: string | null) => (v === null ? u
 const NUMBER_CONVERTER = { fromAttribute: (v: string | null) => (v == null || v === '' ? undefined : Number(v)) }
 
 /**
- * `<xh-approval>` —— Light-DOM 行为宿主：危险动作执行前的人在环闸门。
+ * `<xh-approval>`：Light-DOM 行为宿主：危险动作执行前的人工审批闸门。
  *
- * 超时一律按拒绝收口，这条由机器结构保证；拒绝这条路永远走得通。
+ * 超时一律按拒绝收口，由状态机结构保证；拒绝路径永远可用。
  * 授权项的身份写在作者自己的节点上（`scope-value` 等 `scope-*` 属性），
- * **不用 value**——那是表单属性，写上去会与本组件无关的表单语义搅在一起。
+ * 不使用 value：那是表单属性，写上后会与本组件无关的表单语义混淆。
  *
  * @customElement xh-approval
- * @attr {string} request-id - 这一轮请求的身份，变了即重入待决并按新时长重起计时
+ * @attr {string} request-id - 本轮请求的身份，变化即重新进入待决并按新时长重新计时
  * @attr {string} status - 受控判定态：pending / approved / denied / expired
  * @attr {string} default-status - 非受控初值，默认 pending
- * @attr {number} timeout-ms - 多久没人答就按拒绝收口；缺省不起计时器
+ * @attr {number} timeout-ms - 超时无人应答时按拒绝收口；默认不启动计时器
  * @attr {string} note - 受控的备注文本，随判定载荷一起发出
  * @attr {string} default-note - 备注的非受控初值，默认空串
- * @attr {boolean} loading - 判定在途：只挡重复批准，不挡拒绝
- * @attr {boolean} deny-on-escape - Escape 判为拒绝，默认开
- * @attr {boolean} deny-on-unmount - 卸载时若仍待决就按拒绝派一次，默认关
+ * @attr {boolean} loading - 判定在途：只阻止重复批准，不阻止拒绝
+ * @attr {boolean} deny-on-escape - Escape 判为拒绝，默认开启
+ * @attr {boolean} deny-on-unmount - 卸载时若仍待决则按拒绝派发一次，默认关闭
  * @attr {string} live - 播报档位：polite（默认）或 assertive
- * @attr {'outline'|'subtle'|'ghost'} variant - 形态：描边（缺省档）/ 底色分区 / 无壳内联
+ * @attr {'outline'|'subtle'|'ghost'} variant - 形态：描边（默认档）/ 底色分区 / 无壳内联
  * @attr {string} tone - 语气
  * @attr {string} size - 尺寸：sm / md / lg
  * @fires decision - 判定落定；detail 为 `{ requestId, decision, source, scopes }`
  * @fires granted-scopes-change - 勾选的授权项变化；detail 为 `{ value: string[] }`
  * @fires note-change - 备注变化；detail 为 `{ value: string }`
  * @csspart root - role=group 的闸门本体
- * @csspart title - 闸门标题，给它命名
- * @csspart description - 闸门说明，给它描述
+ * @csspart title - 闸门标题，为它命名
+ * @csspart description - 闸门说明，为它提供描述
  * @csspart live-region - 可配档位的活区
- * @csspart group - 授权项那一组
- * @csspart item - 一项授权，role=checkbox，只认 Space
+ * @csspart group - 授权项分组
+ * @csspart item - 一项授权，role=checkbox，只响应 Space
  * @csspart item-indicator - 勾选记号，对读屏隐藏
- * @csspart item-text - 授权项文字，排在勾选项内因而构成它的可及名
- * @csspart note - 附在判定上的一句自由文本
+ * @csspart item-text - 授权项文字，位于勾选项内因而构成它的可及名
+ * @csspart note - 附在判定上的一段自由文本
  * @csspart timer - 剩余时间，对读屏隐藏
- * @csspart result - 判定落定后才露出的结果条，对读屏隐藏
- * @csspart actions - 排布两颗按钮的动作行
+ * @csspart result - 判定落定后才显示的结果条，对读屏隐藏
+ * @csspart actions - 排布两个按钮的动作行
  * @csspart approve-trigger - 批准
  * @csspart deny-trigger - 拒绝
  */
@@ -104,7 +104,7 @@ export class XhApprovalElement extends XhElement {
   declare variant?: ControlVariant
   declare tone?: Tone
   declare size?: Size
-  /** 可勾选的授权范围；不给就没有勾选那一段。 */
+  /** 可勾选的授权范围；未提供时不显示勾选区。 */
   declare scopes?: readonly ApprovalScope[]
   declare grantedScopes?: readonly string[]
   declare defaultGrantedScopes?: readonly string[]
@@ -141,7 +141,7 @@ export class XhApprovalElement extends XhElement {
     onNoteChange: this.notifyNote,
   }))
 
-  /** 一项授权的自报家门，全部取自作者写在节点上的 scope-* 属性。 */
+  /** 一项授权的声明，全部取自作者写在节点上的 scope-* 属性。 */
   private scopeOf(el: HTMLElement): ApprovalScope {
     return {
       value: el.getAttribute('scope-value') ?? '',

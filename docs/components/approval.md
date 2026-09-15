@@ -99,20 +99,20 @@ variant 换这块闸门怎么与正文分开，size 换标题、条目与按钮�
 
 | 属性 | 类型 | 必填 | 说明 |
 | --- | --- | --- | --- |
-| `requestId` | `string` |  | 这一轮请求的身份。变了即重入待决，并按新时长重起计时。 |
-| `status` | `ApprovalStatus` |  | 给定即受控。 |
+| `requestId` | `string` |  | 本轮请求的身份。变化即重新进入待决，并按新时长重新计时。 |
+| `status` | `ApprovalStatus` |  | 提供即受控。 |
 | `defaultStatus` | `ApprovalStatus` |  |  |
-| `timeoutMs` | `number` |  | 多久没人答就按拒绝收口。**缺省不给默认值**——替宿主定安全策略比不定更危险。 非有限值或非正数同样不起计时器，既不当 0ms 立刻到期，也绝不当成无限期放行。 |
+| `timeoutMs` | `number` |  | 超时无人应答时按拒绝收口。默认不提供默认值：替宿主决定安全策略比不决定更危险。 非有限值或非正数同样不启动计时器，既不按 0ms 立即到期，也不视为无限期放行。 |
 | `scopes` | `readonly ApprovalScope[]` |  |  |
 | `grantedScopes` | `readonly string[]` |  |  |
 | `defaultGrantedScopes` | `readonly string[]` |  |  |
-| `note` | `string` |  | 附在判定上的一句自由文本。给定即受控。 它只随判定载荷发出，不参与「必选项勾满了没有」的判断。 |
+| `note` | `string` |  | 附在判定上的一段自由文本。提供即受控。 它只随判定载荷发出，不参与必选项是否全部勾选的判断。 |
 | `defaultNote` | `string` |  |  |
-| `loading` | `boolean` |  | 判定在途：只挡重复批准，不挡拒绝。 |
-| `denyOnEscape` | `boolean` |  | Escape 判为拒绝，默认开。 |
-| `denyOnUnmount` | `boolean` |  | 卸载时若仍待决就按拒绝派发一次，**默认关**。 机理成立不等于默认值成立：列表换 key、路由切换、热更新任何一次重挂， 都会替用户发出他没做过的判定。 |
+| `loading` | `boolean` |  | 判定在途：只阻止重复批准，不阻止拒绝。 |
+| `denyOnEscape` | `boolean` |  | Escape 判为拒绝，默认开启。 |
+| `denyOnUnmount` | `boolean` |  | 卸载时若仍待决则按拒绝派发一次，默认关闭。 机制成立不等于默认值成立：列表更换 key、路由切换、热更新的任何一次重挂， 都会替用户发出未做过的判定。 |
 | `live` | `'polite' \| 'assertive'` |  | 播报档位，默认 polite。 |
-| `variant` | `ControlVariant` |  | 形态：outline 描边（缺省档）、subtle 底色分区、ghost 无壳内联。 |
+| `variant` | `ControlVariant` |  | 形态：outline 描边（默认档）、subtle 底色分区、ghost 无壳内联。 |
 | `tone` | `Tone` |  |  |
 | `size` | `Size` |  |  |
 | `translations` | `Partial<ApprovalTranslations>` |  |  |
@@ -169,12 +169,12 @@ variant 换这块闸门怎么与正文分开，size 换标题、条目与按钮�
 | 成员 | 类型 | 说明 |
 | --- | --- | --- |
 | `status` | `ApprovalStatus` |  |
-| `settled` | `boolean` | 已经判过了：两颗按钮都收起出口。 |
+| `settled` | `boolean` | 已判定：两个按钮都收起出口。 |
 | `loading` | `boolean` |  |
 | `grantedScopes` | `string[]` |  |
-| `note` | `string` | 备注里的文字；没写过是空串。 |
-| `canApprove` | `boolean` | 必选项是不是都勾满了。 |
-| `announcement` | `string` | 按 status 选出的那一句播报文本；announce 关掉时作者不渲那个部件即可。 |
+| `note` | `string` | 备注中的文字；未填写时为空串。 |
+| `canApprove` | `boolean` | 必选项是否全部勾选。 |
+| `announcement` | `string` | 按 status 选出的播报文本；关闭 announce 时作者不渲染该部件即可。 |
 | `approve` | `() => void` |  |
 | `deny` | `() => void` |  |
 | `setGrantedScopes` | `(next: string[]) => void` |  |
@@ -206,7 +206,7 @@ variant 换这块闸门怎么与正文分开，size 换标题、条目与按钮�
 | `Enter` / `Space` | 焦点在批准按钮上，待决、必选项已勾满、且不在挂起中 | 判为批准，载荷带上已勾选的授权项 |
 | `Enter` / `Space` | 焦点在拒绝按钮上，待决且不在挂起中 | 判为拒绝 |
 | `Space` | 焦点在授权项上，待决且该项未禁用 | 勾选或取消该项。Enter 刻意不参与，与原生复选框一致 |
-| `Escape` | 焦点在闸门内，待决、不在挂起中、且开着 denyOnEscape | 判为拒绝。**它不是「关闭」**——本组件不提供不作答的出口 |
+| `Escape` | 焦点在闸门内，待决、未挂起、且开启 denyOnEscape | 判为拒绝。它不是关闭：本组件不提供不作答的出口 |
 
 ### ARIA
 

@@ -1212,7 +1212,7 @@
       "declarations": [
         {
           "kind": "class",
-          "description": "`<xh-approval>` —— Light-DOM 行为宿主：危险动作执行前的人在环闸门。\n\n超时一律按拒绝收口，这条由机器结构保证；拒绝这条路永远走得通。\n授权项的身份写在作者自己的节点上（`scope-value` 等 `scope-*` 属性），\n**不用 value**——那是表单属性，写上去会与本组件无关的表单语义搅在一起。",
+          "description": "`<xh-approval>`：Light-DOM 行为宿主：危险动作执行前的人工审批闸门。\n\n超时一律按拒绝收口，由状态机结构保证；拒绝路径永远可用。\n授权项的身份写在作者自己的节点上（`scope-value` 等 `scope-*` 属性），\n不使用 value：那是表单属性，写上后会与本组件无关的表单语义混淆。",
           "name": "XhApprovalElement",
           "cssParts": [
             {
@@ -1220,11 +1220,11 @@
               "name": "root"
             },
             {
-              "description": "闸门标题，给它命名",
+              "description": "闸门标题，为它命名",
               "name": "title"
             },
             {
-              "description": "闸门说明，给它描述",
+              "description": "闸门说明，为它提供描述",
               "name": "description"
             },
             {
@@ -1232,11 +1232,11 @@
               "name": "live-region"
             },
             {
-              "description": "授权项那一组",
+              "description": "授权项分组",
               "name": "group"
             },
             {
-              "description": "一项授权，role=checkbox，只认 Space",
+              "description": "一项授权，role=checkbox，只响应 Space",
               "name": "item"
             },
             {
@@ -1244,11 +1244,11 @@
               "name": "item-indicator"
             },
             {
-              "description": "授权项文字，排在勾选项内因而构成它的可及名",
+              "description": "授权项文字，位于勾选项内因而构成它的可及名",
               "name": "item-text"
             },
             {
-              "description": "附在判定上的一句自由文本",
+              "description": "附在判定上的一段自由文本",
               "name": "note"
             },
             {
@@ -1256,11 +1256,11 @@
               "name": "timer"
             },
             {
-              "description": "判定落定后才露出的结果条，对读屏隐藏",
+              "description": "判定落定后才显示的结果条，对读屏隐藏",
               "name": "result"
             },
             {
-              "description": "排布两颗按钮的动作行",
+              "description": "排布两个按钮的动作行",
               "name": "actions"
             },
             {
@@ -1406,7 +1406,7 @@
               "type": {
                 "text": "readonly ApprovalScope[] | undefined"
               },
-              "description": "可勾选的授权范围；不给就没有勾选那一段。"
+              "description": "可勾选的授权范围；未提供时不显示勾选区。"
             },
             {
               "kind": "field",
@@ -1480,7 +1480,7 @@
                   }
                 }
               ],
-              "description": "一项授权的自报家门，全部取自作者写在节点上的 scope-* 属性。"
+              "description": "一项授权的声明，全部取自作者写在节点上的 scope-* 属性。"
             },
             {
               "kind": "method",
@@ -1521,7 +1521,7 @@
               "type": {
                 "text": "string | undefined"
               },
-              "description": "这一轮请求的身份，变了即重入待决并按新时长重起计时",
+              "description": "本轮请求的身份，变化即重新进入待决并按新时长重新计时",
               "name": "request-id",
               "fieldName": "requestId"
             },
@@ -1545,7 +1545,7 @@
               "type": {
                 "text": "number | undefined"
               },
-              "description": "多久没人答就按拒绝收口；缺省不起计时器",
+              "description": "超时无人应答时按拒绝收口；默认不启动计时器",
               "name": "timeout-ms",
               "fieldName": "timeoutMs"
             },
@@ -1569,7 +1569,7 @@
               "type": {
                 "text": "boolean | undefined"
               },
-              "description": "判定在途：只挡重复批准，不挡拒绝",
+              "description": "判定在途：只阻止重复批准，不阻止拒绝",
               "name": "loading",
               "fieldName": "loading"
             },
@@ -1577,7 +1577,7 @@
               "type": {
                 "text": "boolean | undefined"
               },
-              "description": "Escape 判为拒绝，默认开",
+              "description": "Escape 判为拒绝，默认开启",
               "name": "deny-on-escape",
               "fieldName": "denyOnEscape"
             },
@@ -1585,7 +1585,7 @@
               "type": {
                 "text": "boolean | undefined"
               },
-              "description": "卸载时若仍待决就按拒绝派一次，默认关",
+              "description": "卸载时若仍待决则按拒绝派发一次，默认关闭",
               "name": "deny-on-unmount",
               "fieldName": "denyOnUnmount"
             },
@@ -1601,7 +1601,7 @@
               "type": {
                 "text": "ControlVariant | undefined"
               },
-              "description": "形态：描边（缺省档）/ 底色分区 / 无壳内联",
+              "description": "形态：描边（默认档）/ 底色分区 / 无壳内联",
               "name": "variant",
               "fieldName": "variant"
             },

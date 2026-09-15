@@ -16,7 +16,7 @@ import { useApproval } from './use-approval'
 
 type Props = ApprovalSchema['props']
 
-/** 默认插槽的载荷：判定状态、能不能批，以及三个动作入口。 */
+/** 默认插槽的载荷：判定状态、是否可批准，以及三个动作入口。 */
 export type ApprovalRootSlotProps = Pick<
   ApprovalApi,
   'status' | 'settled' | 'loading' | 'grantedScopes' | 'note' | 'canApprove' | 'announcement' | 'approve' | 'deny' | 'setGrantedScopes' | 'setNote'
