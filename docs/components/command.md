@@ -104,28 +104,28 @@ filter 关掉：交进来的 collection 就是此刻该显示的那几条，筛�
 | 属性 | 类型 | 必填 | 说明 |
 | --- | --- | --- | --- |
 | `collection` | `readonly CommandNode[]` |  | 命令清单，标题、别名、归组与禁用的事实源。 |
-| `groups` | `readonly CommandGroup[]` |  | 分组声明，决定组名与组序；清单里出现而这里没声明的组排在后面。 |
+| `groups` | `readonly CommandGroup[]` |  | 分组声明，决定组名与组序；清单中出现而这里未声明的组排在后面。 |
 | `open` | `boolean` |  |  |
 | `defaultOpen` | `boolean` |  |  |
 | `inputValue` | `string` |  |  |
 | `defaultInputValue` | `string` |  |  |
-| `filter` | `boolean` |  | 内置过滤，默认开。关掉即由调用方自己筛，交进来的 collection 就是此刻该显示的那几条。 |
-| `caseSensitive` | `boolean` |  | 过滤区分大小写，缺省不区分。 |
+| `filter` | `boolean` |  | 内置过滤，默认开启。关闭后由调用方自行筛选，传入的 collection 即当前应显示的命令。 |
+| `caseSensitive` | `boolean` |  | 过滤区分大小写，默认不区分。 |
 | `closeOnSelect` | `boolean` |  | 选中一条命令后收起面板，默认 true。 |
 | `modal` | `boolean` |  | 模态（陷焦点、锁滚动、遮罩交互外关闭），默认 true。 |
 | `closeOnEscape` | `boolean` |  |  |
 | `closeOnInteractOutside` | `boolean` |  |  |
 | `restoreFocus` | `boolean` |  |  |
-| `loop` | `boolean` |  | 方向键走到尽头是否回绕，默认 true。 |
-| `loading` | `boolean` |  | 命令还在取：列表报 aria-busy，在途占位顶上来，空态占位让位。 |
+| `loop` | `boolean` |  | 方向键到达末尾是否回绕，默认 true。 |
+| `loading` | `boolean` |  | 命令加载中：列表报告 aria-busy，显示在途占位，隐藏空态占位。 |
 | `placeholder` | `string` |  | 检索框的占位文字。 |
 | `dir` | `Direction` |  | 文字方向，默认 ltr。 |
-| `size` | `Size` |  | 尺寸：sm / md / lg。只换面板宽度与条目的几何档位。 |
-| `variant` | `OverlayBackdropVariant` |  | 遮罩形态：opaque / blur / transparent。落在 backdrop 上，只换那一层的底色与模糊。 |
+| `size` | `Size` |  | 尺寸：sm / md / lg。只影响面板宽度与条目的几何档位。 |
+| `variant` | `OverlayBackdropVariant` |  | 遮罩形态：opaque / blur / transparent。写在 backdrop 上，只影响该层的底色与模糊。 |
 | `translations` | `Partial<CommandTranslations>` |  |  |
 | `onOpenChange` | `(details: CommandOpenChangeDetails) => void` |  | open 变化意图回调；受控时是唯一出口，非受控时随内部转移一并通知。 |
 | `onInputValueChange` | `(details: CommandInputValueChangeDetails) => void` |  | 检索串变化意图回调。 |
-| `onSelect` | `(details: CommandSelectDetails) => void` |  | 选中一条命令：库不执行任何动作，做什么全归这里。 |
+| `onSelect` | `(details: CommandSelectDetails) => void` |  | 选中一条命令：库不执行任何动作，后续行为全部由这里决定。 |
 
 ### 事件
 
@@ -144,7 +144,7 @@ filter 关掉：交进来的 collection 就是此刻该显示的那几条，筛�
 | Vue 组件 | 插槽 | 载荷 | 说明 |
 | --- | --- | --- | --- |
 | `XhCommandRoot` | `default` | `CommandRootSlotProps` |  |
-| `XhCommandRoot` | `trigger` | — | 铺开时的触发按钮内容；不给即不渲染触发器（面板改由快捷键或 v-model:open 唤起）。 |
+| `XhCommandRoot` | `trigger` | — | 铺开时的触发按钮内容；未提供时不渲染触发器（面板改由快捷键或 v-model:open 唤起）。 |
 | `XhCommandRoot` | `item` | `CommandNodeMeta` |  |
 | `XhCommandRoot` | `empty` | — |  |
 | `XhCommandRoot` | `footer` | — |  |
@@ -181,10 +181,10 @@ filter 关掉：交进来的 collection 就是此刻该显示的那几条，筛�
 | --- | --- | --- |
 | `open` | `boolean` |  |
 | `inputValue` | `string` | 当前检索串。 |
-| `groups` | `readonly CommandGroupMeta[]` | 过滤归组之后此刻该显示的命令，空组已经丢掉。 |
-| `results` | `readonly CommandNodeMeta[]` | 上面那份分组视图摊平的结果，次序即方向键走的次序。 |
+| `groups` | `readonly CommandGroupMeta[]` | 过滤归组之后当前应显示的命令，空组已移除。 |
+| `results` | `readonly CommandNodeMeta[]` | 上述分组视图展平的结果，次序即方向键的移动次序。 |
 | `highlightedValue` | `string \| null` | 键盘锚点；收起时为 null。 |
-| `empty` | `boolean` | 一条都没剩下。 |
+| `empty` | `boolean` | 没有剩余条目。 |
 | `loading` | `boolean` |  |
 | `setOpen` | `(next: boolean) => void` |  |
 | `setInputValue` | `(next: string) => void` |  |
@@ -199,9 +199,9 @@ filter 关掉：交进来的 collection 就是此刻该显示的那几条，筛�
 | `getGroupLabelProps` | `(props: CommandGroupProps) => T['element']` |  |
 | `getItemProps` | `(props: CommandItemProps) => T['element']` |  |
 | `getItemTextProps` | `(props: CommandItemProps) => T['element']` |  |
-| `getEmptyProps` | `() => T['element']` | 空态占位：放在 content 里、list 的兄弟。 给了 collection 时由连接层按条数收放；条目手写时不写 hidden，露不露面归作者。 |
-| `getLoadingProps` | `() => T['element']` | 在途占位：与空态占位同一个位置，两者不同屏。 |
-| `getFooterProps` | `() => T['element']` | 面板底部的提示条：作者放什么由作者定，这里只给位置与观感。 |
+| `getEmptyProps` | `() => T['element']` | 空态占位：放在 content 中、list 的兄弟。 提供 collection 时由连接层按条数收放；条目手写时不写 hidden，是否显示由作者决定。 |
+| `getLoadingProps` | `() => T['element']` | 在途占位：与空态占位同一位置，两者不同时显示。 |
+| `getFooterProps` | `() => T['element']` | 面板底部的提示条：内容由作者决定，这里只提供位置与观感。 |
 
 ## 无障碍
 

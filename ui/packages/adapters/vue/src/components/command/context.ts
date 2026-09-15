@@ -10,12 +10,12 @@ import type { ComputedRef, InjectionKey } from 'vue'
 import type { CommandContext } from './use-command'
 import { inject, provide } from 'vue'
 
-/** 条目自报的值与禁用，供 item-text 这类子部件复用同一份声明。 */
+/** 条目声明的值与禁用，供 item-text 等子部件复用同一份声明。 */
 export interface CommandItemContext {
   item: ComputedRef<CommandItemProps>
 }
 
-/** 分组自报的身份，供分组标题取到同一个值（标题的 id 由它派生）。 */
+/** 分组声明的身份，供分组标题取到同一个值（标题的 id 由它派生）。 */
 export interface CommandItemGroupContext {
   group: ComputedRef<CommandGroupProps>
 }

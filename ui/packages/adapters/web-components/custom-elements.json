@@ -12791,7 +12791,7 @@
       "declarations": [
         {
           "kind": "class",
-          "description": "`<xh-command>` —— Light-DOM 行为宿主：作者写 trigger/backdrop/positioner/content/input/list/item/...\n角色节点，元素跑 command 机器并把 connect 产出打上去。\n\n过滤在库这一层做：命令清单经 collection 交进来，检索串一变，不在结果里的条目与整组空掉的分组\n由 connect 打上 hidden。作者只管把整份清单铺成节点，不必自己增删。\n\n焦点自始至终在 input 上：条目不可聚焦、也不进 Tab 序列，锚点经 aria-activedescendant 报给读屏。",
+          "description": "`<xh-command>`：Light-DOM 行为宿主：作者写 trigger / backdrop / positioner / content / input / list / item / ...\n角色节点，元素运行 command 状态机并把 connect 产出接上。\n\n过滤在库这一层完成：命令清单经 collection 传入，检索串变化时，不在结果中的条目与整组被筛空的分组\n由 connect 写上 hidden。作者只需把整份清单铺设为节点，不必自行增删。\n\n焦点自始至终在 input 上：条目不可聚焦、也不进入 Tab 序列，锚点经 aria-activedescendant 报告给读屏。",
           "name": "XhCommandElement",
           "cssParts": [
             {
@@ -12803,7 +12803,7 @@
               "name": "backdrop"
             },
             {
-              "description": "浮层定位容器，由皮肤的 inset 直接摆",
+              "description": "浮层定位容器，由皮肤的 inset 直接摆放",
               "name": "positioner"
             },
             {
@@ -12811,7 +12811,7 @@
               "name": "content"
             },
             {
-              "description": "检索框，面板里唯一的打字入口，带 role=combobox",
+              "description": "检索框，面板中唯一的输入入口，带 role=combobox",
               "name": "input"
             },
             {
@@ -12827,23 +12827,23 @@
               "name": "group-label"
             },
             {
-              "description": "role=option 命令，须自带 value 属性标识身份；不在结果里时带 hidden",
+              "description": "role=option 命令，须自带 value 属性标识身份；不在结果中时带 hidden",
               "name": "item"
             },
             {
-              "description": "命令文本（选中时回传给宿主的取字处）",
+              "description": "命令文本（选中时回传给宿主的取字来源）",
               "name": "item-text"
             },
             {
-              "description": "一条都没剩下时的提示；须放在 content 里当 list 的兄弟（列表内只允许 option 与 group）",
+              "description": "没有剩余条目时的提示；须放在 content 中作为 list 的兄弟（列表内只允许 option 与 group）",
               "name": "empty"
             },
             {
-              "description": "在途占位，与空态占位同一个位置，取数期间顶上来",
+              "description": "在途占位，与空态占位同一位置，加载期间显示",
               "name": "loading"
             },
             {
-              "description": "面板底部提示条，作者放什么由作者定",
+              "description": "面板底部提示条，内容由作者决定",
               "name": "footer"
             }
           ],
@@ -13087,7 +13087,7 @@
               "name": "declaredDisabled",
               "privacy": "private",
               "readonly": true,
-              "description": "作者声明的条目禁用，只认首见那一份；给了 collection 时用它，否则现读"
+              "description": "作者声明的条目禁用，只认首次见到的值；提供 collection 时使用它，否则现读"
             },
             {
               "kind": "field",
@@ -13123,7 +13123,7 @@
                   "text": "CommandApi | null"
                 }
               },
-              "description": "取数口与命令共用的取法。机器要到进文档（hostConnected）才建，\n而这些都是公开面，作者拿到元素随时可能读、可能调——还没进文档时如实给空，不抛错。"
+              "description": "取数口与命令共用的取法。状态机在进入文档（hostConnected）后才建立，\n而这些都是公开面，作者拿到元素后随时可能读取、调用：尚未进入文档时如实返回空值，不抛错。"
             },
             {
               "kind": "field",
@@ -13131,7 +13131,7 @@
               "type": {
                 "text": "boolean"
               },
-              "description": "面板此刻开着没有（`open` 属性是受控入参，可能缺席；这里是结果）。\n机器尚未建起时给 false。",
+              "description": "面板当前是否展开（`open` 属性是受控入参，可能缺席；此处是结果）。\n状态机尚未建立时返回 false。",
               "readonly": true
             },
             {
@@ -13140,7 +13140,7 @@
               "type": {
                 "text": "string"
               },
-              "description": "此刻的检索串（`input-value` 属性缺席时非受控的那份住在机器里，只有这里读得到）。\n机器尚未建起时给空串。",
+              "description": "当前的检索串（`input-value` 属性缺席时非受控的值保存在状态机中，只能从此处读取）。\n状态机尚未建立时返回空串。",
               "readonly": true
             },
             {
@@ -13149,7 +13149,7 @@
               "type": {
                 "text": "readonly CommandGroupMeta[]"
               },
-              "description": "过滤归组之后此刻该显示的命令，空组已经丢掉。机器尚未建起时给空数组。",
+              "description": "过滤归组之后当前应显示的命令，空组已剔除。状态机尚未建立时返回空数组。",
               "readonly": true
             },
             {
@@ -13158,7 +13158,7 @@
               "type": {
                 "text": "readonly CommandNodeMeta[]"
               },
-              "description": "上面那份分组视图摊平的结果，次序即方向键走的次序。机器尚未建起时给空数组。",
+              "description": "分组视图摊平后的结果，次序即方向键的遍历次序。状态机尚未建立时返回空数组。",
               "readonly": true
             },
             {
@@ -13167,7 +13167,7 @@
               "type": {
                 "text": "string | null"
               },
-              "description": "键盘锚点；收起或一条都没剩下时为 null。",
+              "description": "键盘锚点；收起或无结果时为 null。",
               "readonly": true
             },
             {
@@ -13176,7 +13176,7 @@
               "type": {
                 "text": "boolean"
               },
-              "description": "一条都没剩下。机器尚未建起时给 false。",
+              "description": "是否没有任何结果。状态机尚未建立时返回 false。",
               "readonly": true
             },
             {
@@ -13195,7 +13195,7 @@
                   }
                 }
               ],
-              "description": "开合面板。受控（写了 `open` 属性）时只发 open-change，开合归宿主写回。机器尚未建起时不动。"
+              "description": "开合面板。受控（写了 `open` 属性）时只触发 open-change，开合由宿主写回。状态机尚未建立时为空操作。"
             },
             {
               "kind": "method",
@@ -13213,7 +13213,7 @@
                   }
                 }
               ],
-              "description": "改写检索串。受控时语义同 setOpen。机器尚未建起时不动。"
+              "description": "改写检索串。受控时语义同 setOpen。状态机尚未建立时为空操作。"
             },
             {
               "kind": "method",
@@ -13231,7 +13231,7 @@
                   }
                 }
               ],
-              "description": "直接执行某条命令，等同于在它上面按回车。禁用的那条不认。机器尚未建起时不动。"
+              "description": "直接执行某条命令，等同于在该条目上按回车。禁用的条目不响应。状态机尚未建立时为空操作。"
             },
             {
               "kind": "method",
@@ -13378,7 +13378,7 @@
               "type": {
                 "text": "boolean | undefined"
               },
-              "description": "受控开合；缺省该属性即非受控",
+              "description": "受控开合；未提供该属性即非受控",
               "name": "open",
               "fieldName": "open"
             },
@@ -13394,7 +13394,7 @@
               "type": {
                 "text": "string | undefined"
               },
-              "description": "受控检索串；缺省该属性即非受控",
+              "description": "受控检索串；未提供该属性即非受控",
               "name": "input-value",
               "fieldName": "inputValue"
             },
@@ -13410,7 +13410,7 @@
               "type": {
                 "text": "boolean | undefined"
               },
-              "description": "内置过滤，默认开；写 filter=\"false\" 即由调用方自己筛",
+              "description": "内置过滤，默认开启；写 filter=\"false\" 即由调用方自行筛选",
               "name": "filter",
               "fieldName": "filter"
             },
@@ -13434,7 +13434,7 @@
               "type": {
                 "text": "boolean | undefined"
               },
-              "description": "模态（陷焦点、锁滚动、遮罩交互外关闭），默认 true",
+              "description": "模态（陷入焦点、锁定滚动、遮罩交互外关闭），默认 true",
               "name": "modal",
               "fieldName": "modal"
             },
@@ -13450,7 +13450,7 @@
               "type": {
                 "text": "boolean | undefined"
               },
-              "description": "点面板外关闭，默认跟随 modal",
+              "description": "点击面板外关闭，默认跟随 modal",
               "name": "close-on-interact-outside",
               "fieldName": "closeOnInteractOutside"
             },
@@ -13466,7 +13466,7 @@
               "type": {
                 "text": "boolean | undefined"
               },
-              "description": "方向键走到尽头回绕，默认 true；写 loop=\"false\" 关掉",
+              "description": "方向键到达末尾回绕，默认 true；写 loop=\"false\" 关闭",
               "name": "loop",
               "fieldName": "loop"
             },
@@ -13474,7 +13474,7 @@
               "type": {
                 "text": "boolean | undefined"
               },
-              "description": "命令还在取：列表报 aria-busy，在途占位顶上来、空态占位让位",
+              "description": "命令加载中：列表报告 aria-busy，显示在途占位、隐藏空态占位",
               "name": "loading",
               "fieldName": "loading"
             },
@@ -13490,7 +13490,7 @@
               "type": {
                 "text": "Direction | undefined"
               },
-              "description": "文字方向；浮层搬到落点后继承不到作者子树上的方向，要 RTL 就显式给",
+              "description": "文字方向；浮层移到落点后无法继承作者子树上的方向，需要 RTL 时显式提供",
               "name": "dir",
               "fieldName": "direction"
             },
@@ -13498,7 +13498,7 @@
               "type": {
                 "text": "Size | undefined"
               },
-              "description": "尺寸：换面板宽度与条目的几何档位",
+              "description": "尺寸：影响面板宽度与条目的几何档位",
               "name": "size",
               "fieldName": "size"
             },
@@ -13506,7 +13506,7 @@
               "type": {
                 "text": "OverlayBackdropVariant | undefined"
               },
-              "description": "遮罩形态：只换 backdrop 的底色与模糊",
+              "description": "遮罩形态：只影响 backdrop 的底色与模糊",
               "name": "variant",
               "fieldName": "variant"
             }
