@@ -1,4 +1,4 @@
-// 数据页 | 搜索、筛选、分段、表格、状态标签、分页与空态同框：一份数据经四道筛选后落进表体，筛没了就换空态
+// 数据页 | 搜索、筛选、分段、表格、状态标签、分页与空态同框：一份数据经四道筛选后落进表体，筛选为空时切换为空态
 import type { SelectNode, TableSelection, TableSortDescriptor } from "@xihan-ui/headless";
 import type { CSSProperties, ReactNode } from "react";
 import {

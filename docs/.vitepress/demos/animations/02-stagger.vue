@@ -1,4 +1,4 @@
-<!-- 错开起播 | 一组元素依次进场，起点可以从头、从尾或从中间；文字拆开就是一组元素 -->
+<!-- 错开起播 | 一组元素依次进场，起点可以从头、从尾或从中间；文字拆开即为一组元素 -->
 <script setup lang="ts">
 import type { StaggerFrom } from "@xihan-ui/animations";
 import { createMotionPlayer, splitText } from "@xihan-ui/animations";

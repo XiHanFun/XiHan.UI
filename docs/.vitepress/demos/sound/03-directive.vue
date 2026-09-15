@@ -1,4 +1,4 @@
-<!-- 元素配声 | v-sound 默认放 click，给字符串即指名；键盘敲 Enter 一样响，禁用态不响 -->
+<!-- 元素配声 | v-sound 默认放在 click 上，提供字符串即指定声音；键盘按 Enter 同样发声，禁用态不发声 -->
 <script setup lang="ts">
 import { XhButton } from "@xihan-ui/vue";
 import { vSound } from "@xihan-ui/vue/sound";

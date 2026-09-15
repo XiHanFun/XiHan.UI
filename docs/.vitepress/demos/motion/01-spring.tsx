@@ -1,4 +1,4 @@
-// 弹簧 | 感知参数调出物理参数，曲线是解析解直接采样的，右边的方块按同一条曲线走
+// 弹簧 | 感知参数换算为物理参数，曲线是解析解直接采样的，右侧的方块按同一条曲线运动
 import type { ReactNode } from "react";
 import { animate, createSpring, springToLinearEasing } from "@xihan-ui/motion";
 import { useEffect, useMemo, useRef, useState } from "react";

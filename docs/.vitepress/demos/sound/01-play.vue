@@ -1,4 +1,4 @@
-<!-- 试听 | 十四个语义名，切主题听同一件事的三种说法；音量与开关直接落在播放器上 -->
+<!-- 试听 | 十四个语义名，切换主题可听到同一件事的三种表达；音量与开关直接落在播放器上 -->
 <script setup lang="ts">
 import type { SoundTheme } from "@xihan-ui/sound";
 import {
