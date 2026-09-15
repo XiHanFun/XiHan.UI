@@ -1,4 +1,4 @@
-// 上传生命周期 | 给一个 upload 实现组件就是上传器：收下即开传（auto-upload 可关成手动），进度、成败与返回地址都在每条的传输快照里，失败一键重试
+// 上传生命周期 | 提供一个 upload 实现后组件即为上传器：接收即开始上传（auto-upload 可关闭为手动），进度、成败与返回地址都在每条的传输快照中，失败可一键重试
 import type { FileUploadRequest, FileUploadResult } from "@xihan-ui/headless";
 import type { ReactNode } from "react";
 import {

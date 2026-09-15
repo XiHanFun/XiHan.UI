@@ -1,4 +1,4 @@
-// 限制与拒收 | accept / maxFiles / maxFileSize 越界的当场被拒，file-reject 逐个报出理由
+// 限制与拒收 | accept / maxFiles / maxFileSize 越界的当场被拒绝，file-reject 逐个报告理由
 import type { FileUploadFile } from "@xihan-ui/headless";
 import type { ReactNode } from "react";
 import {

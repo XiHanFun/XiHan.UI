@@ -1,4 +1,4 @@
-// 缩略图墙 | item-preview 是个空方框，作者往里塞什么都行；塞进去的图会被裁成方格，一行摆几张由外层网格定
+// 缩略图墙 | item-preview 是一个空方框，作者可放置任意内容；放入的图片会被裁为方格，一行排几张由外层网格决定
 import type { CSSProperties, ReactNode } from "react";
 import {
   XhFileUploadDropzone,

@@ -1,4 +1,4 @@
-<!-- 限制与拒收 | accept / maxFiles / maxFileSize 越界的当场被拒，file-reject 逐个报出理由 -->
+<!-- 限制与拒收 | accept / maxFiles / maxFileSize 越界的当场被拒绝，file-reject 逐个报告理由 -->
 <script setup lang="ts">
 import {
   XhFileUploadClearTrigger,

@@ -1,4 +1,4 @@
-<!-- 预置列表 | defaultFiles 给出挂载时就在的那几份，之后列表照旧由组件自己保管，删除与清空都照常 -->
+<!-- 预置列表 | defaultFiles 给出挂载时已存在的文件，之后列表照常由组件自行保管，删除与清空都照常 -->
 <script setup lang="ts">
 import {
   XhFileUploadClearTrigger,
