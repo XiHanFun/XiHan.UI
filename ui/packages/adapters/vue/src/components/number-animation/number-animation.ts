@@ -17,14 +17,14 @@ import { useMachine } from '../../runtime/use-machine'
 
 type NumberAnimationProps = NumberAnimationSchema['props']
 
-/** 默认插槽的载荷：当前帧的数值，以及它按 precision 与 separator 铺好的文本。 */
+/** 默认插槽的载荷：当前帧的数值，以及它按 precision 与 separator 格式化后的文本。 */
 export type NumberAnimationSlotProps = Pick<NumberAnimationApi, 'value' | 'text'>
 
 /**
- * 一段会自己走的数字：从 from 补间到 to，逐帧算值，格式化后写进根里。
+ * 一段自动变化的数字：从 from 补间到 to，逐帧计算值，格式化后写入根中。
  *
- * 默认插槽拿得到 `{ value, text }`，插了内容就由作者自己排版；
- * 什么都不插时根里就是格式化好的那串字。
+ * 默认插槽可得到 `{ value, text }`，插入内容后由作者自行排版；
+ * 未插入任何内容时根中即为格式化后的文本。
  */
 export const XhNumberAnimation = defineComponent({
   name: 'XhNumberAnimation',

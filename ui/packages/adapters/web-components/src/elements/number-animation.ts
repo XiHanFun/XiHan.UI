@@ -20,29 +20,29 @@ const NUMBER_CONVERTER = { fromAttribute: (v: string | null) => (v == null || v 
 const BOOLEAN_CONVERTER = { fromAttribute: (v: string | null) => (v === null ? undefined : v !== 'false') }
 
 /**
- * `<xh-number-animation>` —— Light-DOM 行为宿主：作者写一个 root 角色节点，
- * 元素跑 number-animation 机器，逐帧把补间算出的数字格式化后写进那个节点。
+ * `<xh-number-animation>`：Light-DOM 行为宿主：作者写一个 root 角色节点，
+ * 元素运行 number-animation 状态机，逐帧把补间计算出的数字格式化后写进该节点。
  *
- * 参数改写分两路：改 `from` 是"换起点"，数字当场落到新起点再重跑；
- * 改 `to` / `duration` / `easing` 是"换目标"，从当前数字接着走，不跳回起点。
- * 已经跑完停在 idle 时改 `to` 同样会重新跑起来，所以"数字跟着数据走"不必额外拨 `active`。
+ * 参数改写分两路：修改 `from` 是更换起点，数字立即落到新起点再重新运行；
+ * 修改 `to` / `duration` / `easing` 是更换目标，从当前数字继续，不跳回起点。
+ * 已经运行完成停在 idle 时修改 `to` 同样会重新运行，因此数字跟随数据变化时不必额外切换 `active`。
  *
- * 根是 role="status" 但 aria-live 缺省写死 off：status 的隐含 aria-live 就是 polite，
- * 一个每帧都在变的数字用 polite 会把读屏刷爆，要播报由作者把 live 开到 polite 或 assertive。
+ * 根是 role="status" 但 aria-live 默认固定为 off：status 的隐含 aria-live 是 polite，
+ * 一个每帧变化的数字使用 polite 会持续触发读屏，需要播报时由作者把 live 设为 polite 或 assertive。
  *
  * @customElement xh-number-animation
- * @attr {number} from - 起点，缺省 0
- * @attr {number} to - 终点，缺省 0
- * @attr {number} duration - 时长毫秒，缺省 1000；<=0 即一步到位
- * @attr {string} easing - 缓动：曲线名（linear / standard / easeIn / easeOut / easeInOut …）或 cubic-bezier 串，缺省线性
- * @attr {number} precision - 小数位，缺省 0
- * @attr {string} separator - 千位分隔符，缺省不分隔
- * @attr {boolean} active - 是否在跑，缺省真；`active="false"` 停在当前值
- * @attr {'sm'|'md'|'lg'} size - 尺寸，只改字号
- * @attr {'brand'|'neutral'|'success'|'warning'|'danger'|'info'} tone - 语气，决定数字用哪族颜色
- * @attr {'off'|'polite'|'assertive'} live - 读屏播报档位，缺省 off
- * @fires complete - 走到终点；detail 为 `{ value: number }`
- * @csspart root - 数字本身（承载 status 语义、data-state 与两个视觉轴）；文字归元素写
+ * @attr {number} from - 起点，默认 0
+ * @attr {number} to - 终点，默认 0
+ * @attr {number} duration - 时长毫秒，默认 1000；<=0 即一步到位
+ * @attr {string} easing - 缓动：曲线名（linear / standard / easeIn / easeOut / easeInOut …）或 cubic-bezier 串，默认线性
+ * @attr {number} precision - 小数位，默认 0
+ * @attr {string} separator - 千位分隔符，默认不分隔
+ * @attr {boolean} active - 是否运行，默认真；`active="false"` 停在当前值
+ * @attr {'sm'|'md'|'lg'} size - 尺寸，只影响字号
+ * @attr {'brand'|'neutral'|'success'|'warning'|'danger'|'info'} tone - 语气，决定数字使用哪族颜色
+ * @attr {'off'|'polite'|'assertive'} live - 读屏播报档位，默认 off
+ * @fires complete - 到达终点；detail 为 `{ value: number }`
+ * @csspart root - 数字本身（承载 status 语义、data-state 与两个视觉轴）；文字由元素写入
  */
 export class XhNumberAnimationElement extends XhElement {
   static override partContract = { anatomy: numberAnimationAnatomy, meta: numberAnimationMeta }
