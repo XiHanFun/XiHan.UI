@@ -65,7 +65,7 @@ describe('卡片的 Hero 风格语义表面', () => {
     expect(root.hasAttribute('data-split')).toBe(false)
     expect(Number.parseFloat(style.paddingTop)).toBe(resolvedLength(root, 'var(--xh-space-4)'))
     expect(Number.parseFloat(style.rowGap)).toBe(resolvedLength(root, 'var(--xh-space-3)'))
-    expect(Number.parseFloat(style.borderRadius)).toBe(resolvedLength(root, 'var(--xh-shape-overlay)'))
+    expect(Number.parseFloat(style.borderRadius)).toBe(resolvedLength(root, 'var(--xh-shape-surface)'))
     expect(style.overflow).toBe('visible')
     expect(getComputedStyle(content).flexDirection).toBe('column')
   })

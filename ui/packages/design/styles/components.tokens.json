@@ -6131,7 +6131,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-shape-overlay"
+        "--xh-shape-surface"
       ],
       "visibility": "public",
       "description": "card 的 root 部件 border-radius 覆盖槽。"
