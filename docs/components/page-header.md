@@ -89,9 +89,9 @@
 
 | 属性 | 类型 | 必填 | 说明 |
 | --- | --- | --- | --- |
-| `bordered` | `boolean` |  | 底部画一条分隔线，把页头与下面的内容分开。给了面的两档改画整圈描边。 |
+| `bordered` | `boolean` |  | 底部绘制一条分隔线，把页头与下方内容分开。提供面的两档改为绘制整圈描边。 |
 | `size` | `Size` |  | 尺寸：sm / md / lg，决定标题字号与整块的上下留白。 |
-| `variant` | `PageHeaderVariant` |  | 形态：plain / surface / raised。不写即不画面，与写 plain 同一个样子。 |
+| `variant` | `PageHeaderVariant` |  | 形态：plain / surface / raised。未提供时不绘制面，与写 plain 相同。 |
 
 ### connect API
 
@@ -100,7 +100,7 @@
 | 成员 | 类型 | 说明 |
 | --- | --- | --- |
 | `getRootProps` | `() => T['element']` |  |
-| `getBreadcrumbProps` | `() => T['element']` | 面包屑位：整行排在标题之上。放什么归作者，组件只圈出位置。 |
+| `getBreadcrumbProps` | `() => T['element']` | 面包屑位：整行排在标题之上。内容由作者决定，组件只划定位置。 |
 | `getBackTriggerProps` | `() => T['element']` |  |
 | `getMediaProps` | `() => T['element']` | 头像 / 图标位：排在返回位与标题之间，不随标题行换行。 |
 | `getTitleProps` | `() => T['element']` |  |

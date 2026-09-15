@@ -14,13 +14,13 @@ import { withXhConfig } from '../../config/config'
 import { vueNormalize } from '../../runtime/normalize-props'
 import { providePageHeader, usePageHeaderContext } from './context'
 
-/** 根节点渲染为 div，缺省值由 connect 给出；普通类型省略 default，Boolean 显式保留 undefined */
+/** 根节点渲染为 div，默认值由 connect 给出；普通类型省略 default，Boolean 显式保留 undefined */
 export const XhPageHeaderRoot = defineComponent({
   name: 'XhPageHeaderRoot',
   props: {
     size: { type: String as PropType<Size> },
     bordered: Boolean,
-    /** 形态：plain / surface / raised。不写即不画面，与写 plain 同一个样子。 */
+    /** 形态：plain / surface / raised。未写即不绘制面，与写 plain 相同。 */
     variant: { type: String as PropType<PageHeaderVariant> },
   },
   setup(props, { slots }) {
@@ -49,8 +49,8 @@ export const XhPageHeaderMedia = defineComponent({
 })
 
 /**
- * 返回位：组件只给身份与位置，按钮本身归作者。
- * as 决定渲染成哪个标签，默认 button；不自动补 type="button"，落在表单里需自行声明。
+ * 返回位：组件只提供身份与位置，按钮本身归作者。
+ * as 决定渲染为哪个标签，默认 button；不自动补 type="button"，位于表单中时需自行声明。
  */
 export const XhPageHeaderBackTrigger = defineComponent({
   name: 'XhPageHeaderBackTrigger',
@@ -68,8 +68,8 @@ export const XhPageHeaderBackTrigger = defineComponent({
 })
 
 /**
- * 标题默认渲染为 div：它只做视觉主次，组件自己不往文档大纲里插一级标题。
- * as 决定渲染成哪个标签——这一块在页面大纲里确实是一级标题时写 as="h1"（或 hN）。
+ * 标题默认渲染为 div：它只做视觉主次，组件自身不向文档大纲插入一级标题。
+ * as 决定渲染为哪个标签：该块在页面大纲中确实是一级标题时写 as="h1"（或 hN）。
  */
 export const XhPageHeaderTitle = defineComponent({
   name: 'XhPageHeaderTitle',
