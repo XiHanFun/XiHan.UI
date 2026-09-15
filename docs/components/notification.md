@@ -1,6 +1,6 @@
 # Notification 通知 <Badge type="info" text="alpha" />
 
-主动推给用户的一条消息：有标题、有正文，可以带操作按钮。
+主动推送给用户的一条消息：有标题、有正文，可以带操作按钮。
 
 <div class="xh-resource-links">
   <a href="https://github.com/XiHanFun/XiHan.UI/tree/dev/ui/packages/engine/headless/src/notification" target="_blank" rel="noreferrer">Headless</a>
@@ -58,40 +58,40 @@ create 返回的就是队列身份 id，存下来随时 dismiss 掉那一条；d
 
 ### 何时使用
 
-- 系统或他人发起的消息：新评论、审批到达、任务跑完了。
-- 后台完成的长任务：用户当时可能已经在做别的事。
-- 一句话讲不完，需要标题加正文两层的信息。
+- 系统或他人发起的消息：新评论、审批到达、任务完成。
+- 后台完成的长任务，用户当时可能在做其他事。
+- 一句话说不完，需要标题加正文两层信息。
 
 ### 何时不用
 
-- 用户刚点了一下按钮，只要一句结果反馈：用[轻提示](./toast)。
-- 用户必须处理才能继续：用[对话框](./dialog)阻断。
-- 页面内某块区域的常驻状态说明：用[警告提示](./alert)。
+- 用户刚点击按钮、只需要一句结果反馈时，使用[轻提示](./toast)。
+- 用户必须处理才能继续时，使用[对话框](./dialog)阻断。
+- 页面内某块区域的常驻状态说明使用[警告提示](./alert)。
 
 ### 特性
 
-- 九宫格落位，`placement` 决定这一摞落在哪儿；也可以按条逐个指定。
-- `max` 限制每个位置同时显示几条，默认 5，超出先挤低优先级、同级里挤最旧的；给 `Infinity` 即不限。
-- 同一个 id 再发一次即就地改写，位置不动，用来做"处理中 → 已完成"。
-- 每条自带计时与暂停：指针停在卡片上、或焦点落进去时不再走表。
-- `duration` 给 0 即常驻不消失，适合需要用户处理的消息。
+- 九宫格落位，`placement` 决定整摞的位置，也可以逐条指定。
+- `max` 限制每个位置同时显示的条数，默认 5，超出时先挤出低优先级，同级中挤出最旧的；设为 `Infinity` 即不限制。
+- 同一个 id 再次发出即就地改写，位置不变，用于“处理中 → 已完成”。
+- 每条自带计时与暂停：指针停在卡片上或焦点进入时暂停计时。
+- `duration` 为 0 时常驻不消失，适合需要用户处理的消息。
 
 ### 组合
 
 - 卡片可以放一个操作按钮（查看详情、撤销），按下即退场。
-- 队列的增删改一并从根插槽给出，业务代码不必自己维护数组。
+- 队列的增删改由根插槽统一给出，业务代码不需要自行维护数组。
 
 ### 最佳实践
 
 - 整个应用只挂一个队列，挂在最外层。
-- 落位躲开固定的操作条与移动端手势区。
-- 重要的那条把 `duration` 关掉，让用户自己收走。
+- 落位避开固定的操作条与移动端手势区。
+- 重要的消息把 `duration` 设为 0，由用户自行关闭。
 
 ### 反模式
 
-- 拿它做操作反馈：一次点击弹出一张两层文本的大卡片，喧宾夺主。
-- 每个页面各挂一个队列：多摞互相盖。
-- `max` 设得太大，一屏被通知占满。
+- 用它做操作反馈：一次点击弹出一张两层文本的大卡片，喧宾夺主。
+- 每个页面各挂一个队列，多摞互相遮盖。
+- `max` 过大，一屏被通知占满。
 
 ## API 参考
 
@@ -257,7 +257,7 @@ create 返回的就是队列身份 id，存下来随时 dismiss 掉那一条；d
 | `--xh-notification-item-leading` | `item` | `line-height` | `default` | `--xh-text-body-leading` | notification 的 item 部件 line-height 覆盖槽。 |
 | `--xh-notification-item-px` | `item` | `padding-inline` | `default` | `--xh-surface-pad-lg` | notification 的 item 部件 padding-inline 覆盖槽。 |
 | `--xh-notification-item-py` | `item` | `padding-block` | `default` | `--xh-surface-pad-lg` | notification 的 item 部件 padding-block 覆盖槽。 |
-| `--xh-notification-item-radius` | `item` | `border-radius` | `default` | `--xh-shape-surface` | notification 的 item 部件 border-radius 覆盖槽。 |
+| `--xh-notification-item-radius` | `item` | `border-radius` | `default` | `--xh-shape-overlay` | notification 的 item 部件 border-radius 覆盖槽。 |
 | `--xh-notification-item-row-gap` | `item` | `row-gap` | `default` | `--xh-space-2` | notification 的 item 部件 row-gap 覆盖槽。 |
 | `--xh-notification-item-shadow` | `item` | `box-shadow` | `default` | `--xh-elevation-sheet` | notification 的 item 部件 box-shadow 覆盖槽。 |
 | `--xh-notification-item-w` | `item` | `inline-size` | `default` | `--xh-overlay-max-w-lg` | notification 的 item 部件 inline-size 覆盖槽。 |
