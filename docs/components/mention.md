@@ -113,27 +113,27 @@ variant 换正文框的描边与底色，候选面板不受影响
 
 | 属性 | 类型 | 必填 | 说明 |
 | --- | --- | --- | --- |
-| `triggerPrefix` | `string \| string[]` |  | 开候选的前缀字符，缺省 '@'。给数组即多种前缀并存，宿主按 onQueryChange 报回的 prefix 分流。 前缀必须紧跟在行首或空白之后，邮箱地址里的 @ 因此不会误触发。 |
-| `collection` | `MentionNode[]` |  | 候选数据，显示文本与禁用的事实源。过滤仍归调用方：交进来的就是此刻该显示的那几条。 组件不管怎么筛，它只负责把查询串交出去。 |
-| `value` | `string` |  | 整段正文。给定即受控：cell 直读 prop，写只发 onValueChange 不落内部值。 |
+| `triggerPrefix` | `string \| string[]` |  | 打开候选的前缀字符，默认 '@'。提供数组即多种前缀并存，宿主按 onQueryChange 报回的 prefix 分流。 前缀必须紧跟在行首或空白之后，邮箱地址中的 @ 因此不会误触发。 |
+| `collection` | `MentionNode[]` |  | 候选数据，显示文本与禁用的事实源。过滤仍由调用方完成：传入的即当前应显示的候选。 组件不负责筛选，只负责交出查询串。 |
+| `value` | `string` |  | 整段正文。提供即受控：cell 直读 prop，写入只发 onValueChange 不落内部值。 |
 | `defaultValue` | `string` |  |  |
-| `disabled` | `boolean` |  | 整个控件禁用：输入框用原生 disabled，候选一概不开。 |
-| `readOnly` | `boolean` |  | 只读：正文仍可聚焦与复制，改不动，候选也不开。 |
-| `invalid` | `boolean` |  | 校验失败标注：描边与聚焦环换成失败色，同时经 aria-invalid 上报。 |
-| `loading` | `boolean` |  | 候选还在取：候选面板报 aria-busy，在途占位顶上来、空态占位让位。 |
-| `placeholder` | `string` |  | 输入框占位文字。不给就整条不输出，作者写在 input 部件上的那份因此留得住。 |
-| `name` | `string` |  | 表单字段名；给了输入框才带 name，整段正文随表单一并提交。 |
-| `loop` | `boolean` |  | 方向键走到尽头是否回绕，默认 true。 |
+| `disabled` | `boolean` |  | 整个控件禁用：输入框使用原生 disabled，候选一概不打开。 |
+| `readOnly` | `boolean` |  | 只读：正文仍可聚焦与复制，不可修改，候选也不打开。 |
+| `invalid` | `boolean` |  | 校验失败标注：描边与聚焦环换为失败色，同时经 aria-invalid 上报。 |
+| `loading` | `boolean` |  | 候选加载中：候选面板报告 aria-busy，显示在途占位、隐藏空态占位。 |
+| `placeholder` | `string` |  | 输入框占位文字。未提供时整条不输出，作者写在 input 部件上的声明因此得以保留。 |
+| `name` | `string` |  | 表单字段名；提供后输入框才带 name，整段正文随表单一并提交。 |
+| `loop` | `boolean` |  | 方向键到达末尾是否回绕，默认 true。 |
 | `placement` | `Placement` |  |  |
-| `dir` | `Direction` |  | 文字方向，缺省 ltr。只改写浮层在行内轴上 start 与 end 的落点。 |
+| `dir` | `Direction` |  | 文字方向，默认 ltr。只改写浮层在行内轴上 start 与 end 的落点。 |
 | `offset` | `number` |  |  |
 | `translations` | `MentionTranslations` |  |  |
-| `variant` | `ControlVariant` |  | 形态：outline / subtle / ghost，决定输入框的描边与底色怎么用。 |
-| `tone` | `Tone` |  | 语气：brand / neutral / success / warning / danger / info，决定聚焦与高亮用哪族颜色。 |
+| `variant` | `ControlVariant` |  | 形态：outline / subtle / ghost，决定输入框的描边与底色使用方式。 |
+| `tone` | `Tone` |  | 语气：brand / neutral / success / warning / danger / info，决定聚焦与高亮使用哪族颜色。 |
 | `size` | `Size` |  | 尺寸：sm / md / lg，决定输入框内边距与字号档位。 |
 | `onValueChange` | `(details: MentionValueChangeDetails) => void` |  | 正文变化回调；受控时是唯一出口。 |
-| `onQueryChange` | `(details: MentionQueryChangeDetails) => void` |  | 查询串变化回调：调用方据此重新过滤候选。收起时报 null。 |
-| `onSelect` | `(details: MentionSelectDetails) => void` |  | 候选被插进正文时回调，带上是哪一条。 |
+| `onQueryChange` | `(details: MentionQueryChangeDetails) => void` |  | 查询串变化回调：调用方据此重新过滤候选。收起时报告 null。 |
+| `onSelect` | `(details: MentionSelectDetails) => void` |  | 候选被插入正文时回调，附带是哪一条。 |
 | `onOpenChange` | `(details: MentionOpenChangeDetails) => void` |  | 浮层开合回调。 |
 
 ### 事件
@@ -143,8 +143,8 @@ variant 换正文框的描边与底色，候选面板不受影响
 | 事件 | 载荷 | 说明 |
 | --- | --- | --- |
 | `value-change` | `MentionValueChangeDetails` | 正文变化；detail 为 `{ value: string }` |
-| `query-change` | `MentionQueryChangeDetails` | 查询串变化；detail 为 `{ query, prefix }`，作者据此过滤候选；收起时报 null |
-| `select` | `MentionSelectDetails` | 候选被插进正文；detail 为 `{ value, label, prefix }` |
+| `query-change` | `MentionQueryChangeDetails` | 查询串变化；detail 为 `{ query, prefix }`，作者据此过滤候选；收起时报告 null |
+| `select` | `MentionSelectDetails` | 候选被插入正文；detail 为 `{ value, label, prefix }` |
 | `open-change` | `MentionOpenChangeDetails` | 浮层开合；detail 为 `{ open: boolean }` |
 
 ### 插槽
@@ -155,7 +155,7 @@ variant 换正文框的描边与底色，候选面板不受影响
 | --- | --- | --- | --- |
 | `XhMentionRoot` | `default` | `MentionRootSlotProps` |  |
 | `XhMentionRoot` | `item` | `MentionNodeMeta` | 铺开 collection 时每条候选的文本插槽。 |
-| `XhMentionRoot` | `empty` | — | 铺开 collection 时空态里那句话；不写走内建英文。 |
+| `XhMentionRoot` | `empty` | — | 铺开 collection 时空态中的文案；未写时使用内建英文。 |
 
 ### 状态
 
@@ -183,23 +183,23 @@ variant 换正文框的描边与底色，候选面板不受影响
 | 成员 | 类型 | 说明 |
 | --- | --- | --- |
 | `open` | `boolean` |  |
-| `collection` | `readonly MentionNodeMeta[]` | collection 推出的候选元信息，按数据顺序排列；没给 collection 即空数组。 |
+| `collection` | `readonly MentionNodeMeta[]` | 由 collection 推导的候选元信息，按数据顺序排列；未提供 collection 时为空数组。 |
 | `value` | `string` | 整段正文。 |
 | `query` | `string \| null` | 当前查询串；没有触发时为 null。 |
 | `activePrefix` | `string \| null` | 触发本次查询的前缀；没有触发时为 null。 |
 | `highlightedValue` | `string \| null` | 高亮候选；收起时为 null。焦点不在它身上，只经 aria-activedescendant 上报。 |
 | `disabled` | `boolean` |  |
-| `empty` | `boolean` | 没有候选可显：给了 collection 且一条都不剩。作者据此显出空态部件。 |
+| `empty` | `boolean` | 没有候选可显示：提供了 collection 且没有剩余条目。作者据此显示空态部件。 |
 | `isHighlighted` | `(value: string) => boolean` |  |
 | `setValue` | `(next: string) => void` | 整段改写正文，浮层随之收起。 |
 | `close` | `() => void` |  |
 | `getRootProps` | `() => T['element']` |  |
-| `getLabelProps` | `() => T['label']` | 标题；`for` 恒写向 input，故须是原生 `&lt;label&gt;`。 |
-| `getInputProps` | `() => T['input']` | 单行输入框；正文就写在它身上。 |
+| `getLabelProps` | `() => T['label']` | 标题；`for` 恒指向 input，因此须是原生 `&lt;label&gt;`。 |
+| `getInputProps` | `() => T['input']` | 单行输入框；正文写在它身上。 |
 | `getPositionerProps` | `() => T['element']` |  |
 | `getContentProps` | `() => T['element']` |  |
-| `getEmptyProps` | `() => T['element']` | 一条候选都没有时显出的空态；有候选时带 hidden 收起。 |
-| `getLoadingProps` | `() => T['element']` | 在途占位：与空态占位同一个位置，两者不同屏——取数期间它顶上来，空态让位。 同样是 content 的兄弟，不进 role=listbox。 |
+| `getEmptyProps` | `() => T['element']` | 没有任何候选时显示的空态；有候选时带 hidden 收起。 |
+| `getLoadingProps` | `() => T['element']` | 在途占位：与空态占位同一位置，两者不同时显示：加载期间显示它，空态让位。 同样是 content 的兄弟，不进入 role=listbox。 |
 | `getItemProps` | `(props: MentionItemProps) => T['element']` |  |
 | `getItemTextProps` | `(props: MentionItemProps) => T['element']` |  |
 

@@ -49,7 +49,7 @@ export const XhMentionRoot = defineComponent({
     loop: { type: Boolean, default: undefined },
     placement: { type: String as PropType<Placement> },
     offset: { type: Number },
-    /** 文字方向；浮层搬到落点后继承不到作者子树上的方向，要 RTL 就显式给。 */
+    /** 文字方向；浮层迁移到落点后无法继承作者子树上的方向，需要 RTL 时显式提供。 */
     dir: { type: String as PropType<Direction> },
     translations: { type: Object as PropType<MentionTranslations> },
     variant: { type: String as PropType<ControlVariant> },
@@ -68,7 +68,7 @@ export const XhMentionRoot = defineComponent({
     default?: (props: MentionRootSlotProps) => VNode[]
     /** 铺开 collection 时每条候选的文本插槽。 */
     item?: (props: MentionNodeMeta) => VNode[]
-    /** 铺开 collection 时空态里那句话；不写走内建英文。 */
+    /** 铺开 collection 时空态中的文案；未写时使用内建英文。 */
     empty?: () => VNode[]
   }>,
   setup(props, { slots, emit }) {
@@ -112,7 +112,7 @@ export const XhMentionRoot = defineComponent({
   },
 })
 
-/** 标题；必须是原生 label，getLabelProps 的 for 恒写向输入框。 */
+/** 标题；必须是原生 label，getLabelProps 的 for 恒指向输入框。 */
 export const XhMentionLabel = defineComponent({
   name: 'XhMentionLabel',
   setup(_, { slots }) {
@@ -121,7 +121,7 @@ export const XhMentionLabel = defineComponent({
   },
 })
 
-/** 单行输入框；正文写在它身上，候选浮层贴着它落位。 */
+/** 单行输入框；正文写在它上面，候选浮层贴着它落位。 */
 export const XhMentionInput = defineComponent({
   name: 'XhMentionInput',
   setup() {
@@ -174,7 +174,7 @@ export const XhMentionContent = defineComponent({
   },
 })
 
-/** 一条候选都没有时显出的空态；与候选面板同级。 */
+/** 没有任何候选时显示的空态；与候选面板同级。 */
 export const XhMentionEmpty = defineComponent({
   name: 'XhMentionEmpty',
   setup(_, { slots }) {
@@ -183,7 +183,7 @@ export const XhMentionEmpty = defineComponent({
   },
 })
 
-/** 候选还在取时顶上来的在途占位；与候选面板同级。 */
+/** 候选仍在获取时显示的在途占位；与候选面板同级。 */
 export const XhMentionLoading = defineComponent({
   name: 'XhMentionLoading',
   setup(_, { slots }) {
@@ -222,9 +222,9 @@ export const XhMentionItemText = defineComponent({
 })
 
 /**
- * 没写默认插槽时按 collection 铺开的整套结构，作者只交数据。
- * 与手写部件产出的 DOM 完全一致，要改结构就写默认插槽，行为不变。
- * 过滤仍归调用方：collection 就是此刻该显示的那几条候选。
+ * 未写默认插槽时按 collection 铺开的整套结构，作者只提供数据。
+ * 与手写部件产出的 DOM 完全一致，需要修改结构时写默认插槽，行为不变。
+ * 过滤仍归调用方：collection 就是当前应显示的候选。
  */
 function renderDefaultTree(
   collection: readonly MentionNodeMeta[],
