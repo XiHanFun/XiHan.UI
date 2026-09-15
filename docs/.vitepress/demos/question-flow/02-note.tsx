@@ -1,4 +1,4 @@
-// 自由文本与跳过 | 选项之外还能自己写一句，写了就算答过；关掉自动前进，每题都等人点继续
+// 自由文本与跳过 | 选项之外还可自行填写一句，填写后即视为已作答；关闭自动前进，每题都等待用户点击继续
 import type { QuestionFlowQuestion } from "@xihan-ui/headless";
 import type { ReactNode } from "react";
 import {
