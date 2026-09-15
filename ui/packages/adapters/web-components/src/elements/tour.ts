@@ -41,41 +41,41 @@ function declaredIndex(el: HTMLElement, position: number): number {
 }
 
 /**
- * `<xh-tour>` —— Light-DOM 行为宿主：用户写 root/backdrop/spotlight/positioner/content/... 角色节点，
- * 元素跑 tour 机器并把 connect 产出打上去。浮层定位引擎在本元素里建好、经 refs 注入机器，
- * 锚点是每一步 target 选择器查出来的页面节点（由机器解析），被定位的浮层取 positioner。
+ * `<xh-tour>`：Light-DOM 行为宿主：作者写 root / backdrop / spotlight / positioner / content / ... 角色节点，
+ * 元素运行 tour 状态机并把 connect 产出接上。浮层定位引擎在本元素中创建、经 refs 注入状态机，
+ * 锚点是每一步 target 选择器查询到的页面节点（由状态机解析），被定位的浮层取 positioner。
  *
  * @customElement xh-tour
- * @attr {boolean} open - 受控开合；缺省该属性即非受控
+ * @attr {boolean} open - 受控开合；未提供该属性即非受控
  * @attr {boolean} default-open - 非受控初始为展开
- * @attr {number} value - 受控步序（0 起）；缺省该属性即非受控
+ * @attr {number} value - 受控步序（0 起）；未提供该属性即非受控
  * @attr {number} default-value - 非受控初始步序，默认 0
- * @attr {string} placement - 整份引导的首选放置位，默认 bottom；单步可用自己的 placement 覆盖
+ * @attr {string} placement - 整份引导的首选放置位，默认 bottom；单步可用自身的 placement 覆盖
  * @attr {number} offset - 气泡与目标的间距（px）
- * @attr {'ltr'|'rtl'} dir - 文字方向，翻转浮层在行内轴上 start 与 end 的落点；只在显式给了才写到定位层上
- * @attr {boolean} close-on-escape - Esc 放弃引导，默认 true；写 close-on-escape="false" 关掉
- * @attr {boolean} close-on-interact-outside - 层外交互关闭，默认 false；写 "true" 打开
- * @attr {boolean} show-backdrop - 画遮罩，默认 true；写 show-backdrop="false" 关掉
+ * @attr {'ltr'|'rtl'} dir - 文字方向，翻转浮层在行内轴上 start 与 end 的落点；只在显式提供时才写到定位层上
+ * @attr {boolean} close-on-escape - Esc 放弃引导，默认 true；写 close-on-escape="false" 关闭
+ * @attr {boolean} close-on-interact-outside - 层外交互关闭，默认 false；写 "true" 开启
+ * @attr {boolean} show-backdrop - 绘制遮罩，默认 true；写 show-backdrop="false" 关闭
  * @attr {number} spotlight-padding - 高亮框在目标四周留出的空白（px），默认 8
- * @attr {boolean} auto-scroll - 展开与换步时自动把目标滚进视口（nearest），默认 true；写 auto-scroll="false" 关掉
+ * @attr {boolean} auto-scroll - 展开与换步时自动把目标滚进视口（nearest），默认 true；写 auto-scroll="false" 关闭
  * @fires open-change - open 状态变化；detail 为 `{ open: boolean }`
  * @fires value-change - 步序变化；detail 为 `{ value: number }`
  * @fires complete - 末步再按下一步；detail 为 `{ step: number }`
  * @fires skip - 用户放弃（跳过按钮或 Escape）；detail 为 `{ step: number }`
- * @csspart root - 引导根节点（data-state/data-step 所在）
+ * @csspart root - 引导根节点（data-state / data-step 所在）
  * @csspart backdrop - 遮罩层（aria-hidden；showBackdrop 为假时带 hidden）
- * @csspart spotlight - 挖洞的高亮框，位置尺寸由内联 style 给出；居中步带 hidden
- * @csspart positioner - 浮层定位容器；锚定步坐标由引擎写成内联样式，居中步交给样式表摆
+ * @csspart spotlight - 挖空的高亮框，位置尺寸由内联 style 给出；居中步带 hidden
+ * @csspart positioner - 浮层定位容器；锚定步坐标由引擎写为内联样式，居中步交给样式表摆放
  * @csspart content - 引导浮层（role=dialog + aria-modal；焦点域与消解层的根节点），收起时带 hidden
- * @csspart title - 标题（aria-labelledby 目标）；作者没写内容时由元素填当前步的 title
- * @csspart description - 描述（aria-describedby 目标）；作者没写内容时填当前步的 description
- * @csspart progress-text - "第 m 步，共 n 步"（aria-live=polite）；作者没写内容时由元素填
+ * @csspart title - 标题（aria-labelledby 目标）；作者未写内容时由元素填入当前步的 title
+ * @csspart description - 描述（aria-describedby 目标）；作者未写内容时填入当前步的 description
+ * @csspart progress-text - 「第 m 步，共 n 步」（aria-live=polite）；作者未写内容时由元素填入
  * @csspart progress-indicator - 圆点组（aria-hidden，带 data-count）
- * @csspart progress-dot - 一步一个的圆点，可自带 index 属性；走过的带 data-complete，当前那颗带 data-current
+ * @csspart progress-dot - 一步一个的圆点，可自带 index 属性；已走过的带 data-complete，当前的带 data-current
  * @csspart prev-trigger - 上一步（首步时原生 disabled）
- * @csspart next-trigger - 下一步（末步带 data-last，语义是"完成"）
- * @csspart skip-trigger - 跳过（发 skip 事件后关闭）
- * @csspart close-trigger - 关闭（只关，不算放弃）
+ * @csspart next-trigger - 下一步（末步带 data-last，语义是完成）
+ * @csspart skip-trigger - 跳过（发出 skip 事件后关闭）
+ * @csspart close-trigger - 关闭（只关闭，不视为放弃）
  * @csspart arrow - 指向目标的箭头（aria-hidden；居中步带 hidden）
  */
 export class XhTourElement extends XhPortalHostElement {
@@ -119,7 +119,7 @@ export class XhTourElement extends XhPortalHostElement {
   declare autoScroll?: boolean
   /** 步骤清单。它是步序的上界，也是读屏"第 m 步，共 n 步"的分母。 */
   declare steps?: TourStep[]
-  /** 关闭按钮的无障碍名与进度文案；connect 每帧重写，作者写在节点上会被盖掉，只能从这里给。 */
+  /** 关闭按钮的无障碍名与进度文案；connect 每帧重写，作者写在节点上的值会被覆盖，只能从此处提供。 */
   declare translations?: Partial<TourTranslations>
 
   private readonly idGen: IdGenerator = createCounterIdGenerator()
@@ -197,7 +197,7 @@ export class XhTourElement extends XhPortalHostElement {
     return this.portal.roots
   }
 
-  /** 退场闸门建一次，并在机器挂载前把同一份 Presence 交给 Headless。 */
+  /** 退场闸门建立一次，并在状态机挂载前把同一份 Presence 交给 Headless。 */
   private ensureExit(): OverlayExit {
     this.ensureConfig()
     this.exit ??= createOverlayExit({
@@ -239,9 +239,9 @@ export class XhTourElement extends XhPortalHostElement {
   }
 
   /**
-   * 角色节点提前发现一次：default-open 时机器在 hostConnected 当场进入 open，
-   * 定位副作用同步取一次 positioner——而常规发现要等首次 updated，
-   * 那一刻 partMap 还空着，引擎挂不上，浮层会停在容器左上角。
+   * 角色节点提前发现一次：default-open 时状态机在 hostConnected 当场进入 open，
+   * 定位副作用同步取一次 positioner：而常规发现要等首次 updated，
+   * 此时 partMap 仍为空，引擎无法挂载，浮层会停在容器左上角。
    * 消解层与焦点域的 ref 是懒读的，不受影响，这里只为定位补上时机。
    */
   override connectedCallback(): void {
@@ -250,9 +250,9 @@ export class XhTourElement extends XhPortalHostElement {
   }
 
   /**
-   * 标题、描述与进度文案的文字只有步骤清单里才有，作者在标记里写不出来（每步都不一样），
-   * 由元素填。作者若自己写了内容（自定义渲染），首次见到时就定为归作者，之后一概不碰——
-   * 每帧回读分不清"作者写的"还是"上一帧自己写的"，一旦写过就再也让不回去。
+   * 标题、描述与进度文案的文字只有步骤清单中才有，作者在标记中无法写出（每步都不同），
+   * 由元素填入。作者若自己写了内容（自定义渲染），首次见到时就判定归作者，之后一概不修改：
+   * 每帧回读无法区分作者写的还是上一帧自己写的，一旦写过就无法交还。
    */
   private fillText(el: HTMLElement | null, text: string | undefined): void {
     if (!el || text === undefined)
@@ -271,7 +271,7 @@ export class XhTourElement extends XhPortalHostElement {
     this.wireWith(this.ctrl.service)
   }
 
-  /** 重量高亮框与浮层位置：目标节点被外部改动（换位、变尺寸）后调它校准。 */
+  /** 重新测量高亮框与浮层位置：目标节点被外部改动（换位、变尺寸）后调用以校准。 */
   remeasure(): void {
     this.ctrl?.service.send({ type: 'GEOMETRY.SYNC' })
   }

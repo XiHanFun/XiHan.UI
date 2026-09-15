@@ -25,11 +25,11 @@ export interface TourContext {
   spotlightRef: Ref<HTMLElement | null>
   positionerRef: Ref<HTMLElement | null>
   contentRef: Ref<HTMLElement | null>
-  /** 此刻该不该可见：收起那一帧押后到退场动画播完；遮罩、高亮框与定位层跟它一起收。 */
+  /** 当前是否应当可见：收起的一帧推迟到退场动画播完；遮罩、高亮框与定位层与它一起收起。 */
   visible: Ref<boolean>
-  /** 作者是否要画遮罩。 */
+  /** 作者是否要绘制遮罩。 */
   showBackdrop: () => boolean
-  /** 浮层搬到哪儿：全局配置的容器 > 运行时的浮层落点 > body。 */
+  /** 浮层迁移到的位置：全局配置的容器 > 运行时的浮层落点 > body。 */
   portalTarget: ComputedRef<string | Element>
 }
 
