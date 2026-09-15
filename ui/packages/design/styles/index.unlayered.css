@@ -8331,7 +8331,7 @@
   padding-block: var(--xh-popconfirm-py, var(--xh-_popconfirm-pad));
   padding-inline: var(--xh-popconfirm-px, var(--xh-_popconfirm-pad));
   border: var(--xh-stroke-thin) solid var(--xh-popconfirm-border, var(--xh-material-frosted-border));
-  border-radius: var(--xh-popconfirm-radius, var(--xh-shape-surface));
+  border-radius: var(--xh-popconfirm-radius, var(--xh-shape-overlay));
   /* 与 Popover 共用 M2 配方：透明 tint 在底层，内侧一像素顶光只表达材质厚度。 */
   background:
     linear-gradient(
@@ -8458,7 +8458,7 @@
     border-color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
     box-shadow var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
     color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
-    scale var(--xh-motion-duration-micro) var(--xh-motion-ease-enter-strong);
+    scale var(--xh-motion-duration-release) var(--xh-motion-ease-release);
 }
 
 /* 并排落在最后一行的右侧两格；取消在左、确认在右 */
@@ -8531,6 +8531,8 @@
   background-color: var(--xh-_tone-active, var(--xh-bg-brand-active));
   box-shadow: var(--xh-_popconfirm-confirm-highlight);
   scale: var(--xh-motion-scale-press);
+  transition-duration: var(--xh-motion-duration-press);
+  transition-timing-function: var(--xh-motion-ease-press);
 }
 
 /* 取消是次要出口，用淡底中性色，不参与语气 */
@@ -8564,6 +8566,8 @@
   background-color: var(--xh-bg-subtle-active);
   box-shadow: none;
   scale: var(--xh-motion-scale-press);
+  transition-duration: var(--xh-motion-duration-press);
+  transition-timing-function: var(--xh-motion-ease-press);
 }
 
 /* 减少动效：圆环停下并整圈换成虚线，静止的形状仍然读得出"还没好"。
