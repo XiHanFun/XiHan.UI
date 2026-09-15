@@ -46,38 +46,38 @@ function authorDisabled(el: HTMLElement): boolean {
 }
 
 /**
- * `<xh-navigation-menu>` —— Light-DOM 行为宿主：作者写
- * root/list/item/trigger/content/link/indicator/viewport 角色节点，
- * 元素跑 navigation-menu 机器并把 connect 产出打上去。
+ * `<xh-navigation-menu>`：Light-DOM 行为宿主：作者写
+ * root / list / item / trigger / content / link / indicator / viewport 角色节点，
+ * 元素运行 navigation-menu 状态机并把 connect 产出接上。
  *
- * 与 `<xh-menu>` 的分野：这里的条目是链接不是命令，因此不做 roving tabindex——
- * 每个 trigger 都留在 Tab 序列里，面板紧跟在 trigger 之后，Tab 才走得进去。
+ * 与 `<xh-menu>` 的差别：这里的条目是链接不是命令，因此不做 roving tabindex：
+ * 每个 trigger 都保留在 Tab 序列中，面板紧跟在 trigger 之后，Tab 才能进入。
  *
- * 标签由作者写，且必须写对：root 是 `<nav>`（地标语义只有标签给得了），list 是 `<ul>`，
- * item 与 indicator 都是 `<li>`（`<ul>` 里只放得下 `<li>`），trigger 是 `<button>`，
- * link 是 `<a>`。面板（content）写在同一个 item 里、紧跟 trigger 之后。
+ * 标签由作者编写，且必须正确：root 是 `<nav>`（地标语义只能由标签提供），list 是 `<ul>`，
+ * item 与 indicator 都是 `<li>`（`<ul>` 中只能放置 `<li>`），trigger 是 `<button>`，
+ * link 是 `<a>`。面板（content）写在同一个 item 中、紧跟 trigger 之后。
  *
  * @customElement xh-navigation-menu
- * @attr {string} value - 受控展开项；缺省该属性即非受控
+ * @attr {string} value - 受控展开项；未提供该属性即非受控
  * @attr {string} default-value - 非受控的初始展开项
  * @attr {'horizontal'|'vertical'} orientation - 方向键轴向，默认 horizontal
- * @attr {number} delay-duration - 悬停/聚焦到展开的等待毫秒，默认 200
- * @attr {number} skip-delay-duration - 收起之后的静默毫秒，默认 300；窗口内再碰 trigger 直接展开
- * @attr {'ltr'|'rtl'} dir - 文字方向，只影响水平轴上 ArrowLeft/ArrowRight 的前后语义
- * @attr {boolean} loop - 方向键走到尽头回绕，默认开启；写 loop="false" 关掉
- * @attr {boolean} disabled - 整套导航禁用：入口全转 aria-disabled，面板不再展开
+ * @attr {number} delay-duration - 悬停 / 聚焦到展开的等待毫秒，默认 200
+ * @attr {number} skip-delay-duration - 收起之后的静默毫秒，默认 300；窗口内再次触及 trigger 直接展开
+ * @attr {'ltr'|'rtl'} dir - 文字方向，只影响水平轴上 ArrowLeft / ArrowRight 的前后语义
+ * @attr {boolean} loop - 方向键到达末尾回绕，默认开启；写 loop="false" 关闭
+ * @attr {boolean} disabled - 整套导航禁用：入口全部为 aria-disabled，面板不再展开
  * @attr {'brand'|'neutral'|'success'|'warning'|'danger'|'info'} tone - 语气
  * @attr {'sm'|'md'|'lg'} size - 尺寸
  * @fires value-change - 展开项变化；detail 为 `{ value: string | null }`
- * @csspart root - nav 地标，承载 aria-label；指针离开/焦点离场/Escape 三条收起出口都在这儿
+ * @csspart root - nav 地标，承载 aria-label；指针离开 / 焦点离场 / Escape 三条收起出口都在这里
  * @csspart list - ul 容器，同时是指示条定位的参照系
  * @csspart item - li 条目，一项一个
  * @csspart trigger - 展开面板的按钮，须自带 value 属性标识身份；禁用写 aria-disabled="true"
- * @csspart trigger-indicator - 入口里的方向标记，须自带 value 属性与所在 trigger 配对；对读屏隐藏
+ * @csspart trigger-indicator - 入口中的方向标记，须自带 value 属性与所在 trigger 配对；对读屏隐藏
  * @csspart content - 面板，须自带 value 属性与 trigger 配对；收起时 hidden
- * @csspart link - 面板里的链接；指向当前页面的那条写 current 属性，得到 aria-current="page"
- * @csspart indicator - 指示条，须写成 `<li>` 并住在 list 里；对读屏隐藏，位置由机器量好写成内联样式
- * @csspart viewport - 可选的共享面板外壳，放在 root 里；都收起时 hidden
+ * @csspart link - 面板中的链接；指向当前页面的条目写 current 属性，得到 aria-current="page"
+ * @csspart indicator - 指示条，须写为 `<li>` 并位于 list 中；对读屏隐藏，位置由状态机测量后写为内联样式
+ * @csspart viewport - 可选的共享面板外壳，放在 root 中；全部收起时 hidden
  */
 export class XhNavigationMenuElement extends XhElement {
   /** 逐个 content 一份退场闸门：一个菜单一份，它们各开各的。 */

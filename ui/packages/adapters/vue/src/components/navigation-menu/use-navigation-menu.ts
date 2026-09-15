@@ -20,7 +20,7 @@ export interface NavigationMenuContext {
   service: Service<NavigationMenuSchema>
   /** nav 根节点：消解层的层内判定以它为界。 */
   rootRef: Ref<HTMLElement | null>
-  /** list 节点：trigger 集合的查询容器，同时是指示条量测的参照系。 */
+  /** list 节点：trigger 集合的查询容器，同时是指示条测量的参照系。 */
   listRef: Ref<HTMLElement | null>
   /** 与 Headless Layer 同 realm 的配置；子面板退场闸门复用它。 */
   config: RuntimeConfig | null

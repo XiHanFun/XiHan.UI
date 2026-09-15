@@ -20,9 +20,9 @@ export interface NavigationMenuContext {
   service: Service<NavigationMenuSchema>
   /** nav 根节点：消解层的层内判定以它为界。 */
   rootRef: RefObject<HTMLElement | null>
-  /** list 节点：trigger 集合的查询容器，同时是指示条量测的参照系。 */
+  /** list 节点：trigger 集合的查询容器，同时是指示条测量的参照系。 */
   listRef: RefObject<HTMLElement | null>
-  /** 运行时配置；服务端没有 DOM 时为 null。面板的退场闸门从它拿 reduce 档。 */
+  /** 运行时配置；服务端没有 DOM 时为 null。面板的退场闸门从它读取 reduce 档。 */
   config: RuntimeConfig | null
 }
 
