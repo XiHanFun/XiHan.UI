@@ -12,13 +12,13 @@ import { flushSync } from 'react-dom'
 import { createRoot } from 'react-dom/client'
 
 /**
- * 把命令式服务的宿主树挂上去，挂不起来也不连累调用方。
+ * 挂载命令式服务的宿主树，挂载失败也不影响调用方。
  *
- * 这几个服务是从路由守卫、请求拦截器这类地方懒建的——那些位置抛异常，
- * 后果不是「提示没弹出来」而是整次导航失败、整站白屏，而报错指向的是浮层部件，
- * 与真正的原因隔着十万八千里。一条轻提示、一根进度条都不该有这个权力。
+ * 这几个服务是从路由守卫、请求拦截器等位置懒建的：这些位置抛异常，
+ * 后果不是提示未弹出而是整次导航失败、整站白屏，而报错指向的是浮层部件，
+ * 与真正的原因相距甚远。一条轻提示、一根进度条都不应有这种权力。
  *
- * 挂不起来时发一条诊断并交回 null，由调用方整体惰化：状态一律不再改动。
+ * 挂载失败时发一条诊断并返回 null，由调用方整体惰化：状态一律不再改动。
  */
 export function mountServiceHost(holder: HTMLElement, node: ReactNode, service: string): Root | null {
   let root: Root | null = null

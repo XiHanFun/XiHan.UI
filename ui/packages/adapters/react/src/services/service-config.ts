@@ -8,13 +8,13 @@
 // 源可以是取值函数，运行期跟着应用切语言；没有响应式源的用句柄上的 setConfig 命令式推。
 import type { XhConfig } from '../config/config'
 
-/** 配置源：给常量或取值函数都行。 */
+/** 配置源：传常量或取值函数均可。 */
 export type XhConfigSource = XhConfig | (() => XhConfig) | undefined
 
 export interface ServiceConfigSource {
-  /** 宿主渲染时读一次。 */
+  /** 宿主渲染时读取一次。 */
   read: () => XhConfig
-  /** 换一份配置源，并通知宿主重渲。 */
+  /** 更换配置源，并通知宿主重渲。 */
   set: (next: XhConfigSource) => void
   subscribe: (fn: () => void) => () => void
 }

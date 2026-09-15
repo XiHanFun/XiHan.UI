@@ -24,7 +24,7 @@ import { XhConfigProvider } from '../config/config'
 import { spinArc } from './glyph'
 import { createServiceConfig } from './service-config'
 
-/** 文案可以给常量，也可以给取值函数——队列里的对话框会跨过一次切语言。 */
+/** 文案可以传常量，也可以传取值函数：队列中的对话框会跨过一次语言切换。 */
 export type ServiceText = string | (() => string)
 
 function textOf(value: ServiceText): string {
@@ -32,8 +32,8 @@ function textOf(value: ServiceText): string {
 }
 
 /**
- * 对话框正文。给串走 description 部件（读屏的 aria-describedby 由它接）；
- * 给渲染函数则整块摊在正文位，自己决定渲染什么。
+ * 对话框正文。传字符串时经 description 部件（读屏的 aria-describedby 由它承接）；
+ * 传渲染函数时整块展开在正文位，自行决定渲染内容。
  */
 export type DialogBody = string | (() => ReactNode)
 
@@ -45,9 +45,9 @@ export interface DialogActionError {
 export interface ConfirmOptions {
   title: string
   content?: DialogBody
-  /** 确认钮语气，默认 brand；危险操作传 danger。 */
+  /** 确认按钮语气，默认 brand；危险操作传 danger。 */
   tone?: Tone
-  /** 标题旁的类型徽记。不给则不出徽记。 */
+  /** 标题旁的类型徽记。未提供时不显示徽记。 */
   badge?: DialogServiceBadge
   okText?: ServiceText
   cancelText?: ServiceText
@@ -57,14 +57,14 @@ export interface ConfirmOptions {
   onActionError?: (error: DialogActionError) => void | Promise<void>
 }
 
-/** 单按钮告知框的入参：没有取消钮，徽记由预设档自己定，其余同 confirm。 */
+/** 单按钮告知框的入参：没有取消按钮，徽记由预设档决定，其余同 confirm。 */
 export type AlertOptions = Omit<ConfirmOptions, 'tone' | 'badge'>
 
-/** 取值型弹窗的入参。正文自己拼表单，确认时把那份值带回来。 */
+/** 取值型弹窗的入参。正文自行拼装表单，确认时把该份值带回。 */
 export interface PromptOptions<T extends object> extends Omit<ConfirmOptions, 'onOk' | 'content'> {
-  /** 每次打开建一份初值。 */
+  /** 每次打开建立一份初值。 */
   initialValue: T
-  /** 用当前那份值渲染表单主体；改值调 set，宿主跟着重渲。 */
+  /** 用当前的值渲染表单主体；改值调用 set，宿主随之重渲。 */
   body: (value: T, set: (patch: Partial<T>) => void) => ReactNode
   /** 落焦到哪个节点，CSS 选择器。 */
   initialFocus?: string
@@ -73,26 +73,26 @@ export interface PromptOptions<T extends object> extends Omit<ConfirmOptions, 'o
 }
 
 export interface DialogServiceOptions {
-  /** 确认钮文案，缺省 OK。 */
+  /** 确认按钮文案，默认 OK。 */
   okText?: ServiceText
-  /** 取消钮文案，缺省 Cancel。 */
+  /** 取消按钮文案，默认 Cancel。 */
   cancelText?: ServiceText
   /** 动作失败时的安全提示，与按钮文案采用相同取值方式。 */
   actionErrorText?: ServiceText
   /**
-   * 喂给对话框子树的全局配置（locale / translations / size / portalContainer）。
-   * 本服务自带宿主树，接不到组件树里的 XhConfigProvider，要让它跟应用同语言就从这里给；
-   * 传取值函数即可运行期跟着切语言，也可以之后用 setConfig 推。
+   * 提供给对话框子树的全局配置（locale / translations / size / portalContainer）。
+   * 本服务自带宿主树，无法接收组件树中的 XhConfigProvider，需要与应用同语言时从这里提供；
+   * 传取值函数即可在运行期跟随切换语言，也可以之后用 setConfig 推送。
    */
   config?: XhConfigSource
-  /** 宿主容器；不给就在 body 下新建一个。 */
+  /** 宿主容器；未提供时在 body 下新建一个。 */
   target?: HTMLElement
 }
 
 export interface DialogService {
   /** 当前请求的动作异常，重试、关闭和切换请求时清空。 */
   readonly actionError: DialogActionError | null
-  /** 确认走 onOk 后 resolve true；取消/Esc resolve false。 */
+  /** 确认经 onOk 后 resolve true；取消/Esc resolve false。 */
   confirm: (options: ConfirmOptions) => Promise<boolean>
   info: (options: AlertOptions) => Promise<void>
   success: (options: AlertOptions) => Promise<void>
@@ -100,7 +100,7 @@ export interface DialogService {
   error: (options: AlertOptions) => Promise<void>
   /** 确认后 resolve 一份值的普通对象快照；取消 / Esc / 卸载 resolve null。 */
   prompt: <T extends object>(options: PromptOptions<T>) => Promise<T | null>
-  /** 换一份全局配置源。 */
+  /** 更换全局配置源。 */
   setConfig: (next: XhConfigSource) => void
   /** 卸载宿主树并移除容器。 */
   dispose: () => void
@@ -113,12 +113,12 @@ interface Spec extends DialogServiceControllerSpec {
   okText: ServiceText
   cancelText: ServiceText
   showCancel: boolean
-  /** 标题旁的类型徽记（预设档用），confirm 不带。 */
+  /** 标题旁的类型徽记（预设档使用），confirm 不带。 */
   badge?: DialogServiceBadge
   /** 返回 false 阻止本次确认；异常由独立错误状态报告。 */
   onOk?: () => unknown
   onActionError?: (error: DialogActionError) => void | Promise<void>
-  /** 取值型弹窗的正文与那份值。 */
+  /** 取值型弹窗的正文与该份值。 */
   body?: (value: object, set: (patch: object) => void) => ReactNode
   value?: object
   initialFocus?: string
@@ -166,7 +166,7 @@ export function createDialogService(options: DialogServiceOptions = {}): DialogS
     controller.close(false)
   }
 
-  /** 取值型弹窗改值：就地写回那份值再推一次重渲。 */
+  /** 取值型弹窗改值：就地写回该份值再推送一次重渲。 */
   function patchValue(patch: object): void {
     const spec = controller.state.current?.spec
     if (!spec?.value)

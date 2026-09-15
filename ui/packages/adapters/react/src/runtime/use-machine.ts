@@ -42,20 +42,20 @@ function getServerVersion(): number {
 }
 
 export interface UseMachineOptions<T extends MachineSchema> {
-  /** 组件自己建的 scope；不给就由 createService 建一个。 */
+  /** 组件自建的 scope；未提供时由 createService 建立一个。 */
   scope?: Scope
   /**
-   * 机器建好、挂载之前跑一次，用来把 refs 交出去。
-   * 机器的挂载效应（浮层的定位与消隐层就在里面）会立刻读 refs，
-   * 放进组件自己的效应里就晚了——那一步排在 useMachine 的挂载效应之后。
-   * 返回值在卸载时调用；StrictMode 重建机器时会再跑一次。
+   * 状态机建立后、挂载之前运行一次，用于交出 refs。
+   * 状态机的挂载效应（浮层的定位与消隐层就在其中）会立即读取 refs，
+   * 放进组件自己的效应中就晚了：那一步排在 useMachine 的挂载效应之后。
+   * 返回值在卸载时调用；StrictMode 重建状态机时会再运行一次。
    */
   onCreate?: (service: Service<T>) => (() => void) | void
 }
 
 interface Instance<T extends MachineSchema> {
   runtime: ReactRuntime
-  /** 身份稳定的对外句柄，内部机器换了也不用换引用。 */
+  /** 身份稳定的对外句柄，内部状态机更换后也不必更换引用。 */
   facade: Service<T>
   mount: () => void
   unmount: () => void
@@ -129,7 +129,7 @@ function createInstance<T extends MachineSchema>(
   }
 }
 
-/** getProps 每次调用都要返回宿主此刻最新的 props。 */
+/** getProps 每次调用都要返回宿主当前最新的 props。 */
 export function useMachine<T extends MachineSchema>(
   machine: MachineConfig<T>,
   getProps: () => Partial<T['props']>,

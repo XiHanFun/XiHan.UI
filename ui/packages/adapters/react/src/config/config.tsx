@@ -23,11 +23,11 @@ export type XhVisualEnvironmentConfig = BindVisualRoot<VisualEnvironmentControll
 
 export interface XhConfig extends XhConfigBase {
   /**
-   * 浮层默认挂到哪个容器；返回 null 即挂 body。
-   * 应用级默认，实例上写了容器的以实例为准。
+   * 浮层默认挂载的容器；返回 null 即挂载到 body。
+   * 应用级默认，实例上写了容器时以实例为准。
    */
   portalContainer?: () => Element | null
-  /** 本 Provider 的七轴视觉环境；root 必须显式给出，不猜测 DOM 边界。 */
+  /** 本 Provider 的七轴视觉环境；root 必须显式给出，不推测 DOM 边界。 */
   visualEnvironment?: XhVisualEnvironmentConfig
 }
 
@@ -42,8 +42,8 @@ const XhConfigContext = createContext<XhConfigContextValue | undefined>(undefine
 /**
  * 本层与外层逐键合并。
  *
- * 键缺席与写成 undefined 都算「这一层没说」，一律回落外层——子树只想改文案时，
- * 不该把外层的 locale 与 portalContainer 一并抹掉。
+ * 键缺席与写为 undefined 都视为本层未声明，一律回落外层：子树只需要改文案时，
+ * 不应把外层的 locale 与 portalContainer 一并清除。
  */
 export function mergeXhConfig(base: XhConfig | undefined, over: XhConfig): XhConfig {
   return mergeBase(base, over)
@@ -91,17 +91,17 @@ export function XhConfigProvider(props: XhConfigProviderProps): ReactNode {
 
 const EMPTY: XhConfig = {}
 
-/** 读当前作用域的全局配置（已与外层合并）；没套 Provider 时得到空对象。 */
+/** 读取当前作用域的全局配置（已与外层合并）；未包裹 Provider 时得到空对象。 */
 export function useXhConfig(): XhConfig {
   return useContext(XhConfigContext)?.config ?? EMPTY
 }
 
 /**
- * 把全局配置垫进组件 props：translations 按键合并（实例键胜出），
- * locale 与 size 在实例没给时回落全局。没套 Provider 时原样返回，零开销。
+ * 把全局配置合入组件 props：translations 按键合并（实例键优先），
+ * locale 与 size 在实例未提供时回落全局。未包裹 Provider 时原样返回，零开销。
  *
- * 跑机器的组件不必逐个调它——useMachine 那一处已经把 locale 与 size 并进去了；
- * 这个函数管两件那里管不到的事：按组件名分桶的 translations，以及没有机器的那十几个组件。
+ * 运行状态机的组件不必逐个调用它：useMachine 已经把 locale 与 size 合并进去；
+ * 本函数负责两件那里无法覆盖的事：按组件名分桶的 translations，以及没有状态机的组件。
  */
 export function withXhConfig<T extends object>(component: keyof XhTranslationOverrides, props: T): T {
   const config = useContext(XhConfigContext)

@@ -11,9 +11,9 @@ import { createFormResetBridge, declaresFormReset, FORM_RESET_EVENT } from '@xih
 import { useEffect } from 'react'
 
 /**
- * 认表单重置的机器，挂一座桥把宿主表单的 reset 翻成机器事件。
+ * 识别表单重置的状态机，架设一座桥把宿主表单的 reset 转换为状态机事件。
  *
- * 锚点传 getter 不传节点：重渲会换掉它。
+ * 锚点传 getter 而不是节点：重渲会替换它。
  */
 export function useFormReset<T extends MachineSchema>(
   service: Service<T>,

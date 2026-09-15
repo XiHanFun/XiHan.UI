@@ -11,10 +11,10 @@ import { Children, cloneElement, Fragment, isValidElement } from 'react'
 import { mergePartProps, mergeReactProps } from './merge-props'
 
 /**
- * asChild：部件不再渲染自己的包裹元素，把该挂的属性合到作者给的那个子节点上。
+ * asChild：部件不再渲染自己的包裹元素，把应挂载的属性合并到作者提供的子节点上。
  *
- * 触发器类部件默认渲染 <button>，作者想用自己的按钮当触发器时，只能往 <button> 里再套一个
- * <button>——那是非法嵌套，浏览器会拆开它，事件与焦点都不对。asChild 是唯一的正解。
+ * 触发器类部件默认渲染 <button>，作者需要用自己的按钮作为触发器时，只能在 <button> 中再嵌套一个
+ * <button>：那是非法嵌套，浏览器会拆开它，事件与焦点都不正确。asChild 是唯一的正确方式。
  */
 
 /** 只忽略空白与空占位；片段展开后不得夹带会被丢弃的可见文本。 */
@@ -34,13 +34,13 @@ function attributable(children: ReactNode, scope: string): ReactElement[] {
   return out
 }
 
-/** 子节点已带角色标记：组件节点的根由它自己渲染，元素节点看有没有写 data-scope。 */
+/** 子节点已带角色标记：组件节点的根由它自己渲染，元素节点检查是否写了 data-scope。 */
 export function carriesOwnAnatomy(node: ReactElement): boolean {
   return typeof node.type !== 'string' || (node.props as Record<string, unknown>)['data-scope'] != null
 }
 
 /**
- * 把部件属性合到作者的子节点上。
+ * 把部件属性合并到作者的子节点上。
  *
  * @param children 作者给的内容
  * @param props 部件该挂的属性（含 ref）
@@ -83,13 +83,13 @@ export function mergeIntoChild(
 }
 
 export interface AsChildProps {
-  /** 借用作者的子节点当本部件，不再渲染自己的包裹元素；子节点须恰好一个。 */
+  /** 借用作者的子节点作为本部件，不再渲染自己的包裹元素；子节点须恰好一个。 */
   asChild?: boolean
 }
 
 /**
- * 部件的渲染出口：开启 asChild 后必须提供合法子节点，否则抛错；未开启时用默认元素。
- * 合并顺序与不开 asChild 时一致，两条路产出的属性相同。
+ * 部件的渲染出口：开启 asChild 后必须提供合法子节点，否则抛错；未开启时使用默认元素。
+ * 合并顺序与未开启 asChild 时一致，两条路径产出的属性相同。
  */
 export function renderAsChild(
   asChild: boolean | undefined,

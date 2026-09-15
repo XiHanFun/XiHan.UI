@@ -32,7 +32,7 @@ import { XhConfigProvider } from '../config/config'
 import { mountServiceHost } from './mount-host'
 import { createServiceConfig } from './service-config'
 
-/** 文案可以给常量，也可以给取值函数——摞里的卡片会跨过一次切语言。 */
+/** 文案可以传常量，也可以传取值函数：堆叠中的卡片会跨过一次语言切换。 */
 export type NotificationTranslationsSource
   = | Partial<NotificationTranslations>
     | (() => Partial<NotificationTranslations>)
@@ -40,24 +40,24 @@ export type NotificationTranslationsSource
 export interface NotificationServiceOptions {
   /** 默认落位，默认 bottom-end；单条可用 options.placement 覆盖。 */
   placement?: NotificationPlacement
-  /** 每个位置最多同时留几条，超出先挤低优先级的、同级里挤最旧的。默认 5；给 Infinity 即不限。 */
+  /** 每个位置最多同时保留几条，超出时先移除低优先级的、同级中移除最旧的。默认 5；传 Infinity 即不限。 */
   max?: number
-  /** 重复怎么算，默认 'id'；给 'content' 则同一句话合并成一条并计数。 */
+  /** 重复的判定方式，默认 'id'；传 'content' 则同一内容合并为一条并计数。 */
   dedupe?: NotificationDedupe
-  /** 同一摞内的间距（px），默认 16。 */
+  /** 同一堆叠内的间距（px），默认 16。 */
   gap?: number
   duration?: number
   removeDelay?: number
   pauseOnPageIdle?: boolean
-  /** 通知的文案：那一摞的读屏名与卡片上那颗叉的读屏名，一个桶装完。 */
+  /** 通知的文案：堆叠区的读屏名与卡片上关闭按钮的读屏名，统一在一个桶中。 */
   translations?: NotificationTranslationsSource
   /**
-   * 喂给通知子树的全局配置（locale / translations / size / portalContainer）。
-   * 本服务自带宿主树，接不到组件树里的 XhConfigProvider，要让它跟应用同语言就从这里给；
-   * 传取值函数即可运行期跟着切语言，也可以之后用 setConfig 推。
+   * 提供给通知子树的全局配置（locale / translations / size / portalContainer）。
+   * 本服务自带宿主树，无法接收组件树中的 XhConfigProvider，需要与应用同语言时从这里提供；
+   * 传取值函数即可在运行期跟随切换语言，也可以之后用 setConfig 推送。
    */
   config?: XhConfigSource
-  /** 宿主容器；不给就在 body 下新建一个。 */
+  /** 宿主容器；未提供时在 body 下新建一个。 */
   target?: HTMLElement
 }
 
@@ -69,7 +69,7 @@ export interface NotificationCreateOptions extends NotificationOptions {
 export type NotificationMessageOptions = Omit<NotificationCreateOptions, 'tone' | 'loading' | 'title'>
 
 export interface NotificationService {
-  /** 入队并返回 id；同 id 已存在则就地改写，合并掉的返回被并进的那一条。 */
+  /** 入队并返回 id；同 id 已存在则就地改写，被合并的返回被并入的那一条。 */
   create: (options?: NotificationCreateOptions) => string
   update: (id: string, options: Partial<NotificationOptions>) => void
   dismiss: (id: string) => void
@@ -78,10 +78,10 @@ export interface NotificationService {
   success: (title: string, options?: NotificationMessageOptions) => string
   warning: (title: string, options?: NotificationMessageOptions) => string
   danger: (title: string, options?: NotificationMessageOptions) => string
-  /** 把当下这些卡片的计时全按住，'service' 这一路与指针、焦点并存。 */
+  /** 暂停当前这些卡片的计时，'service' 这一路与指针、焦点并存。 */
   pauseAll: () => void
   resumeAll: () => void
-  /** 换一份全局配置源。 */
+  /** 更换全局配置源。 */
   setConfig: (next: XhConfigSource) => void
   /** 卸载宿主树并移除容器。 */
   dispose: () => void
@@ -198,7 +198,7 @@ export function createNotificationService(options: NotificationServiceOptions = 
     controller.attach(null)
   const stopConfig = configSource.subscribe(notify)
 
-  /** 入队一条；回调另存一张表，队列记录里只留文案。 */
+  /** 入队一条；回调另存一张表，队列记录中只保留文案。 */
   const create = (opts: NotificationCreateOptions = {}): string => {
     const { onAction, ...record } = opts
     return controller.create(record, onAction)

@@ -43,11 +43,11 @@ export interface UseBackgroundOptions {
 }
 
 export interface UseBackgroundReturn {
-  /** 当前画面实例，读 `.current`；没有元素挂着时是 null。 */
+  /** 当前画面实例，读取 `.current`；没有元素挂载时为 null。 */
   readonly surface: RefObject<BackgroundSurface | null>
   /**
-   * 挂载点。直接当 ref 用：`<div ref={visual.ref} />`，
-   * React 会在元素进出 DOM 时把元素或 null 交进来。
+   * 挂载点。直接作为 ref 使用：`<div ref={visual.ref} />`，
+   * React 会在元素进出 DOM 时把元素或 null 传入。
    */
   ref: (element: Element | null) => void
   setEffect: (effect: BackgroundEffect | string) => void
@@ -59,11 +59,11 @@ export interface UseBackgroundReturn {
 }
 
 /**
- * 建一张受 React 生命周期管理的视觉画面。
+ * 建立一张受 React 生命周期管理的视觉画面。
  *
- * 用**回调式 ref** 而不是 useEffect 里读一个 ref 对象：元素由 React 直接交到手上，
- * 元素换了、组件卸载了都会再调一遍，因此不需要额外的清理效应——
- * 加一个 `[]` 依赖的清理效应反而会在开发模式的重复挂载里把 ref 建好的画面销毁掉再也不建回来。
+ * 使用回调式 ref 而不是在 useEffect 中读取一个 ref 对象：元素由 React 直接交付，
+ * 元素更换、组件卸载时都会再次调用，因此不需要额外的清理效应：
+ * 添加一个 `[]` 依赖的清理效应反而会在开发模式的重复挂载中把 ref 建立的画面销毁且不再重建。
  */
 export function useBackground(options: UseBackgroundOptions): UseBackgroundReturn {
   // 选项每渲染都可能是新对象，建画面时读最近这一份
@@ -112,19 +112,19 @@ export interface XhBackgroundProps extends ComponentPropsWithRef<'div'> {
   effect: BackgroundEffect | string
   params?: Record<string, ParamValue>
   quality?: BackgroundQuality
-  /** 数据驱动点云。效果的粒子通道是 cloud 模式时才有意义。 */
+  /** 数据驱动点云。效果的粒子通道为 cloud 模式时才有意义。 */
   cloud?: PointCloud | null
-  /** 换点云时的形变时长（秒）。 */
+  /** 更换点云时的形变时长（秒）。 */
   morphDuration?: number
   pointer?: boolean
   autoplay?: boolean
   respectReducedMotion?: boolean
   pauseOffscreen?: boolean
-  /** 渲染成什么标签。 */
+  /** 渲染为哪个标签。 */
   as?: ElementType
 }
 
-/** 画面建好那一刻已经吃过的那份取值，用来算出后续每次提交要推什么。 */
+/** 画面建立时已应用的取值，用于计算后续每次提交要推送的内容。 */
 interface AppliedState {
   surface: BackgroundSurface
   effect: BackgroundEffect | string
@@ -134,8 +134,8 @@ interface AppliedState {
 }
 
 /**
- * `<XhBackground>` —— 独立视觉组件。children 浮在效果之上；
- * 画布铺满根元素且 pointer-events: none，不会挡住 children 里的交互。
+ * `<XhBackground>`：独立视觉组件。children 浮在效果之上；
+ * 画布铺满根元素且 pointer-events: none，不会遮挡 children 中的交互。
  */
 export function XhBackground({
   effect,
