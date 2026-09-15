@@ -107,10 +107,10 @@ size 换字号、行高与行号槽的宽度，三档并列对照
 | --- | --- | --- | --- |
 | `model` | `DiffModel` |  | 差异模型，唯一入口。补丁与新旧两版文本都先归一到它。 |
 | `view` | `DiffViewMode` |  |  |
-| `contextLines` | `number` |  | 变更两侧各露几行上下文，其余折起来；不给或非有限值即不折叠。 |
-| `expandedValue` | `readonly string[]` |  | 展开的折叠格 id 集合，给了即受控。 |
+| `contextLines` | `number` |  | 变更两侧各显示的上下文行数，其余折叠；未提供或非有限值时不折叠。 |
+| `expandedValue` | `readonly string[]` |  | 展开的折叠格 id 集合，提供即受控。 |
 | `defaultExpandedValue` | `readonly string[]` |  |  |
-| `wrap` | `boolean` |  | 长行原地折行，不再横向滚动；默认关。 |
+| `wrap` | `boolean` |  | 长行原地折行，不再横向滚动；默认关闭。 |
 | `size` | `Size` |  |  |
 | `translations` | `Partial<DiffViewTranslations>` |  |  |
 | `onExpandedValueChange` | `(details: DiffViewExpandedValueChangeDetails) => void` |  |  |
@@ -150,13 +150,13 @@ size 换字号、行高与行号槽的宽度，三档并列对照
 | 成员 | 类型 | 说明 |
 | --- | --- | --- |
 | `view` | `DiffViewMode` |  |
-| `rows` | `readonly DiffViewRow[]` | 折叠后的可见行序，含折起来的那些格。 |
+| `rows` | `readonly DiffViewRow[]` | 折叠后的可见行序，含折叠的格。 |
 | `expandedValue` | `string[]` |  |
-| `stats` | `{ added: number, removed: number }` | 增删各多少行。 |
+| `stats` | `{ added: number, removed: number }` | 增删的行数。 |
 | `truncated` | `boolean` | 模型被上限截断过。 |
-| `truncatedLines` | `number` | 被上限砍掉、压根没进这份模型的源文本行数；没截断就是 0。 |
-| `truncationText` | `string` | 截断提示条的文字，已把行数代进去；没截断时是空串。 |
-| `isEmpty` | `boolean` | 一条变更都没有。 |
+| `truncatedLines` | `number` | 被上限截断、未进入模型的源文本行数；未截断时为 0。 |
+| `truncationText` | `string` | 截断提示条的文字，已代入行数；未截断时为空串。 |
+| `isEmpty` | `boolean` | 没有任何变更。 |
 | `setExpandedValue` | `(next: string[]) => void` |  |
 | `toggleGap` | `(id: string) => void` |  |
 | `getRootProps` | `() => T['element']` |  |
@@ -174,12 +174,12 @@ size 换字号、行高与行号槽的宽度，三档并列对照
 | `getGapCellProps` | `() => T['element']` |  |
 | `getGapTriggerProps` | `(props: DiffViewGapProps) => T['button']` |  |
 | `getEmptyProps` | `() => T['element']` |  |
-| `getTruncationProps` | `() => T['element']` | 截断提示条；没截断时带 hidden。 |
-| `changeLabel` | `(change: DiffChange) => string` | 变更类型对应的读屏文字，写进视觉隐藏的那一格。 |
-| `cellText` | `(props: DiffViewCellProps) => string \| undefined` | 这一行在这一侧的文本；split 下空侧为 undefined。 |
-| `cellNumber` | `(props: DiffViewCellProps) => number \| undefined` | 这一行在这一侧的行号；没有就是 undefined。 |
-| `cellTokens` | `(props: DiffViewCellProps) => readonly CodeToken[]` | 这一行在这一侧的着色片段；不着色或空侧时为空数组。 |
-| `cellSegments` | `(props: DiffViewCellProps) => readonly DiffViewSegment[]` | 这一行在这一侧的词级片段，着色记号已按片段边界切好。 没算词级差异时为空数组，此时照 cellTokens / cellText 铺。 |
+| `getTruncationProps` | `() => T['element']` | 截断提示条；未截断时带 hidden。 |
+| `changeLabel` | `(change: DiffChange) => string` | 变更类型对应的读屏文字，写入视觉隐藏的格。 |
+| `cellText` | `(props: DiffViewCellProps) => string \| undefined` | 该行在该侧的文本；split 下空侧为 undefined。 |
+| `cellNumber` | `(props: DiffViewCellProps) => number \| undefined` | 该行在该侧的行号；不存在时为 undefined。 |
+| `cellTokens` | `(props: DiffViewCellProps) => readonly CodeToken[]` | 该行在该侧的着色片段；不着色或空侧时为空数组。 |
+| `cellSegments` | `(props: DiffViewCellProps) => readonly DiffViewSegment[]` | 该行在该侧的词级片段，着色记号已按片段边界切分。 未计算词级差异时为空数组，此时按 cellTokens / cellText 铺设。 |
 
 ## 无障碍
 

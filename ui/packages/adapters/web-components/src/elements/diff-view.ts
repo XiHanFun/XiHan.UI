@@ -25,34 +25,34 @@ function segmentKey(line: DiffLine): string {
 }
 
 /**
- * `<xh-diff-view>` —— Light-DOM 行为宿主：作者写 root/viewport/body 三个角色节点，
+ * `<xh-diff-view>`：Light-DOM 行为宿主：作者写 root / viewport / body 三个角色节点，
  * 行由本元素按模型铺进 body。
  *
- * 行是模型算出来的派生结构，作者写不出 N 行，故 body 部件的内容由本元素接管；
+ * 行是模型计算得出的派生结构，作者无法编写 N 行，因此 body 部件的内容由本元素接管；
  * 其余各处一律不替作者生成节点。
  *
  * @customElement xh-diff-view
  * @attr {string} view - unified（默认）或 split
- * @attr {number} context-lines - 变更两侧各露几行上下文，其余折起来
- * @attr {boolean} wrap - 长行原地折行，默认关（长行横向滚动）
+ * @attr {number} context-lines - 变更两侧各显示的上下文行数，其余折叠
+ * @attr {boolean} wrap - 长行原地折行，默认关闭（长行横向滚动）
  * @attr {string} size - 尺寸：sm / md / lg
  * @fires expanded-value-change - 展开集合变化；detail 为 `{ value: string[] }`
  * @csspart root - 外壳，承载 data-view / data-wrap / data-truncated
- * @csspart header - 文件名与增删统计那一行
+ * @csspart header - 文件名与增删统计所在的行
  * @csspart summary - 增删统计位，写 data-change="added" / "removed"，数字由本元素填
  * @csspart viewport - 滚动容器，唯一的 Tab 停靠点
  * @csspart body - role=table，承载 aria-rowcount / aria-colcount
  * @csspart row - 一行，role=row + aria-rowindex + data-change
- * @csspart line-number - 行号槽，不给 role、对读屏隐藏，皮肤用 attr() 画
+ * @csspart line-number - 行号槽，不提供 role、对读屏隐藏，皮肤用 attr() 绘制
  * @csspart line-content - 唯一暴露的内容列，role=cell + aria-colindex
- * @csspart change-label - 变更类型的读屏文字，住在内容格里并视觉隐藏
+ * @csspart change-label - 变更类型的读屏文字，位于内容格中并视觉隐藏
  * @csspart inline-change - 词级片段，变更处承载 data-change
  * @csspart token - 着色片段，承载 data-kind
- * @csspart gap - 折起来的上下文那一行，role=row
- * @csspart gap-cell - 裹住展开按钮的那一格，role=cell
+ * @csspart gap - 折叠的上下文行，role=row
+ * @csspart gap-cell - 包裹展开按钮的格，role=cell
  * @csspart gap-trigger - 展开按钮，承载 aria-expanded
- * @csspart empty - 一条变更都没有时的占位
- * @csspart truncation - 截断提示条，文字由本元素填；没截断时带 hidden
+ * @csspart empty - 没有任何变更时的占位
+ * @csspart truncation - 截断提示条，文字由本元素填入；未截断时带 hidden
  */
 export class XhDiffViewElement extends XhElement {
   static override partContract = { anatomy: diffViewAnatomy, meta: diffViewMeta }
@@ -74,7 +74,7 @@ export class XhDiffViewElement extends XhElement {
   declare contextLines?: number
   declare wrap?: boolean
   declare size?: Size
-  /** 差异模型，由 computeTextDiff 或 parseUnifiedPatch 算出来。 */
+  /** 差异模型，由 computeTextDiff 或 parseUnifiedPatch 计算得出。 */
   declare model?: DiffModel
   declare expandedValue?: readonly string[]
   declare defaultExpandedValue?: readonly string[]
@@ -131,7 +131,7 @@ export class XhDiffViewElement extends XhElement {
 
   /**
    * 把行序铺进 body。
-   * 内容没变就不重铺——每次更新都重建节点会把用户正在拖的选区弄没。
+   * 内容未变时不重铺：每次更新都重建节点会丢失用户正在拖动的选区。
    */
   #paint(api: DiffViewApi): void {
     const host = this.getPart('body')

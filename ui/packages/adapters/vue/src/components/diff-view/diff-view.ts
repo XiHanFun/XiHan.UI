@@ -73,7 +73,7 @@ export const XhDiffViewHeader = defineComponent({
 /**
  * 头部右侧的增删统计位，增删各放一个。
  *
- * 数字取自模型，默认渲染成 `+N` / `−N`；给了插槽就由插槽自己排版。
+ * 数字取自模型，默认渲染为 `+N` / `−N`；提供插槽时由插槽自行排版。
  */
 export const XhDiffViewSummary = defineComponent({
   name: 'XhDiffViewSummary',
@@ -148,7 +148,7 @@ export const XhDiffViewBody = defineComponent({
   },
 })
 
-/** 着色记号逐个铺成 span。 */
+/** 着色记号逐个铺为 span。 */
 function renderTokens(api: DiffViewApi, tokens: readonly CodeToken[]): VNode[] {
   return tokens.map((token, i) => h(
     'span',
@@ -157,7 +157,7 @@ function renderTokens(api: DiffViewApi, tokens: readonly CodeToken[]): VNode[] {
   ))
 }
 
-/** 一格的正文：算了词级差异就先按片段裹一层，否则整行按记号铺；都没有就一个文本节点。 */
+/** 一格的正文：计算了词级差异时先按片段包一层，否则整行按记号铺设；都没有时为一个文本节点。 */
 function renderCell(api: DiffViewApi, rowIndex: number, side: DiffSide): VNode[] {
   const segments = api.cellSegments({ rowIndex, side })
   if (segments.length > 0) {
@@ -184,10 +184,10 @@ export const XhDiffViewEmpty = defineComponent({
 })
 
 /**
- * 截断提示条：这份差异被上限砍掉过多少行。
+ * 截断提示条：这份差异被上限截去了多少行。
  *
- * 文字默认由组件自己填——留给作者填的话，作者不填就又变回一份看着完整的残缺差异，
- * 而这正是这条提示要挡的事。给了插槽就由插槽自己排版，行数一并交出去。
+ * 文字默认由组件自行填入：留给作者填写时，作者不填就又变回一份看似完整的残缺差异，
+ * 而这正是该提示要防止的情况。提供插槽时由插槽自行排版，行数一并交出。
  */
 export const XhDiffViewTruncation = defineComponent({
   name: 'XhDiffViewTruncation',

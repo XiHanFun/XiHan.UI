@@ -18431,7 +18431,7 @@
       "declarations": [
         {
           "kind": "class",
-          "description": "`<xh-diff-view>` —— Light-DOM 行为宿主：作者写 root/viewport/body 三个角色节点，\n行由本元素按模型铺进 body。\n\n行是模型算出来的派生结构，作者写不出 N 行，故 body 部件的内容由本元素接管；\n其余各处一律不替作者生成节点。",
+          "description": "`<xh-diff-view>`：Light-DOM 行为宿主：作者写 root / viewport / body 三个角色节点，\n行由本元素按模型铺进 body。\n\n行是模型计算得出的派生结构，作者无法编写 N 行，因此 body 部件的内容由本元素接管；\n其余各处一律不替作者生成节点。",
           "name": "XhDiffViewElement",
           "cssParts": [
             {
@@ -18439,7 +18439,7 @@
               "name": "root"
             },
             {
-              "description": "文件名与增删统计那一行",
+              "description": "文件名与增删统计所在的行",
               "name": "header"
             },
             {
@@ -18459,7 +18459,7 @@
               "name": "row"
             },
             {
-              "description": "行号槽，不给 role、对读屏隐藏，皮肤用 attr() 画",
+              "description": "行号槽，不提供 role、对读屏隐藏，皮肤用 attr() 绘制",
               "name": "line-number"
             },
             {
@@ -18467,7 +18467,7 @@
               "name": "line-content"
             },
             {
-              "description": "变更类型的读屏文字，住在内容格里并视觉隐藏",
+              "description": "变更类型的读屏文字，位于内容格中并视觉隐藏",
               "name": "change-label"
             },
             {
@@ -18479,11 +18479,11 @@
               "name": "token"
             },
             {
-              "description": "折起来的上下文那一行，role=row",
+              "description": "折叠的上下文行，role=row",
               "name": "gap"
             },
             {
-              "description": "裹住展开按钮的那一格，role=cell",
+              "description": "包裹展开按钮的格，role=cell",
               "name": "gap-cell"
             },
             {
@@ -18491,11 +18491,11 @@
               "name": "gap-trigger"
             },
             {
-              "description": "一条变更都没有时的占位",
+              "description": "没有任何变更时的占位",
               "name": "empty"
             },
             {
-              "description": "截断提示条，文字由本元素填；没截断时带 hidden",
+              "description": "截断提示条，文字由本元素填入；未截断时带 hidden",
               "name": "truncation"
             }
           ],
@@ -18552,7 +18552,7 @@
               "type": {
                 "text": "DiffModel | undefined"
               },
-              "description": "差异模型，由 computeTextDiff 或 parseUnifiedPatch 算出来。"
+              "description": "差异模型，由 computeTextDiff 或 parseUnifiedPatch 计算得出。"
             },
             {
               "kind": "field",
@@ -18627,7 +18627,7 @@
                   }
                 }
               ],
-              "description": "把行序铺进 body。\n内容没变就不重铺——每次更新都重建节点会把用户正在拖的选区弄没。"
+              "description": "把行序铺进 body。\n内容未变时不重铺：每次更新都重建节点会丢失用户正在拖动的选区。"
             },
             {
               "kind": "method",
@@ -18683,7 +18683,7 @@
               "type": {
                 "text": "number | undefined"
               },
-              "description": "变更两侧各露几行上下文，其余折起来",
+              "description": "变更两侧各显示的上下文行数，其余折叠",
               "name": "context-lines",
               "fieldName": "contextLines"
             },
@@ -18691,7 +18691,7 @@
               "type": {
                 "text": "boolean | undefined"
               },
-              "description": "长行原地折行，默认关（长行横向滚动）",
+              "description": "长行原地折行，默认关闭（长行横向滚动）",
               "name": "wrap",
               "fieldName": "wrap"
             },
