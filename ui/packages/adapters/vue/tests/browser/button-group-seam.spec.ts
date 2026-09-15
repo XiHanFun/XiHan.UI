@@ -71,6 +71,17 @@ afterEach(async () => {
   await userEvent.hover(document.querySelector<HTMLElement>('[data-test-park-pointer]')!)
 })
 
+
+/** 语义形状令牌在该元素上解到的像素值。 */
+function shapePx(element: HTMLElement, token: string): number {
+  const probe = document.createElement('div')
+  probe.style.borderTopLeftRadius = `var(${token})`
+  element.append(probe)
+  const value = Number.parseFloat(getComputedStyle(probe).borderTopLeftRadius)
+  probe.remove()
+  return value
+}
+
 describe('按钮组共边按压', () => {
   it.each([
     { orientation: 'horizontal' as const, dir: 'ltr' as const },
@@ -121,7 +132,7 @@ describe('按钮组轮廓', () => {
     expect(Number.parseFloat(separatorStyle.opacity)).toBeGreaterThan(0)
   })
 
-  it('胶囊端点与半高分隔线保持连续轮廓', () => {
+  it('control 圆角端点与半高分隔线保持连续轮廓', () => {
     mount(() => h(XhButtonGroup, { variant: 'solid' }, () => [
       h(XhButton, null, () => '日'),
       h(XhButton, null, () => '周'),
@@ -133,9 +144,12 @@ describe('按钮组轮廓', () => {
     const separators = [...root.querySelectorAll<HTMLElement>(`[data-xh-button-group-separator]`)]
     const rootHeight = root.getBoundingClientRect().height
 
-    expect(Number.parseFloat(getComputedStyle(first!).borderStartStartRadius)).toBeGreaterThanOrEqual(rootHeight / 2)
+    const control = shapePx(root, '--xh-shape-control')
+    expect(control).toBeGreaterThan(0)
+    expect(control).toBeLessThan(rootHeight / 2)
+    expect(Number.parseFloat(getComputedStyle(first!).borderStartStartRadius)).toBe(control)
     expect(getComputedStyle(middle!).borderRadius).toBe('0px')
-    expect(Number.parseFloat(getComputedStyle(last!).borderEndEndRadius)).toBeGreaterThanOrEqual(rootHeight / 2)
+    expect(Number.parseFloat(getComputedStyle(last!).borderEndEndRadius)).toBe(control)
     expect(first!.getBoundingClientRect().right).toBeCloseTo(middle!.getBoundingClientRect().left, 4)
     expect(middle!.getBoundingClientRect().right).toBeCloseTo(last!.getBoundingClientRect().left, 4)
     for (const separator of separators) {
