@@ -48,7 +48,7 @@ type DateRangePickerProps = DateRangePickerSchema['props']
 function noop(): void {}
 
 /**
- * 部件属于并排的第几张面板：自己写了就按自己写的，没写就跟着所在的日历走。
+ * 部件属于并排的第几张面板：自己写了即按自己写的，未写时跟随所在的日历。
  * 兼收字符串以支持写 index="1"。
  */
 function usePanelIndex(index: number | string | undefined): number {
@@ -83,9 +83,9 @@ export type DateRangePickerRootSlotProps
     | 'canGoNext'
   >
   & {
-    /** 起点那组段位。 */
+    /** 起点组段位。 */
     segments: DateFieldSegmentState[]
-    /** 终点那组段位。 */
+    /** 终点组段位。 */
     endSegments: DateFieldSegmentState[]
   }
 
@@ -94,7 +94,7 @@ export interface DateRangePickerSegmentSlotProps {
   segment: DateFieldSegmentState | undefined
 }
 
-/** 快捷选项列函数式 children 的载荷：逐条的投影，作者据此自己铺条目。 */
+/** 快捷选项列函数式 children 的载荷：逐条的投影，作者据此自行铺设条目。 */
 export interface DateRangePickerPresetsSlotProps {
   presets: readonly DateRangePickerPresetState[]
 }
@@ -109,29 +109,29 @@ export interface XhDateRangePickerRootProps extends Omit<ComponentPropsWithRef<'
   max?: string
   locale?: string
   timeZone?: string
-  /** 选择粒度；两组输入行铺哪几段也跟着它走。 */
+  /** 选择粒度；两组输入行铺设哪几段也跟随它。 */
   granularity?: CalendarGranularity
-  /** 面板此刻钻到了哪一层；给定即受控，缺省跟着 granularity。 */
+  /** 面板当前所处的层级；给定即受控，默认跟随 granularity。 */
   activeView?: CalendarView
-  /** 输入行铺哪几段；不给就按 granularity 推。 */
+  /** 输入行铺设哪几段；未提供时按 granularity 推导。 */
   segments?: DateSegmentSet
-  /** 并排展示几页；缺省 1，起止常跨月时给 2。 */
+  /** 并排展示几页；默认 1，起止常跨月时可设为 2。 */
   visibleCount?: number
-  /** 日历恒渲染六行，默认开。关掉后翻页时浮层高度会跟着月份变。 */
+  /** 日历恒渲染六行，默认开启。关闭后翻页时浮层高度会随月份变化。 */
   fixedWeeks?: boolean
-  /** 初始聚焦日，同时决定展开时先落在哪一页；不给就退回起点，再退回今天。 */
+  /** 初始聚焦日，同时决定展开时先落在哪一页；未提供时退回起点，再退回今天。 */
   defaultFocusedValue?: string
-  /** 快捷选项；给了就在浮层里多出一列，日子要在自己那儿算好再传。 */
+  /** 快捷选项；提供后浮层中多出一列，日期要在调用方计算后再传入。 */
   presets?: DateRangePickerPreset[]
   isDateUnavailable?: (value: string, anchor: string | null) => boolean
-  /** 允许跨过不可用的日子；默认关，落了起点后只能挑到两侧最近的不可用日为止。 */
+  /** 允许跨过不可用的日期；默认关闭，落下起点后只能选到两侧最近的不可用日为止。 */
   allowsNonContiguousRanges?: boolean
   disabled?: boolean
   readOnly?: boolean
   invalid?: boolean
   required?: boolean
   name?: string
-  /** 终点那份隐藏输入的表单名；不给即终点不参与提交。 */
+  /** 终点隐藏输入的表单名；未提供时终点不参与提交。 */
   endName?: string
   /** 两组段位各自的读屏名字与快捷选项列的名字。 */
   translations?: DateRangePickerProps['translations']
@@ -140,7 +140,7 @@ export interface XhDateRangePickerRootProps extends Omit<ComponentPropsWithRef<'
   size?: Size
   placement?: Placement
   offset?: number
-  /** 文字方向；浮层搬到落点后继承不到作者子树上的方向，要 RTL 就显式给。 */
+  /** 文字方向；浮层迁移到落点后无法继承作者子树上的方向，需要 RTL 时显式提供。 */
   dir?: Direction
   closeOnSelect?: boolean
   onValueChange?: DateRangePickerProps['onValueChange']
@@ -150,7 +150,7 @@ export interface XhDateRangePickerRootProps extends Omit<ComponentPropsWithRef<'
   children?: SlotChildren<DateRangePickerRootSlotProps>
 }
 
-/** 网格与段位由作者照 children 载荷里的 weeks / segments 自行渲染。 */
+/** 网格与段位由作者按 children 载荷中的 weeks / segments 自行渲染。 */
 export function XhDateRangePickerRoot({
   value,
   defaultValue,
@@ -312,11 +312,11 @@ export function XhDateRangePickerSegmentGroup({ index = 0, children, ...rest }: 
 export interface XhDateRangePickerSegmentProps extends Omit<ComponentPropsWithRef<'div'>, 'children'> {
   /** 段位下标，兼收字符串。 */
   index?: number | string
-  /** 按段名声明这一格。段集里没有这一块时它收起；与 index 二选一，两个都写按段名算。 */
+  /** 按段名声明该格。段集中没有该段时它收起；与 index 二选一，两个都写时按段名计算。 */
   segment?: DateSegmentType
   children?: SlotChildren<DateRangePickerSegmentSlotProps>
 }
-/** 有内容用内容，否则渲染连接层算好的段位文本。 */
+/** 有内容时使用内容，否则渲染连接层计算的段位文本。 */
 export function XhDateRangePickerSegment({ index, segment, children, ...rest }: XhDateRangePickerSegmentProps): ReactNode {
   const ctx = useDateRangePickerContext()
   const group = useDateRangePickerSegmentGroupContext()
@@ -369,10 +369,10 @@ export function XhDateRangePickerTrigger({ children, ...rest }: XhDateRangePicke
 }
 
 export interface XhDateRangePickerPositionerProps extends ComponentPropsWithRef<'div'> {
-  /** 浮层挂到哪个容器；不给就按全局配置，再不给挂 body。 */
+  /** 浮层挂载的容器；未提供时按全局配置，再未提供时挂载到 body。 */
   container?: () => Element | null
 }
-/** 搬到浮层落点：留在原地的话，宿主祖先只要建了层叠上下文就能盖住浮层。 */
+/** 迁移到浮层落点：留在原地时，宿主祖先只要建立了层叠上下文就能遮住浮层。 */
 export function XhDateRangePickerPositioner({ children, container, ...rest }: XhDateRangePickerPositionerProps): ReactNode {
   const ctx = useDateRangePickerContext()
   // 浮层面板的自绘条：与 content 同级、绝对定位不占布局，壳是这层已经 fixed 的 positioner
@@ -432,7 +432,7 @@ export function XhDateRangePickerCalendar({ index = 0, children, ...rest }: XhDa
 }
 
 export interface XhDateRangePickerPresetGroupProps extends Omit<ComponentPropsWithRef<'div'>, 'children'> {
-  /** 自己铺条目；不写就按 presets 数据自动铺，两者产出的 DOM 一致。 */
+  /** 自行铺设条目；未写时按 presets 数据自动铺设，两者产出的 DOM 一致。 */
   children?: SlotChildren<DateRangePickerPresetsSlotProps>
 }
 export function XhDateRangePickerPresetGroup({ children, ...rest }: XhDateRangePickerPresetGroupProps): ReactNode {
@@ -453,10 +453,10 @@ export function XhDateRangePickerPresetGroup({ children, ...rest }: XhDateRangeP
 }
 
 export interface XhDateRangePickerPresetProps extends Omit<ComponentPropsWithRef<'div'>, 'value'> {
-  /** 这一条的身份，与 presets 数据里的 value 逐字对上。 */
+  /** 该条目的身份，与 presets 数据中的 value 逐字对应。 */
   value: string
 }
-/** 有内容用内容，否则用数据里的 label。 */
+/** 有内容时使用内容，否则使用数据中的 label。 */
 export function XhDateRangePickerPreset({ value, children, ...rest }: XhDateRangePickerPresetProps): ReactNode {
   const ctx = useDateRangePickerContext()
   const api = ctx.api
@@ -498,10 +498,10 @@ export function XhDateRangePickerNextYearTrigger({ children, ...rest }: XhDateRa
 }
 
 export interface XhDateRangePickerHeadingProps extends ComponentPropsWithRef<'div'> {
-  /** 属于第几个面板；不写就跟着所在的日历走。 */
+  /** 属于第几个面板；未写时跟随所在的日历。 */
   index?: number | string
 }
-/** 有内容用内容，否则渲染本面板的标题。 */
+/** 有内容时使用内容，否则渲染本面板的标题。 */
 export function XhDateRangePickerHeading({ index, children, ...rest }: XhDateRangePickerHeadingProps): ReactNode {
   const ctx = useDateRangePickerContext()
   const panel = usePanelIndex(index)
@@ -514,10 +514,10 @@ export function XhDateRangePickerHeading({ index, children, ...rest }: XhDateRan
 }
 
 export interface XhDateRangePickerHeadingYearTriggerProps extends ComponentPropsWithRef<'button'> {
-  /** 属于第几个面板；不写就跟着所在的日历走。 */
+  /** 属于第几个面板；未写时跟随所在的日历。 */
   index?: number | string
 }
-/** 有内容用内容，否则渲染标题里年那一截；年视图下它是整个十年跨度。 */
+/** 有内容时使用内容，否则渲染标题中年份的部分；年视图下它是整个十年跨度。 */
 export function XhDateRangePickerHeadingYearTrigger({ index, children, ...rest }: XhDateRangePickerHeadingYearTriggerProps): ReactNode {
   const ctx = useDateRangePickerContext()
   const panel = usePanelIndex(index)
@@ -530,7 +530,7 @@ export function XhDateRangePickerHeadingYearTrigger({ index, children, ...rest }
 }
 
 export interface XhDateRangePickerHeadingMonthTriggerProps extends ComponentPropsWithRef<'button'> {
-  /** 属于第几个面板；不写就跟着所在的日历走。 */
+  /** 属于第几个面板；未写时跟随所在的日历。 */
   index?: number | string
 }
 export function XhDateRangePickerHeadingMonthTrigger({ index, children, ...rest }: XhDateRangePickerHeadingMonthTriggerProps): ReactNode {
@@ -545,7 +545,7 @@ export function XhDateRangePickerHeadingMonthTrigger({ index, children, ...rest 
 }
 
 export interface XhDateRangePickerGridProps extends ComponentPropsWithRef<'div'> {
-  /** 属于第几个面板；不写就跟着所在的日历走。 */
+  /** 属于第几个面板；未写时跟随所在的日历。 */
   index?: number | string
 }
 export function XhDateRangePickerGrid({ index, children, ...rest }: XhDateRangePickerGridProps): ReactNode {
@@ -591,10 +591,10 @@ export function XhDateRangePickerWeekRow({ children, ...rest }: XhDateRangePicke
 }
 
 export interface XhDateRangePickerWeekNumberProps extends ComponentPropsWithRef<'span'> {
-  /** 这一行行首那天的 ISO 串。 */
+  /** 该行行首那一天的 ISO 串。 */
   value: string
 }
-/** 有内容用内容，否则显示这一行的周序号。 */
+/** 有内容时使用内容，否则显示该行的周序号。 */
 export function XhDateRangePickerWeekNumber({ value, children, ...rest }: XhDateRangePickerWeekNumberProps): ReactNode {
   const ctx = useDateRangePickerContext()
   const cal = ctx.api.calendar
@@ -624,12 +624,12 @@ export interface XhDateRangePickerCellProps extends Omit<ComponentPropsWithRef<'
   /** ISO 日期串。 */
   value: string
   /**
-   * 属于第几个面板；不写就跟着所在的日历走。同一天会同时出现在两个面板里
-   * （8 月末那几天也铺在 9 月的首行），「是不是本月」只有连着面板一起看才判得出来。
+   * 属于第几个面板；未写时跟随所在的日历。同一天会同时出现在两个面板中
+   * （8 月末的几天也铺在 9 月的首行），是否为本月只有连同面板一起看才能判定。
    */
   index?: number | string
 }
-/** 不上报格子卸载，翻月后由日历机器按聚焦日重新落点。 */
+/** 不上报格子卸载，翻月后由日历状态机按聚焦日重新落点。 */
 export function XhDateRangePickerCell({ value, index, children, ...rest }: XhDateRangePickerCellProps): ReactNode {
   const ctx = useDateRangePickerContext()
   const panel = usePanelIndex(index)
@@ -658,7 +658,7 @@ export function XhDateRangePickerCellTrigger({ children, ...rest }: XhDateRangeP
 }
 
 export interface XhDateRangePickerHiddenInputProps extends Omit<ComponentPropsWithRef<'input'>, 'value' | 'defaultValue' | 'type'> {
-  /** 写在分段容器外面时用它指明属于哪一端；写在容器里面不必给，跟着容器走。 */
+  /** 写在分段容器外面时用它指明属于哪一端；写在容器内时不必提供，跟随容器。 */
   index?: number | string
 }
 export function XhDateRangePickerHiddenInput({ index, ...rest }: XhDateRangePickerHiddenInputProps): ReactNode {

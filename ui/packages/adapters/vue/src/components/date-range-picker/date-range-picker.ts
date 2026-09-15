@@ -44,8 +44,8 @@ import { useDateRangePickerWithRoot } from './use-date-range-picker'
 type DateRangePickerProps = DateRangePickerSchema['props']
 
 /**
- * 部件属于并排的第几张面板：自己写了就按自己写的，没写就跟着所在的日历走。
- * 兼收字符串以支持模板里写 index="1"。
+ * 部件属于并排的第几张面板：自己写了即按自己写的，未写时跟随所在的日历。
+ * 兼收字符串以支持模板中写 index="1"。
  */
 function usePanelIndex(props: { index?: number | string }): ComputedRef<number> {
   const panel = useDateRangePickerPanelContext()
@@ -79,9 +79,9 @@ export type DateRangePickerRootSlotProps
     | 'canGoNext'
   >
   & {
-    /** 起点那组段位。 */
+    /** 起点组段位。 */
     segments: DateFieldSegmentState[]
-    /** 终点那组段位。 */
+    /** 终点组段位。 */
     endSegments: DateFieldSegmentState[]
   }
 
@@ -90,7 +90,7 @@ export interface DateRangePickerSegmentSlotProps {
   segment: DateFieldSegmentState | undefined
 }
 
-/** 快捷选项列默认插槽的载荷：逐条的投影，作者据此自己铺条目。 */
+/** 快捷选项列默认插槽的载荷：逐条的投影，作者据此自行铺设条目。 */
 export interface DateRangePickerPresetsSlotProps {
   presets: readonly DateRangePickerPresetState[]
 }
@@ -108,22 +108,22 @@ export const XhDateRangePickerRoot = defineComponent({
     max: { type: String },
     locale: { type: String },
     timeZone: { type: String },
-    /** 选择粒度；两组输入行铺哪几段也跟着它走。 */
+    /** 选择粒度；两组输入行铺设哪几段也跟随它。 */
     granularity: { type: String as PropType<CalendarGranularity> },
-    /** 面板此刻钻到了哪一层；给定即受控，缺省跟着 granularity。 */
+    /** 面板当前所处的层级；给定即受控，默认跟随 granularity。 */
     activeView: { type: String as PropType<CalendarView> },
-    /** 输入行铺哪几段；不给就按 granularity 推。 */
+    /** 输入行铺设哪几段；未提供时按 granularity 推导。 */
     segments: { type: Array as PropType<DateSegmentSet> },
-    /** 并排展示几页；缺省 1，起止常跨月时给 2。 */
+    /** 并排展示几页；默认 1，起止常跨月时可设为 2。 */
     visibleCount: { type: Number },
-    /** 日历恒渲染六行，默认开。关掉后翻页时浮层高度会跟着月份变。 */
+    /** 日历恒渲染六行，默认开启。关闭后翻页时浮层高度会随月份变化。 */
     fixedWeeks: { type: Boolean, default: undefined },
-    /** 初始聚焦日，同时决定展开时先落在哪一页；不给就退回起点，再退回今天。 */
+    /** 初始聚焦日，同时决定展开时先落在哪一页；未提供时退回起点，再退回今天。 */
     defaultFocusedValue: { type: String },
-    /** 快捷选项；给了就在浮层里多出一列，日子要在自己的 computed 里算好再传。 */
+    /** 快捷选项；提供后浮层中多出一列，日期要在自己的 computed 中计算后再传入。 */
     presets: { type: Array as PropType<DateRangePickerPreset[]> },
     isDateUnavailable: { type: Function as PropType<(value: string, anchor: string | null) => boolean> },
-    /** 允许跨过不可用的日子；默认关，落了起点后只能挑到两侧最近的不可用日为止。 */
+    /** 允许跨过不可用的日期；默认关闭，落下起点后只能选到两侧最近的不可用日为止。 */
     allowsNonContiguousRanges: { type: Boolean, default: undefined },
     disabled: { type: Boolean, default: undefined },
     readOnly: { type: Boolean, default: undefined },
@@ -139,7 +139,7 @@ export const XhDateRangePickerRoot = defineComponent({
     size: { type: String as PropType<Size> },
     placement: { type: String as PropType<Placement> },
     offset: { type: Number },
-    /** 文字方向；浮层搬到落点后继承不到作者子树上的方向，要 RTL 就显式给。 */
+    /** 文字方向；浮层迁移到落点后无法继承作者子树上的方向，需要 RTL 时显式提供。 */
     dir: { type: String as PropType<Direction> },
     closeOnSelect: { type: Boolean, default: undefined },
   },
@@ -250,7 +250,7 @@ export const XhDateRangePickerSegment = defineComponent({
   props: {
     // 段位下标，兼收字符串以支持模板里写 index="0"
     index: { type: [Number, String] as PropType<number | string> },
-    /** 按段名声明这一格。段集里没有这一块时它收起；与 index 二选一，两个都写按段名算。 */
+    /** 按段名声明该格。段集中没有该段时它收起；与 index 二选一，两个都写时按段名计算。 */
     segment: { type: String as PropType<DateSegmentType> },
   },
   slots: Object as SlotsType<{
@@ -371,7 +371,7 @@ export const XhDateRangePickerCalendar = defineComponent({
 export const XhDateRangePickerPresetGroup = defineComponent({
   name: 'XhDateRangePickerPresetGroup',
   slots: Object as SlotsType<{
-    /** 自己铺条目；不写就按 presets 数据自动铺，两者产出的 DOM 一致。 */
+    /** 自行铺设条目；未写时按 presets 数据自动铺设，两者产出的 DOM 一致。 */
     default?: (props: DateRangePickerPresetsSlotProps) => VNode[]
   }>,
   setup(_, { slots }) {
@@ -397,11 +397,11 @@ export const XhDateRangePickerPresetGroup = defineComponent({
 export const XhDateRangePickerPreset = defineComponent({
   name: 'XhDateRangePickerPreset',
   props: {
-    /** 这一条的身份，与 presets 数据里的 value 逐字对上。 */
+    /** 该条目的身份，与 presets 数据中的 value 逐字对应。 */
     value: { type: String, required: true },
   },
   slots: Object as SlotsType<{
-    /** 条目内容；不写就用数据里的 label。 */
+    /** 条目内容；未写时使用数据中的 label。 */
     default?: () => VNode[]
   }>,
   setup(props, { slots }) {
@@ -461,7 +461,7 @@ export const XhDateRangePickerNextYearTrigger = defineComponent({
 export const XhDateRangePickerHeading = defineComponent({
   name: 'XhDateRangePickerHeading',
   props: {
-    /** 属于第几个面板；不写就跟着所在的日历走。 */
+    /** 属于第几个面板；未写时跟随所在的日历。 */
     index: { type: [Number, String] },
   },
   setup(props, { slots }) {
@@ -479,7 +479,7 @@ export const XhDateRangePickerHeading = defineComponent({
 export const XhDateRangePickerHeadingYearTrigger = defineComponent({
   name: 'XhDateRangePickerHeadingYearTrigger',
   props: {
-    /** 属于第几个面板；不写就跟着所在的日历走。 */
+    /** 属于第几个面板；未写时跟随所在的日历。 */
     index: { type: [Number, String] },
   },
   setup(props, { slots }) {
@@ -497,7 +497,7 @@ export const XhDateRangePickerHeadingYearTrigger = defineComponent({
 export const XhDateRangePickerHeadingMonthTrigger = defineComponent({
   name: 'XhDateRangePickerHeadingMonthTrigger',
   props: {
-    /** 属于第几个面板；不写就跟着所在的日历走。 */
+    /** 属于第几个面板；未写时跟随所在的日历。 */
     index: { type: [Number, String] },
   },
   setup(props, { slots }) {
@@ -514,7 +514,7 @@ export const XhDateRangePickerHeadingMonthTrigger = defineComponent({
 export const XhDateRangePickerGrid = defineComponent({
   name: 'XhDateRangePickerGrid',
   props: {
-    /** 属于第几个面板；不写就跟着所在的日历走。 */
+    /** 属于第几个面板；未写时跟随所在的日历。 */
     index: { type: [Number, String] },
   },
   setup(props, { slots }) {
@@ -560,7 +560,7 @@ export const XhDateRangePickerWeekRow = defineComponent({
 export const XhDateRangePickerWeekNumber = defineComponent({
   name: 'XhDateRangePickerWeekNumber',
   props: {
-    /** 这一行行首那天的 ISO 串。 */
+    /** 该行行首那一天的 ISO 串。 */
     value: { type: String, required: true },
   },
   setup(props, { slots }) {
@@ -597,8 +597,8 @@ export const XhDateRangePickerCell = defineComponent({
     /** ISO 日期串。 */
     value: { type: String, required: true },
     /**
-     * 属于第几个面板；不写就跟着所在的日历走。同一天会同时出现在两个面板里
-     * （8 月末那几天也铺在 9 月的首行），「是不是本月」只有连着面板一起看才判得出来。
+     * 属于第几个面板；未写时跟随所在的日历。同一天会同时出现在两个面板中
+     * （8 月末的几天也铺在 9 月的首行），是否为本月只有连同面板一起看才能判定。
      */
     index: { type: [Number, String] },
   },

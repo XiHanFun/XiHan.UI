@@ -9,15 +9,15 @@ import type { CalendarCellProps } from '@xihan-ui/headless'
 import type { DateRangePickerContext } from './use-date-range-picker'
 import { createContext, useContext } from 'react'
 
-/** 分段容器自报的组号：0 是起点那组，1 是终点那组。 */
+/** 分段容器声明的组号：0 是起点组，1 是终点组。 */
 export type DateRangePickerGroupIndex = 0 | 1
 
 const Ctx = createContext<DateRangePickerContext | undefined>(undefined)
-/** 格子自报的那一天，供 cell-trigger 复用同一份声明（作者只写一次 value）。 */
+/** 格子声明的那一天，供 cell-trigger 复用同一份声明（作者只写一次 value）。 */
 const CellCtx = createContext<CalendarCellProps | undefined>(undefined)
-/** 没有分段容器时的组号，段位与隐藏输入落到起点那组。 */
+/** 没有分段容器时的组号，段位与隐藏输入落到起点组。 */
 const SegmentGroupCtx = createContext<DateRangePickerGroupIndex>(0)
-/** 日历没自报面板号时的落点，与单面板时一致。 */
+/** 日历未声明面板号时的落点，与单面板时一致。 */
 const PanelCtx = createContext<number>(0)
 
 export const DateRangePickerProvider = Ctx
