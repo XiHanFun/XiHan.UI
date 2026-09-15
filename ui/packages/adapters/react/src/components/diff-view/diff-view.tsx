@@ -25,14 +25,14 @@ export type DiffViewRootSlotProps = Pick<
   'view' | 'rows' | 'expandedValue' | 'stats' | 'truncated' | 'truncatedLines' | 'isEmpty' | 'toggleGap' | 'setExpandedValue'
 >
 
-/** 着色记号逐个铺成 span。 */
+/** 着色记号逐个铺为 span。 */
 function renderTokens(api: DiffViewApi, tokens: readonly CodeToken[]): ReactNode[] {
   return tokens.map((token, i) => (
     <span key={i} {...api.getTokenProps(token) as Record<string, unknown>}>{token.text}</span>
   ))
 }
 
-/** 一格的正文：算了词级差异就先按片段裹一层，否则整行按记号铺；都没有就一个文本节点。 */
+/** 一格的正文：计算了词级差异时先按片段包一层，否则整行按记号铺设；都没有时为一个文本节点。 */
 function renderCell(api: DiffViewApi, rowIndex: number, side: DiffSide): ReactNode[] {
   const segments = api.cellSegments({ rowIndex, side })
   if (segments.length > 0) {
@@ -54,16 +54,16 @@ function renderCell(api: DiffViewApi, rowIndex: number, side: DiffSide): ReactNo
 }
 
 export interface XhDiffViewRootProps extends Omit<ComponentPropsWithRef<'div'>, 'children'> {
-  /** 差异模型，唯一入口。补丁与新旧两版文本都先归一到它。 */
+  /** 差异模型，唯一入口。补丁与新旧两版文本都先归一为它。 */
   model?: DiffModel
   /** 单栏 unified 还是并排 split。 */
   view?: DiffViewMode
-  /** 变更两侧各露几行上下文，其余折起来；不给即不折叠。 */
+  /** 变更两侧各显示几行上下文，其余折叠；未提供时不折叠。 */
   contextLines?: number
-  /** 展开的折叠格 id 集合，给了即受控。 */
+  /** 展开的折叠格 id 集合，提供后即受控。 */
   expandedValue?: readonly string[]
   defaultExpandedValue?: readonly string[]
-  /** 长行原地折行，不再横向滚动；默认关。 */
+  /** 长行原地折行，不再横向滚动；默认关闭。 */
   wrap?: boolean
   size?: Size
   translations?: Partial<DiffViewTranslations>
@@ -130,7 +130,7 @@ export interface XhDiffViewSummaryProps extends Omit<ComponentPropsWithRef<'span
 /**
  * 头部右侧的增删统计位，增删各放一个。
  *
- * 数字取自模型，默认渲染成 `+N` / `−N`；给了 children 就由它自己排版。
+ * 数字取自模型，默认渲染为 `+N` / `−N`；提供 children 时由它自行排版。
  */
 export function XhDiffViewSummary({ change, children, ...rest }: XhDiffViewSummaryProps): ReactNode {
   const ctx = useDiffViewContext()
@@ -156,7 +156,7 @@ export function XhDiffViewViewport({ children, ...rest }: XhDiffViewViewportProp
 }
 
 export interface XhDiffViewBodyProps extends ComponentPropsWithRef<'div'> {}
-/** 行是模型算出来的派生结构，作者写不出 N 行，由组件铺。 */
+/** 行是模型计算得出的派生结构，作者无法写出 N 行，由组件铺设。 */
 export function XhDiffViewBody({ children, ...rest }: XhDiffViewBodyProps): ReactNode {
   const ctx = useDiffViewContext()
   const { api } = ctx
@@ -209,10 +209,10 @@ export interface XhDiffViewTruncationProps extends Omit<ComponentPropsWithRef<'d
   children?: SlotChildren<{ count: number }>
 }
 /**
- * 截断提示条：这份差异被上限砍掉过多少行。
+ * 截断提示条：这份差异被上限截去了多少行。
  *
- * 文字默认由组件自己填——留给作者填的话，作者不填就又变回一份看着完整的残缺差异，
- * 而这正是这条提示要挡的事。给了 children 就由它自己排版，行数一并交出去。
+ * 文字默认由组件自行填入：留给作者填写时，作者不填就又变回一份看似完整的残缺差异，
+ * 而这正是该提示要防止的情况。提供 children 时由它自行排版，行数一并交出。
  */
 export function XhDiffViewTruncation({ children, ...rest }: XhDiffViewTruncationProps): ReactNode {
   const ctx = useDiffViewContext()

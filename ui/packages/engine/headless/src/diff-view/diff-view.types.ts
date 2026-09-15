@@ -10,34 +10,34 @@ import type { DiffChange, DiffLine, DiffModel } from './diff-view.model'
 
 export type DiffViewMode = 'unified' | 'split'
 
-/** split 视图里的两侧。unified 只有一列，恒为 old。 */
+/** split 视图中的两侧。unified 只有一列，恒为 old。 */
 export type DiffSide = 'old' | 'new'
 
 export interface DiffViewExpandedValueChangeDetails {
   value: string[]
 }
 
-/** 铺出来的一行：要么是一行差异，要么是折起来的那一格。 */
+/** 铺设出的一行：一行差异，或折叠的一格。 */
 export interface DiffViewRow {
   kind: 'line' | 'gap'
   /** 1 基可见行序，与 aria-rowcount 同一口径。 */
   rowIndex: number
-  /** kind 为 line 时有。 */
+  /** kind 为 line 时存在。 */
   line?: DiffLine
-  /** kind 为 gap 时有：这一格的身份。 */
+  /** kind 为 gap 时存在：该格的身份。 */
   gapId?: string
-  /** kind 为 gap 时有：折起来多少行。 */
+  /** kind 为 gap 时存在：折叠的行数。 */
   hiddenCount?: number
-  /** 这一行是展开某一格才露出来的。 */
+  /** 该行由展开某一格后显示。 */
   revealed?: boolean
 }
 
-/** 一格正文里的一段：词级片段，内部还带着自己那几个着色记号。 */
+/** 一格正文中的一段：词级片段，内部带有自身的着色记号。 */
 export interface DiffViewSegment {
   text: string
-  /** 这一段在配对的另一行里没有。 */
+  /** 该段在配对的另一行中不存在。 */
   changed: boolean
-  /** 这一段内部的着色记号；不着色时为空数组。 */
+  /** 该段内部的着色记号；不着色时为空数组。 */
   tokens: readonly CodeToken[]
 }
 
@@ -56,7 +56,7 @@ export interface DiffViewGapProps {
 
 export interface DiffViewInlineChangeProps {
   rowIndex: number
-  /** 这一段是不是变更处。 */
+  /** 该段是否为变更处。 */
   changed: boolean
 }
 
@@ -65,12 +65,12 @@ export interface DiffViewSchema extends MachineSchema {
     /** 差异模型，唯一入口。补丁与新旧两版文本都先归一到它。 */
     model?: DiffModel
     view?: DiffViewMode
-    /** 变更两侧各露几行上下文，其余折起来；不给或非有限值即不折叠。 */
+    /** 变更两侧各显示的上下文行数，其余折叠；未提供或非有限值时不折叠。 */
     contextLines?: number
-    /** 展开的折叠格 id 集合，给了即受控。 */
+    /** 展开的折叠格 id 集合，提供即受控。 */
     expandedValue?: readonly string[]
     defaultExpandedValue?: readonly string[]
-    /** 长行原地折行，不再横向滚动；默认关。 */
+    /** 长行原地折行，不再横向滚动；默认关闭。 */
     wrap?: boolean
     size?: Size
     translations?: Partial<DiffViewTranslations>
@@ -95,18 +95,18 @@ export interface DiffViewSchema extends MachineSchema {
 
 export interface DiffViewApi<T extends PropTypes = PropTypes> {
   view: DiffViewMode
-  /** 折叠后的可见行序，含折起来的那些格。 */
+  /** 折叠后的可见行序，含折叠的格。 */
   rows: readonly DiffViewRow[]
   expandedValue: string[]
-  /** 增删各多少行。 */
+  /** 增删的行数。 */
   stats: { added: number, removed: number }
   /** 模型被上限截断过。 */
   truncated: boolean
-  /** 被上限砍掉、压根没进这份模型的源文本行数；没截断就是 0。 */
+  /** 被上限截断、未进入模型的源文本行数；未截断时为 0。 */
   truncatedLines: number
-  /** 截断提示条的文字，已把行数代进去；没截断时是空串。 */
+  /** 截断提示条的文字，已代入行数；未截断时为空串。 */
   truncationText: string
-  /** 一条变更都没有。 */
+  /** 没有任何变更。 */
   isEmpty: boolean
   setExpandedValue: (next: string[]) => void
   toggleGap: (id: string) => void
@@ -126,19 +126,19 @@ export interface DiffViewApi<T extends PropTypes = PropTypes> {
   getGapCellProps: () => T['element']
   getGapTriggerProps: (props: DiffViewGapProps) => T['button']
   getEmptyProps: () => T['element']
-  /** 截断提示条；没截断时带 hidden。 */
+  /** 截断提示条；未截断时带 hidden。 */
   getTruncationProps: () => T['element']
-  /** 变更类型对应的读屏文字，写进视觉隐藏的那一格。 */
+  /** 变更类型对应的读屏文字，写入视觉隐藏的格。 */
   changeLabel: (change: DiffChange) => string
-  /** 这一行在这一侧的文本；split 下空侧为 undefined。 */
+  /** 该行在该侧的文本；split 下空侧为 undefined。 */
   cellText: (props: DiffViewCellProps) => string | undefined
-  /** 这一行在这一侧的行号；没有就是 undefined。 */
+  /** 该行在该侧的行号；不存在时为 undefined。 */
   cellNumber: (props: DiffViewCellProps) => number | undefined
-  /** 这一行在这一侧的着色片段；不着色或空侧时为空数组。 */
+  /** 该行在该侧的着色片段；不着色或空侧时为空数组。 */
   cellTokens: (props: DiffViewCellProps) => readonly CodeToken[]
   /**
-   * 这一行在这一侧的词级片段，着色记号已按片段边界切好。
-   * 没算词级差异时为空数组，此时照 cellTokens / cellText 铺。
+   * 该行在该侧的词级片段，着色记号已按片段边界切分。
+   * 未计算词级差异时为空数组，此时按 cellTokens / cellText 铺设。
    */
   cellSegments: (props: DiffViewCellProps) => readonly DiffViewSegment[]
 }
@@ -150,12 +150,12 @@ export interface DiffViewTranslations {
   removed: string
   /** 未改动行的读屏文字。 */
   unchanged: string
-  /** 展开按钮的可访问名，入参是这一格折起来的行数。 */
+  /** 展开按钮的可访问名，入参为该格折叠的行数。 */
   expandGap: (count: number) => string
   /** 没有文件名时表格的兜底可访问名。 */
   diff: string
-  /** 一条变更都没有时的占位文案。 */
+  /** 没有任何变更时的占位文案。 */
   noChanges: string
-  /** 截断提示条的文案，入参是被砍掉的源文本行数。 */
+  /** 截断提示条的文案，入参为被截断的源文本行数。 */
   truncated: (count: number) => string
 }
