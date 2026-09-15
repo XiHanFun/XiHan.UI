@@ -1,4 +1,4 @@
-<!-- 语气 | 在 content 上写 data-tone，确认按钮跟着换色；语气是共享的一层，不是本组件的 prop -->
+<!-- 语气 | 在 content 上写 data-tone，确认按钮随之换色；语气是共享的一层，不是本组件的 prop -->
 <script setup lang="ts">
 import {
   XhPopconfirmCancelTrigger,
