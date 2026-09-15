@@ -1,4 +1,4 @@
-// 回退与状态 | 地址写坏和压根没给 src 是同一个落点，status-change 把三态报出来，root 上的 data-state 也有一份
+// 回退与状态 | 地址错误与未提供 src 是同一个落点，status-change 报告三态，root 上的 data-state 也有一份
 import type { CSSProperties, ReactNode } from "react";
 import { XhImageFallback, XhImageImage, XhImageRoot } from "@xihan-ui/react";
 import { useState } from "react";
