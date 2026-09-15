@@ -1,4 +1,4 @@
-// 快捷选项 | presets 在两组列旁边多排一列，点一条把两端整份写进值并收起
+// 快捷选项 | presets 在两组列旁边多排一列，点击一条即把两端整份写入值并收起
 import type { ReactNode } from "react";
 import { timeRangePickerPresetFromNow, timeRangePickerPresetValue } from "@xihan-ui/headless";
 import {
