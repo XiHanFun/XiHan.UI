@@ -51,8 +51,8 @@
 
 ### 何时不用
 
-- 组合并列操作：使用[按钮组](./button-group)。
-- 仅用于排列控件：使用布局组件。
+- 组合并列操作时，使用[按钮组](./button-group)。
+- 仅排列控件时，使用布局组件。
 
 ### 特性
 
@@ -64,7 +64,7 @@
 ### 组合
 
 - 中间放[文本字段](./text-field)、[数字字段](./number-field)或[选择器](./select)这类单一控件，前后缀是静态的 `item`。
-- 紧邻的动作用[按钮](./button)放在组尾；整组放进[表单字段](./field)获得标签与错误信息。
+- 紧邻的动作使用[按钮](./button)放在组尾；整组放入[表单字段](./field)获得标签与错误信息。
 
 ### 最佳实践
 
@@ -146,7 +146,7 @@
 | `--xh-input-group-item-font-size` | `item` | `font-size` | `default` | `--xh-_input-group-font-size` | input-group 的 item 部件 font-size 覆盖槽。 |
 | `--xh-input-group-item-h` | `item` | `block-size` | `default` | `--xh-_input-group-h` | input-group 的 item 部件 block-size 覆盖槽。 |
 | `--xh-input-group-item-px` | `item` | `padding-inline` | `default` | `--xh-_input-group-px` | input-group 的 item 部件 padding-inline 覆盖槽。 |
-| `--xh-input-group-radius` | `control`<br>`root` | `border-end-end-radius`<br>`border-end-start-radius`<br>`border-radius`<br>`border-start-end-radius`<br>`border-start-start-radius` | `default`<br>`first-child`<br>`is(*, [data-part='control'], [data-part='root'])`<br>`is([data-part='control'], [data-part='root'])`<br>`last-child` | `--xh-shape-control`<br>`--xh-shape-surface` | input-group 的 control、root 部件 border-end-end-radius、border-end-start-radius、border-radius、border-start-end-radius、border-start-start-radius 覆盖槽。 |
+| `--xh-input-group-radius` | `control`<br>`root` | `border-end-end-radius`<br>`border-end-start-radius`<br>`border-radius`<br>`border-start-end-radius`<br>`border-start-start-radius` | `default`<br>`first-child`<br>`is(*, [data-part='control'], [data-part='root'])`<br>`is([data-part='control'], [data-part='root'])`<br>`last-child` | `--xh-shape-control` | input-group 的 control、root 部件 border-end-end-radius、border-end-start-radius、border-radius、border-start-end-radius、border-start-start-radius 覆盖槽。 |
 | `--xh-input-group-ring-focus` | `root` | `outline` | `focus-within` | `--xh-ring-focus` | input-group 的 root 部件 outline 覆盖槽。 |
 | `--xh-input-group-ring-invalid` | `root` | `outline-color` | `focus-within`<br>`has([data-invalid], [aria-invalid='true'])`<br>`invalid` | `--xh-ring-invalid` | input-group 的 root 部件 outline-color 覆盖槽。 |
 | `--xh-input-group-shadow` | `root` | `box-shadow` | `default` | `--xh-_input-group-shadow` | input-group 的 root 部件 box-shadow 覆盖槽。 |
