@@ -1,4 +1,4 @@
-<!-- 出错的那一步 | 用 tones 给被打回的那一步标 danger 语气，状态照旧按步序算 -->
+<!-- 出错的步骤 | 用 tones 为被驳回的步骤标注 danger 语气，状态照常按步序计算 -->
 <script setup lang="ts">
 import { XIcon } from "@xihan-ui/icons";
 import {
