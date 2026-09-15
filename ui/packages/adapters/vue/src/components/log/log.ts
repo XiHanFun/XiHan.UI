@@ -14,7 +14,7 @@ import { withXhConfig } from '../../config/config'
 import { provideLog, useLogContext } from './context'
 import { useLog } from './use-log'
 
-/** 默认插槽的载荷：行数与载入态、粘底状态与按钮的露面情况，以及滚到底部的句柄。 */
+/** 默认插槽的载荷：行数与载入态、粘底状态与按钮的显示情况，以及滚动到底部的句柄。 */
 export type LogRootSlotProps = Pick<
   LogApi,
   | 'rows'

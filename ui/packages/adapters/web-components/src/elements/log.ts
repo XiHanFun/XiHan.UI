@@ -27,22 +27,22 @@ function lineLevel(el: HTMLElement): LogLevel | undefined {
 }
 
 /**
- * `<xh-log>` —— Light-DOM 行为宿主：作者写 root/viewport/content/line 角色节点，
- * 元素把 connectLog 的产出打上去。行长出来时跟随滚动到底部，用户上滚后解除粘附，
- * 滚回底部阈值内、按回到底部按钮或调 scrollToBottom() 时恢复。
+ * `<xh-log>`：Light-DOM 行为宿主：作者写 root / viewport / content / line 角色节点，
+ * 元素把 connectLog 的产出接上。行增长时跟随滚动到底部，用户上滚后解除贴附，
+ * 滚回底部阈值内、按回到底部按钮或调用 scrollToBottom() 时恢复。
  *
- * 行的内容不替作者生成：文本、级别、时间戳、标注都写在 line 角色节点里，元素只发身份与等宽排版。
+ * 行的内容不替作者生成：文本、级别、时间戳、标注都写在 line 角色节点中，元素只发身份与等宽排版。
  *
  * @customElement xh-log
- * @attr {number} rows - 视口按多少行定高；缺省时高度由皮肤给
- * @attr {boolean} loading - 行还在路上：日志区报 aria-busy，根落 data-loading
+ * @attr {number} rows - 视口按多少行定高；未提供时高度由皮肤决定
+ * @attr {boolean} loading - 行仍在传输中：日志区报告 aria-busy，根写 data-loading
  * @attr {string} size - 尺寸：sm / md / lg
- * @fires stick-change - 粘底状态变化；detail 为 `{ atBottom: boolean, sticking: boolean }`
+ * @fires stick-change - 贴底状态变化；detail 为 `{ atBottom: boolean, sticking: boolean }`
  * @csspart root - 组件根容器，承载 data-size / data-loading / data-at-bottom / data-sticking
- * @csspart viewport - 滚动容器；role=log + aria-live=off + tabindex=0，按行数定高写进内联样式
+ * @csspart viewport - 滚动容器；role=log + aria-live=off + tabindex=0，按行数定高写入内联样式
  * @csspart content - 所有行的包裹层，尺寸变化的观察目标
- * @csspart line - 一行日志，拿身份、等宽排版与 data-level；级别写成节点上的 level 属性
- * @csspart scroll-to-end-trigger - 回到底部按钮，在底时收起（hidden + 内联 display）
+ * @csspart line - 一行日志，承载身份、等宽排版与 data-level；级别写为节点上的 level 属性
+ * @csspart scroll-to-end-trigger - 回到底部按钮，在底部时收起（hidden + 内联 display）
  * @csspart live-region - 视觉隐藏的播报区（role=status + aria-live=polite + aria-atomic）
  */
 export class XhLogElement extends XhElement {
@@ -102,8 +102,8 @@ export class XhLogElement extends XhElement {
   }
 
   /**
-   * 滚回底部并恢复粘附。机器要等 hostConnected 才建，还没进 DOM 时如实什么都不做、别炸。
-   * 作者不写 scroll-to-end-trigger 角色节点时，自己的按钮调它。
+   * 滚动到底部并恢复粘附。状态机在 hostConnected 后才建立，尚未进入 DOM 时不做任何处理、不抛错。
+   * 作者未写 scroll-to-end-trigger 角色节点时，由自己的按钮调用它。
    */
   scrollToBottom(): void {
     const service = this.ctrl.service as Service<LogSchema> | undefined

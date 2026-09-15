@@ -10,9 +10,9 @@ import type { MachineSchema, PropTypes, RuntimeConfig, Size, StickToBottomHandle
 /** 一行日志的级别。 */
 export type LogLevel = 'debug' | 'info' | 'warn' | 'error'
 
-/** 逐行取属性时的自报家门。 */
+/** 逐行取属性时的声明。 */
 export interface LogLineProps {
-  /** 这一行的级别；不给就不落 data-level，行走默认前景色。 */
+  /** 该行的级别；未提供时不写 data-level，行使用默认前景色。 */
   level?: LogLevel
 }
 
@@ -35,31 +35,31 @@ export interface LogRefs {
   getViewportEl: () => HTMLElement | null
   /** 内容包裹层，作为尺寸变化的观察目标。 */
   getContentEl: () => HTMLElement | null
-  /** 粘底句柄，由 trackStickToBottom 效应装填，卸载时置空。 */
+  /** 贴底句柄，由 trackStickToBottom 效应装填，卸载时置空。 */
   stick: StickToBottomHandle | null
 }
 
-/** 机器只管粘底：行数、载入态与文案都是视图属性，走 connect 的第二参。 */
+/** 状态机只负责贴底：行数、载入态与文案都是视图属性，经 connect 的第二个参数传入。 */
 export interface LogSchema extends MachineSchema {
   props: {
-    /** 距底多少 px 视为在底，缺省用粘底原语的默认值。 */
+    /** 距底部多少 px 视为在底部，默认使用贴底原语的默认值。 */
     threshold?: number
-    /** 粘底状态变化时通知宿主。 */
+    /** 贴底状态变化时通知宿主。 */
     onStickChange?: (details: LogStickChangeDetails) => void
   }
   context: {
     /** 当前滚动位置是否落在底部阈值内。 */
     atBottom: boolean
-    /** 内容增长时是否自动跟到底，用户上滚后为 false。 */
+    /** 内容增长时是否自动跟随到底部，用户上滚后为 false。 */
     sticking: boolean
   }
   computed: Record<string, never>
   refs: LogRefs
   state: 'idle'
   event:
-    /** 句柄回报的粘底状态变化，是 context 中两个布尔的唯一写入口。 */
+    /** 句柄回报的贴底状态变化，是 context 中两个布尔的唯一写入口。 */
     | { type: 'STICK.CHANGE', atBottom: boolean, sticking: boolean }
-    /** 滚到底部并恢复粘附。 */
+    /** 滚动到底部并恢复贴附。 */
     | { type: 'SCROLL_TO_BOTTOM' }
   tag: never
   guard: never
@@ -68,11 +68,11 @@ export interface LogSchema extends MachineSchema {
 }
 
 export interface LogProps {
-  /** 视口按多少行定高；缺省时高度由皮肤给。 */
+  /** 视口按多少行定高；未提供时高度由皮肤决定。 */
   rows?: number
-  /** 行还在路上：日志区报 aria-busy，根落 data-loading。 */
+  /** 行仍在传输中：日志区报告 aria-busy，根写 data-loading。 */
   loading?: boolean
-  /** 尺寸：sm / md / lg。改的是行文字号与内衬，行高不随档变。 */
+  /** 尺寸：sm / md / lg。影响行文字号与内衬，行高不随档位变化。 */
   size?: Size
   translations?: Partial<LogTranslations>
 }
@@ -83,11 +83,11 @@ export interface LogApi<T extends PropTypes = PropTypes> {
   loading: boolean
   /** 当前滚动位置是否落在底部阈值内。 */
   atBottom: boolean
-  /** 新行进来时是否自动跟到底。 */
+  /** 新行到达时是否自动跟随到底部。 */
   sticking: boolean
   /** 是否显示回到底部按钮，不在底部时为 true。 */
   showScrollToEndTrigger: boolean
-  /** 滚到底部并恢复粘附。 */
+  /** 滚动到底部并恢复贴附。 */
   scrollToBottom: () => void
   getRootProps: () => T['element']
   getViewportProps: () => T['element']

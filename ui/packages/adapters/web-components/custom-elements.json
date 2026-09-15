@@ -30226,7 +30226,7 @@
       "declarations": [
         {
           "kind": "class",
-          "description": "`<xh-log>` —— Light-DOM 行为宿主：作者写 root/viewport/content/line 角色节点，\n元素把 connectLog 的产出打上去。行长出来时跟随滚动到底部，用户上滚后解除粘附，\n滚回底部阈值内、按回到底部按钮或调 scrollToBottom() 时恢复。\n\n行的内容不替作者生成：文本、级别、时间戳、标注都写在 line 角色节点里，元素只发身份与等宽排版。",
+          "description": "`<xh-log>`：Light-DOM 行为宿主：作者写 root / viewport / content / line 角色节点，\n元素把 connectLog 的产出接上。行增长时跟随滚动到底部，用户上滚后解除贴附，\n滚回底部阈值内、按回到底部按钮或调用 scrollToBottom() 时恢复。\n\n行的内容不替作者生成：文本、级别、时间戳、标注都写在 line 角色节点中，元素只发身份与等宽排版。",
           "name": "XhLogElement",
           "cssParts": [
             {
@@ -30234,7 +30234,7 @@
               "name": "root"
             },
             {
-              "description": "滚动容器；role=log + aria-live=off + tabindex=0，按行数定高写进内联样式",
+              "description": "滚动容器；role=log + aria-live=off + tabindex=0，按行数定高写入内联样式",
               "name": "viewport"
             },
             {
@@ -30242,11 +30242,11 @@
               "name": "content"
             },
             {
-              "description": "一行日志，拿身份、等宽排版与 data-level；级别写成节点上的 level 属性",
+              "description": "一行日志，承载身份、等宽排版与 data-level；级别写为节点上的 level 属性",
               "name": "line"
             },
             {
-              "description": "回到底部按钮，在底时收起（hidden + 内联 display）",
+              "description": "回到底部按钮，在底部时收起（hidden + 内联 display）",
               "name": "scroll-to-end-trigger"
             },
             {
@@ -30384,7 +30384,7 @@
                   "text": "void"
                 }
               },
-              "description": "滚回底部并恢复粘附。机器要等 hostConnected 才建，还没进 DOM 时如实什么都不做、别炸。\n作者不写 scroll-to-end-trigger 角色节点时，自己的按钮调它。"
+              "description": "滚动到底部并恢复粘附。状态机在 hostConnected 后才建立，尚未进入 DOM 时不做任何处理、不抛错。\n作者未写 scroll-to-end-trigger 角色节点时，由自己的按钮调用它。"
             },
             {
               "kind": "method",
@@ -30399,7 +30399,7 @@
           ],
           "events": [
             {
-              "description": "粘底状态变化；detail 为 `{ atBottom: boolean, sticking: boolean }`",
+              "description": "贴底状态变化；detail 为 `{ atBottom: boolean, sticking: boolean }`",
               "name": "stick-change",
               "type": {
                 "text": "LogStickChangeDetails"
@@ -30411,7 +30411,7 @@
               "type": {
                 "text": "number | undefined"
               },
-              "description": "视口按多少行定高；缺省时高度由皮肤给",
+              "description": "视口按多少行定高；未提供时高度由皮肤决定",
               "name": "rows",
               "fieldName": "rows"
             },
@@ -30419,7 +30419,7 @@
               "type": {
                 "text": "boolean | undefined"
               },
-              "description": "行还在路上：日志区报 aria-busy，根落 data-loading",
+              "description": "行仍在传输中：日志区报告 aria-busy，根写 data-loading",
               "name": "loading",
               "fieldName": "loading"
             },
