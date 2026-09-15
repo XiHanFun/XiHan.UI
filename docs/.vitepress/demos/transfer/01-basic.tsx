@@ -1,4 +1,4 @@
-// 基础用法 | collection 是条目全集的唯一事实源，value 只装落在右侧的那批
+// 基础用法 | collection 是条目全集的唯一事实源，value 只承载落在右侧的一批
 import type { ReactNode } from "react";
 import {
   XhTransferItem,

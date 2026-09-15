@@ -1,4 +1,4 @@
-// 语气与尺寸 | tone 换勾选标记的色族，size 换条目行与勾选格的几何档；两轴打在根上，两侧面板一起走
+// 语气与尺寸 | tone 更换勾选标记的色族，size 更换条目行与勾选格的几何档；两轴写在根上，两侧面板一起变化
 import type { ReactNode } from "react";
 import {
   XhTransferItem,
