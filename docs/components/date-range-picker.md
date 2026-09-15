@@ -107,41 +107,41 @@ granularity 决定两组输入行铺哪几段、浮层铺哪一档格子
 
 | 属性 | 类型 | 必填 | 说明 |
 | --- | --- | --- | --- |
-| `value` | `string[]` |  | 区间两端，ISO 串。给定即受控：读直取 prop，写只发 onValueChange 不落内部值。 按位存放，空缺的那一端是空串。 |
+| `value` | `string[]` |  | 区间两端，ISO 串。提供即受控：读取直取 prop，写入只发 onValueChange 不落内部值。 按位存放，空缺的一端为空串。 |
 | `defaultValue` | `string[]` |  |  |
-| `open` | `boolean` |  | 展开态。给定即受控：内部不再自改，只发 onOpenChange。 |
+| `open` | `boolean` |  | 展开态。提供即受控：内部不再自行修改，只发 onOpenChange。 |
 | `defaultOpen` | `boolean` |  |  |
 | `min` | `string` |  | 可选范围下界（含当天），ISO 串。日历与分段输入共用这一条。 |
 | `max` | `string` |  | 可选范围上界（含当天），ISO 串。 |
-| `locale` | `string` |  | 决定周首日、月份文案与段位先后（zh-CN 年月日、en-US 月日年）。 不给按宿主语言，宿主也没有时按 en-US。 |
-| `timeZone` | `string` |  | 判定「今天」与格式化文案用的时区，默认取宿主本地时区。 |
-| `isDateUnavailable` | `(value: string, anchor: string \| null) => boolean` |  | 不可用判定，收 ISO 串。界外与它判真的日子同等对待。 第二个参数是区间挑到一半时的起点，其余时候为 null。 |
-| `allowsNonContiguousRanges` | `boolean` |  | 区间允许跨过不可用的日子，默认关；关着时落了起点之后只能挑到两侧最近的不可用日为止。 |
-| `disabled` | `boolean` |  | 整个控件禁用：trigger 转原生 disabled，段位退出 Tab 序，日历格子全转 aria-disabled。 |
-| `readOnly` | `boolean` |  | 只读：浮层照常展开、日历照常翻月浏览，但选中值改不动。 |
-| `invalid` | `boolean` |  | 校验失败：段位报 aria-invalid，各角色节点带 data-invalid。 不给也会自己判：任一端越界、或终点早于起点。 |
-| `required` | `boolean` |  | 必填标注，落到每一段的 aria-required 上。 |
-| `name` | `string` |  | 起点那份隐藏输入的表单字段名；给了才带 name，ISO 串随表单一并提交。 |
-| `endName` | `string` |  | 终点那份隐藏输入的表单字段名；不给即终点不参与提交。 |
+| `locale` | `string` |  | 决定周首日、月份文案与段位先后（zh-CN 年月日、en-US 月日年）。 未提供时按宿主语言，宿主也没有时按 en-US。 |
+| `timeZone` | `string` |  | 判定今天与格式化文案使用的时区，默认取宿主本地时区。 |
+| `isDateUnavailable` | `(value: string, anchor: string \| null) => boolean` |  | 不可用判定，接收 ISO 串。界外与判定为真的日期同等处理。 第二个参数是区间选到一半时的起点，其余时候为 null。 |
+| `allowsNonContiguousRanges` | `boolean` |  | 区间允许跨过不可用的日期，默认关闭；关闭时落下起点之后只能选到两侧最近的不可用日为止。 |
+| `disabled` | `boolean` |  | 整个控件禁用：trigger 为原生 disabled，段位退出 Tab 序列，日历格子全部为 aria-disabled。 |
+| `readOnly` | `boolean` |  | 只读：浮层照常展开、日历照常翻月浏览，但选中值不可修改。 |
+| `invalid` | `boolean` |  | 校验失败：段位报告 aria-invalid，各角色节点带 data-invalid。 未提供时也会自行判定：任一端越界，或终点早于起点。 |
+| `required` | `boolean` |  | 必填标注，写入每一段的 aria-required。 |
+| `name` | `string` |  | 起点隐藏输入的表单字段名；提供后才带 name，ISO 串随表单一并提交。 |
+| `endName` | `string` |  | 终点隐藏输入的表单字段名；未提供时终点不参与提交。 |
 | `granularity` | `CalendarGranularity` |  | 选择粒度。输入行与周期网格都由它决定。 |
-| `activeView` | `CalendarView` |  | 面板此刻钻到了哪一层。给定即受控；缺省跟着 granularity，每次展开都回到目标粒度。 点标题里的年 / 月会改它。 |
-| `segments` | `DateSegmentSet` |  | 输入行铺哪几段。不给就按 granularity 推：按周出「2026-33」、按月出「2026-05」、 按季度出「2026-Q2」、按年出「2026」，按天则按 locale 排年月日。 |
-| `presets` | `DateRangePickerPreset[]` |  | 快捷选项（「近 7 天」「本月」这类）。给了就在浮层里多出一列，点一下整份写进两端。 日子要算好再传：连接层每帧求值，把 `today()` 放进渲染期会跨零点算出两个答案。 不是恰好两端、落在 min/max 之外或被 isDateUnavailable 判掉的那条自动按不下去。 |
-| `visibleCount` | `number` |  | 展示几个连续日历面板；默认 1。起止常跨月，并排两页时显式给 2。 |
-| `fixedWeeks` | `boolean` |  | 日历恒渲染六行，默认开。关掉后网格按当月实际周数收，翻页时浮层高度会跟着变。 |
-| `defaultFocusedValue` | `string` |  | 初始聚焦日，ISO 串；它同时决定展开时先落在哪一页。 不给就退回起点，再退回今天。表单重置回到这一份。 |
-| `variant` | `ControlVariant` |  | 形态：outline / subtle / ghost，决定输入行的描边与底色怎么用。 |
-| `tone` | `Tone` |  | 语气：brand / neutral / success / warning / danger / info，决定聚焦与选中强调用哪族颜色。 |
-| `size` | `Size` |  | 尺寸：sm / md / lg，输入行与浮层里的日历格一并换档。 |
+| `activeView` | `CalendarView` |  | 面板当前所在的层级。提供即受控；未提供时跟随 granularity，每次展开都回到目标粒度。 点击标题中的年 / 月会修改它。 |
+| `segments` | `DateSegmentSet` |  | 输入行铺设的段。未提供时按 granularity 推导：按周为「2026-33」、按月为「2026-05」、 按季度为「2026-Q2」、按年为「2026」，按天则按 locale 排列年月日。 |
+| `presets` | `DateRangePickerPreset[]` |  | 快捷选项（「近 7 天」「本月」等）。提供后浮层中多出一列，点击即整份写入两端。 日期需计算后传入：连接层每帧求值，把 `today()` 放进渲染期会跨零点得出两个结果。 不是恰好两端、落在 min / max 之外或被 isDateUnavailable 判定不可用的选项自动不可按下。 |
+| `visibleCount` | `number` |  | 展示的连续日历面板数；默认 1。起止常跨月，并排两页时显式提供 2。 |
+| `fixedWeeks` | `boolean` |  | 日历恒渲染六行，默认开启。关闭后网格按当月实际周数收缩，翻页时浮层高度随之变化。 |
+| `defaultFocusedValue` | `string` |  | 初始聚焦日，ISO 串；同时决定展开时先落在哪一页。 未提供时回退为起点，再回退为今天。表单重置回到该值。 |
+| `variant` | `ControlVariant` |  | 形态：outline / subtle / ghost，决定输入行的描边与底色使用方式。 |
+| `tone` | `Tone` |  | 语气：brand / neutral / success / warning / danger / info，决定聚焦与选中强调使用哪族颜色。 |
+| `size` | `Size` |  | 尺寸：sm / md / lg，输入行与浮层中的日历格一并换档。 |
 | `placement` | `Placement` |  |  |
-| `dir` | `Direction` |  | 文字方向，缺省 ltr。只改写浮层在行内轴上 start 与 end 的落点。 |
+| `dir` | `Direction` |  | 文字方向，默认 ltr。只改写浮层在行内轴上 start 与 end 的落点。 |
 | `offset` | `number` |  |  |
 | `translations` | `Partial<DateRangePickerTranslations>` |  |  |
-| `closeOnSelect` | `boolean` |  | 选完即收起，默认 true。要两端都落定才算选完。 |
-| `onValueChange` | `(details: DateRangePickerValueChangeDetails) => void` |  | value 变化意图回调；受控时是唯一出口，非受控随内部写入一并通知。 |
+| `closeOnSelect` | `boolean` |  | 选完即收起，默认 true。两端都落定才视为选完。 |
+| `onValueChange` | `(details: DateRangePickerValueChangeDetails) => void` |  | value 变化意图回调；受控时是唯一出口，非受控时随内部写入一并通知。 |
 | `onOpenChange` | `(details: DateRangePickerOpenChangeDetails) => void` |  | open 变化意图回调；受控时是唯一出口，非受控时随内部转移一并通知。 |
-| `onFocusedValueChange` | `(details: DateRangePickerFocusChangeDetails) => void` |  | 聚焦日变化（方向键、翻月、展开、段位输入都会发）。 网格由外部渲染，不监听这条日历不会换月。 |
-| `onActiveViewChange` | `(details: CalendarViewChangeDetails) => void` |  | 面板钻到了哪一层（点标题钻上、点格子钻下都会发）；受控时是唯一出口。 |
+| `onFocusedValueChange` | `(details: DateRangePickerFocusChangeDetails) => void` |  | 聚焦日变化（方向键、翻月、展开、段位输入都会发出）。 网格由外部渲染，不监听该事件时日历不会换月。 |
+| `onActiveViewChange` | `(details: CalendarViewChangeDetails) => void` |  | 面板所在层级变化（点击标题向上、点击格子向下都会发出）；受控时是唯一出口。 |
 
 ### 事件
 
@@ -149,10 +149,10 @@ granularity 决定两组输入行铺哪几段、浮层铺哪一档格子
 
 | 事件 | 载荷 | 说明 |
 | --- | --- | --- |
-| `value-change` | `DateRangePickerValueChangeDetails` | 区间两端变化；detail 为 `{ value: string[] }`，只填了终点时是 `['', end]` |
+| `value-change` | `DateRangePickerValueChangeDetails` | 区间两端变化；detail 为 `{ value: string[] }`，只填终点时为 `['', end]` |
 | `open-change` | `DateRangePickerOpenChangeDetails` | open 状态变化；detail 为 `{ open: boolean }` |
-| `focused-value-change` | `DateRangePickerFocusChangeDetails` | 聚焦日变化（意味着展示月可能换了）；detail 为 `{ focusedValue: string }`，作者据此重画网格 |
-| `active-view-change` | `CalendarViewChangeDetails` | 钻到了另一层（点标题钻上、点格子钻下）；detail 为 `{ activeView: 'day'\|'week'\|'month'\|'quarter'\|'year' }`，作者据此重画网格 |
+| `focused-value-change` | `DateRangePickerFocusChangeDetails` | 聚焦日变化（展示月可能随之变化）；detail 为 `{ focusedValue: string }`，作者据此重绘网格 |
+| `active-view-change` | `CalendarViewChangeDetails` | 切换到另一层级（点击标题向上、点击格子向下）；detail 为 `{ activeView: 'day'\|'week'\|'month'\|'quarter'\|'year' }`，作者据此重绘网格 |
 
 ### 插槽
 
@@ -160,8 +160,8 @@ granularity 决定两组输入行铺哪几段、浮层铺哪一档格子
 
 | Vue 组件 | 插槽 | 载荷 | 说明 |
 | --- | --- | --- | --- |
-| `XhDateRangePickerPreset` | `default` | — | 条目内容；不写就用数据里的 label。 |
-| `XhDateRangePickerPresetGroup` | `default` | `DateRangePickerPresetsSlotProps` | 自己铺条目；不写就按 presets 数据自动铺，两者产出的 DOM 一致。 |
+| `XhDateRangePickerPreset` | `default` | — | 条目内容；未写时使用数据中的 label。 |
+| `XhDateRangePickerPresetGroup` | `default` | `DateRangePickerPresetsSlotProps` | 自行铺设条目；未写时按 presets 数据自动铺设，两者产出的 DOM 一致。 |
 | `XhDateRangePickerRoot` | `default` | `DateRangePickerRootSlotProps` |  |
 | `XhDateRangePickerSegment` | `default` | `DateRangePickerSegmentSlotProps` |  |
 
@@ -194,36 +194,36 @@ granularity 决定两组输入行铺哪几段、浮层铺哪一档格子
 | 成员 | 类型 | 说明 |
 | --- | --- | --- |
 | `open` | `boolean` |  |
-| `value` | `string[]` | 区间两端，ISO 串；按位存放，空缺的那一端是空串。 |
-| `start` | `string \| null` | 起点；没填时为 null。 |
-| `end` | `string \| null` | 终点；没填时为 null。 |
-| `periodValue` | `CalendarPeriodValue \| null` | 两端都落定时的规范化周期值；缺一端为 null。 |
+| `value` | `string[]` | 区间两端，ISO 串；按位存放，空缺的一端为空串。 |
+| `start` | `string \| null` | 起点；未填时为 null。 |
+| `end` | `string \| null` | 终点；未填时为 null。 |
+| `periodValue` | `CalendarPeriodValue \| null` | 两端都落定时的规范化周期值；缺少一端时为 null。 |
 | `focusedValue` | `string` | 生效聚焦日（三路收口后的结果），恒非空。日历展示哪个月由它决定。 |
-| `granularity` | `CalendarGranularity` | 作者要挑的粒度。 |
-| `activeView` | `CalendarView` | 面板此刻钻到了哪一层。 |
+| `granularity` | `CalendarGranularity` | 作者选择的粒度。 |
+| `activeView` | `CalendarView` | 面板当前所在的层级。 |
 | `disabled` | `boolean` |  |
 | `readOnly` | `boolean` |  |
-| `invalid` | `boolean` | 校验失败：作者标的、任一端越界、或终点早于起点。 |
-| `canClear` | `boolean` | 清空按钮此刻可不可按。 |
+| `invalid` | `boolean` | 校验失败：作者标记的、任一端越界，或终点早于起点。 |
+| `canClear` | `boolean` | 清空按钮当前是否可按。 |
 | `setOpen` | `(next: boolean) => void` |  |
 | `setValue` | `(next: string[]) => void` |  |
 | `clear` | `() => void` |  |
-| `setActiveView` | `(next: CalendarView) => void` | 直接钻到某一层。 |
-| `presets` | `readonly DateRangePickerPresetState[]` | 快捷选项逐条的样子，数据顺序。没给 presets 时为空数组。 |
+| `setActiveView` | `(next: CalendarView) => void` | 直接切换到某一层级。 |
+| `presets` | `readonly DateRangePickerPresetState[]` | 快捷选项逐条的状态，数据顺序。未提供 presets 时为空数组。 |
 | `calendar` | `CalendarRangePickerApi<T>` | 内嵌日历：选区间、翻月、键盘导航都在它身上。 |
-| `field` | `DateRangePickerFieldApi<T>` | 起点那组分段输入。 |
-| `fieldEnd` | `DateRangePickerFieldApi<T>` | 终点那组分段输入。 |
+| `field` | `DateRangePickerFieldApi<T>` | 起点分段输入。 |
+| `fieldEnd` | `DateRangePickerFieldApi<T>` | 终点分段输入。 |
 | `getRootProps` | `() => T['element']` |  |
 | `getLabelProps` | `() => T['element']` |  |
 | `getControlProps` | `() => T['element']` |  |
-| `getSegmentGroupProps` | `(props?: DateRangePickerSegmentGroupProps) => T['element']` | role=group 的分段容器，段位挂在它里面。index 选起止两组，不传即起点。 |
+| `getSegmentGroupProps` | `(props?: DateRangePickerSegmentGroupProps) => T['element']` | role=group 的分段容器，段位挂在其中。index 选择起止两组，不传即起点。 |
 | `getRangeSeparatorProps` | `() => T['element']` | 起止输入之间的视觉分隔。 |
 | `getTriggerProps` | `() => T['button']` |  |
 | `getClearTriggerProps` | `() => T['button']` |  |
 | `getPositionerProps` | `() => T['element']` |  |
 | `getContentProps` | `() => T['element']` |  |
-| `getPresetGroupProps` | `() => T['element']` | 快捷选项列（role=listbox）；没给 presets 时带 hidden。 |
-| `getPresetProps` | `(props: DateRangePickerPresetProps) => T['element']` | 一条快捷选项（role=option）：点按把整段区间写进两端。 |
+| `getPresetGroupProps` | `() => T['element']` | 快捷选项列（role=listbox）；未提供 presets 时带 hidden。 |
+| `getPresetProps` | `(props: DateRangePickerPresetProps) => T['element']` | 一条快捷选项（role=option）：点击把整段区间写入两端。 |
 | `getCalendarProps` | `() => T['element']` | 内嵌日历的挂载点，同时充当日历的根节点。 |
 
 ## 无障碍
@@ -241,7 +241,7 @@ granularity 决定两组输入行铺哪几段、浮层铺哪一档格子
 | `Enter` / `Space` | open, focus in grid | 先落起点再落终点（由日历完成）；closeOnSelect 时两端都落定才收起浮层 |
 | `ArrowUp` / `ArrowDown` / `Home` / `End` | open, focus in 快捷选项列 | 在快捷选项之间移动焦点，到头回绕；不写值 |
 | `Enter` / `Space` | open, focus in 某条快捷选项 | 把这条快捷选项的两端整份写进去；closeOnSelect 时收起浮层 |
-| `Alt+ArrowDown` | focus in 某一段, closed, not disabled | 展开浮层并把焦点送进去；触发钮是可选部件，键盘那条入口不能只挂在它身上 |
+| `Alt+ArrowDown` | focus in 某一段, closed, not disabled | 展开浮层并把焦点移入；触发按钮是可选部件，键盘入口不能只挂在它上面 |
 | `Enter` | focus in 某一段, open | 收起浮层。段位里敲出来的值不触发「选完即收」（那时人还在打字），这是那条路的收口手势 |
 
 ### ARIA

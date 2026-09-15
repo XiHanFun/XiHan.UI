@@ -10,18 +10,18 @@ import type { ComputedRef, InjectionKey } from 'vue'
 import type { DateRangePickerContext } from './use-date-range-picker'
 import { computed, inject, provide } from 'vue'
 
-/** 格子自报的那一天，供 cell-trigger 复用同一份声明（作者只写一次 value）。 */
+/** 格子声明的那一天，供 cell-trigger 复用同一份声明（作者只写一次 value）。 */
 export interface DateRangePickerCellContext {
   cell: ComputedRef<CalendarCellProps>
 }
 
-/** 分段容器自报组号，供组内的段位与隐藏输入认领起止两组之一。 */
+/** 分段容器声明的组号，供组内的段位与隐藏输入认领起止两组之一。 */
 export interface DateRangePickerSegmentGroupContext {
-  /** 0 是起点那组，1 是终点那组。 */
+  /** 0 是起点组，1 是终点组。 */
   index: ComputedRef<0 | 1>
 }
 
-/** 日历自报面板号，供面板内的标题、网格与格子认领自己属于并排的第几张。 */
+/** 日历声明的面板号，供面板内的标题、网格与格子认领自己属于并排的第几张。 */
 export interface DateRangePickerPanelContext {
   index: ComputedRef<number>
 }
@@ -31,10 +31,10 @@ const CELL_KEY: InjectionKey<DateRangePickerCellContext> = Symbol.for('xh-date-r
 const SEGMENT_GROUP_KEY: InjectionKey<DateRangePickerSegmentGroupContext> = Symbol.for('xh-date-range-picker-segment-group')
 const PANEL_KEY: InjectionKey<DateRangePickerPanelContext> = Symbol.for('xh-date-range-picker-panel')
 
-/** 没有分段容器时的组号，段位与隐藏输入落到起点那组。 */
+/** 没有分段容器时的组号，段位与隐藏输入落到起点组。 */
 const START_GROUP: DateRangePickerSegmentGroupContext = { index: computed<0 | 1>(() => 0) }
 
-/** 日历没自报面板号时的落点，与单面板时一致。 */
+/** 日历未声明面板号时的落点，与单面板时一致。 */
 const FIRST_PANEL: DateRangePickerPanelContext = { index: computed(() => 0) }
 
 export function provideDateRangePicker(ctx: DateRangePickerContext): void {

@@ -46,7 +46,7 @@ const NUMBER_CONVERTER = { fromAttribute: (v: string | null) => (v === null ? un
 // 三态布尔：缺席=undefined（走缺省）、在场=true、显式写 "false"=false。
 const BOOLEAN_CONVERTER = { fromAttribute: (v: string | null) => (v === null ? undefined : v !== 'false') }
 
-/** 九块段位的名字，按段名声明时照它认。 */
+/** 九个段位的名字，按段名声明时据此识别。 */
 const SEGMENT_TYPES: readonly DateSegmentType[] = [
   'year',
   'quarter',
@@ -60,8 +60,8 @@ const SEGMENT_TYPES: readonly DateSegmentType[] = [
 ]
 
 /**
- * 作者写在段位上的那一句声明：`segment="quarter"` 按段名认，否则按下标（缺省退回组内文档序）。
- * 段名写坏了当没写，退回下标那条路。
+ * 作者写在段位上的声明：`segment="quarter"` 按段名识别，否则按下标（默认退回组内文档序）。
+ * 段名写错时视为未写，退回下标路径。
  */
 function declaredSegment(el: HTMLElement, position: number): DateFieldSegmentProps {
   const raw = el.getAttribute('segment')?.trim()
@@ -77,88 +77,88 @@ function declaredIndex(el: HTMLElement, position: number): number {
 }
 
 /**
- * `<xh-date-range-picker>` —— Light-DOM 行为宿主：作者写 root/label/control/segment-group/range-separator/segment/trigger/
- * clear-trigger/positioner/content/calendar 角色节点，calendar 之内再照日历范围选择器那套写
- * header/prev-trigger/next-trigger/heading/grid/grid-head/week-day/grid-body/week-row/cell/cell-trigger。
+ * `<xh-date-range-picker>`：Light-DOM 行为宿主：作者写 root / label / control / segment-group / range-separator / segment / trigger /
+ * clear-trigger / positioner / content / calendar 角色节点，calendar 之内再按日历范围选择器的方式写
+ * header / prev-trigger / next-trigger / heading / grid / grid-head / week-day / grid-body / week-row / cell / cell-trigger。
  *
- * 本元素是编排机，只持有开合与「分段输入 ↔ 日历」之间的值同步；选日期、翻月、网格键盘导航
- * 委派给内嵌日历，分段输入委派给内嵌分段输入，两部件之内的 DOM 各戴各自的 data-scope。
+ * 本元素是编排状态机，只持有开合与分段输入 ↔ 日历之间的值同步；选日期、翻月、网格键盘导航
+ * 委派给内嵌日历，分段输入委派给内嵌分段输入，两部件之内的 DOM 各带各自的 data-scope。
  *
- * 网格由作者渲染，元素不生成节点：读 `panels` / `weeks` / `weekDays` / `headingLabel` 几个只读属性，
- * 听 `focused-value-change` 与 `active-view-change` 重画。并排多页时读 `panels`，每页自带
- * 日期矩阵、粗粒度格子与标题；输入行铺哪几段读 `fieldSegments` 与 `fieldEndSegments`。
+ * 网格由作者渲染，元素不生成节点：读取 `panels` / `weeks` / `weekDays` / `headingLabel` 几个只读属性，
+ * 监听 `focused-value-change` 与 `active-view-change` 重绘。并排多页时读取 `panels`，每页自带
+ * 日期矩阵、粗粒度格子与标题；输入行铺设的段读取 `fieldSegments` 与 `fieldEndSegments`。
  * 日期身份取 cell 节点上的 `value`（ISO 串），
  * cell-trigger 跟随所在 cell；表头列取 week-day 上的 `value`（列序 0-6）；
- * 段位可自带 `segment` 属性按段名认领（`segment="quarter"`），或自带 `index` 属性声明下标，
- * 两者都没写按所在 segment-group 之内的文档序。
+ * 段位可自带 `segment` 属性按段名归属（`segment="quarter"`），或自带 `index` 属性声明下标，
+ * 两者都未写时按所在 segment-group 之内的文档序。
  *
- * segment-group 写两个：文档序在前的是起点、在后的是终点，各自内部写一整套段位，中间放 range-separator。
+ * segment-group 写两个：文档序在前的是起点、在后的是终点，各自内部写一整套段位，中间放置 range-separator。
  * 段位与 hidden-input 按所在 segment-group 归组，方向键不跨组；
  * hidden-input 写在 segment-group 之外（如与 control 平级）时按文档序对应起止两端。
  *
  * @customElement xh-date-range-picker
- * @prop {string[]} value - 受控的区间两端 [start, end]（数组只走 property）；空缺的一端用空串占位；缺省即非受控
+ * @prop {string[]} value - 受控的区间两端 [start, end]（数组只能通过 property 设置）；空缺的一端用空串占位；未提供即非受控
  * @prop {string[]} default-value - 非受控初始区间
- * @attr {boolean} open - 受控开合；缺省该属性即非受控
+ * @attr {boolean} open - 受控开合；未提供该属性即非受控
  * @attr {boolean} default-open - 非受控初始为展开
  * @attr {string} min - 可选范围下界（含当天），日历与分段输入共用
  * @attr {string} max - 可选范围上界（含当天）
- * @attr {string} locale - 决定周首日、月份文案与段位先后；不给按宿主语言，宿主也没有时按 en-US
- * @attr {string} time-zone - 判定"今天"与格式化用的时区，默认宿主本地时区
- * @attr {'day'|'week'|'month'|'quarter'|'year'} granularity - 选择粒度，默认 day；两组输入行铺哪几段跟着它走
- * @attr {'day'|'week'|'month'|'quarter'|'year'} active-view - 受控：面板此刻钻到了哪一层；缺省跟着 granularity
- * @prop {DateRangePickerPreset[]} presets - 快捷选项（数组只走 property）：给了就在浮层里多出一列
- * @attr {number} visible-count - 并排展示几页；缺省 1，起止常跨月时给 2
- * @attr {boolean} fixed-weeks - 日历恒渲染六行，默认开；写 fixed-weeks="false" 关掉
+ * @attr {string} locale - 决定周首日、月份文案与段位先后；未提供时按宿主语言，宿主也没有时按 en-US
+ * @attr {string} time-zone - 判定今天与格式化使用的时区，默认宿主本地时区
+ * @attr {'day'|'week'|'month'|'quarter'|'year'} granularity - 选择粒度，默认 day；两组输入行铺设的段随之决定
+ * @attr {'day'|'week'|'month'|'quarter'|'year'} active-view - 受控：面板当前所在的层级；未提供时跟随 granularity
+ * @prop {DateRangePickerPreset[]} presets - 快捷选项（数组只能通过 property 设置）：提供后浮层中多出一列
+ * @attr {number} visible-count - 并排展示的页数；默认 1，起止常跨月时提供 2
+ * @attr {boolean} fixed-weeks - 日历恒渲染六行，默认开启；写 fixed-weeks="false" 关闭
  * @attr {string} default-focused-value - 初始聚焦日，同时决定展开时先落在哪一页
- * @attr {boolean} disabled - 整个控件禁用：trigger 转原生 disabled，段位退出 Tab 序
- * @attr {boolean} read-only - 只读：浮层照常展开、日历照常浏览，但选中值改不动
- * @attr {boolean} invalid - 校验失败标注；不给也会自己判：任一端越界、或终点早于起点
- * @attr {boolean} allows-non-contiguous-ranges - 允许跨过不可用的日子；默认关，落了起点后只能挑到两侧最近的不可用日为止
- * @attr {boolean} required - 必填标注，落到每段的 aria-required 上
- * @attr {string} name - 起点那份隐藏输入的表单字段名；给了才带 name
- * @attr {string} end-name - 终点那份隐藏输入的表单字段名；不给即终点不参与提交
+ * @attr {boolean} disabled - 整个控件禁用：trigger 为原生 disabled，段位退出 Tab 序列
+ * @attr {boolean} read-only - 只读：浮层照常展开、日历照常浏览，但选中值不可修改
+ * @attr {boolean} invalid - 校验失败标注；未提供时也会自行判定：任一端越界，或终点早于起点
+ * @attr {boolean} allows-non-contiguous-ranges - 允许跨过不可用的日期；默认关闭，落下起点后只能选到两侧最近的不可用日为止
+ * @attr {boolean} required - 必填标注，写入每段的 aria-required
+ * @attr {string} name - 起点隐藏输入的表单字段名；提供后才带 name
+ * @attr {string} end-name - 终点隐藏输入的表单字段名；未提供时终点不参与提交
  * @attr {'outline'|'subtle'|'ghost'} variant - 视觉变体
  * @attr {'brand'|'neutral'|'success'|'warning'|'danger'|'info'} tone - 语气
  * @attr {'sm'|'md'|'lg'} size - 尺寸
- * @attr {string} placement - 首选放置位，默认 bottom-start；避让后的实际位写在 data-placement 上
+ * @attr {string} placement - 首选放置位，默认 bottom-start；避让后的实际位置写在 data-placement 上
  * @attr {number} offset - 浮层与锚点的间距（px）
- * @attr {'ltr'|'rtl'} dir - 文字方向，翻转浮层在行内轴上 start 与 end 的落点；只在显式给了才写到定位层上
- * @attr {boolean} close-on-select - 两端都落定即收起，默认 true；写 close-on-select="false" 关掉
- * @fires value-change - 区间两端变化；detail 为 `{ value: string[] }`，只填了终点时是 `['', end]`
+ * @attr {'ltr'|'rtl'} dir - 文字方向，翻转浮层在行内轴上 start 与 end 的落点；只在显式提供时才写到定位层上
+ * @attr {boolean} close-on-select - 两端都落定即收起，默认 true；写 close-on-select="false" 关闭
+ * @fires value-change - 区间两端变化；detail 为 `{ value: string[] }`，只填终点时为 `['', end]`
  * @fires open-change - open 状态变化；detail 为 `{ open: boolean }`
- * @fires focused-value-change - 聚焦日变化（意味着展示月可能换了）；detail 为 `{ focusedValue: string }`，作者据此重画网格
- * @fires active-view-change - 钻到了另一层（点标题钻上、点格子钻下）；detail 为 `{ activeView: 'day'|'week'|'month'|'quarter'|'year' }`，作者据此重画网格
- * @csspart root - 组件根容器（承载 data-state/data-disabled/data-readonly/data-invalid）
- * @csspart label - 标题；点它把焦点送进首段。刻意不是原生 label（段位是 div，标不了）
+ * @fires focused-value-change - 聚焦日变化（展示月可能随之变化）；detail 为 `{ focusedValue: string }`，作者据此重绘网格
+ * @fires active-view-change - 切换到另一层级（点击标题向上、点击格子向下）；detail 为 `{ activeView: 'day'|'week'|'month'|'quarter'|'year' }`，作者据此重绘网格
+ * @csspart root - 组件根容器（承载 data-state / data-disabled / data-readonly / data-invalid）
+ * @csspart label - 标题；点击它把焦点送进首段。刻意不是原生 label（段位是 div，无法标注）
  * @csspart control - 输入行容器，同时是浮层的定位锚点
- * @csspart segment-group - role=group 的分段容器，段位挂在它里面；起止两个，data-index 区分
+ * @csspart segment-group - role=group 的分段容器，段位挂在其中；起止两个，data-index 区分
  * @csspart range-separator - 起止输入之间的视觉分隔，退出可访问树
- * @csspart segment - 一段一个的 spinbutton 节点（data-scope="date-field"）。可自带 segment 属性按段名认领
+ * @csspart segment - 一段一个的 spinbutton 节点（data-scope="date-field"）。可自带 segment 属性按段名归属
  *   （segment="quarter"），或自带 index 属性声明下标（在所属 segment-group 组内数），两者都没写按文档序
  * @csspart trigger - 展开日历的按钮，须是原生 button
  * @csspart clear-trigger - 清空按钮，须是原生 button；不占 Tab 位，名字取 translations.clearTrigger
- * @csspart positioner - 浮层定位容器，坐标由引擎写成内联样式
+ * @csspart positioner - 浮层定位容器，坐标由引擎写为内联样式
  * @csspart content - role=dialog 浮层（消解层的根节点），收起时带 hidden
- * @csspart preset-group - 快捷选项列（role=listbox）；没给 presets 时带 hidden
- * @csspart preset - 一条快捷选项（role=option），须自带 value 属性（与 presets 数据里的 value 逐字对上）
+ * @csspart preset-group - 快捷选项列（role=listbox）；未提供 presets 时带 hidden
+ * @csspart preset - 一条快捷选项（role=option），须自带 value 属性（与 presets 数据中的 value 逐字一致）
  * @csspart calendar - 内嵌范围日历的挂载点，同时充当日历的根节点；并排多页时每页各写一个
  * @csspart header - 日历标题栏外壳（data-scope="calendar-range-picker"）
- * @csspart prev-year-trigger - 快速往前翻一大步（日视图一年、粗粒度十页）；可选
- * @csspart prev-trigger - 上一月；越过 min 时转原生 disabled
- * @csspart next-trigger - 下一月；越过 max 时转原生 disabled
- * @csspart next-year-trigger - 快速往后翻一大步；可选
+ * @csspart prev-year-trigger - 快速向前翻一大步（日视图一年、粗粒度十页）；可选
+ * @csspart prev-trigger - 上一月；越过 min 时为原生 disabled
+ * @csspart next-trigger - 下一月；越过 max 时为原生 disabled
+ * @csspart next-year-trigger - 快速向后翻一大步；可选
  * @csspart heading - 展示月标题（grid 的 aria-labelledby 目标）
- * @csspart heading-year-trigger - 标题里年那一截，点它钻到十年格；可选
- * @csspart heading-month-trigger - 标题里月那一截，点它钻到月格；只有日视图有这一截；可选
+ * @csspart heading-year-trigger - 标题中的年，点击切换到十年格；可选
+ * @csspart heading-month-trigger - 标题中的月，点击切换到月格；只有日视图有该部分；可选
  * @csspart grid - role=grid 容器，网格键盘在此收口
- * @csspart grid-head - role=rowgroup 表头组，里面套一个 week-row
+ * @csspart grid-head - role=rowgroup 表头组，其中包含一个 week-row
  * @csspart week-day - role=columnheader 列头，须自带 value 属性标明列序 0-6
  * @csspart grid-body - role=rowgroup 日期组
  * @csspart week-row - role=row 周行，表头与日期行共用
- * @csspart week-number - 行首的周序号格（role=rowheader），须自带 value 属性（行首那天）；可选
+ * @csspart week-number - 行首的周序号格（role=rowheader），须自带 value 属性（行首日期）；可选
  * @csspart cell - role=gridcell 日期格，承载 aria-selected；须自带 value 属性（ISO 串）
- * @csspart cell-trigger - 真正可点可聚焦的那一层，承载 aria-disabled 与 roving tabindex
+ * @csspart cell-trigger - 实际可点击可聚焦的层，承载 aria-disabled 与 roving tabindex
  * @csspart hidden-input - type=hidden 的表单出口，值是 ISO 串；起止各一份
  */
 export class XhDateRangePickerElement extends XhPortalHostElement {
@@ -432,22 +432,22 @@ export class XhDateRangePickerElement extends XhPortalHostElement {
   }
 
   /**
-   * 下面几个只读属性是公开面，作者拿到元素就可能读——机器要到进文档（hostConnected）才建，
-   * 还没建时如实给空，别炸。
+   * 下面几个只读属性是公开面，作者拿到元素后就可能读取：状态机在进入文档（hostConnected）后才建立，
+   * 尚未建立时如实返回空值，不抛错。
    */
   private api(): ReturnType<typeof connectDateRangePicker> | null {
     return this.rootCtrl.service ? connectDateRangePicker(this.services(), wcNormalize) : null
   }
 
   /**
-   * 并排展示的面板，长度即此刻铺了几页。
-   * 每页自带日期矩阵、粗粒度格子与标题，作者照它渲染 calendar / heading / grid 那几层。
+   * 并排展示的面板，长度即当前铺设的页数。
+   * 每页自带日期矩阵、粗粒度格子与标题，作者据此渲染 calendar / heading / grid 各层。
    */
   get panels(): CalendarPanel[] {
     return this.api()?.calendar.panels ?? []
   }
 
-  /** 首个面板的日期矩阵，作者照它重画网格。粗粒度视图下为空数组，多面板请改用 panels。 */
+  /** 首个面板的日期矩阵，作者据此渲染网格。粗粒度视图下为空数组，多面板请改用 panels。 */
   get weeks(): CalendarDay[][] {
     return this.api()?.calendar.weeks ?? []
   }
@@ -467,20 +467,20 @@ export class XhDateRangePickerElement extends XhPortalHostElement {
     return this.api()?.calendar.weekDays ?? []
   }
 
-  /** 首个面板的标题文案，作者写进 heading 节点。多面板请改用 panels。 */
+  /** 首个面板的标题文案，作者写入 heading 节点。多面板请改用 panels。 */
   get headingLabel(): string {
     return this.api()?.calendar.headingLabel ?? ''
   }
 
   /**
-   * 输入行此刻该铺哪几段（段名、当前文字与占位），段数与段序按 granularity 与 locale 推出来。
-   * 作者照它写 segment 节点，不必自己数几段。这是起点那一组。
+   * 输入行当前应铺设的段（段名、当前文字与占位），段数与段序按 granularity 与 locale 推导。
+   * 作者据此写 segment 节点，不必自行计算段数。这是起点一组。
    */
   get fieldSegments(): DateFieldSegmentState[] {
     return this.api()?.field.segments ?? []
   }
 
-  /** 终点那一组该铺哪几段。 */
+  /** 终点一组应铺设的段。 */
   get fieldEndSegments(): DateFieldSegmentState[] {
     return this.api()?.fieldEnd.segments ?? []
   }
