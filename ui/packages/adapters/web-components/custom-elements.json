@@ -61745,7 +61745,7 @@
       "declarations": [
         {
           "kind": "class",
-          "description": "`<xh-tree>` —— Light-DOM 行为宿主：作者写 root/label/tree 与若干 item / branch 角色节点，\n元素跑 tree 机器并把 connect 产出打上去。节点身份取自节点上的 value 属性。\n\n层级（aria-level / aria-posinset / aria-setsize）与禁用都不从 DOM 反推，而是查 `collection`\n这份树数据——它是元信息的唯一事实源，作者的标记只管长相，两个适配器也就不会各推各的。\n因此 collection 必须与标记同源：标记里有、collection 里没有的节点报不出层级，也进不了导航。\n\n树数据与展开/选中集合都是数组，属性表达不了，只能走 property（`el.collection = [...]`）；\n落点校验 `allowDrop`（函数）与读屏文案 `translations`（对象）同理。\n\n打开 node-draggable 后节点可以拖着搬家：整个节点都是拖动源。拖动中被拖的节点原地不动，\n只落 data-dragging；落点画在参照节点上——data-drop 为 before/after 是插在这一行前后，\n为 inside 是放进这个分支。触屏那一路走 node-drag-trigger 把手。\n键盘走 Alt + 方向键：上下在同层兄弟间挪，左右改缩进层级（rtl 下左右对调），一按就是一次完整提交。",
+          "description": "`<xh-tree>`：Light-DOM 行为宿主：作者写 root / label / tree 与若干 item / branch 角色节点，\n元素运行 tree 状态机并把 connect 产出接上。节点身份取自节点上的 value 属性。\n\n层级（aria-level / aria-posinset / aria-setsize）与禁用都不从 DOM 反推，而是查询 `collection`\n这份树数据：它是元信息的唯一事实源，作者的标记只负责外观，各适配器也不会各自推导。\n因此 collection 必须与标记同源：标记中有、collection 中没有的节点无法报告层级，也进入不了导航。\n\n树数据与展开 / 选中集合都是数组，属性无法表达，只能通过 property 设置（`el.collection = [...]`）；\n落点校验 `allowDrop`（函数）与读屏文案 `translations`（对象）同理。\n\n开启 node-draggable 后节点可以拖动移动：整个节点都是拖动源。拖动中被拖的节点原地不动，\n只写 data-dragging；落点绘制在参照节点上：data-drop 为 before / after 是插在该行前后，\n为 inside 是放进该分支。触屏路径经 node-drag-trigger 把手。\n键盘使用 Alt + 方向键：上下在同层兄弟间移动，左右改变缩进层级（rtl 下左右对调），按一次即一次完整提交。",
           "name": "XhTreeElement",
           "cssParts": [
             {
@@ -61757,7 +61757,7 @@
               "name": "label"
             },
             {
-              "description": "视觉隐藏的播报区，拖动过程的读屏文案写在这里；写在 root 里、与 tree 部件平级（root 自己不带角色，它落不进 role=tree 的子节点集合）",
+              "description": "视觉隐藏的播报区，拖动过程的读屏文案写在这里；写在 root 中、与 tree 部件平级（root 自身不带角色，无法进入 role=tree 的子节点集合）",
               "name": "live-region"
             },
             {
@@ -61765,11 +61765,11 @@
               "name": "tree"
             },
             {
-              "description": "空态占位，须放在 root 里当 tree 的兄弟；给了 collection 时由元素按条数收放，节点手写时归作者",
+              "description": "空态占位，须放在 root 中作为 tree 的兄弟；提供 collection 时由元素按条数收放，节点手写时由作者负责",
               "name": "empty"
             },
             {
-              "description": "在途占位，与空态占位同一个位置，取数期间顶上来",
+              "description": "在途占位，与空态占位同一位置，加载期间显示",
               "name": "loading"
             },
             {
@@ -61781,7 +61781,7 @@
               "name": "item-text"
             },
             {
-              "description": "叶子的勾选把手，点它只勾选、不触发点行；可选",
+              "description": "叶子的勾选把手，点击只勾选、不触发点击行；可选",
               "name": "item-checkbox"
             },
             {
@@ -61789,15 +61789,15 @@
               "name": "item-indicator"
             },
             {
-              "description": "role=treeitem 分支，须自带 value 属性；它裹着自己的 branch-content",
+              "description": "role=treeitem 分支，须自带 value 属性；它包裹自己的 branch-content",
               "name": "branch"
             },
             {
-              "description": "分支的勾选把手，点它只勾选、不展开这一枝；可选",
+              "description": "分支的勾选把手，点击只勾选、不展开该分支；可选",
               "name": "branch-checkbox"
             },
             {
-              "description": "分支可点行（选中 + 按 expand-on-click 切换展开）",
+              "description": "分支可点击行（选中 + 按 expand-on-click 切换展开）",
               "name": "branch-control"
             },
             {
@@ -61817,7 +61817,7 @@
               "name": "branch-content"
             },
             {
-              "description": "节点拖拽把手，触屏那一路的入口（自带 touch-action: none，按下即拖）；对读屏隐藏且不占 Tab 位，键盘那一路由树上的 Alt + 方向键承担",
+              "description": "节点拖拽把手，触屏路径的入口（自带 touch-action: none，按下即拖动）；对读屏隐藏且不占 Tab 位，键盘路径由树上的 Alt + 方向键承担",
               "name": "node-drag-trigger"
             }
           ],
@@ -62072,7 +62072,7 @@
                   }
                 }
               ],
-              "description": "取角色节点所属的节点身份：value 写在 item / branch 上，行内的文本、标记、箭头与子层容器\n向上找最近的那个（item / branch 自身 closest 命中的就是它自己）。\n没有包裹层时退回读节点自身，扁平写法也能用。\n越出本宿主的容器不算数——嵌套 xh-tree 的内层节点不会认外层的分支。"
+              "description": "取角色节点所属的节点身份：value 写在 item / branch 上，行内的文本、标记、箭头与子层容器\n向上查找最近的一个（item / branch 自身 closest 命中的就是它自己）。\n没有包裹层时退回读取节点自身，扁平写法也可使用。\n越出本宿主的容器不计：嵌套 xh-tree 的内层节点不会识别外层的分支。"
             },
             {
               "kind": "method",
@@ -62101,7 +62101,7 @@
               }
             },
             {
-              "description": "节点搬了家；detail 为 `{ value, parent, index }`，parent 为 null 即根层，index 是在那一层的落位（已算过先摘后插）",
+              "description": "节点已移动；detail 为 `{ value, parent, index }`，parent 为 null 即根层，index 是在该层的落位（已经过先移除后插入的修正）",
               "name": "node-move",
               "type": {
                 "text": "TreeNodeMoveDetails"
@@ -62113,7 +62113,7 @@
               "type": {
                 "text": "TreeSchema['props']['variant'] | undefined"
               },
-              "description": "外框形态：surface 带描边与底色（缺省），plain 只留行",
+              "description": "外框形态：surface 带描边与底色（默认），plain 只保留行",
               "name": "variant",
               "fieldName": "variant"
             },
@@ -62129,7 +62129,7 @@
               "type": {
                 "text": "Orientation | undefined"
               },
-              "description": "末端那一层怎么排，默认 vertical；horizontal 让子节点全是叶子的那层并排铺开",
+              "description": "末端层的排布方式，默认 vertical；horizontal 使子节点全是叶子的层并排铺开",
               "name": "leaf-orientation",
               "fieldName": "leafOrientation"
             },
@@ -62137,7 +62137,7 @@
               "type": {
                 "text": "boolean | undefined"
               },
-              "description": "multiple 下父子级联勾选（整枝传导/半选/禁用冻结），默认 false",
+              "description": "multiple 下父子级联勾选（整枝传导 / 半选 / 禁用冻结），默认 false",
               "name": "cascade",
               "fieldName": "cascade"
             },
@@ -62153,7 +62153,7 @@
               "type": {
                 "text": "boolean | undefined"
               },
-              "description": "点分支行顺带展开/收起，默认开；写 expand-on-click=\"false\" 关掉",
+              "description": "点击分支行同时展开 / 收起，默认开启；写 expand-on-click=\"false\" 关闭",
               "name": "expand-on-click",
               "fieldName": "expandOnClick"
             },
@@ -62161,7 +62161,7 @@
               "type": {
                 "text": "boolean | undefined"
               },
-              "description": "整棵树禁用：所有节点转 aria-disabled，键盘与点击都改不了展开与选中",
+              "description": "整棵树禁用：所有节点为 aria-disabled，键盘与点击都不能改变展开与选中",
               "name": "disabled",
               "fieldName": "disabled"
             },
@@ -62169,7 +62169,7 @@
               "type": {
                 "text": "boolean | undefined"
               },
-              "description": "上下键走到首尾回绕，默认关；写 loop=\"true\" 打开",
+              "description": "上下键到达首尾回绕，默认关闭；写 loop=\"true\" 开启",
               "name": "loop",
               "fieldName": "loop"
             },
@@ -62177,7 +62177,7 @@
               "type": {
                 "text": "boolean | undefined"
               },
-              "description": "连打检索，默认开；写 typeahead=\"false\" 关掉",
+              "description": "连打检索，默认开启；写 typeahead=\"false\" 关闭",
               "name": "typeahead",
               "fieldName": "typeahead"
             },
@@ -62185,7 +62185,7 @@
               "type": {
                 "text": "Direction | undefined"
               },
-              "description": "文字方向，只对调左右方向键的展开/收起语义，默认 ltr",
+              "description": "文字方向，只对调左右方向键的展开 / 收起语义，默认 ltr",
               "name": "dir",
               "fieldName": "direction"
             },
@@ -62193,7 +62193,7 @@
               "type": {
                 "text": "boolean | undefined"
               },
-              "description": "节点可以拖着搬家，默认关；不叫 draggable 是因为那是 HTML 全局属性，写在元素上浏览器会拿它接管原生拖放，指针就到不了这里",
+              "description": "节点可以拖动移动，默认关闭；不命名为 draggable 是因为那是 HTML 全局属性，写在元素上浏览器会用它接管原生拖放，指针无法到达这里",
               "name": "node-draggable",
               "fieldName": "nodeDraggable"
             },

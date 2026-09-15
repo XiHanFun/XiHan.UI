@@ -20,65 +20,65 @@ const STRING_CONVERTER = { fromAttribute: (v: string | null) => v ?? undefined }
 // Lit 默认的 Boolean 转换器是 v !== null，写 expand-on-click="false" 照样是真。
 const BOOLEAN_CONVERTER = { fromAttribute: (v: string | null) => (v === null ? undefined : v !== 'false') }
 
-/** 搬家事件的 detail：从机器 props 上的回调取，不在适配器里另抄一份类型。 */
+/** 移动事件的 detail：从状态机 props 上的回调取，不在适配器中另抄一份类型。 */
 type TreeNodeMoveDetails = Parameters<NonNullable<TreeSchema['props']['onNodeMove']>>[0]
 
 /** 叶子一系的归属容器。 */
 const ITEM_SELECTOR = '[data-xh-part="item"]'
 /** 分支一系的归属容器；嵌套分支各认最近的那个。 */
 const BRANCH_SELECTOR = '[data-xh-part="branch"]'
-/** 两类节点通吃的归属容器：拖动把手写在叶子里还是分支里都算，取最近的那一个。 */
+/** 两类节点通用的归属容器：拖动把手写在叶子中还是分支中都算，取最近的一个。 */
 const NODE_SELECTOR = `${ITEM_SELECTOR}, ${BRANCH_SELECTOR}`
 
 /**
- * `<xh-tree>` —— Light-DOM 行为宿主：作者写 root/label/tree 与若干 item / branch 角色节点，
- * 元素跑 tree 机器并把 connect 产出打上去。节点身份取自节点上的 value 属性。
+ * `<xh-tree>`：Light-DOM 行为宿主：作者写 root / label / tree 与若干 item / branch 角色节点，
+ * 元素运行 tree 状态机并把 connect 产出接上。节点身份取自节点上的 value 属性。
  *
- * 层级（aria-level / aria-posinset / aria-setsize）与禁用都不从 DOM 反推，而是查 `collection`
- * 这份树数据——它是元信息的唯一事实源，作者的标记只管长相，两个适配器也就不会各推各的。
- * 因此 collection 必须与标记同源：标记里有、collection 里没有的节点报不出层级，也进不了导航。
+ * 层级（aria-level / aria-posinset / aria-setsize）与禁用都不从 DOM 反推，而是查询 `collection`
+ * 这份树数据：它是元信息的唯一事实源，作者的标记只负责外观，各适配器也不会各自推导。
+ * 因此 collection 必须与标记同源：标记中有、collection 中没有的节点无法报告层级，也进入不了导航。
  *
- * 树数据与展开/选中集合都是数组，属性表达不了，只能走 property（`el.collection = [...]`）；
+ * 树数据与展开 / 选中集合都是数组，属性无法表达，只能通过 property 设置（`el.collection = [...]`）；
  * 落点校验 `allowDrop`（函数）与读屏文案 `translations`（对象）同理。
  *
- * 打开 node-draggable 后节点可以拖着搬家：整个节点都是拖动源。拖动中被拖的节点原地不动，
- * 只落 data-dragging；落点画在参照节点上——data-drop 为 before/after 是插在这一行前后，
- * 为 inside 是放进这个分支。触屏那一路走 node-drag-trigger 把手。
- * 键盘走 Alt + 方向键：上下在同层兄弟间挪，左右改缩进层级（rtl 下左右对调），一按就是一次完整提交。
+ * 开启 node-draggable 后节点可以拖动移动：整个节点都是拖动源。拖动中被拖的节点原地不动，
+ * 只写 data-dragging；落点绘制在参照节点上：data-drop 为 before / after 是插在该行前后，
+ * 为 inside 是放进该分支。触屏路径经 node-drag-trigger 把手。
+ * 键盘使用 Alt + 方向键：上下在同层兄弟间移动，左右改变缩进层级（rtl 下左右对调），按一次即一次完整提交。
  *
  * @customElement xh-tree
- * @attr {'plain'|'surface'} variant - 外框形态：surface 带描边与底色（缺省），plain 只留行
+ * @attr {'plain'|'surface'} variant - 外框形态：surface 带描边与底色（默认），plain 只保留行
  * @attr {boolean} multiple - 复选，默认关闭
- * @attr {'horizontal'|'vertical'} leaf-orientation - 末端那一层怎么排，默认 vertical；horizontal 让子节点全是叶子的那层并排铺开
- * @attr {boolean} cascade - multiple 下父子级联勾选（整枝传导/半选/禁用冻结），默认 false
+ * @attr {'horizontal'|'vertical'} leaf-orientation - 末端层的排布方式，默认 vertical；horizontal 使子节点全是叶子的层并排铺开
+ * @attr {boolean} cascade - multiple 下父子级联勾选（整枝传导 / 半选 / 禁用冻结），默认 false
  * @attr {string} checked-strategy - 级联下对外值的收敛策略：child（默认）/ parent / all
- * @attr {boolean} expand-on-click - 点分支行顺带展开/收起，默认开；写 expand-on-click="false" 关掉
- * @attr {boolean} disabled - 整棵树禁用：所有节点转 aria-disabled，键盘与点击都改不了展开与选中
- * @attr {boolean} loop - 上下键走到首尾回绕，默认关；写 loop="true" 打开
- * @attr {boolean} typeahead - 连打检索，默认开；写 typeahead="false" 关掉
- * @attr {'ltr'|'rtl'} dir - 文字方向，只对调左右方向键的展开/收起语义，默认 ltr
- * @attr {boolean} node-draggable - 节点可以拖着搬家，默认关；不叫 draggable 是因为那是 HTML 全局属性，写在元素上浏览器会拿它接管原生拖放，指针就到不了这里
+ * @attr {boolean} expand-on-click - 点击分支行同时展开 / 收起，默认开启；写 expand-on-click="false" 关闭
+ * @attr {boolean} disabled - 整棵树禁用：所有节点为 aria-disabled，键盘与点击都不能改变展开与选中
+ * @attr {boolean} loop - 上下键到达首尾回绕，默认关闭；写 loop="true" 开启
+ * @attr {boolean} typeahead - 连打检索，默认开启；写 typeahead="false" 关闭
+ * @attr {'ltr'|'rtl'} dir - 文字方向，只对调左右方向键的展开 / 收起语义，默认 ltr
+ * @attr {boolean} node-draggable - 节点可以拖动移动，默认关闭；不命名为 draggable 是因为那是 HTML 全局属性，写在元素上浏览器会用它接管原生拖放，指针无法到达这里
  * @fires expanded-value-change - 展开集合变化；detail 为 `{ value: string[] }`
  * @fires selection-change - 选中集合变化；detail 为 `{ value: string[] }`
- * @fires node-move - 节点搬了家；detail 为 `{ value, parent, index }`，parent 为 null 即根层，index 是在那一层的落位（已算过先摘后插）
+ * @fires node-move - 节点已移动；detail 为 `{ value, parent, index }`，parent 为 null 即根层，index 是在该层的落位（已经过先移除后插入的修正）
  * @csspart root - 组件根容器，承载 data-variant
  * @csspart label - 树标题（aria-labelledby 目标）
- * @csspart live-region - 视觉隐藏的播报区，拖动过程的读屏文案写在这里；写在 root 里、与 tree 部件平级（root 自己不带角色，它落不进 role=tree 的子节点集合）
+ * @csspart live-region - 视觉隐藏的播报区，拖动过程的读屏文案写在这里；写在 root 中、与 tree 部件平级（root 自身不带角色，无法进入 role=tree 的子节点集合）
  * @csspart tree - role=tree 容器，键盘在此收口，也是 roving tabindex 的兜底位
- * @csspart empty - 空态占位，须放在 root 里当 tree 的兄弟；给了 collection 时由元素按条数收放，节点手写时归作者
- * @csspart loading - 在途占位，与空态占位同一个位置，取数期间顶上来
+ * @csspart empty - 空态占位，须放在 root 中作为 tree 的兄弟；提供 collection 时由元素按条数收放，节点手写时由作者负责
+ * @csspart loading - 在途占位，与空态占位同一位置，加载期间显示
  * @csspart item - role=treeitem 叶子，须自带 value 属性标识身份
  * @csspart item-text - 叶子文本
- * @csspart item-checkbox - 叶子的勾选把手，点它只勾选、不触发点行；可选
+ * @csspart item-checkbox - 叶子的勾选把手，点击只勾选、不触发点击行；可选
  * @csspart item-indicator - 叶子选中标记（aria-hidden）
- * @csspart branch - role=treeitem 分支，须自带 value 属性；它裹着自己的 branch-content
- * @csspart branch-checkbox - 分支的勾选把手，点它只勾选、不展开这一枝；可选
- * @csspart branch-control - 分支可点行（选中 + 按 expand-on-click 切换展开）
+ * @csspart branch - role=treeitem 分支，须自带 value 属性；它包裹自己的 branch-content
+ * @csspart branch-checkbox - 分支的勾选把手，点击只勾选、不展开该分支；可选
+ * @csspart branch-control - 分支可点击行（选中 + 按 expand-on-click 切换展开）
  * @csspart branch-trigger - 展开箭头（aria-hidden 且不占 Tab 位，只切换展开态）
  * @csspart branch-indicator - 展开方向指示符（aria-hidden）
  * @csspart branch-text - 分支文本
  * @csspart branch-content - role=group 子层容器，收起时隐藏
- * @csspart node-drag-trigger - 节点拖拽把手，触屏那一路的入口（自带 touch-action: none，按下即拖）；对读屏隐藏且不占 Tab 位，键盘那一路由树上的 Alt + 方向键承担
+ * @csspart node-drag-trigger - 节点拖拽把手，触屏路径的入口（自带 touch-action: none，按下即拖动）；对读屏隐藏且不占 Tab 位，键盘路径由树上的 Alt + 方向键承担
  */
 export class XhTreeElement extends XhElement {
   static override partContract = { anatomy: treeAnatomy, meta: treeMeta }
@@ -197,9 +197,9 @@ export class XhTreeElement extends XhElement {
 
   /**
    * 取角色节点所属的节点身份：value 写在 item / branch 上，行内的文本、标记、箭头与子层容器
-   * 向上找最近的那个（item / branch 自身 closest 命中的就是它自己）。
-   * 没有包裹层时退回读节点自身，扁平写法也能用。
-   * 越出本宿主的容器不算数——嵌套 xh-tree 的内层节点不会认外层的分支。
+   * 向上查找最近的一个（item / branch 自身 closest 命中的就是它自己）。
+   * 没有包裹层时退回读取节点自身，扁平写法也可使用。
+   * 越出本宿主的容器不计：嵌套 xh-tree 的内层节点不会识别外层的分支。
    */
   private nodeOf(el: HTMLElement, selector: string): TreeNodeProps {
     const owner = el.closest<HTMLElement>(selector)

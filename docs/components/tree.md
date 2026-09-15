@@ -151,25 +151,25 @@ variant="plain" 去掉外框与底色，树直接落在页面上；缺省 surfac
 
 | 属性 | 类型 | 必填 | 说明 |
 | --- | --- | --- | --- |
-| `collection` | `TreeNode[]` |  | 树数据，层级元信息的唯一事实源。缺省为空树。 |
-| `variant` | `TreeVariant` |  | 外框形态：surface 带描边与底色（缺省），plain 去掉描边与底色，只留行。 |
-| `leafOrientation` | `Orientation` |  | 末端那一层怎么排，默认 vertical（每行一个）。horizontal 让它们并排铺开。 只作用于「子节点全是叶子」的那一层——菜单授权里就是按钮那层： 一个菜单下十几个按钮，横排一行铺完，省掉纵向翻找。中间层与整棵树恒是竖排， 它们承载的是层级本身，横过来层级就读没了。 这是结构判据，逐层自动认。要精确指定哪一层横排，在节点上标 `childrenOrientation`，它比本项优先。 只管排布，不动键盘：方向键在树上是层级操作（左右收展、上下走可见行）， 这是 treeview 的规范语义，不随排布方向改写。 |
-| `expandedValue` | `string[]` |  | 展开集合。给定即受控：cell 直读 prop，写只发 onExpandedValueChange 不落内部值。 |
+| `collection` | `TreeNode[]` |  | 树数据，层级元信息的唯一事实源。默认为空树。 |
+| `variant` | `TreeVariant` |  | 外框形态：surface 带描边与底色（默认），plain 去掉描边与底色，只保留行。 |
+| `leafOrientation` | `Orientation` |  | 末端层的排布方式，默认 vertical（每行一个）。horizontal 使它们并排铺开。 只作用于子节点全是叶子的层：菜单授权中即按钮层： 一个菜单下十几个按钮，横向排成一行，省去纵向翻找。中间层与整棵树恒为纵向， 它们承载的是层级本身，横向排布会失去层级信息。 这是结构判据，逐层自动识别。需要精确指定哪一层横向排布时，在节点上标注 `childrenOrientation`，它优先于本项。 只影响排布，不改变键盘：方向键在树上是层级操作（左右收展、上下移动可见行）， 这是 treeview 的规范语义，不随排布方向改写。 |
+| `expandedValue` | `string[]` |  | 展开集合。提供即受控：cell 直读 prop，写入只发 onExpandedValueChange 不落内部值。 |
 | `defaultExpandedValue` | `string[]` |  |  |
-| `selection` | `string[]` |  | 选中集合。给定即受控，语义同上。 |
+| `selection` | `string[]` |  | 选中集合。提供即受控，语义同上。 |
 | `defaultSelection` | `string[]` |  |  |
-| `multiple` | `boolean` |  | 复选：点击与确认键都是「切换」，tree 带 aria-multiselectable=true。默认 false（单选）。 |
-| `cascade` | `boolean` |  | multiple 下父子级联勾选：点分支整枝传导、子全勾父勾、部分勾中半选， 禁用子树整棵冻结。默认 false（朴素切换）；single 下无效。 |
-| `checkedStrategy` | `CascadeStrategy` |  | 级联下对外值的收敛策略，默认 child（只收叶）；parent = 最高整枝，all = 全部勾中节点。 |
-| `expandOnClick` | `boolean` |  | 点分支行是否顺带展开/收起，默认 true。关掉后只有 branch-trigger 与左右方向键能改展开态。 |
-| `disabled` | `boolean` |  | 整棵树禁用：所有节点转 aria-disabled，键盘与点击都不再改展开/选中。 |
-| `loading` | `boolean` |  | 节点还在取：树报 aria-busy，在途占位顶上来、空态占位让位。 |
-| `loop` | `boolean` |  | 上下键走到首尾是否回绕，默认 false。 |
-| `typeahead` | `boolean` |  | 连打检索，默认开。关掉后可打印字符一律放行给页面。 |
-| `dir` | `Direction` |  | 文字方向，默认 ltr；只对调左右方向键的「展开/收起」语义。 |
+| `multiple` | `boolean` |  | 复选：点击与确认键都是切换，tree 带 aria-multiselectable=true。默认 false（单选）。 |
+| `cascade` | `boolean` |  | multiple 下父子级联勾选：点击分支整枝传导、子全勾父勾、部分勾选半选， 禁用子树整棵冻结。默认 false（朴素切换）；single 下无效。 |
+| `checkedStrategy` | `CascadeStrategy` |  | 级联下对外值的收敛策略，默认 child（只收叶）；parent = 最高整枝，all = 全部勾选节点。 |
+| `expandOnClick` | `boolean` |  | 点击分支行是否同时展开 / 收起，默认 true。关闭后只有 branch-trigger 与左右方向键能改变展开态。 |
+| `disabled` | `boolean` |  | 整棵树禁用：所有节点为 aria-disabled，键盘与点击都不再改变展开 / 选中。 |
+| `loading` | `boolean` |  | 节点加载中：树报告 aria-busy，显示在途占位、隐藏空态占位。 |
+| `loop` | `boolean` |  | 上下键到达首尾是否回绕，默认 false。 |
+| `typeahead` | `boolean` |  | 连打检索，默认开启。关闭后可打印字符一律放行给页面。 |
+| `dir` | `Direction` |  | 文字方向，默认 ltr；只对调左右方向键的展开 / 收起语义。 |
 | `translations` | `Partial<TreeTranslations>` |  |  |
-| `nodeDraggable` | `boolean` |  | 节点可以拖着搬家。整个节点都是拖动源，不另出把手。 |
-| `allowDrop` | `(move: TreeMove) => boolean` |  | 这一次搬家许不许。收到的是折算好的落点（搬到哪个父下面的第几位）。 不给即都许——「落进自己的后代」与「落在禁用节点上」两条库自己会拦。 |
+| `nodeDraggable` | `boolean` |  | 节点可以拖动移动。整个节点都是拖动源，不另设把手。 |
+| `allowDrop` | `(move: TreeMove) => boolean` |  | 本次移动是否允许。收到的是折算后的落点（移到哪个父节点下的第几位）。 未提供时全部允许：落进自身后代与落在禁用节点上两条由库自行拦截。 |
 | `onNodeMove` | `(move: TreeMove) => void` |  |  |
 | `onExpandedValueChange` | `(details: TreeExpandedValueChangeDetails) => void` |  |  |
 | `onSelectionChange` | `(details: TreeSelectionChangeDetails) => void` |  |  |
@@ -182,7 +182,7 @@ variant="plain" 去掉外框与底色，树直接落在页面上；缺省 surfac
 | --- | --- | --- |
 | `expanded-value-change` | `TreeExpandedValueChangeDetails` | 展开集合变化；detail 为 `{ value: string[] }` |
 | `selection-change` | `TreeSelectionChangeDetails` | 选中集合变化；detail 为 `{ value: string[] }` |
-| `node-move` | `TreeNodeMoveDetails` | 节点搬了家；detail 为 `{ value, parent, index }`，parent 为 null 即根层，index 是在那一层的落位（已算过先摘后插） |
+| `node-move` | `TreeNodeMoveDetails` | 节点已移动；detail 为 `{ value, parent, index }`，parent 为 null 即根层，index 是在该层的落位（已经过先移除后插入的修正） |
 
 ### 插槽
 
@@ -206,33 +206,33 @@ variant="plain" 去掉外框与底色，树直接落在页面上；缺省 surfac
 
 | 成员 | 类型 | 说明 |
 | --- | --- | --- |
-| `collection` | `readonly TreeNode[]` | 作者给的原始树数据。 |
-| `visibleNodes` | `readonly TreeVisibleNode[]` | 当前可见行序列（收起分支的子树不在其中）。 方向键、Home/End 与连打检索都在它上面走，不是在原始树上走。 |
-| `dropTarget` | `DropTarget \| null` | 此刻的落点；松手就落在这儿。不合法或没落在任何节点上时是 null。 |
-| `announcement` | `string` | 读屏播报文本。渲进 live-region，不进视觉版面。 |
+| `collection` | `readonly TreeNode[]` | 作者提供的原始树数据。 |
+| `visibleNodes` | `readonly TreeVisibleNode[]` | 当前可见行序列（收起分支的子树不在其中）。 方向键、Home/End 与连打检索都在它上面移动，不在原始树上移动。 |
+| `dropTarget` | `DropTarget \| null` | 当前的落点；松手即落在此处。不合法或未落在任何节点上时为 null。 |
+| `announcement` | `string` | 读屏播报文本。渲染进 live-region，不进入视觉版面。 |
 | `expandedValue` | `string[]` |  |
 | `selection` | `string[]` |  |
 | `focusedValue` | `string \| null` | 焦点锚点；焦点不在树内、或它已被收起而不可见时为 null。 |
-| `multiple` | `boolean` | 生效的是不是复选。 |
+| `multiple` | `boolean` | 生效的是否为复选。 |
 | `disabled` | `boolean` |  |
 | `isExpanded` | `(value: string) => boolean` |  |
 | `isSelected` | `(value: string) => boolean` |  |
-| `isIndeterminate` | `(value: string) => boolean` | 级联模式下该分支是否半选（有效叶后代有勾有不勾）；非级联恒 false。 |
+| `isIndeterminate` | `(value: string) => boolean` | 级联模式下该分支是否半选（有效叶后代部分勾选）；非级联恒为 false。 |
 | `setExpandedValue` | `(next: string[]) => void` |  |
 | `setSelection` | `(next: string[]) => void` |  |
 | `expand` | `(value: string) => void` |  |
 | `collapse` | `(value: string) => void` |  |
-| `select` | `(value: string, options?: { extend?: boolean }) => void` | 选中某个节点。extend 为真时选中锚点到这一节点那一段（仅复选、且非级联）。 |
+| `select` | `(value: string, options?: { extend?: boolean }) => void` | 选中某个节点。extend 为真时选中锚点到该节点的范围（仅复选、且非级联）。 |
 | `getRootProps` | `() => T['element']` |  |
 | `getLabelProps` | `() => T['element']` |  |
 | `getTreeProps` | `() => T['element']` |  |
-| `getEmptyProps` | `() => T['element']` | 空态占位：放在 root 里、tree 的兄弟（role=tree 只许拥有 treeitem 与 group）。 给了 collection 时由连接层按条数收放；节点手写时不写 hidden，露不露面归作者。 |
-| `getLoadingProps` | `() => T['element']` | 在途占位：与空态占位同一个位置，两者不同屏——取数期间它顶上来，空态让位。 给了 collection 时由连接层按条数收放；节点手写时只按 loading 收放。 |
-| `getNodeDragTriggerProps` | `(props: TreeNodeProps) => T['element']` | 节点拖动把手。触屏那一路唯一的入口，不占 Tab 位。 常挂即可：nodeDraggable 关着或这个节点禁用时它自报 data-disabled、也不再让出滚动， 渲了不会错。按拖不拖得动来决定渲不渲，会让 DOM 结构随状态变。 |
+| `getEmptyProps` | `() => T['element']` | 空态占位：放在 root 中、tree 的兄弟（role=tree 只允许拥有 treeitem 与 group）。 提供 collection 时由连接层按条数收放；节点手写时不写 hidden，是否显示由作者决定。 |
+| `getLoadingProps` | `() => T['element']` | 在途占位：与空态占位同一位置，两者不同时显示：加载期间显示它，空态让位。 提供 collection 时由连接层按条数收放；节点手写时只按 loading 收放。 |
+| `getNodeDragTriggerProps` | `(props: TreeNodeProps) => T['element']` | 节点拖动把手。触屏路径唯一的入口，不占 Tab 位。 常驻即可：nodeDraggable 关闭或该节点禁用时它声明 data-disabled、也不再让出滚动， 渲染不会出错。按是否可拖动决定是否渲染，会使 DOM 结构随状态变化。 |
 | `getLiveRegionProps` | `() => T['element']` |  |
 | `getItemProps` | `(props: TreeNodeProps) => T['element']` |  |
 | `getItemTextProps` | `(props: TreeNodeProps) => T['element']` |  |
-| `getItemCheckboxProps` | `(props: TreeNodeProps) => T['element']` | 勾选把手：把「勾这一项」与「点这一行」分成两个可点区域，不给它就没有独立把手。 |
+| `getItemCheckboxProps` | `(props: TreeNodeProps) => T['element']` | 勾选把手：把勾选该项与点击该行分为两个可点击区域，未提供时没有独立把手。 |
 | `getItemIndicatorProps` | `(props: TreeNodeProps) => T['element']` |  |
 | `getBranchProps` | `(props: TreeNodeProps) => T['element']` |  |
 | `getBranchCheckboxProps` | `(props: TreeNodeProps) => T['element']` |  |
@@ -260,8 +260,8 @@ variant="plain" 去掉外框与底色，树直接落在页面上；缺省 surfac
 | `Enter` / `Space` | focus on node, 节点未禁用 | 选中焦点节点（单选替换、复选切换）；焦点在分支上且 expandOnClick 未关时顺带切换展开态 |
 | `*` | focus in tree | 展开与焦点行同一父级的全部分支（已展开与禁用的不动）；同级没有可展开的分支时不吞这个键 |
 | `单个可打印字符` | focus in tree, typeahead 未关 | 连打检索在可见行上按 label 首字母搬焦点，不改选中值，也不展开任何分支 |
-| `Alt+ArrowUp` / `Alt+ArrowDown` | focus in tree, draggable 开着 | 把焦点节点在同一层的兄弟里往前 / 往后挪一位，按一下就是一次完整提交，不进拖动态；纵轴与文字方向无关，rtl 下两键不对调；已是同层首位 / 末位就不动，也不回绕；落点节点禁用或 allowDrop 不许就不搬。裸方向键仍是走可见行、确认键仍是选中 |
-| `Alt+ArrowLeft` / `Alt+ArrowRight` | focus in tree, draggable 开着 | 改焦点节点的缩进层级：往里去是认上一个兄弟当父、落进它子层末位，往外去是变成父节点的下一个兄弟；rtl 下两键对调，「往里去」的那个方向恒是缩进。没有上一个兄弟就缩不进去，已在根层就退不出去，两种情形都不动；落点节点禁用或 allowDrop 不许就不搬 |
+| `Alt+ArrowUp` / `Alt+ArrowDown` | focus in tree, draggable 开启 | 把焦点节点在同一层的兄弟里往前 / 往后挪一位，按一下就是一次完整提交，不进拖动态；纵轴与文字方向无关，rtl 下两键不对调；已是同层首位 / 末位就不动，也不回绕；落点节点禁用或 allowDrop 不许就不搬。裸方向键仍是走可见行、确认键仍是选中 |
+| `Alt+ArrowLeft` / `Alt+ArrowRight` | focus in tree, draggable 开启 | 改焦点节点的缩进层级：往里去是认上一个兄弟当父、落进它子层末位，往外去是变成父节点的下一个兄弟；rtl 下两键对调，「往里去」的那个方向恒是缩进。没有上一个兄弟就缩不进去，已在根层就退不出去，两种情形都不动；落点节点禁用或 allowDrop 不许就不搬 |
 
 ### ARIA
 
