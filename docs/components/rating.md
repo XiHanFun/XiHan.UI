@@ -12,7 +12,7 @@
 
 ## 用法
 
-不传 value 即为非受控，组件自己维护评分；default-value 只决定初始那一档
+不传 value 即为非受控，组件自行维护评分；default-value 只决定初始档位
 
 <XhDemo src="rating/01-basic" />
 
@@ -26,7 +26,7 @@
 
 ### 半星与悬停预览
 
-allow-half 让落点分左右半边；划过只发 hover-change，评分要点下去才改
+allow-half 使落点分左右半边；划过只发 hover-change，评分要点击后才改变
 
 <XhDemo src="rating/02-half" />
 
@@ -38,19 +38,19 @@ count 决定几颗星，星星按 1..count 逐颗写出
 
 ### 只读与禁用
 
-read-only 仍进 Tab 序列、读屏念得出但改不动；disabled 整条退出 Tab 序列
+read-only 仍进入 Tab 序列、读屏可朗读但不可修改；disabled 整条退出 Tab 序列
 
 <XhDemo src="rating/04-readonly-disabled" />
 
 ### 颜色
 
-tone 决定点亮的星用哪族颜色，不写时沿用警示色
+tone 决定点亮的星使用哪族颜色，不写时沿用警示色
 
 <XhDemo src="rating/05-tone" />
 
 ### 尺寸
 
-size 改星的大小与间距，不写即缺省中档
+size 改变星的大小与间距，不写即默认中档
 
 <XhDemo src="rating/06-size" />
 
@@ -62,13 +62,13 @@ size 改星的大小与间距，不写即缺省中档
 
 ### 自定义颜色
 
-点亮色与未点亮色各是一个组件令牌，写在行内即可脱开语气档
+点亮色与未点亮色各是一个组件令牌，写在行内即可脱离语气档
 
 <XhDemo src="rating/08-color" />
 
 ### 再点一次清空
 
-allowClear 缺省就开：点中当前那一档清回“还没评”，键盘在最低档再往下走一步同样清零；设为 false 关掉
+allowClear 默认开启：点击当前档位清回未评分，键盘在最低档再向下一步同样清零；设为 false 关闭
 
 <XhDemo src="rating/09-clearable" />
 
