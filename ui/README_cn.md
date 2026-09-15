@@ -1,4 +1,4 @@
-![logo](../docs/public/images/logo.svg)
+![logo](../assets/logo.png)
 
 [English](README.md)
 
