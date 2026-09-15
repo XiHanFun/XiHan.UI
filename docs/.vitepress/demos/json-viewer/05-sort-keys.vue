@@ -1,4 +1,4 @@
-<!-- 键排序 | sortKeys 让对象键按字典序排，数组顺序不动；接口返回的字段顺序不稳定时用它 -->
+<!-- 键排序 | sortKeys 使对象键按字典序排列，数组顺序不变；接口返回的字段顺序不稳定时使用它 -->
 <script setup lang="ts">
 import { XhJsonViewerRoot } from "@xihan-ui/vue";
 

@@ -1,4 +1,4 @@
-// 空态与形态 | 一行也摊不出来时空态那一格站出来说话；variant="plain" 去掉外框与底色
+// 空态与形态 | 一行都无法展开时显示空态格；variant="plain" 去掉外框与底色
 import type { ReactNode } from "react";
 import { XhButton, XhJsonViewerRoot } from "@xihan-ui/react";
 import { useState } from "react";

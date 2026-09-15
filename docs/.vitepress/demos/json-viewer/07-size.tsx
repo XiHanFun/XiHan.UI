@@ -1,4 +1,4 @@
-// 尺寸 | size 三档只换字号与层级缩进，行的结构与配色都不变
+// 尺寸 | size 三档只改变字号与层级缩进，行的结构与配色都不变
 import type { ReactNode } from "react";
 import { XhJsonViewerRoot } from "@xihan-ui/react";
 

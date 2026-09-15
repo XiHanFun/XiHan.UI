@@ -1,4 +1,4 @@
-// 循环引用 | 值出现在自己的祖先链上就停下并标成 [Circular]，不会无限递归；共享引用不算环，照样摊开
+// 循环引用 | 值出现在自己的祖先链上即停止并标为 [Circular]，不会无限递归；共享引用不算环，照常展开
 import type { ReactNode } from "react";
 import { XhJsonViewerRoot } from "@xihan-ui/react";
 
