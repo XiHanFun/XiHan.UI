@@ -1,6 +1,6 @@
 # Popover 气泡卡片 <Badge type="info" text="alpha" />
 
-由点击触发、贴着触发器的一小块浮层，里面可以放任意内容与交互。
+由点击触发、贴着触发器的一小块浮层，可以放任意内容与交互。
 
 <div class="xh-resource-links">
   <a href="https://github.com/XiHanFun/XiHan.UI/tree/dev/ui/packages/engine/headless/src/popover" target="_blank" rel="noreferrer">Headless</a>
@@ -88,38 +88,38 @@ start / end 是逻辑对齐不是左右：RTL 下 bottom-start 贴的是锚点�
 
 ### 何时使用
 
-- 补充信息或一小组操作，不值得为它开对话框。
-- 内容里有可聚焦元素（按钮、输入框）——这是它与[文字提示](./tooltip)的分界线。
+- 补充信息或一小组操作，不需要为此打开对话框。
+- 内容中有可聚焦元素（按钮、输入框），这是它与[文字提示](./tooltip)的分界。
 
 ### 何时不用
 
-- 只是一句纯文字说明：用[文字提示](./tooltip)。
-- 悬停即出、不需要点击：用[悬浮卡片](./hover-card)。
-- 内容是一列命令：用[菜单](./menu)。
+- 只有一句纯文字说明时，使用[文字提示](./tooltip)。
+- 悬停即出、不需要点击时，使用[悬浮卡片](./hover-card)。
+- 内容是一列命令时，使用[菜单](./menu)。
 
 ### 特性
 
-- `placement` 只是首选位，空间不够时定位引擎自动翻面。
-- `modal` 可选：需要锁住下层时打开；展开期间可动态切换，模态档会锁住页面滚动并让背景失活。
+- `placement` 只是首选位置，空间不足时定位引擎自动翻面。
+- `modal` 可选：需要锁定下层时开启；展开期间可动态切换，模态档会锁定页面滚动并让背景失活。
 - 可以与触发器同宽，也可以落在指针位置。
-- `end` 这类对齐是逻辑方向，跟着书写方向走，不是左右。
+- `end` 等对齐是逻辑方向，跟随书写方向，不是物理左右。
 
-默认内容面使用 M2 磨砂配方，背景模糊只发生在浮层本体，箭头复用底色和边界，不重复模糊。正文保持不透明。关闭按钮键盘聚焦时立即铺实体隔离底，确保内收焦点环有稳定对比。系统减少透明度、高对比与强制颜色时，原位置切换为实体表面，打印时收起交互浮层。
+默认内容面使用 M2 磨砂配方，背景模糊只发生在浮层本体，箭头复用底色和边界，不重复模糊。正文保持不透明。关闭按钮键盘聚焦时立即铺实体隔离底，确保内收焦点环有稳定对比。系统减少透明度、高对比与强制色时，原位切换为实体表面；打印时收起交互浮层。
 
 ### 组合
 
-- 触发器用[按钮](./button)；长内容套[滚动区域](./scroll-area)。
+- 触发器使用[按钮](./button)；长内容使用[滚动区域](./scroll-area)。
 
 ### 最佳实践
 
-- 打开后焦点进浮层，Escape 关闭并归还焦点。
-- 模态浮层关闭时，滚动锁与背景失活会保留到真实退场动画结束；退场内容自身立即退出焦点与交互树。
-- 内容控制在一屏内，需要滚动就说明该换[抽屉](./drawer)了。
+- 打开后焦点进入浮层，Escape 关闭并归还焦点。
+- 模态浮层关闭时，滚动锁与背景失活保留到真实退场动画结束；退场内容自身立即退出焦点与交互树。
+- 内容控制在一屏内，需要滚动时应改用[抽屉](./drawer)。
 
 ### 反模式
 
-- 悬停触发却里面有按钮：指针移过去的路上就关了。
-- 气泡里再弹气泡。
+- 悬停触发却内含按钮：指针移动过去的途中就会关闭。
+- 气泡内再弹出气泡。
 
 ## API 参考
 
@@ -281,7 +281,7 @@ start / end 是逻辑对齐不是左右：RTL 下 bottom-start 贴的是锚点�
 | `--xh-popover-max-w` | `content` | `max-inline-size` | `default` | `--xh-_popover-max-w` | popover 的 content 部件 max-inline-size 覆盖槽。 |
 | `--xh-popover-px` | `content` | `padding-inline` | `default` | `--xh-_popover-pad` | popover 的 content 部件 padding-inline 覆盖槽。 |
 | `--xh-popover-py` | `content` | `padding-block` | `default` | `--xh-_popover-pad` | popover 的 content 部件 padding-block 覆盖槽。 |
-| `--xh-popover-radius` | `content` | `border-radius` | `default` | `--xh-shape-surface` | popover 的 content 部件 border-radius 覆盖槽。 |
+| `--xh-popover-radius` | `content` | `border-radius` | `default` | `--xh-shape-overlay` | popover 的 content 部件 border-radius 覆盖槽。 |
 | `--xh-popover-shadow` | `content` | `box-shadow` | `default` | `--xh-material-frosted-shadow` | popover 的 content 部件 box-shadow 覆盖槽。 |
 | `--xh-popover-title-fg` | `title` | `color` | `default` | `--xh-material-frosted-fg` | popover 的 title 部件 color 覆盖槽。 |
 | `--xh-popover-title-font-size` | `title` | `font-size` | `default` | `--xh-text-label-size` | popover 的 title 部件 font-size 覆盖槽。 |
