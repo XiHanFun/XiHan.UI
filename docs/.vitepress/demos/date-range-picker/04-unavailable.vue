@@ -1,4 +1,4 @@
-<!-- 不可用日期 | 周末不可选，区间允许跨过不可用的日子 -->
+<!-- 不可用日期 | 周末不可选，区间允许跨过不可用的日期 -->
 <script setup lang="ts">
 import {
   XhDateRangePickerCalendar,

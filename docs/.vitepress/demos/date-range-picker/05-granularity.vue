@@ -1,4 +1,4 @@
-<!-- 周期区间 | granularity 决定两组输入行铺哪几段、浮层铺哪一档格子 -->
+<!-- 周期区间 | granularity 决定两组输入行铺设哪几段、浮层铺设哪一档格子 -->
 <script setup lang="ts">
 import type { CalendarGranularity } from "@xihan-ui/headless";
 import {
