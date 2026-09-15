@@ -124,7 +124,7 @@
   [data-scope='image-cropper'][data-part='crop-handle']::after {
     content: '';
     position: absolute;
-    border-radius: var(--xh-image-cropper-handle-radius, var(--xh-shape-pill));
+    border-radius: var(--xh-image-cropper-handle-radius, var(--xh-shape-circle));
     background: var(--xh-_image-cropper-handle-color);
     outline: var(--xh-stroke-thin) solid
       var(--xh-image-cropper-handle-border, var(--xh-_image-cropper-handle-color));

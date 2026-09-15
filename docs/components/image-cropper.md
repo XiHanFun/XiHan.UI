@@ -72,8 +72,8 @@
 
 ### 组合
 
-- 前面接[文件上传](./file-upload)拿到源图，后面把结果交给[头像](./avatar)或[图片](./image)预览。
-- 放进[对话框](./dialog)里做裁切弹窗；缩放与旋转的控制用[滑块](./slider)与[按钮](./button)。
+- 前置[文件上传](./file-upload)获取源图，结果交给[头像](./avatar)或[图片](./image)预览。
+- 放入[对话框](./dialog)作为裁切弹窗；缩放与旋转的控制使用[滑块](./slider)与[按钮](./button)。
 
 ### 最佳实践
 
@@ -258,7 +258,7 @@
 | `--xh-image-cropper-handle-bg-resizing` | `crop-handle` | `background`<br>`border`<br>`outline` | `is([data-position='nw'], [data-position='ne'], [data-position='sw'], [data-position='se'])`<br>`position=ne`<br>`position=nw`<br>`position=se`<br>`position=sw`<br>`resizing` | `--xh-bg-brand` | image-cropper 的 crop-handle 部件 background、border、outline 覆盖槽。 |
 | `--xh-image-cropper-handle-border` | `crop-handle` | `border`<br>`outline` | `default`<br>`is([data-position='nw'], [data-position='ne'], [data-position='sw'], [data-position='se'])`<br>`position=ne`<br>`position=nw`<br>`position=se`<br>`position=sw` | `--xh-_image-cropper-handle-color` | image-cropper 的 crop-handle 部件 border、outline 覆盖槽。 |
 | `--xh-image-cropper-handle-length` | `crop-handle` | `block-size`<br>`inline-size` | `is([data-position='e'], [data-position='w'])`<br>`is([data-position='n'], [data-position='s'])`<br>`position=e`<br>`position=n`<br>`position=s`<br>`position=w` | `--xh-space-8` | image-cropper 的 crop-handle 部件 block-size、inline-size 覆盖槽。 |
-| `--xh-image-cropper-handle-radius` | `crop-handle` | `border-radius` | `default` | `--xh-shape-pill` | image-cropper 的 crop-handle 部件 border-radius 覆盖槽。 |
+| `--xh-image-cropper-handle-radius` | `crop-handle` | `border-radius` | `default` | `--xh-shape-circle` | image-cropper 的 crop-handle 部件 border-radius 覆盖槽。 |
 | `--xh-image-cropper-handle-size` | `crop-handle`<br>`root` | `block-size`<br>`inline-size`<br>`inset` | `default`<br>`is([data-position='nw'], [data-position='ne'], [data-position='sw'], [data-position='se'])`<br>`position=ne`<br>`position=nw`<br>`position=se`<br>`position=sw` | `--xh-control-indicator-size` | image-cropper 的 crop-handle、root 部件 block-size、inline-size、inset 覆盖槽。 |
 | `--xh-image-cropper-handle-thickness` | `crop-handle` | `block-size`<br>`border-block-end-width`<br>`border-block-start-width`<br>`border-inline-end-width`<br>`border-inline-start-width`<br>`inline-size` | `is([data-position='e'], [data-position='w'])`<br>`is([data-position='n'], [data-position='s'])`<br>`position=e`<br>`position=n`<br>`position=ne`<br>`position=nw`<br>`position=s`<br>`position=se`<br>`position=sw`<br>`position=w` | `--xh-stroke-thick` | image-cropper 的 crop-handle 部件 block-size、border-block-end-width、border-block-start-width、border-inline-end-width、border-inline-start-width、inline-size 覆盖槽。 |
 | `--xh-image-cropper-mask` | `crop-area` | `box-shadow` | `default` | `--xh-bg-overlay` | image-cropper 的 crop-area 部件 box-shadow 覆盖槽。 |
