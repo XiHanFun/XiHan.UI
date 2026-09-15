@@ -11,15 +11,15 @@ import { wcNormalize } from '../dom/normalize'
 import { XhElement } from '../element-base'
 
 /**
- * `<xh-card>` —— Light-DOM 行为宿主，无状态机，把 connectCard 产出打到各角色节点。
- * 除 root 外的部件全部可缺省：头、内容、脚按需摆，一个不写也是一张合法的卡片。
+ * `<xh-card>`：Light-DOM 行为宿主，无状态机，把 connectCard 产出接到各角色节点。
+ * 除 root 外的部件全部可省略：头部、内容、脚部按需放置，一个都不写也是合法的卡片。
  *
- * 根上不写 role：卡片是不是地标、要不要可及名字，由里面放了什么内容决定，作者自己声明。
+ * 根上不写 role：卡片是否为地标、是否需要可及名，由其中放置的内容决定，作者自行声明。
  *
  * @customElement xh-card
  * @attr {'default'|'secondary'|'tertiary'|'transparent'} variant - 语义层级，默认 default
  * @csspart root - 卡片根容器，承载 data-variant
- * @csspart header - 头部，装标题与描述
+ * @csspart header - 头部，放置标题与描述
  * @csspart title - 标题
  * @csspart description - 标题下的说明
  * @csspart content - 主体内容
