@@ -7,21 +7,21 @@
 
 import type { ActionVariant, MachineSchema, PropTypes, Size, Tone } from '@xihan-ui/core'
 
-/** 滚回顶部的方式：auto 一步到位，smooth 平滑滚过去。 */
+/** 滚回顶部的方式：auto 一步到位，smooth 平滑滚动。 */
 export type BackTopBehavior = 'auto' | 'smooth'
 
 export interface BackTopVisibilityChangeDetails {
-  /** 按钮此刻露不露面。 */
+  /** 按钮当前是否显示。 */
   visible: boolean
 }
 
-/** 读屏用的文案，默认英文。 */
+/** 读屏文案，默认英文。 */
 export interface BackTopTranslations {
-  /** 按钮的可及名字。按钮里通常只有一个图标，名字只能由这里给。 */
+  /** 按钮的可及名。按钮内通常只有一个图标，名字只能由这里提供。 */
   trigger: string
 }
 
-/** 适配器在挂载前填入的 DOM 取值口。 */
+/** 适配器在挂载前填入的 DOM 取值器。 */
 export interface BackTopRefs {
   /** 滚动容器，返回 null 即整页滚动。 */
   getTargetEl: () => HTMLElement | null
@@ -29,29 +29,29 @@ export interface BackTopRefs {
 
 export interface BackTopSchema extends MachineSchema {
   props: {
-    /** 滚过这么多像素按钮才露面，默认 200。 */
+    /** 滚动超过该像素数后按钮才显示，默认 200。 */
     visibilityHeight?: number
     /** 滚回顶部的方式，默认 smooth。 */
     behavior?: BackTopBehavior
     translations?: Partial<BackTopTranslations>
-    /** 形态：solid / subtle / outline / ghost，决定底色、描边与前景怎么用。 */
+    /** 形态：solid / subtle / outline / ghost，决定底色、描边与前景的使用方式。 */
     variant?: ActionVariant
-    /** 语气：brand / neutral / success / warning / danger / info，决定按钮用哪族颜色。 */
+    /** 语气：brand / neutral / success / warning / danger / info，决定按钮使用哪族颜色。 */
     tone?: Tone
     /** 尺寸：sm / md / lg。 */
     size?: Size
-    /** 露面与否变化时回调。 */
+    /** 显隐变化时回调。 */
     onVisibilityChange?: (details: BackTopVisibilityChangeDetails) => void
   }
   context: Record<string, never>
   computed: Record<string, never>
   refs: BackTopRefs
-  /** hidden 收着（滚动量还没过线）；visible 露着。 */
+  /** hidden 隐藏（滚动量未过线）；visible 显示。 */
   state: 'hidden' | 'visible'
   event:
-    /** 观察器结算出的一帧：按滚动量算，此刻该不该露面。 */
+    /** 观察器结算的一帧：按滚动量判断当前是否应显示。 */
     | { type: 'SCROLL.RESOLVE', visible: boolean }
-    /** 点了按钮。 */
+    /** 点击了按钮。 */
     | { type: 'TRIGGER.CLICK' }
   tag: never
   guard: 'shouldShow' | 'shouldHide'
@@ -60,9 +60,9 @@ export interface BackTopSchema extends MachineSchema {
 }
 
 export interface BackTopApi<T extends PropTypes = PropTypes> {
-  /** 按钮此刻露不露面。 */
+  /** 按钮当前是否显示。 */
   visible: boolean
-  /** 程序化滚回顶部，与点按钮走同一条路。 */
+  /** 程序化滚回顶部，与点击按钮走同一路径。 */
   scrollToTop: () => void
   getRootProps: () => T['element']
   getTriggerProps: () => T['button']

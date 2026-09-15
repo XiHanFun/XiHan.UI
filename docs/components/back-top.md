@@ -89,13 +89,13 @@
 
 | 属性 | 类型 | 必填 | 说明 |
 | --- | --- | --- | --- |
-| `visibilityHeight` | `number` |  | 滚过这么多像素按钮才露面，默认 200。 |
+| `visibilityHeight` | `number` |  | 滚动超过该像素数后按钮才显示，默认 200。 |
 | `behavior` | `BackTopBehavior` |  | 滚回顶部的方式，默认 smooth。 |
 | `translations` | `Partial<BackTopTranslations>` |  |  |
-| `variant` | `ActionVariant` |  | 形态：solid / subtle / outline / ghost，决定底色、描边与前景怎么用。 |
-| `tone` | `Tone` |  | 语气：brand / neutral / success / warning / danger / info，决定按钮用哪族颜色。 |
+| `variant` | `ActionVariant` |  | 形态：solid / subtle / outline / ghost，决定底色、描边与前景的使用方式。 |
+| `tone` | `Tone` |  | 语气：brand / neutral / success / warning / danger / info，决定按钮使用哪族颜色。 |
 | `size` | `Size` |  | 尺寸：sm / md / lg。 |
-| `onVisibilityChange` | `(details: BackTopVisibilityChangeDetails) => void` |  | 露面与否变化时回调。 |
+| `onVisibilityChange` | `(details: BackTopVisibilityChangeDetails) => void` |  | 显隐变化时回调。 |
 
 ### 事件
 
@@ -103,7 +103,7 @@
 
 | 事件 | 载荷 | 说明 |
 | --- | --- | --- |
-| `visibility-change` | `BackTopVisibilityChangeDetails` | 露面与否变化；detail 为 `{ visible: boolean }` |
+| `visibility-change` | `BackTopVisibilityChangeDetails` | 显隐变化；detail 为 `{ visible: boolean }` |
 
 ### 插槽
 
@@ -136,8 +136,8 @@
 
 | 成员 | 类型 | 说明 |
 | --- | --- | --- |
-| `visible` | `boolean` | 按钮此刻露不露面。 |
-| `scrollToTop` | `() => void` | 程序化滚回顶部，与点按钮走同一条路。 |
+| `visible` | `boolean` | 按钮当前是否显示。 |
+| `scrollToTop` | `() => void` | 程序化滚回顶部，与点击按钮走同一路径。 |
 | `getRootProps` | `() => T['element']` |  |
 | `getTriggerProps` | `() => T['button']` |  |
 

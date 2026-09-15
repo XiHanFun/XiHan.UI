@@ -16,10 +16,10 @@ import { useBackTop } from './use-back-top'
 
 type BackTopProps = BackTopSchema['props']
 
-/** 默认插槽的载荷：按钮此刻露不露面。 */
+/** 默认插槽的载荷：按钮当前是否显示。 */
 export type BackTopRootSlotProps = Pick<BackTopApi, 'visible'>
 
-/** 根节点是定位壳：把按钮钉在视口一角，收起时整块让位。 */
+/** 根节点是定位壳：把按钮固定在视口一角，收起时整块让位。 */
 export const XhBackTopRoot = defineComponent({
   name: 'XhBackTopRoot',
   // 缺省值由机器与 connect 决定；普通类型省略 default，Boolean 显式保留 undefined
@@ -30,7 +30,7 @@ export const XhBackTopRoot = defineComponent({
     variant: { type: String as PropType<ActionVariant> },
     tone: { type: String as PropType<Tone> },
     size: { type: String as PropType<Size> },
-    /** 滚动容器，缺省即整页滚动；经 refs 交给观察器。 */
+    /** 滚动容器，默认即整页滚动；经 refs 交给观察器。 */
     target: { type: Object as PropType<HTMLElement | null> },
   },
   emits: {

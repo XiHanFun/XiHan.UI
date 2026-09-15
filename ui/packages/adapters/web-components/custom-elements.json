@@ -2167,7 +2167,7 @@
       "declarations": [
         {
           "kind": "class",
-          "description": "`<xh-back-top>` —— 回到顶部行为宿主：滚动量过线时露出按钮，点它滚回顶部。\n\n作者须把 trigger 写成 `<button>`：激活与 Tab 停靠由平台提供，元素不接管任何按键。\n收起时整个 root 带 hidden，按钮一并退出 Tab 序列与无障碍树——\n靠不透明度藏起来的按钮仍然可聚焦、仍然被读屏念到。",
+          "description": "`<xh-back-top>`：回到顶部行为宿主：滚动量过线时显示按钮，点击滚回顶部。\n\n作者须把 trigger 写为 `<button>`：激活与 Tab 停靠由平台提供，元素不接管任何按键。\n收起时整个 root 带 hidden，按钮一并退出 Tab 序列与无障碍树：\n依靠不透明度隐藏的按钮仍然可聚焦、仍然被读屏朗读。",
           "name": "XhBackTopElement",
           "cssParts": [
             {
@@ -2175,7 +2175,7 @@
               "name": "root"
             },
             {
-              "description": "按钮，须写成 `<button>`；可及名字由 translations.trigger 给",
+              "description": "按钮，须写为 `<button>`；可及名由 translations.trigger 提供",
               "name": "trigger"
             }
           ],
@@ -2304,7 +2304,7 @@
           ],
           "events": [
             {
-              "description": "露面与否变化；detail 为 `{ visible: boolean }`",
+              "description": "显隐变化；detail 为 `{ visible: boolean }`",
               "name": "visibility-change",
               "type": {
                 "text": "BackTopVisibilityChangeDetails"
@@ -2316,7 +2316,7 @@
               "type": {
                 "text": "number | undefined"
               },
-              "description": "滚过这么多像素按钮才露面，默认 200",
+              "description": "滚动超过该像素数后按钮才显示，默认 200",
               "name": "visibility-height",
               "fieldName": "visibilityHeight"
             },
@@ -2332,7 +2332,7 @@
               "type": {
                 "text": "ActionVariant | undefined"
               },
-              "description": "形态，决定底色、描边与前景怎么用",
+              "description": "形态，决定底色、描边与前景的使用方式",
               "name": "variant",
               "fieldName": "variant"
             },
