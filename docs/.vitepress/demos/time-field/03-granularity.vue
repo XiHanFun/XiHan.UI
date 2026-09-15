@@ -1,4 +1,4 @@
-<!-- 精度到秒 | granularity=second 让秒段显出来并参与值，空段按上下键从该段边界起步 -->
+<!-- 精度到秒 | granularity=second 使秒段显示并参与值，空段按上下键从该段边界起步 -->
 <script setup lang="ts">
 import {
   XhTimeFieldControl,
