@@ -113,7 +113,7 @@
     transition:
       background var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
       box-shadow var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
-      scale var(--xh-motion-duration-micro) var(--xh-motion-ease-enter-strong);
+      scale var(--xh-motion-duration-release) var(--xh-motion-ease-release);
   }
 
   [data-scope='file-upload'][data-part='trigger'][hidden] {
@@ -131,6 +131,8 @@
     background: var(--xh-file-upload-trigger-bg-active, var(--xh-bg-subtle-active));
     box-shadow: none;
     scale: var(--xh-motion-scale-press);
+    transition-duration: var(--xh-motion-duration-press);
+    transition-timing-function: var(--xh-motion-ease-press);
   }
 
   /* 单体控件走原生 disabled（与集合条目的 aria-disabled 相反），因此用 :disabled */
@@ -331,7 +333,7 @@
     cursor: pointer;
     transition:
       background var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
-      scale var(--xh-motion-duration-micro) var(--xh-motion-ease-enter-strong);
+      scale var(--xh-motion-duration-release) var(--xh-motion-ease-release);
   }
 
   [data-scope='file-upload'][data-part='item-delete-trigger'][hidden] {
@@ -347,6 +349,8 @@
   [data-scope='file-upload'][data-part='item-delete-trigger']:not(:disabled):active {
     background: var(--xh-file-upload-delete-bg-active, var(--xh-bg-subtle-active));
     scale: var(--xh-motion-scale-press);
+    transition-duration: var(--xh-motion-duration-press);
+    transition-timing-function: var(--xh-motion-ease-press);
   }
 
   [data-scope='file-upload'][data-part='item-delete-trigger']:disabled {
@@ -373,7 +377,7 @@
     cursor: pointer;
     transition:
       background var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
-      scale var(--xh-motion-duration-micro) var(--xh-motion-ease-enter-strong);
+      scale var(--xh-motion-duration-release) var(--xh-motion-ease-release);
   }
 
   [data-scope='file-upload'][data-part='clear-trigger'][hidden] {
@@ -389,6 +393,8 @@
   [data-scope='file-upload'][data-part='clear-trigger']:not(:disabled):active {
     background: var(--xh-file-upload-clear-bg-active, var(--xh-bg-subtle-active));
     scale: var(--xh-motion-scale-press);
+    transition-duration: var(--xh-motion-duration-press);
+    transition-timing-function: var(--xh-motion-ease-press);
   }
 
   /* 空列表时按钮照常可按（收起它会让焦点掉回 body），只把前景压淡一档 */
