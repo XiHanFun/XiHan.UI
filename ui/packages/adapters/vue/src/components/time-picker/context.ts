@@ -10,7 +10,7 @@ import type { ComputedRef, InjectionKey } from 'vue'
 import type { TimePickerContext } from './use-time-picker'
 import { inject, provide } from 'vue'
 
-/** 列自报的单位，供列内选项取到自己归哪一列。 */
+/** 列声明的单位，供列内选项取到自己所属的列。 */
 export interface TimePickerColumnContext {
   unit: ComputedRef<TimePickerColumnUnit>
 }

@@ -10,7 +10,7 @@ import type { TimePickerContext } from './use-time-picker'
 import { createContext, useContext } from 'react'
 
 const Ctx = createContext<TimePickerContext | undefined>(undefined)
-/** 列自报的单位，供列内选项取到自己归哪一列。 */
+/** 列声明的单位，供列内选项取到自己所属的列。 */
 const ColumnCtx = createContext<TimePickerColumnUnit | undefined>(undefined)
 
 export const TimePickerProvider = Ctx

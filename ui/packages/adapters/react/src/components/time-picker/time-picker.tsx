@@ -33,7 +33,7 @@ type TimePickerProps = TimePickerSchema['props']
 
 function noop(): void {}
 
-/** 函数式 children 的载荷：浮层开合与当前值、值状态标志、此刻的段与列，以及开合、写值、清空的动作。 */
+/** 函数式 children 的载荷：浮层开合与当前值、值状态标志、当前的段与列，以及开合、写值、清空的动作。 */
 export type TimePickerRootSlotProps = Pick<
   TimePickerApi,
   | 'open'
@@ -48,12 +48,12 @@ export type TimePickerRootSlotProps = Pick<
   | 'clear'
 >
 
-/** 列函数式 children 的载荷：这一列此刻的可选值。 */
+/** 列函数式 children 的载荷：该列当前的可选值。 */
 export interface TimePickerColumnSlotProps {
   options: TimePickerColumn['options']
 }
 
-/** 快捷选项列函数式 children 的载荷：逐条的投影，作者据此自己铺条目。 */
+/** 快捷选项列函数式 children 的载荷：逐条的投影，作者据此自行铺设条目。 */
 export interface TimePickerPresetsSlotProps {
   presets: readonly TimePickerPresetState[]
 }
@@ -69,7 +69,7 @@ export interface XhTimePickerRootProps extends Omit<ComponentPropsWithRef<'div'>
   hourCycle?: TimeHourCycle
   granularity?: TimeGranularity
   step?: number
-  /** 快捷选项；给了就在浮层里多出一列，时刻要在自己那儿算好再传。 */
+  /** 快捷选项；提供后浮层中多出一列，时刻要在调用方计算后再传入。 */
   presets?: TimePickerPreset[]
   disabled?: boolean
   translations?: TimePickerProps['translations']
@@ -83,7 +83,7 @@ export interface XhTimePickerRootProps extends Omit<ComponentPropsWithRef<'div'>
   size?: Size
   placement?: Placement
   offset?: number
-  /** 文字方向；浮层搬到落点后继承不到作者子树上的方向，要 RTL 就显式给。 */
+  /** 文字方向；浮层迁移到落点后无法继承作者子树上的方向，需要 RTL 时显式提供。 */
   dir?: Direction
   onValueChange?: TimePickerProps['onValueChange']
   onOpenChange?: TimePickerProps['onOpenChange']
@@ -180,7 +180,7 @@ export function XhTimePickerRoot({
 XhTimePickerRoot.xhEvents = ['value-change', 'open-change'] as const
 
 export interface XhTimePickerLabelProps extends ComponentPropsWithRef<'label'> {}
-/** 仍用原生 label 保持表单语义，点标题聚焦第一段由连接层的 click 接管。 */
+/** 仍使用原生 label 保持表单语义，点击标题聚焦第一段由连接层的 click 接管。 */
 export function XhTimePickerLabel({ children, ...rest }: XhTimePickerLabelProps): ReactNode {
   const ctx = useTimePickerContext()
   return <label {...mergeReactProps(ctx.api.getLabelProps() as Record<string, unknown>, rest as Record<string, unknown>)}>{children}</label>
@@ -212,7 +212,7 @@ export interface XhTimePickerSegmentProps extends ComponentPropsWithRef<'span'> 
   /** 段的身份由作者声明。 */
   segment: TimeSegmentType
 }
-/** 有内容用内容，否则显示该段的文字，空段为占位串。 */
+/** 有内容时使用内容，否则显示该段的文字，空段为占位串。 */
 export function XhTimePickerSegment({ segment, children, ...rest }: XhTimePickerSegmentProps): ReactNode {
   const ctx = useTimePickerContext()
   const api = ctx.api
@@ -253,10 +253,10 @@ export function XhTimePickerClearTrigger({ children, ...rest }: XhTimePickerClea
 }
 
 export interface XhTimePickerPositionerProps extends ComponentPropsWithRef<'div'> {
-  /** 浮层挂到哪个容器；不给就按全局配置，再不给挂 body。 */
+  /** 浮层挂载的容器；未提供时按全局配置，再未提供时挂载到 body。 */
   container?: () => Element | null
 }
-/** 搬到浮层落点：留在原地的话，宿主祖先只要建了层叠上下文就能盖住浮层。 */
+/** 迁移到浮层落点：留在原地时，宿主祖先只要建立了层叠上下文就能遮住浮层。 */
 export function XhTimePickerPositioner({ children, container, ...rest }: XhTimePickerPositionerProps): ReactNode {
   const ctx = useTimePickerContext()
   return (
@@ -296,7 +296,7 @@ export function XhTimePickerContent({ children, ...rest }: XhTimePickerContentPr
 }
 
 export interface XhTimePickerPresetGroupProps extends Omit<ComponentPropsWithRef<'div'>, 'children'> {
-  /** 自己铺条目；不写就按 presets 数据自动铺，两者产出的 DOM 一致。 */
+  /** 自行铺设条目；未写时按 presets 数据自动铺设，两者产出的 DOM 一致。 */
   children?: SlotChildren<TimePickerPresetsSlotProps>
 }
 export function XhTimePickerPresetGroup({ children, ...rest }: XhTimePickerPresetGroupProps): ReactNode {
@@ -317,10 +317,10 @@ export function XhTimePickerPresetGroup({ children, ...rest }: XhTimePickerPrese
 }
 
 export interface XhTimePickerPresetProps extends Omit<ComponentPropsWithRef<'div'>, 'value'> {
-  /** 这一条的身份，与 presets 数据里的 value 逐字对上。 */
+  /** 该条目的身份，与 presets 数据中的 value 逐字对应。 */
   value: string
 }
-/** 有内容用内容，否则用数据里的 label。 */
+/** 有内容时使用内容，否则使用数据中的 label。 */
 export function XhTimePickerPreset({ value, children, ...rest }: XhTimePickerPresetProps): ReactNode {
   const ctx = useTimePickerContext()
   const api = ctx.api
@@ -354,7 +354,7 @@ export interface XhTimePickerItemProps extends Omit<ComponentPropsWithRef<'div'>
   /** 两位补零的显示串（'09' / '30'）；上下午列写 '00' / '01'。 */
   value: string
 }
-/** 有内容用内容，否则显示这一格该显示的文字（上下午列按 locale 译成「上午 / 下午」）。 */
+/** 有内容时使用内容，否则显示该格应显示的文字（上下午列按 locale 译为「上午 / 下午」）。 */
 export function XhTimePickerItem({ value, children, ...rest }: XhTimePickerItemProps): ReactNode {
   const ctx = useTimePickerContext()
   const unit = useTimePickerColumnContext()

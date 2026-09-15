@@ -57,53 +57,53 @@ function declaredUnit(el: HTMLElement, position: number): TimePickerColumnUnit {
 }
 
 /**
- * `<xh-time-picker>` —— Light-DOM 行为宿主：作者写 root/label/control/input（多个）/trigger/
- * clear-trigger/positioner/content/column（多个）/item（多个）/hidden-input 角色节点，
- * 元素跑 time-picker 机器并把 connect 产出打上去。浮层定位引擎在本元素里建好、经 refs 注入机器，
+ * `<xh-time-picker>`：Light-DOM 行为宿主：作者写 root / label / control / input（多个）/ trigger /
+ * clear-trigger / positioner / content / column（多个）/ item（多个）/ hidden-input 角色节点，
+ * 元素运行 time-picker 状态机并把 connect 产出接上。浮层定位引擎在本元素中创建、经 refs 注入状态机，
  * 锚点取 control（浮层因此与整个输入行对齐），被定位的浮层取 positioner。
  *
- * 两条改值的路写同一份值：输入行里逐段敲（每段是 role=spinbutton，上下键加减、数字直输自动跳段），
- * 浮层里按列挑（每列是一个 listbox，上下键在列内走、左右键换列、Enter 选中）。
+ * 两条改值路径写入同一份值：输入行中逐段输入（每段是 role=spinbutton，上下键加减、数字直接输入自动跳段），
+ * 浮层中按列选择（每列是一个 listbox，上下键在列内移动、左右键换列、Enter 选中）。
  *
- * 段与格子上的文字由元素填；作者自己写了内容的不碰。
+ * 段与格子上的文字由元素填入；作者自行写了内容的不修改。
  *
  * @customElement xh-time-picker
- * @attr {string} value - 受控值，ISO 时间串（'13:45' / '13:45:30'）；缺省该属性即非受控
+ * @attr {string} value - 受控值，ISO 时间串（'13:45' / '13:45:30'）；未提供该属性即非受控
  * @attr {string} default-value - 非受控初值
- * @attr {boolean} open - 受控开合；缺省该属性即非受控
+ * @attr {boolean} open - 受控开合；未提供该属性即非受控
  * @attr {boolean} default-open - 非受控初始为展开
- * @attr {string} min - 下界（含）：裁掉浮层里落在界外的可选值，并把已填的越界值标注出来
+ * @attr {string} min - 下界（含）：裁掉浮层中落在界外的可选值，并把已填的越界值标注出来
  * @attr {string} max - 上界（含），同上
- * @attr {string} locale - BCP 47 语言标记，决定上午/下午文字与默认小时制
- * @attr {'12'|'24'} hour-cycle - 小时制；不写则按 locale 推断，再没有就用 24
+ * @attr {string} locale - BCP 47 语言标记，决定上午 / 下午文字与默认小时制
+ * @attr {'12'|'24'} hour-cycle - 小时制；未提供时按 locale 推断，仍没有时使用 24
  * @attr {'hour'|'minute'|'second'} granularity - 值精确到哪一段，默认 minute
  * @attr {number} step - 分列的步进（分钟），默认 1
- * @prop {TimePickerPreset[]} presets - 快捷选项（数组只走 property）：给了就在浮层里多出一列
- * @attr {boolean} disabled - 禁用：段整组退出 Tab 序列，触发器用原生 disabled，隐藏输入不参与提交
- * @attr {boolean} read-only - 只读：浮层照常展开与浏览，但值改不动也清不掉
+ * @prop {TimePickerPreset[]} presets - 快捷选项（数组只能通过 property 设置）：提供后浮层中多出一列
+ * @attr {boolean} disabled - 禁用：段整组退出 Tab 序列，触发器使用原生 disabled，隐藏输入不参与提交
+ * @attr {boolean} read-only - 只读：浮层照常展开与浏览，但值不可修改也不可清空
  * @attr {boolean} invalid - 校验失败标注
- * @attr {boolean} required - 必填标注，落到每段的 aria-required 上
- * @attr {string} name - 表单字段名；给了隐藏输入才带 name
+ * @attr {boolean} required - 必填标注，写入每段的 aria-required
+ * @attr {string} name - 表单字段名；提供后隐藏输入才带 name
  * @attr {'outline'|'subtle'|'ghost'} variant - 视觉变体
  * @attr {'brand'|'neutral'|'success'|'warning'|'danger'|'info'} tone - 语气
  * @attr {'sm'|'md'|'lg'} size - 尺寸
- * @attr {string} placement - 首选放置位，默认 bottom-start；避让后的实际位写在 data-placement 上
+ * @attr {string} placement - 首选放置位，默认 bottom-start；避让后的实际位置写在 data-placement 上
  * @attr {number} offset - 浮层与锚点的间距（px）
- * @attr {'ltr'|'rtl'} dir - 文字方向，翻转浮层在行内轴上 start 与 end 的落点；只在显式给了才写到定位层上
+ * @attr {'ltr'|'rtl'} dir - 文字方向，翻转浮层在行内轴上 start 与 end 的落点；只在显式提供时才写到定位层上
  * @fires value-change - 值变化；detail 为 `{ value: string }`
  * @fires open-change - open 状态变化；detail 为 `{ open: boolean }`
- * @csspart root - 组件根容器（承载 data-state/data-disabled/data-readonly/data-invalid/data-empty）
- * @csspart label - 标题；点它会把焦点送到第一段
+ * @csspart root - 组件根容器（承载 data-state / data-disabled / data-readonly / data-invalid / data-empty）
+ * @csspart label - 标题；点击它把焦点送到第一段
  * @csspart control - role=group 的输入行，同时是浮层的定位锚点
- * @csspart segment-group - 段位与分隔符的外壳，占满盒里剩下的宽度
- * @csspart segment - 一段一个的 spinbutton，可自带 segment 属性声明身份，缺省按文档序
- * @csspart trigger - 展开/收起按钮，须是原生 button
- * @csspart clear-trigger - 清空按钮，须是原生 button；不占 Tab 位，可及名走 translations.clearTrigger；没值即收起
- * @csspart positioner - 浮层定位容器，坐标由引擎写成内联样式
+ * @csspart segment-group - 段位与分隔符的外壳，占满盒内剩余宽度
+ * @csspart segment - 一段一个的 spinbutton，可自带 segment 属性声明身份，默认按文档序
+ * @csspart trigger - 展开 / 收起按钮，须是原生 button
+ * @csspart clear-trigger - 清空按钮，须是原生 button；不占 Tab 位，可及名使用 translations.clearTrigger；无值时收起
+ * @csspart positioner - 浮层定位容器，坐标由引擎写为内联样式
  * @csspart content - 浮层容器（消解层与焦点域的根节点），收起时带 hidden
- * @csspart preset-group - 快捷选项列（role=listbox）；没给 presets 时带 hidden
- * @csspart preset - 一条快捷选项（role=option），须自带 value 属性（与 presets 数据里的 value 逐字对上）
- * @csspart column - role=listbox 的一列，可自带 unit 属性声明单位，缺省按文档序
+ * @csspart preset-group - 快捷选项列（role=listbox）；未提供 presets 时带 hidden
+ * @csspart preset - 一条快捷选项（role=option），须自带 value 属性（与 presets 数据中的 value 逐字一致）
+ * @csspart column - role=listbox 的一列，可自带 unit 属性声明单位，默认按文档序
  * @csspart item - role=option 的一格，须自带 value 属性（两位补零的显示串；上下午列写 '00' / '01'）
  * @csspart hidden-input - type=hidden 的表单出口，值是完整 ISO 串
  */
@@ -306,9 +306,9 @@ export class XhTimePickerElement extends XhPortalHostElement {
   }
 
   /**
-   * 此刻该排哪几列、每列有哪些可选值——落在 min/max 之外的、不合 step 的、
-   * 以及随已选的时（分）收窄掉的那些都已经不在里面。作者据它渲染列与格子。
-   * 机器尚未建起时给空数组。
+   * 当前应排列的列及每列的可选值：落在 min/max 之外的、不符合 step 的、
+   * 以及随已选的时（分）收窄后排除的值都已剔除。作者据此渲染列与格子。
+   * 状态机尚未建立时返回空数组。
    */
   get columns(): TimePickerColumn[] {
     return this.ctrl.service ? connectTimePicker(this.ctrl.service, wcNormalize).columns : []

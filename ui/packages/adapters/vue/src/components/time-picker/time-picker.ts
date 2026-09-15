@@ -35,7 +35,7 @@ import { useTimePicker } from './use-time-picker'
 
 type TimePickerProps = TimePickerSchema['props']
 
-/** 默认插槽的载荷：浮层开合与当前值、值状态标志、此刻的段与列，以及开合、写值、清空的动作。 */
+/** 默认插槽的载荷：浮层开合与当前值、值状态标志、当前的段与列，以及开合、写值、清空的动作。 */
 export type TimePickerRootSlotProps = Pick<
   TimePickerApi,
   | 'open'
@@ -50,12 +50,12 @@ export type TimePickerRootSlotProps = Pick<
   | 'clear'
 >
 
-/** 默认插槽的载荷：这一列此刻的可选值。 */
+/** 默认插槽的载荷：该列当前的可选值。 */
 export interface TimePickerColumnSlotProps {
   options: TimePickerColumn['options']
 }
 
-/** 快捷选项列默认插槽的载荷：逐条的投影，作者据此自己铺条目。 */
+/** 快捷选项列默认插槽的载荷：逐条的投影，作者据此自行铺设条目。 */
 export interface TimePickerPresetsSlotProps {
   presets: readonly TimePickerPresetState[]
 }
@@ -74,7 +74,7 @@ export const XhTimePickerRoot = defineComponent({
     hourCycle: { type: Number as PropType<TimeHourCycle> },
     granularity: { type: String as PropType<TimeGranularity> },
     step: { type: Number },
-    /** 快捷选项；给了就在浮层里多出一列，时刻要在自己的 computed 里算好再传。 */
+    /** 快捷选项；提供后浮层中多出一列，时刻要在自己的 computed 中计算后再传入。 */
     presets: { type: Array as PropType<TimePickerPreset[]> },
     disabled: { type: Boolean, default: undefined },
     translations: { type: Object as PropType<TimePickerProps['translations']> },
@@ -88,7 +88,7 @@ export const XhTimePickerRoot = defineComponent({
     size: { type: String as PropType<Size> },
     placement: { type: String as PropType<Placement> },
     offset: { type: Number },
-    /** 文字方向；浮层搬到落点后继承不到作者子树上的方向，要 RTL 就显式给。 */
+    /** 文字方向；浮层迁移到落点后无法继承作者子树上的方向，需要 RTL 时显式提供。 */
     dir: { type: String as PropType<Direction> },
   },
   // *-change 携带 details 对象，update:* 携带裸值
@@ -238,7 +238,7 @@ export const XhTimePickerContent = defineComponent({
 export const XhTimePickerPresetGroup = defineComponent({
   name: 'XhTimePickerPresetGroup',
   slots: Object as SlotsType<{
-    /** 自己铺条目；不写就按 presets 数据自动铺，两者产出的 DOM 一致。 */
+    /** 自行铺设条目；未写时按 presets 数据自动铺设，两者产出的 DOM 一致。 */
     default?: (props: TimePickerPresetsSlotProps) => VNode[]
   }>,
   setup(_, { slots }) {
@@ -264,11 +264,11 @@ export const XhTimePickerPresetGroup = defineComponent({
 export const XhTimePickerPreset = defineComponent({
   name: 'XhTimePickerPreset',
   props: {
-    /** 这一条的身份，与 presets 数据里的 value 逐字对上。 */
+    /** 该条目的身份，与 presets 数据中的 value 逐字对应。 */
     value: { type: String, required: true },
   },
   slots: Object as SlotsType<{
-    /** 条目内容；不写就用数据里的 label。 */
+    /** 条目内容；未写时使用数据中的 label。 */
     default?: () => VNode[]
   }>,
   setup(props, { slots }) {
