@@ -75,7 +75,7 @@ function assertSupportedDeclaration(ctor: typeof XhReactiveElement, name: string
   }
 }
 
-/** 原型上已有同名成员就抛：装访问器会把它整块盖掉，此后作者写的 get/set 或方法永不被调用。 */
+/** 原型上已有同名成员时抛错：安装访问器会把它整块覆盖，此后作者写的 get/set 或方法永不被调用。 */
 function assertPrototypeFree(ctor: typeof XhReactiveElement, name: string): void {
   if (installedAccessors.get(ctor.prototype)?.has(name))
     return
@@ -200,7 +200,7 @@ export class XhReactiveElement extends HostBase implements ReactiveControllerHos
     this.requestUpdate()
   }
 
-  /** 元素还没 upgrade 时被赋的字段值会盖住原型访问器，先摘下来存着。 */
+  /** 元素尚未 upgrade 时被赋的字段值会覆盖原型访问器，先取下保存。 */
   private saveInstanceProperties(): void {
     const self = this as unknown as Record<string, unknown>
     for (const name of (this.constructor as typeof XhReactiveElement).elementProperties.keys()) {

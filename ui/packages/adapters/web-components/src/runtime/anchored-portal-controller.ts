@@ -42,7 +42,7 @@ export class AnchoredPortalController {
     })
   }
 
-  /** XhElement 用它继续发现已经搬到宿主外的全部角色节点。 */
+  /** XhElement 用它继续发现已经迁移到宿主外的全部角色节点。 */
   get roots(): readonly HTMLElement[] {
     return this.portal.roots
   }

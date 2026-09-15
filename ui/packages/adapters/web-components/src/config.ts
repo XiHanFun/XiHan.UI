@@ -37,7 +37,7 @@ export function notifyXhConfigChange(): void {
   for (const listener of [...listeners]) listener()
 }
 
-/** 覆写全局配置。整份替换，不做深合并——想改一处就把整份拿去改。 */
+/** 覆写全局配置。整份替换，不做深合并：需要修改一处时把整份取出修改后写回。 */
 export function setXhConfig(config: XhConfig): void {
   currentVisualEnvironment?.dispose()
   currentVisualEnvironment = config.visualEnvironment
@@ -60,8 +60,8 @@ export function onXhConfigChange(listener: () => void): () => void {
 /**
  * 外层与内层逐键合并。
  *
- * 键缺席与写成 undefined 都算「这一层没说」，一律回落外层——子树里只想改文案时，
- * 不该把外层的 locale 一并抹掉。
+ * 键缺席与写为 undefined 都视为本层未声明，一律回落外层：子树中只需要改文案时，
+ * 不应把外层的 locale 一并清除。
  */
 export function mergeXhConfig(base: XhConfig | undefined, over: XhConfig | undefined): XhConfig {
   return mergeBase(base, over)
@@ -99,11 +99,11 @@ export function resolveXhConfig(node: Element | null | undefined): XhConfig {
 }
 
 /**
- * 把配置并进一份 props：`translations` 逐键合并、元素上的压过全局；
- * `locale` 与 `size` 在元素上没给（键在但值是 undefined）时取配置里的。
- * 一处都没并到就原样返回，不新建对象。
+ * 把配置合入一份 props：`translations` 逐键合并、元素上的覆盖全局；
+ * `locale` 与 `size` 在元素上未提供（键存在但值为 undefined）时取配置中的值。
+ * 没有任何合并时原样返回，不新建对象。
  *
- * host 是发起解析的元素，给了就沿它的祖先链找 `<xh-config>`；不给只看全局那份。
+ * host 是发起解析的元素，提供后沿它的祖先链查找 `<xh-config>`；未提供时只读取全局配置。
  */
 export function withXhConfig<T extends object>(component: string, props: T, host?: Element | null): T {
   return withXhConfigBase(component, props, host === undefined ? current : resolveXhConfig(host))

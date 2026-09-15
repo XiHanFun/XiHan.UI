@@ -12,8 +12,8 @@ export interface PartContract {
   readonly anatomy: { readonly name: string, readonly parts: readonly string[] }
   readonly meta: ComponentMeta
   /**
-   * 部件必须用的标签名。只登记「写错了会静默失效」的那些——
-   * 比如 field 的 label 不是原生 `<label>` 时，`for` 整条失效，点标签不再聚焦控件。
+   * 部件必须使用的标签名。只登记写错后会静默失效的部件：
+   * 例如 field 的 label 不是原生 `<label>` 时，`for` 整条失效，点击标签不再聚焦控件。
    */
   readonly tags?: Readonly<Record<string, readonly string[]>>
   /**

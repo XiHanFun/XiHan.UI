@@ -17,10 +17,10 @@ import { XhReactiveElement } from './reactive'
 let instanceSeq = 0
 
 /**
- * 变动里是否真有角色节点进出。只认"进出的元素自身是角色节点、或其子树里有角色节点"：
- * 业务内容（图表、虚拟列表、面板里的业务 DOM）的增删与 part 集合无关，不该引发重新接线；
- * 更要紧的是断掉一条死循环——角色节点若本身是会在属性变化时改写自身子节点的自定义元素，
- * "宿主重新接线 → 写属性 → 该节点改子节点 → 又命中观察器" 会闭成环。
+ * 变动中是否真有角色节点进出。只认进出的元素自身是角色节点、或其子树中有角色节点：
+ * 业务内容（图表、虚拟列表、面板中的业务 DOM）的增删与 part 集合无关，不应引发重新接线；
+ * 更重要的是切断一条死循环：角色节点若本身是会在属性变化时改写自身子节点的自定义元素，
+ * 宿主重新接线、写属性、该节点改子节点、再次命中观察器会形成环。
  */
 function touchesParts(record: MutationRecord): boolean {
   for (const list of [record.addedNodes, record.removedNodes]) {
@@ -33,8 +33,8 @@ function touchesParts(record: MutationRecord): boolean {
 }
 
 /**
- * 角色节点上属于作者的"声明"（与机器写上去的"状态"分属两侧），改了就等于换了一个条目，必须重新接线。
- * 只盯这几个而不是所有属性：wire() 每帧都往角色节点写 aria- 与 data-，全量观察等于自己触发自己。
+ * 角色节点上属于作者的声明（与状态机写入的状态分属两侧），改变即等于更换了一个条目，必须重新接线。
+ * 只观察这几个而不是所有属性：wire() 每帧都向角色节点写 aria- 与 data-，全量观察等于自己触发自己。
  */
 const AUTHORED_ATTRS = ['value', 'name', 'data-path', 'disabled', 'aria-disabled'] as const
 
@@ -69,8 +69,8 @@ export abstract class XhElement extends XhReactiveElement {
   }
 
   /**
-   * 仍归本实例所有、但为逃离祖先层叠上下文而搬到 Portal 的角色根。
-   * 缺省没有；返回的根必须与宿主属于同一 Document。
+   * 仍归本实例所有、但为脱离祖先层叠上下文而迁移到 Portal 的角色根。
+   * 默认没有；返回的根必须与宿主属于同一 Document。
    */
   protected externalPartRoots(): readonly HTMLElement[] {
     return []
@@ -80,9 +80,9 @@ export abstract class XhElement extends XhReactiveElement {
   private readonly authorDisplay = new WeakMap<HTMLElement, string>()
 
   /**
-   * 用内联 display 兜住收起态：作者层若给这个 part 声明了 display，会盖过 UA 的 `[hidden]{display:none}`，
-   * 光靠 hidden 属性收不起来。展开时还回作者原本的内联值而不是清成 ''——后者会把作者写在该节点上的
-   * `style="display:grid"` 一并抹掉，且再也回不来。
+   * 用内联 display 保证收起态：作者层若为该 part 声明了 display，会覆盖 UA 的 `[hidden]{display:none}`，
+   * 仅靠 hidden 属性无法收起。展开时恢复作者原本的内联值而不是清为 ''：后者会把作者写在该节点上的
+   * `style="display:grid"` 一并清除，且无法恢复。
    */
   protected setPartHidden(el: HTMLElement | null, hidden: boolean): void {
     if (!el)
@@ -122,8 +122,8 @@ export abstract class XhElement extends XhReactiveElement {
   }
 
   /**
-   * 角色节点即将离开本宿主时的回调，交还前调用（节点上还带着本机器写的标记）。
-   * 承载焦点的节点被移除时浏览器不派 focusout（Chrome 如此），机器读不到这件事，需要焦点语义的子类在此如实上报。
+   * 角色节点即将离开本宿主时的回调，交还前调用（节点上仍带着本状态机写入的标记）。
+   * 承载焦点的节点被移除时浏览器不派发 focusout（Chrome 如此），状态机无法得知，需要焦点语义的子类在此如实上报。
    */
   protected onPartsReleased(_nodes: readonly HTMLElement[]): void {}
 
@@ -141,8 +141,8 @@ export abstract class XhElement extends XhReactiveElement {
   private stopConfigWatch: (() => void) | undefined
 
   /**
-   * 把沿祖先链解析到的全局配置并进这份 props：translations 按组件名分桶合并，
-   * locale 与 size 在元素上没给时取配置里的。不跑机器的元素在 wire() 里用它包一层。
+   * 把沿祖先链解析到的全局配置合入这份 props：translations 按组件名分桶合并，
+   * locale 与 size 在元素上未提供时取配置中的值。不运行状态机的元素在 wire() 中用它包一层。
    */
   protected configured<T extends object>(component: string, props: T): T {
     return withXhConfig(component, props, this)
@@ -290,6 +290,6 @@ export abstract class XhElement extends XhReactiveElement {
     this.checkStackingTrap(contract?.anatomy.name)
   }
 
-  /** 子类实现：把 connect 产出打到角色节点上。 */
+  /** 子类实现：把 connect 产出接到角色节点上。 */
   protected abstract wire(): void
 }

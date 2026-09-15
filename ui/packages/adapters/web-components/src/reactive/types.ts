@@ -16,7 +16,7 @@ export type AttributeConverter<Type = unknown>
     | ((value: string | null, type?: unknown) => Type)
 
 export interface PropertyDeclaration<Type = unknown> {
-  /** false=不观察属性；字符串=指定属性名；缺省=字段名转小写（不转短横线）。 */
+  /** false=不观察属性；字符串=指定属性名；默认=字段名转小写（不转短横线）。 */
   readonly attribute?: boolean | string
   /** 没配 converter 时据此选内建转换：Boolean / Number / Object / Array，其余原样取字符串。 */
   readonly type?: unknown

@@ -25,15 +25,15 @@ import type {
  * 语言、尺寸、浮层落点直接由 setXhConfig 与外层 `<xh-config>` 说了算。
  */
 export interface ServiceHostOptions {
-  /** 宿主容器；不给就在浮层落点下新建一个。 */
+  /** 宿主容器；未提供时在浮层落点下新建一个。 */
   target?: HTMLElement
 }
 
 // —— 轻提示 ——
 
 /**
- * create 的入参。`actionLabel` 是条子上那颗行内动作钮的文案，`onAction` 是按下它做什么——
- * 回调不进队列记录（那份要能被整份替换、序列化、比对），服务按 id 单独存一张表。
+ * create 的入参。`actionLabel` 是提示条上行内动作按钮的文案，`onAction` 是按下它执行的动作：
+ * 回调不进入队列记录（该记录要能被整份替换、序列化、比对），服务按 id 单独保存一张表。
  */
 export interface ToastCreateOptions extends ToastOptions {
   onAction?: () => void
@@ -50,7 +50,7 @@ export interface ToastPromiseOptions<T> extends Omit<ToastMessageOptions, 'durat
 }
 
 export interface ToastServiceOptions extends ServiceHostOptions {
-  /** 那一摞落在哪儿，默认 'bottom'。 */
+  /** 堆叠区的位置，默认 'bottom'。 */
   placement?: ToastPlacement
   /** 最多同时留几条，默认 3；超出先挤低优先级的，同级里挤最旧的。 */
   max?: number
@@ -61,7 +61,7 @@ export interface ToastServiceOptions extends ServiceHostOptions {
   duration?: number
   removeDelay?: number
   pauseOnPageIdle?: boolean
-  /** toast 部件的文案（关闭钮的读屏名等）。 */
+  /** toast 部件的文案（关闭按钮的读屏名等）。 */
   toastTranslations?: Partial<ToastTranslations>
 }
 
@@ -83,7 +83,7 @@ export interface ToastService {
    * 返回那一条的 id；Promise 的结果原样交回给调用方，拒绝也照旧拒绝。
    */
   promise: <T>(input: Promise<T> | (() => Promise<T>), options: ToastPromiseOptions<T>) => Promise<T>
-  /** 把当下这一摞的计时全按住，'service' 这一路与指针、焦点并存。 */
+  /** 暂停当前堆叠的计时，'service' 这一路与指针、焦点并存。 */
   pauseAll: () => void
   resumeAll: () => void
   /** 撤掉宿主容器并停机。 */
@@ -106,12 +106,12 @@ export interface NotificationServiceOptions extends ServiceHostOptions {
   max?: number
   /** 重复怎么算，默认 'id'。 */
   dedupe?: NotificationDedupe
-  /** 同一摞内的间距（px），默认 16。 */
+  /** 同一堆叠内的间距（px），默认 16。 */
   gap?: number
   duration?: number
   removeDelay?: number
   pauseOnPageIdle?: boolean
-  /** 通知的文案：那一摞的读屏名与卡片上那颗叉的读屏名，一个桶装完。 */
+  /** 通知的文案：堆叠区的读屏名与卡片上关闭按钮的读屏名，统一在一个桶中。 */
   translations?: Partial<NotificationTranslations>
 }
 
@@ -144,9 +144,9 @@ export interface DialogActionError {
 export interface ConfirmOptions {
   title: string
   content?: DialogBody
-  /** 确认钮语气，默认 brand；危险操作传 danger。 */
+  /** 确认按钮语气，默认 brand；危险操作传 danger。 */
   tone?: Tone
-  /** 标题旁的类型徽记。不给则不出徽记。 */
+  /** 标题旁的类型徽记。未提供时不显示徽记。 */
   badge?: DialogServiceBadge
   okText?: string
   cancelText?: string
@@ -156,13 +156,13 @@ export interface ConfirmOptions {
   onActionError?: (error: DialogActionError) => void | Promise<void>
 }
 
-/** 单按钮告知框的入参：没有取消钮，徽记由预设档自己定，其余同 confirm。 */
+/** 单按钮告知框的入参：没有取消按钮，徽记由预设档决定，其余同 confirm。 */
 export type AlertOptions = Omit<ConfirmOptions, 'tone' | 'badge'>
 
 export interface DialogServiceOptions extends ServiceHostOptions {
-  /** 确认钮文案，缺省 OK。 */
+  /** 确认按钮文案，默认 OK。 */
   okText?: string
-  /** 取消钮文案，缺省 Cancel。 */
+  /** 取消按钮文案，默认 Cancel。 */
   cancelText?: string
   /** 动作失败时的安全提示，与按钮文案相同由调用方提供本地化文字。 */
   actionErrorText?: string
@@ -183,9 +183,9 @@ export interface DialogService {
 // —— 顶部进度条 ——
 
 export interface LoadingBarServiceOptions extends ServiceHostOptions {
-  /** 正常收尾的语气，缺省 brand。 */
+  /** 正常收尾的语气，默认 brand。 */
   tone?: Tone
-  /** error() 收尾用的语气，缺省 danger：出错的收尾要与正常收尾区分得开。 */
+  /** error() 收尾使用的语气，默认 danger：出错的收尾要与正常收尾区分开。 */
   errorTone?: Tone
   height?: string | number
   color?: string
@@ -205,7 +205,7 @@ export interface LoadingBarService {
   error: () => void
   /** 不管还剩几笔在途一律收掉（路由跳走时用）。 */
   finishAll: () => void
-  /** 切成确定进度：给了值就照它显示，内部爬升停止；再 start() 回到不确定。 */
+  /** 切换为确定进度：提供值时按值显示，内部爬升停止；再次 start() 回到不确定。 */
   set: (value: number) => void
   dispose: () => void
 }

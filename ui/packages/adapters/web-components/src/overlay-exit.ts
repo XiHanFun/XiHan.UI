@@ -15,7 +15,7 @@ import { attachCssExit, createPresence } from '@xihan-ui/core/presence'
 export interface OverlayExit {
   /** 行为资源与视觉退场共享的同一份租约。 */
   readonly presence: PresenceHandle
-  /** 浮层子树此刻是否应当可见：展开时为真，退场动画播完之前也为真。 */
+  /** 浮层子树当前是否应当可见：展开时为真，退场动画播完之前也为真。 */
   readonly visible: boolean
   /** content 节点就位或更换时调用，把它的 CSS 退场动画接到退出租约上。 */
   track: (...nodes: Array<HTMLElement | null>) => void

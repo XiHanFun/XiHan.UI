@@ -28,21 +28,21 @@ import { XhReactiveElement } from '../reactive'
 const STRING_CONVERTER = { fromAttribute: (v: string | null) => v ?? undefined }
 
 /**
- * `<xh-config>` —— 配置作用域。包住一棵子树，里面的元素解析 locale / size / translations
- * 时先看最近的这一层，再往外层与全局那份回落。
+ * `<xh-config>`：配置作用域。包裹一棵子树，其中的元素解析 locale / size / translations
+ * 时先查最近的这一层，再向外层与全局配置回退。
  *
- * 它不渲染任何东西、不接线任何角色节点：作者写的子节点原样留在 Light DOM 里，
- * 这个元素只是 DOM 树上的一个记号。皮肤里没有它的规则，布局上它是 display: contents。
+ * 它不渲染任何内容、不接线任何角色节点：作者编写的子节点原样保留在 Light DOM 中，
+ * 该元素只是 DOM 树上的一个标记。皮肤中没有它的规则，布局上它是 display: contents。
  *
- * 与 Vue 适配器的 `provideXhConfig` 是同一件事的两种写法：那边沿组件树找，这边沿 DOM 祖先链找。
- * 逐键合并，本层只覆盖自己写了的那几项——只想改文案的子树不会把外层的 locale 一并抹掉。
+ * 与 Vue 适配器的 `provideXhConfig` 是同一件事的两种写法：Vue 侧沿组件树查找，这里沿 DOM 祖先链查找。
+ * 逐键合并，本层只覆盖自身写了的项：只修改文案的子树不会把外层的 locale 一并抹除。
  *
- * `translations`、`scrollRoot` 与 `portalContainer` 是对象或函数，只能走 property；七个视觉轴均可走属性或 property。
- * 七轴只投影到当前元素；局部 motion 不会改全局 JS override。
+ * `translations`、`scrollRoot` 与 `portalContainer` 是对象或函数，只能通过 property 设置；七个视觉轴均可通过属性或 property 设置。
+ * 七轴只投影到当前元素；局部 motion 不会修改全局 JS override。
  *
  * @customElement xh-config
- * @attr {string} locale - BCP 47 语言标记，喂给日期时间系组件
- * @attr {'sm'|'md'|'lg'} size - 尺寸档的默认值，落到子树里每个声明了三轴 size 的组件上
+ * @attr {string} locale - BCP 47 语言标记，供日期时间类组件使用
+ * @attr {'sm'|'md'|'lg'} size - 尺寸档的默认值，作用于子树中每个声明了三档 size 的组件
  * @attr {'light'|'dark'|'system'} mode - 色彩模式
  * @attr {string} brand - 品牌标识
  * @attr {'comfortable'|'compact'} density - 视觉密度
@@ -50,9 +50,9 @@ const STRING_CONVERTER = { fromAttribute: (v: string | null) => v ?? undefined }
  * @attr {'default'|'more'|'system'} contrast - 对比度偏好
  * @attr {'default'|'reduce'|'system'} motion - 动效偏好；只作用当前 DOM scope
  * @attr {'default'|'reduce'|'system'} transparency - 透明材质偏好
- * @prop {XhTranslationOverrides} translations - 各组件内建文案的覆盖（对象只走 property）
- * @prop {() => HTMLElement | null} scrollRoot - 真正在滚的那个元素，交给滚动锁（函数只走 property）
- * @prop {() => Element | null} portalContainer - 子树内物理 Portal 的默认目标（函数只走 property）
+ * @prop {XhTranslationOverrides} translations - 各组件内建文案的覆盖（对象只能通过 property 设置）
+ * @prop {() => HTMLElement | null} scrollRoot - 实际滚动的元素，交给滚动锁（函数只能通过 property 设置）
+ * @prop {() => Element | null} portalContainer - 子树内物理 Portal 的默认目标（函数只能通过 property 设置）
  */
 export class XhConfigElement extends XhReactiveElement implements XhConfigScope {
   // 描述符逐个写全，CEM 分析器读不了对象展开。
@@ -90,7 +90,7 @@ export class XhConfigElement extends XhReactiveElement implements XhConfigScope 
     return this._visualEnvironmentController
   }
 
-  /** 本层声明的那几项；解析器沿祖先链读它，缺席的键交给外层。 */
+  /** 本层声明的配置项；解析器沿祖先链读取，缺席的键交给外层。 */
   get xhConfig(): XhConfig {
     return {
       locale: this.locale,

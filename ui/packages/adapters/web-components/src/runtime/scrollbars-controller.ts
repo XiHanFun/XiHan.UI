@@ -24,11 +24,11 @@ import { MachineController } from './machine-controller'
 export type ScrollbarsProps = Omit<ScrollbarSchema['props'], 'orientation' | 'gutter'>
 
 export interface ScrollbarsControllerOptions {
-  /** 真正在滚的那层；多档互斥的宿主在这里交此刻活着的那个。 */
+  /** 真正在滚动的层；多档互斥的宿主在这里返回当前生效的那个。 */
   scrollable: () => HTMLElement | null
   /** 条子挂进去的壳：滚动层的父、组件的定位盒，本身不滚。 */
   shell: () => HTMLElement | null
-  /** 摆哪几条轴，默认只摆竖的。 */
+  /** 排布哪几条轴，默认只排竖向。 */
   axes?: readonly Orientation[]
   /** 露面时机、尺寸档、方向这些，逐帧现读。 */
   props?: () => ScrollbarsProps
@@ -51,7 +51,7 @@ export class ScrollbarsController {
   private readonly spreader = createSpreader()
   /** 几条轴共用一个 scope：id 由它派生，同一套条子归在一起。 */
   private readonly scope = createScope(null, createCounterIdGenerator())
-  /** 此刻这套节点挂在哪个壳上；壳换了就整套重建。 */
+  /** 当前这套节点挂在哪个外壳上；外壳更换后整套重建。 */
   private mountedShell: HTMLElement | null = null
 
   constructor(
@@ -61,7 +61,7 @@ export class ScrollbarsController {
     this.axes = options.axes ?? DEFAULT_AXES
   }
 
-  /** 宿主在自己的 wire() 末尾调一次：建节点、建机器、把 connect 产出打上去。 */
+  /** 宿主在自己的 wire() 末尾调用一次：建节点、建状态机、把 connect 产出接上。 */
   wire(): void {
     if (!this.ensureNodes())
       return
@@ -87,10 +87,10 @@ export class ScrollbarsController {
   }
 
   /**
-   * 节点就位之后才建机器。
-   * 机器一跑起来就去解析滚动容器，解析到就给它打 data-xh-scrollbar（皮肤据此把原生条藏成零宽），
-   * 解析不到则投一条 scrollbar.missing-scrollable。
-   * 壳不在场时一条自绘条都没建出来，这两件事都不该发生。
+   * 节点就位之后才建立状态机。
+   * 状态机一运行就去解析滚动容器，解析到即为它写 data-xh-scrollbar（皮肤据此把原生条隐藏为零宽），
+   * 解析不到则投递一条 scrollbar.missing-scrollable。
+   * 外壳不在场时一条自绘滚动条都未建立，这两件事都不应发生。
    */
   private ensureMachines(): void {
     if (this.ctrls.size)
@@ -105,7 +105,7 @@ export class ScrollbarsController {
     }
   }
 
-  /** 机器建起来之前 service 还不存在，取用处一律先问一句。 */
+  /** 状态机建立之前 service 尚不存在，取用处一律先判断。 */
   private serviceOf(axis: Orientation): Service<ScrollbarSchema> | null {
     return (this.ctrls.get(axis)?.service as Service<ScrollbarSchema> | undefined) ?? null
   }
