@@ -1,4 +1,4 @@
-// 受控 | open 与 position 都交给外面握着：面板只报意图，值写回来才动
+// 受控 | open 与 position 都由外部持有：面板只报告意图，值写回后才变化
 import type { FloatingPanelPosition } from "@xihan-ui/headless";
 import type { ReactNode } from "react";
 import {

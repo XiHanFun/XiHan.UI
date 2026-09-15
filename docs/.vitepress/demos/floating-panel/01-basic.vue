@@ -1,4 +1,4 @@
-<!-- 基础用法 | 点触发器打开面板：标题栏那条把手可以拖，右下角可以改大小，Esc 关闭 -->
+<!-- 基础用法 | 点击触发器打开面板：标题栏的把手可以拖动，右下角可以改变大小，Esc 关闭 -->
 <script setup lang="ts">
 import {
   XhFloatingPanelBody,
