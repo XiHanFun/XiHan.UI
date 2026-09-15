@@ -1,4 +1,4 @@
-<!-- 文案本地化 | 把手与几个按钮只有图标，可及名一律走 translations -->
+<!-- 文案本地化 | 把手与几个按钮只有图标，可及名一律经 translations -->
 <script setup lang="ts">
 import type { FloatingPanelSchema } from "@xihan-ui/headless";
 import {

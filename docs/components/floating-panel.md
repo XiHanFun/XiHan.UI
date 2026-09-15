@@ -12,7 +12,7 @@
 
 ## 用法
 
-点触发器打开面板：标题栏那条把手可以拖，右下角可以改大小，Esc 关闭
+点击触发器打开面板：标题栏的把手可以拖动，右下角可以改变大小，Esc 关闭
 
 <XhDemo src="floating-panel/01-basic" />
 
@@ -26,31 +26,31 @@
 
 ### 三种形态
 
-收拢只留标题栏、铺满占满视口；按着的那个钮再按一次回到常规
+收拢只保留标题栏、铺满占满视口；已按下的按钮再按一次回到常规
 
 <XhDemo src="floating-panel/02-window-state" />
 
-### 八个改尺把手
+### 八个尺寸把手
 
-四条边加四个角；min-size 与 max-size 在拖、推、setDimensions 三处同时生效
+四条边加四个角；min-size 与 max-size 在拖动、推动、setDimensions 三处同时生效
 
 <XhDemo src="floating-panel/03-resize" />
 
 ### 受控
 
-open 与 position 都交给外面握着：面板只报意图，值写回来才动
+open 与 position 都由外部持有：面板只报告意图，值写回后才变化
 
 <XhDemo src="floating-panel/04-controlled" />
 
 ### 禁用
 
-搬不动、改不了尺寸、切不了形态；关闭与开合照常，面板不会被锁死在屏幕上
+不可移动、不可改变尺寸、不可切换形态；关闭与开合照常，面板不会被锁定在屏幕上
 
 <XhDemo src="floating-panel/05-disabled" />
 
 ### 文案本地化
 
-把手与几个按钮只有图标，可及名一律走 translations
+把手与几个按钮只有图标，可及名一律经 translations
 
 <XhDemo src="floating-panel/06-translations" />
 

@@ -1,4 +1,4 @@
-// 八个改尺把手 | 四条边加四个角；min-size 与 max-size 在拖、推、setDimensions 三处同时生效
+// 八个尺寸把手 | 四条边加四个角；min-size 与 max-size 在拖动、推动、setDimensions 三处同时生效
 import type { FloatingPanelResizeEdge } from "@xihan-ui/headless";
 import type { ReactNode } from "react";
 import {
