@@ -187,7 +187,7 @@
     cursor: pointer;
     transition:
       background var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
-      scale var(--xh-motion-duration-micro) var(--xh-motion-ease-enter-strong);
+      scale var(--xh-motion-duration-release) var(--xh-motion-ease-release);
   }
 
   [data-scope='image-viewer'][data-part='counter'] {
@@ -209,7 +209,7 @@
     cursor: pointer;
     transition:
       background var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
-      scale var(--xh-motion-duration-micro) var(--xh-motion-ease-enter-strong);
+      scale var(--xh-motion-duration-release) var(--xh-motion-ease-release);
   }
 
   [data-scope='image-viewer'][data-part='prev-trigger'] {
@@ -251,6 +251,8 @@
   [data-scope='image-viewer'][data-part='next-trigger']:active:not(:disabled) {
     background: var(--xh-image-viewer-action-bg-active, color-mix(in oklab, var(--xh-color-neutral-950) 80%, transparent));
     scale: var(--xh-motion-scale-press);
+    transition-duration: var(--xh-motion-duration-press);
+    transition-timing-function: var(--xh-motion-ease-press);
   }
 
   /* 右上角的关闭钮：与翻页钮同底同高，但圆角走控件档，按下有缩放 */
@@ -272,7 +274,7 @@
     cursor: pointer;
     transition:
       background var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
-      scale var(--xh-motion-duration-micro) var(--xh-motion-ease-enter-strong);
+      scale var(--xh-motion-duration-release) var(--xh-motion-ease-release);
   }
 
   /* 三颗钮的面是一层深色纱，纱底下是使用者的图片，环色算不出稳定的取值。
@@ -295,6 +297,8 @@
   [data-scope='image-viewer'][data-part='close-trigger']:active {
     background: var(--xh-image-viewer-close-bg-active, color-mix(in oklab, var(--xh-color-neutral-950) 80%, transparent));
     scale: var(--xh-motion-scale-press);
+    transition-duration: var(--xh-motion-duration-press);
+    transition-timing-function: var(--xh-motion-ease-press);
   }
 
   [data-scope='image-viewer'] button[data-part]:disabled {
