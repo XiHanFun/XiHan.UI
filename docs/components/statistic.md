@@ -12,7 +12,7 @@
 
 ## 用法
 
-标签在上、数值在下；数值由你自己格式化好再塞进来，组件不做千分位也不做换算
+标签在上、数值在下；数值由使用者格式化后放入，组件不做千分位也不做换算
 
 <XhDemo src="statistic/01-basic" />
 
@@ -32,25 +32,25 @@ prefix 与 suffix 和数值排在同一行、按基线对齐，比数值小一�
 
 ### 尺寸
 
-size 换的是标签、数值与前后缀的字号，不传 size 即默认档
+size 改变标签、数值与前后缀的字号，不传 size 即默认档
 
 <XhDemo src="statistic/03-size" />
 
 ### 颜色
 
-tone 决定数值与前后缀用哪族颜色，标签始终保持弱前景
+tone 决定数值与前后缀使用哪族颜色，标签始终保持弱前景
 
 <XhDemo src="statistic/04-tone" />
 
 ### 等宽数字
 
-数值用等宽数字排版，反复换数时字宽不变，后面的单位不会左右挪
+数值使用等宽数字排版，反复更换数值时字宽不变，后面的单位不会左右移动
 
 <XhDemo src="statistic/05-tabular" />
 
 ### 涨跌
 
-trend 落成 trend 部件的 data-direction，箭头由皮肤画；与 tone 正交——跌也可以是好事
+trend 写为 trend 部件的 data-direction，箭头由皮肤绘制；与 tone 正交：下跌也可以是正向语气
 
 <XhDemo src="statistic/06-trend" />
 

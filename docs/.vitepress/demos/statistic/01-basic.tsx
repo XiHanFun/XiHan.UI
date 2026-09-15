@@ -1,4 +1,4 @@
-// 基础用法 | 标签在上、数值在下；数值由你自己格式化好再塞进来，组件不做千分位也不做换算
+// 基础用法 | 标签在上、数值在下；数值由使用者格式化后放入，组件不做千分位也不做换算
 import type { ReactNode } from "react";
 import { XhStatisticLabel, XhStatisticRoot, XhStatisticValue } from "@xihan-ui/react";
 

@@ -1,4 +1,4 @@
-<!-- 语气 | tone 决定数值与前后缀用哪族颜色，标签始终保持弱前景 -->
+<!-- 语气 | tone 决定数值与前后缀使用哪族颜色，标签始终保持弱前景 -->
 <script setup lang="ts">
 import { ArrowUpIcon } from "@xihan-ui/icons";
 import {
