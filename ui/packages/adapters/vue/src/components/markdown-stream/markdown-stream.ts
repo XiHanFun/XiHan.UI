@@ -14,10 +14,10 @@ import { withXhConfig } from '../../config/config'
 import { provideMarkdownStream, useMarkdownStreamContext } from './context'
 import { useMarkdownStream } from './use-markdown-stream'
 
-/** 默认插槽的载荷：块列表与流式状态，以及写好之后要播报的那句话。 */
+/** 默认插槽的载荷：块列表与流式状态，以及完成后要播报的文案。 */
 export type MarkdownStreamRootSlotProps = Pick<MarkdownStreamApi, 'blocks' | 'streaming' | 'announcement'>
 
-/** 逐块插槽的载荷。作者据此把代码块与公式块接管过去。 */
+/** 逐块插槽的载荷。作者据此接管代码块与公式块。 */
 export interface MarkdownStreamBlockSlotProps {
   block: MarkdownBlock
   /** 0 基块下标。 */

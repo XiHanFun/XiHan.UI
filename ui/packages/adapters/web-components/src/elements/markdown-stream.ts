@@ -16,25 +16,25 @@ const STRING_CONVERTER = { fromAttribute: (v: string | null) => v ?? undefined }
 const BOOLEAN_CONVERTER = { fromAttribute: (v: string | null) => (v === null ? undefined : v !== 'false') }
 
 /**
- * `<xh-markdown-stream>` —— Light-DOM 行为宿主，无状态机：wire 时算出 connectMarkdownStream
- * 的产出，打到作者写的角色节点上，并把块列表铺进 content 角色节点。
+ * `<xh-markdown-stream>`：Light-DOM 行为宿主，无状态机：wire 时计算 connectMarkdownStream
+ * 的产出，接到作者编写的角色节点上，并把块列表铺进 content 角色节点。
  *
- * 块是数据铺出来的，作者写不出 N 个节点，故 content 部件的内容由本元素接管。
- * **逐 key 比对复用**：key 没变的块只改内容不重建节点——整表重铺会把已定型的块连同用户
- * 正在拖的选区一起弄没，而稳定 key 正是为了避免这件事。
+ * 块由数据铺设，作者无法编写 N 个节点，因此 content 部件的内容由本元素接管。
+ * 逐 key 比对复用：key 未变的块只改内容不重建节点：整表重铺会把已定型的块连同用户
+ * 正在拖动的选区一起清除，而稳定 key 正是为了避免这一点。
  *
- * markdown 块铺已消毒的 html；代码块与公式块只铺原文，要交给代码组件或公式引擎的话
+ * markdown 块铺设已消毒的 html；代码块与公式块只铺设原文，需要交给代码组件或公式引擎时
  * 由作者监听块节点自行接管。
  *
  * @customElement xh-markdown-stream
  * @attr {'off'|'polite'|'assertive'} announce - 播报档位：off（默认）/ polite / assertive
- * @attr {boolean} streaming - 正文是否仍在增长，只落 data-streaming
- * @attr {boolean} caret - 画不画流式光标，缺席时画，写 caret="false" 关掉
+ * @attr {boolean} streaming - 正文是否仍在增长，只写 data-streaming
+ * @attr {boolean} caret - 是否绘制流式光标，缺席时绘制，写 caret="false" 关闭
  * @attr {string} size - 尺寸：sm / md / lg
  * @csspart root - 外壳，承载 data-state / data-streaming，零块流式时承载 data-caret
- * @csspart content - 正文包裹层，内容由本元素铺
+ * @csspart content - 正文包裹层，内容由本元素铺设
  * @csspart block - 一个顶层块，承载 data-kind / data-live / data-complete / data-caret
- * @csspart live-region - 视觉隐藏的原子播报区，一段回复写完时念一句
+ * @csspart live-region - 视觉隐藏的原子播报区，一段回复完成时朗读一句
  */
 export class XhMarkdownStreamElement extends XhElement {
   static override partContract = { anatomy: markdownStreamAnatomy, meta: markdownStreamMeta }
@@ -54,7 +54,7 @@ export class XhMarkdownStreamElement extends XhElement {
   declare announce?: MarkdownStreamProps['announce']
   declare caret?: boolean
   declare size?: MarkdownStreamProps['size']
-  /** 已渲染好的块列表，由宿主调 createStreamRenderer().render() 得到。 */
+  /** 已渲染的块列表，由宿主调用 createStreamRenderer().render() 得到。 */
   declare blocks?: readonly MarkdownBlock[]
   declare translations?: Partial<MarkdownStreamTranslations>
 

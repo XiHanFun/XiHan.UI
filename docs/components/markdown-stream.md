@@ -100,11 +100,11 @@ size 换正文字号与块间距，三档共用同一份块列表
 
 | 属性 | 类型 | 必填 | 说明 |
 | --- | --- | --- | --- |
-| `announce` | `'off' \| 'polite' \| 'assertive'` |  | 播报档位，默认 off——会话级播报区在消息流那一层，别在每条回复里各开一个。 |
-| `blocks` | `readonly MarkdownBlock[]` | 是 | 已渲染好的块列表。 |
-| `caret` | `boolean` |  | 画不画流式光标，默认画。设成 false 时 data-caret 一处都不发。 |
+| `announce` | `'off' \| 'polite' \| 'assertive'` |  | 播报档位，默认 off：会话级播报区在消息流层，不在每条回复中各开一个。 |
+| `blocks` | `readonly MarkdownBlock[]` | 是 | 已渲染完成的块列表。 |
+| `caret` | `boolean` |  | 是否绘制流式光标，默认绘制。设为 false 时不发出任何 data-caret。 |
 | `size` | `Size` |  | 尺寸：sm / md / lg。 |
-| `streaming` | `boolean` |  | 这一段正文是否仍在增长，只落 data-streaming。 |
+| `streaming` | `boolean` |  | 该段正文是否仍在增长，只写 data-streaming。 |
 | `translations` | `Partial<MarkdownStreamTranslations>` |  |  |
 
 ### 插槽
@@ -132,7 +132,7 @@ size 换正文字号与块间距，三档共用同一份块列表
 | --- | --- | --- |
 | `blocks` | `readonly MarkdownBlock[]` |  |
 | `streaming` | `boolean` |  |
-| `announcement` | `string \| undefined` | 播报文本；announce 为 off、或正文还在增长时为 undefined。 |
+| `announcement` | `string \| undefined` | 播报文本；announce 为 off、或正文仍在增长时为 undefined。 |
 | `getRootProps` | `() => T['element']` |  |
 | `getContentProps` | `() => T['element']` |  |
 | `getBlockProps` | `(props: { block: MarkdownBlock }) => T['element']` |  |
