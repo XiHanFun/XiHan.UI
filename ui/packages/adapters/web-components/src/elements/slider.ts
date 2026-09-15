@@ -34,45 +34,45 @@ const NUMBER_LIST_CONVERTER = {
 }
 
 /**
- * `<xh-slider>` —— Light-DOM 行为宿主：作者写 root/label/control/track/range/thumb
- * 与拇指内的 hidden-input 角色节点，元素跑 slider 机器并把 connect 产出打上去。
+ * `<xh-slider>`：Light-DOM 行为宿主：作者写 root / label / control / track / range / thumb
+ * 与拇指内的 hidden-input 角色节点，元素运行 slider 状态机并把 connect 产出接上。
  *
- * 键盘全在拇指上（方向键步进、PageUp/PageDown 大步进、Home/End 取端点），
- * 指针拖动挂在 control 上（拇指常浮出轨道，只挂 track 会抓不住拇指本身），
- * 值与坐标的换算取 track 的矩形——矩形在事件发生的那一刻才量，连接期一律不碰 DOM。
+ * 键盘全部在拇指上（方向键步进、PageUp / PageDown 大步进、Home / End 取端点），
+ * 指针拖动挂在 control 上（拇指常浮出轨道，只挂 track 会无法抓住拇指本身），
+ * 值与坐标的换算取 track 的矩形：矩形在事件发生时才测量，连接期一律不涉及 DOM。
  *
- * 多滑块时每个拇指要用 index 属性写明自己是第几个（`index="1"`），
+ * 多滑块时每个拇指要用 index 属性写明序号（`index="1"`），
  * 拇指内的 hidden-input 按所在拇指的下标取值，不必另写。
  *
  * @customElement xh-slider
- * @attr {string} value - 受控值，逗号分隔（如 "20,80"）；缺省该属性即非受控
- * @attr {string} default-value - 非受控初值，同样逗号分隔；缺省时是单滑块停在 min
+ * @attr {string} value - 受控值，逗号分隔（如 "20,80"）；未提供该属性即非受控
+ * @attr {string} default-value - 非受控初值，同样逗号分隔；未提供时是单滑块停在 min
  * @attr {number} min - 下界，默认 0
  * @attr {number} max - 上界，默认 100
  * @attr {number} step - 方向键与吸附网格的步长，默认 1
- * @attr {number} large-step - PageUp/PageDown 的步长，默认 10 倍 step
- * @attr {number} min-steps-between-thumbs - 相邻滑块至少隔几格，默认 0
- * @attr {boolean} snap-to-marks - 只认刻度落点：拖动、点按与键盘都吸到最近/下一档刻度；刻度表经 marks property 赋
+ * @attr {number} large-step - PageUp / PageDown 的步长，默认 10 倍 step
+ * @attr {number} min-steps-between-thumbs - 相邻滑块至少相隔的格数，默认 0
+ * @attr {boolean} snap-to-marks - 只接受刻度落点：拖动、点击与键盘都吸附到最近 / 下一档刻度；刻度表经 marks property 赋值
  * @attr {'horizontal'|'vertical'} orientation - 轨道朝向，默认 horizontal
  * @attr {'ltr'|'rtl'} dir - 文字方向，只改写水平轨道上左右两键与指针的语义，默认 ltr
- * @attr {boolean} disabled - 禁用：拇指退出 Tab 序列、推不动、不参与表单提交
- * @attr {boolean} read-only - 只读：仍可聚焦与被读屏念出，推不动
+ * @attr {boolean} disabled - 禁用：拇指退出 Tab 序列、不可推动、不参与表单提交
+ * @attr {boolean} read-only - 只读：仍可聚焦与被读屏朗读，不可推动
  * @attr {boolean} invalid - 校验失败标注
  * @attr {'brand'|'neutral'|'success'|'warning'|'danger'|'info'} tone - 语气
  * @attr {'sm'|'md'|'lg'} size - 尺寸
- * @attr {string} name - 表单字段名；给了才参与提交，多滑块逐个同名 append
- * @fires value-change - 值变化（拖动途中会连发）；detail 为 `{ value: number[] }`
- * @fires value-change-end - 一次操作收尾发一次；detail 为 `{ value: number[], index: number }`
+ * @attr {string} name - 表单字段名；提供后才参与提交，多滑块逐个同名 append
+ * @fires value-change - 值变化（拖动途中连续发出）；detail 为 `{ value: number[] }`
+ * @fires value-change-end - 一次操作收尾时发出一次；detail 为 `{ value: number[], index: number }`
  * @csspart root - 承载 data-orientation / data-disabled / data-readonly / data-invalid / data-dragging 的容器
  * @csspart label - 组标题（拇指的 aria-labelledby 目标）
  * @csspart control - 指针命中区，按下即跳到落点并接管拖动
  * @csspart track - 轨道本体，值与坐标的换算以它的矩形为准
  * @csspart range - 已选区间，起止由内联逻辑属性给出
  * @csspart tick-group - 刻度容器
- * @csspart tick - 刻度点（纯装饰），须自带 value 属性；落进已选区间带 data-passed
- * @csspart tick-label - 刻度文案，须自带 value 属性；点按把最近的滑块跳到这一档
- * @csspart thumb - role=slider 的拇指，键盘交互全在它身上；多滑块须写 index 属性
- * @csspart value-text - 拇指内的值气泡（aria-hidden）；留空即由元素填入该拇指的值文本，作者写了内容则归作者
+ * @csspart tick - 刻度点（纯装饰），须自带 value 属性；落入已选区间时带 data-passed
+ * @csspart tick-label - 刻度文案，须自带 value 属性；点击把最近的滑块跳到该档
+ * @csspart thumb - role=slider 的拇指，键盘交互全部在它身上；多滑块须写 index 属性
+ * @csspart value-text - 拇指内的值气泡（aria-hidden）；留空即由元素填入该拇指的值文本，作者写了内容则由作者负责
  * @csspart hidden-input - 拇指内的表单影子（须是原生 input）
  */
 export class XhSliderElement extends XhElement {
@@ -110,7 +110,7 @@ export class XhSliderElement extends XhElement {
   declare step?: number
   declare largeStep?: number
   declare minStepsBetweenThumbs?: number
-  /** 刻度表；数组进不了属性，只作为 property 暴露。 */
+  /** 刻度表；数组无法表达为属性，只作为 property 暴露。 */
   declare marks?: SliderSchema['props']['marks']
   declare snapToMarks?: boolean
   declare orientation?: Orientation
@@ -186,8 +186,8 @@ export class XhSliderElement extends XhElement {
   }
 
   /**
-   * 拇指自报的下标。多滑块时作者在节点上写 index="1"，与 Vue 侧的 `:index` 是同一份声明；
-   * 写不出数字（没写、写错）时退回 0，单滑块因此不必写。
+   * 拇指声明的下标。多滑块时作者在节点上写 index="1"，与 Vue 侧的 `:index` 是同一份声明；
+   * 无法得到数字（未写、写错）时退回 0，单滑块因此不必写。
    */
   private thumbIndex(el: HTMLElement): number {
     return normalizeItemIndex(el.getAttribute('index'))

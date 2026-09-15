@@ -9,7 +9,7 @@ import type { SliderContext } from './use-slider'
 import { createContext, useContext } from 'react'
 
 const Ctx = createContext<SliderContext | undefined>(undefined)
-/** 拇指自报的下标，供它内部的值气泡与隐藏输入复用同一份声明。 */
+/** 拇指声明的下标，供它内部的值气泡与隐藏输入复用同一份声明。 */
 const ThumbCtx = createContext<number | undefined>(undefined)
 
 export const SliderProvider = Ctx

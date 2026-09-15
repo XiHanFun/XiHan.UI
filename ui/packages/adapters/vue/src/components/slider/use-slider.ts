@@ -18,7 +18,7 @@ import { createVueIdGenerator } from '../../runtime/vue-id'
 export interface SliderContext {
   api: ComputedRef<SliderApi>
   service: Service<SliderSchema>
-  /** 轨道节点，机器在指针事件里拿它量矩形。 */
+  /** 轨道节点，状态机在指针事件中读取它的矩形。 */
   trackRef: Ref<HTMLElement | null>
 }
 

@@ -144,15 +144,15 @@ value-text 挂在 thumb 里就跟着走位；推动那一刻由皮肤放它出�
 | `disabled` | `boolean` |  |  |
 | `readOnly` | `boolean` |  |  |
 | `invalid` | `boolean` |  |  |
-| `tone` | `Tone` |  | 语气：brand / neutral / success / warning / danger / info，决定用哪族颜色 |
+| `tone` | `Tone` |  | 语气：brand / neutral / success / warning / danger / info，决定使用哪族颜色 |
 | `size` | `Size` |  | 尺寸：sm / md / lg，决定拇指直径与轨道厚度 |
 | `name` | `string` |  | 表单字段名；多滑块时逐个 append。 |
-| `minStepsBetweenThumbs` | `number` |  | 相邻滑块至少隔几格，默认 0（可以贴在一起但不能交换顺序）。 |
-| `marks` | `SliderMark[]` |  | 刻度表：轨道上的圆点与文案，点文案即跳值。 |
-| `snapToMarks` | `boolean` |  | 只认刻度落点：拖动、点按与键盘都吸到最近/下一档刻度。 |
-| `getValueText` | `(details: SliderValueTextDetails) => string` |  | 把值翻成人话，产出写进拇指的 aria-valuetext。 不给就不写这个属性，读屏退回念 aria-valuenow。 |
-| `onValueChange` | `(details: SliderValueChangeDetails) => void` |  | 每次推动都发；拖动过程中会连续发很多次。 |
-| `onValueChangeEnd` | `(details: SliderValueChangeEndDetails) => void` |  | 只在一次操作结束时发一次，适合拿来发请求。 |
+| `minStepsBetweenThumbs` | `number` |  | 相邻滑块至少相隔的格数，默认 0（可以贴在一起但不能交换顺序）。 |
+| `marks` | `SliderMark[]` |  | 刻度表：轨道上的圆点与文案，点击文案即跳到该值。 |
+| `snapToMarks` | `boolean` |  | 只接受刻度落点：拖动、点击与键盘都吸附到最近 / 下一档刻度。 |
+| `getValueText` | `(details: SliderValueTextDetails) => string` |  | 把值转换为可读文字，产出写入拇指的 aria-valuetext。 未提供时不写该属性，读屏回退为朗读 aria-valuenow。 |
+| `onValueChange` | `(details: SliderValueChangeDetails) => void` |  | 每次推动都发出；拖动过程中连续发出。 |
+| `onValueChangeEnd` | `(details: SliderValueChangeEndDetails) => void` |  | 只在一次操作结束时发出一次，适合用于发起请求。 |
 
 ### 事件
 
@@ -160,8 +160,8 @@ value-text 挂在 thumb 里就跟着走位；推动那一刻由皮肤放它出�
 
 | 事件 | 载荷 | 说明 |
 | --- | --- | --- |
-| `value-change` | `SliderValueTextDetails` | 值变化（拖动途中会连发）；detail 为 `{ value: number[] }` |
-| `value-change-end` | `SliderValueChangeEndDetails` | 一次操作收尾发一次；detail 为 `{ value: number[], index: number }` |
+| `value-change` | `SliderValueTextDetails` | 值变化（拖动途中连续发出）；detail 为 `{ value: number[] }` |
+| `value-change-end` | `SliderValueChangeEndDetails` | 一次操作收尾时发出一次；detail 为 `{ value: number[], index: number }` |
 
 ### 插槽
 
@@ -195,7 +195,7 @@ value-text 挂在 thumb 里就跟着走位；推动那一刻由皮肤放它出�
 | `dragging` | `boolean` |  |
 | `disabled` | `boolean` |  |
 | `readOnly` | `boolean` |  |
-| `valueText` | `(index: number) => string` | 某个拇指的值文本：给了 getValueText 就是它的产出，否则是值本身。 |
+| `valueText` | `(index: number) => string` | 某个拇指的值文本：提供 getValueText 时是其产出，否则是值本身。 |
 | `setValue` | `(next: number[]) => void` |  |
 | `setThumbValue` | `(index: number, next: number) => void` |  |
 | `getRootProps` | `() => T['element']` |  |
@@ -204,10 +204,10 @@ value-text 挂在 thumb 里就跟着走位；推动那一刻由皮肤放它出�
 | `getTrackProps` | `() => T['element']` |  |
 | `getRangeProps` | `() => T['element']` |  |
 | `getThumbProps` | `(index: number) => T['element']` |  |
-| `getValueTextProps` | `(index: number) => T['element']` | 值气泡：挂在拇指里显示这一个拇指的当前值；aria-hidden，读屏走拇指自己的 aria-valuetext。 |
+| `getValueTextProps` | `(index: number) => T['element']` | 值气泡：挂在拇指中显示该拇指的当前值；aria-hidden，读屏使用拇指自身的 aria-valuetext。 |
 | `getTickGroupProps` | `() => T['element']` | 刻度容器。 |
 | `getTickProps` | `(props: SliderTickProps) => T['element']` | 刻度点：轨道上的圆点，纯装饰。 |
-| `getTickLabelProps` | `(props: SliderTickProps) => T['element']` | 刻度文案：点按把最近的滑块跳到这一档。 |
+| `getTickLabelProps` | `(props: SliderTickProps) => T['element']` | 刻度文案：点击把最近的滑块跳到该档。 |
 | `getHiddenInputProps` | `(index: number) => T['input']` |  |
 
 ## 无障碍
