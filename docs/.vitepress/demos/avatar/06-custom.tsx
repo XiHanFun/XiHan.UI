@@ -1,4 +1,4 @@
-// 自定义直径与配色 | 三档之外的直径、底色、字色各是一个组件令牌；按人名分配颜色就是逐个实例覆盖
+// 自定义直径与配色 | 三档之外的直径、底色、字色各是一个组件令牌；按人名分配颜色即逐个实例覆盖
 import type { CSSProperties, ReactNode } from "react";
 import { XhAvatarFallback, XhAvatarImage, XhAvatarRoot } from "@xihan-ui/react";
 

@@ -1,4 +1,4 @@
-<!-- 图标当回退 | fallback 是普通插槽，放图标和放缩写字一样；没有名字可写时用图标表示「某位用户」 -->
+<!-- 图标作为回退 | fallback 是普通插槽，放图标与放缩写文字一样；没有名字可写时用图标表示某位用户 -->
 <script setup lang="ts">
 import { XhAvatarFallback, XhAvatarImage, XhAvatarRoot, XhIcon } from "@xihan-ui/vue";
 
