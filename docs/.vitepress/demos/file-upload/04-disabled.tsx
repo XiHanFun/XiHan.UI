@@ -1,4 +1,4 @@
-// 禁用 | disabled 把投放区、触发器与隐藏输入一并关停，拖拽进来也不再收
+// 禁用 | disabled 把投放区、触发器与隐藏输入一并关停，拖拽进入也不再接收
 import type { ReactNode } from "react";
 import {
   XhFileUploadDropzone,

@@ -1,4 +1,4 @@
-// 受控 | 传了 files 就由宿主说了算，组件自己不再落值，只发 files-change 报告意图
+// 受控 | 传入 files 后由宿主决定，组件自身不再落值，只发 files-change 报告意图
 import type { ReactNode } from "react";
 import {
   XhButton,

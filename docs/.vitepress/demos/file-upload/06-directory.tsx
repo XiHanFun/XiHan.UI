@@ -1,4 +1,4 @@
-// 选整个目录 | directory 让隐藏输入改收目录，选中目录下的文件一次性全进来，数量上限要跟着放开
+// 选择整个目录 | directory 使隐藏输入改为接收目录，选中目录下的文件一次性全部进入，数量上限要随之放开
 import type { ReactNode } from "react";
 import {
   XhFileUploadDropzone,

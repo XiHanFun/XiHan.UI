@@ -12,7 +12,7 @@
 
 ## 用法
 
-投放区自己就是一个大按钮，隐藏输入是必备部件，缺了它选不了文件
+投放区自身就是一个大按钮，隐藏输入是必备部件，缺少它无法选择文件
 
 <XhDemo src="file-upload/01-basic" />
 
@@ -26,61 +26,61 @@
 
 ### 限制与拒收
 
-accept / maxFiles / maxFileSize 越界的当场被拒，file-reject 逐个报出理由
+accept / maxFiles / maxFileSize 越界的当场被拒绝，file-reject 逐个报告理由
 
 <XhDemo src="file-upload/02-limits" />
 
 ### 受控
 
-传了 files 就由宿主说了算，组件自己不再落值，只发 files-change 报告意图
+传入 files 后由宿主决定，组件自身不再落值，只发 files-change 报告意图
 
 <XhDemo src="file-upload/03-controlled" />
 
 ### 禁用
 
-disabled 把投放区、触发器与隐藏输入一并关停，拖拽进来也不再收
+disabled 把投放区、触发器与隐藏输入一并关停，拖拽进入也不再接收
 
 <XhDemo src="file-upload/04-disabled" />
 
 ### 预置列表
 
-defaultFiles 给出挂载时就在的那几份，之后列表照旧由组件自己保管，删除与清空都照常
+defaultFiles 给出挂载时已存在的文件，之后列表照常由组件自行保管，删除与清空都照常
 
 <XhDemo src="file-upload/05-default-files" />
 
-### 选整个目录
+### 选择整个目录
 
-directory 让隐藏输入改收目录，选中目录下的文件一次性全进来，数量上限要跟着放开
+directory 使隐藏输入改为接收目录，选中目录下的文件一次性全部进入，数量上限要随之放开
 
 <XhDemo src="file-upload/06-directory" />
 
 ### 缩略图墙
 
-item-preview 是个空方框，作者往里塞什么都行；塞进去的图会被裁成方格，一行摆几张由外层网格定
+item-preview 是一个空方框，作者可放置任意内容；放入的图片会被裁为方格，一行排几张由外层网格决定
 
 <XhDemo src="file-upload/07-image-wall" />
 
-### 宿主自定的准入
+### 宿主自定义的准入
 
-组件只管 accept 与大小数量这几条通用规则，别的规矩由宿主在受控列表里再筛一道：这里同名文件只留最先来的那份
+组件只管理 accept 与大小数量这几条通用规则，其他规则由宿主在受控列表中再筛一遍：这里同名文件只保留最先到达的一份
 
 <XhDemo src="file-upload/08-custom-rule" />
 
 ### 上传生命周期
 
-给一个 upload 实现组件就是上传器：收下即开传（auto-upload 可关成手动），进度、成败与返回地址都在每条的传输快照里，失败一键重试
+提供一个 upload 实现后组件即为上传器：接收即开始上传（auto-upload 可关闭为手动），进度、成败与返回地址都在每条的传输快照中，失败可一键重试
 
 <XhDemo src="file-upload/09-manual-upload" />
 
 ### 列表项上的下载
 
-条目里放什么由作者定：一条普通的 a[download] 就是下载口；想自己接管就换成按钮，在处理器里怎么取都行
+条目中放置什么由作者决定：一条普通的 a[download] 就是下载入口；需要自行接管时换为按钮，在处理器中自行获取
 
 <XhDemo src="file-upload/10-download" />
 
 ### 服务器附件回显
 
-remote-files 装编辑表单里已存在的附件：与本地文件同列渲染（allFiles 远程在前）、占 max-files 名额，删除走 remote-files-change 由宿主落库
+remote-files 承载编辑表单中已存在的附件：与本地文件同列渲染（allFiles 远程在前）、占用 max-files 名额，删除经 remote-files-change 由宿主落库
 
 <XhDemo src="file-upload/11-remote-files" />
 
