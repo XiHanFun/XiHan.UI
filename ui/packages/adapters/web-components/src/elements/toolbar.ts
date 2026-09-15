@@ -22,28 +22,28 @@ const STRING_CONVERTER = { fromAttribute: (v: string | null) => v ?? undefined }
 const BOOLEAN_CONVERTER = { fromAttribute: (v: string | null) => (v === null ? undefined : v !== 'false') }
 
 /**
- * `<xh-toolbar>` —— Light-DOM 行为宿主：作者写 root、若干 item，可选的 group 与 separator，
- * 元素跑 toolbar 机器并把 connect 产出打上去。
+ * `<xh-toolbar>`：Light-DOM 行为宿主：作者写 root、若干 item，可选的 group 与 separator，
+ * 元素运行 toolbar 状态机并把 connect 产出接上。
  *
- * 工具条只管两件事：整条一个 Tab 位的方向键导航，以及 role=toolbar / role=group /
- * role=separator 这套 ARIA。条目自己是按钮、切换钮还是下拉触发器，各自的角色、按下态与
- * 点击行为一律归它自己——元素不覆盖条目的 role，也不接管条目的 click。
- * 条目身份取写在条目上的 value 属性；禁用由条目自报 aria-disabled
- * （集合条目一律如此，原生 disabled 不可聚焦、就当不成方向键的起点）。
- * 落在 form 里的按钮式条目记得自己写 type="button"，否则回车会直接提交表单。
+ * 工具条只负责两件事：整条一个 Tab 位的方向键导航，以及 role=toolbar / role=group /
+ * role=separator 这套 ARIA。条目自身是按钮、切换按钮还是下拉触发器，各自的角色、按下态与
+ * 点击行为一律归条目自身：元素不覆盖条目的 role，也不接管条目的 click。
+ * 条目身份取写在条目上的 value 属性；禁用由条目声明 aria-disabled
+ * （集合条目一律如此，原生 disabled 不可聚焦、无法作为方向键的起点）。
+ * 位于 form 中的按钮式条目需自行写 type="button"，否则回车会直接提交表单。
  *
- * 导航在事件那一刻按 data-scope+data-part 查活 DOM，依赖 connect 回写的 data-value，
- * 因此 wire 必须先于交互跑过（基类 updated 已保证）。
+ * 导航在事件发生时按 data-scope + data-part 查询 DOM，依赖 connect 回写的 data-value，
+ * 因此 wire 必须先于交互运行（基类 updated 已保证）。
  *
  * @customElement xh-toolbar
- * @attr {'horizontal'|'vertical'} orientation - 主轴，默认 horizontal；横排收左右键、竖排收上下键，另一轴放行给页面
+ * @attr {'horizontal'|'vertical'} orientation - 主轴，默认 horizontal；横向接管左右键、纵向接管上下键，另一轴放行给页面
  * @attr {'ltr'|'rtl'} dir - 文字方向，只改写水平主轴上左右方向键的语义，默认 ltr
- * @attr {boolean} loop - 方向键走到尽头回绕，默认开启；写 loop="false" 关掉
- * @attr {boolean} disabled - 整条禁用：条目全转 aria-disabled，方向键不再接管
- * @attr {'plain'|'surface'} variant - 视觉变体，缺省 plain；surface 提供附着式工具面
- * @attr {'sm'|'md'|'lg'} size - 尺寸：只换条目间距与整条内边距，条目自身的大小归条目
+ * @attr {boolean} loop - 方向键到达末尾回绕，默认开启；写 loop="false" 关闭
+ * @attr {boolean} disabled - 整条禁用：条目全部为 aria-disabled，方向键不再接管
+ * @attr {'plain'|'surface'} variant - 视觉变体，默认 plain；surface 提供附着式工具面
+ * @attr {'sm'|'md'|'lg'} size - 尺寸：只影响条目间距与整条内边距，条目自身的大小归条目
  * @csspart root - role=toolbar 的容器（键盘在此收口，也是 roving tabindex 的兜底位）
- * @csspart group - role=group 的小分组，装一串相关控件
+ * @csspart group - role=group 的小分组，放置一组相关控件
  * @csspart item - 工具条条目，须自带 value 属性标识身份；禁用写 aria-disabled="true"
  * @csspart separator - role=separator 分隔线，朝向恒与主轴垂直
  */
@@ -73,7 +73,7 @@ export class XhToolbarElement extends XhElement {
   // 整条禁用期间的条目自身声明快照。connect 每帧都把 aria-disabled 写回条目，整条禁用更是写满每一个，
   // 此时回读分不清「作者声明的」还是「自己上一帧写的」，解禁后条目就永远解不开。
   private readonly declaredDisabled = new WeakMap<HTMLElement, boolean>()
-  /** 上一帧是否整条禁用：解禁当帧 DOM 上还留着机器写回的 aria-disabled，读不得。 */
+  /** 上一帧是否整条禁用：解禁当帧 DOM 上仍保留着状态机写回的 aria-disabled，不可读取。 */
   private wasToolbarDisabled = false
 
   // toolbar 机器无副作用：不需要 config/layer/refs，controller 只带 props。

@@ -65,7 +65,7 @@ export const XhToolbarItem = defineComponent({
   props: {
     value: { type: String, required: true },
     disabled: Boolean,
-    /** 条目渲染成哪个标签，默认 button；不自动补 type="button"，表单内需自行声明。 */
+    /** 条目渲染为哪个标签，默认 button；不自动补 type="button"，表单内需自行声明。 */
     as: { type: String, default: 'button' },
   },
   setup(props, { slots }) {

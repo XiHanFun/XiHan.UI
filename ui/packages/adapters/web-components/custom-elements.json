@@ -58257,7 +58257,7 @@
       "declarations": [
         {
           "kind": "class",
-          "description": "`<xh-toolbar>` —— Light-DOM 行为宿主：作者写 root、若干 item，可选的 group 与 separator，\n元素跑 toolbar 机器并把 connect 产出打上去。\n\n工具条只管两件事：整条一个 Tab 位的方向键导航，以及 role=toolbar / role=group /\nrole=separator 这套 ARIA。条目自己是按钮、切换钮还是下拉触发器，各自的角色、按下态与\n点击行为一律归它自己——元素不覆盖条目的 role，也不接管条目的 click。\n条目身份取写在条目上的 value 属性；禁用由条目自报 aria-disabled\n（集合条目一律如此，原生 disabled 不可聚焦、就当不成方向键的起点）。\n落在 form 里的按钮式条目记得自己写 type=\"button\"，否则回车会直接提交表单。\n\n导航在事件那一刻按 data-scope+data-part 查活 DOM，依赖 connect 回写的 data-value，\n因此 wire 必须先于交互跑过（基类 updated 已保证）。",
+          "description": "`<xh-toolbar>`：Light-DOM 行为宿主：作者写 root、若干 item，可选的 group 与 separator，\n元素运行 toolbar 状态机并把 connect 产出接上。\n\n工具条只负责两件事：整条一个 Tab 位的方向键导航，以及 role=toolbar / role=group /\nrole=separator 这套 ARIA。条目自身是按钮、切换按钮还是下拉触发器，各自的角色、按下态与\n点击行为一律归条目自身：元素不覆盖条目的 role，也不接管条目的 click。\n条目身份取写在条目上的 value 属性；禁用由条目声明 aria-disabled\n（集合条目一律如此，原生 disabled 不可聚焦、无法作为方向键的起点）。\n位于 form 中的按钮式条目需自行写 type=\"button\"，否则回车会直接提交表单。\n\n导航在事件发生时按 data-scope + data-part 查询 DOM，依赖 connect 回写的 data-value，\n因此 wire 必须先于交互运行（基类 updated 已保证）。",
           "name": "XhToolbarElement",
           "cssParts": [
             {
@@ -58265,7 +58265,7 @@
               "name": "root"
             },
             {
-              "description": "role=group 的小分组，装一串相关控件",
+              "description": "role=group 的小分组，放置一组相关控件",
               "name": "group"
             },
             {
@@ -58356,7 +58356,7 @@
               },
               "privacy": "private",
               "default": "false",
-              "description": "上一帧是否整条禁用：解禁当帧 DOM 上还留着机器写回的 aria-disabled，读不得。"
+              "description": "上一帧是否整条禁用：解禁当帧 DOM 上仍保留着状态机写回的 aria-disabled，不可读取。"
             },
             {
               "kind": "field",
@@ -58428,7 +58428,7 @@
               "type": {
                 "text": "Orientation | undefined"
               },
-              "description": "主轴，默认 horizontal；横排收左右键、竖排收上下键，另一轴放行给页面",
+              "description": "主轴，默认 horizontal；横向接管左右键、纵向接管上下键，另一轴放行给页面",
               "name": "orientation",
               "fieldName": "orientation"
             },
@@ -58444,7 +58444,7 @@
               "type": {
                 "text": "boolean | undefined"
               },
-              "description": "方向键走到尽头回绕，默认开启；写 loop=\"false\" 关掉",
+              "description": "方向键到达末尾回绕，默认开启；写 loop=\"false\" 关闭",
               "name": "loop",
               "fieldName": "loop"
             },
@@ -58452,7 +58452,7 @@
               "type": {
                 "text": "boolean | undefined"
               },
-              "description": "整条禁用：条目全转 aria-disabled，方向键不再接管",
+              "description": "整条禁用：条目全部为 aria-disabled，方向键不再接管",
               "name": "disabled",
               "fieldName": "disabled"
             },
@@ -58460,7 +58460,7 @@
               "type": {
                 "text": "ToolbarVariant | undefined"
               },
-              "description": "视觉变体，缺省 plain；surface 提供附着式工具面",
+              "description": "视觉变体，默认 plain；surface 提供附着式工具面",
               "name": "variant",
               "fieldName": "variant"
             },
@@ -58468,7 +58468,7 @@
               "type": {
                 "text": "Size | undefined"
               },
-              "description": "尺寸：只换条目间距与整条内边距，条目自身的大小归条目",
+              "description": "尺寸：只影响条目间距与整条内边距，条目自身的大小归条目",
               "name": "size",
               "fieldName": "size"
             }
