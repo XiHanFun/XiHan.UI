@@ -15,6 +15,10 @@ import '@xihan-ui/styles'
 let app: App | null = null
 let host: HTMLElement | null = null
 
+function isTransparentColor(value: string): boolean {
+  return value === 'transparent' || /(?:,\s*0|\/\s*0)\)$/.test(value)
+}
+
 function field(label: string): VNode {
   return h(XhTextFieldRoot, { placeholder: label }, () => [
     h(XhTextFieldControl, null, () => [
@@ -90,7 +94,10 @@ describe('input-group 单一输入表面', () => {
     input.focus()
     expect(root.matches(':focus-within')).toBe(true)
     expect(getComputedStyle(root).outlineStyle).toBe('solid')
-    expect(getComputedStyle(control('primary')).outlineStyle).toBe('none')
+    const nestedControl = getComputedStyle(control('primary'))
+    expect(nestedControl.outlineStyle).toBe('none')
+    expect(isTransparentColor(nestedControl.borderTopColor)).toBe(true)
+    expect(isTransparentColor(nestedControl.backgroundColor)).toBe(true)
     expect(getComputedStyle(input).outlineStyle).toBe('none')
 
     const after = root.getBoundingClientRect()

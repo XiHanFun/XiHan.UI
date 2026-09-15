@@ -131,6 +131,18 @@
 
   /* 子控件不再各画一层输入表面，悬停与聚焦统一落在组的外轮廓。 */
   [data-scope='input-group'][data-part='root'] [data-xh-field-chrome] {
+    --xh-field-bg-rest: transparent;
+    --xh-field-bg-hover: transparent;
+    --xh-field-bg-read-only: transparent;
+    --xh-field-bg-disabled: transparent;
+    --xh-field-border-rest: transparent;
+    --xh-field-border-hover: transparent;
+    --xh-field-border-focus: transparent;
+    --xh-field-border-invalid: transparent;
+    --xh-field-shadow-rest: none;
+    --xh-field-shadow-read-only: none;
+    --xh-field-shadow-disabled: none;
+
     border-color: transparent;
     background-color: transparent;
     box-shadow: none;
