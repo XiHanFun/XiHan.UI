@@ -17,7 +17,7 @@ import { useScrollbar } from './use-scrollbar'
 
 type ScrollbarProps = ScrollbarSchema['props']
 
-/** 默认插槽的载荷：这一条此刻的显隐、几何与位置，以及两个命令式动作。 */
+/** 默认插槽的载荷：该滚动条当前的显隐、几何与位置，以及两个命令式动作。 */
 export type ScrollbarRootSlotProps = Pick<
   ScrollbarApi,
   'visible' | 'native' | 'overflow' | 'dragging' | 'scrolling' | 'thumbSize' | 'thumbOffset' | 'scroll' | 'max' | 'scrollTo' | 'scrollBy'
@@ -28,12 +28,12 @@ export const XhScrollbarRoot = defineComponent({
   // 缺省值由机器与 connect 给出；普通类型省略 default，Boolean 显式保留 undefined
   props: {
     /**
-     * 真正在滚的那个元素，或者取它的函数。它不必是本组件的后代——
-     * 表格的滚动盒、虚拟滚动的视口、随手一个 overflow:auto 的 div 都行。
+     * 真正在滚动的元素，或者取它的函数。它不必是本组件的后代：
+     * 表格的滚动盒、虚拟滚动的视口、任意 overflow:auto 的 div 均可。
      */
     scrollable: { type: [Object, Function] as PropType<ScrollbarTarget> },
     /**
-     * 滚动容器的 id。没给 scrollable 时按它去查节点；focusable 时它同时落到滑块的 aria-controls 上。
+     * 滚动容器的 id。未提供 scrollable 时按它查询节点；focusable 时它同时写到滑块的 aria-controls 上。
      */
     controls: { type: String },
     orientation: { type: String as PropType<Orientation> },
@@ -43,11 +43,11 @@ export const XhScrollbarRoot = defineComponent({
     step: { type: Number },
     size: { type: String as PropType<Size> },
     disabled: Boolean,
-    /** 滑块进 Tab 序并报 role=scrollbar；缺省不进，滚动仍归滚动容器自己。 */
+    /** 滑块进入 Tab 序列并报告 role=scrollbar；默认不进入，滚动仍归滚动容器自身。 */
     focusable: Boolean,
-    /** 横竖两条同时摆着时在末端让出交叉口那一格，交叉口由 XhScrollbarCorner 补。 */
+    /** 横竖两条同时存在时在末端让出交叉口一格，交叉口由 XhScrollbarCorner 补齐。 */
     gutter: Boolean,
-    /** 触屏（粗指针）上也显形；缺省交给原生滚动，整条不画。 */
+    /** 触屏（粗指针）上也显示；默认交给原生滚动，整条不绘制。 */
     forceVisible: Boolean,
     dir: { type: String as PropType<Direction> },
     translations: { type: Object as PropType<ScrollbarProps['translations']> },
@@ -110,7 +110,7 @@ export const XhScrollbarThumb = defineComponent({
   },
 })
 
-/** 交叉口补丁：写在其中一条的根里，贴在它末端之外那一格，跟着这一条显隐。 */
+/** 交叉口补丁：写在其中一条的根中，贴在它末端之外的一格，跟随该条显隐。 */
 export const XhScrollbarCorner = defineComponent({
   name: 'XhScrollbarCorner',
   setup(_, { slots }) {

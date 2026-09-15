@@ -19,42 +19,42 @@ const NUMBER_CONVERTER = { fromAttribute: (v: string | null) => (v == null || v 
 const BOOLEAN_CONVERTER = { fromAttribute: (v: string | null) => (v === null ? undefined : v !== 'false') }
 
 /**
- * `<xh-scrollbar>` —— Light-DOM 行为宿主：作者写 root/track/thumb 三个角色节点，
- * 元素跑 scrollbar 机器并把 connect 产出打上去。
+ * `<xh-scrollbar>`：Light-DOM 行为宿主：作者写 root / track / thumb 三个角色节点，
+ * 元素运行 scrollbar 状态机并把 connect 产出接上。
  *
- * 滚动容器由作者交出来，且**不必**是本元素的后代：写 `controls="内容区的 id"`，
+ * 滚动容器由作者提供，且不必是本元素的后代：写 `controls="内容区的 id"`，
  * 或者用 JS 把节点赋给 `scrollable` 属性。表格的滚动盒、虚拟滚动的视口、
- * 随手一个 overflow:auto 的 div 都行。
+ * 任意 overflow:auto 的 div 均可。
  *
- * 滚动本身一概不接管：键盘（PageUp/PageDown、方向键、Home/End）与滚轮在滚动容器上
- * 走浏览器原生通路，本元素只是另画一套并接上拖拽与点轨道。滑块缺省不进 Tab 序、
- * 也对读屏隐藏——同一件事没必要报两遍；要用键盘操作滑块本身时开 `focusable`。
+ * 滚动本身一概不接管：键盘（PageUp / PageDown、方向键、Home / End）与滚轮在滚动容器上
+ * 使用浏览器原生路径，本元素只是另绘一套并接上拖拽与点击轨道。滑块默认不进入 Tab 序列、
+ * 也对读屏隐藏：同一件事不必报告两遍；需要用键盘操作滑块本身时开启 `focusable`。
  *
- * 滑块的位置与长度按可视区/内容/滚动量算出来后写进内联样式：竖向是
+ * 滑块的位置与长度按可视区 / 内容 / 滚动量计算后写入内联样式：竖向是
  * inset-block-start + block-size，横向是 inset-inline-start + inline-size（逻辑属性，RTL 自动换向）。
  *
  * @customElement xh-scrollbar
- * @attr {string} controls - 滚动容器的 id；没设 scrollable 属性时按它查节点，focusable 时同时落到 aria-controls
- * @attr {'horizontal'|'vertical'} orientation - 这条滚动条管哪条轴，默认 vertical
- * @attr {'auto'|'always'|'scroll'|'hover'|'scroll-hover'} type - 露面的时机，默认 scroll-hover
+ * @attr {string} controls - 滚动容器的 id；未设置 scrollable 属性时按它查找节点，focusable 时同时写到 aria-controls
+ * @attr {'horizontal'|'vertical'} orientation - 该滚动条管理的轴，默认 vertical
+ * @attr {'auto'|'always'|'scroll'|'hover'|'scroll-hover'} type - 显示的时机，默认 scroll-hover
  * @attr {number} hide-delay - 收起前的等待毫秒（type 为 scroll / hover / scroll-hover 时生效），默认 600
- * @attr {number} min-thumb-size - 滑块最短多少像素，默认 20
- * @attr {number} step - 方向键一步滚多少像素，默认 40
- * @attr {'sm'|'md'|'lg'} size - 尺寸档，换的是滚动条厚度
- * @attr {boolean} disabled - 不接指针也不接键盘，恒不显形
- * @attr {boolean} focusable - 滑块进 Tab 序并报 role=scrollbar，默认关
- * @attr {boolean} gutter - 横竖两条同时摆着时在末端让出交叉口那一格，交叉口由 corner 部件补
- * @attr {boolean} force-visible - 触屏（粗指针）上也显形；缺省交给原生滚动，整条不画并带 data-native
+ * @attr {number} min-thumb-size - 滑块的最小像素长度，默认 20
+ * @attr {number} step - 方向键一步滚动的像素数，默认 40
+ * @attr {'sm'|'md'|'lg'} size - 尺寸档，影响滚动条厚度
+ * @attr {boolean} disabled - 不接受指针也不接受键盘，恒不显示
+ * @attr {boolean} focusable - 滑块进入 Tab 序列并报告 role=scrollbar，默认关闭
+ * @attr {boolean} gutter - 横竖两条同时存在时在末端让出交叉口的一格，交叉口由 corner 部件补上
+ * @attr {boolean} force-visible - 触屏（粗指针）上也显示；默认交给原生滚动，整条不绘制并带 data-native
  * @attr {'ltr'|'rtl'} dir - 排版方向，只改写横轴的滚动量正负与指针位移方向
- * @prop {HTMLElement} scrollable - 直接给滚动容器节点（对象只走 property），优先于 controls
- * @fires scroll-start - 开始滚了；detail 为 `{ offset: number, max: number }`
- * @fires scroll-end - 一段滚动结束（停手 120ms）；detail 同上
+ * @prop {HTMLElement} scrollable - 直接提供滚动容器节点（对象只能通过 property 设置），优先于 controls
+ * @fires scroll-start - 开始滚动；detail 为 `{ offset: number, max: number }`
+ * @fires scroll-end - 一段滚动结束（停止 120ms）；detail 同上
  * @fires drag-start - 按住滑块；detail 同上
  * @fires drag-end - 松开滑块；detail 同上
- * @csspart root - 定位盒与指针热区，承载 data-orientation / data-reveal-mode / data-state / data-scrolling / data-dragging / data-size / data-gutter / data-native；收起走 data-state=hidden 由皮肤淡出
- * @csspart track - 量长度的那条轨，点空白处把滑块中心挪过去
- * @csspart thumb - 滑块，位置与长度由内联逻辑属性给出；按住可拖，focusable 时可聚焦并吃方向键
- * @csspart corner - 交叉口补丁（可选），写在根里、贴在本条末端之外那一格，跟着本条显隐
+ * @csspart root - 定位盒与指针热区，承载 data-orientation / data-reveal-mode / data-state / data-scrolling / data-dragging / data-size / data-gutter / data-native；收起时经 data-state=hidden 由皮肤淡出
+ * @csspart track - 测量长度的轨道，点击空白处把滑块中心移过去
+ * @csspart thumb - 滑块，位置与长度由内联逻辑属性给出；按住可拖动，focusable 时可聚焦并响应方向键
+ * @csspart corner - 交叉口补丁（可选），写在根中、位于本条末端之外的一格，随本条显隐
  */
 export class XhScrollbarElement extends XhElement {
   static override partContract = { anatomy: scrollbarAnatomy, meta: scrollbarMeta }

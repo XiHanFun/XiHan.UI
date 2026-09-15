@@ -95,20 +95,20 @@
 
 | 属性 | 类型 | 必填 | 说明 |
 | --- | --- | --- | --- |
-| `orientation` | `Orientation` |  | 这条滚动条管哪条轴，默认 vertical。 |
-| `type` | `ScrollbarType` |  | 露面的时机，默认 scroll-hover。 |
+| `orientation` | `Orientation` |  | 该滚动条管理的轴，默认 vertical。 |
+| `type` | `ScrollbarType` |  | 显示的时机，默认 scroll-hover。 |
 | `hideDelay` | `number` |  | 收起前的等待毫秒（type 为 scroll / hover / scroll-hover 时生效），默认 600。 |
-| `minThumbSize` | `number` |  | 滑块最短多少像素，默认 20。长文档里的滑块再短也按得住。 |
-| `step` | `number` |  | 方向键一步滚多少像素，默认 40。翻页键按视口长度走，不看这个值。 |
-| `size` | `Size` |  | 尺寸：sm / md / lg，换的是滚动条厚度。 |
-| `disabled` | `boolean` |  | 禁用：不接指针也不接键盘，恒不显形。 |
-| `focusable` | `boolean` |  | 滑块进 Tab 序并报 role=scrollbar，默认 false。 缺省不进：滚动容器自己已经能用键盘滚，再给每条滚动条一个 Tab 停靠点， 长页面上会平白多出十几站。要键盘操作滑块本身时才开。 |
-| `controls` | `string` |  | 被控滚动容器的 id；focusable 时落到滑块的 aria-controls 上（没给就用容器自己的 id）。 |
-| `gutter` | `boolean` |  | 横竖两条同时摆着时，各自在末端让出交叉口那一格：竖条不伸到底、横条不伸到头。 交叉口由其中一条里的 corner 部件补上。 |
-| `forceVisible` | `boolean` |  | 触屏设备（粗指针）上也显形，默认 false：触屏没有悬停、拖滑块也不如直接划内容， 缺省交给原生滚动，本组件整条不显形并带 data-native。 |
-| `dir` | `Direction` |  | 排版方向，默认随文档。只影响横轴：RTL 下滚动量的正负、指针位移的方向都要翻一次。 必须显式给：组件不读计算样式，看不见从 RTL 祖先继承来的方向。 |
+| `minThumbSize` | `number` |  | 滑块的最小像素长度，默认 20。长文档中的滑块再短也可按下。 |
+| `step` | `number` |  | 方向键一步滚动的像素数，默认 40。翻页键按视口长度计算，不使用该值。 |
+| `size` | `Size` |  | 尺寸：sm / md / lg，影响滚动条厚度。 |
+| `disabled` | `boolean` |  | 禁用：不接受指针也不接受键盘，恒不显示。 |
+| `focusable` | `boolean` |  | 滑块进入 Tab 序列并报告 role=scrollbar，默认 false。 默认不进入：滚动容器自身已能用键盘滚动，再给每条滚动条一个 Tab 停靠点， 长页面上会多出许多停靠点。需要键盘操作滑块本身时才开启。 |
+| `controls` | `string` |  | 被控滚动容器的 id；focusable 时写到滑块的 aria-controls 上（未提供时使用容器自身的 id）。 |
+| `gutter` | `boolean` |  | 横竖两条同时存在时，各自在末端让出交叉口的一格：竖条不伸到底、横条不伸到头。 交叉口由其中一条中的 corner 部件补上。 |
+| `forceVisible` | `boolean` |  | 触屏设备（粗指针）上也显示，默认 false：触屏没有悬停、拖动滑块也不如直接划动内容， 默认交给原生滚动，本组件整条不显示并带 data-native。 |
+| `dir` | `Direction` |  | 排版方向，默认随文档。只影响横轴：RTL 下滚动量的正负、指针位移的方向都要翻转。 必须显式提供：组件不读取计算样式，无法感知从 RTL 祖先继承的方向。 |
 | `translations` | `Partial<ScrollbarTranslations>` |  |  |
-| `onScrollStart` | `(details: ScrollbarScrollDetails) => void` |  | 开始滚了（停手 120ms 才算一段结束，中途连滚不重复通知）。 |
+| `onScrollStart` | `(details: ScrollbarScrollDetails) => void` |  | 开始滚动（停止 120ms 才视为一段结束，中途连续滚动不重复通知）。 |
 | `onScrollEnd` | `(details: ScrollbarScrollDetails) => void` |  | 一段滚动结束。 |
 | `onDragStart` | `(details: ScrollbarScrollDetails) => void` |  | 按住滑块。 |
 | `onDragEnd` | `(details: ScrollbarScrollDetails) => void` |  | 松开滑块。 |
@@ -120,8 +120,8 @@
 | 事件 | 载荷 | 说明 |
 | --- | --- | --- |
 | `name` | `CustomEvent` |  |
-| `scroll-start` | `` | 开始滚了；detail 为 `{ offset: number, max: number }` |
-| `scroll-end` | `` | 一段滚动结束（停手 120ms）；detail 同上 |
+| `scroll-start` | `` | 开始滚动；detail 为 `{ offset: number, max: number }` |
+| `scroll-end` | `` | 一段滚动结束（停止 120ms）；detail 同上 |
 | `drag-start` | `` | 按住滑块；detail 同上 |
 | `drag-end` | `` | 松开滑块；detail 同上 |
 
@@ -158,23 +158,23 @@
 | --- | --- | --- |
 | `orientation` | `Orientation` |  |
 | `type` | `ScrollbarType` |  |
-| `overflow` | `boolean` | 内容比可视区长。不溢出时 auto 档整条不显形。 |
-| `visible` | `boolean` | 这一刻该不该显形（已把 type、disabled 与触屏原生那一路都算进去）。 |
-| `native` | `boolean` | 交给了原生滚动：粗指针设备且没开 forceVisible，整条不显形。 |
-| `hover` | `boolean` | 指针此刻在滚动容器或滚动条上。 |
-| `dragging` | `boolean` | 手正按在滑块上。 |
-| `scrolling` | `boolean` | 这一段滚动还在进行中。 |
+| `overflow` | `boolean` | 内容比可视区长。不溢出时 auto 档整条不显示。 |
+| `visible` | `boolean` | 当前是否应显示（已把 type、disabled 与触屏原生路径都计算在内）。 |
+| `native` | `boolean` | 已交给原生滚动：粗指针设备且未开启 forceVisible，整条不显示。 |
+| `hover` | `boolean` | 指针当前在滚动容器或滚动条上。 |
+| `dragging` | `boolean` | 指针按在滑块上。 |
+| `scrolling` | `boolean` | 本段滚动仍在进行中。 |
 | `thumbSize` | `number` | 滑块长度占轨道的比例，0-1。 |
 | `thumbOffset` | `number` | 滑块起点占轨道的比例，0-1。 |
 | `scroll` | `number` | 距逻辑起始缘的滚动量（px）。 |
-| `max` | `number` | 还能往前滚多少（px）。 |
-| `scrollTo` | `(offset: number) => void` | 滚到某个绝对位置（px），越界自动夹。 |
-| `scrollBy` | `(delta: number) => void` | 相对当前位置滚若干像素。 |
-| `measure` | `() => void` | 重新量一遍。内容长短变了会自动重量（MutationObserver 盯着容器子树）， 这个出口留给量不到的那些：容器换了、内容在 Shadow DOM 里、或是自定义元素内部改的。 |
+| `max` | `number` | 仍可向前滚动的距离（px）。 |
+| `scrollTo` | `(offset: number) => void` | 滚动到某个绝对位置（px），越界自动夹取。 |
+| `scrollBy` | `(delta: number) => void` | 相对当前位置滚动若干像素。 |
+| `measure` | `() => void` | 重新测量。内容长度变化会自动重新测量（MutationObserver 观察容器子树）， 该出口留给无法测量的情况：容器更换、内容在 Shadow DOM 中、或自定义元素内部修改。 |
 | `getRootProps` | `() => T['element']` |  |
 | `getTrackProps` | `() => T['element']` |  |
 | `getThumbProps` | `() => T['element']` |  |
-| `getCornerProps` | `() => T['element']` | 交叉口补丁，写在其中一条的 root 里；跟着这一条的显隐走。 |
+| `getCornerProps` | `() => T['element']` | 交叉口补丁，写在其中一条的 root 中；随该条的显隐变化。 |
 
 ## 无障碍
 

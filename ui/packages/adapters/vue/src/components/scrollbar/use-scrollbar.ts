@@ -15,21 +15,21 @@ import { vueNormalize } from '../../runtime/normalize-props'
 import { useMachine } from '../../runtime/use-machine'
 import { createVueIdGenerator } from '../../runtime/vue-id'
 
-/** 作者交出滚动容器的两条路：直接给节点（或取节点的函数），或者给它的 id。 */
+/** 作者交出滚动容器的两条路径：直接提供节点（或取节点的函数），或者提供它的 id。 */
 export type ScrollbarTarget = HTMLElement | (() => HTMLElement | null) | null | undefined
 
 export interface ScrollbarContext {
   service: Service<ScrollbarSchema>
   api: ComputedRef<ScrollbarApi>
-  /** 根节点，指针进出它也算「手还在这儿」。 */
+  /** 根节点，指针进出它也视为指针仍在滚动条上。 */
   rootRef: Ref<HTMLElement | null>
-  /** 轨道节点，长度在拖动/点击那一刻现量。 */
+  /** 轨道节点，长度在拖动/点击时现测。 */
   trackRef: Ref<HTMLElement | null>
 }
 
 type ScrollbarProps = ScrollbarSchema['props']
 
-/** 作者给的 props 连同滚动容器；`scrollable` 不进机器，由这里解析成节点交给 refs。 */
+/** 作者提供的 props 连同滚动容器；`scrollable` 不进入状态机，由这里解析为节点交给 refs。 */
 export type ScrollbarSource = ScrollbarProps & { scrollable?: ScrollbarTarget }
 
 export function useScrollbar(
@@ -48,8 +48,8 @@ export function useScrollbar(
   }, scope)
 
   /**
-   * 先认作者给的节点，没有再按 controls 当 id 去查。
-   * 每次调用现查：作者的容器可能是条件渲染出来的，缓存住会永远指向第一帧那个（或 null）。
+   * 优先使用作者提供的节点，没有时再按 controls 作为 id 查询。
+   * 每次调用现查：作者的容器可能是条件渲染的，缓存会永远指向第一帧的节点（或 null）。
    */
   const resolveScrollable = (): HTMLElement | null => {
     const { scrollable: given, controls: id } = toValue(source)

@@ -18,7 +18,7 @@ import { useScrollbar } from './use-scrollbar'
 
 type ScrollbarProps = ScrollbarSchema['props']
 
-/** 函数式 children 的载荷：这一条此刻的显隐、几何与位置，以及两个命令式动作。 */
+/** 函数式 children 的载荷：该滚动条当前的显隐、几何与位置，以及两个命令式动作。 */
 export type ScrollbarRootSlotProps = Pick<
   ScrollbarApi,
   'visible' | 'native' | 'overflow' | 'dragging' | 'scrolling' | 'thumbSize' | 'thumbOffset' | 'scroll' | 'max' | 'scrollTo' | 'scrollBy'
@@ -26,11 +26,11 @@ export type ScrollbarRootSlotProps = Pick<
 
 export interface XhScrollbarRootProps extends Omit<ComponentPropsWithRef<'div'>, 'children' | 'dir' | 'onDragStart' | 'onDragEnd' | 'onScrollEnd'> {
   /**
-   * 真正在滚的那个元素，或者取它的函数。它不必是本组件的后代——
-   * 表格的滚动盒、虚拟滚动的视口、随手一个 overflow:auto 的 div 都行。
+   * 真正在滚动的元素，或者取它的函数。它不必是本组件的后代：
+   * 表格的滚动盒、虚拟滚动的视口、任意 overflow:auto 的 div 均可。
    */
   scrollable?: ScrollbarTarget
-  /** 滚动容器的 id。没给 scrollable 时按它去查节点；focusable 时它同时落到滑块的 aria-controls 上。 */
+  /** 滚动容器的 id。未提供 scrollable 时按它查询节点；focusable 时它同时写到滑块的 aria-controls 上。 */
   controls?: string
   orientation?: Orientation
   type?: ScrollbarType
@@ -39,13 +39,13 @@ export interface XhScrollbarRootProps extends Omit<ComponentPropsWithRef<'div'>,
   step?: number
   size?: Size
   disabled?: boolean
-  /** 滑块进 Tab 序并报 role=scrollbar；缺省不进，滚动仍归滚动容器自己。 */
+  /** 滑块进入 Tab 序列并报告 role=scrollbar；默认不进入，滚动仍归滚动容器自身。 */
   focusable?: boolean
-  /** 横竖两条同时摆着时在末端让出交叉口那一格。 */
+  /** 横竖两条同时存在时在末端让出交叉口一格。 */
   gutter?: boolean
-  /** 触屏（粗指针）上也显形；缺省交给原生滚动，整条不画。 */
+  /** 触屏（粗指针）上也显示；默认交给原生滚动，整条不绘制。 */
   forceVisible?: boolean
-  /** 文字方向，缺省 ltr。 */
+  /** 文字方向，默认 ltr。 */
   dir?: Direction
   translations?: ScrollbarProps['translations']
   onScrollStart?: ScrollbarProps['onScrollStart']
@@ -130,7 +130,7 @@ XhScrollbarRoot.xhEvents = ['scroll-start', 'scroll-end', 'drag-start', 'drag-en
 
 export interface XhScrollbarTrackProps extends ComponentPropsWithRef<'div'> {}
 
-/** 轨道节点交给机器，长度在按下滑块时现量。 */
+/** 轨道节点交给状态机，长度在按下滑块时现测。 */
 export function XhScrollbarTrack({ children, ...rest }: XhScrollbarTrackProps): ReactNode {
   const ctx = useScrollbarContext()
   return (
@@ -159,7 +159,7 @@ export function XhScrollbarThumb({ children, ...rest }: XhScrollbarThumbProps): 
 
 export interface XhScrollbarCornerProps extends ComponentPropsWithRef<'div'> {}
 
-/** 交叉口补丁：写在其中一条的根里，贴在它末端之外那一格，跟着这一条显隐。 */
+/** 交叉口补丁：写在其中一条的根中，贴在它末端之外的一格，跟随该条显隐。 */
 export function XhScrollbarCorner({ children, ...rest }: XhScrollbarCornerProps): ReactNode {
   const ctx = useScrollbarContext()
   return (
