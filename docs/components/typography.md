@@ -103,9 +103,9 @@
 
 | 属性 | 类型 | 必填 | 说明 |
 | --- | --- | --- | --- |
-| `align` | `TypographyAlign` |  | 对齐：start / center / end / justify，整块正文跟着换。 |
-| `size` | `Size` |  | 尺寸：sm / md / lg，整块正文的字号与段间距跟着换档。 |
-| `weight` | `TypographyWeight` |  | 字重：regular / medium / semibold / bold，整块正文跟着换。 |
+| `align` | `TypographyAlign` |  | 对齐：start / center / end / justify，整块正文随之变化。 |
+| `size` | `Size` |  | 尺寸：sm / md / lg，整块正文的字号与段间距随之换档。 |
+| `weight` | `TypographyWeight` |  | 字重：regular / medium / semibold / bold，整块正文随之变化。 |
 
 ### connect API
 
@@ -118,7 +118,7 @@
 | `getParagraphProps` | `() => T['element']` |  |
 | `getTextProps` | `(props?: TypographyTextProps) => T['element']` |  |
 | `getLinkProps` | `() => T['element']` |  |
-| `getProseProps` | `() => T['element']` | 富文本容器：外来的 HTML（Markdown 渲染结果）铺进来，样式按标签给。 |
+| `getProseProps` | `() => T['element']` | 富文本容器：外来的 HTML（Markdown 渲染结果）铺入其中，样式按标签提供。 |
 
 ## 无障碍
 
