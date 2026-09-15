@@ -12,7 +12,7 @@
 
 ## 用法
 
-交一份命令清单，过滤、归组与空态都由组件包办
+提供一份命令清单，过滤、归组与空态都由组件处理
 
 <XhDemo src="command/01-basic" />
 
@@ -24,21 +24,21 @@
 
 ## 示例
 
-### 快捷键唤起 + 手写部件
+### 快捷键唤起与手写部件
 
-Mod+K 打开，命中的字由文本高亮标出来，行尾挂各命令自己的快捷键
+Mod+K 打开，命中的文字由文本高亮标出，行尾挂载各命令自己的快捷键
 
 <XhDemo src="command/02-hotkey" />
 
 ### 遮罩形态
 
-variant 只落在 backdrop 那一层：opaque 压一层底、blur 糊掉背后、transparent 只挡点击
+variant 只落在 backdrop 层：opaque 压一层底色、blur 模糊背后、transparent 只阻挡点击
 
 <XhDemo src="command/03-variant" />
 
 ### 远程检索
 
-filter 关掉：交进来的 collection 就是此刻该显示的那几条，筛选归服务端；取数期间 loading 让在途占位顶上来、列表压暗一档，空态让位
+filter 关闭：传入的 collection 就是当前应显示的条目，筛选归服务端；取数期间 loading 显示在途占位、列表压暗一档，空态让位
 
 <XhDemo src="command/04-async" />
 

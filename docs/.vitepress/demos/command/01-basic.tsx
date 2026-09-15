@@ -1,4 +1,4 @@
-// 基础用法 | 交一份命令清单，过滤、归组与空态都由组件包办
+// 基础用法 | 提供一份命令清单，过滤、归组与空态都由组件处理
 import type { CommandNode, CommandSelectDetails } from "@xihan-ui/headless";
 import type { ReactNode } from "react";
 import { XhCommandRoot } from "@xihan-ui/react";
