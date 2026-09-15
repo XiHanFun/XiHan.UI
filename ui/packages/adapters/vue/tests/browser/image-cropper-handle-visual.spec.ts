@@ -17,7 +17,7 @@ function mount(radius: string) {
       <div data-scope="image-cropper" data-part="crop-area" style="position: relative; inline-size: 200px; block-size: 120px; border-radius: ${radius}">
         <span data-scope="image-cropper" data-part="crop-handle" data-position="n"></span>
         <span data-scope="image-cropper" data-part="crop-handle" data-position="e"></span>
-        <span data-scope="image-cropper" data-part="crop-handle" data-position="se"></span>
+        <span data-scope="image-cropper" data-part="crop-handle" data-position="se" tabindex="0"></span>
       </div>
     </div>`
   document.body.append(host)
@@ -68,13 +68,24 @@ describe('image-cropper 把手视觉', () => {
     )
   })
 
-  it('角部折角继承矩形或圆形裁切框的形状', () => {
+  it('角部折角始终使用圆弧，不跟随裁切框退化成直角', () => {
     const rounded = mount('50%')
-    expect(getComputedStyle(rounded.corner).borderBottomRightRadius).toBe('50%')
-    expect(getComputedStyle(rounded.corner, '::after').borderBottomRightRadius).toBe('50%')
+    expect(getComputedStyle(rounded.corner, '::after').borderRadius).toBe('50%')
 
     const square = mount('0px')
-    expect(getComputedStyle(square.corner).borderBottomRightRadius).toBe('0px')
-    expect(getComputedStyle(square.corner, '::after').borderBottomRightRadius).toBe('0px')
+    expect(getComputedStyle(square.corner, '::after').borderRadius).toBe('50%')
+  })
+
+  it('角部聚焦环围住圆弧指示器，不围透明命中盒', () => {
+    const cropper = mount('0px')
+    cropper.corner.focus()
+
+    const handle = getComputedStyle(cropper.corner)
+    const indicator = getComputedStyle(cropper.corner, '::after')
+    expect(document.activeElement).toBe(cropper.corner)
+    expect(handle.outlineStyle).toBe('none')
+    expect(indicator.outlineStyle).toBe('solid')
+    expect(indicator.outlineWidth).toBe('2px')
+    expect(indicator.borderRadius).toBe('50%')
   })
 })
