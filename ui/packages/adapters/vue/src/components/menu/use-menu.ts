@@ -26,9 +26,9 @@ export interface MenuContext {
   contentRef: Ref<HTMLElement | null>
   /** Portal 之外的逻辑父子、悬停区域与选择收链由 headless 节点统一维护。 */
   tree: MenuTreeNode
-  /** 此刻该不该渲染：退场动画播完之前仍为真。 */
+  /** 当前是否应当渲染：退场动画播完之前仍为真。 */
   visible: Ref<boolean>
-  /** 浮层搬到哪儿：全局配置的容器 > 运行时的浮层落点 > body。 */
+  /** 浮层迁移到的位置：全局配置的容器 > 运行时的浮层落点 > body。 */
   portalTarget: ComputedRef<string | Element>
 }
 

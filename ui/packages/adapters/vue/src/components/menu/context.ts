@@ -10,7 +10,7 @@ import type { ComputedRef, InjectionKey } from 'vue'
 import type { MenuContext } from './use-menu'
 import { inject, provide } from 'vue'
 
-/** 条目自报的值与禁用，供 item-text / item-indicator / item-description 这类子部件复用同一份声明。 */
+/** 条目声明的值与禁用，供 item-text / item-indicator / item-description 等子部件复用同一份声明。 */
 export interface MenuItemContext {
   item: ComputedRef<MenuItemProps>
 }
@@ -40,7 +40,7 @@ export function useMenuItemContext(): MenuItemContext {
   return ctx
 }
 
-/** 分组自报的身份，供分组标题取到同一个值（标题的 id 由它派生）。 */
+/** 分组声明的身份，供分组标题取到同一个值（标题的 id 由它派生）。 */
 export interface MenuGroupContext {
   group: ComputedRef<MenuGroupProps>
 }
@@ -58,7 +58,7 @@ export function useMenuGroupContext(): MenuGroupContext {
   return ctx
 }
 
-/** 子菜单触发条目要同时够到父菜单与本子菜单，这里存父层句柄与它在父层里的身份。 */
+/** 子菜单触发条目要同时访问父菜单与本子菜单，这里保存父层句柄与它在父层中的身份。 */
 export interface MenuSubHandle {
   parent: MenuContext
   value: string
