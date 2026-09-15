@@ -1,4 +1,4 @@
-// 轨道内文案与滑块标记 | 轨道的子节点全由作者决定，data-state 同时打在轨道与滑块上
+// 轨道内文案与滑块标记 | 轨道的子节点全部由作者决定，data-state 同时写在轨道与滑块上
 import type { ReactNode } from "react";
 import { CheckIcon, XIcon } from "@xihan-ui/icons";
 import { useSwitch, XhIcon } from "@xihan-ui/react";

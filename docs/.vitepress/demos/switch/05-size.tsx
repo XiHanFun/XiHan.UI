@@ -1,4 +1,4 @@
-// 尺寸 | size 同时缩放轨道与滑块，不写就是缺省档
+// 尺寸 | size 同时缩放轨道与滑块，不写即默认档
 import type { ReactNode } from "react";
 import { XhSwitch } from "@xihan-ui/react";
 

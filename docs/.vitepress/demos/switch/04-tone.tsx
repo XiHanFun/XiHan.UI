@@ -1,4 +1,4 @@
-// 语气 | tone 决定选中态轨道用哪族颜色，所以这里都置为开
+// 语气 | tone 决定选中态轨道使用哪族颜色，因此这里都设为开
 import type { ReactNode } from "react";
 import { XhSwitch } from "@xihan-ui/react";
 
