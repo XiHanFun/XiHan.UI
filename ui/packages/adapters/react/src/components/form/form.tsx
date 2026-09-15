@@ -44,7 +44,7 @@ export type FormRootSlotProps = Pick<
   | 'reset'
 >
 
-/** 字段容器函数式 children 的载荷：这一个字段的名字、值、错误与控件 id，以及写值的命令。 */
+/** 字段容器函数式 children 的载荷：该字段的名字、值、错误与控件 id，以及写值的命令。 */
 export interface FormFieldGroupSlotProps {
   name: FormPath
   value: unknown
@@ -57,7 +57,7 @@ export interface FormFieldGroupSlotProps {
 /** 错误摘要函数式 children 的载荷：整表的错误、出错字段名与条数。 */
 export type FormErrorSummarySlotProps = Pick<FormApi, 'errors' | 'errorNames' | 'errorCount'>
 
-/** 错误摘要单条函数式 children 的载荷：这一条指向的字段名与它的错误文案。 */
+/** 错误摘要单条函数式 children 的载荷：该条指向的字段名与它的错误文案。 */
 export interface FormErrorSummaryItemSlotProps {
   name: FormPath
   error: string | undefined
@@ -169,7 +169,7 @@ XhFormRoot.xhEvents = ['submit'] as const
 export interface XhFormFieldGroupProps extends Omit<ComponentPropsWithRef<'div'>, 'children'> {
   /** 字段路径；字符串含点仍是单键，数组才表示层级。 */
   name: FormPath
-  /** grid 排布下这一格占多宽：1 至 4 跨这么多列，'full' 占满整行；不写占一列。 */
+  /** grid 排布下该格占多宽：1 至 4 跨相应列数，'full' 占满整行；未写时占一列。 */
   span?: FormFieldSpan
   children?: SlotChildren<FormFieldGroupSlotProps>
 }
@@ -218,7 +218,7 @@ export function XhFormErrorSummary({ children, ...rest }: XhFormErrorSummaryProp
 }
 
 export interface XhFormErrorSummaryItemProps extends Omit<ComponentPropsWithRef<'a'>, 'children'> {
-  /** 这一条指向哪个字段路径。 */
+  /** 该条指向哪个字段路径。 */
   name: FormPath
   children?: SlotChildren<FormErrorSummaryItemSlotProps>
 }

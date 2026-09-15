@@ -20,7 +20,7 @@ export function useFormContext(): FormContext {
   return ctx
 }
 
-/** 表单外也能用的部件（如 Field）从这里拿：不在表单里就是 undefined。 */
+/** 表单外也能使用的部件（如 Field）从这里获取：不在表单内时为 undefined。 */
 export function useOptionalFormContext(): FormContext | undefined {
   return useContext(Ctx)
 }

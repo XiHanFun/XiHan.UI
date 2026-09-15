@@ -63,8 +63,8 @@ const COLUMNS_CONVERTER = {
 }
 
 /**
- * 读字段容器自报的跨列：属性缺席或为空时当作没写。
- * 写 full 就是占满整行，写整数就是跨这么多列；取值范围由 connect 判。
+ * 读取字段容器声明的跨列：属性缺席或为空时视为未写。
+ * 写 full 即占满整行，写整数即跨相应列数；取值范围由 connect 判定。
  */
 function fieldSpanOf(el: HTMLElement): FormFieldSpan | undefined {
   const raw = el.getAttribute('span')
@@ -95,39 +95,39 @@ function fieldPathOf(el: HTMLElement): FormPath {
 }
 
 /**
- * `<xh-form>` —— Light-DOM 行为宿主：作者写 root（必须是原生 `<form>`）与
+ * `<xh-form>`：Light-DOM 行为宿主：作者写 root（必须是原生 `<form>`）与
  * field-group / error-summary / error-summary-item / submit-trigger / reset-trigger 角色节点，
- * 元素跑 form 机器并把 connect 产出打上去。
+ * 元素运行 form 状态机并把 connect 产出接上。
  *
- * 提交只有一条路：`<form>` 自己的 submit 事件。回车的隐式提交、`type=submit` 按钮、
- * 以及命令式的 `submit()` 全部汇到那里，连接层一律 preventDefault——页面永不刷新，
+ * 提交只有一条路径：`<form>` 自身的 submit 事件。回车的隐式提交、`type=submit` 按钮、
+ * 以及命令式的 `submit()` 全部汇到那里，连接层一律 preventDefault：页面永不刷新，
  * 校验与回调都由组件收口。
  *
- * 值与错误都是「表」：元素不去收割原生控件里的值（那要替作者猜 checkbox / 多选 / 数字的类型），
- * 而是由作者经 `values` 属性或 `setFieldValue()` 写进来。校验函数同样由作者给。
+ * 值与错误都是表：元素不采集原生控件中的值（那需要替作者推断 checkbox / 多选 / 数字的类型），
+ * 而是由作者经 `values` 属性或 `setFieldValue()` 写入。校验函数同样由作者提供。
  *
- * 每个字段用一个 field-group 包住并用 `name` 属性自报字符串字段：错误摘要的链接指向它，
- * 提交失败后的焦点也落进它——落点按**文档序**取第一个出错的字段，而不是错误表的键序。
+ * 每个字段用一个 field-group 包裹并用 `name` 属性声明字符串字段：错误摘要的链接指向它，
+ * 提交失败后的焦点也落进它：落点按文档序取第一个出错的字段，而不是错误表的键序。
  *
  * @customElement xh-form
  * @attr {string} validate-on - 校验时机：submit（默认）/ blur / change
  * @attr {string} layout - 排布：vertical（默认）/ horizontal（标签左置两列）/ inline（横排一行流）/ grid（等宽列的网格）
- * @attr {number|string} columns - grid 下分几列（1 至 4 的整数），不写或超出范围按一列排；写 JSON 对象则逐档给列数（base / sm / md / lg / xl）
+ * @attr {number|string} columns - grid 下的列数（1 至 4 的整数），未提供或超出范围按一列排列；写 JSON 对象则逐档提供列数（base / sm / md / lg / xl）
  * @attr {string} label-width - horizontal 下标签列宽（CSS 长度），整表统一对齐
- * @attr {string} label-align - horizontal 下标签对齐缘：end（默认，贴控件）/ start
- * @attr {boolean} disabled - 整个表单禁用：提交、重置、写值一概不发生，两颗按钮带原生 disabled
+ * @attr {string} label-align - horizontal 下标签对齐缘：end（默认，贴近控件）/ start
+ * @attr {boolean} disabled - 整个表单禁用：提交、重置、写值一概不发生，两个按钮带原生 disabled
  * @attr {boolean} read-only - 只读：写值与重置不发生，但仍可提交
  * @fires values-change - 值表变化；detail 为 `{ values }`
  * @fires errors-change - 错误表变化；detail 为 `{ errors }`
  * @fires submit - 校验通过才派发；detail 为 `{ values }`
  * @fires invalid - 校验不通过时派发；detail 为 `{ errors, values }`
  * @fires validation-error - 校验器执行异常；detail 为 `{ cause, values, field }`，field 为 null 表示整表提交
- * @csspart root - 表单根容器，必须是原生 `<form>`（承载 data-state/data-disabled/data-readonly/data-invalid）
+ * @csspart root - 表单根容器，必须是原生 `<form>`（承载 data-state / data-disabled / data-readonly / data-invalid）
  * @csspart field-group - 单个字段的容器，须自带 name 标识字符串字段；数组路径写严格 JSON `data-path`；带 id 供摘要链接指向。
  *   grid 排布下再写个 `span` 属性（1 至 4，或 full 占满整行）就是这一格占多宽，落成 data-span；
  *   运行期改写它不触发重新接线，需作者自行 requestUpdate。
  *   组里的 `<xh-field>` 由表单驱动 invalid/required/disabled，作者显式设的会被顶掉
- * @csspart error-summary - role=alert 的错误汇总（一次提交失败里唯一打断朗读的活区），提交失败且仍有错误时才显形
+ * @csspart error-summary - role=alert 的错误汇总（一次提交失败中唯一打断朗读的活区），提交失败且仍有错误时才显示
  * @csspart error-summary-item - 摘要里的一条，须是原生 `<a>` 且用 name 或严格 JSON `data-path` 标识字段；无对应错误时带 hidden
  * @csspart submit-trigger - 提交键，须是原生 button（连接层写成 type=submit）
  * @csspart reset-trigger - 重置键，须是原生 button（连接层写成 type=reset）
@@ -160,7 +160,7 @@ export class XhFormElement extends XhElement {
   declare errors?: FormErrorPatch
   declare defaultErrors?: FormErrorPatch
   declare validate?: FormSchema['props']['validate']
-  /** 声明式校验规则；对象进不了属性，只作为 property 暴露。 */
+  /** 声明式校验规则；对象无法表达为属性，只作为 property 暴露。 */
   declare rules?: FormSchema['props']['rules']
   declare validateMessages?: FormSchema['props']['validateMessages']
   declare validateOn?: FormValidateOn
@@ -233,8 +233,8 @@ export class XhFormElement extends XhElement {
   }
 
   /**
-   * 命令式入口共用的取法。机器要到进文档（hostConnected）才建：
-   * 还没进文档就下命令是调用方的时序问题，明说好过把这条命令静默丢掉。
+   * 命令式入口共用的取法。状态机在进入文档（hostConnected）后才建立：
+   * 尚未进入文档就发出命令是调用方的时序问题，明确报错好过把命令静默丢弃。
    */
   private commands(): FormApi {
     if (!this.ctrl.service)
@@ -242,12 +242,12 @@ export class XhFormElement extends XhElement {
     return connectForm(this.ctrl.service, wcNormalize)
   }
 
-  /** 写一个字段的值；禁用或只读时不动。 */
+  /** 写入一个字段的值；禁用或只读时不做处理。 */
   setFieldValue(name: FormPath, value: unknown): void {
     this.commands().setFieldValue(name, value)
   }
 
-  /** 写一个字段的错误；不给文案（或给空串）即清掉这一条。 */
+  /** 写入一个字段的错误；未提供文案（或提供空串）即清除该条错误。 */
   setFieldError(name: FormPath, message?: string): void {
     this.commands().setFieldError(name, message)
   }
@@ -256,17 +256,17 @@ export class XhFormElement extends XhElement {
     this.commands().clearErrors()
   }
 
-  /** 走完整的校验与提交流程，与用户按提交键完全同一条路。 */
+  /** 执行完整的校验与提交流程，与用户按提交键完全同一路径。 */
   submit(): void {
     this.commands().submit()
   }
 
-  /** 值与错误都回到初始；禁用或只读时不动。 */
+  /** 值与错误都恢复初始；禁用或只读时不做处理。 */
   reset(): void {
     this.commands().reset()
   }
 
-  /** 字段容器的 DOM id：作者要把它落到自己的控件上时取这里，别自己拼。 */
+  /** 字段容器的 DOM id：作者需要将其写到自己的控件上时从此处读取，不应自行拼接。 */
   getFieldId(name: FormPath): string {
     return this.commands().getFieldId(name)
   }
@@ -275,7 +275,7 @@ export class XhFormElement extends XhElement {
     return this.commands().getFieldValue(name)
   }
 
-  /** 该字段此刻的错误文案；没错时为 undefined。 */
+  /** 该字段当前的错误文案；无错误时为 undefined。 */
   getFieldError(name: FormPath): string | undefined {
     return this.commands().getFieldError(name)
   }
@@ -289,12 +289,12 @@ export class XhFormElement extends XhElement {
     return this.commands().errorCount
   }
 
-  /** 错误表非空。与"提交失败过"无关。 */
+  /** 错误表非空。与是否提交失败过无关。 */
   get invalid(): boolean {
     return this.commands().invalid
   }
 
-  /** 上一次提交被拦下了：错误摘要据此显形。 */
+  /** 上一次提交被拦截：错误摘要据此显示。 */
   get submitFailed(): boolean {
     return this.commands().submitFailed
   }

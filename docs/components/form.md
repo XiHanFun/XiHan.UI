@@ -108,24 +108,24 @@
 
 | 属性 | 类型 | 必填 | 说明 |
 | --- | --- | --- | --- |
-| `values` | `FormValues` |  | 受控值表；给定即受控：cell 直读 prop，写只发 onValuesChange 不落内部值。 |
+| `values` | `FormValues` |  | 受控值表；提供即受控：cell 直读 prop，写入只发 onValuesChange 不落内部值。 |
 | `defaultValues` | `FormValues` |  | 非受控初值，同时也是 reset 的落点。 |
-| `errors` | `FormErrorPatch` |  | 受控错误表；给定即受控。空串会被清理掉（空串不是一条错误）。 |
+| `errors` | `FormErrorPatch` |  | 受控错误表；提供即受控。空串会被清理（空串不是一条错误）。 |
 | `defaultErrors` | `FormErrorPatch` |  |  |
-| `validate` | `(values: FormValues) => FormErrorPatch \| Promise<FormErrorPatch>` |  | 校验函数。返回「字段名 → 错误文案」，没错的字段给空串或干脆不写； 允许返回 Promise（远程校验），期间 validating 置真。 与 rules 并用时同字段两边都报错按 rules 的文案算。 |
+| `validate` | `(values: FormValues) => FormErrorPatch \| Promise<FormErrorPatch>` |  | 校验函数。返回字段名 → 错误文案，无错的字段给空串或省略； 允许返回 Promise（远程校验），期间 validating 置真。 与 rules 并用时同字段两边都报错按 rules 的文案计算。 |
 | `rules` | `FormRules` |  | 声明式校验规则：字段名 → 一条或一组规则，与 validate 可并用。 |
-| `validateMessages` | `FormValidateMessages` |  | 规则文案模板，{name}/{min}/{max} 现场代入；缺省用内置英文模板。 |
+| `validateMessages` | `FormValidateMessages` |  | 规则文案模板，{name}/{min}/{max} 现场代入；未提供时使用内置英文模板。 |
 | `validateOn` | `FormValidateOn` |  | 校验时机，默认 submit。 |
 | `layout` | `FormLayout` |  | 排布，默认 vertical。 |
-| `columns` | `FormColumns` |  | grid 排布下分几列：1 至 4 的整数，不写按一列排；范围外的值也按一列排。 也收断点对象 `{ base, sm, md, lg, xl }`，逐档写各自的列数，没写的档沿用比它窄的那一档。 其余三档排布下不参与排版。 |
+| `columns` | `FormColumns` |  | grid 排布下的列数：1 至 4 的整数，未提供时按一列排列；范围外的值也按一列排列。 也接受断点对象 `{ base, sm, md, lg, xl }`，逐档写各自的列数，未写的档沿用更窄的一档。 其余三档排布下不参与排版。 |
 | `labelWidth` | `number \| string` |  | horizontal 下标签列宽（number 视作 px），整表统一、字段据此对齐。 |
-| `labelAlign` | `'start' \| 'end'` |  | horizontal 下标签文字的对齐缘，默认 end（贴着控件）。 |
-| `disabled` | `boolean` |  | 整个表单禁用：提交、重置、写值一概不发生，两颗按钮带原生 disabled。 |
+| `labelAlign` | `'start' \| 'end'` |  | horizontal 下标签文字的对齐缘，默认 end（贴近控件）。 |
+| `disabled` | `boolean` |  | 整个表单禁用：提交、重置、写值一概不发生，两个按钮带原生 disabled。 |
 | `readOnly` | `boolean` |  | 只读：写值与重置不发生，但仍可提交。 |
-| `onValuesChange` | `(details: FormValuesChangeDetails) => void` |  | 值表变化意图回调；受控时是唯一出口，非受控随内部写入一并通知。 |
+| `onValuesChange` | `(details: FormValuesChangeDetails) => void` |  | 值表变化意图回调；受控时是唯一出口，非受控时随内部写入一并通知。 |
 | `onErrorsChange` | `(details: FormErrorsChangeDetails) => void` |  | 错误表变化意图回调；受控时是唯一出口。 |
-| `onSubmit` | `(details: FormSubmitDetails) => void` |  | 校验通过才调。 |
-| `onInvalid` | `(details: FormInvalidDetails) => void` |  | 校验不通过时调，带上拦下来的整张错误表。 |
+| `onSubmit` | `(details: FormSubmitDetails) => void` |  | 校验通过才调用。 |
+| `onInvalid` | `(details: FormInvalidDetails) => void` |  | 校验不通过时调用，附带拦截的整张错误表。 |
 | `onValidationError` | `(details: FormValidationErrorDetails) => void` |  | 校验器抛错或拒绝 Promise 时调用；不触发 onInvalid 或 onSubmit。 |
 
 ### 事件
@@ -174,28 +174,28 @@
 
 | 成员 | 类型 | 说明 |
 | --- | --- | --- |
-| `values` | `FormValues` | 当下的值表。 |
-| `errors` | `FormErrors` | 当下的错误表（已清理）。 |
+| `values` | `FormValues` | 当前的值表。 |
+| `errors` | `FormErrors` | 当前的错误表（已清理）。 |
 | `errorNames` | `FormPath[]` | 出错的字段名，插入顺序。 |
 | `errorCount` | `number` |  |
-| `invalid` | `boolean` | 错误表非空。与"提交失败过"无关，挂载时作者塞进来的错误也算。 |
-| `submitFailed` | `boolean` | 上一次提交被拦下了：错误摘要据此显形。 |
-| `validating` | `boolean` | 异步校验进行中（提交或逐字段都算）。 |
+| `invalid` | `boolean` | 错误表非空。与是否提交失败过无关，挂载时作者预置的错误也计入。 |
+| `submitFailed` | `boolean` | 上一次提交被拦截：错误摘要据此显示。 |
+| `validating` | `boolean` | 异步校验进行中（提交或逐字段都计入）。 |
 | `validationError` | `FormValidationErrorDetails \| null` | 校验服务异常；null 表示没有异常，字段错误仍从 errors 读取。 |
 | `disabled` | `boolean` |  |
 | `readOnly` | `boolean` |  |
 | `validateOn` | `FormValidateOn` |  |
-| `layout` | `FormLayout` | 当下的排布档。 |
+| `layout` | `FormLayout` | 当前的排布档。 |
 | `getFieldId` | `(name: FormPath) => string` | 字段容器的 DOM id；错误摘要的链接指向它。 |
 | `getFieldValue` | `(name: FormPath) => unknown` |  |
-| `getFieldError` | `(name: FormPath) => string \| undefined` | 该字段此刻的错误文案；没错时为 undefined。 |
+| `getFieldError` | `(name: FormPath) => string \| undefined` | 该字段当前的错误文案；无错时为 undefined。 |
 | `isFieldInvalid` | `(name: FormPath) => boolean` |  |
-| `isFieldRequired` | `(name: FormPath) => boolean` | 该字段的规则里声明了 required：字段的必填标记从这里推。 |
-| `setFieldValue` | `(name: FormPath, value: unknown) => void` | 写一个字段的值；禁用或只读时不动。 |
-| `setFieldError` | `(name: FormPath, message?: string) => void` | 写一个字段的错误；不给文案（或给空串）即清掉这一条。 |
+| `isFieldRequired` | `(name: FormPath) => boolean` | 该字段的规则中声明了 required：字段的必填标记由此推导。 |
+| `setFieldValue` | `(name: FormPath, value: unknown) => void` | 写一个字段的值；禁用或只读时不生效。 |
+| `setFieldError` | `(name: FormPath, message?: string) => void` | 写一个字段的错误；未提供文案（或提供空串）即清除该条。 |
 | `clearErrors` | `() => void` |  |
-| `submit` | `() => void` | 走完整的校验与提交流程，与用户按提交键同一条路。 |
-| `reset` | `() => void` | 值与错误都回到初始；禁用或只读时不动。 |
+| `submit` | `() => void` | 执行完整的校验与提交流程，与用户按提交键走同一路径。 |
+| `reset` | `() => void` | 值与错误都回到初始；禁用或只读时不生效。 |
 | `getRootProps` | `() => T['element']` |  |
 | `getFieldGroupProps` | `(props: FormFieldGroupProps) => T['element']` |  |
 | `getErrorSummaryProps` | `() => T['element']` |  |
