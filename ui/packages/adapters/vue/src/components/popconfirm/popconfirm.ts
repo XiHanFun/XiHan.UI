@@ -33,9 +33,9 @@ export const XhPopconfirmRoot = defineComponent({
     closeOnInteractOutside: { type: Boolean, default: true },
     size: { type: String as PropType<Size> },
     /**
-     * 确认回调走函数 prop 而非 emit：emit 拿不到监听函数的返回值，而异步门就吃它——
-     * 返回 thenable 即挂起（浮层等兑现才收、确认按钮转圈），拒绝留在原地并派 confirm-error。
-     * 模板里照旧写 @confirm，Vue 会把它落到这个 prop 上。
+     * 确认回调使用函数 prop 而非 emit：emit 无法获取监听函数的返回值，而异步门正需要它：
+     * 返回 thenable 即挂起（浮层等待兑现后再收起、确认按钮显示加载），拒绝则保持打开并触发 confirm-error。
+     * 模板中照常写 @confirm，Vue 会把它落到该 prop 上。
      */
     onConfirm: { type: Function as PropType<PopconfirmNotifiers['onConfirm']> },
   },
@@ -77,7 +77,7 @@ export const XhPopconfirmTrigger = defineComponent({
   // 直通属性自己合：Vue 默认把作者的处理器排在部件的后面，这里改成作者先跑
   inheritAttrs: false,
   props: {
-    /** 借用作者的子节点当触发器，不再渲染自己的包裹元素；子节点须恰好一个。 */
+    /** 借用作者的子节点作为触发器，不再渲染自己的包裹元素；子节点须恰好一个。 */
     asChild: Boolean,
   },
   setup(props, { slots, attrs }) {

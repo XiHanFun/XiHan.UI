@@ -23,7 +23,7 @@ export type PopconfirmRootSlotProps = Pick<
   'open' | 'pending' | 'actionError' | 'setOpen' | 'confirm' | 'cancel'
 >
 
-/** 根上自有的那些取值；onCancel 与原生的同名事件含义不同，由这里接管。 */
+/** 根上自有的取值；onCancel 与原生的同名事件含义不同，由这里接管。 */
 type RootElementProps = Omit<ComponentPropsWithRef<'div'>, 'children' | 'onCancel'>
 
 export interface XhPopconfirmRootProps extends RootElementProps {
@@ -36,13 +36,13 @@ export interface XhPopconfirmRootProps extends RootElementProps {
   size?: Size
   onOpenChange?: PopconfirmNotifiers['onOpenChange']
   /**
-   * 点了确认。返回 thenable 即挂起确认门：浮层等它兑现才收起、确认按钮转圈且再点无效，
-   * 拒绝则留在原地并经 onConfirmError 报告。同步返回照旧立即收起。
+   * 点击确认。返回 thenable 即挂起确认门：浮层等待它兑现后再收起、确认按钮显示加载且再次点击无效，
+   * 拒绝则保持打开并经 onConfirmError 报告。同步返回照常立即收起。
    */
   onConfirm?: PopconfirmNotifiers['onConfirm']
   /** 确认动作失败；details.cause 保留同步抛出或 thenable 拒绝时的原始原因。 */
   onConfirmError?: PopconfirmNotifiers['onConfirmError']
-  /** 点了取消，随后浮层收起；Escape 与层外交互只发 onOpenChange，不发这条。 */
+  /** 点击取消，随后浮层收起；Escape 与层外交互只触发 onOpenChange，不触发该回调。 */
   onCancel?: PopconfirmNotifiers['onCancel']
   children?: SlotChildren<PopconfirmRootSlotProps>
 }
@@ -104,10 +104,10 @@ export function XhPopconfirmTrigger({ children, asChild, ...rest }: XhPopconfirm
 }
 
 export interface XhPopconfirmPositionerProps extends ComponentPropsWithRef<'div'> {
-  /** 浮层挂到哪个容器；不给就按全局配置，再不给挂 body。 */
+  /** 浮层挂载的容器；未提供时按全局配置，再未提供时挂载到 body。 */
   container?: () => Element | null
 }
-/** 搬到浮层落点：留在原地的话，宿主祖先只要建了层叠上下文就能盖住浮层。 */
+/** 迁移到浮层落点：留在原地时，宿主祖先只要建立了层叠上下文就能遮住浮层。 */
 export function XhPopconfirmPositioner({ children, container, ...rest }: XhPopconfirmPositionerProps): ReactNode {
   const ctx = usePopconfirmContext()
   return (
