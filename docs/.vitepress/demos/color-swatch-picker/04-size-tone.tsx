@@ -1,4 +1,4 @@
-// 尺寸与语气 | 格子边长跟着控件行高走三档；tone 决定选中环与选中标记用哪族颜色
+// 尺寸与语气 | 格子边长跟随控件行高分三档；tone 决定选中环与选中标记使用哪族颜色
 import type { ReactNode } from "react";
 import { XhColorSwatchPickerRoot } from "@xihan-ui/react";
 

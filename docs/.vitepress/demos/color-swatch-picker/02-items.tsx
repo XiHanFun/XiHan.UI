@@ -1,4 +1,4 @@
-// 手写格子 | 不交数据也行：每格自己报 value，名字与禁用写在格子上；半透明颜色铺在棋盘格上
+// 手写格子 | 不提供数据也可以：每格自行声明 value，名字与禁用写在格子上；半透明颜色铺在棋盘格上
 import type { ReactNode } from "react";
 import { XhColorSwatchPickerItem, XhColorSwatchPickerLabel, XhColorSwatchPickerRoot } from "@xihan-ui/react";
 import { useState } from "react";
