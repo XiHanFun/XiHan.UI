@@ -18,7 +18,7 @@ import {
 } from './context'
 import { useScrollArea } from './use-scroll-area'
 
-/** 默认插槽的载荷：两条轴的滚动条状态、正被拖动的那条轴，以及右下角补丁该不该显形。 */
+/** 默认插槽的载荷：两条轴的滚动条状态、正被拖动的轴，以及右下角补丁是否应当显示。 */
 export type ScrollAreaRootSlotProps = Pick<ScrollAreaApi, 'vertical' | 'horizontal' | 'draggingAxis' | 'cornerVisible'>
 
 export const XhScrollAreaRoot = defineComponent({
@@ -31,7 +31,7 @@ export const XhScrollAreaRoot = defineComponent({
     variant: { type: String as PropType<ScrollAreaVariant> },
     size: { type: String as PropType<Size> },
     dir: { type: String as PropType<Direction> },
-    /** 触屏（粗指针）上也画自绘滚动条；缺省交给原生滚动。 */
+    /** 触屏（粗指针）上也绘制自绘滚动条；默认交给原生滚动。 */
     forceVisible: Boolean,
   },
   slots: Object as SlotsType<{
@@ -73,11 +73,11 @@ export const XhScrollAreaContent = defineComponent({
   },
 })
 
-/** 某条轴的滚动条挂载点，同时是那条 scrollbar 的根；里面照 scrollbar 的写法摆轨道、滑块与交叉口。 */
+/** 某条轴的滚动条挂载点，同时是该 scrollbar 的根；其中按 scrollbar 的写法放置轨道、滑块与交叉口。 */
 export const XhScrollAreaScrollbar = defineComponent({
   name: 'XhScrollAreaScrollbar',
   props: {
-    /** 这条滚动条管哪条轴。 */
+    /** 该滚动条管理哪条轴。 */
     orientation: { type: String as PropType<Orientation>, default: 'vertical' },
   },
   setup(props, { slots }) {
@@ -114,7 +114,7 @@ export const XhScrollAreaThumb = defineComponent({
   },
 })
 
-/** 交叉口补丁，写在竖条的挂载点里；两条都在场时才显形。 */
+/** 交叉口补丁，写在竖条的挂载点中；两条都在场时才显示。 */
 export const XhScrollAreaCorner = defineComponent({
   name: 'XhScrollAreaCorner',
   setup(_, { slots }) {

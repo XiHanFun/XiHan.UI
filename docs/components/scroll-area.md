@@ -92,12 +92,12 @@
 
 | 属性 | 类型 | 必填 | 说明 |
 | --- | --- | --- | --- |
-| `dir` | `Direction` |  | 排版方向，默认随文档。只影响横轴：RTL 下滚动量的正负、指针位移的方向都要翻一次。 必须显式给：组件不读计算样式，看不见从 RTL 祖先继承来的方向。 |
-| `forceVisible` | `boolean` |  | 触屏（粗指针）上也画自绘滚动条，默认 false：缺省交给原生滚动。 |
+| `dir` | `Direction` |  | 排版方向，默认随文档。只影响横轴：RTL 下滚动量的正负、指针位移的方向都要翻转。 必须显式提供：组件不读取计算样式，无法感知从 RTL 祖先继承的方向。 |
+| `forceVisible` | `boolean` |  | 触屏（粗指针）上也绘制自绘滚动条，默认 false：默认交给原生滚动。 |
 | `hideDelay` | `number` |  | 收起前的等待毫秒（type 为 scroll / hover / scroll-hover 时生效），默认 600。 |
-| `orientation` | `ScrollAreaOrientation` |  | 哪几条轴归本组件管，默认 both。 |
-| `size` | `Size` |  | 尺寸：sm / md / lg，换的是滚动条厚度，也是边缘渐隐的带宽。 |
-| `type` | `ScrollbarType` |  | 滚动条露面的时机，默认 scroll-hover。 |
+| `orientation` | `ScrollAreaOrientation` |  | 归本组件管理的轴，默认 both。 |
+| `size` | `Size` |  | 尺寸：sm / md / lg，影响滚动条厚度，也是边缘渐隐的带宽。 |
+| `type` | `ScrollbarType` |  | 滚动条显示的时机，默认 scroll-hover。 |
 | `variant` | `ScrollAreaVariant` |  | 形态：plain / fade，默认 plain。 |
 
 ### 插槽
@@ -127,15 +127,15 @@
 | `orientation` | `ScrollAreaOrientation` |  |
 | `vertical` | `ScrollAreaAxisState` |  |
 | `horizontal` | `ScrollAreaAxisState` |  |
-| `draggingAxis` | `Orientation \| null` | 正被拖动的那条轴；没在拖为 null。 |
-| `cornerVisible` | `boolean` | 右下角补丁该不该显形：两条滚动条同时在场才有它的位置。 |
+| `draggingAxis` | `Orientation \| null` | 正被拖动的轴；未拖动时为 null。 |
+| `cornerVisible` | `boolean` | 右下角补丁是否应显示：两条滚动条同时在场才有它的位置。 |
 | `getRootProps` | `() => T['element']` |  |
 | `getViewportProps` | `() => T['element']` |  |
 | `getContentProps` | `() => T['element']` |  |
-| `getScrollbarProps` | `(props: ScrollAreaScrollbarProps) => T['element']` | 某条轴的滚动条挂载点，同时充当那条 scrollbar 的根节点。 |
+| `getScrollbarProps` | `(props: ScrollAreaScrollbarProps) => T['element']` | 某条轴的滚动条挂载点，同时充当该 scrollbar 的根节点。 |
 | `getTrackProps` | `(props: ScrollAreaScrollbarProps) => T['element']` |  |
 | `getThumbProps` | `(props: ScrollAreaScrollbarProps) => T['element']` |  |
-| `getCornerProps` | `() => T['element']` | 交叉口补丁，写在竖条的挂载点里；只有两条都在场时才显形。 |
+| `getCornerProps` | `() => T['element']` | 交叉口补丁，写在竖条的挂载点中；只有两条都在场时才显示。 |
 
 ## 无障碍
 

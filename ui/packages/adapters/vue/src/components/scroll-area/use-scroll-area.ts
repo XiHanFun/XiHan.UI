@@ -16,19 +16,19 @@ import { useMachine } from '../../runtime/use-machine'
 import { createVueIdGenerator } from '../../runtime/vue-id'
 
 export interface ScrollAreaContext {
-  /** 两条轴各一台 scrollbar 机器。 */
+  /** 两条轴各一台 scrollbar 状态机。 */
   services: ScrollAreaServices
   api: ComputedRef<ScrollAreaApi>
-  /** overflow:auto 的那层，两台机器都挂在它身上。 */
+  /** overflow:auto 的层，两台状态机都挂在它上面。 */
   viewportRef: Ref<HTMLElement | null>
   /** 内容包裹层。 */
   contentRef: Ref<HTMLElement | null>
-  /** 两条轴各自的挂载点（即那条 scrollbar 的根）与轨道，按轴现量。 */
+  /** 两条轴各自的挂载点（即该 scrollbar 的根）与轨道，按轴现测。 */
   scrollbarRefs: Record<Orientation, Ref<HTMLElement | null>>
   trackRefs: Record<Orientation, Ref<HTMLElement | null>>
 }
 
-/** 滚动区没有自己的机器：按轴各建一台 scrollbar，视口就是它们共同的滚动容器。 */
+/** 滚动区没有自己的状态机：按轴各建一台 scrollbar，视口就是它们共同的滚动容器。 */
 export function useScrollArea(source: MaybeRefOrGetter<ScrollAreaProps>): ScrollAreaContext {
   const viewportRef = ref<HTMLElement | null>(null)
   const contentRef = ref<HTMLElement | null>(null)

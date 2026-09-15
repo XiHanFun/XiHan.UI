@@ -20,35 +20,35 @@ const NUMBER_CONVERTER = { fromAttribute: (v: string | null) => (v == null || v 
 const BOOLEAN_CONVERTER = { fromAttribute: (v: string | null) => (v === null ? undefined : v !== 'false') }
 
 /**
- * `<xh-scroll-area>` —— Light-DOM 行为宿主：作者写 root/viewport/content 与两条 scrollbar
- * 角色节点，元素按轴各跑一台 scrollbar 机器并把 connect 产出打上去。
+ * `<xh-scroll-area>`：Light-DOM 行为宿主：作者写 root / viewport / content 与两条 scrollbar
+ * 角色节点，元素按轴各运行一台 scrollbar 状态机并把 connect 产出接上。
  *
- * 滚动区没有自己的机器，它是视口加两条 scrollbar 的组装：scrollbar 角色节点是那条
- * scrollbar 的挂载点、同时充当它的根，里面照 scrollbar 那套写 track / thumb / corner
- * （它们戴 data-scope="scrollbar"），两个组件共用同一份滚动条。
+ * 滚动区没有自己的状态机，它是视口加两条 scrollbar 的组装：scrollbar 角色节点是该
+ * scrollbar 的挂载点、同时充当它的根，其中按 scrollbar 的方式写 track / thumb / corner
+ * （它们带 data-scope="scrollbar"），两个组件共用同一份滚动条。
  *
- * 滚动本身一概不接管：viewport 是真正 overflow:auto 的那层，键盘（PageUp/PageDown、方向键、
- * Home/End）与滚轮全部走浏览器原生通路，元素只是把原生滚动条藏起来另画一套。
- * 自绘的滚动条对读屏隐藏——同一件事没必要报两遍。
+ * 滚动本身一概不接管：viewport 是实际 overflow:auto 的层，键盘（PageUp / PageDown、方向键、
+ * Home / End）与滚轮全部使用浏览器原生路径，元素只是把原生滚动条隐藏并另绘一套。
+ * 自绘的滚动条对读屏隐藏：同一件事不必报告两遍。
  *
- * 每条滚动条用 orientation 属性写明自己管哪条轴（不写即 vertical），
- * 轨道与滑块按所在滚动条的轴向取几何，不必另写。这是挂载时的静态声明：运行期要换轴，换节点。
+ * 每条滚动条用 orientation 属性写明管理的轴（未写即 vertical），
+ * 轨道与滑块按所在滚动条的轴向取几何，不必另写。这是挂载时的静态声明：运行期需要换轴时更换节点。
  *
  * @customElement xh-scroll-area
- * @attr {'auto'|'always'|'scroll'|'hover'|'scroll-hover'} type - 滚动条露面的时机，默认 scroll-hover
+ * @attr {'auto'|'always'|'scroll'|'hover'|'scroll-hover'} type - 滚动条显示的时机，默认 scroll-hover
  * @attr {number} hide-delay - 收起前的等待毫秒（type 为 scroll / hover / scroll-hover 时生效），默认 600
- * @attr {'horizontal'|'vertical'|'both'} orientation - 哪几条轴归本组件管，默认 both
- * @attr {'plain'|'fade'} variant - 形态档，默认 plain；fade 在那一头还滚得动时把该侧内容淡出
- * @attr {'sm'|'md'|'lg'} size - 尺寸档，换的是滚动条厚度，也是边缘渐隐的带宽
+ * @attr {'horizontal'|'vertical'|'both'} orientation - 归本组件管理的轴，默认 both
+ * @attr {'plain'|'fade'} variant - 形态档，默认 plain；fade 在该端仍可滚动时把该侧内容淡出
+ * @attr {'sm'|'md'|'lg'} size - 尺寸档，影响滚动条厚度，也是边缘渐隐的带宽
  * @attr {'ltr'|'rtl'} dir - 排版方向，只改写横轴的滚动量正负与指针位移方向
- * @attr {boolean} force-visible - 触屏（粗指针）上也画自绘滚动条；缺省交给原生滚动
+ * @attr {boolean} force-visible - 触屏（粗指针）上也绘制自绘滚动条；默认交给原生滚动
  * @csspart root - 组件根容器（承载 data-orientation / data-reveal-mode / data-dragging），定位上下文
- * @csspart viewport - 真正 overflow:auto 的那层，带 tabindex=0 让键盘用户落得进来；承载 data-lane-vertical / data-lane-horizontal 与两条轴各自的 data-at-min-* / data-at-max-*
- * @csspart content - 内容包裹层，横向溢出靠它撑出宽度
- * @csspart scrollbar - 某条轴的滚动条挂载点，须用 orientation 属性写明轴向；同时是那条 scrollbar 的根，承载 data-state / data-gutter / data-native
- * @csspart track - 轨道（data-scope="scrollbar"），点空白处把滑块中心挪过去
- * @csspart thumb - 滑块（data-scope="scrollbar"），位置与长度由内联逻辑属性给出；按住可拖
- * @csspart corner - 交叉口补丁（data-scope="scrollbar"），写在竖条的挂载点里；只有两条都在场时显形
+ * @csspart viewport - 实际 overflow:auto 的层，带 tabindex=0 使键盘用户可以进入；承载 data-lane-vertical / data-lane-horizontal 与两条轴各自的 data-at-min-* / data-at-max-*
+ * @csspart content - 内容包裹层，横向溢出依靠它撑出宽度
+ * @csspart scrollbar - 某条轴的滚动条挂载点，须用 orientation 属性写明轴向；同时是该 scrollbar 的根，承载 data-state / data-gutter / data-native
+ * @csspart track - 轨道（data-scope="scrollbar"），点击空白处把滑块中心移过去
+ * @csspart thumb - 滑块（data-scope="scrollbar"），位置与长度由内联逻辑属性给出；按住可拖动
+ * @csspart corner - 交叉口补丁（data-scope="scrollbar"），写在竖条的挂载点中；只有两条都在场时显示
  */
 export class XhScrollAreaElement extends XhElement {
   // 轨道、滑块与交叉口摊在本元素的 Light DOM 里由本元素接线，它们的角色节点归 scrollbar 那套 scope 管
@@ -110,8 +110,8 @@ export class XhScrollAreaElement extends XhElement {
   }
 
   /**
-   * 这条滚动条管哪条轴。作者在节点上写 orientation="horizontal"，与 Vue 侧的同名 prop
-   * 是同一份声明；没写或写不出来即竖向（两个适配器同一个缺省）。
+   * 该滚动条管理哪条轴。作者在节点上写 orientation="horizontal"，与 Vue 侧的同名 prop
+   * 是同一份声明；未写或无法识别即竖向（两个适配器同一个默认值）。
    */
   private barOrientation(el: HTMLElement): Orientation {
     return el.getAttribute('orientation') === 'horizontal' ? 'horizontal' : 'vertical'

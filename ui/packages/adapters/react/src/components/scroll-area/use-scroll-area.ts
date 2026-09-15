@@ -18,20 +18,20 @@ import { useMachine } from '../../runtime/use-machine'
 type AxisNodes = Record<Orientation, HTMLElement | null>
 
 export interface ScrollAreaContext {
-  /** 两条轴各一台 scrollbar 机器。 */
+  /** 两条轴各一台 scrollbar 状态机。 */
   services: ScrollAreaServices
   api: ScrollAreaApi
-  /** overflow:auto 的那层，两台机器都挂在它身上。 */
+  /** overflow:auto 的层，两台状态机都挂在它上面。 */
   viewportRef: RefObject<HTMLElement | null>
   /** 内容包裹层。 */
   contentRef: RefObject<HTMLElement | null>
-  /** 逐轴登记那条滚动条的根节点（即挂载点）。 */
+  /** 逐轴登记该滚动条的根节点（即挂载点）。 */
   setScrollbarEl: (axis: Orientation, el: HTMLElement | null) => void
-  /** 逐轴登记那条滚动条的轨道节点。 */
+  /** 逐轴登记该滚动条的轨道节点。 */
   setTrackEl: (axis: Orientation, el: HTMLElement | null) => void
 }
 
-/** 滚动区没有自己的机器：按轴各建一台 scrollbar，视口就是它们共同的滚动容器。 */
+/** 滚动区没有自己的状态机：按轴各建一台 scrollbar，视口就是它们共同的滚动容器。 */
 export function useScrollArea(props: ScrollAreaProps): ScrollAreaContext {
   const scope = useReactScope()
   const viewportRef = useRef<HTMLElement | null>(null)

@@ -10,7 +10,7 @@ import type { ScrollAreaContext } from './use-scroll-area'
 import { createContext, useContext } from 'react'
 
 const Ctx = createContext<ScrollAreaContext | undefined>(undefined)
-/** 滚动条自报的轴向，供它内部的轨道、滑块与交叉口复用同一份声明。 */
+/** 滚动条声明的轴向，供它内部的轨道、滑块与交叉口复用同一份声明。 */
 const ScrollbarCtx = createContext<Orientation | undefined>(undefined)
 
 export const ScrollAreaProvider = Ctx
