@@ -1,4 +1,4 @@
-// 局部抽屉 | 把抽屉收进某块区域：遮罩与定位层从 fixed 换成 absolute，只罩住那块区域而不是盖满整屏
+// 局部抽屉 | 把抽屉收进某块区域：遮罩与定位层从 fixed 换为 absolute，只覆盖该区域而不是整屏
 import type { CSSProperties, ReactNode } from "react";
 import {
   XhDrawerCloseTrigger,

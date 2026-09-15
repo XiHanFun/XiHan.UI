@@ -1,4 +1,4 @@
-// 基础用法 | 不传 open 即为非受控；Escape 关闭、Tab 在面板里循环，展开期间页面滚不动
+// 基础用法 | 不传 open 即为非受控；Escape 关闭、Tab 在面板内循环，展开期间页面不可滚动
 import type { ReactNode } from "react";
 import {
   XhButton,

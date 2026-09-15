@@ -12,7 +12,7 @@
 
 ## 用法
 
-不传 open 即为非受控；Escape 关闭、Tab 在面板里循环，展开期间页面滚不动
+不传 open 即为非受控；Escape 关闭、Tab 在面板内循环，展开期间页面不可滚动
 
 <XhDemo src="drawer/01-basic" />
 
@@ -26,43 +26,43 @@
 
 ### 贴边方向
 
-side 只落成 data-side，面板压在哪条边由皮肤按这个值决定；root 与 content 报的是同一条边
+side 只写为 data-side，面板贴在哪条边由皮肤按该值决定；root 与 content 报告的是同一条边
 
 <XhDemo src="drawer/02-side" />
 
 ### 受控
 
-传了 open 就由宿主说了算；Escape、点面板外、按叉都只回写 open，不自己改状态
+传入 open 后由宿主决定；Escape、点击面板外、按关闭按钮都只回写 open，不自行修改状态
 
 <XhDemo src="drawer/03-controlled" />
 
 ### 尺寸
 
-size 落成 content 的 data-size，只改面板贴边方向上的厚度；三档各自一个抽屉，点开才看得出厚薄
+size 写为 content 的 data-size，只改变面板贴边方向上的厚度；三档各自一个抽屉，打开后才可见厚度差异
 
 <XhDemo src="drawer/04-size" />
 
 ### 头尾固定、正文滚动
 
-header / body / footer 把面板切成三段：头与尾定在原处，只有正文那一段在滚
+header / body / footer 把面板切为三段：头与尾固定在原处，只有正文一段滚动
 
 <XhDemo src="drawer/05-scroll" />
 
 ### 关闭前拦截
 
-受控时组件不自改状态：Escape、点面板外、按叉都只发一次收起意图，写不写由宿主定
+受控时组件不自行修改状态：Escape、点击面板外、按关闭按钮都只发一次收起意图，是否写回由宿主决定
 
 <XhDemo src="drawer/06-guard" />
 
-### 拖边缘改厚度
+### 拖动边缘改变厚度
 
-面板里放一根把手，拖动时把新厚度写进 content 的 --xh-drawer-size；这个槽压过 size 三档，滑入滑出仍按面板自身宽度算
+面板中放一根把手，拖动时把新厚度写进 content 的 --xh-drawer-size；该槽覆盖 size 三档，滑入滑出仍按面板自身宽度计算
 
 <XhDemo src="drawer/07-resize" />
 
 ### 局部抽屉
 
-把抽屉收进某块区域：遮罩与定位层从 fixed 换成 absolute，只罩住那块区域而不是盖满整屏
+把抽屉收进某块区域：遮罩与定位层从 fixed 换为 absolute，只覆盖该区域而不是整屏
 
 <XhDemo src="drawer/08-contained" />
 
