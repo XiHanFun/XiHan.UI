@@ -12,7 +12,7 @@
 
 ## 用法
 
-触发器打开全屏看片：滚轮缩放、拖拽平移、工具条给缩放/旋转/翻转/归零，Esc 或点遮罩关闭
+触发器打开全屏查看：滚轮缩放、拖拽平移、工具条提供缩放/旋转/翻转/归零，Esc 或点击遮罩关闭
 
 <XhDemo src="image-viewer/01-basic" />
 
@@ -26,19 +26,19 @@
 
 ### 相册与翻页
 
-多张图共用一个看片浮层：两侧按钮或方向键翻页、计数报「第几张」，缩放旋转在换图时归零
+多张图片共用一个查看浮层：两侧按钮或方向键翻页、计数报告第几张，缩放旋转在换图时归零
 
 <XhDemo src="image-viewer/02-album" />
 
 ### 受控与文案
 
-open 与 index 双受控；translations 换工具条的可及名与计数文案
+open 与 index 双受控；translations 更换工具条的可及名与计数文案
 
 <XhDemo src="image-viewer/03-controlled" />
 
 ### 双指缩放
 
-触屏上两指撑开放大、捏合缩小，单指平移；缩放夹在 minScale 与 maxScale 之间
+触屏上两指张开放大、捏合缩小，单指平移；缩放限制在 minScale 与 maxScale 之间
 
 <XhDemo src="image-viewer/04-gesture" />
 
