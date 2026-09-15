@@ -136,7 +136,7 @@ tone 决定使用哪族颜色，与 variant 正交；这里固定 subtle 形态�
 | `required` | `boolean` |  | 必填标注（写入每段的 aria-required）。 |
 | `name` | `string` |  | 表单字段名；提供后隐藏输入才带 name，值随表单一并提交。 |
 | `placeholder` | `string` |  | 空段的占位字符（单字符），按段宽重复，默认 '-'。 |
-| `variant` | `ControlVariant` |  | 形态：outline / subtle / ghost，决定描边与底色的使用方式。 |
+| `variant` | `ControlVariant` |  | 形态：outline / subtle / ghost，决定底色与描边的绘制方式。默认 outline。 |
 | `tone` | `Tone` |  | 语气：brand / neutral / success / warning / danger / info，决定聚焦与强调使用哪族颜色。 |
 | `size` | `Size` |  | 尺寸：sm / md / lg。 |
 | `translations` | `Partial<TimeFieldTranslations>` |  | 段位读屏名的覆盖；未提供时使用内置英文语义名。 |

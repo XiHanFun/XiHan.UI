@@ -65,6 +65,8 @@ export function connectTimeField<T extends PropTypes>(
   const outOfRange = isTimeOutOfRange(value, prop('min'), prop('max'))
   // 越界与显式 invalid 在读屏那里是同一件事：这份输入现在不合法
   const flagged = invalid || outOfRange
+  // 形态默认落 outline：不写时 root 如实投影，皮肤不再依赖缺省档
+  const variant = prop('variant') ?? 'outline'
 
   const focusedSegment = context.get('focusedSegment')
   /**
@@ -116,7 +118,7 @@ export function connectTimeField<T extends PropTypes>(
 
     getRootProps: () => normalize.element({
       ...parts.root.attrs,
-      'data-variant': prop('variant'),
+      'data-variant': variant,
       'data-tone': prop('tone'),
       'data-size': prop('size'),
       'data-disabled': dataAttr(disabled),

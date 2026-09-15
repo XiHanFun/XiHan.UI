@@ -578,6 +578,11 @@ describe('timeFieldMachine', () => {
 })
 
 describe('connectTimeField 属性输出', () => {
+  it('不写 variant 时 root 落 outline；写 subtle 如实落', () => {
+    expect(open().root.getAttribute('data-variant')).toBe('outline')
+    expect(open({ variant: 'subtle' }).root.getAttribute('data-variant')).toBe('subtle')
+  })
+
   it('control 是 group 并由 label 命名，段是 spinbutton', () => {
     const m = open({ defaultValue: '13:45' })
     const api = m.api()
