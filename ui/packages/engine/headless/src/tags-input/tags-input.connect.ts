@@ -39,6 +39,8 @@ export function connectTagsInput<T extends PropTypes>(
   const readOnly = !!prop('readOnly')
   const invalid = !!prop('invalid')
   const required = !!prop('required')
+  // 形态默认落 outline：不写时 root 如实投影，皮肤不再依赖缺省档；标签的形态也从这个常量派
+  const variant = prop('variant') ?? 'outline'
   const showCount = !!prop('showCount')
   const editable = !disabled && !readOnly
   const canEditTags = editable && !!prop('editable')
@@ -112,7 +114,7 @@ export function connectTagsInput<T extends PropTypes>(
     const open = editedValue !== item.value
     return connectStaticTag(
       {
-        variant: tagVariantForControl(prop('variant')),
+        variant: tagVariantForControl(variant),
         tone: prop('tone'),
         size: prop('size'),
         disabled,
@@ -176,7 +178,7 @@ export function connectTagsInput<T extends PropTypes>(
       ...parts.root.attrs,
       ...surfaceAttrs(),
       // 三个视觉轴只落在 root 上，框、标签与各按钮从这里继承皮肤声明的私有槽
-      'data-variant': prop('variant'),
+      'data-variant': variant,
       'data-tone': prop('tone'),
       'data-size': prop('size'),
       // 必填标记只做钩子：星号由外面的字段壳画

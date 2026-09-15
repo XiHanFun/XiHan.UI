@@ -371,6 +371,11 @@ describe('tagsInputMachine 上限', () => {
 })
 
 describe('connectTagsInput 属性输出', () => {
+  it('不写 variant 时 root 落 outline；写 subtle 如实落', () => {
+    expect(mount().root.getAttribute('data-variant')).toBe('outline')
+    expect(mount({ variant: 'subtle' }).root.getAttribute('data-variant')).toBe('subtle')
+  })
+
   it('control 是 group 并由 label 命名；label 的 for 指向输入框', () => {
     const h = mount()
     expect(h.control.getAttribute('role')).toBe('group')

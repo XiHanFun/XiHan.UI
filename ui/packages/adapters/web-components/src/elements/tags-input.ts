@@ -64,7 +64,7 @@ const ARRAY_CONVERTER = {
  * @attr {boolean} add-on-paste - 粘贴时按 delimiter 拆分为多个标签
  * @attr {boolean} editable - 允许双击标签就地修改
  * @attr {'add'|'clear'} blur-behavior - 焦点离开整个组件时残留文本的处置方式
- * @attr {'outline'|'subtle'|'ghost'} variant - 视觉变体
+ * @attr {'outline'|'subtle'|'ghost'} variant - 形态：outline / subtle / ghost，默认 outline
  * @attr {'brand'|'neutral'|'success'|'warning'|'danger'|'info'} tone - 语气
  * @attr {'sm'|'md'|'lg'} size - 尺寸
  * @fires value-change - 标签集合变化；detail 为 `{ value: string[] }`
