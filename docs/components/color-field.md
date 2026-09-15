@@ -108,7 +108,7 @@
 | `invalid` | `boolean` |  |  |
 | `name` | `string` |  | 表单字段名；提供后才参与提交（经表单影子，输入框中未提交的草稿不会被提交）。 |
 | `clearable` | `boolean` |  | 开启清空能力：有值时显示清空按钮、Escape 接管。关闭时按钮带 hidden 收起。 |
-| `variant` | `ControlVariant` |  | 形态：outline / subtle / ghost，决定输入框的底色与描边绘制方式。 |
+| `variant` | `ControlVariant` |  | 形态：outline / subtle / ghost，决定底色与描边的绘制方式。默认 outline。 |
 | `tone` | `Tone` |  | 语气：brand / neutral / success / warning / danger / info，决定聚焦强调使用哪族颜色。 |
 | `size` | `Size` |  | 尺寸：sm / md / lg，决定输入框、色块与清空按钮的几何档位。 |
 | `translations` | `Partial<ColorFieldTranslations>` |  | 读屏文案；默认英文。 |
