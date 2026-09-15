@@ -110,7 +110,7 @@
     transition:
       background var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
       box-shadow var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
-      scale var(--xh-motion-duration-micro) var(--xh-motion-ease-enter-strong);
+      scale var(--xh-motion-duration-release) var(--xh-motion-ease-release);
   }
 
   [data-scope='timer'][data-part='control'][hidden] {
@@ -134,6 +134,8 @@
     background: var(--xh-timer-control-bg-active, var(--xh-bg-subtle-active));
     box-shadow: var(--xh-timer-control-shadow-active, none);
     scale: var(--xh-motion-scale-press);
+    transition-duration: var(--xh-motion-duration-press);
+    transition-timing-function: var(--xh-motion-ease-press);
   }
 
   [data-scope='timer'][data-part='control']:focus-visible {
