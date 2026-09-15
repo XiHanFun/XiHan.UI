@@ -1,4 +1,4 @@
-// 基础用法 | 想的时候自动展开、想完自动收起；状态文案由组件按在不在想与时长给出
+// 基础用法 | 思考时自动展开、思考完成后自动收起；状态文案由组件按是否在思考与时长给出
 import type { ReactNode } from "react";
 import {
   XhReasoningContent,
