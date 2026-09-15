@@ -38678,21 +38678,30 @@
   --xh-_toggle-border-on: var(--xh-toggle-border-on, transparent);
   --xh-_toggle-highlight-on: transparent;
   --xh-_toggle-shadow-on: var(--xh-toggle-shadow, none);
+  /* 禁用同时降级前景与表面，不靠 opacity；选中且禁用时底色掺一半中性面，选中信息不丢。 */
+  --xh-_toggle-bg-disabled: var(--xh-toggle-bg-disabled, var(--xh-bg-subtle));
+  --xh-_toggle-fg-disabled: var(--xh-toggle-fg-disabled, var(--xh-fg-disabled));
+  --xh-_toggle-border-disabled: var(--xh-toggle-border-disabled, transparent);
+  --xh-_toggle-bg-on-disabled: var(
+    --xh-toggle-bg-on-disabled,
+    color-mix(in oklab, var(--xh-_toggle-bg-on) 50%, var(--xh-bg-subtle))
+  );
+  --xh-_toggle-fg-on-disabled: var(--xh-toggle-fg-on-disabled, var(--xh-_toggle-fg-on));
   --xh-action-bg-rest: var(--xh-_toggle-bg);
   --xh-action-bg-hover: var(--xh-_toggle-bg-hover);
   --xh-action-bg-pressed: var(--xh-_toggle-bg-active);
   --xh-action-bg-focus-visible: var(--xh-_toggle-bg);
-  --xh-action-bg-disabled: var(--xh-_toggle-bg);
+  --xh-action-bg-disabled: var(--xh-_toggle-bg-disabled);
   --xh-action-fg-rest: var(--xh-_toggle-fg);
   --xh-action-fg-hover: var(--xh-_toggle-fg);
   --xh-action-fg-pressed: var(--xh-_toggle-fg);
   --xh-action-fg-focus-visible: var(--xh-_toggle-fg);
-  --xh-action-fg-disabled: var(--xh-_toggle-fg);
+  --xh-action-fg-disabled: var(--xh-_toggle-fg-disabled);
   --xh-action-border-rest: var(--xh-_toggle-border);
   --xh-action-border-hover: var(--xh-_toggle-border);
   --xh-action-border-pressed: var(--xh-_toggle-border);
   --xh-action-border-focus-visible: var(--xh-_toggle-border);
-  --xh-action-border-disabled: var(--xh-_toggle-border);
+  --xh-action-border-disabled: var(--xh-_toggle-border-disabled);
   --xh-action-highlight-rest: transparent;
   --xh-action-highlight-hover: transparent;
   --xh-action-highlight-pressed: transparent;
@@ -38703,7 +38712,7 @@
   --xh-action-shadow-pressed: none;
   --xh-action-shadow-focus-visible: none;
   --xh-action-shadow-disabled: none;
-  --xh-action-radius: var(--xh-toggle-radius, var(--xh-shape-pill));
+  --xh-action-radius: var(--xh-toggle-radius, var(--xh-shape-control));
   --xh-action-visual-size: var(--xh-toggle-h, var(--xh-_action-profile-visual-size));
   --xh-action-padding-inline: var(--xh-toggle-px, var(--xh-_action-profile-padding-inline));
   --xh-action-gap: var(--xh-toggle-gap, var(--xh-_action-profile-gap));
@@ -38725,6 +38734,7 @@
   --xh-_toggle-bg-hover: var(--xh-_tone-subtle, var(--xh-bg-subtle));
   --xh-_toggle-bg-active: var(--xh-_tone-subtle-hover, var(--xh-bg-subtle-hover));
   --xh-_toggle-fg: var(--xh-_tone-fg, var(--xh-fg-default));
+  --xh-_toggle-bg-disabled: var(--xh-toggle-bg-disabled, transparent);
   --xh-_toggle-bg-on: var(--xh-_tone, var(--xh-bg-brand));
   --xh-_toggle-bg-on-hover: var(--xh-_tone-hover, var(--xh-bg-brand-hover));
   --xh-_toggle-bg-on-active: var(--xh-_tone-active, var(--xh-bg-brand-active));
@@ -38756,6 +38766,8 @@
   --xh-_toggle-fg: var(--xh-_tone-fg, var(--xh-fg-default));
   --xh-_toggle-border: var(--xh-_tone-border-control, var(--xh-border-control));
   --xh-_toggle-border-on: var(--xh-_tone-border-control, var(--xh-border-control));
+  --xh-_toggle-bg-disabled: var(--xh-toggle-bg-disabled, transparent);
+  --xh-_toggle-border-disabled: var(--xh-toggle-border-disabled, var(--xh-border-subtle));
 }
 
 [data-scope='toggle'][data-part='root'][data-variant='ghost'] {
@@ -38763,6 +38775,7 @@
   --xh-_toggle-bg-hover: var(--xh-_tone-subtle, var(--xh-bg-subtle));
   --xh-_toggle-bg-active: var(--xh-_tone-subtle-hover, var(--xh-bg-subtle-hover));
   --xh-_toggle-fg: var(--xh-_tone-fg, var(--xh-fg-default));
+  --xh-_toggle-bg-disabled: var(--xh-toggle-bg-disabled, transparent);
 }
 
 [data-scope='toggle'][data-part='root'][data-state='on'] {
@@ -38770,12 +38783,12 @@
   --xh-action-bg-hover: var(--xh-_toggle-bg-on-hover);
   --xh-action-bg-pressed: var(--xh-_toggle-bg-on-active);
   --xh-action-bg-focus-visible: var(--xh-_toggle-bg-on);
-  --xh-action-bg-disabled: var(--xh-_toggle-bg-on);
+  --xh-action-bg-disabled: var(--xh-_toggle-bg-on-disabled);
   --xh-action-fg-rest: var(--xh-_toggle-fg-on);
   --xh-action-fg-hover: var(--xh-_toggle-fg-on);
   --xh-action-fg-pressed: var(--xh-_toggle-fg-on);
   --xh-action-fg-focus-visible: var(--xh-_toggle-fg-on);
-  --xh-action-fg-disabled: var(--xh-_toggle-fg-on);
+  --xh-action-fg-disabled: var(--xh-_toggle-fg-on-disabled);
   --xh-action-border-rest: var(--xh-_toggle-border-on);
   --xh-action-border-hover: var(--xh-_toggle-border-on);
   --xh-action-border-pressed: var(--xh-_toggle-border-on);

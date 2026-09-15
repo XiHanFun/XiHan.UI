@@ -57701,6 +57701,9 @@
               "name": "--xh-toggle-bg-active"
             },
             {
+              "name": "--xh-toggle-bg-disabled"
+            },
+            {
               "name": "--xh-toggle-bg-hover"
             },
             {
@@ -57710,10 +57713,16 @@
               "name": "--xh-toggle-bg-on-active"
             },
             {
+              "name": "--xh-toggle-bg-on-disabled"
+            },
+            {
               "name": "--xh-toggle-bg-on-hover"
             },
             {
               "name": "--xh-toggle-border"
+            },
+            {
+              "name": "--xh-toggle-border-disabled"
             },
             {
               "name": "--xh-toggle-border-on"
@@ -57722,7 +57731,13 @@
               "name": "--xh-toggle-fg"
             },
             {
+              "name": "--xh-toggle-fg-disabled"
+            },
+            {
               "name": "--xh-toggle-fg-on"
+            },
+            {
+              "name": "--xh-toggle-fg-on-disabled"
             },
             {
               "name": "--xh-toggle-font-size"
