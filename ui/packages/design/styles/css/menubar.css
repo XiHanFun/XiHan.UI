@@ -104,7 +104,7 @@
     user-select: none;
     transition:
       background var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
-      scale var(--xh-motion-duration-micro) var(--xh-motion-ease-enter-strong);
+      scale var(--xh-motion-duration-release) var(--xh-motion-ease-release);
   }
 
   [data-scope='menubar'][data-part='trigger'][hidden] {
@@ -126,6 +126,8 @@
   /* 按下去要有回应：顶层按钮轻微下压，松手即弹回 */
   [data-scope='menubar'][data-part='trigger']:not([data-disabled]):active {
     scale: var(--xh-motion-scale-press);
+    transition-duration: var(--xh-motion-duration-press);
+    transition-timing-function: var(--xh-motion-ease-press);
   }
 
   /* 禁用走 aria-disabled 而非原生 disabled：trigger 仍要可聚焦（它还得当方向键的起点），
@@ -230,7 +232,7 @@
     padding-block: var(--xh-menubar-content-py, var(--xh-surface-pad-xs));
     padding-inline: var(--xh-menubar-content-px, var(--xh-surface-pad-xs));
     border: var(--xh-stroke-thin) solid var(--xh-menubar-border, var(--xh-material-frosted-border));
-    border-radius: var(--xh-menubar-content-radius, var(--xh-shape-surface));
+    border-radius: var(--xh-menubar-content-radius, var(--xh-shape-overlay));
     background: var(--xh-menubar-content-bg, var(--xh-material-frosted-bg));
     color: var(--xh-menubar-content-fg, var(--xh-material-frosted-fg));
     box-shadow: var(--xh-menubar-content-shadow, var(--xh-material-frosted-shadow));
