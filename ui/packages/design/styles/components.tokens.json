@@ -4223,7 +4223,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-shape-pill"
+        "--xh-shape-inset"
       ],
       "visibility": "public",
       "description": "calendar-picker 的 cell-trigger 部件 border-radius 覆盖槽。"
