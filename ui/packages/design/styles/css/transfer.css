@@ -461,7 +461,7 @@
     transition:
       background var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
       box-shadow var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
-      scale var(--xh-motion-duration-micro) var(--xh-motion-ease-enter-strong);
+      scale var(--xh-motion-duration-release) var(--xh-motion-ease-release);
   }
 
   /* 换底之外再抬起一层：这两颗钮是两块面板之间唯一的动作面，
@@ -478,6 +478,8 @@
     background: var(--xh-transfer-trigger-bg-active, var(--xh-bg-subtle-active));
     box-shadow: var(--xh-transfer-trigger-shadow-active, none);
     scale: var(--xh-motion-scale-press);
+    transition-duration: var(--xh-motion-duration-press);
+    transition-timing-function: var(--xh-motion-ease-press);
   }
 
   /* 搬运按钮是单体控件，禁用走原生 disabled */
