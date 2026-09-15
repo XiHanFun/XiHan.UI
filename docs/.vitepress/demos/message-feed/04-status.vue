@@ -1,4 +1,4 @@
-<!-- 运行态与播报 | status 由宿主持有，组件只把它透出成 root 上的 data-state；播报只发生在 live-region 里，一轮结束才写一句 -->
+<!-- 运行态与播报 | status 由宿主持有，组件只把它透出为 root 上的 data-state；播报只发生在 live-region 中，一轮结束后才写入一句 -->
 <script setup lang="ts">
 import {
   XhButton,

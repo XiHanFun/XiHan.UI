@@ -12,7 +12,7 @@
 
 ## 用法
 
-消息内容全由作者写；组件管的是集合语义、粘底与那一个播报区
+消息内容全部由作者编写；组件管理的是集合语义、粘底与播报区
 
 <XhDemo src="message-feed/01-basic" />
 
@@ -26,37 +26,37 @@
 
 ### 粘底跟随与播报
 
-新消息长出来时自动到底，往上翻就解除；一轮结束在播报区念一句
+新消息增长时自动到底部，向上翻即解除；一轮结束后在播报区朗读一句
 
 <XhDemo src="message-feed/02-sticky" />
 
 ### 按角色分侧
 
-条目上带 data-role，左右分侧与气泡在使用者这一侧写，组件不预设这层外观
+条目上带 data-role，左右分侧与气泡在使用者一侧编写，组件不预设这层外观
 
 <XhDemo src="message-feed/03-roles" />
 
 ### 运行态与播报
 
-status 由宿主持有，组件只把它透出成 root 上的 data-state；播报只发生在 live-region 里，一轮结束才写一句
+status 由宿主持有，组件只把它透出为 root 上的 data-state；播报只发生在 live-region 中，一轮结束后才写入一句
 
 <XhDemo src="message-feed/04-status" />
 
 ### 触底加载更多
 
-stick-change 报到底，宿主据此去取下一页；先往上翻一段再滚回底部，取回来的消息接在后面
+stick-change 报告到达底部，宿主据此获取下一页；先向上翻一段再滚回底部，取回的消息接在后面
 
 <XhDemo src="message-feed/05-load-more" />
 
 ### 向上加载更早的消息
 
-视口的滚动事件直接监听：滚到接近顶部就去取上一页，取回来的插在最前面，读到一半的位置不会被顶走
+直接监听视口的滚动事件：滚到接近顶部时获取上一页，取回的消息插在最前面，正在阅读的位置不会被顶走
 
 <XhDemo src="message-feed/06-load-earlier" />
 
 ### 跳到指定的一条
 
-消息 id 就是锚点：Vue 侧用 root 插槽给的 scrollToItem / focusItem，自定义元素侧按同一个 id 取节点自己滚
+消息 id 就是锚点：Vue 侧使用 root 插槽提供的 scrollToItem / focusItem，自定义元素侧按同一个 id 取节点自行滚动
 
 <XhDemo src="message-feed/07-scroll-to" />
 

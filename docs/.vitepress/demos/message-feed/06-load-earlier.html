@@ -1,4 +1,4 @@
-<!-- 向上加载更早的消息 | 视口的滚动事件直接监听：滚到接近顶部就去取上一页，取回来的插在最前面，读到一半的位置不会被顶走 -->
+<!-- 向上加载更早的消息 | 直接监听视口的滚动事件：滚到接近顶部时获取上一页，取回的消息插在最前面，正在阅读的位置不会被顶走 -->
 <div style="display: grid; gap: 12px">
   <xh-message-feed id="message-feed-earlier" count="8" style="block-size: 220px">
     <div data-xh-part="root">
