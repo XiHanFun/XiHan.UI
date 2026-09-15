@@ -1,4 +1,4 @@
-<!-- 超长差异的截断提示 | 超过 maxLines 的部分被砍掉，提示条把砍了多少行说给读的人 -->
+<!-- 超长差异的截断提示 | 超过 maxLines 的部分被截去，提示条向读者说明截去了多少行 -->
 <script setup lang="ts">
 import { computeTextDiff } from "@xihan-ui/headless";
 import {
