@@ -14,17 +14,17 @@ import { useAffix } from './use-affix'
 
 type AffixProps = AffixSchema['props']
 
-/** 默认插槽的载荷：此刻是不是吸住了。 */
+/** 默认插槽的载荷：当前是否处于吸附状态。 */
 export type AffixRootSlotProps = Pick<AffixApi, 'affixed'>
 
-/** 根节点是占位盒：content 吸住时脱流，它留在原位撑住那块空间。 */
+/** 根节点是占位盒：content 吸附时脱离文档流，它留在原位撑住该空间。 */
 export const XhAffixRoot = defineComponent({
   name: 'XhAffixRoot',
   // 缺省值由机器与 connect 决定；普通类型省略 default，Boolean 显式保留 undefined
   props: {
     offsetTop: { type: Number },
     offsetBottom: { type: Number },
-    /** 滚动容器，缺省即整页滚动；经 refs 交给观察器。 */
+    /** 滚动容器，默认即整页滚动；经 refs 交给观察器。 */
     target: { type: Object as PropType<HTMLElement | null> },
   },
   emits: {
@@ -45,7 +45,7 @@ export const XhAffixRoot = defineComponent({
   },
 })
 
-/** 吸住时脱离常规流钉在可视区边上，落位由机器量好写进内联样式。 */
+/** 吸附时脱离常规流固定在可视区边缘，位置由状态机测量后写入内联样式。 */
 export const XhAffixContent = defineComponent({
   name: 'XhAffixContent',
   setup(_, { slots }) {

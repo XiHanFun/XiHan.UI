@@ -90,8 +90,8 @@
 
 | 属性 | 类型 | 必填 | 说明 |
 | --- | --- | --- | --- |
-| `offsetTop` | `number` |  | 吸住后距滚动容器可视区上边的距离（px）。 |
-| `offsetBottom` | `number` |  | 吸住后距滚动容器可视区下边的距离（px）；给了它就改贴下边。 |
+| `offsetTop` | `number` |  | 吸附后距滚动容器可视区上边的距离（px）。 |
+| `offsetBottom` | `number` |  | 吸附后距滚动容器可视区下边的距离（px）；提供后改为贴靠下边。 |
 | `onAffixChange` | `(details: AffixChangeDetails) => void` |  | 吸附状态变化回调。 |
 
 ### 事件
@@ -126,7 +126,7 @@
 
 | 成员 | 类型 | 说明 |
 | --- | --- | --- |
-| `affixed` | `boolean` | 此刻是不是吸住了。 |
+| `affixed` | `boolean` | 当前是否处于吸附状态。 |
 | `getRootProps` | `() => T['element']` |  |
 | `getContentProps` | `() => T['element']` |  |
 
