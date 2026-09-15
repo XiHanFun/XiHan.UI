@@ -8,9 +8,9 @@
 import { useEffect, useLayoutEffect } from 'react'
 
 /**
- * 排在提交之后、浏览器绘制之前的效应；服务端渲染没有提交，换成永不执行的 useEffect 避开警告。
+ * 排在提交之后、浏览器绘制之前的效应；服务端渲染没有提交，替换为永不执行的 useEffect 以避开警告。
  *
- * 离场上报必须用它：React 对被删子树的 passive 清理排在 DOM 摘除之后，
- * 那时焦点已经掉回 body，「本节点当下正持有焦点」这个守卫恒不成立，事件一次都发不出去。
+ * 离场上报必须使用它：React 对被删子树的 passive 清理排在 DOM 移除之后，
+ * 此时焦点已经回落到 body，本节点当前持有焦点这一守卫恒不成立，事件一次都无法发出。
  */
 export const useIsomorphicLayoutEffect = typeof window === 'undefined' ? useEffect : useLayoutEffect

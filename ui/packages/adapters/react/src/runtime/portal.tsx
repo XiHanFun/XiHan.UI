@@ -13,18 +13,18 @@ import { useXhConfig } from '../config/config'
 
 const useIsomorphicLayoutEffect = typeof window === 'undefined' ? useEffect : useLayoutEffect
 
-/** 浮层挂到哪个容器；返回 null 即挂 body。 */
+/** 浮层挂载的容器；返回 null 即挂载到 body。 */
 export type PortalContainer = (() => Element | null) | undefined
 
 /**
  * 落点解析。
  *
- * 缺省立刻解析。推迟一拍会让 React 把这棵子树拆掉重建，机器刚放进去的焦点跟着丢——
+ * 默认立即解析。推迟一拍会使 React 把这棵子树拆除重建，状态机刚放入的焦点随之丢失：
  * 浮层展开却没有焦点，键盘用户当场卡住。
  *
- * deferUntilMounted 为真时首帧返回 null、搬迁排到挂载后的效应里，好让客户端首帧与
- * 服务端标记对齐。这一档是给「服务端直出过、且要搬走」的那一屏留的，代价就是上面那次拆建：
- * 两者不能兼得——React 没有「此刻在水合」这个渲染期信号，判不出该走哪一档。
+ * deferUntilMounted 为真时首帧返回 null、迁移排到挂载后的效应中，使客户端首帧与
+ * 服务端标记对齐。这一档留给服务端直出过且需要迁移的那一屏，代价是上述的拆建：
+ * 两者不能兼得：React 没有当前正在水合这一渲染期信号，无法判断应走哪一档。
  */
 export function usePortalTarget(container: PortalContainer, deferUntilMounted = false): Element | null {
   const config = useXhConfig()
@@ -43,21 +43,21 @@ export function usePortalTarget(container: PortalContainer, deferUntilMounted = 
 
 export interface XhPortalProps {
   container?: PortalContainer
-  /** 已有的逻辑来源节点；给了就不生成来源标记。祖先 ref 会等当前提交附着完成后再建桥。 */
+  /** 已有的逻辑来源节点；提供后不生成来源标记。祖先 ref 会等当前提交附着完成后再建桥。 */
   source?: { readonly current: Element | null }
   /**
-   * 首帧就地渲染、等挂载后的效应再搬，用来与服务端标记对齐。缺省为假。
-   * 开了这一档，内容会被拆建一次，机器放进去的焦点会丢。
+   * 首帧就地渲染、等挂载后的效应再迁移，用于与服务端标记对齐。默认为假。
+   * 开启后内容会被拆建一次，状态机放入的焦点会丢失。
    */
   deferUntilMounted?: boolean
   children?: ReactNode
 }
 
 /**
- * 把内容搬到浮层落点。
+ * 把内容迁移到浮层落点。
  *
- * 服务端一律就地渲染：react-dom/server 根本不支持 createPortal，而首屏即展开的浮层
- * 必须直出展开态——正文既要能被索引也要能被读屏念到，渲成空占位等于把这一屏丢了。
+ * 服务端一律就地渲染：react-dom/server 不支持 createPortal，而首屏即展开的浮层
+ * 必须直出展开态：正文既要能被索引也要能被读屏朗读，渲染为空占位等于丢失这一屏。
  */
 export function XhPortal({ container, source, deferUntilMounted, children }: XhPortalProps): ReactNode {
   const target = usePortalTarget(container, deferUntilMounted)

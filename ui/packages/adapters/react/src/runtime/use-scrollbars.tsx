@@ -20,31 +20,31 @@ import { useMachine } from './use-machine'
 // 壳是定位盒，条子绝对定位贴它的内边距盒，不占布局、不进滚动层内部、不搬去别处。
 // 宿主只交「谁在滚」与「摆哪几条轴」，节点形状与机器接线都在这里，宿主那侧只有一行 render。
 
-/** 交给条子的 props。轴由 axes 决定、让位按实测溢出算，两者都不从外面收。 */
+/** 交给滚动条的 props。轴由 axes 决定、让位按实测溢出计算，两者都不从外部接收。 */
 export type ScrollbarsProps = Omit<ScrollbarSchema['props'], 'orientation' | 'gutter'>
 
 export interface ScrollbarsOptions {
   /**
-   * 真正在滚的那层。收 getter 而不是节点：ref 挂载后才有值，
-   * 多档互斥的宿主（同一个位置有两个可能的滚动层）在这里交此刻活着的那个。
+   * 真正在滚动的层。接收 getter 而不是节点：ref 挂载后才有值，
+   * 多档互斥的宿主（同一个位置有两个可能的滚动层）在这里返回当前生效的那个。
    */
   scrollable: () => HTMLElement | null
-  /** 摆哪几条轴，默认只摆竖的。首帧定下来之后不再变。 */
+  /** 排布哪几条轴，默认只排竖向。首帧确定之后不再变化。 */
   axes?: readonly Orientation[]
-  /** 露面时机、尺寸档、方向这些，逐帧现读。 */
+  /** 显示时机、尺寸档、方向等，逐帧现读。 */
   props?: () => ScrollbarsProps
 }
 
 export interface ScrollbarsHandle {
-  /** 条子的节点，宿主把它拼进壳的子节点末尾。 */
+  /** 滚动条的节点，宿主把它拼接到外壳子节点的末尾。 */
   render: () => ReactNode[]
-  /** 重量一遍各条轴的尺寸。 */
+  /** 重新测量各条轴的尺寸。 */
   measure: () => void
 }
 
 const DEFAULT_AXES: readonly Orientation[] = ['vertical']
 
-/** 一条轴的接线：各条子把自己的机器登记进来，交叉口让位与重量都按这张表算。 */
+/** 一条轴的接线：各滚动条把自己的状态机登记进来，交叉口让位与重新测量都按该表计算。 */
 interface BarRegistry {
   scope: Scope
   axes: readonly Orientation[]
@@ -62,8 +62,8 @@ function createRegistry(scope: Scope, options: () => ScrollbarsOptions): BarRegi
   const axes = options().axes ?? DEFAULT_AXES
 
   /**
-   * 这条轴的条子此刻常驻在场。判据不走 api：api 里就要读 gutter，读回来会绕成环，
-   * 所以直接读作者给的那份 props 与机器量到的尺寸。
+   * 该轴的滚动条当前常驻在场。判据不经 api：api 中就要读 gutter，读回来会形成循环，
+   * 因此直接读作者提供的 props 与状态机测得的尺寸。
    */
   const standing = (service: Service<ScrollbarSchema>): boolean => {
     const given = options().props?.()
@@ -85,7 +85,7 @@ function createRegistry(scope: Scope, options: () => ScrollbarsOptions): BarRegi
   }
 }
 
-/** 一条轴的条子：三层节点加一块可选的交叉口补丁。 */
+/** 一条轴的滚动条：三层节点加一块可选的交叉口补丁。 */
 function ScrollbarBar({ axis, registry }: { axis: Orientation, registry: BarRegistry }): ReactNode {
   const rootRef = useRef<HTMLElement | null>(null)
   const trackRef = useRef<HTMLElement | null>(null)
@@ -134,9 +134,9 @@ function ScrollbarBar({ axis, registry }: { axis: Orientation, registry: BarRegi
 }
 
 /**
- * 条子的节点与机器接线。
+ * 滚动条的节点与状态机接线。
  *
- * axes 按首帧那一份排定：每条轴一台机器，轴数变了 hook 的调用顺序就会跟着变。
+ * axes 按首帧的值排定：每条轴一台状态机，轴数变化会使 hook 的调用顺序随之变化。
  */
 export function useScrollbars(options: ScrollbarsOptions): ScrollbarsHandle {
   const scope = useReactScope()

@@ -13,7 +13,7 @@ import { flushSync } from 'react-dom'
 // track 是拉式的，由宿主每次提交后逐项比对；
 // flush 用 flushSync 把排队的更新同步提交完再跑回调。
 
-/** 一轮 drain 最多强制提交这么多次；回调互相排队时到此为止，剩下的照跑不吊死。 */
+/** 一轮 drain 最多强制提交的次数；回调互相排队时到此为止，剩余的照常运行，不会死锁。 */
 const MAX_FLUSH_ROUNDS = 100
 
 function noop(): void {}
@@ -25,23 +25,23 @@ interface Tracker {
 }
 
 export interface ReactRuntime extends ReactiveRuntime {
-  /** 订阅任意 cell 变化，配 useSyncExternalStore 的 subscribe。 */
+  /** 订阅任意 cell 变化，配合 useSyncExternalStore 的 subscribe。 */
   subscribe: (fn: () => void) => VoidFunction
-  /** 快照：任意 cell 变化即自增的版本号，配 useSyncExternalStore 的 getSnapshot。 */
+  /** 快照：任意 cell 变化即自增的版本号，配合 useSyncExternalStore 的 getSnapshot。 */
   getVersion: () => number
-  /** 自增版本号并通知订阅者，不改任何值。 */
+  /** 自增版本号并通知订阅者，不修改任何值。 */
   notify: () => void
-  /** 组件渲染体调用：标记「此刻在渲染中」并记下这次渲染读到的版本号。 */
+  /** 组件渲染体调用：标记当前处于渲染中并记录本次渲染读到的版本号。 */
   beginRender: () => void
-  /** 提交后调用，跑排队的 onMount。 */
+  /** 提交后调用，运行排队的 onMount。 */
   mount: () => void
-  /** 卸载时调用：逆序跑 cleanup，并丢弃队列里没跑的 flush 回调。 */
+  /** 卸载时调用：逆序运行 cleanup，并丢弃队列中未运行的 flush 回调。 */
   unmount: () => void
-  /** 每次提交后调用，逐 tracker 拉取比对依赖、变则触发。 */
+  /** 每次提交后调用，逐 tracker 拉取比对依赖、有变化则触发。 */
   runTrackers: () => void
-  /** 每次提交后调用，把这一轮排队的 flush 回调跑掉（此刻 DOM 已落定）。 */
+  /** 每次提交后调用，运行本轮排队的 flush 回调（此时 DOM 已落定）。 */
   flushCommitted: () => void
-  /** 清空钩子与 tracker 登记，供重建机器前复位；订阅者与版本号保留。 */
+  /** 清空钩子与 tracker 登记，供重建状态机前复位；订阅者与版本号保留。 */
   reset: () => void
 }
 
@@ -50,7 +50,7 @@ export function createReactRuntime(): ReactRuntime {
 
   const subscribers = new Set<() => void>()
   let version = 0
-  /** 最近一次渲染读到的版本号；和 version 不等就说明还有一次提交在路上。 */
+  /** 最近一次渲染读到的版本号；与 version 不等即说明还有一次提交尚未完成。 */
   let renderedVersion = 0
 
   let mounts: Array<() => void> = []
@@ -72,14 +72,14 @@ export function createReactRuntime(): ReactRuntime {
     for (const fn of [...subscribers]) fn()
   }
 
-  /** 此刻在渲染中或在自己的 effect 里，调 flushSync 会撞 React 的警告。 */
+  /** 当前处于渲染中或自己的 effect 内，调用 flushSync 会触发 React 的警告。 */
   function blocked(): boolean {
     return rendering || effectDepth > 0
   }
 
   /**
-   * 在 effect 回调外围加禁区标记，effect 里发起的 flush 因此改走微任务。
-   * effect 跑到就说明这一轮渲染已经提交，顺手把渲染中标记撤掉。
+   * 在 effect 回调外围加禁区标记，effect 内发起的 flush 因此改走微任务。
+   * effect 运行即说明本轮渲染已经提交，同时撤销渲染中标记。
    */
   function inEffect(fn: () => void): void {
     rendering = false
@@ -92,7 +92,7 @@ export function createReactRuntime(): ReactRuntime {
     }
   }
 
-  /** 取走当前这一批并逐个跑；卸载后立刻停手，余下的作废。 */
+  /** 取走当前这一批并逐个运行；卸载后立即停止，剩余的作废。 */
   function runBatch(): void {
     const batch = pending.splice(0, pending.length)
     for (const fn of batch) {
@@ -102,7 +102,7 @@ export function createReactRuntime(): ReactRuntime {
     }
   }
 
-  /** 强制路径：先用 flushSync 把排队的更新同步提交，再跑回调。 */
+  /** 强制路径：先用 flushSync 把排队的更新同步提交，再运行回调。 */
   function drainForced(): void {
     if (disposed || draining || pending.length === 0)
       return
@@ -123,7 +123,7 @@ export function createReactRuntime(): ReactRuntime {
     }
   }
 
-  /** 提交后路径：这一轮的 DOM 已落定，直接跑；回调自己又排的留给下一轮。 */
+  /** 提交后路径：本轮的 DOM 已落定，直接运行；回调自身再排队的留给下一轮。 */
   function drainAfterCommit(): void {
     if (disposed || draining || pending.length === 0)
       return

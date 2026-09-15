@@ -20,15 +20,15 @@ import { useMachine } from '../runtime/use-machine'
 import { mountServiceHost } from './mount-host'
 import { createServiceConfig } from './service-config'
 
-/** 文案可以给常量，也可以给取值函数——运行期跟着切语言。 */
+/** 文案可以传常量，也可以传取值函数：运行期跟随切换语言。 */
 export type LoadingBarTranslationsSource
   = | Partial<LoadingBarTranslations>
     | (() => Partial<LoadingBarTranslations>)
 
 export interface LoadingBarServiceOptions {
-  /** 正常收尾的语气，缺省 brand。 */
+  /** 正常收尾的语气，默认 brand。 */
   tone?: Tone
-  /** error() 收尾用的语气，缺省 danger：出错的收尾要与正常收尾区分得开。 */
+  /** error() 收尾使用的语气，默认 danger：出错的收尾要与正常收尾区分开。 */
   errorTone?: Tone
   height?: string | number
   trickle?: boolean
@@ -37,27 +37,27 @@ export interface LoadingBarServiceOptions {
   fadeDuration?: number
   translations?: LoadingBarTranslationsSource
   /**
-   * 喂给进度条子树的全局配置。
-   * 本服务自带宿主树，接不到组件树里的 XhConfigProvider，要让它跟应用同语言就从这里给；
-   * 传取值函数即可运行期跟着切语言，也可以之后用 setConfig 推。
+   * 提供给进度条子树的全局配置。
+   * 本服务自带宿主树，无法接收组件树中的 XhConfigProvider，需要与应用同语言时从这里提供；
+   * 传取值函数即可在运行期跟随切换语言，也可以之后用 setConfig 推送。
    */
   config?: XhConfigSource
-  /** 宿主容器；不给就在 body 下新建一个。 */
+  /** 宿主容器；未提供时在 body 下新建一个。 */
   target?: HTMLElement
 }
 
 export interface LoadingBarService {
   /** 在途计数 +1；从 0 起跳即开始爬升。 */
   start: () => void
-  /** 在途计数 -1（夹到 0，多调不会变负）；归零才收。 */
+  /** 在途计数 -1（夹取到 0，多次调用不会变负）；归零才收尾。 */
   finish: () => void
-  /** 强制归零并以 errorTone 收。 */
+  /** 强制归零并以 errorTone 收尾。 */
   error: () => void
-  /** 不管还剩几笔在途一律收掉（路由跳走时用）。 */
+  /** 无论还剩多少笔在途一律收尾（路由跳转时使用）。 */
   finishAll: () => void
-  /** 切成确定进度：给了值就照它显示，内部爬升停止；再 start() 回到不确定。 */
+  /** 切换为确定进度：提供值时按值显示，内部爬升停止；再次 start() 回到不确定。 */
   set: (value: number) => void
-  /** 换一份全局配置源。 */
+  /** 更换全局配置源。 */
   setConfig: (next: XhConfigSource) => void
   /** 卸载宿主树并移除容器。 */
   dispose: () => void

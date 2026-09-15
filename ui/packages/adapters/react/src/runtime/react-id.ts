@@ -19,9 +19,9 @@ export function useReactIdGenerator(): IdGenerator {
 }
 
 /**
- * 组件这一实例的 scope。
- * createScope 在构造时就把 scopeId 冻住，所以必须记住这一个实例，
- * 每帧新建会让 aria-controls / aria-labelledby 每帧改指向。
+ * 组件该实例的 scope。
+ * createScope 在构造时就固定 scopeId，因此必须记住该实例，
+ * 每帧新建会使 aria-controls / aria-labelledby 每帧改变指向。
  */
 export function useReactScope(): Scope {
   const idGen = useReactIdGenerator()

@@ -17,18 +17,18 @@ import { useCallback, useEffect, useLayoutEffect, useRef } from 'react'
 // 这一层把 connect 交下来的处理器从 React props 里摘出去、原样装到节点上，事件到达路径
 // 于是与另外两家一致。作者写在组件上的 onXxx 不动，仍走 React 合成事件。
 
-/** 服务端没有提交这一步，layout effect 换成永不执行的 useEffect，避开 React 的警告。 */
+/** 服务端没有提交这一步，layout effect 替换为永不执行的 useEffect，避开 React 的警告。 */
 const useIsomorphicLayoutEffect = typeof window === 'undefined' ? useEffect : useLayoutEffect
 
-/** 摘出处理器之后剩下的 props，与要装到节点上的那只 ref。 */
+/** 移除处理器之后剩余的 props，与要装到节点上的 ref。 */
 export interface NativeEventBinding {
-  /** 事件处理器已被摘走的那部分 props。 */
+  /** 事件处理器已被移除的那部分 props。 */
   attrs: Record<string, unknown>
-  /** 装到节点上：节点换了就把监听器搬过去，卸载时摘掉。 */
+  /** 装到节点上：节点更换时把监听器迁移过去，卸载时移除。 */
   ref: RefCallback<HTMLElement>
 }
 
-/** props 里的这一项是不是事件处理器。 */
+/** props 中的该项是否为事件处理器。 */
 function isHandler(key: string, value: unknown): boolean {
   return typeof value === 'function' && /^on[A-Z]/.test(key)
 }
@@ -61,7 +61,7 @@ export function useNativeEvents(props: Record<string, unknown>, only?: readonly 
   const node = useRef<HTMLElement | null>(null)
   const attached = useRef(new Map<string, () => void>())
 
-  /** 让节点上装着的监听器与此刻这份处理器名单对齐；反复调是幂等的。 */
+  /** 使节点上已装的监听器与当前的处理器名单对齐；重复调用是幂等的。 */
   const sync = useCallback(() => {
     const on = attached.current
     const wanted = node.current ? new Set(latest.current.keys()) : new Set<string>()

@@ -90,7 +90,7 @@ const BOOLEAN_PROPS = new Set([
   'inert',
 ])
 
-/** 把内联样式串解析成 React 的 style 对象：自定义属性名原样保留，其余转驼峰。 */
+/** 把内联样式串解析为 React 的 style 对象：自定义属性名原样保留，其余转驼峰。 */
 function parseStyleString(text: string): Dict {
   const style: Dict = {}
   for (const decl of text.split(';')) {
@@ -107,7 +107,7 @@ function parseStyleString(text: string): Dict {
   return style
 }
 
-/** 取该键在 React 里的名字；data-* 与 aria-* 不在两张表里，原样返回（React 直接认这两类连字符属性）。 */
+/** 取该键在 React 中的名字；data-* 与 aria-* 不在两张表中，原样返回（React 直接接受这两类连字符属性）。 */
 function toReactKey(key: string): string {
   if (key.startsWith('on'))
     return EVENT_ALIAS[key.toLowerCase()] ?? key

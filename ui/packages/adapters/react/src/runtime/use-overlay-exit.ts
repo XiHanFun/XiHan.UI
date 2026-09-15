@@ -19,25 +19,25 @@ import { useEffect, useLayoutEffect, useRef, useState } from 'react'
 //
 // 浮层族那几个走 use-overlay：它们还要连消隐层、遮罩与定位一起管。折叠族只需要这一件事。
 
-/** 服务端没有提交这一步，layout effect 换成永不执行的 useEffect，避开 React 的警告。 */
+/** 服务端没有提交这一步，layout effect 替换为永不执行的 useEffect，避开 React 的警告。 */
 const useIsomorphicLayoutEffect = typeof window === 'undefined' ? useEffect : useLayoutEffect
 
 export interface OverlayExitOptions {
   /**
    * 运行时配置；reduce 档下 presence 直接不申领租约。
-   * 服务端没有 DOM、也就没有退场可言，传 null 即退化成「可见与否跟着展开态」。
+   * 服务端没有 DOM、也就没有退场可言，传 null 即退化为可见与否跟随展开态。
    */
   config: RuntimeConfig | null
-  /** 此刻逻辑上是否展开。 */
+  /** 当前逻辑上是否展开。 */
   isOpen: () => boolean
-  /** content 节点，退场动画从它身上探测。 */
+  /** content 节点，退场动画从它上面探测。 */
   contentRef: RefObject<HTMLElement | null>
-  /** Presence 建立后交给需要共用退出生命周期的 Headless 机器；卸载时回传 null。 */
+  /** Presence 建立后交给需要共用退出生命周期的 Headless 状态机；卸载时回传 null。 */
   onPresence?: (presence: PresenceHandle | null) => void
 }
 
 /**
- * 返回「此刻该不该可见」。作者把它落成 content 的内联 display：
+ * 返回当前是否应当可见。作者把它写为 content 的内联 display：
  * `style: visible ? undefined : { display: 'none' }`。
  */
 export function useOverlayExit(options: OverlayExitOptions): boolean {

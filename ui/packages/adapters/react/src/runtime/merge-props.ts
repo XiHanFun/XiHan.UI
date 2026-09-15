@@ -25,7 +25,7 @@ function composeRefs(a: AnyRef, b: AnyRef): AnyRef {
   }
 }
 
-/** 回调式 ref 的返回值在 React 19 里是清理函数，要原样带回去。 */
+/** 回调式 ref 的返回值在 React 19 中是清理函数，要原样带回。 */
 function assign(ref: AnyRef, node: unknown): (() => void) | undefined {
   if (typeof ref === 'function')
     return ref(node as never) as (() => void) | undefined
@@ -35,10 +35,10 @@ function assign(ref: AnyRef, node: unknown): (() => void) | undefined {
 }
 
 /**
- * connect 产出的 props 与作者写在组件上的 props 合成一份。
+ * connect 产出的 props 与作者写在组件上的 props 合并为一份。
  *
- * class / style / 同名事件处理器的合并规则在 core 那一份里，三家适配器共用；
- * 这里只补 ref：React 19 把它当普通 prop，直接后盖前会让先接的那一方收不到节点。
+ * class / style / 同名事件处理器的合并规则在 core 中，三个适配器共用；
+ * 这里只补 ref：React 19 把它当作普通 prop，直接后者覆盖前者会使先接的一方收不到节点。
  */
 export function mergeReactProps<T extends Dict>(...sources: (Partial<T> | undefined)[]): T {
   const merged = mergeProps<T>(...sources) as Dict
@@ -49,10 +49,10 @@ export function mergeReactProps<T extends Dict>(...sources: (Partial<T> | undefi
 }
 
 /**
- * 把部件接线与作者写在部件上的 props 合成一份。
+ * 把部件接线与作者写在部件上的 props 合并为一份。
  *
- * 同名事件处理器作者的排在前面先跑、部件的后跑，作者因此能在部件动作之前拦下事件；
- * className、style 与其余普通值的取舍与直接展开 `{...rest}` 时一致，作者的说了算。
+ * 同名事件处理器作者的排在前面先运行、部件的后运行，作者因此能在部件动作之前拦截事件；
+ * className、style 与其余普通值的取舍与直接展开 `{...rest}` 时一致，以作者的为准。
  */
 export function mergePartProps<T extends Dict>(part: Partial<T>, author: Partial<T>): T {
   const merged = mergeReactProps<T>(part, author) as Dict
