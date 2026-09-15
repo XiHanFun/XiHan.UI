@@ -25651,7 +25651,7 @@
   padding-block: var(--xh-hover-card-py, var(--xh-_hover-card-pad));
   padding-inline: var(--xh-hover-card-px, var(--xh-_hover-card-pad));
   border: var(--xh-stroke-thin) solid var(--xh-hover-card-border, var(--xh-material-frosted-border));
-  border-radius: var(--xh-hover-card-radius, var(--xh-shape-surface));
+  border-radius: var(--xh-hover-card-radius, var(--xh-shape-overlay));
   /* 与气泡族共用 M2：顶光只占一像素，正文保持实体，只在内容层采样一次背景。 */
   background:
     linear-gradient(
