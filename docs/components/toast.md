@@ -105,18 +105,18 @@ description 提供一行简短上下文；需要长时间阅读的内容改用 N
 
 | 属性 | 类型 | 必填 | 说明 |
 | --- | --- | --- | --- |
-| `id` | `string` |  | 队列身份。服务档用它做 create/update/dismiss 的寻址键。 |
-| `title` | `string` |  | 标题文本；作者没在 title 部件里写内容时由适配器填入。 |
+| `id` | `string` |  | 队列身份。服务档用它作为 create / update / dismiss 的寻址键。 |
+| `title` | `string` |  | 标题文本；作者未在 title 部件中写内容时由适配器填入。 |
 | `description` | `string` |  | 可选的补充说明；应保持简短，需要持续阅读的长内容改用 notification。 |
-| `tone` | `ToastTone` |  | 语气，默认 info。danger 走 alert + assertive。 |
-| `loading` | `boolean` |  | 事情还没完：行首换成转圈，且不自动消失（duration 不再起作用），完事后改写成别的语气收尾。 |
+| `tone` | `ToastTone` |  | 语气，默认 info。danger 使用 alert + assertive。 |
+| `loading` | `boolean` |  | 事情尚未完成：行首换为转圈，且不自动消失（duration 不再生效），完成后改写为其他语气收尾。 |
 | `duration` | `number` |  | 停留毫秒，默认 4000。&lt;=0 或非有限数即不自动消失。 |
-| `removeDelay` | `number` |  | 退场窗口毫秒，默认 300：进入 dismissing 后停留这么久再转 unmounted，留给退场动画。 |
+| `removeDelay` | `number` |  | 退场窗口毫秒，默认 300：进入 dismissing 后停留该时长再转为 unmounted，留给退场动画。 |
 | `closable` | `boolean` |  | 是否显示可用的关闭按钮，默认 true。 |
 | `pauseOnPageIdle` | `boolean` |  | 页面切到后台时暂停计时，默认 false；全局服务默认开启。 |
-| `paused` | `boolean` |  | 由宿主按住计时，默认 false。整摞一起暂停走这条： 置真时登记 'service' 这个暂停来源，置假时把它摘掉，与指针、焦点那几路并存。 |
+| `paused` | `boolean` |  | 由宿主暂停计时，默认 false。整组一起暂停经此路径： 置真时登记 'service' 暂停来源，置假时移除它，与指针、焦点等来源并存。 |
 | `translations` | `Partial<ToastTranslations>` |  |  |
-| `onStatusChange` | `(details: ToastStatusChangeDetails) => void` |  | 生命周期落位时通知：dismissing 与 unmounted 各一次。宿主据此把条目移出队列。 |
+| `onStatusChange` | `(details: ToastStatusChangeDetails) => void` |  | 生命周期落定时通知：dismissing 与 unmounted 各一次。宿主据此把条目移出队列。 |
 | `onAction` | `(details: ToastActionDetails) => void` |  | 操作按钮被按下。 |
 
 ### 事件
@@ -125,7 +125,7 @@ description 提供一行简短上下文；需要长时间阅读的内容改用 N
 
 | 事件 | 载荷 | 说明 |
 | --- | --- | --- |
-| `status-change` | `ToastStatusChangeDetails` | 生命周期落位；detail 为 `{ id: string, status: 'dismissing'\|'unmounted' }` |
+| `status-change` | `ToastStatusChangeDetails` | 生命周期落定；detail 为 `{ id: string, status: 'dismissing'\|'unmounted' }` |
 | `action` | `ToastActionDetails` | 操作按钮被按下；detail 为 `{ id: string }` |
 
 ### 插槽
@@ -165,7 +165,7 @@ description 提供一行简短上下文；需要长时间阅读的内容改用 N
 | `loading` | `boolean` |  |
 | `title` | `string \| undefined` |  |
 | `description` | `string \| undefined` |  |
-| `paused` | `boolean` | 计时被按住中。倒计时的可见反馈由使用者自己渲染，这个标记是留给他的钩子——自带皮肤不画。 |
+| `paused` | `boolean` | 计时暂停中。倒计时的可见反馈由使用者自行渲染，该标记是留给使用者的钩子：自带皮肤不绘制。 |
 | `closable` | `boolean` |  |
 | `remaining` | `number` | 剩余毫秒；不自动消失时为 Infinity。 |
 | `dismiss` | `() => void` |  |
@@ -173,7 +173,7 @@ description 提供一行简短上下文；需要长时间阅读的内容改用 N
 | `resume` | `() => void` |  |
 | `duration` | `number` | 停留总时长（毫秒）；不自动消失时为 Infinity。 |
 | `getRootProps` | `() => T['element']` |  |
-| `getIndicatorProps` | `() => T['element']` | 语气指示符：作者塞自己的图形，不塞则由皮肤按语气画兜底字形，加载中换成转圈。 |
+| `getIndicatorProps` | `() => T['element']` | 语气指示符：作者放入自己的图形，未放入时由皮肤按语气绘制兜底字形，加载中换为转圈。 |
 | `getContentProps` | `() => T['element']` | 标题与说明的文本列。 |
 | `getTitleProps` | `() => T['element']` |  |
 | `getDescriptionProps` | `() => T['element']` |  |

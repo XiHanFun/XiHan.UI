@@ -56417,7 +56417,7 @@
       "declarations": [
         {
           "kind": "class",
-          "description": "`<xh-toast>` —— Light-DOM 行为宿主：作者写 root/title/action-trigger/close-trigger\n角色节点，元素跑 toast 机器并把 connect 产出打上去。\n\nroot 承载 role 与 aria-live：默认 status + polite（排队等读屏的空隙），\ntone=\"danger\" 换成 alert + assertive（打断当前朗读）。指针停在条子上、\n或焦点落进条子内部都会把倒计时按住，离开才接着走剩下的那一段。\n\n退场窗口走完只把 root 收起、不删节点：作者写在里面的内容归作者，\n什么时候把这条从队列里删掉是全局服务的事（它收本元素冒泡上去的 status-change）。",
+          "description": "`<xh-toast>`：Light-DOM 行为宿主：作者写 root / title / action-trigger / close-trigger\n角色节点，元素运行 toast 状态机并把 connect 产出接上。\n\nroot 承载 role 与 aria-live：默认 status + polite（排队等待读屏的空隙），\ntone=\"danger\" 换为 alert + assertive（打断当前朗读）。指针停在提示上、\n或焦点落进提示内部都会暂停倒计时，离开后继续剩余部分。\n\n退场窗口结束时只把 root 收起、不删除节点：作者写在其中的内容归作者，\n何时把该条从队列中删除是全局服务的职责（它接收本元素冒泡的 status-change）。",
           "name": "XhToastElement",
           "cssParts": [
             {
@@ -56425,7 +56425,7 @@
               "name": "root"
             },
             {
-              "description": "语气指示符（对读屏隐藏），同样承载 data-loading；不渲染它时字形由 root 的伪元素兜住",
+              "description": "语气指示符（对读屏隐藏），同样承载 data-loading；不渲染它时字形由 root 的伪元素兜底",
               "name": "indicator"
             },
             {
@@ -56441,7 +56441,7 @@
               "name": "description"
             },
             {
-              "description": "操作按钮：先发 action 再进入退场",
+              "description": "操作按钮：先发出 action 再进入退场",
               "name": "action-trigger"
             },
             {
@@ -56449,7 +56449,7 @@
               "name": "progress"
             },
             {
-              "description": "关闭按钮；closable=false 时转原生 disabled 并收起",
+              "description": "关闭按钮；closable=false 时为原生 disabled 并收起",
               "name": "close-trigger"
             }
           ],
@@ -56636,7 +56636,7 @@
           ],
           "events": [
             {
-              "description": "生命周期落位；detail 为 `{ id: string, status: 'dismissing'|'unmounted' }`",
+              "description": "生命周期落定；detail 为 `{ id: string, status: 'dismissing'|'unmounted' }`",
               "name": "status-change",
               "type": {
                 "text": "ToastStatusChangeDetails"
@@ -56655,7 +56655,7 @@
               "type": {
                 "text": "string | undefined"
               },
-              "description": "队列身份，全局服务按它寻址；不给就用实例自己的 scope id",
+              "description": "队列身份，全局服务按它寻址；未提供时使用实例自身的 scope id",
               "name": "id",
               "fieldName": "toastId"
             },
@@ -56663,7 +56663,7 @@
               "type": {
                 "text": "string | undefined"
               },
-              "description": "标题文案；作者没在 title 部件里写内容时由元素填入",
+              "description": "标题文案；作者未在 title 部件中写内容时由元素填入",
               "name": "title",
               "fieldName": "titleText"
             },
@@ -56671,7 +56671,7 @@
               "type": {
                 "text": "string | undefined"
               },
-              "description": "简短补充说明；作者没在 description 部件里写内容时由元素填入",
+              "description": "简短补充说明；作者未在 description 部件中写内容时由元素填入",
               "name": "description",
               "fieldName": "descriptionText"
             },
@@ -56679,7 +56679,7 @@
               "type": {
                 "text": "ToastTone | undefined"
               },
-              "description": "语气，默认 info；danger 走 alert + assertive",
+              "description": "语气，默认 info；danger 使用 alert + assertive",
               "name": "tone",
               "fieldName": "tone"
             },
@@ -56687,7 +56687,7 @@
               "type": {
                 "text": "boolean | undefined"
               },
-              "description": "事情还没完：行首换成转圈，且不自动消失",
+              "description": "事情尚未完成：行首换为转圈，且不自动消失",
               "name": "loading",
               "fieldName": "loading"
             },
@@ -56695,7 +56695,7 @@
               "type": {
                 "text": "number | undefined"
               },
-              "description": "停留毫秒，默认 4000；<=0 即关掉自动消失",
+              "description": "停留毫秒，默认 4000；<=0 即关闭自动消失",
               "name": "duration",
               "fieldName": "duration"
             },
@@ -56711,7 +56711,7 @@
               "type": {
                 "text": "boolean | undefined"
               },
-              "description": "是否给可用的关闭按钮，默认 true；写 closable=\"false\" 关掉",
+              "description": "是否提供可用的关闭按钮，默认 true；写 closable=\"false\" 关闭",
               "name": "closable",
               "fieldName": "closable"
             },
@@ -56719,7 +56719,7 @@
               "type": {
                 "text": "boolean | undefined"
               },
-              "description": "页面切到后台时按住计时，单组件默认关；全局服务默认开",
+              "description": "页面切到后台时暂停计时，单组件默认关闭；全局服务默认开启",
               "name": "pause-on-page-idle",
               "fieldName": "pauseOnPageIdle"
             },
@@ -56727,7 +56727,7 @@
               "type": {
                 "text": "boolean | undefined"
               },
-              "description": "由宿主整摞一起按住计时，默认关；与指针、焦点那几路并存",
+              "description": "由宿主整组一起暂停计时，默认关闭；与指针、焦点等来源并存",
               "name": "paused",
               "fieldName": "paused"
             }

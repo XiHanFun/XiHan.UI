@@ -15,7 +15,7 @@ import { useToast } from './use-toast'
 
 type ToastProps = ToastSchema['props']
 
-/** 默认插槽的载荷：这一条的身份、状态、计时剩余与生命周期方法。 */
+/** 默认插槽的载荷：该条的身份、状态、计时剩余与生命周期方法。 */
 export type ToastRootSlotProps = Pick<
   ToastApi,
   'id' | 'status' | 'tone' | 'loading' | 'paused' | 'remaining' | 'dismiss' | 'pause' | 'resume'

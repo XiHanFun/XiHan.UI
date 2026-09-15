@@ -21,37 +21,37 @@ const NUMBER_CONVERTER = { fromAttribute: (v: string | null) => (v == null || v 
 const BOOLEAN_CONVERTER = { fromAttribute: (v: string | null) => (v === null ? undefined : v !== 'false') }
 
 /**
- * `<xh-toast>` —— Light-DOM 行为宿主：作者写 root/title/action-trigger/close-trigger
- * 角色节点，元素跑 toast 机器并把 connect 产出打上去。
+ * `<xh-toast>`：Light-DOM 行为宿主：作者写 root / title / action-trigger / close-trigger
+ * 角色节点，元素运行 toast 状态机并把 connect 产出接上。
  *
- * root 承载 role 与 aria-live：默认 status + polite（排队等读屏的空隙），
- * tone="danger" 换成 alert + assertive（打断当前朗读）。指针停在条子上、
- * 或焦点落进条子内部都会把倒计时按住，离开才接着走剩下的那一段。
+ * root 承载 role 与 aria-live：默认 status + polite（排队等待读屏的空隙），
+ * tone="danger" 换为 alert + assertive（打断当前朗读）。指针停在提示上、
+ * 或焦点落进提示内部都会暂停倒计时，离开后继续剩余部分。
  *
- * 退场窗口走完只把 root 收起、不删节点：作者写在里面的内容归作者，
- * 什么时候把这条从队列里删掉是全局服务的事（它收本元素冒泡上去的 status-change）。
+ * 退场窗口结束时只把 root 收起、不删除节点：作者写在其中的内容归作者，
+ * 何时把该条从队列中删除是全局服务的职责（它接收本元素冒泡的 status-change）。
  *
  * @customElement xh-toast
- * @attr {string} id - 队列身份，全局服务按它寻址；不给就用实例自己的 scope id
- * @attr {string} title - 标题文案；作者没在 title 部件里写内容时由元素填入
- * @attr {string} description - 简短补充说明；作者没在 description 部件里写内容时由元素填入
- * @attr {'info'|'success'|'warning'|'danger'} tone - 语气，默认 info；danger 走 alert + assertive
- * @attr {boolean} loading - 事情还没完：行首换成转圈，且不自动消失
- * @attr {number} duration - 停留毫秒，默认 4000；<=0 即关掉自动消失
+ * @attr {string} id - 队列身份，全局服务按它寻址；未提供时使用实例自身的 scope id
+ * @attr {string} title - 标题文案；作者未在 title 部件中写内容时由元素填入
+ * @attr {string} description - 简短补充说明；作者未在 description 部件中写内容时由元素填入
+ * @attr {'info'|'success'|'warning'|'danger'} tone - 语气，默认 info；danger 使用 alert + assertive
+ * @attr {boolean} loading - 事情尚未完成：行首换为转圈，且不自动消失
+ * @attr {number} duration - 停留毫秒，默认 4000；<=0 即关闭自动消失
  * @attr {number} remove-delay - 退场窗口毫秒，默认 300，留给退场动画
- * @attr {boolean} closable - 是否给可用的关闭按钮，默认 true；写 closable="false" 关掉
- * @attr {boolean} pause-on-page-idle - 页面切到后台时按住计时，单组件默认关；全局服务默认开
- * @attr {boolean} paused - 由宿主整摞一起按住计时，默认关；与指针、焦点那几路并存
- * @fires status-change - 生命周期落位；detail 为 `{ id: string, status: 'dismissing'|'unmounted' }`
+ * @attr {boolean} closable - 是否提供可用的关闭按钮，默认 true；写 closable="false" 关闭
+ * @attr {boolean} pause-on-page-idle - 页面切到后台时暂停计时，单组件默认关闭；全局服务默认开启
+ * @attr {boolean} paused - 由宿主整组一起暂停计时，默认关闭；与指针、焦点等来源并存
+ * @fires status-change - 生命周期落定；detail 为 `{ id: string, status: 'dismissing'|'unmounted' }`
  * @fires action - 操作按钮被按下；detail 为 `{ id: string }`
  * @csspart root - role=status（danger 时 alert）的容器，承载 data-tone / data-loading / data-state / data-paused
- * @csspart indicator - 语气指示符（对读屏隐藏），同样承载 data-loading；不渲染它时字形由 root 的伪元素兜住
+ * @csspart indicator - 语气指示符（对读屏隐藏），同样承载 data-loading；不渲染它时字形由 root 的伪元素兜底
  * @csspart content - 标题与说明的文本列
  * @csspart title - 标题，aria-labelledby 的目标
  * @csspart description - 可选的简短补充说明
- * @csspart action-trigger - 操作按钮：先发 action 再进入退场
+ * @csspart action-trigger - 操作按钮：先发出 action 再进入退场
  * @csspart progress - 倒计时条；不自动消失时收起
- * @csspart close-trigger - 关闭按钮；closable=false 时转原生 disabled 并收起
+ * @csspart close-trigger - 关闭按钮；closable=false 时为原生 disabled 并收起
  */
 export class XhToastElement extends XhElement {
   static override partContract = { anatomy: toastAnatomy, meta: toastMeta }
