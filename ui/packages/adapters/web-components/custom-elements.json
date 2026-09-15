@@ -3144,7 +3144,7 @@
       "declarations": [
         {
           "kind": "class",
-          "description": "`<xh-button-group>` —— Light-DOM 行为宿主，无状态机，把 connectButtonGroup 产出打到 root 角色节点。\n\n组内每一段是作者自己的按钮，不是本组件的角色节点：三个视觉轴写在根上，\n皮肤把它们翻成 `--xh-button-*` 槽位，沿继承流给每一段。",
+          "description": "`<xh-button-group>`：Light-DOM 行为宿主，无状态机，把 connectButtonGroup 产出接到 root 角色节点。\n\n组内每一段是作者自己的按钮，不是本组件的角色节点：三个视觉轴写在根上，\n皮肤把它们转换为 `--xh-button-*` 槽位，沿继承流下发给每一段。",
           "name": "XhButtonGroupElement",
           "cssParts": [
             {
@@ -3332,7 +3332,7 @@
                   }
                 }
               ],
-              "description": "把整组的禁用落到每一段的原生 disabled 上。\n只打 data-* 是假禁用——段照样可聚焦、照样派 click。\n分隔线不是段，跳过它。"
+              "description": "把整组的禁用落到每一段的原生 disabled 上。\n只写 data-* 是假禁用：段照样可聚焦、照样派发 click。\n分隔线不是段，跳过它。"
             }
           ],
           "attributes": [
@@ -3340,7 +3340,7 @@
               "type": {
                 "text": "string | undefined"
               },
-              "description": "排布，决定相邻两段在哪个轴上合边，默认 horizontal",
+              "description": "排布，决定相邻两段在哪个轴上合并边缘，默认 horizontal",
               "name": "orientation",
               "fieldName": "orientation"
             },
@@ -3348,7 +3348,7 @@
               "type": {
                 "text": "ActionVariant | undefined"
               },
-              "description": "变体，决定底色、描边与前景怎么用",
+              "description": "变体，决定底色、描边与前景的使用方式",
               "name": "variant",
               "fieldName": "variant"
             },
@@ -3372,7 +3372,7 @@
               "type": {
                 "text": "boolean | undefined"
               },
-              "description": "整组禁用：组内每一段都写上原生 disabled；段自己写了禁用的仍然禁用",
+              "description": "整组禁用：组内每一段都写上原生 disabled；段自身声明禁用的仍然禁用",
               "name": "disabled",
               "fieldName": "disabled"
             },

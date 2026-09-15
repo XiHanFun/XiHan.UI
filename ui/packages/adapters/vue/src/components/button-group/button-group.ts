@@ -14,7 +14,7 @@ import { withXhConfig } from '../../config/config'
 import { vueNormalize } from '../../runtime/normalize-props'
 import { provideButtonGroupDisabled } from './context'
 
-/** 从实际调用推出 api 形状，免得再写一遍 normalize 的类型参数。 */
+/** 从实际调用推导 api 形状，避免再写一遍 normalize 的类型参数。 */
 type VueButtonGroupApi = ReturnType<typeof connectButtonGroup>
 
 function flattenChildren(children: readonly VNode[]): VNode[] {
