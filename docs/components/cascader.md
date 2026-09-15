@@ -401,7 +401,7 @@
 | `--xh-cascader-content-fg` | `content` | `color` | `default` | `--xh-material-frosted-fg` | cascader 的 content 部件 color 覆盖槽。 |
 | `--xh-cascader-content-highlight` | `content` | `background` | `default` | `--xh-material-frosted-highlight` | cascader 的 content 部件 background 覆盖槽。 |
 | `--xh-cascader-content-max-w` | `content` | `max-inline-size` | `default` | `--xh-overlay-max-w-xl` | cascader 的 content 部件 max-inline-size 覆盖槽。 |
-| `--xh-cascader-content-radius` | `content` | `border-radius` | `default` | `--xh-shape-surface` | cascader 的 content 部件 border-radius 覆盖槽。 |
+| `--xh-cascader-content-radius` | `content` | `border-radius` | `default` | `--xh-shape-overlay` | cascader 的 content 部件 border-radius 覆盖槽。 |
 | `--xh-cascader-content-shadow` | `content` | `box-shadow` | `default` | `--xh-material-frosted-shadow` | cascader 的 content 部件 box-shadow 覆盖槽。 |
 | `--xh-cascader-control-bg` | `control` | `background` | `default` | `--xh-_cascader-bg` | cascader 的 control 部件 background 覆盖槽。 |
 | `--xh-cascader-control-bg-disabled` | `control` | `background` | `disabled` | `--xh-bg-subtle` | cascader 的 control 部件 background 覆盖槽。 |
