@@ -122,7 +122,7 @@ export const XhDateFieldSegment = defineComponent({
   props: {
     // 下标由作者声明，是哪一段由 locale 与段集算出；兼收字符串
     index: { type: [Number, String] as PropType<number | string> },
-    /** 按段名声明这一格。段集里没有这一块时它收起；与 index 二选一，两个都写按段名算。 */
+    /** 按段名声明该格。段集中没有该段时它收起；与 index 二选一，两个都写时按段名计算。 */
     segment: { type: String as PropType<DateSegmentType> },
   },
   slots: Object as SlotsType<{

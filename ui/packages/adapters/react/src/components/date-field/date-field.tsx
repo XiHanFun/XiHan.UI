@@ -50,7 +50,7 @@ export interface XhDateFieldRootProps extends Omit<ComponentPropsWithRef<'div'>,
   locale?: string
   timeZone?: string
   granularity?: DateGranularity
-  /** 段集：给了就以它为准，granularity 让路。段位节点仍按下标认段，段集是有序的。 */
+  /** 段集：提供后以它为准，granularity 让位。段位节点仍按下标识别段，段集是有序的。 */
   segments?: DateSegmentSet
   disabled?: boolean
   readOnly?: boolean
@@ -142,7 +142,7 @@ export function XhDateFieldRoot({
 XhDateFieldRoot.xhEvents = ['value-change'] as const
 
 export interface XhDateFieldLabelProps extends ComponentPropsWithRef<'span'> {}
-/** 渲染为 span 而非 label，段位不是可被 for 标注的控件；点标题聚焦由连接层接管。 */
+/** 渲染为 span 而非 label，段位不是可被 for 标注的控件；点击标题聚焦由连接层接管。 */
 export function XhDateFieldLabel({ children, ...rest }: XhDateFieldLabelProps): ReactNode {
   const ctx = useDateFieldContext()
   return <span {...mergeReactProps(ctx.api.getLabelProps() as Record<string, unknown>, rest as Record<string, unknown>)}>{children}</span>
@@ -161,13 +161,13 @@ export function XhDateFieldSegmentGroup({ children, ...rest }: XhDateFieldSegmen
 }
 
 export interface XhDateFieldSegmentProps extends Omit<ComponentPropsWithRef<'div'>, 'children'> {
-  /** 下标由作者声明，是哪一段由 locale 与段集算出；兼收字符串。 */
+  /** 下标由作者声明，对应哪一段由 locale 与段集计算；兼收字符串。 */
   index?: number | string
-  /** 按段名声明这一格。段集里没有这一块时它收起；与 index 二选一，两个都写按段名算。 */
+  /** 按段名声明该格。段集中没有该段时它收起；与 index 二选一，两个都写时按段名计算。 */
   segment?: DateSegmentType
   children?: SlotChildren<DateFieldSegmentSlotProps>
 }
-/** 有内容用内容，否则渲染连接层算好的段位文本。 */
+/** 有内容时使用内容，否则渲染连接层计算的段位文本。 */
 export function XhDateFieldSegment({ index, segment, children, ...rest }: XhDateFieldSegmentProps): ReactNode {
   const ctx = useDateFieldContext()
   const api = ctx.api
@@ -184,7 +184,7 @@ export function XhDateFieldSegment({ index, segment, children, ...rest }: XhDate
 }
 
 export interface XhDateFieldClearTriggerProps extends ComponentPropsWithRef<'button'> {}
-/** 没写内容时由皮肤画兜底字形。 */
+/** 未写内容时由皮肤绘制兜底字形。 */
 export function XhDateFieldClearTrigger({ children, ...rest }: XhDateFieldClearTriggerProps): ReactNode {
   const ctx = useDateFieldContext()
   return <button {...mergeReactProps(ctx.api.getClearTriggerProps() as Record<string, unknown>, rest as Record<string, unknown>)}>{children}</button>

@@ -109,23 +109,23 @@
 
 | 属性 | 类型 | 必填 | 说明 |
 | --- | --- | --- | --- |
-| `value` | `string \| null` |  | 受控值，ISO 串（'2026-07-28' / '2026-07-28T13:45'）；null 表示空。给定即受控。 |
+| `value` | `string \| null` |  | 受控值，ISO 串（'2026-07-28' / '2026-07-28T13:45'）；null 表示空。提供即受控。 |
 | `defaultValue` | `string \| null` |  | 非受控初值，同样是 ISO 串。 |
 | `min` | `string` |  | 下界，ISO 串。参与各段区间的收窄，并决定 outOfRange。 |
 | `max` | `string` |  | 上界，ISO 串。 |
-| `locale` | `string` |  | BCP 47 语言标记，决定年月日三段的先后。不给按宿主语言，宿主也没有时按 en-US（月日年）排。 |
-| `timeZone` | `string` |  | IANA 时区名，只用来取「今天」：空段上按上下键时从今天的对应位起步。 |
-| `granularity` | `DateGranularity` |  | 精度，默认 day（只有年月日三段）。给了 segments 时它不再作数。 |
-| `segments` | `DateSegmentSet` |  | 段集：这份控件由哪几块组成，给了就以它为准，granularity 让路。写 `['year', 'quarter']` 得到「2026 Q2」、`['year', 'week']` 得到「2026 33」。归一后为空（如 `[]`）视同没给。 值仍是 ISO 日期（时间）串，故段集里必须有 year，否则段位编辑得动但拼不出值。 |
+| `locale` | `string` |  | BCP 47 语言标记，决定年月日三段的先后。未提供时按宿主语言，宿主也没有时按 en-US（月日年）排列。 |
+| `timeZone` | `string` |  | IANA 时区名，只用于取今天：空段上按上下键时从今天的对应位起步。 |
+| `granularity` | `DateGranularity` |  | 精度，默认 day（只有年月日三段）。提供 segments 时它不再生效。 |
+| `segments` | `DateSegmentSet` |  | 段集：该控件由哪几段组成，提供后以它为准，granularity 让位。写 `['year', 'quarter']` 得到「2026 Q2」、`['year', 'week']` 得到「2026 33」。归一后为空（如 `[]`）视同未提供。 值仍是 ISO 日期（时间）串，因此段集中必须有 year，否则段位可编辑但无法拼出值。 |
 | `disabled` | `boolean` |  |  |
 | `readOnly` | `boolean` |  |  |
 | `invalid` | `boolean` |  |  |
 | `required` | `boolean` |  |  |
-| `name` | `string` |  | 表单字段名；给了隐藏输入才带 name，ISO 串随表单一并提交。 |
+| `name` | `string` |  | 表单字段名；提供后隐藏输入才带 name，ISO 串随表单一并提交。 |
 | `placeholder` | `{ readonly [K in DateSegmentType]?: string }` |  | 各段未填时显示的占位串，逐段覆盖内置默认（yyyy / mm / dd / hh / mm / ss）。 |
-| `translations` | `DateFieldTranslations` |  | 各段的读屏名字，逐段覆盖内置默认。段是 spinbutton，没有名字读屏只念得出一串数字。 |
-| `variant` | `ControlVariant` |  | 形态：outline / subtle / ghost，决定描边与底色怎么用。 |
-| `tone` | `Tone` |  | 语气：brand / neutral / success / warning / danger / info，决定聚焦与强调用哪族颜色。 |
+| `translations` | `DateFieldTranslations` |  | 各段的读屏名字，逐段覆盖内置默认。段是 spinbutton，没有名字时读屏只能朗读一串数字。 |
+| `variant` | `ControlVariant` |  | 形态：outline / subtle / ghost，决定描边与底色的使用方式。 |
+| `tone` | `Tone` |  | 语气：brand / neutral / success / warning / danger / info，决定聚焦与强调使用哪族颜色。 |
 | `size` | `Size` |  | 尺寸：sm / md / lg。 |
 | `onValueChange` | `(details: DateFieldValueChangeDetails) => void` |  |  |
 
@@ -162,28 +162,28 @@
 
 | 成员 | 类型 | 说明 |
 | --- | --- | --- |
-| `value` | `string \| null` | ISO 串；段位没填齐时是 null。 |
-| `valueAsDate` | `Date \| null` | 同一个值的原生 Date；空值或算不出来时为 null。按 timeZone 换算。 |
-| `segments` | `DateFieldSegmentState[]` | 逐段投影，文档序即此刻的段序（给了 segments 就是它归一后的顺序，否则由 locale 排）。 |
-| `complete` | `boolean` | 段位填齐了（value 非 null）。 |
-| `empty` | `boolean` | 一段都没填。 |
-| `outOfRange` | `boolean` | 填齐了但落在 min/max 之外。 |
+| `value` | `string \| null` | ISO 串；段位未填齐时为 null。 |
+| `valueAsDate` | `Date \| null` | 同一个值的原生 Date；空值或无法计算时为 null。按 timeZone 换算。 |
+| `segments` | `DateFieldSegmentState[]` | 逐段投影，文档序即当前的段序（提供 segments 时是其归一后的顺序，否则由 locale 排列）。 |
+| `complete` | `boolean` | 段位已填齐（value 非 null）。 |
+| `empty` | `boolean` | 没有任何段已填。 |
+| `outOfRange` | `boolean` | 已填齐但落在 min / max 之外。 |
 | `disabled` | `boolean` |  |
 | `readOnly` | `boolean` |  |
 | `invalid` | `boolean` |  |
-| `focusedSegment` | `DateSegmentType \| null` | 焦点落在哪一段；焦点在组外时为 null。 |
+| `focusedSegment` | `DateSegmentType \| null` | 焦点所在的段；焦点在组外时为 null。 |
 | `locale` | `string` |  |
 | `granularity` | `DateGranularity` |  |
 | `setValue` | `(next: string \| null) => void` | 直接写整份值；传 null 等于清空。 |
-| `clear` | `() => void` | 清空全部段位；disabled / readOnly 下不动。 |
-| `canClear` | `boolean` | 清空钮此刻是否可用：有段填了值、且可编辑。 |
+| `clear` | `() => void` | 清空全部段位；disabled / readOnly 下不生效。 |
+| `canClear` | `boolean` | 清空按钮当前是否可用：有段已填值、且可编辑。 |
 | `getRootProps` | `() => T['element']` |  |
-| `getLabelProps` | `() => T['element']` | 标题不是原生 label（段位是 div，不可被 label 标注），点它由连接层代为把焦点送进首段。 |
+| `getLabelProps` | `() => T['element']` | 标题不是原生 label（段位是 div，不可被 label 标注），点击它由连接层代为把焦点送进首段。 |
 | `getControlProps` | `() => T['element']` | role=group 的分段容器。 |
-| `getSegmentGroupProps` | `() => T['element']` | 段位与分隔符的外壳：占满盒里剩下的宽度，把清空钮顶到框内末端。 |
-| `segmentOf` | `(props: DateFieldSegmentProps) => DateFieldSegmentState \| undefined` | 作者的那一句声明落在哪一段上；段集里没有这一块（或下标越界）时缺席。文字由适配器照它渲染。 |
+| `getSegmentGroupProps` | `() => T['element']` | 段位与分隔符的外壳：占满盒内剩余宽度，把清空按钮推到框内末端。 |
+| `segmentOf` | `(props: DateFieldSegmentProps) => DateFieldSegmentState \| undefined` | 作者的声明落在哪一段上；段集中没有该段（或下标越界）时缺席。文字由适配器按它渲染。 |
 | `getSegmentProps` | `(props: DateFieldSegmentProps) => T['element']` |  |
-| `getClearTriggerProps` | `() => T['button']` | 清空钮：不占 Tab 位，没值或不可编辑时收起；点完焦点回到首段。 |
+| `getClearTriggerProps` | `() => T['button']` | 清空按钮：不占 Tab 位，无值或不可编辑时收起；点击后焦点回到首段。 |
 | `getHiddenInputProps` | `() => T['input']` | 表单出口：一份 type=hidden 的原生输入，值是 ISO 串。 |
 
 ## 无障碍

@@ -14638,7 +14638,7 @@
       "declarations": [
         {
           "kind": "class",
-          "description": "`<xh-date-field>` —— Light-DOM 行为宿主：作者写 root/label/control/segment-group/segment（多个）/hidden-input\n角色节点，元素跑 date-field 机器并把 connect 产出打上去。\n\n每一段是一个 role=spinbutton 的可聚焦节点：上下键加减并在段区间里回绕、左右键与 Home/End 换段、\n数字键直填且敲满自动跳下一段、Backspace 清掉本段；可选的 clear-trigger 一键清空全部段。\n\n是哪一段有两种写法：只声明下标（`index`，或按文档序），是哪一段由 locale（zh-CN 年月日、\nen-US 月日年）与段集算出来——同一份标记换个 locale 就换一副面孔；或按段名写死\n（`segment=\"quarter\"`），段集里没有这一块时那一格收起。用不上的段带 hidden 留在文档里，\n不卸载作者节点。\n\n段位没填齐时整份值是 null；填齐了才拼出 ISO 串，由 hidden-input 随表单提交。\n\n占位串与读屏名字是逐段的对象，属性表达不了，只能走 property\n（`el.placeholder = { year: '年' }`）。",
+          "description": "`<xh-date-field>`：Light-DOM 行为宿主：作者写 root / label / control / segment-group / segment（多个）/ hidden-input\n角色节点，元素运行 date-field 状态机并把 connect 产出接上。\n\n每一段是一个 role=spinbutton 的可聚焦节点：上下键加减并在段区间内回绕、左右键与 Home/End 换段、\n数字键直接填入且输满自动跳到下一段、Backspace 清除本段；可选的 clear-trigger 一键清空全部段。\n\n段的身份有两种写法：只声明下标（`index`，或按文档序），具体是哪一段由 locale（zh-CN 年月日、\nen-US 月日年）与段集计算：同一份标记更换 locale 即更换形态；或按段名固定\n（`segment=\"quarter\"`），段集中没有该段时该格收起。不使用的段带 hidden 保留在文档中，\n不卸载作者节点。\n\n段位未填齐时整份值为 null；填齐后才拼出 ISO 串，由 hidden-input 随表单提交。\n\n占位串与读屏名字是逐段的对象，属性无法表达，只能通过 property 设置\n（`el.placeholder = { year: '年' }`）。",
           "name": "XhDateFieldElement",
           "cssParts": [
             {
@@ -14646,7 +14646,7 @@
               "name": "root"
             },
             {
-              "description": "标题；点它把焦点送进首段",
+              "description": "标题；点击它把焦点送进首段",
               "name": "label"
             },
             {
@@ -14654,15 +14654,15 @@
               "name": "control"
             },
             {
-              "description": "段位与分隔符的外壳，占满盒里剩下的宽度",
+              "description": "段位与分隔符的外壳，占满盒内剩余宽度",
               "name": "segment-group"
             },
             {
-              "description": "一段一个的 spinbutton 节点。可自带 segment 属性按段名认领（segment=\"quarter\"）， 或自带 index 属性声明下标，两者都没写按文档序",
+              "description": "一段一个的 spinbutton 节点。可自带 segment 属性按段名归属（segment=\"quarter\"）， 或自带 index 属性声明下标，两者都没写按文档序",
               "name": "segment"
             },
             {
-              "description": "清空钮，不占 Tab 位；没值或不可编辑时收起，点完焦点回到首段",
+              "description": "清空按钮，不占 Tab 位；无值或不可编辑时收起，点击后焦点回到首段",
               "name": "clear-trigger"
             },
             {
@@ -14914,7 +14914,7 @@
               "type": {
                 "text": "string | undefined"
               },
-              "description": "受控值，ISO 串；写成空串即\"受控且当前为空\"；缺省该属性即非受控",
+              "description": "受控值，ISO 串；写为空串即受控且当前为空；未提供该属性即非受控",
               "name": "value",
               "fieldName": "value"
             },
@@ -14946,7 +14946,7 @@
               "type": {
                 "text": "string | undefined"
               },
-              "description": "BCP 47 语言标记，决定年月日三段的先后；不给按宿主语言，宿主也没有时按 en-US",
+              "description": "BCP 47 语言标记，决定年月日三段的先后；未提供时按宿主语言，宿主也没有时按 en-US",
               "name": "locale",
               "fieldName": "locale"
             },
@@ -14954,7 +14954,7 @@
               "type": {
                 "text": "string | undefined"
               },
-              "description": "IANA 时区名，只用来取\"今天\"（空段按上下键时的起点）",
+              "description": "IANA 时区名，只用于取今天（空段按上下键时的起点）",
               "name": "time-zone",
               "fieldName": "timeZone"
             },
@@ -14962,7 +14962,7 @@
               "type": {
                 "text": "DateGranularity | undefined"
               },
-              "description": "精度，决定一共几段，默认 day",
+              "description": "精度，决定共有几段，默认 day",
               "name": "granularity",
               "fieldName": "granularity"
             },
@@ -14970,7 +14970,7 @@
               "type": {
                 "text": "DateSegmentSet | undefined"
               },
-              "description": "段集，逗号分隔的段名（`year,quarter`）；给了它 granularity 让路。 可选的九块：year / quarter / month / week / day / hour / minute / second / dayPeriod。 季度与月、周与日两两互斥，都写时留细的那个",
+              "description": "段集，逗号分隔的段名（`year,quarter`）；提供后 granularity 让位。 可选的九块：year / quarter / month / week / day / hour / minute / second / dayPeriod。 季度与月、周与日两两互斥，都写时以较细的粒度为准",
               "name": "segments",
               "fieldName": "segments"
             },
@@ -14978,7 +14978,7 @@
               "type": {
                 "text": "boolean | undefined"
               },
-              "description": "禁用：整组退出 Tab 序，隐藏输入不参与提交",
+              "description": "禁用：整组退出 Tab 序列，隐藏输入不参与提交",
               "name": "disabled",
               "fieldName": "disabled"
             },
@@ -14986,7 +14986,7 @@
               "type": {
                 "text": "boolean | undefined"
               },
-              "description": "只读：可聚焦、可换段，但改不动",
+              "description": "只读：可聚焦、可换段，但不可修改",
               "name": "read-only",
               "fieldName": "readOnly"
             },
@@ -15002,7 +15002,7 @@
               "type": {
                 "text": "boolean | undefined"
               },
-              "description": "必填标注，落到每段的 aria-required 上",
+              "description": "必填标注，写入每段的 aria-required",
               "name": "required",
               "fieldName": "required"
             },
@@ -15010,7 +15010,7 @@
               "type": {
                 "text": "string | undefined"
               },
-              "description": "表单字段名；给了隐藏输入才带 name",
+              "description": "表单字段名；提供后隐藏输入才带 name",
               "name": "name",
               "fieldName": "name"
             },
