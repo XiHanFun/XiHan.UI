@@ -1,7 +1,7 @@
 <script setup lang="ts">
-import type { Component } from "vue";
 import type { ComponentType } from "react";
 import type { Root as ReactRoot } from "react-dom/client";
+import type { Component } from "vue";
 import { XhCodeViewCode, XhCodeViewPre, XhCodeViewRoot } from "@xihan-ui/vue";
 import { useData } from "vitepress";
 import {
@@ -287,26 +287,26 @@ async function copy() {
 
 <style scoped>
 .xh-demo {
-  margin: 22px 0 34px;
-  border: 1px solid color-mix(in oklab, var(--vp-c-divider) 82%, transparent);
-  border-radius: 18px;
+  margin: var(--xh-space-6) 0 var(--xh-space-8);
+  border: var(--xh-stroke-thin) solid var(--xh-border-default);
+  border-radius: var(--xh-shape-surface);
   overflow: hidden;
-  background: var(--vp-c-bg);
-  box-shadow: var(--xh-doc-shadow-surface);
+  background: var(--xh-bg-surface);
+  box-shadow: var(--xh-elevation-raised);
 }
 .xh-demo__stage {
   display: flex;
   flex-wrap: wrap;
   align-items: center;
   justify-content: center;
-  gap: 12px;
+  gap: var(--xh-space-3);
   min-height: 236px;
-  padding: 48px 32px;
-  background: var(--demo-stage-bg, var(--vp-c-bg));
+  padding: var(--xh-space-8) var(--xh-space-6);
+  background: var(--demo-stage-bg, var(--xh-bg-page));
 }
 /* 主题轴钉住深浅时舞台的底与字改由令牌给，与所选那一档同源 */
 .xh-demo__stage--themed {
-  --demo-stage-bg: var(--xh-bg-canvas);
+  --demo-stage-bg: var(--xh-bg-page);
 
   color: var(--xh-fg-default);
 }
@@ -316,16 +316,16 @@ async function copy() {
   flex-wrap: wrap;
   align-items: center;
   justify-content: center;
-  gap: 12px;
+  gap: var(--xh-space-3);
   width: 100%;
 }
 .xh-demo__missing {
   display: flex;
   flex-wrap: wrap;
   align-items: center;
-  gap: 12px;
-  color: var(--vp-c-text-2);
-  font-size: 14px;
+  gap: var(--xh-space-3);
+  color: var(--xh-fg-muted);
+  font-size: var(--xh-text-body-size);
   line-height: 1.7;
 }
 /* 结论是整句话，长过一行就折行，右边的按钮跟着落到下一行 */
@@ -338,35 +338,44 @@ async function copy() {
   flex-wrap: wrap;
   align-items: center;
   justify-content: space-between;
-  gap: 8px 16px;
-  padding: 9px 12px;
-  border-top: 1px solid color-mix(in oklab, var(--vp-c-divider) 76%, transparent);
-  background: color-mix(in oklab, var(--vp-c-bg) 98%, black);
+  gap: var(--xh-space-2) var(--xh-space-4);
+  padding: var(--xh-space-2) var(--xh-space-3);
+  border-top: var(--xh-stroke-thin) solid var(--xh-border-default);
+  background: var(--xh-bg-surface);
 }
 /* 舞台的档位在左、代码的动作在右；行装不下时动作整组落到下一行右端 */
 .xh-demo__actions {
   display: flex;
-  gap: 8px;
+  gap: var(--xh-space-2);
   margin-left: auto;
 }
 .xh-demo__btn {
-  min-height: 30px;
-  padding: 3px 11px;
-  border-radius: 999px;
-  color: var(--vp-c-text-2);
-  font-size: 13px;
-  line-height: 20px;
+  min-height: var(--xh-control-h-sm);
+  padding-inline: var(--xh-control-px-sm);
+  border: var(--xh-stroke-thin) solid transparent;
+  border-radius: var(--xh-shape-control);
+  background: transparent;
+  color: var(--xh-fg-muted);
+  font-size: var(--xh-control-font-sm);
+  line-height: var(--xh-leading-none);
+  cursor: pointer;
   transition:
-    color 150ms ease,
-    background-color 150ms ease,
-    transform 200ms ease;
+    color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
+    background-color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
+    scale var(--xh-motion-duration-release) var(--xh-motion-ease-release);
 }
 .xh-demo__btn:hover {
-  color: var(--vp-c-text-1);
-  background: var(--vp-c-bg-mute);
+  color: var(--xh-fg-default);
+  background: var(--xh-bg-subtle-hover);
 }
 .xh-demo__btn:active {
-  transform: scale(0.97);
+  scale: var(--xh-motion-scale-press);
+  transition-duration: var(--xh-motion-duration-press);
+  transition-timing-function: var(--xh-motion-ease-press);
+}
+.xh-demo__btn:focus-visible {
+  outline: var(--xh-ring-width) solid var(--xh-ring-focus);
+  outline-offset: var(--xh-ring-offset);
 }
 /* 代码由 XhCodeView 渲染，语法着色随之接上。
    它自带的表面（圆角、发丝边、落影）在这里收掉：外壳已经画了一圈边，代码块是它的一段。 */
@@ -377,8 +386,8 @@ async function copy() {
   --xh-code-view-radius: 0;
   --xh-code-view-shadow: none;
   --xh-code-view-font-size: var(--vp-code-font-size);
-  --xh-code-view-px: 24px;
-  --xh-code-view-py: 20px;
+  --xh-code-view-px: var(--xh-space-6);
+  --xh-code-view-py: var(--xh-space-5);
 
   border-top: 1px solid var(--vp-c-divider);
 }
@@ -386,7 +395,7 @@ async function copy() {
 @media (max-width: 639px) {
   .xh-demo__stage {
     min-height: 188px;
-    padding: 34px 18px;
+    padding: var(--xh-space-8) var(--xh-space-4);
   }
 }
 </style>

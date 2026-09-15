@@ -1,18 +1,14 @@
 :root {
   color-scheme: light;
-  --xh-doc-accent: oklch(0.6204 0.195 253.83);
-  --xh-doc-ink: oklch(0.2103 0.0059 285.89);
-  --xh-doc-muted: oklch(0.5517 0.0138 285.94);
-  --xh-doc-canvas: oklch(1 0 0);
-  --xh-doc-surface: oklch(1 0 0);
-  --xh-doc-surface-2: oklch(0.9524 0.0013 286.37);
-  --xh-doc-surface-3: oklch(0.9373 0.0013 286.37);
-  --xh-doc-border: oklch(0.9 0.004 286.32);
-  --xh-doc-shadow-control:
-    0 2px 4px rgb(0 0 0 / 0.04), 0 1px 2px rgb(0 0 0 / 0.06),
-    0 0 1px rgb(0 0 0 / 0.06);
-  --xh-doc-shadow-surface:
-    0 2px 8px rgb(0 0 0 / 0.04), 0 8px 24px rgb(0 0 0 / 0.04);
+  /* 文档壳不维护第二套主题：页面、示例面、文字与边界直接映射组件库语义令牌。 */
+  --xh-doc-accent: var(--xh-fg-brand);
+  --xh-doc-ink: var(--xh-fg-default);
+  --xh-doc-muted: var(--xh-fg-muted);
+  --xh-doc-canvas: var(--xh-bg-page);
+  --xh-doc-surface: var(--xh-bg-surface);
+  --xh-doc-surface-2: var(--xh-bg-subtle);
+  --xh-doc-surface-3: var(--xh-bg-subtle-hover);
+  --xh-doc-border: var(--xh-border-default);
 
   --vp-c-brand-1: var(--xh-doc-accent);
   --vp-c-brand-2: color-mix(in oklab, var(--xh-doc-accent) 88%, black);
@@ -49,13 +45,13 @@
   --vp-layout-max-width: 1600px;
 
   --vp-button-brand-border: transparent;
-  --vp-button-brand-text: white;
+  --vp-button-brand-text: var(--xh-fg-on-brand);
   --vp-button-brand-bg: var(--xh-doc-accent);
   --vp-button-brand-hover-border: transparent;
-  --vp-button-brand-hover-text: white;
+  --vp-button-brand-hover-text: var(--xh-fg-on-brand);
   --vp-button-brand-hover-bg: color-mix(in oklab, var(--xh-doc-accent) 90%, white);
   --vp-button-brand-active-border: transparent;
-  --vp-button-brand-active-text: white;
+  --vp-button-brand-active-text: var(--xh-fg-on-brand);
   --vp-button-brand-active-bg: color-mix(in oklab, var(--xh-doc-accent) 84%, black);
 
   --vp-home-hero-name-color: var(--vp-c-text-1);
@@ -70,15 +66,6 @@
 
 .dark {
   color-scheme: dark;
-  --xh-doc-ink: oklch(0.9911 0 0);
-  --xh-doc-muted: oklch(0.705 0.015 286.067);
-  --xh-doc-canvas: oklch(0.12 0.005 285.823);
-  --xh-doc-surface: oklch(0.2103 0.0059 285.89);
-  --xh-doc-surface-2: oklch(0.257 0.0037 286.14);
-  --xh-doc-surface-3: oklch(0.2721 0.0024 247.91);
-  --xh-doc-border: oklch(0.28 0.006 286.033);
-  --xh-doc-shadow-control: 0 0 1px rgb(255 255 255 / 0.3) inset;
-  --xh-doc-shadow-surface: 0 0 1px rgb(255 255 255 / 0.24) inset;
   --vp-code-block-bg: color-mix(in oklab, var(--xh-doc-surface) 84%, black);
   --vp-c-brand-2: color-mix(in oklab, var(--xh-doc-accent) 88%, white);
   --vp-c-brand-3: color-mix(in oklab, var(--xh-doc-accent) 78%, white);
