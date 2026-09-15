@@ -57,7 +57,7 @@
 ### 特性
 
 - 支持水平与垂直布局。
-- 已完成、当前、未完成三种状态清晰区分；被打回或要留意的那一步用 `tones`（或 collection 的 `tone`）标语气，与状态互不相干。
+- 已完成、当前、未完成三种状态清晰区分；被退回或需要留意的步骤用 `tones`（或 collection 的 `tone`）标记语气，与状态互不相关。
 - 当前步骤使用实心强调标记，已完成步骤使用柔和强调标记。
 - `linear` 限制用户跳到尚未完成的步骤。
 - 方向键移动焦点，Enter 或空格切换步骤。
@@ -274,7 +274,7 @@
 | `--xh-steps-indicator-fg-hover` | `indicator`<br>`trigger` | `color` | `disabled`<br>`hover`<br>`not([data-disabled])`<br>`state=incomplete` | `--xh-fg-default` | steps 的 indicator、trigger 部件 color 覆盖槽。 |
 | `--xh-steps-indicator-fg-toned` | `indicator`<br>`item` | `color` | `state=incomplete`<br>`tone` | `--xh-_steps-accent-text` | steps 的 indicator、item 部件 color 覆盖槽。 |
 | `--xh-steps-indicator-font-size` | `indicator` | `font-size` | `default` | `--xh-_steps-caption-font-size` | steps 的 indicator 部件 font-size 覆盖槽。 |
-| `--xh-steps-indicator-radius` | `indicator` | `border-radius` | `default` | `--xh-shape-pill` | steps 的 indicator 部件 border-radius 覆盖槽。 |
+| `--xh-steps-indicator-radius` | `indicator` | `border-radius` | `default` | `--xh-shape-circle` | steps 的 indicator 部件 border-radius 覆盖槽。 |
 | `--xh-steps-indicator-shadow` | `indicator` | `box-shadow` | `state=current` | `--xh-_steps-highlight` | steps 的 indicator 部件 box-shadow 覆盖槽。 |
 | `--xh-steps-indicator-size` | `indicator`<br>`separator` | `block-size`<br>`inline-size`<br>`margin-inline-start` | `default`<br>`orientation=vertical` | `--xh-_steps-indicator-size` | steps 的 indicator、separator 部件 block-size、inline-size、margin-inline-start 覆盖槽。 |
 | `--xh-steps-item-gap` | `item` | `gap` | `default` | `--xh-space-2` | steps 的 item 部件 gap 覆盖槽。 |
