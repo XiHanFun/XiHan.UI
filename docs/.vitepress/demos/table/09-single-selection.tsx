@@ -1,4 +1,4 @@
-// 单选 | selectionMode 给 single：选中集合最多一个元素，点已选中的那行再点一次就清空，焦点行按空格同理
+// 单选 | selectionMode 设为 single：选中集合最多一个元素，再次点击已选中的行即清空，焦点行按空格同理
 import type { ReactNode } from "react";
 import {
   XhTableBody,

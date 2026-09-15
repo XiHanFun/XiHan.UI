@@ -1,4 +1,4 @@
-// 多选 | selectionMode 默认 none，声明 multiple 才有选择机制；选择列也要在 columns 里占一条，否则右侧列号串位
+// 多选 | selectionMode 默认 none，声明 multiple 才有选择机制；选择列也要在 columns 中占一条，否则右侧列号错位
 import type { TableSelection } from "@xihan-ui/headless";
 import type { ReactNode } from "react";
 import {

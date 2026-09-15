@@ -1,4 +1,4 @@
-<!-- 跨列单元格 | colspan 从它自己那一列往后算，报成 aria-colspan；1 与省略同义，所以只在真跨了列时写 -->
+<!-- 跨列单元格 | colspan 从它自己的列向后计算，报告为 aria-colspan；1 与省略同义，因此只在真正跨列时写 -->
 <script setup lang="ts">
 import {
   XhTableBody,

@@ -1,4 +1,4 @@
-// 单元格就地编辑 | 表体的方向键与 Home/End 是挂在 body 上的冒泡监听，可编辑控件上掐断冒泡这些键就回归输入框自己
+// 单元格就地编辑 | 表体的方向键与 Home/End 是挂在 body 上的冒泡监听，可编辑控件上阻止冒泡后这些键就回归输入框自身
 import type { KeyboardEvent, ReactNode } from "react";
 import {
   XhTableBody,

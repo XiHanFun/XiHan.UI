@@ -1,4 +1,4 @@
-<!-- 树形表拖拽 | 行声明了 parentId 就是树：拖到一行中段是放进这一行（换个父），拖到上下两端仍是插在它前后；键盘走 Alt + 上下键同层挪、Alt + 左右键改缩进。库报的是「搬到哪个父下面的第几位」外加重排好的整份行序，写回归宿主——按 ids 重排、再把那一行的 parentId 设成 parent，两件都做才对得上。许不许搬那一句归 allowRowDrop -->
+<!-- 树形表拖拽 | 行声明了 parentId 即为树：拖到一行中段是放进该行（更换父节点），拖到上下两端仍是插在它前后；键盘使用 Alt + 上下键同层移动、Alt + 左右键改变缩进。库报告的是移动到哪个父节点下的第几位外加重排后的整份行序，写回归宿主：按 ids 重排、再把该行的 parentId 设为 parent，两件都做才一致。是否允许移动由 allowRowDrop 决定 -->
 <div id="table-tree-drag" style="width: 100%; max-width: 560px; display: grid; gap: 12px">
   <xh-table data-host row-reorderable>
     <div data-xh-part="root">

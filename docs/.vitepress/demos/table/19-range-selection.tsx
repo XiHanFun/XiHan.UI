@@ -1,4 +1,4 @@
-// 范围选 | 按住 Shift 点勾选框选中一段；焦点落在表体里按 Ctrl/Cmd + A 全选。禁用行占着顺序位置但不被选进去
+// 范围选择 | 按住 Shift 点击勾选框选中一段；焦点落在表体中按 Ctrl/Cmd + A 全选。禁用行占据顺序位置但不被选入
 import type { TableSelection } from "@xihan-ui/headless";
 import type { ReactNode } from "react";
 import {

@@ -1,4 +1,4 @@
-// 排序 | 列上标了 sortable 才认排序把手；按住 Shift 点是追加到排序链，裸点是整条链换成这一列
+// 排序 | 列上标注 sortable 才识别排序按钮；按住 Shift 点击是追加到排序链，直接点击是整条链换为该列
 import type { TableSortDescriptor } from "@xihan-ui/headless";
 import type { ReactNode } from "react";
 import {

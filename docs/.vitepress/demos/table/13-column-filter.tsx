@@ -1,4 +1,4 @@
-// 列过滤 | 过滤把手是列标题里的一段内容，过滤结果就是宿主算好后传进来的那份 rows；表头是表体的兄弟，把手上的按键不会被表体收走
+// 列过滤 | 过滤按钮是列标题中的一段内容，过滤结果就是宿主计算后传入的 rows；表头是表体的兄弟，按钮上的按键不会被表体接管
 import type { CSSProperties, ReactNode } from "react";
 import { FilterIcon } from "@xihan-ui/icons";
 import {
