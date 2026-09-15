@@ -16,27 +16,27 @@ import { useInfiniteScroll } from './use-infinite-scroll'
 
 type InfiniteScrollProps = InfiniteScrollSchema['props']
 
-/** 函数式 children 的载荷：取数所处的阶段，以及正在取数与已关掉两个状态。 */
+/** 函数式 children 的载荷：取数所处的阶段，以及正在取数与已关闭两个状态。 */
 export type InfiniteScrollRootSlotProps = Pick<InfiniteScrollApi, 'phase' | 'loading' | 'disabled'>
 
-/** 根上自有的那些取值；onLoad 在这里是「该取下一页了」，与原生的同名事件含义不同，由本组件接管。 */
+/** 根上自有的取值；onLoad 在这里表示应取下一页，与原生的同名事件含义不同，由本组件接管。 */
 type RootElementProps = Omit<ComponentPropsWithRef<'div'>, 'children' | 'onLoad'>
 
 export interface XhInfiniteScrollRootProps extends RootElementProps {
-  /** 提前量（px）：哨兵离可视区还有这么远就算进入，默认 0。 */
+  /** 提前量（px）：哨兵距可视区还有该距离时即视为进入，默认 0。 */
   distance?: number
-  /** 关掉：不再观察，也不再触发。列表已经没有下一页时用它。 */
+  /** 关闭：不再观察，也不再触发。列表已经没有下一页时使用它。 */
   disabled?: boolean
   /** 正在取数：其间不观察、不重复触发。取完由宿主写回 false。 */
   loading?: boolean
-  /** 裁剪出可视区的滚动容器，缺省即整页滚动；distance 的提前量扩的正是这块区域。 */
+  /** 裁剪出可视区的滚动容器，默认即整页滚动；distance 的提前量扩展的正是这块区域。 */
   target?: HTMLElement | null
-  /** 该取下一页了。 */
+  /** 应取下一页。 */
   onLoad?: InfiniteScrollProps['onLoad']
   children?: SlotChildren<InfiniteScrollRootSlotProps>
 }
 
-/** 根节点是列表的外壳，状态挂在它身上；滚动本身走浏览器原生通路，组件不接管。 */
+/** 根节点是列表的外壳，状态挂在它上面；滚动本身经浏览器原生通路，组件不接管。 */
 export function XhInfiniteScrollRoot({
   distance,
   disabled,
@@ -63,8 +63,8 @@ XhInfiniteScrollRoot.xhEvents = ['load'] as const
 export interface XhInfiniteScrollLoadMoreTriggerProps extends ComponentPropsWithRef<'button'> {}
 /**
  * 取下一页的按钮：与哨兵是同一条通路的两个入口。
- * 读屏在虚拟光标模式下不产生滚动事件，哨兵那条路够不着，这个按钮是它的键盘等价通路。
- * 文案写在 children 里，组件不代填。
+ * 读屏在虚拟光标模式下不产生滚动事件，哨兵路径无法触及，该按钮是它的键盘等价通路。
+ * 文案写在 children 中，组件不代填。
  */
 export function XhInfiniteScrollLoadMoreTrigger({ children, ...rest }: XhInfiniteScrollLoadMoreTriggerProps): ReactNode {
   const ctx = useInfiniteScrollContext()
@@ -76,7 +76,7 @@ export function XhInfiniteScrollLoadMoreTrigger({ children, ...rest }: XhInfinit
 }
 
 export interface XhInfiniteScrollSentinelProps extends ComponentPropsWithRef<'div'> {}
-/** 摆在列表末尾的哨兵，进可视区即报「该取下一页了」。 */
+/** 放置在列表末尾的哨兵，进入可视区即报告应取下一页。 */
 export function XhInfiniteScrollSentinel({ children, ...rest }: XhInfiniteScrollSentinelProps): ReactNode {
   const ctx = useInfiniteScrollContext()
   return (

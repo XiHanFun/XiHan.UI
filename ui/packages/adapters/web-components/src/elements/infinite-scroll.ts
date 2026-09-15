@@ -18,21 +18,21 @@ const NUMBER_CONVERTER = { fromAttribute: (v: string | null) => (v == null || v 
 const BOOLEAN_CONVERTER = { fromAttribute: (v: string | null) => (v === null ? undefined : v !== 'false') }
 
 /**
- * `<xh-infinite-scroll>` —— 无限滚动行为宿主：摆在列表末尾的哨兵一进可视区就报「该取下一页了」。
+ * `<xh-infinite-scroll>`：无限滚动行为宿主：放在列表末尾的哨兵进入可视区即报告应取下一页。
  *
- * 滚动本身一概不接管，走浏览器原生通路；触发的判据是哨兵与可视区的交叠。
- * 列表滚在某个 overflow 容器里时把容器交给 target：distance 的提前量扩的正是那块可视区，
- * 不给就只对窗口视口生效，落到列表上等于没写。
- * 观察器只在 idle 挂着：loading 与 disabled 两段都不观察，哨兵留在可视区里也不会连着触发第二次。
+ * 滚动本身一概不接管，使用浏览器原生路径；触发的判据是哨兵与可视区的交叠。
+ * 列表在某个 overflow 容器中滚动时把容器交给 target：distance 的提前量扩展的正是该可视区，
+ * 未提供时只对窗口视口生效，对列表等于未设置。
+ * 观察器只在 idle 时挂载：loading 与 disabled 两段都不观察，哨兵停留在可视区内也不会连续触发第二次。
  *
  * @customElement xh-infinite-scroll
- * @attr {number} distance - 提前量（px）：哨兵离可视区还有这么远就算进入，默认 0
- * @attr {boolean} disabled - 关掉，不再观察也不再触发
- * @attr {boolean} loading - 正在取数，其间不观察、不重复触发；取完由宿主写回 false
- * @fires load - 该取下一页了
+ * @attr {number} distance - 提前量（px）：哨兵距可视区该距离即视为进入，默认 0
+ * @attr {boolean} disabled - 关闭，不再观察也不再触发
+ * @attr {boolean} loading - 正在取数，期间不观察、不重复触发；取完由宿主写回 false
+ * @fires load - 应取下一页
  * @csspart root - 列表外壳，承载 data-loading / data-disabled 与 aria-busy
- * @csspart sentinel - 哨兵，摆在列表末尾；对读屏隐藏
- * @csspart load-more-trigger - 取下一页的按钮，与哨兵同一条通路；文案由作者写在按钮里
+ * @csspart sentinel - 哨兵，放在列表末尾；对读屏隐藏
+ * @csspart load-more-trigger - 取下一页的按钮，与哨兵同一路径；文案由作者写在按钮中
  */
 export class XhInfiniteScrollElement extends XhElement {
   static override partContract = { anatomy: infiniteScrollAnatomy, meta: infiniteScrollMeta }
