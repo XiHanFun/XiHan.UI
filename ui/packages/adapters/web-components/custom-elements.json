@@ -38502,19 +38502,19 @@
       "declarations": [
         {
           "kind": "class",
-          "description": "`<xh-popconfirm>` —— Light-DOM 行为宿主：用户写 root/trigger/positioner/content/... 角色节点，\n元素跑 popover 机器（开合、定位、消解层、焦点域都在那里）并把 connectPopconfirm 产出打上去。\n确认与取消不入机器，点下去先派出对应事件再请求收起。\n\n浮层不陷焦点，也没有关闭按钮：答复由 confirm-trigger / cancel-trigger 两颗按钮给出，\nEscape 与层外交互只收起浮层、只派 open-change。",
+          "description": "`<xh-popconfirm>`：Light-DOM 行为宿主：作者写 root / trigger / positioner / content / ... 角色节点，\n元素运行 popover 状态机（开合、定位、消解层、焦点域都在那里）并把 connectPopconfirm 产出接上。\n确认与取消不进入状态机，点击时先派发对应事件再请求收起。\n\n浮层不陷入焦点，也没有关闭按钮：答复由 confirm-trigger / cancel-trigger 两个按钮给出，\nEscape 与层外交互只收起浮层、只派发 open-change。",
           "name": "XhPopconfirmElement",
           "cssParts": [
             {
-              "description": "框住触发器的根容器，承载 data-state",
+              "description": "包裹触发器的根容器，承载 data-state",
               "name": "root"
             },
             {
-              "description": "触发按钮（aria-haspopup/aria-expanded/aria-controls 所在），同时是定位锚点",
+              "description": "触发按钮（aria-haspopup / aria-expanded / aria-controls 所在），同时是定位锚点",
               "name": "trigger"
             },
             {
-              "description": "浮层定位容器，坐标由引擎写成内联样式",
+              "description": "浮层定位容器，坐标由引擎写为内联样式",
               "name": "positioner"
             },
             {
@@ -38684,7 +38684,7 @@
               "type": {
                 "text": "() => void | PromiseLike<unknown> | undefined"
               },
-              "description": "异步确认动作：事件拿不到监听函数的返回值，异步门走这个属性——\n返回 thenable 即挂起（浮层等兑现才收、确认按钮转圈），拒绝留在原地。\nconfirm 事件照发，只作通知。"
+              "description": "异步确认动作：事件无法获取监听函数的返回值，异步门经此属性：\n返回 thenable 即挂起（浮层等待兑现后再收起、确认按钮显示加载），拒绝则保持打开。\nconfirm 事件照常触发，仅作通知。"
             },
             {
               "kind": "field",
@@ -38788,7 +38788,7 @@
                   }
                 }
               ],
-              "description": "机器挂载前建立 Presence，让行为资源与视觉退场从第一轮展开起共用生命周期。"
+              "description": "状态机挂载前建立 Presence，让行为资源与视觉退场从第一轮展开起共用生命周期。"
             },
             {
               "kind": "field",
@@ -38834,7 +38834,7 @@
               }
             },
             {
-              "description": "点了确认按钮；随后浮层收起。异步门走 confirmAction 属性： 事件拿不到监听函数的返回值，给元素赋 `confirmAction = () => thenable` 即挂起确认门 （浮层等兑现才收、确认按钮转圈，拒绝留在原地），confirm 事件照发只作通知",
+              "description": "点击了确认按钮；随后浮层收起。异步门经 confirmAction 属性： 事件拿不到监听函数的返回值，给元素赋 `confirmAction = () => thenable` 即挂起确认门 （浮层等兑现才收、确认按钮转圈，拒绝留在原地），confirm 事件照发只作通知",
               "name": "confirm"
             },
             {
@@ -38845,7 +38845,7 @@
               }
             },
             {
-              "description": "点了取消按钮；随后浮层收起",
+              "description": "点击了取消按钮；随后浮层收起",
               "name": "cancel"
             }
           ],
@@ -38854,7 +38854,7 @@
               "type": {
                 "text": "boolean | undefined"
               },
-              "description": "受控开合；缺省该属性即非受控",
+              "description": "受控开合；未提供该属性即非受控",
               "name": "open",
               "fieldName": "open"
             },
@@ -38870,7 +38870,7 @@
               "type": {
                 "text": "Placement | undefined"
               },
-              "description": "首选放置位，默认 bottom；避让后的实际位写在 data-placement 上",
+              "description": "首选放置位，默认 bottom；避让后的实际位置写在 data-placement 上",
               "name": "placement",
               "fieldName": "placement"
             },
@@ -38886,7 +38886,7 @@
               "type": {
                 "text": "boolean | undefined"
               },
-              "description": "Esc 关闭，默认 true；写 close-on-escape=\"false\" 关掉",
+              "description": "Esc 关闭，默认 true；写 close-on-escape=\"false\" 关闭",
               "name": "close-on-escape",
               "fieldName": "closeOnEscape"
             },
@@ -38894,7 +38894,7 @@
               "type": {
                 "text": "boolean | undefined"
               },
-              "description": "层外交互关闭，默认 true；写 \"false\" 关掉",
+              "description": "层外交互关闭，默认 true；写 \"false\" 关闭",
               "name": "close-on-interact-outside",
               "fieldName": "closeOnInteractOutside"
             },

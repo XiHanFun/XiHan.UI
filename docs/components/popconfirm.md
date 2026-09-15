@@ -105,8 +105,8 @@ size 换的是面板的内边距与最大宽度，三个档位落在 content 上
 | `defaultOpen` | `boolean` |  |  |
 | `dir` | `Direction` |  | 文字方向，缺省 ltr。只改写浮层在行内轴上 start 与 end 的落点。 |
 | `offset` | `number` |  |  |
-| `onCancel` | `() => void` |  | 点了取消按钮，随后浮层收起；挂起中的确认结果随之作废。Escape 与层外交互只发 onOpenChange，不发这条。 |
-| `onConfirm` | `() => void \| PromiseLike<unknown>` |  | 点了确认按钮。返回 thenable 即挂起确认门：浮层等它兑现才收起、 确认按钮转圈且再点无效，拒绝则留在原地并报告确认错误。同步返回照旧立即收起。 |
+| `onCancel` | `() => void` |  | 点击了取消按钮，随后浮层收起；挂起中的确认结果随之作废。Escape 与层外交互只发 onOpenChange，不发该回调。 |
+| `onConfirm` | `() => void \| PromiseLike<unknown>` |  | 点击了确认按钮。返回 thenable 即挂起确认门：浮层等待它兑现才收起、 确认按钮转圈且再次点击无效，拒绝则留在原地并报告确认错误。同步返回照常立即收起。 |
 | `onConfirmError` | `(details: PopconfirmConfirmErrorDetails) => void` |  | 确认回调同步抛出或 thenable 拒绝；details.cause 是未经包装的原始原因。 |
 | `onOpenChange` | `(details: PopoverOpenChangeDetails) => void` |  | open 变化意图；受控时是唯一出口，非受控时随内部转移一并通知。 |
 | `open` | `boolean` |  |  |
@@ -120,9 +120,9 @@ size 换的是面板的内边距与最大宽度，三个档位落在 content 上
 | 事件 | 载荷 | 说明 |
 | --- | --- | --- |
 | `open-change` | `PopoverOpenChangeDetails` | open 状态变化；detail 为 `{ open: boolean }` |
-| `confirm` | `` | 点了确认按钮；随后浮层收起。异步门走 confirmAction 属性： 事件拿不到监听函数的返回值，给元素赋 `confirmAction = () =&gt; thenable` 即挂起确认门 （浮层等兑现才收、确认按钮转圈，拒绝留在原地），confirm 事件照发只作通知 |
+| `confirm` | `` | 点击了确认按钮；随后浮层收起。异步门经 confirmAction 属性： 事件拿不到监听函数的返回值，给元素赋 `confirmAction = () =&gt; thenable` 即挂起确认门 （浮层等兑现才收、确认按钮转圈，拒绝留在原地），confirm 事件照发只作通知 |
 | `confirm-error` | `PopconfirmConfirmErrorDetails` | 确认动作同步抛出或 thenable 拒绝；detail 为 `{ cause }`，保留原始原因 |
-| `cancel` | `` | 点了取消按钮；随后浮层收起 |
+| `cancel` | `` | 点击了取消按钮；随后浮层收起 |
 
 ### 插槽
 
@@ -150,11 +150,11 @@ size 换的是面板的内边距与最大宽度，三个档位落在 content 上
 | 成员 | 类型 | 说明 |
 | --- | --- | --- |
 | `open` | `boolean` |  |
-| `pending` | `boolean` | 异步确认进行中：确认按钮转圈、再点无效。 |
+| `pending` | `boolean` | 异步确认进行中：确认按钮转圈、再次点击无效。 |
 | `actionError` | `PopconfirmConfirmErrorDetails \| null` | 最近一次有效确认动作的错误；新确认或取消时清空。 |
 | `setOpen` | `(next: boolean) => void` |  |
-| `confirm` | `() => void` | 发确认意图并请求收起；异步确认挂起期间再调无效。 |
-| `cancel` | `() => void` | 发取消意图并请求收起。 |
+| `confirm` | `() => void` | 发出确认意图并请求收起；异步确认挂起期间再次调用无效。 |
+| `cancel` | `() => void` | 发出取消意图并请求收起。 |
 | `getRootProps` | `() => T['element']` |  |
 | `getTriggerProps` | `() => T['button']` |  |
 | `getPositionerProps` | `() => T['element']` |  |

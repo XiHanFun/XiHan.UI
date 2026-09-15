@@ -24,30 +24,30 @@ const NUMBER_CONVERTER = { fromAttribute: (v: string | null) => (v === null ? un
 const BOOLEAN_CONVERTER = { fromAttribute: (v: string | null) => (v === null ? undefined : v !== 'false') }
 
 /**
- * `<xh-popconfirm>` —— Light-DOM 行为宿主：用户写 root/trigger/positioner/content/... 角色节点，
- * 元素跑 popover 机器（开合、定位、消解层、焦点域都在那里）并把 connectPopconfirm 产出打上去。
- * 确认与取消不入机器，点下去先派出对应事件再请求收起。
+ * `<xh-popconfirm>`：Light-DOM 行为宿主：作者写 root / trigger / positioner / content / ... 角色节点，
+ * 元素运行 popover 状态机（开合、定位、消解层、焦点域都在那里）并把 connectPopconfirm 产出接上。
+ * 确认与取消不进入状态机，点击时先派发对应事件再请求收起。
  *
- * 浮层不陷焦点，也没有关闭按钮：答复由 confirm-trigger / cancel-trigger 两颗按钮给出，
- * Escape 与层外交互只收起浮层、只派 open-change。
+ * 浮层不陷入焦点，也没有关闭按钮：答复由 confirm-trigger / cancel-trigger 两个按钮给出，
+ * Escape 与层外交互只收起浮层、只派发 open-change。
  *
  * @customElement xh-popconfirm
- * @attr {boolean} open - 受控开合；缺省该属性即非受控
+ * @attr {boolean} open - 受控开合；未提供该属性即非受控
  * @attr {boolean} default-open - 非受控初始为展开
- * @attr {string} placement - 首选放置位，默认 bottom；避让后的实际位写在 data-placement 上
+ * @attr {string} placement - 首选放置位，默认 bottom；避让后的实际位置写在 data-placement 上
  * @attr {number} offset - 浮层与锚点的间距（px），默认 8
- * @attr {boolean} close-on-escape - Esc 关闭，默认 true；写 close-on-escape="false" 关掉
- * @attr {boolean} close-on-interact-outside - 层外交互关闭，默认 true；写 "false" 关掉
+ * @attr {boolean} close-on-escape - Esc 关闭，默认 true；写 close-on-escape="false" 关闭
+ * @attr {boolean} close-on-interact-outside - 层外交互关闭，默认 true；写 "false" 关闭
  * @attr {'sm'|'md'|'lg'} size - 尺寸
  * @fires open-change - open 状态变化；detail 为 `{ open: boolean }`
- * @fires confirm - 点了确认按钮；随后浮层收起。异步门走 confirmAction 属性：
+ * @fires confirm - 点击了确认按钮；随后浮层收起。异步门经 confirmAction 属性：
  *   事件拿不到监听函数的返回值，给元素赋 `confirmAction = () => thenable` 即挂起确认门
  *   （浮层等兑现才收、确认按钮转圈，拒绝留在原地），confirm 事件照发只作通知
  * @fires confirm-error - 确认动作同步抛出或 thenable 拒绝；detail 为 `{ cause }`，保留原始原因
- * @fires cancel - 点了取消按钮；随后浮层收起
- * @csspart root - 框住触发器的根容器，承载 data-state
- * @csspart trigger - 触发按钮（aria-haspopup/aria-expanded/aria-controls 所在），同时是定位锚点
- * @csspart positioner - 浮层定位容器，坐标由引擎写成内联样式
+ * @fires cancel - 点击了取消按钮；随后浮层收起
+ * @csspart root - 包裹触发器的根容器，承载 data-state
+ * @csspart trigger - 触发按钮（aria-haspopup / aria-expanded / aria-controls 所在），同时是定位锚点
+ * @csspart positioner - 浮层定位容器，坐标由引擎写为内联样式
  * @csspart content - 非模态浮层内容（role=dialog；焦点域与消解层的根节点），收起时带 hidden
  * @csspart title - 标题（aria-labelledby 目标）
  * @csspart description - 问题正文（aria-describedby 目标）
@@ -99,9 +99,9 @@ export class XhPopconfirmElement extends XhPortalHostElement {
   }
 
   /**
-   * 异步确认动作：事件拿不到监听函数的返回值，异步门走这个属性——
-   * 返回 thenable 即挂起（浮层等兑现才收、确认按钮转圈），拒绝留在原地。
-   * confirm 事件照发，只作通知。
+   * 异步确认动作：事件无法获取监听函数的返回值，异步门经此属性：
+   * 返回 thenable 即挂起（浮层等待兑现后再收起、确认按钮显示加载），拒绝则保持打开。
+   * confirm 事件照常触发，仅作通知。
    */
   declare confirmAction?: () => void | PromiseLike<unknown>
 
@@ -171,7 +171,7 @@ export class XhPopconfirmElement extends XhPortalHostElement {
     return this.portal.roots
   }
 
-  /** 机器挂载前建立 Presence，让行为资源与视觉退场从第一轮展开起共用生命周期。 */
+  /** 状态机挂载前建立 Presence，让行为资源与视觉退场从第一轮展开起共用生命周期。 */
   private ensureExit(open: boolean): OverlayExit {
     this.ensureConfig()
     this.exit ??= createOverlayExit({
@@ -211,9 +211,9 @@ export class XhPopconfirmElement extends XhPortalHostElement {
   }
 
   /**
-   * 角色节点提前发现一次：default-open 时机器在 hostConnected 当场进入 open，
-   * 定位副作用同步取一次 trigger/positioner——而常规发现要等首次 updated，
-   * 那一刻 partMap 还空着，引擎挂不上，浮层会停在容器左上角。
+   * 角色节点提前发现一次：default-open 时状态机在 hostConnected 当场进入 open，
+   * 定位副作用同步取一次 trigger/positioner：而常规发现要等首次 updated，
+   * 此时 partMap 仍为空，引擎无法挂载，浮层会停在容器左上角。
    */
   override connectedCallback(): void {
     this.refreshParts()
