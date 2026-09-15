@@ -46,7 +46,7 @@ export const XhFieldsetDescription = defineComponent({
   },
 })
 
-/** 把并排的几个字段圈成一段；纯排版。 */
+/** 把并排的几个字段圈为一段；纯排版。 */
 export const XhFieldsetFieldGroup = defineComponent({
   name: 'XhFieldsetFieldGroup',
   setup(_, { slots }) {
@@ -55,7 +55,7 @@ export const XhFieldsetFieldGroup = defineComponent({
   },
 })
 
-/** 组末尾那一行按钮；纯排版。 */
+/** 组末尾的按钮行；纯排版。 */
 export const XhFieldsetActions = defineComponent({
   name: 'XhFieldsetActions',
   setup(_, { slots }) {

@@ -21248,27 +21248,27 @@
       "declarations": [
         {
           "kind": "class",
-          "description": "`<xh-fieldset>` —— Light-DOM 行为宿主，无状态机，把 connectFieldset 产出的属性打到\nroot/legend/description/error-text 角色节点上：说明与错误文案的 id 自动接进 root 的描述链。\n\nroot 必须是原生 `<fieldset>`、legend 必须是原生 `<legend>` 且写成 root 的首个子节点——\n整组禁用连坐组内控件与\"legend 即组名\"都是浏览器给的，写成 div 两样都静默失效。\n\n每个实例自带一份 scope 派生 part id，同页多个字段集各出各的 id。",
+          "description": "`<xh-fieldset>`：Light-DOM 行为宿主，无状态机，把 connectFieldset 产出的属性接到\nroot / legend / description / error-text 角色节点上：说明与错误文案的 id 自动接入 root 的描述链。\n\nroot 必须是原生 `<fieldset>`、legend 必须是原生 `<legend>` 且写为 root 的首个子节点：\n整组禁用连带组内控件与 legend 即组名都由浏览器提供，写为 div 时两者都静默失效。\n\n每个实例自带一份 scope 派生 part id，同页多个字段集各自分配 id。",
           "name": "XhFieldsetElement",
           "cssParts": [
             {
-              "description": "原生 `<fieldset>`，承载原生 disabled 与 data-disabled/data-invalid/data-required",
+              "description": "原生 `<fieldset>`，承载原生 disabled 与 data-disabled / data-invalid / data-required",
               "name": "root"
             },
             {
-              "description": "原生 `<legend>`，这一组的名字；须是 root 的首个子节点",
+              "description": "原生 `<legend>`，该组的名字；须是 root 的首个子节点",
               "name": "legend"
             },
             {
-              "description": "常驻说明文案，恒在 root 的描述链里",
+              "description": "常驻说明文案，恒在 root 的描述链中",
               "name": "description"
             },
             {
-              "description": "把并排的几个字段圈成一段；纯排版",
+              "description": "把并排的几个字段划为一段；纯排版",
               "name": "field-group"
             },
             {
-              "description": "组末尾那一行按钮；纯排版",
+              "description": "组末尾的按钮行；纯排版",
               "name": "actions"
             },
             {
@@ -21357,7 +21357,7 @@
               "type": {
                 "text": "boolean | undefined"
               },
-              "description": "整组禁用：root 落原生 disabled，组内表单控件一并停掉",
+              "description": "整组禁用：root 写原生 disabled，组内表单控件一并禁用",
               "name": "disabled",
               "fieldName": "disabled"
             },
@@ -21365,7 +21365,7 @@
               "type": {
                 "text": "boolean | undefined"
               },
-              "description": "校验失败态：错误文案接入描述链并显出",
+              "description": "校验失败态：错误文案接入描述链并显示",
               "name": "invalid",
               "fieldName": "invalid"
             },
@@ -21373,7 +21373,7 @@
               "type": {
                 "text": "boolean | undefined"
               },
-              "description": "必填标记，只落 data-required 供皮肤给组标题加星号",
+              "description": "必填标记，只写 data-required 供皮肤给组标题加星号",
               "name": "required",
               "fieldName": "required"
             }
