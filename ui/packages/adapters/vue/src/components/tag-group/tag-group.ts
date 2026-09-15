@@ -17,7 +17,7 @@ import { useTagGroup } from './use-tag-group'
 
 type TagGroupProps = TagGroupSchema['props']
 
-/** 默认插槽的载荷：选中集合、选择模式与焦点锚点，以及判定选中与整份赋值、单选、切换、摘除的命令。 */
+/** 默认插槽的载荷：选中集合、选择模式与焦点锚点，以及判定选中与整份赋值、单选、切换、移除的命令。 */
 export type TagGroupRootSlotProps = Pick<
   TagGroupApi,
   'value' | 'selectionMode' | 'focusedValue' | 'isSelected' | 'setValue' | 'select' | 'toggle' | 'deleteItem'
@@ -28,7 +28,7 @@ export const XhTagGroupRoot = defineComponent({
   // 有 connect 兜底的 prop：普通类型省略 default，Boolean 显式保留 undefined
   props: {
     collection: { type: Array as PropType<TagGroupNode[]> },
-    /** 标题文字。给了它就不必再写 label 部件；要放别的内容改用 label 插槽。 */
+    /** 标题文字。提供后不必再写 label 部件；需要放置其他内容时改用 label 插槽。 */
     label: { type: String },
     value: { type: [String, Array] as PropType<string | string[]> },
     defaultValue: { type: [String, Array] as PropType<string | string[]> },
@@ -106,7 +106,7 @@ export const XhTagGroupList = defineComponent({
   },
 })
 
-/** 一枚标签：渲出来是 tag 的 root（data-scope="tag"），组把行角色、Tab 停靠点、选中与锚点叠在它上面。 */
+/** 一个标签：渲染为 tag 的 root（data-scope="tag"），组把行角色、Tab 停靠点、选中与锚点叠加在它上面。 */
 export const XhTagGroupItem = defineComponent({
   name: 'XhTagGroupItem',
   props: {
@@ -159,7 +159,7 @@ export const XhTagGroupCell = defineComponent({
   },
 })
 
-/** 标签文字：渲出来是 tag 的 label。 */
+/** 标签文字：渲染为 tag 的 label。 */
 export const XhTagGroupItemText = defineComponent({
   name: 'XhTagGroupItemText',
   setup(_, { slots }) {
@@ -169,7 +169,7 @@ export const XhTagGroupItemText = defineComponent({
   },
 })
 
-/** 摘除钮：渲出来是所在标签那份 tag 的 close-trigger，不占 Tab 位；整组没开放摘除时收起。 */
+/** 移除按钮：渲染为所在标签那份 tag 的 close-trigger，不占 Tab 位；整组未开放移除时收起。 */
 export const XhTagGroupItemDeleteTrigger = defineComponent({
   name: 'XhTagGroupItemDeleteTrigger',
   setup(_, { slots }) {
@@ -180,8 +180,8 @@ export const XhTagGroupItemDeleteTrigger = defineComponent({
 })
 
 /**
- * 没写默认插槽时按 collection 铺开的整套结构，作者只交数据。
- * 与手写部件产出的 DOM 完全一致，要改结构就写默认插槽。
+ * 未写默认插槽时按 collection 铺开的整套结构，作者只提供数据。
+ * 与手写部件产出的 DOM 完全一致，需要修改结构时写默认插槽。
  */
 function renderDefaultTree(
   collection: readonly TagGroupNodeMeta[],

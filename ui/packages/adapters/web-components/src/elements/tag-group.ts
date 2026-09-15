@@ -22,45 +22,45 @@ const STRING_CONVERTER = { fromAttribute: (v: string | null) => v ?? undefined }
 const BOOLEAN_CONVERTER = { fromAttribute: (v: string | null) => (v === null ? undefined : v !== 'false') }
 
 /**
- * `<xh-tag-group>` —— Light-DOM 行为宿主：作者写 root/label/list 与若干 item（内含 cell）角色节点，
- * 元素跑 tag-group 机器并把 connect 产出打上去。条目身份取自条目节点上的 value 属性，
- * 禁用由条目自报 aria-disabled，可摘由条目自报 deletable 属性。
+ * `<xh-tag-group>`：Light-DOM 行为宿主：作者写 root / label / list 与若干 item（内含 cell）角色节点，
+ * 元素运行 tag-group 状态机并把 connect 产出接上。条目身份取自条目节点上的 value 属性，
+ * 禁用由条目声明 aria-disabled，可移除由条目声明 deletable 属性。
  *
- * item / item-text / item-delete-trigger 三个角色节点接的是库里 tag 的 root / label / close-trigger
- * （DOM 上带 data-scope="tag"，吃 tag 那份皮肤）：三轴、置灰与摘除钮的可及名都由 tag 给，
- * 元素只往标签上叠行角色、Tab 停靠点、选中与锚点。
+ * item / item-text / item-delete-trigger 三个角色节点接线为库内 tag 的 root / label / close-trigger
+ * （DOM 上带 data-scope="tag"，使用 tag 的皮肤）：三轴、置灰与移除按钮的可及名都由 tag 提供，
+ * 元素只在标签上叠加行角色、Tab 停靠点、选中与锚点。
  *
- * 整组只占一个 Tab 停靠点：组内走方向键，摘除走 Delete / Backspace，
- * 每枚标签的摘除钮一律 tabindex=-1。
+ * 整组只占一个 Tab 停靠点：组内使用方向键，移除使用 Delete / Backspace，
+ * 每个标签的移除按钮一律 tabindex=-1。
  *
- * 条目的去留归宿主：item-delete 只报「用户要摘这一枚」，作者收到后自己把节点摘掉。
+ * 条目的去留归宿主：item-delete 只报告用户要移除该标签，作者收到后自行移除节点。
  *
- * 选中值是集合：单选可以直接写 value="a" 属性，多选只能走 property（`el.value = ['a','b']`），
- * 属性表达不了数组。
+ * 选中值是集合：单选可以直接写 value="a" 属性，多选只能通过 property 设置（`el.value = ['a','b']`），
+ * 属性无法表达数组。
  *
  * @customElement xh-tag-group
- * @attr {string} value - 受控选中值（单选简写）；缺省该属性即非受控，多选请用 property
+ * @attr {string} value - 受控选中值（单选简写）；未提供该属性即非受控，多选通过 property 设置
  * @attr {string} default-value - 非受控初始选中值
  * @attr {'none'|'single'|'multiple'} selection-mode - 选择模式，默认 none
- * @attr {boolean} deletable - 给出摘除钮，默认关；条目上写 deletable 可逐枚覆盖
- * @attr {boolean} disabled - 整组禁用：改不了选中值，也摘不掉任何一枚
- * @attr {boolean} read-only - 只读：可聚焦、可导航，但改不动
- * @attr {boolean} loop - 方向键走到尽头回绕，默认 true；写 loop="false" 关掉
+ * @attr {boolean} deletable - 提供移除按钮，默认关闭；条目上写 deletable 可逐个覆盖
+ * @attr {boolean} disabled - 整组禁用：不可修改选中值，也不可移除任何标签
+ * @attr {boolean} read-only - 只读：可聚焦、可导航，但不可修改
+ * @attr {boolean} loop - 方向键到达末尾回绕，默认 true；写 loop="false" 关闭
  * @attr {'ltr'|'rtl'} dir - 文字方向，只改写左右方向键语义，默认 ltr
  * @attr {'horizontal'|'vertical'} orientation - 方向键轴向，默认 horizontal
- * @attr {boolean} typeahead - 连打检索，默认开；写 typeahead="false" 关掉
- * @attr {'solid'|'subtle'|'outline'} variant - 视觉变体，沿继承流下发给每一枚标签
+ * @attr {boolean} typeahead - 连打检索，默认开启；写 typeahead="false" 关闭
+ * @attr {'solid'|'subtle'|'outline'} variant - 视觉变体，沿继承流下发给每个标签
  * @attr {'brand'|'neutral'|'success'|'warning'|'danger'|'info'} tone - 语气
  * @attr {'sm'|'md'|'lg'} size - 尺寸
  * @fires value-change - 选中集合变化；detail 为 `{ value: string[] }`
- * @fires item-delete - 用户要摘掉某一枚；detail 为 `{ value: string }`
- * @csspart root - 组件根容器（承载三视觉轴与 data-orientation/data-disabled）
+ * @fires item-delete - 用户要移除某个标签；detail 为 `{ value: string }`
+ * @csspart root - 组件根容器（承载三视觉轴与 data-orientation / data-disabled）
  * @csspart label - 组标题（aria-labelledby 目标）
  * @csspart list - role=grid 容器，键盘在此收口，也是 roving tabindex 的兜底位
- * @csspart item - 一枚标签，须自带 value 属性标识身份；禁用写 aria-disabled="true"。接的是 tag 的 root（data-scope="tag"），叠上 role=row、roving tabindex、data-selected 与 data-highlighted
- * @csspart cell - role=gridcell，标签里那一格，文字与摘除钮都写在它之内
- * @csspart item-text - 标签文字（连打检索的取字处），接的是 tag 的 label（data-scope="tag"）
- * @csspart item-delete-trigger - 摘除钮，不占 Tab 位；接的是所在标签那份 tag 的 close-trigger（data-scope="tag"），整组没开放摘除时收起，可及名走 translations.deleteItem
+ * @csspart item - 一个标签，须自带 value 属性标识身份；禁用写 aria-disabled="true"。接线为 tag 的 root（data-scope="tag"），叠加 role=row、roving tabindex、data-selected 与 data-highlighted
+ * @csspart cell - role=gridcell，标签内的格，文字与移除按钮都写在它之内
+ * @csspart item-text - 标签文字（连打检索的取字来源），接线为 tag 的 label（data-scope="tag"）
+ * @csspart item-delete-trigger - 移除按钮，不占 Tab 位；接线为所在标签那份 tag 的 close-trigger（data-scope="tag"），整组未开放移除时收起，可及名使用 translations.deleteItem
  */
 export class XhTagGroupElement extends XhElement {
   // item 接的是 tag 的 root，item-text 接的是 tag 的 label，item-delete-trigger 接的是 tag 的 close-trigger：
@@ -112,7 +112,7 @@ export class XhTagGroupElement extends XhElement {
   // 整组禁用期间的条目自身声明快照。connect 每帧都把 aria-disabled 写回条目，整组禁用更是写满每一个，
   // 此时回读分不清「作者声明的」还是「自己上一帧写的」，解禁后条目就永远解不开。
   private readonly declaredDisabled = new WeakMap<HTMLElement, boolean>()
-  /** 上一帧是否整组禁用：解禁当帧 DOM 上还留着机器写回的 aria-disabled，读不得。 */
+  /** 上一帧是否整组禁用：解禁当帧 DOM 上仍保留着状态机写回的 aria-disabled，不可读取。 */
   private wasGroupDisabled = false
   private inheritedControl: FormControlState | undefined
 
@@ -228,8 +228,8 @@ export class XhTagGroupElement extends XhElement {
   }
 
   /**
-   * 取数口与命令共用的取法。机器要到进文档才建，
-   * 而这些都是公开面，作者拿到元素随时可能读、可能调——还没进文档时如实给空，不抛错。
+   * 取数口与命令共用的取法。状态机在进入文档后才建立，
+   * 而这些都是公开面，作者拿到元素后随时可能读取、调用：尚未进入文档时如实返回空值，不抛错。
    */
   private api(): TagGroupApi | null {
     const service = this.ctrl.service as Service<TagGroupSchema> | undefined
@@ -237,14 +237,14 @@ export class XhTagGroupElement extends XhElement {
   }
 
   /**
-   * 此刻选中的那几枚（`value` 属性是受控入参，可能缺席，这里是结果）。
-   * 机器尚未建起时给空数组。
+   * 当前选中的标签值（`value` 属性是受控入参，可能缺席；此处是结果）。
+   * 状态机尚未建立时返回空数组。
    */
   get selectedValues(): string[] {
     return this.api()?.value ?? []
   }
 
-  /** 生效的选择模式（`selection-mode` 属性缺席时的缺省档只有这里读得到）。 */
+  /** 生效的选择模式（`selection-mode` 属性缺席时的默认档只能从此处读取）。 */
   get currentSelectionMode(): TagGroupSelectionMode {
     return this.api()?.selectionMode ?? 'none'
   }
@@ -254,27 +254,27 @@ export class XhTagGroupElement extends XhElement {
     return this.api()?.focusedValue ?? null
   }
 
-  /** 这一枚选中没有。机器尚未建起时一律给假。 */
+  /** 该标签是否选中。状态机尚未建立时一律返回 false。 */
   isSelected(value: string): boolean {
     return this.api()?.isSelected(value) ?? false
   }
 
-  /** 整体改写选中集合。受控时只发 value-change，值归宿主写回。机器尚未建起时不动。 */
+  /** 整体改写选中集合。受控时只触发 value-change，值由宿主写回。状态机尚未建立时为空操作。 */
   setValue(next: string[]): void {
     this.api()?.setValue(next)
   }
 
-  /** 只留这一枚；加选用 toggle。机器尚未建起时不动。 */
+  /** 只保留该标签；加选使用 toggle。状态机尚未建立时为空操作。 */
   select(value: string): void {
     this.api()?.select(value)
   }
 
-  /** 切换这一枚的选中态。机器尚未建起时不动。 */
+  /** 切换该标签的选中态。状态机尚未建立时为空操作。 */
   toggle(value: string): void {
     this.api()?.toggle(value)
   }
 
-  /** 摘掉一枚：从选中集合里去掉并派 item-delete，不搬焦点。机器尚未建起时不动。 */
+  /** 移除一个标签：从选中集合中移除并触发 item-delete，不移动焦点。状态机尚未建立时为空操作。 */
   deleteItem(value: string): void {
     this.api()?.deleteItem(value)
   }

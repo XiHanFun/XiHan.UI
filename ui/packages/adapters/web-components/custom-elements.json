@@ -50675,11 +50675,11 @@
       "declarations": [
         {
           "kind": "class",
-          "description": "`<xh-tag-group>` —— Light-DOM 行为宿主：作者写 root/label/list 与若干 item（内含 cell）角色节点，\n元素跑 tag-group 机器并把 connect 产出打上去。条目身份取自条目节点上的 value 属性，\n禁用由条目自报 aria-disabled，可摘由条目自报 deletable 属性。\n\nitem / item-text / item-delete-trigger 三个角色节点接的是库里 tag 的 root / label / close-trigger\n（DOM 上带 data-scope=\"tag\"，吃 tag 那份皮肤）：三轴、置灰与摘除钮的可及名都由 tag 给，\n元素只往标签上叠行角色、Tab 停靠点、选中与锚点。\n\n整组只占一个 Tab 停靠点：组内走方向键，摘除走 Delete / Backspace，\n每枚标签的摘除钮一律 tabindex=-1。\n\n条目的去留归宿主：item-delete 只报「用户要摘这一枚」，作者收到后自己把节点摘掉。\n\n选中值是集合：单选可以直接写 value=\"a\" 属性，多选只能走 property（`el.value = ['a','b']`），\n属性表达不了数组。",
+          "description": "`<xh-tag-group>`：Light-DOM 行为宿主：作者写 root / label / list 与若干 item（内含 cell）角色节点，\n元素运行 tag-group 状态机并把 connect 产出接上。条目身份取自条目节点上的 value 属性，\n禁用由条目声明 aria-disabled，可移除由条目声明 deletable 属性。\n\nitem / item-text / item-delete-trigger 三个角色节点接线为库内 tag 的 root / label / close-trigger\n（DOM 上带 data-scope=\"tag\"，使用 tag 的皮肤）：三轴、置灰与移除按钮的可及名都由 tag 提供，\n元素只在标签上叠加行角色、Tab 停靠点、选中与锚点。\n\n整组只占一个 Tab 停靠点：组内使用方向键，移除使用 Delete / Backspace，\n每个标签的移除按钮一律 tabindex=-1。\n\n条目的去留归宿主：item-delete 只报告用户要移除该标签，作者收到后自行移除节点。\n\n选中值是集合：单选可以直接写 value=\"a\" 属性，多选只能通过 property 设置（`el.value = ['a','b']`），\n属性无法表达数组。",
           "name": "XhTagGroupElement",
           "cssParts": [
             {
-              "description": "组件根容器（承载三视觉轴与 data-orientation/data-disabled）",
+              "description": "组件根容器（承载三视觉轴与 data-orientation / data-disabled）",
               "name": "root"
             },
             {
@@ -50691,19 +50691,19 @@
               "name": "list"
             },
             {
-              "description": "一枚标签，须自带 value 属性标识身份；禁用写 aria-disabled=\"true\"。接的是 tag 的 root（data-scope=\"tag\"），叠上 role=row、roving tabindex、data-selected 与 data-highlighted",
+              "description": "一个标签，须自带 value 属性标识身份；禁用写 aria-disabled=\"true\"。接线为 tag 的 root（data-scope=\"tag\"），叠加 role=row、roving tabindex、data-selected 与 data-highlighted",
               "name": "item"
             },
             {
-              "description": "role=gridcell，标签里那一格，文字与摘除钮都写在它之内",
+              "description": "role=gridcell，标签内的格，文字与移除按钮都写在它之内",
               "name": "cell"
             },
             {
-              "description": "标签文字（连打检索的取字处），接的是 tag 的 label（data-scope=\"tag\"）",
+              "description": "标签文字（连打检索的取字来源），接线为 tag 的 label（data-scope=\"tag\"）",
               "name": "item-text"
             },
             {
-              "description": "摘除钮，不占 Tab 位；接的是所在标签那份 tag 的 close-trigger（data-scope=\"tag\"），整组没开放摘除时收起，可及名走 translations.deleteItem",
+              "description": "移除按钮，不占 Tab 位；接线为所在标签那份 tag 的 close-trigger（data-scope=\"tag\"），整组未开放移除时收起，可及名使用 translations.deleteItem",
               "name": "item-delete-trigger"
             }
           ],
@@ -50865,7 +50865,7 @@
               },
               "privacy": "private",
               "default": "false",
-              "description": "上一帧是否整组禁用：解禁当帧 DOM 上还留着机器写回的 aria-disabled，读不得。"
+              "description": "上一帧是否整组禁用：解禁当帧 DOM 上仍保留着状态机写回的 aria-disabled，不可读取。"
             },
             {
               "kind": "field",
@@ -51028,7 +51028,7 @@
                   "text": "TagGroupApi | null"
                 }
               },
-              "description": "取数口与命令共用的取法。机器要到进文档才建，\n而这些都是公开面，作者拿到元素随时可能读、可能调——还没进文档时如实给空，不抛错。"
+              "description": "取数口与命令共用的取法。状态机在进入文档后才建立，\n而这些都是公开面，作者拿到元素后随时可能读取、调用：尚未进入文档时如实返回空值，不抛错。"
             },
             {
               "kind": "field",
@@ -51036,7 +51036,7 @@
               "type": {
                 "text": "string[]"
               },
-              "description": "此刻选中的那几枚（`value` 属性是受控入参，可能缺席，这里是结果）。\n机器尚未建起时给空数组。",
+              "description": "当前选中的标签值（`value` 属性是受控入参，可能缺席；此处是结果）。\n状态机尚未建立时返回空数组。",
               "readonly": true
             },
             {
@@ -51045,7 +51045,7 @@
               "type": {
                 "text": "TagGroupSelectionMode"
               },
-              "description": "生效的选择模式（`selection-mode` 属性缺席时的缺省档只有这里读得到）。",
+              "description": "生效的选择模式（`selection-mode` 属性缺席时的默认档只能从此处读取）。",
               "readonly": true
             },
             {
@@ -51073,7 +51073,7 @@
                   }
                 }
               ],
-              "description": "这一枚选中没有。机器尚未建起时一律给假。"
+              "description": "该标签是否选中。状态机尚未建立时一律返回 false。"
             },
             {
               "kind": "method",
@@ -51091,7 +51091,7 @@
                   }
                 }
               ],
-              "description": "整体改写选中集合。受控时只发 value-change，值归宿主写回。机器尚未建起时不动。"
+              "description": "整体改写选中集合。受控时只触发 value-change，值由宿主写回。状态机尚未建立时为空操作。"
             },
             {
               "kind": "method",
@@ -51109,7 +51109,7 @@
                   }
                 }
               ],
-              "description": "只留这一枚；加选用 toggle。机器尚未建起时不动。"
+              "description": "只保留该标签；加选使用 toggle。状态机尚未建立时为空操作。"
             },
             {
               "kind": "method",
@@ -51127,7 +51127,7 @@
                   }
                 }
               ],
-              "description": "切换这一枚的选中态。机器尚未建起时不动。"
+              "description": "切换该标签的选中态。状态机尚未建立时为空操作。"
             },
             {
               "kind": "method",
@@ -51145,7 +51145,7 @@
                   }
                 }
               ],
-              "description": "摘掉一枚：从选中集合里去掉并派 item-delete，不搬焦点。机器尚未建起时不动。"
+              "description": "移除一个标签：从选中集合中移除并触发 item-delete，不移动焦点。状态机尚未建立时为空操作。"
             },
             {
               "kind": "method",
@@ -51167,7 +51167,7 @@
               }
             },
             {
-              "description": "用户要摘掉某一枚；detail 为 `{ value: string }`",
+              "description": "用户要移除某个标签；detail 为 `{ value: string }`",
               "name": "item-delete",
               "type": {
                 "text": "TagGroupItemDeleteDetails"
@@ -51179,7 +51179,7 @@
               "type": {
                 "text": "string | string[] | undefined"
               },
-              "description": "受控选中值（单选简写）；缺省该属性即非受控，多选请用 property",
+              "description": "受控选中值（单选简写）；未提供该属性即非受控，多选通过 property 设置",
               "name": "value",
               "fieldName": "value"
             },
@@ -51203,7 +51203,7 @@
               "type": {
                 "text": "boolean | undefined"
               },
-              "description": "给出摘除钮，默认关；条目上写 deletable 可逐枚覆盖",
+              "description": "提供移除按钮，默认关闭；条目上写 deletable 可逐个覆盖",
               "name": "deletable",
               "fieldName": "deletable"
             },
@@ -51211,7 +51211,7 @@
               "type": {
                 "text": "boolean | undefined"
               },
-              "description": "整组禁用：改不了选中值，也摘不掉任何一枚",
+              "description": "整组禁用：不可修改选中值，也不可移除任何标签",
               "name": "disabled",
               "fieldName": "disabled"
             },
@@ -51219,7 +51219,7 @@
               "type": {
                 "text": "boolean | undefined"
               },
-              "description": "只读：可聚焦、可导航，但改不动",
+              "description": "只读：可聚焦、可导航，但不可修改",
               "name": "read-only",
               "fieldName": "readOnly"
             },
@@ -51227,7 +51227,7 @@
               "type": {
                 "text": "boolean | undefined"
               },
-              "description": "方向键走到尽头回绕，默认 true；写 loop=\"false\" 关掉",
+              "description": "方向键到达末尾回绕，默认 true；写 loop=\"false\" 关闭",
               "name": "loop",
               "fieldName": "loop"
             },
@@ -51251,7 +51251,7 @@
               "type": {
                 "text": "boolean | undefined"
               },
-              "description": "连打检索，默认开；写 typeahead=\"false\" 关掉",
+              "description": "连打检索，默认开启；写 typeahead=\"false\" 关闭",
               "name": "typeahead",
               "fieldName": "typeahead"
             },
@@ -51259,7 +51259,7 @@
               "type": {
                 "text": "TagVariant | undefined"
               },
-              "description": "视觉变体，沿继承流下发给每一枚标签",
+              "description": "视觉变体，沿继承流下发给每个标签",
               "name": "variant",
               "fieldName": "variant"
             },

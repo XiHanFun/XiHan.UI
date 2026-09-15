@@ -106,22 +106,22 @@ size 打在组上逐枚落到每一枚标签上，走 tag 的三档，标签自�
 
 | 属性 | 类型 | 必填 | 说明 |
 | --- | --- | --- | --- |
-| `collection` | `TagGroupNode[]` |  | 条目数据，显示文本、禁用与可摘的事实源。给了它，条目部件只需报 value。 缺省即回到「文本与禁用都写在条目部件上」的老路。 |
-| `value` | `string \| string[]` |  | 选中值，给定即受控；单选可写成裸串，内部归一成数组。 |
+| `collection` | `TagGroupNode[]` |  | 条目数据，显示文本、禁用与可移除的事实源。提供后条目部件只需声明 value。 未提供时回到文本与禁用都写在条目部件上的方式。 |
+| `value` | `string \| string[]` |  | 选中值，提供即受控；单选可写为裸串，内部归一为数组。 |
 | `defaultValue` | `string \| string[]` |  |  |
 | `selectionMode` | `TagGroupSelectionMode` |  | 选择模式，默认 none。 |
-| `deletable` | `boolean` |  | 是否给出摘除钮，默认 false。false 时该钮同时被禁用与收起。 |
-| `disabled` | `boolean` |  | 整组禁用：键盘与点击都不再改选中值，也摘不掉任何一枚。 |
-| `readOnly` | `boolean` |  | 只读：仍可聚焦、可导航与朗读，但选中值改不动、标签也摘不掉。 |
-| `loop` | `boolean` |  | 方向键走到尽头是否回绕，默认 true。 |
+| `deletable` | `boolean` |  | 是否提供移除按钮，默认 false。false 时该按钮同时被禁用与收起。 |
+| `disabled` | `boolean` |  | 整组禁用：键盘与点击都不再修改选中值，也不可移除任何标签。 |
+| `readOnly` | `boolean` |  | 只读：仍可聚焦、可导航与朗读，但选中值不可修改、标签也不可移除。 |
+| `loop` | `boolean` |  | 方向键到达末尾是否回绕，默认 true。 |
 | `dir` | `Direction` |  | 文字方向，默认 ltr。 |
-| `orientation` | `Orientation` |  | 方向键轴向，默认 horizontal——标签是成排出现的。 |
-| `typeahead` | `boolean` |  | 连打检索，默认开。 |
-| `variant` | `TagVariant` |  | 形态：solid / subtle / outline，逐枚落到每一枚标签（tag 的 root）上。 |
-| `tone` | `Tone` |  | 语气：brand / neutral / success / warning / danger / info，决定用哪族颜色。 |
-| `size` | `Size` |  | 尺寸：sm / md / lg，走 tag 的三档。 |
+| `orientation` | `Orientation` |  | 方向键轴向，默认 horizontal：标签成排出现。 |
+| `typeahead` | `boolean` |  | 连打检索，默认开启。 |
+| `variant` | `TagVariant` |  | 形态：solid / subtle / outline，逐个写到每个标签（tag 的 root）上。 |
+| `tone` | `Tone` |  | 语气：brand / neutral / success / warning / danger / info，决定使用哪族颜色。 |
+| `size` | `Size` |  | 尺寸：sm / md / lg，使用 tag 的三档。 |
 | `onValueChange` | `(details: TagGroupValueChangeDetails) => void` |  | value 变化意图回调。 |
-| `onItemDelete` | `(details: TagGroupItemDeleteDetails) => void` |  | 摘除意图回调。条目由宿主的数据决定去留，组件只报「用户要摘这一枚」， 顺手把它从选中集合里去掉，并把焦点交给相邻的一枚。 |
+| `onItemDelete` | `(details: TagGroupItemDeleteDetails) => void` |  | 移除意图回调。条目由宿主的数据决定去留，组件只报告用户要移除该标签， 同时把它从选中集合中移除，并把焦点交给相邻的标签。 |
 | `translations` | `Partial<TagGroupTranslations>` |  |  |
 
 ### 事件
@@ -131,7 +131,7 @@ size 打在组上逐枚落到每一枚标签上，走 tag 的三档，标签自�
 | 事件 | 载荷 | 说明 |
 | --- | --- | --- |
 | `value-change` | `TagGroupValueChangeDetails` | 选中集合变化；detail 为 `{ value: string[] }` |
-| `item-delete` | `TagGroupItemDeleteDetails` | 用户要摘掉某一枚；detail 为 `{ value: string }` |
+| `item-delete` | `TagGroupItemDeleteDetails` | 用户要移除某个标签；detail 为 `{ value: string }` |
 
 ### 插槽
 
@@ -158,24 +158,24 @@ size 打在组上逐枚落到每一枚标签上，走 tag 的三档，标签自�
 | 成员 | 类型 | 说明 |
 | --- | --- | --- |
 | `value` | `string[]` | 选中集合；单选模式下长度 ≤ 1。 |
-| `collection` | `readonly TagGroupNodeMeta[]` | collection 推出的条目元信息，按数据顺序排列；没给 collection 即空数组。 |
+| `collection` | `readonly TagGroupNodeMeta[]` | 由 collection 推导的条目元信息，按数据顺序排列；未提供 collection 时为空数组。 |
 | `selectionMode` | `TagGroupSelectionMode` | 生效的选择模式。 |
 | `focusedValue` | `string \| null` | 焦点锚点；焦点不在组内时为 null。 |
 | `disabled` | `boolean` |  |
 | `readOnly` | `boolean` |  |
-| `deletable` | `boolean` | 整组是否给出摘除钮。 |
+| `deletable` | `boolean` | 整组是否提供移除按钮。 |
 | `isSelected` | `(value: string) => boolean` |  |
 | `setValue` | `(next: string[]) => void` |  |
-| `select` | `(value: string) => void` | 只留这一个；加选用 toggle。 |
+| `select` | `(value: string) => void` | 只保留该条目；加选使用 toggle。 |
 | `toggle` | `(value: string) => void` |  |
-| `deleteItem` | `(value: string) => void` | 摘掉一枚。程序化入口，不搬焦点。 |
+| `deleteItem` | `(value: string) => void` | 移除一个标签。程序化入口，不移动焦点。 |
 | `getRootProps` | `() => T['element']` |  |
 | `getLabelProps` | `() => T['element']` |  |
 | `getListProps` | `() => T['element']` |  |
-| `getItemProps` | `(props: TagGroupItemProps) => T['element']` | 一枚标签：库里 tag 的 root（data-scope="tag"），三轴与置灰由 tag 给； row 角色、身份、roving tabindex、选中（data-selected）与锚点（data-highlighted）叠在它上面。 |
-| `getCellProps` | `(props: TagGroupItemProps) => T['element']` | 标签里那一格；摘除钮必须落在它之内。 |
-| `getItemTextProps` | `(props: TagGroupItemProps) => T['element']` | 标签文字：tag 的 label，截断规则挂在那一层。 |
-| `getItemDeleteTriggerProps` | `(props: TagGroupItemProps) => T['button']` | 摘除钮：所在标签那份 tag 的 close-trigger，不占 Tab 位；可及名、禁用与收起都由 tag 给。 |
+| `getItemProps` | `(props: TagGroupItemProps) => T['element']` | 一个标签：库内 tag 的 root（data-scope="tag"），三轴与置灰由 tag 提供； row 角色、身份、roving tabindex、选中（data-selected）与锚点（data-highlighted）叠加在它上面。 |
+| `getCellProps` | `(props: TagGroupItemProps) => T['element']` | 标签内的格子；移除按钮必须落在它之内。 |
+| `getItemTextProps` | `(props: TagGroupItemProps) => T['element']` | 标签文字：tag 的 label，截断规则挂在该层。 |
+| `getItemDeleteTriggerProps` | `(props: TagGroupItemProps) => T['button']` | 移除按钮：所在标签那份 tag 的 close-trigger，不占 Tab 位；可及名、禁用与收起都由 tag 提供。 |
 
 ## 无障碍
 
@@ -185,15 +185,15 @@ size 打在组上逐枚落到每一枚标签上，走 tag 的三档，标签自�
 
 | 按键 | 生效条件 | 行为 |
 | --- | --- | --- |
-| `Tab` / `Shift+Tab` | focus outside the group | 整组只占一个 Tab 位：焦点进入锚点标签，无锚点时先落列表容器再由它转投；每枚标签的摘除钮一律不占停靠点 |
-| `ArrowRight` | focus in group, orientation=horizontal | 焦点移到下一枚可停留标签（禁用项跳过、尽头按 loop 回绕）；orientation=vertical 时改由 ArrowDown 承担，dir=rtl 再对调左右 |
-| `ArrowLeft` | focus in group, orientation=horizontal | 焦点移到上一枚可停留标签（禁用项跳过、尽头按 loop 回绕）；orientation=vertical 时改由 ArrowUp 承担，dir=rtl 再对调左右 |
+| `Tab` / `Shift+Tab` | focus outside the group | 整组只占一个 Tab 位：焦点进入锚点标签，无锚点时先落到列表容器再由它转移；每个标签的移除按钮一律不占停靠点 |
+| `ArrowRight` | focus in group, orientation=horizontal | 焦点移到下一个可停留标签（禁用项跳过、尽头按 loop 回绕）；orientation=vertical 时改由 ArrowDown 承担，dir=rtl 再对调左右 |
+| `ArrowLeft` | focus in group, orientation=horizontal | 焦点移到上一个可停留标签（禁用项跳过、尽头按 loop 回绕）；orientation=vertical 时改由 ArrowUp 承担，dir=rtl 再对调左右 |
 | `Home` | focus in group | 焦点移到首枚可停留标签 |
 | `End` | focus in group | 焦点移到末枚可停留标签 |
 | `Enter` / `Space` | focus on item, selectionMode=single 且可改 | 只选中焦点标签，替换原有选中；标签禁用或整组只读则不认 |
 | `Enter` / `Space` | focus on item, selectionMode=multiple 且可改 | 切换焦点标签的选中态，其余选中不动 |
 | `Ctrl+A` / `Cmd+A` | focus in group, selectionMode=multiple 且可改 | 选中全部可选标签；已经全选则把它们一并取消（禁用但已选中的不动） |
-| `Delete` / `Backspace` | focus on item, 该标签可摘且可改 | 摘掉焦点标签，并把焦点交给前一枚；前面没有就交给后一枚，一枚不剩就交给列表容器 |
+| `Delete` / `Backspace` | focus on item, 该标签可移除且可修改 | 移除焦点标签，并把焦点交给前一个；前面没有则交给后一个，全部移除后交给列表容器 |
 | `单个可打印字符` | focus in group, typeahead 未关 | 连打检索把焦点移到首字母匹配的标签，不改选中值 |
 
 ### ARIA
