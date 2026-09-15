@@ -12,18 +12,18 @@ import { wcNormalize } from '../dom/normalize'
 import { XhElement } from '../element-base'
 
 /**
- * `<xh-button>` —— 按钮行为宿主，无状态机，宿主属性即 button props。
+ * `<xh-button>`：按钮行为宿主，无状态机，宿主属性即 button props。
  *
  * @customElement xh-button
  * @attr {'button'|'submit'|'reset'} type - 原生按钮类型，默认 button
- * @attr {boolean} disabled - 禁用（原生 disabled，丢焦点）
- * @attr {boolean} icon-only - 只有图标：左右内距清零、宽高相等；作者须自行给可及名
+ * @attr {boolean} disabled - 禁用（原生 disabled，失去焦点）
+ * @attr {boolean} icon-only - 仅图标：左右内边距清零、宽高相等；作者须自行提供可及名
  * @attr {boolean} full-width - 撑满行宽
  * @attr {boolean} loading - 加载中（aria-disabled，保留焦点并拦截点击）
  * @attr {'solid'|'subtle'|'outline'|'ghost'} variant - 视觉变体
  * @attr {'brand'|'neutral'|'success'|'warning'|'danger'|'info'} tone - 颜色
  * @attr {'sm'|'md'|'lg'} size - 尺寸
- * @attr {'button'|'a'} as - 根节点写成哪个标签，默认 button；写 a 时不再产出 type 与原生 disabled
+ * @attr {'button'|'a'} as - 根节点渲染的标签，默认 button；写 a 时不再产出 type 与原生 disabled
  * @csspart root - 承载 data-scope/data-part/data-* 的原生 button（as="a" 时是 a）
  */
 export class XhButtonElement extends XhElement {
