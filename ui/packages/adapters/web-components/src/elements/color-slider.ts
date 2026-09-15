@@ -13,40 +13,40 @@ import { wcNormalize } from '../dom/normalize'
 import { XhElement } from '../element-base'
 import { MachineController } from '../runtime/machine-controller'
 
-/** 属性缺席翻成 undefined，缺省值由机器决定。 */
+/** 属性缺席转换为 undefined，默认值由状态机决定。 */
 const STRING_CONVERTER = { fromAttribute: (v: string | null) => v ?? undefined }
-/** 布尔属性：出现即 true，写 "false" 才是 false；缺席不覆盖机器默认值。 */
+/** 布尔属性：出现即 true，写 "false" 才是 false；缺席不覆盖状态机默认值。 */
 const BOOLEAN_CONVERTER = { fromAttribute: (v: string | null) => (v === null ? undefined : v !== 'false') }
 
 /**
- * `<xh-color-slider>` —— Light-DOM 行为宿主，跑 color-slider 机器并内嵌一台 slider 机器，
- * 把 connect 产出打到 root/label/control/track/thumb/value-text/hidden-input 等角色节点。
+ * `<xh-color-slider>`：Light-DOM 行为宿主，运行 color-slider 状态机并内嵌一台 slider 状态机，
+ * 把 connect 产出接到 root / label / control / track / thumb / value-text / hidden-input 等角色节点。
  *
- * 一条滑杆只推颜色的一路（色相 / 饱和度 / 明度 / 透明度 / 红 / 绿 / 蓝），值是整个颜色串；
- * 轨道的渐变按当前颜色现算写成内联样式，作者只画轨道的形状。
+ * 一条滑杆只推动颜色的一个通道（色相 / 饱和度 / 明度 / 透明度 / 红 / 绿 / 蓝），值是整个颜色串；
+ * 轨道的渐变按当前颜色计算并写为内联样式，作者只绘制轨道的形状。
  *
  * @customElement xh-color-slider
- * @attr {string} value - 受控的颜色值串；缺省该属性即非受控
+ * @attr {string} value - 受控的颜色值串；未提供该属性即非受控
  * @attr {string} default-value - 非受控初值，默认 #000000
- * @attr {'hue'|'saturation'|'brightness'|'alpha'|'red'|'green'|'blue'} channel - 推的是哪一路，默认 hue
+ * @attr {'hue'|'saturation'|'brightness'|'alpha'|'red'|'green'|'blue'} channel - 推动的通道，默认 hue
  * @attr {'hex'|'rgba'|'hsla'} format - 值串的写法，默认 hex
- * @attr {boolean} alpha - 值串带不带透明度；缺省时推透明度那一路带、其余不带
+ * @attr {boolean} alpha - 值串是否带透明度；未提供时推动透明度通道带、其余不带
  * @attr {'horizontal'|'vertical'} orientation - 排布方向
  * @attr {'ltr'|'rtl'} dir - 文字方向，只改写水平轨道上左右两键与指针的语义
  * @attr {boolean} disabled - 禁用
- * @attr {boolean} read-only - 只读：拇指仍可聚焦，推不动
+ * @attr {boolean} read-only - 只读：拇指仍可聚焦，不可推动
  * @attr {boolean} invalid - 校验失败
  * @attr {'sm'|'md'|'lg'} size - 尺寸
- * @attr {string} name - 表单字段名；给了表单影子才带 name 并参与提交
- * @prop {Partial<ColorSliderTranslations>} translations - 读屏文案（只走 property）
- * @fires value-change - 颜色变化；detail 为 `{ value: string }`，拖动过程中会连续发
+ * @attr {string} name - 表单字段名；提供后表单影子才带 name 并参与提交
+ * @prop {Partial<ColorSliderTranslations>} translations - 读屏文案（只能通过 property 设置）
+ * @fires value-change - 颜色变化；detail 为 `{ value: string }`，拖动过程中连续发出
  * @fires value-change-end - 一次推动结束；detail 为 `{ value: string }`
  * @csspart root - 根节点，承载 data-channel / data-orientation / data-size
- * @csspart label - 标签，名字经拇指上的 aria-labelledby 挂过去
- * @csspart control - 可按下的整条区域：按下即跳，拖动跟手
- * @csspart track - 轨道；渐变由元素写成内联 background-image
- * @csspart thumb - role=slider 的拇指，位置由元素写成内联样式
- * @csspart value-text - 值气泡；空着时由元素填本通道的当前数值
+ * @csspart label - 标签，名字经拇指上的 aria-labelledby 关联
+ * @csspart control - 可按下的整条区域：按下即跳转，拖动跟随
+ * @csspart track - 轨道；渐变由元素写为内联 background-image
+ * @csspart thumb - role=slider 的拇指，位置由元素写为内联样式
+ * @csspart value-text - 值气泡；为空时由元素填入本通道的当前数值
  * @csspart hidden-input - 表单影子
  */
 export class XhColorSliderElement extends XhElement {
