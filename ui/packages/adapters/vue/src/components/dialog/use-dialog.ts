@@ -21,7 +21,7 @@ import { createVueIdGenerator } from '../../runtime/vue-id'
 export interface DialogContext {
   service: Service<DialogSchema>
   api: ComputedRef<DialogApi>
-  /** 浮层搬到哪儿：全局配置 > 单一落点。 */
+  /** 浮层迁移到的位置：全局配置 > 单一落点。 */
   portalTarget: ComputedRef<string | Element>
   rendered: Ref<boolean>
   contentRef: Ref<HTMLElement | null>

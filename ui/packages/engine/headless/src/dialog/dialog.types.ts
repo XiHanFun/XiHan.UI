@@ -24,8 +24,8 @@ export interface DialogRefs {
   getTriggerEl: () => HTMLElement | null
   branches: () => Element[]
   /**
-   * connect 给部件落 id 时用的组件名。归还焦点时按这个名字现取 trigger，
-   * 抽屉跑的是同一台机器、部件名却是 drawer，由它的 refs 初值改写成自己的。
+   * connect 给部件写 id 时使用的组件名。归还焦点时按该名字获取 trigger，
+   * 抽屉运行同一台状态机、部件名却是 drawer，由它的 refs 初值改写为自身的名字。
    */
   partScope: string
 }
@@ -33,8 +33,8 @@ export interface DialogRefs {
 export interface DialogOpenChangeDetails {
   open: boolean
   /**
-   * 这一次是怎么关的；展开时不带。
-   * 用它区分「用户主动取消」与「确认后收起」，前者常要回滚草稿。
+   * 本次关闭的原因；展开时不带。
+   * 用于区分用户主动取消与确认后收起，前者常需要回滚草稿。
    */
   reason?: OverlayCloseReason
 }
@@ -48,11 +48,11 @@ export interface DialogSchema extends MachineSchema {
     closeOnEscape?: boolean
     closeOnInteractOutside?: boolean
     restoreFocus?: boolean
-    /** 展开后先聚焦到 content 内匹配此选择器的元素；选择器不匹配时回落默认聚焦顺序。 */
+    /** 展开后先聚焦到 content 内匹配该选择器的元素；选择器不匹配时回退为默认聚焦顺序。 */
     initialFocus?: string
-    /** 尺寸：sm / md / lg。只换 content 的最大宽度，落在 content 上（本组件没有 root 部件）。 */
+    /** 尺寸：sm / md / lg。只影响 content 的最大宽度，写在 content 上（本组件没有 root 部件）。 */
     size?: Size
-    /** 遮罩形态：opaque / blur / transparent。落在 backdrop 上，只换那一层的底色与模糊。 */
+    /** 遮罩形态：opaque / blur / transparent。写在 backdrop 上，只影响该层的底色与模糊。 */
     variant?: OverlayBackdropVariant
     translations?: Partial<DialogTranslations>
     /** open 变化意图回调；受控时是唯一出口，非受控时随内部转移一并通知。 */

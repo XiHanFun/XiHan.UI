@@ -17879,7 +17879,7 @@
       "declarations": [
         {
           "kind": "class",
-          "description": "`<xh-dialog>` —— Light-DOM 行为宿主，跑 dialog 机器并把 connect 产出打到角色节点上，\n关闭时用内联 style.display 隐藏浮层子树。",
+          "description": "`<xh-dialog>`：Light-DOM 行为宿主，运行 dialog 状态机并把 connect 产出接到角色节点上，\n关闭时用内联 style.display 隐藏浮层子树。",
           "name": "XhDialogElement",
           "cssParts": [
             {
@@ -17895,15 +17895,15 @@
               "name": "positioner"
             },
             {
-              "description": "对话框内容（role/aria-modal/焦点陷阱所在）",
+              "description": "对话框内容（role / aria-modal / 焦点陷阱所在）",
               "name": "content"
             },
             {
-              "description": "面板头：标题与说明所在的那一段，不跟着正文滚",
+              "description": "面板头：标题与说明所在的段，不随正文滚动",
               "name": "header"
             },
             {
-              "description": "语气徽记：不给内容就由皮肤按节点上的 data-tone 画兜底字形",
+              "description": "语气徽记：未提供内容时由皮肤按节点上的 data-tone 绘制兜底字形",
               "name": "indicator"
             },
             {
@@ -17915,11 +17915,11 @@
               "name": "description"
             },
             {
-              "description": "正文：面板里唯一会滚的一段",
+              "description": "正文：面板中唯一会滚动的段",
               "name": "body"
             },
             {
-              "description": "面板尾：动作按钮所在的那一段，不跟着正文滚",
+              "description": "面板尾：动作按钮所在的段，不随正文滚动",
               "name": "footer"
             },
             {
@@ -18024,7 +18024,7 @@
               "type": {
                 "text": "DialogSchema['props']['translations'] | undefined"
               },
-              "description": "关闭按钮的无障碍名；connect 每帧重写 aria-label，作者写在节点上会被盖掉，只能从这里给。"
+              "description": "关闭按钮的无障碍名；connect 每帧重写 aria-label，作者写在节点上的值会被覆盖，只能从此处提供。"
             },
             {
               "kind": "field",
@@ -18201,7 +18201,7 @@
               "type": {
                 "text": "boolean | undefined"
               },
-              "description": "受控开合；缺省该属性即非受控",
+              "description": "受控开合；未提供该属性即非受控",
               "name": "open",
               "fieldName": "open"
             },
@@ -18217,7 +18217,7 @@
               "type": {
                 "text": "boolean | undefined"
               },
-              "description": "模态（陷焦点、锁滚动、遮罩交互外关闭），默认 true",
+              "description": "模态（陷入焦点、锁定滚动、遮罩交互外关闭），默认 true",
               "name": "modal",
               "fieldName": "modal"
             },
@@ -18256,7 +18256,7 @@
               "type": {
                 "text": "Size | undefined"
               },
-              "description": "尺寸：只换 content 的最大宽度，落在 content 上",
+              "description": "尺寸：只影响 content 的最大宽度，写在 content 上",
               "name": "size",
               "fieldName": "size"
             },
@@ -18264,7 +18264,7 @@
               "type": {
                 "text": "OverlayBackdropVariant | undefined"
               },
-              "description": "遮罩形态：只换 backdrop 的底色与模糊",
+              "description": "遮罩形态：只影响 backdrop 的底色与模糊",
               "name": "variant",
               "fieldName": "variant"
             }

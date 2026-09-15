@@ -22,31 +22,31 @@ const BOOLEAN_CONVERTER = { fromAttribute: (v: string | null) => (v === null ? u
 const STRING_CONVERTER = { fromAttribute: (v: string | null) => v ?? undefined }
 
 /**
- * `<xh-dialog>` —— Light-DOM 行为宿主，跑 dialog 机器并把 connect 产出打到角色节点上，
+ * `<xh-dialog>`：Light-DOM 行为宿主，运行 dialog 状态机并把 connect 产出接到角色节点上，
  * 关闭时用内联 style.display 隐藏浮层子树。
  *
  * @customElement xh-dialog
- * @attr {boolean} open - 受控开合；缺省该属性即非受控
+ * @attr {boolean} open - 受控开合；未提供该属性即非受控
  * @attr {boolean} default-open - 非受控初始为打开
- * @attr {boolean} modal - 模态（陷焦点、锁滚动、遮罩交互外关闭），默认 true
+ * @attr {boolean} modal - 模态（陷入焦点、锁定滚动、遮罩交互外关闭），默认 true
  * @attr {'dialog'|'alertdialog'} role - 语义角色，默认 dialog
  * @attr {boolean} close-on-escape - Esc 关闭，默认 true
  * @attr {boolean} restore-focus - 关闭后把焦点归还触发元素，默认 true
  * @attr {string} initial-focus - 展开后先聚焦到 content 内匹配此选择器的元素
- * @attr {'sm'|'md'|'lg'} size - 尺寸：只换 content 的最大宽度，落在 content 上
- * @attr {'opaque'|'blur'|'transparent'} variant - 遮罩形态：只换 backdrop 的底色与模糊
+ * @attr {'sm'|'md'|'lg'} size - 尺寸：只影响 content 的最大宽度，写在 content 上
+ * @attr {'opaque'|'blur'|'transparent'} variant - 遮罩形态：只影响 backdrop 的底色与模糊
  * @fires open-change - open 状态变化；detail 为 `{ open: boolean }`
  * @fires exit-complete - 退出完成且本层资源已释放
  * @csspart trigger - 触发按钮
  * @csspart backdrop - 遮罩层
  * @csspart positioner - 浮层定位容器
- * @csspart content - 对话框内容（role/aria-modal/焦点陷阱所在）
- * @csspart header - 面板头：标题与说明所在的那一段，不跟着正文滚
- * @csspart indicator - 语气徽记：不给内容就由皮肤按节点上的 data-tone 画兜底字形
+ * @csspart content - 对话框内容（role / aria-modal / 焦点陷阱所在）
+ * @csspart header - 面板头：标题与说明所在的段，不随正文滚动
+ * @csspart indicator - 语气徽记：未提供内容时由皮肤按节点上的 data-tone 绘制兜底字形
  * @csspart title - 标题（aria-labelledby 目标）
  * @csspart description - 描述（aria-describedby 目标）
- * @csspart body - 正文：面板里唯一会滚的一段
- * @csspart footer - 面板尾：动作按钮所在的那一段，不跟着正文滚
+ * @csspart body - 正文：面板中唯一会滚动的段
+ * @csspart footer - 面板尾：动作按钮所在的段，不随正文滚动
  * @csspart close-trigger - 关闭按钮
  */
 export class XhDialogElement extends XhPortalHostElement {
@@ -77,7 +77,7 @@ export class XhDialogElement extends XhPortalHostElement {
   declare initialFocus?: string
   declare size?: Size
   declare variant?: OverlayBackdropVariant
-  /** 关闭按钮的无障碍名；connect 每帧重写 aria-label，作者写在节点上会被盖掉，只能从这里给。 */
+  /** 关闭按钮的无障碍名；connect 每帧重写 aria-label，作者写在节点上的值会被覆盖，只能从此处提供。 */
   declare translations?: DialogSchema['props']['translations']
 
   private readonly idGen: IdGenerator = createCounterIdGenerator()
