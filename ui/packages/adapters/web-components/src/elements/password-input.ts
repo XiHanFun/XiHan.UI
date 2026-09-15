@@ -21,44 +21,44 @@ const BOOLEAN_CONVERTER = { fromAttribute: (v: string | null) => (v === null ? u
 const NUMBER_CONVERTER = { fromAttribute: (v: string | null) => (v == null || v === '' ? undefined : Number(v)) }
 
 /**
- * `<xh-password-input>` —— Light-DOM 行为宿主：作者写 root/label/control/input/
- * visibility-trigger/caps-lock-indicator 六类角色节点，元素跑 password-input 机器并把 connect 产出打上去。
+ * `<xh-password-input>`：Light-DOM 行为宿主：作者写 root / label / control / input /
+ * visibility-trigger / caps-lock-indicator 六类角色节点，元素运行 password-input 状态机并把 connect 产出接上。
  *
- * label 的 `for` 恒写向 input 的 id，所以 label 角色节点必须是原生 `<label>`、input 角色节点必须是原生
- * `<input>`；切换钮必须是原生 `<button>`，Enter / Space 的激活由平台负责。
+ * label 的 `for` 恒指向 input 的 id，因此 label 角色节点必须是原生 `<label>`、input 角色节点必须是原生
+ * `<input>`；切换按钮必须是原生 `<button>`，Enter / Space 的激活由平台负责。
  *
- * 明暗只改 input 的 type：隐藏态 password、显示态 text。切换之后焦点留在按钮上，
- * 框里的光标与选中范围由机器放回原处。
+ * 显隐只改变 input 的 type：隐藏态 password、显示态 text。切换之后焦点留在按钮上，
+ * 框中的光标与选中范围由状态机放回原处。
  *
- * 大写锁定靠按键事件里的 getModifierState 判定——平台没有"现在查一下修饰键"的接口，
- * 所以提示要等用户按下第一个键才亮，焦点离开输入框即熄灭。提示节点作者写空壳，
- * 里面的文字由元素写入。
+ * 大写锁定依靠按键事件中的 getModifierState 判定：平台没有主动查询修饰键的接口，
+ * 因此提示要等用户按下第一个键才显示，焦点离开输入框即熄灭。提示节点由作者写空壳，
+ * 其中的文字由元素写入。
  *
  * @customElement xh-password-input
- * @attr {string} value - 受控值；缺省该属性即非受控
+ * @attr {string} value - 受控值；未提供该属性即非受控
  * @attr {string} default-value - 非受控初值
- * @attr {boolean} revealed - 受控的明暗态（明文是否揭开）；缺省该属性即非受控
- * @attr {boolean} default-revealed - 非受控的初始明暗态，缺省隐藏
- * @attr {boolean} disabled - 禁用：输入与明暗切换都推不动
- * @attr {boolean} read-only - 只读：值写不进，明暗照切
+ * @attr {boolean} revealed - 受控的显隐态（明文是否显示）；未提供该属性即非受控
+ * @attr {boolean} default-revealed - 非受控的初始显隐态，默认隐藏
+ * @attr {boolean} disabled - 禁用：输入与显隐切换都不可操作
+ * @attr {boolean} read-only - 只读：值不可写入，显隐照常切换
  * @attr {boolean} required - 必填标注
  * @attr {boolean} invalid - 校验失败标注
- * @attr {string} name - 表单字段名；给了才参与提交
+ * @attr {string} name - 表单字段名；提供后才参与提交
  * @attr {string} placeholder - 占位文案
- * @attr {string} auto-complete - 落到 input 上的 autocomplete，缺省 current-password；注册表单要写 new-password
- * @attr {number} strength - 强度档位 0–4；给了才显出强度条，打分算法归调用方
+ * @attr {string} auto-complete - 写到 input 上的 autocomplete，默认 current-password；注册表单要写 new-password
+ * @attr {number} strength - 强度档位 0–4；提供后才显示强度条，打分算法归调用方
  * @attr {'outline'|'subtle'|'ghost'} variant - 视觉变体
  * @attr {'brand'|'neutral'|'success'|'warning'|'danger'|'info'} tone - 语气
  * @attr {'sm'|'md'|'lg'} size - 尺寸
  * @fires value-change - 值变化；detail 为 `{ value: string }`
- * @fires revealed-change - 明暗变化；detail 为 `{ revealed: boolean }`
+ * @fires revealed-change - 显隐变化；detail 为 `{ revealed: boolean }`
  * @csspart root - 承载三个视觉轴与 data-disabled / data-readonly / data-invalid / data-empty 的容器
- * @csspart label - 标题；`for` 恒写向 input，故须是原生 `<label>` 才点得动
- * @csspart control - 视觉盒：描边、底色与聚焦环画在它身上，框内三件都是透明分段
- * @csspart input - 真正的输入框，须是原生 `<input>`；type 随明暗在 password / text 之间换
- * @csspart visibility-trigger - 明暗切换钮，须是原生 `<button>`；名字随状态换，里面放图标即可
+ * @csspart label - 标题；`for` 恒指向 input，因此须是原生 `<label>` 才可点击
+ * @csspart control - 视觉盒：描边、底色与聚焦环绘制在它身上，框内三个部件都是透明分段
+ * @csspart input - 实际的输入框，须是原生 `<input>`；type 随显隐在 password / text 之间切换
+ * @csspart visibility-trigger - 显隐切换按钮，须是原生 `<button>`；名字随状态切换，其中放置图标即可
  * @csspart caps-lock-indicator - 大写锁定提示；节点留空即可，文字由元素写入，是 role=status 的活区域
- * @csspart strength-meter - 强度条，role=meter；档位落在 data-level 与 aria-valuenow 上，没给 strength 时收起
+ * @csspart strength-meter - 强度条，role=meter；档位写在 data-level 与 aria-valuenow 上，未提供 strength 时收起
  */
 export class XhPasswordInputElement extends XhElement {
   static override partContract = { anatomy: passwordInputAnatomy, meta: passwordInputMeta }

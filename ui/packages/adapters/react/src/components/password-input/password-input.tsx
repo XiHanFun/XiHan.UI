@@ -19,13 +19,13 @@ import { usePasswordInput } from './use-password-input'
 
 type PasswordInputProps = PasswordInputSchema['props']
 
-/** 函数式 children 的载荷：当前值与空标志、明暗与大写锁定，以及写值与翻明暗的动作。 */
+/** 函数式 children 的载荷：当前值与空标志、明暗与大写锁定，以及写值与切换明暗的动作。 */
 export type PasswordInputRootSlotProps = Pick<
   PasswordInputApi,
   'value' | 'empty' | 'revealed' | 'capsLock' | 'inputType' | 'setValue' | 'setRevealed' | 'toggleRevealed'
 >
 
-/** 根上自有的那些取值；defaultValue 与原生的同名属性含义不同，由这里接管。 */
+/** 根上自有的取值；defaultValue 与原生的同名属性含义不同，由这里接管。 */
 type RootElementProps = Omit<ComponentPropsWithRef<'div'>, 'children' | 'defaultValue'>
 
 export interface XhPasswordInputRootProps extends RootElementProps {
@@ -37,11 +37,11 @@ export interface XhPasswordInputRootProps extends RootElementProps {
   readOnly?: boolean
   required?: boolean
   invalid?: boolean
-  /** 表单字段名；给了才参与提交。 */
+  /** 表单字段名；提供后才参与提交。 */
   name?: string
   placeholder?: string
   autoComplete?: string
-  /** 强度档位 0–4，由调用方打分后传进来；不给时强度条收起。 */
+  /** 强度档位 0–4，由调用方评分后传入；未提供时强度条收起。 */
   strength?: number
   variant?: ControlVariant
   tone?: Tone
@@ -123,7 +123,7 @@ export function XhPasswordInputRoot({
 XhPasswordInputRoot.xhEvents = ['value-change', 'revealed-change'] as const
 
 export interface XhPasswordInputLabelProps extends ComponentPropsWithRef<'label'> {}
-/** 必须是原生 label，connect 把 for 写向 input。 */
+/** 必须是原生 label，connect 把 for 指向 input。 */
 export function XhPasswordInputLabel({ children, ...rest }: XhPasswordInputLabelProps): ReactNode {
   const ctx = usePasswordInputContext()
   return (
@@ -134,7 +134,7 @@ export function XhPasswordInputLabel({ children, ...rest }: XhPasswordInputLabel
 }
 
 export interface XhPasswordInputControlProps extends ComponentPropsWithRef<'div'> {}
-/** 视觉盒：输入框、切换钮与大写锁定提示都排在它里面。 */
+/** 视觉盒：输入框、切换按钮与大写锁定提示都排在其中。 */
 export function XhPasswordInputControl({ children, ...rest }: XhPasswordInputControlProps): ReactNode {
   const ctx = usePasswordInputContext()
   return (
@@ -145,7 +145,7 @@ export function XhPasswordInputControl({ children, ...rest }: XhPasswordInputCon
 }
 
 export interface XhPasswordInputInputProps extends Omit<ComponentPropsWithRef<'input'>, 'value' | 'defaultValue' | 'type'> {}
-/** 原生 input：光标、选区与撤销都归浏览器，label 的 for 也指着它。 */
+/** 原生 input：光标、选区与撤销都归浏览器，label 的 for 也指向它。 */
 export function XhPasswordInputInput({ ...rest }: XhPasswordInputInputProps): ReactNode {
   // 字段的说明与校验状态要落在真控件上，不能停在封装根的 div 上
   const fieldWiring = useFieldStateWiring()
@@ -177,7 +177,7 @@ export function XhPasswordInputVisibilityTrigger({ children, ...rest }: XhPasswo
 }
 
 export interface XhPasswordInputCapsLockIndicatorProps extends Omit<ComponentPropsWithRef<'span'>, 'children'> {}
-/** 区内文字由组件写：活区域播报的是内容，不是名字。关着时是空串，节点仍在场。 */
+/** 区内文字由组件写入：活区域播报的是内容，不是名字。关闭时是空串，节点仍在场。 */
 export function XhPasswordInputCapsLockIndicator({ ...rest }: XhPasswordInputCapsLockIndicatorProps): ReactNode {
   const ctx = usePasswordInputContext()
   return (
@@ -188,7 +188,7 @@ export function XhPasswordInputCapsLockIndicator({ ...rest }: XhPasswordInputCap
 }
 
 export interface XhPasswordInputStrengthMeterProps extends ComponentPropsWithRef<'div'> {}
-/** 强度条：档位由调用方打分后经 strength 传进来，没给就收起。 */
+/** 强度条：档位由调用方评分后经 strength 传入，未提供时收起。 */
 export function XhPasswordInputStrengthMeter({ children, ...rest }: XhPasswordInputStrengthMeterProps): ReactNode {
   const ctx = usePasswordInputContext()
   return (

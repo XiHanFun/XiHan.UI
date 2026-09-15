@@ -37394,7 +37394,7 @@
       "declarations": [
         {
           "kind": "class",
-          "description": "`<xh-password-input>` —— Light-DOM 行为宿主：作者写 root/label/control/input/\nvisibility-trigger/caps-lock-indicator 六类角色节点，元素跑 password-input 机器并把 connect 产出打上去。\n\nlabel 的 `for` 恒写向 input 的 id，所以 label 角色节点必须是原生 `<label>`、input 角色节点必须是原生\n`<input>`；切换钮必须是原生 `<button>`，Enter / Space 的激活由平台负责。\n\n明暗只改 input 的 type：隐藏态 password、显示态 text。切换之后焦点留在按钮上，\n框里的光标与选中范围由机器放回原处。\n\n大写锁定靠按键事件里的 getModifierState 判定——平台没有\"现在查一下修饰键\"的接口，\n所以提示要等用户按下第一个键才亮，焦点离开输入框即熄灭。提示节点作者写空壳，\n里面的文字由元素写入。",
+          "description": "`<xh-password-input>`：Light-DOM 行为宿主：作者写 root / label / control / input /\nvisibility-trigger / caps-lock-indicator 六类角色节点，元素运行 password-input 状态机并把 connect 产出接上。\n\nlabel 的 `for` 恒指向 input 的 id，因此 label 角色节点必须是原生 `<label>`、input 角色节点必须是原生\n`<input>`；切换按钮必须是原生 `<button>`，Enter / Space 的激活由平台负责。\n\n显隐只改变 input 的 type：隐藏态 password、显示态 text。切换之后焦点留在按钮上，\n框中的光标与选中范围由状态机放回原处。\n\n大写锁定依靠按键事件中的 getModifierState 判定：平台没有主动查询修饰键的接口，\n因此提示要等用户按下第一个键才显示，焦点离开输入框即熄灭。提示节点由作者写空壳，\n其中的文字由元素写入。",
           "name": "XhPasswordInputElement",
           "cssParts": [
             {
@@ -37402,19 +37402,19 @@
               "name": "root"
             },
             {
-              "description": "标题；`for` 恒写向 input，故须是原生 `<label>` 才点得动",
+              "description": "标题；`for` 恒指向 input，因此须是原生 `<label>` 才可点击",
               "name": "label"
             },
             {
-              "description": "视觉盒：描边、底色与聚焦环画在它身上，框内三件都是透明分段",
+              "description": "视觉盒：描边、底色与聚焦环绘制在它身上，框内三个部件都是透明分段",
               "name": "control"
             },
             {
-              "description": "真正的输入框，须是原生 `<input>`；type 随明暗在 password / text 之间换",
+              "description": "实际的输入框，须是原生 `<input>`；type 随显隐在 password / text 之间切换",
               "name": "input"
             },
             {
-              "description": "明暗切换钮，须是原生 `<button>`；名字随状态换，里面放图标即可",
+              "description": "显隐切换按钮，须是原生 `<button>`；名字随状态切换，其中放置图标即可",
               "name": "visibility-trigger"
             },
             {
@@ -37422,7 +37422,7 @@
               "name": "caps-lock-indicator"
             },
             {
-              "description": "强度条，role=meter；档位落在 data-level 与 aria-valuenow 上，没给 strength 时收起",
+              "description": "强度条，role=meter；档位写在 data-level 与 aria-valuenow 上，未提供 strength 时收起",
               "name": "strength-meter"
             }
           ],
@@ -37654,7 +37654,7 @@
               }
             },
             {
-              "description": "明暗变化；detail 为 `{ revealed: boolean }`",
+              "description": "显隐变化；detail 为 `{ revealed: boolean }`",
               "name": "revealed-change",
               "type": {
                 "text": "PasswordInputRevealedChangeDetails"
@@ -37666,7 +37666,7 @@
               "type": {
                 "text": "string | undefined"
               },
-              "description": "受控值；缺省该属性即非受控",
+              "description": "受控值；未提供该属性即非受控",
               "name": "value",
               "fieldName": "value"
             },
@@ -37682,7 +37682,7 @@
               "type": {
                 "text": "boolean | undefined"
               },
-              "description": "受控的明暗态（明文是否揭开）；缺省该属性即非受控",
+              "description": "受控的显隐态（明文是否显示）；未提供该属性即非受控",
               "name": "revealed",
               "fieldName": "revealed"
             },
@@ -37690,7 +37690,7 @@
               "type": {
                 "text": "boolean | undefined"
               },
-              "description": "非受控的初始明暗态，缺省隐藏",
+              "description": "非受控的初始显隐态，默认隐藏",
               "name": "default-revealed",
               "fieldName": "defaultRevealed"
             },
@@ -37698,7 +37698,7 @@
               "type": {
                 "text": "boolean | undefined"
               },
-              "description": "禁用：输入与明暗切换都推不动",
+              "description": "禁用：输入与显隐切换都不可操作",
               "name": "disabled",
               "fieldName": "disabled"
             },
@@ -37706,7 +37706,7 @@
               "type": {
                 "text": "boolean | undefined"
               },
-              "description": "只读：值写不进，明暗照切",
+              "description": "只读：值不可写入，显隐照常切换",
               "name": "read-only",
               "fieldName": "readOnly"
             },
@@ -37730,7 +37730,7 @@
               "type": {
                 "text": "string | undefined"
               },
-              "description": "表单字段名；给了才参与提交",
+              "description": "表单字段名；提供后才参与提交",
               "name": "name",
               "fieldName": "name"
             },
@@ -37746,7 +37746,7 @@
               "type": {
                 "text": "string | undefined"
               },
-              "description": "落到 input 上的 autocomplete，缺省 current-password；注册表单要写 new-password",
+              "description": "写到 input 上的 autocomplete，默认 current-password；注册表单要写 new-password",
               "name": "auto-complete",
               "fieldName": "autoComplete"
             },
@@ -37754,7 +37754,7 @@
               "type": {
                 "text": "number | undefined"
               },
-              "description": "强度档位 0–4；给了才显出强度条，打分算法归调用方",
+              "description": "强度档位 0–4；提供后才显示强度条，打分算法归调用方",
               "name": "strength",
               "fieldName": "strength"
             },
