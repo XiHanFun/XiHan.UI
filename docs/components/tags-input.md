@@ -159,7 +159,7 @@ tone 决定使用哪族颜色，与 variant 正交；这里固定 outline 只查
 | `addOnPaste` | `boolean` |  | 粘贴时接管：按 delimiter 拆分为多个标签。默认关闭（交给浏览器照常粘贴进框中）。 |
 | `editable` | `boolean` |  | 允许双击标签就地修改。默认关闭。 |
 | `blurBehavior` | `TagsInputBlurBehavior \| null` |  | 焦点离开整个组件时输入框中残留文本的处置方式。 |
-| `variant` | `ControlVariant` |  | 形态：outline / subtle / ghost，决定颜色的使用方式。 |
+| `variant` | `ControlVariant` |  | 形态：outline / subtle / ghost，决定底色与描边的绘制方式。默认 outline。 |
 | `tone` | `Tone` |  | 语气：brand / neutral / success / warning / danger / info，决定使用哪族颜色。 |
 | `size` | `Size` |  | 尺寸：sm / md / lg。 |
 | `translations` | `Partial<TagsInputTranslations>` |  |  |

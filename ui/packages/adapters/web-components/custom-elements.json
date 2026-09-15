@@ -52179,7 +52179,7 @@
               "type": {
                 "text": "ControlVariant | undefined"
               },
-              "description": "视觉变体",
+              "description": "形态：outline / subtle / ghost，默认 outline",
               "name": "variant",
               "fieldName": "variant"
             },

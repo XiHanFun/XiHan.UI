@@ -79,7 +79,7 @@ export interface TagsInputSchema extends MachineSchema {
     editable?: boolean
     /** 焦点离开整个组件时输入框中残留文本的处置方式。 */
     blurBehavior?: TagsInputBlurBehavior | null
-    /** 形态：outline / subtle / ghost，决定颜色的使用方式。 */
+    /** 形态：outline / subtle / ghost，决定底色与描边的绘制方式。默认 outline。 */
     variant?: ControlVariant
     /** 语气：brand / neutral / success / warning / danger / info，决定使用哪族颜色。 */
     tone?: Tone
