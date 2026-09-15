@@ -276,7 +276,7 @@
 | `--xh-pagination-content-max-h` | `content` | `max-block-size` | `default` | `--xh-overlay-max-h` | pagination 的 content 部件 max-block-size 覆盖槽。 |
 | `--xh-pagination-content-max-w` | `content` | `max-inline-size` | `default` | `--xh-overlay-max-w` | pagination 的 content 部件 max-inline-size 覆盖槽。 |
 | `--xh-pagination-content-p` | `content` | `padding` | `default` | `--xh-space-1` | pagination 的 content 部件 padding 覆盖槽。 |
-| `--xh-pagination-content-radius` | `content` | `border-radius` | `default` | `--xh-shape-surface` | pagination 的 content 部件 border-radius 覆盖槽。 |
+| `--xh-pagination-content-radius` | `content` | `border-radius` | `default` | `--xh-shape-overlay` | pagination 的 content 部件 border-radius 覆盖槽。 |
 | `--xh-pagination-content-shadow` | `content` | `box-shadow` | `default` | `--xh-elevation-floating` | pagination 的 content 部件 box-shadow 覆盖槽。 |
 | `--xh-pagination-ellipsis-trigger-fg` | `ellipsis-trigger` | `color` | `default` | `--xh-fg-subtle` | pagination 的 ellipsis-trigger 部件 color 覆盖槽。 |
 | `--xh-pagination-font-size` | `ellipsis-trigger`<br>`item`<br>`jumper`<br>`next-trigger`<br>`prev-trigger`<br>`summary` | `font-size` | `default` | `--xh-_pagination-font-size` | pagination 的 ellipsis-trigger、item、jumper、next-trigger、prev-trigger、summary 部件 font-size 覆盖槽。 |
