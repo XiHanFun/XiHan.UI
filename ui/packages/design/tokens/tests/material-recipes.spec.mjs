@@ -19,13 +19,13 @@ const TARGETS = [
 ]
 const PRE_RECIPE_HASHES = {
   'semantic.base.json': '4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945',
-  'semantic.light.json': '59574a08dbc4a412b79ff7f5804ebd20cbb39a185887d35f21ae7cb6715c0b3b',
-  'semantic.dark.json': '23e921cbcf0f3058c31af4d6a74641e8cd1df8224434679cf5e9a5756ead7fa8',
-  'semantic.light.more.json': 'a3cad43d0f9dadb619545ff674039262e895f7ff59578604e06545921338ce09',
-  'semantic.dark.more.json': 'a3cad43d0f9dadb619545ff674039262e895f7ff59578604e06545921338ce09',
-  'semantic.transparency.reduce.json': '46f12c91f4055ba4646b8c996a2adffaa439f85ab7d076b1932a28c38fca075e',
-  'semantic.forced-colors.json': 'ab9a7cb86320f659dc1e58acdfa9e75de7be6ebdf78e6e239fa958a7834dec6a',
-  'semantic.print.json': '377c65deb18b401f9f12da9fbadf59fd45b638aa2502dbdba3dee8b2f1a072c6',
+  'semantic.light.json': 'ef95019b4d67b9256504e5ad156bfedf7f38b0400d1d269d51a9648bf6da6da3',
+  'semantic.dark.json': '66ffa323a8e7079a306defe7fcd2c3f09977beff44a7113604985ffffe1ac8a4',
+  'semantic.light.more.json': '1fb9412c8c8a4c6b9d71e5b4cf67facb391f65af02ffca854c9ffb50265aad0a',
+  'semantic.dark.more.json': '1fb9412c8c8a4c6b9d71e5b4cf67facb391f65af02ffca854c9ffb50265aad0a',
+  'semantic.transparency.reduce.json': '3a6161972abaa3cf6119b41ee68dce090bc8e22d52e0fee0f26b52de30b348dc',
+  'semantic.forced-colors.json': 'f0c85dd9665645f8501c40dfeaffa08ee793302794831068eeac4812deaa200a',
+  'semantic.print.json': '4898d1cee02740421eefad68e3bba5a615e763d87f44350592015a91e0d5fb91',
 }
 
 function flatten(value, prefix = '', result = []) {
@@ -63,7 +63,7 @@ async function loadSource() {
 describe('material Recipe 生成', () => {
   it('m0-M4 的基础配方逐项声明全部原子通道', async () => {
     const source = await loadSource()
-    expect(source.order.map(name => source.profiles[name].id)).toEqual(['M4', 'M3', 'M0', 'M1', 'M2'])
+    expect(source.order.map(name => source.profiles[name].id)).toEqual(['M4', 'M0', 'M1', 'M2'])
 
     for (const name of source.order) {
       for (const theme of ['light', 'dark']) {
@@ -104,7 +104,7 @@ describe('material Recipe 生成', () => {
     }
   })
 
-  it('编译后的 M1-M4 公开值与 Recipe 引入前逐项一致，M0 新增完整九通道', async () => {
+  it('编译后的 M1-M4 公开值与基线逐项一致，M0 新增完整九通道', async () => {
     const source = await loadSource()
     const compiled = compileMaterialRecipes(source)
     for (const file of TARGETS)
@@ -124,8 +124,9 @@ describe('material Recipe 生成', () => {
     for (const theme of ['semantic.light.json', 'semantic.dark.json'])
       expect(compiled[theme].solid).toBeUndefined()
 
-    expect(compiled['semantic.light.json'].glass.bg.$value).toBe('oklch(0.99 0.003 258 / {alpha.medium})')
-    expect(compiled['semantic.light.json'].glass.backdrop.$value).toBe('blur({blur.lg}) saturate(112%)')
+    expect(compiled['semantic.light.json'].frosted.backdrop.$value).toBe('blur({blur.md}) saturate(108%)')
+    expect(compiled['semantic.light.json'].elevated.bg.$value).toBe('oklch(0.99 0.003 258)')
+    expect(compiled['semantic.light.json'].elevated.backdrop.$value).toBe('none')
     expect(compiled['semantic.light.json'].elevated.shadow.$value.split(', ')).toHaveLength(3)
   })
 
@@ -152,7 +153,6 @@ describe('material Recipe 生成', () => {
     const representatives = {
       soft: 'switch.css',
       frosted: 'popover.css',
-      glass: 'prompt-input.css',
       elevated: 'dialog.css',
     }
     for (const [recipe, file] of Object.entries(representatives)) {

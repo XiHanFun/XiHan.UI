@@ -37,15 +37,16 @@ function resolve(name: string, values: Values): string {
   return value.replace(/\{([^}]+)\}/g, (_, key: string) => resolve(key, values))
 }
 
-describe('高层玻璃 M4 材质', () => {
-  it.each(['light', 'dark'] as const)('%s：以高遮蔽正文区保护复杂背景上的文字', (theme) => {
+describe('高层实体面 M4 材质', () => {
+  it.each(['light', 'dark'] as const)('%s：模态主阅读面完全不透明，不采样背景', (theme) => {
     const values = load('primitive.json', 'semantic.base.json', `semantic.${theme}.json`)
     const surface = resolve('material.elevated.bg', values)
-    expect(parseColorToOklch(surface).a).toBe(theme === 'light' ? 0.94 : 0.92)
-    expect(resolve('material.elevated.backdrop', values)).toBe('blur(32px) saturate(108%)')
+    expect(parseColorToOklch(surface).a).toBe(1)
+    expect(resolve('material.elevated.backdrop', values)).toBe('none')
     expect(resolve('material.elevated.shadow', values).split(',')).toHaveLength(3)
     expect(resolve('material.elevated.shadow', values)).not.toContain('inset')
-    for (const name of ['border', 'separator', 'highlight'])
+    expect(parseColorToOklch(resolve('material.elevated.highlight', values)).a).toBe(0)
+    for (const name of ['border', 'separator'])
       expect(parseColorToOklch(resolve(`material.elevated.${name}`, values)).a).toBeGreaterThan(0)
 
     const backgrounds = [

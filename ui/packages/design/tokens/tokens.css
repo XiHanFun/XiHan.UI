@@ -350,10 +350,10 @@
     --xh-material-solid-fg: var(--xh-fg-default);
     --xh-material-solid-fg-muted: var(--xh-fg-muted);
     --xh-material-solid-focus-surface: var(--xh-bg-surface);
+    --xh-material-elevated-backdrop: none;
+    --xh-material-elevated-highlight: oklch(0 0 0 / 0);
     --xh-material-elevated-fg: var(--xh-fg-default);
     --xh-material-elevated-focus-surface: var(--xh-bg-surface);
-    --xh-material-glass-fg: var(--xh-fg-default);
-    --xh-material-glass-focus-surface: var(--xh-bg-surface);
     --xh-material-soft-backdrop: none;
     --xh-material-soft-border: var(--xh-border-subtle);
     --xh-material-soft-separator: var(--xh-border-subtle);
@@ -487,7 +487,7 @@
     --xh-_contrast-more-border-strong: var(--xh-color-neutral-600);
     --xh-_contrast-default-border-subtle: var(--xh-color-neutral-100);
     --xh-_contrast-more-border-subtle: var(--xh-color-neutral-500);
-    --xh-_contrast-default-material-elevated-bg: oklch(0.99 0.003 258 / var(--xh-alpha-ultra-high));
+    --xh-_contrast-default-material-elevated-bg: oklch(0.99 0.003 258);
     --xh-_contrast-default-material-elevated-border: oklch(0.145 0.005 258 / 0.28);
     --xh-_contrast-default-material-elevated-fg-muted: var(--xh-color-neutral-700);
     --xh-_contrast-default-material-elevated-separator: oklch(0.145 0.005 258 / 0.2);
@@ -497,12 +497,6 @@
     --xh-_contrast-default-material-frosted-compact-shadow: 0 1px 2px -1px oklch(0.145 0.005 258 / 0.08), 0 6px 16px -8px oklch(0.145 0.005 258 / 0.12);
     --xh-_contrast-default-material-frosted-highlight: oklch(1 0 0 / 0.52);
     --xh-_contrast-default-material-frosted-separator: oklch(0.145 0.005 258 / 0.12);
-    --xh-_contrast-default-material-glass-bg: oklch(0.99 0.003 258 / var(--xh-alpha-medium));
-    --xh-_contrast-default-material-glass-border: oklch(0.145 0.005 258 / 0.24);
-    --xh-_contrast-default-material-glass-fg-muted: var(--xh-color-neutral-700);
-    --xh-_contrast-default-material-glass-highlight: oklch(1 0 0 / 0.3);
-    --xh-_contrast-default-material-glass-separator: oklch(0.145 0.005 258 / 0.18);
-    --xh-_contrast-default-material-glass-shadow: 0 3px 6px -3px oklch(0.145 0.005 258 / 0.12), 0 16px 40px -14px oklch(0.145 0.005 258 / 0.18);
     --xh-_contrast-default-material-soft-highlight: oklch(1 0 0 / 0.72);
     --xh-border-at-limit: var(--xh-_contrast-use-default, var(--xh-_contrast-default-border-at-limit)) var(--xh-_contrast-use-more, var(--xh-_contrast-more-border-at-limit));
     --xh-border-control: var(--xh-_contrast-use-default, var(--xh-_contrast-default-border-control)) var(--xh-_contrast-use-more, var(--xh-_contrast-more-border-control));
@@ -511,11 +505,9 @@
     --xh-border-invalid: var(--xh-_contrast-use-default, var(--xh-_contrast-default-border-invalid)) var(--xh-_contrast-use-more, var(--xh-_contrast-more-border-invalid));
     --xh-border-strong: var(--xh-_contrast-use-default, var(--xh-_contrast-default-border-strong)) var(--xh-_contrast-use-more, var(--xh-_contrast-more-border-strong));
     --xh-border-subtle: var(--xh-_contrast-use-default, var(--xh-_contrast-default-border-subtle)) var(--xh-_contrast-use-more, var(--xh-_contrast-more-border-subtle));
-    --xh-material-elevated-backdrop: var(--xh-_contrast-use-default, blur(var(--xh-blur-xl)) saturate(108%)) var(--xh-_contrast-use-more, none);
     --xh-material-elevated-bg: var(--xh-_contrast-use-default, var(--xh-_contrast-default-material-elevated-bg)) var(--xh-_contrast-use-more, var(--xh-bg-surface));
     --xh-material-elevated-border: var(--xh-_contrast-use-default, var(--xh-_contrast-default-material-elevated-border)) var(--xh-_contrast-use-more, var(--xh-border-subtle));
     --xh-material-elevated-fg-muted: var(--xh-_contrast-use-default, var(--xh-_contrast-default-material-elevated-fg-muted)) var(--xh-_contrast-use-more, var(--xh-fg-muted));
-    --xh-material-elevated-highlight: var(--xh-_contrast-use-default, oklch(1 0 0 / 0.32)) var(--xh-_contrast-use-more, oklch(0 0 0 / 0));
     --xh-material-elevated-separator: var(--xh-_contrast-use-default, var(--xh-_contrast-default-material-elevated-separator)) var(--xh-_contrast-use-more, var(--xh-border-subtle));
     --xh-material-elevated-shadow: var(--xh-_contrast-use-default, var(--xh-_contrast-default-material-elevated-shadow)) var(--xh-_contrast-use-more, none);
     --xh-material-frosted-backdrop: var(--xh-_contrast-use-default, blur(var(--xh-blur-md)) saturate(108%)) var(--xh-_contrast-use-more, none);
@@ -526,13 +518,6 @@
     --xh-material-frosted-compact-shadow: var(--xh-_contrast-use-default, var(--xh-_contrast-default-material-frosted-compact-shadow)) var(--xh-_contrast-use-more, none);
     --xh-material-frosted-highlight: var(--xh-_contrast-use-default, var(--xh-_contrast-default-material-frosted-highlight)) var(--xh-_contrast-use-more, oklch(0 0 0 / 0));
     --xh-material-frosted-separator: var(--xh-_contrast-use-default, var(--xh-_contrast-default-material-frosted-separator)) var(--xh-_contrast-use-more, var(--xh-border-subtle));
-    --xh-material-glass-backdrop: var(--xh-_contrast-use-default, blur(var(--xh-blur-lg)) saturate(112%)) var(--xh-_contrast-use-more, none);
-    --xh-material-glass-bg: var(--xh-_contrast-use-default, var(--xh-_contrast-default-material-glass-bg)) var(--xh-_contrast-use-more, var(--xh-bg-surface));
-    --xh-material-glass-border: var(--xh-_contrast-use-default, var(--xh-_contrast-default-material-glass-border)) var(--xh-_contrast-use-more, var(--xh-border-subtle));
-    --xh-material-glass-fg-muted: var(--xh-_contrast-use-default, var(--xh-_contrast-default-material-glass-fg-muted)) var(--xh-_contrast-use-more, var(--xh-fg-muted));
-    --xh-material-glass-highlight: var(--xh-_contrast-use-default, var(--xh-_contrast-default-material-glass-highlight)) var(--xh-_contrast-use-more, oklch(0 0 0 / 0));
-    --xh-material-glass-separator: var(--xh-_contrast-use-default, var(--xh-_contrast-default-material-glass-separator)) var(--xh-_contrast-use-more, var(--xh-border-subtle));
-    --xh-material-glass-shadow: var(--xh-_contrast-use-default, var(--xh-_contrast-default-material-glass-shadow)) var(--xh-_contrast-use-more, none);
     --xh-material-soft-highlight: var(--xh-_contrast-use-default, var(--xh-_contrast-default-material-soft-highlight)) var(--xh-_contrast-use-more, oklch(0 0 0 / 0));
   }
 
@@ -602,7 +587,7 @@
     --xh-_contrast-more-border-strong: var(--xh-color-neutral-300);
     --xh-_contrast-default-border-subtle: var(--xh-color-neutral-800);
     --xh-_contrast-more-border-subtle: var(--xh-color-neutral-450);
-    --xh-_contrast-default-material-elevated-bg: oklch(0.19 0.008 258 / 0.92);
+    --xh-_contrast-default-material-elevated-bg: oklch(0.19 0.008 258);
     --xh-_contrast-default-material-elevated-border: oklch(1 0 0 / 0.28);
     --xh-_contrast-default-material-elevated-fg-muted: var(--xh-color-neutral-300);
     --xh-_contrast-default-material-elevated-separator: oklch(1 0 0 / 0.2);
@@ -612,12 +597,6 @@
     --xh-_contrast-default-material-frosted-compact-shadow: 0 1px 2px -1px oklch(0 0 0 / 0.38), 0 6px 16px -8px oklch(0 0 0 / 0.46);
     --xh-_contrast-default-material-frosted-highlight: oklch(1 0 0 / 0.14);
     --xh-_contrast-default-material-frosted-separator: oklch(1 0 0 / 0.12);
-    --xh-_contrast-default-material-glass-bg: oklch(0.19 0.008 258 / var(--xh-alpha-medium));
-    --xh-_contrast-default-material-glass-border: oklch(1 0 0 / 0.24);
-    --xh-_contrast-default-material-glass-fg-muted: var(--xh-color-neutral-300);
-    --xh-_contrast-default-material-glass-highlight: oklch(1 0 0 / 0.22);
-    --xh-_contrast-default-material-glass-separator: oklch(1 0 0 / 0.18);
-    --xh-_contrast-default-material-glass-shadow: 0 3px 6px -3px oklch(0 0 0 / 0.46), 0 16px 40px -14px oklch(0 0 0 / 0.56);
     --xh-_contrast-default-material-soft-highlight: oklch(1 0 0 / 0.07);
     --xh-border-at-limit: var(--xh-_contrast-use-default, var(--xh-_contrast-default-border-at-limit)) var(--xh-_contrast-use-more, var(--xh-_contrast-more-border-at-limit));
     --xh-border-control: var(--xh-_contrast-use-default, var(--xh-_contrast-default-border-control)) var(--xh-_contrast-use-more, var(--xh-_contrast-more-border-control));
@@ -626,11 +605,9 @@
     --xh-border-invalid: var(--xh-_contrast-use-default, var(--xh-_contrast-default-border-invalid)) var(--xh-_contrast-use-more, var(--xh-_contrast-more-border-invalid));
     --xh-border-strong: var(--xh-_contrast-use-default, var(--xh-_contrast-default-border-strong)) var(--xh-_contrast-use-more, var(--xh-_contrast-more-border-strong));
     --xh-border-subtle: var(--xh-_contrast-use-default, var(--xh-_contrast-default-border-subtle)) var(--xh-_contrast-use-more, var(--xh-_contrast-more-border-subtle));
-    --xh-material-elevated-backdrop: var(--xh-_contrast-use-default, blur(var(--xh-blur-xl)) saturate(108%)) var(--xh-_contrast-use-more, none);
     --xh-material-elevated-bg: var(--xh-_contrast-use-default, var(--xh-_contrast-default-material-elevated-bg)) var(--xh-_contrast-use-more, var(--xh-bg-surface));
     --xh-material-elevated-border: var(--xh-_contrast-use-default, var(--xh-_contrast-default-material-elevated-border)) var(--xh-_contrast-use-more, var(--xh-border-subtle));
     --xh-material-elevated-fg-muted: var(--xh-_contrast-use-default, var(--xh-_contrast-default-material-elevated-fg-muted)) var(--xh-_contrast-use-more, var(--xh-fg-muted));
-    --xh-material-elevated-highlight: var(--xh-_contrast-use-default, oklch(1 0 0 / 0.32)) var(--xh-_contrast-use-more, oklch(0 0 0 / 0));
     --xh-material-elevated-separator: var(--xh-_contrast-use-default, var(--xh-_contrast-default-material-elevated-separator)) var(--xh-_contrast-use-more, var(--xh-border-subtle));
     --xh-material-elevated-shadow: var(--xh-_contrast-use-default, var(--xh-_contrast-default-material-elevated-shadow)) var(--xh-_contrast-use-more, none);
     --xh-material-frosted-backdrop: var(--xh-_contrast-use-default, blur(var(--xh-blur-md)) saturate(108%)) var(--xh-_contrast-use-more, none);
@@ -641,13 +618,6 @@
     --xh-material-frosted-compact-shadow: var(--xh-_contrast-use-default, var(--xh-_contrast-default-material-frosted-compact-shadow)) var(--xh-_contrast-use-more, none);
     --xh-material-frosted-highlight: var(--xh-_contrast-use-default, var(--xh-_contrast-default-material-frosted-highlight)) var(--xh-_contrast-use-more, oklch(0 0 0 / 0));
     --xh-material-frosted-separator: var(--xh-_contrast-use-default, var(--xh-_contrast-default-material-frosted-separator)) var(--xh-_contrast-use-more, var(--xh-border-subtle));
-    --xh-material-glass-backdrop: var(--xh-_contrast-use-default, blur(var(--xh-blur-lg)) saturate(112%)) var(--xh-_contrast-use-more, none);
-    --xh-material-glass-bg: var(--xh-_contrast-use-default, var(--xh-_contrast-default-material-glass-bg)) var(--xh-_contrast-use-more, var(--xh-bg-surface));
-    --xh-material-glass-border: var(--xh-_contrast-use-default, var(--xh-_contrast-default-material-glass-border)) var(--xh-_contrast-use-more, var(--xh-border-subtle));
-    --xh-material-glass-fg-muted: var(--xh-_contrast-use-default, var(--xh-_contrast-default-material-glass-fg-muted)) var(--xh-_contrast-use-more, var(--xh-fg-muted));
-    --xh-material-glass-highlight: var(--xh-_contrast-use-default, var(--xh-_contrast-default-material-glass-highlight)) var(--xh-_contrast-use-more, oklch(0 0 0 / 0));
-    --xh-material-glass-separator: var(--xh-_contrast-use-default, var(--xh-_contrast-default-material-glass-separator)) var(--xh-_contrast-use-more, var(--xh-border-subtle));
-    --xh-material-glass-shadow: var(--xh-_contrast-use-default, var(--xh-_contrast-default-material-glass-shadow)) var(--xh-_contrast-use-more, none);
     --xh-material-soft-highlight: var(--xh-_contrast-use-default, var(--xh-_contrast-default-material-soft-highlight)) var(--xh-_contrast-use-more, oklch(0 0 0 / 0));
   }
 
@@ -663,11 +633,9 @@
     --xh-border-invalid: var(--xh-_contrast-use-default, var(--xh-_contrast-default-border-invalid)) var(--xh-_contrast-use-more, var(--xh-_contrast-more-border-invalid));
     --xh-border-strong: var(--xh-_contrast-use-default, var(--xh-_contrast-default-border-strong)) var(--xh-_contrast-use-more, var(--xh-_contrast-more-border-strong));
     --xh-border-subtle: var(--xh-_contrast-use-default, var(--xh-_contrast-default-border-subtle)) var(--xh-_contrast-use-more, var(--xh-_contrast-more-border-subtle));
-    --xh-material-elevated-backdrop: var(--xh-_contrast-use-default, blur(var(--xh-blur-xl)) saturate(108%)) var(--xh-_contrast-use-more, none);
     --xh-material-elevated-bg: var(--xh-_contrast-use-default, var(--xh-_contrast-default-material-elevated-bg)) var(--xh-_contrast-use-more, var(--xh-bg-surface));
     --xh-material-elevated-border: var(--xh-_contrast-use-default, var(--xh-_contrast-default-material-elevated-border)) var(--xh-_contrast-use-more, var(--xh-border-subtle));
     --xh-material-elevated-fg-muted: var(--xh-_contrast-use-default, var(--xh-_contrast-default-material-elevated-fg-muted)) var(--xh-_contrast-use-more, var(--xh-fg-muted));
-    --xh-material-elevated-highlight: var(--xh-_contrast-use-default, oklch(1 0 0 / 0.32)) var(--xh-_contrast-use-more, oklch(0 0 0 / 0));
     --xh-material-elevated-separator: var(--xh-_contrast-use-default, var(--xh-_contrast-default-material-elevated-separator)) var(--xh-_contrast-use-more, var(--xh-border-subtle));
     --xh-material-elevated-shadow: var(--xh-_contrast-use-default, var(--xh-_contrast-default-material-elevated-shadow)) var(--xh-_contrast-use-more, none);
     --xh-material-frosted-backdrop: var(--xh-_contrast-use-default, blur(var(--xh-blur-md)) saturate(108%)) var(--xh-_contrast-use-more, none);
@@ -678,13 +646,6 @@
     --xh-material-frosted-compact-shadow: var(--xh-_contrast-use-default, var(--xh-_contrast-default-material-frosted-compact-shadow)) var(--xh-_contrast-use-more, none);
     --xh-material-frosted-highlight: var(--xh-_contrast-use-default, var(--xh-_contrast-default-material-frosted-highlight)) var(--xh-_contrast-use-more, oklch(0 0 0 / 0));
     --xh-material-frosted-separator: var(--xh-_contrast-use-default, var(--xh-_contrast-default-material-frosted-separator)) var(--xh-_contrast-use-more, var(--xh-border-subtle));
-    --xh-material-glass-backdrop: var(--xh-_contrast-use-default, blur(var(--xh-blur-lg)) saturate(112%)) var(--xh-_contrast-use-more, none);
-    --xh-material-glass-bg: var(--xh-_contrast-use-default, var(--xh-_contrast-default-material-glass-bg)) var(--xh-_contrast-use-more, var(--xh-bg-surface));
-    --xh-material-glass-border: var(--xh-_contrast-use-default, var(--xh-_contrast-default-material-glass-border)) var(--xh-_contrast-use-more, var(--xh-border-subtle));
-    --xh-material-glass-fg-muted: var(--xh-_contrast-use-default, var(--xh-_contrast-default-material-glass-fg-muted)) var(--xh-_contrast-use-more, var(--xh-fg-muted));
-    --xh-material-glass-highlight: var(--xh-_contrast-use-default, var(--xh-_contrast-default-material-glass-highlight)) var(--xh-_contrast-use-more, oklch(0 0 0 / 0));
-    --xh-material-glass-separator: var(--xh-_contrast-use-default, var(--xh-_contrast-default-material-glass-separator)) var(--xh-_contrast-use-more, var(--xh-border-subtle));
-    --xh-material-glass-shadow: var(--xh-_contrast-use-default, var(--xh-_contrast-default-material-glass-shadow)) var(--xh-_contrast-use-more, none);
     --xh-material-soft-highlight: var(--xh-_contrast-use-default, var(--xh-_contrast-default-material-soft-highlight)) var(--xh-_contrast-use-more, oklch(0 0 0 / 0));
   }
 
@@ -698,11 +659,9 @@
     --xh-border-invalid: var(--xh-_contrast-use-default, var(--xh-_contrast-default-border-invalid)) var(--xh-_contrast-use-more, var(--xh-_contrast-more-border-invalid));
     --xh-border-strong: var(--xh-_contrast-use-default, var(--xh-_contrast-default-border-strong)) var(--xh-_contrast-use-more, var(--xh-_contrast-more-border-strong));
     --xh-border-subtle: var(--xh-_contrast-use-default, var(--xh-_contrast-default-border-subtle)) var(--xh-_contrast-use-more, var(--xh-_contrast-more-border-subtle));
-    --xh-material-elevated-backdrop: var(--xh-_contrast-use-default, blur(var(--xh-blur-xl)) saturate(108%)) var(--xh-_contrast-use-more, none);
     --xh-material-elevated-bg: var(--xh-_contrast-use-default, var(--xh-_contrast-default-material-elevated-bg)) var(--xh-_contrast-use-more, var(--xh-bg-surface));
     --xh-material-elevated-border: var(--xh-_contrast-use-default, var(--xh-_contrast-default-material-elevated-border)) var(--xh-_contrast-use-more, var(--xh-border-subtle));
     --xh-material-elevated-fg-muted: var(--xh-_contrast-use-default, var(--xh-_contrast-default-material-elevated-fg-muted)) var(--xh-_contrast-use-more, var(--xh-fg-muted));
-    --xh-material-elevated-highlight: var(--xh-_contrast-use-default, oklch(1 0 0 / 0.32)) var(--xh-_contrast-use-more, oklch(0 0 0 / 0));
     --xh-material-elevated-separator: var(--xh-_contrast-use-default, var(--xh-_contrast-default-material-elevated-separator)) var(--xh-_contrast-use-more, var(--xh-border-subtle));
     --xh-material-elevated-shadow: var(--xh-_contrast-use-default, var(--xh-_contrast-default-material-elevated-shadow)) var(--xh-_contrast-use-more, none);
     --xh-material-frosted-backdrop: var(--xh-_contrast-use-default, blur(var(--xh-blur-md)) saturate(108%)) var(--xh-_contrast-use-more, none);
@@ -713,13 +672,6 @@
     --xh-material-frosted-compact-shadow: var(--xh-_contrast-use-default, var(--xh-_contrast-default-material-frosted-compact-shadow)) var(--xh-_contrast-use-more, none);
     --xh-material-frosted-highlight: var(--xh-_contrast-use-default, var(--xh-_contrast-default-material-frosted-highlight)) var(--xh-_contrast-use-more, oklch(0 0 0 / 0));
     --xh-material-frosted-separator: var(--xh-_contrast-use-default, var(--xh-_contrast-default-material-frosted-separator)) var(--xh-_contrast-use-more, var(--xh-border-subtle));
-    --xh-material-glass-backdrop: var(--xh-_contrast-use-default, blur(var(--xh-blur-lg)) saturate(112%)) var(--xh-_contrast-use-more, none);
-    --xh-material-glass-bg: var(--xh-_contrast-use-default, var(--xh-_contrast-default-material-glass-bg)) var(--xh-_contrast-use-more, var(--xh-bg-surface));
-    --xh-material-glass-border: var(--xh-_contrast-use-default, var(--xh-_contrast-default-material-glass-border)) var(--xh-_contrast-use-more, var(--xh-border-subtle));
-    --xh-material-glass-fg-muted: var(--xh-_contrast-use-default, var(--xh-_contrast-default-material-glass-fg-muted)) var(--xh-_contrast-use-more, var(--xh-fg-muted));
-    --xh-material-glass-highlight: var(--xh-_contrast-use-default, var(--xh-_contrast-default-material-glass-highlight)) var(--xh-_contrast-use-more, oklch(0 0 0 / 0));
-    --xh-material-glass-separator: var(--xh-_contrast-use-default, var(--xh-_contrast-default-material-glass-separator)) var(--xh-_contrast-use-more, var(--xh-border-subtle));
-    --xh-material-glass-shadow: var(--xh-_contrast-use-default, var(--xh-_contrast-default-material-glass-shadow)) var(--xh-_contrast-use-more, none);
     --xh-material-soft-highlight: var(--xh-_contrast-use-default, var(--xh-_contrast-default-material-soft-highlight)) var(--xh-_contrast-use-more, oklch(0 0 0 / 0));
   }
 
@@ -733,12 +685,6 @@
       --xh-material-elevated-separator: var(--xh-border-subtle);
       --xh-material-elevated-fg-muted: var(--xh-fg-muted);
       --xh-material-elevated-focus-surface: var(--xh-bg-surface);
-      --xh-material-glass-bg: var(--xh-bg-surface);
-      --xh-material-glass-backdrop: none;
-      --xh-material-glass-border: var(--xh-border-subtle);
-      --xh-material-glass-highlight: oklch(0 0 0 / 0);
-      --xh-material-glass-separator: var(--xh-border-subtle);
-      --xh-material-glass-fg-muted: var(--xh-fg-muted);
       --xh-material-frosted-compact-alpha: var(--xh-alpha-opaque);
       --xh-material-frosted-compact-backdrop: none;
       --xh-material-frosted-bg: var(--xh-bg-surface);
@@ -759,12 +705,6 @@
     --xh-material-elevated-separator: var(--xh-border-subtle);
     --xh-material-elevated-fg-muted: var(--xh-fg-muted);
     --xh-material-elevated-focus-surface: var(--xh-bg-surface);
-    --xh-material-glass-bg: var(--xh-bg-surface);
-    --xh-material-glass-backdrop: none;
-    --xh-material-glass-border: var(--xh-border-subtle);
-    --xh-material-glass-highlight: oklch(0 0 0 / 0);
-    --xh-material-glass-separator: var(--xh-border-subtle);
-    --xh-material-glass-fg-muted: var(--xh-fg-muted);
     --xh-material-frosted-compact-alpha: var(--xh-alpha-opaque);
     --xh-material-frosted-compact-backdrop: none;
     --xh-material-frosted-bg: var(--xh-bg-surface);
@@ -787,15 +727,6 @@
       --xh-material-elevated-fg: CanvasText;
       --xh-material-elevated-fg-muted: CanvasText;
       --xh-material-elevated-focus-surface: Canvas;
-      --xh-material-glass-bg: Canvas;
-      --xh-material-glass-backdrop: none;
-      --xh-material-glass-border: CanvasText;
-      --xh-material-glass-highlight: transparent;
-      --xh-material-glass-shadow: none;
-      --xh-material-glass-separator: CanvasText;
-      --xh-material-glass-fg: CanvasText;
-      --xh-material-glass-fg-muted: CanvasText;
-      --xh-material-glass-focus-surface: Canvas;
       --xh-material-solid-bg: Canvas;
       --xh-material-solid-border: CanvasText;
       --xh-material-solid-highlight: transparent;
@@ -883,12 +814,6 @@
       --xh-material-elevated-highlight: oklch(0 0 0 / 0);
       --xh-material-elevated-shadow: none;
       --xh-material-elevated-separator: var(--xh-border-subtle);
-      --xh-material-glass-bg: var(--xh-bg-surface);
-      --xh-material-glass-backdrop: none;
-      --xh-material-glass-border: var(--xh-border-subtle);
-      --xh-material-glass-highlight: oklch(0 0 0 / 0);
-      --xh-material-glass-shadow: none;
-      --xh-material-glass-separator: var(--xh-border-subtle);
       --xh-material-soft-highlight: oklch(0 0 0 / 0);
       --xh-material-soft-shadow: none;
       --xh-material-frosted-compact-alpha: var(--xh-alpha-opaque);
