@@ -1,4 +1,4 @@
-// 仪表盘 | variant="dashboard" 在环上留一个缺口，gapDegree 与 gapPosition 决定它多大、朝哪
+// 仪表盘 | variant="dashboard" 在环上留一个缺口，gapDegree 与 gapPosition 决定缺口大小与朝向
 import type { ReactNode } from "react";
 import { XhProgress } from "@xihan-ui/react";
 

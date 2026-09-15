@@ -26,7 +26,7 @@ value 与 max 共同决定百分比
 
 ### 配文字说明
 
-进度条自身只画轨道与进度，百分比文字由使用者摆
+进度条自身只绘制轨道与进度，百分比文字由使用者放置
 
 <XhDemo src="progress/02-labelled" />
 
@@ -44,37 +44,37 @@ tone 决定进度段用哪族颜色，不写时沿用品牌色
 
 ### 尺寸
 
-size 只改轨道厚度，不写即缺省中档
+size 只改变轨道厚度，不写即默认中档
 
 <XhDemo src="progress/05-size" />
 
 ### 自定义外观
 
-轨道色、进度段色与轨道厚度各是一个组件令牌，纯色与渐变都塞得进去
+轨道色、进度段色与轨道厚度各是一个组件令牌，纯色与渐变都可以使用
 
 <XhDemo src="progress/06-custom-appearance" />
 
 ### 环形
 
-variant="circle" 把同一份进度画成环，尺寸档改的是直径
+variant="circle" 把同一份进度绘制为环，尺寸档改变的是直径
 
 <XhDemo src="progress/07-circle" />
 
 ### 仪表盘
 
-variant="dashboard" 在环上留一个缺口，gapDegree 与 gapPosition 决定它多大、朝哪
+variant="dashboard" 在环上留一个缺口，gapDegree 与 gapPosition 决定缺口大小与朝向
 
 <XhDemo src="progress/08-dashboard" />
 
 ### 环心文字
 
-组件只负责把内容摆到环心，写什么由使用者决定
+组件只负责把内容放置到环心，写什么由使用者决定
 
 <XhDemo src="progress/09-circle-label" />
 
 ### 环的外观
 
-直径、颜色与端点走令牌，线宽走 strokeWidth：它改的是几何，半径跟着往里收
+直径、颜色与端点经令牌，线宽经 strokeWidth：它改变的是几何，半径随之向内收缩
 
 <XhDemo src="progress/10-circle-appearance" />
 

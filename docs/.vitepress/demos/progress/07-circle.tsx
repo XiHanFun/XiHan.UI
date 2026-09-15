@@ -1,4 +1,4 @@
-// 环形 | variant="circle" 把同一份进度画成环，尺寸档改的是直径
+// 环形 | variant="circle" 把同一份进度绘制为环，尺寸档改变的是直径
 import type { ReactNode } from "react";
 import { XhProgress } from "@xihan-ui/react";
 
