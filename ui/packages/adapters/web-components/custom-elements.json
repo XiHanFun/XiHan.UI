@@ -1844,7 +1844,7 @@
       "declarations": [
         {
           "kind": "class",
-          "description": "`<xh-avatar-group>` —— Light-DOM 行为宿主，无状态机，把 connectAvatarGroup 产出打到各角色节点。\n\n组内每一枚头像是作者自己的节点，不是本组件的角色节点：尺寸写在根上，\n皮肤把它翻成 `--xh-avatar-*` 槽位，沿继承流给每一枚。\noverflow-item 可缺省：没超出上限时就没有「+N」。",
+          "description": "`<xh-avatar-group>`：Light-DOM 行为宿主，无状态机，把 connectAvatarGroup 产出接到各角色节点。\n\n组内每个头像是作者自己的节点，不是本组件的角色节点：尺寸写在根上，\n皮肤把它转换为 `--xh-avatar-*` 槽位，沿继承流下发给每个头像。\noverflow-item 可省略：未超出上限时没有「+N」。",
           "name": "XhAvatarGroupElement",
           "cssParts": [
             {
@@ -1852,7 +1852,7 @@
               "name": "root"
             },
             {
-              "description": "溢出计数位，内容（「+N」）由作者写",
+              "description": "溢出计数位，内容（「+N」）由作者填写",
               "name": "overflow-item"
             }
           ],
@@ -1900,7 +1900,7 @@
               "type": {
                 "text": "number | undefined"
               },
-              "description": "展示上限，如实落成根上的 data-max；裁剪与计数由作者做",
+              "description": "展示上限，如实写为根上的 data-max；裁剪与计数由作者完成",
               "name": "max",
               "fieldName": "max"
             },
@@ -1908,7 +1908,7 @@
               "type": {
                 "text": "Size | undefined"
               },
-              "description": "尺寸，决定组内每一枚的直径与字号",
+              "description": "尺寸，决定组内每个头像的直径与字号",
               "name": "size",
               "fieldName": "size"
             }
