@@ -1,8 +1,8 @@
 # Vue 适配器
 
-`@xihan-ui/vue` 是无头内核的 Vue 3 外壳。它做三件事：把机器接到 Vue 的响应式上、把部件包成组件、把 `connect` 产出的 props 展开到 vnode 上。**不实现任何组件逻辑。**
+`@xihan-ui/vue` 是无头内核的 Vue 3 外壳。它负责三件事：把状态机接入 Vue 的响应式、把部件封装为组件、把 `connect` 产出的 props 展开到 vnode 上。它不实现任何组件逻辑。
 
-依赖：`vue` 是 peer 依赖（由你的项目提供）；`@xihan-ui/backgrounds` 与 `@xihan-ui/sound` 是**可选** peer，不用视觉效果或音效就不必装。
+依赖：`vue` 是 peer 依赖（由项目提供）；`@xihan-ui/backgrounds` 与 `@xihan-ui/sound` 是可选 peer，不使用视觉效果或音效时不需要安装。
 
 ## 组件命名
 
@@ -19,9 +19,9 @@ import {
 } from "@xihan-ui/vue";
 ```
 
-只有一个部件的组件不带部件后缀（`XhButton`、`XhSwitch`、`XhBadge`）。全部 1002 个导出组件按组件分组列在[组件参考](../components/)里。
+只有一个部件的组件不带部件后缀（`XhButton`、`XhSwitch`、`XhBadge`）。全部 1002 个导出组件按组件分组列在[组件参考](../components/)。
 
-没有插件，不需要 `app.use()`。按名字 import 即可，`sideEffects: false` 让打包器摇掉没用到的部分。
+没有插件，不需要 `app.use()`。按名称 import 即可，`sideEffects: false` 让打包器移除未使用的部分。
 
 ## 配置与视觉环境
 
@@ -54,15 +54,15 @@ emits: {
 
 | 事件 | 载荷 | 用途 |
 | --- | --- | --- |
-| `value-change` | 完整明细对象，如 `{ value }` | 需要拿到全部上下文时 |
-| `update:value` | 裸值 | 供 `v-model` 用 |
+| `value-change` | 完整明细对象，如 `{ value }` | 需要全部上下文时 |
+| `update:value` | 裸值 | 供 `v-model` 使用 |
 
 ```vue
 <template>
   <!-- 双向绑定 -->
   <XhAccordionRoot v-model:value="panels" multiple />
 
-  <!-- 或者自己接明细 -->
+  <!-- 或自行处理明细 -->
   <XhAccordionRoot :value="panels" @value-change="onChange" />
 </template>
 ```
@@ -86,11 +86,11 @@ emits: {
 </template>
 ```
 
-受控时组件**永远不会自己动**：它只发出变更意图，等你把新值写回来才真的改。这条语义收在机器的 `cell` 与 `watch` 里，不由各组件自己判断。详见[状态机运行时](../guide/machine#受控与非受控-cell)。
+受控时组件不会自行改变：它只发出变更意图，由使用者写回新值后才真正改变。这条语义收在状态机的 `cell` 与 `watch` 中，不由各组件自行判断。详见[状态机运行时](../guide/machine#受控与非受控-cell)。
 
 ## 作用域插槽
 
-根组件通过作用域插槽把命令式方法交出来：
+根组件通过作用域插槽提供命令式方法：
 
 ```vue
 <template>
@@ -105,7 +105,7 @@ emits: {
 
 ### 载荷有类型
 
-插槽载荷都写进了组件的 `SlotsType`，所以 `vue-tsc` 接得住两类拼写错误：
+插槽载荷都写进了组件的 `SlotsType`，`vue-tsc` 可以捕获两类拼写错误：
 
 ```vue
 <template>
@@ -116,7 +116,7 @@ emits: {
 </template>
 ```
 
-两类拼写错误各自接得住：
+两类拼写错误分别如下：
 
 ```vue
 <template>
@@ -132,13 +132,11 @@ emits: {
 </template>
 ```
 
-载荷类型本身也从主入口导出（`TabsPanelSlotProps`、`StepsRootSlotProps` 这样命名），
-需要把插槽内容拆成子组件时可以直接拿来标注 props。
+载荷类型本身也从主入口导出（命名如 `TabsPanelSlotProps`、`StepsRootSlotProps`），需要把插槽内容拆成子组件时可以直接用于标注 props。
 
-插槽键在类型上一律是**可选**的：组件内部靠「作者写没写这个插槽」决定要不要按 `collection` 铺开默认结构，
-键若非可选，那条判断在类型上就恒为真了。
+插槽键在类型上一律可选：组件内部按作者是否编写该插槽决定是否按 `collection` 铺开默认结构，键若非可选，该判断在类型上恒为真。
 
-不想用现成 DOM 结构时，直接拿 `api` 自己渲染：
+不使用现成 DOM 结构时，直接使用 `api` 自行渲染：
 
 ```vue
 <script setup lang="ts">
@@ -162,13 +160,13 @@ const { api } = useAccordion(
 </template>
 ```
 
-`api` 是一个 `ComputedRef`，随机器状态变化重新求值。纯展示型组件（`XhBadge` 这类没有状态机的）不提供组合式函数。
+`api` 是一个 `ComputedRef`，随状态机状态变化重新求值。纯展示型组件（如 `XhBadge` 等没有状态机的组件）不提供组合式函数。
 
-上下文类型（`AccordionContext` 等）也一并导出，便于把 `api` 往下透传时标注类型。父子组件之间的 provide / inject 是内部实现，不对外开放——要自定义结构请直接用组合式函数拿 `api`，而不是接进现成组件的上下文。
+上下文类型（`AccordionContext` 等）也一并导出，便于向下透传 `api` 时标注类型。父子组件之间的 provide / inject 是内部实现，不对外开放；自定义结构请直接用组合式函数获取 `api`，不接入现成组件的上下文。
 
-## 机器接到 Vue 响应式
+## 状态机接入 Vue 响应式
 
-内部只有一层薄适配。`createVueRuntime()` 实现 `ReactiveRuntime` 的五个口子：
+内部只有一层薄适配。`createVueRuntime()` 实现 `ReactiveRuntime` 的五个接口：
 
 | 接口 | Vue 实现 |
 | --- | --- |
@@ -177,7 +175,7 @@ const { api } = useAccordion(
 | `flush` | `nextTick` |
 | `onMount` / `onCleanup` | `onMounted` / `onBeforeUnmount`（不在组件内则立即执行 / 忽略） |
 
-`useMachine(machine, props, scope)` 把它包起来。props 传的是 getter 而不是对象，每次展开成新对象让机器的身份缓存失效——这样在模板里原地改某个 prop 也收得到。
+`useMachine(machine, props, scope)` 封装了它。props 传的是 getter 而不是对象，每次展开为新对象使状态机的身份缓存失效，因此在模板中原地修改某个 prop 也能生效。
 
 ## 行为原语
 
@@ -187,7 +185,7 @@ const { api } = useAccordion(
 
 ## 背景层
 
-Vue 侧的视觉适配在**单独的子入口**，不引就不会把 WebGL 引擎打进包：
+Vue 侧的视觉适配位于单独的子入口，不引入就不会把 WebGL 引擎打进包：
 
 ```ts
 import { useBackground, vBackground, XhBackground } from "@xihan-ui/vue/backgrounds";
@@ -197,7 +195,7 @@ import { useBackground, vBackground, XhBackground } from "@xihan-ui/vue/backgrou
 
 ## 声音层
 
-同样是单独的子入口。`withToastSound` / `withDialogSound` 给命令式反馈服务配上声音，调用点一行都不用改；`v-sound` 给单个元素配声：
+同样是单独的子入口。`withToastSound` / `withDialogSound` 为命令式反馈服务配置声音，调用点不需要修改；`v-sound` 为单个元素配置声音：
 
 ```ts
 import { setSoundPlayer, vSound, withToastSound } from "@xihan-ui/vue/sound";
@@ -213,9 +211,9 @@ import { setSoundPlayer, vSound, withToastSound } from "@xihan-ui/vue/sound";
 
 ## 与 Web Components 适配器的关系
 
-两者跑同一个机器、同一份 `connect`，输出的 DOM 属性完全一致——跨适配器一致性测试逐帧比对归一化快照，抹不掉的差异即判失败。
+两者运行同一个状态机、同一份 `connect`，输出的 DOM 属性完全一致：跨适配器一致性测试逐帧比对归一化快照，无法消除的差异即判失败。
 
-选哪个：Vue 项目用这个；需要在多个框架 / 无框架页面里复用同一套组件时用[自定义元素](./web-components)。两者可以在同一页面共存。
+Vue 项目使用本适配器；需要在多个框架或无框架页面中复用同一套组件时使用[自定义元素](./web-components)。两者可以在同一页面共存。
 
 ## 相关
 

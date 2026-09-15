@@ -1170,12 +1170,12 @@ const TABLE = [
   ['docs/guide/animations.md', /(\d+) 个注意预设/, '注意预设数'],
 
   ['docs/adapters/vue.md', /全部 (\d+) 个导出组件/, 'Vue导出组件数'],
-  ['docs/adapters/react.md', /(\d+) 个组件里已铺 \d+ 个/, '组件数'],
-  ['docs/adapters/react.md', /\d+ 个组件里已铺 (\d+) 个/, 'React已铺组件数'],
-  ['docs/adapters/react.md', /(\d+) 个机器里的 `track`/, '用track的机器数'],
-  ['docs/adapters/react.md', /(\d+) 个 `watch` 块全部静默失效/, '带watch块的机器数'],
+  ['docs/adapters/react.md', /(\d+) 个组件中已覆盖 \d+ 个/, '组件数'],
+  ['docs/adapters/react.md', /\d+ 个组件中已覆盖 (\d+) 个/, 'React已铺组件数'],
+  ['docs/adapters/react.md', /(\d+) 个状态机中的 `track`/, '用track的机器数'],
+  ['docs/adapters/react.md', /(\d+) 个 `watch` 块会全部静默失效/, '带watch块的机器数'],
   ['docs/adapters/web-components.md', /注册全部 (\d+) 个 xh-\* 元素/, '自定义元素数'],
-  ['docs/adapters/web-components.md', /（CEM 格式），(\d+) 个元素的标签名/, 'CEM元素数'],
+  ['docs/adapters/web-components.md', /（CEM 格式），包含 (\d+) 个元素的标签名/, 'CEM元素数'],
 
   ['docs/npm-package-dependency.md', /每份皮肤一条 CSS，共 (\d+) 条/, '皮肤份数'],
   ['docs/npm-package-dependency.md', /（(\d+) 份组件皮肤/, '组件皮肤份数'],
