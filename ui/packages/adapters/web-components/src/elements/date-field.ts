@@ -29,7 +29,7 @@ const SEGMENT_SET_CONVERTER = {
 
 type SegmentTexts = { readonly [K in DateSegmentType]?: string }
 
-/** 九块段位的名字，按段名声明时照它认。 */
+/** 九个段位的名字，按段名声明时据此识别。 */
 const SEGMENT_TYPES: readonly DateSegmentType[] = [
   'year',
   'quarter',
@@ -42,7 +42,7 @@ const SEGMENT_TYPES: readonly DateSegmentType[] = [
   'dayPeriod',
 ]
 
-/** 作者写在段位上的下标。缺席或写坏了就退回文档序——手写 HTML 时把段位按顺序排下来本身就是声明。 */
+/** 作者写在段位上的下标。缺席或写错时退回文档序：手写 HTML 时把段位按顺序排列本身就是声明。 */
 function declaredIndex(el: HTMLElement, position: number): number {
   const raw = el.getAttribute('index')
   if (raw == null || raw.trim() === '')
@@ -52,8 +52,8 @@ function declaredIndex(el: HTMLElement, position: number): number {
 }
 
 /**
- * 作者写在段位上的那一句声明：`segment="quarter"` 按段名认，否则按下标（缺省退回文档序）。
- * 段名写坏了当没写，退回下标那条路。
+ * 作者写在段位上的声明：`segment="quarter"` 按段名识别，否则按下标（默认退回文档序）。
+ * 段名写错时视为未写，退回下标路径。
  */
 function declaredSegment(el: HTMLElement, position: number): DateFieldSegmentProps {
   const raw = el.getAttribute('segment')?.trim()
@@ -63,49 +63,49 @@ function declaredSegment(el: HTMLElement, position: number): DateFieldSegmentPro
 }
 
 /**
- * `<xh-date-field>` —— Light-DOM 行为宿主：作者写 root/label/control/segment-group/segment（多个）/hidden-input
- * 角色节点，元素跑 date-field 机器并把 connect 产出打上去。
+ * `<xh-date-field>`：Light-DOM 行为宿主：作者写 root / label / control / segment-group / segment（多个）/ hidden-input
+ * 角色节点，元素运行 date-field 状态机并把 connect 产出接上。
  *
- * 每一段是一个 role=spinbutton 的可聚焦节点：上下键加减并在段区间里回绕、左右键与 Home/End 换段、
- * 数字键直填且敲满自动跳下一段、Backspace 清掉本段；可选的 clear-trigger 一键清空全部段。
+ * 每一段是一个 role=spinbutton 的可聚焦节点：上下键加减并在段区间内回绕、左右键与 Home/End 换段、
+ * 数字键直接填入且输满自动跳到下一段、Backspace 清除本段；可选的 clear-trigger 一键清空全部段。
  *
- * 是哪一段有两种写法：只声明下标（`index`，或按文档序），是哪一段由 locale（zh-CN 年月日、
- * en-US 月日年）与段集算出来——同一份标记换个 locale 就换一副面孔；或按段名写死
- * （`segment="quarter"`），段集里没有这一块时那一格收起。用不上的段带 hidden 留在文档里，
+ * 段的身份有两种写法：只声明下标（`index`，或按文档序），具体是哪一段由 locale（zh-CN 年月日、
+ * en-US 月日年）与段集计算：同一份标记更换 locale 即更换形态；或按段名固定
+ * （`segment="quarter"`），段集中没有该段时该格收起。不使用的段带 hidden 保留在文档中，
  * 不卸载作者节点。
  *
- * 段位没填齐时整份值是 null；填齐了才拼出 ISO 串，由 hidden-input 随表单提交。
+ * 段位未填齐时整份值为 null；填齐后才拼出 ISO 串，由 hidden-input 随表单提交。
  *
- * 占位串与读屏名字是逐段的对象，属性表达不了，只能走 property
+ * 占位串与读屏名字是逐段的对象，属性无法表达，只能通过 property 设置
  * （`el.placeholder = { year: '年' }`）。
  *
  * @customElement xh-date-field
- * @attr {string} value - 受控值，ISO 串；写成空串即"受控且当前为空"；缺省该属性即非受控
+ * @attr {string} value - 受控值，ISO 串；写为空串即受控且当前为空；未提供该属性即非受控
  * @attr {string} default-value - 非受控初值，同样是 ISO 串
  * @attr {string} min - 下界 ISO 串，参与各段区间的收窄
  * @attr {string} max - 上界 ISO 串
- * @attr {string} locale - BCP 47 语言标记，决定年月日三段的先后；不给按宿主语言，宿主也没有时按 en-US
- * @attr {string} time-zone - IANA 时区名，只用来取"今天"（空段按上下键时的起点）
- * @attr {'day'|'hour'|'minute'|'second'} granularity - 精度，决定一共几段，默认 day
- * @attr {string} segments - 段集，逗号分隔的段名（`year,quarter`）；给了它 granularity 让路。
+ * @attr {string} locale - BCP 47 语言标记，决定年月日三段的先后；未提供时按宿主语言，宿主也没有时按 en-US
+ * @attr {string} time-zone - IANA 时区名，只用于取今天（空段按上下键时的起点）
+ * @attr {'day'|'hour'|'minute'|'second'} granularity - 精度，决定共有几段，默认 day
+ * @attr {string} segments - 段集，逗号分隔的段名（`year,quarter`）；提供后 granularity 让位。
  *   可选的九块：year / quarter / month / week / day / hour / minute / second / dayPeriod。
- *   季度与月、周与日两两互斥，都写时留细的那个
- * @attr {boolean} disabled - 禁用：整组退出 Tab 序，隐藏输入不参与提交
- * @attr {boolean} read-only - 只读：可聚焦、可换段，但改不动
+ *   季度与月、周与日两两互斥，都写时以较细的粒度为准
+ * @attr {boolean} disabled - 禁用：整组退出 Tab 序列，隐藏输入不参与提交
+ * @attr {boolean} read-only - 只读：可聚焦、可换段，但不可修改
  * @attr {boolean} invalid - 校验失败标注
- * @attr {boolean} required - 必填标注，落到每段的 aria-required 上
- * @attr {string} name - 表单字段名；给了隐藏输入才带 name
+ * @attr {boolean} required - 必填标注，写入每段的 aria-required
+ * @attr {string} name - 表单字段名；提供后隐藏输入才带 name
  * @attr {'outline'|'subtle'|'ghost'} variant - 形态
  * @attr {'brand'|'neutral'|'success'|'warning'|'danger'|'info'} tone - 语气
  * @attr {'sm'|'md'|'lg'} size - 尺寸
  * @fires value-change - 值变化；detail 为 `{ value: string | null }`
  * @csspart root - 最外层，承载 data-disabled / data-invalid / data-complete / data-out-of-range
- * @csspart label - 标题；点它把焦点送进首段
+ * @csspart label - 标题；点击它把焦点送进首段
  * @csspart control - role=group 的分段容器
- * @csspart segment-group - 段位与分隔符的外壳，占满盒里剩下的宽度
- * @csspart segment - 一段一个的 spinbutton 节点。可自带 segment 属性按段名认领（segment="quarter"），
+ * @csspart segment-group - 段位与分隔符的外壳，占满盒内剩余宽度
+ * @csspart segment - 一段一个的 spinbutton 节点。可自带 segment 属性按段名归属（segment="quarter"），
  *   或自带 index 属性声明下标，两者都没写按文档序
- * @csspart clear-trigger - 清空钮，不占 Tab 位；没值或不可编辑时收起，点完焦点回到首段
+ * @csspart clear-trigger - 清空按钮，不占 Tab 位；无值或不可编辑时收起，点击后焦点回到首段
  * @csspart hidden-input - type=hidden 的表单出口，值是 ISO 串
  */
 export class XhDateFieldElement extends XhElement {
