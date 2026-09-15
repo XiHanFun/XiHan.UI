@@ -1,4 +1,4 @@
-<!-- 禁用 | 单项禁用后点不动，方向键也跳过它；整组禁用则每一项都跟着禁用 -->
+<!-- 禁用 | 单项禁用后不可点击，方向键也跳过它；整组禁用则每一项都随之禁用 -->
 <script setup lang="ts">
 import { XhRadioGroupRoot } from "@xihan-ui/vue";
 
