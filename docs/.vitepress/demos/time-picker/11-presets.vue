@@ -1,4 +1,4 @@
-<!-- 快捷选项 | presets 在列旁边多排一列，点一条整份写进值并收起；时刻在组件外算好再传 -->
+<!-- 快捷选项 | presets 在列旁边多排一列，点击一条即整份写入值并收起；时刻在组件外计算后再传入 -->
 <script setup lang="ts">
 import { timePickerPresetNow } from "@xihan-ui/headless";
 import {

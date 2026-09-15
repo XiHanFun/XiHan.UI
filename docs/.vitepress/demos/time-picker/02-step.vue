@@ -1,4 +1,4 @@
-<!-- 分列步长 | step=15 只裁浮层里的可选值（分列剩四格），段位上手打的分数不受它限制 -->
+<!-- 分列步长 | step=15 只裁剪浮层中的可选值（分列剩四格），段位上手动输入的分钟数不受它限制 -->
 <script setup lang="ts">
 import {
   XhTimePickerClearTrigger,

@@ -1,4 +1,4 @@
-<!-- 可选的触发钮 | 点输入行本来就展开，这个按钮不是必需的；要它是因为它才带 aria-haspopup / aria-expanded -->
+<!-- 可选的触发按钮 | 点击输入行本来就会展开，该按钮不是必需的；需要它是因为它才带 aria-haspopup / aria-expanded -->
 <script setup lang="ts">
 import {
   XhTimePickerClearTrigger,

@@ -1,4 +1,4 @@
-<!-- 三轴 | variant 决定描边与底怎么画、tone 决定用哪族颜色、size 换几何档；三者只落在 root，浮层里的格子一并跟着换 -->
+<!-- 三轴 | variant 决定描边与底色的绘制方式、tone 决定使用哪族颜色、size 切换几何档；三者只落在 root，浮层中的格子一并随之变化 -->
 <script setup lang="ts">
 import type { ControlVariant, Size, Tone } from "@xihan-ui/core";
 import {
