@@ -1,4 +1,4 @@
-// 手动收走 | create 返回的就是队列身份 id，存下来随时 dismiss 掉那一条；dismiss 直接移出队列，不走退场窗口
+// 手动关闭 | create 返回的就是队列身份 id，保存后可随时 dismiss 该条；dismiss 直接移出队列，不经退场窗口
 import type { NotificationOptions, ToastStatusChangeDetails } from "@xihan-ui/headless";
 import type { ReactNode } from "react";
 import {
