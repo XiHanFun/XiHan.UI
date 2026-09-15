@@ -5456,6 +5456,8 @@
   border-color: transparent;
   background-color: transparent;
   box-shadow: none;
+  /* 内层表面始终透明，不播放字段自身的边框/背景过渡，避免失焦时短暂闪回。 */
+  transition: none;
 }
 
 /* 焦点环由组的外表面绘制，子输入保留焦点语义但不再重复画第二圈。 */
