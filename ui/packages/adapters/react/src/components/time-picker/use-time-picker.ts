@@ -19,7 +19,7 @@ import { useMachine } from '../../runtime/use-machine'
 import { useOverlay } from '../../runtime/use-overlay'
 
 export interface TimePickerContext extends OverlayWiring {
-  /** 机器实例，供部件上报 DOM 侧的事实。 */
+  /** 状态机实例，供部件上报 DOM 侧的事实。 */
   service: Service<TimePickerSchema>
   api: TimePickerApi
   /** 表单重置的锚点：接在根节点上。 */
