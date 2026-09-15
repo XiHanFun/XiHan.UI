@@ -93,17 +93,17 @@
 
 | 属性 | 类型 | 必填 | 说明 |
 | --- | --- | --- | --- |
-| `collection` | `ContextMenuNode[]` |  | 条目数据，显示文本、禁用、标记位与分组的事实源。给了它，条目部件只需报 value。 缺省即回到「文本与禁用全写在条目部件上」的老路。 |
-| `open` | `boolean` |  | 展开态。给定即受控：内部不再自改，只发 onOpenChange。 |
+| `collection` | `ContextMenuNode[]` |  | 条目数据，显示文本、禁用、标记位与分组的事实源。提供后条目部件只需声明 value。 未提供时回到文本与禁用全部写在条目部件上的方式。 |
+| `open` | `boolean` |  | 展开态。提供即受控：内部不再自行修改，只发 onOpenChange。 |
 | `defaultOpen` | `boolean` |  |  |
-| `placement` | `Placement` |  | 相对光标那一点的首选放置位，默认 bottom-start。 |
-| `offset` | `number` |  | 浮层与光标的间距（px），默认 0——右键菜单要贴着光标。 |
-| `loop` | `boolean` |  | 方向键走到尽头是否回绕，默认 true。 |
+| `placement` | `Placement` |  | 相对光标位置的首选放置位，默认 bottom-start。 |
+| `offset` | `number` |  | 浮层与光标的间距（px），默认 0：右键菜单需要贴近光标。 |
+| `loop` | `boolean` |  | 方向键到达末尾是否回绕，默认 true。 |
 | `dir` | `Direction` |  | 文字方向，默认 ltr。 |
-| `typeahead` | `boolean` |  | 连打检索，默认开。关掉后可打印字符一律放行给页面。 |
-| `translations` | `Partial<ContextMenuTranslations>` |  | 读屏用的文案，默认英文。 |
-| `longPressDelay` | `number` |  | 触摸端长按多久算触发（ms），默认 700。 |
-| `tone` | `Tone` |  | 语气：brand / neutral / success / warning / danger / info，决定条目高亮与标记位用哪族颜色。 |
+| `typeahead` | `boolean` |  | 连打检索，默认开启。关闭后可打印字符一律放行给页面。 |
+| `translations` | `Partial<ContextMenuTranslations>` |  | 读屏文案，默认英文。 |
+| `longPressDelay` | `number` |  | 触摸端长按多久视为触发（ms），默认 700。 |
+| `tone` | `Tone` |  | 语气：brand / neutral / success / warning / danger / info，决定条目高亮与标记位使用哪族颜色。 |
 | `size` | `Size` |  | 尺寸：sm / md / lg，决定条目高度、内边距与字号档位。 |
 | `onOpenChange` | `(details: ContextMenuOpenChangeDetails) => void` |  | open 变化意图回调；受控时是唯一出口，非受控时随内部转移一并通知。 |
 | `onSelect` | `(details: ContextMenuSelectDetails) => void` |  | 条目被选中；菜单随之关闭。 |
@@ -154,11 +154,11 @@
 | 成员 | 类型 | 说明 |
 | --- | --- | --- |
 | `open` | `boolean` |  |
-| `collection` | `readonly ContextMenuNodeMeta[]` | collection 推出的条目元信息，按数据顺序排列；没给 collection 即空数组。 |
-| `pressing` | `boolean` | 长按计时进行中；触发区据此给按压反馈。 |
-| `point` | `ContextMenuPoint \| null` | 当前锚点坐标；一次都没打开过时为 null。 |
+| `collection` | `readonly ContextMenuNodeMeta[]` | 由 collection 推导的条目元信息，按数据顺序排列；未提供 collection 时为空数组。 |
+| `pressing` | `boolean` | 长按计时进行中；触发区据此提供按压反馈。 |
+| `point` | `ContextMenuPoint \| null` | 当前锚点坐标；从未打开过时为 null。 |
 | `focusedValue` | `string \| null` | 焦点锚点；收起时为 null。 |
-| `setOpen` | `(next: boolean) => void` | 收起走 CLOSE；展开沿用最近一次锚点坐标，从未有过坐标时锚在触发区的起始角上。 |
+| `setOpen` | `(next: boolean) => void` | 收起经 CLOSE；展开沿用最近一次锚点坐标，从未有过坐标时锚定在触发区的起始角。 |
 | `openAt` | `(x: number, y: number) => void` | 命令式展开到指定视口坐标。 |
 | `getRootProps` | `() => T['element']` |  |
 | `getTriggerProps` | `() => T['element']` |  |

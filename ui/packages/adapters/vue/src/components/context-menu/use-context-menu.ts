@@ -26,9 +26,9 @@ export interface ContextMenuContext {
   contentRef: Ref<HTMLElement | null>
   /** 子菜单经 Portal 分离后的逻辑父节点。 */
   tree: MenuTreeNode
-  /** 此刻该不该渲染：退场动画播完之前仍为真。 */
+  /** 当前是否应当渲染：退场动画播完之前仍为真。 */
   visible: Ref<boolean>
-  /** 浮层搬到哪儿：全局配置的 portalContainer > body。 */
+  /** 浮层迁移到的位置：全局配置的 portalContainer > body。 */
   portalTarget: ComputedRef<string | Element>
 }
 

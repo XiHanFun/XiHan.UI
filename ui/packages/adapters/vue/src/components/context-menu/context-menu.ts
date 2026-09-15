@@ -35,7 +35,7 @@ type ContextMenuProps = ContextMenuSchema['props']
 /** 默认插槽的载荷：右键菜单的展开态与锚点坐标，以及开合、按坐标展开的命令。 */
 export type ContextMenuRootSlotProps = Pick<ContextMenuApi, 'open' | 'point' | 'setOpen' | 'openAt'>
 
-/** 子菜单默认插槽的载荷：这一层子菜单自己的展开态与开合命令。 */
+/** 子菜单默认插槽的载荷：该层子菜单自己的展开态与开合命令。 */
 export type ContextMenuSubSlotProps = Pick<MenuApi, 'open' | 'setOpen'>
 
 export const XhContextMenuRoot = defineComponent({
@@ -108,7 +108,7 @@ export const XhContextMenuTrigger = defineComponent({
   // 直通属性自己合：Vue 默认把作者的处理器排在部件的后面，这里改成作者先跑
   inheritAttrs: false,
   props: {
-    /** 借用作者的子节点当触发器，不再渲染自己的包裹元素；子节点须恰好一个。 */
+    /** 借用作者的子节点作为触发器，不再渲染自己的包裹元素；子节点须恰好一个。 */
     asChild: Boolean,
   },
   setup(props, { slots, attrs }) {
@@ -229,14 +229,14 @@ export const XhContextMenuItem = defineComponent({
 })
 
 /**
- * 右键菜单里的子菜单：子层跑一台 submenu 模式的 menu 机器，触发条目由
- * XhContextMenuSubTrigger 渲染成「父层条目 + 子层触发器」的双重身份。
- * 子层内部用 XhMenu 系部件（再往深嵌套即 menu 套 menu）。本身不渲染节点。
+ * 右键菜单中的子菜单：子层运行一台 submenu 模式的 menu 状态机，触发条目由
+ * XhContextMenuSubTrigger 渲染为父层条目与子层触发器的双重身份。
+ * 子层内部使用 XhMenu 系部件（再往深嵌套即 menu 嵌套 menu）。本身不渲染节点。
  */
 export const XhContextMenuSub = defineComponent({
   name: 'XhContextMenuSub',
   props: {
-    /** 它在父右键菜单里的条目身份。 */
+    /** 它在父右键菜单中的条目身份。 */
     value: { type: String, required: true },
     disabled: { type: Boolean, default: undefined },
     placement: { type: String as PropType<Placement> },
@@ -244,11 +244,11 @@ export const XhContextMenuSub = defineComponent({
     loop: { type: Boolean, default: undefined },
     openOnHover: { type: Boolean, default: undefined },
     hoverOpenDelay: { type: Number },
-    /** 文字方向；缺省继承父层。子层被搬到浮层落点，继承不到父层的方向。 */
+    /** 文字方向；默认继承父层。子层被迁移到浮层落点，无法继承父层的方向。 */
     dir: { type: String as PropType<Direction> },
-    /** 语气；缺省继承父层。子层是浮层落点下的同级节点，CSS 私有槽继承不到。 */
+    /** 语气；默认继承父层。子层是浮层落点下的同级节点，CSS 私有槽无法继承。 */
     tone: { type: String as PropType<Tone> },
-    /** 尺寸；缺省继承父层，理由同 tone。 */
+    /** 尺寸；默认继承父层，理由同 tone。 */
     size: { type: String as PropType<Size> },
     hoverCloseDelay: { type: Number },
   },
@@ -317,7 +317,7 @@ export const XhContextMenuItemIndicator = defineComponent({
   },
 })
 
-/** 条目里的副文本，排在文字下一行 */
+/** 条目中的副文本，排在文字下一行 */
 export const XhContextMenuItemDescription = defineComponent({
   name: 'XhContextMenuItemDescription',
   setup(_, { slots }) {
@@ -345,9 +345,9 @@ export const XhContextMenuArrow = defineComponent({
 
 /** 一段连续的同组条目；不分组的条目各自单独成段。 */
 /**
- * 没写默认插槽时按 collection 铺开的整套结构，作者只交数据。
- * 与手写部件产出的 DOM 完全一致，要改结构就写默认插槽，行为不变。
- * 触发区里放什么是作者的事，由 trigger 插槽给出。
+ * 未写默认插槽时按 collection 铺开的整套结构，作者只提供数据。
+ * 与手写部件产出的 DOM 完全一致，需要修改结构时写默认插槽，行为不变。
+ * 触发区中放置的内容由作者决定，经 trigger 插槽给出。
  */
 function renderDefaultTree(
   collection: readonly ContextMenuNodeMeta[],
@@ -362,7 +362,7 @@ function renderDefaultTree(
   ]
 }
 
-/** content 的内容：分组段铺成 group，段首的分隔线落在 group 外面。 */
+/** content 的内容：分组段铺为 group，段首的分隔线落在 group 外面。 */
 function renderNodes(
   collection: readonly ContextMenuNodeMeta[],
   itemSlot?: (node: ContextMenuNodeMeta) => VNode[],
@@ -389,7 +389,7 @@ function renderNodes(
   })
 }
 
-/** 单个条目：标记位排在文字前面，没给标记位就不铺那个部件。 */
+/** 单个条目：标记位排在文字前面，未提供标记位时不铺该部件。 */
 function renderItem(
   meta: ContextMenuNodeMeta,
   itemSlot?: (node: ContextMenuNodeMeta) => VNode[],
