@@ -9,7 +9,7 @@ import type { ReactiveControllerHost } from '../reactive'
 import { DIAGNOSTIC_CODES, ensurePortalRoot, reportDiagnostic } from '@xihan-ui/core'
 
 /**
- * 命令式服务的宿主容器。不给 target 就在浮层落点下新建一个，dispose 时连同容器一起撤掉。
+ * 命令式服务的宿主容器。未提供 target 时在浮层落点下新建一个，dispose 时连同容器一起移除。
  */
 export function createServiceHolder(target?: HTMLElement): { holder: HTMLElement, release: () => void } {
   if (target)
@@ -20,11 +20,11 @@ export function createServiceHolder(target?: HTMLElement): { holder: HTMLElement
 }
 
 /**
- * 给「没有元素的机器」用的最小反应宿主。
+ * 供没有元素的状态机使用的最小反应宿主。
  *
- * 轻提示那一摞在库里没有对应的自定义元素（摞落在哪儿是整个服务的口径，
- * 不是逐页各挂一份），所以队列机器没有可依附的元素。机器只要求宿主在状态变了时
- * 被叫醒一次，这里就只兑现那一件事：把重画排进微任务，同一拍里的多次写入合成一次。
+ * 轻提示的堆叠在库中没有对应的自定义元素（堆叠位置是整个服务的口径，
+ * 不是逐页各挂一份），因此队列状态机没有可依附的元素。状态机只要求宿主在状态变化时
+ * 被唤醒一次，这里就只兑现这一件事：把重绘排进微任务，同一拍内的多次写入合并为一次。
  */
 export function createServiceReactiveHost(render: () => void): ReactiveControllerHost {
   let scheduled = false
@@ -61,10 +61,10 @@ export function createServiceReactiveHost(render: () => void): ReactiveControlle
 }
 
 /**
- * 服务建不起来时发一条诊断并交回 false，由调用方整体惰化。
+ * 服务无法建立时发一条诊断并返回 false，由调用方整体惰化。
  *
- * 这几个服务是从路由守卫、请求拦截器这类地方懒建的——那些位置抛异常，
- * 后果不是「提示没弹出来」而是整次导航失败、整站白屏。一条轻提示不该有这个权力。
+ * 这几个服务是从路由守卫、请求拦截器等位置懒建的：这些位置抛异常，
+ * 后果不是提示未弹出而是整次导航失败、整站白屏。一条轻提示不应有这种权力。
  */
 export function reportServiceFailure(service: string, error: unknown): false {
   reportDiagnostic({

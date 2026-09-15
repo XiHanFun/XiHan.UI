@@ -74,8 +74,8 @@ export function createNotificationService(options: NotificationServiceOptions = 
   }
 
   /**
-   * 那一摞。每个位置一个，按九宫格固定顺序插进 root——
-   * 不按出现次序，否则同一批通知换个先后就会让整块界面重排。
+   * 堆叠区。每个位置一个，按九宫格固定顺序插入 root：
+   * 不按出现次序，否则同一批通知更换先后就会让整块界面重排。
    */
   function ensureGroup(placement: NotificationPlacement): HTMLElement {
     const existing = groups.get(placement)
@@ -164,7 +164,7 @@ export function createNotificationService(options: NotificationServiceOptions = 
     }
   }
 
-  /** 队列一动就重画。元素自己发这条事件，服务不必再盯机器。 */
+  /** 队列一变化就重绘。元素自己发出该事件，服务不必再监视状态机。 */
   const onItems = (): void => render()
   /** 走完退场的那条从队列里删掉；元素自己也收这条，这里只清回调表。 */
   const onStatus = (event: Event): void => {

@@ -15,12 +15,12 @@ import { createLitRuntime } from './lit-runtime'
 
 export interface MachineControllerOptions<T extends MachineSchema> {
   scope?: Scope
-  /** 每次建机器后回调，用于注入 refs。 */
+  /** 每次建立状态机后回调，用于注入 refs。 */
   onBuilt?: (service: Service<T>) => void
   /**
-   * 全局配置从哪个桶里取，默认取机器名。
-   * 只有「跑别人机器」的元素需要写它——比如通知的卡片跑的是 toast 那台机器，
-   * 文案却该跟着通知走。
+   * 全局配置从哪个桶中取，默认取状态机名。
+   * 只有运行其他组件状态机的元素需要写它：例如通知的卡片运行的是 toast 的状态机，
+   * 文案却应跟随通知。
    */
   configName?: string
 }
@@ -65,7 +65,7 @@ export class MachineController<T extends MachineSchema> implements ReactiveContr
     this.attachFormReset()
   }
 
-  /** 元素自己就是锚点（Light DOM）。重连时重建，指向新那台机器。 */
+  /** 元素自己就是锚点（Light DOM）。重连时重建，指向新的状态机。 */
   private attachFormReset(): void {
     if (this.formReset || !declaresFormReset(this.machine))
       return

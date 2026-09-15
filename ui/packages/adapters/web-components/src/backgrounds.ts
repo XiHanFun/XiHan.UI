@@ -29,17 +29,17 @@ import { version as VERSION } from '../package.json'
 import { XhReactiveElement } from './reactive'
 import { defineElement } from './runtime/registry'
 
-/** 属性缺席翻成 undefined（走引擎默认值），写成 "false" 才是关。 */
+/** 属性缺席转换为 undefined（使用引擎默认值），写为 "false" 才是关闭。 */
 const optionalBool = {
   fromAttribute: (value: string | null): boolean | undefined =>
     value === null ? undefined : value !== 'false',
 }
 
 /**
- * `<xh-background>` —— 视觉画面宿主。
+ * `<xh-background>`：视觉画面宿主。
  *
- * 元素自身就是画布的容器：内容照常写在里面，效果铺在内容底下，
- * 画布是 pointer-events: none，不会挡住里面的交互。
+ * 元素自身就是画布的容器：内容照常写在其中，效果铺在内容下方，
+ * 画布是 pointer-events: none，不会遮挡其中的交互。
  *
  * @customElement xh-background
  * @attr {string} effect - 效果名，须先注册（defineXhBackground 会把内置效果一并注册）
@@ -155,8 +155,8 @@ export class XhBackgroundElement extends XhReactiveElement {
 }
 
 /**
- * 注册 `<xh-background>`，并把内置效果一并注册进效果注册表——
- * 元素只认效果名字，注册表空着的话任何 effect 属性都解析不出来。
+ * 注册 `<xh-background>`，并把内置效果一并注册进效果注册表：
+ * 元素只识别效果名字，注册表为空时任何 effect 属性都无法解析。
  */
 export function defineXhBackground(): void {
   registerBuiltinEffects()
