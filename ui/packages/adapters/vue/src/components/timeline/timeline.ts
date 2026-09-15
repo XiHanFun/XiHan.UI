@@ -14,7 +14,7 @@ import { withXhConfig } from '../../config/config'
 import { vueNormalize } from '../../runtime/normalize-props'
 import { provideTimeline, provideTimelineItem, useTimelineContext, useTimelineItem } from './context'
 
-/** 根渲染为 ol：事件本来就有先后，列表标记由皮肤抹掉、列表语义由 role 兜住。 */
+/** 根渲染为 ol：事件本身有先后，列表标记由皮肤去除、列表语义由 role 保留。 */
 export const XhTimelineRoot = defineComponent({
   name: 'XhTimelineRoot',
   // 有 connect 兜底的 prop：普通类型省略 default，Boolean 显式保留 undefined
@@ -30,7 +30,7 @@ export const XhTimelineRoot = defineComponent({
   },
 })
 
-/** 一条事件。tone 只在这一条内生效，下传给它自己的圆点。 */
+/** 一条事件。tone 只在该条内生效，下传给它自己的圆点。 */
 export const XhTimelineItem = defineComponent({
   name: 'XhTimelineItem',
   props: {
@@ -93,7 +93,7 @@ export const XhTimelineDescription = defineComponent({
   },
 })
 
-/** 渲染为 time：机读时间由作者写 datetime，属性原样透传到这个节点上。 */
+/** 渲染为 time：机读时间由作者写 datetime，属性原样透传到该节点上。 */
 export const XhTimelineTime = defineComponent({
   name: 'XhTimelineTime',
   setup(_, { slots }) {

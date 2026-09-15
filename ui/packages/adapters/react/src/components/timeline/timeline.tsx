@@ -16,7 +16,7 @@ import { reactNormalize } from '../../runtime/normalize-props'
 import { TimelineItemProvider, TimelineProvider, useTimelineContext, useTimelineItemContext } from './context'
 
 export interface XhTimelineRootProps extends ComponentPropsWithRef<'ol'> {
-  /** 方向，缺省 vertical。 */
+  /** 方向，默认 vertical。 */
   orientation?: Orientation
   /** 侧别：内容与坐标排在线的哪一侧。 */
   placement?: TimelinePlacement
@@ -24,7 +24,7 @@ export interface XhTimelineRootProps extends ComponentPropsWithRef<'ol'> {
   size?: Size
 }
 
-/** 根渲染为 ol：事件本来就有先后，列表标记由皮肤抹掉、列表语义由 role 兜住。 */
+/** 根渲染为 ol：事件本身有先后，列表标记由皮肤去除、列表语义由 role 保留。 */
 export function XhTimelineRoot({ orientation, placement, size, children, ...rest }: XhTimelineRootProps): ReactNode {
   const api = connectTimeline(
     withXhConfig('timeline', { orientation, placement, size }) as TimelineProps,
@@ -40,7 +40,7 @@ export function XhTimelineRoot({ orientation, placement, size, children, ...rest
 }
 
 export interface XhTimelineItemProps extends ComponentPropsWithRef<'li'> {
-  /** 这一条的语气，只在本条内生效，下传给它自己的圆点。 */
+  /** 该条的语气，只在本条内生效，下传给它自己的圆点。 */
   tone?: Tone
 }
 
@@ -59,7 +59,7 @@ export function XhTimelineItem({ tone, children, ...rest }: XhTimelineItemProps)
 
 export interface XhTimelineLabelProps extends ComponentPropsWithRef<'div'> {}
 
-/** 这一条的坐标（日期、版本号），与内容对置的那一列。 */
+/** 该条的坐标（日期、版本号），与内容对置的一列。 */
 export function XhTimelineLabel({ children, ...rest }: XhTimelineLabelProps): ReactNode {
   const ctx = useTimelineContext()
   return (
@@ -127,7 +127,7 @@ export function XhTimelineDescription({ children, ...rest }: XhTimelineDescripti
 
 export interface XhTimelineTimeProps extends ComponentPropsWithRef<'time'> {}
 
-/** 渲染为 time：机读时间由作者写 datetime，属性原样透传到这个节点上。 */
+/** 渲染为 time：机读时间由作者写 datetime，属性原样透传到该节点上。 */
 export function XhTimelineTime({ children, ...rest }: XhTimelineTimeProps): ReactNode {
   const ctx = useTimelineContext()
   return (
