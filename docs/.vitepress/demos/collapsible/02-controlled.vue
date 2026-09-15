@@ -1,4 +1,4 @@
-<!-- 受控 | 传了 open 就由宿主说了算，组件自己不再改状态，只发 open-change 报告意图 -->
+<!-- 受控 | 传入 open 后由宿主决定，组件自身不再修改状态，只发 open-change 报告意图 -->
 <script setup lang="ts">
 import {
   XhButton,

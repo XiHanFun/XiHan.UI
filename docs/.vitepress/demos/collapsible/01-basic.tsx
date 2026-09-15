@@ -1,4 +1,4 @@
-// 基础用法 | 不传 open 即为非受控，defaultOpen 只给初始值，之后由组件自己维护开合
+// 基础用法 | 不传 open 即为非受控，defaultOpen 只提供初始值，之后由组件自行维护开合
 import type { ReactNode } from "react";
 import {
   XhCollapsibleContent,

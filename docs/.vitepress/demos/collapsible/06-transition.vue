@@ -1,4 +1,4 @@
-<!-- 展开动画 | 收起时节点不卸载，作者接管内容区的 display，用一条行高过渡就能平滑展开 -->
+<!-- 展开动画 | 收起时节点不卸载，作者接管内容区的 display，用一条行高过渡即可平滑展开 -->
 <script setup lang="ts">
 import {
   XhCollapsibleContent,
