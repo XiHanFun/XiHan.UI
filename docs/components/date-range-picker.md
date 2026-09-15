@@ -26,7 +26,7 @@
 
 ### 两页并排
 
-起止常跨月时给 visibleCount=2，两页一起翻
+起止常跨月时设置 visibleCount=2，两页一起翻
 
 <XhDemo src="date-range-picker/02-two-panels" />
 
@@ -38,13 +38,13 @@
 
 ### 不可用日期
 
-周末不可选，区间允许跨过不可用的日子
+周末不可选，区间允许跨过不可用的日期
 
 <XhDemo src="date-range-picker/04-unavailable" />
 
 ### 周期区间
 
-granularity 决定两组输入行铺哪几段、浮层铺哪一档格子
+granularity 决定两组输入行铺设哪几段、浮层铺设哪一档格子
 
 <XhDemo src="date-range-picker/05-granularity" />
 

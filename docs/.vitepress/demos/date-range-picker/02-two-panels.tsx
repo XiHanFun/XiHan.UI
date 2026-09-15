@@ -1,4 +1,4 @@
-// 两页并排 | 起止常跨月时给 visibleCount=2，两页一起翻
+// 两页并排 | 起止常跨月时设置 visibleCount=2，两页一起翻
 import type { CSSProperties, ReactNode } from "react";
 import {
   XhDateRangePickerCalendar,
