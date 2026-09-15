@@ -1,4 +1,4 @@
-// 禁用 | disabled 让标签留在原地却摘不掉：关闭钮仍占着位置，标签宽度不因禁用跳变
+// 禁用 | disabled 使标签留在原地但不可移除：关闭按钮仍占据位置，标签宽度不因禁用跳变
 import type { ReactNode } from "react";
 import { XhTagCloseTrigger, XhTagLabel, XhTagRoot } from "@xihan-ui/react";
 
