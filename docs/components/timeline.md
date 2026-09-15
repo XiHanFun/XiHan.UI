@@ -101,8 +101,8 @@ label 与内容对置：逐条交替排布时时间戳仍停在同一侧，不�
 
 | 属性 | 类型 | 必填 | 说明 |
 | --- | --- | --- | --- |
-| `orientation` | `Orientation` |  | 事件排列方向：vertical 自上而下、horizontal 自起点向终点，缺省 vertical。 |
-| `placement` | `TimelinePlacement` |  | 内容在线的哪一侧：start / end / alternate，不写则内容落在结束侧。 |
+| `orientation` | `Orientation` |  | 事件排列方向：vertical 自上而下、horizontal 自起点向终点，默认 vertical。 |
+| `placement` | `TimelinePlacement` |  | 内容位于线的哪一侧：start / end / alternate，未提供时内容落在结束侧。 |
 | `size` | `Size` |  | 尺寸：sm / md / lg，决定圆点直径、条目间距与字号。 |
 
 ### connect API
@@ -113,7 +113,7 @@ label 与内容对置：逐条交替排布时时间戳仍停在同一侧，不�
 | --- | --- | --- |
 | `getRootProps` | `() => T['element']` |  |
 | `getItemProps` | `() => T['element']` |  |
-| `getLabelProps` | `() => T['element']` | 与内容对置的那一列，装这一条的坐标；排布随整条线的方向与侧别走。 |
+| `getLabelProps` | `() => T['element']` | 与内容对置的一列，放置该条的坐标；排布随整条线的方向与侧别变化。 |
 | `getIndicatorProps` | `(props: TimelineItemProps) => T['element']` | 圆点的语气取自它所属的条目。 |
 | `getConnectorProps` | `() => T['element']` |  |
 | `getContentProps` | `() => T['element']` |  |

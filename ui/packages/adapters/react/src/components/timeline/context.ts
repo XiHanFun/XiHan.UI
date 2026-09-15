@@ -13,7 +13,7 @@ export interface TimelineContext {
 }
 
 const Ctx = createContext<TimelineContext | undefined>(undefined)
-/** 条目的语气下传给它自己那颗圆点。 */
+/** 条目的语气下传给它自己的圆点。 */
 const ItemCtx = createContext<TimelineItemProps | undefined>(undefined)
 
 export const TimelineProvider = Ctx
