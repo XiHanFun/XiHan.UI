@@ -80,7 +80,7 @@
     cursor: pointer;
     transition:
       background var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
-      scale var(--xh-motion-duration-micro) var(--xh-motion-ease-enter-strong);
+      scale var(--xh-motion-duration-release) var(--xh-motion-ease-release);
   }
 
   /* 视觉盒保持 16px，透明命中层扩到随文动作的 24px，不把整枚标签撑高。 */
@@ -105,6 +105,8 @@
   [data-scope='tag'][data-part='close-trigger']:not(:disabled):active {
     background: var(--xh-tag-close-bg-active, color-mix(in oklab, currentColor 22%, transparent));
     scale: var(--xh-motion-scale-press);
+    transition-duration: var(--xh-motion-duration-press);
+    transition-timing-function: var(--xh-motion-ease-press);
   }
 
   [data-scope='tag'][data-part='close-trigger']:disabled {
