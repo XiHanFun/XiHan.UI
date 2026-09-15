@@ -32339,6 +32339,9 @@
   --xh-collection-bg-hover: var(--xh-select-item-bg-hover, var(--xh-bg-subtle));
   --xh-collection-bg-keyboard-highlight: var(--xh-select-item-bg-hover, var(--xh-bg-subtle));
   --xh-collection-bg-selected-highlight: var(--xh-select-item-bg-hover, var(--xh-bg-subtle));
+  /* data-highlighted 同时覆盖指针与键盘路径；指针只换面，焦点环在 :focus-visible 下再接回。 */
+  --xh-collection-outline-keyboard-highlight: transparent;
+  --xh-collection-outline-selected-highlight: transparent;
   --xh-collection-indicator-fg-rest: var(--xh-select-item-check-fg, var(--xh-_select-accent));
   --xh-collection-indicator-fg-checked: var(--xh-select-item-check-fg, var(--xh-_select-accent));
 
@@ -32353,7 +32356,10 @@
 }
 
 /* 键盘焦点出现时底色立即到位，环不会压在背景过渡的中间帧上。 */
-[data-scope='select'][data-part='item']:focus-visible {
+[data-scope='select'][data-part='item']:focus-visible:not(:hover) {
+  --xh-collection-outline-keyboard-highlight: var(--xh-ring-focus);
+  --xh-collection-outline-selected-highlight: var(--xh-ring-focus);
+
   transition: none;
 }
 
