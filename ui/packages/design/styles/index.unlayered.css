@@ -29222,7 +29222,7 @@
     color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
     border-color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
     box-shadow var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
-    scale var(--xh-motion-duration-micro) var(--xh-motion-ease-enter-strong);
+    scale var(--xh-motion-duration-release) var(--xh-motion-ease-release);
 }
 
 /* 悬停这条选择器比当前页那条多一节（:hover），同层里权重更高、会反过来压住它，
@@ -29243,6 +29243,8 @@
 [data-scope='pagination'][data-part='ellipsis-trigger']:active {
   background: var(--xh-pagination-item-bg-active, var(--xh-bg-subtle-active));
   scale: var(--xh-motion-scale-press);
+  transition-duration: var(--xh-motion-duration-press);
+  transition-timing-function: var(--xh-motion-ease-press);
 }
 
 /* 首末页的上一页 / 下一页是原生 disabled（不可聚焦、进不了 Tab 序列），
@@ -29278,6 +29280,8 @@
   border-color: var(--xh-pagination-item-border-selected-active, var(--xh-_pagination-selected-bg-active));
   background: var(--xh-pagination-item-bg-selected-active, var(--xh-_pagination-selected-bg-active));
   scale: var(--xh-motion-scale-press);
+  transition-duration: var(--xh-motion-duration-press);
+  transition-timing-function: var(--xh-motion-ease-press);
 }
 
 /* 省略位是可展开的按钮：折进去的那几页只有它一个入口，指针与键盘都得点得到，
@@ -29384,7 +29388,7 @@
   overflow-y: auto;
   padding: var(--xh-pagination-content-p, var(--xh-space-1));
   border: var(--xh-stroke-thin) solid var(--xh-pagination-content-border, var(--xh-border-default));
-  border-radius: var(--xh-pagination-content-radius, var(--xh-shape-surface));
+  border-radius: var(--xh-pagination-content-radius, var(--xh-shape-overlay));
   background: var(--xh-pagination-content-bg, var(--xh-bg-surface));
   box-shadow: var(--xh-pagination-content-shadow, var(--xh-elevation-floating));
   /* 定位层不吃指针，面板本体必须吃：里面的页码要点得到 */
