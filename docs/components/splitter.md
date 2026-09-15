@@ -91,17 +91,17 @@
 
 | 属性 | 类型 | 必填 | 说明 |
 | --- | --- | --- | --- |
-| `sizes` | `number[]` |  | 每块面板的百分比。给定即受控：内部不再自改，只发 onSizesChange。 |
-| `defaultSizes` | `number[]` |  | 非受控初值；不给就按面板数等分。 |
+| `sizes` | `number[]` |  | 每块面板的百分比。提供即受控：内部不再自行修改，只发 onSizesChange。 |
+| `defaultSizes` | `number[]` |  | 非受控初值；未提供时按面板数等分。 |
 | `panels` | `SplitterPanelProps[]` |  | 逐块的约束；数组长度同时决定面板块数。 |
-| `orientation` | `Orientation` |  | 面板的排布轴，默认 horizontal（并排，拖左右）；vertical 是上下堆叠，拖上下。 |
+| `orientation` | `Orientation` |  | 面板的排布轴，默认 horizontal（并排，左右拖动）；vertical 是上下堆叠，上下拖动。 |
 | `dir` | `Direction` |  | 文字方向，默认 ltr；只对调水平排布下的左右两键与指针位移的正负。 |
-| `disabled` | `boolean` |  | 禁用：分隔条退出 Tab 序列、拖不动也推不动。 |
+| `disabled` | `boolean` |  | 禁用：分隔条退出 Tab 序列、不可拖动也不可推动。 |
 | `step` | `number` |  | 方向键的步长（百分比），默认 1。 |
 | `largeStep` | `number` |  | Shift + 方向键的步长（百分比），默认 10。 |
 | `translations` | `Partial<SplitterTranslations>` |  |  |
-| `onSizesChange` | `(details: SplitterSizesChangeDetails) => void` |  | 每次尺寸变化都发；拖动过程中会连续发很多次。 |
-| `onSizesChangeEnd` | `(details: SplitterSizesChangeEndDetails) => void` |  | 只在一次操作结束时发一次，适合拿来存布局。 |
+| `onSizesChange` | `(details: SplitterSizesChangeDetails) => void` |  | 每次尺寸变化都发出；拖动过程中连续发出。 |
+| `onSizesChangeEnd` | `(details: SplitterSizesChangeEndDetails) => void` |  | 只在一次操作结束时发出一次，适合用于保存布局。 |
 
 ### 事件
 
@@ -109,8 +109,8 @@
 
 | 事件 | 载荷 | 说明 |
 | --- | --- | --- |
-| `sizes-change` | `SplitterSizesChangeDetails` | 布局变化（拖动途中会连发）；detail 为 `{ sizes: number[] }` |
-| `sizes-change-end` | `SplitterSizesChangeEndDetails` | 一次拖拽收尾发一次；detail 为 `{ sizes: number[], index: number }` |
+| `sizes-change` | `SplitterSizesChangeDetails` | 布局变化（拖动途中连续发出）；detail 为 `{ sizes: number[] }` |
+| `sizes-change-end` | `SplitterSizesChangeEndDetails` | 一次拖拽收尾时发出一次；detail 为 `{ sizes: number[], index: number }` |
 
 ### 插槽
 
@@ -140,14 +140,14 @@
 | `panels` | `SplitterPanelState[]` |  |
 | `dragging` | `boolean` |  |
 | `disabled` | `boolean` |  |
-| `setSizes` | `(next: number[]) => void` | 整份赋值：逐块夹进约束、总和归位到 100 之后才落地。 |
-| `setPanelSize` | `(index: number, next: number) => void` | 把第 index 块调到 next，缺的那部分从它后面的面板里取。 最后一块没有属于自己的分隔条，它的尺寸是其余面板的余数，调不动。 |
+| `setSizes` | `(next: number[]) => void` | 整份赋值：逐块夹进约束、总和归位到 100 之后才落定。 |
+| `setPanelSize` | `(index: number, next: number) => void` | 把第 index 块调整为 next，差额从它后面的面板中获取。 最后一块没有属于自己的分隔条，它的尺寸是其余面板的余数，不可调整。 |
 | `collapsePanel` | `(index: number) => void` |  |
 | `expandPanel` | `(index: number) => void` |  |
-| `togglePanel` | `(index: number) => void` | 折叠着就展开、展开着就折叠；不可折叠的面板上是空操作。 |
+| `togglePanel` | `(index: number) => void` | 折叠时展开、展开时折叠；不可折叠的面板上是空操作。 |
 | `getRootProps` | `() => T['element']` |  |
 | `getPanelProps` | `(index: number) => T['element']` |  |
-| `getResizeTriggerProps` | `(index: number) => T['element']` | 第 index 条分隔条坐在第 index 与第 index+1 块面板之间，调整的是前一块。 |
+| `getResizeTriggerProps` | `(index: number) => T['element']` | 第 index 条分隔条位于第 index 与第 index+1 块面板之间，调整的是前一块。 |
 
 ## 无障碍
 

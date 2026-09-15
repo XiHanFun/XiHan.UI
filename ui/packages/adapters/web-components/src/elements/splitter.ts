@@ -33,9 +33,9 @@ const NUMBER_LIST_CONVERTER = {
   },
 }
 /**
- * 面板约束写成 JSON 数组（`panels='[{"id":"main","min":20}]'`）。
- * 解析不出数组就当没写——落一个半截对象进去会让面板块数与作者写的节点数对不上，
- * 那时错的是布局而不只是某一条约束，回到"全都不设限"反而更接近作者本意。
+ * 面板约束写为 JSON 数组（`panels='[{"id":"main","min":20}]'`）。
+ * 无法解析为数组时视为未写：传入一个不完整的对象会让面板块数与作者写的节点数不一致，
+ * 此时错的是布局而不只是某一条约束，回到全部不设限反而更接近作者本意。
  */
 const PANELS_CONVERTER = {
   fromAttribute: (v: string | null) => {
@@ -52,35 +52,35 @@ const PANELS_CONVERTER = {
 }
 
 /**
- * `<xh-splitter>` —— Light-DOM 行为宿主：作者写 root/panel/resize-trigger 角色节点，
- * 元素跑 splitter 机器并把 connect 产出打上去。
+ * `<xh-splitter>`：Light-DOM 行为宿主：作者写 root / panel / resize-trigger 角色节点，
+ * 元素运行 splitter 状态机并把 connect 产出接上。
  *
- * 面板尺寸是百分比，总和恒为 100；每块的尺寸由元素每帧写进内联样式（flex-basis），
- * 作者的样式表不要再碰这条轴。
+ * 面板尺寸是百分比，总和恒为 100；每块的尺寸由元素每帧写入内联样式（flex-basis），
+ * 作者的样式表不应再修改该轴。
  *
- * 拖拽挂在分隔条上（按下—跟手—松手），像素与百分比的换算取 root 的矩形——
- * 矩形在拖拽开始那一刻才量，连接期一律不碰 DOM。
- * 键盘全在分隔条上：方向键按 step 推、Shift+方向键按 largeStep 推、
- * Home/End 取该面板眼下能到的两端、Enter 折叠或展开可折叠的面板。
- * 拖动途中按 Escape 放弃这一场，布局退回按下那一刻。
+ * 拖拽挂在分隔条上（按下、跟随、松开），像素与百分比的换算取 root 的矩形：
+ * 矩形在拖拽开始时才测量，连接期一律不涉及 DOM。
+ * 键盘全部在分隔条上：方向键按 step 推动、Shift + 方向键按 largeStep 推动、
+ * Home / End 取该面板当前可达的两端、Enter 折叠或展开可折叠的面板。
+ * 拖动途中按 Escape 放弃本场，布局退回按下时刻。
  *
- * 面板与分隔条都要用 index 属性写明自己是第几个（`index="1"`）；
- * 第 index 条分隔条坐在第 index 与第 index+1 块面板之间，调整的是前一块。
+ * 面板与分隔条都要用 index 属性写明序号（`index="1"`）；
+ * 第 index 条分隔条位于第 index 与第 index+1 块面板之间，调整的是前一块。
  *
  * @customElement xh-splitter
- * @attr {string} sizes - 受控布局，逗号分隔的百分比（如 "30,70"）；缺省该属性即非受控
- * @attr {string} default-sizes - 非受控初值，同样逗号分隔；缺省时按面板数等分
+ * @attr {string} sizes - 受控布局，逗号分隔的百分比（如 "30,70"）；未提供该属性即非受控
+ * @attr {string} default-sizes - 非受控初值，同样逗号分隔；未提供时按面板数等分
  * @attr {string} panels - 逐块约束的 JSON 数组：id / min / max / collapsible / collapsedSize
  * @attr {'horizontal'|'vertical'} orientation - 面板排布轴，默认 horizontal（并排）
  * @attr {'ltr'|'rtl'} dir - 文字方向，只对调水平排布下左右两键与指针位移的正负，默认 ltr
- * @attr {boolean} disabled - 禁用：分隔条退出 Tab 序列、拖不动也推不动
+ * @attr {boolean} disabled - 禁用：分隔条退出 Tab 序列、不可拖动也不可推动
  * @attr {number} step - 方向键的步长（百分比），默认 1
  * @attr {number} large-step - Shift + 方向键的步长（百分比），默认 10
- * @fires sizes-change - 布局变化（拖动途中会连发）；detail 为 `{ sizes: number[] }`
- * @fires sizes-change-end - 一次拖拽收尾发一次；detail 为 `{ sizes: number[], index: number }`
+ * @fires sizes-change - 布局变化（拖动途中连续发出）；detail 为 `{ sizes: number[] }`
+ * @fires sizes-change-end - 一次拖拽收尾时发出一次；detail 为 `{ sizes: number[], index: number }`
  * @csspart root - 承载 data-orientation / data-disabled / data-dragging 的容器，矩形以它为准
  * @csspart panel - 一块面板；尺寸由内联 flex-basis 给出，折叠时带 data-collapsed
- * @csspart resize-trigger - role=separator 的分隔条，指针与键盘交互全在它身上
+ * @csspart resize-trigger - role=separator 的分隔条，指针与键盘交互全部在它身上
  */
 export class XhSplitterElement extends XhElement {
   static override partContract = { anatomy: splitterAnatomy, meta: splitterMeta }
@@ -153,8 +153,8 @@ export class XhSplitterElement extends XhElement {
   }
 
   /**
-   * 部件自报的下标。作者在节点上写 index="1"，与 Vue 侧的 `:index` 是同一份声明；
-   * 写不出数字（没写、写错）时退回 0。
+   * 部件声明的下标。作者在节点上写 index="1"，与 Vue 侧的 `:index` 是同一份声明；
+   * 无法得到数字（未写、写错）时退回 0。
    */
   private partIndex(el: HTMLElement): number {
     return normalizeItemIndex(el.getAttribute('index'))

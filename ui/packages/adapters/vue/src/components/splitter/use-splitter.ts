@@ -18,7 +18,7 @@ import { createVueIdGenerator } from '../../runtime/vue-id'
 export interface SplitterContext {
   api: ComputedRef<SplitterApi>
   service: Service<SplitterSchema>
-  /** 容器节点，机器在拖拽开始时拿它量矩形。 */
+  /** 容器节点，状态机在拖拽开始时读取它的矩形。 */
   rootRef: Ref<HTMLElement | null>
 }
 
