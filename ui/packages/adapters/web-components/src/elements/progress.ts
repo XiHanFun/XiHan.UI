@@ -12,10 +12,10 @@ import { wcNormalize } from '../dom/normalize'
 import { XhElement } from '../element-base'
 
 /**
- * `<xh-progress>` —— Light-DOM 行为宿主，无状态机，把 connectProgress 产出打到各角色节点。
+ * `<xh-progress>`：Light-DOM 行为宿主，无状态机，把 connectProgress 产出接到各角色节点。
  *
- * 线形写三层 div（root > track > range）；环形要把 track 与 range 写成 `<circle>`、
- * 外面套一层 `<svg>` 当 canvas，环心的文字放进 label：
+ * 线形写三层 div（root > track > range）；环形要把 track 与 range 写为 `<circle>`、
+ * 外层套一层 `<svg>` 作为 canvas，环心的文字放进 label：
  *
  * ```html
  * <xh-progress variant="circle" value="60">
@@ -33,16 +33,16 @@ import { XhElement } from '../element-base'
  * @attr {number} stroke-width - 环的线宽（viewBox 单位），默认 6；只对 circle / dashboard 生效
  * @attr {number} gap-degree - 缺口角度，默认 75；只对 dashboard 生效
  * @attr {'top'|'right'|'bottom'|'left'} gap-position - 缺口朝向，默认 bottom；只对 dashboard 生效
- * @attr {boolean} indeterminate - 进度未知：条子改为往复动画，读屏那侧不报数
+ * @attr {boolean} indeterminate - 进度未知：进度条改为往复动画，读屏侧不报数
  * @attr {string} value-text - 读屏播报的文字，覆盖默认的数值播报
  * @attr {'brand'|'neutral'|'success'|'warning'|'danger'|'info'} tone - 语气
- * @attr {'sm'|'md'|'lg'} size - 尺寸：线形改厚度，环形改直径
- * @attr {'progress'|'meter'} semantics - 报的是进度还是量，默认 progress；meter 发 role=meter 且不接 indeterminate
- * @csspart root - role=progressbar（semantics=meter 时 role=meter）的容器（承载 aria-valuenow/aria-valuemax/data-state）
- * @csspart canvas - 承载环的 svg（线形不用）
+ * @attr {'sm'|'md'|'lg'} size - 尺寸：线形影响厚度，环形影响直径
+ * @attr {'progress'|'meter'} semantics - 报告的是进度还是量，默认 progress；meter 发出 role=meter 且不接受 indeterminate
+ * @csspart root - role=progressbar（semantics=meter 时 role=meter）的容器（承载 aria-valuenow / aria-valuemax / data-state）
+ * @csspart canvas - 承载环的 svg（线形不使用）
  * @csspart track - 进度轨道：线形是满长背景，环形是整段弧
  * @csspart range - 已完成区段：线形写内联 inline-size，环形写 stroke-dashoffset
- * @csspart label - 环心那一块，写什么由使用者决定（线形不用）
+ * @csspart label - 环心区域，内容由使用者决定（线形不使用）
  */
 export class XhProgressElement extends XhElement {
   static override partContract = { anatomy: progressAnatomy, meta: progressMeta }
