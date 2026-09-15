@@ -70,7 +70,7 @@ export interface TimeFieldSchema extends MachineSchema {
     name?: string
     /** 空段的占位字符（单字符），按段宽重复，默认 '-'。 */
     placeholder?: string
-    /** 形态：outline / subtle / ghost，决定描边与底色的使用方式。 */
+    /** 形态：outline / subtle / ghost，决定底色与描边的绘制方式。默认 outline。 */
     variant?: ControlVariant
     /** 语气：brand / neutral / success / warning / danger / info，决定聚焦与强调使用哪族颜色。 */
     tone?: Tone
