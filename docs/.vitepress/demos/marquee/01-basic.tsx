@@ -1,4 +1,4 @@
-// 基础用法 | 窗口只露出一段，轨道在里面往左走；滚动整段在皮肤的 @keyframes 里，用的人不写动画
+// 基础用法 | 窗口只显示一段，轨道在其中向左滚动；滚动整段在皮肤的 @keyframes 中，使用者不写动画
 import type { ReactNode } from "react";
 import { XhMarqueeContent, XhMarqueeRoot } from "@xihan-ui/react";
 

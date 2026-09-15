@@ -12,7 +12,7 @@
 
 ## 用法
 
-窗口只露出一段，轨道在里面往左走；滚动整段在皮肤的 @keyframes 里，用的人不写动画
+窗口只显示一段，轨道在其中向左滚动；滚动整段在皮肤的 @keyframes 中，使用者不写动画
 
 <XhDemo src="marquee/01-basic" />
 
@@ -26,19 +26,19 @@
 
 ### 方向
 
-四档：左右走横轴，上下走纵轴。轴另落成 data-orientation，竖着滚的窗口靠 --xh-marquee-block-size 定高
+四档：左右沿横轴，上下沿纵轴。轴另写为 data-orientation，竖向滚动的窗口依靠 --xh-marquee-block-size 定高
 
 <XhDemo src="marquee/02-direction" />
 
 ### 重复铺满
 
-autoFill 在轨道里铺两份内容，走完一份第二份正好压在起点上，看不出接缝；不开则整段走完再回来
+autoFill 在轨道中铺设两份内容，滚完一份时第二份正好位于起点，看不出接缝；不开启则整段滚完再回到起点
 
 <XhDemo src="marquee/03-auto-fill" />
 
 ### 速度与暂停
 
-speed 是每秒像素；pauseOnHover 在指针停下或焦点落进窗口时停住
+speed 是每秒像素；pauseOnHover 在指针停下或焦点落进窗口时暂停
 
 <XhDemo src="marquee/04-speed-and-pause" />
 
