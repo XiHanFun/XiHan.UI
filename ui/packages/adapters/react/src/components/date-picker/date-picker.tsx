@@ -46,7 +46,7 @@ type DatePickerProps = DatePickerSchema['props']
 function noop(): void {}
 
 /**
- * 部件属于并排的第几张面板：自己写了就按自己写的，没写就跟着所在的日历走。
+ * 部件属于并排的第几张面板：自己写了即按自己写的，未写时跟随所在的日历。
  * 兼收字符串以支持写 index="1"。
  */
 function usePanelIndex(index: number | string | undefined): number {
@@ -81,7 +81,7 @@ export type DatePickerRootSlotProps
   >
   & {
     segments: DateFieldSegmentState[]
-    /** 区间终点那组段位；非区间模式为空数组。 */
+    /** 区间终点组段位；非区间模式为空数组。 */
   }
 
 /** 段位函数式 children 的载荷：本段的投影；下标越界时缺席。 */
@@ -89,7 +89,7 @@ export interface DatePickerSegmentSlotProps {
   segment: DateFieldSegmentState | undefined
 }
 
-/** 快捷选项列函数式 children 的载荷：逐条的投影，作者据此自己铺条目。 */
+/** 快捷选项列函数式 children 的载荷：逐条的投影，作者据此自行铺设条目。 */
 export interface DatePickerPresetsSlotProps {
   presets: readonly DatePickerPresetState[]
 }
@@ -104,19 +104,19 @@ export interface XhDatePickerRootProps extends Omit<ComponentPropsWithRef<'div'>
   locale?: string
   timeZone?: string
   selectionMode?: CalendarPickerSelectionMode
-  /** 选择粒度；与 selectionMode 正交，输入行铺哪几段也跟着它走。 */
+  /** 选择粒度；与 selectionMode 正交，输入行铺设哪几段也跟随它。 */
   granularity?: CalendarGranularity
-  /** 面板此刻钻到了哪一层；给定即受控，缺省跟着 granularity。 */
+  /** 面板当前所处的层级；给定即受控，默认跟随 granularity。 */
   activeView?: CalendarView
-  /** 输入行铺哪几段；不给就按 granularity 推。 */
+  /** 输入行铺设哪几段；未提供时按 granularity 推导。 */
   segments?: DateSegmentSet
-  /** 并排展示几页；缺省 1。 */
+  /** 并排展示几页；默认 1。 */
   visibleCount?: number
-  /** 日历恒渲染六行，默认开。关掉后翻页时浮层高度会跟着月份变。 */
+  /** 日历恒渲染六行，默认开启。关闭后翻页时浮层高度会随月份变化。 */
   fixedWeeks?: boolean
-  /** 初始聚焦日，同时决定展开时先落在哪一页；不给就退回首个选中值，再退回今天。 */
+  /** 初始聚焦日，同时决定展开时先落在哪一页；未提供时退回首个选中值，再退回今天。 */
   defaultFocusedValue?: string
-  /** 快捷选项；给了就在浮层里多出一列，日子要在自己那儿算好再传。 */
+  /** 快捷选项；提供后浮层中多出一列，日期要在调用方计算后再传入。 */
   presets?: DatePickerPreset[]
   isDateUnavailable?: (value: string) => boolean
   disabled?: boolean
@@ -130,7 +130,7 @@ export interface XhDatePickerRootProps extends Omit<ComponentPropsWithRef<'div'>
   size?: Size
   placement?: Placement
   offset?: number
-  /** 文字方向；浮层搬到落点后继承不到作者子树上的方向，要 RTL 就显式给。 */
+  /** 文字方向；浮层迁移到落点后无法继承作者子树上的方向，需要 RTL 时显式提供。 */
   dir?: Direction
   closeOnSelect?: boolean
   showTime?: boolean
@@ -142,7 +142,7 @@ export interface XhDatePickerRootProps extends Omit<ComponentPropsWithRef<'div'>
   children?: SlotChildren<DatePickerRootSlotProps>
 }
 
-/** 网格与段位由作者照 children 载荷里的 weeks / segments 自行渲染。 */
+/** 网格与段位由作者按 children 载荷中的 weeks / segments 自行渲染。 */
 export function XhDatePickerRoot({
   value,
   defaultValue,
@@ -298,11 +298,11 @@ export function XhDatePickerSegmentGroup({ children, ...rest }: XhDatePickerSegm
 export interface XhDatePickerSegmentProps extends Omit<ComponentPropsWithRef<'div'>, 'children'> {
   /** 段位下标，兼收字符串。 */
   index?: number | string
-  /** 按段名声明这一格。段集里没有这一块时它收起；与 index 二选一，两个都写按段名算。 */
+  /** 按段名声明该格。段集中没有该段时它收起；与 index 二选一，两个都写时按段名计算。 */
   segment?: DateSegmentType
   children?: SlotChildren<DatePickerSegmentSlotProps>
 }
-/** 有内容用内容，否则渲染连接层算好的段位文本。 */
+/** 有内容时使用内容，否则渲染连接层计算的段位文本。 */
 export function XhDatePickerSegment({ index, segment, children, ...rest }: XhDatePickerSegmentProps): ReactNode {
   const ctx = useDatePickerContext()
   const { field } = ctx.api
@@ -344,10 +344,10 @@ export function XhDatePickerTrigger({ children, ...rest }: XhDatePickerTriggerPr
 }
 
 export interface XhDatePickerPositionerProps extends ComponentPropsWithRef<'div'> {
-  /** 浮层挂到哪个容器；不给就按全局配置，再不给挂 body。 */
+  /** 浮层挂载的容器；未提供时按全局配置，再未提供时挂载到 body。 */
   container?: () => Element | null
 }
-/** 搬到浮层落点：留在原地的话，宿主祖先只要建了层叠上下文就能盖住浮层。 */
+/** 迁移到浮层落点：留在原地时，宿主祖先只要建立了层叠上下文就能遮住浮层。 */
 export function XhDatePickerPositioner({ children, container, ...rest }: XhDatePickerPositionerProps): ReactNode {
   const ctx = useDatePickerContext()
   // 浮层面板的自绘条：与 content 同级、绝对定位不占布局，壳是这层已经 fixed 的 positioner
@@ -407,7 +407,7 @@ export function XhDatePickerCalendar({ index = 0, children, ...rest }: XhDatePic
 }
 
 export interface XhDatePickerPresetGroupProps extends Omit<ComponentPropsWithRef<'div'>, 'children'> {
-  /** 自己铺条目；不写就按 presets 数据自动铺，两者产出的 DOM 一致。 */
+  /** 自行铺设条目；未写时按 presets 数据自动铺设，两者产出的 DOM 一致。 */
   children?: SlotChildren<DatePickerPresetsSlotProps>
 }
 export function XhDatePickerPresetGroup({ children, ...rest }: XhDatePickerPresetGroupProps): ReactNode {
@@ -428,10 +428,10 @@ export function XhDatePickerPresetGroup({ children, ...rest }: XhDatePickerPrese
 }
 
 export interface XhDatePickerPresetProps extends Omit<ComponentPropsWithRef<'div'>, 'value'> {
-  /** 这一条的身份，与 presets 数据里的 value 逐字对上。 */
+  /** 该条目的身份，与 presets 数据中的 value 逐字对应。 */
   value: string
 }
-/** 有内容用内容，否则用数据里的 label。 */
+/** 有内容时使用内容，否则使用数据中的 label。 */
 export function XhDatePickerPreset({ value, children, ...rest }: XhDatePickerPresetProps): ReactNode {
   const ctx = useDatePickerContext()
   const api = ctx.api
@@ -442,7 +442,7 @@ export function XhDatePickerPreset({ value, children, ...rest }: XhDatePickerPre
   )
 }
 
-/** 时间列整组自动铺：时/分[/秒]各一列，选项点按写值；没开 showTime 时整组带 hidden。 */
+/** 时间列整组自动铺设：时/分[/秒]各一列，选项点按写值；未开启 showTime 时整组带 hidden。 */
 export function XhDatePickerTimePanel(): ReactNode {
   const ctx = useDatePickerContext()
   const api = ctx.api
@@ -498,10 +498,10 @@ export function XhDatePickerNextYearTrigger({ children, ...rest }: XhDatePickerN
 }
 
 export interface XhDatePickerHeadingProps extends ComponentPropsWithRef<'div'> {
-  /** 属于第几个面板；不写就跟着所在的日历走。 */
+  /** 属于第几个面板；未写时跟随所在的日历。 */
   index?: number | string
 }
-/** 有内容用内容，否则渲染本面板的标题。 */
+/** 有内容时使用内容，否则渲染本面板的标题。 */
 export function XhDatePickerHeading({ index, children, ...rest }: XhDatePickerHeadingProps): ReactNode {
   const ctx = useDatePickerContext()
   const panel = usePanelIndex(index)
@@ -514,10 +514,10 @@ export function XhDatePickerHeading({ index, children, ...rest }: XhDatePickerHe
 }
 
 export interface XhDatePickerHeadingYearTriggerProps extends ComponentPropsWithRef<'button'> {
-  /** 属于第几个面板；不写就跟着所在的日历走。 */
+  /** 属于第几个面板；未写时跟随所在的日历。 */
   index?: number | string
 }
-/** 有内容用内容，否则渲染标题里年那一截；年视图下它是整个十年跨度。 */
+/** 有内容时使用内容，否则渲染标题中年份的部分；年视图下它是整个十年跨度。 */
 export function XhDatePickerHeadingYearTrigger({ index, children, ...rest }: XhDatePickerHeadingYearTriggerProps): ReactNode {
   const ctx = useDatePickerContext()
   const panel = usePanelIndex(index)
@@ -530,7 +530,7 @@ export function XhDatePickerHeadingYearTrigger({ index, children, ...rest }: XhD
 }
 
 export interface XhDatePickerHeadingMonthTriggerProps extends ComponentPropsWithRef<'button'> {
-  /** 属于第几个面板；不写就跟着所在的日历走。 */
+  /** 属于第几个面板；未写时跟随所在的日历。 */
   index?: number | string
 }
 export function XhDatePickerHeadingMonthTrigger({ index, children, ...rest }: XhDatePickerHeadingMonthTriggerProps): ReactNode {
@@ -545,7 +545,7 @@ export function XhDatePickerHeadingMonthTrigger({ index, children, ...rest }: Xh
 }
 
 export interface XhDatePickerGridProps extends ComponentPropsWithRef<'div'> {
-  /** 属于第几个面板；不写就跟着所在的日历走。 */
+  /** 属于第几个面板；未写时跟随所在的日历。 */
   index?: number | string
 }
 export function XhDatePickerGrid({ index, children, ...rest }: XhDatePickerGridProps): ReactNode {
@@ -585,10 +585,10 @@ export function XhDatePickerWeekRow({ children, ...rest }: XhDatePickerWeekRowPr
 }
 
 export interface XhDatePickerWeekNumberProps extends ComponentPropsWithRef<'span'> {
-  /** 这一行行首那天的 ISO 串。 */
+  /** 该行行首那一天的 ISO 串。 */
   value: string
 }
-/** 有内容用内容，否则显示这一行的周序号。 */
+/** 有内容时使用内容，否则显示该行的周序号。 */
 export function XhDatePickerWeekNumber({ value, children, ...rest }: XhDatePickerWeekNumberProps): ReactNode {
   const ctx = useDatePickerContext()
   const cal = ctx.api.calendar
@@ -618,12 +618,12 @@ export interface XhDatePickerCellProps extends Omit<ComponentPropsWithRef<'div'>
   /** ISO 日期串。 */
   value: string
   /**
-   * 属于第几个面板；不写就跟着所在的日历走。同一天会同时出现在两个面板里
-   * （8 月末那几天也铺在 9 月的首行），「是不是本月」只有连着面板一起看才判得出来。
+   * 属于第几个面板；未写时跟随所在的日历。同一天会同时出现在两个面板中
+   * （8 月末的几天也铺在 9 月的首行），是否为本月只有连同面板一起看才能判定。
    */
   index?: number | string
 }
-/** 不上报格子卸载，翻月后由日历机器按聚焦日重新落点。 */
+/** 不上报格子卸载，翻月后由日历状态机按聚焦日重新落点。 */
 export function XhDatePickerCell({ value, index, children, ...rest }: XhDatePickerCellProps): ReactNode {
   const ctx = useDatePickerContext()
   const panel = usePanelIndex(index)

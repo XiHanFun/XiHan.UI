@@ -27,15 +27,15 @@ import { createVueIdGenerator } from '../../runtime/vue-id'
 
 export interface DatePickerContext {
   api: ComputedRef<DatePickerApi>
-  /** 四台机器的把手，供部件上报 DOM 侧的事实。 */
+  /** 四台状态机的句柄，供部件上报 DOM 侧的事实。 */
   services: DatePickerServices
   controlRef: Ref<HTMLElement | null>
   positionerRef: Ref<HTMLElement | null>
   contentRef: Ref<HTMLElement | null>
-  /** 此刻该不该渲染：退场动画播完之前仍为真。 */
+  /** 当前是否应当渲染：退场动画播完之前仍为真。 */
   visible: Ref<boolean>
   gridRef: Ref<HTMLElement | null>
-  /** 显式同 Document 目标优先，缺省使用真实根所属运行时的 Portal。 */
+  /** 显式同 Document 目标优先，默认使用真实根所属运行时的 Portal。 */
   portalTarget: ComputedRef<string | Element>
 }
 

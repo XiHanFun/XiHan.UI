@@ -10,12 +10,12 @@ import type { ComputedRef, InjectionKey } from 'vue'
 import type { DatePickerContext } from './use-date-picker'
 import { computed, inject, provide } from 'vue'
 
-/** 格子自报的那一天，供 cell-trigger 复用同一份声明（作者只写一次 value）。 */
+/** 格子声明的那一天，供 cell-trigger 复用同一份声明（作者只写一次 value）。 */
 export interface DatePickerCellContext {
   cell: ComputedRef<CalendarCellProps>
 }
 
-/** 日历自报面板号，供面板内的标题、网格与格子认领自己属于并排的第几张。 */
+/** 日历声明的面板号，供面板内的标题、网格与格子认领自己属于并排的第几张。 */
 export interface DatePickerPanelContext {
   index: ComputedRef<number>
 }
@@ -24,7 +24,7 @@ const KEY: InjectionKey<DatePickerContext> = Symbol.for('xh-date-picker')
 const CELL_KEY: InjectionKey<DatePickerCellContext> = Symbol.for('xh-date-picker-cell')
 const PANEL_KEY: InjectionKey<DatePickerPanelContext> = Symbol.for('xh-date-picker-panel')
 
-/** 日历没自报面板号时的落点，与单面板时一致。 */
+/** 日历未声明面板号时的落点，与单面板时一致。 */
 const FIRST_PANEL: DatePickerPanelContext = { index: computed(() => 0) }
 
 export function provideDatePicker(ctx: DatePickerContext): void {
