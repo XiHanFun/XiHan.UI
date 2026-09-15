@@ -5982,7 +5982,7 @@
   cursor: pointer;
   transition:
     background var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
-    scale var(--xh-motion-duration-micro) var(--xh-motion-ease-enter-strong);
+    scale var(--xh-motion-duration-release) var(--xh-motion-ease-release);
 }
 
 [data-scope='layout'][data-part='sider-trigger']:hover {
@@ -5993,6 +5993,8 @@
 [data-scope='layout'][data-part='sider-trigger']:active {
   background: var(--xh-layout-sider-trigger-bg-active, var(--xh-bg-subtle-active));
   scale: var(--xh-motion-scale-press);
+  transition-duration: var(--xh-motion-duration-press);
+  transition-timing-function: var(--xh-motion-ease-press);
 }
 
 /* —— 分隔线 —— */
