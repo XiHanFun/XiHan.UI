@@ -10,4 +10,5 @@ export function emitActionControlRecipe(options?: {
   bytes: number
   profiles: number
   states: number
+  variants: number
 }>
