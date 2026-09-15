@@ -11102,7 +11102,7 @@
       "declarations": [
         {
           "kind": "class",
-          "description": "`<xh-color-swatch-picker>` —— Light-DOM 行为宿主，跑 color-swatch-picker 机器并把 connect 产出打到\nroot/label/item/swatch/indicator/hidden-input 等角色节点。\n\n从若干固定颜色里挑一个：与单选组同一套 roving tabindex，方向键移焦点并选中，Space 选中；\n每格的色块面经 Swatch 家族画，颜色由元素写进私有槽。",
+          "description": "`<xh-color-swatch-picker>`：Light-DOM 行为宿主，运行 color-swatch-picker 状态机并把 connect 产出接到\nroot / label / item / swatch / indicator / hidden-input 等角色节点。\n\n从若干固定颜色中选择一个：与单选组同一套 roving tabindex，方向键移动焦点并选中，Space 选中；\n每格的色块面经 Swatch 家族绘制，颜色由元素写入私有槽。",
           "name": "XhColorSwatchPickerElement",
           "cssParts": [
             {
@@ -11114,11 +11114,11 @@
               "name": "label"
             },
             {
-              "description": "role=radio 的一格，作者用 value 属性声明颜色串、可用 label 属性给名字",
+              "description": "role=radio 的一格，作者用 value 属性声明颜色串、可用 label 属性提供名字",
               "name": "item"
             },
             {
-              "description": "格里的色块面；颜色由元素写进私有槽，解析不出的串只画棋盘格",
+              "description": "格内的色块面；颜色由元素写入私有槽，无法解析的串只绘制棋盘格",
               "name": "swatch"
             },
             {
@@ -11147,7 +11147,7 @@
               "type": {
                 "text": "ColorSwatchPickerNode[]"
               },
-              "description": "格子数据（只走 property）：可及名字与禁用的事实源，格子部件只需报 value"
+              "description": "格子数据（只能通过 property 设置）：可及名与禁用的事实源，格子部件只需声明 value"
             },
             {
               "kind": "field",
@@ -11246,7 +11246,7 @@
               "type": {
                 "text": "object"
               },
-              "description": "读屏文案（只走 property）：group 是整组的名字，swatch(value) 是一格的名字"
+              "description": "读屏文案（只能通过 property 设置）：group 是整组的名字，swatch(value) 是一格的名字"
             },
             {
               "kind": "field",
@@ -11263,7 +11263,7 @@
               },
               "privacy": "private",
               "default": "false",
-              "description": "上一帧是否整组禁用：解禁当帧 DOM 上还留着机器写回的 aria-disabled，读不得。"
+              "description": "上一帧是否整组禁用：解禁当帧 DOM 上仍保留着状态机写回的 aria-disabled，不可读取。"
             },
             {
               "kind": "field",
@@ -11330,7 +11330,7 @@
               "type": {
                 "text": "string|null"
               },
-              "description": "只读：此刻选中的颜色串（受控与非受控都读机器）",
+              "description": "只读：当前选中的颜色串（受控与非受控都读取状态机）",
               "readonly": true
             },
             {
@@ -11339,7 +11339,7 @@
               "type": {
                 "text": "ColorSwatchPickerNodeMeta[]"
               },
-              "description": "只读：swatches 推出的格子元信息，名字与禁用已定案",
+              "description": "只读：由 swatches 推导的格子元信息，名字与禁用已确定",
               "readonly": true
             },
             {
@@ -11367,7 +11367,7 @@
                   }
                 }
               ],
-              "description": "某个颜色串是否算选中：按颜色比不按串比。机器尚未建起时为 false。"
+              "description": "某个颜色串是否视为选中：按颜色比较而非按串比较。状态机尚未建立时为 false。"
             },
             {
               "kind": "method",
@@ -11385,7 +11385,7 @@
                   }
                 }
               ],
-              "description": "从外面写选中值；null 即清空。机器尚未建起时是空操作。"
+              "description": "从外部写入选中值；null 即清空。状态机尚未建立时为空操作。"
             },
             {
               "kind": "method",
@@ -11504,7 +11504,7 @@
               "type": {
                 "text": "string | undefined"
               },
-              "description": "受控选中的颜色串；缺省该属性即非受控。写法不同的同一个颜色也算选中",
+              "description": "受控选中的颜色串；未提供该属性即非受控。写法不同的同一颜色也视为选中",
               "name": "value",
               "fieldName": "value"
             },
@@ -11528,7 +11528,7 @@
               "type": {
                 "text": "boolean | undefined"
               },
-              "description": "只读：选不动，方向键照常移焦点",
+              "description": "只读：不可选择，方向键照常移动焦点",
               "name": "read-only",
               "fieldName": "readOnly"
             },
@@ -11560,7 +11560,7 @@
               "type": {
                 "text": "string | undefined"
               },
-              "description": "表单字段名；给定后隐藏输入才带 name 并参与提交",
+              "description": "表单字段名；提供后隐藏输入才带 name 并参与提交",
               "name": "name",
               "fieldName": "name"
             },
@@ -11568,7 +11568,7 @@
               "type": {
                 "text": "Size | undefined"
               },
-              "description": "尺寸：换的是格子的边长与间距",
+              "description": "尺寸：影响格子的边长与间距",
               "name": "size",
               "fieldName": "size"
             },
@@ -11576,7 +11576,7 @@
               "type": {
                 "text": "Tone | undefined"
               },
-              "description": "语气：决定选中环与选中标记用哪族颜色",
+              "description": "语气：决定选中环与选中标记使用哪族颜色",
               "name": "tone",
               "fieldName": "tone"
             }

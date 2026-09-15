@@ -17,7 +17,7 @@ import { useMachine } from '../../runtime/use-machine'
 
 export interface ColorSwatchPickerContext {
   api: ColorSwatchPickerApi
-  /** 机器实例，供格子上报 DOM 侧的事实（如格子卸载带走了焦点）。 */
+  /** 状态机实例，供格子上报 DOM 侧的事实（如格子卸载带走了焦点）。 */
   service: Service<ColorSwatchPickerSchema>
   /** 表单重置的锚点：接在根节点上。 */
   rootRef: RefObject<HTMLElement | null>
