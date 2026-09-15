@@ -12,14 +12,14 @@ export interface HoverCardOpenChangeDetails {
   open: boolean
 }
 
-/** 适配器在挂载前填入的 DOM 环境、定位引擎与元素 getter，缺省时相关副作用短路。 */
+/** 适配器在挂载前填入的 DOM 环境、定位引擎与元素 getter，未提供时相关副作用短路。 */
 export interface HoverCardRefs {
   config: RuntimeConfig | null
   /** 注册本层并返回撤销句柄，只在浮层可见期间调用。 */
   registerLayer: (() => { layer: Layer, dispose: Cleanup }) | null
-  /** 视觉退场与行为资源共享的 Presence；缺省时关闭立即释放。 */
+  /** 视觉退场与行为资源共享的 Presence；未提供时关闭立即释放。 */
   presence: PresenceHandle | null
-  /** 浮层定位引擎，缺省时不产出位置结果。 */
+  /** 浮层定位引擎，未提供时不产出位置结果。 */
   position: PositionEnginePort | null
   /** 定位锚点，即 trigger。 */
   getAnchorEl: () => HTMLElement | null
@@ -45,9 +45,9 @@ export interface HoverCardSchema extends MachineSchema {
     openDelay?: number
     /** 指针离开 trigger 或 content 到收起的等待毫秒，默认 300。 */
     closeDelay?: number
-    /** 文字方向，仅在显式给出时写到根节点上。 */
+    /** 文字方向，仅在显式提供时写到根节点上。 */
     dir?: Direction
-    /** 只关掉卡片本身，不影响 trigger 元素自身的可用性。 */
+    /** 只关闭卡片本身，不影响 trigger 元素自身的可用性。 */
     disabled?: boolean
     /** 尺寸：sm / md / lg，决定卡片的内边距档位。 */
     size?: Size
@@ -74,7 +74,7 @@ export interface HoverCardSchema extends MachineSchema {
     | { type: 'POINTER.LEAVE' }
     /** 焦点落入 trigger 或 content。 */
     | { type: 'FOCUS' }
-    /** 焦点离开整张卡片，落到卡片内另一个节点的不算。 */
+    /** 焦点离开整张卡片，落到卡片内另一个节点的不计。 */
     | { type: 'BLUR' }
     | { type: 'ESCAPE' }
     | { type: 'OPEN' }
@@ -103,5 +103,5 @@ export interface HoverCardApi<T extends PropTypes = PropTypes> {
   getArrowProps: () => T['element']
 }
 
-/** 读屏用的文案。本组件目前没有需要外露的文案，位先留着。 */
+/** 读屏文案。本组件目前没有需要外露的文案，保留该位。 */
 export interface HoverCardTranslations {}
