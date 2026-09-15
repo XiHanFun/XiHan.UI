@@ -107,16 +107,16 @@ text 关掉只剩条；EAN 的守卫条照规范比数据条长 5X，不随文�
 
 | 属性 | 类型 | 必填 | 说明 |
 | --- | --- | --- | --- |
-| `barWidth` | `number` |  | 最窄条的像素宽（X 尺寸），缺省 2；整张码的宽度由它乘模块数得出。 |
-| `bearerBars` | `boolean` |  | 上下承载条：itf14 印在瓦楞纸上防止短读的两根横条，缺省画； 只对 itf14 有意义，给别的码制会往诊断通道报一条警告，按没给处理。 |
-| `checksum` | `boolean` |  | 附 mod 43 校验字符。只对 code39 有意义——其余码制的校验位是规范必带的， 给了会往诊断通道报一条警告，按没给处理。 |
-| `format` | `BarCodeFormat` |  | 码制，缺省 code128。给了不认识的值不画码，根落到 `error` 态。 |
-| `gs1` | `boolean` |  | GS1-128：起始符后放 FNC1，内容里的 GS（U+001D）编成变长 AI 之间的分隔。 只对 code128 有意义，给别的码制会往诊断通道报一条警告，按没给处理。 |
-| `height` | `number` |  | 条的像素高，缺省 64；不含守卫条的延长段、人读文字与承载条。 |
-| `label` | `string` |  | 可及名字，缺省用 value；给了全空白的名字等于没给。 |
-| `margin` | `number` |  | 两侧静区，单位是模块数；缺省按码制的规范值（code128 / itf14 / code39 10，ean13 11，upca / upce 9，ean8 7）。 |
-| `text` | `boolean` |  | 条下面是否印人读文字，缺省印。 |
-| `value` | `string` |  | 要编码的内容；空串不画码。定长数字码制收不带或带校验位的两种长度，带了就核对。 |
+| `barWidth` | `number` |  | 最窄条的像素宽度（X 尺寸），默认 2；整张码的宽度由它乘以模块数得出。 |
+| `bearerBars` | `boolean` |  | 上下承载条：itf14 印在瓦楞纸上防止短读的两根横条，默认绘制； 只对 itf14 有意义，其他码制提供时向诊断通道报告一条警告，按未提供处理。 |
+| `checksum` | `boolean` |  | 附加 mod 43 校验字符。只对 code39 有意义：其余码制的校验位是规范必带的， 提供时向诊断通道报告一条警告，按未提供处理。 |
+| `format` | `BarCodeFormat` |  | 码制，默认 code128。提供未知值时不绘制，根落到 `error` 态。 |
+| `gs1` | `boolean` |  | GS1-128：起始符后放置 FNC1，内容中的 GS（U+001D）编码为变长 AI 之间的分隔。 只对 code128 有意义，其他码制提供时向诊断通道报告一条警告，按未提供处理。 |
+| `height` | `number` |  | 条的像素高度，默认 64；不含守卫条的延长段、人读文字与承载条。 |
+| `label` | `string` |  | 可及名，默认使用 value；提供全空白的名字等同于未提供。 |
+| `margin` | `number` |  | 两侧静区，单位为模块数；默认按码制的规范值（code128 / itf14 / code39 10，ean13 11，upca / upce 9，ean8 7）。 |
+| `text` | `boolean` |  | 条下方是否打印人读文字，默认打印。 |
+| `value` | `string` |  | 要编码的内容；空串不绘制。定长数字码制接受不带或带校验位的两种长度，带校验位时校验。 |
 
 ### 状态
 
@@ -132,20 +132,20 @@ text 关掉只剩条；EAN 的守卫条照规范比数据条长 5X，不随文�
 
 | 成员 | 类型 | 说明 |
 | --- | --- | --- |
-| `format` | `BarCodeFormat` | 解析后的码制。给了不认识的值时保持原样透出，好让错误信息与 data-format 都指着那个值。 |
-| `runs` | `readonly number[]` | 条空交替的宽度（模块），首元素是条；没画出码时是空数组。 |
-| `modules` | `number` | 不含静区的模块数；没画出码时为 0。 |
-| `encoded` | `string` | 实际编进码里的内容，含补上的校验位；没画出码时是空串。 |
-| `margin` | `number` | 解析后的静区宽度，单位是模块数。 |
+| `format` | `BarCodeFormat` | 解析后的码制。提供未知值时原样透出，使错误信息与 data-format 都指向该值。 |
+| `runs` | `readonly number[]` | 条空交替的宽度（模块），首元素为条；未绘制时为空数组。 |
+| `modules` | `number` | 不含静区的模块数；未绘制时为 0。 |
+| `encoded` | `string` | 实际编入码中的内容，含补齐的校验位；未绘制时为空串。 |
+| `margin` | `number` | 解析后的静区宽度，单位为模块数。 |
 | `pixelWidth` | `number` | 根的像素宽高，也是 viewBox 的尺寸。 |
 | `pixelHeight` | `number` |  |
 | `viewBox` | `string` | 根的 viewBox。 |
-| `path` | `string` | 全部条（含守卫条的延长段与承载条）合成的那条 `&lt;path&gt;` 的 d；没画出码时是空串，此时不该生成 path 节点。 |
-| `text` | `readonly BarCodeTextRun[]` | 人读文字，每段一个 `&lt;text&gt;`；关了 `text` 或没画出码时是空数组。 |
+| `path` | `string` | 全部条（含守卫条的延长段与承载条）合成的 `&lt;path&gt;` 的 d；未绘制时为空串，此时不应生成 path 节点。 |
+| `text` | `readonly BarCodeTextRun[]` | 人读文字，每段一个 `&lt;text&gt;`；关闭 `text` 或未绘制时为空数组。 |
 | `fontSize` | `number` | 人读文字的字号，像素。 |
 | `state` | `BarCodeState` | 当前状态。 |
 | `error` | `string \| undefined` | 编码失败的原因；其余状态为 undefined。 |
-| `label` | `string \| undefined` | 解析后的可及名字；没给名字时为 undefined，此时根退出无障碍树。 |
+| `label` | `string \| undefined` | 解析后的可及名；未提供名字时为 undefined，此时根退出无障碍树。 |
 | `getRootProps` | `() => T['element']` |  |
 
 ## 无障碍

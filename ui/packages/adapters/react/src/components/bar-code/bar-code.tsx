@@ -12,32 +12,32 @@ import { mergeReactProps } from '../../runtime/merge-props'
 import { reactNormalize } from '../../runtime/normalize-props'
 
 export interface XhBarCodeProps extends Omit<ComponentPropsWithRef<'svg'>, 'children' | 'height'> {
-  /** 码制，缺省 code128。 */
+  /** 码制，默认 code128。 */
   format?: BarCodeFormat
-  /** 要编码的内容；定长数字码制收不带或带校验位的两种长度。 */
+  /** 要编码的内容；定长数字码制接受不带或带校验位的两种长度。 */
   value?: string
-  /** GS1-128：起始符后放 FNC1，内容里的 GS 编成分隔；只对 code128 有意义。 */
+  /** GS1-128：起始符后放置 FNC1，内容中的 GS 编为分隔；只对 code128 有意义。 */
   gs1?: boolean
-  /** 条下面是否印人读文字，缺省印。 */
+  /** 条下方是否印人读文字，默认印。 */
   text?: boolean
   /** 附 mod 43 校验字符；只对 code39 有意义。 */
   checksum?: boolean
-  /** 最窄条的像素宽，缺省 2。 */
+  /** 最窄条的像素宽，默认 2。 */
   barWidth?: number
-  /** 条的像素高，缺省 64。 */
+  /** 条的像素高，默认 64。 */
   height?: number
-  /** 两侧静区（模块数），缺省按码制的规范值。 */
+  /** 两侧静区（模块数），默认按码制的规范值。 */
   margin?: number
-  /** 上下承载条，缺省画；只对 itf14 有意义。 */
+  /** 上下承载条，默认绘制；只对 itf14 有意义。 */
   bearerBars?: boolean
-  /** 可及名字，缺省用 value。 */
+  /** 可及名字，默认使用 value。 */
   label?: string
 }
 
 /**
- * 整张码画成一个 `<svg>`，`format` 选码制：全部条合成一条 `<path>`，人读文字每段一个 `<text>`，
- * 静区靠 viewBox 留出。条空序列由 connect 算一遍，这里只取现成的 path 与文字；
- * 没有可画的内容时不生成任何几何节点。
+ * 整张码绘制为一个 `<svg>`，`format` 选择码制：全部条合成一条 `<path>`，人读文字每段一个 `<text>`，
+ * 静区依靠 viewBox 留出。条空序列由 connect 计算一次，这里只取现成的 path 与文字；
+ * 没有可绘制的内容时不生成任何几何节点。
  */
 export function XhBarCode({
   format,
