@@ -91,6 +91,7 @@ describe('input-group 单一输入表面', () => {
     expect(root.matches(':focus-within')).toBe(true)
     expect(getComputedStyle(root).outlineStyle).toBe('solid')
     expect(getComputedStyle(control('primary')).outlineStyle).toBe('none')
+    expect(getComputedStyle(input).outlineStyle).toBe('none')
 
     const after = root.getBoundingClientRect()
     expect(after.width).toBe(before.width)

@@ -18406,7 +18406,11 @@
   text-align: start;
 }
 
-[data-xh-field-input]:focus-visible {
+[data-xh-field-chrome] [data-xh-field-input]:focus-visible {
+  outline: none;
+}
+
+[data-xh-field-chrome] [data-xh-action-profile='field-inset']:focus-visible {
   outline: none;
 }
 
