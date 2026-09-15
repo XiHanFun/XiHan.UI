@@ -32,7 +32,7 @@ export interface ColorFieldSchema extends MachineSchema {
     name?: string
     /** 开启清空能力：有值时显示清空按钮、Escape 接管。关闭时按钮带 hidden 收起。 */
     clearable?: boolean
-    /** 形态：outline / subtle / ghost，决定输入框的底色与描边绘制方式。 */
+    /** 形态：outline / subtle / ghost，决定底色与描边的绘制方式。默认 outline。 */
     variant?: ControlVariant
     /** 语气：brand / neutral / success / warning / danger / info，决定聚焦强调使用哪族颜色。 */
     tone?: Tone

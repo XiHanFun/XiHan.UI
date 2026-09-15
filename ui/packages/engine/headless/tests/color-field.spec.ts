@@ -149,6 +149,16 @@ describe('connectColorField 投影', () => {
     expect(api(s).getHiddenInputProps()).toMatchObject({ type: 'hidden', name: 'accent', value: '#ff0000' })
   })
 
+  it('不写 variant 时 root 与 control 都落 outline；写 subtle 如实落', () => {
+    const fallback = api(makeService({ defaultValue: '#ff0000' }))
+    expect((fallback.getRootProps() as Dict)['data-variant']).toBe('outline')
+    expect((fallback.getControlProps() as Dict)['data-variant']).toBe('outline')
+
+    const subtle = api(makeService({ defaultValue: '#ff0000', variant: 'subtle' }))
+    expect((subtle.getRootProps() as Dict)['data-variant']).toBe('subtle')
+    expect((subtle.getControlProps() as Dict)['data-variant']).toBe('subtle')
+  })
+
   it('色块经家族属性投影，颜色写进私有槽；空值与无效值不画颜色层', () => {
     const s = makeService({ defaultValue: '#ff000080', alpha: true, size: 'lg' })
     const swatch = api(s).getSwatchProps() as Dict
