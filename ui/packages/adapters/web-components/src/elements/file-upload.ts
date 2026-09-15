@@ -42,49 +42,49 @@ function declaredIndex(el: HTMLElement, position: number): number {
 }
 
 /**
- * `<xh-file-upload>` —— Light-DOM 行为宿主：作者写 root/label/dropzone/trigger/hidden-input
- * 与列表若干角色节点，元素跑 file-upload 机器并把 connect 产出打上去。
+ * `<xh-file-upload>`：Light-DOM 行为宿主：作者写 root / label / dropzone / trigger / hidden-input
+ * 与列表若干角色节点，元素运行 file-upload 状态机并把 connect 产出接上。
  *
- * 投放区收 dragover/dragleave/drop，悬停期间带 data-dragging；点投放区、点 trigger、
- * 或在投放区上按 Enter/Space 都打开系统文件选择框（走隐藏输入的 click）。
- * 收进来的文件先过校验（类型/大小/数量），收下的进列表并派 file-accept，
- * 被拒的连同原因派 file-reject。
+ * 投放区接收 dragover / dragleave / drop，悬停期间带 data-dragging；点击投放区、点击 trigger、
+ * 或在投放区上按 Enter / Space 都打开系统文件选择框（经隐藏输入的 click）。
+ * 接收的文件先经过校验（类型 / 大小 / 数量），接受的进入列表并派发 file-accept，
+ * 被拒绝的连同原因派发 file-reject。
  *
- * 条目节点由作者按 `acceptedFiles` 渲染（听 files-change 重渲），元素不生成节点。
- * 条目按文档序对上列表里的文件，也可以自带 `index` 属性显式声明。
- * item-name 与 item-size-text 的文字由元素填（作者自己写了内容则不碰）。
+ * 条目节点由作者按 `acceptedFiles` 渲染（监听 files-change 重渲染），元素不生成节点。
+ * 条目按文档序对应列表中的文件，也可以自带 `index` 属性显式声明。
+ * item-name 与 item-size-text 的文字由元素填入（作者自行写了内容则不修改）。
  *
  * @customElement xh-file-upload
- * @attr {string} accept - 允许的类型，写法同原生 input：'image/*'、'.png'、精确 MIME，逗号分隔；数组形态请走 property
- * @attr {number} max-files - 最多留几个文件，默认 1
+ * @attr {string} accept - 允许的类型，写法同原生 input：'image/*'、'.png'、精确 MIME，逗号分隔；数组形态通过 property 设置
+ * @attr {number} max-files - 最多保留的文件数，默认 1
  * @attr {number} max-file-size - 单个文件的字节上限，默认不限
  * @attr {number} min-file-size - 单个文件的字节下限，默认 0
- * @attr {boolean} disabled - 禁用：投放区退出 Tab 序列，几个按钮带原生 disabled，增删改一律被守卫挡下
+ * @attr {boolean} disabled - 禁用：投放区退出 Tab 序列，各按钮带原生 disabled，增删改一律被守卫拦截
  * @attr {boolean} invalid - 校验失败标注
- * @attr {string} name - 表单字段名；给了隐藏输入才参与提交
- * @attr {boolean} allow-drop - 是否接受拖拽投放，默认 true；写 allow-drop="false" 关掉
- * @attr {boolean} directory - 选目录而不是选文件（隐藏输入带 webkitdirectory）
- * @attr {'user'|'environment'} capture - 移动端直接调用摄像头/麦克风采集
- * @attr {boolean} auto-upload - 收下即自动开传（须配 upload 实现），默认 true；写 auto-upload="false" 关掉
+ * @attr {string} name - 表单字段名；提供后隐藏输入才参与提交
+ * @attr {boolean} allow-drop - 是否接受拖拽投放，默认 true；写 allow-drop="false" 关闭
+ * @attr {boolean} directory - 选择目录而不是文件（隐藏输入带 webkitdirectory）
+ * @attr {'user'|'environment'} capture - 移动端直接调用摄像头 / 麦克风采集
+ * @attr {boolean} auto-upload - 接受后即自动开始传输（须配置 upload 实现），默认 true；写 auto-upload="false" 关闭
  * @fires files-change - 列表变化；detail 为 `{ files: File[] }`
  * @fires remote-files-change - 远程附件列表变化；detail 为 `{ files: FileUploadRemoteFile[] }`
- * @fires upload-complete - 单个文件传完；detail 为 `{ file, url? }`
- * @fires upload-error - 单个文件传败；detail 为 `{ file, error }`
- * @fires file-accept - 本次收下了哪些；detail 为 `{ files: File[] }`
- * @fires file-reject - 本次拒了哪些、各自为什么；detail 为 `{ files: { file, reasons }[] }`
+ * @fires upload-complete - 单个文件传输完成；detail 为 `{ file, url? }`
+ * @fires upload-error - 单个文件传输失败；detail 为 `{ file, error }`
+ * @fires file-accept - 本次接受了哪些文件；detail 为 `{ files: File[] }`
+ * @fires file-reject - 本次拒绝了哪些文件及各自的原因；detail 为 `{ files: { file, reasons }[] }`
  * @csspart root - 组件根容器，承载 data-dragging / data-disabled / data-invalid / data-empty
- * @csspart label - 标题；`for` 恒写向隐藏输入，故须是原生 `<label>` 才点得动
+ * @csspart label - 标题；`for` 恒指向隐藏输入，因此须是原生 `<label>` 才可点击
  * @csspart dropzone - role=button 的投放区，键盘入口也在这里
- * @csspart trigger - 打开文件选择框的按钮，建议放在投放区之外（按钮里再套按钮读屏只念外面那个）
- * @csspart hidden-input - type=file 的表单出口，视觉上藏起来
+ * @csspart trigger - 打开文件选择框的按钮，建议放在投放区之外（按钮内再套按钮时读屏只朗读外层）
+ * @csspart hidden-input - type=file 的表单出口，视觉隐藏
  * @csspart list - role=list 的列表容器，承载 data-empty
  * @csspart item - role=listitem 的一行，可自带 index 属性声明对应第几个文件
- * @csspart item-preview - 缩略图占位（aria-hidden），带 data-file-type 供皮肤挑图标
- * @csspart item-progress - 传输进度条（aria-hidden），带 data-state 与写着进度比例的私有槽
- * @csspart item-name - 文件名（元素代填）
- * @csspart item-size-text - 人读的文件大小（元素代填）
- * @csspart item-delete-trigger - 删掉这一条
- * @csspart clear-trigger - 清空整份列表；列表为空时打 data-empty，按钮照常在位可聚焦
+ * @csspart item-preview - 缩略图占位（aria-hidden），带 data-file-type 供皮肤选择图标
+ * @csspart item-progress - 传输进度条（aria-hidden），带 data-state 与写有进度比例的私有槽
+ * @csspart item-name - 文件名（由元素填入）
+ * @csspart item-size-text - 可读的文件大小（由元素填入）
+ * @csspart item-delete-trigger - 删除该条
+ * @csspart clear-trigger - 清空整份列表；列表为空时写 data-empty，按钮照常在位可聚焦
  */
 export class XhFileUploadElement extends XhElement {
   static override partContract = { anatomy: fileUploadAnatomy, meta: fileUploadMeta }
@@ -204,34 +204,34 @@ export class XhFileUploadElement extends XhElement {
     }
   }
 
-  /** 命令式入口共用的取法；机器要到进文档（hostConnected）才建，未建则抛。 */
+  /** 命令式入口共用的取法；状态机在进入文档（hostConnected）后才建立，未建立则抛错。 */
   private commands(): FileUploadApi {
     if (!this.ctrl.service)
       throw new Error('[xh] <xh-file-upload> 还没进文档，命令式接口此时不可用')
     return connectFileUpload(this.ctrl.service, wcNormalize)
   }
 
-  /** 当前已收下的文件；作者据此渲染条目节点。 */
+  /** 当前已接收的文件；作者据此渲染条目节点。 */
   get acceptedFiles(): File[] {
     return this.commands().acceptedFiles
   }
 
-  /** 打开系统文件选择框（等价于点投放区或 trigger）。 */
+  /** 打开系统文件选择框（等价于点击投放区或 trigger）。 */
   openFilePicker(): void {
     this.commands().openFilePicker()
   }
 
-  /** 整份替换，照样过校验。 */
+  /** 整份替换，同样经过校验。 */
   setFiles(files: File[]): void {
     this.commands().setFiles(files)
   }
 
-  /** 追加，照样过校验。 */
+  /** 追加，同样经过校验。 */
   addFiles(files: File[]): void {
     this.commands().addFiles(files)
   }
 
-  /** 按引用剔除某一个。 */
+  /** 按引用移除某一个文件。 */
   deleteFile(file: File): void {
     this.commands().deleteFile(file)
   }
@@ -241,7 +241,7 @@ export class XhFileUploadElement extends XhElement {
     this.commands().clear()
   }
 
-  /** 文本是否归元素填：节点非空即判为作者自定义渲染。首次见到时定死，之后不再回读——回读分不出内容是作者写的还是上一帧自己写的。 */
+  /** 文本是否归元素填入：节点非空即判定为作者自定义渲染。首次见到时固定，之后不再回读：回读无法区分内容是作者写的还是上一帧自己写的。 */
   private readonly ownsText = new WeakMap<HTMLElement, boolean>()
 
   private fillText(el: HTMLElement, text: string): void {

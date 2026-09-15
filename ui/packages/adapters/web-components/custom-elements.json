@@ -21453,7 +21453,7 @@
       "declarations": [
         {
           "kind": "class",
-          "description": "`<xh-file-upload>` —— Light-DOM 行为宿主：作者写 root/label/dropzone/trigger/hidden-input\n与列表若干角色节点，元素跑 file-upload 机器并把 connect 产出打上去。\n\n投放区收 dragover/dragleave/drop，悬停期间带 data-dragging；点投放区、点 trigger、\n或在投放区上按 Enter/Space 都打开系统文件选择框（走隐藏输入的 click）。\n收进来的文件先过校验（类型/大小/数量），收下的进列表并派 file-accept，\n被拒的连同原因派 file-reject。\n\n条目节点由作者按 `acceptedFiles` 渲染（听 files-change 重渲），元素不生成节点。\n条目按文档序对上列表里的文件，也可以自带 `index` 属性显式声明。\nitem-name 与 item-size-text 的文字由元素填（作者自己写了内容则不碰）。",
+          "description": "`<xh-file-upload>`：Light-DOM 行为宿主：作者写 root / label / dropzone / trigger / hidden-input\n与列表若干角色节点，元素运行 file-upload 状态机并把 connect 产出接上。\n\n投放区接收 dragover / dragleave / drop，悬停期间带 data-dragging；点击投放区、点击 trigger、\n或在投放区上按 Enter / Space 都打开系统文件选择框（经隐藏输入的 click）。\n接收的文件先经过校验（类型 / 大小 / 数量），接受的进入列表并派发 file-accept，\n被拒绝的连同原因派发 file-reject。\n\n条目节点由作者按 `acceptedFiles` 渲染（监听 files-change 重渲染），元素不生成节点。\n条目按文档序对应列表中的文件，也可以自带 `index` 属性显式声明。\nitem-name 与 item-size-text 的文字由元素填入（作者自行写了内容则不修改）。",
           "name": "XhFileUploadElement",
           "cssParts": [
             {
@@ -21461,7 +21461,7 @@
               "name": "root"
             },
             {
-              "description": "标题；`for` 恒写向隐藏输入，故须是原生 `<label>` 才点得动",
+              "description": "标题；`for` 恒指向隐藏输入，因此须是原生 `<label>` 才可点击",
               "name": "label"
             },
             {
@@ -21469,11 +21469,11 @@
               "name": "dropzone"
             },
             {
-              "description": "打开文件选择框的按钮，建议放在投放区之外（按钮里再套按钮读屏只念外面那个）",
+              "description": "打开文件选择框的按钮，建议放在投放区之外（按钮内再套按钮时读屏只朗读外层）",
               "name": "trigger"
             },
             {
-              "description": "type=file 的表单出口，视觉上藏起来",
+              "description": "type=file 的表单出口，视觉隐藏",
               "name": "hidden-input"
             },
             {
@@ -21485,27 +21485,27 @@
               "name": "item"
             },
             {
-              "description": "缩略图占位（aria-hidden），带 data-file-type 供皮肤挑图标",
+              "description": "缩略图占位（aria-hidden），带 data-file-type 供皮肤选择图标",
               "name": "item-preview"
             },
             {
-              "description": "传输进度条（aria-hidden），带 data-state 与写着进度比例的私有槽",
+              "description": "传输进度条（aria-hidden），带 data-state 与写有进度比例的私有槽",
               "name": "item-progress"
             },
             {
-              "description": "文件名（元素代填）",
+              "description": "文件名（由元素填入）",
               "name": "item-name"
             },
             {
-              "description": "人读的文件大小（元素代填）",
+              "description": "可读的文件大小（由元素填入）",
               "name": "item-size-text"
             },
             {
-              "description": "删掉这一条",
+              "description": "删除该条",
               "name": "item-delete-trigger"
             },
             {
-              "description": "清空整份列表；列表为空时打 data-empty，按钮照常在位可聚焦",
+              "description": "清空整份列表；列表为空时写 data-empty，按钮照常在位可聚焦",
               "name": "clear-trigger"
             }
           ],
@@ -21763,7 +21763,7 @@
                   "text": "FileUploadApi"
                 }
               },
-              "description": "命令式入口共用的取法；机器要到进文档（hostConnected）才建，未建则抛。"
+              "description": "命令式入口共用的取法；状态机在进入文档（hostConnected）后才建立，未建立则抛错。"
             },
             {
               "kind": "field",
@@ -21771,7 +21771,7 @@
               "type": {
                 "text": "File[]"
               },
-              "description": "当前已收下的文件；作者据此渲染条目节点。",
+              "description": "当前已接收的文件；作者据此渲染条目节点。",
               "readonly": true
             },
             {
@@ -21782,7 +21782,7 @@
                   "text": "void"
                 }
               },
-              "description": "打开系统文件选择框（等价于点投放区或 trigger）。"
+              "description": "打开系统文件选择框（等价于点击投放区或 trigger）。"
             },
             {
               "kind": "method",
@@ -21800,7 +21800,7 @@
                   }
                 }
               ],
-              "description": "整份替换，照样过校验。"
+              "description": "整份替换，同样经过校验。"
             },
             {
               "kind": "method",
@@ -21818,7 +21818,7 @@
                   }
                 }
               ],
-              "description": "追加，照样过校验。"
+              "description": "追加，同样经过校验。"
             },
             {
               "kind": "method",
@@ -21836,7 +21836,7 @@
                   }
                 }
               ],
-              "description": "按引用剔除某一个。"
+              "description": "按引用移除某一个文件。"
             },
             {
               "kind": "method",
@@ -21854,7 +21854,7 @@
               "privacy": "private",
               "readonly": true,
               "default": "new WeakMap<HTMLElement, boolean>()",
-              "description": "文本是否归元素填：节点非空即判为作者自定义渲染。首次见到时定死，之后不再回读——回读分不出内容是作者写的还是上一帧自己写的。"
+              "description": "文本是否归元素填入：节点非空即判定为作者自定义渲染。首次见到时固定，之后不再回读：回读无法区分内容是作者写的还是上一帧自己写的。"
             },
             {
               "kind": "method",
@@ -21963,28 +21963,28 @@
               }
             },
             {
-              "description": "单个文件传完；detail 为 `{ file, url? }`",
+              "description": "单个文件传输完成；detail 为 `{ file, url? }`",
               "name": "upload-complete",
               "type": {
                 "text": "FileUploadCompleteDetails"
               }
             },
             {
-              "description": "单个文件传败；detail 为 `{ file, error }`",
+              "description": "单个文件传输失败；detail 为 `{ file, error }`",
               "name": "upload-error",
               "type": {
                 "text": "FileUploadErrorDetails"
               }
             },
             {
-              "description": "本次收下了哪些；detail 为 `{ files: File[] }`",
+              "description": "本次接受了哪些文件；detail 为 `{ files: File[] }`",
               "name": "file-accept",
               "type": {
                 "text": "FileUploadFileAcceptDetails"
               }
             },
             {
-              "description": "本次拒了哪些、各自为什么；detail 为 `{ files: { file, reasons }[] }`",
+              "description": "本次拒绝了哪些文件及各自的原因；detail 为 `{ files: { file, reasons }[] }`",
               "name": "file-reject",
               "type": {
                 "text": "FileUploadFileRejectDetails"
@@ -21996,7 +21996,7 @@
               "type": {
                 "text": "string | string[] | undefined"
               },
-              "description": "允许的类型，写法同原生 input：'image/*'、'.png'、精确 MIME，逗号分隔；数组形态请走 property",
+              "description": "允许的类型，写法同原生 input：'image/*'、'.png'、精确 MIME，逗号分隔；数组形态通过 property 设置",
               "name": "accept",
               "fieldName": "accept"
             },
@@ -22004,7 +22004,7 @@
               "type": {
                 "text": "number | undefined"
               },
-              "description": "最多留几个文件，默认 1",
+              "description": "最多保留的文件数，默认 1",
               "name": "max-files",
               "fieldName": "maxFiles"
             },
@@ -22028,7 +22028,7 @@
               "type": {
                 "text": "boolean | undefined"
               },
-              "description": "禁用：投放区退出 Tab 序列，几个按钮带原生 disabled，增删改一律被守卫挡下",
+              "description": "禁用：投放区退出 Tab 序列，各按钮带原生 disabled，增删改一律被守卫拦截",
               "name": "disabled",
               "fieldName": "disabled"
             },
@@ -22044,7 +22044,7 @@
               "type": {
                 "text": "string | undefined"
               },
-              "description": "表单字段名；给了隐藏输入才参与提交",
+              "description": "表单字段名；提供后隐藏输入才参与提交",
               "name": "name",
               "fieldName": "name"
             },
@@ -22052,7 +22052,7 @@
               "type": {
                 "text": "boolean | undefined"
               },
-              "description": "是否接受拖拽投放，默认 true；写 allow-drop=\"false\" 关掉",
+              "description": "是否接受拖拽投放，默认 true；写 allow-drop=\"false\" 关闭",
               "name": "allow-drop",
               "fieldName": "allowDrop"
             },
@@ -22060,7 +22060,7 @@
               "type": {
                 "text": "boolean | undefined"
               },
-              "description": "选目录而不是选文件（隐藏输入带 webkitdirectory）",
+              "description": "选择目录而不是文件（隐藏输入带 webkitdirectory）",
               "name": "directory",
               "fieldName": "directory"
             },
@@ -22068,7 +22068,7 @@
               "type": {
                 "text": "'user' | 'environment' | undefined"
               },
-              "description": "移动端直接调用摄像头/麦克风采集",
+              "description": "移动端直接调用摄像头 / 麦克风采集",
               "name": "capture",
               "fieldName": "capture"
             },
@@ -22076,7 +22076,7 @@
               "type": {
                 "text": "boolean | undefined"
               },
-              "description": "收下即自动开传（须配 upload 实现），默认 true；写 auto-upload=\"false\" 关掉",
+              "description": "接受后即自动开始传输（须配置 upload 实现），默认 true；写 auto-upload=\"false\" 关闭",
               "name": "auto-upload",
               "fieldName": "autoUpload"
             }

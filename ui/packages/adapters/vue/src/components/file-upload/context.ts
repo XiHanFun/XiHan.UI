@@ -10,7 +10,7 @@ import type { ComputedRef, InjectionKey } from 'vue'
 import type { FileUploadContext } from './use-file-upload'
 import { inject, provide } from 'vue'
 
-/** 条目自报的文件，供 item-name / item-size-text / 删除按钮这些子部件复用同一份声明。 */
+/** 条目声明的文件，供 item-name / item-size-text / 删除按钮等子部件复用同一份声明。 */
 export interface FileUploadItemContext {
   item: ComputedRef<FileUploadItemProps>
 }
