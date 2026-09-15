@@ -1,4 +1,4 @@
-<!-- 语气 | tone 只换圆环起始边那一段颜色，轨道留在中性描边上，转到哪儿才看得出来 -->
+<!-- 语气 | tone 只更换圆环起始边一段的颜色，轨道保持中性描边，旋转时才能看出差别 -->
 <script setup lang="ts">
 import { XhSpinner } from "@xihan-ui/vue";
 
