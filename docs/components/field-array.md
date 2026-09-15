@@ -93,16 +93,16 @@
 
 | 属性 | 类型 | 必填 | 说明 |
 | --- | --- | --- | --- |
-| `value` | `unknown[]` |  | 受控数据数组；给了就由宿主说了算，机器不自改，只发 onValueChange。 |
+| `value` | `unknown[]` |  | 受控数据数组；提供后由宿主决定，状态机不自行修改，只发 onValueChange。 |
 | `defaultValue` | `unknown[]` |  | 非受控初始数据数组。 |
-| `min` | `number` |  | 最少几行。到了这个数，删除把手就按不动了。缺省 0。 |
-| `max` | `number` |  | 最多几行。到了这个数，新增把手就按不动了。缺省不限。 |
-| `createItem` | `() => unknown` |  | 新增一行时造一个空项。不给就插一个 null。 |
-| `movable` | `boolean` |  | 出不出换序把手。关（默认）时两个换序把手一律收起。 |
-| `disabled` | `boolean` |  | 禁用：新增、删除、换序三路都按不动。 |
-| `readOnly` | `boolean` |  | 只读：行数改不动（新增、删除、换序都按不动），行里的控件仍由作者自己置只读。 |
-| `invalid` | `boolean` |  | 校验失败标注：落到根与每一行上。 |
-| `name` | `FormPath` |  | 整份数组的表单字段名。嵌套在 Form 中时会自动接入其值、规则、错误与校验真源； 每一行经 `item.name` 拿到显式数组 FormPath，绝不拼接字符串下标。 |
+| `min` | `number` |  | 最少行数。到达该数值时删除把手不可按下。默认 0。 |
+| `max` | `number` |  | 最多行数。到达该数值时新增把手不可按下。默认不限。 |
+| `createItem` | `() => unknown` |  | 新增一行时创建一个空项。未提供时插入 null。 |
+| `movable` | `boolean` |  | 是否显示换序把手。关闭（默认）时两个换序把手一律收起。 |
+| `disabled` | `boolean` |  | 禁用：新增、删除、换序三路都不可按下。 |
+| `readOnly` | `boolean` |  | 只读：行数不可修改（新增、删除、换序都不可按下），行内的控件仍由作者自行设置只读。 |
+| `invalid` | `boolean` |  | 校验失败标注：写在根与每一行上。 |
+| `name` | `FormPath` |  | 整份数组的表单字段名。嵌套在 Form 中时会自动接入其值、规则、错误与校验真源； 每一行经 `item.name` 获得显式数组 FormPath，不拼接字符串下标。 |
 | `translations` | `Partial<FieldArrayTranslations>` |  |  |
 | `onValueChange` | `(details: FieldArrayValueChangeDetails) => void` |  |  |
 
@@ -146,8 +146,8 @@
 | `readOnly` | `boolean` |  |
 | `invalid` | `boolean` |  |
 | `movable` | `boolean` |  |
-| `atMin` | `boolean` | 已到下限：再删就少于 min 了。 |
-| `atMax` | `boolean` | 已到上限：再加就多于 max 了。 |
+| `atMin` | `boolean` | 已到下限：再删除会少于 min。 |
+| `atMax` | `boolean` | 已到上限：再新增会多于 max。 |
 | `canAdd` | `boolean` |  |
 | `setValue` | `(next: unknown[]) => void` | 整份替换，不受 min / max 约束。 |
 | `add` | `() => void` |  |
@@ -157,7 +157,7 @@
 | `moveDown` | `(index: number) => void` |  |
 | `getRootProps` | `() => T['element']` |  |
 | `getItemProps` | `(item: FieldArrayItemProps) => T['element']` |  |
-| `getItemLabelProps` | `(item: FieldArrayItemProps) => T['element']` | 行前那一小段行号或名目；纯标注，不与行里的控件建立 for 关联。 |
+| `getItemLabelProps` | `(item: FieldArrayItemProps) => T['element']` | 行前的行号或名目：纯标注，不与行内的控件建立 for 关联。 |
 | `getItemContentProps` | `(item: FieldArrayItemProps) => T['element']` |  |
 | `getItemActionProps` | `(item: FieldArrayItemProps) => T['element']` |  |
 | `getAddTriggerProps` | `() => T['button']` |  |

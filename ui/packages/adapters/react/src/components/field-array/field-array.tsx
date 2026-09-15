@@ -42,7 +42,7 @@ export interface XhFieldArrayRootProps extends Omit<ComponentPropsWithRef<'div'>
   defaultValue?: unknown[]
   min?: number
   max?: number
-  /** 新增一行时造一个空项；不给就插一个 null。 */
+  /** 新增一行时构造一个空项；未提供时插入一个 null。 */
   createItem?: () => unknown
   movable?: boolean
   disabled?: boolean
@@ -120,7 +120,7 @@ export function XhFieldArrayRoot({
 XhFieldArrayRoot.xhEvents = ['value-change'] as const
 
 export interface XhFieldArrayItemProps extends ComponentPropsWithRef<'div'> {
-  /** 下标由作者声明；兼收字符串，与另外两家的属性口径对齐。 */
+  /** 下标由作者声明；兼收字符串，与另外两个适配器的属性口径对齐。 */
   index: number | string
 }
 export function XhFieldArrayItem({ index, children, ...rest }: XhFieldArrayItemProps): ReactNode {
@@ -136,7 +136,7 @@ export function XhFieldArrayItem({ index, children, ...rest }: XhFieldArrayItemP
 }
 
 export interface XhFieldArrayItemLabelProps extends ComponentPropsWithRef<'span'> {}
-/** 行前的行号或名目；纯标注，不与行里的控件建 for 关联。 */
+/** 行前的行号或名目；纯标注，不与行内的控件建立 for 关联。 */
 export function XhFieldArrayItemLabel({ children, ...rest }: XhFieldArrayItemLabelProps): ReactNode {
   const ctx = useFieldArrayContext()
   const item = useFieldArrayItemContext()

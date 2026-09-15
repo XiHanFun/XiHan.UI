@@ -14,8 +14,8 @@ export interface FieldArrayValueChangeDetails {
 }
 
 /**
- * 行内三个把手的读屏文案，默认英文。行号一律从 1 数起，与用户看到的行序一致。
- * 新增把手不在此列：它没有行号可带，名字取它自己的内容。
+ * 行内三个把手的读屏文案，默认英文。行号一律从 1 起，与用户看到的行序一致。
+ * 新增把手不在此列：它没有行号，名字取自身内容。
  */
 export interface FieldArrayTranslations {
   deleteItem: (index: number, count: number) => string
@@ -24,21 +24,21 @@ export interface FieldArrayTranslations {
 }
 
 /**
- * 行自报家门：行下标由作者在部件上声明，connect 据此产出属性。
+ * 行的声明：行下标由作者在部件上声明，connect 据此产出属性。
  * connect 在 Vue 的 render 期求值，此时 DOM 尚不存在，不得反查 DOM。
  */
 export interface FieldArrayItemProps {
   index: number
 }
 
-/** 一行的完整读侧投影，作者用它铺行。 */
+/** 一行的完整读侧投影，作者用它铺设行。 */
 export interface FieldArrayItem {
   index: number
-  /** 渲染这一行该用的 key，由组件发号，见 keys 的说明。 */
+  /** 渲染该行应使用的 key，由组件分配，见 keys 的说明。 */
   key: string
-  /** 这一行的数据，原样取自 value[index]。 */
+  /** 该行的数据，原样取自 value[index]。 */
   value: unknown
-  /** 这一行控件该用的显式 FormPath；没给 name 时是 undefined。 */
+  /** 该行控件应使用的显式 FormPath；未提供 name 时为 undefined。 */
   name: FormPath | undefined
   first: boolean
   last: boolean
@@ -47,15 +47,15 @@ export interface FieldArrayItem {
   canMoveDown: boolean
 }
 
-/** 删除与换序之后焦点该落到哪个把手上。 */
+/** 删除与换序之后焦点应落到的把手。 */
 export interface FieldArrayFocusTarget {
   part: string
   index?: number
 }
 
 /**
- * 一次结构改动算出来的新值与新号，暂存在 refs 里，等 value 真的变了再落到 keys 上。
- * 受控宿主不写回时它就一直搁着，不会污染当下的号。
+ * 一次结构改动计算出的新值与新序号，暂存在 refs 中，等 value 实际变化后再落到 keys 上。
+ * 受控宿主不写回时它一直搁置，不会污染当前序号。
  */
 export interface FieldArrayPendingKeys {
   value: unknown[]
@@ -64,60 +64,60 @@ export interface FieldArrayPendingKeys {
 
 export interface FieldArraySchema extends MachineSchema {
   props: {
-    /** 受控数据数组；给了就由宿主说了算，机器不自改，只发 onValueChange。 */
+    /** 受控数据数组；提供后由宿主决定，状态机不自行修改，只发 onValueChange。 */
     value?: unknown[]
     /** 非受控初始数据数组。 */
     defaultValue?: unknown[]
-    /** 最少几行。到了这个数，删除把手就按不动了。缺省 0。 */
+    /** 最少行数。到达该数值时删除把手不可按下。默认 0。 */
     min?: number
-    /** 最多几行。到了这个数，新增把手就按不动了。缺省不限。 */
+    /** 最多行数。到达该数值时新增把手不可按下。默认不限。 */
     max?: number
-    /** 新增一行时造一个空项。不给就插一个 null。 */
+    /** 新增一行时创建一个空项。未提供时插入 null。 */
     createItem?: () => unknown
-    /** 出不出换序把手。关（默认）时两个换序把手一律收起。 */
+    /** 是否显示换序把手。关闭（默认）时两个换序把手一律收起。 */
     movable?: boolean
-    /** 禁用：新增、删除、换序三路都按不动。 */
+    /** 禁用：新增、删除、换序三路都不可按下。 */
     disabled?: boolean
-    /** 只读：行数改不动（新增、删除、换序都按不动），行里的控件仍由作者自己置只读。 */
+    /** 只读：行数不可修改（新增、删除、换序都不可按下），行内的控件仍由作者自行设置只读。 */
     readOnly?: boolean
-    /** 校验失败标注：落到根与每一行上。 */
+    /** 校验失败标注：写在根与每一行上。 */
     invalid?: boolean
     /**
      * 整份数组的表单字段名。嵌套在 Form 中时会自动接入其值、规则、错误与校验真源；
-     * 每一行经 `item.name` 拿到显式数组 FormPath，绝不拼接字符串下标。
+     * 每一行经 `item.name` 获得显式数组 FormPath，不拼接字符串下标。
      */
     name?: FormPath
     translations?: Partial<FieldArrayTranslations>
     onValueChange?: (details: FieldArrayValueChangeDetails) => void
   }
   context: {
-    /** 数据数组。受控（value 给定）时 cell 直读 prop，写只发 onValueChange 不改内部值。 */
+    /** 数据数组。受控（value 提供）时 cell 直读 prop，写入只发 onValueChange 不修改内部值。 */
     value: unknown[]
     /**
-     * 与 value 一一对应的行号，只增删换序，不随行里的数据变。
-     * 宿主的行数据可能没有 id、可能重复、也可能每次改动都换一个新对象，
-     * 所以身份只能由组件自己发号，跟着增删换序这套动作走。
+     * 与 value 一一对应的行序号，只随增删换序变化，不随行内数据变化。
+     * 宿主的行数据可能没有 id、可能重复、也可能每次改动都更换新对象，
+     * 因此身份只能由组件自行分配，跟随增删换序这套动作。
      */
     keys: string[]
   }
   computed: Record<string, never>
   refs: {
-    /** 下一个行号的流水号。 */
+    /** 下一个行序号的流水号。 */
     keySeq: number
-    /** 已经算好、还等着 value 落地的号。 */
+    /** 已计算完成、等待 value 落地的序号。 */
     pending: FieldArrayPendingKeys | null
     /** 最近祖先 Form 的服务，仅由三端适配器接线，不是公开 prop。 */
     form: Service<FormSchema> | null
   }
   state: 'idle'
   event:
-    /** 整份替换（公开 API 与受控写回都走它）。 */
+    /** 整份替换（公开 API 与受控写回都经过它）。 */
     | { type: 'VALUE.SET', value: unknown[] }
     /** 在末尾追加一行。 */
     | { type: 'ITEM.ADD' }
-    /** 删掉某一行；restoreFocus 为真时把焦点接到接位的那一行上。 */
+    /** 删除某一行；restoreFocus 为真时把焦点移到接位的行上。 */
     | { type: 'ITEM.REMOVE', index: number, restoreFocus?: boolean }
-    /** 把某一行挪到另一个位置；restoreFocus 为真时焦点跟着这一行走。 */
+    /** 把某一行移到另一个位置；restoreFocus 为真时焦点随该行移动。 */
     | { type: 'ITEM.MOVE', from: number, to: number, restoreFocus?: boolean }
     | { type: 'FORM.RESET' }
   tag: never
@@ -136,9 +136,9 @@ export interface FieldArrayApi<T extends PropTypes = PropTypes> {
   readOnly: boolean
   invalid: boolean
   movable: boolean
-  /** 已到下限：再删就少于 min 了。 */
+  /** 已到下限：再删除会少于 min。 */
   atMin: boolean
-  /** 已到上限：再加就多于 max 了。 */
+  /** 已到上限：再新增会多于 max。 */
   atMax: boolean
   canAdd: boolean
   /** 整份替换，不受 min / max 约束。 */
@@ -150,7 +150,7 @@ export interface FieldArrayApi<T extends PropTypes = PropTypes> {
   moveDown: (index: number) => void
   getRootProps: () => T['element']
   getItemProps: (item: FieldArrayItemProps) => T['element']
-  /** 行前那一小段行号或名目；纯标注，不与行里的控件建立 for 关联。 */
+  /** 行前的行号或名目：纯标注，不与行内的控件建立 for 关联。 */
   getItemLabelProps: (item: FieldArrayItemProps) => T['element']
   getItemContentProps: (item: FieldArrayItemProps) => T['element']
   getItemActionProps: (item: FieldArrayItemProps) => T['element']
