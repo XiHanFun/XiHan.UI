@@ -9,17 +9,17 @@ import type { Cleanup, Layer, MachineSchema, OverlayBackdropVariant, OverlayClos
 import type { PresenceHandle } from '@xihan-ui/core/presence'
 import type { MultiPointerSession, PinchSnapshot, TrackedPoint } from '@xihan-ui/pointer'
 
-/** 一张待看的图。 */
+/** 一张待查看的图片。 */
 export interface ImageViewerItem {
   src: string
-  /** 也是这张图在看片模式下的可及名。 */
+  /** 也是该图片在查看模式下的可及名。 */
   alt?: string
 }
 
 export interface ImageViewerTranslations {
-  /** 对话框的可及名（当前图没有 alt 时兜底）。 */
+  /** 对话框的可及名（当前图片没有 alt 时兜底）。 */
   content: string
-  /** 工具条的可及名。它与对话框是两块不同的区域，共用一个名字读屏分不出走到了哪儿。 */
+  /** 工具条的可及名。它与对话框是两块不同的区域，共用一个名字时读屏无法区分所在位置。 */
   toolbar: string
   close: string
   zoomIn: string
@@ -35,7 +35,7 @@ export interface ImageViewerTranslations {
   counter: (index: number, count: number) => string
 }
 
-/** 当前那张大图的取图相位：进浮层与换图都从 loading 起算。 */
+/** 当前大图的加载相位：进入浮层与切换图片都从 loading 起算。 */
 export type ImageViewerImageStatus = 'loading' | 'loaded' | 'error'
 
 /** 当前图的变换：缩放、旋转（度）、翻转与平移（px）。 */
@@ -56,14 +56,14 @@ export interface ImageViewerRefs {
   /** 视觉退场的租约真源；逻辑关闭后由它决定何时真正归还模态资源。 */
   presence: PresenceHandle | null
   getContentEl: () => HTMLElement | null
-  /** 平移中的指针会话：起点与起始平移量；不在拖拽中为 null。 */
-  /** 单指平移的基准：按下那一刻的指针位置与当时的偏移。 */
+  /** 平移中的指针会话：起点与起始平移量；不在拖拽中时为 null。 */
+  /** 单指平移的基准：按下时的指针位置与当时的偏移。 */
   panSession: { startX: number, startY: number, originX: number, originY: number } | null
-  /** 跟住落在图上的那几根指针。open 期间存在，离开即摘。 */
+  /** 跟随落在图片上的指针。open 期间存在，离开即移除。 */
   gesture: MultiPointerSession | null
   /**
-   * 双指起始那一刻的快照：两指几何，加上当时的缩放与位移。
-   * 每一帧都相对它算，不相对上一帧——相对上一帧会把浮点误差一路累起来。
+   * 双指起始时的快照：两指几何，加上当时的缩放与位移。
+   * 每一帧都相对它计算，不相对上一帧：相对上一帧会累积浮点误差。
    */
   pinchSession: { start: PinchSnapshot, scale: number, x: number, y: number } | null
 }
@@ -71,8 +71,8 @@ export interface ImageViewerRefs {
 export interface ImageViewerOpenChangeDetails {
   open: boolean
   /**
-   * 这一次是怎么关的；展开时不带。
-   * 用它区分「用户主动取消」与「选完自动收起」，前者常要回滚草稿。
+   * 本次关闭的原因；展开时不带。
+   * 用于区分用户主动取消与选完自动收起，前者常需要回滚草稿。
    */
   reason?: OverlayCloseReason
 }
@@ -84,11 +84,11 @@ export interface ImageViewerIndexChangeDetails {
 
 export interface ImageViewerSchema extends MachineSchema {
   props: {
-    /** 图片清单。看单张就给长度 1 的数组。缺省为空，此时打开也只有工具条与空视口。 */
+    /** 图片清单。查看单张时提供长度 1 的数组。默认为空，此时打开也只有工具条与空视口。 */
     collection?: ImageViewerItem[]
     open?: boolean
     defaultOpen?: boolean
-    /** 当前下标（0 起）。给定即受控：内部不再自改，只发 onIndexChange。 */
+    /** 当前下标（0 起）。提供即受控：内部不再自行修改，只发 onIndexChange。 */
     index?: number
     /** 非受控初值，默认 0。 */
     defaultIndex?: number
@@ -101,25 +101,25 @@ export interface ImageViewerSchema extends MachineSchema {
     /** 缩放上限，默认 8。 */
     maxScale?: number
     closeOnEscape?: boolean
-    /** 点遮罩（内容之外）关闭，默认 true。 */
+    /** 点击遮罩（内容之外）关闭，默认 true。 */
     closeOnInteractOutside?: boolean
     restoreFocus?: boolean
-    /** 遮罩形态：opaque / blur / transparent。落在 backdrop 上，只换那一层的底色与模糊。 */
+    /** 遮罩形态：opaque / blur / transparent。写在 backdrop 上，只影响该层的底色与模糊。 */
     variant?: OverlayBackdropVariant
     translations?: Partial<ImageViewerTranslations>
     /** open 变化意图回调；受控时是唯一出口，非受控时随内部转移一并通知。 */
     onOpenChange?: (details: ImageViewerOpenChangeDetails) => void
-    /** 下标变化意图回调；受控时是唯一出口，非受控随内部写入一并通知。 */
+    /** 下标变化意图回调；受控时是唯一出口，非受控时随内部写入一并通知。 */
     onIndexChange?: (details: ImageViewerIndexChangeDetails) => void
   }
   context: {
-    /** 当前下标。受控（index 给定）时 cell 直读 prop，写只发 onIndexChange 不改内部值。 */
+    /** 当前下标。受控（index 提供）时 cell 直读 prop，写入只发 onIndexChange 不修改内部值。 */
     index: number
-    /** 当前图的变换。换图与重开都归零。 */
+    /** 当前图片的变换。切换图片与重新打开都归零。 */
     transform: ImageViewerTransform
     /** 正在拖拽平移。 */
     panning: boolean
-    /** 当前那张大图的取图相位。换图与重开都回到 loading。 */
+    /** 当前大图的加载相位。切换图片与重新打开都回到 loading。 */
     imageStatus: ImageViewerImageStatus
   }
   computed: Record<string, never>
@@ -138,14 +138,14 @@ export interface ImageViewerSchema extends MachineSchema {
     | { type: 'ROTATE.BY', delta: number }
     | { type: 'FLIP', axis: 'x' | 'y' }
     | { type: 'TRANSFORM.RESET' }
-    /** 大图自己派发的 DOM 事件，由 connect 挂在 image 上回送。 */
+    /** 大图自身派发的 DOM 事件，由 connect 挂在 image 上回送。 */
     | { type: 'IMAGE.LOAD' }
     | { type: 'IMAGE.ERROR' }
     /** 平移到绝对偏移（px），由视口的指针会话驱动。 */
     | { type: 'PAN.MOVE', x: number, y: number }
-    /** 一根手指落在图上。连接层只报落点，跟不跟得住归会话管。 */
+    /** 一根手指落在图片上。连接层只报告落点，是否跟随由会话管理。 */
     | { type: 'POINTERS.DOWN', pointerId: number, clientX: number, clientY: number }
-    /** 触点动了或少了一根。一根是平移，两根是缩放，点数一变就重拍基准。 */
+    /** 触点移动或减少。一根是平移，两根是缩放，点数变化即重新记录基准。 */
     | { type: 'POINTERS.CHANGE', points: readonly TrackedPoint[] }
     | { type: 'POINTERS.END' }
     | { type: 'PAN.END' }
@@ -182,18 +182,18 @@ export interface ImageViewerApi<T extends PropTypes = PropTypes> {
   /** 当前下标，恒在 [0, count - 1] 内；清单为空时为 0。 */
   index: number
   count: number
-  /** 当前那张图；清单为空时为 null。 */
+  /** 当前图片；清单为空时为 null。 */
   currentItem: ImageViewerItem | null
   transform: ImageViewerTransform
   /** 正在拖拽平移。 */
   panning: boolean
-  /** 当前那张大图的取图相位；换图与重开都回到 loading。 */
+  /** 当前大图的加载相位；切换图片与重新打开都回到 loading。 */
   imageStatus: ImageViewerImageStatus
-  /** 往前还翻得动（loop 且多于一张时恒为 true）。 */
+  /** 向前仍可翻页（loop 且多于一张时恒为 true）。 */
   canPrev: boolean
   canNext: boolean
   setOpen: (next: boolean) => void
-  /** 直接跳到某一张；越界会被夹回 [0, count - 1]。换图变换归零。 */
+  /** 直接跳到某一张；越界会被夹回 [0, count - 1]。切换图片时变换归零。 */
   setIndex: (next: number) => void
   next: () => void
   prev: () => void
@@ -204,7 +204,7 @@ export interface ImageViewerApi<T extends PropTypes = PropTypes> {
   rotateRight: () => void
   flipHorizontal: () => void
   flipVertical: () => void
-  /** 变换整体归零（缩放/旋转/翻转/平移）。 */
+  /** 变换整体归零（缩放 / 旋转 / 翻转 / 平移）。 */
   reset: () => void
   getTriggerProps: () => T['button']
   getBackdropProps: () => T['element']
@@ -213,11 +213,11 @@ export interface ImageViewerApi<T extends PropTypes = PropTypes> {
   getViewportProps: () => T['element']
   getImageProps: () => T['img']
   /**
-   * 底部那条控件带，装缩放、旋转、翻转与归零这几颗钮。
+   * 底部的控件带，放置缩放、旋转、翻转与归零按钮。
    *
-   * 它报的是 `role=group`：一组有名字的控件，每颗钮各占一个 Tab 位。
-   * 不报 `role=toolbar`——那个角色承诺条内靠方向键走位，而左右方向键与
-   * Home/End 在这台上是翻页；要那套走位就往这条带里放一个 Toolbar 组件。
+   * 它报告 `role=group`：一组有名字的控件，每个按钮各占一个 Tab 位。
+   * 不报告 `role=toolbar`：该角色承诺条内依靠方向键移动，而左右方向键与
+   * Home/End 在这里是翻页；需要该移动方式时在这条带中放置一个 Toolbar 组件。
    */
   getToolbarProps: () => T['element']
   getZoomInTriggerProps: () => T['button']

@@ -23,7 +23,7 @@ export interface ImageViewerContext extends OverlayWiring {
   backdropRef: RefObject<HTMLElement | null>
 }
 
-/** 看片浮层恒是模态的：遮罩盖住整页，焦点陷在浮层里。 */
+/** 图片查看浮层恒为模态：遮罩覆盖整页，焦点限制在浮层内。 */
 function layer(): Omit<Layer, 'id' | 'node' | 'surfaces'> {
   return {
     kind: 'modal',
