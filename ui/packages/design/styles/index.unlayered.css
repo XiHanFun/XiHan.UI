@@ -28007,7 +28007,7 @@
   cursor: pointer;
   transition:
     background var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
-    scale var(--xh-motion-duration-micro) var(--xh-motion-ease-enter-strong);
+    scale var(--xh-motion-duration-release) var(--xh-motion-ease-release);
 }
 
 [data-scope='navigation-menu'][data-part='trigger'][hidden] {
@@ -28023,6 +28023,8 @@
 /* 按下去要有回应：顶层按钮轻微下压，松手即弹回 */
 [data-scope='navigation-menu'][data-part='trigger']:not([data-disabled]):active {
   scale: var(--xh-motion-scale-press);
+  transition-duration: var(--xh-motion-duration-press);
+  transition-timing-function: var(--xh-motion-ease-press);
 }
 
 /* 展开着的那一张是打开路径，走品牌淡底强档：哪一张开着必须一眼看得出来。
@@ -28056,7 +28058,7 @@
   min-inline-size: var(--xh-navigation-menu-content-min-w, var(--xh-overlay-menu-min-w));
   padding: var(--xh-navigation-menu-content-p, var(--xh-surface-pad-xs));
   border: var(--xh-stroke-thin) solid var(--xh-navigation-menu-content-border, var(--xh-border-default));
-  border-radius: var(--xh-navigation-menu-content-radius, var(--xh-shape-surface));
+  border-radius: var(--xh-navigation-menu-content-radius, var(--xh-shape-overlay));
   background: var(--xh-navigation-menu-content-bg, var(--xh-bg-surface));
   box-shadow: var(--xh-navigation-menu-content-shadow, var(--xh-elevation-floating));
 }
@@ -28194,7 +28196,7 @@
   display: block;
   padding: var(--xh-navigation-menu-viewport-p, var(--xh-space-2));
   border: var(--xh-stroke-thin) solid var(--xh-navigation-menu-content-border, var(--xh-border-default));
-  border-radius: var(--xh-navigation-menu-content-radius, var(--xh-shape-surface));
+  border-radius: var(--xh-navigation-menu-content-radius, var(--xh-shape-overlay));
   background: var(--xh-navigation-menu-content-bg, var(--xh-bg-surface));
   box-shadow: var(--xh-navigation-menu-content-shadow, var(--xh-elevation-floating));
 }
