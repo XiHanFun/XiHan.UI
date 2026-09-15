@@ -1,4 +1,4 @@
-// 涨跌 | trend 落成 trend 部件的 data-direction，箭头由皮肤画；与 tone 正交——跌也可以是好事
+// 涨跌 | trend 写为 trend 部件的 data-direction，箭头由皮肤绘制；与 tone 正交：下跌也可以是正向语气
 import type { ReactNode } from "react";
 import {
   XhStatisticLabel,

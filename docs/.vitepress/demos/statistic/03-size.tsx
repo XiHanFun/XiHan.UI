@@ -1,4 +1,4 @@
-// 尺寸 | size 换的是标签、数值与前后缀的字号，不传 size 即默认档
+// 尺寸 | size 改变标签、数值与前后缀的字号，不传 size 即默认档
 import type { ReactNode } from "react";
 import {
   XhStatisticLabel,
