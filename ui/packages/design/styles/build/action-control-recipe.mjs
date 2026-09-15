@@ -127,7 +127,9 @@ export function assertActionControlRecipe(source) {
   const minimumTarget = /^(\d+(?:\.\d+)?)px$/.exec(source.coarsePointer.minimumTarget)
   if (!minimumTarget || Number(minimumTarget[1]) < 44)
     throw new Error('[action-control-recipe] coarsePointer.minimumTarget 必须是至少 44px 的静态命中区')
-  assertFields(source.motion, ['duration', 'easing', 'pressEasing'], 'root.motion')
+  assertExactKeys(source.motion, ['$description', 'duration', 'easing', 'pressDuration', 'pressEasing', 'releaseDuration', 'releaseEasing'], 'root.motion')
+  for (const field of ['$description', 'duration', 'easing', 'pressDuration', 'pressEasing', 'releaseDuration', 'releaseEasing'])
+    assertString(source.motion[field], `root.motion.${field}`)
   assertExactKeys(source.compact, ['strategy', 'tokens'], 'root.compact')
   if (source.compact.strategy !== 'semantic-token-remap')
     throw new Error('[action-control-recipe] compact.strategy 必须为 semantic-token-remap')
@@ -219,7 +221,7 @@ export function compileActionControlRecipe(source) {
     `      border-color ${source.motion.duration} ${source.motion.easing},`,
     `      box-shadow ${source.motion.duration} ${source.motion.easing},`,
     `      opacity ${source.motion.duration} ${source.motion.easing},`,
-    `      scale ${source.motion.duration} ${source.motion.pressEasing};`,
+    `      scale ${source.motion.releaseDuration} ${source.motion.releaseEasing};`,
   ].join('\n'))
 
   /* text 是尺寸基线；icon 共用其光学档，field/floating 只覆写真正不同的通道。 */
@@ -260,7 +262,12 @@ export function compileActionControlRecipe(source) {
 
   rule('[data-xh-action-control]:focus-visible', stateDeclarations(source, 'focus-visible', true))
   rule('[data-xh-action-control]:not([data-disabled]):not([data-loading]):hover', stateDeclarations(source, 'hover'))
-  rule('[data-xh-action-control]:not([data-disabled]):not([data-loading]):active', stateDeclarations(source, 'pressed'))
+  /* 按下段：所有过渡通道一起收进按下时长与曲线；释放回到 rest 规则的时长。 */
+  rule('[data-xh-action-control]:not([data-disabled]):not([data-loading]):active', [
+    stateDeclarations(source, 'pressed'),
+    `    transition-duration: ${source.motion.pressDuration};`,
+    `    transition-timing-function: ${source.motion.pressEasing};`,
+  ].join('\n'))
   rule('[data-xh-action-control][data-disabled]', stateDeclarations(source, 'disabled'))
   rule('[data-xh-action-control][data-loading][aria-disabled=\'true\']', stateDeclarations(source, 'loading'))
 

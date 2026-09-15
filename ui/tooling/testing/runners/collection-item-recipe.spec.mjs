@@ -59,6 +59,15 @@ describe('collection Item recipe', () => {
     expect(css).not.toMatch(/^\s*\[data-(?!xh-collection)[^\]]+\][^{]*\{/m)
   })
 
+  it('换面走统一点击时间线：释放 200ms，按下 120ms', async () => {
+    const css = compileCollectionItemRecipe(await source())
+    expect(css).toContain('background-color var(--xh-motion-duration-release) var(--xh-motion-ease-release)')
+    const pressed = css.slice(css.indexOf('[data-error]):active {'), css.indexOf('[data-xh-collection-item][data-xh-collection-size'))
+    expect(pressed).toContain('transition-duration: var(--xh-motion-duration-press);')
+    expect(pressed).toContain('transition-timing-function: var(--xh-motion-ease-press);')
+    expect(pressed).not.toMatch(/scale|translate|transform/)
+  })
+
   it.each([
     ['未知根键', (recipe) => { recipe.extra = true }],
     ['缺少状态', (recipe) => { delete recipe.stateValues.error }],

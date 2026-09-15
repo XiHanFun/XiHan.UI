@@ -104,7 +104,7 @@ export function assertCollectionItemRecipe(source) {
   assertFields(source.separator, ['blockMargin', 'inlineMargin', 'color'], 'root.separator')
   if (source.separator.blockMargin.startsWith('-') || source.separator.inlineMargin.startsWith('-'))
     fail('separator margin 不允许使用负值')
-  assertFields(source.motion, ['duration', 'easing'], 'root.motion')
+  assertFields(source.motion, ['$description', 'duration', 'easing', 'pressDuration', 'pressEasing', 'releaseDuration', 'releaseEasing'], 'root.motion')
   assertExactKeys(source.direction, ['axis', 'flow'], 'root.direction')
   if (source.direction.axis !== 'logical' || source.direction.flow !== 'row')
     fail('root.direction 必须使用 logical row')
@@ -171,9 +171,15 @@ ${rest}
     cursor: var(--xh-_collection-cursor);
     opacity: var(--xh-_collection-opacity);
     transition:
-      background-color ${source.motion.duration} ${source.motion.easing},
+      background-color ${source.motion.releaseDuration} ${source.motion.releaseEasing},
       color ${source.motion.duration} ${source.motion.easing},
       outline-color ${source.motion.duration} ${source.motion.easing};
+  }
+
+  /* 按下段：换面收进按下时长与曲线；释放回到 rest 规则的时长。组件皮肤只负责给出 active 面。 */
+  [data-xh-collection-item]:not([aria-disabled='true'], [aria-busy='true'], [data-error]):active {
+    transition-duration: ${source.motion.pressDuration};
+    transition-timing-function: ${source.motion.pressEasing};
   }
 
 ${SIZES.map(size => `  [data-xh-collection-item][data-xh-collection-size='${size}'] {

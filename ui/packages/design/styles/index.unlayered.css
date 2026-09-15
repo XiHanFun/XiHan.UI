@@ -1475,7 +1475,7 @@
     border-color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
     box-shadow var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
     opacity var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
-    scale var(--xh-motion-duration-micro) var(--xh-motion-ease-enter-strong);
+    scale var(--xh-motion-duration-release) var(--xh-motion-ease-release);
 }
 
 [data-xh-action-control][data-xh-action-size='xs'] {
@@ -1554,7 +1554,7 @@
 }
 
 [data-xh-action-control][data-xh-action-profile='floating'] {
-  --xh-_action-profile-radius: var(--xh-shape-pill);
+  --xh-_action-profile-radius: var(--xh-shape-circle);
   --xh-_action-profile-padding-inline: 0;
   --xh-_action-profile-gap: 0;
   flex: none;
@@ -1614,15 +1614,17 @@
   opacity: var(--xh-action-opacity-pressed, 1);
   cursor: var(--xh-action-cursor-pressed, pointer);
   scale: var(--xh-action-scale-pressed, var(--xh-motion-scale-press));
+  transition-duration: var(--xh-motion-duration-press);
+  transition-timing-function: var(--xh-motion-ease-press);
 }
 
 [data-xh-action-control][data-disabled] {
   background-color: var(--xh-action-bg-disabled, var(--xh-bg-subtle));
-  color: var(--xh-action-fg-disabled, var(--xh-fg-default));
+  color: var(--xh-action-fg-disabled, var(--xh-fg-disabled));
   border-color: var(--xh-action-border-disabled, transparent);
   --xh-_action-current-highlight: var(--xh-action-highlight-disabled, transparent);
   box-shadow: var(--xh-action-shadow-disabled, none);
-  opacity: var(--xh-action-opacity-disabled, var(--xh-state-disabled-opacity));
+  opacity: var(--xh-action-opacity-disabled, 1);
   cursor: var(--xh-action-cursor-disabled, not-allowed);
   scale: var(--xh-action-scale-disabled, none);
 }
@@ -31302,9 +31304,15 @@
   cursor: var(--xh-_collection-cursor);
   opacity: var(--xh-_collection-opacity);
   transition:
-    background-color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
+    background-color var(--xh-motion-duration-release) var(--xh-motion-ease-release),
     color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
     outline-color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
+}
+
+/* 按下段：换面收进按下时长与曲线；释放回到 rest 规则的时长。组件皮肤只负责给出 active 面。 */
+[data-xh-collection-item]:not([aria-disabled='true'], [aria-busy='true'], [data-error]):active {
+  transition-duration: var(--xh-motion-duration-press);
+  transition-timing-function: var(--xh-motion-ease-press);
 }
 
 [data-xh-collection-item][data-xh-collection-size='sm'] {
