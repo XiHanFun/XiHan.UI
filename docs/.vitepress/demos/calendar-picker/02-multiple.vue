@@ -1,4 +1,4 @@
-<!-- 多选 | selection-mode=multiple：点一下加进去，再点一下摘掉，集合按日期升序 -->
+<!-- 多选 | selection-mode=multiple：点击一次加入，再点击一次移除，集合按日期升序 -->
 <script setup lang="ts">
 import {
   XhCalendarPickerCell,
