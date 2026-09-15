@@ -1,6 +1,6 @@
 # Popconfirm 弹出确认 <Badge type="info" text="alpha" />
 
-贴着触发器的一句确认：比对话框轻，但仍拦住一次误操作。
+贴着触发器的一句确认：比对话框轻，但仍能拦住一次误操作。
 
 <div class="xh-resource-links">
   <a href="https://github.com/XiHanFun/XiHan.UI/tree/dev/ui/packages/engine/headless/src/popconfirm" target="_blank" rel="noreferrer">Headless</a>
@@ -56,39 +56,33 @@ size 换的是面板的内边距与最大宽度，三个档位落在 content 上
 
 ### 何时不用
 
-- 后果严重不可逆：用[对话框](./dialog)，并让用户读到完整说明。
-- 操作可以撤销：干脆直接做，配一条带"撤销"的[轻提示](./toast)——那比事前确认体验好。
+- 后果严重且不可逆时，使用[对话框](./dialog)，让用户读到完整说明。
+- 操作可以撤销时，直接执行并配一条带“撤销”的[轻提示](./toast)，体验优于事前确认。
 
 ### 特性
 
-- 确认按钮支持同步返回和任意 thenable：调用业务前即占用事务，兑现后收起；同步抛错、
-  `then` 读取失败或拒绝都会保持打开，并通过 `actionError` 与 `confirm-error` 原样暴露 `cause`。
-- pending 期间重复确认、触发器切换、`setOpen(false)`、Escape 与层外交互都不会关闭。
-  取消仍可立即终止组件的等待并收起；它不会假装取消业务 Promise，迟到的兑现或拒绝会按事务票据丢弃。
-- 受控宿主把 `open` 写成 `false` 属于事实状态，会终止当前确认事务；此后重新写成 `true` 是新会话，
-  旧 thenable 的结算不会关闭它或写入错误。
-- 浮层是非模态 `dialog`：不陷焦点、不锁滚动、不隐藏页面其它内容。
+- 确认按钮支持同步返回和任意 thenable：调用业务前即占用事务，兑现后收起；同步抛错、`then` 读取失败或拒绝都会保持打开，并通过 `actionError` 与 `confirm-error` 原样暴露 `cause`。
+- pending 期间重复确认、触发器切换、`setOpen(false)`、Escape 与层外交互都不会关闭。取消仍可立即终止组件的等待并收起；它不假装取消业务 Promise，迟到的兑现或拒绝按事务票据丢弃。
+- 受控宿主把 `open` 写为 `false` 属于事实状态，会终止当前确认事务；此后重新写为 `true` 是新会话，旧 thenable 的结算不会关闭它或写入错误。
+- 浮层是非模态 `dialog`：不捕获焦点、不锁定滚动、不隐藏页面其他内容。
 - 位置、尺寸、语气三轴。
-- 内容与箭头使用和 Popover 同源的 M2 磨砂表面：边界、顶光、背景模糊与投影保持连续；
-  强制颜色模式会撤掉装饰顶光，由系统色接管边界。
-- 标题、说明与末行操作按固定节奏排布，长文案可在可用宽度内断行。确认是实心主操作，
-  取消是 soft 次操作；两颗按钮都有接触高光、按压回执、明确的不透明聚焦底与粗指针命中区。
-- pending 时在确认文案之前显示 spinner，并以 `aria-busy` / `aria-disabled` 报告状态；挂起时按钮不再响应 hover / active 换面，
-  减弱动效下以静止点线圆环表达在途。
+- 内容与箭头使用与 Popover 同源的 M2 磨砂表面：边界、顶光、背景模糊与投影保持连续；强制色模式撤掉装饰顶光，由系统色接管边界。
+- 标题、说明与末行操作按固定节奏排布，长文案可在可用宽度内断行。确认是实心主操作，取消是 soft 次操作；两个按钮都有接触高光、按压反馈、不透明的聚焦底与粗指针命中区。
+- pending 时在确认文案之前显示 spinner，并以 `aria-busy` / `aria-disabled` 报告状态；挂起时按钮不再响应 hover / active 换面，减弱动效下以静止点线圆环表达在途。
 
 ### 组合
 
-- 触发器用[按钮](./button)；放进[表格](./table)的行操作、[菜单](./menu)的条目旁。
+- 触发器使用[按钮](./button)；放入[表格](./table)的行操作、[菜单](./menu)的条目旁。
 
 ### 最佳实践
 
-- 标题直接问那件事（"删除这条记录？"），描述写清后果。
-- 确认按钮写动作名，并对破坏性操作用危险语气。
+- 标题直接询问该操作（“删除这条记录？”），描述说明后果。
+- 确认按钮写动作名，破坏性操作使用危险语气。
 
 ### 反模式
 
-- 每一个操作都要确认：用户会条件反射地点确认，确认就失去意义了。
-- 确认框里没说清楚要删的是哪一条。
+- 每个操作都确认：用户会条件反射地点击确认，确认失去意义。
+- 确认框内未说明要删除的是哪一条。
 
 ## API 参考
 
@@ -257,7 +251,7 @@ size 换的是面板的内边距与最大宽度，三个档位落在 content 上
 | `--xh-popconfirm-max-w` | `content` | `max-inline-size` | `default` | `--xh-_popconfirm-max-w` | popconfirm 的 content 部件 max-inline-size 覆盖槽。 |
 | `--xh-popconfirm-px` | `content` | `padding-inline` | `default` | `--xh-_popconfirm-pad` | popconfirm 的 content 部件 padding-inline 覆盖槽。 |
 | `--xh-popconfirm-py` | `content` | `padding-block` | `default` | `--xh-_popconfirm-pad` | popconfirm 的 content 部件 padding-block 覆盖槽。 |
-| `--xh-popconfirm-radius` | `content` | `border-radius` | `default` | `--xh-shape-surface` | popconfirm 的 content 部件 border-radius 覆盖槽。 |
+| `--xh-popconfirm-radius` | `content` | `border-radius` | `default` | `--xh-shape-overlay` | popconfirm 的 content 部件 border-radius 覆盖槽。 |
 | `--xh-popconfirm-shadow` | `content` | `box-shadow` | `default` | `--xh-material-frosted-shadow` | popconfirm 的 content 部件 box-shadow 覆盖槽。 |
 | `--xh-popconfirm-title-fg` | `title` | `color` | `default` | `--xh-material-frosted-fg` | popconfirm 的 title 部件 color 覆盖槽。 |
 | `--xh-popconfirm-title-font-size` | `title` | `font-size` | `default` | `--xh-text-label-size` | popconfirm 的 title 部件 font-size 覆盖槽。 |
