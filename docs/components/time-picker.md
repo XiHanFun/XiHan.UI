@@ -93,14 +93,14 @@ presets 在列旁边多排一列，点一条整份写进值并收起；时刻在
 
 ### 何时不用
 
-- 任意时间都可以、用户会直接打字：用[时间字段](./time-field)。
+- 任意时间都可以、用户直接键入时，使用[时间字段](./time-field)。
 
 ### 特性
 
 - `step` 分列设定各列的步长。
-- `max` 直接把界外的格从列里裁掉；分列还会随已选的时再裁一遍。
+- `max` 直接把界外的格从列中裁掉；分钟列还会随已选的小时再裁一次。
 - `isTimeUnavailable` 逐格判断可选性。
-- 浮层里可以放"此刻"与确认按钮。
+- 浮层内可以放“此刻”与确认按钮。
 - 触发器打开空值时焦点直接落到第一项；从输入段打开时继续保留键入焦点。
 - 快捷选项与时/分/秒列都从当前值恢复持久选中，并在逻辑末端显示对号；时间项同时使用淡强调面和强调文字。
 - 悬停、键盘高亮与可见焦点使用中性实体底，与选中对号可以同时存在。数字格在左右保留等宽标记轨，选中和 RTL 都不会把数字推离中心。
@@ -115,14 +115,14 @@ presets 在列旁边多排一列，点一条整份写进值并收起；时刻在
 
 ### 最佳实践
 
-- 把不可选的时段裁掉而不是置灰，列会短很多、也更快找到。
-- 打开时把浮层滚到当前值那一格。
+- 把不可选的时段裁掉而不是置灰，列更短、查找更快。
+- 打开时把浮层滚动到当前值。
 - 标准输入行应同时包含清空按钮与时钟图标触发器；二者按值互斥显示。参与表单时同时渲染隐藏输入。
-- 自定义格内文案要保持简短；选中底与对号由皮肤统一绘制，不要在插槽里重复添加。
+- 自定义格内文案保持简短；选中底与对号由皮肤统一绘制，不在插槽内重复添加。
 
 ### 反模式
 
-- 步长设成 1 分钟：一列六十格，滚起来没有尽头。
+- 步长设为 1 分钟：一列六十格，滚动过长。
 
 ## API 参考
 
@@ -418,7 +418,7 @@ presets 在列旁边多排一列，点一条整份写进值并收起；时刻在
 | `--xh-time-picker-content-max-h` | `content` | `max-block-size` | `default` | `--xh-viewport-h-lg` | time-picker 的 content 部件 max-block-size 覆盖槽。 |
 | `--xh-time-picker-content-px` | `content` | `padding-inline` | `default` | `--xh-space-1` | time-picker 的 content 部件 padding-inline 覆盖槽。 |
 | `--xh-time-picker-content-py` | `content` | `padding-block` | `default` | `--xh-space-1` | time-picker 的 content 部件 padding-block 覆盖槽。 |
-| `--xh-time-picker-content-radius` | `content` | `border-radius` | `default` | `--xh-shape-surface` | time-picker 的 content 部件 border-radius 覆盖槽。 |
+| `--xh-time-picker-content-radius` | `content` | `border-radius` | `default` | `--xh-shape-overlay` | time-picker 的 content 部件 border-radius 覆盖槽。 |
 | `--xh-time-picker-content-shadow` | `content` | `box-shadow` | `default` | `--xh-material-frosted-shadow` | time-picker 的 content 部件 box-shadow 覆盖槽。 |
 | `--xh-time-picker-control-bg` | `control` | `background` | `default` | `--xh-_time-picker-control-bg` | time-picker 的 control 部件 background 覆盖槽。 |
 | `--xh-time-picker-control-bg-disabled` | `control` | `background` | `disabled` | `--xh-bg-subtle` | time-picker 的 control 部件 background 覆盖槽。 |
@@ -433,7 +433,7 @@ presets 在列旁边多排一列，点一条整份写进值并收起；时刻在
 | `--xh-time-picker-control-h` | `control` | `block-size` | `default` | `--xh-_time-picker-control-h` | time-picker 的 control 部件 block-size 覆盖槽。 |
 | `--xh-time-picker-control-min-w` | `control`<br>`root` | `min-inline-size` | `default` | `--xh-control-min-w` | time-picker 的 control、root 部件 min-inline-size 覆盖槽。 |
 | `--xh-time-picker-control-px` | `control` | `padding-inline` | `default` | `--xh-_time-picker-control-px` | time-picker 的 control 部件 padding-inline 覆盖槽。 |
-| `--xh-time-picker-control-radius` | `control` | `border-radius` | `default` | `--xh-shape-surface` | time-picker 的 control 部件 border-radius 覆盖槽。 |
+| `--xh-time-picker-control-radius` | `control` | `border-radius` | `default` | `--xh-shape-control` | time-picker 的 control 部件 border-radius 覆盖槽。 |
 | `--xh-time-picker-control-shadow` | `control` | `box-shadow` | `default` | `--xh-_time-picker-control-shadow` | time-picker 的 control 部件 box-shadow 覆盖槽。 |
 | `--xh-time-picker-font-size` | `control` | `font-size` | `default` | `--xh-_time-picker-font-size` | time-picker 的 control 部件 font-size 覆盖槽。 |
 | `--xh-time-picker-gap` | `root` | `gap` | `default` | `--xh-space-1` | time-picker 的 root 部件 gap 覆盖槽。 |

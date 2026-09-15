@@ -60273,7 +60273,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-shape-surface"
+        "--xh-shape-overlay"
       ],
       "visibility": "public",
       "description": "time-picker 的 content 部件 border-radius 覆盖槽。"
@@ -60553,7 +60553,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-shape-surface"
+        "--xh-shape-control"
       ],
       "visibility": "public",
       "description": "time-picker 的 control 部件 border-radius 覆盖槽。"

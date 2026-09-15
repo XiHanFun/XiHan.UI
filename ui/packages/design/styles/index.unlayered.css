@@ -36708,7 +36708,7 @@
   padding-inline: var(--xh-time-picker-control-px, var(--xh-_time-picker-control-px));
   padding-block: 0;
   border: var(--xh-stroke-thin) solid var(--xh-time-picker-control-border, var(--xh-_time-picker-control-border));
-  border-radius: var(--xh-time-picker-control-radius, var(--xh-shape-surface));
+  border-radius: var(--xh-time-picker-control-radius, var(--xh-shape-control));
   outline: var(--xh-ring-width) solid transparent;
   outline-offset: var(--xh-ring-offset);
   background: var(--xh-time-picker-control-bg, var(--xh-_time-picker-control-bg));
@@ -36873,7 +36873,7 @@
   user-select: none;
   transition:
     background var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
-    scale var(--xh-motion-duration-micro) var(--xh-motion-ease-enter-strong);
+    scale var(--xh-motion-duration-release) var(--xh-motion-ease-release);
 }
 
 [data-scope='time-picker'][data-part='trigger'][hidden],
@@ -36898,6 +36898,8 @@
 [data-scope='time-picker'][data-part='trigger']:active:not(:disabled) {
   background: var(--xh-time-picker-action-bg-active, var(--xh-bg-subtle-active));
   scale: var(--xh-motion-scale-press);
+  transition-duration: var(--xh-motion-duration-press);
+  transition-timing-function: var(--xh-motion-ease-press);
 }
 
 [data-scope='time-picker'][data-part='trigger'][data-state='open'] {
@@ -36913,6 +36915,8 @@
 [data-scope='time-picker'][data-part='clear-trigger']:active {
   background: var(--xh-time-picker-action-bg-active, var(--xh-bg-subtle-active));
   scale: var(--xh-motion-scale-press);
+  transition-duration: var(--xh-motion-duration-press);
+  transition-timing-function: var(--xh-motion-ease-press);
 }
 
 /* 清空按钮退出了 Tab 序列，这条是给程序化聚焦兜底；
@@ -36940,7 +36944,7 @@
   /* 列自己定高，面板整体不该再长过页内滚动面那一档 */
   max-block-size: var(--xh-time-picker-content-max-h, var(--xh-viewport-h-lg));
   border: var(--xh-stroke-thin) solid var(--xh-time-picker-content-border, var(--xh-border-subtle));
-  border-radius: var(--xh-time-picker-content-radius, var(--xh-shape-surface));
+  border-radius: var(--xh-time-picker-content-radius, var(--xh-shape-overlay));
   background: var(--xh-time-picker-content-bg, var(--xh-bg-surface));
   color: var(--xh-time-picker-content-fg, var(--xh-fg-default));
   font-variant-numeric: tabular-nums;
