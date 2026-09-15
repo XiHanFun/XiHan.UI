@@ -129,7 +129,7 @@
       background-color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
       border-color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
       box-shadow var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
-      scale var(--xh-motion-duration-micro) var(--xh-motion-ease-enter-strong);
+      scale var(--xh-motion-duration-release) var(--xh-motion-ease-release);
   }
 
   /* content 只能给伪元素，绝不能并进上面那条：content 落在普通元素上会顶掉它的全部子节点，
@@ -178,6 +178,8 @@
 
     box-shadow: var(--xh-checkbox-group-indicator-shadow-pressed, none);
     scale: var(--xh-motion-scale-press);
+    transition-duration: var(--xh-motion-duration-press);
+    transition-timing-function: var(--xh-motion-ease-press);
   }
 
   /* 勾号由皮肤补，作者不必自己往 indicator 里塞字符 */
