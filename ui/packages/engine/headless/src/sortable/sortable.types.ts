@@ -8,7 +8,7 @@
 import type { Direction, MachineSchema, PropTypes } from '@xihan-ui/core'
 import type { DndDelta, DndRect, SortableAxis } from '@xihan-ui/pointer'
 
-/** 拖动是谁发起的。键盘那条路没有指针位移，让位量另算。 */
+/** 拖动的发起方式。键盘路径没有指针位移，让位量另行计算。 */
 export type SortableMode = 'pointer' | 'keyboard'
 
 export interface SortableSortDetails {
@@ -16,9 +16,9 @@ export interface SortableSortDetails {
   from: number
   /** 到第几位。 */
   to: number
-  /** 被拖那一项的标识。 */
+  /** 被拖动项的标识。 */
   id: string
-  /** 已经重排好的顺序，可直接拿去写回数据源。 */
+  /** 已重排的顺序，可直接写回数据源。 */
   ids: string[]
 }
 
@@ -33,15 +33,15 @@ export interface SortableDragEndDetails {
   from: number
   to: number
   mode: SortableMode
-  /** 中途取消（Escape 或系统收走指针）时为 true，此时顺序没有变。 */
+  /** 中途取消（Escape 或系统收回指针）时为 true，此时顺序未变。 */
   canceled: boolean
 }
 
-/** 读屏用的文案，默认英文。拖动过程在视觉上很清楚，在读屏里全靠这几句。 */
+/** 读屏文案，默认英文。拖动过程在视觉上很清楚，在读屏中全部依靠这些文案。 */
 export interface SortableTranslations {
   /** 整个可排序区域的名字。 */
   root: string
-  /** 一项的名字。不给就取该项屏幕上写着的字——id 是内部标识，念出来没人听得懂。 */
+  /** 一项的名字。未提供时取该项屏幕上的文字：id 是内部标识，朗读出来无法理解。 */
   item: (id: string, position: number, total: number) => string
   /** 拖拽手柄的名字。 */
   itemDragTrigger: (name: string) => string
@@ -57,49 +57,49 @@ export interface SortableTranslations {
 
 export interface SortableRefs {
   getRootEl: () => HTMLElement | null
-  /** 按下那一刻的指针位置。跟手位移一律相对它算，不是相对上一帧。 */
+  /** 按下时的指针位置。跟手位移一律相对它计算，不相对上一帧。 */
   origin: { clientX: number, clientY: number } | null
 }
 
 export interface SortableSchema extends MachineSchema {
   props: {
     /**
-     * 项的稳定标识，数组顺序就是当前顺序。这是顺序的唯一真源。
-     * DOM 里项的先后必须与它一致——几何按 DOM 量，回调按它算。
+     * 项的稳定标识，数组顺序即当前顺序。这是顺序的唯一真源。
+     * DOM 中项的先后必须与它一致：几何按 DOM 测量，回调按它计算。
      */
     ids: string[]
-    /** 排序沿哪根轴走。换行网格用 `both`。 */
+    /** 排序沿哪根轴进行。换行网格使用 `both`。 */
     orientation?: SortableAxis
     disabled?: boolean
-    /** 按下之后走多远才算开始拖，默认 5px。给 0 表示按下即拖。 */
+    /** 按下之后移动多远才视为开始拖动，默认 5px。提供 0 表示按下即拖动。 */
     activationDistance?: number
-    /** 拖到容器边缘时自动滚动，默认开。 */
+    /** 拖到容器边缘时自动滚动，默认开启。 */
     autoScroll?: boolean
     dir?: Direction
     translations?: Partial<SortableTranslations>
-    /** 顺序变化意图。取消的那次不发。 */
+    /** 顺序变化意图。取消的一次不发出。 */
     onSort?: (details: SortableSortDetails) => void
     onDragStart?: (details: SortableDragStartDetails) => void
     onDragEnd?: (details: SortableDragEndDetails) => void
   }
   context: {
-    /** 正在拖的那一项，没在拖是 null。 */
+    /** 正在拖动的项，未拖动时为 null。 */
     activeId: string | null
-    /** 拾起时它在第几位；没在拖是 -1。 */
+    /** 拾起时它所在的位次；未拖动时为 -1。 */
     from: number
-    /** 此刻松手会落到第几位；没在拖是 -1。 */
+    /** 当前松手会落到的位次；未拖动时为 -1。 */
     to: number
     mode: SortableMode | null
-    /** 指针相对按下点的位移。键盘拖动恒是零。 */
+    /** 指针相对按下点的位移。键盘拖动恒为零。 */
     delta: DndDelta
-    /** 拾起那一刻各项的矩形快照，下标与 DOM 顺序对齐。 */
+    /** 拾起时各项的矩形快照，下标与 DOM 顺序对齐。 */
     rects: DndRect[]
     /**
-     * 拾起那一刻容器左上角在视口里的位置，已减去容器自身的滚动量。
-     * 落点线据此把项的矩形换算成容器内坐标；没在拖是 null。
+     * 拾起时容器左上角在视口中的位置，已减去容器自身的滚动量。
+     * 落点线据此把项的矩形换算为容器内坐标；未拖动时为 null。
      */
     rootOrigin: DndDelta | null
-    /** 送进 aria-live 的那句话。 */
+    /** 送入 aria-live 的文案。 */
     announcement: string
   }
   refs: SortableRefs
@@ -130,22 +130,22 @@ export interface SortableSchema extends MachineSchema {
 }
 
 export interface SortableItemProps {
-  /** 项标识，与 `ids` 里的值一一对应。 */
+  /** 项标识，与 `ids` 中的值一一对应。 */
   id: string
   /**
-   * 单独禁掉这一项。整份 `disabled` 是列表级的开关，这条是项级的——
-   * 固定标签不许拖、其余照拖，就是这个形状。
+   * 单独禁用该项。整份 `disabled` 是列表级的开关，该条是项级的：
+   * 固定标签不允许拖动、其余照常拖动，即为这一形态。
    */
   disabled?: boolean
 }
 
-/** 一项在此刻的呈现状态，适配器据此渲染。 */
+/** 一项当前的呈现状态，适配器据此渲染。 */
 export interface SortableItemState {
   id: string
   index: number
-  /** 就是它被拖着。 */
+  /** 该项正被拖动。 */
   dragging: boolean
-  /** 让位位移，直接写进 transform。 */
+  /** 让位位移，直接写入 transform。 */
   offset: DndDelta
 }
 
@@ -161,7 +161,7 @@ export interface SortableApi<T extends PropTypes = PropTypes> {
   getRootProps: () => T['element']
   getItemProps: (props: SortableItemProps) => T['element']
   getItemDragTriggerProps: (props: SortableItemProps) => T['element']
-  /** 落点线：拖动中且落点与起点不同一位时才在场，位置由内联样式给出。 */
+  /** 落点线：拖动中且落点与起点不同位时才存在，位置由内联样式给出。 */
   getDropIndicatorProps: () => T['element']
   getLiveRegionProps: () => T['element']
 }

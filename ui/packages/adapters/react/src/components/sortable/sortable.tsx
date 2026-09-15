@@ -28,7 +28,7 @@ export interface SortableRootSlotProps {
   mode: SortableMode | null
 }
 
-/** 每一项的载荷。`dragging` 是「就是它被拖着」，不是「列表里有人在拖」。 */
+/** 每一项的载荷。`dragging` 表示该项正被拖动，而不是列表中有任意项在拖动。 */
 export interface SortableItemSlotProps {
   dragging: boolean
   index: number
@@ -37,17 +37,17 @@ export interface SortableItemSlotProps {
 export interface XhSortableRootProps extends Omit<ComponentPropsWithRef<'div'>, 'children' | 'dir' | 'onDragStart' | 'onDragEnd'> {
   /** 项的稳定标识，数组顺序就是当前顺序。 */
   ids?: string[]
-  /** 排序沿哪根轴走；换行网格用 both。 */
+  /** 排序沿哪根轴进行；换行网格使用 both。 */
   orientation?: SortableAxis
-  /** 文字方向，缺省 ltr。 */
+  /** 文字方向，默认 ltr。 */
   dir?: Direction
   disabled?: boolean
-  /** 按下之后走多远才算开始拖，默认 5px。 */
+  /** 按下之后移动多远才视为开始拖动，默认 5px。 */
   activationDistance?: number
-  /** 拖到容器边缘时自动滚动，默认开。 */
+  /** 拖到容器边缘时自动滚动，默认开启。 */
   autoScroll?: boolean
   translations?: Partial<SortableTranslations>
-  /** 顺序变化意图；取消的那次不发。 */
+  /** 顺序变化意图；取消的一次不触发。 */
   onSort?: SortableProps['onSort']
   onDragStart?: SortableProps['onDragStart']
   onDragEnd?: SortableProps['onDragEnd']
@@ -107,9 +107,9 @@ export function XhSortableRoot({
 XhSortableRoot.xhEvents = ['sort', 'drag-start', 'drag-end'] as const
 
 export interface XhSortableItemProps extends Omit<ComponentPropsWithRef<'div'>, 'children'> {
-  /** 项标识，与 ids 里的值一一对应。 */
+  /** 项标识，与 ids 中的值一一对应。 */
   itemId: string
-  /** 单独禁掉这一项。整份 disabled 在 Root 上，这条是项级的。 */
+  /** 单独禁用该项。整份 disabled 在 Root 上，该项是项级的。 */
   disabled?: boolean
   children?: SlotChildren<SortableItemSlotProps>
 }
@@ -130,9 +130,9 @@ export function XhSortableItem({ itemId, disabled, children, ...rest }: XhSortab
 }
 
 export interface XhSortableItemDragTriggerProps extends ComponentPropsWithRef<'button'> {
-  /** 项标识，与 ids 里的值一一对应。 */
+  /** 项标识，与 ids 中的值一一对应。 */
   itemId: string
-  /** 单独禁掉这一项。整份 disabled 在 Root 上，这条是项级的。 */
+  /** 单独禁用该项。整份 disabled 在 Root 上，该项是项级的。 */
   disabled?: boolean
 }
 
@@ -153,9 +153,9 @@ export function XhSortableItemDragTrigger({ itemId, disabled, children, ...rest 
 export interface XhSortableDropIndicatorProps extends ComponentPropsWithRef<'div'> {}
 
 /**
- * 落点线：拖动中画在松手后这一项会插进去的那条缝上，落点与起点同一位时不在场。
+ * 落点线：拖动中绘制在松手后该项将插入的缝隙上，落点与起点同一位置时不在场。
  *
- * 它是容器的绝对定位子节点，写在 Root 里、排在末项之后——那样它才画在各项之上。
+ * 它是容器的绝对定位子节点，写在 Root 中、排在末项之后：这样才绘制在各项之上。
  */
 export function XhSortableDropIndicator({ ...rest }: XhSortableDropIndicatorProps): ReactNode {
   const ctx = useSortableContext()
@@ -167,7 +167,7 @@ export interface XhSortableLiveRegionProps extends Omit<ComponentPropsWithRef<'d
 /**
  * 拖动过程的读屏播报区，视觉上不可见。
  *
- * 放进列表里就行，位置不限。它必须在拖动开始之前就在 DOM 上——
+ * 放进列表中即可，位置不限。它必须在拖动开始之前就在 DOM 上：
  * 读屏不播报后插入的节点。
  */
 export function XhSortableLiveRegion({ ...rest }: XhSortableLiveRegionProps): ReactNode {

@@ -17,7 +17,7 @@ import { useMachine } from '../../runtime/use-machine'
 export interface SortableContext {
   api: SortableApi
   service: Service<SortableSchema>
-  /** 容器节点，机器在拾起时拿它找项、量矩形。 */
+  /** 容器节点，状态机在拾起时用它查找项、测量矩形。 */
   rootRef: RefObject<HTMLElement | null>
 }
 

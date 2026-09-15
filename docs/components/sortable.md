@@ -93,14 +93,14 @@
 
 | 属性 | 类型 | 必填 | 说明 |
 | --- | --- | --- | --- |
-| `ids` | `string[]` | 是 | 项的稳定标识，数组顺序就是当前顺序。这是顺序的唯一真源。 DOM 里项的先后必须与它一致——几何按 DOM 量，回调按它算。 |
-| `orientation` | `SortableAxis` |  | 排序沿哪根轴走。换行网格用 `both`。 |
+| `ids` | `string[]` | 是 | 项的稳定标识，数组顺序即当前顺序。这是顺序的唯一真源。 DOM 中项的先后必须与它一致：几何按 DOM 测量，回调按它计算。 |
+| `orientation` | `SortableAxis` |  | 排序沿哪根轴进行。换行网格使用 `both`。 |
 | `disabled` | `boolean` |  |  |
-| `activationDistance` | `number` |  | 按下之后走多远才算开始拖，默认 5px。给 0 表示按下即拖。 |
-| `autoScroll` | `boolean` |  | 拖到容器边缘时自动滚动，默认开。 |
+| `activationDistance` | `number` |  | 按下之后移动多远才视为开始拖动，默认 5px。提供 0 表示按下即拖动。 |
+| `autoScroll` | `boolean` |  | 拖到容器边缘时自动滚动，默认开启。 |
 | `dir` | `Direction` |  |  |
 | `translations` | `Partial<SortableTranslations>` |  |  |
-| `onSort` | `(details: SortableSortDetails) => void` |  | 顺序变化意图。取消的那次不发。 |
+| `onSort` | `(details: SortableSortDetails) => void` |  | 顺序变化意图。取消的一次不发出。 |
 | `onDragStart` | `(details: SortableDragStartDetails) => void` |  |  |
 | `onDragEnd` | `(details: SortableDragEndDetails) => void` |  |  |
 
@@ -110,7 +110,7 @@
 
 | 事件 | 载荷 | 说明 |
 | --- | --- | --- |
-| `sort` | `SortableSortDetails` | 顺序变化；detail 为 `{ from, to, id, ids }`，其中 ids 已重排好 |
+| `sort` | `SortableSortDetails` | 顺序变化；detail 为 `{ from, to, id, ids }`，其中 ids 已重排 |
 | `drag-start` | `SortableDragStartDetails` | 拾起；detail 为 `{ id, from, mode }` |
 | `drag-end` | `SortableDragEndDetails` | 收尾（含取消）；detail 为 `{ id, from, to, mode, canceled }` |
 
@@ -149,7 +149,7 @@
 | `getRootProps` | `() => T['element']` |  |
 | `getItemProps` | `(props: SortableItemProps) => T['element']` |  |
 | `getItemDragTriggerProps` | `(props: SortableItemProps) => T['element']` |  |
-| `getDropIndicatorProps` | `() => T['element']` | 落点线：拖动中且落点与起点不同一位时才在场，位置由内联样式给出。 |
+| `getDropIndicatorProps` | `() => T['element']` | 落点线：拖动中且落点与起点不同位时才存在，位置由内联样式给出。 |
 | `getLiveRegionProps` | `() => T['element']` |  |
 
 ## 无障碍
