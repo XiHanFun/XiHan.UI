@@ -25440,7 +25440,7 @@
   transition:
     background var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
     box-shadow var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
-    scale var(--xh-motion-duration-micro) var(--xh-motion-ease-enter-strong);
+    scale var(--xh-motion-duration-release) var(--xh-motion-ease-release);
 }
 
 [data-scope='form'][data-part='submit-trigger'][hidden],
@@ -25458,6 +25458,8 @@
 [data-scope='form'][data-part='reset-trigger']:active:not(:disabled) {
   background: var(--xh-form-trigger-bg-active, var(--xh-bg-subtle-active));
   scale: var(--xh-motion-scale-press);
+  transition-duration: var(--xh-motion-duration-press);
+  transition-timing-function: var(--xh-motion-ease-press);
 }
 
 /* 单体控件用 :disabled（集合条目才用 [data-disabled]）：
