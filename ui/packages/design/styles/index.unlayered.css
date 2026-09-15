@@ -685,7 +685,7 @@
   --xh-button-group-separator-opacity: 1;
 
   position: relative;
-  border-radius: var(--xh-button-group-radius, var(--xh-shape-pill));
+  border-radius: var(--xh-button-group-radius, var(--xh-shape-control));
 }
 
 [data-scope='button-group'][data-part='root'][data-variant='outline']::after {
@@ -753,26 +753,26 @@
    只认直接子节点：段之间插了别的节点时宁可退化成直角，也不要圆错位置 */
 [data-scope='button-group'][data-part='root'][data-orientation='horizontal'] > *:first-child,
 [data-scope='button-group'][data-part='root'][data-orientation='horizontal'] > *:first-child [data-scope='button'][data-part='root'] {
-  border-start-start-radius: var(--xh-button-group-radius, var(--xh-shape-pill));
-  border-end-start-radius: var(--xh-button-group-radius, var(--xh-shape-pill));
+  border-start-start-radius: var(--xh-button-group-radius, var(--xh-shape-control));
+  border-end-start-radius: var(--xh-button-group-radius, var(--xh-shape-control));
 }
 
 [data-scope='button-group'][data-part='root'][data-orientation='horizontal'] > *:last-child,
 [data-scope='button-group'][data-part='root'][data-orientation='horizontal'] > *:last-child [data-scope='button'][data-part='root'] {
-  border-start-end-radius: var(--xh-button-group-radius, var(--xh-shape-pill));
-  border-end-end-radius: var(--xh-button-group-radius, var(--xh-shape-pill));
+  border-start-end-radius: var(--xh-button-group-radius, var(--xh-shape-control));
+  border-end-end-radius: var(--xh-button-group-radius, var(--xh-shape-control));
 }
 
 [data-scope='button-group'][data-part='root'][data-orientation='vertical'] > *:first-child,
 [data-scope='button-group'][data-part='root'][data-orientation='vertical'] > *:first-child [data-scope='button'][data-part='root'] {
-  border-start-start-radius: var(--xh-button-group-radius, var(--xh-shape-pill));
-  border-start-end-radius: var(--xh-button-group-radius, var(--xh-shape-pill));
+  border-start-start-radius: var(--xh-button-group-radius, var(--xh-shape-control));
+  border-start-end-radius: var(--xh-button-group-radius, var(--xh-shape-control));
 }
 
 [data-scope='button-group'][data-part='root'][data-orientation='vertical'] > *:last-child,
 [data-scope='button-group'][data-part='root'][data-orientation='vertical'] > *:last-child [data-scope='button'][data-part='root'] {
-  border-end-start-radius: var(--xh-button-group-radius, var(--xh-shape-pill));
-  border-end-end-radius: var(--xh-button-group-radius, var(--xh-shape-pill));
+  border-end-start-radius: var(--xh-button-group-radius, var(--xh-shape-control));
+  border-end-end-radius: var(--xh-button-group-radius, var(--xh-shape-control));
 }
 
 /* styles/descriptions.css */
