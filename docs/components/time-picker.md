@@ -26,61 +26,61 @@
 
 ### 分列步长
 
-step=15 只裁浮层里的可选值（分列剩四格），段位上手打的分数不受它限制
+step=15 只裁剪浮层中的可选值（分列剩四格），段位上手动输入的分钟数不受它限制
 
 <XhDemo src="time-picker/02-step" />
 
 ### 12 小时制
 
-时列写的是显示值 01-12，落到哪个真实小时由上下午说了算：输入行里敲、浮层里挑都改它
+时列写的是显示值 01-12，落到哪个真实小时由上下午决定：输入行中输入、浮层中选择都会修改它
 
 <XhDemo src="time-picker/03-hour-cycle" />
 
 ### 精度到秒
 
-granularity 同时决定输入行显示几段、浮层里排几列
+granularity 同时决定输入行显示几段、浮层中排几列
 
 <XhDemo src="time-picker/04-granularity" />
 
 ### 禁用 / 只读 / 校验失败
 
-禁用整条退出 Tab 序，只读仍能展开浏览只是改不动值，invalid 只改标注
+禁用整条退出 Tab 序列，只读仍能展开浏览只是不可修改值，invalid 只改变标注
 
 <XhDemo src="time-picker/05-state" />
 
 ### 可选时段
 
-min / max 直接把界外的格从列里裁掉；分列还会随已选的时再裁一遍
+min / max 直接把界外的格从列中裁掉；分列还会随已选的小时再裁剪一次
 
 <XhDemo src="time-picker/06-bounds" />
 
-### 浮层里的操作按钮
+### 浮层中的操作按钮
 
-列表下面这排按钮是作者自己的节点，键盘事件在它这一层收口，不再上交给列表
+列表下方这排按钮是作者自己的节点，键盘事件在这一层收口，不再上交给列表
 
 <XhDemo src="time-picker/07-actions" />
 
-### 自定可选格
+### 自定义可选格
 
-列里渲染哪几格由作者决定，午休两格整段拿掉；手打进段位的时被吸到下一个可约小时
+列中渲染哪几格由作者决定，午休两格整段移除；手动输入段位的小时被吸附到下一个可约小时
 
 <XhDemo src="time-picker/08-predicate" />
 
 ### 三轴
 
-variant 决定描边与底怎么画、tone 决定用哪族颜色、size 换几何档；三者只落在 root，浮层里的格子一并跟着换
+variant 决定描边与底色的绘制方式、tone 决定使用哪族颜色、size 切换几何档；三者只落在 root，浮层中的格子一并随之变化
 
 <XhDemo src="time-picker/09-axes" />
 
-### 可选的触发钮
+### 可选的触发按钮
 
-点输入行本来就展开，这个按钮不是必需的；要它是因为它才带 aria-haspopup / aria-expanded
+点击输入行本来就会展开，该按钮不是必需的；需要它是因为它才带 aria-haspopup / aria-expanded
 
 <XhDemo src="time-picker/10-trigger" />
 
 ### 快捷选项
 
-presets 在列旁边多排一列，点一条整份写进值并收起；时刻在组件外算好再传
+presets 在列旁边多排一列，点击一条即整份写入值并收起；时刻在组件外计算后再传入
 
 <XhDemo src="time-picker/11-presets" />
 

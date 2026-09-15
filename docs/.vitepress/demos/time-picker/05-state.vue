@@ -1,4 +1,4 @@
-<!-- 禁用 / 只读 / 校验失败 | 禁用整条退出 Tab 序，只读仍能展开浏览只是改不动值，invalid 只改标注 -->
+<!-- 禁用 / 只读 / 校验失败 | 禁用整条退出 Tab 序列，只读仍能展开浏览只是不可修改值，invalid 只改变标注 -->
 <script setup lang="ts">
 import {
   XhTimePickerColumn,

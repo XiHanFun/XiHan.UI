@@ -1,4 +1,4 @@
-<!-- 精度到秒 | granularity 同时决定输入行显示几段、浮层里排几列 -->
+<!-- 精度到秒 | granularity 同时决定输入行显示几段、浮层中排几列 -->
 <script setup lang="ts">
 import {
   XhTimePickerClearTrigger,
