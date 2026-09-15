@@ -1,6 +1,6 @@
 # QuestionFlow 澄清问卷 <Badge type="info" text="alpha" />
 
-动手之前先问几句：一次一题，人逐题作答，答完一起提交。
+执行前先提问：一次一题，逐题作答，答完一起提交。
 
 <div class="xh-resource-links">
   <a href="https://github.com/XiHanFun/XiHan.UI/tree/dev/ui/packages/engine/headless/src/question-flow" target="_blank" rel="noreferrer">Headless</a>
@@ -46,54 +46,42 @@ size 换问句、选项行与页脚按钮的几何档，三档共用同一份问
 
 ### 何时使用
 
-- 需求还差几处没说清，把含糊的地方拆成几道选择题问回去。
-- 一次要问的不止一件事，而每件都只要一两秒就能答完。
+- 需求尚有几处不明确，把含糊的地方拆成几道选择题。
+- 一次需要问多件事，且每件都只需一两秒作答。
 
 ### 何时不用
 
-- 只问一件事：那是一个[单选组](./radio-group)或[复选框组](./checkbox-group)，不必套一层问卷。
-- 要人批准一次危险动作：那是闸门，用[审批](./approval)——它的出口只有批准与拒绝两条，
-  没有「跳过」，也没有「答完再说」。
-- 要收一份长表单：字段之间有校验与联动，用[表单](./form)。
+- 只问一件事时，使用[单选组](./radio-group)或[复选框组](./checkbox-group)，不需要套一层问卷。
+- 需要用户批准一次危险操作时，使用[审批](./approval)：它的出口只有批准与拒绝，没有“跳过”，也没有“答完再说”。
+- 收集一份长表单时，字段之间有校验与联动，使用[表单](./form)。
 
 ### 特性
 
-- **一次只暴露一题**：非当前题对读屏 `aria-hidden`、对键盘 `inert`，里面的可聚焦物另发 `tabindex="-1"`。
-  它们仍留在轨道上，只是走不到——这样卡片高度才有得可量，来回翻页也不必重建 DOM。
-- **高度与位移是量出来的，不是猜的**：机器在活 DOM 上量当前题的盒，把结果写进 context，
-  连接层只把它格式化成两个私有槽（视口高度与轨道位移）。连接层是渲染期纯函数，
-  不查 DOM、不起定时器、不读时钟。
-- **单选自动前进，多选等人点继续**：选中一项后隔一小段自动翻到下一题；连着改主意时，
-  每改一次都从整段延时重新计。**自动前进只走下一题**——末题上它停住，不替人按发送。
-- **一颗按钮两个身份**：不是末题时是「继续」，末题时是「发送」。它原位换 `data-mode` 与可访问名，
-  正在按它的人不会按空。
-- **自由文本与选项同等算数**：写了一句「都不是，我想要……」就算答过了这一题，继续键随之亮起。
-- 进度只播报一次：`counter` 那格 `aria-hidden`，逐题跳动的数字不进活区；
-  换题与交卷由 `announcement` 念一句。
-- 跳过是明路：`allowSkip` 关掉时整颗跳过键收起，而不是留一颗按不动的按钮。
-  末题上跳过即交卷——否则最后一题没有出口，人会被困在那里。
+- 一次只暴露一题：非当前题对读屏 `aria-hidden`、对键盘 `inert`，其中的可聚焦元素另发 `tabindex="-1"`。它们仍留在轨道上，只是不可到达，这样卡片高度可以测量，来回翻页也不需要重建 DOM。
+- 高度与位移是测量得出的：状态机在活动 DOM 上测量当前题的盒，把结果写入 context，连接层只把它格式化为两个私有槽（视口高度与轨道位移）。连接层是渲染期纯函数，不查询 DOM、不启动定时器、不读取时钟。
+- 单选自动前进，多选等待用户点击继续：选中一项后隔一小段自动翻到下一题；连续更改时，每次更改都从整段延时重新计时。自动前进只走到下一题，末题上停止，不替用户提交。
+- 一个按钮两个身份：不是末题时为“继续”，末题时为“发送”。它原位切换 `data-mode` 与可访问名称，正在按它的用户不会按空。
+- 自由文本与选项同等有效：填写了“都不是，我想要……”即视为已作答，继续键随之可用。
+- 进度只播报一次：`counter` 部件 `aria-hidden`，逐题跳动的数字不进入活动区域；换题与提交由 `announcement` 读出一句。
+- 跳过是明确路径：`allowSkip` 关闭时整个跳过键收起，而不是保留一个不可用的按钮。末题上跳过即提交，否则最后一题没有出口。
 
 ### 组合
 
-- 步进计数器想做成里程表那样逐位滚动：把 `counter` 当容器，
-  数字交给[数值动画](./number-animation)，判定权仍在本组件手里。
-- 问卷收上来之后要接着执行危险动作：把[审批](./approval)排在它后面，两件事分开——
-  问卷收的是「怎么做」，闸门收的是「做不做」。
-- 装进[对话框](./dialog)时把 `initialFocus` 指到当前题的第一个选项上，
-  打开即可直接用方向键作答。
+- 步进计数器需要做成逐位滚动时，把 `counter` 作为容器，数字交给[数值动画](./number-animation)，判定权仍在本组件。
+- 问卷提交后需要执行危险操作时，把[审批](./approval)排在它后面，两件事分开：问卷收集的是“怎么做”，闸门收集的是“做不做”。
+- 放入[对话框](./dialog)时把 `initialFocus` 指向当前题的第一个选项，打开即可用方向键作答。
 
 ### 最佳实践
 
-- 题目控制在三到五道：这是「动手前问一句」，不是问卷调查。
-- 单选题的选项写成互斥的完整答案，别让人靠自由文本补充关键信息。
-- 提交之后卡片不会自己消失：**宿主要在 `onSubmit` 里决定接下来做什么**，
-  想让它留在原地就渲 `result` 那一格。
+- 题目控制在三到五道：这是执行前的澄清，不是问卷调查。
+- 单选题的选项写成互斥的完整答案，不依赖自由文本补充关键信息。
+- 提交之后卡片不会自动消失：宿主需要在 `onSubmit` 中决定后续动作，需要保留时渲染 `result` 部件。
 
 ### 反模式
 
-- 用它承载不可逆的动作确认：问卷没有「拒绝」这条路，跳过与不答都会让流程继续往下走。
-- 把 `counter` 的文字当播报：那一格对读屏隐藏，改它不会让任何人听见。
-- 关掉自动前进的同时把继续键也藏了：那样单选题就再没有出口。
+- 用它承载不可逆的动作确认：问卷没有“拒绝”路径，跳过与不答都会让流程继续。
+- 把 `counter` 的文字当作播报：该部件对读屏隐藏，修改它不会被读出。
+- 关闭自动前进的同时隐藏继续键：单选题将没有出口。
 
 ## API 参考
 
@@ -267,16 +255,12 @@ size 换问句、选项行与页脚按钮的几何档，三档共用同一份问
 | `live-region` | `aria-atomic` | 'true' |
 | `live-region` | `aria-live` | 'polite' |
 
-- 每题是 `role=group`，题干是它的可访问名；题干缺席时退到 `translations.prompt`。
-- 选项组按题型取 `role=radiogroup`（单选）或 `role=group`（多选），同样由题干命名；
-  选项各自是 `role=radio` 或 `role=checkbox` 并显式报 `aria-checked`。
-- 选项组内是漫游焦点：整组只占一个 Tab 位，落在选中项上，一个都没选时落首个可停留项。
-- 上一题 / 下一题只给按钮入口，不吃全局按键——那会和选项漫游抢同一批方向键。
-  这两颗通常只画一枚箭头，所以它们的可访问名**总会发出去**（`translations.prev` / `translations.next`，
-  缺省 `Previous question` / `Next question`）；跳过键一般带可见文字，`translations.skip` 不给就不产出 `aria-label`。
-- 自由文本那一格取 `translations.note` 作可及名（缺省 `Other answer`），
-  占位文字另走 `translations.notePlaceholder`。
-- 备注框与选项组都挡输入法组合态：组合期间的 Enter 是在确认候选词，不前进。
+- 每题是 `role=group`，题干是它的可访问名称；题干缺席时退到 `translations.prompt`。
+- 选项组按题型取 `role=radiogroup`（单选）或 `role=group`（多选），同样由题干命名；选项各自是 `role=radio` 或 `role=checkbox` 并显式报告 `aria-checked`。
+- 选项组内是漫游焦点：整组只占一个 Tab 位，落在选中项上，没有选中时落在首个可停留项。
+- 上一题 / 下一题只提供按钮入口，不接管全局按键，避免与选项漫游争抢方向键。这两个按钮通常只绘制箭头，因此它们的可访问名称始终发出（`translations.prev` / `translations.next`，默认 `Previous question` / `Next question`）；跳过键一般带可见文字，未提供 `translations.skip` 时不产出 `aria-label`。
+- 自由文本取 `translations.note` 作为可访问名称（默认 `Other answer`），占位文字取 `translations.notePlaceholder`。
+- 备注框与选项组都处理输入法组合态：组合期间的 Enter 用于确认候选词，不前进。
 
 ## 样式参考
 
@@ -323,7 +307,7 @@ size 换问句、选项行与页脚按钮的几何档，三档共用同一份问
 | `--xh-question-flow-border` | `root` | `border` | `default` | `--xh-_question-flow-border` | question-flow 的 root 部件 border 覆盖槽。 |
 | `--xh-question-flow-counter-fg` | `counter` | `color` | `default` | `--xh-fg-subtle` | question-flow 的 counter 部件 color 覆盖槽。 |
 | `--xh-question-flow-counter-font-size` | `counter` | `font-size` | `default` | `--xh-text-caption-size` | question-flow 的 counter 部件 font-size 覆盖槽。 |
-| `--xh-question-flow-dot-radius` | `item-indicator` | `border-radius` | `empty`<br>`select-mode=single` | `--xh-shape-pill` | question-flow 的 item-indicator 部件 border-radius 覆盖槽。 |
+| `--xh-question-flow-dot-radius` | `item-indicator` | `border-radius` | `empty`<br>`select-mode=single` | `--xh-shape-circle` | question-flow 的 item-indicator 部件 border-radius 覆盖槽。 |
 | `--xh-question-flow-dot-size` | `item-indicator` | `block-size`<br>`inline-size` | `empty`<br>`select-mode=single` | `--xh-question-flow-indicator-size` | question-flow 的 item-indicator 部件 block-size、inline-size 覆盖槽。 |
 | `--xh-question-flow-footer-gap` | `footer` | `gap` | `default` | `--xh-space-3` | question-flow 的 footer 部件 gap 覆盖槽。 |
 | `--xh-question-flow-gap` | `root` | `gap` | `default` | `--xh-_question-flow-gap` | question-flow 的 root 部件 gap 覆盖槽。 |
