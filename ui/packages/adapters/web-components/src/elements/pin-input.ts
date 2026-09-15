@@ -20,7 +20,7 @@ const NUMBER_CONVERTER = { fromAttribute: (v: string | null) => (v == null || v 
 const ARRAY_CONVERTER = { fromAttribute: (v: string | null) => (v == null ? undefined : [...v]) }
 const BOOLEAN_CONVERTER = { fromAttribute: (v: string | null) => (v === null ? undefined : v !== 'false') }
 
-/** 作者写在格子上的下标。缺席或写坏了就退回文档序——手写 HTML 时把格子按顺序排下来本身就是声明。 */
+/** 作者写在格子上的下标。缺席或写错时退回文档序：手写 HTML 时把格子按顺序排列本身就是声明。 */
 function declaredIndex(el: HTMLElement, position: number): number {
   const raw = el.getAttribute('index')
   if (raw == null || raw.trim() === '')
@@ -30,42 +30,42 @@ function declaredIndex(el: HTMLElement, position: number): number {
 }
 
 /**
- * `<xh-pin-input>` —— Light-DOM 行为宿主：作者写 root/label/input（多个）/hidden-input 角色节点，
- * 元素跑 pin-input 机器并把 connect 产出打上去。
+ * `<xh-pin-input>`：Light-DOM 行为宿主：作者写 root / label / input（多个）/ hidden-input 角色节点，
+ * 元素运行 pin-input 状态机并把 connect 产出接上。
  *
- * 每格是一个原生输入框：敲一个字符自动跳下一格，退格在空格上回退并清掉上一格，
- * 左右键与 Home/End 在格间移动，粘贴整串按格分发。不接受的字符直接丢弃，
- * 既不进值也不留在框里。整份值另由 hidden-input 随表单提交。
+ * 每格是一个原生输入框：输入一个字符自动跳到下一格，退格在空格上回退并清除上一格，
+ * 左右键与 Home / End 在格间移动，粘贴整串按格分发。不接受的字符直接丢弃，
+ * 既不进入值也不留在框中。整份值另由 hidden-input 随表单提交。
  *
- * 按顺序录入：焦点落在第一个空格上，还轮不到的格子既点不进、也不是 Tab 停靠点；
- * 往回改已填的格子照走，填满之后哪一格都能改。read-only 与 disabled 不设这道限。
+ * 按顺序录入：焦点落在第一个空格上，尚未轮到的格子既不可点击、也不是 Tab 停靠点；
+ * 向回修改已填的格子照常可用，填满之后任何格都可以修改。read-only 与 disabled 不设该限制。
  *
  * @customElement xh-pin-input
- * @attr {string} value - 受控值，逐字符摊进各格；缺省该属性即非受控
- * @attr {string} default-value - 非受控初值，同样逐字符摊开
+ * @attr {string} value - 受控值，逐字符分配到各格；未提供该属性即非受控
+ * @attr {string} default-value - 非受控初值，同样逐字符分配
  * @attr {number} length - 格数，默认 6
- * @attr {'numeric'|'alphanumeric'|'alphabetic'} type - 接受的字符类别，默认 numeric；同时决定移动端弹哪种键盘
- * @attr {string} pattern - 自定义准入：一段正则源码，逐个字符整格匹配（自动加锚与 u 标志）。给了它就盖过 type 的准入表；写坏了退回 type
- * @attr {boolean} mask - 遮蔽显示：每格转 type=password
- * @attr {boolean} otp - 一次性验证码：补 autocomplete=one-time-code
+ * @attr {'numeric'|'alphanumeric'|'alphabetic'} type - 接受的字符类别，默认 numeric；同时决定移动端弹出的键盘类型
+ * @attr {string} pattern - 自定义准入：一段正则源码，逐个字符整格匹配（自动加锚与 u 标志）。提供后覆盖 type 的准入表；无法编译时回退为 type
+ * @attr {boolean} mask - 遮蔽显示：每格改为 type=password
+ * @attr {boolean} otp - 一次性验证码：补充 autocomplete=one-time-code
  * @attr {string} placeholder - 空格子的占位字符
  * @attr {boolean} disabled - 禁用：每格带原生 disabled，隐藏输入不参与提交
- * @attr {boolean} read-only - 只读：每格仍可聚焦、可复制，写不进
+ * @attr {boolean} read-only - 只读：每格仍可聚焦、可复制，不可写入
  * @attr {boolean} required - 必填标注：每格带原生 required
  * @attr {boolean} invalid - 校验失败标注
- * @attr {boolean} blur-on-complete - 填满即把焦点撤走
- * @attr {string} name - 表单字段名；给了隐藏输入才带 name
+ * @attr {boolean} blur-on-complete - 填满即移走焦点
+ * @attr {string} name - 表单字段名；提供后隐藏输入才带 name
  * @attr {'outline'|'subtle'|'ghost'} variant - 视觉变体
  * @attr {'brand'|'neutral'|'success'|'warning'|'danger'|'info'} tone - 语气
  * @attr {'sm'|'md'|'lg'} size - 尺寸
  * @fires value-change - 值变化；detail 为 `{ value: string[], valueAsString: string }`
  * @fires value-complete - 每格都填满；detail 同上
  * @csspart root - role=group 的容器，承载 data-disabled / data-invalid / data-complete
- * @csspart label - 标题；`for` 恒写向首格，故须是原生 `<label>` 才点得动
- * @csspart group - 连着的几格圈成一段（123-456 这种分段写法）；纯排版，不参与下标计算
- * @csspart input - 一格一个的输入框，可自带 index 属性声明下标，缺省按文档序；aria-label 由内置文案给出
+ * @csspart label - 标题；`for` 恒指向首格，因此须是原生 `<label>` 才可点击
+ * @csspart group - 相邻的几格划为一段（123-456 这类分段写法）；纯排版，不参与下标计算
+ * @csspart input - 一格一个的输入框，可自带 index 属性声明下标，默认按文档序；aria-label 由内置文案给出
  * @csspart separator - 段与段之间的分隔；对读屏隐藏
- * @csspart hidden-input - type=hidden 的表单出口，值是拼好的整串
+ * @csspart hidden-input - type=hidden 的表单出口，值是拼接后的整串
  */
 export class XhPinInputElement extends XhElement {
   static override partContract = { anatomy: pinInputAnatomy, meta: pinInputMeta }

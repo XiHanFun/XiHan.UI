@@ -21,13 +21,13 @@ type PinInputProps = PinInputSchema['props']
 
 function noop(): void {}
 
-/** 函数式 children 的载荷：逐格的值与拼好的串、填满与否、格数与焦点所在格，与改值、清空的命令。 */
+/** 函数式 children 的载荷：逐格的值与拼接后的串、是否填满、格数与焦点所在格，以及修改值、清空的命令。 */
 export type PinInputRootSlotProps = Pick<
   PinInputApi,
   'value' | 'valueAsString' | 'complete' | 'length' | 'focusedIndex' | 'setValue' | 'clear'
 >
 
-/** 根上自有的那些取值；defaultValue 与原生的同名属性含义不同，由这里接管。 */
+/** 根上自有的取值；defaultValue 与原生的同名属性含义不同，由这里接管。 */
 type RootElementProps = Omit<ComponentPropsWithRef<'div'>, 'children' | 'defaultValue'>
 
 export interface XhPinInputRootProps extends RootElementProps {
@@ -36,18 +36,18 @@ export interface XhPinInputRootProps extends RootElementProps {
   length?: number
   type?: PinInputType
   pattern?: string
-  /** 遮蔽走原生 password，读屏与密码管理器才认得。 */
+  /** 遮蔽使用原生 password，读屏与密码管理器才能识别。 */
   mask?: boolean
-  /** 一次性验证码：把 autocomplete 打成 one-time-code，系统短信才填得进来。 */
+  /** 一次性验证码：把 autocomplete 写为 one-time-code，系统短信才能填入。 */
   otp?: boolean
   placeholder?: string
   disabled?: boolean
   readOnly?: boolean
   required?: boolean
   invalid?: boolean
-  /** 填满即撤走焦点。 */
+  /** 填满即移走焦点。 */
   blurOnComplete?: boolean
-  /** 表单字段名；给了隐藏输入才带 name 并参与提交。 */
+  /** 表单字段名；提供后隐藏输入才带 name 并参与提交。 */
   name?: string
   variant?: ControlVariant
   tone?: Tone
@@ -132,7 +132,7 @@ export function XhPinInputRoot({
 XhPinInputRoot.xhEvents = ['value-change', 'value-complete'] as const
 
 export interface XhPinInputLabelProps extends ComponentPropsWithRef<'label'> {}
-/** 必须是原生 label，getLabelProps 的 for 恒写向首格。 */
+/** 必须是原生 label，getLabelProps 的 for 恒指向首格。 */
 export function XhPinInputLabel({ children, ...rest }: XhPinInputLabelProps): ReactNode {
   const ctx = usePinInputContext()
   return (
@@ -143,7 +143,7 @@ export function XhPinInputLabel({ children, ...rest }: XhPinInputLabelProps): Re
 }
 
 export interface XhPinInputGroupProps extends ComponentPropsWithRef<'div'> {}
-/** 分段：连着的几格圈成一段（123-456 这种分段写法）。 */
+/** 分段：相邻的几格圈为一段（123-456 这种分段写法）。 */
 export function XhPinInputGroup({ children, ...rest }: XhPinInputGroupProps): ReactNode {
   const ctx = usePinInputContext()
   return (
@@ -165,13 +165,13 @@ export function XhPinInputSeparator({ children, ...rest }: XhPinInputSeparatorPr
 }
 
 export interface XhPinInputInputProps extends Omit<ComponentPropsWithRef<'input'>, 'value' | 'defaultValue' | 'type'> {
-  /** 下标由作者声明；兼收字符串，与另外两家读的是同一份声明。 */
+  /** 下标由作者声明；兼收字符串，与另外两个适配器读取的是同一份声明。 */
   index: number | string
 }
 
 /**
- * 一格。connect 挂的 onFocus 是不冒泡的 DOM focus，改装成原生监听器，
- * 与另外两家同一条到达路径。
+ * 一格。connect 挂载的 onFocus 是不冒泡的 DOM focus，改装为原生监听器，
+ * 与另外两个适配器同一条到达路径。
  */
 export function XhPinInputInput({ index, ...rest }: XhPinInputInputProps): ReactNode {
   const ctx = usePinInputContext()

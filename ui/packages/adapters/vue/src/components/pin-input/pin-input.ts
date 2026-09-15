@@ -17,7 +17,7 @@ import { usePinInput } from './use-pin-input'
 
 type PinInputProps = PinInputSchema['props']
 
-/** 默认插槽的载荷：逐格的值与拼好的串、填满与否、格数与焦点所在格，与改值、清空的命令。 */
+/** 默认插槽的载荷：逐格的值与拼接后的串、是否填满、格数与焦点所在格，以及修改值、清空的命令。 */
 export type PinInputRootSlotProps = Pick<
   PinInputApi,
   'value' | 'valueAsString' | 'complete' | 'length' | 'focusedIndex' | 'setValue' | 'clear'
@@ -85,7 +85,7 @@ export const XhPinInputLabel = defineComponent({
   },
 })
 
-/** 分段：连着的几格圈成一段（123-456 这种分段写法）。 */
+/** 分段：相邻的几格圈为一段（123-456 这种分段写法）。 */
 export const XhPinInputGroup = defineComponent({
   name: 'XhPinInputGroup',
   setup(_, { slots }) {
