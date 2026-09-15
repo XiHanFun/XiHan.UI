@@ -34,7 +34,7 @@ export interface NumberFieldSchema extends MachineSchema {
     changeDelay?: number
     /** 连发间隔，默认 50ms。 */
     changeInterval?: number
-    /** 形态：outline / subtle / ghost，决定输入框与加减按钮的底色与描边绘制方式。 */
+    /** 形态：outline / subtle / ghost，决定底色与描边的绘制方式。默认 outline。 */
     variant?: ControlVariant
     /** 语气：brand / neutral / success / warning / danger / info，决定聚焦强调使用哪族颜色。 */
     tone?: Tone

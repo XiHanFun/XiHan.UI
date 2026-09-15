@@ -103,8 +103,8 @@ parse 把显示串读为数值、format 把数值写回显示串；两个方向�
 - `parse` / `format` 成对，用于接入固定小数位、千分位、货币符号或自定义换算。
 - 越界的值在失焦规范化时被夹回区间。
 - `prefix` / `suffix` 在框内放置货币符、单位或图标，两段对读屏隐藏。
-- `control` 是必需部件，也是输入、前后缀与两个动作共用的唯一视觉盒；默认无可见描边、带轻阴影，悬停与聚焦由整体盒统一反馈。减、加两个动作依次收在右侧并占满控件高度，常态和悬停保持透明，按下时才显示动作反馈。
-- `outline` 延续默认层级投影，`subtle` 与 `ghost` 使用扁平表面；三档都由统一输入壳承担交互反馈。
+- `control` 是必需部件，也是输入、前后缀与两个动作共用的唯一视觉盒；默认即 `outline`：`--xh-bg-canvas` 底、`--xh-border-control` 描边、control 圆角，不写 `variant` 时 root 落 `data-variant="outline"`，悬停与聚焦由整体盒统一反馈。减、加两个动作依次收在右侧并占满控件高度，常态和悬停保持透明，按下时才显示动作反馈。
+- `subtle` 为中性填充、`ghost` 为透明底，两者在悬停与聚焦时浮出描边；三档都由统一输入壳承担交互反馈。
 - comfortable 下 `sm` / `md` / `lg` 控件高为 32 / 36 / 40px；compact 下分别为 28 / 32 / 36px。
   右侧动作区宽度跟随密度档，数字使用等宽字形，前缀、数值和后缀共用中线。
 - 粗指针环境会把加减按钮与控件高度扩到 comfortable 48px、compact 44px；命中区由 flex 子项本身承担，不用伪元素伸进输入区，两个按钮及输入区互不重叠。
@@ -163,7 +163,7 @@ parse 把显示串读为数值、format 把数值写回显示串；两个方向�
 | `name` | `string` |  | 表单字段名；提供后才参与提交。 |
 | `changeDelay` | `number` |  | 按住加减按钮多久开始连发，默认 300ms。 |
 | `changeInterval` | `number` |  | 连发间隔，默认 50ms。 |
-| `variant` | `ControlVariant` |  | 形态：outline / subtle / ghost，决定输入框与加减按钮的底色与描边绘制方式。 |
+| `variant` | `ControlVariant` |  | 形态：outline / subtle / ghost，决定底色与描边的绘制方式。默认 outline。 |
 | `tone` | `Tone` |  | 语气：brand / neutral / success / warning / danger / info，决定聚焦强调使用哪族颜色。 |
 | `size` | `Size` |  | 尺寸：sm / md / lg，决定输入框与加减按钮的几何档位。 |
 | `parse` | `(text: string) => number` |  | 显示串 → 数。默认按 `Number()` 读取（'12abc' 判为非法），提供后替换为它： 千位分隔符、单位后缀、百分号等都依靠它读回。无法读出数时返回 `NaN`。 与 `format` 必须互逆：`format` 输出的串要能被 `parse` 读回同一个数， 否则按一次加号值会漂移。 |

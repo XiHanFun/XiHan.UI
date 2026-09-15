@@ -94,6 +94,15 @@ describe('numberFieldMachine 缺省与投影', () => {
     r.stop()
   })
 
+  it('不写 variant 时 root 落 outline；写 subtle 如实落', () => {
+    const fallback = makeField()
+    expect((fallback.api().getRootProps() as Record<string, unknown>)['data-variant']).toBe('outline')
+    fallback.stop()
+    const subtle = makeField({ variant: 'subtle' })
+    expect((subtle.api().getRootProps() as Record<string, unknown>)['data-variant']).toBe('subtle')
+    subtle.stop()
+  })
+
   it('前后缀对读屏隐藏，名字只由 label 给', () => {
     const f = makeField()
     expect(f.api().getPrefixProps()).toMatchObject({ 'aria-hidden': true })

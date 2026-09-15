@@ -38,7 +38,7 @@ const BOOLEAN_CONVERTER = { fromAttribute: (v: string | null) => (v === null ? u
  * @attr {string} name - 表单字段名；提供后才参与提交
  * @attr {number} change-delay - 按住加减按钮多久后开始连发，默认 300ms
  * @attr {number} change-interval - 连发间隔，默认 50ms
- * @attr {'outline'|'subtle'|'ghost'} variant - 视觉变体
+ * @attr {'outline'|'subtle'|'ghost'} variant - 形态：outline / subtle / ghost，默认 outline
  * @attr {'brand'|'neutral'|'success'|'warning'|'danger'|'info'} tone - 语气
  * @attr {'sm'|'md'|'lg'} size - 尺寸
  * @prop {(text: string) => number} parse - 显示串 → 数（千位分隔符、单位后缀等依靠它读回）；只能通过 property 设置
