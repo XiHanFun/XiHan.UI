@@ -36,9 +36,9 @@ import { useTransfer } from './use-transfer'
 
 type TransferProps = TransferSchema['props']
 
-/** 服务端没有提交这一步，layout effect 换成永不执行的 useEffect，避开 React 的警告。 */
+/** 服务端没有提交这一步，layout effect 替换为永不执行的 useEffect，避开 React 的警告。 */
 
-/** 函数式 children 的载荷：目标侧的值与两侧的勾选、两侧当下可见的条目，以及勾选、写值与搬运的动作。 */
+/** 函数式 children 的载荷：目标侧的值与两侧的勾选、两侧当前可见的条目，以及勾选、写值与移动的动作。 */
 export interface TransferRootSlotProps {
   value: string[]
   selection: string[]
@@ -54,7 +54,7 @@ export interface TransferRootSlotProps {
   move: (to: TransferSide) => void
 }
 
-/** 面板函数式 children 的载荷：这一侧的身份、当下可见的条目、这一侧的全选三态与搜索词。 */
+/** 面板函数式 children 的载荷：该侧的身份、当前可见的条目、该侧的全选三态与搜索词。 */
 export interface TransferPanelSlotProps {
   side: TransferSide
   items: readonly TransferItem[]
@@ -247,7 +247,7 @@ export function XhTransferList({ children, ...rest }: XhTransferListProps): Reac
 }
 
 export interface XhTransferSelectAllTriggerProps extends ComponentPropsWithRef<'button'> {}
-/** 用原生 button，激活与禁用交给平台。 */
+/** 使用原生 button，激活与禁用交给平台。 */
 export function XhTransferSelectAllTrigger({ children, ...rest }: XhTransferSelectAllTriggerProps): ReactNode {
   const ctx = useTransferContext()
   const panel = useTransferPanelContext()
@@ -259,7 +259,7 @@ export function XhTransferSelectAllTrigger({ children, ...rest }: XhTransferSele
 }
 
 export interface XhTransferEmptyProps extends ComponentPropsWithRef<'div'> {}
-/** 空态占位：写在面板里、list 的兄弟；本侧没有可见条目时由连接层放它出面。 */
+/** 空态占位：写在面板中、list 的兄弟；本侧没有可见条目时由连接层显示它。 */
 export function XhTransferEmpty({ children, ...rest }: XhTransferEmptyProps): ReactNode {
   const ctx = useTransferContext()
   const panel = useTransferPanelContext()
@@ -267,7 +267,7 @@ export function XhTransferEmpty({ children, ...rest }: XhTransferEmptyProps): Re
 }
 
 export interface XhTransferLoadingProps extends ComponentPropsWithRef<'div'> {}
-/** 在途占位：与空态占位同一个位置，取数期间顶上来。 */
+/** 在途占位：与空态占位同一个位置，取数期间显示。 */
 export function XhTransferLoading({ children, ...rest }: XhTransferLoadingProps): ReactNode {
   const ctx = useTransferContext()
   const panel = useTransferPanelContext()
@@ -298,7 +298,7 @@ export function XhTransferGroupLabel({ children, ...rest }: XhTransferGroupLabel
   return <span {...mergeReactProps(ctx.api.getGroupLabelProps(group) as Record<string, unknown>, rest as Record<string, unknown>)}>{children}</span>
 }
 
-/** 本条目持有焦点时，value 变更重报焦点条目，卸载时上报本侧列表失焦。 */
+/** 本条目持有焦点时，value 变更重新报告焦点条目，卸载时上报本侧列表失焦。 */
 function useItemFocusReport(
   service: Service<TransferSchema>,
   el: RefObject<HTMLElement | null>,
@@ -372,7 +372,7 @@ export function XhTransferItemCheckbox({ children, ...rest }: XhTransferItemChec
 }
 
 export interface XhTransferToTargetTriggerProps extends ComponentPropsWithRef<'button'> {}
-/** 用原生 button，激活与禁用交给平台。 */
+/** 使用原生 button，激活与禁用交给平台。 */
 export function XhTransferToTargetTrigger({ children, ...rest }: XhTransferToTargetTriggerProps): ReactNode {
   const ctx = useTransferContext()
   return (

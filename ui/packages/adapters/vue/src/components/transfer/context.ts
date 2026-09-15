@@ -10,17 +10,17 @@ import type { ComputedRef, InjectionKey } from 'vue'
 import type { TransferContext } from './use-transfer'
 import { inject, provide } from 'vue'
 
-/** 面板自报的身份，供面板内两侧共用的角色节点区分自己归哪一侧。 */
+/** 面板声明的身份，供面板内两侧共用的角色节点区分自己所属的一侧。 */
 export interface TransferPanelContext {
   panel: ComputedRef<TransferPanelProps>
 }
 
-/** 分组自报的值与所属面板，供分组标题取到同一份身份（标题的 id 由它派生）。 */
+/** 分组声明的值与所属面板，供分组标题取到同一份身份（标题的 id 由它派生）。 */
 export interface TransferGroupContext {
   group: ComputedRef<TransferGroupProps>
 }
 
-/** 条目自报的值与所属面板，供 item-text / item-checkbox 复用同一份声明。 */
+/** 条目声明的值与所属面板，供 item-text / item-checkbox 复用同一份声明。 */
 export interface TransferItemContext {
   item: ComputedRef<TransferItemProps>
 }

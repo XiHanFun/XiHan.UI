@@ -35,7 +35,7 @@ import { useTransfer } from './use-transfer'
 
 type TransferProps = TransferSchema['props']
 
-/** 默认插槽的载荷：目标侧的值与两侧的勾选、两侧当下可见的条目，以及勾选、写值与搬运的动作。 */
+/** 默认插槽的载荷：目标侧的值与两侧的勾选、两侧当前可见的条目，以及勾选、写值与移动的动作。 */
 export interface TransferRootSlotProps {
   value: string[]
   selection: string[]
@@ -51,7 +51,7 @@ export interface TransferRootSlotProps {
   move: (to: TransferSide) => void
 }
 
-/** 面板默认插槽的载荷：这一侧的身份、当下可见的条目、这一侧的全选三态与搜索词。 */
+/** 面板默认插槽的载荷：该侧的身份、当前可见的条目、该侧的全选三态与搜索词。 */
 export interface TransferPanelSlotProps {
   side: TransferSide
   items: readonly TransferItem[]
