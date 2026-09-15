@@ -576,12 +576,26 @@
 
   /* 一端的几列成组并排，小标题独占顶上一行；两组之间留一道更宽的分隔，眼睛先分起止、再分时分 */
   [data-scope='time-range-picker'][data-part='column-group'] {
+    --xh-_time-range-picker-column-group-label-py: var(
+      --xh-time-range-picker-column-group-py,
+      var(--xh-time-range-picker-column-group-label-py, var(--xh-space-1))
+    );
+    --xh-_time-range-picker-column-group-label-h: calc(
+      1lh
+      + var(--xh-_time-range-picker-column-group-label-py)
+      + var(--xh-_time-range-picker-column-group-label-py)
+    );
+
+    position: relative;
     display: flex;
     flex: none;
-    flex-wrap: wrap;
+    flex-wrap: nowrap;
     align-content: flex-start;
     align-items: stretch;
     min-inline-size: 0;
+    padding-block-start: var(--xh-_time-range-picker-column-group-label-h);
+    font-size: var(--xh-text-caption-size);
+    line-height: var(--xh-leading-normal);
   }
 
   [data-scope='time-range-picker'][data-part='column-group'][hidden] {
@@ -596,7 +610,14 @@
 
   /* 组顶上的小标题：独占一行，字号走辅助文本档 */
   [data-scope='time-range-picker'][data-part='column-group-label'] {
-    flex: 0 0 100%;
+    position: absolute;
+    inset-block-start: 0;
+    inset-inline: 0;
+    display: flex;
+    box-sizing: border-box;
+    align-items: center;
+    justify-content: center;
+    block-size: var(--xh-_time-range-picker-column-group-label-h);
     padding-block: var(--xh-time-range-picker-column-group-label-py, var(--xh-space-1));
     padding-inline: var(--xh-time-range-picker-column-group-label-px, var(--xh-space-1));
     color: var(--xh-time-range-picker-column-group-label-fg, var(--xh-fg-subtle));

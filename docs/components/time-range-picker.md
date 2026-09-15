@@ -404,7 +404,8 @@ hourCycle 决定两组段位与时列的写法，上下午各成一段一列
 | `--xh-time-range-picker-column-group-gap` | `column-group` | `margin-inline-start`<br>`padding-inline-start` | `default` | `--xh-space-2` | time-range-picker 的 column-group 部件 margin-inline-start、padding-inline-start 覆盖槽。 |
 | `--xh-time-range-picker-column-group-label-fg` | `column-group-label` | `color` | `default` | `--xh-fg-subtle` | time-range-picker 的 column-group-label 部件 color 覆盖槽。 |
 | `--xh-time-range-picker-column-group-label-px` | `column-group-label` | `padding-inline` | `default` | `--xh-space-1` | time-range-picker 的 column-group-label 部件 padding-inline 覆盖槽。 |
-| `--xh-time-range-picker-column-group-label-py` | `column-group-label` | `padding-block` | `default` | `--xh-space-1` | time-range-picker 的 column-group-label 部件 padding-block 覆盖槽。 |
+| `--xh-time-range-picker-column-group-label-py` | `column-group`<br>`column-group-label` | `block-size`<br>`padding-block`<br>`padding-block-start` | `default` | `--xh-space-1` | time-range-picker 的 column-group、column-group-label 部件 block-size、padding-block、padding-block-start 覆盖槽。 |
+| `--xh-time-range-picker-column-group-py` | `column-group`<br>`column-group-label` | `block-size`<br>`padding-block-start` | `default` | `--xh-time-range-picker-column-group-label-py` | time-range-picker 的 column-group、column-group-label 部件 block-size、padding-block-start 覆盖槽。 |
 | `--xh-time-range-picker-column-h` | `column` | `block-size` | `default` | `--xh-viewport-h-sm` | time-range-picker 的 column 部件 block-size 覆盖槽。 |
 | `--xh-time-range-picker-column-min-w` | `column` | `min-inline-size` | `default` | `--xh-overlay-column-min-w` | time-range-picker 的 column 部件 min-inline-size 覆盖槽。 |
 | `--xh-time-range-picker-column-px` | `column` | `padding-inline` | `default` | `0` | time-range-picker 的 column 部件 padding-inline 覆盖槽。 |

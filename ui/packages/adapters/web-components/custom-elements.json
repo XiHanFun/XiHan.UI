@@ -55322,6 +55322,9 @@
               "name": "--xh-time-range-picker-column-group-label-py"
             },
             {
+              "name": "--xh-time-range-picker-column-group-py"
+            },
+            {
               "name": "--xh-time-range-picker-column-h"
             },
             {

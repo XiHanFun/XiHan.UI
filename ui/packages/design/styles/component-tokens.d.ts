@@ -3281,6 +3281,7 @@ export type ComponentTokenName =
   | '--xh-time-range-picker-column-group-label-fg'
   | '--xh-time-range-picker-column-group-label-px'
   | '--xh-time-range-picker-column-group-label-py'
+  | '--xh-time-range-picker-column-group-py'
   | '--xh-time-range-picker-column-h'
   | '--xh-time-range-picker-column-min-w'
   | '--xh-time-range-picker-column-px'
