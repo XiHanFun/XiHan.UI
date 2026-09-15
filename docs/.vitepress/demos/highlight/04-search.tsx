@@ -1,4 +1,4 @@
-// 跟着输入高亮 | 关键词逐字符比对、不拼进正则，敲进 . * ( 这些字符也只当普通字符找
+// 跟随输入高亮 | 关键词逐字符比对、不拼入正则，输入 . * ( 等字符也只作为普通字符查找
 import type { ReactNode } from "react";
 import { XhHighlight } from "@xihan-ui/react";
 import { useState } from "react";

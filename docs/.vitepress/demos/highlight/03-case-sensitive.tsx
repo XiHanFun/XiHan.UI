@@ -1,4 +1,4 @@
-// 区分大小写 | 缺省不区分，开了 case-sensitive 就按写法比
+// 区分大小写 | 默认不区分，开启 case-sensitive 后按写法比较
 import type { ReactNode } from "react";
 import { XhHighlight } from "@xihan-ui/react";
 

@@ -1,4 +1,4 @@
-<!-- 跟着输入高亮 | 关键词逐字符比对、不拼进正则，敲进 . * ( 这些字符也只当普通字符找 -->
+<!-- 跟随输入高亮 | 关键词逐字符比对、不拼入正则，输入 . * ( 等字符也只作为普通字符查找 -->
 <script setup lang="ts">
 import { XhHighlight } from "@xihan-ui/vue";
 import { ref } from "vue";

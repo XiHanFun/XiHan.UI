@@ -1,4 +1,4 @@
-<!-- 基础用法 | 命中关键词的片段渲染成 `<mark>`，其余是纯文本；整段文本原样拼得回来 -->
+<!-- 基础用法 | 命中关键词的片段渲染为 `<mark>`，其余是纯文本；整段文本可原样拼接还原 -->
 <script setup lang="ts">
 import { XhHighlight } from "@xihan-ui/vue";
 

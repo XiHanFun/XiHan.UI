@@ -1,4 +1,4 @@
-// 语气 | tone 决定命中片段用哪族颜色，没命中的文本不受影响
+// 语气 | tone 决定命中片段使用哪族颜色，未命中的文本不受影响
 import type { ReactNode } from "react";
 import { XhHighlight } from "@xihan-ui/react";
 
