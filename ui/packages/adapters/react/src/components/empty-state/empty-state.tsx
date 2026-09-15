@@ -16,11 +16,11 @@ import { useEmptyState } from './use-empty-state'
 export interface XhEmptyStateRootProps extends ComponentPropsWithRef<'div'> {
   /** 尺寸档位，只改留白与字号，不改语义。 */
   size?: Size
-  /** 播报方式，缺省 polite；off 让根只是个普通容器。 */
+  /** 播报方式，默认 polite；off 使根只是一个普通容器。 */
   live?: EmptyStateLive
-  /** 结果页的状态码，只落成 data-status；通用结果走 tone。 */
+  /** 结果页的状态码，只写为 data-status；通用结果使用 tone。 */
   status?: EmptyStateStatus
-  /** 语气：决定用哪族颜色。 */
+  /** 语气：决定使用哪族颜色。 */
   tone?: Tone
 }
 
@@ -38,7 +38,7 @@ export function XhEmptyStateRoot({ size, live, status, tone, children, ...rest }
 
 export interface XhEmptyStateMediaProps extends ComponentPropsWithRef<'div'> {}
 
-/** 插画槽，内容由作者塞（img、内联 svg 都行）；与图标槽二选一。 */
+/** 插画槽，内容由作者放置（img、内联 svg 均可）；与图标槽二选一。 */
 export function XhEmptyStateMedia({ children, ...rest }: XhEmptyStateMediaProps): ReactNode {
   const ctx = useEmptyStateContext()
   return (
@@ -50,7 +50,7 @@ export function XhEmptyStateMedia({ children, ...rest }: XhEmptyStateMediaProps)
 
 export interface XhEmptyStateIndicatorProps extends ComponentPropsWithRef<'span'> {}
 
-/** 装饰性图标容器，内容由作者塞（字形、内联 svg 都行）。 */
+/** 装饰性图标容器，内容由作者放置（字形、内联 svg 均可）。 */
 export function XhEmptyStateIndicator({ children, ...rest }: XhEmptyStateIndicatorProps): ReactNode {
   const ctx = useEmptyStateContext()
   return (
@@ -62,7 +62,7 @@ export function XhEmptyStateIndicator({ children, ...rest }: XhEmptyStateIndicat
 
 export interface XhEmptyStateTitleProps extends ComponentPropsWithRef<'p'> {}
 
-/** 标题渲染为 p 而不是 hN：它只做视觉主次，不往文档大纲里插一级标题。 */
+/** 标题渲染为 p 而不是 hN：它只做视觉主次，不向文档大纲插入一级标题。 */
 export function XhEmptyStateTitle({ children, ...rest }: XhEmptyStateTitleProps): ReactNode {
   const ctx = useEmptyStateContext()
   return (
@@ -85,7 +85,7 @@ export function XhEmptyStateDescription({ children, ...rest }: XhEmptyStateDescr
 
 export interface XhEmptyStateActionProps extends ComponentPropsWithRef<'div'> {}
 
-/** 操作槽只排版，按钮由作者放进来。 */
+/** 操作槽只排版，按钮由作者放入。 */
 export function XhEmptyStateAction({ children, ...rest }: XhEmptyStateActionProps): ReactNode {
   const ctx = useEmptyStateContext()
   return (

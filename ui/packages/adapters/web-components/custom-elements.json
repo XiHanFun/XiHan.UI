@@ -20357,7 +20357,7 @@
       "declarations": [
         {
           "kind": "class",
-          "description": "`<xh-empty-state>` —— 空状态行为宿主，无状态机，把 connectEmptyState 产出的属性打到角色节点上。\n\nroot 缺省是 role=status 的活区：节点应当常挂、用 hidden 收起，\n整块插进文档的活区读屏通常不播报。首屏静态占位写 live=\"off\"。",
+          "description": "`<xh-empty-state>`：空状态行为宿主，无状态机，把 connectEmptyState 产出的属性接到角色节点上。\n\nroot 默认是 role=status 的活区：节点应当常驻、用 hidden 收起，\n整块插入文档的活区读屏通常不播报。首屏静态占位写 live=\"off\"。",
           "name": "XhEmptyStateElement",
           "cssParts": [
             {
@@ -20463,7 +20463,7 @@
               "type": {
                 "text": "EmptyStateStatus | undefined"
               },
-              "description": "结果页的状态码，写到 root 的 data-status 上；通用结果走 tone",
+              "description": "结果页的状态码，写到 root 的 data-status 上；通用结果使用 tone",
               "name": "status",
               "fieldName": "status"
             },

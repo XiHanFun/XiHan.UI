@@ -13,7 +13,7 @@ import { withXhConfig } from '../../config/config'
 import { provideEmptyState, useEmptyStateContext } from './context'
 import { useEmptyState } from './use-empty-state'
 
-/** 根节点渲染为 div，缺省值由 connect 给出；普通类型省略 default，Boolean 显式保留 undefined */
+/** 根节点渲染为 div，默认值由 connect 给出；普通类型省略 default，Boolean 显式保留 undefined */
 export const XhEmptyStateRoot = defineComponent({
   name: 'XhEmptyStateRoot',
   props: {
