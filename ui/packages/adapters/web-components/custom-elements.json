@@ -22502,7 +22502,7 @@
       "declarations": [
         {
           "kind": "class",
-          "description": "`<xh-float-button>` —— 悬浮按钮行为宿主：一颗钉在视口一角的触发器，展开一组动作。\n\n专用机器持有开合、层外交互、Escape 仲裁与逻辑层生命周期；元素只桥接所属\nDocument 的 RuntimeConfig、LayerRegistry 登记与 root 节点。\n\n作者须把 trigger 写成 `<button>`：激活与 Tab 停靠由平台提供，元素不接管这两件。\n收起时 list 带 hidden，里面的按钮一并退出 Tab 序列与无障碍树。\n贴边距离写在 root 的内联 style 里（自定义属性只有这一条路能同时落到两个适配器上），\n于是 root 的内联 style 归本元素管，作者自己的内联样式写在外层元素上。",
+          "description": "`<xh-float-button>`：悬浮按钮行为宿主：固定在视口一角的触发器，展开一组动作。\n\n专用状态机持有开合、层外交互、Escape 仲裁与逻辑层生命周期；元素只桥接所属\nDocument 的 RuntimeConfig、LayerRegistry 登记与 root 节点。\n\n作者须把 trigger 写为 `<button>`：激活与 Tab 停靠由平台提供，元素不接管这两项。\n收起时 list 带 hidden，其中的按钮一并退出 Tab 序列与无障碍树。\n贴边距离写在 root 的内联 style 中（自定义属性只有这一条路径能同时落到各适配器上），\n因此 root 的内联 style 归本元素管理，作者自己的内联样式写在外层元素上。",
           "name": "XhFloatButtonElement",
           "cssParts": [
             {
@@ -22510,11 +22510,11 @@
               "name": "root"
             },
             {
-              "description": "触发按钮，须写成 `<button>`；可及名字由 translations.trigger 给",
+              "description": "触发按钮，须写为 `<button>`；可及名由 translations.trigger 提供",
               "name": "trigger"
             },
             {
-              "description": "展开的那一组动作；收起时带 hidden",
+              "description": "展开的动作组；收起时带 hidden",
               "name": "list"
             }
           ],
@@ -22742,7 +22742,7 @@
               "type": {
                 "text": "boolean | undefined"
               },
-              "description": "受控展开；缺省该属性即非受控",
+              "description": "受控展开；未提供该属性即非受控",
               "name": "open",
               "fieldName": "open"
             },
@@ -22774,7 +22774,7 @@
               "type": {
                 "text": "FloatButtonPlacement | undefined"
               },
-              "description": "钉在哪一角，默认 bottom-end",
+              "description": "固定在哪一角，默认 bottom-end",
               "name": "placement",
               "fieldName": "placement"
             },
@@ -22782,7 +22782,7 @@
               "type": {
                 "text": "number | undefined"
               },
-              "description": "距那两条边的距离（px），默认 24",
+              "description": "距两条边的距离（px），默认 24",
               "name": "offset",
               "fieldName": "offset"
             },
@@ -22814,7 +22814,7 @@
               "type": {
                 "text": "Size | undefined"
               },
-              "description": "尺寸，缺省与 lg 同档",
+              "description": "尺寸，默认与 lg 同档",
               "name": "size",
               "fieldName": "size"
             }

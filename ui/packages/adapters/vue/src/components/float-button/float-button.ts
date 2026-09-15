@@ -21,10 +21,10 @@ import { withXhConfig } from '../../config/config'
 import { provideFloatButton, useFloatButtonContext } from './context'
 import { useFloatButton } from './use-float-button'
 
-/** 默认插槽的载荷：展开的那一组此刻露不露面，以及改写展开状态的动作。 */
+/** 默认插槽的载荷：展开组当前是否显示，以及改写展开状态的动作。 */
 export type FloatButtonRootSlotProps = Pick<FloatButtonApi, 'open' | 'setOpen'>
 
-/** 根节点是定位壳：把整组钉在视口一角，悬停展开时进出它才算数。 */
+/** 根节点是定位壳：把整组固定在视口一角，悬停展开时以进出它为准。 */
 export const XhFloatButtonRoot = defineComponent({
   name: 'XhFloatButtonRoot',
   // 缺省值由机器与 connect 决定；普通类型省略 default，Boolean 显式保留 undefined
@@ -74,7 +74,7 @@ export const XhFloatButtonTrigger = defineComponent({
   },
 })
 
-/** 展开的那一组动作；收起时带 hidden，里面的按钮一并退出 Tab 序列。 */
+/** 展开的动作组；收起时带 hidden，其中的按钮一并退出 Tab 序列。 */
 export const XhFloatButtonList = defineComponent({
   name: 'XhFloatButtonList',
   setup(_, { slots }) {

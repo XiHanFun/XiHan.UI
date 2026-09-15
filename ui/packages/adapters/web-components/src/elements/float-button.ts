@@ -27,31 +27,31 @@ const NUMBER_CONVERTER = { fromAttribute: (v: string | null) => (v == null || v 
 const TRISTATE_CONVERTER = { fromAttribute: (v: string | null) => (v === null ? undefined : v !== 'false') }
 
 /**
- * `<xh-float-button>` —— 悬浮按钮行为宿主：一颗钉在视口一角的触发器，展开一组动作。
+ * `<xh-float-button>`：悬浮按钮行为宿主：固定在视口一角的触发器，展开一组动作。
  *
- * 专用机器持有开合、层外交互、Escape 仲裁与逻辑层生命周期；元素只桥接所属
+ * 专用状态机持有开合、层外交互、Escape 仲裁与逻辑层生命周期；元素只桥接所属
  * Document 的 RuntimeConfig、LayerRegistry 登记与 root 节点。
  *
- * 作者须把 trigger 写成 `<button>`：激活与 Tab 停靠由平台提供，元素不接管这两件。
- * 收起时 list 带 hidden，里面的按钮一并退出 Tab 序列与无障碍树。
- * 贴边距离写在 root 的内联 style 里（自定义属性只有这一条路能同时落到两个适配器上），
- * 于是 root 的内联 style 归本元素管，作者自己的内联样式写在外层元素上。
+ * 作者须把 trigger 写为 `<button>`：激活与 Tab 停靠由平台提供，元素不接管这两项。
+ * 收起时 list 带 hidden，其中的按钮一并退出 Tab 序列与无障碍树。
+ * 贴边距离写在 root 的内联 style 中（自定义属性只有这一条路径能同时落到各适配器上），
+ * 因此 root 的内联 style 归本元素管理，作者自己的内联样式写在外层元素上。
  *
  * @customElement xh-float-button
- * @attr {boolean} open - 受控展开；缺省该属性即非受控
+ * @attr {boolean} open - 受控展开；未提供该属性即非受控
  * @attr {boolean} default-open - 非受控初始为展开
  * @attr {boolean} disabled - 禁用触发器
  * @attr {'ltr'|'rtl'} dir - 文字方向
- * @attr {'top-start'|'top-end'|'bottom-start'|'bottom-end'} placement - 钉在哪一角，默认 bottom-end
- * @attr {number} offset - 距那两条边的距离（px），默认 24
+ * @attr {'top-start'|'top-end'|'bottom-start'|'bottom-end'} placement - 固定在哪一角，默认 bottom-end
+ * @attr {number} offset - 距两条边的距离（px），默认 24
  * @attr {'hover'|'click'} expand-trigger - 展开方式，默认 click
  * @attr {'solid'|'subtle'|'outline'|'ghost'} variant - 变体
  * @attr {'brand'|'neutral'|'success'|'warning'|'danger'|'info'} tone - 颜色
- * @attr {'sm'|'md'|'lg'} size - 尺寸，缺省与 lg 同档
+ * @attr {'sm'|'md'|'lg'} size - 尺寸，默认与 lg 同档
  * @fires open-change - 展开状态变化；detail 为 `{ open: boolean }`
  * @csspart root - 定位壳，承载 data-state / data-placement / data-disabled
- * @csspart trigger - 触发按钮，须写成 `<button>`；可及名字由 translations.trigger 给
- * @csspart list - 展开的那一组动作；收起时带 hidden
+ * @csspart trigger - 触发按钮，须写为 `<button>`；可及名由 translations.trigger 提供
+ * @csspart list - 展开的动作组；收起时带 hidden
  */
 export class XhFloatButtonElement extends XhElement {
   static override partContract = { anatomy: floatButtonAnatomy, meta: floatButtonMeta }

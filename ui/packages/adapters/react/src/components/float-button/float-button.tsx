@@ -22,7 +22,7 @@ import { renderSlot } from '../../runtime/slot-content'
 import { FloatButtonProvider, useFloatButtonContext } from './context'
 import { useFloatButton } from './use-float-button'
 
-/** 函数式 children 的载荷：展开的那一组此刻露不露面，以及改写展开状态的动作。 */
+/** 函数式 children 的载荷：展开组当前是否显示，以及改写展开状态的动作。 */
 export interface FloatButtonRootSlotProps extends Pick<FloatButtonApi, 'open' | 'setOpen'> {}
 
 export interface XhFloatButtonRootProps extends Omit<ComponentPropsWithRef<'div'>, 'children'> {
@@ -41,7 +41,7 @@ export interface XhFloatButtonRootProps extends Omit<ComponentPropsWithRef<'div'
   children?: SlotChildren<FloatButtonRootSlotProps>
 }
 
-/** 根节点是定位壳：把整组钉在视口一角，悬停展开时进出它才算数。 */
+/** 根节点是定位壳：把整组固定在视口一角，悬停展开时以进出它为准。 */
 export function XhFloatButtonRoot({
   open,
   defaultOpen,
@@ -100,7 +100,7 @@ export function XhFloatButtonTrigger({ children, ...rest }: XhFloatButtonTrigger
 }
 
 export interface XhFloatButtonListProps extends ComponentPropsWithRef<'div'> {}
-/** 展开的那一组动作；收起时带 hidden，里面的按钮一并退出 Tab 序列。 */
+/** 展开的动作组；收起时带 hidden，其中的按钮一并退出 Tab 序列。 */
 export function XhFloatButtonList({ children, ...rest }: XhFloatButtonListProps): ReactNode {
   const ctx = useFloatButtonContext()
   return (

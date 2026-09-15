@@ -97,14 +97,14 @@
 | 属性 | 类型 | 必填 | 说明 |
 | --- | --- | --- | --- |
 | `defaultOpen` | `boolean` |  |  |
-| `dir` | `Direction` |  | 文字方向，只作用于排版；作者没给就不写。 |
+| `dir` | `Direction` |  | 文字方向，只作用于排版；作者未提供时不写入。 |
 | `disabled` | `boolean` |  |  |
 | `expandTrigger` | `FloatButtonExpandTrigger` |  | 展开方式，默认 click。 |
-| `offset` | `number` |  | 距那两条边的距离（px），默认 24。 |
+| `offset` | `number` |  | 距两条边的距离（px），默认 24。 |
 | `onOpenChange` | `(details: CollapsibleOpenChangeDetails) => void` |  | open 变化意图；受控时是唯一出口，非受控时随内部转移一并通知。 |
 | `open` | `boolean` |  |  |
-| `placement` | `FloatButtonPlacement` |  | 钉在哪一角，默认 bottom-end。 |
-| `size` | `Size` |  | 尺寸：sm / md / lg，缺省与 lg 同档——悬浮钮要够得着，起步就比行内按钮大一号。 |
+| `placement` | `FloatButtonPlacement` |  | 固定在哪一角，默认 bottom-end。 |
+| `size` | `Size` |  | 尺寸：sm / md / lg，默认与 lg 同档：悬浮按钮需要易于触达，起始即比行内按钮大一档。 |
 | `tone` | `Tone` |  | 颜色：brand / neutral / success / warning / danger / info。 |
 | `translations` | `Partial<FloatButtonTranslations>` |  |  |
 | `variant` | `ActionVariant` |  | 变体：solid / subtle / outline / ghost。 |
@@ -149,7 +149,7 @@
 
 | 成员 | 类型 | 说明 |
 | --- | --- | --- |
-| `open` | `boolean` | 展开的那一组此刻露不露面。 |
+| `open` | `boolean` | 展开的动作组当前是否显示。 |
 | `setOpen` | `(next: boolean) => void` |  |
 | `getRootProps` | `() => T['element']` |  |
 | `getTriggerProps` | `() => T['button']` |  |
