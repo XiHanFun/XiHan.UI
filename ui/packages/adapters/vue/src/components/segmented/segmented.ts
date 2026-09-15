@@ -114,7 +114,7 @@ export const XhSegmentedItemText = defineComponent({
   },
 })
 
-/** 会滑动的选中标记，位置由机器量好写进内联样式的私有槽；无选中项时收起。 */
+/** 滑动的选中标记，位置由状态机测量后写入内联样式的私有槽；无选中项时收起。 */
 export const XhSegmentedIndicator = defineComponent({
   name: 'XhSegmentedIndicator',
   setup() {
@@ -123,7 +123,7 @@ export const XhSegmentedIndicator = defineComponent({
   },
 })
 
-/** 表单出口：给了 name 才带上它，提交的就是当前选中值。 */
+/** 表单出口：提供 name 时才带上它，提交的即当前选中值。 */
 export const XhSegmentedHiddenInput = defineComponent({
   name: 'XhSegmentedHiddenInput',
   setup() {
@@ -133,9 +133,9 @@ export const XhSegmentedHiddenInput = defineComponent({
 })
 
 /**
- * 没写默认插槽时按 collection 铺开的整套结构，作者只交数据。
- * 与手写部件产出的 DOM 完全一致，要改结构就写默认插槽，行为不变。
- * 指示器排在最前：它绝对定位，靠文档序让后面的段压在它上面，段里的文字才不会被盖住。
+ * 未写默认插槽时按 collection 铺开的整套结构，作者只提供数据。
+ * 与手写部件产出的 DOM 完全一致，需要修改结构时写默认插槽，行为不变。
+ * 指示器排在最前：它绝对定位，依靠文档序让后面的段覆盖在它上面，段中的文字才不会被遮住。
  */
 function renderDefaultTree(
   collection: readonly SegmentedNodeMeta[],

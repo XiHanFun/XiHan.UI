@@ -123,21 +123,21 @@ size 换的是段的高度、内边距与字号，指示器跟着量出来的段
 
 | 属性 | 类型 | 必填 | 说明 |
 | --- | --- | --- | --- |
-| `collection` | `SegmentedNode[]` |  | 条目数据，显示文本与禁用的事实源。给了它，条目部件只需报 value。 缺省即回到「文本与禁用都写在条目部件上」的老路。 |
-| `value` | `string \| null` |  | 选中值。给定即受控：内部不再自改，只发 onValueChange。 |
+| `collection` | `SegmentedNode[]` |  | 条目数据，显示文本与禁用的事实源。提供后条目部件只需声明 value。 未提供时回到文本与禁用都写在条目部件上的方式。 |
+| `value` | `string \| null` |  | 选中值。提供即受控：内部不再自行修改，只发 onValueChange。 |
 | `defaultValue` | `string \| null` |  |  |
 | `disabled` | `boolean` |  | 整组禁用：条目全部 aria-disabled，点击与方向键都不生效。 |
-| `readOnly` | `boolean` |  | 只读：选不动，但仍可聚焦、方向键照常移焦点，对比度不降。 |
-| `invalid` | `boolean` |  | 校验失败：只改呈现，不挡交互。 |
-| `required` | `boolean` |  | 必填：随表单校验一起用，只发无障碍属性，不自行拦提交。 |
-| `name` | `string` |  | 表单字段名。给定后隐藏输入才带 name 并参与提交。 |
+| `readOnly` | `boolean` |  | 只读：不可选择，但仍可聚焦、方向键照常移动焦点，对比度不降低。 |
+| `invalid` | `boolean` |  | 校验失败：只改变呈现，不阻止交互。 |
+| `required` | `boolean` |  | 必填：随表单校验一起使用，只发无障碍属性，不自行拦截提交。 |
+| `name` | `string` |  | 表单字段名。提供后隐藏输入才带 name 并参与提交。 |
 | `orientation` | `Orientation` |  | 视觉排布，默认 horizontal。方向键接受的轴与它无关（四个方向键恒响应）。 |
-| `dir` | `Direction` |  | 文字方向，只改写左右方向键的语义与指示器的起始缘，上下键与之无关。 不给即从根节点的计算样式现读（祖先链上的 dir 与 CSS direction 都算），给了就以它为准。 |
-| `loop` | `boolean` |  | 方向键走到尽头是否回绕，默认 true。 |
+| `dir` | `Direction` |  | 文字方向，只改写左右方向键的语义与指示器的起始缘，上下键与之无关。 未提供时从根节点的计算样式读取（祖先链上的 dir 与 CSS direction 都计入），提供后以它为准。 |
+| `loop` | `boolean` |  | 方向键到达末尾是否回绕，默认 true。 |
 | `block` | `boolean` |  | 撑满行宽，各段等分剩余空间。 |
-| `tone` | `Tone` |  | 语气：brand / neutral / success / warning / danger / info，决定用哪族颜色。 |
+| `tone` | `Tone` |  | 语气：brand / neutral / success / warning / danger / info，决定使用哪族颜色。 |
 | `size` | `Size` |  | 尺寸：sm / md / lg。 |
-| `onValueChange` | `(details: SegmentedValueChangeDetails) => void` |  | value 变化意图回调；受控时是唯一出口，非受控随内部写入一并通知。 |
+| `onValueChange` | `(details: SegmentedValueChangeDetails) => void` |  | value 变化意图回调；受控时是唯一出口，非受控时随内部写入一并通知。 |
 
 ### 事件
 
@@ -170,14 +170,14 @@ size 换的是段的高度、内边距与字号，指示器跟着量出来的段
 
 | 成员 | 类型 | 说明 |
 | --- | --- | --- |
-| `value` | `string \| null` | 当前选中值；一个都没选中时为 null。 |
-| `collection` | `readonly SegmentedNodeMeta[]` | collection 推出的条目元信息，按数据顺序排列；没给 collection 即空数组。 |
+| `value` | `string \| null` | 当前选中值；没有选中任何项时为 null。 |
+| `collection` | `readonly SegmentedNodeMeta[]` | 由 collection 推导的条目元信息，按数据顺序排列；未提供 collection 时为空数组。 |
 | `focusedValue` | `string \| null` | 焦点在组外时为 null。 |
 | `disabled` | `boolean` |  |
 | `readOnly` | `boolean` |  |
 | `isSelected` | `(value: string) => boolean` |  |
 | `setValue` | `(next: string \| null) => void` |  |
-| `measure` | `() => void` | 重量一遍指示器。选中值变化与 collection 增删改名都会自动重量，根的尺寸变化由尺寸观察器接住； 剩下这一类要手动叫：段的文字由部件手写（没走 collection）而后改动，或字体加载完把段撑宽了。 |
+| `measure` | `() => void` | 重新测量指示器。选中值变化与 collection 增删改名都会自动重新测量，根的尺寸变化由尺寸观察器接管； 以下情况需要手动调用：段的文字由部件手写（未经 collection）而后修改，或字体加载完成把段撑宽。 |
 | `getRootProps` | `() => T['element']` |  |
 | `getItemProps` | `(props: SegmentedItemProps) => T['button']` |  |
 | `getItemTextProps` | `(props: SegmentedItemProps) => T['element']` |  |

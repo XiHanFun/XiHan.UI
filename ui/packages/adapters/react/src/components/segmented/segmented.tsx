@@ -18,7 +18,7 @@ import { useSegmented } from './use-segmented'
 
 type SegmentedProps = SegmentedSchema['props']
 
-/** 根上自有的那些取值；defaultValue 与 dir 与原生的同名属性含义不同，由这里接管。 */
+/** 根上自有的取值；defaultValue 与 dir 与原生的同名属性含义不同，由这里接管。 */
 type RootElementProps = Omit<ComponentPropsWithRef<'div'>, 'children' | 'defaultValue' | 'dir'>
 
 export interface XhSegmentedRootProps extends RootElementProps {
@@ -29,7 +29,7 @@ export interface XhSegmentedRootProps extends RootElementProps {
   readOnly?: boolean
   invalid?: boolean
   required?: boolean
-  /** 表单字段名；给了 hidden-input 才带 name 并参与提交。 */
+  /** 表单字段名；提供后 hidden-input 才带 name 并参与提交。 */
   name?: string
   orientation?: Orientation
   dir?: Direction
@@ -39,7 +39,7 @@ export interface XhSegmentedRootProps extends RootElementProps {
   tone?: Tone
   size?: Size
   onValueChange?: SegmentedProps['onValueChange']
-  /** 每一段的自定义内容；不给就用 collection 里的 label。 */
+  /** 每一段的自定义内容；未提供时使用 collection 中的 label。 */
   renderItem?: (node: SegmentedNodeMeta) => ReactNode
   children?: ReactNode
 }
@@ -114,10 +114,10 @@ XhSegmentedRoot.xhEvents = ['value-change'] as const
 
 export interface XhSegmentedItemProps extends Omit<ComponentPropsWithRef<'button'>, 'value'> {
   value: string
-  /** 缺省交给 connect 回 collection 里查，写死 false 会盖掉数据里的禁用。 */
+  /** 默认交给 connect 查询 collection，写死 false 会覆盖数据中的禁用。 */
   disabled?: boolean
 }
-/** 用原生 button，Enter / Space 的激活交给平台。 */
+/** 使用原生 button，Enter / Space 的激活交给平台。 */
 export function XhSegmentedItem({ value, disabled, children, ...rest }: XhSegmentedItemProps): ReactNode {
   const ctx = useSegmentedContext()
   const item = useMemo(() => ({ value, disabled }), [value, disabled])
@@ -173,23 +173,23 @@ export function XhSegmentedItemText({ children, ...rest }: XhSegmentedItemTextPr
 }
 
 export interface XhSegmentedIndicatorProps extends ComponentPropsWithRef<'span'> {}
-/** 会滑动的选中标记，位置由机器量好写进内联样式的私有槽；无选中项时收起。 */
+/** 滑动的选中标记，位置由状态机测量后写入内联样式的私有槽；无选中项时收起。 */
 export function XhSegmentedIndicator({ children, ...rest }: XhSegmentedIndicatorProps): ReactNode {
   const ctx = useSegmentedContext()
   return <span {...mergeReactProps(ctx.api.getIndicatorProps() as Record<string, unknown>, rest as Record<string, unknown>)}>{children}</span>
 }
 
 export interface XhSegmentedHiddenInputProps extends ComponentPropsWithRef<'input'> {}
-/** 表单出口：整组只有一份，给了 name 才带上它，提交的就是当前选中值。 */
+/** 表单出口：整组只有一份，提供 name 后才带上它，提交的即当前选中值。 */
 export function XhSegmentedHiddenInput({ ...rest }: XhSegmentedHiddenInputProps): ReactNode {
   const ctx = useSegmentedContext()
   return <input {...mergeReactProps(ctx.api.getHiddenInputProps() as Record<string, unknown>, rest as Record<string, unknown>)} />
 }
 
 /**
- * 没写 children 时按 collection 铺开的整套结构，作者只交数据。
- * 与手写部件产出的 DOM 完全一致，要改结构就写 children，行为不变。
- * 指示器排在最前：它绝对定位，靠文档序让后面的段压在它上面，段里的文字才不会被盖住。
+ * 未写 children 时按 collection 铺开的整套结构，作者只提供数据。
+ * 与手写部件产出的 DOM 完全一致，需要修改结构时写 children，行为不变。
+ * 指示器排在最前：它绝对定位，依靠文档序让后面的段覆盖在它上面，段中的文字才不会被遮住。
  */
 function DefaultTree(props: {
   collection: readonly SegmentedNodeMeta[]
