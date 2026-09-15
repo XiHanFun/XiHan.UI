@@ -15,7 +15,7 @@ import { useDownloadTrigger } from './use-download-trigger'
 
 type DownloadTriggerProps = DownloadTriggerSchema['props']
 
-/** 默认插槽的载荷：下载状态与禁用、这次会写出的文件名，以及走一次下载的句柄。 */
+/** 默认插槽的载荷：下载状态与禁用、本次会写出的文件名，以及执行一次下载的句柄。 */
 export type DownloadTriggerSlotProps = Pick<
   DownloadTriggerApi,
   'status' | 'preparing' | 'disabled' | 'fileName' | 'download'
@@ -24,8 +24,8 @@ export type DownloadTriggerSlotProps = Pick<
 /**
  * 触发一次浏览器下载的按钮。
  *
- * 默认插槽拿得到 `{ status, preparing, disabled, fileName, download }`，
- * 取数在途时可以据 `preparing` 换掉按钮上的文字。
+ * 默认插槽可得到 `{ status, preparing, disabled, fileName, download }`，
+ * 取数在途时可以据 `preparing` 替换按钮上的文字。
  */
 export const XhDownloadTrigger = defineComponent({
   name: 'XhDownloadTrigger',
