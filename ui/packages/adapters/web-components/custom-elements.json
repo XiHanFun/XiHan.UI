@@ -52377,7 +52377,7 @@
       "declarations": [
         {
           "kind": "class",
-          "description": "`<xh-text-field>` —— Light-DOM 行为宿主：作者写 root/label/input/clear-trigger 四类角色节点，\n元素跑 text-field 机器并把 connect 产出打上去。\n\nlabel 的 `for` 恒写向 input 的 id，所以 label 角色节点必须是原生 `<label>`、\ninput 角色节点必须是原生 `<input>`：任一边换成 `<div>`，点标题不聚焦、读屏也念不出名字。\n\n键盘只额外接一个 Escape（clearable 且有值时清空），其余光标与选区行为全归浏览器。\n清空按钮对读屏隐藏、不占 Tab 位——它只是指针用户的快捷方式，键盘那一路走 Escape。",
+          "description": "`<xh-text-field>`：Light-DOM 行为宿主：作者写 root / label / input / clear-trigger 四类角色节点，\n元素运行 text-field 状态机并把 connect 产出接上。\n\nlabel 的 `for` 恒指向 input 的 id，因此 label 角色节点必须是原生 `<label>`、\ninput 角色节点必须是原生 `<input>`：任一边换为 `<div>`，点击标题不聚焦、读屏也无法朗读名字。\n\n键盘只额外接管一个 Escape（clearable 且有值时清空），其余光标与选区行为全部归浏览器。\n清空按钮对读屏隐藏、不占 Tab 位：它只是指针用户的快捷方式，键盘路径使用 Escape。",
           "name": "XhTextFieldElement",
           "cssParts": [
             {
@@ -52385,15 +52385,15 @@
               "name": "root"
             },
             {
-              "description": "视觉盒；写了它就由它画描边、底色与聚焦环，输入框与清空按钮排在它里面",
+              "description": "视觉盒；提供后由它绘制描边、底色与聚焦环，输入框与清空按钮排列在其中",
               "name": "control"
             },
             {
-              "description": "标题；`for` 恒写向 input，故须是原生 `<label>` 才点得动",
+              "description": "标题；`for` 恒指向 input，因此须是原生 `<label>` 才可点击",
               "name": "label"
             },
             {
-              "description": "真正的输入框，须是原生 `<input>`；键盘交互全在它身上",
+              "description": "实际的输入框，须是原生 `<input>`；键盘交互全部在它身上",
               "name": "input"
             },
             {
@@ -52405,11 +52405,11 @@
               "name": "suffix"
             },
             {
-              "description": "清空按钮，须是原生 button；不占 Tab 位，名字取 translations.clearTrigger；清不了时收起",
+              "description": "清空按钮，须是原生 button；不占 Tab 位，名字取 translations.clearTrigger；无法清空时收起",
               "name": "clear-trigger"
             },
             {
-              "description": "字数；文本由元素按 `已用 / 上限` 填，作者写了自己的内容即不覆盖；没开 show-count 时收起",
+              "description": "字数；文本由元素按 `已用 / 上限` 填入，作者写了自己的内容即不覆盖；未开启 show-count 时收起",
               "name": "count"
             }
           ],
@@ -52538,7 +52538,7 @@
               "type": {
                 "text": "TextFieldSchema['props']['autoSize'] | undefined"
               },
-              "description": "布尔走 auto-size 属性；行数界限对象进不了属性，只作为 property 赋。",
+              "description": "布尔值使用 auto-size 属性；行数界限对象无法表达为属性，只作为 property 赋值。",
               "attribute": "auto-size"
             },
             {
@@ -52575,7 +52575,7 @@
               "type": {
                 "text": "object"
               },
-              "description": "读屏文案（只走 property）：clearTrigger 是清空按钮的名字"
+              "description": "读屏文案（只能通过 property 设置）：clearTrigger 是清空按钮的名字"
             },
             {
               "kind": "field",
@@ -52632,7 +52632,7 @@
               "type": {
                 "text": "boolean"
               },
-              "description": "清空此刻可不可行（开了 clearable、可编辑、且有值）。\n作者据它禁用自己写在组件外面的清空钮。机器尚未建起时为 false。",
+              "description": "当前是否可以清空（开启 clearable、可编辑且有值）。\n作者据此禁用写在组件外部的清空按钮。状态机尚未建立时为 false。",
               "readonly": true
             },
             {
@@ -52641,7 +52641,7 @@
               "type": {
                 "text": "number"
               },
-              "description": "当前字数，即值的长度。机器尚未建起时为 0。",
+              "description": "当前字数，即值的长度。状态机尚未建立时为 0。",
               "readonly": true
             },
             {
@@ -52660,7 +52660,7 @@
                   }
                 }
               ],
-              "description": "从外面写值，只受禁用、只读与字数上限约束，与 clearable 无关。\n机器尚未建起时是空操作。"
+              "description": "从外部写值，只受禁用、只读与字数上限约束，与 clearable 无关。\n状态机尚未建立时为空操作。"
             },
             {
               "kind": "method",
@@ -52670,7 +52670,7 @@
                   "text": "void"
                 }
               },
-              "description": "走清空意图，canClear 不成立时按兵不动；无条件清空请用 setValue('')。\n机器尚未建起时是空操作。"
+              "description": "执行清空意图，canClear 不成立时不做任何处理；无条件清空请使用 setValue('')。\n状态机尚未建立时为空操作。"
             },
             {
               "kind": "field",
@@ -52738,7 +52738,7 @@
               "type": {
                 "text": "string | undefined"
               },
-              "description": "受控值；缺省该属性即非受控",
+              "description": "受控值；未提供该属性即非受控",
               "name": "value",
               "fieldName": "value"
             },
@@ -52754,7 +52754,7 @@
               "type": {
                 "text": "TextFieldType | undefined"
               },
-              "description": "单行输入类型，缺省 text；宿主写成 textarea 时该属性不发",
+              "description": "单行输入类型，默认 text；宿主写为 textarea 时该属性不发出",
               "name": "type",
               "fieldName": "type"
             },
@@ -52770,7 +52770,7 @@
               "type": {
                 "text": "boolean | undefined"
               },
-              "description": "禁用：不可聚焦、写不进",
+              "description": "禁用：不可聚焦、不可写入",
               "name": "disabled",
               "fieldName": "disabled"
             },
@@ -52778,7 +52778,7 @@
               "type": {
                 "text": "boolean | undefined"
               },
-              "description": "只读：仍可聚焦与复制，写不进",
+              "description": "只读：仍可聚焦与复制，不可写入",
               "name": "read-only",
               "fieldName": "readOnly"
             },
@@ -52802,7 +52802,7 @@
               "type": {
                 "text": "string | undefined"
               },
-              "description": "表单字段名；给了才参与提交",
+              "description": "表单字段名；提供后才参与提交",
               "name": "name",
               "fieldName": "name"
             },
@@ -52810,7 +52810,7 @@
               "type": {
                 "text": "number | undefined"
               },
-              "description": "字符数上限；同时落成原生 maxlength 与机器侧截断",
+              "description": "字符数上限；同时落为原生 maxlength 与状态机侧截断",
               "name": "max-length",
               "fieldName": "maxLength"
             },
@@ -52818,7 +52818,7 @@
               "type": {
                 "text": "boolean | undefined"
               },
-              "description": "开启清空：有值时清空按钮显出，Escape 接管",
+              "description": "开启清空：有值时显示清空按钮，Escape 接管",
               "name": "clearable",
               "fieldName": "clearable"
             },
@@ -52826,7 +52826,7 @@
               "type": {
                 "text": "boolean | undefined"
               },
-              "description": "显出字数部件；关掉时该部件收起",
+              "description": "显示字数部件；关闭时该部件收起",
               "name": "show-count",
               "fieldName": "showCount"
             },
@@ -52834,7 +52834,7 @@
               "type": {
                 "text": "TextFieldSchema['props']['autoSize'] | undefined"
               },
-              "description": "布尔走 auto-size 属性；行数界限对象进不了属性，只作为 property 赋。",
+              "description": "布尔值使用 auto-size 属性；行数界限对象无法表达为属性，只作为 property 赋值。",
               "name": "auto-size",
               "fieldName": "autoSize"
             },

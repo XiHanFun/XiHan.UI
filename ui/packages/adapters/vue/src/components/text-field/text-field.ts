@@ -25,7 +25,7 @@ export type TextFieldRootSlotProps = Pick<
   'value' | 'empty' | 'atLimit' | 'count' | 'canClear' | 'setValue' | 'clear'
 >
 
-/** 字数部件默认插槽的载荷：当前字数、上限与顶到上限的标志。 */
+/** 字数部件默认插槽的载荷：当前字数、上限与已达上限的标志。 */
 export type TextFieldCountSlotProps = Pick<TextFieldApi, 'count' | 'maxLength' | 'atLimit'>
 
 export const XhTextFieldRoot = defineComponent({
@@ -99,7 +99,7 @@ export const XhTextFieldControl = defineComponent({
 export const XhTextFieldInput = defineComponent({
   name: 'XhTextFieldInput',
   props: {
-    /** 输入框渲染成哪个标签，默认 input；写 textarea 即多行宿主，接上 autoSize 自动高度。 */
+    /** 输入框渲染为哪个标签，默认 input；写 textarea 即多行宿主，接入 autoSize 自动高度。 */
     as: { type: String as PropType<TextFieldInputHost>, default: 'input' },
   },
   setup(props) {
@@ -160,7 +160,7 @@ export const XhTextFieldClearTrigger = defineComponent({
   },
 })
 
-/** 字数：不写内容时渲 `已用 / 上限`，没设上限就只渲已用。 */
+/** 字数：未写内容时渲染 `已用 / 上限`，未设上限时只渲染已用。 */
 export const XhTextFieldCount = defineComponent({
   name: 'XhTextFieldCount',
   slots: Object as SlotsType<{

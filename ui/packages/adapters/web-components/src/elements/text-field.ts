@@ -20,42 +20,42 @@ const NUMBER_CONVERTER = { fromAttribute: (v: string | null) => (v == null || v 
 const BOOLEAN_CONVERTER = { fromAttribute: (v: string | null) => (v === null ? undefined : v !== 'false') }
 
 /**
- * `<xh-text-field>` —— Light-DOM 行为宿主：作者写 root/label/input/clear-trigger 四类角色节点，
- * 元素跑 text-field 机器并把 connect 产出打上去。
+ * `<xh-text-field>`：Light-DOM 行为宿主：作者写 root / label / input / clear-trigger 四类角色节点，
+ * 元素运行 text-field 状态机并把 connect 产出接上。
  *
- * label 的 `for` 恒写向 input 的 id，所以 label 角色节点必须是原生 `<label>`、
- * input 角色节点必须是原生 `<input>`：任一边换成 `<div>`，点标题不聚焦、读屏也念不出名字。
+ * label 的 `for` 恒指向 input 的 id，因此 label 角色节点必须是原生 `<label>`、
+ * input 角色节点必须是原生 `<input>`：任一边换为 `<div>`，点击标题不聚焦、读屏也无法朗读名字。
  *
- * 键盘只额外接一个 Escape（clearable 且有值时清空），其余光标与选区行为全归浏览器。
- * 清空按钮对读屏隐藏、不占 Tab 位——它只是指针用户的快捷方式，键盘那一路走 Escape。
+ * 键盘只额外接管一个 Escape（clearable 且有值时清空），其余光标与选区行为全部归浏览器。
+ * 清空按钮对读屏隐藏、不占 Tab 位：它只是指针用户的快捷方式，键盘路径使用 Escape。
  *
  * @customElement xh-text-field
- * @attr {string} value - 受控值；缺省该属性即非受控
+ * @attr {string} value - 受控值；未提供该属性即非受控
  * @attr {string} default-value - 非受控初值
- * @attr {'text'|'password'|'email'|'tel'|'url'|'search'} type - 单行输入类型，缺省 text；宿主写成 textarea 时该属性不发
+ * @attr {'text'|'password'|'email'|'tel'|'url'|'search'} type - 单行输入类型，默认 text；宿主写为 textarea 时该属性不发出
  * @attr {string} placeholder - 占位文案
- * @attr {boolean} disabled - 禁用：不可聚焦、写不进
- * @attr {boolean} read-only - 只读：仍可聚焦与复制，写不进
+ * @attr {boolean} disabled - 禁用：不可聚焦、不可写入
+ * @attr {boolean} read-only - 只读：仍可聚焦与复制，不可写入
  * @attr {boolean} required - 必填标注
  * @attr {boolean} invalid - 校验失败标注
- * @attr {string} name - 表单字段名；给了才参与提交
- * @attr {number} max-length - 字符数上限；同时落成原生 maxlength 与机器侧截断
- * @attr {boolean} clearable - 开启清空：有值时清空按钮显出，Escape 接管
- * @attr {boolean} show-count - 显出字数部件；关掉时该部件收起
- * @attr {boolean} auto-size - 多行宿主（input 部件写成 textarea）的自动高度；行数界限对象经 autoSize property 赋
+ * @attr {string} name - 表单字段名；提供后才参与提交
+ * @attr {number} max-length - 字符数上限；同时落为原生 maxlength 与状态机侧截断
+ * @attr {boolean} clearable - 开启清空：有值时显示清空按钮，Escape 接管
+ * @attr {boolean} show-count - 显示字数部件；关闭时该部件收起
+ * @attr {boolean} auto-size - 多行宿主（input 部件写为 textarea）的自动高度；行数界限对象经 autoSize property 赋值
  * @attr {'outline'|'subtle'|'ghost'} variant - 视觉变体
  * @attr {'brand'|'neutral'|'success'|'warning'|'danger'|'info'} tone - 语气
  * @attr {'sm'|'md'|'lg'} size - 尺寸
- * @prop {object} translations - 读屏文案（只走 property）：clearTrigger 是清空按钮的名字
+ * @prop {object} translations - 读屏文案（只能通过 property 设置）：clearTrigger 是清空按钮的名字
  * @fires value-change - 值变化；detail 为 `{ value: string }`
  * @csspart root - 承载 data-disabled / data-readonly / data-invalid / data-empty / data-at-max 的容器
- * @csspart control - 视觉盒；写了它就由它画描边、底色与聚焦环，输入框与清空按钮排在它里面
- * @csspart label - 标题；`for` 恒写向 input，故须是原生 `<label>` 才点得动
- * @csspart input - 真正的输入框，须是原生 `<input>`；键盘交互全在它身上
+ * @csspart control - 视觉盒；提供后由它绘制描边、底色与聚焦环，输入框与清空按钮排列在其中
+ * @csspart label - 标题；`for` 恒指向 input，因此须是原生 `<label>` 才可点击
+ * @csspart input - 实际的输入框，须是原生 `<input>`；键盘交互全部在它身上
  * @csspart prefix - 输入框前的装饰段（货币符、单位、图标）；对读屏隐藏
  * @csspart suffix - 输入框后的装饰段；对读屏隐藏
- * @csspart clear-trigger - 清空按钮，须是原生 button；不占 Tab 位，名字取 translations.clearTrigger；清不了时收起
- * @csspart count - 字数；文本由元素按 `已用 / 上限` 填，作者写了自己的内容即不覆盖；没开 show-count 时收起
+ * @csspart clear-trigger - 清空按钮，须是原生 button；不占 Tab 位，名字取 translations.clearTrigger；无法清空时收起
+ * @csspart count - 字数；文本由元素按 `已用 / 上限` 填入，作者写了自己的内容即不覆盖；未开启 show-count 时收起
  */
 export class XhTextFieldElement extends XhElement {
   static override partContract = { anatomy: textFieldAnatomy, meta: textFieldMeta }
@@ -93,7 +93,7 @@ export class XhTextFieldElement extends XhElement {
   declare maxLength?: number
   declare clearable?: boolean
   declare showCount?: boolean
-  /** 布尔走 auto-size 属性；行数界限对象进不了属性，只作为 property 赋。 */
+  /** 布尔值使用 auto-size 属性；行数界限对象无法表达为属性，只作为 property 赋值。 */
   declare autoSize?: TextFieldSchema['props']['autoSize']
   declare variant?: ControlVariant
   declare tone?: Tone
@@ -143,21 +143,21 @@ export class XhTextFieldElement extends XhElement {
   }
 
   /**
-   * 清空此刻可不可行（开了 clearable、可编辑、且有值）。
-   * 作者据它禁用自己写在组件外面的清空钮。机器尚未建起时为 false。
+   * 当前是否可以清空（开启 clearable、可编辑且有值）。
+   * 作者据此禁用写在组件外部的清空按钮。状态机尚未建立时为 false。
    */
   get canClear(): boolean {
     return this.ctrl.service ? connectTextField(this.ctrl.service, wcNormalize).canClear : false
   }
 
-  /** 当前字数，即值的长度。机器尚未建起时为 0。 */
+  /** 当前字数，即值的长度。状态机尚未建立时为 0。 */
   get count(): number {
     return this.ctrl.service ? connectTextField(this.ctrl.service, wcNormalize).count : 0
   }
 
   /**
-   * 从外面写值，只受禁用、只读与字数上限约束，与 clearable 无关。
-   * 机器尚未建起时是空操作。
+   * 从外部写值，只受禁用、只读与字数上限约束，与 clearable 无关。
+   * 状态机尚未建立时为空操作。
    */
   setValue(next: string): void {
     if (this.ctrl.service)
@@ -165,8 +165,8 @@ export class XhTextFieldElement extends XhElement {
   }
 
   /**
-   * 走清空意图，canClear 不成立时按兵不动；无条件清空请用 setValue('')。
-   * 机器尚未建起时是空操作。
+   * 执行清空意图，canClear 不成立时不做任何处理；无条件清空请使用 setValue('')。
+   * 状态机尚未建立时为空操作。
    */
   clear(): void {
     if (this.ctrl.service)
