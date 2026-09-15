@@ -1,6 +1,6 @@
 # Log 日志 <Badge type="info" text="alpha" />
 
-一块等宽排版的滚动区域，一行一条，可以自动跟到底部。
+等宽排版的滚动区域，一行一条，可以自动跟随到底部。
 
 <div class="xh-resource-links">
   <a href="https://github.com/XiHanFun/XiHan.UI/tree/dev/ui/packages/engine/headless/src/log" target="_blank" rel="noreferrer">Headless</a>
@@ -65,40 +65,37 @@ loading 让日志区报 aria-busy 并把指针换成忙碌态；「正在拉取�
 ### 何时使用
 
 - 构建输出、运行日志、命令行回显。
-- 任意会从底部往下长、希望一直跟到底的内容：内容不必分得出「第几条、谁说的」，
-  一整段往里追加就行。
+- 任何从底部持续增长、需要始终跟随到底的内容：内容不需要区分条目身份，整段追加即可。
 
 ### 何时不用
 
-- 内容是一段会话，条目有身份、要能逐条遍历：用[消息流](./message-feed)。
-- 展示的是结构化记录、需要筛选排序：用[表格](./table)。
-- 是一段代码：用[代码视图](./code-view)。
+- 内容是会话、条目有身份且需要逐条遍历时，使用[消息流](./message-feed)。
+- 展示结构化记录、需要筛选排序时，使用[表格](./table)。
+- 展示一段代码时，使用[代码视图](./code-view)。
 
 ### 特性
 
-- 骨架四层：`root` · `viewport` · `content` · `line`；一行写什么由作者定，组件只给身份与等宽排版。
-  另有两个可缺省的部件：`scroll-to-end-trigger` 与 `live-region`。
+- 结构四层：`root` · `viewport` · `content` · `line`；每行内容由作者决定，组件只提供身份与等宽排版。另有两个可选部件：`scroll-to-end-trigger` 与 `live-region`。
 - `rows` 按行数定高。
-- 自动跟到底部；用户往上翻时停住跟随，回到底部再恢复。
-- 内置「回到底部」：离底时冒出来，按下去归位并重新粘附。留空时皮肤画一枚向下的字形，
-  往按钮里塞节点即换成自己的图形。
+- 自动跟随到底部；用户向上翻时停止跟随，回到底部后恢复。
+- 内置“回到底部”：离开底部时出现，按下后归位并重新粘附。留空时皮肤绘制向下的字形，放入节点即替换为自定义图形。
 - 视口自身可聚焦，整块日志占一个 Tab 停靠位，方向键与翻页键交给浏览器滚动。
 
 ### 组合
 
 - 行内可以用[文本高亮](./highlight)标出关键词。
-- 给视口一个 id，把[滚动条](./scrollbar)的 `controls` 指过去，条子与视口平级摆在 `root` 里：它浮在内容之上，不占宽度。没挂自绘滚动条时视口自己留一条空道，原生滚动条出现与消失不会推动文字。
+- 给视口一个 id，把[滚动条](./scrollbar)的 `controls` 指向它，滚动条与视口平级放在 `root` 内：它浮在内容之上，不占宽度。未挂自绘滚动条时视口自行预留一条通道，原生滚动条出现与消失不会推动文字。
 
 ### 最佳实践
 
-- 用户往上翻时不要强行拉回底部，那是最恼人的行为之一。
-- 行数很大时截断或虚拟化，别把十万行全挂上去。
+- 用户向上翻时不强行拉回底部。
+- 行数很大时截断或虚拟化，不把十万行全部挂载。
 
 ### 反模式
 
-- 每来一行就整块重渲。
-- 不给复制或下载全部日志的入口。
-- 把每一行都写进播报区：读屏会被逐行打断，什么也听不清。
+- 每到一行就整块重渲。
+- 不提供复制或下载全部日志的入口。
+- 把每一行都写进播报区，读屏会被逐行打断。
 
 ## API 参考
 
@@ -198,11 +195,9 @@ loading 让日志区报 aria-busy 并把指针换成忙碌态；「正在拉取�
 | `live-region` | `aria-live` | 'polite' |
 | `live-region` | `role` | 'status' |
 
-- 视口是 `role=log`，但它隐含的 `aria-live` 被显式关掉：一行来一句地念，连成串的输出
-  就成了读屏里的噪声。
-- 播报走独立的 `live-region`：宿主决定念哪一句、什么时候念，例如一段输出跑完之后念结论
-  与错误条数。别把每一行原样写进去，那就等于把关掉的逐行播报又打开了一遍。
-- 成批取行期间视口报 `aria-busy`；播报区是视口的兄弟节点，不受它压制。
+- 视口是 `role=log`，但其隐含的 `aria-live` 被显式关闭：逐行读出连续输出会成为读屏噪声。
+- 播报使用独立的 `live-region`：宿主决定读哪一句、何时读，例如一段输出结束后读出结论与错误条数。不要把每一行原样写入，否则等于重新打开逐行播报。
+- 成批取行期间视口报告 `aria-busy`；播报区是视口的兄弟节点，不受其影响。
 
 ## 样式参考
 
@@ -249,7 +244,7 @@ loading 让日志区报 aria-busy 并把指针换成忙碌态；「正在拉取�
 | `--xh-log-scroll-to-end-trigger-border` | `scroll-to-end-trigger` | `border` | `default` | `--xh-border-default` | log 的 scroll-to-end-trigger 部件 border 覆盖槽。 |
 | `--xh-log-scroll-to-end-trigger-fg` | `scroll-to-end-trigger` | `color` | `default` | `--xh-fg-default` | log 的 scroll-to-end-trigger 部件 color 覆盖槽。 |
 | `--xh-log-scroll-to-end-trigger-inset` | `scroll-to-end-trigger` | `inset-block-end`<br>`inset-inline-end` | `default` | `--xh-space-3` | log 的 scroll-to-end-trigger 部件 inset-block-end、inset-inline-end 覆盖槽。 |
-| `--xh-log-scroll-to-end-trigger-radius` | `scroll-to-end-trigger` | `border-radius` | `default` | `--xh-shape-pill` | log 的 scroll-to-end-trigger 部件 border-radius 覆盖槽。 |
+| `--xh-log-scroll-to-end-trigger-radius` | `scroll-to-end-trigger` | `border-radius` | `default` | `--xh-shape-circle` | log 的 scroll-to-end-trigger 部件 border-radius 覆盖槽。 |
 | `--xh-log-scroll-to-end-trigger-shadow` | `scroll-to-end-trigger` | `box-shadow` | `default` | `--xh-elevation-raised` | log 的 scroll-to-end-trigger 部件 box-shadow 覆盖槽。 |
 | `--xh-log-scroll-to-end-trigger-size` | `scroll-to-end-trigger` | `block-size`<br>`inline-size` | `default` | `--xh-control-h-sm` | log 的 scroll-to-end-trigger 部件 block-size、inline-size 覆盖槽。 |
 | `--xh-log-tab-size` | `line` | `tab-size` | `default` | `4` | log 的 line 部件 tab-size 覆盖槽。 |
