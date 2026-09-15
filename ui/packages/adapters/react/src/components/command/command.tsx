@@ -30,7 +30,7 @@ import { useCommand } from './use-command'
 
 type CommandProps = CommandSchema['props']
 
-/** 函数式 children 的载荷：开合、检索串、结果与锚点，以及改这些的命令。 */
+/** 函数式 children 的载荷：开合、检索串、结果与锚点，以及修改它们的命令。 */
 export type CommandRootSlotProps = Pick<
   CommandApi,
   'open' | 'inputValue' | 'groups' | 'results' | 'highlightedValue' | 'empty' | 'setOpen' | 'setInputValue' | 'select'
@@ -43,7 +43,7 @@ export interface XhCommandRootProps {
   defaultOpen?: boolean
   inputValue?: string
   defaultInputValue?: string
-  /** 内置过滤，默认开；关掉即由调用方自己筛。 */
+  /** 内置过滤，默认开启；关闭后由调用方自行筛选。 */
   filter?: boolean
   caseSensitive?: boolean
   closeOnSelect?: boolean
@@ -54,11 +54,11 @@ export interface XhCommandRootProps {
   loop?: boolean
   loading?: boolean
   placeholder?: string
-  /** 无匹配时的提示语。给了它就不必再写 empty 部件。 */
+  /** 无匹配时的提示语。提供后不必再写 empty 部件。 */
   empty?: ReactNode
-  /** 铺开时的触发按钮内容；不给即不渲染触发器（面板改由快捷键或受控 open 唤起）。 */
+  /** 铺开时的触发按钮内容；未提供时不渲染触发器（面板改由快捷键或受控 open 唤起）。 */
   trigger?: ReactNode
-  /** 铺开时浮层底部的操作区内容；不给即不渲染 footer 部件。 */
+  /** 铺开时浮层底部的操作区内容；未提供时不渲染 footer 部件。 */
   footer?: ReactNode
   dir?: Direction
   size?: Size
@@ -67,7 +67,7 @@ export interface XhCommandRootProps {
   onOpenChange?: CommandProps['onOpenChange']
   onInputValueChange?: CommandProps['onInputValueChange']
   onSelect?: CommandProps['onSelect']
-  /** 每条命令的自定义内容；不给就用清单里的 label。 */
+  /** 每条命令的自定义内容；未提供时使用清单中的 label。 */
   renderItem?: (node: CommandNodeMeta) => ReactNode
   children?: SlotChildren<CommandRootSlotProps>
 }
@@ -122,10 +122,10 @@ export function XhCommandTrigger({ children, asChild, ...rest }: XhCommandTrigge
 }
 
 export interface XhCommandContentProps extends ComponentPropsWithRef<'div'> {
-  /** 浮层挂到哪个容器；不给就按全局配置，再不给挂 body。 */
+  /** 浮层挂载的容器；未提供时按全局配置，再未提供时挂载到 body。 */
   container?: () => Element | null
 }
-/** 搬到浮层落点：留在原地的话，宿主祖先只要建了层叠上下文就能盖住浮层。 */
+/** 迁移到浮层落点：留在原地时，宿主祖先只要建立了层叠上下文就能遮住浮层。 */
 export function XhCommandContent({ children, container, ...rest }: XhCommandContentProps): ReactNode {
   const ctx = useCommandContext()
   if (!ctx.rendered)
@@ -219,7 +219,7 @@ export function XhCommandGroupLabel({ children, ...rest }: XhCommandGroupLabelPr
 
 export interface XhCommandItemProps extends Omit<ComponentPropsWithRef<'div'>, 'value'> {
   value: string
-  /** 缺省交给 connect 回清单里查，写死 false 会盖掉数据里的禁用。 */
+  /** 默认交给 connect 查询清单，写死 false 会覆盖数据中的禁用。 */
   disabled?: boolean
 }
 export function XhCommandItem({ value, disabled, children, ...rest }: XhCommandItemProps): ReactNode {
@@ -244,14 +244,14 @@ export function XhCommandItemText({ children, ...rest }: XhCommandItemTextProps)
 }
 
 export interface XhCommandEmptyProps extends ComponentPropsWithRef<'div'> {}
-/** 放在 content 里作 list 的兄弟节点，不进 role=listbox。 */
+/** 放在 content 中作为 list 的兄弟节点，不进入 role=listbox。 */
 export function XhCommandEmpty({ children, ...rest }: XhCommandEmptyProps): ReactNode {
   const ctx = useCommandContext()
   return <div {...mergeReactProps(ctx.api.getEmptyProps() as Record<string, unknown>, rest as Record<string, unknown>)}>{children}</div>
 }
 
 export interface XhCommandLoadingProps extends ComponentPropsWithRef<'div'> {}
-/** 在途占位：与空态占位同一个位置，取数期间顶上来。 */
+/** 在途占位：与空态占位同一个位置，取数期间显示。 */
 export function XhCommandLoading({ children, ...rest }: XhCommandLoadingProps): ReactNode {
   const ctx = useCommandContext()
   return <div {...mergeReactProps(ctx.api.getLoadingProps() as Record<string, unknown>, rest as Record<string, unknown>)}>{children}</div>
@@ -264,8 +264,8 @@ export function XhCommandFooter({ children, ...rest }: XhCommandFooterProps): Re
 }
 
 /**
- * 没写 children 时按清单铺开的整套结构，作者只交数据。
- * 与手写部件产出的 DOM 完全一致，要改结构就写 children，行为不变。
+ * 未写 children 时按清单铺开的整套结构，作者只提供数据。
+ * 与手写部件产出的 DOM 完全一致，需要修改结构时写 children，行为不变。
  */
 function DefaultTree(props: {
   tree: readonly CommandGroupMeta[]

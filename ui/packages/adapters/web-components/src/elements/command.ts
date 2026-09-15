@@ -34,48 +34,48 @@ const STRING_CONVERTER = { fromAttribute: (v: string | null) => v ?? undefined }
 const BOOLEAN_CONVERTER = { fromAttribute: (v: string | null) => (v === null ? undefined : v !== 'false') }
 
 /**
- * `<xh-command>` —— Light-DOM 行为宿主：作者写 trigger/backdrop/positioner/content/input/list/item/...
- * 角色节点，元素跑 command 机器并把 connect 产出打上去。
+ * `<xh-command>`：Light-DOM 行为宿主：作者写 trigger / backdrop / positioner / content / input / list / item / ...
+ * 角色节点，元素运行 command 状态机并把 connect 产出接上。
  *
- * 过滤在库这一层做：命令清单经 collection 交进来，检索串一变，不在结果里的条目与整组空掉的分组
- * 由 connect 打上 hidden。作者只管把整份清单铺成节点，不必自己增删。
+ * 过滤在库这一层完成：命令清单经 collection 传入，检索串变化时，不在结果中的条目与整组被筛空的分组
+ * 由 connect 写上 hidden。作者只需把整份清单铺设为节点，不必自行增删。
  *
- * 焦点自始至终在 input 上：条目不可聚焦、也不进 Tab 序列，锚点经 aria-activedescendant 报给读屏。
+ * 焦点自始至终在 input 上：条目不可聚焦、也不进入 Tab 序列，锚点经 aria-activedescendant 报告给读屏。
  *
  * @customElement xh-command
- * @attr {boolean} open - 受控开合；缺省该属性即非受控
+ * @attr {boolean} open - 受控开合；未提供该属性即非受控
  * @attr {boolean} default-open - 非受控初始为展开
- * @attr {string} input-value - 受控检索串；缺省该属性即非受控
+ * @attr {string} input-value - 受控检索串；未提供该属性即非受控
  * @attr {string} default-input-value - 非受控初始检索串
- * @attr {boolean} filter - 内置过滤，默认开；写 filter="false" 即由调用方自己筛
+ * @attr {boolean} filter - 内置过滤，默认开启；写 filter="false" 即由调用方自行筛选
  * @attr {boolean} case-sensitive - 过滤区分大小写，默认不区分
  * @attr {boolean} close-on-select - 选中一条命令后收起面板，默认 true
- * @attr {boolean} modal - 模态（陷焦点、锁滚动、遮罩交互外关闭），默认 true
+ * @attr {boolean} modal - 模态（陷入焦点、锁定滚动、遮罩交互外关闭），默认 true
  * @attr {boolean} close-on-escape - Esc 关闭，默认 true
- * @attr {boolean} close-on-interact-outside - 点面板外关闭，默认跟随 modal
+ * @attr {boolean} close-on-interact-outside - 点击面板外关闭，默认跟随 modal
  * @attr {boolean} restore-focus - 关闭后把焦点归还触发元素，默认 true
- * @attr {boolean} loop - 方向键走到尽头回绕，默认 true；写 loop="false" 关掉
- * @attr {boolean} loading - 命令还在取：列表报 aria-busy，在途占位顶上来、空态占位让位
+ * @attr {boolean} loop - 方向键到达末尾回绕，默认 true；写 loop="false" 关闭
+ * @attr {boolean} loading - 命令加载中：列表报告 aria-busy，显示在途占位、隐藏空态占位
  * @attr {string} placeholder - 检索框占位文字
- * @attr {'ltr'|'rtl'} dir - 文字方向；浮层搬到落点后继承不到作者子树上的方向，要 RTL 就显式给
- * @attr {'sm'|'md'|'lg'} size - 尺寸：换面板宽度与条目的几何档位
- * @attr {'opaque'|'blur'|'transparent'} variant - 遮罩形态：只换 backdrop 的底色与模糊
+ * @attr {'ltr'|'rtl'} dir - 文字方向；浮层移到落点后无法继承作者子树上的方向，需要 RTL 时显式提供
+ * @attr {'sm'|'md'|'lg'} size - 尺寸：影响面板宽度与条目的几何档位
+ * @attr {'opaque'|'blur'|'transparent'} variant - 遮罩形态：只影响 backdrop 的底色与模糊
  * @fires open-change - open 状态变化；detail 为 `{ open: boolean, reason?: string }`
  * @fires input-value-change - 检索串变化；detail 为 `{ inputValue: string }`
  * @fires select - 选中一条命令；detail 为 `{ value: string, label: string }`
  * @csspart trigger - 打开面板的按钮，须是原生 button；焦点关闭后归还给它
  * @csspart backdrop - 遮罩层
- * @csspart positioner - 浮层定位容器，由皮肤的 inset 直接摆
+ * @csspart positioner - 浮层定位容器，由皮肤的 inset 直接摆放
  * @csspart content - role=dialog 面板（焦点陷阱所在），收起时带 hidden
- * @csspart input - 检索框，面板里唯一的打字入口，带 role=combobox
+ * @csspart input - 检索框，面板中唯一的输入入口，带 role=combobox
  * @csspart list - role=listbox 结果容器
  * @csspart group - role=group 分组容器，须自带 value 属性标识身份；整组被筛空时带 hidden
  * @csspart group-label - 分组标题（本组 aria-labelledby 的目标）
- * @csspart item - role=option 命令，须自带 value 属性标识身份；不在结果里时带 hidden
- * @csspart item-text - 命令文本（选中时回传给宿主的取字处）
- * @csspart empty - 一条都没剩下时的提示；须放在 content 里当 list 的兄弟（列表内只允许 option 与 group）
- * @csspart loading - 在途占位，与空态占位同一个位置，取数期间顶上来
- * @csspart footer - 面板底部提示条，作者放什么由作者定
+ * @csspart item - role=option 命令，须自带 value 属性标识身份；不在结果中时带 hidden
+ * @csspart item-text - 命令文本（选中时回传给宿主的取字来源）
+ * @csspart empty - 没有剩余条目时的提示；须放在 content 中作为 list 的兄弟（列表内只允许 option 与 group）
+ * @csspart loading - 在途占位，与空态占位同一位置，加载期间显示
+ * @csspart footer - 面板底部提示条，内容由作者决定
  */
 export class XhCommandElement extends XhPortalHostElement {
   /** 本实例的 Portal 容器；显式解析失败不回退配置默认。 */
@@ -151,7 +151,7 @@ export class XhCommandElement extends XhPortalHostElement {
     onChange: () => this.requestUpdate(),
   })
 
-  /** 作者声明的条目禁用，只认首见那一份；给了 collection 时用它，否则现读 */
+  /** 作者声明的条目禁用，只认首次见到的值；提供 collection 时使用它，否则现读 */
   private readonly declaredDisabled = createDeclaredDisabled()
 
   private readonly notifyOpen = (details: CommandOpenChangeDetails): void => {
@@ -174,8 +174,8 @@ export class XhCommandElement extends XhPortalHostElement {
   )
 
   /**
-   * 取数口与命令共用的取法。机器要到进文档（hostConnected）才建，
-   * 而这些都是公开面，作者拿到元素随时可能读、可能调——还没进文档时如实给空，不抛错。
+   * 取数口与命令共用的取法。状态机在进入文档（hostConnected）后才建立，
+   * 而这些都是公开面，作者拿到元素后随时可能读取、调用：尚未进入文档时如实返回空值，不抛错。
    */
   private api(): CommandApi | null {
     const service = this.ctrl.service as Service<CommandSchema> | undefined
@@ -183,52 +183,52 @@ export class XhCommandElement extends XhPortalHostElement {
   }
 
   /**
-   * 面板此刻开着没有（`open` 属性是受控入参，可能缺席；这里是结果）。
-   * 机器尚未建起时给 false。
+   * 面板当前是否展开（`open` 属性是受控入参，可能缺席；此处是结果）。
+   * 状态机尚未建立时返回 false。
    */
   get expanded(): boolean {
     return this.api()?.open ?? false
   }
 
   /**
-   * 此刻的检索串（`input-value` 属性缺席时非受控的那份住在机器里，只有这里读得到）。
-   * 机器尚未建起时给空串。
+   * 当前的检索串（`input-value` 属性缺席时非受控的值保存在状态机中，只能从此处读取）。
+   * 状态机尚未建立时返回空串。
    */
   get currentInputValue(): string {
     return this.api()?.inputValue ?? ''
   }
 
-  /** 过滤归组之后此刻该显示的命令，空组已经丢掉。机器尚未建起时给空数组。 */
+  /** 过滤归组之后当前应显示的命令，空组已剔除。状态机尚未建立时返回空数组。 */
   get groupResults(): readonly CommandGroupMeta[] {
     return this.api()?.groups ?? []
   }
 
-  /** 上面那份分组视图摊平的结果，次序即方向键走的次序。机器尚未建起时给空数组。 */
+  /** 分组视图摊平后的结果，次序即方向键的遍历次序。状态机尚未建立时返回空数组。 */
   get results(): readonly CommandNodeMeta[] {
     return this.api()?.results ?? []
   }
 
-  /** 键盘锚点；收起或一条都没剩下时为 null。 */
+  /** 键盘锚点；收起或无结果时为 null。 */
   get highlightedValue(): string | null {
     return this.api()?.highlightedValue ?? null
   }
 
-  /** 一条都没剩下。机器尚未建起时给 false。 */
+  /** 是否没有任何结果。状态机尚未建立时返回 false。 */
   get isEmpty(): boolean {
     return this.api()?.empty ?? false
   }
 
-  /** 开合面板。受控（写了 `open` 属性）时只发 open-change，开合归宿主写回。机器尚未建起时不动。 */
+  /** 开合面板。受控（写了 `open` 属性）时只触发 open-change，开合由宿主写回。状态机尚未建立时为空操作。 */
   setOpen(next: boolean): void {
     this.api()?.setOpen(next)
   }
 
-  /** 改写检索串。受控时语义同 setOpen。机器尚未建起时不动。 */
+  /** 改写检索串。受控时语义同 setOpen。状态机尚未建立时为空操作。 */
   setInputValue(next: string): void {
     this.api()?.setInputValue(next)
   }
 
-  /** 直接执行某条命令，等同于在它上面按回车。禁用的那条不认。机器尚未建起时不动。 */
+  /** 直接执行某条命令，等同于在该条目上按回车。禁用的条目不响应。状态机尚未建立时为空操作。 */
   select(value: string): void {
     this.api()?.select(value)
   }
@@ -308,7 +308,7 @@ export class XhCommandElement extends XhPortalHostElement {
   }
 
   /**
-   * 提前发现一次角色节点：default-open 时机器在 hostConnected 当场就要把焦点送进检索框。
+   * 提前发现一次角色节点：default-open 时状态机在 hostConnected 当场就要把焦点送进检索框。
    */
   override connectedCallback(): void {
     this.refreshParts()

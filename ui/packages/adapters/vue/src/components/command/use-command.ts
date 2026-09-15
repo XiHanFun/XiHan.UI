@@ -21,9 +21,9 @@ import { createVueIdGenerator } from '../../runtime/vue-id'
 export interface CommandContext {
   service: Service<CommandSchema>
   api: ComputedRef<CommandApi>
-  /** 浮层搬到哪儿：全局配置 > 单一落点。 */
+  /** 浮层迁移到的位置：全局配置 > 单一落点。 */
   portalTarget: ComputedRef<string | Element>
-  /** 此刻该不该渲染：退场动画播完之前仍为真。 */
+  /** 当前是否应当渲染：退场动画播完之前仍为真。 */
   rendered: Ref<boolean>
   contentRef: Ref<HTMLElement | null>
   backdropRef: Ref<HTMLElement | null>
