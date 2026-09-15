@@ -25,23 +25,23 @@ const NUMBER_CONVERTER = { fromAttribute: (v: string | null) => (v === null ? un
 const BOOLEAN_CONVERTER = { fromAttribute: (v: string | null) => (v === null ? undefined : v !== 'false') }
 
 /**
- * `<xh-popover>` —— Light-DOM 行为宿主：用户写 trigger/positioner/content/... 角色节点，
- * 元素跑 popover 机器并把 connect 产出打上去。浮层定位引擎在本元素里建好、经 refs 注入机器，
- * 锚点取 trigger、被定位的浮层取 positioner；机器只认端口，不认识具体引擎。
+ * `<xh-popover>`：Light-DOM 行为宿主：作者写 trigger / positioner / content / ... 角色节点，
+ * 元素运行 popover 状态机并把 connect 产出接上。浮层定位引擎在本元素中创建、经 refs 注入状态机，
+ * 锚点取 trigger、被定位的浮层取 positioner；状态机只识别端口，不识别具体引擎。
  *
  * @customElement xh-popover
- * @attr {boolean} open - 受控开合；缺省该属性即非受控
+ * @attr {boolean} open - 受控开合；未提供该属性即非受控
  * @attr {boolean} default-open - 非受控初始为展开
- * @attr {string} placement - 首选放置位，默认 bottom；避让后的实际位写在 data-placement 上
+ * @attr {string} placement - 首选放置位，默认 bottom；避让后的实际位置写在 data-placement 上
  * @attr {number} offset - 浮层与锚点的间距（px），默认 8
- * @attr {'ltr'|'rtl'} dir - 文字方向，翻转浮层在行内轴上 start 与 end 的落点；只在显式给了才写到定位层上
- * @attr {boolean} modal - 模态浮层陷住焦点并回绕 Tab，默认 false
- * @attr {boolean} close-on-escape - Esc 关闭，默认 true；写 close-on-escape="false" 关掉
- * @attr {boolean} close-on-interact-outside - 层外交互关闭，默认 true；写 "false" 关掉
+ * @attr {'ltr'|'rtl'} dir - 文字方向，翻转浮层在行内轴上 start 与 end 的落点；只在显式提供时才写到定位层上
+ * @attr {boolean} modal - 模态浮层陷入焦点并回绕 Tab，默认 false
+ * @attr {boolean} close-on-escape - Esc 关闭，默认 true；写 close-on-escape="false" 关闭
+ * @attr {boolean} close-on-interact-outside - 层外交互关闭，默认 true；写 "false" 关闭
  * @attr {'sm'|'md'|'lg'} size - 尺寸
  * @fires open-change - open 状态变化；detail 为 `{ open: boolean }`
- * @csspart trigger - 触发按钮（aria-haspopup/aria-expanded/aria-controls 所在），同时是定位锚点
- * @csspart positioner - 浮层定位容器，坐标由引擎写成内联样式
+ * @csspart trigger - 触发按钮（aria-haspopup / aria-expanded / aria-controls 所在），同时是定位锚点
+ * @csspart positioner - 浮层定位容器，坐标由引擎写为内联样式
  * @csspart content - 浮层内容（role=dialog；焦点域与消解层的根节点），收起时带 hidden
  * @csspart title - 标题（aria-labelledby 目标）
  * @csspart description - 描述（aria-describedby 目标）
@@ -80,7 +80,7 @@ export class XhPopoverElement extends XhPortalHostElement {
   declare closeOnEscape?: boolean
   declare closeOnInteractOutside?: boolean
   declare size?: Size
-  /** 关闭按钮的无障碍名；connect 每帧重写 aria-label，作者自己写在节点上会被盖掉，只能从这里给。 */
+  /** 关闭按钮的无障碍名；connect 每帧重写 aria-label，作者写在节点上的值会被覆盖，只能从此处提供。 */
   declare translations?: Partial<PopoverTranslations>
 
   private readonly idGen: IdGenerator = createCounterIdGenerator()
@@ -140,7 +140,7 @@ export class XhPopoverElement extends XhPortalHostElement {
     return this.portal.roots
   }
 
-  /** 机器挂载前建立 Presence，让行为资源与视觉退场从第一轮展开起共用生命周期。 */
+  /** 状态机挂载前建立 Presence，让行为资源与视觉退场从第一轮展开起共用生命周期。 */
   private ensureExit(open: boolean): OverlayExit {
     this.ensureConfig()
     this.exit ??= createOverlayExit({
@@ -181,9 +181,9 @@ export class XhPopoverElement extends XhPortalHostElement {
   }
 
   /**
-   * 角色节点提前发现一次：default-open 时机器在 hostConnected 当场进入 open，
-   * 定位副作用同步取一次 trigger/positioner——而常规发现要等首次 updated，
-   * 那一刻 partMap 还空着，引擎挂不上，浮层会停在容器左上角。
+   * 角色节点提前发现一次：default-open 时状态机在 hostConnected 当场进入 open，
+   * 定位副作用同步取一次 trigger/positioner：而常规发现要等首次 updated，
+   * 此时 partMap 仍为空，引擎无法挂载，浮层会停在容器左上角。
    * 消解层与焦点域的 ref 是懒读的，不受影响，这里只为定位补上时机。
    */
   override connectedCallback(): void {

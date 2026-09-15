@@ -24,9 +24,9 @@ export interface PopoverContext {
   triggerRef: Ref<HTMLElement | null>
   positionerRef: Ref<HTMLElement | null>
   contentRef: Ref<HTMLElement | null>
-  /** 此刻该不该渲染：退场动画播完之前仍为真。 */
+  /** 当前是否应当渲染：退场动画播完之前仍为真。 */
   visible: Ref<boolean>
-  /** 浮层搬到哪儿：全局配置的容器 > 运行时的浮层落点 > body。 */
+  /** 浮层迁移到的位置：全局配置的容器 > 运行时的浮层落点 > body。 */
   portalTarget: ComputedRef<string | Element>
 }
 

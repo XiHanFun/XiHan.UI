@@ -17,11 +17,11 @@ export interface PopoverRefs {
   config: RuntimeConfig | null
   /** 注册本层并返回撤销句柄；只在展开期间调用，层不常驻栈。 */
   registerLayer: (() => { layer: Layer, dispose: Cleanup }) | null
-  /** 视觉退场与行为资源共享的 Presence；缺省时关闭立即释放。 */
+  /** 视觉退场与行为资源共享的 Presence；未提供时关闭立即释放。 */
   presence: PresenceHandle | null
   /** 展开期间 modal 改值时同步滚动锁与背景失活。 */
   syncModalResources: (() => void) | null
-  /** 浮层定位引擎；缺省即不产出位置结果。 */
+  /** 浮层定位引擎；未提供时不产出位置结果。 */
   position: PositionEnginePort | null
   /** 定位锚点，通常是 trigger。 */
   getAnchorEl: () => HTMLElement | null
@@ -30,9 +30,9 @@ export interface PopoverRefs {
   /** 焦点域容器与消解层节点。 */
   getContentEl: () => HTMLElement | null
   /**
-   * 展开那一刻的落焦点。返回 null 即交给焦点域的 Tab 序列探测（浮层的缺省行为）。
-   * 浮层里排着集合的组合件由它把落点收口到锚点条目或集合容器上——
-   * 探测按文档序取 content 的可 tab 后代，作者放在集合前面的搜索框会把焦点抢走。
+   * 展开时的落焦点。返回 null 即交给焦点域的 Tab 序列探测（浮层的默认行为）。
+   * 浮层中排列集合的组合件由它把落点收口到锚点条目或集合容器上：
+   * 探测按文档序取 content 的可 tab 后代，作者放在集合前面的搜索框会夺走焦点。
    */
   getInitialFocusEl: () => HTMLElement | null
 }
@@ -40,8 +40,8 @@ export interface PopoverRefs {
 export interface PopoverOpenChangeDetails {
   open: boolean
   /**
-   * 这一次是怎么关的；展开时不带。
-   * 用它区分「用户主动取消」（esc / interact-outside）与「选完自动收起」，前者常要回滚草稿。
+   * 本次关闭的原因；展开时不带。
+   * 用于区分用户主动取消（esc / interact-outside）与选完自动收起，前者常需要回滚草稿。
    */
   reason?: OverlayCloseReason
 }
@@ -51,10 +51,10 @@ export interface PopoverSchema extends MachineSchema {
     open?: boolean
     defaultOpen?: boolean
     placement?: Placement
-    /** 文字方向，缺省 ltr。只改写浮层在行内轴上 start 与 end 的落点。 */
+    /** 文字方向，默认 ltr。只改写浮层在行内轴上 start 与 end 的落点。 */
     dir?: Direction
     offset?: number
-    /** 模态浮层陷住焦点；默认 false（非模态，Tab 可离开）。 */
+    /** 模态浮层陷入焦点；默认 false（非模态，Tab 可离开）。 */
     modal?: boolean
     closeOnEscape?: boolean
     closeOnInteractOutside?: boolean
@@ -65,7 +65,7 @@ export interface PopoverSchema extends MachineSchema {
     onOpenChange?: (details: PopoverOpenChangeDetails) => void
   }
   context: {
-    /** 定位引擎回填的最新结果；connect 只读它，不碰 DOM 也不调引擎。 */
+    /** 定位引擎回填的最新结果；connect 只读取它，不涉及 DOM 也不调用引擎。 */
     position: PositionResult | null
     /** 关闭时是否把焦点归还触发器；Tab 与层外交互关闭时为 false。 */
     returnFocus: boolean
