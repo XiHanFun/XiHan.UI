@@ -95,7 +95,7 @@
 | --- | --- | --- | --- |
 | `controlId` | `string` |  | 控件 id；作者接管时以它为准。 |
 | `disabled` | `boolean` |  |  |
-| `invalid` | `boolean` |  | 校验失败态：控件上 aria-invalid=true，错误文案接入描述链并显出。 |
+| `invalid` | `boolean` |  | 校验失败态：控件上 aria-invalid=true，错误文案接入描述链并显示。 |
 | `readOnly` | `boolean` |  | 只读：控件上 aria-readonly=true。与 disabled 不同，只读仍可聚焦、仍参与提交。 |
 | `required` | `boolean` |  | 必填：控件上 aria-required=true。 |
 
@@ -118,10 +118,10 @@
 | `disabled` | `boolean` |  |
 | `readOnly` | `boolean` |  |
 | `controlId` | `string` | 控件实际使用的 id，label 的 for 与它一致。 |
-| `labelId` | `string` | 标签节点的 id。复合控件把它并进自己的名字链，字段的标签才念得到。 |
+| `labelId` | `string` | 标签节点的 id。复合控件把它并入自身的名字链，字段的标签才能被朗读。 |
 | `getRootProps` | `() => T['element']` |  |
 | `getLabelProps` | `() => T['label']` |  |
-| `getControlProps` | `() => T['element']` | 控件本身由作者渲染，这里只产出要合并上去的属性。 |
+| `getControlProps` | `() => T['element']` | 控件本身由作者渲染，这里只产出需要合并的属性。 |
 | `getDescriptionProps` | `() => T['element']` |  |
 | `getErrorTextProps` | `() => T['element']` |  |
 
