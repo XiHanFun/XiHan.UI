@@ -1,4 +1,4 @@
-<!-- 参与表单 | 给了 name 就带上表单影子，提交的是一份独立 SVG；表单重置会把画布清回空 -->
+<!-- 参与表单 | 提供 name 后带上表单影子，提交的是一份独立 SVG；表单重置会把画布清空 -->
 <script setup lang="ts">
 import {
   XhSignaturePadClearTrigger,
