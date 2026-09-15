@@ -18,7 +18,7 @@ import { usePagination } from './use-pagination'
 
 type PaginationProps = PaginationSchema['props']
 
-/** 默认插槽的载荷：当前页与总量口径、页码序列与条目区间、前后页页码，以及翻页与按当前页切数据的动作。 */
+/** 默认插槽的载荷：当前页与总量口径、页码序列与条目区间、前后页页码，以及翻页与按当前页切分数据的动作。 */
 export type PaginationRootSlotProps = Pick<
   PaginationApi,
   | 'page'
@@ -139,7 +139,7 @@ export const XhPaginationItem = defineComponent({
 export const XhPaginationEllipsisTrigger = defineComponent({
   name: 'XhPaginationEllipsisTrigger',
   props: {
-    /** 这是哪一侧的省略位：首页与窗口之间是 start，窗口与末页之间是 end。 */
+    /** 该省略位所在的一侧：首页与窗口之间是 start，窗口与末页之间是 end。 */
     side: { type: String as PropType<PaginationEllipsisSide>, default: 'start' },
   },
   setup(props, { slots }) {
@@ -158,7 +158,7 @@ export const XhPaginationEllipsisTrigger = defineComponent({
   },
 })
 
-/** 信息区：不写默认插槽时铺 api.summaryText */
+/** 信息区：未写默认插槽时铺设 api.summaryText */
 export const XhPaginationSummary = defineComponent({
   name: 'XhPaginationSummary',
   slots: Object as SlotsType<{
@@ -184,7 +184,7 @@ export const XhPaginationSummary = defineComponent({
   },
 })
 
-/** 跳页输入框：敲页码按回车即跳 */
+/** 跳页输入框：输入页码按回车即跳转 */
 export const XhPaginationJumper = defineComponent({
   name: 'XhPaginationJumper',
   setup() {
@@ -194,11 +194,11 @@ export const XhPaginationJumper = defineComponent({
 })
 
 /**
- * 每页条数控制器：装的是库里的 select，不再是原生下拉。
+ * 每页条数控制器：装配的是库内的 select，不再是原生下拉。
  *
- * 组合发生在这一层——连接层把整份 select 的 api 摆在 api.pageSizeSelect 上，
- * 这里照它铺角色节点（DOM 上带 data-scope="select"，吃的是 select 那份皮肤）。
- * 档位与档位文字都由连接层从 pageSizeOptions 与 translations.pageSizeOption 算好。
+ * 组合发生在这一层：连接层把整份 select 的 api 放在 api.pageSizeSelect 上，
+ * 这里据此铺设角色节点（DOM 上带 data-scope="select"，使用 select 的皮肤）。
+ * 档位与档位文字都由连接层从 pageSizeOptions 与 translations.pageSizeOption 计算。
  */
 export const XhPaginationPageSizeSelect = defineComponent({
   name: 'XhPaginationPageSizeSelect',

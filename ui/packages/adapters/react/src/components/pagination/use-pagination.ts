@@ -23,21 +23,21 @@ export interface PaginationContext {
   service: Service<PaginationSchema>
   /** 稳定的视觉来源：省略位尚未出现时，浮层壳仍从真实 Pagination 根继承局部轴。 */
   rootRef: RefObject<HTMLElement | null>
-  /** 摊开的那个省略位，定位锚点。 */
+  /** 展开的省略位，定位锚点。 */
   ellipsisRef: RefObject<HTMLElement | null>
   /** 被定位的浮层。 */
   positionerRef: RefObject<HTMLElement | null>
   /** 消解层节点。 */
   contentRef: RefObject<HTMLElement | null>
-  /** 此刻该不该渲染：退场动画播完之前仍为真。 */
+  /** 当前是否应当渲染：退场动画播完之前仍为真。 */
   visible: boolean
-  /** 浮层搬到哪儿：全局配置 > 运行时配置 > body。 */
+  /** 浮层迁移到的位置：全局配置 > 运行时配置 > body。 */
   portalContainer: () => Element | null
-  /** 每页条数那个下拉的触发器，它是那一层的定位锚点。 */
+  /** 每页条数下拉的触发器，它是该层的定位锚点。 */
   pageSizeTriggerRef: RefObject<HTMLElement | null>
   pageSizePositionerRef: RefObject<HTMLElement | null>
   pageSizeContentRef: RefObject<HTMLElement | null>
-  /** 下拉那一层此刻该不该渲染；与省略位那层各走各的闸门。 */
+  /** 下拉层当前是否应当渲染；与省略位层各自使用独立的闸门。 */
   pageSizeVisible: boolean
 }
 
