@@ -1,10 +1,12 @@
+import { cdp } from 'vitest/browser'
 import { afterEach, describe, expect, it } from 'vitest'
 import '@xihan-ui/tokens/tokens.css'
 import '@xihan-ui/styles'
 
 let host: HTMLElement | null = null
 
-afterEach(() => {
+afterEach(async () => {
+  await cdp().send('Emulation.setTouchEmulationEnabled', { enabled: false })
   host?.remove()
   host = null
 })
@@ -91,5 +93,29 @@ describe('carousel 默认视觉', () => {
     carousel.root.removeAttribute('data-autoplay')
     carousel.root.setAttribute('data-paused', '')
     expect(getComputedStyle(carousel.current, '::before').animationPlayState).toBe('paused')
+  })
+
+  it.each(['horizontal', 'vertical'] as const)('%s 粗指针分页划成不重叠的 44px 分区，短线视觉尺寸不变', async (orientation) => {
+    await cdp().send('Emulation.setTouchEmulationEnabled', { enabled: true, maxTouchPoints: 1 })
+    const carousel = mount(orientation)
+    const indicators = [...carousel.indicators.querySelectorAll<HTMLElement>('[data-part="indicator"]')]
+
+    expect(matchMedia('(pointer: coarse)').matches).toBe(true)
+    for (const indicator of indicators) {
+      const rect = indicator.getBoundingClientRect()
+      expect(rect.width).toBeGreaterThanOrEqual(44)
+      expect(rect.height).toBeGreaterThanOrEqual(44)
+    }
+
+    const [first, second] = indicators.map(indicator => indicator.getBoundingClientRect())
+    if (orientation === 'horizontal')
+      expect(first!.right).toBeLessThanOrEqual(second!.left)
+    else
+      expect(first!.bottom).toBeLessThanOrEqual(second!.top)
+
+    const currentMark = getComputedStyle(carousel.current, '::before')
+    expect([currentMark.width, currentMark.height]).toEqual(
+      orientation === 'horizontal' ? ['24px', '2px'] : ['2px', '24px'],
+    )
   })
 })

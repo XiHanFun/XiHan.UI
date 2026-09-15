@@ -6426,10 +6426,12 @@
         "indicator-group"
       ],
       "property": [
+        "background-size",
         "block-size",
         "inline-size"
       ],
       "state": [
+        "@media (pointer: coarse)",
         "current",
         "default",
         "orientation=vertical"
@@ -6438,7 +6440,7 @@
         "--xh-space-4"
       ],
       "visibility": "public",
-      "description": "carousel 的 indicator、indicator-group 部件 block-size、inline-size 覆盖槽。"
+      "description": "carousel 的 indicator、indicator-group 部件 background-size、block-size、inline-size 覆盖槽。"
     },
     {
       "name": "--xh-carousel-indicator-size-current",
@@ -6452,6 +6454,7 @@
         "inline-size"
       ],
       "state": [
+        "@media (pointer: coarse)",
         "current",
         "orientation=vertical"
       ],
@@ -6460,6 +6463,25 @@
       ],
       "visibility": "public",
       "description": "carousel 的 indicator、indicator-group 部件 block-size、inline-size 覆盖槽。"
+    },
+    {
+      "name": "--xh-carousel-indicator-target-size",
+      "component": "carousel",
+      "part": [
+        "indicator"
+      ],
+      "property": [
+        "min-block-size",
+        "min-inline-size"
+      ],
+      "state": [
+        "@media (pointer: coarse)"
+      ],
+      "defaultToken": [
+        "44px"
+      ],
+      "visibility": "public",
+      "description": "carousel 的 indicator 部件 min-block-size、min-inline-size 覆盖槽。"
     },
     {
       "name": "--xh-carousel-trigger-bg",
