@@ -1,4 +1,4 @@
-<!-- 预设色板 | swatches 给一组常用颜色，浮层里内嵌一台色块选择器：方向键在格子间走、按颜色比选中 -->
+<!-- 预设色板 | swatches 提供一组常用颜色，浮层中内嵌一台色块选择器：方向键在格子间移动、按颜色比较选中 -->
 <script setup lang="ts">
 import {
   XhColorPickerAreaThumb,
