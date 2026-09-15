@@ -123,7 +123,7 @@ export function XhTimeFieldRoot({
 XhTimeFieldRoot.xhEvents = ['value-change'] as const
 
 export interface XhTimeFieldLabelProps extends ComponentPropsWithRef<'label'> {}
-/** 仍用原生 label 保持表单语义，点标题聚焦第一段由连接层的 click 接管。 */
+/** 仍使用原生 label 保持表单语义，点击标题聚焦第一段由连接层的 click 接管。 */
 export function XhTimeFieldLabel({ children, ...rest }: XhTimeFieldLabelProps): ReactNode {
   const ctx = useTimeFieldContext()
   return <label {...mergeReactProps(ctx.api.getLabelProps() as Record<string, unknown>, rest as Record<string, unknown>)}>{children}</label>
@@ -145,7 +145,7 @@ export interface XhTimeFieldSegmentProps extends ComponentPropsWithRef<'span'> {
   /** 段的身份由作者声明。 */
   segment: TimeSegmentType
 }
-/** 有内容用内容，否则显示该段的文字，空段为占位串。 */
+/** 有内容时使用内容，否则显示该段的文字，空段为占位串。 */
 export function XhTimeFieldSegment({ segment, children, ...rest }: XhTimeFieldSegmentProps): ReactNode {
   const ctx = useTimeFieldContext()
   const api = ctx.api
@@ -159,7 +159,7 @@ export function XhTimeFieldSegment({ segment, children, ...rest }: XhTimeFieldSe
 }
 
 export interface XhTimeFieldClearTriggerProps extends ComponentPropsWithRef<'button'> {}
-/** 没写内容时由皮肤画兜底字形。 */
+/** 未写内容时由皮肤绘制兜底字形。 */
 export function XhTimeFieldClearTrigger({ children, ...rest }: XhTimeFieldClearTriggerProps): ReactNode {
   const ctx = useTimeFieldContext()
   return <button {...mergeReactProps(ctx.api.getClearTriggerProps() as Record<string, unknown>, rest as Record<string, unknown>)}>{children}</button>

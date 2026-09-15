@@ -123,23 +123,23 @@ tone 决定用哪族颜色，与 variant 正交；这里固定 subtle 形态，�
 
 | 属性 | 类型 | 必填 | 说明 |
 | --- | --- | --- | --- |
-| `value` | `string` |  | 受控值，ISO 时间串。给定即受控：cell 直读 prop，写只发 onValueChange 不落内部值。 |
+| `value` | `string` |  | 受控值，ISO 时间串。提供即受控：cell 直读 prop，写入只发 onValueChange 不落内部值。 |
 | `defaultValue` | `string` |  |  |
-| `min` | `string` |  | 下界（含）。只用来标注越界，不改写用户填进去的东西。 |
+| `min` | `string` |  | 下界（含）。只用于标注越界，不改写用户填写的内容。 |
 | `max` | `string` |  | 上界（含）。同上。 |
-| `locale` | `string` |  | BCP 47 语言标记。决定上午/下午的文字，以及未显式给 hourCycle 时的小时制。 |
-| `hourCycle` | `TimeHourCycle` |  | 小时制。不给则按 locale 推断，locale 也没有时用 24。 |
+| `locale` | `string` |  | BCP 47 语言标记。决定上午 / 下午的文字，以及未显式提供 hourCycle 时的小时制。 |
+| `hourCycle` | `TimeHourCycle` |  | 小时制。未提供时按 locale 推断，locale 也没有时使用 24。 |
 | `granularity` | `TimeGranularity` |  | 值精确到哪一段，默认 minute。 |
 | `disabled` | `boolean` |  | 禁用：段整体退出 Tab 序列、键盘一概不响应，隐藏输入不参与提交。 |
-| `readOnly` | `boolean` |  | 只读：仍可聚焦、可用左右键在段间走，但改不动值。 |
+| `readOnly` | `boolean` |  | 只读：仍可聚焦、可用左右键在段间移动，但不可修改值。 |
 | `invalid` | `boolean` |  | 校验失败标注。 |
-| `required` | `boolean` |  | 必填标注（落到每段的 aria-required 上）。 |
-| `name` | `string` |  | 表单字段名；给了隐藏输入才带 name，值随表单一并提交。 |
+| `required` | `boolean` |  | 必填标注（写入每段的 aria-required）。 |
+| `name` | `string` |  | 表单字段名；提供后隐藏输入才带 name，值随表单一并提交。 |
 | `placeholder` | `string` |  | 空段的占位字符（单字符），按段宽重复，默认 '-'。 |
-| `variant` | `ControlVariant` |  | 形态：outline / subtle / ghost，决定描边与底色怎么用。 |
-| `tone` | `Tone` |  | 语气：brand / neutral / success / warning / danger / info，决定聚焦与强调用哪族颜色。 |
+| `variant` | `ControlVariant` |  | 形态：outline / subtle / ghost，决定描边与底色的使用方式。 |
+| `tone` | `Tone` |  | 语气：brand / neutral / success / warning / danger / info，决定聚焦与强调使用哪族颜色。 |
 | `size` | `Size` |  | 尺寸：sm / md / lg。 |
-| `translations` | `Partial<TimeFieldTranslations>` |  | 段位读屏名的覆盖；不给就用内置英文语义名。 |
+| `translations` | `Partial<TimeFieldTranslations>` |  | 段位读屏名的覆盖；未提供时使用内置英文语义名。 |
 | `onValueChange` | `(details: TimeFieldValueChangeDetails) => void` |  |  |
 
 ### 事件
@@ -174,26 +174,26 @@ tone 决定用哪族颜色，与 variant 正交；这里固定 subtle 形态，�
 
 | 成员 | 类型 | 说明 |
 | --- | --- | --- |
-| `value` | `string` | ISO 时间串；任一必填段为空时是空串。 |
-| `empty` | `boolean` | 值为空串（还没填全）。作者据此点亮提交按钮或显示提示。 |
-| `outOfRange` | `boolean` | 已填全但落在 min/max 之外。只是标注，不改写值。 |
+| `value` | `string` | ISO 时间串；任一必填段为空时为空串。 |
+| `empty` | `boolean` | 值为空串（尚未填全）。作者据此启用提交按钮或显示提示。 |
+| `outOfRange` | `boolean` | 已填全但落在 min / max 之外。只是标注，不改写值。 |
 | `disabled` | `boolean` |  |
 | `readOnly` | `boolean` |  |
 | `invalid` | `boolean` |  |
 | `canClear` | `boolean` | 有值且可编辑（既不 disabled 也不 readOnly）；清空按钮据此显隐。 |
-| `hourCycle` | `TimeHourCycle` | 实际生效的小时制（prop 没给时由 locale 推出来的那个）。 |
+| `hourCycle` | `TimeHourCycle` | 实际生效的小时制（prop 未提供时由 locale 推断的值）。 |
 | `granularity` | `TimeGranularity` |  |
-| `segments` | `TimeSegmentType[]` | 此刻参与显示的段，文档序。未列入的段由 connect 打上 hidden 收起。 |
+| `segments` | `TimeSegmentType[]` | 当前参与显示的段，文档序。未列入的段由 connect 写上 hidden 收起。 |
 | `focusedSegment` | `TimeSegmentType \| null` | 焦点所在段；焦点在组外时为 null。 |
-| `getSegmentText` | `(props: TimeFieldSegmentProps) => string` | 某一段该显示的文字（空段是占位串）。两个适配器都拿它填文本，保证同构。 |
+| `getSegmentText` | `(props: TimeFieldSegmentProps) => string` | 某一段应显示的文字（空段是占位串）。各适配器都用它填充文本，保证同构。 |
 | `setValue` | `(next: string) => void` |  |
 | `clear` | `() => void` |  |
 | `getRootProps` | `() => T['element']` |  |
 | `getLabelProps` | `() => T['label']` |  |
 | `getControlProps` | `() => T['element']` |  |
-| `getSegmentGroupProps` | `() => T['element']` | 段位与分隔符的外壳：占满盒里剩下的宽度，把清空钮顶到框内末端。 |
+| `getSegmentGroupProps` | `() => T['element']` | 段位与分隔符的外壳：占满盒内剩余宽度，把清空按钮推到框内末端。 |
 | `getSegmentProps` | `(props: TimeFieldSegmentProps) => T['element']` |  |
-| `getClearTriggerProps` | `() => T['button']` | 清空按钮：有值才显形，不占 Tab 位，点完焦点回到第一段。 |
+| `getClearTriggerProps` | `() => T['button']` | 清空按钮：有值才显示，不占 Tab 位，点击后焦点回到第一段。 |
 | `getHiddenInputProps` | `() => T['input']` | 表单出口：一份 type=hidden 的原生输入，随表单提交 ISO 串。 |
 
 ## 无障碍

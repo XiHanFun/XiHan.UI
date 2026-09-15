@@ -33,39 +33,39 @@ function declaredSegment(el: HTMLElement, position: number): TimeSegmentType {
 }
 
 /**
- * `<xh-time-field>` —— Light-DOM 行为宿主：作者写 root/label/control/segment（多个）/clear-trigger/hidden-input
- * 角色节点，元素跑 time-field 机器并把 connect 产出打上去。
+ * `<xh-time-field>`：Light-DOM 行为宿主：作者写 root / label / control / segment（多个）/ clear-trigger / hidden-input
+ * 角色节点，元素运行 time-field 状态机并把 connect 产出接上。
  *
- * 每一段是一个 role=spinbutton 的展示节点：上下键加减、左右键换段、数字直输并自动跳段、
- * Backspace 清段；12 小时制下多出一个上午/下午段，可用上下键翻面或直接按 a/p。
+ * 每一段是一个 role=spinbutton 的展示节点：上下键加减、左右键换段、数字直接输入并自动跳段、
+ * Backspace 清段；12 小时制下多出一个上午 / 下午段，可用上下键切换或直接按 a/p。
  * 整组只占一个 Tab 位（roving tabindex）。完整的 ISO 串另由 hidden-input 随表单提交。
  *
- * 段上的文字由元素填（作者写不出"此刻该显示几点"）；作者自己写了内容的段一概不碰。
+ * 段上的文字由元素填入（作者无法预先确定应显示的时刻）；作者自行写了内容的段一概不修改。
  *
  * @customElement xh-time-field
- * @attr {string} value - 受控值，ISO 时间串（'13:45' / '13:45:30'）；缺省该属性即非受控
+ * @attr {string} value - 受控值，ISO 时间串（'13:45' / '13:45:30'）；未提供该属性即非受控
  * @attr {string} default-value - 非受控初值
- * @attr {string} min - 下界（含），只用来标注越界，不改写值
+ * @attr {string} min - 下界（含），只用于标注越界，不改写值
  * @attr {string} max - 上界（含），同上
- * @attr {string} locale - BCP 47 语言标记，决定上午/下午文字与默认小时制
- * @attr {'12'|'24'} hour-cycle - 小时制；不写则按 locale 推断，再没有就用 24
+ * @attr {string} locale - BCP 47 语言标记，决定上午 / 下午文字与默认小时制
+ * @attr {'12'|'24'} hour-cycle - 小时制；未提供时按 locale 推断，仍没有时使用 24
  * @attr {'hour'|'minute'|'second'} granularity - 值精确到哪一段，默认 minute
  * @attr {boolean} disabled - 禁用：整组退出 Tab 序列，隐藏输入不参与提交
- * @attr {boolean} read-only - 只读：仍可聚焦与换段，改不动值
+ * @attr {boolean} read-only - 只读：仍可聚焦与换段，不可修改值
  * @attr {boolean} invalid - 校验失败标注
- * @attr {boolean} required - 必填标注，落到每段的 aria-required 上
- * @attr {string} name - 表单字段名；给了隐藏输入才带 name
+ * @attr {boolean} required - 必填标注，写入每段的 aria-required
+ * @attr {string} name - 表单字段名；提供后隐藏输入才带 name
  * @attr {string} placeholder - 空段的占位字符（单字符），默认 '-'
  * @attr {'outline'|'subtle'|'ghost'} variant - 形态
  * @attr {'brand'|'neutral'|'success'|'warning'|'danger'|'info'} tone - 语气
  * @attr {'sm'|'md'|'lg'} size - 尺寸
  * @fires value-change - 值变化；detail 为 `{ value: string }`
  * @csspart root - 承载 data-disabled / data-readonly / data-invalid / data-empty / data-out-of-range 的容器
- * @csspart label - 标题；点它会把焦点送到第一段
+ * @csspart label - 标题；点击它把焦点送到第一段
  * @csspart control - role=group 的段容器，由 label 命名
- * @csspart segment-group - 段位与分隔符的外壳，占满盒里剩下的宽度
- * @csspart segment - 一段一个的 spinbutton，可自带 segment 属性声明身份，缺省按文档序
- * @csspart clear-trigger - 一键清空全部段的按钮；没值或改不动时收起，不占 Tab 位，点完焦点回到第一段
+ * @csspart segment-group - 段位与分隔符的外壳，占满盒内剩余宽度
+ * @csspart segment - 一段一个的 spinbutton，可自带 segment 属性声明身份，默认按文档序
+ * @csspart clear-trigger - 一键清空全部段的按钮；无值或不可修改时收起，不占 Tab 位，点击后焦点回到第一段
  * @csspart hidden-input - type=hidden 的表单出口，值是完整 ISO 串
  */
 export class XhTimeFieldElement extends XhElement {

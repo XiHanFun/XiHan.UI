@@ -16,7 +16,7 @@ import { useReactScope } from '../../runtime/react-id'
 import { useMachine } from '../../runtime/use-machine'
 
 export interface TimeFieldContext {
-  /** 机器实例，供部件上报 DOM 侧的事实。 */
+  /** 状态机实例，供部件上报 DOM 侧的事实。 */
   service: Service<TimeFieldSchema>
   api: TimeFieldApi
   /** 表单重置的锚点：接在根节点上。 */

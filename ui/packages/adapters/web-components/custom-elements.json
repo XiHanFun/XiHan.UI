@@ -53022,7 +53022,7 @@
       "declarations": [
         {
           "kind": "class",
-          "description": "`<xh-time-field>` —— Light-DOM 行为宿主：作者写 root/label/control/segment（多个）/clear-trigger/hidden-input\n角色节点，元素跑 time-field 机器并把 connect 产出打上去。\n\n每一段是一个 role=spinbutton 的展示节点：上下键加减、左右键换段、数字直输并自动跳段、\nBackspace 清段；12 小时制下多出一个上午/下午段，可用上下键翻面或直接按 a/p。\n整组只占一个 Tab 位（roving tabindex）。完整的 ISO 串另由 hidden-input 随表单提交。\n\n段上的文字由元素填（作者写不出\"此刻该显示几点\"）；作者自己写了内容的段一概不碰。",
+          "description": "`<xh-time-field>`：Light-DOM 行为宿主：作者写 root / label / control / segment（多个）/ clear-trigger / hidden-input\n角色节点，元素运行 time-field 状态机并把 connect 产出接上。\n\n每一段是一个 role=spinbutton 的展示节点：上下键加减、左右键换段、数字直接输入并自动跳段、\nBackspace 清段；12 小时制下多出一个上午 / 下午段，可用上下键切换或直接按 a/p。\n整组只占一个 Tab 位（roving tabindex）。完整的 ISO 串另由 hidden-input 随表单提交。\n\n段上的文字由元素填入（作者无法预先确定应显示的时刻）；作者自行写了内容的段一概不修改。",
           "name": "XhTimeFieldElement",
           "cssParts": [
             {
@@ -53030,7 +53030,7 @@
               "name": "root"
             },
             {
-              "description": "标题；点它会把焦点送到第一段",
+              "description": "标题；点击它把焦点送到第一段",
               "name": "label"
             },
             {
@@ -53038,15 +53038,15 @@
               "name": "control"
             },
             {
-              "description": "段位与分隔符的外壳，占满盒里剩下的宽度",
+              "description": "段位与分隔符的外壳，占满盒内剩余宽度",
               "name": "segment-group"
             },
             {
-              "description": "一段一个的 spinbutton，可自带 segment 属性声明身份，缺省按文档序",
+              "description": "一段一个的 spinbutton，可自带 segment 属性声明身份，默认按文档序",
               "name": "segment"
             },
             {
-              "description": "一键清空全部段的按钮；没值或改不动时收起，不占 Tab 位，点完焦点回到第一段",
+              "description": "一键清空全部段的按钮；无值或不可修改时收起，不占 Tab 位，点击后焦点回到第一段",
               "name": "clear-trigger"
             },
             {
@@ -53323,7 +53323,7 @@
               "type": {
                 "text": "string | undefined"
               },
-              "description": "受控值，ISO 时间串（'13:45' / '13:45:30'）；缺省该属性即非受控",
+              "description": "受控值，ISO 时间串（'13:45' / '13:45:30'）；未提供该属性即非受控",
               "name": "value",
               "fieldName": "value"
             },
@@ -53339,7 +53339,7 @@
               "type": {
                 "text": "string | undefined"
               },
-              "description": "下界（含），只用来标注越界，不改写值",
+              "description": "下界（含），只用于标注越界，不改写值",
               "name": "min",
               "fieldName": "min"
             },
@@ -53355,7 +53355,7 @@
               "type": {
                 "text": "string | undefined"
               },
-              "description": "BCP 47 语言标记，决定上午/下午文字与默认小时制",
+              "description": "BCP 47 语言标记，决定上午 / 下午文字与默认小时制",
               "name": "locale",
               "fieldName": "locale"
             },
@@ -53363,7 +53363,7 @@
               "type": {
                 "text": "TimeHourCycle | undefined"
               },
-              "description": "小时制；不写则按 locale 推断，再没有就用 24",
+              "description": "小时制；未提供时按 locale 推断，仍没有时使用 24",
               "name": "hour-cycle",
               "fieldName": "hourCycle"
             },
@@ -53387,7 +53387,7 @@
               "type": {
                 "text": "boolean | undefined"
               },
-              "description": "只读：仍可聚焦与换段，改不动值",
+              "description": "只读：仍可聚焦与换段，不可修改值",
               "name": "read-only",
               "fieldName": "readOnly"
             },
@@ -53403,7 +53403,7 @@
               "type": {
                 "text": "boolean | undefined"
               },
-              "description": "必填标注，落到每段的 aria-required 上",
+              "description": "必填标注，写入每段的 aria-required",
               "name": "required",
               "fieldName": "required"
             },
@@ -53411,7 +53411,7 @@
               "type": {
                 "text": "string | undefined"
               },
-              "description": "表单字段名；给了隐藏输入才带 name",
+              "description": "表单字段名；提供后隐藏输入才带 name",
               "name": "name",
               "fieldName": "name"
             },
