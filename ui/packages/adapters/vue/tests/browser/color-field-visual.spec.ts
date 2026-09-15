@@ -91,6 +91,24 @@ describe('颜色字段的盒与色块', () => {
     expect(input.value).toBe('tomato')
   })
 
+  it('输入与清空按钮聚焦时只由字段外壳画一圈', async () => {
+    await mountField()
+    const control = part('control')
+    const input = part('input') as HTMLInputElement
+    const clear = part('clear-trigger') as HTMLButtonElement
+
+    await userEvent.click(input)
+    expect(control.matches(':focus-within')).toBe(true)
+    expect(getComputedStyle(control).outlineStyle).toBe('solid')
+    expect(getComputedStyle(input).outlineStyle).toBe('none')
+
+    await userEvent.tab()
+    clear.focus()
+    expect(document.activeElement).toBe(clear)
+    expect(getComputedStyle(control).outlineStyle).toBe('solid')
+    expect(getComputedStyle(clear).outlineStyle).toBe('none')
+  })
+
   it('尺寸档同时换盒高与色块边长；清空后色块只剩棋盘格', async () => {
     await mountField({ size: 'lg' })
     expect(part('control').getBoundingClientRect().height).toBe(40)

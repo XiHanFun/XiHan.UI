@@ -109,11 +109,18 @@ describe('field Chrome 状态与字段内动作', () => {
     ]))
     const controls = [...host!.querySelectorAll<HTMLElement>('[data-xh-field-chrome]')]
     const ready = controls[0]!
+    const input = ready.querySelector<HTMLInputElement>('[data-xh-field-input]')!
+    const clear = ready.querySelector<HTMLButtonElement>('[data-xh-action-profile="field-inset"]')!
     const restBorder = getComputedStyle(ready).borderTopColor
     await userEvent.hover(ready)
     expect(getComputedStyle(ready).borderTopColor).not.toBe(restBorder)
-    await userEvent.click(ready.querySelector('input')!)
+    await userEvent.click(input)
     expect(getComputedStyle(ready).outlineStyle).toBe('solid')
+    expect(getComputedStyle(input).outlineStyle).toBe('none')
+    await userEvent.tab()
+    clear.focus()
+    expect(document.activeElement).toBe(clear)
+    expect(getComputedStyle(clear).outlineStyle).toBe('none')
     expect(getComputedStyle(controls[1]!).borderTopColor).not.toBe(restBorder)
     expect(getComputedStyle(controls[2]!).cursor).toBe('default')
     expect(getComputedStyle(controls[3]!).cursor).toBe('not-allowed')

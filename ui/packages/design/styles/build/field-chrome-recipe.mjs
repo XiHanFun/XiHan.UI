@@ -259,7 +259,8 @@ export function compileFieldChromeRecipe(source) {
     '    line-height: var(--xh-leading-normal);',
     '    text-align: start;',
   ].join('\n'))
-  rule('[data-xh-field-input]:focus-visible', '    outline: none;')
+  rule('[data-xh-field-chrome] [data-xh-field-input]:focus-visible', '    outline: none;')
+  rule('[data-xh-field-chrome] [data-xh-action-profile=\'field-inset\']:focus-visible', '    outline: none;')
   rule('[data-xh-field-input][data-disabled]', '    color: var(--xh-field-input-fg-disabled, var(--xh-fg-disabled));')
   rule('[data-xh-field-input]::placeholder', `    color: var(--xh-field-placeholder-fg, ${source.nativeInput.placeholderColor});`)
   rule('[data-xh-field-input][data-xh-field-layout=\'textarea\']', [
