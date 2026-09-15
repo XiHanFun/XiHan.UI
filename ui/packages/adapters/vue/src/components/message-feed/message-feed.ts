@@ -22,7 +22,7 @@ import { useMessageFeed } from './use-message-feed'
 
 type Props = MessageFeedSchema['props']
 
-/** 本条持有焦点时，id 变更重报锚点，卸载时上报整份消息流失焦 */
+/** 本条持有焦点时，id 变更重新报告锚点，卸载时上报整份消息流失焦 */
 function reportItemFocus(ctx: MessageFeedContext, el: Ref<HTMLElement | null>, id: () => string): void {
   watch(id, (next, prev) => {
     if (next === prev)

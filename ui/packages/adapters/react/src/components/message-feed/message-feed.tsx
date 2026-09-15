@@ -38,7 +38,7 @@ export type MessageFeedRootSlotProps = Pick<
   | 'focusItem'
 >
 
-/** 本条持有焦点时，id 变更重报锚点，卸载时上报整份消息流失焦。 */
+/** 本条持有焦点时，id 变更重新报告锚点，卸载时上报整份消息流失焦。 */
 function useItemFocusReport(
   service: Service<MessageFeedSchema>,
   el: RefObject<HTMLElement | null>,
@@ -68,17 +68,17 @@ function useItemFocusReport(
   }, [service, el])
 }
 
-/** 根上自有的那些取值。 */
+/** 根上自有的取值。 */
 type RootElementProps = Omit<ComponentPropsWithRef<'div'>, 'children'>
 
 export interface XhMessageFeedRootProps extends RootElementProps {
-  /** 消息总数，由宿主声明，不从 DOM 数；aria-setsize 取它。 */
+  /** 消息总数，由宿主声明，不从 DOM 计数；aria-setsize 取它。 */
   count?: number
-  /** 这一轮的运行态，只落 data-state。 */
+  /** 本轮的运行态，只写 data-state。 */
   status?: MessageFeedStatus
-  /** 距底多少 px 视为在底。 */
+  /** 距底部多少 px 视为在底部。 */
   threshold?: number
-  /** 走到首尾是否回绕，默认 false。 */
+  /** 到达首尾是否回绕，默认 false。 */
   loop?: boolean
   /** 尺寸：sm / md / lg。 */
   size?: Size
@@ -135,7 +135,7 @@ export function XhMessageFeedRoot({
 XhMessageFeedRoot.xhEvents = ['stick-change', 'item-focus'] as const
 
 export interface XhMessageFeedViewportProps extends ComponentPropsWithRef<'div'> {}
-/** 把视口节点交给机器，由粘底句柄监听滚动。 */
+/** 把视口节点交给状态机，由粘底句柄监听滚动。 */
 export function XhMessageFeedViewport({ children, ...rest }: XhMessageFeedViewportProps): ReactNode {
   const ctx = useMessageFeedContext()
   return (
@@ -152,7 +152,7 @@ export function XhMessageFeedViewport({ children, ...rest }: XhMessageFeedViewpo
 }
 
 export interface XhMessageFeedListProps extends ComponentPropsWithRef<'div'> {}
-/** 把内容节点交给机器，由粘底句柄观察尺寸；条目必须是它的直接子节点。 */
+/** 把内容节点交给状态机，由粘底句柄观察尺寸；条目必须是它的直接子节点。 */
 export function XhMessageFeedList({ children, ...rest }: XhMessageFeedListProps): ReactNode {
   const ctx = useMessageFeedContext()
   return (
@@ -169,13 +169,13 @@ export function XhMessageFeedList({ children, ...rest }: XhMessageFeedListProps)
 }
 
 export interface XhMessageFeedItemProps extends Omit<ComponentPropsWithRef<'article'>, 'id' | 'role'> {
-  /** 这条消息的身份，落成 data-value；导航与锚点都以它为准。 */
+  /** 该条消息的身份，写为 data-value；导航与锚点都以它为准。 */
   itemId: string
-  /** 0 基下标，落成 aria-posinset = index + 1。 */
+  /** 0 基下标，写为 aria-posinset = index + 1。 */
   itemIndex: number | string
-  /** 这条消息是谁说的。 */
+  /** 该条消息的发言者。 */
   itemRole?: MessageFeedItemRole
-  /** 这条还在流式写入。 */
+  /** 该条仍在流式写入。 */
   itemStreaming?: boolean
 }
 // 属性名一律带 item- 前缀：id 与 role 是 HTML 全局属性，落到节点上会与 role=article 打架
@@ -251,7 +251,7 @@ export function XhMessageFeedScrollToEndTrigger({ children, ...rest }: XhMessage
 }
 
 export interface XhMessageFeedLiveRegionProps extends ComponentPropsWithRef<'div'> {}
-/** 播报文本由宿主在一轮流结束时写进来。 */
+/** 播报文本由宿主在一轮流结束时写入。 */
 export function XhMessageFeedLiveRegion({ children, ...rest }: XhMessageFeedLiveRegionProps): ReactNode {
   const ctx = useMessageFeedContext()
   return (

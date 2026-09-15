@@ -19,7 +19,7 @@ type Props = MessageFeedSchema['props']
 
 export interface MessageFeedContext {
   api: ComputedRef<MessageFeedApi>
-  /** 机器实例，供部件上报 DOM 侧的事实（如条目卸载带走了焦点）。 */
+  /** 状态机实例，供部件上报 DOM 侧的事实（如条目卸载带走了焦点）。 */
   service: Service<MessageFeedSchema>
   /** 根节点，条目集合的归属容器。 */
   rootRef: Ref<HTMLElement | null>
