@@ -103,6 +103,7 @@ export const tokens = {
   "--xh-shadow-xl": "0 2px 4px -1px oklch(0.145 0.005 258 / 0.1), 0 12px 24px -6px oklch(0.145 0.005 258 / 0.12), 0 32px 64px -16px oklch(0.145 0.005 258 / 0.16)",
   "--xh-stroke-thin": "1px",
   "--xh-stroke-thick": "2px",
+  "--xh-stroke-strong": "3px",
   "--xh-z-sticky": "100",
   "--xh-z-modal": "1100",
   "--xh-z-popover": "1200",

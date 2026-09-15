@@ -31,7 +31,7 @@ function mount(radius: string) {
 }
 
 describe('image-cropper 把手视觉', () => {
-  it('边缘短条和角部折角只向裁切框内部绘制', () => {
+  it('边缘短条贴住裁切框边框，并与 resizable 使用相同的厚度和圆端', () => {
     const cropper = mount('12px')
     const cropRect = cropper.cropArea.getBoundingClientRect()
     const northRect = cropper.north.getBoundingClientRect()
@@ -42,18 +42,22 @@ describe('image-cropper 把手视觉', () => {
     const eastIndicator = getComputedStyle(cropper.east, '::after')
     const cornerIndicator = getComputedStyle(cropper.corner, '::after')
 
-    expect(northRect.top + northRect.height / 2).toBeCloseTo(
+    expect(northRect.top + Number.parseFloat(northIndicator.top)).toBeCloseTo(
       cropRect.top + Number.parseFloat(cropStyle.borderTopWidth),
       5,
     )
-    expect(eastRect.left + eastRect.width / 2).toBeCloseTo(
+    expect(eastRect.right - Number.parseFloat(eastIndicator.right)).toBeCloseTo(
       cropRect.right - Number.parseFloat(cropStyle.borderRightWidth),
       5,
     )
     expect(Number.parseFloat(northIndicator.inlineSize)).toBe(32)
-    expect(Number.parseFloat(northIndicator.blockSize)).toBe(2)
-    expect(Number.parseFloat(eastIndicator.inlineSize)).toBe(2)
+    expect(Number.parseFloat(northIndicator.blockSize)).toBe(3)
+    expect(Number.parseFloat(eastIndicator.inlineSize)).toBe(3)
     expect(Number.parseFloat(eastIndicator.blockSize)).toBe(32)
+    expect(northIndicator.borderRadius).toBe('9999px')
+    expect(eastIndicator.borderRadius).toBe('9999px')
+    expect(northIndicator.outlineStyle).toBe('none')
+    expect(eastIndicator.outlineStyle).toBe('none')
     expect(cornerRect.left + Number.parseFloat(cornerIndicator.inlineSize)).toBeCloseTo(
       cropRect.right - Number.parseFloat(cropStyle.borderRightWidth),
       5,

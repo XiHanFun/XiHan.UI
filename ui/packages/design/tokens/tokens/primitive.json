@@ -382,6 +382,10 @@
     "thick": {
       "$type": "dimension",
       "$value": "2px"
+    },
+    "strong": {
+      "$type": "dimension",
+      "$value": "3px"
     }
   },
   "z": {

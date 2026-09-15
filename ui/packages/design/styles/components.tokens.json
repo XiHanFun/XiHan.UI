@@ -30961,8 +30961,7 @@
       ],
       "property": [
         "background",
-        "border",
-        "outline"
+        "border"
       ],
       "state": [
         "default",
@@ -30976,7 +30975,7 @@
         "--xh-bg-surface"
       ],
       "visibility": "public",
-      "description": "image-cropper 的 crop-handle 部件 background、border、outline 覆盖槽。"
+      "description": "image-cropper 的 crop-handle 部件 background、border 覆盖槽。"
     },
     {
       "name": "--xh-image-cropper-handle-bg-hover",
@@ -30986,8 +30985,7 @@
       ],
       "property": [
         "background",
-        "border",
-        "outline"
+        "border"
       ],
       "state": [
         "disabled",
@@ -31004,7 +31002,7 @@
         "--xh-bg-brand-subtle-hover"
       ],
       "visibility": "public",
-      "description": "image-cropper 的 crop-handle 部件 background、border、outline 覆盖槽。"
+      "description": "image-cropper 的 crop-handle 部件 background、border 覆盖槽。"
     },
     {
       "name": "--xh-image-cropper-handle-bg-resizing",
@@ -31014,8 +31012,7 @@
       ],
       "property": [
         "background",
-        "border",
-        "outline"
+        "border"
       ],
       "state": [
         "is([data-position='nw'], [data-position='ne'], [data-position='sw'], [data-position='se'])",
@@ -31029,7 +31026,7 @@
         "--xh-bg-brand"
       ],
       "visibility": "public",
-      "description": "image-cropper 的 crop-handle 部件 background、border、outline 覆盖槽。"
+      "description": "image-cropper 的 crop-handle 部件 background、border 覆盖槽。"
     },
     {
       "name": "--xh-image-cropper-handle-border",
@@ -31038,11 +31035,9 @@
         "crop-handle"
       ],
       "property": [
-        "border",
-        "outline"
+        "border"
       ],
       "state": [
-        "default",
         "is([data-position='nw'], [data-position='ne'], [data-position='sw'], [data-position='se'])",
         "position=ne",
         "position=nw",
@@ -31053,7 +31048,7 @@
         "--xh-_image-cropper-handle-color"
       ],
       "visibility": "public",
-      "description": "image-cropper 的 crop-handle 部件 border、outline 覆盖槽。"
+      "description": "image-cropper 的 crop-handle 部件 border 覆盖槽。"
     },
     {
       "name": "--xh-image-cropper-handle-length",
@@ -31092,7 +31087,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-shape-circle"
+        "--xh-shape-pill"
       ],
       "visibility": "public",
       "description": "image-cropper 的 crop-handle 部件 border-radius 覆盖槽。"
@@ -31150,7 +31145,7 @@
         "position=w"
       ],
       "defaultToken": [
-        "--xh-stroke-thick"
+        "--xh-stroke-strong"
       ],
       "visibility": "public",
       "description": "image-cropper 的 crop-handle 部件 block-size、border-block-end-width、border-block-start-width、border-inline-end-width、border-inline-start-width、inline-size 覆盖槽。"
@@ -47832,20 +47827,22 @@
         "handle"
       ],
       "property": [
-        "inset"
+        "inset-block-end",
+        "inset-block-start",
+        "inset-inline-end",
+        "inset-inline-start"
       ],
       "state": [
         "edge=ne",
         "edge=nw",
         "edge=se",
-        "edge=sw",
-        "is([data-edge='ne'], [data-edge='nw'], [data-edge='se'], [data-edge='sw'])"
+        "edge=sw"
       ],
       "defaultToken": [
-        "--xh-space-1"
+        "0"
       ],
       "visibility": "public",
-      "description": "resizable 的 handle 部件 inset 覆盖槽。"
+      "description": "resizable 的 handle 部件 inset-block-end、inset-block-start、inset-inline-end、inset-inline-start 覆盖槽。"
     },
     {
       "name": "--xh-resizable-grip",
@@ -47980,7 +47977,7 @@
         "edge=w"
       ],
       "defaultToken": [
-        "--xh-space-0_5"
+        "0"
       ],
       "visibility": "public",
       "description": "resizable 的 handle 部件 inset-block-end、inset-block-start、inset-inline-end、inset-inline-start 覆盖槽。"
@@ -48036,7 +48033,7 @@
         "is([data-edge='n'], [data-edge='s'])"
       ],
       "defaultToken": [
-        "--xh-stroke-thick"
+        "--xh-stroke-strong"
       ],
       "visibility": "public",
       "description": "resizable 的 handle 部件 block-size、border-block-end-width、border-block-start-width、border-inline-end-width、border-inline-start-width、inline-size 覆盖槽。"
