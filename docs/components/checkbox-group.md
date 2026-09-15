@@ -97,19 +97,19 @@ primary 用于页面背景，secondary 用于卡片等已有表面
 
 | 属性 | 类型 | 必填 | 说明 |
 | --- | --- | --- | --- |
-| `collection` | `CheckboxGroupNode[]` |  | 条目数据，显示文本与禁用的事实源。给了它，条目部件只需报 value。 缺省即回到「文本与禁用都写在条目部件上」的老路。 |
-| `value` | `string[]` |  | 选中值集合。给定即受控：cell 直读 prop，写只发 onValueChange 不落内部值。 |
+| `collection` | `CheckboxGroupNode[]` |  | 条目数据，显示文本与禁用的事实源。提供后条目部件只需声明 value。 未提供时回到文本与禁用都写在条目部件上的方式。 |
+| `value` | `string[]` |  | 选中值集合。提供即受控：cell 直读 prop，写入只发 onValueChange 不落内部值。 |
 | `defaultValue` | `string[]` |  |  |
-| `itemValues` | `string[]` |  | 组内全部条目的值，按书写顺序声明；不给时 checkedState 退化成 unchecked / indeterminate 两态。 |
-| `disabled` | `boolean` |  | 整组禁用：每一项都跟着禁用，且隐藏输入不参与提交。 |
-| `readOnly` | `boolean` |  | 只读：仍可聚焦与朗读，但用户改不动。 |
-| `invalid` | `boolean` |  | 校验失败标注，落到每个条目的 aria-invalid 上。 |
-| `name` | `string` |  | 表单字段名；给定后每个条目的隐藏输入才带 name，同名多值一并提交。 |
-| `orientation` | `Orientation` |  | 视觉排布，默认 vertical。只出 data-orientation，不出 aria-orientation。 |
-| `tone` | `Tone` |  | 语气：brand / neutral / success / warning / danger / info，决定勾选方框用哪族颜色。 |
-| `variant` | `CheckboxVariant` |  | 视觉变体：primary / secondary。缺省 primary。 |
+| `itemValues` | `string[]` |  | 组内全部条目的值，按书写顺序声明；未提供时 checkedState 退化为 unchecked / indeterminate 两态。 |
+| `disabled` | `boolean` |  | 整组禁用：每一项随之禁用，且隐藏输入不参与提交。 |
+| `readOnly` | `boolean` |  | 只读：仍可聚焦与朗读，但用户不可修改。 |
+| `invalid` | `boolean` |  | 校验失败标注，写入每个条目的 aria-invalid。 |
+| `name` | `string` |  | 表单字段名；提供后每个条目的隐藏输入才带 name，同名多值一并提交。 |
+| `orientation` | `Orientation` |  | 视觉排布，默认 vertical。只输出 data-orientation，不输出 aria-orientation。 |
+| `tone` | `Tone` |  | 语气：brand / neutral / success / warning / danger / info，决定勾选方框使用哪族颜色。 |
+| `variant` | `CheckboxVariant` |  | 视觉变体：primary / secondary。默认 primary。 |
 | `size` | `Size` |  | 尺寸：sm / md / lg，决定方框与文字的几何档位。 |
-| `onValueChange` | `(details: CheckboxGroupValueChangeDetails) => void` |  | value 变化意图回调；受控时是唯一出口，非受控随内部写入一并通知。 |
+| `onValueChange` | `(details: CheckboxGroupValueChangeDetails) => void` |  | value 变化意图回调；受控时是唯一出口，非受控时随内部写入一并通知。 |
 
 ### 事件
 
@@ -152,21 +152,21 @@ primary 用于页面背景，secondary 用于卡片等已有表面
 | 成员 | 类型 | 说明 |
 | --- | --- | --- |
 | `value` | `string[]` |  |
-| `collection` | `readonly CheckboxGroupNodeMeta[]` | collection 推出的条目元信息，按数据顺序排列；没给 collection 即空数组。 |
+| `collection` | `readonly CheckboxGroupNodeMeta[]` | 由 collection 推导的条目元信息，按数据顺序排列；未提供 collection 时为空数组。 |
 | `checkedState` | `CheckboxGroupCheckedState` |  |
 | `disabled` | `boolean` |  |
 | `readOnly` | `boolean` |  |
 | `invalid` | `boolean` |  |
 | `isChecked` | `(value: string) => boolean` |  |
 | `setValue` | `(next: string[]) => void` | 整体替换选中集合。程序化入口，不受 readOnly 拦截。 |
-| `toggleValue` | `(value: string) => void` | 翻转某个值；整组禁用或只读时无效。 |
+| `toggleValue` | `(value: string) => void` | 切换某个值；整组禁用或只读时无效。 |
 | `getRootProps` | `() => T['element']` |  |
 | `getLabelProps` | `() => T['element']` |  |
 | `getItemProps` | `(props: CheckboxGroupItemProps) => T['element']` |  |
 | `getIndicatorProps` | `(props: CheckboxGroupItemProps) => T['element']` |  |
 | `getItemTextProps` | `(props: CheckboxGroupItemProps) => T['element']` |  |
 | `getHiddenInputProps` | `(props: CheckboxGroupItemProps) => T['input']` | 条目的表单影子：一份视觉隐藏的原生 checkbox，由条目内部渲染。 |
-| `getSelectAllTriggerProps` | `() => T['element']` | 全选/半选的父复选框。必须写在 root 之内，它靠祖先链找到本组。 |
+| `getSelectAllTriggerProps` | `() => T['element']` | 全选 / 半选的父复选框。必须写在 root 之内，它依靠祖先链找到本组。 |
 
 ## 无障碍
 

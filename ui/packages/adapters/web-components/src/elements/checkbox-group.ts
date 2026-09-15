@@ -27,24 +27,24 @@ const LIST_CONVERTER = {
 }
 
 /**
- * `<xh-checkbox-group>` —— Light-DOM 行为宿主：作者写 root/label 与若干 item 角色节点，
- * 每个 item 内自带 hidden-input/indicator/item-text，元素跑 checkbox-group 机器
- * 并把 connect 产出打上去。条目身份取自条目节点上的 value 属性。
+ * `<xh-checkbox-group>`：Light-DOM 行为宿主：作者写 root / label 与若干 item 角色节点，
+ * 每个 item 内自带 hidden-input / indicator / item-text，元素运行 checkbox-group 状态机
+ * 并把 connect 产出接上。条目身份取自条目节点上的 value 属性。
  *
- * 不做 roving tabindex：组内每一项都是独立的 Tab 停靠点（禁用项也保留），容器自己不占位。
+ * 不做 roving tabindex：组内每一项都是独立的 Tab 停靠点（禁用项也保留），容器自身不占位。
  *
  * @customElement xh-checkbox-group
- * @attr {string} value - 受控选中值，逗号分隔；缺省该属性即非受控
+ * @attr {string} value - 受控选中值，逗号分隔；未提供该属性即非受控
  * @attr {string} default-value - 非受控初始选中值，逗号分隔
  * @attr {string} item-values - 组内全部条目的值，逗号分隔；trigger 据此分辨全选与半选
  * @attr {boolean} disabled - 整组禁用
- * @attr {boolean} read-only - 只读：可聚焦可朗读，改不动
+ * @attr {boolean} read-only - 只读：可聚焦可朗读，不可修改
  * @attr {boolean} invalid - 校验失败标注
  * @attr {'horizontal'|'vertical'} orientation - 视觉排布，默认 vertical
  * @attr {'brand'|'neutral'|'success'|'warning'|'danger'|'info'} tone - 语气
  * @attr {'primary'|'secondary'} variant - 视觉变体；secondary 不绘制控制盒阴影
  * @attr {'sm'|'md'|'lg'} size - 尺寸
- * @attr {string} name - 表单字段名；给定后隐藏输入才带 name 并参与提交
+ * @attr {string} name - 表单字段名；提供后隐藏输入才带 name 并参与提交
  * @fires value-change - 选中值变化；detail 为 `{ value: string[] }`
  * @csspart root - role=group 容器
  * @csspart label - 组标题（aria-labelledby 目标）
@@ -52,7 +52,7 @@ const LIST_CONVERTER = {
  * @csspart indicator - 条目的视觉方框（对读屏隐藏）
  * @csspart item-text - 条目文本，条目的可及名来源
  * @csspart hidden-input - 条目的表单影子输入（必须是原生 input）
- * @csspart trigger - 全选/半选的父复选框，须写在 root 之内
+ * @csspart trigger - 全选 / 半选的父复选框，须写在 root 之内
  */
 export class XhCheckboxGroupElement extends XhElement {
   static override partContract = { anatomy: checkboxGroupAnatomy, meta: checkboxGroupMeta }
@@ -89,7 +89,7 @@ export class XhCheckboxGroupElement extends XhElement {
 
   /** 条目自身 disabled 声明的快照，整组禁用期间 DOM 上的 aria-disabled 不可信。 */
   private readonly declaredDisabled = new WeakMap<HTMLElement, boolean>()
-  /** 上一帧是否整组禁用；解禁当帧 DOM 上仍留着机器写回的 aria-disabled。 */
+  /** 上一帧是否整组禁用；解禁当帧 DOM 上仍保留着状态机写回的 aria-disabled。 */
   private wasGroupDisabled = false
 
   private readonly notify = (details: CheckboxGroupValueChangeDetails): void => {

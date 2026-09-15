@@ -23,7 +23,7 @@ import { useCheckboxGroup } from './use-checkbox-group'
 
 type CheckboxGroupProps = CheckboxGroupSchema['props']
 
-/** 函数式 children 的载荷：整组的选中集合与全选态，以及整体替换与翻转单值的方法。 */
+/** 函数式 children 的载荷：整组的选中集合与全选态，以及整体替换与切换单值的方法。 */
 export type CheckboxGroupRootSlotProps = Pick<
   CheckboxGroupApi,
   'value' | 'checkedState' | 'isChecked' | 'setValue' | 'toggleValue'
@@ -31,11 +31,11 @@ export type CheckboxGroupRootSlotProps = Pick<
 
 export interface XhCheckboxGroupRootProps extends Omit<ComponentPropsWithRef<'div'>, 'children'> {
   collection?: CheckboxGroupNode[]
-  /** 标题文字。给了它就不必再写 label 部件。 */
+  /** 标题文字。提供后不必再写 label 部件。 */
   label?: ReactNode
   value?: string[]
   defaultValue?: string[]
-  /** 组内全部条目的值；不给时全选格只在 unchecked 与 indeterminate 两态之间走。 */
+  /** 组内全部条目的值；未提供时全选格只在 unchecked 与 indeterminate 两态之间切换。 */
   itemValues?: string[]
   disabled?: boolean
   readOnly?: boolean
@@ -46,7 +46,7 @@ export interface XhCheckboxGroupRootProps extends Omit<ComponentPropsWithRef<'di
   variant?: CheckboxVariant
   size?: Size
   onValueChange?: CheckboxGroupProps['onValueChange']
-  /** 每个条目的自定义内容；不给就用 collection 里的 label。 */
+  /** 每个条目的自定义内容；未提供时使用 collection 中的 label。 */
   renderItem?: (node: CheckboxGroupNodeMeta) => ReactNode
   children?: SlotChildren<CheckboxGroupRootSlotProps>
 }
@@ -124,10 +124,10 @@ export function XhCheckboxGroupLabel({ children, ...rest }: XhCheckboxGroupLabel
 
 export interface XhCheckboxGroupItemProps extends Omit<ComponentPropsWithRef<'div'>, 'value'> {
   value: string
-  /** 缺省交给 connect 回 collection 里查，写死 false 会盖掉数据里的禁用。 */
+  /** 默认交给 connect 查询 collection，写死 false 会覆盖数据中的禁用。 */
   disabled?: boolean
 }
-/** 表单影子由条目自行装配，不暴露成独立部件：作者只写方框与文本。 */
+/** 表单影子由条目自行装配，不暴露为独立部件：作者只写方框与文本。 */
 export function XhCheckboxGroupItem({ value, disabled, children, ...rest }: XhCheckboxGroupItemProps): ReactNode {
   const ctx = useCheckboxGroupContext()
   const item = useMemo(() => ({ value, disabled }), [value, disabled])
@@ -147,7 +147,7 @@ export function XhCheckboxGroupItem({ value, disabled, children, ...rest }: XhCh
 }
 
 export interface XhCheckboxGroupIndicatorProps extends ComponentPropsWithRef<'span'> {}
-/** 方框本身对读屏隐藏，children 留给作者放对勾图形。 */
+/** 方框本身对读屏隐藏，children 留给作者放置勾选图形。 */
 export function XhCheckboxGroupIndicator({ children, ...rest }: XhCheckboxGroupIndicatorProps): ReactNode {
   const ctx = useCheckboxGroupContext()
   const item = useCheckboxGroupItemContext()
@@ -171,9 +171,9 @@ export function XhCheckboxGroupSelectAllTrigger({ children, ...rest }: XhCheckbo
 function noop(): void {}
 
 /**
- * 没写 children 时按 collection 铺开的整套结构，作者只交数据。
- * 与手写部件产出的 DOM 完全一致，要改结构就写 children，行为不变。
- * 全选把手不在其中：它是可选部件，要它就写 children。
+ * 未写 children 时按 collection 铺开的整套结构，作者只提供数据。
+ * 与手写部件产出的 DOM 完全一致，需要修改结构时写 children，行为不变。
+ * 全选控件不在其中：它是可选部件，需要时写 children。
  */
 function DefaultTree(props: {
   collection: readonly CheckboxGroupNodeMeta[]

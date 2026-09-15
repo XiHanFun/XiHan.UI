@@ -10,7 +10,7 @@ import type { CheckboxGroupContext } from './use-checkbox-group'
 import { createContext, useContext } from 'react'
 
 const Ctx = createContext<CheckboxGroupContext | undefined>(undefined)
-/** 条目自报的值与禁用，供 indicator / item-text 复用同一份声明。 */
+/** 条目声明的值与禁用，供 indicator / item-text 复用同一份声明。 */
 const ItemCtx = createContext<CheckboxGroupItemProps | undefined>(undefined)
 
 export const CheckboxGroupProvider = Ctx
