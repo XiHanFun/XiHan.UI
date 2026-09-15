@@ -1,4 +1,4 @@
-// 按行数定高 | rows 定的是「看得见几行」，一行有多高归皮肤，改 --xh-log-line-height 两边一起变
+// 按行数定高 | rows 决定可见几行，一行的高度归皮肤，修改 --xh-log-line-height 两者一起变化
 import type { CSSProperties, ReactNode } from "react";
 import { XhLogContent, XhLogLine, XhLogRoot, XhLogViewport } from "@xihan-ui/react";
 
