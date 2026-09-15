@@ -1,4 +1,4 @@
-<!-- 色板换色 | palette 直接按颜色点名，六个色板只换色阶满档那一端，分档与空格底都不动 -->
+<!-- 色板换色 | palette 直接按颜色指定，六个色板只更换色阶满档一端，分档与空格底色都不变 -->
 <script setup lang="ts">
 import type { HeatmapPalette } from "@xihan-ui/headless";
 import { XhHeatmapRoot } from "@xihan-ui/vue";

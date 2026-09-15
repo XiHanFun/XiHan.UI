@@ -1,4 +1,4 @@
-// 焦点明细 | 焦点落到某一天时报出日期与计数，键盘用户与鼠标用户看到同一份明细
+// 焦点明细 | 焦点落到某一天时报告日期与计数，键盘用户与鼠标用户看到同一份明细
 import type { ReactNode } from "react";
 import { XhHeatmapRoot } from "@xihan-ui/react";
 import { useState } from "react";

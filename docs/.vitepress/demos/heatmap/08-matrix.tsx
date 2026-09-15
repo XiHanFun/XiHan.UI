@@ -1,4 +1,4 @@
-// 矩阵形态 | 行列都由作者给，数据按行列定位而不按日期：星期 × 时段的活跃度
+// 矩阵形态 | 行列都由作者提供，数据按行列定位而不按日期：星期 × 时段的活跃度
 import type { CSSProperties, ReactNode } from "react";
 import { XhHeatmapRoot } from "@xihan-ui/react";
 

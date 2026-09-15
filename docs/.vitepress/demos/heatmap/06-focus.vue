@@ -1,4 +1,4 @@
-<!-- 焦点明细 | 焦点落到某一天时报出日期与计数，键盘用户与鼠标用户看到同一份明细 -->
+<!-- 焦点明细 | 焦点落到某一天时报告日期与计数，键盘用户与鼠标用户看到同一份明细 -->
 <script setup lang="ts">
 import { XhHeatmapRoot } from "@xihan-ui/vue";
 import { ref } from "vue";

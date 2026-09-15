@@ -1,4 +1,4 @@
-// 基础用法 | 一整年铺成周列 × 星期行的方格阵，颜色深浅表示当天数值落在第几档
+// 基础用法 | 一整年铺为周列 × 星期行的方格阵，颜色深浅表示当天数值所在的档位
 import type { HeatmapDatum } from "@xihan-ui/headless";
 import type { ReactNode } from "react";
 import { formatHeatmapDate } from "@xihan-ui/headless";
