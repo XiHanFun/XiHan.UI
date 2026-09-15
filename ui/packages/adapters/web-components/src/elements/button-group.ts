@@ -14,17 +14,17 @@ import { XhElement } from '../element-base'
 const BOOLEAN_CONVERTER = { fromAttribute: (value: string | null) => (value === null ? undefined : value !== 'false') }
 
 /**
- * `<xh-button-group>` —— Light-DOM 行为宿主，无状态机，把 connectButtonGroup 产出打到 root 角色节点。
+ * `<xh-button-group>`：Light-DOM 行为宿主，无状态机，把 connectButtonGroup 产出接到 root 角色节点。
  *
  * 组内每一段是作者自己的按钮，不是本组件的角色节点：三个视觉轴写在根上，
- * 皮肤把它们翻成 `--xh-button-*` 槽位，沿继承流给每一段。
+ * 皮肤把它们转换为 `--xh-button-*` 槽位，沿继承流下发给每一段。
  *
  * @customElement xh-button-group
- * @attr {'horizontal'|'vertical'} orientation - 排布，决定相邻两段在哪个轴上合边，默认 horizontal
- * @attr {'solid'|'subtle'|'outline'|'ghost'} variant - 变体，决定底色、描边与前景怎么用
+ * @attr {'horizontal'|'vertical'} orientation - 排布，决定相邻两段在哪个轴上合并边缘，默认 horizontal
+ * @attr {'solid'|'subtle'|'outline'|'ghost'} variant - 变体，决定底色、描边与前景的使用方式
  * @attr {'brand'|'neutral'|'success'|'warning'|'danger'|'info'} tone - 颜色
  * @attr {'sm'|'md'|'lg'} size - 尺寸，决定各段的高度、内边距与字号
- * @attr {boolean} disabled - 整组禁用：组内每一段都写上原生 disabled；段自己写了禁用的仍然禁用
+ * @attr {boolean} disabled - 整组禁用：组内每一段都写上原生 disabled；段自身声明禁用的仍然禁用
  * @attr {boolean} full-width - 撑满行宽，每段等分剩余空间
  * @attr {boolean} separators - 是否自动在相邻按钮之间生成分隔线，默认 true
  * @csspart root - 组容器，承载 role=group 与 data-orientation / data-variant / data-tone / data-size
@@ -138,7 +138,7 @@ export class XhButtonGroupElement extends XhElement {
 
   /**
    * 把整组的禁用落到每一段的原生 disabled 上。
-   * 只打 data-* 是假禁用——段照样可聚焦、照样派 click。
+   * 只写 data-* 是假禁用：段照样可聚焦、照样派发 click。
    * 分隔线不是段，跳过它。
    */
   private applyGroupDisabled(root: HTMLElement, groupDisabled: boolean, separators: readonly HTMLElement[]): void {

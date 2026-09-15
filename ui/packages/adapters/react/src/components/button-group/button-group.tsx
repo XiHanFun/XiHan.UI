@@ -16,12 +16,12 @@ import { reactNormalize } from '../../runtime/normalize-props'
 import { ButtonGroupDisabledProvider } from './context'
 
 export interface XhButtonGroupProps extends ComponentPropsWithRef<'div'> {
-  /** 排布：horizontal / vertical，决定相邻两段在哪个轴上合边。 */
+  /** 排布：horizontal / vertical，决定相邻两段在哪个轴上合并边缘。 */
   orientation?: 'horizontal' | 'vertical'
   variant?: ActionVariant
   tone?: Tone
   size?: Size
-  /** 整组禁用：组内每一段跟着禁用，段自己写了禁用的仍然禁用。 */
+  /** 整组禁用：组内每一段随之禁用，段自身写了禁用的仍然禁用。 */
   disabled?: boolean
   /** 撑满行宽：整组占满可用宽度，每段等分剩余空间。 */
   fullWidth?: boolean
@@ -60,7 +60,7 @@ function renderChildren(children: ReactNode, api: ReturnType<typeof connectButto
       ])
 }
 
-/** 一组连排的按钮：组内每一段是作者放进 children 的按钮，直接当直接子节点摆。 */
+/** 一组连排的按钮：组内每一段是作者放进 children 的按钮，直接作为直接子节点放置。 */
 export function XhButtonGroup({
   orientation,
   variant,
