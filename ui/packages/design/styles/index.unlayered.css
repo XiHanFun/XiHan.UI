@@ -8002,7 +8002,7 @@
   transition:
     background var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
     color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
-    scale var(--xh-motion-duration-micro) var(--xh-motion-ease-enter-strong);
+    scale var(--xh-motion-duration-release) var(--xh-motion-ease-release);
 
   --xh-_password-input-mark: var(--xh-glyph-mark-eye);
 }
@@ -8051,6 +8051,8 @@
 [data-scope='password-input'][data-part='visibility-trigger']:active:not(:disabled) {
   background: var(--xh-password-input-trigger-bg-active, var(--xh-bg-subtle-active));
   scale: var(--xh-motion-scale-press);
+  transition-duration: var(--xh-motion-duration-press);
+  transition-timing-function: var(--xh-motion-ease-press);
 }
 
 /* 不写 control 时它自成一件，落焦要有自己的环 */
