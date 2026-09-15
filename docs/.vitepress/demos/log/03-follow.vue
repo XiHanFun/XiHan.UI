@@ -1,4 +1,4 @@
-<!-- 自动跟到底部 | 新行进来时视口自己跟着走；往上滚一段就停住跟随，组件报出的 atBottom 与 scrollToBottom 够自己画一条回到最新 -->
+<!-- 自动跟随到底部 | 新行进入时视口自动跟随；向上滚动一段即停止跟随，组件报告的 atBottom 与 scrollToBottom 足以自行绘制一条回到最新 -->
 <script setup lang="ts">
 import { XhButton, XhLogContent, XhLogLine, XhLogRoot, XhLogViewport } from "@xihan-ui/vue";
 import { onUnmounted, ref } from "vue";

@@ -1,4 +1,4 @@
-// 换成自绘滚动条 | 视口给个 id，用滚动条的 controls 挂上去；条子浮在内容之上，不占宽度也不留空道
+// 换为自绘滚动条 | 视口提供一个 id，用滚动条的 controls 挂载；滚动条浮在内容之上，不占宽度也不留空道
 import type { ReactNode } from "react";
 import {
   XhLogContent,

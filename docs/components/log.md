@@ -12,7 +12,7 @@
 
 ## 用法
 
-root / viewport / content / line 四层；一行写什么由作者定，组件只给身份与等宽排版
+root / viewport / content / line 四层；一行写什么由作者决定，组件只提供身份与等宽排版
 
 <XhDemo src="log/01-basic" />
 
@@ -26,19 +26,19 @@ root / viewport / content / line 四层；一行写什么由作者定，组件�
 
 ### 按行数定高
 
-rows 定的是「看得见几行」，一行有多高归皮肤，改 --xh-log-line-height 两边一起变
+rows 决定可见几行，一行的高度归皮肤，修改 --xh-log-line-height 两者一起变化
 
 <XhDemo src="log/02-rows" />
 
-### 自动跟到底部
+### 自动跟随到底部
 
-新行进来时视口自己跟着走；往上滚一段就停住跟随，组件报出的 atBottom 与 scrollToBottom 够自己画一条回到最新
+新行进入时视口自动跟随；向上滚动一段即停止跟随，组件报告的 atBottom 与 scrollToBottom 足以自行绘制一条回到最新
 
 <XhDemo src="log/03-follow" />
 
 ### 取行中
 
-loading 让日志区报 aria-busy 并把指针换成忙碌态；「正在拉取」那一行是作者自己渲的
+loading 使日志区报告 aria-busy 并把指针换为忙碌态；正在拉取那一行由作者自行渲染
 
 <XhDemo src="log/04-loading" />
 
@@ -48,15 +48,15 @@ loading 让日志区报 aria-busy 并把指针换成忙碌态；「正在拉取�
 
 <XhDemo src="log/05-levels" />
 
-### 换成自绘滚动条
+### 换为自绘滚动条
 
-视口给个 id，用滚动条的 controls 挂上去；条子浮在内容之上，不占宽度也不留空道
+视口提供一个 id，用滚动条的 controls 挂载；滚动条浮在内容之上，不占宽度也不留空道
 
 <XhDemo src="log/06-scrollbar" />
 
 ### 回到底部与播报
 
-往上翻一段，右下角那颗钮自己冒出来，按下去归位并重新粘附；输出跑完在播报区念一句结论
+向上翻一段，右下角的按钮自动显示，按下后归位并重新粘附；输出结束后在播报区朗读一句结论
 
 <XhDemo src="log/07-scroll-button" />
 
