@@ -1,4 +1,4 @@
-// 基础用法 | 给 value 就画码，缺省 Code 128，任意 ASCII 都收；人读文字印在条下
+// 基础用法 | 提供 value 即绘制码，默认 Code 128，接受任意 ASCII；人读文字印在条下
 import type { ReactNode } from "react";
 import { XhBarCode } from "@xihan-ui/react";
 

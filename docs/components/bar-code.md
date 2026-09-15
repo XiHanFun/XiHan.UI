@@ -12,7 +12,7 @@
 
 ## 用法
 
-给 value 就画码，缺省 Code 128，任意 ASCII 都收；人读文字印在条下
+提供 value 即绘制码，默认 Code 128，接受任意 ASCII；人读文字印在条下
 
 <XhDemo src="bar-code/01-basic" />
 
@@ -26,13 +26,13 @@
 
 ### 码制
 
-零售商品用 EAN / UPC，外箱用 ITF-14，工业标签用 Code 39；定长数字码制的校验位可省，组件补上
+零售商品用 EAN / UPC，外箱用 ITF-14，工业标签用 Code 39；定长数字码制的校验位可省略，组件补齐
 
 <XhDemo src="bar-code/02-format" />
 
 ### GS1-128
 
-gs1 打开后起始符后放 FNC1；定长 AI 直接连写，变长 AI 后面用 GS（U+001D）隔开下一个
+gs1 开启后起始符后放置 FNC1；定长 AI 直接连写，变长 AI 后面用 GS（U+001D）与下一个隔开
 
 <XhDemo src="bar-code/03-gs1" />
 
@@ -44,13 +44,13 @@ barWidth 是最窄条的像素宽，整张码等比放大；height 只改条高�
 
 ### 人读文字
 
-text 关掉只剩条；EAN 的守卫条照规范比数据条长 5X，不随文字走
+text 关闭后只剩条；EAN 的守卫条按规范比数据条长 5X，不随文字变化
 
 <XhDemo src="bar-code/05-text" />
 
 ### 换色
 
-颜色不是 props，写两个 CSS 变量即可：条必须比底色深且对比要足，反相码扫不出来
+颜色不是 props，写两个 CSS 变量即可：条必须比底色深且对比充足，反相码无法扫描
 
 <XhDemo src="bar-code/06-color" />
 

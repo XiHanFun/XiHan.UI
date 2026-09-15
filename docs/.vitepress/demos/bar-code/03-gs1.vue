@@ -1,4 +1,4 @@
-<!-- GS1-128 | gs1 打开后起始符后放 FNC1；定长 AI 直接连写，变长 AI 后面用 GS（U+001D）隔开下一个 -->
+<!-- GS1-128 | gs1 开启后起始符后放置 FNC1；定长 AI 直接连写，变长 AI 后面用 GS（U+001D）与下一个隔开 -->
 <script setup lang="ts">
 import { BAR_FNC1_CHAR } from "@xihan-ui/headless";
 import { XhBarCode } from "@xihan-ui/vue";

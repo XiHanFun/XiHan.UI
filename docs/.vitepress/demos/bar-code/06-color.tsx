@@ -1,4 +1,4 @@
-// 换色 | 颜色不是 props，写两个 CSS 变量即可：条必须比底色深且对比要足，反相码扫不出来
+// 换色 | 颜色不是 props，写两个 CSS 变量即可：条必须比底色深且对比充足，反相码无法扫描
 import type { CSSProperties, ReactNode } from "react";
 import { XhBarCode } from "@xihan-ui/react";
 

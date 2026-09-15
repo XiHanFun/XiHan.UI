@@ -1,4 +1,4 @@
-<!-- 人读文字 | text 关掉只剩条；EAN 的守卫条照规范比数据条长 5X，不随文字走 -->
+<!-- 人读文字 | text 关闭后只剩条；EAN 的守卫条按规范比数据条长 5X，不随文字变化 -->
 <script setup lang="ts">
 import { XhBarCode } from "@xihan-ui/vue";
 </script>
