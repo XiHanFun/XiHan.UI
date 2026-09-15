@@ -25,6 +25,8 @@ export function connectPromptInput<T extends PropTypes>(
   const submitKey = prop('submitKey') ?? 'enter'
   const allowEmptySubmit = prop('allowEmptySubmit') === true
   const translations = prop('translations')
+  // 形态默认落 outline：不写时 root 如实投影，皮肤不再依赖缺省档
+  const variant = prop('variant') ?? 'outline'
 
   /**
    * 比机器守卫多一条「非禁用」：守卫管事件放不放行，这一份管按钮长什么样。
@@ -48,7 +50,7 @@ export function connectPromptInput<T extends PropTypes>(
       ...parts.root.attrs,
       'data-disabled': dataAttr(disabled),
       'data-loading': dataAttr(loading),
-      'data-variant': prop('variant'),
+      'data-variant': variant,
       'data-tone': prop('tone'),
       'data-size': prop('size'),
     }),

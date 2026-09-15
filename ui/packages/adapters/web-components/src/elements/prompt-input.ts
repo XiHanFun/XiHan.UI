@@ -36,7 +36,7 @@ const BOOLEAN_CONVERTER = { fromAttribute: (v: string | null) => (v === null ? u
  * @attr {'enter'|'mod-enter'|'none'} submit-key - 按哪一档提交，默认 enter；none 档键盘不提交
  * @attr {boolean} allow-empty-submit - 允许空值提交，默认关闭；有附件时置真
  * @attr {boolean} clear-on-submit - 提交后清空，默认开启；写 clear-on-submit="false" 关闭
- * @attr {string} variant - 形态：outline / subtle / ghost
+ * @attr {'outline'|'subtle'|'ghost'} variant - 形态：outline / subtle / ghost，默认 outline
  * @attr {string} tone - 语气
  * @attr {string} size - 尺寸：sm / md / lg
  * @fires value-change - 值变化；detail 为 `{ value: string }`

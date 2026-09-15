@@ -98,7 +98,7 @@ tone 切换聚焦描边与发送按钮使用哪族颜色，输入与提交链路
 - 同一个输入框上叠加了其他处理器且它已处理该按键时，组件让位。
 - 自动长高是两行 CSS，不进入状态机；引擎不支持时退化为 `rows` 决定的固定行数。
 - 两种排布同一份皮肤：直接把输入框与按钮放进 root 是单行；套一层输入行后 root 变为竖排，输入行上下两侧可以再放附件条与动作行。
-- 默认皮肤使用 M1 柔和实体面作为外壳；textarea 使用同配方的实体阅读底。
+- 默认形态是 outline：`--xh-bg-canvas` 底、`--xh-border-control` 描边，不画顶光与背景模糊；textarea 使用 M1 的实体阅读底。
 - 发送按钮留空时皮肤绘制兜底字形：发送身份为上箭头，停止身份为圆角方块；放入自定义图标或文案即覆盖。
 
 ### 组合
@@ -142,7 +142,7 @@ tone 切换聚焦描边与发送按钮使用哪族颜色，输入与提交链路
 | `submitKey` | `PromptInputSubmitKey` |  | 按哪一档提交，默认 enter。 |
 | `allowEmptySubmit` | `boolean` |  | 允许空值提交，默认 false；有附件时由作者置真。这是唯一为附件保留的钩子。 |
 | `clearOnSubmit` | `boolean` |  | 提交后清空，默认 true。 |
-| `variant` | `ControlVariant` |  |  |
+| `variant` | `ControlVariant` |  | 形态：outline / subtle / ghost，决定底色与描边的绘制方式。默认 outline。 |
 | `tone` | `Tone` |  |  |
 | `size` | `Size` |  |  |
 | `translations` | `Partial<PromptInputTranslations>` |  |  |
