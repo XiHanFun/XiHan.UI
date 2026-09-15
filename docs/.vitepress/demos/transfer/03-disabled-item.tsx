@@ -1,4 +1,4 @@
-// 条目禁用 | 禁用写在 items 上：勾不动也搬不动，但仍可聚焦、仍是方向键的起点
+// 条目禁用 | 禁用写在 items 上：不可勾选也不可移动，但仍可聚焦、仍是方向键的起点
 import type { ReactNode } from "react";
 import {
   XhTransferItem,

@@ -1,4 +1,4 @@
-// 单向搬运 | oneWay 把往回搬那条路整个封死，右侧不再接受勾选，往回的按钮也就不必写
+// 单向移动 | oneWay 把向回移动的路径整个封闭，右侧不再接受勾选，向回的按钮也不必编写
 import type { ReactNode } from "react";
 import {
   XhTransferItem,

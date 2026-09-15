@@ -1,4 +1,4 @@
-// 搜索过滤 | searchable 给每侧配一个搜索框，筛剩下的才参与方向键、全选与搬运
+// 搜索过滤 | searchable 为每侧配一个搜索框，筛选后剩余的才参与方向键、全选与移动
 import type { TransferItem } from "@xihan-ui/headless";
 import type { ReactNode } from "react";
 import {

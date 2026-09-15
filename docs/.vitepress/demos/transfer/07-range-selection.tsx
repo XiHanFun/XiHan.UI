@@ -1,4 +1,4 @@
-// 范围选 | 按住 Shift 点某一项，选中锚点到它那一段；锚点跨到另一侧时退化成普通勾选
+// 范围选择 | 按住 Shift 点击某一项，选中锚点到它的一段；锚点跨到另一侧时退化为普通勾选
 import type { ReactNode } from "react";
 import {
   XhTransferItem,
