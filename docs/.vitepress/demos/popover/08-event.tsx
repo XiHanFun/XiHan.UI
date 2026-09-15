@@ -1,4 +1,4 @@
-// 事件 | open-change 带一份 { open }，报的是这次要落到的状态；非受控时内部开合也照发一次
+// 事件 | open-change 带一份 { open }，报告的是本次要进入的状态；非受控时内部开合也照常触发一次
 import type { ReactNode } from "react";
 import {
   XhPopoverArrow,

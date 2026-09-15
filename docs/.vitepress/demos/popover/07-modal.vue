@@ -1,4 +1,4 @@
-<!-- 模态浮层 | modal 让焦点陷在浮层里：Tab 到末尾回绕，旁边那颗按钮这时接不到焦点 -->
+<!-- 模态浮层 | modal 使焦点限制在浮层内：Tab 到末尾回绕，旁边的按钮此时无法获得焦点 -->
 <script setup lang="ts">
 import {
   XhButton,

@@ -1,4 +1,4 @@
-<!-- 受控 | 传了 open 就由宿主说了算；这里额外关掉点外部关闭，只有按钮与 Escape 能收起 -->
+<!-- 受控 | 传入 open 后由宿主决定；这里额外关闭点击外部关闭，只有按钮与 Escape 能收起 -->
 <script setup lang="ts">
 import {
   XhButton,
