@@ -21818,7 +21818,7 @@
   padding-inline: var(--xh-date-picker-control-px, var(--xh-_date-picker-control-px));
   padding-block: 0;
   border: var(--xh-stroke-thin) solid var(--xh-date-picker-control-border, var(--xh-_date-picker-control-border));
-  border-radius: var(--xh-date-picker-control-radius, var(--xh-shape-surface));
+  border-radius: var(--xh-date-picker-control-radius, var(--xh-shape-control));
   outline: var(--xh-ring-width) solid transparent;
   outline-offset: var(--xh-ring-offset);
   background: var(--xh-date-picker-control-bg, var(--xh-_date-picker-control-bg));
@@ -21923,7 +21923,7 @@
   line-height: var(--xh-leading-none);
   cursor: pointer;
   user-select: none;
-  transition: background var(--xh-motion-duration-micro) var(--xh-motion-ease-enter), scale var(--xh-motion-duration-micro) var(--xh-motion-ease-enter-strong);
+  transition: background var(--xh-motion-duration-micro) var(--xh-motion-ease-enter), scale var(--xh-motion-duration-release) var(--xh-motion-ease-release);
 }
 
 [data-scope='date-picker'][data-part='trigger'][hidden],
@@ -21947,11 +21947,15 @@
 [data-scope='date-picker'][data-part='trigger']:active:not(:disabled) {
   background: var(--xh-date-picker-action-bg-active, var(--xh-bg-subtle-active));
   scale: var(--xh-motion-scale-press);
+  transition-duration: var(--xh-motion-duration-press);
+  transition-timing-function: var(--xh-motion-ease-press);
 }
 
 [data-scope='date-picker'][data-part='clear-trigger']:active {
   background: var(--xh-date-picker-action-bg-active, var(--xh-bg-subtle-active));
   scale: var(--xh-motion-scale-press);
+  transition-duration: var(--xh-motion-duration-press);
+  transition-timing-function: var(--xh-motion-ease-press);
 }
 
 /* 展开时按钮压一层底色，与浮层的存在互相印证 */
@@ -21987,7 +21991,7 @@
   padding-block: var(--xh-date-picker-content-py, var(--xh-space-2));
   padding-inline: var(--xh-date-picker-content-px, var(--xh-space-2));
   border: var(--xh-stroke-thin) solid var(--xh-date-picker-content-border, var(--xh-border-subtle));
-  border-radius: var(--xh-date-picker-content-radius, var(--xh-shape-surface));
+  border-radius: var(--xh-date-picker-content-radius, var(--xh-shape-overlay));
   background: var(--xh-date-picker-content-bg, var(--xh-bg-surface));
   color: var(--xh-date-picker-content-fg, var(--xh-fg-default));
   /* 日历是定高结构：六行日期加表头本来就有固定高度，上限走页内滚动面那一档；
@@ -22389,7 +22393,7 @@
   cursor: pointer;
   transition:
     background var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
-    scale var(--xh-motion-duration-micro) var(--xh-motion-ease-enter-strong);
+    scale var(--xh-motion-duration-release) var(--xh-motion-ease-release);
 }
 
 [data-scope='date-picker'][data-part='confirm-trigger']:hover {
@@ -22400,6 +22404,8 @@
 [data-scope='date-picker'][data-part='confirm-trigger']:active {
   background: var(--xh-date-picker-confirm-trigger-bg-active, var(--xh-_date-picker-accent-active));
   scale: var(--xh-motion-scale-press);
+  transition-duration: var(--xh-motion-duration-press);
+  transition-timing-function: var(--xh-motion-ease-press);
 }
 
 /* 面是实心的，环色与面同族，画在面里就看不出来；环改取面自己的前景色——
