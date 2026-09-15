@@ -68,7 +68,7 @@ export interface PinInputSchema extends MachineSchema {
     blurOnComplete?: boolean
     /** 表单字段名；提供后隐藏输入才带 name，整串值随表单一并提交。 */
     name?: string
-    /** 形态：outline / subtle / ghost，决定颜色的使用方式。 */
+    /** 形态：outline / subtle / ghost，决定底色与描边的绘制方式。默认 outline。 */
     variant?: ControlVariant
     /** 语气：brand / neutral / success / warning / danger / info，决定使用哪族颜色。 */
     tone?: Tone

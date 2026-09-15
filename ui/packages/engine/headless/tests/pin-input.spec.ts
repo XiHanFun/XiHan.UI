@@ -375,6 +375,11 @@ describe('connectPinInput 属性输出', () => {
     expect(m.hidden.value).toBe('12')
   })
 
+  it('不写 variant 时 root 落 outline；写 subtle 如实落', () => {
+    expect(open({ length: 2 }).root.getAttribute('data-variant')).toBe('outline')
+    expect(open({ length: 2, variant: 'subtle' }).root.getAttribute('data-variant')).toBe('subtle')
+  })
+
   it('otp=true 补 one-time-code，否则明确关掉自动填充', () => {
     expect(open({ length: 2, otp: true }).boxes[0]!.getAttribute('autocomplete')).toBe('one-time-code')
     expect(open({ length: 2 }).boxes[0]!.getAttribute('autocomplete')).toBe('off')

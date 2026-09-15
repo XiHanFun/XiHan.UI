@@ -55,7 +55,7 @@ function declaredIndex(el: HTMLElement, position: number): number {
  * @attr {boolean} invalid - 校验失败标注
  * @attr {boolean} blur-on-complete - 填满即移走焦点
  * @attr {string} name - 表单字段名；提供后隐藏输入才带 name
- * @attr {'outline'|'subtle'|'ghost'} variant - 视觉变体
+ * @attr {'outline'|'subtle'|'ghost'} variant - 形态：outline / subtle / ghost，默认 outline
  * @attr {'brand'|'neutral'|'success'|'warning'|'danger'|'info'} tone - 语气
  * @attr {'sm'|'md'|'lg'} size - 尺寸
  * @fires value-change - 值变化；detail 为 `{ value: string[], valueAsString: string }`
