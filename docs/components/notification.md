@@ -12,7 +12,7 @@
 
 ## 用法
 
-create 入队并返回 id，队列里的每条由作者渲染成一条通知；退场窗口走完只收起不删，宿主在 status-change 里把它移出队列
+create 入队并返回 id，队列中的每条由作者渲染为一条通知；退场窗口结束后只收起不删除，宿主在 status-change 中把它移出队列
 
 <XhDemo src="notification/01-basic" />
 
@@ -26,31 +26,31 @@ create 入队并返回 id，队列里的每条由作者渲染成一条通知；�
 
 ### 落位
 
-placement 决定这一摞贴视口的哪个角，换的只是 group 上的 data-placement，队列本身不动
+placement 决定该堆叠贴视口的哪个角，更换的只是 group 上的 data-placement，队列本身不变
 
 <XhDemo src="notification/02-placement" />
 
 ### 就地改写
 
-同一个 id 再 create 一次是原地改写而不是新弹一条，位置不动；loading 不自动消失，换成 success 才开始倒计时
+同一个 id 再次 create 是原地改写而不是新弹出一条，位置不变；loading 不自动消失，换为 success 后才开始倒计时
 
 <XhDemo src="notification/03-update" />
 
 ### 上限与清空
 
-max 限制每个位置同时显示几条，超出挤掉最旧的；dismissAll 把队列直接倒掉，不走退场窗口
+max 限制每个位置同时显示几条，超出时移除最旧的；dismissAll 直接清空队列，不经退场窗口
 
 <XhDemo src="notification/04-max" />
 
-### 手动收走
+### 手动关闭
 
-create 返回的就是队列身份 id，存下来随时 dismiss 掉那一条；dismiss 直接移出队列，不走退场窗口
+create 返回的就是队列身份 id，保存后可随时 dismiss 该条；dismiss 直接移出队列，不经退场窗口
 
 <XhDemo src="notification/05-manual-dismiss" />
 
 ### 逐条落位
 
-单条通知自带 placement 就盖掉 notification 的默认落位；placements 报出眼下有条目的位置，一个位置一摞
+单条通知自带 placement 即覆盖 notification 的默认落位；placements 报告当前有条目的位置，一个位置一个堆叠
 
 <XhDemo src="notification/06-per-item-placement" />
 

@@ -1,4 +1,4 @@
-// 上限与清空 | max 限制每个位置同时显示几条，超出挤掉最旧的；dismissAll 把队列直接倒掉，不走退场窗口
+// 上限与清空 | max 限制每个位置同时显示几条，超出时移除最旧的；dismissAll 直接清空队列，不经退场窗口
 import type { ReactNode } from "react";
 import {
   XhButton,

@@ -1,4 +1,4 @@
-// 逐条落位 | 单条通知自带 placement 就盖掉 notification 的默认落位；placements 报出眼下有条目的位置，一个位置一摞
+// 逐条落位 | 单条通知自带 placement 即覆盖 notification 的默认落位；placements 报告当前有条目的位置，一个位置一个堆叠
 import type { NotificationOptions, NotificationPlacement } from "@xihan-ui/headless";
 import type { ReactNode } from "react";
 import {

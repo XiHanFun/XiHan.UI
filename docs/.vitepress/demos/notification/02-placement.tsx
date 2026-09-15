@@ -1,4 +1,4 @@
-// 落位 | placement 决定这一摞贴视口的哪个角，换的只是 group 上的 data-placement，队列本身不动
+// 落位 | placement 决定该堆叠贴视口的哪个角，更换的只是 group 上的 data-placement，队列本身不变
 import type { ReactNode } from "react";
 import {
   XhButton,
