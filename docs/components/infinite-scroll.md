@@ -12,7 +12,7 @@
 
 ## 用法
 
-哨兵滚进可视区就派 load，取完把 loading 写回 false
+哨兵滚进可视区即派发 load，取数完成后把 loading 写回 false
 
 <XhDemo src="infinite-scroll/01-basic" />
 
@@ -26,25 +26,25 @@
 
 ### 提前量
 
-distance 把可视区沿块轴向外扩，哨兵还没露头就先取下一页
+distance 把可视区沿块轴向外扩展，哨兵尚未出现就先取下一页
 
 <XhDemo src="infinite-scroll/02-distance" />
 
-### 取到没有了
+### 没有更多数据
 
-最后一页取完把 disabled 打开，哨兵不再被观察，load 也不再派
+最后一页取完后开启 disabled，哨兵不再被观察，load 也不再派发
 
 <XhDemo src="infinite-scroll/03-disabled" />
 
 ### 状态透出
 
-phase / loading / disabled 由组件交给宿主，加载提示与结束语都由宿主自己摆
+phase / loading / disabled 由组件交给宿主，加载提示与结束语都由宿主自行放置
 
 <XhDemo src="infinite-scroll/04-slot-state" />
 
 ### 取下一页的按钮
 
-与哨兵同一条通路：读屏在虚拟光标模式下不产生滚动事件，这颗按钮是它的键盘等价入口
+与哨兵同一条通路：读屏在虚拟光标模式下不产生滚动事件，该按钮是它的键盘等价入口
 
 <XhDemo src="infinite-scroll/05-load-more" />
 

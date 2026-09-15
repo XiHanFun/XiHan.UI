@@ -1,4 +1,4 @@
-// 取到没有了 | 最后一页取完把 disabled 打开，哨兵不再被观察，load 也不再派
+// 没有更多数据 | 最后一页取完后开启 disabled，哨兵不再被观察，load 也不再派发
 import type { ReactNode } from "react";
 import { XhInfiniteScrollRoot, XhInfiniteScrollSentinel } from "@xihan-ui/react";
 import { useState } from "react";
