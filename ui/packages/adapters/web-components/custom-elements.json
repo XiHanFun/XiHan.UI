@@ -8957,6 +8957,9 @@
               "name": "--xh-collapsible-trigger-fg"
             },
             {
+              "name": "--xh-collapsible-trigger-fg-disabled"
+            },
+            {
               "name": "--xh-collapsible-trigger-fg-open"
             },
             {

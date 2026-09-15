@@ -18101,7 +18101,7 @@
   cursor: pointer;
   transition:
     background var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
-    scale var(--xh-motion-duration-micro) var(--xh-motion-ease-enter-strong);
+    scale var(--xh-motion-duration-release) var(--xh-motion-ease-release);
 }
 
 [data-scope='collapsible'][data-part='trigger']:not([data-disabled]):not([data-state='open']):hover {
@@ -18111,6 +18111,8 @@
 /* 按下去要有回应：整条按钮轻微下压，松手即弹回 */
 [data-scope='collapsible'][data-part='trigger']:not([data-disabled]):active {
   scale: var(--xh-motion-scale-press);
+  transition-duration: var(--xh-motion-duration-press);
+  transition-timing-function: var(--xh-motion-ease-press);
 }
 
 /* 展开着的那一档单开一个槽：与常态共用一个的话，作者一改常态字色就把展开态也改掉了 */
@@ -18118,8 +18120,10 @@
   color: var(--xh-collapsible-trigger-fg-open, var(--xh-_collapsible-open-fg));
 }
 
+/* 禁用前景换成禁用色，不靠 opacity 压暗 */
 [data-scope='collapsible'][data-part='trigger'][data-disabled] {
-  opacity: var(--xh-state-disabled-opacity);
+  color: var(--xh-collapsible-trigger-fg-disabled, var(--xh-fg-disabled));
+  cursor: not-allowed;
 }
 
 /* 开合方向的标记，排在触发器行尾（触发器是 space-between 两端对齐） */
