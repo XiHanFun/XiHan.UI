@@ -590,6 +590,7 @@ export type ComponentTokenName =
   | '--xh-collapsible-trigger-bg'
   | '--xh-collapsible-trigger-bg-hover'
   | '--xh-collapsible-trigger-fg'
+  | '--xh-collapsible-trigger-fg-disabled'
   | '--xh-collapsible-trigger-fg-open'
   | '--xh-collapsible-trigger-font-size'
   | '--xh-collapsible-trigger-font-weight'

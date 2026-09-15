@@ -11093,6 +11093,24 @@
       "description": "collapsible 的 trigger 部件 color 覆盖槽。"
     },
     {
+      "name": "--xh-collapsible-trigger-fg-disabled",
+      "component": "collapsible",
+      "part": [
+        "trigger"
+      ],
+      "property": [
+        "color"
+      ],
+      "state": [
+        "disabled"
+      ],
+      "defaultToken": [
+        "--xh-fg-disabled"
+      ],
+      "visibility": "public",
+      "description": "collapsible 的 trigger 部件 color 覆盖槽。"
+    },
+    {
       "name": "--xh-collapsible-trigger-fg-open",
       "component": "collapsible",
       "part": [
