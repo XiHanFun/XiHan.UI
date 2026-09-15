@@ -12,7 +12,7 @@
 
 ## 用法
 
-渲染成 &lt;time datetime>：文本给人看，datetime 给机器读，两者取自同一个墙钟
+渲染为 &lt;time datetime>：文本供人阅读，datetime 供机器读取，两者取自同一个墙钟
 
 <XhDemo src="timestamp/01-basic" />
 
@@ -26,19 +26,19 @@
 
 ### 呈现方式
 
-date 只到日、datetime 到秒、relative 说成「几分钟前」；datetime 属性的精度跟着走
+date 只到日、datetime 到秒、relative 表述为几分钟前等相对说法；datetime 属性的精度随之变化
 
 <XhDemo src="timestamp/02-type" />
 
 ### 自定义格式串
 
-记号是 YYYY / YY / MM / M / DD / D / HH / H / mm / m / ss / s，只改看到的文本，datetime 不跟着变
+记号是 YYYY / YY / MM / M / DD / D / HH / H / mm / m / ss / s，只改变看到的文本，datetime 不随之变化
 
 <XhDemo src="timestamp/03-format" />
 
 ### 相对时间
 
-just now / n minutes ago 四档，超过三十天退回绝对日期；locale 只换用词，不给则跟随浏览器语言
+just now / n minutes ago 四档，超过三十天退回绝对日期；locale 只更换用词，未提供时跟随浏览器语言
 
 <XhDemo src="timestamp/04-relative" />
 

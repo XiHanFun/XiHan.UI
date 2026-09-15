@@ -1,4 +1,4 @@
-<!-- 基础用法 | 渲染成 <time datetime>：文本给人看，datetime 给机器读，两者取自同一个墙钟 -->
+<!-- 基础用法 | 渲染为 <time datetime>：文本供人阅读，datetime 供机器读取，两者取自同一个墙钟 -->
 <script setup lang="ts">
 import { XhTimestamp } from "@xihan-ui/vue";
 

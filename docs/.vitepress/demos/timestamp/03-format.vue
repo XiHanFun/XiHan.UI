@@ -1,4 +1,4 @@
-<!-- 自定义格式串 | 记号是 YYYY / YY / MM / M / DD / D / HH / H / mm / m / ss / s，只改看到的文本，datetime 不跟着变 -->
+<!-- 自定义格式串 | 记号是 YYYY / YY / MM / M / DD / D / HH / H / mm / m / ss / s，只改变看到的文本，datetime 不随之变化 -->
 <script setup lang="ts">
 import { XhTimestamp } from "@xihan-ui/vue";
 
