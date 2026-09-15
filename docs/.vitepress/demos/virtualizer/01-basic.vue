@@ -1,4 +1,4 @@
-<!-- 基础用法 | 一万条只渲可视区那几条，root 要有确定高度，条目的主轴尺寸由作者按 estimateSize 自己写 -->
+<!-- 基础用法 | 一万条只渲染可视区内的几条，root 要有确定高度，条目的主轴尺寸由作者按 estimateSize 自行编写 -->
 <script setup lang="ts">
 import {
   XhVirtualizerContent,

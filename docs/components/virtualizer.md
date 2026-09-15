@@ -12,7 +12,7 @@
 
 ## 用法
 
-一万条只渲可视区那几条，root 要有确定高度，条目的主轴尺寸由作者按 estimateSize 自己写
+一万条只渲染可视区内的几条，root 要有确定高度，条目的主轴尺寸由作者按 estimateSize 自行编写
 
 <XhDemo src="virtualizer/01-basic" />
 
@@ -26,31 +26,31 @@
 
 ### 动态高度
 
-条目开了 measure 就把真实尺寸回喂给内核，estimateSize 只是首帧的起点，滚过一遍就收敛
+条目开启 measure 后把真实尺寸回传给内核，estimateSize 只是首帧的起点，滚动一遍后即收敛
 
 <XhDemo src="virtualizer/02-dynamic" />
 
-### 滚到指定条目
+### 滚动到指定条目
 
-scrollToIndex 按 align 落位：start 贴上沿、center 居中、end 贴下沿，越界下标由内核夹住
+scrollToIndex 按 align 落位：start 贴上沿、center 居中、end 贴下沿，越界下标由内核夹取
 
 <XhDemo src="virtualizer/03-scroll-to" />
 
 ### 横向列表
 
-horizontal 把主轴换成行内轴：位移改写进行首侧，条目宽度由作者写，gap 由内核直接算进位移
+horizontal 把主轴换为行内轴：位移改写进行首侧，条目宽度由作者编写，gap 由内核直接计入位移
 
 <XhDemo src="virtualizer/04-horizontal" />
 
-### 挂自绘滚动条
+### 挂载自绘滚动条
 
-滚动容器是视口，给它一个 id 交给滚动条即可；虚拟滚动只管渲哪几条，滚动条只管画滚动位置
+滚动容器是视口，提供一个 id 交给滚动条即可；虚拟滚动只管理渲染哪几条，滚动条只负责绘制滚动位置
 
 <XhDemo src="virtualizer/05-scrollbar" />
 
-### 与无限滚动合成一条长列表
+### 与无限滚动组成一条长列表
 
-哨兵摆在内容层之后而不是条目之间：窗口外的条目根本没渲染，摆进去的哨兵永远进不了可视区
+哨兵放置在内容层之后而不是条目之间：窗口外的条目根本没有渲染，放在其中的哨兵永远无法进入可视区
 
 <XhDemo src="virtualizer/06-composed" />
 

@@ -1,4 +1,4 @@
-<!-- 挂自绘滚动条 | 滚动容器是视口，给它一个 id 交给滚动条即可；虚拟滚动只管渲哪几条，滚动条只管画滚动位置 -->
+<!-- 挂载自绘滚动条 | 滚动容器是视口，提供一个 id 交给滚动条即可；虚拟滚动只管理渲染哪几条，滚动条只负责绘制滚动位置 -->
 <xh-virtualizer id="virtualizer-scrollbar" count="10000" estimate-size="36">
   <div data-xh-part="root" style="block-size: 260px; inline-size: 100%; max-inline-size: 420px">
     <!-- 视口给个 id，滚动条按 controls 找到它；挂上后原生滚动条自动藏起来 -->

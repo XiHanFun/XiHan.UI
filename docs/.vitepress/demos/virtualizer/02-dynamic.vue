@@ -1,4 +1,4 @@
-<!-- 动态高度 | 条目开了 measure 就把真实尺寸回喂给内核，estimateSize 只是首帧的起点，滚过一遍就收敛 -->
+<!-- 动态高度 | 条目开启 measure 后把真实尺寸回传给内核，estimateSize 只是首帧的起点，滚动一遍后即收敛 -->
 <script setup lang="ts">
 import {
   XhVirtualizerContent,

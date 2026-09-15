@@ -1,4 +1,4 @@
-<!-- 横向列表 | horizontal 把主轴换成行内轴：位移改写进行首侧，条目宽度由作者写，gap 由内核直接算进位移 -->
+<!-- 横向列表 | horizontal 把主轴换为行内轴：位移改写进行首侧，条目宽度由作者编写，gap 由内核直接计入位移 -->
 <script setup lang="ts">
 import {
   XhVirtualizerContent,
