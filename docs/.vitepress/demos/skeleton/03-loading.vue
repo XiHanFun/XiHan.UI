@@ -1,4 +1,4 @@
-<!-- 加载结束 | loading 期间容器报 aria-busy，翻成 false 后整块收起，位置让给真内容 -->
+<!-- 加载结束 | loading 期间容器报告 aria-busy，切换为 false 后整块收起，位置让给真实内容 -->
 <script setup lang="ts">
 import { XhSkeletonItem, XhSkeletonRoot } from "@xihan-ui/vue";
 import { ref } from "vue";

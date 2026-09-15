@@ -26,13 +26,13 @@
 
 ### 形状
 
-容器的 shape 是这一组的默认形状，单根骨架条自带 shape 就按自己的来
+容器的 shape 是该组的默认形状，单根骨架条自带 shape 时按自己的形状
 
 <XhDemo src="skeleton/02-variant" />
 
 ### 加载结束
 
-loading 期间容器报 aria-busy，翻成 false 后整块收起，位置让给真内容
+loading 期间容器报告 aria-busy，切换为 false 后整块收起，位置让给真实内容
 
 <XhDemo src="skeleton/03-loading" />
 
