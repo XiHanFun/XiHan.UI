@@ -46,39 +46,39 @@ const ITEM_SELECTOR = '[data-xh-part="item"]'
 const BRANCH_SELECTOR = '[data-xh-part="branch"]'
 
 /**
- * `<xh-tree-select>` —— Light-DOM 行为宿主：作者写 root/trigger/positioner/content/tree
- * 与若干 item / branch 角色节点，元素跑 tree-select 机器并把 connect 产出打上去。
- * 浮层定位引擎在本元素里建好、经 refs 注入机器，锚点取 trigger、被定位的浮层取 positioner；
+ * `<xh-tree-select>`：Light-DOM 行为宿主：作者写 root / trigger / positioner / content / tree
+ * 与若干 item / branch 角色节点，元素运行 tree-select 状态机并把 connect 产出接上。
+ * 浮层定位引擎在本元素中创建、经 refs 注入状态机，锚点取 trigger、被定位的浮层取 positioner；
  * 节点身份取节点上的 value 属性。
  *
- * 层级（aria-level / aria-posinset / aria-setsize）、禁用与显示文本都查 `collection` 这份树数据，
- * 不从 DOM 反推，故 collection 必须与标记同源。
+ * 层级（aria-level / aria-posinset / aria-setsize）、禁用与显示文本都查询 `collection` 这份树数据，
+ * 不从 DOM 反推，因此 collection 必须与标记同源。
  *
- * value-text 的显示文字由元素代填；作者在该节点里写了内容就归作者，元素不再改写。
+ * value-text 的显示文字由元素填入；作者在该节点中写了内容则由作者负责，元素不再改写。
  *
- * 树数据与展开/选中集合都是数组，只走 property（`el.collection = [...]`）；
- * 单选的选中值可用 value 属性写成裸串。
+ * 树数据与展开 / 选中集合都是数组，只能通过 property 设置（`el.collection = [...]`）；
+ * 单选的选中值可用 value 属性写为裸串。
  *
  * @customElement xh-tree-select
- * @attr {string} value - 受控选中值（单选简写）；缺省该属性即非受控，多选请用 property 传数组
+ * @attr {string} value - 受控选中值（单选简写）；未提供该属性即非受控，多选通过 property 传入数组
  * @attr {string} default-value - 非受控初始选中值
- * @attr {boolean} open - 受控开合；缺省该属性即非受控
+ * @attr {boolean} open - 受控开合；未提供该属性即非受控
  * @attr {boolean} default-open - 非受控初始为展开
- * @attr {boolean} multiple - 多选：选中后浮层不收起，焦点留在树里
- * @attr {boolean} cascade - 多选下父子级联勾选（整枝传导/半选/禁用冻结），默认 false
+ * @attr {boolean} multiple - 多选：选中后浮层不收起，焦点留在树中
+ * @attr {boolean} cascade - 多选下父子级联勾选（整枝传导 / 半选 / 禁用冻结），默认 false
  * @attr {string} checked-strategy - 级联下对外值的收敛策略：child（默认）/ parent / all
- * @attr {boolean} disabled - 整个控件禁用：trigger 用原生 disabled，表单出口不参与提交
- * @attr {boolean} read-only - 只读：浮层照常展开、树照常浏览，但选中值改不动、也清不掉
+ * @attr {boolean} disabled - 整个控件禁用：trigger 使用原生 disabled，表单出口不参与提交
+ * @attr {boolean} read-only - 只读：浮层照常展开、树照常浏览，但选中值不可修改、也不可清空
  * @attr {boolean} invalid - 校验失败标注
- * @attr {boolean} loading - 节点还在取：树报 aria-busy，在途占位顶上来、空态占位让位
+ * @attr {boolean} loading - 节点加载中：树报告 aria-busy，显示在途占位、隐藏空态占位
  * @attr {'outline'|'subtle'|'ghost'} variant - 视觉变体
  * @attr {'brand'|'neutral'|'success'|'warning'|'danger'|'info'} tone - 语气
  * @attr {'sm'|'md'|'lg'} size - 尺寸
  * @attr {string} placeholder - 无选中时 value-text 显示的占位文字
- * @attr {string} placement - 首选放置位，默认 bottom-start；避让后的实际位写在 data-placement 上
+ * @attr {string} placement - 首选放置位，默认 bottom-start；避让后的实际位置写在 data-placement 上
  * @attr {number} offset - 浮层与锚点的间距（px）
- * @attr {boolean} loop - 上下键走到首尾回绕，默认关；写 loop="true" 打开
- * @attr {'ltr'|'rtl'} dir - 文字方向，只对调左右方向键的展开/收起语义，默认 ltr
+ * @attr {boolean} loop - 上下键到达首尾回绕，默认关闭；写 loop="true" 开启
+ * @attr {'ltr'|'rtl'} dir - 文字方向，只对调左右方向键的展开 / 收起语义，默认 ltr
  * @attr {string} name - 表单字段名；每个选中值提交为一个同名字段
  * @attr {string} form - 显式关联的原生表单 ID，提交与 reset 使用同一所有者
  * @fires value-change - 选中集合变化；detail 为 `{ value: string[] }`
@@ -87,21 +87,21 @@ const BRANCH_SELECTOR = '[data-xh-part="branch"]'
  * @fires branch-load-start - 分支请求开始；detail 为 `{ value, node, reason }`
  * @fires branch-load - 分支请求成功；detail 为 `{ value, node, children }`
  * @fires branch-load-error - 分支请求失败；detail 为 `{ value, node, error }`
- * @csspart root - 组件根容器（承载 data-state/data-disabled/data-readonly/data-invalid）
+ * @csspart root - 组件根容器（承载 data-state / data-disabled / data-readonly / data-invalid）
  * @csspart label - 标题（aria-labelledby 目标）
  * @csspart control - 触发按钮与清空按钮的收纳容器：描边、底色与聚焦环都落在这一层
  * @csspart trigger - role=combobox 的触发按钮，同时是定位锚点，须是原生 button
- * @csspart value-text - 选中项文本的显示位；留空即由元素填入 displayText，作者写了内容则归作者
+ * @csspart value-text - 选中项文本的显示位；留空即由元素填入 displayText，作者写了内容则由作者负责
  * @csspart indicator - 展开指示符（aria-hidden，data-state 随开合）
  * @csspart clear-trigger - 清空按钮，须是原生 button；不占 Tab 位，aria-label 取 translations.clearTrigger，无值时 hidden
- * @csspart positioner - 浮层定位容器，坐标由引擎写成内联样式
+ * @csspart positioner - 浮层定位容器，坐标由引擎写为内联样式
  * @csspart content - 浮层壳（焦点域与消解层的根节点，键盘在此收口），收起时带 hidden
  * @csspart tree - role=tree 容器，没有锚点时的 Tab 兜底位与落焦点
  * @csspart item - role=treeitem 叶子，须自带 value 属性标识身份
  * @csspart item-text - 叶子文本
  * @csspart item-indicator - 叶子与分支共用的选中或半选标记（aria-hidden）
- * @csspart branch - role=treeitem 分支，须自带 value 属性；它裹着自己的 branch-content
- * @csspart branch-control - 分支可点行（点它只改选中值，展开归箭头与左右方向键）
+ * @csspart branch - role=treeitem 分支，须自带 value 属性；它包裹自己的 branch-content
+ * @csspart branch-control - 分支可点击行（点击只改变选中值，展开归箭头与左右方向键）
  * @csspart branch-trigger - 展开箭头（aria-hidden 且不占 Tab 位，只切换展开态）
  * @csspart branch-indicator - 展开方向指示符（aria-hidden）
  * @csspart branch-text - 分支文本
@@ -111,8 +111,8 @@ const BRANCH_SELECTOR = '[data-xh-part="branch"]'
  * @csspart branch-retry-trigger - 懒分支失败后的重试按钮；标记缺席时由元素补齐
  * @csspart branch-empty - 懒分支成功返回空数组的状态；标记缺席时由元素补齐
  * @csspart empty - 整树空态；标记缺席时由元素补齐，collection 与手写节点均自动判定
- * @csspart loading - 在途占位，与空态占位同一个位置，取数期间顶上来
- * @csspart footer - 浮层底部的操作区，写在 content 里、tree 的兄弟；不进树的拥有关系，方向键与连打检索也走不到
+ * @csspart loading - 在途占位，与空态占位同一位置，加载期间显示
+ * @csspart footer - 浮层底部的操作区，写在 content 中、tree 的兄弟；不进入树的拥有关系，方向键与连打检索也无法到达
  * @csspart hidden-input - type=hidden 的表单出口，省略该节点即不参与表单
  */
 export class XhTreeSelectElement extends XhPortalHostElement {
@@ -172,7 +172,7 @@ export class XhTreeSelectElement extends XhPortalHostElement {
   declare tone?: Tone
   declare size?: Size
   declare placeholder?: string
-  /** 读屏文案（树容器兜底名字）；对象进不了属性，只作为 property 暴露。 */
+  /** 读屏文案（树容器的兜底名称）；对象无法表达为属性，只作为 property 暴露。 */
   declare translations?: TreeSelectSchema['props']['translations']
   declare placement?: Placement
   declare offset?: number
@@ -239,7 +239,7 @@ export class XhTreeSelectElement extends XhPortalHostElement {
     return service ? connectTreeSelect(service, wcNormalize) : null
   }
 
-  /** 当前整树是否为空；机器尚未建起时为 false。 */
+  /** 当前整树是否为空；状态机尚未建立时为 false。 */
   get isEmpty(): boolean {
     return this.api()?.empty ?? false
   }
@@ -250,9 +250,9 @@ export class XhTreeSelectElement extends XhPortalHostElement {
   }
 
   /**
-   * 树的自绘条：与 content 同级挂在已经 fixed 的 positioner 上。
-   * 两条轴都摆——深层节点靠缩进往行末推，横向溢出与纵向一样是常态；
-   * 横条的正负按排版方向算，而组件不读计算样式，把作者写的那份显式交过去。
+   * 树的自绘滚动条：与 content 同级挂在已经 fixed 的 positioner 上。
+   * 两条轴都排布：深层节点依靠缩进向行末推，横向溢出与纵向一样是常态；
+   * 横条的正负按排版方向计算，而组件不读取计算样式，把作者写的显式值交过去。
    */
   private readonly bars = new ScrollbarsController(this, {
     shell: () => this.getPart('positioner'),
@@ -363,15 +363,15 @@ export class XhTreeSelectElement extends XhPortalHostElement {
     svc.refs.set('getContentEl', () => this.getPart('content'))
   }
 
-  /** 提前发现一次角色节点：default-open 时机器在 hostConnected 当场要去 content 里挑焦点锚点。 */
+  /** 提前发现一次角色节点：default-open 时状态机在 hostConnected 当场要到 content 中选择焦点锚点。 */
   override connectedCallback(): void {
     this.refreshParts()
     super.connectedCallback()
   }
 
   /**
-   * 承载焦点的节点被移出 DOM 时上报 NODE.LOST，让机器按当前数据重挑锚点。
-   * 判据是「焦点已不在浮层内」且离场的正是持有锚点的那个节点。
+   * 承载焦点的节点被移出 DOM 时上报 NODE.LOST，让状态机按当前数据重新选择锚点。
+   * 判据是焦点已不在浮层内且离场的正是持有锚点的节点。
    */
   protected override onPartsReleased(nodes: readonly HTMLElement[]): void {
     this.hiddenInputs.release(nodes)

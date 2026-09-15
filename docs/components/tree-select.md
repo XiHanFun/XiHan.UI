@@ -154,37 +154,37 @@ Vue 不写默认插槽时按 collection 铺开整套部件：带 children 的节
 
 | 属性 | 类型 | 必填 | 说明 |
 | --- | --- | --- | --- |
-| `collection` | `TreeSelectNode[]` |  | 树数据，层级元信息与显示文本的唯一事实源。`hasChildren` 且未给 children 是懒分支；已给 children 时它优先。缺省为空树。 |
+| `collection` | `TreeSelectNode[]` |  | 树数据，层级元信息与显示文本的唯一事实源。`hasChildren` 且未提供 children 是懒分支；已提供 children 时它优先。默认为空树。 |
 | `loadChildren` | `(request: TreeSelectLoadChildrenRequest) => Promise<TreeSelectNode[] \| undefined \| void> \| TreeSelectNode[] \| undefined \| void` |  | 取回 `hasChildren: true` 分支的直接子项。首次展开自动调用，失败后用 api.retryBranch 显式重试。旧请求的兑现或拒绝不会覆盖更新的一轮，也不会写回已移除的分支。 |
-| `value` | `string \| string[]` |  | 选中值。给定即受控：cell 直读 prop，写只发 onValueChange 不落内部值。 单选写成裸串是简写，内部一律归一成数组。 |
+| `value` | `string \| string[]` |  | 选中值。提供即受控：cell 直读 prop，写入只发 onValueChange 不落内部值。 单选写为裸串是简写，内部一律归一为数组。 |
 | `defaultValue` | `string \| string[]` |  |  |
-| `expandedValue` | `string[]` |  | 展开集合。给定即受控，语义同上。 |
+| `expandedValue` | `string[]` |  | 展开集合。提供即受控，语义同上。 |
 | `defaultExpandedValue` | `string[]` |  |  |
-| `open` | `boolean` |  | 展开态。给定即受控：内部不再自改，只发 onOpenChange。 |
+| `open` | `boolean` |  | 展开态。提供即受控：内部不再自行修改，只发 onOpenChange。 |
 | `defaultOpen` | `boolean` |  |  |
-| `multiple` | `boolean` |  | 多选：选中是集合，选中后浮层不收起、焦点留在树里以便接着挑。 |
-| `cascade` | `boolean` |  | 多选下父子级联勾选：点分支整枝传导、子全勾父勾、部分勾中半选， 禁用子树整棵冻结。默认 false（朴素切换）；单选下无效。 |
-| `checkedStrategy` | `CascadeStrategy` |  | 级联下对外值的收敛策略，默认 child（只收叶）；parent = 最高整枝，all = 全部勾中节点。 |
-| `disabled` | `boolean` |  | 整个控件禁用：trigger 用原生 disabled，表单出口不参与提交。 |
-| `readOnly` | `boolean` |  | 只读：浮层照常展开、树照常浏览与展开收起，但选中值改不动、也清不掉。 disabled 则连键盘入口都没有。 |
-| `invalid` | `boolean` |  | 校验失败：trigger 报 aria-invalid，各角色节点带 data-invalid。 |
-| `loading` | `boolean` |  | 节点还在取：树报 aria-busy，在途占位顶上来、空态占位让位。 |
-| `variant` | `ControlVariant` |  | 形态：outline / subtle / ghost，决定触发框的描边与底色怎么用。 |
-| `tone` | `Tone` |  | 语气：brand / neutral / success / warning / danger / info，决定聚焦与选中用哪族颜色。 |
+| `multiple` | `boolean` |  | 多选：选中为集合，选中后浮层不收起、焦点留在树中以便继续选择。 |
+| `cascade` | `boolean` |  | 多选下父子级联勾选：点击分支整枝传导、子全勾父勾、部分勾选半选， 禁用子树整棵冻结。默认 false（朴素切换）；单选下无效。 |
+| `checkedStrategy` | `CascadeStrategy` |  | 级联下对外值的收敛策略，默认 child（只收叶）；parent = 最高整枝，all = 全部勾选节点。 |
+| `disabled` | `boolean` |  | 整个控件禁用：trigger 使用原生 disabled，表单出口不参与提交。 |
+| `readOnly` | `boolean` |  | 只读：浮层照常展开、树照常浏览与展开收起，但选中值不可修改、也不可清空。 disabled 则连键盘入口都没有。 |
+| `invalid` | `boolean` |  | 校验失败：trigger 报告 aria-invalid，各角色节点带 data-invalid。 |
+| `loading` | `boolean` |  | 节点加载中：树报告 aria-busy，显示在途占位、隐藏空态占位。 |
+| `variant` | `ControlVariant` |  | 形态：outline / subtle / ghost，决定触发框的描边与底色使用方式。 |
+| `tone` | `Tone` |  | 语气：brand / neutral / success / warning / danger / info，决定聚焦与选中使用哪族颜色。 |
 | `size` | `Size` |  | 尺寸：sm / md / lg，决定触发框与树节点行的几何档位。 |
 | `placeholder` | `string` |  | 无选中时 value-text 显示的占位文字。 |
-| `translations` | `Partial<TreeSelectTranslations>` |  | 读屏用的文案，默认英文。 |
+| `translations` | `Partial<TreeSelectTranslations>` |  | 读屏文案，默认英文。 |
 | `placement` | `Placement` |  |  |
 | `offset` | `number` |  |  |
-| `loop` | `boolean` |  | 上下键走到首尾是否回绕，默认 false。 |
-| `dir` | `Direction` |  | 文字方向，默认 ltr；只对调左右方向键的「展开/收起」语义。 |
-| `name` | `string` |  | 表单字段名。给定后表单出口才带 name，选中值随表单一并提交。 |
+| `loop` | `boolean` |  | 上下键到达首尾是否回绕，默认 false。 |
+| `dir` | `Direction` |  | 文字方向，默认 ltr；只对调左右方向键的展开 / 收起语义。 |
+| `name` | `string` |  | 表单字段名。提供后表单出口才带 name，选中值随表单一并提交。 |
 | `form` | `string` |  | 原生表单 ID；显式关联外部表单，提交与 reset 使用同一所有者。 |
-| `onValueChange` | `(details: TreeSelectValueChangeDetails) => void` |  | value 变化意图回调；受控时是唯一出口，非受控随内部写入一并通知。 |
+| `onValueChange` | `(details: TreeSelectValueChangeDetails) => void` |  | value 变化意图回调；受控时是唯一出口，非受控时随内部写入一并通知。 |
 | `onExpandedValueChange` | `(details: TreeSelectExpandedValueChangeDetails) => void` |  | 展开集合变化意图回调；语义同上。 |
 | `onOpenChange` | `(details: TreeSelectOpenChangeDetails) => void` |  | open 变化意图回调；受控时是唯一出口，非受控时随内部转移一并通知。 |
 | `onBranchLoadStart` | `(details: TreeSelectBranchLoadStartDetails) => void` |  | 一轮有效分支请求开始；retry 与首次展开由 reason 区分。 |
-| `onBranchLoad` | `(details: TreeSelectBranchLoadDetails) => void` |  | 一轮有效分支请求成功；children 为空仍是成功，不转换成错误或全局空态。 |
+| `onBranchLoad` | `(details: TreeSelectBranchLoadDetails) => void` |  | 一轮有效分支请求成功；children 为空仍是成功，不转换为错误或全局空态。 |
 | `onBranchLoadError` | `(details: TreeSelectBranchLoadErrorDetails) => void` |  | 一轮有效分支请求失败；保留 loader 给出的原始 error。 |
 
 ### 事件
@@ -242,11 +242,11 @@ Vue 不写默认插槽时按 collection 铺开整套部件：带 children 的节
 | --- | --- | --- |
 | `open` | `boolean` |  |
 | `collection` | `readonly TreeSelectNode[]` | 当前有效树：含 headless 已成功取回的懒分支子项。 |
-| `visibleNodes` | `readonly TreeVisibleNode[]` | 当前可见行序列（收起分支的子树不在其中）。 方向键、Home/End 与连打检索都在它上面走，不是在原始树上走。 |
-| `value` | `string[]` | 选中集合；单选下长度 ≤ 1，形状不随模式变。 |
+| `visibleNodes` | `readonly TreeVisibleNode[]` | 当前可见行序列（收起分支的子树不在其中）。 方向键、Home/End 与连打检索都在它上面移动，不在原始树上移动。 |
+| `value` | `string[]` | 选中集合；单选下长度 ≤ 1，形状不随模式变化。 |
 | `expandedValue` | `string[]` |  |
 | `valueText` | `string \| null` | 选中项的显示文本（多选用逗号加空格连接）；无选中时为 null。取自 collection 的 label。 |
-| `displayText` | `string` | value-text 实际显示的文字：有选中取其文本，否则取 placeholder。 |
+| `displayText` | `string` | value-text 实际显示的文字：有选中时取其文本，否则取 placeholder。 |
 | `focusedValue` | `string \| null` | 焦点锚点；收起、或它已被收起而不可见时为 null。 |
 | `empty` | `boolean` | 整树当前是否没有任何节点；collection 与手写节点统一由 Headless 判定。 |
 | `loading` | `boolean` | 外部整树 loading 状态。懒分支 loading 由 branchLoadState 单独表达。 |
@@ -255,9 +255,9 @@ Vue 不写默认插槽时按 collection 铺开整套部件：带 children 的节
 | `disabled` | `boolean` |  |
 | `readOnly` | `boolean` |  |
 | `invalid` | `boolean` |  |
-| `canClear` | `boolean` | 清空按钮此刻可不可按。 |
+| `canClear` | `boolean` | 清空按钮当前是否可按。 |
 | `isSelected` | `(value: string) => boolean` |  |
-| `isIndeterminate` | `(value: string) => boolean` | 级联模式下该分支是否半选（有效叶后代有勾有不勾）；非级联恒 false。 |
+| `isIndeterminate` | `(value: string) => boolean` | 级联模式下该分支是否半选（有效叶后代部分勾选）；非级联恒为 false。 |
 | `isExpanded` | `(value: string) => boolean` |  |
 | `branchLoadState` | `(value: string) => TreeSelectBranchLoadSnapshot \| null` | 非懒分支返回 null；懒分支即使尚未请求也返回 idle。 |
 | `setOpen` | `(next: boolean) => void` |  |
@@ -266,7 +266,7 @@ Vue 不写默认插槽时按 collection 铺开整套部件：带 children 的节
 | `expand` | `(value: string) => void` |  |
 | `collapse` | `(value: string) => void` |  |
 | `retryBranch` | `(value: string) => void` | 失败后重新取该分支；非懒分支与未知 value 不产生副作用。 |
-| `select` | `(value: string) => void` | 单选替换、多选切换，与点节点同一语义。 |
+| `select` | `(value: string) => void` | 单选替换、多选切换，与点击节点同一语义。 |
 | `clear` | `() => void` |  |
 | `getRootProps` | `() => T['element']` |  |
 | `getLabelProps` | `() => T['element']` |  |
@@ -291,9 +291,9 @@ Vue 不写默认插槽时按 collection 铺开整套部件：带 children 的节
 | `getBranchErrorProps` | `(props: TreeSelectNodeProps) => T['element']` |  |
 | `getBranchRetryTriggerProps` | `(props: TreeSelectNodeProps) => T['button']` |  |
 | `getBranchEmptyProps` | `(props: TreeSelectNodeProps) => T['element']` |  |
-| `getEmptyProps` | `() => T['element']` | 空态占位：放在 content 里、tree 的兄弟。 collection 与手写节点都由连接层按 Headless 空态收放；作者可换内容，不必自己重算。 |
-| `getLoadingProps` | `() => T['element']` | 在途占位：与空态占位同一个位置，两者不同屏——取数期间它顶上来，空态让位。 collection 与手写节点都由连接层按 Headless 空态收放。 |
-| `getFooterProps` | `() => T['element']` | 浮层底部的操作区：放在 content 里、tree 的兄弟，不入树的拥有关系，方向键也走不到。 |
+| `getEmptyProps` | `() => T['element']` | 空态占位：放在 content 中、tree 的兄弟。 collection 与手写节点都由连接层按 Headless 空态收放；作者可更换内容，不必自行重新计算。 |
+| `getLoadingProps` | `() => T['element']` | 在途占位：与空态占位同一位置，两者不同时显示：加载期间显示它，空态让位。 collection 与手写节点都由连接层按 Headless 空态收放。 |
+| `getFooterProps` | `() => T['element']` | 浮层底部的操作区：放在 content 中、tree 的兄弟，不进入树的拥有关系，方向键也无法到达。 |
 | `getHiddenInputProps` | `(props: { value: string }) => T['input']` | 单值表单出口；按 api.value 逐个调用并生成同名 input，零选中不生成提交项。 |
 
 ## 无障碍
