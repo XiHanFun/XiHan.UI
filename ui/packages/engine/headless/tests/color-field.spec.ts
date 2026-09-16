@@ -194,6 +194,14 @@ describe('connectColorField 投影', () => {
 
   it('清空按钮只在可清空时露面，点它清空；禁用抽掉表单出口', () => {
     const s = makeService({ defaultValue: '#ff0000', clearable: true })
+    expect(api(s).getClearTriggerProps()).toMatchObject({
+      'data-xh-action-control': '',
+      'data-xh-action-profile': 'field-inset',
+      'data-xh-action-variant': 'ghost',
+      'data-xh-action-display': 'has-value',
+      'data-xh-action-size': 'md',
+      'data-xh-action-has-value': '',
+    })
     expect((api(s).getClearTriggerProps() as Dict).hidden).toBeUndefined()
     ;((api(s).getClearTriggerProps() as Dict).onClick as () => void)()
     expect(api(s).value).toBe('')

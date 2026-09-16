@@ -435,7 +435,6 @@
     "checkbox:label:color": "color 落 --xh-fg-disabled，禁用标签色统一应为 --xh-fg-subtle；待本组件迁移",
     "checkbox:label:font-size": "font-size 落 --xh-control-font-md，字段标签字号不随档，应为 --xh-text-label-size；待本组件迁移",
     "collapsible:root:icon-size": "--xh-icon-size 兜底落 --xh-glyph-size-text，随文字形只给纯行内文字组件，控件内图标按档取 --xh-glyph-size-sm / md / lg；待本组件迁移",
-    "color-field:label:font-size": "font-size 落 --xh-control-font-md，字段标签字号不随档，应为 --xh-text-label-size；待本组件迁移",
     "color-picker:label:font-size": "font-size 落 --xh-control-font-md，字段标签字号不随档，应为 --xh-text-label-size；待本组件迁移",
     "color-slider:label:color": "color 落 --xh-fg-muted，字段标签应为 --xh-fg-default；待本组件迁移",
     "color-slider:label:spacing": "根的 gap 落 --xh-stack-gap-md，字段标签贴控件应为 --xh-space-1；待本组件迁移",
