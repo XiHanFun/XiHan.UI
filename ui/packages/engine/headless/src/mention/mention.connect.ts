@@ -58,6 +58,9 @@ export function connectMention<T extends PropTypes>(
   // itemCount 尚未结算时不抢跑空态；结算后按真实可见 DOM 判断，手写 hidden 项也不会冒充候选。
   const empty = open && itemCount === 0
 
+  // 形态默认落 outline：不写时 root 与 positioner 如实投影同一常量，皮肤不再依赖缺省档
+  const variant = prop('variant') ?? 'outline'
+
   const isHighlighted = (v: string): boolean => highlighted === v
 
   /** 条目 id。aria-activedescendant 只认单个 IDREF，值里带空格会把它劈成两截，所以先编码再拼。 */
@@ -123,7 +126,7 @@ export function connectMention<T extends PropTypes>(
     getRootProps: () => normalize.element({
       ...parts.root.attrs,
       'data-state': stateAttr,
-      'data-variant': prop('variant'),
+      'data-variant': variant,
       'data-tone': prop('tone'),
       'data-size': prop('size'),
       'data-disabled': dataAttr(disabled),
@@ -247,7 +250,7 @@ export function connectMention<T extends PropTypes>(
       // 定位层被搬到 portal 落点，继承不到作者子树上的方向；作者没给就不写，交给落点处的继承
       'dir': prop('dir'),
       // 视觉轴在浮层这一侧再打一次：positioner 被搬到 portal 落点，继承不到根上的私有槽
-      'data-variant': prop('variant'),
+      'data-variant': variant,
       'data-tone': prop('tone'),
       'data-size': prop('size'),
       // 只读同样在这一侧再打一次：候选被搬到 portal 落点，根上那份够不着它们

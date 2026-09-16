@@ -135,7 +135,7 @@ export interface MentionSchema extends MachineSchema {
     dir?: Direction
     offset?: number
     translations?: MentionTranslations
-    /** 形态：outline / subtle / ghost，决定输入框的描边与底色使用方式。 */
+    /** 形态：outline / subtle / ghost，决定输入框的描边与底色使用方式。默认 outline。 */
     variant?: ControlVariant
     /** 语气：brand / neutral / success / warning / danger / info，决定聚焦与高亮使用哪族颜色。 */
     tone?: Tone
