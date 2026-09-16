@@ -260,6 +260,11 @@ describe('createNotificationService 的默认模板', () => {
     notify.info('一条')
     await tick()
     expect(partOf('item-close-trigger')).not.toBeNull()
+    // 叉是 Action Control 的 icon ghost 档，固定 sm
+    expect(partOf('item-close-trigger')?.getAttribute('data-xh-action-control')).toBe('')
+    expect(partOf('item-close-trigger')?.getAttribute('data-xh-action-profile')).toBe('icon')
+    expect(partOf('item-close-trigger')?.getAttribute('data-xh-action-variant')).toBe('ghost')
+    expect(partOf('item-close-trigger')?.getAttribute('data-xh-action-size')).toBe('sm')
     notify.dismissAll()
     await tick()
 

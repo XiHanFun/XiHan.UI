@@ -39960,16 +39960,16 @@
         "item-action-trigger"
       ],
       "property": [
-        "background"
+        "background-color"
       ],
       "state": [
         "default"
       ],
       "defaultToken": [
-        "--xh-bg-subtle"
+        "transparent"
       ],
       "visibility": "public",
-      "description": "notification 的 item-action-trigger 部件 background 覆盖槽。"
+      "description": "notification 的 item-action-trigger 部件 background-color 覆盖槽。"
     },
     {
       "name": "--xh-notification-action-bg-active",
@@ -39978,17 +39978,21 @@
         "item-action-trigger"
       ],
       "property": [
-        "background"
+        "background-color"
       ],
       "state": [
-        "active",
-        "not(:disabled)"
+        "disabled",
+        "is(:active, [data-pressed])",
+        "loading",
+        "not([data-disabled])",
+        "not([data-loading])",
+        "pressed"
       ],
       "defaultToken": [
-        "--xh-bg-subtle-active"
+        "--xh-bg-subtle-hover"
       ],
       "visibility": "public",
-      "description": "notification 的 item-action-trigger 部件 background 覆盖槽。"
+      "description": "notification 的 item-action-trigger 部件 background-color 覆盖槽。"
     },
     {
       "name": "--xh-notification-action-bg-hover",
@@ -39997,17 +40001,20 @@
         "item-action-trigger"
       ],
       "property": [
-        "background"
+        "background-color"
       ],
       "state": [
+        "disabled",
         "hover",
-        "not(:disabled)"
+        "loading",
+        "not([data-disabled])",
+        "not([data-loading])"
       ],
       "defaultToken": [
-        "--xh-bg-subtle-hover"
+        "--xh-bg-subtle"
       ],
       "visibility": "public",
-      "description": "notification 的 item-action-trigger 部件 background 覆盖槽。"
+      "description": "notification 的 item-action-trigger 部件 background-color 覆盖槽。"
     },
     {
       "name": "--xh-notification-action-border",
@@ -40016,16 +40023,25 @@
         "item-action-trigger"
       ],
       "property": [
-        "border"
+        "border",
+        "border-color"
       ],
       "state": [
-        "default"
+        "default",
+        "disabled",
+        "hover",
+        "is(:active, [data-pressed])",
+        "loading",
+        "not([data-disabled])",
+        "not([data-loading])",
+        "pressed"
       ],
       "defaultToken": [
-        "--xh-border-default"
+        "--xh-border-control",
+        "--xh-border-control-hover"
       ],
       "visibility": "public",
-      "description": "notification 的 item-action-trigger 部件 border 覆盖槽。"
+      "description": "notification 的 item-action-trigger 部件 border、border-color 覆盖槽。"
     },
     {
       "name": "--xh-notification-action-fg",
@@ -40037,7 +40053,14 @@
         "color"
       ],
       "state": [
-        "default"
+        "default",
+        "disabled",
+        "hover",
+        "is(:active, [data-pressed])",
+        "loading",
+        "not([data-disabled])",
+        "not([data-loading])",
+        "pressed"
       ],
       "defaultToken": [
         "--xh-fg-default"
@@ -40070,16 +40093,18 @@
         "item-action-trigger"
       ],
       "property": [
-        "block-size"
+        "block-size",
+        "inline-size"
       ],
       "state": [
-        "default"
+        "default",
+        "xh-action-profile=icon"
       ],
       "defaultToken": [
-        "--xh-control-h-sm"
+        "--xh-_action-profile-visual-size"
       ],
       "visibility": "public",
-      "description": "notification 的 item-action-trigger 部件 block-size 覆盖槽。"
+      "description": "notification 的 item-action-trigger 部件 block-size、inline-size 覆盖槽。"
     },
     {
       "name": "--xh-notification-action-px",
@@ -40094,7 +40119,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-control-px-sm"
+        "--xh-_action-profile-padding-inline"
       ],
       "visibility": "public",
       "description": "notification 的 item-action-trigger 部件 padding-inline 覆盖槽。"
@@ -40124,16 +40149,21 @@
         "item-close-trigger"
       ],
       "property": [
-        "background"
+        "background-color"
       ],
       "state": [
-        "active"
+        "disabled",
+        "is(:active, [data-pressed])",
+        "loading",
+        "not([data-disabled])",
+        "not([data-loading])",
+        "pressed"
       ],
       "defaultToken": [
-        "--xh-bg-subtle-active"
+        "--xh-_action-variant-bg-pressed"
       ],
       "visibility": "public",
-      "description": "notification 的 item-close-trigger 部件 background 覆盖槽。"
+      "description": "notification 的 item-close-trigger 部件 background-color 覆盖槽。"
     },
     {
       "name": "--xh-notification-close-bg-hover",
@@ -40142,17 +40172,20 @@
         "item-close-trigger"
       ],
       "property": [
-        "background"
+        "background-color"
       ],
       "state": [
+        "disabled",
         "hover",
-        "not(:disabled)"
+        "loading",
+        "not([data-disabled])",
+        "not([data-loading])"
       ],
       "defaultToken": [
-        "--xh-bg-subtle-hover"
+        "--xh-_action-variant-bg-hover"
       ],
       "visibility": "public",
-      "description": "notification 的 item-close-trigger 部件 background 覆盖槽。"
+      "description": "notification 的 item-close-trigger 部件 background-color 覆盖槽。"
     },
     {
       "name": "--xh-notification-close-fg",
@@ -40182,8 +40215,13 @@
         "color"
       ],
       "state": [
+        "disabled",
         "hover",
-        "not(:disabled)"
+        "is(:active, [data-pressed])",
+        "loading",
+        "not([data-disabled])",
+        "not([data-loading])",
+        "pressed"
       ],
       "defaultToken": [
         "--xh-fg-default"
@@ -40243,17 +40281,20 @@
       "property": [
         "block-size",
         "inline-size",
+        "min-inline-size",
         "padding-inline-end"
       ],
       "state": [
         "default",
-        "has([data-part='item-close-trigger'])"
+        "has([data-part='item-close-trigger'])",
+        "xh-action-profile=icon"
       ],
       "defaultToken": [
+        "--xh-_action-profile-visual-size",
         "--xh-control-h-sm"
       ],
       "visibility": "public",
-      "description": "notification 的 item、item-close-trigger、item-title 部件 block-size、inline-size、padding-inline-end 覆盖槽。"
+      "description": "notification 的 item、item-close-trigger、item-title 部件 block-size、inline-size、min-inline-size、padding-inline-end 覆盖槽。"
     },
     {
       "name": "--xh-notification-description-fg",
@@ -40295,7 +40336,9 @@
       "name": "--xh-notification-icon-size",
       "component": "notification",
       "part": [
-        "item"
+        "item",
+        "item-action-trigger",
+        "item-close-trigger"
       ],
       "property": [
         "--xh-icon-size"
@@ -40304,10 +40347,11 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-control-indicator-size"
+        "--xh-_action-profile-glyph-size",
+        "--xh-glyph-size-md"
       ],
       "visibility": "public",
-      "description": "notification 的 item 部件 --xh-icon-size 覆盖槽。"
+      "description": "notification 的 item、item-action-trigger、item-close-trigger 部件 --xh-icon-size 覆盖槽。"
     },
     {
       "name": "--xh-notification-indicator-fg",
@@ -40379,7 +40423,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-bg-surface-raised"
+        "--xh-material-elevated-bg"
       ],
       "visibility": "public",
       "description": "notification 的 item 部件 background 覆盖槽。"
@@ -40397,7 +40441,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-border-default"
+        "--xh-material-elevated-border"
       ],
       "visibility": "public",
       "description": "notification 的 item 部件 border 覆盖槽。"
@@ -40415,7 +40459,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-fg-default"
+        "--xh-material-elevated-fg"
       ],
       "visibility": "public",
       "description": "notification 的 item 部件 color 覆盖槽。"
@@ -40559,7 +40603,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-elevation-sheet"
+        "--xh-material-elevated-shadow"
       ],
       "visibility": "public",
       "description": "notification 的 item 部件 box-shadow 覆盖槽。"

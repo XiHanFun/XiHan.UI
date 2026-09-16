@@ -5,6 +5,9 @@
 
 /* 定义 notification 样式。 */
 
+/* Notification 独立皮肤同时传递引入操作 / 关闭钮的动作控件配方；full bundle 递归去重。 */
+@import '../family/action-control.css';
+
 @layer xihan.motion {
   /*
    * 九个位共用同一条进出场，位移不跟着落位走：要按位置分方向，就得从 group 的
@@ -148,12 +151,14 @@
    * 竖排 flex 里这两件事都做不到（叉会变成第三行）。
    * 底与描边一律中性，语气只由左列那枚字形承载：整片兑色是轻提示那条的做法，
    * 一张有标题有正文的卡片全片染色会把两层文字都压在同一片语气色上。
+   * 面走 sheet 三件套（§8.4：--xh-material-elevated-bg / -border / -shadow，与 toast 同一套）。
    *
    * 卡片的槽带 item 段（--xh-notification-item-*），与摞的 --xh-notification-inset 分开。
    */
   [data-scope='notification'][data-part='item'] {
-    /* 叉与操作钮的兜底字形按控件指示符那一档走；左列那枚类型字形另有自己的尺寸 */
-    --xh-icon-size: var(--xh-notification-icon-size, var(--xh-control-indicator-size));
+    /* 作者塞进卡片里的图标与皮肤画的兜底字形同一把尺：Feedback 指示符统一 md 档（§6.5）；
+       左列那枚类型字形另有自己的尺寸槽，叉与操作钮的字形各按按钮档取值 */
+    --xh-icon-size: var(--xh-notification-icon-size, var(--xh-glyph-size-md));
 
     position: relative;
     display: grid;
@@ -168,11 +173,11 @@
     max-inline-size: 100%;
     padding-block: var(--xh-notification-item-py, var(--xh-surface-pad-lg));
     padding-inline: var(--xh-notification-item-px, var(--xh-surface-pad-lg));
-    border: var(--xh-stroke-thin) solid var(--xh-notification-item-border, var(--xh-border-default));
+    border: var(--xh-stroke-thin) solid var(--xh-notification-item-border, var(--xh-material-elevated-border));
     border-radius: var(--xh-notification-item-radius, var(--xh-shape-overlay));
-    background: var(--xh-notification-item-bg, var(--xh-bg-surface-raised));
-    color: var(--xh-notification-item-fg, var(--xh-fg-default));
-    box-shadow: var(--xh-notification-item-shadow, var(--xh-elevation-sheet));
+    background: var(--xh-notification-item-bg, var(--xh-material-elevated-bg));
+    color: var(--xh-notification-item-fg, var(--xh-material-elevated-fg));
+    box-shadow: var(--xh-notification-item-shadow, var(--xh-material-elevated-shadow));
     font-size: var(--xh-notification-item-font-size, var(--xh-text-body-size));
     line-height: var(--xh-notification-item-leading, var(--xh-text-body-leading));
     /* 摞的定位面整面铺开且不吃指针，卡片必须自己吃回来：
@@ -354,88 +359,71 @@
     display: none;
   }
 
+  /* 操作钮是带文案的离散动作钮：盒几何、悬停 / 按下与 0.97 按压、粗指针热区、焦点环、禁用面全由 Action Control
+     的 text outline 档给（连接层投 sm；非 Button 的触发器缺省中性描边、透明底，§7.2.2），组件只映射既有使用者槽。
+     语气只落到左列字形：这颗钮坐在带 data-tone 的卡片里，底 / 边 / 字钉在中性语义面上，不随语气；
+     卡片是 sheet 白面承载：hover --xh-bg-subtle（100）→ pressed --xh-bg-subtle-hover（200） */
   [data-scope='notification'][data-part='item-action-trigger'] {
+    --xh-action-visual-size: var(--xh-notification-action-h, var(--xh-_action-profile-visual-size));
+    --xh-action-padding-inline: var(--xh-notification-action-px, var(--xh-_action-profile-padding-inline));
+    --xh-action-radius: var(--xh-notification-action-radius, var(--xh-shape-control));
+    --xh-action-bg-rest: var(--xh-notification-action-bg, transparent);
+    --xh-action-bg-hover: var(--xh-notification-action-bg-hover, var(--xh-bg-subtle));
+    --xh-action-bg-pressed: var(--xh-notification-action-bg-active, var(--xh-bg-subtle-hover));
+    --xh-action-fg-rest: var(--xh-notification-action-fg, var(--xh-fg-default));
+    --xh-action-fg-hover: var(--xh-notification-action-fg, var(--xh-fg-default));
+    --xh-action-fg-pressed: var(--xh-notification-action-fg, var(--xh-fg-default));
+    --xh-action-border-rest: var(--xh-notification-action-border, var(--xh-border-control));
+    --xh-action-border-hover: var(--xh-notification-action-border, var(--xh-border-control-hover));
+    --xh-action-border-pressed: var(--xh-notification-action-border, var(--xh-border-control-hover));
+    --xh-action-highlight-rest: transparent;
+    --xh-action-shadow-rest: none;
+    --xh-action-shadow-hover: none;
+    --xh-action-shadow-pressed: none;
+    /* 作者塞进钮里的图标按按钮档取字形尺寸 */
+    --xh-icon-size: var(--xh-notification-icon-size, var(--xh-_action-profile-glyph-size));
+
     /* 网格列默认拉满，按钮要贴着起始侧收成自己的宽度 */
     justify-self: start;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    block-size: var(--xh-notification-action-h, var(--xh-control-h-sm));
-    padding-inline: var(--xh-notification-action-px, var(--xh-control-px-sm));
-    border: var(--xh-stroke-thin) solid var(--xh-notification-action-border, var(--xh-border-default));
-    border-radius: var(--xh-notification-action-radius, var(--xh-shape-control));
-    background: var(--xh-notification-action-bg, var(--xh-bg-subtle));
-    color: var(--xh-notification-action-fg, var(--xh-fg-default));
-    /* 按钮不继承字族字号，不接回来的话卡片里会突然冒出一段系统 UI 字体 */
-    font: inherit;
     font-weight: var(--xh-notification-action-font-weight, var(--xh-font-weight-medium));
-    line-height: var(--xh-leading-none);
-    cursor: pointer;
-    transition:
-      background var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
-      scale var(--xh-motion-duration-release) var(--xh-motion-ease-release);
   }
 
+  /* 家族那条 display 会把 UA 的 [hidden]{display:none} 盖掉 */
   [data-scope='notification'][data-part='item-action-trigger'][hidden] {
     display: none;
   }
 
-  [data-scope='notification'][data-part='item-action-trigger']:hover:not(:disabled) {
-    background: var(--xh-notification-action-bg-hover, var(--xh-bg-subtle-hover));
-  }
-
-  [data-scope='notification'][data-part='item-action-trigger']:active:not(:disabled) {
-    background: var(--xh-notification-action-bg-active, var(--xh-bg-subtle-active));
-    scale: var(--xh-motion-scale-press);
-    transition-duration: var(--xh-motion-duration-press);
-    transition-timing-function: var(--xh-motion-ease-press);
-  }
-
-  /* 钉在右上角的内衬处，不参与网格排布——留在流里它会变成正文下面的第三行 */
+  /* 关闭钮是只有字形的离散动作钮：盒几何、悬停 / 按下与 0.97 按压、粗指针热区、焦点环、禁用面全由 Action Control
+     的 icon ghost 档给（连接层投 sm：32px 正方盒，面板角上的叉与此前 --xh-control-h-sm 同尺寸），组件只映射既有
+     使用者槽。静息透明，sheet 白面承载 hover 100 → pressed 200，写了语气时悬停底跟着语气走（--xh-_tone-subtle）。
+     钉在右上角的内衬处，不参与网格排布——留在流里它会变成正文下面的第三行 */
   [data-scope='notification'][data-part='item-close-trigger'] {
+    --xh-action-visual-size: var(--xh-notification-close-size, var(--xh-_action-profile-visual-size));
+    --xh-action-min-inline-size: var(--xh-notification-close-size, var(--xh-_action-profile-visual-size));
+    --xh-action-radius: var(--xh-notification-close-radius, var(--xh-shape-control));
+    --xh-action-bg-hover: var(--xh-notification-close-bg-hover, var(--xh-_action-variant-bg-hover));
+    --xh-action-bg-pressed: var(--xh-notification-close-bg-active, var(--xh-_action-variant-bg-pressed));
+    --xh-action-fg-rest: var(--xh-notification-close-fg, var(--xh-fg-muted));
+    --xh-action-fg-hover: var(--xh-notification-close-fg-hover, var(--xh-fg-default));
+    --xh-action-fg-pressed: var(--xh-notification-close-fg-hover, var(--xh-fg-default));
+    --xh-action-border-rest: transparent;
+    --xh-action-highlight-rest: transparent;
+    --xh-action-shadow-rest: none;
+    --xh-action-shadow-hover: none;
+    --xh-action-shadow-pressed: none;
+    /* 叉的字形按钮档取值（sm → 16px），与左列那枚 md 档的类型字形分开 */
+    --xh-icon-size: var(--xh-notification-icon-size, var(--xh-_action-profile-glyph-size));
+
     position: absolute;
     inset-block-start: var(--xh-notification-close-inset, var(--xh-surface-action-inset));
     inset-inline-end: var(--xh-notification-close-inset, var(--xh-surface-action-inset));
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    block-size: var(--xh-notification-close-size, var(--xh-control-h-sm));
-    inline-size: var(--xh-notification-close-size, var(--xh-control-h-sm));
-    border: 0;
-    border-radius: var(--xh-notification-close-radius, var(--xh-shape-control));
-    background: transparent;
-    color: var(--xh-notification-close-fg, var(--xh-fg-muted));
-    font: inherit;
-    line-height: var(--xh-leading-none);
-    cursor: pointer;
-    transition:
-      background var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
-      color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
-      scale var(--xh-motion-duration-release) var(--xh-motion-ease-release);
+    border-width: 0;
   }
 
   /* closable=false 时连接层同时给了 hidden 与 disabled，这条是它真正收起的那一半：
-     上面声明了 display，不补回来就会留下一个按不动的叉，比压根没有叉更让人困惑 */
+     家族那条 display 会把 UA 的 [hidden]{display:none} 盖掉，不补回来就会留下一个按不动的叉 */
   [data-scope='notification'][data-part='item-close-trigger'][hidden] {
     display: none;
-  }
-
-  [data-scope='notification'][data-part='item-close-trigger']:hover:not(:disabled) {
-    background: var(--xh-notification-close-bg-hover, var(--xh-bg-subtle-hover));
-    color: var(--xh-notification-close-fg-hover, var(--xh-fg-default));
-  }
-
-  [data-scope='notification'][data-part='item-close-trigger']:active {
-    background: var(--xh-notification-close-bg-active, var(--xh-bg-subtle-active));
-    scale: var(--xh-motion-scale-press);
-    transition-duration: var(--xh-motion-duration-press);
-    transition-timing-function: var(--xh-motion-ease-press);
-  }
-
-  /* 单体控件用原生 disabled。常规路径下它与 hidden 同时出现看不见，
-     但作者若在覆盖层把收起改了回来，至少还能看出这颗叉是按不动的 */
-  [data-scope='notification'][data-part='item-close-trigger']:disabled {
-    color: var(--xh-fg-disabled);
   }
 
   /* 没写内容就由皮肤画兜底字形；作者往部件里塞了自己的图形，这几条即不命中 */
@@ -448,17 +436,6 @@
     background-color: currentColor;
     -webkit-mask: var(--xh-glyph-mark-close) center / contain no-repeat;
     mask: var(--xh-glyph-mark-close) center / contain no-repeat;
-  }
-
-  /* 手指落点：叉的视觉盒是 28px，命中区外扩到 44×44（两边各 8px）。
-     外扩走绝对定位的伪元素，盒子本身一动不动——放大盒子会压住标题。
-     用 ::after：::before 已经被兜底字形占着 */
-  @media (pointer: coarse) {
-    [data-scope='notification'][data-part='item-close-trigger']::after {
-      content: '';
-      position: absolute;
-      inset: calc(-1 * var(--xh-space-2));
-    }
   }
 
   @media print {

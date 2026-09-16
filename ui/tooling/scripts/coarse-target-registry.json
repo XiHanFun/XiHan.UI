@@ -148,8 +148,8 @@
       "why": "浮在页面角上的动作钮，手指直接落上去"
     },
     "notification:item-close-trigger": {
-      "px": 32,
-      "why": "通知卡片右上角的叉，手指直接落上去"
+      "px": 24,
+      "why": "通知卡片右上角的叉，手指直接落上去；24px 是 Action Control 的 xs 视觉地板，连接层固定投 sm（32px），粗指针热区由家族外扩到 44px"
     },
     "number-field:decrement-trigger": {
       "px": 24,

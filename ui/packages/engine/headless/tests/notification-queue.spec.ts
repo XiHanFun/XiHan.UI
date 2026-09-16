@@ -3,7 +3,7 @@ import type { ToastSchema } from '../src/toast'
 import { createService, normalizeProps } from '@xihan-ui/core'
 import { createVanillaRuntime } from '@xihan-ui/core/vanilla'
 import { describe, expect, it } from 'vitest'
-import { connectNotification, NOTIFICATION_MAX, notificationMachine, notificationPriorityOf, visibleNotifications } from '../src/notification'
+import { connectNotification, connectNotificationItem, NOTIFICATION_MAX, notificationMachine, notificationPriorityOf, visibleNotifications } from '../src/notification'
 import { toastMachine } from '../src/toast'
 
 type Props = NotificationSchema['props']
@@ -157,6 +157,29 @@ describe('合并计数', () => {
     expect(q.items()[0]!.title).toBe('导出完成')
     expect(q.items()[0]!.count).toBeUndefined()
     q.stop()
+  })
+})
+
+describe('卡片上的两颗钮', () => {
+  it('投影 Action Control 家族属性：操作钮 text outline sm，关闭钮 icon ghost sm', () => {
+    const runtime = createVanillaRuntime()
+    const props = runtime.signal<ToastSchema['props']>({ duration: 0 })
+    const service = createService(toastMachine, { props: () => props.get(), runtime })
+    runtime.start()
+    const api = connectNotificationItem(service, normalizeProps)
+    const action = api.getItemActionTriggerProps() as Record<string, unknown>
+    const close = api.getItemCloseTriggerProps() as Record<string, unknown>
+    expect(action['data-xh-action-control']).toBe('')
+    expect(action['data-xh-action-profile']).toBe('text')
+    expect(action['data-xh-action-variant']).toBe('outline')
+    expect(action['data-xh-action-display']).toBe('always')
+    expect(action['data-xh-action-size']).toBe('sm')
+    expect(close['data-xh-action-control']).toBe('')
+    expect(close['data-xh-action-profile']).toBe('icon')
+    expect(close['data-xh-action-variant']).toBe('ghost')
+    expect(close['data-xh-action-display']).toBe('always')
+    expect(close['data-xh-action-size']).toBe('sm')
+    runtime.stop()
   })
 })
 
