@@ -2,14 +2,14 @@
 
 exports[`family-backlog 条目数 > 七段各一数，与快照一致 1`] = `
 {
-  "edge": 61,
-  "ladder": 116,
+  "edge": 60,
+  "ladder": 113,
   "motion": 1,
-  "press": 75,
-  "scroll": 56,
+  "press": 73,
+  "scroll": 52,
   "selection": 25,
   "shape": 25,
-  "text": 101,
+  "text": 100,
 }
 `;
 
@@ -24,7 +24,6 @@ exports[`family-backlog 键集合 > edge 1`] = `
   "card:root",
   "card:root:raised",
   "card:root:subtle",
-  "cascader:positioner:raised",
   "checkbox-group:root:raised",
   "checkbox-group:select-all-trigger:raised",
   "checkbox:root:raised",
@@ -96,9 +95,6 @@ exports[`family-backlog 键集合 > ladder 1`] = `
   "calendar-range-picker:prev-year-trigger:hover",
   "carousel:prev-trigger:hover",
   "carousel:prev-trigger:pressed",
-  "cascader:clear-trigger:hover",
-  "cascader:clear-trigger:pressed",
-  "cascader:control:focus",
   "clipboard:input:focus",
   "code-view:fold-trigger:hover",
   "collapsible:trigger:hover",
@@ -228,8 +224,6 @@ exports[`family-backlog 键集合 > press 1`] = `
   "calendar-range-picker:prev-trigger",
   "calendar-range-picker:prev-year-trigger",
   "carousel:indicator",
-  "cascader:item",
-  "cascader:search-item",
   "checkbox-group:item",
   "checkbox-group:select-all-trigger",
   "checkbox:root",
@@ -290,11 +284,7 @@ exports[`family-backlog 键集合 > scroll 1`] = `
 [
   "calendar-picker:grid:overscroll",
   "calendar-range-picker:grid:overscroll",
-  "cascader:column:overscroll",
   "cascader:column:unwired",
-  "cascader:content:overscroll",
-  "cascader:content:size",
-  "cascader:search-list:overscroll",
   "cascader:search-list:unwired",
   "color-picker:content:overscroll",
   "color-picker:content:size",
@@ -421,7 +411,6 @@ exports[`family-backlog 键集合 > text 1`] = `
   "card:description:line-height",
   "card:title:font-weight",
   "carousel:root:icon-size",
-  "cascader:label:font-size",
   "checkbox-group:label:spacing",
   "checkbox-group:root:icon-size",
   "checkbox:label:color",

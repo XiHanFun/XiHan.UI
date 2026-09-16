@@ -227,6 +227,25 @@ for (const [key, rules] of Object.entries(SEMANTIC)) {
       continue
     }
 
+    // ② 接了配方的部件的展开路径 / 打开中：面由家族按 data-in-path 给，皮肤只在基础块里映射
+    // --xh-collection-bg-open-path / -font-weight-open-path；核的是这两条映射与同部件 hover 映射同档
+    // （都没映射时家族缺省两者同为 --xh-bg-subtle），皮肤不得再写该状态的 background
+    if (onRecipe && kind === 'open') {
+      if (bg != null || weight != null)
+        report(`已投影 data-xh-collection-item，皮肤却还写了 ${state} 的面——展开路径由 collection-item 配方按 data-in-path 给`)
+      const base = declsFor(skin, target, null, within)
+      const openBg = tokenOf(base.get('--xh-collection-bg-open-path'), slots) ?? '--xh-bg-subtle'
+      const hoverBg = tokenOf(base.get('--xh-collection-bg-hover'), slots) ?? '--xh-bg-subtle'
+      const openWeight = tokenOf(base.get('--xh-collection-font-weight-open-path'), slots)
+      if (openBg.startsWith('--xh-bg-brand'))
+        report(`${state} 映射的 --xh-collection-bg-open-path 是 ${openBg}——打开中不是选中，不用品牌色`)
+      else if (openBg !== hoverBg)
+        report(`${state} 映射的 --xh-collection-bg-open-path 是 ${openBg}，同部件 --xh-collection-bg-hover 是 ${hoverBg}——打开中与所在家族 hover 同档`)
+      if (openWeight != null && !REST_WEIGHT.has(openWeight))
+        report(`${state} 映射的 --xh-collection-font-weight-open-path 是 ${openWeight}——打开中不加粗`)
+      continue
+    }
+
     switch (kind) {
       case 'overlay':
         if (bg != null && !NO_BG.has(bg))

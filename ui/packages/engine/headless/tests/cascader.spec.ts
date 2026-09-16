@@ -1094,14 +1094,58 @@ describe('roving tabindex 与 ARIA 骨架', () => {
 })
 
 describe('connectCascader 形态轴', () => {
-  it('不写 variant 时 root 与 positioner 落 outline；写 subtle 如实落', () => {
+  it('不写 variant 时 root、positioner 与 control 都落 outline；写 subtle 如实落', () => {
     const rootProps = (h: Harness): Record<string, unknown> => h.api().getRootProps() as Record<string, unknown>
+    const controlProps = (h: Harness): Record<string, unknown> => h.api().getControlProps() as Record<string, unknown>
     const fallback = mount()
     expect(rootProps(fallback)['data-variant']).toBe('outline')
     expect(fallback.positioner.getAttribute('data-variant')).toBe('outline')
+    expect(controlProps(fallback)['data-variant']).toBe('outline')
     const subtle = mount({ variant: 'subtle' })
     expect(rootProps(subtle)['data-variant']).toBe('subtle')
     expect(subtle.positioner.getAttribute('data-variant')).toBe('subtle')
+    expect(controlProps(subtle)['data-variant']).toBe('subtle')
+  })
+})
+
+describe('connectCascader 家族角色', () => {
+  const controlProps = (h: Harness): Record<string, unknown> => h.api().getControlProps() as Record<string, unknown>
+
+  it('control 投影 Field Chrome 的稳定角色与尺寸档（缺省 md），三个状态属性都在盒上', () => {
+    const control = controlProps(mount({ readOnly: true, invalid: true }))
+    expect(control['data-xh-field-chrome']).toBe('')
+    expect(control['data-xh-field-size']).toBe('md')
+    expect(control['data-readonly']).toBe('')
+    expect(control['data-invalid']).toBe('')
+    expect(controlProps(mount({ disabled: true }))['data-disabled']).toBe('')
+    expect(controlProps(mount({ size: 'lg' }))['data-xh-field-size']).toBe('lg')
+  })
+
+  it('清空钮走 Action Control 的 field-inset ghost 档，按 has-value 显隐，尺寸档随 size 缺省 md', () => {
+    const h = mount()
+    expect(h.clear.getAttribute('data-xh-action-control')).toBe('')
+    expect(h.clear.getAttribute('data-xh-action-profile')).toBe('field-inset')
+    expect(h.clear.getAttribute('data-xh-action-variant')).toBe('ghost')
+    expect(h.clear.getAttribute('data-xh-action-display')).toBe('has-value')
+    expect(h.clear.getAttribute('data-xh-action-size')).toBe('md')
+    expect(h.clear.hasAttribute('data-xh-action-has-value')).toBe(false)
+    expect(mount({ defaultValue: ['macau'] }).clear.getAttribute('data-xh-action-has-value')).toBe('')
+    expect(mount({ size: 'sm' }).clear.getAttribute('data-xh-action-size')).toBe('sm')
+  })
+
+  it('列内条目与搜索候选都投影 Collection Item 的 overlay 语境与尺寸档；正文与对号各落自己的槽', () => {
+    const h = mount({ searchable: true })
+    const macau = h.item('macau')
+    expect(macau.item.getAttribute('data-xh-collection-item')).toBe('')
+    expect(macau.item.getAttribute('data-xh-collection-size')).toBe('md')
+    expect(macau.item.getAttribute('data-xh-collection-context')).toBe('overlay')
+    expect(macau.text.getAttribute('data-xh-collection-slot')).toBe('text')
+    expect(macau.indicator.getAttribute('data-xh-collection-slot')).toBe('indicator')
+    const search = h.api().getSearchItemProps({ path: ['macau'] }) as Record<string, unknown>
+    expect(search['data-xh-collection-item']).toBe('')
+    expect(search['data-xh-collection-size']).toBe('md')
+    expect(search['data-xh-collection-context']).toBe('overlay')
+    expect(mount({ size: 'lg' }).item('macau').item.getAttribute('data-xh-collection-size')).toBe('lg')
   })
 })
 

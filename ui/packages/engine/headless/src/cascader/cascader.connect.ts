@@ -287,9 +287,15 @@ export function connectCascader<T extends PropTypes>(
       'data-disabled': dataAttr(disabled),
     }),
 
-    /** 触发按钮与清空按钮的收纳容器，也是描边、底色与聚焦环所在的那一层。 */
+    /**
+     * 触发按钮与清空按钮的收纳容器，也是描边、底色与聚焦环所在的那一层：
+     * 由 Field Chrome 家族画在它身上，size 缺省 md，variant 与 root 同源。
+     */
     getControlProps: () => normalize.element({
       ...parts.control.attrs,
+      'data-xh-field-chrome': '',
+      'data-xh-field-size': prop('size') ?? 'md',
+      'data-variant': variant,
       'data-state': stateAttr,
       'data-disabled': dataAttr(disabled),
       'data-readonly': dataAttr(readOnly),
@@ -367,8 +373,15 @@ export function connectCascader<T extends PropTypes>(
       'data-disabled': dataAttr(disabled),
     }),
 
+    // 清空钮走 Action Control 的 field-inset ghost 档：字段底是 canvas，透明 → 悬停 100 → 按下 200，按 has-value 显隐
     getClearTriggerProps: () => normalize.button({
       ...parts['clear-trigger'].attrs,
+      'data-xh-action-control': '',
+      'data-xh-action-profile': 'field-inset',
+      'data-xh-action-variant': 'ghost',
+      'data-xh-action-display': 'has-value',
+      'data-xh-action-size': prop('size') ?? 'md',
+      'data-xh-action-has-value': dataAttr(canClear),
       'type': 'button',
       // 整个控件只占一个 Tab 位（trigger），清空按钮不进 Tab 序，但保留可及名字给读屏
       'tabindex': -1,
@@ -614,8 +627,12 @@ export function connectCascader<T extends PropTypes>(
       const result = index >= 0 ? searchResults[index] : undefined
       const selectionState = searchItemState(path)
       const searchDisabled = disabled || !!result?.disabled
+      // 候选行走 Collection Item 的 overlay 语境：悬停 / 高亮 100、按下 200 由家族给，选中只留行尾对号
       return normalize.element({
         ...parts['search-item'].attrs,
+        'data-xh-collection-item': '',
+        'data-xh-collection-size': prop('size') ?? 'md',
+        'data-xh-collection-context': 'overlay',
         'id': searchItemId(key),
         'role': 'option',
         'aria-selected': selectionState === 'checked' ? 'true' : 'false',
@@ -709,9 +726,14 @@ export function connectCascader<T extends PropTypes>(
       const meta = metaOf(item.value)
       const visible = isVisible(item.value)
       const focused = !!focusedMeta && focusedMeta.value === item.value
+      // 列内条目走 Collection Item 的 overlay 语境：悬停 / 高亮 100、按下 200、展开路径的中性面由家族给，
+      // 选中只留行尾对号
       return normalize.element({
         ...parts.item.attrs,
         ...itemState(item.value),
+        'data-xh-collection-item': '',
+        'data-xh-collection-size': prop('size') ?? 'md',
+        'data-xh-collection-context': 'overlay',
         // 导航与选中都以此为条目身份
         [ITEM_VALUE_ATTR]: item.value,
         // 列的 aria-labelledby 要指得到它，每个条目都需要稳定 id
@@ -758,11 +780,14 @@ export function connectCascader<T extends PropTypes>(
     getItemTextProps: item => normalize.element({
       ...parts['item-text'].attrs,
       ...itemState(item.value),
+      'data-xh-collection-slot': 'text',
     }),
 
+    // 对号落在家族网格的 indicator 列，显隐由家族按 item 的 aria-selected / data-state=checked 给（半选由皮肤给）
     getItemIndicatorProps: item => normalize.element({
       ...parts['item-indicator'].attrs,
       ...itemState(item.value),
+      'data-xh-collection-slot': 'indicator',
       'aria-hidden': true,
     }),
   }

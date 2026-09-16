@@ -6152,7 +6152,7 @@
               "name": "bars",
               "privacy": "private",
               "readonly": true,
-              "default": "new ScrollbarsController(this, { shell: () => this.getPart('positioner'), scrollable: () => this.getPart('content'), axes: ['horizontal'], props: () => ({ dir: this.direction }), })",
+              "default": "new ScrollbarsController(this, { shell: () => this.getPart('positioner'), scrollable: () => this.getPart('content'), axes: ['horizontal'], // 条子走浮层 4px 档 props: () => ({ dir: this.direction, size: 'sm' }), })",
               "description": "列区的自绘滚动条：与 content 同级挂在已经 fixed 的 positioner 上。\n只排布横向：列多到放不下时整体横向滚动，纵向溢出归每一列自身；\n横条的正负按排版方向计算，而组件不读取计算样式，把作者写的显式值交过去。"
             },
             {
@@ -6813,6 +6813,12 @@
               "name": "--xh-cascader-item-bg-hover"
             },
             {
+              "name": "--xh-cascader-item-bg-pressed"
+            },
+            {
+              "name": "--xh-cascader-item-check-fg"
+            },
+            {
               "name": "--xh-cascader-item-fg"
             },
             {
@@ -6820,6 +6826,9 @@
             },
             {
               "name": "--xh-cascader-item-font-size"
+            },
+            {
+              "name": "--xh-cascader-item-font-weight-selected"
             },
             {
               "name": "--xh-cascader-item-gap"
@@ -6844,9 +6853,6 @@
             },
             {
               "name": "--xh-cascader-item-radius"
-            },
-            {
-              "name": "--xh-cascader-item-selected-font-weight"
             },
             {
               "name": "--xh-cascader-label-fg"
