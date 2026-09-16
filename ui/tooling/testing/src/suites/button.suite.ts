@@ -1,6 +1,7 @@
 import type { ConformanceSuite } from '../conformance/types'
 import { buttonAnatomy, buttonKeyboard } from '@xihan-ui/headless'
 import { nativeActivation } from './shared/native-activation'
+import { heldPress, heldPressIgnored } from './shared/press-channel'
 
 const APG = 'https://www.w3.org/WAI/ARIA/apg/patterns/button/'
 
@@ -21,6 +22,18 @@ export const buttonSuite: ConformanceSuite = {
       steps: [nativeActivation('button', 'root')],
     },
     {
+      name: 'Space / Enter 按住与触屏按下：root 投影 data-pressed，抬起、失焦或指针取消撤下',
+      spec: { adr: 'press-channel' },
+      covers: ['button.kbd.press'],
+      steps: [heldPress('button', 'root')],
+    },
+    {
+      name: 'loading：按住不进入按压面（aria-disabled 仍可聚焦，但不该有按压回执）',
+      spec: { adr: 'press-channel' },
+      props: { loading: true },
+      steps: [heldPressIgnored('button', 'root', 'loading 时不接受按压')],
+    },
+    {
       name: '默认：type=button，单一 root，无禁用/加载态',
       spec: { apg: APG },
       initial: {
@@ -33,6 +46,7 @@ export const buttonSuite: ConformanceSuite = {
             'aria-disabled': null,
             'data-disabled': null,
             'data-loading': null,
+            'data-pressed': null,
             'data-xh-action-control': '',
             'data-xh-action-profile': 'text',
             'data-xh-action-display': 'always',

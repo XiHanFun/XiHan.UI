@@ -8,12 +8,12 @@
 import type { PropTypes } from '@xihan-ui/core'
 import type { ButtonProps } from '@xihan-ui/headless'
 import type { ComponentPropsWithRef, ReactNode } from 'react'
-import { connectButton } from '@xihan-ui/headless'
+import { buttonMachine, connectButton } from '@xihan-ui/headless'
 import { createContext, useContext } from 'react'
-import { withXhConfig } from '../config/config'
 import { mergeReactProps } from '../runtime/merge-props'
 import { useNativeEvents } from '../runtime/native-events'
 import { reactNormalize } from '../runtime/normalize-props'
+import { useMachine } from '../runtime/use-machine'
 import { useButtonGroupDisabled } from './button-group/context'
 
 /** 从实际调用推导 api 形状，避免再写一遍 normalize 的类型参数。 */
@@ -57,9 +57,13 @@ export function XhButton({
   children,
   ...rest
 }: XhButtonProps): ReactNode {
-  const configured = withXhConfig('button', {
+  // 外层按钮组禁用时整组一起禁用；段自己写了禁用的仍然禁用
+  const groupDisabled = useButtonGroupDisabled()
+  // 机器只承载按压通道；全局配置（size）由 useMachine 那一处并入。
+  // 作者写在根节点上的可及名转告连接层，图标按钮缺名时由它提醒
+  const service = useMachine(buttonMachine, () => ({
     type,
-    disabled,
+    disabled: disabled || !!groupDisabled,
     loading,
     iconOnly,
     fullWidth,
@@ -67,16 +71,10 @@ export function XhButton({
     tone,
     size,
     as,
-  } as ButtonProps)
-  // 外层按钮组禁用时整组一起禁用；段自己写了禁用的仍然禁用
-  const groupDisabled = useButtonGroupDisabled()
-  // 作者写在根节点上的可及名转告连接层，图标按钮缺名时由它提醒
-  const api = connectButton({
-    ...configured,
-    disabled: configured.disabled || !!groupDisabled,
     ariaLabel: (rest as Record<string, unknown>)['aria-label'] as string | undefined,
     ariaLabelledby: (rest as Record<string, unknown>)['aria-labelledby'] as string | undefined,
-  }, reactNormalize)
+  } as ButtonProps))
+  const api = connectButton(service, reactNormalize)
   // 连接层的 onClick 在载入态里调 stopImmediatePropagation 把同节点上作者的处理器一并拦下。
   // 那是 DOM 语义：React 的合成事件既没有这个方法，两个处理器也早被合成一条链，拦不住。
   // 装成原生监听器之后，事件在节点上就被截住、根本到不了 React 委派的那一层

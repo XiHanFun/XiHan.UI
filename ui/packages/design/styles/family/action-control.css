@@ -351,7 +351,7 @@
     scale: var(--xh-action-scale-hover, none);
   }
 
-  [data-xh-action-control]:not([data-disabled]):not([data-loading]):active {
+  [data-xh-action-control]:not([data-disabled]):not([data-loading]):is(:active, [data-pressed]) {
     background-color: var(--xh-action-bg-pressed, var(--xh-_action-variant-bg-pressed));
     color: var(--xh-action-fg-pressed, var(--xh-_action-variant-fg-pressed));
     border-color: var(--xh-action-border-pressed, var(--xh-_action-variant-border-pressed));
@@ -364,7 +364,7 @@
     transition-timing-function: var(--xh-motion-ease-press);
   }
 
-  [data-xh-action-control]:is([data-xh-action-profile='row'], [data-xh-action-profile='disclosure-trigger']):not([data-disabled]):not([data-loading]):active {
+  [data-xh-action-control]:is([data-xh-action-profile='row'], [data-xh-action-profile='disclosure-trigger']):not([data-disabled]):not([data-loading]):is(:active, [data-pressed]) {
     scale: none;
   }
 
@@ -466,7 +466,7 @@
       border-color: Highlight;
     }
 
-    [data-xh-action-control]:not([data-disabled]):not([data-loading]):active {
+    [data-xh-action-control]:not([data-disabled]):not([data-loading]):is(:active, [data-pressed]) {
       background-color: Highlight;
       color: HighlightText;
       border-color: Highlight;

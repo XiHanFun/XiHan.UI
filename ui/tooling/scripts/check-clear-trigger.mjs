@@ -168,8 +168,9 @@ for (const c of EMBEDDED) {
         problems.push(`${c}.css [clear-trigger] 没把 --xh-${c}-action-radius 映到 field-inset 圆角`)
       if (!has(rules, (t, b) => t.trim().startsWith('[hidden]') && /display:\s*none/.test(b)))
         problems.push(`${c}.css [clear-trigger] 缺 [hidden] { display: none }`)
-      if (!/\[data-xh-action-control\]:not\(\[data-disabled\]\):not\(\[data-loading\]\):active[\s\S]*--xh-motion-scale-press/.test(family))
-        problems.push('family/action-control.css 缺 field-inset 共用的 :active 按压反馈')
+      // 家族的按压面同时认指针 :active 与 Headless 投影的 data-pressed
+      if (!/\[data-xh-action-control\]:not\(\[data-disabled\]\):not\(\[data-loading\]\):is\(:active, \[data-pressed\]\)[\s\S]*--xh-motion-scale-press/.test(family))
+        problems.push('family/action-control.css 缺 field-inset 共用的 :is(:active, [data-pressed]) 按压反馈')
       if (!/transition:[\s\S]{0,400}\bscale\b/.test(family))
         problems.push('family/action-control.css 的共用 transition 没有 scale')
       if (!/['"]data-xh-action-display['"]\s*:\s*['"]has-value['"]/.test(g ?? '') || !/['"]data-xh-action-has-value['"]\s*:/.test(g ?? ''))

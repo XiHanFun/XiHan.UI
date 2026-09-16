@@ -8,6 +8,7 @@
 import type { NormalizeProps, PropTypes, Service } from '@xihan-ui/core'
 import type { ToggleApi, ToggleSchema } from './toggle.types'
 import { dataAttr } from '@xihan-ui/core'
+import { pressHandlers } from '../shared/press'
 import { toggleAnatomy } from './toggle.anatomy'
 
 const parts = toggleAnatomy.build()
@@ -16,9 +17,11 @@ export function connectToggle<T extends PropTypes>(
   service: Service<ToggleSchema>,
   normalize: NormalizeProps<T>,
 ): ToggleApi<T> {
-  const { state, prop, send } = service
+  const { state, context, prop, send } = service
   const pressed = state.get() === 'on'
   const disabled = !!prop('disabled')
+  // 键盘 / 触屏按住期间的按压面；指针按住由 :active 表出，皮肤两者同一档
+  const press = pressHandlers(service)
 
   const setPressed = (next: boolean): void => {
     if (next !== pressed)
@@ -44,10 +47,17 @@ export function connectToggle<T extends PropTypes>(
       'data-icon-only': dataAttr(!!prop('iconOnly')),
       'data-full-width': dataAttr(!!prop('fullWidth')),
       'data-disabled': dataAttr(disabled),
+      'data-pressed': dataAttr(context.get('pressed')),
       'onClick': () => {
         if (!disabled)
           send({ type: 'TOGGLE' })
       },
+      'onKeyDown': press.onKeyDown,
+      'onKeyUp': press.onKeyUp,
+      'onBlur': press.onBlur,
+      'onPointerDown': press.onPointerDown,
+      'onPointerUp': press.onPointerUp,
+      'onPointerCancel': press.onPointerCancel,
     }),
   }
 }

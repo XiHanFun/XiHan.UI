@@ -22,8 +22,31 @@ const LAYOUT_JUSTIFY = ['center', 'start', 'space-between']
 const LAYOUT_PRESS = ['scale', 'surface']
 /* 承载面阶梯只对静息透明的形态有意义：ghost / outline 的悬停与按下面按容器下发的阶梯取值。 */
 const HOST_LADDER_VARIANTS = ['outline', 'ghost']
+/* 按压面：指针按住是 :active，Space / Enter 与触屏按住由 Headless 投影 data-pressed，同一档（真源 §9.1）。 */
+const PRESSED = ':is(:active, [data-pressed])'
 /* 深色实心只覆盖非禁用态：disabled 仍走中性面。 */
 const DARK_SOLID_STATES = ['rest', 'hover', 'pressed', 'focus-visible', 'loading']
+/** 逗号只在括号外才分隔选择器：:is(:active, [data-pressed]) 里的那一个不算。 */
+function splitSelectorList(selector) {
+  const branches = []
+  let depth = 0
+  let current = ''
+  for (const ch of selector) {
+    if (ch === '(')
+      depth++
+    else if (ch === ')')
+      depth--
+    if (ch === ',' && depth === 0) {
+      branches.push(current.trim())
+      current = ''
+      continue
+    }
+    current += ch
+  }
+  branches.push(current.trim())
+  return branches
+}
+
 const STATE_SLOT = {
   backgroundColor: 'bg',
   color: 'fg',
@@ -258,7 +281,7 @@ export function compileActionControlRecipe(source) {
   const selectors = new Set()
   const chunks = []
   const rule = (selector, body, context = 'root', target = chunks, indent = '  ') => {
-    for (const branch of selector.split(',').map(value => value.trim())) {
+    for (const branch of splitSelectorList(selector)) {
       const key = `${context}\n${branch}`
       if (selectors.has(key))
         throw new Error(`[action-control-recipe] 生成了重复选择器：${branch} (${context})`)
@@ -368,15 +391,15 @@ export function compileActionControlRecipe(source) {
   rule('[data-xh-action-control]:focus-visible', stateDeclarations(source, 'focus-visible', true))
   rule('[data-xh-action-control]:not([data-disabled]):not([data-loading]):hover', stateDeclarations(source, 'hover'))
   /* 按下段：所有过渡通道一起收进按下时长与曲线；释放回到 rest 规则的时长。 */
-  rule('[data-xh-action-control]:not([data-disabled]):not([data-loading]):active', [
+  rule(`[data-xh-action-control]:not([data-disabled]):not([data-loading])${PRESSED}`, [
     stateDeclarations(source, 'pressed'),
     `    transition-duration: ${source.motion.pressDuration};`,
     `    transition-timing-function: ${source.motion.pressEasing};`,
   ].join('\n'))
-  /* 只换面的档：按下不缩放，必须排在通用 :active 之后才能覆盖。 */
+  /* 只换面的档：按下不缩放，必须排在通用按压规则之后才能覆盖。 */
   const surfaceProfiles = PROFILES.filter(profile => layoutOf(profile).press === 'surface')
   if (surfaceProfiles.length > 0)
-    rule(`${profileSelector(surfaceProfiles)}:not([data-disabled]):not([data-loading]):active`, '    scale: none;')
+    rule(`${profileSelector(surfaceProfiles)}:not([data-disabled]):not([data-loading])${PRESSED}`, '    scale: none;')
   rule('[data-xh-action-control][data-disabled]', stateDeclarations(source, 'disabled'))
   rule('[data-xh-action-control][data-loading][aria-disabled=\'true\']', stateDeclarations(source, 'loading'))
 
@@ -432,7 +455,7 @@ export function compileActionControlRecipe(source) {
   forcedRule('[data-xh-action-control]', 'rest')
   forcedRule('[data-xh-action-control]:focus-visible', 'focus-visible', [`      outline-color: ${source.forcedColors['focus-visible'].outlineColor};`])
   forcedRule('[data-xh-action-control]:not([data-disabled]):not([data-loading]):hover', 'hover')
-  forcedRule('[data-xh-action-control]:not([data-disabled]):not([data-loading]):active', 'pressed')
+  forcedRule(`[data-xh-action-control]:not([data-disabled]):not([data-loading])${PRESSED}`, 'pressed')
   forcedRule('[data-xh-action-control][data-disabled]', 'disabled')
   forcedRule('[data-xh-action-control][data-loading][aria-disabled=\'true\']', 'loading', ['      border-style: dashed;'])
   chunks.push(`  @media (forced-colors: active) {\n${forced.join('\n\n')}\n  }`)

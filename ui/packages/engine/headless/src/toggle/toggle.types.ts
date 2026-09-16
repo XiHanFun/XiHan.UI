@@ -32,7 +32,13 @@ export interface ToggleSchema extends MachineSchema {
     /** pressed 变化意图回调；受控时是唯一出口，非受控时随内部转移一并通知。 */
     onPressedChange?: (details: TogglePressedChangeDetails) => void
   }
-  context: Record<string, never>
+  context: {
+    /**
+     * 正被按住：Space / Enter 或触屏手指按下到松开之间。它是瞬态的按压面（投影 data-pressed），
+     * 与 props 里的 pressed（开关的 on / off，投影 aria-pressed）是两件事。
+     */
+    pressed: boolean
+  }
   computed: Record<string, never>
   refs: Record<string, never>
   state: 'off' | 'on'
@@ -41,9 +47,12 @@ export interface ToggleSchema extends MachineSchema {
     // 受控回写：宿主改 pressed 后由 watch 派发，无条件跳转、不再通知
     | { type: 'CONTROLLED.ON' }
     | { type: 'CONTROLLED.OFF' }
+    // 按压通道（shared/press）：Space / Enter 或触屏按住与松开
+    | { type: 'PRESS.START' }
+    | { type: 'PRESS.END' }
   tag: never
-  guard: 'isPressedControlled'
-  action: 'invokeOnPress' | 'invokeOnUnpress' | 'syncPressed'
+  guard: 'isPressedControlled' | 'canPress'
+  action: 'invokeOnPress' | 'invokeOnUnpress' | 'syncPressed' | 'startPress' | 'endPress' | 'releaseWhenDisabled'
   effect: never
 }
 

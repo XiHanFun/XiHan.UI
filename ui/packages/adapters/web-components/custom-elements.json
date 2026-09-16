@@ -3444,7 +3444,7 @@
       "declarations": [
         {
           "kind": "class",
-          "description": "`<xh-button>`：按钮行为宿主，无状态机，宿主属性即 button props。",
+          "description": "`<xh-button>`：按钮行为宿主，宿主属性即 button props；机器只承载按压通道（data-pressed）。",
           "name": "XhButtonElement",
           "cssParts": [
             {
@@ -3542,6 +3542,23 @@
                 "text": "ButtonProps['as'] | undefined"
               },
               "attribute": "as"
+            },
+            {
+              "kind": "field",
+              "name": "ctrl",
+              "privacy": "private",
+              "readonly": true,
+              "default": "new MachineController<ButtonSchema>(this, buttonMachine, () => this.machineProps())"
+            },
+            {
+              "kind": "method",
+              "name": "machineProps",
+              "privacy": "private",
+              "return": {
+                "type": {
+                  "text": "Partial<ButtonSchema['props']>"
+                }
+              }
             },
             {
               "kind": "method",

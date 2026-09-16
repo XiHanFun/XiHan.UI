@@ -2,6 +2,7 @@ import type { ConformanceSuite } from '../conformance/types'
 import { toggleAnatomy, toggleKeyboard } from '@xihan-ui/headless'
 import { dispatchClickOnDisabled } from './shared/disabled-press'
 import { nativeActivation } from './shared/native-activation'
+import { heldPress, heldPressIgnored } from './shared/press-channel'
 
 const APG = 'https://www.w3.org/WAI/ARIA/apg/patterns/button/'
 
@@ -19,6 +20,22 @@ export const toggleSuite: ConformanceSuite = {
       steps: [nativeActivation('toggle', 'root')],
     },
     {
+      name: 'Space / Enter 按住与触屏按下：root 投影 data-pressed，与 aria-pressed 的开关态无关',
+      spec: { adr: 'press-channel' },
+      covers: ['toggle.kbd.press'],
+      steps: [
+        heldPress('toggle', 'root'),
+        // 按住面撤下后开关态没被碰过：keydown / keyup 不经平台激活，jsdom 不翻成 click
+        { kind: 'settle', until: { attr: { part: 'root', name: 'data-pressed', value: null } }, expect: { parts: { root: { 'aria-pressed': 'false' } } } },
+      ],
+    },
+    {
+      name: 'disabled：按住不进入按压面',
+      spec: { adr: 'press-channel' },
+      props: { disabled: true },
+      steps: [heldPressIgnored('toggle', 'root', '禁用时不接受按压')],
+    },
+    {
       name: '初始未按下：type=button、aria-pressed=false、data-state=off',
       spec: { apg: APG },
       initial: {
@@ -30,6 +47,7 @@ export const toggleSuite: ConformanceSuite = {
             'aria-pressed': 'false',
             'data-state': 'off',
             'data-disabled': null,
+            'data-pressed': null,
             'data-xh-action-control': '',
             'data-xh-action-profile': 'text',
             'data-xh-action-display': 'always',

@@ -3590,11 +3590,12 @@
         "background-color"
       ],
       "state": [
-        "active",
         "disabled",
+        "is(:active, [data-pressed])",
         "loading",
         "not([data-disabled])",
-        "not([data-loading])"
+        "not([data-loading])",
+        "pressed"
       ],
       "defaultToken": [
         "--xh-bg-brand-active"
@@ -3634,16 +3635,17 @@
         "color"
       ],
       "state": [
-        "active",
         "default",
         "disabled",
         "focus-visible",
         "hover",
+        "is(:active, [data-pressed])",
         "loading",
         "not([data-disabled])",
         "not([data-loading])",
         "not([data-scope='button-group'] *)",
         "not([data-variant])",
+        "pressed",
         "variant",
         "variant=solid"
       ],
@@ -11284,11 +11286,12 @@
         "background-color"
       ],
       "state": [
-        "active",
         "disabled",
+        "is(:active, [data-pressed])",
         "loading",
         "not([data-disabled])",
-        "not([data-loading])"
+        "not([data-loading])",
+        "pressed"
       ],
       "defaultToken": [
         "--xh-bg-subtle-active"
@@ -49630,9 +49633,10 @@
         "background-color"
       ],
       "state": [
-        "active",
         "error",
+        "is(:active, [data-pressed])",
         "not([aria-disabled='true'], [aria-busy='true'], [data-error])",
+        "pressed",
         "xh-collection-context=overlay"
       ],
       "defaultToken": [
@@ -49651,12 +49655,13 @@
         "color"
       ],
       "state": [
-        "active",
         "error",
         "highlighted",
         "hover",
+        "is(:active, [data-pressed])",
         "is(:focus-visible, [data-highlighted])",
         "not([aria-disabled='true'], [aria-busy='true'], [data-error])",
+        "pressed",
         "state=checked",
         "xh-collection-context=overlay",
         "xh-collection-slot=indicator"
@@ -49677,13 +49682,14 @@
         "color"
       ],
       "state": [
-        "active",
         "default",
         "error",
         "highlighted",
         "hover",
+        "is(:active, [data-pressed])",
         "is(:focus-visible, [data-highlighted])",
         "not([aria-disabled='true'], [aria-busy='true'], [data-error])",
+        "pressed",
         "xh-collection-context=overlay"
       ],
       "defaultToken": [
@@ -49702,12 +49708,13 @@
         "color"
       ],
       "state": [
-        "active",
         "error",
         "highlighted",
         "hover",
+        "is(:active, [data-pressed])",
         "is(:focus-visible, [data-highlighted])",
         "not([aria-disabled='true'], [aria-busy='true'], [data-error])",
+        "pressed",
         "xh-collection-context=overlay"
       ],
       "defaultToken": [
@@ -49744,12 +49751,13 @@
         "font-weight"
       ],
       "state": [
-        "active",
         "error",
         "highlighted",
         "hover",
+        "is(:active, [data-pressed])",
         "is(:focus-visible, [data-highlighted])",
         "not([aria-disabled='true'], [aria-busy='true'], [data-error])",
+        "pressed",
         "xh-collection-context=overlay"
       ],
       "defaultToken": [
@@ -58270,11 +58278,12 @@
         "background-color"
       ],
       "state": [
-        "active",
         "disabled",
+        "is(:active, [data-pressed])",
         "loading",
         "not([data-disabled])",
-        "not([data-loading])"
+        "not([data-loading])",
+        "pressed"
       ],
       "defaultToken": [
         "--xh-bg-subtle-active"
@@ -64976,11 +64985,12 @@
         "background-color"
       ],
       "state": [
-        "active",
         "disabled",
+        "is(:active, [data-pressed])",
         "loading",
         "not([data-disabled])",
-        "not([data-loading])"
+        "not([data-loading])",
+        "pressed"
       ],
       "defaultToken": [
         "--xh-bg-subtle-active"
@@ -65062,11 +65072,12 @@
         "background-color"
       ],
       "state": [
-        "active",
         "disabled",
+        "is(:active, [data-pressed])",
         "loading",
         "not([data-disabled])",
         "not([data-loading])",
+        "pressed",
         "state=on"
       ],
       "defaultToken": [
@@ -65128,14 +65139,15 @@
         "border-color"
       ],
       "state": [
-        "active",
         "default",
         "disabled",
         "focus-visible",
         "hover",
+        "is(:active, [data-pressed])",
         "loading",
         "not([data-disabled])",
-        "not([data-loading])"
+        "not([data-loading])",
+        "pressed"
       ],
       "defaultToken": [
         "transparent"
@@ -65174,13 +65186,14 @@
         "border-color"
       ],
       "state": [
-        "active",
         "disabled",
         "focus-visible",
         "hover",
+        "is(:active, [data-pressed])",
         "loading",
         "not([data-disabled])",
         "not([data-loading])",
+        "pressed",
         "state=on"
       ],
       "defaultToken": [
@@ -65199,14 +65212,15 @@
         "color"
       ],
       "state": [
-        "active",
         "default",
         "disabled",
         "focus-visible",
         "hover",
+        "is(:active, [data-pressed])",
         "loading",
         "not([data-disabled])",
-        "not([data-loading])"
+        "not([data-loading])",
+        "pressed"
       ],
       "defaultToken": [
         "--xh-fg-default"
@@ -65242,13 +65256,14 @@
         "color"
       ],
       "state": [
-        "active",
         "disabled",
         "focus-visible",
         "hover",
+        "is(:active, [data-pressed])",
         "loading",
         "not([data-disabled])",
         "not([data-loading])",
+        "pressed",
         "state=on"
       ],
       "defaultToken": [
@@ -65417,13 +65432,14 @@
         "box-shadow"
       ],
       "state": [
-        "active",
         "disabled",
         "focus-visible",
         "hover",
+        "is(:active, [data-pressed])",
         "loading",
         "not([data-disabled])",
         "not([data-loading])",
+        "pressed",
         "state=on"
       ],
       "defaultToken": [

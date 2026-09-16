@@ -5,9 +5,10 @@
 
 // 提供 button 相关实现。
 
-import type { NormalizeProps, PropTypes } from '@xihan-ui/core'
-import type { ButtonApi, ButtonProps } from './button.types'
+import type { NormalizeProps, PropTypes, Service } from '@xihan-ui/core'
+import type { ButtonApi, ButtonSchema } from './button.types'
 import { dataAttr, isDev } from '@xihan-ui/core'
+import { pressHandlers } from '../shared/press'
 import { buttonAnatomy } from './button.anatomy'
 
 const parts = buttonAnatomy.build()
@@ -15,18 +16,23 @@ const parts = buttonAnatomy.build()
 /** 图标按钮缺可及名的提醒只投一次，连接层每次重算都会经过这里。 */
 let iconOnlyNameWarned = false
 
-// Button 无状态机，状态来自 props 与原生伪类。
+// Button 没有业务状态：禁用 / 加载来自 props 与原生伪类，机器只承载按压通道。
 export function connectButton<T extends PropTypes>(
-  props: ButtonProps,
+  service: Service<ButtonSchema>,
   normalize: NormalizeProps<T>,
 ): ButtonApi<T> {
-  const disabled = !!props.disabled
-  const loading = !!props.loading
+  const { prop, context } = service
+  const disabled = !!prop('disabled')
+  const loading = !!prop('loading')
   const interactive = !disabled && !loading
+  const iconOnly = !!prop('iconOnly')
+  const size = prop('size')
   // 渲染成链接时没有原生 type 与原生 disabled 可用，两件事都改走 ARIA
-  const nativeButton = (props.as ?? 'button') === 'button'
+  const nativeButton = (prop('as') ?? 'button') === 'button'
+  // 键盘 / 触屏按住期间的按压面；指针按住由 :active 表出，皮肤两者同一档
+  const press = pressHandlers(service)
   // 图标按钮没有可见文字，没给 aria-label / aria-labelledby 就没有可及名；只在开发模式提醒一次
-  if (isDev() && !iconOnlyNameWarned && props.iconOnly && !props.ariaLabel && !props.ariaLabelledby) {
+  if (isDev() && !iconOnlyNameWarned && iconOnly && !prop('ariaLabel') && !prop('ariaLabelledby')) {
     iconOnlyNameWarned = true
     console.warn('[xh:button] iconOnly 按钮没有可见文字，须给 aria-label 或 aria-labelledby')
   }
@@ -36,7 +42,7 @@ export function connectButton<T extends PropTypes>(
     loading,
     getRootProps: () => normalize.button({
       ...parts.root.attrs,
-      'type': nativeButton ? (props.type ?? 'button') : undefined,
+      'type': nativeButton ? (prop('type') ?? 'button') : undefined,
       // 真 disabled 用原生（会丢焦点）；loading 用 aria-disabled + 拦截事件（保留焦点）。
       // 链接上这两条原生属性都不成立，禁用一并落到 aria-disabled 上
       'disabled': (nativeButton && disabled) || undefined,
@@ -46,16 +52,17 @@ export function connectButton<T extends PropTypes>(
       'aria-busy': loading ? 'true' : undefined,
       // Family Recipe 只需要稳定的视觉角色事实；具体尺寸与状态值全部由样式层配方决定。
       'data-xh-action-control': '',
-      'data-xh-action-profile': props.iconOnly ? 'icon' : 'text',
+      'data-xh-action-profile': iconOnly ? 'icon' : 'text',
       'data-xh-action-display': 'always',
-      'data-xh-action-size': props.size ?? 'md',
-      'data-variant': props.variant,
-      'data-tone': props.tone,
-      'data-size': props.size,
+      'data-xh-action-size': size ?? 'md',
+      'data-variant': prop('variant'),
+      'data-tone': prop('tone'),
+      'data-size': size,
       'data-disabled': dataAttr(disabled),
       'data-loading': dataAttr(loading),
-      'data-icon-only': dataAttr(!!props.iconOnly),
-      'data-full-width': dataAttr(!!props.fullWidth),
+      'data-icon-only': dataAttr(iconOnly),
+      'data-full-width': dataAttr(!!prop('fullWidth')),
+      'data-pressed': dataAttr(context.get('pressed')),
       'onClick': (e: Event) => {
         if (interactive)
           return
@@ -63,6 +70,12 @@ export function connectButton<T extends PropTypes>(
         // 用 stopImmediatePropagation，同节点上作者的处理器也一并拦下
         e.stopImmediatePropagation()
       },
+      'onKeyDown': press.onKeyDown,
+      'onKeyUp': press.onKeyUp,
+      'onBlur': press.onBlur,
+      'onPointerDown': press.onPointerDown,
+      'onPointerUp': press.onPointerUp,
+      'onPointerCancel': press.onPointerCancel,
     }),
     getLabelProps: () => normalize.element({ ...parts.label.attrs }),
     getIndicatorProps: () => normalize.element({ ...parts.indicator.attrs, 'aria-hidden': true }),

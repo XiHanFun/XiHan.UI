@@ -8,5 +8,6 @@
 export { buttonAnatomy } from './button.anatomy'
 export { connectButton } from './button.connect'
 export { buttonKeyboard } from './button.keyboard'
+export { buttonMachine } from './button.machine'
 export { buttonMeta } from './button.meta'
-export type { ButtonApi, ButtonElement, ButtonProps, ButtonTranslations } from './button.types'
+export type { ButtonApi, ButtonElement, ButtonProps, ButtonSchema, ButtonTranslations } from './button.types'

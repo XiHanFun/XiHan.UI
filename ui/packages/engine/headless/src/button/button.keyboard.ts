@@ -14,5 +14,6 @@ export const buttonKeyboard: KeyboardTable = {
   source: APG,
   rows: [
     { id: 'button.kbd.activate', keys: ['Enter', 'Space'], when: 'focus in root, interactive', does: '激活按钮（原生行为）' },
+    { id: 'button.kbd.press', keys: ['Enter', 'Space'], when: 'held in root, interactive', does: '按住期间投影 data-pressed，与指针 :active 同一副按压面；抬起或失焦撤下' },
   ],
 }

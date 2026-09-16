@@ -3,7 +3,7 @@
  * Licensed under the MIT License. See LICENSE in the project root for license information.
  */
 
-// 交互行为原语：焦点域、消解层、滚动锁、存在性、粘底。
+// 交互行为原语：焦点域、消解层、滚动锁、存在性、粘底、按压通道。
 
 export { cascadeState, cascadeToggle, collapseChecked } from './collection/cascade'
 export type { CascadeNodeLike, CascadeState, CascadeStrategy } from './collection/cascade'
@@ -32,6 +32,8 @@ export type { FormResetBridgeOptions } from './form-reset'
 
 export { pointInPolygon, safeTriangle, trackHoverIntent } from './hover-intent'
 export type { HoverIntentOptions, HoverPoint, HoverRect } from './hover-intent'
+export { createPressTracker } from './press'
+export type { PressHandlers, PressTrackerOptions } from './press'
 export { acquireScrollLock } from './scroll-lock'
 
 export type { ScrollLockHandle, ScrollLockOptions } from './scroll-lock'

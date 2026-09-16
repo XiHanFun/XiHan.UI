@@ -34,8 +34,10 @@
 //    列表行一律登 PRESSABLE 的 surface 形态；
 // ⑧ data-pressed 第二判据：PRESSABLE 部件的 connect getter 必须投影 data-pressed（Space / Enter 与粗指针
 //    的按压由 Headless 投影），家族配方的按压选择器必须是 :is(:active, [data-pressed])。
+//    皮肤自己写的按压规则两种写法都认：:active（只有指针）与 :is(:active, [data-pressed])（三种输入同一档）。
 // 存量登 family-backlog.json press 段：⑤ 的 15 条、⑥ 只缩放不换底的、⑦ 皮肤还没有 :active 换面的行，
-// 以及 ⑧ 在 press-channel 落地前的一条 *:data-pressed 总豁免；命中即放行、不命中判过期，表只减不增。
+// 以及 ⑧ 各组件接上 press-channel 之前的一条 *:data-pressed 总豁免（button / toggle 已接，其余随各组件
+// 提交接入，全部接完即删）；命中即放行、不命中判过期，表只减不增。
 import { readdir, readFile } from 'node:fs/promises'
 import { join } from 'node:path'
 import { getterBody } from './lib/connect-getters.mjs'
@@ -234,8 +236,11 @@ const ROW_OR_DISCLOSURE = new Set([
 const ROW_GEOMETRY = /(?:^|;)\s*(?:inline-size\s*:\s*100%|flex\s*:\s*1|display\s*:\s*block)\s*(?:;|$)/
 
 const backlog = await openBacklog('press')
-/** press-channel 落地前 data-pressed 判据的总豁免键。 */
+/** 各组件接上 press-channel 之前 data-pressed 判据的总豁免键。 */
 const PRESSED_CHANNEL = '*:data-pressed'
+/** 按压选择器：皮肤自己写的两种写法都认；家族配方只认后一种（⑧）。 */
+const PRESS_SELECTOR = String.raw`(?::active|:is\(:active, \[data-pressed\]\))`
+const FAMILY_PRESS = String.raw`:is\(:active, \[data-pressed\]\)`
 
 const problems = [...backlog.problems]
 const actionRecipe = await readFile(ACTION_RECIPE, 'utf8').catch(() => '')
@@ -414,9 +419,9 @@ function checkPart(name, part, css, familyCss = '') {
     if (base && ROW_GEOMETRY.test(base[1]))
       report(key, `${name} 的 ${part} 基础规则含 inline-size: 100% / flex: 1 / display: block，是铺满一行的东西，登记成缩放形态——改登记 { part: '${part}', feedback: 'surface' }`)
   }
-  // :active 规则要落在该部件上，且缩放量走令牌
-  const active = new RegExp(`${partSelector(part)}[^{]*:active(?::not\\([^)]*\\))?(?:::[a-z-]+)?\\s*\\{([^}]*)\\}`)
-  const match = css.match(active) ?? familyCss.match(/\[data-xh-action-control\][^{]*:active\s*\{([^}]*)\}/)
+  // 按压规则要落在该部件上，且缩放量走令牌
+  const active = new RegExp(`${partSelector(part)}[^{]*${PRESS_SELECTOR}(?::not\\([^)]*\\))?(?:::[a-z-]+)?\\s*\\{([^}]*)\\}`)
+  const match = css.match(active) ?? familyCss.match(new RegExp(`\\[data-xh-action-control\\][^{]*${FAMILY_PRESS}\\s*\\{([^}]*)\\}`))
   if (!match) {
     problems.push(`${name} 的 ${part} 没有 :active 规则——按下去到松手之间没有任何变化`)
     return
@@ -439,10 +444,10 @@ function checkPart(name, part, css, familyCss = '') {
 
 /** 列表行用换面表达按下，几何保持不变；只有显式登记的部件走这条合同。 */
 function checkSurfacePart(name, part, css, familyCss = '') {
-  const active = new RegExp(`${partSelector(part)}[^{]*:active(?::not\\([^)]*\\))?\\s*\\{([^}]*)\\}`)
+  const active = new RegExp(`${partSelector(part)}[^{]*${PRESS_SELECTOR}(?::not\\([^)]*\\))?\\s*\\{([^}]*)\\}`)
   // 投影了 data-xh-collection-item 的部件（familyCss 非空）可以由家族配方的 pressed 面给出换底
   const match = css.match(active)
-    ?? (familyCss ? familyCss.match(/\[data-xh-collection-item\][^{]*:active\s*\{([^}]*)\}/) : null)
+    ?? (familyCss ? familyCss.match(new RegExp(`\\[data-xh-collection-item\\][^{]*${FAMILY_PRESS}\\s*\\{([^}]*)\\}`)) : null)
   const key = `${name}:${part}`
   const surface = match?.[1].match(/(?:^|;)\s*(?:background(?:-color)?|--xh-_collection-bg)\s*:\s*([^;]+)/)
   if (!surface || /^(?:none|transparent)$/.test(surface[1].trim()))

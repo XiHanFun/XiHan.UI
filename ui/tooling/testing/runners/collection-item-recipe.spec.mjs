@@ -23,7 +23,7 @@ function ruleBody(css, selector) {
 }
 
 function contextSelector(context, subject, overlay) {
-  const suffix = { hover: ':hover', highlight: ':is(:focus-visible, [data-highlighted])', pressed: ':active' }
+  const suffix = { hover: ':hover', highlight: ':is(:focus-visible, [data-highlighted])', pressed: ':is(:active, [data-pressed])' }
   const base = `[data-xh-collection-item][data-xh-collection-context='${context}'][${subject === 'selected' ? 'aria-selected=\'true\'' : 'data-current'}]${GUARD}`
   return overlay ? `${base}${suffix[overlay]}` : base
 }
@@ -85,13 +85,15 @@ describe('collection Item recipe', () => {
   it('换面走统一点击时间线：释放 200ms，按下 120ms，pressed 面排在 hover 与高亮之后', async () => {
     const css = compileCollectionItemRecipe(await source())
     expect(css).toContain('background-color var(--xh-motion-duration-release) var(--xh-motion-ease-release)')
-    const pressed = css.match(/\[data-error\]\):active \{([^}]*)\}/)[1]
+    // 按压面同时认指针 :active 与 Headless 投影的 data-pressed（键盘 / 触屏），同一档
+    const pressed = css.match(/\[data-error\]\):is\(:active, \[data-pressed\]\) \{([^}]*)\}/)[1]
+    expect(css).not.toMatch(/\[data-error\]\):active \{/)
     expect(pressed).toContain('transition-duration: var(--xh-motion-duration-press);')
     expect(pressed).toContain('transition-timing-function: var(--xh-motion-ease-press);')
     expect(pressed).toContain('--xh-_collection-bg: var(--xh-collection-bg-pressed, var(--xh-bg-subtle-hover));')
     expect(pressed).not.toMatch(/scale|translate|transform/)
     // 三条同为 (0,3,0)：pressed 若排在前面会被 hover / 高亮盖掉，永远不可见
-    expect(css.indexOf('[data-error]):active {')).toBeGreaterThan(css.indexOf('[data-highlighted]) {'))
+    expect(css.indexOf('[data-error]):is(:active, [data-pressed]) {')).toBeGreaterThan(css.indexOf('[data-highlighted]) {'))
     expect(css.indexOf('[data-highlighted]) {')).toBeGreaterThan(css.indexOf('[data-error]):hover {'))
   })
 

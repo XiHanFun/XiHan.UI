@@ -196,6 +196,7 @@
     "data-paused": "carousel / notification / toast 的自动推进已暂停（悬停、页面隐藏或调用 api）；marquee 的滚动被作者受控停住。",
     "data-placeholder": "显示的是占位文字，不是真值。",
     "data-positioned": "浮层的坐标已经算出来、可以露面；展开头几帧还没算完时不写。",
+    "data-pressed": "Space / Enter 或粗指针（触屏）按住期间；与指针 :active 同一副按压面，皮肤写 :is(:active, [data-pressed])。由 Headless 的按压通道投影：button、toggle；其余可按部件随各组件接入。",
     "data-pressing": "context-menu 的触发区正在被长按，还没到唤出阈值。",
     "data-range-end": "calendar-range-picker 的这一格是已选区间的末端。",
     "data-range-start": "calendar-range-picker 的这一格是已选区间的起点。",
