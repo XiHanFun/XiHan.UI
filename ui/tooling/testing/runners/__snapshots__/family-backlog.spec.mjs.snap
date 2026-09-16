@@ -2,14 +2,14 @@
 
 exports[`family-backlog 条目数 > 七段各一数，与快照一致 1`] = `
 {
-  "edge": 22,
+  "edge": 21,
   "ladder": 63,
   "motion": 1,
   "press": 50,
   "scroll": 27,
   "selection": 18,
   "shape": 21,
-  "text": 71,
+  "text": 70,
 }
 `;
 
@@ -25,7 +25,6 @@ exports[`family-backlog 键集合 > edge 1`] = `
   "color-slider:thumb:raised",
   "download-trigger:root:raised",
   "file-upload:trigger:raised",
-  "page-header:root:outline",
   "popconfirm:confirm-trigger:raised",
   "segmented:indicator:raised",
   "segmented:root",
@@ -288,7 +287,6 @@ exports[`family-backlog 键集合 > text 1`] = `
   "menubar:content:icon-size",
   "menubar:root:icon-size",
   "navigation-menu:root:icon-size",
-  "page-header:title:font-weight",
   "pagination:root:icon-size",
   "popconfirm:description:color",
   "popconfirm:description:font-size",

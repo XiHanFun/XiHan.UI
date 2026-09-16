@@ -8648,14 +8648,16 @@
   --xh-_page-header-radius: var(--xh-shape-surface);
 }
 
-/* outline 恒带整圈描边：描边撑住这块面的边界，不再叠投影 */
+/* outline 是一张静态内容面：--xh-border-default 描边撑住这块面的边界 + surface 底，不叠投影（§5.3）；
+   --xh-border-subtle 只作 ghost 贴底那条分隔线用，不当根面外边 */
 [data-scope='page-header'][data-part='root'][data-variant='outline'] {
-  border: var(--xh-stroke-thin) solid var(--xh-page-header-border, var(--xh-border-subtle));
+  border: var(--xh-stroke-thin) solid var(--xh-page-header-border, var(--xh-border-default));
   background: var(--xh-page-header-bg, var(--xh-bg-surface));
 }
 
-/* subtle 用淡底当边界：描边透明、无影 */
+/* subtle 用淡底当边界：描边让位给底色但留住 1px 边位（与 outline 同一几何）、无影 */
 [data-scope='page-header'][data-part='root'][data-variant='subtle'] {
+  border: var(--xh-stroke-thin) solid transparent;
   background: var(--xh-page-header-bg, var(--xh-bg-subtle));
 }
 
@@ -8695,7 +8697,8 @@
   overflow-wrap: anywhere;
   color: var(--xh-page-header-title-fg, var(--xh-fg-default));
   font-size: var(--xh-page-header-title-font-size, var(--xh-_page-header-title-size));
-  font-weight: var(--xh-page-header-title-font-weight, var(--xh-font-weight-semibold));
+  /* 页面级标题：字重走标题档令牌，不直接下探字重原语 */
+  font-weight: var(--xh-page-header-title-font-weight, var(--xh-text-heading-3-weight));
   line-height: var(--xh-leading-tight);
 }
 
