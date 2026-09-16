@@ -38,8 +38,9 @@ function part(el: HTMLElement, name: string): HTMLElement {
 }
 
 /** 壳里那几条条子，按摆出来的先后。 */
+/** 直接挂在这个壳上的条子：壳里的滚动层自己还可能再挂贴层的条子（级联的列），那些不算本壳的。 */
 function bars(shell: HTMLElement): HTMLElement[] {
-  return [...shell.querySelectorAll<HTMLElement>('[data-scope="scrollbar"][data-part="root"]')]
+  return [...shell.querySelectorAll<HTMLElement>(':scope > [data-scope="scrollbar"][data-part="root"]')]
 }
 
 const CATALOG: CascaderNode[] = [
@@ -70,6 +71,8 @@ interface Case {
   props?: Record<string, unknown>
   /** 浮层族：按住条子那一下不该把浮层消解掉。 */
   overlay: boolean
+  /** 浮层面板（带 data-state 的那层）；缺省就是滚动层，贴层的条子挂在面板里的列上时另指面板。 */
+  panel?: string
 }
 
 const CASES: Case[] = [
@@ -114,6 +117,30 @@ const CASES: Case[] = [
     axes: ['horizontal'],
     shell: 'positioner',
     layer: 'content',
+    overlay: true,
+    attrs: { 'default-open': '' },
+    props: { collection: CATALOG },
+    markup: `
+      <div data-xh-part="root">
+        <button data-xh-part="trigger"><span data-xh-part="value-text"></span></button>
+        <div data-xh-part="positioner">
+          <div data-xh-part="content">
+            <div data-xh-part="column" level="0">
+              <div data-xh-part="item" value='["zhejiang"]'><span data-xh-part="item-text">Zhejiang</span></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    `,
+  },
+  {
+    // 列自己竖滚：条子贴层挂在 content 里、紧跟在列后面，与 content 那条横的分属两个壳
+    scope: 'cascader',
+    tag: 'xh-cascader',
+    axes: ['vertical'],
+    shell: 'content',
+    layer: 'column',
+    panel: 'content',
     overlay: true,
     attrs: { 'default-open': '' },
     props: { collection: CATALOG },
@@ -265,7 +292,7 @@ describe.each(CASES)('$scope 的自绘条', (item) => {
   it.runIf(item.overlay)('按在条子上不会把浮层消解掉', async () => {
     const el = await mount(item)
 
-    const panel = layerOf(el, item)
+    const panel = item.panel ? part(el, item.panel) : layerOf(el, item)
     expect(panel.getAttribute('data-state')).toBe('open')
 
     part(el, item.shell)
