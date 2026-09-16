@@ -72,6 +72,9 @@ export function connectCascader<T extends PropTypes>(
   }
 
   const metaOf = (v: string): CascaderNodeMeta | undefined => shown.get(v) ?? index.get(v)
+
+  // 形态默认落 outline：不写时 root 与 positioner 如实投影同一常量，皮肤不再依赖缺省档
+  const variant = prop('variant') ?? 'outline'
   const isVisible = (v: string): boolean => shown.has(v)
 
   // 焦点锚点只认当下露得出面的条目：列被砍掉后条目仍在 DOM 里但已 hidden、不可聚焦
@@ -269,7 +272,7 @@ export function connectCascader<T extends PropTypes>(
       ...parts.root.attrs,
       'data-state': stateAttr,
       // 三个视觉轴打在根与 positioner 上，皮肤由这两处往下派发；其余子部件不重复标注
-      'data-variant': prop('variant'),
+      'data-variant': variant,
       'data-tone': prop('tone'),
       'data-size': prop('size'),
       'data-disabled': dataAttr(disabled),
@@ -392,7 +395,7 @@ export function connectCascader<T extends PropTypes>(
       // 定位层被搬到 portal 落点，继承不到作者子树上的方向；作者没给就不写，交给落点处的继承
       'dir': prop('dir'),
       // 视觉轴在浮层这一侧再打一次：positioner 被搬到 portal 落点，继承不到根上的私有槽
-      'data-variant': prop('variant'),
+      'data-variant': variant,
       'data-tone': prop('tone'),
       'data-size': prop('size'),
       'data-state': stateAttr,

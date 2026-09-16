@@ -69,7 +69,7 @@ const ITEM_SELECTOR = '[data-xh-part="item"]'
  * @attr {boolean} read-only - 只读：浮层照常展开、列照常浏览，但选中值不可修改、也不可清空
  * @attr {boolean} invalid - 校验失败标注
  * @attr {boolean} loading - 候选加载中：浮层报告 aria-busy；当前视图无候选时显示在途占位
- * @attr {'outline'|'subtle'|'ghost'} variant - 视觉变体
+ * @attr {'outline'|'subtle'|'ghost'} variant - 形态：outline / subtle / ghost，默认 outline
  * @attr {'brand'|'neutral'|'success'|'warning'|'danger'|'info'} tone - 语气
  * @attr {'sm'|'md'|'lg'} size - 尺寸
  * @attr {string} placeholder - 无选中时 value-text 显示的占位文字
