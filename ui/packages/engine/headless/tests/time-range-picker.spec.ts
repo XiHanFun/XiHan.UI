@@ -354,6 +354,19 @@ describe('纯函数', () => {
   })
 })
 
+describe('connectTimeRangePicker 形态轴', () => {
+  it('不写 variant 时 root 与 positioner 落 outline；写 subtle 如实落', () => {
+    const fallback = open()
+    const fallbackPositioner = fallback.root.querySelector('[data-part="positioner"]')!
+    expect(fallback.root.getAttribute('data-variant')).toBe('outline')
+    expect(fallbackPositioner.getAttribute('data-variant')).toBe('outline')
+    const subtle = open({ variant: 'subtle' })
+    const subtlePositioner = subtle.root.querySelector('[data-part="positioner"]')!
+    expect(subtle.root.getAttribute('data-variant')).toBe('subtle')
+    expect(subtlePositioner.getAttribute('data-variant')).toBe('subtle')
+  })
+})
+
 describe('开合', () => {
   it('默认收起：content 带 hidden、触发器报 aria-expanded=false', () => {
     const h = open()
