@@ -20,6 +20,7 @@
 import { readdir, readFile } from 'node:fs/promises'
 import { join } from 'node:path'
 import process from 'node:process'
+import { openBacklog } from './lib/family-backlog.mjs'
 
 import { OVERLAY_RELATION, RELATION_KEYFRAMES, SHARED_RELATION } from './lib/keyframe-relations.mjs'
 
@@ -76,12 +77,10 @@ const SLIDE_REQUIRED = {
 }
 
 /**
- * 待办：已登记 SLIDE_REQUIRED 但实现尚未跟上的项，逐条写理由。键与 SLIDE_REQUIRED 同形。
- * 只减不增：这里的项一旦在扫描中不再违规，就判红提醒把它删掉；不在这里的违规照常判红。
+ * 待办：已登记 SLIDE_REQUIRED 但实现尚未跟上的项，记在 family-backlog.json 的 motion 段，
+ * 键与 SLIDE_REQUIRED 同形、逐条写理由。只减不增：不再违规的条目判过期；不在表里的违规照常判红。
  */
-const SLIDE_BACKLOG = {
-  'drawer:translate': '入场仍走 --xh-motion-ease-enter-strong 与 duration-enter，改走 --xh-motion-ease-slide + --xh-motion-duration-slide 留给 drawer 提交（规范 §9.5）',
-}
+const slideBacklog = await openBacklog('motion')
 
 /**
  * 逐项例外。键写成「组件:行内属性」，值写这一项为什么两档都不走。
@@ -175,9 +174,8 @@ for (const file of (await readdir(FAMILY_DIR)).filter(f => f.endsWith('.css')).s
   familyKeyframes.set(file, keyframeProps(stripComments(await readFile(join(FAMILY_DIR, file), 'utf8'))))
 
 const files = (await readdir(STYLES_DIR)).filter(f => f.endsWith('.css')).sort()
-const problems = []
+const problems = [...slideBacklog.problems]
 const seen = new Set()
-const backlogSeen = new Set()
 const relationSeen = new Set()
 let checked = 0
 let animations = 0
@@ -222,10 +220,8 @@ for (const file of files) {
       seen.add(key)
       if (ease === '--xh-motion-ease-slide')
         continue
-      if (key in SLIDE_BACKLOG) {
-        backlogSeen.add(key)
+      if (slideBacklog.excuse(key))
         continue
-      }
       problems.push(`${at}\n    —— 关键帧 ${name} 动到 ${prop}（${SLIDE_REQUIRED[key]}），入场曲线该走 --xh-motion-ease-slide，写的是 ${ease ?? '(无)'}`)
     }
   }
@@ -272,12 +268,11 @@ for (const key of Object.keys(SLIDE_REQUIRED)) {
   if (!seen.has(key))
     problems.push(`${key}  登记在 SLIDE_REQUIRED 里却没被扫到——名单过期了`)
 }
-for (const key of Object.keys(SLIDE_BACKLOG)) {
+for (const key of Object.keys(slideBacklog.entries)) {
   if (!(key in SLIDE_REQUIRED))
-    problems.push(`${key}  登记在 SLIDE_BACKLOG 里却不在 SLIDE_REQUIRED——待办只能是已登记规则的欠账`)
-  else if (!backlogSeen.has(key))
-    problems.push(`${key}  登记在 SLIDE_BACKLOG 里却已不违规——把这条从 SLIDE_BACKLOG 删掉`)
+    problems.push(`${key}  登记在 family-backlog.json 的 motion 段却不在 SLIDE_REQUIRED——待办只能是已登记规则的欠账`)
 }
+problems.push(...slideBacklog.stale())
 for (const comp of Object.keys(OVERLAY_RELATION)) {
   if (!relationSeen.has(comp))
     problems.push(`${comp}  登记在 OVERLAY_RELATION 里却没有引用任何共享进出场关键帧——名单过期了`)
@@ -292,5 +287,5 @@ if (problems.length) {
 
 console.log(
   `[check-motion-role] 通过：${files.length} 份皮肤 · ${checked} 项几何类过渡各按角色走 -continuous / -enter-strong / -release（例外登记 ${seen.size} 处）`
-  + ` · ${animations} 条 animation 里 ${relationSeen.size} 个浮层组件的进出场关键帧与锚定关系相符，大尺度待办 ${backlogSeen.size} 处`,
+  + ` · ${animations} 条 animation 里 ${relationSeen.size} 个浮层组件的进出场关键帧与锚定关系相符，大尺度待办 ${slideBacklog.pending} 处`,
 )

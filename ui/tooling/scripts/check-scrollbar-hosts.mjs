@@ -19,14 +19,15 @@
 // 都得在表里（新滚动面必须归档），表里每一条都得扫得到（名单过期）；drawn 面核三端接线、轴、
 // 浮层 4px 档；每一面核 overscroll-behavior 与 scrollbar-gutter 该写的写了、不该写的没写；
 // 原生面不得自己写 scrollbar-width / scrollbar-color；声明 --xh-scrollbar-track-bg 的部件
-// 必须是某个宿主的壳，否则是死声明。尚未达标的面记在同一份 JSON 的 backlog 段，逐条理由，
-// 命中即从表里移除——登记了却没命中判红，表只减不增。
+// 必须是某个宿主的壳，否则是死声明。尚未达标的面记在 family-backlog.json 的 scroll 段
+// （键「组件:部件:问题码」），逐条理由，命中即从表里移除——登记了却没命中判红，表只减不增。
 import { readdir, readFile } from 'node:fs/promises'
 import { basename, dirname, join } from 'node:path'
 
 import ts from 'typescript'
 
 import { ADAPTERS, reactCovered, reactProgress } from './lib/adapters.mjs'
+import { openBacklog } from './lib/family-backlog.mjs'
 
 const VUE = ADAPTERS.vue.components
 const WC = ADAPTERS.wc.components
@@ -524,7 +525,11 @@ function surfaceKeyOf(selector, family) {
 
 const registry = JSON.parse(await readFile(REGISTRY, 'utf8'))
 const surfaces = registry.surfaces ?? {}
-const backlog = registry.backlog ?? {}
+if (registry.backlog != null)
+  problems.push(`${REGISTRY}：backlog 段已迁到 family-backlog.json 的 scroll 段，这里不再登记`)
+/** 尚未达标的面：family-backlog.json 的 scroll 段，键「组件:部件:问题码」。 */
+const backlog = await openBacklog('scroll')
+problems.push(...backlog.problems)
 const ISSUES = new Set(['unwired', 'axes', 'size', 'overscroll', 'gutter'])
 
 for (const [key, entry] of Object.entries(surfaces)) {
@@ -541,15 +546,14 @@ for (const [key, entry] of Object.entries(surfaces)) {
   if (typeof entry.why !== 'string' || !entry.why.trim())
     problems.push(`${REGISTRY}：${key} 缺 why`)
 }
-for (const [key, issues] of Object.entries(backlog)) {
+for (const entry of Object.keys(backlog.entries)) {
+  const at = entry.lastIndexOf(':')
+  const key = entry.slice(0, at)
+  const issue = entry.slice(at + 1)
   if (!(key in surfaces))
-    problems.push(`${REGISTRY}：backlog 里的 ${key} 不在 surfaces 里——先登记再豁免`)
-  for (const [issue, why] of Object.entries(issues)) {
-    if (!ISSUES.has(issue))
-      problems.push(`${REGISTRY}：backlog ${key} 的问题码 ${issue} 不认识，只有 ${[...ISSUES].join(' / ')}`)
-    if (typeof why !== 'string' || !why.trim())
-      problems.push(`${REGISTRY}：backlog ${key}.${issue} 缺理由`)
-  }
+    problems.push(`family-backlog.json scroll 段的 ${entry}：${key} 不在 ${REGISTRY} 的 surfaces 里——先登记再豁免`)
+  if (!ISSUES.has(issue))
+    problems.push(`family-backlog.json scroll 段的 ${entry}：问题码 ${issue} 不认识，只有 ${[...ISSUES].join(' / ')}`)
 }
 
 /** 皮肤里扫到的滚动面：键 → { axes, rules（打到这一面的全部规则）, files }。 */
@@ -721,21 +725,14 @@ for (const [key, file] of [...trackBgDeclared].sort()) {
 }
 
 // 与 backlog 对账：命中且登记了的放过，命中却没登记的判红，登记了却没命中的是过期
-let pending = 0
 for (const [key, bucket] of [...found].sort()) {
   for (const [code, message] of bucket) {
-    if (backlog[key]?.[code])
-      pending += 1
-    else
+    if (!backlog.excuse(`${key}:${code}`))
       problems.push(message)
   }
 }
-for (const [key, issues] of Object.entries(backlog)) {
-  for (const code of Object.keys(issues)) {
-    if (!found.get(key)?.has(code))
-      problems.push(`${REGISTRY}：backlog ${key}.${code} 已经不再命中——豁免过期，从表里删掉`)
-  }
-}
+problems.push(...backlog.stale())
+const pending = backlog.pending
 
 if (problems.length) {
   console.error('[check-scrollbar-hosts] ✗ 自绘条接线不齐：')

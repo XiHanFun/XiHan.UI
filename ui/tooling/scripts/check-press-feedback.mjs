@@ -25,8 +25,21 @@
 //    作者的整块内容，缩放它会把作者自己的排版一起抖起来。改比底色。
 // ③ 列表行的即时换面：显式登记 feedback: 'surface'，换底可由本部件或（投影了 data-xh-collection-item 时）
 //    家族配方的 pressed 面给出，禁止改变按压几何。
+//
+// 真源 §9.1 / §9.2 再加四条：
+// ⑤ 几何判据：登记为缩放的部件，基础规则含 inline-size: 100% / flex: 1 / display: block，或按 §4.1
+//    归为 disclosure trigger / row 的，不该缩放整条——改登记 { part, feedback: 'surface' }；
+// ⑥ 缩放必换底：:active 块（或家族配方的 :active 块）必须同时换一个非透明的 background；
+// ⑦ 集合行不许零反馈：NO_PRESS 只留扩大命中区标签、拖拽轨道、字段外壳与值区、作者内容区四类永久理由，
+//    列表行一律登 PRESSABLE 的 surface 形态；
+// ⑧ data-pressed 第二判据：PRESSABLE 部件的 connect getter 必须投影 data-pressed（Space / Enter 与粗指针
+//    的按压由 Headless 投影），家族配方的按压选择器必须是 :is(:active, [data-pressed])。
+// 存量登 family-backlog.json press 段：⑤ 的 15 条、⑥ 只缩放不换底的、⑦ 皮肤还没有 :active 换面的行，
+// 以及 ⑧ 在 press-channel 落地前的一条 *:data-pressed 总豁免；命中即放行、不命中判过期，表只减不增。
 import { readdir, readFile } from 'node:fs/promises'
 import { join } from 'node:path'
+import { getterBody } from './lib/connect-getters.mjs'
+import { openBacklog } from './lib/family-backlog.mjs'
 
 const SKINS = 'packages/design/styles/css'
 const HEADLESS = 'packages/engine/headless/src'
@@ -39,6 +52,15 @@ const COLLECTION_RECIPE = 'packages/design/styles/family/collection-item.css'
  */
 const PRESSABLE = {
   'menu': [{ part: 'item', feedback: 'surface' }],
+  // 列表族条目：一行文字，按下的回执走换面，不缩放整列（§9.2 集合行不允许零反馈）
+  'command': [{ part: 'item', feedback: 'surface' }],
+  'mention': [{ part: 'item', feedback: 'surface' }],
+  'tree': [{ part: 'item', feedback: 'surface' }, { part: 'branch-control', feedback: 'surface' }],
+  'json-viewer': [{ part: 'branch-control', feedback: 'surface' }],
+  'side-nav': [{ part: 'link', feedback: 'surface' }, { part: 'branch-trigger', feedback: 'surface' }],
+  'steps': [{ part: 'trigger', feedback: 'surface' }],
+  // 圆圈 + 文字的整行条目：回执落在整行的换面上，圆点的缩放归指示器
+  'radio-group': [{ part: 'item', feedback: 'surface' }],
   // 按钮形的控件本体：整颗就是点击目标
   'button': ['root'],
   'download-trigger': [{ part: 'root', feedback: 'surface' }],
@@ -50,18 +72,18 @@ const PRESSABLE = {
   'clipboard': [{ part: 'copy-trigger', feedback: 'surface' }],
   'infinite-scroll': ['load-more-trigger'],
   // 集合件尾部的「取下一页」：一颗铺满一行的按钮，整条就是点击目标
-  'listbox': ['load-more-trigger'],
+  'listbox': ['load-more-trigger', { part: 'item', feedback: 'surface' }],
   // 组里的一枚标签就是 tag 的 root，整枚就是点击目标；摘除钮是 tag 的 close-trigger，按压归 tag.css
   'tag-group': ['tag/root'],
   // 清空 / 关闭 / 移除按钮四类（契约见 check-clear-trigger）
-  'cascader': ['clear-trigger'],
-  'tree-select': ['clear-trigger'],
-  'combobox': ['clear-trigger', 'trigger'],
+  'cascader': ['clear-trigger', { part: 'item', feedback: 'surface' }, { part: 'search-item', feedback: 'surface' }],
+  'tree-select': ['clear-trigger', { part: 'item', feedback: 'surface' }, { part: 'branch-control', feedback: 'surface' }],
+  'combobox': ['clear-trigger', 'trigger', { part: 'item', feedback: 'surface' }],
   // 展开钮与确认钮跟着同组件的 clear-trigger 走同一副观感
-  'date-picker': ['clear-trigger', 'trigger', 'confirm-trigger'],
-  'date-range-picker': ['clear-trigger', 'trigger'],
-  'time-picker': ['clear-trigger', 'trigger'],
-  'time-range-picker': ['clear-trigger', 'trigger'],
+  'date-picker': ['clear-trigger', 'trigger', 'confirm-trigger', { part: 'preset', feedback: 'surface' }, { part: 'time-item', feedback: 'surface' }],
+  'date-range-picker': ['clear-trigger', 'trigger', { part: 'preset', feedback: 'surface' }],
+  'time-picker': ['clear-trigger', 'trigger', { part: 'preset', feedback: 'surface' }, { part: 'item', feedback: 'surface' }],
+  'time-range-picker': ['clear-trigger', 'trigger', { part: 'preset', feedback: 'surface' }, { part: 'item', feedback: 'surface' }],
   'text-field': ['clear-trigger'],
   'color-field': ['clear-trigger'],
   // 标签里的删除钮是 tag 的 close-trigger，按压归 tag.css
@@ -96,10 +118,10 @@ const PRESSABLE = {
   'field-array': ['item-delete-trigger', 'move-up-trigger', 'move-down-trigger', 'add-trigger'],
   // 表单里的编辑、提交与增减
   'editable': ['edit-trigger', 'submit-trigger', 'cancel-trigger'],
-  'form': ['submit-trigger', 'reset-trigger'],
+  'form': ['submit-trigger', 'reset-trigger', { part: 'error-summary-item', feedback: 'surface' }],
   'number-field': ['increment-trigger', 'decrement-trigger'],
   'password-input': ['visibility-trigger'],
-  'transfer': ['to-target-trigger', 'to-source-trigger'],
+  'transfer': ['to-target-trigger', 'to-source-trigger', { part: 'item', feedback: 'surface' }, { part: 'select-all-trigger', feedback: 'surface' }],
   // 勾选形的控件本体：方框、轨道、星星都是自己能被按下的一颗
   'checkbox': ['root'],
   // 组条目的命中区包含文字，按压缩放只落在其中的方框与全选伪元素上
@@ -138,7 +160,7 @@ const PRESSABLE = {
   'tabs': ['trigger'],
   'toolbar': ['item'],
   // 表格里的勾选与展开把手，以及表尾那颗「取下一页」
-  'table': ['select-all-trigger', 'row-select-trigger', 'column-visibility-trigger', 'expand-trigger', 'load-more-trigger'],
+  'table': ['select-all-trigger', 'row-select-trigger', 'column-visibility-trigger', 'expand-trigger', 'load-more-trigger', { part: 'sort-trigger', feedback: 'surface' }],
   // 走马灯的翻页钮、播放钮与圆点
   'carousel': ['prev-trigger', 'next-trigger', 'autoplay-trigger', 'indicator'],
   'layout': ['sider-trigger'],
@@ -164,38 +186,11 @@ const PRESSABLE = {
 const NO_PRESS = {
   // 网格在拖着挑区间时才换手型：按下的回执落在格子上，网格自己不是可按的东西
   'calendar-range-picker:grid': '拖着挑区间时整张网格保持手型，按压回执由格子承担',
-  // 列表族条目：一行文字，按下的回执走高亮档（悬停中性灰、展开路径与悬停同档中性灰）
-  'listbox:item': '列表行的按下回执走高亮档，缩放会抖动整列',
-  'combobox:item': '列表行的按下回执走高亮档，缩放会抖动整列',
-  'command:item': '列表行的按下回执走高亮档，缩放会抖动整列',
-  'cascader:item': '列表行的按下回执走高亮档，缩放会抖动整列',
-  'cascader:search-item': '列表行的按下回执走高亮档，缩放会抖动整列',
-  'mention:item': '列表行的按下回执走高亮档，缩放会抖动整列',
-  'transfer:item': '列表行的按下回执走高亮档，缩放会抖动整列',
-  'tree:item': '列表行的按下回执走高亮档，缩放会抖动整列',
-  'tree:branch-control': '分支那一行与叶子行共用同一套行盒，列表行的按下回执走高亮档，缩放会抖动整列',
-  'tree-select:item': '列表行的按下回执走高亮档，缩放会抖动整列',
-  'tree-select:branch-control': '分支行与叶子行共用同一套行盒，按下回执走高亮档，缩放会抖动整列',
-  'json-viewer:branch-control': '分支那一行是整行点击目标，列表行的按下回执走高亮档，缩放会抖动整列',
-  'date-picker:preset': '列表行的按下回执走高亮档，缩放会抖动整列',
-  'date-range-picker:preset': '列表行的按下回执走高亮档，缩放会抖动整列',
-  'date-picker:time-item': '列表行的按下回执走高亮档，缩放会抖动整列',
-  'time-picker:preset': '列表行的按下回执走高亮档，缩放会抖动整列',
-  'time-picker:item': '列表行的按下回执走高亮档，缩放会抖动整列',
-  'time-range-picker:preset': '列表行的按下回执走高亮档，缩放会抖动整列',
-  'time-range-picker:item': '列表行的按下回执走高亮档，缩放会抖动整列',
-  'side-nav:link': '列表行的按下回执走高亮档，缩放会抖动整列',
-  'side-nav:branch-trigger': '列表行的按下回执走高亮档，缩放会抖动整列',
-  'form:error-summary-item': '错误摘要里的每一条是一行文字链接，回执走文字色，缩放一行文字会把整块摘要抖起来',
-  'steps:trigger': '步骤条目是序号圆点加标题说明的整块内容，按下回执走高亮底色，缩放会把多行文字一起抖起来',
   // 扩大命中区的标签：点它等于点控件，回执落在控件本体上
   'checkbox:label': '标签是包住方框与文字的整行命中区，点它等于点方框，按下的回执落在方框本体上，标签自己不动',
   'switch:label': '标签是包住轨道与文字的整行命中区，点它等于点轨道，按下的回执落在轨道与滑块上，标签自己不动',
   'editable:label': '标题是「点它等于进编辑态」的扩大命中区，反馈该落在预览区与输入框本体上，标签自己不动',
   'slider:tick-label': '刻度文案是点它跳到该刻度的扩大命中区，回执落在拇指上，文案自己不动',
-  // 方框圆圈连着文字的整行条目：回执落在方框与圆点的填色上
-  'radio-group:item': '条目是「圆圈 + 文字」的整行命中区，缩放整行会把文字一起抖起来，按下的回执落在圆圈的圆点上',
-  'transfer:select-all-trigger': '勾选方框与标签连成的一行，缩放会带着标签文字一起抖，回执落在方框的勾选态上',
   // 字段外壳与壳里铺满宽度的值显示体：缩放会把回显文字一起挤
   'cascader:control': '字段外壳，描边底色与控件高度都长在这一层，缩放它会把盒里的回显文字与按钮一起挤',
   'cascader:trigger': '盒里撑满剩余宽度的透明区，承载回显与箭头，缩放它等于抖动整个字段的内容',
@@ -212,12 +207,45 @@ const NO_PRESS = {
   'image-viewer:trigger': '触发区是作者自己的一块内容（多为缩略图），皮肤对它零外观规则；缩放它会把作者的排版一起抖起来',
   'file-upload:dropzone': '大块投放区，按下回执由拖入态的描边与底色给出；缩放整块会把里面的说明文字一起抖起来',
   'truncate:root': '触发区就是被裁的那整段文本，缩放它会把整段排版一起抖起来',
-  'table:sort-trigger': '排序把手 flex:1 撑满整块列标题，缩放会把表头文字连同列宽基线一起抖起来；按下回执落在排序指示字形与列标题底色上',
 }
 
-const problems = []
+/**
+ * 真源 §4.1 归为 disclosure trigger / row 的部件：铺满一行、高度随内容，只换面不缩放。
+ * 登记在这里又在 PRESSABLE 里写成缩放形态的，判 ⑤。
+ */
+const ROW_OR_DISCLOSURE = new Set([
+  'accordion:trigger',
+  'collapsible:trigger',
+  'reasoning:trigger',
+  'tool-call:trigger',
+  'code-view:fold-trigger',
+  'diff-view:gap-trigger',
+  'approval:item',
+  'question-flow:item',
+  'tabs:trigger',
+  'segmented:item',
+  'navigation-menu:trigger',
+  'menubar:trigger',
+  'listbox:load-more-trigger',
+  'table:load-more-trigger',
+  'infinite-scroll:load-more-trigger',
+])
+/** 基础规则里的这几条说明部件是铺满一行的东西，不是定尺的独立动作控件。 */
+const ROW_GEOMETRY = /(?:^|;)\s*(?:inline-size\s*:\s*100%|flex\s*:\s*1|display\s*:\s*block)\s*(?:;|$)/
+
+const backlog = await openBacklog('press')
+/** press-channel 落地前 data-pressed 判据的总豁免键。 */
+const PRESSED_CHANNEL = '*:data-pressed'
+
+const problems = [...backlog.problems]
 const actionRecipe = await readFile(ACTION_RECIPE, 'utf8').catch(() => '')
 const collectionRecipe = await readFile(COLLECTION_RECIPE, 'utf8').catch(() => '')
+
+/** 存量放行：键在 press 段里就不报。 */
+function report(key, message) {
+  if (!backlog.excuse(key))
+    problems.push(message)
+}
 
 for (const [name, parts] of Object.entries(PRESSABLE)) {
   let css
@@ -229,12 +257,27 @@ for (const [name, parts] of Object.entries(PRESSABLE)) {
     continue
   }
   for (const part of parts) {
+    const partName = typeof part === 'string' ? part : part.part
     if (typeof part === 'string')
       checkPart(name, part, css, await isActionControlPart(name, part) ? actionRecipe : '')
     else if (part.feedback === 'surface')
       checkSurfacePart(name, part.part, css, await isCollectionItemPart(name, part.part) ? collectionRecipe : '')
     else
       checkHeldPart(name, part.part, part.attr, css)
+    // ⑧ Space / Enter 与粗指针的按压由 Headless 投影 data-pressed，皮肤的 :active 才能与键盘按压一致
+    const [scope, ownPart] = partName.includes('/') ? partName.split('/') : [name, partName]
+    const body = await getterBody(scope, ownPart)
+    if (body != null && !body.includes('\'data-pressed\''))
+      report(PRESSED_CHANNEL, `${name} 的 ${partName} 登记为可按，connect 的 getter 却没投影 data-pressed——键盘与粗指针的按压回执要由 Headless 给`)
+  }
+}
+
+// ⑧ 家族配方的按压选择器必须同时认 :active 与 [data-pressed]
+for (const [label, recipe] of [['action-control.css', actionRecipe], ['collection-item.css', collectionRecipe]]) {
+  for (const m of recipe.matchAll(/[^{}]*:active[^{]*\{/g)) {
+    const selector = m[0].replace(/\s+/g, ' ').trim()
+    if (!/:is\(:active, \[data-pressed\]\)/.test(selector))
+      report(PRESSED_CHANNEL, `family/${label}  ${selector.slice(0, 70)}  按压选择器只认 :active——要写成 :is(:active, [data-pressed])`)
   }
 }
 
@@ -259,7 +302,7 @@ async function isCollectionItemPart(name, part) {
     return false
   const next = source.slice(start + getter.length).search(/\bget[A-Z][A-Za-z0-9]*Props\s*[:=]/)
   const body = source.slice(start, next < 0 ? source.length : start + getter.length + next)
-  return body.includes("'data-xh-collection-item':")
+  return body.includes('\'data-xh-collection-item\':')
 }
 
 for (const key of Object.keys(NO_PRESS)) {
@@ -361,6 +404,16 @@ function partSelector(part) {
 }
 
 function checkPart(name, part, css, familyCss = '') {
+  const key = `${name}:${part}`
+  // ⑤ 几何判据：铺满一行的东西不该缩放整条
+  if (ROW_OR_DISCLOSURE.has(key)) {
+    report(key, `${name} 的 ${part} 按 §4.1 是 disclosure trigger / row，登记成缩放形态——改登记 { part: '${part}', feedback: 'surface' }，皮肤只换面`)
+  }
+  else {
+    const base = css.match(new RegExp(`(?:^|[,}])\\s*\\[data-scope='${name}'\\]${partSelector(part)}\\s*\\{([^}]*)\\}`, 'm'))
+    if (base && ROW_GEOMETRY.test(base[1]))
+      report(key, `${name} 的 ${part} 基础规则含 inline-size: 100% / flex: 1 / display: block，是铺满一行的东西，登记成缩放形态——改登记 { part: '${part}', feedback: 'surface' }`)
+  }
   // :active 规则要落在该部件上，且缩放量走令牌
   const active = new RegExp(`${partSelector(part)}[^{]*:active(?::not\\([^)]*\\))?(?:::[a-z-]+)?\\s*\\{([^}]*)\\}`)
   const match = css.match(active) ?? familyCss.match(/\[data-xh-action-control\][^{]*:active\s*\{([^}]*)\}/)
@@ -374,6 +427,10 @@ function checkPart(name, part, css, familyCss = '') {
       + `写死的缩放量在减弱动效档下不会归 1`,
     )
   }
+  // ⑥ 缩放必换底：按下那一帧要同时进入 active 面
+  const surface = match[1].match(/(?:^|;)\s*(?:background(?:-color)?|--xh-_[\w-]*(?:bg|surface)[\w-]*)\s*:\s*([^;]+)/)
+  if (!surface || /^(?:none|transparent)$/.test(surface[1].trim()))
+    report(key, `${name} 的 ${part} 按下只缩放不换底——:active 块要同时把 background 换到 active 面（§9.1）`)
   // 缩放要能过渡，否则是硬切
   if (!/transition:[^;]*\bscale\b/.test(css) && !/transition:[^;]*\bscale\b/.test(familyCss)) {
     problems.push(`${name} 的 ${part} 没把 scale 写进 transition——按下与松手都是硬切`)
@@ -386,15 +443,16 @@ function checkSurfacePart(name, part, css, familyCss = '') {
   // 投影了 data-xh-collection-item 的部件（familyCss 非空）可以由家族配方的 pressed 面给出换底
   const match = css.match(active)
     ?? (familyCss ? familyCss.match(/\[data-xh-collection-item\][^{]*:active\s*\{([^}]*)\}/) : null)
+  const key = `${name}:${part}`
   const surface = match?.[1].match(/(?:^|;)\s*(?:background(?:-color)?|--xh-_collection-bg)\s*:\s*([^;]+)/)
   if (!surface || /^(?:none|transparent)$/.test(surface[1].trim()))
-    problems.push(`${name} 的 ${part} 没有明确的 :active 换面`)
+    report(key, `${name} 的 ${part} 没有明确的 :active 换面——集合行不允许零反馈（§9.2）`)
   if (match && /(?:^|;)\s*(?:scale|translate|transform)\s*:/.test(match[1]))
-    problems.push(`${name} 的 ${part} 登记为换面反馈，却在按下时改变几何`)
+    report(key, `${name} 的 ${part} 登记为换面反馈，却在按下时改变几何`)
   const rules = [...css.matchAll(new RegExp(`${partSelector(part)}[^{]*\\{([^}]*)\\}`, 'g'))]
   const familyTransition = /\[data-xh-collection-item\]\s*\{[\s\S]*?transition:[^;]*\bbackground(?:-color)?\b/.test(familyCss)
   if (!rules.some(rule => /transition:[^;]*\bbackground(?:-color)?\b/.test(rule[1])) && !familyTransition)
-    problems.push(`${name} 的 ${part} 没把换面写进本部件的 transition`)
+    report(key, `${name} 的 ${part} 没把换面写进本部件的 transition`)
 }
 
 /** 形态②：反馈规则挂在状态属性上，且换的是底色。 */
@@ -417,6 +475,8 @@ function checkHeldPart(name, part, attr, css) {
   }
 }
 
+problems.push(...backlog.stale())
+
 if (problems.length) {
   console.error('[check-press-feedback] ✗ 按压反馈没接齐：')
   for (const p of problems)
@@ -431,5 +491,5 @@ console.log(
   `[check-press-feedback] 通过：皮肤里 ${clickable.length} 个可点部件全部定性过`
   + `（登记 ${registered.size} 个）——${pressable.length} 个按下去有回应`
   + `（长按等待 ${held} 个比底色，即时换面 ${surfaces} 个保持几何，其余缩放走令牌）`
-  + `，${Object.keys(NO_PRESS).length} 个判定为不给按压反馈`,
+  + `，${Object.keys(NO_PRESS).length} 个判定为不给按压反馈；backlog 待办 ${backlog.pending} 条，无过期豁免`,
 )

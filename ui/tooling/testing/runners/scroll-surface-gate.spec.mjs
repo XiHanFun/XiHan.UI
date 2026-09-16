@@ -17,8 +17,8 @@ function write(root, path, contents) {
   writeFileSync(target, contents, 'utf8')
 }
 
-/** 脚本会 readdir 的目录都得在；三端组件目录留空，夹具里没有任何自绘条宿主。 */
-function createFixture({ css, registry }) {
+/** 脚本会 readdir 的目录都得在；三端组件目录留空，夹具里没有任何自绘条宿主。豁免写进 family-backlog.json 的 scroll 段。 */
+function createFixture({ css, registry, backlog = {} }) {
   const root = mkdtempSync(join(tmpdir(), 'xihan-scroll-surface-gate-'))
   temporaryRoots.push(root)
   for (const dir of [
@@ -31,7 +31,8 @@ function createFixture({ css, registry }) {
   }
   write(root, 'packages/design/styles/css/demo.css', css)
   write(root, 'packages/design/styles/family/field-chrome.css', '')
-  write(root, 'tooling/scripts/scroll-surface-registry.json', JSON.stringify({ surfaces: {}, backlog: {}, ...registry }))
+  write(root, 'tooling/scripts/scroll-surface-registry.json', JSON.stringify({ surfaces: {}, ...registry }))
+  write(root, 'tooling/scripts/family-backlog.json', JSON.stringify({ scroll: backlog }))
   return root
 }
 
@@ -175,7 +176,8 @@ describe('滚动面归档门禁', () => {
 
     const excused = run(createFixture({
       css: BODY_SCROLLS,
-      registry: { surfaces: { 'demo:body': drawn }, backlog: { 'demo:body': { unwired: '夹具：随后接线' } } },
+      registry: { surfaces: { 'demo:body': drawn } },
+      backlog: { 'demo:body:unwired': '夹具：随后接线' },
     }))
     expect(excused.status, String(excused.stderr)).toBe(0)
     expect(excused.stdout).toContain('backlog 待办 1 条')
@@ -184,12 +186,13 @@ describe('滚动面归档门禁', () => {
   it('backlog 里登记了却不再命中的豁免判红为过期', () => {
     const root = createFixture({
       css: BODY_SCROLLS,
-      registry: { surfaces: { 'demo:body': NATIVE_BODY }, backlog: { 'demo:body': { gutter: '夹具：早已补上' } } },
+      registry: { surfaces: { 'demo:body': NATIVE_BODY } },
+      backlog: { 'demo:body:gutter': '夹具：早已补上' },
     })
 
     const result = run(root)
 
     expect(result.status).toBe(1)
-    expect(result.stderr).toContain('backlog demo:body.gutter 已经不再命中')
+    expect(result.stderr).toContain('scroll 段的 demo:body:gutter 已经不再命中')
   })
 })
