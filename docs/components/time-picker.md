@@ -156,7 +156,7 @@ presets 在列旁边多排一列，点击一条即整份写入值并收起；时
 | `invalid` | `boolean` |  | 校验失败标注。 |
 | `required` | `boolean` |  | 必填标注（写入每段的 aria-required）。 |
 | `name` | `string` |  | 表单字段名；提供后隐藏输入才带 name，值随表单一并提交。 |
-| `variant` | `ControlVariant` |  | 形态：outline / subtle / ghost，决定输入行的描边与底色使用方式。 |
+| `variant` | `ControlVariant` |  | 形态：outline / subtle / ghost，决定输入行的描边与底色使用方式。默认 outline。 |
 | `tone` | `Tone` |  | 语气：brand / neutral / success / warning / danger / info，决定聚焦与选中强调使用哪族颜色。 |
 | `size` | `Size` |  | 尺寸：sm / md / lg，输入行与浮层中的格子一并换档。 |
 | `placement` | `Placement` |  |  |

@@ -84,7 +84,7 @@ function declaredUnit(el: HTMLElement, position: number): TimePickerColumnUnit {
  * @attr {boolean} invalid - 校验失败标注
  * @attr {boolean} required - 必填标注，写入每段的 aria-required
  * @attr {string} name - 表单字段名；提供后隐藏输入才带 name
- * @attr {'outline'|'subtle'|'ghost'} variant - 视觉变体
+ * @attr {'outline'|'subtle'|'ghost'} variant - 形态：outline / subtle / ghost，默认 outline
  * @attr {'brand'|'neutral'|'success'|'warning'|'danger'|'info'} tone - 语气
  * @attr {'sm'|'md'|'lg'} size - 尺寸
  * @attr {string} placement - 首选放置位，默认 bottom-start；避让后的实际位置写在 data-placement 上

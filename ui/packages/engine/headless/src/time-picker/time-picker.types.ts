@@ -163,7 +163,7 @@ export interface TimePickerSchema extends MachineSchema {
     required?: boolean
     /** 表单字段名；提供后隐藏输入才带 name，值随表单一并提交。 */
     name?: string
-    /** 形态：outline / subtle / ghost，决定输入行的描边与底色使用方式。 */
+    /** 形态：outline / subtle / ghost，决定输入行的描边与底色使用方式。默认 outline。 */
     variant?: ControlVariant
     /** 语气：brand / neutral / success / warning / danger / info，决定聚焦与选中强调使用哪族颜色。 */
     tone?: Tone

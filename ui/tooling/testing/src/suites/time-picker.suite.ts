@@ -273,10 +273,10 @@ export const timePickerSuite: ConformanceSuite = {
       },
     },
     {
-      name: '三轴都不给时一个属性都不写出来，皮肤据此走缺省档',
+      name: 'variant 不给时落 outline，tone/size 不写',
       spec: { apg: APG },
       initial: {
-        parts: { root: { 'data-variant': null, 'data-tone': null, 'data-size': null } },
+        parts: { root: { 'data-variant': 'outline', 'data-tone': null, 'data-size': null } },
       },
     },
     {
