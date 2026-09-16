@@ -24,7 +24,6 @@
     "field:control:raised": "raised 退役待本组件迁移",
     "file-upload:trigger:raised": "raised 退役待本组件迁移",
     "form:error-summary:raised": "raised 退役待本组件迁移",
-    "input-group:root:raised": "raised 退役待本组件迁移",
     "log:scroll-to-end-trigger:raised": "raised 退役待本组件迁移",
     "message-feed:scroll-to-end-trigger:raised": "raised 退役待本组件迁移",
     "page-header:root:outline": "border 颜色位落 --xh-border-subtle（page-header.css:70；阶段一只改了轴名），根面描边应改 --xh-border-default，待本组件迁移",

@@ -23,10 +23,11 @@
     --xh-_input-group-font-size: var(--xh-control-font-md);
     --xh-_input-group-bg: var(--xh-bg-canvas);
     --xh-_input-group-bg-hover: color-mix(in oklab, var(--xh-bg-subtle) 45%, var(--xh-bg-canvas));
-    --xh-_input-group-border: var(--xh-border-subtle);
-    --xh-_input-group-border-hover: var(--xh-border-default);
+    /* 组壳按字段外壳画 outline 描边（§8.3）：静息 --xh-border-control、悬停升 -hover、聚焦换 -focus，无影 */
+    --xh-_input-group-border: var(--xh-border-control);
+    --xh-_input-group-border-hover: var(--xh-border-control-hover);
     --xh-_input-group-border-focus: var(--xh-border-control-focus);
-    --xh-_input-group-shadow: var(--xh-elevation-raised);
+    --xh-_input-group-shadow: none;
 
     position: relative;
     display: inline-flex;
@@ -55,18 +56,20 @@
     transition: border-color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
   }
 
+  /* subtle：淡底顶替描边表达边界，描边只退成透明而不去掉；悬停浮出 --xh-border-control（§8.3） */
   [data-scope='input-group'][data-part='root'][data-variant='subtle'] {
     --xh-_input-group-bg: var(--xh-bg-subtle);
     --xh-_input-group-bg-hover: var(--xh-bg-subtle-hover);
     --xh-_input-group-border: transparent;
-    --xh-_input-group-border-hover: var(--xh-border-default);
+    --xh-_input-group-border-hover: var(--xh-border-control);
     --xh-_input-group-shadow: none;
   }
 
-  /* ghost：静息不画壳，悬停与聚焦沿用下面的 hover / focus 规则浮出边与底 */
+  /* ghost：静息不画壳，悬停与聚焦沿用下面的 hover / focus 规则浮出 --xh-border-control 与底 */
   [data-scope='input-group'][data-part='root'][data-variant='ghost'] {
     --xh-_input-group-bg: transparent;
     --xh-_input-group-border: transparent;
+    --xh-_input-group-border-hover: var(--xh-border-control);
     --xh-_input-group-shadow: none;
   }
 
