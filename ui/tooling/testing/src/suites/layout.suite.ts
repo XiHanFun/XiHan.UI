@@ -66,6 +66,12 @@ export const layoutSuite: ConformanceSuite = {
             'aria-expanded': 'true',
             'aria-controls': '@part(sider)',
             'data-collapsed': null,
+            // 折叠把手接 Action Control 的 text 档：ghost 形态、恒显、sm 档
+            'data-xh-action-control': '',
+            'data-xh-action-profile': 'text',
+            'data-xh-action-variant': 'ghost',
+            'data-xh-action-display': 'always',
+            'data-xh-action-size': 'sm',
           },
         },
       },

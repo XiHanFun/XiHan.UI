@@ -3,7 +3,7 @@
 exports[`family-backlog 条目数 > 七段各一数，与快照一致 1`] = `
 {
   "edge": 21,
-  "ladder": 63,
+  "ladder": 61,
   "motion": 1,
   "press": 50,
   "scroll": 27,
@@ -78,8 +78,6 @@ exports[`family-backlog 键集合 > ladder 1`] = `
   "image-viewer:zoom-in-trigger:pressed",
   "infinite-scroll:load-more-trigger:hover",
   "infinite-scroll:load-more-trigger:pressed",
-  "layout:sider-trigger:hover",
-  "layout:sider-trigger:pressed",
   "menu:item:pressed",
   "menubar:item:pressed",
   "pagination:jumper:hover",

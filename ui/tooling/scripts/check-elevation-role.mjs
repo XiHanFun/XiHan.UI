@@ -26,7 +26,7 @@ const MATERIAL_FROSTED = /--xh-material-frosted-(?:compact-)?shadow\b/
 // 只允许逐件登记过的部件消费，未迁移的 sheet 面仍走 --xh-elevation-sheet，随各组件迁移逐件补登。
 const MATERIAL_ELEVATED = /--xh-material-elevated-shadow\b/
 /** 已迁到 material-elevated 三件套的 sheet 面：`组件/部件`。 */
-const ELEVATED_CONSUMERS = new Set(['dialog/content', 'toast/root', 'notification/item'])
+const ELEVATED_CONSUMERS = new Set(['dialog/content', 'toast/root', 'notification/item', 'layout/sider'])
 /**
  * 使用者槽包着角色令牌：var(--xh-<组件>-…, var(--xh-elevation-<role>))。
  * 允许套多层：加法式改名把新槽名排在外层、旧名留在它的兜底位上，链因此不止一层。
