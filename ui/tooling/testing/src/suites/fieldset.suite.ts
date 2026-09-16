@@ -42,7 +42,7 @@ export const fieldsetSuite: ConformanceSuite = {
             'aria-required': null,
             'aria-disabled': null,
           },
-          'legend': { 'data-disabled': null },
+          'legend': { 'data-disabled': null, 'data-invalid': null, 'data-required': null },
           'description': { 'id': '@self', 'data-disabled': null },
           'error-text': {
             'role': 'status',
@@ -71,7 +71,7 @@ export const fieldsetSuite: ConformanceSuite = {
       ],
     },
     {
-      name: 'invalid：描述链追加 error-text，错误文案显出，root 仍不产出 aria-invalid',
+      name: 'invalid：描述链追加 error-text，错误文案显出，root 仍不产出 aria-invalid，legend 同步 data-invalid',
       spec: { apg: APG },
       props: { invalid: true },
       initial: {
@@ -81,6 +81,8 @@ export const fieldsetSuite: ConformanceSuite = {
             'data-invalid': '',
             'aria-invalid': null,
           },
+          // 无效字色由 label.css 公共层按组标题自己的这一位画
+          'legend': { 'data-invalid': '' },
           'error-text': {
             // 排队播报不打断：一次提交失败会有多组同时翻转
             'role': 'status',
@@ -91,7 +93,7 @@ export const fieldsetSuite: ConformanceSuite = {
       },
     },
     {
-      name: 'required：root 同步 data-required，不产出 aria-required',
+      name: 'required：root 与 legend 同步 data-required，不产出 aria-required',
       spec: { apg: APG },
       props: { required: true },
       initial: {
@@ -100,6 +102,8 @@ export const fieldsetSuite: ConformanceSuite = {
             'data-required': '',
             'aria-required': null,
           },
+          // 必填星号由 label.css 公共层按组标题自己的这一位画
+          legend: { 'data-required': '' },
         },
       },
     },

@@ -45,6 +45,9 @@ export function connectFieldset<T extends PropTypes>(
     getLegendProps: () => normalize.element({
       ...parts.legend.attrs,
       'data-disabled': dataAttr(disabled),
+      // 必填星号与无效字色由 label.css 公共层按组标题自己的这两位画；root 上的同名两位留给组内规则
+      'data-invalid': dataAttr(invalid),
+      'data-required': dataAttr(required),
     }),
     getDescriptionProps: () => normalize.element({
       ...parts.description.attrs,

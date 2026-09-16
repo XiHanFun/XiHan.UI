@@ -36,6 +36,8 @@ export const fieldSuite: ConformanceSuite = {
           'label': {
             'for': '@part(control)',
             'data-disabled': null,
+            'data-invalid': null,
+            'data-required': null,
           },
           'control': {
             'id': '@self',
@@ -78,12 +80,14 @@ export const fieldSuite: ConformanceSuite = {
       ],
     },
     {
-      name: 'invalid：描述链追加 error-text，错误文案显出，aria-invalid 显式 true',
+      name: 'invalid：描述链追加 error-text，错误文案显出，aria-invalid 显式 true，label 同步 data-invalid',
       spec: { apg: APG },
       props: { invalid: true },
       initial: {
         parts: {
           'root': { 'data-invalid': '' },
+          // 无效字色由 label.css 公共层按标签自己的这一位画
+          'label': { 'data-invalid': '' },
           'control': {
             'aria-labelledby': '@part(label)',
             'aria-describedby': '@part(description) @part(error-text)',
@@ -100,12 +104,14 @@ export const fieldSuite: ConformanceSuite = {
       },
     },
     {
-      name: 'required：控件 aria-required 显式 true，root 同步 data-required',
+      name: 'required：控件 aria-required 显式 true，root 与 label 同步 data-required',
       spec: { apg: APG },
       props: { required: true },
       initial: {
         parts: {
           root: { 'data-required': '' },
+          // 必填星号由 label.css 公共层按标签自己的这一位画
+          label: { 'data-required': '' },
           control: {
             'aria-required': 'true',
             'aria-invalid': 'false',

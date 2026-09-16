@@ -49,6 +49,9 @@ export function connectField<T extends PropTypes>(
       'for': controlId,
       'data-disabled': dataAttr(disabled),
       'data-readonly': dataAttr(readOnly),
+      // 必填星号与无效字色由 label.css 公共层按标签自己的这两位画；root 上的同名两位留给横排布局等规则
+      'data-invalid': dataAttr(invalid),
+      'data-required': dataAttr(required),
       // for 只对可标注元素生效，而作者把 control 标在 div 上是常态（包一层再放真控件）。
       // 那种情形下点标题聚不了焦，且不报错——替它把焦点送给里面第一个可 tab 的节点。
       // 控件根本身就是真控件时这里查的是它的子节点，查不到东西，浏览器的 for 照旧管用。

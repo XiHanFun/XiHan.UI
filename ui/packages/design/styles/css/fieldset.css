@@ -39,29 +39,28 @@
     transition: color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
   }
 
-  /* 整组无效时组标题转警示色：没渲染错误文案的字段集上，这是屏幕上唯一变化的东西 */
-  [data-scope='fieldset'][data-part='root'][data-invalid] > [data-scope='fieldset'][data-part='legend'] {
+  /* 整组无效时组标题转警示色：没渲染错误文案的字段集上，这是屏幕上唯一变化的东西。
+     默认色在 label.css 公共层，这里只把颜色接到本组件的覆盖槽上 */
+  [data-scope='fieldset'][data-part='legend'][data-invalid] {
     color: var(--xh-fieldset-legend-fg-invalid, var(--xh-fg-danger));
   }
 
   /* 整组禁用时组标题跟着变淡；组内控件由原生 fieldset[disabled] 各自呈现禁用态。
-     选择器与上一条同权重且排在后面，禁用与无效同时为真时以禁用为准。 */
+     选择器权重高于上一条且排在后面，禁用与无效同时为真时以禁用为准。 */
   [data-scope='fieldset'][data-part='root'] > [data-scope='fieldset'][data-part='legend'][data-disabled] {
     color: var(--xh-fieldset-legend-fg-disabled, var(--xh-fg-subtle));
   }
 
-  /* 必填星号：跟着根上的 data-required 亮，选填不标 */
-  [data-scope='fieldset'][data-part='root'][data-required] > [data-scope='fieldset'][data-part='legend']::after {
-    content: var(--xh-glyph-mark-required);
-    margin-inline-start: var(--xh-space-1);
+  /* 必填星号的字形、间距与默认色在 label.css 公共层；这里只把颜色接到本组件的覆盖槽上 */
+  [data-scope='fieldset'][data-part='legend'][data-required]::after {
     color: var(--xh-fieldset-legend-star, var(--xh-fg-danger));
   }
 
+  /* 说明与错误文案的角色（外边距、行距、默认字号与字色）在 description.css 公共层；
+     这里只把字色与字号接到本组件的覆盖槽上 */
   [data-scope='fieldset'][data-part='description'] {
-    margin: 0;
     color: var(--xh-fieldset-description-fg, var(--xh-fg-muted));
     font-size: var(--xh-fieldset-description-font-size, var(--xh-text-secondary-size));
-    line-height: var(--xh-leading-normal);
     /* 与组标题同一档过渡：整组转禁用时两处一起变淡 */
     transition: color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
   }
@@ -95,11 +94,8 @@
     display: none;
   }
 
-  /* 不 invalid 时节点带 hidden：此处不声明 display，交给浏览器的 [hidden] 规则收起 */
   [data-scope='fieldset'][data-part='error-text'] {
-    margin: 0;
     color: var(--xh-fieldset-error-fg, var(--xh-fg-danger));
     font-size: var(--xh-fieldset-error-font-size, var(--xh-text-secondary-size));
-    line-height: var(--xh-leading-normal);
   }
 }

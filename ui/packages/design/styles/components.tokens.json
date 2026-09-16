@@ -25253,8 +25253,7 @@
       "name": "--xh-field-label-fg-invalid",
       "component": "field",
       "part": [
-        "label",
-        "root"
+        "label"
       ],
       "property": [
         "color"
@@ -25266,7 +25265,7 @@
         "--xh-fg-danger"
       ],
       "visibility": "public",
-      "description": "field 的 label、root 部件 color 覆盖槽。"
+      "description": "field 的 label 部件 color 覆盖槽。"
     },
     {
       "name": "--xh-field-label-font-size",
@@ -25367,8 +25366,7 @@
       "name": "--xh-field-label-star",
       "component": "field",
       "part": [
-        "label",
-        "root"
+        "label"
       ],
       "property": [
         "color"
@@ -25380,7 +25378,7 @@
         "--xh-fg-danger"
       ],
       "visibility": "public",
-      "description": "field 的 label、root 部件 color 覆盖槽。"
+      "description": "field 的 label 部件 color 覆盖槽。"
     },
     {
       "name": "--xh-field-array-action-gap",
@@ -26132,8 +26130,7 @@
       "name": "--xh-fieldset-legend-fg-invalid",
       "component": "fieldset",
       "part": [
-        "legend",
-        "root"
+        "legend"
       ],
       "property": [
         "color"
@@ -26145,7 +26142,7 @@
         "--xh-fg-danger"
       ],
       "visibility": "public",
-      "description": "fieldset 的 legend、root 部件 color 覆盖槽。"
+      "description": "fieldset 的 legend 部件 color 覆盖槽。"
     },
     {
       "name": "--xh-fieldset-legend-font-size",
@@ -26205,8 +26202,7 @@
       "name": "--xh-fieldset-legend-star",
       "component": "fieldset",
       "part": [
-        "legend",
-        "root"
+        "legend"
       ],
       "property": [
         "color"
@@ -26218,7 +26214,7 @@
         "--xh-fg-danger"
       ],
       "visibility": "public",
-      "description": "fieldset 的 legend、root 部件 color 覆盖槽。"
+      "description": "fieldset 的 legend 部件 color 覆盖槽。"
     },
     {
       "name": "--xh-file-upload-clear-bg-active",

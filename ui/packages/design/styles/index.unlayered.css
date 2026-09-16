@@ -68,7 +68,8 @@
 /*
  * 字段族标签的公共层，按 [data-part='label'] 匹配下面逐个列出的 scope。
  *
- * 收在这里的是逐值相同的两条：行距取 --xh-leading-none，禁用档字色取 --xh-fg-subtle。
+ * 收在这里的是逐值相同的四条：行距取 --xh-leading-none，禁用档字色取 --xh-fg-subtle，
+ * 必填星号取 --xh-glyph-mark-required + --xh-space-1 + --xh-fg-danger，无效档字色取 --xh-fg-danger。
  * 字色、字号、字重三条留在各组件皮肤——它们挂着 --xh-<组件>-label-* 覆盖槽，
  * 槽名里带组件名，写不进一条共享规则。
  *
@@ -76,7 +77,7 @@
  * 统计、进度、推理、说明列表上指的是另一种文字（行内省略的标签正文、环内居中的数字、
  * 描述项的名字），通配规则会把行距按到它们头上。要接进来的组件把 scope 加进列表。
  *
- * 选择器停在两个属性（0,2,0），与组件皮肤同级；引入顺序排在全部组件皮肤之前，
+ * 选择器停在两个属性（0,2,0）或三个属性（0,3,0），与组件皮肤同级；引入顺序排在全部组件皮肤之前，
  * 要另写行距的组件照写即可压过。
  */
 
@@ -103,8 +104,8 @@
 }
 
 /*
- * 禁用档的字色：这四家没有 --xh-<组件>-label-fg-disabled 覆盖槽，取值只有这一处。
- * 挂了那个槽的组件在各自皮肤里另写一条，排在本份之后，压过这里。
+ * 禁用档的字色：公共层默认统一 --xh-fg-subtle。这四家没有 --xh-<组件>-label-fg-disabled 覆盖槽，
+ * 取值只有这一处；挂了那个槽的组件在各自皮肤里另写一条，排在本份之后，压过这里。
  */
 [data-scope='color-picker'][data-part='label'][data-disabled],
 [data-scope='rating'][data-part='label'][data-disabled],
@@ -113,25 +114,73 @@
   color: var(--xh-fg-subtle);
 }
 
+/*
+ * 必填星号：跟着标签自己的 data-required 亮，选填不标。字形、间距、颜色是公共层规则，
+ * 自带标签的字段不得各画一套。
+ *
+ * 接入 = connect 在标签部件投影 data-required + 把 scope 加进这张列表；控件本体不画。
+ * 有 --xh-<组件>-label-star 覆盖槽的组件在各自皮肤里只另写一条 color 压过这里（field 的
+ * --xh-field-label-star、fieldset 的 --xh-fieldset-legend-star），content 与间距不再重写。
+ */
+[data-scope='field'][data-part='label'][data-required]::after,
+[data-scope='fieldset'][data-part='legend'][data-required]::after {
+  content: var(--xh-glyph-mark-required);
+  margin-inline-start: var(--xh-space-1);
+  color: var(--xh-fg-danger);
+}
+
+/*
+ * 无效档的字色：标签跟着自己的 data-invalid 转警示色，没渲染错误文案的字段上这是唯一变化的东西。
+ * 有 --xh-<组件>-label-fg-invalid 覆盖槽的组件在各自皮肤里另写一条 color 压过这里。
+ */
+[data-scope='field'][data-part='label'][data-invalid],
+[data-scope='fieldset'][data-part='legend'][data-invalid] {
+  color: var(--xh-fg-danger);
+}
+
 /* 排在全部组件皮肤之前：字段族说明文字的公共层，无效时把说明让给错误文案。 */
 
 /* styles/description.css */
 /*
- * 字段族说明文字的公共层，按 [data-part='description'] 匹配下面逐个列出的 scope。
+ * 字段族说明与错误文案的公共层，按 [data-part='description'] / [data-part='error-text']
+ * 匹配下面逐个列出的 scope。
+ *
+ * 收在这里的是逐值相同的角色规则：说明 = --xh-text-secondary-size / --xh-fg-muted /
+ * --xh-leading-normal；错误文案 = --xh-text-secondary-size / --xh-fg-danger / --xh-leading-normal；
+ * 两者外边距归零，与控件的距离由字段根的 gap 给。挂了 --xh-<组件>-description-* /
+ * --xh-<组件>-error-* 覆盖槽的组件在各自皮肤里只另写带槽的 color / font-size 压过这里，
+ * margin 与 line-height 不再重写。
  *
  * 说明与错误文案落在控件下方的同一处：无效时收起说明，那一行只剩错误。两段同时在场
  * 会把辅助区撑成两行，整表的字段高度随之参差。
  *
- * 只收视觉。说明的 id 仍挂在控件的 aria-describedby 上，读屏两段都念得到——
+ * 收起只收视觉。说明的 id 仍挂在控件的 aria-describedby 上，读屏两段都念得到——
  * 直接被 aria-describedby 指到的节点，隐藏与否都计入可及描述。
  *
  * scope 逐个列出，不写成 [data-part='description']：这个部件名在提示、气泡、
  * 空状态、说明列表上指的是另一段文字，通配规则会把它们在无效态下一并收起。
- * 要接进来的组件把自己的两条加进列表。
+ * 要接进来的组件把自己的几条加进列表。
  *
- * 限定到直接子节点：字段集无效时收起的是它自己那段说明，不是组内各字段的说明。
+ * 收起限定到直接子节点：字段集无效时收起的是它自己那段说明，不是组内各字段的说明。
  * 引入顺序排在全部组件皮肤之前，组件要另作安排照写同样的无效态限定即可压过。
  */
+
+[data-scope='field'][data-part='description'],
+[data-scope='fieldset'][data-part='description'] {
+  margin: 0;
+  font-size: var(--xh-text-secondary-size);
+  line-height: var(--xh-leading-normal);
+  color: var(--xh-fg-muted);
+}
+
+/* 不 invalid 时节点带 hidden：此处不声明 display，交给浏览器的 [hidden] 规则收起 */
+[data-scope='field'][data-part='error-text'],
+[data-scope='fieldset'][data-part='error-text'] {
+  margin: 0;
+  font-size: var(--xh-text-secondary-size);
+  line-height: var(--xh-leading-normal);
+  color: var(--xh-fg-danger);
+}
 
 [data-scope='field'][data-part='root'][data-invalid] > [data-scope='field'][data-part='description'],
 [data-scope='fieldset'][data-part='root'][data-invalid] > [data-scope='fieldset'][data-part='description'] {
@@ -2452,29 +2501,28 @@
   transition: color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
 }
 
-/* 整组无效时组标题转警示色：没渲染错误文案的字段集上，这是屏幕上唯一变化的东西 */
-[data-scope='fieldset'][data-part='root'][data-invalid] > [data-scope='fieldset'][data-part='legend'] {
+/* 整组无效时组标题转警示色：没渲染错误文案的字段集上，这是屏幕上唯一变化的东西。
+   默认色在 label.css 公共层，这里只把颜色接到本组件的覆盖槽上 */
+[data-scope='fieldset'][data-part='legend'][data-invalid] {
   color: var(--xh-fieldset-legend-fg-invalid, var(--xh-fg-danger));
 }
 
 /* 整组禁用时组标题跟着变淡；组内控件由原生 fieldset[disabled] 各自呈现禁用态。
-   选择器与上一条同权重且排在后面，禁用与无效同时为真时以禁用为准。 */
+   选择器权重高于上一条且排在后面，禁用与无效同时为真时以禁用为准。 */
 [data-scope='fieldset'][data-part='root'] > [data-scope='fieldset'][data-part='legend'][data-disabled] {
   color: var(--xh-fieldset-legend-fg-disabled, var(--xh-fg-subtle));
 }
 
-/* 必填星号：跟着根上的 data-required 亮，选填不标 */
-[data-scope='fieldset'][data-part='root'][data-required] > [data-scope='fieldset'][data-part='legend']::after {
-  content: var(--xh-glyph-mark-required);
-  margin-inline-start: var(--xh-space-1);
+/* 必填星号的字形、间距与默认色在 label.css 公共层；这里只把颜色接到本组件的覆盖槽上 */
+[data-scope='fieldset'][data-part='legend'][data-required]::after {
   color: var(--xh-fieldset-legend-star, var(--xh-fg-danger));
 }
 
+/* 说明与错误文案的角色（外边距、行距、默认字号与字色）在 description.css 公共层；
+   这里只把字色与字号接到本组件的覆盖槽上 */
 [data-scope='fieldset'][data-part='description'] {
-  margin: 0;
   color: var(--xh-fieldset-description-fg, var(--xh-fg-muted));
   font-size: var(--xh-fieldset-description-font-size, var(--xh-text-secondary-size));
-  line-height: var(--xh-leading-normal);
   /* 与组标题同一档过渡：整组转禁用时两处一起变淡 */
   transition: color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
 }
@@ -2508,12 +2556,9 @@
   display: none;
 }
 
-/* 不 invalid 时节点带 hidden：此处不声明 display，交给浏览器的 [hidden] 规则收起 */
 [data-scope='fieldset'][data-part='error-text'] {
-  margin: 0;
   color: var(--xh-fieldset-error-fg, var(--xh-fg-danger));
   font-size: var(--xh-fieldset-error-font-size, var(--xh-text-secondary-size));
-  line-height: var(--xh-leading-normal);
 }
 
 /* styles/flex.css */
@@ -24665,10 +24710,8 @@
   color: var(--xh-field-label-fg-disabled, var(--xh-fg-subtle));
 }
 
-/* 必填星号：跟着根上的 data-required 亮，选填不标 */
-[data-scope='field'][data-part='root'][data-required] > [data-scope='field'][data-part='label']::after {
-  content: var(--xh-glyph-mark-required);
-  margin-inline-start: var(--xh-space-1);
+/* 必填星号的字形、间距与默认色在 label.css 公共层；这里只把颜色接到本组件的覆盖槽上 */
+[data-scope='field'][data-part='label'][data-required]::after {
   color: var(--xh-field-label-star, var(--xh-fg-danger));
 }
 
@@ -24719,27 +24762,25 @@
   box-shadow: none;
 }
 
-[data-scope='field'][data-part='root'][data-invalid] > [data-scope='field'][data-part='label'] {
+/* 无效标签色的默认在 label.css 公共层；这里只把颜色接到本组件的覆盖槽上 */
+[data-scope='field'][data-part='label'][data-invalid] {
   color: var(--xh-field-label-fg-invalid, var(--xh-fg-danger));
 }
 
+/* 说明与错误文案的角色（外边距、行距、默认字号与字色）在 description.css 公共层；
+   这里只把字色与字号接到本组件的覆盖槽上 */
 [data-scope='field'][data-part='description'] {
-  margin: 0;
   color: var(--xh-field-description-fg, var(--xh-fg-muted));
   font-size: var(--xh-field-description-font-size, var(--xh-text-secondary-size));
-  line-height: var(--xh-leading-normal);
 }
 
 [data-scope='field'][data-part='description'][data-disabled] {
   color: var(--xh-field-description-fg-disabled, var(--xh-fg-subtle));
 }
 
-/* 不 invalid 时节点带 hidden：此处不声明 display，交给浏览器的 [hidden] 规则收起 */
 [data-scope='field'][data-part='error-text'] {
-  margin: 0;
   color: var(--xh-field-error-fg, var(--xh-fg-danger));
   font-size: var(--xh-field-error-font-size, var(--xh-text-secondary-size));
-  line-height: var(--xh-leading-normal);
 }
 
 /* 辅助文字那一行的占位：字段渲染了错误文案、当前又没在报错时，补一个与错误文案等高的空块。

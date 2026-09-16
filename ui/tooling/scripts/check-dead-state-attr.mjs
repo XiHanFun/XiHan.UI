@@ -69,7 +69,7 @@ const HOOK_ATTRS = {
   'data-role': '这条消息是谁说的。message-feed.css:81 已写明：左右分侧由使用者按它自己写',
   'data-complete': '填完了 / 流完了。是一个数据位，完成与否的观感由内容本身表出',
   'data-out-of-range': '越界。date / time 四家把 invalid 与 outOfRange 并成一位打进 data-invalid，视觉挂在那一位上',
-  'data-required': '必填。星号由 field 画（field.css:51 按根上的 data-required），控件自身这一位是钩子',
+  'data-required': '必填。星号由 label.css 公共层按 label / legend 上的 data-required 画，控件自身这一位是钩子',
   'data-empty': '空。空与非空的差别由内容本身表出——占位文字通道、空态部件，或者干脆没有东西可画',
   'data-scrolling': '正在滚。滚动条露不露面由 data-state=visible|hidden 表出，这一位是同一件事的数据面',
 }
