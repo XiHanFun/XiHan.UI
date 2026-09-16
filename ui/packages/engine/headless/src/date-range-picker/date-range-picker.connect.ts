@@ -238,6 +238,9 @@ export function connectDateRangePicker<T extends PropTypes>(
   const field = toFieldApi(services.field, fieldRaw)
   const fieldEnd = toFieldApi(services.fieldEnd, fieldEndRaw)
 
+  // 形态默认落 outline：不写时 root 与 positioner 如实投影同一常量，皮肤不再依赖缺省档
+  const variant = prop('variant') ?? 'outline'
+
   return {
     open,
     value,
@@ -268,7 +271,7 @@ export function connectDateRangePicker<T extends PropTypes>(
     getRootProps: () => normalize.element({
       ...parts.root.attrs,
       // 三个视觉轴打在根与 positioner 上，输入行与浮层里的部件各从就近的那一处继承皮肤声明的私有槽
-      'data-variant': prop('variant'),
+      'data-variant': variant,
       'data-tone': prop('tone'),
       'data-size': prop('size'),
       'data-state': stateAttr,
@@ -408,7 +411,7 @@ export function connectDateRangePicker<T extends PropTypes>(
       // 定位层被搬到 portal 落点，继承不到作者子树上的方向；作者没给就不写，交给落点处的继承
       'dir': prop('dir'),
       // 视觉轴在浮层这一侧再打一次：positioner 被搬到 portal 落点，继承不到根上的私有槽
-      'data-variant': prop('variant'),
+      'data-variant': variant,
       'data-tone': prop('tone'),
       'data-size': prop('size'),
       'data-state': stateAttr,
