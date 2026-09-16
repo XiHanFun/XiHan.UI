@@ -2,14 +2,14 @@
 
 exports[`family-backlog 条目数 > 七段各一数，与快照一致 1`] = `
 {
-  "edge": 48,
+  "edge": 45,
   "ladder": 88,
   "motion": 1,
   "press": 66,
   "scroll": 28,
   "selection": 19,
   "shape": 25,
-  "text": 95,
+  "text": 92,
 }
 `;
 
@@ -21,9 +21,6 @@ exports[`family-backlog 键集合 > edge 1`] = `
   "approval:root:raised",
   "approval:root:subtle",
   "button:root:raised",
-  "card:root",
-  "card:root:raised",
-  "card:root:subtle",
   "checkbox-group:root:raised",
   "checkbox-group:select-all-trigger:raised",
   "checkbox:root:raised",
@@ -333,9 +330,6 @@ exports[`family-backlog 键集合 > text 1`] = `
   "back-top:root:icon-size",
   "calendar-picker:root:icon-size",
   "calendar-range-picker:root:icon-size",
-  "card:description:font-size",
-  "card:description:line-height",
-  "card:title:font-weight",
   "carousel:root:icon-size",
   "checkbox-group:label:spacing",
   "checkbox-group:root:icon-size",

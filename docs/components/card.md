@@ -128,22 +128,22 @@ Card 只提供内容面，方向和媒体尺寸由使用场景决定
 | 变量 | 部件 | CSS 属性 | 状态 | 默认来源 | 说明 |
 | --- | --- | --- | --- | --- | --- |
 | `--xh-card-bg` | `root` | `background` | `default`<br>`variant=subtle` | `--xh-bg-subtle`<br>`--xh-bg-surface` | card 的 root 部件 background 覆盖槽。 |
-| `--xh-card-border` | `root` | `border` | `default` | `transparent` | card 的 root 部件 border 覆盖槽。 |
+| `--xh-card-border` | `root` | `border` | `default` | `--xh-border-default` | card 的 root 部件 border 覆盖槽。 |
 | `--xh-card-content-gap` | `content` | `gap` | `default` | `--xh-space-1` | card 的 content 部件 gap 覆盖槽。 |
 | `--xh-card-description-fg` | `description` | `color` | `default` | `--xh-fg-muted` | card 的 description 部件 color 覆盖槽。 |
-| `--xh-card-description-font-size` | `description` | `font-size` | `default` | `--xh-text-label-size` | card 的 description 部件 font-size 覆盖槽。 |
-| `--xh-card-description-leading` | `description` | `line-height` | `default` | `--xh-text-body-leading` | card 的 description 部件 line-height 覆盖槽。 |
+| `--xh-card-description-font-size` | `description` | `font-size` | `default` | `--xh-text-secondary-size` | card 的 description 部件 font-size 覆盖槽。 |
+| `--xh-card-description-leading` | `description` | `line-height` | `default` | `--xh-leading-normal` | card 的 description 部件 line-height 覆盖槽。 |
 | `--xh-card-fg` | `root` | `color` | `default` | `--xh-fg-default` | card 的 root 部件 color 覆盖槽。 |
 | `--xh-card-font-size` | `root` | `font-size` | `default` | `--xh-text-label-size` | card 的 root 部件 font-size 覆盖槽。 |
 | `--xh-card-footer-gap` | `footer` | `gap` | `default` | `--xh-space-2` | card 的 footer 部件 gap 覆盖槽。 |
 | `--xh-card-gap` | `root` | `gap` | `default` | `--xh-space-3` | card 的 root 部件 gap 覆盖槽。 |
 | `--xh-card-leading` | `root` | `line-height` | `default` | `--xh-text-body-leading` | card 的 root 部件 line-height 覆盖槽。 |
-| `--xh-card-p` | `root` | `padding` | `default` | `--xh-space-4` | card 的 root 部件 padding 覆盖槽。 |
+| `--xh-card-p` | `root` | `padding` | `default` | `--xh-surface-pad-lg` | card 的 root 部件 padding 覆盖槽。 |
 | `--xh-card-radius` | `root` | `border-radius` | `default` | `--xh-shape-surface` | card 的 root 部件 border-radius 覆盖槽。 |
-| `--xh-card-shadow` | `root` | `box-shadow` | `default`<br>`variant=ghost` | `--xh-elevation-raised`<br>`none` | card 的 root 部件 box-shadow 覆盖槽。 |
+| `--xh-card-shadow` | `root` | `box-shadow` | `default`<br>`variant=ghost`<br>`variant=subtle` | `--xh-elevation-raised`<br>`none` | card 的 root 部件 box-shadow 覆盖槽。 |
 | `--xh-card-title-fg` | `title` | `color` | `default` | `--xh-fg-default` | card 的 title 部件 color 覆盖槽。 |
 | `--xh-card-title-font-size` | `title` | `font-size` | `default` | `--xh-text-label-size` | card 的 title 部件 font-size 覆盖槽。 |
-| `--xh-card-title-font-weight` | `title` | `font-weight` | `default` | `--xh-font-weight-medium` | card 的 title 部件 font-weight 覆盖槽。 |
+| `--xh-card-title-font-weight` | `title` | `font-weight` | `default` | `--xh-font-weight-semibold` | card 的 title 部件 font-weight 覆盖槽。 |
 | `--xh-card-title-leading` | `title` | `line-height` | `default` | `--xh-leading-relaxed` | card 的 title 部件 line-height 覆盖槽。 |
 <!-- xh-component-tokens:end -->
 
