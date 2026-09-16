@@ -152,9 +152,10 @@ const CASES: Case[] = [
     `,
   },
   {
+    // 面板皮肤 overflow: auto 两轴都滚：日历保持天然宽度，窄视口下横向也在面板内自己滚
     scope: 'date-picker',
     tag: 'xh-date-picker',
-    axes: ['vertical'],
+    axes: ['vertical', 'horizontal'],
     shell: 'positioner',
     layer: 'content',
     overlay: true,

@@ -111,9 +111,10 @@ describe('日期选择浮层', () => {
     expect(content.boxShadow).not.toBe('none')
     expect(content.borderRadius).toBe('12px')
     expect(content.padding).toBe('8px')
-    const highlight = getComputedStyle(part('content'), '::before')
-    expect(alpha(highlight.backgroundColor)).toBe(0)
-    expect(highlight.pointerEvents).toBe('none')
+    // floating 材质：实体底 + 可见描边 + 落影，不画顶光伪元素
+    expect(content.borderTopStyle).toBe('solid')
+    expect(alpha(content.borderTopColor)).toBe(255)
+    expect(getComputedStyle(part('content'), '::before').content).toBe('none')
     const calendar = getComputedStyle(part('calendar'))
     expect(calendar.backdropFilter).toBe('none')
     expect(calendar.boxShadow).toBe('none')
@@ -127,7 +128,7 @@ describe('日期选择浮层', () => {
     expect(content.backdropFilter).toBe('none')
     expect(alpha(content.backgroundColor)).toBe(255)
     expect(content.borderTopStyle).toBe('solid')
-    expect(alpha(getComputedStyle(part('content'), '::before').backgroundColor)).toBe(0)
+    expect(getComputedStyle(part('content'), '::before').content).toBe('none')
   })
 
   it.each(['presets', 'show-time'] as const)('%s：内部结构使用统一分隔线', async (shape) => {

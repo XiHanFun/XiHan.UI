@@ -119,6 +119,12 @@ const SHARED_FAMILY = {
     contentSelector: `[data-scope='cascader'][data-part='trigger']`,
     actionParts: new Set(['clear-trigger']),
   },
+  // 分段日期框 + 日历钮：内容区是 segment-group，尾钮是日历钮与清空钮
+  'date-picker': {
+    boxSelector: '[data-xh-field-chrome]',
+    contentSelector: `[data-scope='date-picker'][data-part='segment-group']`,
+    actionParts: new Set(['trigger', 'clear-trigger']),
+  },
   // 单元素：input 自身即 chrome（盒是 input 而非 control），盒内没有内容区与尾钮，不投影 data-xh-field-input
   'mention': {
     boxSelector: '[data-xh-field-chrome]',
