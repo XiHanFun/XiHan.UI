@@ -203,6 +203,28 @@ describe('question-flow：受控答题态', () => {
 })
 
 describe('question-flow：连接层', () => {
+  it('四颗钮与选项行接 Action Control：翻页 icon/xs ghost、跳过 text ghost、提交 text solid、选项 row ghost；data-disabled 跟着 disabled 走', () => {
+    const rig = mount()
+    const prev = rig.api().getPrevTriggerProps() as Dict
+    expect(prev).toMatchObject({ 'data-xh-action-control': '', 'data-xh-action-profile': 'icon', 'data-xh-action-variant': 'ghost', 'data-xh-action-display': 'always', 'data-xh-action-size': 'xs' })
+    // 第一题：上一题按不动，下一题按得动
+    expect(prev['data-disabled']).toBe('')
+    const next = rig.api().getNextTriggerProps() as Dict
+    expect(next).toMatchObject({ 'data-xh-action-profile': 'icon', 'data-xh-action-size': 'xs' })
+    expect(next['data-disabled']).toBeUndefined()
+    expect(rig.api().getSkipTriggerProps()).toMatchObject({ 'data-xh-action-control': '', 'data-xh-action-profile': 'text', 'data-xh-action-variant': 'ghost', 'data-xh-action-display': 'always', 'data-xh-action-size': 'md' })
+    const submit = rig.api().getSubmitTriggerProps() as Dict
+    expect(submit).toMatchObject({ 'data-xh-action-control': '', 'data-xh-action-profile': 'text', 'data-xh-action-variant': 'solid', 'data-xh-action-display': 'always', 'data-xh-action-size': 'md' })
+    // 没答之前提交键按不动：家族禁用面认 data-disabled
+    expect(submit['data-disabled']).toBe('')
+    expect(rig.api().getItemProps({ questionId: 'a', value: 'a1' })).toMatchObject({ 'data-xh-action-control': '', 'data-xh-action-profile': 'row', 'data-xh-action-variant': 'ghost', 'data-xh-action-display': 'always', 'data-xh-action-size': 'md' })
+    // 档位随 size 走；翻页钮是定尺的 xs 方格，不随 size
+    const lg = mount({ size: 'lg' })
+    expect((lg.api().getSubmitTriggerProps() as Dict)['data-xh-action-size']).toBe('lg')
+    expect((lg.api().getItemProps({ questionId: 'a', value: 'a1' }) as Dict)['data-xh-action-size']).toBe('lg')
+    expect((lg.api().getPrevTriggerProps() as Dict)['data-xh-action-size']).toBe('xs')
+  })
+
   it('提交键在末题上换身份：data-mode 与可访问名一起翻面', () => {
     const rig = mount({
       defaultAnswers: { a: ['a1'], c: ['c1'] },

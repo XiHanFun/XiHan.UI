@@ -5,8 +5,10 @@
 
 /* 定义 question flow 样式。 */
 
-/* 共享关键帧由 family/motion.css 提供，本皮肤 @import 它，单独引入仍成立。 */
+/* 共享关键帧由 family/motion.css 提供，本皮肤 @import 它，单独引入仍成立；
+   独立皮肤同时传递引入选项行与四颗钮的动作控件配方，full bundle 递归去重。 */
 @import '../family/motion.css';
+@import '../family/action-control.css';
 
 @layer xihan.components {
   /* 皮肤在场的标记：开发模式下按 scope 探一次，取不到就说明这份皮肤没被引入。 */
@@ -14,10 +16,10 @@
     --xh-question-flow-skin: 1;
   }
 
-  /* 一张抬起的卡：发丝描边 + 圆角 + 一档落影。三个视觉轴都落在 root 上：
-     形态管底与描边怎么画，语气管用哪族颜色，尺寸管内衬、按钮高度与字号 */
+  /* 一张静态内容面：--xh-border-default 描边 + surface 底 + 无影（§5.3 边界只由描边承担）。
+     三个视觉轴都落在 root 上：形态管底与描边怎么画，语气管用哪族颜色，尺寸管内衬、按钮高度与字号 */
   [data-scope='question-flow'][data-part='root'] {
-    /* 作者塞进指示符与翻页钮的图标跟着字号走，与皮肤画的兜底字形同一把尺 */
+    /* 作者塞进翻页钮的图标按档取尺（§6.5），与皮肤画的兜底字形同一把尺 */
     --xh-icon-size: var(--xh-question-flow-icon-size, var(--xh-glyph-size-md));
     /* 尺寸缺省档：不写 data-size 时按中档走 */
     --xh-_question-flow-p: var(--xh-space-4);
@@ -26,20 +28,15 @@
     --xh-_question-flow-px: var(--xh-control-px-md);
     --xh-_question-flow-font-size: var(--xh-control-font-md);
     --xh-_question-flow-indicator: var(--xh-control-indicator-md);
-    /* 形态缺省档：不写 data-variant 时按描边式走 */
-    --xh-_question-flow-bg: var(--xh-bg-surface);
-    --xh-_question-flow-border: var(--xh-border-subtle);
-    /* 海拔先落进私有槽：无壳档要把它整个关掉 */
-    --xh-_question-flow-shadow: var(--xh-question-flow-shadow, var(--xh-elevation-raised));
 
     display: flex;
     flex-direction: column;
     gap: var(--xh-question-flow-gap, var(--xh-_question-flow-gap));
     padding: var(--xh-question-flow-padding, var(--xh-_question-flow-p));
-    border: var(--xh-stroke-thin) solid var(--xh-question-flow-border, var(--xh-_question-flow-border));
+    border: var(--xh-stroke-thin) solid var(--xh-question-flow-border, var(--xh-border-default));
     border-radius: var(--xh-question-flow-radius, var(--xh-shape-surface));
-    background: var(--xh-question-flow-bg, var(--xh-_question-flow-bg));
-    box-shadow: var(--xh-_question-flow-shadow);
+    background: var(--xh-question-flow-bg, var(--xh-bg-surface));
+    box-shadow: var(--xh-question-flow-shadow, none);
     animation: xh-question-flow-in var(--xh-motion-duration-enter) var(--xh-motion-ease-enter-strong);
   }
 
@@ -49,24 +46,23 @@
   }
 
   /* —— 形态 —— */
-  /* 描边式：底与描边都画满，缺省档就是它 */
-  [data-scope='question-flow'][data-part='root'][data-variant='outline'] {
-    --xh-_question-flow-bg: var(--xh-bg-surface);
-    --xh-_question-flow-border: var(--xh-border-subtle);
-  }
-
+  /* 描边式是缺省档，写在上面那条基础规则里 */
   /* 填充式：底色顶替描边表达边界。描边只退成透明而不去掉，
-     1px 的位置留着，与 outline 档并排时基线对得上 */
+     1px 的位置留着，与 outline 档并排时基线对得上；
+     淡底承载面向选项行与几颗中性钮下发 hover 200 → pressed 300（§7.2） */
   [data-scope='question-flow'][data-part='root'][data-variant='subtle'] {
-    --xh-_question-flow-bg: var(--xh-_tone-subtle, var(--xh-bg-subtle));
-    --xh-_question-flow-border: transparent;
+    --xh-action-host-bg-hover: var(--xh-bg-subtle-hover);
+    --xh-action-host-bg-pressed: var(--xh-bg-subtle-active);
+
+    border-color: transparent;
+    background: var(--xh-question-flow-bg, var(--xh-_tone-subtle, var(--xh-bg-subtle)));
   }
 
-  /* 无壳：底与描边都透明，落影一并收掉——底都不画了，一圈投影就成了没有来处的暗边 */
+  /* 无壳：底与描边都透明，影一并收掉——底都不画了，一圈投影就成了没有来处的暗边 */
   [data-scope='question-flow'][data-part='root'][data-variant='ghost'] {
-    --xh-_question-flow-bg: transparent;
-    --xh-_question-flow-border: transparent;
-    --xh-_question-flow-shadow: 0 0 0 transparent;
+    border-color: transparent;
+    background: transparent;
+    box-shadow: none;
   }
 
   /* —— 尺寸 —— */
@@ -149,13 +145,13 @@
     pointer-events: auto;
   }
 
-  /* 题干就是这一题的标题，也是选项组的可访问名 */
+  /* 题干就是这一题的标题，也是选项组的可访问名：走 Surface 标题档 14/600（§6.4） */
   [data-scope='question-flow'][data-part='prompt'] {
     display: block;
     margin: 0;
     color: var(--xh-question-flow-prompt-fg, var(--xh-fg-default));
     font-size: var(--xh-question-flow-prompt-font-size, var(--xh-text-label-size));
-    font-weight: var(--xh-question-flow-prompt-font-weight, var(--xh-text-label-weight));
+    font-weight: var(--xh-question-flow-prompt-font-weight, var(--xh-font-weight-semibold));
     line-height: var(--xh-leading-tight);
   }
 
@@ -173,40 +169,24 @@
     display: none;
   }
 
-  /* 一个选项：整行可点、可聚焦，记号在左 */
+  /* 一个选项：整行可点、可聚焦，记号在左。盒型、悬停 / 按下 / 禁用面由 Action Control 的 row 档给
+     （ghost 形态：白底承载 hover 100 → pressed 200，按下只换面不缩放，§9.2；禁用守卫认 data-disabled），
+     这里只把使用者槽映射到桥接槽，内衬与间距沿用本组件的档位；字色三态同一支，选中档在下面换一档 */
   [data-scope='question-flow'][data-part='item'] {
-    display: flex;
-    align-items: center;
-    gap: var(--xh-question-flow-item-gap, var(--xh-space-1_5));
-    padding-inline: var(--xh-question-flow-item-px, var(--xh-space-2));
-    padding-block: var(--xh-question-flow-item-py, var(--xh-space-1));
-    border: 0;
-    border-radius: var(--xh-question-flow-item-radius, var(--xh-shape-control));
-    background: var(--xh-question-flow-item-bg, transparent);
-    color: var(--xh-question-flow-item-fg, var(--xh-fg-muted));
-    font-family: inherit;
-    font-size: var(--xh-question-flow-item-font-size, var(--xh-_question-flow-font-size));
-    line-height: var(--xh-leading-normal);
-    text-align: start;
-    cursor: pointer;
-    transition:
-      background var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
-      color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
-      scale var(--xh-motion-duration-release) var(--xh-motion-ease-release);
+    --xh-action-gap: var(--xh-question-flow-item-gap, var(--xh-space-1_5));
+    --xh-action-padding-inline: var(--xh-question-flow-item-px, var(--xh-space-2));
+    --xh-action-padding-block: var(--xh-question-flow-item-py, var(--xh-space-1));
+    --xh-action-radius: var(--xh-question-flow-item-radius, var(--xh-_action-profile-radius));
+    --xh-action-font-size: var(--xh-question-flow-item-font-size, var(--xh-_question-flow-font-size));
+    --xh-action-bg-rest: var(--xh-question-flow-item-bg, var(--xh-_action-variant-bg-rest));
+    --xh-action-bg-hover: var(--xh-question-flow-item-bg-hover, var(--xh-_action-variant-bg-hover));
+    --xh-action-fg-rest: var(--xh-question-flow-item-fg, var(--xh-fg-muted));
+    --xh-action-fg-hover: var(--xh-question-flow-item-fg, var(--xh-fg-muted));
+    --xh-action-fg-pressed: var(--xh-question-flow-item-fg, var(--xh-fg-muted));
   }
 
   [data-scope='question-flow'][data-part='item'][hidden] {
     display: none;
-  }
-
-  [data-scope='question-flow'][data-part='item']:hover {
-    background: var(--xh-question-flow-item-bg-hover, var(--xh-bg-subtle-hover));
-  }
-
-  [data-scope='question-flow'][data-part='item']:active {
-    scale: var(--xh-motion-scale-press);
-    transition-duration: var(--xh-motion-duration-press);
-    transition-timing-function: var(--xh-motion-ease-press);
   }
 
   /* 当前题的选项按位次错开开幕，换题时随 data-current 重跑。
@@ -236,21 +216,19 @@
     animation-delay: calc(var(--xh-motion-stagger-step) * 5);
   }
 
-  /* 选中的那条读起来更重一档 */
+  /* 选中的那条读起来更重一档（禁用项无论选没选都是家族给的禁用色） */
   [data-scope='question-flow'][data-part='item'][data-state='checked'] {
-    color: var(--xh-question-flow-item-fg-checked, var(--xh-fg-default));
-  }
-
-  /* 排在选中档之后：禁用项无论选没选都是禁用色 */
-  [data-scope='question-flow'][data-part='item'][data-disabled] {
-    color: var(--xh-fg-disabled);
+    --xh-action-fg-rest: var(--xh-question-flow-item-fg-checked, var(--xh-fg-default));
+    --xh-action-fg-hover: var(--xh-question-flow-item-fg-checked, var(--xh-fg-default));
+    --xh-action-fg-pressed: var(--xh-question-flow-item-fg-checked, var(--xh-fg-default));
   }
 
   /* 记号盒：多选是圆角方格，单选是圆。选中态填色，纯装饰不进可访问名 */
   [data-scope='question-flow'][data-part='item-indicator'] {
-    /* 盒里那枚记号跟着字号走，与其余带记号盒的控件同一把尺。
+    /* 盒里那枚记号按盒比例量（与 Checkbox 同一比例），作者塞进来的图标读同一把尺。
        根上那把是展示型图标档，比指示符盒还大一档，画进这个盒里会溢出四个像素 */
-    --xh-icon-size: var(--xh-question-flow-indicator-icon-size, var(--xh-glyph-size-text));
+    --xh-_question-flow-indicator-glyph: calc(var(--xh-question-flow-indicator-size, var(--xh-_question-flow-indicator)) * 0.75);
+    --xh-icon-size: var(--xh-question-flow-indicator-icon-size, var(--xh-_question-flow-indicator-glyph));
 
     display: inline-flex;
     flex: none;
@@ -272,17 +250,17 @@
     display: none;
   }
 
-  /* 单选那一档把方格收成圆 */
+  /* 单选那一档把方格收成圆：正方盒取 circle（§6.3） */
   [data-scope='question-flow'][data-part='item-indicator'][data-select-mode='single'] {
-    border-radius: var(--xh-question-flow-indicator-radius-single, var(--xh-shape-pill));
+    border-radius: var(--xh-question-flow-indicator-radius-single, var(--xh-shape-circle));
   }
 
   /* 没写内容就由皮肤画勾；作者往部件里塞了自己的图形，这条规则即不命中 */
   [data-scope='question-flow'][data-part='item-indicator']:empty::before {
     content: '';
     display: inline-block;
-    inline-size: var(--xh-icon-size, var(--xh-glyph-size-text));
-    block-size: var(--xh-icon-size, var(--xh-glyph-size-text));
+    inline-size: var(--xh-icon-size, var(--xh-glyph-size-md));
+    block-size: var(--xh-icon-size, var(--xh-glyph-size-md));
     vertical-align: var(--xh-glyph-baseline-shift);
     background-color: currentColor;
     -webkit-mask: var(--xh-glyph-mark-check) center / contain no-repeat;
@@ -360,56 +338,33 @@
     display: none;
   }
 
-  /* 两颗翻页钮是方形图标钮，中间夹着计数 */
+  /* 两颗翻页钮是方形图标钮，中间夹着计数：盒几何、悬停 / 按下与 0.97 按压、焦点环、禁用面全由
+     Action Control 的 icon 档 xs 位给（24px = --xh-control-action-size；ghost 形态，白底 100 → 200），
+     组件只映射既有使用者槽：尺寸、内衬、圆角（inset）、底与字色 */
   [data-scope='question-flow'][data-part='prev-trigger'],
   [data-scope='question-flow'][data-part='next-trigger'] {
-    display: inline-flex;
-    flex: none;
-    align-items: center;
-    justify-content: center;
-    inline-size: var(--xh-question-flow-step-size, var(--xh-control-action-size));
-    block-size: var(--xh-question-flow-step-size, var(--xh-control-action-size));
-    padding: var(--xh-question-flow-step-padding, var(--xh-space-0));
-    border: 0;
-    border-radius: var(--xh-question-flow-step-radius, var(--xh-shape-inset));
-    background: var(--xh-question-flow-step-bg, transparent);
-    color: var(--xh-question-flow-step-fg, var(--xh-fg-subtle));
-    cursor: pointer;
-    transition:
-      background var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
-      color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
-      scale var(--xh-motion-duration-release) var(--xh-motion-ease-release);
+    --xh-action-visual-size: var(--xh-question-flow-step-size, var(--xh-_action-profile-visual-size));
+    --xh-action-padding-inline: var(--xh-question-flow-step-padding, var(--xh-_action-profile-padding-inline));
+    --xh-action-radius: var(--xh-question-flow-step-radius, var(--xh-shape-inset));
+    --xh-action-bg-rest: var(--xh-question-flow-step-bg, var(--xh-_action-variant-bg-rest));
+    --xh-action-bg-hover: var(--xh-question-flow-step-bg-hover, var(--xh-_action-variant-bg-hover));
+    --xh-action-fg-rest: var(--xh-question-flow-step-fg, var(--xh-fg-subtle));
+    --xh-action-fg-hover: var(--xh-question-flow-step-fg-hover, var(--xh-fg-default));
+    --xh-action-fg-pressed: var(--xh-question-flow-step-fg-hover, var(--xh-fg-default));
   }
 
+  /* 家族那条 display 会把 UA 的 [hidden]{display:none} 盖掉 */
   [data-scope='question-flow'][data-part='prev-trigger'][hidden],
   [data-scope='question-flow'][data-part='next-trigger'][hidden] {
     display: none;
-  }
-
-  [data-scope='question-flow'][data-part='prev-trigger']:hover:not(:disabled),
-  [data-scope='question-flow'][data-part='next-trigger']:hover:not(:disabled) {
-    background: var(--xh-question-flow-step-bg-hover, var(--xh-bg-subtle-hover));
-    color: var(--xh-question-flow-step-fg-hover, var(--xh-fg-default));
-  }
-
-  [data-scope='question-flow'][data-part='prev-trigger']:active:not(:disabled),
-  [data-scope='question-flow'][data-part='next-trigger']:active:not(:disabled) {
-    scale: var(--xh-motion-scale-press);
-    transition-duration: var(--xh-motion-duration-press);
-    transition-timing-function: var(--xh-motion-ease-press);
-  }
-
-  [data-scope='question-flow'][data-part='prev-trigger']:disabled,
-  [data-scope='question-flow'][data-part='next-trigger']:disabled {
-    color: var(--xh-fg-disabled);
   }
 
   /* 没写内容就由皮肤画箭头；作者往按钮里塞了自己的图形，这两条即不命中 */
   [data-scope='question-flow'][data-part='prev-trigger']:empty::before {
     content: '';
     display: inline-block;
-    inline-size: var(--xh-icon-size, var(--xh-glyph-size-text));
-    block-size: var(--xh-icon-size, var(--xh-glyph-size-text));
+    inline-size: var(--xh-icon-size, var(--xh-glyph-size-md));
+    block-size: var(--xh-icon-size, var(--xh-glyph-size-md));
     vertical-align: var(--xh-glyph-baseline-shift);
     background-color: currentColor;
     -webkit-mask: var(--xh-glyph-mark-chevron-up) center / contain no-repeat;
@@ -419,8 +374,8 @@
   [data-scope='question-flow'][data-part='next-trigger']:empty::before {
     content: '';
     display: inline-block;
-    inline-size: var(--xh-icon-size, var(--xh-glyph-size-text));
-    block-size: var(--xh-icon-size, var(--xh-glyph-size-text));
+    inline-size: var(--xh-icon-size, var(--xh-glyph-size-md));
+    block-size: var(--xh-icon-size, var(--xh-glyph-size-md));
     vertical-align: var(--xh-glyph-baseline-shift);
     background-color: currentColor;
     -webkit-mask: var(--xh-glyph-mark-chevron-down) center / contain no-repeat;
@@ -440,89 +395,56 @@
     display: none;
   }
 
-  /* 两颗动作钮共用一套盒：跳过是安静的文字钮，提交是实心块 */
+  /* 两颗动作钮是离散动作控件：盒几何、悬停 / 按下与 0.97 按压、焦点环、禁用面全由 Action Control 的 text 档给，
+     组件只映射既有使用者槽。跳过走 ghost 档：安静的文字钮（白底 100 → 200）；提交走 solid 档：这一组里的主要动作，
+     与 Button 缺省同为品牌实心。两颗共用的几何与字号写在一起 */
   [data-scope='question-flow'][data-part='skip-trigger'],
   [data-scope='question-flow'][data-part='submit-trigger'] {
-    display: inline-flex;
-    flex: none;
-    align-items: center;
-    justify-content: center;
-    gap: var(--xh-question-flow-action-gap, var(--xh-space-1));
-    padding-inline: var(--xh-question-flow-action-px, var(--xh-_question-flow-px));
-    border: var(--xh-stroke-thin) solid transparent;
-    border-radius: var(--xh-question-flow-action-radius, var(--xh-shape-control));
-    block-size: var(--xh-question-flow-action-h, var(--xh-_question-flow-h));
-    font-family: inherit;
-    font-size: var(--xh-question-flow-action-font-size, var(--xh-text-label-size));
+    --xh-action-gap: var(--xh-question-flow-action-gap, var(--xh-space-1));
+    --xh-action-visual-size: var(--xh-question-flow-action-h, var(--xh-_question-flow-h));
+    --xh-action-padding-inline: var(--xh-question-flow-action-px, var(--xh-_question-flow-px));
+    --xh-action-radius: var(--xh-question-flow-action-radius, var(--xh-shape-control));
+    --xh-action-font-size: var(--xh-question-flow-action-font-size, var(--xh-text-label-size));
+
     font-weight: var(--xh-question-flow-action-font-weight, var(--xh-text-label-weight));
-    line-height: var(--xh-leading-none);
-    white-space: nowrap;
-    cursor: pointer;
-    /* box-shadow 在列里是给提交键的：它按不动时内顶高光整个撤掉，不接过渡就是硬切 */
-    transition:
-      background var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
-      border-color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
-      box-shadow var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
-      color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
-      scale var(--xh-motion-duration-release) var(--xh-motion-ease-release);
   }
 
-  /* 面是实心的，环色与面同族，画在面里就看不出来；环改取面自己的前景色——
-     那一族色本来就要在这块面上把字读清楚，与面的对比是按可读性定的 */
-  [data-scope='question-flow'][data-part='submit-trigger']:focus-visible {
-    --xh-_ring-color: currentColor;
-  }
-
+  /* 家族那条 display 会把 UA 的 [hidden]{display:none} 盖掉 */
   [data-scope='question-flow'][data-part='skip-trigger'][hidden],
   [data-scope='question-flow'][data-part='submit-trigger'][hidden] {
     display: none;
   }
 
+  /* 跳过钮：底与字色映到 ghost 档的桥接槽，悬停时字色提到正文档 */
   [data-scope='question-flow'][data-part='skip-trigger'] {
-    background: var(--xh-question-flow-skip-bg, transparent);
-    color: var(--xh-question-flow-skip-fg, var(--xh-fg-muted));
+    --xh-action-bg-rest: var(--xh-question-flow-skip-bg, var(--xh-_action-variant-bg-rest));
+    --xh-action-bg-hover: var(--xh-question-flow-skip-bg-hover, var(--xh-_action-variant-bg-hover));
+    --xh-action-fg-rest: var(--xh-question-flow-skip-fg, var(--xh-fg-muted));
+    --xh-action-fg-hover: var(--xh-question-flow-skip-fg-hover, var(--xh-fg-default));
+    --xh-action-fg-pressed: var(--xh-question-flow-skip-fg-hover, var(--xh-fg-default));
   }
 
-  [data-scope='question-flow'][data-part='skip-trigger']:hover:not(:disabled) {
-    background: var(--xh-question-flow-skip-bg-hover, var(--xh-bg-subtle-hover));
-    color: var(--xh-question-flow-skip-fg-hover, var(--xh-fg-default));
-  }
-
-  [data-scope='question-flow'][data-part='skip-trigger']:active:not(:disabled) {
-    scale: var(--xh-motion-scale-press);
-    transition-duration: var(--xh-motion-duration-press);
-    transition-timing-function: var(--xh-motion-ease-press);
-  }
-
-  /* 内顶高光把实心块顶出一道边，与跳过那颗的描边同一档厚度 */
+  /* 提交钮：品牌实心，内顶高光把实心块顶出一道边，与跳过那颗的描边同一档厚度（三态同一支，
+     答不动时的置灰面由家族收掉、高光随之撤掉，出口一直在那里只是按不动）；底 / 字与置灰底映到 solid 档的桥接槽 */
   [data-scope='question-flow'][data-part='submit-trigger'] {
-    --xh-_question-flow-submit-highlight: var(--xh-_highlight-tone);
-
-    background: var(--xh-question-flow-submit-bg, var(--xh-_tone, var(--xh-bg-brand)));
-    color: var(--xh-question-flow-submit-fg, var(--xh-_tone-on, var(--xh-fg-on-brand)));
-    box-shadow: var(--xh-question-flow-submit-shadow, var(--xh-_question-flow-submit-highlight));
+    --xh-action-bg-rest: var(--xh-question-flow-submit-bg, var(--xh-_action-variant-bg-rest));
+    --xh-action-bg-hover: var(--xh-question-flow-submit-bg-hover, var(--xh-_action-variant-bg-hover));
+    --xh-action-bg-pressed: var(--xh-question-flow-submit-bg-active, var(--xh-_action-variant-bg-pressed));
+    --xh-action-bg-disabled: var(--xh-question-flow-submit-bg-off, var(--xh-_action-variant-bg-disabled));
+    --xh-action-fg-rest: var(--xh-question-flow-submit-fg, var(--xh-_action-variant-fg-rest));
+    --xh-action-fg-hover: var(--xh-question-flow-submit-fg, var(--xh-_action-variant-fg-hover));
+    --xh-action-fg-pressed: var(--xh-question-flow-submit-fg, var(--xh-_action-variant-fg-pressed));
+    --xh-action-highlight-rest: transparent;
+    --xh-action-shadow-rest: var(--xh-question-flow-submit-shadow, var(--xh-_highlight-tone));
+    --xh-action-shadow-hover: var(--xh-question-flow-submit-shadow, var(--xh-_highlight-tone));
+    --xh-action-shadow-pressed: var(--xh-question-flow-submit-shadow, var(--xh-_highlight-tone));
   }
 
-  [data-scope='question-flow'][data-part='submit-trigger']:hover:not(:disabled) {
-    background: var(--xh-question-flow-submit-bg-hover, var(--xh-_tone-hover, var(--xh-bg-brand-hover)));
-  }
-
-  [data-scope='question-flow'][data-part='submit-trigger']:active:not(:disabled) {
-    background: var(--xh-question-flow-submit-bg-active, var(--xh-_tone-active, var(--xh-bg-brand-active)));
-    scale: var(--xh-motion-scale-press);
-    transition-duration: var(--xh-motion-duration-press);
-    transition-timing-function: var(--xh-motion-ease-press);
-  }
-
-  [data-scope='question-flow'][data-part='skip-trigger']:disabled,
-  [data-scope='question-flow'][data-part='submit-trigger']:disabled {
-    color: var(--xh-fg-disabled);
-  }
-
-  /* 答不动时提交键转灰但不收起：出口一直在那里，只是还按不动 */
-  [data-scope='question-flow'][data-part='submit-trigger']:disabled {
-    background: var(--xh-question-flow-submit-bg-off, var(--xh-bg-muted));
-    box-shadow: none;
+  /* 面是实心的，环色与面同族，画在面里就看不出来；环改取面自己的前景色——
+     那一族色本来就要在这块面上把字读清楚，与面的对比是按可读性定的。
+     置灰档的底换成置灰底、字换成置灰色，环取过来就跟底一起糊了，那一档走公共层的环 */
+  [data-scope='question-flow'][data-part='submit-trigger']:not([data-disabled]) {
+    --xh-action-ring-color-focus-visible: currentColor;
   }
 
   /* 交卷之后才露出的那一格 */

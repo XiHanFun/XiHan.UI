@@ -276,13 +276,6 @@
       "ratio": 1,
       "ring": "poured"
     },
-    "question-flow [data-part='submit-trigger'][data-scope='question-flow']": {
-      "parts": [
-        "submit-trigger"
-      ],
-      "ratio": 1,
-      "ring": "poured"
-    },
     "slider [data-invalid][data-part='thumb'][data-scope='slider']": {
       "parts": [
         "thumb"
