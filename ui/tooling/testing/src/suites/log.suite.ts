@@ -115,6 +115,12 @@ export const logSuite: ConformanceSuite = {
             'data-state': 'hidden',
             // 收起时只置 hidden，不卸载节点
             'hidden': '',
+            // 回底钮接 Action Control 的 floating 档：ghost 形态、固定 xs（32px 正方盒）
+            'data-xh-action-control': '',
+            'data-xh-action-profile': 'floating',
+            'data-xh-action-variant': 'ghost',
+            'data-xh-action-display': 'always',
+            'data-xh-action-size': 'xs',
           },
           'live-region': {
             'role': 'status',

@@ -189,7 +189,8 @@ describe('check-family-parity.mjs', () => {
   }, SPAWN_TIMEOUT)
 
   it('读豁免表的家族：成员还挂着豁免时不参与比对，全部迁走后才比', () => {
-    // 把内容面族里 code-view 与 log 的全部豁免删掉，当作两家都已迁走；再给 log 的根面动一刀就该红
+    // 内容面族里 code-view 与 log 已迁走（根面都是无影），这里再把两家残留的豁免键（若有）清掉；
+    // 给 log 的根面动一刀（抬回 raised 落影）就该红
     const root = createFixture()
     const json = JSON.parse(readFileSync(join(root, BACKLOG), 'utf8'))
     for (const section of Object.keys(json)) {
@@ -203,7 +204,7 @@ describe('check-family-parity.mjs', () => {
     writeFileSync(join(root, BACKLOG), JSON.stringify(json, null, 2))
     append(root, 'packages/design/styles/css/log.css', LAYER(`
   [data-scope='log'][data-part='root'] {
-    box-shadow: var(--xh-log-shadow, none);
+    box-shadow: var(--xh-log-shadow, var(--xh-elevation-raised));
   }`))
     const result = run('check-family-parity.mjs', root)
     expect(result.status).toBe(1)

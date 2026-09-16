@@ -30576,6 +30576,9 @@
               "name": "--xh-log-scroll-to-end-trigger-size"
             },
             {
+              "name": "--xh-log-shadow"
+            },
+            {
               "name": "--xh-log-tab-size"
             }
           ]

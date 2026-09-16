@@ -35442,7 +35442,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-bg-subtle"
+        "--xh-bg-surface"
       ],
       "visibility": "public",
       "description": "log 的 root 部件 background 覆盖槽。"
@@ -35541,7 +35541,7 @@
       "name": "--xh-log-icon-size",
       "component": "log",
       "part": [
-        "root"
+        "scroll-to-end-trigger"
       ],
       "property": [
         "--xh-icon-size"
@@ -35550,10 +35550,10 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-glyph-size-text"
+        "--xh-_action-profile-glyph-size"
       ],
       "visibility": "public",
-      "description": "log 的 root 部件 --xh-icon-size 覆盖槽。"
+      "description": "log 的 scroll-to-end-trigger 部件 --xh-icon-size 覆盖槽。"
     },
     {
       "name": "--xh-log-level-debug-fg",
@@ -35691,16 +35691,16 @@
         "scroll-to-end-trigger"
       ],
       "property": [
-        "background"
+        "background-color"
       ],
       "state": [
         "default"
       ],
       "defaultToken": [
-        "--xh-bg-surface-raised"
+        "--xh-material-frosted-bg"
       ],
       "visibility": "public",
-      "description": "log 的 scroll-to-end-trigger 部件 background 覆盖槽。"
+      "description": "log 的 scroll-to-end-trigger 部件 background-color 覆盖槽。"
     },
     {
       "name": "--xh-log-scroll-to-end-trigger-bg-hover",
@@ -35709,16 +35709,20 @@
         "scroll-to-end-trigger"
       ],
       "property": [
-        "background"
+        "background-color"
       ],
       "state": [
-        "hover"
+        "disabled",
+        "hover",
+        "loading",
+        "not([data-disabled])",
+        "not([data-loading])"
       ],
       "defaultToken": [
-        "--xh-bg-subtle-hover"
+        "--xh-_action-variant-bg-hover"
       ],
       "visibility": "public",
-      "description": "log 的 scroll-to-end-trigger 部件 background 覆盖槽。"
+      "description": "log 的 scroll-to-end-trigger 部件 background-color 覆盖槽。"
     },
     {
       "name": "--xh-log-scroll-to-end-trigger-border",
@@ -35727,16 +35731,25 @@
         "scroll-to-end-trigger"
       ],
       "property": [
-        "border"
+        "border",
+        "border-color"
       ],
       "state": [
-        "default"
+        "default",
+        "disabled",
+        "focus-visible",
+        "hover",
+        "is(:active, [data-pressed])",
+        "loading",
+        "not([data-disabled])",
+        "not([data-loading])",
+        "pressed"
       ],
       "defaultToken": [
-        "--xh-border-default"
+        "--xh-material-frosted-border"
       ],
       "visibility": "public",
-      "description": "log 的 scroll-to-end-trigger 部件 border 覆盖槽。"
+      "description": "log 的 scroll-to-end-trigger 部件 border、border-color 覆盖槽。"
     },
     {
       "name": "--xh-log-scroll-to-end-trigger-fg",
@@ -35751,7 +35764,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-fg-default"
+        "--xh-material-frosted-fg"
       ],
       "visibility": "public",
       "description": "log 的 scroll-to-end-trigger 部件 color 覆盖槽。"
@@ -35803,10 +35816,17 @@
         "box-shadow"
       ],
       "state": [
-        "default"
+        "default",
+        "disabled",
+        "hover",
+        "is(:active, [data-pressed])",
+        "loading",
+        "not([data-disabled])",
+        "not([data-loading])",
+        "pressed"
       ],
       "defaultToken": [
-        "--xh-elevation-raised"
+        "--xh-material-frosted-shadow"
       ],
       "visibility": "public",
       "description": "log 的 scroll-to-end-trigger 部件 box-shadow 覆盖槽。"
@@ -35822,13 +35842,32 @@
         "inline-size"
       ],
       "state": [
-        "default"
+        "default",
+        "xh-action-profile=floating"
       ],
       "defaultToken": [
-        "--xh-control-h-sm"
+        "--xh-_action-profile-visual-size"
       ],
       "visibility": "public",
       "description": "log 的 scroll-to-end-trigger 部件 block-size、inline-size 覆盖槽。"
+    },
+    {
+      "name": "--xh-log-shadow",
+      "component": "log",
+      "part": [
+        "root"
+      ],
+      "property": [
+        "box-shadow"
+      ],
+      "state": [
+        "default"
+      ],
+      "defaultToken": [
+        "none"
+      ],
+      "visibility": "public",
+      "description": "log 的 root 部件 box-shadow 覆盖槽。"
     },
     {
       "name": "--xh-log-tab-size",

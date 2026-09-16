@@ -2,14 +2,14 @@
 
 exports[`family-backlog 条目数 > 七段各一数，与快照一致 1`] = `
 {
-  "edge": 39,
-  "ladder": 76,
+  "edge": 38,
+  "ladder": 75,
   "motion": 1,
-  "press": 64,
+  "press": 63,
   "scroll": 28,
   "selection": 19,
-  "shape": 25,
-  "text": 82,
+  "shape": 24,
+  "text": 81,
 }
 `;
 
@@ -28,7 +28,6 @@ exports[`family-backlog 键集合 > edge 1`] = `
   "color-slider:thumb:raised",
   "download-trigger:root:raised",
   "file-upload:trigger:raised",
-  "log:scroll-to-end-trigger:raised",
   "message-feed:scroll-to-end-trigger:raised",
   "page-header:root:outline",
   "popconfirm:confirm-trigger:raised",
@@ -102,7 +101,6 @@ exports[`family-backlog 键集合 > ladder 1`] = `
   "infinite-scroll:load-more-trigger:pressed",
   "layout:sider-trigger:hover",
   "layout:sider-trigger:pressed",
-  "log:scroll-to-end-trigger:hover",
   "menu:item:pressed",
   "menubar:item:pressed",
   "message-feed:scroll-to-end-trigger:hover",
@@ -178,7 +176,6 @@ exports[`family-backlog 键集合 > press 1`] = `
   "json-viewer:branch-control",
   "listbox:item",
   "listbox:load-more-trigger",
-  "log:scroll-to-end-trigger",
   "menubar:trigger",
   "message-feed:scroll-to-end-trigger",
   "navigation-menu:trigger",
@@ -285,7 +282,6 @@ exports[`family-backlog 键集合 > shape 1`] = `
   "float-button:trigger",
   "image-viewer:next-trigger",
   "image-viewer:prev-trigger",
-  "log:scroll-to-end-trigger",
   "message-feed:scroll-to-end-trigger",
   "popconfirm:confirm-trigger::before",
   "question-flow:item-indicator",
@@ -340,7 +336,6 @@ exports[`family-backlog 键集合 > text 1`] = `
   "image-viewer:content:icon-size",
   "json-viewer:root:icon-size",
   "listbox:root:icon-size",
-  "log:root:icon-size",
   "menu:content:icon-size",
   "menubar:content:icon-size",
   "menubar:root:icon-size",

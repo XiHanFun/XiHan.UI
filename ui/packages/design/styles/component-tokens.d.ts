@@ -1875,6 +1875,7 @@ export type ComponentTokenName =
   | '--xh-log-scroll-to-end-trigger-radius'
   | '--xh-log-scroll-to-end-trigger-shadow'
   | '--xh-log-scroll-to-end-trigger-size'
+  | '--xh-log-shadow'
   | '--xh-log-tab-size'
   | '--xh-markdown-stream-caret-bg'
   | '--xh-markdown-stream-caret-duration'

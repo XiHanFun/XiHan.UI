@@ -109,6 +109,14 @@ describe('logMachine 粘底', () => {
     expect(l.api().showScrollToEndTrigger).toBe(false)
     expect(l.api().getRootProps()).toMatchObject({ 'data-at-bottom': '', 'data-sticking': '' })
     expect(l.api().getScrollToEndTriggerProps()).toMatchObject({ 'type': 'button', 'hidden': true, 'data-state': 'hidden' })
+    // 回底钮接 Action Control 的 floating 档：ghost 形态、固定 xs（32px 正方盒），材质由皮肤给 frosted
+    expect(l.api().getScrollToEndTriggerProps()).toMatchObject({
+      'data-xh-action-control': '',
+      'data-xh-action-profile': 'floating',
+      'data-xh-action-variant': 'ghost',
+      'data-xh-action-display': 'always',
+      'data-xh-action-size': 'xs',
+    })
 
     // 先滚到底附近再往上滚：scrollTop 变小即视为用户上滚
     await l.scroll(800)

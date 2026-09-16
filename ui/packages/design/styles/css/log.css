@@ -5,6 +5,9 @@
 
 /* 定义 log 样式。 */
 
+/* 独立皮肤同时传递引入回底钮的动作控件配方；full bundle 递归去重。 */
+@import '../family/action-control.css';
+
 @layer xihan.motion {
   /* 关键帧写在本文件里：动画名的查找只认「文档里有没有这个名字」，
      引用别处文件里的名字时那份文件不一定在场，动画会静默地整个不跑。
@@ -39,16 +42,16 @@
     --xh-_log-font-size: var(--xh-text-secondary-size);
     --xh-_log-content-px: var(--xh-space-3);
 
-    /* 作者塞进回到底部按钮里的图标跟着字号走，与皮肤画的兜底字形同一把尺 */
-    --xh-icon-size: var(--xh-log-icon-size, var(--xh-glyph-size-text));
-
+    /* 一张静态内容面：--xh-border-default 描边 + surface 底 + 无影（§5.3 描边与淡底互斥），
+       与 code-view / diff-view / json-viewer 同走 solid */
     position: relative;
     display: flex;
     flex-direction: column;
     overflow: hidden;
     border: var(--xh-stroke-thin) solid var(--xh-log-border, var(--xh-border-default));
     border-radius: var(--xh-log-radius, var(--xh-shape-surface));
-    background: var(--xh-log-bg, var(--xh-bg-subtle));
+    background: var(--xh-log-bg, var(--xh-bg-surface));
+    box-shadow: var(--xh-log-shadow, none);
     color: var(--xh-log-fg, var(--xh-fg-default));
   }
 
@@ -118,26 +121,31 @@
     color: var(--xh-log-level-error-fg, var(--xh-fg-danger));
   }
 
-  /* 回到底部：浮在视口右下角，收起时不卸载只隐藏 */
+  /* 回到底部：浮在视口右下角，收起时不卸载只隐藏。盒型、悬停 / 按下面与缩放由 Action Control 的
+     floating 档给（circle 正方盒、ghost 形态：白底承载 hover 100 → pressed 200）；材质随角落浮钮族走
+     frosted 四件套（底 + 边 + 影 + 磨砂，§8），这里只把使用者槽映射到桥接槽：
+     字形按 xs 档取 --xh-_action-profile-glyph-size（16px），与 back-top 同一把尺 */
   [data-scope='log'][data-part='scroll-to-end-trigger'] {
+    --xh-_log-scroll-to-end-trigger-shadow: var(--xh-log-scroll-to-end-trigger-shadow, var(--xh-material-frosted-shadow));
+    --xh-action-visual-size: var(--xh-log-scroll-to-end-trigger-size, var(--xh-_action-profile-visual-size));
+    --xh-action-radius: var(--xh-log-scroll-to-end-trigger-radius, var(--xh-shape-circle));
+    --xh-action-bg-rest: var(--xh-log-scroll-to-end-trigger-bg, var(--xh-material-frosted-bg));
+    --xh-action-bg-hover: var(--xh-log-scroll-to-end-trigger-bg-hover, var(--xh-_action-variant-bg-hover));
+    --xh-action-border-rest: var(--xh-log-scroll-to-end-trigger-border, var(--xh-material-frosted-border));
+    --xh-action-border-hover: var(--xh-log-scroll-to-end-trigger-border, var(--xh-material-frosted-border));
+    --xh-action-border-pressed: var(--xh-log-scroll-to-end-trigger-border, var(--xh-material-frosted-border));
+    --xh-action-border-focus-visible: var(--xh-log-scroll-to-end-trigger-border, var(--xh-material-frosted-border));
+    --xh-action-shadow-rest: var(--xh-_log-scroll-to-end-trigger-shadow);
+    --xh-action-shadow-hover: var(--xh-_log-scroll-to-end-trigger-shadow);
+    --xh-action-shadow-pressed: var(--xh-_log-scroll-to-end-trigger-shadow);
+    --xh-action-fg-rest: var(--xh-log-scroll-to-end-trigger-fg, var(--xh-material-frosted-fg));
+    --xh-icon-size: var(--xh-log-icon-size, var(--xh-_action-profile-glyph-size));
+
     position: absolute;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    padding: 0;
-    border: var(--xh-stroke-thin) solid var(--xh-log-scroll-to-end-trigger-border, var(--xh-border-default));
-    border-radius: var(--xh-log-scroll-to-end-trigger-radius, var(--xh-shape-circle));
-    background: var(--xh-log-scroll-to-end-trigger-bg, var(--xh-bg-surface-raised));
-    box-shadow: var(--xh-log-scroll-to-end-trigger-shadow, var(--xh-elevation-raised));
-    color: var(--xh-log-scroll-to-end-trigger-fg, var(--xh-fg-default));
-    inline-size: var(--xh-log-scroll-to-end-trigger-size, var(--xh-control-h-sm));
-    block-size: var(--xh-log-scroll-to-end-trigger-size, var(--xh-control-h-sm));
     inset-block-end: var(--xh-log-scroll-to-end-trigger-inset, var(--xh-space-3));
     inset-inline-end: var(--xh-log-scroll-to-end-trigger-inset, var(--xh-space-3));
-    cursor: pointer;
-    transition:
-      background var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
-      scale var(--xh-motion-duration-release) var(--xh-motion-ease-release);
+    -webkit-backdrop-filter: var(--xh-material-frosted-backdrop);
+    backdrop-filter: var(--xh-material-frosted-backdrop);
   }
 
   /* 连接层收起按钮时写 hidden 属性，上面的 display 会盖掉 UA 规则，这里补回 */
@@ -150,23 +158,13 @@
     animation: xh-log-button-in var(--xh-motion-duration-enter) var(--xh-motion-ease-enter-strong);
   }
 
-  [data-scope='log'][data-part='scroll-to-end-trigger']:hover {
-    background: var(--xh-log-scroll-to-end-trigger-bg-hover, var(--xh-bg-subtle-hover));
-  }
-
-  [data-scope='log'][data-part='scroll-to-end-trigger']:active {
-    scale: var(--xh-motion-scale-press);
-    transition-duration: var(--xh-motion-duration-press);
-    transition-timing-function: var(--xh-motion-ease-press);
-  }
-
   /* 没写内容就由皮肤画一枚向下的字形；作者往按钮里塞了自己的图形，这条规则即不命中。
      不画的话这颗按钮就是一枚空盒，看不出它是干什么的——名字只在 aria-label 上 */
   [data-scope='log'][data-part='scroll-to-end-trigger']:empty::before {
     content: '';
     display: inline-block;
-    inline-size: var(--xh-icon-size, var(--xh-glyph-size-text));
-    block-size: var(--xh-icon-size, var(--xh-glyph-size-text));
+    inline-size: var(--xh-icon-size, var(--xh-glyph-size-sm));
+    block-size: var(--xh-icon-size, var(--xh-glyph-size-sm));
     vertical-align: var(--xh-glyph-baseline-shift);
     background-color: currentColor;
     -webkit-mask: var(--xh-glyph-mark-chevron-down) center / contain no-repeat;
