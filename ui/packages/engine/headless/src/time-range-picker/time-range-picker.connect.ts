@@ -372,8 +372,13 @@ export function connectTimeRangePicker<T extends PropTypes>(
     }),
 
     // 输入行整体：定位锚点取它，浮层因此与整个输入框对齐而不是只贴着某一组段位
+    // control 是唯一的视觉盒：描边、底色、聚焦环由 Field Chrome 家族画在它身上，
+    // 三个状态属性供家族按禁用 / 只读 / 校验切换盒观感；size 缺省 md，variant 与 root 同源
     getControlProps: () => normalize.element({
       ...parts.control.attrs,
+      'data-xh-field-chrome': '',
+      'data-xh-field-size': prop('size') ?? 'md',
+      'data-variant': variant,
       'id': ids.control,
       // 两组段位合起来才是一个控件，靠 group 兜住，名字由 label 提供；两组各自再报「开始 / 结束」
       'role': 'group',
@@ -549,8 +554,15 @@ export function connectTimeRangePicker<T extends PropTypes>(
       'data-disabled': dataAttr(disabled),
     }),
 
+    // 展开钮走 Action Control 的 field-inset ghost 档：字段底是 canvas，透明 → 悬停 100 → 按下 200；
+    // 常驻在场，有值时由皮肤按「清空钮在场」收起；打开中与悬停同档、不另上底，方向由浮层承担
     getTriggerProps: () => normalize.button({
       ...parts.trigger.attrs,
+      'data-xh-action-control': '',
+      'data-xh-action-profile': 'field-inset',
+      'data-xh-action-variant': 'ghost',
+      'data-xh-action-display': 'always',
+      'data-xh-action-size': prop('size') ?? 'md',
       'id': ids.trigger,
       'type': 'button',
       // 单体控件用原生 disabled：禁用的控件不该有键盘入口；只读不禁用，浮层仍可展开查看
@@ -592,8 +604,15 @@ export function connectTimeRangePicker<T extends PropTypes>(
       },
     }),
 
+    // 清空钮同走 field-inset ghost 档，按 has-value 显隐
     getClearTriggerProps: () => normalize.button({
       ...parts['clear-trigger'].attrs,
+      'data-xh-action-control': '',
+      'data-xh-action-profile': 'field-inset',
+      'data-xh-action-variant': 'ghost',
+      'data-xh-action-display': 'has-value',
+      'data-xh-action-size': prop('size') ?? 'md',
+      'data-xh-action-has-value': dataAttr(canClear),
       'type': 'button',
       // 不占 Tab 位：键盘用户在段上按退格即可清；读屏仍能摸到它，名字走文案键
       'tabindex': -1,
@@ -726,8 +745,12 @@ export function connectTimeRangePicker<T extends PropTypes>(
     getPresetProps: ({ value: option }) => {
       const preset = presets.find(p => p.value === option)
       const presetDisabled = disabled || !!preset?.disabled
+      // 快捷选项走 Collection Item 的 overlay 语境：悬停 / 高亮 100、按下 200 由家族给，选中只留行尾对号
       return normalize.element({
         ...parts.preset.attrs,
+        'data-xh-collection-item': '',
+        'data-xh-collection-size': prop('size') ?? 'md',
+        'data-xh-collection-context': 'overlay',
         // 导航与选中都以此为选项身份
         [ITEM_VALUE_ATTR]: option,
         'role': 'option',
@@ -789,8 +812,12 @@ export function connectTimeRangePicker<T extends PropTypes>(
       const selected = itemSelected({ index, unit, value: option })
       const optionDisabled = itemDisabled({ index, unit, value: option })
       const highlighted = focusedColumn?.index === index && focusedColumn.unit === unit && focusedItem === option
+      // 时间格同走 Collection Item 的 overlay 语境：选中只留行尾对号，不再上品牌淡底
       return normalize.element({
         ...parts.item.attrs,
+        'data-xh-collection-item': '',
+        'data-xh-collection-size': prop('size') ?? 'md',
+        'data-xh-collection-context': 'overlay',
         // 导航与选中都以此为选项身份
         [ITEM_VALUE_ATTR]: option,
         'role': 'option',

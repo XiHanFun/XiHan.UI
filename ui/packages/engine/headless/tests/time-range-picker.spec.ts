@@ -355,15 +355,56 @@ describe('纯函数', () => {
 })
 
 describe('connectTimeRangePicker 形态轴', () => {
-  it('不写 variant 时 root 与 positioner 落 outline；写 subtle 如实落', () => {
+  it('不写 variant 时 root、positioner 与 control 都落 outline；写 subtle 如实落', () => {
     const fallback = open()
     const fallbackPositioner = fallback.root.querySelector('[data-part="positioner"]')!
     expect(fallback.root.getAttribute('data-variant')).toBe('outline')
     expect(fallbackPositioner.getAttribute('data-variant')).toBe('outline')
+    expect(fallback.control.getAttribute('data-variant')).toBe('outline')
     const subtle = open({ variant: 'subtle' })
     const subtlePositioner = subtle.root.querySelector('[data-part="positioner"]')!
     expect(subtle.root.getAttribute('data-variant')).toBe('subtle')
     expect(subtlePositioner.getAttribute('data-variant')).toBe('subtle')
+    expect(subtle.control.getAttribute('data-variant')).toBe('subtle')
+  })
+})
+
+describe('connectTimeRangePicker 家族角色', () => {
+  it('control 投影 Field Chrome 的稳定角色与尺寸档（缺省 md），三个状态属性都在盒上', () => {
+    const h = open({ readOnly: true, invalid: true })
+    expect(h.control.getAttribute('data-xh-field-chrome')).toBe('')
+    expect(h.control.getAttribute('data-xh-field-size')).toBe('md')
+    expect(h.control.getAttribute('data-readonly')).toBe('')
+    expect(h.control.getAttribute('data-invalid')).toBe('')
+    expect(open({ disabled: true }).control.getAttribute('data-disabled')).toBe('')
+    expect(open({ size: 'lg' }).control.getAttribute('data-xh-field-size')).toBe('lg')
+  })
+
+  it('展开钮常驻、清空钮按 has-value 显隐，都走 field-inset ghost 档，尺寸档随 size 缺省 md', () => {
+    const h = open()
+    for (const el of [h.trigger, h.clear]) {
+      expect(el.getAttribute('data-xh-action-control')).toBe('')
+      expect(el.getAttribute('data-xh-action-profile')).toBe('field-inset')
+      expect(el.getAttribute('data-xh-action-variant')).toBe('ghost')
+      expect(el.getAttribute('data-xh-action-size')).toBe('md')
+    }
+    expect(h.trigger.getAttribute('data-xh-action-display')).toBe('always')
+    expect(h.clear.getAttribute('data-xh-action-display')).toBe('has-value')
+    expect(h.clear.hasAttribute('data-xh-action-has-value')).toBe(false)
+    expect(open({ defaultValue: ['09:00', '12:00'] }).clear.getAttribute('data-xh-action-has-value')).toBe('')
+    expect(open({ size: 'sm' }).trigger.getAttribute('data-xh-action-size')).toBe('sm')
+  })
+
+  it('快捷选项与时间格都投影 Collection Item 的 overlay 语境与尺寸档', () => {
+    const h = open({ presets: [{ value: '09:00/12:00', label: '上午' }] })
+    const preset = h.api().getPresetProps({ value: '09:00/12:00' }) as Record<string, unknown>
+    const item = h.api().getItemProps({ index: 0, unit: 'hour', value: '08' }) as Record<string, unknown>
+    for (const row of [preset, item]) {
+      expect(row['data-xh-collection-item']).toBe('')
+      expect(row['data-xh-collection-size']).toBe('md')
+      expect(row['data-xh-collection-context']).toBe('overlay')
+    }
+    expect((open({ size: 'lg' }).api().getItemProps({ index: 1, unit: 'hour', value: '08' }) as Record<string, unknown>)['data-xh-collection-size']).toBe('lg')
   })
 })
 

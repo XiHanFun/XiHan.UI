@@ -44,8 +44,9 @@ export function useTimeRangePicker(props: TimeRangePickerSchema['props']): TimeR
 
   const layer = useCallback((): Omit<Layer, 'id' | 'node' | 'surfaces'> => ({
     kind: 'popover',
-    // 整个输入行记为本层分支，点触发器算层内交互
-    branches: () => [controlRef.current].filter(Boolean) as Element[],
+    // 整个输入行记为本层分支，点触发器算层内交互。
+    // 浮层壳一并记上：content 之外还浮着自绘横条，按住它拖动不该把浮层消解掉
+    branches: () => [controlRef.current, positionerRef.current].filter(Boolean) as Element[],
     isModal: () => false,
   }), [])
 

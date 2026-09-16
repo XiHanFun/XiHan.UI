@@ -137,6 +137,12 @@ const SHARED_FAMILY = {
     contentSelector: `[data-scope='time-picker'][data-part='segment-group']`,
     actionParts: new Set(['trigger', 'clear-trigger']),
   },
+  // 分段时间区间框 + 展开钮：起止两组 segment-group 与分隔符是内容区，尾钮是展开钮与清空钮
+  'time-range-picker': {
+    boxSelector: '[data-xh-field-chrome]',
+    contentSelector: `[data-scope='time-range-picker'][data-part='segment-group']`,
+    actionParts: new Set(['trigger', 'clear-trigger']),
+  },
   // 单元素：input 自身即 chrome（盒是 input 而非 control），盒内没有内容区与尾钮，不投影 data-xh-field-input
   'mention': {
     boxSelector: '[data-xh-field-chrome]',

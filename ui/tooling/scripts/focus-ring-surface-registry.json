@@ -142,6 +142,8 @@
     "time-range-picker [data-focus][data-part='segment'][data-scope='time-range-picker']:not([data-disabled])": "环由 control 的 :focus-within 画在外框上，段位只反白标出当前段",
     "time-range-picker [data-part='column'][data-scope='time-range-picker']:not([tabindex='0'])": "列只在还没有格当锚点时认领 Tab 位，那时 [tabindex='0']:focus-visible 另画一圈；有锚点时环长在格上",
     "time-range-picker [data-part='content'][data-scope='time-range-picker']": "面板不承载焦点（焦点在某一列的某一格上）",
+    "time-range-picker [data-part='control'][data-scope='time-range-picker'] [data-part='input'][data-scope='time-range-picker']": "家族随皮肤引入的关环规则：本组件的段位是 span、不投影 data-xh-field-input，这条命不中；环由 control 的 :focus-within 画在外框上",
+    "time-range-picker [data-part='control'][data-scope='time-range-picker'] [data-xh-action-profile='field-inset']": "展开钮与清空钮都在盒里，环由 control 的 :focus-within 画在外框上",
     "time-range-picker [data-part='segment'][data-scope='time-range-picker']": "环由 control 的 :focus-within 画在外框上，段位只反白标出当前段",
     "toggle-group [data-part='root'][data-scope='toggle-group']": "root 会短暂拿到 tabindex=0，onFocus 立刻把焦点转投给条目，高亮长在条目上",
     "toolbar [data-part='root'][data-scope='toolbar']": "root 会短暂拿到 tabindex=0，onFocus 立刻把焦点转投给条目，高亮长在条目上",
@@ -368,13 +370,6 @@
         "root"
       ],
       "ratio": 1,
-      "ring": "poured"
-    },
-    "time-range-picker [data-part='trigger'][data-scope='time-range-picker'][data-state='open']": {
-      "parts": [
-        "trigger"
-      ],
-      "ratio": 2.89,
       "ring": "poured"
     },
     "toggle-group [data-part='root'][data-scope='toggle-group'][data-variant='solid'] [data-part='item'][data-scope='toggle-group'][data-state='on']": {

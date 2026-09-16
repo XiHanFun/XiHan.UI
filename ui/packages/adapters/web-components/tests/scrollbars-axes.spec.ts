@@ -317,6 +317,29 @@ const CASES: Case[] = [
     `,
   },
   {
+    // 两组时列并排放不下时面板整体横滚：横条挂在浮层壳上
+    scope: 'time-range-picker',
+    tag: 'xh-time-range-picker',
+    axes: ['horizontal'],
+    shell: 'positioner',
+    layer: 'content',
+    overlay: true,
+    attrs: { 'default-open': '' },
+    markup: `
+      <div data-xh-part="root">
+        <div data-xh-part="control">
+          <div data-xh-part="segment-group" index="0"><span data-xh-part="segment"></span></div>
+          <div data-xh-part="segment-group" index="1"><span data-xh-part="segment"></span></div>
+        </div>
+        <div data-xh-part="positioner">
+          <div data-xh-part="content">
+            <div data-xh-part="column-group" index="0"><div data-xh-part="column" unit="hour"></div></div>
+          </div>
+        </div>
+      </div>
+    `,
+  },
+  {
     scope: 'json-viewer',
     tag: 'xh-json-viewer',
     axes: ['vertical', 'horizontal'],
