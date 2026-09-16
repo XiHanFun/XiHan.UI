@@ -6157,6 +6157,21 @@
             },
             {
               "kind": "field",
+              "name": "columnBars",
+              "privacy": "private",
+              "readonly": true,
+              "default": "new ScrollbarsController(this, { shell: () => this.getPart('content'), scrollables: () => this.getParts('column'), anchor: 'layer', props: () => ({ dir: this.direction, size: 'sm' }), })",
+              "description": "每一列自己的竖条：列并排住在 content 里，条子贴在各列的盒子上、紧跟在那一列后面，\n按此刻在场的列逐列建一套，列离场即拆。搜索列表与列互斥，同样贴自己的盒子。"
+            },
+            {
+              "kind": "field",
+              "name": "searchBars",
+              "privacy": "private",
+              "readonly": true,
+              "default": "new ScrollbarsController(this, { shell: () => this.getPart('content'), scrollable: () => this.getPart('search-list'), anchor: 'layer', props: () => ({ dir: this.direction, size: 'sm' }), })"
+            },
+            {
+              "kind": "field",
               "name": "inheritedControl",
               "type": {
                 "text": "FormControlState | undefined"
