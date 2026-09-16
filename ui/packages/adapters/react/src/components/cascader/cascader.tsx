@@ -379,14 +379,26 @@ export interface XhCascaderSearchListProps extends ComponentPropsWithRef<'div'> 
 export function XhCascaderSearchList({ renderItem, ...rest }: XhCascaderSearchListProps): ReactNode {
   const ctx = useCascaderContext()
   const api = ctx.api
+  const searchListRef = useRef<HTMLDivElement | null>(null)
+  // 候选列表自己竖滚，条子贴在它的盒子上、紧跟在它后面（与列同一形态：浮层 4px 档）
+  const bars = useScrollbars({
+    scrollable: () => searchListRef.current,
+    anchor: 'layer',
+    props: () => ({ dir: (api.getPositionerProps() as { dir?: Direction }).dir, size: 'sm' }),
+  })
+  // 候选换代、列表显隐都会挪动它在壳内的位置：每次提交后重量一次偏移盒
+  useEffect(() => bars.measure())
   return (
-    <div {...mergeReactProps(api.getSearchListProps() as Record<string, unknown>, rest as Record<string, unknown>)}>
-      {api.searchResults.map(result => (
-        <div key={result.key} {...api.getSearchItemProps({ path: result.path }) as Record<string, unknown>}>
-          {renderItem?.(result) ?? result.labels.join(' / ')}
-        </div>
-      ))}
-    </div>
+    <>
+      <div {...mergeReactProps(api.getSearchListProps() as Record<string, unknown>, rest as Record<string, unknown>, { ref: searchListRef })}>
+        {api.searchResults.map(result => (
+          <div key={result.key} {...api.getSearchItemProps({ path: result.path }) as Record<string, unknown>}>
+            {renderItem?.(result) ?? result.labels.join(' / ')}
+          </div>
+        ))}
+      </div>
+      {bars.render()}
+    </>
   )
 }
 
@@ -397,15 +409,28 @@ export interface XhCascaderColumnProps extends ComponentPropsWithRef<'div'> {
 /** 展开路径变短时本列收起，节点常驻不卸载。 */
 export function XhCascaderColumn({ level, children, ...rest }: XhCascaderColumnProps): ReactNode {
   const ctx = useCascaderContext()
+  const columnRef = useRef<HTMLDivElement | null>(null)
+  // 每列自己竖滚：条子贴在本列的盒子上、紧跟在它后面；content 那条横的归浮层壳
+  const bars = useScrollbars({
+    scrollable: () => columnRef.current,
+    anchor: 'layer',
+    props: () => ({ dir: (ctx.api.getPositionerProps() as { dir?: Direction }).dir, size: 'sm' }),
+  })
+  // 展开路径一变，左边的列换内容、本列在壳内的位置跟着挪：每次提交后重量一次偏移盒
+  useEffect(() => bars.measure())
   return (
-    <div
-      {...mergeReactProps(
-        ctx.api.getColumnProps({ level: Number(level) }) as Record<string, unknown>,
-        rest as Record<string, unknown>,
-      )}
-    >
-      {children}
-    </div>
+    <>
+      <div
+        {...mergeReactProps(
+          ctx.api.getColumnProps({ level: Number(level) }) as Record<string, unknown>,
+          rest as Record<string, unknown>,
+          { ref: columnRef },
+        )}
+      >
+        {children}
+      </div>
+      {bars.render()}
+    </>
   )
 }
 

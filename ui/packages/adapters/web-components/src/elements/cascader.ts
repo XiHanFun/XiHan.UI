@@ -225,6 +225,24 @@ export class XhCascaderElement extends XhPortalHostElement {
     props: () => ({ dir: this.direction, size: 'sm' }),
   })
 
+  /**
+   * 每一列自己的竖条：列并排住在 content 里，条子贴在各列的盒子上、紧跟在那一列后面，
+   * 按此刻在场的列逐列建一套，列离场即拆。搜索列表与列互斥，同样贴自己的盒子。
+   */
+  private readonly columnBars = new ScrollbarsController(this, {
+    shell: () => this.getPart('content'),
+    scrollables: () => this.getParts('column'),
+    anchor: 'layer',
+    props: () => ({ dir: this.direction, size: 'sm' }),
+  })
+
+  private readonly searchBars = new ScrollbarsController(this, {
+    shell: () => this.getPart('content'),
+    scrollable: () => this.getPart('search-list'),
+    anchor: 'layer',
+    props: () => ({ dir: this.direction, size: 'sm' }),
+  })
+
   private inheritedControl: FormControlState | undefined
 
   setFormControlState(state: FormControlState | undefined): void {
@@ -536,6 +554,8 @@ export class XhCascaderElement extends XhPortalHostElement {
       this.setPartHidden(el, !api.isVisible(this.itemOf(el).value))
 
     this.bars.wire()
+    this.columnBars.wire()
+    this.searchBars.wire()
     this.portal.sync(this.exit.visible)
   }
 
