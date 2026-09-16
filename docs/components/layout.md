@@ -101,7 +101,7 @@
 | `siderPresentation` | `LayoutSiderPresentation` |  | 侧栏呈现形态，默认 inline（在骨架中占一列）。 sheet 是覆盖档：侧栏移出画外，展开时覆盖在内容之上并铺一层遮罩，内容因此占满整宽。 同时提供 siderBreakpoint 时它只在未达该档时成立：宽屏仍占一列，窄屏才覆盖， 且跨档时侧栏随之开合（进入覆盖档收起、回到占位档展开），经 siderCollapsed 通道。 覆盖档不锁定焦点、不把背后的内容标记为惰性：它是骨架中的一段，不是模态浮层。 |
 | `headerFixed` | `boolean` |  | 头部吸顶：滚动时头部固定在滚动容器的上沿。只写标记，固定的实现归皮肤。 |
 | `siderFixed` | `boolean` |  | 侧栏吸附：滚动时侧栏固定在滚动容器的上沿，头部也吸顶时让开头部的高度。只写标记，固定的实现归皮肤。 |
-| `bordered` | `boolean` |  | 在头部、侧栏、脚部与内容之间绘制分隔线。 |
+| `split` | `boolean` |  | 在头部、侧栏、脚部与内容之间绘制分隔线。 |
 | `onSiderCollapsedChange` | `(details: LayoutSiderCollapsedChangeDetails) => void` |  | 折叠态变化意图回调；受控时是唯一出口，非受控时随内部转移一并通知。 |
 | `onSiderBreakpoint` | `(details: LayoutSiderBreakpointDetails) => void` |  | 跨过断点时发出一次，挂载或更换档位时也发出一次当前值。 窄屏需要把侧栏换成抽屉时接入该回调：组件自身只切换宽度。 |
 
@@ -174,13 +174,13 @@
 
 | 部件 | 属性 | 值 |
 | --- | --- | --- |
-| `root` | `data-bordered` | ''（条件成立时才出现） |
 | `root` | `data-collapsed` | ''（条件成立时才出现） |
 | `root` | `data-header-fixed` | ''（条件成立时才出现） |
 | `root` | `data-sider-breakpoint` | props.siderBreakpoint |
 | `root` | `data-sider-fixed` | ''（条件成立时才出现） |
 | `root` | `data-sider-placement` | props.siderPlacement |
 | `root` | `data-sider-presentation` | resolveSiderPresentation( prop('siderPresentation'), … |
+| `root` | `data-split` | ''（条件成立时才出现） |
 | `header` | `data-fixed` | ''（条件成立时才出现） |
 | `sider-backdrop` | `data-collapsed` | ''（条件成立时才出现） |
 | `sider` | `data-collapsed` | ''（条件成立时才出现） |
@@ -197,7 +197,7 @@
 | 变量 | 部件 | CSS 属性 | 状态 | 默认来源 | 说明 |
 | --- | --- | --- | --- | --- | --- |
 | `--xh-layout-bg` | `root` | `background` | `default` | `--xh-bg-page` | layout 的 root 部件 background 覆盖槽。 |
-| `--xh-layout-border` | `footer`<br>`header`<br>`root`<br>`sider` | `border-block-end`<br>`border-block-start`<br>`border-inline-end`<br>`border-inline-start` | `bordered`<br>`placement=end`<br>`placement=start` | `--xh-border-default` | layout 的 footer、header、root、sider 部件 border-block-end、border-block-start、border-inline-end、border-inline-start 覆盖槽。 |
+| `--xh-layout-border` | `footer`<br>`header`<br>`root`<br>`sider` | `border-block-end`<br>`border-block-start`<br>`border-inline-end`<br>`border-inline-start` | `placement=end`<br>`placement=start`<br>`split` | `--xh-border-default` | layout 的 footer、header、root、sider 部件 border-block-end、border-block-start、border-inline-end、border-inline-start 覆盖槽。 |
 | `--xh-layout-content-padding` | `content` | `padding` | `default` | `--xh-space-4` | layout 的 content 部件 padding 覆盖槽。 |
 | `--xh-layout-fg` | `root` | `color` | `default` | `--xh-fg-default` | layout 的 root 部件 color 覆盖槽。 |
 | `--xh-layout-footer-bg` | `footer` | `background` | `default` | `--xh-bg-surface` | layout 的 footer 部件 background 覆盖槽。 |

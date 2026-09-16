@@ -4,7 +4,7 @@ import { XhLayoutContent, XhLayoutHeader, XhLayoutRoot, XhLayoutSider, XhLayoutS
 
 export default function Demo(): ReactNode {
   return (
-    <XhLayoutRoot bordered style={{ inlineSize: "min(640px, 100%)", blockSize: "240px", borderRadius: "var(--xh-shape-surface)", overflow: "hidden" }}>
+    <XhLayoutRoot split style={{ inlineSize: "min(640px, 100%)", blockSize: "240px", borderRadius: "var(--xh-shape-surface)", overflow: "hidden" }}>
       <XhLayoutHeader>
         <XhLayoutSiderTrigger>菜单</XhLayoutSiderTrigger>
         <span data-demo-block="line" data-tone="brand" style={{ "--xh-demo-block-inline-size": "96px" } as CSSProperties} />

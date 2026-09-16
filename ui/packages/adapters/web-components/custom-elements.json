@@ -28693,7 +28693,7 @@
           "name": "XhLayoutElement",
           "cssParts": [
             {
-              "description": "骨架根容器，承载 data-sider-placement / data-sider-breakpoint / data-sider-presentation / data-collapsed / data-header-fixed / data-sider-fixed / data-bordered",
+              "description": "骨架根容器，承载 data-sider-placement / data-sider-breakpoint / data-sider-presentation / data-collapsed / data-header-fixed / data-sider-fixed / data-split",
               "name": "root"
             },
             {
@@ -28814,12 +28814,12 @@
             },
             {
               "kind": "field",
-              "name": "bordered",
+              "name": "split",
               "privacy": "public",
               "type": {
                 "text": "boolean | undefined"
               },
-              "attribute": "bordered"
+              "attribute": "split"
             },
             {
               "kind": "field",
@@ -29008,8 +29008,8 @@
                 "text": "boolean | undefined"
               },
               "description": "在头部、侧栏、脚部与内容之间绘制分隔线",
-              "name": "bordered",
-              "fieldName": "bordered"
+              "name": "split",
+              "fieldName": "split"
             }
           ],
           "superclass": {

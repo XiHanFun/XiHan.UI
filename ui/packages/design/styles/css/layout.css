@@ -153,20 +153,20 @@
 
   /* —— 分隔线 —— */
   /* 后代选择器带上 data-scope：骨架里装着整页内容，光凭 data-part 会连里面别的组件同名段一起画上线 */
-  [data-scope='layout'][data-part='root'][data-bordered] [data-scope='layout'][data-part='header'] {
+  [data-scope='layout'][data-part='root'][data-split] [data-scope='layout'][data-part='header'] {
     border-block-end: var(--xh-stroke-thin) solid var(--xh-layout-border, var(--xh-border-default));
   }
 
-  [data-scope='layout'][data-part='root'][data-bordered] [data-scope='layout'][data-part='footer'] {
+  [data-scope='layout'][data-part='root'][data-split] [data-scope='layout'][data-part='footer'] {
     border-block-start: var(--xh-stroke-thin) solid var(--xh-layout-border, var(--xh-border-default));
   }
 
   /* 侧栏只在挨着内容的那一边画线，另一边贴着骨架外沿，画了就是一条多出来的边框 */
-  [data-scope='layout'][data-part='root'][data-bordered] [data-scope='layout'][data-part='sider'][data-placement='start'] {
+  [data-scope='layout'][data-part='root'][data-split] [data-scope='layout'][data-part='sider'][data-placement='start'] {
     border-inline-end: var(--xh-stroke-thin) solid var(--xh-layout-border, var(--xh-border-default));
   }
 
-  [data-scope='layout'][data-part='root'][data-bordered] [data-scope='layout'][data-part='sider'][data-placement='end'] {
+  [data-scope='layout'][data-part='root'][data-split] [data-scope='layout'][data-part='sider'][data-placement='end'] {
     border-inline-start: var(--xh-stroke-thin) solid var(--xh-layout-border, var(--xh-border-default));
   }
 

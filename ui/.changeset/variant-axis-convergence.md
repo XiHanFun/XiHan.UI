@@ -174,3 +174,8 @@ attribute 删除。皮肤把 `[data-bordered]` 选择器映射到 `[data-variant
 `--xh-border-subtle` 描边（原 surface 不写 bordered 时无描边）；`raised` 的抬起投影退役，公开覆盖槽
 `--xh-page-header-shadow` 随之删除；`subtle` 为新增最小规则（描边透明 + `--xh-bg-subtle` 底 + 无影），此前没有
 对应外观。示例 `page-header/02-bordered-footer` 改名 `page-header/02-split-footer`。
+
+**layout 的 `bordered` 改名 `split`。** 它画的是头部、侧栏、脚部与内容之间的分隔线而非有框/无框（layout 根本身
+无壳），与 `data-split` 既有语义一致，因此不加 `variant` 轴；三端的 `bordered` prop / attribute 改名 `split`，DOM
+属性 `data-bordered` 改 `data-split`，皮肤只把 `[data-bordered]` 选择器映射到 `[data-split]`，规则体不动，外观不变。
+至此库内不再有任何组件发出 `data-bordered`，该属性名进入退役清单。

@@ -4,7 +4,7 @@ import { XhLayoutContent, XhLayoutFooter, XhLayoutHeader, XhLayoutRoot, XhLayout
 
 export default function Demo(): ReactNode {
   return (
-    <XhLayoutRoot bordered siderBreakpoint="sm" aria-label="应用页面布局占位区块" style={{ inlineSize: "min(720px, 100%)", blockSize: "280px", borderRadius: "var(--xh-shape-surface)", overflow: "hidden" }}>
+    <XhLayoutRoot split siderBreakpoint="sm" aria-label="应用页面布局占位区块" style={{ inlineSize: "min(720px, 100%)", blockSize: "280px", borderRadius: "var(--xh-shape-surface)", overflow: "hidden" }}>
       <XhLayoutHeader>
         <span data-demo-block="line" data-tone="brand" style={{ "--xh-demo-block-inline-size": "112px" } as CSSProperties} />
       </XhLayoutHeader>

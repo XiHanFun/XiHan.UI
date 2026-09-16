@@ -143,7 +143,7 @@ export default function Demo(): ReactNode {
   const [lastCommand, setLastCommand] = useState("（无）");
 
   return (
-    <XhLayoutRoot bordered style={shellStyle}>
+    <XhLayoutRoot split style={shellStyle}>
       <XhLayoutHeader style={barStyle}>
         <XhLayoutSiderTrigger>菜单</XhLayoutSiderTrigger>
         <strong style={brandStyle}>曦寒控制台</strong>

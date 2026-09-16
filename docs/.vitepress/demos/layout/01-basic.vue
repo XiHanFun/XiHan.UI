@@ -6,7 +6,7 @@ const tones = ["brand", "info", "success"] as const;
 </script>
 
 <template>
-  <XhLayoutRoot bordered sider-breakpoint="sm" aria-label="应用页面布局占位区块" style="inline-size: min(720px, 100%); block-size: 280px; border-radius: var(--xh-shape-surface); overflow: hidden">
+  <XhLayoutRoot split sider-breakpoint="sm" aria-label="应用页面布局占位区块" style="inline-size: min(720px, 100%); block-size: 280px; border-radius: var(--xh-shape-surface); overflow: hidden">
     <XhLayoutHeader>
       <span data-demo-block="line" data-tone="brand" style="--xh-demo-block-inline-size: 112px" />
     </XhLayoutHeader>

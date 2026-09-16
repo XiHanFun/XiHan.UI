@@ -5,12 +5,12 @@ import { XhLayoutContent, XhLayoutHeader, XhLayoutRoot, XhLayoutSider } from "@x
 export default function Demo(): ReactNode {
   return (
     <div style={{ display: "grid", gap: "16px", inlineSize: "min(560px, 100%)" }}>
-      <XhLayoutRoot bordered aria-label="行首侧栏布局" style={{ blockSize: "150px", borderRadius: "var(--xh-shape-surface)", overflow: "hidden" }}>
+      <XhLayoutRoot split aria-label="行首侧栏布局" style={{ blockSize: "150px", borderRadius: "var(--xh-shape-surface)", overflow: "hidden" }}>
         <XhLayoutHeader><span data-demo-block="line" data-tone="brand" /></XhLayoutHeader>
         <XhLayoutSider><span data-demo-block data-tone="info" style={{ "--xh-demo-block-block-size": "100%" } as CSSProperties} /></XhLayoutSider>
         <XhLayoutContent><span data-demo-block data-tone="success" style={{ "--xh-demo-block-block-size": "100%" } as CSSProperties} /></XhLayoutContent>
       </XhLayoutRoot>
-      <XhLayoutRoot siderPlacement="end" bordered aria-label="行尾侧栏布局" style={{ blockSize: "150px", borderRadius: "var(--xh-shape-surface)", overflow: "hidden" }}>
+      <XhLayoutRoot siderPlacement="end" split aria-label="行尾侧栏布局" style={{ blockSize: "150px", borderRadius: "var(--xh-shape-surface)", overflow: "hidden" }}>
         <XhLayoutHeader><span data-demo-block="line" data-tone="warning" /></XhLayoutHeader>
         <XhLayoutSider><span data-demo-block data-tone="danger" style={{ "--xh-demo-block-block-size": "100%" } as CSSProperties} /></XhLayoutSider>
         <XhLayoutContent><span data-demo-block data-tone="neutral" style={{ "--xh-demo-block-block-size": "100%" } as CSSProperties} /></XhLayoutContent>

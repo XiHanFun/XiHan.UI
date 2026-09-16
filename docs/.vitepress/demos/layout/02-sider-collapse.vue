@@ -4,7 +4,7 @@ import { XhLayoutContent, XhLayoutHeader, XhLayoutRoot, XhLayoutSider, XhLayoutS
 </script>
 
 <template>
-  <XhLayoutRoot bordered style="inline-size: min(640px, 100%); block-size: 240px; border-radius: var(--xh-shape-surface); overflow: hidden">
+  <XhLayoutRoot split style="inline-size: min(640px, 100%); block-size: 240px; border-radius: var(--xh-shape-surface); overflow: hidden">
     <XhLayoutHeader>
       <XhLayoutSiderTrigger>菜单</XhLayoutSiderTrigger>
       <span data-demo-block="line" data-tone="brand" style="--xh-demo-block-inline-size: 96px" />

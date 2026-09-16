@@ -50,7 +50,7 @@ export const layoutSuite: ConformanceSuite = {
             'data-collapsed': null,
             'data-header-fixed': null,
             'data-sider-fixed': null,
-            'data-bordered': null,
+            'data-split': null,
           },
           'header': {
             'data-fixed': null,
@@ -305,12 +305,12 @@ export const layoutSuite: ConformanceSuite = {
       ],
     },
     {
-      name: 'bordered 落成 data-bordered，关掉时不留空属性',
+      name: 'split 落成 data-split，关掉时不留空属性',
       spec: { apg: APG },
-      props: { bordered: true },
+      props: { split: true },
       initial: {
         parts: {
-          root: { 'data-bordered': '' },
+          root: { 'data-split': '' },
         },
       },
     },
