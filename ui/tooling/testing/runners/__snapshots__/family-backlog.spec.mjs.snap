@@ -2,14 +2,14 @@
 
 exports[`family-backlog 条目数 > 七段各一数，与快照一致 1`] = `
 {
-  "edge": 41,
-  "ladder": 77,
+  "edge": 39,
+  "ladder": 76,
   "motion": 1,
-  "press": 65,
+  "press": 64,
   "scroll": 28,
   "selection": 19,
   "shape": 25,
-  "text": 83,
+  "text": 82,
 }
 `;
 
@@ -26,8 +26,6 @@ exports[`family-backlog 键集合 > edge 1`] = `
   "color-picker:area-thumb:raised",
   "color-picker:control:raised",
   "color-slider:thumb:raised",
-  "diff-view:root",
-  "diff-view:root:raised",
   "download-trigger:root:raised",
   "file-upload:trigger:raised",
   "log:scroll-to-end-trigger:raised",
@@ -83,7 +81,6 @@ exports[`family-backlog 键集合 > ladder 1`] = `
   "context-menu:item:pressed",
   "dialog:close-trigger:hover",
   "dialog:close-trigger:pressed",
-  "diff-view:gap-trigger:hover",
   "drawer:close-trigger:hover",
   "drawer:close-trigger:pressed",
   "drawer:trigger:hover",
@@ -175,7 +172,6 @@ exports[`family-backlog 键集合 > press 1`] = `
   "collapsible:trigger",
   "color-swatch-picker:item",
   "command:item",
-  "diff-view:gap-trigger",
   "floating-panel:trigger",
   "form:error-summary-item",
   "infinite-scroll:load-more-trigger",
@@ -331,7 +327,6 @@ exports[`family-backlog 键集合 > text 1`] = `
   "descriptions:label:spacing",
   "dialog:content:icon-size",
   "dialog:description:font-size",
-  "diff-view:root:icon-size",
   "drawer:content:icon-size",
   "drawer:description:font-size",
   "drawer:root:icon-size",

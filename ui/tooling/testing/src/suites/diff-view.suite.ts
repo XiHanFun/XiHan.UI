@@ -117,7 +117,16 @@ export const diffViewSuite: ConformanceSuite = {
         parts: {
           'gap': { 'role': 'row', 'data-expanded': null },
           'gap-cell': { 'role': 'cell', 'aria-colindex': '1' },
-          'gap-trigger': { 'type': 'button', 'aria-expanded': 'false' },
+          'gap-trigger': {
+            'type': 'button',
+            'aria-expanded': 'false',
+            // 折叠格按钮接 Action Control 的 disclosure-trigger 档：ghost 形态、按下只换面，档位随 size 走
+            'data-xh-action-control': '',
+            'data-xh-action-profile': 'disclosure-trigger',
+            'data-xh-action-variant': 'ghost',
+            'data-xh-action-display': 'always',
+            'data-xh-action-size': 'md',
+          },
         },
       },
       steps: [

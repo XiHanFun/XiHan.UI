@@ -22411,27 +22411,19 @@
       "name": "--xh-diff-view-border",
       "component": "diff-view",
       "part": [
-        "header",
-        "line-number",
         "root"
       ],
       "property": [
-        "border",
-        "border-block-end",
-        "border-inline-end",
-        "border-inline-start"
+        "border"
       ],
       "state": [
-        "@media (min-width: 1024px)",
-        "default",
-        "side=new",
-        "view=split"
+        "default"
       ],
       "defaultToken": [
-        "--xh-border-subtle"
+        "--xh-border-default"
       ],
       "visibility": "public",
-      "description": "diff-view 的 header、line-number、root 部件 border、border-block-end、border-inline-end、border-inline-start 覆盖槽。"
+      "description": "diff-view 的 root 部件 border 覆盖槽。"
     },
     {
       "name": "--xh-diff-view-change-bar",
@@ -22470,6 +22462,31 @@
       ],
       "visibility": "public",
       "description": "diff-view 的 token 部件 color 覆盖槽。"
+    },
+    {
+      "name": "--xh-diff-view-divider",
+      "component": "diff-view",
+      "part": [
+        "header",
+        "line-number",
+        "root"
+      ],
+      "property": [
+        "border-block-end",
+        "border-inline-end",
+        "border-inline-start"
+      ],
+      "state": [
+        "@media (min-width: 1024px)",
+        "default",
+        "side=new",
+        "view=split"
+      ],
+      "defaultToken": [
+        "--xh-border-subtle"
+      ],
+      "visibility": "public",
+      "description": "diff-view 的 header、line-number、root 部件 border-block-end、border-inline-end、border-inline-start 覆盖槽。"
     },
     {
       "name": "--xh-diff-view-empty-bg",
@@ -22530,7 +22547,8 @@
       "name": "--xh-diff-view-font-size",
       "component": "diff-view",
       "part": [
-        "body"
+        "body",
+        "gap-trigger"
       ],
       "property": [
         "font-size"
@@ -22542,7 +22560,7 @@
         "--xh-_diff-view-font-size"
       ],
       "visibility": "public",
-      "description": "diff-view 的 body 部件 font-size 覆盖槽。"
+      "description": "diff-view 的 body、gap-trigger 部件 font-size 覆盖槽。"
     },
     {
       "name": "--xh-diff-view-gap-bg",
@@ -22569,16 +22587,20 @@
         "gap-trigger"
       ],
       "property": [
-        "background"
+        "background-color"
       ],
       "state": [
-        "hover"
+        "disabled",
+        "hover",
+        "loading",
+        "not([data-disabled])",
+        "not([data-loading])"
       ],
       "defaultToken": [
-        "--xh-bg-subtle-hover"
+        "--xh-_action-variant-bg-hover"
       ],
       "visibility": "public",
-      "description": "diff-view 的 gap-trigger 部件 background 覆盖槽。"
+      "description": "diff-view 的 gap-trigger 部件 background-color 覆盖槽。"
     },
     {
       "name": "--xh-diff-view-gap-fg",
@@ -22682,10 +22704,14 @@
         "--xh-icon-size"
       ],
       "state": [
-        "default"
+        "default",
+        "size=lg",
+        "size=sm"
       ],
       "defaultToken": [
-        "--xh-glyph-size-text"
+        "--xh-glyph-size-lg",
+        "--xh-glyph-size-md",
+        "--xh-glyph-size-sm"
       ],
       "visibility": "public",
       "description": "diff-view 的 root 部件 --xh-icon-size 覆盖槽。"
@@ -22750,20 +22776,23 @@
       "part": [
         "body",
         "gap",
+        "gap-trigger",
         "row"
       ],
       "property": [
+        "block-size",
         "line-height",
         "min-block-size"
       ],
       "state": [
-        "default"
+        "default",
+        "xh-action-profile=disclosure-trigger"
       ],
       "defaultToken": [
         "--xh-text-code-leading"
       ],
       "visibility": "public",
-      "description": "diff-view 的 body、gap、row 部件 line-height、min-block-size 覆盖槽。"
+      "description": "diff-view 的 body、gap、gap-trigger、row 部件 block-size、line-height、min-block-size 覆盖槽。"
     },
     {
       "name": "--xh-diff-view-max-h",
@@ -22953,7 +22982,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-elevation-raised"
+        "none"
       ],
       "visibility": "public",
       "description": "diff-view 的 root 部件 box-shadow 覆盖槽。"
