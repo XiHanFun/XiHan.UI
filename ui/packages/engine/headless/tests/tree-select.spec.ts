@@ -1442,6 +1442,17 @@ describe('treeSelect 懒分支', () => {
   })
 })
 
+describe('connectTreeSelect 形态轴', () => {
+  it('不写 variant 时 root 与 positioner 落 outline；写 subtle 如实落', () => {
+    const fallback = mount()
+    expect(fallback.root.getAttribute('data-variant')).toBe('outline')
+    expect(fallback.positioner.getAttribute('data-variant')).toBe('outline')
+    const subtle = mount({ variant: 'subtle' })
+    expect(subtle.root.getAttribute('data-variant')).toBe('subtle')
+    expect(subtle.positioner.getAttribute('data-variant')).toBe('subtle')
+  })
+})
+
 describe('treeSelect 自动空态', () => {
   it('collection 空树与外部 loading 不同屏', () => {
     const empty = mount({ collection: [] })

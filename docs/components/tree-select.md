@@ -169,7 +169,7 @@ Vue 未写默认插槽时按 collection 铺开整套部件：带 children 的节
 | `readOnly` | `boolean` |  | 只读：浮层照常展开、树照常浏览与展开收起，但选中值不可修改、也不可清空。 disabled 则连键盘入口都没有。 |
 | `invalid` | `boolean` |  | 校验失败：trigger 报告 aria-invalid，各角色节点带 data-invalid。 |
 | `loading` | `boolean` |  | 节点加载中：树报告 aria-busy，显示在途占位、隐藏空态占位。 |
-| `variant` | `ControlVariant` |  | 形态：outline / subtle / ghost，决定触发框的描边与底色使用方式。 |
+| `variant` | `ControlVariant` |  | 形态：outline / subtle / ghost，决定触发框的描边与底色使用方式。默认 outline。 |
 | `tone` | `Tone` |  | 语气：brand / neutral / success / warning / danger / info，决定聚焦与选中使用哪族颜色。 |
 | `size` | `Size` |  | 尺寸：sm / md / lg，决定触发框与树节点行的几何档位。 |
 | `placeholder` | `string` |  | 无选中时 value-text 显示的占位文字。 |

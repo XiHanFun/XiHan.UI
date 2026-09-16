@@ -172,7 +172,7 @@ export interface TreeSelectSchema extends MachineSchema {
     invalid?: boolean
     /** 节点加载中：树报告 aria-busy，显示在途占位、隐藏空态占位。 */
     loading?: boolean
-    /** 形态：outline / subtle / ghost，决定触发框的描边与底色使用方式。 */
+    /** 形态：outline / subtle / ghost，决定触发框的描边与底色使用方式。默认 outline。 */
     variant?: ControlVariant
     /** 语气：brand / neutral / success / warning / danger / info，决定聚焦与选中使用哪族颜色。 */
     tone?: Tone
