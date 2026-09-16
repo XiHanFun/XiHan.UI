@@ -20,7 +20,7 @@ import type {
 import type { PropType, Ref, SlotsType, VNode } from 'vue'
 import type { PayloadOf } from '../../runtime/payload'
 import type { CascaderContext } from './use-cascader'
-import { computed, defineComponent, h, mergeProps, onBeforeUnmount, ref, watch } from 'vue'
+import { computed, defineComponent, h, mergeProps, onBeforeUnmount, onUpdated, ref, watch } from 'vue'
 import { withXhConfig } from '../../config/config'
 import { XhPortal } from '../../runtime/portal'
 import { useScrollbars } from '../../runtime/use-scrollbars'
@@ -351,14 +351,29 @@ export const XhCascaderSearchList = defineComponent({
   }>,
   setup(_, { slots }) {
     const ctx = useCascaderContext()
+    const searchListRef = ref<HTMLElement | null>(null)
+    // 候选列表自己竖滚，条子贴在它的盒子上、紧跟在它后面（与列同一形态：浮层 4px 档）
+    const bars = useScrollbars({
+      scrollable: () => searchListRef.value,
+      anchor: 'layer',
+      props: () => ({ dir: (ctx.api.value.getPositionerProps() as { dir?: Direction }).dir, size: 'sm' }),
+    })
+    // 候选换代、列表显隐都会挪动它在壳内的位置：每次更新后重量一次偏移盒
+    onUpdated(() => bars.measure())
     // 候选整组自动铺：整条路径连缀成一行；item 插槽可换内容
-    return () => h('div', ctx.api.value.getSearchListProps() as Record<string, unknown>, ctx.api.value.searchResults.map(result =>
-      h(
-        'div',
-        { ...ctx.api.value.getSearchItemProps({ path: result.path }) as Record<string, unknown>, key: result.key },
-        slots.item ? slots.item({ result }) : result.labels.join(' / '),
-      ),
-    ))
+    return () => [
+      h('div', {
+        ...ctx.api.value.getSearchListProps() as Record<string, unknown>,
+        ref: (el: unknown) => { searchListRef.value = el as HTMLElement },
+      }, ctx.api.value.searchResults.map(result =>
+        h(
+          'div',
+          { ...ctx.api.value.getSearchItemProps({ path: result.path }) as Record<string, unknown>, key: result.key },
+          slots.item ? slots.item({ result }) : result.labels.join(' / '),
+        ),
+      )),
+      ...bars.render(),
+    ]
   },
 })
 
@@ -370,12 +385,27 @@ export const XhCascaderColumn = defineComponent({
   },
   setup(props, { slots }) {
     const ctx = useCascaderContext()
+    const columnRef = ref<HTMLElement | null>(null)
+    // 每列自己竖滚：条子贴在本列的盒子上、紧跟在它后面；content 那条横的归浮层壳
+    const bars = useScrollbars({
+      scrollable: () => columnRef.value,
+      anchor: 'layer',
+      props: () => ({ dir: (ctx.api.value.getPositionerProps() as { dir?: Direction }).dir, size: 'sm' }),
+    })
+    // 展开路径一变，左边的列换内容、本列在壳内的位置跟着挪：每次更新后重量一次偏移盒
+    onUpdated(() => bars.measure())
     // 展开路径变短时本列收起，节点常挂不卸载
-    return () => h(
-      'div',
-      ctx.api.value.getColumnProps({ level: Number(props.level) }) as Record<string, unknown>,
-      slots.default?.(),
-    )
+    return () => [
+      h(
+        'div',
+        {
+          ...ctx.api.value.getColumnProps({ level: Number(props.level) }) as Record<string, unknown>,
+          ref: (el: unknown) => { columnRef.value = el as HTMLElement },
+        },
+        slots.default?.(),
+      ),
+      ...bars.render(),
+    ]
   },
 })
 

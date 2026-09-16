@@ -6,7 +6,7 @@ exports[`family-backlog 条目数 > 七段各一数，与快照一致 1`] = `
   "ladder": 109,
   "motion": 1,
   "press": 71,
-  "scroll": 47,
+  "scroll": 45,
   "selection": 23,
   "shape": 25,
   "text": 99,
@@ -276,8 +276,6 @@ exports[`family-backlog 键集合 > scroll 1`] = `
 [
   "calendar-picker:grid:overscroll",
   "calendar-range-picker:grid:overscroll",
-  "cascader:column:unwired",
-  "cascader:search-list:unwired",
   "color-picker:content:overscroll",
   "color-picker:content:size",
   "command:list:overscroll",

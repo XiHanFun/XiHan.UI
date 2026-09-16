@@ -295,6 +295,9 @@
     /* 浮层滚动面：滚到头不把页面一起带走 */
     overscroll-behavior: contain;
     pointer-events: auto;
+    /* 各列与搜索列表的竖条贴在自己的盒子上、挂在这一层里（它已是定位盒）：轨道不画底，
+       条子随列一起横滚，列与列之间才不会各多出一道灰带 */
+    --xh-scrollbar-track-bg: transparent;
   }
 
   /* 唯一外壳的内侧顶光；列和状态部件不另画材质面。 */
@@ -355,8 +358,9 @@
   }
 
   /* 分隔线画在列的起始缘，且第一列不画：这样列数增减时线永远只出现在列与列之间。
-     用逻辑属性，rtl 下自动跑到另一侧 */
-  [data-scope='cascader'][data-part='column'] + [data-scope='cascader'][data-part='column'] {
+     用逻辑属性，rtl 下自动跑到另一侧。每列后面紧跟着它自己的竖条节点，相邻选择器接不到下一列，
+     按「前面有过列」取后续的列 */
+  [data-scope='cascader'][data-part='column'] ~ [data-scope='cascader'][data-part='column'] {
     border-inline-start: var(--xh-stroke-thin) solid var(--xh-cascader-column-divider, var(--xh-material-frosted-separator));
   }
 

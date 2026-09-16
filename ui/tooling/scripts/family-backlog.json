@@ -226,8 +226,6 @@
   "scroll": {
     "command:list:unwired": "命令面板尚未接自绘条，随 command 提交接线",
     "command:list:overscroll": "浮层面缺 overscroll-behavior: contain，随 command 提交补",
-    "cascader:column:unwired": "级联的列只接了 content 的横条，列自己的竖条未接，随 cascader 提交接线",
-    "cascader:search-list:unwired": "级联搜索列表未接自绘条，随 cascader 提交接线",
     "menu:content:size": "浮层宿主未传 size: 'sm'，随 menu 提交补",
     "menu:content:overscroll": "浮层面缺 overscroll-behavior: contain，随 menu 提交补",
     "context-menu:content:size": "浮层宿主未传 size: 'sm'，随 context-menu 提交补",
