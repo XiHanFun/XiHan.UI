@@ -318,6 +318,15 @@ function conditionMatches(condition, state) {
   return condition.positive.every(matches) && condition.negative.every(entry => !matches(entry))
 }
 
+/**
+ * input 部件不在 Field Chrome 盒内的组件：皮肤引入了字段家族（盒是 control），但 input 是浮层里的搜索框，
+ * 走 §8.3 登记的下划线式例外，不投影 data-xh-field-input；它的 autofill 两条由皮肤自写，按下面的普通判据核。
+ * 每条都要真被用到（组件没引入字段家族或 input 已投影 field-input 即过期）。
+ */
+const INPUT_OUTSIDE_CHROME = {
+  cascader: '搜索框排在浮层面里、不在 control 盒内，铺的底取浮起面',
+}
+
 /** getInputProps 这一段 getter 自己投影了 data-xh-field-chrome（input 即视觉盒），且全文件没投影 data-xh-field-input。 */
 function inputGetterProjectsChrome(connect) {
   if (/['"]data-xh-field-input['"]\s*:/.test(connect))
@@ -611,8 +620,12 @@ for (const comp of native.sort()) {
       ? await readFile(join(ANATOMY_DIR, comp, `${comp}.connect.ts`), 'utf8')
       : ''
     // input 部件自身就是 chrome 节点（pin-input 的每一格）时不投影 data-xh-field-input——
-    // 投了家族会把格子的边框重置掉；家族的 autofill 规则因此命不中，皮肤必须自写两条，走下面的普通判据
-    if (connect !== '' && !inputGetterProjectsChrome(connect)) {
+    // 投了家族会把格子的边框重置掉；家族的 autofill 规则因此命不中，皮肤必须自写两条，走下面的普通判据；
+    // input 在盒外（INPUT_OUTSIDE_CHROME 登记）同理
+    const outsideChrome = comp in INPUT_OUTSIDE_CHROME
+    if (outsideChrome && (connect === '' || /['"]data-xh-field-input['"]\s*:/.test(connect)))
+      problems.push(`${comp} 登在 INPUT_OUTSIDE_CHROME 里，却没引入字段家族或已投影 data-xh-field-input——登记过期`)
+    if (connect !== '' && !outsideChrome && !inputGetterProjectsChrome(connect)) {
       if (!/['"]data-xh-field-input['"]\s*:/.test(connect))
         problems.push(`${comp}.connect.ts 没有投影 data-xh-field-input，Field Chrome 的 autofill 规则落不到 input 部件`)
       for (const role of ['bg', 'fg']) {

@@ -221,7 +221,8 @@ export class XhCascaderElement extends XhPortalHostElement {
     shell: () => this.getPart('positioner'),
     scrollable: () => this.getPart('content'),
     axes: ['horizontal'],
-    props: () => ({ dir: this.direction }),
+    // 条子走浮层 4px 档
+    props: () => ({ dir: this.direction, size: 'sm' }),
   })
 
   private inheritedControl: FormControlState | undefined

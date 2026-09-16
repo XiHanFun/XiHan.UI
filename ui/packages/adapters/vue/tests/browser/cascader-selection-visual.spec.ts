@@ -198,7 +198,8 @@ describe('级联选择的统一选中标记', () => {
     await userEvent.tab()
     selected.focus()
     expect(selected.matches(':focus-visible')).toBe(true)
-    expect(getComputedStyle(selected).transitionProperty).toBe('color')
+    // 键盘焦点出现时底色与环当帧到位，不压在家族背景过渡的中间帧上
+    expect(getComputedStyle(selected).transitionProperty).toBe('none')
   })
 
   it.each([false, true])('multiple=%s：搜索结果沿用对号，移走高亮后不保留选中底或强调文字', async (multiple) => {

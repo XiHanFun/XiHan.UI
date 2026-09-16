@@ -246,7 +246,8 @@ export const XhCascaderPositioner = defineComponent({
     const bars = useScrollbars({
       scrollable: () => ctx.contentRef.value,
       axes: ['horizontal'],
-      props: () => ({ dir: (ctx.api.value.getPositionerProps() as { dir?: Direction }).dir }),
+      // 条子走浮层 4px 档
+      props: () => ({ dir: (ctx.api.value.getPositionerProps() as { dir?: Direction }).dir, size: 'sm' }),
     })
     // 搬到 portal 落点：留在原地的话，宿主祖先只要建了层叠上下文就能盖住浮层
     return () => h(XhPortal, { to: props.container ?? ctx.portalTarget.value, source: ctx.triggerRef }, () => [

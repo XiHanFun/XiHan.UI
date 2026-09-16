@@ -367,7 +367,9 @@ export const cascaderSuite: ConformanceSuite = {
           },
           'value-text': { 'id': '@self', 'data-placeholder': '', 'data-disabled': null },
           'indicator': { 'aria-hidden': 'true', 'data-state': 'closed' },
-          // 清空按钮不进 Tab 序列但保留可及名字，无选中时只收起、不打 disabled
+          // control 是 Field Chrome 视觉盒：形态与家族尺寸档落在它身上（缺省 outline / md）
+          'control': { 'data-xh-field-chrome': '', 'data-xh-field-size': 'md', 'data-variant': 'outline', 'data-state': 'closed' },
+          // 清空按钮不进 Tab 序列但保留可及名字，无选中时只收起、不打 disabled；走 field-inset 档、不带 has-value
           'clear-trigger': {
             'type': 'button',
             'tabindex': '-1',
@@ -376,6 +378,9 @@ export const cascaderSuite: ConformanceSuite = {
             'hidden': '',
             'disabled': null,
             'data-disabled': null,
+            'data-xh-action-profile': 'field-inset',
+            'data-xh-action-display': 'has-value',
+            'data-xh-action-has-value': null,
           },
           'positioner': { 'data-state': 'closed', 'data-placement': 'bottom-start', 'data-hidden': null },
           'content': {
@@ -419,7 +424,13 @@ export const cascaderSuite: ConformanceSuite = {
             // 集合条目不输出原生 disabled
             'disabled': null,
             'hidden': null,
+            // 列内条目走 Collection Item 的 overlay 语境
+            'data-xh-collection-item': '',
+            'data-xh-collection-context': 'overlay',
+            'data-xh-collection-size': 'md',
           },
+          'item-text[0]': { 'data-xh-collection-slot': 'text' },
+          'item-indicator[0]': { 'data-xh-collection-slot': 'indicator', 'aria-hidden': 'true' },
           // taiwan（children 为空数组）与 macau（无 children）都是叶子，右边不会长出列
           'item[2]': { 'aria-haspopup': null, 'data-branch': null, 'data-value': 'taiwan' },
           'item[3]': { 'aria-haspopup': null, 'data-branch': null, 'data-value': 'macau' },

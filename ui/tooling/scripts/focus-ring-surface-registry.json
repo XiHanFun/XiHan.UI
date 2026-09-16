@@ -55,6 +55,8 @@
     "carousel [data-part='indicator-group'][data-scope='carousel']": "不是可聚焦节点，落焦只会是浏览器兜底行为；指示点各自有环",
     "carousel [data-part='list'][data-scope='carousel']": "不是可聚焦节点，落焦只会是浏览器兜底行为；两侧按钮与指示点各自有环",
     "carousel [data-part='viewport'][data-scope='carousel']": "不是可聚焦节点，落焦只会是浏览器兜底行为；两侧按钮与指示点各自有环",
+    "cascader [data-part='control'][data-scope='cascader'] [data-part='input'][data-scope='cascader']": "家族随皮肤引入的规则：cascader 的内容区是 trigger 按钮、不投影 data-xh-field-input（搜索框在浮层里、不在盒内），这条命不中；环由 control 的 :focus-within 画在外框上",
+    "cascader [data-part='control'][data-scope='cascader'] [data-xh-action-profile='field-inset']": "清空钮在盒里（tabindex=-1，只接程序化落焦），环由 control 的 :focus-within 画在外框上",
     "cascader [data-part='column'][data-scope='cascader']:not([tabindex='0'])": "首列只在打开且还没有锚点条目时认领 Tab 位（那时 tabindex=0，吃 focus.css 的默认环）；tabindex=-1 时是程序化落焦的中转，高亮长在条目上",
     "cascader [data-part='content'][data-scope='cascader']": "焦点域的兜底落点（tabindex=-1），高亮永远长在条目上",
     "color-field [data-part='control'][data-scope='color-field'] [data-part='input'][data-scope='color-field']": "环由 control 的 :focus-within 画在外框上",
