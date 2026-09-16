@@ -1,11 +1,22 @@
-// 双轴宿主与非浮层宿主的自绘条：贴壳的盒、两轴各让一格、不占宽高、静止后收起。
+// 双轴宿主的自绘条：贴壳的盒、两轴各让一格、不占宽高、静止后收起。
 //
 // 这几件只有真实浏览器量得出来：jsdom 不排版，clientWidth 与 getBoundingClientRect 恒是 0，
 // 原生条占不占位、退场那支过渡播不播得出来，都要真皮肤真布局。
+// 宿主取树浮层：content 两轴都可能溢出（深层缩进往行末推、行多往下伸），壳是 positioner。
+// json-viewer 已归页内结构容器、走原生细条（真源 §6.6），不再是双轴自绘条的宿主。
 import type { App } from 'vue'
 import { afterEach, describe, expect, it } from 'vitest'
 import { createApp, h, nextTick } from 'vue'
-import { XhJsonViewerRoot } from '../../src'
+import {
+  XhTreeSelectContent,
+  XhTreeSelectControl,
+  XhTreeSelectFooter,
+  XhTreeSelectItem,
+  XhTreeSelectPositioner,
+  XhTreeSelectRoot,
+  XhTreeSelectTree,
+  XhTreeSelectTrigger,
+} from '../../src'
 import '@xihan-ui/tokens/tokens.css'
 import '@xihan-ui/styles'
 
@@ -17,6 +28,8 @@ afterEach(() => {
   host?.remove()
   app = null
   host = null
+  // 浮层搬去了 body，卸载后确认没留下
+  document.querySelectorAll('[data-scope="tree-select"][data-part="positioner"]').forEach(el => el.remove())
 })
 
 async function tick(times = 3): Promise<void> {
@@ -41,7 +54,7 @@ function mount(node: () => unknown): void {
 }
 
 function part(scope: string, name: string): HTMLElement {
-  return host!.querySelector<HTMLElement>(`[data-scope="${scope}"][data-part="${name}"]`)!
+  return document.querySelector<HTMLElement>(`[data-scope="${scope}"][data-part="${name}"]`)!
 }
 
 /** 壳里那几条条子，按摆出来的先后。 */
@@ -66,20 +79,26 @@ async function scrollTo(el: HTMLElement, top: number, left = 0): Promise<void> {
 }
 
 /**
- * 容器限高 120px、键多到装不下：竖轴溢出。
- * 横轴用原文档——树档的行是 nowrap 的弹性盒、值那格自己省略号收边，横向本就撑不破。
+ * 面板限高 120px、限宽 240px、选项多到装不下：竖轴溢出。
+ * 横轴由页脚里一块固定宽度的内容撑破——树行的文字自己省略号收边，横向本就撑不破。
  */
-async function mountViewer(view?: 'text'): Promise<HTMLElement> {
-  const value: Record<string, unknown> = { note: `长串-${'x'.repeat(200)}` }
-  for (let i = 0; i < 30; i++)
-    value[`key${i}`] = i
-  mount(() => h(XhJsonViewerRoot, {
-    value,
-    view,
-    style: '--xh-json-viewer-max-h: 120px; inline-size: 240px',
-  }))
+async function mountTreeSelect(wide = false): Promise<HTMLElement> {
+  const items = Array.from({ length: 30 }, (_, i) => ({ value: `key${i}`, label: `选项 ${i}` }))
+  mount(() => h(XhTreeSelectRoot, {
+    collection: items,
+    defaultOpen: true,
+  }, () => [
+    h(XhTreeSelectControl, null, () => h(XhTreeSelectTrigger, null, () => '选择')),
+    h(XhTreeSelectPositioner, {
+      style: '--xh-tree-select-content-max-h: 120px; --xh-tree-select-content-max-w: 240px',
+    }, () => h(XhTreeSelectContent, null, () => [
+      h(XhTreeSelectTree, null, () => items.map(item => h(XhTreeSelectItem, { key: item.value, value: item.value }, () => item.label))),
+      wide ? h(XhTreeSelectFooter, null, () => h('div', { style: 'flex: none; inline-size: 600px' }, '很宽的一段页脚')) : null,
+    ])),
+  ]))
   await tick()
-  return part('json-viewer', view === 'text' ? 'text' : 'tree')
+  await expect.poll(() => part('tree-select', 'content').getBoundingClientRect().width).toBeGreaterThan(0)
+  return part('tree-select', 'content')
 }
 
 /** 边框占的那几像素不是滚动条留的槽，量让位时要先减掉。 */
@@ -93,56 +112,58 @@ function gutterOf(el: HTMLElement): { inline: number, block: number } {
   }
 }
 
-describe('json-viewer 的双轴自绘条', () => {
+describe('tree-select 的双轴自绘条', () => {
   it('两条轴各摆一条，交叉口只画在竖条里', async () => {
-    await mountViewer()
+    await mountTreeSelect()
 
-    const roots = bars(part('json-viewer', 'root'))
+    const roots = bars(part('tree-select', 'positioner'))
     expect(roots.map(el => el.getAttribute('data-orientation'))).toEqual(['vertical', 'horizontal'])
-    const corners = part('json-viewer', 'root')
+    const corners = part('tree-select', 'positioner')
       .querySelectorAll('[data-scope="scrollbar"][data-part="corner"]')
     expect(corners).toHaveLength(1)
     expect(roots[0]!.contains(corners[0]!)).toBe(true)
   })
 
   it('两条轴都溢出：各让出交叉口那一格，交叉口露面', async () => {
-    const layer = await mountViewer('text')
+    const layer = await mountTreeSelect(true)
     expect(layer.scrollHeight).toBeGreaterThan(layer.clientHeight)
     expect(layer.scrollWidth).toBeGreaterThan(layer.clientWidth)
 
-    const roots = bars(part('json-viewer', 'root'))
+    const roots = bars(part('tree-select', 'positioner'))
     await waitUntil(() => roots.every(el => el.hasAttribute('data-gutter')))
     expect(roots.map(el => el.hasAttribute('data-gutter'))).toEqual([true, true])
-    expect(part('json-viewer', 'root')
+    expect(part('tree-select', 'positioner')
       .querySelector<HTMLElement>('[data-scope="scrollbar"][data-part="corner"]')!
       .hasAttribute('hidden')).toBe(false)
   })
 
   it('只有竖轴溢出时两条都不让位，交叉口收着', async () => {
-    await mountViewer()
+    const layer = await mountTreeSelect()
+    expect(layer.scrollHeight).toBeGreaterThan(layer.clientHeight)
+    expect(layer.scrollWidth).toBe(layer.clientWidth)
 
-    const roots = bars(part('json-viewer', 'root'))
+    const roots = bars(part('tree-select', 'positioner'))
     expect(roots.map(el => el.hasAttribute('data-gutter'))).toEqual([false, false])
-    expect(part('json-viewer', 'root')
+    expect(part('tree-select', 'positioner')
       .querySelector<HTMLElement>('[data-scope="scrollbar"][data-part="corner"]')!
       .hasAttribute('hidden')).toBe(true)
   })
 
   it('不占宽高：原生条已藏，容器一格槽都不留', async () => {
-    const layer = await mountViewer('text')
+    const layer = await mountTreeSelect(true)
 
     expect(layer.getAttribute('data-xh-scrollbar')).toBe('2')
     expect(gutterOf(layer)).toEqual({ inline: 0, block: 0 })
   })
 
   it('条子贴壳的内边距盒：竖条在行末缘，横条在下缘', async () => {
-    const layer = await mountViewer('text')
+    const layer = await mountTreeSelect(true)
     // 露出来再量：收着时 visibility 是 hidden，但盒子照样在
     layer.dispatchEvent(new PointerEvent('pointerenter'))
     await tick()
 
-    const shell = part('json-viewer', 'root').getBoundingClientRect()
-    const [vertical, horizontal] = bars(part('json-viewer', 'root')).map(el => el.getBoundingClientRect())
+    const shell = part('tree-select', 'positioner').getBoundingClientRect()
+    const [vertical, horizontal] = bars(part('tree-select', 'positioner')).map(el => el.getBoundingClientRect())
     expect(vertical!.right).toBeCloseTo(shell.right, 1)
     expect(horizontal!.bottom).toBeCloseTo(shell.bottom, 1)
     // 都落在壳之内：条子浮在内容上，不是排在内容外边
@@ -151,7 +172,7 @@ describe('json-viewer 的双轴自绘条', () => {
   })
 
   it('滚到底连跑两轮，内容尺寸不长大', async () => {
-    const layer = await mountViewer('text')
+    const layer = await mountTreeSelect(true)
     const before = { h: layer.scrollHeight, w: layer.scrollWidth }
     for (let round = 0; round < 2; round++) {
       await scrollTo(layer, layer.scrollHeight - layer.clientHeight, layer.scrollWidth - layer.clientWidth)
@@ -161,8 +182,8 @@ describe('json-viewer 的双轴自绘条', () => {
   })
 
   it('缺省档滚一下露出，停下再收回', async () => {
-    const layer = await mountViewer()
-    const bar = bars(part('json-viewer', 'root'))[0]!
+    const layer = await mountTreeSelect()
+    const bar = bars(part('tree-select', 'positioner'))[0]!
     expect(bar.getAttribute('data-state')).toBe('hidden')
 
     await scrollTo(layer, 60)

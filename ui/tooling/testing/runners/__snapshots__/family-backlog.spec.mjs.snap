@@ -5,11 +5,11 @@ exports[`family-backlog 条目数 > 七段各一数，与快照一致 1`] = `
   "edge": 38,
   "ladder": 75,
   "motion": 1,
-  "press": 63,
+  "press": 62,
   "scroll": 28,
   "selection": 19,
   "shape": 24,
-  "text": 81,
+  "text": 80,
 }
 `;
 
@@ -173,7 +173,6 @@ exports[`family-backlog 键集合 > press 1`] = `
   "floating-panel:trigger",
   "form:error-summary-item",
   "infinite-scroll:load-more-trigger",
-  "json-viewer:branch-control",
   "listbox:item",
   "listbox:load-more-trigger",
   "menubar:trigger",
@@ -334,7 +333,6 @@ exports[`family-backlog 键集合 > text 1`] = `
   "floating-panel:title:font-weight",
   "hover-card:description:font-size",
   "image-viewer:content:icon-size",
-  "json-viewer:root:icon-size",
   "listbox:root:icon-size",
   "menu:content:icon-size",
   "menubar:content:icon-size",

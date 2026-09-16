@@ -9,11 +9,9 @@ import type { ControlVariant, Direction, Size } from '@xihan-ui/core'
 import type { JsonViewerApi, JsonViewerNode, JsonViewerSchema, JsonViewerTranslations, JsonViewerView } from '@xihan-ui/headless'
 import type { ComponentPropsWithRef, ReactNode } from 'react'
 import { groupJsonViewerNodesByParent } from '@xihan-ui/headless'
-import { useCallback, useRef } from 'react'
 import { withXhConfig } from '../../config/config'
 import { mergeReactProps } from '../../runtime/merge-props'
 import { useNativeEvents } from '../../runtime/native-events'
-import { useScrollbars } from '../../runtime/use-scrollbars'
 import { useJsonViewer } from './use-json-viewer'
 
 type JsonViewerProps = JsonViewerSchema['props']
@@ -77,14 +75,14 @@ function JsonBranch({ api, groups, node }: BranchProps): ReactNode {
 }
 
 /** 树档的滚动层：整棵树铺在其中，键盘也在它上面收口。 */
-function JsonViewerTree({ api, keepLayer }: { api: JsonViewerApi, keepLayer: (el: HTMLElement | null) => void }): ReactNode {
+function JsonViewerTree({ api }: { api: JsonViewerApi }): ReactNode {
   // 容器的 onFocus 是 DOM 的 focus（不冒泡，只在容器自己得焦时接管）。React 的同名合成事件
   // 挂的是冒泡的 focusin，行得焦也会把它叫起来，那一下会把焦点从行抢回锚点上。
   // 同一节点上的 onFocusOut 归到 React 的 onBlur，留在合成事件那一档不动
   const bind = useNativeEvents(api.getTreeProps() as Record<string, unknown>, ['onFocus'])
   const groups = groupJsonViewerNodesByParent(api.visibleNodes)
   return (
-    <div {...mergeReactProps(bind.attrs, { ref: bind.ref }, { ref: keepLayer })}>
+    <div {...mergeReactProps(bind.attrs, { ref: bind.ref })}>
       <JsonRows api={api} groups={groups} parent={null} />
     </div>
   )
@@ -153,22 +151,7 @@ export function XhJsonViewerRoot({
   const ctx = useJsonViewer(withXhConfig('json-viewer', machineProps) as JsonViewerProps)
   const { api } = ctx
 
-  // 此刻在场的那个滚动层：两档互斥，树档是 tree、原文档是 pre。
-  // 只记在场的那个：换档时旧节点的那次空调用不往下传，条子中间就不会有一拍找不到容器
-  const layerRef = useRef<HTMLElement | null>(null)
-  const keepLayer = useCallback((el: HTMLElement | null) => {
-    if (el)
-      layerRef.current = el
-  }, [])
-
-  // 两档的自绘条：与滚动层同级、绝对定位不占布局，壳是这层根。
-  // 两条轴都摆——深层缩进往行首方向推、长字符串往行尾伸
-  const bars = useScrollbars({
-    scrollable: () => layerRef.current,
-    axes: ['vertical', 'horizontal'],
-    props: () => ({ dir }),
-  })
-
+  // 两档容器是页内结构容器（与 Tree 同类）：滚动条走 reset 层的原生细条，不接自绘条（§6.6）
   // 空态与滚动层同级：一行也摊不出来时由它说话，有行可摊时 connect 给它打 hidden
   const emptySlot = (
     <div {...api.getEmptyProps() as Record<string, unknown>}>{empty ?? api.emptyText}</div>
@@ -178,10 +161,9 @@ export function XhJsonViewerRoot({
     <div {...mergeReactProps(api.getRootProps() as Record<string, unknown>, rest as Record<string, unknown>)}>
       {/* 原文档不铺行：整块文本交给 pre，框选与复制才拿得到与后端一字不差的那份 */}
       {api.view === 'text'
-        ? <pre {...api.getTextProps() as Record<string, unknown>} ref={keepLayer}>{api.text}</pre>
-        : <JsonViewerTree api={api} keepLayer={keepLayer} />}
+        ? <pre {...api.getTextProps() as Record<string, unknown>}>{api.text}</pre>
+        : <JsonViewerTree api={api} />}
       {emptySlot}
-      {bars.render()}
     </div>
   )
 }

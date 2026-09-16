@@ -175,16 +175,16 @@
       "why": "穿梭框两侧的定高小列表，真源 §6.6 点名走自绘条"
     },
     "json-viewer:tree": {
-      "mode": "drawn",
+      "mode": "native",
       "overscroll": false,
       "gutter": false,
-      "why": "现状已接自绘条（两轴），真源 §6.6 两档表都没点名它；按现状登记，改原生须删三端接线与 root 上的 track-bg，待拍板"
+      "why": "页内结构容器（与 Tree 同类，真源 §6.6 自绘条只给浮层与定高小列表），深层缩进横向溢出；三端不再接自绘条"
     },
     "json-viewer:text": {
-      "mode": "drawn",
+      "mode": "native",
       "overscroll": false,
       "gutter": false,
-      "why": "文本档与树档互斥共用同一套条子；同上待拍板"
+      "why": "原文档与树档互斥，同一块页内结构容器，长行横向溢出"
     },
     "scroll-area:viewport": {
       "mode": "drawn",

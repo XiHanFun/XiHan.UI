@@ -141,8 +141,9 @@ const FAMILIES = [
     backlog: true,
     members: ['card', 'alert', 'code-view', 'diff-view', 'log', 'json-viewer', 'tool-call', 'reasoning', 'approval', 'question-flow'],
     parts: [
-      { part: 'root', state: '', props: ['border', 'background'] },
-      { part: 'root', state: '', props: ['box-shadow'], only: ['alert', 'code-view', 'diff-view', 'log', 'json-viewer', 'tool-call', 'reasoning', 'approval', 'question-flow'] },
+      // json-viewer 的 root 只是壳，面画在树档容器 tree 上（原文档 text 与它同一套声明）
+      { part: 'root', partBy: { 'json-viewer': 'tree' }, state: '', props: ['border', 'background'] },
+      { part: 'root', partBy: { 'json-viewer': 'tree' }, state: '', props: ['box-shadow'], only: ['alert', 'code-view', 'diff-view', 'log', 'json-viewer', 'tool-call', 'reasoning', 'approval', 'question-flow'] },
     ],
   },
   {

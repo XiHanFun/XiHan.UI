@@ -272,9 +272,9 @@ view="text" 直接输出缩进后的 JSON 原文：整块可框选可复制，�
 
 | 变量 | 部件 | CSS 属性 | 状态 | 默认来源 | 说明 |
 | --- | --- | --- | --- | --- | --- |
-| `--xh-json-viewer-bg` | `empty`<br>`text`<br>`tree` | `background` | `default` | `--xh-_json-viewer-bg` | json-viewer 的 empty、text、tree 部件 background 覆盖槽。 |
+| `--xh-json-viewer-bg` | `empty`<br>`root`<br>`text`<br>`tree` | `background` | `default`<br>`is([data-scope='json-viewer'][data-part='tree'], [data-scope='json-viewer'][data-part='text'], [data-scope='json-viewer'][data-part='empty'])`<br>`variant=subtle` | `--xh-bg-subtle`<br>`--xh-bg-surface` | json-viewer 的 empty、root、text、tree 部件 background 覆盖槽。 |
 | `--xh-json-viewer-boolean-fg` | `item-value` | `color` | `value-type=boolean` | `--xh-syntax-keyword` | json-viewer 的 item-value 部件 color 覆盖槽。 |
-| `--xh-json-viewer-border` | `empty`<br>`text`<br>`tree` | `border` | `default` | `--xh-_json-viewer-border` | json-viewer 的 empty、text、tree 部件 border 覆盖槽。 |
+| `--xh-json-viewer-border` | `empty`<br>`text`<br>`tree` | `border` | `default` | `--xh-border-default` | json-viewer 的 empty、text、tree 部件 border 覆盖槽。 |
 | `--xh-json-viewer-empty-fg` | `empty` | `color` | `default` | `--xh-fg-muted` | json-viewer 的 empty 部件 color 覆盖槽。 |
 | `--xh-json-viewer-empty-gap` | `empty` | `gap` | `default` | `--xh-space-2` | json-viewer 的 empty 部件 gap 覆盖槽。 |
 | `--xh-json-viewer-empty-px` | `empty` | `padding-inline` | `default` | `--xh-space-4` | json-viewer 的 empty 部件 padding-inline 覆盖槽。 |
@@ -282,7 +282,7 @@ view="text" 直接输出缩进后的 JSON 原文：整块可框选可复制，�
 | `--xh-json-viewer-fg` | `root` | `color` | `default` | `--xh-fg-default` | json-viewer 的 root 部件 color 覆盖槽。 |
 | `--xh-json-viewer-font` | `root`<br>`text` | `font-family` | `default` | `--xh-font-family-mono` | json-viewer 的 root、text 部件 font-family 覆盖槽。 |
 | `--xh-json-viewer-font-size` | `root` | `font-size` | `default` | `--xh-_json-viewer-font-size` | json-viewer 的 root 部件 font-size 覆盖槽。 |
-| `--xh-json-viewer-icon-size` | `root` | `--xh-icon-size` | `default` | `--xh-glyph-size-text` | json-viewer 的 root 部件 --xh-icon-size 覆盖槽。 |
+| `--xh-json-viewer-icon-size` | `root` | `--xh-icon-size` | `default`<br>`size=lg`<br>`size=sm` | `--xh-glyph-size-lg`<br>`--xh-glyph-size-md`<br>`--xh-glyph-size-sm` | json-viewer 的 root 部件 --xh-icon-size 覆盖槽。 |
 | `--xh-json-viewer-indent` | `branch-content` | `padding-inline-start` | `default` | `--xh-_json-viewer-indent` | json-viewer 的 branch-content 部件 padding-inline-start 覆盖槽。 |
 | `--xh-json-viewer-indicator-fg` | `branch-trigger` | `color` | `default` | `--xh-fg-subtle` | json-viewer 的 branch-trigger 部件 color 覆盖槽。 |
 | `--xh-json-viewer-indicator-size` | `branch-trigger` | `inline-size` | `default` | `--xh-control-indicator-size` | json-viewer 的 branch-trigger 部件 inline-size 覆盖槽。 |
@@ -297,11 +297,13 @@ view="text" 直接输出缩进后的 JSON 原文：整块可框选可复制，�
 | `--xh-json-viewer-px` | `text`<br>`tree` | `padding-inline` | `default` | `--xh-space-2` | json-viewer 的 text、tree 部件 padding-inline 覆盖槽。 |
 | `--xh-json-viewer-py` | `text`<br>`tree` | `padding-block` | `default` | `--xh-space-2` | json-viewer 的 text、tree 部件 padding-block 覆盖槽。 |
 | `--xh-json-viewer-radius` | `empty`<br>`text`<br>`tree` | `border-radius` | `default` | `--xh-shape-surface` | json-viewer 的 empty、text、tree 部件 border-radius 覆盖槽。 |
+| `--xh-json-viewer-row-bg-active` | `branch-control` | `background` | `active`<br>`disabled`<br>`not([data-disabled])` | `--xh-bg-subtle-hover` | json-viewer 的 branch-control 部件 background 覆盖槽。 |
 | `--xh-json-viewer-row-bg-hover` | `branch-control`<br>`item` | `background` | `highlighted`<br>`is(:hover, [data-highlighted])` | `--xh-bg-subtle` | json-viewer 的 branch-control、item 部件 background 覆盖槽。 |
 | `--xh-json-viewer-row-gap` | `branch-control`<br>`item` | `gap` | `default` | `--xh-space-1` | json-viewer 的 branch-control、item 部件 gap 覆盖槽。 |
 | `--xh-json-viewer-row-px` | `branch-control`<br>`item` | `padding-inline` | `default` | `--xh-space-1` | json-viewer 的 branch-control、item 部件 padding-inline 覆盖槽。 |
 | `--xh-json-viewer-row-py` | `branch-control`<br>`item` | `padding-block` | `default` | `--xh-_json-viewer-row-py` | json-viewer 的 branch-control、item 部件 padding-block 覆盖槽。 |
 | `--xh-json-viewer-row-radius` | `branch-control`<br>`item` | `border-radius` | `default` | `--xh-shape-inset` | json-viewer 的 branch-control、item 部件 border-radius 覆盖槽。 |
+| `--xh-json-viewer-shadow` | `empty`<br>`text`<br>`tree` | `box-shadow` | `default` | `none` | json-viewer 的 empty、text、tree 部件 box-shadow 覆盖槽。 |
 | `--xh-json-viewer-string-fg` | `item-value` | `color` | `value-type=string` | `--xh-syntax-string` | json-viewer 的 item-value 部件 color 覆盖槽。 |
 | `--xh-json-viewer-text-fg` | `text` | `color` | `default` | `--xh-fg-default` | json-viewer 的 text 部件 color 覆盖槽。 |
 <!-- xh-component-tokens:end -->
