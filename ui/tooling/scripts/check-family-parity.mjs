@@ -41,10 +41,25 @@ const FAMILIES = [
     ],
   },
   {
+    // 盒的 display / align-items / 高度 / 内距 / 间距改由 Field Chrome 配方按 chrome 节点生成，
+    // 已迁移成员的皮肤只把使用者槽映射到桥接槽——比对的是这些映射声明（几何四条 + 边与影两条）；
+    // 成员逐个迁移，未迁移的读 family-backlog.json 先不参与
     name: '分段族',
+    backlog: true,
     members: ['date-field', 'time-field', 'date-picker', 'date-range-picker', 'time-picker', 'time-range-picker'],
     parts: [
-      { part: 'control', state: '', props: ['display', 'align-items', 'gap', 'block-size', 'padding-inline'] },
+      {
+        part: 'control',
+        state: '',
+        props: [
+          '--xh-field-control-height',
+          '--xh-field-control-gap',
+          '--xh-field-control-padding-inline',
+          '--xh-field-control-min-inline-size',
+          '--xh-field-border-rest',
+          '--xh-field-shadow-rest',
+        ],
+      },
       { part: 'segment', state: '', props: ['padding-inline'], only: ['date-field', 'time-field'] },
       { part: 'segment-group', state: '', props: ['flex'] },
     ],

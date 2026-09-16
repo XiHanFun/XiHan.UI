@@ -585,9 +585,21 @@ describe('dateFieldMachine', () => {
 })
 
 describe('connectDateField 结构与 ARIA', () => {
-  it('不写 variant 时 root 落 outline；写 subtle 如实落', () => {
-    expect(open({ locale: 'zh-CN' }).root.getAttribute('data-variant')).toBe('outline')
-    expect(open({ locale: 'zh-CN', variant: 'subtle' }).root.getAttribute('data-variant')).toBe('subtle')
+  it('不写 variant 时 root 与 control 都落 outline；写 subtle 如实落', () => {
+    const fallback = open({ locale: 'zh-CN' })
+    expect(fallback.root.getAttribute('data-variant')).toBe('outline')
+    expect(fallback.control.getAttribute('data-variant')).toBe('outline')
+    const subtle = open({ locale: 'zh-CN', variant: 'subtle' })
+    expect(subtle.root.getAttribute('data-variant')).toBe('subtle')
+    expect(subtle.control.getAttribute('data-variant')).toBe('subtle')
+  })
+
+  it('control 投影 Field Chrome 的稳定角色与尺寸档，缺省 md；段位不是原生输入，不投影 field-input', () => {
+    const m = open({ locale: 'zh-CN' })
+    expect(m.control.getAttribute('data-xh-field-chrome')).toBe('')
+    expect(m.control.getAttribute('data-xh-field-size')).toBe('md')
+    expect(m.seg[0]!.hasAttribute('data-xh-field-input')).toBe(false)
+    expect(open({ locale: 'zh-CN', size: 'sm' }).control.getAttribute('data-xh-field-size')).toBe('sm')
   })
 
   it('control 是 group 并由 label 命名，段位是 spinbutton', () => {
@@ -895,6 +907,20 @@ describe('connectDateField 清空钮', () => {
     expect(m.clear.hasAttribute('hidden')).toBe(true)
     expect(m.clear.hasAttribute('disabled')).toBe(false)
     expect(m.api().canClear).toBe(false)
+  })
+
+  it('清空钮走 Action Control 的 field-inset ghost 档，按 has-value 显隐，尺寸档随 size 缺省 md', () => {
+    const m = open({ locale: 'zh-CN' })
+    expect(m.clear.getAttribute('data-xh-action-control')).toBe('')
+    expect(m.clear.getAttribute('data-xh-action-profile')).toBe('field-inset')
+    expect(m.clear.getAttribute('data-xh-action-variant')).toBe('ghost')
+    expect(m.clear.getAttribute('data-xh-action-display')).toBe('has-value')
+    expect(m.clear.getAttribute('data-xh-action-size')).toBe('md')
+    expect(m.clear.hasAttribute('data-xh-action-has-value')).toBe(false)
+
+    const filled = open({ locale: 'zh-CN', defaultValue: '2024-05-06', size: 'lg' })
+    expect(filled.clear.getAttribute('data-xh-action-size')).toBe('lg')
+    expect(filled.clear.getAttribute('data-xh-action-has-value')).toBe('')
   })
 
   it('translations.clearTrigger 换掉名字', () => {

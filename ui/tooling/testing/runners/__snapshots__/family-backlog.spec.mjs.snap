@@ -2,14 +2,14 @@
 
 exports[`family-backlog 条目数 > 七段各一数，与快照一致 1`] = `
 {
-  "edge": 69,
-  "ladder": 136,
+  "edge": 68,
+  "ladder": 133,
   "motion": 1,
   "press": 79,
   "scroll": 64,
   "selection": 25,
   "shape": 25,
-  "text": 109,
+  "text": 108,
 }
 `;
 
@@ -34,7 +34,6 @@ exports[`family-backlog 键集合 > edge 1`] = `
   "color-picker:control:raised",
   "color-slider:thumb:raised",
   "combobox:positioner:raised",
-  "date-field:root:raised",
   "date-picker:content",
   "date-picker:positioner:raised",
   "date-range-picker:content",
@@ -118,9 +117,6 @@ exports[`family-backlog 键集合 > ladder 1`] = `
   "combobox:trigger:hover",
   "combobox:trigger:pressed",
   "context-menu:item:pressed",
-  "date-field:clear-trigger:hover",
-  "date-field:clear-trigger:pressed",
-  "date-field:control:focus",
   "date-picker:clear-trigger:pressed",
   "date-picker:control:focus",
   "date-picker:trigger:hover",
@@ -477,7 +473,6 @@ exports[`family-backlog 键集合 > text 1`] = `
   "command:content:icon-size",
   "context-menu:content:icon-size",
   "context-menu:root:icon-size",
-  "date-field:label:font-size",
   "date-picker:label:font-size",
   "date-range-picker:label:font-size",
   "descriptions:label:spacing",

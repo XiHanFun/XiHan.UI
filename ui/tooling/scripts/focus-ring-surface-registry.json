@@ -68,6 +68,8 @@
     "command [data-part='list'][data-scope='command']": "列表从不承载焦点（焦点恒在检索框，锚点走 aria-activedescendant）；可滚动容器被浏览器塞进 Tab 序列时不画环",
     "context-menu [data-part='content'][data-scope='context-menu']:not([tabindex='0'])": "content 只在打开且还没有锚点条目时认领 Tab 位（那时 tabindex=0，吃 focus.css 的默认环）；tabindex=-1 时是程序化落焦的中转，高亮长在条目上",
     "date-field [data-focus][data-part='segment'][data-scope='date-field']": "环由 control 的 :focus-within 画在外框上，段位只反白标出当前段",
+    "date-field [data-part='control'][data-scope='date-field'] [data-part='input'][data-scope='date-field']": "家族随皮肤引入的规则：date-field 的段位是 div、不投影 data-xh-field-input，这条命不中；环由 control 的 :focus-within 画在外框上",
+    "date-field [data-part='control'][data-scope='date-field'] [data-xh-action-profile='field-inset']": "焦点落到盒内清空钮（tabindex=-1，只接程序化落焦）时 control 已经 :focus-within 起了环",
     "date-field [data-part='segment'][data-scope='date-field']": "环由 control 的 :focus-within 画在外框上，段位只反白标出当前段",
     "date-picker [data-part='content'][data-scope='date-picker']": "浮层壳不承载焦点（焦点直接落到聚焦日那一格），tabindex=-1 只接程序化落焦",
     "date-picker [data-part='segment-group'][data-scope='date-picker']": "容器不占 Tab 位也不承载焦点，环由 control 画",
