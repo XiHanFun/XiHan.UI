@@ -34,7 +34,7 @@ function descriptions(columns: number, placement: 'left' | 'top' = 'left'): stri
       <dd data-scope="descriptions" data-part="value">2026-09-08 12:34:56</dd>
     </div>`).join('')
   return `<dl data-scope="descriptions" data-part="root" data-columns="${columns}"
-    data-placement="${placement}" data-bordered>${items}</dl>`
+    data-placement="${placement}" data-variant="outline">${items}</dl>`
 }
 
 function items(el: HTMLElement): HTMLElement[] {

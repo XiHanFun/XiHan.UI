@@ -5,7 +5,7 @@
 
 // 提供 descriptions 相关实现。
 
-import type { Size } from '@xihan-ui/core'
+import type { ControlVariant, Size } from '@xihan-ui/core'
 import type { DescriptionsColumns, DescriptionsPlacement } from '@xihan-ui/headless'
 import type { PropType } from 'vue'
 import { connectDescriptions } from '@xihan-ui/headless'
@@ -19,7 +19,7 @@ export const XhDescriptionsRoot = defineComponent({
   // 有 connect 兜底的 prop：普通类型省略 default，Boolean 显式保留 undefined
   props: {
     columns: { type: Number as PropType<DescriptionsColumns> },
-    bordered: Boolean,
+    variant: { type: String as PropType<ControlVariant> },
     placement: { type: String as PropType<DescriptionsPlacement> },
     size: { type: String as PropType<Size> },
     /** 根渲染为哪个标签，默认 dl。 */
@@ -30,7 +30,7 @@ export const XhDescriptionsRoot = defineComponent({
     const configured = withXhConfig('descriptions', props)
     const api = computed(() => connectDescriptions({
       columns: configured.columns,
-      bordered: configured.bordered,
+      variant: configured.variant,
       placement: configured.placement,
       size: configured.size,
     }, vueNormalize))

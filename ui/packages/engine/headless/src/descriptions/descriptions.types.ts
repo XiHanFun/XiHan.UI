@@ -5,7 +5,7 @@
 
 // 定义 descriptions 类型契约。
 
-import type { PropTypes, Size } from '@xihan-ui/core'
+import type { ControlVariant, PropTypes, Size } from '@xihan-ui/core'
 
 /** 每行放置几组标签与取值。皮肤逐档给出列数，一到六列。 */
 export type DescriptionsColumns = 1 | 2 | 3 | 4 | 5 | 6
@@ -18,8 +18,8 @@ export type DescriptionsPlacement = 'top' | 'left'
 export interface DescriptionsProps {
   /** 每行放置几组，一到六列；未提供时每行一组。 */
   columns?: DescriptionsColumns
-  /** 外框：给整份描述绘制描边，并在格与格之间绘制网格线。 */
-  bordered?: boolean
+  /** 形态：ghost 不画壳（默认），outline 绘制外框并在格与格之间补网格线，subtle 淡底。默认 ghost。 */
+  variant?: ControlVariant
   /** 标签的位置：top / left；未提供时标签在上。 */
   placement?: DescriptionsPlacement
   /** 尺寸：sm / md / lg。 */

@@ -17700,7 +17700,7 @@
           "name": "XhDescriptionsElement",
           "cssParts": [
             {
-              "description": "网格容器，承载 data-columns / data-placement / data-size / data-bordered",
+              "description": "网格容器，承载 data-columns / data-placement / data-size / data-variant",
               "name": "root"
             },
             {
@@ -17737,12 +17737,12 @@
             },
             {
               "kind": "field",
-              "name": "bordered",
+              "name": "variant",
               "privacy": "public",
               "type": {
-                "text": "boolean | undefined"
+                "text": "ControlVariant | undefined"
               },
-              "attribute": "bordered"
+              "attribute": "variant"
             },
             {
               "kind": "field",
@@ -17784,11 +17784,11 @@
             },
             {
               "type": {
-                "text": "boolean | undefined"
+                "text": "ControlVariant | undefined"
               },
-              "description": "绘制外框，并在格与格之间绘制网格线",
-              "name": "bordered",
-              "fieldName": "bordered"
+              "description": "形态：ghost 不画壳，outline 绘制外框并在格与格之间补网格线，subtle 淡底；默认 ghost",
+              "name": "variant",
+              "fieldName": "variant"
             },
             {
               "type": {

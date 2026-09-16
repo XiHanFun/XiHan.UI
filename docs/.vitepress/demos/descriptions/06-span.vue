@@ -9,7 +9,7 @@ import {
 </script>
 
 <template>
-  <XhDescriptionsRoot :columns="3" bordered style="max-inline-size: 720px">
+  <XhDescriptionsRoot :columns="3" variant="outline" style="max-inline-size: 720px">
     <XhDescriptionsItem>
       <XhDescriptionsLabel>订单号</XhDescriptionsLabel>
       <XhDescriptionsValue>XH-20260810-0042</XhDescriptionsValue>

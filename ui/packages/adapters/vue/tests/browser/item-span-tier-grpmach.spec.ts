@@ -6,6 +6,7 @@
 // 这一条量的是「宽窄反了」：窄档皮肤要每格横跨所有列、一行只摆一组，可 span 从前是
 // 连接层直接写死的 grid-column 行内样式，皮肤盖不过去——于是同一份描述里，作者标了
 // span（本意是「这格要更宽」）的那一格反而比不带 span 的邻居窄一半。
+import type { ControlVariant } from '@xihan-ui/core'
 import type { App } from 'vue'
 import { afterEach, describe, expect, it } from 'vitest'
 import { createApp, h, nextTick } from 'vue'
@@ -59,8 +60,8 @@ const ROWS = [
 const ITEM = '[data-part=\'item\']'
 const SPANNED = '[data-part=\'item\']:nth-child(2)'
 
-async function mountDesc(width: number, columns: 2 | 3 | 4 | 5 | 6, bordered = false): Promise<void> {
-  mount(width, () => h(XhDescriptionsRoot, { columns, bordered }, () =>
+async function mountDesc(width: number, columns: 2 | 3 | 4 | 5 | 6, variant?: ControlVariant): Promise<void> {
+  mount(width, () => h(XhDescriptionsRoot, { columns, variant }, () =>
     ROWS.map(row => h(XhDescriptionsItem, { key: row.label, span: row.span }, () => [
       h(XhDescriptionsLabel, null, () => row.label),
       h(XhDescriptionsValue, null, () => row.value),
@@ -100,7 +101,7 @@ describe('descriptions 的 span 在窄档', () => {
   })
 
   it('窄视口 + 外框：带 span 的那格右缘贴住外框，不留半行空白', async () => {
-    await mountDesc(300, 4, true)
+    await mountDesc(300, 4, 'outline')
     const root = pick('[data-part=\'root\']')
     const rootBox = root.getBoundingClientRect()
     const spanned = pick(SPANNED).getBoundingClientRect()

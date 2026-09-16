@@ -26,7 +26,7 @@ const sizes = [
       v-for="s in sizes"
       :key="s.label"
       :size="s.size"
-      bordered
+      variant="outline"
       :columns="2"
       placement="left"
     >

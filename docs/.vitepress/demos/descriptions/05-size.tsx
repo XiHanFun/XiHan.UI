@@ -26,7 +26,7 @@ export default function Demo(): ReactNode {
         <XhDescriptionsRoot
           key={s.label}
           size={s.size}
-          bordered
+          variant="outline"
           columns={2}
           placement="left"
         >

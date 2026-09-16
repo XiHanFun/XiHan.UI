@@ -128,7 +128,7 @@
     "data-xh-field-auto-size": "Field Chrome 的 textarea 高度由内容量高接管。",
     "data-autoplay": "carousel 的自动轮播正在跑。",
     "data-block": "segmented 占满整行宽度。",
-    "data-bordered": "画外框：descriptions / layout / page-header / table。table 由 borderless 取反得来，缺席即不画。",
+    "data-bordered": "画外框：layout / page-header / table。table 由 borderless 取反得来，缺席即不画。",
     "data-branch": "cascader 的这一项是分支，点开还有下一列。",
     "data-caret": "markdown-stream 的流式光标画在这个节点末尾。",
     "data-case-sensitive": "highlight 的关键词匹配区分大小写。",

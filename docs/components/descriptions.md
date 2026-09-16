@@ -38,9 +38,9 @@ placement 决定标签在上还是在左，不传即在上
 
 ### 外框
 
-bordered 绘制一圈描边，并在格与格之间补上网格线
+variant="outline" 绘制一圈描边，并在格与格之间补上网格线
 
-<XhDemo src="descriptions/04-bordered" />
+<XhDemo src="descriptions/04-outline" />
 
 ### 尺寸
 
@@ -69,7 +69,7 @@ size 改变每格的内边距、组与组的间距与整体字号，不传 size 
 
 - 语义是 `dt` / `dd`，组件只提供身份与排版。
 - `columns` 决定每行几组，不传时每行一组。
-- 标签位置可以在值的上方或左侧；`bordered` 提供外框。
+- 标签位置可以在值的上方或左侧；`variant="outline"` 提供外框与网格线。
 - 每一格可以通过 `span` 横跨多列，上限是当前列数；窄档一行只放一组时忽略该值。
 
 ### 组合
@@ -102,10 +102,10 @@ size 改变每格的内边距、组与组的间距与整体字号，不传 size 
 
 | 属性 | 类型 | 必填 | 说明 |
 | --- | --- | --- | --- |
-| `bordered` | `boolean` |  | 外框：给整份描述绘制描边，并在格与格之间绘制网格线。 |
 | `columns` | `DescriptionsColumns` |  | 每行放置几组，一到六列；未提供时每行一组。 |
 | `placement` | `DescriptionsPlacement` |  | 标签的位置：top / left；未提供时标签在上。 |
 | `size` | `Size` |  | 尺寸：sm / md / lg。 |
+| `variant` | `ControlVariant` |  | 形态：ghost 不画壳（默认），outline 绘制外框并在格与格之间补网格线，subtle 淡底。默认 ghost。 |
 
 ### connect API
 
@@ -139,20 +139,20 @@ size 改变每格的内边距、组与组的间距与整体字号，不传 size 
 
 | 变量 | 部件 | CSS 属性 | 状态 | 默认来源 | 说明 |
 | --- | --- | --- | --- | --- | --- |
-| `--xh-descriptions-bg` | `root` | `background` | `bordered` | `--xh-bg-surface` | descriptions 的 root 部件 background 覆盖槽。 |
-| `--xh-descriptions-border` | `root` | `border` | `bordered` | `--xh-border-default` | descriptions 的 root 部件 border 覆盖槽。 |
-| `--xh-descriptions-divider` | `item`<br>`root` | `border-block-start`<br>`border-inline-start` | `bordered` | `--xh-border-subtle` | descriptions 的 item、root 部件 border-block-start、border-inline-start 覆盖槽。 |
+| `--xh-descriptions-bg` | `root` | `background` | `variant=outline`<br>`variant=subtle` | `--xh-bg-subtle`<br>`--xh-bg-surface` | descriptions 的 root 部件 background 覆盖槽。 |
+| `--xh-descriptions-border` | `root` | `border` | `variant=outline` | `--xh-border-default` | descriptions 的 root 部件 border 覆盖槽。 |
+| `--xh-descriptions-divider` | `item`<br>`root` | `border-block-start`<br>`border-inline-start` | `variant=outline` | `--xh-border-subtle` | descriptions 的 item、root 部件 border-block-start、border-inline-start 覆盖槽。 |
 | `--xh-descriptions-fg` | `root` | `color` | `default` | `--xh-fg-default` | descriptions 的 root 部件 color 覆盖槽。 |
 | `--xh-descriptions-font-size` | `root` | `font-size` | `default` | `--xh-_descriptions-font-size` | descriptions 的 root 部件 font-size 覆盖槽。 |
 | `--xh-descriptions-gap` | `root` | `gap` | `default` | `--xh-_descriptions-gap` | descriptions 的 root 部件 gap 覆盖槽。 |
-| `--xh-descriptions-item-px` | `item`<br>`root` | `padding-inline` | `bordered` | `--xh-_descriptions-px` | descriptions 的 item、root 部件 padding-inline 覆盖槽。 |
-| `--xh-descriptions-item-py` | `item`<br>`root` | `padding-block` | `bordered` | `--xh-_descriptions-py` | descriptions 的 item、root 部件 padding-block 覆盖槽。 |
+| `--xh-descriptions-item-px` | `item`<br>`root` | `padding-inline` | `variant=outline` | `--xh-_descriptions-px` | descriptions 的 item、root 部件 padding-inline 覆盖槽。 |
+| `--xh-descriptions-item-py` | `item`<br>`root` | `padding-block` | `variant=outline` | `--xh-_descriptions-py` | descriptions 的 item、root 部件 padding-block 覆盖槽。 |
 | `--xh-descriptions-label-fg` | `label` | `color` | `default` | `--xh-fg-muted` | descriptions 的 label 部件 color 覆盖槽。 |
 | `--xh-descriptions-label-font-weight` | `label` | `font-weight` | `default` | `--xh-text-label-weight` | descriptions 的 label 部件 font-weight 覆盖槽。 |
 | `--xh-descriptions-label-gap` | `item`<br>`root` | `column-gap` | `@media (min-width: 768px)`<br>`placement=left` | `--xh-_descriptions-label-gap` | descriptions 的 item、root 部件 column-gap 覆盖槽。 |
 | `--xh-descriptions-label-w` | `item`<br>`root` | `grid-template-columns` | `@media (min-width: 768px)`<br>`placement=left` | `--xh-_descriptions-label-w` | descriptions 的 item、root 部件 grid-template-columns 覆盖槽。 |
 | `--xh-descriptions-pair-gap` | `item` | `gap` | `default` | `--xh-_descriptions-pair-gap` | descriptions 的 item 部件 gap 覆盖槽。 |
-| `--xh-descriptions-radius` | `root` | `border-radius` | `bordered` | `--xh-shape-surface` | descriptions 的 root 部件 border-radius 覆盖槽。 |
+| `--xh-descriptions-radius` | `root` | `border-radius` | `variant=outline`<br>`variant=subtle` | `--xh-shape-surface` | descriptions 的 root 部件 border-radius 覆盖槽。 |
 | `--xh-descriptions-value-fg` | `value` | `color` | `default` | `--xh-fg-default` | descriptions 的 value 部件 color 覆盖槽。 |
 <!-- xh-component-tokens:end -->
 

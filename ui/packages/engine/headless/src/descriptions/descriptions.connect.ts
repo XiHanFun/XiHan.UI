@@ -7,7 +7,6 @@
 
 import type { NormalizeProps, PropTypes } from '@xihan-ui/core'
 import type { DescriptionsApi, DescriptionsItemProps, DescriptionsProps } from './descriptions.types'
-import { dataAttr } from '@xihan-ui/core'
 import { descriptionsAnatomy } from './descriptions.anatomy'
 
 const parts = descriptionsAnatomy.build()
@@ -19,14 +18,15 @@ export function connectDescriptions<T extends PropTypes>(
   props: DescriptionsProps,
   normalize: NormalizeProps<T>,
 ): DescriptionsApi<T> {
-  // 三个轴与一个开关只落在根上，每格从这里继承私有槽，子部件不重复标注
+  // 四个轴只落在根上，每格从这里继承私有槽，子部件不重复标注
   const rootAttrs = {
     ...parts.root.attrs,
     // 列数如实落成字符串，两个适配器写到 DOM 上的值一致
     'data-columns': props.columns == null ? undefined : String(props.columns),
     'data-placement': props.placement,
     'data-size': props.size,
-    'data-bordered': dataAttr(props.bordered),
+    // 形态不写就落 ghost：皮肤基础规则即该档，缺省外观不变
+    'data-variant': props.variant ?? 'ghost',
   }
 
   // 跨列数钳进 1 到当前列数之间；列数没给即整份只有一列，跨列无从谈起

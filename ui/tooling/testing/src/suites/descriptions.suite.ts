@@ -41,7 +41,7 @@ export const descriptionsSuite: ConformanceSuite = {
   fixture: descriptionsTree,
   cases: [
     {
-      name: '缺省：各部件都不写 role，三个轴与一个开关一律不输出',
+      name: '缺省：各部件都不写 role，形态落 ghost，其余三个轴一律不输出',
       spec: { apg: APG },
       initial: {
         parts: {
@@ -50,7 +50,7 @@ export const descriptionsSuite: ConformanceSuite = {
             'data-columns': null,
             'data-placement': null,
             'data-size': null,
-            'data-bordered': null,
+            'data-variant': 'ghost',
           },
           'item[0]': { role: null },
           // 标签与取值的配对靠作者写的 dt / dd 表达，组件不补 role、不补 IDREF 关联
@@ -83,18 +83,18 @@ export const descriptionsSuite: ConformanceSuite = {
       },
     },
     {
-      name: 'bordered 落成空串，关掉时不留空属性',
+      name: '形态如实落到根上，切换后跟着改写',
       spec: { apg: APG },
-      props: { bordered: true },
+      props: { variant: 'outline' },
       initial: {
-        parts: { root: { 'data-bordered': '' } },
+        parts: { root: { 'data-variant': 'outline' } },
       },
       steps: [
         {
           kind: 'setProps',
-          props: { bordered: false },
+          props: { variant: 'subtle' },
           expect: {
-            parts: { root: { 'data-bordered': null } },
+            parts: { root: { 'data-variant': 'subtle' } },
           },
         },
       ],
