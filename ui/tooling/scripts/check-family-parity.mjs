@@ -164,7 +164,8 @@ const FAMILIES = [
     backlog: true,
     members: ['toast', 'notification'],
     parts: [
-      { partBy: { toast: 'root', notification: 'item' }, state: '', props: ['border', 'background', 'box-shadow'] },
+      // toast 的面就是 root，使用者槽不带部件段（--xh-toast-border）；notification 的面是 item（--xh-notification-item-border）
+      { partBy: { toast: 'root', notification: 'item' }, slotBy: { toast: '' }, state: '', props: ['border', 'background', 'box-shadow'] },
     ],
   },
   {
@@ -368,9 +369,41 @@ function pending(comp) {
   return [...backlogKeys].some(key => key.startsWith(`${comp}:`))
 }
 
-/** 去掉注释。 */
+/**
+ * 去掉注释与条件块（@media / @supports / @container 整块连同内部规则）：
+ * 打印、粗指针、强制色这些环境分支说的不是这块面的基础取值，混进来会把一家的
+ * `@media print { title { font-weight: bold } }` 当成它的基础字重去比。@layer 不是条件，保留。
+ */
 function strip(src) {
-  return src.replace(/\/\*[\s\S]*?\*\//g, '')
+  const text = src.replace(/\/\*[\s\S]*?\*\//g, '')
+  let out = ''
+  let i = 0
+  while (i < text.length) {
+    const at = text.indexOf('@', i)
+    if (at < 0) {
+      out += text.slice(i)
+      break
+    }
+    const open = text.indexOf('{', at)
+    const prelude = open < 0 ? '' : text.slice(at, open)
+    if (open < 0 || /^@layer\b/.test(prelude) || /[;}]/.test(prelude)) {
+      out += text.slice(i, at + 1)
+      i = at + 1
+      continue
+    }
+    // 跳过整个条件块：从 { 起数括号到配对的 }
+    let depth = 0
+    let j = open
+    for (; j < text.length; j++) {
+      if (text[j] === '{')
+        depth++
+      else if (text[j] === '}' && --depth === 0)
+        break
+    }
+    out += text.slice(i, at)
+    i = j + 1
+  }
+  return out
 }
 
 /** 按顶层逗号拆选择器列表：`:is(a, b)` 括号里的逗号不是分隔符，拆开就把选择器切断了。 */
@@ -448,9 +481,12 @@ function normalize(value, comp) {
  * 按部件分别登记（partBy）的条目里，各成员的槽名部件段必然是自己那个部件（check-spacing-slots 要求槽名的
  * 部件段与规则所在部件一致：date-picker 的行是 time-item，别家是 item），比对时把这一段也归一成 <p>，
  * 槽名的后缀仍逐字比。槽名部件段与部件名不同的成员（notification 的 item-title 用 --xh-notification-title-*）
- * 由条目的 slotBy 指明那一段。
+ * 由条目的 slotBy 指明那一段；slotBy 给空串表示这个成员的槽名不带部件段（toast 的面就是 root）。
  */
 function normalizePart(value, part) {
+  // 槽名不带部件段的成员（面就是 root）：把 <p> 段补进去，与带部件段的成员同形
+  if (part === '')
+    return value.replace(/--xh-(_?)<c>-/g, '--xh-$1<c>-<p>-')
   return value.replace(new RegExp(`--xh-(_?)<c>-${part}-`, 'g'), '--xh-$1<c>-<p>-')
 }
 

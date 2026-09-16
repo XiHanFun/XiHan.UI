@@ -22,8 +22,11 @@ const ROLE = /--xh-elevation-(raised|lifted|floating|sheet)\b/
 const MATERIAL_SOFT = /--xh-material-soft-shadow\b/
 // M2 是锚定浮层的材质配方，海拔等价于 floating；单列名字才能拦住组件退回普通实体投影。
 const MATERIAL_FROSTED = /--xh-material-frosted-(?:compact-)?shadow\b/
-// M4 是 sheet 级遮罩式高层面；当前只允许 Dialog/content 消费，后续迁移必须逐件登记。
+// M4 是 sheet 级遮罩式高层面（sheet = material-elevated 三件套：-bg / -border / -shadow，§8.4）；
+// 只允许逐件登记过的部件消费，未迁移的 sheet 面仍走 --xh-elevation-sheet，随各组件迁移逐件补登。
 const MATERIAL_ELEVATED = /--xh-material-elevated-shadow\b/
+/** 已迁到 material-elevated 三件套的 sheet 面：`组件/部件`。 */
+const ELEVATED_CONSUMERS = new Set(['dialog/content', 'toast/root'])
 /**
  * 使用者槽包着角色令牌：var(--xh-<组件>-…, var(--xh-elevation-<role>))。
  * 允许套多层：加法式改名把新槽名排在外层、旧名留在它的兜底位上，链因此不止一层。
@@ -143,8 +146,8 @@ for (const file of files) {
       // 这条规则落在哪个部件上：取选择器里最后一个 data-part，那才是被样式作用的那个
       const part = [...selector.matchAll(/\[data-part='([a-z0-9-]+)'\]/g)].map(m => m[1]).at(-1)
       const isElevated = MATERIAL_ELEVATED.test(value)
-      if (isElevated && (comp !== 'dialog' || part !== 'content')) {
-        problems.push(`${file}  ${selector.slice(0, 60)}  M4 Elevated sheet 尚未登记给 ${comp} 的 ${part ?? '未知部件'}`)
+      if (isElevated && !ELEVATED_CONSUMERS.has(`${comp}/${part}`)) {
+        problems.push(`${file}  ${selector.slice(0, 60)}  M4 Elevated sheet 尚未登记给 ${comp} 的 ${part ?? '未知部件'}——迁到三件套后补进 ELEVATED_CONSUMERS`)
         continue
       }
       const role = MATERIAL_SOFT.test(value)

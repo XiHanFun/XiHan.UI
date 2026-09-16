@@ -2,14 +2,14 @@
 
 exports[`family-backlog 条目数 > 七段各一数，与快照一致 1`] = `
 {
-  "edge": 43,
-  "ladder": 86,
+  "edge": 42,
+  "ladder": 82,
   "motion": 1,
   "press": 66,
   "scroll": 28,
   "selection": 19,
   "shape": 25,
-  "text": 91,
+  "text": 87,
 }
 `;
 
@@ -50,7 +50,6 @@ exports[`family-backlog 键集合 > edge 1`] = `
   "switch:thumb:raised",
   "tabs:root:raised",
   "timer:control:raised",
-  "toast:root",
   "tool-call:root",
   "tool-call:root:raised",
   "tool-call:root:subtle",
@@ -138,10 +137,6 @@ exports[`family-backlog 键集合 > ladder 1`] = `
   "timer:control:focus",
   "timer:control:hover",
   "timer:control:pressed",
-  "toast:action-trigger:hover",
-  "toast:action-trigger:pressed",
-  "toast:close-trigger:hover",
-  "toast:close-trigger:pressed",
   "tool-call:trigger:hover",
   "toolbar:item:hover",
   "toolbar:item:pressed",
@@ -398,10 +393,6 @@ exports[`family-backlog 键集合 > text 1`] = `
   "timeline:description:font-size",
   "timeline:title:font-size",
   "timeline:title:font-weight",
-  "toast:description:font-size",
-  "toast:description:line-height",
-  "toast:root:icon-size",
-  "toast:title:font-weight",
   "tool-call:root:icon-size",
   "tour:content:icon-size",
   "tour:description:font-size",

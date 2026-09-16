@@ -109,8 +109,15 @@ export function connectToast<T extends PropTypes>(
     // 进入退场后机器不再接这两个事件，按钮点了也不会有第二次退场
     getActionTriggerProps: () => normalize.button({
       ...parts['action-trigger'].attrs,
-      type: 'button',
-      onClick: () => send({ type: 'TOAST.ACTION' }),
+      'type': 'button',
+      // 带文案的离散动作钮：盒、悬停 / 按下与按压、焦点环由 Action Control 家族按这几位给。
+      // 非 Button 的触发器缺省中性描边，取 text outline 档；Toast 没有 size 轴，固定 sm
+      'data-xh-action-control': '',
+      'data-xh-action-profile': 'text',
+      'data-xh-action-variant': 'outline',
+      'data-xh-action-display': 'always',
+      'data-xh-action-size': 'sm',
+      'onClick': () => send({ type: 'TOAST.ACTION' }),
     }),
 
     // 倒计时条：时长交给皮肤的时长槽，走一遍就到头，按住计时时由皮肤停住动画。
@@ -127,7 +134,16 @@ export function connectToast<T extends PropTypes>(
       ...parts['close-trigger'].attrs,
       'type': 'button',
       'aria-label': prop('translations')?.close ?? 'Close',
-      // 单体控件用原生 disabled：不可聚焦、也不占 Tab 位
+      // 只有字形的离散动作钮：盒、悬停 / 按下与按压、粗指针热区、焦点环、禁用面由 Action Control 家族按这几位给。
+      // 取 icon ghost 档；那颗叉排在单行短消息里，走行级动作钮的 xs（24px）。
+      // 显隐不走家族的 hover-focus（那一档用 visibility 收起，这颗叉占 Tab 位，收起后键盘够不到），
+      // 由皮肤按 root 的悬停 / 焦点只压 opacity
+      'data-xh-action-control': '',
+      'data-xh-action-profile': 'icon',
+      'data-xh-action-variant': 'ghost',
+      'data-xh-action-display': 'always',
+      'data-xh-action-size': 'xs',
+      // 单体控件用原生 disabled：不可聚焦、也不占 Tab 位；家族按 data-disabled 给禁用面
       'disabled': !closable || undefined,
       'data-disabled': dataAttr(!closable),
       // 不可关闭时连按钮一起收起，不留一个按不动的叉
