@@ -79,6 +79,12 @@
     inset-inline-end: var(--xh-_scrollbar-thickness);
   }
 
+  /* 贴在滚动层上的根：位置由连接层按层在壳内的偏移盒写成内联几何（含让位），
+     壳边的 inset 全部放开，交叉轴的厚度仍由上面的方向规则给 */
+  [data-scope='scrollbar'][data-part='root'][data-anchor='layer'] {
+    inset: auto;
+  }
+
   [data-scope='scrollbar'][data-part='root'][data-state='hidden'] {
     visibility: hidden;
     opacity: 0;

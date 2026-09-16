@@ -637,3 +637,73 @@ describe('容器上的标记', () => {
     expect(el.getAttribute('data-xh-scrollbar')).toBeNull()
   })
 })
+
+describe('贴在滚动层上', () => {
+  /** jsdom 不做布局，offset* 恒是 0：把层在壳内的偏移盒桩上。 */
+  function stubOffset(el: HTMLElement, box: { left: number, top: number, width: number, height: number }): void {
+    Object.defineProperties(el, {
+      offsetLeft: { configurable: true, get: () => box.left },
+      offsetTop: { configurable: true, get: () => box.top },
+      offsetWidth: { configurable: true, get: () => box.width },
+      offsetHeight: { configurable: true, get: () => box.height },
+    })
+  }
+
+  it('壳锚定（缺省）不写 data-anchor 也不写内联几何', async () => {
+    const r = rig({ type: 'always' })
+    await settle()
+    const root = r.api().getRootProps() as Dict
+    expect(root['data-anchor']).toBeUndefined()
+    expect(root.style).toBeUndefined()
+  })
+
+  it('layer 锚定：竖条贴层的行内末端、横条贴层的块末端，让位时主轴减一个厚度', async () => {
+    const r = rig({ type: 'always', anchor: 'layer' })
+    stubOffset(r.scrollable, { left: 120, top: 8, width: 160, height: 240 })
+    r.api().measure()
+    await settle()
+    expect(r.service.context.get('layerBox')).toEqual({ x: 120, y: 8, width: 160, height: 240 })
+    const root = r.api().getRootProps() as Dict
+    expect(root['data-anchor']).toBe('layer')
+    expect(root.style).toEqual({
+      top: '8px',
+      height: '240px',
+      left: 'calc(280px - var(--xh-_scrollbar-thickness))',
+    })
+
+    r.setProps({ gutter: true })
+    expect((r.api().getRootProps() as Dict).style).toEqual({
+      top: '8px',
+      height: 'calc(240px - var(--xh-_scrollbar-thickness))',
+      left: 'calc(280px - var(--xh-_scrollbar-thickness))',
+    })
+
+    const h = rig({ type: 'always', anchor: 'layer', orientation: 'horizontal' })
+    stubOffset(h.scrollable, { left: 120, top: 8, width: 160, height: 240 })
+    h.api().measure()
+    await settle()
+    expect((h.api().getRootProps() as Dict).style).toEqual({
+      top: 'calc(248px - var(--xh-_scrollbar-thickness))',
+      left: '120px',
+      width: '160px',
+    })
+  })
+
+  it('从右到左排版：竖条贴层的左缘，横条让位时从左侧空出一个厚度', async () => {
+    const r = rig({ type: 'always', anchor: 'layer', dir: 'rtl' })
+    stubOffset(r.scrollable, { left: 120, top: 8, width: 160, height: 240 })
+    r.api().measure()
+    await settle()
+    expect((r.api().getRootProps() as Dict).style).toEqual({ top: '8px', height: '240px', left: '120px' })
+
+    const h = rig({ type: 'always', anchor: 'layer', orientation: 'horizontal', dir: 'rtl', gutter: true })
+    stubOffset(h.scrollable, { left: 120, top: 8, width: 160, height: 240 })
+    h.api().measure()
+    await settle()
+    expect((h.api().getRootProps() as Dict).style).toEqual({
+      top: 'calc(248px - var(--xh-_scrollbar-thickness))',
+      left: 'calc(120px + var(--xh-_scrollbar-thickness))',
+      width: 'calc(160px - var(--xh-_scrollbar-thickness))',
+    })
+  })
+})

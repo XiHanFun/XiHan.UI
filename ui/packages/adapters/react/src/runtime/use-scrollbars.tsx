@@ -6,7 +6,7 @@
 // 提供 use scrollbars 相关实现。
 
 import type { Orientation, Scope, Service } from '@xihan-ui/core'
-import type { ScrollbarSchema } from '@xihan-ui/headless'
+import type { ScrollbarAnchor, ScrollbarSchema } from '@xihan-ui/headless'
 import type { ReactNode } from 'react'
 import { connectScrollbar, isOverflowing, SCROLLBAR_DEFAULT_TYPE, scrollbarMachine } from '@xihan-ui/headless'
 import { useRef } from 'react'
@@ -18,10 +18,12 @@ import { useMachine } from './use-machine'
 //
 // 条子是滚动层的兄弟，挂在组件既有的壳上（浮层族是 positioner，其余是 root）：
 // 壳是定位盒，条子绝对定位贴它的内边距盒，不占布局、不进滚动层内部、不搬去别处。
+// 多个滚动层并排共用一个壳（级联的列、时间列）时取 anchor: 'layer'：每层各自调一次本 hook，
+// 条子紧跟在该层后面渲染、按层在壳内的偏移盒定位。
 // 宿主只交「谁在滚」与「摆哪几条轴」，节点形状与机器接线都在这里，宿主那侧只有一行 render。
 
 /** 交给滚动条的 props。轴由 axes 决定、让位按实测溢出计算，两者都不从外部接收。 */
-export type ScrollbarsProps = Omit<ScrollbarSchema['props'], 'orientation' | 'gutter'>
+export type ScrollbarsProps = Omit<ScrollbarSchema['props'], 'orientation' | 'gutter' | 'anchor'>
 
 export interface ScrollbarsOptions {
   /**
@@ -31,6 +33,11 @@ export interface ScrollbarsOptions {
   scrollable: () => HTMLElement | null
   /** 排布哪几条轴，默认只排竖向。首帧确定之后不再变化。 */
   axes?: readonly Orientation[]
+  /**
+   * 条子贴在壳边（shell，默认）还是贴在滚动层自己的盒子上（layer）。
+   * layer 要求壳是滚动层的定位祖先，条子渲染在该层之后、仍是壳的子节点；首帧确定之后不再变化。
+   */
+  anchor?: ScrollbarAnchor
   /** 显示时机、尺寸档、方向等，逐帧现读。 */
   props?: () => ScrollbarsProps
 }
@@ -48,6 +55,7 @@ const DEFAULT_AXES: readonly Orientation[] = ['vertical']
 interface BarRegistry {
   scope: Scope
   axes: readonly Orientation[]
+  anchor: ScrollbarAnchor | undefined
   scrollable: () => HTMLElement | null
   props: () => ScrollbarsProps
   add: (axis: Orientation, service: Service<ScrollbarSchema>) => void
@@ -75,6 +83,7 @@ function createRegistry(scope: Scope, options: () => ScrollbarsOptions): BarRegi
   return {
     scope,
     axes,
+    anchor: options().anchor,
     scrollable: () => options().scrollable(),
     props: () => options().props?.() ?? {},
     add: (axis, service) => services.set(axis, service),
@@ -93,6 +102,7 @@ function ScrollbarBar({ axis, registry }: { axis: Orientation, registry: BarRegi
   const service = useMachine(scrollbarMachine, () => ({
     ...registry.props(),
     orientation: axis,
+    anchor: registry.anchor,
     gutter: registry.both(),
   }), {
     scope: registry.scope,

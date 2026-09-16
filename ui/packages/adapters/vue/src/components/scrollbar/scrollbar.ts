@@ -6,7 +6,7 @@
 // 提供 scrollbar 相关实现。
 
 import type { Direction, Orientation, Size } from '@xihan-ui/core'
-import type { ScrollbarApi, ScrollbarSchema, ScrollbarType } from '@xihan-ui/headless'
+import type { ScrollbarAnchor, ScrollbarApi, ScrollbarSchema, ScrollbarType } from '@xihan-ui/headless'
 import type { PropType, SlotsType, VNode } from 'vue'
 import type { PayloadOf } from '../../runtime/payload'
 import type { ScrollbarSource, ScrollbarTarget } from './use-scrollbar'
@@ -42,6 +42,8 @@ export const XhScrollbarRoot = defineComponent({
     minThumbSize: { type: Number },
     step: { type: Number },
     size: { type: String as PropType<Size> },
+    /** 根节点贴在壳边（shell，默认）还是贴在滚动层自己的盒子上（layer）；layer 要求壳是滚动层的定位祖先。 */
+    anchor: { type: String as PropType<ScrollbarAnchor> },
     disabled: Boolean,
     /** 滑块进入 Tab 序列并报告 role=scrollbar；默认不进入，滚动仍归滚动容器自身。 */
     focusable: Boolean,

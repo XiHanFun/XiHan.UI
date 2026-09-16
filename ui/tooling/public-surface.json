@@ -6109,8 +6109,10 @@
       "ScrollAxisGeometry",
       "ScrollAxisMetrics",
       "ScrollRect",
+      "ScrollbarAnchor",
       "ScrollbarApi",
       "ScrollbarDragSession",
+      "ScrollbarLayerBox",
       "ScrollbarPoint",
       "ScrollbarRefs",
       "ScrollbarSchema",
@@ -10785,6 +10787,7 @@
       "variant"
     ],
     "scrollbar": [
+      "anchor",
       "controls",
       "dir",
       "disabled",
@@ -11434,6 +11437,7 @@
     "data-action",
     "data-activation-mode",
     "data-align",
+    "data-anchor",
     "data-animation",
     "data-at-bottom",
     "data-at-max",
@@ -17675,6 +17679,7 @@
     },
     "xh-scrollbar": {
       "attributes": [
+        "anchor",
         "controls",
         "dir",
         "disabled",

@@ -6,7 +6,7 @@
 // 提供 scrollbar 相关实现。
 
 import type { Direction, Orientation, Service, Size } from '@xihan-ui/core'
-import type { ScrollbarSchema, ScrollbarType } from '@xihan-ui/headless'
+import type { ScrollbarAnchor, ScrollbarSchema, ScrollbarType } from '@xihan-ui/headless'
 import { connectScrollbar, scrollbarAnatomy, scrollbarMachine, scrollbarMeta } from '@xihan-ui/headless'
 import { wcNormalize } from '../dom/normalize'
 import { XhElement } from '../element-base'
@@ -41,6 +41,7 @@ const BOOLEAN_CONVERTER = { fromAttribute: (v: string | null) => (v === null ? u
  * @attr {number} min-thumb-size - 滑块的最小像素长度，默认 20
  * @attr {number} step - 方向键一步滚动的像素数，默认 40
  * @attr {'sm'|'md'|'lg'} size - 尺寸档，影响滚动条厚度
+ * @attr {'shell'|'layer'} anchor - 根节点贴在壳边（shell，默认）还是贴在滚动层自己的盒子上（layer）；layer 要求壳是滚动层的定位祖先，位置由连接层写成内联几何
  * @attr {boolean} disabled - 不接受指针也不接受键盘，恒不显示
  * @attr {boolean} focusable - 滑块进入 Tab 序列并报告 role=scrollbar，默认关闭
  * @attr {boolean} gutter - 横竖两条同时存在时在末端让出交叉口的一格，交叉口由 corner 部件补上
@@ -51,7 +52,7 @@ const BOOLEAN_CONVERTER = { fromAttribute: (v: string | null) => (v === null ? u
  * @fires scroll-end - 一段滚动结束（停止 120ms）；detail 同上
  * @fires drag-start - 按住滑块；detail 同上
  * @fires drag-end - 松开滑块；detail 同上
- * @csspart root - 定位盒与指针热区，承载 data-orientation / data-reveal-mode / data-state / data-scrolling / data-dragging / data-size / data-gutter / data-native；收起时经 data-state=hidden 由皮肤淡出
+ * @csspart root - 定位盒与指针热区，承载 data-orientation / data-reveal-mode / data-state / data-scrolling / data-dragging / data-size / data-gutter / data-native / data-anchor；收起时经 data-state=hidden 由皮肤淡出
  * @csspart track - 测量长度的轨道，点击空白处把滑块中心移过去
  * @csspart thumb - 滑块，位置与长度由内联逻辑属性给出；按住可拖动，focusable 时可聚焦并响应方向键
  * @csspart corner - 交叉口补丁（可选），写在根中、位于本条末端之外的一格，随本条显隐
@@ -69,6 +70,7 @@ export class XhScrollbarElement extends XhElement {
     minThumbSize: { converter: NUMBER_CONVERTER, attribute: 'min-thumb-size' },
     step: { converter: NUMBER_CONVERTER },
     size: { converter: STRING_CONVERTER },
+    anchor: { converter: STRING_CONVERTER },
     disabled: { converter: BOOLEAN_CONVERTER },
     focusable: { converter: BOOLEAN_CONVERTER },
     gutter: { converter: BOOLEAN_CONVERTER },
@@ -86,6 +88,7 @@ export class XhScrollbarElement extends XhElement {
   declare minThumbSize?: number
   declare step?: number
   declare size?: Size
+  declare anchor?: ScrollbarAnchor
   declare disabled?: boolean
   declare focusable?: boolean
   declare gutter?: boolean
@@ -110,6 +113,7 @@ export class XhScrollbarElement extends XhElement {
       minThumbSize: this.minThumbSize,
       step: this.step,
       size: this.size,
+      anchor: this.anchor,
       disabled: this.disabled ?? false,
       focusable: this.focusable ?? false,
       gutter: this.gutter ?? false,

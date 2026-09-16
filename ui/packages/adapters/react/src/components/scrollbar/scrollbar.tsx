@@ -6,7 +6,7 @@
 // 提供 scrollbar 相关实现。
 
 import type { Direction, Orientation, Size } from '@xihan-ui/core'
-import type { ScrollbarApi, ScrollbarSchema, ScrollbarType } from '@xihan-ui/headless'
+import type { ScrollbarAnchor, ScrollbarApi, ScrollbarSchema, ScrollbarType } from '@xihan-ui/headless'
 import type { ComponentPropsWithRef, ReactNode } from 'react'
 import type { SlotChildren } from '../../runtime/slot-content'
 import type { ScrollbarSource, ScrollbarTarget } from './use-scrollbar'
@@ -38,6 +38,8 @@ export interface XhScrollbarRootProps extends Omit<ComponentPropsWithRef<'div'>,
   minThumbSize?: number
   step?: number
   size?: Size
+  /** 根节点贴在壳边（shell，默认）还是贴在滚动层自己的盒子上（layer）；layer 要求壳是滚动层的定位祖先。 */
+  anchor?: ScrollbarAnchor
   disabled?: boolean
   /** 滑块进入 Tab 序列并报告 role=scrollbar；默认不进入，滚动仍归滚动容器自身。 */
   focusable?: boolean
@@ -64,6 +66,7 @@ export function XhScrollbarRoot({
   minThumbSize,
   step,
   size,
+  anchor,
   disabled,
   focusable,
   gutter,
@@ -86,6 +89,7 @@ export function XhScrollbarRoot({
     minThumbSize,
     step,
     size,
+    anchor,
     disabled,
     focusable,
     gutter,
