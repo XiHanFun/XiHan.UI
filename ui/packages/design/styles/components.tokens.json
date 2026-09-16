@@ -59019,16 +59019,16 @@
         "clear-trigger"
       ],
       "property": [
-        "background"
+        "background-color"
       ],
       "state": [
         "default"
       ],
       "defaultToken": [
-        "transparent"
+        "--xh-_action-variant-bg-rest"
       ],
       "visibility": "public",
-      "description": "time-field 的 clear-trigger 部件 background 覆盖槽。"
+      "description": "time-field 的 clear-trigger 部件 background-color 覆盖槽。"
     },
     {
       "name": "--xh-time-field-action-bg-active",
@@ -59037,16 +59037,21 @@
         "clear-trigger"
       ],
       "property": [
-        "background"
+        "background-color"
       ],
       "state": [
-        "active"
+        "disabled",
+        "is(:active, [data-pressed])",
+        "loading",
+        "not([data-disabled])",
+        "not([data-loading])",
+        "pressed"
       ],
       "defaultToken": [
-        "--xh-bg-subtle-active"
+        "--xh-_action-variant-bg-pressed"
       ],
       "visibility": "public",
-      "description": "time-field 的 clear-trigger 部件 background 覆盖槽。"
+      "description": "time-field 的 clear-trigger 部件 background-color 覆盖槽。"
     },
     {
       "name": "--xh-time-field-action-bg-hover",
@@ -59055,16 +59060,20 @@
         "clear-trigger"
       ],
       "property": [
-        "background"
+        "background-color"
       ],
       "state": [
-        "hover"
+        "disabled",
+        "hover",
+        "loading",
+        "not([data-disabled])",
+        "not([data-loading])"
       ],
       "defaultToken": [
-        "--xh-bg-subtle-hover"
+        "--xh-_action-variant-bg-hover"
       ],
       "visibility": "public",
-      "description": "time-field 的 clear-trigger 部件 background 覆盖槽。"
+      "description": "time-field 的 clear-trigger 部件 background-color 覆盖槽。"
     },
     {
       "name": "--xh-time-field-action-fg",
@@ -59094,7 +59103,11 @@
         "color"
       ],
       "state": [
-        "hover"
+        "disabled",
+        "hover",
+        "loading",
+        "not([data-disabled])",
+        "not([data-loading])"
       ],
       "defaultToken": [
         "--xh-fg-default"
@@ -59133,7 +59146,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-shape-control"
+        "--xh-shape-inset"
       ],
       "visibility": "public",
       "description": "time-field 的 clear-trigger 部件 border-radius 覆盖槽。"
@@ -59146,16 +59159,18 @@
       ],
       "property": [
         "block-size",
-        "inline-size"
+        "inline-size",
+        "min-inline-size"
       ],
       "state": [
-        "default"
+        "default",
+        "xh-action-profile=field-inset"
       ],
       "defaultToken": [
-        "--xh-control-action-size"
+        "--xh-_action-profile-visual-size"
       ],
       "visibility": "public",
-      "description": "time-field 的 clear-trigger 部件 block-size、inline-size 覆盖槽。"
+      "description": "time-field 的 clear-trigger 部件 block-size、inline-size、min-inline-size 覆盖槽。"
     },
     {
       "name": "--xh-time-field-control-bg",
@@ -59164,16 +59179,16 @@
         "control"
       ],
       "property": [
-        "background"
+        "background-color"
       ],
       "state": [
-        "default"
+        "xh-field-chrome"
       ],
       "defaultToken": [
-        "--xh-_time-field-control-bg"
+        "--xh-_field-variant-bg-rest"
       ],
       "visibility": "public",
-      "description": "time-field 的 control 部件 background 覆盖槽。"
+      "description": "time-field 的 control 部件 background-color 覆盖槽。"
     },
     {
       "name": "--xh-time-field-control-bg-disabled",
@@ -59182,16 +59197,17 @@
         "control"
       ],
       "property": [
-        "background"
+        "background-color"
       ],
       "state": [
-        "disabled"
+        "disabled",
+        "xh-field-chrome"
       ],
       "defaultToken": [
-        "--xh-bg-subtle"
+        "--xh-_field-variant-bg-disabled"
       ],
       "visibility": "public",
-      "description": "time-field 的 control 部件 background 覆盖槽。"
+      "description": "time-field 的 control 部件 background-color 覆盖槽。"
     },
     {
       "name": "--xh-time-field-control-bg-hover",
@@ -59200,19 +59216,25 @@
         "control"
       ],
       "property": [
-        "background"
+        "background-color"
       ],
       "state": [
         "disabled",
         "hover",
-        "not([data-disabled], [data-readonly])",
-        "readonly"
+        "invalid",
+        "loading",
+        "not([data-disabled])",
+        "not([data-invalid])",
+        "not([data-loading])",
+        "not([data-readonly])",
+        "readonly",
+        "xh-field-chrome"
       ],
       "defaultToken": [
-        "--xh-_time-field-control-bg-hover"
+        "--xh-_field-variant-bg-hover"
       ],
       "visibility": "public",
-      "description": "time-field 的 control 部件 background 覆盖槽。"
+      "description": "time-field 的 control 部件 background-color 覆盖槽。"
     },
     {
       "name": "--xh-time-field-control-bg-readonly",
@@ -59221,16 +59243,17 @@
         "control"
       ],
       "property": [
-        "background"
+        "background-color"
       ],
       "state": [
-        "readonly"
+        "readonly",
+        "xh-field-chrome"
       ],
       "defaultToken": [
-        "--xh-bg-subtle"
+        "--xh-_field-variant-bg-read-only"
       ],
       "visibility": "public",
-      "description": "time-field 的 control 部件 background 覆盖槽。"
+      "description": "time-field 的 control 部件 background-color 覆盖槽。"
     },
     {
       "name": "--xh-time-field-control-border",
@@ -59242,10 +59265,10 @@
         "border"
       ],
       "state": [
-        "default"
+        "xh-field-chrome"
       ],
       "defaultToken": [
-        "--xh-_time-field-control-border"
+        "--xh-_field-variant-border-rest"
       ],
       "visibility": "public",
       "description": "time-field 的 control 部件 border 覆盖槽。"
@@ -59262,10 +59285,11 @@
       "state": [
         "disabled",
         "focus-within",
-        "not([data-disabled])"
+        "not([data-disabled])",
+        "xh-field-chrome"
       ],
       "defaultToken": [
-        "--xh-_tone"
+        "--xh-_field-variant-border-focus"
       ],
       "visibility": "public",
       "description": "time-field 的 control 部件 border-color 覆盖槽。"
@@ -59283,10 +59307,16 @@
         "disabled",
         "hover",
         "invalid",
-        "not([data-disabled], [data-invalid])"
+        "loading",
+        "not([data-disabled])",
+        "not([data-invalid])",
+        "not([data-loading])",
+        "not([data-readonly])",
+        "readonly",
+        "xh-field-chrome"
       ],
       "defaultToken": [
-        "--xh-_time-field-control-border-hover"
+        "--xh-_field-variant-border-hover"
       ],
       "visibility": "public",
       "description": "time-field 的 control 部件 border-color 覆盖槽。"
@@ -59301,10 +59331,11 @@
         "border-color"
       ],
       "state": [
-        "invalid"
+        "invalid",
+        "xh-field-chrome"
       ],
       "defaultToken": [
-        "--xh-border-invalid"
+        "--xh-_field-variant-border-invalid"
       ],
       "visibility": "public",
       "description": "time-field 的 control 部件 border-color 覆盖槽。"
@@ -59319,7 +59350,7 @@
         "color"
       ],
       "state": [
-        "default"
+        "xh-field-chrome"
       ],
       "defaultToken": [
         "--xh-fg-default"
@@ -59337,7 +59368,7 @@
         "gap"
       ],
       "state": [
-        "default"
+        "xh-field-chrome"
       ],
       "defaultToken": [
         "--xh-_time-field-gap"
@@ -59352,16 +59383,24 @@
         "control"
       ],
       "property": [
-        "block-size"
+        "block-size",
+        "min-block-size"
       ],
       "state": [
-        "default"
+        "has([data-xh-field-input][data-xh-field-layout='multi-tag'])",
+        "has([data-xh-field-input][data-xh-field-layout='single-line'])",
+        "has([data-xh-field-input][data-xh-field-layout='textarea'])",
+        "xh-field-chrome",
+        "xh-field-input",
+        "xh-field-layout=multi-tag",
+        "xh-field-layout=single-line",
+        "xh-field-layout=textarea"
       ],
       "defaultToken": [
         "--xh-_time-field-control-h"
       ],
       "visibility": "public",
-      "description": "time-field 的 control 部件 block-size 覆盖槽。"
+      "description": "time-field 的 control 部件 block-size、min-block-size 覆盖槽。"
     },
     {
       "name": "--xh-time-field-control-min-w",
@@ -59374,7 +59413,8 @@
         "min-inline-size"
       ],
       "state": [
-        "default"
+        "default",
+        "xh-field-chrome"
       ],
       "defaultToken": [
         "--xh-control-min-w"
@@ -59392,7 +59432,7 @@
         "padding-inline"
       ],
       "state": [
-        "default"
+        "xh-field-chrome"
       ],
       "defaultToken": [
         "--xh-_time-field-control-px"
@@ -59410,7 +59450,7 @@
         "border-radius"
       ],
       "state": [
-        "default"
+        "xh-field-chrome"
       ],
       "defaultToken": [
         "--xh-shape-control"
@@ -59428,10 +59468,10 @@
         "box-shadow"
       ],
       "state": [
-        "default"
+        "xh-field-chrome"
       ],
       "defaultToken": [
-        "--xh-_time-field-control-shadow"
+        "none"
       ],
       "visibility": "public",
       "description": "time-field 的 control 部件 box-shadow 覆盖槽。"
@@ -59476,6 +59516,7 @@
       "name": "--xh-time-field-icon-size",
       "component": "time-field",
       "part": [
+        "control",
         "root"
       ],
       "property": [
@@ -59484,15 +59525,17 @@
       "state": [
         "default",
         "size=lg",
-        "size=sm"
+        "size=sm",
+        "xh-field-chrome"
       ],
       "defaultToken": [
+        "--xh-_field-size-glyph-size",
         "--xh-glyph-size-lg",
         "--xh-glyph-size-md",
         "--xh-glyph-size-sm"
       ],
       "visibility": "public",
-      "description": "time-field 的 root 部件 --xh-icon-size 覆盖槽。"
+      "description": "time-field 的 control、root 部件 --xh-icon-size 覆盖槽。"
     },
     {
       "name": "--xh-time-field-label-fg",
@@ -59543,7 +59586,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-_time-field-label-font-size"
+        "--xh-text-label-size"
       ],
       "visibility": "public",
       "description": "time-field 的 label 部件 font-size 覆盖槽。"
@@ -59639,7 +59682,7 @@
         "not([data-focus], [data-disabled])"
       ],
       "defaultToken": [
-        "--xh-bg-subtle-hover"
+        "--xh-bg-subtle"
       ],
       "visibility": "public",
       "description": "time-field 的 segment 部件 background 覆盖槽。"
