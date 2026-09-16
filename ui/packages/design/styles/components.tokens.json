@@ -46173,16 +46173,20 @@
         "submit-trigger"
       ],
       "property": [
-        "block-size"
+        "block-size",
+        "inline-size",
+        "min-block-size"
       ],
       "state": [
-        "default"
+        "default",
+        "xh-action-profile=icon",
+        "xh-action-profile=row"
       ],
       "defaultToken": [
         "--xh-_question-flow-h"
       ],
       "visibility": "public",
-      "description": "question-flow 的 skip-trigger、submit-trigger 部件 block-size 覆盖槽。"
+      "description": "question-flow 的 skip-trigger、submit-trigger 部件 block-size、inline-size、min-block-size 覆盖槽。"
     },
     {
       "name": "--xh-question-flow-action-px",
@@ -46232,10 +46236,12 @@
         "background"
       ],
       "state": [
-        "default"
+        "default",
+        "variant=subtle"
       ],
       "defaultToken": [
-        "--xh-_question-flow-bg"
+        "--xh-_tone-subtle",
+        "--xh-bg-surface"
       ],
       "visibility": "public",
       "description": "question-flow 的 root 部件 background 覆盖槽。"
@@ -46253,7 +46259,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-_question-flow-border"
+        "--xh-border-default"
       ],
       "visibility": "public",
       "description": "question-flow 的 root 部件 border 覆盖槽。"
@@ -46513,7 +46519,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-glyph-size-text"
+        "--xh-_question-flow-indicator-glyph"
       ],
       "visibility": "public",
       "description": "question-flow 的 item-indicator 部件 --xh-icon-size 覆盖槽。"
@@ -46549,7 +46555,7 @@
         "select-mode=single"
       ],
       "defaultToken": [
-        "--xh-shape-pill"
+        "--xh-shape-circle"
       ],
       "visibility": "public",
       "description": "question-flow 的 item-indicator 部件 border-radius 覆盖槽。"
@@ -46561,6 +46567,7 @@
         "item-indicator"
       ],
       "property": [
+        "--xh-icon-size",
         "block-size",
         "inline-size"
       ],
@@ -46573,7 +46580,7 @@
         "--xh-_question-flow-indicator"
       ],
       "visibility": "public",
-      "description": "question-flow 的 item-indicator 部件 block-size、inline-size 覆盖槽。"
+      "description": "question-flow 的 item-indicator 部件 --xh-icon-size、block-size、inline-size 覆盖槽。"
     },
     {
       "name": "--xh-question-flow-item-bg",
@@ -46582,16 +46589,16 @@
         "item"
       ],
       "property": [
-        "background"
+        "background-color"
       ],
       "state": [
         "default"
       ],
       "defaultToken": [
-        "transparent"
+        "--xh-_action-variant-bg-rest"
       ],
       "visibility": "public",
-      "description": "question-flow 的 item 部件 background 覆盖槽。"
+      "description": "question-flow 的 item 部件 background-color 覆盖槽。"
     },
     {
       "name": "--xh-question-flow-item-bg-hover",
@@ -46600,16 +46607,20 @@
         "item"
       ],
       "property": [
-        "background"
+        "background-color"
       ],
       "state": [
-        "hover"
+        "disabled",
+        "hover",
+        "loading",
+        "not([data-disabled])",
+        "not([data-loading])"
       ],
       "defaultToken": [
-        "--xh-bg-subtle-hover"
+        "--xh-_action-variant-bg-hover"
       ],
       "visibility": "public",
-      "description": "question-flow 的 item 部件 background 覆盖槽。"
+      "description": "question-flow 的 item 部件 background-color 覆盖槽。"
     },
     {
       "name": "--xh-question-flow-item-fg",
@@ -46621,7 +46632,14 @@
         "color"
       ],
       "state": [
-        "default"
+        "default",
+        "disabled",
+        "hover",
+        "is(:active, [data-pressed])",
+        "loading",
+        "not([data-disabled])",
+        "not([data-loading])",
+        "pressed"
       ],
       "defaultToken": [
         "--xh-fg-muted"
@@ -46639,6 +46657,13 @@
         "color"
       ],
       "state": [
+        "disabled",
+        "hover",
+        "is(:active, [data-pressed])",
+        "loading",
+        "not([data-disabled])",
+        "not([data-loading])",
+        "pressed",
         "state=checked"
       ],
       "defaultToken": [
@@ -46711,7 +46736,7 @@
         "padding-block"
       ],
       "state": [
-        "default"
+        "xh-action-profile=row"
       ],
       "defaultToken": [
         "--xh-space-1"
@@ -46732,7 +46757,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-shape-control"
+        "--xh-_action-profile-radius"
       ],
       "visibility": "public",
       "description": "question-flow 的 item 部件 border-radius 覆盖槽。"
@@ -46948,7 +46973,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-text-label-weight"
+        "--xh-font-weight-semibold"
       ],
       "visibility": "public",
       "description": "question-flow 的 prompt 部件 font-weight 覆盖槽。"
@@ -47146,7 +47171,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-elevation-raised"
+        "none"
       ],
       "visibility": "public",
       "description": "question-flow 的 root 部件 box-shadow 覆盖槽。"
@@ -47158,16 +47183,16 @@
         "skip-trigger"
       ],
       "property": [
-        "background"
+        "background-color"
       ],
       "state": [
         "default"
       ],
       "defaultToken": [
-        "transparent"
+        "--xh-_action-variant-bg-rest"
       ],
       "visibility": "public",
-      "description": "question-flow 的 skip-trigger 部件 background 覆盖槽。"
+      "description": "question-flow 的 skip-trigger 部件 background-color 覆盖槽。"
     },
     {
       "name": "--xh-question-flow-skip-bg-hover",
@@ -47176,17 +47201,20 @@
         "skip-trigger"
       ],
       "property": [
-        "background"
+        "background-color"
       ],
       "state": [
+        "disabled",
         "hover",
-        "not(:disabled)"
+        "loading",
+        "not([data-disabled])",
+        "not([data-loading])"
       ],
       "defaultToken": [
-        "--xh-bg-subtle-hover"
+        "--xh-_action-variant-bg-hover"
       ],
       "visibility": "public",
-      "description": "question-flow 的 skip-trigger 部件 background 覆盖槽。"
+      "description": "question-flow 的 skip-trigger 部件 background-color 覆盖槽。"
     },
     {
       "name": "--xh-question-flow-skip-fg",
@@ -47216,8 +47244,13 @@
         "color"
       ],
       "state": [
+        "disabled",
         "hover",
-        "not(:disabled)"
+        "is(:active, [data-pressed])",
+        "loading",
+        "not([data-disabled])",
+        "not([data-loading])",
+        "pressed"
       ],
       "defaultToken": [
         "--xh-fg-default"
@@ -47233,16 +47266,16 @@
         "prev-trigger"
       ],
       "property": [
-        "background"
+        "background-color"
       ],
       "state": [
         "default"
       ],
       "defaultToken": [
-        "transparent"
+        "--xh-_action-variant-bg-rest"
       ],
       "visibility": "public",
-      "description": "question-flow 的 next-trigger、prev-trigger 部件 background 覆盖槽。"
+      "description": "question-flow 的 next-trigger、prev-trigger 部件 background-color 覆盖槽。"
     },
     {
       "name": "--xh-question-flow-step-bg-hover",
@@ -47252,17 +47285,20 @@
         "prev-trigger"
       ],
       "property": [
-        "background"
+        "background-color"
       ],
       "state": [
+        "disabled",
         "hover",
-        "not(:disabled)"
+        "loading",
+        "not([data-disabled])",
+        "not([data-loading])"
       ],
       "defaultToken": [
-        "--xh-bg-subtle-hover"
+        "--xh-_action-variant-bg-hover"
       ],
       "visibility": "public",
-      "description": "question-flow 的 next-trigger、prev-trigger 部件 background 覆盖槽。"
+      "description": "question-flow 的 next-trigger、prev-trigger 部件 background-color 覆盖槽。"
     },
     {
       "name": "--xh-question-flow-step-fg",
@@ -47294,8 +47330,13 @@
         "color"
       ],
       "state": [
+        "disabled",
         "hover",
-        "not(:disabled)"
+        "is(:active, [data-pressed])",
+        "loading",
+        "not([data-disabled])",
+        "not([data-loading])",
+        "pressed"
       ],
       "defaultToken": [
         "--xh-fg-default"
@@ -47311,16 +47352,16 @@
         "prev-trigger"
       ],
       "property": [
-        "padding"
+        "padding-inline"
       ],
       "state": [
         "default"
       ],
       "defaultToken": [
-        "--xh-space-0"
+        "--xh-_action-profile-padding-inline"
       ],
       "visibility": "public",
-      "description": "question-flow 的 next-trigger、prev-trigger 部件 padding 覆盖槽。"
+      "description": "question-flow 的 next-trigger、prev-trigger 部件 padding-inline 覆盖槽。"
     },
     {
       "name": "--xh-question-flow-step-radius",
@@ -47350,16 +47391,19 @@
       ],
       "property": [
         "block-size",
-        "inline-size"
+        "inline-size",
+        "min-block-size"
       ],
       "state": [
-        "default"
+        "default",
+        "xh-action-profile=icon",
+        "xh-action-profile=row"
       ],
       "defaultToken": [
-        "--xh-control-action-size"
+        "--xh-_action-profile-visual-size"
       ],
       "visibility": "public",
-      "description": "question-flow 的 next-trigger、prev-trigger 部件 block-size、inline-size 覆盖槽。"
+      "description": "question-flow 的 next-trigger、prev-trigger 部件 block-size、inline-size、min-block-size 覆盖槽。"
     },
     {
       "name": "--xh-question-flow-submit-bg",
@@ -47368,16 +47412,16 @@
         "submit-trigger"
       ],
       "property": [
-        "background"
+        "background-color"
       ],
       "state": [
         "default"
       ],
       "defaultToken": [
-        "--xh-_tone"
+        "--xh-_action-variant-bg-rest"
       ],
       "visibility": "public",
-      "description": "question-flow 的 submit-trigger 部件 background 覆盖槽。"
+      "description": "question-flow 的 submit-trigger 部件 background-color 覆盖槽。"
     },
     {
       "name": "--xh-question-flow-submit-bg-active",
@@ -47386,17 +47430,21 @@
         "submit-trigger"
       ],
       "property": [
-        "background"
+        "background-color"
       ],
       "state": [
-        "active",
-        "not(:disabled)"
+        "disabled",
+        "is(:active, [data-pressed])",
+        "loading",
+        "not([data-disabled])",
+        "not([data-loading])",
+        "pressed"
       ],
       "defaultToken": [
-        "--xh-_tone-active"
+        "--xh-_action-variant-bg-pressed"
       ],
       "visibility": "public",
-      "description": "question-flow 的 submit-trigger 部件 background 覆盖槽。"
+      "description": "question-flow 的 submit-trigger 部件 background-color 覆盖槽。"
     },
     {
       "name": "--xh-question-flow-submit-bg-hover",
@@ -47405,17 +47453,20 @@
         "submit-trigger"
       ],
       "property": [
-        "background"
+        "background-color"
       ],
       "state": [
+        "disabled",
         "hover",
-        "not(:disabled)"
+        "loading",
+        "not([data-disabled])",
+        "not([data-loading])"
       ],
       "defaultToken": [
-        "--xh-_tone-hover"
+        "--xh-_action-variant-bg-hover"
       ],
       "visibility": "public",
-      "description": "question-flow 的 submit-trigger 部件 background 覆盖槽。"
+      "description": "question-flow 的 submit-trigger 部件 background-color 覆盖槽。"
     },
     {
       "name": "--xh-question-flow-submit-bg-off",
@@ -47424,16 +47475,16 @@
         "submit-trigger"
       ],
       "property": [
-        "background"
+        "background-color"
       ],
       "state": [
         "disabled"
       ],
       "defaultToken": [
-        "--xh-bg-muted"
+        "--xh-_action-variant-bg-disabled"
       ],
       "visibility": "public",
-      "description": "question-flow 的 submit-trigger 部件 background 覆盖槽。"
+      "description": "question-flow 的 submit-trigger 部件 background-color 覆盖槽。"
     },
     {
       "name": "--xh-question-flow-submit-fg",
@@ -47445,10 +47496,19 @@
         "color"
       ],
       "state": [
-        "default"
+        "default",
+        "disabled",
+        "hover",
+        "is(:active, [data-pressed])",
+        "loading",
+        "not([data-disabled])",
+        "not([data-loading])",
+        "pressed"
       ],
       "defaultToken": [
-        "--xh-_tone-on"
+        "--xh-_action-variant-fg-hover",
+        "--xh-_action-variant-fg-pressed",
+        "--xh-_action-variant-fg-rest"
       ],
       "visibility": "public",
       "description": "question-flow 的 submit-trigger 部件 color 覆盖槽。"
@@ -47463,10 +47523,17 @@
         "box-shadow"
       ],
       "state": [
-        "default"
+        "default",
+        "disabled",
+        "hover",
+        "is(:active, [data-pressed])",
+        "loading",
+        "not([data-disabled])",
+        "not([data-loading])",
+        "pressed"
       ],
       "defaultToken": [
-        "--xh-_question-flow-submit-highlight"
+        "--xh-_highlight-tone"
       ],
       "visibility": "public",
       "description": "question-flow 的 submit-trigger 部件 box-shadow 覆盖槽。"

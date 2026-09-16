@@ -283,11 +283,40 @@ size 改变问句、选项行与页脚按钮的几何档，三档共用同一份
 | `item` | `data-disabled` | ''（条件成立时才出现） |
 | `item` | `data-select-mode` | 'single' \| 'multiple' |
 | `item` | `data-state` | 'checked' \| 'unchecked' |
+| `item` | `data-xh-action-control` | '' |
+| `item` | `data-xh-action-display` | 'always' |
+| `item` | `data-xh-action-profile` | 'row' |
+| `item` | `data-xh-action-size` | props.size |
+| `item` | `data-xh-action-variant` | 'ghost' |
 | `item-indicator` | `data-select-mode` | 'single' \| 'multiple' |
 | `item-indicator` | `data-state` | 'checked' \| 'unchecked' |
 | `item-text` | `data-state` | 'checked' \| 'unchecked' |
 | `item-text` | `data-value` | item.value |
+| `prev-trigger` | `data-disabled` | ''（条件成立时才出现） |
+| `prev-trigger` | `data-xh-action-control` | '' |
+| `prev-trigger` | `data-xh-action-display` | 'always' |
+| `prev-trigger` | `data-xh-action-profile` | 'icon' |
+| `prev-trigger` | `data-xh-action-size` | 'xs' |
+| `prev-trigger` | `data-xh-action-variant` | 'ghost' |
+| `next-trigger` | `data-disabled` | ''（条件成立时才出现） |
+| `next-trigger` | `data-xh-action-control` | '' |
+| `next-trigger` | `data-xh-action-display` | 'always' |
+| `next-trigger` | `data-xh-action-profile` | 'icon' |
+| `next-trigger` | `data-xh-action-size` | 'xs' |
+| `next-trigger` | `data-xh-action-variant` | 'ghost' |
+| `skip-trigger` | `data-disabled` | ''（条件成立时才出现） |
+| `skip-trigger` | `data-xh-action-control` | '' |
+| `skip-trigger` | `data-xh-action-display` | 'always' |
+| `skip-trigger` | `data-xh-action-profile` | 'text' |
+| `skip-trigger` | `data-xh-action-size` | props.size |
+| `skip-trigger` | `data-xh-action-variant` | 'ghost' |
+| `submit-trigger` | `data-disabled` | ''（条件成立时才出现） |
 | `submit-trigger` | `data-mode` | 'send' \| 'continue' |
+| `submit-trigger` | `data-xh-action-control` | '' |
+| `submit-trigger` | `data-xh-action-display` | 'always' |
+| `submit-trigger` | `data-xh-action-profile` | 'text' |
+| `submit-trigger` | `data-xh-action-size` | props.size |
+| `submit-trigger` | `data-xh-action-variant` | 'solid' |
 | `result` | `data-state` | 'answering' \| 'submitted' |
 
 <!-- xh-component-tokens:start -->
@@ -300,11 +329,11 @@ size 改变问句、选项行与页脚按钮的几何档，三档共用同一份
 | `--xh-question-flow-action-font-size` | `skip-trigger`<br>`submit-trigger` | `font-size` | `default` | `--xh-text-label-size` | question-flow 的 skip-trigger、submit-trigger 部件 font-size 覆盖槽。 |
 | `--xh-question-flow-action-font-weight` | `skip-trigger`<br>`submit-trigger` | `font-weight` | `default` | `--xh-text-label-weight` | question-flow 的 skip-trigger、submit-trigger 部件 font-weight 覆盖槽。 |
 | `--xh-question-flow-action-gap` | `skip-trigger`<br>`submit-trigger` | `gap` | `default` | `--xh-space-1` | question-flow 的 skip-trigger、submit-trigger 部件 gap 覆盖槽。 |
-| `--xh-question-flow-action-h` | `skip-trigger`<br>`submit-trigger` | `block-size` | `default` | `--xh-_question-flow-h` | question-flow 的 skip-trigger、submit-trigger 部件 block-size 覆盖槽。 |
+| `--xh-question-flow-action-h` | `skip-trigger`<br>`submit-trigger` | `block-size`<br>`inline-size`<br>`min-block-size` | `default`<br>`xh-action-profile=icon`<br>`xh-action-profile=row` | `--xh-_question-flow-h` | question-flow 的 skip-trigger、submit-trigger 部件 block-size、inline-size、min-block-size 覆盖槽。 |
 | `--xh-question-flow-action-px` | `skip-trigger`<br>`submit-trigger` | `padding-inline` | `default` | `--xh-_question-flow-px` | question-flow 的 skip-trigger、submit-trigger 部件 padding-inline 覆盖槽。 |
 | `--xh-question-flow-action-radius` | `skip-trigger`<br>`submit-trigger` | `border-radius` | `default` | `--xh-shape-control` | question-flow 的 skip-trigger、submit-trigger 部件 border-radius 覆盖槽。 |
-| `--xh-question-flow-bg` | `root` | `background` | `default` | `--xh-_question-flow-bg` | question-flow 的 root 部件 background 覆盖槽。 |
-| `--xh-question-flow-border` | `root` | `border` | `default` | `--xh-_question-flow-border` | question-flow 的 root 部件 border 覆盖槽。 |
+| `--xh-question-flow-bg` | `root` | `background` | `default`<br>`variant=subtle` | `--xh-_tone-subtle`<br>`--xh-bg-surface` | question-flow 的 root 部件 background 覆盖槽。 |
+| `--xh-question-flow-border` | `root` | `border` | `default` | `--xh-border-default` | question-flow 的 root 部件 border 覆盖槽。 |
 | `--xh-question-flow-counter-fg` | `counter` | `color` | `default` | `--xh-fg-subtle` | question-flow 的 counter 部件 color 覆盖槽。 |
 | `--xh-question-flow-counter-font-size` | `counter` | `font-size` | `default` | `--xh-text-caption-size` | question-flow 的 counter 部件 font-size 覆盖槽。 |
 | `--xh-question-flow-dot-radius` | `item-indicator` | `border-radius` | `empty`<br>`select-mode=single` | `--xh-shape-circle` | question-flow 的 item-indicator 部件 border-radius 覆盖槽。 |
@@ -318,19 +347,19 @@ size 改变问句、选项行与页脚按钮的几何档，三档共用同一份
 | `--xh-question-flow-indicator-border` | `item-indicator` | `border` | `default` | `--xh-border-control` | question-flow 的 item-indicator 部件 border 覆盖槽。 |
 | `--xh-question-flow-indicator-border-checked` | `item-indicator` | `border-color` | `state=checked` | `--xh-_tone` | question-flow 的 item-indicator 部件 border-color 覆盖槽。 |
 | `--xh-question-flow-indicator-fg` | `item-indicator` | `color` | `default` | `--xh-_tone-on` | question-flow 的 item-indicator 部件 color 覆盖槽。 |
-| `--xh-question-flow-indicator-icon-size` | `item-indicator` | `--xh-icon-size` | `default` | `--xh-glyph-size-text` | question-flow 的 item-indicator 部件 --xh-icon-size 覆盖槽。 |
+| `--xh-question-flow-indicator-icon-size` | `item-indicator` | `--xh-icon-size` | `default` | `--xh-_question-flow-indicator-glyph` | question-flow 的 item-indicator 部件 --xh-icon-size 覆盖槽。 |
 | `--xh-question-flow-indicator-radius` | `item-indicator` | `border-radius` | `default` | `--xh-shape-inset` | question-flow 的 item-indicator 部件 border-radius 覆盖槽。 |
-| `--xh-question-flow-indicator-radius-single` | `item-indicator` | `border-radius` | `select-mode=single` | `--xh-shape-pill` | question-flow 的 item-indicator 部件 border-radius 覆盖槽。 |
-| `--xh-question-flow-indicator-size` | `item-indicator` | `block-size`<br>`inline-size` | `default`<br>`empty`<br>`select-mode=single` | `--xh-_question-flow-indicator` | question-flow 的 item-indicator 部件 block-size、inline-size 覆盖槽。 |
-| `--xh-question-flow-item-bg` | `item` | `background` | `default` | `transparent` | question-flow 的 item 部件 background 覆盖槽。 |
-| `--xh-question-flow-item-bg-hover` | `item` | `background` | `hover` | `--xh-bg-subtle-hover` | question-flow 的 item 部件 background 覆盖槽。 |
-| `--xh-question-flow-item-fg` | `item` | `color` | `default` | `--xh-fg-muted` | question-flow 的 item 部件 color 覆盖槽。 |
-| `--xh-question-flow-item-fg-checked` | `item` | `color` | `state=checked` | `--xh-fg-default` | question-flow 的 item 部件 color 覆盖槽。 |
+| `--xh-question-flow-indicator-radius-single` | `item-indicator` | `border-radius` | `select-mode=single` | `--xh-shape-circle` | question-flow 的 item-indicator 部件 border-radius 覆盖槽。 |
+| `--xh-question-flow-indicator-size` | `item-indicator` | `--xh-icon-size`<br>`block-size`<br>`inline-size` | `default`<br>`empty`<br>`select-mode=single` | `--xh-_question-flow-indicator` | question-flow 的 item-indicator 部件 --xh-icon-size、block-size、inline-size 覆盖槽。 |
+| `--xh-question-flow-item-bg` | `item` | `background-color` | `default` | `--xh-_action-variant-bg-rest` | question-flow 的 item 部件 background-color 覆盖槽。 |
+| `--xh-question-flow-item-bg-hover` | `item` | `background-color` | `disabled`<br>`hover`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])` | `--xh-_action-variant-bg-hover` | question-flow 的 item 部件 background-color 覆盖槽。 |
+| `--xh-question-flow-item-fg` | `item` | `color` | `default`<br>`disabled`<br>`hover`<br>`is(:active, [data-pressed])`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])`<br>`pressed` | `--xh-fg-muted` | question-flow 的 item 部件 color 覆盖槽。 |
+| `--xh-question-flow-item-fg-checked` | `item` | `color` | `disabled`<br>`hover`<br>`is(:active, [data-pressed])`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])`<br>`pressed`<br>`state=checked` | `--xh-fg-default` | question-flow 的 item 部件 color 覆盖槽。 |
 | `--xh-question-flow-item-font-size` | `item` | `font-size` | `default` | `--xh-_question-flow-font-size` | question-flow 的 item 部件 font-size 覆盖槽。 |
 | `--xh-question-flow-item-gap` | `item` | `gap` | `default` | `--xh-space-1_5` | question-flow 的 item 部件 gap 覆盖槽。 |
 | `--xh-question-flow-item-px` | `item` | `padding-inline` | `default` | `--xh-space-2` | question-flow 的 item 部件 padding-inline 覆盖槽。 |
-| `--xh-question-flow-item-py` | `item` | `padding-block` | `default` | `--xh-space-1` | question-flow 的 item 部件 padding-block 覆盖槽。 |
-| `--xh-question-flow-item-radius` | `item` | `border-radius` | `default` | `--xh-shape-control` | question-flow 的 item 部件 border-radius 覆盖槽。 |
+| `--xh-question-flow-item-py` | `item` | `padding-block` | `xh-action-profile=row` | `--xh-space-1` | question-flow 的 item 部件 padding-block 覆盖槽。 |
+| `--xh-question-flow-item-radius` | `item` | `border-radius` | `default` | `--xh-_action-profile-radius` | question-flow 的 item 部件 border-radius 覆盖槽。 |
 | `--xh-question-flow-note-bg` | `note` | `background` | `default` | `--xh-bg-surface` | question-flow 的 note 部件 background 覆盖槽。 |
 | `--xh-question-flow-note-border` | `note` | `border` | `default` | `--xh-border-control` | question-flow 的 note 部件 border 覆盖槽。 |
 | `--xh-question-flow-note-fg` | `note` | `color` | `default` | `--xh-fg-default` | question-flow 的 note 部件 color 覆盖槽。 |
@@ -342,7 +371,7 @@ size 改变问句、选项行与页脚按钮的几何档，三档共用同一份
 | `--xh-question-flow-placeholder-fg` | `note` | `color` | `placeholder` | `--xh-fg-subtle` | question-flow 的 note 部件 color 覆盖槽。 |
 | `--xh-question-flow-prompt-fg` | `prompt` | `color` | `default` | `--xh-fg-default` | question-flow 的 prompt 部件 color 覆盖槽。 |
 | `--xh-question-flow-prompt-font-size` | `prompt` | `font-size` | `default` | `--xh-text-label-size` | question-flow 的 prompt 部件 font-size 覆盖槽。 |
-| `--xh-question-flow-prompt-font-weight` | `prompt` | `font-weight` | `default` | `--xh-text-label-weight` | question-flow 的 prompt 部件 font-weight 覆盖槽。 |
+| `--xh-question-flow-prompt-font-weight` | `prompt` | `font-weight` | `default` | `--xh-font-weight-semibold` | question-flow 的 prompt 部件 font-weight 覆盖槽。 |
 | `--xh-question-flow-question-gap` | `question` | `gap` | `default` | `--xh-space-2` | question-flow 的 question 部件 gap 覆盖槽。 |
 | `--xh-question-flow-radius` | `root` | `border-radius` | `default` | `--xh-shape-surface` | question-flow 的 root 部件 border-radius 覆盖槽。 |
 | `--xh-question-flow-result-bg` | `result` | `background` | `default` | `--xh-bg-subtle` | question-flow 的 result 部件 background 覆盖槽。 |
@@ -353,24 +382,24 @@ size 改变问句、选项行与页脚按钮的几何档，三档共用同一份
 | `--xh-question-flow-result-px` | `result` | `padding-inline` | `default` | `--xh-space-2` | question-flow 的 result 部件 padding-inline 覆盖槽。 |
 | `--xh-question-flow-result-py` | `result` | `padding-block` | `default` | `--xh-space-1` | question-flow 的 result 部件 padding-block 覆盖槽。 |
 | `--xh-question-flow-result-radius` | `result` | `border-radius` | `default` | `--xh-shape-pill` | question-flow 的 result 部件 border-radius 覆盖槽。 |
-| `--xh-question-flow-shadow` | `root` | `box-shadow` | `default` | `--xh-elevation-raised` | question-flow 的 root 部件 box-shadow 覆盖槽。 |
-| `--xh-question-flow-skip-bg` | `skip-trigger` | `background` | `default` | `transparent` | question-flow 的 skip-trigger 部件 background 覆盖槽。 |
-| `--xh-question-flow-skip-bg-hover` | `skip-trigger` | `background` | `hover`<br>`not(:disabled)` | `--xh-bg-subtle-hover` | question-flow 的 skip-trigger 部件 background 覆盖槽。 |
+| `--xh-question-flow-shadow` | `root` | `box-shadow` | `default` | `none` | question-flow 的 root 部件 box-shadow 覆盖槽。 |
+| `--xh-question-flow-skip-bg` | `skip-trigger` | `background-color` | `default` | `--xh-_action-variant-bg-rest` | question-flow 的 skip-trigger 部件 background-color 覆盖槽。 |
+| `--xh-question-flow-skip-bg-hover` | `skip-trigger` | `background-color` | `disabled`<br>`hover`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])` | `--xh-_action-variant-bg-hover` | question-flow 的 skip-trigger 部件 background-color 覆盖槽。 |
 | `--xh-question-flow-skip-fg` | `skip-trigger` | `color` | `default` | `--xh-fg-muted` | question-flow 的 skip-trigger 部件 color 覆盖槽。 |
-| `--xh-question-flow-skip-fg-hover` | `skip-trigger` | `color` | `hover`<br>`not(:disabled)` | `--xh-fg-default` | question-flow 的 skip-trigger 部件 color 覆盖槽。 |
-| `--xh-question-flow-step-bg` | `next-trigger`<br>`prev-trigger` | `background` | `default` | `transparent` | question-flow 的 next-trigger、prev-trigger 部件 background 覆盖槽。 |
-| `--xh-question-flow-step-bg-hover` | `next-trigger`<br>`prev-trigger` | `background` | `hover`<br>`not(:disabled)` | `--xh-bg-subtle-hover` | question-flow 的 next-trigger、prev-trigger 部件 background 覆盖槽。 |
+| `--xh-question-flow-skip-fg-hover` | `skip-trigger` | `color` | `disabled`<br>`hover`<br>`is(:active, [data-pressed])`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])`<br>`pressed` | `--xh-fg-default` | question-flow 的 skip-trigger 部件 color 覆盖槽。 |
+| `--xh-question-flow-step-bg` | `next-trigger`<br>`prev-trigger` | `background-color` | `default` | `--xh-_action-variant-bg-rest` | question-flow 的 next-trigger、prev-trigger 部件 background-color 覆盖槽。 |
+| `--xh-question-flow-step-bg-hover` | `next-trigger`<br>`prev-trigger` | `background-color` | `disabled`<br>`hover`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])` | `--xh-_action-variant-bg-hover` | question-flow 的 next-trigger、prev-trigger 部件 background-color 覆盖槽。 |
 | `--xh-question-flow-step-fg` | `next-trigger`<br>`prev-trigger` | `color` | `default` | `--xh-fg-subtle` | question-flow 的 next-trigger、prev-trigger 部件 color 覆盖槽。 |
-| `--xh-question-flow-step-fg-hover` | `next-trigger`<br>`prev-trigger` | `color` | `hover`<br>`not(:disabled)` | `--xh-fg-default` | question-flow 的 next-trigger、prev-trigger 部件 color 覆盖槽。 |
-| `--xh-question-flow-step-padding` | `next-trigger`<br>`prev-trigger` | `padding` | `default` | `--xh-space-0` | question-flow 的 next-trigger、prev-trigger 部件 padding 覆盖槽。 |
+| `--xh-question-flow-step-fg-hover` | `next-trigger`<br>`prev-trigger` | `color` | `disabled`<br>`hover`<br>`is(:active, [data-pressed])`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])`<br>`pressed` | `--xh-fg-default` | question-flow 的 next-trigger、prev-trigger 部件 color 覆盖槽。 |
+| `--xh-question-flow-step-padding` | `next-trigger`<br>`prev-trigger` | `padding-inline` | `default` | `--xh-_action-profile-padding-inline` | question-flow 的 next-trigger、prev-trigger 部件 padding-inline 覆盖槽。 |
 | `--xh-question-flow-step-radius` | `next-trigger`<br>`prev-trigger` | `border-radius` | `default` | `--xh-shape-inset` | question-flow 的 next-trigger、prev-trigger 部件 border-radius 覆盖槽。 |
-| `--xh-question-flow-step-size` | `next-trigger`<br>`prev-trigger` | `block-size`<br>`inline-size` | `default` | `--xh-control-action-size` | question-flow 的 next-trigger、prev-trigger 部件 block-size、inline-size 覆盖槽。 |
-| `--xh-question-flow-submit-bg` | `submit-trigger` | `background` | `default` | `--xh-_tone` | question-flow 的 submit-trigger 部件 background 覆盖槽。 |
-| `--xh-question-flow-submit-bg-active` | `submit-trigger` | `background` | `active`<br>`not(:disabled)` | `--xh-_tone-active` | question-flow 的 submit-trigger 部件 background 覆盖槽。 |
-| `--xh-question-flow-submit-bg-hover` | `submit-trigger` | `background` | `hover`<br>`not(:disabled)` | `--xh-_tone-hover` | question-flow 的 submit-trigger 部件 background 覆盖槽。 |
-| `--xh-question-flow-submit-bg-off` | `submit-trigger` | `background` | `disabled` | `--xh-bg-muted` | question-flow 的 submit-trigger 部件 background 覆盖槽。 |
-| `--xh-question-flow-submit-fg` | `submit-trigger` | `color` | `default` | `--xh-_tone-on` | question-flow 的 submit-trigger 部件 color 覆盖槽。 |
-| `--xh-question-flow-submit-shadow` | `submit-trigger` | `box-shadow` | `default` | `--xh-_question-flow-submit-highlight` | question-flow 的 submit-trigger 部件 box-shadow 覆盖槽。 |
+| `--xh-question-flow-step-size` | `next-trigger`<br>`prev-trigger` | `block-size`<br>`inline-size`<br>`min-block-size` | `default`<br>`xh-action-profile=icon`<br>`xh-action-profile=row` | `--xh-_action-profile-visual-size` | question-flow 的 next-trigger、prev-trigger 部件 block-size、inline-size、min-block-size 覆盖槽。 |
+| `--xh-question-flow-submit-bg` | `submit-trigger` | `background-color` | `default` | `--xh-_action-variant-bg-rest` | question-flow 的 submit-trigger 部件 background-color 覆盖槽。 |
+| `--xh-question-flow-submit-bg-active` | `submit-trigger` | `background-color` | `disabled`<br>`is(:active, [data-pressed])`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])`<br>`pressed` | `--xh-_action-variant-bg-pressed` | question-flow 的 submit-trigger 部件 background-color 覆盖槽。 |
+| `--xh-question-flow-submit-bg-hover` | `submit-trigger` | `background-color` | `disabled`<br>`hover`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])` | `--xh-_action-variant-bg-hover` | question-flow 的 submit-trigger 部件 background-color 覆盖槽。 |
+| `--xh-question-flow-submit-bg-off` | `submit-trigger` | `background-color` | `disabled` | `--xh-_action-variant-bg-disabled` | question-flow 的 submit-trigger 部件 background-color 覆盖槽。 |
+| `--xh-question-flow-submit-fg` | `submit-trigger` | `color` | `default`<br>`disabled`<br>`hover`<br>`is(:active, [data-pressed])`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])`<br>`pressed` | `--xh-_action-variant-fg-hover`<br>`--xh-_action-variant-fg-pressed`<br>`--xh-_action-variant-fg-rest` | question-flow 的 submit-trigger 部件 color 覆盖槽。 |
+| `--xh-question-flow-submit-shadow` | `submit-trigger` | `box-shadow` | `default`<br>`disabled`<br>`hover`<br>`is(:active, [data-pressed])`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])`<br>`pressed` | `--xh-_highlight-tone` | question-flow 的 submit-trigger 部件 box-shadow 覆盖槽。 |
 | `--xh-question-flow-track-gap` | `track` | `gap` | `default` | `--xh-_question-flow-gap` | question-flow 的 track 部件 gap 覆盖槽。 |
 | `--xh-question-flow-track-y` | `track` | `translate` | `default` | `--xh-_question-flow-track-y` | question-flow 的 track 部件 translate 覆盖槽。 |
 | `--xh-question-flow-viewport-h` | `viewport` | `block-size` | `default` | `--xh-_question-flow-viewport-h` | question-flow 的 viewport 部件 block-size 覆盖槽。 |
@@ -378,7 +407,7 @@ size 改变问句、选项行与页脚按钮的几何档，三档共用同一份
 
 ### 动效
 
-关键帧 `xh-question-flow-in` · `xh-question-flow-result-in` 随皮肤自带，不引用别处文件里的名字；共享关键帧 `xh-rise-in` 由 `family/motion.css` 提供，皮肤 `@import` 它，单独引入仍成立；`background` · `block-size` · `border-color` · `box-shadow` · `color` · `opacity` · `scale` · `translate` 走 `transition` 过渡。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
+关键帧 `xh-question-flow-in` · `xh-question-flow-result-in` 随皮肤自带，不引用别处文件里的名字；共享关键帧 `xh-rise-in` 由 `family/motion.css` 提供，皮肤 `@import` 它，单独引入仍成立；`background` · `block-size` · `border-color` · `color` · `opacity` · `translate` 走 `transition` 过渡。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
 
 系统开启减弱动效时由令牌层统一收敛，皮肤不另作判断。
 

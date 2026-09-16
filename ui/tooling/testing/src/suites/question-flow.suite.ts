@@ -111,8 +111,9 @@ export const questionFlowSuite: ConformanceSuite = {
             { role: 'group' },
             { role: 'radiogroup' },
           ],
+          // 选项行接 Action Control row 档：ghost 形态、按下只换面，档位随 size 缺省 md
           'item': [
-            { 'role': 'radio', 'aria-checked': 'false', 'tabindex': '0', 'disabled': null },
+            { 'role': 'radio', 'aria-checked': 'false', 'tabindex': '0', 'disabled': null, 'data-xh-action-control': '', 'data-xh-action-profile': 'row', 'data-xh-action-variant': 'ghost', 'data-xh-action-display': 'always', 'data-xh-action-size': 'md' },
             { 'role': 'radio', 'aria-checked': 'false', 'tabindex': '-1' },
             { role: 'radio', tabindex: '-1' },
             // 第二题不是当前题：它的选项一个 Tab 停靠点都不占
@@ -121,9 +122,12 @@ export const questionFlowSuite: ConformanceSuite = {
           // 计数只给眼睛看，进度由播报区念
           'counter': { 'aria-hidden': 'true' },
           'live-region': { 'aria-live': 'polite', 'aria-atomic': 'true' },
-          'prev-trigger': { disabled: '' },
-          'next-trigger': { disabled: null },
-          'submit-trigger': { 'data-mode': 'continue', 'disabled': '' },
+          // 两颗翻页钮接 icon 档 xs 位 ghost；跳过接 text 档 ghost；提交接 text 档 solid；
+          // 单体控件用原生 disabled，家族按 data-disabled 给禁用面
+          'prev-trigger': { 'disabled': '', 'data-disabled': '', 'data-xh-action-control': '', 'data-xh-action-profile': 'icon', 'data-xh-action-variant': 'ghost', 'data-xh-action-display': 'always', 'data-xh-action-size': 'xs' },
+          'next-trigger': { 'disabled': null, 'data-disabled': null, 'data-xh-action-control': '', 'data-xh-action-profile': 'icon', 'data-xh-action-variant': 'ghost', 'data-xh-action-display': 'always', 'data-xh-action-size': 'xs' },
+          'skip-trigger': { 'data-disabled': null, 'data-xh-action-control': '', 'data-xh-action-profile': 'text', 'data-xh-action-variant': 'ghost', 'data-xh-action-display': 'always', 'data-xh-action-size': 'md' },
+          'submit-trigger': { 'data-mode': 'continue', 'disabled': '', 'data-disabled': '', 'data-xh-action-control': '', 'data-xh-action-profile': 'text', 'data-xh-action-variant': 'solid', 'data-xh-action-display': 'always', 'data-xh-action-size': 'md' },
           'result': { 'aria-hidden': 'true', 'hidden': '' },
         },
         activeElement: null,

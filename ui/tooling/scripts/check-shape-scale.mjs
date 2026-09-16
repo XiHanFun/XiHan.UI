@@ -69,7 +69,8 @@ const IDENTITY = {
   'dialog:indicator': 'circle',
   'radio-group:indicator': 'circle',
   'radio-group:indicator::before': 'circle',
-  'question-flow:item-indicator': 'circle',
+  // 记号盒：单选是圆，多选是嵌在行里的圆角方格（与 Checkbox 同 inset），单选的实心点是圆
+  'question-flow:item-indicator[data-select-mode=\'single\']': 'circle',
   'question-flow:item-indicator::before': 'circle',
   'switch:thumb': 'circle',
   'slider:thumb': 'circle',
@@ -148,6 +149,7 @@ const IDENTITY = {
   'tabs:list': 'surface',
   // inset：嵌在 control 内的小块
   'checkbox:root': 'inset',
+  'question-flow:item-indicator': 'inset',
   'checkbox-group:indicator': 'inset',
   'checkbox-group:select-all-trigger': 'inset',
   'table:row-select-trigger': 'inset',

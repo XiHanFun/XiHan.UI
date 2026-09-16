@@ -42,6 +42,8 @@ export function connectQuestionFlow<T extends PropTypes>(
   const isFirst = index <= 0
   const isLast = index >= count - 1
   const canAdvance = !submitted && canAdvanceQuestion(current, answers, notes)
+  // 选项行与三颗文字 / 实心钮的家族档位随 size 走，缺省 md
+  const size = prop('size') ?? 'md'
 
   const promptId = (id: string): string => scope.partId(questionFlowAnatomy.name, `prompt:${encodeURIComponent(id)}`)
 
@@ -210,7 +212,9 @@ export function connectQuestionFlow<T extends PropTypes>(
       })
     },
 
-    // 集合条目一律 aria-disabled，不用原生 disabled：原生 disabled 不可聚焦，禁用项就当不成方向键的起点
+    // 集合条目一律 aria-disabled，不用原生 disabled：原生 disabled 不可聚焦，禁用项就当不成方向键的起点。
+    // 整行是集合行：接 Action Control 的 row 档，ghost 形态、按下只换面不缩放（§9.2）；
+    // 承载面的阶梯由根按 variant 经 host 槽下发；档位随 size 走
     getItemProps: (item) => {
       const single = typeOf(item.questionId) === 'single'
       const selected = isOptionSelected(item.questionId, item.value)
@@ -220,6 +224,11 @@ export function connectQuestionFlow<T extends PropTypes>(
         ...parts.item.attrs,
         // 原生按钮落在 form 里少了 type 会变成 submit
         'type': 'button',
+        'data-xh-action-control': '',
+        'data-xh-action-profile': 'row',
+        'data-xh-action-variant': 'ghost',
+        'data-xh-action-display': 'always',
+        'data-xh-action-size': size,
         'role': single ? 'radio' : 'checkbox',
         // 未选中也显式输出 false：省略会让读屏无从区分"未选中"与"不是选项"
         'aria-checked': selected ? 'true' : 'false',
@@ -283,12 +292,20 @@ export function connectQuestionFlow<T extends PropTypes>(
       ...parts.footer.attrs,
     }),
 
-    // 两颗翻页钮通常只画一枚箭头，名字无条件发：图标按钮没有可读文字，缺了它读屏念不出这是什么
+    // 两颗翻页钮通常只画一枚箭头，名字无条件发：图标按钮没有可读文字，缺了它读屏念不出这是什么。
+    // 离散动作控件：接 Action Control 的 icon 档 xs 位（24px 方格）ghost 形态；单体控件用原生 disabled，
+    // 家族按 data-disabled 给禁用面
     getPrevTriggerProps: () => normalize.button({
       ...parts['prev-trigger'].attrs,
       'type': 'button',
+      'data-xh-action-control': '',
+      'data-xh-action-profile': 'icon',
+      'data-xh-action-variant': 'ghost',
+      'data-xh-action-display': 'always',
+      'data-xh-action-size': 'xs',
       'aria-label': translations?.prev ?? 'Previous question',
       'disabled': (isFirst || submitted) || undefined,
+      'data-disabled': dataAttr(isFirst || submitted),
       'onClick': () => send({ type: 'PREV' }),
     }),
 
@@ -301,30 +318,50 @@ export function connectQuestionFlow<T extends PropTypes>(
     getNextTriggerProps: () => normalize.button({
       ...parts['next-trigger'].attrs,
       'type': 'button',
+      'data-xh-action-control': '',
+      'data-xh-action-profile': 'icon',
+      'data-xh-action-variant': 'ghost',
+      'data-xh-action-display': 'always',
+      'data-xh-action-size': 'xs',
       'aria-label': translations?.next ?? 'Next question',
       'disabled': (isLast || submitted) || undefined,
+      'data-disabled': dataAttr(isLast || submitted),
       'onClick': () => send({ type: 'NEXT' }),
     }),
 
-    // 关掉跳过就整颗收起：留一颗按不动的按钮，读屏仍会念到一条走不通的路
+    // 关掉跳过就整颗收起：留一颗按不动的按钮，读屏仍会念到一条走不通的路。
+    // 接 Action Control 的 text 档 ghost 形态：安静的文字钮；档位随 size 走
     getSkipTriggerProps: () => normalize.button({
       ...parts['skip-trigger'].attrs,
       'type': 'button',
+      'data-xh-action-control': '',
+      'data-xh-action-profile': 'text',
+      'data-xh-action-variant': 'ghost',
+      'data-xh-action-display': 'always',
+      'data-xh-action-size': size,
       'aria-label': translations?.skip,
       'hidden': !allowSkip || undefined,
       'disabled': submitted || undefined,
+      'data-disabled': dataAttr(submitted),
       'onClick': () => send({ type: 'SKIP' }),
     }),
 
     // 同一颗按钮按是不是末题在继续与发送两种身份间切换。
     // 名字与跳过键同一口径：不给就不发。这颗按钮按惯例带可见文字，
     // 兜底的英文会把可见文字盖掉，语音控制照着看见的字念就点不动它
+    // 接 Action Control 的 text 档 solid 形态：这一组里的主要动作，与 Button 缺省同为品牌实心
     getSubmitTriggerProps: () => normalize.button({
       ...parts['submit-trigger'].attrs,
       'type': 'button',
+      'data-xh-action-control': '',
+      'data-xh-action-profile': 'text',
+      'data-xh-action-variant': 'solid',
+      'data-xh-action-display': 'always',
+      'data-xh-action-size': size,
       'data-mode': isLast ? 'send' : 'continue',
       'aria-label': isLast ? translations?.send : translations?.continue,
       'disabled': !canAdvance || undefined,
+      'data-disabled': dataAttr(!canAdvance),
       'onClick': advance,
     }),
 
