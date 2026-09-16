@@ -152,7 +152,7 @@ export interface DateRangePickerSchema extends MachineSchema {
      * 未提供时回退为起点，再回退为今天。表单重置回到该值。
      */
     defaultFocusedValue?: string
-    /** 形态：outline / subtle / ghost，决定输入行的描边与底色使用方式。 */
+    /** 形态：outline / subtle / ghost，决定输入行的描边与底色使用方式。默认 outline。 */
     variant?: ControlVariant
     /** 语气：brand / neutral / success / warning / danger / info，决定聚焦与选中强调使用哪族颜色。 */
     tone?: Tone
