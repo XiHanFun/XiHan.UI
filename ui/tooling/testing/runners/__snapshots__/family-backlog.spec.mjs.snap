@@ -2,14 +2,14 @@
 
 exports[`family-backlog 条目数 > 七段各一数，与快照一致 1`] = `
 {
-  "edge": 63,
-  "ladder": 122,
+  "edge": 62,
+  "ladder": 119,
   "motion": 1,
   "press": 77,
-  "scroll": 60,
+  "scroll": 58,
   "selection": 25,
   "shape": 25,
-  "text": 103,
+  "text": 102,
 }
 `;
 
@@ -58,7 +58,6 @@ exports[`family-backlog 键集合 > edge 1`] = `
   "reasoning:root:raised",
   "segmented:indicator:raised",
   "segmented:root",
-  "select:positioner:raised",
   "signature-pad:clear-trigger:raised",
   "slider:thumb:raised",
   "sortable:item:raised",
@@ -168,9 +167,6 @@ exports[`family-backlog 键集合 > ladder 1`] = `
   "question-flow:skip-trigger:hover",
   "reasoning:trigger:hover",
   "segmented:item:hover",
-  "select:clear-trigger:hover",
-  "select:clear-trigger:pressed",
-  "select:control:focus",
   "signature-pad:clear-trigger:hover",
   "signature-pad:clear-trigger:pressed",
   "sortable:item-drag-trigger:hover",
@@ -342,8 +338,6 @@ exports[`family-backlog 键集合 > scroll 1`] = `
   "popconfirm:content:unwired",
   "popover:content:overscroll",
   "popover:content:size",
-  "select:list:overscroll",
-  "select:list:unwired",
   "time-picker:column:overscroll",
   "time-picker:column:unwired",
   "time-picker:preset-group:overscroll",
@@ -495,7 +489,6 @@ exports[`family-backlog 键集合 > text 1`] = `
   "rating:label:spacing",
   "rating:root:icon-size",
   "reasoning:root:icon-size",
-  "select:label:font-size",
   "side-nav:root:icon-size",
   "signature-pad:label:color",
   "signature-pad:label:spacing",

@@ -286,12 +286,22 @@ function registeredLayers(src) {
   return layers
 }
 
-/** 一个组件可注册多个独立浮层；仅核 node 指向本次自绘滚动层或其壳的注册。 */
-function checkLayerBranches(src, label, shell, scrollables, reference) {
+/** 登记表提前读一次：层注册的 node 可能是包着滚动层的浮层外壳（select 的 list 住在 content 里），登记在面的 layerNode 上。 */
+const registry = JSON.parse(await readFile(REGISTRY, 'utf8'))
+
+/** 某组件各滚动面登记的浮层节点：层注册的 node 指向它时，这一层就是该滚动面所在的浮层。 */
+function layerNodesOf(comp) {
+  return Object.entries(registry.surfaces ?? {})
+    .filter(([key, entry]) => key.startsWith(`${comp}:`) && typeof entry.layerNode === 'string')
+    .map(([, entry]) => entry.layerNode)
+}
+
+/** 一个组件可注册多个独立浮层；仅核 node 指向本次自绘滚动层、其壳或登记的浮层节点的注册。 */
+function checkLayerBranches(comp, src, label, shell, scrollables, reference) {
   const layers = registeredLayers(src)
   if (!layers.length)
     return []
-  const hosts = [...new Set([shell, ...scrollables])]
+  const hosts = [...new Set([shell, ...scrollables, ...layerNodesOf(comp)])]
   const ownLayers = layers.filter(layer => hosts.some(part => reference(part).test(layer.node ?? '')))
   if (!ownLayers.length)
     return [`${label}：已有 LayerRegistry 注册，但读不出哪个 node 对应自绘滚动宿主 ${hosts.join(' / ')}；须显式核对该层的壳接线`]
@@ -409,9 +419,9 @@ for (const [comp, { block, src }] of wcHosts) {
   // 规则⑥：条子是 content 的兄弟，浮层不把壳记进层分支，按住条子那一下就被判成层外交互
   const shellPart = shells[0]
   hostInfo.set(comp, { shellPart, scrollables, block })
-  problems.push(...checkLayerBranches(src, `${comp}：WC 侧`, shellPart, scrollables, part => new RegExp(`\\bgetPart\\(\\s*['"]${part}['"]\\s*\\)`)))
+  problems.push(...checkLayerBranches(comp, src, `${comp}：WC 侧`, shellPart, scrollables, part => new RegExp(`\\bgetPart\\(\\s*['"]${part}['"]\\s*\\)`)))
   for (const { file, src: vueSrc } of vueSources.get(comp) ?? []) {
-    problems.push(...checkLayerBranches(vueSrc, file, shellPart, scrollables, part => new RegExp(`\\b${camel(part)}Ref\\b`)))
+    problems.push(...checkLayerBranches(comp, vueSrc, file, shellPart, scrollables, part => new RegExp(`\\b${camel(part)}Ref\\b`)))
   }
 
   const css = await read(join(STYLES, `${comp}.css`))
@@ -523,7 +533,6 @@ function surfaceKeyOf(selector, family) {
   return `${family}:${head[1].slice(prefix.length)}${rest.map(a => `[${a[1].startsWith(prefix) ? a[1].slice(prefix.length) : a[1]}${a[2] ? `=${a[2]}` : ''}]`).join('')}`
 }
 
-const registry = JSON.parse(await readFile(REGISTRY, 'utf8'))
 const surfaces = registry.surfaces ?? {}
 if (registry.backlog != null)
   problems.push(`${REGISTRY}：backlog 段已迁到 family-backlog.json 的 scroll 段，这里不再登记`)
@@ -539,6 +548,8 @@ for (const [key, entry] of Object.entries(surfaces)) {
     problems.push(`${REGISTRY}：${key} 的 mode 只能是 drawn / native，实际 ${JSON.stringify(entry.mode)}`)
   if (entry.wiring !== undefined && (entry.mode !== 'drawn' || !['scrollbars', 'anatomy'].includes(entry.wiring)))
     problems.push(`${REGISTRY}：${key} 的 wiring 只在 drawn 上出现，且只能是 scrollbars / anatomy`)
+  if (entry.layerNode !== undefined && (entry.mode !== 'drawn' || typeof entry.layerNode !== 'string' || !/^[\w-]+$/.test(entry.layerNode)))
+    problems.push(`${REGISTRY}：${key} 的 layerNode 只在 drawn 上出现，且要写成一个部件名（层注册的 node 指向的、包着这一面的浮层节点）`)
   for (const flag of ['overscroll', 'gutter']) {
     if (typeof entry[flag] !== 'boolean')
       problems.push(`${REGISTRY}：${key} 的 ${flag} 要写成布尔`)

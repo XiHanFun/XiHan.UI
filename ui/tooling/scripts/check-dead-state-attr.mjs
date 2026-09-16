@@ -117,7 +117,6 @@ const HOOKS = {
   'cascader:data-loading': '在途的观感由只在取数期在场的 loading 部件承载，根上这一位是给作者接线的镜像',
   'listbox:data-loading': '在途的观感由只在取数期在场的 loading 部件承载，根上这一位是给作者接线的镜像',
 
-  'select:data-loading': '在途的观感由只在取数期在场的 loading 部件承载，根上这一位是给作者接线的镜像',
   'transfer:data-loading': '在途的观感由只在取数期在场的 loading 部件承载，根上这一位是给作者接线的镜像',
   'tree:data-loading': '在途的观感由只在取数期在场的 loading 部件承载，根上这一位是给作者接线的镜像',
   'tree-select:data-loading': '在途的观感由只在取数期在场的 loading 部件承载，根上这一位是给作者接线的镜像',

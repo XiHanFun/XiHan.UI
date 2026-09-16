@@ -1,11 +1,12 @@
 {
-  "$description": "组件内滚动面登记表，真源是 component-design.md §6.6 的两档表。surfaces 的键是「组件:部件」（typography 的 prose 里那个 <pre> 写成 typography:prose(pre)，家族配方写成 field-chrome:input[layout=textarea]）；mode 是 drawn（Scrollbar 组件接线的自绘条）或 native（reset 层给的原生细条）；overscroll / gutter 是该面该不该写 overscroll-behavior: contain / scrollbar-gutter: stable；wiring 只在 drawn 上出现，缺省 scrollbars（useScrollbars / ScrollbarsController 接线），anatomy 表示条子是组件自己的解剖部件（ScrollArea）。尚未达标的面记在 family-backlog.json 的 scroll 段（键「组件:部件:问题码」），命中即从表里移除，登记了却没命中判红。",
+  "$description": "组件内滚动面登记表，真源是 component-design.md §6.6 的两档表。surfaces 的键是「组件:部件」（typography 的 prose 里那个 <pre> 写成 typography:prose(pre)，家族配方写成 field-chrome:input[layout=textarea]）；mode 是 drawn（Scrollbar 组件接线的自绘条）或 native（reset 层给的原生细条）；overscroll / gutter 是该面该不该写 overscroll-behavior: contain / scrollbar-gutter: stable；wiring 只在 drawn 上出现，缺省 scrollbars（useScrollbars / ScrollbarsController 接线），anatomy 表示条子是组件自己的解剖部件（ScrollArea）；layerNode 只在 drawn 上出现，写层注册的 node 指向的、包着这一面的浮层部件（select 的 list 住在 content 里），门禁据此认出该层并核它的 branches 记进了壳。尚未达标的面记在 family-backlog.json 的 scroll 段（键「组件:部件:问题码」），命中即从表里移除，登记了却没命中判红。",
   "surfaces": {
     "select:list": {
       "mode": "drawn",
       "overscroll": true,
       "gutter": false,
-      "why": "Select 浮层里的候选列表，Overlay 家族 positioner 下的 list"
+      "layerNode": "content",
+      "why": "Select 浮层里的候选列表，Overlay 家族 positioner 下的 list；层注册的 node 是包着它的 content"
     },
     "combobox:content": {
       "mode": "drawn",

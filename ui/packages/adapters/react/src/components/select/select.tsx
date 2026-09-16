@@ -16,6 +16,7 @@ import { mergeReactProps } from '../../runtime/merge-props'
 import { useNativeEvents } from '../../runtime/native-events'
 import { XhPortal } from '../../runtime/portal'
 import { renderSlot, slotIsPlainText } from '../../runtime/slot-content'
+import { useScrollbars } from '../../runtime/use-scrollbars'
 import { useFieldLabelWiring, useFieldStateWiring } from '../field/use-field-control'
 import { useFormControlProps } from '../form/use-form-control'
 import {
@@ -192,7 +193,17 @@ export interface XhSelectControlProps extends ComponentPropsWithRef<'div'> {}
 /** 控件盒：触发器与清空按钮在其中并排，描边、底色与聚焦环都落在它上面。 */
 export function XhSelectControl({ children, ...rest }: XhSelectControlProps): ReactNode {
   const ctx = useSelectContext()
-  return <div {...mergeReactProps(ctx.api.getControlProps() as Record<string, unknown>, rest as Record<string, unknown>)}>{children}</div>
+  return (
+    <div
+      {...mergeReactProps(
+        ctx.api.getControlProps() as Record<string, unknown>,
+        rest as Record<string, unknown>,
+        { ref: (el: HTMLDivElement | null) => { ctx.controlRef.current = el } },
+      )}
+    >
+      {children}
+    </div>
+  )
 }
 
 export interface XhSelectTriggerProps extends ComponentPropsWithRef<'button'> {}
@@ -302,6 +313,8 @@ export interface XhSelectPositionerProps extends ComponentPropsWithRef<'div'> {
 /** 迁移到浮层落点：留在原地时，宿主祖先只要建立了层叠上下文就能遮住浮层。 */
 export function XhSelectPositioner({ children, container, ...rest }: XhSelectPositionerProps): ReactNode {
   const ctx = useSelectContext()
+  // 列表的自绘条：与 content 同级、绝对定位不占布局，壳是这层已经 fixed 的 positioner，条子走浮层 4px 档
+  const bars = useScrollbars({ scrollable: () => ctx.listRef.current, props: () => ({ size: 'sm' }) })
   return (
     <XhPortal container={container ?? ctx.portalContainer} source={ctx.triggerRef}>
       <div
@@ -312,6 +325,7 @@ export function XhSelectPositioner({ children, container, ...rest }: XhSelectPos
         )}
       >
         {children}
+        {bars.render()}
       </div>
     </XhPortal>
   )
@@ -342,7 +356,17 @@ export interface XhSelectListProps extends ComponentPropsWithRef<'div'> {}
 /** 列表框本体：条目放在其中。滚动也在这一层，底部操作区因此不随条目滚动。 */
 export function XhSelectList({ children, ...rest }: XhSelectListProps): ReactNode {
   const ctx = useSelectContext()
-  return <div {...mergeReactProps(ctx.api.getListProps() as Record<string, unknown>, rest as Record<string, unknown>)}>{children}</div>
+  return (
+    <div
+      {...mergeReactProps(
+        ctx.api.getListProps() as Record<string, unknown>,
+        rest as Record<string, unknown>,
+        { ref: (el: HTMLDivElement | null) => { ctx.listRef.current = el } },
+      )}
+    >
+      {children}
+    </div>
+  )
 }
 
 export interface XhSelectFooterProps extends ComponentPropsWithRef<'div'> {}

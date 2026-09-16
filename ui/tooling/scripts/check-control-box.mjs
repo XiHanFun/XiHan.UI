@@ -103,6 +103,12 @@ const SHARED_FAMILY = {
     contentSelector: '[data-xh-field-input]',
     actionParts: new Set(['trigger', 'clear-trigger']),
   },
+  // 下拉族：内容区是撑满盒的 trigger 按钮（自己的解剖部件，不是原生输入），尾钮只有清空钮
+  'select': {
+    boxSelector: '[data-xh-field-chrome]',
+    contentSelector: `[data-scope='select'][data-part='trigger']`,
+    actionParts: new Set(['clear-trigger']),
+  },
   // 单元素：input 自身即 chrome（盒是 input 而非 control），盒内没有内容区与尾钮，不投影 data-xh-field-input
   'mention': {
     boxSelector: '[data-xh-field-chrome]',

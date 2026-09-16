@@ -44454,6 +44454,14 @@
             },
             {
               "kind": "field",
+              "name": "bars",
+              "privacy": "private",
+              "readonly": true,
+              "default": "new ScrollbarsController(this, { shell: () => this.getPart('positioner'), scrollable: () => this.getPart('list'), props: () => ({ size: 'sm' }), })",
+              "description": "列表的自绘条：与 content 同级挂在已经 fixed 的 positioner 上，滚动层是 list，条子走浮层 4px 档"
+            },
+            {
+              "kind": "field",
               "name": "declaredDisabled",
               "privacy": "private",
               "readonly": true,
@@ -44987,6 +44995,9 @@
             },
             {
               "name": "--xh-select-control-border-invalid"
+            },
+            {
+              "name": "--xh-select-control-fg"
             },
             {
               "name": "--xh-select-control-gap"

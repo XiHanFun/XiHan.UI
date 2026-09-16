@@ -23,8 +23,12 @@ export interface SelectContext {
   service: Service<SelectSchema>
   api: ComputedRef<SelectApi>
   triggerRef: Ref<HTMLElement | null>
+  /** 盒：触发器与清空按钮在里面并排，记为浮层分支 */
+  controlRef: Ref<HTMLElement | null>
   positionerRef: Ref<HTMLElement | null>
   contentRef: Ref<HTMLElement | null>
+  /** 列表框本体：真正在滚动的层，自绘条挂在 positioner 上跟着它走 */
+  listRef: Ref<HTMLElement | null>
   /** 当前是否应当渲染：退场动画播完之前仍为真。 */
   visible: Ref<boolean>
   /** 浮层迁移到的位置：全局配置的容器 > 运行时的浮层落点 > body。 */
@@ -38,8 +42,10 @@ export function useSelect(
 ): SelectContext {
   const xhConfig = useXhConfig()
   const triggerRef = ref<HTMLElement | null>(null)
+  const controlRef = ref<HTMLElement | null>(null)
   const positionerRef = ref<HTMLElement | null>(null)
   const contentRef = ref<HTMLElement | null>(null)
+  const listRef = ref<HTMLElement | null>(null)
 
   const idGen = createVueIdGenerator()
   const scope = createScope(null, idGen)
@@ -55,8 +61,9 @@ export function useSelect(
     const registerLayer = (): { layer: Layer, dispose: Cleanup } => config!.layerRegistry.register({
       kind: 'popover',
       node: () => contentRef.value,
-      // trigger 记为本层分支，点它算层内交互
-      branches: () => [triggerRef.value].filter(Boolean) as Element[],
+      // 整个盒记为本层分支：点触发器或清空钮算层内交互，开合交给 trigger 自己切换；
+      // 浮层壳一并记上：列表之外还浮着自绘滚动条，按住它拖动不该把列表消解掉
+      branches: () => [controlRef.value, positionerRef.value].filter(Boolean) as Element[],
       isModal: () => false,
       surfaces: () => [],
     })
@@ -81,5 +88,5 @@ export function useSelect(
   // 全局配置写了容器就用它，否则落到运行时那个单一浮层落点；没有 DOM 时才回到 body
   const portalTarget = computed<string | Element>(() => xhConfig.value.portalContainer?.() ?? config?.portalContainer() ?? 'body')
 
-  return { visible, service, api, triggerRef, positionerRef, contentRef, portalTarget }
+  return { visible, service, api, triggerRef, controlRef, positionerRef, contentRef, listRef, portalTarget }
 }

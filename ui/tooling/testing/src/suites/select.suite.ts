@@ -267,6 +267,8 @@ export const selectSuite: ConformanceSuite = {
           'item-indicator': 3,
         },
         parts: {
+          // control 是 Field Chrome 视觉盒：形态与家族尺寸档落在它身上（缺省 outline / md）
+          'control': { 'data-xh-field-chrome': '', 'data-xh-field-size': 'md', 'data-variant': 'outline', 'data-state': 'closed' },
           'trigger': {
             'type': 'button',
             // select-only 形态的组合框：按钮扮演 combobox，列表框由 aria-controls 指过去
@@ -1029,7 +1031,8 @@ export const selectSuite: ConformanceSuite = {
       props: { defaultValue: 'banana', placeholder: '请选择', name: 'fruit', translations: { clearTrigger: '清空所选' } },
       initial: {
         parts: {
-          'clear-trigger': { 'hidden': null, 'tabindex': '-1', 'aria-hidden': null, 'aria-label': '清空所选', 'disabled': null, 'data-disabled': null, 'data-state': null },
+          // 清空钮走 field-inset 档，有值时在场并带 has-value
+          'clear-trigger': { 'hidden': null, 'tabindex': '-1', 'aria-hidden': null, 'aria-label': '清空所选', 'disabled': null, 'data-disabled': null, 'data-state': null, 'data-xh-action-profile': 'field-inset', 'data-xh-action-display': 'has-value', 'data-xh-action-has-value': '' },
           'indicator': { 'data-clearable': '' },
         },
       },
