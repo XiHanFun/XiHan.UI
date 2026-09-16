@@ -497,7 +497,6 @@
     padding-inline: var(--xh-time-range-picker-preset-group-px, var(--xh-space-1));
     overflow-y: auto;
     border-inline-end: var(--xh-stroke-thin) solid var(--xh-time-range-picker-column-divider, var(--xh-material-frosted-separator));
-    scrollbar-width: thin;
   }
 
   [data-scope='time-range-picker'][data-part='preset-group'][hidden] {
@@ -646,7 +645,6 @@
     padding-inline: var(--xh-time-range-picker-column-px, 0);
     overflow-y: auto;
     /* 滚动容器在某些浏览器里会被自动塞进 Tab 序列，是否画环见下方按 tabindex 分档的两条 */
-    scrollbar-width: thin;
   }
 
   /* granularity 关掉的列（精度不到秒时的秒列）由连接层打 hidden */

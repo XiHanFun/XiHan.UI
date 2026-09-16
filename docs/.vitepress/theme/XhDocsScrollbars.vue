@@ -37,7 +37,7 @@ onBeforeUnmount(() => {
 
 <template>
   <div v-if="page" class="xh-doc-scrollbar xh-doc-scrollbar--page">
-    <XhScrollbarRoot :scrollable="page" orientation="vertical" type="scroll" size="sm">
+    <XhScrollbarRoot :scrollable="page" orientation="vertical" size="sm">
       <XhScrollbarTrack>
         <XhScrollbarThumb />
       </XhScrollbarTrack>
@@ -45,7 +45,7 @@ onBeforeUnmount(() => {
   </div>
 
   <div v-if="sidebar" class="xh-doc-scrollbar xh-doc-scrollbar--sidebar">
-    <XhScrollbarRoot :scrollable="sidebar" orientation="vertical" type="scroll" size="sm">
+    <XhScrollbarRoot :scrollable="sidebar" orientation="vertical" size="sm">
       <XhScrollbarTrack>
         <XhScrollbarThumb />
       </XhScrollbarTrack>
@@ -55,10 +55,8 @@ onBeforeUnmount(() => {
 
 <style>
 .xh-doc-scrollbar {
+  /* 只关轨道底色；滑块色阶与 type 都跟组件同一套（令牌 15 / 25 / 35%、scroll-hover），不另写覆写 */
   --xh-scrollbar-track-bg: transparent;
-  --xh-scrollbar-thumb-bg: color-mix(in oklab, var(--vp-c-text-2) 38%, transparent);
-  --xh-scrollbar-thumb-bg-hover: color-mix(in oklab, var(--vp-c-text-1) 58%, transparent);
-  --xh-scrollbar-thumb-bg-active: color-mix(in oklab, var(--vp-c-text-1) 72%, transparent);
 
   position: fixed;
   z-index: 60;

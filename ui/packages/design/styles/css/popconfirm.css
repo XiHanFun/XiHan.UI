@@ -38,9 +38,6 @@
        引擎没算（尚未落位 / 无引擎 / 贴边归零）时退到视口宽 */
     --xh-_popconfirm-available-w: 100vw;
 
-    /* 面板内容的自绘条浮在内容之上：轨道不上底色，实色轨道会在面板右缘糊一条竖灰带 */
-    --xh-scrollbar-track-bg: transparent;
-
     position: fixed;
     z-index: var(--xh-popconfirm-layer, var(--xh-_layer, var(--xh-layer-popover)));
     /* 空壳不吃指针，交互只发生在 content 上 */

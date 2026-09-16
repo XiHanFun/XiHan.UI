@@ -4,6 +4,7 @@
 // ③ 圆角 / 内衬 / 间隙的长度一律走令牌变量
 // ④ 过渡只列要动的属性，不写 all
 // ⑤ 自定义属性统一 --xh- 前缀
+// ⑥ 原生细条由 reset 层统一给，皮肤不写 scrollbar-width / scrollbar-color（藏条写 none）
 // 暂不引 stylelint-config-standard（避免对空仓库报噪），规则保持最小可执行集。
 
 /**
@@ -62,24 +63,44 @@ function disallowedListMessage(property, value) {
     return `${property} 的取值 "${value}" 里有裸长度：换成 var(--xh-shape-…) / var(--xh-space-…)，`
       + '或本组件的覆盖槽；calc() 与 var() 的兜底位同样只能放令牌'
   }
+  if (property === 'scrollbar-width' || property === 'scrollbar-color') {
+    return `${property} 的取值 "${value}"：原生细条由 reset 层统一给，皮肤不写 scrollbar-width / scrollbar-color；`
+      + '藏条写 scrollbar-width: none'
+  }
   return `${property} 是物理方向属性：改用逻辑属性（margin-inline-start / padding-inline-end 等）`
+}
+
+/**
+ * 皮肤里的禁用清单。抽成一张表：reset.css 是细条规则的唯一住处，它的 override 要拿到
+ * 「去掉 scrollbar 两条之后的同一张表」，两份不能各抄一遍再各自漂。
+ */
+const DISALLOWED = {
+  // 禁物理内外边距，强制逻辑属性
+  '/^margin-(left|right)$/': [/.*/],
+  '/^padding-(left|right)$/': [/.*/],
+  // 写 all 的过渡会把以后新加的属性一并接上：某天补一条 background-image 或 box-shadow，
+  // 就凭空多出一段没人设计过的动画，而且浏览器要逐帧比对全部属性。要动什么就列什么。
+  '/^transition(-property)?$/': [TRANSITION_ALL],
+  // 白名单是整值比对，看得见取值的外形，看不进 var() 的兜底位与 calc() 内部。
+  // 这条补的就是里面那一层：任何位置出现裸长度都判红。两条合起来才等于「长度只能来自令牌」。
+  [asKey(LENGTH_PROP)]: [RAW_LENGTH],
+}
+
+/**
+ * 原生细条（thin + 令牌色阶）只住在 reset 层，皮肤各自再写一遍就是散落的第二真源：
+ * 换厚度或色阶时得逐份找。皮肤里 scrollbar-width 只许写 none（挂了自绘条时藏原生条），
+ * scrollbar-color 一律不许写。reset.css 通过下面的 override 拿掉这两条。
+ */
+const SCROLLBAR_DISALLOWED = {
+  'scrollbar-width': [/^(?!none$).+/],
+  'scrollbar-color': [/.*/],
 }
 
 /** @type {import('stylelint').Config} */
 export default {
   rules: {
     'declaration-property-value-disallowed-list': [
-      {
-        // 禁物理内外边距，强制逻辑属性
-        '/^margin-(left|right)$/': [/.*/],
-        '/^padding-(left|right)$/': [/.*/],
-        // 写 all 的过渡会把以后新加的属性一并接上：某天补一条 background-image 或 box-shadow，
-        // 就凭空多出一段没人设计过的动画，而且浏览器要逐帧比对全部属性。要动什么就列什么。
-        '/^transition(-property)?$/': [TRANSITION_ALL],
-        // 白名单是整值比对，看得见取值的外形，看不进 var() 的兜底位与 calc() 内部。
-        // 这条补的就是里面那一层：任何位置出现裸长度都判红。两条合起来才等于「长度只能来自令牌」。
-        [asKey(LENGTH_PROP)]: [RAW_LENGTH],
-      },
+      { ...DISALLOWED, ...SCROLLBAR_DISALLOWED },
       { message: disallowedListMessage },
     ],
     'property-disallowed-list': ['margin-left', 'margin-right', 'padding-left', 'padding-right', 'left', 'right'],
@@ -118,4 +139,14 @@ export default {
     // 半档间距写作 space-0_5，故允许下划线
     'custom-property-pattern': '^xh-(_)?[a-z0-9_-]+$',
   },
+  overrides: [
+    {
+      // reset.css 是细条规则的唯一住处：只对它放开 scrollbar 两条，其余禁用项原样保留。
+      // 无层产物把 reset 整段内联进去，同样放开；皮肤源文件各自受上面那张全表管
+      files: ['**/styles/css/reset.css', '**/styles/index.unlayered.css'],
+      rules: {
+        'declaration-property-value-disallowed-list': [DISALLOWED, { message: disallowedListMessage }],
+      },
+    },
+  ],
 }
