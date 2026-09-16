@@ -349,7 +349,9 @@ export function connectQuestionFlow<T extends PropTypes>(
     // 同一颗按钮按是不是末题在继续与发送两种身份间切换。
     // 名字与跳过键同一口径：不给就不发。这颗按钮按惯例带可见文字，
     // 兜底的英文会把可见文字盖掉，语音控制照着看见的字念就点不动它
-    // 接 Action Control 的 text 档 solid 形态：这一组里的主要动作，与 Button 缺省同为品牌实心
+    // 接 Action Control 的 text 档 solid 形态：这一组里的主要动作，与 Button 缺省同为品牌实心。
+    // 语气与 Button 同构地投在这颗钮自己身上：家族的深色 solid 规则只看触发器自身的 data-tone，
+    // 没有它就把实心面改写成品牌色，亮色语气色、暗色品牌蓝，两套主题对不上
     getSubmitTriggerProps: () => normalize.button({
       ...parts['submit-trigger'].attrs,
       'type': 'button',
@@ -358,6 +360,7 @@ export function connectQuestionFlow<T extends PropTypes>(
       'data-xh-action-variant': 'solid',
       'data-xh-action-display': 'always',
       'data-xh-action-size': size,
+      'data-tone': prop('tone'),
       'data-mode': isLast ? 'send' : 'continue',
       'aria-label': isLast ? translations?.send : translations?.continue,
       'disabled': !canAdvance || undefined,

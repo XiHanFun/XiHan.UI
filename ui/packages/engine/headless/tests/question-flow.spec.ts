@@ -225,6 +225,19 @@ describe('question-flow：连接层', () => {
     expect((lg.api().getPrevTriggerProps() as Dict)['data-xh-action-size']).toBe('xs')
   })
 
+  // 家族的深色 solid 规则只看触发器自身的 data-tone：不投的话暗色下实心面被改写成品牌色，
+  // 与亮色下的语气色对不上。语气轴由连接层作真源投到钮上，与 Button 同构；ghost 形态的跳过钮不吃这条
+  it('语气投在提交钮自己身上：与根同值，没打语气时不投；跳过钮不投', () => {
+    const plain = mount()
+    expect((plain.api().getRootProps() as Dict)['data-tone']).toBeUndefined()
+    expect((plain.api().getSubmitTriggerProps() as Dict)['data-tone']).toBeUndefined()
+
+    const warning = mount({ tone: 'warning' })
+    expect((warning.api().getRootProps() as Dict)['data-tone']).toBe('warning')
+    expect((warning.api().getSubmitTriggerProps() as Dict)['data-tone']).toBe('warning')
+    expect((warning.api().getSkipTriggerProps() as Dict)['data-tone']).toBeUndefined()
+  })
+
   it('提交键在末题上换身份：data-mode 与可访问名一起翻面', () => {
     const rig = mount({
       defaultAnswers: { a: ['a1'], c: ['c1'] },
