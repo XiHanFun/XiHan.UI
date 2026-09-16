@@ -1,195 +1,342 @@
 {
-  "$description": "组件内滚动面登记表，真源是 component-design.md §6.6 的两档表。surfaces 的键是「组件:部件」（typography 的 prose 里那个 <pre> 写成 typography:prose(pre)，家族配方写成 field-chrome:input[layout=textarea]）；mode 是 drawn（Scrollbar 组件接线的自绘条）或 native（reset 层给的原生细条）；overscroll / gutter 是该面该不该写 overscroll-behavior: contain / scrollbar-gutter: stable；wiring 只在 drawn 上出现，缺省 scrollbars（useScrollbars / ScrollbarsController 接线），anatomy 表示条子是组件自己的解剖部件（ScrollArea）。backlog 是尚未达标的面：键同 surfaces，值按问题码逐条写理由，命中即从表里移除，登记了却没命中判红。",
+  "$description": "组件内滚动面登记表，真源是 component-design.md §6.6 的两档表。surfaces 的键是「组件:部件」（typography 的 prose 里那个 <pre> 写成 typography:prose(pre)，家族配方写成 field-chrome:input[layout=textarea]）；mode 是 drawn（Scrollbar 组件接线的自绘条）或 native（reset 层给的原生细条）；overscroll / gutter 是该面该不该写 overscroll-behavior: contain / scrollbar-gutter: stable；wiring 只在 drawn 上出现，缺省 scrollbars（useScrollbars / ScrollbarsController 接线），anatomy 表示条子是组件自己的解剖部件（ScrollArea）。尚未达标的面记在 family-backlog.json 的 scroll 段（键「组件:部件:问题码」），命中即从表里移除，登记了却没命中判红。",
   "surfaces": {
-    "select:list": { "mode": "drawn", "overscroll": true, "gutter": false, "why": "Select 浮层里的候选列表，Overlay 家族 positioner 下的 list" },
-    "combobox:content": { "mode": "drawn", "overscroll": true, "gutter": false, "why": "Combobox 浮层候选面，Overlay 家族 positioner 下的 content" },
-    "command:list": { "mode": "drawn", "overscroll": true, "gutter": false, "why": "命令面板的候选列表，居中浮层 positioner 下的 list" },
-    "cascader:content": { "mode": "drawn", "overscroll": true, "gutter": false, "why": "级联面板的列区，列多到放不下时整体横滚" },
-    "cascader:column": { "mode": "drawn", "overscroll": true, "gutter": false, "why": "级联的单列，定高小列表" },
-    "cascader:search-list": { "mode": "drawn", "overscroll": true, "gutter": false, "why": "级联搜索态的扁平候选列表，与列区互斥" },
-    "tree-select:content": { "mode": "drawn", "overscroll": true, "gutter": false, "why": "树选择浮层面，深层缩进横向溢出是常态，两轴都滚" },
-    "menu:content": { "mode": "drawn", "overscroll": true, "gutter": false, "why": "菜单浮层面，条目超过上限在菜单内部滚" },
-    "context-menu:content": { "mode": "drawn", "overscroll": true, "gutter": false, "why": "右键菜单浮层面" },
-    "menubar:content": { "mode": "drawn", "overscroll": true, "gutter": false, "why": "菜单栏下拉浮层面" },
-    "mention:content": { "mode": "drawn", "overscroll": true, "gutter": false, "why": "提及候选浮层面" },
-    "popover:content": { "mode": "drawn", "overscroll": true, "gutter": false, "why": "气泡卡片面，内容由作者给、长度不可预知" },
-    "hover-card:content": { "mode": "drawn", "overscroll": true, "gutter": false, "why": "悬停卡片面" },
-    "popconfirm:content": { "mode": "drawn", "overscroll": true, "gutter": false, "why": "气泡确认面，说明文案长度由作者给" },
-    "pagination:content": { "mode": "drawn", "overscroll": true, "gutter": false, "why": "分页器每页条数下拉的浮层面" },
-    "color-picker:content": { "mode": "drawn", "overscroll": true, "gutter": false, "why": "取色器浮层面，矮视口下面板内自己滚" },
-    "date-picker:content": { "mode": "drawn", "overscroll": true, "gutter": false, "why": "日期浮层面，日历块保持天然宽度，两轴都滚" },
-    "date-picker:preset-group": { "mode": "drawn", "overscroll": true, "gutter": false, "why": "日期浮层里的快捷选项列，窄视口横排横滚、宽视口竖排竖滚" },
-    "date-picker:time-column": { "mode": "drawn", "overscroll": true, "gutter": false, "why": "日期时间档里的时间列，定高小列表" },
-    "date-range-picker:content": { "mode": "drawn", "overscroll": true, "gutter": false, "why": "日期区间浮层面，两轴都滚" },
-    "date-range-picker:preset-group": { "mode": "drawn", "overscroll": true, "gutter": false, "why": "日期区间浮层里的快捷选项列" },
-    "time-picker:column": { "mode": "drawn", "overscroll": true, "gutter": false, "why": "时间列，定高小列表" },
-    "time-picker:preset-group": { "mode": "drawn", "overscroll": true, "gutter": false, "why": "时间浮层里的快捷选项列" },
-    "time-range-picker:column": { "mode": "drawn", "overscroll": true, "gutter": false, "why": "时间区间的时间列，定高小列表" },
-    "time-range-picker:preset-group": { "mode": "drawn", "overscroll": true, "gutter": false, "why": "时间区间浮层里的快捷选项列" },
-    "time-range-picker:content": { "mode": "drawn", "overscroll": true, "gutter": false, "why": "时间区间浮层面，两组列并排放不下时整体横滚" },
-    "listbox:content": { "mode": "drawn", "overscroll": false, "gutter": false, "why": "页内定高小列表，真源 §6.6 点名走自绘条" },
-    "transfer:list": { "mode": "drawn", "overscroll": false, "gutter": false, "why": "穿梭框两侧的定高小列表，真源 §6.6 点名走自绘条" },
-    "json-viewer:tree": { "mode": "drawn", "overscroll": false, "gutter": false, "why": "现状已接自绘条（两轴），真源 §6.6 两档表都没点名它；按现状登记，改原生须删三端接线与 root 上的 track-bg，待拍板" },
-    "json-viewer:text": { "mode": "drawn", "overscroll": false, "gutter": false, "why": "文本档与树档互斥共用同一套条子；同上待拍板" },
-    "scroll-area:viewport": { "mode": "drawn", "wiring": "anatomy", "overscroll": false, "gutter": false, "why": "ScrollArea 本身就是自绘条的组装：视口藏原生条，轨道与滑块是它自己的解剖部件，不走 useScrollbars 接线" },
-    "table:root": { "mode": "native", "overscroll": false, "gutter": false, "why": "页内结构容器，列多时横滚、行多时竖滚" },
-    "tree:tree": { "mode": "native", "overscroll": false, "gutter": false, "why": "页内树，深层缩进横向溢出" },
-    "virtualizer:viewport": { "mode": "native", "overscroll": false, "gutter": false, "why": "虚拟列表视口，页内结构容器" },
-    "dialog:body": { "mode": "native", "overscroll": true, "gutter": true, "why": "模态 body：滚到头不把滚动量传给页面；内容高度随交互变化，留稳定空道" },
-    "drawer:body": { "mode": "native", "overscroll": true, "gutter": true, "why": "模态 body，同 dialog:body" },
-    "drawer:content": { "mode": "native", "overscroll": false, "gutter": false, "why": "现状 content 与 body 双层 overflow，两层都能滚；应收成只由 body 滚，随 drawer 提交收口后从表里删掉" },
-    "floating-panel:body": { "mode": "native", "overscroll": false, "gutter": false, "why": "非模态浮动面板的 body，页内结构容器" },
-    "layout:sider": { "mode": "native", "overscroll": false, "gutter": false, "why": "布局侧栏，fixed 与 sheet 两档条目多时在内部滚" },
-    "side-nav:branch-content": { "mode": "native", "overscroll": false, "gutter": false, "why": "侧导航折叠态的 popout 分支列表" },
-    "log:viewport": { "mode": "native", "overscroll": true, "gutter": true, "why": "粘底视口：滚动量不传给页面；行数动态增长，滚动条出没不推动文字" },
-    "message-feed:viewport": { "mode": "native", "overscroll": true, "gutter": true, "why": "粘底视口，同 log:viewport" },
-    "calendar-picker:grid": { "mode": "native", "overscroll": false, "gutter": false, "why": "快速选年的三列网格，页内结构容器" },
-    "calendar-range-picker:grid": { "mode": "native", "overscroll": false, "gutter": false, "why": "同 calendar-picker:grid" },
-    "tags-input:control": { "mode": "native", "overscroll": false, "gutter": false, "why": "标签输入的控件盒，标签多到超过上限行数时在盒内滚" },
-    "text-field:control": { "mode": "native", "overscroll": false, "gutter": false, "why": "自动增高的多行文本到上限后在控件盒内滚" },
-    "file-upload:list": { "mode": "native", "overscroll": false, "gutter": false, "why": "上传条目列表，页内结构容器" },
-    "tour:description": { "mode": "native", "overscroll": false, "gutter": false, "why": "导览步骤的说明文案区，长文案时在卡内滚" },
-    "heatmap:root": { "mode": "native", "overscroll": false, "gutter": false, "why": "一整年五十几列，放不下时横滚" },
-    "marquee:root": { "mode": "native", "overscroll": false, "gutter": false, "why": "减弱动效与打印档下不再跑马，改成可滚的静态容器" },
-    "code-view:pre": { "mode": "native", "overscroll": false, "gutter": false, "why": "代码块长行横滚" },
-    "diff-view:viewport": { "mode": "native", "overscroll": false, "gutter": false, "why": "差异视图的视口" },
-    "markdown-stream:block": { "mode": "native", "overscroll": false, "gutter": false, "why": "流式 Markdown 里的代码块长行横滚" },
-    "tool-call:content": { "mode": "native", "overscroll": false, "gutter": false, "why": "工具调用展开后的参数区，长行横滚" },
-    "typography:prose(pre)": { "mode": "native", "overscroll": false, "gutter": false, "why": "Typography prose 里的代码块，库内唯一不带 data-part 的滚动面，reset 层单独点名" },
-    "field-chrome:input[layout=textarea]": { "mode": "native", "overscroll": false, "gutter": false, "why": "字段配方里 textarea 布局的输入框自己滚" }
-  },
-  "backlog": {
     "select:list": {
-      "unwired": "Select 尚未接自绘条，随 select 提交接线",
-      "overscroll": "浮层面缺 overscroll-behavior: contain，随 select 提交补"
+      "mode": "drawn",
+      "overscroll": true,
+      "gutter": false,
+      "why": "Select 浮层里的候选列表，Overlay 家族 positioner 下的 list"
     },
     "combobox:content": {
-      "size": "浮层宿主未传 size: 'sm'（真源浮层 4px），随 combobox 提交补，条子厚度 6px → 4px 是可见变化",
-      "overscroll": "浮层面缺 overscroll-behavior: contain，随 combobox 提交补"
+      "mode": "drawn",
+      "overscroll": true,
+      "gutter": false,
+      "why": "Combobox 浮层候选面，Overlay 家族 positioner 下的 content"
     },
     "command:list": {
-      "unwired": "命令面板尚未接自绘条，随 command 提交接线",
-      "overscroll": "浮层面缺 overscroll-behavior: contain，随 command 提交补"
+      "mode": "drawn",
+      "overscroll": true,
+      "gutter": false,
+      "why": "命令面板的候选列表，居中浮层 positioner 下的 list"
     },
     "cascader:content": {
-      "size": "浮层宿主未传 size: 'sm'，随 cascader 提交补",
-      "overscroll": "浮层面缺 overscroll-behavior: contain，随 cascader 提交补"
+      "mode": "drawn",
+      "overscroll": true,
+      "gutter": false,
+      "why": "级联面板的列区，列多到放不下时整体横滚"
     },
     "cascader:column": {
-      "unwired": "级联的列只接了 content 的横条，列自己的竖条未接，随 cascader 提交接线",
-      "overscroll": "浮层面缺 overscroll-behavior: contain，随 cascader 提交补"
+      "mode": "drawn",
+      "overscroll": true,
+      "gutter": false,
+      "why": "级联的单列，定高小列表"
     },
     "cascader:search-list": {
-      "unwired": "级联搜索列表未接自绘条，随 cascader 提交接线",
-      "overscroll": "浮层面缺 overscroll-behavior: contain，随 cascader 提交补"
+      "mode": "drawn",
+      "overscroll": true,
+      "gutter": false,
+      "why": "级联搜索态的扁平候选列表，与列区互斥"
     },
     "tree-select:content": {
-      "size": "浮层宿主未传 size: 'sm'，随 tree-select 提交补",
-      "overscroll": "浮层面缺 overscroll-behavior: contain，随 tree-select 提交补"
+      "mode": "drawn",
+      "overscroll": true,
+      "gutter": false,
+      "why": "树选择浮层面，深层缩进横向溢出是常态，两轴都滚"
     },
     "menu:content": {
-      "size": "浮层宿主未传 size: 'sm'，随 menu 提交补",
-      "overscroll": "浮层面缺 overscroll-behavior: contain，随 menu 提交补"
+      "mode": "drawn",
+      "overscroll": true,
+      "gutter": false,
+      "why": "菜单浮层面，条目超过上限在菜单内部滚"
     },
     "context-menu:content": {
-      "size": "浮层宿主未传 size: 'sm'，随 context-menu 提交补",
-      "overscroll": "浮层面缺 overscroll-behavior: contain，随 context-menu 提交补"
+      "mode": "drawn",
+      "overscroll": true,
+      "gutter": false,
+      "why": "右键菜单浮层面"
     },
     "menubar:content": {
-      "unwired": "菜单栏下拉尚未接自绘条，随 menubar 提交接线（接线时把 positioner 上的 --xh-scrollbar-track-bg 加回）",
-      "overscroll": "浮层面缺 overscroll-behavior: contain，随 menubar 提交补"
+      "mode": "drawn",
+      "overscroll": true,
+      "gutter": false,
+      "why": "菜单栏下拉浮层面"
     },
     "mention:content": {
-      "size": "浮层宿主未传 size: 'sm'，随 mention 提交补",
-      "overscroll": "浮层面缺 overscroll-behavior: contain，随 mention 提交补"
+      "mode": "drawn",
+      "overscroll": true,
+      "gutter": false,
+      "why": "提及候选浮层面"
     },
     "popover:content": {
-      "size": "浮层宿主未传 size: 'sm'，随 popover 提交补",
-      "overscroll": "浮层面缺 overscroll-behavior: contain，随 popover 提交补"
+      "mode": "drawn",
+      "overscroll": true,
+      "gutter": false,
+      "why": "气泡卡片面，内容由作者给、长度不可预知"
     },
     "hover-card:content": {
-      "size": "浮层宿主未传 size: 'sm'，随 hover-card 提交补",
-      "overscroll": "浮层面缺 overscroll-behavior: contain，随 hover-card 提交补"
+      "mode": "drawn",
+      "overscroll": true,
+      "gutter": false,
+      "why": "悬停卡片面"
     },
     "popconfirm:content": {
-      "unwired": "气泡确认尚未接自绘条，随 popconfirm 提交接线（接线时把 positioner 上的 --xh-scrollbar-track-bg 加回）",
-      "overscroll": "浮层面缺 overscroll-behavior: contain，随 popconfirm 提交补"
+      "mode": "drawn",
+      "overscroll": true,
+      "gutter": false,
+      "why": "气泡确认面，说明文案长度由作者给"
     },
     "pagination:content": {
-      "size": "浮层宿主未传 size: 'sm'，随 pagination 提交补",
-      "overscroll": "浮层面缺 overscroll-behavior: contain，随 pagination 提交补"
+      "mode": "drawn",
+      "overscroll": true,
+      "gutter": false,
+      "why": "分页器每页条数下拉的浮层面"
     },
     "color-picker:content": {
-      "size": "浮层宿主未传 size: 'sm'，随 color-picker 提交补",
-      "overscroll": "浮层面缺 overscroll-behavior: contain，随 color-picker 提交补"
+      "mode": "drawn",
+      "overscroll": true,
+      "gutter": false,
+      "why": "取色器浮层面，矮视口下面板内自己滚"
     },
     "date-picker:content": {
-      "size": "浮层宿主未传 size: 'sm'，随 date-picker 提交补",
-      "axes": "皮肤 overflow: auto 两轴都滚，三端只接了竖条，缺 horizontal，随 date-picker 提交补",
-      "overscroll": "浮层面缺 overscroll-behavior: contain，随 date-picker 提交补"
+      "mode": "drawn",
+      "overscroll": true,
+      "gutter": false,
+      "why": "日期浮层面，日历块保持天然宽度，两轴都滚"
     },
     "date-picker:preset-group": {
-      "unwired": "快捷选项列未接自绘条，随 date-picker 提交接线",
-      "overscroll": "浮层面缺 overscroll-behavior: contain，随 date-picker 提交补"
+      "mode": "drawn",
+      "overscroll": true,
+      "gutter": false,
+      "why": "日期浮层里的快捷选项列，窄视口横排横滚、宽视口竖排竖滚"
     },
     "date-picker:time-column": {
-      "unwired": "时间列未接自绘条，随 date-picker 提交接线",
-      "overscroll": "浮层面缺 overscroll-behavior: contain，随 date-picker 提交补"
+      "mode": "drawn",
+      "overscroll": true,
+      "gutter": false,
+      "why": "日期时间档里的时间列，定高小列表"
     },
     "date-range-picker:content": {
-      "size": "浮层宿主未传 size: 'sm'，随 date-range-picker 提交补",
-      "axes": "皮肤 overflow: auto 两轴都滚，三端只接了竖条，缺 horizontal，随 date-range-picker 提交补",
-      "overscroll": "浮层面缺 overscroll-behavior: contain，随 date-range-picker 提交补"
+      "mode": "drawn",
+      "overscroll": true,
+      "gutter": false,
+      "why": "日期区间浮层面，两轴都滚"
     },
     "date-range-picker:preset-group": {
-      "unwired": "快捷选项列未接自绘条，随 date-range-picker 提交接线",
-      "overscroll": "浮层面缺 overscroll-behavior: contain，随 date-range-picker 提交补"
+      "mode": "drawn",
+      "overscroll": true,
+      "gutter": false,
+      "why": "日期区间浮层里的快捷选项列"
     },
     "time-picker:column": {
-      "unwired": "时间列未接自绘条，随 time-picker 提交接线",
-      "overscroll": "浮层面缺 overscroll-behavior: contain，随 time-picker 提交补"
+      "mode": "drawn",
+      "overscroll": true,
+      "gutter": false,
+      "why": "时间列，定高小列表"
     },
     "time-picker:preset-group": {
-      "unwired": "快捷选项列未接自绘条，随 time-picker 提交接线",
-      "overscroll": "浮层面缺 overscroll-behavior: contain，随 time-picker 提交补"
+      "mode": "drawn",
+      "overscroll": true,
+      "gutter": false,
+      "why": "时间浮层里的快捷选项列"
     },
     "time-range-picker:column": {
-      "unwired": "时间列未接自绘条，随 time-range-picker 提交接线",
-      "overscroll": "浮层面缺 overscroll-behavior: contain，随 time-range-picker 提交补"
+      "mode": "drawn",
+      "overscroll": true,
+      "gutter": false,
+      "why": "时间区间的时间列，定高小列表"
     },
     "time-range-picker:preset-group": {
-      "unwired": "快捷选项列未接自绘条，随 time-range-picker 提交接线",
-      "overscroll": "浮层面缺 overscroll-behavior: contain，随 time-range-picker 提交补"
+      "mode": "drawn",
+      "overscroll": true,
+      "gutter": false,
+      "why": "时间区间浮层里的快捷选项列"
     },
     "time-range-picker:content": {
-      "unwired": "时间区间浮层面未接自绘条（横条），随 time-range-picker 提交接线",
-      "overscroll": "浮层面缺 overscroll-behavior: contain，随 time-range-picker 提交补"
+      "mode": "drawn",
+      "overscroll": true,
+      "gutter": false,
+      "why": "时间区间浮层面，两组列并排放不下时整体横滚"
     },
     "listbox:content": {
-      "unwired": "页内定高小列表尚未接自绘条，随 listbox 提交接线"
+      "mode": "drawn",
+      "overscroll": false,
+      "gutter": false,
+      "why": "页内定高小列表，真源 §6.6 点名走自绘条"
     },
     "transfer:list": {
-      "unwired": "穿梭框列表尚未接自绘条，随 transfer 提交接线"
+      "mode": "drawn",
+      "overscroll": false,
+      "gutter": false,
+      "why": "穿梭框两侧的定高小列表，真源 §6.6 点名走自绘条"
+    },
+    "json-viewer:tree": {
+      "mode": "drawn",
+      "overscroll": false,
+      "gutter": false,
+      "why": "现状已接自绘条（两轴），真源 §6.6 两档表都没点名它；按现状登记，改原生须删三端接线与 root 上的 track-bg，待拍板"
+    },
+    "json-viewer:text": {
+      "mode": "drawn",
+      "overscroll": false,
+      "gutter": false,
+      "why": "文本档与树档互斥共用同一套条子；同上待拍板"
+    },
+    "scroll-area:viewport": {
+      "mode": "drawn",
+      "wiring": "anatomy",
+      "overscroll": false,
+      "gutter": false,
+      "why": "ScrollArea 本身就是自绘条的组装：视口藏原生条，轨道与滑块是它自己的解剖部件，不走 useScrollbars 接线"
+    },
+    "table:root": {
+      "mode": "native",
+      "overscroll": false,
+      "gutter": false,
+      "why": "页内结构容器，列多时横滚、行多时竖滚"
+    },
+    "tree:tree": {
+      "mode": "native",
+      "overscroll": false,
+      "gutter": false,
+      "why": "页内树，深层缩进横向溢出"
     },
     "virtualizer:viewport": {
-      "overscroll": "页内结构容器多写了 overscroll-behavior: contain，真源只给浮层、模态 body 与粘底视口，随 virtualizer 提交删"
-    },
-    "calendar-picker:grid": {
-      "overscroll": "快速选年网格多写了 overscroll-behavior: contain，随 calendar-picker 提交删"
-    },
-    "calendar-range-picker:grid": {
-      "overscroll": "快速选年网格多写了 overscroll-behavior: contain，随 calendar-range-picker 提交删"
+      "mode": "native",
+      "overscroll": false,
+      "gutter": false,
+      "why": "虚拟列表视口，页内结构容器"
     },
     "dialog:body": {
-      "overscroll": "模态 body 缺 overscroll-behavior: contain，随 dialog 提交补",
-      "gutter": "内容高度动态变化的 body 缺带 :not([data-xh-scrollbar]) 守卫的 scrollbar-gutter: stable，随 dialog 提交补"
+      "mode": "native",
+      "overscroll": true,
+      "gutter": true,
+      "why": "模态 body：滚到头不把滚动量传给页面；内容高度随交互变化，留稳定空道"
     },
     "drawer:body": {
-      "overscroll": "模态 body 缺 overscroll-behavior: contain，随 drawer 提交补",
-      "gutter": "内容高度动态变化的 body 缺带 :not([data-xh-scrollbar]) 守卫的 scrollbar-gutter: stable，随 drawer 提交补"
+      "mode": "native",
+      "overscroll": true,
+      "gutter": true,
+      "why": "模态 body，同 dialog:body"
+    },
+    "drawer:content": {
+      "mode": "native",
+      "overscroll": false,
+      "gutter": false,
+      "why": "现状 content 与 body 双层 overflow，两层都能滚；应收成只由 body 滚，随 drawer 提交收口后从表里删掉"
+    },
+    "floating-panel:body": {
+      "mode": "native",
+      "overscroll": false,
+      "gutter": false,
+      "why": "非模态浮动面板的 body，页内结构容器"
+    },
+    "layout:sider": {
+      "mode": "native",
+      "overscroll": false,
+      "gutter": false,
+      "why": "布局侧栏，fixed 与 sheet 两档条目多时在内部滚"
+    },
+    "side-nav:branch-content": {
+      "mode": "native",
+      "overscroll": false,
+      "gutter": false,
+      "why": "侧导航折叠态的 popout 分支列表"
+    },
+    "log:viewport": {
+      "mode": "native",
+      "overscroll": true,
+      "gutter": true,
+      "why": "粘底视口：滚动量不传给页面；行数动态增长，滚动条出没不推动文字"
     },
     "message-feed:viewport": {
-      "gutter": "粘底视口缺带 :not([data-xh-scrollbar]) 守卫的 scrollbar-gutter: stable，随 message-feed 提交补"
+      "mode": "native",
+      "overscroll": true,
+      "gutter": true,
+      "why": "粘底视口，同 log:viewport"
+    },
+    "calendar-picker:grid": {
+      "mode": "native",
+      "overscroll": false,
+      "gutter": false,
+      "why": "快速选年的三列网格，页内结构容器"
+    },
+    "calendar-range-picker:grid": {
+      "mode": "native",
+      "overscroll": false,
+      "gutter": false,
+      "why": "同 calendar-picker:grid"
+    },
+    "tags-input:control": {
+      "mode": "native",
+      "overscroll": false,
+      "gutter": false,
+      "why": "标签输入的控件盒，标签多到超过上限行数时在盒内滚"
+    },
+    "text-field:control": {
+      "mode": "native",
+      "overscroll": false,
+      "gutter": false,
+      "why": "自动增高的多行文本到上限后在控件盒内滚"
+    },
+    "file-upload:list": {
+      "mode": "native",
+      "overscroll": false,
+      "gutter": false,
+      "why": "上传条目列表，页内结构容器"
+    },
+    "tour:description": {
+      "mode": "native",
+      "overscroll": false,
+      "gutter": false,
+      "why": "导览步骤的说明文案区，长文案时在卡内滚"
+    },
+    "heatmap:root": {
+      "mode": "native",
+      "overscroll": false,
+      "gutter": false,
+      "why": "一整年五十几列，放不下时横滚"
+    },
+    "marquee:root": {
+      "mode": "native",
+      "overscroll": false,
+      "gutter": false,
+      "why": "减弱动效与打印档下不再跑马，改成可滚的静态容器"
+    },
+    "code-view:pre": {
+      "mode": "native",
+      "overscroll": false,
+      "gutter": false,
+      "why": "代码块长行横滚"
+    },
+    "diff-view:viewport": {
+      "mode": "native",
+      "overscroll": false,
+      "gutter": false,
+      "why": "差异视图的视口"
+    },
+    "markdown-stream:block": {
+      "mode": "native",
+      "overscroll": false,
+      "gutter": false,
+      "why": "流式 Markdown 里的代码块长行横滚"
+    },
+    "tool-call:content": {
+      "mode": "native",
+      "overscroll": false,
+      "gutter": false,
+      "why": "工具调用展开后的参数区，长行横滚"
+    },
+    "typography:prose(pre)": {
+      "mode": "native",
+      "overscroll": false,
+      "gutter": false,
+      "why": "Typography prose 里的代码块，库内唯一不带 data-part 的滚动面，reset 层单独点名"
+    },
+    "field-chrome:input[layout=textarea]": {
+      "mode": "native",
+      "overscroll": false,
+      "gutter": false,
+      "why": "字段配方里 textarea 布局的输入框自己滚"
     }
   }
 }

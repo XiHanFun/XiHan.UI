@@ -10,8 +10,15 @@
 //
 // 登记的部件 + 状态在全族一条规则都匹配不上时判红：不查的话，部件改名或状态换写法之后
 // 这一条就只是空转，逐条列属性的家族尤其看不出来。
+//
+// 真源 §4 的家族（内容面 / 列表容器 / 反馈面 / 字段 / 值选择 / 导航 / 开关 / 按钮形触发器）
+// 在存量上会大面积分叉，迁移按组件逐个进仓。这些家族读 family-backlog.json：成员在任何一段
+// 里还挂着豁免的，先不参与比对；已迁移成员 ≥ 2 才比——首个迁移组件进仓时
+// 门禁就能运行，第二个进仓时开始钉住同值。部件与状态可以按成员分别登记（partBy / stateBy），
+// 同一件东西在不同成员里叫不同的部件名、挂不同的状态属性。
 import { readFile } from 'node:fs/promises'
 import { join } from 'node:path'
+import { readBacklog } from './lib/family-backlog.mjs'
 
 const STYLES_DIR = 'packages/design/styles/css'
 
@@ -94,7 +101,163 @@ const FAMILIES = [
       { part: 'trigger', state: '[hidden]', props: '*' },
     ],
   },
+  // ——以下家族按真源 §4 登记，读 family-backlog.json，已迁移成员 ≥ 2 才比——
+  {
+    // 静态内容面：边界三选一（§8.3），根面的边、底、影同源
+    name: '内容面族',
+    backlog: true,
+    members: ['card', 'alert', 'code-view', 'diff-view', 'log', 'json-viewer', 'tool-call', 'reasoning', 'approval', 'question-flow'],
+    parts: [
+      { part: 'root', state: '', props: ['border', 'background', 'box-shadow'] },
+    ],
+  },
+  {
+    // 列表容器面：Collection 容器的 outline 档与 Surface 家族同一套描边面
+    name: '列表容器族',
+    backlog: true,
+    members: ['tree', 'listbox', 'transfer', 'list', 'descriptions', 'table'],
+    parts: [
+      {
+        partBy: { tree: 'tree', listbox: 'content', transfer: 'source-panel', list: 'root', descriptions: 'root', table: 'root' },
+        stateBy: { tree: '', listbox: '', transfer: '', list: '[data-variant=\'outline\']', descriptions: '[data-variant=\'outline\']', table: '[data-variant=\'outline\']' },
+        props: ['border', 'background', 'box-shadow'],
+      },
+    ],
+  },
+  {
+    // 反馈面：sheet 三件套（§8.4）
+    name: '反馈面族',
+    backlog: true,
+    members: ['toast', 'notification'],
+    parts: [
+      { partBy: { toast: 'root', notification: 'item' }, state: '', props: ['border', 'background', 'box-shadow'] },
+    ],
+  },
+  {
+    // 字段外壳：静息描边形态与三档 variant 私有槽（§8.3）
+    name: '字段族',
+    backlog: true,
+    members: [
+      'field',
+      'text-field',
+      'select',
+      'cascader',
+      'combobox',
+      'tree-select',
+      'date-field',
+      'time-field',
+      'date-picker',
+      'time-picker',
+      'date-range-picker',
+      'time-range-picker',
+      'number-field',
+      'pin-input',
+      'password-input',
+      'tags-input',
+      'editable',
+      'mention',
+      'color-field',
+      'color-picker',
+    ],
+    parts: [
+      { part: 'control', state: '', props: ['border', 'border-radius', 'background', 'box-shadow'] },
+      { part: 'root', state: '[data-variant=\'outline\']', props: '*' },
+      { part: 'root', state: '[data-variant=\'subtle\']', props: '*' },
+      { part: 'root', state: '[data-variant=\'ghost\']', props: '*' },
+    ],
+  },
+  {
+    // 值选择：选中行的底、字色与字重按集合语境走（§7.3）
+    name: '值选择族',
+    backlog: true,
+    members: ['select', 'listbox', 'combobox', 'cascader', 'tree-select', 'tree', 'date-picker', 'time-picker', 'time-range-picker'],
+    parts: [
+      {
+        partBy: { 'select': 'item', 'listbox': 'item', 'combobox': 'item', 'cascader': 'item', 'tree-select': 'item', 'tree': 'item', 'date-picker': 'time-item', 'time-picker': 'item', 'time-range-picker': 'item' },
+        stateBy: {
+          'select': '[data-state=\'checked\']',
+          'listbox': '[data-state=\'checked\']',
+          'combobox': '[data-state=\'checked\']',
+          'cascader': '[data-state=\'checked\']',
+          'tree-select': '[data-selected]',
+          'tree': '[data-selected]',
+          'date-picker': '[data-state=\'checked\']',
+          'time-picker': '[data-state=\'checked\']',
+          'time-range-picker': '[data-state=\'checked\']',
+        },
+        props: ['background', 'color', 'font-weight'],
+      },
+    ],
+  },
+  {
+    // 导航当前页：字色与字重（§7.3）；Breadcrumb 当前页不可点，是登记的例外，不在族内
+    name: '导航族',
+    backlog: true,
+    members: ['tabs', 'anchor', 'navigation-menu', 'side-nav'],
+    parts: [
+      {
+        partBy: { 'tabs': 'trigger', 'anchor': 'link', 'navigation-menu': 'link', 'side-nav': 'link' },
+        stateBy: { 'tabs': '[data-state=\'active\']', 'anchor': '[data-current]', 'navigation-menu': '[data-current]', 'side-nav': '[data-current]' },
+        props: ['color', 'font-weight'],
+      },
+    ],
+  },
+  {
+    // 开关型：选中段的底与影（§7.3）
+    name: '开关族',
+    backlog: true,
+    members: ['segmented', 'toggle-group', 'tabs'],
+    parts: [
+      {
+        partBy: { 'segmented': 'item', 'toggle-group': 'item', 'tabs': 'trigger' },
+        stateBy: { 'segmented': '[data-state=\'checked\']', 'toggle-group': '[data-state=\'on\']', 'tabs': '[data-state=\'active\']' },
+        props: ['background', 'box-shadow'],
+      },
+    ],
+  },
+  {
+    // 按钮形触发器：缺省中性，hover / active 的底按承载面阶梯走（§7.2）
+    name: '按钮形触发器族',
+    backlog: true,
+    members: ['toggle', 'clipboard', 'download-trigger', 'float-button', 'back-top', 'toolbar', 'pagination'],
+    parts: [
+      {
+        partBy: { 'toggle': 'root', 'clipboard': 'copy-trigger', 'download-trigger': 'root', 'float-button': 'trigger', 'back-top': 'trigger', 'toolbar': 'item', 'pagination': 'item' },
+        state: ':hover',
+        props: ['background'],
+      },
+      {
+        partBy: { 'toggle': 'root', 'clipboard': 'copy-trigger', 'download-trigger': 'root', 'float-button': 'trigger', 'back-top': 'trigger', 'toolbar': 'item', 'pagination': 'item' },
+        state: ':active',
+        props: ['background'],
+      },
+    ],
+  },
 ]
+
+/** 豁免表里全部分段的键，判成员是否「尚未迁移」。 */
+const backlogKeys = new Set()
+{
+  const { sections, problems: backlogProblems } = await readBacklog()
+  for (const entries of Object.values(sections)) {
+    for (const key of Object.keys(entries))
+      backlogKeys.add(key)
+  }
+  if (backlogProblems.length) {
+    console.error('[check-family-parity] ✗ family-backlog.json 本身有错：')
+    for (const problem of backlogProblems)
+      console.error(`  ${problem}`)
+    process.exit(1)
+  }
+}
+
+/**
+ * 成员在任何一段豁免表里还有条目：尚未迁移，先不参与比对。
+ * 按组件而不按部件判——迁移是一个组件八个维度一次做完，表里还剩一条它就还没进仓。
+ */
+function pending(comp) {
+  return [...backlogKeys].some(key => key.startsWith(`${comp}:`))
+}
 
 /** 去掉注释。 */
 function strip(src) {
@@ -163,6 +326,8 @@ function normalize(value, comp) {
 
 const problems = new Map()
 let governed = 0
+/** 读豁免表的家族里，已迁移成员不足两个而跳过的条目数。 */
+let skipped = 0
 
 function report(family, detail) {
   if (!problems.has(family))
@@ -183,30 +348,52 @@ for (const family of FAMILIES) {
         if (m == null || m[1] !== comp)
           continue
         // :not(…) 只是「别落在禁用项上」的守卫，不改这条规则说的是哪个状态；
-        // 其余伪类（:hover / :focus-visible）是另一个状态，不并进来
+        // 其余伪类（:hover / :focus-visible）是另一个状态：只在登记了那个伪类的家族里比，且要整条恰好是它
         const rest = m[3].replace(/:not\([^)]*\)/g, '')
-        if (/[:>+~ ]/.test(rest))
+        if (/[>+~ ]/.test(rest))
+          continue
+        if (rest.includes(':') && !family.parts.some(p => typeof p.state === 'string' && p.state.startsWith(':') && rest === p.state))
           continue
         const decls = new Map()
         for (const [name, value] of rule.decls)
-          decls.set(name, normalize(value, comp))
+          decls.set(normalize(name, comp), normalize(value, comp))
         byPart.push({ part: m[2], rest, decls })
       }
     }
     byMember.set(comp, byPart)
   }
 
-  for (const { part, state, props, only } of family.parts) {
-    // only：这条只在真有该部件规则的成员之间比对（别家的段位戴着别人的 scope 或叫别的名字）
-    const members = only ?? family.members
-    const key = `${part}${state}`
+  for (const entry of family.parts) {
+    const { props, only } = entry
+    /** 部件与状态可以按成员分别登记。 */
+    const partFor = comp => entry.partBy?.[comp] ?? entry.part
+    const stateFor = comp => entry.stateBy?.[comp] ?? entry.state ?? ''
+    // only：这条只在真有该部件规则的成员之间比对（别家的段位戴着别人的 scope 或叫别的名字）；
+    // 读豁免表的家族里，受管部件上还挂着豁免的成员尚未迁移，先不参与比对
+    let members = only ?? family.members
+    if (family.backlog) {
+      members = members.filter(comp => !pending(comp))
+      if (members.length < 2) {
+        skipped++
+        continue
+      }
+    }
+    const key = entry.partBy
+      ? `${[...new Set(members.map(partFor))].join('|')}${[...new Set(members.map(stateFor))].join('|')}`
+      : `${entry.part}${entry.state ?? ''}`
+    const matches = (rule, comp) => {
+      const state = stateFor(comp)
+      if (rule.part !== partFor(comp))
+        return false
+      if (state === '')
+        return rule.rest === ''
+      return state.startsWith(':') ? rule.rest === state : rule.rest.includes(state)
+    }
     /** 某个成员在这个部件+状态上的全部声明，同状态的多条规则并成一份。 */
     const declsOf = (comp) => {
       const merged = new Map()
       for (const rule of byMember.get(comp)) {
-        if (rule.part !== part)
-          continue
-        if (state === '' ? rule.rest !== '' : !rule.rest.includes(state))
+        if (!matches(rule, comp))
           continue
         for (const [name, value] of rule.decls)
           merged.set(name, value)
@@ -218,8 +405,7 @@ for (const family of FAMILIES) {
     // 名单过期反查：这个部件+状态在全族一条规则都匹配不上，登记就再也查不到东西了。
     // 部件改名、状态换写法（悬停与键盘锚点并成 :is(:hover, [data-highlighted]) 那次）
     // 都会走到这里；不查的话判据不是判红而是空转，逐条列属性的家族尤其看不出来
-    const matched = members.some(comp => byMember.get(comp).some(rule =>
-      rule.part === part && (state === '' ? rule.rest === '' : rule.rest.includes(state))))
+    const matched = members.some(comp => byMember.get(comp).some(rule => matches(rule, comp)))
     if (!matched) {
       report(family.name, `${key}：全族一条规则都匹配不上——名单过期了，改成新的部件 / 状态写法，或删掉这一条`)
       continue
@@ -244,7 +430,7 @@ for (const family of FAMILIES) {
       }
 
       const [majority] = [...counts].sort((a, b) => b[1] - a[1])
-      const lines = [`${key} 的 ${name}：多数派 ${majority[0] ?? '（未声明）'}（${majority[1]}/${family.members.length}）`]
+      const lines = [`${key} 的 ${name}：多数派 ${majority[0] ?? '（未声明）'}（${majority[1]}/${members.length}）`]
       for (const [comp, value] of values) {
         if (value !== majority[0])
           lines.push(`  少数派 ${comp} = ${value ?? '（未声明）'}`)
@@ -265,4 +451,4 @@ if (problems.size) {
   process.exit(1)
 }
 
-console.log(`[check-family-parity] 通过：${FAMILIES.length} 个家族 · ${governed} 处属性全族同值`)
+console.log(`[check-family-parity] 通过：${FAMILIES.length} 个家族 · ${governed} 处属性全族同值（读豁免表的家族里 ${skipped} 条因已迁移成员不足两个暂不比）`)

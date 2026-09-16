@@ -12,6 +12,8 @@
 // 其余皮肤都留了 var(--xh-<组件>-…-shadow, var(--xh-elevation-<role>))，这里不许例外。
 import { readdir, readFile } from 'node:fs/promises'
 import { join } from 'node:path'
+import { openBacklog } from './lib/family-backlog.mjs'
+import { colorPositionOf, innermost } from './lib/skin-rules.mjs'
 
 const STYLES_DIR = 'packages/design/styles/css'
 
@@ -37,17 +39,23 @@ const SLOTTED = /^var\((?:--xh-[a-z][a-z0-9-]*,\s*var\()+--xh-elevation-(?:raise
  * 改成逐部件登记，两个方向都查得出来：登了没有即死登记，有了没登即漏管。
  *
  * 值是数组：同一个部件在不同状态下换档的（滑杆拇指静态一档、拖动中另一档）逐档登记，
- * 每一档都要在皮肤里真出现，否则算死登记。raised 不必登记就能用——它不是一个面；
- * 但一个部件只要登了记，它用到的每一档都得在数组里，包括 raised。
+ * 每一档都要在皮肤里真出现，否则算死登记。
+ *
+ * raised 同样逐部件登记（真源 §8）：它只给 Card 与可抬起 / 可拖起的部件，且描边必须在——
+ * raised 所在规则块（或同部件基础块）必须声明 border，颜色位落 --xh-border-default /
+ * --xh-material-solid-border；影只是加成，不作边界。存量的 raised 记在 family-backlog.json
+ * edge 段（键 组件:部件:raised），随各组件迁移逐条删除。
  */
 const EXPECTED = {
   'back-top': { root: ['frosted'] },
   'button': { root: ['soft', 'raised'] },
   'card': { root: ['raised'] },
-  'checkbox': { root: ['soft', 'raised'] },
-  'checkbox-group': { 'root': ['soft', 'raised'], 'select-all-trigger': ['soft', 'raised'] },
+  'color-picker': { 'content': ['frosted'], 'area-thumb': ['raised'] },
+  'segmented': { indicator: ['raised'] },
+  'sortable': { item: ['raised'] },
+  'checkbox': { root: ['soft'] },
+  'checkbox-group': { 'root': ['soft'], 'select-all-trigger': ['soft'] },
   'cascader': { content: ['frosted'] },
-  'color-picker': { content: ['frosted'] },
   'combobox': { content: ['frosted'] },
   // 命令面板是盖在页面上、带遮罩的一面，与对话框同档
   'command': { content: ['sheet'] },
@@ -69,7 +77,7 @@ const EXPECTED = {
   'notification': { item: ['sheet'] },
   // 摊开的页码面板是锚在省略号上的浮层：有 positioner、有 pop-in 进场、吃 --xh-overlay-max-h
   'pagination': { content: ['floating'] },
-  'popconfirm': { 'content': ['frosted'], 'confirm-trigger': ['soft', 'raised'], 'cancel-trigger': ['soft'] },
+  'popconfirm': { 'content': ['frosted'], 'confirm-trigger': ['soft'], 'cancel-trigger': ['soft'] },
   'popover': { content: ['frosted'] },
   'prompt-input': { root: ['soft'] },
   'select': { content: ['frosted'] },
@@ -90,14 +98,34 @@ const EXPECTED = {
 
 /** 见到的 `组件/部件/角色`，用于反查死登记。 */
 const seenRoles = new Set()
+/** raised 退役的存量：登在 edge 段、键以 :raised 结尾的那些。 */
+const backlog = await openBacklog('edge', { owns: key => key.endsWith(':raised') })
+/** raised 的描边必须是这两种边色之一。 */
+const RAISED_BORDER = new Set(['--xh-border-default', '--xh-material-solid-border'])
 
 const files = (await readdir(STYLES_DIR)).filter(f => f.endsWith('.css')).sort()
-const problems = []
+const problems = [...backlog.problems]
 let checked = 0
 
 for (const file of files) {
   const comp = file.replace(/\.css$/, '')
   const src = (await readFile(join(STYLES_DIR, file), 'utf8')).replace(/\/\*[\s\S]*?\*\//g, '')
+  const allRules = [...src.matchAll(/([^{}]+)\{([^{}]*)\}/g)].map(rule => ({
+    selector: rule[1].replace(/\s+/g, ' ').trim(),
+    body: rule[2],
+  }))
+  /** 一块规则里 border 简写 / border-color 的颜色位（最内层）；没写返回 null。 */
+  const borderOf = (body) => {
+    let token = null
+    for (const decl of body.matchAll(/(?:^|;)\s*(border|border-color)\s*:\s*([^;}]+)/g))
+      token = innermost(decl[1] === 'border' ? colorPositionOf(decl[2].trim()) : decl[2].trim())
+    return token
+  }
+  /** 同部件基础块（主体只有 scope + part）的边色。 */
+  const baseBorderOf = (part) => {
+    const base = allRules.find(r => r.selector === `[data-scope='${comp}'][data-part='${part}']`)
+    return base ? borderOf(base.body) : null
+  }
   for (const rule of src.matchAll(/([^{}]+)\{([^{}]*)\}/g)) {
     const selector = rule[1].replace(/\s+/g, ' ').trim()
     for (const decl of rule[2].matchAll(/(?:^|;|\{)\s*(box-shadow|--xh-_[\w-]*shadow[\w-]*)\s*:\s*([^;}]+)/g)) {
@@ -121,8 +149,8 @@ for (const file of files) {
         : MATERIAL_FROSTED.test(value)
           ? 'frosted'
           : isElevated
-              ? 'sheet'
-              : value.match(ROLE)?.[1]
+            ? 'sheet'
+            : value.match(ROLE)?.[1]
       if (!role) {
         problems.push(`${file}  ${selector.slice(0, 60)}  ${decl[1]}: ${value.slice(0, 60)}  —— 没走 --xh-elevation-raised / floating / sheet 或已登记材质投影`)
         continue
@@ -136,21 +164,41 @@ for (const file of files) {
       seenRoles.add(`${comp}/${part}/${role}`)
       const want = EXPECTED[comp]?.[part]
       if (want) {
-        if (!want.includes(role))
-          problems.push(`${file}  ${selector.slice(0, 60)}  用了 ${role}，这个面该是 ${want.join(' 或 ')}`)
+        if (!want.includes(role)) {
+          if (!(role === 'raised' && backlog.excuse(`${comp}:${part}:raised`)))
+            problems.push(`${file}  ${selector.slice(0, 60)}  用了 ${role}，这个面该是 ${want.join(' 或 ')}`)
+        }
+        else if (role === 'raised') {
+          // raised 必带描边：本块没写 border 就看同部件基础块，颜色位得是 border-default 系
+          const border = borderOf(rule[2]) ?? baseBorderOf(part)
+          if (border == null || !RAISED_BORDER.has(border)) {
+            if (!backlog.excuse(`${comp}:${part}:raised`))
+              problems.push(`${file}  ${selector.slice(0, 60)}  ${comp} 的 ${part} 用了 raised，描边却是 ${border ?? '（没写 border）'}——raised 面必带 --xh-border-default 描边，影只是加成`)
+          }
+        }
       }
       // 没登记过的部件用了面档：要么补登，要么那一处不该用面档。
       // 判据不看这个组件在表里有没有别的条目——一个组件一条都没登记时也照查，
       // 否则整份皮肤只要不登记就整个不受管（slider 与 pagination 曾这样落在盲区里）
-      else if (role !== 'raised') {
+      else if (role === 'raised') {
+        if (!backlog.excuse(`${comp}:${part}:raised`)) {
+          problems.push(
+            `${file}  ${selector.slice(0, 60)}  ${comp} 的 ${part} 用了 raised 却没登记——`
+            + `raised 只给 Card 与可抬起 / 可拖起部件，逐部件登进 EXPECTED 并带 --xh-border-default 描边；不是的改成描边面（§8.3）`,
+          )
+        }
+      }
+      else {
         problems.push(
           `${file}  ${selector.slice(0, 60)}  ${comp} 的 ${part} 用了 ${role} 却没登记——`
-          + `补进 EXPECTED，或改用 raised（它不是一个面）`,
+          + `补进 EXPECTED`,
         )
       }
     }
   }
 }
+
+problems.push(...backlog.stale())
 
 // 死登记反查：登了却一处也没出现
 let registrations = 0
@@ -172,4 +220,4 @@ if (problems.length) {
   process.exit(1)
 }
 
-console.log(`[check-elevation-role] 通过：${files.length} 份皮肤 · ${checked} 处阴影全部按角色走（${registrations} 条逐部件登记，非 raised 的每一处都在其中）`)
+console.log(`[check-elevation-role] 通过：${files.length} 份皮肤 · ${checked} 处阴影全部按角色走（${registrations} 条逐部件登记，每一处都在其中；raised 退役待办 ${backlog.pending} 条，无过期豁免）`)

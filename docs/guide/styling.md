@@ -354,6 +354,7 @@ const ratio = contrastRatio("oklch(0.2 0.02 250)", frosted, page);
 | `check-part-wiring` | 解剖中声明、`connect` 中产出、适配器却未接线的部件。皮肤为它写了规则却匹配不到任何元素 |
 | `check-scrollbar-hosts` | 自绘条三端接线不齐、壳缺定位上下文或轨道底色、浮层没把壳记进层分支；皮肤里的滚动面没有登记进 `scroll-surface-registry.json`（或登记过期）、自绘面的轴与浮层 4px 档没接齐、`overscroll-behavior` / `scrollbar-gutter` 写在不该写的面上或该写的面上没写、原生面自己写 `scrollbar-width`、不是壳的部件声明 `--xh-scrollbar-track-bg` |
 | stylelint | 常规 CSS 规范，含皮肤不得手写 `scrollbar-width`（`none` 除外）/ `scrollbar-color` |
+| 家族门禁（`check-surface-edge` / `check-elevation-role` / `check-selection-marker` / `check-state-ladder` / `check-shape-scale` / `check-press-feedback` / `check-text-role` / `check-family-parity`） | 根面 `border` 颜色位落 `--xh-border-subtle` / `--xh-border-strong`、淡底面带影、ghost 档画边底影、raised 没登记或没带 `--xh-border-default` 描边；选中与当前态没按浮层集合 / 页内集合 / 导航 / 格状 / 开关的唯一标记走；hover / pressed 的底不从语义面派生或阶梯与承载面不符、焦点边不是 `--xh-border-control-focus`；取 circle / pill 的部件没在身份表登记、正方盒用 pill 冒充圆；铺满一行的部件登记成缩放、缩放不换底、集合行零反馈；标签 / 说明 / 标题 / 图标没按角色取令牌；同族成员不同值。存量登在 `tooling/scripts/family-backlog.json`，按门禁分段、一条一句理由，命中即放行、不命中判过期；`check-family-backlog` 用快照与 CEILING 钉住每段条目数，键集合只减不增——迁走一个组件 = 删条目 + 重录快照 + 下调 CEILING |
 
 ## 完全自定义皮肤
 
