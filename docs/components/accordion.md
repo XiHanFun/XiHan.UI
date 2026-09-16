@@ -86,7 +86,7 @@ indicator 是可选部件，不渲染它就没有默认字形；标记由作者�
 
 ### 变体
 
-plain 不绘制外壳，surface 连成单一表面，bordered 逐条绘制边框；三档只改变与页面分开的方式
+ghost 不绘制外壳，outline 连成单一表面，subtle 用淡底；三档只改变与页面分开的方式
 
 <XhDemo src="accordion/12-variant" />
 
@@ -146,7 +146,7 @@ plain 不绘制外壳，surface 连成单一表面，bordered 逐条绘制边框
 | `collapsible` | `boolean` |  | 允许收起最后一个展开项，默认 false。 |
 | `loop` | `boolean` |  | 方向键到达末尾是否回绕，默认 false。 |
 | `disabled` | `boolean` |  | 整组禁用：所有条目都不可切换，条目上的 disabled 只能收紧不能放宽。 |
-| `variant` | `AccordionVariant` |  | 变体：plain / surface / bordered，决定条目与页面的分隔方式。默认 plain。 |
+| `variant` | `ControlVariant` |  | 形态：ghost 条目直接相邻不画容器（默认），outline 为单一连续表面，subtle 为淡底。默认 ghost。 |
 | `orientation` | `Orientation` |  | 方向键轴向，默认 vertical。 |
 | `dir` | `Direction` |  | 文字方向，默认 ltr；影响水平轴上 ArrowLeft / ArrowRight 的语义。 |
 | `tone` | `Tone` |  | 颜色：brand / neutral / success / warning / danger / info，决定使用哪组状态色。 |
@@ -268,11 +268,10 @@ plain 不绘制外壳，surface 连成单一表面，bordered 逐条绘制边框
 | `--xh-accordion-content-px` | `content` | `padding-inline` | `default` | `--xh-_accordion-content-px` | accordion 的 content 部件 padding-inline 覆盖槽。 |
 | `--xh-accordion-icon-size` | `root` | `--xh-icon-size` | `default` | `--xh-glyph-size-text` | accordion 的 root 部件 --xh-icon-size 覆盖槽。 |
 | `--xh-accordion-indicator-fg` | `indicator` | `color` | `default` | `--xh-fg-muted` | accordion 的 indicator 部件 color 覆盖槽。 |
-| `--xh-accordion-item-bg` | `root` | `background` | `variant=surface` | `--xh-bg-surface` | accordion 的 root 部件 background 覆盖槽。 |
-| `--xh-accordion-item-border` | `item`<br>`item-separator`<br>`root` | `background`<br>`border`<br>`border-block-start`<br>`border-inline-start` | `default`<br>`not(:last-child)`<br>`orientation=horizontal`<br>`variant=bordered`<br>`variant=surface` | `--xh-border-subtle` | accordion 的 item、item-separator、root 部件 background、border、border-block-start、border-inline-start 覆盖槽。 |
-| `--xh-accordion-item-gap` | `root` | `gap` | `variant=bordered` | `--xh-space-2` | accordion 的 root 部件 gap 覆盖槽。 |
-| `--xh-accordion-item-radius` | `item`<br>`root` | `border-radius` | `variant=bordered`<br>`variant=surface` | `--xh-shape-surface` | accordion 的 item、root 部件 border-radius 覆盖槽。 |
-| `--xh-accordion-item-shadow` | `root` | `box-shadow` | `variant=surface` | `none` | accordion 的 root 部件 box-shadow 覆盖槽。 |
+| `--xh-accordion-item-bg` | `root` | `background` | `variant=outline`<br>`variant=subtle` | `--xh-bg-subtle`<br>`--xh-bg-surface` | accordion 的 root 部件 background 覆盖槽。 |
+| `--xh-accordion-item-border` | `item`<br>`item-separator`<br>`root` | `background`<br>`border-block-start`<br>`border-inline-start` | `default`<br>`is([data-variant='outline'], [data-variant='subtle'])`<br>`not(:last-child)`<br>`orientation=horizontal`<br>`variant=outline`<br>`variant=subtle` | `--xh-border-subtle` | accordion 的 item、item-separator、root 部件 background、border-block-start、border-inline-start 覆盖槽。 |
+| `--xh-accordion-item-radius` | `root` | `border-radius` | `variant=outline`<br>`variant=subtle` | `--xh-shape-surface` | accordion 的 root 部件 border-radius 覆盖槽。 |
+| `--xh-accordion-item-shadow` | `root` | `box-shadow` | `variant=outline`<br>`variant=subtle` | `none` | accordion 的 root 部件 box-shadow 覆盖槽。 |
 | `--xh-accordion-trigger-bg` | `trigger` | `background` | `default` | `transparent` | accordion 的 trigger 部件 background 覆盖槽。 |
 | `--xh-accordion-trigger-bg-hover` | `trigger` | `background` | `disabled`<br>`hover`<br>`not([data-disabled])`<br>`not([data-state='open'])`<br>`state=open` | `--xh-bg-subtle-hover` | accordion 的 trigger 部件 background 覆盖槽。 |
 | `--xh-accordion-trigger-fg` | `trigger` | `color` | `default` | `--xh-fg-default` | accordion 的 trigger 部件 color 覆盖槽。 |

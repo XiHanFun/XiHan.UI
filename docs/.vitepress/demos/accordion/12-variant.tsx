@@ -1,4 +1,4 @@
-// 变体 | plain 不绘制外壳，surface 连成单一表面，bordered 逐条绘制边框；三档只改变与页面分开的方式
+// 形态 | ghost 不绘制外壳，outline 连成单一表面，subtle 用淡底；三档只改变与页面分开的方式
 import type { ReactNode } from "react";
 import { XhAccordionRoot } from "@xihan-ui/react";
 
@@ -7,7 +7,7 @@ const panels = [
   { value: "refund", label: "退换政策", content: "签收 7 天内可申请退换。" },
 ];
 
-const variants = ["plain", "surface", "bordered"] as const;
+const variants = ["ghost", "outline", "subtle"] as const;
 
 export default function Demo(): ReactNode {
   return (

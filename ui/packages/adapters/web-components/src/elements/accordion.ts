@@ -5,8 +5,8 @@
 
 // 提供 accordion 相关实现。
 
-import type { Direction, IdGenerator, Orientation, RuntimeConfig, Size, Tone } from '@xihan-ui/core'
-import type { AccordionItemProps, AccordionNode, AccordionSchema, AccordionValueChangeDetails, AccordionVariant } from '@xihan-ui/headless'
+import type { ControlVariant, Direction, IdGenerator, Orientation, RuntimeConfig, Size, Tone } from '@xihan-ui/core'
+import type { AccordionItemProps, AccordionNode, AccordionSchema, AccordionValueChangeDetails } from '@xihan-ui/headless'
 import type { OverlayExit } from '../overlay-exit'
 import { createCounterIdGenerator, createRuntimeConfig, createScope, isItemDisabled } from '@xihan-ui/core'
 import { accordionAnatomy, accordionMachine, accordionMeta, connectAccordion } from '@xihan-ui/headless'
@@ -26,7 +26,7 @@ const ITEM_SELECTOR = '[data-xh-part="item"]'
  * @attr {boolean} collapsible - 允许收起最后一个展开项
  * @attr {boolean} loop - 方向键到达末尾回绕，默认关闭
  * @attr {boolean} disabled - 整组禁用
- * @attr {'plain'|'surface'|'bordered'} variant - 形态，默认 plain
+ * @attr {'outline'|'subtle'|'ghost'} variant - 形态：ghost 条目直接相邻不画容器，outline 为单一连续表面，subtle 为淡底；默认 ghost
  * @attr {'horizontal'|'vertical'} orientation - 方向键轴向，默认 vertical
  * @attr {'brand'|'neutral'|'success'|'warning'|'danger'|'info'} tone - 语气
  * @attr {'sm'|'md'|'lg'} size - 尺寸
@@ -78,7 +78,7 @@ export class XhAccordionElement extends XhElement {
   declare collapsible?: boolean
   declare loop?: boolean
   declare disabled?: boolean
-  declare variant?: AccordionVariant
+  declare variant?: ControlVariant
   declare orientation?: Orientation
   declare textDir?: Direction
   declare tone?: Tone

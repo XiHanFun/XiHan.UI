@@ -14,7 +14,6 @@ export type ComponentTokenName =
   | '--xh-accordion-indicator-fg'
   | '--xh-accordion-item-bg'
   | '--xh-accordion-item-border'
-  | '--xh-accordion-item-gap'
   | '--xh-accordion-item-radius'
   | '--xh-accordion-item-shadow'
   | '--xh-accordion-trigger-bg'

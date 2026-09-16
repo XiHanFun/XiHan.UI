@@ -1,9 +1,9 @@
-<!-- 变体 | plain 不绘制外壳，surface 连成单一表面，bordered 逐条绘制边框；三档只改变与页面分开的方式 -->
+<!-- 形态 | ghost 不绘制外壳，outline 连成单一表面，subtle 用淡底；三档只改变与页面分开的方式 -->
 <div
   id="accordion-variants"
   style="display: grid; gap: 16px; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr))"
 >
-  <xh-accordion variant="plain">
+  <xh-accordion variant="ghost">
     <div data-xh-part="root">
       <div data-xh-part="item" value="shipping">
         <h3 data-xh-part="header">
@@ -26,7 +26,7 @@
     </div>
   </xh-accordion>
 
-  <xh-accordion variant="surface">
+  <xh-accordion variant="outline">
     <div data-xh-part="root">
       <div data-xh-part="item" value="shipping">
         <h3 data-xh-part="header">
@@ -49,7 +49,7 @@
     </div>
   </xh-accordion>
 
-  <xh-accordion variant="bordered">
+  <xh-accordion variant="subtle">
     <div data-xh-part="root">
       <div data-xh-part="item" value="shipping">
         <h3 data-xh-part="header">

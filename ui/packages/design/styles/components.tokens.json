@@ -123,9 +123,11 @@
         "background"
       ],
       "state": [
-        "variant=surface"
+        "variant=outline",
+        "variant=subtle"
       ],
       "defaultToken": [
+        "--xh-bg-subtle",
         "--xh-bg-surface"
       ],
       "visibility": "public",
@@ -141,60 +143,41 @@
       ],
       "property": [
         "background",
-        "border",
         "border-block-start",
         "border-inline-start"
       ],
       "state": [
         "default",
+        "is([data-variant='outline'], [data-variant='subtle'])",
         "not(:last-child)",
         "orientation=horizontal",
-        "variant=bordered",
-        "variant=surface"
+        "variant=outline",
+        "variant=subtle"
       ],
       "defaultToken": [
         "--xh-border-subtle"
       ],
       "visibility": "public",
-      "description": "accordion 的 item、item-separator、root 部件 background、border、border-block-start、border-inline-start 覆盖槽。"
-    },
-    {
-      "name": "--xh-accordion-item-gap",
-      "component": "accordion",
-      "part": [
-        "root"
-      ],
-      "property": [
-        "gap"
-      ],
-      "state": [
-        "variant=bordered"
-      ],
-      "defaultToken": [
-        "--xh-space-2"
-      ],
-      "visibility": "public",
-      "description": "accordion 的 root 部件 gap 覆盖槽。"
+      "description": "accordion 的 item、item-separator、root 部件 background、border-block-start、border-inline-start 覆盖槽。"
     },
     {
       "name": "--xh-accordion-item-radius",
       "component": "accordion",
       "part": [
-        "item",
         "root"
       ],
       "property": [
         "border-radius"
       ],
       "state": [
-        "variant=bordered",
-        "variant=surface"
+        "variant=outline",
+        "variant=subtle"
       ],
       "defaultToken": [
         "--xh-shape-surface"
       ],
       "visibility": "public",
-      "description": "accordion 的 item、root 部件 border-radius 覆盖槽。"
+      "description": "accordion 的 root 部件 border-radius 覆盖槽。"
     },
     {
       "name": "--xh-accordion-item-shadow",
@@ -206,7 +189,8 @@
         "box-shadow"
       ],
       "state": [
-        "variant=surface"
+        "variant=outline",
+        "variant=subtle"
       ],
       "defaultToken": [
         "none"

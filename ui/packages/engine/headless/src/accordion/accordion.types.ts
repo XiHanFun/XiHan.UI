@@ -5,10 +5,7 @@
 
 // 定义 accordion 类型契约。
 
-import type { Direction, MachineSchema, Orientation, PropTypes, Size, Tone } from '@xihan-ui/core'
-
-/** 变体：条目与页面的分隔方式。默认 plain，条目直接相邻、不绘制容器。 */
-export type AccordionVariant = 'plain' | 'surface' | 'bordered'
+import type { ControlVariant, Direction, MachineSchema, Orientation, PropTypes, Size, Tone } from '@xihan-ui/core'
 
 export interface AccordionValueChangeDetails {
   value: string[]
@@ -61,8 +58,8 @@ export interface AccordionSchema extends MachineSchema {
     loop?: boolean
     /** 整组禁用：所有条目都不可切换，条目上的 disabled 只能收紧不能放宽。 */
     disabled?: boolean
-    /** 变体：plain / surface / bordered，决定条目与页面的分隔方式。默认 plain。 */
-    variant?: AccordionVariant
+    /** 形态：ghost 条目直接相邻不画容器（默认），outline 为单一连续表面，subtle 为淡底。默认 ghost。 */
+    variant?: ControlVariant
     /** 方向键轴向，默认 vertical。 */
     orientation?: Orientation
     /** 文字方向，默认 ltr；影响水平轴上 ArrowLeft / ArrowRight 的语义。 */

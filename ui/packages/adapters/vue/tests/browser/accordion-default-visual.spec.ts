@@ -10,7 +10,7 @@ afterEach(() => {
   host = null
 })
 
-function mount(variant?: 'plain' | 'surface') {
+function mount(variant?: 'ghost' | 'outline' | 'subtle') {
   host = document.createElement('div')
   host.innerHTML = `
     <div data-scope="accordion" data-part="root"${variant ? ` data-variant="${variant}"` : ''}>
@@ -64,8 +64,8 @@ describe('accordion 默认视觉', () => {
     expect(getComputedStyle(open!).backgroundColor).toBe(openRest)
   })
 
-  it('surface 是一块连续表面，分隔线内收且末项不留尾线', () => {
-    const accordion = mount('surface')
+  it('outline 是一块连续表面，分隔线内收且末项不留尾线', () => {
+    const accordion = mount('outline')
     const root = getComputedStyle(accordion.root)
     const firstSeparator = getComputedStyle(accordion.items[0]!, '::after')
     const lastSeparator = getComputedStyle(accordion.items[1]!, '::after')

@@ -5,8 +5,8 @@
 
 // 提供 accordion 相关实现。
 
-import type { Direction, Orientation, Size, Tone } from '@xihan-ui/core'
-import type { AccordionNode, AccordionNodeMeta, AccordionSchema, AccordionVariant } from '@xihan-ui/headless'
+import type { ControlVariant, Direction, Orientation, Size, Tone } from '@xihan-ui/core'
+import type { AccordionNode, AccordionNodeMeta, AccordionSchema } from '@xihan-ui/headless'
 import type { ComponentPropsWithRef, ReactNode } from 'react'
 import { useMemo, useRef } from 'react'
 import { mergeReactProps } from '../../runtime/merge-props'
@@ -27,7 +27,7 @@ export interface XhAccordionRootProps extends RootElementProps {
   collapsible?: boolean
   loop?: boolean
   disabled?: boolean
-  variant?: AccordionVariant
+  variant?: ControlVariant
   orientation?: Orientation
   /** 只改变水平轴上左右键的语义，不写入 DOM。 */
   dir?: Direction
