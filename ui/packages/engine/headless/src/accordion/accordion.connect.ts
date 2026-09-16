@@ -67,7 +67,7 @@ export function connectAccordion<T extends PropTypes>(
     getRootProps: () => normalize.element({
       ...parts.root.attrs,
       'data-orientation': orientation,
-      'data-variant': prop('variant'),
+      'data-variant': prop('variant') ?? 'ghost',
       'data-tone': prop('tone'),
       'data-size': prop('size'),
       'data-disabled': dataAttr(groupDisabled),

@@ -102,8 +102,8 @@ describe('connectAccordion 投影', () => {
   })
 
   it('根落方向与三轴；collection 推出文本、正文与禁用，部件上写的禁用优先，整组禁用一票通过', () => {
-    const a = makeAccordion({ collection: [{ value: 'install' }, { value: 'theme', label: '换皮肤', content: '覆写令牌', disabled: true }], variant: 'bordered', tone: 'brand', size: 'sm' })
-    expect(a.api().getRootProps()).toMatchObject({ 'data-orientation': 'vertical', 'data-variant': 'bordered', 'data-tone': 'brand', 'data-size': 'sm' })
+    const a = makeAccordion({ collection: [{ value: 'install' }, { value: 'theme', label: '换皮肤', content: '覆写令牌', disabled: true }], variant: 'outline', tone: 'brand', size: 'sm' })
+    expect(a.api().getRootProps()).toMatchObject({ 'data-orientation': 'vertical', 'data-variant': 'outline', 'data-tone': 'brand', 'data-size': 'sm' })
     expect(a.api().collection).toEqual([
       { value: 'install', label: 'install', content: undefined, disabled: false },
       { value: 'theme', label: '换皮肤', content: '覆写令牌', disabled: true },
@@ -113,6 +113,16 @@ describe('connectAccordion 投影', () => {
     a.setProps({ disabled: true })
     expect(a.api().getRootProps()).toMatchObject({ 'data-disabled': '' })
     expect((a.api().getTriggerProps({ value: 'install' }) as Record<string, unknown>)['aria-disabled']).toBe('true')
+    a.stop()
+  })
+
+  it('形态恒有值：不写 variant 时 root 落 ghost，写了 outline / subtle 如实落', () => {
+    const a = makeAccordion()
+    expect(a.api().getRootProps()).toMatchObject({ 'data-variant': 'ghost' })
+    a.setProps({ variant: 'outline' })
+    expect(a.api().getRootProps()).toMatchObject({ 'data-variant': 'outline' })
+    a.setProps({ variant: 'subtle' })
+    expect(a.api().getRootProps()).toMatchObject({ 'data-variant': 'subtle' })
     a.stop()
   })
 })

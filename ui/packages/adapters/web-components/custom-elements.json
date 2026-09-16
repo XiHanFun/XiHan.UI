@@ -156,7 +156,7 @@
               "name": "variant",
               "privacy": "public",
               "type": {
-                "text": "AccordionVariant | undefined"
+                "text": "ControlVariant | undefined"
               },
               "attribute": "variant"
             },
@@ -301,9 +301,9 @@
             },
             {
               "type": {
-                "text": "AccordionVariant | undefined"
+                "text": "ControlVariant | undefined"
               },
-              "description": "形态，默认 plain",
+              "description": "形态：ghost 条目直接相邻不画容器，outline 为单一连续表面，subtle 为淡底；默认 ghost",
               "name": "variant",
               "fieldName": "variant"
             },
@@ -362,9 +362,6 @@
             },
             {
               "name": "--xh-accordion-item-border"
-            },
-            {
-              "name": "--xh-accordion-item-gap"
             },
             {
               "name": "--xh-accordion-item-radius"

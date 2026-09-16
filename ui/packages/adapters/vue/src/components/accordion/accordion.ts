@@ -5,8 +5,8 @@
 
 // 提供 accordion 相关实现。
 
-import type { Direction, Orientation, Size, Tone } from '@xihan-ui/core'
-import type { AccordionNode, AccordionNodeMeta, AccordionSchema, AccordionVariant } from '@xihan-ui/headless'
+import type { ControlVariant, Direction, Orientation, Size, Tone } from '@xihan-ui/core'
+import type { AccordionNode, AccordionNodeMeta, AccordionSchema } from '@xihan-ui/headless'
 import type { PropType, VNode } from 'vue'
 import type { PayloadOf } from '../../runtime/payload'
 import { defineComponent, h, ref } from 'vue'
@@ -26,7 +26,7 @@ export const XhAccordionRoot = defineComponent({
     collapsible: Boolean,
     loop: Boolean,
     disabled: Boolean,
-    variant: { type: String as PropType<AccordionVariant> },
+    variant: { type: String as PropType<ControlVariant> },
     orientation: { type: String as PropType<Orientation> },
     // 只改水平轴上左右键的语义，不写进 DOM
     dir: { type: String as PropType<Direction> },
