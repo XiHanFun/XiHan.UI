@@ -60,6 +60,7 @@ export const approvalSuite: ConformanceSuite = {
             'data-xh-action-variant': 'solid',
             'data-xh-action-display': 'always',
             'data-xh-action-size': 'md',
+            'data-tone': null,
           },
           'deny-trigger': {
             'type': 'button',
@@ -70,6 +71,7 @@ export const approvalSuite: ConformanceSuite = {
             'data-xh-action-variant': 'outline',
             'data-xh-action-display': 'always',
             'data-xh-action-size': 'md',
+            'data-tone': null,
           },
           // 授权行接 Action Control row 档：ghost 形态、按下只换面
           'item': [
@@ -90,6 +92,20 @@ export const approvalSuite: ConformanceSuite = {
       initial: {
         parts: {
           root: { 'data-variant': 'ghost' },
+        },
+      },
+    },
+    {
+      // 家族的深色 solid 规则只看触发器自身的 data-tone：语气除了落在根上染描边，
+      // 还与 Button 同构地投在批准钮自己身上，暗色下实心面才不会落回品牌色；描边形态的拒绝钮不吃这条
+      name: '语气落到根与批准钮上：根染描边、批准钮实心面随语气，拒绝钮不投',
+      spec: { apg: APG },
+      props: { tone: 'danger' },
+      initial: {
+        parts: {
+          'root': { 'data-tone': 'danger' },
+          'approve-trigger': { 'data-tone': 'danger' },
+          'deny-trigger': { 'data-tone': null },
         },
       },
     },
