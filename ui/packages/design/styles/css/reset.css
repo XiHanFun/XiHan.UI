@@ -7,12 +7,22 @@
  * 库自己的基线，只作用于带 data-scope 的库节点，不碰宿主页面的任何元素。
  *
  * 层序上 xihan.reset 在 xihan.components 之前，所以组件皮肤里的任何显式声明都盖得住这里。
+ *
+ * 本层全部选择器（剥去伪元素）特指度为 (0,0,0)：一律以 :where() 包住。无层产物
+ * index.unlayered.css 里没有层序可依，只按特指度竞争，而 Family Recipe 的根规则
+ * （[data-xh-action-control] 一类，(0,1,0)）在产物里排在本文件之前——本层若同为 (0,1,0)，
+ * 靠源序就把配方的三档字号压掉。压到 (0,0,0) 后，无层产物里任何皮肤与配方规则都压得住它；
+ * 代价是无层模式下宿主的元素选择器 (0,0,1) 也压得过，写在文档站「皮肤与样式分层」。
  */
 @layer xihan.reset {
   /* 尺寸一律含边框：皮肤里的宽高都是照可见盒子写的。 */
-  [data-scope],
-  [data-scope]::before,
-  [data-scope]::after {
+  :where([data-scope]) {
+    box-sizing: border-box;
+  }
+
+  /* 伪元素自身带 (0,0,1)，无法再低；:where() 只压掉宿主那一截。 */
+  :where([data-scope])::before,
+  :where([data-scope])::after {
     box-sizing: border-box;
   }
 
@@ -20,7 +30,7 @@
    * UA 样式会把表单控件的字体锁成系统默认，不跟随页面。
    * 这几个元素是 UA 唯一强制字体的地方，标题一类不在其中，故不做全局 font: inherit。
    */
-  [data-scope]:where(button, input, optgroup, select, textarea) {
+  :where([data-scope]):where(button, input, optgroup, select, textarea) {
     font: inherit;
     letter-spacing: inherit;
   }
@@ -34,11 +44,11 @@
    * 用 visibility 而不是 display：display:none 会让浮层退出排版，引擎量不到它的尺寸。
    * 锚点被滚出可视区时引擎置 hidden，各皮肤另有一条 [data-hidden] 压回去。
    */
-  [data-scope][data-part='positioner'] {
+  :where([data-scope][data-part='positioner']) {
     visibility: hidden;
   }
 
-  [data-scope][data-part='positioner'][data-positioned] {
+  :where([data-scope][data-part='positioner'][data-positioned]) {
     visibility: visible;
   }
 
@@ -55,8 +65,8 @@
    * 只写这两个属性：高亮伪元素能吃的属性极窄，box-shadow / border 一类多数引擎
    * 直接丢弃，不报错也不生效，写了只会让人以为已经处理过。
    */
-  [data-scope]::selection,
-  [data-scope] *::selection {
+  :where([data-scope])::selection,
+  :where([data-scope]) *::selection {
     background: var(--xh-bg-brand-subtle);
     color: var(--xh-fg-default);
   }
