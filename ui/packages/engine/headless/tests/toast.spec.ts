@@ -251,6 +251,23 @@ describe('connectToast', () => {
     expect(unmounted.hidden).toBe(true)
   })
 
+  it('两颗钮投影 Action Control 家族属性：操作钮 text outline sm，关闭钮 icon ghost xs', () => {
+    const api = makeToast({ duration: 0 }).api()
+    const action = api.getActionTriggerProps() as Record<string, unknown>
+    const close = api.getCloseTriggerProps() as Record<string, unknown>
+    expect(action['data-xh-action-control']).toBe('')
+    expect(action['data-xh-action-profile']).toBe('text')
+    expect(action['data-xh-action-variant']).toBe('outline')
+    expect(action['data-xh-action-display']).toBe('always')
+    expect(action['data-xh-action-size']).toBe('sm')
+    expect(close['data-xh-action-control']).toBe('')
+    expect(close['data-xh-action-profile']).toBe('icon')
+    expect(close['data-xh-action-variant']).toBe('ghost')
+    // 显隐由皮肤按 root 悬停 / 焦点只压 opacity：家族的 hover-focus 用 visibility 收起，占 Tab 位的叉会被键盘漏掉
+    expect(close['data-xh-action-display']).toBe('always')
+    expect(close['data-xh-action-size']).toBe('xs')
+  })
+
   it('closable=false：关闭按钮 disabled + hidden，且点它也不会退场', () => {
     const t = makeToast({ duration: 0, closable: false })
     const close = t.api().getCloseTriggerProps() as Record<string, unknown> & { onClick: () => void }

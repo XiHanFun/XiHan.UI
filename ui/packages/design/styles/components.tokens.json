@@ -64870,16 +64870,16 @@
         "action-trigger"
       ],
       "property": [
-        "background"
+        "background-color"
       ],
       "state": [
         "default"
       ],
       "defaultToken": [
-        "--xh-bg-subtle"
+        "transparent"
       ],
       "visibility": "public",
-      "description": "toast 的 action-trigger 部件 background 覆盖槽。"
+      "description": "toast 的 action-trigger 部件 background-color 覆盖槽。"
     },
     {
       "name": "--xh-toast-action-bg-active",
@@ -64888,17 +64888,21 @@
         "action-trigger"
       ],
       "property": [
-        "background"
+        "background-color"
       ],
       "state": [
-        "active",
-        "not(:disabled)"
+        "disabled",
+        "is(:active, [data-pressed])",
+        "loading",
+        "not([data-disabled])",
+        "not([data-loading])",
+        "pressed"
       ],
       "defaultToken": [
-        "--xh-bg-subtle-active"
+        "--xh-bg-subtle-hover"
       ],
       "visibility": "public",
-      "description": "toast 的 action-trigger 部件 background 覆盖槽。"
+      "description": "toast 的 action-trigger 部件 background-color 覆盖槽。"
     },
     {
       "name": "--xh-toast-action-bg-hover",
@@ -64907,17 +64911,20 @@
         "action-trigger"
       ],
       "property": [
-        "background"
+        "background-color"
       ],
       "state": [
+        "disabled",
         "hover",
-        "not(:disabled)"
+        "loading",
+        "not([data-disabled])",
+        "not([data-loading])"
       ],
       "defaultToken": [
-        "--xh-bg-subtle-hover"
+        "--xh-bg-subtle"
       ],
       "visibility": "public",
-      "description": "toast 的 action-trigger 部件 background 覆盖槽。"
+      "description": "toast 的 action-trigger 部件 background-color 覆盖槽。"
     },
     {
       "name": "--xh-toast-action-border",
@@ -64926,16 +64933,25 @@
         "action-trigger"
       ],
       "property": [
-        "border"
+        "border",
+        "border-color"
       ],
       "state": [
-        "default"
+        "default",
+        "disabled",
+        "hover",
+        "is(:active, [data-pressed])",
+        "loading",
+        "not([data-disabled])",
+        "not([data-loading])",
+        "pressed"
       ],
       "defaultToken": [
-        "--xh-border-default"
+        "--xh-border-control",
+        "--xh-border-control-hover"
       ],
       "visibility": "public",
-      "description": "toast 的 action-trigger 部件 border 覆盖槽。"
+      "description": "toast 的 action-trigger 部件 border、border-color 覆盖槽。"
     },
     {
       "name": "--xh-toast-action-fg",
@@ -64947,7 +64963,14 @@
         "color"
       ],
       "state": [
-        "default"
+        "default",
+        "disabled",
+        "hover",
+        "is(:active, [data-pressed])",
+        "loading",
+        "not([data-disabled])",
+        "not([data-loading])",
+        "pressed"
       ],
       "defaultToken": [
         "--xh-fg-default"
@@ -64980,16 +65003,18 @@
         "action-trigger"
       ],
       "property": [
-        "block-size"
+        "block-size",
+        "inline-size"
       ],
       "state": [
-        "default"
+        "default",
+        "xh-action-profile=icon"
       ],
       "defaultToken": [
-        "--xh-control-h-sm"
+        "--xh-_action-profile-visual-size"
       ],
       "visibility": "public",
-      "description": "toast 的 action-trigger 部件 block-size 覆盖槽。"
+      "description": "toast 的 action-trigger 部件 block-size、inline-size 覆盖槽。"
     },
     {
       "name": "--xh-toast-action-px",
@@ -65004,7 +65029,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-control-px-sm"
+        "--xh-_action-profile-padding-inline"
       ],
       "visibility": "public",
       "description": "toast 的 action-trigger 部件 padding-inline 覆盖槽。"
@@ -65040,7 +65065,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-bg-surface"
+        "--xh-material-elevated-bg"
       ],
       "visibility": "public",
       "description": "toast 的 root 部件 background 覆盖槽。"
@@ -65058,7 +65083,7 @@
         "default"
       ],
       "defaultToken": [
-        "transparent"
+        "--xh-material-elevated-border"
       ],
       "visibility": "public",
       "description": "toast 的 root 部件 border 覆盖槽。"
@@ -65070,16 +65095,16 @@
         "close-trigger"
       ],
       "property": [
-        "background"
+        "background-color"
       ],
       "state": [
         "default"
       ],
       "defaultToken": [
-        "--xh-bg-subtle"
+        "--xh-_action-variant-bg-rest"
       ],
       "visibility": "public",
-      "description": "toast 的 close-trigger 部件 background 覆盖槽。"
+      "description": "toast 的 close-trigger 部件 background-color 覆盖槽。"
     },
     {
       "name": "--xh-toast-close-bg-active",
@@ -65088,16 +65113,21 @@
         "close-trigger"
       ],
       "property": [
-        "background"
+        "background-color"
       ],
       "state": [
-        "active"
+        "disabled",
+        "is(:active, [data-pressed])",
+        "loading",
+        "not([data-disabled])",
+        "not([data-loading])",
+        "pressed"
       ],
       "defaultToken": [
-        "--xh-bg-subtle-active"
+        "--xh-_action-variant-bg-pressed"
       ],
       "visibility": "public",
-      "description": "toast 的 close-trigger 部件 background 覆盖槽。"
+      "description": "toast 的 close-trigger 部件 background-color 覆盖槽。"
     },
     {
       "name": "--xh-toast-close-bg-hover",
@@ -65106,17 +65136,20 @@
         "close-trigger"
       ],
       "property": [
-        "background"
+        "background-color"
       ],
       "state": [
+        "disabled",
         "hover",
-        "not(:disabled)"
+        "loading",
+        "not([data-disabled])",
+        "not([data-loading])"
       ],
       "defaultToken": [
-        "--xh-bg-subtle-hover"
+        "--xh-_action-variant-bg-hover"
       ],
       "visibility": "public",
-      "description": "toast 的 close-trigger 部件 background 覆盖槽。"
+      "description": "toast 的 close-trigger 部件 background-color 覆盖槽。"
     },
     {
       "name": "--xh-toast-close-border",
@@ -65131,7 +65164,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-border-default"
+        "--xh-_action-variant-border-rest"
       ],
       "visibility": "public",
       "description": "toast 的 close-trigger 部件 border 覆盖槽。"
@@ -65164,8 +65197,13 @@
         "color"
       ],
       "state": [
+        "disabled",
         "hover",
-        "not(:disabled)"
+        "is(:active, [data-pressed])",
+        "loading",
+        "not([data-disabled])",
+        "not([data-loading])",
+        "pressed"
       ],
       "defaultToken": [
         "--xh-fg-default"
@@ -65199,16 +65237,18 @@
       ],
       "property": [
         "block-size",
-        "inline-size"
+        "inline-size",
+        "min-inline-size"
       ],
       "state": [
-        "default"
+        "default",
+        "xh-action-profile=icon"
       ],
       "defaultToken": [
-        "--xh-control-action-size"
+        "--xh-_action-profile-visual-size"
       ],
       "visibility": "public",
-      "description": "toast 的 close-trigger 部件 block-size、inline-size 覆盖槽。"
+      "description": "toast 的 close-trigger 部件 block-size、inline-size、min-inline-size 覆盖槽。"
     },
     {
       "name": "--xh-toast-description-fg",
@@ -65241,7 +65281,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-text-label-size"
+        "--xh-text-secondary-size"
       ],
       "visibility": "public",
       "description": "toast 的 description 部件 font-size 覆盖槽。"
@@ -65259,7 +65299,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-text-body-leading"
+        "--xh-leading-normal"
       ],
       "visibility": "public",
       "description": "toast 的 description 部件 line-height 覆盖槽。"
@@ -65298,7 +65338,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-fg-default"
+        "--xh-material-elevated-fg"
       ],
       "visibility": "public",
       "description": "toast 的 root 部件 color 覆盖槽。"
@@ -65403,6 +65443,7 @@
       "name": "--xh-toast-icon-size",
       "component": "toast",
       "part": [
+        "close-trigger",
         "root"
       ],
       "property": [
@@ -65412,10 +65453,11 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-glyph-size-sm"
+        "--xh-_action-profile-glyph-size",
+        "--xh-glyph-size-md"
       ],
       "visibility": "public",
-      "description": "toast 的 root 部件 --xh-icon-size 覆盖槽。"
+      "description": "toast 的 close-trigger、root 部件 --xh-icon-size 覆盖槽。"
     },
     {
       "name": "--xh-toast-indicator-p",
@@ -65713,7 +65755,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-elevation-sheet"
+        "--xh-material-elevated-shadow"
       ],
       "visibility": "public",
       "description": "toast 的 root 部件 box-shadow 覆盖槽。"
@@ -65767,7 +65809,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-font-weight-medium"
+        "--xh-font-weight-semibold"
       ],
       "visibility": "public",
       "description": "toast 的 title 部件 font-weight 覆盖槽。"

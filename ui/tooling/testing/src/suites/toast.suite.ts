@@ -73,13 +73,27 @@ export const toastSuite: ConformanceSuite = {
           },
           'title': { id: '@self' },
           'description': { id: '@self' },
-          'action-trigger': { type: 'button' },
+          // 带文案的离散动作钮：text outline 档，固定 sm
+          'action-trigger': {
+            'type': 'button',
+            'data-xh-action-control': '',
+            'data-xh-action-profile': 'text',
+            'data-xh-action-variant': 'outline',
+            'data-xh-action-display': 'always',
+            'data-xh-action-size': 'sm',
+          },
           'close-trigger': {
             'type': 'button',
             'aria-label': 'Close',
             'disabled': null,
             'data-disabled': null,
             'hidden': null,
+            // 只有字形的离散动作钮：icon ghost 档、固定 xs（显隐由皮肤按 root 悬停 / 焦点给，不走 hover-focus）
+            'data-xh-action-control': '',
+            'data-xh-action-profile': 'icon',
+            'data-xh-action-variant': 'ghost',
+            'data-xh-action-display': 'always',
+            'data-xh-action-size': 'xs',
           },
         },
       },
