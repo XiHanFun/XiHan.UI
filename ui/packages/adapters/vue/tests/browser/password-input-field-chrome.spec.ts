@@ -197,18 +197,37 @@ describe('password-input Field Chrome 细节', () => {
     expect(mask()).not.toBe(hiddenMask)
   })
 
-  it('forced-colors 保留动作分隔，禁用分隔改用系统禁用色', async () => {
+  it('forced-colors 保留动作分隔，禁用分隔改用系统禁用色，键盘焦点环与字色回到系统色', async () => {
     await cdp().send('Emulation.setEmulatedMedia', {
       media: '',
       features: [{ name: 'forced-colors', value: 'active' }],
     })
     await mount([fieldNode('enabled'), fieldNode('forced-disabled', { disabled: true })])
-    const enabled = getComputedStyle(part('enabled', 'visibility-trigger'))
+    const trigger = part('enabled', 'visibility-trigger')
+    const enabled = getComputedStyle(trigger)
     const disabled = getComputedStyle(part('forced-disabled', 'visibility-trigger'))
     // 高对比档整层丢弃 background-image，分隔线由皮肤用系统色重画
     expect(enabled.backgroundImage).not.toBe('none')
     expect(disabled.backgroundImage).not.toBe('none')
     expect(enabled.backgroundSize).toBe('1px 50%')
     expect(enabled.backgroundImage).not.toBe(disabled.backgroundImage)
+
+    // 分隔线要求关掉这颗钮的强制换色，皮肤自留的焦点环与家族焦点底/字不能因此按作者色落地
+    const probe = document.createElement('span')
+    probe.style.cssText = 'color: Highlight; background-color: ButtonFace; forced-color-adjust: none'
+    document.body.append(probe)
+    const highlight = getComputedStyle(probe).color
+    const buttonFace = getComputedStyle(probe).backgroundColor
+    probe.style.color = 'ButtonText'
+    const buttonText = getComputedStyle(probe).color
+    probe.remove()
+
+    part('enabled', 'input').focus()
+    await userEvent.keyboard('{Tab}')
+    expect(document.activeElement).toBe(trigger)
+    expect(trigger.matches(':focus-visible')).toBe(true)
+    expect(enabled.outlineColor).toBe(highlight)
+    expect(enabled.backgroundColor).toBe(buttonFace)
+    expect(enabled.color).toBe(buttonText)
   })
 })
