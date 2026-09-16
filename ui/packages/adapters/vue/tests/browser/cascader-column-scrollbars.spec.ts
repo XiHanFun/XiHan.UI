@@ -21,6 +21,9 @@ import {
 import '@xihan-ui/tokens/tokens.css'
 import '@xihan-ui/styles'
 
+// 几何断言容差 1px：连接层按 offsetLeft / offsetTop / offsetWidth / offsetHeight 写内联几何，它们是取整的整数，
+// 层的真实盒子可以落在半像素上
+
 const CHILDREN = Array.from({ length: 30 }, (_, index) => ({ value: `city-${index}`, label: `城市 ${index}` }))
 const COLLECTION = [
   { value: 'east', label: '华东', children: CHILDREN },
@@ -100,9 +103,9 @@ describe('级联列与搜索列表的自绘条', () => {
       expect(column.hasAttribute('data-xh-scrollbar')).toBe(true)
       const box = column.getBoundingClientRect()
       const rect = bar.getBoundingClientRect()
-      expect(rect.right).toBeCloseTo(box.right, 0)
-      expect(rect.top).toBeCloseTo(box.top, 0)
-      expect(rect.height).toBeCloseTo(box.height, 0)
+      expect(Math.abs(rect.right - box.right)).toBeLessThanOrEqual(1)
+      expect(Math.abs(rect.top - box.top)).toBeLessThanOrEqual(1)
+      expect(Math.abs(rect.height - box.height)).toBeLessThanOrEqual(1)
       expect(getComputedStyle(bar.querySelector<HTMLElement>('[data-part="track"]')!).backgroundColor).toBe('rgba(0, 0, 0, 0)')
     }
     // 第二列溢出：滚动后条子露面
@@ -132,8 +135,8 @@ describe('级联列与搜索列表的自绘条', () => {
     expect(bar.getAttribute('data-anchor')).toBe('layer')
     const box = list.getBoundingClientRect()
     const rect = bar.getBoundingClientRect()
-    expect(rect.right).toBeCloseTo(box.right, 0)
-    expect(rect.height).toBeCloseTo(box.height, 0)
+    expect(Math.abs(rect.right - box.right)).toBeLessThanOrEqual(1)
+    expect(Math.abs(rect.height - box.height)).toBeLessThanOrEqual(1)
     expect(list.scrollHeight).toBeGreaterThan(list.clientHeight)
   })
 
@@ -141,6 +144,6 @@ describe('级联列与搜索列表的自绘条', () => {
     await mountCascader('rtl')
     const column = parts('column').filter(el => !el.hidden)[1]!
     const bar = barAfter(column)
-    expect(bar.getBoundingClientRect().left).toBeCloseTo(column.getBoundingClientRect().left, 0)
+    expect(Math.abs(bar.getBoundingClientRect().left - column.getBoundingClientRect().left)).toBeLessThanOrEqual(1)
   })
 })

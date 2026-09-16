@@ -8,6 +8,9 @@ import { XhScrollbarRoot, XhScrollbarThumb, XhScrollbarTrack } from '../../src'
 import '@xihan-ui/tokens/tokens.css'
 import '@xihan-ui/styles'
 
+// 几何断言容差 1px：连接层按 offsetLeft / offsetTop / offsetWidth / offsetHeight 写内联几何，它们是取整的整数，
+// 层的真实盒子可以落在半像素上
+
 let app: App | null = null
 let host: HTMLElement | null = null
 
@@ -79,14 +82,14 @@ describe('贴在滚动层上的条子', () => {
     for (const [layer, bar] of [[a, barA], [b, barB]] as const) {
       const box = layer!.getBoundingClientRect()
       const rect = bar!.getBoundingClientRect()
-      expect(rect.right).toBeCloseTo(box.right, 0)
-      expect(rect.top).toBeCloseTo(box.top, 0)
-      expect(rect.height).toBeCloseTo(box.height, 0)
+      expect(Math.abs(rect.right - box.right)).toBeLessThanOrEqual(1)
+      expect(Math.abs(rect.top - box.top)).toBeLessThanOrEqual(1)
+      expect(Math.abs(rect.height - box.height)).toBeLessThanOrEqual(1)
       expect(rect.width).toBe(4)
       expect(getComputedStyle(bar!).visibility).toBe('visible')
     }
     // 两列宽度不同：两条条子不在同一竖线上
-    expect(barA!.getBoundingClientRect().right).not.toBeCloseTo(barB!.getBoundingClientRect().right, 0)
+    expect(Math.abs(barA!.getBoundingClientRect().right - barB!.getBoundingClientRect().right)).toBeGreaterThan(1)
   })
 
   it('从右到左排版时竖条贴列的左缘', async () => {
@@ -96,8 +99,8 @@ describe('贴在滚动层上的条子', () => {
     const [barA] = bars()
     const box = a!.getBoundingClientRect()
     const rect = barA!.getBoundingClientRect()
-    expect(rect.left).toBeCloseTo(box.left, 0)
-    expect(rect.height).toBeCloseTo(box.height, 0)
+    expect(Math.abs(rect.left - box.left)).toBeLessThanOrEqual(1)
+    expect(Math.abs(rect.height - box.height)).toBeLessThanOrEqual(1)
   })
 
   it('横条贴各自那一列的底缘，长度与列同宽', async () => {
@@ -108,9 +111,9 @@ describe('贴在滚动层上的条子', () => {
     for (const [layer, bar] of [[a, barA], [b, barB]] as const) {
       const box = layer!.getBoundingClientRect()
       const rect = bar!.getBoundingClientRect()
-      expect(rect.bottom).toBeCloseTo(box.bottom, 0)
-      expect(rect.left).toBeCloseTo(box.left, 0)
-      expect(rect.width).toBeCloseTo(box.width, 0)
+      expect(Math.abs(rect.bottom - box.bottom)).toBeLessThanOrEqual(1)
+      expect(Math.abs(rect.left - box.left)).toBeLessThanOrEqual(1)
+      expect(Math.abs(rect.width - box.width)).toBeLessThanOrEqual(1)
       expect(rect.height).toBe(4)
     }
   })
@@ -124,6 +127,6 @@ describe('贴在滚动层上的条子', () => {
     await tick()
     await new Promise(resolve => setTimeout(resolve, 60))
     await tick()
-    expect(barB!.getBoundingClientRect().right).toBeCloseTo(b!.getBoundingClientRect().right, 0)
+    expect(Math.abs(barB!.getBoundingClientRect().right - b!.getBoundingClientRect().right)).toBeLessThanOrEqual(1)
   })
 })
