@@ -135,7 +135,7 @@ export type { InfiniteScrollApi, InfiniteScrollPhase, InfiniteScrollRefs, Infini
 export { connectInputGroup, inputGroupAnatomy, inputGroupKeyboard, inputGroupMeta } from './input-group'
 export type { InputGroupApi, InputGroupProps, InputGroupTranslations } from './input-group'
 export { connectJsonViewer, flattenJson, groupJsonViewerNodesByParent, JSON_VIEWER_ROOT_PATH, jsonChildPath, jsonExpandedPathsToDepth, jsonText, jsonValueText, jsonValueType, jsonViewerAnatomy, jsonViewerBranchQuery, jsonViewerItemQuery, jsonViewerKeyboard, jsonViewerMachine, jsonViewerMeta } from './json-viewer'
-export type { JsonViewerApi, JsonViewerExpandedValueChangeDetails, JsonViewerFlattenOptions, JsonViewerNode, JsonViewerNodeProps, JsonViewerNodesByParent, JsonViewerSchema, JsonViewerTranslations, JsonViewerValueType, JsonViewerVariant, JsonViewerView, JsonViewerWalkOptions } from './json-viewer'
+export type { JsonViewerApi, JsonViewerExpandedValueChangeDetails, JsonViewerFlattenOptions, JsonViewerNode, JsonViewerNodeProps, JsonViewerNodesByParent, JsonViewerSchema, JsonViewerTranslations, JsonViewerValueType, JsonViewerView, JsonViewerWalkOptions } from './json-viewer'
 export { connectKbd, detectKbdPlatform, formatHotkey, isTypingTarget, kbdAnatomy, kbdKeyboard, kbdMeta, matchesHotkey, resolveKbdPlatform } from './kbd'
 export type { HotkeySegment, KbdApi, KbdKeyProps, KbdPlatform, KbdProps, KbdResolvedPlatform, KbdTarget, KbdTranslations, KbdTriggerDetails, KbdVariant } from './kbd'
 export { connectLayout, layoutAnatomy, layoutKeyboard, layoutMachine, layoutMeta } from './layout'

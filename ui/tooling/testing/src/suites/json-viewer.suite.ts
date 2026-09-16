@@ -107,8 +107,8 @@ export const jsonViewerSuite: ConformanceSuite = {
           'empty': 1,
         },
         parts: {
-          // 形态恒有值：缺省 surface，读一眼 DOM 就知道这块有没有外框
-          'root': { 'data-size': null, 'data-variant': 'surface' },
+          // 形态恒有值：缺省 outline，读一眼 DOM 就知道这块有没有外框
+          'root': { 'data-size': null, 'data-variant': 'outline' },
           // 有行可摊时空态收起来，不占位置
           'empty': { hidden: '' },
           'tree': {
@@ -444,10 +444,10 @@ export const jsonViewerSuite: ConformanceSuite = {
     {
       name: 'variant 只落在 root 上，无框档不动任何语义',
       spec: { apg: APG },
-      props: props({ variant: 'plain' }),
+      props: props({ variant: 'ghost' }),
       initial: {
         parts: {
-          root: { 'data-variant': 'plain' },
+          root: { 'data-variant': 'ghost' },
           tree: { 'role': 'tree', 'data-variant': null },
         },
       },

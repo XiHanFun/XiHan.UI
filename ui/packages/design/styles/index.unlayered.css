@@ -5807,8 +5807,14 @@
   display: none;
 }
 
+/* 淡底档：描边透明、底换成 subtle；outline 即基础规则 */
+[data-scope='json-viewer'][data-part='root'][data-variant='subtle'] {
+  --xh-_json-viewer-border: transparent;
+  --xh-_json-viewer-bg: var(--xh-bg-subtle);
+}
+
 /* 无框档：边框留着但透明，去掉外框不会让行的位置跳一格 */
-[data-scope='json-viewer'][data-part='root'][data-variant='plain'] {
+[data-scope='json-viewer'][data-part='root'][data-variant='ghost'] {
   --xh-_json-viewer-border: transparent;
   --xh-_json-viewer-bg: transparent;
 }

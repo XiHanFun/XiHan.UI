@@ -530,6 +530,14 @@ describe('connectJsonViewer ARIA 与层级', () => {
     expect(h.root.getAttribute('data-size')).toBe('sm')
     expect(h.treeEl.getAttribute('data-size')).toBeNull()
   })
+
+  it('形态恒有值：不写 variant 时根落 outline，写了 subtle / ghost 如实落到根、不进 tree', () => {
+    expect(mount().root.getAttribute('data-variant')).toBe('outline')
+    const h = mount({ variant: 'subtle' })
+    expect(h.root.getAttribute('data-variant')).toBe('subtle')
+    expect(h.treeEl.hasAttribute('data-variant')).toBe(false)
+    expect(mount({ variant: 'ghost' }).root.getAttribute('data-variant')).toBe('ghost')
+  })
 })
 
 describe('connectJsonViewer roving tabindex', () => {

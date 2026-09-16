@@ -68,7 +68,7 @@ view="text" 直接输出缩进后的 JSON 原文：整块可框选可复制，�
 
 ### 空态与形态
 
-一行都无法展开时显示空态格；variant="plain" 去掉外框与底色
+一行都无法展开时显示空态格；variant="ghost" 去掉外框与底色
 
 <XhDemo src="json-viewer/09-empty" />
 
@@ -95,7 +95,7 @@ view="text" 直接输出缩进后的 JSON 原文：整块可框选可复制，�
 - `maxStringLength` 截断长字符串，`maxItems` 折叠超长数组，`sortKeys` 让对象键按字典序排列。
 - 循环引用展开到即停，标记为 `[Circular]`，不会无限递归。
 - 每一行带 `data-value-type`，六种值形态各自着色。
-- 尺寸轴与其他组件同源；`variant` 决定是否带外框，默认 `surface`。
+- 尺寸轴与其他组件同源；`variant` 决定外框形态，默认 `outline`；`subtle` 换成淡底无描边，`ghost` 去掉外框与底色只保留内容。
 - 没有任何行可展开时由 `empty` 部件说明，文案使用 `translations.empty`，作者也可以自行写入内容。
 - 只支持 JSON 能表达的形状，传入活对象时呈现有损：`Date` / `Map` / `Set` 一律按自有可枚举键展开，因此显示为 `{}`；`undefined` 归入 `null` 一档、显示为 `undefined`；`bigint` 归入 `number`；函数与 symbol 归入 `string`，按各自的字符串形式呈现。需要如实展示这些值时先转换为 JSON 能表达的形状。
 - 自定义元素侧：`value` 属性接受一段 JSON 文本（无法解析时按字符串值展示），对象与数组直接赋 property（`el.value = { … }`）；`expandedValue` / `defaultExpandedValue` / `translations` 没有对应属性，只能通过 property 设置，写成 `expanded-value='["$"]'` 不会生效。
@@ -135,7 +135,7 @@ view="text" 直接输出缩进后的 JSON 原文：整块可框选可复制，�
 | --- | --- | --- | --- |
 | `value` | `unknown` |  | 要展示的值，任意形状。未提供时为空视图（不展开任何行）。 |
 | `view` | `JsonViewerView` |  | 展示形态，默认 tree。 text 档直接输出 JSON 原文：整块可框选可复制，且不受 maxStringLength / maxItems 折减： 目的是与后端下发的内容完全一致。展开集合与键盘导航在该档上不生效。 |
-| `variant` | `JsonViewerVariant` |  | 外框形态：surface 带描边与底色（默认），plain 去掉描边与底色，只保留内容。 |
+| `variant` | `ControlVariant` |  | 外框形态：outline 带描边与底色（默认），subtle 淡底无描边，ghost 去掉描边与底色只保留内容。 |
 | `expandedValue` | `string[]` |  | 展开集合（元素是行路径）。提供即受控：cell 直读 prop，写入只发 onExpandedValueChange 不落内部值。 |
 | `defaultExpandedValue` | `string[]` |  | 非受控初值；未提供时按 defaultExpandedDepth 计算。 |
 | `defaultExpandedDepth` | `number` |  | 初始展开到第几层（层级号不超过它的分支全部展开），默认 1，即只展开根行。 |

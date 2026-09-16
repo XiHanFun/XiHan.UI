@@ -5,8 +5,8 @@
 
 // 提供 json viewer 相关实现。
 
-import type { Direction, Size } from '@xihan-ui/core'
-import type { JsonViewerApi, JsonViewerNode, JsonViewerSchema, JsonViewerTranslations, JsonViewerVariant, JsonViewerView } from '@xihan-ui/headless'
+import type { ControlVariant, Direction, Size } from '@xihan-ui/core'
+import type { JsonViewerApi, JsonViewerNode, JsonViewerSchema, JsonViewerTranslations, JsonViewerView } from '@xihan-ui/headless'
 import type { PropType, SlotsType, VNode } from 'vue'
 import type { PayloadOf } from '../../runtime/payload'
 import { groupJsonViewerNodesByParent } from '@xihan-ui/headless'
@@ -72,8 +72,8 @@ export const XhJsonViewerRoot = defineComponent({
     // 任意形状都收，类型检查交给使用方
     value: { type: null as unknown as PropType<unknown>, default: undefined as unknown },
     view: { type: String as PropType<JsonViewerView> },
-    /** 外框形态：surface 带描边与底色（默认），plain 只保留内容。 */
-    variant: { type: String as PropType<JsonViewerVariant> },
+    /** 外框形态：outline 带描边与底色（默认），subtle 淡底无描边，ghost 去掉描边与底色只保留内容。 */
+    variant: { type: String as PropType<ControlVariant> },
     expandedValue: { type: Array as PropType<string[]> },
     defaultExpandedValue: { type: Array as PropType<string[]> },
     defaultExpandedDepth: { type: Number },

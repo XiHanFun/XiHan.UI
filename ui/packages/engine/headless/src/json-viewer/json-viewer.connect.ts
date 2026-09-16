@@ -53,8 +53,8 @@ export function connectJsonViewer<T extends PropTypes>(
   const highlighted = isFocusWithin ? anchor : null
 
   const view = prop('view') ?? 'tree'
-  // 形态恒有值：缺省 surface，读一眼 DOM 就知道这块有没有外框
-  const variant = prop('variant') ?? 'surface'
+  // 形态恒有值：缺省 outline，读一眼 DOM 就知道这块有没有外框
+  const variant = prop('variant') ?? 'outline'
   // 顶层没给值就一行也摊不出来，这时候容器里空空如也，交给空态部件说话
   const isEmpty = rows.length === 0
   // 键序与环路记号跟树同源，两档切过去内容对得上

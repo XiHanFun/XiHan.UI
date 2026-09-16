@@ -27931,7 +27931,7 @@
               "name": "variant",
               "privacy": "public",
               "type": {
-                "text": "JsonViewerVariant | undefined"
+                "text": "ControlVariant | undefined"
               },
               "attribute": "variant"
             },
@@ -28283,9 +28283,9 @@
             },
             {
               "type": {
-                "text": "JsonViewerVariant | undefined"
+                "text": "ControlVariant | undefined"
               },
-              "description": "外框形态：surface 带描边与底色（默认），plain 只保留内容",
+              "description": "外框形态：outline 带描边与底色，subtle 淡底无描边，ghost 只保留内容；默认 outline",
               "name": "variant",
               "fieldName": "variant"
             },

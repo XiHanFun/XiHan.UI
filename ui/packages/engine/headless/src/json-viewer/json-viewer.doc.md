@@ -23,7 +23,7 @@
 - `maxStringLength` 截断长字符串，`maxItems` 折叠超长数组，`sortKeys` 让对象键按字典序排列。
 - 循环引用展开到即停，标记为 `[Circular]`，不会无限递归。
 - 每一行带 `data-value-type`，六种值形态各自着色。
-- 尺寸轴与其他组件同源；`variant` 决定是否带外框，默认 `surface`。
+- 尺寸轴与其他组件同源；`variant` 决定外框形态，默认 `outline`；`subtle` 换成淡底无描边，`ghost` 去掉外框与底色只保留内容。
 - 没有任何行可展开时由 `empty` 部件说明，文案使用 `translations.empty`，作者也可以自行写入内容。
 - 只支持 JSON 能表达的形状，传入活对象时呈现有损：`Date` / `Map` / `Set` 一律按自有可枚举键展开，因此显示为 `{}`；`undefined` 归入 `null` 一档、显示为 `undefined`；`bigint` 归入 `number`；函数与 symbol 归入 `string`，按各自的字符串形式呈现。需要如实展示这些值时先转换为 JSON 能表达的形状。
 - 自定义元素侧：`value` 属性接受一段 JSON 文本（无法解析时按字符串值展示），对象与数组直接赋 property（`el.value = { … }`）；`expandedValue` / `defaultExpandedValue` / `translations` 没有对应属性，只能通过 property 设置，写成 `expanded-value='["$"]'` 不会生效。
