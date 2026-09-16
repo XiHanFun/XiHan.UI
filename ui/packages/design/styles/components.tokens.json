@@ -466,7 +466,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-_alert-surface"
+        "--xh-bg-surface"
       ],
       "visibility": "public",
       "description": "alert 的 root 部件 background 覆盖槽。"
@@ -484,7 +484,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-_alert-edge"
+        "--xh-border-default"
       ],
       "visibility": "public",
       "description": "alert 的 root 部件 border 覆盖槽。"
@@ -496,16 +496,21 @@
         "close-trigger"
       ],
       "property": [
-        "background"
+        "background-color"
       ],
       "state": [
-        "active"
+        "disabled",
+        "is(:active, [data-pressed])",
+        "loading",
+        "not([data-disabled])",
+        "not([data-loading])",
+        "pressed"
       ],
       "defaultToken": [
-        "--xh-_tone-subtle-active"
+        "--xh-_action-variant-bg-pressed"
       ],
       "visibility": "public",
-      "description": "alert 的 close-trigger 部件 background 覆盖槽。"
+      "description": "alert 的 close-trigger 部件 background-color 覆盖槽。"
     },
     {
       "name": "--xh-alert-close-bg-hover",
@@ -514,17 +519,20 @@
         "close-trigger"
       ],
       "property": [
-        "background"
+        "background-color"
       ],
       "state": [
+        "disabled",
         "hover",
-        "not(:disabled)"
+        "loading",
+        "not([data-disabled])",
+        "not([data-loading])"
       ],
       "defaultToken": [
-        "--xh-_tone-subtle-hover"
+        "--xh-_action-variant-bg-hover"
       ],
       "visibility": "public",
-      "description": "alert 的 close-trigger 部件 background 覆盖槽。"
+      "description": "alert 的 close-trigger 部件 background-color 覆盖槽。"
     },
     {
       "name": "--xh-alert-close-fg",
@@ -554,8 +562,13 @@
         "color"
       ],
       "state": [
+        "disabled",
         "hover",
-        "not(:disabled)"
+        "is(:active, [data-pressed])",
+        "loading",
+        "not([data-disabled])",
+        "not([data-loading])",
+        "pressed"
       ],
       "defaultToken": [
         "--xh-fg-default"
@@ -589,16 +602,18 @@
       ],
       "property": [
         "block-size",
-        "inline-size"
+        "inline-size",
+        "min-inline-size"
       ],
       "state": [
-        "default"
+        "default",
+        "xh-action-profile=icon"
       ],
       "defaultToken": [
-        "--xh-control-h-sm"
+        "--xh-_action-profile-visual-size"
       ],
       "visibility": "public",
-      "description": "alert 的 close-trigger 部件 block-size、inline-size 覆盖槽。"
+      "description": "alert 的 close-trigger 部件 block-size、inline-size、min-inline-size 覆盖槽。"
     },
     {
       "name": "--xh-alert-content-gap",
@@ -712,6 +727,7 @@
       "name": "--xh-alert-icon-size",
       "component": "alert",
       "part": [
+        "close-trigger",
         "root"
       ],
       "property": [
@@ -721,10 +737,11 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-glyph-size-sm"
+        "--xh-_action-profile-glyph-size",
+        "--xh-glyph-size-md"
       ],
       "visibility": "public",
-      "description": "alert 的 root 部件 --xh-icon-size 覆盖槽。"
+      "description": "alert 的 close-trigger、root 部件 --xh-icon-size 覆盖槽。"
     },
     {
       "name": "--xh-alert-indicator-fg",
@@ -847,7 +864,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-elevation-raised"
+        "none"
       ],
       "visibility": "public",
       "description": "alert 的 root 部件 box-shadow 覆盖槽。"

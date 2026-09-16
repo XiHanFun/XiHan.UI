@@ -2,21 +2,19 @@
 
 exports[`family-backlog 条目数 > 七段各一数，与快照一致 1`] = `
 {
-  "edge": 45,
-  "ladder": 88,
+  "edge": 43,
+  "ladder": 86,
   "motion": 1,
   "press": 66,
   "scroll": 28,
   "selection": 19,
   "shape": 25,
-  "text": 92,
+  "text": 91,
 }
 `;
 
 exports[`family-backlog 键集合 > edge 1`] = `
 [
-  "alert:root",
-  "alert:root:raised",
   "approval:root",
   "approval:root:raised",
   "approval:root:subtle",
@@ -66,8 +64,6 @@ exports[`family-backlog 键集合 > edge 1`] = `
 exports[`family-backlog 键集合 > ladder 1`] = `
 [
   "accordion:trigger:hover",
-  "alert:close-trigger:hover",
-  "alert:close-trigger:pressed",
   "anchor:link:hover",
   "approval:deny-trigger:hover",
   "approval:item:hover",
@@ -323,7 +319,6 @@ exports[`family-backlog 键集合 > shape 1`] = `
 exports[`family-backlog 键集合 > text 1`] = `
 [
   "accordion:root:icon-size",
-  "alert:root:icon-size",
   "approval:description:line-height",
   "approval:root:icon-size",
   "approval:title:font-weight",
