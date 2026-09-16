@@ -28,3 +28,29 @@ describe('connectField 必填与无效落在标签上', () => {
     expect(labelProps()['data-invalid']).toBeUndefined()
   })
 })
+
+describe('connectField 的 control 投影 Field Chrome 家族属性', () => {
+  const controlProps = (props?: FieldProps) => api(props).getControlProps() as Record<string, unknown>
+
+  it('control 自身就是视觉盒：投 chrome 标记，尺寸固定 md、形态固定 outline（Field 没有这两条轴）', () => {
+    const control = controlProps()
+    expect(control['data-xh-field-chrome']).toBe('')
+    expect(control['data-xh-field-size']).toBe('md')
+    expect(control['data-variant']).toBe('outline')
+  })
+
+  it('三态都落在 chrome 节点上，家族按它们换面', () => {
+    const control = controlProps({ disabled: true, readOnly: true, invalid: true })
+    expect(control['data-disabled']).toBe('')
+    expect(control['data-readonly']).toBe('')
+    expect(control['data-invalid']).toBe('')
+    const rest = controlProps()
+    expect(rest['data-disabled']).toBeUndefined()
+    expect(rest['data-readonly']).toBeUndefined()
+    expect(rest['data-invalid']).toBeUndefined()
+  })
+
+  it('control 不投 data-xh-field-input：它自己就是盒，没有盒内输入段', () => {
+    expect(controlProps()['data-xh-field-input']).toBeUndefined()
+  })
+})

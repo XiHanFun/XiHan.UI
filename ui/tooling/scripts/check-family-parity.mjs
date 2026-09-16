@@ -16,11 +16,12 @@
 // 里还挂着豁免的，先不参与比对；已迁移成员 ≥ 2 才比——首个迁移组件进仓时
 // 门禁就能运行，第二个进仓时开始钉住同值。部件与状态可以按成员分别登记（partBy / stateBy），
 // 同一件东西在不同成员里叫不同的部件名、挂不同的状态属性。
-import { readFile } from 'node:fs/promises'
+import { readdir, readFile } from 'node:fs/promises'
 import { join } from 'node:path'
 import { readBacklog } from './lib/family-backlog.mjs'
 
 const STYLES_DIR = 'packages/design/styles/css'
+const FAMILY_DIR = 'packages/design/styles/family'
 
 /**
  * 家族与受管辖的属性。
@@ -198,7 +199,6 @@ const FAMILIES = [
         part: 'control',
         state: '',
         props: [
-          '--xh-field-control-radius',
           '--xh-field-bg-rest',
           '--xh-field-bg-hover',
           '--xh-field-bg-read-only',
@@ -213,6 +213,32 @@ const FAMILIES = [
         ],
         only: [
           'field',
+          'text-field',
+          'select',
+          'cascader',
+          'combobox',
+          'tree-select',
+          'date-field',
+          'time-field',
+          'date-picker',
+          'time-picker',
+          'date-range-picker',
+          'time-range-picker',
+          'number-field',
+          'password-input',
+          'tags-input',
+          'editable',
+          'color-field',
+          'color-picker',
+        ],
+      },
+      // 圆角的使用者槽 --xh-<c>-control-radius 在 field 身上就是家族读的桥接槽 --xh-field-control-radius 本身
+      // （组件名恰是家族前缀），使用者写它即被家族直接读到，皮肤无法再写一条映射（会自引用）；field 不在这条里比
+      {
+        part: 'control',
+        state: '',
+        props: ['--xh-field-control-radius'],
+        only: [
           'text-field',
           'select',
           'cascader',
@@ -382,11 +408,22 @@ function expandIs(selector) {
     expandIs(selector.slice(0, hit.index) + alt.trim() + selector.slice(hit.index + hit[0].length)))
 }
 
-/** 把取值里的组件名换成占位符：命名里那截组件名不是差异。 */
+/**
+ * 家族配方里出现的槽名（桥接槽 --xh-field-* 与私有槽 --xh-_field-* 这类）：组件名恰是家族前缀的成员
+ * （field）归一时不能把它们当成自己的槽名换掉，否则它的映射声明在全族里永远对不上。
+ */
+const familySlots = new Set()
+for (const file of (await readdir(FAMILY_DIR)).filter(name => name.endsWith('.css'))) {
+  const src = await readFile(join(FAMILY_DIR, file), 'utf8')
+  for (const m of src.matchAll(/--xh-_?[a-z0-9-]+/g))
+    familySlots.add(m[0])
+}
+
+/** 把取值里的组件名换成占位符：命名里那截组件名不是差异；家族配方的槽名照抄。 */
 function normalize(value, comp) {
+  const own = new RegExp(`--xh-(_?)${comp}-[a-z0-9-]+`, 'g')
   return value
-    .replace(new RegExp(`--xh-_${comp}-`, 'g'), '--xh-_<c>-')
-    .replace(new RegExp(`--xh-${comp}-`, 'g'), '--xh-<c>-')
+    .replace(own, (name, priv) => familySlots.has(name) ? name : `--xh-${priv}<c>-${name.slice(`--xh-${priv}${comp}-`.length)}`)
     .replace(/\s+/g, ' ')
     .trim()
 }

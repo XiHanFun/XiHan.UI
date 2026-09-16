@@ -63,6 +63,11 @@ export function connectField<T extends PropTypes>(
     }),
     getControlProps: () => normalize.element({
       ...parts.control.attrs,
+      // control 就是作者自己的输入控件，视觉盒由 Field Chrome 家族配方按这三位画：
+      // Field 没有 size / variant 轴，固定投 md 与 outline，家族的尺寸私有槽才有值
+      'data-xh-field-chrome': '',
+      'data-xh-field-size': 'md',
+      'data-variant': 'outline',
       'id': controlId,
       // label 的 for 只对可标注元素生效，而作者把 control 标在 div 上是常态
       // （包一层再放原生控件）。那种情形下 for 静默失效，靠这条把名字接回来。

@@ -4,7 +4,7 @@
 import { afterEach, describe, expect, it } from 'vitest'
 import { createApp, createSSRApp, createTextVNode, defineComponent, Fragment, h } from 'vue'
 import { renderToString } from 'vue/server-renderer'
-import { useFieldControl, XhFieldControl, XhFieldLabel, XhFieldRoot, XhSwitch } from '../src'
+import { useFieldControl, XhFieldControl, XhFieldLabel, XhFieldRoot, XhSwitch, XhTextFieldControl, XhTextFieldInput, XhTextFieldRoot } from '../src'
 
 let cleanup: Array<() => void> = []
 
@@ -53,6 +53,28 @@ describe('field control 的角色标记', () => {
     expect(host.querySelector('[data-scope=\'field\'][data-part=\'control\']')).toBeNull()
   })
 
+  it('裸控件自身就是字段视觉盒：家族标记一并落到它身上', () => {
+    const host = mountField(() => h('input'))
+    const input = host.querySelector('input')!
+
+    expect(input.hasAttribute('data-xh-field-chrome')).toBe(true)
+    expect(input.getAttribute('data-xh-field-size')).toBe('md')
+    expect(input.getAttribute('data-variant')).toBe('outline')
+  })
+
+  // 薄封装自己有视觉盒（text-field 的 control 投了 chrome），字段的 chrome 标记落到封装根上就是双壳；
+  // 形态轴同理：作者在封装上写的 variant 不能被字段固定投的 outline 盖掉
+  it('组件节点不收家族标记与形态轴，封装根上不会再套一层字段外壳', () => {
+    const host = mountField(() => h(XhTextFieldRoot, { variant: 'subtle' }, () => [h(XhTextFieldControl, null, () => [h(XhTextFieldInput)])]))
+    const root = host.querySelector('[data-scope=\'text-field\'][data-part=\'root\']')!
+
+    expect(root.hasAttribute('data-xh-field-chrome')).toBe(false)
+    expect(root.hasAttribute('data-xh-field-size')).toBe(false)
+    expect(root.getAttribute('data-variant')).toBe('subtle')
+    expect(root.getAttribute('aria-labelledby')).toBe(host.querySelector('label')!.id)
+    expect(host.querySelectorAll('[data-xh-field-chrome]')).toHaveLength(1)
+  })
+
   it('元素节点写了 data-scope 时同样不被覆盖', () => {
     const host = mountField(() => h('div', { 'data-scope': 'diagram', 'data-part': 'canvas' }))
     const node = host.querySelector('[data-scope=\'diagram\']')!
@@ -88,6 +110,18 @@ describe('控件藏在薄封装里', () => {
     expect(input.id).not.toBe('')
     expect(label.getAttribute('for')).toBe(input.id)
     expect(input.getAttribute('aria-labelledby')).toBe(label.id)
+  })
+
+  it('useFieldControl 只交出接线，解剖两位与家族标记一起剔掉', () => {
+    const host = mountField(() => h(Wrapper), { asChild: false })
+    const input = host.querySelector('input')!
+
+    expect(input.hasAttribute('data-scope')).toBe(false)
+    expect(input.hasAttribute('data-part')).toBe(false)
+    expect(input.hasAttribute('data-xh-field-chrome')).toBe(false)
+    expect(input.hasAttribute('data-xh-field-size')).toBe(false)
+    expect(input.hasAttribute('data-variant')).toBe(false)
+    expect(input.getAttribute('aria-invalid')).toBe('false')
   })
 })
 

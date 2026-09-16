@@ -24217,6 +24217,10 @@
 /* styles/field.css */
 /* 定义 field 样式。 */
 
+/* Field 独立皮肤同时传递引入字段视觉盒；full bundle 递归去重。 */
+
+/* family/field-chrome.css */
+
 /* 皮肤在场的标记：开发模式下按 scope 探一次，取不到就说明这份皮肤没被引入。 */
 [data-scope='field'] {
   --xh-field-skin: 1;
@@ -24290,51 +24294,33 @@
   color: var(--xh-field-label-star, var(--xh-fg-danger));
 }
 
-/* control 是作者自己的输入控件，这里只给一套可被覆盖的基础皮肤 */
+/* control 是作者自己的输入控件，它自身就是视觉盒：描边、底、影、圆角与悬停 / 聚焦 / 无效 /
+   只读 / 禁用各态由 Field Chrome 家族配方按连接层投影的 data-xh-field-chrome 画，
+   这里只把既有使用者槽映射到家族桥接槽。Field 没有 size 轴，尺寸私有槽按连接层固定投的 md 档取值。
+   使用者槽与桥接槽同在 --xh-field- 前缀下：圆角那一位（--xh-field-control-radius）与家族读的桥接槽同名，
+   使用者写它即被家族直接读到，无法再经映射中转，圆角在这里按同一槽同一缺省直接声明（与家族算出的值一致，
+   只为把这一位使用者槽留在皮肤的消费位上）；其余各位逐条对齐，不与桥接槽撞名 */
 [data-scope='field'][data-part='control'] {
+  --xh-field-control-height: var(--xh-field-control-h, var(--xh-_field-size-control-height));
+  --xh-field-control-padding-inline: var(--xh-field-control-px, var(--xh-_field-size-padding-inline));
+  --xh-field-bg-rest: var(--xh-field-control-bg, var(--xh-_field-variant-bg-rest));
+  --xh-field-bg-hover: var(--xh-field-control-bg-hover, var(--xh-_field-variant-bg-hover));
+  --xh-field-bg-read-only: var(--xh-field-control-bg-readonly, var(--xh-_field-variant-bg-read-only));
+  --xh-field-bg-disabled: var(--xh-field-control-bg-disabled, var(--xh-_field-variant-bg-disabled));
+  --xh-field-fg-rest: var(--xh-field-control-fg, var(--xh-fg-default));
+  --xh-field-border-rest: var(--xh-field-control-border, var(--xh-_field-variant-border-rest));
+  --xh-field-border-hover: var(--xh-field-control-border-hover, var(--xh-_field-variant-border-hover));
+  --xh-field-border-focus: var(--xh-field-control-border-focus, var(--xh-_field-variant-border-focus));
+  --xh-field-border-invalid: var(--xh-field-control-border-invalid, var(--xh-_field-variant-border-invalid));
+  /* 焦点环与家族同一支公共环，不再留逐组件的环色槽（§7.2.5 焦点边与环一律公共） */
+  --xh-field-ring-focus: var(--xh-ring-focus);
+  --xh-field-ring-invalid: var(--xh-ring-invalid);
+  --xh-field-shadow-rest: var(--xh-field-control-shadow, none);
+
   inline-size: 100%;
-  block-size: var(--xh-field-control-h, var(--xh-control-h-md));
-  padding-inline: var(--xh-field-control-px, var(--xh-control-px-md));
-  border: var(--xh-stroke-thin) solid var(--xh-field-control-border, transparent);
   border-radius: var(--xh-field-control-radius, var(--xh-shape-control));
-  outline: var(--xh-ring-width) solid transparent;
-  outline-offset: var(--xh-ring-offset);
-  background: var(--xh-field-control-bg, var(--xh-bg-canvas));
-  color: var(--xh-field-control-fg, var(--xh-fg-default));
+  /* 家族 chrome 不设字号：控件自身就是盒，正文字号由这里给 */
   font-size: var(--xh-field-control-font-size, var(--xh-text-body-size));
-  box-shadow: var(--xh-field-control-shadow, var(--xh-elevation-raised));
-  /* 聚焦、无效与禁用三档换的都是颜色，各态之间接一段过渡 */
-  transition:
-    border-color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
-    background var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
-    color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
-    box-shadow var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
-    outline-color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
-}
-
-[data-scope='field'][data-part='control']:hover:not([data-disabled], [data-readonly], [data-invalid]) {
-  border-color: var(--xh-field-control-border-hover, var(--xh-border-default));
-  background: var(
-    --xh-field-control-bg-hover,
-    color-mix(in oklab, var(--xh-bg-subtle) 45%, var(--xh-field-control-bg, var(--xh-bg-canvas)))
-  );
-}
-
-[data-scope='field'][data-part='control']:focus-visible {
-  border-color: var(--xh-field-control-border-focus, var(--xh-_tone, var(--xh-border-control-focus)));
-  outline: var(--xh-ring-width) solid var(--xh-field-control-ring, var(--xh-ring-focus));
-  outline-offset: var(--xh-ring-offset);
-}
-
-[data-scope='field'][data-part='control'][data-invalid] {
-  border-color: var(--xh-field-control-border-invalid, var(--xh-border-invalid));
-}
-
-/* 禁用由作者在控件上落原生 disabled，样式统一走 data-disabled */
-[data-scope='field'][data-part='control'][data-disabled] {
-  background: var(--xh-field-control-bg-disabled, var(--xh-bg-subtle));
-  color: var(--xh-fg-disabled);
-  box-shadow: none;
 }
 
 /* 无效标签色的默认在 label.css 公共层；这里只把颜色接到本组件的覆盖槽上 */

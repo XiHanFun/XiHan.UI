@@ -25343,21 +25343,16 @@
         "control"
       ],
       "property": [
-        "background"
+        "background-color"
       ],
       "state": [
-        "default",
-        "disabled",
-        "hover",
-        "invalid",
-        "not([data-disabled], [data-readonly], [data-invalid])",
-        "readonly"
+        "xh-field-chrome"
       ],
       "defaultToken": [
-        "--xh-bg-canvas"
+        "--xh-_field-variant-bg-rest"
       ],
       "visibility": "public",
-      "description": "field 的 control 部件 background 覆盖槽。"
+      "description": "field 的 control 部件 background-color 覆盖槽。"
     },
     {
       "name": "--xh-field-control-bg-disabled",
@@ -25366,16 +25361,17 @@
         "control"
       ],
       "property": [
-        "background"
+        "background-color"
       ],
       "state": [
-        "disabled"
+        "disabled",
+        "xh-field-chrome"
       ],
       "defaultToken": [
-        "--xh-bg-subtle"
+        "--xh-_field-variant-bg-disabled"
       ],
       "visibility": "public",
-      "description": "field 的 control 部件 background 覆盖槽。"
+      "description": "field 的 control 部件 background-color 覆盖槽。"
     },
     {
       "name": "--xh-field-control-bg-hover",
@@ -25384,20 +25380,44 @@
         "control"
       ],
       "property": [
-        "background"
+        "background-color"
       ],
       "state": [
         "disabled",
         "hover",
         "invalid",
-        "not([data-disabled], [data-readonly], [data-invalid])",
-        "readonly"
+        "loading",
+        "not([data-disabled])",
+        "not([data-invalid])",
+        "not([data-loading])",
+        "not([data-readonly])",
+        "readonly",
+        "xh-field-chrome"
       ],
       "defaultToken": [
-        "--xh-bg-subtle"
+        "--xh-_field-variant-bg-hover"
       ],
       "visibility": "public",
-      "description": "field 的 control 部件 background 覆盖槽。"
+      "description": "field 的 control 部件 background-color 覆盖槽。"
+    },
+    {
+      "name": "--xh-field-control-bg-readonly",
+      "component": "field",
+      "part": [
+        "control"
+      ],
+      "property": [
+        "background-color"
+      ],
+      "state": [
+        "readonly",
+        "xh-field-chrome"
+      ],
+      "defaultToken": [
+        "--xh-_field-variant-bg-read-only"
+      ],
+      "visibility": "public",
+      "description": "field 的 control 部件 background-color 覆盖槽。"
     },
     {
       "name": "--xh-field-control-border",
@@ -25409,10 +25429,10 @@
         "border"
       ],
       "state": [
-        "default"
+        "xh-field-chrome"
       ],
       "defaultToken": [
-        "transparent"
+        "--xh-_field-variant-border-rest"
       ],
       "visibility": "public",
       "description": "field 的 control 部件 border 覆盖槽。"
@@ -25427,10 +25447,13 @@
         "border-color"
       ],
       "state": [
-        "focus-visible"
+        "disabled",
+        "focus-within",
+        "not([data-disabled])",
+        "xh-field-chrome"
       ],
       "defaultToken": [
-        "--xh-_tone"
+        "--xh-_field-variant-border-focus"
       ],
       "visibility": "public",
       "description": "field 的 control 部件 border-color 覆盖槽。"
@@ -25448,11 +25471,16 @@
         "disabled",
         "hover",
         "invalid",
-        "not([data-disabled], [data-readonly], [data-invalid])",
-        "readonly"
+        "loading",
+        "not([data-disabled])",
+        "not([data-invalid])",
+        "not([data-loading])",
+        "not([data-readonly])",
+        "readonly",
+        "xh-field-chrome"
       ],
       "defaultToken": [
-        "--xh-border-default"
+        "--xh-_field-variant-border-hover"
       ],
       "visibility": "public",
       "description": "field 的 control 部件 border-color 覆盖槽。"
@@ -25467,10 +25495,11 @@
         "border-color"
       ],
       "state": [
-        "invalid"
+        "invalid",
+        "xh-field-chrome"
       ],
       "defaultToken": [
-        "--xh-border-invalid"
+        "--xh-_field-variant-border-invalid"
       ],
       "visibility": "public",
       "description": "field 的 control 部件 border-color 覆盖槽。"
@@ -25485,7 +25514,7 @@
         "color"
       ],
       "state": [
-        "default"
+        "xh-field-chrome"
       ],
       "defaultToken": [
         "--xh-fg-default"
@@ -25521,17 +25550,26 @@
       ],
       "property": [
         "block-size",
+        "min-block-size",
         "padding-block"
       ],
       "state": [
-        "default",
-        "layout=horizontal"
+        "has([data-xh-field-input][data-xh-field-layout='multi-tag'])",
+        "has([data-xh-field-input][data-xh-field-layout='single-line'])",
+        "has([data-xh-field-input][data-xh-field-layout='textarea'])",
+        "layout=horizontal",
+        "xh-field-chrome",
+        "xh-field-input",
+        "xh-field-layout=multi-tag",
+        "xh-field-layout=single-line",
+        "xh-field-layout=textarea"
       ],
       "defaultToken": [
+        "--xh-_field-size-control-height",
         "--xh-control-h-md"
       ],
       "visibility": "public",
-      "description": "field 的 control、label、root 部件 block-size、padding-block 覆盖槽。"
+      "description": "field 的 control、label、root 部件 block-size、min-block-size、padding-block 覆盖槽。"
     },
     {
       "name": "--xh-field-control-px",
@@ -25543,10 +25581,10 @@
         "padding-inline"
       ],
       "state": [
-        "default"
+        "xh-field-chrome"
       ],
       "defaultToken": [
-        "--xh-control-px-md"
+        "--xh-_field-size-padding-inline"
       ],
       "visibility": "public",
       "description": "field 的 control 部件 padding-inline 覆盖槽。"
@@ -25570,24 +25608,6 @@
       "description": "field 的 control 部件 border-radius 覆盖槽。"
     },
     {
-      "name": "--xh-field-control-ring",
-      "component": "field",
-      "part": [
-        "control"
-      ],
-      "property": [
-        "outline"
-      ],
-      "state": [
-        "focus-visible"
-      ],
-      "defaultToken": [
-        "--xh-ring-focus"
-      ],
-      "visibility": "public",
-      "description": "field 的 control 部件 outline 覆盖槽。"
-    },
-    {
       "name": "--xh-field-control-shadow",
       "component": "field",
       "part": [
@@ -25597,10 +25617,10 @@
         "box-shadow"
       ],
       "state": [
-        "default"
+        "xh-field-chrome"
       ],
       "defaultToken": [
-        "--xh-elevation-raised"
+        "none"
       ],
       "visibility": "public",
       "description": "field 的 control 部件 box-shadow 覆盖槽。"
