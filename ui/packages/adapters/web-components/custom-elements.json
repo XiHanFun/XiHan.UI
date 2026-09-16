@@ -20229,13 +20229,7 @@
               "name": "--xh-editable-control-bg-disabled"
             },
             {
-              "name": "--xh-editable-control-bg-focus"
-            },
-            {
               "name": "--xh-editable-control-bg-hover"
-            },
-            {
-              "name": "--xh-editable-control-bg-invalid"
             },
             {
               "name": "--xh-editable-control-bg-readonly"
@@ -20256,6 +20250,9 @@
               "name": "--xh-editable-control-border-invalid"
             },
             {
+              "name": "--xh-editable-control-fg"
+            },
+            {
               "name": "--xh-editable-control-gap"
             },
             {
@@ -20263,6 +20260,9 @@
             },
             {
               "name": "--xh-editable-control-min-w"
+            },
+            {
+              "name": "--xh-editable-control-px"
             },
             {
               "name": "--xh-editable-control-radius"
@@ -20287,9 +20287,6 @@
             },
             {
               "name": "--xh-editable-input-font-size"
-            },
-            {
-              "name": "--xh-editable-input-h"
             },
             {
               "name": "--xh-editable-input-px"
@@ -20322,9 +20319,6 @@
               "name": "--xh-editable-preview-px"
             },
             {
-              "name": "--xh-editable-touch-target-size"
-            },
-            {
               "name": "--xh-editable-trigger-bg"
             },
             {
@@ -20350,6 +20344,9 @@
             },
             {
               "name": "--xh-editable-trigger-font-size"
+            },
+            {
+              "name": "--xh-editable-trigger-radius"
             },
             {
               "name": "--xh-editable-trigger-size"
