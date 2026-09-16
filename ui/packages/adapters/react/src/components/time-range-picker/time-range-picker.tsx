@@ -21,11 +21,13 @@ import type {
 import type { ComponentPropsWithRef, ReactNode } from 'react'
 import type { SlotChildren } from '../../runtime/slot-content'
 import { resolveTimeRangePickerEndIndex } from '@xihan-ui/headless'
+import { useEffect, useRef } from 'react'
 import { withXhConfig } from '../../config/config'
 import { mergeReactProps } from '../../runtime/merge-props'
 import { useNativeEvents } from '../../runtime/native-events'
 import { XhPortal } from '../../runtime/portal'
 import { renderSlot, slotPaints } from '../../runtime/slot-content'
+import { useScrollbars } from '../../runtime/use-scrollbars'
 import { useFieldLabelWiring, useFieldStateWiring } from '../field/use-field-control'
 import { useFormControlProps } from '../form/use-form-control'
 import {
@@ -307,6 +309,13 @@ export interface XhTimeRangePickerPositionerProps extends ComponentPropsWithRef<
 /** 迁移到浮层落点：留在原地时，宿主祖先只要建立了层叠上下文就能遮住浮层。 */
 export function XhTimeRangePickerPositioner({ children, container, ...rest }: XhTimeRangePickerPositionerProps): ReactNode {
   const ctx = useTimeRangePickerContext()
+  // 浮层面板的自绘条：两组时列并排放不下时面板整体横滚，横条与 content 同级挂在已经 fixed 的 positioner 上，
+  // 条子走浮层 4px 档；各列自己竖滚的条子贴在列上、挂在 content 里
+  const bars = useScrollbars({
+    scrollable: () => ctx.contentRef.current,
+    axes: ['horizontal'],
+    props: () => ({ dir: (ctx.api.getPositionerProps() as { dir?: Direction }).dir, size: 'sm' }),
+  })
   return (
     <XhPortal container={container ?? ctx.portalContainer} source={ctx.controlRef}>
       <div
@@ -317,6 +326,7 @@ export function XhTimeRangePickerPositioner({ children, container, ...rest }: Xh
         )}
       >
         {children}
+        {bars.render()}
       </div>
     </XhPortal>
   )
@@ -350,17 +360,28 @@ export interface XhTimeRangePickerPresetGroupProps extends Omit<ComponentPropsWi
 export function XhTimeRangePickerPresetGroup({ children, ...rest }: XhTimeRangePickerPresetGroupProps): ReactNode {
   const ctx = useTimeRangePickerContext()
   const api = ctx.api
+  const presetGroupRef = useRef<HTMLDivElement | null>(null)
+  // 快捷选项列定高自己竖滚：条子贴在它的盒子上、紧跟在它后面（浮层 4px 档）
+  const bars = useScrollbars({
+    scrollable: () => presetGroupRef.current,
+    anchor: 'layer',
+    props: () => ({ dir: (api.getPositionerProps() as { dir?: Direction }).dir, size: 'sm' }),
+  })
+  useEffect(() => bars.measure())
   const authored = children == null ? null : renderSlot(children, { presets: api.presets })
   return (
-    <div {...mergeReactProps(api.getPresetGroupProps() as Record<string, unknown>, rest as Record<string, unknown>)}>
-      {slotPaints(authored)
-        ? authored
-        : api.presets.map(preset => (
-            <div key={preset.value} {...api.getPresetProps({ value: preset.value }) as Record<string, unknown>}>
-              {preset.label}
-            </div>
-          ))}
-    </div>
+    <>
+      <div {...mergeReactProps(api.getPresetGroupProps() as Record<string, unknown>, rest as Record<string, unknown>, { ref: presetGroupRef })}>
+        {slotPaints(authored)
+          ? authored
+          : api.presets.map(preset => (
+              <div key={preset.value} {...api.getPresetProps({ value: preset.value }) as Record<string, unknown>}>
+                {preset.label}
+              </div>
+            ))}
+      </div>
+      {bars.render()}
+    </>
   )
 }
 
@@ -413,14 +434,23 @@ export function XhTimeRangePickerColumn({ unit, children, ...rest }: XhTimeRange
   const ctx = useTimeRangePickerContext()
   const index = useTimeRangePickerEndContext()
   const api = ctx.api
+  const columnRef = useRef<HTMLDivElement | null>(null)
+  // 定高的时间列自己竖滚：条子贴在本列的盒子上、紧跟在它后面（浮层 4px 档）
+  const bars = useScrollbars({
+    scrollable: () => columnRef.current,
+    anchor: 'layer',
+    props: () => ({ dir: (api.getPositionerProps() as { dir?: Direction }).dir, size: 'sm' }),
+  })
+  useEffect(() => bars.measure())
   return (
     // 下传单位，供列内选项取到自己归哪一列
     <TimeRangePickerColumnProvider value={unit}>
-      <div {...mergeReactProps(api.getColumnProps({ index, unit }) as Record<string, unknown>, rest as Record<string, unknown>)}>
+      <div {...mergeReactProps(api.getColumnProps({ index, unit }) as Record<string, unknown>, rest as Record<string, unknown>, { ref: columnRef })}>
         {children == null
           ? null
           : renderSlot(children, { options: api.columnGroups[index].columns.find(c => c.unit === unit)?.options ?? [] })}
       </div>
+      {bars.render()}
     </TimeRangePickerColumnProvider>
   )
 }

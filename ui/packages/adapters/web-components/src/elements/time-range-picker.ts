@@ -28,6 +28,7 @@ import { wcNormalize } from '../dom/normalize'
 import { createOverlayExit } from '../overlay-exit'
 import { MachineController } from '../runtime/machine-controller'
 import { XhPortalHostElement } from '../runtime/portal-host'
+import { ScrollbarsController } from '../runtime/scrollbars-controller'
 
 // 属性缺席翻成 undefined，以此区分受控与非受控。
 const STRING_CONVERTER = { fromAttribute: (v: string | null) => v ?? undefined }
@@ -272,13 +273,40 @@ export class XhTimeRangePickerElement extends XhPortalHostElement {
   }
 
   // 只交注册函数、不在连接期注册：层的入栈出栈跟着展开态走（机器的 trackLayer 效应负责）。
+  /** 浮层面板的自绘横条：两组时列并排放不下时面板整体横滚，条子与 content 同级挂在已经 fixed 的 positioner 上，走浮层 4px 档 */
+  private readonly bars = new ScrollbarsController(this, {
+    shell: () => this.getPart('positioner'),
+    scrollable: () => this.getPart('content'),
+    axes: ['horizontal'],
+    props: () => ({ dir: this.direction, size: 'sm' }),
+  })
+
+  /**
+   * 快捷选项列与各时间列各自的竖条：都住在 content 里，条子贴在各自的盒子上、紧跟在那一层后面；
+   * 时间列按在场的列逐列建一套，列离场即拆
+   */
+  private readonly presetBars = new ScrollbarsController(this, {
+    shell: () => this.getPart('content'),
+    scrollable: () => this.getPart('preset-group'),
+    anchor: 'layer',
+    props: () => ({ dir: this.direction, size: 'sm' }),
+  })
+
+  private readonly columnBars = new ScrollbarsController(this, {
+    shell: () => this.getPart('content'),
+    scrollables: () => this.getParts('column'),
+    anchor: 'layer',
+    props: () => ({ dir: this.direction, size: 'sm' }),
+  })
+
   private readonly registerLayer = (): { layer: Layer, dispose: Cleanup } => {
     this.ensureConfig()
     return this.config!.layerRegistry.register({
       kind: 'popover',
       node: () => this.getPart('content'),
       // 整个输入行记为本层分支：点触发器算层内交互，开合交给它自己切换。
-      branches: () => [this.getPart('control')].filter(Boolean) as Element[],
+      // 浮层壳一并记上：content 之外还浮着自绘横条，按住它拖动不该把浮层消解掉
+      branches: () => [this.getPart('control'), this.getPart('positioner')].filter(Boolean) as Element[],
       isModal: () => false,
       // 浮层不带遮罩，无可点关闭的表面
       surfaces: () => [],
@@ -414,6 +442,10 @@ export class XhTimeRangePickerElement extends XhPortalHostElement {
     this.exit.track(this.getPart('content'))
     this.exit.update(api.open)
     this.setPartHidden(this.getPart('content'), !this.exit.visible)
+
+    this.bars.wire()
+    this.presetBars.wire()
+    this.columnBars.wire()
     this.portal.sync(this.exit.visible)
   }
 

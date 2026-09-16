@@ -5,6 +5,7 @@ import { afterEach, describe, expect, it } from 'vitest'
 import { userEvent } from 'vitest/browser'
 import { createApp, h, nextTick } from 'vue'
 import {
+  XhTimeRangePickerClearTrigger,
   XhTimeRangePickerColumn,
   XhTimeRangePickerColumnGroup,
   XhTimeRangePickerColumnGroupLabel,
@@ -12,6 +13,7 @@ import {
   XhTimeRangePickerControl,
   XhTimeRangePickerItem,
   XhTimeRangePickerPositioner,
+  XhTimeRangePickerPresetGroup,
   XhTimeRangePickerRangeSeparator,
   XhTimeRangePickerRoot,
   XhTimeRangePickerSegment,
@@ -45,6 +47,26 @@ function item(index: 0 | 1, unit: string, value: string): HTMLElement {
 }
 
 const values: string[][] = []
+
+function alpha(color: string): number {
+  const canvas = document.createElement('canvas')
+  canvas.width = canvas.height = 1
+  const context = canvas.getContext('2d')!
+  context.fillStyle = color
+  context.fillRect(0, 0, 1, 1)
+  return context.getImageData(0, 0, 1, 1).data[3]!
+}
+
+/** 紧跟在某个层后面的条子，按轴取。 */
+function barsAfter(el: HTMLElement): HTMLElement[] {
+  const out: HTMLElement[] = []
+  let next = el.nextElementSibling
+  while (next instanceof HTMLElement && next.dataset.scope === 'scrollbar' && next.dataset.part === 'root') {
+    out.push(next)
+    next = next.nextElementSibling
+  }
+  return out
+}
 
 function segmentGroup(index: 0 | 1) {
   return h(XhTimeRangePickerSegmentGroup, { index }, () => [
@@ -86,9 +108,11 @@ async function mountPicker(props: Record<string, unknown> = {}): Promise<void> {
         segmentGroup(0),
         h(XhTimeRangePickerRangeSeparator),
         segmentGroup(1),
+        h(XhTimeRangePickerClearTrigger),
         h(XhTimeRangePickerTrigger),
       ]),
       h(XhTimeRangePickerPositioner, null, () => h(XhTimeRangePickerContent, null, () => [
+        ...(props.presets ? [h(XhTimeRangePickerPresetGroup)] : []),
         columnGroup(0, '开始'),
         columnGroup(1, '结束'),
       ])),
@@ -227,5 +251,107 @@ describe('浮层里的两组时列', () => {
     const after = content.getBoundingClientRect()
     expect(after.width).toBeCloseTo(before.width, 0)
     expect(after.height).toBeCloseTo(before.height, 0)
+  })
+})
+
+describe('时间范围选择器的家族观感', () => {
+  it('输入行是描边式字段外壳：canvas 底 + 描边 + 无影；清空钮与展开钮是盒内 field-inset 正方钮', async () => {
+    await mountPicker({ defaultValue: ['09:00', '10:00'] })
+    const control = part('control')
+    const rest = getComputedStyle(control)
+    expect(control.getAttribute('data-xh-field-chrome')).toBe('')
+    expect(alpha(rest.backgroundColor)).toBe(255)
+    expect(rest.borderTopStyle).toBe('solid')
+    expect(alpha(rest.borderTopColor)).toBe(255)
+    expect(rest.boxShadow).toBe('none')
+    expect(rest.borderRadius).toBe('4px')
+    expect(rest.height).toBe('36px')
+    const clear = part('clear-trigger')
+    clear.style.transition = 'none'
+    expect(clear.getAttribute('data-xh-action-profile')).toBe('field-inset')
+    expect(clear.getAttribute('data-xh-action-has-value')).toBe('')
+    // 有值时清空钮顶上来，展开钮让位
+    expect(getComputedStyle(part('trigger')).display).toBe('none')
+    const clearRest = getComputedStyle(clear)
+    expect(clearRest.borderRadius).toBe('4px')
+    expect(clearRest.width).toBe(clearRest.height)
+    expect(alpha(clearRest.backgroundColor)).toBe(0)
+    const probe = document.createElement('span')
+    probe.style.background = 'var(--xh-bg-subtle)'
+    control.append(probe)
+    const hover100 = getComputedStyle(probe).backgroundColor
+    probe.style.background = 'var(--xh-bg-subtle-hover)'
+    const pressed200 = getComputedStyle(probe).backgroundColor
+    probe.remove()
+    await userEvent.hover(clear)
+    expect(getComputedStyle(clear).backgroundColor).toBe(hover100)
+    clear.dataset.pressed = ''
+    expect(getComputedStyle(clear).backgroundColor).toBe(pressed200)
+    expect(getComputedStyle(clear).scale).toBe('0.97')
+  })
+
+  it('浮层是 floating 实体面且横向自绘条挂在壳上；时间格选中只留对号，悬停 100、按下 200 不缩放', async () => {
+    await mountPicker({ defaultOpen: true, defaultValue: ['09:30', '10:00'] })
+    await nextTick()
+    const content = getComputedStyle(part('content'))
+    expect(content.backdropFilter).toBe('none')
+    expect(alpha(content.backgroundColor)).toBe(255)
+    expect(content.borderTopStyle).toBe('solid')
+    expect(alpha(content.borderTopColor)).toBe(255)
+    expect(content.boxShadow).not.toBe('none')
+    expect(content.borderRadius).toBe('12px')
+    expect(content.overscrollBehaviorX).toBe('contain')
+    expect(getComputedStyle(part('content'), '::before').content).toBe('none')
+    // 面板整体横滚那一条挂在浮层壳上；各列自己的竖条贴在列上
+    const shellBars = [...part('positioner').querySelectorAll<HTMLElement>(':scope > [data-scope="scrollbar"][data-part="root"]')]
+    expect(shellBars.map(bar => bar.dataset.orientation)).toEqual(['horizontal'])
+    expect(shellBars[0]!.getAttribute('data-size')).toBe('sm')
+
+    // 看终点那一组：打开时键盘锚点落在起点组的选中格上，那一格叠着高亮面
+    const selected = item(1, 'hour', '10')
+    const plain = item(1, 'hour', '11')
+    selected.style.transition = 'none'
+    plain.style.transition = 'none'
+    expect(selected.getAttribute('data-state')).toBe('checked')
+    expect(selected.getAttribute('data-xh-collection-context')).toBe('overlay')
+    expect(alpha(getComputedStyle(selected).backgroundColor)).toBe(0)
+    expect(getComputedStyle(selected).color).toBe(getComputedStyle(plain).color)
+    expect(getComputedStyle(selected).fontWeight).toBe(getComputedStyle(plain).fontWeight)
+    expect(getComputedStyle(selected, '::after').opacity).toBe('1')
+    expect(getComputedStyle(plain, '::after').opacity).toBe('0')
+    await userEvent.hover(plain)
+    const hover = getComputedStyle(plain).backgroundColor
+    expect(alpha(hover)).toBe(255)
+    await userEvent.hover(selected)
+    expect(getComputedStyle(selected).backgroundColor).toBe(hover)
+    selected.dataset.pressed = ''
+    expect(getComputedStyle(selected).backgroundColor).not.toBe(hover)
+    expect(getComputedStyle(selected).scale).toBe('none')
+  })
+
+  it('每一列与快捷列后面紧跟一条贴层的竖条，贴各自盒子的行内末端、与之同高；列间分隔线仍在', async () => {
+    await mountPicker({ defaultOpen: true, presets: [{ value: '09:00/10:00', label: '早班' }] })
+    await nextTick()
+    // 24 小时制下上下午列收起，收起的列没有几何可量
+    const columns = parts('column').filter(column => !column.hidden)
+    expect(columns.length).toBe(4)
+    for (const layer of [...columns, part('preset-group')]) {
+      const [bar, ...rest] = barsAfter(layer)
+      expect(rest).toEqual([])
+      expect(bar!.getAttribute('data-anchor')).toBe('layer')
+      expect(bar!.getAttribute('data-orientation')).toBe('vertical')
+      expect(bar!.getAttribute('data-size')).toBe('sm')
+      expect(layer.hasAttribute('data-xh-scrollbar')).toBe(true)
+      const box = layer.getBoundingClientRect()
+      const rect = bar!.getBoundingClientRect()
+      expect(Math.abs(rect.right - box.right)).toBeLessThanOrEqual(1)
+      expect(Math.abs(rect.top - box.top)).toBeLessThanOrEqual(1)
+      expect(Math.abs(rect.height - box.height)).toBeLessThanOrEqual(1)
+      expect(getComputedStyle(bar!.querySelector<HTMLElement>('[data-part="track"]')!).backgroundColor).toBe('rgba(0, 0, 0, 0)')
+      expect(getComputedStyle(layer).overscrollBehaviorY).toBe('contain')
+    }
+    // 列与列之间的分隔线由 column ~ column 给：条子节点夹在两列之间也接得上
+    expect(Number.parseFloat(getComputedStyle(columns[1]!).borderInlineStartWidth)).toBeGreaterThan(0)
+    expect(Number.parseFloat(getComputedStyle(columns[0]!).borderInlineStartWidth)).toBe(0)
   })
 })

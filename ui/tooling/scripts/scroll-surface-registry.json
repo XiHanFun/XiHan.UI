@@ -146,13 +146,15 @@
       "mode": "drawn",
       "overscroll": true,
       "gutter": false,
-      "why": "时间区间的时间列，定高小列表"
+      "layerNode": "content",
+      "why": "时间区间的时间列，定高小列表；条子贴层挂在 content 里"
     },
     "time-range-picker:preset-group": {
       "mode": "drawn",
       "overscroll": true,
       "gutter": false,
-      "why": "时间区间浮层里的快捷选项列"
+      "layerNode": "content",
+      "why": "时间区间浮层里的快捷选项列；条子贴层挂在 content 里"
     },
     "time-range-picker:content": {
       "mode": "drawn",

@@ -92,7 +92,8 @@ const EXPECTED = {
   'tag': { root: ['soft'] },
   // 含时分秒多列的锚定面板：floating（§8.4）
   'time-picker': { content: ['floating'] },
-  'time-range-picker': { content: ['frosted'] },
+  // 两组时列并排的锚定面板：floating（§8.4）
+  'time-range-picker': { content: ['floating'] },
   'toast': { root: ['sheet'] },
   'tooltip': { content: ['frosted'] },
   'tour': { content: ['sheet'] },

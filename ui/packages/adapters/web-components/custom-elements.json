@@ -55048,6 +55048,29 @@
             },
             {
               "kind": "field",
+              "name": "bars",
+              "privacy": "private",
+              "readonly": true,
+              "default": "new ScrollbarsController(this, { shell: () => this.getPart('positioner'), scrollable: () => this.getPart('content'), axes: ['horizontal'], props: () => ({ dir: this.direction, size: 'sm' }), })",
+              "description": "浮层面板的自绘横条：两组时列并排放不下时面板整体横滚，条子与 content 同级挂在已经 fixed 的 positioner 上，走浮层 4px 档"
+            },
+            {
+              "kind": "field",
+              "name": "presetBars",
+              "privacy": "private",
+              "readonly": true,
+              "default": "new ScrollbarsController(this, { shell: () => this.getPart('content'), scrollable: () => this.getPart('preset-group'), anchor: 'layer', props: () => ({ dir: this.direction, size: 'sm' }), })",
+              "description": "快捷选项列与各时间列各自的竖条：都住在 content 里，条子贴在各自的盒子上、紧跟在那一层后面；\n时间列按在场的列逐列建一套，列离场即拆"
+            },
+            {
+              "kind": "field",
+              "name": "columnBars",
+              "privacy": "private",
+              "readonly": true,
+              "default": "new ScrollbarsController(this, { shell: () => this.getPart('content'), scrollables: () => this.getParts('column'), anchor: 'layer', props: () => ({ dir: this.direction, size: 'sm' }), })"
+            },
+            {
+              "kind": "field",
               "name": "registerLayer",
               "privacy": "private",
               "readonly": true
@@ -55399,9 +55422,6 @@
               "name": "--xh-time-range-picker-column-px"
             },
             {
-              "name": "--xh-time-range-picker-content-backdrop"
-            },
-            {
               "name": "--xh-time-range-picker-content-bg"
             },
             {
@@ -55409,9 +55429,6 @@
             },
             {
               "name": "--xh-time-range-picker-content-fg"
-            },
-            {
-              "name": "--xh-time-range-picker-content-highlight"
             },
             {
               "name": "--xh-time-range-picker-content-max-h"
@@ -55483,13 +55500,10 @@
               "name": "--xh-time-range-picker-icon-size"
             },
             {
-              "name": "--xh-time-range-picker-item-bg-checked"
-            },
-            {
-              "name": "--xh-time-range-picker-item-bg-checked-hover"
-            },
-            {
               "name": "--xh-time-range-picker-item-bg-hover"
+            },
+            {
+              "name": "--xh-time-range-picker-item-bg-pressed"
             },
             {
               "name": "--xh-time-range-picker-item-check-fg"
@@ -55501,10 +55515,13 @@
               "name": "--xh-time-range-picker-item-fg"
             },
             {
-              "name": "--xh-time-range-picker-item-fg-checked"
+              "name": "--xh-time-range-picker-item-fg-selected"
             },
             {
               "name": "--xh-time-range-picker-item-font-size"
+            },
+            {
+              "name": "--xh-time-range-picker-item-font-weight-selected"
             },
             {
               "name": "--xh-time-range-picker-item-h"
@@ -55517,9 +55534,6 @@
             },
             {
               "name": "--xh-time-range-picker-item-radius"
-            },
-            {
-              "name": "--xh-time-range-picker-item-weight-checked"
             },
             {
               "name": "--xh-time-range-picker-label-fg"
@@ -55544,6 +55558,9 @@
             },
             {
               "name": "--xh-time-range-picker-preset-bg-hover"
+            },
+            {
+              "name": "--xh-time-range-picker-preset-bg-pressed"
             },
             {
               "name": "--xh-time-range-picker-preset-check-fg"

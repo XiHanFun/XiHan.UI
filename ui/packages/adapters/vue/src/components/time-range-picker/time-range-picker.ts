@@ -21,10 +21,11 @@ import type {
 import type { PropType, SlotsType, VNode } from 'vue'
 import type { PayloadOf } from '../../runtime/payload'
 import { resolveTimeRangePickerEndIndex } from '@xihan-ui/headless'
-import { computed, defineComponent, h, mergeProps } from 'vue'
+import { computed, defineComponent, h, mergeProps, onUpdated, ref } from 'vue'
 import { withXhConfig } from '../../config/config'
 import { XhPortal } from '../../runtime/portal'
 import { slotPaints } from '../../runtime/slot-content'
+import { useScrollbars } from '../../runtime/use-scrollbars'
 import { useFieldLabelWiring, useFieldStateWiring } from '../field/use-field-control'
 import { useFormControlProps } from '../form/use-form-control'
 import {
@@ -250,12 +251,19 @@ export const XhTimeRangePickerPositioner = defineComponent({
   inheritAttrs: false,
   setup(props, { slots, attrs }) {
     const ctx = useTimeRangePickerContext()
+    // 浮层面板的自绘条：两组时列并排放不下时面板整体横滚，横条与 content 同级挂在已经 fixed 的 positioner 上，
+    // 条子走浮层 4px 档；各列自己竖滚的条子贴在列上、挂在 content 里
+    const bars = useScrollbars({
+      scrollable: () => ctx.contentRef.value,
+      axes: ['horizontal'],
+      props: () => ({ dir: (ctx.api.value.getPositionerProps() as { dir?: Direction }).dir, size: 'sm' }),
+    })
     // 搬到 portal 落点：留在原地的话，宿主祖先只要建了层叠上下文就能盖住浮层
     return () => h(XhPortal, { to: props.container ?? ctx.portalTarget.value, source: ctx.controlRef }, () => [
       h('div', {
         ...mergeProps(ctx.api.value.getPositionerProps() as Record<string, unknown>, attrs),
         ref: (el: unknown) => { ctx.positionerRef.value = el as HTMLElement },
-      }, slots.default?.()),
+      }, [...(slots.default?.() ?? []), ...bars.render()]),
     ])
   },
 })
@@ -280,22 +288,38 @@ export const XhTimeRangePickerPresetGroup = defineComponent({
     /** 自行铺设条目；未写时按 presets 数据自动铺设，两者产出的 DOM 一致。 */
     default?: (props: TimeRangePickerPresetsSlotProps) => VNode[]
   }>,
-  setup(_, { slots }) {
+  // 根是片段（选项列节点 + 贴层的条子），Vue 不会把直通属性合上去：作者写的 class、style 与 data-* 自己接住落到列节点上
+  inheritAttrs: false,
+  setup(_, { slots, attrs }) {
     const ctx = useTimeRangePickerContext()
+    const presetGroupRef = ref<HTMLElement | null>(null)
+    // 快捷选项列定高自己竖滚：条子贴在它的盒子上、紧跟在它后面（浮层 4px 档）
+    const bars = useScrollbars({
+      scrollable: () => presetGroupRef.value,
+      anchor: 'layer',
+      props: () => ({ dir: (ctx.api.value.getPositionerProps() as { dir?: Direction }).dir, size: 'sm' }),
+    })
+    onUpdated(() => bars.measure())
     return () => {
       const api = ctx.api.value
       const authored = slots.default?.({ presets: api.presets })
-      return h(
-        'div',
-        api.getPresetGroupProps() as Record<string, unknown>,
-        slotPaints(authored)
-          ? authored
-          : api.presets.map(preset => h(
-              'div',
-              { ...api.getPresetProps({ value: preset.value }) as Record<string, unknown>, key: preset.value },
-              preset.label,
-            )),
-      )
+      return [
+        h(
+          'div',
+          {
+            ...mergeProps(api.getPresetGroupProps() as Record<string, unknown>, attrs),
+            ref: (el: unknown) => { presetGroupRef.value = el as HTMLElement },
+          },
+          slotPaints(authored)
+            ? authored
+            : api.presets.map(preset => h(
+                'div',
+                { ...api.getPresetProps({ value: preset.value }) as Record<string, unknown>, key: preset.value },
+                preset.label,
+              )),
+        ),
+        ...bars.render(),
+      ]
     }
   },
 })
@@ -363,17 +387,33 @@ export const XhTimeRangePickerColumn = defineComponent({
   slots: Object as SlotsType<{
     default?: (props: TimeRangePickerColumnSlotProps) => VNode[]
   }>,
-  setup(props, { slots }) {
+  // 根是片段（列节点 + 贴层的条子），Vue 不会把直通属性合上去：作者写的 class、style 与 data-* 自己接住落到列节点上
+  inheritAttrs: false,
+  setup(props, { slots, attrs }) {
     const ctx = useTimeRangePickerContext()
     const end = useTimeRangePickerEndContext()
     const unit = computed(() => props.unit)
     // 下传单位，供列内选项取到自己归哪一列
     provideTimeRangePickerColumn({ unit })
-    return () => h(
-      'div',
-      ctx.api.value.getColumnProps({ index: end.index.value, unit: props.unit }) as Record<string, unknown>,
-      slots.default?.({ options: ctx.api.value.columnGroups[end.index.value].columns.find(c => c.unit === props.unit)?.options ?? [] }),
-    )
+    const columnRef = ref<HTMLElement | null>(null)
+    // 定高的时间列自己竖滚：条子贴在本列的盒子上、紧跟在它后面（浮层 4px 档）
+    const bars = useScrollbars({
+      scrollable: () => columnRef.value,
+      anchor: 'layer',
+      props: () => ({ dir: (ctx.api.value.getPositionerProps() as { dir?: Direction }).dir, size: 'sm' }),
+    })
+    onUpdated(() => bars.measure())
+    return () => [
+      h(
+        'div',
+        {
+          ...mergeProps(ctx.api.value.getColumnProps({ index: end.index.value, unit: props.unit }) as Record<string, unknown>, attrs),
+          ref: (el: unknown) => { columnRef.value = el as HTMLElement },
+        },
+        slots.default?.({ options: ctx.api.value.columnGroups[end.index.value].columns.find(c => c.unit === props.unit)?.options ?? [] }),
+      ),
+      ...bars.render(),
+    ]
   },
 })
 

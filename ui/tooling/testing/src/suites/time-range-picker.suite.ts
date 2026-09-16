@@ -257,6 +257,10 @@ export const timeRangePickerSuite: ConformanceSuite = {
             'aria-labelledby': '@part(label)',
             'aria-disabled': 'false',
             'aria-invalid': 'false',
+            // control 是 Field Chrome 视觉盒：形态与家族尺寸档落在它身上（缺省 outline / md）
+            'data-xh-field-chrome': '',
+            'data-xh-field-size': 'md',
+            'data-variant': 'outline',
           },
           'segment-group[0]': { 'role': 'group', 'aria-label': 'Start time', 'data-index': '0', 'data-empty': '' },
           'segment-group[1]': { 'role': 'group', 'aria-label': 'End time', 'data-index': '1', 'data-empty': '' },
@@ -267,8 +271,9 @@ export const timeRangePickerSuite: ConformanceSuite = {
           [S_PERIOD]: { hidden: '' },
           [E_HOUR]: { 'role': 'spinbutton', 'tabindex': '0', 'hidden': null },
           [E_MINUTE]: { role: 'spinbutton', tabindex: '-1' },
-          'trigger': { 'type': 'button', 'aria-haspopup': 'dialog', 'aria-expanded': 'false', 'aria-controls': '@part(content)' },
-          'clear-trigger': { 'hidden': '', 'tabindex': '-1', 'aria-label': 'Clear' },
+          // 展开钮常驻、走 field-inset 档；清空钮没值即收起，走 field-inset 档、没值时不带 has-value
+          'trigger': { 'type': 'button', 'aria-haspopup': 'dialog', 'aria-expanded': 'false', 'aria-controls': '@part(content)', 'data-xh-action-profile': 'field-inset', 'data-xh-action-display': 'always' },
+          'clear-trigger': { 'hidden': '', 'tabindex': '-1', 'aria-label': 'Clear', 'data-xh-action-profile': 'field-inset', 'data-xh-action-display': 'has-value', 'data-xh-action-has-value': null },
           'hidden-input[0]': { type: 'hidden', name: 'from' },
           'hidden-input[1]': { type: 'hidden', name: 'to' },
           'content': { role: 'dialog', hidden: '', tabindex: '-1' },

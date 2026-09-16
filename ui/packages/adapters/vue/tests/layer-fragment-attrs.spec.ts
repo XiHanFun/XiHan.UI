@@ -33,6 +33,14 @@ import {
   XhTimePickerPresetGroup,
   XhTimePickerRoot,
   XhTimePickerTrigger,
+  XhTimeRangePickerColumn,
+  XhTimeRangePickerColumnGroup,
+  XhTimeRangePickerContent,
+  XhTimeRangePickerControl,
+  XhTimeRangePickerPositioner,
+  XhTimeRangePickerPresetGroup,
+  XhTimeRangePickerRoot,
+  XhTimeRangePickerTrigger,
 } from '../src'
 
 let cleanup: Array<() => void> = []
@@ -202,6 +210,35 @@ describe('time-picker 片段作根的列部件接住直通属性', () => {
     }
     // 自动铺设的条目仍在列内
     expect(el('[data-scope=\'time-picker\'][data-part=\'preset-group\']').querySelector('[data-part=\'preset\']')?.textContent).toBe('上班')
+    expect(warn.mock.calls.flat().some(arg => String(arg).includes('Extraneous non-props attributes'))).toBe(false)
+  })
+})
+
+describe('time-range-picker 片段作根的列部件接住直通属性', () => {
+  it('column 与 preset-group 收下 class、内联 style 与 data-*，落到各自的列节点，且没有直通属性告警', async () => {
+    const warn = vi.spyOn(console, 'warn').mockImplementation(() => {})
+    mount(() => h(XhTimeRangePickerRoot, {
+      open: true,
+      presets: [{ value: '09:00/12:00', label: '上午' }],
+    }, () => [
+      h(XhTimeRangePickerControl, null, () => h(XhTimeRangePickerTrigger)),
+      h(XhTimeRangePickerPositioner, null, () => [
+        h(XhTimeRangePickerContent, null, () => [
+          h(XhTimeRangePickerPresetGroup, AUTHORED),
+          h(XhTimeRangePickerColumnGroup, { index: 0 }, () => h(XhTimeRangePickerColumn, { unit: 'hour', ...AUTHORED })),
+        ]),
+      ]),
+    ]))
+    await tick()
+
+    for (const name of ['preset-group', 'column']) {
+      const layer = el(`[data-scope='time-range-picker'][data-part='${name}']`)
+      expect(layer.classList.contains('authored')).toBe(true)
+      expect(layer.style.getPropertyValue('--authored')).toBe('1px')
+      expect(layer.getAttribute('data-testid')).toBe('authored')
+    }
+    // 自动铺设的条目仍在列内
+    expect(el('[data-scope=\'time-range-picker\'][data-part=\'preset-group\']').querySelector('[data-part=\'preset\']')?.textContent).toBe('上午')
     expect(warn.mock.calls.flat().some(arg => String(arg).includes('Extraneous non-props attributes'))).toBe(false)
   })
 })

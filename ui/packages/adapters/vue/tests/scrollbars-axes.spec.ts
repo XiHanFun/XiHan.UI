@@ -23,6 +23,9 @@ import {
   XhDateRangePickerPositioner,
   XhDateRangePickerRoot,
   XhJsonViewerRoot,
+  XhTimeRangePickerContent,
+  XhTimeRangePickerPositioner,
+  XhTimeRangePickerRoot,
   XhTreeSelectRoot,
 } from '../src'
 
@@ -186,6 +189,20 @@ const CASES: Case[] = [
     mount: async () => {
       render(() => h(XhDateRangePickerRoot, { defaultOpen: true }, () => [
         h(XhDateRangePickerPositioner, null, () => [h(XhDateRangePickerContent, null, () => '面板')]),
+      ]))
+      await settle()
+    },
+  },
+  {
+    // 两组时列并排放不下时面板整体横滚：横条挂在浮层壳上；各列自己的竖条贴在列上、挂在 content 里
+    scope: 'time-range-picker',
+    axes: ['horizontal'],
+    shell: 'positioner',
+    layer: 'content',
+    overlay: true,
+    mount: async () => {
+      render(() => h(XhTimeRangePickerRoot, { defaultOpen: true }, () => [
+        h(XhTimeRangePickerPositioner, null, () => [h(XhTimeRangePickerContent, null, () => '面板')]),
       ]))
       await settle()
     },
