@@ -12122,6 +12122,7 @@
     "xihan.tokens"
   ],
   "cssSlots": [
+    "--xh-accordion-border",
     "--xh-accordion-content-fg",
     "--xh-accordion-content-font-size",
     "--xh-accordion-content-pb",

@@ -28,7 +28,7 @@ background-color: rgba(0, 0, 0, 0)
 transition-property: all
 transition-duration: 0s
 transition-timing-function: ease
-animation-name: xh-accordion-collapse
+animation-name: xh-disclosure-collapse
 animation-duration: 0.12s
 animation-timing-function: cubic-bezier(0.4, 0, 1, 1)
 outline-width: 3px
@@ -155,19 +155,19 @@ border-top-width: 0px
 border-right-width: 0px
 border-bottom-width: 0px
 border-left-width: 0px
-border-top-color: oklch(0.145 0.005 258)
-border-right-color: oklch(0.145 0.005 258)
-border-bottom-color: oklch(0.145 0.005 258)
-border-left-color: oklch(0.145 0.005 258)
+border-top-color: rgba(0, 0, 0, 0)
+border-right-color: rgba(0, 0, 0, 0)
+border-bottom-color: rgba(0, 0, 0, 0)
+border-left-color: rgba(0, 0, 0, 0)
 min-height: 36px
 font-size: 14px
 line-height: 14px
 font-weight: 500
 color: oklch(0.145 0.005 258)
 background-color: rgba(0, 0, 0, 0)
-transition-property: background, scale
-transition-duration: 0.12s, 0.2s
-transition-timing-function: cubic-bezier(0, 0, 0.2, 1), cubic-bezier(0.23, 1, 0.32, 1)
+transition-property: background-color, border-color, box-shadow, opacity, scale
+transition-duration: 0.12s, 0.12s, 0.12s, 0.12s, 0.2s
+transition-timing-function: cubic-bezier(0, 0, 0.2, 1), cubic-bezier(0, 0, 0.2, 1), cubic-bezier(0, 0, 0.2, 1), cubic-bezier(0, 0, 0.2, 1), cubic-bezier(0.23, 1, 0.32, 1)
 animation-name: none
 animation-duration: 0s
 animation-timing-function: ease

@@ -44,10 +44,17 @@ export function connectCollapsible<T extends PropTypes>(
       'data-state': stateAttr,
       'data-disabled': dataAttr(disabled),
     }),
+    // 触发器是铺满一行的 disclosure trigger：接 Action Control 的 disclosure-trigger 档，ghost 形态、
+    // 按下只换面不缩放（§9.2）；根无壳，阶梯按画布承载走；档位随 size 走
     getTriggerProps: () => normalize.button({
       ...parts.trigger.attrs,
       'id': ids.trigger,
       'type': 'button',
+      'data-xh-action-control': '',
+      'data-xh-action-profile': 'disclosure-trigger',
+      'data-xh-action-variant': 'ghost',
+      'data-xh-action-display': 'always',
+      'data-xh-action-size': prop('size') ?? 'md',
       'aria-controls': ids.content,
       'aria-expanded': open ? 'true' : 'false',
       // 单体控件用原生 disabled，只留 data-disabled 的话禁用态只是样式

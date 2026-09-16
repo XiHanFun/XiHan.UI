@@ -3,13 +3,13 @@
 exports[`family-backlog 条目数 > 七段各一数，与快照一致 1`] = `
 {
   "edge": 24,
-  "ladder": 67,
+  "ladder": 65,
   "motion": 1,
-  "press": 52,
+  "press": 50,
   "scroll": 27,
   "selection": 19,
   "shape": 21,
-  "text": 73,
+  "text": 71,
 }
 `;
 
@@ -44,7 +44,6 @@ exports[`family-backlog 键集合 > edge 1`] = `
 
 exports[`family-backlog 键集合 > ladder 1`] = `
 [
-  "accordion:trigger:hover",
   "anchor:link:hover",
   "breadcrumb:link:hover",
   "calendar-picker:cell-trigger:hover",
@@ -56,7 +55,6 @@ exports[`family-backlog 键集合 > ladder 1`] = `
   "carousel:prev-trigger:hover",
   "carousel:prev-trigger:pressed",
   "clipboard:input:focus",
-  "collapsible:trigger:hover",
   "color-picker:channel-input:focus",
   "color-picker:control:focus",
   "color-picker:eye-dropper-trigger:hover",
@@ -123,7 +121,6 @@ exports[`family-backlog 键集合 > motion 1`] = `
 exports[`family-backlog 键集合 > press 1`] = `
 [
   "*:data-pressed",
-  "accordion:trigger",
   "calendar-picker:cell-trigger",
   "calendar-picker:heading-month-trigger",
   "calendar-picker:heading-year-trigger",
@@ -142,7 +139,6 @@ exports[`family-backlog 键集合 > press 1`] = `
   "checkbox-group:item",
   "checkbox-group:select-all-trigger",
   "checkbox:root",
-  "collapsible:trigger",
   "color-swatch-picker:item",
   "command:item",
   "floating-panel:trigger",
@@ -261,7 +257,6 @@ exports[`family-backlog 键集合 > shape 1`] = `
 
 exports[`family-backlog 键集合 > text 1`] = `
 [
-  "accordion:root:icon-size",
   "back-top:root:icon-size",
   "calendar-picker:root:icon-size",
   "calendar-range-picker:root:icon-size",
@@ -270,7 +265,6 @@ exports[`family-backlog 键集合 > text 1`] = `
   "checkbox-group:root:icon-size",
   "checkbox:label:color",
   "checkbox:label:font-size",
-  "collapsible:root:icon-size",
   "color-picker:label:font-size",
   "color-slider:label:color",
   "color-slider:label:spacing",

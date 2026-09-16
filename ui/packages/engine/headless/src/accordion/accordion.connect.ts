@@ -89,11 +89,18 @@ export function connectAccordion<T extends PropTypes>(
       'data-state': stateAttr(item),
       'data-disabled': dataAttr(itemDisabled(item)),
     }),
+    // 标题栏是铺满一行的 disclosure trigger：接 Action Control 的 disclosure-trigger 档，ghost 形态、
+    // 按下只换面不缩放（§9.2）；承载面的阶梯由根按 variant 经 host 槽下发；档位随 size 走
     getTriggerProps: item => normalize.button({
       ...parts.trigger.attrs,
       [ITEM_VALUE_ATTR]: item.value,
       'id': triggerId(item.value),
       'type': 'button',
+      'data-xh-action-control': '',
+      'data-xh-action-profile': 'disclosure-trigger',
+      'data-xh-action-variant': 'ghost',
+      'data-xh-action-display': 'always',
+      'data-xh-action-size': prop('size') ?? 'md',
       'aria-controls': contentId(item.value),
       'aria-expanded': isOpen(item.value) ? 'true' : 'false',
       // 用 aria-disabled，禁用条目仍可聚焦

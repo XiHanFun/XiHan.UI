@@ -58,6 +58,12 @@ export const accordionSuite: ConformanceSuite = {
             'aria-disabled': 'false',
             'data-state': 'closed',
             'data-disabled': null,
+            // 标题栏接 Action Control 的 disclosure-trigger 档：ghost 形态、按下只换面，档位随 size 走
+            'data-xh-action-control': '',
+            'data-xh-action-profile': 'disclosure-trigger',
+            'data-xh-action-variant': 'ghost',
+            'data-xh-action-display': 'always',
+            'data-xh-action-size': 'md',
           },
           'trigger[1]': { 'data-value': 'two', 'aria-expanded': 'true', 'data-state': 'open' },
           'content[0]': {

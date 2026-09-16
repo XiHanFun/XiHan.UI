@@ -3,6 +3,24 @@
   "version": 1,
   "tokens": [
     {
+      "name": "--xh-accordion-border",
+      "component": "accordion",
+      "part": [
+        "root"
+      ],
+      "property": [
+        "border"
+      ],
+      "state": [
+        "variant=outline"
+      ],
+      "defaultToken": [
+        "--xh-border-default"
+      ],
+      "visibility": "public",
+      "description": "accordion 的 root 部件 border 覆盖槽。"
+    },
+    {
       "name": "--xh-accordion-content-fg",
       "component": "accordion",
       "part": [
@@ -80,7 +98,8 @@
       "name": "--xh-accordion-icon-size",
       "component": "accordion",
       "part": [
-        "root"
+        "root",
+        "trigger"
       ],
       "property": [
         "--xh-icon-size"
@@ -89,10 +108,11 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-glyph-size-text"
+        "--xh-_action-profile-glyph-size",
+        "--xh-glyph-size-md"
       ],
       "visibility": "public",
-      "description": "accordion 的 root 部件 --xh-icon-size 覆盖槽。"
+      "description": "accordion 的 root、trigger 部件 --xh-icon-size 覆盖槽。"
     },
     {
       "name": "--xh-accordion-indicator-fg",
@@ -204,16 +224,16 @@
         "trigger"
       ],
       "property": [
-        "background"
+        "background-color"
       ],
       "state": [
         "default"
       ],
       "defaultToken": [
-        "transparent"
+        "--xh-_action-variant-bg-rest"
       ],
       "visibility": "public",
-      "description": "accordion 的 trigger 部件 background 覆盖槽。"
+      "description": "accordion 的 trigger 部件 background-color 覆盖槽。"
     },
     {
       "name": "--xh-accordion-trigger-bg-hover",
@@ -222,20 +242,20 @@
         "trigger"
       ],
       "property": [
-        "background"
+        "background-color"
       ],
       "state": [
         "disabled",
         "hover",
+        "loading",
         "not([data-disabled])",
-        "not([data-state='open'])",
-        "state=open"
+        "not([data-loading])"
       ],
       "defaultToken": [
-        "--xh-bg-subtle-hover"
+        "--xh-_action-variant-bg-hover"
       ],
       "visibility": "public",
-      "description": "accordion 的 trigger 部件 background 覆盖槽。"
+      "description": "accordion 的 trigger 部件 background-color 覆盖槽。"
     },
     {
       "name": "--xh-accordion-trigger-fg",
@@ -247,10 +267,19 @@
         "color"
       ],
       "state": [
-        "default"
+        "default",
+        "disabled",
+        "hover",
+        "is(:active, [data-pressed])",
+        "loading",
+        "not([data-disabled])",
+        "not([data-loading])",
+        "pressed"
       ],
       "defaultToken": [
-        "--xh-fg-default"
+        "--xh-_action-variant-fg-hover",
+        "--xh-_action-variant-fg-pressed",
+        "--xh-_action-variant-fg-rest"
       ],
       "visibility": "public",
       "description": "accordion 的 trigger 部件 color 覆盖槽。"
@@ -268,7 +297,7 @@
         "disabled"
       ],
       "defaultToken": [
-        "--xh-fg-disabled"
+        "--xh-_action-variant-fg-disabled"
       ],
       "visibility": "public",
       "description": "accordion 的 trigger 部件 color 覆盖槽。"
@@ -283,6 +312,13 @@
         "color"
       ],
       "state": [
+        "disabled",
+        "hover",
+        "is(:active, [data-pressed])",
+        "loading",
+        "not([data-disabled])",
+        "not([data-loading])",
+        "pressed",
         "state=open"
       ],
       "defaultToken": [
@@ -304,7 +340,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-_accordion-trigger-font-size"
+        "--xh-_action-profile-font-size"
       ],
       "visibility": "public",
       "description": "accordion 的 trigger 部件 font-size 覆盖槽。"
@@ -340,7 +376,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-_accordion-trigger-gap"
+        "--xh-_action-profile-gap"
       ],
       "visibility": "public",
       "description": "accordion 的 trigger 部件 gap 覆盖槽。"
@@ -352,16 +388,18 @@
         "trigger"
       ],
       "property": [
+        "block-size",
         "min-block-size"
       ],
       "state": [
-        "default"
+        "default",
+        "xh-action-profile=disclosure-trigger"
       ],
       "defaultToken": [
-        "--xh-_accordion-trigger-h"
+        "--xh-_action-profile-visual-size"
       ],
       "visibility": "public",
-      "description": "accordion 的 trigger 部件 min-block-size 覆盖槽。"
+      "description": "accordion 的 trigger 部件 block-size、min-block-size 覆盖槽。"
     },
     {
       "name": "--xh-accordion-trigger-px",
@@ -376,7 +414,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-_accordion-trigger-px"
+        "--xh-_action-profile-padding-inline"
       ],
       "visibility": "public",
       "description": "accordion 的 trigger 部件 padding-inline 覆盖槽。"
@@ -391,10 +429,10 @@
         "padding-block"
       ],
       "state": [
-        "default"
+        "xh-action-profile=disclosure-trigger"
       ],
       "defaultToken": [
-        "--xh-_accordion-trigger-py"
+        "--xh-_action-profile-padding-block"
       ],
       "visibility": "public",
       "description": "accordion 的 trigger 部件 padding-block 覆盖槽。"
@@ -412,7 +450,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-shape-control"
+        "--xh-_action-profile-radius"
       ],
       "visibility": "public",
       "description": "accordion 的 trigger 部件 border-radius 覆盖槽。"
@@ -11228,7 +11266,8 @@
       "name": "--xh-collapsible-icon-size",
       "component": "collapsible",
       "part": [
-        "root"
+        "root",
+        "trigger"
       ],
       "property": [
         "--xh-icon-size"
@@ -11237,10 +11276,11 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-glyph-size-text"
+        "--xh-_action-profile-glyph-size",
+        "--xh-glyph-size-md"
       ],
       "visibility": "public",
-      "description": "collapsible 的 root 部件 --xh-icon-size 覆盖槽。"
+      "description": "collapsible 的 root、trigger 部件 --xh-icon-size 覆盖槽。"
     },
     {
       "name": "--xh-collapsible-indicator-fg",
@@ -11267,16 +11307,16 @@
         "trigger"
       ],
       "property": [
-        "background"
+        "background-color"
       ],
       "state": [
         "default"
       ],
       "defaultToken": [
-        "transparent"
+        "--xh-_action-variant-bg-rest"
       ],
       "visibility": "public",
-      "description": "collapsible 的 trigger 部件 background 覆盖槽。"
+      "description": "collapsible 的 trigger 部件 background-color 覆盖槽。"
     },
     {
       "name": "--xh-collapsible-trigger-bg-hover",
@@ -11285,20 +11325,20 @@
         "trigger"
       ],
       "property": [
-        "background"
+        "background-color"
       ],
       "state": [
         "disabled",
         "hover",
+        "loading",
         "not([data-disabled])",
-        "not([data-state='open'])",
-        "state=open"
+        "not([data-loading])"
       ],
       "defaultToken": [
-        "--xh-bg-subtle-hover"
+        "--xh-_action-variant-bg-hover"
       ],
       "visibility": "public",
-      "description": "collapsible 的 trigger 部件 background 覆盖槽。"
+      "description": "collapsible 的 trigger 部件 background-color 覆盖槽。"
     },
     {
       "name": "--xh-collapsible-trigger-fg",
@@ -11310,10 +11350,19 @@
         "color"
       ],
       "state": [
-        "default"
+        "default",
+        "disabled",
+        "hover",
+        "is(:active, [data-pressed])",
+        "loading",
+        "not([data-disabled])",
+        "not([data-loading])",
+        "pressed"
       ],
       "defaultToken": [
-        "--xh-fg-default"
+        "--xh-_action-variant-fg-hover",
+        "--xh-_action-variant-fg-pressed",
+        "--xh-_action-variant-fg-rest"
       ],
       "visibility": "public",
       "description": "collapsible 的 trigger 部件 color 覆盖槽。"
@@ -11331,7 +11380,7 @@
         "disabled"
       ],
       "defaultToken": [
-        "--xh-fg-disabled"
+        "--xh-_action-variant-fg-disabled"
       ],
       "visibility": "public",
       "description": "collapsible 的 trigger 部件 color 覆盖槽。"
@@ -11346,6 +11395,13 @@
         "color"
       ],
       "state": [
+        "disabled",
+        "hover",
+        "is(:active, [data-pressed])",
+        "loading",
+        "not([data-disabled])",
+        "not([data-loading])",
+        "pressed",
         "state=open"
       ],
       "defaultToken": [
@@ -11367,7 +11423,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-_collapsible-trigger-font-size"
+        "--xh-_action-profile-font-size"
       ],
       "visibility": "public",
       "description": "collapsible 的 trigger 部件 font-size 覆盖槽。"
@@ -11403,7 +11459,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-_collapsible-trigger-gap"
+        "--xh-_action-profile-gap"
       ],
       "visibility": "public",
       "description": "collapsible 的 trigger 部件 gap 覆盖槽。"
@@ -11415,16 +11471,18 @@
         "trigger"
       ],
       "property": [
+        "block-size",
         "min-block-size"
       ],
       "state": [
-        "default"
+        "default",
+        "xh-action-profile=disclosure-trigger"
       ],
       "defaultToken": [
-        "--xh-_collapsible-trigger-h"
+        "--xh-_action-profile-visual-size"
       ],
       "visibility": "public",
-      "description": "collapsible 的 trigger 部件 min-block-size 覆盖槽。"
+      "description": "collapsible 的 trigger 部件 block-size、min-block-size 覆盖槽。"
     },
     {
       "name": "--xh-collapsible-trigger-px",
@@ -11439,7 +11497,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-_collapsible-trigger-px"
+        "--xh-_action-profile-padding-inline"
       ],
       "visibility": "public",
       "description": "collapsible 的 trigger 部件 padding-inline 覆盖槽。"
@@ -11454,10 +11512,10 @@
         "padding-block"
       ],
       "state": [
-        "default"
+        "xh-action-profile=disclosure-trigger"
       ],
       "defaultToken": [
-        "--xh-_collapsible-trigger-py"
+        "--xh-_action-profile-padding-block"
       ],
       "visibility": "public",
       "description": "collapsible 的 trigger 部件 padding-block 覆盖槽。"
@@ -11475,7 +11533,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-shape-control"
+        "--xh-_action-profile-radius"
       ],
       "visibility": "public",
       "description": "collapsible 的 trigger 部件 border-radius 覆盖槽。"

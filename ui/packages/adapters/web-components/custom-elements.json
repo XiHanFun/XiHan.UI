@@ -340,6 +340,9 @@
           "customElement": true,
           "cssProperties": [
             {
+              "name": "--xh-accordion-border"
+            },
+            {
               "name": "--xh-accordion-content-fg"
             },
             {
