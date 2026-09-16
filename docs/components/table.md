@@ -231,7 +231,7 @@ prefix-columns 让库把序号/多选列插在最前面并占用列号；序号�
 | `empty` | `boolean` |  | 显式声明表体为空；未提供时按 rows 是否为空推导。 |
 | `stickyHeader` | `boolean` |  | 表头吸顶：只写 data-fixed（布尔），固定的实现归皮肤。列冻结使用 data-frozen，两者不同名。 |
 | `striped` | `boolean` |  | 斑马纹：表体偶数行换一层浅底。 |
-| `borderless` | `boolean` |  | 去掉外框，只保留行间横线：root 上的 data-bordered 随之缺席。 |
+| `variant` | `ControlVariant` |  | 形态：outline 画外框与圆角（默认），ghost 去掉外框只留行间横线，subtle 淡底。默认 outline。 |
 | `ruled` | `boolean` |  | 列与列之间加竖分隔线，写为 root 上的 data-split。 |
 | `footer` | `boolean` |  | 表格带脚注行。行号空间的最后一行留给它，aria-rowcount 也把它计入。 |
 | `loop` | `boolean` |  | 上下键到达首尾是否回绕，默认 false。 |
@@ -462,13 +462,13 @@ prefix-columns 让库把序号/多选列插在最前面并占用列号；序号�
 
 | 部件 | 属性 | 值 |
 | --- | --- | --- |
-| `root` | `data-bordered` | ''（条件成立时才出现） |
 | `root` | `data-empty` | ''（条件成立时才出现） |
 | `root` | `data-fixed` | ''（条件成立时才出现） |
 | `root` | `data-loading` | ''（条件成立时才出现） |
 | `root` | `data-size` | props.size |
 | `root` | `data-split` | ''（条件成立时才出现） |
 | `root` | `data-striped` | ''（条件成立时才出现） |
+| `root` | `data-variant` | props.variant |
 | `header` | `data-fixed` | ''（条件成立时才出现） |
 | `body` | `data-empty` | ''（条件成立时才出现） |
 | `row` | `data-draggable` | ''（条件成立时才出现） |
@@ -508,8 +508,8 @@ prefix-columns 让库把序号/多选列插在最前面并占用列号；序号�
 
 | 变量 | 部件 | CSS 属性 | 状态 | 默认来源 | 说明 |
 | --- | --- | --- | --- | --- | --- |
-| `--xh-table-bg` | `root` | `background` | `default` | `--xh-bg-surface` | table 的 root 部件 background 覆盖槽。 |
-| `--xh-table-border` | `footer`<br>`header`<br>`root` | `border`<br>`border-block-end`<br>`border-block-start` | `bordered`<br>`default` | `--xh-border-default` | table 的 footer、header、root 部件 border、border-block-end、border-block-start 覆盖槽。 |
+| `--xh-table-bg` | `root` | `background` | `default`<br>`variant=subtle` | `--xh-bg-subtle`<br>`--xh-bg-surface` | table 的 root 部件 background 覆盖槽。 |
+| `--xh-table-border` | `footer`<br>`header`<br>`root` | `border`<br>`border-block-end`<br>`border-block-start` | `default`<br>`variant=outline` | `--xh-border-default` | table 的 footer、header、root 部件 border、border-block-end、border-block-start 覆盖槽。 |
 | `--xh-table-caption-fg` | `caption` | `color` | `default` | `--xh-fg-muted` | table 的 caption 部件 color 覆盖槽。 |
 | `--xh-table-caption-font-size` | `caption` | `font-size` | `default` | `--xh-text-label-size` | table 的 caption 部件 font-size 覆盖槽。 |
 | `--xh-table-caption-font-weight` | `caption` | `font-weight` | `default` | `--xh-text-label-weight` | table 的 caption 部件 font-weight 覆盖槽。 |
@@ -553,7 +553,7 @@ prefix-columns 让库把序号/多选列插在最前面并占用列号；序号�
 | `--xh-table-load-more-trigger-radius` | `load-more-trigger` | `border-radius` | `default` | `--xh-shape-control` | table 的 load-more-trigger 部件 border-radius 覆盖槽。 |
 | `--xh-table-loading-duration` | `loading` | `animation` | `default` | `--xh-shimmer-duration` | table 的 loading 部件 animation 覆盖槽。 |
 | `--xh-table-max-h` | `root` | `max-block-size` | `default` | `--xh-viewport-h-lg` | table 的 root 部件 max-block-size 覆盖槽。 |
-| `--xh-table-radius` | `root` | `border-radius` | `bordered` | `--xh-shape-surface` | table 的 root 部件 border-radius 覆盖槽。 |
+| `--xh-table-radius` | `root` | `border-radius` | `variant=outline`<br>`variant=subtle` | `--xh-shape-surface` | table 的 root 部件 border-radius 覆盖槽。 |
 | `--xh-table-resize-fg` | `column-resize-trigger` | `background` | `default` | `--xh-border-default` | table 的 column-resize-trigger 部件 background 覆盖槽。 |
 | `--xh-table-resize-fg-active` | `column-resize-trigger` | `background` | `hover`<br>`resizing` | `--xh-bg-brand` | table 的 column-resize-trigger 部件 background 覆盖槽。 |
 | `--xh-table-resize-line` | `column-resize-trigger` | `inline-size` | `default` | `--xh-stroke-thin` | table 的 column-resize-trigger 部件 inline-size 覆盖槽。 |

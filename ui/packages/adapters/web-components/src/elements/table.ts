@@ -5,7 +5,7 @@
 
 // 提供 table 相关实现。
 
-import type { Direction, Size } from '@xihan-ui/core'
+import type { ControlVariant, Direction, Size } from '@xihan-ui/core'
 import type {
   TableApi,
   TableColumnDef,
@@ -71,7 +71,7 @@ const FOOTER_SELECTOR = '[data-xh-part="footer"]'
  * @attr {boolean} empty - 显式声明表体为空；未提供时按 rows 是否为空推导，写 empty="false" 强制不为空
  * @attr {boolean} sticky-header - 表头吸顶，只写 data-fixed（布尔）；列冻结使用 data-frozen
  * @attr {boolean} striped - 斑马纹：表体偶数行换一层浅底
- * @attr {boolean} borderless - 去掉外框，只保留行间横线
+ * @attr {'outline'|'subtle'|'ghost'} variant - 形态：outline 画外框与圆角，ghost 去掉外框只留行间横线，subtle 淡底；默认 outline
  * @attr {boolean} ruled - 列与列之间加竖分隔线
  * @attr {boolean} footer - 表格带脚注行：行号空间的最后一行留给它，aria-rowcount 也计入
  * @attr {boolean} row-reorderable - 行可以拖动换位：整行都是拖动源；触屏路径经 row-drag-trigger 把手
@@ -136,7 +136,7 @@ export class XhTableElement extends XhElement {
     empty: { converter: BOOLEAN_CONVERTER },
     stickyHeader: { type: Boolean, attribute: 'sticky-header' },
     striped: { type: Boolean },
-    borderless: { type: Boolean },
+    variant: { converter: STRING_CONVERTER },
     ruled: { type: Boolean },
     footer: { type: Boolean },
     rowReorderable: { type: Boolean, attribute: 'row-reorderable' },
@@ -167,7 +167,7 @@ export class XhTableElement extends XhElement {
   declare empty?: boolean
   declare stickyHeader?: boolean
   declare striped?: boolean
-  declare borderless?: boolean
+  declare variant?: ControlVariant
   declare ruled?: boolean
   declare footer?: boolean
   declare rowReorderable?: boolean
@@ -223,7 +223,7 @@ export class XhTableElement extends XhElement {
       empty: this.empty,
       stickyHeader: this.stickyHeader ?? false,
       striped: this.striped ?? false,
-      borderless: this.borderless ?? false,
+      variant: this.variant,
       ruled: this.ruled ?? false,
       footer: this.footer ?? false,
       rowReorderable: this.rowReorderable ?? false,

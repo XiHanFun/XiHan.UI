@@ -491,7 +491,7 @@ export function connectTable<T extends PropTypes>(
       'data-empty': dataAttr(isEmpty),
       'data-fixed': dataAttr(stickyHeader),
       'data-striped': dataAttr(!!prop('striped')),
-      'data-bordered': dataAttr(!prop('borderless')),
+      'data-variant': prop('variant') ?? 'outline',
       'data-split': dataAttr(!!prop('ruled')),
     }),
 

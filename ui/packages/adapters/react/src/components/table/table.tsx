@@ -5,7 +5,7 @@
 
 // 提供 table 相关实现。
 
-import type { Direction, Service, Size } from '@xihan-ui/core'
+import type { ControlVariant, Direction, Service, Size } from '@xihan-ui/core'
 import type {
   TableApi,
   TableColumnDef,
@@ -152,7 +152,8 @@ export interface XhTableRootProps extends RootElementProps {
   empty?: boolean
   stickyHeader?: boolean
   striped?: boolean
-  borderless?: boolean
+  /** 形态：outline 画外框与圆角（默认），ghost 去掉外框只留行间横线，subtle 淡底。默认 outline。 */
+  variant?: ControlVariant
   ruled?: boolean
   footer?: boolean
   /** 行可以拖动换位。整行都是拖动源，不另设把手。 */
@@ -196,7 +197,7 @@ export function XhTableRoot({
   empty,
   stickyHeader,
   striped,
-  borderless,
+  variant,
   ruled,
   footer,
   rowReorderable,
@@ -233,7 +234,7 @@ export function XhTableRoot({
     empty,
     stickyHeader,
     striped,
-    borderless,
+    variant,
     ruled,
     footer,
     rowReorderable,

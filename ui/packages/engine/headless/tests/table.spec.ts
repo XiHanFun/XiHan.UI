@@ -1135,18 +1135,23 @@ describe('吸附列的偏移与外观开关', () => {
     expect((name.style as Record<string, unknown> | undefined)?.['--xh-table-sticky-inset']).toBeUndefined()
   })
 
-  it('斑马纹 / 外框 / 竖线三个开关落到 root 上', () => {
-    const h = mount({ striped: true, borderless: true, ruled: true })
+  it('斑马纹 / 竖线两个开关与形态轴落到 root 上', () => {
+    const h = mount({ striped: true, variant: 'ghost', ruled: true })
     const root = h.api().getRootProps() as Record<string, unknown>
     expect(root['data-striped']).toBe('')
-    // 外框报的是正面事实：borderless 开着就是不画，这一位缺席
-    expect(root['data-bordered']).toBeUndefined()
+    // 形态如实落值：ghost 就是不画外框
+    expect(root['data-variant']).toBe('ghost')
     expect(root['data-split']).toBe('')
 
     const plain = mount().api().getRootProps() as Record<string, unknown>
     expect(plain['data-striped']).toBeUndefined()
-    expect(plain['data-bordered']).toBe('')
+    // variant 不给时落 outline，不再有 data-bordered
+    expect(plain['data-variant']).toBe('outline')
+    expect(plain['data-bordered']).toBeUndefined()
     expect(plain['data-split']).toBeUndefined()
+
+    const subtle = mount({ variant: 'subtle' }).api().getRootProps() as Record<string, unknown>
+    expect(subtle['data-variant']).toBe('subtle')
   })
 })
 

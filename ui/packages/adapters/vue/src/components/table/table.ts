@@ -5,7 +5,7 @@
 
 // 提供 table 相关实现。
 
-import type { Direction, Size } from '@xihan-ui/core'
+import type { ControlVariant, Direction, Size } from '@xihan-ui/core'
 import type {
   TableApi,
   TableColumnDef,
@@ -140,7 +140,7 @@ export const XhTableRoot = /* @__PURE__ */ defineComponent({
     empty: { type: Boolean, default: undefined },
     stickyHeader: Boolean,
     striped: Boolean,
-    borderless: Boolean,
+    variant: { type: String as PropType<ControlVariant> },
     ruled: Boolean,
     footer: Boolean,
     /** 行可以拖动换位。整行都是拖动源，不另设把手。 */

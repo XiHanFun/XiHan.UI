@@ -10971,7 +10971,6 @@
     ],
     "table": [
       "allowRowDrop",
-      "borderless",
       "columnPreference",
       "columns",
       "defaultColumnPreference",
@@ -11001,7 +11000,8 @@
       "sort",
       "stickyHeader",
       "striped",
-      "translations"
+      "translations",
+      "variant"
     ],
     "tabs": [
       "activationMode",
@@ -17906,7 +17906,6 @@
     },
     "xh-table": {
       "attributes": [
-        "borderless",
         "dir",
         "empty",
         "footer",
@@ -17919,7 +17918,8 @@
         "selection-mode",
         "size",
         "sticky-header",
-        "striped"
+        "striped",
+        "variant"
       ],
       "events": [
         "column-preference-change",

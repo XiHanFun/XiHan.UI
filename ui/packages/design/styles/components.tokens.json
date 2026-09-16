@@ -54436,9 +54436,11 @@
         "background"
       ],
       "state": [
-        "default"
+        "default",
+        "variant=subtle"
       ],
       "defaultToken": [
+        "--xh-bg-subtle",
         "--xh-bg-surface"
       ],
       "visibility": "public",
@@ -54458,8 +54460,8 @@
         "border-block-start"
       ],
       "state": [
-        "bordered",
-        "default"
+        "default",
+        "variant=outline"
       ],
       "defaultToken": [
         "--xh-border-default"
@@ -55289,7 +55291,8 @@
         "border-radius"
       ],
       "state": [
-        "bordered"
+        "variant=outline",
+        "variant=subtle"
       ],
       "defaultToken": [
         "--xh-shape-surface"
