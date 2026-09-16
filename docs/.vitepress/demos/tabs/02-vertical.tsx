@@ -10,7 +10,7 @@ import {
 
 export default function Demo(): ReactNode {
   return (
-    <XhTabsRoot defaultValue="account" orientation="vertical" variant="line" style={{ inlineSize: "420px", maxInlineSize: "100%" }}>
+    <XhTabsRoot defaultValue="account" orientation="vertical" style={{ inlineSize: "420px", maxInlineSize: "100%" }}>
       <XhTabsList aria-label="账户设置">
         <XhTabsTrigger value="account">账户</XhTabsTrigger>
         <XhTabsTrigger value="security">安全</XhTabsTrigger>

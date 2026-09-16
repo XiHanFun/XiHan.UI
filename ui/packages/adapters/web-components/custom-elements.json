@@ -50486,7 +50486,7 @@
               "type": {
                 "text": "TabsVariant | undefined"
               },
-              "description": "视觉变体，默认 segment",
+              "description": "视觉变体，默认 line",
               "name": "variant",
               "fieldName": "variant"
             },

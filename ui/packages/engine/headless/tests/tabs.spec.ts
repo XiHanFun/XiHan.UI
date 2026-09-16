@@ -113,6 +113,13 @@ describe('标签页 · 选中值', () => {
   })
 })
 
+describe('标签页 · 视觉轴', () => {
+  it('variant 不写时 root 落 line，写了如实投影', () => {
+    expect((makeTabs().api().getRootProps() as Dict)['data-variant']).toBe('line')
+    expect((makeTabs({ variant: 'segment' }).api().getRootProps() as Dict)['data-variant']).toBe('segment')
+  })
+})
+
 describe('标签页 · 焦点锚点', () => {
   it('点选：同时写选中与锚点', () => {
     const t = makeTabs()

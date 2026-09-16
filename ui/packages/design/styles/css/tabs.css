@@ -17,25 +17,25 @@
     --xh-_tabs-trigger-px: var(--xh-control-px-md);
     --xh-_tabs-trigger-font-size: var(--xh-control-font-md);
 
-    /* 缺省是主变体：浅色标签带承载一块浮起的选中面。Web Components 升级前还没有
+    /* 缺省是 line 变体：透明标签带，选中项由文字与底部指示条表达。Web Components 升级前还没有
        data-variant，这组基础值也必须画成相同结果，避免定义完成时闪换样式。 */
-    --xh-_tabs-list-gap: var(--xh-space-0_5);
-    --xh-_tabs-list-bg: var(--xh-bg-subtle);
-    --xh-_tabs-list-p: var(--xh-space-1);
-    --xh-_tabs-list-radius: var(--xh-shape-surface);
+    --xh-_tabs-list-gap: var(--xh-space-0);
+    --xh-_tabs-list-bg: transparent;
+    --xh-_tabs-list-p: var(--xh-space-0);
+    --xh-_tabs-list-radius: 0;
     --xh-_tabs-list-border-width: 0;
     --xh-_tabs-trigger-border-width: 0;
     --xh-_tabs-trigger-border: transparent;
     --xh-_tabs-trigger-radius: var(--xh-shape-control);
-    --xh-_tabs-trigger-bg-active: var(--xh-_tone-subtle, var(--xh-bg-surface));
-    --xh-_tabs-trigger-bg-active-hover: var(--xh-_tone-subtle-hover, var(--xh-bg-surface));
+    --xh-_tabs-trigger-bg-active: transparent;
+    --xh-_tabs-trigger-bg-active-hover: transparent;
     --xh-_tabs-trigger-border-active: transparent;
-    --xh-_tabs-trigger-shadow-active: var(--xh-elevation-raised);
+    --xh-_tabs-trigger-shadow-active: none;
 
     /* 语气落在选中态：指示条与选中标签的文字。
        没写 data-tone 时 --xh-_tone 一族没被声明，两个槽都退回原来的取色 */
     --xh-_tabs-accent: var(--xh-_tone, var(--xh-bg-brand));
-    --xh-_tabs-accent-text: var(--xh-_tone-fg, var(--xh-fg-default));
+    --xh-_tabs-accent-text: var(--xh-_tone-fg, var(--xh-fg-brand-strong));
 
     display: flex;
     flex-direction: column;
@@ -62,18 +62,21 @@
   }
 
   /* —— 变体 —— */
-  /* 次级导航：透明标签带与底部基线，选中项由文字和滑动指示条强调。 */
+  /* 主变体的显式写法，与缺省视觉一致：透明标签带与底部基线，选中项由文字和滑动指示条强调。 */
   [data-scope='tabs'][data-part='root'][data-variant='line'] {
     --xh-_tabs-list-gap: var(--xh-space-0);
     --xh-_tabs-list-bg: transparent;
     --xh-_tabs-list-p: var(--xh-space-0);
     --xh-_tabs-list-radius: 0;
     --xh-_tabs-list-border-width: 0;
+    --xh-_tabs-trigger-border-width: 0;
+    --xh-_tabs-trigger-border: transparent;
     --xh-_tabs-trigger-radius: var(--xh-shape-control);
     --xh-_tabs-trigger-bg-active: transparent;
     --xh-_tabs-trigger-bg-active-hover: transparent;
-    --xh-_tabs-accent-text: var(--xh-_tone-fg, var(--xh-fg-brand-strong));
+    --xh-_tabs-trigger-border-active: transparent;
     --xh-_tabs-trigger-shadow-active: none;
+    --xh-_tabs-accent-text: var(--xh-_tone-fg, var(--xh-fg-brand-strong));
   }
 
   /* 卡片式：基线收掉，选中的那张标签自己成为一张有描边有底的卡片，顶边一条指示条 */
@@ -89,19 +92,25 @@
     --xh-_tabs-trigger-bg-active-hover: var(--xh-_tone-subtle-hover, var(--xh-bg-surface));
     --xh-_tabs-trigger-border-active: var(--xh-_tone-border, var(--xh-border-default));
     --xh-_tabs-trigger-shadow-active: inset 0 var(--xh-stroke-thick) 0 0 var(--xh-_tabs-accent);
+    /* 选中文字不换品牌色：卡片面与顶边条已经表达选中 */
+    --xh-_tabs-accent-text: var(--xh-_tone-fg, var(--xh-fg-default));
   }
 
-  /* 主变体的显式写法，与缺省视觉一致。 */
+  /* 分段式：浅色标签带承载一块浮起的选中面，选中文字保持默认字色。 */
   [data-scope='tabs'][data-part='root'][data-variant='segment'] {
     --xh-_tabs-list-gap: var(--xh-space-0_5);
     --xh-_tabs-list-bg: var(--xh-bg-subtle);
     --xh-_tabs-list-p: var(--xh-space-1);
     --xh-_tabs-list-radius: var(--xh-shape-surface);
     --xh-_tabs-list-border-width: 0;
+    --xh-_tabs-trigger-border-width: 0;
+    --xh-_tabs-trigger-border: transparent;
     --xh-_tabs-trigger-radius: var(--xh-shape-control);
     --xh-_tabs-trigger-bg-active: var(--xh-_tone-subtle, var(--xh-bg-surface));
     --xh-_tabs-trigger-bg-active-hover: var(--xh-_tone-subtle-hover, var(--xh-bg-surface));
+    --xh-_tabs-trigger-border-active: transparent;
     --xh-_tabs-trigger-shadow-active: var(--xh-elevation-raised);
+    --xh-_tabs-accent-text: var(--xh-_tone-fg, var(--xh-fg-default));
   }
 
   /* 一行排不下就折行：标签宽度由文字决定，硬撑一行会把整块版面顶出去。
@@ -344,8 +353,7 @@
       inline-size var(--xh-motion-duration-enter) var(--xh-motion-ease-continuous);
   }
 
-  /* 主变体与卡片变体已经由选中面表达状态，不再叠一条下划线。 */
-  [data-scope='tabs'][data-part='root']:not([data-variant]) [data-scope='tabs'][data-part='indicator'],
+  /* 分段与卡片变体已经由选中面表达状态，不再叠一条下划线。 */
   [data-scope='tabs'][data-part='root']:is([data-variant='segment'], [data-variant='card'])
     [data-scope='tabs'][data-part='indicator'] {
     display: none;
