@@ -40897,11 +40897,11 @@
         "background"
       ],
       "state": [
-        "is([data-variant='surface'], [data-variant='raised'])",
-        "variant=raised",
-        "variant=surface"
+        "variant=outline",
+        "variant=subtle"
       ],
       "defaultToken": [
+        "--xh-bg-subtle",
         "--xh-bg-surface"
       ],
       "visibility": "public",
@@ -40918,10 +40918,9 @@
         "border-block-end"
       ],
       "state": [
-        "bordered",
-        "is([data-variant='surface'], [data-variant='raised'])",
-        "variant=raised",
-        "variant=surface"
+        "split",
+        "variant=ghost",
+        "variant=outline"
       ],
       "defaultToken": [
         "--xh-border-subtle"
@@ -41165,24 +41164,6 @@
       ],
       "visibility": "public",
       "description": "page-header 的 root 部件 row-gap 覆盖槽。"
-    },
-    {
-      "name": "--xh-page-header-shadow",
-      "component": "page-header",
-      "part": [
-        "root"
-      ],
-      "property": [
-        "box-shadow"
-      ],
-      "state": [
-        "variant=raised"
-      ],
-      "defaultToken": [
-        "--xh-elevation-raised"
-      ],
-      "visibility": "public",
-      "description": "page-header 的 root 部件 box-shadow 覆盖槽。"
     },
     {
       "name": "--xh-page-header-title-fg",

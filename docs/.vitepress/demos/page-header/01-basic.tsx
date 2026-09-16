@@ -13,7 +13,7 @@ import {
 
 export default function Demo(): ReactNode {
   return (
-    <XhPageHeaderRoot variant="surface" style={{ inlineSize: "min(720px, 100%)" }}>
+    <XhPageHeaderRoot variant="outline" style={{ inlineSize: "min(720px, 100%)" }}>
       <XhPageHeaderBackTrigger
         type="button"
         aria-label="返回订单列表"

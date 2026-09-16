@@ -5,8 +5,8 @@
 
 // 提供 page header 相关实现。
 
-import type { Size } from '@xihan-ui/core'
-import type { PageHeaderProps, PageHeaderVariant } from '@xihan-ui/headless'
+import type { ControlVariant, Size } from '@xihan-ui/core'
+import type { PageHeaderProps } from '@xihan-ui/headless'
 import { connectPageHeader, pageHeaderAnatomy, pageHeaderMeta } from '@xihan-ui/headless'
 import { wcNormalize } from '../dom/normalize'
 import { XhElement } from '../element-base'
@@ -23,9 +23,9 @@ const STRING_CONVERTER = { fromAttribute: (v: string | null) => v ?? undefined }
  *
  * @customElement xh-page-header
  * @attr {'sm'|'md'|'lg'} size - 尺寸，决定标题字号与整块的上下留白
- * @attr {boolean} bordered - 底部绘制一条分隔线；提供面的两档改为绘制整圈描边
- * @attr {'plain'|'surface'|'raised'} variant - 形态，未提供时不绘制面（与 plain 相同）；surface 加底色与圆角，raised 再加一层投影
- * @csspart root - 页头根容器，承载 data-size / data-variant / data-bordered
+ * @attr {boolean} split - 在页头底部绘制一条分隔线；有面的两档不画它，边界由描边承担
+ * @attr {'outline'|'subtle'|'ghost'} variant - 形态：ghost 贴在页面底色上，outline 为带描边的独立面，subtle 淡底；默认 ghost
+ * @csspart root - 页头根容器，承载 data-size / data-variant / data-split
  * @csspart breadcrumb - 面包屑位，整行排在标题之上
  * @csspart back-trigger - 返回位，作者自己的按钮，组件只提供位置
  * @csspart media - 头像 / 图标位，排在返回位与标题之间
@@ -40,19 +40,19 @@ export class XhPageHeaderElement extends XhElement {
   // 描述符逐个写全，CEM 分析器读不了对象展开
   static override properties = {
     size: { converter: STRING_CONVERTER },
-    bordered: { type: Boolean },
+    split: { type: Boolean },
     variant: { converter: STRING_CONVERTER },
   }
 
   declare size?: Size
-  declare bordered?: boolean
-  declare variant?: PageHeaderVariant
+  declare split?: boolean
+  declare variant?: ControlVariant
 
   protected wire(): void {
     // 读响应式 property，不回读 DOM 特性
     const api = connectPageHeader(this.configured('page-header', {
       size: this.size,
-      bordered: this.bordered ?? false,
+      split: this.split ?? false,
       variant: this.variant,
     } satisfies PageHeaderProps), wcNormalize)
 

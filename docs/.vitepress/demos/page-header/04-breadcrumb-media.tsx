@@ -10,7 +10,7 @@ import {
 
 export default function Demo(): ReactNode {
   return (
-    <XhPageHeaderRoot variant="surface" style={{ inlineSize: "min(720px, 100%)" }}>
+    <XhPageHeaderRoot variant="outline" style={{ inlineSize: "min(720px, 100%)" }}>
       <XhPageHeaderBreadcrumb>工作台 / 客户 / Acme Inc.</XhPageHeaderBreadcrumb>
       <XhPageHeaderMedia>
         <span style={{ display: "grid", placeItems: "center", inlineSize: "40px", blockSize: "40px", borderRadius: "var(--xh-shape-pill)", background: "var(--xh-bg-brand-subtle)", color: "var(--xh-fg-brand)", fontWeight: 600 }}>A</span>

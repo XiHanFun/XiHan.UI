@@ -5,8 +5,8 @@
 
 // 提供 page header 相关实现。
 
-import type { Size } from '@xihan-ui/core'
-import type { PageHeaderProps, PageHeaderVariant } from '@xihan-ui/headless'
+import type { ControlVariant, Size } from '@xihan-ui/core'
+import type { PageHeaderProps } from '@xihan-ui/headless'
 import type { PropType } from 'vue'
 import { connectPageHeader } from '@xihan-ui/headless'
 import { computed, defineComponent, h } from 'vue'
@@ -19,9 +19,10 @@ export const XhPageHeaderRoot = defineComponent({
   name: 'XhPageHeaderRoot',
   props: {
     size: { type: String as PropType<Size> },
-    bordered: Boolean,
-    /** 形态：plain / surface / raised。未写即不绘制面，与写 plain 相同。 */
-    variant: { type: String as PropType<PageHeaderVariant> },
+    /** 在页头底部绘制一条分隔线；有面的两档不画它，边界由描边承担。 */
+    split: Boolean,
+    /** 形态：ghost 贴在页面底色上，outline 为带描边的独立面，subtle 淡底；未写落 ghost。 */
+    variant: { type: String as PropType<ControlVariant> },
   },
   setup(props, { slots }) {
     const api = computed(() => connectPageHeader(withXhConfig('page-header', props) as PageHeaderProps, vueNormalize))

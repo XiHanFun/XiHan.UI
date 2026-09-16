@@ -36323,7 +36323,7 @@
           "name": "XhPageHeaderElement",
           "cssParts": [
             {
-              "description": "页头根容器，承载 data-size / data-variant / data-bordered",
+              "description": "页头根容器，承载 data-size / data-variant / data-split",
               "name": "root"
             },
             {
@@ -36376,19 +36376,19 @@
             },
             {
               "kind": "field",
-              "name": "bordered",
+              "name": "split",
               "privacy": "public",
               "type": {
                 "text": "boolean | undefined"
               },
-              "attribute": "bordered"
+              "attribute": "split"
             },
             {
               "kind": "field",
               "name": "variant",
               "privacy": "public",
               "type": {
-                "text": "PageHeaderVariant | undefined"
+                "text": "ControlVariant | undefined"
               },
               "attribute": "variant"
             },
@@ -36416,15 +36416,15 @@
               "type": {
                 "text": "boolean | undefined"
               },
-              "description": "底部绘制一条分隔线；提供面的两档改为绘制整圈描边",
-              "name": "bordered",
-              "fieldName": "bordered"
+              "description": "在页头底部绘制一条分隔线；有面的两档不画它，边界由描边承担",
+              "name": "split",
+              "fieldName": "split"
             },
             {
               "type": {
-                "text": "PageHeaderVariant | undefined"
+                "text": "ControlVariant | undefined"
               },
-              "description": "形态，未提供时不绘制面（与 plain 相同）；surface 加底色与圆角，raised 再加一层投影",
+              "description": "形态：ghost 贴在页面底色上，outline 为带描边的独立面，subtle 淡底；默认 ghost",
               "name": "variant",
               "fieldName": "variant"
             }
@@ -36480,9 +36480,6 @@
             },
             {
               "name": "--xh-page-header-row-gap"
-            },
-            {
-              "name": "--xh-page-header-shadow"
             },
             {
               "name": "--xh-page-header-title-fg"

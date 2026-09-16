@@ -10,7 +10,7 @@ import {
 </script>
 
 <template>
-  <XhPageHeaderRoot variant="surface" style="inline-size: min(720px, 100%)">
+  <XhPageHeaderRoot variant="outline" style="inline-size: min(720px, 100%)">
     <XhPageHeaderBreadcrumb>工作台 / 客户 / Acme Inc.</XhPageHeaderBreadcrumb>
     <XhPageHeaderMedia>
       <span style="display: grid; place-items: center; inline-size: 40px; block-size: 40px; border-radius: var(--xh-shape-pill); background: var(--xh-bg-brand-subtle); color: var(--xh-fg-brand); font-weight: 600">A</span>

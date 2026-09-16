@@ -13,7 +13,7 @@ import {
 </script>
 
 <template>
-  <XhPageHeaderRoot variant="surface" style="inline-size: min(720px, 100%)">
+  <XhPageHeaderRoot variant="outline" style="inline-size: min(720px, 100%)">
     <XhPageHeaderBackTrigger
       type="button"
       aria-label="返回订单列表"
