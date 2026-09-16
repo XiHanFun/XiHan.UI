@@ -5,8 +5,8 @@
 
 // 提供 tree 相关实现。
 
-import type { CascadeStrategy, Direction, Orientation, Service } from '@xihan-ui/core'
-import type { TreeApi, TreeNode, TreeSchema, TreeVariant } from '@xihan-ui/headless'
+import type { CascadeStrategy, ControlVariant, Direction, Orientation, Service } from '@xihan-ui/core'
+import type { TreeApi, TreeNode, TreeSchema } from '@xihan-ui/headless'
 import type { ComponentPropsWithRef, ReactNode, RefObject } from 'react'
 import type { SlotChildren } from '../../runtime/slot-content'
 import { useEffect, useMemo, useRef } from 'react'
@@ -69,8 +69,8 @@ function useNodeFocusReport(
 
 export interface XhTreeRootProps extends Omit<ComponentPropsWithRef<'div'>, 'children'> {
   collection?: TreeNode[]
-  /** 外框形态：surface 带描边与底色（默认），plain 只保留行。 */
-  variant?: TreeVariant
+  /** 外框形态：outline 带描边与底色（默认），subtle 淡底无描边，ghost 去掉描边与底色只保留行。 */
+  variant?: ControlVariant
   expandedValue?: string[]
   defaultExpandedValue?: string[]
   selection?: string[]

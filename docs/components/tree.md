@@ -92,7 +92,7 @@ leaf-orientation 按结构判据横排子节点全为叶子的层；要指定哪
 
 ### 变体
 
-variant="plain" 去掉外框与底色，树直接落在页面上；默认 surface 保持带框的外观
+variant="ghost" 去掉外框与底色，树直接落在页面上；默认 outline 保持带框的外观
 
 <XhDemo src="tree/13-variant" />
 
@@ -112,7 +112,7 @@ variant="plain" 去掉外框与底色，树直接落在页面上；默认 surfac
 ### 特性
 
 - 展开集合与选中集合两套值各自可受控。
-- `variant` 决定是否带外框，默认 `surface`；`plain` 让树直接落在页面上。
+- `variant` 决定外框形态，默认 `outline`；`subtle` 换成淡底无描边，`ghost` 让树直接落在页面上。
 - `cascade` 与 `checkedStrategy` 决定勾选父节点是否带子节点，以及回显给哪一层。
 - 支持只让叶子进选中集合、关键词过滤、子节点异步加载、拖放换父。
 - `expandOnClick` 决定点整行是否展开。
@@ -152,7 +152,7 @@ variant="plain" 去掉外框与底色，树直接落在页面上；默认 surfac
 | 属性 | 类型 | 必填 | 说明 |
 | --- | --- | --- | --- |
 | `collection` | `TreeNode[]` |  | 树数据，层级元信息的唯一事实源。默认为空树。 |
-| `variant` | `TreeVariant` |  | 外框形态：surface 带描边与底色（默认），plain 去掉描边与底色，只保留行。 |
+| `variant` | `ControlVariant` |  | 外框形态：outline 带描边与底色（默认），subtle 淡底无描边，ghost 去掉描边与底色只保留行。 |
 | `leafOrientation` | `Orientation` |  | 末端层的排布方式，默认 vertical（每行一个）。horizontal 使它们并排铺开。 只作用于子节点全是叶子的层：菜单授权中即按钮层： 一个菜单下十几个按钮，横向排成一行，省去纵向翻找。中间层与整棵树恒为纵向， 它们承载的是层级本身，横向排布会失去层级信息。 这是结构判据，逐层自动识别。需要精确指定哪一层横向排布时，在节点上标注 `childrenOrientation`，它优先于本项。 只影响排布，不改变键盘：方向键在树上是层级操作（左右收展、上下移动可见行）， 这是 treeview 的规范语义，不随排布方向改写。 |
 | `expandedValue` | `string[]` |  | 展开集合。提供即受控：cell 直读 prop，写入只发 onExpandedValueChange 不落内部值。 |
 | `defaultExpandedValue` | `string[]` |  |  |

@@ -5,7 +5,7 @@
 
 // 定义 tree 类型契约。
 
-import type { CascadeStrategy, Direction, MachineSchema, Orientation, PropTypes, Typeahead } from '@xihan-ui/core'
+import type { CascadeStrategy, ControlVariant, Direction, MachineSchema, Orientation, PropTypes, Typeahead } from '@xihan-ui/core'
 import type { MultiPointerSession } from '@xihan-ui/pointer'
 import type { DragRect, DragTranslations, DropTarget } from '../shared/drag'
 
@@ -18,9 +18,6 @@ import type { DragRect, DragTranslations, DropTarget } from '../shared/drag'
  * 让它承担 tabindex=0 会使整棵树没有停靠点；focusedValue 指向已隐藏节点时同样投影为 null。
  */
 export type TreeFocusModel = 'roving-tabindex'
-
-/** 外框形态：surface 带描边与底色，plain 只保留行。 */
-export type TreeVariant = 'plain' | 'surface'
 
 /**
  * 作者提供的树数据，是层级元信息（层级号、同层序号、同层总数、父子关系）的唯一事实源：
@@ -124,8 +121,8 @@ export interface TreeSchema extends MachineSchema {
   props: {
     /** 树数据，层级元信息的唯一事实源。默认为空树。 */
     collection?: TreeNode[]
-    /** 外框形态：surface 带描边与底色（默认），plain 去掉描边与底色，只保留行。 */
-    variant?: TreeVariant
+    /** 外框形态：outline 带描边与底色（默认），subtle 淡底无描边，ghost 去掉描边与底色只保留行。 */
+    variant?: ControlVariant
     /**
      * 末端层的排布方式，默认 vertical（每行一个）。horizontal 使它们并排铺开。
      *

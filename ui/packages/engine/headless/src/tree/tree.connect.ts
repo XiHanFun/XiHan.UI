@@ -68,8 +68,8 @@ export function connectTree<T extends PropTypes>(
   const loading = !!prop('loading')
   // 集合交给库时相位由库判；节点手写时库数不出有几条
   const counted = prop('collection') != null
-  // 形态恒有值：缺省 surface，读一眼 DOM 就知道这棵树有没有外框
-  const variant = prop('variant') ?? 'surface'
+  // 形态恒有值：缺省 outline，读一眼 DOM 就知道这棵树有没有外框
+  const variant = prop('variant') ?? 'outline'
   const dir = prop('dir') ?? 'ltr'
   // 横排只开给末端那一层；其余一律竖排，层级得靠竖排读出来
   const leafOrientation = prop('leafOrientation') ?? 'vertical'

@@ -59,7 +59,7 @@ export const XhTreeRoot = defineComponent({
   // 有 connect 兜底的 prop：普通类型省略 default，Boolean 显式保留 undefined
   props: {
     collection: { type: Array as PropType<TreeNode[]> },
-    /** 外框形态：surface 带描边与底色（默认），plain 只保留行。 */
+    /** 外框形态：outline 带描边与底色（默认），subtle 淡底无描边，ghost 去掉描边与底色只保留行。 */
     variant: { type: String as PropType<TreeProps['variant']> },
     expandedValue: { type: Array as PropType<string[]> },
     defaultExpandedValue: { type: Array as PropType<string[]> },

@@ -1,4 +1,4 @@
-// 形态 | variant="plain" 去掉外框与底色，树直接落在页面上；默认 surface 保持带框的外观
+// 形态 | variant="ghost" 去掉外框与底色，树直接落在页面上；默认 outline 保持带框的外观
 import type { ReactNode } from "react";
 import {
   XhTreeBranch,
@@ -25,7 +25,7 @@ const collection = [
   { value: "readme", label: "README.md" },
 ];
 
-const variants = ["surface", "plain"] as const;
+const variants = ["outline", "ghost"] as const;
 
 export default function Demo(): ReactNode {
   return (

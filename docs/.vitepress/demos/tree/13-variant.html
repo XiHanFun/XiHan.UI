@@ -1,6 +1,6 @@
-<!-- 形态 | variant="plain" 去掉外框与底色，树直接落在页面上；默认 surface 保持带框的外观 -->
+<!-- 形态 | variant="ghost" 去掉外框与底色，树直接落在页面上；默认 outline 保持带框的外观 -->
 <div style="display: grid; gap: 16px; inline-size: 100%; max-inline-size: 320px">
-  <xh-tree id="tree-variant-surface" variant="surface">
+  <xh-tree id="tree-variant-outline" variant="outline">
     <div data-xh-part="root">
       <div data-xh-part="tree">
         <div data-xh-part="branch" value="src">
@@ -27,7 +27,7 @@
     </div>
   </xh-tree>
 
-  <xh-tree id="tree-variant-plain" variant="plain">
+  <xh-tree id="tree-variant-ghost" variant="ghost">
     <div data-xh-part="root">
       <div data-xh-part="tree">
         <div data-xh-part="branch" value="src">
@@ -69,7 +69,7 @@
   ];
 
   // 数据与展开集合都是数组，只走属性
-  for (const id of ["tree-variant-surface", "tree-variant-plain"]) {
+  for (const id of ["tree-variant-outline", "tree-variant-ghost"]) {
     const tree = document.getElementById(id);
     tree.collection = collection;
     tree.expandedValue = ["src"];
