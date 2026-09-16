@@ -25077,7 +25077,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-text-body-size"
+        "--xh-text-secondary-size"
       ],
       "visibility": "public",
       "description": "empty-state 的 description 部件 font-size 覆盖槽。"
@@ -25095,7 +25095,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-text-body-leading"
+        "--xh-leading-normal"
       ],
       "visibility": "public",
       "description": "empty-state 的 description 部件 line-height 覆盖槽。"

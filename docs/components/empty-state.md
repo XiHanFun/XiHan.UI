@@ -168,8 +168,8 @@ tone 为图标区上语气色，与全库同一根轴；绘制什么图标仍由
 | --- | --- | --- | --- | --- | --- |
 | `--xh-empty-state-action-gap` | `action` | `gap` | `default` | `--xh-space-2` | empty-state 的 action 部件 gap 覆盖槽。 |
 | `--xh-empty-state-description-fg` | `description` | `color` | `default` | `--xh-fg-muted` | empty-state 的 description 部件 color 覆盖槽。 |
-| `--xh-empty-state-description-font-size` | `description` | `font-size` | `default` | `--xh-text-body-size` | empty-state 的 description 部件 font-size 覆盖槽。 |
-| `--xh-empty-state-description-leading` | `description` | `line-height` | `default` | `--xh-text-body-leading` | empty-state 的 description 部件 line-height 覆盖槽。 |
+| `--xh-empty-state-description-font-size` | `description` | `font-size` | `default` | `--xh-text-secondary-size` | empty-state 的 description 部件 font-size 覆盖槽。 |
+| `--xh-empty-state-description-leading` | `description` | `line-height` | `default` | `--xh-leading-normal` | empty-state 的 description 部件 line-height 覆盖槽。 |
 | `--xh-empty-state-description-max-w` | `description` | `max-inline-size` | `default` | `--xh-measure-prose` | empty-state 的 description 部件 max-inline-size 覆盖槽。 |
 | `--xh-empty-state-fg` | `root` | `color` | `default` | `--xh-fg-default` | empty-state 的 root 部件 color 覆盖槽。 |
 | `--xh-empty-state-gap` | `root` | `gap` | `default` | `--xh-_empty-state-gap` | empty-state 的 root 部件 gap 覆盖槽。 |
