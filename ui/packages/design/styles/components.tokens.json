@@ -40109,7 +40109,7 @@
         "color"
       ],
       "state": [
-        "default"
+        "xh-field-affix"
       ],
       "defaultToken": [
         "--xh-fg-muted"
@@ -40128,7 +40128,8 @@
         "color"
       ],
       "state": [
-        "disabled"
+        "disabled",
+        "xh-field-affix"
       ],
       "defaultToken": [
         "--xh-fg-disabled"
@@ -40147,7 +40148,7 @@
         "font-size"
       ],
       "state": [
-        "default"
+        "xh-field-affix"
       ],
       "defaultToken": [
         "--xh-_number-field-font-size"
@@ -40162,16 +40163,16 @@
         "control"
       ],
       "property": [
-        "background"
+        "background-color"
       ],
       "state": [
-        "default"
+        "xh-field-chrome"
       ],
       "defaultToken": [
-        "--xh-_number-field-bg"
+        "--xh-_field-variant-bg-rest"
       ],
       "visibility": "public",
-      "description": "number-field 的 control 部件 background 覆盖槽。"
+      "description": "number-field 的 control 部件 background-color 覆盖槽。"
     },
     {
       "name": "--xh-number-field-control-bg-disabled",
@@ -40180,36 +40181,17 @@
         "control"
       ],
       "property": [
-        "background"
-      ],
-      "state": [
-        "disabled"
-      ],
-      "defaultToken": [
-        "--xh-bg-subtle"
-      ],
-      "visibility": "public",
-      "description": "number-field 的 control 部件 background 覆盖槽。"
-    },
-    {
-      "name": "--xh-number-field-control-bg-focus",
-      "component": "number-field",
-      "part": [
-        "control"
-      ],
-      "property": [
-        "background"
+        "background-color"
       ],
       "state": [
         "disabled",
-        "focus-within",
-        "not([data-disabled])"
+        "xh-field-chrome"
       ],
       "defaultToken": [
-        "--xh-_number-field-bg-focus"
+        "--xh-_field-variant-bg-disabled"
       ],
       "visibility": "public",
-      "description": "number-field 的 control 部件 background 覆盖槽。"
+      "description": "number-field 的 control 部件 background-color 覆盖槽。"
     },
     {
       "name": "--xh-number-field-control-bg-hover",
@@ -40218,38 +40200,25 @@
         "control"
       ],
       "property": [
-        "background"
+        "background-color"
       ],
       "state": [
         "disabled",
         "hover",
         "invalid",
-        "not([data-disabled], [data-readonly], [data-invalid])",
-        "readonly"
+        "loading",
+        "not([data-disabled])",
+        "not([data-invalid])",
+        "not([data-loading])",
+        "not([data-readonly])",
+        "readonly",
+        "xh-field-chrome"
       ],
       "defaultToken": [
-        "--xh-_number-field-bg-hover"
+        "--xh-_field-variant-bg-hover"
       ],
       "visibility": "public",
-      "description": "number-field 的 control 部件 background 覆盖槽。"
-    },
-    {
-      "name": "--xh-number-field-control-bg-invalid",
-      "component": "number-field",
-      "part": [
-        "control"
-      ],
-      "property": [
-        "background"
-      ],
-      "state": [
-        "invalid"
-      ],
-      "defaultToken": [
-        "--xh-_number-field-bg-focus"
-      ],
-      "visibility": "public",
-      "description": "number-field 的 control 部件 background 覆盖槽。"
+      "description": "number-field 的 control 部件 background-color 覆盖槽。"
     },
     {
       "name": "--xh-number-field-control-bg-readonly",
@@ -40258,16 +40227,17 @@
         "control"
       ],
       "property": [
-        "background"
+        "background-color"
       ],
       "state": [
-        "readonly"
+        "readonly",
+        "xh-field-chrome"
       ],
       "defaultToken": [
-        "--xh-bg-subtle"
+        "--xh-_field-variant-bg-read-only"
       ],
       "visibility": "public",
-      "description": "number-field 的 control 部件 background 覆盖槽。"
+      "description": "number-field 的 control 部件 background-color 覆盖槽。"
     },
     {
       "name": "--xh-number-field-control-border",
@@ -40279,10 +40249,10 @@
         "border"
       ],
       "state": [
-        "default"
+        "xh-field-chrome"
       ],
       "defaultToken": [
-        "--xh-_number-field-border"
+        "--xh-_field-variant-border-rest"
       ],
       "visibility": "public",
       "description": "number-field 的 control 部件 border 覆盖槽。"
@@ -40299,10 +40269,11 @@
       "state": [
         "disabled",
         "focus-within",
-        "not([data-disabled])"
+        "not([data-disabled])",
+        "xh-field-chrome"
       ],
       "defaultToken": [
-        "--xh-_number-field-border-focus"
+        "--xh-_field-variant-border-focus"
       ],
       "visibility": "public",
       "description": "number-field 的 control 部件 border-color 覆盖槽。"
@@ -40320,11 +40291,16 @@
         "disabled",
         "hover",
         "invalid",
-        "not([data-disabled], [data-readonly], [data-invalid])",
-        "readonly"
+        "loading",
+        "not([data-disabled])",
+        "not([data-invalid])",
+        "not([data-loading])",
+        "not([data-readonly])",
+        "readonly",
+        "xh-field-chrome"
       ],
       "defaultToken": [
-        "--xh-_number-field-border-hover"
+        "--xh-_field-variant-border-hover"
       ],
       "visibility": "public",
       "description": "number-field 的 control 部件 border-color 覆盖槽。"
@@ -40339,13 +40315,32 @@
         "border-color"
       ],
       "state": [
-        "invalid"
+        "invalid",
+        "xh-field-chrome"
       ],
       "defaultToken": [
-        "--xh-border-invalid"
+        "--xh-_field-variant-border-invalid"
       ],
       "visibility": "public",
       "description": "number-field 的 control 部件 border-color 覆盖槽。"
+    },
+    {
+      "name": "--xh-number-field-control-fg",
+      "component": "number-field",
+      "part": [
+        "control"
+      ],
+      "property": [
+        "color"
+      ],
+      "state": [
+        "xh-field-chrome"
+      ],
+      "defaultToken": [
+        "--xh-fg-default"
+      ],
+      "visibility": "public",
+      "description": "number-field 的 control 部件 color 覆盖槽。"
     },
     {
       "name": "--xh-number-field-control-gap",
@@ -40357,7 +40352,7 @@
         "gap"
       ],
       "state": [
-        "default"
+        "xh-field-chrome"
       ],
       "defaultToken": [
         "--xh-_number-field-gap"
@@ -40372,16 +40367,24 @@
         "control"
       ],
       "property": [
-        "block-size"
+        "block-size",
+        "min-block-size"
       ],
       "state": [
-        "default"
+        "has([data-xh-field-input][data-xh-field-layout='multi-tag'])",
+        "has([data-xh-field-input][data-xh-field-layout='single-line'])",
+        "has([data-xh-field-input][data-xh-field-layout='textarea'])",
+        "xh-field-chrome",
+        "xh-field-input",
+        "xh-field-layout=multi-tag",
+        "xh-field-layout=single-line",
+        "xh-field-layout=textarea"
       ],
       "defaultToken": [
         "--xh-_number-field-h"
       ],
       "visibility": "public",
-      "description": "number-field 的 control 部件 block-size 覆盖槽。"
+      "description": "number-field 的 control 部件 block-size、min-block-size 覆盖槽。"
     },
     {
       "name": "--xh-number-field-control-min-w",
@@ -40394,7 +40397,8 @@
         "min-inline-size"
       ],
       "state": [
-        "default"
+        "default",
+        "xh-field-chrome"
       ],
       "defaultToken": [
         "--xh-control-min-w"
@@ -40412,7 +40416,7 @@
         "padding-inline"
       ],
       "state": [
-        "default"
+        "xh-field-chrome"
       ],
       "defaultToken": [
         "0"
@@ -40430,10 +40434,10 @@
         "border-radius"
       ],
       "state": [
-        "default"
+        "xh-field-chrome"
       ],
       "defaultToken": [
-        "--xh-_number-field-radius"
+        "--xh-shape-control"
       ],
       "visibility": "public",
       "description": "number-field 的 control 部件 border-radius 覆盖槽。"
@@ -40448,10 +40452,10 @@
         "box-shadow"
       ],
       "state": [
-        "default"
+        "xh-field-chrome"
       ],
       "defaultToken": [
-        "--xh-_number-field-shadow"
+        "none"
       ],
       "visibility": "public",
       "description": "number-field 的 control 部件 box-shadow 覆盖槽。"
@@ -40478,6 +40482,7 @@
       "name": "--xh-number-field-icon-size",
       "component": "number-field",
       "part": [
+        "control",
         "root"
       ],
       "property": [
@@ -40486,15 +40491,17 @@
       "state": [
         "default",
         "size=lg",
-        "size=sm"
+        "size=sm",
+        "xh-field-chrome"
       ],
       "defaultToken": [
+        "--xh-_field-size-glyph-size",
         "--xh-glyph-size-lg",
         "--xh-glyph-size-md",
         "--xh-glyph-size-sm"
       ],
       "visibility": "public",
-      "description": "number-field 的 root 部件 --xh-icon-size 覆盖槽。"
+      "description": "number-field 的 control、root 部件 --xh-icon-size 覆盖槽。"
     },
     {
       "name": "--xh-number-field-input-align",
@@ -40527,7 +40534,8 @@
       ],
       "state": [
         "-webkit-autofill",
-        "autofill"
+        "autofill",
+        "xh-field-input"
       ],
       "defaultToken": [
         "--xh-bg-canvas"
@@ -40547,7 +40555,8 @@
       ],
       "state": [
         "-webkit-autofill",
-        "autofill"
+        "autofill",
+        "xh-field-input"
       ],
       "defaultToken": [
         "--xh-fg-default"
@@ -40566,7 +40575,7 @@
         "color"
       ],
       "state": [
-        "default"
+        "xh-field-input"
       ],
       "defaultToken": [
         "--xh-fg-default"
@@ -40585,7 +40594,7 @@
         "font-size"
       ],
       "state": [
-        "default"
+        "xh-field-input"
       ],
       "defaultToken": [
         "--xh-_number-field-font-size"
@@ -40680,7 +40689,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-_number-field-label-font-size"
+        "--xh-text-label-size"
       ],
       "visibility": "public",
       "description": "number-field 的 label 部件 font-size 覆盖槽。"
@@ -40714,34 +40723,14 @@
         "color"
       ],
       "state": [
-        "placeholder"
+        "placeholder",
+        "xh-field-input"
       ],
       "defaultToken": [
         "--xh-fg-subtle"
       ],
       "visibility": "public",
       "description": "number-field 的 control、input 部件 color 覆盖槽。"
-    },
-    {
-      "name": "--xh-number-field-touch-target-size",
-      "component": "number-field",
-      "part": [
-        "control",
-        "decrement-trigger",
-        "increment-trigger"
-      ],
-      "property": [
-        "min-block-size",
-        "min-inline-size"
-      ],
-      "state": [
-        "@media (pointer: coarse)"
-      ],
-      "defaultToken": [
-        "--xh-control-box-lg"
-      ],
-      "visibility": "public",
-      "description": "number-field 的 control、decrement-trigger、increment-trigger 部件 min-block-size、min-inline-size 覆盖槽。"
     },
     {
       "name": "--xh-number-field-trigger-bg-active",
@@ -40752,17 +40741,21 @@
         "increment-trigger"
       ],
       "property": [
-        "background"
+        "background-color"
       ],
       "state": [
-        "active",
-        "not(:disabled)"
+        "disabled",
+        "is(:active, [data-pressed])",
+        "loading",
+        "not([data-disabled])",
+        "not([data-loading])",
+        "pressed"
       ],
       "defaultToken": [
-        "--xh-_number-field-trigger-bg-active"
+        "--xh-_action-variant-bg-pressed"
       ],
       "visibility": "public",
-      "description": "number-field 的 control、decrement-trigger、increment-trigger 部件 background 覆盖槽。"
+      "description": "number-field 的 control、decrement-trigger、increment-trigger 部件 background-color 覆盖槽。"
     },
     {
       "name": "--xh-number-field-trigger-divider",
@@ -40773,7 +40766,7 @@
         "input"
       ],
       "property": [
-        "border-inline-start"
+        "background-image"
       ],
       "state": [
         "has([data-part='input'])"
@@ -40782,7 +40775,7 @@
         "--xh-material-soft-separator"
       ],
       "visibility": "public",
-      "description": "number-field 的 control、decrement-trigger、input 部件 border-inline-start 覆盖槽。"
+      "description": "number-field 的 control、decrement-trigger、input 部件 background-image 覆盖槽。"
     },
     {
       "name": "--xh-number-field-trigger-divider-h",
@@ -40793,8 +40786,7 @@
         "input"
       ],
       "property": [
-        "block-size",
-        "inset-block-start"
+        "background-size"
       ],
       "state": [
         "has([data-part='input'])"
@@ -40803,7 +40795,7 @@
         "--xh-_number-field-divider-h"
       ],
       "visibility": "public",
-      "description": "number-field 的 control、decrement-trigger、input 部件 block-size、inset-block-start 覆盖槽。"
+      "description": "number-field 的 control、decrement-trigger、input 部件 background-size 覆盖槽。"
     },
     {
       "name": "--xh-number-field-trigger-fg",
@@ -40837,8 +40829,11 @@
         "color"
       ],
       "state": [
+        "disabled",
         "hover",
-        "not(:disabled)"
+        "loading",
+        "not([data-disabled])",
+        "not([data-loading])"
       ],
       "defaultToken": [
         "--xh-fg-default"
@@ -40867,6 +40862,26 @@
       "description": "number-field 的 control、decrement-trigger、increment-trigger 部件 font-size 覆盖槽。"
     },
     {
+      "name": "--xh-number-field-trigger-radius",
+      "component": "number-field",
+      "part": [
+        "control",
+        "decrement-trigger",
+        "increment-trigger"
+      ],
+      "property": [
+        "border-radius"
+      ],
+      "state": [
+        "default"
+      ],
+      "defaultToken": [
+        "--xh-shape-inset"
+      ],
+      "visibility": "public",
+      "description": "number-field 的 control、decrement-trigger、increment-trigger 部件 border-radius 覆盖槽。"
+    },
+    {
       "name": "--xh-number-field-trigger-size",
       "component": "number-field",
       "part": [
@@ -40876,16 +40891,18 @@
       ],
       "property": [
         "block-size",
-        "inline-size"
+        "inline-size",
+        "min-inline-size"
       ],
       "state": [
-        "default"
+        "default",
+        "xh-action-profile=field-inset"
       ],
       "defaultToken": [
-        "--xh-control-action-size"
+        "--xh-_action-profile-visual-size"
       ],
       "visibility": "public",
-      "description": "number-field 的 control、decrement-trigger、increment-trigger 部件 block-size、inline-size 覆盖槽。"
+      "description": "number-field 的 control、decrement-trigger、increment-trigger 部件 block-size、inline-size、min-inline-size 覆盖槽。"
     },
     {
       "name": "--xh-page-header-bg",

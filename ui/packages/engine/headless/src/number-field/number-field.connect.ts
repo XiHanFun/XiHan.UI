@@ -28,6 +28,8 @@ export function connectNumberField<T extends PropTypes>(
   const invalid = !!prop('invalid')
   const min = prop('min')
   const max = prop('max')
+  // 形态默认落 outline：不写时 root 与 control 都如实投影，皮肤不再依赖缺省档
+  const variant = prop('variant') ?? 'outline'
 
   // 只在已经贴着边界时关掉按钮的 disabled；空值时两个方向都还能走（会落到 min 或 0）
   const editable = !disabled && !readOnly
@@ -77,7 +79,7 @@ export function connectNumberField<T extends PropTypes>(
     getRootProps: () => normalize.element({
       ...parts.root.attrs,
       // 三个视觉轴只落在 root，子部件从这里继承皮肤声明的私有槽；形态默认落 outline，皮肤不再依赖缺省档
-      'data-variant': prop('variant') ?? 'outline',
+      'data-variant': variant,
       'data-tone': prop('tone'),
       'data-size': prop('size'),
       'data-disabled': dataAttr(disabled),
@@ -93,10 +95,13 @@ export function connectNumberField<T extends PropTypes>(
       'data-disabled': dataAttr(disabled),
     }),
 
-    // control 是纯视觉包裹：盒子的描边/底色/聚焦环都从它身上画，
-    // 三个状态属性供皮肤按禁用/只读/校验切换盒观感
+    // control 是纯视觉包裹：盒子的描边/底色/聚焦环由 Field Chrome 家族画在它身上，
+    // 三个状态属性供家族按禁用/只读/校验切换盒观感；size 缺省 md，variant 与 root 同源
     getControlProps: () => normalize.element({
       ...parts.control.attrs,
+      'data-xh-field-chrome': '',
+      'data-xh-field-size': prop('size') ?? 'md',
+      'data-variant': variant,
       'data-disabled': dataAttr(disabled),
       'data-readonly': dataAttr(readOnly),
       'data-invalid': dataAttr(invalid),
@@ -105,12 +110,14 @@ export function connectNumberField<T extends PropTypes>(
     // 装饰段：货币符、单位、图标。名字由 label 部件给，这两段一律不进名字链
     getPrefixProps: () => normalize.element({
       ...parts.prefix.attrs,
+      'data-xh-field-affix': 'prefix',
       'aria-hidden': true,
       'data-disabled': dataAttr(disabled),
     }),
 
     getSuffixProps: () => normalize.element({
       ...parts.suffix.attrs,
+      'data-xh-field-affix': 'suffix',
       'aria-hidden': true,
       'data-disabled': dataAttr(disabled),
     }),
@@ -134,7 +141,11 @@ export function connectNumberField<T extends PropTypes>(
       'aria-valuemin': min,
       'aria-valuemax': max,
       'aria-invalid': invalid ? 'true' : 'false',
+      // Field Chrome 不读取 number-field anatomy；原生输入角色与单行布局由 Headless 明确投影
+      'data-xh-field-input': '',
+      'data-xh-field-layout': 'single-line',
       'data-disabled': dataAttr(disabled),
+      'data-readonly': dataAttr(readOnly),
       'data-invalid': dataAttr(invalid),
       'onInput': (event: Event) => {
         send({ type: 'VALUE.SET', value: (event.target as HTMLInputElement).value })
@@ -164,8 +175,14 @@ export function connectNumberField<T extends PropTypes>(
       },
     }),
 
+    // 加减钮走 Action Control 的 field-inset ghost 档：正方视觉盒、inset 圆角、悬停 100 / 按下 200
     getIncrementTriggerProps: () => normalize.button({
       ...parts['increment-trigger'].attrs,
+      'data-xh-action-control': '',
+      'data-xh-action-profile': 'field-inset',
+      'data-xh-action-variant': 'ghost',
+      'data-xh-action-display': 'always',
+      'data-xh-action-size': prop('size') ?? 'md',
       'type': 'button',
       'disabled': !canIncrement || undefined,
       'data-disabled': dataAttr(!canIncrement),
@@ -174,6 +191,11 @@ export function connectNumberField<T extends PropTypes>(
 
     getDecrementTriggerProps: () => normalize.button({
       ...parts['decrement-trigger'].attrs,
+      'data-xh-action-control': '',
+      'data-xh-action-profile': 'field-inset',
+      'data-xh-action-variant': 'ghost',
+      'data-xh-action-display': 'always',
+      'data-xh-action-size': prop('size') ?? 'md',
       'type': 'button',
       'disabled': !canDecrement || undefined,
       'data-disabled': dataAttr(!canDecrement),

@@ -36209,13 +36209,7 @@
               "name": "--xh-number-field-control-bg-disabled"
             },
             {
-              "name": "--xh-number-field-control-bg-focus"
-            },
-            {
               "name": "--xh-number-field-control-bg-hover"
-            },
-            {
-              "name": "--xh-number-field-control-bg-invalid"
             },
             {
               "name": "--xh-number-field-control-bg-readonly"
@@ -36231,6 +36225,9 @@
             },
             {
               "name": "--xh-number-field-control-border-invalid"
+            },
+            {
+              "name": "--xh-number-field-control-fg"
             },
             {
               "name": "--xh-number-field-control-gap"
@@ -36293,9 +36290,6 @@
               "name": "--xh-number-field-placeholder-fg"
             },
             {
-              "name": "--xh-number-field-touch-target-size"
-            },
-            {
               "name": "--xh-number-field-trigger-bg-active"
             },
             {
@@ -36312,6 +36306,9 @@
             },
             {
               "name": "--xh-number-field-trigger-font-size"
+            },
+            {
+              "name": "--xh-number-field-trigger-radius"
             },
             {
               "name": "--xh-number-field-trigger-size"

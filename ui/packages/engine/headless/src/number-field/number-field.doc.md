@@ -19,13 +19,13 @@
 - `parse` / `format` 成对，用于接入固定小数位、千分位、货币符号或自定义换算。
 - 越界的值在失焦规范化时被夹回区间。
 - `prefix` / `suffix` 在框内放置货币符、单位或图标，两段对读屏隐藏。
-- `control` 是必需部件，也是输入、前后缀与两个动作共用的唯一视觉盒；默认即 `outline`：`--xh-bg-canvas` 底、`--xh-border-control` 描边、control 圆角，不写 `variant` 时 root 落 `data-variant="outline"`，悬停与聚焦由整体盒统一反馈。减、加两个动作依次收在右侧并占满控件高度，常态和悬停保持透明，按下时才显示动作反馈。
+- `control` 是必需部件，也是输入、前后缀与两个动作共用的唯一视觉盒，投影 Field Chrome 家族（`data-xh-field-chrome`、`data-xh-field-size`、`data-variant`），输入与前后缀分别投影 `data-xh-field-input` 与 `data-xh-field-affix`；默认即 `outline`：`--xh-bg-canvas` 底、`--xh-border-control` 描边、control 圆角、无阴影，不写 `variant` 时 root 与 control 都落 `data-variant="outline"`，悬停与聚焦由整体盒统一反馈，聚焦描边一律 `--xh-border-control-focus`。减、加两颗动作依次收在右侧，走 Action Control 的 `field-inset` ghost 档：正方视觉盒、inset 圆角、在控件里垂直居中，悬停 `--xh-bg-subtle`（100）、按下 `--xh-bg-subtle-hover`（200）中性底并带 0.97 按压缩放，粗指针命中区由家族伪元素外扩到 44px。
 - `subtle` 为中性填充、`ghost` 为透明底，两者在悬停与聚焦时浮出描边；三档都由统一输入壳承担交互反馈。
 - comfortable 下 `sm` / `md` / `lg` 控件高为 32 / 36 / 40px；compact 下分别为 28 / 32 / 36px。
   右侧动作区宽度跟随密度档，数字使用等宽字形，前缀、数值和后缀共用中线。
 - 粗指针环境会把加减按钮与控件高度扩到 comfortable 48px、compact 44px；命中区由 flex 子项本身承担，不用伪元素伸进输入区，两个按钮及输入区互不重叠。
 - Tab 只停在 `spinbutton` 输入框，聚焦环由整个 `control` 统一绘制；加减按钮退出 Tab 序列，但仍可由指针和公开 API 操作。到达 `min` / `max` 时只禁用对应方向，`disabled` / `readOnly` 才同时锁住两侧。
-- 输入与右侧动作组之间使用一条半高、垂直居中的柔和分隔线；位置使用逻辑属性，RTL 下自动换边。
+- 输入与右侧动作组之间使用一条半高、垂直居中的柔和分隔线，画在减钮的背景层上；RTL 下换到另一边。
 
 ## 组合
 
