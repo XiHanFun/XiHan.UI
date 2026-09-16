@@ -61,7 +61,7 @@ function escape(props: Dict): void {
   })
 }
 
-describe('Action Control 家族属性', () => {
+describe('approval：Action Control 家族属性', () => {
   it('两颗钮接 text 档：批准 solid、拒绝 outline；授权行接 row 档 ghost；档位随 size 缺省 md', () => {
     const r = mount({ scopes: [{ value: 'read' }] })
     expect(r.approve()).toMatchObject({
@@ -88,6 +88,19 @@ describe('Action Control 家族属性', () => {
     const sm = mount({ size: 'sm', scopes: [{ value: 'read' }] })
     expect(sm.approve()['data-xh-action-size']).toBe('sm')
     expect((sm.api().getItemProps({ value: 'read' }) as Dict)['data-xh-action-size']).toBe('sm')
+  })
+
+  // 家族的深色 solid 规则只看触发器自身的 data-tone：不投的话暗色下实心面被改写成品牌色，
+  // 与亮色下的语气色对不上。语气轴由连接层作真源投到钮上，与 Button 同构；描边形态的拒绝钮不吃这条
+  it('语气投在批准钮自己身上：与根同值，没打语气时不投；拒绝钮不投', () => {
+    const plain = mount({ scopes: [{ value: 'read' }] })
+    expect(plain.root()['data-tone']).toBeUndefined()
+    expect(plain.approve()['data-tone']).toBeUndefined()
+
+    const danger = mount({ tone: 'danger', scopes: [{ value: 'read' }] })
+    expect(danger.root()['data-tone']).toBe('danger')
+    expect(danger.approve()['data-tone']).toBe('danger')
+    expect(danger.deny()['data-tone']).toBeUndefined()
   })
 
   // 家族只认 data-disabled 给禁用面：没勾满与落定都投它，在途那一档另有在途面、不投

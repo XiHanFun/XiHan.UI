@@ -275,6 +275,7 @@ variant 改变该闸门与正文分开的方式，size 改变标题、条目与�
 | `approve-trigger` | `data-disabled` | ''（条件成立时才出现） |
 | `approve-trigger` | `data-loading` | ''（条件成立时才出现） |
 | `approve-trigger` | `data-state` | 'pending' \| 'approved' \| 'denied' \| 'expired' |
+| `approve-trigger` | `data-tone` | props.tone |
 | `approve-trigger` | `data-xh-action-control` | '' |
 | `approve-trigger` | `data-xh-action-display` | 'always' |
 | `approve-trigger` | `data-xh-action-profile` | 'text' |

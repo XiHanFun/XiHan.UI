@@ -194,7 +194,9 @@ export function connectApproval<T extends PropTypes>(
 
     // 待决时用 aria-disabled 而不是原生 disabled：保住可聚焦，让读屏念得到为什么按不动。
     // 离散动作控件：接 Action Control 的 text 档 solid 形态（判定闸门里的主要动作）；
-    // 家族只认 data-disabled 给禁用面，没勾满与落定都投它，在途不投（那一档另有在途面）
+    // 家族只认 data-disabled 给禁用面，没勾满与落定都投它，在途不投（那一档另有在途面）。
+    // 语气与 Button 同构地投在这颗钮自己身上：家族的深色 solid 规则只看触发器自身的 data-tone，
+    // 没有它就把实心面改写成品牌色，亮色语气色、暗色品牌蓝，两套主题对不上
     getApproveTriggerProps: () => normalize.button({
       ...parts['approve-trigger'].attrs,
       'type': 'button',
@@ -203,6 +205,7 @@ export function connectApproval<T extends PropTypes>(
       'data-xh-action-variant': 'solid',
       'data-xh-action-display': 'always',
       'data-xh-action-size': size,
+      'data-tone': prop('tone'),
       'aria-disabled': (!canApprove || loading) ? 'true' : 'false',
       'aria-busy': loading ? 'true' : undefined,
       'aria-label': translations?.approve,
