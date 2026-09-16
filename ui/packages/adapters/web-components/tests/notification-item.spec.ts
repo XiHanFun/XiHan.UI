@@ -64,6 +64,25 @@ describe('xh-notification-item 的角色节点', () => {
     expect(part(el, 'item-close-trigger').getAttribute('aria-label')).toBe('Close')
   })
 
+  it('两颗钮带 Action Control 家族属性：操作钮 text outline sm，叉 icon ghost sm', async () => {
+    const el = mount()
+    await settle(el)
+
+    const action = part(el, 'item-action-trigger')
+    expect(action.getAttribute('data-xh-action-control')).toBe('')
+    expect(action.getAttribute('data-xh-action-profile')).toBe('text')
+    expect(action.getAttribute('data-xh-action-variant')).toBe('outline')
+    expect(action.getAttribute('data-xh-action-display')).toBe('always')
+    expect(action.getAttribute('data-xh-action-size')).toBe('sm')
+
+    const close = part(el, 'item-close-trigger')
+    expect(close.getAttribute('data-xh-action-control')).toBe('')
+    expect(close.getAttribute('data-xh-action-profile')).toBe('icon')
+    expect(close.getAttribute('data-xh-action-variant')).toBe('ghost')
+    expect(close.getAttribute('data-xh-action-display')).toBe('always')
+    expect(close.getAttribute('data-xh-action-size')).toBe('sm')
+  })
+
   it('tone=danger 换成 alert + assertive', async () => {
     const el = mount('tone="danger"')
     await settle(el)
