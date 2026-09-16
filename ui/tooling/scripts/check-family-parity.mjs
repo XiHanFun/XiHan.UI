@@ -134,7 +134,7 @@ const FAMILIES = [
     ],
   },
   {
-    // 字段外壳：静息描边形态与三档 variant 私有槽（§8.3）
+    // 字段外壳：视觉盒的桥接槽映射同源（§8.3）
     name: '字段族',
     backlog: true,
     members: [
@@ -160,10 +160,48 @@ const FAMILIES = [
       'color-picker',
     ],
     parts: [
-      { part: 'control', state: '', props: ['border', 'border-radius', 'background', 'box-shadow'] },
-      { part: 'root', state: '[data-variant=\'outline\']', props: '*' },
-      { part: 'root', state: '[data-variant=\'subtle\']', props: '*' },
-      { part: 'root', state: '[data-variant=\'ghost\']', props: '*' },
+      // 边、底、影、圆角与三档 variant 由 Field Chrome 配方按 chrome 节点的 data-variant 生成，
+      // 已迁移成员的皮肤只把使用者槽映射到桥接槽——比对的是这些映射声明本身（槽名与缺省都要同源）。
+      // pin-input 的视觉盒是每一格 input，使用者槽按 box 命名，不与 control 的映射比对
+      {
+        part: 'control',
+        state: '',
+        props: [
+          '--xh-field-control-radius',
+          '--xh-field-bg-rest',
+          '--xh-field-bg-hover',
+          '--xh-field-bg-read-only',
+          '--xh-field-bg-disabled',
+          '--xh-field-border-rest',
+          '--xh-field-border-hover',
+          '--xh-field-border-focus',
+          '--xh-field-border-invalid',
+          '--xh-field-ring-focus',
+          '--xh-field-ring-invalid',
+          '--xh-field-shadow-rest',
+        ],
+        only: [
+          'field',
+          'text-field',
+          'select',
+          'cascader',
+          'combobox',
+          'tree-select',
+          'date-field',
+          'time-field',
+          'date-picker',
+          'time-picker',
+          'date-range-picker',
+          'time-range-picker',
+          'number-field',
+          'password-input',
+          'tags-input',
+          'editable',
+          'mention',
+          'color-field',
+          'color-picker',
+        ],
+      },
     ],
   },
   {

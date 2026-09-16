@@ -9,7 +9,7 @@ exports[`family-backlog 条目数 > 七段各一数，与快照一致 1`] = `
   "scroll": 64,
   "selection": 25,
   "shape": 25,
-  "text": 113,
+  "text": 112,
 }
 `;
 
@@ -473,7 +473,6 @@ exports[`family-backlog 键集合 > text 1`] = `
   "checkbox:label:color",
   "checkbox:label:font-size",
   "collapsible:root:icon-size",
-  "color-field:label:font-size",
   "color-picker:label:font-size",
   "color-slider:label:color",
   "color-slider:label:spacing",

@@ -11271,7 +11271,7 @@
         "default"
       ],
       "defaultToken": [
-        "transparent"
+        "--xh-_action-variant-bg-rest"
       ],
       "visibility": "public",
       "description": "color-field 的 clear-trigger 部件 background-color 覆盖槽。"
@@ -11294,7 +11294,7 @@
         "pressed"
       ],
       "defaultToken": [
-        "--xh-bg-subtle-active"
+        "--xh-_action-variant-bg-pressed"
       ],
       "visibility": "public",
       "description": "color-field 的 clear-trigger 部件 background-color 覆盖槽。"
@@ -11316,7 +11316,7 @@
         "not([data-loading])"
       ],
       "defaultToken": [
-        "--xh-bg-subtle-hover"
+        "--xh-_action-variant-bg-hover"
       ],
       "visibility": "public",
       "description": "color-field 的 clear-trigger 部件 background-color 覆盖槽。"
@@ -11744,6 +11744,7 @@
       "name": "--xh-color-field-icon-size",
       "component": "color-field",
       "part": [
+        "control",
         "root"
       ],
       "property": [
@@ -11752,15 +11753,17 @@
       "state": [
         "default",
         "size=lg",
-        "size=sm"
+        "size=sm",
+        "xh-field-chrome"
       ],
       "defaultToken": [
+        "--xh-_field-size-glyph-size",
         "--xh-glyph-size-lg",
         "--xh-glyph-size-md",
         "--xh-glyph-size-sm"
       ],
       "visibility": "public",
-      "description": "color-field 的 root 部件 --xh-icon-size 覆盖槽。"
+      "description": "color-field 的 control、root 部件 --xh-icon-size 覆盖槽。"
     },
     {
       "name": "--xh-color-field-input-autofill-bg",
@@ -11887,7 +11890,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-_color-field-label-font-size"
+        "--xh-text-label-size"
       ],
       "visibility": "public",
       "description": "color-field 的 label 部件 font-size 覆盖槽。"

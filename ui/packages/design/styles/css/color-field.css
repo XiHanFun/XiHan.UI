@@ -20,7 +20,6 @@
     --xh-_color-field-px: var(--xh-control-px-md);
     --xh-_color-field-gap: var(--xh-control-gap-md);
     --xh-_color-field-font-size: var(--xh-control-font-md);
-    --xh-_color-field-label-font-size: var(--xh-control-font-md);
     --xh-_color-field-action-font-size: var(--xh-control-caption-md);
 
     --xh-icon-size: var(--xh-color-field-icon-size, var(--xh-glyph-size-md));
@@ -41,7 +40,6 @@
     --xh-_color-field-px: var(--xh-control-px-sm);
     --xh-_color-field-gap: var(--xh-control-gap-sm);
     --xh-_color-field-font-size: var(--xh-control-font-sm);
-    --xh-_color-field-label-font-size: var(--xh-control-font-sm);
     --xh-_color-field-action-font-size: var(--xh-control-caption-sm);
     --xh-icon-size: var(--xh-color-field-icon-size, var(--xh-glyph-size-sm));
   }
@@ -51,14 +49,13 @@
     --xh-_color-field-px: var(--xh-control-px-lg);
     --xh-_color-field-gap: var(--xh-control-gap-lg);
     --xh-_color-field-font-size: var(--xh-control-font-lg);
-    --xh-_color-field-label-font-size: var(--xh-control-font-lg);
     --xh-_color-field-action-font-size: var(--xh-control-caption-lg);
     --xh-icon-size: var(--xh-color-field-icon-size, var(--xh-glyph-size-lg));
   }
 
   [data-scope='color-field'][data-part='label'] {
     color: var(--xh-color-field-label-fg, var(--xh-fg-default));
-    font-size: var(--xh-color-field-label-font-size, var(--xh-_color-field-label-font-size));
+    font-size: var(--xh-color-field-label-font-size, var(--xh-text-label-size));
     font-weight: var(--xh-color-field-label-font-weight, var(--xh-text-label-weight));
   }
 
@@ -84,6 +81,8 @@
     --xh-field-ring-focus: var(--xh-ring-focus);
     --xh-field-ring-invalid: var(--xh-ring-invalid);
     --xh-field-shadow-rest: var(--xh-color-field-control-shadow, none);
+    /* 家族 chrome 会重写 --xh-icon-size，使用者图标槽必须经桥接槽下发才能在盒内生效 */
+    --xh-field-glyph-size: var(--xh-color-field-icon-size, var(--xh-_field-size-glyph-size));
   }
 
   /* 当前颜色的色块：棋盘格、颜色层、描边与尺寸档由 Swatch 家族画（节点带 data-xh-swatch），
@@ -115,14 +114,15 @@
     display: none;
   }
 
-  /* clear 的视觉与粗指针热区来自 MAT-05 field-inset profile，组件只映射既有覆盖槽。 */
+  /* clear 的视觉、悬停/按压阶梯与粗指针热区来自 field-inset ghost 档，组件只映射既有覆盖槽。 */
   [data-scope='color-field'][data-part='clear-trigger'] {
     --xh-action-visual-size: var(--xh-color-field-action-size, var(--xh-_action-profile-visual-size));
     --xh-action-min-inline-size: var(--xh-color-field-action-size, var(--xh-_action-profile-visual-size));
     --xh-action-radius: var(--xh-color-field-action-radius, var(--xh-shape-inset));
-    --xh-action-bg-rest: var(--xh-color-field-action-bg, transparent);
-    --xh-action-bg-hover: var(--xh-color-field-action-bg-hover, var(--xh-bg-subtle-hover));
-    --xh-action-bg-pressed: var(--xh-color-field-action-bg-active, var(--xh-bg-subtle-active));
+    /* 底色阶梯由 ghost 档给（透明 → 100 → 200），使用者槽只作覆盖入口 */
+    --xh-action-bg-rest: var(--xh-color-field-action-bg, var(--xh-_action-variant-bg-rest));
+    --xh-action-bg-hover: var(--xh-color-field-action-bg-hover, var(--xh-_action-variant-bg-hover));
+    --xh-action-bg-pressed: var(--xh-color-field-action-bg-active, var(--xh-_action-variant-bg-pressed));
     --xh-action-fg-rest: var(--xh-color-field-action-fg, var(--xh-fg-muted));
     --xh-action-fg-hover: var(--xh-color-field-action-fg-hover, var(--xh-fg-default));
     --xh-action-border-rest: transparent;
@@ -131,6 +131,8 @@
     --xh-action-shadow-hover: none;
     --xh-action-shadow-pressed: none;
     --xh-action-font-size: var(--xh-color-field-action-font-size, var(--xh-_color-field-action-font-size));
+    /* 配方尚未把 profile 字形档灌进 --xh-icon-size，钮内字形先按 field-inset 档逐钮取值 */
+    --xh-icon-size: var(--xh-_action-profile-glyph-size);
 
     border-width: 0;
   }

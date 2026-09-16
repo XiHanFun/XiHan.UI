@@ -239,6 +239,7 @@
 | `clear-trigger` | `data-xh-action-has-value` | ''（条件成立时才出现） |
 | `clear-trigger` | `data-xh-action-profile` | 'field-inset' |
 | `clear-trigger` | `data-xh-action-size` | props.size |
+| `clear-trigger` | `data-xh-action-variant` | 'ghost' |
 
 <!-- xh-component-tokens:start -->
 ### CSS 变量
@@ -247,9 +248,9 @@
 
 | 变量 | 部件 | CSS 属性 | 状态 | 默认来源 | 说明 |
 | --- | --- | --- | --- | --- | --- |
-| `--xh-color-field-action-bg` | `clear-trigger` | `background-color` | `default` | `transparent` | color-field 的 clear-trigger 部件 background-color 覆盖槽。 |
-| `--xh-color-field-action-bg-active` | `clear-trigger` | `background-color` | `disabled`<br>`is(:active, [data-pressed])`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])`<br>`pressed` | `--xh-bg-subtle-active` | color-field 的 clear-trigger 部件 background-color 覆盖槽。 |
-| `--xh-color-field-action-bg-hover` | `clear-trigger` | `background-color` | `disabled`<br>`hover`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])` | `--xh-bg-subtle-hover` | color-field 的 clear-trigger 部件 background-color 覆盖槽。 |
+| `--xh-color-field-action-bg` | `clear-trigger` | `background-color` | `default` | `--xh-_action-variant-bg-rest` | color-field 的 clear-trigger 部件 background-color 覆盖槽。 |
+| `--xh-color-field-action-bg-active` | `clear-trigger` | `background-color` | `disabled`<br>`is(:active, [data-pressed])`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])`<br>`pressed` | `--xh-_action-variant-bg-pressed` | color-field 的 clear-trigger 部件 background-color 覆盖槽。 |
+| `--xh-color-field-action-bg-hover` | `clear-trigger` | `background-color` | `disabled`<br>`hover`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])` | `--xh-_action-variant-bg-hover` | color-field 的 clear-trigger 部件 background-color 覆盖槽。 |
 | `--xh-color-field-action-fg` | `clear-trigger` | `color` | `default` | `--xh-fg-muted` | color-field 的 clear-trigger 部件 color 覆盖槽。 |
 | `--xh-color-field-action-fg-hover` | `clear-trigger` | `color` | `disabled`<br>`hover`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])` | `--xh-fg-default` | color-field 的 clear-trigger 部件 color 覆盖槽。 |
 | `--xh-color-field-action-font-size` | `clear-trigger` | `font-size` | `default` | `--xh-_color-field-action-font-size` | color-field 的 clear-trigger 部件 font-size 覆盖槽。 |
@@ -271,14 +272,14 @@
 | `--xh-color-field-control-radius` | `control` | `border-radius` | `xh-field-chrome` | `--xh-shape-control` | color-field 的 control 部件 border-radius 覆盖槽。 |
 | `--xh-color-field-control-shadow` | `control` | `box-shadow` | `xh-field-chrome` | `none` | color-field 的 control 部件 box-shadow 覆盖槽。 |
 | `--xh-color-field-gap` | `root` | `gap` | `default` | `--xh-space-1` | color-field 的 root 部件 gap 覆盖槽。 |
-| `--xh-color-field-icon-size` | `root` | `--xh-icon-size` | `default`<br>`size=lg`<br>`size=sm` | `--xh-glyph-size-lg`<br>`--xh-glyph-size-md`<br>`--xh-glyph-size-sm` | color-field 的 root 部件 --xh-icon-size 覆盖槽。 |
+| `--xh-color-field-icon-size` | `control`<br>`root` | `--xh-icon-size` | `default`<br>`size=lg`<br>`size=sm`<br>`xh-field-chrome` | `--xh-_field-size-glyph-size`<br>`--xh-glyph-size-lg`<br>`--xh-glyph-size-md`<br>`--xh-glyph-size-sm` | color-field 的 control、root 部件 --xh-icon-size 覆盖槽。 |
 | `--xh-color-field-input-autofill-bg` | `input` | `box-shadow` | `-webkit-autofill`<br>`autofill`<br>`xh-field-input` | `--xh-bg-canvas` | color-field 的 input 部件 box-shadow 覆盖槽。 |
 | `--xh-color-field-input-autofill-fg` | `input` | `-webkit-text-fill-color` | `-webkit-autofill`<br>`autofill`<br>`xh-field-input` | `--xh-fg-default` | color-field 的 input 部件 -webkit-text-fill-color 覆盖槽。 |
 | `--xh-color-field-input-fg` | `input` | `color` | `xh-field-input` | `--xh-fg-default` | color-field 的 input 部件 color 覆盖槽。 |
 | `--xh-color-field-input-font-size` | `input` | `font-size` | `xh-field-input` | `--xh-_color-field-font-size` | color-field 的 input 部件 font-size 覆盖槽。 |
 | `--xh-color-field-label-fg` | `label` | `color` | `default` | `--xh-fg-default` | color-field 的 label 部件 color 覆盖槽。 |
 | `--xh-color-field-label-fg-disabled` | `label` | `color` | `disabled` | `--xh-fg-subtle` | color-field 的 label 部件 color 覆盖槽。 |
-| `--xh-color-field-label-font-size` | `label` | `font-size` | `default` | `--xh-_color-field-label-font-size` | color-field 的 label 部件 font-size 覆盖槽。 |
+| `--xh-color-field-label-font-size` | `label` | `font-size` | `default` | `--xh-text-label-size` | color-field 的 label 部件 font-size 覆盖槽。 |
 | `--xh-color-field-label-font-weight` | `label` | `font-weight` | `default` | `--xh-text-label-weight` | color-field 的 label 部件 font-weight 覆盖槽。 |
 | `--xh-color-field-placeholder-fg` | `input` | `color` | `placeholder`<br>`xh-field-input` | `--xh-fg-subtle` | color-field 的 input 部件 color 覆盖槽。 |
 | `--xh-color-field-swatch-border` | `swatch` | `--xh-swatch-border` | `default` | `--xh-border-default` | color-field 的 swatch 部件 --xh-swatch-border 覆盖槽。 |
