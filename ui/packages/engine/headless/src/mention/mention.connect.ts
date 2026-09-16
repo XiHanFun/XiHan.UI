@@ -171,8 +171,15 @@ export function connectMention<T extends PropTypes>(
       'aria-autocomplete': 'list',
       // 收起态没有高亮可指，属性整个缺席（aria-activedescendant 没有"假值"写法）
       'aria-activedescendant': open && highlighted != null ? itemId(highlighted) : undefined,
+      // 输入框自身就是唯一的视觉盒：描边、底色、聚焦环由 Field Chrome 家族画在它身上，
+      // 不投影 data-xh-field-input（那会让家族把它当盒内分段重置掉边框）；size 缺省 md，variant 与 root 同源
+      'data-xh-field-chrome': '',
+      'data-xh-field-size': prop('size') ?? 'md',
+      'data-xh-field-layout': 'single-line',
+      'data-variant': variant,
       'data-state': stateAttr,
       'data-disabled': dataAttr(disabled),
+      'data-readonly': dataAttr(readOnly),
       'data-invalid': dataAttr(invalid),
       'onInput': (event: Event) => {
         const el = event.target as MentionInputEl
@@ -312,9 +319,14 @@ export function connectMention<T extends PropTypes>(
       'hidden': !(open && loading && itemCount === 0) || undefined,
     }),
 
+    // 候选行走 Collection Item 的 overlay 语境：悬停 / 高亮 100、按下 200 由家族给，
+    // 提及即选即执行，没有持久选中，aria-selected 只标当前高亮那一条
     getItemProps: item => normalize.element({
       ...parts.item.attrs,
       ...itemStateAttrs(item),
+      'data-xh-collection-item': '',
+      'data-xh-collection-size': prop('size') ?? 'md',
+      'data-xh-collection-context': 'overlay',
       // 导航与提交都以此为候选身份
       [ITEM_VALUE_ATTR]: item.value,
       // aria-activedescendant 要指得到它，所以每个候选都得有个稳定 id
@@ -341,6 +353,7 @@ export function connectMention<T extends PropTypes>(
     getItemTextProps: item => normalize.element({
       ...parts['item-text'].attrs,
       ...itemStateAttrs(item),
+      'data-xh-collection-slot': 'text',
     }),
   }
 }

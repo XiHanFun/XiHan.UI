@@ -36077,16 +36077,16 @@
         "input"
       ],
       "property": [
-        "background"
+        "background-color"
       ],
       "state": [
-        "default"
+        "xh-field-chrome"
       ],
       "defaultToken": [
-        "--xh-_mention-input-bg"
+        "--xh-_field-variant-bg-rest"
       ],
       "visibility": "public",
-      "description": "mention 的 input 部件 background 覆盖槽。"
+      "description": "mention 的 input 部件 background-color 覆盖槽。"
     },
     {
       "name": "--xh-mention-input-bg-disabled",
@@ -36095,16 +36095,17 @@
         "input"
       ],
       "property": [
-        "background"
+        "background-color"
       ],
       "state": [
-        "disabled"
+        "disabled",
+        "xh-field-chrome"
       ],
       "defaultToken": [
-        "--xh-bg-subtle"
+        "--xh-_field-variant-bg-disabled"
       ],
       "visibility": "public",
-      "description": "mention 的 input 部件 background 覆盖槽。"
+      "description": "mention 的 input 部件 background-color 覆盖槽。"
     },
     {
       "name": "--xh-mention-input-bg-hover",
@@ -36113,18 +36114,25 @@
         "input"
       ],
       "property": [
-        "background"
+        "background-color"
       ],
       "state": [
+        "disabled",
         "hover",
         "invalid",
-        "not(:disabled, [readonly], [data-invalid])"
+        "loading",
+        "not([data-disabled])",
+        "not([data-invalid])",
+        "not([data-loading])",
+        "not([data-readonly])",
+        "readonly",
+        "xh-field-chrome"
       ],
       "defaultToken": [
-        "--xh-_mention-input-bg-hover"
+        "--xh-_field-variant-bg-hover"
       ],
       "visibility": "public",
-      "description": "mention 的 input 部件 background 覆盖槽。"
+      "description": "mention 的 input 部件 background-color 覆盖槽。"
     },
     {
       "name": "--xh-mention-input-bg-readonly",
@@ -36133,16 +36141,17 @@
         "input"
       ],
       "property": [
-        "background"
+        "background-color"
       ],
       "state": [
-        "default"
+        "readonly",
+        "xh-field-chrome"
       ],
       "defaultToken": [
-        "--xh-bg-subtle"
+        "--xh-_field-variant-bg-read-only"
       ],
       "visibility": "public",
-      "description": "mention 的 input 部件 background 覆盖槽。"
+      "description": "mention 的 input 部件 background-color 覆盖槽。"
     },
     {
       "name": "--xh-mention-input-border",
@@ -36154,10 +36163,10 @@
         "border"
       ],
       "state": [
-        "default"
+        "xh-field-chrome"
       ],
       "defaultToken": [
-        "--xh-_mention-input-border"
+        "--xh-_field-variant-border-rest"
       ],
       "visibility": "public",
       "description": "mention 的 input 部件 border 覆盖槽。"
@@ -36172,10 +36181,13 @@
         "border-color"
       ],
       "state": [
-        "focus-visible"
+        "disabled",
+        "focus-within",
+        "not([data-disabled])",
+        "xh-field-chrome"
       ],
       "defaultToken": [
-        "--xh-_tone"
+        "--xh-_field-variant-border-focus"
       ],
       "visibility": "public",
       "description": "mention 的 input 部件 border-color 覆盖槽。"
@@ -36190,12 +36202,19 @@
         "border-color"
       ],
       "state": [
+        "disabled",
         "hover",
         "invalid",
-        "not(:disabled, [readonly], [data-invalid])"
+        "loading",
+        "not([data-disabled])",
+        "not([data-invalid])",
+        "not([data-loading])",
+        "not([data-readonly])",
+        "readonly",
+        "xh-field-chrome"
       ],
       "defaultToken": [
-        "--xh-_mention-input-border-hover"
+        "--xh-_field-variant-border-hover"
       ],
       "visibility": "public",
       "description": "mention 的 input 部件 border-color 覆盖槽。"
@@ -36210,10 +36229,11 @@
         "border-color"
       ],
       "state": [
-        "invalid"
+        "invalid",
+        "xh-field-chrome"
       ],
       "defaultToken": [
-        "--xh-border-invalid"
+        "--xh-_field-variant-border-invalid"
       ],
       "visibility": "public",
       "description": "mention 的 input 部件 border-color 覆盖槽。"
@@ -36228,7 +36248,7 @@
         "color"
       ],
       "state": [
-        "default"
+        "xh-field-chrome"
       ],
       "defaultToken": [
         "--xh-fg-default"
@@ -36261,16 +36281,24 @@
         "input"
       ],
       "property": [
-        "block-size"
+        "block-size",
+        "min-block-size"
       ],
       "state": [
-        "default"
+        "has([data-xh-field-input][data-xh-field-layout='multi-tag'])",
+        "has([data-xh-field-input][data-xh-field-layout='single-line'])",
+        "has([data-xh-field-input][data-xh-field-layout='textarea'])",
+        "xh-field-chrome",
+        "xh-field-input",
+        "xh-field-layout=multi-tag",
+        "xh-field-layout=single-line",
+        "xh-field-layout=textarea"
       ],
       "defaultToken": [
         "--xh-_mention-h"
       ],
       "visibility": "public",
-      "description": "mention 的 input 部件 block-size 覆盖槽。"
+      "description": "mention 的 input 部件 block-size、min-block-size 覆盖槽。"
     },
     {
       "name": "--xh-mention-input-min-w",
@@ -36283,7 +36311,8 @@
         "min-inline-size"
       ],
       "state": [
-        "default"
+        "default",
+        "xh-field-chrome"
       ],
       "defaultToken": [
         "--xh-control-min-w"
@@ -36301,7 +36330,7 @@
         "padding-inline"
       ],
       "state": [
-        "default"
+        "xh-field-chrome"
       ],
       "defaultToken": [
         "--xh-_mention-px"
@@ -36319,7 +36348,7 @@
         "border-radius"
       ],
       "state": [
-        "default"
+        "xh-field-chrome"
       ],
       "defaultToken": [
         "--xh-shape-control"
@@ -36337,12 +36366,10 @@
         "box-shadow"
       ],
       "state": [
-        "-webkit-autofill",
-        "autofill",
-        "default"
+        "xh-field-chrome"
       ],
       "defaultToken": [
-        "--xh-_mention-input-shadow"
+        "none"
       ],
       "visibility": "public",
       "description": "mention 的 input 部件 box-shadow 覆盖槽。"
@@ -36354,18 +36381,43 @@
         "item"
       ],
       "property": [
-        "background"
+        "background-color"
       ],
       "state": [
-        "disabled",
+        "error",
         "highlighted",
-        "not([data-disabled])"
+        "hover",
+        "is(:focus-visible, [data-highlighted])",
+        "not([aria-disabled='true'], [aria-busy='true'], [data-error])",
+        "xh-collection-context=overlay"
       ],
       "defaultToken": [
         "--xh-bg-subtle"
       ],
       "visibility": "public",
-      "description": "mention 的 item 部件 background 覆盖槽。"
+      "description": "mention 的 item 部件 background-color 覆盖槽。"
+    },
+    {
+      "name": "--xh-mention-item-bg-pressed",
+      "component": "mention",
+      "part": [
+        "item"
+      ],
+      "property": [
+        "background-color"
+      ],
+      "state": [
+        "error",
+        "is(:active, [data-pressed])",
+        "not([aria-disabled='true'], [aria-busy='true'], [data-error])",
+        "pressed",
+        "xh-collection-context=overlay"
+      ],
+      "defaultToken": [
+        "--xh-bg-subtle-hover"
+      ],
+      "visibility": "public",
+      "description": "mention 的 item 部件 background-color 覆盖槽。"
     },
     {
       "name": "--xh-mention-item-fg",
@@ -36377,7 +36429,15 @@
         "color"
       ],
       "state": [
-        "default"
+        "default",
+        "error",
+        "highlighted",
+        "hover",
+        "is(:active, [data-pressed])",
+        "is(:focus-visible, [data-highlighted])",
+        "not([aria-disabled='true'], [aria-busy='true'], [data-error])",
+        "pressed",
+        "xh-collection-context=overlay"
       ],
       "defaultToken": [
         "--xh-material-frosted-fg"
@@ -36410,16 +36470,20 @@
         "item"
       ],
       "property": [
-        "gap"
+        "margin-inline-end",
+        "margin-inline-start"
       ],
       "state": [
-        "default"
+        "xh-collection-slot=indicator",
+        "xh-collection-slot=prefix",
+        "xh-collection-slot=shortcut",
+        "xh-collection-slot=suffix"
       ],
       "defaultToken": [
         "--xh-_mention-gap"
       ],
       "visibility": "public",
-      "description": "mention 的 item 部件 gap 覆盖槽。"
+      "description": "mention 的 item 部件 margin-inline-end、margin-inline-start 覆盖槽。"
     },
     {
       "name": "--xh-mention-item-leading",
@@ -36542,7 +36606,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-_mention-font-size"
+        "--xh-text-label-size"
       ],
       "visibility": "public",
       "description": "mention 的 label 部件 font-size 覆盖槽。"

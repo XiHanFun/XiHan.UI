@@ -39,7 +39,7 @@ const COMPONENTS = [
  * 解剖里有 control 的组件登在这里等于一条走不到的死登记，会被下面的名单核验报出来。
  */
 const SINGLE_ELEMENT = {
-  'mention': '单行 input 自画盒，没有尾钮',
+  'mention': '单行 input 自身即视觉盒（自身投影 Field Chrome），没有尾钮',
   'pin-input': '每格一个 input 即视觉盒（自身投影 Field Chrome），格与格之间由 root 排布',
 }
 
@@ -96,6 +96,13 @@ const SHARED_FAMILY = {
     boxSelector: '[data-xh-field-chrome]',
     contentSelector: '[data-xh-field-input]',
     actionParts: new Set(['clear-trigger']),
+  },
+  // 单元素：input 自身即 chrome（盒是 input 而非 control），盒内没有内容区与尾钮，不投影 data-xh-field-input
+  'mention': {
+    boxSelector: '[data-xh-field-chrome]',
+    boxPart: 'input',
+    contentSelector: null,
+    actionParts: new Set(),
   },
 }
 
@@ -185,8 +192,8 @@ function effectivePart(selector, comp) {
     return direct
   const family = SHARED_FAMILY[comp]
   if (family && selector.includes(family.boxSelector))
-    return 'control'
-  if (family && selector.includes(family.contentSelector))
+    return family.boxPart ?? 'control'
+  if (family?.contentSelector && selector.includes(family.contentSelector))
     return 'input'
   return null
 }
@@ -244,7 +251,7 @@ for (const comp of COMPONENTS) {
     if (family.contentSelector === FIELD_INPUT_SELECTOR && !projectsInput)
       report(comp, 'box-part', '连接层没有把 Field Chrome 的 input 稳定角色投影到解剖部件')
     if (family.contentSelector !== FIELD_INPUT_SELECTOR && projectsInput)
-      report(comp, 'box-part', `内容区登记为 ${family.contentSelector}，连接层却投影了 data-xh-field-input——登记过期了`)
+      report(comp, 'box-part', `内容区登记为 ${family.contentSelector ?? '无（单元素）'}，连接层却投影了 data-xh-field-input——登记过期了`)
   }
 
   // 本文件里每个自定义属性声明过的值，用来把组件槽的回退链走通

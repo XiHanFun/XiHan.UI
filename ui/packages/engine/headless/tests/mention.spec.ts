@@ -627,6 +627,31 @@ describe('connectMention 形态轴', () => {
     const subtle = mount({ variant: 'subtle' })
     expect(subtle.root.getAttribute('data-variant')).toBe('subtle')
     expect(subtle.positioner.getAttribute('data-variant')).toBe('subtle')
+    expect(subtle.input.getAttribute('data-variant')).toBe('subtle')
+  })
+
+  it('输入框自身即视觉盒：投影 Field Chrome 稳定角色、单行布局、尺寸档（缺省 md）与只读态，不投影 field-input', () => {
+    const m = mount({ readOnly: true })
+    expect(m.input.getAttribute('data-xh-field-chrome')).toBe('')
+    expect(m.input.getAttribute('data-xh-field-layout')).toBe('single-line')
+    expect(m.input.getAttribute('data-xh-field-size')).toBe('md')
+    expect(m.input.getAttribute('data-variant')).toBe('outline')
+    expect(m.input.getAttribute('data-readonly')).toBe('')
+    expect(m.input.hasAttribute('data-xh-field-input')).toBe(false)
+    const lg = mount({ size: 'lg' })
+    expect(lg.input.getAttribute('data-xh-field-size')).toBe('lg')
+    expect(lg.input.hasAttribute('data-readonly')).toBe(false)
+  })
+
+  it('候选行投影 Collection Item 的 overlay 语境与尺寸档，正文投影 text 槽', () => {
+    const api = mount({ size: 'sm' }).api()
+    expect(api.getItemProps({ value: 'lilei' })).toMatchObject({
+      'data-xh-collection-item': '',
+      'data-xh-collection-size': 'sm',
+      'data-xh-collection-context': 'overlay',
+    })
+    expect(api.getItemTextProps({ value: 'lilei' })).toMatchObject({ 'data-xh-collection-slot': 'text' })
+    expect((mount().api().getItemProps({ value: 'lilei' }) as Record<string, unknown>)['data-xh-collection-size']).toBe('md')
   })
 })
 

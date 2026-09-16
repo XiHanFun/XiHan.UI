@@ -168,10 +168,11 @@ export class XhMentionElement extends XhPortalHostElement {
     { scope: this.mentionScope, onBuilt: svc => this.injectRefs(svc) },
   )
 
-  /** 候选列表的自绘条：与 content 同级挂在已经 fixed 的 positioner 上 */
+  /** 候选列表的自绘条：与 content 同级挂在已经 fixed 的 positioner 上，条子走浮层 4px 档 */
   private readonly bars = new ScrollbarsController(this, {
     shell: () => this.getPart('positioner'),
     scrollable: () => this.getPart('content'),
+    props: () => ({ size: 'sm' }),
   })
 
   /** 作者声明的条目禁用，只认首次见到的值；提供 collection 时使用它，否则现读 */
