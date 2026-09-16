@@ -26629,7 +26629,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-fg-default"
+        "--xh-fg-muted"
       ],
       "visibility": "public",
       "description": "fieldset 的 legend 部件 color 覆盖槽。"

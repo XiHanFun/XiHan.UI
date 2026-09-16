@@ -2493,7 +2493,8 @@
 [data-scope='fieldset'][data-part='legend'] {
   padding: 0;
   margin-block-end: var(--xh-fieldset-legend-gap, var(--xh-space-2));
-  color: var(--xh-fieldset-legend-fg, var(--xh-fg-default));
+  /* 组标题是「一组字段的标题」，归集合标题角色（§6.4）：fg-muted，与组 --xh-space-2，字号字重同字段标签 */
+  color: var(--xh-fieldset-legend-fg, var(--xh-fg-muted));
   font-size: var(--xh-fieldset-legend-font-size, var(--xh-text-label-size));
   font-weight: var(--xh-fieldset-legend-font-weight, var(--xh-text-label-weight));
   line-height: var(--xh-leading-tight);
