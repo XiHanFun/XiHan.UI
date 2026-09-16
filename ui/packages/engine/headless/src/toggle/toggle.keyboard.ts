@@ -14,5 +14,6 @@ export const toggleKeyboard: KeyboardTable = {
   source: APG,
   rows: [
     { id: 'toggle.kbd.toggle', keys: ['Space', 'Enter'], when: 'focus in root, not disabled', does: '切换 pressed 状态' },
+    { id: 'toggle.kbd.press', keys: ['Space', 'Enter'], when: 'held in root, not disabled', does: '按住期间投影 data-pressed，与指针 :active 同一副按压面；抬起或失焦撤下' },
   ],
 }

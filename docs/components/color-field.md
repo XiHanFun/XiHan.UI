@@ -248,7 +248,7 @@
 | 变量 | 部件 | CSS 属性 | 状态 | 默认来源 | 说明 |
 | --- | --- | --- | --- | --- | --- |
 | `--xh-color-field-action-bg` | `clear-trigger` | `background-color` | `default` | `transparent` | color-field 的 clear-trigger 部件 background-color 覆盖槽。 |
-| `--xh-color-field-action-bg-active` | `clear-trigger` | `background-color` | `active`<br>`disabled`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])` | `--xh-bg-subtle-active` | color-field 的 clear-trigger 部件 background-color 覆盖槽。 |
+| `--xh-color-field-action-bg-active` | `clear-trigger` | `background-color` | `disabled`<br>`is(:active, [data-pressed])`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])`<br>`pressed` | `--xh-bg-subtle-active` | color-field 的 clear-trigger 部件 background-color 覆盖槽。 |
 | `--xh-color-field-action-bg-hover` | `clear-trigger` | `background-color` | `disabled`<br>`hover`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])` | `--xh-bg-subtle-hover` | color-field 的 clear-trigger 部件 background-color 覆盖槽。 |
 | `--xh-color-field-action-fg` | `clear-trigger` | `color` | `default` | `--xh-fg-muted` | color-field 的 clear-trigger 部件 color 覆盖槽。 |
 | `--xh-color-field-action-fg-hover` | `clear-trigger` | `color` | `disabled`<br>`hover`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])` | `--xh-fg-default` | color-field 的 clear-trigger 部件 color 覆盖槽。 |

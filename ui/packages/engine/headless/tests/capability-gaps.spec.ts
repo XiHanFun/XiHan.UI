@@ -1,11 +1,12 @@
 // @vitest-environment jsdom
 // 本轮补的三处能力缺口：输入类型出口、进度不确定态、看图器两端直达。
+import type { ButtonSchema } from '../src/button'
 import type { ImageViewerSchema } from '../src/image-viewer'
 import type { TextFieldSchema } from '../src/text-field'
 import { createService, normalizeProps } from '@xihan-ui/core'
 import { createVanillaRuntime } from '@xihan-ui/core/vanilla'
 import { describe, expect, it } from 'vitest'
-import { connectButton } from '../src/button'
+import { buttonMachine, connectButton } from '../src/button'
 import { connectImageViewer, imageViewerMachine } from '../src/image-viewer'
 import { connectProgress } from '../src/progress'
 import { connectTextField, textFieldMachine } from '../src/text-field'
@@ -96,21 +97,29 @@ describe('imageViewer 的两端直达', () => {
   })
 })
 
+/** 按钮只承载按压通道的机器：投影只看 props，建一台直接连。 */
+function button(props: Partial<ButtonSchema['props']>) {
+  const runtime = createVanillaRuntime()
+  const service = createService(buttonMachine, { props: () => props, runtime })
+  runtime.start()
+  return connectButton(service, normalizeProps)
+}
+
 describe('button 的图标态与撑满态', () => {
   it('iconOnly 落成 data 标记，交给皮肤清内距并把宽度跟住高度', () => {
-    const root = connectButton({ iconOnly: true }, normalizeProps).getRootProps() as Record<string, unknown>
+    const root = button({ iconOnly: true }).getRootProps() as Record<string, unknown>
     expect(root['data-icon-only']).toBe('')
     expect(root['data-full-width']).toBeUndefined()
   })
 
   it('fullWidth 独立于 iconOnly，两者可各自开关', () => {
-    const root = connectButton({ fullWidth: true }, normalizeProps).getRootProps() as Record<string, unknown>
+    const root = button({ fullWidth: true }).getRootProps() as Record<string, unknown>
     expect(root['data-full-width']).toBe('')
     expect(root['data-icon-only']).toBeUndefined()
   })
 
   it('两个都不给时一个标记都不发', () => {
-    const root = connectButton({}, normalizeProps).getRootProps() as Record<string, unknown>
+    const root = button({}).getRootProps() as Record<string, unknown>
     expect(root['data-icon-only']).toBeUndefined()
     expect(root['data-full-width']).toBeUndefined()
   })

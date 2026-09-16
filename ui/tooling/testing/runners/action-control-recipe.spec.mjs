@@ -40,7 +40,9 @@ describe('action Control Family Recipe', () => {
     expect(css).toContain('@media (forced-colors: active)')
     expect(css).toContain('scale var(--xh-motion-duration-release) var(--xh-motion-ease-release)')
     expect(css).toContain('var(--xh-motion-scale-press)')
-    const pressed = css.slice(css.indexOf(':not([data-loading]):active {'), css.indexOf('[data-xh-action-control][data-disabled]'))
+    // 按压面同时认指针 :active 与 Headless 投影的 data-pressed（键盘 / 触屏），同一档
+    const pressed = css.slice(css.indexOf(':not([data-loading]):is(:active, [data-pressed]) {'), css.indexOf('[data-xh-action-control][data-disabled]'))
+    expect(css).not.toMatch(/:not\(\[data-loading\]\):active/)
     expect(pressed).toContain('transition-duration: var(--xh-motion-duration-press);')
     expect(pressed).toContain('transition-timing-function: var(--xh-motion-ease-press);')
   })
@@ -120,8 +122,8 @@ describe('action Control Family Recipe', () => {
       expect(body).toContain('padding-block: var(--xh-action-padding-block, var(--xh-_action-profile-padding-block));')
       expect(body).toContain(`justify-content: ${recipe.profiles[profile].layout.justify};`)
     }
-    const generic = css.indexOf('[data-xh-action-control]:not([data-disabled]):not([data-loading]):active {')
-    const surface = css.indexOf('[data-xh-action-control]:is([data-xh-action-profile=\'row\'], [data-xh-action-profile=\'disclosure-trigger\']):not([data-disabled]):not([data-loading]):active {')
+    const generic = css.indexOf('[data-xh-action-control]:not([data-disabled]):not([data-loading]):is(:active, [data-pressed]) {')
+    const surface = css.indexOf('[data-xh-action-control]:is([data-xh-action-profile=\'row\'], [data-xh-action-profile=\'disclosure-trigger\']):not([data-disabled]):not([data-loading]):is(:active, [data-pressed]) {')
     expect(generic).toBeGreaterThan(-1)
     expect(surface).toBeGreaterThan(generic)
     expect(css.slice(surface, css.indexOf('\n  }', surface))).toContain('scale: none;')

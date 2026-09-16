@@ -35,11 +35,13 @@ const MARKER_CURRENTS = ['none', 'bar']
 /** 上下文态的主体：selected 读 aria 事实，current 读状态词汇表里的 data-current。 */
 const SUBJECT = { selected: '[aria-selected=\'true\']', current: '[data-current]' }
 const GUARD = ':not([aria-disabled=\'true\'], [aria-busy=\'true\'], [data-error])'
+/** 按压面：指针按住是 :active，Space / Enter 与触屏按住由 Headless 投影 data-pressed，同一档（真源 §9.2）。 */
+const PRESSED = ':is(:active, [data-pressed])'
 /** 叠加态的后缀：hover / highlight / pressed 与基础态使用同一组选择器。 */
 const OVERLAY_SUFFIX = {
   hover: ':hover',
   highlight: ':is(:focus-visible, [data-highlighted])',
-  pressed: ':active',
+  pressed: PRESSED,
 }
 
 const stateName = state => state.replace('+', '-')
@@ -333,7 +335,7 @@ ${stateVars(source, 'keyboard-highlight')}
   }
 
   /* 按下段：pressed 面与按下时长、曲线一起给出；排在 hover 与高亮之后，同特指度才不会被它们盖掉。 */
-  [data-xh-collection-item]${GUARD}:active {
+  [data-xh-collection-item]${GUARD}${PRESSED} {
 ${stateVars(source, 'pressed')}
 
     transition-duration: ${source.motion.pressDuration};
@@ -415,7 +417,7 @@ ${forcedStateVars(source, 'hover')}
 ${forcedStateVars(source, 'keyboard-highlight')}
     }
 
-    [data-xh-collection-item]${GUARD}:active {
+    [data-xh-collection-item]${GUARD}${PRESSED} {
 ${forcedStateVars(source, 'pressed')}
     }
 

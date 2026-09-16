@@ -124,24 +124,34 @@
 | --- | --- |
 | 自定义元素 | `<xh-button>` |
 | Vue 组件 | `XhButton` `XhButtonIndicator` `XhButtonLabel` `XhButtonPrefix` `XhButtonSuffix` |
-| 状态机 | 无，`connect` 直接由 props 算属性 |
+| 状态机 | `buttonMachine` |
 | 皮肤 | `@xihan-ui/styles/button.css` |
 
 ### Props
 
 | 属性 | 类型 | 必填 | 说明 |
 | --- | --- | --- | --- |
+| `type` | `'button' \| 'submit' \| 'reset'` |  |  |
+| `disabled` | `boolean` |  |  |
+| `loading` | `boolean` |  | 加载态：用 aria-disabled + 拦截事件表达，保留焦点。 |
+| `variant` | `ActionVariant` |  | 变体：solid / subtle / outline / ghost。 |
+| `tone` | `Tone` |  | 颜色：brand / neutral / success / warning / danger / info。 |
+| `size` | `Size` |  |  |
+| `iconOnly` | `boolean` |  | 仅图标：左右内边距清零、宽高相等。宽度跟随当前尺寸档的高度， 不必把档位写进行内样式。图标按钮没有可见文字，作者须自行提供可及名。 |
 | `ariaLabel` | `string` |  | 作者写在根节点上的可及名（aria-label / aria-labelledby）。 宿主只把它们转告连接层，用于判断图标按钮是否有名字；属性本身仍由宿主写入根节点。 |
 | `ariaLabelledby` | `string` |  |  |
-| `as` | `ButtonElement` |  | 渲染的标签，默认 button。 写为 a 时不再产出 type 与原生 disabled（两者在链接上无效），禁用改由 aria-disabled 表达， 点击仍被拦截。href 由作者自行提供。 |
-| `disabled` | `boolean` |  |  |
 | `fullWidth` | `boolean` |  | 撑满行宽：表单末尾的提交按钮与移动端常用。 |
-| `iconOnly` | `boolean` |  | 仅图标：左右内边距清零、宽高相等。宽度跟随当前尺寸档的高度， 不必把档位写进行内样式。图标按钮没有可见文字，作者须自行提供可及名。 |
-| `loading` | `boolean` |  | 加载态：用 aria-disabled + 拦截事件表达，保留焦点。 |
-| `size` | `Size` |  |  |
-| `tone` | `Tone` |  | 颜色：brand / neutral / success / warning / danger / info。 |
-| `type` | `'button' \| 'submit' \| 'reset'` |  |  |
-| `variant` | `ActionVariant` |  | 变体：solid / subtle / outline / ghost。 |
+| `as` | `ButtonElement` |  | 渲染的标签，默认 button。 写为 a 时不再产出 type 与原生 disabled（两者在链接上无效），禁用改由 aria-disabled 表达， 点击仍被拦截。href 由作者自行提供。 |
+
+### 状态
+
+以下名称仅用于内部状态机。
+
+**状态**：`idle`
+
+**事件**：`PRESS.START` · `PRESS.END`
+
+**判据**：`canPress`
 
 ### connect API
 
@@ -166,6 +176,7 @@
 | 按键 | 生效条件 | 行为 |
 | --- | --- | --- |
 | `Enter` / `Space` | focus in root, interactive | 激活按钮（原生行为） |
+| `Enter` / `Space` | held in root, interactive | 按住期间投影 data-pressed，与指针 :active 同一副按压面；抬起或失焦撤下 |
 
 ### ARIA
 
@@ -197,6 +208,7 @@
 | `root` | `data-full-width` | ''（条件成立时才出现） |
 | `root` | `data-icon-only` | ''（条件成立时才出现） |
 | `root` | `data-loading` | ''（条件成立时才出现） |
+| `root` | `data-pressed` | ''（条件成立时才出现） |
 | `root` | `data-size` | props.size |
 | `root` | `data-tone` | props.tone |
 | `root` | `data-variant` | props.variant |
@@ -213,9 +225,9 @@
 | 变量 | 部件 | CSS 属性 | 状态 | 默认来源 | 说明 |
 | --- | --- | --- | --- | --- | --- |
 | `--xh-button-bg` | `root` | `background-color` | `default`<br>`focus-visible`<br>`loading`<br>`not([data-scope='button-group'] *)`<br>`not([data-variant])`<br>`variant`<br>`variant=solid` | `--xh-_tone`<br>`--xh-bg-brand` | button 的 root 部件 background-color 覆盖槽。 |
-| `--xh-button-bg-active` | `root` | `background-color` | `active`<br>`disabled`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])` | `--xh-bg-brand-active` | button 的 root 部件 background-color 覆盖槽。 |
+| `--xh-button-bg-active` | `root` | `background-color` | `disabled`<br>`is(:active, [data-pressed])`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])`<br>`pressed` | `--xh-bg-brand-active` | button 的 root 部件 background-color 覆盖槽。 |
 | `--xh-button-bg-hover` | `root` | `background-color` | `disabled`<br>`hover`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])` | `--xh-bg-brand-hover` | button 的 root 部件 background-color 覆盖槽。 |
-| `--xh-button-fg` | `root` | `color` | `active`<br>`default`<br>`disabled`<br>`focus-visible`<br>`hover`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])`<br>`not([data-scope='button-group'] *)`<br>`not([data-variant])`<br>`variant`<br>`variant=solid` | `--xh-_tone-on`<br>`--xh-fg-on-brand` | button 的 root 部件 color 覆盖槽。 |
+| `--xh-button-fg` | `root` | `color` | `default`<br>`disabled`<br>`focus-visible`<br>`hover`<br>`is(:active, [data-pressed])`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])`<br>`not([data-scope='button-group'] *)`<br>`not([data-variant])`<br>`pressed`<br>`variant`<br>`variant=solid` | `--xh-_tone-on`<br>`--xh-fg-on-brand` | button 的 root 部件 color 覆盖槽。 |
 | `--xh-button-font-size` | `root` | `font-size` | `default` | `--xh-_button-group-font-size` | button 的 root 部件 font-size 覆盖槽。 |
 | `--xh-button-font-weight` | `root` | `font-weight` | `default` | `--xh-text-label-weight` | button 的 root 部件 font-weight 覆盖槽。 |
 | `--xh-button-gap` | `root` | `gap` | `default` | `--xh-_button-group-gap` | button 的 root 部件 gap 覆盖槽。 |

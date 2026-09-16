@@ -2,7 +2,7 @@ import type { App, VNode } from 'vue'
 import { cdp, userEvent } from '@vitest/browser/context'
 import { afterEach, describe, expect, it } from 'vitest'
 import { createApp, h, nextTick } from 'vue'
-import { XhButton, XhButtonGroup, XhButtonIndicator, XhButtonLabel } from '../../src'
+import { XhButton, XhButtonGroup, XhButtonIndicator, XhButtonLabel, XhToggle } from '../../src'
 import '@xihan-ui/tokens/tokens.css'
 import '@xihan-ui/styles'
 
@@ -78,6 +78,15 @@ async function release(element: HTMLElement): Promise<void> {
     buttons: 0,
     clickCount: 1,
   })
+}
+
+/** 键盘按下 / 抬起拆开派：按住的中间帧要真实的 keydown 才看得见。 */
+async function keyDown(key: ' ' | 'Enter'): Promise<void> {
+  await cdp().send('Input.dispatchKeyEvent', { type: 'keyDown', key: key === ' ' ? ' ' : 'Enter', code: key === ' ' ? 'Space' : 'Enter', windowsVirtualKeyCode: key === ' ' ? 32 : 13 })
+}
+
+async function keyUp(key: ' ' | 'Enter'): Promise<void> {
+  await cdp().send('Input.dispatchKeyEvent', { type: 'keyUp', key: key === ' ' ? ' ' : 'Enter', code: key === ' ' ? 'Space' : 'Enter', windowsVirtualKeyCode: key === ' ' ? 32 : 13 })
 }
 
 afterEach(async () => {
@@ -214,6 +223,75 @@ describe('action Control 状态与命中区', () => {
     await press(onTinted)
     expect(getComputedStyle(onTinted).backgroundColor).toBe(resolveColor('--xh-bg-subtle-active'))
     await release(onTinted)
+  })
+
+  it.each([
+    { label: 'XhButton', render: () => h(XhButton, { variant: 'ghost' }, () => '按钮') },
+    { label: 'XhToggle', render: () => h(XhToggle, { variant: 'ghost' }, () => '开关') },
+  ])('$label：键盘 Space / Enter 按住投影 data-pressed，解出与指针 :active 同一副按压面（scale 0.97、pressed 底）', async ({ render }) => {
+    document.documentElement.dataset.theme = 'light'
+    mount(render)
+    freezeMotion()
+    const element = action()
+    const restBg = getComputedStyle(element).backgroundColor
+    const isOn = (): boolean => element.getAttribute('aria-pressed') === 'true'
+    // 指针按住那一副面是基准：键盘按住要解出同样的底与缩放。松开指针即一次 click，
+    // 开关会翻面，所以 off / on 两个状态各取一次基准（按钮没有状态，两次同值）
+    const pointerPressedBg = async (): Promise<string> => {
+      await press(element)
+      expect(element.matches(':active')).toBe(true)
+      const bg = getComputedStyle(element).backgroundColor
+      await release(element)
+      await userEvent.hover(document.querySelector<HTMLElement>('[data-test-park-pointer]')!)
+      await nextTick()
+      return bg
+    }
+    const offPressedBg = await pointerPressedBg()
+    expect(offPressedBg).not.toBe(restBg)
+    const onPressedBg = isOn() ? await pointerPressedBg() : offPressedBg
+    expect(isOn()).toBe(false)
+
+    element.focus()
+    expect(element.matches(':focus')).toBe(true)
+    expect(element.hasAttribute('data-pressed')).toBe(false)
+    expect(getComputedStyle(element).scale).toBe('none')
+
+    // Chromium 会给 Space 按住的按钮打 :active，Enter 则不会：两条都要走到同一副面。
+    // 原生激活时机不同：Space 抬起才 click（按住期间仍是 off），Enter 按下即 click（按住期间已翻到 on）
+    for (const key of [' ', 'Enter'] as const) {
+      await keyDown(key)
+      await nextTick()
+      expect(element.hasAttribute('data-pressed'), `${JSON.stringify(key)} 按住`).toBe(true)
+      if (key === 'Enter')
+        expect(element.matches(':active'), 'Enter 按住没有 :active，这一副面只能来自 data-pressed').toBe(false)
+      expect(getComputedStyle(element).scale, `${JSON.stringify(key)} 按住的缩放`).toBe('0.97')
+      expect(getComputedStyle(element).backgroundColor, `${JSON.stringify(key)} 按住的底`).toBe(isOn() ? onPressedBg : offPressedBg)
+
+      await keyUp(key)
+      await nextTick()
+      expect(element.hasAttribute('data-pressed'), `${JSON.stringify(key)} 抬起`).toBe(false)
+      expect(getComputedStyle(element).scale, `${JSON.stringify(key)} 抬起的缩放`).toBe('none')
+      // 这一次激活把开关翻到 on：翻回去，下一个键从 off 起
+      if (isOn()) {
+        element.click()
+        await nextTick()
+      }
+    }
+  })
+
+  it('键盘按住途中失焦即撤下按压面', async () => {
+    mount(() => h(XhButton, { variant: 'ghost' }, () => '按钮'))
+    freezeMotion()
+    const element = action()
+    element.focus()
+    await keyDown('Enter')
+    await nextTick()
+    expect(element.hasAttribute('data-pressed')).toBe(true)
+    element.blur()
+    await nextTick()
+    expect(element.hasAttribute('data-pressed')).toBe(false)
+    expect(getComputedStyle(element).scale).toBe('none')
+    await keyUp('Enter')
   })
 
   it('row 与 disclosure-trigger 按下只换面不缩放', async () => {

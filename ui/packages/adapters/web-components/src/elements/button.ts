@@ -6,13 +6,14 @@
 // 提供 button 相关实现。
 
 import type { ActionVariant, Size, Tone } from '@xihan-ui/core'
-import type { ButtonProps } from '@xihan-ui/headless'
-import { buttonAnatomy, buttonMeta, connectButton } from '@xihan-ui/headless'
+import type { ButtonProps, ButtonSchema } from '@xihan-ui/headless'
+import { buttonAnatomy, buttonMachine, buttonMeta, connectButton } from '@xihan-ui/headless'
 import { wcNormalize } from '../dom/normalize'
 import { XhElement } from '../element-base'
+import { MachineController } from '../runtime/machine-controller'
 
 /**
- * `<xh-button>`：按钮行为宿主，无状态机，宿主属性即 button props。
+ * `<xh-button>`：按钮行为宿主，宿主属性即 button props；机器只承载按压通道（data-pressed）。
  *
  * @customElement xh-button
  * @attr {'button'|'submit'|'reset'} type - 原生按钮类型，默认 button
@@ -51,11 +52,11 @@ export class XhButtonElement extends XhElement {
   declare size?: Size
   declare as?: ButtonProps['as']
 
-  protected wire(): void {
+  private readonly ctrl = new MachineController<ButtonSchema>(this, buttonMachine, () => this.machineProps())
+
+  private machineProps(): Partial<ButtonSchema['props']> {
     const root = this.getPart('root')
-    if (!root)
-      return
-    const api = connectButton(this.configured('button', {
+    return {
       type: this.type,
       disabled: this.disabled,
       loading: this.loading,
@@ -66,9 +67,16 @@ export class XhButtonElement extends XhElement {
       iconOnly: this.iconOnly,
       fullWidth: this.fullWidth,
       // 作者写在根节点上的可及名转告连接层，图标按钮缺名时由它提醒
-      ariaLabel: root.getAttribute('aria-label') ?? undefined,
-      ariaLabelledby: root.getAttribute('aria-labelledby') ?? undefined,
-    } satisfies ButtonProps), wcNormalize)
+      ariaLabel: root?.getAttribute('aria-label') ?? undefined,
+      ariaLabelledby: root?.getAttribute('aria-labelledby') ?? undefined,
+    }
+  }
+
+  protected wire(): void {
+    const root = this.getPart('root')
+    if (!root)
+      return
+    const api = connectButton(this.ctrl.service, wcNormalize)
     this.spreader.spread(root, api.getRootProps() as Record<string, unknown>)
 
     // label / prefix / suffix / indicator 都是可选角色节点，作者写了才接

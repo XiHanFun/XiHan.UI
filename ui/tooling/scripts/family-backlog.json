@@ -1,5 +1,5 @@
 {
-  "$description": "逐家族豁免表：七条家族门禁（edge = check-surface-edge 与 check-elevation-role 的 raised 登记，键以 :raised 结尾的归后者；selection = check-selection-marker；ladder = check-state-ladder；shape = check-shape-scale 身份表；scroll = check-scrollbar-hosts，键「组件:部件:问题码」；press = check-press-feedback，*:data-pressed 是 press-channel 落地前的总豁免；text = check-text-role；motion = check-motion-role 的大尺度待办）各一段，每段是「组件:部件[:状态]: 理由」。只登「尚未迁移」的存量，每条必须真被放行过一次——门禁跑完把没命中的条目判过期；「本来就不该有」的进各门禁自己的永久登记表。条目数由 tooling/testing/runners/family-backlog.spec.mjs 的快照与 CEILING 钉住，键集合只许是快照的子集：迁走一个组件 = 删条目 + vitest -u 重录快照 + 下调 CEILING，三者同一提交可见。",
+  "$description": "逐家族豁免表：七条家族门禁（edge = check-surface-edge 与 check-elevation-role 的 raised 登记，键以 :raised 结尾的归后者；selection = check-selection-marker；ladder = check-state-ladder；shape = check-shape-scale 身份表；scroll = check-scrollbar-hosts，键「组件:部件:问题码」；press = check-press-feedback，*:data-pressed 是各组件接上按压通道前的总豁免（button / toggle 已接）；text = check-text-role；motion = check-motion-role 的大尺度待办）各一段，每段是「组件:部件[:状态]: 理由」。只登「尚未迁移」的存量，每条必须真被放行过一次——门禁跑完把没命中的条目判过期；「本来就不该有」的进各门禁自己的永久登记表。条目数由 tooling/testing/runners/family-backlog.spec.mjs 的快照与 CEILING 钉住，键集合只许是快照的子集：迁走一个组件 = 删条目 + vitest -u 重录快照 + 下调 CEILING，三者同一提交可见。",
   "edge": {
     "alert:root": "缺省边 transparent 而以 --xh-elevation-raised 充当边界，应改 --xh-border-default 描边 + 无影，待本组件迁移",
     "alert:root:raised": "raised 退役待本组件迁移",
@@ -336,7 +336,7 @@
     "message-feed:viewport:gutter": "粘底视口缺带 :not([data-xh-scrollbar]) 守卫的 scrollbar-gutter: stable，随 message-feed 提交补"
   },
   "press": {
-    "*:data-pressed": "press-channel 尚未落地：Core / Headless 还没有按压通道，connect 不投影 data-pressed、家族配方的按压选择器只认 :active；通道落地时删掉这一条",
+    "*:data-pressed": "按压通道已落地（Core createPressTracker / pressHandlers，家族配方按压选择器已是 :is(:active, [data-pressed])），button / toggle 已投影 data-pressed；其余 PRESSABLE 部件（check-press-feedback ⑧）随各组件提交接入，全部接完删除这一条",
     "accordion:trigger": "按 §4.1 是 disclosure trigger / row，登记成缩放形态，改登记 { part: 'trigger', feedback: 'surface' }，皮肤只换面；按下只缩放不换底，:active 块要同时把 background 换到 active 面（§9.1）；待本组件迁移",
     "approval:approve-trigger": "按下只缩放不换底，:active 块要同时把 background 换到 active 面（§9.1）；待本组件迁移",
     "approval:deny-trigger": "按下只缩放不换底，:active 块要同时把 background 换到 active 面（§9.1）；待本组件迁移",

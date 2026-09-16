@@ -8,10 +8,10 @@
 import type { PropTypes } from '@xihan-ui/core'
 import type { ButtonProps } from '@xihan-ui/headless'
 import type { InjectionKey, PropType, Ref } from 'vue'
-import { connectButton } from '@xihan-ui/headless'
+import { buttonMachine, connectButton } from '@xihan-ui/headless'
 import { computed, defineComponent, h, inject, provide, useAttrs } from 'vue'
-import { withXhConfig } from '../config/config'
 import { vueNormalize } from '../runtime/normalize-props'
+import { useMachine } from '../runtime/use-machine'
 import { useButtonGroupDisabled } from './button-group/context'
 
 /** 从实际调用推导 api 形状，避免再写一遍 normalize 的类型参数。 */
@@ -42,17 +42,17 @@ export const XhButton = defineComponent({
   },
   setup(props, { slots }) {
     const attrs = useAttrs()
-    // withXhConfig 只能在 setup 期调，连接层在渲染期读这份代理
-    const configured = withXhConfig('button', props as ButtonProps)
     // 外层按钮组禁用时整组一起禁用；段自己写了禁用的仍然禁用
     const groupDisabled = useButtonGroupDisabled()
+    // 机器只承载按压通道；全局配置（size）由 useMachine 那一处并入。
     // 作者写在根节点上的可及名转告连接层，图标按钮缺名时由它提醒
-    const api = computed(() => connectButton({
-      ...configured,
-      disabled: configured.disabled || !!groupDisabled?.value,
+    const service = useMachine(buttonMachine, () => ({
+      ...props,
+      disabled: props.disabled || !!groupDisabled?.value,
       ariaLabel: attrs['aria-label'] as string | undefined,
       ariaLabelledby: attrs['aria-labelledby'] as string | undefined,
-    }, vueNormalize))
+    } as ButtonProps))
+    const api = computed(() => connectButton(service, vueNormalize))
     provide(ButtonKey, api)
     return () => h(props.as, api.value.getRootProps() as Record<string, unknown>, slots.default?.())
   },

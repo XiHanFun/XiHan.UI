@@ -165,7 +165,7 @@
   }
 
   /* 按下段：pressed 面与按下时长、曲线一起给出；排在 hover 与高亮之后，同特指度才不会被它们盖掉。 */
-  [data-xh-collection-item]:not([aria-disabled='true'], [aria-busy='true'], [data-error]):active {
+  [data-xh-collection-item]:not([aria-disabled='true'], [aria-busy='true'], [data-error]):is(:active, [data-pressed]) {
     --xh-_collection-bg: var(--xh-collection-bg-pressed, var(--xh-bg-subtle-hover));
     --xh-_collection-fg: var(--xh-collection-fg-pressed, var(--xh-material-frosted-fg));
     --xh-_collection-description-fg: var(--xh-collection-description-fg-pressed, var(--xh-material-frosted-fg-muted));
@@ -212,7 +212,7 @@
     --xh-_collection-opacity: var(--xh-collection-opacity-selected-highlight, 1);
   }
 
-  [data-xh-collection-item][data-xh-collection-context='overlay'][aria-selected='true']:not([aria-disabled='true'], [aria-busy='true'], [data-error]):active {
+  [data-xh-collection-item][data-xh-collection-context='overlay'][aria-selected='true']:not([aria-disabled='true'], [aria-busy='true'], [data-error]):is(:active, [data-pressed]) {
     --xh-_collection-bg: var(--xh-collection-bg-selected-pressed, var(--xh-bg-subtle-hover));
     --xh-_collection-fg: var(--xh-collection-fg-selected-pressed, var(--xh-material-frosted-fg));
     --xh-_collection-description-fg: var(--xh-collection-description-fg-selected-pressed, var(--xh-material-frosted-fg-muted));
@@ -256,7 +256,7 @@
     --xh-_collection-opacity: var(--xh-collection-opacity-selected-highlight, 1);
   }
 
-  [data-xh-collection-item][data-xh-collection-context='page'][aria-selected='true']:not([aria-disabled='true'], [aria-busy='true'], [data-error]):active {
+  [data-xh-collection-item][data-xh-collection-context='page'][aria-selected='true']:not([aria-disabled='true'], [aria-busy='true'], [data-error]):is(:active, [data-pressed]) {
     --xh-_collection-bg: var(--xh-collection-bg-selected-pressed, var(--xh-bg-brand-subtle-active));
     --xh-_collection-fg: var(--xh-collection-fg-selected-pressed, var(--xh-fg-on-brand-subtle));
     --xh-_collection-description-fg: var(--xh-collection-description-fg-selected-pressed, var(--xh-material-frosted-fg-muted));
@@ -300,7 +300,7 @@
     --xh-_collection-opacity: var(--xh-collection-opacity-current-highlight, 1);
   }
 
-  [data-xh-collection-item][data-xh-collection-context='page'][data-current]:not([aria-disabled='true'], [aria-busy='true'], [data-error]):active {
+  [data-xh-collection-item][data-xh-collection-context='page'][data-current]:not([aria-disabled='true'], [aria-busy='true'], [data-error]):is(:active, [data-pressed]) {
     --xh-_collection-bg: var(--xh-collection-bg-current-pressed, var(--xh-bg-brand-subtle-active));
     --xh-_collection-fg: var(--xh-collection-fg-current-pressed, var(--xh-fg-on-brand-subtle));
     --xh-_collection-description-fg: var(--xh-collection-description-fg-current-pressed, var(--xh-material-frosted-fg-muted));
@@ -415,7 +415,7 @@
       --xh-_collection-indicator-fg: Highlight;
     }
 
-    [data-xh-collection-item]:not([aria-disabled='true'], [aria-busy='true'], [data-error]):active {
+    [data-xh-collection-item]:not([aria-disabled='true'], [aria-busy='true'], [data-error]):is(:active, [data-pressed]) {
       --xh-_collection-bg: Highlight;
       --xh-_collection-fg: HighlightText;
       --xh-_collection-outline: transparent;
@@ -443,7 +443,7 @@
       --xh-_collection-indicator-fg: Highlight;
     }
 
-    [data-xh-collection-item][data-xh-collection-context='overlay'][aria-selected='true']:not([aria-disabled='true'], [aria-busy='true'], [data-error]):active {
+    [data-xh-collection-item][data-xh-collection-context='overlay'][aria-selected='true']:not([aria-disabled='true'], [aria-busy='true'], [data-error]):is(:active, [data-pressed]) {
       --xh-_collection-bg: Highlight;
       --xh-_collection-fg: HighlightText;
       --xh-_collection-outline: transparent;
@@ -471,7 +471,7 @@
       --xh-_collection-indicator-fg: HighlightText;
     }
 
-    [data-xh-collection-item][data-xh-collection-context='page'][aria-selected='true']:not([aria-disabled='true'], [aria-busy='true'], [data-error]):active {
+    [data-xh-collection-item][data-xh-collection-context='page'][aria-selected='true']:not([aria-disabled='true'], [aria-busy='true'], [data-error]):is(:active, [data-pressed]) {
       --xh-_collection-bg: Highlight;
       --xh-_collection-fg: HighlightText;
       --xh-_collection-outline: transparent;
@@ -499,7 +499,7 @@
       --xh-_collection-indicator-fg: HighlightText;
     }
 
-    [data-xh-collection-item][data-xh-collection-context='page'][data-current]:not([aria-disabled='true'], [aria-busy='true'], [data-error]):active {
+    [data-xh-collection-item][data-xh-collection-context='page'][data-current]:not([aria-disabled='true'], [aria-busy='true'], [data-error]):is(:active, [data-pressed]) {
       --xh-_collection-bg: Highlight;
       --xh-_collection-fg: HighlightText;
       --xh-_collection-outline: transparent;
