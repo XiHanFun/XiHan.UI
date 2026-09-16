@@ -290,9 +290,20 @@ tone 决定使用哪族颜色，与 variant 正交；这里固定 outline 只查
 | `root` | `data-tone` | props.tone |
 | `root` | `data-variant` | props.variant |
 | `label` | `data-disabled` | ''（条件成立时才出现） |
+| `control` | `data-variant` | props.variant |
+| `control` | `data-xh-field-chrome` | '' |
+| `control` | `data-xh-field-layout` | 'multi-tag' |
+| `control` | `data-xh-field-size` | props.size |
 | `input` | `data-disabled` | ''（条件成立时才出现） |
 | `input` | `data-invalid` | ''（条件成立时才出现） |
 | `input` | `data-readonly` | ''（条件成立时才出现） |
+| `input` | `data-xh-field-input` | '' |
+| `clear-trigger` | `data-xh-action-control` | '' |
+| `clear-trigger` | `data-xh-action-display` | 'has-value' |
+| `clear-trigger` | `data-xh-action-has-value` | ''（条件成立时才出现） |
+| `clear-trigger` | `data-xh-action-profile` | 'field-inset' |
+| `clear-trigger` | `data-xh-action-size` | props.size |
+| `clear-trigger` | `data-xh-action-variant` | 'ghost' |
 | `count` | `data-at-max` | ''（条件成立时才出现） |
 | `count` | `data-disabled` | ''（条件成立时才出现） |
 
@@ -303,42 +314,42 @@ tone 决定使用哪族颜色，与 variant 正交；这里固定 outline 只查
 
 | 变量 | 部件 | CSS 属性 | 状态 | 默认来源 | 说明 |
 | --- | --- | --- | --- | --- | --- |
-| `--xh-tags-input-action-bg` | `clear-trigger` | `background` | `default` | `transparent` | tags-input 的 clear-trigger 部件 background 覆盖槽。 |
-| `--xh-tags-input-action-bg-active` | `clear-trigger` | `background` | `active` | `--xh-bg-subtle-active` | tags-input 的 clear-trigger 部件 background 覆盖槽。 |
-| `--xh-tags-input-action-bg-hover` | `clear-trigger` | `background` | `hover` | `--xh-bg-subtle-hover` | tags-input 的 clear-trigger 部件 background 覆盖槽。 |
+| `--xh-tags-input-action-bg` | `clear-trigger` | `background-color` | `default` | `--xh-_action-variant-bg-rest` | tags-input 的 clear-trigger 部件 background-color 覆盖槽。 |
+| `--xh-tags-input-action-bg-active` | `clear-trigger` | `background-color` | `disabled`<br>`is(:active, [data-pressed])`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])`<br>`pressed` | `--xh-_action-variant-bg-pressed` | tags-input 的 clear-trigger 部件 background-color 覆盖槽。 |
+| `--xh-tags-input-action-bg-hover` | `clear-trigger` | `background-color` | `disabled`<br>`hover`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])` | `--xh-_action-variant-bg-hover` | tags-input 的 clear-trigger 部件 background-color 覆盖槽。 |
 | `--xh-tags-input-action-fg` | `clear-trigger` | `color` | `default` | `--xh-fg-muted` | tags-input 的 clear-trigger 部件 color 覆盖槽。 |
-| `--xh-tags-input-action-fg-hover` | `clear-trigger` | `color` | `hover` | `--xh-fg-default` | tags-input 的 clear-trigger 部件 color 覆盖槽。 |
+| `--xh-tags-input-action-fg-hover` | `clear-trigger` | `color` | `disabled`<br>`hover`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])` | `--xh-fg-default` | tags-input 的 clear-trigger 部件 color 覆盖槽。 |
 | `--xh-tags-input-action-font-size` | `clear-trigger` | `font-size` | `default` | `--xh-text-secondary-size` | tags-input 的 clear-trigger 部件 font-size 覆盖槽。 |
-| `--xh-tags-input-action-radius` | `clear-trigger` | `border-radius` | `default` | `--xh-shape-control` | tags-input 的 clear-trigger 部件 border-radius 覆盖槽。 |
-| `--xh-tags-input-action-size` | `clear-trigger` | `block-size`<br>`inline-size` | `default` | `--xh-control-action-size` | tags-input 的 clear-trigger 部件 block-size、inline-size 覆盖槽。 |
-| `--xh-tags-input-control-bg` | `control` | `background` | `default` | `--xh-_tags-input-control-bg` | tags-input 的 control 部件 background 覆盖槽。 |
-| `--xh-tags-input-control-bg-disabled` | `control` | `background` | `disabled` | `--xh-bg-subtle` | tags-input 的 control 部件 background 覆盖槽。 |
-| `--xh-tags-input-control-bg-hover` | `control` | `background` | `at-max`<br>`disabled`<br>`hover`<br>`invalid`<br>`not([data-disabled], [data-readonly], [data-invalid], [data-at-max])`<br>`readonly` | `--xh-_tags-input-control-bg-hover` | tags-input 的 control 部件 background 覆盖槽。 |
-| `--xh-tags-input-control-bg-readonly` | `control` | `background` | `disabled`<br>`not([data-disabled])`<br>`readonly` | `--xh-bg-subtle` | tags-input 的 control 部件 background 覆盖槽。 |
-| `--xh-tags-input-control-border` | `control` | `border` | `default` | `--xh-_tags-input-control-border` | tags-input 的 control 部件 border 覆盖槽。 |
-| `--xh-tags-input-control-border-at-max` | `control` | `border-color` | `at-max` | `--xh-border-at-limit` | tags-input 的 control 部件 border-color 覆盖槽。 |
-| `--xh-tags-input-control-border-focus` | `control` | `border-color` | `disabled`<br>`focus-within`<br>`not([data-disabled])` | `--xh-_tone` | tags-input 的 control 部件 border-color 覆盖槽。 |
-| `--xh-tags-input-control-border-hover` | `control` | `border-color` | `at-max`<br>`disabled`<br>`hover`<br>`invalid`<br>`not([data-disabled], [data-readonly], [data-invalid], [data-at-max])`<br>`readonly` | `--xh-_tags-input-control-border-hover` | tags-input 的 control 部件 border-color 覆盖槽。 |
-| `--xh-tags-input-control-border-invalid` | `control` | `border-color` | `invalid` | `--xh-border-invalid` | tags-input 的 control 部件 border-color 覆盖槽。 |
-| `--xh-tags-input-control-fg` | `control` | `color` | `default` | `--xh-fg-default` | tags-input 的 control 部件 color 覆盖槽。 |
-| `--xh-tags-input-control-gap` | `control` | `gap` | `default` | `--xh-_tags-input-control-gap` | tags-input 的 control 部件 gap 覆盖槽。 |
-| `--xh-tags-input-control-h` | `control` | `min-block-size` | `default` | `--xh-_tags-input-control-h` | tags-input 的 control 部件 min-block-size 覆盖槽。 |
+| `--xh-tags-input-action-radius` | `clear-trigger` | `border-radius` | `default` | `--xh-shape-inset` | tags-input 的 clear-trigger 部件 border-radius 覆盖槽。 |
+| `--xh-tags-input-action-size` | `clear-trigger` | `block-size`<br>`inline-size`<br>`min-inline-size` | `default`<br>`xh-action-profile=field-inset` | `--xh-_action-profile-visual-size` | tags-input 的 clear-trigger 部件 block-size、inline-size、min-inline-size 覆盖槽。 |
+| `--xh-tags-input-control-bg` | `control` | `background-color` | `xh-field-chrome` | `--xh-_field-variant-bg-rest` | tags-input 的 control 部件 background-color 覆盖槽。 |
+| `--xh-tags-input-control-bg-disabled` | `control` | `background-color` | `disabled`<br>`xh-field-chrome` | `--xh-_field-variant-bg-disabled` | tags-input 的 control 部件 background-color 覆盖槽。 |
+| `--xh-tags-input-control-bg-hover` | `control` | `background-color` | `disabled`<br>`hover`<br>`invalid`<br>`loading`<br>`not([data-disabled])`<br>`not([data-invalid])`<br>`not([data-loading])`<br>`not([data-readonly])`<br>`readonly`<br>`xh-field-chrome` | `--xh-_field-variant-bg-hover` | tags-input 的 control 部件 background-color 覆盖槽。 |
+| `--xh-tags-input-control-bg-readonly` | `control` | `background-color` | `readonly`<br>`xh-field-chrome` | `--xh-_field-variant-bg-read-only` | tags-input 的 control 部件 background-color 覆盖槽。 |
+| `--xh-tags-input-control-border` | `control` | `border` | `xh-field-chrome` | `--xh-_field-variant-border-rest` | tags-input 的 control 部件 border 覆盖槽。 |
+| `--xh-tags-input-control-border-at-max` | `control` | `border-color` | `at-max`<br>`invalid`<br>`not([data-invalid])` | `--xh-border-at-limit` | tags-input 的 control 部件 border-color 覆盖槽。 |
+| `--xh-tags-input-control-border-focus` | `control` | `border-color` | `disabled`<br>`focus-within`<br>`not([data-disabled])`<br>`xh-field-chrome` | `--xh-_field-variant-border-focus` | tags-input 的 control 部件 border-color 覆盖槽。 |
+| `--xh-tags-input-control-border-hover` | `control` | `border-color` | `disabled`<br>`hover`<br>`invalid`<br>`loading`<br>`not([data-disabled])`<br>`not([data-invalid])`<br>`not([data-loading])`<br>`not([data-readonly])`<br>`readonly`<br>`xh-field-chrome` | `--xh-_field-variant-border-hover` | tags-input 的 control 部件 border-color 覆盖槽。 |
+| `--xh-tags-input-control-border-invalid` | `control` | `border-color` | `invalid`<br>`xh-field-chrome` | `--xh-_field-variant-border-invalid` | tags-input 的 control 部件 border-color 覆盖槽。 |
+| `--xh-tags-input-control-fg` | `control` | `color` | `xh-field-chrome` | `--xh-fg-default` | tags-input 的 control 部件 color 覆盖槽。 |
+| `--xh-tags-input-control-gap` | `control` | `gap` | `xh-field-chrome` | `--xh-_tags-input-control-gap` | tags-input 的 control 部件 gap 覆盖槽。 |
+| `--xh-tags-input-control-h` | `control` | `block-size`<br>`min-block-size` | `has([data-xh-field-input][data-xh-field-layout='multi-tag'])`<br>`has([data-xh-field-input][data-xh-field-layout='single-line'])`<br>`has([data-xh-field-input][data-xh-field-layout='textarea'])`<br>`xh-field-chrome`<br>`xh-field-input`<br>`xh-field-layout=multi-tag`<br>`xh-field-layout=single-line`<br>`xh-field-layout=textarea` | `--xh-_tags-input-control-h` | tags-input 的 control 部件 block-size、min-block-size 覆盖槽。 |
 | `--xh-tags-input-control-max-h` | `control` | `max-block-size` | `default` | `--xh-viewport-h-sm` | tags-input 的 control 部件 max-block-size 覆盖槽。 |
-| `--xh-tags-input-control-min-w` | `control`<br>`root` | `min-inline-size` | `default` | `--xh-control-min-w` | tags-input 的 control、root 部件 min-inline-size 覆盖槽。 |
-| `--xh-tags-input-control-px` | `control` | `padding-inline` | `default` | `--xh-_tags-input-control-px` | tags-input 的 control 部件 padding-inline 覆盖槽。 |
-| `--xh-tags-input-control-py` | `control` | `padding-block` | `default` | `--xh-space-0_5` | tags-input 的 control 部件 padding-block 覆盖槽。 |
-| `--xh-tags-input-control-radius` | `control` | `border-radius` | `default` | `--xh-shape-control` | tags-input 的 control 部件 border-radius 覆盖槽。 |
-| `--xh-tags-input-control-shadow` | `control` | `box-shadow` | `default` | `--xh-_tags-input-control-shadow` | tags-input 的 control 部件 box-shadow 覆盖槽。 |
+| `--xh-tags-input-control-min-w` | `control`<br>`root` | `min-inline-size` | `default`<br>`xh-field-chrome` | `--xh-control-min-w` | tags-input 的 control、root 部件 min-inline-size 覆盖槽。 |
+| `--xh-tags-input-control-px` | `control` | `padding-inline` | `xh-field-chrome` | `--xh-_tags-input-control-px` | tags-input 的 control 部件 padding-inline 覆盖槽。 |
+| `--xh-tags-input-control-radius` | `control` | `border-radius` | `xh-field-chrome` | `--xh-shape-control` | tags-input 的 control 部件 border-radius 覆盖槽。 |
+| `--xh-tags-input-control-shadow` | `control` | `box-shadow` | `xh-field-chrome` | `none` | tags-input 的 control 部件 box-shadow 覆盖槽。 |
 | `--xh-tags-input-count-fg` | `count` | `color` | `default` | `--xh-fg-muted` | tags-input 的 count 部件 color 覆盖槽。 |
 | `--xh-tags-input-count-fg-at-max` | `count` | `color` | `at-max` | `--xh-fg-warning` | tags-input 的 count 部件 color 覆盖槽。 |
 | `--xh-tags-input-count-fg-disabled` | `count` | `color` | `disabled` | `--xh-fg-disabled` | tags-input 的 count 部件 color 覆盖槽。 |
 | `--xh-tags-input-count-font-size` | `count` | `font-size` | `default` | `--xh-_tags-input-item-font-size` | tags-input 的 count 部件 font-size 覆盖槽。 |
 | `--xh-tags-input-gap` | `root` | `gap` | `default` | `--xh-space-1` | tags-input 的 root 部件 gap 覆盖槽。 |
-| `--xh-tags-input-icon-size` | `root` | `--xh-icon-size` | `default`<br>`size=lg`<br>`size=sm` | `--xh-glyph-size-lg`<br>`--xh-glyph-size-md`<br>`--xh-glyph-size-sm` | tags-input 的 root 部件 --xh-icon-size 覆盖槽。 |
-| `--xh-tags-input-input-autofill-bg` | `input` | `box-shadow` | `-webkit-autofill`<br>`autofill` | `--xh-bg-canvas` | tags-input 的 input 部件 box-shadow 覆盖槽。 |
-| `--xh-tags-input-input-autofill-fg` | `input` | `-webkit-text-fill-color` | `-webkit-autofill`<br>`autofill` | `--xh-fg-default` | tags-input 的 input 部件 -webkit-text-fill-color 覆盖槽。 |
-| `--xh-tags-input-input-basis` | `input` | `flex` | `default` | `6rem` | tags-input 的 input 部件 flex 覆盖槽。 |
-| `--xh-tags-input-input-font-size` | `input` | `font-size` | `default` | `--xh-_tags-input-input-font-size` | tags-input 的 input 部件 font-size 覆盖槽。 |
+| `--xh-tags-input-icon-size` | `control`<br>`root` | `--xh-icon-size` | `default`<br>`size=lg`<br>`size=sm`<br>`xh-field-chrome` | `--xh-_field-size-glyph-size`<br>`--xh-glyph-size-lg`<br>`--xh-glyph-size-md`<br>`--xh-glyph-size-sm` | tags-input 的 control、root 部件 --xh-icon-size 覆盖槽。 |
+| `--xh-tags-input-input-autofill-bg` | `input` | `box-shadow` | `-webkit-autofill`<br>`autofill`<br>`xh-field-input` | `--xh-bg-canvas` | tags-input 的 input 部件 box-shadow 覆盖槽。 |
+| `--xh-tags-input-input-autofill-fg` | `input` | `-webkit-text-fill-color` | `-webkit-autofill`<br>`autofill`<br>`xh-field-input` | `--xh-fg-default` | tags-input 的 input 部件 -webkit-text-fill-color 覆盖槽。 |
+| `--xh-tags-input-input-basis` | `input` | `flex-basis` | `default` | `6rem` | tags-input 的 input 部件 flex-basis 覆盖槽。 |
+| `--xh-tags-input-input-fg` | `input` | `color` | `xh-field-input` | `--xh-fg-default` | tags-input 的 input 部件 color 覆盖槽。 |
+| `--xh-tags-input-input-font-size` | `input` | `font-size` | `xh-field-input` | `--xh-_tags-input-input-font-size` | tags-input 的 input 部件 font-size 覆盖槽。 |
 | `--xh-tags-input-input-min-w` | `input` | `min-inline-size` | `default` | `4rem` | tags-input 的 input 部件 min-inline-size 覆盖槽。 |
 | `--xh-tags-input-item-bg-highlight` | `item`<br>`root` | `background` | `disabled`<br>`highlighted`<br>`not([data-disabled])` | `--xh-_tags-input-accent` | tags-input 的 item、root 部件 background 覆盖槽。 |
 | `--xh-tags-input-item-fg-highlight` | `item`<br>`root` | `color` | `disabled`<br>`highlighted`<br>`not([data-disabled])` | `--xh-_tags-input-accent-fg` | tags-input 的 item、root 部件 color 覆盖槽。 |
@@ -351,16 +362,14 @@ tone 决定使用哪族颜色，与 variant 正交；这里固定 outline 只查
 | `--xh-tags-input-item-radius` | `item-input` | `border-radius` | `default` | `--xh-shape-control` | tags-input 的 item-input 部件 border-radius 覆盖槽。 |
 | `--xh-tags-input-label-fg` | `label` | `color` | `default` | `--xh-fg-default` | tags-input 的 label 部件 color 覆盖槽。 |
 | `--xh-tags-input-label-fg-disabled` | `label` | `color` | `disabled` | `--xh-fg-subtle` | tags-input 的 label 部件 color 覆盖槽。 |
-| `--xh-tags-input-label-font-size` | `label` | `font-size` | `default` | `--xh-_tags-input-label-font-size` | tags-input 的 label 部件 font-size 覆盖槽。 |
+| `--xh-tags-input-label-font-size` | `label` | `font-size` | `default` | `--xh-text-label-size` | tags-input 的 label 部件 font-size 覆盖槽。 |
 | `--xh-tags-input-label-font-weight` | `label` | `font-weight` | `default` | `--xh-text-label-weight` | tags-input 的 label 部件 font-weight 覆盖槽。 |
-| `--xh-tags-input-placeholder-fg` | `input` | `color` | `placeholder` | `--xh-fg-subtle` | tags-input 的 input 部件 color 覆盖槽。 |
+| `--xh-tags-input-placeholder-fg` | `input` | `color` | `placeholder`<br>`xh-field-input` | `--xh-fg-subtle` | tags-input 的 input 部件 color 覆盖槽。 |
 <!-- xh-component-tokens:end -->
 
 ### 动效
 
-`background` · `border-color` · `scale` 走 `transition` 过渡。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
-
-系统开启减弱动效时由令牌层统一收敛，皮肤不另作判断。
+本组件皮肤不含过渡与关键帧，也没有脚本驱动的动效：状态一变，外观立即到位。
 
 ### RTL
 

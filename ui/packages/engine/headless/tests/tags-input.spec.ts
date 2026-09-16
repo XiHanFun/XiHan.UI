@@ -371,9 +371,24 @@ describe('tagsInputMachine 上限', () => {
 })
 
 describe('connectTagsInput 属性输出', () => {
-  it('不写 variant 时 root 落 outline；写 subtle 如实落', () => {
-    expect(mount().root.getAttribute('data-variant')).toBe('outline')
-    expect(mount({ variant: 'subtle' }).root.getAttribute('data-variant')).toBe('subtle')
+  it('不写 variant 时 root 与 control 都落 outline；写 subtle 如实落', () => {
+    const fallback = mount()
+    expect(fallback.root.getAttribute('data-variant')).toBe('outline')
+    expect(fallback.control.getAttribute('data-variant')).toBe('outline')
+    const subtle = mount({ variant: 'subtle' })
+    expect(subtle.root.getAttribute('data-variant')).toBe('subtle')
+    expect(subtle.control.getAttribute('data-variant')).toBe('subtle')
+  })
+
+  it('control 投影 Field Chrome 稳定角色、multi-tag 布局与尺寸档（缺省 md），input 只投影输入角色', () => {
+    const h = mount()
+    expect(h.control.getAttribute('data-xh-field-chrome')).toBe('')
+    expect(h.control.getAttribute('data-xh-field-layout')).toBe('multi-tag')
+    expect(h.control.getAttribute('data-xh-field-size')).toBe('md')
+    expect(h.input.getAttribute('data-xh-field-input')).toBe('')
+    // 布局落在 control 上，input 不再重复投影，免得家族 :has 变体叠两层
+    expect(h.input.hasAttribute('data-xh-field-layout')).toBe(false)
+    expect(mount({ size: 'lg' }).control.getAttribute('data-xh-field-size')).toBe('lg')
   })
 
   it('control 是 group 并由 label 命名；label 的 for 指向输入框', () => {
@@ -484,6 +499,19 @@ describe('connectTagsInput 属性输出', () => {
     expect(mount({ defaultInputValue: 'a' }).clearTrigger.hasAttribute('hidden')).toBe(false)
     expect(mount({ defaultValue: ['a'], readOnly: true }).clearTrigger.hasAttribute('hidden')).toBe(true)
     expect(mount({ defaultValue: ['a'], disabled: true }).clearTrigger.hasAttribute('hidden')).toBe(true)
+  })
+
+  it('清空按钮走 Action Control 的 field-inset ghost 档，按 has-value 显隐，尺寸档随 size 缺省 md', () => {
+    const empty = mount()
+    expect(empty.clearTrigger.getAttribute('data-xh-action-control')).toBe('')
+    expect(empty.clearTrigger.getAttribute('data-xh-action-profile')).toBe('field-inset')
+    expect(empty.clearTrigger.getAttribute('data-xh-action-variant')).toBe('ghost')
+    expect(empty.clearTrigger.getAttribute('data-xh-action-display')).toBe('has-value')
+    expect(empty.clearTrigger.getAttribute('data-xh-action-size')).toBe('md')
+    expect(empty.clearTrigger.hasAttribute('data-xh-action-has-value')).toBe(false)
+    expect(mount({ defaultValue: ['a'] }).clearTrigger.getAttribute('data-xh-action-has-value')).toBe('')
+    expect(mount({ defaultInputValue: 'a' }).clearTrigger.getAttribute('data-xh-action-has-value')).toBe('')
+    expect(mount({ size: 'sm' }).clearTrigger.getAttribute('data-xh-action-size')).toBe('sm')
   })
 
   it('外部把标签换掉后，锚点不再落在一个已经不存在的标签上', () => {

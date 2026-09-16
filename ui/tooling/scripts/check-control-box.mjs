@@ -92,6 +92,11 @@ const SHARED_FAMILY = {
     contentSelector: `[data-scope='time-field'][data-part='segment-group']`,
     actionParts: new Set(['clear-trigger']),
   },
+  'tags-input': {
+    boxSelector: '[data-xh-field-chrome]',
+    contentSelector: '[data-xh-field-input]',
+    actionParts: new Set(['clear-trigger']),
+  },
 }
 
 /** Field Chrome 的原生输入角色；内容区登记成它的组件，连接层必须把它投影到 input 上。 */
@@ -126,7 +131,6 @@ const OUTSIDE_BOX = {
  * 名单之外的组件一律受本门禁管辖。
  */
 const EXEMPT = {
-  'tags-input box-h': '标签换行后盒要被行数撑高，定高会把第二行裁掉，故写 min-block-size',
   'pin-input box-h': '每格是等宽方框，宽高同取 --xh-pin-input-box-size 一个尺寸，不走控件行高',
   'pin-input box-px': '方格内距归零，留了内距单字符居中后可用宽度不足',
   'pin-input box-min-w': '格宽即方格边长，再给最小宽会把方框拉成长方形',

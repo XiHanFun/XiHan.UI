@@ -193,9 +193,15 @@ export function connectTagsInput<T extends PropTypes>(
       'data-disabled': dataAttr(disabled),
     }),
 
+    // control 是唯一的视觉盒：描边、底色、聚焦环由 Field Chrome 家族画在它身上，多标签布局
+    // （可换行、自动高、半档纵向内衬）由家族按 multi-tag 生成；size 缺省 md，variant 与 root 同源
     getControlProps: () => normalize.element({
       ...parts.control.attrs,
       ...surfaceAttrs(),
+      'data-xh-field-chrome': '',
+      'data-xh-field-size': prop('size') ?? 'md',
+      'data-xh-field-layout': 'multi-tag',
+      'data-variant': variant,
       // 一排标签加一个输入框在读屏那里是一个整体，靠 group 兜住，名字由 label 提供
       'role': 'group',
       'aria-labelledby': ids.label,
@@ -230,6 +236,9 @@ export function connectTagsInput<T extends PropTypes>(
       // 表单出口是 hidden-input，原生 required 挂上去也不参与校验，必填只经 aria 上报
       'aria-required': required ? 'true' : 'false',
       'aria-invalid': invalid ? 'true' : 'false',
+      // Field Chrome 不读取 tags-input anatomy；原生输入角色由 Headless 明确投影，
+      // 布局落在 control 上（multi-tag），input 不再重复投影
+      'data-xh-field-input': '',
       'data-disabled': dataAttr(disabled),
       'data-readonly': dataAttr(readOnly),
       'data-invalid': dataAttr(invalid),
@@ -430,8 +439,15 @@ export function connectTagsInput<T extends PropTypes>(
       },
     }),
 
+    // 清空钮走 Action Control 的 field-inset ghost 档：字段底是 canvas，透明 → 悬停 100 → 按下 200
     getClearTriggerProps: () => normalize.button({
       ...parts['clear-trigger'].attrs,
+      'data-xh-action-control': '',
+      'data-xh-action-profile': 'field-inset',
+      'data-xh-action-variant': 'ghost',
+      'data-xh-action-display': 'has-value',
+      'data-xh-action-size': prop('size') ?? 'md',
+      'data-xh-action-has-value': dataAttr(count > 0 || inputValue !== ''),
       'type': 'button',
       'aria-label': label.clearTrigger,
       // 不占 Tab 位，键盘用户走 Backspace 逐个删
