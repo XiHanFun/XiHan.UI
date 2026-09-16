@@ -314,13 +314,28 @@
 | `control` | `data-invalid` | ''（条件成立时才出现） |
 | `control` | `data-readonly` | ''（条件成立时才出现） |
 | `control` | `data-state` | 'open' \| 'closed' |
+| `control` | `data-variant` | props.variant |
+| `control` | `data-xh-field-chrome` | '' |
+| `control` | `data-xh-field-size` | props.size |
 | `input` | `data-disabled` | ''（条件成立时才出现） |
 | `input` | `data-invalid` | ''（条件成立时才出现） |
-| `input` | `data-multiline` | ''（条件成立时才出现） |
 | `input` | `data-readonly` | ''（条件成立时才出现） |
 | `input` | `data-state` | 'open' \| 'closed' |
+| `input` | `data-xh-field-input` | '' |
+| `input` | `data-xh-field-layout` | 'textarea' \| 'single-line' |
 | `trigger` | `data-disabled` | ''（条件成立时才出现） |
 | `trigger` | `data-state` | 'open' \| 'closed' |
+| `trigger` | `data-xh-action-control` | '' |
+| `trigger` | `data-xh-action-display` | 'always' |
+| `trigger` | `data-xh-action-profile` | 'field-inset' |
+| `trigger` | `data-xh-action-size` | props.size |
+| `trigger` | `data-xh-action-variant` | 'ghost' |
+| `clear-trigger` | `data-xh-action-control` | '' |
+| `clear-trigger` | `data-xh-action-display` | 'has-value' |
+| `clear-trigger` | `data-xh-action-has-value` | ''（条件成立时才出现） |
+| `clear-trigger` | `data-xh-action-profile` | 'field-inset' |
+| `clear-trigger` | `data-xh-action-size` | props.size |
+| `clear-trigger` | `data-xh-action-variant` | 'ghost' |
 | `positioner` | `data-hidden` | ''（条件成立时才出现） |
 | `positioner` | `data-placement` | 定位引擎算出的实际落位 |
 | `positioner` | `data-positioned` | ''（条件成立时才出现） |
@@ -330,6 +345,11 @@
 | `positioner` | `data-variant` | props.variant |
 | `content` | `data-placement` | 定位引擎算出的实际落位 |
 | `content` | `data-state` | 'open' \| 'closed' |
+| `item` | `data-xh-collection-context` | 'overlay' |
+| `item` | `data-xh-collection-item` | '' |
+| `item` | `data-xh-collection-size` | props.size |
+| `item-text` | `data-xh-collection-slot` | 'text' |
+| `item-indicator` | `data-xh-collection-slot` | 'indicator' |
 | `empty` | `data-state` | 'open' \| 'closed' |
 | `loading` | `data-state` | 'open' \| 'closed' |
 
@@ -340,14 +360,14 @@
 
 | 变量 | 部件 | CSS 属性 | 状态 | 默认来源 | 说明 |
 | --- | --- | --- | --- | --- | --- |
-| `--xh-combobox-action-bg` | `clear-trigger`<br>`trigger` | `background` | `default`<br>`disabled` | `transparent` | combobox 的 clear-trigger、trigger 部件 background 覆盖槽。 |
-| `--xh-combobox-action-bg-active` | `clear-trigger`<br>`trigger` | `background` | `active`<br>`not(:disabled)` | `--xh-bg-subtle-active` | combobox 的 clear-trigger、trigger 部件 background 覆盖槽。 |
-| `--xh-combobox-action-bg-hover` | `clear-trigger`<br>`trigger` | `background` | `hover`<br>`not(:disabled)` | `--xh-bg-subtle-hover` | combobox 的 clear-trigger、trigger 部件 background 覆盖槽。 |
+| `--xh-combobox-action-bg` | `clear-trigger`<br>`trigger` | `background-color` | `default` | `--xh-_action-variant-bg-rest` | combobox 的 clear-trigger、trigger 部件 background-color 覆盖槽。 |
+| `--xh-combobox-action-bg-active` | `clear-trigger`<br>`trigger` | `background-color` | `disabled`<br>`is(:active, [data-pressed])`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])`<br>`pressed` | `--xh-_action-variant-bg-pressed` | combobox 的 clear-trigger、trigger 部件 background-color 覆盖槽。 |
+| `--xh-combobox-action-bg-hover` | `clear-trigger`<br>`trigger` | `background-color` | `disabled`<br>`hover`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])` | `--xh-_action-variant-bg-hover` | combobox 的 clear-trigger、trigger 部件 background-color 覆盖槽。 |
 | `--xh-combobox-action-fg` | `clear-trigger`<br>`trigger` | `color` | `default` | `--xh-fg-muted` | combobox 的 clear-trigger、trigger 部件 color 覆盖槽。 |
-| `--xh-combobox-action-fg-hover` | `clear-trigger`<br>`trigger` | `color` | `hover`<br>`not(:disabled)` | `--xh-fg-default` | combobox 的 clear-trigger、trigger 部件 color 覆盖槽。 |
+| `--xh-combobox-action-fg-hover` | `clear-trigger`<br>`trigger` | `color` | `disabled`<br>`hover`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])` | `--xh-fg-default` | combobox 的 clear-trigger、trigger 部件 color 覆盖槽。 |
 | `--xh-combobox-action-font-size` | `clear-trigger`<br>`trigger` | `font-size` | `default` | `--xh-text-secondary-size` | combobox 的 clear-trigger、trigger 部件 font-size 覆盖槽。 |
-| `--xh-combobox-action-radius` | `clear-trigger`<br>`trigger` | `border-radius` | `default` | `--xh-shape-control` | combobox 的 clear-trigger、trigger 部件 border-radius 覆盖槽。 |
-| `--xh-combobox-action-size` | `clear-trigger`<br>`trigger` | `block-size`<br>`inline-size` | `default` | `--xh-control-action-size` | combobox 的 clear-trigger、trigger 部件 block-size、inline-size 覆盖槽。 |
+| `--xh-combobox-action-radius` | `clear-trigger`<br>`trigger` | `border-radius` | `default` | `--xh-shape-inset` | combobox 的 clear-trigger、trigger 部件 border-radius 覆盖槽。 |
+| `--xh-combobox-action-size` | `clear-trigger`<br>`trigger` | `block-size`<br>`inline-size`<br>`min-inline-size` | `default`<br>`xh-action-profile=field-inset` | `--xh-_action-profile-visual-size` | combobox 的 clear-trigger、trigger 部件 block-size、inline-size、min-inline-size 覆盖槽。 |
 | `--xh-combobox-content-backdrop` | `content` | `-webkit-backdrop-filter`<br>`backdrop-filter` | `default` | `--xh-material-frosted-backdrop` | combobox 的 content 部件 -webkit-backdrop-filter、backdrop-filter 覆盖槽。 |
 | `--xh-combobox-content-bg` | `content` | `background` | `default` | `--xh-material-frosted-bg` | combobox 的 content 部件 background 覆盖槽。 |
 | `--xh-combobox-content-border` | `content` | `border` | `default` | `--xh-material-frosted-border` | combobox 的 content 部件 border 覆盖槽。 |
@@ -362,22 +382,21 @@
 | `--xh-combobox-content-py` | `content` | `padding-block` | `default` | `--xh-space-1` | combobox 的 content 部件 padding-block 覆盖槽。 |
 | `--xh-combobox-content-radius` | `content` | `border-radius` | `default` | `--xh-shape-overlay` | combobox 的 content 部件 border-radius 覆盖槽。 |
 | `--xh-combobox-content-shadow` | `content` | `box-shadow` | `default` | `--xh-material-frosted-shadow` | combobox 的 content 部件 box-shadow 覆盖槽。 |
-| `--xh-combobox-control-bg` | `control` | `background` | `default` | `--xh-_combobox-control-bg` | combobox 的 control 部件 background 覆盖槽。 |
-| `--xh-combobox-control-bg-disabled` | `control` | `background` | `disabled` | `--xh-bg-subtle` | combobox 的 control 部件 background 覆盖槽。 |
-| `--xh-combobox-control-bg-hover` | `control` | `background` | `disabled`<br>`hover`<br>`not([data-disabled], [data-readonly])`<br>`readonly` | `--xh-_combobox-control-bg-hover` | combobox 的 control 部件 background 覆盖槽。 |
-| `--xh-combobox-control-bg-readonly` | `control` | `background` | `readonly` | `--xh-bg-subtle` | combobox 的 control 部件 background 覆盖槽。 |
-| `--xh-combobox-control-border` | `control` | `border` | `default` | `--xh-_combobox-control-border` | combobox 的 control 部件 border 覆盖槽。 |
-| `--xh-combobox-control-border-focus` | `control` | `border-color` | `disabled`<br>`focus-within`<br>`not([data-disabled])` | `--xh-_tone` | combobox 的 control 部件 border-color 覆盖槽。 |
-| `--xh-combobox-control-border-hover` | `control` | `border-color` | `disabled`<br>`hover`<br>`invalid`<br>`not([data-disabled], [data-invalid])` | `--xh-_combobox-control-border-hover` | combobox 的 control 部件 border-color 覆盖槽。 |
-| `--xh-combobox-control-border-invalid` | `control` | `border-color` | `invalid` | `--xh-border-invalid` | combobox 的 control 部件 border-color 覆盖槽。 |
-| `--xh-combobox-control-fg` | `control` | `color` | `default` | `--xh-fg-default` | combobox 的 control 部件 color 覆盖槽。 |
-| `--xh-combobox-control-gap` | `control` | `gap` | `default` | `--xh-_combobox-gap` | combobox 的 control 部件 gap 覆盖槽。 |
-| `--xh-combobox-control-h` | `control` | `block-size` | `default` | `--xh-_combobox-h` | combobox 的 control 部件 block-size 覆盖槽。 |
-| `--xh-combobox-control-min-w` | `control`<br>`root` | `min-inline-size` | `default` | `--xh-control-min-w` | combobox 的 control、root 部件 min-inline-size 覆盖槽。 |
-| `--xh-combobox-control-px` | `control` | `padding-inline` | `default` | `--xh-_combobox-px` | combobox 的 control 部件 padding-inline 覆盖槽。 |
-| `--xh-combobox-control-py` | `control`<br>`input` | `padding-block` | `has([data-part='input'][data-multiline])`<br>`multiline` | `--xh-field-py` | combobox 的 control、input 部件 padding-block 覆盖槽。 |
-| `--xh-combobox-control-radius` | `control` | `border-radius` | `default` | `--xh-shape-control` | combobox 的 control 部件 border-radius 覆盖槽。 |
-| `--xh-combobox-control-shadow` | `control` | `box-shadow` | `default` | `--xh-_combobox-control-shadow` | combobox 的 control 部件 box-shadow 覆盖槽。 |
+| `--xh-combobox-control-bg` | `control` | `background-color` | `xh-field-chrome` | `--xh-_field-variant-bg-rest` | combobox 的 control 部件 background-color 覆盖槽。 |
+| `--xh-combobox-control-bg-disabled` | `control` | `background-color` | `disabled`<br>`xh-field-chrome` | `--xh-_field-variant-bg-disabled` | combobox 的 control 部件 background-color 覆盖槽。 |
+| `--xh-combobox-control-bg-hover` | `control` | `background-color` | `disabled`<br>`hover`<br>`invalid`<br>`loading`<br>`not([data-disabled])`<br>`not([data-invalid])`<br>`not([data-loading])`<br>`not([data-readonly])`<br>`readonly`<br>`xh-field-chrome` | `--xh-_field-variant-bg-hover` | combobox 的 control 部件 background-color 覆盖槽。 |
+| `--xh-combobox-control-bg-readonly` | `control` | `background-color` | `readonly`<br>`xh-field-chrome` | `--xh-_field-variant-bg-read-only` | combobox 的 control 部件 background-color 覆盖槽。 |
+| `--xh-combobox-control-border` | `control` | `border` | `xh-field-chrome` | `--xh-_field-variant-border-rest` | combobox 的 control 部件 border 覆盖槽。 |
+| `--xh-combobox-control-border-focus` | `control` | `border-color` | `disabled`<br>`focus-within`<br>`not([data-disabled])`<br>`xh-field-chrome` | `--xh-_field-variant-border-focus` | combobox 的 control 部件 border-color 覆盖槽。 |
+| `--xh-combobox-control-border-hover` | `control` | `border-color` | `disabled`<br>`hover`<br>`invalid`<br>`loading`<br>`not([data-disabled])`<br>`not([data-invalid])`<br>`not([data-loading])`<br>`not([data-readonly])`<br>`readonly`<br>`xh-field-chrome` | `--xh-_field-variant-border-hover` | combobox 的 control 部件 border-color 覆盖槽。 |
+| `--xh-combobox-control-border-invalid` | `control` | `border-color` | `invalid`<br>`xh-field-chrome` | `--xh-_field-variant-border-invalid` | combobox 的 control 部件 border-color 覆盖槽。 |
+| `--xh-combobox-control-fg` | `control`<br>`input` | `color` | `xh-field-chrome`<br>`xh-field-input` | `--xh-fg-default` | combobox 的 control、input 部件 color 覆盖槽。 |
+| `--xh-combobox-control-gap` | `control` | `gap` | `xh-field-chrome` | `--xh-_combobox-gap` | combobox 的 control 部件 gap 覆盖槽。 |
+| `--xh-combobox-control-h` | `control` | `block-size`<br>`min-block-size` | `has([data-xh-field-input][data-xh-field-layout='multi-tag'])`<br>`has([data-xh-field-input][data-xh-field-layout='single-line'])`<br>`has([data-xh-field-input][data-xh-field-layout='textarea'])`<br>`xh-field-chrome`<br>`xh-field-input`<br>`xh-field-layout=multi-tag`<br>`xh-field-layout=single-line`<br>`xh-field-layout=textarea` | `--xh-_combobox-h` | combobox 的 control 部件 block-size、min-block-size 覆盖槽。 |
+| `--xh-combobox-control-min-w` | `control`<br>`root` | `min-inline-size` | `default`<br>`xh-field-chrome` | `--xh-control-min-w` | combobox 的 control、root 部件 min-inline-size 覆盖槽。 |
+| `--xh-combobox-control-px` | `control` | `padding-inline` | `xh-field-chrome` | `--xh-_combobox-px` | combobox 的 control 部件 padding-inline 覆盖槽。 |
+| `--xh-combobox-control-radius` | `control` | `border-radius` | `xh-field-chrome` | `--xh-shape-control` | combobox 的 control 部件 border-radius 覆盖槽。 |
+| `--xh-combobox-control-shadow` | `control` | `box-shadow` | `xh-field-chrome` | `none` | combobox 的 control 部件 box-shadow 覆盖槽。 |
 | `--xh-combobox-empty-fg` | `empty` | `color` | `default` | `--xh-material-frosted-fg-muted` | combobox 的 empty 部件 color 覆盖槽。 |
 | `--xh-combobox-empty-font-size` | `empty` | `font-size` | `default` | `--xh-_combobox-font-size` | combobox 的 empty 部件 font-size 覆盖槽。 |
 | `--xh-combobox-empty-px` | `empty` | `padding-inline` | `default` | `--xh-control-px-md` | combobox 的 empty 部件 padding-inline 覆盖槽。 |
@@ -390,17 +409,20 @@
 | `--xh-combobox-group-label-px` | `group-label` | `padding-inline` | `default` | `--xh-control-px-md` | combobox 的 group-label 部件 padding-inline 覆盖槽。 |
 | `--xh-combobox-group-label-py` | `group-label` | `padding-block` | `default` | `--xh-space-1` | combobox 的 group-label 部件 padding-block 覆盖槽。 |
 | `--xh-combobox-group-spacing` | `group` | `margin-block-start` | `default` | `--xh-space-1_5` | combobox 的 group 部件 margin-block-start 覆盖槽。 |
-| `--xh-combobox-icon-size` | `positioner`<br>`root` | `--xh-icon-size` | `is([data-part='root'], [data-part='positioner'])`<br>`size=lg`<br>`size=sm` | `--xh-glyph-size-lg`<br>`--xh-glyph-size-md`<br>`--xh-glyph-size-sm` | combobox 的 positioner、root 部件 --xh-icon-size 覆盖槽。 |
-| `--xh-combobox-input-autofill-bg` | `input` | `box-shadow` | `-webkit-autofill`<br>`autofill` | `--xh-bg-canvas` | combobox 的 input 部件 box-shadow 覆盖槽。 |
-| `--xh-combobox-input-autofill-fg` | `input` | `-webkit-text-fill-color` | `-webkit-autofill`<br>`autofill` | `--xh-fg-default` | combobox 的 input 部件 -webkit-text-fill-color 覆盖槽。 |
-| `--xh-combobox-input-font-size` | `input` | `font-size` | `default` | `--xh-_combobox-font-size` | combobox 的 input 部件 font-size 覆盖槽。 |
-| `--xh-combobox-item-bg-hover` | `item` | `background` | `disabled`<br>`highlighted`<br>`not([data-disabled])` | `--xh-bg-subtle` | combobox 的 item 部件 background 覆盖槽。 |
-| `--xh-combobox-item-fg` | `item` | `color` | `default`<br>`state=checked` | `--xh-material-frosted-fg` | combobox 的 item 部件 color 覆盖槽。 |
-| `--xh-combobox-item-fg-selected` | `item` | `color` | `state=checked` | `--xh-combobox-item-fg` | combobox 的 item 部件 color 覆盖槽。 |
+| `--xh-combobox-icon-size` | `control`<br>`positioner`<br>`root` | `--xh-icon-size` | `is([data-part='root'], [data-part='positioner'])`<br>`size=lg`<br>`size=sm`<br>`xh-field-chrome` | `--xh-_field-size-glyph-size`<br>`--xh-glyph-size-lg`<br>`--xh-glyph-size-md`<br>`--xh-glyph-size-sm` | combobox 的 control、positioner、root 部件 --xh-icon-size 覆盖槽。 |
+| `--xh-combobox-input-autofill-bg` | `input` | `box-shadow` | `-webkit-autofill`<br>`autofill`<br>`xh-field-input` | `--xh-bg-canvas` | combobox 的 input 部件 box-shadow 覆盖槽。 |
+| `--xh-combobox-input-autofill-fg` | `input` | `-webkit-text-fill-color` | `-webkit-autofill`<br>`autofill`<br>`xh-field-input` | `--xh-fg-default` | combobox 的 input 部件 -webkit-text-fill-color 覆盖槽。 |
+| `--xh-combobox-input-fg` | `input` | `color` | `xh-field-input` | `--xh-combobox-control-fg` | combobox 的 input 部件 color 覆盖槽。 |
+| `--xh-combobox-input-font-size` | `input` | `font-size` | `xh-field-input` | `--xh-_combobox-font-size` | combobox 的 input 部件 font-size 覆盖槽。 |
+| `--xh-combobox-item-bg-hover` | `item` | `background-color` | `error`<br>`highlighted`<br>`hover`<br>`is(:focus-visible, [data-highlighted])`<br>`not([aria-disabled='true'], [aria-busy='true'], [data-error])`<br>`xh-collection-context=overlay` | `--xh-bg-subtle` | combobox 的 item 部件 background-color 覆盖槽。 |
+| `--xh-combobox-item-bg-pressed` | `item` | `background-color` | `error`<br>`is(:active, [data-pressed])`<br>`not([aria-disabled='true'], [aria-busy='true'], [data-error])`<br>`pressed`<br>`xh-collection-context=overlay` | `--xh-bg-subtle-hover` | combobox 的 item 部件 background-color 覆盖槽。 |
+| `--xh-combobox-item-check-fg` | `item` | `color` | `error`<br>`highlighted`<br>`hover`<br>`is(:active, [data-pressed])`<br>`is(:focus-visible, [data-highlighted])`<br>`not([aria-disabled='true'], [aria-busy='true'], [data-error])`<br>`pressed`<br>`state=checked`<br>`xh-collection-context=overlay`<br>`xh-collection-slot=indicator` | `--xh-combobox-item-indicator-fg` | combobox 的 item 部件 color 覆盖槽。 |
+| `--xh-combobox-item-fg` | `item` | `color` | `default`<br>`error`<br>`highlighted`<br>`hover`<br>`is(:active, [data-pressed])`<br>`is(:focus-visible, [data-highlighted])`<br>`not([aria-disabled='true'], [aria-busy='true'], [data-error])`<br>`pressed`<br>`xh-collection-context=overlay` | `--xh-material-frosted-fg` | combobox 的 item 部件 color 覆盖槽。 |
+| `--xh-combobox-item-fg-selected` | `item` | `color` | `error`<br>`highlighted`<br>`hover`<br>`is(:active, [data-pressed])`<br>`is(:focus-visible, [data-highlighted])`<br>`not([aria-disabled='true'], [aria-busy='true'], [data-error])`<br>`pressed`<br>`xh-collection-context=overlay` | `--xh-combobox-item-fg` | combobox 的 item 部件 color 覆盖槽。 |
 | `--xh-combobox-item-font-size` | `item` | `font-size` | `default` | `--xh-_combobox-font-size` | combobox 的 item 部件 font-size 覆盖槽。 |
-| `--xh-combobox-item-font-weight-selected` | `item` | `font-weight` | `state=checked` | `--xh-font-weight-regular` | combobox 的 item 部件 font-weight 覆盖槽。 |
-| `--xh-combobox-item-gap` | `item` | `gap` | `default` | `--xh-_combobox-gap` | combobox 的 item 部件 gap 覆盖槽。 |
-| `--xh-combobox-item-indicator-fg` | `item-indicator` | `color` | `default` | `--xh-_combobox-accent` | combobox 的 item-indicator 部件 color 覆盖槽。 |
+| `--xh-combobox-item-font-weight-selected` | `item` | `font-weight` | `error`<br>`highlighted`<br>`hover`<br>`is(:active, [data-pressed])`<br>`is(:focus-visible, [data-highlighted])`<br>`not([aria-disabled='true'], [aria-busy='true'], [data-error])`<br>`pressed`<br>`xh-collection-context=overlay` | `--xh-font-weight-regular` | combobox 的 item 部件 font-weight 覆盖槽。 |
+| `--xh-combobox-item-gap` | `item` | `margin-inline-end`<br>`margin-inline-start` | `xh-collection-slot=indicator`<br>`xh-collection-slot=prefix`<br>`xh-collection-slot=shortcut`<br>`xh-collection-slot=suffix` | `--xh-_combobox-gap` | combobox 的 item 部件 margin-inline-end、margin-inline-start 覆盖槽。 |
+| `--xh-combobox-item-indicator-fg` | `item` | `color` | `error`<br>`highlighted`<br>`hover`<br>`is(:active, [data-pressed])`<br>`is(:focus-visible, [data-highlighted])`<br>`not([aria-disabled='true'], [aria-busy='true'], [data-error])`<br>`pressed`<br>`state=checked`<br>`xh-collection-context=overlay`<br>`xh-collection-slot=indicator` | `--xh-_combobox-accent` | combobox 的 item 部件 color 覆盖槽。 |
 | `--xh-combobox-item-indicator-size` | `item-indicator` | `block-size`<br>`inline-size` | `default` | `--xh-control-indicator-size` | combobox 的 item-indicator 部件 block-size、inline-size 覆盖槽。 |
 | `--xh-combobox-item-leading` | `item` | `line-height` | `default` | `--xh-leading-normal` | combobox 的 item 部件 line-height 覆盖槽。 |
 | `--xh-combobox-item-px` | `item` | `padding-inline` | `default` | `--xh-_combobox-item-px` | combobox 的 item 部件 padding-inline 覆盖槽。 |
@@ -408,19 +430,19 @@
 | `--xh-combobox-item-radius` | `item` | `border-radius` | `default` | `--xh-shape-control` | combobox 的 item 部件 border-radius 覆盖槽。 |
 | `--xh-combobox-label-fg` | `label` | `color` | `default` | `--xh-fg-default` | combobox 的 label 部件 color 覆盖槽。 |
 | `--xh-combobox-label-fg-disabled` | `label` | `color` | `disabled` | `--xh-fg-subtle` | combobox 的 label 部件 color 覆盖槽。 |
-| `--xh-combobox-label-font-size` | `label` | `font-size` | `default` | `--xh-_combobox-label-font-size` | combobox 的 label 部件 font-size 覆盖槽。 |
+| `--xh-combobox-label-font-size` | `label` | `font-size` | `default` | `--xh-text-label-size` | combobox 的 label 部件 font-size 覆盖槽。 |
 | `--xh-combobox-label-font-weight` | `label` | `font-weight` | `default` | `--xh-text-label-weight` | combobox 的 label 部件 font-weight 覆盖槽。 |
 | `--xh-combobox-layer` | `positioner` | `z-index` | `default` | `--xh-_layer` | combobox 的 positioner 部件 z-index 覆盖槽。 |
 | `--xh-combobox-loading-fg` | `loading` | `color` | `default` | `--xh-material-frosted-fg-muted` | combobox 的 loading 部件 color 覆盖槽。 |
 | `--xh-combobox-loading-font-size` | `loading` | `font-size` | `default` | `--xh-_combobox-font-size` | combobox 的 loading 部件 font-size 覆盖槽。 |
 | `--xh-combobox-loading-px` | `loading` | `padding-inline` | `default` | `--xh-control-px-md` | combobox 的 loading 部件 padding-inline 覆盖槽。 |
 | `--xh-combobox-loading-py` | `loading` | `padding-block` | `default` | `--xh-space-3` | combobox 的 loading 部件 padding-block 覆盖槽。 |
-| `--xh-combobox-placeholder-fg` | `input` | `color` | `placeholder` | `--xh-fg-subtle` | combobox 的 input 部件 color 覆盖槽。 |
+| `--xh-combobox-placeholder-fg` | `input` | `color` | `placeholder`<br>`xh-field-input` | `--xh-fg-subtle` | combobox 的 input 部件 color 覆盖槽。 |
 <!-- xh-component-tokens:end -->
 
 ### 动效
 
-共享关键帧 `xh-overlay-slide-in` · `xh-overlay-slide-out` 由 `family/motion.css` 提供，皮肤 `@import` 它，单独引入仍成立；`background` · `border-color` · `color` · `rotate` · `scale` 走 `transition` 过渡。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
+共享关键帧 `xh-overlay-slide-in` · `xh-overlay-slide-out` 由 `family/motion.css` 提供，皮肤 `@import` 它，单独引入仍成立；`rotate` 走 `transition` 过渡。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
 
 皮肤之外还有一段：退场由适配器的退场闸门把关，动画播完才真收起。
 

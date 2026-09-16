@@ -14171,17 +14171,16 @@
         "trigger"
       ],
       "property": [
-        "background"
+        "background-color"
       ],
       "state": [
-        "default",
-        "disabled"
+        "default"
       ],
       "defaultToken": [
-        "transparent"
+        "--xh-_action-variant-bg-rest"
       ],
       "visibility": "public",
-      "description": "combobox 的 clear-trigger、trigger 部件 background 覆盖槽。"
+      "description": "combobox 的 clear-trigger、trigger 部件 background-color 覆盖槽。"
     },
     {
       "name": "--xh-combobox-action-bg-active",
@@ -14191,17 +14190,21 @@
         "trigger"
       ],
       "property": [
-        "background"
+        "background-color"
       ],
       "state": [
-        "active",
-        "not(:disabled)"
+        "disabled",
+        "is(:active, [data-pressed])",
+        "loading",
+        "not([data-disabled])",
+        "not([data-loading])",
+        "pressed"
       ],
       "defaultToken": [
-        "--xh-bg-subtle-active"
+        "--xh-_action-variant-bg-pressed"
       ],
       "visibility": "public",
-      "description": "combobox 的 clear-trigger、trigger 部件 background 覆盖槽。"
+      "description": "combobox 的 clear-trigger、trigger 部件 background-color 覆盖槽。"
     },
     {
       "name": "--xh-combobox-action-bg-hover",
@@ -14211,17 +14214,20 @@
         "trigger"
       ],
       "property": [
-        "background"
+        "background-color"
       ],
       "state": [
+        "disabled",
         "hover",
-        "not(:disabled)"
+        "loading",
+        "not([data-disabled])",
+        "not([data-loading])"
       ],
       "defaultToken": [
-        "--xh-bg-subtle-hover"
+        "--xh-_action-variant-bg-hover"
       ],
       "visibility": "public",
-      "description": "combobox 的 clear-trigger、trigger 部件 background 覆盖槽。"
+      "description": "combobox 的 clear-trigger、trigger 部件 background-color 覆盖槽。"
     },
     {
       "name": "--xh-combobox-action-fg",
@@ -14253,8 +14259,11 @@
         "color"
       ],
       "state": [
+        "disabled",
         "hover",
-        "not(:disabled)"
+        "loading",
+        "not([data-disabled])",
+        "not([data-loading])"
       ],
       "defaultToken": [
         "--xh-fg-default"
@@ -14295,7 +14304,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-shape-control"
+        "--xh-shape-inset"
       ],
       "visibility": "public",
       "description": "combobox 的 clear-trigger、trigger 部件 border-radius 覆盖槽。"
@@ -14309,16 +14318,18 @@
       ],
       "property": [
         "block-size",
-        "inline-size"
+        "inline-size",
+        "min-inline-size"
       ],
       "state": [
-        "default"
+        "default",
+        "xh-action-profile=field-inset"
       ],
       "defaultToken": [
-        "--xh-control-action-size"
+        "--xh-_action-profile-visual-size"
       ],
       "visibility": "public",
-      "description": "combobox 的 clear-trigger、trigger 部件 block-size、inline-size 覆盖槽。"
+      "description": "combobox 的 clear-trigger、trigger 部件 block-size、inline-size、min-inline-size 覆盖槽。"
     },
     {
       "name": "--xh-combobox-content-backdrop",
@@ -14580,16 +14591,16 @@
         "control"
       ],
       "property": [
-        "background"
+        "background-color"
       ],
       "state": [
-        "default"
+        "xh-field-chrome"
       ],
       "defaultToken": [
-        "--xh-_combobox-control-bg"
+        "--xh-_field-variant-bg-rest"
       ],
       "visibility": "public",
-      "description": "combobox 的 control 部件 background 覆盖槽。"
+      "description": "combobox 的 control 部件 background-color 覆盖槽。"
     },
     {
       "name": "--xh-combobox-control-bg-disabled",
@@ -14598,16 +14609,17 @@
         "control"
       ],
       "property": [
-        "background"
+        "background-color"
       ],
       "state": [
-        "disabled"
+        "disabled",
+        "xh-field-chrome"
       ],
       "defaultToken": [
-        "--xh-bg-subtle"
+        "--xh-_field-variant-bg-disabled"
       ],
       "visibility": "public",
-      "description": "combobox 的 control 部件 background 覆盖槽。"
+      "description": "combobox 的 control 部件 background-color 覆盖槽。"
     },
     {
       "name": "--xh-combobox-control-bg-hover",
@@ -14616,19 +14628,25 @@
         "control"
       ],
       "property": [
-        "background"
+        "background-color"
       ],
       "state": [
         "disabled",
         "hover",
-        "not([data-disabled], [data-readonly])",
-        "readonly"
+        "invalid",
+        "loading",
+        "not([data-disabled])",
+        "not([data-invalid])",
+        "not([data-loading])",
+        "not([data-readonly])",
+        "readonly",
+        "xh-field-chrome"
       ],
       "defaultToken": [
-        "--xh-_combobox-control-bg-hover"
+        "--xh-_field-variant-bg-hover"
       ],
       "visibility": "public",
-      "description": "combobox 的 control 部件 background 覆盖槽。"
+      "description": "combobox 的 control 部件 background-color 覆盖槽。"
     },
     {
       "name": "--xh-combobox-control-bg-readonly",
@@ -14637,16 +14655,17 @@
         "control"
       ],
       "property": [
-        "background"
+        "background-color"
       ],
       "state": [
-        "readonly"
+        "readonly",
+        "xh-field-chrome"
       ],
       "defaultToken": [
-        "--xh-bg-subtle"
+        "--xh-_field-variant-bg-read-only"
       ],
       "visibility": "public",
-      "description": "combobox 的 control 部件 background 覆盖槽。"
+      "description": "combobox 的 control 部件 background-color 覆盖槽。"
     },
     {
       "name": "--xh-combobox-control-border",
@@ -14658,10 +14677,10 @@
         "border"
       ],
       "state": [
-        "default"
+        "xh-field-chrome"
       ],
       "defaultToken": [
-        "--xh-_combobox-control-border"
+        "--xh-_field-variant-border-rest"
       ],
       "visibility": "public",
       "description": "combobox 的 control 部件 border 覆盖槽。"
@@ -14678,10 +14697,11 @@
       "state": [
         "disabled",
         "focus-within",
-        "not([data-disabled])"
+        "not([data-disabled])",
+        "xh-field-chrome"
       ],
       "defaultToken": [
-        "--xh-_tone"
+        "--xh-_field-variant-border-focus"
       ],
       "visibility": "public",
       "description": "combobox 的 control 部件 border-color 覆盖槽。"
@@ -14699,10 +14719,16 @@
         "disabled",
         "hover",
         "invalid",
-        "not([data-disabled], [data-invalid])"
+        "loading",
+        "not([data-disabled])",
+        "not([data-invalid])",
+        "not([data-loading])",
+        "not([data-readonly])",
+        "readonly",
+        "xh-field-chrome"
       ],
       "defaultToken": [
-        "--xh-_combobox-control-border-hover"
+        "--xh-_field-variant-border-hover"
       ],
       "visibility": "public",
       "description": "combobox 的 control 部件 border-color 覆盖槽。"
@@ -14717,10 +14743,11 @@
         "border-color"
       ],
       "state": [
-        "invalid"
+        "invalid",
+        "xh-field-chrome"
       ],
       "defaultToken": [
-        "--xh-border-invalid"
+        "--xh-_field-variant-border-invalid"
       ],
       "visibility": "public",
       "description": "combobox 的 control 部件 border-color 覆盖槽。"
@@ -14729,19 +14756,21 @@
       "name": "--xh-combobox-control-fg",
       "component": "combobox",
       "part": [
-        "control"
+        "control",
+        "input"
       ],
       "property": [
         "color"
       ],
       "state": [
-        "default"
+        "xh-field-chrome",
+        "xh-field-input"
       ],
       "defaultToken": [
         "--xh-fg-default"
       ],
       "visibility": "public",
-      "description": "combobox 的 control 部件 color 覆盖槽。"
+      "description": "combobox 的 control、input 部件 color 覆盖槽。"
     },
     {
       "name": "--xh-combobox-control-gap",
@@ -14753,7 +14782,7 @@
         "gap"
       ],
       "state": [
-        "default"
+        "xh-field-chrome"
       ],
       "defaultToken": [
         "--xh-_combobox-gap"
@@ -14768,16 +14797,24 @@
         "control"
       ],
       "property": [
-        "block-size"
+        "block-size",
+        "min-block-size"
       ],
       "state": [
-        "default"
+        "has([data-xh-field-input][data-xh-field-layout='multi-tag'])",
+        "has([data-xh-field-input][data-xh-field-layout='single-line'])",
+        "has([data-xh-field-input][data-xh-field-layout='textarea'])",
+        "xh-field-chrome",
+        "xh-field-input",
+        "xh-field-layout=multi-tag",
+        "xh-field-layout=single-line",
+        "xh-field-layout=textarea"
       ],
       "defaultToken": [
         "--xh-_combobox-h"
       ],
       "visibility": "public",
-      "description": "combobox 的 control 部件 block-size 覆盖槽。"
+      "description": "combobox 的 control 部件 block-size、min-block-size 覆盖槽。"
     },
     {
       "name": "--xh-combobox-control-min-w",
@@ -14790,7 +14827,8 @@
         "min-inline-size"
       ],
       "state": [
-        "default"
+        "default",
+        "xh-field-chrome"
       ],
       "defaultToken": [
         "--xh-control-min-w"
@@ -14808,33 +14846,13 @@
         "padding-inline"
       ],
       "state": [
-        "default"
+        "xh-field-chrome"
       ],
       "defaultToken": [
         "--xh-_combobox-px"
       ],
       "visibility": "public",
       "description": "combobox 的 control 部件 padding-inline 覆盖槽。"
-    },
-    {
-      "name": "--xh-combobox-control-py",
-      "component": "combobox",
-      "part": [
-        "control",
-        "input"
-      ],
-      "property": [
-        "padding-block"
-      ],
-      "state": [
-        "has([data-part='input'][data-multiline])",
-        "multiline"
-      ],
-      "defaultToken": [
-        "--xh-field-py"
-      ],
-      "visibility": "public",
-      "description": "combobox 的 control、input 部件 padding-block 覆盖槽。"
     },
     {
       "name": "--xh-combobox-control-radius",
@@ -14846,7 +14864,7 @@
         "border-radius"
       ],
       "state": [
-        "default"
+        "xh-field-chrome"
       ],
       "defaultToken": [
         "--xh-shape-control"
@@ -14864,10 +14882,10 @@
         "box-shadow"
       ],
       "state": [
-        "default"
+        "xh-field-chrome"
       ],
       "defaultToken": [
-        "--xh-_combobox-control-shadow"
+        "none"
       ],
       "visibility": "public",
       "description": "combobox 的 control 部件 box-shadow 覆盖槽。"
@@ -15092,6 +15110,7 @@
       "name": "--xh-combobox-icon-size",
       "component": "combobox",
       "part": [
+        "control",
         "positioner",
         "root"
       ],
@@ -15101,15 +15120,17 @@
       "state": [
         "is([data-part='root'], [data-part='positioner'])",
         "size=lg",
-        "size=sm"
+        "size=sm",
+        "xh-field-chrome"
       ],
       "defaultToken": [
+        "--xh-_field-size-glyph-size",
         "--xh-glyph-size-lg",
         "--xh-glyph-size-md",
         "--xh-glyph-size-sm"
       ],
       "visibility": "public",
-      "description": "combobox 的 positioner、root 部件 --xh-icon-size 覆盖槽。"
+      "description": "combobox 的 control、positioner、root 部件 --xh-icon-size 覆盖槽。"
     },
     {
       "name": "--xh-combobox-input-autofill-bg",
@@ -15122,7 +15143,8 @@
       ],
       "state": [
         "-webkit-autofill",
-        "autofill"
+        "autofill",
+        "xh-field-input"
       ],
       "defaultToken": [
         "--xh-bg-canvas"
@@ -15141,13 +15163,32 @@
       ],
       "state": [
         "-webkit-autofill",
-        "autofill"
+        "autofill",
+        "xh-field-input"
       ],
       "defaultToken": [
         "--xh-fg-default"
       ],
       "visibility": "public",
       "description": "combobox 的 input 部件 -webkit-text-fill-color 覆盖槽。"
+    },
+    {
+      "name": "--xh-combobox-input-fg",
+      "component": "combobox",
+      "part": [
+        "input"
+      ],
+      "property": [
+        "color"
+      ],
+      "state": [
+        "xh-field-input"
+      ],
+      "defaultToken": [
+        "--xh-combobox-control-fg"
+      ],
+      "visibility": "public",
+      "description": "combobox 的 input 部件 color 覆盖槽。"
     },
     {
       "name": "--xh-combobox-input-font-size",
@@ -15159,7 +15200,7 @@
         "font-size"
       ],
       "state": [
-        "default"
+        "xh-field-input"
       ],
       "defaultToken": [
         "--xh-_combobox-font-size"
@@ -15174,18 +15215,70 @@
         "item"
       ],
       "property": [
-        "background"
+        "background-color"
       ],
       "state": [
-        "disabled",
+        "error",
         "highlighted",
-        "not([data-disabled])"
+        "hover",
+        "is(:focus-visible, [data-highlighted])",
+        "not([aria-disabled='true'], [aria-busy='true'], [data-error])",
+        "xh-collection-context=overlay"
       ],
       "defaultToken": [
         "--xh-bg-subtle"
       ],
       "visibility": "public",
-      "description": "combobox 的 item 部件 background 覆盖槽。"
+      "description": "combobox 的 item 部件 background-color 覆盖槽。"
+    },
+    {
+      "name": "--xh-combobox-item-bg-pressed",
+      "component": "combobox",
+      "part": [
+        "item"
+      ],
+      "property": [
+        "background-color"
+      ],
+      "state": [
+        "error",
+        "is(:active, [data-pressed])",
+        "not([aria-disabled='true'], [aria-busy='true'], [data-error])",
+        "pressed",
+        "xh-collection-context=overlay"
+      ],
+      "defaultToken": [
+        "--xh-bg-subtle-hover"
+      ],
+      "visibility": "public",
+      "description": "combobox 的 item 部件 background-color 覆盖槽。"
+    },
+    {
+      "name": "--xh-combobox-item-check-fg",
+      "component": "combobox",
+      "part": [
+        "item"
+      ],
+      "property": [
+        "color"
+      ],
+      "state": [
+        "error",
+        "highlighted",
+        "hover",
+        "is(:active, [data-pressed])",
+        "is(:focus-visible, [data-highlighted])",
+        "not([aria-disabled='true'], [aria-busy='true'], [data-error])",
+        "pressed",
+        "state=checked",
+        "xh-collection-context=overlay",
+        "xh-collection-slot=indicator"
+      ],
+      "defaultToken": [
+        "--xh-combobox-item-indicator-fg"
+      ],
+      "visibility": "public",
+      "description": "combobox 的 item 部件 color 覆盖槽。"
     },
     {
       "name": "--xh-combobox-item-fg",
@@ -15198,7 +15291,14 @@
       ],
       "state": [
         "default",
-        "state=checked"
+        "error",
+        "highlighted",
+        "hover",
+        "is(:active, [data-pressed])",
+        "is(:focus-visible, [data-highlighted])",
+        "not([aria-disabled='true'], [aria-busy='true'], [data-error])",
+        "pressed",
+        "xh-collection-context=overlay"
       ],
       "defaultToken": [
         "--xh-material-frosted-fg"
@@ -15216,7 +15316,14 @@
         "color"
       ],
       "state": [
-        "state=checked"
+        "error",
+        "highlighted",
+        "hover",
+        "is(:active, [data-pressed])",
+        "is(:focus-visible, [data-highlighted])",
+        "not([aria-disabled='true'], [aria-busy='true'], [data-error])",
+        "pressed",
+        "xh-collection-context=overlay"
       ],
       "defaultToken": [
         "--xh-combobox-item-fg"
@@ -15252,7 +15359,14 @@
         "font-weight"
       ],
       "state": [
-        "state=checked"
+        "error",
+        "highlighted",
+        "hover",
+        "is(:active, [data-pressed])",
+        "is(:focus-visible, [data-highlighted])",
+        "not([aria-disabled='true'], [aria-busy='true'], [data-error])",
+        "pressed",
+        "xh-collection-context=overlay"
       ],
       "defaultToken": [
         "--xh-font-weight-regular"
@@ -15267,34 +15381,47 @@
         "item"
       ],
       "property": [
-        "gap"
+        "margin-inline-end",
+        "margin-inline-start"
       ],
       "state": [
-        "default"
+        "xh-collection-slot=indicator",
+        "xh-collection-slot=prefix",
+        "xh-collection-slot=shortcut",
+        "xh-collection-slot=suffix"
       ],
       "defaultToken": [
         "--xh-_combobox-gap"
       ],
       "visibility": "public",
-      "description": "combobox 的 item 部件 gap 覆盖槽。"
+      "description": "combobox 的 item 部件 margin-inline-end、margin-inline-start 覆盖槽。"
     },
     {
       "name": "--xh-combobox-item-indicator-fg",
       "component": "combobox",
       "part": [
-        "item-indicator"
+        "item"
       ],
       "property": [
         "color"
       ],
       "state": [
-        "default"
+        "error",
+        "highlighted",
+        "hover",
+        "is(:active, [data-pressed])",
+        "is(:focus-visible, [data-highlighted])",
+        "not([aria-disabled='true'], [aria-busy='true'], [data-error])",
+        "pressed",
+        "state=checked",
+        "xh-collection-context=overlay",
+        "xh-collection-slot=indicator"
       ],
       "defaultToken": [
         "--xh-_combobox-accent"
       ],
       "visibility": "public",
-      "description": "combobox 的 item-indicator 部件 color 覆盖槽。"
+      "description": "combobox 的 item 部件 color 覆盖槽。"
     },
     {
       "name": "--xh-combobox-item-indicator-size",
@@ -15436,7 +15563,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-_combobox-label-font-size"
+        "--xh-text-label-size"
       ],
       "visibility": "public",
       "description": "combobox 的 label 部件 font-size 覆盖槽。"
@@ -15559,7 +15686,8 @@
         "color"
       ],
       "state": [
-        "placeholder"
+        "placeholder",
+        "xh-field-input"
       ],
       "defaultToken": [
         "--xh-fg-subtle"

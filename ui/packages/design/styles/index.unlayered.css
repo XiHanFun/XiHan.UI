@@ -20334,7 +20334,13 @@
 }
 
 /* styles/combobox.css */
-/* 定义 combobox 样式。 */
+/* Combobox 独立皮肤同时传递引入字段视觉盒、字段内动作与浮层集合行；full bundle 递归去重。 */
+
+/* family/field-chrome.css */
+
+/* family/action-control.css */
+
+/* family/collection-item.css */
 
 /* 共享关键帧由 family/motion.css 提供，本皮肤 @import 它，单独引入仍成立。 */
 
@@ -20402,30 +20408,19 @@
 
 /* 私有槽同时声明在根与 positioner 上：浮层被搬到 portal 落点，不是根的后代，继承不过去 */
 [data-scope='combobox']:is([data-part='root'], [data-part='positioner']) {
-  /* 尺寸档只换这五个私有槽，输入行、标题与候选都从这两处继承它们，
-     换档不必给每个部件各写一条选择器 */
+  /* 尺寸档只换这几个私有槽，输入行与候选都从这两处继承它们，
+     换档不必给每个部件各写一条选择器；形态三档由家族按 control 上的 data-variant 生成，皮肤不再声明 */
   --xh-_combobox-h: var(--xh-control-h-md);
   --xh-_combobox-px: var(--xh-control-px-md);
   --xh-_combobox-item-py: var(--xh-list-option-py-md);
   --xh-_combobox-item-px: var(--xh-control-px-md);
   --xh-_combobox-gap: var(--xh-control-gap-md);
   --xh-_combobox-font-size: var(--xh-control-font-md);
-  --xh-_combobox-label-font-size: var(--xh-control-font-md);
 
   /* 作者塞进指示符槽的图标跟着控件的尺寸档走；它自己写了 size 时仍以作者的为准 */
   --xh-icon-size: var(--xh-combobox-icon-size, var(--xh-glyph-size-md));
 
-  /* 形态档只换这五个槽：缺省即 outline（描边 + 画布底 + 一档落影） */
-  --xh-_combobox-control-bg: var(--xh-bg-canvas);
-  /* 悬停那一档底：描边之外再换一次填充，语气在场时兑同族的淡底 */
-  --xh-_combobox-control-bg-hover: var(--xh-_tone-subtle, var(--xh-bg-subtle));
-  --xh-_combobox-control-border: var(--xh-border-control);
-  --xh-_combobox-control-border-hover: var(--xh-border-control-hover);
-  /* 一档静态落影把盒从页面里抬起一层，与描边一起画出盒的边界 */
-  --xh-_combobox-control-shadow: var(--xh-elevation-raised);
-
-  /* 聚焦环恒用固定环色；语气只落在勾选标记上，单选与多选正文使用同一颜色。 */
-  --xh-_combobox-ring: var(--xh-ring-focus);
+  /* 语气只落在勾选标记上，单选与多选正文使用同一颜色。 */
   --xh-_combobox-accent: var(--xh-_tone, var(--xh-fg-brand));
 }
 
@@ -20453,7 +20448,6 @@
   --xh-_combobox-item-px: var(--xh-control-px-sm);
   --xh-_combobox-gap: var(--xh-control-gap-sm);
   --xh-_combobox-font-size: var(--xh-control-font-sm);
-  --xh-_combobox-label-font-size: var(--xh-control-font-sm);
 
   --xh-icon-size: var(--xh-combobox-icon-size, var(--xh-glyph-size-sm));
 }
@@ -20465,42 +20459,13 @@
   --xh-_combobox-item-px: var(--xh-control-px-lg);
   --xh-_combobox-gap: var(--xh-control-gap-lg);
   --xh-_combobox-font-size: var(--xh-control-font-lg);
-  --xh-_combobox-label-font-size: var(--xh-control-font-lg);
 
   --xh-icon-size: var(--xh-combobox-icon-size, var(--xh-glyph-size-lg));
 }
 
-/* —— 形态 —— */
-/* 输入类不做 solid：实心底压着可编辑的文字，读起来像块不可点的色板。
-   形态只决定描边与底色怎么用，用哪族颜色由 data-tone 决定 */
-[data-scope='combobox']:is([data-part='root'], [data-part='positioner'])[data-variant='outline'] {
-  --xh-_combobox-control-bg: var(--xh-bg-canvas);
-  --xh-_combobox-control-bg-hover: var(--xh-_tone-subtle, var(--xh-bg-subtle));
-  --xh-_combobox-control-border: var(--xh-border-control);
-  --xh-_combobox-control-border-hover: var(--xh-border-control-hover);
-}
-
-/* 填充式：底色顶替描边，悬停时才浮出一道淡边 */
-[data-scope='combobox']:is([data-part='root'], [data-part='positioner'])[data-variant='subtle'] {
-  --xh-_combobox-control-bg: var(--xh-_tone-subtle, var(--xh-bg-subtle));
-  --xh-_combobox-control-bg-hover: var(--xh-_tone-subtle-hover, var(--xh-bg-subtle-hover));
-  --xh-_combobox-control-border: transparent;
-  --xh-_combobox-control-border-hover: var(--xh-_tone-border, var(--xh-border-control-hover));
-}
-
-/* 无框：底与常态描边透明，悬停与聚焦浮出描边。
-   落影一并关掉——底与描边都透明时它就是一片没有面的影子 */
-[data-scope='combobox']:is([data-part='root'], [data-part='positioner'])[data-variant='ghost'] {
-  --xh-_combobox-control-shadow: 0 0 0 transparent;
-  --xh-_combobox-control-bg: transparent;
-  --xh-_combobox-control-bg-hover: var(--xh-_tone-subtle, var(--xh-bg-subtle));
-  --xh-_combobox-control-border: transparent;
-  --xh-_combobox-control-border-hover: var(--xh-_tone-border, var(--xh-border-control-hover));
-}
-
 [data-scope='combobox'][data-part='label'] {
   color: var(--xh-combobox-label-fg, var(--xh-fg-default));
-  font-size: var(--xh-combobox-label-font-size, var(--xh-_combobox-label-font-size));
+  font-size: var(--xh-combobox-label-font-size, var(--xh-text-label-size));
   font-weight: var(--xh-combobox-label-font-weight, var(--xh-text-label-weight));
   line-height: var(--xh-leading-none);
 }
@@ -20510,151 +20475,77 @@
 }
 
 /* 画成一个框的是 control 而不是 input：输入框、展开按钮、清空按钮三者要看起来是一体的，
-   边框长在里面任何一个身上都会把另外两个割在框外 */
+   边框长在里面任何一个身上都会把另外两个割在框外。描边、底色、圆角、聚焦环、五态与悬停由
+   Field Chrome 家族画在 control 上，多行宿主的排版由家族按 input 上的布局值切换；
+   组件只映射既有公开槽（shadow 缺省 none：字段静息描边式、无影） */
 [data-scope='combobox'][data-part='control'] {
-  display: inline-flex;
-  align-items: center;
-  gap: var(--xh-combobox-control-gap, var(--xh-_combobox-gap));
-  min-inline-size: min(var(--xh-combobox-control-min-w, var(--xh-control-min-w)), 100%);
-  block-size: var(--xh-combobox-control-h, var(--xh-_combobox-h));
-  padding-inline: var(--xh-combobox-control-px, var(--xh-_combobox-px));
-  border: var(--xh-stroke-thin) solid var(--xh-combobox-control-border, var(--xh-_combobox-control-border));
-  border-radius: var(--xh-combobox-control-radius, var(--xh-shape-control));
-  background: var(--xh-combobox-control-bg, var(--xh-_combobox-control-bg));
-  box-shadow: var(--xh-combobox-control-shadow, var(--xh-_combobox-control-shadow));
-  color: var(--xh-combobox-control-fg, var(--xh-fg-default));
-  transition:
-    background var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
-    border-color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
+  --xh-field-control-height: var(--xh-combobox-control-h, var(--xh-_combobox-h));
+  --xh-field-control-padding-inline: var(--xh-combobox-control-px, var(--xh-_combobox-px));
+  --xh-field-control-gap: var(--xh-combobox-control-gap, var(--xh-_combobox-gap));
+  --xh-field-control-min-inline-size: var(--xh-combobox-control-min-w, var(--xh-control-min-w));
+  --xh-field-control-radius: var(--xh-combobox-control-radius, var(--xh-shape-control));
+  --xh-field-bg-rest: var(--xh-combobox-control-bg, var(--xh-_field-variant-bg-rest));
+  --xh-field-bg-hover: var(--xh-combobox-control-bg-hover, var(--xh-_field-variant-bg-hover));
+  --xh-field-bg-read-only: var(--xh-combobox-control-bg-readonly, var(--xh-_field-variant-bg-read-only));
+  --xh-field-bg-disabled: var(--xh-combobox-control-bg-disabled, var(--xh-_field-variant-bg-disabled));
+  --xh-field-fg-rest: var(--xh-combobox-control-fg, var(--xh-fg-default));
+  --xh-field-border-rest: var(--xh-combobox-control-border, var(--xh-_field-variant-border-rest));
+  --xh-field-border-hover: var(--xh-combobox-control-border-hover, var(--xh-_field-variant-border-hover));
+  --xh-field-border-focus: var(--xh-combobox-control-border-focus, var(--xh-_field-variant-border-focus));
+  --xh-field-border-invalid: var(--xh-combobox-control-border-invalid, var(--xh-_field-variant-border-invalid));
+  --xh-field-ring-focus: var(--xh-ring-focus);
+  --xh-field-ring-invalid: var(--xh-ring-invalid);
+  --xh-field-shadow-rest: var(--xh-combobox-control-shadow, none);
+  /* 家族 chrome 会重写 --xh-icon-size，使用者图标槽必须经桥接槽下发才能在盒内生效 */
+  --xh-field-glyph-size: var(--xh-combobox-icon-size, var(--xh-_field-size-glyph-size));
 }
 
 [data-scope='combobox'][data-part='control'][hidden] {
   display: none;
 }
 
-/* hover 只在中性态换描边：invalid 正拿边框颜色说事，被 hover 盖掉那条信息就没了 */
-[data-scope='combobox'][data-part='control']:hover:not([data-disabled], [data-invalid]) {
-  border-color: var(--xh-combobox-control-border-hover, var(--xh-_combobox-control-border-hover));
-}
-
-/* 描边之外再换一档填充：只挪一格描边色的悬停在浅底上几乎读不出来。
-   只读盒的底色正说着「改不动」，不参与换填充 */
-[data-scope='combobox'][data-part='control']:hover:not([data-disabled], [data-readonly]) {
-  background: var(--xh-combobox-control-bg-hover, var(--xh-_combobox-control-bg-hover));
-}
-
-/* 焦点环画在 control 上而不是 input 上：视觉上的「框」是 control，
-   环若长在里面那个透明的 input 身上，就会缩在文字区里、与框错开一圈。
-   input 是这里唯一可聚焦的常规节点，:focus-within 与它的 :focus-visible 等价 */
-[data-scope='combobox'][data-part='control']:focus-within:not([data-disabled]) {
-  border-color: var(--xh-combobox-control-border-focus, var(--xh-_tone, var(--xh-border-control-focus)));
-  outline: var(--xh-ring-width) solid var(--xh-_combobox-ring);
-  outline-offset: var(--xh-ring-offset);
-}
-
-[data-scope='combobox'][data-part='control'][data-invalid] {
-  border-color: var(--xh-combobox-control-border-invalid, var(--xh-border-invalid));
-
-  /* 校验失败时环也跟着变红：两圈等宽相邻却一红一蓝，读的人不知道哪个才是当前状态 */
-  --xh-_combobox-ring: var(--xh-ring-invalid);
-}
-
-/* 只读仍可聚焦、可复制，所以不置灰，只把底色压下去表示"改不动" */
-[data-scope='combobox'][data-part='control'][data-readonly] {
-  background: var(--xh-combobox-control-bg-readonly, var(--xh-bg-subtle));
-}
-
-[data-scope='combobox'][data-part='control'][data-disabled] {
-  background: var(--xh-combobox-control-bg-disabled, var(--xh-bg-subtle));
-  color: var(--xh-fg-disabled);
-}
-
 /* input 是单体表单控件，禁用走原生 disabled（候选那边一律 aria-disabled）。
-   它自己不画框也不画环，两者都归 control */
+   它自己不画框也不画环，两者都归 control；边框 / 底 / 内距的重置、占位色与自动填充回铺由家族按
+   data-xh-field-input 给（含撑满剩余宽度的 flex:1），多行宿主的 block-size:auto 与只许纵向拉伸同由家族的 textarea 布局给 */
 [data-scope='combobox'][data-part='input'] {
-  flex: 1;
-  min-inline-size: 0;
-  block-size: 100%;
-  padding: 0;
-  border: 0;
-  background: transparent;
-  color: inherit;
-  /* 表单控件不继承页面字体，只给字号会让输入框用 UA 默认字族，与周围文本对不上 */
-  font-family: inherit;
-  font-size: var(--xh-combobox-input-font-size, var(--xh-_combobox-font-size));
-  line-height: var(--xh-leading-normal);
+  --xh-field-input-fg: var(--xh-combobox-input-fg, var(--xh-combobox-control-fg, var(--xh-fg-default)));
+  --xh-field-input-font-size: var(--xh-combobox-input-font-size, var(--xh-_combobox-font-size));
+  --xh-field-placeholder-fg: var(--xh-combobox-placeholder-fg, var(--xh-fg-subtle));
+  --xh-field-autofill-bg: var(--xh-combobox-input-autofill-bg, var(--xh-bg-canvas));
+  --xh-field-autofill-fg: var(--xh-combobox-input-autofill-fg, var(--xh-fg-default));
 }
 
 [data-scope='combobox'][data-part='input'][hidden] {
   display: none;
 }
 
-/* 多行宿主：输入行不再是固定一行高，改由 textarea 自己的行数撑开。
-   两个按钮跟着贴到顶上对齐首行，不然它们会浮在整块文字的正中间 */
-[data-scope='combobox'][data-part='control']:has([data-part='input'][data-multiline]) {
-  align-items: start;
-  block-size: auto;
-  padding-block: var(--xh-combobox-control-py, var(--xh-field-py));
-}
-
-[data-scope='combobox'][data-part='input'][data-multiline] {
-  block-size: auto;
-  /* 只许纵向拉伸：横向拉宽会把浮层与输入行的对齐拽歪 */
-  resize: vertical;
-}
-
-[data-scope='combobox'][data-part='input']::placeholder {
-  color: var(--xh-combobox-placeholder-fg, var(--xh-fg-subtle));
-}
-
-/* 焦点环已由 control 的 :focus-within 画好，这里再画一圈会套成两层 */
-[data-scope='combobox'][data-part='input']:focus-visible {
-  outline: none;
-}
-
-[data-scope='combobox'][data-part='input']:disabled {
-  color: var(--xh-fg-disabled);
-}
-
-/* 自动填充：引擎给填过的框强加一套系统色（多数是黄底黑字），盖得过 background 与 color，
-   深色档下就剩一个不跟主题走的黄框。底改用 inset 阴影铺回来，扩散量 100vmax 填满内容盒；
-   字改用 -webkit-text-fill-color 接回来，那是这个态下唯一还听样式表的前景通道。
-   不去拉长 transition 把系统底推迟显现：那只是把它藏起来，减弱动效通道一关过渡就当场露出。
-   两个选择器名分写两条：一条选择器列表里只要有一个名字不被认识，整条规则就被丢弃。
-   框的底画在 control 上，input 本身是透明分段，所以铺的是 control 那一档的底；
-   取不透明的面令牌而不是 --xh-_combobox-control-bg：后者在 ghost 档下是透明的，铺了等于没铺。 */
-[data-scope='combobox'][data-part='input']:autofill {
-  box-shadow: inset 0 0 0 100vmax var(--xh-combobox-input-autofill-bg, var(--xh-bg-canvas));
-  -webkit-text-fill-color: var(--xh-combobox-input-autofill-fg, var(--xh-fg-default));
-}
-
-[data-scope='combobox'][data-part='input']:-webkit-autofill {
-  box-shadow: inset 0 0 0 100vmax var(--xh-combobox-input-autofill-bg, var(--xh-bg-canvas));
-  -webkit-text-fill-color: var(--xh-combobox-input-autofill-fg, var(--xh-fg-default));
-}
-
-/* 两个按钮同一副长相：贴在框内右侧的小方钮，不占宽度也不撑高 control */
+/* 两个按钮同一副长相：贴在框内末端的小方钮，不占宽度也不撑高 control。正方视觉盒、inset 圆角、
+   悬停 100 / 按下 200 与 0.97 按压、粗指针热区、禁用面与 :focus-visible 关环（盒的 :focus-within
+   已画了一圈）全由 Action Control 的 field-inset ghost 档给，组件只映射既有覆盖槽 */
 [data-scope='combobox'][data-part='trigger'],
 [data-scope='combobox'][data-part='clear-trigger'] {
-  display: inline-flex;
-  flex: none;
-  align-items: center;
-  justify-content: center;
-  inline-size: var(--xh-combobox-action-size, var(--xh-control-action-size));
-  block-size: var(--xh-combobox-action-size, var(--xh-control-action-size));
-  padding: 0;
-  border: 0;
-  border-radius: var(--xh-combobox-action-radius, var(--xh-shape-control));
-  background: var(--xh-combobox-action-bg, transparent);
-  color: var(--xh-combobox-action-fg, var(--xh-fg-muted));
-  font-family: inherit;
-  font-size: var(--xh-combobox-action-font-size, var(--xh-text-secondary-size));
-  line-height: var(--xh-leading-none);
-  cursor: pointer;
-  user-select: none;
-  transition: background var(--xh-motion-duration-micro) var(--xh-motion-ease-enter), scale var(--xh-motion-duration-release) var(--xh-motion-ease-release);
+  --xh-action-visual-size: var(--xh-combobox-action-size, var(--xh-_action-profile-visual-size));
+  --xh-action-min-inline-size: var(--xh-combobox-action-size, var(--xh-_action-profile-visual-size));
+  --xh-action-radius: var(--xh-combobox-action-radius, var(--xh-shape-inset));
+  /* 底色阶梯由 ghost 档给（透明 → 100 → 200），使用者槽只作覆盖入口 */
+  --xh-action-bg-rest: var(--xh-combobox-action-bg, var(--xh-_action-variant-bg-rest));
+  --xh-action-bg-hover: var(--xh-combobox-action-bg-hover, var(--xh-_action-variant-bg-hover));
+  --xh-action-bg-pressed: var(--xh-combobox-action-bg-active, var(--xh-_action-variant-bg-pressed));
+  --xh-action-fg-rest: var(--xh-combobox-action-fg, var(--xh-fg-muted));
+  --xh-action-fg-hover: var(--xh-combobox-action-fg-hover, var(--xh-fg-default));
+  --xh-action-border-rest: transparent;
+  --xh-action-highlight-rest: transparent;
+  --xh-action-shadow-rest: none;
+  --xh-action-shadow-hover: none;
+  --xh-action-shadow-pressed: none;
+  --xh-action-font-size: var(--xh-combobox-action-font-size, var(--xh-text-secondary-size));
+  /* 配方尚未把 profile 字形档灌进 --xh-icon-size，钮内字形先按 field-inset 档逐钮取值 */
+  --xh-icon-size: var(--xh-_action-profile-glyph-size);
+
+  border-width: 0;
 }
 
+/* 没值时连接层给的是 hidden 属性；家族那条 display 会把 UA 规则盖掉 */
 [data-scope='combobox'][data-part='trigger'][hidden],
 [data-scope='combobox'][data-part='clear-trigger'][hidden] {
   display: none;
@@ -20668,7 +20559,7 @@
 }
 
 /* 展开时箭头翻个面，指向与列表的去向一致。转的是字形或作者塞的图形，不转按钮本体：
-   按钮自带悬停底色，整个按钮转会带着底色一起转 */
+   按钮自带悬停底色，整个按钮转会带着底色一起转；家族按压缩放的是整钮，不影响这里的转向 */
 [data-scope='combobox'][data-part='trigger']:empty::before,
 [data-scope='combobox'][data-part='trigger'] > * {
   transition: rotate var(--xh-motion-duration-micro) var(--xh-motion-ease-enter-strong);
@@ -20698,34 +20589,10 @@
   mask: var(--xh-glyph-mark-close) center / contain no-repeat;
 }
 
+/* 打开中与悬停同档：展开钮不另上底，方向由箭头转向承担 */
 [data-scope='combobox'][data-part='trigger'][data-state='open']:empty::before,
 [data-scope='combobox'][data-part='trigger'][data-state='open'] > * {
   rotate: 180deg;
-}
-
-[data-scope='combobox'][data-part='trigger']:hover:not(:disabled),
-[data-scope='combobox'][data-part='clear-trigger']:hover:not(:disabled) {
-  background: var(--xh-combobox-action-bg-hover, var(--xh-bg-subtle-hover));
-  color: var(--xh-combobox-action-fg-hover, var(--xh-fg-default));
-}
-
-[data-scope='combobox'][data-part='trigger']:active:not(:disabled),
-[data-scope='combobox'][data-part='clear-trigger']:active:not(:disabled) {
-  background: var(--xh-combobox-action-bg-active, var(--xh-bg-subtle-active));
-  scale: var(--xh-motion-scale-press);
-  transition-duration: var(--xh-motion-duration-press);
-  transition-timing-function: var(--xh-motion-ease-press);
-}
-
-/* 两个按钮都在盒里，盒的 :focus-within 已经画了一圈；这里再画一圈就是框里套框 */
-[data-scope='combobox'][data-part='trigger']:focus-visible,
-[data-scope='combobox'][data-part='clear-trigger']:focus-visible {
-  outline: none;
-}
-
-[data-scope='combobox'][data-part='trigger']:disabled {
-  background: var(--xh-combobox-action-bg, transparent);
-  color: var(--xh-fg-disabled);
 }
 
 [data-scope='combobox'][data-part='content'] {
@@ -20755,6 +20622,8 @@
   -webkit-backdrop-filter: var(--xh-combobox-content-backdrop, var(--xh-material-frosted-backdrop));
   backdrop-filter: var(--xh-combobox-content-backdrop, var(--xh-material-frosted-backdrop));
   overflow-y: auto;
+  /* 浮层滚动面：滚到头不把页面一起带走 */
+  overscroll-behavior: contain;
   pointer-events: auto;
 }
 
@@ -20825,53 +20694,55 @@
   display: none;
 }
 
+/* 候选行：网格、尺寸档、悬停 / 高亮 100、按下 200、禁用面与选中标记由 Collection Item 家族按 overlay
+   语境给（选中 = 透明底 + 行尾对号，正文保持 rest 色与常规字重），公开 Combobox 槽只映射到家族合同 */
 [data-scope='combobox'][data-part='item'] {
-  display: flex;
-  align-items: center;
-  gap: var(--xh-combobox-item-gap, var(--xh-_combobox-gap));
-  padding-block: var(--xh-combobox-item-py, var(--xh-_combobox-item-py));
-  padding-inline: var(--xh-combobox-item-px, var(--xh-_combobox-item-px));
-  border-radius: var(--xh-combobox-item-radius, var(--xh-shape-control));
-  color: var(--xh-combobox-item-fg, var(--xh-material-frosted-fg));
-  font-size: var(--xh-combobox-item-font-size, var(--xh-_combobox-font-size));
+  --xh-collection-block-padding: var(--xh-combobox-item-py, var(--xh-_combobox-item-py));
+  --xh-collection-inline-padding: var(--xh-combobox-item-px, var(--xh-_combobox-item-px));
+  --xh-collection-gap: var(--xh-combobox-item-gap, var(--xh-_combobox-gap));
+  --xh-collection-font-size: var(--xh-combobox-item-font-size, var(--xh-_combobox-font-size));
+  --xh-collection-radius: var(--xh-combobox-item-radius, var(--xh-shape-control));
+  --xh-collection-fg-rest: var(--xh-combobox-item-fg, var(--xh-material-frosted-fg));
+  --xh-collection-fg-hover: var(--xh-combobox-item-fg, var(--xh-material-frosted-fg));
+  --xh-collection-fg-keyboard-highlight: var(--xh-combobox-item-fg, var(--xh-material-frosted-fg));
+  --xh-collection-fg-selected: var(--xh-combobox-item-fg-selected, var(--xh-combobox-item-fg, var(--xh-material-frosted-fg)));
+  --xh-collection-fg-selected-highlight: var(--xh-combobox-item-fg-selected, var(--xh-combobox-item-fg, var(--xh-material-frosted-fg)));
+  --xh-collection-fg-selected-hover: var(--xh-combobox-item-fg-selected, var(--xh-combobox-item-fg, var(--xh-material-frosted-fg)));
+  --xh-collection-fg-selected-pressed: var(--xh-combobox-item-fg-selected, var(--xh-combobox-item-fg, var(--xh-material-frosted-fg)));
+  --xh-collection-fg-pressed: var(--xh-combobox-item-fg, var(--xh-material-frosted-fg));
+  --xh-collection-font-weight-selected: var(--xh-combobox-item-font-weight-selected, var(--xh-font-weight-regular));
+  --xh-collection-font-weight-selected-highlight: var(--xh-combobox-item-font-weight-selected, var(--xh-font-weight-regular));
+  --xh-collection-font-weight-selected-hover: var(--xh-combobox-item-font-weight-selected, var(--xh-font-weight-regular));
+  --xh-collection-font-weight-selected-pressed: var(--xh-combobox-item-font-weight-selected, var(--xh-font-weight-regular));
+  --xh-collection-bg-hover: var(--xh-combobox-item-bg-hover, var(--xh-bg-subtle));
+  --xh-collection-bg-keyboard-highlight: var(--xh-combobox-item-bg-hover, var(--xh-bg-subtle));
+  --xh-collection-bg-selected-highlight: var(--xh-combobox-item-bg-hover, var(--xh-bg-subtle));
+  --xh-collection-bg-selected-hover: var(--xh-combobox-item-bg-hover, var(--xh-bg-subtle));
+  --xh-collection-bg-pressed: var(--xh-combobox-item-bg-pressed, var(--xh-bg-subtle-hover));
+  --xh-collection-bg-selected-pressed: var(--xh-combobox-item-bg-pressed, var(--xh-bg-subtle-hover));
+  /* data-highlighted 同时覆盖指针与键盘路径；焦点恒在输入框，候选不接环 */
+  --xh-collection-outline-keyboard-highlight: transparent;
+  --xh-collection-outline-selected-highlight: transparent;
+  --xh-collection-indicator-fg-rest: var(--xh-combobox-item-check-fg, var(--xh-combobox-item-indicator-fg, var(--xh-_combobox-accent)));
+  --xh-collection-indicator-fg-checked: var(--xh-combobox-item-check-fg, var(--xh-combobox-item-indicator-fg, var(--xh-_combobox-accent)));
+  --xh-collection-indicator-fg-selected: var(--xh-combobox-item-check-fg, var(--xh-combobox-item-indicator-fg, var(--xh-_combobox-accent)));
+  --xh-collection-indicator-fg-selected-hover: var(--xh-combobox-item-check-fg, var(--xh-combobox-item-indicator-fg, var(--xh-_combobox-accent)));
+  --xh-collection-indicator-fg-selected-highlight: var(--xh-combobox-item-check-fg, var(--xh-combobox-item-indicator-fg, var(--xh-_combobox-accent)));
+  --xh-collection-indicator-fg-selected-pressed: var(--xh-combobox-item-check-fg, var(--xh-combobox-item-indicator-fg, var(--xh-_combobox-accent)));
+
   /* 行高留出文字的上下伸展空间，行内那层 overflow:hidden 才不会把字削掉 */
   line-height: var(--xh-combobox-item-leading, var(--xh-leading-normal));
   white-space: nowrap;
-  cursor: pointer;
   user-select: none;
-  transition:
-    background var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
-    color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
 }
 
-/* 候选按需收起（作者自己藏掉某几条）时要让位，有 display 就得补这条 */
+/* 候选按需收起（作者自己藏掉某几条）时要让位，家族给了 display 就得补这条 */
 [data-scope='combobox'][data-part='item'][hidden] {
   display: none;
 }
 
-/* 键盘锚点走中性灰轻档。只认 data-highlighted，不写 :hover：指针划过时连接层已经把高亮搬过来了，
-   两套底色各画各的会出现"鼠标停在 A 上、回车提交的却是 B" */
-[data-scope='combobox'][data-part='item'][data-highlighted]:not([data-disabled]) {
-  background: var(--xh-combobox-item-bg-hover, var(--xh-bg-subtle));
-}
-
-/* 单选、多选统一由末端对号表达选中；正文不换品牌色、不增重，
-   中性底整条通道留给 data-highlighted。两个状态叠加时仍能同时看见。 */
-[data-scope='combobox'][data-part='item'][data-state='checked'] {
-  color: var(--xh-combobox-item-fg-selected, var(--xh-combobox-item-fg, var(--xh-material-frosted-fg)));
-  font-weight: var(--xh-combobox-item-font-weight-selected, var(--xh-font-weight-regular));
-}
-
-/* 禁用走 aria-disabled 而非原生 disabled（原生 disabled 不派 click，禁用守卫就走不到），
-   所以只能靠 data-disabled 表达，写 :disabled 永远不命中 */
-[data-scope='combobox'][data-part='item'][data-disabled] {
-  color: var(--xh-fg-disabled);
-  cursor: not-allowed;
-}
-
+/* 正文落在家族网格的 text 列；网格项默认最小尺寸是内容尺寸，不归零则长文本把行撑破、省略号轮不上 */
 [data-scope='combobox'][data-part='item-text'] {
-  flex: 1;
-  /* 弹性项默认 min-width: auto 不肯收缩到内容以下，省略号因此永不生效 */
   min-inline-size: 0;
   overflow: hidden;
   white-space: nowrap;
@@ -20882,17 +20753,14 @@
   display: none;
 }
 
-/* 勾选标记只在选中项上出现；未选中时占位不塌，切换选中不引起行宽抖动 */
+/* 勾选标记落在家族网格的 indicator 列，只在选中项上显形（家族按 aria-selected / data-state=checked 给）；
+   未选中时占位不塌，切换选中不引起行宽抖动 */
 [data-scope='combobox'][data-part='item-indicator'] {
   display: inline-flex;
-  flex: none;
   align-items: center;
   justify-content: center;
   inline-size: var(--xh-combobox-item-indicator-size, var(--xh-control-indicator-size));
   block-size: var(--xh-combobox-item-indicator-size, var(--xh-control-indicator-size));
-  margin-inline-start: auto;
-  color: var(--xh-combobox-item-indicator-fg, var(--xh-_combobox-accent));
-  visibility: hidden;
 }
 
 [data-scope='combobox'][data-part='item-indicator'][hidden] {
@@ -20909,14 +20777,6 @@
   background-color: currentColor;
   -webkit-mask: var(--xh-glyph-mark-check) center / contain no-repeat;
   mask: var(--xh-glyph-mark-check) center / contain no-repeat;
-}
-
-[data-scope='combobox'][data-part='item-indicator'][data-state='checked'] {
-  visibility: visible;
-}
-
-[data-scope='combobox'][data-part='item-indicator'][data-disabled] {
-  color: var(--xh-fg-disabled);
 }
 
 /* 空态提示保持为 listbox 的同级 role=status；它只承载文字，表面由同格 content 统一绘制。 */

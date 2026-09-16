@@ -115,7 +115,6 @@ const HOOKS = {
   'table:data-loading': '加载中的观感由 loading 部件承载（table.css:746 起，收起时 hidden）',
   // 集合件取条目在途：那一格由只在取数期在场的 loading 部件顶上来
   'cascader:data-loading': '在途的观感由只在取数期在场的 loading 部件承载，根上这一位是给作者接线的镜像',
-  'combobox:data-loading': '在途的观感由只在取数期在场的 loading 部件承载，根上这一位是给作者接线的镜像',
   'listbox:data-loading': '在途的观感由只在取数期在场的 loading 部件承载，根上这一位是给作者接线的镜像',
 
   'select:data-loading': '在途的观感由只在取数期在场的 loading 部件承载，根上这一位是给作者接线的镜像',

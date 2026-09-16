@@ -415,13 +415,65 @@ describe('connectCombobox 属性输出', () => {
 })
 
 describe('connectCombobox 形态轴', () => {
-  it('不写 variant 时 root 与 positioner 落 outline；写 subtle 如实落', () => {
+  it('不写 variant 时 root、positioner 与 control 都落 outline；写 subtle 如实落', () => {
     const fallback = mount()
     expect(fallback.root.getAttribute('data-variant')).toBe('outline')
     expect(fallback.positioner.getAttribute('data-variant')).toBe('outline')
+    expect(fallback.control.getAttribute('data-variant')).toBe('outline')
     const subtle = mount({ variant: 'subtle' })
     expect(subtle.root.getAttribute('data-variant')).toBe('subtle')
     expect(subtle.positioner.getAttribute('data-variant')).toBe('subtle')
+    expect(subtle.control.getAttribute('data-variant')).toBe('subtle')
+  })
+})
+
+describe('connectCombobox 家族角色', () => {
+  it('control 投影 Field Chrome 的稳定角色与尺寸档（缺省 md），三个状态属性都在盒上', () => {
+    const h = mount({ readOnly: true, invalid: true })
+    expect(h.control.getAttribute('data-xh-field-chrome')).toBe('')
+    expect(h.control.getAttribute('data-xh-field-size')).toBe('md')
+    expect(h.control.getAttribute('data-readonly')).toBe('')
+    expect(h.control.getAttribute('data-invalid')).toBe('')
+    expect(mount({ disabled: true }).control.getAttribute('data-disabled')).toBe('')
+    expect(mount({ size: 'lg' }).control.getAttribute('data-xh-field-size')).toBe('lg')
+  })
+
+  it('input 投影 field-input 与 single-line 布局；多行宿主换 textarea 布局', () => {
+    const h = mount()
+    expect(h.input.getAttribute('data-xh-field-input')).toBe('')
+    expect(h.input.getAttribute('data-xh-field-layout')).toBe('single-line')
+    const multi = h.api().getInputProps({ as: 'textarea' }) as Record<string, unknown>
+    expect(multi['data-xh-field-layout']).toBe('textarea')
+  })
+
+  it('展开钮常驻、清空钮按 has-value 显隐，都走 field-inset ghost 档，尺寸档随 size 缺省 md', () => {
+    const h = mount()
+    for (const el of [h.trigger, h.clear]) {
+      expect(el.getAttribute('data-xh-action-control')).toBe('')
+      expect(el.getAttribute('data-xh-action-profile')).toBe('field-inset')
+      expect(el.getAttribute('data-xh-action-variant')).toBe('ghost')
+      expect(el.getAttribute('data-xh-action-size')).toBe('md')
+    }
+    expect(h.trigger.getAttribute('data-xh-action-display')).toBe('always')
+    expect(h.clear.getAttribute('data-xh-action-display')).toBe('has-value')
+    expect(h.clear.hasAttribute('data-xh-action-has-value')).toBe(false)
+    type(h.input, 'a')
+    expect(h.clear.getAttribute('data-xh-action-has-value')).toBe('')
+    expect(mount({ size: 'sm' }).trigger.getAttribute('data-xh-action-size')).toBe('sm')
+  })
+
+  it('候选行投影 Collection Item 的 overlay 语境与尺寸档，正文与对号各落自己的槽', () => {
+    const h = mount({ defaultValue: 'apple' })
+    const apple = h.item('apple')
+    expect(apple.getAttribute('data-xh-collection-item')).toBe('')
+    expect(apple.getAttribute('data-xh-collection-size')).toBe('md')
+    expect(apple.getAttribute('data-xh-collection-context')).toBe('overlay')
+    const text = h.api().getItemTextProps({ value: 'apple' }) as Record<string, unknown>
+    const indicator = h.api().getItemIndicatorProps({ value: 'apple' }) as Record<string, unknown>
+    expect(text['data-xh-collection-slot']).toBe('text')
+    expect(indicator['data-xh-collection-slot']).toBe('indicator')
+    expect(indicator['aria-hidden']).toBe(true)
+    expect(mount({ size: 'lg' }).item('apple').getAttribute('data-xh-collection-size')).toBe('lg')
   })
 })
 
