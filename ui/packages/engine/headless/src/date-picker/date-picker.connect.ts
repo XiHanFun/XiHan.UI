@@ -375,8 +375,13 @@ export function connectDatePicker<T extends PropTypes>(
     // 输入行整体，同时是浮层的定位锚点
     // 点输入行就展开：日期这种东西多数人是来挑的，不该逼着先去点那个小箭头。
     // 触发钮仍是可选部件，留着给键盘与读屏用户一个明写的入口（它才带 aria-haspopup / aria-expanded）
+    // control 是唯一的视觉盒：描边、底色、聚焦环由 Field Chrome 家族画在它身上，
+    // 三个状态属性供家族按禁用 / 只读 / 校验切换盒观感；size 缺省 md，variant 与 root 同源
     getControlProps: () => normalize.element({
       ...parts.control.attrs,
+      'data-xh-field-chrome': '',
+      'data-xh-field-size': prop('size') ?? 'md',
+      'data-variant': variant,
       'data-state': stateAttr,
       'data-disabled': dataAttr(disabled),
       'data-readonly': dataAttr(readOnly),
@@ -436,8 +441,15 @@ export function connectDatePicker<T extends PropTypes>(
       })
     },
 
+    // 日历钮走 Action Control 的 field-inset ghost 档：字段底是 canvas，透明 → 悬停 100 → 按下 200；
+    // 常驻在场，有值时由皮肤按「清空钮在场」收起；打开中与悬停同档、不另上底，方向由浮层承担
     getTriggerProps: () => normalize.button({
       ...parts.trigger.attrs,
+      'data-xh-action-control': '',
+      'data-xh-action-profile': 'field-inset',
+      'data-xh-action-variant': 'ghost',
+      'data-xh-action-display': 'always',
+      'data-xh-action-size': prop('size') ?? 'md',
       'id': ids.trigger,
       'type': 'button',
       // 用原生 disabled，不可聚焦也不派 click；只读不禁用，日历仍能展开
@@ -456,8 +468,15 @@ export function connectDatePicker<T extends PropTypes>(
       },
     }),
 
+    // 清空钮同走 field-inset ghost 档，按 has-value 显隐
     getClearTriggerProps: () => normalize.button({
       ...parts['clear-trigger'].attrs,
+      'data-xh-action-control': '',
+      'data-xh-action-profile': 'field-inset',
+      'data-xh-action-variant': 'ghost',
+      'data-xh-action-display': 'has-value',
+      'data-xh-action-size': prop('size') ?? 'md',
+      'data-xh-action-has-value': dataAttr(canClear),
       'type': 'button',
       // 不进 Tab 序列：段位上按退格即可清值；读屏仍能按名字找到它
       'tabindex': -1,
@@ -562,8 +581,12 @@ export function connectDatePicker<T extends PropTypes>(
     getPresetProps: ({ value: v }) => {
       const preset = presets.find(p => p.value === v)
       const presetDisabled = disabled || !!preset?.disabled
+      // 快捷选项走 Collection Item 的 overlay 语境：悬停 / 高亮 100、按下 200 由家族给，选中只留行尾对号
       return normalize.element({
         ...parts.preset.attrs,
+        'data-xh-collection-item': '',
+        'data-xh-collection-size': prop('size') ?? 'md',
+        'data-xh-collection-context': 'overlay',
         'role': 'option',
         // listbox 的选中语义是 aria-selected；未选中也要显式输出 false
         'aria-selected': preset?.selected ? 'true' : 'false',
@@ -643,8 +666,12 @@ export function connectDatePicker<T extends PropTypes>(
 
     getTimeItemProps: ({ unit, value: v }) => {
       const selected = timeValue?.split(':')[timeSlotOf(unit)] === v
+      // 时间格同走 Collection Item 的 overlay 语境：选中只留行尾对号，不再上品牌淡底
       return normalize.element({
         ...parts['time-item'].attrs,
+        'data-xh-collection-item': '',
+        'data-xh-collection-size': prop('size') ?? 'md',
+        'data-xh-collection-context': 'overlay',
         'role': 'option',
         'aria-selected': selected ? 'true' : 'false',
         'data-unit': unit,
@@ -657,12 +684,18 @@ export function connectDatePicker<T extends PropTypes>(
       })
     },
 
-    // showTime 的收口：选完日子与时间由它收浮层
+    // showTime 的收口：选完日子与时间由它收浮层。面板里唯一的主要动作，走 Action Control 的 text solid 档
+    // （与 Button 缺省同为品牌实心）；面板内部件不随字段尺寸档，钮取 sm
     getConfirmTriggerProps: () => normalize.button({
       ...parts['confirm-trigger'].attrs,
-      type: 'button',
-      hidden: !showTime || undefined,
-      onClick: () => send({ type: 'CLOSE' }),
+      'data-xh-action-control': '',
+      'data-xh-action-profile': 'text',
+      'data-xh-action-variant': 'solid',
+      'data-xh-action-display': 'always',
+      'data-xh-action-size': 'sm',
+      'type': 'button',
+      'hidden': !showTime || undefined,
+      'onClick': () => send({ type: 'CLOSE' }),
     }),
   }
 }

@@ -304,10 +304,12 @@ export class XhDatePickerElement extends XhPortalHostElement {
     { scope: this.pickerScope },
   )
 
-  /** 浮层面板的自绘条：与 content 同级挂在已经 fixed 的 positioner 上 */
+  /** 浮层面板的自绘条：与 content 同级挂在已经 fixed 的 positioner 上；面板两轴都滚，条子走浮层 4px 档 */
   private readonly bars = new ScrollbarsController(this, {
     shell: () => this.getPart('positioner'),
     scrollable: () => this.getPart('content'),
+    axes: ['vertical', 'horizontal'],
+    props: () => ({ dir: this.direction, size: 'sm' }),
   })
 
   private services(): DatePickerServices {

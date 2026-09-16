@@ -299,16 +299,20 @@ for (const [key, rules] of Object.entries(SEMANTIC)) {
         break
       }
       case 'open': {
+        // 投影了 Action Control 的部件（字段内的展开钮）：底由家族按 --xh-action-bg-rest 画，打开态的面
+        // 是皮肤在该状态里把 --xh-action-bg-rest 映到与基础块 --xh-action-bg-hover 同一支；两支都按槽解析到底
+        const onAction = await getterProjects(comp, target, 'data-xh-action-control')
+        const openBg = onAction ? tokenOf(decls.get('--xh-action-bg-rest'), slots) ?? bg : bg
         const hover = tokenOf((() => {
-          const h = declsFor(skin, target, ':hover', within)
-          return h.get('background') ?? h.get('background-color')
+          const h = declsFor(skin, target, onAction ? null : ':hover', within)
+          return onAction ? h.get('--xh-action-bg-hover') : (h.get('background') ?? h.get('background-color'))
         })(), slots)
-        if (bg == null)
+        if (openBg == null)
           report(`${state} 没写 background——展开路径 / 打开中要落与 hover 同档的中性面`)
-        else if (bg.startsWith('--xh-bg-brand'))
-          report(`${state} 的底是 ${bg}——打开中不是选中，不用品牌色`)
-        else if (hover != null && bg !== hover)
-          report(`${state} 的底是 ${bg}，同部件 hover 档是 ${hover}——打开中与所在家族 hover 同档`)
+        else if (openBg.startsWith('--xh-bg-brand'))
+          report(`${state} 的底是 ${openBg}——打开中不是选中，不用品牌色`)
+        else if (hover != null && openBg !== hover)
+          report(`${state} 的底是 ${openBg}，同部件 hover 档是 ${hover}——打开中与所在家族 hover 同档`)
         if (weight != null && !REST_WEIGHT.has(weight))
           report(`${state} 加粗成 ${weight}——打开中不加粗`)
         break

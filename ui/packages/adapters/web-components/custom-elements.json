@@ -15749,8 +15749,8 @@
               "name": "bars",
               "privacy": "private",
               "readonly": true,
-              "default": "new ScrollbarsController(this, { shell: () => this.getPart('positioner'), scrollable: () => this.getPart('content'), })",
-              "description": "浮层面板的自绘条：与 content 同级挂在已经 fixed 的 positioner 上"
+              "default": "new ScrollbarsController(this, { shell: () => this.getPart('positioner'), scrollable: () => this.getPart('content'), axes: ['vertical', 'horizontal'], props: () => ({ dir: this.direction, size: 'sm' }), })",
+              "description": "浮层面板的自绘条：与 content 同级挂在已经 fixed 的 positioner 上；面板两轴都滚，条子走浮层 4px 档"
             },
             {
               "kind": "method",
@@ -16292,9 +16292,6 @@
               "name": "--xh-date-picker-confirm-trigger-shadow"
             },
             {
-              "name": "--xh-date-picker-content-backdrop"
-            },
-            {
               "name": "--xh-date-picker-content-bg"
             },
             {
@@ -16302,9 +16299,6 @@
             },
             {
               "name": "--xh-date-picker-content-fg"
-            },
-            {
-              "name": "--xh-date-picker-content-highlight"
             },
             {
               "name": "--xh-date-picker-content-px"
@@ -16403,6 +16397,9 @@
               "name": "--xh-date-picker-preset-bg-hover"
             },
             {
+              "name": "--xh-date-picker-preset-bg-pressed"
+            },
+            {
               "name": "--xh-date-picker-preset-check-fg"
             },
             {
@@ -16458,6 +16455,9 @@
             },
             {
               "name": "--xh-date-picker-time-item-bg-hover"
+            },
+            {
+              "name": "--xh-date-picker-time-item-bg-pressed"
             },
             {
               "name": "--xh-date-picker-time-item-check-fg"

@@ -60,7 +60,8 @@ const EXPECTED = {
   // 命令面板是盖在页面上、带遮罩的一面，与对话框同档
   'command': { content: ['sheet'] },
   'context-menu': { content: ['frosted'] },
-  'date-picker': { content: ['frosted'] },
+  // 含日历网格与时间列的锚定面板：floating（实体底 + border-default + elevation-floating，§8.4）
+  'date-picker': { content: ['floating'] },
   'date-range-picker': { content: ['frosted'] },
   'dialog': { content: ['sheet'] },
   'drawer': { content: ['sheet'] },

@@ -16683,7 +16683,13 @@
 }
 
 /* styles/cascader.css */
-/* 定义 cascader 样式。 */
+/* Cascader 独立皮肤同时传递引入字段视觉盒、字段内动作与浮层集合行；full bundle 递归去重。 */
+
+/* family/field-chrome.css */
+
+/* family/action-control.css */
+
+/* family/collection-item.css */
 
 /* 共享关键帧由 family/motion.css 提供，本皮肤 @import 它，单独引入仍成立。 */
 
@@ -16741,30 +16747,17 @@
   /* 作者塞进指示符槽的图标跟着尺寸档走，与皮肤画的兜底字形同一把尺 */
   --xh-icon-size: var(--xh-cascader-icon-size, var(--xh-glyph-size-md));
 
-  /* 尺寸档只换这几个私有槽，盒与列里的条目都从这两处继承它们，换档不必给每个部件各写一条选择器 */
+  /* 尺寸档只换这几个私有槽，盒与列里的条目都从这两处继承它们，换档不必给每个部件各写一条选择器；
+     形态三档由家族按 control 上的 data-variant 生成，浮层与列不跟着变，皮肤不再声明 */
   --xh-_cascader-h: var(--xh-control-h-md);
   --xh-_cascader-px: var(--xh-control-px-md);
   --xh-_cascader-row-py: var(--xh-list-option-py-md);
   --xh-_cascader-row-px: var(--xh-control-px-md);
   --xh-_cascader-gap: var(--xh-control-gap-md);
   --xh-_cascader-font-size: var(--xh-control-font-md);
-  --xh-_cascader-label-font-size: var(--xh-control-font-md);
-
-  /* 形态档只换触发框的描边、两档底色与落影这五个槽，浮层与列不跟着变：
-     变的是「这是个输入位」的表达方式，不是弹出内容的表达方式 */
-  --xh-_cascader-border: var(--xh-border-control);
-  --xh-_cascader-border-hover: var(--xh-border-control-hover);
-  --xh-_cascader-bg: var(--xh-bg-canvas);
-  /* 悬停那一档底：描边之外再换一次填充，语气在场时兑同族的淡底 */
-  --xh-_cascader-bg-hover: var(--xh-_tone-subtle, var(--xh-bg-subtle));
-  /* 一档静态落影把触发框从页面里抬起一层，与描边一起画出框的边界 */
-  --xh-_cascader-shadow: var(--xh-elevation-raised);
 
   /* 强调色随语气走，只落在勾选标记上；没写 data-tone 时退回品牌色 */
   --xh-_cascader-accent: var(--xh-_tone, var(--xh-fg-brand));
-
-  /* 聚焦环恒用固定环色；校验失败时换成告警环色 */
-  --xh-_cascader-ring: var(--xh-ring-focus);
 }
 
 /* 标签一行、盒一行的两行堆叠 */
@@ -16783,34 +16776,6 @@
   display: none;
 }
 
-/* —— 形态 —— */
-/* 形态只决定描边与底色怎么用；用哪族颜色由 data-tone 决定，没写 tone 就沿用原来的中性配色 */
-/* outline 就是缺省那一身：描边加画布底，写出来只为让三档并列可读 */
-[data-scope='cascader']:is([data-part='root'], [data-part='positioner'])[data-variant='outline'] {
-  --xh-_cascader-border: var(--xh-border-control);
-  --xh-_cascader-border-hover: var(--xh-border-control-hover);
-  --xh-_cascader-bg: var(--xh-bg-canvas);
-  --xh-_cascader-bg-hover: var(--xh-_tone-subtle, var(--xh-bg-subtle));
-}
-
-/* subtle 是填充式：底色接过「这里能点」的表达，描边随之让位 */
-[data-scope='cascader']:is([data-part='root'], [data-part='positioner'])[data-variant='subtle'] {
-  --xh-_cascader-border: transparent;
-  --xh-_cascader-border-hover: var(--xh-_tone-border, var(--xh-border-control-hover));
-  --xh-_cascader-bg: var(--xh-_tone-subtle, var(--xh-bg-subtle));
-  --xh-_cascader-bg-hover: var(--xh-_tone-subtle-hover, var(--xh-bg-subtle-hover));
-}
-
-/* 无框：底与常态描边透明，悬停浮出描边，聚焦由焦点环表达。
-   落影一并关掉——底与描边都透明时它就是一片没有面的影子 */
-[data-scope='cascader']:is([data-part='root'], [data-part='positioner'])[data-variant='ghost'] {
-  --xh-_cascader-shadow: 0 0 0 transparent;
-  --xh-_cascader-border: transparent;
-  --xh-_cascader-border-hover: var(--xh-_tone-border, var(--xh-border-control-hover));
-  --xh-_cascader-bg: transparent;
-  --xh-_cascader-bg-hover: var(--xh-_tone-subtle, var(--xh-bg-subtle));
-}
-
 /* —— 尺寸 —— */
 /* 缺省档写在上面的基础规则里 */
 [data-scope='cascader']:is([data-part='root'], [data-part='positioner'])[data-size='sm'] {
@@ -16821,7 +16786,6 @@
   --xh-_cascader-row-px: var(--xh-control-px-sm);
   --xh-_cascader-gap: var(--xh-control-gap-sm);
   --xh-_cascader-font-size: var(--xh-control-font-sm);
-  --xh-_cascader-label-font-size: var(--xh-control-font-sm);
 }
 
 [data-scope='cascader']:is([data-part='root'], [data-part='positioner'])[data-size='lg'] {
@@ -16832,12 +16796,11 @@
   --xh-_cascader-row-px: var(--xh-control-px-lg);
   --xh-_cascader-gap: var(--xh-control-gap-lg);
   --xh-_cascader-font-size: var(--xh-control-font-lg);
-  --xh-_cascader-label-font-size: var(--xh-control-font-lg);
 }
 
 [data-scope='cascader'][data-part='label'] {
   color: var(--xh-cascader-label-fg, var(--xh-fg-default));
-  font-size: var(--xh-cascader-label-font-size, var(--xh-_cascader-label-font-size));
+  font-size: var(--xh-cascader-label-font-size, var(--xh-text-label-size));
   font-weight: var(--xh-cascader-label-font-weight, var(--xh-text-label-weight));
   line-height: var(--xh-leading-none);
 }
@@ -16847,62 +16810,34 @@
   color: var(--xh-cascader-label-fg-disabled, var(--xh-fg-subtle));
 }
 
-/* 盒：描边、底色、控件高度与行内内衬都落在这一层，触发按钮与清空按钮在里面并排 */
+/* 盒：描边、底色、圆角、控件高度、行内内衬、聚焦环、五态与悬停由 Field Chrome 家族画在这一层，
+   触发按钮与清空按钮在里面并排；Tab 停靠点是盒里的 trigger（展开后才移进列里），环由家族的
+   :focus-within 画在盒上。组件只映射既有公开槽（shadow 缺省 none：字段静息描边式、无影）；盒里是按钮 */
 [data-scope='cascader'][data-part='control'] {
-  display: inline-flex;
-  align-items: center;
-  gap: var(--xh-cascader-control-gap, var(--xh-_cascader-gap));
-  min-inline-size: min(var(--xh-cascader-control-min-w, var(--xh-control-min-w)), 100%);
-  block-size: var(--xh-cascader-control-h, var(--xh-_cascader-h));
-  padding-inline: var(--xh-cascader-control-px, var(--xh-_cascader-px));
-  border: var(--xh-stroke-thin) solid var(--xh-cascader-control-border, var(--xh-_cascader-border));
-  border-radius: var(--xh-cascader-control-radius, var(--xh-shape-control));
-  background: var(--xh-cascader-control-bg, var(--xh-_cascader-bg));
-  box-shadow: var(--xh-cascader-control-shadow, var(--xh-_cascader-shadow));
-  color: var(--xh-cascader-control-fg, var(--xh-fg-default));
-  cursor: pointer;
-  transition:
-    background var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
-    border-color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
+  --xh-field-control-height: var(--xh-cascader-control-h, var(--xh-_cascader-h));
+  --xh-field-control-padding-inline: var(--xh-cascader-control-px, var(--xh-_cascader-px));
+  --xh-field-control-gap: var(--xh-cascader-control-gap, var(--xh-_cascader-gap));
+  --xh-field-control-min-inline-size: var(--xh-cascader-control-min-w, var(--xh-control-min-w));
+  --xh-field-control-radius: var(--xh-cascader-control-radius, var(--xh-shape-control));
+  --xh-field-bg-rest: var(--xh-cascader-control-bg, var(--xh-_field-variant-bg-rest));
+  --xh-field-bg-hover: var(--xh-cascader-control-bg-hover, var(--xh-_field-variant-bg-hover));
+  --xh-field-bg-read-only: var(--xh-cascader-control-bg-readonly, var(--xh-_field-variant-bg-read-only));
+  --xh-field-bg-disabled: var(--xh-cascader-control-bg-disabled, var(--xh-_field-variant-bg-disabled));
+  --xh-field-fg-rest: var(--xh-cascader-control-fg, var(--xh-fg-default));
+  --xh-field-border-rest: var(--xh-cascader-control-border, var(--xh-_field-variant-border-rest));
+  --xh-field-border-hover: var(--xh-cascader-control-border-hover, var(--xh-_field-variant-border-hover));
+  --xh-field-border-focus: var(--xh-cascader-control-border-focus, var(--xh-_field-variant-border-focus));
+  --xh-field-border-invalid: var(--xh-cascader-control-border-invalid, var(--xh-_field-variant-border-invalid));
+  --xh-field-ring-focus: var(--xh-ring-focus);
+  --xh-field-ring-invalid: var(--xh-ring-invalid);
+  --xh-field-shadow-rest: var(--xh-cascader-control-shadow, none);
+  --xh-field-cursor-rest: pointer;
+  /* 家族 chrome 会重写 --xh-icon-size，使用者图标槽必须经桥接槽下发才能在盒内生效 */
+  --xh-field-glyph-size: var(--xh-cascader-icon-size, var(--xh-_field-size-glyph-size));
 }
 
 [data-scope='cascader'][data-part='control'][hidden] {
   display: none;
-}
-
-/* hover 只在中性态换描边：invalid 正拿边框颜色说事，被 hover 盖掉那条信息就没了 */
-[data-scope='cascader'][data-part='control']:hover:not([data-disabled], [data-invalid]) {
-  border-color: var(--xh-cascader-control-border-hover, var(--xh-_cascader-border-hover));
-}
-
-/* 描边之外再换一档填充：只挪一格描边色的悬停在浅底上几乎读不出来。
-   只读盒的底色正说着「改不动」，不参与换填充 */
-[data-scope='cascader'][data-part='control']:hover:not([data-disabled], [data-readonly]) {
-  background: var(--xh-cascader-control-bg-hover, var(--xh-_cascader-bg-hover));
-}
-
-/* Tab 停靠点是盒里的 trigger（展开后才移进列里），环画在盒上 */
-[data-scope='cascader'][data-part='control']:focus-within:not([data-disabled]) {
-  border-color: var(--xh-cascader-control-border-focus, var(--xh-_tone, var(--xh-border-control-focus)));
-  outline: var(--xh-ring-width) solid var(--xh-_cascader-ring);
-  outline-offset: var(--xh-ring-offset);
-}
-
-[data-scope='cascader'][data-part='control'][data-invalid] {
-  border-color: var(--xh-cascader-control-border-invalid, var(--xh-border-invalid));
-
-  /* 校验失败时环也跟着变红：两圈等宽相邻却一红一蓝，读的人不知道哪个才是当前状态 */
-  --xh-_cascader-ring: var(--xh-ring-invalid);
-}
-
-/* 只读仍可聚焦、浮层仍展得开、列仍能浏览，所以不置灰，只把底色压下去表示「改不动」 */
-[data-scope='cascader'][data-part='control'][data-readonly] {
-  background: var(--xh-cascader-control-bg-readonly, var(--xh-bg-subtle));
-}
-
-[data-scope='cascader'][data-part='control'][data-disabled] {
-  background: var(--xh-cascader-control-bg-disabled, var(--xh-bg-subtle));
-  color: var(--xh-fg-disabled);
 }
 
 /* 盒内那颗可聚焦的按钮：不画描边不铺底也不自带高度，只占满剩余宽度、排布回显与箭头 */
@@ -16991,41 +16926,34 @@
   color: var(--xh-fg-disabled);
 }
 
-/* 盒内靠右的小方钮，不撑高那一行 */
+/* 盒内靠右的小方钮，不撑高那一行：正方视觉盒、inset 圆角、悬停 100 / 按下 200 与 0.97 按压、粗指针热区与
+   :focus-visible 关环（盒的 :focus-within 已画了一圈）全由 Action Control 的 field-inset ghost 档给，
+   组件只映射既有覆盖槽 */
 [data-scope='cascader'][data-part='clear-trigger'] {
-  display: inline-flex;
-  flex: none;
-  align-items: center;
-  justify-content: center;
-  inline-size: var(--xh-cascader-action-size, var(--xh-control-action-size));
-  block-size: var(--xh-cascader-action-size, var(--xh-control-action-size));
-  padding: 0;
-  border: 0;
-  border-radius: var(--xh-cascader-action-radius, var(--xh-shape-control));
-  background: var(--xh-cascader-action-bg, transparent);
-  color: var(--xh-cascader-action-fg, var(--xh-fg-muted));
-  font-family: inherit;
-  font-size: var(--xh-cascader-action-font-size, var(--xh-text-secondary-size));
-  line-height: var(--xh-leading-none);
-  cursor: pointer;
-  user-select: none;
-  transition: background var(--xh-motion-duration-micro) var(--xh-motion-ease-enter), scale var(--xh-motion-duration-release) var(--xh-motion-ease-release);
+  --xh-action-visual-size: var(--xh-cascader-action-size, var(--xh-_action-profile-visual-size));
+  --xh-action-min-inline-size: var(--xh-cascader-action-size, var(--xh-_action-profile-visual-size));
+  --xh-action-radius: var(--xh-cascader-action-radius, var(--xh-shape-inset));
+  /* 底色阶梯由 ghost 档给（透明 → 100 → 200），使用者槽只作覆盖入口 */
+  --xh-action-bg-rest: var(--xh-cascader-action-bg, var(--xh-_action-variant-bg-rest));
+  --xh-action-bg-hover: var(--xh-cascader-action-bg-hover, var(--xh-_action-variant-bg-hover));
+  --xh-action-bg-pressed: var(--xh-cascader-action-bg-active, var(--xh-_action-variant-bg-pressed));
+  --xh-action-fg-rest: var(--xh-cascader-action-fg, var(--xh-fg-muted));
+  --xh-action-fg-hover: var(--xh-cascader-action-fg-hover, var(--xh-fg-default));
+  --xh-action-border-rest: transparent;
+  --xh-action-highlight-rest: transparent;
+  --xh-action-shadow-rest: none;
+  --xh-action-shadow-hover: none;
+  --xh-action-shadow-pressed: none;
+  --xh-action-font-size: var(--xh-cascader-action-font-size, var(--xh-text-secondary-size));
+  /* 配方尚未把 profile 字形档灌进 --xh-icon-size，钮内字形先按 field-inset 档逐钮取值 */
+  --xh-icon-size: var(--xh-_action-profile-glyph-size);
+
+  border-width: 0;
 }
 
+/* 没值时连接层给的是 hidden 属性；家族那条 display 会把 UA 规则盖掉 */
 [data-scope='cascader'][data-part='clear-trigger'][hidden] {
   display: none;
-}
-
-[data-scope='cascader'][data-part='clear-trigger']:hover {
-  background: var(--xh-cascader-action-bg-hover, var(--xh-bg-subtle-hover));
-  color: var(--xh-cascader-action-fg-hover, var(--xh-fg-default));
-}
-
-[data-scope='cascader'][data-part='clear-trigger']:active {
-  background: var(--xh-cascader-action-bg-active, var(--xh-bg-subtle-active));
-  scale: var(--xh-motion-scale-press);
-  transition-duration: var(--xh-motion-duration-press);
-  transition-timing-function: var(--xh-motion-ease-press);
 }
 
 /* 级联的骨架就在这一条上：列沿书写方向并排，一层一列。
@@ -17047,6 +16975,8 @@
   backdrop-filter: var(--xh-cascader-content-backdrop, var(--xh-material-frosted-backdrop));
   /* 列多到放不下时整体横向滚动；纵向溢出归每一列自己 */
   overflow-x: auto;
+  /* 浮层滚动面：滚到头不把页面一起带走 */
+  overscroll-behavior: contain;
   pointer-events: auto;
 }
 
@@ -17097,6 +17027,8 @@
   padding-block: var(--xh-cascader-column-py, var(--xh-space-1));
   padding-inline: var(--xh-cascader-column-px, var(--xh-space-1));
   overflow-y: auto;
+  /* 浮层滚动面：滚到头不把页面一起带走 */
+  overscroll-behavior: contain;
 }
 
 /* 展开路径砍短了这一列就收起来。display 盖掉了 UA 的 [hidden]{display:none}，
@@ -17152,24 +17084,53 @@
   color: var(--xh-fg-disabled);
 }
 
+/* 列内条目：网格、尺寸档、悬停 / 高亮 100、按下 200、展开路径的中性面（与悬停同档）、禁用面与选中标记
+   由 Collection Item 家族按 overlay 语境给（选中 = 透明底 + 行尾对号，正文保持 rest 色与常规字重），
+   公开 Cascader 槽只映射到家族合同。data-highlighted 跟的是连接层记的焦点行（指针与键盘共用），
+   环只在真正的键盘焦点上接回，见下 */
 [data-scope='cascader'][data-part='item'] {
-  display: flex;
-  align-items: center;
-  gap: var(--xh-cascader-item-gap, var(--xh-_cascader-gap));
+  --xh-collection-block-padding: var(--xh-cascader-item-py, var(--xh-_cascader-row-py));
+  --xh-collection-inline-padding: var(--xh-cascader-item-px, var(--xh-_cascader-row-px));
+  --xh-collection-gap: var(--xh-cascader-item-gap, var(--xh-_cascader-gap));
+  --xh-collection-font-size: var(--xh-cascader-item-font-size, var(--xh-_cascader-font-size));
+  --xh-collection-radius: var(--xh-cascader-item-radius, var(--xh-shape-control));
+  --xh-collection-glyph-size: var(--xh-cascader-icon-size, var(--xh-_collection-glyph-size));
+  --xh-collection-fg-rest: var(--xh-cascader-item-fg, var(--xh-material-frosted-fg));
+  --xh-collection-fg-hover: var(--xh-cascader-item-fg, var(--xh-material-frosted-fg));
+  --xh-collection-fg-keyboard-highlight: var(--xh-cascader-item-fg, var(--xh-material-frosted-fg));
+  --xh-collection-fg-open-path: var(--xh-cascader-item-fg, var(--xh-material-frosted-fg));
+  --xh-collection-fg-selected: var(--xh-cascader-item-fg-selected, var(--xh-cascader-item-fg, var(--xh-material-frosted-fg)));
+  --xh-collection-fg-selected-highlight: var(--xh-cascader-item-fg-selected, var(--xh-cascader-item-fg, var(--xh-material-frosted-fg)));
+  --xh-collection-fg-selected-hover: var(--xh-cascader-item-fg-selected, var(--xh-cascader-item-fg, var(--xh-material-frosted-fg)));
+  --xh-collection-fg-selected-pressed: var(--xh-cascader-item-fg-selected, var(--xh-cascader-item-fg, var(--xh-material-frosted-fg)));
+  --xh-collection-fg-pressed: var(--xh-cascader-item-fg, var(--xh-material-frosted-fg));
+  --xh-collection-font-weight-open-path: var(--xh-cascader-item-active-font-weight, var(--xh-font-weight-regular));
+  --xh-collection-font-weight-selected: var(--xh-cascader-item-font-weight-selected, var(--xh-font-weight-regular));
+  --xh-collection-font-weight-selected-highlight: var(--xh-cascader-item-font-weight-selected, var(--xh-font-weight-regular));
+  --xh-collection-font-weight-selected-hover: var(--xh-cascader-item-font-weight-selected, var(--xh-font-weight-regular));
+  --xh-collection-font-weight-selected-pressed: var(--xh-cascader-item-font-weight-selected, var(--xh-font-weight-regular));
+  --xh-collection-bg-hover: var(--xh-cascader-item-bg-hover, var(--xh-bg-subtle));
+  --xh-collection-bg-keyboard-highlight: var(--xh-cascader-item-bg-hover, var(--xh-bg-subtle));
+  --xh-collection-bg-open-path: var(--xh-cascader-item-bg-active, var(--xh-bg-subtle));
+  --xh-collection-bg-selected-highlight: var(--xh-cascader-item-bg-hover, var(--xh-bg-subtle));
+  --xh-collection-bg-selected-hover: var(--xh-cascader-item-bg-hover, var(--xh-bg-subtle));
+  --xh-collection-bg-pressed: var(--xh-cascader-item-bg-pressed, var(--xh-bg-subtle-hover));
+  --xh-collection-bg-selected-pressed: var(--xh-cascader-item-bg-pressed, var(--xh-bg-subtle-hover));
+  --xh-collection-outline-keyboard-highlight: transparent;
+  --xh-collection-outline-selected-highlight: transparent;
+  --xh-collection-indicator-fg-rest: var(--xh-cascader-item-check-fg, var(--xh-cascader-item-indicator-fg, var(--xh-_cascader-accent)));
+  --xh-collection-indicator-fg-checked: var(--xh-cascader-item-check-fg, var(--xh-cascader-item-indicator-fg, var(--xh-_cascader-accent)));
+  --xh-collection-indicator-fg-selected: var(--xh-cascader-item-check-fg, var(--xh-cascader-item-indicator-fg, var(--xh-_cascader-accent)));
+  --xh-collection-indicator-fg-selected-hover: var(--xh-cascader-item-check-fg, var(--xh-cascader-item-indicator-fg, var(--xh-_cascader-accent)));
+  --xh-collection-indicator-fg-selected-highlight: var(--xh-cascader-item-check-fg, var(--xh-cascader-item-indicator-fg, var(--xh-_cascader-accent)));
+  --xh-collection-indicator-fg-selected-pressed: var(--xh-cascader-item-check-fg, var(--xh-cascader-item-indicator-fg, var(--xh-_cascader-accent)));
+  --xh-collection-indicator-fg-open-path: var(--xh-cascader-item-check-fg, var(--xh-cascader-item-indicator-fg, var(--xh-_cascader-accent)));
+
   max-inline-size: var(--xh-cascader-item-max-w, var(--xh-overlay-max-w));
-  padding-block: var(--xh-cascader-item-py, var(--xh-_cascader-row-py));
-  padding-inline: var(--xh-cascader-item-px, var(--xh-_cascader-row-px));
-  border-radius: var(--xh-cascader-item-radius, var(--xh-shape-control));
-  color: var(--xh-cascader-item-fg, var(--xh-material-frosted-fg));
-  font-size: var(--xh-cascader-item-font-size, var(--xh-_cascader-font-size));
   /* 行高留出文字的上下伸展空间，行内那层 overflow:hidden 才不会把字削掉 */
   line-height: var(--xh-cascader-item-leading, var(--xh-leading-normal));
   white-space: nowrap;
-  cursor: pointer;
   user-select: none;
-  transition:
-    background var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
-    color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
 }
 
 /* 条目常挂不卸载：不属于当前这一列的那些靠 hidden 收起。
@@ -17206,43 +17167,28 @@
   animation-delay: calc(5 * var(--xh-motion-stagger-step));
 }
 
-/* 列项与搜索结果共用一档中性反馈；选中由对号承担，不借背景或文字强调。 */
-[data-scope='cascader'][data-part='item']:not([data-disabled]):is(:hover, [data-highlighted], :focus-visible) {
-  background: var(--xh-cascader-item-bg-hover, var(--xh-bg-subtle));
+/* 键盘焦点出现时环才接回并立即到位，不压在背景过渡的中间帧上 */
+[data-scope='cascader'][data-part='item']:focus-visible:not(:hover) {
+  --xh-collection-outline-keyboard-highlight: var(--xh-ring-focus);
+  --xh-collection-outline-selected-highlight: var(--xh-ring-focus);
+
+  transition: none;
 }
 
-/* 键盘焦点的实体中性底要当帧落下，避免背景过渡期间焦点位置发虚。 */
-[data-scope='cascader'][data-part='item']:focus-visible {
-  transition-property: color;
+[data-scope='cascader'][data-part='item']:focus:not(:focus-visible) {
+  outline: none;
 }
 
-/* 展开路径只保留同一中性底与正常字重，不叠品牌底，也不把路径误读成已选择。 */
-[data-scope='cascader'][data-part='item']:not([data-disabled])[data-in-path] {
-  background: var(--xh-cascader-item-bg-active, var(--xh-bg-subtle));
-  font-weight: var(--xh-cascader-item-active-font-weight, var(--xh-font-weight-regular));
-}
-
-/* 单选、多选与搜索结果都由末端对号表示选中；正文保留常态颜色与字重。 */
-[data-scope='cascader'][data-part='item'][data-state='checked'] {
-  color: var(--xh-cascader-item-fg-selected, var(--xh-cascader-item-fg, var(--xh-material-frosted-fg)));
-  font-weight: var(--xh-cascader-item-selected-font-weight, var(--xh-font-weight-regular));
-}
-
-/* 禁用走 aria-disabled 而非原生 disabled：条目仍要可聚焦（它还得当方向键的起点），
-   所以只能靠 data-disabled 表达，写 :disabled 永远不命中 */
-[data-scope='cascader'][data-part='item'][data-disabled] {
-  color: var(--xh-fg-disabled);
-  cursor: not-allowed;
-}
-
-/* 分支条目行尾画右向小箭头：不点开也看得出还有下一级。位置由 item-text 的 flex:1 顶到行尾。
+/* 分支条目行尾画右向小箭头：不点开也看得出还有下一级。落在家族网格的 suffix 列、跨两行居中。
    与菜单族的子菜单箭头同走字形令牌——此前这里是「描全边框再抹掉两条、把剩下的直角旋 45 度」，
    作者换掉标记时换不动它，RTL 还得再翻一次旋转角 */
 [data-scope='cascader'][data-part='item'][data-branch]::after {
   content: '';
-  flex: none;
+  grid-column: suffix;
+  grid-row: 1 / span 2;
   inline-size: var(--xh-cascader-branch-arrow-size, var(--xh-icon-size, var(--xh-glyph-size-text)));
   block-size: var(--xh-cascader-branch-arrow-size, var(--xh-icon-size, var(--xh-glyph-size-text)));
+  margin-inline-start: var(--xh-cascader-item-gap, var(--xh-_cascader-gap));
   background-color: var(--xh-cascader-branch-arrow-fg, var(--xh-fg-subtle));
   -webkit-mask: var(--xh-glyph-mark-chevron-right) center / contain no-repeat;
   mask: var(--xh-glyph-mark-chevron-right) center / contain no-repeat;
@@ -17257,25 +17203,22 @@
   mask-image: var(--xh-glyph-mark-chevron-left);
 }
 
+/* 正文落在家族网格的 text 列；网格项默认最小尺寸是内容尺寸，不归零则长文本把行撑破、省略号轮不上 */
 [data-scope='cascader'][data-part='item-text'] {
-  flex: 1;
   min-inline-size: 0;
   overflow: hidden;
   white-space: nowrap;
   text-overflow: ellipsis;
 }
 
-/* 勾选标记只在选中项上出现；未选中时占位不塌，切换选中不引起行宽抖动 */
+/* 勾选标记落在家族网格的 indicator 列，只在选中项上显形（家族按 aria-selected / data-state=checked 给）；
+   未选中时占位不塌，切换选中不引起行宽抖动 */
 [data-scope='cascader'][data-part='item-indicator'] {
   display: inline-flex;
-  flex: none;
   align-items: center;
   justify-content: center;
-  margin-inline-start: auto;
   inline-size: var(--xh-cascader-item-indicator-size, var(--xh-control-indicator-size));
   block-size: var(--xh-cascader-item-indicator-size, var(--xh-control-indicator-size));
-  color: var(--xh-cascader-item-indicator-fg, var(--xh-_cascader-accent));
-  visibility: hidden;
 }
 
 [data-scope='cascader'][data-part='item-indicator'][hidden] {
@@ -17292,10 +17235,6 @@
   background-color: currentColor;
   -webkit-mask: var(--xh-glyph-mark-check) center / contain no-repeat;
   mask: var(--xh-glyph-mark-check) center / contain no-repeat;
-}
-
-[data-scope='cascader'][data-part='item-indicator'][data-state='checked'] {
-  visibility: visible;
 }
 
 /* 级联勾选的半选态只在皮肤自绘（:empty）时露面画横杠：
@@ -17315,6 +17254,7 @@
   mask: var(--xh-glyph-mark-minus) center / contain no-repeat;
 }
 
+/* 家族按行的禁用降级标记色；半选横线也一并跟着 */
 [data-scope='cascader'][data-part='item-indicator'][data-disabled] {
   color: var(--xh-fg-disabled);
 }
@@ -17369,6 +17309,8 @@
   block-size: var(--xh-cascader-column-h, var(--xh-viewport-h-sm));
   padding: var(--xh-cascader-search-p, var(--xh-space-1));
   overflow-y: auto;
+  /* 浮层滚动面：滚到头不把页面一起带走 */
+  overscroll-behavior: contain;
 }
 
 [data-scope='cascader'][data-part='search-list'][hidden] {
@@ -17385,51 +17327,61 @@
   display: none;
 }
 
-/* 候选与列内条目同一套行度量，虚拟高亮与悬停同用轻档 */
+/* 候选与列内条目同一套行度量与家族状态面（悬停 / 高亮 100、按下 200、禁用面由 Collection Item 给）。
+   搜索结果没有独立的正文部件，匿名文本进不了家族网格的 text 列，行保持块级排版，
+   末端为同一枚皮肤对号预留固定轨 */
 [data-scope='cascader'][data-part='search-item'] {
+  --xh-collection-block-padding: var(--xh-cascader-item-py, var(--xh-_cascader-row-py));
+  --xh-collection-inline-padding: var(--xh-cascader-item-px, var(--xh-_cascader-row-px));
+  --xh-collection-gap: var(--xh-cascader-item-gap, var(--xh-_cascader-gap));
+  --xh-collection-font-size: var(--xh-cascader-item-font-size, var(--xh-_cascader-font-size));
+  --xh-collection-radius: var(--xh-cascader-item-radius, var(--xh-shape-control));
+  --xh-collection-fg-rest: var(--xh-cascader-item-fg, var(--xh-material-frosted-fg));
+  --xh-collection-fg-hover: var(--xh-cascader-item-fg, var(--xh-material-frosted-fg));
+  --xh-collection-fg-keyboard-highlight: var(--xh-cascader-item-fg, var(--xh-material-frosted-fg));
+  --xh-collection-fg-selected: var(--xh-cascader-item-fg-selected, var(--xh-cascader-item-fg, var(--xh-material-frosted-fg)));
+  --xh-collection-fg-selected-highlight: var(--xh-cascader-item-fg-selected, var(--xh-cascader-item-fg, var(--xh-material-frosted-fg)));
+  --xh-collection-fg-selected-hover: var(--xh-cascader-item-fg-selected, var(--xh-cascader-item-fg, var(--xh-material-frosted-fg)));
+  --xh-collection-fg-selected-pressed: var(--xh-cascader-item-fg-selected, var(--xh-cascader-item-fg, var(--xh-material-frosted-fg)));
+  --xh-collection-fg-pressed: var(--xh-cascader-item-fg, var(--xh-material-frosted-fg));
+  --xh-collection-font-weight-selected: var(--xh-cascader-item-font-weight-selected, var(--xh-font-weight-regular));
+  --xh-collection-font-weight-selected-highlight: var(--xh-cascader-item-font-weight-selected, var(--xh-font-weight-regular));
+  --xh-collection-font-weight-selected-hover: var(--xh-cascader-item-font-weight-selected, var(--xh-font-weight-regular));
+  --xh-collection-font-weight-selected-pressed: var(--xh-cascader-item-font-weight-selected, var(--xh-font-weight-regular));
+  --xh-collection-bg-hover: var(--xh-cascader-item-bg-hover, var(--xh-bg-subtle));
+  --xh-collection-bg-keyboard-highlight: var(--xh-cascader-item-bg-hover, var(--xh-bg-subtle));
+  --xh-collection-bg-selected-highlight: var(--xh-cascader-item-bg-hover, var(--xh-bg-subtle));
+  --xh-collection-bg-selected-hover: var(--xh-cascader-item-bg-hover, var(--xh-bg-subtle));
+  --xh-collection-bg-pressed: var(--xh-cascader-item-bg-pressed, var(--xh-bg-subtle-hover));
+  --xh-collection-bg-selected-pressed: var(--xh-cascader-item-bg-pressed, var(--xh-bg-subtle-hover));
+  --xh-collection-outline-keyboard-highlight: transparent;
+  --xh-collection-outline-selected-highlight: transparent;
+
   position: relative;
-  padding-block: var(--xh-cascader-item-py, var(--xh-_cascader-row-py));
-  padding-inline: var(--xh-cascader-item-px, var(--xh-_cascader-row-px));
-  /* 搜索结果没有独立 indicator 部件，末端为同一枚皮肤对号预留固定轨。 */
+  display: block;
+  /* 末端为对号预留固定轨：对号绝对定位，不进内容流 */
   padding-inline-end: calc(
     var(--xh-cascader-item-px, var(--xh-_cascader-row-px)) +
       var(--xh-cascader-item-indicator-size, var(--xh-control-indicator-size)) +
       var(--xh-cascader-item-gap, var(--xh-_cascader-gap))
   );
   overflow: hidden;
-  border-radius: var(--xh-cascader-item-radius, var(--xh-shape-control));
-  color: var(--xh-cascader-item-fg, var(--xh-material-frosted-fg));
-  font-size: var(--xh-cascader-item-font-size, var(--xh-_cascader-font-size));
   line-height: var(--xh-cascader-item-leading, var(--xh-leading-normal));
   text-overflow: ellipsis;
   white-space: nowrap;
-  cursor: pointer;
   user-select: none;
-  transition:
-    background var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
-    color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
 }
 
-[data-scope='cascader'][data-part='search-item']:not([data-disabled]):is(
-    :hover,
-    [data-highlighted],
-    :focus-visible
-  ) {
-  background: var(--xh-cascader-item-bg-hover, var(--xh-bg-subtle));
+/* 键盘焦点出现时环才接回并立即到位，不压在背景过渡的中间帧上 */
+[data-scope='cascader'][data-part='search-item']:focus-visible:not(:hover) {
+  --xh-collection-outline-keyboard-highlight: var(--xh-ring-focus);
+  --xh-collection-outline-selected-highlight: var(--xh-ring-focus);
+
+  transition: none;
 }
 
-[data-scope='cascader'][data-part='search-item']:focus-visible {
-  transition-property: color;
-}
-
-[data-scope='cascader'][data-part='search-item'][data-state='checked'] {
-  color: var(--xh-cascader-item-fg-selected, var(--xh-cascader-item-fg, var(--xh-material-frosted-fg)));
-  font-weight: var(--xh-cascader-item-selected-font-weight, var(--xh-font-weight-regular));
-}
-
-[data-scope='cascader'][data-part='search-item'][data-disabled] {
-  color: var(--xh-fg-disabled);
-  cursor: not-allowed;
+[data-scope='cascader'][data-part='search-item']:focus:not(:focus-visible) {
+  outline: none;
 }
 
 /* 自动生成的搜索结果复用 item-indicator 的尺寸、颜色和对号字形，不新增第二套作者槽。 */
@@ -21862,7 +21814,13 @@
 }
 
 /* styles/date-picker.css */
-/* 定义 date picker 样式。 */
+/* DatePicker 独立皮肤同时传递引入字段视觉盒、字段内动作与浮层集合行；full bundle 递归去重。 */
+
+/* family/field-chrome.css */
+
+/* family/action-control.css */
+
+/* family/collection-item.css */
 
 /* css/scrollbar.css */
 
@@ -21923,42 +21881,20 @@
 
 /* 私有槽同时声明在根与 positioner 上：浮层被搬到 portal 落点，不是根的后代，继承不过去 */
 [data-scope='date-picker']:is([data-part='root'], [data-part='positioner']) {
-  /* 尺寸档只换这几个私有槽，标题、输入行与浮层里的部件都从这两处继承它们，
-     换档不必给每个部件各写一条选择器 */
+  /* 尺寸档只换这几个私有槽，输入行与浮层里的部件都从这两处继承它们，
+     换档不必给每个部件各写一条选择器；形态三档由家族按 control 上的 data-variant 生成，皮肤不再声明 */
   --xh-_date-picker-control-h: var(--xh-control-h-md);
   --xh-_date-picker-control-px: var(--xh-control-px-md);
   --xh-_date-picker-gap: var(--xh-control-gap-md);
   --xh-_date-picker-font-size: var(--xh-control-font-md);
-  --xh-_date-picker-label-font-size: var(--xh-control-font-md);
 
-  /* 形态档只换这五个私有槽：两档底色、两档描边与落影 */
-  --xh-_date-picker-control-bg: var(--xh-bg-canvas);
-  /* 悬停那一档底：描边之外再换一次填充，语气在场时兑同族的淡底 */
-  --xh-_date-picker-control-bg-hover: color-mix(in oklab, var(--xh-bg-subtle) 45%, var(--xh-_date-picker-control-bg));
-  --xh-_date-picker-control-border: transparent;
-  --xh-_date-picker-control-border-hover: var(--xh-border-default);
-  /* 一档静态落影把盒从页面里抬起一层，与描边一起画出盒的边界 */
-  --xh-_date-picker-control-shadow: var(--xh-elevation-raised);
-
-  /* 聚焦环、选中对号与确认按钮随语气走。没写 data-tone 时这几个 --xh-_tone* 没被声明，
-     退回原来的焦点色与品牌色 */
-  --xh-_date-picker-ring: var(--xh-ring-focus);
-  --xh-_date-picker-accent: var(--xh-_tone, var(--xh-bg-brand));
-  --xh-_date-picker-accent-hover: var(--xh-_tone-hover, var(--xh-bg-brand-hover));
-  --xh-_date-picker-accent-active: var(--xh-_tone-active, var(--xh-bg-brand-active));
-  --xh-_date-picker-accent-fg: var(--xh-_tone-on, var(--xh-fg-on-brand));
-  /* 内嵌日期段沿用日期输入的轻强调焦点，不另画一套实心选择态。 */
+  /* 选中对号随语气走。没写 data-tone 时这几个 --xh-_tone* 没被声明，退回品牌色 */
+  /* 内嵌日期段沿用日期输入的轻强调焦点：当前段是「当前项」，淡底 + 淡底前景，不另画一套实心选择态。 */
   --xh-_date-field-segment-bg: var(--xh-_tone-subtle, var(--xh-bg-brand-subtle));
-  --xh-_date-field-segment-fg: var(--xh-_tone-fg, var(--xh-fg-brand));
+  --xh-_date-field-segment-fg: var(--xh-_tone-fg, var(--xh-fg-on-brand-subtle));
   /* 对号画在普通面上，取语气前景角色，不能拿确认按钮的实心背景色充当前景。 */
   --xh-_date-picker-check-fg: var(--xh-_tone, var(--xh-fg-brand));
   --xh-_date-picker-time-item-check-size: var(--xh-glyph-size-sm);
-  --xh-_date-picker-time-item-bg-selected: var(--xh-_tone-subtle, var(--xh-bg-brand-subtle));
-  --xh-_date-picker-time-item-bg-selected-hover: var(--xh-_tone-subtle-hover, var(--xh-bg-brand-subtle-hover));
-  --xh-_date-picker-time-item-fg-selected: var(--xh-_tone-fg, var(--xh-fg-brand));
-  /* 确认按钮是面板里唯一的实心块，顶边画一条极浅的内高光把它衬出厚度 */
-  --xh-_date-picker-confirm-highlight: inset 0 var(--xh-stroke-thin) 0 0
-    color-mix(in oklab, var(--xh-_date-picker-accent-fg) 14%, transparent);
 }
 
 /* 与文本框、分段日期同一套堆叠：标签一行、输入行一行 */
@@ -21983,7 +21919,6 @@
   --xh-_date-picker-control-px: var(--xh-control-px-sm);
   --xh-_date-picker-gap: var(--xh-control-gap-sm);
   --xh-_date-picker-font-size: var(--xh-control-font-sm);
-  --xh-_date-picker-label-font-size: var(--xh-control-font-sm);
 }
 
 [data-scope='date-picker']:is([data-part='root'], [data-part='positioner'])[data-size='lg'] {
@@ -21992,7 +21927,6 @@
   --xh-_date-picker-control-px: var(--xh-control-px-lg);
   --xh-_date-picker-gap: var(--xh-control-gap-lg);
   --xh-_date-picker-font-size: var(--xh-control-font-lg);
-  --xh-_date-picker-label-font-size: var(--xh-control-font-lg);
 }
 
 /* 375px 复合面板要同时容下日历与时/分两列；手机档用正式小指示符，平板起恢复16px。 */
@@ -22002,35 +21936,6 @@
   }
 }
 
-/* —— 形态 —— */
-/* 输入类不做实心档：填满一个要往里打字的框，字与底就没法同时读。
-   形态只决定底与描边怎么画，用哪族颜色由 data-tone 决定 */
-[data-scope='date-picker']:is([data-part='root'], [data-part='positioner'])[data-variant='outline'] {
-  --xh-_date-picker-control-bg: var(--xh-bg-canvas);
-  --xh-_date-picker-control-bg-hover: var(--xh-_tone-subtle, var(--xh-bg-subtle));
-  --xh-_date-picker-control-border: var(--xh-border-control);
-  --xh-_date-picker-control-border-hover: var(--xh-border-control-hover);
-}
-
-/* 填充式：底色顶替描边表达边界。描边只退成透明而不去掉，1px 的位置留着，
-   与 outline 档并排时基线对得上、聚焦画描边也不引起跳动 */
-[data-scope='date-picker']:is([data-part='root'], [data-part='positioner'])[data-variant='subtle'] {
-  --xh-_date-picker-control-bg: var(--xh-_tone-subtle, var(--xh-bg-subtle));
-  --xh-_date-picker-control-bg-hover: var(--xh-_tone-subtle-hover, var(--xh-bg-subtle-hover));
-  --xh-_date-picker-control-border: transparent;
-  --xh-_date-picker-control-border-hover: var(--xh-_tone-border, var(--xh-border-control-hover));
-}
-
-/* 无框：底与常态描边透明，悬停与聚焦浮出描边。
-   落影一并关掉——底与描边都透明时它就是一片没有面的影子 */
-[data-scope='date-picker']:is([data-part='root'], [data-part='positioner'])[data-variant='ghost'] {
-  --xh-_date-picker-control-shadow: 0 0 0 transparent;
-  --xh-_date-picker-control-bg: transparent;
-  --xh-_date-picker-control-bg-hover: var(--xh-_tone-subtle, var(--xh-bg-subtle));
-  --xh-_date-picker-control-border: transparent;
-  --xh-_date-picker-control-border-hover: var(--xh-_tone-border, var(--xh-border-control-hover));
-}
-
 /* 只要声明了 display 就盖掉了 UA 的 [hidden]{display:none}，收起态得自己还回去 */
 [data-scope='date-picker'][data-part='root'][hidden] {
   display: none;
@@ -22038,7 +21943,7 @@
 
 [data-scope='date-picker'][data-part='label'] {
   color: var(--xh-date-picker-label-fg, var(--xh-fg-default));
-  font-size: var(--xh-date-picker-label-font-size, var(--xh-_date-picker-label-font-size));
+  font-size: var(--xh-date-picker-label-font-size, var(--xh-text-label-size));
   font-weight: var(--xh-date-picker-label-font-weight, var(--xh-text-label-weight));
   line-height: var(--xh-leading-none);
 }
@@ -22052,72 +21957,35 @@
 }
 
 /* 画成一个框的是 control 而不是 input：段位、清空按钮、日历按钮三者要看起来是一体的，
-   边框长在里面任何一个身上都会把另外两个割在框外 */
+   边框长在里面任何一个身上都会把另外两个割在框外。描边、底色、圆角、聚焦环、五态与悬停由
+   Field Chrome 家族画在 control 上（焦点落在段或按钮上，家族 :focus-within 让整框亮起来）；
+   组件只映射既有公开槽（shadow 缺省 none：字段静息描边式、无影）。打开中不另画环，由浮层本身承担 */
 [data-scope='date-picker'][data-part='control'] {
-  display: inline-flex;
-  align-items: center;
-  gap: var(--xh-date-picker-control-gap, var(--xh-_date-picker-gap));
-  min-inline-size: min(var(--xh-date-picker-control-min-w, var(--xh-control-min-w)), 100%);
-  block-size: var(--xh-date-picker-control-h, var(--xh-_date-picker-control-h));
-  padding-inline: var(--xh-date-picker-control-px, var(--xh-_date-picker-control-px));
-  padding-block: 0;
-  border: var(--xh-stroke-thin) solid var(--xh-date-picker-control-border, var(--xh-_date-picker-control-border));
-  border-radius: var(--xh-date-picker-control-radius, var(--xh-shape-control));
-  outline: var(--xh-ring-width) solid transparent;
-  outline-offset: var(--xh-ring-offset);
-  background: var(--xh-date-picker-control-bg, var(--xh-_date-picker-control-bg));
-  box-shadow: var(--xh-date-picker-control-shadow, var(--xh-_date-picker-control-shadow));
-  color: var(--xh-date-picker-control-fg, var(--xh-fg-default));
-  transition:
-    background var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
-    border-color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
-    outline-color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
+  --xh-field-control-height: var(--xh-date-picker-control-h, var(--xh-_date-picker-control-h));
+  --xh-field-control-padding-inline: var(--xh-date-picker-control-px, var(--xh-_date-picker-control-px));
+  --xh-field-control-gap: var(--xh-date-picker-control-gap, var(--xh-_date-picker-gap));
+  --xh-field-control-min-inline-size: var(--xh-date-picker-control-min-w, var(--xh-control-min-w));
+  --xh-field-control-radius: var(--xh-date-picker-control-radius, var(--xh-shape-control));
+  --xh-field-bg-rest: var(--xh-date-picker-control-bg, var(--xh-_field-variant-bg-rest));
+  --xh-field-bg-hover: var(--xh-date-picker-control-bg-hover, var(--xh-_field-variant-bg-hover));
+  --xh-field-bg-read-only: var(--xh-date-picker-control-bg-readonly, var(--xh-_field-variant-bg-read-only));
+  --xh-field-bg-disabled: var(--xh-date-picker-control-bg-disabled, var(--xh-_field-variant-bg-disabled));
+  --xh-field-fg-rest: var(--xh-date-picker-control-fg, var(--xh-fg-default));
+  --xh-field-border-rest: var(--xh-date-picker-control-border, var(--xh-_field-variant-border-rest));
+  --xh-field-border-hover: var(--xh-date-picker-control-border-hover, var(--xh-_field-variant-border-hover));
+  --xh-field-border-focus: var(--xh-date-picker-control-border-focus, var(--xh-_field-variant-border-focus));
+  --xh-field-border-invalid: var(--xh-date-picker-control-border-invalid, var(--xh-_field-variant-border-invalid));
+  --xh-field-ring-focus: var(--xh-ring-focus);
+  --xh-field-ring-invalid: var(--xh-ring-invalid);
+  --xh-field-shadow-rest: var(--xh-date-picker-control-shadow, none);
+  /* 段位靠键盘编辑，盒上不是文本光标 */
+  --xh-field-cursor-rest: default;
+  /* 家族 chrome 会重写 --xh-icon-size，使用者图标槽必须经桥接槽下发才能在盒内生效 */
+  --xh-field-glyph-size: var(--xh-date-picker-icon-size, var(--xh-_field-size-glyph-size));
 }
 
 [data-scope='date-picker'][data-part='control'][hidden] {
   display: none;
-}
-
-/* hover 只在中性态换描边：invalid 正拿边框颜色说事，被 hover 盖掉那条信息就没了 */
-[data-scope='date-picker'][data-part='control']:hover:not([data-disabled], [data-invalid]) {
-  border-color: var(--xh-date-picker-control-border-hover, var(--xh-_date-picker-control-border-hover));
-}
-
-/* 描边之外再换一档填充：只挪一格描边色的悬停在浅底上几乎读不出来。
-   只读盒的底色正说着「改不动」，不参与换填充 */
-[data-scope='date-picker'][data-part='control']:hover:not([data-disabled], [data-readonly]) {
-  background: var(--xh-date-picker-control-bg-hover, var(--xh-_date-picker-control-bg-hover));
-}
-
-/* 焦点落在某一段或某个按钮上，而边框长在 control 上：焦点环得由内向外借一层。
-   control 自己不占 Tab 位，:focus-within 是它唯一能感知组内焦点的方式 */
-[data-scope='date-picker'][data-part='control']:focus-within:not([data-disabled]) {
-  border-color: var(--xh-date-picker-control-border-focus, var(--xh-_tone, var(--xh-border-control-focus)));
-  outline: var(--xh-ring-width) solid var(--xh-_date-picker-ring);
-  outline-offset: var(--xh-ring-offset);
-}
-
-[data-scope='date-picker'][data-part='control'][data-state='open']:not([data-disabled]) {
-  border-color: var(--xh-date-picker-control-border-focus, var(--xh-_tone, var(--xh-border-control-focus)));
-  outline: var(--xh-ring-width) solid var(--xh-_date-picker-ring);
-  outline-offset: var(--xh-ring-offset);
-}
-
-[data-scope='date-picker'][data-part='control'][data-invalid] {
-  border-color: var(--xh-date-picker-control-border-invalid, var(--xh-border-invalid));
-
-  /* 校验失败时环也跟着变红：两圈等宽相邻却一红一蓝，读的人不知道哪个才是当前状态 */
-  --xh-_date-picker-ring: var(--xh-ring-invalid);
-}
-
-/* 只读仍可聚焦、日历仍能展开来看，不置灰，只把底色压下去表示"改不动" */
-[data-scope='date-picker'][data-part='control'][data-readonly] {
-  background: var(--xh-date-picker-control-bg-readonly, var(--xh-bg-subtle));
-}
-
-[data-scope='date-picker'][data-part='control'][data-disabled] {
-  background: var(--xh-date-picker-control-bg-disabled, var(--xh-bg-subtle));
-  color: var(--xh-fg-disabled);
 }
 
 /* 段位与作者写在段间的分隔符都在这一层里：段位自己那身皮由 date-field 那份样式负责
@@ -22148,33 +22016,46 @@
   outline: none;
 }
 
-/* 两个按钮同一副长相：贴在框内末端的小方钮，不占宽度也不撑高 control */
+/* 两个按钮同一副长相：贴在框内末端的小方钮，不占宽度也不撑高 control。正方视觉盒、inset 圆角、
+   悬停 100 / 按下 200 与 0.97 按压、粗指针热区、禁用面与 :focus-visible 关环（盒的 :focus-within
+   已画了一圈）全由 Action Control 的 field-inset ghost 档给，组件只映射既有覆盖槽。
+   打开中与悬停同档：日历钮不另上底，方向由浮层本身承担 */
 [data-scope='date-picker'][data-part='trigger'],
 [data-scope='date-picker'][data-part='clear-trigger'] {
-  display: inline-flex;
-  flex: none;
-  align-items: center;
-  justify-content: center;
-  inline-size: var(--xh-date-picker-action-size, var(--xh-control-action-size));
-  block-size: var(--xh-date-picker-action-size, var(--xh-control-action-size));
-  padding: 0;
-  border: 0;
-  border-radius: var(--xh-date-picker-action-radius, var(--xh-shape-control));
-  background: var(--xh-date-picker-action-bg, transparent);
-  color: var(--xh-date-picker-action-fg, var(--xh-fg-muted));
-  font-family: inherit;
-  font-size: var(--xh-date-picker-action-font-size, var(--xh-text-secondary-size));
-  line-height: var(--xh-leading-none);
-  cursor: pointer;
-  user-select: none;
-  transition: background var(--xh-motion-duration-micro) var(--xh-motion-ease-enter), scale var(--xh-motion-duration-release) var(--xh-motion-ease-release);
+  --xh-action-visual-size: var(--xh-date-picker-action-size, var(--xh-_action-profile-visual-size));
+  --xh-action-min-inline-size: var(--xh-date-picker-action-size, var(--xh-_action-profile-visual-size));
+  --xh-action-radius: var(--xh-date-picker-action-radius, var(--xh-shape-inset));
+  /* 底色阶梯由 ghost 档给（透明 → 100 → 200），使用者槽只作覆盖入口 */
+  --xh-action-bg-rest: var(--xh-date-picker-action-bg, var(--xh-_action-variant-bg-rest));
+  --xh-action-bg-hover: var(--xh-date-picker-action-bg-hover, var(--xh-_action-variant-bg-hover));
+  --xh-action-bg-pressed: var(--xh-date-picker-action-bg-active, var(--xh-_action-variant-bg-pressed));
+  --xh-action-fg-rest: var(--xh-date-picker-action-fg, var(--xh-fg-muted));
+  --xh-action-fg-hover: var(--xh-date-picker-action-fg-hover, var(--xh-fg-default));
+  --xh-action-border-rest: transparent;
+  --xh-action-highlight-rest: transparent;
+  --xh-action-shadow-rest: none;
+  --xh-action-shadow-hover: none;
+  --xh-action-shadow-pressed: none;
+  --xh-action-font-size: var(--xh-date-picker-action-font-size, var(--xh-text-secondary-size));
+  /* 配方尚未把 profile 字形档灌进 --xh-icon-size，钮内字形先按 field-inset 档逐钮取值 */
+  --xh-icon-size: var(--xh-_action-profile-glyph-size);
+
+  border-width: 0;
 }
 
+/* 没值时连接层给的是 hidden 属性；家族那条 display 会把 UA 规则盖掉 */
 [data-scope='date-picker'][data-part='trigger'][hidden],
 [data-scope='date-picker'][data-part='clear-trigger'][hidden] {
   display: none;
 }
 
+/* 打开中与悬停同档：日历钮的静息底换到悬停那一支中性面，不用品牌色、不另画环；方向由浮层本身承担 */
+[data-scope='date-picker'][data-part='trigger'][data-state='open'] {
+  --xh-action-bg-rest: var(--xh-date-picker-action-bg-hover, var(--xh-_action-variant-bg-hover));
+  --xh-action-fg-rest: var(--xh-date-picker-action-fg-hover, var(--xh-fg-default));
+}
+
+/* 有值时清空钮顶上来，日历钮让位：两颗并排堆着用户分不清点哪个 */
 [data-scope='date-picker'][data-part='control']:has(
     > [data-scope='date-picker'][data-part='clear-trigger']:not([hidden])
   )
@@ -22182,50 +22063,8 @@
   display: none;
 }
 
-[data-scope='date-picker'][data-part='trigger']:hover:not(:disabled),
-[data-scope='date-picker'][data-part='clear-trigger']:hover {
-  background: var(--xh-date-picker-action-bg-hover, var(--xh-bg-subtle-hover));
-  color: var(--xh-date-picker-action-fg-hover, var(--xh-fg-default));
-}
-
-[data-scope='date-picker'][data-part='trigger']:active:not(:disabled) {
-  background: var(--xh-date-picker-action-bg-active, var(--xh-bg-subtle-active));
-  scale: var(--xh-motion-scale-press);
-  transition-duration: var(--xh-motion-duration-press);
-  transition-timing-function: var(--xh-motion-ease-press);
-}
-
-[data-scope='date-picker'][data-part='clear-trigger']:active {
-  background: var(--xh-date-picker-action-bg-active, var(--xh-bg-subtle-active));
-  scale: var(--xh-motion-scale-press);
-  transition-duration: var(--xh-motion-duration-press);
-  transition-timing-function: var(--xh-motion-ease-press);
-}
-
-/* 展开时按钮压一层底色，与浮层的存在互相印证 */
-[data-scope='date-picker'][data-part='trigger'][data-state='open'] {
-  background: var(--xh-date-picker-action-bg-active, var(--xh-bg-subtle-active));
-  color: var(--xh-date-picker-action-fg-hover, var(--xh-fg-default));
-}
-
-/* 面是实心的，环色与面同族，画在面里就看不出来；环改取面自己的前景色——
-   那一族色本来就要在这块面上把字读清楚，与面的对比是按可读性定的 */
-[data-scope='date-picker'][data-part='trigger'][data-state='open']:focus-visible {
-  --xh-_ring-color: currentColor;
-}
-
-/* 清空按钮不占 Tab 位（tabindex=-1），这条是给程序化聚焦兜底：落焦时得看得见。
-   展开钮是常规 Tab 停靠点，它落焦时环由盒的 :focus-within 画，这里不再套一圈 */
-[data-scope='date-picker'][data-part='clear-trigger']:focus-visible {
-  outline: var(--xh-ring-width) solid var(--xh-_date-picker-ring);
-  outline-offset: var(--xh-ring-offset);
-}
-
-[data-scope='date-picker'][data-part='trigger']:disabled {
-  background: var(--xh-date-picker-action-bg, transparent);
-  color: var(--xh-fg-disabled);
-}
-
+/* 浮层：含日历网格与时间列的锚定面板，走 floating 材质——实体底 + --xh-border-default 描边 +
+   --xh-elevation-floating 落影，不透景、不画顶光 */
 [data-scope='date-picker'][data-part='content'] {
   position: relative;
   display: block;
@@ -22234,7 +22073,7 @@
   max-inline-size: var(--xh-_date-picker-available-w);
   padding-block: var(--xh-date-picker-content-py, var(--xh-space-2));
   padding-inline: var(--xh-date-picker-content-px, var(--xh-space-2));
-  border: var(--xh-stroke-thin) solid var(--xh-date-picker-content-border, var(--xh-border-subtle));
+  border: var(--xh-stroke-thin) solid var(--xh-date-picker-content-border, var(--xh-border-default));
   border-radius: var(--xh-date-picker-content-radius, var(--xh-shape-overlay));
   background: var(--xh-date-picker-content-bg, var(--xh-bg-surface));
   color: var(--xh-date-picker-content-fg, var(--xh-fg-default));
@@ -22244,22 +22083,10 @@
   /* 两轴都滚：块轴放不下时面板内自己竖滚，行内轴放不下时面板内自己横滚，
      日历那几块保持各自的天然宽度，不被压 */
   overflow: auto;
-  box-shadow: var(--xh-date-picker-content-shadow, var(--xh-material-frosted-shadow));
-  -webkit-backdrop-filter: var(--xh-date-picker-content-backdrop, none);
-  backdrop-filter: var(--xh-date-picker-content-backdrop, none);
+  /* 浮层滚动面：滚到头不把页面一起带走 */
+  overscroll-behavior: contain;
+  box-shadow: var(--xh-date-picker-content-shadow, var(--xh-elevation-floating));
   pointer-events: auto;
-}
-
-/* 顶光由唯一浮层表面绘制，不占日历空间，也不拦截操作。 */
-[data-scope='date-picker'][data-part='content']::before {
-  content: '';
-  position: absolute;
-  inset-block-start: 0;
-  inset-inline: 0;
-  block-size: var(--xh-stroke-thin);
-  border-radius: inherit;
-  background: var(--xh-date-picker-content-highlight, transparent);
-  pointer-events: none;
 }
 
 /* 这里刻意没有 [data-part='content'][hidden] { display: none }，与 dialog 一致：
@@ -22400,6 +22227,8 @@
   padding: var(--xh-date-picker-preset-group-padding, var(--xh-space-1));
   overflow-x: auto;
   overflow-y: hidden;
+  /* 浮层滚动面：滚到头不把页面一起带走 */
+  overscroll-behavior: contain;
   border-block-end: var(--xh-stroke-thin) solid var(--xh-date-picker-column-divider, var(--xh-material-frosted-separator));
 }
 
@@ -22418,41 +22247,62 @@
   display: none;
 }
 
+/* 快捷选项：悬停 / 高亮 100、按下 200、禁用面由 Collection Item 家族按 overlay 语境给（选中 = 透明底 +
+   行尾对号，正文保持 rest 色与常规字重）。选项没有正文部件，匿名文本进不了家族网格的 text 列，
+   行保持块级排版，末端为对号预留固定轨 */
 [data-scope='date-picker'][data-part='preset'] {
+  --xh-collection-block-padding: var(--xh-date-picker-preset-py, var(--xh-space-1));
+  --xh-collection-inline-padding: var(--xh-date-picker-preset-px, var(--xh-space-3));
+  --xh-collection-font-size: var(--xh-text-secondary-size);
+  --xh-collection-radius: var(--xh-date-picker-preset-radius, var(--xh-shape-control));
+  /* 面板是实体面（floating），正文取页面前景 */
+  --xh-collection-fg-rest: var(--xh-fg-default);
+  --xh-collection-fg-hover: var(--xh-fg-default);
+  --xh-collection-fg-keyboard-highlight: var(--xh-fg-default);
+  --xh-collection-fg-pressed: var(--xh-fg-default);
+  --xh-collection-fg-selected: var(--xh-date-picker-preset-fg-selected, var(--xh-fg-default));
+  --xh-collection-fg-selected-highlight: var(--xh-date-picker-preset-fg-selected, var(--xh-fg-default));
+  --xh-collection-fg-selected-hover: var(--xh-date-picker-preset-fg-selected, var(--xh-fg-default));
+  --xh-collection-fg-selected-pressed: var(--xh-date-picker-preset-fg-selected, var(--xh-fg-default));
+  --xh-collection-fg-disabled: var(--xh-date-picker-preset-fg-disabled, var(--xh-fg-disabled));
+  --xh-collection-bg-hover: var(--xh-date-picker-preset-bg-hover, var(--xh-bg-subtle));
+  --xh-collection-bg-keyboard-highlight: var(--xh-date-picker-preset-bg-hover, var(--xh-bg-subtle));
+  --xh-collection-bg-selected-highlight: var(--xh-date-picker-preset-bg-hover, var(--xh-bg-subtle));
+  --xh-collection-bg-selected-hover: var(--xh-date-picker-preset-bg-hover, var(--xh-bg-subtle));
+  --xh-collection-bg-pressed: var(--xh-date-picker-preset-bg-pressed, var(--xh-bg-subtle-hover));
+  --xh-collection-bg-selected-pressed: var(--xh-date-picker-preset-bg-pressed, var(--xh-bg-subtle-hover));
+  --xh-collection-outline-keyboard-highlight: transparent;
+  --xh-collection-outline-selected-highlight: transparent;
+
   /* 横着排那一档不许被压扁：条目文本本来就不折行 */
   position: relative;
+  display: block;
   flex: none;
-  padding-block: var(--xh-date-picker-preset-py, var(--xh-space-1));
-  padding-inline: var(--xh-date-picker-preset-px, var(--xh-space-3));
   /* 对号的末端轨始终留着，切换选中时文字与整列宽度都不移动。 */
   padding-inline-end: calc(
     var(--xh-date-picker-preset-px, var(--xh-space-3)) +
       var(--xh-date-picker-preset-check-size, var(--xh-glyph-size-sm)) +
       var(--xh-space-1)
   );
-  border-radius: var(--xh-date-picker-preset-radius, var(--xh-shape-control));
-  font-size: var(--xh-text-secondary-size);
-  line-height: var(--xh-leading-normal);
   white-space: nowrap;
-  cursor: pointer;
   user-select: none;
-  transition:
-    background var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
-    color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
 }
 
-/* 悬停与键盘焦点共用中性底；持久选中只由末端对号表达。 */
-[data-scope='date-picker'][data-part='preset']:not([data-disabled]):is(:hover, :focus-visible) {
-  background: var(--xh-date-picker-preset-bg-hover, var(--xh-bg-subtle));
+/* 键盘焦点出现时环才接回并立即到位，不压在背景过渡的中间帧上 */
+[data-scope='date-picker'][data-part='preset']:focus-visible:not(:hover) {
+  --xh-collection-outline-keyboard-highlight: var(--xh-ring-focus);
+  --xh-collection-outline-selected-highlight: var(--xh-ring-focus);
+
+  transition: none;
 }
 
-[data-scope='date-picker'][data-part='preset']:focus-visible {
-  transition-property: color;
+[data-scope='date-picker'][data-part='preset']:focus:not(:focus-visible) {
+  outline: none;
 }
 
-[data-scope='date-picker'][data-part='preset'][data-state='checked'] {
-  color: var(--xh-date-picker-preset-fg-selected, inherit);
-  font-weight: var(--xh-font-weight-regular);
+/* 上面给了 display，UA 的 [hidden]{display:none} 已被盖掉，这里补回来 */
+[data-scope='date-picker'][data-part='preset'][hidden] {
+  display: none;
 }
 
 [data-scope='date-picker'][data-part='preset']::after {
@@ -22473,11 +22323,6 @@
 
 [data-scope='date-picker'][data-part='preset'][data-state='checked']::after {
   opacity: 1;
-}
-
-[data-scope='date-picker'][data-part='preset'][data-disabled] {
-  color: var(--xh-date-picker-preset-fg-disabled, var(--xh-fg-disabled));
-  cursor: not-allowed;
 }
 
 [data-scope='date-picker'][data-part='preset'][data-disabled]::after {
@@ -22505,6 +22350,8 @@
   padding-inline: var(--xh-date-picker-time-column-px, 0);
   overflow-x: hidden;
   overflow-y: auto;
+  /* 浮层滚动面：滚到头不把页面一起带走 */
+  overscroll-behavior: contain;
   border-inline-start: var(--xh-stroke-thin) solid var(--xh-date-picker-column-divider, var(--xh-material-frosted-separator));
 }
 
@@ -22512,11 +22359,34 @@
   display: none;
 }
 
+/* 时间格：悬停 / 高亮 100、按下 200 由 Collection Item 家族按 overlay 语境给，选中只留末端对号——
+   浮层瞬态集合的选中不上品牌淡底、不加粗、不变字色。格里只有数字、没有正文部件，保持自己的
+   居中排版与等宽标记轨，家族只给状态面 */
 [data-scope='date-picker'][data-part='time-item'] {
   --xh-_date-picker-time-item-rail: max(
     var(--xh-date-picker-time-item-px, var(--xh-space-0_5)),
     calc(var(--xh-date-picker-time-item-check-size, var(--xh-_date-picker-time-item-check-size)) + var(--xh-space-0_5))
   );
+  --xh-collection-block-padding: var(--xh-date-picker-time-item-py, 0);
+  --xh-collection-inline-padding: var(--xh-_date-picker-time-item-rail);
+  --xh-collection-font-size: var(--xh-text-secondary-size);
+  --xh-collection-radius: var(--xh-date-picker-time-item-radius, var(--xh-shape-control));
+  --xh-collection-fg-rest: var(--xh-fg-default);
+  --xh-collection-fg-hover: var(--xh-fg-default);
+  --xh-collection-fg-keyboard-highlight: var(--xh-fg-default);
+  --xh-collection-fg-pressed: var(--xh-fg-default);
+  --xh-collection-fg-selected: var(--xh-date-picker-time-item-fg-selected, var(--xh-fg-default));
+  --xh-collection-fg-selected-highlight: var(--xh-date-picker-time-item-fg-selected, var(--xh-fg-default));
+  --xh-collection-fg-selected-hover: var(--xh-date-picker-time-item-fg-selected, var(--xh-fg-default));
+  --xh-collection-fg-selected-pressed: var(--xh-date-picker-time-item-fg-selected, var(--xh-fg-default));
+  --xh-collection-bg-hover: var(--xh-date-picker-time-item-bg-hover, var(--xh-bg-subtle));
+  --xh-collection-bg-keyboard-highlight: var(--xh-date-picker-time-item-bg-hover, var(--xh-bg-subtle));
+  --xh-collection-bg-selected-highlight: var(--xh-date-picker-time-item-bg-hover, var(--xh-bg-subtle));
+  --xh-collection-bg-selected-hover: var(--xh-date-picker-time-item-bg-hover, var(--xh-bg-subtle));
+  --xh-collection-bg-pressed: var(--xh-date-picker-time-item-bg-pressed, var(--xh-bg-subtle-hover));
+  --xh-collection-bg-selected-pressed: var(--xh-date-picker-time-item-bg-pressed, var(--xh-bg-subtle-hover));
+  --xh-collection-outline-keyboard-highlight: transparent;
+  --xh-collection-outline-selected-highlight: transparent;
 
   position: relative;
   display: flex;
@@ -22524,45 +22394,26 @@
   align-items: center;
   justify-content: center;
   block-size: var(--xh-date-picker-time-item-h, calc(var(--xh-control-h-sm) - var(--xh-space-1)));
-  padding-block: var(--xh-date-picker-time-item-py, 0);
-  /* 左右两轨等宽：末端放对号，起始端留同宽空轨，数字仍在整行数学中心。 */
-  padding-inline: var(--xh-_date-picker-time-item-rail);
-  border-radius: var(--xh-date-picker-time-item-radius, var(--xh-shape-control));
-  font-size: var(--xh-text-secondary-size);
-  line-height: var(--xh-leading-normal);
   font-variant-numeric: tabular-nums;
   text-align: center;
-  cursor: pointer;
+  white-space: nowrap;
   user-select: none;
-  transition:
-    background var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
-    color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
 }
 
 [data-scope='date-picker'][data-part='time-item'][hidden] {
   display: none;
 }
 
-[data-scope='date-picker'][data-part='time-column']:not([aria-disabled='true']) [data-part='time-item']:is(
-    :hover,
-    :focus-visible
-  ) {
-  background: var(--xh-date-picker-time-item-bg-hover, var(--xh-bg-subtle));
+/* 键盘焦点出现时环才接回并立即到位，不压在背景过渡的中间帧上 */
+[data-scope='date-picker'][data-part='time-item']:focus-visible:not(:hover) {
+  --xh-collection-outline-keyboard-highlight: var(--xh-ring-focus);
+  --xh-collection-outline-selected-highlight: var(--xh-ring-focus);
+
+  transition: none;
 }
 
-[data-scope='date-picker'][data-part='time-item']:focus-visible {
-  transition-property: color;
-}
-
-[data-scope='date-picker'][data-part='time-item'][data-state='checked'] {
-  background: var(--xh-_date-picker-time-item-bg-selected);
-  color: var(--xh-date-picker-time-item-fg-selected, var(--xh-_date-picker-time-item-fg-selected));
-  font-weight: var(--xh-font-weight-medium);
-}
-
-[data-scope='date-picker'][data-part='time-column']:not([aria-disabled='true'])
-  [data-part='time-item'][data-state='checked']:is(:hover, :focus-visible) {
-  background: var(--xh-_date-picker-time-item-bg-selected-hover);
+[data-scope='date-picker'][data-part='time-item']:focus:not(:focus-visible) {
+  outline: none;
 }
 
 [data-scope='date-picker'][data-part='time-item']::after {
@@ -22612,53 +22463,54 @@
   }
 }
 
+/* 列整体禁用时格没有自己的 aria-disabled，禁用面按列的 aria-disabled 映射到家族槽：
+   字色降级、悬停 / 高亮 / 按下不换面、光标 not-allowed */
 [data-scope='date-picker'][data-part='time-column'][aria-disabled='true'] [data-part='time-item'] {
-  color: var(--xh-fg-disabled);
-  cursor: not-allowed;
+  --xh-collection-fg-rest: var(--xh-fg-disabled);
+  --xh-collection-fg-hover: var(--xh-fg-disabled);
+  --xh-collection-fg-keyboard-highlight: var(--xh-fg-disabled);
+  --xh-collection-fg-pressed: var(--xh-fg-disabled);
+  --xh-collection-fg-selected: var(--xh-fg-disabled);
+  --xh-collection-bg-hover: transparent;
+  --xh-collection-bg-keyboard-highlight: transparent;
+  --xh-collection-bg-pressed: transparent;
+  --xh-collection-bg-selected-hover: transparent;
+  --xh-collection-bg-selected-highlight: transparent;
+  --xh-collection-bg-selected-pressed: transparent;
+  --xh-collection-cursor-rest: not-allowed;
+  --xh-collection-cursor-hover: not-allowed;
+  --xh-collection-cursor-keyboard-highlight: not-allowed;
+  --xh-collection-cursor-pressed: not-allowed;
+  --xh-collection-cursor-selected: not-allowed;
 }
 
 [data-scope='date-picker'][data-part='time-column'][aria-disabled='true'] [data-part='time-item']::after {
   background-color: var(--xh-fg-disabled);
 }
 
-/* 槽名统一按部件取 --xh-date-picker-confirm-trigger-* */
+/* 确认钮是面板里唯一的主要动作：品牌实心、悬停 / 按下与 0.97 按压、焦点环全由 Action Control 的
+   text solid 档给；槽名统一按部件取 --xh-date-picker-confirm-trigger-*，只映射到家族桥接槽 */
 [data-scope='date-picker'][data-part='confirm-trigger'] {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  block-size: var(--xh-date-picker-confirm-trigger-h, var(--xh-control-h-sm));
-  padding-inline: var(--xh-date-picker-confirm-trigger-px, var(--xh-control-px-sm));
-  border: none;
-  border-radius: var(--xh-date-picker-confirm-trigger-radius, var(--xh-shape-control));
-  background: var(--xh-date-picker-confirm-trigger-bg, var(--xh-_date-picker-accent));
-  color: var(--xh-date-picker-confirm-trigger-fg, var(--xh-_date-picker-accent-fg));
-  box-shadow: var(--xh-date-picker-confirm-trigger-shadow, var(--xh-_date-picker-confirm-highlight));
-  font-size: var(--xh-text-secondary-size);
-  cursor: pointer;
-  transition:
-    background var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
-    scale var(--xh-motion-duration-release) var(--xh-motion-ease-release);
+  --xh-action-visual-size: var(--xh-date-picker-confirm-trigger-h, var(--xh-_action-profile-visual-size));
+  --xh-action-padding-inline: var(--xh-date-picker-confirm-trigger-px, var(--xh-_action-profile-padding-inline));
+  --xh-action-radius: var(--xh-date-picker-confirm-trigger-radius, var(--xh-shape-control));
+  --xh-action-bg-rest: var(--xh-date-picker-confirm-trigger-bg, var(--xh-_action-variant-bg-rest));
+  --xh-action-bg-hover: var(--xh-date-picker-confirm-trigger-bg-hover, var(--xh-_action-variant-bg-hover));
+  --xh-action-bg-pressed: var(--xh-date-picker-confirm-trigger-bg-active, var(--xh-_action-variant-bg-pressed));
+  --xh-action-fg-rest: var(--xh-date-picker-confirm-trigger-fg, var(--xh-_action-variant-fg-rest));
+  --xh-action-fg-hover: var(--xh-date-picker-confirm-trigger-fg, var(--xh-_action-variant-fg-hover));
+  --xh-action-fg-pressed: var(--xh-date-picker-confirm-trigger-fg, var(--xh-_action-variant-fg-pressed));
+  --xh-action-border-rest: transparent;
+  --xh-action-highlight-rest: transparent;
+  --xh-action-shadow-rest: var(--xh-date-picker-confirm-trigger-shadow, none);
+  --xh-action-shadow-hover: var(--xh-date-picker-confirm-trigger-shadow, none);
+  --xh-action-shadow-pressed: var(--xh-date-picker-confirm-trigger-shadow, none);
+  --xh-action-font-size: var(--xh-text-secondary-size);
+
+  border-width: 0;
 }
 
-[data-scope='date-picker'][data-part='confirm-trigger']:hover {
-  background: var(--xh-date-picker-confirm-trigger-bg-hover, var(--xh-_date-picker-accent-hover));
-}
-
-/* 它是面板里唯一的确认出口，与框内那两颗小钮同一副按压观感：换底再加一次轻微下压 */
-[data-scope='date-picker'][data-part='confirm-trigger']:active {
-  background: var(--xh-date-picker-confirm-trigger-bg-active, var(--xh-_date-picker-accent-active));
-  scale: var(--xh-motion-scale-press);
-  transition-duration: var(--xh-motion-duration-press);
-  transition-timing-function: var(--xh-motion-ease-press);
-}
-
-/* 面是实心的，环色与面同族，画在面里就看不出来；环改取面自己的前景色——
-   那一族色本来就要在这块面上把字读清楚，与面的对比是按可读性定的 */
-[data-scope='date-picker'][data-part='confirm-trigger']:focus-visible {
-  outline: var(--xh-ring-width) solid currentColor;
-  outline-offset: var(--xh-ring-offset);
-}
-
+/* 收起时连接层给的是 hidden 属性；家族那条 display 会把 UA 规则盖掉 */
 [data-scope='date-picker'][data-part='confirm-trigger'][hidden] {
   display: none;
 }

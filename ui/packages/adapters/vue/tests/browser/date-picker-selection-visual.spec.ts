@@ -124,7 +124,7 @@ afterEach(async () => {
 })
 
 describe('日期选择器快捷项与时间项的统一选中反馈', () => {
-  it('preset 使用对号，time-item 使用淡强调面、强调文字与对号表示持久选值', async () => {
+  it('preset 与 time-item 都只用对号表示持久选值：透明底、正文颜色与字重保持 rest', async () => {
     await mountDatePicker()
     const selectedPreset = byTestId('selected-preset')
     const plainPreset = byTestId('plain-preset')
@@ -143,9 +143,10 @@ describe('日期选择器快捷项与时间项的统一选中反馈', () => {
     expect(checkStyle(plainPreset).opacity).toBe('0')
 
     expect(selectedTime.getAttribute('data-state')).toBe('checked')
-    expect(alpha(getComputedStyle(selectedTime).backgroundColor)).toBe(255)
-    expect(getComputedStyle(selectedTime).color).not.toBe(getComputedStyle(plainTime).color)
-    expect(getComputedStyle(selectedTime).fontWeight).not.toBe(getComputedStyle(plainTime).fontWeight)
+    // 浮层瞬态集合的选中：透明底 + 末端对号，不上品牌淡底、不变字色、不加粗（§7.3）
+    expect(alpha(getComputedStyle(selectedTime).backgroundColor)).toBe(0)
+    expect(getComputedStyle(selectedTime).color).toBe(getComputedStyle(plainTime).color)
+    expect(getComputedStyle(selectedTime).fontWeight).toBe(getComputedStyle(plainTime).fontWeight)
     expect(checkStyle(selectedTime).opacity).toBe('1')
     expect(checkStyle(selectedTime).maskImage).not.toBe('none')
   })
@@ -161,8 +162,8 @@ describe('日期选择器快捷项与时间项的统一选中反馈', () => {
     const selectedTime = timeItem('hour', '09')
     selectedTime.style.transition = 'none'
     await userEvent.hover(selectedTime)
-    expect(getComputedStyle(selectedTime).backgroundColor).not.toBe(neutral)
-    expect(alpha(getComputedStyle(selectedTime).backgroundColor)).toBe(255)
+    // selected + hover = 家族 hover 档 + 对号：与未选中项的悬停面同一档中性面
+    expect(getComputedStyle(selectedTime).backgroundColor).toBe(neutral)
     expect(checkStyle(selectedTime).opacity).toBe('1')
 
     await userEvent.tab()
@@ -170,18 +171,19 @@ describe('日期选择器快捷项与时间项的统一选中反馈', () => {
     preset.focus()
     expect(preset.matches(':focus-visible')).toBe(true)
     expect(getComputedStyle(preset).backgroundColor).toBe(neutral)
-    expect(getComputedStyle(preset).transitionProperty).toBe('color')
+    // 键盘焦点出现时底色与环当帧到位，不压在家族背景过渡的中间帧上
+    expect(getComputedStyle(preset).transitionProperty).toBe('none')
 
     const selectedPreset = byTestId('selected-preset')
     selectedPreset.focus()
     expect(getComputedStyle(selectedPreset).backgroundColor).toBe(neutral)
-    expect(getComputedStyle(selectedPreset).transitionProperty).toBe('color')
+    expect(getComputedStyle(selectedPreset).transitionProperty).toBe('none')
     expect(checkStyle(selectedPreset).opacity).toBe('1')
 
     const focusedTime = timeItem('minute', '15')
     focusedTime.focus()
     expect(focusedTime.matches(':focus-visible')).toBe(true)
-    expect(getComputedStyle(focusedTime).transitionProperty).toBe('color')
+    expect(getComputedStyle(focusedTime).transitionProperty).toBe('none')
   })
 
   it.each(['ltr', 'rtl'] as const)('%s：时间数字保持数学居中，对号只翻到逻辑末端', async (dir) => {

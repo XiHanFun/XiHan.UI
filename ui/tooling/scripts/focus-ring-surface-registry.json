@@ -55,10 +55,10 @@
     "carousel [data-part='indicator-group'][data-scope='carousel']": "不是可聚焦节点，落焦只会是浏览器兜底行为；指示点各自有环",
     "carousel [data-part='list'][data-scope='carousel']": "不是可聚焦节点，落焦只会是浏览器兜底行为；两侧按钮与指示点各自有环",
     "carousel [data-part='viewport'][data-scope='carousel']": "不是可聚焦节点，落焦只会是浏览器兜底行为；两侧按钮与指示点各自有环",
-    "cascader [data-part='control'][data-scope='cascader'] [data-part='input'][data-scope='cascader']": "家族随皮肤引入的规则：cascader 的内容区是 trigger 按钮、不投影 data-xh-field-input（搜索框在浮层里、不在盒内），这条命不中；环由 control 的 :focus-within 画在外框上",
-    "cascader [data-part='control'][data-scope='cascader'] [data-xh-action-profile='field-inset']": "清空钮在盒里（tabindex=-1，只接程序化落焦），环由 control 的 :focus-within 画在外框上",
     "cascader [data-part='column'][data-scope='cascader']:not([tabindex='0'])": "首列只在打开且还没有锚点条目时认领 Tab 位（那时 tabindex=0，吃 focus.css 的默认环）；tabindex=-1 时是程序化落焦的中转，高亮长在条目上",
     "cascader [data-part='content'][data-scope='cascader']": "焦点域的兜底落点（tabindex=-1），高亮永远长在条目上",
+    "cascader [data-part='control'][data-scope='cascader'] [data-part='input'][data-scope='cascader']": "家族随皮肤引入的规则：cascader 的内容区是 trigger 按钮、不投影 data-xh-field-input（搜索框在浮层里、不在盒内），这条命不中；环由 control 的 :focus-within 画在外框上",
+    "cascader [data-part='control'][data-scope='cascader'] [data-xh-action-profile='field-inset']": "清空钮在盒里（tabindex=-1，只接程序化落焦），环由 control 的 :focus-within 画在外框上",
     "color-field [data-part='control'][data-scope='color-field'] [data-part='input'][data-scope='color-field']": "环由 control 的 :focus-within 画在外框上",
     "color-field [data-part='control'][data-scope='color-field'] [data-xh-action-profile='field-inset']": "环由 control 的 :focus-within 画在外框上",
     "color-picker [data-part='content'][data-scope='color-picker']": "浮层只是容器，tabindex=-1 是焦点域的兜底落点，环长在里面的控件上",
@@ -73,6 +73,8 @@
     "date-field [data-part='control'][data-scope='date-field'] [data-xh-action-profile='field-inset']": "焦点落到盒内清空钮（tabindex=-1，只接程序化落焦）时 control 已经 :focus-within 起了环",
     "date-field [data-part='segment'][data-scope='date-field']": "环由 control 的 :focus-within 画在外框上，段位只反白标出当前段",
     "date-picker [data-part='content'][data-scope='date-picker']": "浮层壳不承载焦点（焦点直接落到聚焦日那一格），tabindex=-1 只接程序化落焦",
+    "date-picker [data-part='control'][data-scope='date-picker'] [data-part='input'][data-scope='date-picker']": "家族随皮肤引入的规则：date-picker 的段位是 div、不投影 data-xh-field-input，这条命不中；环由 control 的 :focus-within 画在外框上",
+    "date-picker [data-part='control'][data-scope='date-picker'] [data-xh-action-profile='field-inset']": "日历钮与清空钮都在盒里，环由 control 的 :focus-within 画在外框上",
     "date-picker [data-part='segment-group'][data-scope='date-picker']": "容器不占 Tab 位也不承载焦点，环由 control 画",
     "date-range-picker [data-part='content'][data-scope='date-range-picker']": "浮层壳不承载焦点（焦点直接落到起点那一格），tabindex=-1 只接程序化落焦",
     "date-range-picker [data-part='segment-group'][data-scope='date-range-picker']": "容器不占 Tab 位也不承载焦点，环由 control 画",
@@ -142,10 +144,10 @@
     "transfer [data-part='list'][data-scope='transfer']": "焦点在集合外时容器自己进 Tab 序列兜底，高亮永远长在条目上",
     "tree [data-part='branch'][data-scope='tree']": "branch 是 treeitem，环画在它自己那一行上；整棵子树套一圈会把展开的层级全框进去",
     "tree [data-part='tree'][data-scope='tree']": "焦点在树外时容器自己进 Tab 序列兜底，环永远长在行上",
-    "tree-select [data-part='control'][data-scope='tree-select'] [data-part='input'][data-scope='tree-select']": "家族随皮肤引入的规则：tree-select 的内容区是 trigger 按钮、不投影 data-xh-field-input，这条命不中；环由 control 的 :focus-within 画在外框上",
-    "tree-select [data-part='control'][data-scope='tree-select'] [data-xh-action-profile='field-inset']": "清空钮在盒里（tabindex=-1，只接程序化落焦），环由 control 的 :focus-within 画在外框上",
     "tree-select [data-part='branch'][data-scope='tree-select']": "branch 是 treeitem，环画在它自己那一行上；整棵子树套一圈会把展开的层级全框进去",
     "tree-select [data-part='content'][data-scope='tree-select']": "焦点域的兜底落点（tabindex=-1），高亮永远长在行上",
+    "tree-select [data-part='control'][data-scope='tree-select'] [data-part='input'][data-scope='tree-select']": "家族随皮肤引入的规则：tree-select 的内容区是 trigger 按钮、不投影 data-xh-field-input，这条命不中；环由 control 的 :focus-within 画在外框上",
+    "tree-select [data-part='control'][data-scope='tree-select'] [data-xh-action-profile='field-inset']": "清空钮在盒里（tabindex=-1，只接程序化落焦），环由 control 的 :focus-within 画在外框上",
     "tree-select [data-part='tree'][data-scope='tree-select']:not([tabindex='0'])": "树只在打开且还没有锚点行时认领 Tab 位（那时 tabindex=0，吃 focus.css 的默认环）；tabindex=-1 时是程序化落焦的中转，环长在行上",
     "virtualizer [data-part='content'][data-scope='virtualizer']": "纯容器，不进 Tab 序列也不承载焦点；作者自己加了 tabindex 也该显形视口那圈环，不在这儿多画一圈；条目内部的可聚焦内容有自己的环",
     "virtualizer [data-part='item'][data-scope='virtualizer']": "纯容器，不进 Tab 序列也不承载焦点；作者自己加了 tabindex 也该显形视口那圈环，不在这儿多画一圈；条目内部的可聚焦内容有自己的环",
@@ -227,20 +229,6 @@
     "color-picker [data-part='eye-dropper-trigger'][data-scope='color-picker'][data-state='picking']": {
       "parts": [
         "eye-dropper-trigger"
-      ],
-      "ratio": 2.89,
-      "ring": "poured"
-    },
-    "date-picker [data-part=:is(positioner,root)][data-scope='date-picker'] [data-part='confirm-trigger'][data-scope='date-picker']": {
-      "parts": [
-        "confirm-trigger"
-      ],
-      "ratio": 1,
-      "ring": "poured"
-    },
-    "date-picker [data-part='trigger'][data-scope='date-picker'][data-state='open']": {
-      "parts": [
-        "trigger"
       ],
       "ratio": 2.89,
       "ring": "poured"
