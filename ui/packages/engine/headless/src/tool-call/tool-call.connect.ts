@@ -55,7 +55,7 @@ export function connectToolCall<T extends PropTypes>(
     getRootProps: () => normalize.element({
       ...parts.root.attrs,
       'data-state': stateAttr,
-      'data-variant': props.variant,
+      'data-variant': props.variant ?? 'outline',
       'data-tone': props.tone,
       'data-size': props.size,
       'data-disabled': dataAttr(disabled),

@@ -77,6 +77,13 @@ describe('connectToolCall 投影', () => {
     t.stop()
   })
 
+  it('variant 不写时根落 outline；写 subtle 如实落', () => {
+    const t = makeToolCall()
+    expect(t.api().getRootProps()).toMatchObject({ 'data-variant': 'outline' })
+    expect(t.api({ variant: 'subtle' }).getRootProps()).toMatchObject({ 'data-variant': 'subtle' })
+    t.stop()
+  })
+
   it('trigger 与 content 互指；只在出错时把错误文本挂进描述链；审批位只在等待批准时露出', () => {
     const t = makeToolCall()
     const plain = t.api({ phase: 'output-available' })

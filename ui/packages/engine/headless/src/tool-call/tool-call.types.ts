@@ -97,7 +97,7 @@ export interface ToolCallProps {
   startTime?: number
   /** 本次调用结束的时刻。可能缺席：仍在运行，或流被中止时兜底收尾不写该字段。 */
   endTime?: number
-  /** 形态：outline 描边（默认档）、subtle 底色分区、ghost 无壳内联。 */
+  /** 形态：outline 描边、subtle 底色分区、ghost 无壳内联。默认 outline。 */
   variant?: ControlVariant
   tone?: Tone
   size?: Size
