@@ -57,9 +57,9 @@
 ### 特性
 
 - 默认 `ghost` 形态只组织控件，不绘制工具条外框。
-- `outline` 形态提供带内距、背景和阴影的附着式工具面；`subtle` 为淡底。
+- `outline` 形态提供带内距、描边与背景的附着式工具面；`subtle` 为淡底。
 - `group` 将相关操作连接成连续分段，并以低对比度分隔线区分。
-- 独立条目使用无描边样式，组内条目使用中性操作面；`aria-pressed` 表示选中状态。
+- 独立条目是接入 Action Control text 档的无描边工具按钮，组内条目使用中性操作面；`aria-pressed` 表示选中状态。
 - 支持水平、垂直、分组、分隔线与整体禁用。
 - 方向键在条目间移动，禁用项会被跳过。
 
@@ -182,6 +182,11 @@
 | `group` | `data-disabled` | ''（条件成立时才出现） |
 | `group` | `data-orientation` | props.orientation |
 | `item` | `data-disabled` | ''（条件成立时才出现） |
+| `item` | `data-xh-action-control` | '' |
+| `item` | `data-xh-action-display` | 'always' |
+| `item` | `data-xh-action-profile` | 'text' |
+| `item` | `data-xh-action-size` | props.size |
+| `item` | `data-xh-action-variant` | 'ghost' |
 | `separator` | `data-orientation` | 'vertical' \| 'horizontal' |
 
 <!-- xh-component-tokens:start -->
@@ -198,20 +203,21 @@
 | `--xh-toolbar-gap` | `root` | `gap` | `default` | `--xh-_toolbar-gap` | toolbar 的 root 部件 gap 覆盖槽。 |
 | `--xh-toolbar-group-gap` | `group` | `gap` | `default` | `--xh-space-0` | toolbar 的 group 部件 gap 覆盖槽。 |
 | `--xh-toolbar-icon-size` | `root` | `--xh-icon-size` | `default`<br>`size=lg`<br>`size=sm` | `--xh-glyph-size-lg`<br>`--xh-glyph-size-md`<br>`--xh-glyph-size-sm` | toolbar 的 root 部件 --xh-icon-size 覆盖槽。 |
-| `--xh-toolbar-item-bg` | `group`<br>`item` | `background` | `default` | `--xh-bg-subtle`<br>`transparent` | toolbar 的 group、item 部件 background 覆盖槽。 |
-| `--xh-toolbar-item-bg-active` | `group`<br>`item` | `background` | `active`<br>`disabled`<br>`not([data-disabled])` | `--xh-bg-subtle-active` | toolbar 的 group、item 部件 background 覆盖槽。 |
-| `--xh-toolbar-item-bg-disabled` | `group`<br>`item` | `background` | `disabled` | `--xh-bg-subtle`<br>`transparent` | toolbar 的 group、item 部件 background 覆盖槽。 |
-| `--xh-toolbar-item-bg-hover` | `group`<br>`item` | `background` | `disabled`<br>`hover`<br>`not([data-disabled])` | `--xh-bg-subtle-hover` | toolbar 的 group、item 部件 background 覆盖槽。 |
-| `--xh-toolbar-item-bg-pressed` | `group`<br>`item` | `background` | `default` | `--xh-bg-brand-subtle` | toolbar 的 group、item 部件 background 覆盖槽。 |
-| `--xh-toolbar-item-bg-pressed-hover` | `group`<br>`item` | `background` | `disabled`<br>`hover`<br>`not([data-disabled])` | `--xh-bg-brand-subtle-hover` | toolbar 的 group、item 部件 background 覆盖槽。 |
-| `--xh-toolbar-item-fg` | `item` | `color` | `default` | `inherit` | toolbar 的 item 部件 color 覆盖槽。 |
-| `--xh-toolbar-item-fg-pressed` | `group`<br>`item` | `color` | `default` | `--xh-fg-brand-strong` | toolbar 的 group、item 部件 color 覆盖槽。 |
-| `--xh-toolbar-item-font-size` | `item` | `font-size` | `default` | `--xh-_toolbar-item-font-size` | toolbar 的 item 部件 font-size 覆盖槽。 |
+| `--xh-toolbar-item-bg` | `group`<br>`item` | `background-color` | `default`<br>`not([aria-pressed='true'])` | `--xh-_action-variant-bg-rest`<br>`--xh-bg-subtle` | toolbar 的 group、item 部件 background-color 覆盖槽。 |
+| `--xh-toolbar-item-bg-active` | `item` | `background-color` | `disabled`<br>`is(:active, [data-pressed])`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])`<br>`pressed` | `--xh-_action-variant-bg-pressed` | toolbar 的 item 部件 background-color 覆盖槽。 |
+| `--xh-toolbar-item-bg-disabled` | `group`<br>`item` | `background-color` | `disabled` | `--xh-_action-variant-bg-disabled`<br>`--xh-bg-subtle` | toolbar 的 group、item 部件 background-color 覆盖槽。 |
+| `--xh-toolbar-item-bg-hover` | `item` | `background-color` | `disabled`<br>`hover`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])` | `--xh-_action-variant-bg-hover` | toolbar 的 item 部件 background-color 覆盖槽。 |
+| `--xh-toolbar-item-bg-pressed` | `item` | `background-color` | `default` | `--xh-bg-brand-subtle` | toolbar 的 item 部件 background-color 覆盖槽。 |
+| `--xh-toolbar-item-bg-pressed-active` | `item` | `background-color` | `disabled`<br>`is(:active, [data-pressed])`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])`<br>`pressed` | `--xh-bg-brand-subtle-active` | toolbar 的 item 部件 background-color 覆盖槽。 |
+| `--xh-toolbar-item-bg-pressed-hover` | `item` | `background-color` | `disabled`<br>`hover`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])` | `--xh-bg-brand-subtle-hover` | toolbar 的 item 部件 background-color 覆盖槽。 |
+| `--xh-toolbar-item-fg` | `item` | `color` | `default`<br>`disabled`<br>`hover`<br>`is(:active, [data-pressed])`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])`<br>`pressed` | `--xh-_action-variant-fg-hover`<br>`--xh-_action-variant-fg-pressed`<br>`--xh-_action-variant-fg-rest` | toolbar 的 item 部件 color 覆盖槽。 |
+| `--xh-toolbar-item-fg-pressed` | `item` | `color` | `default`<br>`disabled`<br>`hover`<br>`is(:active, [data-pressed])`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])`<br>`pressed` | `--xh-fg-on-brand-subtle` | toolbar 的 item 部件 color 覆盖槽。 |
+| `--xh-toolbar-item-font-size` | `item` | `font-size` | `default` | `--xh-_action-profile-font-size` | toolbar 的 item 部件 font-size 覆盖槽。 |
 | `--xh-toolbar-item-font-weight` | `item` | `font-weight` | `default` | `--xh-text-label-weight` | toolbar 的 item 部件 font-weight 覆盖槽。 |
 | `--xh-toolbar-item-gap` | `item` | `gap` | `default` | `--xh-control-gap-sm` | toolbar 的 item 部件 gap 覆盖槽。 |
-| `--xh-toolbar-item-h` | `item` | `min-block-size` | `default` | `--xh-_toolbar-item-h` | toolbar 的 item 部件 min-block-size 覆盖槽。 |
-| `--xh-toolbar-item-px` | `item` | `padding-inline` | `default` | `--xh-_toolbar-item-px` | toolbar 的 item 部件 padding-inline 覆盖槽。 |
-| `--xh-toolbar-item-radius` | `group`<br>`item` | `border-end-end-radius`<br>`border-end-start-radius`<br>`border-radius`<br>`border-start-end-radius`<br>`border-start-start-radius` | `default`<br>`first-of-type`<br>`last-of-type`<br>`orientation=horizontal`<br>`orientation=vertical` | `--xh-shape-control` | toolbar 的 group、item 部件 border-end-end-radius、border-end-start-radius、border-radius、border-start-end-radius、border-start-start-radius 覆盖槽。 |
+| `--xh-toolbar-item-h` | `item` | `block-size` | `default` | `--xh-_action-profile-visual-size` | toolbar 的 item 部件 block-size 覆盖槽。 |
+| `--xh-toolbar-item-px` | `item` | `padding-inline` | `default` | `--xh-_action-profile-padding-inline` | toolbar 的 item 部件 padding-inline 覆盖槽。 |
+| `--xh-toolbar-item-radius` | `group`<br>`item` | `border-end-end-radius`<br>`border-end-start-radius`<br>`border-radius`<br>`border-start-end-radius`<br>`border-start-start-radius` | `default`<br>`first-of-type`<br>`last-of-type`<br>`orientation=horizontal`<br>`orientation=vertical` | `--xh-_action-profile-radius`<br>`--xh-shape-control` | toolbar 的 group、item 部件 border-end-end-radius、border-end-start-radius、border-radius、border-start-end-radius、border-start-start-radius 覆盖槽。 |
 | `--xh-toolbar-px` | `root` | `padding-inline` | `default` | `--xh-_toolbar-root-p` | toolbar 的 root 部件 padding-inline 覆盖槽。 |
 | `--xh-toolbar-py` | `root` | `padding-block` | `default` | `--xh-_toolbar-root-p` | toolbar 的 root 部件 padding-block 覆盖槽。 |
 | `--xh-toolbar-radius` | `root` | `border-radius` | `default`<br>`variant=outline` | `--xh-shape-surface` | toolbar 的 root 部件 border-radius 覆盖槽。 |
@@ -221,12 +227,12 @@
 | `--xh-toolbar-separator-opacity` | `group`<br>`separator` | `opacity` | `default` | `--xh-control-separator-opacity` | toolbar 的 group、separator 部件 opacity 覆盖槽。 |
 | `--xh-toolbar-separator-radius` | `separator` | `border-radius` | `default` | `--xh-shape-pill` | toolbar 的 separator 部件 border-radius 覆盖槽。 |
 | `--xh-toolbar-separator-thickness` | `group`<br>`separator` | `block-size`<br>`inline-size`<br>`margin-block-start`<br>`margin-inline-start` | `orientation=horizontal`<br>`orientation=vertical` | `--xh-stroke-thin` | toolbar 的 group、separator 部件 block-size、inline-size、margin-block-start、margin-inline-start 覆盖槽。 |
-| `--xh-toolbar-shadow` | `root` | `box-shadow` | `variant=outline` | `--xh-elevation-raised` | toolbar 的 root 部件 box-shadow 覆盖槽。 |
+| `--xh-toolbar-shadow` | `root` | `box-shadow` | `variant=outline` | `none` | toolbar 的 root 部件 box-shadow 覆盖槽。 |
 <!-- xh-component-tokens:end -->
 
 ### 动效
 
-`background` · `color` · `scale` 走 `transition` 过渡。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
+`background` · `color` 走 `transition` 过渡。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
 
 系统开启减弱动效时由令牌层统一收敛，皮肤不另作判断。
 

@@ -5,6 +5,9 @@
 
 /* 定义 toolbar 样式。 */
 
+/* 独立皮肤传递引入条目的动作控件配方，full bundle 递归去重。 */
+@import '../family/action-control.css';
+
 @layer xihan.components {
   /* 皮肤在场的标记：开发模式下按 scope 探一次，取不到就说明这份皮肤没被引入。 */
   [data-scope='toolbar'] {
@@ -18,12 +21,10 @@
     --xh-_toolbar-gap: var(--xh-space-2);
     --xh-_toolbar-p: var(--xh-space-1);
     --xh-_toolbar-item-h: var(--xh-control-h-md);
-    --xh-_toolbar-item-px: var(--xh-control-px-md);
-    --xh-_toolbar-item-font-size: var(--xh-control-font-md);
     --xh-_toolbar-separator-size: calc(var(--xh-_toolbar-item-h) / 2);
     --xh-icon-size: var(--xh-toolbar-icon-size, var(--xh-glyph-size-md));
 
-    /* 缺省 ghost：工具条只组织控件，不额外画外框。 */
+    /* 缺省 ghost：工具条只组织控件，不额外画外框；条目按画布承载走 hover 100 → pressed 200。 */
     --xh-_toolbar-root-p: 0;
     --xh-_toolbar-root-border-width: 0;
     --xh-_toolbar-root-border: transparent;
@@ -67,22 +68,26 @@
     --xh-_toolbar-root-bg-disabled: transparent;
   }
 
-  /* 淡底档：带内距、换成 subtle 底，不画描边与落影。 */
+  /* 淡底档：带内距、换成 subtle 底，描边让位给底色但留住 1px 边位（与 outline 几何一致），无影；
+     淡底承载面向条目下发 hover 200 → pressed 300（§7.2） */
   [data-scope='toolbar'][data-part='root'][data-variant='subtle'] {
     --xh-_toolbar-root-p: var(--xh-_toolbar-p);
+    --xh-_toolbar-root-border-width: var(--xh-stroke-thin);
     --xh-_toolbar-root-bg: var(--xh-bg-subtle);
+    --xh-action-host-bg-hover: var(--xh-bg-subtle-hover);
+    --xh-action-host-bg-pressed: var(--xh-bg-subtle-active);
   }
 
-  /* 附着式工具面：用于悬浮工具条或与内容区域分开的独立操作带。 */
+  /* 附着式工具面：一张静态内容面，--xh-border-default 描边 + surface 底 + 无影（§5.3 边界只由描边承担）。 */
   [data-scope='toolbar'][data-part='root'][data-variant='outline'] {
     --xh-_toolbar-root-p: var(--xh-_toolbar-p);
-    --xh-_toolbar-root-border-width: 0;
-    --xh-_toolbar-root-border: transparent;
+    --xh-_toolbar-root-border-width: var(--xh-stroke-thin);
+    --xh-_toolbar-root-border: var(--xh-border-default);
     --xh-_toolbar-root-bg: var(--xh-bg-surface);
     --xh-_toolbar-root-bg-disabled: var(--xh-bg-muted);
 
     border-radius: var(--xh-toolbar-radius, var(--xh-shape-surface));
-    box-shadow: var(--xh-toolbar-shadow, var(--xh-elevation-raised));
+    box-shadow: var(--xh-toolbar-shadow, none);
   }
 
   /* —— 尺寸 —— */
@@ -92,8 +97,6 @@
     --xh-_toolbar-gap: var(--xh-space-0_5);
     --xh-_toolbar-p: var(--xh-space-0_5);
     --xh-_toolbar-item-h: var(--xh-control-h-sm);
-    --xh-_toolbar-item-px: var(--xh-control-px-sm);
-    --xh-_toolbar-item-font-size: var(--xh-control-font-sm);
     --xh-icon-size: var(--xh-toolbar-icon-size, var(--xh-glyph-size-sm));
   }
 
@@ -101,8 +104,6 @@
     --xh-_toolbar-gap: var(--xh-space-3);
     --xh-_toolbar-p: var(--xh-space-2);
     --xh-_toolbar-item-h: var(--xh-control-h-lg);
-    --xh-_toolbar-item-px: var(--xh-control-px-lg);
-    --xh-_toolbar-item-font-size: var(--xh-control-font-lg);
     --xh-icon-size: var(--xh-toolbar-icon-size, var(--xh-glyph-size-lg));
   }
 
@@ -142,97 +143,57 @@
     display: none;
   }
 
-  /* 默认条目是一枚无描边工具按钮；作者仍可用类名或内联样式完整覆盖。 */
+  /* 默认条目是一枚无描边工具按钮：盒型、三档几何、悬停 / 按下 / 禁用面与按压缩放由 Action Control 的
+     text 档给（ghost 形态：ghost 根按画布承载 hover 100 → pressed 200，subtle 根与分组由 host 槽下发
+     200 → 300，§7.2）；这里只把使用者槽映射到桥接槽（-gap / -h / -px / -radius / -bg / -bg-hover /
+     -bg-active / -bg-disabled / -fg / -font-size 保留为第一参数）。作者仍可用类名或内联样式完整覆盖。 */
   [data-scope='toolbar'][data-part='item'] {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    gap: var(--xh-toolbar-item-gap, var(--xh-control-gap-sm));
-    min-block-size: var(--xh-toolbar-item-h, var(--xh-_toolbar-item-h));
-    padding-block: 0;
-    padding-inline: var(--xh-toolbar-item-px, var(--xh-_toolbar-item-px));
-    border: 0;
-    border-radius: var(--xh-toolbar-item-radius, var(--xh-shape-control));
-    background: var(--xh-toolbar-item-bg, transparent);
-    color: var(--xh-toolbar-item-fg, inherit);
-    font-family: inherit;
-    font-size: var(--xh-toolbar-item-font-size, var(--xh-_toolbar-item-font-size));
+    --xh-action-gap: var(--xh-toolbar-item-gap, var(--xh-control-gap-sm));
+    --xh-action-visual-size: var(--xh-toolbar-item-h, var(--xh-_action-profile-visual-size));
+    --xh-action-padding-inline: var(--xh-toolbar-item-px, var(--xh-_action-profile-padding-inline));
+    --xh-action-radius: var(--xh-toolbar-item-radius, var(--xh-_action-profile-radius));
+    --xh-action-bg-rest: var(--xh-toolbar-item-bg, var(--xh-_action-variant-bg-rest));
+    --xh-action-bg-hover: var(--xh-toolbar-item-bg-hover, var(--xh-_action-variant-bg-hover));
+    --xh-action-bg-pressed: var(--xh-toolbar-item-bg-active, var(--xh-_action-variant-bg-pressed));
+    --xh-action-bg-disabled: var(--xh-toolbar-item-bg-disabled, var(--xh-_action-variant-bg-disabled));
+    --xh-action-fg-rest: var(--xh-toolbar-item-fg, var(--xh-_action-variant-fg-rest));
+    --xh-action-fg-hover: var(--xh-toolbar-item-fg, var(--xh-_action-variant-fg-hover));
+    --xh-action-fg-pressed: var(--xh-toolbar-item-fg, var(--xh-_action-variant-fg-pressed));
+    --xh-action-font-size: var(--xh-toolbar-item-font-size, var(--xh-_action-profile-font-size));
+
     font-weight: var(--xh-toolbar-item-font-weight, var(--xh-text-label-weight));
-    line-height: var(--xh-leading-none);
-    white-space: nowrap;
-    cursor: pointer;
-    user-select: none;
     touch-action: manipulation;
-    transition:
-      background var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
-      color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
-      scale var(--xh-motion-duration-release) var(--xh-motion-ease-release);
   }
 
-  [data-scope='toolbar'][data-part='item']:not([data-disabled]):hover {
-    background: var(--xh-toolbar-item-bg-hover, var(--xh-bg-subtle-hover));
-  }
-
-  [data-scope='toolbar'][data-part='item']:not([data-disabled]):active {
-    background: var(--xh-toolbar-item-bg-active, var(--xh-bg-subtle-active));
-    scale: var(--xh-motion-scale-press);
-    transition-duration: var(--xh-motion-duration-press);
-    transition-timing-function: var(--xh-motion-ease-press);
-  }
-
+  /* 无滑块开关的按下态（§7.3）：品牌淡底 + 淡底前景，hover / 按下沿 12% → 20% → 28% 三档走；
+     三态都经桥接槽交给家族画，禁用面仍由家族按 data-disabled 给 */
   [data-scope='toolbar'][data-part='item'][aria-pressed='true'] {
-    background: var(--xh-toolbar-item-bg-pressed, var(--xh-bg-brand-subtle));
-    color: var(--xh-toolbar-item-fg-pressed, var(--xh-fg-brand-strong));
-  }
-
-  [data-scope='toolbar'][data-part='item'][aria-pressed='true']:not([data-disabled]):hover {
-    background: var(--xh-toolbar-item-bg-pressed-hover, var(--xh-bg-brand-subtle-hover));
-  }
-
-  /* 集合条目一律 aria-disabled 而非原生 disabled（禁用项仍要能当方向键的起点），
-     所以这里读 data-disabled，写 :disabled 永远不命中 */
-  [data-scope='toolbar'][data-part='item'][data-disabled] {
-    background: var(--xh-toolbar-item-bg-disabled, transparent);
-    color: var(--xh-fg-disabled);
-    cursor: not-allowed;
-    scale: none;
+    --xh-action-bg-rest: var(--xh-toolbar-item-bg-pressed, var(--xh-bg-brand-subtle));
+    --xh-action-bg-hover: var(--xh-toolbar-item-bg-pressed-hover, var(--xh-bg-brand-subtle-hover));
+    --xh-action-bg-pressed: var(--xh-toolbar-item-bg-pressed-active, var(--xh-bg-brand-subtle-active));
+    --xh-action-fg-rest: var(--xh-toolbar-item-fg-pressed, var(--xh-fg-on-brand-subtle));
+    --xh-action-fg-hover: var(--xh-toolbar-item-fg-pressed, var(--xh-fg-on-brand-subtle));
+    --xh-action-fg-pressed: var(--xh-toolbar-item-fg-pressed, var(--xh-fg-on-brand-subtle));
   }
 
   [data-scope='toolbar'][data-part='item'][hidden] {
     display: none;
   }
 
-  /* 组内分段使用同一块中性操作面；中间段保持直角，只给整组两端补回胶囊圆角。 */
+  /* 组内分段使用同一块中性操作面（淡底承载：hover 200 → pressed 300 由 host 槽下发）；
+     中间段保持直角，只给整组两端补回控件圆角。按下态 / 禁用面与散落条目同一套规则 */
   [data-scope='toolbar'][data-part='group'] > [data-scope='toolbar'][data-part='item'] {
+    --xh-action-host-bg-hover: var(--xh-bg-subtle-hover);
+    --xh-action-host-bg-pressed: var(--xh-bg-subtle-active);
+    --xh-action-radius: 0;
+    --xh-action-bg-disabled: var(--xh-toolbar-item-bg-disabled, var(--xh-bg-subtle));
+
     position: relative;
-    border-radius: 0;
-    background: var(--xh-toolbar-item-bg, var(--xh-bg-subtle));
   }
 
-  [data-scope='toolbar'][data-part='group']
-    > [data-scope='toolbar'][data-part='item']:not([data-disabled]):active {
-    background: var(--xh-toolbar-item-bg-active, var(--xh-bg-subtle-active));
-    scale: none;
-  }
-
-  [data-scope='toolbar'][data-part='group']
-    > [data-scope='toolbar'][data-part='item']:not([data-disabled]):hover {
-    background: var(--xh-toolbar-item-bg-hover, var(--xh-bg-subtle-hover));
-  }
-
-  [data-scope='toolbar'][data-part='group'] > [data-scope='toolbar'][data-part='item'][aria-pressed='true'] {
-    background: var(--xh-toolbar-item-bg-pressed, var(--xh-bg-brand-subtle));
-    color: var(--xh-toolbar-item-fg-pressed, var(--xh-fg-brand-strong));
-  }
-
-  [data-scope='toolbar'][data-part='group']
-    > [data-scope='toolbar'][data-part='item'][aria-pressed='true']:not([data-disabled]):hover {
-    background: var(--xh-toolbar-item-bg-pressed-hover, var(--xh-bg-brand-subtle-hover));
-  }
-
-  [data-scope='toolbar'][data-part='group'] > [data-scope='toolbar'][data-part='item'][data-disabled] {
-    background: var(--xh-toolbar-item-bg-disabled, var(--xh-bg-subtle));
-    color: var(--xh-fg-disabled);
+  /* 组内未选中的段才铺中性面：选中段的品牌淡底由上面 aria-pressed 那条给，这条比它更特定，不守卫会把它盖掉 */
+  [data-scope='toolbar'][data-part='group'] > [data-scope='toolbar'][data-part='item']:not([aria-pressed='true']) {
+    --xh-action-bg-rest: var(--xh-toolbar-item-bg, var(--xh-bg-subtle));
   }
 
   [data-scope='toolbar'][data-part='group'][data-orientation='horizontal']

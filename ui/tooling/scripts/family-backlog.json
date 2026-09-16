@@ -21,8 +21,6 @@
     "switch:thumb:raised": "滑块描边落 --xh-material-soft-border，应为 --xh-border-default，待本组件迁移",
     "tabs:root:raised": "raised 退役待本组件迁移",
     "timer:control:raised": "raised 退役待本组件迁移",
-    "toolbar:root:outline": "outline 档边宽 0 + transparent，没有描边；应为 --xh-border-default 描边 + surface 底，待本组件迁移",
-    "toolbar:root:raised": "raised 退役待本组件迁移",
     "tooltip:content": "描边是 color-mix 的反色半透明边，真源 §8.4 要求 tooltip 走 frosted 四件套，待本组件迁移",
     "transfer:to-source-trigger:raised": "raised 退役待本组件迁移"
   },
@@ -41,8 +39,7 @@
     "tabs:trigger": "导航当前页字重是 （没写 font-weight），应为 --xh-font-weight-medium；待本组件迁移",
     "tag-group:tag/root": "页内持久集合的选中行面是 （没写 background），应为 --xh-bg-brand-subtle；页内持久集合的选中字色是 （没写 color），应为 --xh-fg-on-brand-subtle；待本组件迁移",
     "toggle-group:item": "无滑块开关的选中底是 （没写 background），应为 --xh-bg-brand-subtle；无滑块开关的选中字色是 （没写 color），应为 --xh-fg-on-brand-subtle；待本组件迁移",
-    "toggle:root": "无滑块开关的选中底是 （没写 background），应为 --xh-bg-brand-subtle；无滑块开关的选中字色是 （没写 color），应为 --xh-fg-on-brand-subtle；待本组件迁移",
-    "toolbar:item": "无滑块开关的选中字色是 --xh-fg-brand-strong，应为 --xh-fg-on-brand-subtle；待本组件迁移",
+    "toggle:root": "无滑块开关的选中字色（桥接槽 --xh-action-fg-rest 解析到底）是 --xh-fg-brand，应为 --xh-fg-on-brand-subtle；待本组件迁移",
     "transfer:item": "页内持久集合的选中行面是 （没写 background），应为 --xh-bg-brand-subtle；页内持久集合的选中字色是 （没写 color），应为 --xh-fg-on-brand-subtle；待本组件迁移",
     "tree:branch-control": "页内持久集合的选中行面是 （没写 background），应为 --xh-bg-brand-subtle；页内持久集合的选中字色是 --xh-fg-brand-strong，应为 --xh-fg-on-brand-subtle；待本组件迁移",
     "tree:item": "页内持久集合的选中行面是 （没写 background），应为 --xh-bg-brand-subtle；页内持久集合的选中字色是 --xh-fg-brand-strong，应为 --xh-fg-on-brand-subtle；待本组件迁移"
@@ -107,8 +104,6 @@
     "timer:control:focus": "焦点边写了 border-color: var(--xh-timer-control-border-focus, var(--xh-_tone, var(--x，焦点边框一律 --xh-border-control-focus，不随 tone；待本组件迁移",
     "timer:control:hover": "hover 落 --xh-bg-subtle-hover（200），这份皮肤却没给 --xh-action-host-bg-* 赋值，白底承载 hover 是 --xh-bg-subtle（100），淡底容器由 host 槽下发；待本组件迁移",
     "timer:control:pressed": "pressed 落 --xh-bg-subtle-active（300），这份皮肤却没给 --xh-action-host-bg-* 赋值，白底承载 pressed 是 --xh-bg-subtle-hover（200）；待本组件迁移",
-    "toolbar:item:hover": "hover 落 --xh-bg-subtle-hover（200），这份皮肤却没给 --xh-action-host-bg-* 赋值，白底承载 hover 是 --xh-bg-subtle（100），淡底容器由 host 槽下发；待本组件迁移",
-    "toolbar:item:pressed": "pressed 落 --xh-bg-subtle-active（300），这份皮肤却没给 --xh-action-host-bg-* 赋值，白底承载 pressed 是 --xh-bg-subtle-hover（200）；待本组件迁移",
     "tour:close-trigger:hover": "hover 落 --xh-bg-subtle-hover（200），这份皮肤却没给 --xh-action-host-bg-* 赋值，白底承载 hover 是 --xh-bg-subtle（100），淡底容器由 host 槽下发；待本组件迁移",
     "tour:close-trigger:pressed": "pressed 落 --xh-bg-subtle-active（300），这份皮肤却没给 --xh-action-host-bg-* 赋值，白底承载 pressed 是 --xh-bg-subtle-hover（200）；待本组件迁移",
     "transfer:to-target-trigger:hover": "hover 落 --xh-bg-subtle-hover（200），这份皮肤却没给 --xh-action-host-bg-* 赋值，白底承载 hover 是 --xh-bg-subtle（100），淡底容器由 host 槽下发；待本组件迁移",

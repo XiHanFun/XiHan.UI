@@ -16,7 +16,9 @@
 // 三条判据：
 // ① connect 投影 data-xh-collection-item 的 getter 必须同时投影 data-xh-collection-context（overlay | page）；
 // ② 已投影 collection-item 的部件，皮肤不得再写选中态的 background / color / font-weight（由家族配方给）；
-// ③ 未接配方的部件按 SEMANTIC 登记的语义类查上表；open / in-path 的底色要与同部件 hover 档同值。
+// ③ 未接配方的部件按 SEMANTIC 登记的语义类查上表；open / in-path 的底色要与同部件 hover 档同值；
+//    投影 data-xh-action-control 的部件（无滑块开关、字段内展开钮）读它在该状态里映射的
+//    --xh-action-bg-rest / --xh-action-fg-rest 桥接槽，面由 Action Control 配方按这两支画。
 // 私有槽在赋值点判，兜底链看最内层。存量登 family-backlog.json selection 段，命中即放行、不命中判过期。
 import { getterProjects, gettersProjecting, partOfGetter } from './lib/connect-getters.mjs'
 import { openBacklog } from './lib/family-backlog.mjs'
@@ -148,7 +150,8 @@ function declsFor(skin, target, state, within) {
           continue
       }
       else if (state) {
-        if (!subject.includes(state) || !pure(subject, state))
+        // 状态得写在主体上，藏在 :not(…) 守卫里的是「排除这个状态」的规则，不是这个状态自己的
+        if (!subject.replace(/:not\([^)]*\)/g, '').includes(state) || !pure(subject, state))
           continue
       }
       else if (subject.replace(/:not\([^)]*\)/g, '').replace(/\[data-(?:scope|part)=['"]?[a-z0-9-]+['"]?\]/g, '') !== '') {
@@ -281,12 +284,18 @@ for (const [key, rules] of Object.entries(SEMANTIC)) {
         if (weight !== '--xh-font-weight-medium')
           report(`面包屑当前页字重应为 --xh-font-weight-medium，实际 ${weight ?? '（没写 font-weight）'}`)
         break
-      case 'flat':
-        if (bg !== '--xh-bg-brand-subtle')
-          report(`无滑块开关的选中底是 ${bg ?? '（没写 background）'}，应为 --xh-bg-brand-subtle`)
-        if (color !== '--xh-fg-on-brand-subtle')
-          report(`无滑块开关的选中字色是 ${color ?? '（没写 color）'}，应为 --xh-fg-on-brand-subtle`)
+      case 'flat': {
+        // 投影了 Action Control 的部件（Toggle / Toolbar item）：底与字色由家族按 --xh-action-bg-rest /
+        // --xh-action-fg-rest 画，选中态的面是皮肤在该状态里映射的这两支桥接槽；两支都按槽解析到底
+        const onAction = await getterProjects(comp, target, 'data-xh-action-control')
+        const flatBg = onAction ? tokenOf(decls.get('--xh-action-bg-rest'), slots) ?? bg : bg
+        const flatColor = onAction ? tokenOf(decls.get('--xh-action-fg-rest'), slots) ?? color : color
+        if (flatBg !== '--xh-bg-brand-subtle')
+          report(`无滑块开关的选中底是 ${flatBg ?? '（没写 background）'}，应为 --xh-bg-brand-subtle`)
+        if (flatColor !== '--xh-fg-on-brand-subtle')
+          report(`无滑块开关的选中字色是 ${flatColor ?? '（没写 color）'}，应为 --xh-fg-on-brand-subtle`)
         break
+      }
       case 'slider': {
         const border = tokenOf(decls.get('border-color') ?? decls.get('border'), slots)
         const shadow = tokenOf(decls.get('box-shadow'), slots)

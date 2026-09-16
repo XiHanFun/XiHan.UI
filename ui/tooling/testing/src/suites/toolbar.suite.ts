@@ -101,6 +101,12 @@ export const toolbarSuite: ConformanceSuite = {
               'tabindex': '-1',
               // 集合条目绝不输出原生 disabled
               'disabled': null,
+              // 默认条目接 Action Control 的 text 档：ghost 形态、恒显，档位随工具条 size 走
+              'data-xh-action-control': '',
+              'data-xh-action-profile': 'text',
+              'data-xh-action-variant': 'ghost',
+              'data-xh-action-display': 'always',
+              'data-xh-action-size': 'md',
             },
             {
               'role': null,
