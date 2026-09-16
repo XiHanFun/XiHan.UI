@@ -112,7 +112,7 @@ size 改变问句、选项行与页脚按钮的几何档，三档共用同一份
 | `autoAdvanceDelay` | `number` |  | 自动前进前等待的时长（毫秒），默认 480。非有限值或负数不启动计时器。 |
 | `allowSkip` | `boolean` |  | 允许跳过，默认开启。关闭后跳过按钮收起，SKIP 事件也不再生效。 |
 | `loop` | `boolean` |  | 选项组内漫游到达末尾是否回绕，默认 true。 |
-| `variant` | `ControlVariant` |  |  |
+| `variant` | `ControlVariant` |  | 形态：outline 描边、subtle 底色分区、ghost 无壳内联。默认 outline。 |
 | `tone` | `Tone` |  |  |
 | `size` | `Size` |  |  |
 | `translations` | `Partial<QuestionFlowTranslations>` |  |  |

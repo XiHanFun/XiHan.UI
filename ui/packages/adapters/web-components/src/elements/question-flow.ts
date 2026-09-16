@@ -49,7 +49,7 @@ const NUMBER_CONVERTER = { fromAttribute: (v: string | null) => (v == null || v 
  * @attr {number} auto-advance-delay - 自动前进前等待的时长（毫秒），默认 480
  * @attr {boolean} allow-skip - 允许跳过，默认开启；关闭后跳过键整体收起
  * @attr {boolean} loop - 选项组内漫游到达末尾回绕，默认开启
- * @attr {'outline'|'subtle'|'ghost'} variant - 形态
+ * @attr {'outline'|'subtle'|'ghost'} variant - 形态：outline 描边、subtle 底色分区、ghost 无壳内联，默认 outline
  * @attr {'brand'|'neutral'|'success'|'warning'|'danger'|'info'} tone - 语气
  * @attr {'sm'|'md'|'lg'} size - 尺寸
  * @fires index-change - 当前题变化；detail 为 `{ index }`
