@@ -3556,6 +3556,7 @@ export type ComponentTokenName =
   | '--xh-toolbar-item-bg-disabled'
   | '--xh-toolbar-item-bg-hover'
   | '--xh-toolbar-item-bg-pressed'
+  | '--xh-toolbar-item-bg-pressed-active'
   | '--xh-toolbar-item-bg-pressed-hover'
   | '--xh-toolbar-item-fg'
   | '--xh-toolbar-item-fg-pressed'

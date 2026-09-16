@@ -112,11 +112,18 @@ export function connectToolbar<T extends PropTypes>(
     }),
 
     // 不给 role、也不接管 click：条目的角色、按下态与点击行为归它自己。
-    // 这里只发与导航相关的三样：身份标记、Tab 停靠位、禁用声明
+    // 这里只发与导航相关的三样：身份标记、Tab 停靠位、禁用声明，外加家族标记——
+    // 默认条目是一枚定尺工具按钮，接 Action Control 的 text 档，ghost 形态，档位随工具条 size 走；
+    // 承载面的阶梯由根按 variant / 分组经 host 槽下发
     getItemProps: item => normalize.element({
       ...parts.item.attrs,
       // 导航以此为条目身份
       [ITEM_VALUE_ATTR]: item.value,
+      'data-xh-action-control': '',
+      'data-xh-action-profile': 'text',
+      'data-xh-action-variant': 'ghost',
+      'data-xh-action-display': 'always',
+      'data-xh-action-size': prop('size') ?? 'md',
       // 集合条目一律 aria-disabled，不用原生 disabled：原生 disabled 不可聚焦、不派 click
       'aria-disabled': isDisabled(item) ? 'true' : 'false',
       'data-disabled': dataAttr(isDisabled(item)),

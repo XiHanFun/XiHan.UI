@@ -10,16 +10,29 @@ afterEach(() => {
   host = null
 })
 
-function mount(options: { pressed?: boolean, size?: 'lg' | 'md' | 'sm', variant?: 'ghost' | 'outline' } = {}) {
+function tokenColor(name: string): string {
+  const probe = document.createElement('span')
+  probe.style.color = `var(${name})`
+  document.body.append(probe)
+  const color = getComputedStyle(probe).color
+  probe.remove()
+  return color
+}
+
+function mount(options: { pressed?: boolean, size?: 'lg' | 'md' | 'sm', variant?: 'ghost' | 'outline' | 'subtle', loose?: boolean } = {}) {
   host = document.createElement('div')
+  // 静态夹具带上 connect 投影的家族属性：条目的盒型与三态面由 Action Control 配方按它们画
+  const size = options.size ?? 'md'
+  const item = (text: string, extra = '') => `<button data-scope="toolbar" data-part="item" data-xh-action-control data-xh-action-profile="text" data-xh-action-variant="ghost" data-xh-action-display="always" data-xh-action-size="${size}"${extra}>${text}</button>`
   host.innerHTML = `
     <div data-scope="toolbar" data-part="root" data-orientation="horizontal"${options.variant ? ` data-variant="${options.variant}"` : ''}${options.size ? ` data-size="${options.size}"` : ''}>
+      ${options.loose ? item('散落') : ''}
       <div data-scope="toolbar" data-part="group" data-orientation="horizontal">
-        <button data-scope="toolbar" data-part="item">撤销</button>
+        ${item('撤销')}
         <span data-scope="toolbar" data-part="separator" data-orientation="vertical"></span>
-        <button data-scope="toolbar" data-part="item"${options.pressed ? ' aria-pressed="true"' : ''}>加粗</button>
+        ${item('加粗', options.pressed ? ' aria-pressed="true"' : '')}
         <span data-scope="toolbar" data-part="separator" data-orientation="vertical"></span>
-        <button data-scope="toolbar" data-part="item">复制</button>
+        ${item('复制')}
       </div>
     </div>`
   document.body.append(host)
@@ -65,15 +78,26 @@ describe('toolbar 默认视觉', () => {
     expect(Number.parseFloat(paint.padding)).toBe(0)
   })
 
-  it('outline 提供无描边的附着工具面', () => {
+  it('outline 是 border-default 描边 + surface 底 + 无影的附着工具面', () => {
     const surface = mount({ variant: 'outline' })
     const style = getComputedStyle(surface.root)
 
-    expect(style.backgroundColor).not.toBe('rgba(0, 0, 0, 0)')
-    expect(Number.parseFloat(style.borderTopWidth)).toBe(0)
+    expect(style.backgroundColor).toBe(tokenColor('--xh-bg-surface'))
+    expect(Number.parseFloat(style.borderTopWidth)).toBe(1)
+    expect(style.borderTopColor).toBe(tokenColor('--xh-border-default'))
     expect(Number.parseFloat(style.paddingInlineStart)).toBeGreaterThan(0)
-    expect(style.boxShadow).not.toBe('none')
+    expect(style.boxShadow).toBe('none')
     expect(Number.parseFloat(style.borderRadius)).toBe(shapePx(surface.root, '--xh-shape-surface'))
+  })
+
+  it('subtle 是淡底 + 透明边位 + 无影，与 outline 同一几何', () => {
+    const surface = mount({ variant: 'subtle' })
+    const style = getComputedStyle(surface.root)
+
+    expect(style.backgroundColor).toBe(tokenColor('--xh-bg-subtle'))
+    expect(Number.parseFloat(style.borderTopWidth)).toBe(1)
+    expect(style.borderTopColor).toBe('rgba(0, 0, 0, 0)')
+    expect(style.boxShadow).toBe('none')
   })
 
   it('默认分组由连续操作段组成', () => {
@@ -95,21 +119,33 @@ describe('toolbar 默认视觉', () => {
     expect(Number.parseFloat(lastStyle.borderTopRightRadius)).toBeGreaterThan(0)
   })
 
-  it('分段悬停与选中只改变当前操作面', async () => {
+  it('分段悬停与选中只改变当前操作面：组内淡底承载 hover 200，选中为品牌淡底 + 淡底前景', async () => {
     const idle = mount()
     const idleStyle = getComputedStyle(idle.items[1]!)
     const idleBackground = idleStyle.backgroundColor
-    const idleHeight = Number.parseFloat(idleStyle.minBlockSize)
+    const idleHeight = Number.parseFloat(idleStyle.blockSize)
 
     await userEvent.hover(idle.items[1]!)
+    await expect.poll(() => getComputedStyle(idle.items[1]!).backgroundColor).toBe(tokenColor('--xh-bg-subtle-hover'))
     expect(getComputedStyle(idle.items[1]!).backgroundColor).not.toBe(idleBackground)
     expect(Number.parseFloat(getComputedStyle(idle.items[1]!).borderRadius)).toBe(0)
 
     const pressed = mount({ pressed: true })
-    expect(getComputedStyle(pressed.items[1]!).backgroundColor).not.toBe(idleBackground)
+    expect(getComputedStyle(pressed.items[1]!).backgroundColor).toBe(tokenColor('--xh-bg-brand-subtle'))
+    expect(getComputedStyle(pressed.items[1]!).color).toBe(tokenColor('--xh-fg-on-brand-subtle'))
 
     const large = mount({ size: 'lg' })
-    expect(Number.parseFloat(getComputedStyle(large.items[1]!).minBlockSize)).toBeGreaterThan(idleHeight)
+    expect(Number.parseFloat(getComputedStyle(large.items[1]!).blockSize)).toBeGreaterThan(idleHeight)
+  })
+
+  it('ghost 根上散落的条目按画布承载走：hover 100，按下缩放走令牌', async () => {
+    const toolbar = mount({ loose: true })
+    const loose = toolbar.items[0]!
+    expect(getComputedStyle(loose).backgroundColor).toBe('rgba(0, 0, 0, 0)')
+
+    await userEvent.hover(loose)
+    await expect.poll(() => getComputedStyle(loose).backgroundColor).toBe(tokenColor('--xh-bg-subtle'))
+    expect(getComputedStyle(loose).transitionProperty).toContain('scale')
   })
 
   it('组内分隔线为半高低对比线且不占额外间距', () => {

@@ -101,6 +101,18 @@ describe('connectToolbar ARIA', () => {
     expect(item['data-disabled']).toBe('')
   })
 
+  it('条目接 Action Control 的 text 档：ghost 形态、恒显，档位随工具条 size 走、缺省 md', () => {
+    const item = itemProps(makeService().service, { value: 'bold' })
+    expect(item).toMatchObject({
+      'data-xh-action-control': '',
+      'data-xh-action-profile': 'text',
+      'data-xh-action-variant': 'ghost',
+      'data-xh-action-display': 'always',
+      'data-xh-action-size': 'md',
+    })
+    expect(itemProps(makeService({ size: 'sm' }).service, { value: 'bold' })['data-xh-action-size']).toBe('sm')
+  })
+
   it('整条禁用时容器退出 Tab 序列：进去了方向键也不响应，那就是个死停靠点', () => {
     expect(rootProps(makeService({ disabled: true }).service).tabindex).toBeUndefined()
     // 没禁用时照旧兜底

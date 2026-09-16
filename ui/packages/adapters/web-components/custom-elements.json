@@ -58594,6 +58594,9 @@
               "name": "--xh-toolbar-item-bg-pressed"
             },
             {
+              "name": "--xh-toolbar-item-bg-pressed-active"
+            },
+            {
               "name": "--xh-toolbar-item-bg-pressed-hover"
             },
             {
