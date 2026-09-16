@@ -24,9 +24,9 @@ Header 放标题与说明，Content 放主体
 
 ## 示例
 
-### 层级
+### 变体
 
-default、secondary、tertiary 逐级增强表面，transparent 用于嵌套内容
+outline 为默认卡面，subtle 淡底嵌入，ghost 用于嵌套
 
 <XhDemo src="card/02-variant" />
 
@@ -57,7 +57,7 @@ Card 只提供内容面，方向和媒体尺寸由使用场景决定
 ### 特性
 
 - root 必需；header、title、description、content、footer 按内容组合。
-- `default`、`secondary`、`tertiary` 表达逐级增强的表面层级，`transparent` 用于嵌套内容。
+- `outline` 是默认卡面，`subtle` 用淡底嵌在别的面里，`ghost` 用于嵌套内容不再画面。
 - 根统一提供 16px 内边距、12px 段间距和 surface 圆角；横向布局与媒体比例由使用场景决定。
 
 ### 组合
@@ -89,7 +89,7 @@ Card 只提供内容面，方向和媒体尺寸由使用场景决定
 
 | 属性 | 类型 | 必填 | 说明 |
 | --- | --- | --- | --- |
-| `variant` | `CardVariant` |  | 语义层级：default / secondary / tertiary / transparent，默认 default。 |
+| `variant` | `ControlVariant` |  | 形态：outline 为带影的抬起面，subtle 为淡底，ghost 无底无影。默认 outline。 |
 
 ### connect API
 
@@ -127,7 +127,7 @@ Card 只提供内容面，方向和媒体尺寸由使用场景决定
 
 | 变量 | 部件 | CSS 属性 | 状态 | 默认来源 | 说明 |
 | --- | --- | --- | --- | --- | --- |
-| `--xh-card-bg` | `root` | `background` | `default`<br>`variant=secondary`<br>`variant=tertiary` | `--xh-bg-subtle`<br>`--xh-bg-subtle-hover`<br>`--xh-bg-surface` | card 的 root 部件 background 覆盖槽。 |
+| `--xh-card-bg` | `root` | `background` | `default`<br>`variant=subtle` | `--xh-bg-subtle`<br>`--xh-bg-surface` | card 的 root 部件 background 覆盖槽。 |
 | `--xh-card-border` | `root` | `border` | `default` | `transparent` | card 的 root 部件 border 覆盖槽。 |
 | `--xh-card-content-gap` | `content` | `gap` | `default` | `--xh-space-1` | card 的 content 部件 gap 覆盖槽。 |
 | `--xh-card-description-fg` | `description` | `color` | `default` | `--xh-fg-muted` | card 的 description 部件 color 覆盖槽。 |
@@ -140,7 +140,7 @@ Card 只提供内容面，方向和媒体尺寸由使用场景决定
 | `--xh-card-leading` | `root` | `line-height` | `default` | `--xh-text-body-leading` | card 的 root 部件 line-height 覆盖槽。 |
 | `--xh-card-p` | `root` | `padding` | `default` | `--xh-space-4` | card 的 root 部件 padding 覆盖槽。 |
 | `--xh-card-radius` | `root` | `border-radius` | `default` | `--xh-shape-surface` | card 的 root 部件 border-radius 覆盖槽。 |
-| `--xh-card-shadow` | `root` | `box-shadow` | `default`<br>`variant=transparent` | `--xh-elevation-raised`<br>`none` | card 的 root 部件 box-shadow 覆盖槽。 |
+| `--xh-card-shadow` | `root` | `box-shadow` | `default`<br>`variant=ghost` | `--xh-elevation-raised`<br>`none` | card 的 root 部件 box-shadow 覆盖槽。 |
 | `--xh-card-title-fg` | `title` | `color` | `default` | `--xh-fg-default` | card 的 title 部件 color 覆盖槽。 |
 | `--xh-card-title-font-size` | `title` | `font-size` | `default` | `--xh-text-label-size` | card 的 title 部件 font-size 覆盖槽。 |
 | `--xh-card-title-font-weight` | `title` | `font-weight` | `default` | `--xh-font-weight-medium` | card 的 title 部件 font-weight 覆盖槽。 |

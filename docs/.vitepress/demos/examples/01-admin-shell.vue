@@ -188,7 +188,7 @@ const lastCommand = ref("（无）");
       </XhToolbarRoot>
 
       <div class="shell__cards">
-        <XhCardRoot variant="secondary">
+        <XhCardRoot variant="subtle">
           <XhCardHeader>
             <XhCardTitle>待发货</XhCardTitle>
           </XhCardHeader>
@@ -200,7 +200,7 @@ const lastCommand = ref("（无）");
           </XhCardContent>
         </XhCardRoot>
 
-        <XhCardRoot variant="secondary">
+        <XhCardRoot variant="subtle">
           <XhCardHeader>
             <XhCardTitle>待退款</XhCardTitle>
           </XhCardHeader>

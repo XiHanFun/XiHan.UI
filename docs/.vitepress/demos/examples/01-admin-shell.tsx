@@ -252,7 +252,7 @@ export default function Demo(): ReactNode {
         </XhToolbarRoot>
 
         <div style={cardsStyle}>
-          <XhCardRoot variant="secondary">
+          <XhCardRoot variant="subtle">
             <XhCardHeader>
               <XhCardTitle>待发货</XhCardTitle>
             </XhCardHeader>
@@ -264,7 +264,7 @@ export default function Demo(): ReactNode {
             </XhCardContent>
           </XhCardRoot>
 
-          <XhCardRoot variant="secondary">
+          <XhCardRoot variant="subtle">
             <XhCardHeader>
               <XhCardTitle>待退款</XhCardTitle>
             </XhCardHeader>

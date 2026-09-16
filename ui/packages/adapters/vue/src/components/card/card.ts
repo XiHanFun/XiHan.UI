@@ -5,7 +5,8 @@
 
 // 提供 card 相关实现。
 
-import type { CardProps, CardVariant } from '@xihan-ui/headless'
+import type { ControlVariant } from '@xihan-ui/core'
+import type { CardProps } from '@xihan-ui/headless'
 import type { PropType } from 'vue'
 import { connectCard } from '@xihan-ui/headless'
 import { computed, defineComponent, h } from 'vue'
@@ -17,7 +18,7 @@ export const XhCardRoot = defineComponent({
   name: 'XhCardRoot',
   // 缺省值由 connect 给出。
   props: {
-    variant: { type: String as PropType<CardVariant> },
+    variant: { type: String as PropType<ControlVariant> },
   },
   setup(props, { slots }) {
     const api = computed(() => connectCard(withXhConfig('card', props) as CardProps, vueNormalize))

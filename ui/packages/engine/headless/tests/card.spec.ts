@@ -10,11 +10,11 @@ function api(props: CardProps = {}) {
 }
 
 describe('connectCard', () => {
-  it('形态恒有值、缺省 default；根上不写 role，地标与可及名归作者', () => {
+  it('形态恒有值、缺省 outline；根上不写 role，地标与可及名归作者', () => {
     const root = api().getRootProps() as Record<string, unknown>
-    expect(root).toMatchObject({ ...parts.root.attrs, 'data-variant': 'default' })
+    expect(root).toMatchObject({ ...parts.root.attrs, 'data-variant': 'outline' })
     expect(root.role).toBeUndefined()
-    expect(api({ variant: 'transparent' }).getRootProps()).toMatchObject({ 'data-variant': 'transparent' })
+    expect(api({ variant: 'ghost' }).getRootProps()).toMatchObject({ 'data-variant': 'ghost' })
   })
 
   it('五个子部件只拿身份', () => {

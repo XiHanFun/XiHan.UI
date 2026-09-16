@@ -1,8 +1,8 @@
-<!-- 层级 | default、secondary、tertiary 逐级增强表面，transparent 用于嵌套内容 -->
+<!-- 形态 | outline 为默认卡面，subtle 淡底嵌入，ghost 用于嵌套 -->
 <script setup lang="ts">
 import { XhCardContent, XhCardHeader, XhCardRoot, XhCardTitle } from "@xihan-ui/vue";
 
-const variants = ["default", "secondary", "tertiary", "transparent"] as const;
+const variants = ["outline", "subtle", "ghost"] as const;
 </script>
 
 <template>

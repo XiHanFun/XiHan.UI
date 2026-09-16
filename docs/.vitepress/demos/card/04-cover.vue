@@ -4,7 +4,7 @@ import { XhCardContent, XhCardDescription, XhCardHeader, XhCardRoot, XhCardTitle
 </script>
 
 <template>
-  <XhCardRoot variant="secondary" style="max-inline-size: 300px">
+  <XhCardRoot variant="subtle" style="max-inline-size: 300px">
     <div
       aria-hidden="true"
       style="block-size: 120px; border-radius: var(--xh-shape-surface); background: linear-gradient(135deg, var(--xh-bg-brand), var(--xh-bg-surface))"

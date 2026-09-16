@@ -5,14 +5,11 @@
 
 // 定义 card 类型契约。
 
-import type { PropTypes } from '@xihan-ui/core'
-
-/** 形态。取值与 card.css 的选择器一一对应。 */
-export type CardVariant = 'default' | 'secondary' | 'tertiary' | 'transparent'
+import type { ControlVariant, PropTypes } from '@xihan-ui/core'
 
 export interface CardProps {
-  /** 语义层级：default / secondary / tertiary / transparent，默认 default。 */
-  variant?: CardVariant
+  /** 形态：outline 为带影的抬起面，subtle 为淡底，ghost 无底无影。默认 outline。 */
+  variant?: ControlVariant
 }
 
 export interface CardApi<T extends PropTypes = PropTypes> {

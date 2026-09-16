@@ -5909,12 +5909,10 @@
       ],
       "state": [
         "default",
-        "variant=secondary",
-        "variant=tertiary"
+        "variant=subtle"
       ],
       "defaultToken": [
         "--xh-bg-subtle",
-        "--xh-bg-subtle-hover",
         "--xh-bg-surface"
       ],
       "visibility": "public",
@@ -6147,7 +6145,7 @@
       ],
       "state": [
         "default",
-        "variant=transparent"
+        "variant=ghost"
       ],
       "defaultToken": [
         "--xh-elevation-raised",

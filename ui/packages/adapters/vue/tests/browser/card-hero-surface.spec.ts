@@ -1,5 +1,5 @@
 // Card 的语义表面、统一节奏与部件布局依赖真实 CSS 计算值。
-import type { CardVariant } from '@xihan-ui/headless'
+import type { ControlVariant } from '@xihan-ui/core'
 import type { App } from 'vue'
 import { afterEach, describe, expect, it } from 'vitest'
 import { createApp, h, nextTick } from 'vue'
@@ -24,7 +24,7 @@ afterEach(() => {
   host = null
 })
 
-function card(variant?: CardVariant): unknown {
+function card(variant?: ControlVariant): unknown {
   return h(XhCardRoot, { variant }, () => [
     h(XhCardHeader, null, () => [
       h(XhCardTitle, null, () => '卡片标题'),
@@ -59,7 +59,7 @@ describe('卡片的 Hero 风格语义表面', () => {
     const style = getComputedStyle(root)
     const content = root.querySelector<HTMLElement>('[data-part="content"]')!
 
-    expect(root.dataset.variant).toBe('default')
+    expect(root.dataset.variant).toBe('outline')
     expect(root.hasAttribute('data-size')).toBe(false)
     expect(root.hasAttribute('data-hoverable')).toBe(false)
     expect(root.hasAttribute('data-split')).toBe(false)
@@ -70,14 +70,14 @@ describe('卡片的 Hero 风格语义表面', () => {
     expect(getComputedStyle(content).flexDirection).toBe('column')
   })
 
-  it('四个层级有明确表面，transparent 不带底色和投影', async () => {
-    const variants: CardVariant[] = ['default', 'secondary', 'tertiary', 'transparent']
+  it('三档形态有明确表面，ghost 不带底色和投影', async () => {
+    const variants: ControlVariant[] = ['outline', 'subtle', 'ghost']
     await mount(() => h('div', null, variants.map(variant => card(variant))))
     const roots = [...host!.querySelectorAll<HTMLElement>('[data-scope="card"][data-part="root"]')]
     const backgrounds = roots.map(root => getComputedStyle(root).backgroundColor)
 
-    expect(new Set(backgrounds.slice(0, 3)).size).toBe(3)
-    expect(backgrounds[3]).toBe('rgba(0, 0, 0, 0)')
-    expect(getComputedStyle(roots[3]!).boxShadow).toBe('none')
+    expect(new Set(backgrounds.slice(0, 2)).size).toBe(2)
+    expect(backgrounds[2]).toBe('rgba(0, 0, 0, 0)')
+    expect(getComputedStyle(roots[2]!).boxShadow).toBe('none')
   })
 })
