@@ -3,13 +3,13 @@
 exports[`family-backlog 条目数 > 七段各一数，与快照一致 1`] = `
 {
   "edge": 48,
-  "ladder": 92,
+  "ladder": 88,
   "motion": 1,
   "press": 66,
   "scroll": 28,
   "selection": 19,
   "shape": 25,
-  "text": 96,
+  "text": 95,
 }
 `;
 
@@ -98,10 +98,6 @@ exports[`family-backlog 键集合 > ladder 1`] = `
   "drawer:close-trigger:pressed",
   "drawer:trigger:hover",
   "drawer:trigger:pressed",
-  "field-array:add-trigger:hover",
-  "field-array:add-trigger:pressed",
-  "field-array:item-delete-trigger:hover",
-  "field-array:item-delete-trigger:pressed",
   "file-upload:clear-trigger:hover",
   "file-upload:clear-trigger:pressed",
   "file-upload:dropzone:focus",
@@ -365,7 +361,6 @@ exports[`family-backlog 键集合 > text 1`] = `
   "empty-state:description:font-size",
   "empty-state:description:line-height",
   "empty-state:title:font-size",
-  "field-array:root:icon-size",
   "file-upload:label:spacing",
   "file-upload:root:icon-size",
   "float-button:root:icon-size",

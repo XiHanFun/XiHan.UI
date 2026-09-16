@@ -277,6 +277,28 @@ for (const [c, part] of Object.entries(ROW_DELETE)) {
   if (!css)
     continue
   const rules = rulesOf(css, c, part)
+  // 投影了 Action Control 正方盒档（icon / field-inset）的删除钮：尺寸、圆角与按压由家族给，
+  // 皮肤只映射使用者槽——查的是映射声明与家族的按压面（同 ① 的 sharedAction 分支）
+  const src = await connect(c)
+  const g = src ? getter(src, `get${part.replace(/(?:^|-)([a-z])/g, (_, ch) => ch.toUpperCase())}Props`) : null
+  const sharedAction = /@import\s+['"]\.\.\/family\/action-control\.css['"]/.test(css)
+    && /['"]data-xh-action-profile['"]\s*:\s*['"](?:icon|field-inset)['"]/.test(g ?? '')
+  if (sharedAction) {
+    const family = await readFile(ACTION_FAMILY, 'utf8')
+    // 映射声明常与同行的换序把手写成一组选择器：基础块的尾巴要么为空，要么是逗号接着的兄弟部件
+    const base = t => t.trim() === '' || /^,\s*\[data-scope=/.test(t.trim())
+    const sizeRe = /--xh-action-visual-size:\s*var\(--xh-[a-z-]+-size,\s*var\(--xh-_action-profile-visual-size\)\)/
+    if (!has(rules, (t, b) => base(t) && sizeRe.test(b)))
+      problems.push(`${c}.css [${part}] 行级删除钮没把使用者尺寸槽映到家族正方盒（--xh-action-visual-size）`)
+    const radiusRe = /--xh-action-radius:\s*var\(--xh-[a-z-]+-radius,\s*var\(--xh-shape-control\)\)/
+    if (!has(rules, (t, b) => base(t) && radiusRe.test(b)))
+      problems.push(`${c}.css [${part}] 行级删除钮圆角该映到 --xh-shape-control（带使用者槽）`)
+    if (!has(rules, (t, b) => t.trim().startsWith('[hidden]') && /display:\s*none/.test(b)))
+      problems.push(`${c}.css [${part}] 缺 [hidden] { display: none }`)
+    if (!/\[data-xh-action-control\]:not\(\[data-disabled\]\):not\(\[data-loading\]\):is\(:active, \[data-pressed\]\)[\s\S]*--xh-motion-scale-press/.test(family))
+      problems.push('family/action-control.css 缺共用的 :is(:active, [data-pressed]) 按压反馈')
+    continue
+  }
   const sizeRe = /(?:inline-size|block-size):\s*var\(--xh-[a-z-]+-size,\s*var\(--xh-control-action-size\)\)/
   if (!has(rules, (t, b) => t.trim() === '' && sizeRe.test(b)))
     problems.push(`${c}.css [${part}] 行级删除钮尺寸该以 --xh-control-action-size 为基准（带使用者槽）`)

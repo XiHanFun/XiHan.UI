@@ -91,13 +91,15 @@ export function connectFieldArray<T extends PropTypes>(
     'data-at-max': dataAttr(atMax),
   })
 
-  const moveTriggerProps = (item: FieldArrayItemProps, step: -1 | 1): T['button'] => {
+  // 两颗换序把手只差方向；家族标记由各自的 getter 写在自己身上（门禁按 getter 切片判家族归属）
+  const moveTriggerProps = (item: FieldArrayItemProps, step: -1 | 1, attrs: Record<string, string>): T['button'] => {
     const part = step < 0 ? 'move-up-trigger' : 'move-down-trigger'
     const enabled = step < 0 ? canMoveUp(item.index) : canMoveDown(item.index)
     const text = step < 0 ? label.moveUpTrigger : label.moveDownTrigger
     return normalize.button({
       ...parts[part].attrs,
       ...itemAttrs(item),
+      ...attrs,
       'type': 'button',
       // 挪完由机器按这个 id 把焦点接到新位置上同方向的把手
       'id': fieldArrayTriggerId(scope, part, item.index),
@@ -177,6 +179,12 @@ export function connectFieldArray<T extends PropTypes>(
 
     getAddTriggerProps: () => normalize.button({
       ...parts['add-trigger'].attrs,
+      // 新增把手是一颗带文案的离散动作钮：text 档、中性描边（虚线由皮肤给），高一个控件
+      'data-xh-action-control': '',
+      'data-xh-action-profile': 'text',
+      'data-xh-action-variant': 'outline',
+      'data-xh-action-display': 'always',
+      'data-xh-action-size': 'md',
       'type': 'button',
       // 整份删空后焦点交回这里，机器按这个 id 找它
       'id': fieldArrayTriggerId(scope, 'add-trigger'),
@@ -190,9 +198,17 @@ export function connectFieldArray<T extends PropTypes>(
       },
     }),
 
+    // 行内三颗把手是只有字形的离散动作钮：盒、悬停 / 按下与 0.97 按压、粗指针热区、禁用面由 Action Control
+    // 家族按这几位给。icon 档 xs 是 24px 正方盒——行级把手贴着一个控件高的行，取行内动作钮那一档；
+    // ghost 档静息透明，白底承载 hover 100 → pressed 200
     getItemDeleteTriggerProps: item => normalize.button({
       ...parts['item-delete-trigger'].attrs,
       ...itemAttrs(item),
+      'data-xh-action-control': '',
+      'data-xh-action-profile': 'icon',
+      'data-xh-action-variant': 'ghost',
+      'data-xh-action-display': 'always',
+      'data-xh-action-size': 'xs',
       'type': 'button',
       // 删完由机器按这个 id 把焦点接到接位的那一行上
       'id': fieldArrayTriggerId(scope, 'item-delete-trigger', item.index),
@@ -212,7 +228,19 @@ export function connectFieldArray<T extends PropTypes>(
       },
     }),
 
-    getMoveUpTriggerProps: item => moveTriggerProps(item, -1),
-    getMoveDownTriggerProps: item => moveTriggerProps(item, 1),
+    getMoveUpTriggerProps: item => moveTriggerProps(item, -1, {
+      'data-xh-action-control': '',
+      'data-xh-action-profile': 'icon',
+      'data-xh-action-variant': 'ghost',
+      'data-xh-action-display': 'always',
+      'data-xh-action-size': 'xs',
+    }),
+    getMoveDownTriggerProps: item => moveTriggerProps(item, 1, {
+      'data-xh-action-control': '',
+      'data-xh-action-profile': 'icon',
+      'data-xh-action-variant': 'ghost',
+      'data-xh-action-display': 'always',
+      'data-xh-action-size': 'xs',
+    }),
   }
 }
