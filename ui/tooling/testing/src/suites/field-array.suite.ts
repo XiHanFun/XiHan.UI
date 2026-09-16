@@ -68,8 +68,25 @@ export const fieldArraySuite: ConformanceSuite = {
           'item-content[1]': { 'data-index': '1' },
           'item-action[1]': { 'data-index': '1' },
           // 换序没开：两个把手收起，且明确报"按不动"
-          'move-up-trigger[1]': { 'hidden': '', 'aria-disabled': 'true' },
-          'move-down-trigger[1]': { 'hidden': '', 'aria-disabled': 'true' },
+          // 三颗行内把手是只有字形的离散动作钮：Action Control icon ghost 档，xs 正方盒，常显
+          'move-up-trigger[1]': {
+            'hidden': '',
+            'aria-disabled': 'true',
+            'data-xh-action-control': '',
+            'data-xh-action-profile': 'icon',
+            'data-xh-action-variant': 'ghost',
+            'data-xh-action-display': 'always',
+            'data-xh-action-size': 'xs',
+          },
+          'move-down-trigger[1]': {
+            'hidden': '',
+            'aria-disabled': 'true',
+            'data-xh-action-control': '',
+            'data-xh-action-profile': 'icon',
+            'data-xh-action-variant': 'ghost',
+            'data-xh-action-display': 'always',
+            'data-xh-action-size': 'xs',
+          },
           'item-delete-trigger[1]': {
             'type': 'button',
             'hidden': null,
@@ -78,9 +95,24 @@ export const fieldArraySuite: ConformanceSuite = {
             'data-disabled': null,
             // 把手里只有一个叉，行号只能由名字带出来
             'aria-label': 'Remove row 2 of 3',
+            'data-xh-action-control': '',
+            'data-xh-action-profile': 'icon',
+            'data-xh-action-variant': 'ghost',
+            'data-xh-action-display': 'always',
+            'data-xh-action-size': 'xs',
           },
-          // 新增把手装的是一句话，名字取它自己的内容，组件不写 aria-label 去盖掉它
-          'add-trigger': { 'type': 'button', 'aria-disabled': 'false', 'aria-label': null },
+          // 新增把手装的是一句话，名字取它自己的内容，组件不写 aria-label 去盖掉它；
+          // 它是带文案的动作钮：text outline 档（中性描边，虚线由皮肤给），高一个控件
+          'add-trigger': {
+            'type': 'button',
+            'aria-disabled': 'false',
+            'aria-label': null,
+            'data-xh-action-control': '',
+            'data-xh-action-profile': 'text',
+            'data-xh-action-variant': 'outline',
+            'data-xh-action-display': 'always',
+            'data-xh-action-size': 'md',
+          },
         },
       },
     },

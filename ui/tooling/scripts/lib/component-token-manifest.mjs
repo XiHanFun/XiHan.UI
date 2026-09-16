@@ -304,10 +304,15 @@ export async function buildComponentTokenManifest(options = {}) {
     }))
   }
 
+  /* 一份 connect 可以给不同部件投不同的 profile（行级把手 icon 档、新增钮 text 档），逐处投影都算。 */
   async function actionProfiles(component) {
     const source = await readFile(join(HEADLESS_DIR, component, `${component}.connect.ts`), 'utf8').catch(() => '')
-    const expression = /['"]data-xh-action-profile['"]\s*:\s*([^,\n]+)/.exec(source)?.[1] ?? ''
-    return new Set([...expression.matchAll(/['"]([a-z-]+)['"]/g)].map(match => match[1]))
+    const profiles = new Set()
+    for (const projection of source.matchAll(/['"]data-xh-action-profile['"]\s*:\s*([^,\n]+)/g)) {
+      for (const match of projection[1].matchAll(/['"]([a-z-]+)['"]/g))
+        profiles.add(match[1])
+    }
+    return profiles
   }
 
   /* 与 actionProfiles 同形：Collection Item 家族按组件投影的 data-xh-collection-context 过滤上下文声明。 */

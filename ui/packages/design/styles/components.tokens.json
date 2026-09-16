@@ -25933,16 +25933,16 @@
         "add-trigger"
       ],
       "property": [
-        "background"
+        "background-color"
       ],
       "state": [
         "default"
       ],
       "defaultToken": [
-        "transparent"
+        "--xh-_action-variant-bg-rest"
       ],
       "visibility": "public",
-      "description": "field-array 的 add-trigger 部件 background 覆盖槽。"
+      "description": "field-array 的 add-trigger 部件 background-color 覆盖槽。"
     },
     {
       "name": "--xh-field-array-add-bg-active",
@@ -25951,17 +25951,21 @@
         "add-trigger"
       ],
       "property": [
-        "background"
+        "background-color"
       ],
       "state": [
-        "active",
-        "not([aria-disabled='true'])"
+        "disabled",
+        "is(:active, [data-pressed])",
+        "loading",
+        "not([data-disabled])",
+        "not([data-loading])",
+        "pressed"
       ],
       "defaultToken": [
-        "--xh-bg-subtle-active"
+        "--xh-_action-variant-bg-pressed"
       ],
       "visibility": "public",
-      "description": "field-array 的 add-trigger 部件 background 覆盖槽。"
+      "description": "field-array 的 add-trigger 部件 background-color 覆盖槽。"
     },
     {
       "name": "--xh-field-array-add-bg-hover",
@@ -25970,17 +25974,20 @@
         "add-trigger"
       ],
       "property": [
-        "background"
+        "background-color"
       ],
       "state": [
+        "disabled",
         "hover",
-        "not([aria-disabled='true'])"
+        "loading",
+        "not([data-disabled])",
+        "not([data-loading])"
       ],
       "defaultToken": [
-        "--xh-bg-subtle-hover"
+        "--xh-_action-variant-bg-hover"
       ],
       "visibility": "public",
-      "description": "field-array 的 add-trigger 部件 background 覆盖槽。"
+      "description": "field-array 的 add-trigger 部件 background-color 覆盖槽。"
     },
     {
       "name": "--xh-field-array-add-border",
@@ -25995,7 +26002,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-border-control"
+        "--xh-_action-variant-border-rest"
       ],
       "visibility": "public",
       "description": "field-array 的 add-trigger 部件 border 覆盖槽。"
@@ -26010,10 +26017,10 @@
         "border-color"
       ],
       "state": [
-        "default"
+        "disabled"
       ],
       "defaultToken": [
-        "--xh-border-subtle"
+        "--xh-_action-variant-border-disabled"
       ],
       "visibility": "public",
       "description": "field-array 的 add-trigger 部件 border-color 覆盖槽。"
@@ -26028,11 +26035,14 @@
         "border-color"
       ],
       "state": [
+        "disabled",
         "hover",
-        "not([aria-disabled='true'])"
+        "loading",
+        "not([data-disabled])",
+        "not([data-loading])"
       ],
       "defaultToken": [
-        "--xh-border-control-hover"
+        "--xh-_action-variant-border-hover"
       ],
       "visibility": "public",
       "description": "field-array 的 add-trigger 部件 border-color 覆盖槽。"
@@ -26047,7 +26057,14 @@
         "color"
       ],
       "state": [
-        "default"
+        "default",
+        "disabled",
+        "hover",
+        "is(:active, [data-pressed])",
+        "loading",
+        "not([data-disabled])",
+        "not([data-loading])",
+        "pressed"
       ],
       "defaultToken": [
         "--xh-fg-brand"
@@ -26080,16 +26097,18 @@
         "add-trigger"
       ],
       "property": [
-        "block-size"
+        "block-size",
+        "inline-size"
       ],
       "state": [
-        "default"
+        "default",
+        "xh-action-profile=icon"
       ],
       "defaultToken": [
-        "--xh-control-h-md"
+        "--xh-_action-profile-visual-size"
       ],
       "visibility": "public",
-      "description": "field-array 的 add-trigger 部件 block-size 覆盖槽。"
+      "description": "field-array 的 add-trigger 部件 block-size、inline-size 覆盖槽。"
     },
     {
       "name": "--xh-field-array-add-px",
@@ -26104,7 +26123,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-control-px-md"
+        "--xh-_action-profile-padding-inline"
       ],
       "visibility": "public",
       "description": "field-array 的 add-trigger 部件 padding-inline 覆盖槽。"
@@ -26167,7 +26186,10 @@
       "name": "--xh-field-array-icon-size",
       "component": "field-array",
       "part": [
-        "root"
+        "add-trigger",
+        "item-delete-trigger",
+        "move-down-trigger",
+        "move-up-trigger"
       ],
       "property": [
         "--xh-icon-size"
@@ -26176,10 +26198,10 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-glyph-size-text"
+        "--xh-_action-profile-glyph-size"
       ],
       "visibility": "public",
-      "description": "field-array 的 root 部件 --xh-icon-size 覆盖槽。"
+      "description": "field-array 的 add-trigger、item-delete-trigger、move-down-trigger、move-up-trigger 部件 --xh-icon-size 覆盖槽。"
     },
     {
       "name": "--xh-field-array-item-delete-fg-hover",
@@ -26191,8 +26213,13 @@
         "color"
       ],
       "state": [
+        "disabled",
         "hover",
-        "not([aria-disabled='true'])"
+        "is(:active, [data-pressed])",
+        "loading",
+        "not([data-disabled])",
+        "not([data-loading])",
+        "pressed"
       ],
       "defaultToken": [
         "--xh-fg-danger-hover"
@@ -26299,16 +26326,16 @@
         "move-up-trigger"
       ],
       "property": [
-        "background"
+        "background-color"
       ],
       "state": [
         "default"
       ],
       "defaultToken": [
-        "transparent"
+        "--xh-_action-variant-bg-rest"
       ],
       "visibility": "public",
-      "description": "field-array 的 item-delete-trigger、move-down-trigger、move-up-trigger 部件 background 覆盖槽。"
+      "description": "field-array 的 item-delete-trigger、move-down-trigger、move-up-trigger 部件 background-color 覆盖槽。"
     },
     {
       "name": "--xh-field-array-trigger-bg-active",
@@ -26319,17 +26346,21 @@
         "move-up-trigger"
       ],
       "property": [
-        "background"
+        "background-color"
       ],
       "state": [
-        "active",
-        "not([aria-disabled='true'])"
+        "disabled",
+        "is(:active, [data-pressed])",
+        "loading",
+        "not([data-disabled])",
+        "not([data-loading])",
+        "pressed"
       ],
       "defaultToken": [
-        "--xh-bg-subtle-active"
+        "--xh-_action-variant-bg-pressed"
       ],
       "visibility": "public",
-      "description": "field-array 的 item-delete-trigger、move-down-trigger、move-up-trigger 部件 background 覆盖槽。"
+      "description": "field-array 的 item-delete-trigger、move-down-trigger、move-up-trigger 部件 background-color 覆盖槽。"
     },
     {
       "name": "--xh-field-array-trigger-bg-hover",
@@ -26340,17 +26371,20 @@
         "move-up-trigger"
       ],
       "property": [
-        "background"
+        "background-color"
       ],
       "state": [
+        "disabled",
         "hover",
-        "not([aria-disabled='true'])"
+        "loading",
+        "not([data-disabled])",
+        "not([data-loading])"
       ],
       "defaultToken": [
-        "--xh-bg-subtle-hover"
+        "--xh-_action-variant-bg-hover"
       ],
       "visibility": "public",
-      "description": "field-array 的 item-delete-trigger、move-down-trigger、move-up-trigger 部件 background 覆盖槽。"
+      "description": "field-array 的 item-delete-trigger、move-down-trigger、move-up-trigger 部件 background-color 覆盖槽。"
     },
     {
       "name": "--xh-field-array-trigger-fg",
@@ -26384,8 +26418,13 @@
         "color"
       ],
       "state": [
+        "disabled",
         "hover",
-        "not([aria-disabled='true'])"
+        "is(:active, [data-pressed])",
+        "loading",
+        "not([data-disabled])",
+        "not([data-loading])",
+        "pressed"
       ],
       "defaultToken": [
         "--xh-fg-default"
@@ -26443,16 +26482,18 @@
       ],
       "property": [
         "block-size",
-        "inline-size"
+        "inline-size",
+        "min-inline-size"
       ],
       "state": [
-        "default"
+        "default",
+        "xh-action-profile=icon"
       ],
       "defaultToken": [
-        "--xh-control-action-size"
+        "--xh-_action-profile-visual-size"
       ],
       "visibility": "public",
-      "description": "field-array 的 item-delete-trigger、move-down-trigger、move-up-trigger 部件 block-size、inline-size 覆盖槽。"
+      "description": "field-array 的 item-delete-trigger、move-down-trigger、move-up-trigger 部件 block-size、inline-size、min-inline-size 覆盖槽。"
     },
     {
       "name": "--xh-fieldset-actions-gap",

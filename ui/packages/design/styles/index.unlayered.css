@@ -2239,6 +2239,10 @@
 /* styles/field-array.css */
 /* 定义 field array 样式。 */
 
+/* FieldArray 独立皮肤同时传递引入把手的动作控件配方；full bundle 递归去重。 */
+
+/* family/action-control.css */
+
 /* 皮肤在场的标记：开发模式下按 scope 探一次，取不到就说明这份皮肤没被引入。 */
 [data-scope='field-array'] {
   --xh-field-array-skin: 1;
@@ -2246,9 +2250,6 @@
 
 /* 一行一条，纵向堆叠；新增把手跟在最后一行下面 */
 [data-scope='field-array'][data-part='root'] {
-  /* 作者塞进指示符槽的图标跟着字号走，与皮肤画的兜底字形同一把尺 */
-  --xh-icon-size: var(--xh-field-array-icon-size, var(--xh-glyph-size-text));
-
   display: flex;
   flex-direction: column;
   gap: var(--xh-field-array-gap, var(--xh-space-2));
@@ -2304,42 +2305,37 @@
   gap: var(--xh-field-array-action-gap, var(--xh-space-1));
 }
 
-/* —— 行内三个把手 —— */
+/* —— 行内三个把手 ——
+   只有字形的离散动作钮：盒几何、悬停 / 按下与 0.97 按压、粗指针热区、焦点环、禁用面全由 Action Control 的
+   icon ghost 档给（连接层投 xs：24px 正方盒，行级把手贴着一个控件高的行，取行内动作钮那一档），
+   组件只映射既有使用者槽。静息透明，白底承载 hover 100 → pressed 200。
+   按不动的把手由连接层同时打 aria-disabled 与 data-disabled，家族按后者收掉悬停与按下反馈 */
 [data-scope='field-array'][data-part='item-delete-trigger'],
 [data-scope='field-array'][data-part='move-up-trigger'],
 [data-scope='field-array'][data-part='move-down-trigger'] {
-  display: inline-flex;
-  flex: none;
-  align-items: center;
-  justify-content: center;
-  padding: 0;
-  border: 0;
-  background: var(--xh-field-array-trigger-bg, transparent);
-  color: var(--xh-field-array-trigger-fg, var(--xh-fg-muted));
-  font-family: inherit;
-  font-size: var(--xh-field-array-trigger-font-size, var(--xh-text-secondary-size));
-  line-height: var(--xh-leading-none);
-  cursor: pointer;
-  transition:
-    background var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
-    scale var(--xh-motion-duration-release) var(--xh-motion-ease-release);
+  --xh-action-visual-size: var(--xh-field-array-trigger-size, var(--xh-_action-profile-visual-size));
+  --xh-action-min-inline-size: var(--xh-field-array-trigger-size, var(--xh-_action-profile-visual-size));
+  --xh-action-radius: var(--xh-field-array-trigger-radius, var(--xh-shape-control));
+  --xh-action-bg-rest: var(--xh-field-array-trigger-bg, var(--xh-_action-variant-bg-rest));
+  --xh-action-bg-hover: var(--xh-field-array-trigger-bg-hover, var(--xh-_action-variant-bg-hover));
+  --xh-action-bg-pressed: var(--xh-field-array-trigger-bg-active, var(--xh-_action-variant-bg-pressed));
+  --xh-action-fg-rest: var(--xh-field-array-trigger-fg, var(--xh-fg-muted));
+  --xh-action-fg-hover: var(--xh-field-array-trigger-fg-hover, var(--xh-fg-default));
+  --xh-action-fg-pressed: var(--xh-field-array-trigger-fg-hover, var(--xh-fg-default));
+  --xh-action-border-rest: transparent;
+  --xh-action-highlight-rest: transparent;
+  --xh-action-shadow-rest: none;
+  --xh-action-shadow-hover: none;
+  --xh-action-shadow-pressed: none;
+  --xh-action-font-size: var(--xh-field-array-trigger-font-size, var(--xh-text-secondary-size));
+  /* 作者塞进把手的图标与皮肤画的兜底字形同一把尺：按档取字形尺寸。
+     配方尚未把 profile 字形档灌进 --xh-icon-size，钮内字形先按 icon 档逐钮取值 */
+  --xh-icon-size: var(--xh-field-array-icon-size, var(--xh-_action-profile-glyph-size));
+
+  border-width: 0;
 }
 
-/* 行级删除把手：命中区取行内动作按钮尺寸，圆角取控件圆角 */
-[data-scope='field-array'][data-part='item-delete-trigger'] {
-  inline-size: var(--xh-field-array-trigger-size, var(--xh-control-action-size));
-  block-size: var(--xh-field-array-trigger-size, var(--xh-control-action-size));
-  border-radius: var(--xh-field-array-trigger-radius, var(--xh-shape-control));
-}
-
-[data-scope='field-array'][data-part='move-up-trigger'],
-[data-scope='field-array'][data-part='move-down-trigger'] {
-  inline-size: var(--xh-field-array-trigger-size, var(--xh-control-action-size));
-  block-size: var(--xh-field-array-trigger-size, var(--xh-control-action-size));
-  border-radius: var(--xh-field-array-trigger-radius, var(--xh-shape-control));
-}
-
-/* 不换序时连接层给换序把手写 hidden；上面那条 display 会把 UA 的 [hidden]{display:none}
+/* 不换序时连接层给换序把手写 hidden；家族那条 display 会把 UA 的 [hidden]{display:none}
    盖掉，少了这条把手还留在原地。删除把手同样声明了 display，作者自己收起它时要的是同一条 */
 [data-scope='field-array'][data-part='item-delete-trigger'][hidden],
 [data-scope='field-array'][data-part='move-up-trigger'][hidden],
@@ -2347,81 +2343,42 @@
   display: none;
 }
 
-/* 按不动的把手不给悬停与按下反馈：它仍然可聚焦、可点，反馈会让人以为点得动 */
-[data-scope='field-array'][data-part='item-delete-trigger']:hover:not([aria-disabled='true']),
-[data-scope='field-array'][data-part='move-up-trigger']:hover:not([aria-disabled='true']),
-[data-scope='field-array'][data-part='move-down-trigger']:hover:not([aria-disabled='true']) {
-  background: var(--xh-field-array-trigger-bg-hover, var(--xh-bg-subtle-hover));
-  color: var(--xh-field-array-trigger-fg-hover, var(--xh-fg-default));
-}
-
-[data-scope='field-array'][data-part='item-delete-trigger']:not([aria-disabled='true']):active,
-[data-scope='field-array'][data-part='move-up-trigger']:not([aria-disabled='true']):active,
-[data-scope='field-array'][data-part='move-down-trigger']:not([aria-disabled='true']):active {
-  background: var(--xh-field-array-trigger-bg-active, var(--xh-bg-subtle-active));
-  scale: var(--xh-motion-scale-press);
-  transition-duration: var(--xh-motion-duration-press);
-  transition-timing-function: var(--xh-motion-ease-press);
-}
-
 /* 删除把手悬停转危险色：它是这一行里唯一不可撤销的动作 */
-[data-scope='field-array'][data-part='item-delete-trigger']:hover:not([aria-disabled='true']) {
-  color: var(--xh-field-array-item-delete-fg-hover, var(--xh-fg-danger-hover));
+[data-scope='field-array'][data-part='item-delete-trigger'] {
+  --xh-action-fg-hover: var(--xh-field-array-item-delete-fg-hover, var(--xh-fg-danger-hover));
+  --xh-action-fg-pressed: var(--xh-field-array-item-delete-fg-hover, var(--xh-fg-danger-hover));
 }
 
-/* 到上下限、或整份禁用时用 aria-disabled 表达（原生 disabled 不派 click，禁用守卫走不到），
-   所以样式也得认这个属性，写 :disabled 永远不命中 */
-[data-scope='field-array'][data-part='item-delete-trigger'][aria-disabled='true'],
-[data-scope='field-array'][data-part='move-up-trigger'][aria-disabled='true'],
-[data-scope='field-array'][data-part='move-down-trigger'][aria-disabled='true'] {
-  background: transparent;
-  color: var(--xh-fg-disabled);
-}
-
-/* —— 新增把手 —— */
-/* 虚线描边把它和行里的实心控件区分开：它加的是行，不是行里的值 */
+/* —— 新增把手 ——
+   带文案的离散动作钮，走 text outline 档（中性描边、透明底，hover 100 → pressed 200），高一个控件；
+   虚线描边把它和行里的实心控件区分开：它加的是行，不是行里的值——家族只写 border-color，线型由这里给 */
 [data-scope='field-array'][data-part='add-trigger'] {
-  display: inline-flex;
+  --xh-action-visual-size: var(--xh-field-array-add-height, var(--xh-_action-profile-visual-size));
+  --xh-action-padding-inline: var(--xh-field-array-add-px, var(--xh-_action-profile-padding-inline));
+  --xh-action-gap: var(--xh-field-array-action-gap, var(--xh-space-1));
+  --xh-action-radius: var(--xh-field-array-add-radius, var(--xh-shape-control));
+  --xh-action-bg-rest: var(--xh-field-array-add-bg, var(--xh-_action-variant-bg-rest));
+  --xh-action-bg-hover: var(--xh-field-array-add-bg-hover, var(--xh-_action-variant-bg-hover));
+  --xh-action-bg-pressed: var(--xh-field-array-add-bg-active, var(--xh-_action-variant-bg-pressed));
+  --xh-action-fg-rest: var(--xh-field-array-add-fg, var(--xh-fg-brand));
+  --xh-action-fg-hover: var(--xh-field-array-add-fg, var(--xh-fg-brand));
+  --xh-action-fg-pressed: var(--xh-field-array-add-fg, var(--xh-fg-brand));
+  --xh-action-border-rest: var(--xh-field-array-add-border, var(--xh-_action-variant-border-rest));
+  --xh-action-border-hover: var(--xh-field-array-add-border-hover, var(--xh-_action-variant-border-hover));
+  --xh-action-border-disabled: var(--xh-field-array-add-border-disabled, var(--xh-_action-variant-border-disabled));
+  --xh-action-highlight-rest: transparent;
+  --xh-action-shadow-rest: none;
+  --xh-action-shadow-hover: none;
+  --xh-action-shadow-pressed: none;
+  --xh-action-font-size: var(--xh-field-array-add-font-size, var(--xh-text-label-size));
+  --xh-icon-size: var(--xh-field-array-icon-size, var(--xh-_action-profile-glyph-size));
+
   align-self: flex-start;
-  align-items: center;
-  justify-content: center;
-  gap: var(--xh-field-array-action-gap, var(--xh-space-1));
-  block-size: var(--xh-field-array-add-height, var(--xh-control-h-md));
-  padding-inline: var(--xh-field-array-add-px, var(--xh-control-px-md));
-  border: var(--xh-stroke-thin) dashed var(--xh-field-array-add-border, var(--xh-border-control));
-  border-radius: var(--xh-field-array-add-radius, var(--xh-shape-control));
-  background: var(--xh-field-array-add-bg, transparent);
-  color: var(--xh-field-array-add-fg, var(--xh-fg-brand));
-  font-family: inherit;
-  font-size: var(--xh-field-array-add-font-size, var(--xh-text-label-size));
-  line-height: var(--xh-leading-none);
-  cursor: pointer;
-  transition:
-    background var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
-    border-color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
-    scale var(--xh-motion-duration-release) var(--xh-motion-ease-release);
+  border-style: dashed;
 }
 
 [data-scope='field-array'][data-part='add-trigger'][hidden] {
   display: none;
-}
-
-[data-scope='field-array'][data-part='add-trigger']:hover:not([aria-disabled='true']) {
-  border-color: var(--xh-field-array-add-border-hover, var(--xh-border-control-hover));
-  background: var(--xh-field-array-add-bg-hover, var(--xh-bg-subtle-hover));
-}
-
-[data-scope='field-array'][data-part='add-trigger']:not([aria-disabled='true']):active {
-  background: var(--xh-field-array-add-bg-active, var(--xh-bg-subtle-active));
-  scale: var(--xh-motion-scale-press);
-  transition-duration: var(--xh-motion-duration-press);
-  transition-timing-function: var(--xh-motion-ease-press);
-}
-
-[data-scope='field-array'][data-part='add-trigger'][aria-disabled='true'] {
-  border-color: var(--xh-field-array-add-border-disabled, var(--xh-border-subtle));
-  background: transparent;
-  color: var(--xh-fg-disabled);
 }
 
 /* 没写内容就由皮肤画兜底字形；作者往部件里塞了自己的图形，这几条即不命中 */

@@ -420,3 +420,45 @@ describe('接入 FormPath：行号变更只在 Headless 真源迁移', () => {
     expect(connectForm(form, normalizeProps).getFieldError(moved)).toBe('异步错误')
   })
 })
+
+describe('把手投影 Action Control 家族属性', () => {
+  const HANDLE = {
+    'data-xh-action-control': '',
+    'data-xh-action-profile': 'icon',
+    'data-xh-action-variant': 'ghost',
+    'data-xh-action-display': 'always',
+    'data-xh-action-size': 'xs',
+  }
+
+  it('三颗行内把手是只有字形的离散动作钮：icon ghost 档、xs 正方盒、常显', () => {
+    const service = makeService({ defaultValue: ['甲', '乙'], movable: true })
+    const [row] = api(service).items
+    const a = api(service)
+    for (const props of [a.getItemDeleteTriggerProps(row!), a.getMoveUpTriggerProps(row!), a.getMoveDownTriggerProps(row!)]) {
+      const dict = props as Record<string, unknown>
+      for (const [key, value] of Object.entries(HANDLE))
+        expect(dict[key], key).toBe(value)
+    }
+  })
+
+  it('新增把手是带文案的动作钮：text outline 档、md 高、常显', () => {
+    const add = api(makeService()).getAddTriggerProps() as Record<string, unknown>
+    expect(add['data-xh-action-control']).toBe('')
+    expect(add['data-xh-action-profile']).toBe('text')
+    expect(add['data-xh-action-variant']).toBe('outline')
+    expect(add['data-xh-action-display']).toBe('always')
+    expect(add['data-xh-action-size']).toBe('md')
+  })
+
+  it('按不动的把手同时打 aria-disabled 与 data-disabled：前者给读屏，后者给家族收反馈', () => {
+    const service = makeService({ defaultValue: ['甲'], min: 1, max: 1 })
+    const a = api(service)
+    const [row] = a.items
+    const remove = a.getItemDeleteTriggerProps(row!) as Record<string, unknown>
+    expect(remove['aria-disabled']).toBe('true')
+    expect(remove['data-disabled']).toBe('')
+    const add = a.getAddTriggerProps() as Record<string, unknown>
+    expect(add['aria-disabled']).toBe('true')
+    expect(add['data-disabled']).toBe('')
+  })
+})
