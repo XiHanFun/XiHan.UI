@@ -61011,7 +61011,7 @@
               "name": "bars",
               "privacy": "private",
               "readonly": true,
-              "default": "new ScrollbarsController(this, { shell: () => this.getPart('positioner'), scrollable: () => this.getPart('content'), axes: ['vertical', 'horizontal'], props: () => ({ dir: this.direction }), })",
+              "default": "new ScrollbarsController(this, { shell: () => this.getPart('positioner'), scrollable: () => this.getPart('content'), axes: ['vertical', 'horizontal'], // 条子走浮层 4px 档 props: () => ({ dir: this.direction, size: 'sm' }), })",
               "description": "树的自绘滚动条：与 content 同级挂在已经 fixed 的 positioner 上。\n两条轴都排布：深层节点依靠缩进向行末推，横向溢出与纵向一样是常态；\n横条的正负按排版方向计算，而组件不读取计算样式，把作者写的显式值交过去。"
             },
             {
@@ -61646,6 +61646,12 @@
               "name": "--xh-tree-select-item-bg-hover"
             },
             {
+              "name": "--xh-tree-select-item-bg-pressed"
+            },
+            {
+              "name": "--xh-tree-select-item-check-fg"
+            },
+            {
               "name": "--xh-tree-select-item-fg"
             },
             {
@@ -61653,6 +61659,9 @@
             },
             {
               "name": "--xh-tree-select-item-font-size"
+            },
+            {
+              "name": "--xh-tree-select-item-font-weight-selected"
             },
             {
               "name": "--xh-tree-select-item-gap"
@@ -61674,9 +61683,6 @@
             },
             {
               "name": "--xh-tree-select-item-radius"
-            },
-            {
-              "name": "--xh-tree-select-item-selected-font-weight"
             },
             {
               "name": "--xh-tree-select-label-fg"

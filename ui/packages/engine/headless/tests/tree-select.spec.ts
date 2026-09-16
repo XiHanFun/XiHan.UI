@@ -1443,13 +1443,58 @@ describe('treeSelect 懒分支', () => {
 })
 
 describe('connectTreeSelect 形态轴', () => {
-  it('不写 variant 时 root 与 positioner 落 outline；写 subtle 如实落', () => {
+  it('不写 variant 时 root、positioner 与 control 都落 outline；写 subtle 如实落', () => {
     const fallback = mount()
     expect(fallback.root.getAttribute('data-variant')).toBe('outline')
     expect(fallback.positioner.getAttribute('data-variant')).toBe('outline')
+    expect((fallback.api().getControlProps() as Record<string, unknown>)['data-variant']).toBe('outline')
     const subtle = mount({ variant: 'subtle' })
     expect(subtle.root.getAttribute('data-variant')).toBe('subtle')
     expect(subtle.positioner.getAttribute('data-variant')).toBe('subtle')
+    expect((subtle.api().getControlProps() as Record<string, unknown>)['data-variant']).toBe('subtle')
+  })
+})
+
+describe('connectTreeSelect 家族角色', () => {
+  it('control 投影 Field Chrome 的稳定角色与尺寸档（缺省 md），三个状态属性都在盒上', () => {
+    const control = mount({ readOnly: true, invalid: true }).api().getControlProps() as Record<string, unknown>
+    expect(control['data-xh-field-chrome']).toBe('')
+    expect(control['data-xh-field-size']).toBe('md')
+    expect(control['data-readonly']).toBe('')
+    expect(control['data-invalid']).toBe('')
+    expect((mount({ disabled: true }).api().getControlProps() as Record<string, unknown>)['data-disabled']).toBe('')
+    expect((mount({ size: 'lg' }).api().getControlProps() as Record<string, unknown>)['data-xh-field-size']).toBe('lg')
+  })
+
+  it('清空钮走 Action Control 的 field-inset ghost 档，按 has-value 显隐，尺寸档随 size 缺省 md', () => {
+    const h = mount()
+    expect(h.clear.getAttribute('data-xh-action-control')).toBe('')
+    expect(h.clear.getAttribute('data-xh-action-profile')).toBe('field-inset')
+    expect(h.clear.getAttribute('data-xh-action-variant')).toBe('ghost')
+    expect(h.clear.getAttribute('data-xh-action-display')).toBe('has-value')
+    expect(h.clear.getAttribute('data-xh-action-size')).toBe('md')
+    expect(h.clear.hasAttribute('data-xh-action-has-value')).toBe(false)
+    expect(mount({ defaultValue: 'license' }).clear.getAttribute('data-xh-action-has-value')).toBe('')
+    expect(mount({ size: 'sm' }).clear.getAttribute('data-xh-action-size')).toBe('sm')
+  })
+
+  it('叶子行与分支行都投影 Collection Item 的 overlay 语境与尺寸档；正文、对号与展开箭头各落自己的槽', () => {
+    const h = mount({ defaultValue: 'license' })
+    const leaf = h.item('license')
+    const branch = h.branch('src')
+    for (const row of [leaf.item, branch.control]) {
+      expect(row.getAttribute('data-xh-collection-item')).toBe('')
+      expect(row.getAttribute('data-xh-collection-size')).toBe('md')
+      expect(row.getAttribute('data-xh-collection-context')).toBe('overlay')
+    }
+    expect(leaf.text.getAttribute('data-xh-collection-slot')).toBe('text')
+    expect(leaf.indicator.getAttribute('data-xh-collection-slot')).toBe('indicator')
+    expect(branch.text.getAttribute('data-xh-collection-slot')).toBe('text')
+    expect(branch.trigger.getAttribute('data-xh-collection-slot')).toBe('prefix')
+    expect(branch.indicator.getAttribute('data-xh-collection-slot')).toBe('prefix')
+    // 分支行本身不是 treeitem：aria-selected 在 branch 上，行上只有 data-selected 供皮肤显示对号
+    expect(branch.control.hasAttribute('aria-selected')).toBe(false)
+    expect(mount({ size: 'lg' }).item('license').item.getAttribute('data-xh-collection-size')).toBe('lg')
   })
 })
 

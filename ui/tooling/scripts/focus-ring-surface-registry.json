@@ -140,6 +140,8 @@
     "transfer [data-part='list'][data-scope='transfer']": "焦点在集合外时容器自己进 Tab 序列兜底，高亮永远长在条目上",
     "tree [data-part='branch'][data-scope='tree']": "branch 是 treeitem，环画在它自己那一行上；整棵子树套一圈会把展开的层级全框进去",
     "tree [data-part='tree'][data-scope='tree']": "焦点在树外时容器自己进 Tab 序列兜底，环永远长在行上",
+    "tree-select [data-part='control'][data-scope='tree-select'] [data-part='input'][data-scope='tree-select']": "家族随皮肤引入的规则：tree-select 的内容区是 trigger 按钮、不投影 data-xh-field-input，这条命不中；环由 control 的 :focus-within 画在外框上",
+    "tree-select [data-part='control'][data-scope='tree-select'] [data-xh-action-profile='field-inset']": "清空钮在盒里（tabindex=-1，只接程序化落焦），环由 control 的 :focus-within 画在外框上",
     "tree-select [data-part='branch'][data-scope='tree-select']": "branch 是 treeitem，环画在它自己那一行上；整棵子树套一圈会把展开的层级全框进去",
     "tree-select [data-part='content'][data-scope='tree-select']": "焦点域的兜底落点（tabindex=-1），高亮永远长在行上",
     "tree-select [data-part='tree'][data-scope='tree-select']:not([tabindex='0'])": "树只在打开且还没有锚点行时认领 Tab 位（那时 tabindex=0，吃 focus.css 的默认环）；tabindex=-1 时是程序化落焦的中转，环长在行上",

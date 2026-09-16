@@ -279,7 +279,9 @@ export const treeSelectSuite: ConformanceSuite = {
           },
           'value-text': { 'id': '@self', 'data-placeholder': '', 'data-disabled': null },
           'indicator': { 'aria-hidden': 'true', 'data-state': 'closed' },
-          // 清空按钮不进 Tab 序列，但读屏按 aria-label 找得到它；无选中时整个收起
+          // control 是 Field Chrome 视觉盒：形态与家族尺寸档落在它身上（缺省 outline / md）
+          'control': { 'data-xh-field-chrome': '', 'data-xh-field-size': 'md', 'data-variant': 'outline', 'data-state': 'closed' },
+          // 清空按钮不进 Tab 序列，但读屏按 aria-label 找得到它；无选中时整个收起，走 field-inset 档、不带 has-value
           'clear-trigger': {
             'type': 'button',
             'tabindex': '-1',
@@ -288,6 +290,9 @@ export const treeSelectSuite: ConformanceSuite = {
             'hidden': '',
             'disabled': null,
             'data-disabled': null,
+            'data-xh-action-profile': 'field-inset',
+            'data-xh-action-display': 'has-value',
+            'data-xh-action-has-value': null,
           },
           'positioner': { 'data-state': 'closed', 'data-placement': 'bottom-start', 'data-hidden': null },
           'content': {
@@ -362,12 +367,21 @@ export const treeSelectSuite: ConformanceSuite = {
             'data-value': 'index',
             'tabindex': '-1',
             'disabled': null,
+            // 叶子行走 Collection Item 的 overlay 语境
+            'data-xh-collection-item': '',
+            'data-xh-collection-context': 'overlay',
+            'data-xh-collection-size': 'md',
           },
+          // 分支行与叶子行同一家族语境；对号槽落在行尾，箭头槽落在首列
+          'branch-control[0]': { 'data-xh-collection-item': '', 'data-xh-collection-context': 'overlay', 'data-xh-collection-size': 'md', 'aria-selected': null },
+          'branch-trigger[0]': { 'data-xh-collection-slot': 'prefix' },
+          'branch-text[0]': { 'data-xh-collection-slot': 'text' },
+          'item-text[0]': { 'data-xh-collection-slot': 'text' },
           // 收起分支里的节点只是 hidden，层级属性照发
           'item[1]': { 'aria-level': '3', 'aria-posinset': '1', 'aria-setsize': '1', 'data-value': 'dom' },
           'item[2]': { 'aria-disabled': 'true', 'data-disabled': '', 'data-value': 'readme', 'disabled': null },
           'item[3]': { 'aria-level': '1', 'aria-posinset': '3', 'aria-setsize': '3', 'data-value': 'license' },
-          'item-indicator[0]': { 'aria-hidden': 'true', 'data-selected': null },
+          'item-indicator[0]': { 'aria-hidden': 'true', 'data-selected': null, 'data-xh-collection-slot': 'indicator' },
         },
         activeElement: null,
       },

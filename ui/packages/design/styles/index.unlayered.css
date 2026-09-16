@@ -40653,7 +40653,13 @@
 }
 
 /* styles/tree-select.css */
-/* 定义 tree select 样式。 */
+/* TreeSelect 独立皮肤同时传递引入字段视觉盒、字段内动作与浮层集合行；full bundle 递归去重。 */
+
+/* family/field-chrome.css */
+
+/* family/action-control.css */
+
+/* family/collection-item.css */
 
 /* 共享关键帧由 family/motion.css 提供，本皮肤 @import 它，单独引入仍成立。 */
 
@@ -40717,30 +40723,17 @@
   /* 作者塞进指示符槽的图标跟着尺寸档走，与皮肤画的兜底字形同一把尺 */
   --xh-icon-size: var(--xh-tree-select-icon-size, var(--xh-glyph-size-md));
 
-  /* 尺寸档只换这几个私有槽，盒与树里的行都从这两处继承它们，换档不必给每个部件各写一条选择器 */
+  /* 尺寸档只换这几个私有槽，盒与树里的行都从这两处继承它们，换档不必给每个部件各写一条选择器；
+     形态三档由家族按 control 上的 data-variant 生成，浮层与树不跟着变，皮肤不再声明 */
   --xh-_tree-select-h: var(--xh-control-h-md);
   --xh-_tree-select-px: var(--xh-control-px-md);
   --xh-_tree-select-row-py: var(--xh-list-option-py-md);
   --xh-_tree-select-row-px: var(--xh-control-px-md);
   --xh-_tree-select-gap: var(--xh-control-gap-md);
   --xh-_tree-select-font-size: var(--xh-control-font-md);
-  --xh-_tree-select-label-font-size: var(--xh-control-font-md);
-
-  /* 形态档只换触发框的描边、两档底色与落影这五个槽，浮层与树不跟着变：
-     变的是「这是个输入位」的表达方式，不是弹出内容的表达方式 */
-  --xh-_tree-select-border: var(--xh-border-control);
-  --xh-_tree-select-border-hover: var(--xh-border-control-hover);
-  --xh-_tree-select-bg: var(--xh-bg-canvas);
-  /* 悬停那一档底：描边之外再换一次填充，语气在场时兑同族的淡底 */
-  --xh-_tree-select-bg-hover: var(--xh-_tone-subtle, var(--xh-bg-subtle));
-  /* 一档静态落影把触发框从页面里抬起一层，与描边一起画出框的边界 */
-  --xh-_tree-select-shadow: var(--xh-elevation-raised);
 
   /* 强调色随语气走，只落在勾选标记上；没写 data-tone 时退回品牌色 */
   --xh-_tree-select-accent: var(--xh-_tone, var(--xh-fg-brand));
-
-  /* 聚焦环恒用固定环色；校验失败时换成告警环色 */
-  --xh-_tree-select-ring: var(--xh-ring-focus);
 }
 
 /* 标签一行、盒一行的两行堆叠 */
@@ -40759,34 +40752,6 @@
   display: none;
 }
 
-/* —— 形态 —— */
-/* 形态只决定描边与底色怎么用；用哪族颜色由 data-tone 决定，没写 tone 就沿用原来的中性配色 */
-/* outline 就是缺省那一身：描边加画布底，写出来只为让三档并列可读 */
-[data-scope='tree-select']:is([data-part='root'], [data-part='positioner'])[data-variant='outline'] {
-  --xh-_tree-select-border: var(--xh-border-control);
-  --xh-_tree-select-border-hover: var(--xh-border-control-hover);
-  --xh-_tree-select-bg: var(--xh-bg-canvas);
-  --xh-_tree-select-bg-hover: var(--xh-_tone-subtle, var(--xh-bg-subtle));
-}
-
-/* subtle 是填充式：底色接过「这里能点」的表达，描边随之让位 */
-[data-scope='tree-select']:is([data-part='root'], [data-part='positioner'])[data-variant='subtle'] {
-  --xh-_tree-select-border: transparent;
-  --xh-_tree-select-border-hover: var(--xh-_tone-border, var(--xh-border-control-hover));
-  --xh-_tree-select-bg: var(--xh-_tone-subtle, var(--xh-bg-subtle));
-  --xh-_tree-select-bg-hover: var(--xh-_tone-subtle-hover, var(--xh-bg-subtle-hover));
-}
-
-/* 无框：底与常态描边透明，悬停浮出描边，聚焦由焦点环表达。
-   落影一并关掉——底与描边都透明时它就是一片没有面的影子 */
-[data-scope='tree-select']:is([data-part='root'], [data-part='positioner'])[data-variant='ghost'] {
-  --xh-_tree-select-shadow: 0 0 0 transparent;
-  --xh-_tree-select-border: transparent;
-  --xh-_tree-select-border-hover: var(--xh-_tone-border, var(--xh-border-control-hover));
-  --xh-_tree-select-bg: transparent;
-  --xh-_tree-select-bg-hover: var(--xh-_tone-subtle, var(--xh-bg-subtle));
-}
-
 /* —— 尺寸 —— */
 /* 缺省档写在上面的基础规则里 */
 [data-scope='tree-select']:is([data-part='root'], [data-part='positioner'])[data-size='sm'] {
@@ -40797,7 +40762,6 @@
   --xh-_tree-select-row-px: var(--xh-control-px-sm);
   --xh-_tree-select-gap: var(--xh-control-gap-sm);
   --xh-_tree-select-font-size: var(--xh-control-font-sm);
-  --xh-_tree-select-label-font-size: var(--xh-control-font-sm);
 }
 
 [data-scope='tree-select']:is([data-part='root'], [data-part='positioner'])[data-size='lg'] {
@@ -40808,12 +40772,11 @@
   --xh-_tree-select-row-px: var(--xh-control-px-lg);
   --xh-_tree-select-gap: var(--xh-control-gap-lg);
   --xh-_tree-select-font-size: var(--xh-control-font-lg);
-  --xh-_tree-select-label-font-size: var(--xh-control-font-lg);
 }
 
 [data-scope='tree-select'][data-part='label'] {
   color: var(--xh-tree-select-label-fg, var(--xh-fg-default));
-  font-size: var(--xh-tree-select-label-font-size, var(--xh-_tree-select-label-font-size));
+  font-size: var(--xh-tree-select-label-font-size, var(--xh-text-label-size));
   font-weight: var(--xh-tree-select-label-font-weight, var(--xh-text-label-weight));
   line-height: var(--xh-leading-none);
 }
@@ -40823,62 +40786,34 @@
   color: var(--xh-fg-subtle);
 }
 
-/* 盒：描边、底色、控件高度与行内内衬都落在这一层，触发按钮与清空按钮在里面并排 */
+/* 盒：描边、底色、圆角、控件高度、行内内衬、聚焦环、五态与悬停由 Field Chrome 家族画在这一层，
+   触发按钮与清空按钮在里面并排；Tab 停靠点是盒里的 trigger（展开后才移进树里），环由家族的
+   :focus-within 画在盒上。组件只映射既有公开槽（shadow 缺省 none：字段静息描边式、无影）；盒里是按钮 */
 [data-scope='tree-select'][data-part='control'] {
-  display: inline-flex;
-  align-items: center;
-  gap: var(--xh-tree-select-control-gap, var(--xh-_tree-select-gap));
-  min-inline-size: min(var(--xh-tree-select-control-min-w, var(--xh-control-min-w)), 100%);
-  block-size: var(--xh-tree-select-control-h, var(--xh-_tree-select-h));
-  padding-inline: var(--xh-tree-select-control-px, var(--xh-_tree-select-px));
-  border: var(--xh-stroke-thin) solid var(--xh-tree-select-control-border, var(--xh-_tree-select-border));
-  border-radius: var(--xh-tree-select-control-radius, var(--xh-shape-control));
-  background: var(--xh-tree-select-control-bg, var(--xh-_tree-select-bg));
-  box-shadow: var(--xh-tree-select-control-shadow, var(--xh-_tree-select-shadow));
-  color: var(--xh-tree-select-control-fg, var(--xh-fg-default));
-  cursor: pointer;
-  transition:
-    background var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
-    border-color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
+  --xh-field-control-height: var(--xh-tree-select-control-h, var(--xh-_tree-select-h));
+  --xh-field-control-padding-inline: var(--xh-tree-select-control-px, var(--xh-_tree-select-px));
+  --xh-field-control-gap: var(--xh-tree-select-control-gap, var(--xh-_tree-select-gap));
+  --xh-field-control-min-inline-size: var(--xh-tree-select-control-min-w, var(--xh-control-min-w));
+  --xh-field-control-radius: var(--xh-tree-select-control-radius, var(--xh-shape-control));
+  --xh-field-bg-rest: var(--xh-tree-select-control-bg, var(--xh-_field-variant-bg-rest));
+  --xh-field-bg-hover: var(--xh-tree-select-control-bg-hover, var(--xh-_field-variant-bg-hover));
+  --xh-field-bg-read-only: var(--xh-tree-select-control-bg-readonly, var(--xh-_field-variant-bg-read-only));
+  --xh-field-bg-disabled: var(--xh-tree-select-control-bg-disabled, var(--xh-_field-variant-bg-disabled));
+  --xh-field-fg-rest: var(--xh-tree-select-control-fg, var(--xh-fg-default));
+  --xh-field-border-rest: var(--xh-tree-select-control-border, var(--xh-_field-variant-border-rest));
+  --xh-field-border-hover: var(--xh-tree-select-control-border-hover, var(--xh-_field-variant-border-hover));
+  --xh-field-border-focus: var(--xh-tree-select-control-border-focus, var(--xh-_field-variant-border-focus));
+  --xh-field-border-invalid: var(--xh-tree-select-control-border-invalid, var(--xh-_field-variant-border-invalid));
+  --xh-field-ring-focus: var(--xh-ring-focus);
+  --xh-field-ring-invalid: var(--xh-ring-invalid);
+  --xh-field-shadow-rest: var(--xh-tree-select-control-shadow, none);
+  --xh-field-cursor-rest: pointer;
+  /* 家族 chrome 会重写 --xh-icon-size，使用者图标槽必须经桥接槽下发才能在盒内生效 */
+  --xh-field-glyph-size: var(--xh-tree-select-icon-size, var(--xh-_field-size-glyph-size));
 }
 
 [data-scope='tree-select'][data-part='control'][hidden] {
   display: none;
-}
-
-/* hover 只在中性态换描边：invalid 正拿边框颜色说事，被 hover 盖掉那条信息就没了 */
-[data-scope='tree-select'][data-part='control']:hover:not([data-disabled], [data-invalid]) {
-  border-color: var(--xh-tree-select-control-border-hover, var(--xh-_tree-select-border-hover));
-}
-
-/* 描边之外再换一档填充：只挪一格描边色的悬停在浅底上几乎读不出来。
-   只读盒的底色正说着「改不动」，不参与换填充 */
-[data-scope='tree-select'][data-part='control']:hover:not([data-disabled], [data-readonly]) {
-  background: var(--xh-tree-select-control-bg-hover, var(--xh-_tree-select-bg-hover));
-}
-
-/* Tab 停靠点是盒里的 trigger（展开后才移进树里），环画在盒上 */
-[data-scope='tree-select'][data-part='control']:focus-within:not([data-disabled]) {
-  border-color: var(--xh-tree-select-control-border-focus, var(--xh-_tone, var(--xh-border-control-focus)));
-  outline: var(--xh-ring-width) solid var(--xh-_tree-select-ring);
-  outline-offset: var(--xh-ring-offset);
-}
-
-[data-scope='tree-select'][data-part='control'][data-invalid] {
-  border-color: var(--xh-tree-select-control-border-invalid, var(--xh-border-invalid));
-
-  /* 校验失败时环也跟着变红：两圈等宽相邻却一红一蓝，读的人不知道哪个才是当前状态 */
-  --xh-_tree-select-ring: var(--xh-ring-invalid);
-}
-
-/* 只读仍可聚焦、浮层仍展得开、树仍能浏览，所以不置灰，只把底色压下去表示「改不动」 */
-[data-scope='tree-select'][data-part='control'][data-readonly] {
-  background: var(--xh-tree-select-control-bg-readonly, var(--xh-bg-subtle));
-}
-
-[data-scope='tree-select'][data-part='control'][data-disabled] {
-  background: var(--xh-tree-select-control-bg-disabled, var(--xh-bg-subtle));
-  color: var(--xh-fg-disabled);
 }
 
 /* 盒内那颗可聚焦的按钮：不画描边不铺底也不自带高度，只占满剩余宽度、排布回显与箭头 */
@@ -40958,41 +40893,34 @@
   color: var(--xh-fg-disabled);
 }
 
-/* 盒内靠右的小方钮，不撑高那一行 */
+/* 盒内靠右的小方钮，不撑高那一行：正方视觉盒、inset 圆角、悬停 100 / 按下 200 与 0.97 按压、粗指针热区与
+   :focus-visible 关环（盒的 :focus-within 已画了一圈）全由 Action Control 的 field-inset ghost 档给，
+   组件只映射既有覆盖槽 */
 [data-scope='tree-select'][data-part='clear-trigger'] {
-  display: inline-flex;
-  flex: none;
-  align-items: center;
-  justify-content: center;
-  inline-size: var(--xh-tree-select-action-size, var(--xh-control-action-size));
-  block-size: var(--xh-tree-select-action-size, var(--xh-control-action-size));
-  padding: 0;
-  border: 0;
-  border-radius: var(--xh-tree-select-action-radius, var(--xh-shape-control));
-  background: var(--xh-tree-select-action-bg, transparent);
-  color: var(--xh-tree-select-action-fg, var(--xh-fg-muted));
-  font-family: inherit;
-  font-size: var(--xh-tree-select-action-font-size, var(--xh-text-secondary-size));
-  line-height: var(--xh-leading-none);
-  cursor: pointer;
-  user-select: none;
-  transition: background var(--xh-motion-duration-micro) var(--xh-motion-ease-enter), scale var(--xh-motion-duration-release) var(--xh-motion-ease-release);
+  --xh-action-visual-size: var(--xh-tree-select-action-size, var(--xh-_action-profile-visual-size));
+  --xh-action-min-inline-size: var(--xh-tree-select-action-size, var(--xh-_action-profile-visual-size));
+  --xh-action-radius: var(--xh-tree-select-action-radius, var(--xh-shape-inset));
+  /* 底色阶梯由 ghost 档给（透明 → 100 → 200），使用者槽只作覆盖入口 */
+  --xh-action-bg-rest: var(--xh-tree-select-action-bg, var(--xh-_action-variant-bg-rest));
+  --xh-action-bg-hover: var(--xh-tree-select-action-bg-hover, var(--xh-_action-variant-bg-hover));
+  --xh-action-bg-pressed: var(--xh-tree-select-action-bg-active, var(--xh-_action-variant-bg-pressed));
+  --xh-action-fg-rest: var(--xh-tree-select-action-fg, var(--xh-fg-muted));
+  --xh-action-fg-hover: var(--xh-tree-select-action-fg-hover, var(--xh-fg-default));
+  --xh-action-border-rest: transparent;
+  --xh-action-highlight-rest: transparent;
+  --xh-action-shadow-rest: none;
+  --xh-action-shadow-hover: none;
+  --xh-action-shadow-pressed: none;
+  --xh-action-font-size: var(--xh-tree-select-action-font-size, var(--xh-text-secondary-size));
+  /* 配方尚未把 profile 字形档灌进 --xh-icon-size，钮内字形先按 field-inset 档逐钮取值 */
+  --xh-icon-size: var(--xh-_action-profile-glyph-size);
+
+  border-width: 0;
 }
 
+/* 没值时连接层给的是 hidden 属性；家族那条 display 会把 UA 规则盖掉 */
 [data-scope='tree-select'][data-part='clear-trigger'][hidden] {
   display: none;
-}
-
-[data-scope='tree-select'][data-part='clear-trigger']:hover {
-  background: var(--xh-tree-select-action-bg-hover, var(--xh-bg-subtle-hover));
-  color: var(--xh-tree-select-action-fg-hover, var(--xh-fg-default));
-}
-
-[data-scope='tree-select'][data-part='clear-trigger']:active {
-  background: var(--xh-tree-select-action-bg-active, var(--xh-bg-subtle-active));
-  scale: var(--xh-motion-scale-press);
-  transition-duration: var(--xh-motion-duration-press);
-  transition-timing-function: var(--xh-motion-ease-press);
 }
 
 [data-scope='tree-select'][data-part='content'] {
@@ -41018,6 +40946,8 @@
   backdrop-filter: var(--xh-tree-select-content-backdrop, var(--xh-material-frosted-backdrop));
   /* 两轴一起给：深层节点靠缩进往行末推，横向溢出是常态，得够得着 */
   overflow: auto;
+  /* 浮层滚动面：滚到头不把页面一起带走 */
+  overscroll-behavior: contain;
   pointer-events: auto;
 }
 
@@ -41143,106 +41073,137 @@
   outline: none;
 }
 
-[data-scope='tree-select'][data-part='branch']:focus-visible > [data-scope='tree-select'][data-part='branch-control'] {
-  outline: var(--xh-ring-width) solid var(--xh-ring-focus);
-  outline-offset: var(--xh-ring-offset);
-}
-
-/* 行：叶子与分支共用同一套盒子，两种行在视觉上必须齐平 */
+/* 行：叶子与分支共用同一套盒子，两种行在视觉上必须齐平。网格、尺寸档、悬停 / 高亮 100、按下 200 与
+   选中标记由 Collection Item 家族按 overlay 语境给（选中 = 透明底 + 行尾对号，正文保持 rest 色与常规
+   字重），公开 TreeSelect 槽只映射到家族合同。data-highlighted 跟的是连接层记的焦点行（指针与键盘共用），
+   环只在真正的键盘焦点上接回，见下 */
 [data-scope='tree-select'][data-part='item'],
 [data-scope='tree-select'][data-part='branch-control'] {
-  display: flex;
-  align-items: center;
-  gap: var(--xh-tree-select-item-gap, var(--xh-_tree-select-gap));
-  padding-block: var(--xh-tree-select-item-py, var(--xh-_tree-select-row-py));
-  padding-inline: var(--xh-tree-select-item-px, var(--xh-_tree-select-row-px));
-  border-radius: var(--xh-tree-select-item-radius, var(--xh-shape-control));
-  color: var(--xh-tree-select-item-fg, var(--xh-material-frosted-fg));
-  font-size: var(--xh-tree-select-item-font-size, var(--xh-_tree-select-font-size));
+  --xh-collection-block-padding: var(--xh-tree-select-item-py, var(--xh-_tree-select-row-py));
+  --xh-collection-inline-padding: var(--xh-tree-select-item-px, var(--xh-_tree-select-row-px));
+  --xh-collection-gap: var(--xh-tree-select-item-gap, var(--xh-_tree-select-gap));
+  --xh-collection-font-size: var(--xh-tree-select-item-font-size, var(--xh-_tree-select-font-size));
+  --xh-collection-radius: var(--xh-tree-select-item-radius, var(--xh-shape-control));
+  --xh-collection-glyph-size: var(--xh-tree-select-icon-size, var(--xh-_collection-glyph-size));
+  --xh-collection-fg-rest: var(--xh-tree-select-item-fg, var(--xh-material-frosted-fg));
+  --xh-collection-fg-hover: var(--xh-tree-select-item-fg, var(--xh-material-frosted-fg));
+  --xh-collection-fg-keyboard-highlight: var(--xh-tree-select-item-fg, var(--xh-material-frosted-fg));
+  --xh-collection-fg-selected: var(--xh-tree-select-item-fg-selected, var(--xh-tree-select-item-fg, var(--xh-material-frosted-fg)));
+  --xh-collection-fg-selected-highlight: var(--xh-tree-select-item-fg-selected, var(--xh-tree-select-item-fg, var(--xh-material-frosted-fg)));
+  --xh-collection-fg-selected-hover: var(--xh-tree-select-item-fg-selected, var(--xh-tree-select-item-fg, var(--xh-material-frosted-fg)));
+  --xh-collection-fg-selected-pressed: var(--xh-tree-select-item-fg-selected, var(--xh-tree-select-item-fg, var(--xh-material-frosted-fg)));
+  --xh-collection-fg-pressed: var(--xh-tree-select-item-fg, var(--xh-material-frosted-fg));
+  --xh-collection-font-weight-selected: var(--xh-tree-select-item-font-weight-selected, var(--xh-font-weight-regular));
+  --xh-collection-font-weight-selected-highlight: var(--xh-tree-select-item-font-weight-selected, var(--xh-font-weight-regular));
+  --xh-collection-font-weight-selected-hover: var(--xh-tree-select-item-font-weight-selected, var(--xh-font-weight-regular));
+  --xh-collection-font-weight-selected-pressed: var(--xh-tree-select-item-font-weight-selected, var(--xh-font-weight-regular));
+  --xh-collection-bg-hover: var(--xh-tree-select-item-bg-hover, var(--xh-bg-subtle));
+  --xh-collection-bg-keyboard-highlight: var(--xh-tree-select-item-bg-hover, var(--xh-bg-subtle));
+  --xh-collection-bg-selected-highlight: var(--xh-tree-select-item-bg-hover, var(--xh-bg-subtle));
+  --xh-collection-bg-selected-hover: var(--xh-tree-select-item-bg-hover, var(--xh-bg-subtle));
+  --xh-collection-bg-pressed: var(--xh-tree-select-item-bg-pressed, var(--xh-bg-subtle-hover));
+  --xh-collection-bg-selected-pressed: var(--xh-tree-select-item-bg-pressed, var(--xh-bg-subtle-hover));
+  --xh-collection-outline-keyboard-highlight: transparent;
+  --xh-collection-outline-selected-highlight: transparent;
+  --xh-collection-indicator-fg-rest: var(--xh-tree-select-item-check-fg, var(--xh-tree-select-item-indicator-fg, var(--xh-_tree-select-accent)));
+  --xh-collection-indicator-fg-checked: var(--xh-tree-select-item-check-fg, var(--xh-tree-select-item-indicator-fg, var(--xh-_tree-select-accent)));
+  --xh-collection-indicator-fg-selected: var(--xh-tree-select-item-check-fg, var(--xh-tree-select-item-indicator-fg, var(--xh-_tree-select-accent)));
+  --xh-collection-indicator-fg-selected-hover: var(--xh-tree-select-item-check-fg, var(--xh-tree-select-item-indicator-fg, var(--xh-_tree-select-accent)));
+  --xh-collection-indicator-fg-selected-highlight: var(--xh-tree-select-item-check-fg, var(--xh-tree-select-item-indicator-fg, var(--xh-_tree-select-accent)));
+  --xh-collection-indicator-fg-selected-pressed: var(--xh-tree-select-item-check-fg, var(--xh-tree-select-item-indicator-fg, var(--xh-_tree-select-accent)));
+
   /* 行高留出文字的上下伸展空间，行内那层 overflow:hidden 才不会把字削掉 */
   line-height: var(--xh-tree-select-item-leading, var(--xh-leading-normal));
   white-space: nowrap;
-  cursor: pointer;
   user-select: none;
-  transition:
-    background var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
-    color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
 }
 
-/* 叶子保留分支箭头的首格；选中标记独立固定在行尾，不再同时承担层级缩进。 */
-[data-scope='tree-select'][data-part='item'] {
-  padding-inline-start: calc(
-    var(--xh-tree-select-item-px, var(--xh-_tree-select-row-px)) +
-      var(--xh-tree-select-branch-indicator-size, var(--xh-control-indicator-size)) +
-      var(--xh-tree-select-item-gap, var(--xh-_tree-select-gap))
-  );
-}
-
+/* 家族给了 display，UA 的 [hidden]{display:none} 已被盖掉，这里补回来 */
 [data-scope='tree-select'][data-part='item'][hidden],
 [data-scope='tree-select'][data-part='branch-control'][hidden] {
   display: none;
 }
 
-/* 悬停与键盘锚点共用中性灰轻档：data-highlighted 跟的是连接层记的焦点行，
-   与选中互相独立，键盘落焦另有聚焦环标记位置 */
-[data-scope='tree-select'][data-part='item']:not([data-disabled]):is(:hover, [data-highlighted], :focus-visible),
-[data-scope='tree-select'][data-part='branch-control']:not([data-disabled]):is(:hover, [data-highlighted]),
-[data-scope='tree-select'][data-part='branch']:not([data-disabled]):focus-visible > [data-part='branch-control'] {
-  background: var(--xh-tree-select-item-bg-hover, var(--xh-bg-subtle));
+/* 叶子在家族网格的首列放一格与分支箭头等宽的占位：两种行的文字起点才对得齐；
+   选中标记独立固定在行尾（indicator 列），不再同时承担层级缩进 */
+[data-scope='tree-select'][data-part='item']::before {
+  content: '';
+  grid-column: prefix;
+  grid-row: 1 / span 2;
+  inline-size: var(--xh-tree-select-branch-indicator-size, var(--xh-control-indicator-size));
+  margin-inline-end: var(--xh-tree-select-item-gap, var(--xh-_tree-select-gap));
 }
 
-/* 叶子与分支统一用末端对号表示选中，正文不变色、不加粗。 */
-[data-scope='tree-select'][data-part='item'][data-selected],
-[data-scope='tree-select'][data-part='branch-control'][data-selected] {
-  color: var(--xh-tree-select-item-fg-selected, var(--xh-tree-select-item-fg, var(--xh-material-frosted-fg)));
-  font-weight: var(--xh-tree-select-item-selected-font-weight, var(--xh-font-weight-regular));
+/* 键盘焦点出现时环才接回并立即到位，不压在背景过渡的中间帧上：叶子自己承载焦点，
+   分支的焦点在 branch 上、环画在它那一行 */
+[data-scope='tree-select'][data-part='item']:focus-visible:not(:hover),
+[data-scope='tree-select'][data-part='branch']:focus-visible > [data-scope='tree-select'][data-part='branch-control'] {
+  --xh-collection-outline-keyboard-highlight: var(--xh-ring-focus);
+  --xh-collection-outline-selected-highlight: var(--xh-ring-focus);
+
+  transition: none;
 }
 
-[data-scope='tree-select'][data-part='item']:focus-visible,
-[data-scope='tree-select'][data-part='branch']:focus-visible > [data-part='branch-control'] {
-  transition-property: color;
+[data-scope='tree-select'][data-part='item']:focus:not(:focus-visible) {
+  outline: none;
 }
 
-/* 禁用走 aria-disabled 而非原生 disabled：节点仍要可聚焦（它还得当方向键的起点），
-   所以只能靠 data-disabled 表达，写 :disabled 永远不命中 */
-[data-scope='tree-select'][data-part='item'][data-disabled],
+/* 分支行不是 treeitem 本体（aria-disabled 在 branch 上），禁用面按连接层的 data-disabled 映射到家族槽：
+   字色降级、悬停 / 高亮 / 按下不换面、光标 not-allowed */
 [data-scope='tree-select'][data-part='branch-control'][data-disabled] {
-  color: var(--xh-fg-disabled);
+  --xh-collection-fg-rest: var(--xh-fg-disabled);
+  --xh-collection-fg-hover: var(--xh-fg-disabled);
+  --xh-collection-fg-keyboard-highlight: var(--xh-fg-disabled);
+  --xh-collection-fg-pressed: var(--xh-fg-disabled);
+  --xh-collection-bg-hover: transparent;
+  --xh-collection-bg-keyboard-highlight: transparent;
+  --xh-collection-bg-pressed: transparent;
+  --xh-collection-cursor-rest: not-allowed;
+  --xh-collection-cursor-hover: not-allowed;
+  --xh-collection-cursor-keyboard-highlight: not-allowed;
+  --xh-collection-cursor-pressed: not-allowed;
 }
 
+/* 懒分支取数失败不预设错误面（文案与重试归作者结构接线）：家族按 data-error 给的告警面在这里映射回常态 */
+[data-scope='tree-select'][data-part='branch-control'][data-error] {
+  --xh-collection-bg-error: transparent;
+  --xh-collection-fg-error: var(--xh-material-frosted-fg);
+  --xh-collection-description-fg-error: var(--xh-material-frosted-fg-muted);
+  --xh-collection-indicator-fg-error: var(--xh-_tree-select-accent);
+  --xh-collection-outline-error: transparent;
+}
+
+/* 正文落在家族网格的 text 列；网格项默认最小尺寸是内容尺寸，不归零则长文本把行撑破、省略号轮不上 */
 [data-scope='tree-select'][data-part='item-text'],
 [data-scope='tree-select'][data-part='branch-text'] {
-  flex: 1;
   min-inline-size: 0;
   overflow: hidden;
   white-space: nowrap;
   text-overflow: ellipsis;
 }
 
-/* 勾选标记只在选中项上出现；未选中时占位不塌，切换选中不引起行宽抖动。
+/* 勾选标记落在家族网格的 indicator 列；未选中时占位不塌，切换选中不引起行宽抖动。
    尺寸槽按各自部件取名：行内的勾与展开箭头分别是 item- 与 branch- 段，
    触发器上那枚箭头是 --xh-tree-select-indicator-*，三处各调各的 */
 [data-scope='tree-select'][data-part='item-indicator'] {
   display: inline-flex;
-  flex: none;
-  order: 1;
   align-items: center;
   justify-content: center;
-  margin-inline-start: auto;
   inline-size: var(--xh-tree-select-item-indicator-size, var(--xh-control-indicator-size));
   block-size: var(--xh-tree-select-item-indicator-size, var(--xh-control-indicator-size));
-  color: var(--xh-tree-select-item-indicator-fg, var(--xh-_tree-select-accent));
-  visibility: hidden;
 }
 
 [data-scope='tree-select'][data-part='item-indicator'][hidden] {
   display: none;
 }
 
+/* 家族只按行的 aria-selected 显示对号：分支行的 aria-selected 在 branch 上、半选没有选中语义，
+   这两档按标记自身的 data-selected / data-indeterminate 显形 */
 [data-scope='tree-select'][data-part='item-indicator']:is([data-selected], [data-indeterminate]) {
   visibility: visible;
 }
 
+/* 分支行的禁用不在行的 aria-disabled 上（那在 branch 上），标记按自身的 data-disabled 降级 */
 [data-scope='tree-select'][data-part='item-indicator'][data-disabled] {
   color: var(--xh-fg-disabled);
 }

@@ -316,7 +316,8 @@ export function XhTreeSelectPositioner({ children, container, ...rest }: XhTreeS
   const bars = useScrollbars({
     scrollable: () => ctx.contentRef.current,
     axes: ['vertical', 'horizontal'],
-    props: () => ({ dir: (ctx.api.getPositionerProps() as { dir?: Direction }).dir }),
+    // 条子走浮层 4px 档
+    props: () => ({ dir: (ctx.api.getPositionerProps() as { dir?: Direction }).dir, size: 'sm' }),
   })
   return (
     <XhPortal container={container ?? ctx.portalContainer} source={ctx.triggerRef}>
