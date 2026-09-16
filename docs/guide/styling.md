@@ -51,6 +51,27 @@ CSS 的级联顺序由 `@layer` 声明的首次出现顺序决定，与 `@import
 
 reset 层的每条选择器都由 `:where()` 包住，特指度为 (0,0,0)（伪元素自身的 (0,0,1) 无法再低）。有层版本里这一点无关紧要，层序已经保证皮肤压得住 reset；无层版本 `index.unlayered.css` 只按特指度竞争，而 Family Recipe 的根规则（`[data-xh-action-control]` 一类，(0,1,0)）在产物里排在 reset 之前，reset 只有低一档才不会靠源序把配方的字号压掉。代价是无层模式下宿主页面的元素选择器（`div { visibility: hidden }` 这类 (0,0,1)）可以压过 reset——这是无层模式「按特指度竞争」既有取舍的延伸，宿主有这类规则时请自行提高 reset 覆盖的特指度或改用有层版本。
 
+## 组件内滚动
+
+组件内的滚动条形态只有两档，按滚动面的身份固定（设计真源 §6.6）：
+
+| 档 | 适用面 | 表达 |
+| --- | --- | --- |
+| 自绘条 | Overlay 家族 positioner 下的 content / list / column，以及定高小列表（Listbox、Transfer、时间列、Cascader column） | Scrollbar 组件接线，`type` 默认 `scroll-hover`，浮层 4px、页内 6px，壳上 `--xh-scrollbar-track-bg: transparent` |
+| 原生细条 | 页内结构容器（Table、Tree、Virtualizer viewport、Dialog / Drawer body、Layout sider、Log / MessageFeed 视口、Typography `pre`……）与作者自建滚动容器 | reset 层统一给：`scrollbar-width: thin` + `scrollbar-color: var(--xh-fg-scrollbar-thumb) var(--xh-bg-scrollbar-track)` |
+
+原生细条住在 reset 层，选择器是 `:where([data-scope][data-part], [data-xh-scroll], [data-scope='typography'][data-part='prose'] pre)`。库节点自动命中；作者自己的滚动容器与文档示例加 `data-xh-scroll` 即得同一套细条，不必引任何组件：
+
+```html
+<div data-xh-scroll style="max-block-size: 240px; overflow: auto">
+  <!-- 长内容 -->
+</div>
+```
+
+`data-xh-scroll` 只挂样式，不进任何组件契约；它不是 Web Components 的角色声明，角色声明只有 `data-xh-part`。
+
+皮肤不得手写 `scrollbar-width` / `scrollbar-color`（stylelint 判红），要藏原生条（挂了自绘条时）只能写 `scrollbar-width: none`。两条边界属性同样按身份给：`overscroll-behavior: contain` 只给浮层滚动面、模态 body 与粘底视口，页内结构容器保持 `auto`；`scrollbar-gutter: stable` 只给内容高度动态变化的容器（Log、MessageFeed、Dialog / Drawer body），并带 `:not([data-xh-scrollbar])` 守卫——挂了自绘条的容器原生条已是零宽，空道对它没有布局作用。每一处滚动面都登记在 `tooling/scripts/scroll-surface-registry.json`，由 `check-scrollbar-hosts` 逐面核对。
+
 ## 皮肤的写法
 
 选择器只使用 `data-*`，不使用类名：
@@ -331,7 +352,8 @@ const ratio = contrastRatio("oklch(0.2 0.02 250)", frosted, page);
 | `check-focus-ring-surface` | 可聚焦部件的面对环的对比度不到 3:1，该档位却没有规则更换环色（`--xh-_ring-color` / `outline-color` / 聚焦规则中的 `outline` 简写求值后仍是库环）。反之改环色的规则覆盖到非实心档、`:focus-visible` 中关闭环（`outline: none` / `outline-width: 0`）却未登记由谁绘制、绘制实心面却不接焦点也未登记的部件，同样判红；聚焦规则把环色写成透明直接判红，失效档只豁免对比度，环不允许消失。`@supports` 块内的规则按条件成立处理，`@media` 只认几种真实媒体条件为条件块，其余条件块与 `@container` 一律按成立处理；皮肤中给库环令牌链上的名称赋值直接判红 |
 | `check-overlay-strategy` | 浮层的坐标系在状态机、`connect`、皮肤三处不一致 |
 | `check-part-wiring` | 解剖中声明、`connect` 中产出、适配器却未接线的部件。皮肤为它写了规则却匹配不到任何元素 |
-| stylelint | 常规 CSS 规范 |
+| `check-scrollbar-hosts` | 自绘条三端接线不齐、壳缺定位上下文或轨道底色、浮层没把壳记进层分支；皮肤里的滚动面没有登记进 `scroll-surface-registry.json`（或登记过期）、自绘面的轴与浮层 4px 档没接齐、`overscroll-behavior` / `scrollbar-gutter` 写在不该写的面上或该写的面上没写、原生面自己写 `scrollbar-width`、不是壳的部件声明 `--xh-scrollbar-track-bg` |
+| stylelint | 常规 CSS 规范，含皮肤不得手写 `scrollbar-width`（`none` 除外）/ `scrollbar-color` |
 
 ## 完全自定义皮肤
 

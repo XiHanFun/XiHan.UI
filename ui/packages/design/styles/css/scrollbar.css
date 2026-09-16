@@ -11,38 +11,10 @@
     --xh-scrollbar-skin: 1;
   }
 
-  /* 组件内部的原生滚动面复用本组件的厚度与色阶；宿主页面不受影响。
-     挂载完整 Scrollbar 时，后面的 data-xh-scrollbar 规则会隐藏原生外观并改用自绘轨道。 */
-  :where([data-scope][data-part]) {
-    scrollbar-width: thin;
-    scrollbar-color: var(--xh-fg-scrollbar-thumb) var(--xh-bg-scrollbar-track);
-    scrollbar-gutter: auto;
-  }
-
-  :where([data-scope][data-part])::-webkit-scrollbar {
-    width: var(--xh-scrollbar-thickness-md);
-    height: var(--xh-scrollbar-thickness-md);
-  }
-
-  :where([data-scope][data-part])::-webkit-scrollbar-track {
-    background: var(--xh-bg-scrollbar-track);
-  }
-
-  :where([data-scope][data-part])::-webkit-scrollbar-thumb {
-    border-radius: calc(var(--xh-scrollbar-thickness-md) / 2);
-    background: var(--xh-fg-scrollbar-thumb);
-  }
-
-  :where([data-scope][data-part])::-webkit-scrollbar-thumb:hover {
-    background: var(--xh-fg-scrollbar-thumb-hover);
-  }
-
-  :where([data-scope][data-part])::-webkit-scrollbar-thumb:active {
-    background: var(--xh-fg-scrollbar-thumb-active);
-  }
-
-  /* 挂了自绘滚动条的容器：原生滚动条只藏外观，滚动能力一点不动。
-     标记由机器挂监听时打上，最后一条滚动条拆走才撤。下面那条 ::-webkit-scrollbar 兜住还没实现 scrollbar-width 的引擎 */
+  /* 库内原生滚动面的细条规则住在 reset 层（reset.css），本文件只管自绘条本身。
+     挂了自绘滚动条的容器：原生滚动条只藏外观，滚动能力一点不动。
+     标记由机器挂监听时打上，最后一条滚动条拆走才撤。这条是 (0,1,0)，压得过 reset 层的 thin；
+     下面那条 ::-webkit-scrollbar 兜住还没实现 scrollbar-width 的引擎 */
   [data-xh-scrollbar] {
     scrollbar-width: none;
   }

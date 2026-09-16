@@ -142,9 +142,14 @@ function selectorsOf(css) {
   return out
 }
 
-/** 剥去伪元素后，选择器是否整个由 :where() 包住（即 (0,0,0)）。 */
+/**
+ * 剥去伪元素后，选择器是否整个由 :where() 包住（即 (0,0,0)）。
+ * 伪元素后面只允许跟用户动作伪类（Selectors 4 §3.6：hover / active / focus 一族），
+ * 它们只匹配伪元素本身（`::-webkit-scrollbar-thumb:hover` 是滑块被悬停，不是宿主元素被悬停），
+ * 与配方、皮肤在真实元素上的规则互不竞争，随伪元素一起剥掉。
+ */
 function isZeroSpecificity(selector) {
-  let rest = selector.replace(/::[\w-]+(\([^()]*\))?/g, '')
+  let rest = selector.replace(/::[\w-]+(\([^()]*\))?(?::(?:hover|active|focus|focus-visible|focus-within))*/g, '')
   let previous
   do {
     previous = rest

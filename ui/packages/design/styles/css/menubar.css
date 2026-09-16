@@ -122,9 +122,6 @@
     --xh-_overlay-enter-left: 0;
     --xh-_overlay-enter-right: 0;
 
-    /* 自绘滚动条轨道保持透明，避免在磨砂面右缘叠出一条实体灰带。 */
-    --xh-scrollbar-track-bg: transparent;
-
     position: fixed;
     z-index: var(--xh-menubar-layer, var(--xh-_layer, var(--xh-layer-popover)));
     /* 空壳不吃指针，交互只发生在 content 上 */

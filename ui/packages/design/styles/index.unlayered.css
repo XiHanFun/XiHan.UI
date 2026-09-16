@@ -8575,9 +8575,6 @@
      引擎没算（尚未落位 / 无引擎 / 贴边归零）时退到视口宽 */
   --xh-_popconfirm-available-w: 100vw;
 
-  /* 面板内容的自绘条浮在内容之上：轨道不上底色，实色轨道会在面板右缘糊一条竖灰带 */
-  --xh-scrollbar-track-bg: transparent;
-
   position: fixed;
   z-index: var(--xh-popconfirm-layer, var(--xh-_layer, var(--xh-layer-popover)));
   /* 空壳不吃指针，交互只发生在 content 上 */
@@ -9307,6 +9304,48 @@
 
 :where([data-scope][data-part='positioner'][data-positioned]) {
   visibility: visible;
+}
+
+/*
+ * 库内原生滚动面与作者容器共用的细条。
+ *
+ * 两档滚动面里的「原生细条」档：页内结构容器（Table、Tree、Virtualizer viewport、
+ * Dialog / Drawer body、Log 视口一类）不接自绘条，靠这里把原生条统一成 thin + 令牌色阶。
+ * 三个入口：库节点（[data-scope][data-part]）、作者自建滚动容器与文档示例（[data-xh-scroll]）、
+ * Typography prose 里的 <pre>——它是库内唯一不带 data-part 的滚动面，作者只写 <pre> 不写角色。
+ * 皮肤不得再手写 scrollbar-width / scrollbar-color（stylelint 判红），要藏条写 none。
+ * 这里不写 scrollbar-gutter：auto 是初始值，stable 只给内容高度会变的容器由皮肤显式写。
+ *
+ * 令牌住在 xihan.tokens 层、排在本层之后，但自定义属性的求值不受层序影响：
+ * var() 在计算值阶段沿元素树取值，层序只裁决同一属性的两条声明谁赢。
+ * [data-xh-scrollbar] 的 scrollbar-width: none 是 (0,1,0)，有层与无层两种产物里都压得住本条；
+ * ::-webkit-scrollbar 伪元素自带 (0,0,1)，ScrollArea 那条 display: none 同样压得住。
+ */
+:where([data-scope][data-part], [data-xh-scroll], [data-scope='typography'][data-part='prose'] pre) {
+  scrollbar-width: thin;
+  scrollbar-color: var(--xh-fg-scrollbar-thumb) var(--xh-bg-scrollbar-track);
+}
+
+:where([data-scope][data-part], [data-xh-scroll], [data-scope='typography'][data-part='prose'] pre)::-webkit-scrollbar {
+  width: var(--xh-scrollbar-thickness-md);
+  height: var(--xh-scrollbar-thickness-md);
+}
+
+:where([data-scope][data-part], [data-xh-scroll], [data-scope='typography'][data-part='prose'] pre)::-webkit-scrollbar-track {
+  background: var(--xh-bg-scrollbar-track);
+}
+
+:where([data-scope][data-part], [data-xh-scroll], [data-scope='typography'][data-part='prose'] pre)::-webkit-scrollbar-thumb {
+  border-radius: calc(var(--xh-scrollbar-thickness-md) / 2);
+  background: var(--xh-fg-scrollbar-thumb);
+}
+
+:where([data-scope][data-part], [data-xh-scroll], [data-scope='typography'][data-part='prose'] pre)::-webkit-scrollbar-thumb:hover {
+  background: var(--xh-fg-scrollbar-thumb-hover);
+}
+
+:where([data-scope][data-part], [data-xh-scroll], [data-scope='typography'][data-part='prose'] pre)::-webkit-scrollbar-thumb:active {
+  background: var(--xh-fg-scrollbar-thumb-active);
 }
 
 /*
@@ -14285,38 +14324,10 @@
   --xh-scrollbar-skin: 1;
 }
 
-/* 组件内部的原生滚动面复用本组件的厚度与色阶；宿主页面不受影响。
-   挂载完整 Scrollbar 时，后面的 data-xh-scrollbar 规则会隐藏原生外观并改用自绘轨道。 */
-:where([data-scope][data-part]) {
-  scrollbar-width: thin;
-  scrollbar-color: var(--xh-fg-scrollbar-thumb) var(--xh-bg-scrollbar-track);
-  scrollbar-gutter: auto;
-}
-
-:where([data-scope][data-part])::-webkit-scrollbar {
-  width: var(--xh-scrollbar-thickness-md);
-  height: var(--xh-scrollbar-thickness-md);
-}
-
-:where([data-scope][data-part])::-webkit-scrollbar-track {
-  background: var(--xh-bg-scrollbar-track);
-}
-
-:where([data-scope][data-part])::-webkit-scrollbar-thumb {
-  border-radius: calc(var(--xh-scrollbar-thickness-md) / 2);
-  background: var(--xh-fg-scrollbar-thumb);
-}
-
-:where([data-scope][data-part])::-webkit-scrollbar-thumb:hover {
-  background: var(--xh-fg-scrollbar-thumb-hover);
-}
-
-:where([data-scope][data-part])::-webkit-scrollbar-thumb:active {
-  background: var(--xh-fg-scrollbar-thumb-active);
-}
-
-/* 挂了自绘滚动条的容器：原生滚动条只藏外观，滚动能力一点不动。
-   标记由机器挂监听时打上，最后一条滚动条拆走才撤。下面那条 ::-webkit-scrollbar 兜住还没实现 scrollbar-width 的引擎 */
+/* 库内原生滚动面的细条规则住在 reset 层（reset.css），本文件只管自绘条本身。
+   挂了自绘滚动条的容器：原生滚动条只藏外观，滚动能力一点不动。
+   标记由机器挂监听时打上，最后一条滚动条拆走才撤。这条是 (0,1,0)，压得过 reset 层的 thin；
+   下面那条 ::-webkit-scrollbar 兜住还没实现 scrollbar-width 的引擎 */
 [data-xh-scrollbar] {
   scrollbar-width: none;
 }
@@ -27264,9 +27275,6 @@
   --xh-_overlay-enter-left: 0;
   --xh-_overlay-enter-right: 0;
 
-  /* 自绘滚动条轨道保持透明，避免在磨砂面右缘叠出一条实体灰带。 */
-  --xh-scrollbar-track-bg: transparent;
-
   position: fixed;
   z-index: var(--xh-menubar-layer, var(--xh-_layer, var(--xh-layer-popover)));
   /* 空壳不吃指针，交互只发生在 content 上 */
@@ -36977,7 +36985,6 @@
   padding-inline: var(--xh-time-picker-preset-group-px, var(--xh-space-1));
   overflow-y: auto;
   border-inline-end: var(--xh-stroke-thin) solid var(--xh-time-picker-column-divider, var(--xh-material-frosted-separator));
-  scrollbar-width: thin;
 }
 
 [data-scope='time-picker'][data-part='preset-group'][hidden] {
@@ -37069,7 +37076,6 @@
   padding-inline: var(--xh-time-picker-column-px, 0);
   overflow-y: auto;
   /* 滚动容器在某些浏览器里会被自动塞进 Tab 序列，是否画环见下方按 tabindex 分档的两条 */
-  scrollbar-width: thin;
 }
 
 /* granularity 关掉的列（精度不到秒时的秒列）由连接层打 hidden */
@@ -37741,7 +37747,6 @@
   padding-inline: var(--xh-time-range-picker-preset-group-px, var(--xh-space-1));
   overflow-y: auto;
   border-inline-end: var(--xh-stroke-thin) solid var(--xh-time-range-picker-column-divider, var(--xh-material-frosted-separator));
-  scrollbar-width: thin;
 }
 
 [data-scope='time-range-picker'][data-part='preset-group'][hidden] {
@@ -37890,7 +37895,6 @@
   padding-inline: var(--xh-time-range-picker-column-px, 0);
   overflow-y: auto;
   /* 滚动容器在某些浏览器里会被自动塞进 Tab 序列，是否画环见下方按 tabindex 分档的两条 */
-  scrollbar-width: thin;
 }
 
 /* granularity 关掉的列（精度不到秒时的秒列）由连接层打 hidden */

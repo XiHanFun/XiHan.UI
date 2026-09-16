@@ -13,6 +13,14 @@
 // 是 WC 那个选项对象与 Vue 的 branches 行，React 侧的写法要等它铺到第一个滚动宿主
 // 才定得下来；那之前把解析硬猜出来，只会核出一批假绿。
 // React 只核 react-coverage.json 里已铺到的组件，没铺到的跳过。
+//
+// 规则⑦-⑩管的是「滚动面归档」：真源 component-design.md §6.6 把组件内滚动面分成两档
+// （自绘条 / 原生细条），scroll-surface-registry.json 逐面登记。皮肤里每一处 overflow: auto|scroll
+// 都得在表里（新滚动面必须归档），表里每一条都得扫得到（名单过期）；drawn 面核三端接线、轴、
+// 浮层 4px 档；每一面核 overscroll-behavior 与 scrollbar-gutter 该写的写了、不该写的没写；
+// 原生面不得自己写 scrollbar-width / scrollbar-color；声明 --xh-scrollbar-track-bg 的部件
+// 必须是某个宿主的壳，否则是死声明。尚未达标的面记在同一份 JSON 的 backlog 段，逐条理由，
+// 命中即从表里移除——登记了却没命中判红，表只减不增。
 import { readdir, readFile } from 'node:fs/promises'
 import { basename, dirname, join } from 'node:path'
 
@@ -24,6 +32,10 @@ const VUE = ADAPTERS.vue.components
 const WC = ADAPTERS.wc.components
 const REACT = ADAPTERS.react.components
 const STYLES = 'packages/design/styles/css'
+/** 家族配方里也有滚动面（字段配方的 textarea 布局），一并扫。 */
+const FAMILY_SCROLL_FILES = ['packages/design/styles/family/field-chrome.css']
+/** 滚动面登记表：真源 §6.6 两档表的机器可读版。 */
+const REGISTRY = 'tooling/scripts/scroll-surface-registry.json'
 /** 组件总数的分母：一个组件一份套件。 */
 const SUITES_DIR = 'tooling/testing/src/suites'
 
@@ -105,13 +117,13 @@ function declares(body, property) {
   return new RegExp(`(?:^|[;\\s{])${property}\\s*:`).test(body)
 }
 
-/** 取出 `new ScrollbarsController(` 之后配平括号内的那段实参。 */
-function callBlock(src) {
-  const at = src.indexOf(WC_CALL)
+/** 取出调用点之后配平括号内的那段实参；缺省取 WC 的 `new ScrollbarsController(`。 */
+function callBlock(src, call = WC_CALL) {
+  const at = src.indexOf(call)
   if (at < 0)
     return null
   let depth = 0
-  for (let i = at + WC_CALL.length - 1; i < src.length; i++) {
+  for (let i = at + call.length - 1; i < src.length; i++) {
     if (src[i] === '(')
       depth++
     else if (src[i] === ')' && --depth === 0)
@@ -342,7 +354,7 @@ for await (const file of walk(REACT)) {
   const dir = basename(dirname(file))
   const comp = dir === basename(REACT) ? basename(file).replace(/\.tsx?$/, '') : dir
   if (src.includes(REACT_CALL))
-    reactHosts.set(comp, file)
+    reactHosts.set(comp, { file, src })
 }
 
 const covered = await reactCovered()
@@ -363,6 +375,8 @@ for (const comp of allHosts) {
     problems.push(`${comp}：${wired.join(' / ')} 侧配了自绘条，${bare.join(' / ')} 侧没配`)
 }
 
+/** 每个 WC 宿主读出来的壳与滚动层，规则⑧按它核登记表。 */
+const hostInfo = new Map()
 let checkedShells = 0
 for (const [comp, { block, src }] of wcHosts) {
   // 规则④：本层一条轴只认一个壳与一个滚动层，多实例的宿主要另一套接法
@@ -393,6 +407,7 @@ for (const [comp, { block, src }] of wcHosts) {
 
   // 规则⑥：条子是 content 的兄弟，浮层不把壳记进层分支，按住条子那一下就被判成层外交互
   const shellPart = shells[0]
+  hostInfo.set(comp, { shellPart, scrollables, block })
   problems.push(...checkLayerBranches(src, `${comp}：WC 侧`, shellPart, scrollables, part => new RegExp(`\\bgetPart\\(\\s*['"]${part}['"]\\s*\\)`)))
   for (const { file, src: vueSrc } of vueSources.get(comp) ?? []) {
     problems.push(...checkLayerBranches(vueSrc, file, shellPart, scrollables, part => new RegExp(`\\b${camel(part)}Ref\\b`)))
@@ -429,6 +444,299 @@ for (const [comp, { block, src }] of wcHosts) {
   }
 }
 
+// ───────────────────────── 规则⑦-⑩：滚动面归档 ─────────────────────────
+
+/** 一条声明块里 overflow 家族给出的可滚轴：简写算两轴，-x / -inline 横、-y / -block 竖。 */
+function scrollAxesOf(body) {
+  const axes = new Set()
+  for (const m of body.matchAll(/(?:^|[;\s{])overflow(-x|-y|-block|-inline)?\s*:\s*(?:auto|scroll)\b/g)) {
+    const suffix = m[1]
+    if (!suffix) {
+      axes.add('vertical').add('horizontal')
+    }
+    else if (suffix === '-x' || suffix === '-inline') {
+      axes.add('horizontal')
+    }
+    else {
+      axes.add('vertical')
+    }
+  }
+  return axes
+}
+
+/**
+ * 一段（不含逗号的）选择器打的是哪个滚动面，键与登记表同形：
+ * `[data-scope=S][data-part=P]…` → `S:P`，再带后代的（prose 里的 pre）→ `S:P(pre)`；
+ * 家族配方没有 data-scope，按属性名去掉 data-xh-<家族>- 前缀拼：`field-chrome:input[layout=textarea]`。
+ * 状态与尺寸限定一律不进键：同一个部件的各档是同一个滚动面。读不出身份的返回 null，由调用处判红。
+ */
+function surfaceKeyOf(selector, family) {
+  const s = selector.trim().replace(/['"]/g, '')
+  const scopeAt = /\[data-scope=([\w-]+)\]/.exec(s)
+  if (scopeAt) {
+    // 从 data-scope 起逐字吃完同一个复合选择器：属性块 `[…]` 与伪类 `:name(…)`（括号配平），
+    // 碰到组合符（空白 / > / + / ~）就停，剩下的是后代那一截
+    let i = scopeAt.index + scopeAt[0].length
+    while (i < s.length) {
+      const ch = s[i]
+      if (ch === '[') {
+        i = s.indexOf(']', i) + 1
+        if (i === 0)
+          return null
+      }
+      else if (ch === ':') {
+        i += 1
+        while (i < s.length && /[\w-]/.test(s[i])) i += 1
+        if (s[i] === '(') {
+          let depth = 0
+          for (; i < s.length; i++) {
+            if (s[i] === '(')
+              depth++
+            else if (s[i] === ')' && --depth === 0)
+              break
+          }
+          i += 1
+        }
+      }
+      else {
+        break
+      }
+    }
+    const compound = s.slice(scopeAt.index, i)
+    const part = /\[data-part=([\w-]+)\]/.exec(compound)
+    if (!part)
+      return null
+    const tail = s.slice(i).trim()
+    if (!tail)
+      return `${scopeAt[1]}:${part[1]}`
+    const tag = /^(?::where\()?([a-z][\w-]*)\)?$/.exec(tail)
+    return tag ? `${scopeAt[1]}:${part[1]}(${tag[1]})` : null
+  }
+  if (!family)
+    return null
+  const prefix = `data-xh-${family.replace(/-chrome$/, '')}-`
+  const attrs = [...s.matchAll(/\[([\w-]+)(?:=([\w-]+))?\]/g)]
+  if (!attrs.length || !attrs[0][1].startsWith(prefix))
+    return null
+  const [head, ...rest] = attrs
+  return `${family}:${head[1].slice(prefix.length)}${rest.map(a => `[${a[1].startsWith(prefix) ? a[1].slice(prefix.length) : a[1]}${a[2] ? `=${a[2]}` : ''}]`).join('')}`
+}
+
+const registry = JSON.parse(await readFile(REGISTRY, 'utf8'))
+const surfaces = registry.surfaces ?? {}
+const backlog = registry.backlog ?? {}
+const ISSUES = new Set(['unwired', 'axes', 'size', 'overscroll', 'gutter'])
+
+for (const [key, entry] of Object.entries(surfaces)) {
+  if (!/^[\w-]+:[\w-]+(?:\([\w-]+\)|(?:\[[\w-]+(?:=[\w-]+)?\])+)?$/.test(key))
+    problems.push(`${REGISTRY}：键 ${key} 不是「组件:部件」形态`)
+  if (entry.mode !== 'drawn' && entry.mode !== 'native')
+    problems.push(`${REGISTRY}：${key} 的 mode 只能是 drawn / native，实际 ${JSON.stringify(entry.mode)}`)
+  if (entry.wiring !== undefined && (entry.mode !== 'drawn' || !['scrollbars', 'anatomy'].includes(entry.wiring)))
+    problems.push(`${REGISTRY}：${key} 的 wiring 只在 drawn 上出现，且只能是 scrollbars / anatomy`)
+  for (const flag of ['overscroll', 'gutter']) {
+    if (typeof entry[flag] !== 'boolean')
+      problems.push(`${REGISTRY}：${key} 的 ${flag} 要写成布尔`)
+  }
+  if (typeof entry.why !== 'string' || !entry.why.trim())
+    problems.push(`${REGISTRY}：${key} 缺 why`)
+}
+for (const [key, issues] of Object.entries(backlog)) {
+  if (!(key in surfaces))
+    problems.push(`${REGISTRY}：backlog 里的 ${key} 不在 surfaces 里——先登记再豁免`)
+  for (const [issue, why] of Object.entries(issues)) {
+    if (!ISSUES.has(issue))
+      problems.push(`${REGISTRY}：backlog ${key} 的问题码 ${issue} 不认识，只有 ${[...ISSUES].join(' / ')}`)
+    if (typeof why !== 'string' || !why.trim())
+      problems.push(`${REGISTRY}：backlog ${key}.${issue} 缺理由`)
+  }
+}
+
+/** 皮肤里扫到的滚动面：键 → { axes, rules（打到这一面的全部规则）, files }。 */
+const scanned = new Map()
+/** 声明了 --xh-scrollbar-track-bg 的面（规则⑩）。 */
+const trackBgDeclared = new Map()
+const skinFiles = (await readdir(STYLES)).filter(f => f.endsWith('.css')).map(f => ({ file: join(STYLES, f), family: null }))
+for (const file of FAMILY_SCROLL_FILES)
+  skinFiles.push({ file, family: basename(file, '.css') })
+for (const { file, family } of skinFiles) {
+  const rules = readRules(await readFile(file, 'utf8'))
+  for (const rule of rules) {
+    const axes = scrollAxesOf(rule.body)
+    const declaresTrackBg = declares(rule.body, '--xh-scrollbar-track-bg')
+    if (!axes.size && !declaresTrackBg)
+      continue
+    for (const one of rule.selector.split(',')) {
+      const key = surfaceKeyOf(one, family)
+      if (!key) {
+        if (axes.size)
+          problems.push(`${file}：\`${one.trim()}\` 上有 overflow: auto|scroll，但读不出它是哪个组件的哪个部件——滚动面必须打在 [data-scope][data-part] 上`)
+        continue
+      }
+      if (axes.size) {
+        const hit = scanned.get(key) ?? { axes: new Set(), rules: [], files: new Set() }
+        for (const axis of axes) hit.axes.add(axis)
+        hit.files.add(file)
+        scanned.set(key, hit)
+      }
+      if (declaresTrackBg)
+        trackBgDeclared.set(key, file)
+    }
+  }
+  // 打到这一面的全部规则（含状态档）：overscroll / gutter / scrollbar-* 按整面看，不只看基础规则
+  for (const rule of rules) {
+    for (const one of rule.selector.split(',')) {
+      const key = surfaceKeyOf(one, family)
+      const hit = key && scanned.get(key)
+      if (hit && !hit.rules.includes(rule))
+        hit.rules.push(rule)
+    }
+  }
+}
+
+// 规则⑦：覆盖面。皮肤里的每一处滚动面都在表里，表里的每一条都扫得到。
+for (const key of [...scanned.keys()].sort()) {
+  if (!(key in surfaces))
+    problems.push(`${key}（${[...scanned.get(key).files].join('、')}）有 overflow: auto|scroll 但没登记——新滚动面必须归档进 ${REGISTRY}，按真源 §6.6 定它走自绘条还是原生细条`)
+}
+for (const key of Object.keys(surfaces)) {
+  if (!scanned.has(key))
+    problems.push(`${key} 登记在 ${REGISTRY} 里，皮肤里却扫不到它的 overflow: auto|scroll——名单过期，删掉这条`)
+}
+
+/** 命中的问题：键 → 问题码 → 文案。与 backlog 对账后才决定红不红。 */
+const found = new Map()
+function issue(key, code, message) {
+  const bucket = found.get(key) ?? new Map()
+  if (!bucket.has(code))
+    bucket.set(code, message)
+  found.set(key, bucket)
+}
+
+/** `['vertical', 'horizontal']` 这类字面量里的轴；没写就是缺省的只竖。 */
+function axesIn(expr) {
+  if (!expr)
+    return new Set(['vertical'])
+  return new Set([...expr.matchAll(/['"](vertical|horizontal)['"]/g)].map(m => m[1]))
+}
+
+/** props 表达式里的 size 档；没写返回 null。 */
+function sizeIn(expr) {
+  const m = expr && /\bsize\s*:\s*['"]([\w-]+)['"]/.exec(expr)
+  return m ? m[1] : null
+}
+
+/** 三端各自那段 useScrollbars / ScrollbarsController 调用的实参。 */
+function sidesOf(comp) {
+  const sides = []
+  const wc = hostInfo.get(comp)
+  if (wc)
+    sides.push({ label: ADAPTERS.wc.label, block: wc.block })
+  for (const { src } of vueSources.get(comp) ?? []) {
+    const block = callBlock(src, VUE_CALL)
+    if (block)
+      sides.push({ label: ADAPTERS.vue.label, block })
+  }
+  const react = reactHosts.get(comp)
+  if (react) {
+    const block = callBlock(react.src, REACT_CALL)
+    if (block)
+      sides.push({ label: ADAPTERS.react.label, block })
+  }
+  return sides
+}
+
+for (const [key, entry] of Object.entries(surfaces)) {
+  const hit = scanned.get(key)
+  if (!hit)
+    continue
+  const [comp, part] = key.split(':')
+  const rules = hit.rules
+  const bodies = rules.map(r => r.body).join('\n')
+
+  if (entry.mode === 'drawn' && entry.wiring === 'anatomy') {
+    // 条子是组件自己的解剖部件：视口得把原生条藏掉，且不该再走 useScrollbars 那条线
+    if (!rules.some(r => /(?:^|[;\s{])scrollbar-width\s*:\s*none\b/.test(r.body)))
+      problems.push(`${key}：登记为自绘条（解剖部件），皮肤里却没有 scrollbar-width: none 藏原生条`)
+    if (wcHosts.has(comp) || vueHosts.has(comp) || reactHosts.has(comp))
+      problems.push(`${key}：登记为解剖部件自绘，却又接了 useScrollbars / ScrollbarsController，两套条子会叠在一起`)
+  }
+  else if (entry.mode === 'drawn') {
+    // 规则⑧：drawn 面必须三端都接了这一面；轴要盖住皮肤声明的轴；浮层壳走 4px 档、页内壳不传 size
+    const wc = hostInfo.get(comp)
+    if (!wc || !allHosts.includes(comp)) {
+      issue(key, 'unwired', `${key}：登记为自绘条，三端都没接 useScrollbars / ScrollbarsController`)
+    }
+    else if (!wc.scrollables.includes(part)) {
+      issue(key, 'unwired', `${key}：登记为自绘条，宿主 ${comp} 的 scrollable 只点名了 ${wc.scrollables.join(' / ')}，这一面没接`)
+    }
+    else {
+      const sides = sidesOf(comp)
+      const missingAxes = sides
+        .map(side => ({ side: side.label, missing: [...hit.axes].filter(axis => !axesIn(optionExpr(side.block, 'axes')).has(axis)) }))
+        .filter(x => x.missing.length)
+      if (missingAxes.length)
+        issue(key, 'axes', `${key}：皮肤声明可滚 ${[...hit.axes].join(' + ')}，${missingAxes.map(x => `${x.side} 缺 ${x.missing.join(' / ')}`).join('；')}——axes 要盖住皮肤声明的轴`)
+      const sizes = sides.map(side => ({ side: side.label, size: sizeIn(optionExpr(side.block, 'props')) }))
+      if (wc.shellPart === 'positioner') {
+        const bad = sizes.filter(x => x.size !== 'sm')
+        if (bad.length)
+          issue(key, 'size', `${key}：壳是 positioner，条子走浮层 4px 档，${bad.map(x => `${x.side} 的 props 里 size 是 ${x.size ?? '缺省 md'}`).join('；')}——要写 size: 'sm'`)
+      }
+      else {
+        const bad = sizes.filter(x => x.size !== null)
+        if (bad.length)
+          issue(key, 'size', `${key}：壳是 ${wc.shellPart}（页内宿主），条子走 6px 缺省档，${bad.map(x => `${x.side} 却传了 size: '${x.size}'`).join('；')}`)
+      }
+    }
+  }
+  else {
+    // 规则⑨：原生面不自己画条——stylelint 已拦 thin 以外的值，这里兜 none：藏了原生条又没接自绘条
+    for (const property of ['scrollbar-width', 'scrollbar-color']) {
+      if (rules.some(r => declares(r.body, property)))
+        problems.push(`${key}：登记为原生细条，皮肤里却写了 ${property}——细条由 reset 层统一给，皮肤不写；要自绘条就改登记为 drawn 并接线`)
+    }
+  }
+
+  // 规则⑨（两档都核）：overscroll-behavior: contain 只给浮层面、模态 body 与粘底视口；
+  // scrollbar-gutter: stable 只给内容高度动态变化的容器，且带 :not([data-xh-scrollbar]) 守卫
+  const hasOverscroll = /(?:^|[;\s{])overscroll-behavior(?:-\w+)?\s*:\s*contain\b/.test(bodies)
+  if (entry.overscroll && !hasOverscroll)
+    issue(key, 'overscroll', `${key}：登记 overscroll=true，皮肤里缺 overscroll-behavior: contain`)
+  if (!entry.overscroll && hasOverscroll)
+    issue(key, 'overscroll', `${key}：登记 overscroll=false（页内结构容器保持 auto），皮肤里却写了 overscroll-behavior: contain`)
+  const gutterRules = rules.filter(r => declares(r.body, 'scrollbar-gutter'))
+  const guardedStable = gutterRules.some(r => r.selector.includes(':not([data-xh-scrollbar])') && /scrollbar-gutter\s*:\s*stable\b/.test(r.body))
+  if (entry.gutter && !guardedStable)
+    issue(key, 'gutter', `${key}：登记 gutter=true，皮肤里缺带 :not([data-xh-scrollbar]) 守卫的 scrollbar-gutter: stable`)
+  if (!entry.gutter && gutterRules.length)
+    issue(key, 'gutter', `${key}：登记 gutter=false，皮肤里却写了 scrollbar-gutter——stable 只给内容高度动态变化的容器`)
+}
+
+// 规则⑩：--xh-scrollbar-track-bg 只有挂了条子的壳才有资格声明；别处的一律是死声明
+const shellKeys = new Set([...hostInfo].map(([comp, info]) => `${comp}:${info.shellPart}`))
+for (const [key, file] of [...trackBgDeclared].sort()) {
+  if (!shellKeys.has(key))
+    problems.push(`${file}：${key} 声明了 --xh-scrollbar-track-bg，但它不是任何自绘条宿主的壳——死声明，删掉；接线时随壳一起加回`)
+}
+
+// 与 backlog 对账：命中且登记了的放过，命中却没登记的判红，登记了却没命中的是过期
+let pending = 0
+for (const [key, bucket] of [...found].sort()) {
+  for (const [code, message] of bucket) {
+    if (backlog[key]?.[code])
+      pending += 1
+    else
+      problems.push(message)
+  }
+}
+for (const [key, issues] of Object.entries(backlog)) {
+  for (const code of Object.keys(issues)) {
+    if (!found.get(key)?.has(code))
+      problems.push(`${REGISTRY}：backlog ${key}.${code} 已经不再命中——豁免过期，从表里删掉`)
+  }
+}
+
 if (problems.length) {
   console.error('[check-scrollbar-hosts] ✗ 自绘条接线不齐：')
   for (const problem of problems)
@@ -437,9 +745,14 @@ if (problems.length) {
 }
 
 const reactExpected = allHosts.filter(comp => covered.has(comp)).length
+const modes = Object.values(surfaces).reduce((acc, entry) => ({ ...acc, [entry.mode]: (acc[entry.mode] ?? 0) + 1 }), {})
 console.log(
   `[check-scrollbar-hosts] 通过：${allHosts.length} 个宿主的接线齐（Vue ${vueHosts.size} · Web Components ${wcHosts.size} · React ${reactHosts.size}/${reactExpected}），`
   + `${checkedShells} 个壳有定位上下文与轨道底色、也都记进了层分支，滚动层皮肤没有漏守卫的原生条声明`,
+)
+console.log(
+  `[check-scrollbar-hosts] 滚动面 ${scanned.size} 个全部归档（自绘 ${modes.drawn ?? 0} · 原生 ${modes.native ?? 0}），`
+  + `overscroll / gutter / track-bg 按登记核过；backlog 待办 ${pending} 条，无过期豁免`,
 )
 console.log(
   `[check-scrollbar-hosts] ${reactProgress(covered, suiteCount)}，没铺到的宿主不核；`

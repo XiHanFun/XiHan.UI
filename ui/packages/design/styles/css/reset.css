@@ -53,6 +53,48 @@
   }
 
   /*
+   * 库内原生滚动面与作者容器共用的细条。
+   *
+   * 两档滚动面里的「原生细条」档：页内结构容器（Table、Tree、Virtualizer viewport、
+   * Dialog / Drawer body、Log 视口一类）不接自绘条，靠这里把原生条统一成 thin + 令牌色阶。
+   * 三个入口：库节点（[data-scope][data-part]）、作者自建滚动容器与文档示例（[data-xh-scroll]）、
+   * Typography prose 里的 <pre>——它是库内唯一不带 data-part 的滚动面，作者只写 <pre> 不写角色。
+   * 皮肤不得再手写 scrollbar-width / scrollbar-color（stylelint 判红），要藏条写 none。
+   * 这里不写 scrollbar-gutter：auto 是初始值，stable 只给内容高度会变的容器由皮肤显式写。
+   *
+   * 令牌住在 xihan.tokens 层、排在本层之后，但自定义属性的求值不受层序影响：
+   * var() 在计算值阶段沿元素树取值，层序只裁决同一属性的两条声明谁赢。
+   * [data-xh-scrollbar] 的 scrollbar-width: none 是 (0,1,0)，有层与无层两种产物里都压得住本条；
+   * ::-webkit-scrollbar 伪元素自带 (0,0,1)，ScrollArea 那条 display: none 同样压得住。
+   */
+  :where([data-scope][data-part], [data-xh-scroll], [data-scope='typography'][data-part='prose'] pre) {
+    scrollbar-width: thin;
+    scrollbar-color: var(--xh-fg-scrollbar-thumb) var(--xh-bg-scrollbar-track);
+  }
+
+  :where([data-scope][data-part], [data-xh-scroll], [data-scope='typography'][data-part='prose'] pre)::-webkit-scrollbar {
+    width: var(--xh-scrollbar-thickness-md);
+    height: var(--xh-scrollbar-thickness-md);
+  }
+
+  :where([data-scope][data-part], [data-xh-scroll], [data-scope='typography'][data-part='prose'] pre)::-webkit-scrollbar-track {
+    background: var(--xh-bg-scrollbar-track);
+  }
+
+  :where([data-scope][data-part], [data-xh-scroll], [data-scope='typography'][data-part='prose'] pre)::-webkit-scrollbar-thumb {
+    border-radius: calc(var(--xh-scrollbar-thickness-md) / 2);
+    background: var(--xh-fg-scrollbar-thumb);
+  }
+
+  :where([data-scope][data-part], [data-xh-scroll], [data-scope='typography'][data-part='prose'] pre)::-webkit-scrollbar-thumb:hover {
+    background: var(--xh-fg-scrollbar-thumb-hover);
+  }
+
+  :where([data-scope][data-part], [data-xh-scroll], [data-scope='typography'][data-part='prose'] pre)::-webkit-scrollbar-thumb:active {
+    background: var(--xh-fg-scrollbar-thumb-active);
+  }
+
+  /*
    * 选区高亮的底与字。不写这条时用的是 UA 的系统高亮色（多数是系统蓝底白字）：
    * 它不跟主题走，深色档下这块蓝会横在面板上，选中的文字反而比没选中时更难认。
    *

@@ -91,6 +91,38 @@ describe('scrollbar 默认视觉', () => {
     expect(style.scrollbarColor).not.toBe('auto')
   })
 
+  it('作者容器打 data-xh-scroll 即得 reset 层的细条与令牌色阶', () => {
+    host = document.createElement('div')
+    host.innerHTML = `
+      <div data-xh-scroll style="block-size: 80px; overflow: auto">
+        <div style="block-size: 240px"></div>
+      </div>
+      <div data-probe style="color: var(--xh-fg-scrollbar-thumb); background-color: var(--xh-bg-scrollbar-track)"></div>`
+    document.body.append(host)
+    const box = host.querySelector<HTMLElement>('[data-xh-scroll]')!
+    const probe = getComputedStyle(host.querySelector<HTMLElement>('[data-probe]')!)
+    const style = getComputedStyle(box)
+    expect(style.scrollbarWidth).toBe('thin')
+    // 两支令牌各解出一个颜色：滑块用 fg-scrollbar-thumb，轨道用 bg-scrollbar-track
+    expect(style.scrollbarColor).toBe(`${probe.color} ${probe.backgroundColor}`)
+  })
+
+  it('typography prose 里的 pre 不带 data-part 也吃到同一套细条', () => {
+    host = document.createElement('div')
+    host.innerHTML = `
+      <div data-scope="typography" data-part="prose">
+        <pre style="inline-size: 120px">${'x'.repeat(400)}</pre>
+      </div>
+      <div data-probe style="color: var(--xh-fg-scrollbar-thumb); background-color: var(--xh-bg-scrollbar-track)"></div>`
+    document.body.append(host)
+    const pre = host.querySelector<HTMLElement>('pre')!
+    const probe = getComputedStyle(host.querySelector<HTMLElement>('[data-probe]')!)
+    const style = getComputedStyle(pre)
+    expect(pre.scrollWidth).toBeGreaterThan(pre.clientWidth)
+    expect(style.scrollbarWidth).toBe('thin')
+    expect(style.scrollbarColor).toBe(`${probe.color} ${probe.backgroundColor}`)
+  })
+
   it('悬停只增强滑块对比，不显形轨道', async () => {
     const scrollbar = mount()
     const idle = getComputedStyle(scrollbar.thumb).backgroundColor
