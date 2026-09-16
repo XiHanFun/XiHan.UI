@@ -269,13 +269,6 @@
       "ratio": 2.89,
       "ring": "poured"
     },
-    "form [data-part='submit-trigger'][data-scope='form']": {
-      "parts": [
-        "submit-trigger"
-      ],
-      "ratio": 1,
-      "ring": "poured"
-    },
     "pagination [data-part=:is(positioner,root)][data-scope='pagination'] [data-current][data-part='item'][data-scope='pagination']": {
       "parts": [
         "item"

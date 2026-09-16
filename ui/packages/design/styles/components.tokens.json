@@ -29122,17 +29122,16 @@
         "submit-trigger"
       ],
       "property": [
-        "background",
-        "border-color"
+        "background-color"
       ],
       "state": [
-        "not(:disabled)"
+        "default"
       ],
       "defaultToken": [
-        "--xh-bg-brand"
+        "--xh-_action-variant-bg-rest"
       ],
       "visibility": "public",
-      "description": "form 的 submit-trigger 部件 background、border-color 覆盖槽。"
+      "description": "form 的 submit-trigger 部件 background-color 覆盖槽。"
     },
     {
       "name": "--xh-form-submit-bg-active",
@@ -29141,18 +29140,21 @@
         "submit-trigger"
       ],
       "property": [
-        "background",
-        "border-color"
+        "background-color"
       ],
       "state": [
-        "active",
-        "not(:disabled)"
+        "disabled",
+        "is(:active, [data-pressed])",
+        "loading",
+        "not([data-disabled])",
+        "not([data-loading])",
+        "pressed"
       ],
       "defaultToken": [
-        "--xh-bg-brand-active"
+        "--xh-_action-variant-bg-pressed"
       ],
       "visibility": "public",
-      "description": "form 的 submit-trigger 部件 background、border-color 覆盖槽。"
+      "description": "form 的 submit-trigger 部件 background-color 覆盖槽。"
     },
     {
       "name": "--xh-form-submit-bg-hover",
@@ -29161,18 +29163,20 @@
         "submit-trigger"
       ],
       "property": [
-        "background",
-        "border-color"
+        "background-color"
       ],
       "state": [
+        "disabled",
         "hover",
-        "not(:disabled)"
+        "loading",
+        "not([data-disabled])",
+        "not([data-loading])"
       ],
       "defaultToken": [
-        "--xh-bg-brand-hover"
+        "--xh-_action-variant-bg-hover"
       ],
       "visibility": "public",
-      "description": "form 的 submit-trigger 部件 background、border-color 覆盖槽。"
+      "description": "form 的 submit-trigger 部件 background-color 覆盖槽。"
     },
     {
       "name": "--xh-form-submit-border",
@@ -29181,16 +29185,16 @@
         "submit-trigger"
       ],
       "property": [
-        "border-color"
+        "border"
       ],
       "state": [
-        "not(:disabled)"
+        "default"
       ],
       "defaultToken": [
-        "--xh-form-submit-bg"
+        "--xh-_action-variant-border-rest"
       ],
       "visibility": "public",
-      "description": "form 的 submit-trigger 部件 border-color 覆盖槽。"
+      "description": "form 的 submit-trigger 部件 border 覆盖槽。"
     },
     {
       "name": "--xh-form-submit-border-active",
@@ -29202,11 +29206,15 @@
         "border-color"
       ],
       "state": [
-        "active",
-        "not(:disabled)"
+        "disabled",
+        "is(:active, [data-pressed])",
+        "loading",
+        "not([data-disabled])",
+        "not([data-loading])",
+        "pressed"
       ],
       "defaultToken": [
-        "--xh-form-submit-bg-active"
+        "--xh-_action-variant-border-pressed"
       ],
       "visibility": "public",
       "description": "form 的 submit-trigger 部件 border-color 覆盖槽。"
@@ -29221,11 +29229,14 @@
         "border-color"
       ],
       "state": [
+        "disabled",
         "hover",
-        "not(:disabled)"
+        "loading",
+        "not([data-disabled])",
+        "not([data-loading])"
       ],
       "defaultToken": [
-        "--xh-form-submit-bg-hover"
+        "--xh-_action-variant-border-hover"
       ],
       "visibility": "public",
       "description": "form 的 submit-trigger 部件 border-color 覆盖槽。"
@@ -29240,10 +29251,19 @@
         "color"
       ],
       "state": [
-        "not(:disabled)"
+        "default",
+        "disabled",
+        "hover",
+        "is(:active, [data-pressed])",
+        "loading",
+        "not([data-disabled])",
+        "not([data-loading])",
+        "pressed"
       ],
       "defaultToken": [
-        "--xh-fg-on-brand"
+        "--xh-_action-variant-fg-hover",
+        "--xh-_action-variant-fg-pressed",
+        "--xh-_action-variant-fg-rest"
       ],
       "visibility": "public",
       "description": "form 的 submit-trigger 部件 color 覆盖槽。"
@@ -29258,10 +29278,17 @@
         "box-shadow"
       ],
       "state": [
-        "not(:disabled)"
+        "default",
+        "disabled",
+        "hover",
+        "is(:active, [data-pressed])",
+        "loading",
+        "not([data-disabled])",
+        "not([data-loading])",
+        "pressed"
       ],
       "defaultToken": [
-        "--xh-_form-submit-highlight"
+        "--xh-_highlight-brand"
       ],
       "visibility": "public",
       "description": "form 的 submit-trigger 部件 box-shadow 覆盖槽。"
@@ -29477,7 +29504,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-elevation-raised"
+        "none"
       ],
       "visibility": "public",
       "description": "form 的 error-summary 部件 box-shadow 覆盖槽。"
@@ -29486,40 +29513,42 @@
       "name": "--xh-form-trigger-bg",
       "component": "form",
       "part": [
-        "reset-trigger",
-        "submit-trigger"
+        "reset-trigger"
       ],
       "property": [
-        "background"
+        "background-color"
       ],
       "state": [
         "default"
       ],
       "defaultToken": [
-        "--xh-bg-subtle"
+        "--xh-_action-variant-bg-rest"
       ],
       "visibility": "public",
-      "description": "form 的 reset-trigger、submit-trigger 部件 background 覆盖槽。"
+      "description": "form 的 reset-trigger 部件 background-color 覆盖槽。"
     },
     {
       "name": "--xh-form-trigger-bg-active",
       "component": "form",
       "part": [
-        "reset-trigger",
-        "submit-trigger"
+        "reset-trigger"
       ],
       "property": [
-        "background"
+        "background-color"
       ],
       "state": [
-        "active",
-        "not(:disabled)"
+        "disabled",
+        "is(:active, [data-pressed])",
+        "loading",
+        "not([data-disabled])",
+        "not([data-loading])",
+        "pressed"
       ],
       "defaultToken": [
-        "--xh-bg-subtle-active"
+        "--xh-_action-variant-bg-pressed"
       ],
       "visibility": "public",
-      "description": "form 的 reset-trigger、submit-trigger 部件 background 覆盖槽。"
+      "description": "form 的 reset-trigger 部件 background-color 覆盖槽。"
     },
     {
       "name": "--xh-form-trigger-bg-disabled",
@@ -29529,43 +29558,44 @@
         "submit-trigger"
       ],
       "property": [
-        "background"
+        "background-color"
       ],
       "state": [
         "disabled"
       ],
       "defaultToken": [
-        "--xh-bg-muted"
+        "--xh-_action-variant-bg-disabled"
       ],
       "visibility": "public",
-      "description": "form 的 reset-trigger、submit-trigger 部件 background 覆盖槽。"
+      "description": "form 的 reset-trigger、submit-trigger 部件 background-color 覆盖槽。"
     },
     {
       "name": "--xh-form-trigger-bg-hover",
       "component": "form",
       "part": [
-        "reset-trigger",
-        "submit-trigger"
+        "reset-trigger"
       ],
       "property": [
-        "background"
+        "background-color"
       ],
       "state": [
+        "disabled",
         "hover",
-        "not(:disabled)"
+        "loading",
+        "not([data-disabled])",
+        "not([data-loading])"
       ],
       "defaultToken": [
-        "--xh-bg-subtle-hover"
+        "--xh-_action-variant-bg-hover"
       ],
       "visibility": "public",
-      "description": "form 的 reset-trigger、submit-trigger 部件 background 覆盖槽。"
+      "description": "form 的 reset-trigger 部件 background-color 覆盖槽。"
     },
     {
       "name": "--xh-form-trigger-border",
       "component": "form",
       "part": [
-        "reset-trigger",
-        "submit-trigger"
+        "reset-trigger"
       ],
       "property": [
         "border"
@@ -29574,10 +29604,10 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-border-control"
+        "--xh-_action-variant-border-rest"
       ],
       "visibility": "public",
-      "description": "form 的 reset-trigger、submit-trigger 部件 border 覆盖槽。"
+      "description": "form 的 reset-trigger 部件 border 覆盖槽。"
     },
     {
       "name": "--xh-form-trigger-border-disabled",
@@ -29593,7 +29623,7 @@
         "disabled"
       ],
       "defaultToken": [
-        "--xh-border-subtle"
+        "--xh-_action-variant-border-disabled"
       ],
       "visibility": "public",
       "description": "form 的 reset-trigger、submit-trigger 部件 border-color 覆盖槽。"
@@ -29602,40 +29632,50 @@
       "name": "--xh-form-trigger-border-hover",
       "component": "form",
       "part": [
-        "reset-trigger",
-        "submit-trigger"
+        "reset-trigger"
       ],
       "property": [
         "border-color"
       ],
       "state": [
+        "disabled",
         "hover",
-        "not(:disabled)"
+        "loading",
+        "not([data-disabled])",
+        "not([data-loading])"
       ],
       "defaultToken": [
-        "--xh-border-control-hover"
+        "--xh-_action-variant-border-hover"
       ],
       "visibility": "public",
-      "description": "form 的 reset-trigger、submit-trigger 部件 border-color 覆盖槽。"
+      "description": "form 的 reset-trigger 部件 border-color 覆盖槽。"
     },
     {
       "name": "--xh-form-trigger-fg",
       "component": "form",
       "part": [
-        "reset-trigger",
-        "submit-trigger"
+        "reset-trigger"
       ],
       "property": [
         "color"
       ],
       "state": [
-        "default"
+        "default",
+        "disabled",
+        "hover",
+        "is(:active, [data-pressed])",
+        "loading",
+        "not([data-disabled])",
+        "not([data-loading])",
+        "pressed"
       ],
       "defaultToken": [
-        "--xh-fg-default"
+        "--xh-_action-variant-fg-hover",
+        "--xh-_action-variant-fg-pressed",
+        "--xh-_action-variant-fg-rest"
       ],
       "visibility": "public",
-      "description": "form 的 reset-trigger、submit-trigger 部件 color 覆盖槽。"
+      "description": "form 的 reset-trigger 部件 color 覆盖槽。"
     },
     {
       "name": "--xh-form-trigger-font-size",
@@ -29670,7 +29710,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-control-h-md"
+        "--xh-_action-profile-visual-size"
       ],
       "visibility": "public",
       "description": "form 的 reset-trigger、submit-trigger 部件 block-size 覆盖槽。"
@@ -29689,7 +29729,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-control-px-md"
+        "--xh-_action-profile-padding-inline"
       ],
       "visibility": "public",
       "description": "form 的 reset-trigger、submit-trigger 部件 padding-inline 覆盖槽。"

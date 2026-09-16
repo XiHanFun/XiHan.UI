@@ -114,12 +114,24 @@ export const formSuite: ConformanceSuite = {
             'data-form-path': formPathKey('password'),
           },
           'submit-trigger': {
-            type: 'submit',
-            disabled: null,
+            'type': 'submit',
+            'disabled': null,
+            // 提交是主要动作：Action Control text solid 档，常显、固定 md
+            'data-xh-action-control': '',
+            'data-xh-action-profile': 'text',
+            'data-xh-action-variant': 'solid',
+            'data-xh-action-display': 'always',
+            'data-xh-action-size': 'md',
           },
           'reset-trigger': {
-            type: 'reset',
-            disabled: null,
+            'type': 'reset',
+            'disabled': null,
+            // 重置不是主要动作：text outline 档，中性描边
+            'data-xh-action-control': '',
+            'data-xh-action-profile': 'text',
+            'data-xh-action-variant': 'outline',
+            'data-xh-action-display': 'always',
+            'data-xh-action-size': 'md',
           },
         },
       },
