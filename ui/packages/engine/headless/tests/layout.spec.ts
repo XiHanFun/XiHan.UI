@@ -105,6 +105,23 @@ describe('resolveSiderPresentation', () => {
 })
 
 describe('layout 覆盖档的属性', () => {
+  it('折叠把手接 Action Control 的 text 档：ghost 形态、恒显、sm 档，与 sider 互指', () => {
+    const l = makeLayout()
+    cleanups.push(l.stop)
+    const api = l.api()
+    const trigger = api.getSiderTriggerProps() as Record<string, unknown>
+    expect(trigger).toMatchObject({
+      'type': 'button',
+      'aria-expanded': 'true',
+      'data-xh-action-control': '',
+      'data-xh-action-profile': 'text',
+      'data-xh-action-variant': 'ghost',
+      'data-xh-action-display': 'always',
+      'data-xh-action-size': 'sm',
+    })
+    expect(trigger['aria-controls']).toBe((api.getSiderProps() as Record<string, unknown>).id)
+  })
+
   it('占位档：两处都落 inline，遮罩带 hidden', () => {
     const l = makeLayout()
     cleanups.push(l.stop)

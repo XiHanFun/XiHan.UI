@@ -97,9 +97,16 @@ export function connectLayout<T extends PropTypes>(
     getFooterProps: () => normalize.element({ ...parts.footer.attrs }),
 
     // 把手指名它开合的是哪一段：aria-controls 指向侧栏，aria-expanded 与 data-collapsed 说的都是侧栏的折叠态
+    // 折叠把手是一枚小档文字按钮：接 Action Control 的 text 档，ghost 形态、sm 档；
+    // 承载面的阶梯由它所在的面（顶栏白底 / 侧栏淡底）经 host 槽下发
     getSiderTriggerProps: () => normalize.button({
       ...parts['sider-trigger'].attrs,
       'type': 'button',
+      'data-xh-action-control': '',
+      'data-xh-action-profile': 'text',
+      'data-xh-action-variant': 'ghost',
+      'data-xh-action-display': 'always',
+      'data-xh-action-size': 'sm',
       'aria-controls': ids.sider,
       'aria-expanded': collapsed ? 'false' : 'true',
       'data-collapsed': dataAttr(collapsed),

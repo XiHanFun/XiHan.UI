@@ -33814,10 +33814,12 @@
       "state": [
         "placement=end",
         "placement=start",
+        "presentation=sheet",
         "split"
       ],
       "defaultToken": [
-        "--xh-border-default"
+        "--xh-border-default",
+        "--xh-material-elevated-border"
       ],
       "visibility": "public",
       "description": "layout 的 footer、header、root、sider 部件 border-block-end、border-block-start、border-inline-end、border-inline-start 覆盖槽。"
@@ -34058,10 +34060,12 @@
         "background"
       ],
       "state": [
-        "default"
+        "default",
+        "presentation=sheet"
       ],
       "defaultToken": [
-        "--xh-bg-subtle"
+        "--xh-bg-subtle",
+        "--xh-material-elevated-bg"
       ],
       "visibility": "public",
       "description": "layout 的 sider 部件 background 覆盖槽。"
@@ -34139,7 +34143,7 @@
         "presentation=sheet"
       ],
       "defaultToken": [
-        "--xh-elevation-sheet"
+        "--xh-material-elevated-shadow"
       ],
       "visibility": "public",
       "description": "layout 的 sider 部件 box-shadow 覆盖槽。"
@@ -34151,16 +34155,16 @@
         "sider-trigger"
       ],
       "property": [
-        "background"
+        "background-color"
       ],
       "state": [
         "default"
       ],
       "defaultToken": [
-        "transparent"
+        "--xh-_action-variant-bg-rest"
       ],
       "visibility": "public",
-      "description": "layout 的 sider-trigger 部件 background 覆盖槽。"
+      "description": "layout 的 sider-trigger 部件 background-color 覆盖槽。"
     },
     {
       "name": "--xh-layout-sider-trigger-bg-active",
@@ -34169,16 +34173,21 @@
         "sider-trigger"
       ],
       "property": [
-        "background"
+        "background-color"
       ],
       "state": [
-        "active"
+        "disabled",
+        "is(:active, [data-pressed])",
+        "loading",
+        "not([data-disabled])",
+        "not([data-loading])",
+        "pressed"
       ],
       "defaultToken": [
-        "--xh-bg-subtle-active"
+        "--xh-_action-variant-bg-pressed"
       ],
       "visibility": "public",
-      "description": "layout 的 sider-trigger 部件 background 覆盖槽。"
+      "description": "layout 的 sider-trigger 部件 background-color 覆盖槽。"
     },
     {
       "name": "--xh-layout-sider-trigger-bg-hover",
@@ -34187,16 +34196,20 @@
         "sider-trigger"
       ],
       "property": [
-        "background"
+        "background-color"
       ],
       "state": [
-        "hover"
+        "disabled",
+        "hover",
+        "loading",
+        "not([data-disabled])",
+        "not([data-loading])"
       ],
       "defaultToken": [
-        "--xh-bg-subtle-hover"
+        "--xh-_action-variant-bg-hover"
       ],
       "visibility": "public",
-      "description": "layout 的 sider-trigger 部件 background 覆盖槽。"
+      "description": "layout 的 sider-trigger 部件 background-color 覆盖槽。"
     },
     {
       "name": "--xh-layout-sider-trigger-fg",
@@ -34208,10 +34221,19 @@
         "color"
       ],
       "state": [
-        "default"
+        "default",
+        "disabled",
+        "hover",
+        "is(:active, [data-pressed])",
+        "loading",
+        "not([data-disabled])",
+        "not([data-loading])",
+        "pressed"
       ],
       "defaultToken": [
-        "--xh-fg-default"
+        "--xh-_action-variant-fg-hover",
+        "--xh-_action-variant-fg-pressed",
+        "--xh-_action-variant-fg-rest"
       ],
       "visibility": "public",
       "description": "layout 的 sider-trigger 部件 color 覆盖槽。"
@@ -34229,7 +34251,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-control-gap-sm"
+        "--xh-_action-profile-gap"
       ],
       "visibility": "public",
       "description": "layout 的 sider-trigger 部件 gap 覆盖槽。"
@@ -34247,7 +34269,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-control-px-sm"
+        "--xh-_action-profile-padding-inline"
       ],
       "visibility": "public",
       "description": "layout 的 sider-trigger 部件 padding-inline 覆盖槽。"
@@ -34265,7 +34287,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-shape-control"
+        "--xh-_action-profile-radius"
       ],
       "visibility": "public",
       "description": "layout 的 sider-trigger 部件 border-radius 覆盖槽。"
