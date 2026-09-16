@@ -208,6 +208,9 @@ export function connectDatePicker<T extends PropTypes>(
   // 整份控件的不合法态照它发，只标出错的那一组段位等于把反馈藏在输入行里的一小块
   const flagged = invalid || !!fieldRaw.outOfRange
 
+  // 形态默认落 outline：不写时 root 与 positioner 如实投影同一常量，皮肤不再依赖缺省档
+  const variant = prop('variant') ?? 'outline'
+
   /**
    * 同一份分段输入里的全部段位，文档序。事件那一刻现查，不缓存节点数组。
    *
@@ -349,7 +352,7 @@ export function connectDatePicker<T extends PropTypes>(
     getRootProps: () => normalize.element({
       ...parts.root.attrs,
       // 三个视觉轴打在根与 positioner 上，输入行与浮层里的部件各从就近的那一处继承皮肤声明的私有槽
-      'data-variant': prop('variant'),
+      'data-variant': variant,
       'data-tone': prop('tone'),
       'data-size': prop('size'),
       'data-state': stateAttr,
@@ -480,7 +483,7 @@ export function connectDatePicker<T extends PropTypes>(
       // 定位层被搬到 portal 落点，继承不到作者子树上的方向；作者没给就不写，交给落点处的继承
       'dir': prop('dir'),
       // 视觉轴在浮层这一侧再打一次：positioner 被搬到 portal 落点，继承不到根上的私有槽
-      'data-variant': prop('variant'),
+      'data-variant': variant,
       'data-tone': prop('tone'),
       'data-size': prop('size'),
       'data-state': stateAttr,
