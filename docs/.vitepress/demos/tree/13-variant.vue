@@ -1,4 +1,4 @@
-<!-- 形态 | variant="plain" 去掉外框与底色，树直接落在页面上；默认 surface 保持带框的外观 -->
+<!-- 形态 | variant="ghost" 去掉外框与底色，树直接落在页面上；默认 outline 保持带框的外观 -->
 <script setup lang="ts">
 import {
   XhTreeBranch,
@@ -29,7 +29,7 @@ const collection = [
 <template>
   <div style="display: grid; gap: 16px; inline-size: 100%; max-inline-size: 320px">
     <XhTreeRoot
-      v-for="variant in (['surface', 'plain'] as const)"
+      v-for="variant in (['outline', 'ghost'] as const)"
       :key="variant"
       :collection="collection"
       :variant="variant"

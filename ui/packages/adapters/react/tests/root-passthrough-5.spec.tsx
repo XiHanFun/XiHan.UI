@@ -122,7 +122,7 @@ const CASES: RootCase[] = [
   {
     name: 'tree',
     Root: XhTreeRoot as ComponentType<Record<string, unknown>>,
-    schemaProps: { collection: NODES, variant: 'plain' },
+    schemaProps: { collection: NODES, variant: 'ghost' },
     token: '--xh-tree-bg',
     leakAttrs: ['collection', 'variant'],
   },

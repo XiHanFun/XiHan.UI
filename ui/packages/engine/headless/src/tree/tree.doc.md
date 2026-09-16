@@ -16,7 +16,7 @@
 ## 特性
 
 - 展开集合与选中集合两套值各自可受控。
-- `variant` 决定是否带外框，默认 `surface`；`plain` 让树直接落在页面上。
+- `variant` 决定外框形态，默认 `outline`；`subtle` 换成淡底无描边，`ghost` 让树直接落在页面上。
 - `cascade` 与 `checkedStrategy` 决定勾选父节点是否带子节点，以及回显给哪一层。
 - 支持只让叶子进选中集合、关键词过滤、子节点异步加载、拖放换父。
 - `expandOnClick` 决定点整行是否展开。

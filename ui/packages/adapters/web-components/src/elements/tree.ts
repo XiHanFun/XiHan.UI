@@ -47,7 +47,7 @@ const NODE_SELECTOR = `${ITEM_SELECTOR}, ${BRANCH_SELECTOR}`
  * 键盘使用 Alt + 方向键：上下在同层兄弟间移动，左右改变缩进层级（rtl 下左右对调），按一次即一次完整提交。
  *
  * @customElement xh-tree
- * @attr {'plain'|'surface'} variant - 外框形态：surface 带描边与底色（默认），plain 只保留行
+ * @attr {'outline'|'subtle'|'ghost'} variant - 外框形态：outline 带描边与底色，subtle 淡底无描边，ghost 只保留行；默认 outline
  * @attr {boolean} multiple - 复选，默认关闭
  * @attr {'horizontal'|'vertical'} leaf-orientation - 末端层的排布方式，默认 vertical；horizontal 使子节点全是叶子的层并排铺开
  * @attr {boolean} cascade - multiple 下父子级联勾选（整枝传导 / 半选 / 禁用冻结），默认 false

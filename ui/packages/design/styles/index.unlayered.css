@@ -41873,8 +41873,14 @@
   display: none;
 }
 
+/* 淡底档：描边透明、底换成 subtle；outline 即基础规则 */
+[data-scope='tree'][data-part='root'][data-variant='subtle'] {
+  --xh-_tree-border: transparent;
+  --xh-_tree-bg: var(--xh-bg-subtle);
+}
+
 /* 无框档：边框留着但透明，去掉外框不会让行的位置跳一格 */
-[data-scope='tree'][data-part='root'][data-variant='plain'] {
+[data-scope='tree'][data-part='root'][data-variant='ghost'] {
   --xh-_tree-border: transparent;
   --xh-_tree-bg: transparent;
 }
