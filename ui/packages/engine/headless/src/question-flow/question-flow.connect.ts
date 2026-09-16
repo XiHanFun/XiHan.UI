@@ -112,7 +112,7 @@ export function connectQuestionFlow<T extends PropTypes>(
     getRootProps: () => normalize.element({
       ...parts.root.attrs,
       'data-state': status,
-      'data-variant': prop('variant'),
+      'data-variant': prop('variant') ?? 'outline',
       'data-tone': prop('tone'),
       'data-size': prop('size'),
     }),

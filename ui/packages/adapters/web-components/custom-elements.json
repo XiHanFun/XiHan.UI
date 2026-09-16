@@ -40678,7 +40678,7 @@
               "type": {
                 "text": "ControlVariant | undefined"
               },
-              "description": "形态",
+              "description": "形态：outline 描边、subtle 底色分区、ghost 无壳内联，默认 outline",
               "name": "variant",
               "fieldName": "variant"
             },

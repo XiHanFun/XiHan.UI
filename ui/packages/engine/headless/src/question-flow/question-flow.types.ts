@@ -114,6 +114,7 @@ export interface QuestionFlowSchema extends MachineSchema {
     allowSkip?: boolean
     /** 选项组内漫游到达末尾是否回绕，默认 true。 */
     loop?: boolean
+    /** 形态：outline 描边、subtle 底色分区、ghost 无壳内联。默认 outline。 */
     variant?: ControlVariant
     tone?: Tone
     size?: Size

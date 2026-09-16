@@ -273,3 +273,10 @@ describe('question-flow：连接层', () => {
     expect(fallback['aria-label']).toBe('Options')
   })
 })
+
+describe('connectQuestionFlow 投影', () => {
+  it('variant 不写时根落 outline；写 subtle 如实落', () => {
+    expect(mount().api().getRootProps()).toMatchObject({ 'data-variant': 'outline' })
+    expect(mount({ variant: 'subtle' }).api().getRootProps()).toMatchObject({ 'data-variant': 'subtle' })
+  })
+})
