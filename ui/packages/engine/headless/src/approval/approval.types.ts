@@ -80,7 +80,7 @@ export interface ApprovalSchema extends MachineSchema {
     denyOnUnmount?: boolean
     /** 播报档位，默认 polite。 */
     live?: 'polite' | 'assertive'
-    /** 形态：outline 描边（默认档）、subtle 底色分区、ghost 无壳内联。 */
+    /** 形态：outline 描边、subtle 底色分区、ghost 无壳内联。默认 outline。 */
     variant?: ControlVariant
     tone?: Tone
     size?: Size

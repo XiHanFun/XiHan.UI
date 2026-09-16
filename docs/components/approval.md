@@ -112,7 +112,7 @@ variant 改变该闸门与正文分开的方式，size 改变标题、条目与�
 | `denyOnEscape` | `boolean` |  | Escape 判为拒绝，默认开启。 |
 | `denyOnUnmount` | `boolean` |  | 卸载时若仍待决则按拒绝派发一次，默认关闭。 机制成立不等于默认值成立：列表更换 key、路由切换、热更新的任何一次重挂， 都会替用户发出未做过的判定。 |
 | `live` | `'polite' \| 'assertive'` |  | 播报档位，默认 polite。 |
-| `variant` | `ControlVariant` |  | 形态：outline 描边（默认档）、subtle 底色分区、ghost 无壳内联。 |
+| `variant` | `ControlVariant` |  | 形态：outline 描边、subtle 底色分区、ghost 无壳内联。默认 outline。 |
 | `tone` | `Tone` |  |  |
 | `size` | `Size` |  |  |
 | `translations` | `Partial<ApprovalTranslations>` |  |  |
