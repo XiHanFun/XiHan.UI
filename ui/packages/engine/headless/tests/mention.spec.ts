@@ -619,6 +619,17 @@ describe('正文输入不被抢', () => {
   })
 })
 
+describe('connectMention 形态轴', () => {
+  it('不写 variant 时 root 与 positioner 落 outline；写 subtle 如实落', () => {
+    const fallback = mount()
+    expect(fallback.root.getAttribute('data-variant')).toBe('outline')
+    expect(fallback.positioner.getAttribute('data-variant')).toBe('outline')
+    const subtle = mount({ variant: 'subtle' })
+    expect(subtle.root.getAttribute('data-variant')).toBe('subtle')
+    expect(subtle.positioner.getAttribute('data-variant')).toBe('subtle')
+  })
+})
+
 describe('公开 API 与无障碍属性', () => {
   it('setValue 整段改写正文并收起浮层', async () => {
     const m = mount()
