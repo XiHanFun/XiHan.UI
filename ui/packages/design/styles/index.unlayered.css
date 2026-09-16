@@ -9828,22 +9828,31 @@
 /* styles/reasoning.css */
 /* 定义 reasoning 样式。 */
 
-/* 共享关键帧由 family/motion.css 提供，本皮肤 @import 它，单独引入仍成立。 */
+/* 共享关键帧由 family/motion.css 提供，本皮肤 @import 它，单独引入仍成立；
+   独立皮肤同时传递引入开关的动作控件配方，full bundle 递归去重。 */
 
 /* family/motion.css */
+
+/* family/action-control.css */
 
 /* 皮肤在场的标记：开发模式下按 scope 探一次，取不到就说明这份皮肤没被引入。 */
 [data-scope='reasoning'] {
   --xh-reasoning-skin: 1;
 }
 
-/* 一张轻表面：底色分区、静态抬起，描边留给形态轴按档打开 */
+/* 一张淡底面：--xh-bg-subtle 底 + 透明边位 + 无影（§8 subtle 无影），描边留给 outline 档打开。
+   缺省淡底承载开关：向它下发 hover 200 → pressed 300 的阶梯（§7.2），白底档在形态规则里改回 100 → 200 */
 [data-scope='reasoning'][data-part='root'] {
-  /* 作者塞进两个图形位的图标跟着字号走，与皮肤画的兜底字形同一把尺 */
-  --xh-icon-size: var(--xh-reasoning-icon-size, var(--xh-glyph-size-text));
+  --xh-action-host-bg-hover: var(--xh-bg-subtle-hover);
+  --xh-action-host-bg-pressed: var(--xh-bg-subtle-active);
 
-  /* 海拔先落进私有槽：语气档要把它与左侧色条叠成一条 box-shadow，无壳档把它关掉 */
-  --xh-_reasoning-shadow: var(--xh-reasoning-shadow, var(--xh-elevation-raised));
+  /* 作者塞进两个图形位的图标与皮肤画的兜底字形同一把尺：按档取（§6.5），与开关的家族档同步——
+     不写 data-size 时字号是 sm 档，字形随之取 sm */
+  --xh-_reasoning-icon-size: var(--xh-glyph-size-sm);
+  --xh-icon-size: var(--xh-reasoning-icon-size, var(--xh-_reasoning-icon-size));
+
+  /* 影另落一份进私有槽给语气档：它要把影与左侧色条叠成一条 box-shadow，缺省无影写成零影占位 */
+  --xh-_reasoning-shadow: var(--xh-reasoning-shadow, 0 0 0 transparent);
 
   /* 尺寸缺省档：不写 data-size 时的取值。三档都只写这三个私有槽，
      公开槽留在读处当首选，作者在祖先上设的覆盖才赢得过档位声明 */
@@ -9856,7 +9865,7 @@
   border: var(--xh-stroke-thin) solid transparent;
   border-radius: var(--xh-reasoning-radius, var(--xh-shape-surface));
   background: var(--xh-reasoning-bg, var(--xh-bg-subtle));
-  box-shadow: var(--xh-_reasoning-shadow);
+  box-shadow: var(--xh-reasoning-shadow, none);
 }
 
 /* 上面声明的 display 会盖掉 UA 的 [hidden]{display:none}，这里补回 */
@@ -9866,60 +9875,53 @@
 
 /* —— 形态 —— */
 /* 缺省档即 subtle，写在上面那条基础规则里 */
+/* 描边分区：--xh-border-default 描边 + surface 底（§5.3 静态内容面）；
+   白底承载面把开关的阶梯改回 hover 100 → pressed 200 */
 [data-scope='reasoning'][data-part='root'][data-variant='outline'] {
-  border-color: var(--xh-reasoning-border, var(--xh-border-subtle));
+  --xh-action-host-bg-hover: var(--xh-bg-subtle);
+  --xh-action-host-bg-pressed: var(--xh-bg-subtle-hover);
+
+  border: var(--xh-stroke-thin) solid var(--xh-reasoning-border, var(--xh-border-default));
   background: var(--xh-reasoning-bg, var(--xh-bg-surface));
 }
 
-/* 无壳内联：思考过程贴着正文走，不占一块面 */
+/* 无壳内联：思考过程贴着正文走，不占一块面；开关落在正文的白底上，阶梯同 outline 档 */
 [data-scope='reasoning'][data-part='root'][data-variant='ghost'] {
-  --xh-_reasoning-shadow: 0 0 0 transparent;
+  --xh-action-host-bg-hover: var(--xh-bg-subtle);
+  --xh-action-host-bg-pressed: var(--xh-bg-subtle-hover);
 
   overflow: visible;
   background: none;
+  box-shadow: none;
 }
 
-/* 无壳档的开关只占文字宽度，自己带圆角，悬停时才浮出一块底 */
+/* 无壳档的开关只占文字宽度（盖掉 profile 的铺满一行），自己带圆角，悬停时才浮出一块底 */
 [data-scope='reasoning'][data-part='root'][data-variant='ghost'] [data-scope='reasoning'][data-part='trigger'] {
+  --xh-action-radius: var(--xh-reasoning-trigger-radius, var(--xh-shape-control));
+
   inline-size: auto;
-  border-radius: var(--xh-reasoning-trigger-radius, var(--xh-shape-control));
 }
 
+/* 开关铺满一行，盒型、悬停 / 按下 / 禁用面由 Action Control 的 disclosure-trigger 档给（ghost 形态，
+   阶梯由根按承载面经 host 槽下发，按下只换面不缩放，§9.2）；这里只把使用者槽映射到桥接槽：
+   圆角归零贴住面边，内衬与字号沿用本组件的档位（不取 profile 的内衬，几何不变），字色三态都停在
+   弱一档的 muted（开关不是正文）；字形尺由根按同一档位给 */
 [data-scope='reasoning'][data-part='trigger'] {
-  display: flex;
-  align-items: center;
-  gap: var(--xh-reasoning-trigger-gap, var(--xh-space-2));
-  padding-inline: var(--xh-reasoning-px, var(--xh-_reasoning-px));
-  padding-block: var(--xh-reasoning-py, var(--xh-_reasoning-py));
-  border: 0;
-  background: none;
-  color: var(--xh-reasoning-trigger-fg, var(--xh-fg-muted));
-  font: inherit;
-  font-size: var(--xh-reasoning-font-size, var(--xh-_reasoning-font-size));
-  inline-size: 100%;
-  text-align: start;
-  cursor: pointer;
-  transition:
-    background var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
-    scale var(--xh-motion-duration-release) var(--xh-motion-ease-release);
+  --xh-action-radius: 0;
+  --xh-action-gap: var(--xh-reasoning-trigger-gap, var(--xh-space-2));
+  --xh-action-padding-inline: var(--xh-reasoning-px, var(--xh-_reasoning-px));
+  --xh-action-padding-block: var(--xh-reasoning-py, var(--xh-_reasoning-py));
+  --xh-action-font-size: var(--xh-reasoning-font-size, var(--xh-_reasoning-font-size));
+  --xh-action-fg-rest: var(--xh-reasoning-trigger-fg, var(--xh-fg-muted));
+  --xh-action-fg-hover: var(--xh-reasoning-trigger-fg, var(--xh-fg-muted));
+  --xh-action-fg-pressed: var(--xh-reasoning-trigger-fg, var(--xh-fg-muted));
+  --xh-action-bg-hover: var(--xh-reasoning-trigger-bg-hover, var(--xh-_action-variant-bg-hover));
+
+  border-width: 0;
 }
 
 [data-scope='reasoning'][data-part='trigger'][hidden] {
   display: none;
-}
-
-[data-scope='reasoning'][data-part='trigger']:hover:not(:disabled) {
-  background: var(--xh-reasoning-trigger-bg-hover, var(--xh-bg-subtle-hover));
-}
-
-[data-scope='reasoning'][data-part='trigger']:active:not(:disabled) {
-  scale: var(--xh-motion-scale-press);
-  transition-duration: var(--xh-motion-duration-press);
-  transition-timing-function: var(--xh-motion-ease-press);
-}
-
-[data-scope='reasoning'][data-part='trigger']:disabled {
-  color: var(--xh-fg-disabled);
 }
 
 /* 状态图形位：在想的时候实一档，想完退回弱一档 */
@@ -9954,8 +9956,8 @@
 [data-scope='reasoning'][data-part='indicator']:empty::before {
   content: '';
   display: inline-block;
-  inline-size: var(--xh-icon-size, var(--xh-glyph-size-text));
-  block-size: var(--xh-icon-size, var(--xh-glyph-size-text));
+  inline-size: var(--xh-icon-size, var(--xh-glyph-size-md));
+  block-size: var(--xh-icon-size, var(--xh-glyph-size-md));
   vertical-align: var(--xh-glyph-baseline-shift);
   background-color: currentColor;
   -webkit-mask: var(--xh-glyph-mark-chevron-down) center / contain no-repeat;
@@ -10075,20 +10077,23 @@
   animation: xh-disclosure-collapse var(--xh-motion-duration-exit) var(--xh-motion-ease-exit) forwards;
 }
 
-/* 尺寸档只改内衬与字号 */
+/* 尺寸档改内衬、字号与图标档 */
 [data-scope='reasoning'][data-part='root'][data-size='sm'] {
+  --xh-_reasoning-icon-size: var(--xh-glyph-size-sm);
   --xh-_reasoning-px: var(--xh-space-2);
   --xh-_reasoning-py: var(--xh-space-1);
   --xh-_reasoning-font-size: var(--xh-control-font-sm);
 }
 
 [data-scope='reasoning'][data-part='root'][data-size='md'] {
+  --xh-_reasoning-icon-size: var(--xh-glyph-size-md);
   --xh-_reasoning-px: var(--xh-space-3);
   --xh-_reasoning-py: var(--xh-space-2);
   --xh-_reasoning-font-size: var(--xh-control-font-md);
 }
 
 [data-scope='reasoning'][data-part='root'][data-size='lg'] {
+  --xh-_reasoning-icon-size: var(--xh-glyph-size-lg);
   --xh-_reasoning-px: var(--xh-space-4);
   --xh-_reasoning-py: var(--xh-space-3);
   --xh-_reasoning-font-size: var(--xh-control-font-lg);

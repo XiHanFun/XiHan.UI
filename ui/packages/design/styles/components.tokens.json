@@ -47998,16 +47998,16 @@
         "root"
       ],
       "property": [
-        "border-color"
+        "border"
       ],
       "state": [
         "variant=outline"
       ],
       "defaultToken": [
-        "--xh-border-subtle"
+        "--xh-border-default"
       ],
       "visibility": "public",
-      "description": "reasoning 的 root 部件 border-color 覆盖槽。"
+      "description": "reasoning 的 root 部件 border 覆盖槽。"
     },
     {
       "name": "--xh-reasoning-content-fg",
@@ -48184,7 +48184,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-glyph-size-text"
+        "--xh-_reasoning-icon-size"
       ],
       "visibility": "public",
       "description": "reasoning 的 root 部件 --xh-icon-size 覆盖槽。"
@@ -48300,7 +48300,8 @@
       "state": [
         "@keyframes xh-disclosure-collapse",
         "@keyframes xh-disclosure-expand",
-        "default"
+        "default",
+        "xh-action-profile=disclosure-trigger"
       ],
       "defaultToken": [
         "--xh-_reasoning-py"
@@ -48394,7 +48395,8 @@
         "tone"
       ],
       "defaultToken": [
-        "--xh-elevation-raised"
+        "0 0 0 transparent",
+        "none"
       ],
       "visibility": "public",
       "description": "reasoning 的 root 部件 box-shadow 覆盖槽。"
@@ -48496,17 +48498,20 @@
         "trigger"
       ],
       "property": [
-        "background"
+        "background-color"
       ],
       "state": [
+        "disabled",
         "hover",
-        "not(:disabled)"
+        "loading",
+        "not([data-disabled])",
+        "not([data-loading])"
       ],
       "defaultToken": [
-        "--xh-bg-subtle-hover"
+        "--xh-_action-variant-bg-hover"
       ],
       "visibility": "public",
-      "description": "reasoning 的 trigger 部件 background 覆盖槽。"
+      "description": "reasoning 的 trigger 部件 background-color 覆盖槽。"
     },
     {
       "name": "--xh-reasoning-trigger-fg",
@@ -48518,7 +48523,14 @@
         "color"
       ],
       "state": [
-        "default"
+        "default",
+        "disabled",
+        "hover",
+        "is(:active, [data-pressed])",
+        "loading",
+        "not([data-disabled])",
+        "not([data-loading])",
+        "pressed"
       ],
       "defaultToken": [
         "--xh-fg-muted"

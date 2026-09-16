@@ -2,14 +2,14 @@
 
 exports[`family-backlog 条目数 > 七段各一数，与快照一致 1`] = `
 {
-  "edge": 35,
-  "ladder": 74,
+  "edge": 32,
+  "ladder": 73,
   "motion": 1,
-  "press": 61,
+  "press": 60,
   "scroll": 28,
   "selection": 19,
   "shape": 24,
-  "text": 79,
+  "text": 78,
 }
 `;
 
@@ -35,9 +35,6 @@ exports[`family-backlog 键集合 > edge 1`] = `
   "question-flow:root:outline",
   "question-flow:root:raised",
   "question-flow:root:subtle",
-  "reasoning:root",
-  "reasoning:root:outline",
-  "reasoning:root:raised",
   "segmented:indicator:raised",
   "segmented:root",
   "signature-pad:clear-trigger:raised",
@@ -111,7 +108,6 @@ exports[`family-backlog 键集合 > ladder 1`] = `
   "question-flow:item:hover",
   "question-flow:prev-trigger:hover",
   "question-flow:skip-trigger:hover",
-  "reasoning:trigger:hover",
   "segmented:item:hover",
   "signature-pad:clear-trigger:hover",
   "signature-pad:clear-trigger:pressed",
@@ -180,7 +176,6 @@ exports[`family-backlog 键集合 > press 1`] = `
   "question-flow:skip-trigger",
   "radio-group:item",
   "rating:item",
-  "reasoning:trigger",
   "segmented:item",
   "side-nav:branch-trigger",
   "side-nav:link",
@@ -348,7 +343,6 @@ exports[`family-backlog 键集合 > text 1`] = `
   "rating:label:font-size",
   "rating:label:spacing",
   "rating:root:icon-size",
-  "reasoning:root:icon-size",
   "side-nav:root:icon-size",
   "signature-pad:label:color",
   "signature-pad:label:spacing",

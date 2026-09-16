@@ -47,6 +47,15 @@ describe('connectReasoning 投影', () => {
     const trigger = r.api().getTriggerProps() as Record<string, unknown>
     const content = r.api().getContentProps() as Record<string, unknown>
     expect(trigger).toMatchObject({ 'type': 'button', 'aria-expanded': 'false', 'data-state': 'closed' })
+    // 开关接 Action Control 的 disclosure-trigger 档：ghost 形态、按下只换面；不写 size 时档位取 sm
+    expect(trigger).toMatchObject({
+      'data-xh-action-control': '',
+      'data-xh-action-profile': 'disclosure-trigger',
+      'data-xh-action-variant': 'ghost',
+      'data-xh-action-display': 'always',
+      'data-xh-action-size': 'sm',
+    })
+    expect((r.api({ size: 'lg' }).getTriggerProps() as Record<string, unknown>)['data-xh-action-size']).toBe('lg')
     expect(trigger['aria-label']).toBeUndefined()
     expect(trigger['aria-controls']).toBe(content.id)
     expect(content).toMatchObject({ role: 'region', hidden: true, inert: true })

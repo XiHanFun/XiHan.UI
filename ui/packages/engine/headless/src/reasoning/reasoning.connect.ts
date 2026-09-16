@@ -60,10 +60,18 @@ export function connectReasoning<T extends PropTypes>(
 
     // label 与 duration 排在里面，「思考过程，用时 12 秒」自然构成可访问名——
     // 再发一个 aria-label 会盖过节点里的文字，两者不一致时读屏念的和屏幕上看到的对不上
+    // 开关是铺满一行的 disclosure trigger：接 Action Control 的 disclosure-trigger 档，ghost 形态、
+    // 按下只换面不缩放（§9.2）；承载面的阶梯由根按 variant 经 host 槽下发；档位随 size 走，
+    // 不写 size 时皮肤的缺省字号是 sm 档（--xh-control-font-sm），字形与最小高度随之取 sm
     getTriggerProps: () => normalize.button({
       ...parts.trigger.attrs,
       'id': ids.trigger,
       'type': 'button',
+      'data-xh-action-control': '',
+      'data-xh-action-profile': 'disclosure-trigger',
+      'data-xh-action-variant': 'ghost',
+      'data-xh-action-display': 'always',
+      'data-xh-action-size': props.size ?? 'sm',
       'aria-controls': ids.content,
       'aria-expanded': open ? 'true' : 'false',
       'disabled': disabled || undefined,
