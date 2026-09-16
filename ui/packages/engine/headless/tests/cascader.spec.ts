@@ -1093,6 +1093,18 @@ describe('roving tabindex 与 ARIA 骨架', () => {
   })
 })
 
+describe('connectCascader 形态轴', () => {
+  it('不写 variant 时 root 与 positioner 落 outline；写 subtle 如实落', () => {
+    const rootProps = (h: Harness): Record<string, unknown> => h.api().getRootProps() as Record<string, unknown>
+    const fallback = mount()
+    expect(rootProps(fallback)['data-variant']).toBe('outline')
+    expect(fallback.positioner.getAttribute('data-variant')).toBe('outline')
+    const subtle = mount({ variant: 'subtle' })
+    expect(rootProps(subtle)['data-variant']).toBe('subtle')
+    expect(subtle.positioner.getAttribute('data-variant')).toBe('subtle')
+  })
+})
+
 describe('空态占位', () => {
   const emptyProps = (h: Harness): Record<string, unknown> => h.api().getEmptyProps() as Record<string, unknown>
   const loadingProps = (h: Harness): Record<string, unknown> => h.api().getLoadingProps() as Record<string, unknown>

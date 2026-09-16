@@ -120,7 +120,7 @@
 | `invalid` | `boolean` |  | 校验失败：trigger 报告 aria-invalid，各角色节点带 data-invalid。 |
 | `loading` | `boolean` |  | 候选加载中：浮层报告 aria-busy；当前视图无候选时显示在途占位。 |
 | `translations` | `Partial<CascaderTranslations>` |  | 空态占位的文案覆盖，默认英文。 |
-| `variant` | `ControlVariant` |  | 形态：outline / subtle / ghost，决定触发框的描边与底色使用方式。 |
+| `variant` | `ControlVariant` |  | 形态：outline / subtle / ghost，决定触发框的描边与底色使用方式。默认 outline。 |
 | `tone` | `Tone` |  | 语气：brand / neutral / success / warning / danger / info，决定聚焦与选中使用哪族颜色。 |
 | `size` | `Size` |  | 尺寸：sm / md / lg，决定触发框与条目的几何档位。 |
 | `placeholder` | `string` |  | 无选中时 value-text 显示的占位文字。 |
