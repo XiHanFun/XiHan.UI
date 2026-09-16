@@ -6,6 +6,7 @@
 // 由 component-token-manifest.mjs 生成，禁止手改。
 
 export type ComponentTokenName =
+  | '--xh-accordion-border'
   | '--xh-accordion-content-fg'
   | '--xh-accordion-content-font-size'
   | '--xh-accordion-content-pb'

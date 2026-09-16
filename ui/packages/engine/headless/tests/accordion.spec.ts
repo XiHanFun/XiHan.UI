@@ -87,6 +87,14 @@ describe('connectAccordion 投影', () => {
     const open = a.api().getTriggerProps({ value: 'install' }) as Record<string, unknown>
     const openContent = a.api().getContentProps({ value: 'install' }) as Record<string, unknown>
     expect(open).toMatchObject({ 'type': 'button', 'aria-expanded': 'true', 'aria-disabled': 'false', 'data-state': 'open' })
+    // 标题栏接 Action Control 的 disclosure-trigger 档：ghost 形态、按下只换面，档位随 size 走
+    expect(open).toMatchObject({
+      'data-xh-action-control': '',
+      'data-xh-action-profile': 'disclosure-trigger',
+      'data-xh-action-variant': 'ghost',
+      'data-xh-action-display': 'always',
+      'data-xh-action-size': 'md',
+    })
     expect(open['aria-controls']).toBe(openContent.id)
     expect(openContent).toMatchObject({ role: 'region', hidden: undefined, inert: undefined })
     expect(openContent['aria-labelledby']).toBe(open.id)
@@ -109,6 +117,7 @@ describe('connectAccordion 投影', () => {
       { value: 'theme', label: '换皮肤', content: '覆写令牌', disabled: true },
     ])
     expect((a.api().getTriggerProps({ value: 'theme' }) as Record<string, unknown>)['aria-disabled']).toBe('true')
+    expect((a.api().getTriggerProps({ value: 'theme' }) as Record<string, unknown>)['data-xh-action-size']).toBe('sm')
     expect((a.api().getTriggerProps({ value: 'theme', disabled: false }) as Record<string, unknown>)['aria-disabled']).toBe('false')
     a.setProps({ disabled: true })
     expect(a.api().getRootProps()).toMatchObject({ 'data-disabled': '' })

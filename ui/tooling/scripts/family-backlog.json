@@ -48,7 +48,6 @@
     "tree:item": "页内持久集合的选中行面是 （没写 background），应为 --xh-bg-brand-subtle；页内持久集合的选中字色是 --xh-fg-brand-strong，应为 --xh-fg-on-brand-subtle；待本组件迁移"
   },
   "ladder": {
-    "accordion:trigger:hover": "hover 落 --xh-bg-subtle-hover（200），这份皮肤却没给 --xh-action-host-bg-* 赋值，白底承载 hover 是 --xh-bg-subtle（100），淡底容器由 host 槽下发；待本组件迁移",
     "anchor:link:hover": "hover 落 --xh-bg-subtle-hover（200），这份皮肤却没给 --xh-action-host-bg-* 赋值，白底承载 hover 是 --xh-bg-subtle（100），淡底容器由 host 槽下发；待本组件迁移",
     "breadcrumb:link:hover": "hover 落 --xh-bg-subtle-hover（200），这份皮肤却没给 --xh-action-host-bg-* 赋值，白底承载 hover 是 --xh-bg-subtle（100），淡底容器由 host 槽下发；待本组件迁移",
     "calendar-picker:cell-trigger:hover": "hover 落 --xh-bg-subtle-hover（200），这份皮肤却没给 --xh-action-host-bg-* 赋值，白底承载 hover 是 --xh-bg-subtle（100），淡底容器由 host 槽下发；待本组件迁移",
@@ -60,7 +59,6 @@
     "carousel:prev-trigger:hover": "hover 落 --xh-bg-subtle-hover（200），这份皮肤却没给 --xh-action-host-bg-* 赋值，白底承载 hover 是 --xh-bg-subtle（100），淡底容器由 host 槽下发；待本组件迁移",
     "carousel:prev-trigger:pressed": "pressed 落 --xh-bg-subtle-active（300），这份皮肤却没给 --xh-action-host-bg-* 赋值，白底承载 pressed 是 --xh-bg-subtle-hover（200）；待本组件迁移",
     "clipboard:input:focus": "焦点边写了 border-color: var(--xh-clipboard-input-border-focus, var(--xh-_tone, var(-，焦点边框一律 --xh-border-control-focus，不随 tone；待本组件迁移",
-    "collapsible:trigger:hover": "hover 落 --xh-bg-subtle-hover（200），这份皮肤却没给 --xh-action-host-bg-* 赋值，白底承载 hover 是 --xh-bg-subtle（100），淡底容器由 host 槽下发；待本组件迁移",
     "color-picker:channel-input:focus": "焦点边写了 border-color: var(--xh-color-picker-input-border-focus, var(--xh-_tone, va，焦点边框一律 --xh-border-control-focus，不随 tone；待本组件迁移",
     "color-picker:control:focus": "焦点边写了 border-color: var(--xh-color-picker-control-border-focus, var(--xh-_tone, ，焦点边框一律 --xh-border-control-focus，不随 tone；待本组件迁移",
     "color-picker:eye-dropper-trigger:hover": "hover 落 --xh-bg-subtle-hover（200），这份皮肤却没给 --xh-action-host-bg-* 赋值，白底承载 hover 是 --xh-bg-subtle（100），淡底容器由 host 槽下发；待本组件迁移",
@@ -170,7 +168,6 @@
   },
   "press": {
     "*:data-pressed": "按压通道已落地（Core createPressTracker / pressHandlers，家族配方按压选择器已是 :is(:active, [data-pressed])），button / toggle 已投影 data-pressed；其余 PRESSABLE 部件（check-press-feedback ⑧）随各组件提交接入，全部接完删除这一条",
-    "accordion:trigger": "按 §4.1 是 disclosure trigger / row，登记成缩放形态，改登记 { part: 'trigger', feedback: 'surface' }，皮肤只换面；按下只缩放不换底，:active 块要同时把 background 换到 active 面（§9.1）；待本组件迁移",
     "calendar-picker:cell-trigger": "基础规则含 inline-size: 100% / flex: 1 / display: block，是铺满一行的东西，登记成缩放形态，改登记 { part: 'cell-trigger', feedback: 'surface' }；按下只缩放不换底，:active 块要同时把 background 换到 active 面（§9.1）；待本组件迁移",
     "calendar-picker:heading-month-trigger": "按下只缩放不换底，:active 块要同时把 background 换到 active 面（§9.1）；待本组件迁移",
     "calendar-picker:heading-year-trigger": "按下只缩放不换底，:active 块要同时把 background 换到 active 面（§9.1）；待本组件迁移",
@@ -189,7 +186,6 @@
     "checkbox-group:item": "按下只缩放不换底，:active 块要同时把 background 换到 active 面（§9.1）；待本组件迁移",
     "checkbox-group:select-all-trigger": "按下只缩放不换底，:active 块要同时把 background 换到 active 面（§9.1）；待本组件迁移",
     "checkbox:root": "按下只缩放不换底，:active 块要同时把 background 换到 active 面（§9.1）；待本组件迁移",
-    "collapsible:trigger": "按 §4.1 是 disclosure trigger / row，登记成缩放形态，改登记 { part: 'trigger', feedback: 'surface' }，皮肤只换面；按下只缩放不换底，:active 块要同时把 background 换到 active 面（§9.1）；待本组件迁移",
     "color-swatch-picker:item": "按下只缩放不换底，:active 块要同时把 background 换到 active 面（§9.1）；待本组件迁移",
     "command:item": "没有明确的 :active 换面，集合行不允许零反馈（§9.2）；待本组件迁移",
     "floating-panel:trigger": "按下只缩放不换底，:active 块要同时把 background 换到 active 面（§9.1）；待本组件迁移",
@@ -223,7 +219,6 @@
     "tree:item": "没有明确的 :active 换面，集合行不允许零反馈（§9.2）；待本组件迁移"
   },
   "text": {
-    "accordion:root:icon-size": "--xh-icon-size 兜底落 --xh-glyph-size-text，随文字形只给纯行内文字组件，控件内图标按档取 --xh-glyph-size-sm / md / lg；待本组件迁移",
     "back-top:root:icon-size": "--xh-icon-size 兜底落 --xh-glyph-size-text，随文字形只给纯行内文字组件，控件内图标按档取 --xh-glyph-size-sm / md / lg；待本组件迁移",
     "calendar-picker:root:icon-size": "--xh-icon-size 兜底落 --xh-glyph-size-text，随文字形只给纯行内文字组件，控件内图标按档取 --xh-glyph-size-sm / md / lg；待本组件迁移",
     "calendar-range-picker:root:icon-size": "--xh-icon-size 兜底落 --xh-glyph-size-text，随文字形只给纯行内文字组件，控件内图标按档取 --xh-glyph-size-sm / md / lg；待本组件迁移",
@@ -232,7 +227,6 @@
     "checkbox-group:root:icon-size": "--xh-icon-size 兜底落 --xh-glyph-size-text，随文字形只给纯行内文字组件，控件内图标按档取 --xh-glyph-size-sm / md / lg；待本组件迁移",
     "checkbox:label:color": "color 落 --xh-fg-disabled，禁用标签色统一应为 --xh-fg-subtle；待本组件迁移",
     "checkbox:label:font-size": "font-size 落 --xh-control-font-md，字段标签字号不随档，应为 --xh-text-label-size；待本组件迁移",
-    "collapsible:root:icon-size": "--xh-icon-size 兜底落 --xh-glyph-size-text，随文字形只给纯行内文字组件，控件内图标按档取 --xh-glyph-size-sm / md / lg；待本组件迁移",
     "color-picker:label:font-size": "font-size 落 --xh-control-font-md，字段标签字号不随档，应为 --xh-text-label-size；待本组件迁移",
     "color-slider:label:color": "color 落 --xh-fg-muted，字段标签应为 --xh-fg-default；待本组件迁移",
     "color-slider:label:spacing": "根的 gap 落 --xh-stack-gap-md，字段标签贴控件应为 --xh-space-1；待本组件迁移",

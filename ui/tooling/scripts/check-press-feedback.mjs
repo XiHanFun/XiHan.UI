@@ -157,8 +157,8 @@ const PRESSABLE = {
   ],
   'timer': ['control'],
   // 展开与导航的触发钮
-  'accordion': ['trigger'],
-  'collapsible': ['trigger'],
+  'accordion': [{ part: 'trigger', feedback: 'surface' }],
+  'collapsible': [{ part: 'trigger', feedback: 'surface' }],
   'menubar': ['trigger', { part: 'item', feedback: 'surface' }],
   'navigation-menu': ['trigger'],
   'tabs': ['trigger'],

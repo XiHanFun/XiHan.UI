@@ -5,8 +5,10 @@
 
 /* 定义 accordion 样式。 */
 
-/* 共享关键帧由 family/motion.css 提供，本皮肤 @import 它，单独引入仍成立。 */
+/* 共享关键帧由 family/motion.css 提供，本皮肤 @import 它，单独引入仍成立；
+   独立皮肤同时传递引入标题栏的动作控件配方，full bundle 递归去重。 */
 @import '../family/motion.css';
+@import '../family/action-control.css';
 
 @layer xihan.components {
   /* 皮肤在场的标记：开发模式下按 scope 探一次，取不到就说明这份皮肤没被引入。 */
@@ -15,15 +17,10 @@
   }
 
   [data-scope='accordion'][data-part='root'] {
-    /* 作者塞进指示符槽的图标跟着字号走，与皮肤画的兜底字形同一把尺 */
-    --xh-icon-size: var(--xh-accordion-icon-size, var(--xh-glyph-size-text));
+    /* 作者塞进正文里的图标与皮肤画的兜底字形同一把尺：md 档（§6.5），标题栏上另按家族档取值 */
+    --xh-icon-size: var(--xh-accordion-icon-size, var(--xh-glyph-size-md));
 
-    /* 尺寸档只换这四个私有槽，标题栏从 root 继承它们，换档不必给每个部件各写一条选择器 */
-    --xh-_accordion-trigger-h: var(--xh-control-h-md);
-    --xh-_accordion-trigger-px: var(--xh-space-4);
-    --xh-_accordion-trigger-py: var(--xh-space-4);
-    --xh-_accordion-trigger-gap: var(--xh-control-gap-md);
-    --xh-_accordion-trigger-font-size: var(--xh-control-font-md);
+    /* 尺寸档只换正文这两个私有槽，正文从 root 继承它们；标题栏的三档几何由家族 disclosure-trigger 档给 */
     --xh-_accordion-content-px: var(--xh-space-4);
     --xh-_accordion-content-pb: var(--xh-space-4);
 
@@ -45,21 +42,11 @@
   /* —— 尺寸 —— */
   /* 缺省档写在上面的基础规则里 */
   [data-scope='accordion'][data-part='root'][data-size='sm'] {
-    --xh-_accordion-trigger-h: var(--xh-control-h-sm);
-    --xh-_accordion-trigger-px: var(--xh-space-3);
-    --xh-_accordion-trigger-py: var(--xh-space-3);
-    --xh-_accordion-trigger-gap: var(--xh-control-gap-sm);
-    --xh-_accordion-trigger-font-size: var(--xh-control-font-sm);
     --xh-_accordion-content-px: var(--xh-space-3);
     --xh-_accordion-content-pb: var(--xh-space-3);
   }
 
   [data-scope='accordion'][data-part='root'][data-size='lg'] {
-    --xh-_accordion-trigger-h: var(--xh-control-h-lg);
-    --xh-_accordion-trigger-px: var(--xh-space-5);
-    --xh-_accordion-trigger-py: var(--xh-space-5);
-    --xh-_accordion-trigger-gap: var(--xh-control-gap-lg);
-    --xh-_accordion-trigger-font-size: var(--xh-control-font-lg);
     --xh-_accordion-content-px: var(--xh-space-5);
     --xh-_accordion-content-pb: var(--xh-space-5);
   }
@@ -115,15 +102,23 @@
     border-inline-start: 0;
   }
 
+  /* outline：一张静态内容面，--xh-border-default 描边 + surface 底 + 无影（§5.3 边界只由描边承担）；
+     根的外边走 --xh-accordion-border，与条与条之间的分隔线槽 --xh-accordion-item-border 各管各的 */
   [data-scope='accordion'][data-part='root'][data-variant='outline'] {
+    border: var(--xh-stroke-thin) solid var(--xh-accordion-border, var(--xh-border-default));
     border-radius: var(--xh-accordion-item-radius, var(--xh-shape-surface));
     background: var(--xh-accordion-item-bg, var(--xh-bg-surface));
     box-shadow: var(--xh-accordion-item-shadow, none);
     overflow: clip;
   }
 
-  /* subtle：同一块连续表面，底换成淡底 */
+  /* subtle：同一块连续表面，底换成淡底，描边让位给底色但留住 1px 边位（三档几何一致）；
+     淡底承载面向标题栏下发 hover 200 → pressed 300（§7.2） */
   [data-scope='accordion'][data-part='root'][data-variant='subtle'] {
+    --xh-action-host-bg-hover: var(--xh-bg-subtle-hover);
+    --xh-action-host-bg-pressed: var(--xh-bg-subtle-active);
+
+    border: var(--xh-stroke-thin) solid transparent;
     border-radius: var(--xh-accordion-item-radius, var(--xh-shape-surface));
     background: var(--xh-accordion-item-bg, var(--xh-bg-subtle));
     box-shadow: var(--xh-accordion-item-shadow, none);
@@ -146,51 +141,40 @@
     font: inherit;
   }
 
+  /* 标题栏铺满一行，盒型、三档几何、悬停 / 按下 / 禁用面由 Action Control 的 disclosure-trigger 档给
+     （ghost 形态：白底承载 hover 100 → pressed 200，淡底容器由根下发 host 槽；按下只换面不缩放，§9.2）；
+     这里只把使用者槽映射到桥接槽：字色三态同值（家族的 hover / pressed 字色规则比皮肤更特定，不映射会被换回
+     缺省字色），字形按标题栏自己的档位取 --xh-_action-profile-glyph-size；边归零贴住条目，几何与迁移前一致 */
   [data-scope='accordion'][data-part='trigger'] {
-    display: inline-flex;
-    align-items: center;
-    justify-content: space-between;
-    inline-size: 100%;
-    gap: var(--xh-accordion-trigger-gap, var(--xh-_accordion-trigger-gap));
-    min-block-size: var(--xh-accordion-trigger-h, var(--xh-_accordion-trigger-h));
-    padding-block: var(--xh-accordion-trigger-py, var(--xh-_accordion-trigger-py));
-    padding-inline: var(--xh-accordion-trigger-px, var(--xh-_accordion-trigger-px));
-    border: 0;
-    border-radius: var(--xh-accordion-trigger-radius, var(--xh-shape-control));
-    background: var(--xh-accordion-trigger-bg, transparent);
-    color: var(--xh-accordion-trigger-fg, var(--xh-fg-default));
-    font-size: var(--xh-accordion-trigger-font-size, var(--xh-_accordion-trigger-font-size));
+    --xh-action-gap: var(--xh-accordion-trigger-gap, var(--xh-_action-profile-gap));
+    --xh-action-visual-size: var(--xh-accordion-trigger-h, var(--xh-_action-profile-visual-size));
+    --xh-action-padding-block: var(--xh-accordion-trigger-py, var(--xh-_action-profile-padding-block));
+    --xh-action-padding-inline: var(--xh-accordion-trigger-px, var(--xh-_action-profile-padding-inline));
+    --xh-action-radius: var(--xh-accordion-trigger-radius, var(--xh-_action-profile-radius));
+    --xh-action-bg-rest: var(--xh-accordion-trigger-bg, var(--xh-_action-variant-bg-rest));
+    --xh-action-bg-hover: var(--xh-accordion-trigger-bg-hover, var(--xh-_action-variant-bg-hover));
+    --xh-action-fg-rest: var(--xh-accordion-trigger-fg, var(--xh-_action-variant-fg-rest));
+    --xh-action-fg-hover: var(--xh-accordion-trigger-fg, var(--xh-_action-variant-fg-hover));
+    --xh-action-fg-pressed: var(--xh-accordion-trigger-fg, var(--xh-_action-variant-fg-pressed));
+    --xh-action-font-size: var(--xh-accordion-trigger-font-size, var(--xh-_action-profile-font-size));
+    --xh-icon-size: var(--xh-accordion-icon-size, var(--xh-_action-profile-glyph-size));
+
+    border-width: 0;
     font-weight: var(--xh-accordion-trigger-font-weight, var(--xh-text-label-weight));
-    line-height: var(--xh-leading-none);
-    cursor: pointer;
-    transition:
-      background var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
-      scale var(--xh-motion-duration-release) var(--xh-motion-ease-release);
-  }
-
-  /* 禁用条目带的是 aria-disabled 而非原生 disabled，:hover 照样命中；
-     不挡掉的话置灰的那一条悬停仍会换底 */
-  [data-scope='accordion'][data-part='trigger']:not([data-disabled]):not([data-state='open']):hover {
-    background: var(--xh-accordion-trigger-bg-hover, var(--xh-bg-subtle-hover));
-  }
-
-  /* 按下去要有回应：标题栏整条轻微下压，松手即弹回 */
-  [data-scope='accordion'][data-part='trigger']:not([data-disabled]):active {
-    scale: var(--xh-motion-scale-press);
-    transition-duration: var(--xh-motion-duration-press);
-    transition-timing-function: var(--xh-motion-ease-press);
   }
 
   /* 展开态自带一个槽：与常态共用一个的话，作者一改常态字色，
-     展开那一档的语气高亮就跟着被抹平，再也分不开 */
+     展开那一档的语气高亮就跟着被抹平，再也分不开。悬停 / 按下的面与收起态同档（§7.3 open 与家族 hover 同档中性） */
   [data-scope='accordion'][data-part='trigger'][data-state='open'] {
-    color: var(--xh-accordion-trigger-fg-open, var(--xh-_accordion-open-fg));
+    --xh-action-fg-rest: var(--xh-accordion-trigger-fg-open, var(--xh-_accordion-open-fg));
+    --xh-action-fg-hover: var(--xh-accordion-trigger-fg-open, var(--xh-_accordion-open-fg));
+    --xh-action-fg-pressed: var(--xh-accordion-trigger-fg-open, var(--xh-_accordion-open-fg));
   }
 
-  /* 禁用条目走 aria-disabled，仍留在 Tab 序里，只是不可操作；前景换成禁用色，不靠 opacity 压暗 */
+  /* 禁用条目走 aria-disabled，仍留在 Tab 序里，只是不可操作；前景换成禁用色，不靠 opacity 压暗
+     （家族按 data-disabled 给禁用面与指针，字色槽在这里保留优先） */
   [data-scope='accordion'][data-part='trigger'][data-disabled] {
-    color: var(--xh-accordion-trigger-fg-disabled, var(--xh-fg-disabled));
-    cursor: not-allowed;
+    --xh-action-fg-disabled: var(--xh-accordion-trigger-fg-disabled, var(--xh-_action-variant-fg-disabled));
   }
 
   [data-scope='accordion'][data-part='indicator'] {
@@ -200,15 +184,16 @@
     flex: none;
     color: var(--xh-accordion-indicator-fg, var(--xh-fg-muted));
     line-height: var(--xh-leading-none);
-    transition: rotate var(--xh-motion-duration-micro) var(--xh-motion-ease-enter-strong);
+    /* 指示器与正文同档转向（§9.4）：正文 enter 档展开，箭头也用同一段时长翻过去 */
+    transition: rotate var(--xh-motion-duration-enter) var(--xh-motion-ease-enter-strong);
   }
 
   /* 没写内容就由皮肤画；作者往部件里塞了自己的图形，这条规则即不命中 */
   [data-scope='accordion'][data-part='indicator']:empty::before {
     content: '';
     display: inline-block;
-    inline-size: var(--xh-icon-size, var(--xh-glyph-size-text));
-    block-size: var(--xh-icon-size, var(--xh-glyph-size-text));
+    inline-size: var(--xh-icon-size, var(--xh-glyph-size-md));
+    block-size: var(--xh-icon-size, var(--xh-glyph-size-md));
     vertical-align: var(--xh-glyph-baseline-shift);
     background-color: currentColor;
     -webkit-mask: var(--xh-glyph-mark-chevron-down) center / contain no-repeat;

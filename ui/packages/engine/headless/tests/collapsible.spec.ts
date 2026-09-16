@@ -36,6 +36,14 @@ describe('connectCollapsible 投影', () => {
   it('trigger 是 type=button 并与 content 互指；收起的 content 带 hidden 与 inert，展开后两者都撤掉', () => {
     const c = makeCollapsible()
     expect(c.trigger()).toMatchObject({ 'type': 'button', 'aria-expanded': 'false', 'data-state': 'closed' })
+    // 触发器接 Action Control 的 disclosure-trigger 档：ghost 形态、按下只换面，档位随 size 走
+    expect(c.trigger()).toMatchObject({
+      'data-xh-action-control': '',
+      'data-xh-action-profile': 'disclosure-trigger',
+      'data-xh-action-variant': 'ghost',
+      'data-xh-action-display': 'always',
+      'data-xh-action-size': 'md',
+    })
     expect(c.trigger()['aria-controls']).toBe(c.content().id)
     expect(c.content()).toMatchObject({ 'hidden': true, 'inert': true, 'data-state': 'closed' })
     c.click()
@@ -51,6 +59,7 @@ describe('connectCollapsible 投影', () => {
     const c = makeCollapsible({ tone: 'brand', size: 'sm' })
     const root = c.api().getRootProps() as Record<string, unknown>
     expect(root).toMatchObject({ 'data-tone': 'brand', 'data-size': 'sm', 'data-state': 'closed' })
+    expect(c.trigger()['data-xh-action-size']).toBe('sm')
     expect(root.dir).toBeUndefined()
     c.setProps({ dir: 'rtl' })
     expect((c.api().getRootProps() as Record<string, unknown>).dir).toBe('rtl')
