@@ -48,7 +48,7 @@
        不认 dvb 的引擎由级联回落到前一条的 vh */
     max-block-size: min(var(--xh-table-max-h, var(--xh-viewport-h-lg)), 100vh);
     max-block-size: min(var(--xh-table-max-h, var(--xh-viewport-h-lg)), 100dvb);
-    /* 外框由 [data-bordered] 画：那一位缺席就是不要外框，只留行间横线 */
+    /* 外框由 [data-variant='outline'] 画；ghost 不画外框，只留行间横线 */
     border: 0;
     background: var(--xh-table-bg, var(--xh-bg-surface));
     color: var(--xh-table-fg, var(--xh-fg-default));
@@ -297,10 +297,16 @@
     background: var(--xh-table-row-bg-striped, var(--xh-bg-subtle));
   }
 
-  /* 外框：一圈描边加圆角。不画时只留行间横线，圆角也随之无意义 */
-  [data-scope='table'][data-part='root'][data-bordered] {
+  /* 形态：outline 画一圈描边加圆角；ghost 即基础规则，只留行间横线，圆角也随之无意义 */
+  [data-scope='table'][data-part='root'][data-variant='outline'] {
     border: var(--xh-stroke-thin) solid var(--xh-table-border, var(--xh-border-default));
     border-radius: var(--xh-table-radius, var(--xh-shape-surface));
+  }
+
+  /* 淡底档：不画描边，surface 圆角 + subtle 底 */
+  [data-scope='table'][data-part='root'][data-variant='subtle'] {
+    border-radius: var(--xh-table-radius, var(--xh-shape-surface));
+    background: var(--xh-table-bg, var(--xh-bg-subtle));
   }
 
   /* 竖分隔线：列与列之间一道细线，末列不画 */

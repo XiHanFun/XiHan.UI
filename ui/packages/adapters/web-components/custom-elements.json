@@ -49448,12 +49448,12 @@
             },
             {
               "kind": "field",
-              "name": "borderless",
+              "name": "variant",
               "privacy": "public",
               "type": {
-                "text": "boolean | undefined"
+                "text": "ControlVariant | undefined"
               },
-              "attribute": "borderless"
+              "attribute": "variant"
             },
             {
               "kind": "field",
@@ -49816,11 +49816,11 @@
             },
             {
               "type": {
-                "text": "boolean | undefined"
+                "text": "ControlVariant | undefined"
               },
-              "description": "去掉外框，只保留行间横线",
-              "name": "borderless",
-              "fieldName": "borderless"
+              "description": "形态：outline 画外框与圆角，ghost 去掉外框只留行间横线，subtle 淡底；默认 outline",
+              "name": "variant",
+              "fieldName": "variant"
             },
             {
               "type": {

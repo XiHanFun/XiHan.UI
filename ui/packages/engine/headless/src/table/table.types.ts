@@ -5,7 +5,7 @@
 
 // 定义 table 类型契约。
 
-import type { Direction, MachineSchema, PropTypes, Size } from '@xihan-ui/core'
+import type { ControlVariant, Direction, MachineSchema, PropTypes, Size } from '@xihan-ui/core'
 import type { DragRect, DragTranslations, DropTarget } from '../shared/drag'
 
 /**
@@ -306,8 +306,8 @@ export interface TableSchema extends MachineSchema {
     stickyHeader?: boolean
     /** 斑马纹：表体偶数行换一层浅底。 */
     striped?: boolean
-    /** 去掉外框，只保留行间横线：root 上的 data-bordered 随之缺席。 */
-    borderless?: boolean
+    /** 形态：outline 画外框与圆角（默认），ghost 去掉外框只留行间横线，subtle 淡底。默认 outline。 */
+    variant?: ControlVariant
     /** 列与列之间加竖分隔线，写为 root 上的 data-split。 */
     ruled?: boolean
     /** 表格带脚注行。行号空间的最后一行留给它，aria-rowcount 也把它计入。 */
