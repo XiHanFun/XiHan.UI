@@ -195,7 +195,7 @@ required 写为 data-required，皮肤据此为组标题加星号；星号只是
 | `--xh-fieldset-field-group-col-w` | `field-group` | `grid-template-columns` | `default` | `--xh-layout-col-min-sm` | fieldset 的 field-group 部件 grid-template-columns 覆盖槽。 |
 | `--xh-fieldset-field-group-gap` | `field-group` | `gap` | `default` | `--xh-space-3` | fieldset 的 field-group 部件 gap 覆盖槽。 |
 | `--xh-fieldset-gap` | `root` | `gap` | `default` | `--xh-space-4` | fieldset 的 root 部件 gap 覆盖槽。 |
-| `--xh-fieldset-legend-fg` | `legend` | `color` | `default` | `--xh-fg-default` | fieldset 的 legend 部件 color 覆盖槽。 |
+| `--xh-fieldset-legend-fg` | `legend` | `color` | `default` | `--xh-fg-muted` | fieldset 的 legend 部件 color 覆盖槽。 |
 | `--xh-fieldset-legend-fg-disabled` | `legend`<br>`root` | `color` | `disabled` | `--xh-fg-subtle` | fieldset 的 legend、root 部件 color 覆盖槽。 |
 | `--xh-fieldset-legend-fg-invalid` | `legend` | `color` | `invalid` | `--xh-fg-danger` | fieldset 的 legend 部件 color 覆盖槽。 |
 | `--xh-fieldset-legend-font-size` | `legend` | `font-size` | `default` | `--xh-text-label-size` | fieldset 的 legend 部件 font-size 覆盖槽。 |
