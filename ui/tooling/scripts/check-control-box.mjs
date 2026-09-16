@@ -87,6 +87,11 @@ const SHARED_FAMILY = {
     contentSelector: `[data-scope='date-field'][data-part='segment-group']`,
     actionParts: new Set(['clear-trigger']),
   },
+  'time-field': {
+    boxSelector: '[data-xh-field-chrome]',
+    contentSelector: `[data-scope='time-field'][data-part='segment-group']`,
+    actionParts: new Set(['clear-trigger']),
+  },
 }
 
 /** Field Chrome 的原生输入角色；内容区登记成它的组件，连接层必须把它投影到 input 上。 */

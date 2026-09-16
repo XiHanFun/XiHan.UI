@@ -2,14 +2,14 @@
 
 exports[`family-backlog 条目数 > 七段各一数，与快照一致 1`] = `
 {
-  "edge": 68,
-  "ladder": 133,
+  "edge": 67,
+  "ladder": 129,
   "motion": 1,
   "press": 79,
   "scroll": 64,
   "selection": 25,
   "shape": 25,
-  "text": 108,
+  "text": 107,
 }
 `;
 
@@ -68,7 +68,6 @@ exports[`family-backlog 键集合 > edge 1`] = `
   "switch:thumb:raised",
   "tabs:root:raised",
   "tags-input:root:raised",
-  "time-field:root:raised",
   "time-picker:content",
   "time-picker:positioner:raised",
   "time-range-picker:content",
@@ -190,10 +189,6 @@ exports[`family-backlog 键集合 > ladder 1`] = `
   "tags-input:clear-trigger:hover",
   "tags-input:clear-trigger:pressed",
   "tags-input:control:focus",
-  "time-field:clear-trigger:hover",
-  "time-field:clear-trigger:pressed",
-  "time-field:control:focus",
-  "time-field:segment:hover",
   "time-picker:clear-trigger:pressed",
   "time-picker:control:focus",
   "time-picker:segment:hover",
@@ -535,7 +530,6 @@ exports[`family-backlog 键集合 > text 1`] = `
   "switch:label:color",
   "table:root:icon-size",
   "tags-input:label:font-size",
-  "time-field:label:font-size",
   "time-picker:label:font-size",
   "time-range-picker:label:font-size",
   "timeline:description:font-size",

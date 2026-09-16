@@ -3,7 +3,9 @@
  * Licensed under the MIT License. See LICENSE in the project root for license information.
  */
 
-/* 定义 time field 样式。 */
+/* TimeField 独立皮肤同时传递引入字段视觉盒与字段内动作；full bundle 递归去重。 */
+@import '../family/field-chrome.css';
+@import '../family/action-control.css';
 
 @layer xihan.components {
   /* 皮肤在场的标记：开发模式下按 scope 探一次，取不到就说明这份皮肤没被引入。 */
@@ -11,29 +13,21 @@
     --xh-time-field-skin: 1;
   }
 
-  /* 与文本框、数字框同一套堆叠：标签一行、控件一行 */
+  /* 与文本框、数字框同一套堆叠：标签一行、控件一行。
+     组件层只把既有公开槽映射到家族合同；形态三档由家族按 control 上的 data-variant 生成，皮肤不再声明。 */
   [data-scope='time-field'][data-part='root'] {
     /* 作者塞进来的图标跟着控件的尺寸档走；它自己写了 size 时仍以作者的为准 */
     --xh-icon-size: var(--xh-time-field-icon-size, var(--xh-glyph-size-md));
 
-    /* 尺寸档只换这四个私有槽，标题与控件都从 root 继承它们，换档不必给每个部件各写一条选择器 */
+    /* 尺寸档只换这四个私有槽，控件从 root 继承它们，换档不必给每个部件各写一条选择器 */
     --xh-_time-field-control-h: var(--xh-control-h-md);
     --xh-_time-field-control-px: var(--xh-control-px-md);
     --xh-_time-field-gap: var(--xh-control-gap-md);
     --xh-_time-field-font-size: var(--xh-control-font-md);
-    --xh-_time-field-label-font-size: var(--xh-control-font-md);
-    /* 形态档只换这五个私有槽：两档底色、两档描边与落影 */
-    --xh-_time-field-control-bg: var(--xh-bg-canvas);
-    /* 悬停那一档底：描边之外再换一次填充，语气在场时兑同族的淡底 */
-    --xh-_time-field-control-bg-hover: color-mix(in oklab, var(--xh-bg-subtle) 45%, var(--xh-_time-field-control-bg));
-    --xh-_time-field-control-border: transparent;
-    --xh-_time-field-control-border-hover: var(--xh-border-default);
-    /* 一档静态落影把控件从页面里抬起一层，与描边一起画出框的边界 */
-    --xh-_time-field-control-shadow: var(--xh-elevation-raised);
-    /* 聚焦描边与段位反白随语气走。没写 data-tone 时这几个 --xh-_tone* 没被声明，退回原来的焦点色与品牌色 */
-    --xh-_time-field-ring: var(--xh-ring-focus);
+    /* 段位反白随语气走：当前段是「当前项」，淡底 + 淡底前景。
+       没写 data-tone 时这几个 --xh-_tone* 没被声明，退回品牌淡底 */
     --xh-_time-field-segment-bg: var(--xh-_tone-subtle, var(--xh-bg-brand-subtle));
-    --xh-_time-field-segment-fg: var(--xh-_tone-fg, var(--xh-fg-brand));
+    --xh-_time-field-segment-fg: var(--xh-_tone-fg, var(--xh-fg-on-brand-subtle));
 
     display: inline-flex;
     flex-direction: column;
@@ -51,7 +45,6 @@
     --xh-_time-field-control-px: var(--xh-control-px-sm);
     --xh-_time-field-gap: var(--xh-control-gap-sm);
     --xh-_time-field-font-size: var(--xh-control-font-sm);
-    --xh-_time-field-label-font-size: var(--xh-control-font-sm);
   }
 
   [data-scope='time-field'][data-part='root'][data-size='lg'] {
@@ -60,34 +53,6 @@
     --xh-_time-field-control-px: var(--xh-control-px-lg);
     --xh-_time-field-gap: var(--xh-control-gap-lg);
     --xh-_time-field-font-size: var(--xh-control-font-lg);
-    --xh-_time-field-label-font-size: var(--xh-control-font-lg);
-  }
-
-  /* —— 形态 —— */
-  /* 描边式：与缺省等价，写出来是为了三档形态在皮肤里都看得见 */
-  [data-scope='time-field'][data-part='root'][data-variant='outline'] {
-    --xh-_time-field-control-bg: var(--xh-bg-canvas);
-    --xh-_time-field-control-bg-hover: var(--xh-_tone-subtle, var(--xh-bg-subtle));
-    --xh-_time-field-control-border: var(--xh-border-control);
-    --xh-_time-field-control-border-hover: var(--xh-border-control-hover);
-  }
-
-  /* 填充式：底色顶替描边，悬停时才浮出一道淡边 */
-  [data-scope='time-field'][data-part='root'][data-variant='subtle'] {
-    --xh-_time-field-control-bg: var(--xh-_tone-subtle, var(--xh-bg-subtle));
-    --xh-_time-field-control-bg-hover: var(--xh-_tone-subtle-hover, var(--xh-bg-subtle-hover));
-    --xh-_time-field-control-border: transparent;
-    --xh-_time-field-control-border-hover: var(--xh-_tone-border, var(--xh-border-control-hover));
-  }
-
-  /* 无框：底与常态描边透明，悬停与聚焦浮出描边。
-     落影一并关掉——底与描边都透明时它就是一片没有面的影子 */
-  [data-scope='time-field'][data-part='root'][data-variant='ghost'] {
-    --xh-_time-field-control-shadow: 0 0 0 transparent;
-    --xh-_time-field-control-bg: transparent;
-    --xh-_time-field-control-bg-hover: var(--xh-_tone-subtle, var(--xh-bg-subtle));
-    --xh-_time-field-control-border: transparent;
-    --xh-_time-field-control-border-hover: var(--xh-_tone-border, var(--xh-border-control-hover));
   }
 
   /* 声明了 display 就盖掉了 UA 的 [hidden]{display:none}，收起态得自己还回去 */
@@ -97,7 +62,7 @@
 
   [data-scope='time-field'][data-part='label'] {
     color: var(--xh-time-field-label-fg, var(--xh-fg-default));
-    font-size: var(--xh-time-field-label-font-size, var(--xh-_time-field-label-font-size));
+    font-size: var(--xh-time-field-label-font-size, var(--xh-text-label-size));
     font-weight: var(--xh-time-field-label-font-weight, var(--xh-text-label-weight));
   }
 
@@ -105,74 +70,40 @@
     color: var(--xh-time-field-label-fg-disabled, var(--xh-fg-subtle));
   }
 
-  /* 几段合起来看着像一个输入框：边框、高度、内边距全长在 control 上，
-     段自己只管一小块可聚焦的高亮区 */
+  /* 几段合起来看着像一个输入框：描边、底色、圆角、聚焦环、五态与悬停由 Field Chrome 家族画在
+     control 上，段自己只管一小块可聚焦的高亮区。组件只映射既有公开槽；段位靠键盘编辑，盒上不是文本光标 */
   [data-scope='time-field'][data-part='control'] {
-    display: inline-flex;
-    min-inline-size: min(var(--xh-time-field-control-min-w, var(--xh-control-min-w)), 100%);
-    align-items: center;
-    gap: var(--xh-time-field-control-gap, var(--xh-_time-field-gap));
-    block-size: var(--xh-time-field-control-h, var(--xh-_time-field-control-h));
-    padding-inline: var(--xh-time-field-control-px, var(--xh-_time-field-control-px));
-    padding-block: 0;
-    border: var(--xh-stroke-thin) solid var(--xh-time-field-control-border, var(--xh-_time-field-control-border));
-    border-radius: var(--xh-time-field-control-radius, var(--xh-shape-control));
-    outline: var(--xh-ring-width) solid transparent;
-    outline-offset: var(--xh-ring-offset);
-    background: var(--xh-time-field-control-bg, var(--xh-_time-field-control-bg));
-    box-shadow: var(--xh-time-field-control-shadow, var(--xh-_time-field-control-shadow));
-    color: var(--xh-time-field-control-fg, var(--xh-fg-default));
+    --xh-field-control-height: var(--xh-time-field-control-h, var(--xh-_time-field-control-h));
+    --xh-field-control-padding-inline: var(--xh-time-field-control-px, var(--xh-_time-field-control-px));
+    --xh-field-control-gap: var(--xh-time-field-control-gap, var(--xh-_time-field-gap));
+    --xh-field-control-min-inline-size: var(--xh-time-field-control-min-w, var(--xh-control-min-w));
+    --xh-field-control-radius: var(--xh-time-field-control-radius, var(--xh-shape-control));
+    --xh-field-bg-rest: var(--xh-time-field-control-bg, var(--xh-_field-variant-bg-rest));
+    --xh-field-bg-hover: var(--xh-time-field-control-bg-hover, var(--xh-_field-variant-bg-hover));
+    --xh-field-bg-read-only: var(--xh-time-field-control-bg-readonly, var(--xh-_field-variant-bg-read-only));
+    --xh-field-bg-disabled: var(--xh-time-field-control-bg-disabled, var(--xh-_field-variant-bg-disabled));
+    --xh-field-fg-rest: var(--xh-time-field-control-fg, var(--xh-fg-default));
+    --xh-field-border-rest: var(--xh-time-field-control-border, var(--xh-_field-variant-border-rest));
+    --xh-field-border-hover: var(--xh-time-field-control-border-hover, var(--xh-_field-variant-border-hover));
+    --xh-field-border-focus: var(--xh-time-field-control-border-focus, var(--xh-_field-variant-border-focus));
+    --xh-field-border-invalid: var(--xh-time-field-control-border-invalid, var(--xh-_field-variant-border-invalid));
+    --xh-field-ring-focus: var(--xh-ring-focus);
+    --xh-field-ring-invalid: var(--xh-ring-invalid);
+    --xh-field-shadow-rest: var(--xh-time-field-control-shadow, none);
+    --xh-field-cursor-rest: default;
+    /* 家族 chrome 会重写 --xh-icon-size，使用者图标槽必须经桥接槽下发才能在盒内生效 */
+    --xh-field-glyph-size: var(--xh-time-field-icon-size, var(--xh-_field-size-glyph-size));
+
     /* 表单控件不继承页面字体，只给字号会让它用 UA 默认字族，与周围文本对不上 */
     font-family: inherit;
     font-size: var(--xh-time-field-font-size, var(--xh-_time-field-font-size));
     /* 等宽数字：各位字宽不一时逐段填入会让整行左右跳 */
     font-variant-numeric: tabular-nums;
     line-height: var(--xh-leading-normal);
-    transition:
-      background var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
-      border-color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
-      outline-color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
   }
 
   [data-scope='time-field'][data-part='control'][hidden] {
     display: none;
-  }
-
-  /* hover 只在中性态换描边：invalid 正拿边框颜色说事，被 hover 盖掉那条信息就没了 */
-  [data-scope='time-field'][data-part='control']:hover:not([data-disabled], [data-invalid]) {
-    border-color: var(--xh-time-field-control-border-hover, var(--xh-_time-field-control-border-hover));
-  }
-
-  /* 描边之外再换一档填充：只挪一格描边色的悬停在浅底上几乎读不出来。
-     只读盒的底色正说着「改不动」，不参与换填充 */
-  [data-scope='time-field'][data-part='control']:hover:not([data-disabled], [data-readonly]) {
-    background: var(--xh-time-field-control-bg-hover, var(--xh-_time-field-control-bg-hover));
-  }
-
-  /* 焦点真正落在段上，但整块看起来才是一个控件：段内有焦点时整框亮起来。
-     control 自己不占 Tab 位，所以这里写的是 focus-within 而不是 focus-visible */
-  [data-scope='time-field'][data-part='control']:focus-within:not([data-disabled]) {
-    border-color: var(--xh-time-field-control-border-focus, var(--xh-_tone, var(--xh-border-control-focus)));
-    outline: var(--xh-ring-width) solid var(--xh-_time-field-ring);
-    outline-offset: var(--xh-ring-offset);
-  }
-
-  [data-scope='time-field'][data-part='control'][data-invalid] {
-    border-color: var(--xh-time-field-control-border-invalid, var(--xh-border-invalid));
-
-    /* 校验失败时环也跟着变红：两圈等宽相邻却一红一蓝，读的人不知道哪个才是当前状态 */
-    --xh-_time-field-ring: var(--xh-ring-invalid);
-  }
-
-  /* 只读仍可聚焦、可换段，所以不置灰，只把底色压下去表示"改不动" */
-  [data-scope='time-field'][data-part='control'][data-readonly] {
-    background: var(--xh-time-field-control-bg-readonly, var(--xh-bg-subtle));
-  }
-
-  /* control 是个 div，没有 :disabled 可用；禁用态由连接层的 data-disabled 表达 */
-  [data-scope='time-field'][data-part='control'][data-disabled] {
-    background: var(--xh-time-field-control-bg-disabled, var(--xh-bg-subtle));
-    color: var(--xh-fg-disabled);
   }
 
   /* 段位与作者写在段间的分隔符都在这一层里：它占满盒里剩下的宽度，
@@ -248,8 +179,9 @@
     color: var(--xh-time-field-segment-fg-invalid-focus, var(--xh-fg-danger));
   }
 
+  /* 白底承载的悬停走 100：段位铺在 canvas 底的盒里，不是淡底容器 */
   [data-scope='time-field'][data-part='segment']:hover:not([data-focus], [data-disabled]) {
-    background: var(--xh-time-field-segment-bg-hover, var(--xh-bg-subtle-hover));
+    background: var(--xh-time-field-segment-bg-hover, var(--xh-bg-subtle));
   }
 
   /* 段是集合条目形态（role=spinbutton 的 span），禁用走 data-disabled 而不是 :disabled */
@@ -257,51 +189,34 @@
     color: var(--xh-fg-disabled);
   }
 
-  /* 清空按钮贴在框内末端：不占宽度也不撑高 control，有值时才显形。
-     靠段位外壳的 flex:1 顶到末端，自己不写 margin */
+  /* 清空按钮贴在框内末端，靠段位外壳的 flex:1 顶到末端，自己不写 margin：正方视觉盒、inset 圆角、
+     悬停 100 / 按下 200 与 0.97 按压、粗指针热区与 :focus-visible 关环全由 Action Control 的
+     field-inset ghost 档给，组件只映射既有覆盖槽。没值时连接层给 hidden 收起 */
   [data-scope='time-field'][data-part='clear-trigger'] {
-    display: inline-flex;
-    flex: none;
-    align-items: center;
-    justify-content: center;
-    inline-size: var(--xh-time-field-action-size, var(--xh-control-action-size));
-    block-size: var(--xh-time-field-action-size, var(--xh-control-action-size));
-    padding: 0;
-    border: 0;
-    border-radius: var(--xh-time-field-action-radius, var(--xh-shape-control));
-    background: var(--xh-time-field-action-bg, transparent);
-    color: var(--xh-time-field-action-fg, var(--xh-fg-muted));
-    font-family: inherit;
-    font-size: var(--xh-time-field-action-font-size, var(--xh-text-secondary-size));
-    line-height: var(--xh-leading-none);
-    cursor: pointer;
-    user-select: none;
-    transition:
-      background var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
-      scale var(--xh-motion-duration-release) var(--xh-motion-ease-release);
+    --xh-action-visual-size: var(--xh-time-field-action-size, var(--xh-_action-profile-visual-size));
+    --xh-action-min-inline-size: var(--xh-time-field-action-size, var(--xh-_action-profile-visual-size));
+    --xh-action-radius: var(--xh-time-field-action-radius, var(--xh-shape-inset));
+    /* 底色阶梯由 ghost 档给（透明 → 100 → 200），使用者槽只作覆盖入口 */
+    --xh-action-bg-rest: var(--xh-time-field-action-bg, var(--xh-_action-variant-bg-rest));
+    --xh-action-bg-hover: var(--xh-time-field-action-bg-hover, var(--xh-_action-variant-bg-hover));
+    --xh-action-bg-pressed: var(--xh-time-field-action-bg-active, var(--xh-_action-variant-bg-pressed));
+    --xh-action-fg-rest: var(--xh-time-field-action-fg, var(--xh-fg-muted));
+    --xh-action-fg-hover: var(--xh-time-field-action-fg-hover, var(--xh-fg-default));
+    --xh-action-border-rest: transparent;
+    --xh-action-highlight-rest: transparent;
+    --xh-action-shadow-rest: none;
+    --xh-action-shadow-hover: none;
+    --xh-action-shadow-pressed: none;
+    --xh-action-font-size: var(--xh-time-field-action-font-size, var(--xh-text-secondary-size));
+    /* 配方尚未把 profile 字形档灌进 --xh-icon-size，钮内字形先按 field-inset 档逐钮取值 */
+    --xh-icon-size: var(--xh-_action-profile-glyph-size);
+
+    border-width: 0;
   }
 
-  /* 没值时连接层给的是 hidden 属性；上面那条 display 会把 UA 规则盖掉 */
+  /* 没值时连接层给的是 hidden 属性；家族那条 display 会把 UA 规则盖掉 */
   [data-scope='time-field'][data-part='clear-trigger'][hidden] {
     display: none;
-  }
-
-  [data-scope='time-field'][data-part='clear-trigger']:hover {
-    background: var(--xh-time-field-action-bg-hover, var(--xh-bg-subtle-hover));
-    color: var(--xh-time-field-action-fg-hover, var(--xh-fg-default));
-  }
-
-  [data-scope='time-field'][data-part='clear-trigger']:active {
-    background: var(--xh-time-field-action-bg-active, var(--xh-bg-subtle-active));
-    scale: var(--xh-motion-scale-press);
-    transition-duration: var(--xh-motion-duration-press);
-    transition-timing-function: var(--xh-motion-ease-press);
-  }
-
-  /* 按钮不占 Tab 位（tabindex=-1），这条是给程序化聚焦兜底：落焦时得看得见 */
-  [data-scope='time-field'][data-part='clear-trigger']:focus-visible {
-    outline: var(--xh-ring-width) solid var(--xh-_time-field-ring);
-    outline-offset: var(--xh-ring-offset);
   }
 
   /* 没写内容就由皮肤画兜底字形；作者往部件里塞了自己的图形，这条即不命中 */

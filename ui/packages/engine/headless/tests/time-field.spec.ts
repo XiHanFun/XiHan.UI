@@ -578,9 +578,21 @@ describe('timeFieldMachine', () => {
 })
 
 describe('connectTimeField 属性输出', () => {
-  it('不写 variant 时 root 落 outline；写 subtle 如实落', () => {
-    expect(open().root.getAttribute('data-variant')).toBe('outline')
-    expect(open({ variant: 'subtle' }).root.getAttribute('data-variant')).toBe('subtle')
+  it('不写 variant 时 root 与 control 都落 outline；写 subtle 如实落', () => {
+    const fallback = open()
+    expect(fallback.root.getAttribute('data-variant')).toBe('outline')
+    expect(fallback.control.getAttribute('data-variant')).toBe('outline')
+    const subtle = open({ variant: 'subtle' })
+    expect(subtle.root.getAttribute('data-variant')).toBe('subtle')
+    expect(subtle.control.getAttribute('data-variant')).toBe('subtle')
+  })
+
+  it('control 投影 Field Chrome 的稳定角色与尺寸档，缺省 md；段位不是原生输入，不投影 field-input', () => {
+    const m = open()
+    expect(m.control.getAttribute('data-xh-field-chrome')).toBe('')
+    expect(m.control.getAttribute('data-xh-field-size')).toBe('md')
+    expect(m.seg('hour').hasAttribute('data-xh-field-input')).toBe(false)
+    expect(open({ size: 'lg' }).control.getAttribute('data-xh-field-size')).toBe('lg')
   })
 
   it('control 是 group 并由 label 命名，段是 spinbutton', () => {
@@ -954,6 +966,19 @@ describe('connectTimeField 受控与命令式出口', () => {
     expect(m.clear.hasAttribute('disabled')).toBe(false)
     expect(m.clear.getAttribute('aria-label')).toBe('Clear')
     expect(m.api().canClear).toBe(true)
+  })
+
+  it('清空钮走 Action Control 的 field-inset ghost 档，按 has-value 显隐，尺寸档随 size 缺省 md', () => {
+    const m = open({ granularity: 'minute' })
+    expect(m.clear.getAttribute('data-xh-action-control')).toBe('')
+    expect(m.clear.getAttribute('data-xh-action-profile')).toBe('field-inset')
+    expect(m.clear.getAttribute('data-xh-action-variant')).toBe('ghost')
+    expect(m.clear.getAttribute('data-xh-action-display')).toBe('has-value')
+    expect(m.clear.getAttribute('data-xh-action-size')).toBe('md')
+    expect(m.clear.hasAttribute('data-xh-action-has-value')).toBe(false)
+    m.api().setValue('13:45')
+    expect(m.clear.getAttribute('data-xh-action-has-value')).toBe('')
+    expect(open({ size: 'sm' }).clear.getAttribute('data-xh-action-size')).toBe('sm')
   })
 
   it('清空钮：aria-label 走 translations.clearTrigger', () => {

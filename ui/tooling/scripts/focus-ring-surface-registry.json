@@ -122,6 +122,8 @@
     "text-field [data-part='control'][data-scope='text-field'] [data-part='input'][data-scope='text-field']": "环由 control 的 :focus-within 画在外框上",
     "text-field [data-part='control'][data-scope='text-field'] [data-xh-action-profile='field-inset']": "环由 control 的 :focus-within 画在外框上",
     "time-field [data-focus][data-part='segment'][data-scope='time-field']:not([data-disabled])": "环由 control 的 :focus-within 画在外框上，段位只反白标出当前段",
+    "time-field [data-part='control'][data-scope='time-field'] [data-part='input'][data-scope='time-field']": "家族随皮肤引入的规则：time-field 的段位是 div、不投影 data-xh-field-input，这条命不中；环由 control 的 :focus-within 画在外框上",
+    "time-field [data-part='control'][data-scope='time-field'] [data-xh-action-profile='field-inset']": "焦点落到盒内清空钮（tabindex=-1，只接程序化落焦）时 control 已经 :focus-within 起了环",
     "time-field [data-part='segment'][data-scope='time-field']": "环由 control 的 :focus-within 画在外框上，段位只反白标出当前段",
     "time-picker [data-focus][data-part='segment'][data-scope='time-picker']:not([data-disabled])": "环由 control 的 :focus-within 画在外框上，段位只反白标出当前段",
     "time-picker [data-part='column'][data-scope='time-picker']:not([tabindex='0'])": "列只在还没有格当锚点时认领 Tab 位，那时 [tabindex='0']:focus-visible 另画一圈；有锚点时环长在格上",
