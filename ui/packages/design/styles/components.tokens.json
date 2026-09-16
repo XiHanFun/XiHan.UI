@@ -72382,6 +72382,7 @@
       "name": "--xh-tree-select-item-bg-hover",
       "component": "tree-select",
       "part": [
+        "branch",
         "branch-control",
         "item"
       ],
@@ -72389,18 +72390,22 @@
         "background-color"
       ],
       "state": [
+        "disabled",
         "error",
+        "focus-visible",
         "highlighted",
         "hover",
         "is(:focus-visible, [data-highlighted])",
+        "is(:hover, [data-highlighted])",
         "not([aria-disabled='true'], [aria-busy='true'], [data-error])",
+        "not([data-disabled])",
         "xh-collection-context=overlay"
       ],
       "defaultToken": [
         "--xh-bg-subtle"
       ],
       "visibility": "public",
-      "description": "tree-select 的 branch-control、item 部件 background-color 覆盖槽。"
+      "description": "tree-select 的 branch、branch-control、item 部件 background-color 覆盖槽。"
     },
     {
       "name": "--xh-tree-select-item-bg-pressed",
@@ -72413,9 +72418,11 @@
         "background-color"
       ],
       "state": [
+        "disabled",
         "error",
         "is(:active, [data-pressed])",
         "not([aria-disabled='true'], [aria-busy='true'], [data-error])",
+        "not([data-disabled])",
         "pressed",
         "xh-collection-context=overlay"
       ],
