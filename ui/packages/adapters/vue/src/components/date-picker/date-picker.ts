@@ -347,7 +347,9 @@ export const XhDatePickerPresetGroup = defineComponent({
     /** 自行铺设条目；未写时按 presets 数据自动铺设，两者产出的 DOM 一致。 */
     default?: (props: DatePickerPresetsSlotProps) => VNode[]
   }>,
-  setup(_, { slots }) {
+  // 根是片段（选项列节点 + 贴层的条子），Vue 不会把直通属性合上去：作者写的 class、style 与 data-* 自己接住落到列节点上
+  inheritAttrs: false,
+  setup(_, { slots, attrs }) {
     const ctx = useDatePickerContext()
     const presetGroupRef = ref<HTMLElement | null>(null)
     // 快捷选项列自己滚（窄视口横排横滚、宽视口竖排竖滚）：两轴的条子贴在它的盒子上、紧跟在它后面
@@ -365,7 +367,7 @@ export const XhDatePickerPresetGroup = defineComponent({
         h(
           'div',
           {
-            ...api.getPresetGroupProps() as Record<string, unknown>,
+            ...mergeProps(api.getPresetGroupProps() as Record<string, unknown>, attrs),
             ref: (el: unknown) => { presetGroupRef.value = el as HTMLElement },
           },
           slotPaints(authored)
