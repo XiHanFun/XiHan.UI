@@ -20,12 +20,12 @@ export function connectPageHeader<T extends PropTypes>(
 ): PageHeaderApi<T> {
   return {
     // 尺寸、形态与分隔线只落在根上，各段从这里继承私有槽，子部件不重复标注。
-    // 形态不写即不发这个属性：没写轴的页头逐值不变
+    // 形态不写落 ghost：贴在页面底色上，皮肤基础规则即该档
     getRootProps: () => normalize.element({
       ...parts.root.attrs,
       'data-size': props.size,
-      'data-variant': props.variant,
-      'data-bordered': dataAttr(props.bordered),
+      'data-variant': props.variant ?? 'ghost',
+      'data-split': dataAttr(props.split),
     }),
 
     // 面包屑位整行另起排在标题之上，装什么归作者

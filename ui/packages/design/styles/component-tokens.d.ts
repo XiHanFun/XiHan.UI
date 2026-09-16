@@ -2194,7 +2194,6 @@ export type ComponentTokenName =
   | '--xh-page-header-py'
   | '--xh-page-header-radius'
   | '--xh-page-header-row-gap'
-  | '--xh-page-header-shadow'
   | '--xh-page-header-title-fg'
   | '--xh-page-header-title-font-size'
   | '--xh-page-header-title-font-weight'

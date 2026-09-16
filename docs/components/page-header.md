@@ -28,11 +28,11 @@
 
 在标题下方显示页面摘要
 
-<XhDemo src="page-header/02-bordered-footer" />
+<XhDemo src="page-header/02-split-footer" />
 
 ### 变体
 
-适配页面、表面与抬升区域
+ghost 贴在页面底色上，outline 为带描边的独立面，subtle 淡底
 
 <XhDemo src="page-header/03-variant" />
 
@@ -57,8 +57,8 @@
 
 - 标题与说明上下排列，操作区位于末侧。
 - 面包屑、返回位、媒体位、操作区和页脚均可省略。
-- `surface` 提供独立内容面，`raised` 增加抬升层级。
-- `bordered` 为纯净页头增加底部分隔，为有面页头增加完整边界。
+- `outline` 提供带描边的独立内容面，`subtle` 提供淡底面，`ghost` 贴在页面底色上。
+- `split` 为贴底页头增加底部分隔线；有面的两档由描边承担边界。
 
 ### 组合
 
@@ -89,9 +89,9 @@
 
 | 属性 | 类型 | 必填 | 说明 |
 | --- | --- | --- | --- |
-| `bordered` | `boolean` |  | 底部绘制一条分隔线，把页头与下方内容分开。提供面的两档改为绘制整圈描边。 |
 | `size` | `Size` |  | 尺寸：sm / md / lg，决定标题字号与整块的上下留白。 |
-| `variant` | `PageHeaderVariant` |  | 形态：plain / surface / raised。未提供时不绘制面，与写 plain 相同。 |
+| `split` | `boolean` |  | 在页头底部绘制一条分隔线，把页头与下方内容分开；有面的两档不画它，边界由描边承担。 |
+| `variant` | `ControlVariant` |  | 形态：ghost 贴在页面底色上（默认），outline 为带描边的独立面，subtle 淡底。默认 ghost。 |
 
 ### connect API
 
@@ -128,8 +128,8 @@
 
 | 部件 | 属性 | 值 |
 | --- | --- | --- |
-| `root` | `data-bordered` | ''（条件成立时才出现） |
 | `root` | `data-size` | props.size |
+| `root` | `data-split` | ''（条件成立时才出现） |
 | `root` | `data-variant` | props.variant |
 
 <!-- xh-component-tokens:start -->
@@ -139,8 +139,8 @@
 
 | 变量 | 部件 | CSS 属性 | 状态 | 默认来源 | 说明 |
 | --- | --- | --- | --- | --- | --- |
-| `--xh-page-header-bg` | `root` | `background` | `is([data-variant='surface'], [data-variant='raised'])`<br>`variant=raised`<br>`variant=surface` | `--xh-bg-surface` | page-header 的 root 部件 background 覆盖槽。 |
-| `--xh-page-header-border` | `root` | `border`<br>`border-block-end` | `bordered`<br>`is([data-variant='surface'], [data-variant='raised'])`<br>`variant=raised`<br>`variant=surface` | `--xh-border-subtle` | page-header 的 root 部件 border、border-block-end 覆盖槽。 |
+| `--xh-page-header-bg` | `root` | `background` | `variant=outline`<br>`variant=subtle` | `--xh-bg-subtle`<br>`--xh-bg-surface` | page-header 的 root 部件 background 覆盖槽。 |
+| `--xh-page-header-border` | `root` | `border`<br>`border-block-end` | `split`<br>`variant=ghost`<br>`variant=outline` | `--xh-border-subtle` | page-header 的 root 部件 border、border-block-end 覆盖槽。 |
 | `--xh-page-header-breadcrumb-fg` | `breadcrumb` | `color` | `default` | `--xh-fg-muted` | page-header 的 breadcrumb 部件 color 覆盖槽。 |
 | `--xh-page-header-breadcrumb-font-size` | `breadcrumb` | `font-size` | `default` | `--xh-text-secondary-size` | page-header 的 breadcrumb 部件 font-size 覆盖槽。 |
 | `--xh-page-header-column-gap` | `back-trigger`<br>`extra`<br>`media` | `margin-inline-end`<br>`margin-inline-start` | `default` | `--xh-space-3` | page-header 的 back-trigger、extra、media 部件 margin-inline-end、margin-inline-start 覆盖槽。 |
@@ -154,7 +154,6 @@
 | `--xh-page-header-py` | `root` | `padding-block` | `default` | `--xh-_page-header-py` | page-header 的 root 部件 padding-block 覆盖槽。 |
 | `--xh-page-header-radius` | `root` | `border-radius` | `default` | `--xh-_page-header-radius` | page-header 的 root 部件 border-radius 覆盖槽。 |
 | `--xh-page-header-row-gap` | `root` | `row-gap` | `default` | `--xh-_page-header-row-gap` | page-header 的 root 部件 row-gap 覆盖槽。 |
-| `--xh-page-header-shadow` | `root` | `box-shadow` | `variant=raised` | `--xh-elevation-raised` | page-header 的 root 部件 box-shadow 覆盖槽。 |
 | `--xh-page-header-title-fg` | `title` | `color` | `default` | `--xh-fg-default` | page-header 的 title 部件 color 覆盖槽。 |
 | `--xh-page-header-title-font-size` | `title` | `font-size` | `default` | `--xh-_page-header-title-size` | page-header 的 title 部件 font-size 覆盖槽。 |
 | `--xh-page-header-title-font-weight` | `title` | `font-weight` | `default` | `--xh-font-weight-semibold` | page-header 的 title 部件 font-weight 覆盖槽。 |

@@ -3,7 +3,7 @@ import { XhButton, XhPageHeaderDescription, XhPageHeaderExtra, XhPageHeaderRoot,
 </script>
 
 <template>
-  <XhPageHeaderRoot variant="surface" style="inline-size: 250px">
+  <XhPageHeaderRoot variant="outline" style="inline-size: 250px">
     <XhPageHeaderTitle>订单 SO-004</XhPageHeaderTitle>
     <XhPageHeaderDescription>今天 14:32 更新</XhPageHeaderDescription>
     <XhPageHeaderExtra>

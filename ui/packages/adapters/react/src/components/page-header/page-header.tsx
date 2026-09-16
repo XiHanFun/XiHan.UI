@@ -5,8 +5,8 @@
 
 // 提供 page header 相关实现。
 
-import type { Size } from '@xihan-ui/core'
-import type { PageHeaderProps, PageHeaderVariant } from '@xihan-ui/headless'
+import type { ControlVariant, Size } from '@xihan-ui/core'
+import type { PageHeaderProps } from '@xihan-ui/headless'
 import type { ComponentPropsWithRef, ElementType, ReactNode } from 'react'
 import { connectPageHeader } from '@xihan-ui/headless'
 import { withXhConfig } from '../../config/config'
@@ -17,16 +17,16 @@ import { PageHeaderProvider, usePageHeaderContext } from './context'
 export interface XhPageHeaderRootProps extends ComponentPropsWithRef<'div'> {
   /** 尺寸：sm / md / lg，决定标题字号与整块的上下留白。 */
   size?: Size
-  /** 底部绘制一条分隔线，把页头与下方的内容分开。 */
-  bordered?: boolean
-  /** 形态：plain / surface / raised。未写即不绘制面，与写 plain 相同。 */
-  variant?: PageHeaderVariant
+  /** 在页头底部绘制一条分隔线，把页头与下方内容分开；有面的两档不画它，边界由描边承担。 */
+  split?: boolean
+  /** 形态：ghost 贴在页面底色上，outline 为带描边的独立面，subtle 淡底；未写落 ghost。 */
+  variant?: ControlVariant
 }
 
 /** 页头外壳。两个视觉轴与分隔线开关只落在这一层，各段从这里继承。 */
-export function XhPageHeaderRoot({ size, bordered, variant, children, ...rest }: XhPageHeaderRootProps): ReactNode {
+export function XhPageHeaderRoot({ size, split, variant, children, ...rest }: XhPageHeaderRootProps): ReactNode {
   const api = connectPageHeader(
-    withXhConfig('page-header', { size, bordered, variant }) as PageHeaderProps,
+    withXhConfig('page-header', { size, split, variant }) as PageHeaderProps,
     reactNormalize,
   )
   return (

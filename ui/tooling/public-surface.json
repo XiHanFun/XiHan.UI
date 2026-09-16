@@ -5956,7 +5956,6 @@
       "PageHeaderApi",
       "PageHeaderProps",
       "PageHeaderTranslations",
-      "PageHeaderVariant",
       "PaginationApi",
       "PaginationEllipsisSide",
       "PaginationEllipsisTriggerProps",
@@ -10563,8 +10562,8 @@
       "variant"
     ],
     "page-header": [
-      "bordered",
       "size",
+      "split",
       "variant"
     ],
     "pagination": [
@@ -14297,7 +14296,6 @@
     "--xh-page-header-py",
     "--xh-page-header-radius",
     "--xh-page-header-row-gap",
-    "--xh-page-header-shadow",
     "--xh-page-header-title-fg",
     "--xh-page-header-title-font-size",
     "--xh-page-header-title-font-weight",
@@ -17424,8 +17422,8 @@
     },
     "xh-page-header": {
       "attributes": [
-        "bordered",
         "size",
+        "split",
         "variant"
       ],
       "events": []

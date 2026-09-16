@@ -1,7 +1,7 @@
 import type { ConformanceSuite, FixtureNode } from '../conformance/types'
 import { pageHeaderAnatomy, pageHeaderKeyboard } from '@xihan-ui/headless'
 
-// 页头是容器，APG 没有对应模式；判据只锁「两个轴如实落到根上、各段拿得到自己的身份、
+// 页头是容器，APG 没有对应模式；判据只锁「两个轴与分隔线如实落到根上、各段拿得到自己的身份、
 // 返回位除身份外一个属性都不多写」。
 const APG = 'https://www.w3.org/WAI/ARIA/apg/'
 
@@ -29,14 +29,15 @@ export const pageHeaderSuite: ConformanceSuite = {
   fixture: pageHeaderTree,
   cases: [
     {
-      name: '缺省：根不写 role，两个轴一律不输出',
+      name: '缺省：根不写 role，形态落 ghost，尺寸与分隔线不输出',
       spec: { apg: APG },
       initial: {
         parts: {
           root: {
             'role': null,
             'data-size': null,
-            'data-bordered': null,
+            'data-variant': 'ghost',
+            'data-split': null,
           },
         },
       },
@@ -52,22 +53,22 @@ export const pageHeaderSuite: ConformanceSuite = {
       },
     },
     {
-      name: '分隔线落成 data-bordered，关掉时不留空属性',
+      name: '分隔线落成 data-split，关掉时不留空属性',
       spec: { apg: APG },
-      props: { bordered: true },
+      props: { split: true },
       initial: {
         parts: {
-          root: { 'data-bordered': '' },
+          root: { 'data-split': '' },
         },
       },
     },
     {
-      name: '关掉分隔线：根上不留 data-bordered',
+      name: '关掉分隔线：根上不留 data-split',
       spec: { apg: APG },
-      props: { bordered: false },
+      props: { split: false },
       initial: {
         parts: {
-          root: { 'data-bordered': null },
+          root: { 'data-split': null },
         },
       },
     },

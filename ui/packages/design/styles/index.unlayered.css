@@ -7754,30 +7754,29 @@
 }
 
 /* —— 分隔线 —— */
-[data-scope='page-header'][data-part='root'][data-bordered] {
+/* 只有贴底的 ghost 画这条下边线：一块切了圆角的面底下横一条直线，两头会露在圆角外面，
+   有面的两档由自己的边界接手同一件事——把页头与下面的内容分开 */
+[data-scope='page-header'][data-part='root'][data-variant='ghost'][data-split] {
   border-block-end: var(--xh-stroke-thin) solid var(--xh-page-header-border, var(--xh-border-subtle));
 }
 
 /* —— 形态 —— */
-/* 不画面的那一档不在这儿：它就是上面那套基础取值，不写 data-variant 与写 plain 长一个样。
+/* ghost 不在这儿：它就是上面那套基础取值，贴在页面底色上不画面。
    画了面的两档左右补上与上下同档的内衬，否则内容会贴着那块面的边 */
-[data-scope='page-header'][data-part='root']:is([data-variant='surface'], [data-variant='raised']) {
+[data-scope='page-header'][data-part='root']:is([data-variant='outline'], [data-variant='subtle']) {
   --xh-_page-header-px: var(--xh-_page-header-py);
   --xh-_page-header-radius: var(--xh-shape-surface);
+}
 
+/* outline 恒带整圈描边：描边撑住这块面的边界，不再叠投影 */
+[data-scope='page-header'][data-part='root'][data-variant='outline'] {
+  border: var(--xh-stroke-thin) solid var(--xh-page-header-border, var(--xh-border-subtle));
   background: var(--xh-page-header-bg, var(--xh-bg-surface));
 }
 
-/* 有面的两档不再画那条下边线：一块切了圆角的面底下横一条直线，两头会露在圆角外面。
-   整圈描边接手同一件事——把页头与下面的内容分开 */
-[data-scope='page-header'][data-part='root']:is([data-variant='surface'], [data-variant='raised'])[data-bordered] {
-  border: var(--xh-stroke-thin) solid var(--xh-page-header-border, var(--xh-border-subtle));
-}
-
-/* 抬起那一档恒带整圈描边：高对比档里投影整个被丢弃，只剩描边撑住这块面的边界 */
-[data-scope='page-header'][data-part='root'][data-variant='raised'] {
-  border: var(--xh-stroke-thin) solid var(--xh-page-header-border, var(--xh-border-subtle));
-  box-shadow: var(--xh-page-header-shadow, var(--xh-elevation-raised));
+/* subtle 用淡底当边界：描边透明、无影 */
+[data-scope='page-header'][data-part='root'][data-variant='subtle'] {
+  background: var(--xh-page-header-bg, var(--xh-bg-subtle));
 }
 
 /* —— 各段 —— */

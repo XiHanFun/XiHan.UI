@@ -10,21 +10,22 @@ function api(props: PageHeaderProps = {}) {
 }
 
 describe('connectPageHeader 根', () => {
-  it('缺省只带身份：尺寸、形态不写就不发，分隔线不开就不落；也不替作者写 banner 地标', () => {
+  it('缺省：尺寸不写就不发，形态落 ghost，分隔线不开就不落；也不替作者写 banner 地标', () => {
     const root = api().getRootProps() as Record<string, unknown>
     expect(root).toMatchObject(parts.root.attrs)
     expect(root['data-size']).toBeUndefined()
-    expect(root['data-variant']).toBeUndefined()
-    expect(root['data-bordered']).toBeUndefined()
+    expect(root['data-variant']).toBe('ghost')
+    expect(root['data-split']).toBeUndefined()
     expect(root.role).toBeUndefined()
   })
 
   it('尺寸、形态与分隔线只落在根上', () => {
-    expect(api({ size: 'lg', variant: 'raised', bordered: true }).getRootProps()).toMatchObject({
+    expect(api({ size: 'lg', variant: 'outline', split: true }).getRootProps()).toMatchObject({
       'data-size': 'lg',
-      'data-variant': 'raised',
-      'data-bordered': '',
+      'data-variant': 'outline',
+      'data-split': '',
     })
+    expect((api({ variant: 'subtle' }).getRootProps() as Record<string, unknown>)['data-variant']).toBe('subtle')
   })
 })
 

@@ -5,21 +5,15 @@
 
 // 定义 page header 类型契约。
 
-import type { PropTypes, Size } from '@xihan-ui/core'
-
-/**
- * 形态：页头是否绘制一块面。
- * 默认不绘制（贴在页面底色上，只有标题与一条可选的分隔线），surface 加底色与圆角，raised 再加一层投影。
- */
-export type PageHeaderVariant = 'plain' | 'surface' | 'raised'
+import type { ControlVariant, PropTypes, Size } from '@xihan-ui/core'
 
 export interface PageHeaderProps {
   /** 尺寸：sm / md / lg，决定标题字号与整块的上下留白。 */
   size?: Size
-  /** 底部绘制一条分隔线，把页头与下方内容分开。提供面的两档改为绘制整圈描边。 */
-  bordered?: boolean
-  /** 形态：plain / surface / raised。未提供时不绘制面，与写 plain 相同。 */
-  variant?: PageHeaderVariant
+  /** 在页头底部绘制一条分隔线，把页头与下方内容分开；有面的两档不画它，边界由描边承担。 */
+  split?: boolean
+  /** 形态：ghost 贴在页面底色上（默认），outline 为带描边的独立面，subtle 淡底。默认 ghost。 */
+  variant?: ControlVariant
 }
 
 export interface PageHeaderApi<T extends PropTypes = PropTypes> {
