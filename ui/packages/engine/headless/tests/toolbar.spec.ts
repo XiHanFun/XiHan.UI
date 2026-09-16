@@ -78,6 +78,12 @@ describe('connectToolbar ARIA', () => {
     expect(root['data-disabled']).toBeUndefined()
   })
 
+  it('形态恒有值：不写 variant 时 root 落 ghost，写了 outline / subtle 如实落', () => {
+    expect(rootProps(makeService().service)['data-variant']).toBe('ghost')
+    expect(rootProps(makeService({ variant: 'outline' }).service)['data-variant']).toBe('outline')
+    expect(rootProps(makeService({ variant: 'subtle' }).service)['data-variant']).toBe('subtle')
+  })
+
   it('orientation=vertical：aria-orientation 与 data-orientation 一并跟着换', () => {
     const { service } = makeService({ orientation: 'vertical' })
     const root = rootProps(service)

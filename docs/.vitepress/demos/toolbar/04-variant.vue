@@ -9,7 +9,7 @@ import {
 </script>
 
 <template>
-  <XhToolbarRoot variant="surface" aria-label="快捷操作">
+  <XhToolbarRoot variant="outline" aria-label="快捷操作">
     <XhToolbarGroup>
       <XhToolbarItem value="copy" type="button">复制</XhToolbarItem>
       <XhToolbarItem value="cut" type="button">剪切</XhToolbarItem>

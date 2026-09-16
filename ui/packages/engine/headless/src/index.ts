@@ -273,7 +273,7 @@ export type { ToggleGroupApi, ToggleGroupItemProps, ToggleGroupNode, ToggleGroup
 export { connectToolCall, isToolCallErrored, isToolCallRunning, isToolCallSettled, toneOfToolCallPhase, toolCallAnatomy, toolCallDuration, toolCallKeyboard, toolCallMachine, toolCallMeta, toolCallStatusText } from './tool-call'
 export type { ToolCallApi, ToolCallOpenChangeDetails, ToolCallPhase, ToolCallProps, ToolCallSchema, ToolCallTranslations } from './tool-call'
 export { connectToolbar, toolbarAnatomy, toolbarItemQuery, toolbarKeyboard, toolbarMachine, toolbarMeta } from './toolbar'
-export type { ToolbarApi, ToolbarItemProps, ToolbarSchema, ToolbarTranslations, ToolbarVariant } from './toolbar'
+export type { ToolbarApi, ToolbarItemProps, ToolbarSchema, ToolbarTranslations } from './toolbar'
 export { connectTooltip, TOOLTIP_DEFAULT_PLACEMENT, tooltipAnatomy, tooltipKeyboard, tooltipMachine, tooltipMeta } from './tooltip'
 export type { TooltipApi, TooltipOpenChangeDetails, TooltipRefs, TooltipSchema, TooltipTranslations } from './tooltip'
 export { clampTourStep, connectTour, currentTourStep, isTourLastStep, sameTourSpotlight, TOUR_DEFAULT_OFFSET, TOUR_DEFAULT_PLACEMENT, TOUR_DEFAULT_SPOTLIGHT_PADDING, tourAnatomy, tourKeyboard, tourMachine, tourMeta, tourSpotlightBox, tourStepCount } from './tour'

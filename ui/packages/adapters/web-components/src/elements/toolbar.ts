@@ -5,8 +5,8 @@
 
 // 提供 toolbar 相关实现。
 
-import type { Direction, Orientation, Size } from '@xihan-ui/core'
-import type { ToolbarItemProps, ToolbarSchema, ToolbarVariant } from '@xihan-ui/headless'
+import type { ControlVariant, Direction, Orientation, Size } from '@xihan-ui/core'
+import type { ToolbarItemProps, ToolbarSchema } from '@xihan-ui/headless'
 import { isItemDisabled, ITEM_VALUE_ATTR } from '@xihan-ui/core'
 import { connectToolbar, toolbarAnatomy, toolbarMachine, toolbarMeta } from '@xihan-ui/headless'
 import { wcNormalize } from '../dom/normalize'
@@ -40,7 +40,7 @@ const BOOLEAN_CONVERTER = { fromAttribute: (v: string | null) => (v === null ? u
  * @attr {'ltr'|'rtl'} dir - 文字方向，只改写水平主轴上左右方向键的语义，默认 ltr
  * @attr {boolean} loop - 方向键到达末尾回绕，默认开启；写 loop="false" 关闭
  * @attr {boolean} disabled - 整条禁用：条目全部为 aria-disabled，方向键不再接管
- * @attr {'plain'|'surface'} variant - 视觉变体，默认 plain；surface 提供附着式工具面
+ * @attr {'outline'|'subtle'|'ghost'} variant - 形态：ghost 只组织控件不画面，outline 为附着式工具面，subtle 为淡底；默认 ghost
  * @attr {'sm'|'md'|'lg'} size - 尺寸：只影响条目间距与整条内边距，条目自身的大小归条目
  * @csspart root - role=toolbar 的容器（键盘在此收口，也是 roving tabindex 的兜底位）
  * @csspart group - role=group 的小分组，放置一组相关控件
@@ -67,7 +67,7 @@ export class XhToolbarElement extends XhElement {
   declare direction?: Direction
   declare loop?: boolean
   declare disabled?: boolean
-  declare variant?: ToolbarVariant
+  declare variant?: ControlVariant
   declare size?: Size
 
   // 整条禁用期间的条目自身声明快照。connect 每帧都把 aria-disabled 写回条目，整条禁用更是写满每一个，

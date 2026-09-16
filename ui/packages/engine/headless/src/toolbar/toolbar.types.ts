@@ -5,7 +5,7 @@
 
 // 定义 toolbar 类型契约。
 
-import type { Direction, MachineSchema, Orientation, PropTypes, Size } from '@xihan-ui/core'
+import type { ControlVariant, Direction, MachineSchema, Orientation, PropTypes, Size } from '@xihan-ui/core'
 
 /**
  * 条目的声明：值与禁用由作者在部件上声明，connect 据此产出属性。
@@ -16,9 +16,6 @@ export interface ToolbarItemProps {
   value: string
   disabled?: boolean
 }
-
-/** 视觉变体：plain 是默认档，surface 提供附着式工具面。 */
-export type ToolbarVariant = 'plain' | 'surface'
 
 export interface ToolbarSchema extends MachineSchema {
   props: {
@@ -33,8 +30,8 @@ export interface ToolbarSchema extends MachineSchema {
     loop?: boolean
     /** 整条禁用：条目全部为 aria-disabled，方向键不再接管。 */
     disabled?: boolean
-    /** 变体：plain / surface，决定工具条是否绘制一块面。默认 plain。 */
-    variant?: ToolbarVariant
+    /** 形态：ghost 只组织控件不画面（默认），outline 为附着式工具面，subtle 为淡底。默认 ghost。 */
+    variant?: ControlVariant
     /** 尺寸：sm / md / lg，同时调整排布与默认条目尺寸。 */
     size?: Size
   }

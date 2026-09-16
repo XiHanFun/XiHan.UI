@@ -5,8 +5,8 @@
 
 // 提供 toolbar 相关实现。
 
-import type { Direction, Orientation, Size } from '@xihan-ui/core'
-import type { ToolbarApi, ToolbarSchema, ToolbarVariant } from '@xihan-ui/headless'
+import type { ControlVariant, Direction, Orientation, Size } from '@xihan-ui/core'
+import type { ToolbarApi, ToolbarSchema } from '@xihan-ui/headless'
 import type { ComponentPropsWithRef, ElementType, ReactNode } from 'react'
 import type { SlotChildren } from '../../runtime/slot-content'
 import { createElement, useEffect, useRef } from 'react'
@@ -27,7 +27,7 @@ export interface XhToolbarRootProps extends Omit<ComponentPropsWithRef<'div'>, '
   dir?: Direction
   loop?: boolean
   disabled?: boolean
-  variant?: ToolbarVariant
+  variant?: ControlVariant
   size?: Size
   children?: SlotChildren<ToolbarRootSlotProps>
 }
