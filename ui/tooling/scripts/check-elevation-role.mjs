@@ -138,8 +138,9 @@ for (const file of files) {
     const selector = rule[1].replace(/\s+/g, ' ').trim()
     for (const decl of rule[2].matchAll(/(?:^|;|\{)\s*(box-shadow|--xh-_[\w-]*shadow[\w-]*)\s*:\s*([^;}]+)/g)) {
       const value = decl[2].trim()
-      // 不是海拔的阴影：inset、零偏移的描边式扩散（头像组的描边、聚光灯的环、裁切框外的遮罩）、只引私有槽、兜底 none
-      if (value === 'none' || value === '0' || /^inset\b/.test(value) || value.startsWith('0 0 0 ') || /,\s*none\)$/.test(value))
+      // 不是海拔的阴影：inset、零偏移的描边式扩散（头像组的描边、聚光灯的环、裁切框外的遮罩）、只引私有槽、
+      // 兜底 none，以及使用者槽兜底「0 0 0 transparent」的零影占位（无影面要与语气色条叠成一条 box-shadow 时的写法）
+      if (value === 'none' || value === '0' || /^inset\b/.test(value) || value.startsWith('0 0 0 ') || /,\s*(?:none|0 0 0 transparent)\)$/.test(value))
         continue
       // 只引私有槽（或组件槽包着私有槽）的消费点：角色在私有槽的赋值点那里查
       if (/^var\((?:--xh-[a-z0-9-]+,\s*var\()*--xh-_[\w-]+\)+$/.test(value))

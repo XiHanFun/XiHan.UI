@@ -3506,6 +3506,7 @@ export type ComponentTokenName =
   | '--xh-tool-call-border'
   | '--xh-tool-call-border-error'
   | '--xh-tool-call-content-gap'
+  | '--xh-tool-call-divider'
   | '--xh-tool-call-duration-fg'
   | '--xh-tool-call-error-fg'
   | '--xh-tool-call-font-size'

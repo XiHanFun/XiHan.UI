@@ -89,6 +89,15 @@ describe('connectToolCall 投影', () => {
     const plain = t.api({ phase: 'output-available' })
     const trigger = plain.getTriggerProps() as Record<string, unknown>
     expect(trigger).toMatchObject({ 'type': 'button', 'aria-expanded': 'false' })
+    // 开关接 Action Control 的 disclosure-trigger 档：ghost 形态、按下只换面，档位随 size 走
+    expect(trigger).toMatchObject({
+      'data-xh-action-control': '',
+      'data-xh-action-profile': 'disclosure-trigger',
+      'data-xh-action-variant': 'ghost',
+      'data-xh-action-display': 'always',
+      'data-xh-action-size': 'md',
+    })
+    expect((t.api({ phase: 'output-available', size: 'sm' }).getTriggerProps() as Record<string, unknown>)['data-xh-action-size']).toBe('sm')
     expect(trigger['aria-controls']).toBe((plain.getContentProps() as Record<string, unknown>).id)
     expect(trigger['aria-describedby']).toBeUndefined()
     expect((plain.getApprovalProps() as Record<string, unknown>).hidden).toBe(true)
