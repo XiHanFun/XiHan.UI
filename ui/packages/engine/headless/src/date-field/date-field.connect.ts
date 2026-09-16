@@ -184,6 +184,8 @@ export function connectDateField<T extends PropTypes>(
       },
     }),
 
+    // control 是唯一的视觉盒：描边、底色、聚焦环由 Field Chrome 家族画在它身上，
+    // 三个状态属性供家族按禁用 / 只读 / 校验切换盒观感；size 缺省 md，variant 与 root 同源
     getControlProps: () => normalize.element({
       ...parts.control.attrs,
       'id': ids.control,
@@ -191,6 +193,9 @@ export function connectDateField<T extends PropTypes>(
       'role': 'group',
       'aria-labelledby': ids.label,
       'aria-disabled': disabled ? 'true' : 'false',
+      'data-xh-field-chrome': '',
+      'data-xh-field-size': prop('size') ?? 'md',
+      'data-variant': variant,
       'data-disabled': dataAttr(disabled),
       'data-readonly': dataAttr(readOnly),
       'data-invalid': dataAttr(flagged),
@@ -319,8 +324,15 @@ export function connectDateField<T extends PropTypes>(
       })
     },
 
+    // 清空钮走 Action Control 的 field-inset ghost 档：字段底是 canvas，透明 → 悬停 100 → 按下 200
     getClearTriggerProps: () => normalize.button({
       ...parts['clear-trigger'].attrs,
+      'data-xh-action-control': '',
+      'data-xh-action-profile': 'field-inset',
+      'data-xh-action-variant': 'ghost',
+      'data-xh-action-display': 'has-value',
+      'data-xh-action-size': prop('size') ?? 'md',
+      'data-xh-action-has-value': dataAttr(!empty),
       'type': 'button',
       // 不进 Tab 序：段位上按退格即可清值；读屏仍能按名字找到它
       'tabindex': -1,

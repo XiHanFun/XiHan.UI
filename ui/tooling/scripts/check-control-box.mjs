@@ -81,7 +81,16 @@ const SHARED_FAMILY = {
     contentSelector: '[data-xh-field-input]',
     actionParts: new Set(['visibility-trigger']),
   },
+  // 分段框：段位是 div 而非原生输入，内容区是 segment-group 自己的解剖部件，不投影 data-xh-field-input
+  'date-field': {
+    boxSelector: '[data-xh-field-chrome]',
+    contentSelector: `[data-scope='date-field'][data-part='segment-group']`,
+    actionParts: new Set(['clear-trigger']),
+  },
 }
+
+/** Field Chrome 的原生输入角色；内容区登记成它的组件，连接层必须把它投影到 input 上。 */
+const FIELD_INPUT_SELECTOR = '[data-xh-field-input]'
 
 /**
  * 两套盒的控件：写了 control 由 control 画盒，不写则那个 input 自己画盒。
@@ -219,8 +228,14 @@ for (const comp of COMPONENTS) {
   if (usesFieldChrome) {
     if (!rawSrc.includes("@import '../family/field-chrome.css'"))
       report(comp, 'box-part', '登记为 Field Chrome 使用者却没有传递引入 field-chrome.css')
-    if (!connectSource.includes("'data-xh-field-chrome': ''") || !connectSource.includes("'data-xh-field-input': ''"))
-      report(comp, 'box-part', '连接层没有把 Field Chrome 的 chrome / input 稳定角色投影到解剖部件')
+    if (!connectSource.includes(`'data-xh-field-chrome': ''`))
+      report(comp, 'box-part', '连接层没有把 Field Chrome 的 chrome 稳定角色投影到解剖部件')
+    // 内容区登记成家族 input 角色的，连接层必须投影它；登记成自己的解剖部件的，投影了反而说明登记过期
+    const projectsInput = connectSource.includes(`'data-xh-field-input': ''`)
+    if (family.contentSelector === FIELD_INPUT_SELECTOR && !projectsInput)
+      report(comp, 'box-part', '连接层没有把 Field Chrome 的 input 稳定角色投影到解剖部件')
+    if (family.contentSelector !== FIELD_INPUT_SELECTOR && projectsInput)
+      report(comp, 'box-part', `内容区登记为 ${family.contentSelector}，连接层却投影了 data-xh-field-input——登记过期了`)
   }
 
   // 本文件里每个自定义属性声明过的值，用来把组件槽的回退链走通
