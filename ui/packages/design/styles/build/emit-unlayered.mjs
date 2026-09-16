@@ -5,9 +5,11 @@
 // 这类），本库整套皮肤就会被压掉。而 `@import ... layer()` 只能给无层样式加层，
 // 没有反向操作——所以层化是使用者无法撤销的单向门，得由库这边提供不带层的一份。
 //
-// 拆层后规则改按特异性竞争：皮肤选择器至少是 [data-scope=x][data-part=y]（0,2,0），
-// 稳压 button（0,0,1）。层内先后不受影响：reset 的两条规则特异性低于组件规则，
-// motion 层装的是 @keyframes、不参与级联。
+// 拆层后规则改按特异性竞争，三档从低到高：reset 层全部 :where() 包住为 (0,0,0)，
+// Family Recipe 的根规则 [data-xh-action-control] 一类为 (0,1,0)，皮肤选择器
+// [data-scope=x][data-part=y] 从 (0,2,0) 起，都稳压宿主的 button（0,0,1）。
+// 配方在产物里排在 reset 之前，reset 只有低一档才不会靠源序把配方的字号压掉，
+// 由 check-layer-order 门禁断言。motion 层装的是 @keyframes、不参与级联。
 //
 // 代价是 xihan.overrides 这个覆盖槽位在这一份里不存在，使用者改用特异性覆盖。
 // 两份的取舍写在文档站的「安装与接入」。

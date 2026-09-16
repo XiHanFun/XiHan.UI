@@ -31,13 +31,16 @@ CSS 的级联顺序由 `@layer` 声明的首次出现顺序决定，与 `@import
 
 ```css
 @layer xihan.reset {
-  [data-scope],
-  [data-scope]::before,
-  [data-scope]::after {
+  :where([data-scope]) {
     box-sizing: border-box;
   }
 
-  [data-scope]:where(button, input, optgroup, select, textarea) {
+  :where([data-scope])::before,
+  :where([data-scope])::after {
+    box-sizing: border-box;
+  }
+
+  :where([data-scope]):where(button, input, optgroup, select, textarea) {
     font: inherit;
     letter-spacing: inherit;
   }
@@ -45,6 +48,8 @@ CSS 的级联顺序由 `@layer` 声明的首次出现顺序决定，与 `@import
 ```
 
 没有全局 reset，不影响宿主页面的任何元素。与现有页面共存不需要隔离。
+
+reset 层的每条选择器都由 `:where()` 包住，特指度为 (0,0,0)（伪元素自身的 (0,0,1) 无法再低）。有层版本里这一点无关紧要，层序已经保证皮肤压得住 reset；无层版本 `index.unlayered.css` 只按特指度竞争，而 Family Recipe 的根规则（`[data-xh-action-control]` 一类，(0,1,0)）在产物里排在 reset 之前，reset 只有低一档才不会靠源序把配方的字号压掉。代价是无层模式下宿主页面的元素选择器（`div { visibility: hidden }` 这类 (0,0,1)）可以压过 reset——这是无层模式「按特指度竞争」既有取舍的延伸，宿主有这类规则时请自行提高 reset 覆盖的特指度或改用有层版本。
 
 ## 皮肤的写法
 
