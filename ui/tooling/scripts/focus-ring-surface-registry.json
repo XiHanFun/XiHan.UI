@@ -77,6 +77,8 @@
     "date-picker [data-part='control'][data-scope='date-picker'] [data-xh-action-profile='field-inset']": "日历钮与清空钮都在盒里，环由 control 的 :focus-within 画在外框上",
     "date-picker [data-part='segment-group'][data-scope='date-picker']": "容器不占 Tab 位也不承载焦点，环由 control 画",
     "date-range-picker [data-part='content'][data-scope='date-range-picker']": "浮层壳不承载焦点（焦点直接落到起点那一格），tabindex=-1 只接程序化落焦",
+    "date-range-picker [data-part='control'][data-scope='date-range-picker'] [data-part='input'][data-scope='date-range-picker']": "家族随皮肤引入的关环规则：本组件没有 input 部件（段位由 date-field 那份解剖承担），环由 control 的 :focus-within 画在外框上",
+    "date-range-picker [data-part='control'][data-scope='date-range-picker'] [data-xh-action-profile='field-inset']": "日历钮与清空钮都在盒里，环由 control 的 :focus-within 画在外框上",
     "date-range-picker [data-part='segment-group'][data-scope='date-range-picker']": "容器不占 Tab 位也不承载焦点，环由 control 画",
     "dialog [data-part='content'][data-scope='dialog']": "面板是焦点陷阱的兜底落点（tabindex=-1），环长在里面的可聚焦控件上",
     "drawer [data-part='content'][data-scope='drawer']": "面板是焦点陷阱的兜底落点（tabindex=-1），环长在里面的可聚焦控件上",
@@ -229,13 +231,6 @@
     "color-picker [data-part='eye-dropper-trigger'][data-scope='color-picker'][data-state='picking']": {
       "parts": [
         "eye-dropper-trigger"
-      ],
-      "ratio": 2.89,
-      "ring": "poured"
-    },
-    "date-range-picker [data-part='trigger'][data-scope='date-range-picker'][data-state='open']": {
-      "parts": [
-        "trigger"
       ],
       "ratio": 2.89,
       "ring": "poured"

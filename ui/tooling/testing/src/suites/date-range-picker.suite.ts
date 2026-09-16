@@ -375,6 +375,9 @@ export const dateRangePickerSuite: ConformanceSuite = {
           },
           // 分隔符是纯视觉部件，退出可访问树
           'range-separator': { 'aria-hidden': 'true', 'hidden': null },
+          // control 是 Field Chrome 视觉盒：形态与家族尺寸档落在它身上（缺省 outline / md）
+          'control': { 'data-xh-field-chrome': '', 'data-xh-field-size': 'md', 'data-variant': 'outline', 'data-state': 'closed' },
+          // 日历钮常驻、走 field-inset 档
           'trigger': {
             'type': 'button',
             'aria-haspopup': 'dialog',
@@ -383,15 +386,20 @@ export const dateRangePickerSuite: ConformanceSuite = {
             'aria-labelledby': '@part(label)',
             'data-state': 'closed',
             'disabled': null,
+            'data-xh-action-profile': 'field-inset',
+            'data-xh-action-display': 'always',
           },
           'clear-trigger': {
-            // 有值时可按；不占 Tab 位但带名字
+            // 有值时可按；不占 Tab 位但带名字；走 field-inset 档，有值时带 has-value
             'type': 'button',
             'tabindex': '-1',
             'aria-hidden': null,
             'aria-label': 'Clear',
             'hidden': null,
             'disabled': null,
+            'data-xh-action-profile': 'field-inset',
+            'data-xh-action-display': 'has-value',
+            'data-xh-action-has-value': '',
           },
           'content': {
             'role': 'dialog',

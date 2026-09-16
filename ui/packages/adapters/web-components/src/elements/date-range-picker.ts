@@ -315,10 +315,24 @@ export class XhDateRangePickerElement extends XhPortalHostElement {
     { scope: this.pickerScope },
   )
 
-  /** 浮层面板的自绘条：与 content 同级挂在已经 fixed 的 positioner 上 */
+  /** 浮层面板的自绘条：与 content 同级挂在已经 fixed 的 positioner 上；面板两轴都滚，条子走浮层 4px 档 */
   private readonly bars = new ScrollbarsController(this, {
     shell: () => this.getPart('positioner'),
     scrollable: () => this.getPart('content'),
+    axes: ['vertical', 'horizontal'],
+    props: () => ({ dir: this.direction, size: 'sm' }),
+  })
+
+  /**
+   * 快捷选项列自己的条子：住在 content 里，条子贴在它的盒子上、紧跟在那一层后面；
+   * 窄视口横排横滚、宽视口竖排竖滚，两轴都摆。
+   */
+  private readonly presetBars = new ScrollbarsController(this, {
+    shell: () => this.getPart('content'),
+    scrollable: () => this.getPart('preset-group'),
+    anchor: 'layer',
+    axes: ['vertical', 'horizontal'],
+    props: () => ({ dir: this.direction, size: 'sm' }),
   })
 
   private services(): DateRangePickerServices {
@@ -648,6 +662,7 @@ export class XhDateRangePickerElement extends XhPortalHostElement {
     this.setPartHidden(this.getPart('content'), !this.exit.visible)
 
     this.bars.wire()
+    this.presetBars.wire()
     this.portal.sync(this.exit.visible)
   }
 

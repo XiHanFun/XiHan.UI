@@ -22,7 +22,7 @@ import type { ComponentPropsWithRef, ReactNode } from 'react'
 import type { SlotChildren } from '../../runtime/slot-content'
 import type { DateRangePickerGroupIndex } from './context'
 import { dateRangePickerFieldAt, resolveDateRangePickerFieldIndex, resolveDateRangePickerPanelIndex } from '@xihan-ui/headless'
-import { useMemo } from 'react'
+import { useEffect, useMemo, useRef } from 'react'
 import { withXhConfig } from '../../config/config'
 import { mergeReactProps } from '../../runtime/merge-props'
 import { useNativeEvents } from '../../runtime/native-events'
@@ -375,8 +375,13 @@ export interface XhDateRangePickerPositionerProps extends ComponentPropsWithRef<
 /** 迁移到浮层落点：留在原地时，宿主祖先只要建立了层叠上下文就能遮住浮层。 */
 export function XhDateRangePickerPositioner({ children, container, ...rest }: XhDateRangePickerPositionerProps): ReactNode {
   const ctx = useDateRangePickerContext()
-  // 浮层面板的自绘条：与 content 同级、绝对定位不占布局，壳是这层已经 fixed 的 positioner
-  const bars = useScrollbars({ scrollable: () => ctx.contentRef.current })
+  // 浮层面板的自绘条：与 content 同级、绝对定位不占布局，壳是这层已经 fixed 的 positioner；
+  // 面板皮肤两轴都滚，条子走浮层 4px 档
+  const bars = useScrollbars({
+    scrollable: () => ctx.contentRef.current,
+    axes: ['vertical', 'horizontal'],
+    props: () => ({ dir: (ctx.api.getPositionerProps() as { dir?: Direction }).dir, size: 'sm' }),
+  })
   return (
     <XhPortal container={container ?? ctx.portalContainer} source={ctx.controlRef}>
       <div
@@ -438,17 +443,29 @@ export interface XhDateRangePickerPresetGroupProps extends Omit<ComponentPropsWi
 export function XhDateRangePickerPresetGroup({ children, ...rest }: XhDateRangePickerPresetGroupProps): ReactNode {
   const ctx = useDateRangePickerContext()
   const api = ctx.api
+  const presetGroupRef = useRef<HTMLDivElement | null>(null)
+  // 快捷选项列自己滚（窄视口横排横滚、宽视口竖排竖滚）：两轴的条子贴在它的盒子上、紧跟在它后面
+  const bars = useScrollbars({
+    scrollable: () => presetGroupRef.current,
+    anchor: 'layer',
+    axes: ['vertical', 'horizontal'],
+    props: () => ({ dir: (api.getPositionerProps() as { dir?: Direction }).dir, size: 'sm' }),
+  })
+  useEffect(() => bars.measure())
   const authored = children == null ? null : renderSlot(children, { presets: api.presets })
   return (
-    <div {...mergeReactProps(api.getPresetGroupProps() as Record<string, unknown>, rest as Record<string, unknown>)}>
-      {slotPaints(authored)
-        ? authored
-        : api.presets.map(preset => (
-            <div key={preset.value} {...api.getPresetProps({ value: preset.value }) as Record<string, unknown>}>
-              {preset.label}
-            </div>
-          ))}
-    </div>
+    <>
+      <div {...mergeReactProps(api.getPresetGroupProps() as Record<string, unknown>, rest as Record<string, unknown>, { ref: presetGroupRef })}>
+        {slotPaints(authored)
+          ? authored
+          : api.presets.map(preset => (
+              <div key={preset.value} {...api.getPresetProps({ value: preset.value }) as Record<string, unknown>}>
+                {preset.label}
+              </div>
+            ))}
+      </div>
+      {bars.render()}
+    </>
   )
 }
 
