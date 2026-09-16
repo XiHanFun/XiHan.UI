@@ -300,6 +300,7 @@ describe('connectTextField 输入与清空', () => {
     expect(trigger.tabindex).toBe(-1)
     expect(trigger['data-xh-action-control']).toBe('')
     expect(trigger['data-xh-action-profile']).toBe('field-inset')
+    expect(trigger['data-xh-action-variant']).toBe('ghost')
     expect(trigger['data-xh-action-display']).toBe('has-value')
     expect(trigger['data-xh-action-size']).toBe('md')
     expect(trigger['data-xh-action-has-value']).toBe('')

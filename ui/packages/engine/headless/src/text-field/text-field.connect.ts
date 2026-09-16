@@ -166,6 +166,8 @@ export function connectTextField<T extends PropTypes>(
       ...parts['clear-trigger'].attrs,
       'data-xh-action-control': '',
       'data-xh-action-profile': 'field-inset',
+      // 字段底是 canvas，清空钮走 ghost 档：透明 → 悬停 100 → 按下 200
+      'data-xh-action-variant': 'ghost',
       'data-xh-action-display': 'has-value',
       'data-xh-action-size': prop('size') ?? 'md',
       'data-xh-action-has-value': dataAttr(!empty),
