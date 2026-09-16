@@ -99,6 +99,9 @@ const CROSS_PART = {
   'tool-call.status': ['duration', 'error'],
   // 叶子为同级分支的展开箭头保留首格；对号独立位于末端，箭头尺寸覆盖后缩进也需同值。
   'tree-select.branch-indicator': ['item'],
+  // 叶子与分支行是同一套行盒，行的悬停 / 按下底槽以 item 取名、两种行共用（值选择族逐条同值）；
+  // 分支行单独接回的懒取数失败行反馈读的也是这两支
+  'tree-select.item': ['branch-control'],
 }
 
 /** 注释挖空但保留换行。 */

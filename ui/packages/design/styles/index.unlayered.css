@@ -40955,14 +40955,12 @@
   --xh-collection-font-weight-selected-highlight: var(--xh-tree-select-item-font-weight-selected, var(--xh-font-weight-regular));
   --xh-collection-font-weight-selected-hover: var(--xh-tree-select-item-font-weight-selected, var(--xh-font-weight-regular));
   --xh-collection-font-weight-selected-pressed: var(--xh-tree-select-item-font-weight-selected, var(--xh-font-weight-regular));
-  --xh-_tree-select-row-bg-hover: var(--xh-tree-select-item-bg-hover, var(--xh-bg-subtle));
-  --xh-_tree-select-row-bg-pressed: var(--xh-tree-select-item-bg-pressed, var(--xh-bg-subtle-hover));
-  --xh-collection-bg-hover: var(--xh-_tree-select-row-bg-hover);
-  --xh-collection-bg-keyboard-highlight: var(--xh-_tree-select-row-bg-hover);
-  --xh-collection-bg-selected-highlight: var(--xh-_tree-select-row-bg-hover);
-  --xh-collection-bg-selected-hover: var(--xh-_tree-select-row-bg-hover);
-  --xh-collection-bg-pressed: var(--xh-_tree-select-row-bg-pressed);
-  --xh-collection-bg-selected-pressed: var(--xh-_tree-select-row-bg-pressed);
+  --xh-collection-bg-hover: var(--xh-tree-select-item-bg-hover, var(--xh-bg-subtle));
+  --xh-collection-bg-keyboard-highlight: var(--xh-tree-select-item-bg-hover, var(--xh-bg-subtle));
+  --xh-collection-bg-selected-highlight: var(--xh-tree-select-item-bg-hover, var(--xh-bg-subtle));
+  --xh-collection-bg-selected-hover: var(--xh-tree-select-item-bg-hover, var(--xh-bg-subtle));
+  --xh-collection-bg-pressed: var(--xh-tree-select-item-bg-pressed, var(--xh-bg-subtle-hover));
+  --xh-collection-bg-selected-pressed: var(--xh-tree-select-item-bg-pressed, var(--xh-bg-subtle-hover));
   --xh-collection-outline-keyboard-highlight: transparent;
   --xh-collection-outline-selected-highlight: transparent;
   --xh-collection-indicator-fg-rest: var(--xh-tree-select-item-check-fg, var(--xh-tree-select-item-indicator-fg, var(--xh-_tree-select-accent)));
@@ -41034,19 +41032,20 @@
 }
 
 /* 取数失败的行仍可激活（Enter / 点行触发重试），而家族的悬停、高亮与按下三段都排除了 [data-error]：
-   这里在家族解算点上把同一阶梯接回：悬停与键盘高亮 100 档、按下 200 档并走按下时长，
+   这里在家族解算点上把同一阶梯接回（行槽以 item 取名、叶子与分支行共用，登记见 check-spacing-slots）：
+   悬停与键盘高亮 100 档、按下 200 档并走按下时长，
    键盘焦点环随 branch 的 :focus-visible 画在这一行；禁用分支不进这三段 */
 [data-scope='tree-select'][data-part='branch-control'][data-error]:not([data-disabled]):is(:hover, [data-highlighted]) {
-  --xh-_collection-bg: var(--xh-_tree-select-row-bg-hover);
+  --xh-_collection-bg: var(--xh-tree-select-item-bg-hover, var(--xh-bg-subtle));
 }
 
 [data-scope='tree-select'][data-part='branch']:focus-visible > [data-scope='tree-select'][data-part='branch-control'][data-error]:not([data-disabled]) {
-  --xh-_collection-bg: var(--xh-_tree-select-row-bg-hover);
+  --xh-_collection-bg: var(--xh-tree-select-item-bg-hover, var(--xh-bg-subtle));
   --xh-_collection-outline: var(--xh-ring-focus);
 }
 
 [data-scope='tree-select'][data-part='branch-control'][data-error]:not([data-disabled]):is(:active, [data-pressed]) {
-  --xh-_collection-bg: var(--xh-_tree-select-row-bg-pressed);
+  --xh-_collection-bg: var(--xh-tree-select-item-bg-pressed, var(--xh-bg-subtle-hover));
 
   transition-duration: var(--xh-motion-duration-press);
   transition-timing-function: var(--xh-motion-ease-press);
