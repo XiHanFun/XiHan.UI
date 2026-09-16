@@ -5916,7 +5916,7 @@
         "default"
       ],
       "defaultToken": [
-        "transparent"
+        "--xh-border-default"
       ],
       "visibility": "public",
       "description": "card 的 root 部件 border 覆盖槽。"
@@ -5970,7 +5970,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-text-label-size"
+        "--xh-text-secondary-size"
       ],
       "visibility": "public",
       "description": "card 的 description 部件 font-size 覆盖槽。"
@@ -5988,7 +5988,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-text-body-leading"
+        "--xh-leading-normal"
       ],
       "visibility": "public",
       "description": "card 的 description 部件 line-height 覆盖槽。"
@@ -6096,7 +6096,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-space-4"
+        "--xh-surface-pad-lg"
       ],
       "visibility": "public",
       "description": "card 的 root 部件 padding 覆盖槽。"
@@ -6130,7 +6130,8 @@
       ],
       "state": [
         "default",
-        "variant=ghost"
+        "variant=ghost",
+        "variant=subtle"
       ],
       "defaultToken": [
         "--xh-elevation-raised",
@@ -6188,7 +6189,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-font-weight-medium"
+        "--xh-font-weight-semibold"
       ],
       "visibility": "public",
       "description": "card 的 title 部件 font-weight 覆盖槽。"

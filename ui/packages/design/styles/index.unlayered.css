@@ -15971,7 +15971,9 @@
   --xh-card-skin: 1;
 }
 
-/* Card 是带统一内边距与节奏的内容面；布局方向可由作者在根上覆盖。 */
+/* Card 是带统一内边距与节奏的内容面；布局方向可由作者在根上覆盖。
+   边界由 --xh-border-default 描边承担，raised 落影只是抬起的加成（§5.3：Card 是唯一登记 raised 的静态面，
+   且 raised 必带描边）；内衬只走 --xh-surface-* 阶梯。 */
 [data-scope='card'][data-part='root'] {
   position: relative;
   display: flex;
@@ -15979,8 +15981,8 @@
   gap: var(--xh-card-gap, var(--xh-space-3));
   min-inline-size: 0;
   overflow: visible;
-  padding: var(--xh-card-p, var(--xh-space-4));
-  border: var(--xh-stroke-thin) solid var(--xh-card-border, transparent);
+  padding: var(--xh-card-p, var(--xh-surface-pad-lg));
+  border: var(--xh-stroke-thin) solid var(--xh-card-border, var(--xh-border-default));
   border-radius: var(--xh-card-radius, var(--xh-shape-surface));
   background: var(--xh-card-bg, var(--xh-bg-surface));
   color: var(--xh-card-fg, var(--xh-fg-default));
@@ -15989,12 +15991,16 @@
   line-height: var(--xh-card-leading, var(--xh-text-body-leading));
 }
 
-/* 形态只换底与影：outline 即基础规则，subtle 淡底，ghost 无底无影；不承诺描边、悬停或尺寸等额外行为。 */
+/* 形态按根面三选一：outline 即基础规则（描边 + surface 底 + raised），subtle 淡底 + 透明占位边 + 无影
+   （淡底与阴影互斥），ghost 三件都不画（占位边保住 1px 边位，三档几何一致）；不承诺悬停或尺寸等额外行为。 */
 [data-scope='card'][data-part='root'][data-variant='subtle'] {
+  border-color: transparent;
   background: var(--xh-card-bg, var(--xh-bg-subtle));
+  box-shadow: var(--xh-card-shadow, none);
 }
 
 [data-scope='card'][data-part='root'][data-variant='ghost'] {
+  border-color: transparent;
   background: transparent;
   box-shadow: var(--xh-card-shadow, none);
 }
@@ -16012,14 +16018,14 @@
 [data-scope='card'][data-part='title'] {
   color: var(--xh-card-title-fg, var(--xh-fg-default));
   font-size: var(--xh-card-title-font-size, var(--xh-text-label-size));
-  font-weight: var(--xh-card-title-font-weight, var(--xh-font-weight-medium));
+  font-weight: var(--xh-card-title-font-weight, var(--xh-font-weight-semibold));
   line-height: var(--xh-card-title-leading, var(--xh-leading-relaxed));
 }
 
 [data-scope='card'][data-part='description'] {
   color: var(--xh-card-description-fg, var(--xh-fg-muted));
-  font-size: var(--xh-card-description-font-size, var(--xh-text-label-size));
-  line-height: var(--xh-card-description-leading, var(--xh-text-body-leading));
+  font-size: var(--xh-card-description-font-size, var(--xh-text-secondary-size));
+  line-height: var(--xh-card-description-leading, var(--xh-leading-normal));
 }
 
 [data-scope='card'][data-part='content'] {
