@@ -118,7 +118,7 @@
 | `startTime` | `number` |  | 本次调用开始的时刻，毫秒时间戳。 |
 | `tone` | `Tone` |  |  |
 | `translations` | `Partial<ToolCallTranslations>` |  |  |
-| `variant` | `ControlVariant` |  | 形态：outline 描边（默认档）、subtle 底色分区、ghost 无壳内联。 |
+| `variant` | `ControlVariant` |  | 形态：outline 描边、subtle 底色分区、ghost 无壳内联。默认 outline。 |
 
 ### 事件
 
