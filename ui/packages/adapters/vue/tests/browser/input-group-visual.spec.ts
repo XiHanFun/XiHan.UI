@@ -62,7 +62,7 @@ afterEach(() => {
 })
 
 describe('input-group 单一输入表面', () => {
-  it('outline 保留悬浮面，subtle 降低强调且子控件不重复绘制表面', async () => {
+  it('outline 组壳画字段描边且无影，subtle 淡底透明边且子控件不重复绘制表面', async () => {
     await mount()
 
     const outline = getComputedStyle(group('outline'))
@@ -70,11 +70,19 @@ describe('input-group 单一输入表面', () => {
     const outlineControl = getComputedStyle(control('outline'))
     const item = getComputedStyle(group('outline').querySelector('[data-part="item"]')!)
 
-    expect(outline.boxShadow).not.toBe('none')
+    // 边界只由描边承担：组壳静息无影（§8.3），外轮廓取字段描边色 --xh-border-control
+    expect(outline.boxShadow).toBe('none')
     expect(subtle.boxShadow).toBe('none')
     expect(subtle.backgroundColor).not.toBe(outline.backgroundColor)
     expect(group('subtle').getAttribute('data-variant')).toBe('subtle')
-    expect(getComputedStyle(group('outline'), '::before').borderTopWidth).not.toBe('0px')
+    const outlineEdge = getComputedStyle(group('outline'), '::before')
+    expect(outlineEdge.borderTopWidth).not.toBe('0px')
+    const probe = document.createElement('span')
+    probe.style.color = 'var(--xh-border-control)'
+    group('outline').append(probe)
+    expect(outlineEdge.borderTopColor).toBe(getComputedStyle(probe).color)
+    probe.remove()
+    expect(isTransparentColor(getComputedStyle(group('subtle'), '::before').borderTopColor)).toBe(true)
     expect(outlineControl.backgroundColor).toBe('rgba(0, 0, 0, 0)')
     expect(outlineControl.boxShadow).toBe('none')
     expect(item.backgroundColor).toBe('rgba(0, 0, 0, 0)')

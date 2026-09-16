@@ -2,7 +2,7 @@
 
 exports[`family-backlog 条目数 > 七段各一数，与快照一致 1`] = `
 {
-  "edge": 52,
+  "edge": 51,
   "ladder": 95,
   "motion": 1,
   "press": 66,
@@ -38,7 +38,6 @@ exports[`family-backlog 键集合 > edge 1`] = `
   "field:control:raised",
   "file-upload:trigger:raised",
   "form:error-summary:raised",
-  "input-group:root:raised",
   "log:scroll-to-end-trigger:raised",
   "message-feed:scroll-to-end-trigger:raised",
   "page-header:root:outline",
