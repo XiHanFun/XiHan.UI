@@ -5185,7 +5185,7 @@
               "name": "variant",
               "privacy": "public",
               "type": {
-                "text": "CardVariant | undefined"
+                "text": "ControlVariant | undefined"
               },
               "attribute": "variant"
             },
@@ -5203,9 +5203,9 @@
           "attributes": [
             {
               "type": {
-                "text": "CardVariant | undefined"
+                "text": "ControlVariant | undefined"
               },
-              "description": "语义层级，默认 default",
+              "description": "形态：outline 为带影的抬起面，subtle 为淡底，ghost 无底无影；默认 outline",
               "name": "variant",
               "fieldName": "variant"
             }

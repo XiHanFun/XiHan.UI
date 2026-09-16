@@ -17,7 +17,7 @@ export function connectCard<T extends PropTypes>(
   props: CardProps,
   normalize: NormalizeProps<T>,
 ): CardApi<T> {
-  const variant = props.variant ?? 'default'
+  const variant = props.variant ?? 'outline'
   const rootAttrs = {
     ...parts.root.attrs,
     'data-variant': variant,

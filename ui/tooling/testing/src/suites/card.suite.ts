@@ -24,25 +24,25 @@ export const cardSuite: ConformanceSuite = {
   },
   cases: [
     {
-      name: '缺省：根不写 role，语义层级明确为 default',
+      name: '缺省：根不写 role，形态落 outline',
       spec: { apg: APG },
       initial: {
         parts: {
           root: {
             'role': null,
-            'data-variant': 'default',
+            'data-variant': 'outline',
           },
         },
       },
     },
     {
-      name: '显式语义层级如实落到根上',
+      name: '显式形态如实落到根上',
       spec: { apg: APG },
-      props: { variant: 'tertiary' },
+      props: { variant: 'ghost' },
       initial: {
         parts: {
           root: {
-            'data-variant': 'tertiary',
+            'data-variant': 'ghost',
           },
         },
       },

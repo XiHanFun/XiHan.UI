@@ -15472,16 +15472,12 @@
   line-height: var(--xh-card-leading, var(--xh-text-body-leading));
 }
 
-/* 变体描述内容面的语义层级，不承诺描边、悬停或尺寸等额外行为。 */
-[data-scope='card'][data-part='root'][data-variant='secondary'] {
+/* 形态只换底与影：outline 即基础规则，subtle 淡底，ghost 无底无影；不承诺描边、悬停或尺寸等额外行为。 */
+[data-scope='card'][data-part='root'][data-variant='subtle'] {
   background: var(--xh-card-bg, var(--xh-bg-subtle));
 }
 
-[data-scope='card'][data-part='root'][data-variant='tertiary'] {
-  background: var(--xh-card-bg, var(--xh-bg-subtle-hover));
-}
-
-[data-scope='card'][data-part='root'][data-variant='transparent'] {
+[data-scope='card'][data-part='root'][data-variant='ghost'] {
   background: transparent;
   box-shadow: var(--xh-card-shadow, none);
 }
@@ -15532,7 +15528,7 @@
 }
 
 @media (forced-colors: active) {
-  [data-scope='card'][data-part='root']:not([data-variant='transparent']) {
+  [data-scope='card'][data-part='root']:not([data-variant='ghost']) {
     border-color: CanvasText;
     box-shadow: none;
   }

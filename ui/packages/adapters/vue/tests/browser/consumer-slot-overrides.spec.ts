@@ -137,7 +137,7 @@ async function hover(el: HTMLElement): Promise<void> {
 // —— 卡片：内容面、投影、节奏与说明文字 ——
 
 function CARD(): unknown {
-  return h(XhCardRoot, { variant: 'secondary' }, () => [
+  return h(XhCardRoot, { variant: 'subtle' }, () => [
     h(XhCardHeader, null, () => [
       h(XhCardTitle, null, () => '标题'),
       h(XhCardDescription, null, () => '说明文字'),

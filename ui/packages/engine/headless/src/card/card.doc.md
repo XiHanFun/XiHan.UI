@@ -15,7 +15,7 @@
 ## 特性
 
 - root 必需；header、title、description、content、footer 按内容组合。
-- `default`、`secondary`、`tertiary` 表达逐级增强的表面层级，`transparent` 用于嵌套内容。
+- `outline` 是默认卡面，`subtle` 用淡底嵌在别的面里，`ghost` 用于嵌套内容不再画面。
 - 根统一提供 16px 内边距、12px 段间距和 surface 圆角；横向布局与媒体比例由使用场景决定。
 
 ## 组合

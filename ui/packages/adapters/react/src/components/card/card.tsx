@@ -5,7 +5,8 @@
 
 // 提供 card 相关实现。
 
-import type { CardProps, CardVariant } from '@xihan-ui/headless'
+import type { ControlVariant } from '@xihan-ui/core'
+import type { CardProps } from '@xihan-ui/headless'
 import type { ComponentPropsWithRef, ReactNode } from 'react'
 import { connectCard } from '@xihan-ui/headless'
 import { withXhConfig } from '../../config/config'
@@ -14,11 +15,11 @@ import { reactNormalize } from '../../runtime/normalize-props'
 import { CardProvider, useCardContext } from './context'
 
 export interface XhCardRootProps extends ComponentPropsWithRef<'div'> {
-  /** 语义层级：default / secondary / tertiary / transparent，默认 default。 */
-  variant?: CardVariant
+  /** 形态：outline 为带影的抬起面，subtle 为淡底，ghost 无底无影。默认 outline。 */
+  variant?: ControlVariant
 }
 
-/** 卡片外壳。语义层级只落在这一层。 */
+/** 卡片外壳。形态只落在这一层。 */
 export function XhCardRoot({ variant, children, ...rest }: XhCardRootProps): ReactNode {
   const api = connectCard(withXhConfig('card', { variant }) as CardProps, reactNormalize)
   return (

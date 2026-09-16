@@ -5,10 +5,13 @@
 
 // 提供 card 相关实现。
 
-import type { CardProps, CardVariant } from '@xihan-ui/headless'
+import type { ControlVariant } from '@xihan-ui/core'
+import type { CardProps } from '@xihan-ui/headless'
 import { cardAnatomy, cardMeta, connectCard } from '@xihan-ui/headless'
 import { wcNormalize } from '../dom/normalize'
 import { XhElement } from '../element-base'
+
+const STRING_CONVERTER = { fromAttribute: (v: string | null) => v ?? undefined }
 
 /**
  * `<xh-card>`：Light-DOM 行为宿主，无状态机，把 connectCard 产出接到各角色节点。
@@ -17,7 +20,7 @@ import { XhElement } from '../element-base'
  * 根上不写 role：卡片是否为地标、是否需要可及名，由其中放置的内容决定，作者自行声明。
  *
  * @customElement xh-card
- * @attr {'default'|'secondary'|'tertiary'|'transparent'} variant - 语义层级，默认 default
+ * @attr {'outline'|'subtle'|'ghost'} variant - 形态：outline 为带影的抬起面，subtle 为淡底，ghost 无底无影；默认 outline
  * @csspart root - 卡片根容器，承载 data-variant
  * @csspart header - 头部，放置标题与描述
  * @csspart title - 标题
@@ -30,10 +33,10 @@ export class XhCardElement extends XhElement {
 
   // 属性缺席翻成 undefined，缺省值由 connect 决定
   static override properties = {
-    variant: { converter: { fromAttribute: (v: string | null) => v ?? undefined } },
+    variant: { converter: STRING_CONVERTER },
   }
 
-  declare variant?: CardVariant
+  declare variant?: ControlVariant
 
   protected wire(): void {
     // 读响应式 property，不回读 DOM 特性

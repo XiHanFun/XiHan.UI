@@ -4,7 +4,7 @@ import { XhCardContent, XhCardDescription, XhCardHeader, XhCardRoot, XhCardTitle
 
 export default function Demo(): ReactNode {
   return (
-    <XhCardRoot variant="secondary" style={{ maxInlineSize: "300px" }}>
+    <XhCardRoot variant="subtle" style={{ maxInlineSize: "300px" }}>
       <div
         aria-hidden="true"
         style={{

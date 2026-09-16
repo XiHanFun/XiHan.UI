@@ -1,36 +1,27 @@
-<!-- 层级 | default、secondary、tertiary 逐级增强表面，transparent 用于嵌套内容 -->
+<!-- 形态 | outline 为默认卡面，subtle 淡底嵌入，ghost 用于嵌套 -->
 <div style="display: flex; flex-wrap: wrap; gap: 16px">
-  <xh-card variant="default">
+  <xh-card variant="outline">
     <div data-xh-part="root" style="inline-size: 200px">
       <div data-xh-part="header">
-        <div data-xh-part="title">default</div>
+        <div data-xh-part="title">outline</div>
       </div>
       <div data-xh-part="content">一段用来看表面层级的正文。</div>
     </div>
   </xh-card>
 
-  <xh-card variant="secondary">
+  <xh-card variant="subtle">
     <div data-xh-part="root" style="inline-size: 200px">
       <div data-xh-part="header">
-        <div data-xh-part="title">secondary</div>
+        <div data-xh-part="title">subtle</div>
       </div>
       <div data-xh-part="content">一段用来看表面层级的正文。</div>
     </div>
   </xh-card>
 
-  <xh-card variant="tertiary">
+  <xh-card variant="ghost">
     <div data-xh-part="root" style="inline-size: 200px">
       <div data-xh-part="header">
-        <div data-xh-part="title">tertiary</div>
-      </div>
-      <div data-xh-part="content">一段用来看表面层级的正文。</div>
-    </div>
-  </xh-card>
-
-  <xh-card variant="transparent">
-    <div data-xh-part="root" style="inline-size: 200px">
-      <div data-xh-part="header">
-        <div data-xh-part="title">transparent</div>
+        <div data-xh-part="title">ghost</div>
       </div>
       <div data-xh-part="content">一段用来看表面层级的正文。</div>
     </div>
