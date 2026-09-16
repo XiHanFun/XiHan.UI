@@ -31,7 +31,16 @@ export const reasoningSuite: ConformanceSuite = {
         counts: { root: 1, trigger: 1, content: 1 },
         parts: {
           root: { 'data-state': 'closed', 'data-streaming': null, 'aria-busy': null },
-          trigger: { 'type': 'button', 'aria-expanded': 'false' },
+          trigger: {
+            'type': 'button',
+            'aria-expanded': 'false',
+            // 开关接 Action Control 的 disclosure-trigger 档：ghost 形态、按下只换面，缺省档位 sm
+            'data-xh-action-control': '',
+            'data-xh-action-profile': 'disclosure-trigger',
+            'data-xh-action-variant': 'ghost',
+            'data-xh-action-display': 'always',
+            'data-xh-action-size': 'sm',
+          },
           content: { role: 'region', hidden: '', inert: '' },
           indicator: { 'aria-hidden': 'true' },
         },

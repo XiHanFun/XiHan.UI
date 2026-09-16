@@ -176,7 +176,7 @@ const PRESSABLE = {
   'message-feed': ['scroll-to-end-trigger'],
   'prompt-input': ['submit-trigger'],
   'question-flow': ['item', 'prev-trigger', 'next-trigger', 'skip-trigger', 'submit-trigger'],
-  'reasoning': ['trigger'],
+  'reasoning': [{ part: 'trigger', feedback: 'surface' }],
   'tool-call': [{ part: 'trigger', feedback: 'surface' }],
   // 触屏上代替右键的长按：等待期的回执落在 data-pressing 上
   'context-menu': [{ part: 'trigger', attr: 'data-pressing' }, { part: 'item', feedback: 'surface' }],
