@@ -235,6 +235,65 @@ const CASES: Case[] = [
     `,
   },
   {
+    // 区间面板同样两轴都滚：两张日历保持天然宽度，窄视口下横向在面板内自己滚
+    scope: 'date-range-picker',
+    tag: 'xh-date-range-picker',
+    axes: ['vertical', 'horizontal'],
+    shell: 'positioner',
+    layer: 'content',
+    overlay: true,
+    attrs: { 'default-open': '', 'locale': 'zh-CN' },
+    markup: `
+      <div data-xh-part="root">
+        <div data-xh-part="control">
+          <div data-xh-part="segment-group" index="0"><span data-xh-part="segment"></span></div>
+          <div data-xh-part="segment-group" index="1"><span data-xh-part="segment"></span></div>
+        </div>
+        <div data-xh-part="positioner">
+          <div data-xh-part="content">
+            <div data-xh-part="calendar">
+              <div data-xh-part="header"><div data-xh-part="heading"></div></div>
+              <div data-xh-part="grid">
+                <div data-xh-part="grid-body"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    `,
+  },
+  {
+    // 区间面板的快捷选项列自己滚：条子贴层挂在 content 里、紧跟在列后面
+    scope: 'date-range-picker',
+    tag: 'xh-date-range-picker',
+    axes: ['vertical', 'horizontal'],
+    shell: 'content',
+    layer: 'preset-group',
+    panel: 'content',
+    overlay: true,
+    attrs: { 'default-open': '', 'locale': 'zh-CN' },
+    props: { presets: [{ value: '2026-09-01/2026-09-30', label: '本月' }] },
+    markup: `
+      <div data-xh-part="root">
+        <div data-xh-part="control">
+          <div data-xh-part="segment-group" index="0"><span data-xh-part="segment"></span></div>
+          <div data-xh-part="segment-group" index="1"><span data-xh-part="segment"></span></div>
+        </div>
+        <div data-xh-part="positioner">
+          <div data-xh-part="content">
+            <div data-xh-part="preset-group"></div>
+            <div data-xh-part="calendar">
+              <div data-xh-part="header"><div data-xh-part="heading"></div></div>
+              <div data-xh-part="grid">
+                <div data-xh-part="grid-body"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    `,
+  },
+  {
     scope: 'json-viewer',
     tag: 'xh-json-viewer',
     axes: ['vertical', 'horizontal'],

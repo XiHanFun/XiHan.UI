@@ -6,12 +6,14 @@ import {
   XhDateRangePickerCalendar,
   XhDateRangePickerCell,
   XhDateRangePickerCellTrigger,
+  XhDateRangePickerClearTrigger,
   XhDateRangePickerContent,
   XhDateRangePickerControl,
   XhDateRangePickerGrid,
   XhDateRangePickerGridBody,
   XhDateRangePickerGridHead,
   XhDateRangePickerPositioner,
+  XhDateRangePickerPresetGroup,
   XhDateRangePickerRangeSeparator,
   XhDateRangePickerRoot,
   XhDateRangePickerSegment,
@@ -51,6 +53,26 @@ function trigger(value: string): HTMLElement {
 
 const values: string[][] = []
 
+function alpha(color: string): number {
+  const canvas = document.createElement('canvas')
+  canvas.width = canvas.height = 1
+  const context = canvas.getContext('2d')!
+  context.fillStyle = color
+  context.fillRect(0, 0, 1, 1)
+  return context.getImageData(0, 0, 1, 1).data[3]!
+}
+
+/** 紧跟在某个层后面的条子，按轴取。 */
+function barsAfter(el: HTMLElement): HTMLElement[] {
+  const out: HTMLElement[] = []
+  let next = el.nextElementSibling
+  while (next instanceof HTMLElement && next.dataset.scope === 'scrollbar' && next.dataset.part === 'root') {
+    out.push(next)
+    next = next.nextElementSibling
+  }
+  return out
+}
+
 function segmentGroup(index: 0 | 1) {
   return h(XhDateRangePickerSegmentGroup, { index }, () => [
     h(XhDateRangePickerSegment, { index: 0 }),
@@ -78,9 +100,11 @@ async function mountPicker(props: Record<string, unknown> = {}): Promise<void> {
           segmentGroup(0),
           h(XhDateRangePickerRangeSeparator),
           segmentGroup(1),
+          h(XhDateRangePickerClearTrigger),
           h(XhDateRangePickerTrigger),
         ]),
-        h(XhDateRangePickerPositioner, null, () => h(XhDateRangePickerContent, null, () =>
+        h(XhDateRangePickerPositioner, null, () => h(XhDateRangePickerContent, null, () => [
+          ...(props.presets ? [h(XhDateRangePickerPresetGroup)] : []),
           h(XhDateRangePickerCalendar, null, () => h(XhDateRangePickerGrid, null, () => [
             h(XhDateRangePickerGridHead, null, () => h(XhDateRangePickerWeekRow, null, () =>
               weekDays.map((day: any) => h(XhDateRangePickerWeekDay, { key: day.value, value: day.value })))),
@@ -88,7 +112,8 @@ async function mountPicker(props: Record<string, unknown> = {}): Promise<void> {
               h(XhDateRangePickerWeekRow, { key: week[0].start }, () => week.map(day =>
                 h(XhDateRangePickerCell, { key: day.start, value: day.start }, () =>
                   h(XhDateRangePickerCellTrigger, null, () => String(day.day))))))),
-          ])))),
+          ])),
+        ])),
       ],
     }),
   })
@@ -99,8 +124,116 @@ async function mountPicker(props: Record<string, unknown> = {}): Promise<void> {
 afterEach(() => {
   app?.unmount()
   host?.remove()
+  document.getElementById('xh-portal-root')?.remove()
   app = null
   host = null
+})
+
+const PRESETS = [
+  { value: '2026-09-01/2026-09-30', label: '本月' },
+  { value: '2026-10-01/2026-10-31', label: '下月' },
+]
+
+describe('日期范围选择器的家族观感', () => {
+  it('输入行是描边式字段外壳：canvas 底 + 描边 + 无影，聚焦时描边换焦点色并带环', async () => {
+    await mountPicker()
+    const control = part('control')
+    control.style.transition = 'none'
+    const rest = getComputedStyle(control)
+    expect(control.getAttribute('data-xh-field-chrome')).toBe('')
+    expect(alpha(rest.backgroundColor)).toBe(255)
+    expect(rest.borderTopStyle).toBe('solid')
+    expect(alpha(rest.borderTopColor)).toBe(255)
+    expect(rest.boxShadow).toBe('none')
+    expect(rest.borderRadius).toBe('4px')
+    expect(rest.height).toBe('36px')
+    const restBorder = rest.borderTopColor
+    document.querySelector<HTMLElement>(`[data-scope='date-field'][data-part='segment']`)!.focus()
+    await nextTick()
+    const focused = getComputedStyle(control)
+    expect(focused.borderTopColor).not.toBe(restBorder)
+    expect(focused.outlineStyle).toBe('solid')
+    expect(Number.parseFloat(focused.outlineWidth)).toBeGreaterThan(0)
+  })
+
+  it('日历钮与清空钮是盒内 field-inset 正方钮：inset 圆角、悬停 100 / 按下 200 与 0.97 缩放', async () => {
+    await mountPicker({ defaultValue: ['2026-09-07', '2026-09-11'] })
+    const clear = part('clear-trigger')
+    clear.style.transition = 'none'
+    expect(clear.getAttribute('data-xh-action-profile')).toBe('field-inset')
+    expect(clear.getAttribute('data-xh-action-has-value')).toBe('')
+    expect(part('trigger').getAttribute('data-xh-action-profile')).toBe('field-inset')
+    // 有值时清空钮顶上来，日历钮让位
+    expect(getComputedStyle(part('trigger')).display).toBe('none')
+    const rest = getComputedStyle(clear)
+    expect(rest.borderRadius).toBe('4px')
+    expect(rest.width).toBe(rest.height)
+    expect(alpha(rest.backgroundColor)).toBe(0)
+    const probe = document.createElement('span')
+    probe.style.background = 'var(--xh-bg-subtle)'
+    part('control').append(probe)
+    const hover100 = getComputedStyle(probe).backgroundColor
+    probe.style.background = 'var(--xh-bg-subtle-hover)'
+    const pressed200 = getComputedStyle(probe).backgroundColor
+    probe.remove()
+    await userEvent.hover(clear)
+    expect(getComputedStyle(clear).backgroundColor).toBe(hover100)
+    clear.dataset.pressed = ''
+    expect(getComputedStyle(clear).backgroundColor).toBe(pressed200)
+    expect(getComputedStyle(clear).scale).toBe('0.97')
+  })
+
+  it('浮层是 floating 实体面：实体底 + 可见描边 + 落影，不透景、不画顶光', async () => {
+    await mountPicker({ defaultOpen: true })
+    await nextTick()
+    const content = getComputedStyle(part('content'))
+    expect(content.backdropFilter).toBe('none')
+    expect(alpha(content.backgroundColor)).toBe(255)
+    expect(content.borderTopStyle).toBe('solid')
+    expect(alpha(content.borderTopColor)).toBe(255)
+    expect(content.boxShadow).not.toBe('none')
+    expect(content.borderRadius).toBe('12px')
+    expect(content.overscrollBehaviorY).toBe('contain')
+    expect(getComputedStyle(part('content'), '::before').content).toBe('none')
+  })
+
+  it('快捷选项走浮层集合行：选中只留对号且透明底，悬停 100、按下 200；列后紧跟贴层的竖横两条条子', async () => {
+    await mountPicker({ defaultOpen: true, defaultValue: ['2026-09-01', '2026-09-30'], presets: PRESETS })
+    await nextTick()
+    const [selected, plain] = document.querySelectorAll<HTMLElement>(`[data-scope='date-range-picker'][data-part='preset']`)
+    selected!.style.transition = 'none'
+    plain!.style.transition = 'none'
+    expect(selected!.getAttribute('data-state')).toBe('checked')
+    expect(selected!.getAttribute('data-xh-collection-context')).toBe('overlay')
+    expect(alpha(getComputedStyle(selected!).backgroundColor)).toBe(0)
+    expect(getComputedStyle(selected!).color).toBe(getComputedStyle(plain!).color)
+    expect(getComputedStyle(selected!).fontWeight).toBe(getComputedStyle(plain!).fontWeight)
+    expect(getComputedStyle(selected!, '::after').opacity).toBe('1')
+    expect(getComputedStyle(plain!, '::after').opacity).toBe('0')
+    await userEvent.hover(plain!)
+    const hover = getComputedStyle(plain!).backgroundColor
+    expect(alpha(hover)).toBe(255)
+    plain!.dataset.pressed = ''
+    const pressed = getComputedStyle(plain!).backgroundColor
+    expect(pressed).not.toBe(hover)
+    expect(getComputedStyle(plain!).scale).toBe('none')
+
+    const group = part('preset-group')
+    const bars = barsAfter(group)
+    expect(bars.map(bar => bar.dataset.orientation)).toEqual(['vertical', 'horizontal'])
+    expect(group.hasAttribute('data-xh-scrollbar')).toBe(true)
+    expect(getComputedStyle(group).overscrollBehaviorY).toBe('contain')
+    for (const bar of bars) {
+      expect(bar.getAttribute('data-anchor')).toBe('layer')
+      expect(bar.getAttribute('data-size')).toBe('sm')
+      expect(getComputedStyle(bar.querySelector<HTMLElement>('[data-part="track"]')!).backgroundColor).toBe('rgba(0, 0, 0, 0)')
+    }
+    // 选项列与日历之间的空当由 preset-group ~ calendar 给，条子节点夹在两者之间也接得上
+    const calendar = part('calendar')
+    expect(calendar.previousElementSibling).not.toBe(group)
+    const wide = window.matchMedia('(min-width: 768px)').matches
+    expect(Number.parseFloat(getComputedStyle(calendar)[wide ? 'paddingInlineStart' : 'paddingBlockStart'])).toBeGreaterThan(0)
+  })
 })
 
 describe('日期范围选择器的输入行', () => {

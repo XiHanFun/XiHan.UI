@@ -22,7 +22,7 @@ import type {
 import type { ComputedRef, PropType, SlotsType, VNode } from 'vue'
 import type { PayloadOf } from '../../runtime/payload'
 import { dateRangePickerFieldAt, resolveDateRangePickerFieldIndex, resolveDateRangePickerPanelIndex } from '@xihan-ui/headless'
-import { computed, defineComponent, h, mergeProps, ref } from 'vue'
+import { computed, defineComponent, h, mergeProps, onUpdated, ref } from 'vue'
 import { withXhConfig } from '../../config/config'
 import { XhPortal } from '../../runtime/portal'
 import { slotPaints } from '../../runtime/slot-content'
@@ -318,8 +318,14 @@ export const XhDateRangePickerPositioner = defineComponent({
   inheritAttrs: false,
   setup(props, { slots, attrs }) {
     const ctx = useDateRangePickerContext()
-    // 浮层面板的自绘条：与 content 同级、绝对定位不占布局，壳是这层已经 fixed 的 positioner
-    const bars = useScrollbars({ scrollable: () => ctx.contentRef.value, scope: ctx.services.root.scope })
+    // 浮层面板的自绘条：与 content 同级、绝对定位不占布局，壳是这层已经 fixed 的 positioner；
+    // 面板皮肤两轴都滚，条子走浮层 4px 档
+    const bars = useScrollbars({
+      scrollable: () => ctx.contentRef.value,
+      scope: ctx.services.root.scope,
+      axes: ['vertical', 'horizontal'],
+      props: () => ({ dir: (ctx.api.value.getPositionerProps() as { dir?: Direction }).dir, size: 'sm' }),
+    })
     // 搬到 portal 落点：留在原地的话，宿主祖先只要建了层叠上下文就能盖住浮层
     return () => {
       const target = props.container ?? ctx.portalTarget.value
@@ -374,22 +380,39 @@ export const XhDateRangePickerPresetGroup = defineComponent({
     /** 自行铺设条目；未写时按 presets 数据自动铺设，两者产出的 DOM 一致。 */
     default?: (props: DateRangePickerPresetsSlotProps) => VNode[]
   }>,
-  setup(_, { slots }) {
+  // 根是片段（选项列节点 + 贴层的条子），Vue 不会把直通属性合上去：作者写的 class、style 与 data-* 自己接住落到列节点上
+  inheritAttrs: false,
+  setup(_, { slots, attrs }) {
     const ctx = useDateRangePickerContext()
+    const presetGroupRef = ref<HTMLElement | null>(null)
+    // 快捷选项列自己滚（窄视口横排横滚、宽视口竖排竖滚）：两轴的条子贴在它的盒子上、紧跟在它后面
+    const bars = useScrollbars({
+      scrollable: () => presetGroupRef.value,
+      anchor: 'layer',
+      axes: ['vertical', 'horizontal'],
+      props: () => ({ dir: (ctx.api.value.getPositionerProps() as { dir?: Direction }).dir, size: 'sm' }),
+    })
+    onUpdated(() => bars.measure())
     return () => {
       const api = ctx.api.value
       const authored = slots.default?.({ presets: api.presets })
-      return h(
-        'div',
-        api.getPresetGroupProps() as Record<string, unknown>,
-        slotPaints(authored)
-          ? authored
-          : api.presets.map(preset => h(
-              'div',
-              { ...api.getPresetProps({ value: preset.value }) as Record<string, unknown>, key: preset.value },
-              preset.label,
-            )),
-      )
+      return [
+        h(
+          'div',
+          {
+            ...mergeProps(api.getPresetGroupProps() as Record<string, unknown>, attrs),
+            ref: (el: unknown) => { presetGroupRef.value = el as HTMLElement },
+          },
+          slotPaints(authored)
+            ? authored
+            : api.presets.map(preset => h(
+                'div',
+                { ...api.getPresetProps({ value: preset.value }) as Record<string, unknown>, key: preset.value },
+                preset.label,
+              )),
+        ),
+        ...bars.render(),
+      ]
     }
   },
 })

@@ -62,7 +62,8 @@ const EXPECTED = {
   'context-menu': { content: ['frosted'] },
   // 含日历网格与时间列的锚定面板：floating（实体底 + border-default + elevation-floating，§8.4）
   'date-picker': { content: ['floating'] },
-  'date-range-picker': { content: ['frosted'] },
+  // 含两张日历网格的锚定面板：floating（§8.4）
+  'date-range-picker': { content: ['floating'] },
   'dialog': { content: ['sheet'] },
   'drawer': { content: ['sheet'] },
   'float-button': { root: ['frosted'] },

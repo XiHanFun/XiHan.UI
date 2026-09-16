@@ -17059,8 +17059,16 @@
               "name": "bars",
               "privacy": "private",
               "readonly": true,
-              "default": "new ScrollbarsController(this, { shell: () => this.getPart('positioner'), scrollable: () => this.getPart('content'), })",
-              "description": "浮层面板的自绘条：与 content 同级挂在已经 fixed 的 positioner 上"
+              "default": "new ScrollbarsController(this, { shell: () => this.getPart('positioner'), scrollable: () => this.getPart('content'), axes: ['vertical', 'horizontal'], props: () => ({ dir: this.direction, size: 'sm' }), })",
+              "description": "浮层面板的自绘条：与 content 同级挂在已经 fixed 的 positioner 上；面板两轴都滚，条子走浮层 4px 档"
+            },
+            {
+              "kind": "field",
+              "name": "presetBars",
+              "privacy": "private",
+              "readonly": true,
+              "default": "new ScrollbarsController(this, { shell: () => this.getPart('content'), scrollable: () => this.getPart('preset-group'), anchor: 'layer', axes: ['vertical', 'horizontal'], props: () => ({ dir: this.direction, size: 'sm' }), })",
+              "description": "快捷选项列自己的条子：住在 content 里，条子贴在它的盒子上、紧跟在那一层后面；\n窄视口横排横滚、宽视口竖排竖滚，两轴都摆。"
             },
             {
               "kind": "method",
@@ -17592,9 +17600,6 @@
               "name": "--xh-date-range-picker-column-divider"
             },
             {
-              "name": "--xh-date-range-picker-content-backdrop"
-            },
-            {
               "name": "--xh-date-range-picker-content-bg"
             },
             {
@@ -17602,9 +17607,6 @@
             },
             {
               "name": "--xh-date-range-picker-content-fg"
-            },
-            {
-              "name": "--xh-date-range-picker-content-highlight"
             },
             {
               "name": "--xh-date-range-picker-content-px"
@@ -17701,6 +17703,9 @@
             },
             {
               "name": "--xh-date-range-picker-preset-bg-hover"
+            },
+            {
+              "name": "--xh-date-range-picker-preset-bg-pressed"
             },
             {
               "name": "--xh-date-range-picker-preset-check-fg"

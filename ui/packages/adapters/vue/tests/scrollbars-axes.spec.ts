@@ -19,6 +19,9 @@ import {
   XhDatePickerContent,
   XhDatePickerPositioner,
   XhDatePickerRoot,
+  XhDateRangePickerContent,
+  XhDateRangePickerPositioner,
+  XhDateRangePickerRoot,
   XhJsonViewerRoot,
   XhTreeSelectRoot,
 } from '../src'
@@ -169,6 +172,20 @@ const CASES: Case[] = [
     mount: async () => {
       render(() => h(XhDatePickerRoot, { defaultOpen: true }, () => [
         h(XhDatePickerPositioner, null, () => [h(XhDatePickerContent, null, () => '面板')]),
+      ]))
+      await settle()
+    },
+  },
+  {
+    // 区间面板同样两轴都滚：两张日历保持天然宽度，窄视口下横向在面板内自己滚
+    scope: 'date-range-picker',
+    axes: ['vertical', 'horizontal'],
+    shell: 'positioner',
+    layer: 'content',
+    overlay: true,
+    mount: async () => {
+      render(() => h(XhDateRangePickerRoot, { defaultOpen: true }, () => [
+        h(XhDateRangePickerPositioner, null, () => [h(XhDateRangePickerContent, null, () => '面板')]),
       ]))
       await settle()
     },
