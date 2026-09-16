@@ -41979,16 +41979,16 @@
         "control"
       ],
       "property": [
-        "background"
+        "background-color"
       ],
       "state": [
-        "default"
+        "xh-field-chrome"
       ],
       "defaultToken": [
-        "--xh-_password-input-bg"
+        "--xh-_field-variant-bg-rest"
       ],
       "visibility": "public",
-      "description": "password-input 的 control 部件 background 覆盖槽。"
+      "description": "password-input 的 control 部件 background-color 覆盖槽。"
     },
     {
       "name": "--xh-password-input-control-bg-disabled",
@@ -41997,16 +41997,17 @@
         "control"
       ],
       "property": [
-        "background"
+        "background-color"
       ],
       "state": [
-        "disabled"
+        "disabled",
+        "xh-field-chrome"
       ],
       "defaultToken": [
-        "--xh-bg-subtle"
+        "--xh-_field-variant-bg-disabled"
       ],
       "visibility": "public",
-      "description": "password-input 的 control 部件 background 覆盖槽。"
+      "description": "password-input 的 control 部件 background-color 覆盖槽。"
     },
     {
       "name": "--xh-password-input-control-bg-hover",
@@ -42015,20 +42016,25 @@
         "control"
       ],
       "property": [
-        "background"
+        "background-color"
       ],
       "state": [
         "disabled",
         "hover",
         "invalid",
-        "not([data-disabled], [data-readonly], [data-invalid])",
-        "readonly"
+        "loading",
+        "not([data-disabled])",
+        "not([data-invalid])",
+        "not([data-loading])",
+        "not([data-readonly])",
+        "readonly",
+        "xh-field-chrome"
       ],
       "defaultToken": [
-        "--xh-_password-input-bg-hover"
+        "--xh-_field-variant-bg-hover"
       ],
       "visibility": "public",
-      "description": "password-input 的 control 部件 background 覆盖槽。"
+      "description": "password-input 的 control 部件 background-color 覆盖槽。"
     },
     {
       "name": "--xh-password-input-control-bg-readonly",
@@ -42037,16 +42043,17 @@
         "control"
       ],
       "property": [
-        "background"
+        "background-color"
       ],
       "state": [
-        "readonly"
+        "readonly",
+        "xh-field-chrome"
       ],
       "defaultToken": [
-        "--xh-bg-subtle"
+        "--xh-_field-variant-bg-read-only"
       ],
       "visibility": "public",
-      "description": "password-input 的 control 部件 background 覆盖槽。"
+      "description": "password-input 的 control 部件 background-color 覆盖槽。"
     },
     {
       "name": "--xh-password-input-control-border",
@@ -42058,10 +42065,10 @@
         "border"
       ],
       "state": [
-        "default"
+        "xh-field-chrome"
       ],
       "defaultToken": [
-        "--xh-_password-input-border"
+        "--xh-_field-variant-border-rest"
       ],
       "visibility": "public",
       "description": "password-input 的 control 部件 border 覆盖槽。"
@@ -42078,10 +42085,11 @@
       "state": [
         "disabled",
         "focus-within",
-        "not([data-disabled])"
+        "not([data-disabled])",
+        "xh-field-chrome"
       ],
       "defaultToken": [
-        "--xh-_password-input-border-focus"
+        "--xh-_field-variant-border-focus"
       ],
       "visibility": "public",
       "description": "password-input 的 control 部件 border-color 覆盖槽。"
@@ -42099,11 +42107,16 @@
         "disabled",
         "hover",
         "invalid",
-        "not([data-disabled], [data-readonly], [data-invalid])",
-        "readonly"
+        "loading",
+        "not([data-disabled])",
+        "not([data-invalid])",
+        "not([data-loading])",
+        "not([data-readonly])",
+        "readonly",
+        "xh-field-chrome"
       ],
       "defaultToken": [
-        "--xh-_password-input-border-hover"
+        "--xh-_field-variant-border-hover"
       ],
       "visibility": "public",
       "description": "password-input 的 control 部件 border-color 覆盖槽。"
@@ -42118,36 +42131,50 @@
         "border-color"
       ],
       "state": [
-        "invalid"
+        "invalid",
+        "xh-field-chrome"
       ],
       "defaultToken": [
-        "--xh-border-invalid"
+        "--xh-_field-variant-border-invalid"
       ],
       "visibility": "public",
       "description": "password-input 的 control 部件 border-color 覆盖槽。"
     },
     {
+      "name": "--xh-password-input-control-fg",
+      "component": "password-input",
+      "part": [
+        "control"
+      ],
+      "property": [
+        "color"
+      ],
+      "state": [
+        "xh-field-chrome"
+      ],
+      "defaultToken": [
+        "--xh-fg-default"
+      ],
+      "visibility": "public",
+      "description": "password-input 的 control 部件 color 覆盖槽。"
+    },
+    {
       "name": "--xh-password-input-control-gap",
       "component": "password-input",
       "part": [
-        "control",
-        "input",
-        "visibility-trigger"
+        "control"
       ],
       "property": [
-        "gap",
-        "inset-inline-end",
-        "inset-inline-start"
+        "gap"
       ],
       "state": [
-        "default",
-        "has(~ [data-scope='password-input'][data-part='input'])"
+        "xh-field-chrome"
       ],
       "defaultToken": [
         "--xh-_password-input-gap"
       ],
       "visibility": "public",
-      "description": "password-input 的 control、input、visibility-trigger 部件 gap、inset-inline-end、inset-inline-start 覆盖槽。"
+      "description": "password-input 的 control 部件 gap 覆盖槽。"
     },
     {
       "name": "--xh-password-input-control-h",
@@ -42156,16 +42183,24 @@
         "control"
       ],
       "property": [
-        "block-size"
+        "block-size",
+        "min-block-size"
       ],
       "state": [
-        "default"
+        "has([data-xh-field-input][data-xh-field-layout='multi-tag'])",
+        "has([data-xh-field-input][data-xh-field-layout='single-line'])",
+        "has([data-xh-field-input][data-xh-field-layout='textarea'])",
+        "xh-field-chrome",
+        "xh-field-input",
+        "xh-field-layout=multi-tag",
+        "xh-field-layout=single-line",
+        "xh-field-layout=textarea"
       ],
       "defaultToken": [
         "--xh-_password-input-h"
       ],
       "visibility": "public",
-      "description": "password-input 的 control 部件 block-size 覆盖槽。"
+      "description": "password-input 的 control 部件 block-size、min-block-size 覆盖槽。"
     },
     {
       "name": "--xh-password-input-control-min-w",
@@ -42178,7 +42213,8 @@
         "min-inline-size"
       ],
       "state": [
-        "default"
+        "default",
+        "xh-field-chrome"
       ],
       "defaultToken": [
         "--xh-control-min-w"
@@ -42196,7 +42232,7 @@
         "padding-inline"
       ],
       "state": [
-        "default"
+        "xh-field-chrome"
       ],
       "defaultToken": [
         "--xh-_password-input-px"
@@ -42214,7 +42250,7 @@
         "border-radius"
       ],
       "state": [
-        "default"
+        "xh-field-chrome"
       ],
       "defaultToken": [
         "--xh-shape-control"
@@ -42232,10 +42268,10 @@
         "box-shadow"
       ],
       "state": [
-        "default"
+        "xh-field-chrome"
       ],
       "defaultToken": [
-        "--xh-_password-input-shadow"
+        "none"
       ],
       "visibility": "public",
       "description": "password-input 的 control 部件 box-shadow 覆盖槽。"
@@ -42262,6 +42298,7 @@
       "name": "--xh-password-input-icon-size",
       "component": "password-input",
       "part": [
+        "control",
         "root"
       ],
       "property": [
@@ -42270,21 +42307,22 @@
       "state": [
         "default",
         "size=lg",
-        "size=sm"
+        "size=sm",
+        "xh-field-chrome"
       ],
       "defaultToken": [
+        "--xh-_field-size-glyph-size",
         "--xh-glyph-size-lg",
         "--xh-glyph-size-md",
         "--xh-glyph-size-sm"
       ],
       "visibility": "public",
-      "description": "password-input 的 root 部件 --xh-icon-size 覆盖槽。"
+      "description": "password-input 的 control、root 部件 --xh-icon-size 覆盖槽。"
     },
     {
       "name": "--xh-password-input-input-autofill-bg",
       "component": "password-input",
       "part": [
-        "control",
         "input"
       ],
       "property": [
@@ -42292,13 +42330,14 @@
       ],
       "state": [
         "-webkit-autofill",
-        "autofill"
+        "autofill",
+        "xh-field-input"
       ],
       "defaultToken": [
-        "--xh-_password-input-autofill-bg"
+        "--xh-bg-canvas"
       ],
       "visibility": "public",
-      "description": "password-input 的 control、input 部件 box-shadow 覆盖槽。"
+      "description": "password-input 的 input 部件 box-shadow 覆盖槽。"
     },
     {
       "name": "--xh-password-input-input-autofill-fg",
@@ -42311,161 +42350,14 @@
       ],
       "state": [
         "-webkit-autofill",
-        "autofill"
+        "autofill",
+        "xh-field-input"
       ],
       "defaultToken": [
-        "--xh-_password-input-autofill-fg"
+        "--xh-fg-default"
       ],
       "visibility": "public",
       "description": "password-input 的 input 部件 -webkit-text-fill-color 覆盖槽。"
-    },
-    {
-      "name": "--xh-password-input-input-bg",
-      "component": "password-input",
-      "part": [
-        "input"
-      ],
-      "property": [
-        "background"
-      ],
-      "state": [
-        "default"
-      ],
-      "defaultToken": [
-        "--xh-_password-input-bg"
-      ],
-      "visibility": "public",
-      "description": "password-input 的 input 部件 background 覆盖槽。"
-    },
-    {
-      "name": "--xh-password-input-input-bg-disabled",
-      "component": "password-input",
-      "part": [
-        "input"
-      ],
-      "property": [
-        "background"
-      ],
-      "state": [
-        "disabled"
-      ],
-      "defaultToken": [
-        "--xh-bg-subtle"
-      ],
-      "visibility": "public",
-      "description": "password-input 的 input 部件 background 覆盖槽。"
-    },
-    {
-      "name": "--xh-password-input-input-bg-hover",
-      "component": "password-input",
-      "part": [
-        "input"
-      ],
-      "property": [
-        "background"
-      ],
-      "state": [
-        "hover",
-        "invalid",
-        "not(:disabled, [readonly], [data-invalid])"
-      ],
-      "defaultToken": [
-        "--xh-_password-input-bg-hover"
-      ],
-      "visibility": "public",
-      "description": "password-input 的 input 部件 background 覆盖槽。"
-    },
-    {
-      "name": "--xh-password-input-input-bg-readonly",
-      "component": "password-input",
-      "part": [
-        "input"
-      ],
-      "property": [
-        "background"
-      ],
-      "state": [
-        "default"
-      ],
-      "defaultToken": [
-        "--xh-bg-subtle"
-      ],
-      "visibility": "public",
-      "description": "password-input 的 input 部件 background 覆盖槽。"
-    },
-    {
-      "name": "--xh-password-input-input-border",
-      "component": "password-input",
-      "part": [
-        "input"
-      ],
-      "property": [
-        "border"
-      ],
-      "state": [
-        "default"
-      ],
-      "defaultToken": [
-        "--xh-_password-input-border"
-      ],
-      "visibility": "public",
-      "description": "password-input 的 input 部件 border 覆盖槽。"
-    },
-    {
-      "name": "--xh-password-input-input-border-focus",
-      "component": "password-input",
-      "part": [
-        "input"
-      ],
-      "property": [
-        "border-color"
-      ],
-      "state": [
-        "focus-visible"
-      ],
-      "defaultToken": [
-        "--xh-_password-input-border-focus"
-      ],
-      "visibility": "public",
-      "description": "password-input 的 input 部件 border-color 覆盖槽。"
-    },
-    {
-      "name": "--xh-password-input-input-border-hover",
-      "component": "password-input",
-      "part": [
-        "input"
-      ],
-      "property": [
-        "border-color"
-      ],
-      "state": [
-        "hover",
-        "invalid",
-        "not(:disabled, [readonly], [data-invalid])"
-      ],
-      "defaultToken": [
-        "--xh-_password-input-border-hover"
-      ],
-      "visibility": "public",
-      "description": "password-input 的 input 部件 border-color 覆盖槽。"
-    },
-    {
-      "name": "--xh-password-input-input-border-invalid",
-      "component": "password-input",
-      "part": [
-        "input"
-      ],
-      "property": [
-        "border-color"
-      ],
-      "state": [
-        "invalid"
-      ],
-      "defaultToken": [
-        "--xh-border-invalid"
-      ],
-      "visibility": "public",
-      "description": "password-input 的 input 部件 border-color 覆盖槽。"
     },
     {
       "name": "--xh-password-input-input-fg",
@@ -42477,7 +42369,7 @@
         "color"
       ],
       "state": [
-        "default"
+        "xh-field-input"
       ],
       "defaultToken": [
         "--xh-fg-default"
@@ -42495,105 +42387,13 @@
         "font-size"
       ],
       "state": [
-        "default"
+        "xh-field-input"
       ],
       "defaultToken": [
         "--xh-_password-input-font-size"
       ],
       "visibility": "public",
       "description": "password-input 的 input 部件 font-size 覆盖槽。"
-    },
-    {
-      "name": "--xh-password-input-input-h",
-      "component": "password-input",
-      "part": [
-        "input"
-      ],
-      "property": [
-        "block-size"
-      ],
-      "state": [
-        "default"
-      ],
-      "defaultToken": [
-        "--xh-_password-input-h"
-      ],
-      "visibility": "public",
-      "description": "password-input 的 input 部件 block-size 覆盖槽。"
-    },
-    {
-      "name": "--xh-password-input-input-min-w",
-      "component": "password-input",
-      "part": [
-        "input"
-      ],
-      "property": [
-        "min-inline-size"
-      ],
-      "state": [
-        "default"
-      ],
-      "defaultToken": [
-        "--xh-control-min-w"
-      ],
-      "visibility": "public",
-      "description": "password-input 的 input 部件 min-inline-size 覆盖槽。"
-    },
-    {
-      "name": "--xh-password-input-input-px",
-      "component": "password-input",
-      "part": [
-        "input"
-      ],
-      "property": [
-        "padding-inline"
-      ],
-      "state": [
-        "default"
-      ],
-      "defaultToken": [
-        "--xh-_password-input-px"
-      ],
-      "visibility": "public",
-      "description": "password-input 的 input 部件 padding-inline 覆盖槽。"
-    },
-    {
-      "name": "--xh-password-input-input-radius",
-      "component": "password-input",
-      "part": [
-        "input"
-      ],
-      "property": [
-        "border-radius"
-      ],
-      "state": [
-        "default"
-      ],
-      "defaultToken": [
-        "--xh-shape-control"
-      ],
-      "visibility": "public",
-      "description": "password-input 的 input 部件 border-radius 覆盖槽。"
-    },
-    {
-      "name": "--xh-password-input-input-shadow",
-      "component": "password-input",
-      "part": [
-        "input"
-      ],
-      "property": [
-        "box-shadow"
-      ],
-      "state": [
-        "-webkit-autofill",
-        "autofill",
-        "default"
-      ],
-      "defaultToken": [
-        "--xh-_password-input-shadow"
-      ],
-      "visibility": "public",
-      "description": "password-input 的 input 部件 box-shadow 覆盖槽。"
     },
     {
       "name": "--xh-password-input-label-fg",
@@ -42644,7 +42444,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-_password-input-label-font-size"
+        "--xh-text-label-size"
       ],
       "visibility": "public",
       "description": "password-input 的 label 部件 font-size 覆盖槽。"
@@ -42677,7 +42477,8 @@
         "color"
       ],
       "state": [
-        "placeholder"
+        "placeholder",
+        "xh-field-input"
       ],
       "defaultToken": [
         "--xh-fg-subtle"
@@ -42764,17 +42565,16 @@
         "visibility-trigger"
       ],
       "property": [
-        "background"
+        "background-color"
       ],
       "state": [
-        "default",
-        "disabled"
+        "default"
       ],
       "defaultToken": [
-        "transparent"
+        "--xh-_action-variant-bg-rest"
       ],
       "visibility": "public",
-      "description": "password-input 的 visibility-trigger 部件 background 覆盖槽。"
+      "description": "password-input 的 visibility-trigger 部件 background-color 覆盖槽。"
     },
     {
       "name": "--xh-password-input-trigger-bg-active",
@@ -42783,17 +42583,21 @@
         "visibility-trigger"
       ],
       "property": [
-        "background"
+        "background-color"
       ],
       "state": [
-        "active",
-        "not(:disabled)"
+        "disabled",
+        "is(:active, [data-pressed])",
+        "loading",
+        "not([data-disabled])",
+        "not([data-loading])",
+        "pressed"
       ],
       "defaultToken": [
-        "--xh-bg-subtle-active"
+        "--xh-_action-variant-bg-pressed"
       ],
       "visibility": "public",
-      "description": "password-input 的 visibility-trigger 部件 background 覆盖槽。"
+      "description": "password-input 的 visibility-trigger 部件 background-color 覆盖槽。"
     },
     {
       "name": "--xh-password-input-trigger-bg-hover",
@@ -42802,17 +42606,20 @@
         "visibility-trigger"
       ],
       "property": [
-        "background"
+        "background-color"
       ],
       "state": [
+        "disabled",
         "hover",
-        "not(:disabled)"
+        "loading",
+        "not([data-disabled])",
+        "not([data-loading])"
       ],
       "defaultToken": [
-        "--xh-bg-subtle-hover"
+        "--xh-_action-variant-bg-hover"
       ],
       "visibility": "public",
-      "description": "password-input 的 visibility-trigger 部件 background 覆盖槽。"
+      "description": "password-input 的 visibility-trigger 部件 background-color 覆盖槽。"
     },
     {
       "name": "--xh-password-input-trigger-fg",
@@ -42842,8 +42649,11 @@
         "color"
       ],
       "state": [
+        "disabled",
         "hover",
-        "not(:disabled)"
+        "loading",
+        "not([data-disabled])",
+        "not([data-loading])"
       ],
       "defaultToken": [
         "--xh-fg-default"
@@ -42882,7 +42692,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-shape-control"
+        "--xh-shape-inset"
       ],
       "visibility": "public",
       "description": "password-input 的 visibility-trigger 部件 border-radius 覆盖槽。"
@@ -42895,16 +42705,18 @@
       ],
       "property": [
         "block-size",
-        "inline-size"
+        "inline-size",
+        "min-inline-size"
       ],
       "state": [
-        "default"
+        "default",
+        "xh-action-profile=field-inset"
       ],
       "defaultToken": [
-        "--xh-control-action-size"
+        "--xh-_action-profile-visual-size"
       ],
       "visibility": "public",
-      "description": "password-input 的 visibility-trigger 部件 block-size、inline-size 覆盖槽。"
+      "description": "password-input 的 visibility-trigger 部件 block-size、inline-size、min-inline-size 覆盖槽。"
     },
     {
       "name": "--xh-password-input-visibility-trigger-separator-color",
@@ -42915,7 +42727,7 @@
         "visibility-trigger"
       ],
       "property": [
-        "border-inline-start"
+        "background-image"
       ],
       "state": [
         "has(~ [data-scope='password-input'][data-part='input'])"
@@ -42924,7 +42736,7 @@
         "--xh-border-subtle"
       ],
       "visibility": "public",
-      "description": "password-input 的 control、input、visibility-trigger 部件 border-inline-start 覆盖槽。"
+      "description": "password-input 的 control、input、visibility-trigger 部件 background-image 覆盖槽。"
     },
     {
       "name": "--xh-password-input-visibility-trigger-separator-h",
@@ -42935,8 +42747,7 @@
         "visibility-trigger"
       ],
       "property": [
-        "block-size",
-        "inset-block-start"
+        "background-size"
       ],
       "state": [
         "has(~ [data-scope='password-input'][data-part='input'])"
@@ -42945,7 +42756,7 @@
         "--xh-_password-input-divider-h"
       ],
       "visibility": "public",
-      "description": "password-input 的 control、input、visibility-trigger 部件 block-size、inset-block-start 覆盖槽。"
+      "description": "password-input 的 control、input、visibility-trigger 部件 background-size 覆盖槽。"
     },
     {
       "name": "--xh-pin-input-box-autofill-bg",

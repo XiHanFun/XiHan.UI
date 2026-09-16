@@ -94,14 +94,15 @@ afterEach(async () => {
 })
 
 describe('password-input Field Chrome 细节', () => {
-  it('三尺寸与 compact 同步缩放高度、间距、动作盒和半高分隔', async () => {
+  it('三尺寸与 compact 同步缩放高度与间距，切换钮取 field-inset 档正方盒并带半高分隔', async () => {
+    // 钮走 field-inset 档：sm 固定 24px，md / lg 取小一档的控件高
     const cases = [
       ['comfortable-sm', 'comfortable', 'sm', 32, 4, 24],
-      ['comfortable-md', 'comfortable', 'md', 36, 8, 24],
-      ['comfortable-lg', 'comfortable', 'lg', 40, 12, 24],
-      ['compact-sm', 'compact', 'sm', 28, 4, 20],
-      ['compact-md', 'compact', 'md', 32, 6, 20],
-      ['compact-lg', 'compact', 'lg', 36, 8, 20],
+      ['comfortable-md', 'comfortable', 'md', 36, 8, 32],
+      ['comfortable-lg', 'comfortable', 'lg', 40, 12, 36],
+      ['compact-sm', 'compact', 'sm', 28, 4, 24],
+      ['compact-md', 'compact', 'md', 32, 6, 28],
+      ['compact-lg', 'compact', 'lg', 36, 8, 32],
     ] as const
     await mount(cases.map(([id, density, size]) => fieldNode(id, { density, size })))
 
@@ -112,7 +113,7 @@ describe('password-input Field Chrome 细节', () => {
       const caps = part(id, 'caps-lock-indicator')
       const prefix = field(id).querySelector<HTMLElement>(`[data-testid='prefix']`)!
       const suffix = field(id).querySelector<HTMLElement>(`[data-testid='suffix']`)!
-      const separator = getComputedStyle(trigger, '::after')
+      const separator = getComputedStyle(trigger)
 
       expect(control.getBoundingClientRect().height).toBe(height)
       expect(trigger.getBoundingClientRect().width).toBe(action)
@@ -121,9 +122,11 @@ describe('password-input Field Chrome 细节', () => {
       expect(distance(prefix.getBoundingClientRect(), input.getBoundingClientRect())).toBeCloseTo(gap, 1)
       expect(distance(input.getBoundingClientRect(), suffix.getBoundingClientRect())).toBeCloseTo(gap, 1)
       expect(distance(caps.getBoundingClientRect(), trigger.getBoundingClientRect())).toBeCloseTo(gap, 1)
-      expect(Number.parseFloat(separator.blockSize)).toBeCloseTo(height / 2, 1)
-      expect(separator.borderInlineStartWidth).toBe('1px')
-      expect(Number.parseFloat(separator.insetInlineStart)).toBeCloseTo(-(gap + 1) / 2, 1)
+      // 分隔线画在钮的背景层：1px × 钮半高，贴在靠输入的那一侧（钮排在输入之后即逻辑起始侧）
+      expect(separator.backgroundSize).toBe('1px 50%')
+      expect(separator.backgroundPosition).toBe('0px 50%')
+      expect(separator.backgroundRepeat).toBe('no-repeat')
+      expect(getComputedStyle(trigger).borderRadius).toBe('4px')
     }
   })
 
@@ -156,23 +159,24 @@ describe('password-input Field Chrome 细节', () => {
     expect(getComputedStyle(disabledCaps).color).toBe(getComputedStyle(disabledTrigger).color)
   })
 
-  it('自动填充派生色跟随实体形态和状态，ghost 明确使用可覆盖平台底的 canvas', async () => {
+  it('自动填充由家族用 canvas 实体底与默认前景重绘，三档形态与只读、禁用都盖得住平台底', async () => {
     await mount([
+      fieldNode('outline'),
       fieldNode('subtle', { variant: 'subtle' }),
       fieldNode('readonly-fill', { readOnly: true }),
       fieldNode('disabled-fill', { disabled: true }),
       fieldNode('ghost', { variant: 'ghost' }),
     ])
 
-    for (const id of ['subtle', 'readonly-fill', 'disabled-fill']) {
+    const canvas = resolveColor(part('outline', 'control'), '--xh-bg-canvas')
+    const fg = resolveColor(part('outline', 'control'), '--xh-fg-default')
+    expect(canvas).not.toBe('rgba(0, 0, 0, 0)')
+    for (const id of ['outline', 'subtle', 'readonly-fill', 'disabled-fill', 'ghost']) {
       const input = part(id, 'input')
-      expect(resolveColor(input, '--xh-_password-input-autofill-bg'))
-        .toBe(getComputedStyle(part(id, 'control')).backgroundColor)
+      expect(input.dataset.xhFieldInput).toBe('')
+      expect(resolveColor(input, '--xh-field-autofill-bg')).toBe(canvas)
+      expect(resolveColor(input, '--xh-field-autofill-fg')).toBe(fg)
     }
-    const disabledInput = part('disabled-fill', 'input')
-    expect(resolveColor(disabledInput, '--xh-_password-input-autofill-fg'))
-      .toBe(getComputedStyle(disabledInput).color)
-    expect(resolveColor(part('ghost', 'input'), '--xh-_password-input-autofill-bg')).not.toBe('rgba(0, 0, 0, 0)')
   })
 
   it('空切换钮使用内置眼睛字形并随明暗状态切换', async () => {
@@ -199,10 +203,12 @@ describe('password-input Field Chrome 细节', () => {
       features: [{ name: 'forced-colors', value: 'active' }],
     })
     await mount([fieldNode('enabled'), fieldNode('forced-disabled', { disabled: true })])
-    const enabled = getComputedStyle(part('enabled', 'visibility-trigger'), '::after')
-    const disabled = getComputedStyle(part('forced-disabled', 'visibility-trigger'), '::after')
-    expect(enabled.borderInlineStartWidth).toBe('1px')
-    expect(disabled.borderInlineStartWidth).toBe('1px')
-    expect(enabled.borderInlineStartColor).not.toBe(disabled.borderInlineStartColor)
+    const enabled = getComputedStyle(part('enabled', 'visibility-trigger'))
+    const disabled = getComputedStyle(part('forced-disabled', 'visibility-trigger'))
+    // 高对比档整层丢弃 background-image，分隔线由皮肤用系统色重画
+    expect(enabled.backgroundImage).not.toBe('none')
+    expect(disabled.backgroundImage).not.toBe('none')
+    expect(enabled.backgroundSize).toBe('1px 50%')
+    expect(enabled.backgroundImage).not.toBe(disabled.backgroundImage)
   })
 })

@@ -209,9 +209,35 @@ describe('connectPasswordInput 默认形态', () => {
     expect(h.input.getAttribute('aria-describedby')).toBeNull()
   })
 
-  it('不写 variant 时 root 落 outline；写 subtle 如实落', () => {
-    expect(mount().root.getAttribute('data-variant')).toBe('outline')
-    expect(mount({ variant: 'subtle' }).root.getAttribute('data-variant')).toBe('subtle')
+  it('不写 variant 时 root 与 control 都落 outline；写 subtle 如实落', () => {
+    const fallback = mount()
+    expect(fallback.root.getAttribute('data-variant')).toBe('outline')
+    expect(fallback.control.getAttribute('data-variant')).toBe('outline')
+    const subtle = mount({ variant: 'subtle' })
+    expect(subtle.root.getAttribute('data-variant')).toBe('subtle')
+    expect(subtle.control.getAttribute('data-variant')).toBe('subtle')
+  })
+
+  it('只投影 Field Chrome 稳定角色、布局与尺寸，皮肤不反查组件 anatomy', () => {
+    const h = mount()
+    expect(h.control.getAttribute('data-xh-field-chrome')).toBe('')
+    expect(h.control.getAttribute('data-xh-field-size')).toBe('md')
+    expect(h.input.getAttribute('data-xh-field-input')).toBe('')
+    expect(h.input.getAttribute('data-xh-field-layout')).toBe('single-line')
+    expect(mount({ size: 'lg' }).control.getAttribute('data-xh-field-size')).toBe('lg')
+    const readOnly = mount({ readOnly: true })
+    expect(readOnly.control.getAttribute('data-readonly')).toBe('')
+    expect(readOnly.input.getAttribute('data-readonly')).toBe('')
+  })
+
+  it('明暗钮走 Action Control 的 field-inset ghost 档并常显，尺寸随 size 缺省 md', () => {
+    const h = mount()
+    expect(h.trigger.getAttribute('data-xh-action-control')).toBe('')
+    expect(h.trigger.getAttribute('data-xh-action-profile')).toBe('field-inset')
+    expect(h.trigger.getAttribute('data-xh-action-variant')).toBe('ghost')
+    expect(h.trigger.getAttribute('data-xh-action-display')).toBe('always')
+    expect(h.trigger.getAttribute('data-xh-action-size')).toBe('md')
+    expect(mount({ size: 'sm' }).trigger.getAttribute('data-xh-action-size')).toBe('sm')
   })
 
   it('translations 覆盖三句文案', () => {
