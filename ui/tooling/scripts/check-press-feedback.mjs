@@ -171,7 +171,7 @@ const PRESSABLE = {
   // AI 族里点得动的部件
   'approval': ['approve-trigger', 'deny-trigger', 'item'],
   'code-view': [{ part: 'fold-trigger', feedback: 'surface' }],
-  'diff-view': ['gap-trigger'],
+  'diff-view': [{ part: 'gap-trigger', feedback: 'surface' }],
   'log': ['scroll-to-end-trigger'],
   'message-feed': ['scroll-to-end-trigger'],
   'prompt-input': ['submit-trigger'],

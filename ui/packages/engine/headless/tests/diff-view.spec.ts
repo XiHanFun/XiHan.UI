@@ -189,6 +189,20 @@ describe('connectDiffView 展开按钮', () => {
       .toBe(`Show ${gap!.hiddenCount} hidden lines`)
   })
 
+  it('折叠格按钮接 Action Control 的 disclosure-trigger 档：ghost 形态、按下只换面，档位随 size 走', () => {
+    const api = makeDiffView({ model, contextLines: 2 })
+    const gap = api.rows.find(row => row.kind === 'gap')
+    const trigger = api.getGapTriggerProps({ gapId: gap!.gapId! }) as Dict
+    expect(trigger['data-xh-action-control']).toBe('')
+    expect(trigger['data-xh-action-profile']).toBe('disclosure-trigger')
+    expect(trigger['data-xh-action-variant']).toBe('ghost')
+    expect(trigger['data-xh-action-display']).toBe('always')
+    expect(trigger['data-xh-action-size']).toBe('md')
+    const small = makeDiffView({ model, contextLines: 2, size: 'sm' })
+    const smallGap = small.rows.find(row => row.kind === 'gap')
+    expect((small.getGapTriggerProps({ gapId: smallGap!.gapId! }) as Dict)['data-xh-action-size']).toBe('sm')
+  })
+
   it('translations.expandGap 拿到的是这一格自己折起来的行数', () => {
     const api = makeDiffView({
       model,

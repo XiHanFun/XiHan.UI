@@ -18800,6 +18800,9 @@
               "name": "--xh-diff-view-comment-fg"
             },
             {
+              "name": "--xh-diff-view-divider"
+            },
+            {
               "name": "--xh-diff-view-empty-bg"
             },
             {

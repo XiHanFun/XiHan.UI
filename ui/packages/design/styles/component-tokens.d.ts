@@ -1179,6 +1179,7 @@ export type ComponentTokenName =
   | '--xh-diff-view-border'
   | '--xh-diff-view-change-bar'
   | '--xh-diff-view-comment-fg'
+  | '--xh-diff-view-divider'
   | '--xh-diff-view-empty-bg'
   | '--xh-diff-view-empty-fg'
   | '--xh-diff-view-font'

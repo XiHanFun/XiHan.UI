@@ -5,15 +5,20 @@
 
 /* 定义 diff view 样式。 */
 
+/* 独立皮肤同时传递引入折叠格按钮的动作控件配方；full bundle 递归去重。 */
+@import '../family/action-control.css';
+
 @layer xihan.components {
   /* 皮肤在场的标记：开发模式下按 scope 探一次，取不到就说明这份皮肤没被引入。 */
   [data-scope='diff-view'] {
     --xh-diff-view-skin: 1;
   }
 
+  /* 一张静态内容面：--xh-border-default 描边 + surface 底 + 无影（§5.3 边界只由描边承担）；
+     头部、行号列与并排接缝的内部分隔线走另一支 --xh-diff-view-divider（subtle） */
   [data-scope='diff-view'][data-part='root'] {
-    /* 作者塞进部件里的图标跟着字号走，与皮肤画的兜底字形同一把尺 */
-    --xh-icon-size: var(--xh-diff-view-icon-size, var(--xh-glyph-size-text));
+    /* 作者塞进部件里的图标与皮肤画的兜底字形同一把尺：md 档，随 data-size 换档（§6.5） */
+    --xh-icon-size: var(--xh-diff-view-icon-size, var(--xh-glyph-size-md));
 
     /* 尺寸缺省档：不写 data-size 时的取值。三档都只写这三个私有槽，
        公开槽留在读处当首选，作者在祖先上设的覆盖才赢得过档位声明 */
@@ -23,11 +28,10 @@
 
     display: block;
     overflow: hidden;
-    border: var(--xh-stroke-thin) solid var(--xh-diff-view-border, var(--xh-border-subtle));
+    border: var(--xh-stroke-thin) solid var(--xh-diff-view-border, var(--xh-border-default));
     border-radius: var(--xh-diff-view-radius, var(--xh-shape-surface));
     background: var(--xh-diff-view-bg, var(--xh-bg-surface));
-    /* 一张抬起的表面：描边加一档静态海拔，与同族的其余表面齐平 */
-    box-shadow: var(--xh-diff-view-shadow, var(--xh-elevation-raised));
+    box-shadow: var(--xh-diff-view-shadow, none);
   }
 
   /* 上面声明的 display 会盖掉 UA 的 [hidden]{display:none}，这里补回 */
@@ -41,7 +45,7 @@
     gap: var(--xh-diff-view-header-gap, var(--xh-space-2));
     padding-inline: var(--xh-diff-view-px, var(--xh-_diff-view-px));
     padding-block: var(--xh-diff-view-py, var(--xh-_diff-view-py));
-    border-block-end: var(--xh-stroke-thin) solid var(--xh-diff-view-border, var(--xh-border-subtle));
+    border-block-end: var(--xh-stroke-thin) solid var(--xh-diff-view-divider, var(--xh-border-subtle));
     color: var(--xh-diff-view-header-fg, var(--xh-fg-muted));
     font-family: var(--xh-diff-view-font, var(--xh-font-family-mono));
     font-size: var(--xh-diff-view-header-font-size, var(--xh-text-secondary-size));
@@ -131,7 +135,7 @@
     box-sizing: content-box;
     flex: 0 0 auto;
     padding-inline: var(--xh-diff-view-px, var(--xh-_diff-view-px));
-    border-inline-end: var(--xh-stroke-thin) solid var(--xh-diff-view-border, var(--xh-border-subtle));
+    border-inline-end: var(--xh-stroke-thin) solid var(--xh-diff-view-divider, var(--xh-border-subtle));
     color: var(--xh-diff-view-number-fg, var(--xh-fg-subtle));
     inline-size: var(--xh-diff-view-gutter, 4ch);
     text-align: end;
@@ -254,8 +258,11 @@
     color: var(--xh-diff-view-punctuation-fg, var(--xh-fg-subtle));
   }
 
-  /* 折起来的那一行：整行都是展开按钮 */
+  /* 折起来的那一行：整行都是展开按钮。行是淡底承载面，向按钮下发 hover 200 → pressed 300（§7.2） */
   [data-scope='diff-view'][data-part='gap'] {
+    --xh-action-host-bg-hover: var(--xh-bg-subtle-hover);
+    --xh-action-host-bg-pressed: var(--xh-bg-subtle-active);
+
     background: var(--xh-diff-view-gap-bg, var(--xh-bg-subtle));
   }
 
@@ -268,33 +275,23 @@
     display: none;
   }
 
+  /* 展开按钮铺满折叠格，盒型、悬停与按下面由 Action Control 的 disclosure-trigger 档给（ghost 形态，
+     按下只换面不缩放，§9.2）；这里只把使用者槽映射到桥接槽：圆角归零贴住格边、纵向内衬归零、
+     高度锚在代码行高上让折叠格与相邻代码行同高，字号跟着正文走 */
   [data-scope='diff-view'][data-part='gap-trigger'] {
-    display: block;
-    padding-inline: var(--xh-diff-view-px, var(--xh-_diff-view-px));
-    border: 0;
-    background: none;
-    color: var(--xh-diff-view-gap-fg, var(--xh-fg-muted));
-    font: inherit;
-    inline-size: 100%;
-    text-align: start;
-    cursor: pointer;
-    transition:
-      background var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
-      scale var(--xh-motion-duration-release) var(--xh-motion-ease-release);
+    --xh-action-radius: 0;
+    --xh-action-visual-size: var(--xh-diff-view-line-height, var(--xh-text-code-leading));
+    --xh-action-padding-inline: var(--xh-diff-view-px, var(--xh-_diff-view-px));
+    --xh-action-padding-block: 0;
+    --xh-action-font-size: var(--xh-diff-view-font-size, var(--xh-_diff-view-font-size));
+    --xh-action-fg-rest: var(--xh-diff-view-gap-fg, var(--xh-fg-muted));
+    --xh-action-bg-hover: var(--xh-diff-view-gap-bg-hover, var(--xh-_action-variant-bg-hover));
+
+    border-width: 0;
   }
 
   [data-scope='diff-view'][data-part='gap-trigger'][hidden] {
     display: none;
-  }
-
-  [data-scope='diff-view'][data-part='gap-trigger']:hover {
-    background: var(--xh-diff-view-gap-bg-hover, var(--xh-bg-subtle-hover));
-  }
-
-  [data-scope='diff-view'][data-part='gap-trigger']:active {
-    scale: var(--xh-motion-scale-press);
-    transition-duration: var(--xh-motion-duration-press);
-    transition-timing-function: var(--xh-motion-ease-press);
   }
 
   [data-scope='diff-view'][data-part='empty'] {
@@ -336,16 +333,17 @@
     content: '';
     flex: none;
     display: inline-block;
-    inline-size: var(--xh-icon-size, var(--xh-glyph-size-text));
-    block-size: var(--xh-icon-size, var(--xh-glyph-size-text));
+    inline-size: var(--xh-icon-size, var(--xh-glyph-size-md));
+    block-size: var(--xh-icon-size, var(--xh-glyph-size-md));
     vertical-align: var(--xh-glyph-baseline-shift);
     background-color: currentColor;
     -webkit-mask: var(--xh-glyph-mark-warning) center / contain no-repeat;
     mask: var(--xh-glyph-mark-warning) center / contain no-repeat;
   }
 
-  /* 尺寸档只改字号与内衬 */
+  /* 尺寸档改字号、内衬与图标档 */
   [data-scope='diff-view'][data-part='root'][data-size='sm'] {
+    --xh-icon-size: var(--xh-diff-view-icon-size, var(--xh-glyph-size-sm));
     --xh-_diff-view-font-size: var(--xh-control-font-sm);
     --xh-_diff-view-px: var(--xh-space-2);
     --xh-_diff-view-py: var(--xh-space-1);
@@ -358,6 +356,7 @@
   }
 
   [data-scope='diff-view'][data-part='root'][data-size='lg'] {
+    --xh-icon-size: var(--xh-diff-view-icon-size, var(--xh-glyph-size-lg));
     --xh-_diff-view-font-size: var(--xh-control-font-lg);
     --xh-_diff-view-px: var(--xh-space-4);
     --xh-_diff-view-py: var(--xh-space-3);
@@ -372,7 +371,7 @@
     /* 两列之间的接缝：新侧的行号槽再补一条左边线。只在并排时是接缝，
        堆叠时它落在段首，成了一条与任何东西都不相接的竖线 */
     [data-scope='diff-view'][data-part='root'][data-view='split'] [data-part='line-number'][data-side='new'] {
-      border-inline-start: var(--xh-stroke-thin) solid var(--xh-diff-view-border, var(--xh-border-subtle));
+      border-inline-start: var(--xh-stroke-thin) solid var(--xh-diff-view-divider, var(--xh-border-subtle));
     }
   }
 

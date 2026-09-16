@@ -1077,427 +1077,7 @@
 /* styles/diff-view.css */
 /* 定义 diff view 样式。 */
 
-/* 皮肤在场的标记：开发模式下按 scope 探一次，取不到就说明这份皮肤没被引入。 */
-[data-scope='diff-view'] {
-  --xh-diff-view-skin: 1;
-}
-
-[data-scope='diff-view'][data-part='root'] {
-  /* 作者塞进部件里的图标跟着字号走，与皮肤画的兜底字形同一把尺 */
-  --xh-icon-size: var(--xh-diff-view-icon-size, var(--xh-glyph-size-text));
-
-  /* 尺寸缺省档：不写 data-size 时的取值。三档都只写这三个私有槽，
-     公开槽留在读处当首选，作者在祖先上设的覆盖才赢得过档位声明 */
-  --xh-_diff-view-font-size: var(--xh-control-font-sm);
-  --xh-_diff-view-px: var(--xh-space-3);
-  --xh-_diff-view-py: var(--xh-space-2);
-
-  display: block;
-  overflow: hidden;
-  border: var(--xh-stroke-thin) solid var(--xh-diff-view-border, var(--xh-border-subtle));
-  border-radius: var(--xh-diff-view-radius, var(--xh-shape-surface));
-  background: var(--xh-diff-view-bg, var(--xh-bg-surface));
-  /* 一张抬起的表面：描边加一档静态海拔，与同族的其余表面齐平 */
-  box-shadow: var(--xh-diff-view-shadow, var(--xh-elevation-raised));
-}
-
-/* 上面声明的 display 会盖掉 UA 的 [hidden]{display:none}，这里补回 */
-[data-scope='diff-view'][data-part='root'][hidden] {
-  display: none;
-}
-
-[data-scope='diff-view'][data-part='header'] {
-  display: flex;
-  align-items: center;
-  gap: var(--xh-diff-view-header-gap, var(--xh-space-2));
-  padding-inline: var(--xh-diff-view-px, var(--xh-_diff-view-px));
-  padding-block: var(--xh-diff-view-py, var(--xh-_diff-view-py));
-  border-block-end: var(--xh-stroke-thin) solid var(--xh-diff-view-border, var(--xh-border-subtle));
-  color: var(--xh-diff-view-header-fg, var(--xh-fg-muted));
-  font-family: var(--xh-diff-view-font, var(--xh-font-family-mono));
-  font-size: var(--xh-diff-view-header-font-size, var(--xh-text-secondary-size));
-}
-
-[data-scope='diff-view'][data-part='header'][hidden] {
-  display: none;
-}
-
-/* 增删统计整组顶到右侧：头部是 flex，自动外边距吃掉中间的空当。
-   第二个之后的不再顶，与前一个之间只留头部本来的间隙 */
-[data-scope='diff-view'][data-part='summary'] {
-  margin-inline-start: auto;
-}
-
-[data-scope='diff-view'][data-part='summary'] ~ [data-scope='diff-view'][data-part='summary'] {
-  margin-inline-start: 0;
-}
-
-[data-scope='diff-view'][data-part='summary'][data-change='added'] {
-  color: var(--xh-diff-view-added-fg, var(--xh-diff-added-fg));
-}
-
-[data-scope='diff-view'][data-part='summary'][data-change='removed'] {
-  color: var(--xh-diff-view-removed-fg, var(--xh-diff-removed-fg));
-}
-
-/* 唯一的 Tab 停靠点；两轴都可能溢出 */
-[data-scope='diff-view'][data-part='viewport'] {
-  overflow: auto;
-  max-block-size: var(--xh-diff-view-max-h, var(--xh-viewport-max-h));
-}
-
-[data-scope='diff-view'][data-part='body'] {
-  display: block;
-  font-family: var(--xh-diff-view-font, var(--xh-font-family-mono));
-  font-size: var(--xh-diff-view-font-size, var(--xh-_diff-view-font-size));
-  line-height: var(--xh-diff-view-line-height, var(--xh-text-code-leading));
-  min-inline-size: max-content;
-}
-
-[data-scope='diff-view'][data-part='body'][hidden] {
-  display: none;
-}
-
-/* 一行：行号与内容并排 */
-[data-scope='diff-view'][data-part='row'],
-[data-scope='diff-view'][data-part='gap'] {
-  display: flex;
-  min-block-size: var(--xh-diff-view-line-height, var(--xh-text-code-leading));
-}
-
-[data-scope='diff-view'][data-part='row'][hidden],
-[data-scope='diff-view'][data-part='gap'][hidden] {
-  display: none;
-}
-
-/* 变更类型不只靠颜色：新增行画一条实心色条 */
-[data-scope='diff-view'][data-part='row'][data-change='added'] {
-  background: var(--xh-diff-view-added-bg, var(--xh-diff-added-bg));
-  box-shadow: inset var(--xh-diff-view-change-bar, var(--xh-stroke-thick)) 0 0 0 var(--xh-diff-view-added-fg, var(--xh-diff-added-fg));
-}
-
-/* 删除行的色条改画斜纹：与新增行的实心条在灰度与高对比度下也分得开。
-   45 度、1.5px 实 1.5px 空是纹理几何，不是设计尺度上的档位 */
-[data-scope='diff-view'][data-part='row'][data-change='removed'] {
-  background:
-    repeating-linear-gradient(
-        45deg,
-        var(--xh-diff-view-removed-fg, var(--xh-diff-removed-fg)) 0,
-        var(--xh-diff-view-removed-fg, var(--xh-diff-removed-fg)) 1.5px,
-        transparent 1.5px,
-        transparent 3px
-      )
-      left / var(--xh-diff-view-change-bar, var(--xh-stroke-thick)) 100% no-repeat,
-    var(--xh-diff-view-removed-bg, var(--xh-diff-removed-bg));
-}
-
-/* 点开折叠格才露出来的那几行播一次入场；收起是硬切，不占一段退场窗口 */
-[data-scope='diff-view'][data-part='row'][data-revealed] {
-  animation: xh-diff-view-reveal var(--xh-motion-duration-enter) var(--xh-motion-ease-enter-strong);
-}
-
-/* 行号是画上去的不是写上去的：复制差异不带它，读屏也不逐行念数字 */
-[data-scope='diff-view'][data-part='line-number'] {
-  display: block;
-  box-sizing: content-box;
-  flex: 0 0 auto;
-  padding-inline: var(--xh-diff-view-px, var(--xh-_diff-view-px));
-  border-inline-end: var(--xh-stroke-thin) solid var(--xh-diff-view-border, var(--xh-border-subtle));
-  color: var(--xh-diff-view-number-fg, var(--xh-fg-subtle));
-  inline-size: var(--xh-diff-view-gutter, 4ch);
-  text-align: end;
-  user-select: none;
-}
-
-[data-scope='diff-view'][data-part='line-number']::before {
-  content: attr(data-line-number);
-}
-
-[data-scope='diff-view'][data-part='line-number'][hidden] {
-  display: none;
-}
-
-/* 行号跟着行的变更类型走：一眼扫下来数字本身就分出了增删 */
-[data-scope='diff-view'][data-part='line-number'][data-change='added'] {
-  color: var(--xh-diff-view-added-fg, var(--xh-diff-added-fg));
-}
-
-[data-scope='diff-view'][data-part='line-number'][data-change='removed'] {
-  color: var(--xh-diff-view-removed-fg, var(--xh-diff-removed-fg));
-}
-
-/* 窄档的并排视图：一行的两侧改成上下两段，旧行在上、新行在下。
-   行由横排 flex 换成两列栅格——行号一列、正文一列，一行里的四个格按 DOM 次序
-   自然落成两行，正文列因此只按单侧的最长行撑宽，不再是两侧之和 */
-[data-scope='diff-view'][data-part='root'][data-view='split'] [data-part='row']:not([hidden]) {
-  display: grid;
-  grid-template-columns: auto minmax(0, 1fr);
-}
-
-/* white-space: pre 保留缩进；每一侧各占一半宽 */
-[data-scope='diff-view'][data-part='line-content'] {
-  display: block;
-  flex: 1 1 0;
-  min-inline-size: 0;
-  padding-inline-end: var(--xh-diff-view-px, var(--xh-_diff-view-px));
-  white-space: pre;
-}
-
-[data-scope='diff-view'][data-part='line-content'][hidden] {
-  display: none;
-}
-
-[data-scope='diff-view'][data-part='line-content'][data-change='added'] {
-  color: var(--xh-diff-view-added-fg, var(--xh-diff-added-fg));
-}
-
-[data-scope='diff-view'][data-part='line-content'][data-change='removed'] {
-  color: var(--xh-diff-view-removed-fg, var(--xh-diff-removed-fg));
-}
-
-/* 并排视图里空的那一侧只有底色，没有内容 */
-[data-scope='diff-view'][data-part='line-content'][data-empty] {
-  background: var(--xh-diff-view-empty-bg, var(--xh-bg-subtle));
-}
-
-/* 开了换行：pre-wrap 仍保留缩进与连续空白，只是允许行尾折下来；
-   anywhere 让没有空格的长串（url、base64）也能断 */
-[data-scope='diff-view'][data-part='root'][data-wrap] [data-part='line-content'] {
-  white-space: pre-wrap;
-  overflow-wrap: anywhere;
-}
-
-/* 正文原本按最长行撑宽，不解除就折不下来 */
-[data-scope='diff-view'][data-part='root'][data-wrap] [data-part='body'] {
-  min-inline-size: 0;
-}
-
-/* 变更类型的读屏文字：视觉隐藏，不能 display:none——那样读屏就取不到它了。
-   变更不该只靠颜色传达 */
-[data-scope='diff-view'][data-part='change-label'] {
-  position: absolute;
-  inline-size: 1px;
-  block-size: 1px;
-  padding: 0;
-  margin: -1px;
-  border: 0;
-  overflow: hidden;
-  clip-path: inset(50%);
-  white-space: nowrap;
-}
-
-/* 词级片段：只有真正动过的那几段上底色，其余段落是纯包裹。
-   不给内衬——等宽列要逐字对齐，多一像素整份差异就错位 */
-[data-scope='diff-view'][data-part='inline-change'][data-change] {
-  border-radius: var(--xh-diff-view-inline-change-radius, var(--xh-shape-inset));
-  /* 片段跨行时两半各自收边，否则圆角只画在整段的首尾。两条都写：WebKit 只认带前缀那条 */
-  -webkit-box-decoration-break: clone;
-  box-decoration-break: clone;
-}
-
-[data-scope='diff-view'][data-part='inline-change'][data-change='added'] {
-  background: color-mix(in oklab, var(--xh-diff-view-added-fg, var(--xh-diff-added-fg)) 18%, transparent);
-}
-
-[data-scope='diff-view'][data-part='inline-change'][data-change='removed'] {
-  background: color-mix(in oklab, var(--xh-diff-view-removed-fg, var(--xh-diff-removed-fg)) 18%, transparent);
-}
-
-[data-scope='diff-view'][data-part='token'][data-kind='comment'] {
-  color: var(--xh-diff-view-comment-fg, var(--xh-fg-muted));
-  font-style: italic;
-}
-
-[data-scope='diff-view'][data-part='token'][data-kind='string'] {
-  color: var(--xh-diff-view-string-fg, var(--xh-syntax-string));
-}
-
-[data-scope='diff-view'][data-part='token'][data-kind='number'] {
-  color: var(--xh-diff-view-number-token-fg, var(--xh-syntax-number));
-}
-
-[data-scope='diff-view'][data-part='token'][data-kind='keyword'] {
-  color: var(--xh-diff-view-keyword-fg, var(--xh-syntax-keyword));
-  font-weight: var(--xh-diff-view-keyword-weight, var(--xh-font-weight-semibold));
-}
-
-[data-scope='diff-view'][data-part='token'][data-kind='punctuation'] {
-  color: var(--xh-diff-view-punctuation-fg, var(--xh-fg-subtle));
-}
-
-/* 折起来的那一行：整行都是展开按钮 */
-[data-scope='diff-view'][data-part='gap'] {
-  background: var(--xh-diff-view-gap-bg, var(--xh-bg-subtle));
-}
-
-[data-scope='diff-view'][data-part='gap-cell'] {
-  display: block;
-  flex: 1 1 auto;
-}
-
-[data-scope='diff-view'][data-part='gap-cell'][hidden] {
-  display: none;
-}
-
-[data-scope='diff-view'][data-part='gap-trigger'] {
-  display: block;
-  padding-inline: var(--xh-diff-view-px, var(--xh-_diff-view-px));
-  border: 0;
-  background: none;
-  color: var(--xh-diff-view-gap-fg, var(--xh-fg-muted));
-  font: inherit;
-  inline-size: 100%;
-  text-align: start;
-  cursor: pointer;
-  transition:
-    background var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
-    scale var(--xh-motion-duration-release) var(--xh-motion-ease-release);
-}
-
-[data-scope='diff-view'][data-part='gap-trigger'][hidden] {
-  display: none;
-}
-
-[data-scope='diff-view'][data-part='gap-trigger']:hover {
-  background: var(--xh-diff-view-gap-bg-hover, var(--xh-bg-subtle-hover));
-}
-
-[data-scope='diff-view'][data-part='gap-trigger']:active {
-  scale: var(--xh-motion-scale-press);
-  transition-duration: var(--xh-motion-duration-press);
-  transition-timing-function: var(--xh-motion-ease-press);
-}
-
-[data-scope='diff-view'][data-part='empty'] {
-  display: block;
-  padding-inline: var(--xh-diff-view-px, var(--xh-_diff-view-px));
-  padding-block: var(--xh-diff-view-py, var(--xh-_diff-view-py));
-  color: var(--xh-diff-view-empty-fg, var(--xh-fg-muted));
-  font-size: var(--xh-diff-view-header-font-size, var(--xh-text-secondary-size));
-}
-
-[data-scope='diff-view'][data-part='empty'][hidden] {
-  display: none;
-}
-
-/* 截断提示条：这份差异不完整。它比 empty 显眼一档——空差异只是没东西可看，
-   被砍过的差异看着像完整的，读的人不主动往这儿看就不会知道 */
-[data-scope='diff-view'][data-part='truncation'] {
-  display: flex;
-  align-items: center;
-  gap: var(--xh-diff-view-truncation-gap, var(--xh-space-2));
-  padding-inline: var(--xh-diff-view-px, var(--xh-_diff-view-px));
-  padding-block: var(--xh-diff-view-py, var(--xh-_diff-view-py));
-  border-block-start: var(--xh-stroke-thin) solid
-    var(--xh-diff-view-truncation-border, var(--xh-border-subtle));
-  background: var(--xh-diff-view-truncation-bg,
-    color-mix(in oklab, var(--xh-fg-warning) 12%, var(--xh-bg-surface)));
-  color: var(--xh-diff-view-truncation-fg,
-    color-mix(in oklab, var(--xh-fg-warning) 60%, var(--xh-fg-default)));
-  font-size: var(--xh-diff-view-header-font-size, var(--xh-text-secondary-size));
-}
-
-[data-scope='diff-view'][data-part='truncation'][hidden] {
-  display: none;
-}
-
-/* 提示条的文字由适配器填，所以字形不走 :empty 那条兜底路径，恒画一枚；
-   不要它就把 --xh-glyph-mark-warning 在子树上置 none */
-[data-scope='diff-view'][data-part='truncation']::before {
-  content: '';
-  flex: none;
-  display: inline-block;
-  inline-size: var(--xh-icon-size, var(--xh-glyph-size-text));
-  block-size: var(--xh-icon-size, var(--xh-glyph-size-text));
-  vertical-align: var(--xh-glyph-baseline-shift);
-  background-color: currentColor;
-  -webkit-mask: var(--xh-glyph-mark-warning) center / contain no-repeat;
-  mask: var(--xh-glyph-mark-warning) center / contain no-repeat;
-}
-
-/* 尺寸档只改字号与内衬 */
-[data-scope='diff-view'][data-part='root'][data-size='sm'] {
-  --xh-_diff-view-font-size: var(--xh-control-font-sm);
-  --xh-_diff-view-px: var(--xh-space-2);
-  --xh-_diff-view-py: var(--xh-space-1);
-}
-
-[data-scope='diff-view'][data-part='root'][data-size='md'] {
-  --xh-_diff-view-font-size: var(--xh-control-font-md);
-  --xh-_diff-view-px: var(--xh-space-3);
-  --xh-_diff-view-py: var(--xh-space-2);
-}
-
-[data-scope='diff-view'][data-part='root'][data-size='lg'] {
-  --xh-_diff-view-font-size: var(--xh-control-font-lg);
-  --xh-_diff-view-px: var(--xh-space-4);
-  --xh-_diff-view-py: var(--xh-space-3);
-}
-
-/* 宽档：视口放得下两列，并排视图回到一行两侧 */
-@media (min-width: 1024px) {
-  [data-scope='diff-view'][data-part='root'][data-view='split'] [data-part='row']:not([hidden]) {
-    display: flex;
-  }
-
-  /* 两列之间的接缝：新侧的行号槽再补一条左边线。只在并排时是接缝，
-     堆叠时它落在段首，成了一条与任何东西都不相接的竖线 */
-  [data-scope='diff-view'][data-part='root'][data-view='split'] [data-part='line-number'][data-side='new'] {
-    border-inline-start: var(--xh-stroke-thin) solid var(--xh-diff-view-border, var(--xh-border-subtle));
-  }
-}
-
-/*
- * 高对比档：新增行那条实心色条写在 box-shadow 上、删除行那条斜纹写在渐变上，
- * 这一档里两者一起被丢弃，只剩两个被系统换成同色的底。
- * 改画两圈内收的环，实线对新增、虚线对删除，两档在纯系统色下仍分得开。
- * 用 outline 不用 border：行是横排 flex，加边会把行号与内容一起往里推，
- * 没有变更的行不加边，同一屏上的行首就对不齐了。
- */
-@media (forced-colors: active) {
-  [data-scope='diff-view'][data-part='row'][data-change='added'] {
-    outline: var(--xh-stroke-thick) solid CanvasText;
-    outline-offset: calc(-1 * var(--xh-stroke-thick));
-  }
-
-  [data-scope='diff-view'][data-part='row'][data-change='removed'] {
-    outline: var(--xh-stroke-thick) dashed CanvasText;
-    outline-offset: calc(-1 * var(--xh-stroke-thick));
-  }
-}
-
-/*
- * 打印：底色与背景图一起被丢掉，新增行那条实心色条写在 box-shadow 上、
- * 删除行那条斜纹写在渐变上，两者在纸上都不出现，两种变更就此糊成一样。
- * 与高对比档同一套办法：实线环对新增、虚线环对删除，都是印得出来的通道。
- */
-@media print {
-  [data-scope='diff-view'][data-part='row'][data-change='added'] {
-    outline: var(--xh-stroke-thick) solid currentColor;
-    outline-offset: calc(-1 * var(--xh-stroke-thick));
-  }
-
-  [data-scope='diff-view'][data-part='row'][data-change='removed'] {
-    outline: var(--xh-stroke-thick) dashed currentColor;
-    outline-offset: calc(-1 * var(--xh-stroke-thick));
-  }
-}
-
-/* 露出来的行从上一行底下推出来：位移走幅度令牌，减弱动效档把它归零 */
-@keyframes xh-diff-view-reveal {
-  from {
-    opacity: 0;
-    translate: 0 calc(-1 * var(--xh-motion-distance-sm));
-  }
-
-  to {
-    opacity: 1;
-    translate: 0 0;
-  }
-}
-
-/* styles/download-trigger.css */
-/* 定义 download trigger 样式。 */
+/* 独立皮肤同时传递引入折叠格按钮的动作控件配方；full bundle 递归去重。 */
 
 /* family/action-control.css */
 /* AUTO-GENERATED by build/action-control-recipe.mjs — do not edit. */
@@ -1978,6 +1558,426 @@
     border-style: dashed;
   }
 }
+
+/* 皮肤在场的标记：开发模式下按 scope 探一次，取不到就说明这份皮肤没被引入。 */
+[data-scope='diff-view'] {
+  --xh-diff-view-skin: 1;
+}
+
+/* 一张静态内容面：--xh-border-default 描边 + surface 底 + 无影（§5.3 边界只由描边承担）；
+   头部、行号列与并排接缝的内部分隔线走另一支 --xh-diff-view-divider（subtle） */
+[data-scope='diff-view'][data-part='root'] {
+  /* 作者塞进部件里的图标与皮肤画的兜底字形同一把尺：md 档，随 data-size 换档（§6.5） */
+  --xh-icon-size: var(--xh-diff-view-icon-size, var(--xh-glyph-size-md));
+
+  /* 尺寸缺省档：不写 data-size 时的取值。三档都只写这三个私有槽，
+     公开槽留在读处当首选，作者在祖先上设的覆盖才赢得过档位声明 */
+  --xh-_diff-view-font-size: var(--xh-control-font-sm);
+  --xh-_diff-view-px: var(--xh-space-3);
+  --xh-_diff-view-py: var(--xh-space-2);
+
+  display: block;
+  overflow: hidden;
+  border: var(--xh-stroke-thin) solid var(--xh-diff-view-border, var(--xh-border-default));
+  border-radius: var(--xh-diff-view-radius, var(--xh-shape-surface));
+  background: var(--xh-diff-view-bg, var(--xh-bg-surface));
+  box-shadow: var(--xh-diff-view-shadow, none);
+}
+
+/* 上面声明的 display 会盖掉 UA 的 [hidden]{display:none}，这里补回 */
+[data-scope='diff-view'][data-part='root'][hidden] {
+  display: none;
+}
+
+[data-scope='diff-view'][data-part='header'] {
+  display: flex;
+  align-items: center;
+  gap: var(--xh-diff-view-header-gap, var(--xh-space-2));
+  padding-inline: var(--xh-diff-view-px, var(--xh-_diff-view-px));
+  padding-block: var(--xh-diff-view-py, var(--xh-_diff-view-py));
+  border-block-end: var(--xh-stroke-thin) solid var(--xh-diff-view-divider, var(--xh-border-subtle));
+  color: var(--xh-diff-view-header-fg, var(--xh-fg-muted));
+  font-family: var(--xh-diff-view-font, var(--xh-font-family-mono));
+  font-size: var(--xh-diff-view-header-font-size, var(--xh-text-secondary-size));
+}
+
+[data-scope='diff-view'][data-part='header'][hidden] {
+  display: none;
+}
+
+/* 增删统计整组顶到右侧：头部是 flex，自动外边距吃掉中间的空当。
+   第二个之后的不再顶，与前一个之间只留头部本来的间隙 */
+[data-scope='diff-view'][data-part='summary'] {
+  margin-inline-start: auto;
+}
+
+[data-scope='diff-view'][data-part='summary'] ~ [data-scope='diff-view'][data-part='summary'] {
+  margin-inline-start: 0;
+}
+
+[data-scope='diff-view'][data-part='summary'][data-change='added'] {
+  color: var(--xh-diff-view-added-fg, var(--xh-diff-added-fg));
+}
+
+[data-scope='diff-view'][data-part='summary'][data-change='removed'] {
+  color: var(--xh-diff-view-removed-fg, var(--xh-diff-removed-fg));
+}
+
+/* 唯一的 Tab 停靠点；两轴都可能溢出 */
+[data-scope='diff-view'][data-part='viewport'] {
+  overflow: auto;
+  max-block-size: var(--xh-diff-view-max-h, var(--xh-viewport-max-h));
+}
+
+[data-scope='diff-view'][data-part='body'] {
+  display: block;
+  font-family: var(--xh-diff-view-font, var(--xh-font-family-mono));
+  font-size: var(--xh-diff-view-font-size, var(--xh-_diff-view-font-size));
+  line-height: var(--xh-diff-view-line-height, var(--xh-text-code-leading));
+  min-inline-size: max-content;
+}
+
+[data-scope='diff-view'][data-part='body'][hidden] {
+  display: none;
+}
+
+/* 一行：行号与内容并排 */
+[data-scope='diff-view'][data-part='row'],
+[data-scope='diff-view'][data-part='gap'] {
+  display: flex;
+  min-block-size: var(--xh-diff-view-line-height, var(--xh-text-code-leading));
+}
+
+[data-scope='diff-view'][data-part='row'][hidden],
+[data-scope='diff-view'][data-part='gap'][hidden] {
+  display: none;
+}
+
+/* 变更类型不只靠颜色：新增行画一条实心色条 */
+[data-scope='diff-view'][data-part='row'][data-change='added'] {
+  background: var(--xh-diff-view-added-bg, var(--xh-diff-added-bg));
+  box-shadow: inset var(--xh-diff-view-change-bar, var(--xh-stroke-thick)) 0 0 0 var(--xh-diff-view-added-fg, var(--xh-diff-added-fg));
+}
+
+/* 删除行的色条改画斜纹：与新增行的实心条在灰度与高对比度下也分得开。
+   45 度、1.5px 实 1.5px 空是纹理几何，不是设计尺度上的档位 */
+[data-scope='diff-view'][data-part='row'][data-change='removed'] {
+  background:
+    repeating-linear-gradient(
+        45deg,
+        var(--xh-diff-view-removed-fg, var(--xh-diff-removed-fg)) 0,
+        var(--xh-diff-view-removed-fg, var(--xh-diff-removed-fg)) 1.5px,
+        transparent 1.5px,
+        transparent 3px
+      )
+      left / var(--xh-diff-view-change-bar, var(--xh-stroke-thick)) 100% no-repeat,
+    var(--xh-diff-view-removed-bg, var(--xh-diff-removed-bg));
+}
+
+/* 点开折叠格才露出来的那几行播一次入场；收起是硬切，不占一段退场窗口 */
+[data-scope='diff-view'][data-part='row'][data-revealed] {
+  animation: xh-diff-view-reveal var(--xh-motion-duration-enter) var(--xh-motion-ease-enter-strong);
+}
+
+/* 行号是画上去的不是写上去的：复制差异不带它，读屏也不逐行念数字 */
+[data-scope='diff-view'][data-part='line-number'] {
+  display: block;
+  box-sizing: content-box;
+  flex: 0 0 auto;
+  padding-inline: var(--xh-diff-view-px, var(--xh-_diff-view-px));
+  border-inline-end: var(--xh-stroke-thin) solid var(--xh-diff-view-divider, var(--xh-border-subtle));
+  color: var(--xh-diff-view-number-fg, var(--xh-fg-subtle));
+  inline-size: var(--xh-diff-view-gutter, 4ch);
+  text-align: end;
+  user-select: none;
+}
+
+[data-scope='diff-view'][data-part='line-number']::before {
+  content: attr(data-line-number);
+}
+
+[data-scope='diff-view'][data-part='line-number'][hidden] {
+  display: none;
+}
+
+/* 行号跟着行的变更类型走：一眼扫下来数字本身就分出了增删 */
+[data-scope='diff-view'][data-part='line-number'][data-change='added'] {
+  color: var(--xh-diff-view-added-fg, var(--xh-diff-added-fg));
+}
+
+[data-scope='diff-view'][data-part='line-number'][data-change='removed'] {
+  color: var(--xh-diff-view-removed-fg, var(--xh-diff-removed-fg));
+}
+
+/* 窄档的并排视图：一行的两侧改成上下两段，旧行在上、新行在下。
+   行由横排 flex 换成两列栅格——行号一列、正文一列，一行里的四个格按 DOM 次序
+   自然落成两行，正文列因此只按单侧的最长行撑宽，不再是两侧之和 */
+[data-scope='diff-view'][data-part='root'][data-view='split'] [data-part='row']:not([hidden]) {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+}
+
+/* white-space: pre 保留缩进；每一侧各占一半宽 */
+[data-scope='diff-view'][data-part='line-content'] {
+  display: block;
+  flex: 1 1 0;
+  min-inline-size: 0;
+  padding-inline-end: var(--xh-diff-view-px, var(--xh-_diff-view-px));
+  white-space: pre;
+}
+
+[data-scope='diff-view'][data-part='line-content'][hidden] {
+  display: none;
+}
+
+[data-scope='diff-view'][data-part='line-content'][data-change='added'] {
+  color: var(--xh-diff-view-added-fg, var(--xh-diff-added-fg));
+}
+
+[data-scope='diff-view'][data-part='line-content'][data-change='removed'] {
+  color: var(--xh-diff-view-removed-fg, var(--xh-diff-removed-fg));
+}
+
+/* 并排视图里空的那一侧只有底色，没有内容 */
+[data-scope='diff-view'][data-part='line-content'][data-empty] {
+  background: var(--xh-diff-view-empty-bg, var(--xh-bg-subtle));
+}
+
+/* 开了换行：pre-wrap 仍保留缩进与连续空白，只是允许行尾折下来；
+   anywhere 让没有空格的长串（url、base64）也能断 */
+[data-scope='diff-view'][data-part='root'][data-wrap] [data-part='line-content'] {
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+
+/* 正文原本按最长行撑宽，不解除就折不下来 */
+[data-scope='diff-view'][data-part='root'][data-wrap] [data-part='body'] {
+  min-inline-size: 0;
+}
+
+/* 变更类型的读屏文字：视觉隐藏，不能 display:none——那样读屏就取不到它了。
+   变更不该只靠颜色传达 */
+[data-scope='diff-view'][data-part='change-label'] {
+  position: absolute;
+  inline-size: 1px;
+  block-size: 1px;
+  padding: 0;
+  margin: -1px;
+  border: 0;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+/* 词级片段：只有真正动过的那几段上底色，其余段落是纯包裹。
+   不给内衬——等宽列要逐字对齐，多一像素整份差异就错位 */
+[data-scope='diff-view'][data-part='inline-change'][data-change] {
+  border-radius: var(--xh-diff-view-inline-change-radius, var(--xh-shape-inset));
+  /* 片段跨行时两半各自收边，否则圆角只画在整段的首尾。两条都写：WebKit 只认带前缀那条 */
+  -webkit-box-decoration-break: clone;
+  box-decoration-break: clone;
+}
+
+[data-scope='diff-view'][data-part='inline-change'][data-change='added'] {
+  background: color-mix(in oklab, var(--xh-diff-view-added-fg, var(--xh-diff-added-fg)) 18%, transparent);
+}
+
+[data-scope='diff-view'][data-part='inline-change'][data-change='removed'] {
+  background: color-mix(in oklab, var(--xh-diff-view-removed-fg, var(--xh-diff-removed-fg)) 18%, transparent);
+}
+
+[data-scope='diff-view'][data-part='token'][data-kind='comment'] {
+  color: var(--xh-diff-view-comment-fg, var(--xh-fg-muted));
+  font-style: italic;
+}
+
+[data-scope='diff-view'][data-part='token'][data-kind='string'] {
+  color: var(--xh-diff-view-string-fg, var(--xh-syntax-string));
+}
+
+[data-scope='diff-view'][data-part='token'][data-kind='number'] {
+  color: var(--xh-diff-view-number-token-fg, var(--xh-syntax-number));
+}
+
+[data-scope='diff-view'][data-part='token'][data-kind='keyword'] {
+  color: var(--xh-diff-view-keyword-fg, var(--xh-syntax-keyword));
+  font-weight: var(--xh-diff-view-keyword-weight, var(--xh-font-weight-semibold));
+}
+
+[data-scope='diff-view'][data-part='token'][data-kind='punctuation'] {
+  color: var(--xh-diff-view-punctuation-fg, var(--xh-fg-subtle));
+}
+
+/* 折起来的那一行：整行都是展开按钮。行是淡底承载面，向按钮下发 hover 200 → pressed 300（§7.2） */
+[data-scope='diff-view'][data-part='gap'] {
+  --xh-action-host-bg-hover: var(--xh-bg-subtle-hover);
+  --xh-action-host-bg-pressed: var(--xh-bg-subtle-active);
+
+  background: var(--xh-diff-view-gap-bg, var(--xh-bg-subtle));
+}
+
+[data-scope='diff-view'][data-part='gap-cell'] {
+  display: block;
+  flex: 1 1 auto;
+}
+
+[data-scope='diff-view'][data-part='gap-cell'][hidden] {
+  display: none;
+}
+
+/* 展开按钮铺满折叠格，盒型、悬停与按下面由 Action Control 的 disclosure-trigger 档给（ghost 形态，
+   按下只换面不缩放，§9.2）；这里只把使用者槽映射到桥接槽：圆角归零贴住格边、纵向内衬归零、
+   高度锚在代码行高上让折叠格与相邻代码行同高，字号跟着正文走 */
+[data-scope='diff-view'][data-part='gap-trigger'] {
+  --xh-action-radius: 0;
+  --xh-action-visual-size: var(--xh-diff-view-line-height, var(--xh-text-code-leading));
+  --xh-action-padding-inline: var(--xh-diff-view-px, var(--xh-_diff-view-px));
+  --xh-action-padding-block: 0;
+  --xh-action-font-size: var(--xh-diff-view-font-size, var(--xh-_diff-view-font-size));
+  --xh-action-fg-rest: var(--xh-diff-view-gap-fg, var(--xh-fg-muted));
+  --xh-action-bg-hover: var(--xh-diff-view-gap-bg-hover, var(--xh-_action-variant-bg-hover));
+
+  border-width: 0;
+}
+
+[data-scope='diff-view'][data-part='gap-trigger'][hidden] {
+  display: none;
+}
+
+[data-scope='diff-view'][data-part='empty'] {
+  display: block;
+  padding-inline: var(--xh-diff-view-px, var(--xh-_diff-view-px));
+  padding-block: var(--xh-diff-view-py, var(--xh-_diff-view-py));
+  color: var(--xh-diff-view-empty-fg, var(--xh-fg-muted));
+  font-size: var(--xh-diff-view-header-font-size, var(--xh-text-secondary-size));
+}
+
+[data-scope='diff-view'][data-part='empty'][hidden] {
+  display: none;
+}
+
+/* 截断提示条：这份差异不完整。它比 empty 显眼一档——空差异只是没东西可看，
+   被砍过的差异看着像完整的，读的人不主动往这儿看就不会知道 */
+[data-scope='diff-view'][data-part='truncation'] {
+  display: flex;
+  align-items: center;
+  gap: var(--xh-diff-view-truncation-gap, var(--xh-space-2));
+  padding-inline: var(--xh-diff-view-px, var(--xh-_diff-view-px));
+  padding-block: var(--xh-diff-view-py, var(--xh-_diff-view-py));
+  border-block-start: var(--xh-stroke-thin) solid
+    var(--xh-diff-view-truncation-border, var(--xh-border-subtle));
+  background: var(--xh-diff-view-truncation-bg,
+    color-mix(in oklab, var(--xh-fg-warning) 12%, var(--xh-bg-surface)));
+  color: var(--xh-diff-view-truncation-fg,
+    color-mix(in oklab, var(--xh-fg-warning) 60%, var(--xh-fg-default)));
+  font-size: var(--xh-diff-view-header-font-size, var(--xh-text-secondary-size));
+}
+
+[data-scope='diff-view'][data-part='truncation'][hidden] {
+  display: none;
+}
+
+/* 提示条的文字由适配器填，所以字形不走 :empty 那条兜底路径，恒画一枚；
+   不要它就把 --xh-glyph-mark-warning 在子树上置 none */
+[data-scope='diff-view'][data-part='truncation']::before {
+  content: '';
+  flex: none;
+  display: inline-block;
+  inline-size: var(--xh-icon-size, var(--xh-glyph-size-md));
+  block-size: var(--xh-icon-size, var(--xh-glyph-size-md));
+  vertical-align: var(--xh-glyph-baseline-shift);
+  background-color: currentColor;
+  -webkit-mask: var(--xh-glyph-mark-warning) center / contain no-repeat;
+  mask: var(--xh-glyph-mark-warning) center / contain no-repeat;
+}
+
+/* 尺寸档改字号、内衬与图标档 */
+[data-scope='diff-view'][data-part='root'][data-size='sm'] {
+  --xh-icon-size: var(--xh-diff-view-icon-size, var(--xh-glyph-size-sm));
+  --xh-_diff-view-font-size: var(--xh-control-font-sm);
+  --xh-_diff-view-px: var(--xh-space-2);
+  --xh-_diff-view-py: var(--xh-space-1);
+}
+
+[data-scope='diff-view'][data-part='root'][data-size='md'] {
+  --xh-_diff-view-font-size: var(--xh-control-font-md);
+  --xh-_diff-view-px: var(--xh-space-3);
+  --xh-_diff-view-py: var(--xh-space-2);
+}
+
+[data-scope='diff-view'][data-part='root'][data-size='lg'] {
+  --xh-icon-size: var(--xh-diff-view-icon-size, var(--xh-glyph-size-lg));
+  --xh-_diff-view-font-size: var(--xh-control-font-lg);
+  --xh-_diff-view-px: var(--xh-space-4);
+  --xh-_diff-view-py: var(--xh-space-3);
+}
+
+/* 宽档：视口放得下两列，并排视图回到一行两侧 */
+@media (min-width: 1024px) {
+  [data-scope='diff-view'][data-part='root'][data-view='split'] [data-part='row']:not([hidden]) {
+    display: flex;
+  }
+
+  /* 两列之间的接缝：新侧的行号槽再补一条左边线。只在并排时是接缝，
+     堆叠时它落在段首，成了一条与任何东西都不相接的竖线 */
+  [data-scope='diff-view'][data-part='root'][data-view='split'] [data-part='line-number'][data-side='new'] {
+    border-inline-start: var(--xh-stroke-thin) solid var(--xh-diff-view-divider, var(--xh-border-subtle));
+  }
+}
+
+/*
+ * 高对比档：新增行那条实心色条写在 box-shadow 上、删除行那条斜纹写在渐变上，
+ * 这一档里两者一起被丢弃，只剩两个被系统换成同色的底。
+ * 改画两圈内收的环，实线对新增、虚线对删除，两档在纯系统色下仍分得开。
+ * 用 outline 不用 border：行是横排 flex，加边会把行号与内容一起往里推，
+ * 没有变更的行不加边，同一屏上的行首就对不齐了。
+ */
+@media (forced-colors: active) {
+  [data-scope='diff-view'][data-part='row'][data-change='added'] {
+    outline: var(--xh-stroke-thick) solid CanvasText;
+    outline-offset: calc(-1 * var(--xh-stroke-thick));
+  }
+
+  [data-scope='diff-view'][data-part='row'][data-change='removed'] {
+    outline: var(--xh-stroke-thick) dashed CanvasText;
+    outline-offset: calc(-1 * var(--xh-stroke-thick));
+  }
+}
+
+/*
+ * 打印：底色与背景图一起被丢掉，新增行那条实心色条写在 box-shadow 上、
+ * 删除行那条斜纹写在渐变上，两者在纸上都不出现，两种变更就此糊成一样。
+ * 与高对比档同一套办法：实线环对新增、虚线环对删除，都是印得出来的通道。
+ */
+@media print {
+  [data-scope='diff-view'][data-part='row'][data-change='added'] {
+    outline: var(--xh-stroke-thick) solid currentColor;
+    outline-offset: calc(-1 * var(--xh-stroke-thick));
+  }
+
+  [data-scope='diff-view'][data-part='row'][data-change='removed'] {
+    outline: var(--xh-stroke-thick) dashed currentColor;
+    outline-offset: calc(-1 * var(--xh-stroke-thick));
+  }
+}
+
+/* 露出来的行从上一行底下推出来：位移走幅度令牌，减弱动效档把它归零 */
+@keyframes xh-diff-view-reveal {
+  from {
+    opacity: 0;
+    translate: 0 calc(-1 * var(--xh-motion-distance-sm));
+  }
+
+  to {
+    opacity: 1;
+    translate: 0 0;
+  }
+}
+
+/* styles/download-trigger.css */
+/* 定义 download trigger 样式。 */
+
+/* family/action-control.css */
 
 /* 转圈的关键帧定义在本文件里：引用别处文件的动画名时那份文件不一定在场，动画会静默不跑 */
 @keyframes xh-download-trigger-rotate {

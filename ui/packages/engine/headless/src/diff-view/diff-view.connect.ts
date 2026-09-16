@@ -288,9 +288,16 @@ export function connectDiffView<T extends PropTypes>(
       'aria-colindex': 1,
     }),
 
+    // 折叠格整行都是展开按钮，是铺满一行的 disclosure trigger：接 Action Control 的 disclosure-trigger 档，
+    // ghost 形态，按下只换面不缩放（§9.2）；淡底承载的 hover 200 → pressed 300 由 gap 行经 host 槽下发；档位随 size 走
     getGapTriggerProps: ({ gapId }) => normalize.button({
       ...parts['gap-trigger'].attrs,
       'type': 'button',
+      'data-xh-action-control': '',
+      'data-xh-action-profile': 'disclosure-trigger',
+      'data-xh-action-variant': 'ghost',
+      'data-xh-action-display': 'always',
+      'data-xh-action-size': prop('size') ?? 'md',
       'aria-expanded': expandedValue.includes(gapId) ? 'true' : 'false',
       // 按钮上写的是「⋯ 12」，读出来就是"⋯ 12"，什么都没说明；名字必须自带动作与量词
       'aria-label': expandGapLabel(hiddenCountOf(gapId)),
