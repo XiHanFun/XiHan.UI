@@ -67247,7 +67247,7 @@
       ],
       "state": [
         "default",
-        "variant=surface"
+        "variant=outline"
       ],
       "defaultToken": [
         "--xh-shape-surface"
@@ -67385,7 +67385,7 @@
         "box-shadow"
       ],
       "state": [
-        "variant=surface"
+        "variant=outline"
       ],
       "defaultToken": [
         "--xh-elevation-raised"

@@ -5,8 +5,8 @@
 
 // 提供 toolbar 相关实现。
 
-import type { Direction, Orientation, Size } from '@xihan-ui/core'
-import type { ToolbarApi, ToolbarSchema, ToolbarVariant } from '@xihan-ui/headless'
+import type { ControlVariant, Direction, Orientation, Size } from '@xihan-ui/core'
+import type { ToolbarApi, ToolbarSchema } from '@xihan-ui/headless'
 import type { PropType, SlotsType, VNode } from 'vue'
 import { defineComponent, h, onBeforeUnmount, ref, watch } from 'vue'
 import { provideToolbar, useToolbarContext } from './context'
@@ -25,7 +25,7 @@ export const XhToolbarRoot = defineComponent({
     dir: { type: String as PropType<Direction> },
     loop: { type: Boolean, default: undefined },
     disabled: { type: Boolean, default: undefined },
-    variant: { type: String as PropType<ToolbarVariant> },
+    variant: { type: String as PropType<ControlVariant> },
     size: { type: String as PropType<Size> },
   },
   slots: Object as SlotsType<{

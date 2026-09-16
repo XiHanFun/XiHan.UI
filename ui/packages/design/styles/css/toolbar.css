@@ -23,7 +23,7 @@
     --xh-_toolbar-separator-size: calc(var(--xh-_toolbar-item-h) / 2);
     --xh-icon-size: var(--xh-toolbar-icon-size, var(--xh-glyph-size-md));
 
-    /* 缺省 plain：工具条只组织控件，不额外画外框。 */
+    /* 缺省 ghost：工具条只组织控件，不额外画外框。 */
     --xh-_toolbar-root-p: 0;
     --xh-_toolbar-root-border-width: 0;
     --xh-_toolbar-root-border: transparent;
@@ -59,7 +59,7 @@
   }
 
   /* —— 变体 —— */
-  [data-scope='toolbar'][data-part='root'][data-variant='plain'] {
+  [data-scope='toolbar'][data-part='root'][data-variant='ghost'] {
     --xh-_toolbar-root-p: 0;
     --xh-_toolbar-root-border-width: 0;
     --xh-_toolbar-root-border: transparent;
@@ -67,8 +67,14 @@
     --xh-_toolbar-root-bg-disabled: transparent;
   }
 
+  /* 淡底档：带内距、换成 subtle 底，不画描边与落影。 */
+  [data-scope='toolbar'][data-part='root'][data-variant='subtle'] {
+    --xh-_toolbar-root-p: var(--xh-_toolbar-p);
+    --xh-_toolbar-root-bg: var(--xh-bg-subtle);
+  }
+
   /* 附着式工具面：用于悬浮工具条或与内容区域分开的独立操作带。 */
-  [data-scope='toolbar'][data-part='root'][data-variant='surface'] {
+  [data-scope='toolbar'][data-part='root'][data-variant='outline'] {
     --xh-_toolbar-root-p: var(--xh-_toolbar-p);
     --xh-_toolbar-root-border-width: 0;
     --xh-_toolbar-root-border: transparent;

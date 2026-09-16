@@ -10,7 +10,7 @@ afterEach(() => {
   host = null
 })
 
-function mount(options: { pressed?: boolean, size?: 'lg' | 'md' | 'sm', variant?: 'plain' | 'surface' } = {}) {
+function mount(options: { pressed?: boolean, size?: 'lg' | 'md' | 'sm', variant?: 'ghost' | 'outline' } = {}) {
   host = document.createElement('div')
   host.innerHTML = `
     <div data-scope="toolbar" data-part="root" data-orientation="horizontal"${options.variant ? ` data-variant="${options.variant}"` : ''}${options.size ? ` data-size="${options.size}"` : ''}>
@@ -43,7 +43,7 @@ function shapePx(element: HTMLElement, token: string): number {
 }
 
 describe('toolbar 默认视觉', () => {
-  it('不写变体与显式 plain 都不画外框', () => {
+  it('不写变体与显式 ghost 都不画外框', () => {
     const plain = mount()
     const plainStyle = getComputedStyle(plain.root)
     const paint = {
@@ -52,7 +52,7 @@ describe('toolbar 默认视觉', () => {
       padding: plainStyle.paddingInlineStart,
     }
 
-    const explicit = mount({ variant: 'plain' })
+    const explicit = mount({ variant: 'ghost' })
     const explicitStyle = getComputedStyle(explicit.root)
     expect({
       background: explicitStyle.backgroundColor,
@@ -65,8 +65,8 @@ describe('toolbar 默认视觉', () => {
     expect(Number.parseFloat(paint.padding)).toBe(0)
   })
 
-  it('surface 提供无描边的附着工具面', () => {
-    const surface = mount({ variant: 'surface' })
+  it('outline 提供无描边的附着工具面', () => {
+    const surface = mount({ variant: 'outline' })
     const style = getComputedStyle(surface.root)
 
     expect(style.backgroundColor).not.toBe('rgba(0, 0, 0, 0)')

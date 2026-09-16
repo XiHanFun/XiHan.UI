@@ -58334,7 +58334,7 @@
               "name": "variant",
               "privacy": "public",
               "type": {
-                "text": "ToolbarVariant | undefined"
+                "text": "ControlVariant | undefined"
               },
               "attribute": "variant"
             },
@@ -58464,9 +58464,9 @@
             },
             {
               "type": {
-                "text": "ToolbarVariant | undefined"
+                "text": "ControlVariant | undefined"
               },
-              "description": "视觉变体，默认 plain；surface 提供附着式工具面",
+              "description": "形态：ghost 只组织控件不画面，outline 为附着式工具面，subtle 为淡底；默认 ghost",
               "name": "variant",
               "fieldName": "variant"
             },
