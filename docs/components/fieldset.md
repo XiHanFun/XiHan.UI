@@ -69,8 +69,8 @@ required 写为 data-required，皮肤据此为组标题加星号；星号只是
 - `disabled` 落为原生 `fieldset[disabled]`，组内控件不可聚焦、不可编辑、不参与提交，不需要逐个控件接线。
 - 说明文字与错误文案自动派生 `id` 并接入根节点的 `aria-describedby`，作者不需要写 `id`。
 - 错误文案带 `role="status"` + `aria-live="polite"`，节点常驻、通过 `hidden` 显隐，`invalid` 翻转时读屏排队播报，不打断当前朗读。整表提交失败时的打断式播报只由 Form 的错误摘要发出。
-- `invalid` 落为 `data-invalid`，皮肤据此把组标题转为警示色，同时把错误文案接入描述链并显示。
-- `required` 落为 `data-required`，皮肤据此给组标题加星号。
+- `invalid` 落为根与组标题上的 `data-invalid`，组标题据此转为警示色，同时把错误文案接入描述链并显示。
+- `required` 落为根与组标题上的 `data-required`，组标题的星号由 label 公共层按组标题自己的这一位画。
 - `field-group` 把并排的几个字段圈成一段（宽度足够时自动分栏），`actions` 承载组末尾的按钮行。
 - `disabled` 只作用于原生表单控件：组内 `div` 型控件（滑块、评分等）需要各自接 `disabled`。
 
@@ -173,6 +173,8 @@ required 写为 data-required，皮肤据此为组标题加星号；星号只是
 | `root` | `data-invalid` | ''（条件成立时才出现） |
 | `root` | `data-required` | ''（条件成立时才出现） |
 | `legend` | `data-disabled` | ''（条件成立时才出现） |
+| `legend` | `data-invalid` | ''（条件成立时才出现） |
+| `legend` | `data-required` | ''（条件成立时才出现） |
 | `description` | `data-disabled` | ''（条件成立时才出现） |
 | `field-group` | `data-disabled` | ''（条件成立时才出现） |
 | `actions` | `data-disabled` | ''（条件成立时才出现） |
@@ -195,11 +197,11 @@ required 写为 data-required，皮肤据此为组标题加星号；星号只是
 | `--xh-fieldset-gap` | `root` | `gap` | `default` | `--xh-space-4` | fieldset 的 root 部件 gap 覆盖槽。 |
 | `--xh-fieldset-legend-fg` | `legend` | `color` | `default` | `--xh-fg-default` | fieldset 的 legend 部件 color 覆盖槽。 |
 | `--xh-fieldset-legend-fg-disabled` | `legend`<br>`root` | `color` | `disabled` | `--xh-fg-subtle` | fieldset 的 legend、root 部件 color 覆盖槽。 |
-| `--xh-fieldset-legend-fg-invalid` | `legend`<br>`root` | `color` | `invalid` | `--xh-fg-danger` | fieldset 的 legend、root 部件 color 覆盖槽。 |
+| `--xh-fieldset-legend-fg-invalid` | `legend` | `color` | `invalid` | `--xh-fg-danger` | fieldset 的 legend 部件 color 覆盖槽。 |
 | `--xh-fieldset-legend-font-size` | `legend` | `font-size` | `default` | `--xh-text-label-size` | fieldset 的 legend 部件 font-size 覆盖槽。 |
 | `--xh-fieldset-legend-font-weight` | `legend` | `font-weight` | `default` | `--xh-text-label-weight` | fieldset 的 legend 部件 font-weight 覆盖槽。 |
 | `--xh-fieldset-legend-gap` | `legend` | `margin-block-end` | `default` | `--xh-space-2` | fieldset 的 legend 部件 margin-block-end 覆盖槽。 |
-| `--xh-fieldset-legend-star` | `legend`<br>`root` | `color` | `required` | `--xh-fg-danger` | fieldset 的 legend、root 部件 color 覆盖槽。 |
+| `--xh-fieldset-legend-star` | `legend` | `color` | `required` | `--xh-fg-danger` | fieldset 的 legend 部件 color 覆盖槽。 |
 <!-- xh-component-tokens:end -->
 
 ### 动效
@@ -207,7 +209,3 @@ required 写为 data-required，皮肤据此为组标题加星号；星号只是
 `color` 走 `transition` 过渡。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
 
 系统开启减弱动效时由令牌层统一收敛，皮肤不另作判断。
-
-### RTL
-
-皮肤用逻辑属性排布（`inline-start` 一族），`dir="rtl"` 下自动镜像。

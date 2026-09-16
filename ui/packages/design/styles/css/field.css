@@ -74,10 +74,8 @@
     color: var(--xh-field-label-fg-disabled, var(--xh-fg-subtle));
   }
 
-  /* 必填星号：跟着根上的 data-required 亮，选填不标 */
-  [data-scope='field'][data-part='root'][data-required] > [data-scope='field'][data-part='label']::after {
-    content: var(--xh-glyph-mark-required);
-    margin-inline-start: var(--xh-space-1);
+  /* 必填星号的字形、间距与默认色在 label.css 公共层；这里只把颜色接到本组件的覆盖槽上 */
+  [data-scope='field'][data-part='label'][data-required]::after {
     color: var(--xh-field-label-star, var(--xh-fg-danger));
   }
 
@@ -128,27 +126,25 @@
     box-shadow: none;
   }
 
-  [data-scope='field'][data-part='root'][data-invalid] > [data-scope='field'][data-part='label'] {
+  /* 无效标签色的默认在 label.css 公共层；这里只把颜色接到本组件的覆盖槽上 */
+  [data-scope='field'][data-part='label'][data-invalid] {
     color: var(--xh-field-label-fg-invalid, var(--xh-fg-danger));
   }
 
+  /* 说明与错误文案的角色（外边距、行距、默认字号与字色）在 description.css 公共层；
+     这里只把字色与字号接到本组件的覆盖槽上 */
   [data-scope='field'][data-part='description'] {
-    margin: 0;
     color: var(--xh-field-description-fg, var(--xh-fg-muted));
     font-size: var(--xh-field-description-font-size, var(--xh-text-secondary-size));
-    line-height: var(--xh-leading-normal);
   }
 
   [data-scope='field'][data-part='description'][data-disabled] {
     color: var(--xh-field-description-fg-disabled, var(--xh-fg-subtle));
   }
 
-  /* 不 invalid 时节点带 hidden：此处不声明 display，交给浏览器的 [hidden] 规则收起 */
   [data-scope='field'][data-part='error-text'] {
-    margin: 0;
     color: var(--xh-field-error-fg, var(--xh-fg-danger));
     font-size: var(--xh-field-error-font-size, var(--xh-text-secondary-size));
-    line-height: var(--xh-leading-normal);
   }
 
   /* 辅助文字那一行的占位：字段渲染了错误文案、当前又没在报错时，补一个与错误文案等高的空块。

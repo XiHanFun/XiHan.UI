@@ -6,7 +6,8 @@
 /*
  * 字段族标签的公共层，按 [data-part='label'] 匹配下面逐个列出的 scope。
  *
- * 收在这里的是逐值相同的两条：行距取 --xh-leading-none，禁用档字色取 --xh-fg-subtle。
+ * 收在这里的是逐值相同的四条：行距取 --xh-leading-none，禁用档字色取 --xh-fg-subtle，
+ * 必填星号取 --xh-glyph-mark-required + --xh-space-1 + --xh-fg-danger，无效档字色取 --xh-fg-danger。
  * 字色、字号、字重三条留在各组件皮肤——它们挂着 --xh-<组件>-label-* 覆盖槽，
  * 槽名里带组件名，写不进一条共享规则。
  *
@@ -14,7 +15,7 @@
  * 统计、进度、推理、说明列表上指的是另一种文字（行内省略的标签正文、环内居中的数字、
  * 描述项的名字），通配规则会把行距按到它们头上。要接进来的组件把 scope 加进列表。
  *
- * 选择器停在两个属性（0,2,0），与组件皮肤同级；引入顺序排在全部组件皮肤之前，
+ * 选择器停在两个属性（0,2,0）或三个属性（0,3,0），与组件皮肤同级；引入顺序排在全部组件皮肤之前，
  * 要另写行距的组件照写即可压过。
  */
 @layer xihan.components {
@@ -41,13 +42,37 @@
   }
 
   /*
-   * 禁用档的字色：这四家没有 --xh-<组件>-label-fg-disabled 覆盖槽，取值只有这一处。
-   * 挂了那个槽的组件在各自皮肤里另写一条，排在本份之后，压过这里。
+   * 禁用档的字色：公共层默认统一 --xh-fg-subtle。这四家没有 --xh-<组件>-label-fg-disabled 覆盖槽，
+   * 取值只有这一处；挂了那个槽的组件在各自皮肤里另写一条，排在本份之后，压过这里。
    */
   [data-scope='color-picker'][data-part='label'][data-disabled],
   [data-scope='rating'][data-part='label'][data-disabled],
   [data-scope='signature-pad'][data-part='label'][data-disabled],
   [data-scope='slider'][data-part='label'][data-disabled] {
     color: var(--xh-fg-subtle);
+  }
+
+  /*
+   * 必填星号：跟着标签自己的 data-required 亮，选填不标。字形、间距、颜色是公共层规则，
+   * 自带标签的字段不得各画一套。
+   *
+   * 接入 = connect 在标签部件投影 data-required + 把 scope 加进这张列表；控件本体不画。
+   * 有 --xh-<组件>-label-star 覆盖槽的组件在各自皮肤里只另写一条 color 压过这里（field 的
+   * --xh-field-label-star、fieldset 的 --xh-fieldset-legend-star），content 与间距不再重写。
+   */
+  [data-scope='field'][data-part='label'][data-required]::after,
+  [data-scope='fieldset'][data-part='legend'][data-required]::after {
+    content: var(--xh-glyph-mark-required);
+    margin-inline-start: var(--xh-space-1);
+    color: var(--xh-fg-danger);
+  }
+
+  /*
+   * 无效档的字色：标签跟着自己的 data-invalid 转警示色，没渲染错误文案的字段上这是唯一变化的东西。
+   * 有 --xh-<组件>-label-fg-invalid 覆盖槽的组件在各自皮肤里另写一条 color 压过这里。
+   */
+  [data-scope='field'][data-part='label'][data-invalid],
+  [data-scope='fieldset'][data-part='legend'][data-invalid] {
+    color: var(--xh-fg-danger);
   }
 }

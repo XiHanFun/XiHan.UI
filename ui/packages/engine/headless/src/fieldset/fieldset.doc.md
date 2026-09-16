@@ -21,8 +21,8 @@
 - `disabled` 落为原生 `fieldset[disabled]`，组内控件不可聚焦、不可编辑、不参与提交，不需要逐个控件接线。
 - 说明文字与错误文案自动派生 `id` 并接入根节点的 `aria-describedby`，作者不需要写 `id`。
 - 错误文案带 `role="status"` + `aria-live="polite"`，节点常驻、通过 `hidden` 显隐，`invalid` 翻转时读屏排队播报，不打断当前朗读。整表提交失败时的打断式播报只由 Form 的错误摘要发出。
-- `invalid` 落为 `data-invalid`，皮肤据此把组标题转为警示色，同时把错误文案接入描述链并显示。
-- `required` 落为 `data-required`，皮肤据此给组标题加星号。
+- `invalid` 落为根与组标题上的 `data-invalid`，组标题据此转为警示色，同时把错误文案接入描述链并显示。
+- `required` 落为根与组标题上的 `data-required`，组标题的星号由 label 公共层按组标题自己的这一位画。
 - `field-group` 把并排的几个字段圈成一段（宽度足够时自动分栏），`actions` 承载组末尾的按钮行。
 - `disabled` 只作用于原生表单控件：组内 `div` 型控件（滑块、评分等）需要各自接 `disabled`。
 

@@ -79,6 +79,16 @@ describe('connectFieldset 无效与必填', () => {
     expect(props['aria-required']).toBeUndefined()
   })
 
+  // 必填星号与无效字色由 label.css 公共层按组标题自己的两位画，root 上那两位选不中 legend
+  it('组标题自己带 data-required / data-invalid，公共层的星号与警示色按它选中', () => {
+    const legend = api({ invalid: true, required: true }).getLegendProps() as Record<string, unknown>
+    expect(legend['data-required']).toBe('')
+    expect(legend['data-invalid']).toBe('')
+    const plain = api().getLegendProps() as Record<string, unknown>
+    expect(plain['data-required']).toBeUndefined()
+    expect(plain['data-invalid']).toBeUndefined()
+  })
+
   it('api 上的三个布尔恒是布尔，作者传 undefined 也读得到 false', () => {
     const one = api()
     expect([one.disabled, one.invalid, one.required]).toEqual([false, false, false])
