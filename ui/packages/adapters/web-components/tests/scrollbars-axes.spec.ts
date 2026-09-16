@@ -4,8 +4,8 @@ import type { Orientation } from '@xihan-ui/core'
 // 轴不止一条、壳不止 positioner 的那几个宿主。
 // 这里钉住五件事：条子由元素自己建、挂在作者写的壳上、是滚动层的兄弟；
 // 建出来的节点一个 data-xh-part 都不带（打了会被 discoverParts 收进 partMap）；
-// 摆出来的轴与宿主报的一致（cascader 只摆横的，tree-select 与 json-viewer 两条都摆）；
-// 交叉口只画在双轴宿主的竖条里；json-viewer 两档互斥，换档时条子不被整份重铺抹掉。
+// 摆出来的轴与宿主报的一致（cascader 只摆横的，tree-select 两条都摆）；
+// 交叉口只画在双轴宿主的竖条里；json-viewer 是页内结构容器，两档都走原生细条，root 上一条自绘条也不挂。
 import type { CascaderNode, TreeNode } from '@xihan-ui/headless'
 import { beforeEach, describe, expect, it } from 'vitest'
 import { defineXhElements } from '../src/define'
@@ -339,16 +339,6 @@ const CASES: Case[] = [
       </div>
     `,
   },
-  {
-    scope: 'json-viewer',
-    tag: 'xh-json-viewer',
-    axes: ['vertical', 'horizontal'],
-    shell: 'root',
-    layer: 'tree',
-    overlay: false,
-    props: { value: { orderNo: 'SO-1', items: [{ sku: 'A', qty: 2 }] } },
-    markup: '<div data-xh-part="root"></div>',
-  },
 ]
 
 async function mount(item: Case): Promise<Updatable> {
@@ -438,7 +428,7 @@ describe.each(CASES)('$scope 的自绘条', (item) => {
   })
 })
 
-describe('json-viewer 两档互斥', () => {
+describe('json-viewer 不接自绘条', () => {
   async function mountViewer(view?: string): Promise<Updatable> {
     const el = document.createElement('xh-json-viewer') as Updatable
     el.innerHTML = '<div data-xh-part="root"></div>'
@@ -454,44 +444,15 @@ describe('json-viewer 两档互斥', () => {
     return el.querySelector<HTMLElement>(`[data-scope="json-viewer"][data-part="${name}"]`)
   }
 
-  it('树档：条子跟着 tree，pre 不在场', async () => {
+  it('树档与原文档都走原生细条：root 上不挂条子，容器不带 data-xh-scrollbar', async () => {
     const el = await mountViewer()
-
-    expect(bars(part(el, 'root'))).toHaveLength(2)
-    expect(scopePart(el, 'tree')!.getAttribute('data-xh-scrollbar')).toBe('2')
-    expect(scopePart(el, 'text')).toBeNull()
-  })
-
-  it('原文档：条子跟着 pre', async () => {
-    const el = await mountViewer('text')
-
-    expect(bars(part(el, 'root'))).toHaveLength(2)
-    expect(scopePart(el, 'text')!.getAttribute('data-xh-scrollbar')).toBe('2')
-  })
-
-  it('换档时整份重铺不把条子抹掉，条子跟到此刻在场的那个容器', async () => {
-    const el = await mountViewer()
-    const before = bars(part(el, 'root'))
-    expect(before).toHaveLength(2)
+    expect(bars(part(el, 'root'))).toHaveLength(0)
+    expect(scopePart(el, 'tree')!.hasAttribute('data-xh-scrollbar')).toBe(false)
 
     el.setAttribute('view', 'text')
     await settle(el)
-
-    // 条子由同一组机器摆出，换档不重建
-    expect(bars(part(el, 'root'))).toEqual(before)
-    expect(scopePart(el, 'text')!.getAttribute('data-xh-scrollbar')).toBe('2')
+    expect(bars(part(el, 'root'))).toHaveLength(0)
+    expect(scopePart(el, 'text')!.hasAttribute('data-xh-scrollbar')).toBe(false)
     expect(scopePart(el, 'tree')).toBeNull()
-  })
-
-  it('作者写在 root 里的东西被清掉时，条子留在原地', async () => {
-    const el = document.createElement('xh-json-viewer') as Updatable
-    el.innerHTML = '<div data-xh-part="root"><span id="stale">占位</span></div>'
-    el.value = { a: 1 }
-    document.body.appendChild(el)
-    await settle(el)
-
-    const root = part(el, 'root')
-    expect(root.querySelector('#stale')).toBeNull()
-    expect(bars(root)).toHaveLength(2)
   })
 })

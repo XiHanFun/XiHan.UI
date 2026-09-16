@@ -32806,6 +32806,7 @@
       "component": "json-viewer",
       "part": [
         "empty",
+        "root",
         "text",
         "tree"
       ],
@@ -32813,13 +32814,16 @@
         "background"
       ],
       "state": [
-        "default"
+        "default",
+        "is([data-scope='json-viewer'][data-part='tree'], [data-scope='json-viewer'][data-part='text'], [data-scope='json-viewer'][data-part='empty'])",
+        "variant=subtle"
       ],
       "defaultToken": [
-        "--xh-_json-viewer-bg"
+        "--xh-bg-subtle",
+        "--xh-bg-surface"
       ],
       "visibility": "public",
-      "description": "json-viewer 的 empty、text、tree 部件 background 覆盖槽。"
+      "description": "json-viewer 的 empty、root、text、tree 部件 background 覆盖槽。"
     },
     {
       "name": "--xh-json-viewer-boolean-fg",
@@ -32854,7 +32858,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-_json-viewer-border"
+        "--xh-border-default"
       ],
       "visibility": "public",
       "description": "json-viewer 的 empty、text、tree 部件 border 覆盖槽。"
@@ -32996,10 +33000,14 @@
         "--xh-icon-size"
       ],
       "state": [
-        "default"
+        "default",
+        "size=lg",
+        "size=sm"
       ],
       "defaultToken": [
-        "--xh-glyph-size-text"
+        "--xh-glyph-size-lg",
+        "--xh-glyph-size-md",
+        "--xh-glyph-size-sm"
       ],
       "visibility": "public",
       "description": "json-viewer 的 root 部件 --xh-icon-size 覆盖槽。"
@@ -33268,6 +33276,26 @@
       "description": "json-viewer 的 empty、text、tree 部件 border-radius 覆盖槽。"
     },
     {
+      "name": "--xh-json-viewer-row-bg-active",
+      "component": "json-viewer",
+      "part": [
+        "branch-control"
+      ],
+      "property": [
+        "background"
+      ],
+      "state": [
+        "active",
+        "disabled",
+        "not([data-disabled])"
+      ],
+      "defaultToken": [
+        "--xh-bg-subtle-hover"
+      ],
+      "visibility": "public",
+      "description": "json-viewer 的 branch-control 部件 background 覆盖槽。"
+    },
+    {
       "name": "--xh-json-viewer-row-bg-hover",
       "component": "json-viewer",
       "part": [
@@ -33362,6 +33390,26 @@
       ],
       "visibility": "public",
       "description": "json-viewer 的 branch-control、item 部件 border-radius 覆盖槽。"
+    },
+    {
+      "name": "--xh-json-viewer-shadow",
+      "component": "json-viewer",
+      "part": [
+        "empty",
+        "text",
+        "tree"
+      ],
+      "property": [
+        "box-shadow"
+      ],
+      "state": [
+        "default"
+      ],
+      "defaultToken": [
+        "none"
+      ],
+      "visibility": "public",
+      "description": "json-viewer 的 empty、text、tree 部件 box-shadow 覆盖槽。"
     },
     {
       "name": "--xh-json-viewer-string-fg",

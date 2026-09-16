@@ -2,11 +2,10 @@
 //
 // 轴不止一条、壳不止 positioner 的那几个宿主。
 // 这里钉住五件事：条子挂在各自的壳上、是滚动层的兄弟；建出来的节点一个 data-xh-part 都不带；
-// 摆出来的轴与宿主报的一致（cascader 只摆横的，tree-select 与 json-viewer 两条都摆）；
+// 摆出来的轴与宿主报的一致（cascader 只摆横的，tree-select 两条都摆）；
 // 双轴的让位跟着另一条轴的实测溢出走、交叉口只画在竖条里；
-// json-viewer 两档互斥，条子跟到此刻在场的那个容器。
+// json-viewer 是页内结构容器，两档都走原生细条，root 上一条自绘条也不挂。
 import type { Orientation } from '@xihan-ui/core'
-import { DIAGNOSTIC_CODES, onDiagnostic, setDiagnosticsDedupe } from '@xihan-ui/core'
 import { afterEach, describe, expect, it } from 'vitest'
 import { createApp, defineComponent, h, nextTick, ref } from 'vue'
 import {
@@ -207,17 +206,6 @@ const CASES: Case[] = [
       await settle()
     },
   },
-  {
-    scope: 'json-viewer',
-    axes: ['vertical', 'horizontal'],
-    shell: 'root',
-    layer: 'tree',
-    overlay: false,
-    mount: async () => {
-      render(() => h(XhJsonViewerRoot, { value: { orderNo: 'SO-1', items: [{ sku: 'A', qty: 2 }] } }))
-      await settle()
-    },
-  },
 ]
 
 describe.each(CASES)('$scope 的自绘条', (item) => {
@@ -319,65 +307,24 @@ describe('双轴的让位跟着另一条轴走', () => {
   })
 })
 
-describe('json-viewer 两档互斥', () => {
+describe('json-viewer 不接自绘条', () => {
   function mountViewer(view: 'tree' | 'text') {
     const current = ref(view)
     render(() => h(XhJsonViewerRoot, { value: { a: 1, b: [2, 3] }, view: current.value }))
     return current
   }
 
-  it('树档：条子跟着 tree，pre 不在场', async () => {
-    mountViewer('tree')
-    await settle()
-
-    const root = part('json-viewer', 'root')
-    expect(bars(root)).toHaveLength(2)
-    expect(part('json-viewer', 'tree').getAttribute('data-xh-scrollbar')).toBe('2')
-    expect(document.querySelector('[data-scope="json-viewer"][data-part="text"]')).toBeNull()
-  })
-
-  it('原文档：条子跟着 pre', async () => {
-    mountViewer('text')
-    await settle()
-
-    const root = part('json-viewer', 'root')
-    expect(bars(root)).toHaveLength(2)
-    expect(part('json-viewer', 'text').getAttribute('data-xh-scrollbar')).toBe('2')
-  })
-
-  it('换档后条子还在壳上，跟到此刻在场的那个容器', async () => {
+  it('树档与原文档都走原生细条：root 上不挂条子，容器不带 data-xh-scrollbar', async () => {
     const current = mountViewer('tree')
     await settle()
-    const before = bars(part('json-viewer', 'root'))
+
+    expect(bars(part('json-viewer', 'root'))).toHaveLength(0)
+    expect(part('json-viewer', 'tree').hasAttribute('data-xh-scrollbar')).toBe(false)
 
     current.value = 'text'
     await settle()
 
-    const root = part('json-viewer', 'root')
-    // 条子由同一组机器摆出，换档不重建
-    expect(bars(root)).toEqual(before)
-    expect(part('json-viewer', 'text').getAttribute('data-xh-scrollbar')).toBe('2')
-  })
-
-  it('换档不投「找不到滚动容器」的诊断', async () => {
-    // 直接收诊断而不是盯 console：同一条诊断整个进程只打印一次，盯 console 会把这条判据变成恒真
-    const codes: string[] = []
-    setDiagnosticsDedupe(false)
-    const off = onDiagnostic(record => void codes.push(record.code))
-    try {
-      const current = mountViewer('tree')
-      await settle()
-      codes.length = 0
-
-      current.value = 'text'
-      await settle()
-
-      // 旧容器的 ref 置空与新容器挂上之间，条子不该空跑一轮
-      expect(codes).not.toContain(DIAGNOSTIC_CODES.scrollbarMissingScrollable)
-    }
-    finally {
-      off()
-      setDiagnosticsDedupe(true)
-    }
+    expect(bars(part('json-viewer', 'root'))).toHaveLength(0)
+    expect(part('json-viewer', 'text').hasAttribute('data-xh-scrollbar')).toBe(false)
   })
 })

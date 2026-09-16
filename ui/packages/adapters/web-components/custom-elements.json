@@ -28051,24 +28051,6 @@
               "default": "new MachineController<JsonViewerSchema>(this, jsonViewerMachine, () => this.machineProps())"
             },
             {
-              "kind": "field",
-              "name": "bars",
-              "privacy": "private",
-              "readonly": true,
-              "default": "new ScrollbarsController(this, { shell: () => this.getPart('root'), scrollable: () => scrollLayerOf(this.getPart('root')), axes: ['vertical', 'horizontal'], props: () => ({ dir: this.direction }), })",
-              "description": "两档的自绘滚动条：与滚动层同级挂在根上。两档互斥，交给当前在场的一档：\n两个容器都由本元素建立，不带 data-xh-part，从 root 中现查。\n两条轴都排布：深层缩进向行首方向推、长字符串向行尾延伸。"
-            },
-            {
-              "kind": "field",
-              "name": "wiredLayer",
-              "type": {
-                "text": "HTMLElement | null"
-              },
-              "privacy": "private",
-              "default": "null",
-              "description": "条子上一轮接的是哪一档的容器。"
-            },
-            {
               "kind": "method",
               "name": "machineProps",
               "privacy": "private",
@@ -28233,17 +28215,6 @@
             },
             {
               "kind": "method",
-              "name": "syncBars",
-              "privacy": "private",
-              "return": {
-                "type": {
-                  "text": "void"
-                }
-              },
-              "description": "把滚动条接到当前在场的容器上。\n状态机的追踪器在本轮渲染之前就已运行完毕，本轮更换的容器它无法看到；\n换档后再推动一轮，下一轮的追踪器才把滚动监听与容器标记迁移过去。"
-            },
-            {
-              "kind": "method",
               "name": "adopt",
               "privacy": "private",
               "return": {
@@ -28271,7 +28242,7 @@
                   }
                 }
               ],
-              "description": "root 中只保留该档的容器：移除另一档，作者写在其中的内容也一并清除。\n自绘滚动条同样挂在 root 上，按 scope 识别后保留：整份 replaceChildren 会把滚动条一起清除。\n已经就位的节点一律不动：移动一个节点等于把它移除再插回，焦点在树内会回落到 body。"
+              "description": "root 中只保留该档的容器：移除另一档，作者写在其中的内容也一并清除。\n已经就位的节点一律不动：移动一个节点等于把它移除再插回，焦点在树内会回落到 body。"
             }
           ],
           "events": [
@@ -28447,6 +28418,9 @@
               "name": "--xh-json-viewer-radius"
             },
             {
+              "name": "--xh-json-viewer-row-bg-active"
+            },
+            {
               "name": "--xh-json-viewer-row-bg-hover"
             },
             {
@@ -28460,6 +28434,9 @@
             },
             {
               "name": "--xh-json-viewer-row-radius"
+            },
+            {
+              "name": "--xh-json-viewer-shadow"
             },
             {
               "name": "--xh-json-viewer-string-fg"
