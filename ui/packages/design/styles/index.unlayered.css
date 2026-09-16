@@ -12630,7 +12630,8 @@
   --xh-_empty-state-gap: var(--xh-stack-gap-md);
   --xh-_empty-state-py: var(--xh-section-py-md);
   --xh-_empty-state-icon-size: var(--xh-glyph-size-2xl);
-  --xh-_empty-state-title-size: var(--xh-control-font-lg);
+  /* 标题走 Surface / Feedback 标题档 14/600（§6.4）；sm 同档只缩图形与留白，lg 升到页面级 heading-3 */
+  --xh-_empty-state-title-size: var(--xh-text-label-size);
   /* 图标区的强调色：由 data-status（状态码）或 data-tone（语气）换掉；两样都没写就退成中性 */
   --xh-_empty-state-accent: var(--xh-fg-subtle);
 
@@ -12654,7 +12655,6 @@
   --xh-_empty-state-gap: var(--xh-stack-gap-sm);
   --xh-_empty-state-py: var(--xh-section-py-sm);
   --xh-_empty-state-icon-size: var(--xh-glyph-size-xl);
-  --xh-_empty-state-title-size: var(--xh-control-font-md);
 }
 
 [data-scope='empty-state'][data-part='root'][data-size='lg'] {
@@ -12728,8 +12728,8 @@
   margin: 0;
   max-inline-size: var(--xh-empty-state-description-max-w, var(--xh-measure-prose));
   color: var(--xh-empty-state-description-fg, var(--xh-fg-muted));
-  font-size: var(--xh-empty-state-description-font-size, var(--xh-text-body-size));
-  line-height: var(--xh-empty-state-description-leading, var(--xh-text-body-leading));
+  font-size: var(--xh-empty-state-description-font-size, var(--xh-text-secondary-size));
+  line-height: var(--xh-empty-state-description-leading, var(--xh-leading-normal));
 }
 
 [data-scope='empty-state'][data-part='action'] {
