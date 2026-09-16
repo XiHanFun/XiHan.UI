@@ -50,9 +50,10 @@ function widths(nodes: Iterable<Element>): number[] {
 const TIERS = [375, 768, 1280]
 
 describe('pin-input：一行格子放不下时逐格收窄', () => {
+  // 每格 input 自身即 Field Chrome 的 chrome 节点：Headless 在格子上投影 chrome / 尺寸档 / variant，静态标记照抄
   const markup = `<div data-scope="pin-input" data-part="root" data-size="lg">
     <label data-scope="pin-input" data-part="label">验证码</label>
-    <div style="display:flex">${'<input data-scope="pin-input" data-part="input">'.repeat(8)}</div>
+    <div style="display:flex">${'<input data-scope="pin-input" data-part="input" data-xh-field-chrome data-xh-field-size="lg" data-variant="outline">'.repeat(8)}</div>
   </div>`
 
   it.each(TIERS)('%ipx 下不顶出页面', (width) => {

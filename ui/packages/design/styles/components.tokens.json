@@ -42803,16 +42803,16 @@
         "input"
       ],
       "property": [
-        "background"
+        "background-color"
       ],
       "state": [
-        "default"
+        "xh-field-chrome"
       ],
       "defaultToken": [
-        "--xh-_pin-input-box-bg"
+        "--xh-_field-variant-bg-rest"
       ],
       "visibility": "public",
-      "description": "pin-input 的 input 部件 background 覆盖槽。"
+      "description": "pin-input 的 input 部件 background-color 覆盖槽。"
     },
     {
       "name": "--xh-pin-input-box-bg-disabled",
@@ -42821,16 +42821,17 @@
         "input"
       ],
       "property": [
-        "background"
+        "background-color"
       ],
       "state": [
-        "disabled"
+        "disabled",
+        "xh-field-chrome"
       ],
       "defaultToken": [
-        "--xh-bg-subtle"
+        "--xh-_field-variant-bg-disabled"
       ],
       "visibility": "public",
-      "description": "pin-input 的 input 部件 background 覆盖槽。"
+      "description": "pin-input 的 input 部件 background-color 覆盖槽。"
     },
     {
       "name": "--xh-pin-input-box-bg-hover",
@@ -42839,19 +42840,25 @@
         "input"
       ],
       "property": [
-        "background"
+        "background-color"
       ],
       "state": [
+        "disabled",
         "hover",
         "invalid",
-        "not(:disabled, [data-readonly], [data-invalid])",
-        "readonly"
+        "loading",
+        "not([data-disabled])",
+        "not([data-invalid])",
+        "not([data-loading])",
+        "not([data-readonly])",
+        "readonly",
+        "xh-field-chrome"
       ],
       "defaultToken": [
-        "--xh-_pin-input-box-bg-hover"
+        "--xh-_field-variant-bg-hover"
       ],
       "visibility": "public",
-      "description": "pin-input 的 input 部件 background 覆盖槽。"
+      "description": "pin-input 的 input 部件 background-color 覆盖槽。"
     },
     {
       "name": "--xh-pin-input-box-bg-readonly",
@@ -42860,16 +42867,17 @@
         "input"
       ],
       "property": [
-        "background"
+        "background-color"
       ],
       "state": [
-        "readonly"
+        "readonly",
+        "xh-field-chrome"
       ],
       "defaultToken": [
-        "--xh-bg-subtle"
+        "--xh-_field-variant-bg-read-only"
       ],
       "visibility": "public",
-      "description": "pin-input 的 input 部件 background 覆盖槽。"
+      "description": "pin-input 的 input 部件 background-color 覆盖槽。"
     },
     {
       "name": "--xh-pin-input-box-border",
@@ -42881,10 +42889,10 @@
         "border"
       ],
       "state": [
-        "default"
+        "xh-field-chrome"
       ],
       "defaultToken": [
-        "--xh-_pin-input-box-border"
+        "--xh-_field-variant-border-rest"
       ],
       "visibility": "public",
       "description": "pin-input 的 input 部件 border 覆盖槽。"
@@ -42920,11 +42928,14 @@
         "border-color"
       ],
       "state": [
+        "disabled",
         "focus",
-        "focus-visible"
+        "focus-within",
+        "not([data-disabled])",
+        "xh-field-chrome"
       ],
       "defaultToken": [
-        "--xh-_tone"
+        "--xh-_field-variant-border-focus"
       ],
       "visibility": "public",
       "description": "pin-input 的 input 部件 border-color 覆盖槽。"
@@ -42939,13 +42950,19 @@
         "border-color"
       ],
       "state": [
+        "disabled",
         "hover",
         "invalid",
-        "not(:disabled, [data-readonly], [data-invalid])",
-        "readonly"
+        "loading",
+        "not([data-disabled])",
+        "not([data-invalid])",
+        "not([data-loading])",
+        "not([data-readonly])",
+        "readonly",
+        "xh-field-chrome"
       ],
       "defaultToken": [
-        "--xh-_pin-input-box-border-hover"
+        "--xh-_field-variant-border-hover"
       ],
       "visibility": "public",
       "description": "pin-input 的 input 部件 border-color 覆盖槽。"
@@ -42960,10 +42977,11 @@
         "border-color"
       ],
       "state": [
-        "invalid"
+        "invalid",
+        "xh-field-chrome"
       ],
       "defaultToken": [
-        "--xh-border-invalid"
+        "--xh-_field-variant-border-invalid"
       ],
       "visibility": "public",
       "description": "pin-input 的 input 部件 border-color 覆盖槽。"
@@ -42978,7 +42996,7 @@
         "color"
       ],
       "state": [
-        "default"
+        "xh-field-chrome"
       ],
       "defaultToken": [
         "--xh-fg-default"
@@ -43032,7 +43050,7 @@
         "border-radius"
       ],
       "state": [
-        "default"
+        "xh-field-chrome"
       ],
       "defaultToken": [
         "--xh-shape-control"
@@ -43050,12 +43068,10 @@
         "box-shadow"
       ],
       "state": [
-        "-webkit-autofill",
-        "autofill",
-        "default"
+        "xh-field-chrome"
       ],
       "defaultToken": [
-        "--xh-_pin-input-box-shadow"
+        "none"
       ],
       "visibility": "public",
       "description": "pin-input 的 input 部件 box-shadow 覆盖槽。"
@@ -43068,16 +43084,25 @@
       ],
       "property": [
         "block-size",
-        "inline-size"
+        "inline-size",
+        "min-block-size"
       ],
       "state": [
-        "default"
+        "default",
+        "has([data-xh-field-input][data-xh-field-layout='multi-tag'])",
+        "has([data-xh-field-input][data-xh-field-layout='single-line'])",
+        "has([data-xh-field-input][data-xh-field-layout='textarea'])",
+        "xh-field-chrome",
+        "xh-field-input",
+        "xh-field-layout=multi-tag",
+        "xh-field-layout=single-line",
+        "xh-field-layout=textarea"
       ],
       "defaultToken": [
         "--xh-_pin-input-box-size"
       ],
       "visibility": "public",
-      "description": "pin-input 的 input 部件 block-size、inline-size 覆盖槽。"
+      "description": "pin-input 的 input 部件 block-size、inline-size、min-block-size 覆盖槽。"
     },
     {
       "name": "--xh-pin-input-gap",
@@ -43146,7 +43171,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-_pin-input-label-font-size"
+        "--xh-text-label-size"
       ],
       "visibility": "public",
       "description": "pin-input 的 label 部件 font-size 覆盖槽。"

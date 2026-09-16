@@ -261,6 +261,9 @@ pattern 是一段正则源码，逐个字符整格匹配；写法无效时退回
 | `input` | `data-index` | String(index) |
 | `input` | `data-invalid` | ''（条件成立时才出现） |
 | `input` | `data-readonly` | ''（条件成立时才出现） |
+| `input` | `data-variant` | props.variant |
+| `input` | `data-xh-field-chrome` | '' |
+| `input` | `data-xh-field-size` | props.size |
 | `separator` | `data-disabled` | ''（条件成立时才出现） |
 
 <!-- xh-component-tokens:start -->
@@ -272,25 +275,25 @@ pattern 是一段正则源码，逐个字符整格匹配；写法无效时退回
 | --- | --- | --- | --- | --- | --- |
 | `--xh-pin-input-box-autofill-bg` | `input` | `box-shadow` | `-webkit-autofill`<br>`autofill` | `--xh-bg-canvas` | pin-input 的 input 部件 box-shadow 覆盖槽。 |
 | `--xh-pin-input-box-autofill-fg` | `input` | `-webkit-text-fill-color` | `-webkit-autofill`<br>`autofill` | `--xh-fg-default` | pin-input 的 input 部件 -webkit-text-fill-color 覆盖槽。 |
-| `--xh-pin-input-box-bg` | `input` | `background` | `default` | `--xh-_pin-input-box-bg` | pin-input 的 input 部件 background 覆盖槽。 |
-| `--xh-pin-input-box-bg-disabled` | `input` | `background` | `disabled` | `--xh-bg-subtle` | pin-input 的 input 部件 background 覆盖槽。 |
-| `--xh-pin-input-box-bg-hover` | `input` | `background` | `hover`<br>`invalid`<br>`not(:disabled, [data-readonly], [data-invalid])`<br>`readonly` | `--xh-_pin-input-box-bg-hover` | pin-input 的 input 部件 background 覆盖槽。 |
-| `--xh-pin-input-box-bg-readonly` | `input` | `background` | `readonly` | `--xh-bg-subtle` | pin-input 的 input 部件 background 覆盖槽。 |
-| `--xh-pin-input-box-border` | `input` | `border` | `default` | `--xh-_pin-input-box-border` | pin-input 的 input 部件 border 覆盖槽。 |
+| `--xh-pin-input-box-bg` | `input` | `background-color` | `xh-field-chrome` | `--xh-_field-variant-bg-rest` | pin-input 的 input 部件 background-color 覆盖槽。 |
+| `--xh-pin-input-box-bg-disabled` | `input` | `background-color` | `disabled`<br>`xh-field-chrome` | `--xh-_field-variant-bg-disabled` | pin-input 的 input 部件 background-color 覆盖槽。 |
+| `--xh-pin-input-box-bg-hover` | `input` | `background-color` | `disabled`<br>`hover`<br>`invalid`<br>`loading`<br>`not([data-disabled])`<br>`not([data-invalid])`<br>`not([data-loading])`<br>`not([data-readonly])`<br>`readonly`<br>`xh-field-chrome` | `--xh-_field-variant-bg-hover` | pin-input 的 input 部件 background-color 覆盖槽。 |
+| `--xh-pin-input-box-bg-readonly` | `input` | `background-color` | `readonly`<br>`xh-field-chrome` | `--xh-_field-variant-bg-read-only` | pin-input 的 input 部件 background-color 覆盖槽。 |
+| `--xh-pin-input-box-border` | `input` | `border` | `xh-field-chrome` | `--xh-_field-variant-border-rest` | pin-input 的 input 部件 border 覆盖槽。 |
 | `--xh-pin-input-box-border-complete` | `input`<br>`root` | `border-color` | `complete`<br>`invalid`<br>`not([data-invalid], :disabled)` | `--xh-_pin-input-accent` | pin-input 的 input、root 部件 border-color 覆盖槽。 |
-| `--xh-pin-input-box-border-focus` | `input` | `border-color` | `focus`<br>`focus-visible` | `--xh-_tone` | pin-input 的 input 部件 border-color 覆盖槽。 |
-| `--xh-pin-input-box-border-hover` | `input` | `border-color` | `hover`<br>`invalid`<br>`not(:disabled, [data-readonly], [data-invalid])`<br>`readonly` | `--xh-_pin-input-box-border-hover` | pin-input 的 input 部件 border-color 覆盖槽。 |
-| `--xh-pin-input-box-border-invalid` | `input` | `border-color` | `invalid` | `--xh-border-invalid` | pin-input 的 input 部件 border-color 覆盖槽。 |
-| `--xh-pin-input-box-fg` | `input` | `color` | `default` | `--xh-fg-default` | pin-input 的 input 部件 color 覆盖槽。 |
+| `--xh-pin-input-box-border-focus` | `input` | `border-color` | `disabled`<br>`focus`<br>`focus-within`<br>`not([data-disabled])`<br>`xh-field-chrome` | `--xh-_field-variant-border-focus` | pin-input 的 input 部件 border-color 覆盖槽。 |
+| `--xh-pin-input-box-border-hover` | `input` | `border-color` | `disabled`<br>`hover`<br>`invalid`<br>`loading`<br>`not([data-disabled])`<br>`not([data-invalid])`<br>`not([data-loading])`<br>`not([data-readonly])`<br>`readonly`<br>`xh-field-chrome` | `--xh-_field-variant-border-hover` | pin-input 的 input 部件 border-color 覆盖槽。 |
+| `--xh-pin-input-box-border-invalid` | `input` | `border-color` | `invalid`<br>`xh-field-chrome` | `--xh-_field-variant-border-invalid` | pin-input 的 input 部件 border-color 覆盖槽。 |
+| `--xh-pin-input-box-fg` | `input` | `color` | `xh-field-chrome` | `--xh-fg-default` | pin-input 的 input 部件 color 覆盖槽。 |
 | `--xh-pin-input-box-font-size` | `input` | `font-size` | `default` | `--xh-_pin-input-box-font-size` | pin-input 的 input 部件 font-size 覆盖槽。 |
 | `--xh-pin-input-box-gap` | `input` | `margin-inline-start` | `default` | `--xh-_pin-input-box-gap` | pin-input 的 input 部件 margin-inline-start 覆盖槽。 |
-| `--xh-pin-input-box-radius` | `input` | `border-radius` | `default` | `--xh-shape-control` | pin-input 的 input 部件 border-radius 覆盖槽。 |
-| `--xh-pin-input-box-shadow` | `input` | `box-shadow` | `-webkit-autofill`<br>`autofill`<br>`default` | `--xh-_pin-input-box-shadow` | pin-input 的 input 部件 box-shadow 覆盖槽。 |
-| `--xh-pin-input-box-size` | `input` | `block-size`<br>`inline-size` | `default` | `--xh-_pin-input-box-size` | pin-input 的 input 部件 block-size、inline-size 覆盖槽。 |
+| `--xh-pin-input-box-radius` | `input` | `border-radius` | `xh-field-chrome` | `--xh-shape-control` | pin-input 的 input 部件 border-radius 覆盖槽。 |
+| `--xh-pin-input-box-shadow` | `input` | `box-shadow` | `xh-field-chrome` | `none` | pin-input 的 input 部件 box-shadow 覆盖槽。 |
+| `--xh-pin-input-box-size` | `input` | `block-size`<br>`inline-size`<br>`min-block-size` | `default`<br>`has([data-xh-field-input][data-xh-field-layout='multi-tag'])`<br>`has([data-xh-field-input][data-xh-field-layout='single-line'])`<br>`has([data-xh-field-input][data-xh-field-layout='textarea'])`<br>`xh-field-chrome`<br>`xh-field-input`<br>`xh-field-layout=multi-tag`<br>`xh-field-layout=single-line`<br>`xh-field-layout=textarea` | `--xh-_pin-input-box-size` | pin-input 的 input 部件 block-size、inline-size、min-block-size 覆盖槽。 |
 | `--xh-pin-input-gap` | `root` | `gap` | `default` | `--xh-space-1` | pin-input 的 root 部件 gap 覆盖槽。 |
 | `--xh-pin-input-label-fg` | `label` | `color` | `default` | `--xh-fg-default` | pin-input 的 label 部件 color 覆盖槽。 |
 | `--xh-pin-input-label-fg-disabled` | `label` | `color` | `disabled` | `--xh-fg-subtle` | pin-input 的 label 部件 color 覆盖槽。 |
-| `--xh-pin-input-label-font-size` | `label` | `font-size` | `default` | `--xh-_pin-input-label-font-size` | pin-input 的 label 部件 font-size 覆盖槽。 |
+| `--xh-pin-input-label-font-size` | `label` | `font-size` | `default` | `--xh-text-label-size` | pin-input 的 label 部件 font-size 覆盖槽。 |
 | `--xh-pin-input-label-font-weight` | `label` | `font-weight` | `default` | `--xh-text-label-weight` | pin-input 的 label 部件 font-weight 覆盖槽。 |
 | `--xh-pin-input-placeholder-fg` | `input` | `color` | `placeholder` | `--xh-fg-subtle` | pin-input 的 input 部件 color 覆盖槽。 |
 | `--xh-pin-input-separator-fg` | `separator` | `color` | `default` | `--xh-fg-muted` | pin-input 的 separator 部件 color 覆盖槽。 |
@@ -301,9 +304,7 @@ pattern 是一段正则源码，逐个字符整格匹配；写法无效时退回
 
 ### 动效
 
-`background` · `border-color` 走 `transition` 过渡。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
-
-系统开启减弱动效时由令牌层统一收敛，皮肤不另作判断。
+本组件皮肤不含过渡与关键帧，也没有脚本驱动的动效：状态一变，外观立即到位。
 
 ### RTL
 

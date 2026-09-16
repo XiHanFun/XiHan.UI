@@ -318,6 +318,19 @@ function conditionMatches(condition, state) {
   return condition.positive.every(matches) && condition.negative.every(entry => !matches(entry))
 }
 
+/** getInputProps 这一段 getter 自己投影了 data-xh-field-chrome（input 即视觉盒），且全文件没投影 data-xh-field-input。 */
+function inputGetterProjectsChrome(connect) {
+  if (/['"]data-xh-field-input['"]\s*:/.test(connect))
+    return false
+  const start = connect.search(/(?<![A-Za-z])getInputProps\s*[:=]/)
+  if (start < 0)
+    return false
+  const rest = connect.slice(start + 'getInputProps'.length)
+  const next = rest.search(/\bget[A-Z][A-Za-z0-9]*Props\s*[:=]/)
+  const body = next < 0 ? rest : rest.slice(0, next)
+  return /['"]data-xh-field-chrome['"]\s*:/.test(body)
+}
+
 /** 公开 autofill 槽的第二参必须仍是一支 var；返回它指向的语义/私有槽。 */
 function fallbackTarget(body, role) {
   const match = new RegExp(
@@ -594,8 +607,12 @@ for (const comp of native.sort()) {
   let css
   try {
     const componentCss = await readFile(join(SKIN_DIR, `${comp}.css`), 'utf8')
-    if (/@import\s+['"]\.\.\/family\/field-chrome\.css['"]/.test(componentCss)) {
-      const connect = await readFile(join(ANATOMY_DIR, comp, `${comp}.connect.ts`), 'utf8')
+    const connect = /@import\s+['"]\.\.\/family\/field-chrome\.css['"]/.test(componentCss)
+      ? await readFile(join(ANATOMY_DIR, comp, `${comp}.connect.ts`), 'utf8')
+      : ''
+    // input 部件自身就是 chrome 节点（pin-input 的每一格）时不投影 data-xh-field-input——
+    // 投了家族会把格子的边框重置掉；家族的 autofill 规则因此命不中，皮肤必须自写两条，走下面的普通判据
+    if (connect !== '' && !inputGetterProjectsChrome(connect)) {
       if (!/['"]data-xh-field-input['"]\s*:/.test(connect))
         problems.push(`${comp}.connect.ts 没有投影 data-xh-field-input，Field Chrome 的 autofill 规则落不到 input 部件`)
       for (const role of ['bg', 'fg']) {

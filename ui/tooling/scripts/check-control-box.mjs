@@ -40,7 +40,7 @@ const COMPONENTS = [
  */
 const SINGLE_ELEMENT = {
   'mention': '单行 input 自画盒，没有尾钮',
-  'pin-input': '每格一个 input 自画盒，格与格之间由 root 排布',
+  'pin-input': '每格一个 input 即视觉盒（自身投影 Field Chrome），格与格之间由 root 排布',
 }
 
 /** 盒内的内容区：占满剩余宽度、把尾钮顶到最右的那个部件。 */
