@@ -37835,6 +37835,9 @@
               "name": "--xh-password-input-control-border-invalid"
             },
             {
+              "name": "--xh-password-input-control-fg"
+            },
+            {
               "name": "--xh-password-input-control-gap"
             },
             {
@@ -37865,49 +37868,10 @@
               "name": "--xh-password-input-input-autofill-fg"
             },
             {
-              "name": "--xh-password-input-input-bg"
-            },
-            {
-              "name": "--xh-password-input-input-bg-disabled"
-            },
-            {
-              "name": "--xh-password-input-input-bg-hover"
-            },
-            {
-              "name": "--xh-password-input-input-bg-readonly"
-            },
-            {
-              "name": "--xh-password-input-input-border"
-            },
-            {
-              "name": "--xh-password-input-input-border-focus"
-            },
-            {
-              "name": "--xh-password-input-input-border-hover"
-            },
-            {
-              "name": "--xh-password-input-input-border-invalid"
-            },
-            {
               "name": "--xh-password-input-input-fg"
             },
             {
               "name": "--xh-password-input-input-font-size"
-            },
-            {
-              "name": "--xh-password-input-input-h"
-            },
-            {
-              "name": "--xh-password-input-input-min-w"
-            },
-            {
-              "name": "--xh-password-input-input-px"
-            },
-            {
-              "name": "--xh-password-input-input-radius"
-            },
-            {
-              "name": "--xh-password-input-input-shadow"
             },
             {
               "name": "--xh-password-input-label-fg"

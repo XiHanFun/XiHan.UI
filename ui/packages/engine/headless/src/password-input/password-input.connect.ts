@@ -104,9 +104,13 @@ export function connectPasswordInput<T extends PropTypes>(
       'data-disabled': dataAttr(disabled),
     }),
 
-    // 视觉盒画在 control 上：描边、底色与聚焦环归它，框内三件都是透明分段
+    // 视觉盒由 Field Chrome 家族画在 control 上：描边、底色与聚焦环归它，框内三件都是透明分段；
+    // size 缺省 md，variant 与 root 同源
     getControlProps: () => normalize.element({
       ...parts.control.attrs,
+      'data-xh-field-chrome': '',
+      'data-xh-field-size': prop('size') ?? 'md',
+      'data-variant': variant,
       'data-disabled': dataAttr(disabled),
       'data-readonly': dataAttr(readOnly),
       'data-invalid': dataAttr(invalid),
@@ -136,7 +140,11 @@ export function connectPasswordInput<T extends PropTypes>(
       'aria-invalid': invalid ? 'true' : 'false',
       // 大写锁定亮着时把提示挂进描述：焦点晚于提示出现的用户，进框就能听见
       'aria-describedby': capsLock ? ids.capsLock : undefined,
+      // Field Chrome 不读取 password-input anatomy；原生输入角色与单行布局由 Headless 明确投影
+      'data-xh-field-input': '',
+      'data-xh-field-layout': 'single-line',
       'data-disabled': dataAttr(disabled),
+      'data-readonly': dataAttr(readOnly),
       'data-invalid': dataAttr(invalid),
       'onInput': (event: Event) => {
         const el = event.target as HTMLInputElement
@@ -149,8 +157,14 @@ export function connectPasswordInput<T extends PropTypes>(
       'onBlur': () => send({ type: 'CAPS_LOCK.SET', on: false }),
     }),
 
+    // 明暗钮走 Action Control 的 field-inset ghost 档：正方视觉盒、inset 圆角、悬停 100 / 按下 200
     getVisibilityTriggerProps: () => normalize.button({
       ...parts['visibility-trigger'].attrs,
+      'data-xh-action-control': '',
+      'data-xh-action-profile': 'field-inset',
+      'data-xh-action-variant': 'ghost',
+      'data-xh-action-display': 'always',
+      'data-xh-action-size': prop('size') ?? 'md',
       // 少了 type，按钮落在 form 里会变成 submit
       'type': 'button',
       // 名字随动作走。名字换了就不再加 aria-pressed：两个通道各说各的，

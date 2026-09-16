@@ -76,14 +76,20 @@ const SHARED_FAMILY = {
     contentSelector: '[data-xh-field-input]',
     actionParts: new Set(['increment-trigger', 'decrement-trigger']),
   },
+  'password-input': {
+    boxSelector: '[data-xh-field-chrome]',
+    contentSelector: '[data-xh-field-input]',
+    actionParts: new Set(['visibility-trigger']),
+  },
 }
 
 /**
  * 两套盒的控件：写了 control 由 control 画盒，不写则那个 input 自己画盒。
  * 两种用法都得有聚焦环，所以 input 上那条不算出格。
  * 每条都要真被用来放行过一次，一次都没用上的会被下面的名单核验报出来。
+ * password-input 接入 Field Chrome 后无 control 的结构不再画盒，名单现为空。
  */
-const DUAL_BOX = new Set(['password-input'])
+const DUAL_BOX = new Set([])
 
 /** 盒与盒内文字区：聚焦环只许画在其中的盒上。浮层里的条目、列表另说，不在此列。 */
 const BOX_AREA_PARTS = new Set(['control', 'input', 'trigger', 'value-text', 'segment-group', 'segment'])
