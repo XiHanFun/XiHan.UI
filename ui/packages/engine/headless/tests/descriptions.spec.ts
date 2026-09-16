@@ -10,6 +10,21 @@ function api(props: DescriptionsProps = {}) {
   return connectDescriptions(props, normalizeProps)
 }
 
+describe('connectDescriptions 的形态', () => {
+  it('形态不写落 ghost，其余三个轴不写就不落', () => {
+    const root = api().getRootProps() as Props
+    expect(root['data-variant']).toBe('ghost')
+    expect(root['data-columns']).toBeUndefined()
+    expect(root['data-placement']).toBeUndefined()
+    expect(root['data-size']).toBeUndefined()
+  })
+
+  it('形态如实落到根上', () => {
+    expect((api({ variant: 'outline' }).getRootProps() as Props)['data-variant']).toBe('outline')
+    expect((api({ variant: 'subtle' }).getRootProps() as Props)['data-variant']).toBe('subtle')
+  })
+})
+
 describe('connectDescriptions 的跨列', () => {
   it('不写 span 即不产出 style，旧的零参调用照样成立', () => {
     expect((api({ columns: 3 }).getItemProps() as Props).style).toBeUndefined()

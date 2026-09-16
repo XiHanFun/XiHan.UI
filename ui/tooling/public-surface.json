@@ -9978,10 +9978,10 @@
       "visibleCount"
     ],
     "descriptions": [
-      "bordered",
       "columns",
       "placement",
-      "size"
+      "size",
+      "variant"
     ],
     "dialog": [
       "closeOnEscape",
@@ -16716,10 +16716,10 @@
     },
     "xh-descriptions": {
       "attributes": [
-        "bordered",
         "columns",
         "placement",
-        "size"
+        "size",
+        "variant"
       ],
       "events": []
     },

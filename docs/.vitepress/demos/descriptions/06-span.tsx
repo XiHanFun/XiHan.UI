@@ -9,7 +9,7 @@ import {
 
 export default function Demo(): ReactNode {
   return (
-    <XhDescriptionsRoot columns={3} bordered style={{ maxInlineSize: "720px" }}>
+    <XhDescriptionsRoot columns={3} variant="outline" style={{ maxInlineSize: "720px" }}>
       <XhDescriptionsItem>
         <XhDescriptionsLabel>订单号</XhDescriptionsLabel>
         <XhDescriptionsValue>XH-20260810-0042</XhDescriptionsValue>

@@ -20725,9 +20725,11 @@
         "background"
       ],
       "state": [
-        "bordered"
+        "variant=outline",
+        "variant=subtle"
       ],
       "defaultToken": [
+        "--xh-bg-subtle",
         "--xh-bg-surface"
       ],
       "visibility": "public",
@@ -20743,7 +20745,7 @@
         "border"
       ],
       "state": [
-        "bordered"
+        "variant=outline"
       ],
       "defaultToken": [
         "--xh-border-default"
@@ -20763,7 +20765,7 @@
         "border-inline-start"
       ],
       "state": [
-        "bordered"
+        "variant=outline"
       ],
       "defaultToken": [
         "--xh-border-subtle"
@@ -20836,7 +20838,7 @@
         "padding-inline"
       ],
       "state": [
-        "bordered"
+        "variant=outline"
       ],
       "defaultToken": [
         "--xh-_descriptions-px"
@@ -20855,7 +20857,7 @@
         "padding-block"
       ],
       "state": [
-        "bordered"
+        "variant=outline"
       ],
       "defaultToken": [
         "--xh-_descriptions-py"
@@ -20967,7 +20969,8 @@
         "border-radius"
       ],
       "state": [
-        "bordered"
+        "variant=outline",
+        "variant=subtle"
       ],
       "defaultToken": [
         "--xh-shape-surface"

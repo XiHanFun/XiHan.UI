@@ -876,8 +876,8 @@
   color: var(--xh-descriptions-value-fg, var(--xh-fg-default));
 }
 
-/* —— 外框与网格线 —— */
-[data-scope='descriptions'][data-part='root'][data-bordered] {
+/* —— 形态：ghost 即基础规则，不画壳；outline 画外框与网格线 —— */
+[data-scope='descriptions'][data-part='root'][data-variant='outline'] {
   /* 网格线由每格自己的边线拼出来，格与格之间不能再留缝 */
   gap: 0;
   border: var(--xh-stroke-thin) solid var(--xh-descriptions-border, var(--xh-border-default));
@@ -888,7 +888,7 @@
 }
 
 /* 每格自带上边线与左边线，行首与首行那几格再各自抹掉，相邻两格之间就只剩一条 */
-[data-scope='descriptions'][data-part='root'][data-bordered]
+[data-scope='descriptions'][data-part='root'][data-variant='outline']
   > [data-scope='descriptions'][data-part='item'] {
   padding-block: var(--xh-descriptions-item-py, var(--xh-_descriptions-py));
   padding-inline: var(--xh-descriptions-item-px, var(--xh-_descriptions-px));
@@ -897,9 +897,16 @@
   border-inline-start: 0 solid var(--xh-descriptions-divider, var(--xh-border-subtle));
 }
 
-[data-scope='descriptions'][data-part='root'][data-bordered]
+[data-scope='descriptions'][data-part='root'][data-variant='outline']
   > [data-scope='descriptions'][data-part='item']:first-child {
   border-block-start-width: 0;
+}
+
+/* 淡底档：不画描边也不补网格线，surface 圆角 + subtle 底 */
+[data-scope='descriptions'][data-part='root'][data-variant='subtle'] {
+  border-radius: var(--xh-descriptions-radius, var(--xh-shape-surface));
+  background: var(--xh-descriptions-bg, var(--xh-bg-subtle));
+  overflow: hidden;
 }
 
 /* —— 逐档的列数与边线 ——
@@ -940,31 +947,31 @@
   }
 
   /* 一行两格：二、四、六列在这一档共用这套边线 */
-  [data-scope='descriptions'][data-part='root'][data-bordered][data-columns='2']
+  [data-scope='descriptions'][data-part='root'][data-variant='outline'][data-columns='2']
     > [data-scope='descriptions'][data-part='item']:not(:nth-child(2n + 1)),
-  [data-scope='descriptions'][data-part='root'][data-bordered][data-columns='4']
+  [data-scope='descriptions'][data-part='root'][data-variant='outline'][data-columns='4']
     > [data-scope='descriptions'][data-part='item']:not(:nth-child(2n + 1)),
-  [data-scope='descriptions'][data-part='root'][data-bordered][data-columns='6']
+  [data-scope='descriptions'][data-part='root'][data-variant='outline'][data-columns='6']
     > [data-scope='descriptions'][data-part='item']:not(:nth-child(2n + 1)) {
     border-inline-start-width: var(--xh-stroke-thin);
   }
 
-  [data-scope='descriptions'][data-part='root'][data-bordered][data-columns='2']
+  [data-scope='descriptions'][data-part='root'][data-variant='outline'][data-columns='2']
     > [data-scope='descriptions'][data-part='item']:nth-child(-n + 2),
-  [data-scope='descriptions'][data-part='root'][data-bordered][data-columns='4']
+  [data-scope='descriptions'][data-part='root'][data-variant='outline'][data-columns='4']
     > [data-scope='descriptions'][data-part='item']:nth-child(-n + 2),
-  [data-scope='descriptions'][data-part='root'][data-bordered][data-columns='6']
+  [data-scope='descriptions'][data-part='root'][data-variant='outline'][data-columns='6']
     > [data-scope='descriptions'][data-part='item']:nth-child(-n + 2) {
     border-block-start-width: 0;
   }
 
   /* 一行三格 */
-  [data-scope='descriptions'][data-part='root'][data-bordered][data-columns='3']
+  [data-scope='descriptions'][data-part='root'][data-variant='outline'][data-columns='3']
     > [data-scope='descriptions'][data-part='item']:not(:nth-child(3n + 1)) {
     border-inline-start-width: var(--xh-stroke-thin);
   }
 
-  [data-scope='descriptions'][data-part='root'][data-bordered][data-columns='3']
+  [data-scope='descriptions'][data-part='root'][data-variant='outline'][data-columns='3']
     > [data-scope='descriptions'][data-part='item']:nth-child(-n + 3) {
     border-block-start-width: 0;
   }
@@ -981,32 +988,32 @@
     grid-column: span var(--xh-_descriptions-item-span);
   }
 
-  [data-scope='descriptions'][data-part='root'][data-bordered][data-columns='4']
+  [data-scope='descriptions'][data-part='root'][data-variant='outline'][data-columns='4']
     > [data-scope='descriptions'][data-part='item']:not(:nth-child(4n + 1)) {
     border-inline-start-width: var(--xh-stroke-thin);
   }
 
-  [data-scope='descriptions'][data-part='root'][data-bordered][data-columns='4']
+  [data-scope='descriptions'][data-part='root'][data-variant='outline'][data-columns='4']
     > [data-scope='descriptions'][data-part='item']:nth-child(-n + 4) {
     border-block-start-width: 0;
   }
 
-  [data-scope='descriptions'][data-part='root'][data-bordered][data-columns='5']
+  [data-scope='descriptions'][data-part='root'][data-variant='outline'][data-columns='5']
     > [data-scope='descriptions'][data-part='item']:not(:nth-child(5n + 1)) {
     border-inline-start-width: var(--xh-stroke-thin);
   }
 
-  [data-scope='descriptions'][data-part='root'][data-bordered][data-columns='5']
+  [data-scope='descriptions'][data-part='root'][data-variant='outline'][data-columns='5']
     > [data-scope='descriptions'][data-part='item']:nth-child(-n + 5) {
     border-block-start-width: 0;
   }
 
-  [data-scope='descriptions'][data-part='root'][data-bordered][data-columns='6']
+  [data-scope='descriptions'][data-part='root'][data-variant='outline'][data-columns='6']
     > [data-scope='descriptions'][data-part='item']:not(:nth-child(6n + 1)) {
     border-inline-start-width: var(--xh-stroke-thin);
   }
 
-  [data-scope='descriptions'][data-part='root'][data-bordered][data-columns='6']
+  [data-scope='descriptions'][data-part='root'][data-variant='outline'][data-columns='6']
     > [data-scope='descriptions'][data-part='item']:nth-child(-n + 6) {
     border-block-start-width: 0;
   }

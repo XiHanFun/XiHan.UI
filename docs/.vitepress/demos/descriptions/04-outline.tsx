@@ -1,4 +1,4 @@
-// 外框 | bordered 绘制一圈描边，并在格与格之间补上网格线
+// 外框 | variant="outline" 绘制一圈描边，并在格与格之间补上网格线
 import type { ReactNode } from "react";
 import {
   XhDescriptionsItem,
@@ -16,7 +16,7 @@ const rows = [
 
 export default function Demo(): ReactNode {
   return (
-    <XhDescriptionsRoot bordered columns={2} placement="left">
+    <XhDescriptionsRoot variant="outline" columns={2} placement="left">
       {rows.map(row => (
         <XhDescriptionsItem key={row.label}>
           <XhDescriptionsLabel>{row.label}</XhDescriptionsLabel>

@@ -5,7 +5,7 @@
 
 // 提供 descriptions 相关实现。
 
-import type { Size } from '@xihan-ui/core'
+import type { ControlVariant, Size } from '@xihan-ui/core'
 import type { DescriptionsColumns, DescriptionsPlacement, DescriptionsProps } from '@xihan-ui/headless'
 import type { ComponentPropsWithRef, ElementType, ReactNode } from 'react'
 import { connectDescriptions } from '@xihan-ui/headless'
@@ -17,8 +17,8 @@ import { DescriptionsProvider, useDescriptionsContext } from './context'
 export interface XhDescriptionsRootProps extends ComponentPropsWithRef<'dl'> {
   /** 每行排几组，一到六列；未写即每行一组。 */
   columns?: DescriptionsColumns
-  /** 外框：为整份描述绘制描边，并在格与格之间绘制网格线。 */
-  bordered?: boolean
+  /** 形态：ghost 不画壳（默认），outline 绘制外框并在格与格之间补网格线，subtle 淡底。默认 ghost。 */
+  variant?: ControlVariant
   /** 标签的位置：top / left；未写即标签在上。 */
   placement?: DescriptionsPlacement
   /** 尺寸：sm / md / lg。 */
@@ -27,17 +27,17 @@ export interface XhDescriptionsRootProps extends ComponentPropsWithRef<'dl'> {
   as?: ElementType
 }
 
-/** 一组只读的标签与取值：三个轴与一个开关只落在这一层，各格从这里继承。 */
+/** 一组只读的标签与取值：四个轴只落在这一层，各格从这里继承。 */
 export function XhDescriptionsRoot({
   columns,
-  bordered,
+  variant,
   placement,
   size,
   as = 'dl',
   children,
   ...rest
 }: XhDescriptionsRootProps): ReactNode {
-  const configured = withXhConfig('descriptions', { columns, bordered, placement, size }) as DescriptionsProps
+  const configured = withXhConfig('descriptions', { columns, variant, placement, size }) as DescriptionsProps
   const api = connectDescriptions(configured, reactNormalize)
   const Tag = as as 'dl'
   return (
