@@ -61,6 +61,56 @@ function escape(props: Dict): void {
   })
 }
 
+describe('Action Control 家族属性', () => {
+  it('两颗钮接 text 档：批准 solid、拒绝 outline；授权行接 row 档 ghost；档位随 size 缺省 md', () => {
+    const r = mount({ scopes: [{ value: 'read' }] })
+    expect(r.approve()).toMatchObject({
+      'data-xh-action-control': '',
+      'data-xh-action-profile': 'text',
+      'data-xh-action-variant': 'solid',
+      'data-xh-action-display': 'always',
+      'data-xh-action-size': 'md',
+    })
+    expect(r.deny()).toMatchObject({
+      'data-xh-action-control': '',
+      'data-xh-action-profile': 'text',
+      'data-xh-action-variant': 'outline',
+      'data-xh-action-display': 'always',
+      'data-xh-action-size': 'md',
+    })
+    expect(r.api().getItemProps({ value: 'read' })).toMatchObject({
+      'data-xh-action-control': '',
+      'data-xh-action-profile': 'row',
+      'data-xh-action-variant': 'ghost',
+      'data-xh-action-display': 'always',
+      'data-xh-action-size': 'md',
+    })
+    const sm = mount({ size: 'sm', scopes: [{ value: 'read' }] })
+    expect(sm.approve()['data-xh-action-size']).toBe('sm')
+    expect((sm.api().getItemProps({ value: 'read' }) as Dict)['data-xh-action-size']).toBe('sm')
+  })
+
+  // 家族只认 data-disabled 给禁用面：没勾满与落定都投它，在途那一档另有在途面、不投
+  it('data-disabled 三档：闲时不投；必选项没勾满只投批准；落定两颗都投；在途两颗都不投', () => {
+    const idle = mount({ scopes: [{ value: 'read' }] })
+    expect(idle.approve()['data-disabled']).toBeUndefined()
+    expect(idle.deny()['data-disabled']).toBeUndefined()
+
+    const gated = mount({ scopes: [{ value: 'read', required: true }] })
+    expect(gated.approve()['aria-disabled']).toBe('true')
+    expect(gated.approve()['data-disabled']).toBe('')
+    expect(gated.deny()['data-disabled']).toBeUndefined()
+
+    const settled = mount({ defaultStatus: 'approved' })
+    expect(settled.approve()['data-disabled']).toBe('')
+    expect(settled.deny()['data-disabled']).toBe('')
+
+    const loading = mount({ loading: true, scopes: [{ value: 'read', required: true }] })
+    expect(loading.approve()['data-disabled']).toBeUndefined()
+    expect(loading.deny()['data-disabled']).toBeUndefined()
+  })
+})
+
 describe('判定在途（loading）', () => {
   it('批准与拒绝一起锁：两颗钮的 aria 与 data 位同构', () => {
     const r = mount({ loading: true })

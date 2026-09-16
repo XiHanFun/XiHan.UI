@@ -2,22 +2,19 @@
 
 exports[`family-backlog 条目数 > 七段各一数，与快照一致 1`] = `
 {
-  "edge": 32,
-  "ladder": 73,
+  "edge": 29,
+  "ladder": 71,
   "motion": 1,
-  "press": 60,
+  "press": 57,
   "scroll": 28,
   "selection": 19,
-  "shape": 24,
-  "text": 78,
+  "shape": 23,
+  "text": 75,
 }
 `;
 
 exports[`family-backlog 键集合 > edge 1`] = `
 [
-  "approval:root",
-  "approval:root:raised",
-  "approval:root:subtle",
   "button:root:raised",
   "checkbox-group:root:raised",
   "checkbox-group:select-all-trigger:raised",
@@ -54,8 +51,6 @@ exports[`family-backlog 键集合 > ladder 1`] = `
 [
   "accordion:trigger:hover",
   "anchor:link:hover",
-  "approval:deny-trigger:hover",
-  "approval:item:hover",
   "breadcrumb:link:hover",
   "calendar-picker:cell-trigger:hover",
   "calendar-picker:cell-trigger:selected",
@@ -138,9 +133,6 @@ exports[`family-backlog 键集合 > press 1`] = `
 [
   "*:data-pressed",
   "accordion:trigger",
-  "approval:approve-trigger",
-  "approval:deny-trigger",
-  "approval:item",
   "calendar-picker:cell-trigger",
   "calendar-picker:heading-month-trigger",
   "calendar-picker:heading-year-trigger",
@@ -258,7 +250,6 @@ exports[`family-backlog 键集合 > selection 1`] = `
 
 exports[`family-backlog 键集合 > shape 1`] = `
 [
-  "approval:footer::before",
   "back-top:trigger",
   "carousel:autoplay-trigger",
   "carousel:next-trigger",
@@ -288,9 +279,6 @@ exports[`family-backlog 键集合 > shape 1`] = `
 exports[`family-backlog 键集合 > text 1`] = `
 [
   "accordion:root:icon-size",
-  "approval:description:line-height",
-  "approval:root:icon-size",
-  "approval:title:font-weight",
   "back-top:root:icon-size",
   "calendar-picker:root:icon-size",
   "calendar-range-picker:root:icon-size",

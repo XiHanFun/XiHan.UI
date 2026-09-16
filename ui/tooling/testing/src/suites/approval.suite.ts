@@ -48,11 +48,32 @@ export const approvalSuite: ConformanceSuite = {
         counts: { 'root': 1, 'approve-trigger': 1, 'deny-trigger': 1, 'item': 2 },
         parts: {
           'root': { 'role': 'group', 'data-state': 'pending', 'data-loading': null },
-          // 待决时用 aria-disabled 而不是原生 disabled：保住可聚焦、让读屏念得到为什么按不动
-          'approve-trigger': { 'type': 'button', 'aria-disabled': 'true', 'disabled': null },
-          'deny-trigger': { type: 'button', disabled: null },
+          // 待决时用 aria-disabled 而不是原生 disabled：保住可聚焦、让读屏念得到为什么按不动；
+          // 两颗钮接 Action Control text 档（批准 solid / 拒绝 outline），没勾满那档只在批准上投 data-disabled
+          'approve-trigger': {
+            'type': 'button',
+            'aria-disabled': 'true',
+            'disabled': null,
+            'data-disabled': '',
+            'data-xh-action-control': '',
+            'data-xh-action-profile': 'text',
+            'data-xh-action-variant': 'solid',
+            'data-xh-action-display': 'always',
+            'data-xh-action-size': 'md',
+          },
+          'deny-trigger': {
+            'type': 'button',
+            'disabled': null,
+            'data-disabled': null,
+            'data-xh-action-control': '',
+            'data-xh-action-profile': 'text',
+            'data-xh-action-variant': 'outline',
+            'data-xh-action-display': 'always',
+            'data-xh-action-size': 'md',
+          },
+          // 授权行接 Action Control row 档：ghost 形态、按下只换面
           'item': [
-            { 'role': 'checkbox', 'aria-checked': 'false', 'aria-required': 'true', 'tabindex': '0' },
+            { 'role': 'checkbox', 'aria-checked': 'false', 'aria-required': 'true', 'tabindex': '0', 'data-xh-action-control': '', 'data-xh-action-profile': 'row', 'data-xh-action-variant': 'ghost', 'data-xh-action-display': 'always', 'data-xh-action-size': 'md' },
             { 'role': 'checkbox', 'aria-checked': 'false', 'aria-required': 'false', 'tabindex': '0' },
           ],
           // 逐秒变化的数字进活区会不停打断
@@ -84,7 +105,7 @@ export const approvalSuite: ConformanceSuite = {
           expect: {
             parts: {
               'item': [{ 'aria-checked': 'true' }, { 'aria-checked': 'false' }],
-              'approve-trigger': { 'aria-disabled': 'false' },
+              'approve-trigger': { 'aria-disabled': 'false', 'data-disabled': null },
             },
             events: [{ type: 'granted-scopes-change', detail: { value: ['read'] } }],
           },
@@ -144,9 +165,9 @@ export const approvalSuite: ConformanceSuite = {
       props: { loading: true, scopes: [{ value: 'read', required: true }] },
       initial: {
         parts: {
-          'approve-trigger': { 'aria-disabled': 'true', 'aria-busy': 'true', 'data-loading': '' },
+          'approve-trigger': { 'aria-disabled': 'true', 'aria-busy': 'true', 'data-loading': '', 'data-disabled': null },
           // 同样不用原生 disabled：锁住的钮仍留在 Tab 序里，读屏才念得到为什么按不动
-          'deny-trigger': { 'aria-disabled': 'true', 'aria-busy': 'true', 'data-loading': '', 'disabled': null },
+          'deny-trigger': { 'aria-disabled': 'true', 'aria-busy': 'true', 'data-loading': '', 'disabled': null, 'data-disabled': null },
         },
       },
       steps: [
@@ -192,8 +213,8 @@ export const approvalSuite: ConformanceSuite = {
       initial: {
         parts: {
           'root': { 'data-state': 'approved' },
-          'approve-trigger': { disabled: '' },
-          'deny-trigger': { disabled: '' },
+          'approve-trigger': { 'disabled': '', 'data-disabled': '' },
+          'deny-trigger': { 'disabled': '', 'data-disabled': '' },
         },
       },
     },
