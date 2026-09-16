@@ -101,7 +101,7 @@ open 交给宿主：外部一个按钮统一开合几段思考，自动开合让
 | `streaming` | `boolean` |  | 仍在思考。适配器把它折叠为状态机的 running。 |
 | `tone` | `Tone` |  |  |
 | `translations` | `Partial<ReasoningTranslations>` |  |  |
-| `variant` | `ControlVariant` |  | 形态：outline 描边、subtle 底色分区（默认档）、ghost 无壳内联。 |
+| `variant` | `ControlVariant` |  | 形态：outline 描边、subtle 底色分区、ghost 无壳内联。默认 subtle。 |
 
 ### 事件
 

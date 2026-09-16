@@ -75,6 +75,13 @@ describe('connectReasoning 投影', () => {
     r.stop()
   })
 
+  it('variant 不写时根落 subtle；写 outline 如实落', () => {
+    const r = makeReasoning()
+    expect(r.api().getRootProps()).toMatchObject({ 'data-variant': 'subtle' })
+    expect(r.api({ variant: 'outline' }).getRootProps()).toMatchObject({ 'data-variant': 'outline' })
+    r.stop()
+  })
+
   it('禁用走原生 disabled，点不动', () => {
     const r = makeReasoning({ disabled: true })
     expect(r.api().disabled).toBe(true)

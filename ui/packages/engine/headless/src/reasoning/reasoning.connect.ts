@@ -52,7 +52,7 @@ export function connectReasoning<T extends PropTypes>(
       ...parts.root.attrs,
       'data-state': stateAttr,
       'data-streaming': dataAttr(streaming),
-      'data-variant': props.variant,
+      'data-variant': props.variant ?? 'subtle',
       'data-tone': props.tone,
       'data-size': props.size,
       'data-disabled': dataAttr(disabled),
