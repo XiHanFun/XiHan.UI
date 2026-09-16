@@ -14,6 +14,12 @@ import {
   XhCascaderRoot,
   XhCascaderSearchList,
   XhCascaderTrigger,
+  XhDatePickerContent,
+  XhDatePickerControl,
+  XhDatePickerPositioner,
+  XhDatePickerPresetGroup,
+  XhDatePickerRoot,
+  XhDatePickerTrigger,
 } from '../src'
 
 let cleanup: Array<() => void> = []
@@ -102,6 +108,32 @@ describe('cascader 片段作根的列部件接住直通属性', () => {
     expect(list.classList.contains('authored')).toBe(true)
     expect(list.style.getPropertyValue('--authored')).toBe('1px')
     expect(list.getAttribute('data-testid')).toBe('authored')
+    expect(warn.mock.calls.flat().some(arg => String(arg).includes('Extraneous non-props attributes'))).toBe(false)
+  })
+})
+
+describe('date-picker 片段作根的快捷选项列接住直通属性', () => {
+  it('preset-group 收下 class、内联 style 与 data-*，落到列节点，且没有直通属性告警', async () => {
+    const warn = vi.spyOn(console, 'warn').mockImplementation(() => {})
+    mount(() => h(XhDatePickerRoot, {
+      open: true,
+      presets: [{ value: '2026-09-16', label: '今天' }],
+    }, () => [
+      h(XhDatePickerControl, null, () => h(XhDatePickerTrigger)),
+      h(XhDatePickerPositioner, null, () => [
+        h(XhDatePickerContent, null, () => [
+          h(XhDatePickerPresetGroup, AUTHORED),
+        ]),
+      ]),
+    ]))
+    await tick()
+
+    const group = el('[data-scope=\'date-picker\'][data-part=\'preset-group\']')
+    expect(group.classList.contains('authored')).toBe(true)
+    expect(group.style.getPropertyValue('--authored')).toBe('1px')
+    expect(group.getAttribute('data-testid')).toBe('authored')
+    // 自动铺设的条目仍在列内
+    expect(group.querySelector('[data-part=\'preset\']')?.textContent).toBe('今天')
     expect(warn.mock.calls.flat().some(arg => String(arg).includes('Extraneous non-props attributes'))).toBe(false)
   })
 })
