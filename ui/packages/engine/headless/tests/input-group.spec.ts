@@ -10,17 +10,17 @@ function api(props: InputGroupProps = {}) {
 }
 
 describe('connectInputGroup', () => {
-  it('根缺省只带身份：不写 role，组里各控件的角色与可及名归它们自己；两轴不写就不落', () => {
+  it('根缺省只带身份：不写 role，组里各控件的角色与可及名归它们自己；形态落 outline，尺寸不落', () => {
     const root = api().getRootProps() as Record<string, unknown>
     expect(root).toMatchObject(parts.root.attrs)
     expect(root.role).toBeUndefined()
-    expect(root['data-variant']).toBeUndefined()
+    expect(root['data-variant']).toBe('outline')
     expect(root['data-size']).toBeUndefined()
   })
 
   it('形态与尺寸只落在根上', () => {
-    expect(api({ variant: 'secondary', size: 'lg' }).getRootProps()).toMatchObject({
-      'data-variant': 'secondary',
+    expect(api({ variant: 'subtle', size: 'lg' }).getRootProps()).toMatchObject({
+      'data-variant': 'subtle',
       'data-size': 'lg',
     })
   })

@@ -32,7 +32,7 @@
 
 ### 变体
 
-使用主要或次级输入表面
+outline 画描边输入面，subtle 用淡底嵌入已有表面
 
 <XhDemo src="input-group/03-variant" />
 
@@ -57,7 +57,7 @@
 ### 特性
 
 - 所有内容共享一个背景、外轮廓和焦点环。
-- 支持 `primary` 与 `secondary` 两种视觉变体。
+- 支持 `outline`、`subtle` 与 `ghost` 三种形态，与组内字段同一套词。
 - 前后缀不参与交互，控件保留自身语义。
 - 支持 `sm`、`md` 和 `lg` 三种尺寸。
 
@@ -93,7 +93,7 @@
 | 属性 | 类型 | 必填 | 说明 |
 | --- | --- | --- | --- |
 | `size` | `Size` |  | 尺寸：sm / md / lg，写入根上供皮肤填入 item 的高度、内衬与字号槽位。 未提供时档位由组内控件自身的 data-size 决定，组内没有带档位的控件时使用 md。 |
-| `variant` | `InputGroupVariant` |  | 视觉变体：primary / secondary。默认 primary。 |
+| `variant` | `ControlVariant` |  | 形态：outline / subtle / ghost，与组内字段同一套词。默认 outline。 |
 
 ### connect API
 

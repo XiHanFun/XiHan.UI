@@ -5745,7 +5745,6 @@
       "InputGroupApi",
       "InputGroupProps",
       "InputGroupTranslations",
-      "InputGroupVariant",
       "JSON_VIEWER_ROOT_PATH",
       "JsonViewerApi",
       "JsonViewerExpandedValueChangeDetails",

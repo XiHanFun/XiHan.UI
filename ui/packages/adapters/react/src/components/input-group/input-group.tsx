@@ -5,8 +5,8 @@
 
 // 提供 input group 相关实现。
 
-import type { Size } from '@xihan-ui/core'
-import type { InputGroupProps, InputGroupVariant } from '@xihan-ui/headless'
+import type { ControlVariant, Size } from '@xihan-ui/core'
+import type { InputGroupProps } from '@xihan-ui/headless'
 import type { ComponentPropsWithRef, ReactNode } from 'react'
 import { connectInputGroup } from '@xihan-ui/headless'
 import { withXhConfig } from '../../config/config'
@@ -15,8 +15,8 @@ import { reactNormalize } from '../../runtime/normalize-props'
 import { InputGroupProvider, useInputGroupContext } from './context'
 
 export interface XhInputGroupRootProps extends ComponentPropsWithRef<'div'> {
-  /** 视觉变体：primary 是默认输入面，secondary 用于已有表面。 */
-  variant?: InputGroupVariant
+  /** 形态：outline / subtle / ghost，与组内字段同一套词。默认 outline。 */
+  variant?: ControlVariant
   /** 档位：落到根上，皮肤据此为前后缀块更换高度与字号。 */
   size?: Size
 }

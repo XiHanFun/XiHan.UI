@@ -5552,11 +5552,18 @@
   transition: border-color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
 }
 
-[data-scope='input-group'][data-part='root'][data-variant='secondary'] {
+[data-scope='input-group'][data-part='root'][data-variant='subtle'] {
   --xh-_input-group-bg: var(--xh-bg-subtle);
   --xh-_input-group-bg-hover: var(--xh-bg-subtle-hover);
   --xh-_input-group-border: transparent;
   --xh-_input-group-border-hover: var(--xh-border-default);
+  --xh-_input-group-shadow: none;
+}
+
+/* ghost：静息不画壳，悬停与聚焦沿用下面的 hover / focus 规则浮出边与底 */
+[data-scope='input-group'][data-part='root'][data-variant='ghost'] {
+  --xh-_input-group-bg: transparent;
+  --xh-_input-group-border: transparent;
   --xh-_input-group-shadow: none;
 }
 

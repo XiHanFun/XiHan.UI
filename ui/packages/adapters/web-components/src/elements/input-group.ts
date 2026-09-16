@@ -5,8 +5,8 @@
 
 // 提供 input group 相关实现。
 
-import type { Size } from '@xihan-ui/core'
-import type { InputGroupProps, InputGroupVariant } from '@xihan-ui/headless'
+import type { ControlVariant, Size } from '@xihan-ui/core'
+import type { InputGroupProps } from '@xihan-ui/headless'
 import { connectInputGroup, inputGroupAnatomy, inputGroupMeta } from '@xihan-ui/headless'
 import { wcNormalize } from '../dom/normalize'
 import { XhElement } from '../element-base'
@@ -18,7 +18,7 @@ import { XhElement } from '../element-base'
  * 由皮肤按根的身份提供。item 可省略：一组只有控件、没有固定前后缀时就没有它。
  *
  * @customElement xh-input-group
- * @attr {'primary'|'secondary'} variant - 视觉变体；secondary 使用低强调表面且不绘制阴影
+ * @attr {'outline'|'subtle'|'ghost'} variant - 形态：outline 画描边输入面，subtle 用淡底且不绘制阴影，ghost 无壳；默认 outline
  * @attr {'sm'|'md'|'lg'} size - 尺寸，决定 item 的高度、内衬与字号；未提供时跟随组内控件的档位
  * @csspart root - 组容器，承载 data-size
  * @csspart item - 前后缀块，内容由作者编写
@@ -32,7 +32,7 @@ export class XhInputGroupElement extends XhElement {
     size: { converter: { fromAttribute: (v: string | null) => v ?? undefined } },
   }
 
-  declare variant?: InputGroupVariant
+  declare variant?: ControlVariant
   declare size?: Size
 
   protected wire(): void {
