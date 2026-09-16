@@ -177,7 +177,8 @@ const FAMILIES = [
     parts: [
       // 边、底、影、圆角与三档 variant 由 Field Chrome 配方按 chrome 节点的 data-variant 生成，
       // 已迁移成员的皮肤只把使用者槽映射到桥接槽——比对的是这些映射声明本身（槽名与缺省都要同源）。
-      // pin-input 的视觉盒是每一格 input，使用者槽按 box 命名，不与 control 的映射比对
+      // pin-input 的视觉盒是每一格 input，使用者槽按 box 命名；mention 没有 control，输入框自身即视觉盒，
+      // 使用者槽按 input 命名：两家都不与 control 的映射比对
       {
         part: 'control',
         state: '',
@@ -212,7 +213,6 @@ const FAMILIES = [
           'password-input',
           'tags-input',
           'editable',
-          'mention',
           'color-field',
           'color-picker',
         ],

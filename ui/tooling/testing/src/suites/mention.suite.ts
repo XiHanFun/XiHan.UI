@@ -439,7 +439,7 @@ export const mentionSuite: ConformanceSuite = {
       ],
     },
     {
-      name: '三个视觉轴如实落到根上，子部件不重复标注',
+      name: '三个视觉轴如实落到根上；输入框自身即 Field Chrome 视觉盒，只带形态与家族尺寸档，不重复标注语气与尺寸',
       spec: { apg: APG },
       props: { variant: 'subtle', tone: 'brand', size: 'lg' },
       initial: {
@@ -449,7 +449,14 @@ export const mentionSuite: ConformanceSuite = {
             'data-tone': 'brand',
             'data-size': 'lg',
           },
-          input: { 'data-variant': null, 'data-tone': null, 'data-size': null },
+          input: {
+            'data-variant': 'subtle',
+            'data-tone': null,
+            'data-size': null,
+            'data-xh-field-chrome': '',
+            'data-xh-field-size': 'lg',
+            'data-xh-field-layout': 'single-line',
+          },
         },
       },
     },

@@ -87,6 +87,8 @@
     "json-viewer [data-part='tree'][data-scope='json-viewer']": "焦点在树外时容器自己进 Tab 序列兜底，环永远长在行上",
     "listbox [data-part='content'][data-scope='listbox']": "焦点在集合外时容器自己进 Tab 序列兜底，高亮永远长在条目上",
     "mention [data-part='content'][data-scope='mention']": "列表从不承载焦点（焦点恒在输入框，高亮走 aria-activedescendant）；可滚动容器被浏览器塞进 Tab 序列时不画环",
+    "mention [data-part='control'][data-scope='mention'] [data-part='input'][data-scope='mention']": "家族随皮肤引入的规则：mention 的输入框自身即 chrome、不投影 data-xh-field-input，这条命不中；环由家族 :focus-within 画在输入框自己身上",
+    "mention [data-part='control'][data-scope='mention'] [data-xh-action-profile='field-inset']": "家族随皮肤引入的规则：mention 没有内嵌动作钮，这条命不中",
     "menu [data-part='content'][data-scope='menu']": "焦点域的兜底落点（tabindex=-1），高亮永远长在条目上",
     "menubar [data-part='content'][data-scope='menubar']": "没有条目锚点时的 Tab 兜底落点，高亮永远长在条目上",
     "menubar [data-part='root'][data-scope='menubar']": "roving tabindex 的兜底落点，焦点转投给 trigger 之后不再停留",

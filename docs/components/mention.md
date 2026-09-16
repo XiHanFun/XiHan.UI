@@ -79,7 +79,7 @@ variant 更换正文框的描边与底色，候选面板不受影响
 - 候选仍在加载且当前没有可见项时由 `loading` 显示，空态让位；已有候选时列表保持可见可操作，只通过 `aria-busy` 报告后台刷新。
 - 带 `hidden` 的候选不参与计数、高亮、方向键或 Enter；全部隐藏后清除 `aria-activedescendant`，不提交不可见的旧项。
 - `name` 让整段正文随表单提交，表单重置回落到 `defaultValue`。
-- 正文输入保持实体，唯一候选面使用 M2 磨砂面与细顶光；空态和加载文字位于材质之上，不另绘框。浮层使用四向短位移，不缩放文字；增强对比度时切为实体，减弱动效时取消位移。
+- 输入框投影 Field Chrome，描边式静息无影，唯一候选面使用 M2 磨砂面与细顶光；空态和加载文字位于材质之上，不另绘框。浮层使用四向短位移，不缩放文字；增强对比度时切为实体，减弱动效时取消位移。
 
 ### 组合
 
@@ -269,7 +269,12 @@ variant 更换正文框的描边与底色，候选面板不受影响
 | `label` | `data-disabled` | ''（条件成立时才出现） |
 | `input` | `data-disabled` | ''（条件成立时才出现） |
 | `input` | `data-invalid` | ''（条件成立时才出现） |
+| `input` | `data-readonly` | ''（条件成立时才出现） |
 | `input` | `data-state` | 'open' \| 'closed' |
+| `input` | `data-variant` | props.variant |
+| `input` | `data-xh-field-chrome` | '' |
+| `input` | `data-xh-field-layout` | 'single-line' |
+| `input` | `data-xh-field-size` | props.size |
 | `positioner` | `data-hidden` | ''（条件成立时才出现） |
 | `positioner` | `data-placement` | 定位引擎算出的实际落位 |
 | `positioner` | `data-positioned` | ''（条件成立时才出现） |
@@ -282,6 +287,10 @@ variant 更换正文框的描边与底色，候选面板不受影响
 | `content` | `data-state` | 'open' \| 'closed' |
 | `empty` | `data-state` | 'open' \| 'closed' |
 | `loading` | `data-state` | 'open' \| 'closed' |
+| `item` | `data-xh-collection-context` | 'overlay' |
+| `item` | `data-xh-collection-item` | '' |
+| `item` | `data-xh-collection-size` | props.size |
+| `item-text` | `data-xh-collection-slot` | 'text' |
 
 <!-- xh-component-tokens:start -->
 ### CSS 变量
@@ -310,32 +319,33 @@ variant 更换正文框的描边与底色，候选面板不受影响
 | `--xh-mention-empty-py` | `empty` | `padding-block` | `default` | `--xh-space-3` | mention 的 empty 部件 padding-block 覆盖槽。 |
 | `--xh-mention-input-autofill-bg` | `input` | `box-shadow` | `-webkit-autofill`<br>`autofill` | `--xh-bg-canvas` | mention 的 input 部件 box-shadow 覆盖槽。 |
 | `--xh-mention-input-autofill-fg` | `input` | `-webkit-text-fill-color` | `-webkit-autofill`<br>`autofill` | `--xh-fg-default` | mention 的 input 部件 -webkit-text-fill-color 覆盖槽。 |
-| `--xh-mention-input-bg` | `input` | `background` | `default` | `--xh-_mention-input-bg` | mention 的 input 部件 background 覆盖槽。 |
-| `--xh-mention-input-bg-disabled` | `input` | `background` | `disabled` | `--xh-bg-subtle` | mention 的 input 部件 background 覆盖槽。 |
-| `--xh-mention-input-bg-hover` | `input` | `background` | `hover`<br>`invalid`<br>`not(:disabled, [readonly], [data-invalid])` | `--xh-_mention-input-bg-hover` | mention 的 input 部件 background 覆盖槽。 |
-| `--xh-mention-input-bg-readonly` | `input` | `background` | `default` | `--xh-bg-subtle` | mention 的 input 部件 background 覆盖槽。 |
-| `--xh-mention-input-border` | `input` | `border` | `default` | `--xh-_mention-input-border` | mention 的 input 部件 border 覆盖槽。 |
-| `--xh-mention-input-border-focus` | `input` | `border-color` | `focus-visible` | `--xh-_tone` | mention 的 input 部件 border-color 覆盖槽。 |
-| `--xh-mention-input-border-hover` | `input` | `border-color` | `hover`<br>`invalid`<br>`not(:disabled, [readonly], [data-invalid])` | `--xh-_mention-input-border-hover` | mention 的 input 部件 border-color 覆盖槽。 |
-| `--xh-mention-input-border-invalid` | `input` | `border-color` | `invalid` | `--xh-border-invalid` | mention 的 input 部件 border-color 覆盖槽。 |
-| `--xh-mention-input-fg` | `input` | `color` | `default` | `--xh-fg-default` | mention 的 input 部件 color 覆盖槽。 |
+| `--xh-mention-input-bg` | `input` | `background-color` | `xh-field-chrome` | `--xh-_field-variant-bg-rest` | mention 的 input 部件 background-color 覆盖槽。 |
+| `--xh-mention-input-bg-disabled` | `input` | `background-color` | `disabled`<br>`xh-field-chrome` | `--xh-_field-variant-bg-disabled` | mention 的 input 部件 background-color 覆盖槽。 |
+| `--xh-mention-input-bg-hover` | `input` | `background-color` | `disabled`<br>`hover`<br>`invalid`<br>`loading`<br>`not([data-disabled])`<br>`not([data-invalid])`<br>`not([data-loading])`<br>`not([data-readonly])`<br>`readonly`<br>`xh-field-chrome` | `--xh-_field-variant-bg-hover` | mention 的 input 部件 background-color 覆盖槽。 |
+| `--xh-mention-input-bg-readonly` | `input` | `background-color` | `readonly`<br>`xh-field-chrome` | `--xh-_field-variant-bg-read-only` | mention 的 input 部件 background-color 覆盖槽。 |
+| `--xh-mention-input-border` | `input` | `border` | `xh-field-chrome` | `--xh-_field-variant-border-rest` | mention 的 input 部件 border 覆盖槽。 |
+| `--xh-mention-input-border-focus` | `input` | `border-color` | `disabled`<br>`focus-within`<br>`not([data-disabled])`<br>`xh-field-chrome` | `--xh-_field-variant-border-focus` | mention 的 input 部件 border-color 覆盖槽。 |
+| `--xh-mention-input-border-hover` | `input` | `border-color` | `disabled`<br>`hover`<br>`invalid`<br>`loading`<br>`not([data-disabled])`<br>`not([data-invalid])`<br>`not([data-loading])`<br>`not([data-readonly])`<br>`readonly`<br>`xh-field-chrome` | `--xh-_field-variant-border-hover` | mention 的 input 部件 border-color 覆盖槽。 |
+| `--xh-mention-input-border-invalid` | `input` | `border-color` | `invalid`<br>`xh-field-chrome` | `--xh-_field-variant-border-invalid` | mention 的 input 部件 border-color 覆盖槽。 |
+| `--xh-mention-input-fg` | `input` | `color` | `xh-field-chrome` | `--xh-fg-default` | mention 的 input 部件 color 覆盖槽。 |
 | `--xh-mention-input-font-size` | `input` | `font-size` | `default` | `--xh-_mention-font-size` | mention 的 input 部件 font-size 覆盖槽。 |
-| `--xh-mention-input-h` | `input` | `block-size` | `default` | `--xh-_mention-h` | mention 的 input 部件 block-size 覆盖槽。 |
-| `--xh-mention-input-min-w` | `input`<br>`root` | `min-inline-size` | `default` | `--xh-control-min-w` | mention 的 input、root 部件 min-inline-size 覆盖槽。 |
-| `--xh-mention-input-px` | `input` | `padding-inline` | `default` | `--xh-_mention-px` | mention 的 input 部件 padding-inline 覆盖槽。 |
-| `--xh-mention-input-radius` | `input` | `border-radius` | `default` | `--xh-shape-control` | mention 的 input 部件 border-radius 覆盖槽。 |
-| `--xh-mention-input-shadow` | `input` | `box-shadow` | `-webkit-autofill`<br>`autofill`<br>`default` | `--xh-_mention-input-shadow` | mention 的 input 部件 box-shadow 覆盖槽。 |
-| `--xh-mention-item-bg-hover` | `item` | `background` | `disabled`<br>`highlighted`<br>`not([data-disabled])` | `--xh-bg-subtle` | mention 的 item 部件 background 覆盖槽。 |
-| `--xh-mention-item-fg` | `item` | `color` | `default` | `--xh-material-frosted-fg` | mention 的 item 部件 color 覆盖槽。 |
+| `--xh-mention-input-h` | `input` | `block-size`<br>`min-block-size` | `has([data-xh-field-input][data-xh-field-layout='multi-tag'])`<br>`has([data-xh-field-input][data-xh-field-layout='single-line'])`<br>`has([data-xh-field-input][data-xh-field-layout='textarea'])`<br>`xh-field-chrome`<br>`xh-field-input`<br>`xh-field-layout=multi-tag`<br>`xh-field-layout=single-line`<br>`xh-field-layout=textarea` | `--xh-_mention-h` | mention 的 input 部件 block-size、min-block-size 覆盖槽。 |
+| `--xh-mention-input-min-w` | `input`<br>`root` | `min-inline-size` | `default`<br>`xh-field-chrome` | `--xh-control-min-w` | mention 的 input、root 部件 min-inline-size 覆盖槽。 |
+| `--xh-mention-input-px` | `input` | `padding-inline` | `xh-field-chrome` | `--xh-_mention-px` | mention 的 input 部件 padding-inline 覆盖槽。 |
+| `--xh-mention-input-radius` | `input` | `border-radius` | `xh-field-chrome` | `--xh-shape-control` | mention 的 input 部件 border-radius 覆盖槽。 |
+| `--xh-mention-input-shadow` | `input` | `box-shadow` | `xh-field-chrome` | `none` | mention 的 input 部件 box-shadow 覆盖槽。 |
+| `--xh-mention-item-bg-hover` | `item` | `background-color` | `error`<br>`highlighted`<br>`hover`<br>`is(:focus-visible, [data-highlighted])`<br>`not([aria-disabled='true'], [aria-busy='true'], [data-error])`<br>`xh-collection-context=overlay` | `--xh-bg-subtle` | mention 的 item 部件 background-color 覆盖槽。 |
+| `--xh-mention-item-bg-pressed` | `item` | `background-color` | `error`<br>`is(:active, [data-pressed])`<br>`not([aria-disabled='true'], [aria-busy='true'], [data-error])`<br>`pressed`<br>`xh-collection-context=overlay` | `--xh-bg-subtle-hover` | mention 的 item 部件 background-color 覆盖槽。 |
+| `--xh-mention-item-fg` | `item` | `color` | `default`<br>`error`<br>`highlighted`<br>`hover`<br>`is(:active, [data-pressed])`<br>`is(:focus-visible, [data-highlighted])`<br>`not([aria-disabled='true'], [aria-busy='true'], [data-error])`<br>`pressed`<br>`xh-collection-context=overlay` | `--xh-material-frosted-fg` | mention 的 item 部件 color 覆盖槽。 |
 | `--xh-mention-item-font-size` | `item` | `font-size` | `default` | `--xh-_mention-font-size` | mention 的 item 部件 font-size 覆盖槽。 |
-| `--xh-mention-item-gap` | `item` | `gap` | `default` | `--xh-_mention-gap` | mention 的 item 部件 gap 覆盖槽。 |
+| `--xh-mention-item-gap` | `item` | `margin-inline-end`<br>`margin-inline-start` | `xh-collection-slot=indicator`<br>`xh-collection-slot=prefix`<br>`xh-collection-slot=shortcut`<br>`xh-collection-slot=suffix` | `--xh-_mention-gap` | mention 的 item 部件 margin-inline-end、margin-inline-start 覆盖槽。 |
 | `--xh-mention-item-leading` | `item` | `line-height` | `default` | `--xh-leading-normal` | mention 的 item 部件 line-height 覆盖槽。 |
 | `--xh-mention-item-px` | `item` | `padding-inline` | `default` | `--xh-_mention-item-px` | mention 的 item 部件 padding-inline 覆盖槽。 |
 | `--xh-mention-item-py` | `item` | `padding-block` | `default` | `--xh-_mention-item-py` | mention 的 item 部件 padding-block 覆盖槽。 |
 | `--xh-mention-item-radius` | `item` | `border-radius` | `default` | `--xh-shape-control` | mention 的 item 部件 border-radius 覆盖槽。 |
 | `--xh-mention-label-fg` | `label` | `color` | `default` | `--xh-fg-default` | mention 的 label 部件 color 覆盖槽。 |
 | `--xh-mention-label-fg-disabled` | `label` | `color` | `disabled` | `--xh-fg-subtle` | mention 的 label 部件 color 覆盖槽。 |
-| `--xh-mention-label-font-size` | `label` | `font-size` | `default` | `--xh-_mention-font-size` | mention 的 label 部件 font-size 覆盖槽。 |
+| `--xh-mention-label-font-size` | `label` | `font-size` | `default` | `--xh-text-label-size` | mention 的 label 部件 font-size 覆盖槽。 |
 | `--xh-mention-label-font-weight` | `label` | `font-weight` | `default` | `--xh-text-label-weight` | mention 的 label 部件 font-weight 覆盖槽。 |
 | `--xh-mention-label-gap` | `label` | `margin-block-end` | `default` | `--xh-space-1` | mention 的 label 部件 margin-block-end 覆盖槽。 |
 | `--xh-mention-layer` | `positioner` | `z-index` | `default` | `--xh-_layer` | mention 的 positioner 部件 z-index 覆盖槽。 |
@@ -348,7 +358,7 @@ variant 更换正文框的描边与底色，候选面板不受影响
 
 ### 动效
 
-共享关键帧 `xh-overlay-slide-in` · `xh-overlay-slide-out` 由 `family/motion.css` 提供，皮肤 `@import` 它，单独引入仍成立；`background` · `border-color` · `color` 走 `transition` 过渡。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
+共享关键帧 `xh-overlay-slide-in` · `xh-overlay-slide-out` 由 `family/motion.css` 提供，皮肤 `@import` 它，单独引入仍成立。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
 
 皮肤之外还有一段：退场由适配器的退场闸门把关，动画播完才真收起。
 

@@ -2,14 +2,14 @@
 
 exports[`family-backlog 条目数 > 七段各一数，与快照一致 1`] = `
 {
-  "edge": 65,
-  "ladder": 126,
+  "edge": 64,
+  "ladder": 125,
   "motion": 1,
-  "press": 79,
-  "scroll": 64,
+  "press": 78,
+  "scroll": 62,
   "selection": 25,
   "shape": 25,
-  "text": 105,
+  "text": 104,
 }
 `;
 
@@ -46,7 +46,6 @@ exports[`family-backlog 键集合 > edge 1`] = `
   "form:error-summary:raised",
   "input-group:root:raised",
   "log:scroll-to-end-trigger:raised",
-  "mention:positioner:raised",
   "message-feed:scroll-to-end-trigger:raised",
   "page-header:root:outline",
   "popconfirm:confirm-trigger:raised",
@@ -154,7 +153,6 @@ exports[`family-backlog 键集合 > ladder 1`] = `
   "layout:sider-trigger:hover",
   "layout:sider-trigger:pressed",
   "log:scroll-to-end-trigger:hover",
-  "mention:input:focus",
   "menu:item:pressed",
   "menubar:item:pressed",
   "message-feed:scroll-to-end-trigger:hover",
@@ -263,7 +261,6 @@ exports[`family-backlog 键集合 > press 1`] = `
   "listbox:item",
   "listbox:load-more-trigger",
   "log:scroll-to-end-trigger",
-  "mention:item",
   "menubar:trigger",
   "message-feed:scroll-to-end-trigger",
   "navigation-menu:trigger",
@@ -341,8 +338,6 @@ exports[`family-backlog 键集合 > scroll 1`] = `
   "hover-card:content:overscroll",
   "hover-card:content:size",
   "listbox:content:unwired",
-  "mention:content:overscroll",
-  "mention:content:size",
   "menu:content:overscroll",
   "menu:content:size",
   "menubar:content:overscroll",
@@ -487,7 +482,6 @@ exports[`family-backlog 键集合 > text 1`] = `
   "json-viewer:root:icon-size",
   "listbox:root:icon-size",
   "log:root:icon-size",
-  "mention:label:font-size",
   "menu:content:icon-size",
   "menubar:content:icon-size",
   "menubar:root:icon-size",

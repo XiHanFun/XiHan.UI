@@ -191,8 +191,8 @@ export interface XhMentionPositionerProps extends ComponentPropsWithRef<'div'> {
 /** 迁移到浮层落点：留在原地时，宿主祖先只要建立了层叠上下文就能遮住浮层。 */
 export function XhMentionPositioner({ children, container, ...rest }: XhMentionPositionerProps): ReactNode {
   const ctx = useMentionContext()
-  // 候选列表的自绘条：与 content 同级、绝对定位不占布局，壳是这层已经 fixed 的 positioner
-  const bars = useScrollbars({ scrollable: () => ctx.contentRef.current })
+  // 候选列表的自绘条：与 content 同级、绝对定位不占布局，壳是这层已经 fixed 的 positioner，条子走浮层 4px 档
+  const bars = useScrollbars({ scrollable: () => ctx.contentRef.current, props: () => ({ size: 'sm' }) })
   return (
     <XhPortal container={container ?? ctx.portalContainer} source={ctx.inputRef}>
       <div

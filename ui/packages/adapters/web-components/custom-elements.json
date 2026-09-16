@@ -31753,8 +31753,8 @@
               "name": "bars",
               "privacy": "private",
               "readonly": true,
-              "default": "new ScrollbarsController(this, { shell: () => this.getPart('positioner'), scrollable: () => this.getPart('content'), })",
-              "description": "候选列表的自绘条：与 content 同级挂在已经 fixed 的 positioner 上"
+              "default": "new ScrollbarsController(this, { shell: () => this.getPart('positioner'), scrollable: () => this.getPart('content'), props: () => ({ size: 'sm' }), })",
+              "description": "候选列表的自绘条：与 content 同级挂在已经 fixed 的 positioner 上，条子走浮层 4px 档"
             },
             {
               "kind": "field",
@@ -32151,6 +32151,9 @@
             },
             {
               "name": "--xh-mention-item-bg-hover"
+            },
+            {
+              "name": "--xh-mention-item-bg-pressed"
             },
             {
               "name": "--xh-mention-item-fg"
