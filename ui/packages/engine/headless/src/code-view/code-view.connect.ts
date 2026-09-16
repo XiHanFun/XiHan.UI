@@ -167,9 +167,16 @@ export function connectCodeView<T extends PropTypes>(
       'data-kind': token.kind,
     }),
 
+    // 折叠条是铺满一行的 disclosure trigger：接 Action Control 的 disclosure-trigger 档，ghost 形态、
+    // 白底承载 hover 100 → pressed 200，按下只换面不缩放（§9.2）；档位随 size 走
     getFoldTriggerProps: () => normalize.button({
       ...parts['fold-trigger'].attrs,
       'type': 'button',
+      'data-xh-action-control': '',
+      'data-xh-action-profile': 'disclosure-trigger',
+      'data-xh-action-variant': 'ghost',
+      'data-xh-action-display': 'always',
+      'data-xh-action-size': props.size ?? 'md',
       'aria-controls': ids.pre,
       'aria-expanded': clamped ? 'false' : 'true',
       'aria-label': clamped

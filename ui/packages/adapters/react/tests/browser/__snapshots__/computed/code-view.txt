@@ -75,8 +75,8 @@ padding-top: 8px
 padding-right: 12px
 padding-bottom: 8px
 padding-left: 12px
-row-gap: normal
-column-gap: normal
+row-gap: 8px
+column-gap: 8px
 border-top-left-radius: 0px
 border-top-right-radius: 0px
 border-bottom-right-radius: 0px
@@ -86,18 +86,18 @@ border-right-width: 0px
 border-bottom-width: 0px
 border-left-width: 0px
 border-top-color: oklch(0.967 0.001 258)
-border-right-color: oklch(0.439 0.006 258)
-border-bottom-color: oklch(0.439 0.006 258)
-border-left-color: oklch(0.439 0.006 258)
-min-height: 0px
+border-right-color: oklch(0.967 0.001 258)
+border-bottom-color: oklch(0.967 0.001 258)
+border-left-color: oklch(0.967 0.001 258)
+min-height: 36px
 font-size: 13px
-line-height: normal
+line-height: 13px
 font-weight: 400
 color: oklch(0.439 0.006 258)
 background-color: rgba(0, 0, 0, 0)
-transition-property: background, scale
-transition-duration: 0.12s, 0.2s
-transition-timing-function: cubic-bezier(0, 0, 0.2, 1), cubic-bezier(0.23, 1, 0.32, 1)
+transition-property: background-color, border-color, box-shadow, opacity, scale
+transition-duration: 0.12s, 0.12s, 0.12s, 0.12s, 0.2s
+transition-timing-function: cubic-bezier(0, 0, 0.2, 1), cubic-bezier(0, 0, 0.2, 1), cubic-bezier(0, 0, 0.2, 1), cubic-bezier(0, 0, 0.2, 1), cubic-bezier(0.23, 1, 0.32, 1)
 animation-name: none
 animation-duration: 0s
 animation-timing-function: ease

@@ -10494,16 +10494,20 @@
         "fold-trigger"
       ],
       "property": [
-        "background"
+        "background-color"
       ],
       "state": [
-        "hover"
+        "disabled",
+        "hover",
+        "loading",
+        "not([data-disabled])",
+        "not([data-loading])"
       ],
       "defaultToken": [
-        "--xh-bg-subtle-hover"
+        "--xh-_action-variant-bg-hover"
       ],
       "visibility": "public",
-      "description": "code-view 的 fold-trigger 部件 background 覆盖槽。"
+      "description": "code-view 的 fold-trigger 部件 background-color 覆盖槽。"
     },
     {
       "name": "--xh-code-view-fold-fg",
@@ -10533,7 +10537,7 @@
         "padding-block"
       ],
       "state": [
-        "default"
+        "xh-action-profile=disclosure-trigger"
       ],
       "defaultToken": [
         "--xh-space-2"
@@ -10622,17 +10626,26 @@
         "header"
       ],
       "property": [
+        "border",
         "border-block-end",
-        "border-block-start"
+        "border-color"
       ],
       "state": [
-        "default"
+        "default",
+        "disabled",
+        "focus-visible",
+        "hover",
+        "is(:active, [data-pressed])",
+        "loading",
+        "not([data-disabled])",
+        "not([data-loading])",
+        "pressed"
       ],
       "defaultToken": [
         "--xh-border-subtle"
       ],
       "visibility": "public",
-      "description": "code-view 的 fold-trigger、header 部件 border-block-end、border-block-start 覆盖槽。"
+      "description": "code-view 的 fold-trigger、header 部件 border、border-block-end、border-color 覆盖槽。"
     },
     {
       "name": "--xh-code-view-header-fg",
@@ -11039,7 +11052,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-elevation-raised"
+        "none"
       ],
       "visibility": "public",
       "description": "code-view 的 root 部件 box-shadow 覆盖槽。"

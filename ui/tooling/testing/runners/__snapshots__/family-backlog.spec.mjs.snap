@@ -2,10 +2,10 @@
 
 exports[`family-backlog 条目数 > 七段各一数，与快照一致 1`] = `
 {
-  "edge": 42,
-  "ladder": 78,
+  "edge": 41,
+  "ladder": 77,
   "motion": 1,
-  "press": 66,
+  "press": 65,
   "scroll": 28,
   "selection": 19,
   "shape": 25,
@@ -23,7 +23,6 @@ exports[`family-backlog 键集合 > edge 1`] = `
   "checkbox-group:select-all-trigger:raised",
   "checkbox:root:raised",
   "clipboard:root:raised",
-  "code-view:root:raised",
   "color-picker:area-thumb:raised",
   "color-picker:control:raised",
   "color-slider:thumb:raised",
@@ -76,7 +75,6 @@ exports[`family-backlog 键集合 > ladder 1`] = `
   "carousel:prev-trigger:hover",
   "carousel:prev-trigger:pressed",
   "clipboard:input:focus",
-  "code-view:fold-trigger:hover",
   "collapsible:trigger:hover",
   "color-picker:channel-input:focus",
   "color-picker:control:focus",
@@ -174,7 +172,6 @@ exports[`family-backlog 键集合 > press 1`] = `
   "checkbox-group:item",
   "checkbox-group:select-all-trigger",
   "checkbox:root",
-  "code-view:fold-trigger",
   "collapsible:trigger",
   "color-swatch-picker:item",
   "command:item",
