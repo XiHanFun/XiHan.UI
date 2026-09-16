@@ -43,7 +43,6 @@
     "popconfirm [content] linear-gradient(\n        to bottom,\n        var(--xh-material-frosted-highlight) 0 var(--xh-stroke-thin),\n        transparent var(--xh-stroke-thin)\n      ),\n      var(--xh-popconfirm-bg, var(--xh-material-frosted-bg))": "M2 确认面有透明底与顶光，content 自身关环；确认钮和取消钮聚焦时各自使用实际不透明背景，焦点环不依赖背后采样颜色。",
     "popover [close-trigger] var(--xh-material-frosted-focus-surface)": "关闭钮聚焦时切到不透明 M2 focus-surface，公共环不与模糊背景直接比较。",
     "popover [content] linear-gradient(\n        to bottom,\n        var(--xh-material-frosted-highlight) 0 var(--xh-stroke-thin),\n        transparent var(--xh-stroke-thin)\n      ),\n      var(--xh-popover-bg, var(--xh-material-frosted-bg))": "M2 内容面含半透明 tint 与装饰顶光，最终底色随页面背景变化；content 自身的程序化焦点环已关闭，内建关闭钮聚焦时实际铺不透明 focus-surface，任意作者控件由各自皮肤保证焦点面。",
-    "prompt-input [input] var(--xh-material-soft-focus-surface)": "输入段自身明确关闭 outline，焦点环画在 root；该不透明底只负责文字与自动填充的可读性。",
     "scrollbar [thumb] var(--xh-fg-scrollbar-thumb-active)": "滑块拖动态仍叠在作者内容上，最终颜色随宿主背景变化；可聚焦滑块另以不透明 currentColor 绘制焦点环",
     "scrollbar [thumb] var(--xh-fg-scrollbar-thumb)": "滑块静息面叠在作者内容上，最终颜色随宿主背景变化；可聚焦滑块另以不透明 currentColor 绘制焦点环",
     "toggle-group [item] color-mix(in oklab, var(--xh-_toggle-group-item-bg-on) 50%, var(--xh-bg-muted))": "禁用且按下那一档，色由私有槽掺进 color-mix 里，本脚本只解整条 var() 链、不进函数实参；失效控件本就在 SC 1.4.11 的豁免里",
@@ -105,7 +104,8 @@
     "pin-input [data-part='control'][data-scope='pin-input'] [data-xh-action-profile='field-inset']": "家族随皮肤引入的规则：pin-input 没有内嵌动作钮，这条命不中",
     "popconfirm [data-part='content'][data-scope='popconfirm']": "浮层壳是焦点域的兜底落点（tabindex=-1），环长在确认与取消两颗按钮上",
     "popover [data-part='content'][data-scope='popover']": "面板是焦点域的兜底落点（tabindex=-1），环长在里面的可聚焦控件上",
-    "prompt-input [data-part='input'][data-scope='prompt-input']": "环由 root 的 :focus-within 画在整个框上",
+    "prompt-input [data-part='control'][data-scope='prompt-input'] [data-part='input'][data-scope='prompt-input']": "家族随皮肤引入的关环规则（chrome 是 root 而不是 control）：输入段自身不画环，环由 root 的 :focus-within 画在整个框上",
+    "prompt-input [data-part='control'][data-scope='prompt-input'] [data-xh-action-profile='field-inset']": "家族随皮肤引入的关环规则：本组件没有 field-inset 档的钮（发送钮走 text 档），这条命不中",
     "rating [data-part='control'][data-scope='rating']": "焦点域的兜底落点：焦点从带外进来先落在它身上，随即转投给某颗星；高亮永远长在星星上",
     "resizable [data-part='handle'][data-scope='resizable']": "把手本体是覆盖整条边的透明命中区，聚焦时由 ::after 的短条或折角自身切换为焦点色",
     "scroll-area [data-part='content'][data-scope='scroll-area']": "纯容器，不进 Tab 序列也不承载焦点；作者自己加了 tabindex 也该显形视口那圈环，不在这儿多画一圈",
@@ -284,13 +284,6 @@
     "popconfirm [data-part='confirm-trigger'][data-scope='popconfirm']": {
       "parts": [
         "confirm-trigger"
-      ],
-      "ratio": 1,
-      "ring": "poured"
-    },
-    "prompt-input [data-part='submit-trigger'][data-scope='prompt-input']": {
-      "parts": [
-        "submit-trigger"
       ],
       "ratio": 1,
       "ring": "poured"

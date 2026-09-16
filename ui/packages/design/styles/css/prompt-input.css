@@ -3,7 +3,9 @@
  * Licensed under the MIT License. See LICENSE in the project root for license information.
  */
 
-/* 定义 prompt input 样式。 */
+/* PromptInput 独立皮肤同时传递引入字段视觉盒与字段内动作；full bundle 递归去重。 */
+@import '../family/field-chrome.css';
+@import '../family/action-control.css';
 
 @layer xihan.components {
   /* 皮肤在场的标记：开发模式下按 scope 探一次，取不到就说明这份皮肤没被引入。 */
@@ -11,14 +13,13 @@
     --xh-prompt-input-skin: 1;
   }
 
-  /* 边框画在 root 上，内部 textarea 无边框；align-items: flex-end 让按钮随输入框长高贴着底边。
-     默认外壳消费 M1 柔和实体面；输入区使用实体阅读底。
-     三个视觉轴都落在 root 上：形态管底与描边怎么画，语气管用哪族颜色，尺寸管高度与字号 */
+  /* root 就是视觉盒：描边、底色、圆角、聚焦环、悬停与禁用面由 Field Chrome 家族画在它身上（静息描边式：
+     canvas 底 + --xh-border-control 描边 + 无影，不用 soft，§8.3 登记例外只在 8px surface 圆角），内部 textarea
+     无边框；align-items: flex-end 让按钮随输入框长高贴着底边。
+     三个视觉轴都落在 root 上：形态三档由家族按 data-variant 生成，语气管用哪族颜色，尺寸管高度与字号 */
   [data-scope='prompt-input'][data-part='root'] {
-    transition:
-      background var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
-      border-color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
-      border-radius var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
+    /* 圆角可由使用者槽切换，家族只过渡底、描边、影与环 */
+    transition: border-radius var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
     /* 尺寸缺省档：不写 data-size 时按中档走 */
     --xh-_prompt-input-h: var(--xh-control-h-md);
     --xh-_prompt-input-gap: var(--xh-control-gap-md);
@@ -27,17 +28,26 @@
     --xh-_prompt-input-submit-px: var(--xh-control-px-md);
     /* 皮肤画的兜底字形与作者塞进来的图标读同一把尺，随尺寸档一起换 */
     --xh-icon-size: var(--xh-prompt-input-icon-size, var(--xh-glyph-size-md));
-    /* 默认 M1 外壳完整消费 tint、边缘、顶光与阴影；辅助模式由同源令牌收掉光效。 */
-    --xh-_prompt-input-bg: var(--xh-material-soft-bg);
-    --xh-_prompt-input-bg-hover: var(--xh-material-soft-bg);
-    --xh-_prompt-input-border: var(--xh-material-soft-border);
-    --xh-_prompt-input-border-hover: var(--xh-material-soft-border);
-    --xh-_prompt-input-border-focus: var(--xh-_tone, var(--xh-border-control-focus));
-    --xh-_prompt-input-shadow: var(--xh-material-soft-shadow);
-    --xh-_prompt-input-backdrop: var(--xh-material-soft-backdrop);
-    --xh-_prompt-input-highlight: var(--xh-material-soft-highlight);
-    --xh-_prompt-input-surface: var(--xh-prompt-input-bg, var(--xh-_prompt-input-bg));
-    --xh-_prompt-input-border-color: var(--xh-prompt-input-border, var(--xh-_prompt-input-border));
+
+    /* 家族桥接槽：既有使用者槽保留为第一参数，缺省落家族按 data-variant 生成的三档 */
+    /* 多行随内容长高，盒不定高 */
+    --xh-field-control-height: auto;
+    /* 家族的行内内衬与下面 padding 简写同值 */
+    --xh-field-control-padding-inline: var(--xh-prompt-input-p, var(--xh-_prompt-input-px));
+    --xh-field-control-gap: var(--xh-prompt-input-gap, var(--xh-_prompt-input-gap));
+    --xh-field-control-radius: var(--xh-prompt-input-radius, var(--xh-shape-surface));
+    --xh-field-bg-rest: var(--xh-prompt-input-bg, var(--xh-_field-variant-bg-rest));
+    --xh-field-bg-hover: var(--xh-prompt-input-bg-hover, var(--xh-_field-variant-bg-hover));
+    --xh-field-bg-disabled: var(--xh-prompt-input-bg-disabled, var(--xh-_field-variant-bg-disabled));
+    --xh-field-border-rest: var(--xh-prompt-input-border, var(--xh-_field-variant-border-rest));
+    --xh-field-border-hover: var(--xh-prompt-input-border-hover, var(--xh-_field-variant-border-hover));
+    --xh-field-border-focus: var(--xh-prompt-input-border-focus, var(--xh-_field-variant-border-focus));
+    --xh-field-shadow-rest: var(--xh-prompt-input-shadow, none);
+    /* 家族 chrome 会重写 --xh-icon-size，使用者图标槽必须经桥接槽下发才能在盒内生效 */
+    --xh-field-glyph-size: var(--xh-prompt-input-icon-size, var(--xh-_field-size-glyph-size));
+    /* 生成中（data-loading）这块框仍可打字：不压前景、不换等待光标，只有按钮换成停止身份 */
+    --xh-field-fg-loading: var(--xh-fg-default);
+    --xh-field-cursor-loading: text;
 
     /* 整框内衬的当前值，随尺寸档与 --xh-prompt-input-p 一起变。
        附件条与动作行由作者写在 root 里、不是本组件的部件，它们靠读这一支对齐同一条内衬线 */
@@ -45,21 +55,8 @@
 
     display: flex;
     align-items: flex-end;
-    gap: var(--xh-prompt-input-gap, var(--xh-_prompt-input-gap));
     /* 整框的内衬走控件内边距尺的小档，密度收紧时随之收窄 */
     padding: var(--xh-prompt-input-p, var(--xh-_prompt-input-px));
-    border: var(--xh-stroke-thin) solid var(--xh-_prompt-input-border-color);
-    border-radius: var(--xh-prompt-input-radius, var(--xh-shape-surface));
-    background:
-      linear-gradient(
-        to bottom,
-        var(--xh-_prompt-input-highlight) 0 var(--xh-stroke-thin),
-        transparent var(--xh-stroke-thin)
-      ),
-      var(--xh-_prompt-input-surface);
-    box-shadow: var(--xh-prompt-input-shadow, var(--xh-_prompt-input-shadow));
-    -webkit-backdrop-filter: var(--xh-_prompt-input-backdrop);
-    backdrop-filter: var(--xh-_prompt-input-backdrop);
   }
 
   /* 上面声明的 display 会盖掉 UA 的 [hidden]{display:none}，这里补回 */
@@ -72,28 +69,6 @@
   [data-scope='prompt-input'][data-part='root']:has(> [data-scope='prompt-input'][data-part='control']) {
     flex-direction: column;
     align-items: stretch;
-  }
-
-  /* 指针停在框上：描边与底一起换。这是一块要打字的大面，只挪一圈 1px 的描边读不出来。
-     摘掉持有焦点的那一档：打字时指针多半就停在框上，不摘的话语气色的聚焦描边一直被压着 */
-  [data-scope='prompt-input'][data-part='root']:hover:not([data-disabled], :focus-within) {
-    --xh-_prompt-input-border-color: var(--xh-prompt-input-border-hover, var(--xh-_prompt-input-border-hover));
-    --xh-_prompt-input-surface: var(--xh-prompt-input-bg-hover, var(--xh-_prompt-input-bg-hover));
-  }
-
-  /* 焦点环画在整个框上；用 focus-within 使焦点落在发送按钮时同样点亮 */
-  [data-scope='prompt-input'][data-part='root']:focus-within {
-    --xh-_prompt-input-border-color: var(--xh-prompt-input-border-focus, var(--xh-_prompt-input-border-focus));
-    outline: var(--xh-ring-width) solid var(--xh-ring-focus);
-    outline-offset: var(--xh-ring-offset);
-  }
-
-  /* 禁用态只换光标与底色；文字由 textarea 与按钮各自走 fg-disabled，
-     整框不再压 opacity——两者叠起来会压到读不出 */
-  [data-scope='prompt-input'][data-part='root'][data-disabled] {
-    --xh-_prompt-input-surface: var(--xh-prompt-input-bg-disabled, var(--xh-bg-subtle));
-    --xh-_prompt-input-backdrop: none;
-    --xh-_prompt-input-highlight: transparent;
   }
 
   /* —— 尺寸 —— */
@@ -124,41 +99,6 @@
     --xh-icon-size: var(--xh-prompt-input-icon-size, var(--xh-glyph-size-lg));
   }
 
-  /* —— 形态 —— */
-  /* 形态只决定底与描边怎么画；用哪族颜色由 data-tone 决定。
-     没有实心档：填满一个要往里打字的框，字与底就没法同时读 */
-  [data-scope='prompt-input'][data-part='root'][data-variant='outline'] {
-    --xh-_prompt-input-bg: var(--xh-bg-canvas);
-    --xh-_prompt-input-bg-hover: var(--xh-bg-subtle);
-    --xh-_prompt-input-border: var(--xh-border-control);
-    --xh-_prompt-input-border-hover: var(--xh-border-control-hover);
-    --xh-_prompt-input-backdrop: none;
-    --xh-_prompt-input-highlight: transparent;
-  }
-
-  /* 填充式：底色顶替描边表达边界。描边只退成透明而不去掉，1px 的位置留着，
-     与 outline 档并排时基线对得上、聚焦画描边也不引起跳动 */
-  [data-scope='prompt-input'][data-part='root'][data-variant='subtle'] {
-    --xh-_prompt-input-bg: var(--xh-_tone-subtle, var(--xh-bg-subtle));
-    --xh-_prompt-input-bg-hover: var(--xh-_tone-subtle-hover, var(--xh-bg-subtle-hover));
-    --xh-_prompt-input-border: transparent;
-    --xh-_prompt-input-border-hover: var(--xh-_tone-border, var(--xh-border-control-hover));
-    --xh-_prompt-input-backdrop: none;
-    --xh-_prompt-input-highlight: transparent;
-  }
-
-  /* 无框：底与常态描边透明，聚焦时浮出描边。落影一并收掉——底都不画了，
-     一圈投影就成了没有来处的暗边 */
-  [data-scope='prompt-input'][data-part='root'][data-variant='ghost'] {
-    --xh-_prompt-input-bg: transparent;
-    --xh-_prompt-input-bg-hover: var(--xh-_tone-subtle, var(--xh-bg-subtle));
-    --xh-_prompt-input-border: transparent;
-    --xh-_prompt-input-border-hover: var(--xh-_tone-border, var(--xh-border-control-hover));
-    --xh-_prompt-input-shadow: none;
-    --xh-_prompt-input-backdrop: none;
-    --xh-_prompt-input-highlight: transparent;
-  }
-
   /* 输入行承接单行写法下落在 root 上的那份几何：输入框与按钮并排、按钮贴着底边。
      它自己不画底也不画描边，边界仍由 root 表达 */
   [data-scope='prompt-input'][data-part='control'] {
@@ -171,27 +111,27 @@
     display: none;
   }
 
-  /* 输入区使用 M1 的实体隔离底：长文本阅读与焦点对比不依赖外壳底色。
-     min-inline-size: 0 防止长内容把弹性子项撑出容器。 */
+  /* 输入段透明、底由外框承担：重置、字色、占位符与自动填充由 Field Chrome 家族的 [data-xh-field-input] 给，
+     组件只映射既有使用者槽。刻意不投影 data-xh-field-layout：家族 textarea 布局的 :has() 变体会压掉
+     root 自己的 padding 与 align-items。 */
   [data-scope='prompt-input'][data-part='input'] {
-    flex: 1;
-    min-inline-size: 0;
+    --xh-field-input-fg: var(--xh-prompt-input-input-fg, var(--xh-fg-default));
+    --xh-field-input-font-size: var(--xh-prompt-input-input-font-size, var(--xh-_prompt-input-font-size));
+    --xh-field-placeholder-fg: var(--xh-prompt-input-placeholder-fg, var(--xh-fg-subtle));
+    /* 框的底画在 root 上，input 本身是透明分段，自动填充铺的是外框缺省那一档的实体底 */
+    --xh-field-autofill-bg: var(--xh-prompt-input-input-autofill-bg, var(--xh-bg-canvas));
+    --xh-field-autofill-fg: var(--xh-prompt-input-input-autofill-fg, var(--xh-fg-default));
+
+    /* 多行随内容长高，不撑满外框 */
+    block-size: auto;
     /* 上下留白把单行文本盒撑到控件高度，文字中线与按钮中线对齐。
        级联兜底：先写一行的高度算式（输入框字号 × 行距），再写 1lh。
        1lh 晚于本库声明的浏览器地板，取不到时旧引擎丢掉后一条、留下前一条。
-       两条取的是同一组槽——字号来自下面那条 font-size、行距来自它下面那条 line-height，
-       所以算出来是同一个数。 */
+       两条取的是同一组槽——字号来自家族映射的 --xh-field-input-font-size、行距来自家族的
+       line-height，所以算出来是同一个数。 */
     padding-block: calc((var(--xh-_prompt-input-h) - var(--xh-prompt-input-input-font-size, var(--xh-_prompt-input-font-size)) * var(--xh-leading-normal)) / 2);
     padding-block: calc((var(--xh-_prompt-input-h) - 1lh) / 2);
-    padding-inline: 0;
-    border: 0;
     border-radius: var(--xh-prompt-input-input-radius, var(--xh-shape-inset));
-    background: var(--xh-material-soft-focus-surface);
-    color: var(--xh-prompt-input-input-fg, var(--xh-material-soft-fg));
-    /* 表单控件默认不继承页面字族，显式继承 */
-    font-family: inherit;
-    font-size: var(--xh-prompt-input-input-font-size, var(--xh-_prompt-input-font-size));
-    line-height: var(--xh-leading-normal);
     /* 高度由 field-sizing 随内容变，不支持的引擎退化为 rows 定下的固定行数；
        配套禁用 resize，避免拖拽写死的高度盖掉它。封顶行数由使用者覆盖槽给。 */
     max-block-size: var(--xh-prompt-input-max-h, calc(var(--xh-leading-normal) * 1em * 8));
@@ -199,112 +139,63 @@
     resize: none;
   }
 
-  /* 焦点环已画在 root 上，这里去掉自身的环 */
-  [data-scope='prompt-input'][data-part='input']:focus-visible {
-    outline: none;
-  }
-
-  [data-scope='prompt-input'][data-part='input']::placeholder {
-    color: var(--xh-prompt-input-placeholder-fg, var(--xh-fg-subtle));
-  }
-
   /* textarea 是单体表单控件，禁用走原生 disabled */
   [data-scope='prompt-input'][data-part='input']:disabled {
     color: var(--xh-fg-disabled);
   }
 
-  /* 自动填充：引擎给填过的框强加一套系统色（多数是黄底黑字），盖得过 background 与 color，
-     深色档下就剩一块不跟主题走的黄底。底改用 inset 阴影铺回来，扩散量 100vmax 填满内容盒；
-     字改用 -webkit-text-fill-color 接回来，那是这个态下唯一还听样式表的前景通道。
-     不去拉长 transition 把系统底推迟显现：那只是把它藏起来，减弱动效通道一关过渡就当场露出。
-     两个选择器名分写两条：一条选择器列表里只要有一个名字不被认识，整条规则就被丢弃。
-     框的底画在 root 上，input 本身是透明分段，所以铺的是 root 那一档的底；
-     取 M1 实体阅读底而不是 --xh-_prompt-input-bg：后者在 ghost 档下是透明的，铺了等于没铺。 */
-  [data-scope='prompt-input'][data-part='input']:autofill {
-    box-shadow: inset 0 0 0 100vmax var(--xh-prompt-input-input-autofill-bg, var(--xh-material-soft-focus-surface));
-    -webkit-text-fill-color: var(--xh-prompt-input-input-autofill-fg, var(--xh-material-soft-fg));
-  }
-
-  [data-scope='prompt-input'][data-part='input']:-webkit-autofill {
-    box-shadow: inset 0 0 0 100vmax var(--xh-prompt-input-input-autofill-bg, var(--xh-material-soft-focus-surface));
-    -webkit-text-fill-color: var(--xh-prompt-input-input-autofill-fg, var(--xh-material-soft-fg));
-  }
-
-  /* 私有变量槽位，send 与 stop 两个身份只换这几个配色值 */
+  /* 发送钮是组件的主要动作，与 Button 缺省同为品牌实心：盒几何、悬停 / 按下与 0.97 按压、焦点环、禁用面
+     全由 Action Control 的 text solid 档给（连接层按 loading 切成 subtle 的停止身份），组件只映射既有使用者槽。
+     取 text 档而不是 icon 档：icon 档把行内尺寸钉成正方，作者放文案（「发送」）会被挤；发送钮的几何本来就是
+     「至少一个控件高的方钮 + 行内内衬」，与 text 档一致 */
   [data-scope='prompt-input'][data-part='submit-trigger'] {
-    --xh-_bg: var(--xh-prompt-input-send-bg, var(--xh-_tone, var(--xh-bg-brand)));
-    --xh-_bg-hover: var(--xh-prompt-input-send-bg-hover, var(--xh-_tone-hover, var(--xh-bg-brand-hover)));
-    --xh-_bg-active: var(--xh-prompt-input-send-bg-active, var(--xh-_tone-active, var(--xh-bg-brand-active)));
-    --xh-_fg: var(--xh-prompt-input-send-fg, var(--xh-_tone-on, var(--xh-fg-on-brand)));
-    /* 发送身份是实心底，顶边画一条极浅的内高光把这块面衬出厚度 */
-    --xh-_prompt-input-submit-highlight: var(--xh-_highlight-tone);
+    --xh-action-visual-size: var(--xh-_prompt-input-h);
+    --xh-action-min-inline-size: var(--xh-_prompt-input-h);
+    --xh-action-padding-inline: var(--xh-prompt-input-submit-px, var(--xh-_prompt-input-submit-px));
+    --xh-action-radius: var(--xh-prompt-input-submit-radius, var(--xh-shape-control));
+    --xh-action-bg-rest: var(--xh-prompt-input-send-bg, var(--xh-_action-variant-bg-rest));
+    --xh-action-bg-hover: var(--xh-prompt-input-send-bg-hover, var(--xh-_action-variant-bg-hover));
+    --xh-action-bg-pressed: var(--xh-prompt-input-send-bg-active, var(--xh-_action-variant-bg-pressed));
+    --xh-action-fg-rest: var(--xh-prompt-input-send-fg, var(--xh-_action-variant-fg-rest));
+    --xh-action-fg-hover: var(--xh-prompt-input-send-fg, var(--xh-_action-variant-fg-hover));
+    --xh-action-fg-pressed: var(--xh-prompt-input-send-fg, var(--xh-_action-variant-fg-pressed));
+    --xh-action-border-rest: transparent;
+    --xh-action-highlight-rest: transparent;
+    /* 发送身份是实心底，顶边画一条极浅的内高光把这块面衬出厚度；三态同一支，禁用面由家族收掉 */
+    --xh-action-shadow-rest: var(--xh-prompt-input-submit-shadow, var(--xh-_highlight-tone));
+    --xh-action-shadow-hover: var(--xh-prompt-input-submit-shadow, var(--xh-_highlight-tone));
+    --xh-action-shadow-pressed: var(--xh-prompt-input-submit-shadow, var(--xh-_highlight-tone));
+    /* 输入为空时按钮转灰但不收起 */
+    --xh-action-bg-disabled: var(--xh-prompt-input-send-bg-off, var(--xh-bg-muted));
+    --xh-action-font-size: var(--xh-prompt-input-submit-font-size, var(--xh-text-label-size));
+    /* 面是实心的，环色与面同族，画在面里就看不出来；环改取面自己的前景色——
+       那一族色本来就要在这块面上把字读清楚，与面的对比是按可读性定的 */
+    --xh-action-ring-color-focus-visible: currentColor;
 
-    display: inline-flex;
     /* 按钮不参与弹性伸缩 */
     flex: none;
-    align-items: center;
-    justify-content: center;
-    min-inline-size: var(--xh-_prompt-input-h);
-    block-size: var(--xh-_prompt-input-h);
-    padding-inline: var(--xh-prompt-input-submit-px, var(--xh-_prompt-input-submit-px));
-    border: 0;
-    border-radius: var(--xh-prompt-input-submit-radius, var(--xh-shape-control));
-    background: var(--xh-_bg);
-    color: var(--xh-_fg);
-    box-shadow: var(--xh-prompt-input-submit-shadow, var(--xh-_prompt-input-submit-highlight));
-    font-family: inherit;
-    font-size: var(--xh-prompt-input-submit-font-size, var(--xh-text-label-size));
+    border-width: 0;
     font-weight: var(--xh-prompt-input-submit-font-weight, var(--xh-text-label-weight));
-    line-height: var(--xh-leading-none);
-    white-space: nowrap;
-    cursor: pointer;
-    user-select: none;
-    /* 换到停止身份与转灰这两档都会把内高光收掉，box-shadow 因此跟着配色一起过渡 */
-    transition:
-      background var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
-      color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
-      box-shadow var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
-      scale var(--xh-motion-duration-release) var(--xh-motion-ease-release);
   }
 
-  /* 面是实心的，环色与面同族，画在面里就看不出来；环改取面自己的前景色——
-     那一族色本来就要在这块面上把字读清楚，与面的对比是按可读性定的 */
-  [data-scope='prompt-input'][data-part='submit-trigger']:not([data-mode='stop']):focus-visible {
-    --xh-_ring-color: currentColor;
-  }
-
+  /* 家族那条 display 会把 UA 的 [hidden]{display:none} 盖掉 */
   [data-scope='prompt-input'][data-part='submit-trigger'][hidden] {
     display: none;
   }
 
-  [data-scope='prompt-input'][data-part='submit-trigger']:hover:not(:disabled) {
-    background: var(--xh-_bg-hover);
-  }
-
-  [data-scope='prompt-input'][data-part='submit-trigger']:active:not(:disabled) {
-    background: var(--xh-_bg-active);
-    scale: var(--xh-motion-scale-press);
-    transition-duration: var(--xh-motion-duration-press);
-    transition-timing-function: var(--xh-motion-ease-press);
-  }
-
-  /* 停止身份只换配色，从主色降到中性；文案与可访问名由连接层切换 */
+  /* 停止身份只换配色，从主色降到中性淡底（连接层同时把家族档切成 subtle）；文案与可访问名由连接层切换。
+     淡底面上没有厚度可言，内高光收掉；环色回到公共焦点色 */
   [data-scope='prompt-input'][data-part='submit-trigger'][data-mode='stop'] {
-    --xh-_bg: var(--xh-prompt-input-stop-bg, var(--xh-bg-subtle));
-    --xh-_bg-hover: var(--xh-prompt-input-stop-bg-hover, var(--xh-bg-subtle-hover));
-    --xh-_bg-active: var(--xh-prompt-input-stop-bg-active, var(--xh-bg-subtle-active));
-    --xh-_fg: var(--xh-prompt-input-stop-fg, var(--xh-fg-default));
-
-    /* 停止身份是淡底，面上没有厚度可言，内高光收掉 */
-    box-shadow: none;
-  }
-
-  /* 禁用走原生 disabled，输入为空时按钮转灰但不收起 */
-  [data-scope='prompt-input'][data-part='submit-trigger']:disabled {
-    --xh-_bg: var(--xh-prompt-input-send-bg-off, var(--xh-bg-muted));
-    --xh-_fg: var(--xh-fg-disabled);
-
-    box-shadow: none;
+    --xh-action-bg-rest: var(--xh-prompt-input-stop-bg, var(--xh-_action-variant-bg-rest));
+    --xh-action-bg-hover: var(--xh-prompt-input-stop-bg-hover, var(--xh-_action-variant-bg-hover));
+    --xh-action-bg-pressed: var(--xh-prompt-input-stop-bg-active, var(--xh-_action-variant-bg-pressed));
+    --xh-action-fg-rest: var(--xh-prompt-input-stop-fg, var(--xh-_action-variant-fg-rest));
+    --xh-action-fg-hover: var(--xh-prompt-input-stop-fg, var(--xh-_action-variant-fg-hover));
+    --xh-action-fg-pressed: var(--xh-prompt-input-stop-fg, var(--xh-_action-variant-fg-pressed));
+    --xh-action-shadow-rest: none;
+    --xh-action-shadow-hover: none;
+    --xh-action-shadow-pressed: none;
+    --xh-action-ring-color-focus-visible: var(--xh-ring-focus);
   }
 
   /* 按钮没写内容就由皮肤画兜底字形，两种身份各画一枚；
@@ -329,12 +220,5 @@
     vertical-align: var(--xh-glyph-baseline-shift);
     border-radius: var(--xh-prompt-input-stop-mark-radius, var(--xh-shape-inset));
     background-color: currentColor;
-  }
-
-  @media (forced-colors: active) {
-    /* 强制色会丢掉渐变图层；实体材质底、边框与焦点环仍由同源 M1 令牌和系统色表达。 */
-    [data-scope='prompt-input'][data-part='root'] {
-      background-image: none;
-    }
   }
 }

@@ -50,10 +50,12 @@ export const promptInputSuite: ConformanceSuite = {
       initial: {
         counts: { 'root': 1, 'input': 1, 'submit-trigger': 1 },
         parts: {
-          'root': { 'data-disabled': null, 'data-loading': null },
+          // root 是 Field Chrome 视觉盒：家族尺寸档落在它身上（缺省 md）
+          'root': { 'data-disabled': null, 'data-loading': null, 'data-xh-field-chrome': '', 'data-xh-field-size': 'md' },
           // 不给 translations.input 就整条不输出，作者的 <label for> 与自写的 aria-label 才留得住
-          'input': { 'aria-label': null, 'data-state': 'empty' },
-          'submit-trigger': { 'type': 'button', 'data-mode': 'send', 'aria-label': 'Send', 'disabled': '' },
+          'input': { 'aria-label': null, 'data-state': 'empty', 'data-xh-field-input': '' },
+          // 发送钮走 text solid 档，输入为空时转灰：原生 disabled 与家族的 data-disabled 同步
+          'submit-trigger': { 'type': 'button', 'data-mode': 'send', 'aria-label': 'Send', 'disabled': '', 'data-disabled': '', 'data-xh-action-profile': 'text', 'data-xh-action-variant': 'solid' },
         },
         activeElement: null,
         events: [],

@@ -81,7 +81,6 @@ const EXPECTED = {
   'pagination': { content: ['floating'] },
   'popconfirm': { 'content': ['frosted'], 'confirm-trigger': ['soft'], 'cancel-trigger': ['soft'] },
   'popover': { content: ['frosted'] },
-  'prompt-input': { root: ['soft'] },
   'select': { content: ['frosted'] },
   'side-nav': { 'branch-content': ['floating'] },
   // 拇指静止时是 raised，带 data-dragging 的那一档走 lifted：跟着手走的元素抬高一档，

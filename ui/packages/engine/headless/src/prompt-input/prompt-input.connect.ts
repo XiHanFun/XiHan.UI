@@ -46,8 +46,12 @@ export function connectPromptInput<T extends PropTypes>(
 
     // 不发 aria-busy：在途的是会话那一层的活区，输入壳自己没在更新；
     // 报了它反而会压住同一棵子树内播报区的播报
+    // root 就是视觉盒：描边、底色、聚焦环由 Field Chrome 家族画在它身上（8px surface 圆角是登记例外），
+    // disabled / loading 两个状态属性供家族切换盒观感；size 缺省 md
     getRootProps: () => normalize.element({
       ...parts.root.attrs,
+      'data-xh-field-chrome': '',
+      'data-xh-field-size': prop('size') ?? 'md',
       'data-disabled': dataAttr(disabled),
       'data-loading': dataAttr(loading),
       'data-variant': variant,
@@ -59,8 +63,11 @@ export function connectPromptInput<T extends PropTypes>(
       ...parts.control.attrs,
     }),
 
+    // 输入段透明、底由外框承担：重置与字色由家族的 [data-xh-field-input] 给。
+    // 刻意不投影 data-xh-field-layout：家族 textarea 布局的 :has() 变体会压掉皮肤在 root 上的排布
     getInputProps: () => normalize.textarea({
       ...parts.input.attrs,
+      'data-xh-field-input': '',
       // 用原生 disabled 属性，同时挡住聚焦与输入
       'disabled': disabled || undefined,
       // 只在作者给了文案时才发：无条件发会盖掉他自己的 <label for> 与 aria-label
@@ -106,14 +113,22 @@ export function connectPromptInput<T extends PropTypes>(
       },
     }),
 
+    // 发送钮是组件的主要动作，走 Action Control 的 text solid 档（与 Button 缺省同为品牌实心）；
+    // 生成中换成停止身份，降到中性淡底（subtle）。text 档而不是 icon 档：作者可以放文案，不钉成正方
     getSubmitTriggerProps: () => normalize.button({
       ...parts['submit-trigger'].attrs,
+      'data-xh-action-control': '',
+      'data-xh-action-profile': 'text',
+      'data-xh-action-variant': loading ? 'subtle' : 'solid',
+      'data-xh-action-display': 'always',
+      'data-xh-action-size': prop('size') ?? 'md',
       'type': 'button',
       // 同一颗按钮按 loading 在发送与停止两种身份间切换
       'data-mode': loading ? 'stop' : 'send',
       'aria-label': loading ? (translations?.stop ?? 'Stop generating') : (translations?.send ?? 'Send'),
-      // 生成期间恒可用，此刻按钮的语义是停止
+      // 生成期间恒可用，此刻按钮的语义是停止；家族按 data-disabled 给禁用面，与原生 disabled 同步
       'disabled': (!loading && !canSubmit) || undefined,
+      'data-disabled': dataAttr(!loading && !canSubmit),
       'onClick': () => {
         send(loading ? { type: 'STOP' } : { type: 'SUBMIT' })
       },

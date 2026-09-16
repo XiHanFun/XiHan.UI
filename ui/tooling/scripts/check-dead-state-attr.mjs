@@ -127,7 +127,6 @@ const HOOKS = {
   'field-array:data-invalid': '校验失败的观感落在行里各输入件自己身上，这一层只往下传状态',
   'form:data-readonly': '整份表单置只读时由逐个控件自己表出',
   // 忙：锁住的观感由提交钮的身份切换承载
-  'prompt-input:data-loading': '在途时提交钮切成 data-mode=stop，观感挂在那一位上',
   // 其余逐条
   'calendar-picker:data-focus': '漫游焦点的锚点位。看得见的聚焦环走 :focus-visible',
   'calendar-range-picker:data-focus': '漫游焦点的锚点位。看得见的聚焦环走 :focus-visible',
