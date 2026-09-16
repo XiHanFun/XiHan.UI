@@ -155,8 +155,12 @@ export function connectEditable<T extends PropTypes>(
       // label 部件若不是 <label> 元素，for 会失效，靠这条兜住可访问名
       'aria-labelledby': ids.label,
       'aria-invalid': invalid ? 'true' : 'false',
+      // Field Chrome 不读取 editable anatomy；原生输入角色与单行布局由 Headless 明确投影
+      'data-xh-field-input': '',
+      'data-xh-field-layout': 'single-line',
       'data-state': stateAttr,
       'data-disabled': dataAttr(disabled),
+      'data-readonly': dataAttr(readOnly),
       'data-invalid': dataAttr(invalid),
       'data-auto-resize': dataAttr(autoResize),
       // 用 hidden 收起而非卸载：常挂着才留得住输入法状态与作者挂在节点上的东西
@@ -197,8 +201,14 @@ export function connectEditable<T extends PropTypes>(
       },
     }),
 
+    // 三颗动作走 Action Control 的 field-inset ghost 档：正方视觉盒、inset 圆角、悬停 100 / 按下 200
     getEditTriggerProps: () => normalize.button({
       ...parts['edit-trigger'].attrs,
+      'data-xh-action-control': '',
+      'data-xh-action-profile': 'field-inset',
+      'data-xh-action-variant': 'ghost',
+      'data-xh-action-display': 'always',
+      'data-xh-action-size': prop('size') ?? 'md',
       'type': 'button',
       'aria-controls': ids.input,
       // 用原生 disabled 而非 aria-disabled：只给 data-disabled 的话按钮仍可聚焦、读屏仍念"可点"
@@ -211,6 +221,11 @@ export function connectEditable<T extends PropTypes>(
 
     getSubmitTriggerProps: () => normalize.button({
       ...parts['submit-trigger'].attrs,
+      'data-xh-action-control': '',
+      'data-xh-action-profile': 'field-inset',
+      'data-xh-action-variant': 'ghost',
+      'data-xh-action-display': 'always',
+      'data-xh-action-size': prop('size') ?? 'md',
       'type': 'button',
       'disabled': !editing || undefined,
       'data-disabled': dataAttr(!editing),
@@ -225,6 +240,11 @@ export function connectEditable<T extends PropTypes>(
 
     getCancelTriggerProps: () => normalize.button({
       ...parts['cancel-trigger'].attrs,
+      'data-xh-action-control': '',
+      'data-xh-action-profile': 'field-inset',
+      'data-xh-action-variant': 'ghost',
+      'data-xh-action-display': 'always',
+      'data-xh-action-size': prop('size') ?? 'md',
       'type': 'button',
       'disabled': !editing || undefined,
       'data-disabled': dataAttr(!editing),
@@ -237,10 +257,16 @@ export function connectEditable<T extends PropTypes>(
       },
     }),
 
+    // control 是唯一的视觉盒：描边、底色、聚焦环由 Field Chrome 家族画在它身上，
+    // 三个状态属性供家族按禁用 / 只读 / 校验切换盒观感；size 缺省 md，variant 与 root 同源
     getControlProps: () => normalize.element({
       ...parts.control.attrs,
+      'data-xh-field-chrome': '',
+      'data-xh-field-size': prop('size') ?? 'md',
+      'data-variant': variant,
       'data-state': stateAttr,
       'data-disabled': dataAttr(disabled),
+      'data-readonly': dataAttr(readOnly),
       'data-invalid': dataAttr(invalid),
     }),
   }

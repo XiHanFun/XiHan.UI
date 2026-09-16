@@ -299,9 +299,44 @@ describe('editableMachine 写值', () => {
 })
 
 describe('connectEditable 结构与标注', () => {
-  it('不写 variant 时 root 落 outline；写 subtle 如实落', () => {
-    expect((makeService().api().getRootProps() as Dict)['data-variant']).toBe('outline')
-    expect((makeService({ variant: 'subtle' }).api().getRootProps() as Dict)['data-variant']).toBe('subtle')
+  it('不写 variant 时 root 与 control 都落 outline；写 subtle 如实落', () => {
+    const fallback = makeService().api()
+    expect((fallback.getRootProps() as Dict)['data-variant']).toBe('outline')
+    expect((fallback.getControlProps() as Dict)['data-variant']).toBe('outline')
+    const subtle = makeService({ variant: 'subtle' }).api()
+    expect((subtle.getRootProps() as Dict)['data-variant']).toBe('subtle')
+    expect((subtle.getControlProps() as Dict)['data-variant']).toBe('subtle')
+  })
+
+  it('control 投影 Field Chrome 稳定角色、尺寸档与只读态，input 投影单行输入角色', () => {
+    const api = makeService({ readOnly: true }).api()
+    expect(api.getControlProps()).toMatchObject({
+      'data-xh-field-chrome': '',
+      'data-xh-field-size': 'md',
+      'data-readonly': '',
+    })
+    expect(api.getInputProps()).toMatchObject({
+      'data-xh-field-input': '',
+      'data-xh-field-layout': 'single-line',
+      'data-readonly': '',
+    })
+    const control = makeService({ size: 'sm' }).api().getControlProps() as Dict
+    expect(control['data-xh-field-size']).toBe('sm')
+    expect(control['data-readonly']).toBeUndefined()
+  })
+
+  it('三颗动作走 Action Control 的 field-inset ghost always 档，尺寸档随 size 缺省 md', () => {
+    const api = makeService().api()
+    for (const props of [api.getEditTriggerProps(), api.getSubmitTriggerProps(), api.getCancelTriggerProps()]) {
+      expect(props).toMatchObject({
+        'data-xh-action-control': '',
+        'data-xh-action-profile': 'field-inset',
+        'data-xh-action-variant': 'ghost',
+        'data-xh-action-display': 'always',
+        'data-xh-action-size': 'md',
+      })
+    }
+    expect((makeService({ size: 'lg' }).api().getSubmitTriggerProps() as Dict)['data-xh-action-size']).toBe('lg')
   })
 
   it('root 是有名字的 group，状态位齐全', () => {
