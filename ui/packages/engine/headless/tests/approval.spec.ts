@@ -150,3 +150,10 @@ describe('拒绝这条路本身不吃闸门', () => {
     expect(onDecision.mock.calls[0]![0].source).toBe('api')
   })
 })
+
+describe('connectApproval 投影', () => {
+  it('variant 不写时根落 outline；写 subtle 如实落', () => {
+    expect(mount().root()).toMatchObject({ 'data-variant': 'outline' })
+    expect(mount({ variant: 'subtle' }).root()).toMatchObject({ 'data-variant': 'subtle' })
+  })
+})
