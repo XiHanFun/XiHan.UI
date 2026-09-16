@@ -242,12 +242,66 @@ for (const c of STANDALONE) {
   }
 }
 
+/** ③ 尺寸基准与 Action Control 档位的对应：接了家族的叉由连接层投 data-xh-action-size，档位得与基准同高。 */
+const CLOSE_ACTION_SIZE = { '--xh-control-h-sm': 'sm', '--xh-control-action-size': 'xs', '--xh-control-h-lg': 'lg' }
+
+/** 基础块里某条桥接槽的取值（选择器尾巴为空的那些规则）。 */
+function bridgeIn(rules, name) {
+  for (const r of rules) {
+    if (r.tail.trim() !== '')
+      continue
+    const m = new RegExp(`${esc(name)}:\\s*([^;]+);`).exec(r.body)
+    if (m)
+      return m[1].trim()
+  }
+  return null
+}
+
+/** ③ 接了 Action Control icon 档的关闭钮：字形颜色经桥接槽走，常态 / 悬停都得留使用者槽。 */
+function checkActionCloseForeground(c, part, css) {
+  const rules = rulesOf(css, c, part)
+  const rest = bridgeIn(rules, '--xh-action-fg-rest')
+  if (!rest || !consumerSlot(c, rest))
+    problems.push(`${c}.css [${part}] 前景色没留使用者槽，该写 --xh-action-fg-rest: var(--xh-${c}-close-fg, <语义令牌>)`)
+  const hover = bridgeIn(rules, '--xh-action-fg-hover')
+  if (hover && !consumerSlot(c, hover))
+    problems.push(`${c}.css [${part}] 悬停换了字色却没留槽，该写 --xh-action-fg-hover: var(--xh-${c}-close-fg-hover, <语义令牌>)`)
+  if (CLOSE_FG_EXCEPTION[c])
+    problems.push(`${c} 的叉已接 Action Control 并经桥接槽给前景，CLOSE_FG_EXCEPTION 里那条登记过期了，删掉`)
+}
+
 // ③ 浮层角落关闭钮
 for (const [c, sizeException] of Object.entries(CLOSE)) {
   const css = await skin(c)
   if (!css)
     continue
   const part = CLOSE_PART[c] ?? 'close-trigger'
+  const src = await connect(c)
+  const g = src ? getter(src, `get${part.replace(/(?:^|-)([a-z])/g, (_, ch) => ch.toUpperCase())}Props`) : null
+  // 投影了 Action Control icon 档的叉：尺寸、圆角、按压与粗指针热区由家族给，皮肤只映射使用者槽——
+  // 查映射声明、[hidden]、家族按压面，以及连接层投的档位与尺寸基准同高（同 ① / ④ 的 sharedAction 分支）
+  const sharedAction = /@import\s+['"]\.\.\/family\/action-control\.css['"]/.test(css)
+    && /['"]data-xh-action-profile['"]\s*:\s*['"]icon['"]/.test(g ?? '')
+  if (sharedAction) {
+    const family = await readFile(ACTION_FAMILY, 'utf8')
+    const rules = rulesOf(css, c, part)
+    const sizeRe = new RegExp(`--xh-action-visual-size:\\s*var\\(--xh-${esc(c)}-close-size,\\s*var\\(--xh-_action-profile-visual-size\\)\\)`)
+    if (!has(rules, (t, b) => t.trim() === '' && sizeRe.test(b)))
+      problems.push(`${c}.css [${part}] 没把 --xh-${c}-close-size 映到家族正方盒（--xh-action-visual-size）`)
+    const radiusRe = new RegExp(`--xh-action-radius:\\s*var\\(--xh-${esc(c)}-close-radius,\\s*var\\(--xh-shape-control\\)\\)`)
+    if (!has(rules, (t, b) => t.trim() === '' && radiusRe.test(b)))
+      problems.push(`${c}.css [${part}] 圆角该映到 --xh-shape-control（--xh-action-radius: var(--xh-${c}-close-radius, var(--xh-shape-control))）`)
+    if (!has(rules, (t, b) => t.trim().startsWith('[hidden]') && /display:\s*none/.test(b)))
+      problems.push(`${c}.css [${part}] 缺 [hidden] { display: none }`)
+    if (!/\[data-xh-action-control\]:not\(\[data-disabled\]\):not\(\[data-loading\]\):is\(:active, \[data-pressed\]\)[\s\S]*--xh-motion-scale-press/.test(family))
+      problems.push('family/action-control.css 缺共用的 :is(:active, [data-pressed]) 按压反馈')
+    const want = CLOSE_ACTION_SIZE[sizeException ?? '--xh-control-h-sm']
+    const size = /['"]data-xh-action-size['"]\s*:\s*['"]([a-z]+)['"]/.exec(g ?? '')?.[1]
+    if (size !== want)
+      problems.push(`${c}.connect.ts 的 ${part} 投的 data-xh-action-size 是 ${size ?? '（没投）'}，尺寸基准 ${sizeException ?? '--xh-control-h-sm'} 对应 ${want} 档`)
+    checkActionCloseForeground(c, part, css)
+    continue
+  }
   await checkButtonSkin(c, part, {
     sizeSlot: `--xh-${c}-close-size`,
     sizeToken: sizeException ?? '--xh-control-h-sm',

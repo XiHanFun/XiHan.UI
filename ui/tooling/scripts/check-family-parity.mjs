@@ -134,12 +134,15 @@ const FAMILIES = [
   },
   // ——以下家族按真源 §4 登记，读 family-backlog.json，已迁移成员 ≥ 2 才比——
   {
-    // 静态内容面：边界三选一（§8.3），根面的边、底、影同源
+    // 静态内容面：边界三选一（§8.3），根面的边、底同源；影只在 Card 之外比——
+    // 真源 §5.3 把 raised 落影只给 Card（check-elevation-role EXPECTED card.root=['raised']），
+    // 其余静态面一律无影，Card 的影是它一家的登记身份，不是分叉
     name: '内容面族',
     backlog: true,
     members: ['card', 'alert', 'code-view', 'diff-view', 'log', 'json-viewer', 'tool-call', 'reasoning', 'approval', 'question-flow'],
     parts: [
-      { part: 'root', state: '', props: ['border', 'background', 'box-shadow'] },
+      { part: 'root', state: '', props: ['border', 'background'] },
+      { part: 'root', state: '', props: ['box-shadow'], only: ['alert', 'code-view', 'diff-view', 'log', 'json-viewer', 'tool-call', 'reasoning', 'approval', 'question-flow'] },
     ],
   },
   {
@@ -162,6 +165,19 @@ const FAMILIES = [
     members: ['toast', 'notification'],
     parts: [
       { partBy: { toast: 'root', notification: 'item' }, state: '', props: ['border', 'background', 'box-shadow'] },
+    ],
+  },
+  {
+    // Feedback 三家的排版与指示符：标题 14/600、说明 13/fg-muted（§6.4），指示符统一 md 档（§6.5）
+    name: 'Feedback 族',
+    backlog: true,
+    members: ['alert', 'toast', 'notification'],
+    parts: [
+      // notification 的标题 / 说明部件叫 item-title / item-description，使用者槽却按 title / description 取名
+      // （--xh-notification-title-*，check-spacing-slots 已登记），槽名的部件段按 slotBy 归一
+      { partBy: { alert: 'title', toast: 'title', notification: 'item-title' }, slotBy: { notification: 'title' }, state: '', props: ['font-size', 'font-weight'] },
+      { partBy: { alert: 'description', toast: 'description', notification: 'item-description' }, slotBy: { notification: 'description' }, state: '', props: ['font-size', 'color'] },
+      { partBy: { alert: 'root', toast: 'root', notification: 'item' }, state: '', props: ['--xh-icon-size'] },
     ],
   },
   {
@@ -431,7 +447,8 @@ function normalize(value, comp) {
 /**
  * 按部件分别登记（partBy）的条目里，各成员的槽名部件段必然是自己那个部件（check-spacing-slots 要求槽名的
  * 部件段与规则所在部件一致：date-picker 的行是 time-item，别家是 item），比对时把这一段也归一成 <p>，
- * 槽名的后缀仍逐字比。
+ * 槽名的后缀仍逐字比。槽名部件段与部件名不同的成员（notification 的 item-title 用 --xh-notification-title-*）
+ * 由条目的 slotBy 指明那一段。
  */
 function normalizePart(value, part) {
   return value.replace(new RegExp(`--xh-(_?)<c>-${part}-`, 'g'), '--xh-$1<c>-<p>-')
@@ -509,7 +526,7 @@ for (const family of FAMILIES) {
         if (!matches(rule, comp))
           continue
         for (const [name, value] of rule.decls)
-          merged.set(name, entry.partBy ? normalizePart(value, partFor(comp)) : value)
+          merged.set(name, entry.partBy ? normalizePart(value, entry.slotBy?.[comp] ?? partFor(comp)) : value)
       }
       return merged
     }

@@ -49,6 +49,12 @@ export const alertSuite: ConformanceSuite = {
             'disabled': null,
             'data-disabled': null,
             'hidden': null,
+            // 只有字形的离散动作钮：icon ghost 档，固定 sm
+            'data-xh-action-control': '',
+            'data-xh-action-profile': 'icon',
+            'data-xh-action-variant': 'ghost',
+            'data-xh-action-display': 'always',
+            'data-xh-action-size': 'sm',
           },
         },
       },

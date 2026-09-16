@@ -94,7 +94,14 @@ export function connectAlert<T extends PropTypes>(
       ...parts['close-trigger'].attrs,
       'type': 'button',
       'aria-label': prop('translations')?.close ?? 'Close',
-      // 单体控件用原生 disabled：不可聚焦、也不占 Tab 位
+      // 只有字形的离散动作钮：盒、悬停 / 按下与按压、粗指针热区、焦点环、禁用面由 Action Control 家族按这几位给。
+      // 取 icon ghost 档（静息透明、白底承载 hover 100 → pressed 200）；Alert 没有 size 轴，固定 sm（32px 正方盒）
+      'data-xh-action-control': '',
+      'data-xh-action-profile': 'icon',
+      'data-xh-action-variant': 'ghost',
+      'data-xh-action-display': 'always',
+      'data-xh-action-size': 'sm',
+      // 单体控件用原生 disabled：不可聚焦、也不占 Tab 位；家族按 data-disabled 给禁用面
       'disabled': !closable || undefined,
       'data-disabled': dataAttr(!closable),
       // 不可关闭时连按钮一起收起，不留一个按不动的叉

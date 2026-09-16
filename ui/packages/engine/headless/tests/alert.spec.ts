@@ -106,6 +106,15 @@ describe('connectAlert 实时区语义', () => {
 })
 
 describe('connectAlert 关闭按钮', () => {
+  it('投影 Action Control 家族属性：icon ghost 档、常显、固定 sm', () => {
+    const close = makeAlert().api().getCloseTriggerProps()
+    expect(close['data-xh-action-control']).toBe('')
+    expect(close['data-xh-action-profile']).toBe('icon')
+    expect(close['data-xh-action-variant']).toBe('ghost')
+    expect(close['data-xh-action-display']).toBe('always')
+    expect(close['data-xh-action-size']).toBe('sm')
+  })
+
   it('可访问名默认 Close，可由 translations 替换', () => {
     expect(makeAlert().api().getCloseTriggerProps()['aria-label']).toBe('Close')
     expect(makeAlert({ translations: { close: '关闭提示' } }).api().getCloseTriggerProps()['aria-label']).toBe('关闭提示')

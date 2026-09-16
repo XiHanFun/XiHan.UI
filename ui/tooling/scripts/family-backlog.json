@@ -1,8 +1,6 @@
 {
   "$description": "逐家族豁免表：七条家族门禁（edge = check-surface-edge 与 check-elevation-role 的 raised 登记，键以 :raised 结尾的归后者；selection = check-selection-marker；ladder = check-state-ladder；shape = check-shape-scale 身份表；scroll = check-scrollbar-hosts，键「组件:部件:问题码」；press = check-press-feedback，*:data-pressed 是各组件接上按压通道前的总豁免（button / toggle 已接）；text = check-text-role；motion = check-motion-role 的大尺度待办）各一段，每段是「组件:部件[:状态]: 理由」。只登「尚未迁移」的存量，每条必须真被放行过一次——门禁跑完把没命中的条目判过期；「本来就不该有」的进各门禁自己的永久登记表。条目数由 tooling/testing/runners/family-backlog.spec.mjs 的快照与 CEILING 钉住，键集合只许是快照的子集：迁走一个组件 = 删条目 + vitest -u 重录快照 + 下调 CEILING，三者同一提交可见。",
   "edge": {
-    "alert:root": "缺省边 transparent 而以 --xh-elevation-raised 充当边界，应改 --xh-border-default 描边 + 无影，待本组件迁移",
-    "alert:root:raised": "raised 退役待本组件迁移",
     "approval:root": "border 颜色位落 --xh-border-strong（approval.css:53），根面描边应改 --xh-border-default，待本组件迁移",
     "approval:root:raised": "raised 退役待本组件迁移",
     "approval:root:subtle": "淡底档沿用基础块的 --xh-elevation-raised 落影，淡底面应无影，待本组件迁移",
@@ -70,8 +68,6 @@
   },
   "ladder": {
     "accordion:trigger:hover": "hover 落 --xh-bg-subtle-hover（200），这份皮肤却没给 --xh-action-host-bg-* 赋值，白底承载 hover 是 --xh-bg-subtle（100），淡底容器由 host 槽下发；待本组件迁移",
-    "alert:close-trigger:hover": "hover 落 --xh-bg-subtle-hover（200），这份皮肤却没给 --xh-action-host-bg-* 赋值，白底承载 hover 是 --xh-bg-subtle（100），淡底容器由 host 槽下发；待本组件迁移",
-    "alert:close-trigger:pressed": "pressed 落 --xh-bg-subtle-active（300），这份皮肤却没给 --xh-action-host-bg-* 赋值，白底承载 pressed 是 --xh-bg-subtle-hover（200）；待本组件迁移",
     "anchor:link:hover": "hover 落 --xh-bg-subtle-hover（200），这份皮肤却没给 --xh-action-host-bg-* 赋值，白底承载 hover 是 --xh-bg-subtle（100），淡底容器由 host 槽下发；待本组件迁移",
     "approval:deny-trigger:hover": "hover 落 --xh-bg-subtle-hover（200），这份皮肤却没给 --xh-action-host-bg-* 赋值，白底承载 hover 是 --xh-bg-subtle（100），淡底容器由 host 槽下发；待本组件迁移",
     "approval:item:hover": "hover 落 --xh-bg-subtle-hover（200），这份皮肤却没给 --xh-action-host-bg-* 赋值，白底承载 hover 是 --xh-bg-subtle（100），淡底容器由 host 槽下发；待本组件迁移",
@@ -285,7 +281,6 @@
   },
   "text": {
     "accordion:root:icon-size": "--xh-icon-size 兜底落 --xh-glyph-size-text，随文字形只给纯行内文字组件，控件内图标按档取 --xh-glyph-size-sm / md / lg；待本组件迁移",
-    "alert:root:icon-size": "Feedback 指示符落 --xh-glyph-size-sm，Alert / Toast / Notification 统一 --xh-glyph-size-md；待本组件迁移",
     "approval:description:line-height": "line-height 落 --xh-text-body-leading，说明文字应为 --xh-leading-normal；待本组件迁移",
     "approval:root:icon-size": "--xh-icon-size 兜底落 --xh-glyph-size-text，随文字形只给纯行内文字组件，控件内图标按档取 --xh-glyph-size-sm / md / lg；待本组件迁移",
     "approval:title:font-weight": "font-weight 落 --xh-text-label-weight，Surface / Feedback / 浮层内标题应为 --xh-font-weight-semibold；待本组件迁移",
