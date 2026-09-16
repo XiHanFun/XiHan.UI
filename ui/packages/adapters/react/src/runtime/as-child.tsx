@@ -40,6 +40,15 @@ export function carriesOwnAnatomy(node: ReactElement): boolean {
 }
 
 /**
+ * 角色标记：解剖两位、家族标记（data-xh-*）与随视觉盒走的形态轴（data-variant）。
+ * 子节点自带解剖时这些都不该落到它身上：家族标记会在封装自己的视觉盒外再画一层壳，
+ * 形态轴会盖掉封装根上作者写的那一档。
+ */
+export function isRoleMarker(key: string): boolean {
+  return key === 'data-scope' || key === 'data-part' || key === 'data-variant' || key.startsWith('data-xh-')
+}
+
+/**
  * 把部件属性合并到作者的子节点上。
  *
  * @param children 作者给的内容
@@ -61,7 +70,7 @@ export function mergeIntoChild(
   const keepAnatomy = !carriesOwnAnatomy(child)
   const own: Record<string, unknown> = {}
   for (const [key, value] of Object.entries(props)) {
-    if (!keepAnatomy && (key === 'data-scope' || key === 'data-part'))
+    if (!keepAnatomy && isRoleMarker(key))
       continue
     own[key] = value
   }

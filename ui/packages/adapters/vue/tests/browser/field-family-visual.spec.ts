@@ -3,14 +3,10 @@ import { userEvent } from 'vitest/browser'
 import '@xihan-ui/tokens/tokens.css'
 import '@xihan-ui/styles'
 
-// 已接入 Field Chrome 家族配方的字段：静息即描边式（canvas 底、border-control 描边、无阴影），按配方断言。
-const MIGRATED = ['text-field'] as const
-
-// 尚未接入家族形态矩阵的字段：仍是透明描边 + raised 阴影，只断言彼此同形。
-// 这张表只减不增：每迁一家就把它从这里移到 MIGRATED。
-const PENDING = ['field', 'number-field', 'date-field', 'date-picker', 'time-field', 'time-picker'] as const
-
-const FAMILIES = [...MIGRATED, ...PENDING] as const
+// 字段族七家都已接入 Field Chrome 家族配方：静息即描边式（canvas 底、border-control 描边、无阴影），
+// 视觉盒由 chrome 节点上的 data-xh-field-chrome / data-xh-field-size 画，这里的静态夹具照连接层的投影写。
+// field 的 control 就是作者的原生 input，它自身就是 chrome 节点。
+const FAMILIES = ['field', 'text-field', 'number-field', 'date-field', 'date-picker', 'time-field', 'time-picker'] as const
 
 type Family = typeof FAMILIES[number]
 
@@ -19,7 +15,7 @@ let host: HTMLElement | null = null
 function markup(): string {
   return `
     <section data-family="field">
-      <input data-scope="field" data-part="control" />
+      <input data-scope="field" data-part="control" data-xh-field-chrome data-xh-field-size="md" data-variant="outline" />
     </section>
     <section data-family="text-field">
       <div data-scope="text-field" data-part="root">
@@ -30,7 +26,7 @@ function markup(): string {
     </section>
     <section data-family="number-field">
       <div data-scope="number-field" data-part="root">
-        <div data-scope="number-field" data-part="control">
+        <div data-scope="number-field" data-part="control" data-xh-field-chrome data-xh-field-size="md">
           <button data-scope="number-field" data-part="decrement-trigger"></button>
           <input data-scope="number-field" data-part="input" />
           <button data-scope="number-field" data-part="increment-trigger"></button>
@@ -39,7 +35,7 @@ function markup(): string {
     </section>
     <section data-family="date-field">
       <div data-scope="date-field" data-part="root">
-        <div data-scope="date-field" data-part="control">
+        <div data-scope="date-field" data-part="control" data-xh-field-chrome data-xh-field-size="md">
           <div data-scope="date-field" data-part="segment-group">
             <span data-scope="date-field" data-part="segment" tabindex="0"></span>
           </div>
@@ -48,7 +44,7 @@ function markup(): string {
     </section>
     <section data-family="date-picker">
       <div data-scope="date-picker" data-part="root">
-        <div data-scope="date-picker" data-part="control">
+        <div data-scope="date-picker" data-part="control" data-xh-field-chrome data-xh-field-size="md">
           <div data-scope="date-picker" data-part="segment-group">
             <span data-scope="date-field" data-part="segment" tabindex="0"></span>
           </div>
@@ -58,7 +54,7 @@ function markup(): string {
     </section>
     <section data-family="time-field">
       <div data-scope="time-field" data-part="root">
-        <div data-scope="time-field" data-part="control">
+        <div data-scope="time-field" data-part="control" data-xh-field-chrome data-xh-field-size="md">
           <div data-scope="time-field" data-part="segment-group">
             <span data-scope="time-field" data-part="segment" tabindex="0"></span>
           </div>
@@ -67,7 +63,7 @@ function markup(): string {
     </section>
     <section data-family="time-picker">
       <div data-scope="time-picker" data-part="root">
-        <div data-scope="time-picker" data-part="control">
+        <div data-scope="time-picker" data-part="control" data-xh-field-chrome data-xh-field-size="md">
           <div data-scope="time-picker" data-part="segment-group">
             <span data-scope="time-picker" data-part="segment" tabindex="0"></span>
           </div>
@@ -133,11 +129,6 @@ afterEach(async () => {
 })
 
 describe('字段族默认视觉盒', () => {
-  it('迁移表与待迁移表合起来正好是七个字段，且互不重叠', () => {
-    expect(new Set(FAMILIES).size).toBe(7)
-    expect(MIGRATED.some(family => (PENDING as readonly string[]).includes(family))).toBe(false)
-  })
-
   it('七个字段在常态下使用同一高度、圆角与描边宽度', () => {
     mount()
     for (const family of FAMILIES) {
@@ -148,9 +139,9 @@ describe('字段族默认视觉盒', () => {
     }
   })
 
-  it('已迁移字段静息为描边式：canvas 底、border-control 描边、无阴影', () => {
+  it('七个字段静息为描边式：canvas 底、border-control 描边、无阴影', () => {
     mount()
-    for (const family of MIGRATED) {
+    for (const family of FAMILIES) {
       const value = exterior(control(family))
       expect(value.background, family).toBe(resolveColor('var(--xh-bg-canvas)'))
       expect(value.borderColor, family).toBe(resolveColor('var(--xh-border-control)'))
@@ -158,9 +149,9 @@ describe('字段族默认视觉盒', () => {
     }
   })
 
-  it('已迁移字段悬停换 border-control-hover 描边与淡混底，仍无阴影', async () => {
+  it('七个字段悬停换 border-control-hover 描边与淡混底，仍无阴影', async () => {
     mount()
-    for (const family of MIGRATED) {
+    for (const family of FAMILIES) {
       await userEvent.hover(control(family))
       await settle()
       const value = exterior(control(family))
@@ -168,22 +159,6 @@ describe('字段族默认视觉盒', () => {
       expect(value.borderColor, family).toBe(resolveColor('var(--xh-border-control-hover)'))
       expect(value.shadow, family).toBe('none')
     }
-  })
-
-  it('待迁移字段在常态与悬停下仍彼此同形', async () => {
-    mount()
-    const rest = PENDING.map(family => exterior(control(family)))
-    for (const state of rest.slice(1))
-      expect(state).toEqual(rest[0])
-
-    const hovered: Array<Record<string, string | number>> = []
-    for (const family of PENDING) {
-      await userEvent.hover(control(family))
-      await settle()
-      hovered.push(exterior(control(family)))
-    }
-    for (const state of hovered.slice(1))
-      expect(state).toEqual(hovered[0])
   })
 
   it('七个字段聚焦时由同一外壳绘制描边与焦点环', async () => {

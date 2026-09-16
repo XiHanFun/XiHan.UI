@@ -83,6 +83,8 @@
     "drawer [data-part='content'][data-scope='drawer']": "面板是焦点陷阱的兜底落点（tabindex=-1），环长在里面的可聚焦控件上",
     "editable [data-part='control'][data-scope='editable'] [data-part='input'][data-scope='editable']": "输入框位于一体式字段盒内，环由 control 的 :focus-within 画在统一外框上",
     "editable [data-part='control'][data-scope='editable'] [data-xh-action-profile='field-inset']": "三颗动作钮位于一体式字段盒内，环由 control 的 :focus-within 画在统一外框上",
+    "field [data-part='control'][data-scope='field'] [data-part='input'][data-scope='field']": "家族随皮肤引入的规则：field 的 control 就是作者的原生控件、自身即 chrome，没有盒内 input 部件，这条命不中；环由家族 :focus-within 画在控件自己身上",
+    "field [data-part='control'][data-scope='field'] [data-xh-action-profile='field-inset']": "家族随皮肤引入的规则：field 没有内嵌动作钮，这条命不中",
     "floating-panel [data-part='content'][data-scope='floating-panel']": "面板本体不接收焦点，只是键盘事件的收口点；环长在标题栏的按钮上",
     "form [data-part='error-summary'][data-scope='form']": "摘要不承载焦点（焦点直接送去出错的字段），它只是一段播报",
     "hover-card [data-part='content'][data-scope='hover-card']": "可编程聚焦的容器（tabindex=-1），环留给里面真正的可聚焦元素",

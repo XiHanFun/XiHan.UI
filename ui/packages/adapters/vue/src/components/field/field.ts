@@ -7,7 +7,7 @@
 
 import type { SlotsType, VNode } from 'vue'
 import { defineComponent, h } from 'vue'
-import { mergeIntoChild } from '../../runtime/as-child'
+import { isRoleMarker, mergeIntoChild } from '../../runtime/as-child'
 import { useOptionalFormContext, useOptionalFormField } from '../form/context'
 import { useFormControlProps } from '../form/use-form-control'
 import { provideField, useFieldContext } from './context'
@@ -42,11 +42,16 @@ export const XhFieldLabel = defineComponent({
 /** 默认插槽的载荷：控件节点应挂载的那组属性，作者把它交给自己渲染的控件。 */
 export type FieldControlSlotProps = Record<string, unknown>
 
-/** 去掉角色标记，只保留接线属性（id 与 aria-*）。 */
+/**
+ * 去掉角色标记，只保留接线属性（id、aria-* 与状态位）。
+ *
+ * 角色标记含解剖两位与家族标记（data-xh-*）：control 投影了 Field Chrome 的视觉盒标记，
+ * 落到薄封装的根上会在封装自己的视觉盒外再画一层壳。
+ */
 export function wiringOnly(controlProps: Record<string, unknown>): Record<string, unknown> {
   const rest: Record<string, unknown> = {}
   for (const [key, value] of Object.entries(controlProps)) {
-    if (key !== 'data-scope' && key !== 'data-part')
+    if (!isRoleMarker(key))
       rest[key] = value
   }
   return rest

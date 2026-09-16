@@ -47,6 +47,10 @@ export const fieldSuite: ConformanceSuite = {
             'aria-required': 'false',
             'data-invalid': null,
             'data-disabled': null,
+            // 控件自身就是字段视觉盒：Field 没有 size / variant 轴，固定 md 与 outline
+            'data-xh-field-chrome': '',
+            'data-xh-field-size': 'md',
+            'data-variant': 'outline',
           },
           'error-text': {
             'role': 'status',

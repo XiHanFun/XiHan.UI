@@ -21218,6 +21218,9 @@
               "name": "--xh-field-control-bg-hover"
             },
             {
+              "name": "--xh-field-control-bg-readonly"
+            },
+            {
               "name": "--xh-field-control-border"
             },
             {
@@ -21243,9 +21246,6 @@
             },
             {
               "name": "--xh-field-control-radius"
-            },
-            {
-              "name": "--xh-field-control-ring"
             },
             {
               "name": "--xh-field-control-shadow"

@@ -53,6 +53,15 @@ export function carriesOwnAnatomy(node: VNode): boolean {
 }
 
 /**
+ * 角色标记：解剖两位、家族标记（data-xh-*）与随视觉盒走的形态轴（data-variant）。
+ * 子节点自带解剖时这些都不该落到它身上：家族标记会在封装自己的视觉盒外再画一层壳，
+ * 形态轴会盖掉封装根上作者写的那一档。
+ */
+export function isRoleMarker(key: string): boolean {
+  return key === 'data-scope' || key === 'data-part' || key === 'data-variant' || key.startsWith('data-xh-')
+}
+
+/**
  * 元素 ref 解包：子节点是组件时 ref 得到的是组件实例，触发器需要的是它的根元素。
  * 组件多根时 $el 是占位注释，该类子节点本就不适合作为触发器，原样交出由定位层报错。
  */
@@ -79,7 +88,7 @@ export function mergeIntoChild(nodes: readonly VNode[] | undefined, props: Recor
   const merged: Record<string, unknown> = {}
   const keepAnatomy = !carriesOwnAnatomy(child)
   for (const [key, value] of Object.entries(props)) {
-    if (!keepAnatomy && (key === 'data-scope' || key === 'data-part'))
+    if (!keepAnatomy && isRoleMarker(key))
       continue
     merged[key] = value
   }

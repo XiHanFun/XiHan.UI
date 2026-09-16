@@ -69,6 +69,7 @@
 ### 最佳实践
 
 - 使用持续可见的明确标签。
+- 把 `control` 标在真控件（`<input>`、`<textarea>`、`<select>`）上：描边式视觉盒按这个节点画，包一层再放真控件会在真控件外再套一层壳。
 - 说明文字简短且补充必要信息。
 - 错误信息应说明如何修正。
 
@@ -76,6 +77,7 @@
 
 - 用占位符代替标签。
 - 同时手写并覆盖组件生成的 ARIA 关联。
+- 给 `control` 再写一套边框、底色与阴影：静息描边、悬停、聚焦、无效、只读与禁用各态由字段外壳统一给。
 
 ## API 参考
 
@@ -171,6 +173,9 @@
 | `control` | `data-disabled` | ''（条件成立时才出现） |
 | `control` | `data-invalid` | ''（条件成立时才出现） |
 | `control` | `data-readonly` | ''（条件成立时才出现） |
+| `control` | `data-variant` | 'outline' |
+| `control` | `data-xh-field-chrome` | '' |
+| `control` | `data-xh-field-size` | 'md' |
 | `description` | `data-disabled` | ''（条件成立时才出现） |
 
 <!-- xh-component-tokens:start -->
@@ -180,20 +185,20 @@
 
 | 变量 | 部件 | CSS 属性 | 状态 | 默认来源 | 说明 |
 | --- | --- | --- | --- | --- | --- |
-| `--xh-field-control-bg` | `control` | `background` | `default`<br>`disabled`<br>`hover`<br>`invalid`<br>`not([data-disabled], [data-readonly], [data-invalid])`<br>`readonly` | `--xh-bg-canvas` | field 的 control 部件 background 覆盖槽。 |
-| `--xh-field-control-bg-disabled` | `control` | `background` | `disabled` | `--xh-bg-subtle` | field 的 control 部件 background 覆盖槽。 |
-| `--xh-field-control-bg-hover` | `control` | `background` | `disabled`<br>`hover`<br>`invalid`<br>`not([data-disabled], [data-readonly], [data-invalid])`<br>`readonly` | `--xh-bg-subtle` | field 的 control 部件 background 覆盖槽。 |
-| `--xh-field-control-border` | `control` | `border` | `default` | `transparent` | field 的 control 部件 border 覆盖槽。 |
-| `--xh-field-control-border-focus` | `control` | `border-color` | `focus-visible` | `--xh-_tone` | field 的 control 部件 border-color 覆盖槽。 |
-| `--xh-field-control-border-hover` | `control` | `border-color` | `disabled`<br>`hover`<br>`invalid`<br>`not([data-disabled], [data-readonly], [data-invalid])`<br>`readonly` | `--xh-border-default` | field 的 control 部件 border-color 覆盖槽。 |
-| `--xh-field-control-border-invalid` | `control` | `border-color` | `invalid` | `--xh-border-invalid` | field 的 control 部件 border-color 覆盖槽。 |
-| `--xh-field-control-fg` | `control` | `color` | `default` | `--xh-fg-default` | field 的 control 部件 color 覆盖槽。 |
+| `--xh-field-control-bg` | `control` | `background-color` | `xh-field-chrome` | `--xh-_field-variant-bg-rest` | field 的 control 部件 background-color 覆盖槽。 |
+| `--xh-field-control-bg-disabled` | `control` | `background-color` | `disabled`<br>`xh-field-chrome` | `--xh-_field-variant-bg-disabled` | field 的 control 部件 background-color 覆盖槽。 |
+| `--xh-field-control-bg-hover` | `control` | `background-color` | `disabled`<br>`hover`<br>`invalid`<br>`loading`<br>`not([data-disabled])`<br>`not([data-invalid])`<br>`not([data-loading])`<br>`not([data-readonly])`<br>`readonly`<br>`xh-field-chrome` | `--xh-_field-variant-bg-hover` | field 的 control 部件 background-color 覆盖槽。 |
+| `--xh-field-control-bg-readonly` | `control` | `background-color` | `readonly`<br>`xh-field-chrome` | `--xh-_field-variant-bg-read-only` | field 的 control 部件 background-color 覆盖槽。 |
+| `--xh-field-control-border` | `control` | `border` | `xh-field-chrome` | `--xh-_field-variant-border-rest` | field 的 control 部件 border 覆盖槽。 |
+| `--xh-field-control-border-focus` | `control` | `border-color` | `disabled`<br>`focus-within`<br>`not([data-disabled])`<br>`xh-field-chrome` | `--xh-_field-variant-border-focus` | field 的 control 部件 border-color 覆盖槽。 |
+| `--xh-field-control-border-hover` | `control` | `border-color` | `disabled`<br>`hover`<br>`invalid`<br>`loading`<br>`not([data-disabled])`<br>`not([data-invalid])`<br>`not([data-loading])`<br>`not([data-readonly])`<br>`readonly`<br>`xh-field-chrome` | `--xh-_field-variant-border-hover` | field 的 control 部件 border-color 覆盖槽。 |
+| `--xh-field-control-border-invalid` | `control` | `border-color` | `invalid`<br>`xh-field-chrome` | `--xh-_field-variant-border-invalid` | field 的 control 部件 border-color 覆盖槽。 |
+| `--xh-field-control-fg` | `control` | `color` | `xh-field-chrome` | `--xh-fg-default` | field 的 control 部件 color 覆盖槽。 |
 | `--xh-field-control-font-size` | `control` | `font-size` | `default` | `--xh-text-body-size` | field 的 control 部件 font-size 覆盖槽。 |
-| `--xh-field-control-h` | `control`<br>`label`<br>`root` | `block-size`<br>`padding-block` | `default`<br>`layout=horizontal` | `--xh-control-h-md` | field 的 control、label、root 部件 block-size、padding-block 覆盖槽。 |
-| `--xh-field-control-px` | `control` | `padding-inline` | `default` | `--xh-control-px-md` | field 的 control 部件 padding-inline 覆盖槽。 |
+| `--xh-field-control-h` | `control`<br>`label`<br>`root` | `block-size`<br>`min-block-size`<br>`padding-block` | `has([data-xh-field-input][data-xh-field-layout='multi-tag'])`<br>`has([data-xh-field-input][data-xh-field-layout='single-line'])`<br>`has([data-xh-field-input][data-xh-field-layout='textarea'])`<br>`layout=horizontal`<br>`xh-field-chrome`<br>`xh-field-input`<br>`xh-field-layout=multi-tag`<br>`xh-field-layout=single-line`<br>`xh-field-layout=textarea` | `--xh-_field-size-control-height`<br>`--xh-control-h-md` | field 的 control、label、root 部件 block-size、min-block-size、padding-block 覆盖槽。 |
+| `--xh-field-control-px` | `control` | `padding-inline` | `xh-field-chrome` | `--xh-_field-size-padding-inline` | field 的 control 部件 padding-inline 覆盖槽。 |
 | `--xh-field-control-radius` | `control` | `border-radius` | `default` | `--xh-shape-control` | field 的 control 部件 border-radius 覆盖槽。 |
-| `--xh-field-control-ring` | `control` | `outline` | `focus-visible` | `--xh-ring-focus` | field 的 control 部件 outline 覆盖槽。 |
-| `--xh-field-control-shadow` | `control` | `box-shadow` | `default` | `--xh-elevation-raised` | field 的 control 部件 box-shadow 覆盖槽。 |
+| `--xh-field-control-shadow` | `control` | `box-shadow` | `xh-field-chrome` | `none` | field 的 control 部件 box-shadow 覆盖槽。 |
 | `--xh-field-description-fg` | `description` | `color` | `default` | `--xh-fg-muted` | field 的 description 部件 color 覆盖槽。 |
 | `--xh-field-description-fg-disabled` | `description` | `color` | `disabled` | `--xh-fg-subtle` | field 的 description 部件 color 覆盖槽。 |
 | `--xh-field-description-font-size` | `description` | `font-size` | `default` | `--xh-text-secondary-size` | field 的 description 部件 font-size 覆盖槽。 |
@@ -213,9 +218,7 @@
 
 ### 动效
 
-`background` · `border-color` · `box-shadow` · `color` · `outline-color` 走 `transition` 过渡。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
-
-系统开启减弱动效时由令牌层统一收敛，皮肤不另作判断。
+本组件皮肤不含过渡与关键帧，也没有脚本驱动的动效：状态一变，外观立即到位。
 
 ### RTL
 
