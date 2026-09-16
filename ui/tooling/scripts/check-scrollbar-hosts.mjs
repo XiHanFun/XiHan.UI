@@ -723,11 +723,14 @@ function sidesOf(comp, part) {
 }
 
 /**
- * 这个壳是不是浮层里的壳：positioner 本身，或者它自己就是某一路挂在浮层壳下的滚动层
- * （content 既是 positioner 下的滚动面，又是列们的壳）。
+ * 这个壳是不是浮层里的壳：positioner 本身；它自己就是某一路挂在浮层壳下的滚动层
+ * （content 既是 positioner 下的滚动面，又是列们的壳）；或者它就是登记表里某个滚动面的 layerNode
+ * ——层注册的 node 指向它、面住在它里面（time-picker 的 content 自己不滚，只当列们的壳）。
  */
 function isOverlayShell(comp, shellPart, seen = new Set()) {
   if (shellPart === 'positioner')
+    return true
+  if (layerNodesOf(comp).includes(shellPart))
     return true
   if (seen.has(shellPart))
     return false

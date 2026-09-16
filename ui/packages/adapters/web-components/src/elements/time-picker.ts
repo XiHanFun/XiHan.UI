@@ -26,6 +26,7 @@ import { wcNormalize } from '../dom/normalize'
 import { createOverlayExit } from '../overlay-exit'
 import { MachineController } from '../runtime/machine-controller'
 import { XhPortalHostElement } from '../runtime/portal-host'
+import { ScrollbarsController } from '../runtime/scrollbars-controller'
 
 // 属性缺席翻成 undefined，以此区分受控与非受控。
 const STRING_CONVERTER = { fromAttribute: (v: string | null) => v ?? undefined }
@@ -253,6 +254,24 @@ export class XhTimePickerElement extends XhPortalHostElement {
   }
 
   // 只交注册函数、不在连接期注册：层的入栈出栈跟着展开态走（机器的 trackLayer 效应负责）。
+  /**
+   * 快捷选项列与时间列各自的条子：都住在 content 里，条子贴在各自的盒子上、紧跟在那一层后面；
+   * 时间列按在场的列逐列建一套，列离场即拆。条子走浮层 4px 档
+   */
+  private readonly presetBars = new ScrollbarsController(this, {
+    shell: () => this.getPart('content'),
+    scrollable: () => this.getPart('preset-group'),
+    anchor: 'layer',
+    props: () => ({ dir: this.direction, size: 'sm' }),
+  })
+
+  private readonly columnBars = new ScrollbarsController(this, {
+    shell: () => this.getPart('content'),
+    scrollables: () => this.getParts('column'),
+    anchor: 'layer',
+    props: () => ({ dir: this.direction, size: 'sm' }),
+  })
+
   private readonly registerLayer = (): { layer: Layer, dispose: Cleanup } => {
     this.ensureConfig()
     return this.config!.layerRegistry.register({
@@ -371,6 +390,9 @@ export class XhTimePickerElement extends XhPortalHostElement {
     this.exit.track(this.getPart('content'))
     this.exit.update(api.open)
     this.setPartHidden(this.getPart('content'), !this.exit.visible)
+
+    this.presetBars.wire()
+    this.columnBars.wire()
     this.portal.sync(this.exit.visible)
   }
 

@@ -119,7 +119,7 @@ afterEach(async () => {
 })
 
 describe('time-picker 统一选中反馈', () => {
-  it('快捷项以对号标记，数字项同时使用淡强调面、强调文字与对号', async () => {
+  it('快捷项与数字项都只用对号表示持久选值：透明底、正文颜色与字重保持 rest', async () => {
     await mountTimePicker()
     const selectedPreset = byTestId('selected-preset')
     const plainPreset = byTestId('plain-preset')
@@ -137,34 +137,44 @@ describe('time-picker 统一选中反馈', () => {
     expect(checkStyle(plainPreset).opacity).toBe('0')
 
     expect(selectedItem.getAttribute('data-state')).toBe('checked')
-    expect(alpha(getComputedStyle(selectedItem).backgroundColor)).toBe(255)
-    expect(getComputedStyle(selectedItem).backgroundColor).not.toBe(getComputedStyle(plainItem).backgroundColor)
-    expect(getComputedStyle(selectedItem).color).not.toBe(getComputedStyle(plainItem).color)
-    expect(getComputedStyle(selectedItem).fontWeight).not.toBe(getComputedStyle(plainItem).fontWeight)
+    // 浮层瞬态集合的选中：透明底 + 末端对号，不上品牌淡底、不变字色、不加粗（§7.3）
+    expect(alpha(getComputedStyle(selectedItem).backgroundColor)).toBe(0)
+    expect(getComputedStyle(selectedItem).color).toBe(getComputedStyle(plainItem).color)
+    expect(getComputedStyle(selectedItem).fontWeight).toBe(getComputedStyle(plainItem).fontWeight)
     expect(checkStyle(selectedItem).opacity).toBe('1')
     expect(checkStyle(selectedItem).maskImage).not.toBe('none')
     expect(checkStyle(plainItem).opacity).toBe('0')
   })
 
-  it('选中叠加 hover 时提升强调底，普通项仍使用中性底', async () => {
+  it('hover 与键盘焦点增加中性状态底，选中叠加 hover 与普通项同档，按下再深一档且不缩放', async () => {
     await mountTimePicker()
     const selected = byTestId('hour-09')
     const plain = byTestId('hour-08')
+    selected.style.transition = 'none'
+    plain.style.transition = 'none'
 
     await userEvent.hover(plain)
     const neutral = getComputedStyle(plain).backgroundColor
     expect(alpha(neutral)).toBe(255)
 
     await userEvent.hover(selected)
+    // selected + hover = 家族 hover 档 + 对号：与未选中项的悬停面同一档中性面
+    expect(getComputedStyle(selected).backgroundColor).toBe(neutral)
+    expect(checkStyle(selected).opacity).toBe('1')
+    // 集合行按下只换面：比悬停再深一档，不缩放整格
+    selected.dataset.pressed = ''
     expect(getComputedStyle(selected).backgroundColor).not.toBe(neutral)
     expect(alpha(getComputedStyle(selected).backgroundColor)).toBe(255)
-    expect(checkStyle(selected).opacity).toBe('1')
+    expect(getComputedStyle(selected).scale).toBe('none')
+    delete selected.dataset.pressed
 
     await userEvent.tab()
     const preset = byTestId('plain-preset')
     preset.focus()
     expect(preset.matches(':focus-visible')).toBe(true)
     expect(getComputedStyle(preset).backgroundColor).toBe(neutral)
+    // 键盘焦点出现时底色与环当帧到位，不压在家族背景过渡的中间帧上
+    expect(getComputedStyle(preset).transitionProperty).toBe('none')
   })
 
   it.each(['ltr', 'rtl'] as const)('%s：数字保持数学居中，对号只翻转到逻辑末端', async (dir) => {

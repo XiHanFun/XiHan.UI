@@ -325,6 +325,10 @@ export const timePickerSuite: ConformanceSuite = {
             'aria-invalid': 'false',
             'aria-readonly': null,
             'aria-required': null,
+            // control 是 Field Chrome 视觉盒：形态与家族尺寸档落在它身上（缺省 outline / md）
+            'data-xh-field-chrome': '',
+            'data-xh-field-size': 'md',
+            'data-variant': 'outline',
           },
           [HOUR_SEG]: {
             'role': 'spinbutton',
@@ -345,14 +349,18 @@ export const timePickerSuite: ConformanceSuite = {
           [SECOND_SEG]: { 'data-value': 'second', 'hidden': '', 'tabindex': null },
           // 24 小时制下没有上下午段
           [DAY_PERIOD_SEG]: { 'data-value': 'dayPeriod', 'hidden': '', 'tabindex': null },
+          // 展开钮常驻、走 field-inset 档
           'trigger': {
             'aria-haspopup': 'dialog',
             'aria-expanded': 'false',
             'aria-controls': '@part(content)',
             'data-state': 'closed',
+            'data-xh-action-profile': 'field-inset',
+            'data-xh-action-display': 'always',
           },
-          // 键盘用户在段上按退格即可清，这个按钮不占 Tab 位；读屏能摸到它，名字走文案键；没值即收起
-          'clear-trigger': { 'tabindex': '-1', 'aria-hidden': null, 'aria-label': 'Clear', 'hidden': '', 'disabled': null, 'data-disabled': null },
+          // 键盘用户在段上按退格即可清，这个按钮不占 Tab 位；读屏能摸到它，名字走文案键；没值即收起；
+          // 走 field-inset 档，没值时不带 has-value
+          'clear-trigger': { 'tabindex': '-1', 'aria-hidden': null, 'aria-label': 'Clear', 'hidden': '', 'disabled': null, 'data-disabled': null, 'data-xh-action-profile': 'field-inset', 'data-xh-action-display': 'has-value', 'data-xh-action-has-value': null },
           // 浮层报的是非模态对话框，与 trigger 的 aria-haspopup="dialog" 对上
           'content': { 'role': 'dialog', 'aria-modal': 'false', 'hidden': '', 'data-state': 'closed' },
           [HOUR_COL]: {
