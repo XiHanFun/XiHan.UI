@@ -108,6 +108,8 @@
     "scrollbar [data-part='root'][data-scope='scrollbar']": "纯容器，不承载焦点；作者加了 tabindex 也不在这儿多画一圈，环长在滑块上",
     "scrollbar [data-part='track'][data-scope='scrollbar']": "纯容器，不承载焦点；作者加了 tabindex 也不在这儿多画一圈，环长在滑块上",
     "segmented [data-part='root'][data-scope='segmented']": "root 会短暂拿到 tabindex=0，onFocus 立刻把焦点转投给段，高亮长在条目上",
+    "select [data-part='control'][data-scope='select'] [data-part='input'][data-scope='select']": "家族随皮肤引入的规则：select 的内容区是 trigger 按钮、不投影 data-xh-field-input，这条命不中；环由 control 的 :focus-within 画在外框上",
+    "select [data-part='control'][data-scope='select'] [data-xh-action-profile='field-inset']": "清空钮在盒里（tabindex=-1，只接程序化落焦），环由 control 的 :focus-within 画在外框上",
     "select [data-part='list'][data-scope='select']:not([tabindex='0'])": "列表只在打开且还没有锚点条目时认领 Tab 位（那时 tabindex=0，吃 focus.css 的默认环）；tabindex=-1 时是程序化落焦的中转，高亮长在条目上",
     "select [data-part='trigger'][data-scope='select']": "环画在盒（control 的 :focus-within）上，按钮自己不再画",
     "splitter [data-part='panel'][data-scope='splitter']": "面板不占 Tab 位也不承载焦点（连接层没给 tabindex）；作者加了 tabindex 也不在这儿画环，环长在分隔条上",

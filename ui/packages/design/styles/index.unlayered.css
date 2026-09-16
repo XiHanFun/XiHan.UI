@@ -30952,7 +30952,11 @@
 /* styles/scrollbar.css */
 
 /* styles/select.css */
-/* Select 条目与按需皮肤都从同一份 Collection Item Recipe 取得布局、状态和列节奏。 */
+/* Select 独立皮肤同时传递引入字段视觉盒、字段内动作与浮层集合行；full bundle 递归去重。 */
+
+/* family/field-chrome.css */
+
+/* family/action-control.css */
 
 /* family/collection-item.css */
 
@@ -30979,6 +30983,8 @@
   --xh-_overlay-enter-down: 0;
   --xh-_overlay-enter-left: 0;
   --xh-_overlay-enter-right: 0;
+  /* 列表的自绘条浮在内容之上：轨道不上底色，实色轨道会在列表右缘糊一条竖灰带 */
+  --xh-scrollbar-track-bg: transparent;
 
   position: fixed;
   z-index: var(--xh-select-layer, var(--xh-_layer, var(--xh-layer-popover)));
@@ -31010,25 +31016,16 @@
 
 /* 私有槽同时声明在根与 positioner 上：浮层被搬到 portal 落点，不是根的后代，继承不过去 */
 [data-scope='select']:is([data-part='root'], [data-part='positioner']) {
-  /* 尺寸档只换这五个私有槽，触发器、标题与条目都从这两处继承它们，
-     换档不必给每个部件各写一条选择器 */
+  /* 尺寸档只换这几个私有槽，触发器与条目都从这两处继承它们，
+     换档不必给每个部件各写一条选择器；形态三档由家族按 control 上的 data-variant 生成，皮肤不再声明 */
   --xh-_select-h: var(--xh-control-h-md);
   --xh-_select-px: var(--xh-control-px-md);
   --xh-_select-item-py: var(--xh-list-option-py-md);
   --xh-_select-item-px: var(--xh-control-px-md);
   --xh-_select-gap: var(--xh-control-gap-md);
   --xh-_select-font-size: var(--xh-control-font-md);
-  --xh-_select-label-font-size: var(--xh-control-font-md);
 
-  /* 默认与 Field Chrome 一致：实体底、透明边界和轻影。 */
-  --xh-_select-control-bg: var(--xh-bg-canvas);
-  --xh-_select-control-bg-hover: color-mix(in oklab, var(--xh-bg-subtle) 45%, var(--xh-bg-canvas));
-  --xh-_select-control-border: transparent;
-  --xh-_select-control-border-hover: var(--xh-border-default);
-  --xh-_select-control-shadow: var(--xh-elevation-raised);
-
-  /* 聚焦环恒用固定环色；语气只落在勾选标记上，单选与多选正文使用同一颜色。 */
-  --xh-_select-ring: var(--xh-ring-focus);
+  /* 语气只落在勾选标记上，单选与多选正文使用同一颜色。 */
   --xh-_select-accent: var(--xh-_tone, var(--xh-fg-brand));
 }
 
@@ -31056,7 +31053,6 @@
   --xh-_select-item-px: var(--xh-control-px-sm);
   --xh-_select-gap: var(--xh-control-gap-sm);
   --xh-_select-font-size: var(--xh-control-font-sm);
-  --xh-_select-label-font-size: var(--xh-control-font-sm);
 }
 
 /* 图标只跟着盒那一侧换档：浮层里的勾选标记有自己的指示符盒，换成整档图标会撑破它 */
@@ -31075,42 +31071,11 @@
   --xh-_select-item-px: var(--xh-control-px-lg);
   --xh-_select-gap: var(--xh-control-gap-lg);
   --xh-_select-font-size: var(--xh-control-font-lg);
-  --xh-_select-label-font-size: var(--xh-control-font-lg);
-}
-
-/* —— 形态 —— */
-/* 输入类不做 solid：实心底压着可编辑的值，读起来像块不可点的色板。
-   形态只决定描边与底色怎么用，用哪族颜色由 data-tone 决定 */
-[data-scope='select']:is([data-part='root'], [data-part='positioner'])[data-variant='outline'] {
-  --xh-_select-control-bg: var(--xh-bg-canvas);
-  --xh-_select-control-bg-hover: var(--xh-_tone-subtle, var(--xh-bg-subtle));
-  --xh-_select-control-border: var(--xh-border-control);
-  --xh-_select-control-border-hover: var(--xh-border-control-hover);
-  --xh-_select-control-shadow: none;
-}
-
-/* 填充式：底色顶替描边，悬停时才浮出一道淡边 */
-[data-scope='select']:is([data-part='root'], [data-part='positioner'])[data-variant='subtle'] {
-  --xh-_select-control-bg: var(--xh-_tone-subtle, var(--xh-bg-subtle));
-  --xh-_select-control-bg-hover: var(--xh-_tone-subtle-hover, var(--xh-bg-subtle-hover));
-  --xh-_select-control-border: transparent;
-  --xh-_select-control-border-hover: var(--xh-_tone-border, var(--xh-border-control-hover));
-  --xh-_select-control-shadow: none;
-}
-
-/* 无框：底与常态描边透明，悬停浮出描边，聚焦由焦点环表达。
-   落影一并关掉——底与描边都透明时它就是一片没有面的影子 */
-[data-scope='select']:is([data-part='root'], [data-part='positioner'])[data-variant='ghost'] {
-  --xh-_select-control-shadow: none;
-  --xh-_select-control-bg: transparent;
-  --xh-_select-control-bg-hover: var(--xh-_tone-subtle, var(--xh-bg-subtle));
-  --xh-_select-control-border: transparent;
-  --xh-_select-control-border-hover: var(--xh-_tone-border, var(--xh-border-control-hover));
 }
 
 [data-scope='select'][data-part='label'] {
   color: var(--xh-select-label-fg, var(--xh-fg-default));
-  font-size: var(--xh-select-label-font-size, var(--xh-_select-label-font-size));
+  font-size: var(--xh-select-label-font-size, var(--xh-text-label-size));
   font-weight: var(--xh-select-label-font-weight, var(--xh-text-label-weight));
   line-height: var(--xh-leading-none);
 }
@@ -31119,64 +31084,30 @@
   color: var(--xh-select-label-fg-disabled, var(--xh-fg-subtle));
 }
 
-/* 盒：描边、底色、圆角、控件高度与行内内衬都长在这一层，触发器与清空按钮在里面并排。
-   聚焦环也画在它上面，焦点落在哪颗按钮上，看到的都是同一个框亮起来 */
+/* 盒：描边、底色、圆角、控件高度、行内内衬、聚焦环、五态与悬停由 Field Chrome 家族画在这一层，
+   触发器与清空按钮在里面并排；焦点落在哪颗按钮上，看到的都是同一个框亮起来（家族 :focus-within）。
+   组件只映射既有公开槽（shadow 缺省 none：字段静息描边式、无影）；盒里是按钮而不是文本光标 */
 [data-scope='select'][data-part='control'] {
-  display: inline-flex;
-  align-items: center;
-  gap: var(--xh-select-control-gap, var(--xh-_select-gap));
-  block-size: var(--xh-select-control-h, var(--xh-_select-h));
-  padding-inline: var(--xh-select-control-px, var(--xh-_select-px));
-  min-inline-size: min(var(--xh-select-control-min-w, var(--xh-control-min-w)), 100%);
-  border: var(--xh-stroke-thin) solid var(--xh-select-control-border, var(--xh-_select-control-border));
-  border-radius: var(--xh-select-control-radius, var(--xh-shape-control));
-  background-color: var(--xh-select-control-bg, var(--xh-_select-control-bg));
-  box-shadow: var(--xh-select-control-shadow, var(--xh-_select-control-shadow));
-  transition:
-    background-color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
-    border-color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
-    box-shadow var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
-}
-
-/* hover 只在中性态换描边：invalid 正拿边框颜色说事，被 hover 盖掉那条信息就没了 */
-[data-scope='select'][data-part='control']:hover:not([data-disabled], [data-invalid]) {
-  border-color: var(--xh-select-control-border-hover, var(--xh-_select-control-border-hover));
-}
-
-/* 描边之外再换一档填充：只挪一格描边色的悬停在浅底上几乎读不出来。
-   只读盒的底色正说着「改不动」，不参与换填充 */
-[data-scope='select'][data-part='control']:hover:not([data-disabled], [data-readonly]) {
-  background-color: var(--xh-select-control-bg-hover, var(--xh-_select-control-bg-hover));
-}
-
-[data-scope='select'][data-part='control'][data-invalid] {
-  border-color: var(--xh-select-control-border-invalid, var(--xh-border-invalid));
-
-  /* 校验失败时环也跟着变红：两圈等宽相邻却一红一蓝，读的人不知道哪个才是当前状态 */
-  --xh-_select-ring: var(--xh-ring-invalid);
-}
-
-/* 焦点落在盒内任一颗按钮上都画同一圈环；禁用时按钮不可聚焦，守卫只是把这条说死 */
-[data-scope='select'][data-part='control']:focus-within:not([data-disabled]) {
-  outline: var(--xh-ring-width) solid var(--xh-_select-ring);
-  outline-offset: var(--xh-ring-offset);
-}
-
-/* 聚焦态描边色与环共用一族语气色。校验失败时要显式让开，描边保持红色 */
-[data-scope='select'][data-part='control']:focus-within:not([data-invalid]) {
-  border-color: var(--xh-select-control-border-focus, var(--xh-_tone, var(--xh-border-control-focus)));
-}
-
-/* 只读仍可聚焦、浮层仍展得开、条目仍能浏览，所以不置灰，只把底色压下去表示「改不动」 */
-[data-scope='select'][data-part='control'][data-readonly] {
-  background-color: var(--xh-select-control-bg-readonly, var(--xh-bg-subtle));
-  box-shadow: none;
-}
-
-[data-scope='select'][data-part='control'][data-disabled] {
-  background-color: var(--xh-select-control-bg-disabled, var(--xh-bg-subtle));
-  box-shadow: none;
-  color: var(--xh-fg-disabled);
+  --xh-field-control-height: var(--xh-select-control-h, var(--xh-_select-h));
+  --xh-field-control-padding-inline: var(--xh-select-control-px, var(--xh-_select-px));
+  --xh-field-control-gap: var(--xh-select-control-gap, var(--xh-_select-gap));
+  --xh-field-control-min-inline-size: var(--xh-select-control-min-w, var(--xh-control-min-w));
+  --xh-field-control-radius: var(--xh-select-control-radius, var(--xh-shape-control));
+  --xh-field-bg-rest: var(--xh-select-control-bg, var(--xh-_field-variant-bg-rest));
+  --xh-field-bg-hover: var(--xh-select-control-bg-hover, var(--xh-_field-variant-bg-hover));
+  --xh-field-bg-read-only: var(--xh-select-control-bg-readonly, var(--xh-_field-variant-bg-read-only));
+  --xh-field-bg-disabled: var(--xh-select-control-bg-disabled, var(--xh-_field-variant-bg-disabled));
+  --xh-field-fg-rest: var(--xh-select-control-fg, var(--xh-fg-default));
+  --xh-field-border-rest: var(--xh-select-control-border, var(--xh-_field-variant-border-rest));
+  --xh-field-border-hover: var(--xh-select-control-border-hover, var(--xh-_field-variant-border-hover));
+  --xh-field-border-focus: var(--xh-select-control-border-focus, var(--xh-_field-variant-border-focus));
+  --xh-field-border-invalid: var(--xh-select-control-border-invalid, var(--xh-_field-variant-border-invalid));
+  --xh-field-ring-focus: var(--xh-ring-focus);
+  --xh-field-ring-invalid: var(--xh-ring-invalid);
+  --xh-field-shadow-rest: var(--xh-select-control-shadow, none);
+  --xh-field-cursor-rest: pointer;
+  /* 家族 chrome 会重写 --xh-icon-size，使用者图标槽必须经桥接槽下发才能在盒内生效 */
+  --xh-field-glyph-size: var(--xh-select-icon-size, var(--xh-_field-size-glyph-size));
 }
 
 /* 触发器退化成盒里那颗可聚焦的按钮：描边、底色与内衬归盒，它只占满剩余一行 */
@@ -31198,49 +31129,35 @@
   cursor: pointer;
 }
 
-/* 清空按钮：盒里 trigger 的兄弟节点，排在触发器之后，与展开箭头一样宽；清不了时连接层给 hidden */
+/* 清空按钮：盒里 trigger 的兄弟节点，排在触发器之后，与展开箭头一样宽；清不了时连接层给 hidden。
+   正方视觉盒、inset 圆角、悬停 100 / 按下 200 与 0.97 按压、粗指针热区与 :focus-visible 关环
+   （盒的 :focus-within 已画了一圈）全由 Action Control 的 field-inset ghost 档给，组件只映射既有覆盖槽 */
 [data-scope='select'][data-part='clear-trigger'] {
-  display: inline-flex;
-  flex: none;
-  align-items: center;
-  justify-content: center;
-  inline-size: var(--xh-select-action-size, var(--xh-control-action-size));
-  block-size: var(--xh-select-action-size, var(--xh-control-action-size));
-  padding: 0;
-  border: 0;
-  border-radius: var(--xh-select-action-radius, var(--xh-shape-control));
-  background: var(--xh-select-action-bg, transparent);
-  color: var(--xh-select-action-fg, var(--xh-fg-muted));
-  font-family: inherit;
+  --xh-action-visual-size: var(--xh-select-action-size, var(--xh-_action-profile-visual-size));
+  --xh-action-min-inline-size: var(--xh-select-action-size, var(--xh-_action-profile-visual-size));
+  --xh-action-radius: var(--xh-select-action-radius, var(--xh-shape-inset));
+  /* 底色阶梯由 ghost 档给（透明 → 100 → 200），使用者槽只作覆盖入口 */
+  --xh-action-bg-rest: var(--xh-select-action-bg, var(--xh-_action-variant-bg-rest));
+  --xh-action-bg-hover: var(--xh-select-action-bg-hover, var(--xh-_action-variant-bg-hover));
+  --xh-action-bg-pressed: var(--xh-select-action-bg-active, var(--xh-_action-variant-bg-pressed));
+  --xh-action-fg-rest: var(--xh-select-action-fg, var(--xh-fg-muted));
+  --xh-action-fg-hover: var(--xh-select-action-fg-hover, var(--xh-fg-default));
+  --xh-action-border-rest: transparent;
+  --xh-action-highlight-rest: transparent;
+  --xh-action-shadow-rest: none;
+  --xh-action-shadow-hover: none;
+  --xh-action-shadow-pressed: none;
+  /* 字号钉死：继承页面字号会让行框高过按钮，字形被基线顶离正中 */
+  --xh-action-font-size: var(--xh-select-action-font-size, var(--xh-text-secondary-size));
+  /* 配方尚未把 profile 字形档灌进 --xh-icon-size，钮内字形先按 field-inset 档逐钮取值 */
+  --xh-icon-size: var(--xh-_action-profile-glyph-size);
 
-  /* 字号行高钉死：继承页面字号会让行框高过按钮，字形被基线顶离正中 */
-  font-size: var(--xh-select-action-font-size, var(--xh-text-secondary-size));
-  line-height: var(--xh-leading-none);
-  cursor: pointer;
-  user-select: none;
-  transition: background var(--xh-motion-duration-micro) var(--xh-motion-ease-enter), scale var(--xh-motion-duration-release) var(--xh-motion-ease-release);
+  border-width: 0;
 }
 
+/* 没值时连接层给的是 hidden 属性；家族那条 display 会把 UA 规则盖掉 */
 [data-scope='select'][data-part='clear-trigger'][hidden] {
   display: none;
-}
-
-[data-scope='select'][data-part='clear-trigger']:hover {
-  background: var(--xh-select-action-bg-hover, var(--xh-bg-subtle-hover));
-  color: var(--xh-select-action-fg-hover, var(--xh-fg-default));
-}
-
-[data-scope='select'][data-part='clear-trigger']:active {
-  background: var(--xh-select-action-bg-active, var(--xh-bg-subtle-active));
-  scale: var(--xh-motion-scale-press);
-  transition-duration: var(--xh-motion-duration-press);
-  transition-timing-function: var(--xh-motion-ease-press);
-}
-
-/* 清空按钮退出了 Tab 序列（tabindex=-1），正常操作走不到这里；留着是给程序化聚焦兜底，落焦时得看得见 */
-[data-scope='select'][data-part='clear-trigger']:focus-visible {
-  outline: var(--xh-ring-width) solid var(--xh-_select-ring);
-  outline-offset: var(--xh-ring-offset);
 }
 
 /* 标签行：触发器里收着可见标签与 +N 那一枚的一行，行里每一枚都是 tag（data-scope="tag"），
@@ -31390,6 +31307,8 @@
   gap: var(--xh-select-list-gap, var(--xh-list-option-gap));
   min-block-size: 0;
   overflow-y: auto;
+  /* 浮层滚动面：滚到头不把页面一起带走 */
+  overscroll-behavior: contain;
 }
 
 /* 底部操作区：贴在列表下沿，用一道分隔线与条目断开。

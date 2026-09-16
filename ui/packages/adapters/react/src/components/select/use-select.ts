@@ -25,8 +25,12 @@ export interface SelectContext extends OverlayWiring {
   /** 表单重置的锚点：接在根节点上。 */
   rootRef: RefObject<HTMLElement | null>
   triggerRef: RefObject<HTMLElement | null>
+  /** 盒：触发器与清空按钮在里面并排，记为浮层分支 */
+  controlRef: RefObject<HTMLElement | null>
   positionerRef: RefObject<HTMLElement | null>
   contentRef: RefObject<HTMLElement | null>
+  /** 列表框本体：真正在滚动的层，自绘条挂在 positioner 上跟着它走 */
+  listRef: RefObject<HTMLElement | null>
 }
 
 export function useSelect(props: SelectSchema['props']): SelectContext {
@@ -34,16 +38,19 @@ export function useSelect(props: SelectSchema['props']): SelectContext {
   const scope = useReactScope()
   const rootRef = useRef<HTMLElement | null>(null)
   const triggerRef = useRef<HTMLElement | null>(null)
+  const controlRef = useRef<HTMLElement | null>(null)
   const positionerRef = useRef<HTMLElement | null>(null)
   const contentRef = useRef<HTMLElement | null>(null)
+  const listRef = useRef<HTMLElement | null>(null)
   const serviceRef = useRef<Service<SelectSchema> | null>(null)
 
   const initialOpen = (props.open ?? props.defaultOpen) ?? false
 
   const layer = useCallback((): Omit<Layer, 'id' | 'node' | 'surfaces'> => ({
     kind: 'popover',
-    // trigger 记为本层分支，点它算层内交互
-    branches: () => [triggerRef.current].filter(Boolean) as Element[],
+    // 整个盒记为本层分支：点触发器或清空钮算层内交互，开合交给 trigger 自己切换；
+    // 浮层壳一并记上：列表之外还浮着自绘滚动条，按住它拖动不该把列表消解掉
+    branches: () => [controlRef.current, positionerRef.current].filter(Boolean) as Element[],
     isModal: () => false,
   }), [])
 
@@ -78,7 +85,9 @@ export function useSelect(props: SelectSchema['props']): SelectContext {
     api: connectSelect(service, reactNormalize),
     rootRef,
     triggerRef,
+    controlRef,
     positionerRef,
     contentRef,
+    listRef,
   }
 }

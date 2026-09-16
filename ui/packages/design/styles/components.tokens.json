@@ -48709,16 +48709,16 @@
         "clear-trigger"
       ],
       "property": [
-        "background"
+        "background-color"
       ],
       "state": [
         "default"
       ],
       "defaultToken": [
-        "transparent"
+        "--xh-_action-variant-bg-rest"
       ],
       "visibility": "public",
-      "description": "select 的 clear-trigger 部件 background 覆盖槽。"
+      "description": "select 的 clear-trigger 部件 background-color 覆盖槽。"
     },
     {
       "name": "--xh-select-action-bg-active",
@@ -48727,16 +48727,21 @@
         "clear-trigger"
       ],
       "property": [
-        "background"
+        "background-color"
       ],
       "state": [
-        "active"
+        "disabled",
+        "is(:active, [data-pressed])",
+        "loading",
+        "not([data-disabled])",
+        "not([data-loading])",
+        "pressed"
       ],
       "defaultToken": [
-        "--xh-bg-subtle-active"
+        "--xh-_action-variant-bg-pressed"
       ],
       "visibility": "public",
-      "description": "select 的 clear-trigger 部件 background 覆盖槽。"
+      "description": "select 的 clear-trigger 部件 background-color 覆盖槽。"
     },
     {
       "name": "--xh-select-action-bg-hover",
@@ -48745,16 +48750,20 @@
         "clear-trigger"
       ],
       "property": [
-        "background"
+        "background-color"
       ],
       "state": [
-        "hover"
+        "disabled",
+        "hover",
+        "loading",
+        "not([data-disabled])",
+        "not([data-loading])"
       ],
       "defaultToken": [
-        "--xh-bg-subtle-hover"
+        "--xh-_action-variant-bg-hover"
       ],
       "visibility": "public",
-      "description": "select 的 clear-trigger 部件 background 覆盖槽。"
+      "description": "select 的 clear-trigger 部件 background-color 覆盖槽。"
     },
     {
       "name": "--xh-select-action-fg",
@@ -48784,7 +48793,11 @@
         "color"
       ],
       "state": [
-        "hover"
+        "disabled",
+        "hover",
+        "loading",
+        "not([data-disabled])",
+        "not([data-loading])"
       ],
       "defaultToken": [
         "--xh-fg-default"
@@ -48823,7 +48836,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-shape-control"
+        "--xh-shape-inset"
       ],
       "visibility": "public",
       "description": "select 的 clear-trigger 部件 border-radius 覆盖槽。"
@@ -48837,16 +48850,19 @@
       ],
       "property": [
         "block-size",
-        "inline-size"
+        "inline-size",
+        "min-inline-size"
       ],
       "state": [
-        "default"
+        "default",
+        "xh-action-profile=field-inset"
       ],
       "defaultToken": [
+        "--xh-_action-profile-visual-size",
         "--xh-control-action-size"
       ],
       "visibility": "public",
-      "description": "select 的 clear-trigger、indicator 部件 block-size、inline-size 覆盖槽。"
+      "description": "select 的 clear-trigger、indicator 部件 block-size、inline-size、min-inline-size 覆盖槽。"
     },
     {
       "name": "--xh-select-content-backdrop",
@@ -49075,10 +49091,10 @@
         "background-color"
       ],
       "state": [
-        "default"
+        "xh-field-chrome"
       ],
       "defaultToken": [
-        "--xh-_select-control-bg"
+        "--xh-_field-variant-bg-rest"
       ],
       "visibility": "public",
       "description": "select 的 control 部件 background-color 覆盖槽。"
@@ -49093,10 +49109,11 @@
         "background-color"
       ],
       "state": [
-        "disabled"
+        "disabled",
+        "xh-field-chrome"
       ],
       "defaultToken": [
-        "--xh-bg-subtle"
+        "--xh-_field-variant-bg-disabled"
       ],
       "visibility": "public",
       "description": "select 的 control 部件 background-color 覆盖槽。"
@@ -49113,11 +49130,17 @@
       "state": [
         "disabled",
         "hover",
-        "not([data-disabled], [data-readonly])",
-        "readonly"
+        "invalid",
+        "loading",
+        "not([data-disabled])",
+        "not([data-invalid])",
+        "not([data-loading])",
+        "not([data-readonly])",
+        "readonly",
+        "xh-field-chrome"
       ],
       "defaultToken": [
-        "--xh-_select-control-bg-hover"
+        "--xh-_field-variant-bg-hover"
       ],
       "visibility": "public",
       "description": "select 的 control 部件 background-color 覆盖槽。"
@@ -49132,10 +49155,11 @@
         "background-color"
       ],
       "state": [
-        "readonly"
+        "readonly",
+        "xh-field-chrome"
       ],
       "defaultToken": [
-        "--xh-bg-subtle"
+        "--xh-_field-variant-bg-read-only"
       ],
       "visibility": "public",
       "description": "select 的 control 部件 background-color 覆盖槽。"
@@ -49150,10 +49174,10 @@
         "border"
       ],
       "state": [
-        "default"
+        "xh-field-chrome"
       ],
       "defaultToken": [
-        "--xh-_select-control-border"
+        "--xh-_field-variant-border-rest"
       ],
       "visibility": "public",
       "description": "select 的 control 部件 border 覆盖槽。"
@@ -49168,12 +49192,13 @@
         "border-color"
       ],
       "state": [
+        "disabled",
         "focus-within",
-        "invalid",
-        "not([data-invalid])"
+        "not([data-disabled])",
+        "xh-field-chrome"
       ],
       "defaultToken": [
-        "--xh-_tone"
+        "--xh-_field-variant-border-focus"
       ],
       "visibility": "public",
       "description": "select 的 control 部件 border-color 覆盖槽。"
@@ -49191,10 +49216,16 @@
         "disabled",
         "hover",
         "invalid",
-        "not([data-disabled], [data-invalid])"
+        "loading",
+        "not([data-disabled])",
+        "not([data-invalid])",
+        "not([data-loading])",
+        "not([data-readonly])",
+        "readonly",
+        "xh-field-chrome"
       ],
       "defaultToken": [
-        "--xh-_select-control-border-hover"
+        "--xh-_field-variant-border-hover"
       ],
       "visibility": "public",
       "description": "select 的 control 部件 border-color 覆盖槽。"
@@ -49209,13 +49240,32 @@
         "border-color"
       ],
       "state": [
-        "invalid"
+        "invalid",
+        "xh-field-chrome"
       ],
       "defaultToken": [
-        "--xh-border-invalid"
+        "--xh-_field-variant-border-invalid"
       ],
       "visibility": "public",
       "description": "select 的 control 部件 border-color 覆盖槽。"
+    },
+    {
+      "name": "--xh-select-control-fg",
+      "component": "select",
+      "part": [
+        "control"
+      ],
+      "property": [
+        "color"
+      ],
+      "state": [
+        "xh-field-chrome"
+      ],
+      "defaultToken": [
+        "--xh-fg-default"
+      ],
+      "visibility": "public",
+      "description": "select 的 control 部件 color 覆盖槽。"
     },
     {
       "name": "--xh-select-control-gap",
@@ -49227,7 +49277,7 @@
         "gap"
       ],
       "state": [
-        "default"
+        "xh-field-chrome"
       ],
       "defaultToken": [
         "--xh-_select-gap"
@@ -49242,16 +49292,24 @@
         "control"
       ],
       "property": [
-        "block-size"
+        "block-size",
+        "min-block-size"
       ],
       "state": [
-        "default"
+        "has([data-xh-field-input][data-xh-field-layout='multi-tag'])",
+        "has([data-xh-field-input][data-xh-field-layout='single-line'])",
+        "has([data-xh-field-input][data-xh-field-layout='textarea'])",
+        "xh-field-chrome",
+        "xh-field-input",
+        "xh-field-layout=multi-tag",
+        "xh-field-layout=single-line",
+        "xh-field-layout=textarea"
       ],
       "defaultToken": [
         "--xh-_select-h"
       ],
       "visibility": "public",
-      "description": "select 的 control 部件 block-size 覆盖槽。"
+      "description": "select 的 control 部件 block-size、min-block-size 覆盖槽。"
     },
     {
       "name": "--xh-select-control-min-w",
@@ -49264,7 +49322,8 @@
         "min-inline-size"
       ],
       "state": [
-        "default"
+        "default",
+        "xh-field-chrome"
       ],
       "defaultToken": [
         "--xh-control-min-w"
@@ -49282,7 +49341,7 @@
         "padding-inline"
       ],
       "state": [
-        "default"
+        "xh-field-chrome"
       ],
       "defaultToken": [
         "--xh-_select-px"
@@ -49300,7 +49359,7 @@
         "border-radius"
       ],
       "state": [
-        "default"
+        "xh-field-chrome"
       ],
       "defaultToken": [
         "--xh-shape-control"
@@ -49318,10 +49377,10 @@
         "box-shadow"
       ],
       "state": [
-        "default"
+        "xh-field-chrome"
       ],
       "defaultToken": [
-        "--xh-_select-control-shadow"
+        "none"
       ],
       "visibility": "public",
       "description": "select 的 control 部件 box-shadow 覆盖槽。"
@@ -49672,6 +49731,7 @@
       "name": "--xh-select-icon-size",
       "component": "select",
       "part": [
+        "control",
         "root"
       ],
       "property": [
@@ -49680,15 +49740,17 @@
       "state": [
         "default",
         "size=lg",
-        "size=sm"
+        "size=sm",
+        "xh-field-chrome"
       ],
       "defaultToken": [
+        "--xh-_field-size-glyph-size",
         "--xh-glyph-size-lg",
         "--xh-glyph-size-md",
         "--xh-glyph-size-sm"
       ],
       "visibility": "public",
-      "description": "select 的 root 部件 --xh-icon-size 覆盖槽。"
+      "description": "select 的 control、root 部件 --xh-icon-size 覆盖槽。"
     },
     {
       "name": "--xh-select-indicator-fg",
@@ -50036,7 +50098,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-_select-label-font-size"
+        "--xh-text-label-size"
       ],
       "visibility": "public",
       "description": "select 的 label 部件 font-size 覆盖槽。"

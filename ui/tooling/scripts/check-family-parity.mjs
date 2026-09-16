@@ -72,11 +72,26 @@ const FAMILIES = [
     ],
   },
   {
+    // 盒的 display / align-items / 高度 / 内距 / 间距 / 最小宽改由 Field Chrome 配方按 chrome 节点生成，
+    // 已迁移成员的皮肤只把使用者槽映射到桥接槽——比对的是这些映射声明（几何四条 + 边与影两条 + 盒上指针）；
+    // 成员逐个迁移，未迁移的读 family-backlog.json 先不参与
     name: '下拉族',
+    backlog: true,
     members: ['select', 'cascader', 'tree-select', 'color-picker'],
     parts: [
-      // 盒宽的上下限一起管：只有一家给盒封顶，同一行栅格里它就比邻座窄一截
-      { part: 'control', state: '', props: ['display', 'align-items', 'block-size', 'padding-inline', 'min-inline-size', 'max-inline-size'] },
+      {
+        part: 'control',
+        state: '',
+        props: [
+          '--xh-field-control-height',
+          '--xh-field-control-gap',
+          '--xh-field-control-padding-inline',
+          '--xh-field-control-min-inline-size',
+          '--xh-field-border-rest',
+          '--xh-field-shadow-rest',
+          '--xh-field-cursor-rest',
+        ],
+      },
       { part: 'trigger', state: '', props: ['flex', 'border', 'background', 'padding'] },
     ],
   },
@@ -220,25 +235,24 @@ const FAMILIES = [
     ],
   },
   {
-    // 值选择：选中行的底、字色与字重按集合语境走（§7.3）
+    // 值选择：选中行的底、字色与字重按集合语境走（§7.3）。选中 / 悬停 / 按下各态由 Collection Item 配方
+    // 按 data-xh-collection-context 生成，已迁移成员的皮肤只在行的基础规则里把使用者槽映射到桥接槽——
+    // 比对的是这些映射声明：悬停 / 高亮 / 按下面全族同源；选中字色、字重与选中叠加面只在浮层瞬态语境
+    // （overlay）的成员间比，页内持久集合（listbox / tree）的选中面是品牌淡底 + 淡底前景，另一档取值
     name: '值选择族',
     backlog: true,
     members: ['select', 'listbox', 'combobox', 'cascader', 'tree-select', 'tree', 'date-picker', 'time-picker', 'time-range-picker'],
     parts: [
       {
         partBy: { 'select': 'item', 'listbox': 'item', 'combobox': 'item', 'cascader': 'item', 'tree-select': 'item', 'tree': 'item', 'date-picker': 'time-item', 'time-picker': 'item', 'time-range-picker': 'item' },
-        stateBy: {
-          'select': '[data-state=\'checked\']',
-          'listbox': '[data-state=\'checked\']',
-          'combobox': '[data-state=\'checked\']',
-          'cascader': '[data-state=\'checked\']',
-          'tree-select': '[data-selected]',
-          'tree': '[data-selected]',
-          'date-picker': '[data-state=\'checked\']',
-          'time-picker': '[data-state=\'checked\']',
-          'time-range-picker': '[data-state=\'checked\']',
-        },
-        props: ['background', 'color', 'font-weight'],
+        state: '',
+        props: ['--xh-collection-bg-hover', '--xh-collection-bg-keyboard-highlight', '--xh-collection-bg-pressed'],
+      },
+      {
+        partBy: { 'select': 'item', 'combobox': 'item', 'cascader': 'item', 'tree-select': 'item', 'date-picker': 'time-item', 'time-picker': 'item', 'time-range-picker': 'item' },
+        state: '',
+        props: ['--xh-collection-fg-selected', '--xh-collection-font-weight-selected', '--xh-collection-bg-selected-hover', '--xh-collection-bg-selected-pressed'],
+        only: ['select', 'combobox', 'cascader', 'tree-select', 'date-picker', 'time-picker', 'time-range-picker'],
       },
     ],
   },

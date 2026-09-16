@@ -2606,6 +2606,7 @@ export type ComponentTokenName =
   | '--xh-select-control-border-focus'
   | '--xh-select-control-border-hover'
   | '--xh-select-control-border-invalid'
+  | '--xh-select-control-fg'
   | '--xh-select-control-gap'
   | '--xh-select-control-h'
   | '--xh-select-control-min-w'

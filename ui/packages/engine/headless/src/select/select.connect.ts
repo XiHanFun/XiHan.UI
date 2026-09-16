@@ -195,9 +195,13 @@ export function connectSelect<T extends PropTypes>(
       'id': ids.label,
       'data-disabled': dataAttr(disabled),
     }),
-    // 盒：描边、底色与聚焦环都落在它上面，样式要认的状态因此在这里发全
+    // 盒：描边、底色与聚焦环由 Field Chrome 家族画在它身上，样式要认的状态因此在这里发全；
+    // size 缺省 md，variant 与 root 同源
     getControlProps: () => normalize.element({
       ...parts.control.attrs,
+      'data-xh-field-chrome': '',
+      'data-xh-field-size': prop('size') ?? 'md',
+      'data-variant': variant,
       'data-state': stateAttr,
       'data-disabled': dataAttr(disabled),
       'data-readonly': dataAttr(readOnly),
@@ -301,9 +305,16 @@ export function connectSelect<T extends PropTypes>(
     // 删除钮就是所在标签那份 tag 的 close-trigger：可及名、禁用与点按都由 tag 给，
     // 只读时点按送到机器的 VALUE.SET 被 isReadOnly 守卫挡下
     getItemDeleteTriggerProps: ({ value: v }) => hostedTag(v).getCloseTriggerProps(),
-    // 清空按钮是 trigger 的兄弟节点（按钮不能套按钮），点按只清值不碰开合
+    // 清空按钮是 trigger 的兄弟节点（按钮不能套按钮），点按只清值不碰开合；
+    // 走 Action Control 的 field-inset ghost 档：字段底是 canvas，透明 → 悬停 100 → 按下 200，按 has-value 显隐
     getClearTriggerProps: () => normalize.button({
       ...parts['clear-trigger'].attrs,
+      'data-xh-action-control': '',
+      'data-xh-action-profile': 'field-inset',
+      'data-xh-action-variant': 'ghost',
+      'data-xh-action-display': 'has-value',
+      'data-xh-action-size': prop('size') ?? 'md',
+      'data-xh-action-has-value': dataAttr(canClear),
       'type': 'button',
       // 整个控件只占一个 Tab 位（trigger）：清空钮不进 Tab 序，但仍对读屏可见
       'tabindex': -1,

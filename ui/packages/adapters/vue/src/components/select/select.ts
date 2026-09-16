@@ -12,6 +12,7 @@ import { computed, defineComponent, h, mergeProps, onBeforeUnmount, ref, watch }
 import { withXhConfig } from '../../config/config'
 import { XhPortal } from '../../runtime/portal'
 import { slotIsPlainText } from '../../runtime/slot-content'
+import { useScrollbars } from '../../runtime/use-scrollbars'
 import { useFieldLabelWiring, useFieldStateWiring } from '../field/use-field-control'
 import { useFormControlProps } from '../form/use-form-control'
 import { provideSelect, provideSelectGroup, provideSelectItem, provideSelectTag, useSelectContext, useSelectGroupContext, useSelectItemContext, useSelectTagContext } from './context'
@@ -132,7 +133,10 @@ export const XhSelectControl = /* @__PURE__ */ defineComponent({
   setup(_, { slots }) {
     const ctx = useSelectContext()
     // 盒：触发器与清空按钮在里面并排，描边、底色与聚焦环都长在它上面
-    return () => h('div', ctx.api.value.getControlProps() as Record<string, unknown>, slots.default?.())
+    return () => h('div', {
+      ...ctx.api.value.getControlProps() as Record<string, unknown>,
+      ref: (el: unknown) => { ctx.controlRef.value = el as HTMLElement },
+    }, slots.default?.())
   },
 })
 
@@ -259,12 +263,14 @@ export const XhSelectPositioner = /* @__PURE__ */ defineComponent({
   inheritAttrs: false,
   setup(props, { slots, attrs }) {
     const ctx = useSelectContext()
+    // 列表的自绘条：与 content 同级、绝对定位不占布局，壳是这层已经 fixed 的 positioner，条子走浮层 4px 档
+    const bars = useScrollbars({ scrollable: () => ctx.listRef.value, props: { size: 'sm' } })
     // 搬到 portal 落点：留在原地的话，宿主祖先只要建了层叠上下文就能盖住浮层
     return () => h(XhPortal, { to: props.container ?? ctx.portalTarget.value, source: ctx.triggerRef }, () => [
       h('div', {
         ...mergeProps(ctx.api.value.getPositionerProps() as Record<string, unknown>, attrs),
         ref: (el: unknown) => { ctx.positionerRef.value = el as HTMLElement },
-      }, slots.default?.()),
+      }, [...(slots.default?.() ?? []), ...bars.render()]),
     ])
   },
 })
@@ -288,7 +294,10 @@ export const XhSelectList = /* @__PURE__ */ defineComponent({
   setup(_, { slots }) {
     const ctx = useSelectContext()
     // 列表框本体：条目放这里面。滚动也在这一层，底部操作区因此不随条目滚走
-    return () => h('div', ctx.api.value.getListProps() as Record<string, unknown>, slots.default?.())
+    return () => h('div', {
+      ...ctx.api.value.getListProps() as Record<string, unknown>,
+      ref: (el: unknown) => { ctx.listRef.value = el as HTMLElement },
+    }, slots.default?.())
   },
 })
 

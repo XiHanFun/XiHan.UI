@@ -16,6 +16,7 @@ import { wcNormalize } from '../dom/normalize'
 import { createOverlayExit } from '../overlay-exit'
 import { MachineController } from '../runtime/machine-controller'
 import { XhPortalHostElement } from '../runtime/portal-host'
+import { ScrollbarsController } from '../runtime/scrollbars-controller'
 
 // 属性缺席翻成 undefined，缺省值由机器与 connect 决定。
 const STRING_CONVERTER = { fromAttribute: (v: string | null) => v ?? undefined }
@@ -184,6 +185,13 @@ export class XhSelectElement extends XhPortalHostElement {
     { scope: this.selectScope, onBuilt: svc => this.injectRefs(svc) },
   )
 
+  /** 列表的自绘条：与 content 同级挂在已经 fixed 的 positioner 上，滚动层是 list，条子走浮层 4px 档 */
+  private readonly bars = new ScrollbarsController(this, {
+    shell: () => this.getPart('positioner'),
+    scrollable: () => this.getPart('list'),
+    props: () => ({ size: 'sm' }),
+  })
+
   /** 作者声明的条目禁用，只认首次见到的值；提供 collection 时使用它，否则现读 */
   private readonly declaredDisabled = createDeclaredDisabled()
   private inheritedControl: FormControlState | undefined
@@ -255,8 +263,9 @@ export class XhSelectElement extends XhPortalHostElement {
     return this.config!.layerRegistry.register({
       kind: 'popover',
       node: () => this.getPart('content'),
-      // trigger 记为本层分支：点它算层内交互，开合交给 trigger 自己切换。
-      branches: () => [this.getPart('trigger')].filter(Boolean) as Element[],
+      // 整个盒记为本层分支：点触发器或清空钮算层内交互，开合交给 trigger 自己切换。
+      // 浮层壳一并记上：列表之外还浮着自绘滚动条，按住它拖动不该把列表消解掉
+      branches: () => [this.getPart('control'), this.getPart('positioner')].filter(Boolean) as Element[],
       isModal: () => false,
       // 列表不带遮罩，无可点关闭的表面
       surfaces: () => [],
@@ -477,6 +486,7 @@ export class XhSelectElement extends XhPortalHostElement {
     exit.track(content)
     exit.update(api.open)
     this.setPartHidden(content, !exit.visible)
+    this.bars.wire()
     this.portal.sync(exit.visible)
 
     // 首次键盘展开时，旧帧的 content 仍带 inert，connect 当场 focus 会被浏览器拒绝。

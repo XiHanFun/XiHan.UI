@@ -9,13 +9,13 @@ const SNAPSHOT = new URL('./__snapshots__/family-backlog.spec.mjs.snap', import.
 
 /** 每段的条目上限：初始值 = 首次进仓时的条目数，只许下调。 */
 const CEILING = {
-  edge: 63,
+  edge: 62,
   selection: 25,
-  ladder: 122,
+  ladder: 119,
   shape: 25,
-  scroll: 60,
+  scroll: 58,
   press: 77,
-  text: 103,
+  text: 102,
   motion: 1,
 }
 

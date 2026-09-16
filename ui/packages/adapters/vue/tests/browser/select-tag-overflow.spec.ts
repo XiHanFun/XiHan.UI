@@ -355,16 +355,16 @@ describe('多选标签：形态按控件的面派，语气在标签上有落点'
     }
   })
 
-  it('默认盒与 outline 的边界不同，标签保持同一淡底形态', async () => {
+  it('不写 variant 的盒就是 outline 档（描边式静息，边、底、字逐值相同），标签保持同一淡底形态', async () => {
     await mountTags(10, 600, { tone: 'danger' })
     const boxDefault = paintOf(part('control'))
     const tagDefault = paintOf(tags()[0]!)
     teardown()
     await mountTags(10, 600, { variant: 'outline', tone: 'danger' })
     const boxOutline = paintOf(part('control'))
-    expect(boxOutline.bg).toBe(boxDefault.bg)
-    expect(boxOutline.fg).toBe(boxDefault.fg)
-    expect(boxOutline.border).not.toBe(boxDefault.border)
+    expect(boxOutline).toEqual(boxDefault)
+    // 描边式静息：边画出来了，不是透明占位
+    expect(boxDefault.border).not.toBe('rgba(0, 0, 0, 0)')
     expect(paintOf(tags()[0]!)).toEqual(tagDefault)
   })
 
