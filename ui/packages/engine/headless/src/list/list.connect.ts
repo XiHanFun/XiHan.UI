@@ -18,11 +18,12 @@ export function connectList<T extends PropTypes>(
   props: ListProps,
   normalize: NormalizeProps<T>,
 ): ListApi<T> {
-  // 一个轴与三个开关只落在根上，条目各段从这里继承私有槽，子部件不重复标注
+  // 两个轴与两个开关只落在根上，条目各段从这里继承私有槽，子部件不重复标注
   const rootAttrs = {
     ...parts.root.attrs,
     'data-size': props.size,
-    'data-bordered': dataAttr(props.bordered),
+    // 形态不写就落 ghost：皮肤基础规则即该档，缺省外观不变
+    'data-variant': props.variant ?? 'ghost',
     'data-hoverable': dataAttr(props.hoverable),
     'data-split': dataAttr(props.split),
   }

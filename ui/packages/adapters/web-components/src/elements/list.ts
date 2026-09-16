@@ -5,7 +5,7 @@
 
 // 提供 list 相关实现。
 
-import type { Size } from '@xihan-ui/core'
+import type { ControlVariant, Size } from '@xihan-ui/core'
 import type { ListProps } from '@xihan-ui/headless'
 import { connectList, listAnatomy, listMeta } from '@xihan-ui/headless'
 import { wcNormalize } from '../dom/normalize'
@@ -22,11 +22,11 @@ const STRING_CONVERTER = { fromAttribute: (v: string | null) => v ?? undefined }
  * item 同理。组件不补 role。
  *
  * @customElement xh-list
- * @attr {boolean} bordered - 给整份列表绘制描边与圆角
+ * @attr {'outline'|'subtle'|'ghost'} variant - 形态：ghost 不画壳，outline 给整份列表绘制描边与圆角，subtle 淡底；默认 ghost
  * @attr {boolean} hoverable - 指针悬停时条目切换底色
  * @attr {boolean} split - 条目之间绘制分隔线
  * @attr {'sm'|'md'|'lg'} size - 尺寸，决定条目的内边距、图文间距与两行文字的字号
- * @csspart root - 列表根容器，承载 data-size / data-bordered / data-hoverable / data-split
+ * @csspart root - 列表根容器，承载 data-size / data-variant / data-hoverable / data-split
  * @csspart item - 一条条目
  * @csspart item-media - 条目最前的媒体位，放头像、图标或缩略图
  * @csspart item-content - 条目的文字区，放置标题与说明
@@ -39,13 +39,13 @@ export class XhListElement extends XhElement {
 
   // 描述符逐个写全，CEM 分析器读不了对象展开
   static override properties = {
-    bordered: { type: Boolean },
+    variant: { converter: STRING_CONVERTER },
     hoverable: { type: Boolean },
     split: { type: Boolean },
     size: { converter: STRING_CONVERTER },
   }
 
-  declare bordered?: boolean
+  declare variant?: ControlVariant
   declare hoverable?: boolean
   declare split?: boolean
   declare size?: Size
@@ -53,7 +53,7 @@ export class XhListElement extends XhElement {
   protected wire(): void {
     // 读响应式 property，不回读 DOM 特性
     const api = connectList(this.configured('list', {
-      bordered: this.bordered ?? false,
+      variant: this.variant,
       hoverable: this.hoverable ?? false,
       split: this.split ?? false,
       size: this.size,

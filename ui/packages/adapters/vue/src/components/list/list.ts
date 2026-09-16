@@ -5,7 +5,7 @@
 
 // 提供 list 相关实现。
 
-import type { Size } from '@xihan-ui/core'
+import type { ControlVariant, Size } from '@xihan-ui/core'
 import type { PropType } from 'vue'
 import { connectList } from '@xihan-ui/headless'
 import { computed, defineComponent, h } from 'vue'
@@ -17,7 +17,7 @@ export const XhListRoot = defineComponent({
   name: 'XhListRoot',
   // 有 connect 兜底的 prop：普通类型省略 default，Boolean 显式保留 undefined
   props: {
-    bordered: Boolean,
+    variant: { type: String as PropType<ControlVariant> },
     hoverable: Boolean,
     split: Boolean,
     size: { type: String as PropType<Size> },
@@ -28,7 +28,7 @@ export const XhListRoot = defineComponent({
     // withXhConfig 只能在 setup 期调，连接层在渲染期读这份代理
     const configured = withXhConfig('list', props)
     const api = computed(() => connectList({
-      bordered: configured.bordered,
+      variant: configured.variant,
       hoverable: configured.hoverable,
       split: configured.split,
       size: configured.size,

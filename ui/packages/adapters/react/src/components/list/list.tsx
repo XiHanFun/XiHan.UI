@@ -5,7 +5,7 @@
 
 // 提供 list 相关实现。
 
-import type { Size } from '@xihan-ui/core'
+import type { ControlVariant, Size } from '@xihan-ui/core'
 import type { ListProps } from '@xihan-ui/headless'
 import type { ComponentPropsWithRef, ElementType, ReactNode } from 'react'
 import { connectList } from '@xihan-ui/headless'
@@ -15,8 +15,8 @@ import { reactNormalize } from '../../runtime/normalize-props'
 import { ListProvider, useListContext } from './context'
 
 export interface XhListRootProps extends ComponentPropsWithRef<'ul'> {
-  /** 外框：为整份列表绘制描边与圆角。 */
-  bordered?: boolean
+  /** 形态：ghost 不画壳（默认），outline 为整份列表绘制描边与圆角，subtle 淡底。默认 ghost。 */
+  variant?: ControlVariant
   /** 指针悬停时条目更换底色。 */
   hoverable?: boolean
   /** 条目之间绘制分隔线。 */
@@ -27,9 +27,9 @@ export interface XhListRootProps extends ComponentPropsWithRef<'ul'> {
   as?: ElementType
 }
 
-/** 一份条目列表：一个轴与三个开关只落在根上，条目各段从这里继承。 */
+/** 一份条目列表：两个轴与两个开关只落在根上，条目各段从这里继承。 */
 export function XhListRoot({
-  bordered,
+  variant,
   hoverable,
   split,
   size,
@@ -37,7 +37,7 @@ export function XhListRoot({
   children,
   ...rest
 }: XhListRootProps): ReactNode {
-  const configured = withXhConfig('list', { bordered, hoverable, split, size }) as ListProps
+  const configured = withXhConfig('list', { variant, hoverable, split, size }) as ListProps
   const api = connectList(configured, reactNormalize)
   const Tag = as as 'ul'
   return (

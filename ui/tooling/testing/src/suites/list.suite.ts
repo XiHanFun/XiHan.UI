@@ -50,14 +50,14 @@ export const listSuite: ConformanceSuite = {
   fixture: listTree,
   cases: [
     {
-      name: '缺省：根与条目都不写 role，一个轴与三个开关一律不输出',
+      name: '缺省：根与条目都不写 role，形态落 ghost，其余轴与开关一律不输出',
       spec: { apg: APG },
       initial: {
         parts: {
           'root': {
             'role': null,
             'data-size': null,
-            'data-bordered': null,
+            'data-variant': 'ghost',
             'data-hoverable': null,
             'data-split': null,
           },
@@ -73,13 +73,13 @@ export const listSuite: ConformanceSuite = {
       },
     },
     {
-      name: '三个开关落成 data-*，关掉时不留空属性',
+      name: '形态如实落到根上，两个开关落成 data-*，关掉时不留空属性',
       spec: { apg: APG },
-      props: { bordered: true, split: true, hoverable: false },
+      props: { variant: 'outline', split: true, hoverable: false },
       initial: {
         parts: {
           root: {
-            'data-bordered': '',
+            'data-variant': 'outline',
             'data-split': '',
             'data-hoverable': null,
           },

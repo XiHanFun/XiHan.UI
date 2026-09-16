@@ -15,7 +15,7 @@
 ## 特性
 
 - 六个部件都可选。
-- `split` 在条目之间绘制分隔线，`bordered` 提供外框，`hoverable` 提供悬停反馈。
+- `split` 在条目之间绘制分隔线，`variant="outline"` 提供外框，`hoverable` 提供悬停反馈。
 
 ## 组合
 

@@ -10,21 +10,21 @@ function api(props: ListProps = {}) {
 }
 
 describe('connectList', () => {
-  it('根与条目都不写 role：是不是列表由作者选的标签表达；轴与开关不写就不落', () => {
+  it('根与条目都不写 role：是不是列表由作者选的标签表达；形态不写落 ghost，其余轴与开关不写就不落', () => {
     const root = api().getRootProps() as Record<string, unknown>
     expect(root).toMatchObject(parts.root.attrs)
     expect(root.role).toBeUndefined()
     expect(root['data-size']).toBeUndefined()
-    expect(root['data-bordered']).toBeUndefined()
+    expect(root['data-variant']).toBe('ghost')
     expect(root['data-hoverable']).toBeUndefined()
     expect(root['data-split']).toBeUndefined()
     expect((api().getItemProps() as Record<string, unknown>).role).toBeUndefined()
   })
 
-  it('一个轴与三个开关只落在根上', () => {
-    expect(api({ size: 'sm', bordered: true, hoverable: true, split: true }).getRootProps()).toMatchObject({
+  it('两个轴与两个开关只落在根上', () => {
+    expect(api({ size: 'sm', variant: 'outline', hoverable: true, split: true }).getRootProps()).toMatchObject({
       'data-size': 'sm',
-      'data-bordered': '',
+      'data-variant': 'outline',
       'data-hoverable': '',
       'data-split': '',
     })
