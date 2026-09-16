@@ -2,11 +2,12 @@ import { afterEach, describe, expect, it } from 'vitest'
 import '@xihan-ui/tokens/tokens.css'
 import '@xihan-ui/styles'
 
-let host: HTMLElement | null = null
+/* 同一用例会挂两副页头（贴底与 split 各一），逐副记下、用例结束一并清掉 */
+const hosts: HTMLElement[] = []
 
 afterEach(() => {
-  host?.remove()
-  host = null
+  for (const host of hosts.splice(0))
+    host.remove()
 })
 
 function tokenColor(name: string): string {
@@ -19,7 +20,8 @@ function tokenColor(name: string): string {
 }
 
 function mount(variant?: 'ghost' | 'outline' | 'subtle', split = false) {
-  host = document.createElement('div')
+  const host = document.createElement('div')
+  hosts.push(host)
   host.innerHTML = `
     <header data-scope="page-header" data-part="root"${variant ? ` data-variant="${variant}"` : ''}${split ? ' data-split' : ''}>
       <h1 data-scope="page-header" data-part="title">订单详情</h1>
