@@ -5754,7 +5754,6 @@
       "JsonViewerSchema",
       "JsonViewerTranslations",
       "JsonViewerValueType",
-      "JsonViewerVariant",
       "JsonViewerView",
       "JsonViewerWalkOptions",
       "KbdApi",

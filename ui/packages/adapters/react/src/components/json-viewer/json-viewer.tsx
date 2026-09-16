@@ -5,8 +5,8 @@
 
 // 提供 json viewer 相关实现。
 
-import type { Direction, Size } from '@xihan-ui/core'
-import type { JsonViewerApi, JsonViewerNode, JsonViewerSchema, JsonViewerTranslations, JsonViewerVariant, JsonViewerView } from '@xihan-ui/headless'
+import type { ControlVariant, Direction, Size } from '@xihan-ui/core'
+import type { JsonViewerApi, JsonViewerNode, JsonViewerSchema, JsonViewerTranslations, JsonViewerView } from '@xihan-ui/headless'
 import type { ComponentPropsWithRef, ReactNode } from 'react'
 import { groupJsonViewerNodesByParent } from '@xihan-ui/headless'
 import { useCallback, useRef } from 'react'
@@ -98,8 +98,8 @@ export interface XhJsonViewerRootProps extends RootElementProps {
   value?: unknown
   /** 展示形态：tree 展开为可折叠的行，text 直接输出 JSON 原文。 */
   view?: JsonViewerView
-  /** 外框形态：surface 带描边与底色（默认），plain 只保留内容。 */
-  variant?: JsonViewerVariant
+  /** 外框形态：outline 带描边与底色（默认），subtle 淡底无描边，ghost 去掉描边与底色只保留内容。 */
+  variant?: ControlVariant
   expandedValue?: string[]
   defaultExpandedValue?: string[]
   defaultExpandedDepth?: number

@@ -5,8 +5,8 @@
 
 // 提供 json viewer 相关实现。
 
-import type { Direction, Size } from '@xihan-ui/core'
-import type { JsonViewerApi, JsonViewerExpandedValueChangeDetails, JsonViewerNode, JsonViewerSchema, JsonViewerTranslations, JsonViewerVariant } from '@xihan-ui/headless'
+import type { ControlVariant, Direction, Size } from '@xihan-ui/core'
+import type { JsonViewerApi, JsonViewerExpandedValueChangeDetails, JsonViewerNode, JsonViewerSchema, JsonViewerTranslations } from '@xihan-ui/headless'
 import { connectJsonViewer, groupJsonViewerNodesByParent, jsonViewerAnatomy, jsonViewerMachine, jsonViewerMeta } from '@xihan-ui/headless'
 import { wcNormalize } from '../dom/normalize'
 import { XhElement } from '../element-base'
@@ -95,7 +95,7 @@ function scrollLayerOf(root: HTMLElement | null): HTMLElement | null {
  * @attr {boolean} loop - 上下键到达首尾回绕，默认关闭
  * @attr {'ltr'|'rtl'} dir - 文字方向，只对调左右方向键的展开 / 收起语义；未提供时从 DOM 读取
  * @attr {'sm'|'md'|'lg'} size - 尺寸
- * @attr {'plain'|'surface'} variant - 外框形态：surface 带描边与底色（默认），plain 只保留内容
+ * @attr {'outline'|'subtle'|'ghost'} variant - 外框形态：outline 带描边与底色，subtle 淡底无描边，ghost 只保留内容；默认 outline
  * @fires expanded-value-change - 展开集合变化；detail 为 `{ value: string[] }`
  * @csspart root - 组件根容器，由作者编写；承载 data-size 与 data-variant
  * @csspart tree - role=tree 的树容器（键盘在此收口，焦点在树外时它兜底占 Tab 位）
@@ -141,7 +141,7 @@ export class XhJsonViewerElement extends XhElement {
   declare maxItems?: number
   declare sortKeys?: boolean
   declare view?: 'tree' | 'text'
-  declare variant?: JsonViewerVariant
+  declare variant?: ControlVariant
   declare loop?: boolean
   declare direction?: Direction
   declare size?: Size

@@ -1,4 +1,4 @@
-<!-- 空态与形态 | 一行都无法展开时显示空态格；variant="plain" 去掉外框与底色 -->
+<!-- 空态与形态 | 一行都无法展开时显示空态格；variant="ghost" 去掉外框与底色 -->
 <script setup lang="ts">
 import { XhButton, XhJsonViewerRoot } from "@xihan-ui/vue";
 import { ref } from "vue";
@@ -21,6 +21,6 @@ function toggle(): void {
       <template #empty>这份接口还没有返回内容</template>
     </XhJsonViewerRoot>
 
-    <XhJsonViewerRoot :value="payload" :default-expanded-depth="2" variant="plain" />
+    <XhJsonViewerRoot :value="payload" :default-expanded-depth="2" variant="ghost" />
   </div>
 </template>

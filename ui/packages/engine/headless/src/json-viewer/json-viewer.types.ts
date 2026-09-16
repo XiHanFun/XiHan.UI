@@ -5,7 +5,7 @@
 
 // 定义 json viewer 类型契约。
 
-import type { Direction, MachineSchema, PropTypes, Size } from '@xihan-ui/core'
+import type { ControlVariant, Direction, MachineSchema, PropTypes, Size } from '@xihan-ui/core'
 
 /**
  * 值的类型标签，直接写入 data-value-type 供皮肤逐类型上色。
@@ -74,9 +74,6 @@ export interface JsonViewerNodeProps {
 /** 展示形态：tree 展平为可折叠的行，text 直接输出缩进后的 JSON 原文。 */
 export type JsonViewerView = 'tree' | 'text'
 
-/** 外框形态：surface 带描边与底色，plain 只保留内容。 */
-export type JsonViewerVariant = 'plain' | 'surface'
-
 /** 读屏与界面上的文案，默认英文。 */
 export interface JsonViewerTranslations {
   /** 原文视图区域的可及名：它是一整块可滚动的文本，不提供名字时读屏无法朗读其含义。 */
@@ -110,8 +107,8 @@ export interface JsonViewerSchema extends MachineSchema {
      * 目的是与后端下发的内容完全一致。展开集合与键盘导航在该档上不生效。
      */
     view?: JsonViewerView
-    /** 外框形态：surface 带描边与底色（默认），plain 去掉描边与底色，只保留内容。 */
-    variant?: JsonViewerVariant
+    /** 外框形态：outline 带描边与底色（默认），subtle 淡底无描边，ghost 去掉描边与底色只保留内容。 */
+    variant?: ControlVariant
     /** 展开集合（元素是行路径）。提供即受控：cell 直读 prop，写入只发 onExpandedValueChange 不落内部值。 */
     expandedValue?: string[]
     /** 非受控初值；未提供时按 defaultExpandedDepth 计算。 */

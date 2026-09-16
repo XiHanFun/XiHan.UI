@@ -1,4 +1,4 @@
-<!-- 空态与形态 | 一行都无法展开时显示空态格；variant="plain" 去掉外框与底色 -->
+<!-- 空态与形态 | 一行都无法展开时显示空态格；variant="ghost" 去掉外框与底色 -->
 <div style="display: grid; gap: 12px; inline-size: 100%; max-inline-size: 420px">
   <xh-button size="sm" variant="outline">
     <button id="json-empty-toggle" data-xh-part="root">喂一份数据</button>
@@ -8,7 +8,7 @@
     <div data-xh-part="root"></div>
   </xh-json-viewer>
 
-  <xh-json-viewer id="json-empty-b" default-expanded-depth="2" variant="plain">
+  <xh-json-viewer id="json-empty-b" default-expanded-depth="2" variant="ghost">
     <div data-xh-part="root"></div>
   </xh-json-viewer>
 </div>

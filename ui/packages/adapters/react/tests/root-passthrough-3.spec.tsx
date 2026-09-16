@@ -71,7 +71,7 @@ const CASES: Case[] = [
     scope: 'json-viewer',
     tag: 'div',
     token: '--xh-json-viewer-probe',
-    machine: { value: { a: 1 }, view: 'text', variant: 'plain' },
+    machine: { value: { a: 1 }, view: 'text', variant: 'ghost' },
     leaks: ['value', 'view', 'variant'],
     render: props => <XhJsonViewerRoot {...props} />,
   },

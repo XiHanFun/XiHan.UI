@@ -1,4 +1,4 @@
-// 空态与形态 | 一行都无法展开时显示空态格；variant="plain" 去掉外框与底色
+// 空态与形态 | 一行都无法展开时显示空态格；variant="ghost" 去掉外框与底色
 import type { ReactNode } from "react";
 import { XhButton, XhJsonViewerRoot } from "@xihan-ui/react";
 import { useState } from "react";
@@ -19,7 +19,7 @@ export default function Demo(): ReactNode {
       {/* 不写这一格即铺 translations.empty 那句话 */}
       <XhJsonViewerRoot value={payload} defaultExpandedDepth={2} empty="这份接口还没有返回内容" />
 
-      <XhJsonViewerRoot value={payload} defaultExpandedDepth={2} variant="plain" />
+      <XhJsonViewerRoot value={payload} defaultExpandedDepth={2} variant="ghost" />
     </div>
   );
 }
