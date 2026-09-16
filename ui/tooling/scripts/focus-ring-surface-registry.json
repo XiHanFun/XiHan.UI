@@ -94,6 +94,8 @@
     "number-field [data-part='control'][data-scope='number-field'] [data-xh-action-profile='field-inset']": "焦点落到盒内加减钮时 control 已经 :focus-within 起了环",
     "password-input [data-part='control'][data-scope='password-input'] [data-part='input'][data-scope='password-input']": "环由 control 的 :focus-within 画在外框上",
     "password-input [data-part='control'][data-scope='password-input'] [data-xh-action-profile='field-inset']": "家族对不占 Tab 位的内嵌钮关环；切换钮占 Tab 位，本皮肤以更高特异度在 control 内的切换钮上重新画环，盒里两个停靠点才分得开",
+    "pin-input [data-part='control'][data-scope='pin-input'] [data-part='input'][data-scope='pin-input']": "家族随皮肤引入的规则：pin-input 每格 input 自身即 chrome、不投影 data-xh-field-input，这条命不中；格子的环由家族 :focus-within 与皮肤的 [data-focus] 画在格子自己身上",
+    "pin-input [data-part='control'][data-scope='pin-input'] [data-xh-action-profile='field-inset']": "家族随皮肤引入的规则：pin-input 没有内嵌动作钮，这条命不中",
     "popconfirm [data-part='content'][data-scope='popconfirm']": "浮层壳是焦点域的兜底落点（tabindex=-1），环长在确认与取消两颗按钮上",
     "popover [data-part='content'][data-scope='popover']": "面板是焦点域的兜底落点（tabindex=-1），环长在里面的可聚焦控件上",
     "prompt-input [data-part='input'][data-scope='prompt-input']": "环由 root 的 :focus-within 画在整个框上",

@@ -375,9 +375,24 @@ describe('connectPinInput 属性输出', () => {
     expect(m.hidden.value).toBe('12')
   })
 
-  it('不写 variant 时 root 落 outline；写 subtle 如实落', () => {
-    expect(open({ length: 2 }).root.getAttribute('data-variant')).toBe('outline')
-    expect(open({ length: 2, variant: 'subtle' }).root.getAttribute('data-variant')).toBe('subtle')
+  it('不写 variant 时 root 与每格都落 outline；写 subtle 如实落', () => {
+    const fallback = open({ length: 2 })
+    expect(fallback.root.getAttribute('data-variant')).toBe('outline')
+    expect(fallback.boxes.map(box => box.getAttribute('data-variant'))).toEqual(['outline', 'outline'])
+    const subtle = open({ length: 2, variant: 'subtle' })
+    expect(subtle.root.getAttribute('data-variant')).toBe('subtle')
+    expect(subtle.boxes[1]!.getAttribute('data-variant')).toBe('subtle')
+  })
+
+  it('每格自身即 Field Chrome 的 chrome 节点：投影 chrome 与尺寸档，不投影 input 角色', () => {
+    const m = open({ length: 2, readOnly: true })
+    for (const box of m.boxes) {
+      expect(box.getAttribute('data-xh-field-chrome')).toBe('')
+      expect(box.getAttribute('data-xh-field-size')).toBe('md')
+      expect(box.hasAttribute('data-xh-field-input')).toBe(false)
+      expect(box.getAttribute('data-readonly')).toBe('')
+    }
+    expect(open({ length: 2, size: 'lg' }).boxes[0]!.getAttribute('data-xh-field-size')).toBe('lg')
   })
 
   it('otp=true 补 one-time-code，否则明确关掉自动填充', () => {

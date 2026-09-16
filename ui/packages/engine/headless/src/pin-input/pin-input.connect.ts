@@ -152,10 +152,15 @@ export function connectPinInput<T extends PropTypes>(
       'data-disabled': dataAttr(disabled),
     }),
 
+    // 每一格 input 自身就是 Field Chrome 的 chrome 节点：描边、底、圆角与五态由家族按 data-variant 画；
+    // 不投影 data-xh-field-input，否则家族会把格子的边框重置掉
     getInputProps: ({ index }) => normalize.input({
       ...parts.input.attrs,
       'id': inputId(index),
       'data-index': String(index),
+      'data-xh-field-chrome': '',
+      'data-xh-field-size': prop('size') ?? 'md',
+      'data-variant': variant,
       'data-disabled': dataAttr(disabled),
       'data-readonly': dataAttr(readOnly),
       'data-invalid': dataAttr(invalid),

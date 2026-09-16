@@ -2,14 +2,14 @@
 
 exports[`family-backlog 条目数 > 七段各一数，与快照一致 1`] = `
 {
-  "edge": 70,
-  "ladder": 137,
+  "edge": 69,
+  "ladder": 136,
   "motion": 1,
   "press": 79,
   "scroll": 64,
   "selection": 25,
   "shape": 25,
-  "text": 110,
+  "text": 109,
 }
 `;
 
@@ -51,7 +51,6 @@ exports[`family-backlog 键集合 > edge 1`] = `
   "mention:positioner:raised",
   "message-feed:scroll-to-end-trigger:raised",
   "page-header:root:outline",
-  "pin-input:root:raised",
   "popconfirm:confirm-trigger:raised",
   "prompt-input:root",
   "question-flow:root",
@@ -173,7 +172,6 @@ exports[`family-backlog 键集合 > ladder 1`] = `
   "pagination:jumper:hover",
   "pagination:prev-trigger:hover",
   "pagination:prev-trigger:pressed",
-  "pin-input:input:focus",
   "popconfirm:cancel-trigger:hover",
   "popconfirm:cancel-trigger:pressed",
   "popover:close-trigger:hover",
@@ -514,7 +512,6 @@ exports[`family-backlog 键集合 > text 1`] = `
   "notification:item:icon-size",
   "page-header:title:font-weight",
   "pagination:root:icon-size",
-  "pin-input:label:font-size",
   "popconfirm:description:color",
   "popconfirm:description:font-size",
   "popover:content:icon-size",
