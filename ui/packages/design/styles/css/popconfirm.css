@@ -5,6 +5,9 @@
 
 /* 定义 popconfirm 样式。 */
 
+/* 共享关键帧由 family/motion.css 提供，本皮肤 @import 它，单独引入仍成立。 */
+@import '../family/motion.css';
+
 @layer xihan.motion {
   /* 转圈的关键帧定义在本文件里：引用别处文件的动画名时那份文件不一定在场，动画会静默不跑 */
   @keyframes xh-popconfirm-rotate {
@@ -14,39 +17,6 @@
   }
 }
 
-@layer xihan.motion {
-  /* 动画名的查找只认「文档里有没有这个名字」：引用别处文件里的名字，那份文件不一定在场，
-     动画会静默地整个不跑。每份皮肤都能单独引入，所以它用到的关键帧都写在自己身上。 */
-  /* 进场从锚点那一侧冒出来：起点朝哪个方向退让由 placement 写进四个方向槽（那一侧写 1），
-     四个都没写就退回原地缩放 */
-  @keyframes xh-overlay-pop-in {
-    from {
-      opacity: 0;
-      scale: var(--xh-motion-scale-enter);
-      translate:
-        calc((var(--xh-_overlay-enter-right, 0) - var(--xh-_overlay-enter-left, 0)) * var(--xh-motion-distance-sm))
-        calc((var(--xh-_overlay-enter-down, 0) - var(--xh-_overlay-enter-up, 0)) * var(--xh-motion-distance-sm));
-    }
-
-    to {
-      opacity: 1;
-      scale: 1;
-      translate: 0 0;
-    }
-  }
-
-  @keyframes xh-pop-out {
-    from {
-      opacity: 1;
-      scale: 1;
-    }
-
-    to {
-      opacity: 0;
-      scale: var(--xh-motion-scale-exit);
-    }
-  }
-}
 
 @layer xihan.components {
   /* 皮肤在场的标记：开发模式下按 scope 探一次，取不到就说明这份皮肤没被引入。 */

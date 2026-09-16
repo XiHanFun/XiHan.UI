@@ -219,6 +219,12 @@ function paintedRules(css) {
       buf = ''
       continue
     }
+    // 顶层的 `@import '../family/x.css';` 是语句不是块：不清掉它，紧随其后的 `@layer` 前缀
+    // 会被拼成「@import …; @layer …」，整份皮肤的规则就都被当成条件块里的而漏掉
+    if (ch === ';' && stack.length === 0) {
+      buf = ''
+      continue
+    }
     buf += ch
   }
   return out

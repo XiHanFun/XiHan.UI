@@ -147,7 +147,7 @@ tone 为图标区上语气色，与全库同一根轴；绘制什么图标仍由
 
 ### 皮肤
 
-`@xihan-ui/styles/empty-state.css` 使用 `[data-scope="empty-state"][data-part="root"]` 部件选择器，位于 `xihan.components` 与 `xihan.motion` 层。覆盖样式使用 `xihan.overrides`。
+`@xihan-ui/styles/empty-state.css` 使用 `[data-scope="empty-state"][data-part="root"]` 部件选择器，位于 `xihan.components` 层。覆盖样式使用 `xihan.overrides`。
 
 ### 数据属性
 
@@ -188,7 +188,7 @@ tone 为图标区上语气色，与全库同一根轴；绘制什么图标仍由
 
 ### 动效
 
-关键帧 `xh-rise-in` 随皮肤自带，不引用别处文件里的名字。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
+共享关键帧 `xh-rise-in` 由 `family/motion.css` 提供，皮肤 `@import` 它，单独引入仍成立。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
 
 系统开启减弱动效时由令牌层统一收敛，皮肤不另作判断。
 

@@ -7,6 +7,9 @@
 
 @import './scrollbar.css';
 
+/* 共享关键帧由 family/motion.css 提供，本皮肤 @import 它，单独引入仍成立。 */
+@import '../family/motion.css';
+
 @layer xihan.components {
   /* 皮肤在场的标记：开发模式下按 scope 探一次，取不到就说明这份皮肤没被引入。 */
   [data-scope='date-picker'] {
@@ -846,35 +849,6 @@
 }
 
 @layer xihan.motion {
-  /* 与选择器共用短位移动作；独立引入本皮肤时也提供完整关键帧。 */
-  @keyframes xh-overlay-slide-in {
-    from {
-      opacity: 0;
-      translate:
-        calc((var(--xh-_overlay-enter-right, 0) - var(--xh-_overlay-enter-left, 0)) * var(--xh-motion-distance-sm))
-        calc((var(--xh-_overlay-enter-down, 0) - var(--xh-_overlay-enter-up, 0)) * var(--xh-motion-distance-sm));
-    }
-
-    to {
-      opacity: 1;
-      translate: 0 0;
-    }
-  }
-
-  @keyframes xh-overlay-slide-out {
-    from {
-      opacity: 1;
-      translate: 0 0;
-    }
-
-    to {
-      opacity: 0;
-      translate:
-        calc((var(--xh-_overlay-enter-right, 0) - var(--xh-_overlay-enter-left, 0)) * var(--xh-motion-distance-sm))
-        calc((var(--xh-_overlay-enter-down, 0) - var(--xh-_overlay-enter-up, 0)) * var(--xh-motion-distance-sm));
-    }
-  }
-
   @media print {
     /* 打印：定位层与遮罩是交互期才存在的东西，落到纸上只会盖住底下的正文。
        收起写在这份皮肤里而不是 reset：reset 层排在组件层之前，组件层里任何一条 display 都压得住它。 */

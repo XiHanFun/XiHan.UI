@@ -23,7 +23,8 @@ import { readdir, readFile } from 'node:fs/promises'
 import { join } from 'node:path'
 import process from 'node:process'
 
-const STYLES_DIR = 'packages/design/styles/css'
+/** 扫描面：组件皮肤 + 家族文件（family/motion.css 装着共享关键帧，其余家族文件没有时长与幅度声明）。 */
+const STYLES_DIRS = ['packages/design/styles/css', 'packages/design/styles/family']
 
 /** 位移与缩放的两个独立属性，整条值都是幅度。 */
 const MANAGED_PROPS = new Set(['translate', 'scale'])
@@ -168,15 +169,17 @@ function offendingLiterals(text) {
   return bad
 }
 
-const files = (await readdir(STYLES_DIR)).filter(f => f.endsWith('.css')).sort()
+const files = (await Promise.all(STYLES_DIRS.map(async dir =>
+  (await readdir(dir)).filter(f => f.endsWith('.css')).sort().map(f => ({ dir, file: dir.endsWith('/family') ? `family/${f}` : f })),
+))).flat()
 const problems = []
 const exemptSeen = new Set()
 let amplitudes = 0
 let inKeyframes = 0
 let slotAssignments = 0
 
-for (const file of files) {
-  const css = stripComments(await readFile(join(STYLES_DIR, file), 'utf8'))
+for (const { dir, file } of files) {
+  const css = stripComments(await readFile(join(dir, file.replace(/^family\//, '')), 'utf8'))
   const ranges = keyframeRanges(css)
   const decls = [...declarations(css)]
   const lineOf = index => css.slice(0, index).split('\n').length
@@ -239,7 +242,7 @@ if (problems.length > 0) {
 }
 
 console.log(
-  `[check-motion-amplitude] 通过：${files.length} 份皮肤 · ${amplitudes} 处位移 / 缩放声明（其中 ${inKeyframes} 处在关键帧里）`
+  `[check-motion-amplitude] 通过：${files.length} 份皮肤与家族文件 · ${amplitudes} 处位移 / 缩放声明（其中 ${inKeyframes} 处在关键帧里）`
   + ` · ${slotAssignments} 处喂给它们的槽赋值，幅度全部取自 --xh-motion-distance-* / --xh-motion-scale-*，`
   + `字面量只剩百分比与 0 / 1 这类几何（静态几何豁免 ${exemptSeen.size} 处）`,
 )

@@ -10,11 +10,21 @@
 //   shape —— 元素原地形变（scale / rotate）→ enter-strong；按压缩放的释放段走统一点击时间线的 release
 //
 // 逐项判，不逐条判：一条 transition 可以列多项，`inset-block-start` 与 `scale` 同列时两项各判各的。
+//
+// animation 另核两条：
+//   关系 —— 浮层按锚定关系三分（规范 §9.5），登记在 OVERLAY_RELATION 里的组件，其 animation
+//           引用的共享进出场关键帧只能是本关系那一对（RELATION_KEYFRAMES）；fade / disclosure
+//           不表达锚定关系，不受限。共享关键帧住在 family/motion.css，关系表在 lib/keyframe-relations.mjs。
+//   大尺度 —— 关键帧里动到 SLIDE_REQUIRED 登记的属性时，入场声明的曲线要走 --xh-motion-ease-slide；
+//           退场按 §9.5 走 -exit，不在此列。关键帧体从本皮肤与它 @import 的家族文件里解。
 import { readdir, readFile } from 'node:fs/promises'
 import { join } from 'node:path'
 import process from 'node:process'
 
+import { OVERLAY_RELATION, RELATION_KEYFRAMES, SHARED_RELATION } from './lib/keyframe-relations.mjs'
+
 const STYLES_DIR = 'packages/design/styles/css'
+const FAMILY_DIR = 'packages/design/styles/family'
 
 /** 被推到新位置或新尺寸的属性。 */
 const MOVE = new Set([
@@ -62,6 +72,15 @@ const REQUIRED = { move: ['--xh-motion-ease-continuous'], shape: ['--xh-motion-e
 const SLIDE_REQUIRED = {
   'carousel:transform': '整页换位，位移量以百分比计',
   'layout:translate': '覆盖档的侧栏整条推出画外，位移量以自身宽度的百分比计',
+  'drawer:translate': '面板从视口外整条推入，位移量以自身尺寸的百分比计（关键帧 xh-drawer-in-*）',
+}
+
+/**
+ * 待办：已登记 SLIDE_REQUIRED 但实现尚未跟上的项，逐条写理由。键与 SLIDE_REQUIRED 同形。
+ * 只减不增：这里的项一旦在扫描中不再违规，就判红提醒把它删掉；不在这里的违规照常判红。
+ */
+const SLIDE_BACKLOG = {
+  'drawer:translate': '入场仍走 --xh-motion-ease-enter-strong 与 duration-enter，改走 --xh-motion-ease-slide + --xh-motion-duration-slide 留给 drawer 提交（规范 §9.5）',
 }
 
 /**
@@ -113,15 +132,103 @@ function easeToken(item) {
 }
 
 const TRANSITION_DECL = /(?<![\w-])transition\s*:([^;{}]+)[;}]/g
+const ANIMATION_DECL = /(?<![\w-])animation\s*:([^;{}]+)[;}]/g
+
+/** 从 `{` 出发找到配对的 `}`。 */
+function blockEnd(css, open) {
+  let depth = 0
+  for (let i = open; i < css.length; i++) {
+    if (css[i] === '{')
+      depth++
+    else if (css[i] === '}' && --depth === 0)
+      return i
+  }
+  return css.length
+}
+
+/** 一份 CSS 里的关键帧：名字 → 帧体内动到的属性集合。 */
+function keyframeProps(css) {
+  const out = new Map()
+  for (const m of css.matchAll(/@keyframes\s+([\w-]+)\s*\{/g)) {
+    const open = m.index + m[0].length - 1
+    const body = css.slice(open + 1, blockEnd(css, open))
+    const props = new Set()
+    for (const d of body.matchAll(/(?<![\w-])([a-z][a-z0-9-]*)\s*:/g))
+      props.add(d[1])
+    out.set(m[1], props)
+  }
+  return out
+}
+
+/** 一条 animation 声明引用的关键帧名：令牌名以 `--` 开头，用前置断言排掉。 */
+function animationName(value) {
+  return value.match(/(?<![-\w])(xh-[a-z0-9-]+)/)?.[1] ?? null
+}
+
+/** 皮肤 @import 的家族文件名。 */
+function familyImports(css) {
+  return [...css.matchAll(/^\s*@import\s+['"]\.\.\/family\/([\w-]+\.css)['"]\s*;/gm)].map(m => m[1])
+}
+
+const familyKeyframes = new Map()
+for (const file of (await readdir(FAMILY_DIR)).filter(f => f.endsWith('.css')).sort())
+  familyKeyframes.set(file, keyframeProps(stripComments(await readFile(join(FAMILY_DIR, file), 'utf8'))))
 
 const files = (await readdir(STYLES_DIR)).filter(f => f.endsWith('.css')).sort()
 const problems = []
 const seen = new Set()
+const backlogSeen = new Set()
+const relationSeen = new Set()
 let checked = 0
+let animations = 0
 
 for (const file of files) {
   const comp = file.replace(/\.css$/, '')
   const css = stripComments(await readFile(join(STYLES_DIR, file), 'utf8'))
+
+  // 本皮肤能解到的关键帧：自己的 + @import 的家族文件里的
+  const keyframes = new Map(keyframeProps(css))
+  for (const family of familyImports(css)) {
+    for (const [name, props] of familyKeyframes.get(family) ?? [])
+      keyframes.set(name, props)
+  }
+
+  const relation = OVERLAY_RELATION[comp]
+  for (const m of css.matchAll(ANIMATION_DECL)) {
+    const line = css.slice(0, m.index).split('\n').length
+    const value = m[1].replace(/\s+/g, ' ').trim()
+    const name = animationName(value)
+    if (!name)
+      continue
+    animations++
+    const at = `${file}:${line}  animation: ${value}`
+
+    // 关系判据：只核共享的进出场关键帧（fade / disclosure 不表达锚定关系）
+    const nameRelation = SHARED_RELATION[name]
+    if (relation && nameRelation && nameRelation in RELATION_KEYFRAMES) {
+      relationSeen.add(comp)
+      if (!RELATION_KEYFRAMES[relation].includes(name))
+        problems.push(`${at}\n    —— ${comp} 的锚定关系是 ${relation}，只能用 ${RELATION_KEYFRAMES[relation].join(' / ')}，引用的 ${name} 属于 ${nameRelation}`)
+    }
+
+    // 大尺度判据：关键帧动到 SLIDE_REQUIRED 登记的属性，入场曲线要走 -slide；退场走 -exit 不核
+    const ease = easeToken(value)
+    if (ease === '--xh-motion-ease-exit')
+      continue
+    for (const prop of keyframes.get(name) ?? []) {
+      const key = `${comp}:${prop}`
+      if (!(key in SLIDE_REQUIRED))
+        continue
+      seen.add(key)
+      if (ease === '--xh-motion-ease-slide')
+        continue
+      if (key in SLIDE_BACKLOG) {
+        backlogSeen.add(key)
+        continue
+      }
+      problems.push(`${at}\n    —— 关键帧 ${name} 动到 ${prop}（${SLIDE_REQUIRED[key]}），入场曲线该走 --xh-motion-ease-slide，写的是 ${ease ?? '(无)'}`)
+    }
+  }
 
   for (const m of css.matchAll(TRANSITION_DECL)) {
     const line = css.slice(0, m.index).split('\n').length
@@ -165,6 +272,16 @@ for (const key of Object.keys(SLIDE_REQUIRED)) {
   if (!seen.has(key))
     problems.push(`${key}  登记在 SLIDE_REQUIRED 里却没被扫到——名单过期了`)
 }
+for (const key of Object.keys(SLIDE_BACKLOG)) {
+  if (!(key in SLIDE_REQUIRED))
+    problems.push(`${key}  登记在 SLIDE_BACKLOG 里却不在 SLIDE_REQUIRED——待办只能是已登记规则的欠账`)
+  else if (!backlogSeen.has(key))
+    problems.push(`${key}  登记在 SLIDE_BACKLOG 里却已不违规——把这条从 SLIDE_BACKLOG 删掉`)
+}
+for (const comp of Object.keys(OVERLAY_RELATION)) {
+  if (!relationSeen.has(comp))
+    problems.push(`${comp}  登记在 OVERLAY_RELATION 里却没有引用任何共享进出场关键帧——名单过期了`)
+}
 
 if (problems.length) {
   console.error('[check-motion-role] ✗ 几何类过渡的曲线档位选错：')
@@ -173,4 +290,7 @@ if (problems.length) {
   process.exit(1)
 }
 
-console.log(`[check-motion-role] 通过：${files.length} 份皮肤 · ${checked} 项几何类过渡各按角色走 -continuous / -enter-strong / -release（例外登记 ${seen.size} 处）`)
+console.log(
+  `[check-motion-role] 通过：${files.length} 份皮肤 · ${checked} 项几何类过渡各按角色走 -continuous / -enter-strong / -release（例外登记 ${seen.size} 处）`
+  + ` · ${animations} 条 animation 里 ${relationSeen.size} 个浮层组件的进出场关键帧与锚定关系相符，大尺度待办 ${backlogSeen.size} 处`,
+)

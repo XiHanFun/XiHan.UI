@@ -1,9 +1,16 @@
 #!/usr/bin/env node
-// 门禁：每份皮肤引用的动画名，都必须在同一份皮肤里定义过。
+// 门禁：每份皮肤引用的动画名，都必须在「本皮肤 + 本皮肤 @import 的家族文件」里定义过。
 //
 // styles 的 exports 逐组件铺了一百多条子入口，`import '@xihan-ui/styles/dialog.css'` 是受支持的用法。
 // 而 @keyframes 的名字查找只认「文档里有没有这个名字」——引用别处文件里的名字时，
 // 那份文件不一定在场，动画会静默地整个不跑：不报错、不降级，看上去就是「没做动效」。
+//
+// 单独引入成立的条件是「名字随本文件一起到场」：要么写在本皮肤身上（组件专属关键帧），
+// 要么由本皮肤 @import 的 family/motion.css 带到场（跨皮肤共用的关键帧，规范 §9.4 / §9.5）。
+// 只在 index.css 引一次不算：按需引入的人拿不到它。
+//
+// 共享关键帧只许住在 family/motion.css：皮肤内重定义同名会按出现顺序互相覆盖，而两份帧体
+// 迟早分叉。反过来，@import 了 motion.css 却一个共享名字都没引用，是死引入，同样判红。
 //
 // 同名的多份定义必须逐字一致：名字是全局的，两份不同内容会按出现顺序互相覆盖。
 import { readdir, readFile } from 'node:fs/promises'
@@ -12,6 +19,10 @@ import { join } from 'node:path'
 import { ADAPTERS, reactCovered, reactProgress } from './lib/adapters.mjs'
 
 const STYLES_DIR = 'packages/design/styles/css'
+const FAMILY_DIR = 'packages/design/styles/family'
+/** 共享关键帧的唯一真源；皮肤靠这条相对 @import 把它带到场。 */
+const MOTION_FAMILY = 'motion.css'
+const MOTION_IMPORT = `@import '../family/${MOTION_FAMILY}';`
 /** 组件总数的分母：一个组件一份套件。 */
 const SUITES_DIR = 'tooling/testing/src/suites'
 /** 适配器源码：内联样式里不许引用动画名，它们不归任何一份皮肤管，名字在不在场没人保证。 */
@@ -83,7 +94,29 @@ function references(css) {
   return out
 }
 
+/** 皮肤里的相对 @import，只认 ../family/ 下的文件；别的相对引入（./scrollbar.css 一类）不带关键帧。 */
+function familyImports(css) {
+  return [...css.matchAll(/^\s*@import\s+['"]\.\.\/family\/([\w-]+\.css)['"]\s*;/gm)].map(m => m[1])
+}
+
 const files = (await readdir(STYLES_DIR)).filter(f => f.endsWith('.css')).sort()
+
+/** 家族文件里的定义：名字 → { body, layered }。当前只有 motion.css 带关键帧。 */
+const familyDefs = new Map()
+for (const file of (await readdir(FAMILY_DIR)).filter(f => f.endsWith('.css')).sort()) {
+  const css = stripComments(await readFile(join(FAMILY_DIR, file), 'utf8'))
+  for (const [name, def] of definitions(css)) {
+    if (familyDefs.has(name))
+      familyDefs.set(name, { ...def, file: `family/${file}`, duplicate: true })
+    else
+      familyDefs.set(name, { ...def, file: `family/${file}` })
+  }
+}
+const motionNames = new Set([...familyDefs].filter(([, d]) => d.file === `family/${MOTION_FAMILY}`).map(([name]) => name))
+if (motionNames.size === 0) {
+  console.error(`[check-keyframe-refs] ✗ ${FAMILY_DIR}/${MOTION_FAMILY} 里一个 @keyframes 都没有——共享关键帧的真源不在场`)
+  process.exit(1)
+}
 
 /** 文件 → 定义；以及全局的 名字 → [{ file, body }]。 */
 const defsByFile = new Map()
@@ -91,22 +124,38 @@ const defsByName = new Map()
 for (const file of files) {
   const css = stripComments(await readFile(join(STYLES_DIR, file), 'utf8'))
   const defs = definitions(css)
-  defsByFile.set(file, { defs, refs: references(css) })
+  defsByFile.set(file, { defs, refs: references(css), imports: familyImports(css) })
   for (const [name, def] of defs) {
     if (!defsByName.has(name))
       defsByName.set(name, [])
     defsByName.get(name).push({ file, ...def })
   }
 }
+for (const [name, def] of familyDefs) {
+  if (!defsByName.has(name))
+    defsByName.set(name, [])
+  defsByName.get(name).push({ file: def.file, body: def.body, layered: def.layered })
+  if (def.duplicate)
+    defsByName.get(name).push({ file: def.file, body: def.body, layered: def.layered })
+}
 
 const crossFile = []
 const undefinedRefs = []
 const drifted = []
 const unlayered = []
+const redefined = []
+const deadImport = []
+const missingImport = []
 
-for (const [file, { defs, refs }] of defsByFile) {
+for (const [file, { defs, refs, imports }] of defsByFile) {
+  // 本皮肤 @import 的家族文件带到场的名字
+  const inScope = new Set()
+  for (const [name, def] of familyDefs) {
+    if (imports.includes(def.file.slice('family/'.length)))
+      inScope.add(name)
+  }
   for (const name of refs) {
-    if (defs.has(name))
+    if (defs.has(name) || inScope.has(name))
       continue
     const elsewhere = defsByName.get(name)
     if (elsewhere === undefined)
@@ -114,6 +163,18 @@ for (const [file, { defs, refs }] of defsByFile) {
     else
       crossFile.push(`${file} 引用了 ${name}，而它定义在 ${elsewhere.map(e => e.file).join(' / ')}——单独引入本文件时动画不跑`)
   }
+  // (a) 皮肤内重定义共享关键帧：名字是全局的，两份定义按出现顺序互相覆盖
+  for (const name of defs.keys()) {
+    if (motionNames.has(name))
+      redefined.push(`${file} 重定义了 ${name}——共享关键帧只许住在 family/${MOTION_FAMILY}，皮肤改成 @import 它`)
+  }
+  // (b) 引入与引用双向对账：死引入与漏引入都判红
+  const usesShared = [...refs].some(name => motionNames.has(name))
+  const importsMotion = imports.includes(MOTION_FAMILY)
+  if (importsMotion && !usesShared)
+    deadImport.push(`${file} @import 了 family/${MOTION_FAMILY}，却没有引用其中任何一个关键帧——死引入，删掉那条 @import`)
+  if (usesShared && !importsMotion)
+    missingImport.push(`${file} 引用了 family/${MOTION_FAMILY} 里的关键帧却没有 ${MOTION_IMPORT}——单独引入本文件时动画不跑`)
 }
 
 for (const [name, list] of defsByName) {
@@ -173,17 +234,17 @@ for (const { label, dir, name } of ADAPTER_DIRS) {
   scanned.set(label, count)
 }
 
-const problems = [...undefinedRefs, ...crossFile, ...drifted, ...unlayered, ...inlined]
+const problems = [...undefinedRefs, ...crossFile, ...redefined, ...deadImport, ...missingImport, ...drifted, ...unlayered, ...inlined]
 if (problems.length > 0) {
   console.error('[check-keyframe-refs] 动画名的引用与定义对不上：')
   for (const p of problems) console.error(`  ${p}`)
-  console.error('  每份皮肤都要能单独引入，它用到的动画就得写在自己身上。')
+  console.error(`  每份皮肤都要能单独引入：组件专属关键帧写在自己身上，共享关键帧由 ${MOTION_IMPORT} 带到场。`)
   process.exit(1)
 }
 
 const total = [...defsByName.values()].reduce((n, list) => n + list.length, 0)
-const shared = [...defsByName].filter(([, list]) => list.length > 1).length
-console.log(`[check-keyframe-refs] 通过：${files.length} 份皮肤 · ${total} 处动画定义（${defsByName.size} 个名字，其中 ${shared} 个被多份皮肤各自带了一份），引用全部就地可解析`)
+const importers = [...defsByFile.values()].filter(({ imports }) => imports.includes(MOTION_FAMILY)).length
+console.log(`[check-keyframe-refs] 通过：${files.length} 份皮肤 · ${total} 处动画定义（${defsByName.size} 个名字，其中 ${motionNames.size} 个共享关键帧只定义在 family/${MOTION_FAMILY}、由 ${importers} 份皮肤 @import），引用全部就地可解析`)
 console.log(
   `[check-keyframe-refs] 三个适配器的源码里没有内联的动画名：`
   + `${[...scanned].map(([label, n]) => `${label} ${n} 份`).join(' · ')}`

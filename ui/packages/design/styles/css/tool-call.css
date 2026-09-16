@@ -5,6 +5,9 @@
 
 /* 定义 tool call 样式。 */
 
+/* 共享关键帧由 family/motion.css 提供，本皮肤 @import 它，单独引入仍成立。 */
+@import '../family/motion.css';
+
 @layer xihan.components {
   /* 皮肤在场的标记：开发模式下按 scope 探一次，取不到就说明这份皮肤没被引入。 */
   [data-scope='tool-call'] {
@@ -290,6 +293,10 @@
      收起由适配器在退场结束后写内联 display 落成，退场窗口内靠 connect 发的 inert 挡住焦点。
      详情区按阶段取舍，参数、结果与错误同一时刻只排一格，收起时整格随行高归零 */
   [data-scope='tool-call'][data-part='content'] {
+    /* 行高与内缩同帧动的共享关键帧读这两条槽：两端内缩同值 */
+    --xh-_disclosure-pt: var(--xh-tool-call-py, var(--xh-_tool-call-py));
+    --xh-_disclosure-pb: var(--xh-tool-call-py, var(--xh-_tool-call-py));
+
     display: grid;
     grid-template-rows: 1fr;
     /* 块轴照旧裁掉：收起靠行高归零，多出来的那一截不能露在外面。
@@ -305,11 +312,11 @@
   /* 展开那一档才提前备好行高这条通道：属性随 data-state 一起消失，收起后不长期占着 */
   [data-scope='tool-call'][data-part='content'][data-state='open'] {
     will-change: grid-template-rows;
-    animation: xh-tool-call-expand var(--xh-motion-duration-enter) var(--xh-motion-ease-enter-strong);
+    animation: xh-disclosure-expand var(--xh-motion-duration-enter) var(--xh-motion-ease-enter-strong);
   }
 
   [data-scope='tool-call'][data-part='content'][data-state='closed'] {
-    animation: xh-tool-call-collapse var(--xh-motion-duration-exit) var(--xh-motion-ease-enter-strong) forwards;
+    animation: xh-disclosure-collapse var(--xh-motion-duration-exit) var(--xh-motion-ease-enter-strong) forwards;
   }
 
   [data-scope='tool-call'][data-part='input'],
@@ -363,8 +370,7 @@
 }
 
 @layer xihan.motion {
-  /* 动画名的查找只认「文档里有没有这个名字」：引用别处文件里的名字，那份文件不一定在场，
-     动画会静默地整个不跑。每份皮肤都能单独引入，所以它用到的关键帧都写在自己身上。
+  /* 组件专属关键帧写在自己身上；共享的 disclosure 关键帧由 family/motion.css 提供。
      幅度走令牌，减弱动效时由令牌层归零 */
   @keyframes xh-tool-call-enter {
     from {
@@ -375,31 +381,6 @@
     to {
       opacity: 1;
       translate: 0 0;
-    }
-  }
-
-  /* 行高与内缩同帧动：内缩不归零的话，border-box 会把盒子钳在上下内缩之和上，收不干净 */
-  @keyframes xh-tool-call-expand {
-    from {
-      grid-template-rows: 0fr;
-      padding-block: 0;
-    }
-
-    to {
-      grid-template-rows: 1fr;
-      padding-block: var(--xh-tool-call-py, var(--xh-_tool-call-py));
-    }
-  }
-
-  @keyframes xh-tool-call-collapse {
-    from {
-      grid-template-rows: 1fr;
-      padding-block: var(--xh-tool-call-py, var(--xh-_tool-call-py));
-    }
-
-    to {
-      grid-template-rows: 0fr;
-      padding-block: 0;
     }
   }
 
