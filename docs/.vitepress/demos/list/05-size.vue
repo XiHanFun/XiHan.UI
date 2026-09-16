@@ -22,7 +22,7 @@ const sizes = [
       v-for="s in sizes"
       :key="s.label"
       :size="s.size"
-      bordered
+      variant="outline"
       split
       style="inline-size: 200px"
     >

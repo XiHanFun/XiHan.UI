@@ -51,12 +51,19 @@
     --xh-_list-description-size: var(--xh-control-caption-lg);
   }
 
-  /* —— 外框 —— */
-  [data-scope='list'][data-part='root'][data-bordered] {
+  /* —— 形态：ghost 即基础规则，不画壳 —— */
+  [data-scope='list'][data-part='root'][data-variant='outline'] {
     border: var(--xh-stroke-thin) solid var(--xh-list-border, var(--xh-border-default));
     border-radius: var(--xh-list-radius, var(--xh-shape-surface));
     background: var(--xh-list-bg, var(--xh-bg-surface));
     /* 首尾条目的悬停底色要被圆角裁住 */
+    overflow: hidden;
+  }
+
+  /* 淡底档：不画描边，底换成 subtle */
+  [data-scope='list'][data-part='root'][data-variant='subtle'] {
+    border-radius: var(--xh-list-radius, var(--xh-shape-surface));
+    background: var(--xh-list-bg, var(--xh-bg-subtle));
     overflow: hidden;
   }
 

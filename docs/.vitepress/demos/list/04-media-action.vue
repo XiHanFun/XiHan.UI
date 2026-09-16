@@ -17,7 +17,7 @@ const members = [
 </script>
 
 <template>
-  <XhListRoot bordered hoverable split style="max-inline-size: 420px">
+  <XhListRoot variant="outline" hoverable split style="max-inline-size: 420px">
     <XhListItem v-for="m in members" :key="m.name">
       <!-- 媒体位画什么由使用者决定，这里放一个首字头像 -->
       <XhListItemMedia

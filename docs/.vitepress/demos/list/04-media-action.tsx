@@ -17,7 +17,7 @@ const members = [
 
 export default function Demo(): ReactNode {
   return (
-    <XhListRoot bordered hoverable split style={{ maxInlineSize: "420px" }}>
+    <XhListRoot variant="outline" hoverable split style={{ maxInlineSize: "420px" }}>
       {members.map(m => (
         <XhListItem key={m.name}>
           {/* 媒体位画什么由使用者决定，这里放一个首字头像 */}

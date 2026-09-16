@@ -32,9 +32,9 @@ split 在条目之间绘制一条线，第一条上方不绘制
 
 ### 外框与悬停
 
-bordered 为整份列表绘制一圈描边，hoverable 使条目在指针悬停时更换底色
+variant="outline" 为整份列表绘制一圈描边，hoverable 使条目在指针悬停时更换底色
 
-<XhDemo src="list/03-bordered-hoverable" />
+<XhDemo src="list/03-outline-hoverable" />
 
 ### 媒体位与操作位
 
@@ -63,7 +63,7 @@ size 改变条目的内边距、图文间距与两行文字的字号，不传 si
 ### 特性
 
 - 六个部件都可选。
-- `split` 在条目之间绘制分隔线，`bordered` 提供外框，`hoverable` 提供悬停反馈。
+- `split` 在条目之间绘制分隔线，`variant="outline"` 提供外框，`hoverable` 提供悬停反馈。
 
 ### 组合
 
@@ -94,10 +94,10 @@ size 改变条目的内边距、图文间距与两行文字的字号，不传 si
 
 | 属性 | 类型 | 必填 | 说明 |
 | --- | --- | --- | --- |
-| `bordered` | `boolean` |  | 外框：给整份列表绘制描边与圆角。 |
 | `hoverable` | `boolean` |  | 指针悬停时条目切换底色。 |
 | `size` | `Size` |  | 尺寸：sm / md / lg。 |
 | `split` | `boolean` |  | 条目之间绘制分隔线。 |
+| `variant` | `ControlVariant` |  | 形态：ghost 不画壳（默认），outline 为整份列表绘制描边与圆角，subtle 淡底。默认 ghost。 |
 
 ### connect API
 
@@ -135,8 +135,8 @@ size 改变条目的内边距、图文间距与两行文字的字号，不传 si
 | 变量 | 部件 | CSS 属性 | 状态 | 默认来源 | 说明 |
 | --- | --- | --- | --- | --- | --- |
 | `--xh-list-action-gap` | `item-action` | `gap` | `default` | `--xh-space-2` | list 的 item-action 部件 gap 覆盖槽。 |
-| `--xh-list-bg` | `root` | `background` | `bordered` | `--xh-bg-surface` | list 的 root 部件 background 覆盖槽。 |
-| `--xh-list-border` | `root` | `border` | `bordered` | `--xh-border-default` | list 的 root 部件 border 覆盖槽。 |
+| `--xh-list-bg` | `root` | `background` | `variant=outline`<br>`variant=subtle` | `--xh-bg-subtle`<br>`--xh-bg-surface` | list 的 root 部件 background 覆盖槽。 |
+| `--xh-list-border` | `root` | `border` | `variant=outline` | `--xh-border-default` | list 的 root 部件 border 覆盖槽。 |
 | `--xh-list-content-gap` | `item-content` | `gap` | `default` | `--xh-space-1` | list 的 item-content 部件 gap 覆盖槽。 |
 | `--xh-list-description-fg` | `item-description` | `color` | `default` | `--xh-fg-muted` | list 的 item-description 部件 color 覆盖槽。 |
 | `--xh-list-description-font-size` | `item-description` | `font-size` | `default` | `--xh-_list-description-size` | list 的 item-description 部件 font-size 覆盖槽。 |
@@ -146,7 +146,7 @@ size 改变条目的内边距、图文间距与两行文字的字号，不传 si
 | `--xh-list-item-gap` | `item` | `gap` | `default` | `--xh-_list-item-gap` | list 的 item 部件 gap 覆盖槽。 |
 | `--xh-list-item-px` | `item` | `padding-inline` | `default` | `--xh-_list-item-px` | list 的 item 部件 padding-inline 覆盖槽。 |
 | `--xh-list-item-py` | `item` | `padding-block` | `default` | `--xh-_list-item-py` | list 的 item 部件 padding-block 覆盖槽。 |
-| `--xh-list-radius` | `root` | `border-radius` | `bordered` | `--xh-shape-surface` | list 的 root 部件 border-radius 覆盖槽。 |
+| `--xh-list-radius` | `root` | `border-radius` | `variant=outline`<br>`variant=subtle` | `--xh-shape-surface` | list 的 root 部件 border-radius 覆盖槽。 |
 | `--xh-list-title-fg` | `item-title` | `color` | `default` | `--xh-fg-default` | list 的 item-title 部件 color 覆盖槽。 |
 | `--xh-list-title-font-size` | `item-title` | `font-size` | `default` | `--xh-_list-title-size` | list 的 item-title 部件 font-size 覆盖槽。 |
 | `--xh-list-title-font-weight` | `item-title` | `font-weight` | `default` | `--xh-font-weight-medium` | list 的 item-title 部件 font-weight 覆盖槽。 |

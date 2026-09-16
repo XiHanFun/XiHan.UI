@@ -1,7 +1,7 @@
 <!-- 尺寸 | size 改变条目的内边距、图文间距与两行文字的字号，不传 size 即默认档 -->
 <!-- 三份宿主都设 display: contents，三个 root 直接当排布容器的子项 -->
 <div style="display: flex; flex-wrap: wrap; align-items: flex-start; gap: 16px">
-  <xh-list size="sm" bordered split style="display: contents">
+  <xh-list size="sm" variant="outline" split style="display: contents">
     <ul data-xh-part="root" style="inline-size: 200px">
       <li data-xh-part="item">
         <div data-xh-part="item-content">
@@ -19,7 +19,7 @@
   </xh-list>
 
   <!-- 中间一档不写 size -->
-  <xh-list bordered split style="display: contents">
+  <xh-list variant="outline" split style="display: contents">
     <ul data-xh-part="root" style="inline-size: 200px">
       <li data-xh-part="item">
         <div data-xh-part="item-content">
@@ -36,7 +36,7 @@
     </ul>
   </xh-list>
 
-  <xh-list size="lg" bordered split style="display: contents">
+  <xh-list size="lg" variant="outline" split style="display: contents">
     <ul data-xh-part="root" style="inline-size: 200px">
       <li data-xh-part="item">
         <div data-xh-part="item-content">

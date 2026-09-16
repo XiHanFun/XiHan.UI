@@ -5,13 +5,13 @@
 
 // 定义 list 类型契约。
 
-import type { PropTypes, Size } from '@xihan-ui/core'
+import type { ControlVariant, PropTypes, Size } from '@xihan-ui/core'
 
 /** 尺寸档位，只影响条目的内边距、图文间距与两行文字的字号。 */
 
 export interface ListProps {
-  /** 外框：给整份列表绘制描边与圆角。 */
-  bordered?: boolean
+  /** 形态：ghost 不画壳（默认），outline 为整份列表绘制描边与圆角，subtle 淡底。默认 ghost。 */
+  variant?: ControlVariant
   /** 指针悬停时条目切换底色。 */
   hoverable?: boolean
   /** 条目之间绘制分隔线。 */

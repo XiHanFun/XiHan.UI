@@ -22,7 +22,7 @@ export default function Demo(): ReactNode {
         <XhListRoot
           key={s.label}
           size={s.size}
-          bordered
+          variant="outline"
           split
           style={{ inlineSize: "200px" }}
         >
