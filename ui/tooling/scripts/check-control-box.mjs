@@ -71,6 +71,11 @@ const SHARED_FAMILY = {
     contentSelector: '[data-xh-field-input]',
     actionParts: new Set(['clear-trigger']),
   },
+  'number-field': {
+    boxSelector: '[data-xh-field-chrome]',
+    contentSelector: '[data-xh-field-input]',
+    actionParts: new Set(['increment-trigger', 'decrement-trigger']),
+  },
 }
 
 /**

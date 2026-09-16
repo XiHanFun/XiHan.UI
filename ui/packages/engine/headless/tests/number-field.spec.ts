@@ -90,17 +90,50 @@ describe('numberFieldMachine 缺省与投影', () => {
     f.stop()
     const r = makeField({ defaultValue: '3', readOnly: true })
     expect(r.input().readonly).toBe(true)
+    expect(r.api().getControlProps()).toMatchObject({ 'data-readonly': '' })
+    expect(r.input()).toMatchObject({ 'data-readonly': '' })
     expect(r.api().canIncrement).toBe(false)
     r.stop()
   })
 
-  it('不写 variant 时 root 落 outline；写 subtle 如实落', () => {
+  it('不写 variant 时 root 与 control 都落 outline；写 subtle 如实落', () => {
     const fallback = makeField()
     expect((fallback.api().getRootProps() as Record<string, unknown>)['data-variant']).toBe('outline')
+    expect((fallback.api().getControlProps() as Record<string, unknown>)['data-variant']).toBe('outline')
     fallback.stop()
     const subtle = makeField({ variant: 'subtle' })
     expect((subtle.api().getRootProps() as Record<string, unknown>)['data-variant']).toBe('subtle')
+    expect((subtle.api().getControlProps() as Record<string, unknown>)['data-variant']).toBe('subtle')
     subtle.stop()
+  })
+
+  it('只投影 Field Chrome 稳定角色、布局与尺寸，皮肤不反查组件 anatomy', () => {
+    const fallback = makeField()
+    expect(fallback.api().getControlProps()).toMatchObject({ 'data-xh-field-chrome': '', 'data-xh-field-size': 'md' })
+    expect(fallback.input()).toMatchObject({ 'data-xh-field-input': '', 'data-xh-field-layout': 'single-line' })
+    expect(fallback.api().getPrefixProps()).toMatchObject({ 'data-xh-field-affix': 'prefix' })
+    expect(fallback.api().getSuffixProps()).toMatchObject({ 'data-xh-field-affix': 'suffix' })
+    fallback.stop()
+    const sm = makeField({ size: 'sm' })
+    expect(sm.api().getControlProps()).toMatchObject({ 'data-xh-field-size': 'sm' })
+    sm.stop()
+  })
+
+  it('加减钮走 Action Control 的 field-inset ghost 档并常显，尺寸随 size 缺省 md', () => {
+    const f = makeField()
+    for (const trigger of [f.api().getIncrementTriggerProps(), f.api().getDecrementTriggerProps()]) {
+      expect(trigger).toMatchObject({
+        'data-xh-action-control': '',
+        'data-xh-action-profile': 'field-inset',
+        'data-xh-action-variant': 'ghost',
+        'data-xh-action-display': 'always',
+        'data-xh-action-size': 'md',
+      })
+    }
+    f.stop()
+    const lg = makeField({ size: 'lg' })
+    expect(lg.api().getIncrementTriggerProps()).toMatchObject({ 'data-xh-action-size': 'lg' })
+    lg.stop()
   })
 
   it('前后缀对读屏隐藏，名字只由 label 给', () => {
