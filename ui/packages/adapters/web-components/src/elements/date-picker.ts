@@ -312,6 +312,25 @@ export class XhDatePickerElement extends XhPortalHostElement {
     props: () => ({ dir: this.direction, size: 'sm' }),
   })
 
+  /**
+   * 快捷选项列与时间列各自的条子：都住在 content 里，条子贴在各自的盒子上、紧跟在那一层后面。
+   * 快捷列窄视口横排横滚、宽视口竖排竖滚，两轴都摆；时间列按在场的列逐列建一套，列离场即拆。
+   */
+  private readonly presetBars = new ScrollbarsController(this, {
+    shell: () => this.getPart('content'),
+    scrollable: () => this.getPart('preset-group'),
+    anchor: 'layer',
+    axes: ['vertical', 'horizontal'],
+    props: () => ({ dir: this.direction, size: 'sm' }),
+  })
+
+  private readonly timeBars = new ScrollbarsController(this, {
+    shell: () => this.getPart('content'),
+    scrollables: () => this.getParts('time-column'),
+    anchor: 'layer',
+    props: () => ({ dir: this.direction, size: 'sm' }),
+  })
+
   private services(): DatePickerServices {
     return {
       root: this.rootCtrl.service,
@@ -621,6 +640,8 @@ export class XhDatePickerElement extends XhPortalHostElement {
     this.setPartHidden(this.getPart('content'), !this.exit.visible)
 
     this.bars.wire()
+    this.presetBars.wire()
+    this.timeBars.wire()
     this.portal.sync(this.exit.visible)
   }
 

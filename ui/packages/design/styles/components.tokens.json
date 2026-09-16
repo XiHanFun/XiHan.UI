@@ -19891,6 +19891,32 @@
       "description": "date-picker 的 time-item 部件 block-size、inline-size、inset-inline-end、padding-inline 覆盖槽。"
     },
     {
+      "name": "--xh-date-picker-time-item-fg",
+      "component": "date-picker",
+      "part": [
+        "time-item"
+      ],
+      "property": [
+        "color"
+      ],
+      "state": [
+        "default",
+        "error",
+        "highlighted",
+        "hover",
+        "is(:active, [data-pressed])",
+        "is(:focus-visible, [data-highlighted])",
+        "not([aria-disabled='true'], [aria-busy='true'], [data-error])",
+        "pressed",
+        "xh-collection-context=overlay"
+      ],
+      "defaultToken": [
+        "--xh-material-frosted-fg"
+      ],
+      "visibility": "public",
+      "description": "date-picker 的 time-item 部件 color 覆盖槽。"
+    },
+    {
       "name": "--xh-date-picker-time-item-fg-selected",
       "component": "date-picker",
       "part": [
@@ -19910,10 +19936,35 @@
         "xh-collection-context=overlay"
       ],
       "defaultToken": [
-        "--xh-fg-default"
+        "--xh-date-picker-time-item-fg"
       ],
       "visibility": "public",
       "description": "date-picker 的 time-item 部件 color 覆盖槽。"
+    },
+    {
+      "name": "--xh-date-picker-time-item-font-weight-selected",
+      "component": "date-picker",
+      "part": [
+        "time-item"
+      ],
+      "property": [
+        "font-weight"
+      ],
+      "state": [
+        "error",
+        "highlighted",
+        "hover",
+        "is(:active, [data-pressed])",
+        "is(:focus-visible, [data-highlighted])",
+        "not([aria-disabled='true'], [aria-busy='true'], [data-error])",
+        "pressed",
+        "xh-collection-context=overlay"
+      ],
+      "defaultToken": [
+        "--xh-font-weight-regular"
+      ],
+      "visibility": "public",
+      "description": "date-picker 的 time-item 部件 font-weight 覆盖槽。"
     },
     {
       "name": "--xh-date-picker-time-item-h",

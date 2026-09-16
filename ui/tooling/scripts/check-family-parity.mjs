@@ -391,6 +391,15 @@ function normalize(value, comp) {
     .trim()
 }
 
+/**
+ * 按部件分别登记（partBy）的条目里，各成员的槽名部件段必然是自己那个部件（check-spacing-slots 要求槽名的
+ * 部件段与规则所在部件一致：date-picker 的行是 time-item，别家是 item），比对时把这一段也归一成 <p>，
+ * 槽名的后缀仍逐字比。
+ */
+function normalizePart(value, part) {
+  return value.replace(new RegExp(`--xh-(_?)<c>-${part}-`, 'g'), '--xh-$1<c>-<p>-')
+}
+
 const problems = new Map()
 let governed = 0
 /** 读豁免表的家族里，已迁移成员不足两个而跳过的条目数。 */
@@ -463,7 +472,7 @@ for (const family of FAMILIES) {
         if (!matches(rule, comp))
           continue
         for (const [name, value] of rule.decls)
-          merged.set(name, value)
+          merged.set(name, entry.partBy ? normalizePart(value, partFor(comp)) : value)
       }
       return merged
     }

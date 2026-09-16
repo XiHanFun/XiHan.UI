@@ -273,6 +273,8 @@
     overscroll-behavior: contain;
     box-shadow: var(--xh-date-picker-content-shadow, var(--xh-elevation-floating));
     pointer-events: auto;
+    /* 快捷选项列与时间列的条子贴在各自的盒子上、挂在这一层里（它已是定位盒）：轨道不画底 */
+    --xh-scrollbar-track-bg: transparent;
   }
 
   /* 这里刻意没有 [data-part='content'][hidden] { display: none }，与 dialog 一致：
@@ -356,14 +358,15 @@
   }
 
   /* 快捷选项与它旁边那张日历之间留出同样的空当。
-     手机档选项条在上、日历在下，空当留在块轴 */
-  [data-scope='date-picker'][data-part='preset-group'] + [data-scope='date-picker'][data-part='calendar'] {
+     手机档选项条在上、日历在下，空当留在块轴。
+     选项列后面紧跟着它自己的两条条子节点，相邻选择器接不到日历，按「前面有过选项列」取日历 */
+  [data-scope='date-picker'][data-part='preset-group'] ~ [data-scope='date-picker'][data-part='calendar'] {
     padding-block-start: var(--xh-date-picker-panel-gap, var(--xh-space-3));
   }
 
   /* 平板起选项列回到日历一侧，空当跟着回到行内轴，两道分隔线左右对称 */
   @media (min-width: 768px) {
-    [data-scope='date-picker'][data-part='preset-group'] + [data-scope='date-picker'][data-part='calendar'] {
+    [data-scope='date-picker'][data-part='preset-group'] ~ [data-scope='date-picker'][data-part='calendar'] {
       padding-block-start: 0;
       padding-inline-start: var(--xh-date-picker-panel-gap, var(--xh-space-3));
     }
@@ -547,7 +550,9 @@
 
   /* 时间格：悬停 / 高亮 100、按下 200 由 Collection Item 家族按 overlay 语境给，选中只留末端对号——
      浮层瞬态集合的选中不上品牌淡底、不加粗、不变字色。格里只有数字、没有正文部件，保持自己的
-     居中排版与等宽标记轨，家族只给状态面 */
+     居中排版与等宽标记轨，家族只给状态面。行的字色与字重按值选择族的同一套映射写（--xh-date-picker-time-item-fg
+     / -fg-selected / -font-weight-selected 使用者槽，缺省落家族配方的行字色 --xh-material-frosted-fg：
+     它在各主题与 forced-colors 下都等于 --xh-fg-default，floating 面板上的面色仍由 content 自己给） */
   [data-scope='date-picker'][data-part='time-item'] {
     --xh-_date-picker-time-item-rail: max(
       var(--xh-date-picker-time-item-px, var(--xh-space-0_5)),
@@ -557,14 +562,18 @@
     --xh-collection-inline-padding: var(--xh-_date-picker-time-item-rail);
     --xh-collection-font-size: var(--xh-text-secondary-size);
     --xh-collection-radius: var(--xh-date-picker-time-item-radius, var(--xh-shape-control));
-    --xh-collection-fg-rest: var(--xh-fg-default);
-    --xh-collection-fg-hover: var(--xh-fg-default);
-    --xh-collection-fg-keyboard-highlight: var(--xh-fg-default);
-    --xh-collection-fg-pressed: var(--xh-fg-default);
-    --xh-collection-fg-selected: var(--xh-date-picker-time-item-fg-selected, var(--xh-fg-default));
-    --xh-collection-fg-selected-highlight: var(--xh-date-picker-time-item-fg-selected, var(--xh-fg-default));
-    --xh-collection-fg-selected-hover: var(--xh-date-picker-time-item-fg-selected, var(--xh-fg-default));
-    --xh-collection-fg-selected-pressed: var(--xh-date-picker-time-item-fg-selected, var(--xh-fg-default));
+    --xh-collection-fg-rest: var(--xh-date-picker-time-item-fg, var(--xh-material-frosted-fg));
+    --xh-collection-fg-hover: var(--xh-date-picker-time-item-fg, var(--xh-material-frosted-fg));
+    --xh-collection-fg-keyboard-highlight: var(--xh-date-picker-time-item-fg, var(--xh-material-frosted-fg));
+    --xh-collection-fg-pressed: var(--xh-date-picker-time-item-fg, var(--xh-material-frosted-fg));
+    --xh-collection-fg-selected: var(--xh-date-picker-time-item-fg-selected, var(--xh-date-picker-time-item-fg, var(--xh-material-frosted-fg)));
+    --xh-collection-fg-selected-highlight: var(--xh-date-picker-time-item-fg-selected, var(--xh-date-picker-time-item-fg, var(--xh-material-frosted-fg)));
+    --xh-collection-fg-selected-hover: var(--xh-date-picker-time-item-fg-selected, var(--xh-date-picker-time-item-fg, var(--xh-material-frosted-fg)));
+    --xh-collection-fg-selected-pressed: var(--xh-date-picker-time-item-fg-selected, var(--xh-date-picker-time-item-fg, var(--xh-material-frosted-fg)));
+    --xh-collection-font-weight-selected: var(--xh-date-picker-time-item-font-weight-selected, var(--xh-font-weight-regular));
+    --xh-collection-font-weight-selected-highlight: var(--xh-date-picker-time-item-font-weight-selected, var(--xh-font-weight-regular));
+    --xh-collection-font-weight-selected-hover: var(--xh-date-picker-time-item-font-weight-selected, var(--xh-font-weight-regular));
+    --xh-collection-font-weight-selected-pressed: var(--xh-date-picker-time-item-font-weight-selected, var(--xh-font-weight-regular));
     --xh-collection-bg-hover: var(--xh-date-picker-time-item-bg-hover, var(--xh-bg-subtle));
     --xh-collection-bg-keyboard-highlight: var(--xh-date-picker-time-item-bg-hover, var(--xh-bg-subtle));
     --xh-collection-bg-selected-highlight: var(--xh-date-picker-time-item-bg-hover, var(--xh-bg-subtle));

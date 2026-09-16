@@ -206,6 +206,35 @@ const CASES: Case[] = [
     `,
   },
   {
+    // 时间列定高自己竖滚：条子贴层挂在 content 里、紧跟在列后面
+    scope: 'date-picker',
+    tag: 'xh-date-picker',
+    axes: ['vertical'],
+    shell: 'content',
+    layer: 'time-column',
+    panel: 'content',
+    overlay: true,
+    attrs: { 'default-open': '', 'locale': 'zh-CN', 'show-time': '' },
+    markup: `
+      <div data-xh-part="root">
+        <div data-xh-part="control">
+          <div data-xh-part="segment-group"><span data-xh-part="segment"></span></div>
+        </div>
+        <div data-xh-part="positioner">
+          <div data-xh-part="content">
+            <div data-xh-part="calendar">
+              <div data-xh-part="header"><div data-xh-part="heading"></div></div>
+              <div data-xh-part="grid">
+                <div data-xh-part="grid-body"></div>
+              </div>
+            </div>
+            <div data-xh-part="time-column" unit="hour"></div>
+          </div>
+        </div>
+      </div>
+    `,
+  },
+  {
     scope: 'json-viewer',
     tag: 'xh-json-viewer',
     axes: ['vertical', 'horizontal'],

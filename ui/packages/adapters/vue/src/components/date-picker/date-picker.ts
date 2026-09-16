@@ -17,13 +17,14 @@ import type {
   DatePickerPreset,
   DatePickerPresetState,
   DatePickerSchema,
+  DatePickerTimeUnit,
   DateSegmentSet,
   DateSegmentType,
 } from '@xihan-ui/headless'
 import type { ComputedRef, PropType, SlotsType, VNode } from 'vue'
 import type { PayloadOf } from '../../runtime/payload'
 import { resolveDatePickerPanelIndex } from '@xihan-ui/headless'
-import { computed, defineComponent, h, mergeProps, ref } from 'vue'
+import { computed, defineComponent, h, mergeProps, onUpdated, ref } from 'vue'
 import { withXhConfig } from '../../config/config'
 import { XhPortal } from '../../runtime/portal'
 import { slotPaints } from '../../runtime/slot-content'
@@ -348,20 +349,35 @@ export const XhDatePickerPresetGroup = defineComponent({
   }>,
   setup(_, { slots }) {
     const ctx = useDatePickerContext()
+    const presetGroupRef = ref<HTMLElement | null>(null)
+    // 快捷选项列自己滚（窄视口横排横滚、宽视口竖排竖滚）：两轴的条子贴在它的盒子上、紧跟在它后面
+    const bars = useScrollbars({
+      scrollable: () => presetGroupRef.value,
+      anchor: 'layer',
+      axes: ['vertical', 'horizontal'],
+      props: () => ({ dir: (ctx.api.value.getPositionerProps() as { dir?: Direction }).dir, size: 'sm' }),
+    })
+    onUpdated(() => bars.measure())
     return () => {
       const api = ctx.api.value
       const authored = slots.default?.({ presets: api.presets })
-      return h(
-        'div',
-        api.getPresetGroupProps() as Record<string, unknown>,
-        slotPaints(authored)
-          ? authored
-          : api.presets.map(preset => h(
-              'div',
-              { ...api.getPresetProps({ value: preset.value }) as Record<string, unknown>, key: preset.value },
-              preset.label,
-            )),
-      )
+      return [
+        h(
+          'div',
+          {
+            ...api.getPresetGroupProps() as Record<string, unknown>,
+            ref: (el: unknown) => { presetGroupRef.value = el as HTMLElement },
+          },
+          slotPaints(authored)
+            ? authored
+            : api.presets.map(preset => h(
+                'div',
+                { ...api.getPresetProps({ value: preset.value }) as Record<string, unknown>, key: preset.value },
+                preset.label,
+              )),
+        ),
+        ...bars.render(),
+      ]
     }
   },
 })
@@ -390,23 +406,55 @@ export const XhDatePickerPreset = defineComponent({
   },
 })
 
+/** 一列时间选项连同贴在它盒子上的竖条：每列一台滚动条机器，列数随 showSeconds 变时组件实例跟着增减。 */
+const XhDatePickerTimeColumnHost = defineComponent({
+  name: 'XhDatePickerTimeColumnHost',
+  props: {
+    unit: { type: String as PropType<DatePickerTimeUnit>, required: true },
+  },
+  setup(props) {
+    const ctx = useDatePickerContext()
+    const timeColumnRef = ref<HTMLElement | null>(null)
+    // 定高的时间列自己竖滚：条子贴在本列的盒子上、紧跟在它后面（浮层 4px 档）
+    const bars = useScrollbars({
+      scrollable: () => timeColumnRef.value,
+      anchor: 'layer',
+      props: () => ({ dir: (ctx.api.value.getPositionerProps() as { dir?: Direction }).dir, size: 'sm' }),
+    })
+    onUpdated(() => bars.measure())
+    return () => {
+      const api = ctx.api.value
+      const column = api.timeColumns.find(item => item.unit === props.unit)
+      if (!column)
+        return null
+      return [
+        h(
+          'div',
+          {
+            ...api.getTimeColumnProps({ unit: column.unit }) as Record<string, unknown>,
+            ref: (el: unknown) => { timeColumnRef.value = el as HTMLElement },
+          },
+          column.options.map(option =>
+            h(
+              'div',
+              { ...api.getTimeItemProps({ unit: column.unit, value: option }) as Record<string, unknown>, key: option },
+              option,
+            ),
+          ),
+        ),
+        ...bars.render(),
+      ]
+    }
+  },
+})
+
 export const XhDatePickerTimePanel = defineComponent({
   name: 'XhDatePickerTimePanel',
   setup() {
     const ctx = useDatePickerContext()
     // 时间列整组自动铺：时/分[/秒]各一列，选项点按写值；没开 showTime 时整组带 hidden
     return () => ctx.api.value.timeColumns.map(column =>
-      h(
-        'div',
-        { ...ctx.api.value.getTimeColumnProps({ unit: column.unit }) as Record<string, unknown>, key: column.unit },
-        column.options.map(option =>
-          h(
-            'div',
-            { ...ctx.api.value.getTimeItemProps({ unit: column.unit, value: option }) as Record<string, unknown>, key: option },
-            option,
-          ),
-        ),
-      ),
+      h(XhDatePickerTimeColumnHost, { unit: column.unit, key: column.unit }),
     )
   },
 })
