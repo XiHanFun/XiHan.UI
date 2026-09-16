@@ -41025,6 +41025,25 @@
   --xh-collection-outline-error: transparent;
 }
 
+/* 取数失败的行仍可激活（Enter / 点行触发重试），而家族的悬停、高亮与按下三段都排除了 [data-error]：
+   这里按同一阶梯在 error 槽上接回：悬停与键盘高亮 100 档、按下 200 档并走按下时长，
+   键盘焦点环随 branch 的 :focus-visible 画在这一行；禁用分支不进这三段 */
+[data-scope='tree-select'][data-part='branch-control'][data-error]:not([data-disabled]):is(:hover, [data-highlighted]) {
+  --xh-collection-bg-error: var(--xh-tree-select-item-bg-hover, var(--xh-bg-subtle));
+}
+
+[data-scope='tree-select'][data-part='branch']:focus-visible > [data-scope='tree-select'][data-part='branch-control'][data-error]:not([data-disabled]) {
+  --xh-collection-bg-error: var(--xh-tree-select-item-bg-hover, var(--xh-bg-subtle));
+  --xh-collection-outline-error: var(--xh-ring-focus);
+}
+
+[data-scope='tree-select'][data-part='branch-control'][data-error]:not([data-disabled]):is(:active, [data-pressed]) {
+  --xh-collection-bg-error: var(--xh-tree-select-item-bg-pressed, var(--xh-bg-subtle-hover));
+
+  transition-duration: var(--xh-motion-duration-press);
+  transition-timing-function: var(--xh-motion-ease-press);
+}
+
 /* 正文落在家族网格的 text 列；网格项默认最小尺寸是内容尺寸，不归零则长文本把行撑破、省略号轮不上 */
 [data-scope='tree-select'][data-part='item-text'],
 [data-scope='tree-select'][data-part='branch-text'] {
