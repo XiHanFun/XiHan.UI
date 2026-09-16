@@ -236,6 +236,11 @@ stick-change 报告到达底部，宿主据此获取下一页；先向上翻一�
 | `item` | `data-role` | item.role |
 | `item` | `data-streaming` | ''（条件成立时才出现） |
 | `scroll-to-end-trigger` | `data-state` | 'hidden' \| 'visible' |
+| `scroll-to-end-trigger` | `data-xh-action-control` | '' |
+| `scroll-to-end-trigger` | `data-xh-action-display` | 'always' |
+| `scroll-to-end-trigger` | `data-xh-action-profile` | 'floating' |
+| `scroll-to-end-trigger` | `data-xh-action-size` | 'xs' |
+| `scroll-to-end-trigger` | `data-xh-action-variant` | 'ghost' |
 
 <!-- xh-component-tokens:start -->
 ### CSS 变量
@@ -245,25 +250,25 @@ stick-change 报告到达底部，宿主据此获取下一页；先向上翻一�
 | 变量 | 部件 | CSS 属性 | 状态 | 默认来源 | 说明 |
 | --- | --- | --- | --- | --- | --- |
 | `--xh-message-feed-gap` | `list` | `gap` | `default` | `--xh-_message-feed-gap` | message-feed 的 list 部件 gap 覆盖槽。 |
-| `--xh-message-feed-icon-size` | `root` | `--xh-icon-size` | `default` | `--xh-glyph-size-text` | message-feed 的 root 部件 --xh-icon-size 覆盖槽。 |
+| `--xh-message-feed-icon-size` | `scroll-to-end-trigger` | `--xh-icon-size` | `default` | `--xh-_action-profile-glyph-size` | message-feed 的 scroll-to-end-trigger 部件 --xh-icon-size 覆盖槽。 |
 | `--xh-message-feed-item-gap` | `item` | `gap` | `default` | `--xh-space-1` | message-feed 的 item 部件 gap 覆盖槽。 |
 | `--xh-message-feed-item-radius` | `item` | `border-radius` | `default` | `--xh-shape-surface` | message-feed 的 item 部件 border-radius 覆盖槽。 |
 | `--xh-message-feed-label-fg` | `item-label` | `color` | `default` | `--xh-fg-muted` | message-feed 的 item-label 部件 color 覆盖槽。 |
 | `--xh-message-feed-label-font-size` | `item-label` | `font-size` | `default` | `--xh-text-caption-size` | message-feed 的 item-label 部件 font-size 覆盖槽。 |
 | `--xh-message-feed-p` | `list` | `padding` | `default` | `--xh-_message-feed-p` | message-feed 的 list 部件 padding 覆盖槽。 |
-| `--xh-message-feed-scroll-to-end-trigger-bg` | `scroll-to-end-trigger` | `background` | `default` | `--xh-bg-surface-raised` | message-feed 的 scroll-to-end-trigger 部件 background 覆盖槽。 |
-| `--xh-message-feed-scroll-to-end-trigger-bg-hover` | `scroll-to-end-trigger` | `background` | `hover` | `--xh-bg-subtle-hover` | message-feed 的 scroll-to-end-trigger 部件 background 覆盖槽。 |
-| `--xh-message-feed-scroll-to-end-trigger-border` | `scroll-to-end-trigger` | `border` | `default` | `--xh-border-default` | message-feed 的 scroll-to-end-trigger 部件 border 覆盖槽。 |
-| `--xh-message-feed-scroll-to-end-trigger-fg` | `scroll-to-end-trigger` | `color` | `default` | `--xh-fg-default` | message-feed 的 scroll-to-end-trigger 部件 color 覆盖槽。 |
+| `--xh-message-feed-scroll-to-end-trigger-bg` | `scroll-to-end-trigger` | `background-color` | `default` | `--xh-material-frosted-bg` | message-feed 的 scroll-to-end-trigger 部件 background-color 覆盖槽。 |
+| `--xh-message-feed-scroll-to-end-trigger-bg-hover` | `scroll-to-end-trigger` | `background-color` | `disabled`<br>`hover`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])` | `--xh-_action-variant-bg-hover` | message-feed 的 scroll-to-end-trigger 部件 background-color 覆盖槽。 |
+| `--xh-message-feed-scroll-to-end-trigger-border` | `scroll-to-end-trigger` | `border`<br>`border-color` | `default`<br>`disabled`<br>`focus-visible`<br>`hover`<br>`is(:active, [data-pressed])`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])`<br>`pressed` | `--xh-material-frosted-border` | message-feed 的 scroll-to-end-trigger 部件 border、border-color 覆盖槽。 |
+| `--xh-message-feed-scroll-to-end-trigger-fg` | `scroll-to-end-trigger` | `color` | `default` | `--xh-material-frosted-fg` | message-feed 的 scroll-to-end-trigger 部件 color 覆盖槽。 |
 | `--xh-message-feed-scroll-to-end-trigger-inset` | `scroll-to-end-trigger` | `inset-block-end`<br>`inset-inline-end` | `default` | `--xh-space-4` | message-feed 的 scroll-to-end-trigger 部件 inset-block-end、inset-inline-end 覆盖槽。 |
 | `--xh-message-feed-scroll-to-end-trigger-radius` | `scroll-to-end-trigger` | `border-radius` | `default` | `--xh-shape-circle` | message-feed 的 scroll-to-end-trigger 部件 border-radius 覆盖槽。 |
-| `--xh-message-feed-scroll-to-end-trigger-shadow` | `scroll-to-end-trigger` | `box-shadow` | `default` | `--xh-elevation-raised` | message-feed 的 scroll-to-end-trigger 部件 box-shadow 覆盖槽。 |
-| `--xh-message-feed-scroll-to-end-trigger-size` | `scroll-to-end-trigger` | `block-size`<br>`inline-size` | `default` | `--xh-control-h-sm` | message-feed 的 scroll-to-end-trigger 部件 block-size、inline-size 覆盖槽。 |
+| `--xh-message-feed-scroll-to-end-trigger-shadow` | `scroll-to-end-trigger` | `box-shadow` | `default`<br>`disabled`<br>`hover`<br>`is(:active, [data-pressed])`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])`<br>`pressed` | `--xh-material-frosted-shadow` | message-feed 的 scroll-to-end-trigger 部件 box-shadow 覆盖槽。 |
+| `--xh-message-feed-scroll-to-end-trigger-size` | `scroll-to-end-trigger` | `block-size`<br>`inline-size` | `default`<br>`xh-action-profile=floating` | `--xh-_action-profile-visual-size` | message-feed 的 scroll-to-end-trigger 部件 block-size、inline-size 覆盖槽。 |
 <!-- xh-component-tokens:end -->
 
 ### 动效
 
-关键帧 `xh-message-feed-button-in` · `xh-message-feed-item-in` 随皮肤自带，不引用别处文件里的名字；`background` · `scale` 走 `transition` 过渡。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
+关键帧 `xh-message-feed-button-in` · `xh-message-feed-item-in` 随皮肤自带，不引用别处文件里的名字。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
 
 系统开启减弱动效时由令牌层统一收敛，皮肤不另作判断。
 

@@ -2,14 +2,14 @@
 
 exports[`family-backlog 条目数 > 七段各一数，与快照一致 1`] = `
 {
-  "edge": 25,
-  "ladder": 68,
+  "edge": 24,
+  "ladder": 67,
   "motion": 1,
-  "press": 53,
-  "scroll": 28,
+  "press": 52,
+  "scroll": 27,
   "selection": 19,
-  "shape": 22,
-  "text": 74,
+  "shape": 21,
+  "text": 73,
 }
 `;
 
@@ -25,7 +25,6 @@ exports[`family-backlog 键集合 > edge 1`] = `
   "color-slider:thumb:raised",
   "download-trigger:root:raised",
   "file-upload:trigger:raised",
-  "message-feed:scroll-to-end-trigger:raised",
   "page-header:root:outline",
   "popconfirm:confirm-trigger:raised",
   "segmented:indicator:raised",
@@ -88,7 +87,6 @@ exports[`family-backlog 键集合 > ladder 1`] = `
   "layout:sider-trigger:pressed",
   "menu:item:pressed",
   "menubar:item:pressed",
-  "message-feed:scroll-to-end-trigger:hover",
   "pagination:jumper:hover",
   "pagination:prev-trigger:hover",
   "pagination:prev-trigger:pressed",
@@ -153,7 +151,6 @@ exports[`family-backlog 键集合 > press 1`] = `
   "listbox:item",
   "listbox:load-more-trigger",
   "menubar:trigger",
-  "message-feed:scroll-to-end-trigger",
   "navigation-menu:trigger",
   "radio-group:item",
   "rating:item",
@@ -201,7 +198,6 @@ exports[`family-backlog 键集合 > scroll 1`] = `
   "menu:content:size",
   "menubar:content:overscroll",
   "menubar:content:unwired",
-  "message-feed:viewport:gutter",
   "pagination:content:overscroll",
   "pagination:content:size",
   "popconfirm:content:overscroll",
@@ -251,7 +247,6 @@ exports[`family-backlog 键集合 > shape 1`] = `
   "float-button:trigger",
   "image-viewer:next-trigger",
   "image-viewer:prev-trigger",
-  "message-feed:scroll-to-end-trigger",
   "popconfirm:confirm-trigger::before",
   "slider:tick",
   "switch:thumb::after",
@@ -303,7 +298,6 @@ exports[`family-backlog 键集合 > text 1`] = `
   "menu:content:icon-size",
   "menubar:content:icon-size",
   "menubar:root:icon-size",
-  "message-feed:root:icon-size",
   "navigation-menu:root:icon-size",
   "page-header:title:font-weight",
   "pagination:root:icon-size",

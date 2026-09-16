@@ -219,7 +219,8 @@ export const messageFeedSuite: ConformanceSuite = {
       covers: ['message-feed.kbd.scroll-to-end-trigger'],
       initial: {
         parts: {
-          'scroll-to-end-trigger': { 'hidden': '', 'data-state': 'hidden', 'aria-label': 'Scroll to bottom', 'type': 'button' },
+          // 回底钮接 Action Control 的 floating 档：ghost 形态、固定 xs 正方盒
+          'scroll-to-end-trigger': { 'hidden': '', 'data-state': 'hidden', 'aria-label': 'Scroll to bottom', 'type': 'button', 'data-xh-action-control': '', 'data-xh-action-profile': 'floating', 'data-xh-action-variant': 'ghost', 'data-xh-action-display': 'always', 'data-xh-action-size': 'xs' },
         },
       },
     },

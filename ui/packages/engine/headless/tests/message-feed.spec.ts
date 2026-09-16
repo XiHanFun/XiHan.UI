@@ -106,6 +106,18 @@ describe('粘底', () => {
     expect(rig.api().showScrollToEndTrigger).toBe(false)
   })
 
+  it('回底钮接 Action Control 的 floating 档：ghost 形态、固定 xs 正方盒', () => {
+    const rig = mount()
+    expect(rig.api().getScrollToEndTriggerProps()).toMatchObject({
+      'type': 'button',
+      'data-xh-action-control': '',
+      'data-xh-action-profile': 'floating',
+      'data-xh-action-variant': 'ghost',
+      'data-xh-action-display': 'always',
+      'data-xh-action-size': 'xs',
+    })
+  })
+
   it('句柄回报即转发给宿主', () => {
     const onStickChange = vi.fn()
     const rig = mount({ onStickChange })
