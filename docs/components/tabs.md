@@ -30,9 +30,9 @@
 
 <XhDemo src="tabs/02-vertical" />
 
-### 次级变体
+### 分段变体
 
-使用下划线表示当前标签
+使用浅色标签带与浮起的选中面
 
 <XhDemo src="tabs/03-variant" />
 
@@ -69,8 +69,8 @@
 
 ### 特性
 
-- 默认 `segment` 变体使用浅色标签带与浮起选中项。
-- `line` 用于次级导航，`card` 用于文档式标签。
+- 默认 `line` 变体使用透明标签带与底部指示条；`segment` 提供浅色标签带与浮起选中项。
+- `card` 用于文档式标签。
 - 支持水平、垂直、禁用与手动激活模式。
 - 面板常驻并通过 `hidden` 切换，内部状态不会丢失。
 - `reorderable` 支持指针拖动与 Alt + 方向键换位。
@@ -113,7 +113,7 @@
 | `dir` | `Direction` |  | 文字方向，默认 ltr；只影响水平轴上 ArrowLeft / ArrowRight 的前后语义。 |
 | `activationMode` | `TabsActivationMode` |  | 方向键移动焦点时是否同时切换选中，默认 automatic。 |
 | `loop` | `boolean` |  | 方向键到达末尾是否回绕，默认 true。 |
-| `variant` | `TabsVariant` |  | 变体：line / card / segment，决定选中态的绘制方式。默认 segment。 |
+| `variant` | `TabsVariant` |  | 变体：line / card / segment，决定选中态的绘制方式。默认 line。 |
 | `tone` | `Tone` |  | 语气：brand / neutral / success / warning / danger / info，决定使用哪族颜色。 |
 | `size` | `Size` |  | 尺寸：sm / md / lg。 |
 | `reorderable` | `boolean` |  | 标签可以拖动换位。整个标签都是拖动源，不另设把手。 顺序不进入状态机：collection 是 prop，库没有自己的标签序可写，只发 onTabMove。 |

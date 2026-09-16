@@ -130,6 +130,9 @@ export function connectTabs<T extends PropTypes>(
     send({ type: 'TRIGGER.SELECT', value: next })
   }
 
+  // 变体不写时显式落 line：皮肤基础规则即 line 取值，root 上始终带 data-variant 供子部件与自定义皮肤判定
+  const variant = prop('variant') ?? 'line'
+
   return {
     value,
     dropTarget,
@@ -141,7 +144,7 @@ export function connectTabs<T extends PropTypes>(
     getRootProps: () => normalize.element({
       ...parts.root.attrs,
       'data-orientation': orientation,
-      'data-variant': prop('variant'),
+      'data-variant': variant,
       'data-tone': prop('tone'),
       'data-size': prop('size'),
     }),

@@ -85,7 +85,7 @@ export const tabsSuite: ConformanceSuite = {
         ],
         counts: { 'root': 1, 'list': 1, 'trigger': 3, 'tab-drag-trigger': 3, 'content': 3, 'live-region': 1 },
         parts: {
-          'root': { 'data-orientation': 'horizontal' },
+          'root': { 'data-orientation': 'horizontal', 'data-variant': 'line' },
           'list': { 'role': 'tablist', 'aria-orientation': 'horizontal', 'tabindex': '0' },
           'trigger[0]': {
             'role': 'tab',
