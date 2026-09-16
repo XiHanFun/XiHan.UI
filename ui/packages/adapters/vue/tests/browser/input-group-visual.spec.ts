@@ -40,11 +40,11 @@ async function mount(): Promise<void> {
   document.body.append(host)
   app = createApp({
     render: () => h('div', { style: 'display:flex;gap:16px' }, [
-      h(XhInputGroupRoot, { 'data-testid': 'primary' }, () => [
+      h(XhInputGroupRoot, { 'data-testid': 'outline' }, () => [
         h(XhInputGroupItem, null, () => '@'),
         field('主要表面'),
       ]),
-      h(XhInputGroupRoot, { 'data-testid': 'secondary', 'variant': 'secondary' }, () => [
+      h(XhInputGroupRoot, { 'data-testid': 'subtle', 'variant': 'subtle' }, () => [
         h(XhInputGroupItem, null, () => '@'),
         field('次级表面'),
       ]),
@@ -62,27 +62,27 @@ afterEach(() => {
 })
 
 describe('input-group 单一输入表面', () => {
-  it('primary 保留悬浮面，secondary 降低强调且子控件不重复绘制表面', async () => {
+  it('outline 保留悬浮面，subtle 降低强调且子控件不重复绘制表面', async () => {
     await mount()
 
-    const primary = getComputedStyle(group('primary'))
-    const secondary = getComputedStyle(group('secondary'))
-    const primaryControl = getComputedStyle(control('primary'))
-    const item = getComputedStyle(group('primary').querySelector('[data-part="item"]')!)
+    const outline = getComputedStyle(group('outline'))
+    const subtle = getComputedStyle(group('subtle'))
+    const outlineControl = getComputedStyle(control('outline'))
+    const item = getComputedStyle(group('outline').querySelector('[data-part="item"]')!)
 
-    expect(primary.boxShadow).not.toBe('none')
-    expect(secondary.boxShadow).toBe('none')
-    expect(secondary.backgroundColor).not.toBe(primary.backgroundColor)
-    expect(group('secondary').getAttribute('data-variant')).toBe('secondary')
-    expect(getComputedStyle(group('primary'), '::before').borderTopWidth).not.toBe('0px')
-    expect(primaryControl.backgroundColor).toBe('rgba(0, 0, 0, 0)')
-    expect(primaryControl.boxShadow).toBe('none')
+    expect(outline.boxShadow).not.toBe('none')
+    expect(subtle.boxShadow).toBe('none')
+    expect(subtle.backgroundColor).not.toBe(outline.backgroundColor)
+    expect(group('subtle').getAttribute('data-variant')).toBe('subtle')
+    expect(getComputedStyle(group('outline'), '::before').borderTopWidth).not.toBe('0px')
+    expect(outlineControl.backgroundColor).toBe('rgba(0, 0, 0, 0)')
+    expect(outlineControl.boxShadow).toBe('none')
     expect(item.backgroundColor).toBe('rgba(0, 0, 0, 0)')
   })
 
   it('hover 与键盘焦点只更新组的外表面，不改变控件几何', async () => {
     await mount()
-    const root = group('primary')
+    const root = group('outline')
     const input = root.querySelector<HTMLInputElement>('input')!
     const before = root.getBoundingClientRect()
     const restBackground = getComputedStyle(root).backgroundColor
@@ -94,7 +94,7 @@ describe('input-group 单一输入表面', () => {
     input.focus()
     expect(root.matches(':focus-within')).toBe(true)
     expect(getComputedStyle(root).outlineStyle).toBe('solid')
-    const nestedControl = getComputedStyle(control('primary'))
+    const nestedControl = getComputedStyle(control('outline'))
     expect(nestedControl.outlineStyle).toBe('none')
     expect(isTransparentColor(nestedControl.borderTopColor)).toBe(true)
     expect(isTransparentColor(nestedControl.backgroundColor)).toBe(true)
@@ -102,9 +102,9 @@ describe('input-group 单一输入表面', () => {
     expect(nestedControl.transitionDuration.split(', ').every(value => value === '0s')).toBe(true)
 
     input.blur()
-    expect(isTransparentColor(getComputedStyle(control('primary')).borderTopColor)).toBe(true)
+    expect(isTransparentColor(getComputedStyle(control('outline')).borderTopColor)).toBe(true)
     await new Promise(resolve => setTimeout(resolve, 150))
-    expect(isTransparentColor(getComputedStyle(control('primary')).borderTopColor)).toBe(true)
+    expect(isTransparentColor(getComputedStyle(control('outline')).borderTopColor)).toBe(true)
 
     const after = root.getBoundingClientRect()
     expect(after.width).toBe(before.width)

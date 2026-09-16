@@ -27679,7 +27679,7 @@
               "name": "variant",
               "privacy": "public",
               "type": {
-                "text": "InputGroupVariant | undefined"
+                "text": "ControlVariant | undefined"
               },
               "attribute": "variant"
             },
@@ -27706,9 +27706,9 @@
           "attributes": [
             {
               "type": {
-                "text": "InputGroupVariant | undefined"
+                "text": "ControlVariant | undefined"
               },
-              "description": "视觉变体；secondary 使用低强调表面且不绘制阴影",
+              "description": "形态：outline 画描边输入面，subtle 用淡底且不绘制阴影，ghost 无壳；默认 outline",
               "name": "variant",
               "fieldName": "variant"
             },

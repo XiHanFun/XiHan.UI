@@ -1,4 +1,4 @@
-<!-- 变体 | 使用主要或次级输入表面 -->
+<!-- 形态 | outline 画描边输入面，subtle 用淡底嵌入已有表面 -->
 <script setup lang="ts">
 import {
   XhInputGroupItem,
@@ -11,20 +11,20 @@ import {
 
 <template>
   <div style="display: flex; flex-wrap: wrap; gap: 12px">
-    <XhInputGroupRoot variant="primary">
+    <XhInputGroupRoot variant="outline">
       <XhInputGroupItem>¥</XhInputGroupItem>
-      <XhTextFieldRoot placeholder="主要表面">
+      <XhTextFieldRoot placeholder="描边表面">
         <XhTextFieldControl>
-          <XhTextFieldInput inputmode="decimal" aria-label="主要金额" />
+          <XhTextFieldInput inputmode="decimal" aria-label="描边金额" />
         </XhTextFieldControl>
       </XhTextFieldRoot>
     </XhInputGroupRoot>
 
-    <XhInputGroupRoot variant="secondary">
+    <XhInputGroupRoot variant="subtle">
       <XhInputGroupItem>¥</XhInputGroupItem>
-      <XhTextFieldRoot placeholder="次级表面">
+      <XhTextFieldRoot placeholder="淡底表面">
         <XhTextFieldControl>
-          <XhTextFieldInput inputmode="decimal" aria-label="次要金额" />
+          <XhTextFieldInput inputmode="decimal" aria-label="淡底金额" />
         </XhTextFieldControl>
       </XhTextFieldRoot>
     </XhInputGroupRoot>

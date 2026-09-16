@@ -19,25 +19,25 @@ export const inputGroupSuite: ConformanceSuite = {
   },
   cases: [
     {
-      name: '缺省：根不写 role，也不输出档位',
+      name: '缺省：根不写 role，形态落 outline，不输出档位',
       spec: { apg: APG },
       initial: {
         parts: {
           root: {
             'role': null,
-            'data-variant': null,
+            'data-variant': 'outline',
             'data-size': null,
           },
         },
       },
     },
     {
-      name: '次级变体如实落成 data-variant',
+      name: 'subtle 形态如实落成 data-variant',
       spec: { apg: APG },
-      props: { variant: 'secondary' },
+      props: { variant: 'subtle' },
       initial: {
         parts: {
-          root: { 'data-variant': 'secondary' },
+          root: { 'data-variant': 'subtle' },
         },
       },
     },

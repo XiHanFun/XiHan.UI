@@ -20,7 +20,7 @@ export function connectInputGroup<T extends PropTypes>(
   return {
     getRootProps: () => normalize.element({
       ...parts.root.attrs,
-      'data-variant': props.variant,
+      'data-variant': props.variant ?? 'outline',
       'data-size': props.size,
     }),
     // 前后缀块只拿身份：文本由作者写，高度、描边与圆角由皮肤按这个身份给

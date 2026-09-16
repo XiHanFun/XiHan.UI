@@ -5,14 +5,11 @@
 
 // 定义 input group 类型契约。
 
-import type { PropTypes, Size } from '@xihan-ui/core'
-
-/** 视觉变体：primary 是带阴影的默认输入面，secondary 用于已有表面的低强调场景。 */
-export type InputGroupVariant = 'primary' | 'secondary'
+import type { ControlVariant, PropTypes, Size } from '@xihan-ui/core'
 
 export interface InputGroupProps {
-  /** 视觉变体：primary / secondary。默认 primary。 */
-  variant?: InputGroupVariant
+  /** 形态：outline / subtle / ghost，与组内字段同一套词。默认 outline。 */
+  variant?: ControlVariant
   /**
    * 尺寸：sm / md / lg，写入根上供皮肤填入 item 的高度、内衬与字号槽位。
    * 未提供时档位由组内控件自身的 data-size 决定，组内没有带档位的控件时使用 md。
