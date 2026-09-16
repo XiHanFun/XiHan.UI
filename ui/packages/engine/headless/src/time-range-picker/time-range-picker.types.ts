@@ -157,7 +157,7 @@ export interface TimeRangePickerSchema extends MachineSchema {
     name?: string
     /** 终点隐藏输入的表单字段名；未提供时终点不参与提交。 */
     endName?: string
-    /** 形态：outline / subtle / ghost，决定输入行的描边与底色使用方式。 */
+    /** 形态：outline / subtle / ghost，决定输入行的描边与底色使用方式。默认 outline。 */
     variant?: ControlVariant
     /** 语气：brand / neutral / success / warning / danger / info，决定聚焦与选中强调使用哪族颜色。 */
     tone?: Tone

@@ -122,7 +122,7 @@ hourCycle 决定两组段位与时列的写法，上下午各成一段一列
 | `required` | `boolean` |  | 必填标注（写入每段的 aria-required）。 |
 | `name` | `string` |  | 起点隐藏输入的表单字段名；提供后才带 name。 |
 | `endName` | `string` |  | 终点隐藏输入的表单字段名；未提供时终点不参与提交。 |
-| `variant` | `ControlVariant` |  | 形态：outline / subtle / ghost，决定输入行的描边与底色使用方式。 |
+| `variant` | `ControlVariant` |  | 形态：outline / subtle / ghost，决定输入行的描边与底色使用方式。默认 outline。 |
 | `tone` | `Tone` |  | 语气：brand / neutral / success / warning / danger / info，决定聚焦与选中强调使用哪族颜色。 |
 | `size` | `Size` |  | 尺寸：sm / md / lg，输入行与浮层中的格子一并换档。 |
 | `placement` | `Placement` |  |  |
