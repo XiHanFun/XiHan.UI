@@ -10,6 +10,7 @@
   ],
   "approval": [
     "variant",
+    "tone",
     "size"
   ],
   "avatar": [

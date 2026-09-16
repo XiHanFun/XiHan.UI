@@ -5,6 +5,9 @@
 
 /* 定义 approval 样式。 */
 
+/* 独立皮肤同时传递引入授权行与两颗钮的动作控件配方，full bundle 递归去重。 */
+@import '../family/action-control.css';
+
 @layer xihan.motion {
   /* 动画名的查找只认「文档里有没有这个名字」：引用别处文件里的名字，那份文件不一定在场，
      动画会静默地整个不跑。每份皮肤都能单独引入，所以它用到的关键帧都写在自己身上。 */
@@ -47,10 +50,12 @@
     --xh-approval-skin: 1;
   }
 
-  /* 一块要人做决定的表面：浮起一档、按语气画描边，判定落定后描边退回中性 */
+  /* 一块要人做决定的静态内容面：--xh-border-default 描边 + surface 底 + 无影（§5.3 边界只由描边承担），
+     作者打了语气时描边染成语气色作强调（下面那条），判定落定后描边退回中性 */
   [data-scope='approval'][data-part='root'] {
-    /* 作者塞进指示符槽的图标跟着字号走，与皮肤画的兜底字形同一把尺 */
-    --xh-icon-size: var(--xh-approval-icon-size, var(--xh-glyph-size-text));
+    /* 作者塞进标题 / 说明 / 结果条里的图标按档取尺（§6.5），缺省 md；勾选记号另按盒比例量 */
+    --xh-_approval-icon-size: var(--xh-glyph-size-md);
+    --xh-icon-size: var(--xh-approval-icon-size, var(--xh-_approval-icon-size));
 
     /* 尺寸缺省档：不写 data-size 时的取值。三档都只写这批私有槽，
        公开槽留在读处当首选，作者在祖先上设的覆盖才赢得过档位声明 */
@@ -61,17 +66,14 @@
     --xh-_approval-item-font-size: var(--xh-control-font-md);
     --xh-_approval-note-font-size: var(--xh-control-font-md);
 
-    /* 海拔先落进私有槽：无壳档要把它关掉 */
-    --xh-_approval-shadow: var(--xh-approval-shadow, var(--xh-elevation-raised));
-
     display: flex;
     flex-direction: column;
     gap: var(--xh-approval-gap, var(--xh-_approval-gap));
     padding: var(--xh-approval-p, var(--xh-_approval-p));
-    border: var(--xh-stroke-thin) solid var(--xh-approval-border, var(--xh-_tone, var(--xh-border-strong)));
+    border: var(--xh-stroke-thin) solid var(--xh-approval-border, var(--xh-border-default));
     border-radius: var(--xh-approval-radius, var(--xh-shape-surface));
     background: var(--xh-approval-bg, var(--xh-bg-surface));
-    box-shadow: var(--xh-_approval-shadow);
+    box-shadow: var(--xh-approval-shadow, none);
     transition: border-color var(--xh-motion-duration-enter) var(--xh-motion-ease-enter-strong);
     animation: xh-approval-in var(--xh-motion-duration-enter) var(--xh-motion-ease-enter-strong);
   }
@@ -81,34 +83,44 @@
     display: none;
   }
 
-  /* 判过了就不再抢注意力 */
+  /* 语气只染描边：作者定的强调，待决时把这块面从正文里提出来 */
+  [data-scope='approval'][data-part='root'][data-tone] {
+    border-color: var(--xh-approval-border, var(--xh-_tone, var(--xh-border-default)));
+  }
+
+  /* 判过了就不再抢注意力：语气色边退回中性描边（根面外边不取 subtle，§5.3）。
+     排在语气那条之后：同等特指度，落定要盖得过语气 */
   [data-scope='approval'][data-part='root']:not([data-state='pending']) {
-    border-color: var(--xh-approval-border-settled, var(--xh-border-subtle));
+    border-color: var(--xh-approval-border-settled, var(--xh-border-default));
   }
 
   /* —— 形态 —— */
   /* 缺省档即 outline，写在上面那条基础规则里。
      两档排在落定那条之后：它们把描边整个撤掉，排在前面会被落定那条按同等特指度盖回来 */
-  /* 底色分区：描边让位给底色，闸门嵌在别人的面里时不再多一圈线 */
+  /* 底色分区：描边让位给底色，闸门嵌在别人的面里时不再多一圈线；
+     淡底承载面向授权行与拒绝钮下发 hover 200 → pressed 300（§7.2） */
   [data-scope='approval'][data-part='root'][data-variant='subtle'] {
+    --xh-action-host-bg-hover: var(--xh-bg-subtle-hover);
+    --xh-action-host-bg-pressed: var(--xh-bg-subtle-active);
+
     border-color: transparent;
     background: var(--xh-approval-bg, var(--xh-bg-subtle));
   }
 
   /* 无壳内联：卡中卡时不再自带一张面，跟着外层的底走 */
   [data-scope='approval'][data-part='root'][data-variant='ghost'] {
-    --xh-_approval-shadow: 0 0 0 transparent;
-
     border-color: transparent;
     background: none;
+    box-shadow: none;
   }
 
+  /* 标题走 Surface 标题档 14/600（§6.4） */
   [data-scope='approval'][data-part='title'] {
     display: block;
     margin: 0;
     color: var(--xh-approval-title-fg, var(--xh-fg-default));
     font-size: var(--xh-approval-title-font-size, var(--xh-text-label-size));
-    font-weight: var(--xh-approval-title-font-weight, var(--xh-text-label-weight));
+    font-weight: var(--xh-approval-title-font-weight, var(--xh-font-weight-semibold));
     line-height: var(--xh-leading-tight);
   }
 
@@ -121,7 +133,7 @@
     margin: 0;
     color: var(--xh-approval-description-fg, var(--xh-fg-muted));
     font-size: var(--xh-approval-description-font-size, var(--xh-text-secondary-size));
-    line-height: var(--xh-text-body-leading);
+    line-height: var(--xh-leading-normal);
   }
 
   [data-scope='approval'][data-part='description'][hidden] {
@@ -151,43 +163,28 @@
     display: none;
   }
 
-  /* 一项授权：整行可点、可聚焦，勾选记号在左 */
+  /* 一项授权：整行可点、可聚焦，勾选记号在左。盒型、悬停 / 按下 / 禁用面由 Action Control 的 row 档给
+     （ghost 形态：白底承载 hover 100 → pressed 200，按下只换面不缩放，§9.2；禁用守卫认 data-disabled），
+     这里只把使用者槽映射到桥接槽，内衬与间距沿用本组件的档位 */
   [data-scope='approval'][data-part='item'] {
-    display: flex;
-    align-items: center;
-    gap: var(--xh-approval-item-gap, var(--xh-space-1_5));
-    padding-inline: var(--xh-approval-item-px, var(--xh-space-2));
-    padding-block: var(--xh-approval-item-py, var(--xh-space-1));
-    border-radius: var(--xh-approval-item-radius, var(--xh-shape-control));
-    font-size: var(--xh-approval-item-font-size, var(--xh-_approval-item-font-size));
-    cursor: pointer;
-    transition:
-      background var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
-      color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
+    --xh-action-gap: var(--xh-approval-item-gap, var(--xh-space-1_5));
+    --xh-action-padding-inline: var(--xh-approval-item-px, var(--xh-space-2));
+    --xh-action-padding-block: var(--xh-approval-item-py, var(--xh-space-1));
+    --xh-action-radius: var(--xh-approval-item-radius, var(--xh-_action-profile-radius));
+    --xh-action-font-size: var(--xh-approval-item-font-size, var(--xh-_approval-item-font-size));
+    --xh-action-bg-hover: var(--xh-approval-item-bg-hover, var(--xh-_action-variant-bg-hover));
   }
 
   [data-scope='approval'][data-part='item'][hidden] {
     display: none;
   }
 
-  /* 禁用项带的是 aria-disabled 而非原生 disabled，:hover 照样命中；
-     不挡掉的话已落定或置灰的那一条悬停仍会换底 */
-  [data-scope='approval'][data-part='item']:not([data-disabled]):hover {
-    background: var(--xh-approval-item-bg-hover, var(--xh-bg-subtle-hover));
-  }
-
-  [data-scope='approval'][data-part='item']:active {
-    scale: var(--xh-motion-scale-press);
-    transition-duration: var(--xh-motion-duration-press);
-    transition-timing-function: var(--xh-motion-ease-press);
-  }
-
-  [data-scope='approval'][data-part='item'][data-disabled] {
-    color: var(--xh-fg-disabled);
-  }
-
-  /* 勾选记号：方框 + 选中态填色，纯装饰不进可访问名 */
+  /* 勾选记号：方框 + 选中态填色，纯装饰不进可访问名。
+     勾按盒比例量（与 Checkbox 同一比例），作者塞进来的图标读同一把尺，不随根上的整档图标放大撑破盒 */
   [data-scope='approval'][data-part='item-indicator'] {
+    --xh-_approval-indicator-glyph: calc(var(--xh-approval-indicator-size, var(--xh-control-indicator-size)) * 0.75);
+    --xh-icon-size: var(--xh-approval-indicator-icon-size, var(--xh-_approval-indicator-glyph));
+
     display: inline-flex;
     flex: none;
     align-items: center;
@@ -211,8 +208,8 @@
   [data-scope='approval'][data-part='item-indicator']:empty::before {
     content: '';
     display: inline-block;
-    inline-size: var(--xh-icon-size, var(--xh-glyph-size-text));
-    block-size: var(--xh-icon-size, var(--xh-glyph-size-text));
+    inline-size: var(--xh-icon-size, var(--xh-glyph-size-md));
+    block-size: var(--xh-icon-size, var(--xh-glyph-size-md));
     vertical-align: var(--xh-glyph-baseline-shift);
     background-color: currentColor;
     -webkit-mask: var(--xh-glyph-mark-check) center / contain no-repeat;
@@ -325,109 +322,77 @@
     display: none;
   }
 
-  /* 两颗按钮：批准是实心主色，拒绝是描边中性 */
+  /* 两颗按钮是离散动作控件：盒几何、悬停 / 按下与 0.97 按压、焦点环、禁用与在途面全由 Action Control 的
+     text 档给，组件只映射既有使用者槽。批准走 solid 档：判定闸门里的主要动作，与 Button 缺省同为品牌实心；
+     拒绝走 outline 档：非 Button 的触发器缺省中性描边（§7.2.2）。
+     三档守卫由连接层投影：判定在途是 data-loading + aria-disabled（保住可聚焦，家族给在途面：底色不置灰、
+     指针 progress），必选项没勾满与落定是 data-disabled（家族给禁用面：置灰底、置灰字、not-allowed）。
+     两颗共用的几何与字号写在一起 */
   [data-scope='approval'][data-part='approve-trigger'],
   [data-scope='approval'][data-part='deny-trigger'] {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    padding-inline: var(--xh-approval-action-px, var(--xh-_approval-action-px));
-    border: var(--xh-stroke-thin) solid transparent;
-    border-radius: var(--xh-approval-action-radius, var(--xh-shape-control));
-    font-family: inherit;
-    font-size: var(--xh-approval-action-font-size, var(--xh-text-label-size));
+    --xh-action-visual-size: var(--xh-approval-action-h, var(--xh-_approval-action-h));
+    --xh-action-padding-inline: var(--xh-approval-action-px, var(--xh-_approval-action-px));
+    --xh-action-radius: var(--xh-approval-action-radius, var(--xh-shape-control));
+    --xh-action-font-size: var(--xh-approval-action-font-size, var(--xh-text-label-size));
+
     font-weight: var(--xh-approval-action-font-weight, var(--xh-text-label-weight));
-    line-height: var(--xh-leading-none);
-    block-size: var(--xh-approval-action-h, var(--xh-_approval-action-h));
-    white-space: nowrap;
-    cursor: pointer;
-    /* 必选项勾满与否会把批准钮的内高光开合，box-shadow 因此跟着配色一起过渡 */
-    transition:
-      background var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
-      border-color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
-      box-shadow var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
-      scale var(--xh-motion-duration-release) var(--xh-motion-ease-release);
   }
 
+  /* 家族那条 display 会把 UA 的 [hidden]{display:none} 盖掉 */
   [data-scope='approval'][data-part='approve-trigger'][hidden],
   [data-scope='approval'][data-part='deny-trigger'][hidden] {
     display: none;
   }
 
-  /* 内顶高光把实心块顶出一道边，与拒绝那颗的描边同一档厚度 */
+  /* 批准钮：品牌实心，内顶高光把实心块顶出一道边，与拒绝那颗的描边同一档厚度（三态与在途同一支，
+     禁用面由家族收掉）；底 / 字与禁用底映到 solid 档的桥接槽 */
   [data-scope='approval'][data-part='approve-trigger'] {
-    --xh-_approval-approve-highlight: var(--xh-_highlight-tone);
-
-    background: var(--xh-approval-approve-bg, var(--xh-_tone, var(--xh-bg-brand)));
-    color: var(--xh-approval-approve-fg, var(--xh-_tone-on, var(--xh-fg-on-brand)));
-    box-shadow: var(--xh-approval-approve-shadow, var(--xh-_approval-approve-highlight));
+    --xh-action-bg-rest: var(--xh-approval-approve-bg, var(--xh-_action-variant-bg-rest));
+    --xh-action-bg-hover: var(--xh-approval-approve-bg-hover, var(--xh-_action-variant-bg-hover));
+    --xh-action-bg-loading: var(--xh-approval-approve-bg, var(--xh-_action-variant-bg-loading));
+    --xh-action-bg-disabled: var(--xh-approval-approve-bg-off, var(--xh-_action-variant-bg-disabled));
+    --xh-action-fg-rest: var(--xh-approval-approve-fg, var(--xh-_action-variant-fg-rest));
+    --xh-action-fg-hover: var(--xh-approval-approve-fg, var(--xh-_action-variant-fg-hover));
+    --xh-action-fg-pressed: var(--xh-approval-approve-fg, var(--xh-_action-variant-fg-pressed));
+    --xh-action-fg-loading: var(--xh-approval-approve-fg, var(--xh-_action-variant-fg-loading));
+    --xh-action-highlight-rest: transparent;
+    --xh-action-shadow-rest: var(--xh-approval-approve-shadow, var(--xh-_highlight-tone));
+    --xh-action-shadow-hover: var(--xh-approval-approve-shadow, var(--xh-_highlight-tone));
+    --xh-action-shadow-pressed: var(--xh-approval-approve-shadow, var(--xh-_highlight-tone));
+    --xh-action-shadow-loading: var(--xh-approval-approve-shadow, var(--xh-_highlight-tone));
   }
 
   /* 面是实心的，环色与面同族，画在面里就看不出来；环改取面自己的前景色——
      那一族色本来就要在这块面上把字读清楚，与面的对比是按可读性定的。
-     两条分支对着还铺着实心底的那两档：按得动的常态，与判定在途那一档。
-     关闭档的底换成置灰底、字换成置灰色，环取过来就跟底一起糊了，那一档走公共层的环 */
-  [data-scope='approval'][data-part='approve-trigger']:not([aria-disabled='true']):focus-visible,
-  [data-scope='approval'][data-part='approve-trigger'][data-loading]:focus-visible {
-    --xh-_ring-color: currentColor;
+     只对着还铺着实心底的那两档：按得动的常态，与判定在途那一档；
+     禁用档的底换成置灰底、字换成置灰色，环取过来就跟底一起糊了，那一档走公共层的环 */
+  [data-scope='approval'][data-part='approve-trigger']:not([data-disabled]) {
+    --xh-action-ring-color-focus-visible: currentColor;
   }
 
-  /* 两道守卫缺一不可：判定在途走 aria-disabled（保住可聚焦），落定后才换成原生 disabled，
-     而浏览器对原生 disabled 的按钮照样给 :hover */
-  [data-scope='approval'][data-part='approve-trigger']:not([aria-disabled='true']):not(:disabled):hover {
-    background: var(--xh-approval-approve-bg-hover, var(--xh-_tone-hover, var(--xh-bg-brand-hover)));
-  }
-
-  [data-scope='approval'][data-part='approve-trigger']:not([aria-disabled='true']):not(:disabled):active {
-    scale: var(--xh-motion-scale-press);
-    transition-duration: var(--xh-motion-duration-press);
-    transition-timing-function: var(--xh-motion-ease-press);
-  }
-
-  /* 待决时用 aria-disabled 而不是原生 disabled：保住可聚焦，让读屏念得到为什么按不动。
-     所以置灰要按这个属性写，不能只写 :disabled。
-     判定在途时这一位同样为真，但那一档另有观感，排除掉 */
-  [data-scope='approval'][data-part='approve-trigger'][aria-disabled='true']:not([data-loading]) {
-    background: var(--xh-approval-approve-bg-off, var(--xh-bg-muted));
-    color: var(--xh-fg-disabled);
-    box-shadow: none;
-    cursor: not-allowed;
-  }
-
+  /* 拒绝钮：中性描边，底 / 边 / 字与禁用面映到 outline 档的桥接槽（透明底 → 100 → 200；
+     落定后描边退回中性，不再像个能按的出口） */
   [data-scope='approval'][data-part='deny-trigger'] {
-    border-color: var(--xh-approval-deny-border, var(--xh-border-control));
-    background: var(--xh-approval-deny-bg, transparent);
-    color: var(--xh-approval-deny-fg, var(--xh-fg-default));
+    --xh-action-bg-rest: var(--xh-approval-deny-bg, var(--xh-_action-variant-bg-rest));
+    --xh-action-bg-hover: var(--xh-approval-deny-bg-hover, var(--xh-_action-variant-bg-hover));
+    --xh-action-bg-disabled: var(--xh-approval-deny-bg-off, var(--xh-_action-variant-bg-disabled));
+    --xh-action-fg-rest: var(--xh-approval-deny-fg, var(--xh-_action-variant-fg-rest));
+    --xh-action-fg-hover: var(--xh-approval-deny-fg, var(--xh-_action-variant-fg-hover));
+    --xh-action-fg-pressed: var(--xh-approval-deny-fg, var(--xh-_action-variant-fg-pressed));
+    --xh-action-border-rest: var(--xh-approval-deny-border, var(--xh-_action-variant-border-rest));
+    --xh-action-border-disabled: var(--xh-approval-deny-border-off, var(--xh-_action-variant-border-disabled));
+    --xh-action-highlight-rest: transparent;
+    --xh-action-shadow-rest: none;
+    --xh-action-shadow-hover: none;
+    --xh-action-shadow-pressed: none;
   }
 
-  /* 守卫与批准那颗同构：在途是 aria-disabled，落定是原生 disabled，两者浏览器都照给 :hover */
-  [data-scope='approval'][data-part='deny-trigger']:not([aria-disabled='true']):not(:disabled):hover {
-    background: var(--xh-approval-deny-bg-hover, var(--xh-bg-subtle-hover));
-  }
-
-  [data-scope='approval'][data-part='deny-trigger']:not([aria-disabled='true']):not(:disabled):active {
-    scale: var(--xh-motion-scale-press);
-    transition-duration: var(--xh-motion-duration-press);
-    transition-timing-function: var(--xh-motion-ease-press);
-  }
-
-  /* 拒绝钮只有落定后才真的按不动，那一档走原生 disabled：描边退回中性，不再像个能按的出口。
-     前景与指针由文件末尾两颗钮共用的那条 :disabled 规则给 */
-  [data-scope='approval'][data-part='deny-trigger']:disabled {
-    border-color: var(--xh-approval-deny-border-off, var(--xh-border-default));
-    background: var(--xh-approval-deny-bg-off, transparent);
-  }
-
-  /* 判定在途：两颗钮那一行里转一枚圆环，指针换成 progress。
+  /* 判定在途：两颗钮那一行里转一枚圆环（指针 progress 由家族的在途面给）。
      两颗钮此刻确实按不动，但按不动的理由是「你按的那一下正在走」，与「必选项没勾满」
      的那档灰不是一回事；只留灰的话两种情形长得一模一样，用户读不出系统正在想。
      所以在途这一档不置灰：颜色与对比度都保持原样，锁住只由圆环与指针说。
      圆环挂在这一行上而不是某一颗钮上：连接层只拿到「有一条判定在途」，
      拿不到是哪一颗按下的，画在两颗钮上会有一颗在说假话 */
-  [data-scope='approval'][data-part='approve-trigger'][data-loading],
-  [data-scope='approval'][data-part='deny-trigger'][data-loading] {
-    cursor: progress;
-  }
 
   [data-scope='approval'][data-part='root'][data-loading] [data-scope='approval'][data-part='footer']::before {
     content: '';
@@ -440,7 +405,7 @@
     block-size: 1em;
     border: var(--xh-stroke-thin) solid transparent;
     border-block-start-color: currentColor;
-    border-radius: var(--xh-shape-pill);
+    border-radius: var(--xh-shape-circle);
     animation: xh-approval-rotate var(--xh-approval-loading-duration, var(--xh-spin-duration)) var(--xh-motion-ease-loop) infinite;
   }
 
@@ -460,13 +425,9 @@
     animation: none;
   }
 
-  [data-scope='approval'][data-part='approve-trigger']:disabled,
-  [data-scope='approval'][data-part='deny-trigger']:disabled {
-    color: var(--xh-fg-disabled);
-  }
-
-  /* 尺寸档改内衬、间距、按钮高度与行内字号 */
+  /* 尺寸档改内衬、间距、按钮高度、行内字号与图标档 */
   [data-scope='approval'][data-part='root'][data-size='sm'] {
+    --xh-_approval-icon-size: var(--xh-glyph-size-sm);
     --xh-_approval-p: var(--xh-space-3);
     --xh-_approval-gap: var(--xh-space-2);
     --xh-_approval-action-h: var(--xh-control-h-sm);
@@ -476,6 +437,7 @@
   }
 
   [data-scope='approval'][data-part='root'][data-size='md'] {
+    --xh-_approval-icon-size: var(--xh-glyph-size-md);
     --xh-_approval-p: var(--xh-space-4);
     --xh-_approval-gap: var(--xh-space-3);
     --xh-_approval-action-h: var(--xh-control-h-md);
@@ -485,6 +447,7 @@
   }
 
   [data-scope='approval'][data-part='root'][data-size='lg'] {
+    --xh-_approval-icon-size: var(--xh-glyph-size-lg);
     --xh-_approval-p: var(--xh-space-5);
     --xh-_approval-gap: var(--xh-space-4);
     --xh-_approval-action-h: var(--xh-control-h-lg);

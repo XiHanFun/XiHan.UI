@@ -178,13 +178,6 @@
     "tour [progress-dot]": "步骤指示点，纯展示不接焦点"
   },
   "solid": {
-    "approval [data-part='approve-trigger'][data-scope='approval']": {
-      "parts": [
-        "approve-trigger"
-      ],
-      "ratio": 1,
-      "ring": "poured"
-    },
     "back-top [data-part='root'][data-scope='back-top'][data-variant='solid'] [data-part='trigger'][data-scope='back-top']": {
       "parts": [
         "trigger"

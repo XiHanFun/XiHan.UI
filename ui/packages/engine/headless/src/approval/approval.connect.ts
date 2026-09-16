@@ -41,6 +41,9 @@ export function connectApproval<T extends PropTypes>(
   const ids = scope.ids('approval', 'title', 'description')
   // 必选项没勾满、或判定在途，都批不了；拒绝这条路不受它们影响
   const canApprove = !loading && canApproveScopes(scopes, granted)
+  // 必选项没勾满的那一档：aria 上与在途同为 aria-disabled，家族按 data-disabled 给置灰面、按 data-loading 给在途面
+  const gated = !loading && !canApprove
+  const size = prop('size') ?? 'md'
 
   const isScopeGranted = (value: string): boolean => granted.includes(value)
   const scopeDisabled = (item: ApprovalScope): boolean => settled || loading || item.disabled === true
@@ -108,10 +111,17 @@ export function connectApproval<T extends PropTypes>(
       'aria-label': translations?.scopes ?? 'Permissions',
     }),
 
-    // 每个复选框各占一个 Tab 停靠点，不做 roving：授权项要逐条读、逐条勾
+    // 每个复选框各占一个 Tab 停靠点，不做 roving：授权项要逐条读、逐条勾。
+    // 整行是集合行：接 Action Control 的 row 档，ghost 形态、按下只换面不缩放（§9.2）；
+    // 承载面的阶梯由根按 variant 经 host 槽下发；档位随 size 走
     getItemProps: item => normalize.element({
       'role': 'checkbox',
       ...parts.item.attrs,
+      'data-xh-action-control': '',
+      'data-xh-action-profile': 'row',
+      'data-xh-action-variant': 'ghost',
+      'data-xh-action-display': 'always',
+      'data-xh-action-size': size,
       'aria-checked': isScopeGranted(item.value) ? 'true' : 'false',
       'aria-disabled': scopeDisabled(item) ? 'true' : 'false',
       'aria-required': item.required === true ? 'true' : 'false',
@@ -182,16 +192,24 @@ export function connectApproval<T extends PropTypes>(
       ...parts.footer.attrs,
     }),
 
-    // 待决时用 aria-disabled 而不是原生 disabled：保住可聚焦，让读屏念得到为什么按不动
+    // 待决时用 aria-disabled 而不是原生 disabled：保住可聚焦，让读屏念得到为什么按不动。
+    // 离散动作控件：接 Action Control 的 text 档 solid 形态（判定闸门里的主要动作）；
+    // 家族只认 data-disabled 给禁用面，没勾满与落定都投它，在途不投（那一档另有在途面）
     getApproveTriggerProps: () => normalize.button({
       ...parts['approve-trigger'].attrs,
       'type': 'button',
+      'data-xh-action-control': '',
+      'data-xh-action-profile': 'text',
+      'data-xh-action-variant': 'solid',
+      'data-xh-action-display': 'always',
+      'data-xh-action-size': size,
       'aria-disabled': (!canApprove || loading) ? 'true' : 'false',
       'aria-busy': loading ? 'true' : undefined,
       'aria-label': translations?.approve,
       'disabled': settled || undefined,
       'data-state': status,
       'data-loading': dataAttr(loading),
+      'data-disabled': dataAttr(settled || gated),
       'onClick': () => {
         if (!settled && canApprove)
           send({ type: 'APPROVE' })
@@ -202,15 +220,22 @@ export function connectApproval<T extends PropTypes>(
     // 状态机要等宿主回话才落定，这段空窗里再按一次就会送出第二条判定，闸门后面的系统收到
     // 两条相互矛盾的结论。锁法与批准同构：aria-disabled 而不是原生 disabled，保住可聚焦，
     // 让读屏念得到为什么按不动
+    // 接 Action Control 的 text 档 outline 形态：非 Button 的触发器缺省中性描边（§7.2.2）
     getDenyTriggerProps: () => normalize.button({
       ...parts['deny-trigger'].attrs,
       'type': 'button',
+      'data-xh-action-control': '',
+      'data-xh-action-profile': 'text',
+      'data-xh-action-variant': 'outline',
+      'data-xh-action-display': 'always',
+      'data-xh-action-size': size,
       'aria-disabled': loading ? 'true' : 'false',
       'aria-busy': loading ? 'true' : undefined,
       'aria-label': translations?.deny,
       'disabled': settled || undefined,
       'data-state': status,
       'data-loading': dataAttr(loading),
+      'data-disabled': dataAttr(settled),
       'onClick': () => {
         if (!settled && !loading)
           send({ type: 'DENY', source: 'user' })

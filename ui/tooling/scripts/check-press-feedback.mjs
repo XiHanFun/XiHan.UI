@@ -169,7 +169,7 @@ const PRESSABLE = {
   'carousel': ['prev-trigger', 'next-trigger', 'autoplay-trigger', 'indicator'],
   'layout': ['sider-trigger'],
   // AI 族里点得动的部件
-  'approval': ['approve-trigger', 'deny-trigger', 'item'],
+  'approval': ['approve-trigger', 'deny-trigger', { part: 'item', feedback: 'surface' }],
   'code-view': [{ part: 'fold-trigger', feedback: 'surface' }],
   'diff-view': [{ part: 'gap-trigger', feedback: 'surface' }],
   'log': ['scroll-to-end-trigger'],

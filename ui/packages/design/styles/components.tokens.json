@@ -1302,16 +1302,18 @@
         "deny-trigger"
       ],
       "property": [
-        "block-size"
+        "block-size",
+        "min-block-size"
       ],
       "state": [
-        "default"
+        "default",
+        "xh-action-profile=row"
       ],
       "defaultToken": [
         "--xh-_approval-action-h"
       ],
       "visibility": "public",
-      "description": "approval 的 approve-trigger、deny-trigger 部件 block-size 覆盖槽。"
+      "description": "approval 的 approve-trigger、deny-trigger 部件 block-size、min-block-size 覆盖槽。"
     },
     {
       "name": "--xh-approval-action-px",
@@ -1358,16 +1360,18 @@
         "approve-trigger"
       ],
       "property": [
-        "background"
+        "background-color"
       ],
       "state": [
-        "default"
+        "default",
+        "loading"
       ],
       "defaultToken": [
-        "--xh-_tone"
+        "--xh-_action-variant-bg-loading",
+        "--xh-_action-variant-bg-rest"
       ],
       "visibility": "public",
-      "description": "approval 的 approve-trigger 部件 background 覆盖槽。"
+      "description": "approval 的 approve-trigger 部件 background-color 覆盖槽。"
     },
     {
       "name": "--xh-approval-approve-bg-hover",
@@ -1376,18 +1380,20 @@
         "approve-trigger"
       ],
       "property": [
-        "background"
+        "background-color"
       ],
       "state": [
+        "disabled",
         "hover",
-        "not(:disabled)",
-        "not([aria-disabled='true'])"
+        "loading",
+        "not([data-disabled])",
+        "not([data-loading])"
       ],
       "defaultToken": [
-        "--xh-_tone-hover"
+        "--xh-_action-variant-bg-hover"
       ],
       "visibility": "public",
-      "description": "approval 的 approve-trigger 部件 background 覆盖槽。"
+      "description": "approval 的 approve-trigger 部件 background-color 覆盖槽。"
     },
     {
       "name": "--xh-approval-approve-bg-off",
@@ -1396,17 +1402,16 @@
         "approve-trigger"
       ],
       "property": [
-        "background"
+        "background-color"
       ],
       "state": [
-        "loading",
-        "not([data-loading])"
+        "disabled"
       ],
       "defaultToken": [
-        "--xh-bg-muted"
+        "--xh-_action-variant-bg-disabled"
       ],
       "visibility": "public",
-      "description": "approval 的 approve-trigger 部件 background 覆盖槽。"
+      "description": "approval 的 approve-trigger 部件 background-color 覆盖槽。"
     },
     {
       "name": "--xh-approval-approve-fg",
@@ -1418,10 +1423,20 @@
         "color"
       ],
       "state": [
-        "default"
+        "default",
+        "disabled",
+        "hover",
+        "is(:active, [data-pressed])",
+        "loading",
+        "not([data-disabled])",
+        "not([data-loading])",
+        "pressed"
       ],
       "defaultToken": [
-        "--xh-_tone-on"
+        "--xh-_action-variant-fg-hover",
+        "--xh-_action-variant-fg-loading",
+        "--xh-_action-variant-fg-pressed",
+        "--xh-_action-variant-fg-rest"
       ],
       "visibility": "public",
       "description": "approval 的 approve-trigger 部件 color 覆盖槽。"
@@ -1436,10 +1451,17 @@
         "box-shadow"
       ],
       "state": [
-        "default"
+        "default",
+        "disabled",
+        "hover",
+        "is(:active, [data-pressed])",
+        "loading",
+        "not([data-disabled])",
+        "not([data-loading])",
+        "pressed"
       ],
       "defaultToken": [
-        "--xh-_approval-approve-highlight"
+        "--xh-_highlight-tone"
       ],
       "visibility": "public",
       "description": "approval 的 approve-trigger 部件 box-shadow 覆盖槽。"
@@ -1471,16 +1493,19 @@
         "root"
       ],
       "property": [
-        "border"
+        "border",
+        "border-color"
       ],
       "state": [
-        "default"
+        "default",
+        "tone"
       ],
       "defaultToken": [
-        "--xh-_tone"
+        "--xh-_tone",
+        "--xh-border-default"
       ],
       "visibility": "public",
-      "description": "approval 的 root 部件 border 覆盖槽。"
+      "description": "approval 的 root 部件 border、border-color 覆盖槽。"
     },
     {
       "name": "--xh-approval-border-settled",
@@ -1496,7 +1521,7 @@
         "state=pending"
       ],
       "defaultToken": [
-        "--xh-border-subtle"
+        "--xh-border-default"
       ],
       "visibility": "public",
       "description": "approval 的 root 部件 border-color 覆盖槽。"
@@ -1508,16 +1533,16 @@
         "deny-trigger"
       ],
       "property": [
-        "background"
+        "background-color"
       ],
       "state": [
         "default"
       ],
       "defaultToken": [
-        "transparent"
+        "--xh-_action-variant-bg-rest"
       ],
       "visibility": "public",
-      "description": "approval 的 deny-trigger 部件 background 覆盖槽。"
+      "description": "approval 的 deny-trigger 部件 background-color 覆盖槽。"
     },
     {
       "name": "--xh-approval-deny-bg-hover",
@@ -1526,18 +1551,20 @@
         "deny-trigger"
       ],
       "property": [
-        "background"
+        "background-color"
       ],
       "state": [
+        "disabled",
         "hover",
-        "not(:disabled)",
-        "not([aria-disabled='true'])"
+        "loading",
+        "not([data-disabled])",
+        "not([data-loading])"
       ],
       "defaultToken": [
-        "--xh-bg-subtle-hover"
+        "--xh-_action-variant-bg-hover"
       ],
       "visibility": "public",
-      "description": "approval 的 deny-trigger 部件 background 覆盖槽。"
+      "description": "approval 的 deny-trigger 部件 background-color 覆盖槽。"
     },
     {
       "name": "--xh-approval-deny-bg-off",
@@ -1546,16 +1573,16 @@
         "deny-trigger"
       ],
       "property": [
-        "background"
+        "background-color"
       ],
       "state": [
         "disabled"
       ],
       "defaultToken": [
-        "transparent"
+        "--xh-_action-variant-bg-disabled"
       ],
       "visibility": "public",
-      "description": "approval 的 deny-trigger 部件 background 覆盖槽。"
+      "description": "approval 的 deny-trigger 部件 background-color 覆盖槽。"
     },
     {
       "name": "--xh-approval-deny-border",
@@ -1564,16 +1591,16 @@
         "deny-trigger"
       ],
       "property": [
-        "border-color"
+        "border"
       ],
       "state": [
         "default"
       ],
       "defaultToken": [
-        "--xh-border-control"
+        "--xh-_action-variant-border-rest"
       ],
       "visibility": "public",
-      "description": "approval 的 deny-trigger 部件 border-color 覆盖槽。"
+      "description": "approval 的 deny-trigger 部件 border 覆盖槽。"
     },
     {
       "name": "--xh-approval-deny-border-off",
@@ -1588,7 +1615,7 @@
         "disabled"
       ],
       "defaultToken": [
-        "--xh-border-default"
+        "--xh-_action-variant-border-disabled"
       ],
       "visibility": "public",
       "description": "approval 的 deny-trigger 部件 border-color 覆盖槽。"
@@ -1603,10 +1630,19 @@
         "color"
       ],
       "state": [
-        "default"
+        "default",
+        "disabled",
+        "hover",
+        "is(:active, [data-pressed])",
+        "loading",
+        "not([data-disabled])",
+        "not([data-loading])",
+        "pressed"
       ],
       "defaultToken": [
-        "--xh-fg-default"
+        "--xh-_action-variant-fg-hover",
+        "--xh-_action-variant-fg-pressed",
+        "--xh-_action-variant-fg-rest"
       ],
       "visibility": "public",
       "description": "approval 的 deny-trigger 部件 color 覆盖槽。"
@@ -1714,7 +1750,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-glyph-size-text"
+        "--xh-_approval-icon-size"
       ],
       "visibility": "public",
       "description": "approval 的 root 部件 --xh-icon-size 覆盖槽。"
@@ -1792,6 +1828,24 @@
       "description": "approval 的 item-indicator 部件 color 覆盖槽。"
     },
     {
+      "name": "--xh-approval-indicator-icon-size",
+      "component": "approval",
+      "part": [
+        "item-indicator"
+      ],
+      "property": [
+        "--xh-icon-size"
+      ],
+      "state": [
+        "default"
+      ],
+      "defaultToken": [
+        "--xh-_approval-indicator-glyph"
+      ],
+      "visibility": "public",
+      "description": "approval 的 item-indicator 部件 --xh-icon-size 覆盖槽。"
+    },
+    {
       "name": "--xh-approval-indicator-radius",
       "component": "approval",
       "part": [
@@ -1816,6 +1870,7 @@
         "item-indicator"
       ],
       "property": [
+        "--xh-icon-size",
         "block-size",
         "inline-size"
       ],
@@ -1826,7 +1881,7 @@
         "--xh-control-indicator-size"
       ],
       "visibility": "public",
-      "description": "approval 的 item-indicator 部件 block-size、inline-size 覆盖槽。"
+      "description": "approval 的 item-indicator 部件 --xh-icon-size、block-size、inline-size 覆盖槽。"
     },
     {
       "name": "--xh-approval-item-bg-hover",
@@ -1835,18 +1890,20 @@
         "item"
       ],
       "property": [
-        "background"
+        "background-color"
       ],
       "state": [
         "disabled",
         "hover",
-        "not([data-disabled])"
+        "loading",
+        "not([data-disabled])",
+        "not([data-loading])"
       ],
       "defaultToken": [
-        "--xh-bg-subtle-hover"
+        "--xh-_action-variant-bg-hover"
       ],
       "visibility": "public",
-      "description": "approval 的 item 部件 background 覆盖槽。"
+      "description": "approval 的 item 部件 background-color 覆盖槽。"
     },
     {
       "name": "--xh-approval-item-font-size",
@@ -1912,7 +1969,7 @@
         "padding-block"
       ],
       "state": [
-        "default"
+        "xh-action-profile=row"
       ],
       "defaultToken": [
         "--xh-space-1"
@@ -1933,7 +1990,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-shape-control"
+        "--xh-_action-profile-radius"
       ],
       "visibility": "public",
       "description": "approval 的 item 部件 border-radius 覆盖槽。"
@@ -2353,7 +2410,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-elevation-raised"
+        "none"
       ],
       "visibility": "public",
       "description": "approval 的 root 部件 box-shadow 覆盖槽。"
@@ -2443,7 +2500,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-text-label-weight"
+        "--xh-font-weight-semibold"
       ],
       "visibility": "public",
       "description": "approval 的 title 部件 font-weight 覆盖槽。"

@@ -1714,6 +1714,9 @@
               "name": "--xh-approval-indicator-fg"
             },
             {
+              "name": "--xh-approval-indicator-icon-size"
+            },
+            {
               "name": "--xh-approval-indicator-radius"
             },
             {

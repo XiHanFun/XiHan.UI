@@ -102,6 +102,7 @@ export type ComponentTokenName =
   | '--xh-approval-indicator-border'
   | '--xh-approval-indicator-border-checked'
   | '--xh-approval-indicator-fg'
+  | '--xh-approval-indicator-icon-size'
   | '--xh-approval-indicator-radius'
   | '--xh-approval-indicator-size'
   | '--xh-approval-item-bg-hover'
