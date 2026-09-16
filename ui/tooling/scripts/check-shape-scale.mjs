@@ -15,6 +15,9 @@
 // radius 兜底值（私有槽在赋值点解）必须等于登记档；取 circle / pill 的部件必须在表里；
 // 同一规则块里 inline-size 与 block-size 同槽 / 同值的正方盒不得取 pill（用 pill 冒充圆）。
 // 登记为 floating 的悬浮圆钮，connect 还得投影 data-xh-action-profile: 'floating'——手写圆钮不算。
+// 接了 Action Control 的部件圆角由家族配方按 profile 给，皮肤只在桥接槽 --xh-action-radius 上映射
+// 使用者槽；这条桥接槽就是该部件的圆角声明，原语判据与逐部件登记的身份判据同样对它生效
+// （按后缀归档的 close / clear 钮不核桥接槽：field-inset 档的形状由家族 profile 给）。
 // 存量登 family-backlog.json shape 段，命中即放行、不命中判过期。
 import fs from 'node:fs'
 import path from 'node:path'
@@ -32,6 +35,8 @@ const PRIMITIVE = /var\(\s*--xh-radius-[\w-]+/
 
 /** 简写、border-<side>-radius 与逻辑角长属性。 */
 const RADIUS_PROP = /^border(?:-[\w-]+)?-radius$/
+/** Action Control 的圆角桥接槽：接了家族的部件圆角写在这里，与 border-radius 同等看待。 */
+const ACTION_RADIUS = '--xh-action-radius'
 /** 私有槽赋值：原语先灌进私有槽再消费同样是下探。 */
 const RADIUS_SLOT = /^--xh-_[\w-]*radius[\w-]*$/
 
@@ -266,7 +271,7 @@ for (const file of fs.readdirSync(cssDir).filter(f => f.endsWith('.css')).sort()
   const blockOf = selectors => all.filter(d => d.selectors.join('>') === selectors.join('>'))
 
   for (const { prop, value, index, selectors } of all) {
-    const isRadiusProp = RADIUS_PROP.test(prop)
+    const isRadiusProp = RADIUS_PROP.test(prop) || prop === ACTION_RADIUS
     if (!isRadiusProp && !RADIUS_SLOT.test(prop))
       continue
     checked++
@@ -282,10 +287,12 @@ for (const file of fs.readdirSync(cssDir).filter(f => f.endsWith('.css')).sort()
     const key = `${comp}:${parts.at(-1) ?? '?'}${pseudo ? `::${pseudo}` : ''}`
 
     // 第三条判据：形状身份
-    if (prop === 'border-radius' && !selectors.some(s => s.startsWith('@keyframes'))) {
+    if ((prop === 'border-radius' || prop === ACTION_RADIUS) && !selectors.some(s => s.startsWith('@keyframes'))) {
       const shapes = ends(value).filter(t => t.startsWith('--xh-shape-')).map(t => t.replace('--xh-shape-', ''))
       for (const hit of identityKeysOf(comp, selector)) {
-        const want = wantOf(hit.key, hit.part)
+        // 桥接槽只核逐部件登记的身份：按后缀归档的 close / clear 钮在 field-inset 档里取 inset，
+        // 那是家族按 profile 给的形状，不在这条身份表管辖之内
+        const want = prop === ACTION_RADIUS && !(hit.key in IDENTITY) ? null : wantOf(hit.key, hit.part)
         const where = `${file}:${lineOf(index)}`
         if (want) {
           identityChecked++
