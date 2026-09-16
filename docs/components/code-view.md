@@ -242,6 +242,11 @@ size 切换字号、行高与内边距三档，行号槽与折叠按钮随之变
 | `code` | `data-wrap` | ''（条件成立时才出现） |
 | `token` | `data-kind` | token.kind |
 | `fold-trigger` | `data-state` | 'closed' \| 'open' |
+| `fold-trigger` | `data-xh-action-control` | '' |
+| `fold-trigger` | `data-xh-action-display` | 'always' |
+| `fold-trigger` | `data-xh-action-profile` | 'disclosure-trigger' |
+| `fold-trigger` | `data-xh-action-size` | props.size |
+| `fold-trigger` | `data-xh-action-variant` | 'ghost' |
 
 <!-- xh-component-tokens:start -->
 ### CSS 变量
@@ -255,14 +260,14 @@ size 切换字号、行高与内边距三档，行号槽与折叠按钮随之变
 | `--xh-code-view-comment-fg` | `token` | `color` | `kind=comment` | `--xh-fg-muted` | code-view 的 token 部件 color 覆盖槽。 |
 | `--xh-code-view-fg` | `root` | `color` | `default` | `--xh-fg-muted` | code-view 的 root 部件 color 覆盖槽。 |
 | `--xh-code-view-filename-fg` | `filename` | `color` | `default` | `--xh-fg-default` | code-view 的 filename 部件 color 覆盖槽。 |
-| `--xh-code-view-fold-bg-hover` | `fold-trigger` | `background` | `hover` | `--xh-bg-subtle-hover` | code-view 的 fold-trigger 部件 background 覆盖槽。 |
+| `--xh-code-view-fold-bg-hover` | `fold-trigger` | `background-color` | `disabled`<br>`hover`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])` | `--xh-_action-variant-bg-hover` | code-view 的 fold-trigger 部件 background-color 覆盖槽。 |
 | `--xh-code-view-fold-fg` | `fold-trigger` | `color` | `default` | `--xh-fg-muted` | code-view 的 fold-trigger 部件 color 覆盖槽。 |
-| `--xh-code-view-fold-py` | `fold-trigger` | `padding-block` | `default` | `--xh-space-2` | code-view 的 fold-trigger 部件 padding-block 覆盖槽。 |
+| `--xh-code-view-fold-py` | `fold-trigger` | `padding-block` | `xh-action-profile=disclosure-trigger` | `--xh-space-2` | code-view 的 fold-trigger 部件 padding-block 覆盖槽。 |
 | `--xh-code-view-font` | `code`<br>`filename` | `font-family` | `default` | `--xh-font-family-mono` | code-view 的 code、filename 部件 font-family 覆盖槽。 |
 | `--xh-code-view-font-size` | `root` | `font-size` | `default` | `--xh-_code-view-font-size` | code-view 的 root 部件 font-size 覆盖槽。 |
 | `--xh-code-view-gutter-border` | `line-number` | `border-inline-end` | `default` | `--xh-border-default` | code-view 的 line-number 部件 border-inline-end 覆盖槽。 |
 | `--xh-code-view-gutter-gap` | `line-number` | `padding-inline-end` | `default` | `--xh-space-1` | code-view 的 line-number 部件 padding-inline-end 覆盖槽。 |
-| `--xh-code-view-header-border` | `fold-trigger`<br>`header` | `border-block-end`<br>`border-block-start` | `default` | `--xh-border-subtle` | code-view 的 fold-trigger、header 部件 border-block-end、border-block-start 覆盖槽。 |
+| `--xh-code-view-header-border` | `fold-trigger`<br>`header` | `border`<br>`border-block-end`<br>`border-color` | `default`<br>`disabled`<br>`focus-visible`<br>`hover`<br>`is(:active, [data-pressed])`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])`<br>`pressed` | `--xh-border-subtle` | code-view 的 fold-trigger、header 部件 border、border-block-end、border-color 覆盖槽。 |
 | `--xh-code-view-header-fg` | `header` | `color` | `default` | `--xh-fg-muted` | code-view 的 header 部件 color 覆盖槽。 |
 | `--xh-code-view-header-font-size` | `fold-trigger`<br>`header` | `font-size` | `default` | `--xh-text-secondary-size` | code-view 的 fold-trigger、header 部件 font-size 覆盖槽。 |
 | `--xh-code-view-header-gap` | `header` | `gap` | `default` | `--xh-space-2` | code-view 的 header 部件 gap 覆盖槽。 |
@@ -284,13 +289,13 @@ size 切换字号、行高与内边距三档，行号槽与折叠按钮随之变
 | `--xh-code-view-px` | `fold-trigger`<br>`line`<br>`line-content`<br>`line-number`<br>`root` | `padding-inline`<br>`padding-inline-end`<br>`padding-inline-start` | `default`<br>`line-numbers`<br>`not([data-line-numbers])` | `--xh-space-3` | code-view 的 fold-trigger、line、line-content、line-number、root 部件 padding-inline、padding-inline-end、padding-inline-start 覆盖槽。 |
 | `--xh-code-view-py` | `pre` | `padding-block` | `default` | `--xh-space-3` | code-view 的 pre 部件 padding-block 覆盖槽。 |
 | `--xh-code-view-radius` | `root` | `border-radius` | `default` | `--xh-shape-surface` | code-view 的 root 部件 border-radius 覆盖槽。 |
-| `--xh-code-view-shadow` | `root` | `box-shadow` | `default` | `--xh-elevation-raised` | code-view 的 root 部件 box-shadow 覆盖槽。 |
+| `--xh-code-view-shadow` | `root` | `box-shadow` | `default` | `none` | code-view 的 root 部件 box-shadow 覆盖槽。 |
 | `--xh-code-view-string-fg` | `token` | `color` | `kind=string` | `--xh-syntax-string` | code-view 的 token 部件 color 覆盖槽。 |
 <!-- xh-component-tokens:end -->
 
 ### 动效
 
-`background` · `box-shadow` · `scale` 走 `transition` 过渡。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
+`background` · `box-shadow` 走 `transition` 过渡。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
 
 系统开启减弱动效时由令牌层统一收敛，皮肤不另作判断。
 

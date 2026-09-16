@@ -24,7 +24,9 @@
 //    提前撤掉，而等待期恰恰是最需要回执的那几百毫秒；也不比缩放，因为这类触发区往往是
 //    作者的整块内容，缩放它会把作者自己的排版一起抖起来。改比底色。
 // ③ 列表行的即时换面：显式登记 feedback: 'surface'，换底可由本部件或（投影了 data-xh-collection-item 时）
-//    家族配方的 pressed 面给出，禁止改变按压几何。
+//    家族配方的 pressed 面给出，禁止改变按压几何。投影了 data-xh-action-control 且 profile 为 row /
+//    disclosure-trigger 的部件（§9.2 铺满一行的动作条目与 disclosure trigger）读 family/action-control.css：
+//    通用按压块给换底，两档专属的按压块 scale: none 保住几何。
 //
 // 真源 §9.1 / §9.2 再加四条：
 // ⑤ 几何判据：登记为缩放的部件，基础规则含 inline-size: 100% / flex: 1 / display: block，或按 §4.1
@@ -168,7 +170,7 @@ const PRESSABLE = {
   'layout': ['sider-trigger'],
   // AI 族里点得动的部件
   'approval': ['approve-trigger', 'deny-trigger', 'item'],
-  'code-view': ['fold-trigger'],
+  'code-view': [{ part: 'fold-trigger', feedback: 'surface' }],
   'diff-view': ['gap-trigger'],
   'log': ['scroll-to-end-trigger'],
   'message-feed': ['scroll-to-end-trigger'],
@@ -266,7 +268,7 @@ for (const [name, parts] of Object.entries(PRESSABLE)) {
     if (typeof part === 'string')
       checkPart(name, part, css, await isActionControlPart(name, part) ? actionRecipe : '')
     else if (part.feedback === 'surface')
-      checkSurfacePart(name, part.part, css, await isCollectionItemPart(name, part.part) ? collectionRecipe : '')
+      checkSurfacePart(name, part.part, css, await surfaceFamilyCss(name, part.part))
     else
       checkHeldPart(name, part.part, part.attr, css)
     // ⑧ Space / Enter 与粗指针的按压由 Headless 投影 data-pressed，皮肤的 :active 才能与键盘按压一致
@@ -308,6 +310,21 @@ async function isCollectionItemPart(name, part) {
   const next = source.slice(start + getter.length).search(/\bget[A-Z][A-Za-z0-9]*Props\s*[:=]/)
   const body = source.slice(start, next < 0 ? source.length : start + getter.length + next)
   return body.includes('\'data-xh-collection-item\':')
+}
+
+/**
+ * 形态③的家族来源：投影 data-xh-collection-item 的读 Collection Item 配方；投影 data-xh-action-control
+ * 且 profile 为 row / disclosure-trigger 的读 Action Control 配方；都没有就只认皮肤自己的 :active 换面。
+ */
+async function surfaceFamilyCss(name, part) {
+  if (await isCollectionItemPart(name, part))
+    return collectionRecipe
+  if (await isActionControlPart(name, part)) {
+    const body = await getterBody(name, part)
+    if (/'data-xh-action-profile':\s*'(?:row|disclosure-trigger)'/.test(body ?? ''))
+      return actionRecipe
+  }
+  return ''
 }
 
 for (const key of Object.keys(NO_PRESS)) {
@@ -445,17 +462,26 @@ function checkPart(name, part, css, familyCss = '') {
 /** 列表行用换面表达按下，几何保持不变；只有显式登记的部件走这条合同。 */
 function checkSurfacePart(name, part, css, familyCss = '') {
   const active = new RegExp(`${partSelector(part)}[^{]*${PRESS_SELECTOR}(?::not\\([^)]*\\))?\\s*\\{([^}]*)\\}`)
-  // 投影了 data-xh-collection-item 的部件（familyCss 非空）可以由家族配方的 pressed 面给出换底
-  const match = css.match(active)
-    ?? (familyCss ? familyCss.match(new RegExp(`\\[data-xh-collection-item\\][^{]*${FAMILY_PRESS}\\s*\\{([^}]*)\\}`)) : null)
   const key = `${name}:${part}`
+  // 投影了家族标记的部件（familyCss 非空）可以由家族配方的 pressed 面给出换底：
+  // Collection Item 读 [data-xh-collection-item] 的按压块；Action Control 的 row / disclosure-trigger 档
+  // 读 [data-xh-action-control] 的通用按压块（不取两档专属那条——它只归零 scale，不换底）
+  const isAction = familyCss !== '' && familyCss === actionRecipe
+  const marker = isAction ? String.raw`\[data-xh-action-control\]` : String.raw`\[data-xh-collection-item\]`
+  const familyPress = new RegExp(`${marker}(?:(?!:is\\(\\[data-xh-action-profile)[^{])*${FAMILY_PRESS}\\s*\\{([^}]*)\\}`)
+  const match = css.match(active) ?? (familyCss ? familyCss.match(familyPress) : null)
   const surface = match?.[1].match(/(?:^|;)\s*(?:background(?:-color)?|--xh-_collection-bg)\s*:\s*([^;]+)/)
   if (!surface || /^(?:none|transparent)$/.test(surface[1].trim()))
     report(key, `${name} 的 ${part} 没有明确的 :active 换面——集合行不允许零反馈（§9.2）`)
-  if (match && /(?:^|;)\s*(?:scale|translate|transform)\s*:/.test(match[1]))
-    report(key, `${name} 的 ${part} 登记为换面反馈，却在按下时改变几何`)
+  if (match && /(?:^|;)\s*(?:scale|translate|transform)\s*:/.test(match[1])) {
+    // Action Control 通用按压块带 0.97 缩放，row / disclosure-trigger 两档靠专属按压块 scale: none 归零；
+    // 皮肤自己写的按压块则一律不许动几何
+    const rowPress = new RegExp(String.raw`\[data-xh-action-control\]:is\(\[data-xh-action-profile='row'\], \[data-xh-action-profile='disclosure-trigger'\]\)[^{]*${FAMILY_PRESS}\s*\{[^}]*(?:^|;|\s)scale\s*:\s*none\s*;`)
+    if (!(isAction && match.input === familyCss && rowPress.test(familyCss)))
+      report(key, `${name} 的 ${part} 登记为换面反馈，却在按下时改变几何`)
+  }
   const rules = [...css.matchAll(new RegExp(`${partSelector(part)}[^{]*\\{([^}]*)\\}`, 'g'))]
-  const familyTransition = /\[data-xh-collection-item\]\s*\{[\s\S]*?transition:[^;]*\bbackground(?:-color)?\b/.test(familyCss)
+  const familyTransition = new RegExp(`${marker}\\s*\\{[\\s\\S]*?transition:[^;]*\\bbackground(?:-color)?\\b`).test(familyCss)
   if (!rules.some(rule => /transition:[^;]*\bbackground(?:-color)?\b/.test(rule[1])) && !familyTransition)
     report(key, `${name} 的 ${part} 没把换面写进本部件的 transition`)
 }

@@ -195,6 +195,17 @@ describe('折叠', () => {
     expect(openProps['aria-controls']).toBe((open.getPreProps() as Dict).id)
   })
 
+  it('折叠条接 Action Control 的 disclosure-trigger 档：ghost 形态、按下只换面，档位随 size 走', () => {
+    const trigger = api({ code: 'a\nb\nc', clamp: 2 }).getFoldTriggerProps() as Dict
+    expect(trigger['data-xh-action-control']).toBe('')
+    expect(trigger['data-xh-action-profile']).toBe('disclosure-trigger')
+    expect(trigger['data-xh-action-variant']).toBe('ghost')
+    expect(trigger['data-xh-action-display']).toBe('always')
+    expect(trigger['data-xh-action-size']).toBe('md')
+    const small = api({ code: 'a\nb\nc', clamp: 2, size: 'sm' }).getFoldTriggerProps() as Dict
+    expect(small['data-xh-action-size']).toBe('sm')
+  })
+
   it('纯受控：点按钮只发意图，自己不落态', () => {
     const onClampToggle = vi.fn()
     const a = api({ code: 'a\nb\nc', clamp: 2, onClampToggle })
