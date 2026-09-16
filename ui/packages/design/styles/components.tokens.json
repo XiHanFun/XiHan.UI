@@ -45049,16 +45049,16 @@
         "root"
       ],
       "property": [
-        "background"
+        "background-color"
       ],
       "state": [
-        "default"
+        "xh-field-chrome"
       ],
       "defaultToken": [
-        "--xh-_prompt-input-bg"
+        "--xh-_field-variant-bg-rest"
       ],
       "visibility": "public",
-      "description": "prompt-input 的 root 部件 background 覆盖槽。"
+      "description": "prompt-input 的 root 部件 background-color 覆盖槽。"
     },
     {
       "name": "--xh-prompt-input-bg-disabled",
@@ -45067,16 +45067,17 @@
         "root"
       ],
       "property": [
-        "background"
+        "background-color"
       ],
       "state": [
-        "disabled"
+        "disabled",
+        "xh-field-chrome"
       ],
       "defaultToken": [
-        "--xh-bg-subtle"
+        "--xh-_field-variant-bg-disabled"
       ],
       "visibility": "public",
-      "description": "prompt-input 的 root 部件 background 覆盖槽。"
+      "description": "prompt-input 的 root 部件 background-color 覆盖槽。"
     },
     {
       "name": "--xh-prompt-input-bg-hover",
@@ -45085,18 +45086,25 @@
         "root"
       ],
       "property": [
-        "background"
+        "background-color"
       ],
       "state": [
         "disabled",
         "hover",
-        "not([data-disabled], :focus-within)"
+        "invalid",
+        "loading",
+        "not([data-disabled])",
+        "not([data-invalid])",
+        "not([data-loading])",
+        "not([data-readonly])",
+        "readonly",
+        "xh-field-chrome"
       ],
       "defaultToken": [
-        "--xh-_prompt-input-bg-hover"
+        "--xh-_field-variant-bg-hover"
       ],
       "visibility": "public",
-      "description": "prompt-input 的 root 部件 background 覆盖槽。"
+      "description": "prompt-input 的 root 部件 background-color 覆盖槽。"
     },
     {
       "name": "--xh-prompt-input-border",
@@ -45108,10 +45116,10 @@
         "border"
       ],
       "state": [
-        "default"
+        "xh-field-chrome"
       ],
       "defaultToken": [
-        "--xh-_prompt-input-border"
+        "--xh-_field-variant-border-rest"
       ],
       "visibility": "public",
       "description": "prompt-input 的 root 部件 border 覆盖槽。"
@@ -45123,16 +45131,19 @@
         "root"
       ],
       "property": [
-        "border"
+        "border-color"
       ],
       "state": [
-        "focus-within"
+        "disabled",
+        "focus-within",
+        "not([data-disabled])",
+        "xh-field-chrome"
       ],
       "defaultToken": [
-        "--xh-_prompt-input-border-focus"
+        "--xh-_field-variant-border-focus"
       ],
       "visibility": "public",
-      "description": "prompt-input 的 root 部件 border 覆盖槽。"
+      "description": "prompt-input 的 root 部件 border-color 覆盖槽。"
     },
     {
       "name": "--xh-prompt-input-border-hover",
@@ -45141,18 +45152,25 @@
         "root"
       ],
       "property": [
-        "border"
+        "border-color"
       ],
       "state": [
         "disabled",
         "hover",
-        "not([data-disabled], :focus-within)"
+        "invalid",
+        "loading",
+        "not([data-disabled])",
+        "not([data-invalid])",
+        "not([data-loading])",
+        "not([data-readonly])",
+        "readonly",
+        "xh-field-chrome"
       ],
       "defaultToken": [
-        "--xh-_prompt-input-border-hover"
+        "--xh-_field-variant-border-hover"
       ],
       "visibility": "public",
-      "description": "prompt-input 的 root 部件 border 覆盖槽。"
+      "description": "prompt-input 的 root 部件 border-color 覆盖槽。"
     },
     {
       "name": "--xh-prompt-input-gap",
@@ -45164,7 +45182,7 @@
         "gap"
       ],
       "state": [
-        "default"
+        "xh-field-chrome"
       ],
       "defaultToken": [
         "--xh-_prompt-input-gap"
@@ -45185,9 +45203,11 @@
         "default",
         "size=lg",
         "size=md",
-        "size=sm"
+        "size=sm",
+        "xh-field-chrome"
       ],
       "defaultToken": [
+        "--xh-_field-size-glyph-size",
         "--xh-glyph-size-lg",
         "--xh-glyph-size-md",
         "--xh-glyph-size-sm"
@@ -45206,10 +45226,11 @@
       ],
       "state": [
         "-webkit-autofill",
-        "autofill"
+        "autofill",
+        "xh-field-input"
       ],
       "defaultToken": [
-        "--xh-material-soft-focus-surface"
+        "--xh-bg-canvas"
       ],
       "visibility": "public",
       "description": "prompt-input 的 input 部件 box-shadow 覆盖槽。"
@@ -45225,10 +45246,11 @@
       ],
       "state": [
         "-webkit-autofill",
-        "autofill"
+        "autofill",
+        "xh-field-input"
       ],
       "defaultToken": [
-        "--xh-material-soft-fg"
+        "--xh-fg-default"
       ],
       "visibility": "public",
       "description": "prompt-input 的 input 部件 -webkit-text-fill-color 覆盖槽。"
@@ -45243,10 +45265,10 @@
         "color"
       ],
       "state": [
-        "default"
+        "xh-field-input"
       ],
       "defaultToken": [
-        "--xh-material-soft-fg"
+        "--xh-fg-default"
       ],
       "visibility": "public",
       "description": "prompt-input 的 input 部件 color 覆盖槽。"
@@ -45262,7 +45284,8 @@
         "padding-block"
       ],
       "state": [
-        "default"
+        "default",
+        "xh-field-input"
       ],
       "defaultToken": [
         "--xh-_prompt-input-font-size"
@@ -45314,16 +45337,18 @@
       ],
       "property": [
         "--xh-prompt-input-computed-px",
-        "padding"
+        "padding",
+        "padding-inline"
       ],
       "state": [
-        "default"
+        "default",
+        "xh-field-chrome"
       ],
       "defaultToken": [
         "--xh-_prompt-input-px"
       ],
       "visibility": "public",
-      "description": "prompt-input 的 root 部件 --xh-prompt-input-computed-px、padding 覆盖槽。"
+      "description": "prompt-input 的 root 部件 --xh-prompt-input-computed-px、padding、padding-inline 覆盖槽。"
     },
     {
       "name": "--xh-prompt-input-placeholder-fg",
@@ -45335,7 +45360,8 @@
         "color"
       ],
       "state": [
-        "placeholder"
+        "placeholder",
+        "xh-field-input"
       ],
       "defaultToken": [
         "--xh-fg-subtle"
@@ -45353,7 +45379,7 @@
         "border-radius"
       ],
       "state": [
-        "default"
+        "xh-field-chrome"
       ],
       "defaultToken": [
         "--xh-shape-surface"
@@ -45386,16 +45412,16 @@
         "submit-trigger"
       ],
       "property": [
-        "background"
+        "background-color"
       ],
       "state": [
         "default"
       ],
       "defaultToken": [
-        "--xh-_tone"
+        "--xh-_action-variant-bg-rest"
       ],
       "visibility": "public",
-      "description": "prompt-input 的 submit-trigger 部件 background 覆盖槽。"
+      "description": "prompt-input 的 submit-trigger 部件 background-color 覆盖槽。"
     },
     {
       "name": "--xh-prompt-input-send-bg-active",
@@ -45404,17 +45430,21 @@
         "submit-trigger"
       ],
       "property": [
-        "background"
+        "background-color"
       ],
       "state": [
-        "active",
-        "not(:disabled)"
+        "disabled",
+        "is(:active, [data-pressed])",
+        "loading",
+        "not([data-disabled])",
+        "not([data-loading])",
+        "pressed"
       ],
       "defaultToken": [
-        "--xh-_tone-active"
+        "--xh-_action-variant-bg-pressed"
       ],
       "visibility": "public",
-      "description": "prompt-input 的 submit-trigger 部件 background 覆盖槽。"
+      "description": "prompt-input 的 submit-trigger 部件 background-color 覆盖槽。"
     },
     {
       "name": "--xh-prompt-input-send-bg-hover",
@@ -45423,17 +45453,20 @@
         "submit-trigger"
       ],
       "property": [
-        "background"
+        "background-color"
       ],
       "state": [
+        "disabled",
         "hover",
-        "not(:disabled)"
+        "loading",
+        "not([data-disabled])",
+        "not([data-loading])"
       ],
       "defaultToken": [
-        "--xh-_tone-hover"
+        "--xh-_action-variant-bg-hover"
       ],
       "visibility": "public",
-      "description": "prompt-input 的 submit-trigger 部件 background 覆盖槽。"
+      "description": "prompt-input 的 submit-trigger 部件 background-color 覆盖槽。"
     },
     {
       "name": "--xh-prompt-input-send-bg-off",
@@ -45442,7 +45475,7 @@
         "submit-trigger"
       ],
       "property": [
-        "background"
+        "background-color"
       ],
       "state": [
         "disabled"
@@ -45451,7 +45484,7 @@
         "--xh-bg-muted"
       ],
       "visibility": "public",
-      "description": "prompt-input 的 submit-trigger 部件 background 覆盖槽。"
+      "description": "prompt-input 的 submit-trigger 部件 background-color 覆盖槽。"
     },
     {
       "name": "--xh-prompt-input-send-fg",
@@ -45463,10 +45496,19 @@
         "color"
       ],
       "state": [
-        "default"
+        "default",
+        "disabled",
+        "hover",
+        "is(:active, [data-pressed])",
+        "loading",
+        "not([data-disabled])",
+        "not([data-loading])",
+        "pressed"
       ],
       "defaultToken": [
-        "--xh-_tone-on"
+        "--xh-_action-variant-fg-hover",
+        "--xh-_action-variant-fg-pressed",
+        "--xh-_action-variant-fg-rest"
       ],
       "visibility": "public",
       "description": "prompt-input 的 submit-trigger 部件 color 覆盖槽。"
@@ -45481,10 +45523,10 @@
         "box-shadow"
       ],
       "state": [
-        "default"
+        "xh-field-chrome"
       ],
       "defaultToken": [
-        "--xh-_prompt-input-shadow"
+        "none"
       ],
       "visibility": "public",
       "description": "prompt-input 的 root 部件 box-shadow 覆盖槽。"
@@ -45496,16 +45538,16 @@
         "submit-trigger"
       ],
       "property": [
-        "background"
+        "background-color"
       ],
       "state": [
         "mode=stop"
       ],
       "defaultToken": [
-        "--xh-bg-subtle"
+        "--xh-_action-variant-bg-rest"
       ],
       "visibility": "public",
-      "description": "prompt-input 的 submit-trigger 部件 background 覆盖槽。"
+      "description": "prompt-input 的 submit-trigger 部件 background-color 覆盖槽。"
     },
     {
       "name": "--xh-prompt-input-stop-bg-active",
@@ -45514,18 +45556,22 @@
         "submit-trigger"
       ],
       "property": [
-        "background"
+        "background-color"
       ],
       "state": [
-        "active",
+        "disabled",
+        "is(:active, [data-pressed])",
+        "loading",
         "mode=stop",
-        "not(:disabled)"
+        "not([data-disabled])",
+        "not([data-loading])",
+        "pressed"
       ],
       "defaultToken": [
-        "--xh-bg-subtle-active"
+        "--xh-_action-variant-bg-pressed"
       ],
       "visibility": "public",
-      "description": "prompt-input 的 submit-trigger 部件 background 覆盖槽。"
+      "description": "prompt-input 的 submit-trigger 部件 background-color 覆盖槽。"
     },
     {
       "name": "--xh-prompt-input-stop-bg-hover",
@@ -45534,18 +45580,21 @@
         "submit-trigger"
       ],
       "property": [
-        "background"
+        "background-color"
       ],
       "state": [
+        "disabled",
         "hover",
+        "loading",
         "mode=stop",
-        "not(:disabled)"
+        "not([data-disabled])",
+        "not([data-loading])"
       ],
       "defaultToken": [
-        "--xh-bg-subtle-hover"
+        "--xh-_action-variant-bg-hover"
       ],
       "visibility": "public",
-      "description": "prompt-input 的 submit-trigger 部件 background 覆盖槽。"
+      "description": "prompt-input 的 submit-trigger 部件 background-color 覆盖槽。"
     },
     {
       "name": "--xh-prompt-input-stop-fg",
@@ -45557,10 +45606,19 @@
         "color"
       ],
       "state": [
-        "mode=stop"
+        "disabled",
+        "hover",
+        "is(:active, [data-pressed])",
+        "loading",
+        "mode=stop",
+        "not([data-disabled])",
+        "not([data-loading])",
+        "pressed"
       ],
       "defaultToken": [
-        "--xh-fg-default"
+        "--xh-_action-variant-fg-hover",
+        "--xh-_action-variant-fg-pressed",
+        "--xh-_action-variant-fg-rest"
       ],
       "visibility": "public",
       "description": "prompt-input 的 submit-trigger 部件 color 覆盖槽。"
@@ -45686,10 +45744,17 @@
         "box-shadow"
       ],
       "state": [
-        "default"
+        "default",
+        "disabled",
+        "hover",
+        "is(:active, [data-pressed])",
+        "loading",
+        "not([data-disabled])",
+        "not([data-loading])",
+        "pressed"
       ],
       "defaultToken": [
-        "--xh-_prompt-input-submit-highlight"
+        "--xh-_highlight-tone"
       ],
       "visibility": "public",
       "description": "prompt-input 的 submit-trigger 部件 box-shadow 覆盖槽。"

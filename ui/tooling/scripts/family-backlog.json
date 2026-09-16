@@ -28,7 +28,6 @@
     "message-feed:scroll-to-end-trigger:raised": "raised 退役待本组件迁移",
     "page-header:root:outline": "border 颜色位落 --xh-border-subtle（page-header.css:70；阶段一只改了轴名），根面描边应改 --xh-border-default，待本组件迁移",
     "popconfirm:confirm-trigger:raised": "raised 退役待本组件迁移",
-    "prompt-input:root": "静息描边落 --xh-material-soft-border，真源 §8.3 要求 PromptInput 静息描边仍为 --xh-border-control、不用 soft，待本组件迁移",
     "question-flow:root": "border 颜色位落 --xh-border-subtle（question-flow.css:21），根面描边应改 --xh-border-default，待本组件迁移",
     "question-flow:root:outline": "border 颜色位落 --xh-border-subtle（question-flow.css:54），根面描边应改 --xh-border-default，待本组件迁移",
     "question-flow:root:raised": "raised 退役待本组件迁移",

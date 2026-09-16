@@ -1,6 +1,6 @@
 import type { App } from 'vue'
 import { afterEach, describe, expect, it } from 'vitest'
-import { cdp } from 'vitest/browser'
+import { cdp, userEvent } from 'vitest/browser'
 import { createApp, h, nextTick } from 'vue'
 import {
   XhPromptInputControl,
@@ -66,8 +66,17 @@ afterEach(async () => {
   await cdp().send('Emulation.setEmulatedMedia', { media: '', features: [] })
 })
 
-describe('prompt-input 的 M1 柔和实体皮肤', () => {
-  it.each(['light', 'dark'] as const)('%s：外壳消费 soft 实体配方，不采样背景，textarea 保持实体阅读底', async (theme) => {
+function tokenColor(name: string): string {
+  const probe = document.createElement('span')
+  probe.style.color = `var(${name})`
+  document.body.append(probe)
+  const color = getComputedStyle(probe).color
+  probe.remove()
+  return color
+}
+
+describe('prompt-input 的字段描边外壳', () => {
+  it.each(['light', 'dark'] as const)('%s：外壳走 Field Chrome 描边式（canvas 底 + border-control + 无影，无顶光无模糊），输入段透明', async (theme) => {
     document.documentElement.dataset.theme = theme
     mount()
     await settle()
@@ -76,14 +85,18 @@ describe('prompt-input 的 M1 柔和实体皮肤', () => {
     const input = part('input') as HTMLTextAreaElement
     const rootStyle = getComputedStyle(root)
     const inputStyle = getComputedStyle(input)
+    expect(root.getAttribute('data-xh-field-chrome')).toBe('')
     expect(alpha(rootStyle.backgroundColor)).toBe(255)
-    expect(rootStyle.backgroundImage).toContain('linear-gradient')
+    expect(rootStyle.backgroundColor).toBe(tokenBackground('--xh-bg-canvas'))
+    expect(rootStyle.backgroundImage).toBe('none')
     expect(rootStyle.borderTopWidth).toBe('1px')
+    expect(rootStyle.borderTopColor).toBe(tokenColor('--xh-border-control'))
+    expect(rootStyle.borderRadius).toBe('8px')
     expect(rootStyle.backdropFilter).toBe('none')
-    expect(rootStyle.boxShadow).not.toBe('none')
-    expect(alpha(inputStyle.backgroundColor)).toBe(255)
-    expect(inputStyle.backgroundColor).toBe(tokenBackground('--xh-material-soft-focus-surface'))
-    expect(inputStyle.color).not.toBe('rgba(0, 0, 0, 0)')
+    expect(rootStyle.boxShadow).toBe('none')
+    expect(input.getAttribute('data-xh-field-input')).toBe('')
+    expect(alpha(inputStyle.backgroundColor)).toBe(0)
+    expect(inputStyle.color).toBe(tokenColor('--xh-fg-default'))
     root.style.setProperty('--xh-prompt-input-input-radius', '12px')
     expect(getComputedStyle(input).borderTopLeftRadius).toBe('12px')
 
@@ -91,10 +104,67 @@ describe('prompt-input 的 M1 柔和实体皮肤', () => {
     await settle()
     expect(root.matches(':focus-within')).toBe(true)
     expect(getComputedStyle(root).outlineStyle).toBe('solid')
+    expect(getComputedStyle(root).borderTopColor).toBe(tokenColor('--xh-border-control-focus'))
     expect(inputStyle.outlineStyle).toBe('none')
   })
 
-  it('高对比度收掉高光与投影，同时保留整框焦点环', async () => {
+  it('发送钮是品牌实心的 Action Control：悬停换底、按下 0.97 缩放，输入为空转灰，生成中降为中性淡底的停止身份', async () => {
+    mount()
+    await settle()
+    const trigger = part('submit-trigger') as HTMLButtonElement
+    trigger.style.transition = 'none'
+    expect(trigger.getAttribute('data-xh-action-control')).toBe('')
+    expect(trigger.getAttribute('data-xh-action-variant')).toBe('solid')
+    expect(getComputedStyle(trigger).backgroundColor).toBe(tokenBackground('--xh-bg-brand'))
+    expect(getComputedStyle(trigger).color).toBe(tokenColor('--xh-fg-on-brand'))
+    expect(getComputedStyle(trigger).height).toBe('36px')
+    expect(getComputedStyle(trigger).borderRadius).toBe('4px')
+    // 发送身份顶边一条内高光
+    expect(getComputedStyle(trigger).boxShadow).not.toBe('none')
+    await userEvent.hover(trigger)
+    expect(getComputedStyle(trigger).backgroundColor).toBe(tokenBackground('--xh-bg-brand-hover'))
+    trigger.dataset.pressed = ''
+    expect(getComputedStyle(trigger).backgroundColor).toBe(tokenBackground('--xh-bg-brand-active'))
+    expect(getComputedStyle(trigger).scale).toBe('0.97')
+    delete trigger.dataset.pressed
+
+    const input = part('input') as HTMLTextAreaElement
+    input.focus()
+    await userEvent.clear(input)
+    await settle()
+    expect(trigger.disabled).toBe(true)
+    expect(trigger.hasAttribute('data-disabled')).toBe(true)
+    expect(getComputedStyle(trigger).backgroundColor).toBe(tokenBackground('--xh-bg-muted'))
+    expect(getComputedStyle(trigger).boxShadow).toBe('none')
+  })
+
+  it('生成中：停止身份是中性淡底，外框仍可打字、不压前景', async () => {
+    host = document.createElement('div')
+    document.body.append(host)
+    app = createApp({
+      render: () => h(XhPromptInputRoot, { loading: true, defaultValue: '生成中' }, () =>
+        h(XhPromptInputControl, null, () => [
+          h(XhPromptInputInput, { placeholder: '输入消息' }),
+          h(XhPromptInputSubmitTrigger),
+        ])),
+    })
+    app.mount(host)
+    await settle()
+    const trigger = part('submit-trigger')
+    trigger.style.transition = 'none'
+    // 上一条用例把指针停在了发送钮上：先挪开，读的才是静息面
+    await userEvent.unhover(trigger)
+    expect(trigger.getAttribute('data-mode')).toBe('stop')
+    expect(trigger.getAttribute('data-xh-action-variant')).toBe('subtle')
+    expect(getComputedStyle(trigger).backgroundColor).toBe(tokenBackground('--xh-bg-subtle'))
+    expect(getComputedStyle(trigger).boxShadow).toBe('none')
+    const root = part('root')
+    expect(root.hasAttribute('data-loading')).toBe(true)
+    expect(getComputedStyle(root).cursor).toBe('text')
+    expect(getComputedStyle(part('input')).color).toBe(tokenColor('--xh-fg-default'))
+  })
+
+  it('高对比度保持实体描边面与整框焦点环', async () => {
     document.documentElement.dataset.contrast = 'more'
     mount()
     await settle()
@@ -113,7 +183,7 @@ describe('prompt-input 的 M1 柔和实体皮肤', () => {
   it.each([
     ['减少透明度', { name: 'prefers-reduced-transparency', value: 'reduce' }, '(prefers-reduced-transparency: reduce)'],
     ['强制色', { name: 'forced-colors', value: 'active' }, '(forced-colors: active)'],
-  ] as const)('%s：系统辅助模式保持实体面并关闭投影', async (_, feature, query) => {
+  ] as const)('%s：系统辅助模式保持实体面、无影无渐变，输入段仍透明', async (_, feature, query) => {
     await cdp().send('Emulation.setEmulatedMedia', { media: '', features: [feature] })
     expect(matchMedia(query).matches).toBe(true)
     mount()
@@ -124,16 +194,13 @@ describe('prompt-input 的 M1 柔和实体皮肤', () => {
     const style = getComputedStyle(root)
     expect(alpha(style.backgroundColor)).toBe(255)
     expect(style.backdropFilter).toBe('none')
-    if (feature.name === 'forced-colors')
-      expect(style.boxShadow).toBe('none')
-    else
-      expect(style.boxShadow).not.toBe('none')
-    if (feature.name === 'forced-colors')
-      expect(style.backgroundImage).toBe('none')
-    expect(alpha(getComputedStyle(input).backgroundColor)).toBe(255)
+    expect(style.boxShadow).toBe('none')
+    expect(style.backgroundImage).toBe('none')
+    expect(style.borderTopWidth).toBe('1px')
+    expect(alpha(getComputedStyle(input).backgroundColor)).toBe(0)
   })
 
-  it('打印：令牌关闭滤镜与投影，并让外壳使用实体底', async () => {
+  it('打印：外壳保持实体描边面，无滤镜与投影', async () => {
     await cdp().send('Emulation.setEmulatedMedia', { media: 'print', features: [] })
     mount()
     await settle()
