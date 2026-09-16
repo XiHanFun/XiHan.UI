@@ -57,6 +57,8 @@ export function connectScrollbar<T extends PropTypes>(
         : geometry.overflow && stateName !== 'hidden'
 
   const vertical = orientation === 'vertical'
+  const anchor = prop('anchor') ?? 'shell'
+  const gutter = !!prop('gutter')
 
   const scrollTo = (offset: number): void => send({ type: 'SCROLL.TO', offset })
   const scrollBy = (delta: number): void => send({ type: 'STEP', delta })
@@ -80,6 +82,29 @@ export function connectScrollbar<T extends PropTypes>(
           insetInlineStart: pct(geometry.offset),
           inlineSize: pct(geometry.size),
         }
+
+  /**
+   * 贴在滚动层上的根节点：按层在壳内的偏移盒写内联几何，皮肤那侧只保留交叉轴的厚度。
+   * 竖条贴层的行内末端（RTL 下是左缘），横条贴层的块末端；让出交叉口时主轴长度减掉一个厚度，
+   * 厚度是皮肤按尺寸档给的自定义属性，这里只在 calc 里引用它；偏移盒是物理坐标，几何一律写物理属性。
+   */
+  const layerStyle = (): Record<string, string> => {
+    const box = context.get('layerBox')
+    const thickness = 'var(--xh-_scrollbar-thickness)'
+    const rtl = dir === 'rtl'
+    const trim = (length: number): string => (gutter ? `calc(${length}px - ${thickness})` : `${length}px`)
+    return vertical
+      ? {
+          top: `${box.y}px`,
+          height: trim(box.height),
+          left: rtl ? `${box.x}px` : `calc(${box.x + box.width}px - ${thickness})`,
+        }
+      : {
+          top: `calc(${box.y + box.height}px - ${thickness})`,
+          left: rtl && gutter ? `calc(${box.x}px + ${thickness})` : `${box.x}px`,
+          width: trim(box.width),
+        }
+  }
 
   /**
    * 键盘只在滑块上收口，且只认本轴那两个方向键：交叉轴的方向键不拦，
@@ -143,6 +168,9 @@ export function connectScrollbar<T extends PropTypes>(
       'data-gutter': dataAttr(prop('gutter')),
       // 缺省档不写属性：皮肤的基础规则就是缺省档
       'data-size': prop('size'),
+      // 贴在滚动层上时皮肤放开壳边的 inset，位置全由下面的内联几何给；壳锚定不写属性也不写样式
+      'data-anchor': anchor === 'layer' ? 'layer' : undefined,
+      'style': anchor === 'layer' ? layerStyle() : undefined,
     }),
 
     getTrackProps: () => normalize.element({

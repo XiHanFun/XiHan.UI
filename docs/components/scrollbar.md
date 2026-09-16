@@ -68,6 +68,7 @@
 - 可与[表格](./table)、[虚拟滚动](./virtualizer)和[日志](./log)组合使用。
 - 日期、时间和年份网格等组件内部滚动面复用本组件的透明轨道、厚度和滑块色阶；需要完整自绘交互时组合 `root`、`track` 与 `thumb`。
 - 双轴滚动时使用 `gutter` 和 `corner` 处理交叉区域。
+- 多个滚动层并排共用一个定位壳（级联的列、时间列）时，`anchor` 取 `layer`，每层各自一套滚动条贴在该层的盒子上。
 
 ### 最佳实践
 
@@ -101,6 +102,7 @@
 | `minThumbSize` | `number` |  | 滑块的最小像素长度，默认 20。长文档中的滑块再短也可按下。 |
 | `step` | `number` |  | 方向键一步滚动的像素数，默认 40。翻页键按视口长度计算，不使用该值。 |
 | `size` | `Size` |  | 尺寸：sm / md / lg，影响滚动条厚度。 |
+| `anchor` | `ScrollbarAnchor` |  | 根节点的锚定方式，默认 shell。layer 时根节点按滚动层在壳内的偏移盒以内联样式定位， 壳必须是滚动层的定位祖先（offsetParent）；该值在状态机生命周期内不应变化。 |
 | `disabled` | `boolean` |  | 禁用：不接受指针也不接受键盘，恒不显示。 |
 | `focusable` | `boolean` |  | 滑块进入 Tab 序列并报告 role=scrollbar，默认 false。 默认不进入：滚动容器自身已能用键盘滚动，再给每条滚动条一个 Tab 停靠点， 长页面上会多出许多停靠点。需要键盘操作滑块本身时才开启。 |
 | `controls` | `string` |  | 被控滚动容器的 id；focusable 时写到滑块的 aria-controls 上（未提供时使用容器自身的 id）。 |
@@ -220,6 +222,7 @@
 
 | 部件 | 属性 | 值 |
 | --- | --- | --- |
+| `root` | `data-anchor` | 'layer' \| undefined |
 | `root` | `data-disabled` | ''（条件成立时才出现） |
 | `root` | `data-dragging` | ''（条件成立时才出现） |
 | `root` | `data-gutter` | ''（条件成立时才出现） |

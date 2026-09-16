@@ -19,6 +19,22 @@ import type { ScrollAxisMetrics } from '../shared/scroll-geometry'
  */
 export type ScrollbarType = 'auto' | 'always' | 'scroll' | 'hover' | 'scroll-hover'
 
+/**
+ * 根节点的锚定方式：
+ * - shell 贴在定位祖先（壳）的边上，壳本身不滚动；
+ * - layer 贴在滚动层自己的盒子上：根节点仍挂在壳里，但按滚动层在壳内的偏移盒定位，
+ *   多个滚动层并排共用一个壳（级联的列、时间列）时各自一套滚动条。
+ */
+export type ScrollbarAnchor = 'shell' | 'layer'
+
+/** 滚动层在定位祖先内的偏移盒（px，物理坐标，取自 offsetLeft / offsetTop / offsetWidth / offsetHeight）。 */
+export interface ScrollbarLayerBox {
+  x: number
+  y: number
+  width: number
+  height: number
+}
+
 /** 指针位置，只取两个坐标。 */
 export interface ScrollbarPoint {
   clientX: number
@@ -73,6 +89,11 @@ export interface ScrollbarSchema extends MachineSchema {
     step?: number
     /** 尺寸：sm / md / lg，影响滚动条厚度。 */
     size?: Size
+    /**
+     * 根节点的锚定方式，默认 shell。layer 时根节点按滚动层在壳内的偏移盒以内联样式定位，
+     * 壳必须是滚动层的定位祖先（offsetParent）；该值在状态机生命周期内不应变化。
+     */
+    anchor?: ScrollbarAnchor
     /** 禁用：不接受指针也不接受键盘，恒不显示。 */
     disabled?: boolean
     /**
@@ -112,6 +133,8 @@ export interface ScrollbarSchema extends MachineSchema {
   context: {
     /** 本轴测得的尺寸；connect 只读取它，不涉及 DOM。 */
     metrics: ScrollAxisMetrics
+    /** anchor 为 layer 时测得的滚动层偏移盒；shell 锚定恒为零盒，connect 不读取。 */
+    layerBox: ScrollbarLayerBox
     /** 指针当前在滚动容器或滚动条上。拖动结束后依靠它决定是保持显示还是开始倒计时。 */
     pointerInside: boolean
     /** 正在进行的滑块拖动；未拖动时为 null。 */

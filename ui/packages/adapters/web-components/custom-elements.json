@@ -43112,7 +43112,7 @@
           "name": "XhScrollbarElement",
           "cssParts": [
             {
-              "description": "定位盒与指针热区，承载 data-orientation / data-reveal-mode / data-state / data-scrolling / data-dragging / data-size / data-gutter / data-native；收起时经 data-state=hidden 由皮肤淡出",
+              "description": "定位盒与指针热区，承载 data-orientation / data-reveal-mode / data-state / data-scrolling / data-dragging / data-size / data-gutter / data-native / data-anchor；收起时经 data-state=hidden 由皮肤淡出",
               "name": "root"
             },
             {
@@ -43200,6 +43200,15 @@
                 "text": "Size | undefined"
               },
               "attribute": "size"
+            },
+            {
+              "kind": "field",
+              "name": "anchor",
+              "privacy": "public",
+              "type": {
+                "text": "ScrollbarAnchor | undefined"
+              },
+              "attribute": "anchor"
             },
             {
               "kind": "field",
@@ -43425,6 +43434,14 @@
               "description": "尺寸档，影响滚动条厚度",
               "name": "size",
               "fieldName": "size"
+            },
+            {
+              "type": {
+                "text": "ScrollbarAnchor | undefined"
+              },
+              "description": "根节点贴在壳边（shell，默认）还是贴在滚动层自己的盒子上（layer）；layer 要求壳是滚动层的定位祖先，位置由连接层写成内联几何",
+              "name": "anchor",
+              "fieldName": "anchor"
             },
             {
               "type": {

@@ -7,7 +7,7 @@
 
 import type { Direction, Orientation, Params, Transition } from '@xihan-ui/core'
 import type { ScrollAxisMetrics } from '../shared/scroll-geometry'
-import type { ScrollbarSchema, ScrollbarType } from './scrollbar.types'
+import type { ScrollbarLayerBox, ScrollbarSchema, ScrollbarType } from './scrollbar.types'
 import { DIAGNOSTIC_CODES, reportDiagnostic, setTimeoutEffect, setup } from '@xihan-ui/core'
 import { createPointerSession, resolveSessionDoc } from '@xihan-ui/pointer'
 import { clamp } from '../shared/number'
@@ -52,6 +52,7 @@ export const SCROLLBAR_STEP = 40
 export const SCROLLBAR_SCROLL_END_DELAY = 120
 
 const EMPTY_METRICS: ScrollAxisMetrics = { viewport: 0, content: 0, scroll: 0, track: 0 }
+const EMPTY_BOX: ScrollbarLayerBox = { x: 0, y: 0, width: 0, height: 0 }
 
 /**
  * 挂了自绘滚动条的容器带这个标记，皮肤据此藏掉原生滚动条的外观。
@@ -86,6 +87,11 @@ function sameMetrics(a: ScrollAxisMetrics, b: ScrollAxisMetrics | undefined): bo
   return !!b && a.viewport === b.viewport && a.content === b.content && a.scroll === b.scroll && a.track === b.track
 }
 
+/** 逐字段比：偏移盒同样每次量都是新对象。 */
+function sameBox(a: ScrollbarLayerBox, b: ScrollbarLayerBox | undefined): boolean {
+  return !!b && a.x === b.x && a.y === b.y && a.width === b.width && a.height === b.height
+}
+
 /** 量尺寸与写回滚动位置用到的参数子集。 */
 type MeasureParams = Pick<Params<ScrollbarSchema>, 'refs' | 'prop' | 'context'>
 
@@ -118,6 +124,17 @@ function runMeasure(p: MeasureParams): void {
   const next = measureAxis(scrollable, p.refs.get('getTrackEl')(), axis, dir)
   if (!sameMetrics(next, p.context.get('metrics')))
     p.context.set('metrics', next)
+  // 贴在滚动层上的根节点按层在壳内的偏移盒定位：offset* 相对定位祖先的内边距盒，与绝对定位同一参照
+  if (p.prop('anchor') === 'layer') {
+    const box: ScrollbarLayerBox = {
+      x: scrollable.offsetLeft,
+      y: scrollable.offsetTop,
+      width: scrollable.offsetWidth,
+      height: scrollable.offsetHeight,
+    }
+    if (!sameBox(box, p.context.get('layerBox')))
+      p.context.set('layerBox', box)
+  }
 }
 
 /** 写回滚动位置；RTL 横轴要翻回负数。 */
@@ -160,6 +177,7 @@ export const scrollbarMachine = createMachine({
   context: ({ cell }) => ({
     // 尺寸是量出来的，不受控、不对外通知
     metrics: cell<ScrollAxisMetrics>(() => ({ defaultValue: EMPTY_METRICS, isEqual: sameMetrics })),
+    layerBox: cell<ScrollbarLayerBox>(() => ({ defaultValue: EMPTY_BOX, isEqual: sameBox })),
     pointerInside: cell<boolean>(() => ({ defaultValue: false })),
     drag: cell<ScrollbarSchema['context']['drag']>(() => ({ defaultValue: null })),
     scrolling: cell<boolean>(() => ({ defaultValue: false })),
@@ -411,6 +429,26 @@ export const scrollbarMachine = createMachine({
             ? new win.ResizeObserver(() => send({ type: 'MEASURE' }))
             : null
           resize?.observe(scrollable)
+          // 贴在滚动层上时，层在壳内的位置还随并排的兄弟伸缩、增减而变：壳与每个兄弟的尺寸一变、
+          // 兄弟一增减，都重量一次偏移盒（兄弟增减后把新来的也盯上）
+          const parent = prop('anchor') === 'layer' ? scrollable.parentElement : null
+          const watchSiblings = (): void => {
+            if (!parent || !resize)
+              return
+            resize.observe(parent)
+            for (const sibling of parent.children) {
+              if (sibling !== scrollable && sibling instanceof win.HTMLElement)
+                resize.observe(sibling)
+            }
+          }
+          watchSiblings()
+          const siblings = parent && typeof win.MutationObserver === 'function'
+            ? new win.MutationObserver(() => {
+                watchSiblings()
+                send({ type: 'MEASURE' })
+              })
+            : null
+          siblings?.observe(parent!, { childList: true })
 
           /**
            * 内容长短变了也要重量，而 ResizeObserver 看不见这件事：容器是定高的，
@@ -439,6 +477,7 @@ export const scrollbarMachine = createMachine({
             scrollable.removeEventListener('pointerleave', onLeave)
             resize?.disconnect()
             mutate?.disconnect()
+            siblings?.disconnect()
           }
         }
 

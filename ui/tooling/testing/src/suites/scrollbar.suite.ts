@@ -168,6 +168,41 @@ export const scrollbarSuite: ConformanceSuite = {
       },
     },
     {
+      name: 'anchor=layer：根带 data-anchor，按滚动层在壳内的偏移盒写内联几何',
+      spec: { apg: WCAG },
+      props: { ...BASE, type: 'always', anchor: 'layer' },
+      steps: [
+        {
+          kind: 'raw',
+          why: 'jsdom 不做布局，offset* 恒是 0，桩出层在壳内的偏移盒；内联几何不进归一化快照，直接读节点',
+          run: ({ doc }) => {
+            layout(doc)
+            Object.defineProperties(target(doc), {
+              offsetLeft: { configurable: true, get: () => 120 },
+              offsetTop: { configurable: true, get: () => 8 },
+              offsetWidth: { configurable: true, get: () => 160 },
+              offsetHeight: { configurable: true, get: () => 240 },
+            })
+            target(doc).dispatchEvent(new Event('scroll'))
+          },
+          expect: { parts: { root: { 'data-anchor': 'layer', 'data-state': 'visible' } } },
+        },
+        {
+          kind: 'raw',
+          why: '内联几何不进归一化快照，直接读根节点的 style',
+          run: ({ doc }) => {
+            const style = findPart(doc, 'root').style
+            const actual = { top: style.top, height: style.height, left: style.left }
+            const want = { top: '8px', height: '240px', left: 'calc(280px - var(--xh-_scrollbar-thickness))' }
+            for (const [key, value] of Object.entries(want)) {
+              if (actual[key as keyof typeof actual] !== value)
+                throw new Error(`root.${key} 期望 ${value}，实际 ${actual[key as keyof typeof actual] || '(空)'}`)
+            }
+          },
+        },
+      ],
+    },
+    {
       name: '默认（scroll-hover）：挂载时收着，data-state=hidden 由皮肤淡出',
       spec: { apg: WCAG },
       props: BASE,

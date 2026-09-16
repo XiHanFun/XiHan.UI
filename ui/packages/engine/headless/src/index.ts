@@ -201,7 +201,7 @@ export type { ResizableApi, ResizableDimensions, ResizableDimensionsChangeDetail
 export { connectScrollArea, scrollAreaAnatomy, scrollAreaKeyboard, scrollAreaMeta, scrollAreaScrollbarProps } from './scroll-area'
 export type { ScrollAreaApi, ScrollAreaAxisState, ScrollAreaOrientation, ScrollAreaProps, ScrollAreaScrollbarProps, ScrollAreaServices, ScrollAreaTranslations, ScrollAreaVariant } from './scroll-area'
 export { connectScrollbar, SCROLLBAR_DEFAULT_TYPE, SCROLLBAR_HIDE_DELAY, SCROLLBAR_HOST_ATTR, SCROLLBAR_SCROLL_END_DELAY, SCROLLBAR_STEP, scrollbarAnatomy, scrollbarKeyboard, scrollbarMachine, scrollbarMeta } from './scrollbar'
-export type { ScrollbarApi, ScrollbarDragSession, ScrollbarPoint, ScrollbarRefs, ScrollbarSchema, ScrollbarScrollDetails, ScrollbarTranslations, ScrollbarType } from './scrollbar'
+export type { ScrollbarAnchor, ScrollbarApi, ScrollbarDragSession, ScrollbarLayerBox, ScrollbarPoint, ScrollbarRefs, ScrollbarSchema, ScrollbarScrollDetails, ScrollbarTranslations, ScrollbarType } from './scrollbar'
 export { connectSegmented, resolveSegmentedIndicator, segmentedAnatomy, segmentedItemQuery, segmentedKeyboard, segmentedMachine, segmentedMeta } from './segmented'
 export type { SegmentedApi, SegmentedBox, SegmentedIndicatorRect, SegmentedItemProps, SegmentedNode, SegmentedNodeMeta, SegmentedRefs, SegmentedSchema, SegmentedTranslations, SegmentedValueChangeDetails } from './segmented'
 export { connectSelect, SELECT_DEFAULT_MAX_TAG_COUNT, SELECT_DEFAULT_PLACEMENT, selectAnatomy, selectItemQuery, selectItemText, selectKeyboard, selectMachine, selectMeta } from './select'

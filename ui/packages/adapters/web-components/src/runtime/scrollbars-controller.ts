@@ -6,7 +6,7 @@
 // 提供 scrollbars controller 相关实现。
 
 import type { Orientation, Service } from '@xihan-ui/core'
-import type { ScrollbarSchema } from '@xihan-ui/headless'
+import type { ScrollbarAnchor, ScrollbarSchema } from '@xihan-ui/headless'
 import type { ReactiveControllerHost } from '../reactive'
 import { createCounterIdGenerator, createScope } from '@xihan-ui/core'
 import { connectScrollbar, isOverflowing, SCROLLBAR_DEFAULT_TYPE, scrollbarMachine } from '@xihan-ui/headless'
@@ -19,20 +19,41 @@ import { MachineController } from './machine-controller'
 // 节点由本件建、挂在组件既有的壳上（浮层族是 positioner，其余是 root），作者一个字不用写。
 // 建出来的节点一律不打 data-xh-part：打了会被宿主的 discoverParts 收进 partMap，
 // 于是野节点告警、宿主重接线环、契约 delegates 三样一起找上门。
+//
+// 多个滚动层并排共用一个壳（级联的列、时间列）时取 anchor: 'layer' 并交 scrollables：
+// 本件按当前在场的层逐个建一套条子（各自一台机器），条子紧跟在那一层后面、按层在壳内的偏移盒定位，
+// 层离场时那套条子随之拆掉。
 
-/** 交给条子的 props。轴由 axes 决定、让位按实测溢出算，两者都不从外面收。 */
-export type ScrollbarsProps = Omit<ScrollbarSchema['props'], 'orientation' | 'gutter'>
+/** 交给条子的 props。轴由 axes 决定、让位按实测溢出算、锚定由 anchor 给，都不从外面收。 */
+export type ScrollbarsProps = Omit<ScrollbarSchema['props'], 'orientation' | 'gutter' | 'anchor'>
 
-export interface ScrollbarsControllerOptions {
-  /** 真正在滚动的层；多档互斥的宿主在这里返回当前生效的那个。 */
-  scrollable: () => HTMLElement | null
-  /** 条子挂进去的壳：滚动层的父、组件的定位盒，本身不滚。 */
+interface ScrollbarsControllerBaseOptions {
+  /** 条子挂进去的壳：滚动层的父、组件的定位盒，本身不滚（贴层锚定时它可以横向滚，条子随层一起走）。 */
   shell: () => HTMLElement | null
   /** 排布哪几条轴，默认只排竖向。 */
   axes?: readonly Orientation[]
   /** 露面时机、尺寸档、方向这些，逐帧现读。 */
   props?: () => ScrollbarsProps
 }
+
+/** 一路滚动层：条子贴壳边（缺省）或贴层的盒子。 */
+export interface ScrollbarsSingleOptions extends ScrollbarsControllerBaseOptions {
+  /** 真正在滚动的层；多档互斥的宿主在这里返回当前生效的那个。 */
+  scrollable: () => HTMLElement | null
+  /** 条子贴在壳边（shell，默认）还是贴在滚动层自己的盒子上（layer）。 */
+  anchor?: ScrollbarAnchor
+  scrollables?: undefined
+}
+
+/** 多路并排的滚动层：每层一套条子，只能贴层的盒子。 */
+export interface ScrollbarsSetOptions extends ScrollbarsControllerBaseOptions {
+  /** 此刻在场的全部滚动层，逐帧现读；离场的层其条子随之拆掉。 */
+  scrollables: () => readonly HTMLElement[]
+  anchor: 'layer'
+  scrollable?: undefined
+}
+
+export type ScrollbarsControllerOptions = ScrollbarsSingleOptions | ScrollbarsSetOptions
 
 interface BarNodes {
   root: HTMLElement
@@ -53,6 +74,10 @@ export class ScrollbarsController {
   private readonly scope = createScope(null, createCounterIdGenerator())
   /** 当前这套节点挂在哪个外壳上；外壳更换后整套重建。 */
   private mountedShell: HTMLElement | null = null
+  /** 贴层锚定时条子紧跟着哪一层；层换了整套重建。 */
+  private mountedLayer: HTMLElement | null = null
+  /** 多路模式：每一层一套子控制器。 */
+  private readonly members = new Map<HTMLElement, ScrollbarsController>()
 
   constructor(
     private readonly host: ReactiveControllerHost & HTMLElement,
@@ -63,6 +88,10 @@ export class ScrollbarsController {
 
   /** 宿主在自己的 wire() 末尾调用一次：建节点、建状态机、把 connect 产出接上。 */
   wire(): void {
+    if (this.options.scrollables) {
+      this.wireMembers(this.options.scrollables())
+      return
+    }
     if (!this.ensureNodes())
       return
     this.ensureMachines()
@@ -83,6 +112,49 @@ export class ScrollbarsController {
           hidden: both ? undefined : true,
         })
       }
+      // 贴层的条子随并排兄弟的伸缩挪位：宿主每轮接线都重量一次偏移盒
+      if (this.options.anchor === 'layer')
+        api.measure()
+    }
+  }
+
+  /** 拆掉整套：节点摘掉、机器停下并从宿主注销；多路模式连成员一起拆。 */
+  dispose(): void {
+    for (const member of this.members.values())
+      member.dispose()
+    this.members.clear()
+    this.releaseNodes()
+    for (const ctrl of this.ctrls.values()) {
+      ctrl.hostDisconnected()
+      this.host.removeController(ctrl)
+    }
+    this.ctrls.clear()
+    this.mountedShell = null
+    this.mountedLayer = null
+  }
+
+  /** 多路模式：按此刻在场的层对一遍成员，新层建一套、离场的拆掉，在场的逐个接线。 */
+  private wireMembers(layers: readonly HTMLElement[]): void {
+    const live = new Set(layers)
+    for (const [layer, member] of this.members) {
+      if (!live.has(layer)) {
+        member.dispose()
+        this.members.delete(layer)
+      }
+    }
+    for (const layer of layers) {
+      let member = this.members.get(layer)
+      if (!member) {
+        member = new ScrollbarsController(this.host, {
+          shell: this.options.shell,
+          scrollable: () => layer,
+          anchor: 'layer',
+          axes: this.options.axes,
+          props: this.options.props,
+        })
+        this.members.set(layer, member)
+      }
+      member.wire()
     }
   }
 
@@ -114,6 +186,7 @@ export class ScrollbarsController {
     return {
       ...this.options.props?.(),
       orientation: axis,
+      anchor: this.options.anchor,
       gutter: this.both(),
     }
   }
@@ -140,19 +213,13 @@ export class ScrollbarsController {
 
   private injectRefs(service: Service<ScrollbarSchema>, axis: Orientation): void {
     // 传 getter 而非节点：节点在 wire() 里才建出来，量尺寸与挂监听都在机器的效应里进行
-    service.refs.set('getScrollableEl', this.options.scrollable)
+    service.refs.set('getScrollableEl', this.options.scrollable ?? (() => null))
     service.refs.set('getTrackEl', () => this.nodes.get(axis)?.track ?? null)
     service.refs.set('getRootEl', () => this.nodes.get(axis)?.root ?? null)
   }
 
-  /** 按当前壳建一套条子；壳没到就早退，壳换了就把旧那套摘掉重建。 */
-  private ensureNodes(): boolean {
-    const shell = this.options.shell()
-    if (!shell)
-      return false
-    if (this.mountedShell === shell)
-      return true
-
+  /** 摘掉现有的节点并释放它们身上的 spread。 */
+  private releaseNodes(): void {
     for (const nodes of this.nodes.values()) {
       this.spreader.release(nodes.root)
       this.spreader.release(nodes.track)
@@ -162,8 +229,27 @@ export class ScrollbarsController {
       nodes.root.remove()
     }
     this.nodes.clear()
+  }
+
+  /**
+   * 按当前壳建一套条子；壳没到就早退，壳换了就把旧那套摘掉重建。
+   * 贴层锚定时条子紧跟在层后面（与 Vue / React 把条子渲在该层之后同一 DOM 序），层换了同样重建。
+   */
+  private ensureNodes(): boolean {
+    const shell = this.options.shell()
+    if (!shell)
+      return false
+    const layer = this.options.anchor === 'layer' ? (this.options.scrollable?.() ?? null) : null
+    // 贴层的条子要能按层在壳内的偏移盒定位：层得在壳里，且壳是它的定位祖先（结构由宿主保证）
+    if (this.options.anchor === 'layer' && (!layer || !shell.contains(layer)))
+      return false
+    if (this.mountedShell === shell && this.mountedLayer === layer)
+      return true
+
+    this.releaseNodes()
 
     const doc = this.host.ownerDocument
+    let tail: HTMLElement | null = layer
     for (const axis of this.axes) {
       const root = doc.createElement('div')
       const track = doc.createElement('div')
@@ -173,10 +259,17 @@ export class ScrollbarsController {
       const corner = this.axes.length > 1 && axis === 'vertical' ? doc.createElement('div') : null
       if (corner)
         root.append(corner)
-      shell.append(root)
+      if (tail) {
+        tail.after(root)
+        tail = root
+      }
+      else {
+        shell.append(root)
+      }
       this.nodes.set(axis, { root, track, thumb, corner })
     }
     this.mountedShell = shell
+    this.mountedLayer = layer
     // 本轮的追踪器已经跑过，新节点它看不见：再催一轮，下一轮才把监听与量尺寸挪到这套节点上
     this.host.requestUpdate()
     return true

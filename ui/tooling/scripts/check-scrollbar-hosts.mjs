@@ -8,6 +8,10 @@
 // 浮层没把壳记进层分支（条子是 content 的兄弟，按住它那一下被判成层外交互，浮层当场收起）。
 // 前四条都不报错、只“看着不对”，所以在这里逐条钉死。
 //
+// 一个组件可以接多路条子（浮层壳上的 content 一路、content 里每一列各一路）：三端的每一处调用都读，
+// 不只读文件里的第一处；WC 的多路形态（scrollables + anchor: 'layer'）按点名的角色节点算一路，
+// 每一面各自找到接它的那一路再核轴与档。
+//
 // 第三家（React）只核规则①的那一半：它有没有在同一个组件上接这条线。
 // 后面几条（壳点名一个角色节点、皮肤的定位上下文与轨道底色、层分支）的解析入口
 // 是 WC 那个选项对象与 Vue 的 branches 行，React 侧的写法要等它铺到第一个滚动宿主
@@ -118,19 +122,30 @@ function declares(body, property) {
   return new RegExp(`(?:^|[;\\s{])${property}\\s*:`).test(body)
 }
 
-/** 取出调用点之后配平括号内的那段实参；缺省取 WC 的 `new ScrollbarsController(`。 */
-function callBlock(src, call = WC_CALL) {
-  const at = src.indexOf(call)
-  if (at < 0)
-    return null
-  let depth = 0
-  for (let i = at + call.length - 1; i < src.length; i++) {
-    if (src[i] === '(')
-      depth++
-    else if (src[i] === ')' && --depth === 0)
-      return src.slice(at, i + 1)
+/** 取出每一处调用点之后配平括号内的那段实参；缺省取 WC 的 `new ScrollbarsController(`。 */
+function callBlocks(src, call = WC_CALL) {
+  const blocks = []
+  let from = 0
+  while (true) {
+    const at = src.indexOf(call, from)
+    if (at < 0)
+      return blocks
+    let depth = 0
+    let end = -1
+    for (let i = at + call.length - 1; i < src.length; i++) {
+      if (src[i] === '(') {
+        depth++
+      }
+      else if (src[i] === ')' && --depth === 0) {
+        end = i + 1
+        break
+      }
+    }
+    if (end < 0)
+      return blocks
+    blocks.push(src.slice(at, end))
+    from = end
   }
-  return null
 }
 
 /** 取出某个选项冒号后面那段表达式，到同层的下一个逗号或对象末尾为止。 */
@@ -231,7 +246,7 @@ const OPAQUE_CALLS = new Set([
  * 传进去的那个 getPart 只是告诉函数从哪儿找起，本身不是要点的节点，所以不算。
  * 认不出的调用记进 unresolved 交给调用处报错：认不出就别猜，猜错了后面几条规则就查了个空。
  */
-function resolveParts(src, text, seen = new Set()) {
+function resolveParts(src, text, seen = new Set(), many = false) {
   const spans = []
   const parts = []
   const unresolved = []
@@ -244,13 +259,17 @@ function resolveParts(src, text, seen = new Set()) {
       continue
     }
     spans.push(call)
-    const inner = resolveParts(src, body, new Set([...seen, call.name]))
+    const inner = resolveParts(src, body, new Set([...seen, call.name]), many)
     parts.push(...inner.parts)
     unresolved.push(...inner.unresolved)
   }
-  // 展开过的那几段调用文本已经按函数体算过，这里只收剩下的
+  // 展开过的那几段调用文本已经按函数体算过，这里只收剩下的；
+  // 多路形态（scrollables）点名的是一族同名节点，getParts('x') 也算数
   const outside = index => !spans.some(s => index >= s.start && index < s.end)
-  for (const pattern of [/getPart\('([\w-]+)'\)/g, /\[data-part=["']([\w-]+)["']\]/g]) {
+  const patterns = [/getPart\('([\w-]+)'\)/g, /\[data-part=["']([\w-]+)["']\]/g]
+  if (many)
+    patterns.push(/getParts\('([\w-]+)'\)/g)
+  for (const pattern of patterns) {
     for (const hit of text.matchAll(pattern)) {
       if (outside(hit.index))
         parts.push(hit[1])
@@ -305,7 +324,8 @@ function checkLayerBranches(comp, src, label, shell, scrollables, reference) {
   const ownLayers = layers.filter(layer => hosts.some(part => reference(part).test(layer.node ?? '')))
   if (!ownLayers.length)
     return [`${label}：已有 LayerRegistry 注册，但读不出哪个 node 对应自绘滚动宿主 ${hosts.join(' / ')}；须显式核对该层的壳接线`]
-  return ownLayers.filter(layer => !reference(shell).test(layer.branches ?? ''))
+  // 壳就是层节点本身（贴层的条子挂在 content 里）：条子已在层内，按住它本来就是层内交互
+  return ownLayers.filter(layer => !reference(shell).test(layer.node ?? '') && !reference(shell).test(layer.branches ?? ''))
     .map(() => `${label}：层注册的 branches 要把 ${shell} 记进去，否则按住条子会把浮层消解掉`)
 }
 
@@ -355,7 +375,7 @@ for (const name of await readdir(WC)) {
   const src = stripSourceComments(await readFile(join(WC, name), 'utf8'))
   if (!src.includes(WC_CALL))
     continue
-  wcHosts.set(basename(name, '.ts'), { block: callBlock(src) ?? '', src })
+  wcHosts.set(basename(name, '.ts'), { blocks: callBlocks(src), src })
 }
 
 // React 侧：组件名取 components/ 下那一层目录名，与 Vue 同一套铺法
@@ -386,43 +406,49 @@ for (const comp of allHosts) {
     problems.push(`${comp}：${wired.join(' / ')} 侧配了自绘条，${bare.join(' / ')} 侧没配`)
 }
 
-/** 每个 WC 宿主读出来的壳与滚动层，规则⑧按它核登记表。 */
+/** 每个 WC 宿主读出来的各路壳与滚动层（数组，一路一项），规则⑧按它核登记表。 */
 const hostInfo = new Map()
 let checkedShells = 0
-for (const [comp, { block, src }] of wcHosts) {
-  // 规则④：本层一条轴只认一个壳与一个滚动层，多实例的宿主要另一套接法
-  if (block.includes('getParts('))
-    problems.push(`${comp}：shell / scrollable 写成了 getParts(…)，这一层只支持单实例`)
+for (const [comp, { blocks, src }] of wcHosts) {
+  const routes = []
+  let broken = false
+  for (const block of blocks) {
+    const many = /(?:^|[{,\s])scrollables\s*:/.test(block)
+    // 规则④：单路形态一条轴只认一个壳与一个滚动层，多实例要写成 scrollables + anchor: 'layer' 的多路形态
+    if (!many && block.includes('getParts('))
+      problems.push(`${comp}：shell / scrollable 写成了 getParts(…)，单路形态只支持单实例；多实例写 scrollables 并取 anchor: 'layer'`)
+    if (many && !/anchor\s*:\s*['"]layer['"]/.test(block))
+      problems.push(`${comp}：scrollables 多路形态只能贴层（anchor: 'layer'）`)
 
-  const shell = resolveParts(src, optionExpr(block, 'shell') ?? '')
-  const scrollable = resolveParts(src, optionExpr(block, 'scrollable') ?? '')
-  const opaque = [...new Set([...shell.unresolved, ...scrollable.unresolved])]
-  if (opaque.length) {
-    problems.push(
-      `${comp}：shell / scrollable 套了 ${opaque.map(name => `${name}(…)`).join('、')}，`
-      + '门禁读不出点的是哪个角色节点；把节点写成 getPart(\'…\')，或把那个函数摆进本文件',
-    )
-    continue
-  }
+    const shell = resolveParts(src, optionExpr(block, 'shell') ?? '')
+    const scrollable = resolveParts(src, optionExpr(block, many ? 'scrollables' : 'scrollable') ?? '', new Set(), many)
+    const opaque = [...new Set([...shell.unresolved, ...scrollable.unresolved])]
+    if (opaque.length) {
+      problems.push(
+        `${comp}：shell / scrollable 套了 ${opaque.map(name => `${name}(…)`).join('、')}，`
+        + '门禁读不出点的是哪个角色节点；把节点写成 getPart(\'…\')，或把那个函数摆进本文件',
+      )
+      broken = true
+      continue
+    }
 
-  const shells = shell.parts
-  const scrollables = scrollable.parts
-  if (shells.length !== 1) {
-    problems.push(`${comp}：shell 要正好点名一个角色节点，实际 ${shells.length} 个`)
+    const shells = shell.parts
+    const scrollables = scrollable.parts
+    if (shells.length !== 1) {
+      problems.push(`${comp}：shell 要正好点名一个角色节点，实际 ${shells.length} 个`)
+      broken = true
+      continue
+    }
+    if (scrollables.length === 0) {
+      problems.push(`${comp}：${many ? 'scrollables' : 'scrollable'} 没点名任何角色节点`)
+      broken = true
+      continue
+    }
+    routes.push({ shellPart: shells[0], scrollables, block, anchor: many || /anchor\s*:\s*['"]layer['"]/.test(block) ? 'layer' : 'shell' })
+  }
+  if (broken || !routes.length)
     continue
-  }
-  if (scrollables.length === 0) {
-    problems.push(`${comp}：scrollable 没点名任何角色节点`)
-    continue
-  }
-
-  // 规则⑥：条子是 content 的兄弟，浮层不把壳记进层分支，按住条子那一下就被判成层外交互
-  const shellPart = shells[0]
-  hostInfo.set(comp, { shellPart, scrollables, block })
-  problems.push(...checkLayerBranches(comp, src, `${comp}：WC 侧`, shellPart, scrollables, part => new RegExp(`\\bgetPart\\(\\s*['"]${part}['"]\\s*\\)`)))
-  for (const { file, src: vueSrc } of vueSources.get(comp) ?? []) {
-    problems.push(...checkLayerBranches(comp, vueSrc, file, shellPart, scrollables, part => new RegExp(`\\b${camel(part)}Ref\\b`)))
-  }
+  hostInfo.set(comp, routes)
 
   const css = await read(join(STYLES, `${comp}.css`))
   if (css === null) {
@@ -431,15 +457,25 @@ for (const [comp, { block, src }] of wcHosts) {
   }
   const rules = readRules(css)
 
-  const body = baseBody(rules, comp, shellPart)
-  checkedShells += 1
-  // 规则②：壳没有定位上下文，条子会飘到某个远房祖先身上，页面上位置不对而控制台零输出
-  if (!declares(body, 'position'))
-    problems.push(`${comp} 的 ${shellPart}：条子挂在它身上，它的基础规则里必须有 position`)
-  // 规则③：轨道底色缺省是实色，不关掉会在滚动层边缘糊出一条灰带
-  if (!declares(body, '--xh-scrollbar-track-bg'))
-    problems.push(`${comp} 的 ${shellPart}：要声明 --xh-scrollbar-track-bg，缺省的实色轨道会糊出一条灰带`)
+  for (const shellPart of new Set(routes.map(route => route.shellPart))) {
+    const scrollables = [...new Set(routes.filter(route => route.shellPart === shellPart).flatMap(route => route.scrollables))]
+    // 规则⑥：条子是 content 的兄弟，浮层不把壳记进层分支，按住条子那一下就被判成层外交互
+    problems.push(...checkLayerBranches(comp, src, `${comp}：WC 侧`, shellPart, scrollables, part => new RegExp(`\\bgetPart\\(\\s*['"]${part}['"]\\s*\\)`)))
+    for (const { file, src: vueSrc } of vueSources.get(comp) ?? []) {
+      problems.push(...checkLayerBranches(comp, vueSrc, file, shellPart, scrollables, part => new RegExp(`\\b${camel(part)}Ref\\b`)))
+    }
 
+    const body = baseBody(rules, comp, shellPart)
+    checkedShells += 1
+    // 规则②：壳没有定位上下文，条子会飘到某个远房祖先身上，页面上位置不对而控制台零输出
+    if (!declares(body, 'position'))
+      problems.push(`${comp} 的 ${shellPart}：条子挂在它身上，它的基础规则里必须有 position`)
+    // 规则③：轨道底色缺省是实色，不关掉会在滚动层边缘糊出一条灰带
+    if (!declares(body, '--xh-scrollbar-track-bg'))
+      problems.push(`${comp} 的 ${shellPart}：要声明 --xh-scrollbar-track-bg，缺省的实色轨道会糊出一条灰带`)
+  }
+
+  const scrollables = [...new Set(routes.flatMap(route => route.scrollables))]
   // 规则⑤：滚动层已经挂了自绘条，皮肤里没加守卫的原生条声明会与它并存
   for (const layer of scrollables) {
     for (const rule of rules) {
@@ -641,24 +677,62 @@ function sizeIn(expr) {
   return m ? m[1] : null
 }
 
-/** 三端各自那段 useScrollbars / ScrollbarsController 调用的实参。 */
-function sidesOf(comp) {
-  const sides = []
-  const wc = hostInfo.get(comp)
-  if (wc)
-    sides.push({ label: ADAPTERS.wc.label, block: wc.block })
-  for (const { src } of vueSources.get(comp) ?? []) {
-    const block = callBlock(src, VUE_CALL)
-    if (block)
-      sides.push({ label: ADAPTERS.vue.label, block })
+/**
+ * Vue / React 侧接这一面的那一路：文件里只有一处调用就是它；多处调用时按 scrollable 里点的 ref 名
+ * （`<部件>Ref`，与层分支的约定同一套）认，认不出的记 unresolved 交给调用处判红。
+ */
+function hookRoutesOf(sources, call, part) {
+  const matched = []
+  let unresolved = false
+  for (const src of sources) {
+    const blocks = callBlocks(src, call)
+    if (blocks.length <= 1) {
+      matched.push(...blocks)
+      continue
+    }
+    const named = blocks.filter(block => new RegExp(`\\b${camel(part)}Ref\\b`).test(optionExpr(block, 'scrollable') ?? ''))
+    if (named.length)
+      matched.push(...named)
+    else
+      unresolved = true
   }
+  return { blocks: matched, unresolved }
+}
+
+/** 三端各自接这一面的那一路 useScrollbars / ScrollbarsController 调用的实参。 */
+function sidesOf(comp, part) {
+  const sides = []
+  const problemsHere = []
+  const wc = (hostInfo.get(comp) ?? []).filter(route => route.scrollables.includes(part))
+  for (const route of wc)
+    sides.push({ label: ADAPTERS.wc.label, block: route.block })
+  const vue = hookRoutesOf((vueSources.get(comp) ?? []).map(entry => entry.src), VUE_CALL, part)
+  if (vue.unresolved)
+    problemsHere.push(`${comp}:${part}：Vue 侧有多路 useScrollbars，读不出哪一路的 scrollable 接的是 ${part}——scrollable 里写 ${camel(part)}Ref`)
+  for (const block of vue.blocks)
+    sides.push({ label: ADAPTERS.vue.label, block })
   const react = reactHosts.get(comp)
   if (react) {
-    const block = callBlock(react.src, REACT_CALL)
-    if (block)
+    const routes = hookRoutesOf([react.src], REACT_CALL, part)
+    if (routes.unresolved)
+      problemsHere.push(`${comp}:${part}：React 侧有多路 useScrollbars，读不出哪一路的 scrollable 接的是 ${part}——scrollable 里写 ${camel(part)}Ref`)
+    for (const block of routes.blocks)
       sides.push({ label: ADAPTERS.react.label, block })
   }
-  return sides
+  return { sides, problems: problemsHere }
+}
+
+/**
+ * 这个壳是不是浮层里的壳：positioner 本身，或者它自己就是某一路挂在浮层壳下的滚动层
+ * （content 既是 positioner 下的滚动面，又是列们的壳）。
+ */
+function isOverlayShell(comp, shellPart, seen = new Set()) {
+  if (shellPart === 'positioner')
+    return true
+  if (seen.has(shellPart))
+    return false
+  seen.add(shellPart)
+  return (hostInfo.get(comp) ?? []).some(route => route.scrollables.includes(shellPart) && isOverlayShell(comp, route.shellPart, seen))
 }
 
 for (const [key, entry] of Object.entries(surfaces)) {
@@ -678,25 +752,33 @@ for (const [key, entry] of Object.entries(surfaces)) {
   }
   else if (entry.mode === 'drawn') {
     // 规则⑧：drawn 面必须三端都接了这一面；轴要盖住皮肤声明的轴；浮层壳走 4px 档、页内壳不传 size
-    const wc = hostInfo.get(comp)
-    if (!wc || !allHosts.includes(comp)) {
+    const routes = hostInfo.get(comp) ?? []
+    const wc = routes.find(route => route.scrollables.includes(part))
+    if (!routes.length || !allHosts.includes(comp)) {
       issue(key, 'unwired', `${key}：登记为自绘条，三端都没接 useScrollbars / ScrollbarsController`)
     }
-    else if (!wc.scrollables.includes(part)) {
-      issue(key, 'unwired', `${key}：登记为自绘条，宿主 ${comp} 的 scrollable 只点名了 ${wc.scrollables.join(' / ')}，这一面没接`)
+    else if (!wc) {
+      issue(key, 'unwired', `${key}：登记为自绘条，宿主 ${comp} 各路的 scrollable 只点名了 ${[...new Set(routes.flatMap(route => route.scrollables))].join(' / ')}，这一面没接`)
     }
     else {
-      const sides = sidesOf(comp)
+      const { sides, problems: routeProblems } = sidesOf(comp, part)
+      problems.push(...routeProblems)
       const missingAxes = sides
         .map(side => ({ side: side.label, missing: [...hit.axes].filter(axis => !axesIn(optionExpr(side.block, 'axes')).has(axis)) }))
         .filter(x => x.missing.length)
       if (missingAxes.length)
         issue(key, 'axes', `${key}：皮肤声明可滚 ${[...hit.axes].join(' + ')}，${missingAxes.map(x => `${x.side} 缺 ${x.missing.join(' / ')}`).join('；')}——axes 要盖住皮肤声明的轴`)
+      // 贴层的条子：三端都得写 anchor: 'layer'，不然壳锚定的条子会贴到壳边而不是这一层
+      if (wc.anchor === 'layer') {
+        const bare = sides.filter(side => !/anchor\s*:\s*['"]layer['"]/.test(side.block)).map(side => side.label)
+        if (bare.length)
+          problems.push(`${key}：WC 侧贴层锚定（anchor: 'layer'），${bare.join(' / ')} 侧那一路没写 anchor: 'layer'`)
+      }
       const sizes = sides.map(side => ({ side: side.label, size: sizeIn(optionExpr(side.block, 'props')) }))
-      if (wc.shellPart === 'positioner') {
+      if (isOverlayShell(comp, wc.shellPart)) {
         const bad = sizes.filter(x => x.size !== 'sm')
         if (bad.length)
-          issue(key, 'size', `${key}：壳是 positioner，条子走浮层 4px 档，${bad.map(x => `${x.side} 的 props 里 size 是 ${x.size ?? '缺省 md'}`).join('；')}——要写 size: 'sm'`)
+          issue(key, 'size', `${key}：壳 ${wc.shellPart} 在浮层里，条子走浮层 4px 档，${bad.map(x => `${x.side} 的 props 里 size 是 ${x.size ?? '缺省 md'}`).join('；')}——要写 size: 'sm'`)
       }
       else {
         const bad = sizes.filter(x => x.size !== null)
@@ -729,7 +811,7 @@ for (const [key, entry] of Object.entries(surfaces)) {
 }
 
 // 规则⑩：--xh-scrollbar-track-bg 只有挂了条子的壳才有资格声明；别处的一律是死声明
-const shellKeys = new Set([...hostInfo].map(([comp, info]) => `${comp}:${info.shellPart}`))
+const shellKeys = new Set([...hostInfo].flatMap(([comp, routes]) => routes.map(route => `${comp}:${route.shellPart}`)))
 for (const [key, file] of [...trackBgDeclared].sort()) {
   if (!shellKeys.has(key))
     problems.push(`${file}：${key} 声明了 --xh-scrollbar-track-bg，但它不是任何自绘条宿主的壳——死声明，删掉；接线时随壳一起加回`)

@@ -18,8 +18,10 @@ export {
 } from './scrollbar.machine'
 export { scrollbarMeta } from './scrollbar.meta'
 export type {
+  ScrollbarAnchor,
   ScrollbarApi,
   ScrollbarDragSession,
+  ScrollbarLayerBox,
   ScrollbarPoint,
   ScrollbarRefs,
   ScrollbarSchema,
