@@ -97,6 +97,12 @@ const SHARED_FAMILY = {
     contentSelector: '[data-xh-field-input]',
     actionParts: new Set(['clear-trigger']),
   },
+  // 可输入的组合框：展开小钮与清空钮都是盒内尾钮，同走 field-inset 档
+  'combobox': {
+    boxSelector: '[data-xh-field-chrome]',
+    contentSelector: '[data-xh-field-input]',
+    actionParts: new Set(['trigger', 'clear-trigger']),
+  },
   // 单元素：input 自身即 chrome（盒是 input 而非 control），盒内没有内容区与尾钮，不投影 data-xh-field-input
   'mention': {
     boxSelector: '[data-xh-field-chrome]',

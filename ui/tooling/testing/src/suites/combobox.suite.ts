@@ -155,9 +155,13 @@ export const comboboxSuite: ConformanceSuite = {
         parts: {
           'root': { 'data-state': 'closed', 'data-disabled': null, 'data-invalid': null },
           'label': { id: '@self', for: '@part(input)' },
+          // control 是 Field Chrome 视觉盒：形态与家族尺寸档落在它身上（缺省 outline / md）
+          'control': { 'data-xh-field-chrome': '', 'data-xh-field-size': 'md', 'data-variant': 'outline', 'data-state': 'closed' },
           'input': {
             'id': '@self',
             'role': 'combobox',
+            'data-xh-field-input': '',
+            'data-xh-field-layout': 'single-line',
             'aria-haspopup': 'listbox',
             'aria-expanded': 'false',
             'aria-controls': '@part(content)',
@@ -173,9 +177,9 @@ export const comboboxSuite: ConformanceSuite = {
             'readonly': null,
           },
           // 两个按钮都退出 Tab 序列：能力在输入框上都够得着
-          'trigger': { 'type': 'button', 'tabindex': '-1', 'aria-controls': '@part(content)', 'data-state': 'closed' },
+          'trigger': { 'type': 'button', 'tabindex': '-1', 'aria-controls': '@part(content)', 'data-state': 'closed', 'data-xh-action-profile': 'field-inset', 'data-xh-action-display': 'always' },
           // 清空钮没值只收起，不灰留位；对读屏不隐藏，靠 aria-label 报名
-          'clear-trigger': { 'type': 'button', 'tabindex': '-1', 'aria-label': 'Clear', 'aria-hidden': null, 'hidden': '', 'disabled': null, 'data-disabled': null },
+          'clear-trigger': { 'type': 'button', 'tabindex': '-1', 'aria-label': 'Clear', 'aria-hidden': null, 'hidden': '', 'disabled': null, 'data-disabled': null, 'data-xh-action-profile': 'field-inset', 'data-xh-action-display': 'has-value', 'data-xh-action-has-value': null },
           'positioner': { 'data-state': 'closed', 'data-placement': 'bottom-start' },
           'content': {
             'role': 'listbox',
@@ -195,6 +199,10 @@ export const comboboxSuite: ConformanceSuite = {
               'data-state': 'unchecked',
               'data-highlighted': null,
               'data-disabled': null,
+              // 候选行走 Collection Item 的 overlay 语境
+              'data-xh-collection-item': '',
+              'data-xh-collection-context': 'overlay',
+              'data-xh-collection-size': 'md',
               // 焦点恒在输入框：候选既不进 Tab 序列，也不承载焦点
               'tabindex': null,
               // 集合条目绝不输出原生 disabled：那样连 click 都不派了

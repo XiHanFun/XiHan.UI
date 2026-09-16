@@ -65,16 +65,17 @@ describe('combobox 输入宿主可换成 textarea', () => {
     expect(props.placeholder).toBe('写点什么')
   })
 
-  it('两种宿主只差那三条与一个排版标记，其余键一模一样', () => {
+  it('两种宿主只差那三条与家族布局值，其余键一模一样', () => {
     const a = api()
     const single = present(a.getInputProps() as Record<string, unknown>)
     const multi = present(a.getInputProps({ as: 'textarea' }) as Record<string, unknown>)
     const dropped = Object.keys(single).filter(k => !(k in multi))
     expect(dropped.sort()).toEqual(['aria-expanded', 'role', 'type'])
-    // 皮肤只认 data-*、不认标签名，多行排版靠这一条认出来
-    expect(Object.keys(multi).filter(k => !(k in single))).toEqual(['data-multiline'])
-    expect(multi['data-multiline']).toBe('')
-    expect(single['data-multiline']).toBeUndefined()
+    // 皮肤只认 data-*、不认标签名，多行排版靠家族布局值认出来；旧 data-multiline 钩子已退役
+    expect(Object.keys(multi).filter(k => !(k in single))).toEqual([])
+    expect(multi['data-xh-field-layout']).toBe('textarea')
+    expect(single['data-xh-field-layout']).toBe('single-line')
+    expect(multi['data-multiline']).toBeUndefined()
   })
 
   it('展开态下 aria-activedescendant 与 data-state 两端一致，只有 aria-expanded 单行独有', () => {

@@ -178,9 +178,14 @@ export function connectCombobox<T extends PropTypes>(
       'data-disabled': dataAttr(disabled),
     }),
 
-    // 定位锚点取整个输入行，浮层因此与输入框对齐
+    // 定位锚点取整个输入行，浮层因此与输入框对齐。
+    // control 是唯一的视觉盒：描边、底色、聚焦环由 Field Chrome 家族画在它身上，
+    // 三个状态属性供家族按禁用 / 只读 / 校验切换盒观感；size 缺省 md，variant 与 root 同源
     getControlProps: () => normalize.element({
       ...parts.control.attrs,
+      'data-xh-field-chrome': '',
+      'data-xh-field-size': prop('size') ?? 'md',
+      'data-variant': variant,
       'data-state': stateAttr,
       'data-disabled': dataAttr(disabled),
       'data-readonly': dataAttr(readOnly),
@@ -213,8 +218,10 @@ export function connectCombobox<T extends PropTypes>(
       // 收起态没有高亮可指，属性整个缺席（aria-activedescendant 没有"假值"写法）
       'aria-activedescendant': open && highlighted != null ? itemId(highlighted) : undefined,
       'aria-invalid': invalid ? 'true' : 'false',
-      // 皮肤只认 data-*、不认标签名，多行宿主的排版靠这一条认出来
-      'data-multiline': dataAttr(isMultilineHost(input)),
+      // 盒内的原生输入：家族按这一条重置它的边框 / 底 / 内距，并按布局值排单行或多行
+      // （皮肤只认 data-*、不认标签名，多行宿主靠布局值认出来）
+      'data-xh-field-input': '',
+      'data-xh-field-layout': isMultilineHost(input) ? 'textarea' : 'single-line',
       'data-state': stateAttr,
       'data-disabled': dataAttr(disabled),
       'data-readonly': dataAttr(readOnly),
@@ -319,8 +326,15 @@ export function connectCombobox<T extends PropTypes>(
       },
     }),
 
+    // 展开钮走 Action Control 的 field-inset ghost 档：字段底是 canvas，透明 → 悬停 100 → 按下 200；
+    // 常驻在场，有值时由皮肤按「清空钮在场」收起
     getTriggerProps: () => normalize.button({
       ...parts.trigger.attrs,
+      'data-xh-action-control': '',
+      'data-xh-action-profile': 'field-inset',
+      'data-xh-action-variant': 'ghost',
+      'data-xh-action-display': 'always',
+      'data-xh-action-size': prop('size') ?? 'md',
       'type': 'button',
       // 整个组合框只占一个 Tab 位（输入框），按钮退出 Tab 序列
       'tabindex': -1,
@@ -341,8 +355,15 @@ export function connectCombobox<T extends PropTypes>(
       },
     }),
 
+    // 清空钮同走 field-inset ghost 档，按 has-value 显隐
     getClearTriggerProps: () => normalize.button({
       ...parts['clear-trigger'].attrs,
+      'data-xh-action-control': '',
+      'data-xh-action-profile': 'field-inset',
+      'data-xh-action-variant': 'ghost',
+      'data-xh-action-display': 'has-value',
+      'data-xh-action-size': prop('size') ?? 'md',
+      'data-xh-action-has-value': dataAttr(canClear),
       'type': 'button',
       // 键盘用户走退格与 Escape，这个按钮不进 Tab 序列；读屏按虚拟光标仍找得到它
       'tabindex': -1,
@@ -422,9 +443,14 @@ export function connectCombobox<T extends PropTypes>(
       id: groupLabelId(group.value),
     }),
 
+    // 候选行走 Collection Item 的 overlay 语境：悬停 / 高亮 100、按下 200 由家族给，
+    // 选中只留行尾对号（透明底、正文常规字重）
     getItemProps: item => normalize.element({
       ...parts.item.attrs,
       ...itemStateAttrs(item),
+      'data-xh-collection-item': '',
+      'data-xh-collection-size': prop('size') ?? 'md',
+      'data-xh-collection-context': 'overlay',
       // 导航与选中都以此为候选身份
       [ITEM_VALUE_ATTR]: item.value,
       // aria-activedescendant 要指得到它，所以每个候选都得有个稳定 id
@@ -466,11 +492,14 @@ export function connectCombobox<T extends PropTypes>(
     getItemTextProps: item => normalize.element({
       ...parts['item-text'].attrs,
       ...itemStateAttrs(item),
+      'data-xh-collection-slot': 'text',
     }),
 
+    // 对号落在家族网格的 indicator 列，显隐由家族按 item 的 aria-selected / data-state=checked 给
     getItemIndicatorProps: item => normalize.element({
       ...parts['item-indicator'].attrs,
       ...itemStateAttrs(item),
+      'data-xh-collection-slot': 'indicator',
       'aria-hidden': true,
     }),
 
