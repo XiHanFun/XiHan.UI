@@ -66,10 +66,17 @@ export function connectToolCall<T extends PropTypes>(
       'data-errored': dataAttr(errored),
     }),
 
+    // 开关是铺满一行的 disclosure trigger：接 Action Control 的 disclosure-trigger 档，ghost 形态、
+    // 按下只换面不缩放（§9.2）；承载面的阶梯由根按 variant 经 host 槽下发；档位随 size 走
     getTriggerProps: () => normalize.button({
       ...parts.trigger.attrs,
       'id': ids.trigger,
       'type': 'button',
+      'data-xh-action-control': '',
+      'data-xh-action-profile': 'disclosure-trigger',
+      'data-xh-action-variant': 'ghost',
+      'data-xh-action-display': 'always',
+      'data-xh-action-size': props.size ?? 'md',
       'aria-controls': ids.content,
       'aria-expanded': open ? 'true' : 'false',
       // 出错时才把错误文本挂进描述链：无条件挂会指向一个作者根本没渲的节点

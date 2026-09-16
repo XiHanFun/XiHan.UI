@@ -67131,22 +67131,19 @@
       "name": "--xh-tool-call-border",
       "component": "tool-call",
       "part": [
-        "approval",
-        "content",
         "root"
       ],
       "property": [
-        "border",
-        "border-block-start"
+        "border"
       ],
       "state": [
         "default"
       ],
       "defaultToken": [
-        "--xh-border-subtle"
+        "--xh-border-default"
       ],
       "visibility": "public",
-      "description": "tool-call 的 approval、content、root 部件 border、border-block-start 覆盖槽。"
+      "description": "tool-call 的 root 部件 border 覆盖槽。"
     },
     {
       "name": "--xh-tool-call-border-error",
@@ -67185,6 +67182,25 @@
       ],
       "visibility": "public",
       "description": "tool-call 的 content 部件 gap 覆盖槽。"
+    },
+    {
+      "name": "--xh-tool-call-divider",
+      "component": "tool-call",
+      "part": [
+        "approval",
+        "content"
+      ],
+      "property": [
+        "border-block-start"
+      ],
+      "state": [
+        "default"
+      ],
+      "defaultToken": [
+        "--xh-border-subtle"
+      ],
+      "visibility": "public",
+      "description": "tool-call 的 approval、content 部件 border-block-start 覆盖槽。"
     },
     {
       "name": "--xh-tool-call-duration-fg",
@@ -67244,7 +67260,8 @@
       "name": "--xh-tool-call-icon-size",
       "component": "tool-call",
       "part": [
-        "root"
+        "root",
+        "trigger"
       ],
       "property": [
         "--xh-icon-size"
@@ -67253,10 +67270,11 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-glyph-size-text"
+        "--xh-_action-profile-glyph-size",
+        "--xh-glyph-size-md"
       ],
       "visibility": "public",
-      "description": "tool-call 的 root 部件 --xh-icon-size 覆盖槽。"
+      "description": "tool-call 的 root、trigger 部件 --xh-icon-size 覆盖槽。"
     },
     {
       "name": "--xh-tool-call-indicator-fg",
@@ -67331,7 +67349,8 @@
       "state": [
         "@keyframes xh-disclosure-collapse",
         "@keyframes xh-disclosure-expand",
-        "default"
+        "default",
+        "xh-action-profile=disclosure-trigger"
       ],
       "defaultToken": [
         "--xh-_tool-call-py"
@@ -67371,7 +67390,8 @@
         "tone"
       ],
       "defaultToken": [
-        "--xh-elevation-raised"
+        "0 0 0 transparent",
+        "none"
       ],
       "visibility": "public",
       "description": "tool-call 的 root 部件 box-shadow 覆盖槽。"
@@ -67778,17 +67798,20 @@
         "trigger"
       ],
       "property": [
-        "background"
+        "background-color"
       ],
       "state": [
+        "disabled",
         "hover",
-        "not(:disabled)"
+        "loading",
+        "not([data-disabled])",
+        "not([data-loading])"
       ],
       "defaultToken": [
-        "--xh-bg-subtle-hover"
+        "--xh-_action-variant-bg-hover"
       ],
       "visibility": "public",
-      "description": "tool-call 的 trigger 部件 background 覆盖槽。"
+      "description": "tool-call 的 trigger 部件 background-color 覆盖槽。"
     },
     {
       "name": "--xh-tool-call-trigger-fg",

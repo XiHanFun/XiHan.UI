@@ -58201,6 +58201,9 @@
               "name": "--xh-tool-call-content-gap"
             },
             {
+              "name": "--xh-tool-call-divider"
+            },
+            {
               "name": "--xh-tool-call-duration-fg"
             },
             {

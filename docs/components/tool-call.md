@@ -242,6 +242,11 @@
 | `root` | `data-variant` | props.variant |
 | `trigger` | `data-disabled` | ''（条件成立时才出现） |
 | `trigger` | `data-state` | 'open' \| 'closed' |
+| `trigger` | `data-xh-action-control` | '' |
+| `trigger` | `data-xh-action-display` | 'always' |
+| `trigger` | `data-xh-action-profile` | 'disclosure-trigger' |
+| `trigger` | `data-xh-action-size` | props.size |
+| `trigger` | `data-xh-action-variant` | 'ghost' |
 | `indicator` | `data-state` | 'open' \| 'closed' |
 | `label` | `data-state` | props.phase |
 | `summary` | `data-state` | props.phase |
@@ -262,19 +267,20 @@
 | 变量 | 部件 | CSS 属性 | 状态 | 默认来源 | 说明 |
 | --- | --- | --- | --- | --- | --- |
 | `--xh-tool-call-bg` | `root` | `background` | `default`<br>`variant=subtle` | `--xh-bg-subtle`<br>`--xh-bg-surface` | tool-call 的 root 部件 background 覆盖槽。 |
-| `--xh-tool-call-border` | `approval`<br>`content`<br>`root` | `border`<br>`border-block-start` | `default` | `--xh-border-subtle` | tool-call 的 approval、content、root 部件 border、border-block-start 覆盖槽。 |
+| `--xh-tool-call-border` | `root` | `border` | `default` | `--xh-border-default` | tool-call 的 root 部件 border 覆盖槽。 |
 | `--xh-tool-call-border-error` | `root` | `border-color` | `errored`<br>`has([data-scope='tool-call'][data-state='output-error'])`<br>`state=output-error` | `--xh-border-invalid` | tool-call 的 root 部件 border-color 覆盖槽。 |
 | `--xh-tool-call-content-gap` | `content` | `gap` | `default` | `--xh-space-2` | tool-call 的 content 部件 gap 覆盖槽。 |
+| `--xh-tool-call-divider` | `approval`<br>`content` | `border-block-start` | `default` | `--xh-border-subtle` | tool-call 的 approval、content 部件 border-block-start 覆盖槽。 |
 | `--xh-tool-call-duration-fg` | `duration` | `color` | `default` | `--xh-fg-subtle` | tool-call 的 duration 部件 color 覆盖槽。 |
 | `--xh-tool-call-error-fg` | `error` | `color` | `default` | `--xh-fg-danger` | tool-call 的 error 部件 color 覆盖槽。 |
 | `--xh-tool-call-font-size` | `trigger` | `font-size` | `default` | `--xh-_tool-call-font-size` | tool-call 的 trigger 部件 font-size 覆盖槽。 |
-| `--xh-tool-call-icon-size` | `root` | `--xh-icon-size` | `default` | `--xh-glyph-size-text` | tool-call 的 root 部件 --xh-icon-size 覆盖槽。 |
+| `--xh-tool-call-icon-size` | `root`<br>`trigger` | `--xh-icon-size` | `default` | `--xh-_action-profile-glyph-size`<br>`--xh-glyph-size-md` | tool-call 的 root、trigger 部件 --xh-icon-size 覆盖槽。 |
 | `--xh-tool-call-indicator-fg` | `indicator` | `color` | `default` | `--xh-fg-subtle` | tool-call 的 indicator 部件 color 覆盖槽。 |
 | `--xh-tool-call-label-font` | `label`<br>`summary` | `font-family` | `default` | `--xh-font-family-mono` | tool-call 的 label、summary 部件 font-family 覆盖槽。 |
 | `--xh-tool-call-px` | `approval`<br>`content`<br>`trigger` | `padding-inline` | `default` | `--xh-_tool-call-px` | tool-call 的 approval、content、trigger 部件 padding-inline 覆盖槽。 |
-| `--xh-tool-call-py` | `approval`<br>`content`<br>`trigger` | `padding-block`<br>`padding-block-end`<br>`padding-block-start` | `@keyframes xh-disclosure-collapse`<br>`@keyframes xh-disclosure-expand`<br>`default` | `--xh-_tool-call-py` | tool-call 的 approval、content、trigger 部件 padding-block、padding-block-end、padding-block-start 覆盖槽。 |
+| `--xh-tool-call-py` | `approval`<br>`content`<br>`trigger` | `padding-block`<br>`padding-block-end`<br>`padding-block-start` | `@keyframes xh-disclosure-collapse`<br>`@keyframes xh-disclosure-expand`<br>`default`<br>`xh-action-profile=disclosure-trigger` | `--xh-_tool-call-py` | tool-call 的 approval、content、trigger 部件 padding-block、padding-block-end、padding-block-start 覆盖槽。 |
 | `--xh-tool-call-radius` | `root` | `border-radius` | `default` | `--xh-shape-surface` | tool-call 的 root 部件 border-radius 覆盖槽。 |
-| `--xh-tool-call-shadow` | `root` | `box-shadow` | `default`<br>`tone` | `--xh-elevation-raised` | tool-call 的 root 部件 box-shadow 覆盖槽。 |
+| `--xh-tool-call-shadow` | `root` | `box-shadow` | `default`<br>`tone` | `0 0 0 transparent`<br>`none` | tool-call 的 root 部件 box-shadow 覆盖槽。 |
 | `--xh-tool-call-shimmer-duration` | `root`<br>`status` | `animation` | `loading` | `--xh-shimmer-duration` | tool-call 的 root、status 部件 animation 覆盖槽。 |
 | `--xh-tool-call-status-bg-approval` | `status` | `background` | `state=awaiting-approval` | `--xh-fg-warning` | tool-call 的 status 部件 background 覆盖槽。 |
 | `--xh-tool-call-status-bg-done` | `status` | `background` | `state=output-available` | `--xh-fg-success` | tool-call 的 status 部件 background 覆盖槽。 |
@@ -296,7 +302,7 @@
 | `--xh-tool-call-summary-radius` | `summary` | `border-radius` | `default` | `--xh-shape-control` | tool-call 的 summary 部件 border-radius 覆盖槽。 |
 | `--xh-tool-call-tone-bar` | `root` | `box-shadow` | `tone` | `--xh-stroke-thick` | tool-call 的 root 部件 box-shadow 覆盖槽。 |
 | `--xh-tool-call-tone-fg` | `root` | `box-shadow` | `tone` | `--xh-_tone-soft` | tool-call 的 root 部件 box-shadow 覆盖槽。 |
-| `--xh-tool-call-trigger-bg-hover` | `trigger` | `background` | `hover`<br>`not(:disabled)` | `--xh-bg-subtle-hover` | tool-call 的 trigger 部件 background 覆盖槽。 |
+| `--xh-tool-call-trigger-bg-hover` | `trigger` | `background-color` | `disabled`<br>`hover`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])` | `--xh-_action-variant-bg-hover` | tool-call 的 trigger 部件 background-color 覆盖槽。 |
 | `--xh-tool-call-trigger-fg` | `trigger` | `color` | `default` | `--xh-fg-default` | tool-call 的 trigger 部件 color 覆盖槽。 |
 | `--xh-tool-call-trigger-gap` | `trigger` | `gap` | `default` | `--xh-space-2` | tool-call 的 trigger 部件 gap 覆盖槽。 |
 | `--xh-tool-call-trigger-radius` | `root`<br>`trigger` | `border-radius` | `variant=ghost` | `--xh-shape-control` | tool-call 的 root、trigger 部件 border-radius 覆盖槽。 |
@@ -304,7 +310,7 @@
 
 ### 动效
 
-关键帧 `xh-tool-call-enter` · `xh-tool-call-shimmer` 随皮肤自带，不引用别处文件里的名字；共享关键帧 `xh-disclosure-collapse` · `xh-disclosure-expand` 由 `family/motion.css` 提供，皮肤 `@import` 它，单独引入仍成立；`background` · `rotate` · `scale` 走 `transition` 过渡。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
+关键帧 `xh-tool-call-enter` · `xh-tool-call-shimmer` 随皮肤自带，不引用别处文件里的名字；共享关键帧 `xh-disclosure-collapse` · `xh-disclosure-expand` 由 `family/motion.css` 提供，皮肤 `@import` 它，单独引入仍成立；`rotate` 走 `transition` 过渡。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
 
 皮肤之外还有一段：退场由适配器的退场闸门把关，动画播完才真收起。
 

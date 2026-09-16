@@ -5,8 +5,10 @@
 
 /* 定义 tool call 样式。 */
 
-/* 共享关键帧由 family/motion.css 提供，本皮肤 @import 它，单独引入仍成立。 */
+/* 共享关键帧由 family/motion.css 提供，本皮肤 @import 它，单独引入仍成立；
+   独立皮肤同时传递引入开关的动作控件配方，full bundle 递归去重。 */
 @import '../family/motion.css';
+@import '../family/action-control.css';
 
 @layer xihan.components {
   /* 皮肤在场的标记：开发模式下按 scope 探一次，取不到就说明这份皮肤没被引入。 */
@@ -14,7 +16,8 @@
     --xh-tool-call-skin: 1;
   }
 
-  /* 一张抬起的表面：描边 + 圆角 + 静态海拔。
+  /* 一张静态内容面：--xh-border-default 描边 + surface 底 + 无影（§5.3 边界只由描边承担）；
+     审批位与详情区的内部分隔线走另一支 --xh-tool-call-divider（subtle）。
      卡片建出来时淡入并向上收一段，一屏若干张的错峰交给外层容器排 */
   [data-scope='tool-call'][data-part='root'] {
     /* 尺寸缺省档：不写 data-size 时的取值。三档都只写这三个私有槽，
@@ -23,17 +26,18 @@
     --xh-_tool-call-py: var(--xh-space-2);
     --xh-_tool-call-font-size: var(--xh-control-font-md);
 
-    /* 海拔先落进私有槽：语气档要把它与左侧色条叠成一条 box-shadow，无壳档把它关掉 */
-    --xh-_tool-call-shadow: var(--xh-tool-call-shadow, var(--xh-elevation-raised));
+    /* 影另落一份进私有槽给语气档：它要把影与左侧色条叠成一条 box-shadow，缺省无影写成零影占位 */
+    --xh-_tool-call-shadow: var(--xh-tool-call-shadow, 0 0 0 transparent);
 
-    --xh-icon-size: var(--xh-tool-call-icon-size, var(--xh-glyph-size-text));
+    /* 作者塞进指示符里的图标与皮肤画的兜底字形同一把尺：md 档（§6.5），开关上另按家族档取值 */
+    --xh-icon-size: var(--xh-tool-call-icon-size, var(--xh-glyph-size-md));
 
     display: block;
     overflow: hidden;
-    border: var(--xh-stroke-thin) solid var(--xh-tool-call-border, var(--xh-border-subtle));
+    border: var(--xh-stroke-thin) solid var(--xh-tool-call-border, var(--xh-border-default));
     border-radius: var(--xh-tool-call-radius, var(--xh-shape-surface));
     background: var(--xh-tool-call-bg, var(--xh-bg-surface));
-    box-shadow: var(--xh-_tool-call-shadow);
+    box-shadow: var(--xh-tool-call-shadow, none);
     animation: xh-tool-call-enter var(--xh-motion-duration-enter) var(--xh-motion-ease-enter-strong) both;
   }
 
@@ -44,8 +48,12 @@
 
   /* —— 形态 —— */
   /* 缺省档即 outline，写在上面那条基础规则里 */
-  /* 底色分区：描边让位给底色，嵌在别人的面里时不再多一圈线 */
+  /* 底色分区：描边让位给底色，嵌在别人的面里时不再多一圈线；
+     淡底承载面向开关下发 hover 200 → pressed 300（§7.2） */
   [data-scope='tool-call'][data-part='root'][data-variant='subtle'] {
+    --xh-action-host-bg-hover: var(--xh-bg-subtle-hover);
+    --xh-action-host-bg-pressed: var(--xh-bg-subtle-active);
+
     border-color: transparent;
     background: var(--xh-tool-call-bg, var(--xh-bg-subtle));
   }
@@ -57,12 +65,14 @@
     overflow: visible;
     border-color: transparent;
     background: none;
+    box-shadow: none;
   }
 
-  /* 无壳档的开关只占文字宽度，自己带圆角，悬停时才浮出一块底 */
+  /* 无壳档的开关只占文字宽度（盖掉 profile 的铺满一行），自己带圆角，悬停时才浮出一块底 */
   [data-scope='tool-call'][data-part='root'][data-variant='ghost'] [data-scope='tool-call'][data-part='trigger'] {
+    --xh-action-radius: var(--xh-tool-call-trigger-radius, var(--xh-shape-control));
+
     inline-size: auto;
-    border-radius: var(--xh-tool-call-trigger-radius, var(--xh-shape-control));
   }
 
   /* 出错态换描边色，与语气轴各管各的：语气是作者定的强调，出错是组件自己的阶段。
@@ -73,41 +83,25 @@
     border-color: var(--xh-tool-call-border-error, var(--xh-border-invalid));
   }
 
+  /* 开关铺满一行，盒型、悬停 / 按下 / 禁用面由 Action Control 的 disclosure-trigger 档给（ghost 形态：
+     白底承载 hover 100 → pressed 200，按下只换面不缩放，§9.2）；这里只把使用者槽映射到桥接槽：
+     圆角归零贴住卡边，内衬与字号沿用卡片的档位（不取 profile 的 md 档内衬，几何不变），
+     字形按开关自己的档位取 --xh-_action-profile-glyph-size */
   [data-scope='tool-call'][data-part='trigger'] {
-    display: flex;
-    align-items: center;
-    gap: var(--xh-tool-call-trigger-gap, var(--xh-space-2));
-    padding-inline: var(--xh-tool-call-px, var(--xh-_tool-call-px));
-    padding-block: var(--xh-tool-call-py, var(--xh-_tool-call-py));
-    border: 0;
-    background: none;
-    color: var(--xh-tool-call-trigger-fg, var(--xh-fg-default));
-    font: inherit;
-    font-size: var(--xh-tool-call-font-size, var(--xh-_tool-call-font-size));
-    inline-size: 100%;
-    text-align: start;
-    cursor: pointer;
-    transition:
-      background var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
-      scale var(--xh-motion-duration-release) var(--xh-motion-ease-release);
+    --xh-action-radius: 0;
+    --xh-action-gap: var(--xh-tool-call-trigger-gap, var(--xh-space-2));
+    --xh-action-padding-inline: var(--xh-tool-call-px, var(--xh-_tool-call-px));
+    --xh-action-padding-block: var(--xh-tool-call-py, var(--xh-_tool-call-py));
+    --xh-action-font-size: var(--xh-tool-call-font-size, var(--xh-_tool-call-font-size));
+    --xh-action-fg-rest: var(--xh-tool-call-trigger-fg, var(--xh-fg-default));
+    --xh-action-bg-hover: var(--xh-tool-call-trigger-bg-hover, var(--xh-_action-variant-bg-hover));
+    --xh-icon-size: var(--xh-tool-call-icon-size, var(--xh-_action-profile-glyph-size));
+
+    border-width: 0;
   }
 
   [data-scope='tool-call'][data-part='trigger'][hidden] {
     display: none;
-  }
-
-  [data-scope='tool-call'][data-part='trigger']:hover:not(:disabled) {
-    background: var(--xh-tool-call-trigger-bg-hover, var(--xh-bg-subtle-hover));
-  }
-
-  [data-scope='tool-call'][data-part='trigger']:active:not(:disabled) {
-    scale: var(--xh-motion-scale-press);
-    transition-duration: var(--xh-motion-duration-press);
-    transition-timing-function: var(--xh-motion-ease-press);
-  }
-
-  [data-scope='tool-call'][data-part='trigger']:disabled {
-    color: var(--xh-fg-disabled);
   }
 
   /* 指示随开合转向，纯装饰 */
@@ -125,8 +119,8 @@
   [data-scope='tool-call'][data-part='indicator']:empty::before {
     content: '';
     display: inline-block;
-    inline-size: var(--xh-icon-size, var(--xh-glyph-size-text));
-    block-size: var(--xh-icon-size, var(--xh-glyph-size-text));
+    inline-size: var(--xh-icon-size, var(--xh-glyph-size-md));
+    block-size: var(--xh-icon-size, var(--xh-glyph-size-md));
     vertical-align: var(--xh-glyph-baseline-shift);
     background-color: currentColor;
     -webkit-mask: var(--xh-glyph-mark-chevron-right) center / contain no-repeat;
@@ -282,7 +276,7 @@
     display: block;
     padding-inline: var(--xh-tool-call-px, var(--xh-_tool-call-px));
     padding-block: var(--xh-tool-call-py, var(--xh-_tool-call-py));
-    border-block-start: var(--xh-stroke-thin) solid var(--xh-tool-call-border, var(--xh-border-subtle));
+    border-block-start: var(--xh-stroke-thin) solid var(--xh-tool-call-divider, var(--xh-border-subtle));
   }
 
   [data-scope='tool-call'][data-part='approval'][hidden] {
@@ -306,7 +300,7 @@
     gap: var(--xh-tool-call-content-gap, var(--xh-space-2));
     padding-inline: var(--xh-tool-call-px, var(--xh-_tool-call-px));
     padding-block: var(--xh-tool-call-py, var(--xh-_tool-call-py));
-    border-block-start: var(--xh-stroke-thin) solid var(--xh-tool-call-border, var(--xh-border-subtle));
+    border-block-start: var(--xh-stroke-thin) solid var(--xh-tool-call-divider, var(--xh-border-subtle));
   }
 
   /* 展开那一档才提前备好行高这条通道：属性随 data-state 一起消失，收起后不长期占着 */
@@ -315,8 +309,9 @@
     animation: xh-disclosure-expand var(--xh-motion-duration-enter) var(--xh-motion-ease-enter-strong);
   }
 
+  /* 退场走 exit 档曲线（§9.4） */
   [data-scope='tool-call'][data-part='content'][data-state='closed'] {
-    animation: xh-disclosure-collapse var(--xh-motion-duration-exit) var(--xh-motion-ease-enter-strong) forwards;
+    animation: xh-disclosure-collapse var(--xh-motion-duration-exit) var(--xh-motion-ease-exit) forwards;
   }
 
   [data-scope='tool-call'][data-part='input'],
