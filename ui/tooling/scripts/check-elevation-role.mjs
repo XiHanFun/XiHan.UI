@@ -90,7 +90,8 @@ const EXPECTED = {
   'color-slider': { thumb: ['raised', 'lifted'] },
   'switch': { thumb: ['soft', 'raised'] },
   'tag': { root: ['soft'] },
-  'time-picker': { content: ['frosted'] },
+  // 含时分秒多列的锚定面板：floating（§8.4）
+  'time-picker': { content: ['floating'] },
   'time-range-picker': { content: ['frosted'] },
   'toast': { root: ['sheet'] },
   'tooltip': { content: ['frosted'] },

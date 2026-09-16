@@ -91,9 +91,14 @@ describe('时间选择浮层', () => {
     expect(content.boxShadow).not.toBe('none')
     expect(content.borderRadius).toBe('12px')
     expect(content.padding).toBe('4px')
-    const highlight = getComputedStyle(part('content'), '::before')
-    expect(alpha(highlight.backgroundColor)).toBe(0)
-    expect(highlight.pointerEvents).toBe('none')
+    // floating 材质：实体底 + 可见描边 + 落影，不画顶光伪元素
+    expect(content.borderTopStyle).toBe('solid')
+    expect(alpha(content.borderTopColor)).toBe(255)
+    expect(getComputedStyle(part('content'), '::before').content).toBe('none')
+    // 输入行是描边式字段外壳：描边 + 无影
+    expect(control.borderTopStyle).toBe('solid')
+    expect(alpha(control.borderTopColor)).toBe(255)
+    expect(control.boxShadow).toBe('none')
     for (const name of ['column', 'preset-group']) {
       const style = getComputedStyle(part(name))
       expect(style.backdropFilter).toBe('none')
@@ -109,7 +114,7 @@ describe('时间选择浮层', () => {
     expect(content.backdropFilter).toBe('none')
     expect(alpha(content.backgroundColor)).toBe(255)
     expect(content.borderTopStyle).toBe('solid')
-    expect(alpha(getComputedStyle(part('content'), '::before').backgroundColor)).toBe(0)
+    expect(getComputedStyle(part('content'), '::before').content).toBe('none')
   })
 
   it.each(['ltr', 'rtl'] as const)('%s：快捷选项与数字列使用统一逻辑分隔线', async (dir) => {
@@ -182,6 +187,22 @@ describe('时间选择浮层', () => {
     hours.scrollTop = 80
     expect(hours.scrollTop).toBe(80)
     expect(minutes.scrollTop).toBe(minuteScroll)
+    // 每一列与快捷列后面紧跟一条贴层的竖条，贴各自盒子的行内末端、与之同高；列的原生细条随之隐藏
+    for (const layer of [hours, minutes, part('preset-group')]) {
+      const bar = layer.nextElementSibling as HTMLElement
+      expect(bar.dataset.scope).toBe('scrollbar')
+      expect(bar.getAttribute('data-anchor')).toBe('layer')
+      expect(bar.getAttribute('data-orientation')).toBe('vertical')
+      expect(bar.getAttribute('data-size')).toBe('sm')
+      expect(layer.hasAttribute('data-xh-scrollbar')).toBe(true)
+      const box = layer.getBoundingClientRect()
+      const rect = bar.getBoundingClientRect()
+      expect(Math.abs(rect.right - box.right)).toBeLessThanOrEqual(1)
+      expect(Math.abs(rect.top - box.top)).toBeLessThanOrEqual(1)
+      expect(Math.abs(rect.height - box.height)).toBeLessThanOrEqual(1)
+      expect(getComputedStyle(bar.querySelector<HTMLElement>('[data-part="track"]')!).backgroundColor).toBe('rgba(0, 0, 0, 0)')
+    }
+    expect(getComputedStyle(hours).overscrollBehaviorY).toBe('contain')
     part('item').focus()
     await userEvent.keyboard('{Escape}')
     await expect.poll(() => content.getBoundingClientRect().height).toBe(0)

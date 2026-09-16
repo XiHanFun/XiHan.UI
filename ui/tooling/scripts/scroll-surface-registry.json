@@ -132,13 +132,15 @@
       "mode": "drawn",
       "overscroll": true,
       "gutter": false,
-      "why": "时间列，定高小列表"
+      "layerNode": "content",
+      "why": "时间列，定高小列表；浮层 content 自己不滚，只当列们的壳"
     },
     "time-picker:preset-group": {
       "mode": "drawn",
       "overscroll": true,
       "gutter": false,
-      "why": "时间浮层里的快捷选项列"
+      "layerNode": "content",
+      "why": "时间浮层里的快捷选项列；浮层 content 自己不滚，只当它的壳"
     },
     "time-range-picker:column": {
       "mode": "drawn",

@@ -54071,6 +54071,21 @@
             },
             {
               "kind": "field",
+              "name": "presetBars",
+              "privacy": "private",
+              "readonly": true,
+              "default": "new ScrollbarsController(this, { shell: () => this.getPart('content'), scrollable: () => this.getPart('preset-group'), anchor: 'layer', props: () => ({ dir: this.direction, size: 'sm' }), })",
+              "description": "快捷选项列与时间列各自的条子：都住在 content 里，条子贴在各自的盒子上、紧跟在那一层后面；\n时间列按在场的列逐列建一套，列离场即拆。条子走浮层 4px 档"
+            },
+            {
+              "kind": "field",
+              "name": "columnBars",
+              "privacy": "private",
+              "readonly": true,
+              "default": "new ScrollbarsController(this, { shell: () => this.getPart('content'), scrollables: () => this.getParts('column'), anchor: 'layer', props: () => ({ dir: this.direction, size: 'sm' }), })"
+            },
+            {
+              "kind": "field",
               "name": "registerLayer",
               "privacy": "private",
               "readonly": true
@@ -54379,9 +54394,6 @@
               "name": "--xh-time-picker-column-px"
             },
             {
-              "name": "--xh-time-picker-content-backdrop"
-            },
-            {
               "name": "--xh-time-picker-content-bg"
             },
             {
@@ -54389,9 +54401,6 @@
             },
             {
               "name": "--xh-time-picker-content-fg"
-            },
-            {
-              "name": "--xh-time-picker-content-highlight"
             },
             {
               "name": "--xh-time-picker-content-max-h"
@@ -54463,13 +54472,10 @@
               "name": "--xh-time-picker-icon-size"
             },
             {
-              "name": "--xh-time-picker-item-bg-checked"
-            },
-            {
-              "name": "--xh-time-picker-item-bg-checked-hover"
-            },
-            {
               "name": "--xh-time-picker-item-bg-hover"
+            },
+            {
+              "name": "--xh-time-picker-item-bg-pressed"
             },
             {
               "name": "--xh-time-picker-item-check-fg"
@@ -54481,10 +54487,13 @@
               "name": "--xh-time-picker-item-fg"
             },
             {
-              "name": "--xh-time-picker-item-fg-checked"
+              "name": "--xh-time-picker-item-fg-selected"
             },
             {
               "name": "--xh-time-picker-item-font-size"
+            },
+            {
+              "name": "--xh-time-picker-item-font-weight-selected"
             },
             {
               "name": "--xh-time-picker-item-h"
@@ -54497,9 +54506,6 @@
             },
             {
               "name": "--xh-time-picker-item-radius"
-            },
-            {
-              "name": "--xh-time-picker-item-weight-checked"
             },
             {
               "name": "--xh-time-picker-label-fg"
@@ -54524,6 +54530,9 @@
             },
             {
               "name": "--xh-time-picker-preset-bg-hover"
+            },
+            {
+              "name": "--xh-time-picker-preset-bg-pressed"
             },
             {
               "name": "--xh-time-picker-preset-check-fg"

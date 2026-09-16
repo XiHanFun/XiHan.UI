@@ -294,6 +294,29 @@ const CASES: Case[] = [
     `,
   },
   {
+    // 时间列定高自己竖滚：条子贴层挂在 content 里、紧跟在列后面；content 自己不滚，只当列们的壳
+    scope: 'time-picker',
+    tag: 'xh-time-picker',
+    axes: ['vertical'],
+    shell: 'content',
+    layer: 'column',
+    panel: 'content',
+    overlay: true,
+    attrs: { 'default-open': '' },
+    markup: `
+      <div data-xh-part="root">
+        <div data-xh-part="control">
+          <div data-xh-part="segment-group"><span data-xh-part="segment"></span></div>
+        </div>
+        <div data-xh-part="positioner">
+          <div data-xh-part="content">
+            <div data-xh-part="column" unit="hour"></div>
+          </div>
+        </div>
+      </div>
+    `,
+  },
+  {
     scope: 'json-viewer',
     tag: 'xh-json-viewer',
     axes: ['vertical', 'horizontal'],

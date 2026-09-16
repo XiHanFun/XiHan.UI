@@ -19,11 +19,13 @@ import type {
 } from '@xihan-ui/headless'
 import type { ComponentPropsWithRef, ReactNode } from 'react'
 import type { SlotChildren } from '../../runtime/slot-content'
+import { useEffect, useRef } from 'react'
 import { withXhConfig } from '../../config/config'
 import { mergeReactProps } from '../../runtime/merge-props'
 import { useNativeEvents } from '../../runtime/native-events'
 import { XhPortal } from '../../runtime/portal'
 import { renderSlot, slotPaints } from '../../runtime/slot-content'
+import { useScrollbars } from '../../runtime/use-scrollbars'
 import { useFieldLabelWiring, useFieldStateWiring } from '../field/use-field-control'
 import { useFormControlProps } from '../form/use-form-control'
 import { TimePickerColumnProvider, TimePickerProvider, useTimePickerColumnContext, useTimePickerContext } from './context'
@@ -302,17 +304,28 @@ export interface XhTimePickerPresetGroupProps extends Omit<ComponentPropsWithRef
 export function XhTimePickerPresetGroup({ children, ...rest }: XhTimePickerPresetGroupProps): ReactNode {
   const ctx = useTimePickerContext()
   const api = ctx.api
+  const presetGroupRef = useRef<HTMLDivElement | null>(null)
+  // 快捷选项列定高自己竖滚：条子贴在它的盒子上、紧跟在它后面（浮层 4px 档）
+  const bars = useScrollbars({
+    scrollable: () => presetGroupRef.current,
+    anchor: 'layer',
+    props: () => ({ dir: (api.getPositionerProps() as { dir?: Direction }).dir, size: 'sm' }),
+  })
+  useEffect(() => bars.measure())
   const authored = children == null ? null : renderSlot(children, { presets: api.presets })
   return (
-    <div {...mergeReactProps(api.getPresetGroupProps() as Record<string, unknown>, rest as Record<string, unknown>)}>
-      {slotPaints(authored)
-        ? authored
-        : api.presets.map(preset => (
-            <div key={preset.value} {...api.getPresetProps({ value: preset.value }) as Record<string, unknown>}>
-              {preset.label}
-            </div>
-          ))}
-    </div>
+    <>
+      <div {...mergeReactProps(api.getPresetGroupProps() as Record<string, unknown>, rest as Record<string, unknown>, { ref: presetGroupRef })}>
+        {slotPaints(authored)
+          ? authored
+          : api.presets.map(preset => (
+              <div key={preset.value} {...api.getPresetProps({ value: preset.value }) as Record<string, unknown>}>
+                {preset.label}
+              </div>
+            ))}
+      </div>
+      {bars.render()}
+    </>
   )
 }
 
@@ -338,14 +351,23 @@ export interface XhTimePickerColumnProps extends Omit<ComponentPropsWithRef<'div
 export function XhTimePickerColumn({ unit, children, ...rest }: XhTimePickerColumnProps): ReactNode {
   const ctx = useTimePickerContext()
   const api = ctx.api
+  const columnRef = useRef<HTMLDivElement | null>(null)
+  // 定高的时间列自己竖滚：条子贴在本列的盒子上、紧跟在它后面（浮层 4px 档）
+  const bars = useScrollbars({
+    scrollable: () => columnRef.current,
+    anchor: 'layer',
+    props: () => ({ dir: (api.getPositionerProps() as { dir?: Direction }).dir, size: 'sm' }),
+  })
+  useEffect(() => bars.measure())
   return (
     // 下传单位，供列内选项取到自己归哪一列
     <TimePickerColumnProvider value={unit}>
-      <div {...mergeReactProps(api.getColumnProps({ unit }) as Record<string, unknown>, rest as Record<string, unknown>)}>
+      <div {...mergeReactProps(api.getColumnProps({ unit }) as Record<string, unknown>, rest as Record<string, unknown>, { ref: columnRef })}>
         {children == null
           ? null
           : renderSlot(children, { options: api.columns.find(c => c.unit === unit)?.options ?? [] })}
       </div>
+      {bars.render()}
     </TimePickerColumnProvider>
   )
 }
