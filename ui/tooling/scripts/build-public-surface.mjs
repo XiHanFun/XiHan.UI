@@ -17,6 +17,8 @@ import { readComponentTokenManifest } from './lib/component-token-manifest.mjs'
 const PACKAGES = 'packages'
 const HEADLESS = 'packages/engine/headless/src'
 const SKINS = 'packages/design/styles/css'
+/** 共享关键帧住在家族文件里（family/motion.css），关键帧扫描面要把它算进来。 */
+const FAMILY = 'packages/design/styles/family'
 const TOKENS = 'packages/design/tokens/tokens.json'
 const WC_CEM = 'packages/adapters/web-components/custom-elements.json'
 const OUT = 'tooling/public-surface.json'
@@ -244,6 +246,13 @@ for (const file of await readdir(SKINS)) {
     stateValues.add(m[1])
   // 关键帧名字是受支持的覆盖点（规范 §8.7 约束 3），改名与删名同样是破坏性变更。
   for (const m of css.matchAll(/@keyframes\s+([\w-]+)/g))
+    keyframes.add(m[1])
+}
+// 共享关键帧只定义在 family/motion.css，皮肤里扫不到它们
+for (const file of await readdir(FAMILY)) {
+  if (!file.endsWith('.css'))
+    continue
+  for (const m of (await readFile(join(FAMILY, file), 'utf8')).matchAll(/@keyframes\s+([\w-]+)/g))
     keyframes.add(m[1])
 }
 

@@ -5,21 +5,8 @@
 
 /* 定义 float button 样式。 */
 
-@layer xihan.motion {
-  /* 动画名的查找只认「文档里有没有这个名字」：引用别处文件里的名字，那份文件不一定在场，
-     动画会静默地整个不跑。每份皮肤都能单独引入，所以它用到的关键帧都写在自己身上。 */
-  @keyframes xh-pop-in {
-    from {
-      opacity: 0;
-      scale: var(--xh-motion-scale-enter);
-    }
-
-    to {
-      opacity: 1;
-      scale: 1;
-    }
-  }
-}
+/* 共享关键帧由 family/motion.css 提供，本皮肤 @import 它，单独引入仍成立。 */
+@import '../family/motion.css';
 
 @layer xihan.components {
   /* 皮肤在场的标记：开发模式下按 scope 探一次，取不到就说明这份皮肤没被引入。 */

@@ -755,7 +755,7 @@ describe('tool-call 收起', () => {
 
     const closing = part('tool-call', 'content')
     expect(getComputedStyle(closing).display, 'content 收起态不能是 display:none').not.toBe('none')
-    expectPlaying(closing, 'xh-tool-call-collapse')
+    expectPlaying(closing, 'xh-disclosure-collapse')
   })
 
   it('动画结束后才落成内联收起', async () => {
@@ -776,12 +776,12 @@ describe('tool-call 收起', () => {
 
     const content = part('tool-call', 'content')
     expect(content.style.display).not.toBe('none')
-    expectPlaying(content, 'xh-tool-call-expand')
+    expectPlaying(content, 'xh-disclosure-expand')
 
     // 被打断的那张退场租约要在重新展开时归还：没归还的话下一次收起等不到
     // 「所有租约归还」，详情区就永远停在退场态、内联收起再也落不下来
     await setOpen(false)
-    expectPlaying(content, 'xh-tool-call-collapse', '第二次收起也要播收拢')
+    expectPlaying(content, 'xh-disclosure-collapse', '第二次收起也要播收拢')
     expect(await animationEnd(content)).toBe(true)
     await settle()
     expect(content.style.display, '第二次收拢结束后同样应当收起').toBe('none')
@@ -802,7 +802,7 @@ describe('reasoning 收起', () => {
 
     const closing = part('reasoning', 'content')
     expect(getComputedStyle(closing).display, 'content 收起态不能是 display:none').not.toBe('none')
-    expectPlaying(closing, 'xh-reasoning-collapse')
+    expectPlaying(closing, 'xh-disclosure-collapse')
   })
 
   it('动画结束后才落成内联收起', async () => {
@@ -823,12 +823,12 @@ describe('reasoning 收起', () => {
 
     const content = part('reasoning', 'content')
     expect(content.style.display).not.toBe('none')
-    expectPlaying(content, 'xh-reasoning-expand')
+    expectPlaying(content, 'xh-disclosure-expand')
 
     // 被打断的那张退场租约要在重新展开时归还：没归还的话下一次收起等不到
     // 「所有租约归还」，思考正文就永远停在退场态、内联收起再也落不下来
     await setOpen(false)
-    expectPlaying(content, 'xh-reasoning-collapse', '第二次收起也要播收拢')
+    expectPlaying(content, 'xh-disclosure-collapse', '第二次收起也要播收拢')
     expect(await animationEnd(content)).toBe(true)
     await settle()
     expect(content.style.display, '第二次收拢结束后同样应当收起').toBe('none')

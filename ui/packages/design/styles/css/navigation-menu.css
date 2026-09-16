@@ -5,32 +5,8 @@
 
 /* 定义 navigation menu 样式。 */
 
-@layer xihan.motion {
-  /* 面板往下探一小截再落位：纯淡入看不出它是从哪条 trigger 长出来的 */
-  @keyframes xh-pop-in {
-    from {
-      opacity: 0;
-      scale: var(--xh-motion-scale-enter);
-    }
-
-    to {
-      opacity: 1;
-      scale: 1;
-    }
-  }
-
-  @keyframes xh-pop-out {
-    from {
-      opacity: 1;
-      scale: 1;
-    }
-
-    to {
-      opacity: 0;
-      scale: var(--xh-motion-scale-exit);
-    }
-  }
-}
+/* 共享关键帧由 family/motion.css 提供，本皮肤 @import 它，单独引入仍成立。 */
+@import '../family/motion.css';
 
 @layer xihan.components {
   /* 皮肤在场的标记：开发模式下按 scope 探一次，取不到就说明这份皮肤没被引入。 */

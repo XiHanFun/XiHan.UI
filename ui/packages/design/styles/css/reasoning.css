@@ -5,6 +5,9 @@
 
 /* 定义 reasoning 样式。 */
 
+/* 共享关键帧由 family/motion.css 提供，本皮肤 @import 它，单独引入仍成立。 */
+@import '../family/motion.css';
+
 @layer xihan.components {
   /* 皮肤在场的标记：开发模式下按 scope 探一次，取不到就说明这份皮肤没被引入。 */
   [data-scope='reasoning'] {
@@ -223,6 +226,9 @@
    * 收起由适配器在退场结束后写内联 display 落成，退场窗口内靠 connect 发的 inert 挡住焦点。
    */
   [data-scope='reasoning'][data-part='content'] {
+    /* 行高与内缩同帧动的共享关键帧读这条槽：只有末端有内缩，起端不写、按 0 动 */
+    --xh-_disclosure-pb: var(--xh-reasoning-py, var(--xh-_reasoning-py));
+
     display: grid;
     grid-template-rows: 1fr;
     overflow: clip;
@@ -239,11 +245,11 @@
   /* 展开那一档才提前备好行高这条通道：属性随 data-state 一起消失，收起后不长期占着 */
   [data-scope='reasoning'][data-part='content'][data-state='open'] {
     will-change: grid-template-rows;
-    animation: xh-reasoning-expand var(--xh-motion-duration-enter) var(--xh-motion-ease-enter-strong);
+    animation: xh-disclosure-expand var(--xh-motion-duration-enter) var(--xh-motion-ease-enter-strong);
   }
 
   [data-scope='reasoning'][data-part='content'][data-state='closed'] {
-    animation: xh-reasoning-collapse var(--xh-motion-duration-exit) var(--xh-motion-ease-exit) forwards;
+    animation: xh-disclosure-collapse var(--xh-motion-duration-exit) var(--xh-motion-ease-exit) forwards;
   }
 
   /* 尺寸档只改内衬与字号 */
@@ -274,31 +280,6 @@
 }
 
 @layer xihan.motion {
-  /* 行高与内缩同帧动：内缩不归零的话，border-box 会把盒子钳在下内缩上，收不干净 */
-  @keyframes xh-reasoning-expand {
-    from {
-      grid-template-rows: 0fr;
-      padding-block-end: 0;
-    }
-
-    to {
-      grid-template-rows: 1fr;
-      padding-block-end: var(--xh-reasoning-py, var(--xh-_reasoning-py));
-    }
-  }
-
-  @keyframes xh-reasoning-collapse {
-    from {
-      grid-template-rows: 1fr;
-      padding-block-end: var(--xh-reasoning-py, var(--xh-_reasoning-py));
-    }
-
-    to {
-      grid-template-rows: 0fr;
-      padding-block-end: 0;
-    }
-  }
-
   /* 文案整句换掉时接住这次替换 */
   @keyframes xh-reasoning-fade-in {
     from {

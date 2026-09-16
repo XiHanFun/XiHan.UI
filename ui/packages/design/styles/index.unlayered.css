@@ -2639,8 +2639,89 @@
 /* styles/float-button.css */
 /* 定义 float button 样式。 */
 
-/* 动画名的查找只认「文档里有没有这个名字」：引用别处文件里的名字，那份文件不一定在场，
-   动画会静默地整个不跑。每份皮肤都能单独引入，所以它用到的关键帧都写在自己身上。 */
+/* 共享关键帧由 family/motion.css 提供，本皮肤 @import 它，单独引入仍成立。 */
+
+/* family/motion.css */
+/* 定义 motion 样式。 */
+
+/* 共享关键帧的唯一真源（规范 §9.4 / §9.5）。
+ *
+ * 动画名的查找只认「文档里有没有这个名字」：引用别处文件里的名字，那份文件不一定在场，
+ * 动画会静默地整个不跑。所以引用这里任一名字的皮肤都 @import 本文件，单独引入那份皮肤时
+ * 关键帧仍在场；全量入口由 emit-unlayered 按物理文件去重，有层入口靠打包器对同一 URL 的
+ * @import 去重，同名同帧体即使重复插入也无副作用。
+ *
+ * 本文件只放跨皮肤共用的关键帧，皮肤内不得重定义这些名字（check-keyframe-refs 判红）；
+ * 组件专属关键帧仍住在各自皮肤。幅度只引 --xh-motion-distance-sm 与 --xh-motion-scale-enter /
+ * -exit，减弱动效档由令牌层把它们归零。四个方向槽 --xh-_overlay-enter-* 由浮层皮肤按
+ * placement 写在 positioner 上，四个都没写时位移退回 0。
+ */
+
+/* ── 锚定列表 / 菜单：沿落位方向短位移，不缩放文字与选中标记 ──
+   Menu、Select、Combobox、Cascader、ContextMenu、Menubar、Mention、TreeSelect、
+   Date / Time picker、Tooltip */
+@keyframes xh-overlay-slide-in {
+  from {
+    opacity: 0;
+    translate:
+      calc((var(--xh-_overlay-enter-right, 0) - var(--xh-_overlay-enter-left, 0)) * var(--xh-motion-distance-sm))
+      calc((var(--xh-_overlay-enter-down, 0) - var(--xh-_overlay-enter-up, 0)) * var(--xh-motion-distance-sm));
+  }
+
+  to {
+    opacity: 1;
+    translate: 0 0;
+  }
+}
+
+@keyframes xh-overlay-slide-out {
+  from {
+    opacity: 1;
+    translate: 0 0;
+  }
+
+  to {
+    opacity: 0;
+    translate:
+      calc((var(--xh-_overlay-enter-right, 0) - var(--xh-_overlay-enter-left, 0)) * var(--xh-motion-distance-sm))
+      calc((var(--xh-_overlay-enter-down, 0) - var(--xh-_overlay-enter-up, 0)) * var(--xh-motion-distance-sm));
+  }
+}
+
+/* ── 锚定面板：从锚点那一侧冒出来，缩放叠短位移 ──
+   Popover、HoverCard、Popconfirm、Tour、Command。
+   起点朝哪个方向退让由 placement 写进四个方向槽（那一侧写 1），四个都没写就退回原地缩放 */
+@keyframes xh-overlay-pop-in {
+  from {
+    opacity: 0;
+    scale: var(--xh-motion-scale-enter);
+    translate:
+      calc((var(--xh-_overlay-enter-right, 0) - var(--xh-_overlay-enter-left, 0)) * var(--xh-motion-distance-sm))
+      calc((var(--xh-_overlay-enter-down, 0) - var(--xh-_overlay-enter-up, 0)) * var(--xh-motion-distance-sm));
+  }
+
+  to {
+    opacity: 1;
+    scale: 1;
+    translate: 0 0;
+  }
+}
+
+/* 退场只缩放淡出，不再沿方向退让；锚定面板与无锚定弹出共用 */
+@keyframes xh-pop-out {
+  from {
+    opacity: 1;
+    scale: 1;
+  }
+
+  to {
+    opacity: 0;
+    scale: var(--xh-motion-scale-exit);
+  }
+}
+
+/* ── 无锚定弹出：原地缩放淡入，没有方向 ──
+   NavigationMenu、SideNav popout、FloatingPanel、FloatButton 列表、Pagination 弹层 */
 @keyframes xh-pop-in {
   from {
     opacity: 0;
@@ -2650,6 +2731,75 @@
   to {
     opacity: 1;
     scale: 1;
+  }
+}
+
+/* ── 遮罩与全屏面：只动不透明度 ──
+   Dialog / Drawer / ImageViewer / Tour / Command 的遮罩，Avatar / Image 的载入揭示，
+   Cascader 列项的淡入 */
+@keyframes xh-fade-in {
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes xh-fade-out {
+  from {
+    opacity: 1;
+  }
+
+  to {
+    opacity: 0;
+  }
+}
+
+/* 页内内容的上浮进场：淡入叠一小段向上位移。Command 的分组、EmptyState、QuestionFlow */
+@keyframes xh-rise-in {
+  from {
+    opacity: 0;
+    translate: 0 var(--xh-motion-distance-sm);
+  }
+
+  to {
+    opacity: 1;
+    translate: 0 0;
+  }
+}
+
+/* ── Surface 级 disclosure：行高 0fr → 1fr，内缩同帧动 ──
+   Accordion、Collapsible、Reasoning、ToolCall 的 content。
+   内缩不归零的话，border-box 会把盒子钳在上下内缩之和上，收不干净。
+   两端内缩由各皮肤在 content 上写进 --xh-_disclosure-pt / --xh-_disclosure-pb，
+   没写的那一端按 0 动（与该端本来就没有内缩的皮肤一致） */
+@keyframes xh-disclosure-expand {
+  from {
+    grid-template-rows: 0fr;
+    padding-block-start: 0;
+    padding-block-end: 0;
+  }
+
+  to {
+    grid-template-rows: 1fr;
+    padding-block-start: var(--xh-_disclosure-pt, 0);
+    padding-block-end: var(--xh-_disclosure-pb, 0);
+  }
+}
+
+@keyframes xh-disclosure-collapse {
+  from {
+    grid-template-rows: 1fr;
+    padding-block-start: var(--xh-_disclosure-pt, 0);
+    padding-block-end: var(--xh-_disclosure-pb, 0);
+  }
+
+  to {
+    grid-template-rows: 0fr;
+    padding-block-start: 0;
+    padding-block-end: 0;
   }
 }
 
@@ -2989,31 +3139,9 @@
 /* styles/floating-panel.css */
 /* 定义 floating panel 样式。 */
 
-/* 动画名的查找只认「文档里有没有这个名字」：引用别处文件里的名字，那份文件不一定在场，
-   动画会静默地整个不跑。每份皮肤都能单独引入，所以它用到的关键帧都写在自己身上。 */
-@keyframes xh-pop-in {
-  from {
-    opacity: 0;
-    scale: var(--xh-motion-scale-enter);
-  }
+/* 共享关键帧由 family/motion.css 提供，本皮肤 @import 它，单独引入仍成立。 */
 
-  to {
-    opacity: 1;
-    scale: 1;
-  }
-}
-
-@keyframes xh-pop-out {
-  from {
-    opacity: 1;
-    scale: 1;
-  }
-
-  to {
-    opacity: 0;
-    scale: var(--xh-motion-scale-exit);
-  }
-}
+/* family/motion.css */
 
 /* 皮肤在场的标记：开发模式下按 scope 探一次，取不到就说明这份皮肤没被引入。 */
 [data-scope='floating-panel'] {
@@ -7214,33 +7342,9 @@
 /* styles/mention.css */
 /* 定义 mention 样式。 */
 
-/* 短位移关键帧随皮肤自带，单独引入也能完成进退场。 */
-@keyframes xh-overlay-slide-in {
-  from {
-    opacity: 0;
-    translate:
-      calc((var(--xh-_overlay-enter-right, 0) - var(--xh-_overlay-enter-left, 0)) * var(--xh-motion-distance-sm))
-      calc((var(--xh-_overlay-enter-down, 0) - var(--xh-_overlay-enter-up, 0)) * var(--xh-motion-distance-sm));
-  }
+/* 共享关键帧由 family/motion.css 提供，本皮肤 @import 它，单独引入仍成立。 */
 
-  to {
-    opacity: 1;
-    translate: 0 0;
-  }
-}
-@keyframes xh-overlay-slide-out {
-  from {
-    opacity: 1;
-    translate: 0 0;
-  }
-
-  to {
-    opacity: 0;
-    translate:
-      calc((var(--xh-_overlay-enter-right, 0) - var(--xh-_overlay-enter-left, 0)) * var(--xh-motion-distance-sm))
-      calc((var(--xh-_overlay-enter-down, 0) - var(--xh-_overlay-enter-up, 0)) * var(--xh-motion-distance-sm));
-  }
-}
+/* family/motion.css */
 
 /* 皮肤在场的标记：开发模式下按 scope 探一次，取不到就说明这份皮肤没被引入。 */
 [data-scope='mention'] {
@@ -8441,42 +8545,14 @@
 /* styles/popconfirm.css */
 /* 定义 popconfirm 样式。 */
 
+/* 共享关键帧由 family/motion.css 提供，本皮肤 @import 它，单独引入仍成立。 */
+
+/* family/motion.css */
+
 /* 转圈的关键帧定义在本文件里：引用别处文件的动画名时那份文件不一定在场，动画会静默不跑 */
 @keyframes xh-popconfirm-rotate {
   to {
     transform: rotate(1turn);
-  }
-}
-
-/* 动画名的查找只认「文档里有没有这个名字」：引用别处文件里的名字，那份文件不一定在场，
-   动画会静默地整个不跑。每份皮肤都能单独引入，所以它用到的关键帧都写在自己身上。 */
-/* 进场从锚点那一侧冒出来：起点朝哪个方向退让由 placement 写进四个方向槽（那一侧写 1），
-   四个都没写就退回原地缩放 */
-@keyframes xh-overlay-pop-in {
-  from {
-    opacity: 0;
-    scale: var(--xh-motion-scale-enter);
-    translate:
-      calc((var(--xh-_overlay-enter-right, 0) - var(--xh-_overlay-enter-left, 0)) * var(--xh-motion-distance-sm))
-      calc((var(--xh-_overlay-enter-down, 0) - var(--xh-_overlay-enter-up, 0)) * var(--xh-motion-distance-sm));
-  }
-
-  to {
-    opacity: 1;
-    scale: 1;
-    translate: 0 0;
-  }
-}
-
-@keyframes xh-pop-out {
-  from {
-    opacity: 1;
-    scale: 1;
-  }
-
-  to {
-    opacity: 0;
-    scale: var(--xh-motion-scale-exit);
   }
 }
 
@@ -9255,6 +9331,10 @@
 /* styles/reasoning.css */
 /* 定义 reasoning 样式。 */
 
+/* 共享关键帧由 family/motion.css 提供，本皮肤 @import 它，单独引入仍成立。 */
+
+/* family/motion.css */
+
 /* 皮肤在场的标记：开发模式下按 scope 探一次，取不到就说明这份皮肤没被引入。 */
 [data-scope='reasoning'] {
   --xh-reasoning-skin: 1;
@@ -9472,6 +9552,9 @@
  * 收起由适配器在退场结束后写内联 display 落成，退场窗口内靠 connect 发的 inert 挡住焦点。
  */
 [data-scope='reasoning'][data-part='content'] {
+  /* 行高与内缩同帧动的共享关键帧读这条槽：只有末端有内缩，起端不写、按 0 动 */
+  --xh-_disclosure-pb: var(--xh-reasoning-py, var(--xh-_reasoning-py));
+
   display: grid;
   grid-template-rows: 1fr;
   overflow: clip;
@@ -9488,11 +9571,11 @@
 /* 展开那一档才提前备好行高这条通道：属性随 data-state 一起消失，收起后不长期占着 */
 [data-scope='reasoning'][data-part='content'][data-state='open'] {
   will-change: grid-template-rows;
-  animation: xh-reasoning-expand var(--xh-motion-duration-enter) var(--xh-motion-ease-enter-strong);
+  animation: xh-disclosure-expand var(--xh-motion-duration-enter) var(--xh-motion-ease-enter-strong);
 }
 
 [data-scope='reasoning'][data-part='content'][data-state='closed'] {
-  animation: xh-reasoning-collapse var(--xh-motion-duration-exit) var(--xh-motion-ease-exit) forwards;
+  animation: xh-disclosure-collapse var(--xh-motion-duration-exit) var(--xh-motion-ease-exit) forwards;
 }
 
 /* 尺寸档只改内衬与字号 */
@@ -9519,31 +9602,6 @@
   box-shadow:
     inset var(--xh-reasoning-tone-bar, var(--xh-stroke-thick)) 0 0 0 var(--xh-reasoning-tone-fg, var(--xh-_tone-soft, var(--xh-bg-brand))),
     var(--xh-_reasoning-shadow);
-}
-
-/* 行高与内缩同帧动：内缩不归零的话，border-box 会把盒子钳在下内缩上，收不干净 */
-@keyframes xh-reasoning-expand {
-  from {
-    grid-template-rows: 0fr;
-    padding-block-end: 0;
-  }
-
-  to {
-    grid-template-rows: 1fr;
-    padding-block-end: var(--xh-reasoning-py, var(--xh-_reasoning-py));
-  }
-}
-
-@keyframes xh-reasoning-collapse {
-  from {
-    grid-template-rows: 1fr;
-    padding-block-end: var(--xh-reasoning-py, var(--xh-_reasoning-py));
-  }
-
-  to {
-    grid-template-rows: 0fr;
-    padding-block-end: 0;
-  }
 }
 
 /* 文案整句换掉时接住这次替换 */
@@ -12090,21 +12148,9 @@
 /* styles/empty-state.css */
 /* 定义 empty state 样式。 */
 
-/* 动画名的查找只认「文档里有没有这个名字」：引用别处文件里的名字，那份文件不一定在场，
-   动画会静默地整个不跑。每份皮肤都能单独引入，所以它用到的关键帧都写在自己身上。 */
+/* 共享关键帧由 family/motion.css 提供，本皮肤 @import 它，单独引入仍成立。 */
 
-/* 幅度走令牌，减弱动效时由令牌层归零；位移用独立属性而非 transform 简写 */
-@keyframes xh-rise-in {
-  from {
-    opacity: 0;
-    translate: 0 var(--xh-motion-distance-sm);
-  }
-
-  to {
-    opacity: 1;
-    translate: 0 0;
-  }
-}
+/* family/motion.css */
 
 /* 皮肤在场的标记：开发模式下按 scope 探一次，取不到就说明这份皮肤没被引入。 */
 [data-scope='empty-state'] {
@@ -12615,6 +12661,10 @@
 /* styles/accordion.css */
 /* 定义 accordion 样式。 */
 
+/* 共享关键帧由 family/motion.css 提供，本皮肤 @import 它，单独引入仍成立。 */
+
+/* family/motion.css */
+
 /* 皮肤在场的标记：开发模式下按 scope 探一次，取不到就说明这份皮肤没被引入。 */
 [data-scope='accordion'] {
   --xh-accordion-skin: 1;
@@ -12828,6 +12878,9 @@
 /* 这里刻意没有 [data-part='content'][hidden] { display: none }：补了动画一帧都播不出来。
    收起由适配器在退场结束后写内联 display 落成，退场窗口内靠 connect 发的 inert 挡住焦点 */
 [data-scope='accordion'][data-part='content'] {
+  /* 行高与内缩同帧动的共享关键帧读这条槽：只有末端有内缩，起端不写、按 0 动 */
+  --xh-_disclosure-pb: var(--xh-accordion-content-pb, var(--xh-_accordion-content-pb));
+
   display: grid;
   grid-template-rows: 1fr;
   overflow: clip;
@@ -12842,36 +12895,11 @@
 /* 展开那一档才提前备好行高这条通道：属性随 data-state 一起消失，收起后不长期占着 */
 [data-scope='accordion'][data-part='content'][data-state='open'] {
   will-change: grid-template-rows;
-  animation: xh-accordion-expand var(--xh-motion-duration-enter) var(--xh-motion-ease-enter-strong);
+  animation: xh-disclosure-expand var(--xh-motion-duration-enter) var(--xh-motion-ease-enter-strong);
 }
 
 [data-scope='accordion'][data-part='content'][data-state='closed'] {
-  animation: xh-accordion-collapse var(--xh-motion-duration-exit) var(--xh-motion-ease-exit) forwards;
-}
-
-/* 行高与内缩同帧动：内缩不归零的话，border-box 会把盒子钳在上下内缩之和上，收不干净 */
-@keyframes xh-accordion-expand {
-  from {
-    grid-template-rows: 0fr;
-    padding-block-end: 0;
-  }
-
-  to {
-    grid-template-rows: 1fr;
-    padding-block-end: var(--xh-accordion-content-pb, var(--xh-_accordion-content-pb));
-  }
-}
-
-@keyframes xh-accordion-collapse {
-  from {
-    grid-template-rows: 1fr;
-    padding-block-end: var(--xh-accordion-content-pb, var(--xh-_accordion-content-pb));
-  }
-
-  to {
-    grid-template-rows: 0fr;
-    padding-block-end: 0;
-  }
+  animation: xh-disclosure-collapse var(--xh-motion-duration-exit) var(--xh-motion-ease-exit) forwards;
 }
 
 /* 声明过任何 display 就盖掉了 UA 的 [hidden]{display:none}，收起态得自己还回去。
@@ -13533,17 +13561,9 @@
 /* styles/avatar.css */
 /* 定义 avatar 样式。 */
 
-/* 动画名的查找只认「文档里有没有这个名字」：引用别处文件里的名字，那份文件不一定在场，
-   动画会静默地整个不跑。每份皮肤都能单独引入，所以它用到的关键帧都写在自己身上。 */
-@keyframes xh-fade-in {
-  from {
-    opacity: 0;
-  }
+/* 共享关键帧由 family/motion.css 提供，本皮肤 @import 它，单独引入仍成立。 */
 
-  to {
-    opacity: 1;
-  }
-}
+/* family/motion.css */
 
 /* 皮肤在场的标记：开发模式下按 scope 探一次，取不到就说明这份皮肤没被引入。 */
 [data-scope='avatar'] {
@@ -16048,6 +16068,10 @@
 /* styles/cascader.css */
 /* 定义 cascader 样式。 */
 
+/* 共享关键帧由 family/motion.css 提供，本皮肤 @import 它，单独引入仍成立。 */
+
+/* family/motion.css */
+
 /* 皮肤在场的标记：开发模式下按 scope 探一次，取不到就说明这份皮肤没被引入。 */
 [data-scope='cascader'] {
   --xh-cascader-skin: 1;
@@ -16913,46 +16937,6 @@
   [data-scope='cascader'][data-part='item-indicator'][data-disabled]:empty::before,
   [data-scope='cascader'][data-part='search-item'][data-disabled]::after {
     background-color: GrayText;
-  }
-}
-
-/* 关键帧随皮肤自带，独立引入时仍有完整的短位移动效。 */
-@keyframes xh-overlay-slide-in {
-  from {
-    opacity: 0;
-    translate:
-      calc((var(--xh-_overlay-enter-right, 0) - var(--xh-_overlay-enter-left, 0)) * var(--xh-motion-distance-sm))
-      calc((var(--xh-_overlay-enter-down, 0) - var(--xh-_overlay-enter-up, 0)) * var(--xh-motion-distance-sm));
-  }
-
-  to {
-    opacity: 1;
-    translate: 0 0;
-  }
-}
-
-/* 浮层已经移动，列项只淡入，不再对文字叠加缩放。 */
-@keyframes xh-fade-in {
-  from {
-    opacity: 0;
-  }
-
-  to {
-    opacity: 1;
-  }
-}
-
-@keyframes xh-overlay-slide-out {
-  from {
-    opacity: 1;
-    translate: 0 0;
-  }
-
-  to {
-    opacity: 0;
-    translate:
-      calc((var(--xh-_overlay-enter-right, 0) - var(--xh-_overlay-enter-left, 0)) * var(--xh-motion-distance-sm))
-      calc((var(--xh-_overlay-enter-down, 0) - var(--xh-_overlay-enter-up, 0)) * var(--xh-motion-distance-sm));
   }
 }
 
@@ -18334,6 +18318,10 @@
 /* styles/collapsible.css */
 /* 定义 collapsible 样式。 */
 
+/* 共享关键帧由 family/motion.css 提供，本皮肤 @import 它，单独引入仍成立。 */
+
+/* family/motion.css */
+
 /* 皮肤在场的标记：开发模式下按 scope 探一次，取不到就说明这份皮肤没被引入。 */
 [data-scope='collapsible'] {
   --xh-collapsible-skin: 1;
@@ -18467,6 +18455,9 @@
 /* 这里刻意没有 [data-part='content'][hidden] { display: none }：补了动画一帧都播不出来。
    收起由适配器在退场结束后写内联 display 落成，退场窗口内靠 connect 发的 inert 挡住焦点 */
 [data-scope='collapsible'][data-part='content'] {
+  /* 行高与内缩同帧动的共享关键帧读这条槽：只有末端有内缩，起端不写、按 0 动 */
+  --xh-_disclosure-pb: var(--xh-collapsible-content-pb, var(--xh-_collapsible-content-pb));
+
   display: grid;
   grid-template-rows: 1fr;
   overflow: clip;
@@ -18481,36 +18472,11 @@
 /* 展开那一档才提前备好行高这条通道：属性随 data-state 一起消失，收起后不长期占着 */
 [data-scope='collapsible'][data-part='content'][data-state='open'] {
   will-change: grid-template-rows;
-  animation: xh-collapsible-expand var(--xh-motion-duration-enter) var(--xh-motion-ease-enter-strong);
+  animation: xh-disclosure-expand var(--xh-motion-duration-enter) var(--xh-motion-ease-enter-strong);
 }
 
 [data-scope='collapsible'][data-part='content'][data-state='closed'] {
-  animation: xh-collapsible-collapse var(--xh-motion-duration-exit) var(--xh-motion-ease-exit) forwards;
-}
-
-/* 行高与内缩同帧动：内缩不归零的话，border-box 会把盒子钳在上下内缩之和上，收不干净 */
-@keyframes xh-collapsible-expand {
-  from {
-    grid-template-rows: 0fr;
-    padding-block-end: 0;
-  }
-
-  to {
-    grid-template-rows: 1fr;
-    padding-block-end: var(--xh-collapsible-content-pb, var(--xh-_collapsible-content-pb));
-  }
-}
-
-@keyframes xh-collapsible-collapse {
-  from {
-    grid-template-rows: 1fr;
-    padding-block-end: var(--xh-collapsible-content-pb, var(--xh-_collapsible-content-pb));
-  }
-
-  to {
-    grid-template-rows: 0fr;
-    padding-block-end: 0;
-  }
+  animation: xh-disclosure-collapse var(--xh-motion-duration-exit) var(--xh-motion-ease-exit) forwards;
 }
 
 /* 声明过任何 display 就盖掉了 UA 的 [hidden]{display:none}，收起态得自己还回去。
@@ -19020,32 +18986,7 @@
 
 /* family/swatch.css */
 
-@keyframes xh-overlay-slide-in {
-  from {
-    opacity: 0;
-    translate:
-      calc((var(--xh-_overlay-enter-right, 0) - var(--xh-_overlay-enter-left, 0)) * var(--xh-motion-distance-sm))
-      calc((var(--xh-_overlay-enter-down, 0) - var(--xh-_overlay-enter-up, 0)) * var(--xh-motion-distance-sm));
-  }
-
-  to {
-    opacity: 1;
-    translate: 0 0;
-  }
-}
-@keyframes xh-overlay-slide-out {
-  from {
-    opacity: 1;
-    translate: 0 0;
-  }
-
-  to {
-    opacity: 0;
-    translate:
-      calc((var(--xh-_overlay-enter-right, 0) - var(--xh-_overlay-enter-left, 0)) * var(--xh-motion-distance-sm))
-      calc((var(--xh-_overlay-enter-down, 0) - var(--xh-_overlay-enter-up, 0)) * var(--xh-motion-distance-sm));
-  }
-}
+/* family/motion.css */
 
 /* 皮肤在场的标记：开发模式下按 scope 探一次，取不到就说明这份皮肤没被引入。 */
 [data-scope='color-picker'] {
@@ -20068,36 +20009,9 @@
 /* styles/combobox.css */
 /* 定义 combobox 样式。 */
 
-/* 动画名的查找只认「文档里有没有这个名字」：引用别处文件里的名字，那份文件不一定在场，
-   动画会静默地整个不跑。每份皮肤都能单独引入，所以它用到的关键帧都写在自己身上。 */
-/* 进退场沿落位方向短距离移动，不缩放文字与选中标记。 */
-@keyframes xh-overlay-slide-in {
-  from {
-    opacity: 0;
-    translate:
-      calc((var(--xh-_overlay-enter-right, 0) - var(--xh-_overlay-enter-left, 0)) * var(--xh-motion-distance-sm))
-      calc((var(--xh-_overlay-enter-down, 0) - var(--xh-_overlay-enter-up, 0)) * var(--xh-motion-distance-sm));
-  }
+/* 共享关键帧由 family/motion.css 提供，本皮肤 @import 它，单独引入仍成立。 */
 
-  to {
-    opacity: 1;
-    translate: 0 0;
-  }
-}
-
-@keyframes xh-overlay-slide-out {
-  from {
-    opacity: 1;
-    translate: 0 0;
-  }
-
-  to {
-    opacity: 0;
-    translate:
-      calc((var(--xh-_overlay-enter-right, 0) - var(--xh-_overlay-enter-left, 0)) * var(--xh-motion-distance-sm))
-      calc((var(--xh-_overlay-enter-down, 0) - var(--xh-_overlay-enter-up, 0)) * var(--xh-motion-distance-sm));
-  }
-}
+/* family/motion.css */
 
 /* 皮肤在场的标记：开发模式下按 scope 探一次，取不到就说明这份皮肤没被引入。 */
 [data-scope='combobox'] {
@@ -20745,69 +20659,9 @@
 /* styles/command.css */
 /* 定义 command 样式。 */
 
-/* 动画名的查找只认「文档里有没有这个名字」：引用别处文件里的名字，那份文件不一定在场，
-   动画会静默地整个不跑。每份皮肤都能单独引入，所以它用到的关键帧都写在自己身上。 */
-@keyframes xh-fade-in {
-  from {
-    opacity: 0;
-  }
+/* 共享关键帧由 family/motion.css 提供，本皮肤 @import 它，单独引入仍成立。 */
 
-  to {
-    opacity: 1;
-  }
-}
-
-@keyframes xh-fade-out {
-  from {
-    opacity: 1;
-  }
-
-  to {
-    opacity: 0;
-  }
-}
-
-/* 进场从锚点那一侧冒出来：起点朝哪个方向退让由 placement 写进四个方向槽（那一侧写 1），
-   四个都没写就退回原地缩放 */
-@keyframes xh-overlay-pop-in {
-  from {
-    opacity: 0;
-    scale: var(--xh-motion-scale-enter);
-    translate:
-      calc((var(--xh-_overlay-enter-right, 0) - var(--xh-_overlay-enter-left, 0)) * var(--xh-motion-distance-sm))
-      calc((var(--xh-_overlay-enter-down, 0) - var(--xh-_overlay-enter-up, 0)) * var(--xh-motion-distance-sm));
-  }
-
-  to {
-    opacity: 1;
-    scale: 1;
-    translate: 0 0;
-  }
-}
-
-@keyframes xh-pop-out {
-  from {
-    opacity: 1;
-    scale: 1;
-  }
-
-  to {
-    opacity: 0;
-    scale: var(--xh-motion-scale-exit);
-  }
-}
-
-@keyframes xh-rise-in {
-  from {
-    opacity: 0;
-    translate: 0 var(--xh-motion-distance-sm);
-  }
-
-  to {
-    opacity: 1;
-    translate: 0 0;
-  }
-}
+/* family/motion.css */
 
 /* 皮肤在场的标记：开发模式下按 scope 探一次，取不到就说明这份皮肤没被引入。 */
 [data-scope='command'] {
@@ -21180,34 +21034,9 @@
 /* styles/context-menu.css */
 /* 定义 context menu 样式。 */
 
-/* 各菜单皮肤都自带同一份短位移动作，单独引入 context-menu.css 时也不会丢动画。 */
-@keyframes xh-overlay-slide-in {
-  from {
-    opacity: 0;
-    translate:
-      calc((var(--xh-_overlay-enter-right, 0) - var(--xh-_overlay-enter-left, 0)) * var(--xh-motion-distance-sm))
-      calc((var(--xh-_overlay-enter-down, 0) - var(--xh-_overlay-enter-up, 0)) * var(--xh-motion-distance-sm));
-  }
+/* 共享关键帧由 family/motion.css 提供，本皮肤 @import 它，单独引入仍成立。 */
 
-  to {
-    opacity: 1;
-    translate: 0 0;
-  }
-}
-
-@keyframes xh-overlay-slide-out {
-  from {
-    opacity: 1;
-    translate: 0 0;
-  }
-
-  to {
-    opacity: 0;
-    translate:
-      calc((var(--xh-_overlay-enter-right, 0) - var(--xh-_overlay-enter-left, 0)) * var(--xh-motion-distance-sm))
-      calc((var(--xh-_overlay-enter-down, 0) - var(--xh-_overlay-enter-up, 0)) * var(--xh-motion-distance-sm));
-  }
-}
+/* family/motion.css */
 
 /* 皮肤在场的标记：开发模式下按 scope 探一次，取不到就说明这份皮肤没被引入。 */
 [data-scope='context-menu'] {
@@ -21579,30 +21408,6 @@
   mask: var(--xh-glyph-mark-check) center / contain no-repeat;
 }
 
-/* 自带前缀独占一个名字，不动公共的那份关键帧 */
-@keyframes xh-pop-in {
-  from {
-    opacity: 0;
-    scale: var(--xh-motion-scale-enter);
-  }
-
-  to {
-    opacity: 1;
-    scale: 1;
-  }
-}
-@keyframes xh-pop-out {
-  from {
-    opacity: 1;
-    scale: 1;
-  }
-
-  to {
-    opacity: 0;
-    scale: var(--xh-motion-scale-exit);
-  }
-}
-
 @media print {
   /* 打印：定位层与遮罩是交互期才存在的东西，落到纸上只会盖住底下的正文。
      收起写在这份皮肤里而不是 reset：reset 层排在组件层之前，组件层里任何一条 display 都压得住它。 */
@@ -21953,6 +21758,10 @@
 /* 定义 date picker 样式。 */
 
 /* css/scrollbar.css */
+
+/* 共享关键帧由 family/motion.css 提供，本皮肤 @import 它，单独引入仍成立。 */
+
+/* family/motion.css */
 
 /* 皮肤在场的标记：开发模式下按 scope 探一次，取不到就说明这份皮肤没被引入。 */
 [data-scope='date-picker'] {
@@ -22789,35 +22598,6 @@
   }
 }
 
-/* 与选择器共用短位移动作；独立引入本皮肤时也提供完整关键帧。 */
-@keyframes xh-overlay-slide-in {
-  from {
-    opacity: 0;
-    translate:
-      calc((var(--xh-_overlay-enter-right, 0) - var(--xh-_overlay-enter-left, 0)) * var(--xh-motion-distance-sm))
-      calc((var(--xh-_overlay-enter-down, 0) - var(--xh-_overlay-enter-up, 0)) * var(--xh-motion-distance-sm));
-  }
-
-  to {
-    opacity: 1;
-    translate: 0 0;
-  }
-}
-
-@keyframes xh-overlay-slide-out {
-  from {
-    opacity: 1;
-    translate: 0 0;
-  }
-
-  to {
-    opacity: 0;
-    translate:
-      calc((var(--xh-_overlay-enter-right, 0) - var(--xh-_overlay-enter-left, 0)) * var(--xh-motion-distance-sm))
-      calc((var(--xh-_overlay-enter-down, 0) - var(--xh-_overlay-enter-up, 0)) * var(--xh-motion-distance-sm));
-  }
-}
-
 @media print {
   /* 打印：定位层与遮罩是交互期才存在的东西，落到纸上只会盖住底下的正文。
      收起写在这份皮肤里而不是 reset：reset 层排在组件层之前，组件层里任何一条 display 都压得住它。 */
@@ -22830,6 +22610,10 @@
 /* 定义 date range picker 样式。 */
 
 /* css/scrollbar.css */
+
+/* 共享关键帧由 family/motion.css 提供，本皮肤 @import 它，单独引入仍成立。 */
+
+/* family/motion.css */
 
 /* 皮肤在场的标记：开发模式下按 scope 探一次，取不到就说明这份皮肤没被引入。 */
 [data-scope='date-range-picker'] {
@@ -23464,35 +23248,6 @@
   }
 }
 
-/* 与选择器共用短位移动作；独立引入本皮肤时也提供完整关键帧。 */
-@keyframes xh-overlay-slide-in {
-  from {
-    opacity: 0;
-    translate:
-      calc((var(--xh-_overlay-enter-right, 0) - var(--xh-_overlay-enter-left, 0)) * var(--xh-motion-distance-sm))
-      calc((var(--xh-_overlay-enter-down, 0) - var(--xh-_overlay-enter-up, 0)) * var(--xh-motion-distance-sm));
-  }
-
-  to {
-    opacity: 1;
-    translate: 0 0;
-  }
-}
-
-@keyframes xh-overlay-slide-out {
-  from {
-    opacity: 1;
-    translate: 0 0;
-  }
-
-  to {
-    opacity: 0;
-    translate:
-      calc((var(--xh-_overlay-enter-right, 0) - var(--xh-_overlay-enter-left, 0)) * var(--xh-motion-distance-sm))
-      calc((var(--xh-_overlay-enter-down, 0) - var(--xh-_overlay-enter-up, 0)) * var(--xh-motion-distance-sm));
-  }
-}
-
 @media print {
   /* 打印：定位层与遮罩是交互期才存在的东西，落到纸上只会盖住底下的正文。
      收起写在这份皮肤里而不是 reset：reset 层排在组件层之前，组件层里任何一条 display 都压得住它。 */
@@ -23504,27 +23259,9 @@
 /* styles/dialog.css */
 /* 定义 dialog 样式。 */
 
-/* 动画名的查找只认「文档里有没有这个名字」：引用别处文件里的名字，那份文件不一定在场，
-   动画会静默地整个不跑。每份皮肤都能单独引入，所以它用到的关键帧都写在自己身上。 */
-@keyframes xh-fade-in {
-  from {
-    opacity: 0;
-  }
+/* 共享关键帧由 family/motion.css 提供，本皮肤 @import 它，单独引入仍成立。 */
 
-  to {
-    opacity: 1;
-  }
-}
-
-@keyframes xh-fade-out {
-  from {
-    opacity: 1;
-  }
-
-  to {
-    opacity: 0;
-  }
-}
+/* family/motion.css */
 
 /* 幅度走令牌，减弱动效时由令牌层归零；位移与缩放用独立属性而非 transform 简写，
    两者互不覆盖，手势期间写 translate 也不会把 scale 抹掉 */
@@ -23917,27 +23654,9 @@
 /* styles/drawer.css */
 /* 定义 drawer 样式。 */
 
-/* 动画名的查找只认「文档里有没有这个名字」：引用别处文件里的名字，那份文件不一定在场，
-   动画会静默地整个不跑。每份皮肤都能单独引入，所以它用到的关键帧都写在自己身上。 */
-@keyframes xh-fade-in {
-  from {
-    opacity: 0;
-  }
+/* 共享关键帧由 family/motion.css 提供，本皮肤 @import 它，单独引入仍成立。 */
 
-  to {
-    opacity: 1;
-  }
-}
-
-@keyframes xh-fade-out {
-  from {
-    opacity: 1;
-  }
-
-  to {
-    opacity: 0;
-  }
-}
+/* family/motion.css */
 
 /* 四条边各一对滑入/滑出。位移量用 translate 的百分比，参照的是面板自己的边框盒，
    所以不管 --xh-drawer-size 被改成多少，"正好推到视口外"这件事都成立。
@@ -25829,37 +25548,9 @@
 /* styles/hover-card.css */
 /* 定义 hover card 样式。 */
 
-/* 动画名的查找只认「文档里有没有这个名字」：引用别处文件里的名字，那份文件不一定在场，
-   动画会静默地整个不跑。每份皮肤都能单独引入，所以它用到的关键帧都写在自己身上。 */
-/* 进场从锚点那一侧冒出来：起点朝哪个方向退让由 placement 写进四个方向槽（那一侧写 1），
-   四个都没写就退回原地缩放 */
-@keyframes xh-overlay-pop-in {
-  from {
-    opacity: 0;
-    scale: var(--xh-motion-scale-enter);
-    translate:
-      calc((var(--xh-_overlay-enter-right, 0) - var(--xh-_overlay-enter-left, 0)) * var(--xh-motion-distance-sm))
-      calc((var(--xh-_overlay-enter-down, 0) - var(--xh-_overlay-enter-up, 0)) * var(--xh-motion-distance-sm));
-  }
+/* 共享关键帧由 family/motion.css 提供，本皮肤 @import 它，单独引入仍成立。 */
 
-  to {
-    opacity: 1;
-    scale: 1;
-    translate: 0 0;
-  }
-}
-
-@keyframes xh-pop-out {
-  from {
-    opacity: 1;
-    scale: 1;
-  }
-
-  to {
-    opacity: 0;
-    scale: var(--xh-motion-scale-exit);
-  }
-}
+/* family/motion.css */
 
 /* 皮肤在场的标记：开发模式下按 scope 探一次，取不到就说明这份皮肤没被引入。 */
 [data-scope='hover-card'] {
@@ -26181,17 +25872,9 @@
 /* styles/image.css */
 /* 定义 image 样式。 */
 
-/* 动画名的查找只认「文档里有没有这个名字」：引用别处文件里的名字，那份文件不一定在场，
-   动画会静默地整个不跑。每份皮肤都能单独引入，所以它用到的关键帧都写在自己身上。 */
-@keyframes xh-fade-in {
-  from {
-    opacity: 0;
-  }
+/* 共享关键帧由 family/motion.css 提供，本皮肤 @import 它，单独引入仍成立。 */
 
-  to {
-    opacity: 1;
-  }
-}
+/* family/motion.css */
 
 /* 皮肤在场的标记：开发模式下按 scope 探一次，取不到就说明这份皮肤没被引入。 */
 [data-scope='image'] {
@@ -26264,27 +25947,9 @@
 /* styles/image-viewer.css */
 /* 定义 image viewer 样式。 */
 
-/* 动画名的查找只认「文档里有没有这个名字」：引用别处文件里的名字，那份文件不一定在场，
-   动画会静默地整个不跑。每份皮肤都能单独引入，所以它用到的关键帧都写在自己身上。 */
-@keyframes xh-fade-in {
-  from {
-    opacity: 0;
-  }
+/* 共享关键帧由 family/motion.css 提供，本皮肤 @import 它，单独引入仍成立。 */
 
-  to {
-    opacity: 1;
-  }
-}
-
-@keyframes xh-fade-out {
-  from {
-    opacity: 1;
-  }
-
-  to {
-    opacity: 0;
-  }
-}
+/* family/motion.css */
 
 /* 皮肤在场的标记：开发模式下按 scope 探一次，取不到就说明这份皮肤没被引入。 */
 [data-scope='image-viewer'] {
@@ -27136,35 +26801,9 @@
 /* styles/menu.css */
 /* 定义 menu 样式。 */
 
-/* 动画名的查找只认「文档里有没有这个名字」：引用别处文件里的名字，那份文件不一定在场，
-   动画会静默地整个不跑。每份皮肤都能单独引入，所以它用到的关键帧都写在自己身上。 */
-@keyframes xh-overlay-slide-in {
-  from {
-    opacity: 0;
-    translate:
-      calc((var(--xh-_overlay-enter-right, 0) - var(--xh-_overlay-enter-left, 0)) * var(--xh-motion-distance-sm))
-      calc((var(--xh-_overlay-enter-down, 0) - var(--xh-_overlay-enter-up, 0)) * var(--xh-motion-distance-sm));
-  }
+/* 共享关键帧由 family/motion.css 提供，本皮肤 @import 它，单独引入仍成立。 */
 
-  to {
-    opacity: 1;
-    translate: 0 0;
-  }
-}
-
-@keyframes xh-overlay-slide-out {
-  from {
-    opacity: 1;
-    translate: 0 0;
-  }
-
-  to {
-    opacity: 0;
-    translate:
-      calc((var(--xh-_overlay-enter-right, 0) - var(--xh-_overlay-enter-left, 0)) * var(--xh-motion-distance-sm))
-      calc((var(--xh-_overlay-enter-down, 0) - var(--xh-_overlay-enter-up, 0)) * var(--xh-motion-distance-sm));
-  }
-}
+/* family/motion.css */
 
 /* 皮肤在场的标记：开发模式下按 scope 探一次，取不到就说明这份皮肤没被引入。 */
 [data-scope='menu'] {
@@ -27508,34 +27147,9 @@
 /* styles/menubar.css */
 /* 定义 menubar 样式。 */
 
-/* 每份浮层皮肤独立携带同名关键帧，单独引入 menubar.css 时动画也完整。 */
-@keyframes xh-overlay-slide-in {
-  from {
-    opacity: 0;
-    translate:
-      calc((var(--xh-_overlay-enter-right, 0) - var(--xh-_overlay-enter-left, 0)) * var(--xh-motion-distance-sm))
-      calc((var(--xh-_overlay-enter-down, 0) - var(--xh-_overlay-enter-up, 0)) * var(--xh-motion-distance-sm));
-  }
+/* 共享关键帧由 family/motion.css 提供，本皮肤 @import 它，单独引入仍成立。 */
 
-  to {
-    opacity: 1;
-    translate: 0 0;
-  }
-}
-
-@keyframes xh-overlay-slide-out {
-  from {
-    opacity: 1;
-    translate: 0 0;
-  }
-
-  to {
-    opacity: 0;
-    translate:
-      calc((var(--xh-_overlay-enter-right, 0) - var(--xh-_overlay-enter-left, 0)) * var(--xh-motion-distance-sm))
-      calc((var(--xh-_overlay-enter-down, 0) - var(--xh-_overlay-enter-up, 0)) * var(--xh-motion-distance-sm));
-  }
-}
+/* family/motion.css */
 
 /* 皮肤在场的标记：开发模式下按 scope 探一次，取不到就说明这份皮肤没被引入。 */
 [data-scope='menubar'] {
@@ -28176,30 +27790,9 @@
 /* styles/navigation-menu.css */
 /* 定义 navigation menu 样式。 */
 
-/* 面板往下探一小截再落位：纯淡入看不出它是从哪条 trigger 长出来的 */
-@keyframes xh-pop-in {
-  from {
-    opacity: 0;
-    scale: var(--xh-motion-scale-enter);
-  }
+/* 共享关键帧由 family/motion.css 提供，本皮肤 @import 它，单独引入仍成立。 */
 
-  to {
-    opacity: 1;
-    scale: 1;
-  }
-}
-
-@keyframes xh-pop-out {
-  from {
-    opacity: 1;
-    scale: 1;
-  }
-
-  to {
-    opacity: 0;
-    scale: var(--xh-motion-scale-exit);
-  }
-}
+/* family/motion.css */
 
 /* 皮肤在场的标记：开发模式下按 scope 探一次，取不到就说明这份皮肤没被引入。 */
 [data-scope='navigation-menu'] {
@@ -29402,30 +28995,9 @@
 /* styles/pagination.css */
 /* 定义 pagination 样式。 */
 
-/* 动画名的查找只认「文档里有没有这个名字」：引用别处文件里的名字，那份文件不一定在场，
-   动画会静默地整个不跑。每份皮肤都能单独引入，所以它用到的关键帧都写在自己身上。 */
-@keyframes xh-pop-in {
-  from {
-    opacity: 0;
-    scale: var(--xh-motion-scale-enter);
-  }
+/* 共享关键帧由 family/motion.css 提供，本皮肤 @import 它，单独引入仍成立。 */
 
-  to {
-    opacity: 1;
-    scale: 1;
-  }
-}
-@keyframes xh-pop-out {
-  from {
-    opacity: 1;
-    scale: 1;
-  }
-
-  to {
-    opacity: 0;
-    scale: var(--xh-motion-scale-exit);
-  }
-}
+/* family/motion.css */
 
 /* 皮肤在场的标记：开发模式下按 scope 探一次，取不到就说明这份皮肤没被引入。 */
 [data-scope='pagination'] {
@@ -30050,37 +29622,9 @@
 /* styles/popover.css */
 /* 定义 popover 样式。 */
 
-/* 动画名的查找只认「文档里有没有这个名字」：引用别处文件里的名字，那份文件不一定在场，
-   动画会静默地整个不跑。每份皮肤都能单独引入，所以它用到的关键帧都写在自己身上。 */
-/* 进场从锚点那一侧冒出来：起点朝哪个方向退让由 placement 写进四个方向槽（那一侧写 1），
-   四个都没写就退回原地缩放 */
-@keyframes xh-overlay-pop-in {
-  from {
-    opacity: 0;
-    scale: var(--xh-motion-scale-enter);
-    translate:
-      calc((var(--xh-_overlay-enter-right, 0) - var(--xh-_overlay-enter-left, 0)) * var(--xh-motion-distance-sm))
-      calc((var(--xh-_overlay-enter-down, 0) - var(--xh-_overlay-enter-up, 0)) * var(--xh-motion-distance-sm));
-  }
+/* 共享关键帧由 family/motion.css 提供，本皮肤 @import 它，单独引入仍成立。 */
 
-  to {
-    opacity: 1;
-    scale: 1;
-    translate: 0 0;
-  }
-}
-
-@keyframes xh-pop-out {
-  from {
-    opacity: 1;
-    scale: 1;
-  }
-
-  to {
-    opacity: 0;
-    scale: var(--xh-motion-scale-exit);
-  }
-}
+/* family/motion.css */
 
 /* 皮肤在场的标记：开发模式下按 scope 探一次，取不到就说明这份皮肤没被引入。 */
 [data-scope='popover'] {
@@ -30522,6 +30066,10 @@
 
 /* styles/question-flow.css */
 /* 定义 question flow 样式。 */
+
+/* 共享关键帧由 family/motion.css 提供，本皮肤 @import 它，单独引入仍成立。 */
+
+/* family/motion.css */
 
 /* 皮肤在场的标记：开发模式下按 scope 探一次，取不到就说明这份皮肤没被引入。 */
 [data-scope='question-flow'] {
@@ -31072,26 +30620,12 @@
   white-space: nowrap;
 }
 
-/* 动画名的查找只认「文档里有没有这个名字」：引用别处文件里的名字，那份文件不一定在场，
-   动画会静默地整个不跑。每份皮肤都能单独引入，所以它用到的关键帧都写在自己身上。 */
-
+/* 组件专属关键帧写在自己身上；共享的 xh-rise-in 由 family/motion.css 提供。 */
 /* 幅度走令牌，减弱动效时由令牌层归零；位移用独立属性而非 transform 简写 */
 @keyframes xh-question-flow-in {
   from {
     opacity: 0;
     translate: 0 var(--xh-motion-distance-md);
-  }
-
-  to {
-    opacity: 1;
-    translate: 0 0;
-  }
-}
-
-@keyframes xh-rise-in {
-  from {
-    opacity: 0;
-    translate: 0 var(--xh-motion-distance-sm);
   }
 
   to {
@@ -32231,66 +31765,7 @@
   }
 }
 
-/* 菜单族共用同一份短位移动作；本皮肤自带定义，单独引入 select.css 时也不会丢动画。 */
-@keyframes xh-overlay-slide-in {
-  from {
-    opacity: 0;
-    translate:
-      calc((var(--xh-_overlay-enter-right, 0) - var(--xh-_overlay-enter-left, 0)) * var(--xh-motion-distance-sm))
-      calc((var(--xh-_overlay-enter-down, 0) - var(--xh-_overlay-enter-up, 0)) * var(--xh-motion-distance-sm));
-  }
-
-  to {
-    opacity: 1;
-    translate: 0 0;
-  }
-}
-
-@keyframes xh-overlay-slide-out {
-  from {
-    opacity: 1;
-    translate: 0 0;
-  }
-
-  to {
-    opacity: 0;
-    translate:
-      calc((var(--xh-_overlay-enter-right, 0) - var(--xh-_overlay-enter-left, 0)) * var(--xh-motion-distance-sm))
-      calc((var(--xh-_overlay-enter-down, 0) - var(--xh-_overlay-enter-up, 0)) * var(--xh-motion-distance-sm));
-  }
-}
-
-/* 动画名的查找只认「文档里有没有这个名字」：引用别处文件里的名字，那份文件不一定在场，
-   动画会静默地整个不跑。每份皮肤都能单独引入，所以它用到的关键帧都写在自己身上。 */
-/* 进场从锚点那一侧冒出来：起点朝哪个方向退让由 placement 写进四个方向槽（那一侧写 1），
-   四个都没写就退回原地缩放 */
-@keyframes xh-overlay-pop-in {
-  from {
-    opacity: 0;
-    scale: var(--xh-motion-scale-enter);
-    translate:
-      calc((var(--xh-_overlay-enter-right, 0) - var(--xh-_overlay-enter-left, 0)) * var(--xh-motion-distance-sm))
-      calc((var(--xh-_overlay-enter-down, 0) - var(--xh-_overlay-enter-up, 0)) * var(--xh-motion-distance-sm));
-  }
-
-  to {
-    opacity: 1;
-    scale: 1;
-    translate: 0 0;
-  }
-}
-
-@keyframes xh-pop-out {
-  from {
-    opacity: 1;
-    scale: 1;
-  }
-
-  to {
-    opacity: 0;
-    scale: var(--xh-motion-scale-exit);
-  }
-}
+/* family/motion.css */
 
 /* 皮肤在场的标记：开发模式下按 scope 探一次，取不到就说明这份皮肤没被引入。 */
 [data-scope='select'] {
@@ -33074,31 +32549,9 @@
 /* styles/side-nav.css */
 /* 定义 side nav 样式。 */
 
-/* 动画名的查找只认「文档里有没有这个名字」：引用别处文件里的名字，那份文件不一定在场，
-   动画会静默地整个不跑。每份皮肤都能单独引入，所以它用到的关键帧都写在自己身上。 */
-@keyframes xh-pop-in {
-  from {
-    opacity: 0;
-    scale: var(--xh-motion-scale-enter);
-  }
+/* 共享关键帧由 family/motion.css 提供，本皮肤 @import 它，单独引入仍成立。 */
 
-  to {
-    opacity: 1;
-    scale: 1;
-  }
-}
-
-@keyframes xh-pop-out {
-  from {
-    opacity: 1;
-    scale: 1;
-  }
-
-  to {
-    opacity: 0;
-    scale: var(--xh-motion-scale-exit);
-  }
-}
+/* family/motion.css */
 
 /* 皮肤在场的标记：开发模式下按 scope 探一次，取不到就说明这份皮肤没被引入。 */
 [data-scope='side-nav'] {
@@ -37069,6 +36522,10 @@
 
 /* css/scrollbar.css */
 
+/* 共享关键帧由 family/motion.css 提供，本皮肤 @import 它，单独引入仍成立。 */
+
+/* family/motion.css */
+
 /* 皮肤在场的标记：开发模式下按 scope 探一次，取不到就说明这份皮肤没被引入。 */
 [data-scope='time-picker'] {
   --xh-time-picker-skin: 1;
@@ -37782,35 +37239,6 @@
   mask: var(--xh-glyph-mark-clock) center / contain no-repeat;
 }
 
-/* 与选择器共用短位移动作；独立引入本皮肤时也提供完整关键帧。 */
-@keyframes xh-overlay-slide-in {
-  from {
-    opacity: 0;
-    translate:
-      calc((var(--xh-_overlay-enter-right, 0) - var(--xh-_overlay-enter-left, 0)) * var(--xh-motion-distance-sm))
-      calc((var(--xh-_overlay-enter-down, 0) - var(--xh-_overlay-enter-up, 0)) * var(--xh-motion-distance-sm));
-  }
-
-  to {
-    opacity: 1;
-    translate: 0 0;
-  }
-}
-
-@keyframes xh-overlay-slide-out {
-  from {
-    opacity: 1;
-    translate: 0 0;
-  }
-
-  to {
-    opacity: 0;
-    translate:
-      calc((var(--xh-_overlay-enter-right, 0) - var(--xh-_overlay-enter-left, 0)) * var(--xh-motion-distance-sm))
-      calc((var(--xh-_overlay-enter-down, 0) - var(--xh-_overlay-enter-up, 0)) * var(--xh-motion-distance-sm));
-  }
-}
-
 @media print {
   /* 打印：定位层与遮罩是交互期才存在的东西，落到纸上只会盖住底下的正文。
      收起写在这份皮肤里而不是 reset：reset 层排在组件层之前，组件层里任何一条 display 都压得住它。 */
@@ -37823,6 +37251,10 @@
 /* 定义 time range picker 样式。 */
 
 /* css/scrollbar.css */
+
+/* 共享关键帧由 family/motion.css 提供，本皮肤 @import 它，单独引入仍成立。 */
+
+/* family/motion.css */
 
 /* 皮肤在场的标记：开发模式下按 scope 探一次，取不到就说明这份皮肤没被引入。 */
 [data-scope='time-range-picker'] {
@@ -38626,35 +38058,6 @@
   background-color: currentColor;
   -webkit-mask: var(--xh-glyph-mark-clock) center / contain no-repeat;
   mask: var(--xh-glyph-mark-clock) center / contain no-repeat;
-}
-
-/* 与选择器共用短位移动作；独立引入本皮肤时也提供完整关键帧。 */
-@keyframes xh-overlay-slide-in {
-  from {
-    opacity: 0;
-    translate:
-      calc((var(--xh-_overlay-enter-right, 0) - var(--xh-_overlay-enter-left, 0)) * var(--xh-motion-distance-sm))
-      calc((var(--xh-_overlay-enter-down, 0) - var(--xh-_overlay-enter-up, 0)) * var(--xh-motion-distance-sm));
-  }
-
-  to {
-    opacity: 1;
-    translate: 0 0;
-  }
-}
-
-@keyframes xh-overlay-slide-out {
-  from {
-    opacity: 1;
-    translate: 0 0;
-  }
-
-  to {
-    opacity: 0;
-    translate:
-      calc((var(--xh-_overlay-enter-right, 0) - var(--xh-_overlay-enter-left, 0)) * var(--xh-motion-distance-sm))
-      calc((var(--xh-_overlay-enter-down, 0) - var(--xh-_overlay-enter-up, 0)) * var(--xh-motion-distance-sm));
-  }
 }
 
 @media print {
@@ -39793,6 +39196,10 @@
 /* styles/tool-call.css */
 /* 定义 tool call 样式。 */
 
+/* 共享关键帧由 family/motion.css 提供，本皮肤 @import 它，单独引入仍成立。 */
+
+/* family/motion.css */
+
 /* 皮肤在场的标记：开发模式下按 scope 探一次，取不到就说明这份皮肤没被引入。 */
 [data-scope='tool-call'] {
   --xh-tool-call-skin: 1;
@@ -40077,6 +39484,10 @@
    收起由适配器在退场结束后写内联 display 落成，退场窗口内靠 connect 发的 inert 挡住焦点。
    详情区按阶段取舍，参数、结果与错误同一时刻只排一格，收起时整格随行高归零 */
 [data-scope='tool-call'][data-part='content'] {
+  /* 行高与内缩同帧动的共享关键帧读这两条槽：两端内缩同值 */
+  --xh-_disclosure-pt: var(--xh-tool-call-py, var(--xh-_tool-call-py));
+  --xh-_disclosure-pb: var(--xh-tool-call-py, var(--xh-_tool-call-py));
+
   display: grid;
   grid-template-rows: 1fr;
   /* 块轴照旧裁掉：收起靠行高归零，多出来的那一截不能露在外面。
@@ -40092,11 +39503,11 @@
 /* 展开那一档才提前备好行高这条通道：属性随 data-state 一起消失，收起后不长期占着 */
 [data-scope='tool-call'][data-part='content'][data-state='open'] {
   will-change: grid-template-rows;
-  animation: xh-tool-call-expand var(--xh-motion-duration-enter) var(--xh-motion-ease-enter-strong);
+  animation: xh-disclosure-expand var(--xh-motion-duration-enter) var(--xh-motion-ease-enter-strong);
 }
 
 [data-scope='tool-call'][data-part='content'][data-state='closed'] {
-  animation: xh-tool-call-collapse var(--xh-motion-duration-exit) var(--xh-motion-ease-enter-strong) forwards;
+  animation: xh-disclosure-collapse var(--xh-motion-duration-exit) var(--xh-motion-ease-enter-strong) forwards;
 }
 
 [data-scope='tool-call'][data-part='input'],
@@ -40148,8 +39559,7 @@
     var(--xh-_tool-call-shadow);
 }
 
-/* 动画名的查找只认「文档里有没有这个名字」：引用别处文件里的名字，那份文件不一定在场，
-   动画会静默地整个不跑。每份皮肤都能单独引入，所以它用到的关键帧都写在自己身上。
+/* 组件专属关键帧写在自己身上；共享的 disclosure 关键帧由 family/motion.css 提供。
    幅度走令牌，减弱动效时由令牌层归零 */
 @keyframes xh-tool-call-enter {
   from {
@@ -40160,31 +39570,6 @@
   to {
     opacity: 1;
     translate: 0 0;
-  }
-}
-
-/* 行高与内缩同帧动：内缩不归零的话，border-box 会把盒子钳在上下内缩之和上，收不干净 */
-@keyframes xh-tool-call-expand {
-  from {
-    grid-template-rows: 0fr;
-    padding-block: 0;
-  }
-
-  to {
-    grid-template-rows: 1fr;
-    padding-block: var(--xh-tool-call-py, var(--xh-_tool-call-py));
-  }
-}
-
-@keyframes xh-tool-call-collapse {
-  from {
-    grid-template-rows: 1fr;
-    padding-block: var(--xh-tool-call-py, var(--xh-_tool-call-py));
-  }
-
-  to {
-    grid-template-rows: 0fr;
-    padding-block: 0;
   }
 }
 
@@ -40532,36 +39917,9 @@
 /* styles/tooltip.css */
 /* 定义 tooltip 样式。 */
 
-/* 动画名的查找只认「文档里有没有这个名字」：引用别处文件里的名字，那份文件不一定在场，
-   动画会静默地整个不跑。每份皮肤都能单独引入，所以它用到的关键帧都写在自己身上。 */
-/* Tooltip 与菜单族共用同一项短位移动作；每份皮肤都自带定义，单独引入时也完整。 */
-@keyframes xh-overlay-slide-in {
-  from {
-    opacity: 0;
-    translate:
-      calc((var(--xh-_overlay-enter-right, 0) - var(--xh-_overlay-enter-left, 0)) * var(--xh-motion-distance-sm))
-      calc((var(--xh-_overlay-enter-down, 0) - var(--xh-_overlay-enter-up, 0)) * var(--xh-motion-distance-sm));
-  }
+/* 共享关键帧由 family/motion.css 提供，本皮肤 @import 它，单独引入仍成立。 */
 
-  to {
-    opacity: 1;
-    translate: 0 0;
-  }
-}
-
-@keyframes xh-overlay-slide-out {
-  from {
-    opacity: 1;
-    translate: 0 0;
-  }
-
-  to {
-    opacity: 0;
-    translate:
-      calc((var(--xh-_overlay-enter-right, 0) - var(--xh-_overlay-enter-left, 0)) * var(--xh-motion-distance-sm))
-      calc((var(--xh-_overlay-enter-down, 0) - var(--xh-_overlay-enter-up, 0)) * var(--xh-motion-distance-sm));
-  }
-}
+/* family/motion.css */
 
 /* 皮肤在场的标记：开发模式下按 scope 探一次，取不到就说明这份皮肤没被引入。 */
 [data-scope='tooltip'] {
@@ -40761,57 +40119,9 @@
 /* styles/tour.css */
 /* 定义 tour 样式。 */
 
-/* 动画名的查找只认「文档里有没有这个名字」：引用别处文件里的名字，那份文件不一定在场，
-   动画会静默地整个不跑。每份皮肤都能单独引入，所以它用到的关键帧都写在自己身上。 */
-@keyframes xh-fade-in {
-  from {
-    opacity: 0;
-  }
+/* 共享关键帧由 family/motion.css 提供，本皮肤 @import 它，单独引入仍成立。 */
 
-  to {
-    opacity: 1;
-  }
-}
-
-@keyframes xh-fade-out {
-  from {
-    opacity: 1;
-  }
-
-  to {
-    opacity: 0;
-  }
-}
-
-/* 进场从锚点那一侧冒出来：起点朝哪个方向退让由 placement 写进四个方向槽（那一侧写 1），
-   四个都没写就退回原地缩放 */
-@keyframes xh-overlay-pop-in {
-  from {
-    opacity: 0;
-    scale: var(--xh-motion-scale-enter);
-    translate:
-      calc((var(--xh-_overlay-enter-right, 0) - var(--xh-_overlay-enter-left, 0)) * var(--xh-motion-distance-sm))
-      calc((var(--xh-_overlay-enter-down, 0) - var(--xh-_overlay-enter-up, 0)) * var(--xh-motion-distance-sm));
-  }
-
-  to {
-    opacity: 1;
-    scale: 1;
-    translate: 0 0;
-  }
-}
-
-@keyframes xh-pop-out {
-  from {
-    opacity: 1;
-    scale: 1;
-  }
-
-  to {
-    opacity: 0;
-    scale: var(--xh-motion-scale-exit);
-  }
-}
+/* family/motion.css */
 
 /* 高亮框落定时那一下呼吸：换步时视线要跟着它走，纯位移太容易被漏看 */
 @keyframes xh-tour-spotlight-in {
@@ -42425,34 +41735,9 @@
 /* styles/tree-select.css */
 /* 定义 tree select 样式。 */
 
-/* 与选择器共用短位移动作；独立引入本皮肤时也提供完整关键帧。 */
-@keyframes xh-overlay-slide-in {
-  from {
-    opacity: 0;
-    translate:
-      calc((var(--xh-_overlay-enter-right, 0) - var(--xh-_overlay-enter-left, 0)) * var(--xh-motion-distance-sm))
-      calc((var(--xh-_overlay-enter-down, 0) - var(--xh-_overlay-enter-up, 0)) * var(--xh-motion-distance-sm));
-  }
+/* 共享关键帧由 family/motion.css 提供，本皮肤 @import 它，单独引入仍成立。 */
 
-  to {
-    opacity: 1;
-    translate: 0 0;
-  }
-}
-
-@keyframes xh-overlay-slide-out {
-  from {
-    opacity: 1;
-    translate: 0 0;
-  }
-
-  to {
-    opacity: 0;
-    translate:
-      calc((var(--xh-_overlay-enter-right, 0) - var(--xh-_overlay-enter-left, 0)) * var(--xh-motion-distance-sm))
-      calc((var(--xh-_overlay-enter-down, 0) - var(--xh-_overlay-enter-up, 0)) * var(--xh-motion-distance-sm));
-  }
-}
+/* family/motion.css */
 
 /* 皮肤在场的标记：开发模式下按 scope 探一次，取不到就说明这份皮肤没被引入。 */
 [data-scope='tree-select'] {

@@ -36,6 +36,7 @@
     "./action-control.css": "./family/action-control.css",
     "./collection-item.css": "./family/collection-item.css",
     "./field-chrome.css": "./family/field-chrome.css",
+    "./motion.css": "./family/motion.css",
     "./swatch.css": "./family/swatch.css",
     "./components.tokens.json": "./components.tokens.json",
     "./accordion.css": "./css/accordion.css",

@@ -5,6 +5,9 @@
 
 /* 定义 accordion 样式。 */
 
+/* 共享关键帧由 family/motion.css 提供，本皮肤 @import 它，单独引入仍成立。 */
+@import '../family/motion.css';
+
 @layer xihan.components {
   /* 皮肤在场的标记：开发模式下按 scope 探一次，取不到就说明这份皮肤没被引入。 */
   [data-scope='accordion'] {
@@ -219,6 +222,9 @@
   /* 这里刻意没有 [data-part='content'][hidden] { display: none }：补了动画一帧都播不出来。
      收起由适配器在退场结束后写内联 display 落成，退场窗口内靠 connect 发的 inert 挡住焦点 */
   [data-scope='accordion'][data-part='content'] {
+    /* 行高与内缩同帧动的共享关键帧读这条槽：只有末端有内缩，起端不写、按 0 动 */
+    --xh-_disclosure-pb: var(--xh-accordion-content-pb, var(--xh-_accordion-content-pb));
+
     display: grid;
     grid-template-rows: 1fr;
     overflow: clip;
@@ -233,40 +239,15 @@
   /* 展开那一档才提前备好行高这条通道：属性随 data-state 一起消失，收起后不长期占着 */
   [data-scope='accordion'][data-part='content'][data-state='open'] {
     will-change: grid-template-rows;
-    animation: xh-accordion-expand var(--xh-motion-duration-enter) var(--xh-motion-ease-enter-strong);
+    animation: xh-disclosure-expand var(--xh-motion-duration-enter) var(--xh-motion-ease-enter-strong);
   }
 
   [data-scope='accordion'][data-part='content'][data-state='closed'] {
-    animation: xh-accordion-collapse var(--xh-motion-duration-exit) var(--xh-motion-ease-exit) forwards;
+    animation: xh-disclosure-collapse var(--xh-motion-duration-exit) var(--xh-motion-ease-exit) forwards;
   }
 }
 
 @layer xihan.motion {
-  /* 行高与内缩同帧动：内缩不归零的话，border-box 会把盒子钳在上下内缩之和上，收不干净 */
-  @keyframes xh-accordion-expand {
-    from {
-      grid-template-rows: 0fr;
-      padding-block-end: 0;
-    }
-
-    to {
-      grid-template-rows: 1fr;
-      padding-block-end: var(--xh-accordion-content-pb, var(--xh-_accordion-content-pb));
-    }
-  }
-
-  @keyframes xh-accordion-collapse {
-    from {
-      grid-template-rows: 1fr;
-      padding-block-end: var(--xh-accordion-content-pb, var(--xh-_accordion-content-pb));
-    }
-
-    to {
-      grid-template-rows: 0fr;
-      padding-block-end: 0;
-    }
-  }
-
   /* 声明过任何 display 就盖掉了 UA 的 [hidden]{display:none}，收起态得自己还回去。
      写在文件末尾：兜底必须排在该部件所有 display 声明之后 */
   [data-scope='accordion'][data-part='root'][hidden],

@@ -1,0 +1,166 @@
+/*
+ * Copyright (c) 2021-Present XiHanFun and contributors.
+ * Licensed under the MIT License. See LICENSE in the project root for license information.
+ */
+
+/* 定义 motion 样式。 */
+
+/* 共享关键帧的唯一真源（规范 §9.4 / §9.5）。
+ *
+ * 动画名的查找只认「文档里有没有这个名字」：引用别处文件里的名字，那份文件不一定在场，
+ * 动画会静默地整个不跑。所以引用这里任一名字的皮肤都 @import 本文件，单独引入那份皮肤时
+ * 关键帧仍在场；全量入口由 emit-unlayered 按物理文件去重，有层入口靠打包器对同一 URL 的
+ * @import 去重，同名同帧体即使重复插入也无副作用。
+ *
+ * 本文件只放跨皮肤共用的关键帧，皮肤内不得重定义这些名字（check-keyframe-refs 判红）；
+ * 组件专属关键帧仍住在各自皮肤。幅度只引 --xh-motion-distance-sm 与 --xh-motion-scale-enter /
+ * -exit，减弱动效档由令牌层把它们归零。四个方向槽 --xh-_overlay-enter-* 由浮层皮肤按
+ * placement 写在 positioner 上，四个都没写时位移退回 0。
+ */
+@layer xihan.motion {
+  /* ── 锚定列表 / 菜单：沿落位方向短位移，不缩放文字与选中标记 ──
+     Menu、Select、Combobox、Cascader、ContextMenu、Menubar、Mention、TreeSelect、
+     Date / Time picker、Tooltip */
+  @keyframes xh-overlay-slide-in {
+    from {
+      opacity: 0;
+      translate:
+        calc((var(--xh-_overlay-enter-right, 0) - var(--xh-_overlay-enter-left, 0)) * var(--xh-motion-distance-sm))
+        calc((var(--xh-_overlay-enter-down, 0) - var(--xh-_overlay-enter-up, 0)) * var(--xh-motion-distance-sm));
+    }
+
+    to {
+      opacity: 1;
+      translate: 0 0;
+    }
+  }
+
+  @keyframes xh-overlay-slide-out {
+    from {
+      opacity: 1;
+      translate: 0 0;
+    }
+
+    to {
+      opacity: 0;
+      translate:
+        calc((var(--xh-_overlay-enter-right, 0) - var(--xh-_overlay-enter-left, 0)) * var(--xh-motion-distance-sm))
+        calc((var(--xh-_overlay-enter-down, 0) - var(--xh-_overlay-enter-up, 0)) * var(--xh-motion-distance-sm));
+    }
+  }
+
+  /* ── 锚定面板：从锚点那一侧冒出来，缩放叠短位移 ──
+     Popover、HoverCard、Popconfirm、Tour、Command。
+     起点朝哪个方向退让由 placement 写进四个方向槽（那一侧写 1），四个都没写就退回原地缩放 */
+  @keyframes xh-overlay-pop-in {
+    from {
+      opacity: 0;
+      scale: var(--xh-motion-scale-enter);
+      translate:
+        calc((var(--xh-_overlay-enter-right, 0) - var(--xh-_overlay-enter-left, 0)) * var(--xh-motion-distance-sm))
+        calc((var(--xh-_overlay-enter-down, 0) - var(--xh-_overlay-enter-up, 0)) * var(--xh-motion-distance-sm));
+    }
+
+    to {
+      opacity: 1;
+      scale: 1;
+      translate: 0 0;
+    }
+  }
+
+  /* 退场只缩放淡出，不再沿方向退让；锚定面板与无锚定弹出共用 */
+  @keyframes xh-pop-out {
+    from {
+      opacity: 1;
+      scale: 1;
+    }
+
+    to {
+      opacity: 0;
+      scale: var(--xh-motion-scale-exit);
+    }
+  }
+
+  /* ── 无锚定弹出：原地缩放淡入，没有方向 ──
+     NavigationMenu、SideNav popout、FloatingPanel、FloatButton 列表、Pagination 弹层 */
+  @keyframes xh-pop-in {
+    from {
+      opacity: 0;
+      scale: var(--xh-motion-scale-enter);
+    }
+
+    to {
+      opacity: 1;
+      scale: 1;
+    }
+  }
+
+  /* ── 遮罩与全屏面：只动不透明度 ──
+     Dialog / Drawer / ImageViewer / Tour / Command 的遮罩，Avatar / Image 的载入揭示，
+     Cascader 列项的淡入 */
+  @keyframes xh-fade-in {
+    from {
+      opacity: 0;
+    }
+
+    to {
+      opacity: 1;
+    }
+  }
+
+  @keyframes xh-fade-out {
+    from {
+      opacity: 1;
+    }
+
+    to {
+      opacity: 0;
+    }
+  }
+
+  /* 页内内容的上浮进场：淡入叠一小段向上位移。Command 的分组、EmptyState、QuestionFlow */
+  @keyframes xh-rise-in {
+    from {
+      opacity: 0;
+      translate: 0 var(--xh-motion-distance-sm);
+    }
+
+    to {
+      opacity: 1;
+      translate: 0 0;
+    }
+  }
+
+  /* ── Surface 级 disclosure：行高 0fr → 1fr，内缩同帧动 ──
+     Accordion、Collapsible、Reasoning、ToolCall 的 content。
+     内缩不归零的话，border-box 会把盒子钳在上下内缩之和上，收不干净。
+     两端内缩由各皮肤在 content 上写进 --xh-_disclosure-pt / --xh-_disclosure-pb，
+     没写的那一端按 0 动（与该端本来就没有内缩的皮肤一致） */
+  @keyframes xh-disclosure-expand {
+    from {
+      grid-template-rows: 0fr;
+      padding-block-start: 0;
+      padding-block-end: 0;
+    }
+
+    to {
+      grid-template-rows: 1fr;
+      padding-block-start: var(--xh-_disclosure-pt, 0);
+      padding-block-end: var(--xh-_disclosure-pb, 0);
+    }
+  }
+
+  @keyframes xh-disclosure-collapse {
+    from {
+      grid-template-rows: 1fr;
+      padding-block-start: var(--xh-_disclosure-pt, 0);
+      padding-block-end: var(--xh-_disclosure-pb, 0);
+    }
+
+    to {
+      grid-template-rows: 0fr;
+      padding-block-start: 0;
+      padding-block-end: 0;
+    }
+  }
+}

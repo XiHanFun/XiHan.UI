@@ -42,22 +42,21 @@
       "name": "--xh-accordion-content-pb",
       "component": "accordion",
       "part": [
-        "*",
         "content"
       ],
       "property": [
         "padding-block-end"
       ],
       "state": [
-        "@keyframes xh-accordion-collapse",
-        "@keyframes xh-accordion-expand",
+        "@keyframes xh-disclosure-collapse",
+        "@keyframes xh-disclosure-expand",
         "default"
       ],
       "defaultToken": [
         "--xh-_accordion-content-pb"
       ],
       "visibility": "public",
-      "description": "accordion 的 *、content 部件 padding-block-end 覆盖槽。"
+      "description": "accordion 的 content 部件 padding-block-end 覆盖槽。"
     },
     {
       "name": "--xh-accordion-content-px",
@@ -10949,22 +10948,21 @@
       "name": "--xh-collapsible-content-pb",
       "component": "collapsible",
       "part": [
-        "*",
         "content"
       ],
       "property": [
         "padding-block-end"
       ],
       "state": [
-        "@keyframes xh-collapsible-collapse",
-        "@keyframes xh-collapsible-expand",
+        "@keyframes xh-disclosure-collapse",
+        "@keyframes xh-disclosure-expand",
         "default"
       ],
       "defaultToken": [
         "--xh-_collapsible-content-pb"
       ],
       "visibility": "public",
-      "description": "collapsible 的 *、content 部件 padding-block-end 覆盖槽。"
+      "description": "collapsible 的 content 部件 padding-block-end 覆盖槽。"
     },
     {
       "name": "--xh-collapsible-content-px",
@@ -47515,7 +47513,6 @@
       "name": "--xh-reasoning-py",
       "component": "reasoning",
       "part": [
-        "*",
         "content",
         "trigger"
       ],
@@ -47524,15 +47521,15 @@
         "padding-block-end"
       ],
       "state": [
-        "@keyframes xh-reasoning-collapse",
-        "@keyframes xh-reasoning-expand",
+        "@keyframes xh-disclosure-collapse",
+        "@keyframes xh-disclosure-expand",
         "default"
       ],
       "defaultToken": [
         "--xh-_reasoning-py"
       ],
       "visibility": "public",
-      "description": "reasoning 的 *、content、trigger 部件 padding-block、padding-block-end 覆盖槽。"
+      "description": "reasoning 的 content、trigger 部件 padding-block、padding-block-end 覆盖槽。"
     },
     {
       "name": "--xh-reasoning-radius",
@@ -66243,24 +66240,25 @@
       "name": "--xh-tool-call-py",
       "component": "tool-call",
       "part": [
-        "*",
         "approval",
         "content",
         "trigger"
       ],
       "property": [
-        "padding-block"
+        "padding-block",
+        "padding-block-end",
+        "padding-block-start"
       ],
       "state": [
-        "@keyframes xh-tool-call-collapse",
-        "@keyframes xh-tool-call-expand",
+        "@keyframes xh-disclosure-collapse",
+        "@keyframes xh-disclosure-expand",
         "default"
       ],
       "defaultToken": [
         "--xh-_tool-call-py"
       ],
       "visibility": "public",
-      "description": "tool-call 的 *、approval、content、trigger 部件 padding-block 覆盖槽。"
+      "description": "tool-call 的 approval、content、trigger 部件 padding-block、padding-block-end、padding-block-start 覆盖槽。"
     },
     {
       "name": "--xh-tool-call-radius",

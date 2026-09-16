@@ -12,7 +12,8 @@
 import { readdir, readFile } from 'node:fs/promises'
 import { join } from 'node:path'
 
-const STYLES_DIR = 'packages/design/styles/css'
+/** 扫描面：组件皮肤 + 家族文件（family/motion.css 装着共享关键帧，其余家族文件没有时长与幅度声明）。 */
+const STYLES_DIRS = ['packages/design/styles/css', 'packages/design/styles/family']
 const TIMING_PROPS = new Set([
   'animation',
   'transition',
@@ -32,12 +33,14 @@ function stripComments(css) {
   return css.replace(/\/\*[\s\S]*?\*\//g, c => c.replace(/[^\n]/g, ''))
 }
 
-const files = (await readdir(STYLES_DIR)).filter(f => f.endsWith('.css')).sort()
+const files = (await Promise.all(STYLES_DIRS.map(async dir =>
+  (await readdir(dir)).filter(f => f.endsWith('.css')).sort().map(f => ({ dir, file: dir.endsWith('/family') ? `family/${f}` : f })),
+))).flat()
 const problems = []
 let timings = 0
 
-for (const file of files) {
-  const css = stripComments(await readFile(join(STYLES_DIR, file), 'utf8'))
+for (const { dir, file } of files) {
+  const css = stripComments(await readFile(join(dir, file.replace(/^family\//, '')), 'utf8'))
 
   // 声明可能跨行（transition 列表一行一项），按 `属性: 值;` 整体匹配再换算行号
   for (const m of css.matchAll(/(?<![\w-])([\w-]+)\s*:([^;{}]+);/g)) {
@@ -72,4 +75,4 @@ if (problems.length) {
   process.exit(1)
 }
 
-console.log(`[check-motion-primitives] 通过：${files.length} 份皮肤 · ${timings} 条 animation / transition 时长声明都没直引 --xh-duration-* 原语，没有 !important 与 0.01ms`)
+console.log(`[check-motion-primitives] 通过：${files.length} 份皮肤与家族文件 · ${timings} 条 animation / transition 时长声明都没直引 --xh-duration-* 原语，没有 !important 与 0.01ms`)

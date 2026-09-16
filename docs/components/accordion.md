@@ -264,7 +264,7 @@ ghost 不绘制外壳，outline 连成单一表面，subtle 用淡底；三档�
 | --- | --- | --- | --- | --- | --- |
 | `--xh-accordion-content-fg` | `content` | `color` | `default` | `--xh-fg-muted` | accordion 的 content 部件 color 覆盖槽。 |
 | `--xh-accordion-content-font-size` | `content` | `font-size` | `default` | `--xh-text-secondary-size` | accordion 的 content 部件 font-size 覆盖槽。 |
-| `--xh-accordion-content-pb` | `*`<br>`content` | `padding-block-end` | `@keyframes xh-accordion-collapse`<br>`@keyframes xh-accordion-expand`<br>`default` | `--xh-_accordion-content-pb` | accordion 的 *、content 部件 padding-block-end 覆盖槽。 |
+| `--xh-accordion-content-pb` | `content` | `padding-block-end` | `@keyframes xh-disclosure-collapse`<br>`@keyframes xh-disclosure-expand`<br>`default` | `--xh-_accordion-content-pb` | accordion 的 content 部件 padding-block-end 覆盖槽。 |
 | `--xh-accordion-content-px` | `content` | `padding-inline` | `default` | `--xh-_accordion-content-px` | accordion 的 content 部件 padding-inline 覆盖槽。 |
 | `--xh-accordion-icon-size` | `root` | `--xh-icon-size` | `default` | `--xh-glyph-size-text` | accordion 的 root 部件 --xh-icon-size 覆盖槽。 |
 | `--xh-accordion-indicator-fg` | `indicator` | `color` | `default` | `--xh-fg-muted` | accordion 的 indicator 部件 color 覆盖槽。 |
@@ -288,7 +288,7 @@ ghost 不绘制外壳，outline 连成单一表面，subtle 用淡底；三档�
 
 ### 动效
 
-关键帧 `xh-accordion-collapse` · `xh-accordion-expand` 随皮肤自带，不引用别处文件里的名字；`background` · `rotate` · `scale` 走 `transition` 过渡。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
+共享关键帧 `xh-disclosure-collapse` · `xh-disclosure-expand` 由 `family/motion.css` 提供，皮肤 `@import` 它，单独引入仍成立；`background` · `rotate` · `scale` 走 `transition` 过渡。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
 
 皮肤之外还有一段：退场由适配器的退场闸门把关，动画播完才真收起。
 

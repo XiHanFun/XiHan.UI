@@ -357,15 +357,22 @@ function skinTraits(id) {
   // 减弱动效、高对比与打印这三类块里写的是「关掉」，判动效只看剥掉它们之后的正文
   const base = stripMedia(css, /prefers-reduced-motion|forced-colors|print/)
   const declared = uniq(/@keyframes\s+([\w-]+)/g)
+  // 共享关键帧住在皮肤 @import 的家族文件里（family/motion.css），皮肤只引用名字
+  const familyDeclared = uniq(/@keyframes\s+([\w-]+)/g, [...css.matchAll(/^@import\s+'(\.\.\/family\/[\w-]+\.css)';/gm)]
+    .map(m => fs.readFileSync(path.join(uiRoot, 'packages/design/styles/css', m[1]), 'utf8'))
+    .join('\n'))
   const animations = uniq(/^[ \t]*animation(?:-name)?\s*:\s*([^;}]+)/gm, base).filter(v => !motionOff(v))
   // 名字被正文里的 animation 引到才算在播；名字走私有槽转发时解不出来，退回全部声明
-  const named = declared.filter(k => animations.some(v => new RegExp(`(?:^|[\\s,(])${k}(?=$|[\\s,)])`).test(v)))
+  const referenced = k => animations.some(v => new RegExp(`(?:^|[\\s,(])${k}(?=$|[\\s,)])`).test(v))
+  const named = declared.filter(referenced)
+  const sharedKeyframes = familyDeclared.filter(referenced)
   const transitions = [...base.matchAll(/^[ \t]*transition(-[a-z]+)?\s*:\s*([^;}]+)/gm)]
     .map(m => ({ suffix: m[1] ?? '', value: m[2] }))
     .filter(d => !motionOff(d.value))
   const queries = uniq(/@(?:container|media)[^({]*\(([^)]+)\)/g)
   return {
     keyframes: named.length ? named : (animations.length ? declared : []),
+    sharedKeyframes,
     layers: uniq(/@layer\s+([\w.]+)/g),
     transitions: transitions.length > 0,
     transitionProps: transitionProps(transitions),
@@ -1070,6 +1077,8 @@ function renderComponent(entry, category) {
   const inSkin = []
   if (sk?.keyframes.length)
     inSkin.push(`关键帧 ${sk.keyframes.map(code).join(' · ')} 随皮肤自带，不引用别处文件里的名字`)
+  if (sk?.sharedKeyframes.length)
+    inSkin.push(`共享关键帧 ${sk.sharedKeyframes.map(code).join(' · ')} 由 ${code('family/motion.css')} 提供，皮肤 ${code('@import')} 它，单独引入仍成立`)
   if (sk?.transitionProps.length)
     inSkin.push(`${sk.transitionProps.map(code).join(' · ')} 走 ${code('transition')} 过渡`)
   else if (sk?.transitions)

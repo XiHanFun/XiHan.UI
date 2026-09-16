@@ -22,7 +22,8 @@ import { readdir, readFile } from 'node:fs/promises'
 import { join } from 'node:path'
 import process from 'node:process'
 
-const STYLES_DIR = 'packages/design/styles/css'
+/** 扫描面：组件皮肤 + 家族文件（family/motion.css 装着共享关键帧，其余家族文件没有时长与幅度声明）。 */
+const STYLES_DIRS = ['packages/design/styles/css', 'packages/design/styles/family']
 
 /** 带缓动的声明位置：两个简写、两个长属性，以及先灌进私有槽再消费的写法。 */
 // 结尾收 `;` 也收 `}`：CSS 允许块内最后一条省略分号，只认分号的话那一条整个看不见，
@@ -61,14 +62,16 @@ function keyframeName(value) {
   return value.match(/(?<![-\w])(xh-[a-z0-9-]+)/)?.[1] ?? null
 }
 
-const files = (await readdir(STYLES_DIR)).filter(f => f.endsWith('.css')).sort()
+const files = (await Promise.all(STYLES_DIRS.map(async dir =>
+  (await readdir(dir)).filter(f => f.endsWith('.css')).sort().map(f => ({ dir, file: dir.endsWith('/family') ? `family/${f}` : f })),
+))).flat()
 const problems = []
 const seen = new Set()
 let checked = 0
 
-for (const file of files) {
+for (const { dir, file } of files) {
   const comp = file.replace(/\.css$/, '')
-  const css = stripComments(await readFile(join(STYLES_DIR, file), 'utf8'))
+  const css = stripComments(await readFile(join(dir, file.replace(/^family\//, '')), 'utf8'))
 
   // 声明可能跨行（transition 列表一行一项），按 `属性: 值;` 整体匹配再换算行号
   for (const m of css.matchAll(TIMING_DECL)) {
@@ -106,4 +109,4 @@ if (problems.length) {
   process.exit(1)
 }
 
-console.log(`[check-motion-easing] 通过：${files.length} 份皮肤 · ${checked} 条缓动声明全部走语义档，没有下探 --xh-ease-* 与手写曲线（匀速与阶跃登记 ${seen.size} 处）`)
+console.log(`[check-motion-easing] 通过：${files.length} 份皮肤与家族文件 · ${checked} 条缓动声明全部走语义档，没有下探 --xh-ease-* 与手写曲线（匀速与阶跃登记 ${seen.size} 处）`)

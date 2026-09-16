@@ -230,7 +230,7 @@ open 交给宿主：外部一个按钮统一开合几段思考，自动开合让
 | `--xh-reasoning-label-font-weight` | `label` | `font-weight` | `default` | `--xh-text-label-weight` | reasoning 的 label 部件 font-weight 覆盖槽。 |
 | `--xh-reasoning-label-streaming-fg` | `label` | `color` | `@media (prefers-reduced-motion: reduce)`<br>`@media print`<br>`motion=reduce`<br>`streaming`<br>`where([data-motion='reduce'])` | `--xh-fg-default` | reasoning 的 label 部件 color 覆盖槽。 |
 | `--xh-reasoning-px` | `content`<br>`trigger` | `margin-inline-start`<br>`padding-inline`<br>`padding-inline-end` | `default` | `--xh-_reasoning-px` | reasoning 的 content、trigger 部件 margin-inline-start、padding-inline、padding-inline-end 覆盖槽。 |
-| `--xh-reasoning-py` | `*`<br>`content`<br>`trigger` | `padding-block`<br>`padding-block-end` | `@keyframes xh-reasoning-collapse`<br>`@keyframes xh-reasoning-expand`<br>`default` | `--xh-_reasoning-py` | reasoning 的 *、content、trigger 部件 padding-block、padding-block-end 覆盖槽。 |
+| `--xh-reasoning-py` | `content`<br>`trigger` | `padding-block`<br>`padding-block-end` | `@keyframes xh-disclosure-collapse`<br>`@keyframes xh-disclosure-expand`<br>`default` | `--xh-_reasoning-py` | reasoning 的 content、trigger 部件 padding-block、padding-block-end 覆盖槽。 |
 | `--xh-reasoning-radius` | `root` | `border-radius` | `default` | `--xh-shape-surface` | reasoning 的 root 部件 border-radius 覆盖槽。 |
 | `--xh-reasoning-rail` | `content` | `border-inline-start` | `default` | `--xh-border-subtle` | reasoning 的 content 部件 border-inline-start 覆盖槽。 |
 | `--xh-reasoning-rail-inset` | `content` | `margin-inline-start` | `default` | `--xh-reasoning-px` | reasoning 的 content 部件 margin-inline-start 覆盖槽。 |
@@ -249,7 +249,7 @@ open 交给宿主：外部一个按钮统一开合几段思考，自动开合让
 
 ### 动效
 
-关键帧 `xh-reasoning-collapse` · `xh-reasoning-expand` · `xh-reasoning-fade-in` · `xh-reasoning-shimmer` 随皮肤自带，不引用别处文件里的名字；`background` · `color` · `rotate` · `scale` 走 `transition` 过渡。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
+关键帧 `xh-reasoning-fade-in` · `xh-reasoning-shimmer` 随皮肤自带，不引用别处文件里的名字；共享关键帧 `xh-disclosure-collapse` · `xh-disclosure-expand` 由 `family/motion.css` 提供，皮肤 `@import` 它，单独引入仍成立；`background` · `color` · `rotate` · `scale` 走 `transition` 过渡。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
 
 皮肤之外还有一段：退场由适配器的退场闸门把关，动画播完才真收起。
 
