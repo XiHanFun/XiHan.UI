@@ -126,12 +126,26 @@ export const questionFlowSuite: ConformanceSuite = {
           // 单体控件用原生 disabled，家族按 data-disabled 给禁用面
           'prev-trigger': { 'disabled': '', 'data-disabled': '', 'data-xh-action-control': '', 'data-xh-action-profile': 'icon', 'data-xh-action-variant': 'ghost', 'data-xh-action-display': 'always', 'data-xh-action-size': 'xs' },
           'next-trigger': { 'disabled': null, 'data-disabled': null, 'data-xh-action-control': '', 'data-xh-action-profile': 'icon', 'data-xh-action-variant': 'ghost', 'data-xh-action-display': 'always', 'data-xh-action-size': 'xs' },
-          'skip-trigger': { 'data-disabled': null, 'data-xh-action-control': '', 'data-xh-action-profile': 'text', 'data-xh-action-variant': 'ghost', 'data-xh-action-display': 'always', 'data-xh-action-size': 'md' },
-          'submit-trigger': { 'data-mode': 'continue', 'disabled': '', 'data-disabled': '', 'data-xh-action-control': '', 'data-xh-action-profile': 'text', 'data-xh-action-variant': 'solid', 'data-xh-action-display': 'always', 'data-xh-action-size': 'md' },
+          'skip-trigger': { 'data-disabled': null, 'data-xh-action-control': '', 'data-xh-action-profile': 'text', 'data-xh-action-variant': 'ghost', 'data-xh-action-display': 'always', 'data-xh-action-size': 'md', 'data-tone': null },
+          'submit-trigger': { 'data-mode': 'continue', 'disabled': '', 'data-disabled': '', 'data-xh-action-control': '', 'data-xh-action-profile': 'text', 'data-xh-action-variant': 'solid', 'data-xh-action-display': 'always', 'data-xh-action-size': 'md', 'data-tone': null },
           'result': { 'aria-hidden': 'true', 'hidden': '' },
         },
         activeElement: null,
         events: [],
+      },
+    },
+    {
+      // 家族的深色 solid 规则只看触发器自身的 data-tone：语气除了落在根上，
+      // 还与 Button 同构地投在提交钮自己身上，暗色下实心面才不会落回品牌色；ghost 形态的跳过钮不吃这条
+      name: '语气落到根与提交钮上：提交钮实心面随语气，跳过钮不投',
+      spec: { apg: APG },
+      props: { questions: QUESTIONS, tone: 'warning' },
+      initial: {
+        parts: {
+          'root': { 'data-tone': 'warning' },
+          'submit-trigger': { 'data-tone': 'warning' },
+          'skip-trigger': { 'data-tone': null },
+        },
       },
     },
     {

@@ -29484,7 +29484,8 @@
 
 /* 一个选项：整行可点、可聚焦，记号在左。盒型、悬停 / 按下 / 禁用面由 Action Control 的 row 档给
    （ghost 形态：白底承载 hover 100 → pressed 200，按下只换面不缩放，§9.2；禁用守卫认 data-disabled），
-   这里只把使用者槽映射到桥接槽，内衬与间距沿用本组件的档位；字色三态同一支，选中档在下面换一档 */
+   这里只把使用者槽映射到桥接槽，内衬与间距沿用本组件的档位；字色三态同一支，选中档在下面换一档。
+   行高不吃家族的单行档：row 档允许换行、高度随内容，一条会折行的选项文案走正文行高（§6.4） */
 [data-scope='question-flow'][data-part='item'] {
   --xh-action-gap: var(--xh-question-flow-item-gap, var(--xh-space-1_5));
   --xh-action-padding-inline: var(--xh-question-flow-item-px, var(--xh-space-2));
@@ -29496,6 +29497,8 @@
   --xh-action-fg-rest: var(--xh-question-flow-item-fg, var(--xh-fg-muted));
   --xh-action-fg-hover: var(--xh-question-flow-item-fg, var(--xh-fg-muted));
   --xh-action-fg-pressed: var(--xh-question-flow-item-fg, var(--xh-fg-muted));
+
+  line-height: var(--xh-leading-normal);
 }
 
 [data-scope='question-flow'][data-part='item'][hidden] {

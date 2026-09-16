@@ -312,6 +312,7 @@ size 改变问句、选项行与页脚按钮的几何档，三档共用同一份
 | `skip-trigger` | `data-xh-action-variant` | 'ghost' |
 | `submit-trigger` | `data-disabled` | ''（条件成立时才出现） |
 | `submit-trigger` | `data-mode` | 'send' \| 'continue' |
+| `submit-trigger` | `data-tone` | props.tone |
 | `submit-trigger` | `data-xh-action-control` | '' |
 | `submit-trigger` | `data-xh-action-display` | 'always' |
 | `submit-trigger` | `data-xh-action-profile` | 'text' |
