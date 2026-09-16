@@ -74,6 +74,7 @@ const EXPECTED = {
   'heatmap': { tooltip: ['floating'] },
   // 浮在视口一角的回底钮：与 back-top / float-button 同属角落浮钮族，走 frosted 四件套
   'log': { 'scroll-to-end-trigger': ['frosted'] },
+  'message-feed': { 'scroll-to-end-trigger': ['frosted'] },
   'hover-card': { content: ['frosted'] },
   // 覆盖档的侧栏是盖在内容之上、带遮罩的一面，与抽屉同档；占位档的侧栏不画投影
   'layout': { sider: ['sheet'] },

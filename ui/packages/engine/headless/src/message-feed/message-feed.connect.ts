@@ -190,9 +190,16 @@ export function connectMessageFeed<T extends PropTypes>(
       id: scope.partId('message-feed', `item-label:${id}`),
     }),
 
+    // 回底钮是浮在内容之上的单图标动作：接 Action Control 的 floating 档（circle 正方盒，§6.3），ghost 形态、
+    // 固定 xs（--xh-control-box-sm 32px，与此前 --xh-control-h-sm 同尺寸），材质由皮肤按角落浮钮族给 frosted
     getScrollToEndTriggerProps: () => normalize.button({
       ...parts['scroll-to-end-trigger'].attrs,
       'type': 'button',
+      'data-xh-action-control': '',
+      'data-xh-action-profile': 'floating',
+      'data-xh-action-variant': 'ghost',
+      'data-xh-action-display': 'always',
+      'data-xh-action-size': 'xs',
       'aria-label': translations?.scrollToBottom ?? 'Scroll to bottom',
       'data-state': atBottom ? 'hidden' : 'visible',
       // 收起不卸载：按钮反复建删会让它的进场动画每次从头播

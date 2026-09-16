@@ -5,6 +5,9 @@
 
 /* 定义 message feed 样式。 */
 
+/* 独立皮肤同时传递引入回底钮的动作控件配方，full bundle 递归去重。 */
+@import '../family/action-control.css';
+
 @layer xihan.motion {
   /* 关键帧写在本文件里：动画名的查找只认「文档里有没有这个名字」，
      引用别处文件里的名字时那份文件不一定在场，动画会静默地整个不跑。
@@ -42,9 +45,6 @@
 
   /* 根是定位基准：回到底部按钮贴在它的右下角。高度由使用者的版面给，这里不定高 */
   [data-scope='message-feed'][data-part='root'] {
-    /* 作者塞进按钮里的图标跟着字号走，与皮肤画的兜底字形同一把尺 */
-    --xh-icon-size: var(--xh-message-feed-icon-size, var(--xh-glyph-size-text));
-
     /* 尺寸缺省档：不写 data-size 时的取值。三档都只写这两个私有槽，
        公开槽留在读处当首选，作者在祖先上设的覆盖才赢得过档位声明 */
     --xh-_message-feed-gap: var(--xh-space-4);
@@ -60,12 +60,18 @@
     display: none;
   }
 
-  /* 滚动容器。overscroll-behavior 挡住滚到头之后把整页一起带走 */
+  /* 滚动容器：粘底视口，走 reset 层的原生细条。overscroll-behavior 挡住滚到头之后把整页一起带走 */
   [data-scope='message-feed'][data-part='viewport'] {
     overflow-y: auto;
     flex: 1 1 auto;
     min-block-size: 0;
     overscroll-behavior: contain;
+  }
+
+  /* 流式视口的内容高度一直在变，还在用原生滚动条的视口留一条空道，滚动条出现与消失时不推动文字（§6.6）。
+     带 data-xh-scrollbar 的容器已经把原生条藏成零宽，这条空道对它没有布局作用，排除掉 */
+  [data-scope='message-feed'][data-part='viewport']:not([data-xh-scrollbar]) {
+    scrollbar-gutter: stable;
   }
 
   [data-scope='message-feed'][data-part='list'] {
@@ -104,28 +110,34 @@
     display: none;
   }
 
-  /* 回到底部：贴在滚动区右下角，收起时不卸载只隐藏 */
+  /* 回到底部：浮在滚动区右下角，收起时不卸载只隐藏。盒型、悬停 / 按下面与缩放由 Action Control 的
+     floating 档给（circle 正方盒、ghost 形态：白底承载 hover 100 → pressed 200）；材质随角落浮钮族走
+     frosted 四件套（底 + 边 + 影 + 磨砂，§8），这里只把使用者槽映射到桥接槽：
+     字形按 xs 档取 --xh-_action-profile-glyph-size（16px），与 log / back-top 同一把尺 */
   [data-scope='message-feed'][data-part='scroll-to-end-trigger'] {
+    --xh-_message-feed-scroll-to-end-trigger-shadow: var(--xh-message-feed-scroll-to-end-trigger-shadow, var(--xh-material-frosted-shadow));
+    --xh-action-visual-size: var(--xh-message-feed-scroll-to-end-trigger-size, var(--xh-_action-profile-visual-size));
+    --xh-action-radius: var(--xh-message-feed-scroll-to-end-trigger-radius, var(--xh-shape-circle));
+    --xh-action-bg-rest: var(--xh-message-feed-scroll-to-end-trigger-bg, var(--xh-material-frosted-bg));
+    --xh-action-bg-hover: var(--xh-message-feed-scroll-to-end-trigger-bg-hover, var(--xh-_action-variant-bg-hover));
+    --xh-action-border-rest: var(--xh-message-feed-scroll-to-end-trigger-border, var(--xh-material-frosted-border));
+    --xh-action-border-hover: var(--xh-message-feed-scroll-to-end-trigger-border, var(--xh-material-frosted-border));
+    --xh-action-border-pressed: var(--xh-message-feed-scroll-to-end-trigger-border, var(--xh-material-frosted-border));
+    --xh-action-border-focus-visible: var(--xh-message-feed-scroll-to-end-trigger-border, var(--xh-material-frosted-border));
+    --xh-action-shadow-rest: var(--xh-_message-feed-scroll-to-end-trigger-shadow);
+    --xh-action-shadow-hover: var(--xh-_message-feed-scroll-to-end-trigger-shadow);
+    --xh-action-shadow-pressed: var(--xh-_message-feed-scroll-to-end-trigger-shadow);
+    --xh-action-fg-rest: var(--xh-message-feed-scroll-to-end-trigger-fg, var(--xh-material-frosted-fg));
+    --xh-icon-size: var(--xh-message-feed-icon-size, var(--xh-_action-profile-glyph-size));
+
     position: absolute;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    padding: 0;
-    border: var(--xh-stroke-thin) solid var(--xh-message-feed-scroll-to-end-trigger-border, var(--xh-border-default));
-    border-radius: var(--xh-message-feed-scroll-to-end-trigger-radius, var(--xh-shape-circle));
-    background: var(--xh-message-feed-scroll-to-end-trigger-bg, var(--xh-bg-surface-raised));
-    box-shadow: var(--xh-message-feed-scroll-to-end-trigger-shadow, var(--xh-elevation-raised));
-    color: var(--xh-message-feed-scroll-to-end-trigger-fg, var(--xh-fg-default));
-    inline-size: var(--xh-message-feed-scroll-to-end-trigger-size, var(--xh-control-h-sm));
-    block-size: var(--xh-message-feed-scroll-to-end-trigger-size, var(--xh-control-h-sm));
     inset-block-end: var(--xh-message-feed-scroll-to-end-trigger-inset, var(--xh-space-4));
     inset-inline-end: var(--xh-message-feed-scroll-to-end-trigger-inset, var(--xh-space-4));
-    cursor: pointer;
-    transition:
-      background var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
-      scale var(--xh-motion-duration-release) var(--xh-motion-ease-release);
+    -webkit-backdrop-filter: var(--xh-material-frosted-backdrop);
+    backdrop-filter: var(--xh-material-frosted-backdrop);
   }
 
+  /* 连接层收起按钮时写 hidden 属性，家族那条 display 会盖掉 UA 规则，这里补回 */
   [data-scope='message-feed'][data-part='scroll-to-end-trigger'][hidden] {
     display: none;
   }
@@ -135,22 +147,12 @@
     animation: xh-message-feed-button-in var(--xh-motion-duration-enter) var(--xh-motion-ease-enter-strong);
   }
 
-  [data-scope='message-feed'][data-part='scroll-to-end-trigger']:hover {
-    background: var(--xh-message-feed-scroll-to-end-trigger-bg-hover, var(--xh-bg-subtle-hover));
-  }
-
-  [data-scope='message-feed'][data-part='scroll-to-end-trigger']:active {
-    scale: var(--xh-motion-scale-press);
-    transition-duration: var(--xh-motion-duration-press);
-    transition-timing-function: var(--xh-motion-ease-press);
-  }
-
   /* 没写内容就由皮肤画一枚向下的字形；作者往按钮里塞了自己的图形，这条规则即不命中 */
   [data-scope='message-feed'][data-part='scroll-to-end-trigger']:empty::before {
     content: '';
     display: inline-block;
-    inline-size: var(--xh-icon-size, var(--xh-glyph-size-text));
-    block-size: var(--xh-icon-size, var(--xh-glyph-size-text));
+    inline-size: var(--xh-icon-size, var(--xh-glyph-size-sm));
+    block-size: var(--xh-icon-size, var(--xh-glyph-size-sm));
     vertical-align: var(--xh-glyph-baseline-shift);
     background-color: currentColor;
     -webkit-mask: var(--xh-glyph-mark-chevron-down) center / contain no-repeat;
