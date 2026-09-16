@@ -252,7 +252,17 @@
 | `error-summary` | `data-state` | 'invalid' \| 'idle' |
 | `error-summary-item` | `data-invalid` | ''（条件成立时才出现） |
 | `submit-trigger` | `data-disabled` | ''（条件成立时才出现） |
+| `submit-trigger` | `data-xh-action-control` | '' |
+| `submit-trigger` | `data-xh-action-display` | 'always' |
+| `submit-trigger` | `data-xh-action-profile` | 'text' |
+| `submit-trigger` | `data-xh-action-size` | 'md' |
+| `submit-trigger` | `data-xh-action-variant` | 'solid' |
 | `reset-trigger` | `data-disabled` | ''（条件成立时才出现） |
+| `reset-trigger` | `data-xh-action-control` | '' |
+| `reset-trigger` | `data-xh-action-display` | 'always' |
+| `reset-trigger` | `data-xh-action-profile` | 'text' |
+| `reset-trigger` | `data-xh-action-size` | 'md' |
+| `reset-trigger` | `data-xh-action-variant` | 'outline' |
 
 <!-- xh-component-tokens:start -->
 ### CSS 变量
@@ -267,14 +277,14 @@
 | `--xh-form-gap` | `root` | `gap` | `default` | `--xh-stack-gap-md` | form 的 root 部件 gap 覆盖槽。 |
 | `--xh-form-inline-gap` | `root` | `column-gap` | `layout=inline` | `--xh-space-4` | form 的 root 部件 column-gap 覆盖槽。 |
 | `--xh-form-label-w` | `root` | `grid-template-columns` | `layout=horizontal` | `30%` | form 的 root 部件 grid-template-columns 覆盖槽。 |
-| `--xh-form-submit-bg` | `submit-trigger` | `background`<br>`border-color` | `not(:disabled)` | `--xh-bg-brand` | form 的 submit-trigger 部件 background、border-color 覆盖槽。 |
-| `--xh-form-submit-bg-active` | `submit-trigger` | `background`<br>`border-color` | `active`<br>`not(:disabled)` | `--xh-bg-brand-active` | form 的 submit-trigger 部件 background、border-color 覆盖槽。 |
-| `--xh-form-submit-bg-hover` | `submit-trigger` | `background`<br>`border-color` | `hover`<br>`not(:disabled)` | `--xh-bg-brand-hover` | form 的 submit-trigger 部件 background、border-color 覆盖槽。 |
-| `--xh-form-submit-border` | `submit-trigger` | `border-color` | `not(:disabled)` | `--xh-form-submit-bg` | form 的 submit-trigger 部件 border-color 覆盖槽。 |
-| `--xh-form-submit-border-active` | `submit-trigger` | `border-color` | `active`<br>`not(:disabled)` | `--xh-form-submit-bg-active` | form 的 submit-trigger 部件 border-color 覆盖槽。 |
-| `--xh-form-submit-border-hover` | `submit-trigger` | `border-color` | `hover`<br>`not(:disabled)` | `--xh-form-submit-bg-hover` | form 的 submit-trigger 部件 border-color 覆盖槽。 |
-| `--xh-form-submit-fg` | `submit-trigger` | `color` | `not(:disabled)` | `--xh-fg-on-brand` | form 的 submit-trigger 部件 color 覆盖槽。 |
-| `--xh-form-submit-shadow` | `submit-trigger` | `box-shadow` | `not(:disabled)` | `--xh-_form-submit-highlight` | form 的 submit-trigger 部件 box-shadow 覆盖槽。 |
+| `--xh-form-submit-bg` | `submit-trigger` | `background-color` | `default` | `--xh-_action-variant-bg-rest` | form 的 submit-trigger 部件 background-color 覆盖槽。 |
+| `--xh-form-submit-bg-active` | `submit-trigger` | `background-color` | `disabled`<br>`is(:active, [data-pressed])`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])`<br>`pressed` | `--xh-_action-variant-bg-pressed` | form 的 submit-trigger 部件 background-color 覆盖槽。 |
+| `--xh-form-submit-bg-hover` | `submit-trigger` | `background-color` | `disabled`<br>`hover`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])` | `--xh-_action-variant-bg-hover` | form 的 submit-trigger 部件 background-color 覆盖槽。 |
+| `--xh-form-submit-border` | `submit-trigger` | `border` | `default` | `--xh-_action-variant-border-rest` | form 的 submit-trigger 部件 border 覆盖槽。 |
+| `--xh-form-submit-border-active` | `submit-trigger` | `border-color` | `disabled`<br>`is(:active, [data-pressed])`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])`<br>`pressed` | `--xh-_action-variant-border-pressed` | form 的 submit-trigger 部件 border-color 覆盖槽。 |
+| `--xh-form-submit-border-hover` | `submit-trigger` | `border-color` | `disabled`<br>`hover`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])` | `--xh-_action-variant-border-hover` | form 的 submit-trigger 部件 border-color 覆盖槽。 |
+| `--xh-form-submit-fg` | `submit-trigger` | `color` | `default`<br>`disabled`<br>`hover`<br>`is(:active, [data-pressed])`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])`<br>`pressed` | `--xh-_action-variant-fg-hover`<br>`--xh-_action-variant-fg-pressed`<br>`--xh-_action-variant-fg-rest` | form 的 submit-trigger 部件 color 覆盖槽。 |
+| `--xh-form-submit-shadow` | `submit-trigger` | `box-shadow` | `default`<br>`disabled`<br>`hover`<br>`is(:active, [data-pressed])`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])`<br>`pressed` | `--xh-_highlight-brand` | form 的 submit-trigger 部件 box-shadow 覆盖槽。 |
 | `--xh-form-summary-bg` | `error-summary` | `background` | `default` | `--xh-bg-surface` | form 的 error-summary 部件 background 覆盖槽。 |
 | `--xh-form-summary-border` | `error-summary` | `border` | `default` | `--xh-border-invalid` | form 的 error-summary 部件 border 覆盖槽。 |
 | `--xh-form-summary-fg` | `error-summary` | `color` | `default` | `--xh-fg-danger` | form 的 error-summary 部件 color 覆盖槽。 |
@@ -286,24 +296,24 @@
 | `--xh-form-summary-px` | `error-summary` | `padding-inline` | `default` | `--xh-control-px-md` | form 的 error-summary 部件 padding-inline 覆盖槽。 |
 | `--xh-form-summary-py` | `error-summary` | `padding-block` | `default` | `--xh-space-3` | form 的 error-summary 部件 padding-block 覆盖槽。 |
 | `--xh-form-summary-radius` | `error-summary` | `border-radius` | `default` | `--xh-shape-surface` | form 的 error-summary 部件 border-radius 覆盖槽。 |
-| `--xh-form-summary-shadow` | `error-summary` | `box-shadow` | `default` | `--xh-elevation-raised` | form 的 error-summary 部件 box-shadow 覆盖槽。 |
-| `--xh-form-trigger-bg` | `reset-trigger`<br>`submit-trigger` | `background` | `default` | `--xh-bg-subtle` | form 的 reset-trigger、submit-trigger 部件 background 覆盖槽。 |
-| `--xh-form-trigger-bg-active` | `reset-trigger`<br>`submit-trigger` | `background` | `active`<br>`not(:disabled)` | `--xh-bg-subtle-active` | form 的 reset-trigger、submit-trigger 部件 background 覆盖槽。 |
-| `--xh-form-trigger-bg-disabled` | `reset-trigger`<br>`submit-trigger` | `background` | `disabled` | `--xh-bg-muted` | form 的 reset-trigger、submit-trigger 部件 background 覆盖槽。 |
-| `--xh-form-trigger-bg-hover` | `reset-trigger`<br>`submit-trigger` | `background` | `hover`<br>`not(:disabled)` | `--xh-bg-subtle-hover` | form 的 reset-trigger、submit-trigger 部件 background 覆盖槽。 |
-| `--xh-form-trigger-border` | `reset-trigger`<br>`submit-trigger` | `border` | `default` | `--xh-border-control` | form 的 reset-trigger、submit-trigger 部件 border 覆盖槽。 |
-| `--xh-form-trigger-border-disabled` | `reset-trigger`<br>`submit-trigger` | `border-color` | `disabled` | `--xh-border-subtle` | form 的 reset-trigger、submit-trigger 部件 border-color 覆盖槽。 |
-| `--xh-form-trigger-border-hover` | `reset-trigger`<br>`submit-trigger` | `border-color` | `hover`<br>`not(:disabled)` | `--xh-border-control-hover` | form 的 reset-trigger、submit-trigger 部件 border-color 覆盖槽。 |
-| `--xh-form-trigger-fg` | `reset-trigger`<br>`submit-trigger` | `color` | `default` | `--xh-fg-default` | form 的 reset-trigger、submit-trigger 部件 color 覆盖槽。 |
+| `--xh-form-summary-shadow` | `error-summary` | `box-shadow` | `default` | `none` | form 的 error-summary 部件 box-shadow 覆盖槽。 |
+| `--xh-form-trigger-bg` | `reset-trigger` | `background-color` | `default` | `--xh-_action-variant-bg-rest` | form 的 reset-trigger 部件 background-color 覆盖槽。 |
+| `--xh-form-trigger-bg-active` | `reset-trigger` | `background-color` | `disabled`<br>`is(:active, [data-pressed])`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])`<br>`pressed` | `--xh-_action-variant-bg-pressed` | form 的 reset-trigger 部件 background-color 覆盖槽。 |
+| `--xh-form-trigger-bg-disabled` | `reset-trigger`<br>`submit-trigger` | `background-color` | `disabled` | `--xh-_action-variant-bg-disabled` | form 的 reset-trigger、submit-trigger 部件 background-color 覆盖槽。 |
+| `--xh-form-trigger-bg-hover` | `reset-trigger` | `background-color` | `disabled`<br>`hover`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])` | `--xh-_action-variant-bg-hover` | form 的 reset-trigger 部件 background-color 覆盖槽。 |
+| `--xh-form-trigger-border` | `reset-trigger` | `border` | `default` | `--xh-_action-variant-border-rest` | form 的 reset-trigger 部件 border 覆盖槽。 |
+| `--xh-form-trigger-border-disabled` | `reset-trigger`<br>`submit-trigger` | `border-color` | `disabled` | `--xh-_action-variant-border-disabled` | form 的 reset-trigger、submit-trigger 部件 border-color 覆盖槽。 |
+| `--xh-form-trigger-border-hover` | `reset-trigger` | `border-color` | `disabled`<br>`hover`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])` | `--xh-_action-variant-border-hover` | form 的 reset-trigger 部件 border-color 覆盖槽。 |
+| `--xh-form-trigger-fg` | `reset-trigger` | `color` | `default`<br>`disabled`<br>`hover`<br>`is(:active, [data-pressed])`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])`<br>`pressed` | `--xh-_action-variant-fg-hover`<br>`--xh-_action-variant-fg-pressed`<br>`--xh-_action-variant-fg-rest` | form 的 reset-trigger 部件 color 覆盖槽。 |
 | `--xh-form-trigger-font-size` | `reset-trigger`<br>`submit-trigger` | `font-size` | `default` | `--xh-text-body-size` | form 的 reset-trigger、submit-trigger 部件 font-size 覆盖槽。 |
-| `--xh-form-trigger-h` | `reset-trigger`<br>`submit-trigger` | `block-size` | `default` | `--xh-control-h-md` | form 的 reset-trigger、submit-trigger 部件 block-size 覆盖槽。 |
-| `--xh-form-trigger-px` | `reset-trigger`<br>`submit-trigger` | `padding-inline` | `default` | `--xh-control-px-md` | form 的 reset-trigger、submit-trigger 部件 padding-inline 覆盖槽。 |
+| `--xh-form-trigger-h` | `reset-trigger`<br>`submit-trigger` | `block-size` | `default` | `--xh-_action-profile-visual-size` | form 的 reset-trigger、submit-trigger 部件 block-size 覆盖槽。 |
+| `--xh-form-trigger-px` | `reset-trigger`<br>`submit-trigger` | `padding-inline` | `default` | `--xh-_action-profile-padding-inline` | form 的 reset-trigger、submit-trigger 部件 padding-inline 覆盖槽。 |
 | `--xh-form-trigger-radius` | `reset-trigger`<br>`submit-trigger` | `border-radius` | `default` | `--xh-shape-control` | form 的 reset-trigger、submit-trigger 部件 border-radius 覆盖槽。 |
 <!-- xh-component-tokens:end -->
 
 ### 动效
 
-关键帧 `xh-form-summary-enter` 随皮肤自带，不引用别处文件里的名字；`background` · `box-shadow` · `scale` 走 `transition` 过渡。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
+关键帧 `xh-form-summary-enter` 随皮肤自带，不引用别处文件里的名字。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
 
 系统开启减弱动效时由令牌层统一收敛，皮肤不另作判断。
 

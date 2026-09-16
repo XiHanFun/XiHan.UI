@@ -200,7 +200,14 @@ export function connectForm<T extends PropTypes>(
     getSubmitTriggerProps: () => normalize.button({
       ...parts['submit-trigger'].attrs,
       'type': 'submit',
-      // 单体控件用原生 disabled（集合条目才用 aria-disabled）
+      // 离散动作控件：盒、悬停 / 按下与按压、焦点环、禁用面由 Action Control 家族按这几位给。
+      // 提交是表单的主要动作，取 solid 档（与 Button 缺省同为品牌实心）；Form 没有 size 轴，固定 md
+      'data-xh-action-control': '',
+      'data-xh-action-profile': 'text',
+      'data-xh-action-variant': 'solid',
+      'data-xh-action-display': 'always',
+      'data-xh-action-size': 'md',
+      // 单体控件用原生 disabled（集合条目才用 aria-disabled）；家族按 data-disabled 给禁用面
       'disabled': disabled || undefined,
       'data-disabled': dataAttr(disabled),
     }),
@@ -208,6 +215,12 @@ export function connectForm<T extends PropTypes>(
     getResetTriggerProps: () => normalize.button({
       ...parts['reset-trigger'].attrs,
       'type': 'reset',
+      // 重置不是主要动作，取 outline 档：中性描边、透明底
+      'data-xh-action-control': '',
+      'data-xh-action-profile': 'text',
+      'data-xh-action-variant': 'outline',
+      'data-xh-action-display': 'always',
+      'data-xh-action-size': 'md',
       // 只读表单也重置不了，重置就是在写值
       'disabled': !editable || undefined,
       'data-disabled': dataAttr(!editable),

@@ -2,8 +2,8 @@
 
 exports[`family-backlog 条目数 > 七段各一数，与快照一致 1`] = `
 {
-  "edge": 49,
-  "ladder": 94,
+  "edge": 48,
+  "ladder": 92,
   "motion": 1,
   "press": 66,
   "scroll": 28,
@@ -36,7 +36,6 @@ exports[`family-backlog 键集合 > edge 1`] = `
   "diff-view:root:raised",
   "download-trigger:root:raised",
   "file-upload:trigger:raised",
-  "form:error-summary:raised",
   "log:scroll-to-end-trigger:raised",
   "message-feed:scroll-to-end-trigger:raised",
   "page-header:root:outline",
@@ -112,8 +111,6 @@ exports[`family-backlog 键集合 > ladder 1`] = `
   "file-upload:trigger:pressed",
   "floating-panel:window-state-trigger:hover",
   "floating-panel:window-state-trigger:pressed",
-  "form:submit-trigger:hover",
-  "form:submit-trigger:pressed",
   "image-viewer:close-trigger:hover",
   "image-viewer:close-trigger:pressed",
   "image-viewer:zoom-in-trigger:hover",

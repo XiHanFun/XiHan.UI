@@ -5,6 +5,9 @@
 
 /* 定义 form 样式。 */
 
+/* Form 独立皮肤同时传递引入提交 / 重置钮的动作控件配方；full bundle 递归去重。 */
+@import '../family/action-control.css';
+
 @layer xihan.components {
   /* 皮肤在场的标记：开发模式下按 scope 探一次，取不到就说明这份皮肤没被引入。 */
   [data-scope='form'] {
@@ -184,7 +187,8 @@
     color: var(--xh-form-summary-fg, var(--xh-fg-danger));
     font-size: var(--xh-form-summary-font-size, var(--xh-text-body-size));
     line-height: var(--xh-leading-normal);
-    box-shadow: var(--xh-form-summary-shadow, var(--xh-elevation-raised));
+    /* 静态反馈面：边界由描边承担，不带落影（§8 solid 无影） */
+    box-shadow: var(--xh-form-summary-shadow, none);
   }
 
   /* 漏了这条，摘要一旦出现过就再也撤不下去（上面那条 display 盖掉了 UA 的 [hidden] 规则） */
@@ -273,88 +277,64 @@
     color: var(--xh-form-summary-item-fg-hover, var(--xh-fg-danger-hover));
   }
 
-  /* 两颗按钮共用一份底子：它们是同一种东西，只是干的活不同，
-     分开写迟早会改了一颗忘了另一颗 */
+  /* 两颗按钮是离散动作控件：盒几何、悬停 / 按下与 0.97 按压、焦点环、禁用面全由 Action Control 的 text 档给，
+     组件只映射既有使用者槽。提交走 solid 档：表单提交是这一组里的主要动作，与 Button 缺省同为品牌实心；
+     重置走 outline 档：非 Button 的触发器缺省中性描边（§7.2.2）。两颗共用的几何与字号写在一起 */
   [data-scope='form'][data-part='submit-trigger'],
   [data-scope='form'][data-part='reset-trigger'] {
-    display: inline-flex;
+    --xh-action-visual-size: var(--xh-form-trigger-h, var(--xh-_action-profile-visual-size));
+    --xh-action-padding-inline: var(--xh-form-trigger-px, var(--xh-_action-profile-padding-inline));
+    --xh-action-radius: var(--xh-form-trigger-radius, var(--xh-shape-control));
+    --xh-action-font-size: var(--xh-form-trigger-font-size, var(--xh-text-body-size));
+
+    /* 按钮不参与弹性伸缩 */
     flex: none;
-    align-items: center;
-    justify-content: center;
-    block-size: var(--xh-form-trigger-h, var(--xh-control-h-md));
-    padding-block: 0;
-    padding-inline: var(--xh-form-trigger-px, var(--xh-control-px-md));
-    border: var(--xh-stroke-thin) solid var(--xh-form-trigger-border, var(--xh-border-control));
-    border-radius: var(--xh-form-trigger-radius, var(--xh-shape-control));
-    background: var(--xh-form-trigger-bg, var(--xh-bg-subtle));
-    color: var(--xh-form-trigger-fg, var(--xh-fg-default));
-    /* 表单控件不继承页面字体，只给字号会让按钮用 UA 默认字族，与周围文本对不上 */
-    font-family: inherit;
-    font-size: var(--xh-form-trigger-font-size, var(--xh-text-body-size));
-    line-height: var(--xh-leading-none);
-    white-space: nowrap;
-    cursor: pointer;
-    user-select: none;
-    /* box-shadow 在列里是给提交键的内高光留的：它随可用与置灰两档进出 */
-    transition:
-      background var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
-      box-shadow var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
-      scale var(--xh-motion-duration-release) var(--xh-motion-ease-release);
   }
 
+  /* 家族那条 display 会把 UA 的 [hidden]{display:none} 盖掉 */
   [data-scope='form'][data-part='submit-trigger'][hidden],
   [data-scope='form'][data-part='reset-trigger'][hidden] {
     display: none;
   }
 
-  [data-scope='form'][data-part='submit-trigger']:hover:not(:disabled),
-  [data-scope='form'][data-part='reset-trigger']:hover:not(:disabled) {
-    border-color: var(--xh-form-trigger-border-hover, var(--xh-border-control-hover));
-    background: var(--xh-form-trigger-bg-hover, var(--xh-bg-subtle-hover));
+  /* 重置钮：中性描边，底 / 边 / 字与禁用面映到 outline 档的桥接槽（透明底 → 100 → 200） */
+  [data-scope='form'][data-part='reset-trigger'] {
+    --xh-action-bg-rest: var(--xh-form-trigger-bg, var(--xh-_action-variant-bg-rest));
+    --xh-action-bg-hover: var(--xh-form-trigger-bg-hover, var(--xh-_action-variant-bg-hover));
+    --xh-action-bg-pressed: var(--xh-form-trigger-bg-active, var(--xh-_action-variant-bg-pressed));
+    --xh-action-bg-disabled: var(--xh-form-trigger-bg-disabled, var(--xh-_action-variant-bg-disabled));
+    --xh-action-fg-rest: var(--xh-form-trigger-fg, var(--xh-_action-variant-fg-rest));
+    --xh-action-fg-hover: var(--xh-form-trigger-fg, var(--xh-_action-variant-fg-hover));
+    --xh-action-fg-pressed: var(--xh-form-trigger-fg, var(--xh-_action-variant-fg-pressed));
+    --xh-action-border-rest: var(--xh-form-trigger-border, var(--xh-_action-variant-border-rest));
+    --xh-action-border-hover: var(--xh-form-trigger-border-hover, var(--xh-_action-variant-border-hover));
+    --xh-action-border-disabled: var(--xh-form-trigger-border-disabled, var(--xh-_action-variant-border-disabled));
+    --xh-action-highlight-rest: transparent;
+    --xh-action-shadow-rest: none;
+    --xh-action-shadow-hover: none;
+    --xh-action-shadow-pressed: none;
   }
 
-  [data-scope='form'][data-part='submit-trigger']:active:not(:disabled),
-  [data-scope='form'][data-part='reset-trigger']:active:not(:disabled) {
-    background: var(--xh-form-trigger-bg-active, var(--xh-bg-subtle-active));
-    scale: var(--xh-motion-scale-press);
-    transition-duration: var(--xh-motion-duration-press);
-    transition-timing-function: var(--xh-motion-ease-press);
-  }
-
-  /* 单体控件用 :disabled（集合条目才用 [data-disabled]）：
-     整表禁用时提交键置灰，只读时重置键也一并落到这条上 */
-  [data-scope='form'][data-part='submit-trigger']:disabled,
-  [data-scope='form'][data-part='reset-trigger']:disabled {
-    border-color: var(--xh-form-trigger-border-disabled, var(--xh-border-subtle));
-    background: var(--xh-form-trigger-bg-disabled, var(--xh-bg-muted));
-    color: var(--xh-fg-disabled);
-  }
-
-  /* 提交是这一组里的主操作，给它一层实心底色区分开，顶边再画一条极浅的内高光衬出厚度。
-     置灰那档不命中这条选择器，高光自然不出现 */
-  [data-scope='form'][data-part='submit-trigger']:not(:disabled) {
-    --xh-_form-submit-highlight: var(--xh-_highlight-brand);
-
-    border-color: var(--xh-form-submit-border, var(--xh-form-submit-bg, var(--xh-bg-brand)));
-    background: var(--xh-form-submit-bg, var(--xh-bg-brand));
-    color: var(--xh-form-submit-fg, var(--xh-fg-on-brand));
-    box-shadow: var(--xh-form-submit-shadow, var(--xh-_form-submit-highlight));
-  }
-
-  /* 面是实心的，环色与面同族，画在面里就看不出来；环改取面自己的前景色——
+  /* 提交钮：品牌实心，顶边一条极浅的内高光把这块面衬出厚度（三态同一支，禁用面由家族收掉）。
+     面是实心的，环色与面同族，画在面里就看不出来；环改取面自己的前景色——
      那一族色本来就要在这块面上把字读清楚，与面的对比是按可读性定的 */
-  [data-scope='form'][data-part='submit-trigger']:not(:disabled):focus-visible {
-    --xh-_ring-color: currentColor;
-  }
-
-  [data-scope='form'][data-part='submit-trigger']:hover:not(:disabled) {
-    border-color: var(--xh-form-submit-border-hover, var(--xh-form-submit-bg-hover, var(--xh-bg-brand-hover)));
-    background: var(--xh-form-submit-bg-hover, var(--xh-bg-brand-hover));
-  }
-
-  [data-scope='form'][data-part='submit-trigger']:active:not(:disabled) {
-    border-color: var(--xh-form-submit-border-active, var(--xh-form-submit-bg-active, var(--xh-bg-brand-active)));
-    background: var(--xh-form-submit-bg-active, var(--xh-bg-brand-active));
+  [data-scope='form'][data-part='submit-trigger'] {
+    --xh-action-bg-rest: var(--xh-form-submit-bg, var(--xh-_action-variant-bg-rest));
+    --xh-action-bg-hover: var(--xh-form-submit-bg-hover, var(--xh-_action-variant-bg-hover));
+    --xh-action-bg-pressed: var(--xh-form-submit-bg-active, var(--xh-_action-variant-bg-pressed));
+    --xh-action-bg-disabled: var(--xh-form-trigger-bg-disabled, var(--xh-_action-variant-bg-disabled));
+    --xh-action-fg-rest: var(--xh-form-submit-fg, var(--xh-_action-variant-fg-rest));
+    --xh-action-fg-hover: var(--xh-form-submit-fg, var(--xh-_action-variant-fg-hover));
+    --xh-action-fg-pressed: var(--xh-form-submit-fg, var(--xh-_action-variant-fg-pressed));
+    --xh-action-border-rest: var(--xh-form-submit-border, var(--xh-_action-variant-border-rest));
+    --xh-action-border-hover: var(--xh-form-submit-border-hover, var(--xh-_action-variant-border-hover));
+    --xh-action-border-pressed: var(--xh-form-submit-border-active, var(--xh-_action-variant-border-pressed));
+    --xh-action-border-disabled: var(--xh-form-trigger-border-disabled, var(--xh-_action-variant-border-disabled));
+    --xh-action-highlight-rest: transparent;
+    --xh-action-shadow-rest: var(--xh-form-submit-shadow, var(--xh-_highlight-brand));
+    --xh-action-shadow-hover: var(--xh-form-submit-shadow, var(--xh-_highlight-brand));
+    --xh-action-shadow-pressed: var(--xh-form-submit-shadow, var(--xh-_highlight-brand));
+    --xh-action-ring-color-focus-visible: currentColor;
   }
 }
 

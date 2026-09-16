@@ -725,6 +725,28 @@ describe('connectForm 结构与标注', () => {
     expect((makeService({ disabled: true }).api().getResetTriggerProps() as Dict).disabled).toBe(true)
   })
 
+  it('两颗按钮投影 Action Control：提交 text solid（主要动作），重置 text outline（中性），都常显、固定 md', () => {
+    const submit = makeService().api().getSubmitTriggerProps() as Dict
+    const reset = makeService().api().getResetTriggerProps() as Dict
+    for (const trigger of [submit, reset]) {
+      expect(trigger['data-xh-action-control']).toBe('')
+      expect(trigger['data-xh-action-profile']).toBe('text')
+      expect(trigger['data-xh-action-display']).toBe('always')
+      expect(trigger['data-xh-action-size']).toBe('md')
+    }
+    expect(submit['data-xh-action-variant']).toBe('solid')
+    expect(reset['data-xh-action-variant']).toBe('outline')
+  })
+
+  it('禁用面由家族按 data-disabled 给：与原生 disabled 同步投影', () => {
+    const s = makeService({ readOnly: true })
+    expect((s.api().getResetTriggerProps() as Dict)['data-disabled']).toBe('')
+    expect((s.api().getSubmitTriggerProps() as Dict)['data-disabled']).toBeUndefined()
+    const d = makeService({ disabled: true })
+    expect((d.api().getSubmitTriggerProps() as Dict)['data-disabled']).toBe('')
+    expect((d.api().getResetTriggerProps() as Dict)['data-disabled']).toBe('')
+  })
+
   it('api 的读取面与命令面与部件走的是同一条路', () => {
     const s = makeService({ defaultValues: { email: 'a@b.c' }, validate: () => ({ email: '不能为空' }) })
     expect(s.api().getFieldValue('email')).toBe('a@b.c')
