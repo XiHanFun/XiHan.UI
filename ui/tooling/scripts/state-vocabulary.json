@@ -111,7 +111,8 @@
     "data-placement": "摆在宿主的哪一侧、哪个角。",
     "data-position": "落在什么位置：浮层贴着锚点还是居中、裁剪手柄在哪个方位。",
     "data-state": "当前处在哪一档状态。取值域登记在 data-state 段的族体系里，判据④逐值核对。",
-    "data-variant": "取哪一档形态（形态轴，取值域逐组件自定）。"
+    "data-variant": "取哪一档形态（形态轴，取值域逐组件自定）。",
+    "data-xh-action-variant": "这颗离散动作控件取 Action Control 家族的哪一档形态（solid / subtle / outline / ghost，与形态轴同一套词）：由 connect 逐部件投影，一个组件里主要动作与次要动作可以各取一档（form 的提交 solid、重置 outline；field-array 的行内把手 ghost、新增钮 outline）。"
   },
   "boolean": {
     "$description": "布尔状态属性（有即真，缺席即假，一律经 dataAttr 发）。同一含义只用一个名字。connect 里发出的布尔属性必须逐个登记在这里，登记项写明它是什么语义；登记了却没人发的算名单过期。一件事只准有一个名字：新名字登记前先与已有的比对一遍，同义即用既有的那个。",
