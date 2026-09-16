@@ -86,7 +86,7 @@ const lastCommand = ref("（无）");
 </script>
 
 <template>
-  <XhLayoutRoot bordered class="shell">
+  <XhLayoutRoot split class="shell">
     <XhLayoutHeader class="shell__header">
       <XhLayoutSiderTrigger>菜单</XhLayoutSiderTrigger>
       <strong class="shell__brand">曦寒控制台</strong>

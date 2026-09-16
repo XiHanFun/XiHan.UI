@@ -28,7 +28,7 @@ export const XhLayoutRoot = defineComponent({
     siderPresentation: { type: String as PropType<LayoutSiderPresentation> },
     headerFixed: Boolean,
     siderFixed: Boolean,
-    bordered: Boolean,
+    split: Boolean,
   },
   // sider-collapsed-change 携带 { collapsed }，update:siderCollapsed 携带裸布尔
   emits: {

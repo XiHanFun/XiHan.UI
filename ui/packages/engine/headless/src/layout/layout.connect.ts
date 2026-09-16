@@ -64,7 +64,7 @@ export function connectLayout<T extends PropTypes>(
       'data-collapsed': dataAttr(collapsed),
       'data-header-fixed': dataAttr(headerFixed),
       'data-sider-fixed': dataAttr(siderFixed),
-      'data-bordered': dataAttr(prop('bordered')),
+      'data-split': dataAttr(prop('split')),
     }),
 
     getHeaderProps: () => normalize.element({

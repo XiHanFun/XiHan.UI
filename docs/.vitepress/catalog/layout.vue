@@ -3,7 +3,7 @@ import { XhLayoutContent, XhLayoutHeader, XhLayoutRoot, XhLayoutSider } from "@x
 </script>
 
 <template>
-  <XhLayoutRoot bordered sider-width="72px" aria-label="页头、侧栏与内容区布局预览" style="inline-size: 240px; block-size: 150px; border-radius: var(--xh-shape-surface); overflow: hidden">
+  <XhLayoutRoot split sider-width="72px" aria-label="页头、侧栏与内容区布局预览" style="inline-size: 240px; block-size: 150px; border-radius: var(--xh-shape-surface); overflow: hidden">
     <XhLayoutHeader>
       <span data-demo-block="line" data-tone="brand" aria-hidden="true" style="--xh-demo-block-inline-size: 72px" />
     </XhLayoutHeader>

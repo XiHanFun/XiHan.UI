@@ -33,7 +33,7 @@ export interface XhLayoutRootProps extends ComponentPropsWithRef<'div'> {
   /** 侧栏吸附：只写标记，固定的实现归皮肤。 */
   siderFixed?: boolean
   /** 在头部、侧栏、脚部与内容之间绘制分隔线。 */
-  bordered?: boolean
+  split?: boolean
   onSiderCollapsedChange?: LayoutProps['onSiderCollapsedChange']
   onSiderBreakpoint?: LayoutProps['onSiderBreakpoint']
 }

@@ -64,7 +64,7 @@ export interface LayoutSchema extends MachineSchema {
     /** 侧栏吸附：滚动时侧栏固定在滚动容器的上沿，头部也吸顶时让开头部的高度。只写标记，固定的实现归皮肤。 */
     siderFixed?: boolean
     /** 在头部、侧栏、脚部与内容之间绘制分隔线。 */
-    bordered?: boolean
+    split?: boolean
     /** 折叠态变化意图回调；受控时是唯一出口，非受控时随内部转移一并通知。 */
     onSiderCollapsedChange?: (details: LayoutSiderCollapsedChangeDetails) => void
     /**

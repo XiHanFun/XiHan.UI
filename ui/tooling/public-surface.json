@@ -10337,7 +10337,6 @@
       "variant"
     ],
     "layout": [
-      "bordered",
       "defaultSiderCollapsed",
       "headerFixed",
       "onSiderBreakpoint",
@@ -10348,7 +10347,8 @@
       "siderFixed",
       "siderPlacement",
       "siderPresentation",
-      "siderWidth"
+      "siderWidth",
+      "split"
     ],
     "list": [
       "hoverable",
@@ -11437,7 +11437,6 @@
     "data-auto-resize",
     "data-autoplay",
     "data-block",
-    "data-bordered",
     "data-bound",
     "data-branch",
     "data-caret",
@@ -17137,7 +17136,6 @@
     },
     "xh-layout": {
       "attributes": [
-        "bordered",
         "default-sider-collapsed",
         "header-fixed",
         "sider-breakpoint",
@@ -17146,7 +17144,8 @@
         "sider-fixed",
         "sider-placement",
         "sider-presentation",
-        "sider-width"
+        "sider-width",
+        "split"
       ],
       "events": [
         "sider-breakpoint",

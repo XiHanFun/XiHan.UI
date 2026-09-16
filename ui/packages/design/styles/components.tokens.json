@@ -32987,9 +32987,9 @@
         "border-inline-start"
       ],
       "state": [
-        "bordered",
         "placement=end",
-        "placement=start"
+        "placement=start",
+        "split"
       ],
       "defaultToken": [
         "--xh-border-default"

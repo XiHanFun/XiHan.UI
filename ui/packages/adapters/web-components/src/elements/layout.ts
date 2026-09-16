@@ -37,10 +37,10 @@ const STRING_CONVERTER = { fromAttribute: (v: string | null) => v ?? undefined }
  * @attr {'inline'|'sheet'} sider-presentation - 侧栏呈现形态：inline 占一列，sheet 移出画外、展开时覆盖在内容之上；提供断点时只在未达该档时成立
  * @attr {boolean} header-fixed - 头部吸顶：滚动时头部固定在滚动容器的上沿
  * @attr {boolean} sider-fixed - 侧栏吸附：滚动时侧栏固定在滚动容器的上沿，头部也吸顶时让开头部的高度
- * @attr {boolean} bordered - 在头部、侧栏、脚部与内容之间绘制分隔线
+ * @attr {boolean} split - 在头部、侧栏、脚部与内容之间绘制分隔线
  * @fires sider-collapsed-change - 折叠态变化；detail 为 `{ collapsed: boolean }`
  * @fires sider-breakpoint - 跨过断点时发出，挂载时也发出一次当前值；detail 为 `{ matched: boolean }`
- * @csspart root - 骨架根容器，承载 data-sider-placement / data-sider-breakpoint / data-sider-presentation / data-collapsed / data-header-fixed / data-sider-fixed / data-bordered
+ * @csspart root - 骨架根容器，承载 data-sider-placement / data-sider-breakpoint / data-sider-presentation / data-collapsed / data-header-fixed / data-sider-fixed / data-split
  * @csspart header - 顶部横幅区，横贯整行；吸顶时带 data-fixed
  * @csspart sider-backdrop - 覆盖档铺在内容之上的遮罩，点击它收起侧栏；占位档下带 hidden。写在 sider 之前
  * @csspart sider - 侧栏，折叠时带 data-collapsed、宽度随之在两档之间切换；吸附时带 data-fixed；覆盖档带 data-presentation="sheet"
@@ -70,7 +70,7 @@ export class XhLayoutElement extends XhElement {
     siderPresentation: { attribute: 'sider-presentation', converter: STRING_CONVERTER },
     headerFixed: { type: Boolean, attribute: 'header-fixed' },
     siderFixed: { type: Boolean, attribute: 'sider-fixed' },
-    bordered: { type: Boolean },
+    split: { type: Boolean },
   }
 
   declare siderCollapsed?: boolean
@@ -82,7 +82,7 @@ export class XhLayoutElement extends XhElement {
   declare siderPresentation?: LayoutSiderPresentation
   declare headerFixed?: boolean
   declare siderFixed?: boolean
-  declare bordered?: boolean
+  declare split?: boolean
 
   private readonly idGen: IdGenerator = createCounterIdGenerator()
   private readonly layoutScope = createScope(this, this.idGen)
@@ -124,7 +124,7 @@ export class XhLayoutElement extends XhElement {
       siderPresentation: this.siderPresentation,
       headerFixed: this.headerFixed ?? false,
       siderFixed: this.siderFixed ?? false,
-      bordered: this.bordered ?? false,
+      split: this.split ?? false,
       onSiderCollapsedChange: this.notify,
       onSiderBreakpoint: this.notifyBreakpoint,
     }
