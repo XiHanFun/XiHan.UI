@@ -15768,6 +15768,21 @@
               "description": "浮层面板的自绘条：与 content 同级挂在已经 fixed 的 positioner 上；面板两轴都滚，条子走浮层 4px 档"
             },
             {
+              "kind": "field",
+              "name": "presetBars",
+              "privacy": "private",
+              "readonly": true,
+              "default": "new ScrollbarsController(this, { shell: () => this.getPart('content'), scrollable: () => this.getPart('preset-group'), anchor: 'layer', axes: ['vertical', 'horizontal'], props: () => ({ dir: this.direction, size: 'sm' }), })",
+              "description": "快捷选项列与时间列各自的条子：都住在 content 里，条子贴在各自的盒子上、紧跟在那一层后面。\n快捷列窄视口横排横滚、宽视口竖排竖滚，两轴都摆；时间列按在场的列逐列建一套，列离场即拆。"
+            },
+            {
+              "kind": "field",
+              "name": "timeBars",
+              "privacy": "private",
+              "readonly": true,
+              "default": "new ScrollbarsController(this, { shell: () => this.getPart('content'), scrollables: () => this.getParts('time-column'), anchor: 'layer', props: () => ({ dir: this.direction, size: 'sm' }), })"
+            },
+            {
               "kind": "method",
               "name": "services",
               "privacy": "private",
@@ -16481,7 +16496,13 @@
               "name": "--xh-date-picker-time-item-check-size"
             },
             {
+              "name": "--xh-date-picker-time-item-fg"
+            },
+            {
               "name": "--xh-date-picker-time-item-fg-selected"
+            },
+            {
+              "name": "--xh-date-picker-time-item-font-weight-selected"
             },
             {
               "name": "--xh-date-picker-time-item-h"

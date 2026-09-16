@@ -242,8 +242,6 @@
     "pagination:content:overscroll": "浮层面缺 overscroll-behavior: contain，随 pagination 提交补",
     "color-picker:content:size": "浮层宿主未传 size: 'sm'，随 color-picker 提交补",
     "color-picker:content:overscroll": "浮层面缺 overscroll-behavior: contain，随 color-picker 提交补",
-    "date-picker:preset-group:unwired": "快捷选项列未接自绘条，随 date-picker 提交接线",
-    "date-picker:time-column:unwired": "时间列未接自绘条，随 date-picker 提交接线",
     "date-range-picker:content:size": "浮层宿主未传 size: 'sm'，随 date-range-picker 提交补",
     "date-range-picker:content:axes": "皮肤 overflow: auto 两轴都滚，三端只接了竖条，缺 horizontal，随 date-range-picker 提交补",
     "date-range-picker:content:overscroll": "浮层面缺 overscroll-behavior: contain，随 date-range-picker 提交补",

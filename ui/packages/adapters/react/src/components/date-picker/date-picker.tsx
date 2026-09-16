@@ -16,13 +16,14 @@ import type {
   DatePickerPreset,
   DatePickerPresetState,
   DatePickerSchema,
+  DatePickerTimeUnit,
   DateSegmentSet,
   DateSegmentType,
 } from '@xihan-ui/headless'
 import type { ComponentPropsWithRef, ReactNode } from 'react'
 import type { SlotChildren } from '../../runtime/slot-content'
 import { resolveDatePickerPanelIndex } from '@xihan-ui/headless'
-import { useMemo } from 'react'
+import { useEffect, useMemo, useRef } from 'react'
 import { withXhConfig } from '../../config/config'
 import { mergeReactProps } from '../../runtime/merge-props'
 import { useNativeEvents } from '../../runtime/native-events'
@@ -418,17 +419,29 @@ export interface XhDatePickerPresetGroupProps extends Omit<ComponentPropsWithRef
 export function XhDatePickerPresetGroup({ children, ...rest }: XhDatePickerPresetGroupProps): ReactNode {
   const ctx = useDatePickerContext()
   const api = ctx.api
+  const presetGroupRef = useRef<HTMLDivElement | null>(null)
+  // 快捷选项列自己滚（窄视口横排横滚、宽视口竖排竖滚）：两轴的条子贴在它的盒子上、紧跟在它后面
+  const bars = useScrollbars({
+    scrollable: () => presetGroupRef.current,
+    anchor: 'layer',
+    axes: ['vertical', 'horizontal'],
+    props: () => ({ dir: (api.getPositionerProps() as { dir?: Direction }).dir, size: 'sm' }),
+  })
+  useEffect(() => bars.measure())
   const authored = children == null ? null : renderSlot(children, { presets: api.presets })
   return (
-    <div {...mergeReactProps(api.getPresetGroupProps() as Record<string, unknown>, rest as Record<string, unknown>)}>
-      {slotPaints(authored)
-        ? authored
-        : api.presets.map(preset => (
-            <div key={preset.value} {...api.getPresetProps({ value: preset.value }) as Record<string, unknown>}>
-              {preset.label}
-            </div>
-          ))}
-    </div>
+    <>
+      <div {...mergeReactProps(api.getPresetGroupProps() as Record<string, unknown>, rest as Record<string, unknown>, { ref: presetGroupRef })}>
+        {slotPaints(authored)
+          ? authored
+          : api.presets.map(preset => (
+              <div key={preset.value} {...api.getPresetProps({ value: preset.value }) as Record<string, unknown>}>
+                {preset.label}
+              </div>
+            ))}
+      </div>
+      {bars.render()}
+    </>
   )
 }
 
@@ -448,19 +461,42 @@ export function XhDatePickerPreset({ value, children, ...rest }: XhDatePickerPre
 }
 
 /** 时间列整组自动铺设：时/分[/秒]各一列，选项点按写值；未开启 showTime 时整组带 hidden。 */
+/** 一列时间选项连同贴在它盒子上的竖条：每列一台滚动条机器，列数随 showSeconds 变时组件实例跟着增减。 */
+function XhDatePickerTimeColumnHost({ unit }: { unit: DatePickerTimeUnit }): ReactNode {
+  const ctx = useDatePickerContext()
+  const api = ctx.api
+  const timeColumnRef = useRef<HTMLDivElement | null>(null)
+  // 定高的时间列自己竖滚：条子贴在本列的盒子上、紧跟在它后面（浮层 4px 档）
+  const bars = useScrollbars({
+    scrollable: () => timeColumnRef.current,
+    anchor: 'layer',
+    props: () => ({ dir: (api.getPositionerProps() as { dir?: Direction }).dir, size: 'sm' }),
+  })
+  useEffect(() => bars.measure())
+  const column = api.timeColumns.find(item => item.unit === unit)
+  if (!column)
+    return null
+  return (
+    <>
+      <div {...mergeReactProps(api.getTimeColumnProps({ unit: column.unit }) as Record<string, unknown>, { ref: timeColumnRef })}>
+        {column.options.map(option => (
+          <div key={option} {...api.getTimeItemProps({ unit: column.unit, value: option }) as Record<string, unknown>}>
+            {option}
+          </div>
+        ))}
+      </div>
+      {bars.render()}
+    </>
+  )
+}
+
 export function XhDatePickerTimePanel(): ReactNode {
   const ctx = useDatePickerContext()
   const api = ctx.api
   return (
     <>
       {api.timeColumns.map(column => (
-        <div key={column.unit} {...api.getTimeColumnProps({ unit: column.unit }) as Record<string, unknown>}>
-          {column.options.map(option => (
-            <div key={option} {...api.getTimeItemProps({ unit: column.unit, value: option }) as Record<string, unknown>}>
-              {option}
-            </div>
-          ))}
-        </div>
+        <XhDatePickerTimeColumnHost key={column.unit} unit={column.unit} />
       ))}
     </>
   )
