@@ -52246,9 +52246,6 @@
               "name": "--xh-tags-input-control-px"
             },
             {
-              "name": "--xh-tags-input-control-py"
-            },
-            {
               "name": "--xh-tags-input-control-radius"
             },
             {
@@ -52280,6 +52277,9 @@
             },
             {
               "name": "--xh-tags-input-input-basis"
+            },
+            {
+              "name": "--xh-tags-input-input-fg"
             },
             {
               "name": "--xh-tags-input-input-font-size"

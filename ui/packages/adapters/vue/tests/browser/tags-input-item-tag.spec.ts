@@ -284,8 +284,8 @@ describe('框里的标签就是库里的 tag', () => {
   })
 })
 
-describe('光标走到标签上：反白落在 tag 的 root 上', () => {
-  it('反白的底是语气强调色、字是配对的前景色，删除钮的字跟着换；没走到的那枚不变', async () => {
+describe('光标走到标签上：当前项的淡底落在 tag 的 root 上', () => {
+  it('当前项的底是品牌淡底、字是淡底前景，删除钮的字跟着换；没走到的那枚不变', async () => {
     await mountTags({ tags: ['甲', '乙'] })
     const before = getComputedStyle(pills()[1]!).backgroundColor
     await highlightLast()
@@ -296,24 +296,24 @@ describe('光标走到标签上：反白落在 tag 的 root 上', () => {
     expect(pills()[1]!.hasAttribute('data-highlighted')).toBe(false)
 
     const lit = getComputedStyle(pills()[1]!)
-    expect(lit.backgroundColor).toBe(resolveColor('var(--xh-bg-brand)'))
-    expect(lit.color).toBe(resolveColor('var(--xh-fg-on-brand)'))
+    expect(lit.backgroundColor).toBe(resolveColor('var(--xh-bg-brand-subtle)'))
+    expect(lit.color).toBe(resolveColor('var(--xh-fg-on-brand-subtle)'))
     expect(lit.borderTopColor).toBe('rgba(0, 0, 0, 0)')
-    expect(getComputedStyle(tagPart('close-trigger', 1)).color).toBe(resolveColor('var(--xh-fg-on-brand)'))
+    expect(getComputedStyle(tagPart('close-trigger', 1)).color).toBe(resolveColor('var(--xh-fg-on-brand-subtle)'))
     expect(getComputedStyle(pills()[0]!).backgroundColor).toBe(before)
   })
 
-  it('写了语气时反白取那族的实心底与配对前景', async () => {
+  it('写了语气时当前项取那族的淡底与淡底前景', async () => {
     await mountTags({ tags: ['甲'], tone: 'danger' })
     await highlightLast()
     const root = part('root')
 
     const lit = getComputedStyle(pills()[0]!)
-    expect(lit.backgroundColor).toBe(resolveColor('var(--xh-_tone)', root))
-    expect(lit.color).toBe(resolveColor('var(--xh-_tone-on)', root))
+    expect(lit.backgroundColor).toBe(resolveColor('var(--xh-_tone-subtle)', root))
+    expect(lit.color).toBe(resolveColor('var(--xh-_tone-fg)', root))
   })
 
-  it('反白不改标签的高：底换了，框仍是一行控件高', async () => {
+  it('当前项不改标签的高：底换了，框仍是一行控件高', async () => {
     await mountTags({ tags: ['甲'] })
     const before = height(pills()[0]!)
     await highlightLast()
