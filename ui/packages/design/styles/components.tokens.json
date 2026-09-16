@@ -41933,6 +41933,7 @@
         "variant=outline"
       ],
       "defaultToken": [
+        "--xh-border-default",
         "--xh-border-subtle"
       ],
       "visibility": "public",
@@ -42224,7 +42225,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-font-weight-semibold"
+        "--xh-text-heading-3-weight"
       ],
       "visibility": "public",
       "description": "page-header 的 title 部件 font-weight 覆盖槽。"
