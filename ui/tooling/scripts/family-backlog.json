@@ -61,8 +61,7 @@
     "toolbar:root:outline": "outline 档边宽 0 + transparent，没有描边；应为 --xh-border-default 描边 + surface 底，待本组件迁移",
     "toolbar:root:raised": "raised 退役待本组件迁移",
     "tooltip:content": "描边是 color-mix 的反色半透明边，真源 §8.4 要求 tooltip 走 frosted 四件套，待本组件迁移",
-    "transfer:to-source-trigger:raised": "raised 退役待本组件迁移",
-    "tree-select:positioner:raised": "raised 退役待本组件迁移"
+    "transfer:to-source-trigger:raised": "raised 退役待本组件迁移"
   },
   "selection": {
     "anchor:link": "导航当前页字色是 --xh-fg-brand，应为 --xh-fg-brand-strong；待本组件迁移",
@@ -207,10 +206,7 @@
     "tour:close-trigger:hover": "hover 落 --xh-bg-subtle-hover（200），这份皮肤却没给 --xh-action-host-bg-* 赋值，白底承载 hover 是 --xh-bg-subtle（100），淡底容器由 host 槽下发；待本组件迁移",
     "tour:close-trigger:pressed": "pressed 落 --xh-bg-subtle-active（300），这份皮肤却没给 --xh-action-host-bg-* 赋值，白底承载 pressed 是 --xh-bg-subtle-hover（200）；待本组件迁移",
     "transfer:to-target-trigger:hover": "hover 落 --xh-bg-subtle-hover（200），这份皮肤却没给 --xh-action-host-bg-* 赋值，白底承载 hover 是 --xh-bg-subtle（100），淡底容器由 host 槽下发；待本组件迁移",
-    "transfer:to-target-trigger:pressed": "pressed 落 --xh-bg-subtle-active（300），这份皮肤却没给 --xh-action-host-bg-* 赋值，白底承载 pressed 是 --xh-bg-subtle-hover（200）；待本组件迁移",
-    "tree-select:clear-trigger:hover": "hover 落 --xh-bg-subtle-hover（200），这份皮肤却没给 --xh-action-host-bg-* 赋值，白底承载 hover 是 --xh-bg-subtle（100），淡底容器由 host 槽下发；待本组件迁移",
-    "tree-select:clear-trigger:pressed": "pressed 落 --xh-bg-subtle-active（300），这份皮肤却没给 --xh-action-host-bg-* 赋值，白底承载 pressed 是 --xh-bg-subtle-hover（200）；待本组件迁移",
-    "tree-select:control:focus": "焦点边写了 border-color: var(--xh-tree-select-control-border-focus, var(--xh-_tone, v，焦点边框一律 --xh-border-control-focus，不随 tone；待本组件迁移"
+    "transfer:to-target-trigger:pressed": "pressed 落 --xh-bg-subtle-active（300），这份皮肤却没给 --xh-action-host-bg-* 赋值，白底承载 pressed 是 --xh-bg-subtle-hover（200）；待本组件迁移"
   },
   "shape": {
     "approval:footer::before": "取了 pill，身份表登记的是 circle；inline-size 与 block-size 同值（1em）的正方盒取了 pill，正方盒必须取 circle；待本组件迁移",
@@ -248,8 +244,6 @@
     "cascader:column:overscroll": "浮层面缺 overscroll-behavior: contain，随 cascader 提交补",
     "cascader:search-list:unwired": "级联搜索列表未接自绘条，随 cascader 提交接线",
     "cascader:search-list:overscroll": "浮层面缺 overscroll-behavior: contain，随 cascader 提交补",
-    "tree-select:content:size": "浮层宿主未传 size: 'sm'，随 tree-select 提交补",
-    "tree-select:content:overscroll": "浮层面缺 overscroll-behavior: contain，随 tree-select 提交补",
     "menu:content:size": "浮层宿主未传 size: 'sm'，随 menu 提交补",
     "menu:content:overscroll": "浮层面缺 overscroll-behavior: contain，随 menu 提交补",
     "context-menu:content:size": "浮层宿主未传 size: 'sm'，随 context-menu 提交补",
@@ -373,8 +367,6 @@
     "tour:skip-trigger": "按下只缩放不换底，:active 块要同时把 background 换到 active 面（§9.1）；待本组件迁移",
     "transfer:item": "没有明确的 :active 换面，集合行不允许零反馈（§9.2）；待本组件迁移",
     "transfer:select-all-trigger": "没有明确的 :active 换面，集合行不允许零反馈（§9.2）；待本组件迁移",
-    "tree-select:branch-control": "没有明确的 :active 换面，集合行不允许零反馈（§9.2）；待本组件迁移",
-    "tree-select:item": "没有明确的 :active 换面，集合行不允许零反馈（§9.2）；待本组件迁移",
     "tree:branch-control": "没有明确的 :active 换面，集合行不允许零反馈（§9.2）；待本组件迁移",
     "tree:item": "没有明确的 :active 换面，集合行不允许零反馈（§9.2）；待本组件迁移"
   },
@@ -479,7 +471,6 @@
     "tour:description:line-height": "line-height 落 --xh-text-body-leading，说明文字应为 --xh-leading-normal；待本组件迁移",
     "tour:root:icon-size": "--xh-icon-size 兜底落 --xh-glyph-size-text，随文字形只给纯行内文字组件，控件内图标按档取 --xh-glyph-size-sm / md / lg；待本组件迁移",
     "transfer:root:icon-size": "--xh-icon-size 兜底落 --xh-glyph-size-text，随文字形只给纯行内文字组件，控件内图标按档取 --xh-glyph-size-sm / md / lg；待本组件迁移",
-    "tree-select:label:font-size": "font-size 落 --xh-control-font-md，字段标签字号不随档，应为 --xh-text-label-size；待本组件迁移",
     "tree:root:icon-size": "--xh-icon-size 兜底落 --xh-glyph-size-text，随文字形只给纯行内文字组件，控件内图标按档取 --xh-glyph-size-sm / md / lg；待本组件迁移"
   },
   "motion": {

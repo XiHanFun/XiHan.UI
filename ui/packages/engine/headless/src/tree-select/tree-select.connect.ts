@@ -266,9 +266,15 @@ export function connectTreeSelect<T extends PropTypes>(
       'data-disabled': dataAttr(disabled),
     }),
 
-    /** 触发按钮与清空按钮的收纳容器，也是描边、底色与聚焦环所在的那一层。 */
+    /**
+     * 触发按钮与清空按钮的收纳容器，也是描边、底色与聚焦环所在的那一层：
+     * 由 Field Chrome 家族画在它身上，size 缺省 md，variant 与 root 同源。
+     */
     getControlProps: () => normalize.element({
       ...parts.control.attrs,
+      'data-xh-field-chrome': '',
+      'data-xh-field-size': prop('size') ?? 'md',
+      'data-variant': variant,
       'data-state': stateAttr,
       'data-disabled': dataAttr(disabled),
       'data-readonly': dataAttr(readOnly),
@@ -346,8 +352,15 @@ export function connectTreeSelect<T extends PropTypes>(
       'data-disabled': dataAttr(disabled),
     }),
 
+    // 清空钮走 Action Control 的 field-inset ghost 档：字段底是 canvas，透明 → 悬停 100 → 按下 200，按 has-value 显隐
     getClearTriggerProps: () => normalize.button({
       ...parts['clear-trigger'].attrs,
+      'data-xh-action-control': '',
+      'data-xh-action-profile': 'field-inset',
+      'data-xh-action-variant': 'ghost',
+      'data-xh-action-display': 'has-value',
+      'data-xh-action-size': prop('size') ?? 'md',
+      'data-xh-action-has-value': dataAttr(canClear),
       'type': 'button',
       // 整个控件只占一个 Tab 位（trigger），此按钮不入 Tab 序列；读屏按虚拟光标仍找得到它
       'tabindex': -1,
@@ -560,11 +573,15 @@ export function connectTreeSelect<T extends PropTypes>(
       'data-state': stateAttr,
     }),
 
+    // 叶子行走 Collection Item 的 overlay 语境：悬停 / 高亮 100、按下 200 由家族给，选中只留行尾对号
     getItemProps: node => normalize.element({
       ...parts.item.attrs,
       ...nodeAttrs(node.value),
       ...nodeState(node.value),
-      onClick: (event: MouseEvent) => {
+      'data-xh-collection-item': '',
+      'data-xh-collection-size': prop('size') ?? 'md',
+      'data-xh-collection-context': 'overlay',
+      'onClick': (event: MouseEvent) => {
         if (!interactive || isDisabled(node.value))
           return
         // 叶子本身就是 treeitem，直接认 currentTarget
@@ -572,17 +589,20 @@ export function connectTreeSelect<T extends PropTypes>(
         send({ type: 'NODE.SELECT', value: node.value })
       },
       // 禁用节点被点到也记锚点，供方向键起步
-      onFocus: () => send({ type: 'NODE.FOCUS', value: node.value }),
+      'onFocus': () => send({ type: 'NODE.FOCUS', value: node.value }),
     }),
 
     getItemTextProps: node => normalize.element({
       ...parts['item-text'].attrs,
       ...nodeState(node.value),
+      'data-xh-collection-slot': 'text',
     }),
 
+    // 对号落在家族网格的 indicator 列（叶子与分支行共用）
     getItemIndicatorProps: node => normalize.element({
       ...parts['item-indicator'].attrs,
       ...nodeState(node.value),
+      'data-xh-collection-slot': 'indicator',
       'aria-hidden': true,
     }),
 
@@ -597,10 +617,14 @@ export function connectTreeSelect<T extends PropTypes>(
       'onFocus': () => send({ type: 'NODE.FOCUS', value: node.value }),
     }),
 
+    // 分支行同走 Collection Item 的 overlay 语境；aria-selected 在 branch 上，选中对号的显隐由皮肤按 data-selected 给
     getBranchControlProps: node => normalize.element({
       ...parts['branch-control'].attrs,
       ...branchState(node.value),
-      onClick: (event: MouseEvent) => {
+      'data-xh-collection-item': '',
+      'data-xh-collection-size': prop('size') ?? 'md',
+      'data-xh-collection-context': 'overlay',
+      'onClick': (event: MouseEvent) => {
         if (!interactive || isDisabled(node.value))
           return
         // 分支行只是 treeitem 里的一层内容，焦点落在 branch 上
@@ -612,9 +636,11 @@ export function connectTreeSelect<T extends PropTypes>(
       },
     }),
 
+    // 展开箭头落在家族网格的首列（prefix），叶子行用占位对齐
     getBranchTriggerProps: node => normalize.element({
       ...parts['branch-trigger'].attrs,
       ...branchState(node.value),
+      'data-xh-collection-slot': 'prefix',
       // 箭头与 branch 的左右方向键语义重复，退出可及树与 Tab 序列
       'aria-hidden': true,
       'tabindex': -1,
@@ -635,12 +661,14 @@ export function connectTreeSelect<T extends PropTypes>(
     getBranchIndicatorProps: node => normalize.element({
       ...parts['branch-indicator'].attrs,
       ...branchState(node.value),
+      'data-xh-collection-slot': 'prefix',
       'aria-hidden': true,
     }),
 
     getBranchTextProps: node => normalize.element({
       ...parts['branch-text'].attrs,
       ...branchState(node.value),
+      'data-xh-collection-slot': 'text',
     }),
 
     getBranchContentProps: node => normalize.element({

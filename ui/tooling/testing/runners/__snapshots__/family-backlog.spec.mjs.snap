@@ -2,14 +2,14 @@
 
 exports[`family-backlog 条目数 > 七段各一数，与快照一致 1`] = `
 {
-  "edge": 62,
-  "ladder": 119,
+  "edge": 61,
+  "ladder": 116,
   "motion": 1,
-  "press": 77,
-  "scroll": 58,
+  "press": 75,
+  "scroll": 56,
   "selection": 25,
   "shape": 25,
-  "text": 102,
+  "text": 101,
 }
 `;
 
@@ -76,7 +76,6 @@ exports[`family-backlog 键集合 > edge 1`] = `
   "toolbar:root:raised",
   "tooltip:content",
   "transfer:to-source-trigger:raised",
-  "tree-select:positioner:raised",
 ]
 `;
 
@@ -198,9 +197,6 @@ exports[`family-backlog 键集合 > ladder 1`] = `
   "tour:close-trigger:pressed",
   "transfer:to-target-trigger:hover",
   "transfer:to-target-trigger:pressed",
-  "tree-select:clear-trigger:hover",
-  "tree-select:clear-trigger:pressed",
-  "tree-select:control:focus",
 ]
 `;
 
@@ -285,8 +281,6 @@ exports[`family-backlog 键集合 > press 1`] = `
   "tour:skip-trigger",
   "transfer:item",
   "transfer:select-all-trigger",
-  "tree-select:branch-control",
-  "tree-select:item",
   "tree:branch-control",
   "tree:item",
 ]
@@ -349,8 +343,6 @@ exports[`family-backlog 键集合 > scroll 1`] = `
   "time-range-picker:preset-group:overscroll",
   "time-range-picker:preset-group:unwired",
   "transfer:list:unwired",
-  "tree-select:content:overscroll",
-  "tree-select:content:size",
   "virtualizer:viewport:overscroll",
 ]
 `;
@@ -517,7 +509,6 @@ exports[`family-backlog 键集合 > text 1`] = `
   "tour:description:line-height",
   "tour:root:icon-size",
   "transfer:root:icon-size",
-  "tree-select:label:font-size",
   "tree:root:icon-size",
 ]
 `;

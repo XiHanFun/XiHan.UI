@@ -109,6 +109,11 @@ const SHARED_FAMILY = {
     contentSelector: `[data-scope='select'][data-part='trigger']`,
     actionParts: new Set(['clear-trigger']),
   },
+  'tree-select': {
+    boxSelector: '[data-xh-field-chrome]',
+    contentSelector: `[data-scope='tree-select'][data-part='trigger']`,
+    actionParts: new Set(['clear-trigger']),
+  },
   // 单元素：input 自身即 chrome（盒是 input 而非 control），盒内没有内容区与尾钮，不投影 data-xh-field-input
   'mention': {
     boxSelector: '[data-xh-field-chrome]',
@@ -141,7 +146,6 @@ const OUTSIDE_BOX = {
   'list': 'select 的列表在浮层里撑满面板高度',
   'item-text': '条目正文撑满条目宽度，把条目右侧的选中标记顶到最右',
   'item-indicator': '浮层选项的选择标记属于列表行，在作者正文未使用 item-text 时仍应对齐逻辑末端',
-  'branch-text': 'tree-select 树枝的文字撑满枝宽',
   'empty': 'cascader 空态铺满面板',
 }
 
