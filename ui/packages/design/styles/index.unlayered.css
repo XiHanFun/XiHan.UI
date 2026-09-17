@@ -27612,6 +27612,14 @@
   inset-inline-start: calc(100% + var(--xh-navigation-menu-content-offset, var(--xh-space-1)));
 }
 
+@media (forced-colors: active) {
+  /* 按下：常态靠底色深一档表出，这一档里底色被统一换成 Canvas；按住那一下用系统高亮反色画回来 */
+  [data-scope='navigation-menu'][data-part='trigger']:not([data-disabled]):is(:active, [data-pressed]) {
+    background: Highlight;
+    color: HighlightText;
+  }
+}
+
 /* styles/notification.css */
 /* 定义 notification 样式。 */
 
