@@ -55,7 +55,8 @@ const EXPECTED = {
   'card': { root: ['raised'] },
   'color-picker': { 'content': ['frosted'], 'area-thumb': ['raised'] },
   'segmented': { indicator: ['raised'] },
-  'sortable': { item: ['raised'] },
+  // 被指针拎起、跟着手走的条目：lifted（拖起的面是作者内容，不强加描边，raised 条款不适用）
+  'sortable': { item: ['lifted'] },
   'cascader': { content: ['frosted'] },
   'combobox': { content: ['frosted'] },
   // 命令面板是盖在页面上、带遮罩的一面，与对话框同档

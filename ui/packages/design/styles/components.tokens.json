@@ -54587,24 +54587,49 @@
       "description": "slider 的 control 部件 block-size 覆盖槽。"
     },
     {
+      "name": "--xh-sortable-drag-bg-active",
+      "component": "sortable",
+      "part": [
+        "item-drag-trigger"
+      ],
+      "property": [
+        "background-color"
+      ],
+      "state": [
+        "disabled",
+        "is(:active, [data-pressed])",
+        "loading",
+        "not([data-disabled])",
+        "not([data-loading])",
+        "pressed"
+      ],
+      "defaultToken": [
+        "--xh-_action-variant-bg-pressed"
+      ],
+      "visibility": "public",
+      "description": "sortable 的 item-drag-trigger 部件 background-color 覆盖槽。"
+    },
+    {
       "name": "--xh-sortable-drag-bg-hover",
       "component": "sortable",
       "part": [
         "item-drag-trigger"
       ],
       "property": [
-        "background"
+        "background-color"
       ],
       "state": [
         "disabled",
         "hover",
-        "not([data-disabled])"
+        "loading",
+        "not([data-disabled])",
+        "not([data-loading])"
       ],
       "defaultToken": [
-        "--xh-bg-subtle-hover"
+        "--xh-_action-variant-bg-hover"
       ],
       "visibility": "public",
-      "description": "sortable 的 item-drag-trigger 部件 background 覆盖槽。"
+      "description": "sortable 的 item-drag-trigger 部件 background-color 覆盖槽。"
     },
     {
       "name": "--xh-sortable-drag-fg",
@@ -54654,7 +54679,11 @@
       "state": [
         "disabled",
         "hover",
-        "not([data-disabled])"
+        "is(:active, [data-pressed])",
+        "loading",
+        "not([data-disabled])",
+        "not([data-loading])",
+        "pressed"
       ],
       "defaultToken": [
         "--xh-fg-default"
@@ -54699,6 +54728,24 @@
       "description": "sortable 的 item-drag-trigger 部件 inline-size 覆盖槽。"
     },
     {
+      "name": "--xh-sortable-drag-icon-size",
+      "component": "sortable",
+      "part": [
+        "item-drag-trigger"
+      ],
+      "property": [
+        "--xh-icon-size"
+      ],
+      "state": [
+        "default"
+      ],
+      "defaultToken": [
+        "--xh-_action-profile-glyph-size"
+      ],
+      "visibility": "public",
+      "description": "sortable 的 item-drag-trigger 部件 --xh-icon-size 覆盖槽。"
+    },
+    {
       "name": "--xh-sortable-drag-radius",
       "component": "sortable",
       "part": [
@@ -54724,16 +54771,18 @@
       ],
       "property": [
         "block-size",
-        "inline-size"
+        "inline-size",
+        "min-inline-size"
       ],
       "state": [
-        "default"
+        "default",
+        "xh-action-profile=icon"
       ],
       "defaultToken": [
-        "--xh-control-action-size"
+        "--xh-_action-profile-visual-size"
       ],
       "visibility": "public",
-      "description": "sortable 的 item-drag-trigger 部件 block-size、inline-size 覆盖槽。"
+      "description": "sortable 的 item-drag-trigger 部件 block-size、inline-size、min-inline-size 覆盖槽。"
     },
     {
       "name": "--xh-sortable-drop-indicator-bg",
@@ -54841,7 +54890,7 @@
         "dragging"
       ],
       "defaultToken": [
-        "--xh-elevation-raised"
+        "--xh-elevation-lifted"
       ],
       "visibility": "public",
       "description": "sortable 的 item 部件 box-shadow 覆盖槽。"

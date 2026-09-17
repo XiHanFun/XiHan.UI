@@ -9,7 +9,6 @@
     "file-upload:trigger:raised": "raised 退役待本组件迁移",
     "popconfirm:confirm-trigger:raised": "raised 退役待本组件迁移",
     "signature-pad:clear-trigger:raised": "raised 退役待本组件迁移",
-    "sortable:item:raised": "拖起的条目没有描边，raised 必带 --xh-border-default，待本组件迁移",
     "tooltip:content": "描边是 color-mix 的反色半透明边，真源 §8.4 要求 tooltip 走 frosted 四件套，待本组件迁移"
   },
   "selection": {
@@ -49,7 +48,6 @@
     "popover:close-trigger:pressed": "pressed 落 --xh-bg-subtle-active（300），这份皮肤却没给 --xh-action-host-bg-* 赋值，白底承载 pressed 是 --xh-bg-subtle-hover（200）；待本组件迁移",
     "signature-pad:clear-trigger:hover": "hover 落 --xh-bg-subtle-hover（200），这份皮肤却没给 --xh-action-host-bg-* 赋值，白底承载 hover 是 --xh-bg-subtle（100），淡底容器由 host 槽下发；待本组件迁移",
     "signature-pad:clear-trigger:pressed": "pressed 落 --xh-bg-subtle-active（300），这份皮肤却没给 --xh-action-host-bg-* 赋值，白底承载 pressed 是 --xh-bg-subtle-hover（200）；待本组件迁移",
-    "sortable:item-drag-trigger:hover": "hover 落 --xh-bg-subtle-hover（200），这份皮肤却没给 --xh-action-host-bg-* 赋值，白底承载 hover 是 --xh-bg-subtle（100），淡底容器由 host 槽下发；待本组件迁移",
     "splitter:resize-trigger:hover": "hover 落 --xh-bg-subtle-active（300），300 只留给 pressed；待本组件迁移",
     "steps:indicator:hover": "hover 落 --xh-bg-subtle-hover（200），这份皮肤却没给 --xh-action-host-bg-* 赋值，白底承载 hover 是 --xh-bg-subtle（100），淡底容器由 host 槽下发；待本组件迁移",
     "tour:close-trigger:hover": "hover 落 --xh-bg-subtle-hover（200），这份皮肤却没给 --xh-action-host-bg-* 赋值，白底承载 hover 是 --xh-bg-subtle（100），淡底容器由 host 槽下发；待本组件迁移",
