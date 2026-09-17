@@ -5,11 +5,11 @@ exports[`family-backlog 条目数 > 七段各一数，与快照一致 1`] = `
   "edge": 20,
   "ladder": 56,
   "motion": 1,
-  "press": 47,
+  "press": 45,
   "scroll": 25,
-  "selection": 17,
+  "selection": 15,
   "shape": 19,
-  "text": 67,
+  "text": 66,
 }
 `;
 
@@ -152,8 +152,6 @@ exports[`family-backlog 键集合 > press 1`] = `
   "tour:skip-trigger",
   "transfer:item",
   "transfer:select-all-trigger",
-  "tree:branch-control",
-  "tree:item",
 ]
 `;
 
@@ -204,8 +202,6 @@ exports[`family-backlog 键集合 > selection 1`] = `
   "toggle-group:item",
   "toggle:root",
   "transfer:item",
-  "tree:branch-control",
-  "tree:item",
 ]
 `;
 
@@ -301,6 +297,5 @@ exports[`family-backlog 键集合 > text 1`] = `
   "tour:description:line-height",
   "tour:root:icon-size",
   "transfer:root:icon-size",
-  "tree:root:icon-size",
 ]
 `;

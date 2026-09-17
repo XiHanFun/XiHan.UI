@@ -293,6 +293,8 @@ const FAMILIES = [
     parts: [
       {
         partBy: { 'select': 'item', 'listbox': 'item', 'combobox': 'item', 'cascader': 'item', 'tree-select': 'item', 'tree': 'item', 'date-picker': 'time-item', 'time-picker': 'item', 'time-range-picker': 'item' },
+        // tree 的叶子与分支行共用一套按 row 取名的公开槽（--xh-tree-row-*，check-spacing-slots 已登记共用）
+        slotBy: { tree: 'row' },
         state: '',
         props: ['--xh-collection-bg-hover', '--xh-collection-bg-keyboard-highlight', '--xh-collection-bg-pressed'],
       },

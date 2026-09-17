@@ -37,9 +37,7 @@
     "tag-group:tag/root": "页内持久集合的选中行面是 （没写 background），应为 --xh-bg-brand-subtle；页内持久集合的选中字色是 （没写 color），应为 --xh-fg-on-brand-subtle；待本组件迁移",
     "toggle-group:item": "无滑块开关的选中底是 （没写 background），应为 --xh-bg-brand-subtle；无滑块开关的选中字色是 （没写 color），应为 --xh-fg-on-brand-subtle；待本组件迁移",
     "toggle:root": "无滑块开关的选中字色（桥接槽 --xh-action-fg-rest 解析到底）是 --xh-fg-brand，应为 --xh-fg-on-brand-subtle；待本组件迁移",
-    "transfer:item": "页内持久集合的选中行面是 （没写 background），应为 --xh-bg-brand-subtle；页内持久集合的选中字色是 （没写 color），应为 --xh-fg-on-brand-subtle；待本组件迁移",
-    "tree:branch-control": "页内持久集合的选中行面是 （没写 background），应为 --xh-bg-brand-subtle；页内持久集合的选中字色是 --xh-fg-brand-strong，应为 --xh-fg-on-brand-subtle；待本组件迁移",
-    "tree:item": "页内持久集合的选中行面是 （没写 background），应为 --xh-bg-brand-subtle；页内持久集合的选中字色是 --xh-fg-brand-strong，应为 --xh-fg-on-brand-subtle；待本组件迁移"
+    "transfer:item": "页内持久集合的选中行面是 （没写 background），应为 --xh-bg-brand-subtle；页内持久集合的选中字色是 （没写 color），应为 --xh-fg-on-brand-subtle；待本组件迁移"
   },
   "ladder": {
     "anchor:link:hover": "hover 落 --xh-bg-subtle-hover（200），这份皮肤却没给 --xh-action-host-bg-* 赋值，白底承载 hover 是 --xh-bg-subtle（100），淡底容器由 host 槽下发；待本组件迁移",
@@ -192,9 +190,7 @@
     "tour:prev-trigger": "按下只缩放不换底，:active 块要同时把 background 换到 active 面（§9.1）；待本组件迁移",
     "tour:skip-trigger": "按下只缩放不换底，:active 块要同时把 background 换到 active 面（§9.1）；待本组件迁移",
     "transfer:item": "没有明确的 :active 换面，集合行不允许零反馈（§9.2）；待本组件迁移",
-    "transfer:select-all-trigger": "没有明确的 :active 换面，集合行不允许零反馈（§9.2）；待本组件迁移",
-    "tree:branch-control": "没有明确的 :active 换面，集合行不允许零反馈（§9.2）；待本组件迁移",
-    "tree:item": "没有明确的 :active 换面，集合行不允许零反馈（§9.2）；待本组件迁移"
+    "transfer:select-all-trigger": "没有明确的 :active 换面，集合行不允许零反馈（§9.2）；待本组件迁移"
   },
   "text": {
     "back-top:root:icon-size": "--xh-icon-size 兜底落 --xh-glyph-size-text，随文字形只给纯行内文字组件，控件内图标按档取 --xh-glyph-size-sm / md / lg；待本组件迁移",
@@ -262,8 +258,7 @@
     "tour:description:font-size": "font-size 落 --xh-text-body-size，说明文字应为 --xh-text-secondary-size；待本组件迁移",
     "tour:description:line-height": "line-height 落 --xh-text-body-leading，说明文字应为 --xh-leading-normal；待本组件迁移",
     "tour:root:icon-size": "--xh-icon-size 兜底落 --xh-glyph-size-text，随文字形只给纯行内文字组件，控件内图标按档取 --xh-glyph-size-sm / md / lg；待本组件迁移",
-    "transfer:root:icon-size": "--xh-icon-size 兜底落 --xh-glyph-size-text，随文字形只给纯行内文字组件，控件内图标按档取 --xh-glyph-size-sm / md / lg；待本组件迁移",
-    "tree:root:icon-size": "--xh-icon-size 兜底落 --xh-glyph-size-text，随文字形只给纯行内文字组件，控件内图标按档取 --xh-glyph-size-sm / md / lg；待本组件迁移"
+    "transfer:root:icon-size": "--xh-icon-size 兜底落 --xh-glyph-size-text，随文字形只给纯行内文字组件，控件内图标按档取 --xh-glyph-size-sm / md / lg；待本组件迁移"
   },
   "motion": {
     "drawer:translate": "入场仍走 --xh-motion-ease-enter-strong 与 duration-enter，改走 --xh-motion-ease-slide + --xh-motion-duration-slide 留给 drawer 提交（规范 §9.5）"
