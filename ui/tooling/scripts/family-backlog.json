@@ -38,8 +38,6 @@
     "tour:progress-dot": "取了 pill，身份表登记的是 circle；inline-size 与 block-size 同值（var(--xh-space-2)）的正方盒取了 pill，正方盒必须取 circle；待本组件迁移"
   },
   "scroll": {
-    "hover-card:content:size": "浮层宿主未传 size: 'sm'，随 hover-card 提交补",
-    "hover-card:content:overscroll": "浮层面缺 overscroll-behavior: contain，随 hover-card 提交补",
     "popconfirm:content:unwired": "气泡确认尚未接自绘条，随 popconfirm 提交接线（接线时把 positioner 上的 --xh-scrollbar-track-bg 加回）",
     "popconfirm:content:overscroll": "浮层面缺 overscroll-behavior: contain，随 popconfirm 提交补",
     "color-picker:content:size": "浮层宿主未传 size: 'sm'，随 color-picker 提交补",
@@ -65,7 +63,6 @@
     "drawer:root:icon-size": "--xh-icon-size 兜底落 --xh-glyph-size-text，随文字形只给纯行内文字组件，控件内图标按档取 --xh-glyph-size-sm / md / lg；待本组件迁移",
     "file-upload:label:spacing": "根的 gap 落 --xh-space-3，字段标签贴控件应为 --xh-space-1；待本组件迁移",
     "file-upload:root:icon-size": "--xh-icon-size 兜底落 --xh-glyph-size-text，随文字形只给纯行内文字组件，控件内图标按档取 --xh-glyph-size-sm / md / lg；待本组件迁移",
-    "hover-card:description:font-size": "font-size 落 --xh-text-body-size，说明文字应为 --xh-text-secondary-size；待本组件迁移",
     "popconfirm:description:color": "color 落 --xh-material-frosted-fg-muted，说明文字应为 --xh-fg-muted；待本组件迁移",
     "popconfirm:description:font-size": "font-size 落 --xh-text-body-size，说明文字应为 --xh-text-secondary-size；待本组件迁移",
     "steps:title:font-size": "font-size 落 --xh-control-font-md，Surface / Feedback / 浮层内标题应为 --xh-text-label-size；待本组件迁移",

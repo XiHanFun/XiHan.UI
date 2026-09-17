@@ -6,10 +6,10 @@ exports[`family-backlog 条目数 > 七段各一数，与快照一致 1`] = `
   "ladder": 23,
   "motion": 1,
   "press": 5,
-  "scroll": 10,
+  "scroll": 8,
   "selection": 0,
   "shape": 2,
-  "text": 19,
+  "text": 18,
 }
 `;
 
@@ -75,8 +75,6 @@ exports[`family-backlog 键集合 > scroll 1`] = `
   "dialog:body:overscroll",
   "drawer:body:gutter",
   "drawer:body:overscroll",
-  "hover-card:content:overscroll",
-  "hover-card:content:size",
   "popconfirm:content:overscroll",
   "popconfirm:content:unwired",
 ]
@@ -101,7 +99,6 @@ exports[`family-backlog 键集合 > text 1`] = `
   "drawer:root:icon-size",
   "file-upload:label:spacing",
   "file-upload:root:icon-size",
-  "hover-card:description:font-size",
   "popconfirm:description:color",
   "popconfirm:description:font-size",
   "steps:title:font-size",

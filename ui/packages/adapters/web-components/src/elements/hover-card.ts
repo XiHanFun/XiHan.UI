@@ -119,6 +119,8 @@ export class XhHoverCardElement extends XhPortalHostElement {
   private readonly bars = new ScrollbarsController(this, {
     shell: () => this.getPart('positioner'),
     scrollable: () => this.getPart('content'),
+    // 浮层里走 4px 档
+    props: () => ({ size: 'sm' }),
   })
 
   private machineProps(): Partial<HoverCardSchema['props']> {

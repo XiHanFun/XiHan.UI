@@ -110,6 +110,8 @@
     /* 内容由作者给，长度不可预知：不限高就整块伸出视口且滚不到 */
     max-block-size: min(var(--xh-hover-card-max-h, var(--xh-overlay-max-h)), var(--xh-_hover-card-available-h));
     overflow-y: auto;
+    /* 浮在页面之上的 Overlay 滚动面（§6.6）：滚到头不把页面一起带走 */
+    overscroll-behavior: contain;
     padding-block: var(--xh-hover-card-py, var(--xh-_hover-card-pad));
     padding-inline: var(--xh-hover-card-px, var(--xh-_hover-card-pad));
     border: var(--xh-stroke-thin) solid var(--xh-hover-card-border, var(--xh-material-frosted-border));
@@ -173,9 +175,10 @@
     color: var(--xh-hover-card-title-fg, var(--xh-fg-default));
   }
 
+  /* 说明文字走说明档（§6.4）：13px + fg-muted */
   [data-scope='hover-card'][data-part='description'] {
     margin: 0;
-    font-size: var(--xh-text-body-size);
+    font-size: var(--xh-hover-card-description-font-size, var(--xh-text-secondary-size));
     color: var(--xh-hover-card-description-fg, var(--xh-fg-muted));
   }
 
