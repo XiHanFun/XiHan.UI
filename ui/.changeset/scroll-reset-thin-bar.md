@@ -16,3 +16,5 @@
 `check-scrollbar-hosts` 扩成滚动面归档门禁：`scroll-surface-registry.json` 逐面登记两档归属与 `overscroll` / `gutter` 该不该写；皮肤里每一处 `overflow: auto|scroll` 都得在表里、表里每一条都得扫得到；自绘面核三端接线、轴齐全、浮层壳 `size: 'sm'`；原生面不得自己写 `scrollbar-width` / `scrollbar-color`；`--xh-scrollbar-track-bg` 只有宿主的壳才有资格声明。尚未达标的面记在同一份 JSON 的 backlog 段，逐条理由，命中即删、只减不增。
 
 文档站的页面与侧栏滚动条回到与组件同一 `type`（`scroll-hover`）与令牌色阶，不再另写 `type="scroll"` 与三条滑块色覆写。
+
+`reset.css` 里原生细条的 `::-webkit-scrollbar-thumb` 圆角改取 `var(--xh-shape-pill)`：原生滑块与自绘 `scrollbar:thumb` 同为一维对象，形状身份是胶囊，不再按厚度折半凑半圆（三档厚度下可见形状不变）。`check-shape-scale` 的 NO_SLOT 登记 `reset:*::-webkit-scrollbar-thumb`，主体为 `:where(…)` 一组宿主的规则部件位记作 `*`。
