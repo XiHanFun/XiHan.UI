@@ -8,15 +8,18 @@ function root(props: ButtonGroupProps = {}): Record<string, unknown> {
 }
 
 describe('connectButtonGroup 缺省', () => {
-  it('横排、不禁用、自动插分隔线；三轴不写就不落属性，皮肤退回缺省档', () => {
+  it('横排、不禁用、自动插分隔线；variant 缺省显式落 subtle，tone / size 不写就不落属性', () => {
     const api = connectButtonGroup({}, normalizeProps)
     expect(api.orientation).toBe('horizontal')
     expect(api.disabled).toBe(false)
     expect(api.separators).toBe(true)
+    // 组缺省中性淡底：只有 Button 单独一枚缺省品牌实心
+    expect(api.variant).toBe('subtle')
+    expect(api.tone).toBeUndefined()
+    expect(api.size).toBeUndefined()
 
     const props = root()
-    expect(props).toMatchObject({ 'role': 'group', 'data-orientation': 'horizontal' })
-    expect(props['data-variant']).toBeUndefined()
+    expect(props).toMatchObject({ 'role': 'group', 'data-orientation': 'horizontal', 'data-variant': 'subtle' })
     expect(props['data-tone']).toBeUndefined()
     expect(props['data-size']).toBeUndefined()
     expect(props['data-disabled']).toBeUndefined()
@@ -32,12 +35,16 @@ describe('connectButtonGroup 缺省', () => {
 })
 
 describe('connectButtonGroup 三轴与状态', () => {
-  it('三轴只落在根上，组内每一段靠继承拿到', () => {
+  it('三轴落在根上，并经 api 暴露给适配器下发到每一段', () => {
     expect(root({ variant: 'outline', tone: 'danger', size: 'sm' })).toMatchObject({
       'data-variant': 'outline',
       'data-tone': 'danger',
       'data-size': 'sm',
     })
+    const api = connectButtonGroup({ variant: 'outline', tone: 'danger', size: 'sm' }, normalizeProps)
+    expect(api.variant).toBe('outline')
+    expect(api.tone).toBe('danger')
+    expect(api.size).toBe('sm')
   })
 
   it('竖排、禁用与撑满行宽各落一个状态位', () => {

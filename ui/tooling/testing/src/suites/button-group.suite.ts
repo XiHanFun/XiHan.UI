@@ -18,14 +18,14 @@ export const buttonGroupSuite: ConformanceSuite = {
   },
   cases: [
     {
-      name: '缺省：role=group，横排，三轴一律不输出',
+      name: '缺省：role=group，横排，variant 显式落 subtle（组缺省中性），tone / size 不输出',
       spec: { apg: APG },
       initial: {
         parts: {
           root: {
             'role': 'group',
             'data-orientation': 'horizontal',
-            'data-variant': null,
+            'data-variant': 'subtle',
             'data-tone': null,
             'data-size': null,
           },
@@ -47,7 +47,7 @@ export const buttonGroupSuite: ConformanceSuite = {
       },
     },
     {
-      name: '三轴如实落到根上，组内每一段从根继承',
+      name: '三轴如实落到根上，组内每一段由适配器下发（段自写者优先）',
       spec: { apg: APG },
       props: { variant: 'outline', tone: 'brand', size: 'sm' },
       initial: {

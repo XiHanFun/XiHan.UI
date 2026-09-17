@@ -10,11 +10,14 @@ import type { ActionVariant, PropTypes, Size, Tone } from '@xihan-ui/core'
 export interface ButtonGroupProps {
   /** 排布：horizontal / vertical，决定相邻两段在哪个轴上合并边缘。 */
   orientation?: 'horizontal' | 'vertical'
-  /** 变体：solid / subtle / outline / ghost，写入根上供皮肤填入组内按钮的颜色槽位。 */
+  /**
+   * 变体：solid / subtle / outline / ghost，默认 subtle（组缺省中性淡底）。
+   * 写入根上，并由适配器下发给组内每一段；段自己写了 variant 的优先。
+   */
   variant?: ActionVariant
-  /** 颜色：brand / neutral / success / warning / danger / info，写入根上沿继承流下发给组内每一段。 */
+  /** 颜色：brand / neutral / success / warning / danger / info，写入根上并下发给组内每一段；段自己写了的优先。 */
   tone?: Tone
-  /** 尺寸：sm / md / lg，写入根上供皮肤填入组内按钮的高度、内边距与字号槽位。 */
+  /** 尺寸：sm / md / lg，写入根上并下发给组内每一段；段自己写了的优先。 */
   size?: Size
   /** 整组禁用：适配器把它落到组内每一段的原生 disabled 上，段自身声明禁用的仍然禁用。 */
   disabled?: boolean
@@ -30,6 +33,12 @@ export interface ButtonGroupApi<T extends PropTypes = PropTypes> {
   disabled: boolean
   /** 适配器是否自动生成相邻按钮间的分隔线。 */
   separators: boolean
+  /** 组的变体（缺省 subtle）。适配器把它下发给未自写 variant 的每一段，段因此自带形态矩阵属性。 */
+  variant: ActionVariant
+  /** 组的颜色；未写时为 undefined，段沿用自己的。适配器下发给未自写 tone 的每一段。 */
+  tone: Tone | undefined
+  /** 组的尺寸；未写时为 undefined，段沿用自己的。适配器下发给未自写 size 的每一段。 */
+  size: Size | undefined
   getRootProps: () => T['element']
 }
 

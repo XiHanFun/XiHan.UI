@@ -3156,7 +3156,7 @@
       "declarations": [
         {
           "kind": "class",
-          "description": "`<xh-button-group>`：Light-DOM 行为宿主，无状态机，把 connectButtonGroup 产出接到 root 角色节点。\n\n组内每一段是作者自己的按钮，不是本组件的角色节点：三个视觉轴写在根上，\n皮肤把它们转换为 `--xh-button-*` 槽位，沿继承流下发给每一段。",
+          "description": "`<xh-button-group>`：Light-DOM 行为宿主，无状态机，把 connectButtonGroup 产出接到 root 角色节点。\n\n组内每一段是作者自己的按钮，不是本组件的角色节点：三个视觉轴写在根上，\n并按整组禁用同一条路写到每个未自写该属性的 `<xh-button>` 子节点上（段自己写了的优先），\n段因此自带形态矩阵属性，颜色由家族配方给出。",
           "name": "XhButtonGroupElement",
           "cssParts": [
             {
@@ -3244,6 +3244,14 @@
               "readonly": true,
               "default": "new WeakMap<Element, boolean>()",
               "description": "作者在标记里写的段禁用，按元素记住头一回见到的那一份。\n整组禁用期间每一段上都被写了 disabled，第二帧起现读分不清是作者写的还是自己上一帧写的，\n解禁时就再也解不开。"
+            },
+            {
+              "kind": "field",
+              "name": "declaredAxes",
+              "privacy": "private",
+              "readonly": true,
+              "default": "new WeakMap<Element, Partial<Record<GroupAxis, string | null>>>()",
+              "description": "作者在段上自写的 variant / tone / size，同样按元素记住头一回见到的那一份：\n组值写上去之后现读分不清是作者写的还是自己写的，组换值时就盖不回去。"
             },
             {
               "kind": "field",
@@ -3345,6 +3353,37 @@
                 }
               ],
               "description": "把整组的禁用落到每一段的原生 disabled 上。\n只写 data-* 是假禁用：段照样可聚焦、照样派发 click。\n分隔线不是段，跳过它。"
+            },
+            {
+              "kind": "method",
+              "name": "applyGroupAxes",
+              "privacy": "private",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "root",
+                  "type": {
+                    "text": "HTMLElement"
+                  }
+                },
+                {
+                  "name": "axes",
+                  "type": {
+                    "text": "Record<GroupAxis, string | undefined>"
+                  }
+                },
+                {
+                  "name": "separators",
+                  "type": {
+                    "text": "readonly HTMLElement[]"
+                  }
+                }
+              ],
+              "description": "把组的 variant / tone / size 写到每个未自写该属性的 `<xh-button>` 段上。\n段是 `<xh-button>` 宿主，属性即它的 props，写上去就经它自己的连接层投影成 data-xh-action-variant\n一类稳定属性；作者自写的那一档保留。只认 xh-button：作者放进组里的裸 <button> 不是本库的段。"
             }
           ],
           "attributes": [
@@ -3360,7 +3399,7 @@
               "type": {
                 "text": "ActionVariant | undefined"
               },
-              "description": "变体，决定底色、描边与前景的使用方式",
+              "description": "变体，默认 subtle；下发给未自写 variant 的每一段",
               "name": "variant",
               "fieldName": "variant"
             },
@@ -3368,7 +3407,7 @@
               "type": {
                 "text": "Tone | undefined"
               },
-              "description": "颜色",
+              "description": "颜色；下发给未自写 tone 的每一段",
               "name": "tone",
               "fieldName": "tone"
             },
@@ -3376,7 +3415,7 @@
               "type": {
                 "text": "Size | undefined"
               },
-              "description": "尺寸，决定各段的高度、内边距与字号",
+              "description": "尺寸，决定各段的高度、内边距与字号；下发给未自写 size 的每一段",
               "name": "size",
               "fieldName": "size"
             },

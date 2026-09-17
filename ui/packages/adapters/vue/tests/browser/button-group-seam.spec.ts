@@ -68,8 +68,19 @@ afterEach(async () => {
   app = null
   host?.remove()
   host = null
+  delete document.documentElement.dataset.theme
   await userEvent.hover(document.querySelector<HTMLElement>('[data-test-park-pointer]')!)
 })
+
+/** 把语义令牌解析成与 getComputedStyle 同格式的颜色值，避免直接比对带 var() 链的自定义属性。 */
+function resolveColor(token: string): string {
+  const probe = document.createElement('span')
+  probe.style.backgroundColor = `var(${token})`
+  host!.append(probe)
+  const value = getComputedStyle(probe).backgroundColor
+  probe.remove()
+  return value
+}
 
 
 /** 语义形状令牌在该元素上解到的像素值。 */
@@ -177,19 +188,23 @@ describe('按钮组轮廓', () => {
 })
 
 describe('按钮组混合形态边界', () => {
-  it('outline 外框归组根，显式形态仍保留自己的边界', () => {
+  it('outline 外框归组根，组内每一段都压平描边；组形态下发到未自写的段，显式形态的段仍按自己的矩阵列取面', () => {
+    document.documentElement.dataset.theme = 'light'
     mount(() => h(XhButtonGroup, { variant: 'outline' }, () => [
       h(XhButton, null, () => '继承组'),
       h(XhButton, { variant: 'solid' }, () => '实心'),
       h(XhButton, { variant: 'subtle' }, () => '轻底'),
       h(XhButton, { variant: 'ghost' }, () => '幽灵'),
     ]))
-    const [inherited, solid, subtle, ghost] = buttons().map(button => getComputedStyle(button).borderTopColor)
+    const segments = buttons()
+    expect(segments.map(button => button.getAttribute('data-xh-action-variant'))).toEqual(['outline', 'solid', 'subtle', 'ghost'])
+    for (const button of segments)
+      expect(getComputedStyle(button).borderTopColor).toBe('rgba(0, 0, 0, 0)')
 
+    const [inherited, solid, subtle, ghost] = segments.map(button => getComputedStyle(button).backgroundColor)
     expect(inherited).toBe('rgba(0, 0, 0, 0)')
-    expect(solid).toBe('rgba(0, 0, 0, 0)')
-    expect(subtle).not.toBe(inherited)
-    expect(subtle).not.toBe('rgba(0, 0, 0, 0)')
+    expect(solid).toBe(resolveColor('--xh-bg-brand'))
+    expect(subtle).toBe(resolveColor('--xh-bg-subtle'))
     expect(ghost).toBe('rgba(0, 0, 0, 0)')
   })
 
