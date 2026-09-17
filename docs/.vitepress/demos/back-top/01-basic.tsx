@@ -18,6 +18,7 @@ export default function Demo(): ReactNode {
     <div style={{ position: "relative", inlineSize: "min(560px, 100%)" }}>
       <div
         ref={scrollEl}
+        data-xh-scroll=""
         style={{
           blockSize: "240px",
           overflow: "auto",

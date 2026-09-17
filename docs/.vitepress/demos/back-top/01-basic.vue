@@ -11,6 +11,7 @@ const scrollEl = ref<HTMLElement | null>(null);
   <div style="position: relative; inline-size: min(560px, 100%)">
     <div
       ref="scrollEl"
+      data-xh-scroll
       style="
         block-size: 240px;
         overflow: auto;

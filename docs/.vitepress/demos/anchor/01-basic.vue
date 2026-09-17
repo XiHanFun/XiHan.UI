@@ -40,6 +40,7 @@ const scrollEl = ref<HTMLElement | null>(null);
 
     <div
       ref="scrollEl"
+      data-xh-scroll
       style="
         block-size: 240px;
         overflow: auto;

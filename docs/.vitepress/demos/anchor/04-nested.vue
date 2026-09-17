@@ -83,6 +83,7 @@ function isGroupActive(group: {
 
     <div
       ref="scrollEl"
+      data-xh-scroll
       style="
         block-size: 240px;
         overflow: auto;

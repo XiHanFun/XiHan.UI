@@ -14,7 +14,6 @@ const items = ["项目概览", "组件规范", "设计令牌", "无障碍", "交
       style="
         block-size: 144px;
         overflow: auto;
-        scrollbar-width: none;
         border-radius: var(--xh-shape-surface);
         background: var(--xh-bg-subtle);
         padding: 12px;

@@ -21,6 +21,7 @@ function onLoad(): void {
 <template>
   <div
     ref="scrollEl"
+    data-xh-scroll
     style="
       block-size: 240px;
       overflow: auto;

@@ -59,7 +59,7 @@ export default function Demo(): ReactNode {
         </XhAnchorList>
       </XhAnchorRoot>
 
-      <div ref={scrollEl} style={scroller}>
+      <div ref={scrollEl} data-xh-scroll="" style={scroller}>
         <div style={stickyBar}>章节导航</div>
 
         {sections.map(s => (

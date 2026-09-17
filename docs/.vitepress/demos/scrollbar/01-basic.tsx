@@ -8,7 +8,6 @@ const items = ["项目概览", "组件规范", "设计令牌", "无障碍", "交
 const boxStyle = {
   blockSize: "144px",
   overflow: "auto",
-  scrollbarWidth: "none",
   borderRadius: "var(--xh-shape-surface)",
   background: "var(--xh-bg-subtle)",
   padding: "12px",

@@ -25,6 +25,7 @@ export default function Demo(): ReactNode {
   return (
     <div
       ref={setScrollEl}
+      data-xh-scroll=""
       style={{
         blockSize: "240px",
         overflow: "auto",

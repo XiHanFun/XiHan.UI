@@ -29,6 +29,7 @@ export default function Demo(): ReactNode {
     <div style={{ display: "grid", gap: "12px", inlineSize: "100%" }}>
       <div
         ref={setScrollEl}
+        data-xh-scroll=""
         style={{
           blockSize: "220px",
           overflow: "auto",

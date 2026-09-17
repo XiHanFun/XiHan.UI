@@ -13,6 +13,7 @@ const autoEl = ref<HTMLElement | null>(null);
     <div style="position: relative">
       <div
         ref="smoothEl"
+        data-xh-scroll
         style="block-size: 200px; overflow: auto; padding-inline: 14px; border-radius: var(--xh-shape-surface); background: var(--xh-bg-subtle)"
       >
         <p v-for="section in sections" :key="section" style="min-block-size: 64px">平滑 · {{ section }}</p>
@@ -31,6 +32,7 @@ const autoEl = ref<HTMLElement | null>(null);
     <div style="position: relative">
       <div
         ref="autoEl"
+        data-xh-scroll
         style="block-size: 200px; overflow: auto; padding-inline: 14px; border-radius: var(--xh-shape-surface); background: var(--xh-bg-subtle)"
       >
         <p v-for="section in sections" :key="section" style="min-block-size: 64px">立即 · {{ section }}</p>

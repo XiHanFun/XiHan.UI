@@ -39,6 +39,7 @@ const scrollEl = ref<HTMLElement | null>(null);
 
     <div
       ref="scrollEl"
+      data-xh-scroll
       style="
         position: relative;
         block-size: 240px;

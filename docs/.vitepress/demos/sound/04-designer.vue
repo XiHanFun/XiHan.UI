@@ -94,6 +94,7 @@ onBeforeUnmount(() => player.dispose());
     </div>
 
     <pre
+      data-xh-scroll
       style="
         margin: 0;
         padding: 12px 14px;

@@ -7,7 +7,6 @@ const cells = Array.from({ length: 24 }, (_, i) => `第 ${i + 1} 列`);
 
 const boxStyle = {
   overflow: "auto",
-  scrollbarWidth: "none",
   border: "1px solid var(--xh-border-default)",
   borderRadius: "var(--xh-shape-surface)",
   padding: "8px",
