@@ -5,8 +5,7 @@
     "color-picker:area-thumb:raised": "拇指描边落 --xh-color-neutral-0 原语，应为 --xh-border-default，待本组件迁移",
     "color-picker:control:raised": "raised 退役待本组件迁移",
     "file-upload:trigger:raised": "raised 退役待本组件迁移",
-    "popconfirm:confirm-trigger:raised": "raised 退役待本组件迁移",
-    "tooltip:content": "描边是 color-mix 的反色半透明边，真源 §8.4 要求 tooltip 走 frosted 四件套，待本组件迁移"
+    "popconfirm:confirm-trigger:raised": "raised 退役待本组件迁移"
   },
   "selection": {},
   "ladder": {
