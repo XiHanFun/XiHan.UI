@@ -19497,7 +19497,6 @@
 [data-scope='color-picker'][data-part='swatch-picker'] {
   --xh-_color-swatch-picker-cell: var(--xh-color-picker-swatch-cell, var(--xh-control-h-sm));
   --xh-_color-swatch-picker-gap: var(--xh-color-picker-swatch-gap, var(--xh-control-gap-sm));
-  --xh-_color-swatch-picker-font-size: var(--xh-control-font-sm);
   --xh-_color-swatch-picker-indicator: var(--xh-control-indicator-sm);
   --xh-_color-swatch-picker-mark: calc(var(--xh-_color-swatch-picker-indicator) - var(--xh-space-1));
   --xh-_color-swatch-picker-accent: var(--xh-_tone, var(--xh-bg-brand));
@@ -19863,16 +19862,15 @@
 
 /* 一组固定颜色排成可换行的网格，每格是一颗 role=radio 的方块。
    格子的边长跟着控件行高走（sm/md/lg 三档），一排色块与旁边的按钮、字段齐高；
-   色块面、棋盘格与描边由 Swatch 家族画，这份皮肤只管格子的命中区、选中环与选中标记 */
+   色块面、棋盘格与描边由 Swatch 家族画，这份皮肤只管格子的命中区、选中描边与选中徽标 */
 [data-scope='color-swatch-picker'][data-part='root'] {
-  /* 尺寸档只换这几个私有槽，标题、格子与标记都从 root 继承它们 */
+  /* 尺寸档只换这几个私有槽，格子与标记都从 root 继承它们；标题走字段标签角色，不随档 */
   --xh-_color-swatch-picker-cell: var(--xh-control-h-md);
   --xh-_color-swatch-picker-gap: var(--xh-control-gap-md);
-  --xh-_color-swatch-picker-font-size: var(--xh-control-font-md);
   --xh-_color-swatch-picker-indicator: var(--xh-control-indicator-md);
   /* 勾从徽标里减去一圈内衬，徽标换档时勾跟着走 */
   --xh-_color-swatch-picker-mark: calc(var(--xh-_color-swatch-picker-indicator) - var(--xh-space-1));
-  /* 选中环与徽标底随语气走。没写 data-tone 时 --xh-_tone 没被声明，退回品牌色 */
+  /* 徽标底随语气走。没写 data-tone 时 --xh-_tone 没被声明，退回品牌色 */
   --xh-_color-swatch-picker-accent: var(--xh-_tone, var(--xh-bg-brand));
   /* 作者往标记槽里换 XhIcon 时与兜底的勾同一把尺 */
   --xh-icon-size: var(--xh-color-swatch-picker-icon-size, var(--xh-_color-swatch-picker-mark));
@@ -19891,54 +19889,75 @@
 [data-scope='color-swatch-picker'][data-part='root'][data-size='sm'] {
   --xh-_color-swatch-picker-cell: var(--xh-control-h-sm);
   --xh-_color-swatch-picker-gap: var(--xh-control-gap-sm);
-  --xh-_color-swatch-picker-font-size: var(--xh-control-font-sm);
   --xh-_color-swatch-picker-indicator: var(--xh-control-indicator-sm);
 }
 
 [data-scope='color-swatch-picker'][data-part='root'][data-size='lg'] {
   --xh-_color-swatch-picker-cell: var(--xh-control-h-lg);
   --xh-_color-swatch-picker-gap: var(--xh-control-gap-lg);
-  --xh-_color-swatch-picker-font-size: var(--xh-control-font-lg);
   --xh-_color-swatch-picker-indicator: var(--xh-control-indicator-lg);
 }
 
-/* 标题独占一行，格子从下一行起排 */
+/* 标题独占一行，格子从下一行起排。复合单字段的标签（§6.4）：14 / 500 / fg-default，不随档；
+   与格子的距离贴控件 space-1——容器的 gap 归格子之间，标签在它之上补一段差值把距离收成目标值 */
 [data-scope='color-swatch-picker'][data-part='label'] {
   flex-basis: 100%;
-  color: var(--xh-color-swatch-picker-label-fg, var(--xh-fg-muted));
-  font-size: var(--xh-color-swatch-picker-label-font-size, var(--xh-_color-swatch-picker-font-size));
+  margin-block-end: calc(
+    var(--xh-color-swatch-picker-label-gap, var(--xh-space-1))
+    - var(--xh-color-swatch-picker-gap, var(--xh-_color-swatch-picker-gap))
+  );
+  color: var(--xh-color-swatch-picker-label-fg, var(--xh-fg-default));
+  font-size: var(--xh-color-swatch-picker-label-font-size, var(--xh-text-label-size));
   font-weight: var(--xh-color-swatch-picker-label-font-weight, var(--xh-text-label-weight));
 }
 
+[data-scope='color-swatch-picker'][data-part='label'][data-disabled] {
+  color: var(--xh-color-swatch-picker-label-fg-disabled, var(--xh-fg-subtle));
+}
+
 /* 一格：正方形命中区，里面铺满色块面。
-   position 是给格内那份视觉隐藏的原生输入与压在色块上的标记做定位基准，别去掉 */
+   position 是给格内那份视觉隐藏的原生输入与压在色块上的标记做定位基准，别去掉。
+   色块的描边按格子的状态换（静息 / 悬停 / 按下 / 选中），四档都写在格子这一层的私有槽上，
+   色块面那条只读它——这一格的底色就是它要展示的那个颜色，交互回执只能落在描边上 */
 [data-scope='color-swatch-picker'][data-part='item'] {
+  --xh-_color-swatch-picker-edge: var(--xh-color-swatch-picker-swatch-border, var(--xh-border-default));
+
   position: relative;
   display: inline-flex;
   flex: none;
   inline-size: var(--xh-color-swatch-picker-item-size, var(--xh-_color-swatch-picker-cell));
   block-size: var(--xh-color-swatch-picker-item-size, var(--xh-_color-swatch-picker-cell));
-  border-radius: var(--xh-color-swatch-picker-item-radius, var(--xh-shape-control));
+  /* 色块 item 的身份是 inset（§6.3：嵌在 control 内的小块） */
+  border-radius: var(--xh-color-swatch-picker-item-radius, var(--xh-shape-inset));
   outline: none;
   cursor: pointer;
   transition: scale var(--xh-motion-duration-release) var(--xh-motion-ease-release);
 }
 
-/* 这一格的底色就是它要展示的那个颜色，换底等于把展示物盖掉，交互回执只能落在别处：
-   指到哪一格看描边，按下去看下压。置灰与只读的都不压 */
-[data-scope='color-swatch-picker'][data-part='item']:not([data-disabled], [data-readonly]):active {
+/* 指到哪一格：描边换到控件的悬停边（border-strong 只留给 contrast-more 与登记的强调边）；
+   选中的那一格保留自己的品牌描边（§9.3 选中身份不被悬停盖掉） */
+[data-scope='color-swatch-picker'][data-part='item']:not([data-disabled], [data-readonly], [data-state='checked']):hover {
+  --xh-_color-swatch-picker-edge: var(--xh-color-swatch-picker-swatch-border-hover, var(--xh-border-control-hover));
+}
+
+/* 这一格的底色就是它要展示的那个颜色，换底等于把展示物盖掉（§9.1 的「同时换底」在这里落不下去），
+   交互回执只能落在别处：按下去看下压，描边同时换到品牌色作第二通道（按住即将选中的那一格）。
+   置灰与只读的都不压；指针 :active 与 Headless 投影的 data-pressed 看见同一副按压面 */
+[data-scope='color-swatch-picker'][data-part='item']:not([data-disabled], [data-readonly]):is(:active, [data-pressed]) {
+  --xh-_color-swatch-picker-edge: var(--xh-color-swatch-picker-swatch-border-pressed, var(--xh-_tone, var(--xh-fg-brand)));
+
   scale: var(--xh-motion-scale-press);
   transition-duration: var(--xh-motion-duration-press);
   transition-timing-function: var(--xh-motion-ease-press);
 }
 
-/* 正被选中的那一格：环画在盒子外面，不挤占色块本身的面积 */
+/* 正被选中的那一格：色块自己的描边换成品牌色（语气组取语气色），与正中的徽标一起表达选中，
+   不再在盒子外面另画一圈——外圈 outline 留给焦点环独占 */
 [data-scope='color-swatch-picker'][data-part='item'][data-state='checked'] {
-  outline: var(--xh-ring-width) solid var(--xh-color-swatch-picker-ring, var(--xh-_color-swatch-picker-accent));
-  outline-offset: var(--xh-ring-offset);
+  --xh-_color-swatch-picker-edge: var(--xh-color-swatch-picker-ring, var(--xh-_tone, var(--xh-fg-brand)));
 }
 
-/* 选中的格子自带一圈同特指度的环，这一条排在它之后，键盘焦点才压得住 */
+/* 焦点环独占 outline：选中不再画外圈，由色块正中的徽标与色块自己的品牌描边表达 */
 [data-scope='color-swatch-picker'][data-part='item']:focus-visible {
   outline: var(--xh-ring-width) solid var(--xh-ring-focus);
   outline-offset: var(--xh-ring-offset);
@@ -19956,26 +19975,22 @@
   cursor: default;
 }
 
-/* 色块面铺满格子，圆角随格子；家族合同里的三把尺在这里接上组件自己的公开槽 */
+/* 色块面铺满格子，圆角随格子；家族合同里的三把尺在这里接上组件自己的公开槽，
+   描边读格子按状态给的那一档 */
 [data-scope='color-swatch-picker'][data-part='swatch'] {
   --xh-swatch-size: 100%;
-  --xh-swatch-radius: var(--xh-color-swatch-picker-item-radius, var(--xh-shape-control));
-  --xh-swatch-border: var(--xh-color-swatch-picker-swatch-border, var(--xh-border-default));
+  --xh-swatch-radius: var(--xh-color-swatch-picker-item-radius, var(--xh-shape-inset));
+  --xh-swatch-border: var(--xh-_color-swatch-picker-edge);
 
   transition: border-color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
 }
 
-/* 指到哪一格：描边加深一档 */
-[data-scope='color-swatch-picker'][data-part='item']:not([data-disabled], [data-readonly]):hover > [data-part='swatch'] {
-  --xh-swatch-border: var(--xh-color-swatch-picker-swatch-border-hover, var(--xh-border-strong));
-}
-
-/* 校验失败：整组的描边转警示色，压在悬停规则之后 */
+/* 校验失败：整组的描边转警示色，压过悬停、按下与选中那几档 */
 [data-scope='color-swatch-picker'][data-part='swatch'][data-invalid] {
   --xh-swatch-border: var(--xh-color-swatch-picker-swatch-border-invalid, var(--xh-border-invalid));
 }
 
-/* 选中标记：压在色块正中的一枚小徽标——语气底加一圈画布色描边，
+/* 选中徽标：压在色块正中的一枚小圆徽——语气底加一圈画布色描边，
    再往里是一个勾。徽标自带底色与描边，落在任何颜色的色块上都看得出来，
    色块恰好是品牌色时那圈画布色把它从底上隔出来 */
 [data-scope='color-swatch-picker'][data-part='indicator'] {
@@ -19994,7 +20009,8 @@
   inline-size: var(--xh-color-swatch-picker-indicator-size, var(--xh-_color-swatch-picker-indicator));
   block-size: var(--xh-color-swatch-picker-indicator-size, var(--xh-_color-swatch-picker-indicator));
   border: var(--xh-stroke-thin) solid var(--xh-color-swatch-picker-indicator-border, var(--xh-bg-canvas));
-  border-radius: var(--xh-shape-pill);
+  /* 正方盒取 circle（§6.3：宽高同槽的盒不得用 pill 冒充圆） */
+  border-radius: var(--xh-shape-circle);
   background: var(--xh-color-swatch-picker-indicator-bg, var(--xh-_color-swatch-picker-accent));
   opacity: 0;
   scale: 0;
@@ -20053,12 +20069,13 @@
 }
 
 /*
- * 高对比档：色块面由家族退出强制着色自己保住原色；选中环与徽标换成系统的高亮色，
+ * 高对比档：色块面由家族退出强制着色自己保住原色；选中描边与徽标换成系统的高亮色，
  * 徽标那圈描边与勾各取系统墨色，选中的那一格在任何色块上都框得出来。
  */
 @media (forced-colors: active) {
-  [data-scope='color-swatch-picker'][data-part='item'][data-state='checked'] {
-    outline-color: Highlight;
+  /* 家族在这一档把色块描边统一钉成 CanvasText，选中的那一格要在它之上换成高亮色 */
+  [data-scope='color-swatch-picker'][data-part='item'][data-state='checked'] > [data-part='swatch'] {
+    border-color: Highlight;
   }
 
   [data-scope='color-swatch-picker'][data-part='indicator']::before {

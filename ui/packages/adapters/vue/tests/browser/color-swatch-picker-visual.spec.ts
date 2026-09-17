@@ -1,5 +1,5 @@
-// ColorSwatchPicker 的格子是正方形命中区、色块面铺满格子、选中的格子外画环并压一枚徽标。
-// 边长、环的几何、徽标显隐与叠放只能在真实 Chromium 中验证。
+// ColorSwatchPicker 的格子是正方形命中区、色块面铺满格子、选中的格子换品牌描边并压一枚圆徽标。
+// 边长、描边、徽标显隐与叠放只能在真实 Chromium 中验证。
 import type { App } from 'vue'
 import { afterEach, describe, expect, it } from 'vitest'
 import { cdp } from 'vitest/browser'
@@ -72,6 +72,8 @@ describe('颜色色块选择器的格子', () => {
     expect(face.width).toBe(cell)
     expect(face.height).toBe(cell)
     expect(getComputedStyle(swatch).borderTopLeftRadius).toBe(getComputedStyle(item).borderTopLeftRadius)
+    // 色块 item 的身份是 inset（§6.3）
+    expect(getComputedStyle(item).borderTopLeftRadius).toBe(`${resolvedLength('--xh-shape-inset')}px`)
   })
 
   it('三档边长各取 sm / md / lg 的控件行高，色块面跟着格子一起换档', async () => {
@@ -85,29 +87,31 @@ describe('颜色色块选择器的格子', () => {
     expect(part('swatch').getBoundingClientRect().width).toBe(resolvedLength('--xh-control-h-lg'))
   })
 
-  it('选中的格子：环画在盒子外面、徽标压在色块正中且可见；未选中的格子没有环、徽标透明', async () => {
+  it('选中的格子：外圈不再画环（outline 留给焦点环），色块描边换品牌色、徽标压在色块正中且可见；未选中的格子描边默认、徽标透明', async () => {
     await mountPicker({ defaultValue: '#e11d48' })
     const checked = part('item', 0)
     const unchecked = part('item', 2)
-    expect(getComputedStyle(checked).outlineStyle).toBe('solid')
-    expect(getComputedStyle(checked).outlineColor).toBe(resolvedToken('--xh-bg-brand'))
+    expect(getComputedStyle(checked).outlineStyle).toBe('none')
     expect(getComputedStyle(unchecked).outlineStyle).toBe('none')
+    expect(getComputedStyle(part('swatch', 0)).borderTopColor).toBe(resolvedToken('--xh-fg-brand'))
+    expect(getComputedStyle(part('swatch', 2)).borderTopColor).toBe(resolvedToken('--xh-border-default'))
     const badge = getComputedStyle(part('indicator', 0), '::before')
     expect(badge.opacity).toBe('1')
     expect(badge.backgroundColor).toBe(resolvedToken('--xh-bg-brand'))
     expect(badge.borderTopColor).toBe(resolvedToken('--xh-bg-canvas'))
-    // 徽标直径取指示器档，居中压在格子上
+    // 徽标直径取指示器档，居中压在格子上；正方盒取 circle
     const size = resolvedLength('--xh-control-indicator-md')
     expect(Number.parseFloat(badge.width)).toBe(size)
+    expect(badge.borderTopLeftRadius).toBe('50%')
     expect(getComputedStyle(part('indicator', 2), '::before').opacity).toBe('0')
     expect(getComputedStyle(part('indicator', 0), '::after').opacity).toBe('1')
     expect(getComputedStyle(part('indicator', 2), '::after').opacity).toBe('0')
   })
 
-  it('语气换的是环与徽标的颜色，不动色块本身', async () => {
+  it('语气换的是选中描边与徽标的颜色，不动色块本身', async () => {
     await mountPicker({ defaultValue: '#e11d48', tone: 'success' })
-    const checked = part('item', 0)
-    expect(getComputedStyle(checked).outlineColor).toBe(resolvedToken('--xh-color-success-600'))
+    expect(getComputedStyle(part('swatch', 0)).borderTopColor).toBe(resolvedToken('--xh-color-success-600'))
+    expect(getComputedStyle(part('indicator', 0), '::before').backgroundColor).toBe(resolvedToken('--xh-color-success-600'))
     const layers = getComputedStyle(part('swatch', 0)).backgroundImage
     expect(layers).toContain('rgb(225, 29, 72)')
   })
@@ -121,7 +125,21 @@ describe('颜色色块选择器的格子', () => {
     expect(style.borderTopColor).toBe(resolvedToken('--xh-border-invalid'))
   })
 
-  it('高对比档：色块保住原色，选中环换成系统高亮色', async () => {
+  it('按下：格子缩放，底是展示物不换，描边换到品牌色作第二通道', async () => {
+    await mountPicker()
+    const root = part('root')
+    root.style.setProperty('--xh-motion-duration-micro', '0ms')
+    root.style.setProperty('--xh-motion-duration-press', '0ms')
+    root.style.setProperty('--xh-motion-duration-release', '0ms')
+    const item = part('item', 2)
+    const face = getComputedStyle(part('swatch', 2)).backgroundImage
+    item.setAttribute('data-pressed', '')
+    expect(getComputedStyle(item).scale).toBe('0.97')
+    expect(getComputedStyle(part('swatch', 2)).backgroundImage).toBe(face)
+    expect(getComputedStyle(part('swatch', 2)).borderTopColor).toBe(resolvedToken('--xh-fg-brand'))
+  })
+
+  it('高对比档：色块保住原色，选中描边换成系统高亮色', async () => {
     await cdp().send('Emulation.setEmulatedMedia', {
       media: '',
       features: [{ name: 'forced-colors', value: 'active' }],
@@ -133,7 +151,7 @@ describe('颜色色块选择器的格子', () => {
     const highlight = document.createElement('span')
     highlight.style.cssText = 'color: Highlight; forced-color-adjust: none'
     document.body.append(highlight)
-    expect(getComputedStyle(part('item', 0)).outlineColor).toBe(getComputedStyle(highlight).color)
+    expect(getComputedStyle(part('swatch', 0)).borderTopColor).toBe(getComputedStyle(highlight).color)
     highlight.remove()
   })
 })

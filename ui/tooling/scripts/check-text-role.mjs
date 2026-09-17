@@ -196,11 +196,19 @@ function expect(scope, part, decls, prop, want, why) {
     problems.push(`${decl.file}:${decl.line}  ${key}  ${prop} 落 ${token}，${why}应为 ${Array.isArray(want) ? want.join(' / ') : want}`)
 }
 
-/** 与相邻元素的间距：部件自己的 margin-block-end，没有就看所在容器（缺省是根）的 gap / row-gap。 */
+/**
+ * 与相邻元素的间距：部件自己的 margin-block-end，没有就看所在容器（缺省是根）的 gap / row-gap。
+ * 标签自己的 margin 写成 calc(目标 − 容器 gap) 的差值时（field、color-swatch-picker：容器的 gap 归条目之间，
+ * 标签在它之上补差把到控件的距离收成目标值），真正的距离是被减项，按它判。
+ */
 function expectSpacing(scope, part, decls, want, why, container = 'root') {
-  // 标签自己的 margin 是 calc 差值（field 那种「容器 gap 之上补差」）时，真正的距离仍是根的 gap
   const margin = decls.get('margin-block-end')
-  const own = margin && !margin.value.startsWith('calc(') ? margin : null
+  const diff = margin && /^calc\(\s*(var\([\s\S]+?\))\s*-\s*var\([\s\S]+\)\s*\)$/.exec(margin.value)
+  const own = margin && !margin.value.startsWith('calc(')
+    ? margin
+    : diff
+      ? { ...margin, value: diff[1] }
+      : null
   const host = declsFor(scope, container)
   const decl = own ?? host.get('row-gap') ?? host.get('gap')
   if (!decl)

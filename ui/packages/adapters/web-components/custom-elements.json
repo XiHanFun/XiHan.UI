@@ -11644,10 +11644,16 @@
               "name": "--xh-color-swatch-picker-label-fg"
             },
             {
+              "name": "--xh-color-swatch-picker-label-fg-disabled"
+            },
+            {
               "name": "--xh-color-swatch-picker-label-font-size"
             },
             {
               "name": "--xh-color-swatch-picker-label-font-weight"
+            },
+            {
+              "name": "--xh-color-swatch-picker-label-gap"
             },
             {
               "name": "--xh-color-swatch-picker-ring"
@@ -11660,6 +11666,9 @@
             },
             {
               "name": "--xh-color-swatch-picker-swatch-border-invalid"
+            },
+            {
+              "name": "--xh-color-swatch-picker-swatch-border-pressed"
             }
           ]
         }

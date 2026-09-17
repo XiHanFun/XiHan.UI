@@ -5,11 +5,11 @@ exports[`family-backlog 条目数 > 七段各一数，与快照一致 1`] = `
   "edge": 12,
   "ladder": 40,
   "motion": 1,
-  "press": 9,
+  "press": 8,
   "scroll": 12,
   "selection": 2,
-  "shape": 14,
-  "text": 42,
+  "shape": 12,
+  "text": 39,
 }
 `;
 
@@ -85,7 +85,6 @@ exports[`family-backlog 键集合 > press 1`] = `
 [
   "*:data-pressed",
   "carousel:indicator",
-  "color-swatch-picker:item",
   "floating-panel:trigger",
   "form:error-summary-item",
   "rating:item",
@@ -126,8 +125,6 @@ exports[`family-backlog 键集合 > shape 1`] = `
   "carousel:next-trigger",
   "carousel:prev-trigger",
   "clipboard:copy-trigger::before",
-  "color-swatch-picker:indicator::before",
-  "color-swatch-picker:item",
   "download-trigger:root::before",
   "float-button:trigger",
   "image-viewer:next-trigger",
@@ -145,9 +142,6 @@ exports[`family-backlog 键集合 > text 1`] = `
   "color-picker:label:font-size",
   "color-slider:label:color",
   "color-slider:label:spacing",
-  "color-swatch-picker:label:color",
-  "color-swatch-picker:label:font-size",
-  "color-swatch-picker:label:spacing",
   "dialog:content:icon-size",
   "dialog:description:font-size",
   "drawer:content:icon-size",

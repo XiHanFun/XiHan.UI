@@ -31,6 +31,9 @@
 //    合同项可再带两个字段：target 指明换面落在该部件的哪个后代上（radio-group 的 item 按下时圆圈换底，
 //    整行本身没有面）；channel: 'color' 声明这一档无底、按下只换前景（§9.2「line 档无底时换前景」，
 //    tabs 缺省的 line 变体），此时 :active 块换 color 也算回执——没声明 channel 的仍只认换底。
+// ④ 展示色底的缩放（登记成 { part, feedback: 'scale', channel: 'border' }）：这一格的底色就是它要展示的
+//    东西（色板的格子），按下换底等于把展示物盖掉，§9.1「同时换底」在这里落不下去；缩放仍走令牌，
+//    换面的第二通道落在描边上——:active 块必须改 border / outline、家族的 --xh-swatch-border 或本皮肤的描边私有槽。
 //
 // 真源 §9.1 / §9.2 再加四条：
 // ⑤ 几何判据：登记为缩放的部件，基础规则含 inline-size: 100% / flex: 1 / display: block，或按 §4.1
@@ -142,7 +145,8 @@ const PRESSABLE = {
   'rating': ['item'],
   // 预设色板的格子归内嵌的 color-swatch-picker，按压归那份皮
   'color-picker': ['eye-dropper-trigger'],
-  'color-swatch-picker': ['item'],
+  // 色板的格子：底色就是展示物，按下缩放并换描边（形态 ④）
+  'color-swatch-picker': [{ part: 'item', feedback: 'scale', channel: 'border' }],
   'pagination': ['prev-trigger', 'next-trigger', 'item', 'ellipsis-trigger'],
   // 两个日历的翻页钮、标题钮与日期格
   'calendar-picker': [
@@ -291,6 +295,8 @@ for (const [name, parts] of Object.entries(PRESSABLE)) {
     const partName = typeof part === 'string' ? part : part.part
     if (typeof part === 'string')
       checkPart(name, part, css, await isActionControlPart(name, part) ? actionRecipe : '')
+    else if (part.feedback === 'scale')
+      checkPart(name, part.part, css, await isActionControlPart(name, part.part) ? actionRecipe : '', part)
     else if (part.feedback === 'surface')
       checkSurfacePart(name, part.part, css, await surfaceFamilyCss(name, part.part), part, await isRowProfile(name, part.part))
     else
@@ -458,7 +464,7 @@ function partSelector(part) {
     : `\\[data-scope='${part.slice(0, slash)}'\\]\\[data-part='${part.slice(slash + 1)}'\\]`
 }
 
-function checkPart(name, part, css, familyCss = '') {
+function checkPart(name, part, css, familyCss = '', contract = {}) {
   const key = `${name}:${part}`
   // ⑤ 几何判据：铺满一行的东西不该缩放整条
   if (ROW_OR_DISCLOSURE.has(key)) {
@@ -485,10 +491,17 @@ function checkPart(name, part, css, familyCss = '') {
       + `写死的缩放量在减弱动效档下不会归 1`,
     )
   }
-  // ⑥ 缩放必换底：按下那一帧要同时进入 active 面
-  const surface = match[1].match(/(?:^|;)\s*(?:background(?:-color)?|--xh-_[\w-]*(?:bg|surface)[\w-]*)\s*:\s*([^;]+)/)
-  if (!surface || /^(?:none|transparent)$/.test(surface[1].trim()))
-    report(key, `${name} 的 ${part} 按下只缩放不换底——:active 块要同时把 background 换到 active 面（§9.1）`)
+  // ⑥ 缩放必换底：按下那一帧要同时进入 active 面；形态 ④ 的底是展示物，第二通道改看描边
+  if (contract.channel === 'border') {
+    const edge = match[1].match(/(?:^|;)\s*(?:border(?:-color)?|outline(?:-color)?|--xh-swatch-border|--xh-_[\w-]*(?:border|edge)[\w-]*)\s*:\s*([^;]+)/)
+    if (!edge || /^(?:none|transparent)$/.test(edge[1].trim()))
+      report(key, `${name} 的 ${part} 登记为展示色底的缩放，:active 块却没换描边——底是展示物换不得，回执得落在 border / outline / --xh-swatch-border 上`)
+  }
+  else {
+    const surface = match[1].match(/(?:^|;)\s*(?:background(?:-color)?|--xh-_[\w-]*(?:bg|surface)[\w-]*)\s*:\s*([^;]+)/)
+    if (!surface || /^(?:none|transparent)$/.test(surface[1].trim()))
+      report(key, `${name} 的 ${part} 按下只缩放不换底——:active 块要同时把 background 换到 active 面（§9.1）`)
+  }
   // 缩放要能过渡，否则是硬切
   if (!/transition:[^;]*\bscale\b/.test(css) && !/transition:[^;]*\bscale\b/.test(familyCss)) {
     problems.push(`${name} 的 ${part} 没把 scale 写进 transition——按下与松手都是硬切`)
@@ -581,9 +594,10 @@ if (problems.length) {
 const pressable = Object.values(PRESSABLE).flat()
 const held = pressable.filter(part => typeof part !== 'string' && 'attr' in part).length
 const surfaces = pressable.filter(part => typeof part !== 'string' && part.feedback === 'surface').length
+const edged = pressable.filter(part => typeof part !== 'string' && part.feedback === 'scale' && part.channel === 'border').length
 console.log(
   `[check-press-feedback] 通过：皮肤里 ${clickable.length} 个可点部件全部定性过`
   + `（登记 ${registered.size} 个）——${pressable.length} 个按下去有回应`
-  + `（长按等待 ${held} 个比底色，即时换面 ${surfaces} 个保持几何，其余缩放走令牌）`
+  + `（长按等待 ${held} 个比底色，即时换面 ${surfaces} 个保持几何，展示色底缩放并换描边 ${edged} 个，其余缩放走令牌）`
   + `，${Object.keys(NO_PRESS).length} 个判定为不给按压反馈；backlog 待办 ${backlog.pending} 条，无过期豁免`,
 )
