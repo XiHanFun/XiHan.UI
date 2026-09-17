@@ -57,7 +57,6 @@ const EXPECTED = {
   'segmented': { indicator: ['raised'] },
   'sortable': { item: ['raised'] },
   'checkbox': { root: ['soft'] },
-  'checkbox-group': { 'root': ['soft'], 'select-all-trigger': ['soft'] },
   'cascader': { content: ['frosted'] },
   'combobox': { content: ['frosted'] },
   // 命令面板是盖在页面上、带遮罩的一面，与对话框同档

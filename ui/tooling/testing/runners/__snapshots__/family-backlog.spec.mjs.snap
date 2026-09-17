@@ -2,22 +2,20 @@
 
 exports[`family-backlog 条目数 > 七段各一数，与快照一致 1`] = `
 {
-  "edge": 16,
+  "edge": 14,
   "ladder": 49,
   "motion": 1,
-  "press": 29,
+  "press": 27,
   "scroll": 16,
   "selection": 3,
-  "shape": 16,
-  "text": 54,
+  "shape": 15,
+  "text": 52,
 }
 `;
 
 exports[`family-backlog 键集合 > edge 1`] = `
 [
   "button:root:raised",
-  "checkbox-group:root:raised",
-  "checkbox-group:select-all-trigger:raised",
   "checkbox:root:raised",
   "clipboard:root:raised",
   "color-picker:area-thumb:raised",
@@ -112,8 +110,6 @@ exports[`family-backlog 键集合 > press 1`] = `
   "calendar-range-picker:prev-trigger",
   "calendar-range-picker:prev-year-trigger",
   "carousel:indicator",
-  "checkbox-group:item",
-  "checkbox-group:select-all-trigger",
   "checkbox:root",
   "color-swatch-picker:item",
   "floating-panel:trigger",
@@ -163,7 +159,6 @@ exports[`family-backlog 键集合 > shape 1`] = `
   "carousel:autoplay-trigger",
   "carousel:next-trigger",
   "carousel:prev-trigger",
-  "checkbox-group:select-all-trigger",
   "clipboard:copy-trigger::before",
   "color-swatch-picker:indicator::before",
   "color-swatch-picker:item",
@@ -184,8 +179,6 @@ exports[`family-backlog 键集合 > text 1`] = `
   "calendar-picker:root:icon-size",
   "calendar-range-picker:root:icon-size",
   "carousel:root:icon-size",
-  "checkbox-group:label:spacing",
-  "checkbox-group:root:icon-size",
   "checkbox:label:color",
   "checkbox:label:font-size",
   "color-picker:label:font-size",
