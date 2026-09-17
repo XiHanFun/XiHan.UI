@@ -217,13 +217,6 @@
       "ratio": 2.89,
       "ring": "poured"
     },
-    "drawer [data-part='trigger'][data-scope='drawer'][data-state='open']": {
-      "parts": [
-        "trigger"
-      ],
-      "ratio": 2.89,
-      "ring": "poured"
-    },
     "slider [data-invalid][data-part='thumb'][data-scope='slider']": {
       "parts": [
         "thumb"

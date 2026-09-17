@@ -19718,6 +19718,9 @@
               "name": "--xh-drawer-bg"
             },
             {
+              "name": "--xh-drawer-border"
+            },
+            {
               "name": "--xh-drawer-close-bg-active"
             },
             {

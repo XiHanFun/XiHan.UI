@@ -11,12 +11,12 @@ const SNAPSHOT = new URL('./__snapshots__/family-backlog.spec.mjs.snap', import.
 const CEILING = {
   edge: 4,
   selection: 0,
-  ladder: 19,
+  ladder: 15,
   shape: 1,
-  scroll: 4,
+  scroll: 2,
   press: 5,
-  text: 14,
-  motion: 1,
+  text: 11,
+  motion: 0,
 }
 
 const backlog = JSON.parse(readFileSync(BACKLOG, 'utf8'))

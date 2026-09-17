@@ -140,8 +140,8 @@
       "why": "下载钮本体，手指直接落上去；24px 是 Action Control 的内部 xs 视觉地板，公开 sm/md/lg 更高"
     },
     "drawer:close-trigger": {
-      "px": 32,
-      "why": "抽屉右上角的叉，手指直接落上去"
+      "px": 24,
+      "why": "抽屉右上角的叉，手指直接落上去；24px 是 Action Control 的 xs 视觉地板，连接层投 icon 档 sm（28px 正方盒），粗指针命中区由家族 ::after 外扩到 44px"
     },
     "float-button:trigger": {
       "px": 24,
