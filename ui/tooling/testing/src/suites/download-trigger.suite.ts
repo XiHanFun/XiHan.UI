@@ -2,6 +2,7 @@ import type { ConformanceSuite } from '../conformance/types'
 import { downloadTriggerAnatomy, downloadTriggerKeyboard } from '@xihan-ui/headless'
 import { dispatchClickOnDisabled } from './shared/disabled-press'
 import { nativeActivation } from './shared/native-activation'
+import { heldPress, heldPressIgnored } from './shared/press-channel'
 
 const APG = 'https://www.w3.org/WAI/ARIA/apg/patterns/button/'
 
@@ -54,10 +55,37 @@ export const downloadTriggerSuite: ConformanceSuite = {
             'disabled': null,
             // 单体原生控件的禁用一律走原生 disabled，这个属性任何时候都不该出现
             'aria-disabled': null,
+            'data-pressed': null,
+            // 定尺的独立动作按钮：形态缺省显式落 subtle（缺省中性，solid 才品牌实心）
+            'data-xh-action-control': '',
+            'data-xh-action-profile': 'text',
+            'data-xh-action-variant': 'subtle',
+            'data-variant': 'subtle',
           },
         },
         activeElement: null,
         events: [],
+      },
+    },
+    {
+      name: 'Space / Enter 按住与触屏按下：root 投影 data-pressed，抬起、失焦或指针取消撤下',
+      spec: { adr: 'press-channel' },
+      covers: ['download-trigger.kbd.press'],
+      props: { data: 'a,b\n1,2', fileName: 'report.csv' },
+      steps: [heldPress('download-trigger', 'root')],
+    },
+    {
+      name: 'disabled：按住不进入按压面',
+      spec: { adr: 'press-channel' },
+      props: { data: 'a,b\n1,2', fileName: 'report.csv', disabled: true },
+      steps: [heldPressIgnored('download-trigger', 'root', '禁用时不接受按压')],
+    },
+    {
+      name: 'variant 原样投影：data-variant 与 data-xh-action-variant 同源',
+      spec: { adr: 'action-control-family' },
+      props: { data: 'a,b\n1,2', fileName: 'report.csv', variant: 'solid' },
+      initial: {
+        parts: { root: { 'data-variant': 'solid', 'data-xh-action-variant': 'solid' } },
       },
     },
     {
@@ -73,9 +101,10 @@ export const downloadTriggerSuite: ConformanceSuite = {
               root: {
                 'data-state': 'preparing',
                 'aria-busy': 'true',
-                // 在途不禁用：禁用会把焦点从按钮上弹走，键盘用户等回来时不知道自己在哪
+                // 在途不走原生 disabled：那会把焦点从按钮上弹走，键盘用户等回来时不知道自己在哪；
+                // 「现在按不动」由 aria-disabled 如实报出，与 aria-busy 是两件事（同 button 的 loading）
                 'disabled': null,
-                'aria-disabled': null,
+                'aria-disabled': 'true',
               },
             },
             // 数据还没到手，这一帧不该有任何对外事件

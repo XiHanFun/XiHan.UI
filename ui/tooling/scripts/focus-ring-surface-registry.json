@@ -233,13 +233,6 @@
       "ratio": 2.89,
       "ring": "poured"
     },
-    "download-trigger [data-part='root'][data-scope='download-trigger'][data-variant='solid']": {
-      "parts": [
-        "root"
-      ],
-      "ratio": 1,
-      "ring": "poured"
-    },
     "drawer [data-part='trigger'][data-scope='drawer'][data-state='open']": {
       "parts": [
         "trigger"

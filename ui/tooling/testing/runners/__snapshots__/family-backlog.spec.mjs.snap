@@ -2,13 +2,13 @@
 
 exports[`family-backlog 条目数 > 七段各一数，与快照一致 1`] = `
 {
-  "edge": 8,
+  "edge": 7,
   "ladder": 36,
   "motion": 1,
   "press": 7,
   "scroll": 12,
   "selection": 0,
-  "shape": 10,
+  "shape": 9,
   "text": 31,
 }
 `;
@@ -18,7 +18,6 @@ exports[`family-backlog 键集合 > edge 1`] = `
   "button:root:raised",
   "color-picker:area-thumb:raised",
   "color-picker:control:raised",
-  "download-trigger:root:raised",
   "file-upload:trigger:raised",
   "popconfirm:confirm-trigger:raised",
   "signature-pad:clear-trigger:raised",
@@ -110,7 +109,6 @@ exports[`family-backlog 键集合 > shape 1`] = `
   "carousel:autoplay-trigger",
   "carousel:next-trigger",
   "carousel:prev-trigger",
-  "download-trigger:root::before",
   "float-button:trigger",
   "image-viewer:next-trigger",
   "image-viewer:prev-trigger",

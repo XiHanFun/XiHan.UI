@@ -50,7 +50,7 @@ const NO_SLOT = {
   'tour:progress-dot': '进度圆点，圆是它的身份；当前那颗拉成胶囊也靠这条圆角',
   'popconfirm:confirm-trigger::before': '转圈的加载环',
   'switch:thumb::after': '转圈的加载环',
-  'download-trigger:root::before': '转圈的加载环',
+  'download-trigger:root::before': '转圈的加载环，正方盒取 circle',
   'clipboard:copy-trigger::before': '转圈的加载环，正方盒取 circle',
   'approval:footer::before': '转圈的加载环',
   // reset 层的原生细条：主体是 :where([data-scope][data-part], [data-xh-scroll], …) 一组宿主，
