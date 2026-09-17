@@ -42,7 +42,7 @@ padding-bottom: 1px
 padding-left: 6px
 row-gap: normal
 column-gap: normal
-border-top-left-radius: 0px
+border-top-left-radius: 4px
 border-top-right-radius: 0px
 border-bottom-right-radius: 0px
 border-bottom-left-radius: 0px
