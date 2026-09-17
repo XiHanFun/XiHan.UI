@@ -2604,6 +2604,9 @@
               "name": "--xh-badge-bg"
             },
             {
+              "name": "--xh-badge-dot-radius"
+            },
+            {
               "name": "--xh-badge-dot-size"
             },
             {
