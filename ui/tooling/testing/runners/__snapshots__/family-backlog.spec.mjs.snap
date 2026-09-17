@@ -3,13 +3,13 @@
 exports[`family-backlog 条目数 > 七段各一数，与快照一致 1`] = `
 {
   "edge": 12,
-  "ladder": 48,
+  "ladder": 45,
   "motion": 1,
-  "press": 25,
-  "scroll": 16,
+  "press": 18,
+  "scroll": 15,
   "selection": 3,
   "shape": 14,
-  "text": 49,
+  "text": 48,
 }
 `;
 
@@ -34,9 +34,6 @@ exports[`family-backlog 键集合 > ladder 1`] = `
 [
   "anchor:link:hover",
   "breadcrumb:link:hover",
-  "calendar-picker:cell-trigger:hover",
-  "calendar-picker:cell-trigger:selected",
-  "calendar-picker:prev-year-trigger:hover",
   "calendar-range-picker:cell-trigger:hover",
   "calendar-range-picker:cell-trigger:selected",
   "calendar-range-picker:prev-year-trigger:hover",
@@ -92,13 +89,6 @@ exports[`family-backlog 键集合 > motion 1`] = `
 exports[`family-backlog 键集合 > press 1`] = `
 [
   "*:data-pressed",
-  "calendar-picker:cell-trigger",
-  "calendar-picker:heading-month-trigger",
-  "calendar-picker:heading-year-trigger",
-  "calendar-picker:next-trigger",
-  "calendar-picker:next-year-trigger",
-  "calendar-picker:prev-trigger",
-  "calendar-picker:prev-year-trigger",
   "calendar-range-picker:cell-trigger",
   "calendar-range-picker:heading-month-trigger",
   "calendar-range-picker:heading-year-trigger",
@@ -121,7 +111,6 @@ exports[`family-backlog 键集合 > press 1`] = `
 
 exports[`family-backlog 键集合 > scroll 1`] = `
 [
-  "calendar-picker:grid:overscroll",
   "calendar-range-picker:grid:overscroll",
   "color-picker:content:overscroll",
   "color-picker:content:size",
@@ -170,7 +159,6 @@ exports[`family-backlog 键集合 > shape 1`] = `
 exports[`family-backlog 键集合 > text 1`] = `
 [
   "back-top:root:icon-size",
-  "calendar-picker:root:icon-size",
   "calendar-range-picker:root:icon-size",
   "carousel:root:icon-size",
   "color-picker:label:font-size",
