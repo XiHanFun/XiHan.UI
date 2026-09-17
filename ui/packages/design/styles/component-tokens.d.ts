@@ -3396,6 +3396,7 @@ export type ComponentTokenName =
   | '--xh-timer-display-fg'
   | '--xh-timer-fg'
   | '--xh-timer-gap'
+  | '--xh-timer-icon-size'
   | '--xh-timer-item-fg'
   | '--xh-timer-separator-fg'
   | '--xh-timer-separator-px'

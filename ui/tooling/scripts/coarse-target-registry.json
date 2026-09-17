@@ -188,8 +188,8 @@
       "why": "页签，手指直接落上去"
     },
     "timer:control": {
-      "px": 36,
-      "why": "计时器的起停钮，手指直接落上去"
+      "px": 24,
+      "why": "计时器的起停钮，手指直接落上去；24px 是 Action Control 的 xs 视觉地板，连接层按 size 投 sm / md / lg（32 / 36 / 40px），粗指针热区由家族外扩到 44px"
     },
     "toast:close-trigger": {
       "px": 24,

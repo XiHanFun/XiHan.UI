@@ -56286,6 +56286,9 @@
               "name": "--xh-timer-gap"
             },
             {
+              "name": "--xh-timer-icon-size"
+            },
+            {
               "name": "--xh-timer-item-fg"
             },
             {

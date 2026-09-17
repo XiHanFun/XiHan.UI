@@ -5,19 +5,20 @@
 
 /* 定义 timer 样式。 */
 
+/* Timer 独立皮肤同时传递引入起停钮的动作控件配方；full bundle 递归去重。 */
+@import '../family/action-control.css';
+
 @layer xihan.components {
   /* 皮肤在场的标记：开发模式下按 scope 探一次，取不到就说明这份皮肤没被引入。 */
   [data-scope='timer'] {
     --xh-timer-skin: 1;
   }
 
-  /* 三个尺寸档只换这几个私有槽，各部件从 root 继承它们，换档不必给每个部件各写一条选择器 */
+  /* 三个尺寸档只换这两个私有槽，各部件从 root 继承它们，换档不必给每个部件各写一条选择器；
+     起停钮的档位由连接层直接投给家族，这里不再中转 */
   [data-scope='timer'][data-part='root'] {
     --xh-_timer-digit-size: var(--xh-text-heading-2-size);
     --xh-_timer-gap: var(--xh-space-3);
-    --xh-_timer-control-h: var(--xh-control-h-md);
-    --xh-_timer-control-px: var(--xh-control-px-md);
-    --xh-_timer-control-gap: var(--xh-control-gap-md);
 
     display: inline-flex;
     align-items: center;
@@ -34,17 +35,11 @@
   [data-scope='timer'][data-part='root'][data-size='sm'] {
     --xh-_timer-digit-size: var(--xh-text-heading-3-size);
     --xh-_timer-gap: var(--xh-space-2);
-    --xh-_timer-control-h: var(--xh-control-h-sm);
-    --xh-_timer-control-px: var(--xh-control-px-sm);
-    --xh-_timer-control-gap: var(--xh-control-gap-sm);
   }
 
   [data-scope='timer'][data-part='root'][data-size='lg'] {
     --xh-_timer-digit-size: var(--xh-text-heading-1-size);
     --xh-_timer-gap: var(--xh-space-4);
-    --xh-_timer-control-h: var(--xh-control-h-lg);
-    --xh-_timer-control-px: var(--xh-control-px-lg);
-    --xh-_timer-control-gap: var(--xh-control-gap-lg);
   }
 
   /* —— 时间区 —— */
@@ -89,73 +84,40 @@
     font-weight: var(--xh-font-weight-regular);
   }
 
-  /* —— 起停按钮 —— */
+  /* —— 起停按钮 ——
+     带文案（或图标）的离散动作钮：盒几何、悬停 / 按下与 0.97 按压、粗指针热区、焦点环、禁用面全由
+     Action Control 的 text outline 档给（连接层按 size 投档，缺省 md 一个控件高），组件只映射既有使用者槽。
+     中性描边、透明底；白底承载 hover 100 → pressed 200，不抬升；焦点边由家族给，不随语气 */
   [data-scope='timer'][data-part='control'] {
-    /* 粗指针下的命中区是钮上的绝对定位伪元素，这一层是它的定位参照系 */
-    position: relative;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    gap: var(--xh-timer-control-gap, var(--xh-_timer-control-gap));
-    block-size: var(--xh-timer-control-h, var(--xh-_timer-control-h));
-    padding-inline: var(--xh-timer-control-px, var(--xh-_timer-control-px));
-    border: var(--xh-stroke-thin) solid var(--xh-timer-control-border, var(--xh-border-control));
-    border-radius: var(--xh-timer-control-radius, var(--xh-shape-control));
-    background: var(--xh-timer-control-bg, var(--xh-bg-surface));
-    color: var(--xh-timer-control-fg, var(--xh-fg-default));
-    font-size: var(--xh-text-label-size);
+    --xh-action-visual-size: var(--xh-timer-control-h, var(--xh-_action-profile-visual-size));
+    --xh-action-padding-inline: var(--xh-timer-control-px, var(--xh-_action-profile-padding-inline));
+    --xh-action-gap: var(--xh-timer-control-gap, var(--xh-_action-profile-gap));
+    --xh-action-radius: var(--xh-timer-control-radius, var(--xh-shape-control));
+    --xh-action-bg-rest: var(--xh-timer-control-bg, var(--xh-_action-variant-bg-rest));
+    --xh-action-bg-hover: var(--xh-timer-control-bg-hover, var(--xh-_action-variant-bg-hover));
+    --xh-action-bg-pressed: var(--xh-timer-control-bg-active, var(--xh-_action-variant-bg-pressed));
+    --xh-action-bg-disabled: var(--xh-timer-control-bg-disabled, var(--xh-_action-variant-bg-disabled));
+    --xh-action-fg-rest: var(--xh-timer-control-fg, var(--xh-_action-variant-fg-rest));
+    --xh-action-fg-hover: var(--xh-timer-control-fg, var(--xh-_action-variant-fg-hover));
+    --xh-action-fg-pressed: var(--xh-timer-control-fg, var(--xh-_action-variant-fg-pressed));
+    --xh-action-border-rest: var(--xh-timer-control-border, var(--xh-_action-variant-border-rest));
+    --xh-action-border-hover: var(--xh-timer-control-border-hover, var(--xh-_action-variant-border-hover));
+    --xh-action-border-pressed: var(--xh-timer-control-border-hover, var(--xh-_action-variant-border-pressed));
+    --xh-action-border-focus-visible: var(--xh-timer-control-border-focus, var(--xh-_action-variant-border-focus-visible));
+    --xh-action-border-disabled: var(--xh-timer-control-border-disabled, var(--xh-_action-variant-border-disabled));
+    --xh-action-highlight-rest: transparent;
+    --xh-action-shadow-rest: none;
+    --xh-action-shadow-hover: var(--xh-timer-control-shadow-hover, none);
+    --xh-action-shadow-pressed: var(--xh-timer-control-shadow-active, none);
+    --xh-action-font-size: var(--xh-text-label-size);
+    /* 作者塞进钮里的图标按档取字形尺寸，与文案同一把尺 */
+    --xh-icon-size: var(--xh-timer-icon-size, var(--xh-_action-profile-glyph-size));
+
     font-weight: var(--xh-text-label-weight);
-    line-height: var(--xh-leading-none);
-    cursor: pointer;
-    transition:
-      background var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
-      box-shadow var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
-      scale var(--xh-motion-duration-release) var(--xh-motion-ease-release);
   }
 
+  /* 家族那条 display 会把 UA 的 [hidden]{display:none} 盖掉，作者收起它时要的是这一条 */
   [data-scope='timer'][data-part='control'][hidden] {
     display: none;
-  }
-
-  [data-scope='timer'][data-part='control']:hover {
-    border-color: var(--xh-timer-control-border-hover, var(--xh-border-control-hover));
-    background: var(--xh-timer-control-bg-hover, var(--xh-bg-subtle-hover));
-  }
-
-  /* 换底之外再抬起一层：它是一块可点的面，光换一档底色在浅色页面上读不出来。
-     禁用的那一档不抬——抬起来就是在说它还能按 */
-  [data-scope='timer'][data-part='control']:hover:not(:disabled) {
-    box-shadow: var(--xh-timer-control-shadow-hover, var(--xh-elevation-raised));
-  }
-
-  /* 换底之外再压一档：起停是 timer 唯一的动作入口，按下要有回执。
-     按下那一刻把悬停抬起的那层影子收回去，钮才像是被按回了平面 */
-  [data-scope='timer'][data-part='control']:active:not(:disabled) {
-    background: var(--xh-timer-control-bg-active, var(--xh-bg-subtle-active));
-    box-shadow: var(--xh-timer-control-shadow-active, none);
-    scale: var(--xh-motion-scale-press);
-    transition-duration: var(--xh-motion-duration-press);
-    transition-timing-function: var(--xh-motion-ease-press);
-  }
-
-  [data-scope='timer'][data-part='control']:focus-visible {
-    border-color: var(--xh-timer-control-border-focus, var(--xh-_tone, var(--xh-border-control-focus)));
-  }
-
-  /* 作者把按钮禁掉时的样子。文字改用 fg-disabled 就不再叠 opacity，两条一起上会掉到读不出来 */
-  [data-scope='timer'][data-part='control']:disabled {
-    border-color: var(--xh-timer-control-border-disabled, var(--xh-border-subtle));
-    background: var(--xh-timer-control-bg-disabled, var(--xh-bg-muted));
-    color: var(--xh-fg-disabled);
-  }
-
-  @media (pointer: coarse) {
-    /* 手指的落点比这颗钮大：命中区由伪元素向四周外扩，钮自己的盒与排版一点不动。
-       取 8px 是按最矮的 sm 档算的（28 + 8 × 2 = 44），md 与 lg 档更宽裕 */
-    [data-scope='timer'][data-part='control']::before {
-      content: '';
-      position: absolute;
-      inset: -8px;
-    }
   }
 }

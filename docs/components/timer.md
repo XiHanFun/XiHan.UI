@@ -256,6 +256,11 @@ tick 每过一个 interval 触发一次，complete 只在到达终点时触发�
 | `display` | `data-state` | 'idle' \| 'running' \| 'paused' \| 'completed' |
 | `item` | `data-unit` | item.unit |
 | `control` | `data-action` | 'pause' \| 'resume' \| 'reset' \| 'start' |
+| `control` | `data-xh-action-control` | '' |
+| `control` | `data-xh-action-display` | 'always' |
+| `control` | `data-xh-action-profile` | 'text' |
+| `control` | `data-xh-action-size` | props.size |
+| `control` | `data-xh-action-variant` | 'outline' |
 
 <!-- xh-component-tokens:start -->
 ### CSS 变量
@@ -265,25 +270,26 @@ tick 每过一个 interval 触发一次，complete 只在到达终点时触发�
 | 变量 | 部件 | CSS 属性 | 状态 | 默认来源 | 说明 |
 | --- | --- | --- | --- | --- | --- |
 | `--xh-timer-completed-fg` | `display` | `color` | `state=completed` | `--xh-fg-muted` | timer 的 display 部件 color 覆盖槽。 |
-| `--xh-timer-control-bg` | `control` | `background` | `default` | `--xh-bg-surface` | timer 的 control 部件 background 覆盖槽。 |
-| `--xh-timer-control-bg-active` | `control` | `background` | `active`<br>`not(:disabled)` | `--xh-bg-subtle-active` | timer 的 control 部件 background 覆盖槽。 |
-| `--xh-timer-control-bg-disabled` | `control` | `background` | `disabled` | `--xh-bg-muted` | timer 的 control 部件 background 覆盖槽。 |
-| `--xh-timer-control-bg-hover` | `control` | `background` | `hover` | `--xh-bg-subtle-hover` | timer 的 control 部件 background 覆盖槽。 |
-| `--xh-timer-control-border` | `control` | `border` | `default` | `--xh-border-control` | timer 的 control 部件 border 覆盖槽。 |
-| `--xh-timer-control-border-disabled` | `control` | `border-color` | `disabled` | `--xh-border-subtle` | timer 的 control 部件 border-color 覆盖槽。 |
-| `--xh-timer-control-border-focus` | `control` | `border-color` | `focus-visible` | `--xh-_tone` | timer 的 control 部件 border-color 覆盖槽。 |
-| `--xh-timer-control-border-hover` | `control` | `border-color` | `hover` | `--xh-border-control-hover` | timer 的 control 部件 border-color 覆盖槽。 |
-| `--xh-timer-control-fg` | `control` | `color` | `default` | `--xh-fg-default` | timer 的 control 部件 color 覆盖槽。 |
-| `--xh-timer-control-gap` | `control` | `gap` | `default` | `--xh-_timer-control-gap` | timer 的 control 部件 gap 覆盖槽。 |
-| `--xh-timer-control-h` | `control` | `block-size` | `default` | `--xh-_timer-control-h` | timer 的 control 部件 block-size 覆盖槽。 |
-| `--xh-timer-control-px` | `control` | `padding-inline` | `default` | `--xh-_timer-control-px` | timer 的 control 部件 padding-inline 覆盖槽。 |
+| `--xh-timer-control-bg` | `control` | `background-color` | `default` | `--xh-_action-variant-bg-rest` | timer 的 control 部件 background-color 覆盖槽。 |
+| `--xh-timer-control-bg-active` | `control` | `background-color` | `disabled`<br>`is(:active, [data-pressed])`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])`<br>`pressed` | `--xh-_action-variant-bg-pressed` | timer 的 control 部件 background-color 覆盖槽。 |
+| `--xh-timer-control-bg-disabled` | `control` | `background-color` | `disabled` | `--xh-_action-variant-bg-disabled` | timer 的 control 部件 background-color 覆盖槽。 |
+| `--xh-timer-control-bg-hover` | `control` | `background-color` | `disabled`<br>`hover`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])` | `--xh-_action-variant-bg-hover` | timer 的 control 部件 background-color 覆盖槽。 |
+| `--xh-timer-control-border` | `control` | `border` | `default` | `--xh-_action-variant-border-rest` | timer 的 control 部件 border 覆盖槽。 |
+| `--xh-timer-control-border-disabled` | `control` | `border-color` | `disabled` | `--xh-_action-variant-border-disabled` | timer 的 control 部件 border-color 覆盖槽。 |
+| `--xh-timer-control-border-focus` | `control` | `border-color` | `focus-visible` | `--xh-_action-variant-border-focus-visible` | timer 的 control 部件 border-color 覆盖槽。 |
+| `--xh-timer-control-border-hover` | `control` | `border-color` | `disabled`<br>`hover`<br>`is(:active, [data-pressed])`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])`<br>`pressed` | `--xh-_action-variant-border-hover`<br>`--xh-_action-variant-border-pressed` | timer 的 control 部件 border-color 覆盖槽。 |
+| `--xh-timer-control-fg` | `control` | `color` | `default`<br>`disabled`<br>`hover`<br>`is(:active, [data-pressed])`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])`<br>`pressed` | `--xh-_action-variant-fg-hover`<br>`--xh-_action-variant-fg-pressed`<br>`--xh-_action-variant-fg-rest` | timer 的 control 部件 color 覆盖槽。 |
+| `--xh-timer-control-gap` | `control` | `gap` | `default` | `--xh-_action-profile-gap` | timer 的 control 部件 gap 覆盖槽。 |
+| `--xh-timer-control-h` | `control` | `block-size` | `default` | `--xh-_action-profile-visual-size` | timer 的 control 部件 block-size 覆盖槽。 |
+| `--xh-timer-control-px` | `control` | `padding-inline` | `default` | `--xh-_action-profile-padding-inline` | timer 的 control 部件 padding-inline 覆盖槽。 |
 | `--xh-timer-control-radius` | `control` | `border-radius` | `default` | `--xh-shape-control` | timer 的 control 部件 border-radius 覆盖槽。 |
-| `--xh-timer-control-shadow-active` | `control` | `box-shadow` | `active`<br>`not(:disabled)` | `none` | timer 的 control 部件 box-shadow 覆盖槽。 |
-| `--xh-timer-control-shadow-hover` | `control` | `box-shadow` | `hover`<br>`not(:disabled)` | `--xh-elevation-raised` | timer 的 control 部件 box-shadow 覆盖槽。 |
+| `--xh-timer-control-shadow-active` | `control` | `box-shadow` | `disabled`<br>`is(:active, [data-pressed])`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])`<br>`pressed` | `none` | timer 的 control 部件 box-shadow 覆盖槽。 |
+| `--xh-timer-control-shadow-hover` | `control` | `box-shadow` | `disabled`<br>`hover`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])` | `none` | timer 的 control 部件 box-shadow 覆盖槽。 |
 | `--xh-timer-digit-font-size` | `display` | `font-size` | `default` | `--xh-_timer-digit-size` | timer 的 display 部件 font-size 覆盖槽。 |
 | `--xh-timer-display-fg` | `display` | `color` | `default` | `--xh-fg-default` | timer 的 display 部件 color 覆盖槽。 |
 | `--xh-timer-fg` | `root` | `color` | `default` | `--xh-fg-default` | timer 的 root 部件 color 覆盖槽。 |
 | `--xh-timer-gap` | `root` | `gap` | `default` | `--xh-_timer-gap` | timer 的 root 部件 gap 覆盖槽。 |
+| `--xh-timer-icon-size` | `control` | `--xh-icon-size` | `default` | `--xh-_action-profile-glyph-size` | timer 的 control 部件 --xh-icon-size 覆盖槽。 |
 | `--xh-timer-item-fg` | `item` | `color` | `default` | `inherit` | timer 的 item 部件 color 覆盖槽。 |
 | `--xh-timer-separator-fg` | `separator` | `color` | `default` | `--xh-fg-subtle` | timer 的 separator 部件 color 覆盖槽。 |
 | `--xh-timer-separator-px` | `separator` | `padding-inline` | `default` | `--xh-space-0_5` | timer 的 separator 部件 padding-inline 覆盖槽。 |
@@ -291,13 +297,9 @@ tick 每过一个 interval 触发一次，complete 只在到达终点时触发�
 
 ### 动效
 
-`background` · `box-shadow` · `color` · `scale` 走 `transition` 过渡。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
+`color` 走 `transition` 过渡。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
 
 系统开启减弱动效时由令牌层统一收敛，皮肤不另作判断。
-
-### 响应式
-
-皮肤另按输入能力分档：`pointer: coarse`：同一份皮肤在触屏与带指针的设备上不一样，与视口宽度无关。
 
 ### RTL
 
