@@ -24,7 +24,7 @@ export default function Demo(): ReactNode {
   return (
     <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))", gap: "16px", inlineSize: "min(640px, 100%)" }}>
       <div style={{ position: "relative" }}>
-        <div ref={smoothEl} style={panelStyle}>
+        <div ref={smoothEl} data-xh-scroll="" style={panelStyle}>
           {sections.map(section => <p key={section} style={{ minBlockSize: "64px" }}>{`平滑 · ${section}`}</p>)}
         </div>
         <XhBackTopRoot target={() => smoothEl.current} behavior="smooth" visibilityHeight={40} size="sm" style={rootStyle}>
@@ -33,7 +33,7 @@ export default function Demo(): ReactNode {
       </div>
 
       <div style={{ position: "relative" }}>
-        <div ref={autoEl} style={panelStyle}>
+        <div ref={autoEl} data-xh-scroll="" style={panelStyle}>
           {sections.map(section => <p key={section} style={{ minBlockSize: "64px" }}>{`立即 · ${section}`}</p>)}
         </div>
         <XhBackTopRoot target={() => autoEl.current} behavior="auto" visibilityHeight={40} size="sm" style={rootStyle}>

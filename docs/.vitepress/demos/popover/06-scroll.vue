@@ -22,7 +22,7 @@ const versions = Array.from({ length: 18 }, (_, i) => ({
     <XhPopoverPositioner>
       <XhPopoverContent>
         <XhPopoverTitle>历史版本</XhPopoverTitle>
-        <div style="max-block-size: 160px; overflow: auto">
+        <div data-xh-scroll style="max-block-size: 160px; overflow: auto">
           <p
             v-for="v in versions"
             :key="v.id"

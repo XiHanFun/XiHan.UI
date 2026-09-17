@@ -21,7 +21,7 @@
     const box = document.createElement("div");
     box.id = `scrollbar-types-${type}`;
     box.style.cssText =
-      "block-size: 140px; overflow: auto; scrollbar-width: none; border: 1px solid var(--xh-border-default); border-radius: var(--xh-shape-surface); padding: 8px";
+      "block-size: 140px; overflow: auto; border: 1px solid var(--xh-border-default); border-radius: var(--xh-shape-surface); padding: 8px";
     box.replaceChildren(
       ...Array.from({ length: 30 }, (_, i) => {
         const line = document.createElement("div");

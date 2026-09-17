@@ -24,6 +24,7 @@ function onLoad(): void {
   <div style="display: grid; gap: 12px; inline-size: 100%">
     <div
       ref="scrollEl"
+      data-xh-scroll
       style="
         block-size: 220px;
         overflow: auto;

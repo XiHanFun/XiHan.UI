@@ -22,7 +22,7 @@ export default function Demo(): ReactNode {
       <XhPopoverPositioner>
         <XhPopoverContent>
           <XhPopoverTitle>历史版本</XhPopoverTitle>
-          <div style={{ maxBlockSize: "160px", overflow: "auto" }}>
+          <div data-xh-scroll="" style={{ maxBlockSize: "160px", overflow: "auto" }}>
             {versions.map(v => (
               <p
                 key={v.id}

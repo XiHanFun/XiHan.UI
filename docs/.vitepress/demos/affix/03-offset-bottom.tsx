@@ -9,6 +9,7 @@ export default function Demo(): ReactNode {
   return (
     <div
       ref={scrollEl}
+      data-xh-scroll=""
       style={{
         blockSize: "240px",
         inlineSize: "min(420px, 100%)",

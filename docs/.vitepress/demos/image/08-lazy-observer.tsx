@@ -36,6 +36,7 @@ export default function Demo(): ReactNode {
   return (
     <div
       ref={viewport}
+      data-xh-scroll=""
       style={{
         inlineSize: "260px",
         blockSize: "180px",

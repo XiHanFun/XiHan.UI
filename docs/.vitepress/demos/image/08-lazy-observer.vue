@@ -33,6 +33,7 @@ onBeforeUnmount(() => observer?.disconnect());
 <template>
   <div
     ref="viewport"
+    data-xh-scroll
     style="
       inline-size: 260px;
       block-size: 180px;

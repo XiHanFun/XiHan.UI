@@ -8,7 +8,6 @@ const rows = Array.from({ length: 30 }, (_, r) => Array.from({ length: 12 }, (_,
 const boxStyle = {
   blockSize: "200px",
   overflow: "auto",
-  scrollbarWidth: "none",
   border: "1px solid var(--xh-border-default)",
   borderRadius: "var(--xh-shape-surface)",
   padding: "8px",

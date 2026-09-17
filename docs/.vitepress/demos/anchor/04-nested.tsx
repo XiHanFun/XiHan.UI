@@ -94,7 +94,7 @@ export default function Demo(): ReactNode {
         </XhAnchorList>
       </XhAnchorRoot>
 
-      <div ref={scrollEl} style={scroller}>
+      <div ref={scrollEl} data-xh-scroll="" style={scroller}>
         {sections.map(s => (
           <div key={s.value} id={s.value} style={{ blockSize: "140px", paddingBlock: "12px" }}>
             <strong>{s.label}</strong>

@@ -14,7 +14,6 @@ const cells = Array.from({ length: 24 }, (_, i) => `第 ${i + 1} 列`);
       ref="box"
       style="
         overflow: auto;
-        scrollbar-width: none;
         border: 1px solid var(--xh-border-default);
         border-radius: var(--xh-shape-surface);
         padding: 8px;

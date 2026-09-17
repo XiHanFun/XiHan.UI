@@ -140,6 +140,7 @@ export default function Demo(): ReactNode {
       </div>
 
       <pre
+        data-xh-scroll=""
         style={{
           margin: 0,
           padding: "12px 14px",
