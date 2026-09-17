@@ -169,11 +169,7 @@ for (const [key, comps] of publicGroups) {
 }
 /** 后缀相同但概念不同的，逐条写明理由；名单之外一律受管。 */
 const DISTINCT = {
-  'rows': '栅格的 rows 是一份行轨道表，日志的 rows 是可见行数',
-  // 同名不同面：看图的关闭钮压在暗遮罩上，只能往固定的深色兑；标签的移除钮在标签里面，
-  // 实心 / 淡底 / 描边三种形态下底色各不相同，只有从 currentColor 兑才三种都压得住
-  'close-bg-hover': 'image-viewer 的关闭钮压在暗遮罩上，tag 的移除钮压在标签自己的底上',
-  'close-bg-active': '同 close-bg-hover',
+  rows: '栅格的 rows 是一份行轨道表，日志的 rows 是可见行数',
 }
 const divergent = [...bySuffix].filter(([suffix, byComp]) => !(suffix in DISTINCT) && byComp.size >= 2 && new Set(byComp.values()).size >= 2)
 for (const suffix of Object.keys(DISTINCT)) {

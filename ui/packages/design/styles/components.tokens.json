@@ -32844,55 +32844,54 @@
       "name": "--xh-image-viewer-action-bg-active",
       "component": "image-viewer",
       "part": [
-        "flip-horizontal-trigger",
-        "flip-vertical-trigger",
+        "close-trigger",
+        "content",
         "next-trigger",
         "prev-trigger",
-        "reset-trigger",
-        "rotate-left-trigger",
-        "rotate-right-trigger",
-        "zoom-in-trigger",
-        "zoom-out-trigger"
+        "toolbar"
       ],
       "property": [
-        "background"
+        "background-color"
       ],
       "state": [
-        "active",
-        "not(:disabled)"
+        "disabled",
+        "is(:active, [data-pressed])",
+        "loading",
+        "not([data-disabled])",
+        "not([data-loading])",
+        "pressed"
       ],
       "defaultToken": [
         "--xh-color-neutral-950"
       ],
       "visibility": "public",
-      "description": "image-viewer 的 flip-horizontal-trigger、flip-vertical-trigger、next-trigger、prev-trigger、reset-trigger、rotate-left-trigger、rotate-right-trigger、zoom-in-trigger、zoom-out-trigger 部件 background 覆盖槽。"
+      "description": "image-viewer 的 close-trigger、content、next-trigger、prev-trigger、toolbar 部件 background-color 覆盖槽。"
     },
     {
       "name": "--xh-image-viewer-action-bg-hover",
       "component": "image-viewer",
       "part": [
-        "flip-horizontal-trigger",
-        "flip-vertical-trigger",
+        "close-trigger",
+        "content",
         "next-trigger",
         "prev-trigger",
-        "reset-trigger",
-        "rotate-left-trigger",
-        "rotate-right-trigger",
-        "zoom-in-trigger",
-        "zoom-out-trigger"
+        "toolbar"
       ],
       "property": [
-        "background"
+        "background-color"
       ],
       "state": [
+        "disabled",
         "hover",
-        "not(:disabled)"
+        "loading",
+        "not([data-disabled])",
+        "not([data-loading])"
       ],
       "defaultToken": [
         "--xh-color-neutral-950"
       ],
       "visibility": "public",
-      "description": "image-viewer 的 flip-horizontal-trigger、flip-vertical-trigger、next-trigger、prev-trigger、reset-trigger、rotate-left-trigger、rotate-right-trigger、zoom-in-trigger、zoom-out-trigger 部件 background 覆盖槽。"
+      "description": "image-viewer 的 close-trigger、content、next-trigger、prev-trigger、toolbar 部件 background-color 覆盖槽。"
     },
     {
       "name": "--xh-image-viewer-backdrop-bg",
@@ -32919,6 +32918,7 @@
         "backdrop"
       ],
       "property": [
+        "-webkit-backdrop-filter",
         "backdrop-filter"
       ],
       "state": [
@@ -32928,7 +32928,7 @@
         "--xh-overlay-backdrop-blur"
       ],
       "visibility": "public",
-      "description": "image-viewer 的 backdrop 部件 backdrop-filter 覆盖槽。"
+      "description": "image-viewer 的 backdrop 部件 -webkit-backdrop-filter、backdrop-filter 覆盖槽。"
     },
     {
       "name": "--xh-image-viewer-backdrop-layer",
@@ -32953,22 +32953,26 @@
       "component": "image-viewer",
       "part": [
         "close-trigger",
+        "content",
         "counter",
         "next-trigger",
         "prev-trigger",
         "toolbar"
       ],
       "property": [
-        "background"
+        "background",
+        "background-color"
       ],
       "state": [
-        "default"
+        "default",
+        "disabled",
+        "focus-visible"
       ],
       "defaultToken": [
         "--xh-color-neutral-950"
       ],
       "visibility": "public",
-      "description": "image-viewer 的 close-trigger、counter、next-trigger、prev-trigger、toolbar 部件 background 覆盖槽。"
+      "description": "image-viewer 的 close-trigger、content、counter、next-trigger、prev-trigger、toolbar 部件 background、background-color 覆盖槽。"
     },
     {
       "name": "--xh-image-viewer-close-bg-active",
@@ -32977,16 +32981,21 @@
         "close-trigger"
       ],
       "property": [
-        "background"
+        "background-color"
       ],
       "state": [
-        "active"
+        "disabled",
+        "is(:active, [data-pressed])",
+        "loading",
+        "not([data-disabled])",
+        "not([data-loading])",
+        "pressed"
       ],
       "defaultToken": [
-        "--xh-color-neutral-950"
+        "--xh-_image-viewer-chrome-bg-active"
       ],
       "visibility": "public",
-      "description": "image-viewer 的 close-trigger 部件 background 覆盖槽。"
+      "description": "image-viewer 的 close-trigger 部件 background-color 覆盖槽。"
     },
     {
       "name": "--xh-image-viewer-close-bg-hover",
@@ -32995,17 +33004,46 @@
         "close-trigger"
       ],
       "property": [
-        "background"
+        "background-color"
       ],
       "state": [
+        "disabled",
         "hover",
-        "not(:disabled)"
+        "loading",
+        "not([data-disabled])",
+        "not([data-loading])"
       ],
       "defaultToken": [
-        "--xh-color-neutral-950"
+        "--xh-_image-viewer-chrome-bg-hover"
       ],
       "visibility": "public",
-      "description": "image-viewer 的 close-trigger 部件 background 覆盖槽。"
+      "description": "image-viewer 的 close-trigger 部件 background-color 覆盖槽。"
+    },
+    {
+      "name": "--xh-image-viewer-close-fg",
+      "component": "image-viewer",
+      "part": [
+        "close-trigger"
+      ],
+      "property": [
+        "color"
+      ],
+      "state": [
+        "default",
+        "disabled",
+        "focus-visible",
+        "hover",
+        "is(:active, [data-pressed])",
+        "loading",
+        "not([data-disabled])",
+        "not([data-loading])",
+        "pressed"
+      ],
+      "defaultToken": [
+        "currentColor"
+      ],
+      "visibility": "public",
+      "description": "image-viewer 的 close-trigger 部件 color 覆盖槽。"
     },
     {
       "name": "--xh-image-viewer-close-radius",
@@ -33036,10 +33074,12 @@
         "inline-size"
       ],
       "state": [
-        "default"
+        "default",
+        "xh-action-profile=floating",
+        "xh-action-profile=icon"
       ],
       "defaultToken": [
-        "--xh-control-h-lg"
+        "--xh-_action-profile-visual-size"
       ],
       "visibility": "public",
       "description": "image-viewer 的 close-trigger 部件 block-size、inline-size 覆盖槽。"
@@ -33063,6 +33103,24 @@
       "description": "image-viewer 的 counter 部件 padding 覆盖槽。"
     },
     {
+      "name": "--xh-image-viewer-counter-radius",
+      "component": "image-viewer",
+      "part": [
+        "counter"
+      ],
+      "property": [
+        "border-radius"
+      ],
+      "state": [
+        "default"
+      ],
+      "defaultToken": [
+        "--xh-image-viewer-overlay-radius"
+      ],
+      "visibility": "public",
+      "description": "image-viewer 的 counter 部件 border-radius 覆盖槽。"
+    },
+    {
       "name": "--xh-image-viewer-fg",
       "component": "image-viewer",
       "part": [
@@ -33084,7 +33142,11 @@
       "name": "--xh-image-viewer-icon-size",
       "component": "image-viewer",
       "part": [
-        "content"
+        "close-trigger",
+        "content",
+        "next-trigger",
+        "prev-trigger",
+        "toolbar"
       ],
       "property": [
         "--xh-icon-size"
@@ -33093,10 +33155,11 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-glyph-size-text"
+        "--xh-_action-profile-glyph-size",
+        "--xh-glyph-size-md"
       ],
       "visibility": "public",
-      "description": "image-viewer 的 content 部件 --xh-icon-size 覆盖槽。"
+      "description": "image-viewer 的 close-trigger、content、next-trigger、prev-trigger、toolbar 部件 --xh-icon-size 覆盖槽。"
     },
     {
       "name": "--xh-image-viewer-layer",
@@ -33187,7 +33250,9 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-shape-pill"
+        "--xh-_action-profile-radius",
+        "--xh-shape-control",
+        "--xh-shape-surface"
       ],
       "visibility": "public",
       "description": "image-viewer 的 counter、next-trigger、prev-trigger、toolbar 部件 border-radius 覆盖槽。"
@@ -33241,7 +33306,25 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-shape-control"
+        "--xh-_action-profile-radius"
+      ],
+      "visibility": "public",
+      "description": "image-viewer 的 toolbar 部件 border-radius 覆盖槽。"
+    },
+    {
+      "name": "--xh-image-viewer-toolbar-radius-outer",
+      "component": "image-viewer",
+      "part": [
+        "toolbar"
+      ],
+      "property": [
+        "border-radius"
+      ],
+      "state": [
+        "default"
+      ],
+      "defaultToken": [
+        "--xh-image-viewer-overlay-radius"
       ],
       "visibility": "public",
       "description": "image-viewer 的 toolbar 部件 border-radius 覆盖槽。"

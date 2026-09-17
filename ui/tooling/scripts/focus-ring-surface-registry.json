@@ -1,9 +1,6 @@
 {
   "backlog": {},
   "declared": {
-    "image-viewer [data-part='close-trigger'][data-scope='image-viewer']": "面是半透明的（neutral-950 兑 transparent 55%），压在使用者的图片上，静态算不出对比度",
-    "image-viewer [data-part='next-trigger'][data-scope='image-viewer']": "面是半透明的（neutral-950 兑 transparent 55%），压在使用者的图片上，静态算不出对比度",
-    "image-viewer [data-part='prev-trigger'][data-scope='image-viewer']": "面是半透明的（neutral-950 兑 transparent 55%），压在使用者的图片上，静态算不出对比度",
     "popconfirm [data-part='cancel-trigger'][data-scope='popconfirm']:is(:hover, :active)": "规则只罩 :is(:hover, :active) 两档：那两档的面 bg-subtle-hover 2.97、bg-subtle-active 2.52 在线下，本脚本不收 :hover / :active 的面；常态的淡底 3.40 过线，吃默认环",
     "scrollbar [data-part='thumb'][data-scope='scrollbar']:not([data-disabled])": "滑块面为半透明中性色，聚焦环改取不透明的 currentColor，避免环色随滑块透明度一起变淡",
     "segmented [data-part='root'][data-scope='segmented']:has([data-scope='segmented'][data-part='indicator']:not([hidden])) [data-part='item'][data-scope='segmented'][data-state='checked']": "选中段自己的面是透空的，环内侧是压在它底下、与它同一块矩形的指示器实心底（写了 data-tone 时默认环压上去 1.08-2.89）；本脚本只看部件自己那条 background，看不见被压在下面的兄弟节点",
@@ -29,9 +26,6 @@
     "floating-panel [window-state-trigger] var(--xh-material-frosted-focus-surface)": "窗口状态钮聚焦时铺不透明 M2 focus-surface；选中实心档另由 currentColor 环规则保证。",
     "heatmap [cell] color-mix(in oklab, var(--xh-_heatmap-ink) var(--xh-_heatmap-level), var(--xh-_heatmap-empty))": "档位是连着的百分比、由连接层内联写进 style，皮肤里恒是 0%，静态解不出格子的实际颜色；满档那一格的面就是 --xh-_heatmap-ink（缺省即 --xh-bg-brand），环压上去大概率不到 3:1，要浏览器态判据接",
     "hover-card [content] linear-gradient(\n        to bottom,\n        var(--xh-material-frosted-highlight) 0 var(--xh-stroke-thin),\n        transparent var(--xh-stroke-thin)\n      ),\n      var(--xh-hover-card-bg, var(--xh-material-frosted-bg))": "M2 预览面含透明底与顶光，content 的程序化聚焦已明确关环；预览默认没有内建交互控件，作者若组合控件，其实体焦点面由各自皮肤提供。",
-    "image-viewer [close-trigger] color-mix(in oklab, var(--xh-color-neutral-950) 55%, transparent)": "面是半透明的，压在使用者的图片上，静态算不出对比度",
-    "image-viewer [next-trigger] color-mix(in oklab, var(--xh-color-neutral-950) 55%, transparent)": "面是半透明的，压在使用者的图片上，静态算不出对比度",
-    "image-viewer [prev-trigger] color-mix(in oklab, var(--xh-color-neutral-950) 55%, transparent)": "面是半透明的，压在使用者的图片上，静态算不出对比度",
     "mention [content] var(--xh-material-frosted-bg)": "M2 外壳的透明底随背后内容变化，不能按单一实体色判定；此 content 已由同表 ringless 逐条登记并在皮肤明确关闭程序化焦点环。内部真实控件仍按各自部件独立检查，不能由本条放行。",
     "menu [content] var(--xh-material-frosted-bg)": "M2 外壳的透明底随背后内容变化，不能按单一实体色判定；此 content 已由同表 ringless 逐条登记并在皮肤明确关闭程序化焦点环。内部真实控件仍按各自部件独立检查，不能由本条放行。",
     "menubar [content] var(--xh-material-frosted-bg)": "M2 外壳的透明底随背后内容变化，不能按单一实体色判定；此 content 已由同表 ringless 逐条登记并在皮肤明确关闭程序化焦点环。内部真实控件仍按各自部件独立检查，不能由本条放行。",

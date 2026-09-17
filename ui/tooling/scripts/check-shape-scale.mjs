@@ -143,18 +143,21 @@ const IDENTITY = {
   'scrollbar:thumb': 'pill',
   'sortable:drop-indicator': 'pill',
   'skeleton:item[data-shape=\'text\']': 'pill',
-  'image-viewer:toolbar': 'pill',
-  'image-viewer:counter': 'pill',
+
   'tour:progress-dot': 'circle',
   // control：在 chrome 内或随文的按钮与字段
   'pagination:item': 'control',
+  // 看图器顶部一行字的计数气泡：与 tooltip / kbd 同档
+  'image-viewer:counter': 'control',
   'kbd:root': 'control',
   'tooltip:content': 'control',
   'rating:item': 'control',
   'tabs:trigger': 'control',
   'steps:trigger': 'control',
-  // surface：轨道
+  // surface：轨道与容器
   'segmented:root': 'surface',
+  // 看图器底部的工具条外壳：容器不是一维对象，与 toolbar 根面同身份
+  'image-viewer:toolbar': 'surface',
   'tabs:list': 'surface',
   // inset：嵌在 control 内的小块
   'checkbox:root': 'inset',

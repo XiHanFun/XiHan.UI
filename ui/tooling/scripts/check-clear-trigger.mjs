@@ -34,7 +34,7 @@ const CLOSE_PART = { notification: 'item-close-trigger' }
  * ③ 前景槽的例外：这颗叉不自定前景，颜色随别处走。
  * 登记了却其实有槽的照样报，免得名单变成过期的免检通行证。
  */
-const CLOSE_FG_EXCEPTION = { 'image-viewer': '看图时整块 chrome 盖住页面，叉的颜色随那层继承（color: inherit），自己不定前景' }
+const CLOSE_FG_EXCEPTION = {}
 /** ④ 标签内移除钮（组件 → 部件）与行级删除钮。 */
 const CHIP_REMOVE = { tag: 'close-trigger' }
 const ROW_DELETE = { 'file-upload': 'item-delete-trigger', 'field-array': 'item-delete-trigger' }

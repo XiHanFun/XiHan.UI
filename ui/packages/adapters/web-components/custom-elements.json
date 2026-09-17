@@ -27333,6 +27333,9 @@
               "name": "--xh-image-viewer-close-bg-hover"
             },
             {
+              "name": "--xh-image-viewer-close-fg"
+            },
+            {
               "name": "--xh-image-viewer-close-radius"
             },
             {
@@ -27340,6 +27343,9 @@
             },
             {
               "name": "--xh-image-viewer-counter-padding"
+            },
+            {
+              "name": "--xh-image-viewer-counter-radius"
             },
             {
               "name": "--xh-image-viewer-fg"
@@ -27370,6 +27376,9 @@
             },
             {
               "name": "--xh-image-viewer-toolbar-radius"
+            },
+            {
+              "name": "--xh-image-viewer-toolbar-radius-outer"
             }
           ]
         }

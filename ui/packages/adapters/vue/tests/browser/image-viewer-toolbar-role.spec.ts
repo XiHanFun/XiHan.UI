@@ -187,3 +187,31 @@ describe('看片浮层的控件带：报的角色与拿得到的走位一致', (
     expect(focusedPart()).toBe('flip-vertical-trigger')
   })
 })
+
+describe('看片浮层的 chrome 钮：Action Control 档位落到真实盒子上', () => {
+  it('翻页钮是 48px 正圆、关闭钮 40px 控件圆角、工具条钮 24px；十颗钮的前景随 chrome 继承', async () => {
+    mount()
+    await settle()
+    const prev = part('prev-trigger')
+    const next = part('next-trigger')
+    const close = part('close-trigger')
+    const zoomIn = part('zoom-in-trigger')
+    const chromeColor = getComputedStyle(part('content')).color
+
+    for (const el of [prev, next]) {
+      const rect = el.getBoundingClientRect()
+      expect([rect.width, rect.height]).toEqual([48, 48])
+      expect(getComputedStyle(el).borderRadius).toBe('50%')
+      expect(getComputedStyle(el).color).toBe(chromeColor)
+    }
+    const closeRect = close.getBoundingClientRect()
+    expect([closeRect.width, closeRect.height]).toEqual([40, 40])
+    expect(getComputedStyle(close).borderRadius).toBe('4px')
+    const zoomRect = zoomIn.getBoundingClientRect()
+    expect([zoomRect.width, zoomRect.height]).toEqual([24, 24])
+    expect(getComputedStyle(zoomIn).color).toBe(chromeColor)
+    // 工具条外壳与计数气泡按身份取圆角：容器 surface 8px、一行字的气泡 control 4px
+    expect(getComputedStyle(part('toolbar')).borderRadius).toBe('8px')
+    expect(getComputedStyle(part('counter')).borderRadius).toBe('4px')
+  })
+})
