@@ -13869,7 +13869,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-stack-gap-md"
+        "--xh-space-1"
       ],
       "visibility": "public",
       "description": "color-slider 的 root 部件 gap 覆盖槽。"
@@ -13887,7 +13887,25 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-fg-muted"
+        "--xh-fg-default"
+      ],
+      "visibility": "public",
+      "description": "color-slider 的 label 部件 color 覆盖槽。"
+    },
+    {
+      "name": "--xh-color-slider-label-fg-disabled",
+      "component": "color-slider",
+      "part": [
+        "label"
+      ],
+      "property": [
+        "color"
+      ],
+      "state": [
+        "disabled"
+      ],
+      "defaultToken": [
+        "--xh-fg-subtle"
       ],
       "visibility": "public",
       "description": "color-slider 的 label 部件 color 覆盖槽。"
@@ -13959,7 +13977,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-bg-surface"
+        "--xh-border-default"
       ],
       "visibility": "public",
       "description": "color-slider 的 thumb 部件 border 覆盖槽。"
@@ -14032,6 +14050,24 @@
       ],
       "defaultToken": [
         "--xh-elevation-raised"
+      ],
+      "visibility": "public",
+      "description": "color-slider 的 thumb 部件 box-shadow 覆盖槽。"
+    },
+    {
+      "name": "--xh-color-slider-thumb-shadow-disabled",
+      "component": "color-slider",
+      "part": [
+        "thumb"
+      ],
+      "property": [
+        "box-shadow"
+      ],
+      "state": [
+        "disabled"
+      ],
+      "defaultToken": [
+        "none"
       ],
       "visibility": "public",
       "description": "color-slider 的 thumb 部件 box-shadow 覆盖槽。"

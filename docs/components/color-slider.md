@@ -38,7 +38,7 @@
 
 ### 竖直与状态
 
-orientation 竖排时渐变自下而上；禁用整体压暗，只读保留 Tab 位但不可调节
+orientation 竖排时渐变自下而上；禁用时标签换禁用前景、颜色带压暗，只读保留 Tab 位但不可调节
 
 <XhDemo src="color-slider/04-states" />
 
@@ -64,7 +64,7 @@ orientation 竖排时渐变自下而上；禁用整体压暗，只读保留 Tab 
 - 灰度与纯黑处色相无定义，把明度调到 0 再拉回时色相由锚点保持，不塌为 0。
 - 拖动、键盘、RTL 方向与竖直排布全部取自内嵌的[滑块](./slider)；`onValueChange` 在拖动中连续发出，`onValueChangeEnd` 在松手时只发一次。
 - 拇指按未取整的工作色定位，比按整格计算更贴近当前颜色；`aria-valuetext` 带单位播报。
-- 尺寸 sm / md / lg 改变拇指直径与颜色带厚度；禁用整体压暗，只读保留 Tab 位但不可调整，`invalid` 只改变拇指描边，保留当前颜色的面。
+- 尺寸 sm / md / lg 改变拇指直径与颜色带厚度；禁用时标签换到禁用前景、颜色带与拇指压暗且拇指不再抬起，只读保留 Tab 位但不可调整，`invalid` 只改变拇指描边，保留当前颜色的面。
 
 ### 组合
 
@@ -227,16 +227,18 @@ orientation 竖排时渐变自下而上；禁用整体压暗，只读保留 Tab 
 | --- | --- | --- | --- | --- | --- |
 | `--xh-color-slider-checker` | `track` | `background-image` | `channel=alpha` | `--xh-color-neutral-300` | color-slider 的 track 部件 background-image 覆盖槽。 |
 | `--xh-color-slider-checker-base` | `track` | `background-color` | `channel=alpha` | `--xh-bg-surface` | color-slider 的 track 部件 background-color 覆盖槽。 |
-| `--xh-color-slider-gap` | `root` | `gap` | `default` | `--xh-stack-gap-md` | color-slider 的 root 部件 gap 覆盖槽。 |
-| `--xh-color-slider-label-fg` | `label` | `color` | `default` | `--xh-fg-muted` | color-slider 的 label 部件 color 覆盖槽。 |
+| `--xh-color-slider-gap` | `root` | `gap` | `default` | `--xh-space-1` | color-slider 的 root 部件 gap 覆盖槽。 |
+| `--xh-color-slider-label-fg` | `label` | `color` | `default` | `--xh-fg-default` | color-slider 的 label 部件 color 覆盖槽。 |
+| `--xh-color-slider-label-fg-disabled` | `label` | `color` | `disabled` | `--xh-fg-subtle` | color-slider 的 label 部件 color 覆盖槽。 |
 | `--xh-color-slider-label-font-size` | `label` | `font-size` | `default` | `--xh-text-label-size` | color-slider 的 label 部件 font-size 覆盖槽。 |
 | `--xh-color-slider-label-font-weight` | `label` | `font-weight` | `default` | `--xh-text-label-weight` | color-slider 的 label 部件 font-weight 覆盖槽。 |
 | `--xh-color-slider-thumb-bg` | `thumb` | `background` | `default` | `--xh-_color-slider-thumb-color` | color-slider 的 thumb 部件 background 覆盖槽。 |
-| `--xh-color-slider-thumb-border` | `thumb` | `border` | `default` | `--xh-bg-surface` | color-slider 的 thumb 部件 border 覆盖槽。 |
+| `--xh-color-slider-thumb-border` | `thumb` | `border` | `default` | `--xh-border-default` | color-slider 的 thumb 部件 border 覆盖槽。 |
 | `--xh-color-slider-thumb-border-invalid` | `thumb` | `border-color` | `invalid` | `--xh-border-invalid` | color-slider 的 thumb 部件 border-color 覆盖槽。 |
 | `--xh-color-slider-thumb-radius` | `thumb` | `border-radius` | `default` | `--xh-shape-circle` | color-slider 的 thumb 部件 border-radius 覆盖槽。 |
 | `--xh-color-slider-thumb-scale-dragging` | `thumb` | `scale` | `dragging` | `--xh-motion-scale-drag` | color-slider 的 thumb 部件 scale 覆盖槽。 |
 | `--xh-color-slider-thumb-shadow` | `thumb` | `box-shadow` | `default` | `--xh-elevation-raised` | color-slider 的 thumb 部件 box-shadow 覆盖槽。 |
+| `--xh-color-slider-thumb-shadow-disabled` | `thumb` | `box-shadow` | `disabled` | `none` | color-slider 的 thumb 部件 box-shadow 覆盖槽。 |
 | `--xh-color-slider-thumb-shadow-dragging` | `thumb` | `box-shadow` | `dragging` | `--xh-elevation-lifted` | color-slider 的 thumb 部件 box-shadow 覆盖槽。 |
 | `--xh-color-slider-thumb-size` | `control`<br>`root`<br>`thumb` | `block-size`<br>`inline-size`<br>`margin-block-end`<br>`margin-block-start`<br>`margin-inline-start` | `default`<br>`orientation=horizontal`<br>`orientation=vertical`<br>`size=lg`<br>`size=sm` | `--xh-space-3`<br>`--xh-space-6`<br>`--xh-track-thumb-size` | color-slider 的 control、root、thumb 部件 block-size、inline-size、margin-block-end、margin-block-start、margin-inline-start 覆盖槽。 |
 | `--xh-color-slider-track-border` | `track` | `box-shadow` | `default` | `--xh-border-subtle` | color-slider 的 track 部件 box-shadow 覆盖槽。 |
