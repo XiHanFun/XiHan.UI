@@ -46,6 +46,9 @@ const CROSS_PART = {
   // 搜索结果列表与空态占的都是一格列的位置，几何跟着 column 走，三种形态才等宽等高
   // 色块面铺满格子，两者的圆角必须是同一个值，否则四角露出格子的底
   'color-swatch-picker.item': ['swatch'],
+  // 色块描边按格子的状态换（静息 / 悬停 / 按下 / 选中），四档赋值写在格子上的私有槽里、色块面只读它；
+  // 槽仍按画描边的色块面取名，作者不必知道这层转接
+  'color-swatch-picker.swatch': ['item'],
   'cascader.column': ['search-list', 'empty'],
   // 搜索候选与列内条目排的是同一套行度量，空态文字与条目同一档字号
   'cascader.item': ['search-item', 'empty'],
