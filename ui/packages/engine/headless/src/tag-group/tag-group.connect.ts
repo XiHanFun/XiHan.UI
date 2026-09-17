@@ -339,6 +339,16 @@ export function connectTagGroup<T extends PropTypes>(
       role: 'gridcell',
     }),
 
+    // 选中标记领在文字前面：页内持久集合的选中不能只靠底色（§7.3），选中的那一枚亮一枚对号。
+    // 未选中即 hidden 收起，selectionMode none 时 isSelected 恒假、标记永不出现；
+    // 读屏不用它——选中态由标签上的 aria-selected 报
+    getItemIndicatorProps: item => normalize.element({
+      ...parts['item-indicator'].attrs,
+      ...stateAttrs(item),
+      'aria-hidden': true,
+      'hidden': !isSelected(item.value) || undefined,
+    }),
+
     // 标签文字落在 tag 的 label 上，截断规则挂在那一层
     getItemTextProps: item => hostedTag(item).getLabelProps(),
 

@@ -44,6 +44,7 @@ function spread(el: HTMLElement, props: Record<string, unknown>): void {
 interface ItemNodes {
   item: HTMLElement
   cell: HTMLElement
+  indicator: HTMLElement
   text: HTMLElement
   del: HTMLButtonElement
 }
@@ -92,13 +93,14 @@ function mount(initial: Partial<Props> = {}, options: MountOptions = {}): Harnes
   for (const v of VALUES) {
     const item = doc.createElement('span')
     const cell = doc.createElement('span')
+    const indicator = doc.createElement('span')
     const text = doc.createElement('span')
     const del = doc.createElement('button')
     text.textContent = v[0]!.toUpperCase() + v.slice(1)
-    cell.append(text, del)
+    cell.append(indicator, text, del)
     item.append(cell)
     list.appendChild(item)
-    nodes.set(v, { item, cell, text, del })
+    nodes.set(v, { item, cell, indicator, text, del })
   }
 
   const render = (): void => {
@@ -110,6 +112,7 @@ function mount(initial: Partial<Props> = {}, options: MountOptions = {}): Harnes
       const decl = { value: v, disabled: disabledItems.has(v) || undefined }
       spread(n.item, api.getItemProps(decl) as Record<string, unknown>)
       spread(n.cell, api.getCellProps(decl) as Record<string, unknown>)
+      spread(n.indicator, api.getItemIndicatorProps(decl) as Record<string, unknown>)
       spread(n.text, api.getItemTextProps(decl) as Record<string, unknown>)
       spread(n.del, api.getItemDeleteTriggerProps(decl) as Record<string, unknown>)
     }
@@ -218,6 +221,32 @@ describe('选中与高亮落在 tag 的 root 上', () => {
     vue.item.click()
     expect(h.values.at(-1)).toEqual({ value: ['react', 'vue'] })
     expect(vue.item.hasAttribute('data-selected')).toBe(true)
+  })
+
+  it('选中标记是本组件的 item-indicator：选中时展示、未选中 hidden 收起，读屏不见；不接选中的一排永不出现', () => {
+    const h = mount({ selectionMode: 'multiple', defaultValue: ['react'] })
+    const react = h.nodes('react')
+    const vue = h.nodes('vue')
+    expect(react.indicator.getAttribute('data-scope')).toBe('tag-group')
+    expect(react.indicator.getAttribute('data-part')).toBe('item-indicator')
+    expect(react.indicator.getAttribute('aria-hidden')).toBe('true')
+    expect(react.indicator.hasAttribute('hidden')).toBe(false)
+    expect(react.indicator.hasAttribute('data-selected')).toBe(true)
+    expect(vue.indicator.hasAttribute('hidden')).toBe(true)
+    expect(vue.indicator.hasAttribute('data-selected')).toBe(false)
+
+    vue.item.click()
+    expect(vue.indicator.hasAttribute('hidden')).toBe(false)
+    expect(vue.indicator.hasAttribute('data-selected')).toBe(true)
+
+    // 禁用跟着标签走，皮肤据此把标记一起置灰
+    const disabled = mount({ selectionMode: 'single', defaultValue: 'react' }, { disabledItems: ['react'] })
+    expect(disabled.nodes('react').indicator.hasAttribute('data-disabled')).toBe(true)
+    expect(disabled.nodes('react').indicator.hasAttribute('hidden')).toBe(false)
+
+    // 只作标记的一排：isSelected 恒假，标记全部收起
+    const marks = mount({ defaultValue: ['react'] })
+    expect(marks.nodes('react').indicator.hasAttribute('hidden')).toBe(true)
   })
 
   it('聚焦一枚即为锚点：data-highlighted 与 tabindex=0 都落在 tag 的 root 上', () => {

@@ -705,6 +705,7 @@
       "notification",
       "question-flow",
       "select",
+      "tag-group",
       "tree",
       "tree-select"
     ],

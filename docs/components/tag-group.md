@@ -22,7 +22,7 @@
 
 加粗的是必需部件。
 
-`data-scope="tag-group"`：`root` · `label` · **`list`** · **`cell`**
+`data-scope="tag-group"`：`root` · `label` · **`list`** · **`cell`** · `item-indicator`
 
 ## 示例
 
@@ -65,6 +65,7 @@ size 写在组上逐个落到每个标签上，使用 tag 的三档，标签自�
 - roving tabindex：整组一个 Tab 停靠点，组内使用方向键移动；`Home` / `End` 到端点。
 - `selectionMode` 三档：`none` 只是标记、`single` 单选、`multiple` 可多选（`Ctrl` / `Cmd` + `A` 全选）。
 - 每一个标签就是库内的[标签](./tag)：标签本体是它的 `root`，文字是它的 `label`，移除按钮是它的 `close-trigger`；组只在其上叠加行角色、Tab 停靠点、选中与锚点。
+- 选中的标签使用品牌淡底，并在文字前展示 `item-indicator` 选中标记（默认绘制对号，也可放入图标）；未选中时该部件收起，不接选中时不出现。
 - `deletable` 显示移除按钮，键盘路径使用 `Delete` / `Backspace`。
 - 选择与移除是两个互斥动作：点击标签本体才选择，点击移除按钮只从选中集合移除并发出 `item-delete`，不会让同一次冒泡 click 把待删值重新选中。
 - 移除一个之后焦点交给前一个；前面没有则交给后一个，没有剩余时交给列表容器。
@@ -97,7 +98,7 @@ size 写在组上逐个落到每个标签上，使用 tag 的三档，标签自�
 | 层 | 值 |
 | --- | --- |
 | 自定义元素 | `<xh-tag-group>` |
-| Vue 组件 | `XhTagGroupCell` `XhTagGroupItem` `XhTagGroupItemDeleteTrigger` `XhTagGroupItemText` `XhTagGroupLabel` `XhTagGroupList` `XhTagGroupRoot` |
+| Vue 组件 | `XhTagGroupCell` `XhTagGroupItem` `XhTagGroupItemDeleteTrigger` `XhTagGroupItemIndicator` `XhTagGroupItemText` `XhTagGroupLabel` `XhTagGroupList` `XhTagGroupRoot` |
 | 组合式函数 | `useTagGroup` |
 | 状态机 | `tagGroupMachine` |
 | 皮肤 | `@xihan-ui/styles/tag-group.css` |
@@ -174,6 +175,7 @@ size 写在组上逐个落到每个标签上，使用 tag 的三档，标签自�
 | `getListProps` | `() => T['element']` |  |
 | `getItemProps` | `(props: TagGroupItemProps) => T['element']` | 一个标签：库内 tag 的 root（data-scope="tag"），三轴与置灰由 tag 提供； row 角色、身份、roving tabindex、选中（data-selected）与锚点（data-highlighted）叠加在它上面。 |
 | `getCellProps` | `(props: TagGroupItemProps) => T['element']` | 标签内的格子；移除按钮必须落在它之内。 |
+| `getItemIndicatorProps` | `(props: TagGroupItemProps) => T['element']` | 选中标记：落在格子内、文字之前，选中时展示、未选中时以 hidden 收起； 对读屏隐藏，选中态由标签上的 aria-selected 表达。内容留空时由皮肤绘制对号，也可放入图标。 |
 | `getItemTextProps` | `(props: TagGroupItemProps) => T['element']` | 标签文字：tag 的 label，截断规则挂在该层。 |
 | `getItemDeleteTriggerProps` | `(props: TagGroupItemProps) => T['button']` | 移除按钮：所在标签那份 tag 的 close-trigger，不占 Tab 位；可及名、禁用与收起都由 tag 提供。 |
 
@@ -209,6 +211,7 @@ size 写在组上逐个落到每个标签上，使用 tag 的三档，标签自�
 | `list` | `aria-readonly` | 'true' \| 'false' |
 | `list` | `role` | 'grid' |
 | `cell` | `role` | 'gridcell' |
+| `item-indicator` | `aria-hidden` | 'true' |
 | `item` | `aria-disabled` | 'true' \| 'false' |
 | `item` | `aria-selected` | 'true' \| 'false' \| undefined |
 | `item` | `role` | 'row' |
@@ -220,6 +223,8 @@ size 写在组上逐个落到每个标签上，使用 tag 的三档，标签自�
 ### 皮肤
 
 `@xihan-ui/styles/tag-group.css` 使用 `[data-scope="tag-group"][data-part="root"]` 部件选择器，位于 `xihan.components` 层。覆盖样式使用 `xihan.overrides`。
+
+`forced-colors: active` 下另有一套规则：颜色交给系统，边框与状态标记改用系统色关键字。
 
 ### 数据属性
 
@@ -244,9 +249,16 @@ size 写在组上逐个落到每个标签上，使用 tag 的三档，标签自�
 | 变量 | 部件 | CSS 属性 | 状态 | 默认来源 | 说明 |
 | --- | --- | --- | --- | --- | --- |
 | `--xh-tag-group-gap` | `root` | `gap` | `default` | `--xh-space-2` | tag-group 的 root 部件 gap 覆盖槽。 |
-| `--xh-tag-group-item-bg-hover` | `list`<br>`root` | `background` | `disabled`<br>`highlighted`<br>`is(:hover, [data-highlighted])`<br>`not([data-disabled])`<br>`not([data-variant='solid'])`<br>`variant=solid` | `--xh-bg-subtle-hover` | tag-group 的 list、root 部件 background 覆盖槽。 |
-| `--xh-tag-group-item-border-selected` | `list`<br>`root` | `border-color` | `disabled`<br>`not([data-disabled])`<br>`not([data-variant='solid'])`<br>`selected`<br>`variant=solid` | `--xh-_tone`<br>`currentColor` | tag-group 的 list、root 部件 border-color 覆盖槽。 |
+| `--xh-tag-group-item-bg-hover` | `list`<br>`root` | `background` | `disabled`<br>`highlighted`<br>`is(:hover, [data-highlighted])`<br>`not([data-disabled])`<br>`not([data-variant='solid'])`<br>`variant=solid` | `--xh-bg-subtle` | tag-group 的 list、root 部件 background 覆盖槽。 |
+| `--xh-tag-group-item-bg-pressed` | `list`<br>`root` | `background` | `disabled`<br>`is(:active, [data-pressed])`<br>`not([data-disabled])`<br>`not([data-variant='solid'])`<br>`pressed`<br>`selectable`<br>`variant=solid` | `--xh-bg-subtle-hover` | tag-group 的 list、root 部件 background 覆盖槽。 |
+| `--xh-tag-group-item-bg-pressed-solid` | `list`<br>`root` | `background` | `disabled`<br>`is(:active, [data-pressed])`<br>`not([data-disabled])`<br>`pressed`<br>`selectable`<br>`variant=solid` | `--xh-_tone-active` | tag-group 的 list、root 部件 background 覆盖槽。 |
+| `--xh-tag-group-item-bg-selected` | `list`<br>`root` | `background` | `disabled`<br>`not([data-disabled])`<br>`not([data-variant='solid'])`<br>`selected`<br>`variant=solid` | `--xh-_tone-subtle` | tag-group 的 list、root 部件 background 覆盖槽。 |
+| `--xh-tag-group-item-bg-selected-hover` | `list`<br>`root` | `background` | `disabled`<br>`highlighted`<br>`is(:hover, [data-highlighted])`<br>`not([data-disabled])`<br>`not([data-variant='solid'])`<br>`selected`<br>`variant=solid` | `--xh-_tone-subtle-hover` | tag-group 的 list、root 部件 background 覆盖槽。 |
+| `--xh-tag-group-item-bg-selected-pressed` | `list`<br>`root` | `background` | `disabled`<br>`is(:active, [data-pressed])`<br>`not([data-disabled])`<br>`not([data-variant='solid'])`<br>`pressed`<br>`selectable`<br>`selected`<br>`variant=solid` | `--xh-_tone-subtle-active` | tag-group 的 list、root 部件 background 覆盖槽。 |
+| `--xh-tag-group-item-border-selected` | `list`<br>`root` | `border-color` | `disabled`<br>`not([data-disabled])`<br>`not([data-variant='solid'])`<br>`selected`<br>`variant=solid` | `currentColor`<br>`transparent` | tag-group 的 list、root 部件 border-color 覆盖槽。 |
 | `--xh-tag-group-item-fg-selected` | `list`<br>`root` | `color` | `disabled`<br>`not([data-disabled])`<br>`not([data-variant='solid'])`<br>`selected`<br>`variant=solid` | `--xh-_tone-fg` | tag-group 的 list、root 部件 color 覆盖槽。 |
+| `--xh-tag-group-item-indicator-fg` | `item-indicator` | `color` | `default` | `currentColor` | tag-group 的 item-indicator 部件 color 覆盖槽。 |
+| `--xh-tag-group-item-indicator-size` | `item-indicator` | `--xh-icon-size` | `default` | `--xh-glyph-size-text` | tag-group 的 item-indicator 部件 --xh-icon-size 覆盖槽。 |
 | `--xh-tag-group-label-fg` | `label` | `color` | `default` | `--xh-fg-muted` | tag-group 的 label 部件 color 覆盖槽。 |
 | `--xh-tag-group-label-font-size` | `label` | `font-size` | `default` | `--xh-text-label-size` | tag-group 的 label 部件 font-size 覆盖槽。 |
 | `--xh-tag-group-label-font-weight` | `label` | `font-weight` | `default` | `--xh-text-label-weight` | tag-group 的 label 部件 font-weight 覆盖槽。 |

@@ -59,6 +59,7 @@ const BOOLEAN_CONVERTER = { fromAttribute: (v: string | null) => (v === null ? u
  * @csspart list - role=grid 容器，键盘在此收口，也是 roving tabindex 的兜底位
  * @csspart item - 一个标签，须自带 value 属性标识身份；禁用写 aria-disabled="true"。接线为 tag 的 root（data-scope="tag"），叠加 role=row、roving tabindex、data-selected 与 data-highlighted
  * @csspart cell - role=gridcell，标签内的格，文字与移除按钮都写在它之内
+ * @csspart item-indicator - 选中标记，落在格内、文字之前；选中时展示、未选中以 hidden 收起，对读屏隐藏；内容留空时由皮肤绘制对号
  * @csspart item-text - 标签文字（连打检索的取字来源），接线为 tag 的 label（data-scope="tag"）
  * @csspart item-delete-trigger - 移除按钮，不占 Tab 位；接线为所在标签那份 tag 的 close-trigger（data-scope="tag"），整组未开放移除时收起，可及名使用 translations.deleteItem
  */
@@ -299,6 +300,8 @@ export class XhTagGroupElement extends XhElement {
       // 标签内的那一格、文字与摘除钮跟着同一份声明走，样式层各处状态一致
       for (const cell of this.partsIn(el, 'cell'))
         this.spreader.spread(cell, api.getCellProps(item) as Record<string, unknown>)
+      for (const indicator of this.partsIn(el, 'item-indicator'))
+        this.spreader.spread(indicator, api.getItemIndicatorProps(item) as Record<string, unknown>)
       for (const text of this.partsIn(el, 'item-text'))
         this.spreader.spread(text, api.getItemTextProps(item) as Record<string, unknown>)
       for (const trigger of this.partsIn(el, 'item-delete-trigger'))

@@ -212,6 +212,15 @@ export function XhTagGroupCell({ children, ...rest }: XhTagGroupCellProps): Reac
   return <span {...mergeReactProps(ctx.api.getCellProps(item) as Record<string, unknown>, rest as Record<string, unknown>)}>{children}</span>
 }
 
+export interface XhTagGroupItemIndicatorProps extends ComponentPropsWithRef<'span'> {}
+
+/** 选中标记：落在格子内、文字之前，选中时展示、未选中时收起；内容留空时由皮肤绘制对号。 */
+export function XhTagGroupItemIndicator({ children, ...rest }: XhTagGroupItemIndicatorProps): ReactNode {
+  const ctx = useTagGroupContext()
+  const { item } = useTagGroupItemContext()
+  return <span {...mergeReactProps(ctx.api.getItemIndicatorProps(item) as Record<string, unknown>, rest as Record<string, unknown>)}>{children}</span>
+}
+
 export interface XhTagGroupItemTextProps extends ComponentPropsWithRef<'span'> {}
 
 /** 标签文字：渲染为 tag 的 label。 */
@@ -246,6 +255,7 @@ function DefaultTree(props: {
         {props.collection.map(node => (
           <XhTagGroupItem key={node.value} value={node.value}>
             <XhTagGroupCell>
+              <XhTagGroupItemIndicator />
               <XhTagGroupItemText>{props.renderItem?.(node) ?? node.label}</XhTagGroupItemText>
               <XhTagGroupItemDeleteTrigger />
             </XhTagGroupCell>

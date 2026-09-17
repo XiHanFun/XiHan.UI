@@ -59676,7 +59676,130 @@
         "variant=solid"
       ],
       "defaultToken": [
+        "--xh-bg-subtle"
+      ],
+      "visibility": "public",
+      "description": "tag-group 的 list、root 部件 background 覆盖槽。"
+    },
+    {
+      "name": "--xh-tag-group-item-bg-pressed",
+      "component": "tag-group",
+      "part": [
+        "list",
+        "root"
+      ],
+      "property": [
+        "background"
+      ],
+      "state": [
+        "disabled",
+        "is(:active, [data-pressed])",
+        "not([data-disabled])",
+        "not([data-variant='solid'])",
+        "pressed",
+        "selectable",
+        "variant=solid"
+      ],
+      "defaultToken": [
         "--xh-bg-subtle-hover"
+      ],
+      "visibility": "public",
+      "description": "tag-group 的 list、root 部件 background 覆盖槽。"
+    },
+    {
+      "name": "--xh-tag-group-item-bg-pressed-solid",
+      "component": "tag-group",
+      "part": [
+        "list",
+        "root"
+      ],
+      "property": [
+        "background"
+      ],
+      "state": [
+        "disabled",
+        "is(:active, [data-pressed])",
+        "not([data-disabled])",
+        "pressed",
+        "selectable",
+        "variant=solid"
+      ],
+      "defaultToken": [
+        "--xh-_tone-active"
+      ],
+      "visibility": "public",
+      "description": "tag-group 的 list、root 部件 background 覆盖槽。"
+    },
+    {
+      "name": "--xh-tag-group-item-bg-selected",
+      "component": "tag-group",
+      "part": [
+        "list",
+        "root"
+      ],
+      "property": [
+        "background"
+      ],
+      "state": [
+        "disabled",
+        "not([data-disabled])",
+        "not([data-variant='solid'])",
+        "selected",
+        "variant=solid"
+      ],
+      "defaultToken": [
+        "--xh-_tone-subtle"
+      ],
+      "visibility": "public",
+      "description": "tag-group 的 list、root 部件 background 覆盖槽。"
+    },
+    {
+      "name": "--xh-tag-group-item-bg-selected-hover",
+      "component": "tag-group",
+      "part": [
+        "list",
+        "root"
+      ],
+      "property": [
+        "background"
+      ],
+      "state": [
+        "disabled",
+        "highlighted",
+        "is(:hover, [data-highlighted])",
+        "not([data-disabled])",
+        "not([data-variant='solid'])",
+        "selected",
+        "variant=solid"
+      ],
+      "defaultToken": [
+        "--xh-_tone-subtle-hover"
+      ],
+      "visibility": "public",
+      "description": "tag-group 的 list、root 部件 background 覆盖槽。"
+    },
+    {
+      "name": "--xh-tag-group-item-bg-selected-pressed",
+      "component": "tag-group",
+      "part": [
+        "list",
+        "root"
+      ],
+      "property": [
+        "background"
+      ],
+      "state": [
+        "disabled",
+        "is(:active, [data-pressed])",
+        "not([data-disabled])",
+        "not([data-variant='solid'])",
+        "pressed",
+        "selectable",
+        "selected",
+        "variant=solid"
+      ],
+      "defaultToken": [
+        "--xh-_tone-subtle-active"
       ],
       "visibility": "public",
       "description": "tag-group 的 list、root 部件 background 覆盖槽。"
@@ -59699,8 +59822,8 @@
         "variant=solid"
       ],
       "defaultToken": [
-        "--xh-_tone",
-        "currentColor"
+        "currentColor",
+        "transparent"
       ],
       "visibility": "public",
       "description": "tag-group 的 list、root 部件 border-color 覆盖槽。"
@@ -59727,6 +59850,42 @@
       ],
       "visibility": "public",
       "description": "tag-group 的 list、root 部件 color 覆盖槽。"
+    },
+    {
+      "name": "--xh-tag-group-item-indicator-fg",
+      "component": "tag-group",
+      "part": [
+        "item-indicator"
+      ],
+      "property": [
+        "color"
+      ],
+      "state": [
+        "default"
+      ],
+      "defaultToken": [
+        "currentColor"
+      ],
+      "visibility": "public",
+      "description": "tag-group 的 item-indicator 部件 color 覆盖槽。"
+    },
+    {
+      "name": "--xh-tag-group-item-indicator-size",
+      "component": "tag-group",
+      "part": [
+        "item-indicator"
+      ],
+      "property": [
+        "--xh-icon-size"
+      ],
+      "state": [
+        "default"
+      ],
+      "defaultToken": [
+        "--xh-glyph-size-text"
+      ],
+      "visibility": "public",
+      "description": "tag-group 的 item-indicator 部件 --xh-icon-size 覆盖槽。"
     },
     {
       "name": "--xh-tag-group-label-fg",
