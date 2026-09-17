@@ -5571,6 +5571,10 @@
 /* styles/infinite-scroll.css */
 /* 定义 infinite scroll 样式。 */
 
+/* 独立皮肤同时传递引入取下一页按钮的动作控件配方，full bundle 递归去重。 */
+
+/* family/action-control.css */
+
 /* 皮肤在场的标记：开发模式下按 scope 探一次，取不到就说明这份皮肤没被引入。 */
 [data-scope='infinite-scroll'] {
   --xh-infinite-scroll-skin: 1;
@@ -5599,44 +5603,36 @@
 }
 
 /*
- * 取下一页的按钮：与哨兵同一条通路的键盘入口，摆在列表末尾自成一行。
- * 高度只给下限，作者往里塞图标或两行文字都撑得开。
+ * 取下一页的按钮：与哨兵同一条通路的键盘入口，摆在列表末尾自成一行——铺满一行的独立动作条目，
+ * 接 Action Control 的 row 档、outline 形态（§9.2）：宽度由容器给、高度随内容、按下只换面不缩放；
+ * 盒几何、中性描边与透明底、悬停 / 按下 / 禁用面、焦点环与粗指针热区全由家族给，
+ * 白底承载 hover 100 → pressed 200。这里只把使用者槽映射到桥接槽，并把文案居中：
+ * 它是一行里唯一的东西，靠起始缘会像一条没对齐的列表项。
+ * 行高不吃家族的单行档：row 档允许换行、高度随内容，折行的文案走正文行高（§6.4）
  */
 [data-scope='infinite-scroll'][data-part='load-more-trigger'] {
-  display: inline-flex;
-  align-items: center;
+  --xh-action-gap: var(--xh-infinite-scroll-load-more-gap, var(--xh-_action-profile-gap));
+  --xh-action-visual-size: var(--xh-infinite-scroll-load-more-h, var(--xh-_action-profile-visual-size));
+  --xh-action-padding-inline: var(--xh-infinite-scroll-load-more-px, var(--xh-_action-profile-padding-inline));
+  --xh-action-radius: var(--xh-infinite-scroll-load-more-radius, var(--xh-_action-profile-radius));
+  --xh-action-border-rest: var(--xh-infinite-scroll-load-more-border, var(--xh-_action-variant-border-rest));
+  --xh-action-border-hover: var(--xh-infinite-scroll-load-more-border-hover, var(--xh-_action-variant-border-hover));
+  --xh-action-border-pressed: var(--xh-infinite-scroll-load-more-border-hover, var(--xh-_action-variant-border-pressed));
+  --xh-action-bg-rest: var(--xh-infinite-scroll-load-more-bg, var(--xh-_action-variant-bg-rest));
+  --xh-action-bg-hover: var(--xh-infinite-scroll-load-more-bg-hover, var(--xh-_action-variant-bg-hover));
+  --xh-action-bg-pressed: var(--xh-infinite-scroll-load-more-bg-active, var(--xh-_action-variant-bg-pressed));
+  --xh-action-fg-rest: var(--xh-infinite-scroll-load-more-fg, var(--xh-_action-variant-fg-rest));
+  --xh-action-fg-hover: var(--xh-infinite-scroll-load-more-fg, var(--xh-_action-variant-fg-hover));
+  --xh-action-fg-pressed: var(--xh-infinite-scroll-load-more-fg, var(--xh-_action-variant-fg-pressed));
+  --xh-action-font-size: var(--xh-infinite-scroll-load-more-font-size, var(--xh-text-body-size));
+  /* 作者塞进钮里的图标按档取字形尺寸，与文案同一把尺 */
+  --xh-icon-size: var(--xh-infinite-scroll-load-more-icon-size, var(--xh-_action-profile-glyph-size));
+
   justify-content: center;
-  gap: var(--xh-infinite-scroll-load-more-gap, var(--xh-control-gap-md));
-  min-block-size: var(--xh-infinite-scroll-load-more-h, var(--xh-control-h-md));
-  padding-block: 0;
-  padding-inline: var(--xh-infinite-scroll-load-more-px, var(--xh-control-px-md));
-  border: var(--xh-stroke-thin) solid var(--xh-infinite-scroll-load-more-border, var(--xh-border-control));
-  border-radius: var(--xh-infinite-scroll-load-more-radius, var(--xh-shape-control));
-  background: var(--xh-infinite-scroll-load-more-bg, var(--xh-bg-canvas));
-  color: var(--xh-infinite-scroll-load-more-fg, var(--xh-fg-default));
-  font-family: inherit;
-  font-size: var(--xh-infinite-scroll-load-more-font-size, var(--xh-text-body-size));
-  line-height: var(--xh-leading-none);
-  cursor: pointer;
+  text-align: center;
+  line-height: var(--xh-leading-normal);
   /* 到底了连点是常态，触屏上默认会当成双击缩放 */
-  user-select: none;
   touch-action: manipulation;
-  transition:
-    background var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
-    border-color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
-    scale var(--xh-motion-duration-release) var(--xh-motion-ease-release);
-}
-
-[data-scope='infinite-scroll'][data-part='load-more-trigger']:hover {
-  border-color: var(--xh-infinite-scroll-load-more-border-hover, var(--xh-border-control-hover));
-  background: var(--xh-infinite-scroll-load-more-bg-hover, var(--xh-bg-subtle-hover));
-}
-
-[data-scope='infinite-scroll'][data-part='load-more-trigger']:active {
-  background: var(--xh-infinite-scroll-load-more-bg-active, var(--xh-bg-subtle-active));
-  scale: var(--xh-motion-scale-press);
-  transition-duration: var(--xh-motion-duration-press);
-  transition-timing-function: var(--xh-motion-ease-press);
 }
 
 /* 声明过 display 就盖掉了 UA 的 [hidden]{display:none}，作者要藏哨兵时得自己补回来 */

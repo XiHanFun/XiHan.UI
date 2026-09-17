@@ -64,7 +64,7 @@ phase / loading / disabled 由组件交给宿主，加载提示与结束语都�
 - `distance` 是提前量：距底部该距离时触发，用户感觉不到等待。
 - `loading` 与 `disabled` 由组件交给宿主，加载提示与结束语由宿主放置。
 - 加载完成后关闭即可，不会再触发。
-- `load-more-trigger` 是同一通路的另一个入口：一个真实按钮，取数中与关闭时自动停用。
+- `load-more-trigger` 是同一通路的另一个入口：一个真实按钮，取数中与关闭时自动停用。它是铺满一行的独立动作条目：宽度由容器给、高度随内容，中性描边与透明底，按下只换面不缩放。
 
 ### 组合
 
@@ -178,6 +178,11 @@ phase / loading / disabled 由组件交给宿主，加载提示与结束语都�
 | `root` | `data-loading` | ''（条件成立时才出现） |
 | `load-more-trigger` | `data-disabled` | ''（条件成立时才出现） |
 | `load-more-trigger` | `data-loading` | ''（条件成立时才出现） |
+| `load-more-trigger` | `data-xh-action-control` | '' |
+| `load-more-trigger` | `data-xh-action-display` | 'always' |
+| `load-more-trigger` | `data-xh-action-profile` | 'row' |
+| `load-more-trigger` | `data-xh-action-size` | 'md' |
+| `load-more-trigger` | `data-xh-action-variant` | 'outline' |
 
 <!-- xh-component-tokens:start -->
 ### CSS 变量
@@ -186,25 +191,24 @@ phase / loading / disabled 由组件交给宿主，加载提示与结束语都�
 
 | 变量 | 部件 | CSS 属性 | 状态 | 默认来源 | 说明 |
 | --- | --- | --- | --- | --- | --- |
-| `--xh-infinite-scroll-load-more-bg` | `load-more-trigger` | `background` | `default` | `--xh-bg-canvas` | infinite-scroll 的 load-more-trigger 部件 background 覆盖槽。 |
-| `--xh-infinite-scroll-load-more-bg-active` | `load-more-trigger` | `background` | `active` | `--xh-bg-subtle-active` | infinite-scroll 的 load-more-trigger 部件 background 覆盖槽。 |
-| `--xh-infinite-scroll-load-more-bg-hover` | `load-more-trigger` | `background` | `hover` | `--xh-bg-subtle-hover` | infinite-scroll 的 load-more-trigger 部件 background 覆盖槽。 |
-| `--xh-infinite-scroll-load-more-border` | `load-more-trigger` | `border` | `default` | `--xh-border-control` | infinite-scroll 的 load-more-trigger 部件 border 覆盖槽。 |
-| `--xh-infinite-scroll-load-more-border-hover` | `load-more-trigger` | `border-color` | `hover` | `--xh-border-control-hover` | infinite-scroll 的 load-more-trigger 部件 border-color 覆盖槽。 |
-| `--xh-infinite-scroll-load-more-fg` | `load-more-trigger` | `color` | `default` | `--xh-fg-default` | infinite-scroll 的 load-more-trigger 部件 color 覆盖槽。 |
+| `--xh-infinite-scroll-load-more-bg` | `load-more-trigger` | `background-color` | `default` | `--xh-_action-variant-bg-rest` | infinite-scroll 的 load-more-trigger 部件 background-color 覆盖槽。 |
+| `--xh-infinite-scroll-load-more-bg-active` | `load-more-trigger` | `background-color` | `disabled`<br>`is(:active, [data-pressed])`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])`<br>`pressed` | `--xh-_action-variant-bg-pressed` | infinite-scroll 的 load-more-trigger 部件 background-color 覆盖槽。 |
+| `--xh-infinite-scroll-load-more-bg-hover` | `load-more-trigger` | `background-color` | `disabled`<br>`hover`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])` | `--xh-_action-variant-bg-hover` | infinite-scroll 的 load-more-trigger 部件 background-color 覆盖槽。 |
+| `--xh-infinite-scroll-load-more-border` | `load-more-trigger` | `border` | `default` | `--xh-_action-variant-border-rest` | infinite-scroll 的 load-more-trigger 部件 border 覆盖槽。 |
+| `--xh-infinite-scroll-load-more-border-hover` | `load-more-trigger` | `border-color` | `disabled`<br>`hover`<br>`is(:active, [data-pressed])`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])`<br>`pressed` | `--xh-_action-variant-border-hover`<br>`--xh-_action-variant-border-pressed` | infinite-scroll 的 load-more-trigger 部件 border-color 覆盖槽。 |
+| `--xh-infinite-scroll-load-more-fg` | `load-more-trigger` | `color` | `default`<br>`disabled`<br>`hover`<br>`is(:active, [data-pressed])`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])`<br>`pressed` | `--xh-_action-variant-fg-hover`<br>`--xh-_action-variant-fg-pressed`<br>`--xh-_action-variant-fg-rest` | infinite-scroll 的 load-more-trigger 部件 color 覆盖槽。 |
 | `--xh-infinite-scroll-load-more-font-size` | `load-more-trigger` | `font-size` | `default` | `--xh-text-body-size` | infinite-scroll 的 load-more-trigger 部件 font-size 覆盖槽。 |
-| `--xh-infinite-scroll-load-more-gap` | `load-more-trigger` | `gap` | `default` | `--xh-control-gap-md` | infinite-scroll 的 load-more-trigger 部件 gap 覆盖槽。 |
-| `--xh-infinite-scroll-load-more-h` | `load-more-trigger` | `min-block-size` | `default` | `--xh-control-h-md` | infinite-scroll 的 load-more-trigger 部件 min-block-size 覆盖槽。 |
-| `--xh-infinite-scroll-load-more-px` | `load-more-trigger` | `padding-inline` | `default` | `--xh-control-px-md` | infinite-scroll 的 load-more-trigger 部件 padding-inline 覆盖槽。 |
-| `--xh-infinite-scroll-load-more-radius` | `load-more-trigger` | `border-radius` | `default` | `--xh-shape-control` | infinite-scroll 的 load-more-trigger 部件 border-radius 覆盖槽。 |
+| `--xh-infinite-scroll-load-more-gap` | `load-more-trigger` | `gap` | `default` | `--xh-_action-profile-gap` | infinite-scroll 的 load-more-trigger 部件 gap 覆盖槽。 |
+| `--xh-infinite-scroll-load-more-h` | `load-more-trigger` | `block-size`<br>`min-block-size` | `default`<br>`xh-action-profile=row` | `--xh-_action-profile-visual-size` | infinite-scroll 的 load-more-trigger 部件 block-size、min-block-size 覆盖槽。 |
+| `--xh-infinite-scroll-load-more-icon-size` | `load-more-trigger` | `--xh-icon-size` | `default` | `--xh-_action-profile-glyph-size` | infinite-scroll 的 load-more-trigger 部件 --xh-icon-size 覆盖槽。 |
+| `--xh-infinite-scroll-load-more-px` | `load-more-trigger` | `padding-inline` | `default` | `--xh-_action-profile-padding-inline` | infinite-scroll 的 load-more-trigger 部件 padding-inline 覆盖槽。 |
+| `--xh-infinite-scroll-load-more-radius` | `load-more-trigger` | `border-radius` | `default` | `--xh-_action-profile-radius` | infinite-scroll 的 load-more-trigger 部件 border-radius 覆盖槽。 |
 | `--xh-infinite-scroll-sentinel-size` | `sentinel` | `block-size` | `default` | `--xh-stroke-thin` | infinite-scroll 的 sentinel 部件 block-size 覆盖槽。 |
 <!-- xh-component-tokens:end -->
 
 ### 动效
 
-`background` · `border-color` · `scale` 走 `transition` 过渡。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
-
-系统开启减弱动效时由令牌层统一收敛，皮肤不另作判断。
+本组件皮肤不含过渡与关键帧，也没有脚本驱动的动效：状态一变，外观立即到位。
 
 ### RTL
 

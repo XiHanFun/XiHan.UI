@@ -1698,6 +1698,7 @@ export type ComponentTokenName =
   | '--xh-infinite-scroll-load-more-font-size'
   | '--xh-infinite-scroll-load-more-gap'
   | '--xh-infinite-scroll-load-more-h'
+  | '--xh-infinite-scroll-load-more-icon-size'
   | '--xh-infinite-scroll-load-more-px'
   | '--xh-infinite-scroll-load-more-radius'
   | '--xh-infinite-scroll-sentinel-size'

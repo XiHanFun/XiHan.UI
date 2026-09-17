@@ -27703,6 +27703,9 @@
               "name": "--xh-infinite-scroll-load-more-h"
             },
             {
+              "name": "--xh-infinite-scroll-load-more-icon-size"
+            },
+            {
               "name": "--xh-infinite-scroll-load-more-px"
             },
             {

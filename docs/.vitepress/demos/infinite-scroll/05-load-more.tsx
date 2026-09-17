@@ -42,7 +42,7 @@ export default function Demo(): ReactNode {
         ))}
         <XhInfiniteScrollSentinel />
         {/* 文案写在按钮里：组件不代填名字，读屏念的与眼睛看的是同一句 */}
-        <div style={{ display: "flex", justifyContent: "center", padding: "8px 12px" }}>
+        <div style={{ padding: "8px 12px" }}>
           <XhInfiniteScrollLoadMoreTrigger>
             {loading ? "正在取下一页…" : "加载更多"}
           </XhInfiniteScrollLoadMoreTrigger>

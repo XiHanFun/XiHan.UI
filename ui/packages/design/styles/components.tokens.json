@@ -32476,16 +32476,16 @@
         "load-more-trigger"
       ],
       "property": [
-        "background"
+        "background-color"
       ],
       "state": [
         "default"
       ],
       "defaultToken": [
-        "--xh-bg-canvas"
+        "--xh-_action-variant-bg-rest"
       ],
       "visibility": "public",
-      "description": "infinite-scroll 的 load-more-trigger 部件 background 覆盖槽。"
+      "description": "infinite-scroll 的 load-more-trigger 部件 background-color 覆盖槽。"
     },
     {
       "name": "--xh-infinite-scroll-load-more-bg-active",
@@ -32494,16 +32494,21 @@
         "load-more-trigger"
       ],
       "property": [
-        "background"
+        "background-color"
       ],
       "state": [
-        "active"
+        "disabled",
+        "is(:active, [data-pressed])",
+        "loading",
+        "not([data-disabled])",
+        "not([data-loading])",
+        "pressed"
       ],
       "defaultToken": [
-        "--xh-bg-subtle-active"
+        "--xh-_action-variant-bg-pressed"
       ],
       "visibility": "public",
-      "description": "infinite-scroll 的 load-more-trigger 部件 background 覆盖槽。"
+      "description": "infinite-scroll 的 load-more-trigger 部件 background-color 覆盖槽。"
     },
     {
       "name": "--xh-infinite-scroll-load-more-bg-hover",
@@ -32512,16 +32517,20 @@
         "load-more-trigger"
       ],
       "property": [
-        "background"
+        "background-color"
       ],
       "state": [
-        "hover"
+        "disabled",
+        "hover",
+        "loading",
+        "not([data-disabled])",
+        "not([data-loading])"
       ],
       "defaultToken": [
-        "--xh-bg-subtle-hover"
+        "--xh-_action-variant-bg-hover"
       ],
       "visibility": "public",
-      "description": "infinite-scroll 的 load-more-trigger 部件 background 覆盖槽。"
+      "description": "infinite-scroll 的 load-more-trigger 部件 background-color 覆盖槽。"
     },
     {
       "name": "--xh-infinite-scroll-load-more-border",
@@ -32536,7 +32545,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-border-control"
+        "--xh-_action-variant-border-rest"
       ],
       "visibility": "public",
       "description": "infinite-scroll 的 load-more-trigger 部件 border 覆盖槽。"
@@ -32551,10 +32560,17 @@
         "border-color"
       ],
       "state": [
-        "hover"
+        "disabled",
+        "hover",
+        "is(:active, [data-pressed])",
+        "loading",
+        "not([data-disabled])",
+        "not([data-loading])",
+        "pressed"
       ],
       "defaultToken": [
-        "--xh-border-control-hover"
+        "--xh-_action-variant-border-hover",
+        "--xh-_action-variant-border-pressed"
       ],
       "visibility": "public",
       "description": "infinite-scroll 的 load-more-trigger 部件 border-color 覆盖槽。"
@@ -32569,10 +32585,19 @@
         "color"
       ],
       "state": [
-        "default"
+        "default",
+        "disabled",
+        "hover",
+        "is(:active, [data-pressed])",
+        "loading",
+        "not([data-disabled])",
+        "not([data-loading])",
+        "pressed"
       ],
       "defaultToken": [
-        "--xh-fg-default"
+        "--xh-_action-variant-fg-hover",
+        "--xh-_action-variant-fg-pressed",
+        "--xh-_action-variant-fg-rest"
       ],
       "visibility": "public",
       "description": "infinite-scroll 的 load-more-trigger 部件 color 覆盖槽。"
@@ -32608,7 +32633,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-control-gap-md"
+        "--xh-_action-profile-gap"
       ],
       "visibility": "public",
       "description": "infinite-scroll 的 load-more-trigger 部件 gap 覆盖槽。"
@@ -32620,16 +32645,36 @@
         "load-more-trigger"
       ],
       "property": [
+        "block-size",
         "min-block-size"
+      ],
+      "state": [
+        "default",
+        "xh-action-profile=row"
+      ],
+      "defaultToken": [
+        "--xh-_action-profile-visual-size"
+      ],
+      "visibility": "public",
+      "description": "infinite-scroll 的 load-more-trigger 部件 block-size、min-block-size 覆盖槽。"
+    },
+    {
+      "name": "--xh-infinite-scroll-load-more-icon-size",
+      "component": "infinite-scroll",
+      "part": [
+        "load-more-trigger"
+      ],
+      "property": [
+        "--xh-icon-size"
       ],
       "state": [
         "default"
       ],
       "defaultToken": [
-        "--xh-control-h-md"
+        "--xh-_action-profile-glyph-size"
       ],
       "visibility": "public",
-      "description": "infinite-scroll 的 load-more-trigger 部件 min-block-size 覆盖槽。"
+      "description": "infinite-scroll 的 load-more-trigger 部件 --xh-icon-size 覆盖槽。"
     },
     {
       "name": "--xh-infinite-scroll-load-more-px",
@@ -32644,7 +32689,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-control-px-md"
+        "--xh-_action-profile-padding-inline"
       ],
       "visibility": "public",
       "description": "infinite-scroll 的 load-more-trigger 部件 padding-inline 覆盖槽。"
@@ -32662,7 +32707,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-shape-control"
+        "--xh-_action-profile-radius"
       ],
       "visibility": "public",
       "description": "infinite-scroll 的 load-more-trigger 部件 border-radius 覆盖槽。"
