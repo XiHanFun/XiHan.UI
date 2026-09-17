@@ -451,5 +451,11 @@
     [data-scope='menubar'][data-part='separator'] {
       background: CanvasText;
     }
+
+    /* 按下：常态靠底色深一档表出，这一档里底色被统一换成 Canvas；按住那一下用系统高亮反色画回来 */
+    [data-scope='menubar'][data-part='trigger']:not([data-disabled]):is(:active, [data-pressed]) {
+      background: Highlight;
+      color: HighlightText;
+    }
   }
 }
