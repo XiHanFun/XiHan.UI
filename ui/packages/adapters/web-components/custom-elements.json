@@ -26741,6 +26741,9 @@
               "name": "--xh-image-cropper-bg"
             },
             {
+              "name": "--xh-image-cropper-crop-area-radius"
+            },
+            {
               "name": "--xh-image-cropper-crop-border"
             },
             {

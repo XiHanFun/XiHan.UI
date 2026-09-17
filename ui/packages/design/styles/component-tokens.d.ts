@@ -1663,6 +1663,7 @@ export type ComponentTokenName =
   | '--xh-icon-wrapper-size'
   | '--xh-image-bg'
   | '--xh-image-cropper-bg'
+  | '--xh-image-cropper-crop-area-radius'
   | '--xh-image-cropper-crop-border'
   | '--xh-image-cropper-grid-line'
   | '--xh-image-cropper-handle-bg'
