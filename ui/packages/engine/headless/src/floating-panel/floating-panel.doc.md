@@ -20,7 +20,9 @@
 - 三种形态：常规、收拢（只留标题栏）、铺满（占满视口），由 `windowState` 一个值表达，可受控。
 - 位置与尺寸各自成对（`position` / `defaultPosition`、`dimensions` / `defaultDimensions`），受控与非受控齐全。
 - 八个调整尺寸的把手在节点上声明各自守护的边，西边与北边的把手会同时改变位置。
-- 默认皮肤使用 M2 磨砂面：描边、顶边高光、投影与光学采样同出一份配方；高对比、减少透明、强制色与打印时原位收敛为实体面，标题栏按钮键盘聚焦时先铺实体隔离底。
+- 默认皮肤使用 M2 磨砂面：描边、顶边高光、投影与光学采样同出一份配方；高对比、减少透明、强制色与打印时原位收敛为实体面；浮层内标题 14 / 600。
+- 开合触发器走 Action Control text 档：默认 `outline` 描边、md 高度，按下缩放并换底。标题栏的形态按钮与关闭按钮走 icon 档 sm、`ghost` 面：磨砂白面上悬停 100 → 按下 200，焦点面透明吃库环；当前形态的那颗按钮是按下的开关（`aria-pressed`），取品牌淡底 `--xh-bg-brand-subtle` + `--xh-fg-on-brand-subtle`，悬停 20% → 按下 28%。Space / Enter 与触屏按住期间由连接层投影 `data-pressed`。
+- 正文是浮在页面之上的滚动面：原生细条，`overscroll-behavior: contain` 让滚到头不带走页面。
 - 键盘全程可达：拖拽把手上方向键平移、Shift 快速移动、Enter / Space 送回初始位置；调整把手上方向键推动边缘；Esc 关闭。
 - `minSize` / `maxSize` 在每一处入口都生效：拖动、键盘推动、`setDimensions` 使用同一个夹取函数。
 - 内建默认矩形在挂载时按视口夹取一次：先收尺寸再调位置，窄屏上面板与右侧的调整把手不会落在屏幕外。提供 `defaultPosition` / `defaultDimensions` 时按提供的值。

@@ -23519,6 +23519,15 @@
               "name": "--xh-floating-panel-action-bg-hover"
             },
             {
+              "name": "--xh-floating-panel-action-bg-on"
+            },
+            {
+              "name": "--xh-floating-panel-action-bg-on-active"
+            },
+            {
+              "name": "--xh-floating-panel-action-bg-on-hover"
+            },
+            {
               "name": "--xh-floating-panel-action-fg"
             },
             {
@@ -23526,6 +23535,9 @@
             },
             {
               "name": "--xh-floating-panel-action-fg-hover"
+            },
+            {
+              "name": "--xh-floating-panel-action-fg-on"
             },
             {
               "name": "--xh-floating-panel-action-radius"

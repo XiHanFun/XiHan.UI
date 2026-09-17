@@ -1,5 +1,6 @@
 import type { ConformanceSuite } from '../conformance/types'
 import { floatingPanelAnatomy, floatingPanelKeyboard } from '@xihan-ui/headless'
+import { heldPress, heldPressIgnored } from './shared/press-channel'
 
 const APG = 'https://www.w3.org/WAI/ARIA/apg/patterns/dialog-modal/'
 const APG_SPLITTER = 'https://www.w3.org/WAI/ARIA/apg/patterns/windowsplitter/#keyboardinteraction'
@@ -86,6 +87,13 @@ export const floatingPanelSuite: ConformanceSuite = {
             'aria-expanded': 'false',
             'aria-controls': '@part(content)',
             'data-state': 'closed',
+            'data-pressed': null,
+            // 页面上的独立文字按钮：接 Action Control text 档 md、缺省 outline
+            'data-xh-action-control': '',
+            'data-xh-action-profile': 'text',
+            'data-xh-action-display': 'always',
+            'data-xh-action-size': 'md',
+            'data-xh-action-variant': 'outline',
           },
           'positioner': { 'hidden': '', 'data-state': 'closed' },
           'content': {
@@ -118,9 +126,29 @@ export const floatingPanelSuite: ConformanceSuite = {
             { 'aria-orientation': 'vertical', 'aria-valuenow': '360', 'data-edge': 'se' },
           ],
           'window-state-trigger': [
-            { 'type': 'button', 'aria-pressed': 'false', 'data-target-window-state': 'minimized', 'data-state': 'off' },
+            {
+              'type': 'button',
+              'aria-pressed': 'false',
+              'data-target-window-state': 'minimized',
+              'data-state': 'off',
+              'data-pressed': null,
+              // 标题栏上的单图标钮：接 Action Control icon 档 sm、ghost 面
+              'data-xh-action-control': '',
+              'data-xh-action-profile': 'icon',
+              'data-xh-action-display': 'always',
+              'data-xh-action-size': 'sm',
+              'data-xh-action-variant': 'ghost',
+            },
             { 'aria-pressed': 'false', 'data-target-window-state': 'maximized' },
           ],
+          'close-trigger': {
+            'type': 'button',
+            'data-pressed': null,
+            'data-xh-action-control': '',
+            'data-xh-action-profile': 'icon',
+            'data-xh-action-size': 'sm',
+            'data-xh-action-variant': 'ghost',
+          },
         },
         activeElement: null,
       },
@@ -229,7 +257,17 @@ export const floatingPanelSuite: ConformanceSuite = {
             events: [],
           },
         },
+        heldPressIgnored('floating-panel', 'window-state-trigger', '禁用时形态钮不接受按压'),
+        // 开合与关闭不受禁用影响，关闭钮照常进按压面
+        heldPress('floating-panel', 'close-trigger'),
       ],
+    },
+    {
+      name: 'Space / Enter 按住与触屏按下：触发器与形态钮各自投影 data-pressed，抬起、失焦或指针取消撤下',
+      spec: { adr: 'press-channel' },
+      covers: ['floating-panel.kbd.press'],
+      props: { defaultOpen: true },
+      steps: [heldPress('floating-panel', 'trigger'), heldPress('floating-panel', 'window-state-trigger')],
     },
     {
       name: '拖拽把手：方向键平移 10px，Shift 一下走 50px',

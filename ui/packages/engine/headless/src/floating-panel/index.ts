@@ -31,6 +31,7 @@ export type {
   FloatingPanelPoint,
   FloatingPanelPosition,
   FloatingPanelPositionChangeDetails,
+  FloatingPanelPressedPart,
   FloatingPanelRefs,
   FloatingPanelResizeEdge,
   FloatingPanelResizeTriggerProps,

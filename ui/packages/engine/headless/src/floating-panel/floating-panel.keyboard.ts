@@ -53,5 +53,11 @@ export const floatingPanelKeyboard: KeyboardTable = {
       when: 'focus on resize-trigger, 未禁用、resizable 开启且是常规形态',
       does: '同上，一下推 50px',
     },
+    {
+      id: 'floating-panel.kbd.press',
+      keys: ['Enter', 'Space'],
+      when: 'held in trigger / close-trigger / window-state-trigger（形态钮须未禁用）',
+      does: '按住期间该按钮投影 data-pressed，与指针 :active 同一副按压面；抬起或失焦撤下',
+    },
   ],
 }
