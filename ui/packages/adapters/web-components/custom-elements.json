@@ -25016,6 +25016,9 @@
               "name": "--xh-heatmap-tooltip-bg"
             },
             {
+              "name": "--xh-heatmap-tooltip-border"
+            },
+            {
               "name": "--xh-heatmap-tooltip-fg"
             },
             {

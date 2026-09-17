@@ -390,14 +390,15 @@ levels 决定分几档，图例与格子共用同一条色阶
 | `--xh-heatmap-sticky-layer` | `row-label`<br>`week-day` | `z-index` | `default` | `1` | heatmap 的 row-label、week-day 部件 z-index 覆盖槽。 |
 | `--xh-heatmap-title-fg` | `month-label`<br>`root` | `color` | `variant=month` | `--xh-fg-default` | heatmap 的 month-label、root 部件 color 覆盖槽。 |
 | `--xh-heatmap-tooltip-bg` | `tooltip` | `background` | `default` | `--xh-fg-default` | heatmap 的 tooltip 部件 background 覆盖槽。 |
-| `--xh-heatmap-tooltip-fg` | `tooltip` | `color` | `default` | `--xh-bg-surface` | heatmap 的 tooltip 部件 color 覆盖槽。 |
-| `--xh-heatmap-tooltip-font-size` | `tooltip` | `font-size` | `default` | `--xh-text-caption-size` | heatmap 的 tooltip 部件 font-size 覆盖槽。 |
+| `--xh-heatmap-tooltip-border` | `tooltip` | `border` | `default` | `--xh-heatmap-tooltip-fg` | heatmap 的 tooltip 部件 border 覆盖槽。 |
+| `--xh-heatmap-tooltip-fg` | `tooltip` | `border`<br>`color` | `default` | `--xh-bg-surface` | heatmap 的 tooltip 部件 border、color 覆盖槽。 |
+| `--xh-heatmap-tooltip-font-size` | `tooltip` | `font-size` | `default` | `--xh-control-caption-md` | heatmap 的 tooltip 部件 font-size 覆盖槽。 |
 | `--xh-heatmap-tooltip-layer` | `tooltip` | `z-index` | `default` | `2` | heatmap 的 tooltip 部件 z-index 覆盖槽。 |
 | `--xh-heatmap-tooltip-max-w` | `tooltip` | `max-inline-size` | `default` | `--xh-overlay-max-w` | heatmap 的 tooltip 部件 max-inline-size 覆盖槽。 |
 | `--xh-heatmap-tooltip-px` | `tooltip` | `padding-inline` | `default` | `--xh-space-2` | heatmap 的 tooltip 部件 padding-inline 覆盖槽。 |
 | `--xh-heatmap-tooltip-py` | `tooltip` | `padding-block` | `default` | `--xh-space-1` | heatmap 的 tooltip 部件 padding-block 覆盖槽。 |
 | `--xh-heatmap-tooltip-radius` | `tooltip` | `border-radius` | `default` | `--xh-shape-control` | heatmap 的 tooltip 部件 border-radius 覆盖槽。 |
-| `--xh-heatmap-tooltip-shadow` | `tooltip` | `box-shadow` | `default` | `--xh-elevation-floating` | heatmap 的 tooltip 部件 box-shadow 覆盖槽。 |
+| `--xh-heatmap-tooltip-shadow` | `tooltip` | `box-shadow` | `default` | `--xh-material-frosted-compact-shadow` | heatmap 的 tooltip 部件 box-shadow 覆盖槽。 |
 | `--xh-heatmap-week-day-skip` | `root`<br>`week-day` | `color` | `week-day=0`<br>`week-day=2`<br>`week-day=4`<br>`week-day=6` | `transparent` | heatmap 的 root、week-day 部件 color 覆盖槽。 |
 <!-- xh-component-tokens:end -->
 

@@ -30634,12 +30634,31 @@
       "description": "heatmap 的 tooltip 部件 background 覆盖槽。"
     },
     {
+      "name": "--xh-heatmap-tooltip-border",
+      "component": "heatmap",
+      "part": [
+        "tooltip"
+      ],
+      "property": [
+        "border"
+      ],
+      "state": [
+        "default"
+      ],
+      "defaultToken": [
+        "--xh-heatmap-tooltip-fg"
+      ],
+      "visibility": "public",
+      "description": "heatmap 的 tooltip 部件 border 覆盖槽。"
+    },
+    {
       "name": "--xh-heatmap-tooltip-fg",
       "component": "heatmap",
       "part": [
         "tooltip"
       ],
       "property": [
+        "border",
         "color"
       ],
       "state": [
@@ -30649,7 +30668,7 @@
         "--xh-bg-surface"
       ],
       "visibility": "public",
-      "description": "heatmap 的 tooltip 部件 color 覆盖槽。"
+      "description": "heatmap 的 tooltip 部件 border、color 覆盖槽。"
     },
     {
       "name": "--xh-heatmap-tooltip-font-size",
@@ -30664,7 +30683,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-text-caption-size"
+        "--xh-control-caption-md"
       ],
       "visibility": "public",
       "description": "heatmap 的 tooltip 部件 font-size 覆盖槽。"
@@ -30772,7 +30791,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-elevation-floating"
+        "--xh-material-frosted-compact-shadow"
       ],
       "visibility": "public",
       "description": "heatmap 的 tooltip 部件 box-shadow 覆盖槽。"
