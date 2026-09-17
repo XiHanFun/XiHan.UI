@@ -12,7 +12,7 @@ import { connectButtonGroup } from '@xihan-ui/headless'
 import { Comment, computed, defineComponent, Fragment, h, Text } from 'vue'
 import { withXhConfig } from '../../config/config'
 import { vueNormalize } from '../../runtime/normalize-props'
-import { provideButtonGroupDisabled } from './context'
+import { provideButtonGroupContext } from './context'
 
 /** 从实际调用推导 api 形状，避免再写一遍 normalize 的类型参数。 */
 type VueButtonGroupApi = ReturnType<typeof connectButtonGroup>
@@ -61,8 +61,14 @@ export const XhButtonGroup = defineComponent({
   setup(props, { slots }) {
     const configured = withXhConfig('button-group', props) as ButtonGroupProps
     const api = computed<VueButtonGroupApi>(() => connectButtonGroup(configured, vueNormalize))
-    // 组内每一段收到的是真禁用：只打 data-* 的话按钮照样点得动
-    provideButtonGroupDisabled(computed(() => api.value.disabled))
+    // 组内每一段收到的是真禁用：只打 data-* 的话按钮照样点得动。
+    // 组的 variant / tone / size 走同一条路下发，段自己写了的优先；段因此自带形态矩阵属性
+    provideButtonGroupContext(computed(() => ({
+      disabled: api.value.disabled,
+      variant: api.value.variant,
+      tone: api.value.tone,
+      size: api.value.size,
+    })))
     // 组内每一段是作者放进插槽的按钮，直接当直接子节点摆
     return () => h(
       'div',

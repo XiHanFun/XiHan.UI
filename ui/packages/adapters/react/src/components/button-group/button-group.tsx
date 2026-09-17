@@ -9,11 +9,11 @@ import type { ActionVariant, Size, Tone } from '@xihan-ui/core'
 import type { ButtonGroupProps } from '@xihan-ui/headless'
 import type { ComponentPropsWithRef, ReactElement, ReactNode } from 'react'
 import { connectButtonGroup } from '@xihan-ui/headless'
-import { Children, Fragment, isValidElement } from 'react'
+import { Children, Fragment, isValidElement, useMemo } from 'react'
 import { withXhConfig } from '../../config/config'
 import { mergeReactProps } from '../../runtime/merge-props'
 import { reactNormalize } from '../../runtime/normalize-props'
-import { ButtonGroupDisabledProvider } from './context'
+import { ButtonGroupProvider } from './context'
 
 export interface XhButtonGroupProps extends ComponentPropsWithRef<'div'> {
   /** 排布：horizontal / vertical，决定相邻两段在哪个轴上合并边缘。 */
@@ -82,11 +82,16 @@ export function XhButtonGroup({
     separators,
   } as ButtonGroupProps)
   const api = connectButtonGroup(configured, reactNormalize)
+  // 组内每一段收到的是真禁用；组的 variant / tone / size 走同一条路下发，段自己写了的优先
+  const context = useMemo(
+    () => ({ disabled: api.disabled, variant: api.variant, tone: api.tone, size: api.size }),
+    [api.disabled, api.variant, api.tone, api.size],
+  )
   return (
-    <ButtonGroupDisabledProvider value={api.disabled}>
+    <ButtonGroupProvider value={context}>
       <div {...mergeReactProps(api.getRootProps() as Record<string, unknown>, rest as Record<string, unknown>)}>
         {renderChildren(children, api)}
       </div>
-    </ButtonGroupDisabledProvider>
+    </ButtonGroupProvider>
   )
 }

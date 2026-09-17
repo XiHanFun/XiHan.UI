@@ -58,11 +58,11 @@
   }
 
   /* Button soft 是 §5.3 登记的 raised 消费者：solid 一档静息带顶光与贴地软影，悬停抬到 raised，按下只留顶光。
-     成组时段与段共边焊成一条，悬停不抬起——投影会压到左右两段的面上，ButtonGroup 用
-     --xh-_button-group-shadow-hover 只留顶光 */
+     成组时段与段共边焊成一条，静息不落软影、悬停不抬起——投影会压到左右两段的面上，
+     ButtonGroup 用 --xh-_button-group-shadow-rest / -hover 只留顶光 */
   [data-scope='button'][data-part='root'][data-variant='solid'] {
     --xh-action-highlight-pressed: var(--xh-_highlight-tone);
-    --xh-_button-shadow-rest: var(--xh-_highlight-tone), var(--xh-material-soft-shadow);
+    --xh-_button-shadow-rest: var(--xh-_button-group-shadow-rest, var(--xh-_highlight-tone), var(--xh-material-soft-shadow));
     --xh-_button-shadow-hover: var(--xh-_button-group-shadow-hover, var(--xh-_highlight-tone), var(--xh-elevation-raised));
     --xh-_button-shadow-pressed: var(--xh-_highlight-tone);
   }

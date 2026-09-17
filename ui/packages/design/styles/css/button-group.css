@@ -31,14 +31,13 @@
        后者是使用者的入口，写死它，进了组的胶囊按钮就再也圆不起来 */
     --xh-_button-group-radius: 0;
 
-    /* 段与段共边焊成一条，悬停那一档不抬：抬起其中一段，投影会压到左右两段的面上。
-       收回常态那一档——实心组仍留着顶边那条高光，其余形态本来就是 none */
-    --xh-_button-group-shadow-hover: var(--xh-_button-group-highlight, none);
+    /* 段与段共边焊成一条，solid 段静息不落贴地软影、悬停那一档不抬：抬起其中一段，投影会压到
+       左右两段的面上。两档都只留实心面顶边那条高光；其余形态的影本来就是 none，这两支只被
+       button.css 的 solid 块消费。颜色不在这里灌：段自带 data-xh-action-variant，底 / 前景 / 描边由
+       家族形态矩阵按段自己的形态给出 */
+    --xh-_button-group-shadow-rest: var(--xh-_highlight-tone);
+    --xh-_button-group-shadow-hover: var(--xh-_highlight-tone);
     --xh-_group-separator-size: calc(var(--xh-_button-group-h, var(--xh-control-h-md)) / 2);
-    --xh-button-bg: var(--xh-bg-subtle);
-    --xh-button-bg-hover: var(--xh-bg-subtle-hover);
-    --xh-button-bg-active: var(--xh-bg-subtle-active);
-    --xh-button-fg: var(--xh-fg-default);
 
     display: inline-flex;
     align-items: stretch;
@@ -154,34 +153,16 @@
   }
 
   /* —— 形态 —— */
-  /* 只写按钮暴露出来的颜色槽位：段自己写了形态时走的是它自己那条规则，这里的槽位不参与。
-     用哪族颜色由根上的 data-tone 决定，语气槽沿继承流下来，没写语气就沿用品牌/中性配色 */
+  /* 组的形态由适配器下发到每一段（段自己写了的优先），段的颜色由家族形态矩阵给出；
+     这里只定段间那条线在各档面上的颜色与浓淡，用哪族颜色由根上的 data-tone 决定 */
   [data-scope='button-group'][data-part='root'][data-variant='solid'] {
-    --xh-button-bg: var(--xh-_tone, var(--xh-bg-brand));
-    --xh-button-bg-hover: var(--xh-_tone-hover, var(--xh-bg-brand-hover));
-    --xh-button-bg-active: var(--xh-_tone-active, var(--xh-bg-brand-active));
-    --xh-button-fg: var(--xh-_tone-on, var(--xh-fg-on-brand));
     --xh-button-group-separator-color: var(--xh-_tone-on, var(--xh-fg-on-brand));
     --xh-button-group-separator-opacity: 0.24;
-    /* 实心面顶边的内高光，沿继承流给组里每一段；段自己写了形态时按钮那边会覆盖掉它 */
-    --xh-_button-group-highlight: var(--xh-_highlight-tone);
   }
 
   [data-scope='button-group'][data-part='root'][data-variant='subtle'] {
-    --xh-button-bg: var(--xh-_tone-subtle, var(--xh-bg-subtle));
-    --xh-button-bg-hover: var(--xh-_tone-subtle-hover, var(--xh-bg-subtle-hover));
-    --xh-button-bg-active: var(--xh-_tone-subtle-active, var(--xh-bg-subtle-active));
-    --xh-button-fg: var(--xh-_tone-fg, var(--xh-fg-default));
     --xh-button-group-separator-color: var(--xh-_tone-fg, var(--xh-fg-default));
     --xh-button-group-separator-opacity: 0.16;
-  }
-
-  [data-scope='button-group'][data-part='root'][data-variant='outline'],
-  [data-scope='button-group'][data-part='root'][data-variant='ghost'] {
-    --xh-button-bg: transparent;
-    --xh-button-bg-hover: var(--xh-_tone-subtle, var(--xh-bg-subtle));
-    --xh-button-bg-active: var(--xh-_tone-subtle-hover, var(--xh-bg-subtle-active));
-    --xh-button-fg: var(--xh-_tone-fg, var(--xh-fg-default));
   }
 
   [data-scope='button-group'][data-part='root'][data-variant='outline'] {
@@ -208,11 +189,11 @@
     --xh-button-group-separator-opacity: 0.16;
   }
 
-  /* outline 的外框由组根统一绘制，未声明形态的段不再各画一圈边框。 */
+  /* outline 的外框由组根统一绘制，组内每一段都不再各画一圈边框（段的形态矩阵描边被这一条压平）。 */
   [data-scope='button-group'][data-part='root'][data-variant='outline']
-    > [data-scope='button'][data-part='root']:not([data-variant]),
+    > [data-scope='button'][data-part='root'],
   [data-scope='button-group'][data-part='root'][data-variant='outline']
-    > * > [data-scope='button'][data-part='root']:not([data-variant]) {
+    > * > [data-scope='button'][data-part='root'] {
     border-color: transparent;
   }
 
@@ -244,11 +225,12 @@
   }
 
   /* 独立 Button 按下时缩一档；组内段却靠共边重叠一像素，单段缩放会同时撕开两侧接缝。
-     组内仍保留 active 换底与撤高光，只把会改变外轮廓几何的 scale 收掉。 */
+     组内仍保留 active 换底与撤高光，只把会改变外轮廓几何的 scale 收掉（§9.2 允许的只换面）；
+     键盘与触屏的按压由 Headless 投影 data-pressed，与指针 :active 同一档。 */
   [data-scope='button-group'][data-part='root']
-    > [data-scope='button'][data-part='root']:not([data-disabled]):not([data-loading]):active,
+    > [data-scope='button'][data-part='root']:not([data-disabled]):not([data-loading]):is(:active, [data-pressed]),
   [data-scope='button-group'][data-part='root']
-    > * > [data-scope='button'][data-part='root']:not([data-disabled]):not([data-loading]):active {
+    > * > [data-scope='button'][data-part='root']:not([data-disabled]):not([data-loading]):is(:active, [data-pressed]) {
     scale: none;
   }
 

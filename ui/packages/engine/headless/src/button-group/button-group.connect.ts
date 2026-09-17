@@ -13,7 +13,8 @@ import { buttonGroupAnatomy } from './button-group.anatomy'
 const parts = buttonGroupAnatomy.build()
 
 // ButtonGroup 无状态机：一层容器，排布与三个视觉轴全部由 props 算出。
-// 三轴只落在根上，组内每一段从根继承下来的自定义属性里取值，段自己不重复标注。
+// 三轴落在根上；组的 variant / tone / size 同时经 api 暴露，适配器按整组禁用同一条下发路径
+// 把它们落到每一段（段自己写了的优先），段因此自带 data-xh-action-variant，颜色由家族形态矩阵给出。
 export function connectButtonGroup<T extends PropTypes>(
   props: ButtonGroupProps,
   normalize: NormalizeProps<T>,
@@ -21,20 +22,27 @@ export function connectButtonGroup<T extends PropTypes>(
   const orientation = props.orientation ?? 'horizontal'
   const disabled = !!props.disabled
   const separators = props.separators ?? true
+  // 组缺省中性淡底（真源 §7.2 第 2 条：只有 Button 单独一枚缺省品牌实心），显式落 subtle
+  const variant = props.variant ?? 'subtle'
+  const tone = props.tone
+  const size = props.size
 
   return {
     orientation,
     disabled,
     separators,
+    variant,
+    tone,
+    size,
 
     getRootProps: () => normalize.element({
       ...parts.root.attrs,
       // 一组相关按钮对读屏是一个整体；role=group 不收 aria-orientation，排布只走 data-orientation
       'role': 'group',
       'data-orientation': orientation,
-      'data-variant': props.variant,
-      'data-tone': props.tone,
-      'data-size': props.size,
+      'data-variant': variant,
+      'data-tone': tone,
+      'data-size': size,
       'data-disabled': dataAttr(disabled),
       'data-full-width': dataAttr(!!props.fullWidth),
     }),

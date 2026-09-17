@@ -13,17 +13,22 @@ import { XhElement } from '../element-base'
 
 const BOOLEAN_CONVERTER = { fromAttribute: (value: string | null) => (value === null ? undefined : value !== 'false') }
 
+/** 组下发给段的三个视觉轴，与 disabled 走同一条路。 */
+type GroupAxis = 'variant' | 'tone' | 'size'
+const GROUP_AXES: readonly GroupAxis[] = ['variant', 'tone', 'size']
+
 /**
  * `<xh-button-group>`：Light-DOM 行为宿主，无状态机，把 connectButtonGroup 产出接到 root 角色节点。
  *
  * 组内每一段是作者自己的按钮，不是本组件的角色节点：三个视觉轴写在根上，
- * 皮肤把它们转换为 `--xh-button-*` 槽位，沿继承流下发给每一段。
+ * 并按整组禁用同一条路写到每个未自写该属性的 `<xh-button>` 子节点上（段自己写了的优先），
+ * 段因此自带形态矩阵属性，颜色由家族配方给出。
  *
  * @customElement xh-button-group
  * @attr {'horizontal'|'vertical'} orientation - 排布，决定相邻两段在哪个轴上合并边缘，默认 horizontal
- * @attr {'solid'|'subtle'|'outline'|'ghost'} variant - 变体，决定底色、描边与前景的使用方式
- * @attr {'brand'|'neutral'|'success'|'warning'|'danger'|'info'} tone - 颜色
- * @attr {'sm'|'md'|'lg'} size - 尺寸，决定各段的高度、内边距与字号
+ * @attr {'solid'|'subtle'|'outline'|'ghost'} variant - 变体，默认 subtle；下发给未自写 variant 的每一段
+ * @attr {'brand'|'neutral'|'success'|'warning'|'danger'|'info'} tone - 颜色；下发给未自写 tone 的每一段
+ * @attr {'sm'|'md'|'lg'} size - 尺寸，决定各段的高度、内边距与字号；下发给未自写 size 的每一段
  * @attr {boolean} disabled - 整组禁用：组内每一段都写上原生 disabled；段自身声明禁用的仍然禁用
  * @attr {boolean} full-width - 撑满行宽，每段等分剩余空间
  * @attr {boolean} separators - 是否自动在相邻按钮之间生成分隔线，默认 true
@@ -57,6 +62,11 @@ export class XhButtonGroupElement extends XhElement {
    * 解禁时就再也解不开。
    */
   private readonly declaredDisabled = new WeakMap<Element, boolean>()
+  /**
+   * 作者在段上自写的 variant / tone / size，同样按元素记住头一回见到的那一份：
+   * 组值写上去之后现读分不清是作者写的还是自己写的，组换值时就盖不回去。
+   */
+  private readonly declaredAxes = new WeakMap<Element, Partial<Record<GroupAxis, string | null>>>()
   private observedRoot: HTMLElement | null = null
   private readonly segmentObserver = new MutationObserver((records) => {
     const authoredChange = records.some(record => [...record.addedNodes, ...record.removedNodes]
@@ -95,8 +105,10 @@ export class XhButtonGroupElement extends XhElement {
       separator.toggleAttribute('data-disabled', api.disabled)
     }
 
-    if (root)
+    if (root) {
       this.applyGroupDisabled(root, api.disabled, separators)
+      this.applyGroupAxes(root, { variant: api.variant, tone: api.tone, size: api.size }, separators)
+    }
   }
 
   /** ButtonGroup 的按钮不是本组件 part，单独观察 root 的直接子节点。 */
@@ -148,6 +160,32 @@ export class XhButtonGroupElement extends XhElement {
       if (!this.declaredDisabled.has(child))
         this.declaredDisabled.set(child, child.hasAttribute('disabled'))
       child.toggleAttribute('disabled', groupDisabled || this.declaredDisabled.get(child)!)
+    }
+  }
+
+  /**
+   * 把组的 variant / tone / size 写到每个未自写该属性的 `<xh-button>` 段上。
+   * 段是 `<xh-button>` 宿主，属性即它的 props，写上去就经它自己的连接层投影成 data-xh-action-variant
+   * 一类稳定属性；作者自写的那一档保留。只认 xh-button：作者放进组里的裸 <button> 不是本库的段。
+   */
+  private applyGroupAxes(root: HTMLElement, axes: Record<GroupAxis, string | undefined>, separators: readonly HTMLElement[]): void {
+    for (const child of root.children) {
+      if (separators.includes(child as HTMLElement) || child.localName !== 'xh-button')
+        continue
+      let declared = this.declaredAxes.get(child)
+      if (!declared) {
+        declared = {}
+        this.declaredAxes.set(child, declared)
+      }
+      for (const axis of GROUP_AXES) {
+        if (!(axis in declared))
+          declared[axis] = child.getAttribute(axis)
+        const value = declared[axis] ?? axes[axis]
+        if (value == null)
+          child.removeAttribute(axis)
+        else
+          child.setAttribute(axis, value)
+      }
     }
   }
 }
