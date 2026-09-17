@@ -19,6 +19,8 @@
     --xh-_list-item-gap: var(--xh-space-3);
     --xh-_list-title-size: var(--xh-control-font-md);
     --xh-_list-description-size: var(--xh-control-caption-md);
+    /* 条目悬停换到的面：坐在白底上是 100，淡底档的根把它抬到 200（§7.2 按承载面的阶梯） */
+    --xh-_list-item-bg-hover: var(--xh-bg-subtle);
 
     display: flex;
     flex-direction: column;
@@ -60,8 +62,12 @@
     overflow: hidden;
   }
 
-  /* 淡底档：不画描边，底换成 subtle */
+  /* 淡底档：底换成 subtle，描边留一圈透明边位，与 outline 同一几何；
+     条目坐在淡底上，悬停面抬一档 */
   [data-scope='list'][data-part='root'][data-variant='subtle'] {
+    --xh-_list-item-bg-hover: var(--xh-bg-subtle-hover);
+
+    border: var(--xh-stroke-thin) solid transparent;
     border-radius: var(--xh-list-radius, var(--xh-shape-surface));
     background: var(--xh-list-bg, var(--xh-bg-subtle));
     overflow: hidden;
@@ -91,7 +97,7 @@
   /* 悬停换底色：只在能用指针的设备上生效，触摸端不留一个按不掉的悬停态 */
   @media (hover: hover) {
     [data-scope='list'][data-part='root'][data-hoverable] > [data-scope='list'][data-part='item']:hover {
-      background: var(--xh-list-item-bg-hover, var(--xh-bg-subtle));
+      background: var(--xh-list-item-bg-hover, var(--xh-_list-item-bg-hover));
     }
   }
 
