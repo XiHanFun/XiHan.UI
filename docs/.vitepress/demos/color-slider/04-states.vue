@@ -1,4 +1,4 @@
-<!-- 竖直与状态 | orientation 竖排时渐变自下而上；禁用整体压暗，只读保留 Tab 位但不可调节 -->
+<!-- 竖直与状态 | orientation 竖排时渐变自下而上；禁用时标签换禁用前景、颜色带压暗，只读保留 Tab 位但不可调节 -->
 <script setup lang="ts">
 import {
   XhColorSliderControl,

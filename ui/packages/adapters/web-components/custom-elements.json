@@ -11054,6 +11054,9 @@
               "name": "--xh-color-slider-label-fg"
             },
             {
+              "name": "--xh-color-slider-label-fg-disabled"
+            },
+            {
               "name": "--xh-color-slider-label-font-size"
             },
             {
@@ -11076,6 +11079,9 @@
             },
             {
               "name": "--xh-color-slider-thumb-shadow"
+            },
+            {
+              "name": "--xh-color-slider-thumb-shadow-disabled"
             },
             {
               "name": "--xh-color-slider-thumb-shadow-dragging"

@@ -23,7 +23,8 @@
 
     display: flex;
     flex-direction: column;
-    gap: var(--xh-color-slider-gap, var(--xh-stack-gap-md));
+    /* 字段标签贴控件（§6.4 复合单字段） */
+    gap: var(--xh-color-slider-gap, var(--xh-space-1));
   }
 
   /* 竖排时整条控件收成一块，不再撑满一行：宽度由拇指直径决定 */
@@ -32,15 +33,18 @@
     align-items: center;
   }
 
-  /* 禁用的整体压暗只做一次，落在最外层：track / thumb 各自再叠一层 opacity 会越叠越黑 */
-  [data-scope='color-slider'][data-part='root'][data-disabled] {
-    opacity: var(--xh-state-disabled-opacity);
-  }
+  /* 禁用不整体压暗（§7.2 第 9 条）：标签是文字，换到禁用前景；颜色带与拇指画的是颜色本身，换不得色，
+     压暗只做一次、落在 control 上（track / thumb 各自再叠一层 opacity 会越叠越黑），拇指另收掉抬升 */
 
+  /* 字段标签：14 / 500 / fg-default（§6.4），禁用换到 --xh-fg-subtle */
   [data-scope='color-slider'][data-part='label'] {
-    color: var(--xh-color-slider-label-fg, var(--xh-fg-muted));
+    color: var(--xh-color-slider-label-fg, var(--xh-fg-default));
     font-size: var(--xh-color-slider-label-font-size, var(--xh-text-label-size));
     font-weight: var(--xh-color-slider-label-font-weight, var(--xh-text-label-weight));
+  }
+
+  [data-scope='color-slider'][data-part='label'][data-disabled] {
+    color: var(--xh-color-slider-label-fg-disabled, var(--xh-fg-subtle));
   }
 
   /* 拇指以它为定位上下文（拇指常常浮出轨道，挂在 track 上会被轨道的盒子束住）。
@@ -67,6 +71,11 @@
 
   [data-scope='color-slider'][data-part='control'][data-readonly]:not([data-disabled]) {
     cursor: default;
+  }
+
+  [data-scope='color-slider'][data-part='control'][data-disabled] {
+    opacity: var(--xh-state-disabled-opacity);
+    cursor: not-allowed;
   }
 
   /* 轨道画的是颜色本身：渐变由连接层内联给，这里只给形状与一圈细边把浅色端从底色里框出来。
@@ -113,7 +122,8 @@
   }
 
   /* 圆点浮在轨道之上：轨道是流内的，拇指是绝对定位的，天然后来居上。
-     拇指填的是当前那一档的颜色（连接层写进私有槽），一圈实体面描边把它从任何底色里框出来。
+     拇指填的是当前那一档的颜色（连接层写进私有槽），拇指是可拖起的 raised 面（§8）：
+     --xh-border-default 描边把它从任何底色里框出来，raised 影只是加成、不作边界。
      box-sizing 必须显式写：描边要吃进直径里，否则下面按半个直径回拉的负外边距就对不上圆心。 */
   [data-scope='color-slider'][data-part='thumb'] {
     --xh-_color-slider-thumb-color: transparent;
@@ -122,7 +132,7 @@
     box-sizing: border-box;
     inline-size: var(--xh-_thumb-size);
     block-size: var(--xh-_thumb-size);
-    border: var(--xh-stroke-thick) solid var(--xh-color-slider-thumb-border, var(--xh-bg-surface));
+    border: var(--xh-stroke-thick) solid var(--xh-color-slider-thumb-border, var(--xh-border-default));
     border-radius: var(--xh-color-slider-thumb-radius, var(--xh-shape-circle));
     background: var(--xh-color-slider-thumb-bg, var(--xh-_color-slider-thumb-color));
     box-shadow: var(--xh-color-slider-thumb-shadow, var(--xh-elevation-raised));
@@ -161,6 +171,12 @@
 
   [data-scope='color-slider'][data-part='thumb'][data-readonly]:not([data-disabled]) {
     cursor: default;
+  }
+
+  /* 禁用：拖不起来的东西不该看着像浮在轨道上，影收掉；面仍是当前颜色，压暗由 control 那一层给 */
+  [data-scope='color-slider'][data-part='thumb'][data-disabled] {
+    box-shadow: var(--xh-color-slider-thumb-shadow-disabled, none);
+    cursor: not-allowed;
   }
 
   /* 值气泡：挂在拇指里，跟着拇指一起走位。默认只在推动那一刻露面 */

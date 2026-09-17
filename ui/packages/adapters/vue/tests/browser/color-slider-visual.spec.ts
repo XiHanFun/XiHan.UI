@@ -24,6 +24,15 @@ function part(name: string): HTMLElement {
   return element
 }
 
+function resolvedToken(name: string): string {
+  const probe = document.createElement('span')
+  probe.style.cssText = `color: var(${name})`
+  document.body.append(probe)
+  const value = getComputedStyle(probe).color
+  probe.remove()
+  return value
+}
+
 async function mountSlider(props: Record<string, unknown> = {}): Promise<void> {
   host = document.createElement('div')
   host.style.cssText = 'inline-size: 300px; padding: 24px'
@@ -103,6 +112,31 @@ describe('颜色滑块的轨道与拇指', () => {
     expect(Number(part('thumb').getAttribute('aria-valuenow'))).toBeGreaterThan(150)
     expect(Number(part('thumb').getAttribute('aria-valuenow'))).toBeLessThan(210)
     expect(getComputedStyle(part('thumb')).boxShadow).toBe(before)
+  })
+
+  it('字段标签 14 / 500 / fg-default 贴控件 space-1；拇指是 raised 面，描边 border-default', async () => {
+    await mountSlider()
+    const label = getComputedStyle(part('label'))
+    expect(label.fontSize).toBe('14px')
+    expect(label.fontWeight).toBe('500')
+    expect(label.color).toBe(resolvedToken('--xh-fg-default'))
+    expect(getComputedStyle(part('root')).rowGap).toBe('4px')
+    const thumb = getComputedStyle(part('thumb'))
+    expect(thumb.borderTopColor).toBe(resolvedToken('--xh-border-default'))
+    expect(thumb.borderTopWidth).toBe('2px')
+    expect(thumb.boxShadow).not.toBe('none')
+  })
+
+  it('禁用：不整体压暗，标签换 fg-subtle，颜色带与拇指压暗一次、拇指不再抬起且面仍是当前色', async () => {
+    await mountSlider({ disabled: true })
+    expect(getComputedStyle(part('root')).opacity).toBe('1')
+    expect(getComputedStyle(part('label')).color).toBe(resolvedToken('--xh-fg-subtle'))
+    expect(getComputedStyle(part('control')).opacity).toBe('0.5')
+    expect(getComputedStyle(part('control')).cursor).toBe('not-allowed')
+    const thumb = getComputedStyle(part('thumb'))
+    expect(thumb.boxShadow).toBe('none')
+    expect(thumb.backgroundColor).toBe('rgb(59, 130, 246)')
+    expect(thumb.borderTopColor).toBe(resolvedToken('--xh-border-default'))
   })
 
   it('高对比档：轨道与拇指退出强制着色保住原色，描边换成系统色', async () => {
