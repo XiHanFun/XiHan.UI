@@ -21,6 +21,7 @@ import { connectTransfer, resolveFormControlState, transferAnatomy, transferFocu
 import { wcNormalize } from '../dom/normalize'
 import { XhElement } from '../element-base'
 import { MachineController } from '../runtime/machine-controller'
+import { ScrollbarsController } from '../runtime/scrollbars-controller'
 
 // 属性缺席翻成 undefined，缺省值由机器与 connect 决定。
 const STRING_CONVERTER = { fromAttribute: (v: string | null) => v ?? undefined }
@@ -166,6 +167,20 @@ export class XhTransferElement extends XhElement {
   // transfer 机器无副作用、无 refs（两侧集合全部从 collection + value + 搜索串推导），
   // 不需要 config / 定位引擎，故 controller 只带 props。
   private readonly ctrl = new MachineController<TransferSchema>(this, transferMachine, () => this.machineProps())
+
+  /**
+   * 两侧定高小列表各走一路自绘条（§6.6）：多路形态按此刻在场的每个 list 各建一套条子，紧跟在那一层后面、
+   * 贴在列表自己的盒子上，挂在 root 这个定位盒上（面板不定位，root 才是列表的定位祖先）；
+   * 两条轴都摆——皮肤给的是两轴 overflow: auto。页内宿主走 6px 缺省档，横条的正负按排版方向算
+   */
+  private readonly bars = new ScrollbarsController(this, {
+    shell: () => this.getPart('root'),
+    scrollables: () => this.getParts('list'),
+    anchor: 'layer',
+    axes: ['vertical', 'horizontal'],
+    props: () => ({ dir: this.direction }),
+  })
+
   private inheritedControl: FormControlState | undefined
 
   /** 最近的 Field 或 Form 只交状态；Transfer 仅消费公开的禁用、只读、无效三轴。 */
@@ -331,5 +346,7 @@ export class XhTransferElement extends XhElement {
         }
       }
     }
+
+    this.bars.wire()
   }
 }

@@ -235,6 +235,10 @@ export const transferSuite: ConformanceSuite = {
           'panel-count[1]': { 'data-count': '1', 'data-checked-count': '0' },
           'item': itemsOn(['durian'], []),
           'item[0]': {
+            // 条目走 Collection Item 的 page 语境
+            'data-xh-collection-item': '',
+            'data-xh-collection-size': 'md',
+            'data-xh-collection-context': 'page',
             'role': 'option',
             'aria-disabled': 'false',
             'tabindex': '-1',
@@ -242,6 +246,9 @@ export const transferSuite: ConformanceSuite = {
             'disabled': null,
           },
           'item[1]': { 'aria-disabled': 'true', 'data-disabled': '', 'disabled': null },
+          // 勾选方框是前导标记部件，不占家族的 indicator 槽
+          'item-checkbox[0]': { 'data-xh-collection-slot': 'prefix' },
+          'item-text[0]': { 'data-xh-collection-slot': 'text' },
           // 左侧的 durian 那一份隐去了，它绝不能认领 Tab 位
           'item[3]': { hidden: '', tabindex: '-1' },
           'item[7]': { hidden: null },
@@ -255,13 +262,19 @@ export const transferSuite: ConformanceSuite = {
             'disabled': null,
           },
           'to-target-trigger': {
+            // 只有字形的离散动作钮：Action Control icon 档 outline 形态、正方盒固定 sm 档
+            'data-xh-action-control': '',
+            'data-xh-action-profile': 'icon',
+            'data-xh-action-variant': 'outline',
+            'data-xh-action-display': 'always',
+            'data-xh-action-size': 'sm',
             'type': 'button',
             'aria-controls': '@part(list[1])',
             // 一个都没勾：没什么可搬，按钮退出 Tab 序列
             'disabled': '',
             'data-disabled': '',
           },
-          'to-source-trigger': { 'type': 'button', 'aria-controls': '@part(list[0])', 'disabled': '' },
+          'to-source-trigger': { 'type': 'button', 'aria-controls': '@part(list[0])', 'disabled': '', 'data-xh-action-control': '', 'data-xh-action-profile': 'icon' },
           // searchable 没开：搜索框常挂但隐去
           'search[0]': {
             'type': 'text',

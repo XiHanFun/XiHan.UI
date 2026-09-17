@@ -2,14 +2,14 @@
 
 exports[`family-backlog 条目数 > 七段各一数，与快照一致 1`] = `
 {
-  "edge": 20,
-  "ladder": 56,
+  "edge": 19,
+  "ladder": 54,
   "motion": 1,
-  "press": 39,
-  "scroll": 25,
-  "selection": 14,
-  "shape": 17,
-  "text": 65,
+  "press": 37,
+  "scroll": 24,
+  "selection": 13,
+  "shape": 16,
+  "text": 64,
 }
 `;
 
@@ -34,7 +34,6 @@ exports[`family-backlog 键集合 > edge 1`] = `
   "switch:thumb:raised",
   "tabs:root:raised",
   "tooltip:content",
-  "transfer:to-source-trigger:raised",
 ]
 `;
 
@@ -94,8 +93,6 @@ exports[`family-backlog 键集合 > ladder 1`] = `
   "tabs:trigger:hover",
   "tour:close-trigger:hover",
   "tour:close-trigger:pressed",
-  "transfer:to-target-trigger:hover",
-  "transfer:to-target-trigger:pressed",
 ]
 `;
 
@@ -144,8 +141,6 @@ exports[`family-backlog 键集合 > press 1`] = `
   "tour:next-trigger",
   "tour:prev-trigger",
   "tour:skip-trigger",
-  "transfer:item",
-  "transfer:select-all-trigger",
 ]
 `;
 
@@ -175,7 +170,6 @@ exports[`family-backlog 键集合 > scroll 1`] = `
   "popconfirm:content:unwired",
   "popover:content:overscroll",
   "popover:content:size",
-  "transfer:list:unwired",
 ]
 `;
 
@@ -194,7 +188,6 @@ exports[`family-backlog 键集合 > selection 1`] = `
   "tag-group:tag/root",
   "toggle-group:item",
   "toggle:root",
-  "transfer:item",
 ]
 `;
 
@@ -216,7 +209,6 @@ exports[`family-backlog 键集合 > shape 1`] = `
   "slider:tick",
   "switch:thumb::after",
   "tour:progress-dot",
-  "transfer:select-all-trigger",
 ]
 `;
 
@@ -286,6 +278,5 @@ exports[`family-backlog 键集合 > text 1`] = `
   "tour:description:font-size",
   "tour:description:line-height",
   "tour:root:icon-size",
-  "transfer:root:icon-size",
 ]
 `;

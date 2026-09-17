@@ -70601,6 +70601,7 @@
         "select-all-trigger"
       ],
       "property": [
+        "--xh-icon-size",
         "block-size",
         "inline-size",
         "margin-inline-start"
@@ -70614,7 +70615,7 @@
         "--xh-_transfer-box"
       ],
       "visibility": "public",
-      "description": "transfer 的 item-checkbox、select-all-trigger 部件 block-size、inline-size、margin-inline-start 覆盖槽。"
+      "description": "transfer 的 item-checkbox、select-all-trigger 部件 --xh-icon-size、block-size、inline-size、margin-inline-start 覆盖槽。"
     },
     {
       "name": "--xh-transfer-empty-fg",
@@ -70854,19 +70855,28 @@
       "name": "--xh-transfer-icon-size",
       "component": "transfer",
       "part": [
-        "root"
+        "item",
+        "root",
+        "to-source-trigger",
+        "to-target-trigger"
       ],
       "property": [
         "--xh-icon-size"
       ],
       "state": [
-        "default"
+        "default",
+        "size=lg",
+        "size=sm"
       ],
       "defaultToken": [
-        "--xh-glyph-size-text"
+        "--xh-_action-profile-glyph-size",
+        "--xh-_collection-glyph-size",
+        "--xh-glyph-size-lg",
+        "--xh-glyph-size-md",
+        "--xh-glyph-size-sm"
       ],
       "visibility": "public",
-      "description": "transfer 的 root 部件 --xh-icon-size 覆盖槽。"
+      "description": "transfer 的 item、root、to-source-trigger、to-target-trigger 部件 --xh-icon-size 覆盖槽。"
     },
     {
       "name": "--xh-transfer-item-bg-hover",
@@ -70875,19 +70885,66 @@
         "item"
       ],
       "property": [
-        "background"
+        "background-color"
       ],
       "state": [
         "disabled",
+        "error",
         "highlighted",
-        "is(:hover, [data-highlighted])",
-        "not([data-disabled])"
+        "hover",
+        "is(:focus-visible, [data-highlighted])",
+        "not([aria-disabled='true'], [data-disabled], [aria-busy='true'], [data-error])"
       ],
       "defaultToken": [
         "--xh-bg-subtle"
       ],
       "visibility": "public",
-      "description": "transfer 的 item 部件 background 覆盖槽。"
+      "description": "transfer 的 item 部件 background-color 覆盖槽。"
+    },
+    {
+      "name": "--xh-transfer-item-bg-pressed",
+      "component": "transfer",
+      "part": [
+        "item"
+      ],
+      "property": [
+        "background-color"
+      ],
+      "state": [
+        "disabled",
+        "error",
+        "is(:active, [data-pressed])",
+        "not([aria-disabled='true'], [data-disabled], [aria-busy='true'], [data-error])",
+        "pressed"
+      ],
+      "defaultToken": [
+        "--xh-bg-subtle-hover"
+      ],
+      "visibility": "public",
+      "description": "transfer 的 item 部件 background-color 覆盖槽。"
+    },
+    {
+      "name": "--xh-transfer-item-bg-selected",
+      "component": "transfer",
+      "part": [
+        "item"
+      ],
+      "property": [
+        "background-color"
+      ],
+      "state": [
+        "disabled",
+        "error",
+        "is([aria-selected='true'], [data-selected])",
+        "not([aria-disabled='true'], [data-disabled], [aria-busy='true'], [data-error])",
+        "selected",
+        "xh-collection-context=page"
+      ],
+      "defaultToken": [
+        "--xh-bg-brand-subtle"
+      ],
+      "visibility": "public",
+      "description": "transfer 的 item 部件 background-color 覆盖槽。"
     },
     {
       "name": "--xh-transfer-item-fg",
@@ -70899,10 +70956,46 @@
         "color"
       ],
       "state": [
-        "default"
+        "default",
+        "disabled",
+        "error",
+        "highlighted",
+        "hover",
+        "is(:active, [data-pressed])",
+        "is(:focus-visible, [data-highlighted])",
+        "not([aria-disabled='true'], [data-disabled], [aria-busy='true'], [data-error])",
+        "pressed"
       ],
       "defaultToken": [
         "--xh-fg-default"
+      ],
+      "visibility": "public",
+      "description": "transfer 的 item 部件 color 覆盖槽。"
+    },
+    {
+      "name": "--xh-transfer-item-fg-selected",
+      "component": "transfer",
+      "part": [
+        "item"
+      ],
+      "property": [
+        "color"
+      ],
+      "state": [
+        "disabled",
+        "error",
+        "highlighted",
+        "hover",
+        "is(:active, [data-pressed])",
+        "is(:focus-visible, [data-highlighted])",
+        "is([aria-selected='true'], [data-selected])",
+        "not([aria-disabled='true'], [data-disabled], [aria-busy='true'], [data-error])",
+        "pressed",
+        "selected",
+        "xh-collection-context=page"
+      ],
+      "defaultToken": [
+        "--xh-fg-on-brand-subtle"
       ],
       "visibility": "public",
       "description": "transfer 的 item 部件 color 覆盖槽。"
@@ -71397,7 +71490,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-text-label-weight"
+        "--xh-font-weight-semibold"
       ],
       "visibility": "public",
       "description": "transfer 的 panel-title 部件 font-weight 覆盖槽。"
@@ -71511,6 +71604,44 @@
       "description": "transfer 的 search 部件 padding-inline 覆盖槽。"
     },
     {
+      "name": "--xh-transfer-select-all-bg-hover",
+      "component": "transfer",
+      "part": [
+        "select-all-trigger"
+      ],
+      "property": [
+        "background"
+      ],
+      "state": [
+        "hover",
+        "not(:disabled)"
+      ],
+      "defaultToken": [
+        "--xh-bg-subtle"
+      ],
+      "visibility": "public",
+      "description": "transfer 的 select-all-trigger 部件 background 覆盖槽。"
+    },
+    {
+      "name": "--xh-transfer-select-all-bg-pressed",
+      "component": "transfer",
+      "part": [
+        "select-all-trigger"
+      ],
+      "property": [
+        "background"
+      ],
+      "state": [
+        "active",
+        "not(:disabled)"
+      ],
+      "defaultToken": [
+        "--xh-bg-subtle-hover"
+      ],
+      "visibility": "public",
+      "description": "transfer 的 select-all-trigger 部件 background 覆盖槽。"
+    },
+    {
       "name": "--xh-transfer-select-all-fg",
       "component": "transfer",
       "part": [
@@ -71577,7 +71708,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-shape-control"
+        "--xh-shape-inset"
       ],
       "visibility": "public",
       "description": "transfer 的 select-all-trigger 部件 border-radius 覆盖槽。"
@@ -71590,16 +71721,16 @@
         "to-target-trigger"
       ],
       "property": [
-        "background"
+        "background-color"
       ],
       "state": [
         "default"
       ],
       "defaultToken": [
-        "--xh-bg-subtle"
+        "--xh-_action-variant-bg-rest"
       ],
       "visibility": "public",
-      "description": "transfer 的 to-source-trigger、to-target-trigger 部件 background 覆盖槽。"
+      "description": "transfer 的 to-source-trigger、to-target-trigger 部件 background-color 覆盖槽。"
     },
     {
       "name": "--xh-transfer-trigger-bg-active",
@@ -71609,17 +71740,21 @@
         "to-target-trigger"
       ],
       "property": [
-        "background"
+        "background-color"
       ],
       "state": [
-        "active",
-        "not(:disabled)"
+        "disabled",
+        "is(:active, [data-pressed])",
+        "loading",
+        "not([data-disabled])",
+        "not([data-loading])",
+        "pressed"
       ],
       "defaultToken": [
-        "--xh-bg-subtle-active"
+        "--xh-_action-variant-bg-pressed"
       ],
       "visibility": "public",
-      "description": "transfer 的 to-source-trigger、to-target-trigger 部件 background 覆盖槽。"
+      "description": "transfer 的 to-source-trigger、to-target-trigger 部件 background-color 覆盖槽。"
     },
     {
       "name": "--xh-transfer-trigger-bg-hover",
@@ -71629,17 +71764,20 @@
         "to-target-trigger"
       ],
       "property": [
-        "background"
+        "background-color"
       ],
       "state": [
+        "disabled",
         "hover",
-        "not(:disabled)"
+        "loading",
+        "not([data-disabled])",
+        "not([data-loading])"
       ],
       "defaultToken": [
-        "--xh-bg-subtle-hover"
+        "--xh-_action-variant-bg-hover"
       ],
       "visibility": "public",
-      "description": "transfer 的 to-source-trigger、to-target-trigger 部件 background 覆盖槽。"
+      "description": "transfer 的 to-source-trigger、to-target-trigger 部件 background-color 覆盖槽。"
     },
     {
       "name": "--xh-transfer-trigger-border",
@@ -71649,16 +71787,26 @@
         "to-target-trigger"
       ],
       "property": [
-        "border"
+        "border",
+        "border-color"
       ],
       "state": [
-        "default"
+        "default",
+        "disabled",
+        "hover",
+        "is(:active, [data-pressed])",
+        "loading",
+        "not([data-disabled])",
+        "not([data-loading])",
+        "pressed"
       ],
       "defaultToken": [
-        "--xh-border-default"
+        "--xh-_action-variant-border-hover",
+        "--xh-_action-variant-border-pressed",
+        "--xh-_action-variant-border-rest"
       ],
       "visibility": "public",
-      "description": "transfer 的 to-source-trigger、to-target-trigger 部件 border 覆盖槽。"
+      "description": "transfer 的 to-source-trigger、to-target-trigger 部件 border、border-color 覆盖槽。"
     },
     {
       "name": "--xh-transfer-trigger-fg",
@@ -71671,10 +71819,19 @@
         "color"
       ],
       "state": [
-        "default"
+        "default",
+        "disabled",
+        "hover",
+        "is(:active, [data-pressed])",
+        "loading",
+        "not([data-disabled])",
+        "not([data-loading])",
+        "pressed"
       ],
       "defaultToken": [
-        "--xh-fg-default"
+        "--xh-_action-variant-fg-hover",
+        "--xh-_action-variant-fg-pressed",
+        "--xh-_action-variant-fg-rest"
       ],
       "visibility": "public",
       "description": "transfer 的 to-source-trigger、to-target-trigger 部件 color 覆盖槽。"
@@ -71712,7 +71869,7 @@
         "default"
       ],
       "defaultToken": [
-        "--xh-space-2"
+        "--xh-_action-profile-padding-inline"
       ],
       "visibility": "public",
       "description": "transfer 的 to-source-trigger、to-target-trigger 部件 padding-inline 覆盖槽。"
@@ -71747,8 +71904,12 @@
         "box-shadow"
       ],
       "state": [
-        "active",
-        "not(:disabled)"
+        "disabled",
+        "is(:active, [data-pressed])",
+        "loading",
+        "not([data-disabled])",
+        "not([data-loading])",
+        "pressed"
       ],
       "defaultToken": [
         "none"
@@ -71767,11 +71928,14 @@
         "box-shadow"
       ],
       "state": [
+        "disabled",
         "hover",
-        "not(:disabled)"
+        "loading",
+        "not([data-disabled])",
+        "not([data-loading])"
       ],
       "defaultToken": [
-        "--xh-elevation-raised"
+        "none"
       ],
       "visibility": "public",
       "description": "transfer 的 to-source-trigger、to-target-trigger 部件 box-shadow 覆盖槽。"
@@ -71785,16 +71949,18 @@
       ],
       "property": [
         "block-size",
+        "inline-size",
         "min-inline-size"
       ],
       "state": [
-        "default"
+        "default",
+        "xh-action-profile=icon"
       ],
       "defaultToken": [
-        "--xh-control-h-sm"
+        "--xh-_action-profile-visual-size"
       ],
       "visibility": "public",
-      "description": "transfer 的 to-source-trigger、to-target-trigger 部件 block-size、min-inline-size 覆盖槽。"
+      "description": "transfer 的 to-source-trigger、to-target-trigger 部件 block-size、inline-size、min-inline-size 覆盖槽。"
     },
     {
       "name": "--xh-tree-bg",

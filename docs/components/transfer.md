@@ -93,6 +93,7 @@ tone 更换勾选标记的色族，size 更换条目行与勾选格的几何档�
 ### 特性
 
 - 两栏都可搜索，`filter` 可自定义匹配规则。
+- 勾中的条目铺品牌淡底行面并由行首的方框标记，与表格选中行同一副外观；两侧定高列表挂自绘滚动条。
 - `oneWay` 单向移动：只能移向目标，不可退回。
 - 万级条目时只渲染可视区。
 - 每一侧的空（`empty`）与在途（`loading`）各有部件；`loading` 为真时两侧列表报 `aria-busy`，空态让位。
@@ -313,12 +314,27 @@ tone 更换勾选标记的色族，size 更换条目行与勾选格的几何档�
 | `group` | `data-side` | group.side |
 | `group-label` | `data-disabled` | ''（条件成立时才出现） |
 | `group-label` | `data-side` | group.side |
+| `item` | `data-xh-collection-context` | 'page' |
+| `item` | `data-xh-collection-item` | '' |
+| `item` | `data-xh-collection-size` | props.size |
+| `item-text` | `data-xh-collection-slot` | 'text' |
+| `item-checkbox` | `data-xh-collection-slot` | 'prefix' |
 | `empty` | `data-disabled` | ''（条件成立时才出现） |
 | `empty` | `data-side` | panel.side |
 | `loading` | `data-disabled` | ''（条件成立时才出现） |
 | `loading` | `data-side` | panel.side |
 | `to-target-trigger` | `data-disabled` | ''（条件成立时才出现） |
+| `to-target-trigger` | `data-xh-action-control` | '' |
+| `to-target-trigger` | `data-xh-action-display` | 'always' |
+| `to-target-trigger` | `data-xh-action-profile` | 'icon' |
+| `to-target-trigger` | `data-xh-action-size` | 'sm' |
+| `to-target-trigger` | `data-xh-action-variant` | 'outline' |
 | `to-source-trigger` | `data-disabled` | ''（条件成立时才出现） |
+| `to-source-trigger` | `data-xh-action-control` | '' |
+| `to-source-trigger` | `data-xh-action-display` | 'always' |
+| `to-source-trigger` | `data-xh-action-profile` | 'icon' |
+| `to-source-trigger` | `data-xh-action-size` | 'sm' |
+| `to-source-trigger` | `data-xh-action-variant` | 'outline' |
 | `select-all-trigger` | `data-disabled` | ''（条件成立时才出现） |
 | `select-all-trigger` | `data-side` | panel.side |
 | `select-all-trigger` | `data-state` | checkStates[panel.side] |
@@ -341,7 +357,7 @@ tone 更换勾选标记的色族，size 更换条目行与勾选格的几何档�
 | `--xh-transfer-checkbox-fg` | `item-checkbox`<br>`select-all-trigger` | `background-color`<br>`color` | `default`<br>`state=checked`<br>`state=indeterminate` | `--xh-_transfer-on-accent` | transfer 的 item-checkbox、select-all-trigger 部件 background-color、color 覆盖槽。 |
 | `--xh-transfer-checkbox-font-size` | `item-checkbox`<br>`select-all-trigger` | `font-size` | `default`<br>`state=checked`<br>`state=indeterminate` | `--xh-_transfer-box` | transfer 的 item-checkbox、select-all-trigger 部件 font-size 覆盖槽。 |
 | `--xh-transfer-checkbox-radius` | `item-checkbox`<br>`select-all-trigger` | `border-radius` | `default` | `--xh-shape-inset` | transfer 的 item-checkbox、select-all-trigger 部件 border-radius 覆盖槽。 |
-| `--xh-transfer-checkbox-size` | `item-checkbox`<br>`select-all-trigger` | `block-size`<br>`inline-size`<br>`margin-inline-start` | `default`<br>`state=checked`<br>`state=indeterminate` | `--xh-_transfer-box` | transfer 的 item-checkbox、select-all-trigger 部件 block-size、inline-size、margin-inline-start 覆盖槽。 |
+| `--xh-transfer-checkbox-size` | `item-checkbox`<br>`select-all-trigger` | `--xh-icon-size`<br>`block-size`<br>`inline-size`<br>`margin-inline-start` | `default`<br>`state=checked`<br>`state=indeterminate` | `--xh-_transfer-box` | transfer 的 item-checkbox、select-all-trigger 部件 --xh-icon-size、block-size、inline-size、margin-inline-start 覆盖槽。 |
 | `--xh-transfer-empty-fg` | `empty` | `color` | `default` | `--xh-fg-subtle` | transfer 的 empty 部件 color 覆盖槽。 |
 | `--xh-transfer-empty-font-size` | `empty` | `font-size` | `default` | `--xh-_transfer-font-size` | transfer 的 empty 部件 font-size 覆盖槽。 |
 | `--xh-transfer-empty-px` | `empty` | `padding-inline` | `default` | `--xh-_transfer-px` | transfer 的 empty 部件 padding-inline 覆盖槽。 |
@@ -355,9 +371,12 @@ tone 更换勾选标记的色族，size 更换条目行与勾选格的几何档�
 | `--xh-transfer-group-label-px` | `group-label` | `padding-inline` | `default` | `--xh-_transfer-px` | transfer 的 group-label 部件 padding-inline 覆盖槽。 |
 | `--xh-transfer-group-label-py` | `group-label` | `padding-block` | `default` | `--xh-space-1` | transfer 的 group-label 部件 padding-block 覆盖槽。 |
 | `--xh-transfer-group-spacing` | `group` | `margin-block-start` | `default` | `--xh-space-1_5` | transfer 的 group 部件 margin-block-start 覆盖槽。 |
-| `--xh-transfer-icon-size` | `root` | `--xh-icon-size` | `default` | `--xh-glyph-size-text` | transfer 的 root 部件 --xh-icon-size 覆盖槽。 |
-| `--xh-transfer-item-bg-hover` | `item` | `background` | `disabled`<br>`highlighted`<br>`is(:hover, [data-highlighted])`<br>`not([data-disabled])` | `--xh-bg-subtle` | transfer 的 item 部件 background 覆盖槽。 |
-| `--xh-transfer-item-fg` | `item` | `color` | `default` | `--xh-fg-default` | transfer 的 item 部件 color 覆盖槽。 |
+| `--xh-transfer-icon-size` | `item`<br>`root`<br>`to-source-trigger`<br>`to-target-trigger` | `--xh-icon-size` | `default`<br>`size=lg`<br>`size=sm` | `--xh-_action-profile-glyph-size`<br>`--xh-_collection-glyph-size`<br>`--xh-glyph-size-lg`<br>`--xh-glyph-size-md`<br>`--xh-glyph-size-sm` | transfer 的 item、root、to-source-trigger、to-target-trigger 部件 --xh-icon-size 覆盖槽。 |
+| `--xh-transfer-item-bg-hover` | `item` | `background-color` | `disabled`<br>`error`<br>`highlighted`<br>`hover`<br>`is(:focus-visible, [data-highlighted])`<br>`not([aria-disabled='true'], [data-disabled], [aria-busy='true'], [data-error])` | `--xh-bg-subtle` | transfer 的 item 部件 background-color 覆盖槽。 |
+| `--xh-transfer-item-bg-pressed` | `item` | `background-color` | `disabled`<br>`error`<br>`is(:active, [data-pressed])`<br>`not([aria-disabled='true'], [data-disabled], [aria-busy='true'], [data-error])`<br>`pressed` | `--xh-bg-subtle-hover` | transfer 的 item 部件 background-color 覆盖槽。 |
+| `--xh-transfer-item-bg-selected` | `item` | `background-color` | `disabled`<br>`error`<br>`is([aria-selected='true'], [data-selected])`<br>`not([aria-disabled='true'], [data-disabled], [aria-busy='true'], [data-error])`<br>`selected`<br>`xh-collection-context=page` | `--xh-bg-brand-subtle` | transfer 的 item 部件 background-color 覆盖槽。 |
+| `--xh-transfer-item-fg` | `item` | `color` | `default`<br>`disabled`<br>`error`<br>`highlighted`<br>`hover`<br>`is(:active, [data-pressed])`<br>`is(:focus-visible, [data-highlighted])`<br>`not([aria-disabled='true'], [data-disabled], [aria-busy='true'], [data-error])`<br>`pressed` | `--xh-fg-default` | transfer 的 item 部件 color 覆盖槽。 |
+| `--xh-transfer-item-fg-selected` | `item` | `color` | `disabled`<br>`error`<br>`highlighted`<br>`hover`<br>`is(:active, [data-pressed])`<br>`is(:focus-visible, [data-highlighted])`<br>`is([aria-selected='true'], [data-selected])`<br>`not([aria-disabled='true'], [data-disabled], [aria-busy='true'], [data-error])`<br>`pressed`<br>`selected`<br>`xh-collection-context=page` | `--xh-fg-on-brand-subtle` | transfer 的 item 部件 color 覆盖槽。 |
 | `--xh-transfer-item-font-size` | `item` | `font-size` | `default` | `--xh-_transfer-font-size` | transfer 的 item 部件 font-size 覆盖槽。 |
 | `--xh-transfer-item-gap` | `item` | `gap` | `default` | `--xh-_transfer-gap` | transfer 的 item 部件 gap 覆盖槽。 |
 | `--xh-transfer-item-leading` | `item` | `line-height` | `default` | `--xh-leading-normal` | transfer 的 item 部件 line-height 覆盖槽。 |
@@ -384,33 +403,35 @@ tone 更换勾选标记的色族，size 更换条目行与勾选格的几何档�
 | `--xh-transfer-panel-radius` | `source-panel`<br>`target-panel` | `border-radius` | `default` | `--xh-shape-surface` | transfer 的 source-panel、target-panel 部件 border-radius 覆盖槽。 |
 | `--xh-transfer-panel-title-fg` | `panel-title` | `color` | `default` | `--xh-fg-default` | transfer 的 panel-title 部件 color 覆盖槽。 |
 | `--xh-transfer-panel-title-font-size` | `panel-title` | `font-size` | `default` | `--xh-text-label-size` | transfer 的 panel-title 部件 font-size 覆盖槽。 |
-| `--xh-transfer-panel-title-font-weight` | `panel-title` | `font-weight` | `default` | `--xh-text-label-weight` | transfer 的 panel-title 部件 font-weight 覆盖槽。 |
+| `--xh-transfer-panel-title-font-weight` | `panel-title` | `font-weight` | `default` | `--xh-font-weight-semibold` | transfer 的 panel-title 部件 font-weight 覆盖槽。 |
 | `--xh-transfer-search-bg` | `search` | `background` | `default` | `transparent` | transfer 的 search 部件 background 覆盖槽。 |
 | `--xh-transfer-search-border` | `search` | `border-block-end` | `default` | `--xh-border-control` | transfer 的 search 部件 border-block-end 覆盖槽。 |
 | `--xh-transfer-search-fg` | `search` | `color` | `default` | `--xh-fg-default` | transfer 的 search 部件 color 覆盖槽。 |
 | `--xh-transfer-search-font-size` | `search` | `font-size` | `default` | `--xh-_transfer-font-size` | transfer 的 search 部件 font-size 覆盖槽。 |
 | `--xh-transfer-search-h` | `search` | `block-size` | `default` | `--xh-control-h-sm` | transfer 的 search 部件 block-size 覆盖槽。 |
 | `--xh-transfer-search-px` | `search` | `padding-inline` | `default` | `--xh-_transfer-px` | transfer 的 search 部件 padding-inline 覆盖槽。 |
+| `--xh-transfer-select-all-bg-hover` | `select-all-trigger` | `background` | `hover`<br>`not(:disabled)` | `--xh-bg-subtle` | transfer 的 select-all-trigger 部件 background 覆盖槽。 |
+| `--xh-transfer-select-all-bg-pressed` | `select-all-trigger` | `background` | `active`<br>`not(:disabled)` | `--xh-bg-subtle-hover` | transfer 的 select-all-trigger 部件 background 覆盖槽。 |
 | `--xh-transfer-select-all-fg` | `select-all-trigger` | `color` | `default` | `--xh-fg-muted` | transfer 的 select-all-trigger 部件 color 覆盖槽。 |
 | `--xh-transfer-select-all-font-size` | `select-all-trigger` | `font-size` | `default` | `--xh-text-caption-size` | transfer 的 select-all-trigger 部件 font-size 覆盖槽。 |
 | `--xh-transfer-select-all-gap` | `select-all-trigger` | `gap` | `default` | `--xh-control-gap-sm` | transfer 的 select-all-trigger 部件 gap 覆盖槽。 |
-| `--xh-transfer-select-all-radius` | `select-all-trigger` | `border-radius` | `default` | `--xh-shape-control` | transfer 的 select-all-trigger 部件 border-radius 覆盖槽。 |
-| `--xh-transfer-trigger-bg` | `to-source-trigger`<br>`to-target-trigger` | `background` | `default` | `--xh-bg-subtle` | transfer 的 to-source-trigger、to-target-trigger 部件 background 覆盖槽。 |
-| `--xh-transfer-trigger-bg-active` | `to-source-trigger`<br>`to-target-trigger` | `background` | `active`<br>`not(:disabled)` | `--xh-bg-subtle-active` | transfer 的 to-source-trigger、to-target-trigger 部件 background 覆盖槽。 |
-| `--xh-transfer-trigger-bg-hover` | `to-source-trigger`<br>`to-target-trigger` | `background` | `hover`<br>`not(:disabled)` | `--xh-bg-subtle-hover` | transfer 的 to-source-trigger、to-target-trigger 部件 background 覆盖槽。 |
-| `--xh-transfer-trigger-border` | `to-source-trigger`<br>`to-target-trigger` | `border` | `default` | `--xh-border-default` | transfer 的 to-source-trigger、to-target-trigger 部件 border 覆盖槽。 |
-| `--xh-transfer-trigger-fg` | `to-source-trigger`<br>`to-target-trigger` | `color` | `default` | `--xh-fg-default` | transfer 的 to-source-trigger、to-target-trigger 部件 color 覆盖槽。 |
+| `--xh-transfer-select-all-radius` | `select-all-trigger` | `border-radius` | `default` | `--xh-shape-inset` | transfer 的 select-all-trigger 部件 border-radius 覆盖槽。 |
+| `--xh-transfer-trigger-bg` | `to-source-trigger`<br>`to-target-trigger` | `background-color` | `default` | `--xh-_action-variant-bg-rest` | transfer 的 to-source-trigger、to-target-trigger 部件 background-color 覆盖槽。 |
+| `--xh-transfer-trigger-bg-active` | `to-source-trigger`<br>`to-target-trigger` | `background-color` | `disabled`<br>`is(:active, [data-pressed])`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])`<br>`pressed` | `--xh-_action-variant-bg-pressed` | transfer 的 to-source-trigger、to-target-trigger 部件 background-color 覆盖槽。 |
+| `--xh-transfer-trigger-bg-hover` | `to-source-trigger`<br>`to-target-trigger` | `background-color` | `disabled`<br>`hover`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])` | `--xh-_action-variant-bg-hover` | transfer 的 to-source-trigger、to-target-trigger 部件 background-color 覆盖槽。 |
+| `--xh-transfer-trigger-border` | `to-source-trigger`<br>`to-target-trigger` | `border`<br>`border-color` | `default`<br>`disabled`<br>`hover`<br>`is(:active, [data-pressed])`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])`<br>`pressed` | `--xh-_action-variant-border-hover`<br>`--xh-_action-variant-border-pressed`<br>`--xh-_action-variant-border-rest` | transfer 的 to-source-trigger、to-target-trigger 部件 border、border-color 覆盖槽。 |
+| `--xh-transfer-trigger-fg` | `to-source-trigger`<br>`to-target-trigger` | `color` | `default`<br>`disabled`<br>`hover`<br>`is(:active, [data-pressed])`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])`<br>`pressed` | `--xh-_action-variant-fg-hover`<br>`--xh-_action-variant-fg-pressed`<br>`--xh-_action-variant-fg-rest` | transfer 的 to-source-trigger、to-target-trigger 部件 color 覆盖槽。 |
 | `--xh-transfer-trigger-font-size` | `to-source-trigger`<br>`to-target-trigger` | `font-size` | `default` | `--xh-text-label-size` | transfer 的 to-source-trigger、to-target-trigger 部件 font-size 覆盖槽。 |
-| `--xh-transfer-trigger-px` | `to-source-trigger`<br>`to-target-trigger` | `padding-inline` | `default` | `--xh-space-2` | transfer 的 to-source-trigger、to-target-trigger 部件 padding-inline 覆盖槽。 |
+| `--xh-transfer-trigger-px` | `to-source-trigger`<br>`to-target-trigger` | `padding-inline` | `default` | `--xh-_action-profile-padding-inline` | transfer 的 to-source-trigger、to-target-trigger 部件 padding-inline 覆盖槽。 |
 | `--xh-transfer-trigger-radius` | `to-source-trigger`<br>`to-target-trigger` | `border-radius` | `default` | `--xh-shape-control` | transfer 的 to-source-trigger、to-target-trigger 部件 border-radius 覆盖槽。 |
-| `--xh-transfer-trigger-shadow-active` | `to-source-trigger`<br>`to-target-trigger` | `box-shadow` | `active`<br>`not(:disabled)` | `none` | transfer 的 to-source-trigger、to-target-trigger 部件 box-shadow 覆盖槽。 |
-| `--xh-transfer-trigger-shadow-hover` | `to-source-trigger`<br>`to-target-trigger` | `box-shadow` | `hover`<br>`not(:disabled)` | `--xh-elevation-raised` | transfer 的 to-source-trigger、to-target-trigger 部件 box-shadow 覆盖槽。 |
-| `--xh-transfer-trigger-size` | `to-source-trigger`<br>`to-target-trigger` | `block-size`<br>`min-inline-size` | `default` | `--xh-control-h-sm` | transfer 的 to-source-trigger、to-target-trigger 部件 block-size、min-inline-size 覆盖槽。 |
+| `--xh-transfer-trigger-shadow-active` | `to-source-trigger`<br>`to-target-trigger` | `box-shadow` | `disabled`<br>`is(:active, [data-pressed])`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])`<br>`pressed` | `none` | transfer 的 to-source-trigger、to-target-trigger 部件 box-shadow 覆盖槽。 |
+| `--xh-transfer-trigger-shadow-hover` | `to-source-trigger`<br>`to-target-trigger` | `box-shadow` | `disabled`<br>`hover`<br>`loading`<br>`not([data-disabled])`<br>`not([data-loading])` | `none` | transfer 的 to-source-trigger、to-target-trigger 部件 box-shadow 覆盖槽。 |
+| `--xh-transfer-trigger-size` | `to-source-trigger`<br>`to-target-trigger` | `block-size`<br>`inline-size`<br>`min-inline-size` | `default`<br>`xh-action-profile=icon` | `--xh-_action-profile-visual-size` | transfer 的 to-source-trigger、to-target-trigger 部件 block-size、inline-size、min-inline-size 覆盖槽。 |
 <!-- xh-component-tokens:end -->
 
 ### 动效
 
-`background` · `border-color` · `box-shadow` · `color` · `scale` 走 `transition` 过渡。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
+`background` · `background-color` · `border-color` 走 `transition` 过渡。时长与缓动读[动效令牌](../guide/motion)，改令牌即改全局节奏。
 
 系统开启减弱动效时由令牌层统一收敛，皮肤不另作判断。
 

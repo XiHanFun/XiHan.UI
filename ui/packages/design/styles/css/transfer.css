@@ -5,6 +5,9 @@
 
 /* 定义 transfer 样式。 */
 
+@import '../family/action-control.css';
+@import '../family/collection-item.css';
+
 @layer xihan.components {
   /* 皮肤在场的标记：开发模式下按 scope 探一次，取不到就说明这份皮肤没被引入。 */
   [data-scope='transfer'] {
@@ -18,8 +21,11 @@
      中间那栏没有对应的角色节点（anatomy 里两个按钮是 root 的直接子节点），
      所以只能按位置显式安放，不能靠自动流——自动流会把"往回搬"甩到目标面板的位置上 */
   [data-scope='transfer'][data-part='root'] {
-    /* 作者塞进指示符槽的图标跟着字号走，与皮肤画的兜底字形同一把尺 */
-    --xh-icon-size: var(--xh-transfer-icon-size, var(--xh-glyph-size-text));
+    /* 条目外的字形（空态占位里作者塞的图标）按档取尺，缺省 md；条目内的字形由家族随 data-xh-collection-size
+       下发，搬运钮内的按 Action Control icon 档取，勾选格里的勾按边长比例取（§6.5） */
+    --xh-icon-size: var(--xh-transfer-icon-size, var(--xh-glyph-size-md));
+    /* 两侧定高小列表的自绘条挂在根上（§6.6）：根是条子的定位盒（面板不定位），轨道底色关掉才不会在列表边缘糊出一条灰带 */
+    --xh-scrollbar-track-bg: transparent;
 
     /* 尺寸档只换这五个私有槽，面板头、搜索框、条目与勾选格都从 root 继承它们，
        换档不必给每个部件各写一条选择器 */
@@ -33,6 +39,7 @@
     --xh-_transfer-accent: var(--xh-_tone, var(--xh-bg-brand));
     --xh-_transfer-on-accent: var(--xh-_tone-on, var(--xh-fg-on-brand));
 
+    position: relative;
     display: grid;
     grid-template-rows: auto auto;
     grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
@@ -44,6 +51,7 @@
   /* —— 尺寸 —— */
   /* 缺省档写在上面的基础规则里 */
   [data-scope='transfer'][data-part='root'][data-size='sm'] {
+    --xh-icon-size: var(--xh-transfer-icon-size, var(--xh-glyph-size-sm));
     --xh-_transfer-item-py: var(--xh-list-option-py-sm);
     --xh-_transfer-px: var(--xh-control-px-sm);
     --xh-_transfer-gap: var(--xh-control-gap-sm);
@@ -52,6 +60,7 @@
   }
 
   [data-scope='transfer'][data-part='root'][data-size='lg'] {
+    --xh-icon-size: var(--xh-transfer-icon-size, var(--xh-glyph-size-lg));
     --xh-_transfer-item-py: var(--xh-list-option-py-lg);
     --xh-_transfer-px: var(--xh-control-px-lg);
     --xh-_transfer-gap: var(--xh-control-gap-lg);
@@ -131,8 +140,9 @@
     min-inline-size: 0;
     overflow: hidden;
     color: var(--xh-transfer-panel-title-fg, var(--xh-fg-default));
+    /* 面板标头是 Surface 内的标题：14 / 600（§6.4） */
     font-size: var(--xh-transfer-panel-title-font-size, var(--xh-text-label-size));
-    font-weight: var(--xh-transfer-panel-title-font-weight, var(--xh-text-label-weight));
+    font-weight: var(--xh-transfer-panel-title-font-weight, var(--xh-font-weight-semibold));
     line-height: var(--xh-leading-none);
     white-space: nowrap;
     text-overflow: ellipsis;
@@ -275,36 +285,55 @@
     color: var(--xh-fg-disabled);
   }
 
+  /* 条目走 Collection Item 的 page 语境（页内持久集合，§7.3）：悬停 / 高亮 / 按下面（白底承载 hover 100 →
+     pressed 200）与勾选行的选中面（品牌淡底 + 淡底前景，selected+hover 20% / +pressed 28%）都由家族按
+     aria-selected / aria-disabled 给出，标记由行首的勾选方框承担；禁用面（字色降级、not-allowed、不换面）
+     也归家族。这里只把公开槽映射到桥接槽。
+     布局保持 flex 而不用家族网格：间距统一由行的 gap 给，家族按槽下发的外边距（--xh-collection-gap）归零 */
   [data-scope='transfer'][data-part='item'] {
+    --xh-collection-block-padding: var(--xh-transfer-item-py, var(--xh-_transfer-item-py));
+    --xh-collection-inline-padding: var(--xh-transfer-item-px, var(--xh-_transfer-px));
+    --xh-collection-gap: 0;
+    --xh-collection-font-size: var(--xh-transfer-item-font-size, var(--xh-_transfer-font-size));
+    --xh-collection-radius: var(--xh-transfer-item-radius, var(--xh-shape-control));
+    /* 作者的图标尺槽经桥接槽下发到条目，家族缺省按 data-xh-collection-size 取档 */
+    --xh-collection-glyph-size: var(--xh-transfer-icon-size, var(--xh-_collection-glyph-size));
+    --xh-collection-fg-rest: var(--xh-transfer-item-fg, var(--xh-fg-default));
+    --xh-collection-fg-hover: var(--xh-transfer-item-fg, var(--xh-fg-default));
+    --xh-collection-fg-keyboard-highlight: var(--xh-transfer-item-fg, var(--xh-fg-default));
+    --xh-collection-fg-pressed: var(--xh-transfer-item-fg, var(--xh-fg-default));
+    --xh-collection-fg-selected: var(--xh-transfer-item-fg-selected, var(--xh-fg-on-brand-subtle));
+    --xh-collection-fg-selected-hover: var(--xh-transfer-item-fg-selected, var(--xh-fg-on-brand-subtle));
+    --xh-collection-fg-selected-highlight: var(--xh-transfer-item-fg-selected, var(--xh-fg-on-brand-subtle));
+    --xh-collection-fg-selected-pressed: var(--xh-transfer-item-fg-selected, var(--xh-fg-on-brand-subtle));
+    --xh-collection-bg-hover: var(--xh-transfer-item-bg-hover, var(--xh-bg-subtle));
+    --xh-collection-bg-keyboard-highlight: var(--xh-transfer-item-bg-hover, var(--xh-bg-subtle));
+    --xh-collection-bg-pressed: var(--xh-transfer-item-bg-pressed, var(--xh-bg-subtle-hover));
+    --xh-collection-bg-selected: var(--xh-transfer-item-bg-selected, var(--xh-bg-brand-subtle));
+    /* data-highlighted 跟的是连接层记的焦点条目（指针点选也会落焦）：只换面，焦点环在 :focus-visible 下再接回 */
+    --xh-collection-outline-keyboard-highlight: transparent;
+    --xh-collection-outline-selected-highlight: transparent;
+
     display: flex;
     flex: none;
     gap: var(--xh-transfer-item-gap, var(--xh-_transfer-gap));
     align-items: center;
-    padding-block: var(--xh-transfer-item-py, var(--xh-_transfer-item-py));
-    padding-inline: var(--xh-transfer-item-px, var(--xh-_transfer-px));
-    border-radius: var(--xh-transfer-item-radius, var(--xh-shape-control));
-    color: var(--xh-transfer-item-fg, var(--xh-fg-default));
-    font-size: var(--xh-transfer-item-font-size, var(--xh-_transfer-font-size));
     /* 行高留出文字的上下伸展空间，行内那层 overflow:hidden 才不会把字削掉 */
     line-height: var(--xh-transfer-item-leading, var(--xh-leading-normal));
     white-space: nowrap;
-    cursor: pointer;
     user-select: none;
-    transition:
-      background var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
-      color var(--xh-motion-duration-micro) var(--xh-motion-ease-enter);
   }
 
-  /* 悬停与键盘锚点共用中性灰轻档：条目本身承载焦点，不另画描边。
-     data-highlighted 跟的是连接层记的焦点条目，与勾选互相独立 */
-  [data-scope='transfer'][data-part='item']:not([data-disabled]):is(:hover, [data-highlighted]) {
-    background: var(--xh-transfer-item-bg-hover, var(--xh-bg-subtle));
+  /* 键盘焦点出现时环才接回并立即到位，不压在背景过渡的中间帧上 */
+  [data-scope='transfer'][data-part='item']:focus-visible:not(:hover) {
+    --xh-collection-outline-keyboard-highlight: var(--xh-ring-focus);
+    --xh-collection-outline-selected-highlight: var(--xh-ring-focus);
+
+    transition: none;
   }
 
-  /* 禁用走 aria-disabled 而非原生 disabled：条目仍要可聚焦（它还得当方向键的起点），
-     所以样式只能读 data-disabled，写 :disabled 永远不命中 */
-  [data-scope='transfer'][data-part='item'][data-disabled] {
-    color: var(--xh-fg-disabled);
+  [data-scope='transfer'][data-part='item']:focus:not(:focus-visible) {
+    outline: none;
   }
 
   [data-scope='transfer'][data-part='item-text'] {
@@ -319,6 +348,9 @@
      两个方框就此走形。全选格没有对应的角色节点（它自己就是按钮），由伪元素补出来 */
   [data-scope='transfer'][data-part='item-checkbox'],
   [data-scope='transfer'][data-part='select-all-trigger']::before {
+    /* 方框里的勾按边长的比例取尺（与 Checkbox 同一比例），不吃家族按档下发的行内字形尺 */
+    --xh-icon-size: calc(var(--xh-transfer-checkbox-size, var(--xh-_transfer-box)) * 0.75);
+
     display: inline-flex;
     flex: none;
     align-items: center;
@@ -423,6 +455,9 @@
      禁用因此写 :disabled，不写 data-disabled */
   /* position 是给叠在方框上的那颗字形 ::after 当定位基准 */
   [data-scope='transfer'][data-part='select-all-trigger'] {
+    /* 叠在方框上的那颗字形 ::after 与方框里的勾同一把尺 */
+    --xh-icon-size: calc(var(--xh-transfer-checkbox-size, var(--xh-_transfer-box)) * 0.75);
+
     position: relative;
     display: inline-flex;
     flex: none;
@@ -430,62 +465,57 @@
     align-items: center;
     padding: 0;
     border: 0;
-    border-radius: var(--xh-transfer-select-all-radius, var(--xh-shape-control));
+    /* 全选格是嵌在面板头里的勾选小块：inset 档圆角（身份表登记） */
+    border-radius: var(--xh-transfer-select-all-radius, var(--xh-shape-inset));
     background: none;
     color: var(--xh-transfer-select-all-fg, var(--xh-fg-muted));
     font-size: var(--xh-transfer-select-all-font-size, var(--xh-text-caption-size));
     font-weight: var(--xh-font-weight-medium);
     line-height: var(--xh-leading-none);
     cursor: pointer;
+    transition: background-color var(--xh-motion-duration-release) var(--xh-motion-ease-release);
+  }
+
+  /* 全选是「方框 + 文案」的整行命中区（§9.2）：按下只换面不缩放，勾选回执落在方框上；白底承载 hover 100 → pressed 200 */
+  [data-scope='transfer'][data-part='select-all-trigger']:hover:not(:disabled) {
+    background: var(--xh-transfer-select-all-bg-hover, var(--xh-bg-subtle));
+  }
+
+  [data-scope='transfer'][data-part='select-all-trigger']:active:not(:disabled) {
+    background: var(--xh-transfer-select-all-bg-pressed, var(--xh-bg-subtle-hover));
+    transition-duration: var(--xh-motion-duration-press);
+    transition-timing-function: var(--xh-motion-ease-press);
   }
 
   [data-scope='transfer'][data-part='select-all-trigger']:disabled {
     color: var(--xh-fg-disabled);
   }
 
+  /* 两颗搬运钮是只有字形的离散动作钮：接 Action Control 的 icon 档、outline 形态（中性描边、透明底，
+     白底承载 hover 100 → pressed 200，按下 0.97 并同时换底），盒、焦点环、粗指针热区与禁用面由家族给；
+     此前的 raised 悬停抬升退役（§8.3 边界只由描边承担）。这里只把使用者槽映射到桥接槽；
+     钮是正方盒，按 sm 档取一个控件高 */
   [data-scope='transfer'][data-part='to-target-trigger'],
   [data-scope='transfer'][data-part='to-source-trigger'] {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    min-inline-size: var(--xh-transfer-trigger-size, var(--xh-control-h-sm));
-    block-size: var(--xh-transfer-trigger-size, var(--xh-control-h-sm));
-    padding-inline: var(--xh-transfer-trigger-px, var(--xh-space-2));
-    border: var(--xh-stroke-thin) solid var(--xh-transfer-trigger-border, var(--xh-border-default));
-    border-radius: var(--xh-transfer-trigger-radius, var(--xh-shape-control));
-    background: var(--xh-transfer-trigger-bg, var(--xh-bg-subtle));
-    color: var(--xh-transfer-trigger-fg, var(--xh-fg-default));
-    font-size: var(--xh-transfer-trigger-font-size, var(--xh-text-label-size));
-    line-height: var(--xh-leading-none);
-    cursor: pointer;
-    transition:
-      background var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
-      box-shadow var(--xh-motion-duration-micro) var(--xh-motion-ease-enter),
-      scale var(--xh-motion-duration-release) var(--xh-motion-ease-release);
-  }
-
-  /* 换底之外再抬起一层：这两颗钮是两块面板之间唯一的动作面，
-     光换一档底色与它自己的常态底只差一点，隔着两列条目看不出来 */
-  [data-scope='transfer'][data-part='to-target-trigger']:hover:not(:disabled),
-  [data-scope='transfer'][data-part='to-source-trigger']:hover:not(:disabled) {
-    background: var(--xh-transfer-trigger-bg-hover, var(--xh-bg-subtle-hover));
-    box-shadow: var(--xh-transfer-trigger-shadow-hover, var(--xh-elevation-raised));
-  }
-
-  /* 按下那一刻把悬停抬起的那层影子收回去，钮才像是被按回了平面 */
-  [data-scope='transfer'][data-part='to-target-trigger']:active:not(:disabled),
-  [data-scope='transfer'][data-part='to-source-trigger']:active:not(:disabled) {
-    background: var(--xh-transfer-trigger-bg-active, var(--xh-bg-subtle-active));
-    box-shadow: var(--xh-transfer-trigger-shadow-active, none);
-    scale: var(--xh-motion-scale-press);
-    transition-duration: var(--xh-motion-duration-press);
-    transition-timing-function: var(--xh-motion-ease-press);
-  }
-
-  /* 搬运按钮是单体控件，禁用走原生 disabled */
-  [data-scope='transfer'][data-part='to-target-trigger']:disabled,
-  [data-scope='transfer'][data-part='to-source-trigger']:disabled {
-    color: var(--xh-fg-disabled);
+    --xh-action-visual-size: var(--xh-transfer-trigger-size, var(--xh-_action-profile-visual-size));
+    --xh-action-min-inline-size: var(--xh-transfer-trigger-size, var(--xh-_action-profile-visual-size));
+    --xh-action-padding-inline: var(--xh-transfer-trigger-px, var(--xh-_action-profile-padding-inline));
+    --xh-action-radius: var(--xh-transfer-trigger-radius, var(--xh-shape-control));
+    --xh-action-border-rest: var(--xh-transfer-trigger-border, var(--xh-_action-variant-border-rest));
+    --xh-action-border-hover: var(--xh-transfer-trigger-border, var(--xh-_action-variant-border-hover));
+    --xh-action-border-pressed: var(--xh-transfer-trigger-border, var(--xh-_action-variant-border-pressed));
+    --xh-action-bg-rest: var(--xh-transfer-trigger-bg, var(--xh-_action-variant-bg-rest));
+    --xh-action-bg-hover: var(--xh-transfer-trigger-bg-hover, var(--xh-_action-variant-bg-hover));
+    --xh-action-bg-pressed: var(--xh-transfer-trigger-bg-active, var(--xh-_action-variant-bg-pressed));
+    --xh-action-fg-rest: var(--xh-transfer-trigger-fg, var(--xh-_action-variant-fg-rest));
+    --xh-action-fg-hover: var(--xh-transfer-trigger-fg, var(--xh-_action-variant-fg-hover));
+    --xh-action-fg-pressed: var(--xh-transfer-trigger-fg, var(--xh-_action-variant-fg-pressed));
+    --xh-action-shadow-hover: var(--xh-transfer-trigger-shadow-hover, none);
+    --xh-action-shadow-pressed: var(--xh-transfer-trigger-shadow-active, none);
+    --xh-action-font-size: var(--xh-transfer-trigger-font-size, var(--xh-text-label-size));
+    /* 作者塞进钮里的图标与皮肤画的兜底箭头同一把尺：按 icon 档取字形尺寸。
+       配方尚未把 profile 字形档灌进 --xh-icon-size，钮内字形先按 icon 档逐钮取值 */
+    --xh-icon-size: var(--xh-transfer-icon-size, var(--xh-_action-profile-glyph-size));
   }
 
   /* 上面凡是给了 display 的角色节点都要补这条：display 声明会盖掉 UA 的 [hidden]{display:none}，

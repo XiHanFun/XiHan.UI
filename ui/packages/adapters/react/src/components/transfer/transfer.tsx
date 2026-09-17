@@ -21,6 +21,7 @@ import { useIsomorphicLayoutEffect } from '../../runtime/layout-effect'
 import { mergeReactProps } from '../../runtime/merge-props'
 import { useNativeEvents } from '../../runtime/native-events'
 import { renderSlot } from '../../runtime/slot-content'
+import { useScrollbars } from '../../runtime/use-scrollbars'
 import { useFormControlProps } from '../form/use-form-control'
 import {
   TransferGroupProvider,
@@ -239,10 +240,25 @@ export function XhTransferList({ children, ...rest }: XhTransferListProps): Reac
   // 容器的 onFocus 是 DOM 的 focus（不冒泡，只在容器自己得焦时接管）。React 的同名合成事件
   // 挂的是冒泡的 focusin，条目得焦也会把它叫起来，那一下会把焦点从条目抢回锚点上
   const bind = useNativeEvents(ctx.api.getListProps(panel) as Record<string, unknown>, ['onFocus'])
+  const listRef = useRef<HTMLDivElement | null>(null)
+  // 两侧定高小列表各走一路自绘条（§6.6）：条子紧跟在列表后面、贴在列表自己的盒子上，
+  // 挂在 root 这个定位盒上（面板不定位，root 才是列表的定位祖先）；两条轴都摆——皮肤给的是两轴 overflow: auto。
+  // 页内宿主走 6px 缺省档；横条的正负按排版方向算，把机器里那份 dir 交过去
+  const bars = useScrollbars({
+    scrollable: () => listRef.current,
+    axes: ['vertical', 'horizontal'],
+    anchor: 'layer',
+    props: () => ({ dir: ctx.service.prop('dir') }),
+  })
+  // 搬运、搜索筛选与空态显隐都会挪动列表在壳内的位置与尺寸：每次提交后重量一次偏移盒
+  useEffect(() => bars.measure())
   return (
-    <div {...mergeReactProps(bind.attrs, rest as Record<string, unknown>, { ref: bind.ref })}>
-      {children}
-    </div>
+    <>
+      <div {...mergeReactProps(bind.attrs, rest as Record<string, unknown>, { ref: bind.ref }, { ref: listRef })}>
+        {children}
+      </div>
+      {bars.render()}
+    </>
   )
 }
 

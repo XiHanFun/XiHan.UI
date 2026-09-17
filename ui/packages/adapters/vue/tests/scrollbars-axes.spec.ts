@@ -31,6 +31,12 @@ import {
   XhTimeRangePickerContent,
   XhTimeRangePickerPositioner,
   XhTimeRangePickerRoot,
+  XhTransferItem,
+  XhTransferItemText,
+  XhTransferList,
+  XhTransferRoot,
+  XhTransferSourcePanel,
+  XhTransferTargetPanel,
   XhTreeSelectRoot,
 } from '../src'
 
@@ -338,6 +344,41 @@ describe('双轴的让位跟着另一条轴走', () => {
     expect(bars(shell).map(root => root.hasAttribute('data-gutter'))).toEqual([false, false])
     expect(shell.querySelector<HTMLElement>('[data-scope="scrollbar"][data-part="corner"]')!.hasAttribute('hidden'))
       .toBe(true)
+  })
+})
+
+describe('transfer 两侧列表各一路自绘条', () => {
+  const ITEMS = [{ value: 'a', label: 'A' }, { value: 'b', label: 'B' }]
+  function mountTransfer(): void {
+    render(() => h(XhTransferRoot, { collection: ITEMS, defaultValue: ['b'] }, () => [
+      h(XhTransferSourcePanel, null, () => [h(XhTransferList, null, () => ITEMS.map(item =>
+        h(XhTransferItem, { value: item.value, side: 'source' }, () => [h(XhTransferItemText, null, () => item.label)]),
+      ))]),
+      h(XhTransferTargetPanel, null, () => [h(XhTransferList, null, () => ITEMS.map(item =>
+        h(XhTransferItem, { value: item.value, side: 'target' }, () => [h(XhTransferItemText, null, () => item.label)]),
+      ))]),
+    ]))
+  }
+
+  it('条子挂在 root 上、贴层锚定、紧跟在各自的列表后面，两轴都摆、走 6px 缺省档', async () => {
+    mountTransfer()
+    await settle()
+
+    const root = part('transfer', 'root')
+    const lists = [...root.querySelectorAll<HTMLElement>('[data-scope="transfer"][data-part="list"]')]
+    expect(lists).toHaveLength(2)
+    const roots = bars(root)
+    expect(roots).toHaveLength(4)
+    for (const list of lists) {
+      expect(list.getAttribute('data-xh-scrollbar')).toBe('2')
+      const own = [list.nextElementSibling, list.nextElementSibling?.nextElementSibling] as HTMLElement[]
+      expect(own.map(node => node?.getAttribute('data-orientation'))).toEqual(['vertical', 'horizontal'])
+      for (const node of own) {
+        expect(node.getAttribute('data-anchor')).toBe('layer')
+        expect(node.getAttribute('data-size')).toBeNull()
+        expect(node.hasAttribute('data-xh-part')).toBe(false)
+      }
+    }
   })
 })
 

@@ -456,6 +456,52 @@ describe.each(CASES)('$scope 的自绘条', (item) => {
   })
 })
 
+describe('transfer 两侧列表各一路自绘条', () => {
+  async function mountTransfer(): Promise<Updatable> {
+    const el = document.createElement('xh-transfer') as Updatable
+    el.innerHTML = `
+      <div data-xh-part="root">
+        <div data-xh-part="source-panel">
+          <div data-xh-part="list">
+            <div data-xh-part="item" value="a"><span data-xh-part="item-text">A</span></div>
+          </div>
+        </div>
+        <button type="button" data-xh-part="to-target-trigger"></button>
+        <button type="button" data-xh-part="to-source-trigger"></button>
+        <div data-xh-part="target-panel">
+          <div data-xh-part="list">
+            <div data-xh-part="item" value="b"><span data-xh-part="item-text">B</span></div>
+          </div>
+        </div>
+      </div>
+    `
+    el.collection = [{ value: 'a', label: 'A' }, { value: 'b', label: 'B' }]
+    document.body.appendChild(el)
+    await settle(el)
+    return el
+  }
+
+  it('多路形态：条子挂在 root 上、贴层锚定、紧跟在各自的列表后面，两轴都摆、走 6px 缺省档', async () => {
+    const el = await mountTransfer()
+
+    const root = part(el, 'root')
+    const lists = [...root.querySelectorAll<HTMLElement>('[data-scope="transfer"][data-part="list"]')]
+    expect(lists).toHaveLength(2)
+    // 条子紧跟在列表后面、住在各自的面板里，不是壳的直接子节点
+    expect(root.querySelectorAll('[data-scope="scrollbar"][data-part="root"]')).toHaveLength(4)
+    for (const list of lists) {
+      expect(list.getAttribute('data-xh-scrollbar')).toBe('2')
+      const own = [list.nextElementSibling, list.nextElementSibling?.nextElementSibling] as HTMLElement[]
+      expect(own.map(node => node?.getAttribute('data-orientation'))).toEqual(['vertical', 'horizontal'])
+      for (const node of own) {
+        expect(node.getAttribute('data-anchor')).toBe('layer')
+        expect(node.getAttribute('data-size')).toBeNull()
+        expect(node.hasAttribute('data-xh-part')).toBe(false)
+      }
+    }
+  })
+})
+
 describe('json-viewer 不接自绘条', () => {
   async function mountViewer(view?: string): Promise<Updatable> {
     const el = document.createElement('xh-json-viewer') as Updatable
