@@ -32377,6 +32377,18 @@
 }
 
 @media (forced-colors: active) {
+  /* 按下：常态靠触发器底色深一档表出，这一档里底色被统一换成 Canvas；按住那一下用系统高亮反色画回来 */
+  [data-scope='steps'][data-part='trigger']:not([data-disabled]):is(:active, [data-pressed]) {
+    background: Highlight;
+    color: HighlightText;
+  }
+
+  /* 标题与说明各自写了颜色，这一档里会被换成 CanvasText 压在高亮底上；按住时一起跟到反色 */
+  [data-scope='steps'][data-part='trigger']:not([data-disabled]):is(:active, [data-pressed])
+    :is([data-scope='steps'][data-part='title'], [data-scope='steps'][data-part='description']) {
+    color: HighlightText;
+  }
+
   [data-scope='steps'][data-part='trigger']:hover:not([data-disabled])
     [data-scope='steps'][data-part='indicator'][data-state='incomplete'] {
     border-color: Highlight;
@@ -34320,19 +34332,33 @@
   cursor: pointer;
 }
 
-/* 按下去要有回应：整枚轻微下压，松手即弹回。置灰的不压 */
-[data-scope='tag-group'][data-part='list'] > [data-scope='tag'][data-part='root'][data-selectable]:not([data-disabled]):active {
+/* 按下去要有回应：可选的芯片是一颗定尺的离散控件（§9.1），整枚轻微下压并同时换底
+   （白底承载 hover 100 → pressed 200），松手即弹回。置灰的不压；
+   指针 :active 与 Headless 投影的 data-pressed 看见同一副按压面 */
+[data-scope='tag-group'][data-part='list']
+  > [data-scope='tag'][data-part='root'][data-selectable]:not([data-disabled]):not([data-variant='solid']):is(:active, [data-pressed]) {
   scale: var(--xh-motion-scale-press);
+  background: var(--xh-tag-group-item-bg-pressed, var(--xh-bg-subtle-hover));
   transition-duration: var(--xh-motion-duration-press);
   transition-timing-function: var(--xh-motion-ease-press);
 }
 
-/* 悬停与键盘锚点共用中性灰轻档：data-highlighted 跟的是连接层记的焦点标签，与选中互相独立。
+/* 实心档的面本身就是那族色，按下往同一族的 active 档走，字仍是实心底上配对的前景 */
+[data-scope='tag-group'][data-part='list']
+  > [data-scope='tag'][data-part='root'][data-selectable][data-variant='solid']:not([data-disabled]):is(:active, [data-pressed]) {
+  scale: var(--xh-motion-scale-press);
+  background: var(--xh-tag-group-item-bg-pressed-solid, var(--xh-_tone-active, var(--xh-bg-brand-active)));
+  transition-duration: var(--xh-motion-duration-press);
+  transition-timing-function: var(--xh-motion-ease-press);
+}
+
+/* 悬停与键盘锚点共用白底承载的 hover 档（§7.2：hover 100 → pressed 200）：
+   data-highlighted 跟的是连接层记的焦点标签，与选中互相独立。
    实心标签不进这里：它的字是实心底上配对的那支前景色，换成灰底就读不出来了；
-   实心档在这两档里面不换，回执落在按压与聚焦环上 */
+   实心档在这两档里面不换，回执落在按压缩放与聚焦环上 */
 [data-scope='tag-group'][data-part='list']
   > [data-scope='tag'][data-part='root']:not([data-disabled]):not([data-variant='solid']):is(:hover, [data-highlighted]) {
-  background: var(--xh-tag-group-item-bg-hover, var(--xh-bg-subtle-hover));
+  background: var(--xh-tag-group-item-bg-hover, var(--xh-bg-subtle));
 }
 
 [data-scope='tag-group'][data-part='list'] > [data-scope='tag'][data-part='root']:focus:not(:focus-visible) {
@@ -34348,13 +34374,25 @@
 }
 
 /* —— 选中 —— */
-/* 选中是这一排里「这几枚被挑中了」，靠边框接手，底色整条通道留给悬停与键盘锚点，两者因此能同时看见。
-   置灰的标签不进这里：它的边与字都已退成置灰色。实心档另有一条：它的面本身就是那族色，
-   语气色的描边与正文色的字压在上面都读不出来 */
+/* 页内持久集合的选中（§7.3）：品牌淡底行面 + 配对前景 + 前导对号（item-indicator），描边退到透明边位；
+   悬停与按下在淡底上派生 20% / 28%，键盘锚点同悬停档。
+   标了语气的组从语气层取同一条曲线。置灰的标签不进这里：它的边与字都已退成置灰色。
+   实心档另有一条：它的面本身就是那族色，淡底与配对前景压在上面都读不出来 */
 [data-scope='tag-group'][data-part='list']
   > [data-scope='tag'][data-part='root'][data-selected]:not([data-disabled]):not([data-variant='solid']) {
-  border-color: var(--xh-tag-group-item-border-selected, var(--xh-_tone, var(--xh-bg-brand)));
-  color: var(--xh-tag-group-item-fg-selected, var(--xh-_tone-fg, var(--xh-fg-brand-strong)));
+  border-color: var(--xh-tag-group-item-border-selected, transparent);
+  background: var(--xh-tag-group-item-bg-selected, var(--xh-_tone-subtle, var(--xh-bg-brand-subtle)));
+  color: var(--xh-tag-group-item-fg-selected, var(--xh-_tone-fg, var(--xh-fg-on-brand-subtle)));
+}
+
+[data-scope='tag-group'][data-part='list']
+  > [data-scope='tag'][data-part='root'][data-selected]:not([data-disabled]):not([data-variant='solid']):is(:hover, [data-highlighted]) {
+  background: var(--xh-tag-group-item-bg-selected-hover, var(--xh-_tone-subtle-hover, var(--xh-bg-brand-subtle-hover)));
+}
+
+[data-scope='tag-group'][data-part='list']
+  > [data-scope='tag'][data-part='root'][data-selected][data-selectable]:not([data-disabled]):not([data-variant='solid']):is(:active, [data-pressed]) {
+  background: var(--xh-tag-group-item-bg-selected-pressed, var(--xh-_tone-subtle-active, var(--xh-bg-brand-subtle-active)));
 }
 
 /* 实心标签选中：字不换（仍是 tag.css 给的面配对前景色，作者的 --xh-tag-fg 照旧生效），
@@ -34375,6 +34413,53 @@
 
 [data-scope='tag-group'][data-part='cell'][hidden] {
   display: none;
+}
+
+/* 选中标记：领在文字前面的一枚对号，与摘除钮的叉同一把随文尺（标签是纯行内文字组件）；
+   作者塞进来的图标读同一支 --xh-icon-size。连接层没选中时给 hidden，UA 的 display:none 被上面的 display 盖住，
+   这里压回去 */
+[data-scope='tag-group'][data-part='item-indicator'] {
+  --xh-icon-size: var(--xh-tag-group-item-indicator-size, var(--xh-glyph-size-text));
+
+  display: inline-flex;
+  flex: none;
+  align-items: center;
+  justify-content: center;
+  inline-size: var(--xh-icon-size, var(--xh-glyph-size-text));
+  block-size: var(--xh-icon-size, var(--xh-glyph-size-text));
+  color: var(--xh-tag-group-item-indicator-fg, currentColor);
+}
+
+[data-scope='tag-group'][data-part='item-indicator'][hidden] {
+  display: none;
+}
+
+/* 没写内容就由皮肤画兜底对号；作者往部件里塞了自己的图形，这条即不命中 */
+[data-scope='tag-group'][data-part='item-indicator']:empty::before {
+  content: '';
+  display: inline-block;
+  inline-size: var(--xh-icon-size, var(--xh-glyph-size-text));
+  block-size: var(--xh-icon-size, var(--xh-glyph-size-text));
+  background-color: currentColor;
+  -webkit-mask: var(--xh-glyph-mark-check) center / contain no-repeat;
+  mask: var(--xh-glyph-mark-check) center / contain no-repeat;
+}
+
+@media (forced-colors: active) {
+  /* 选中靠淡底与配对前景表出，这一档里两者都被统一换掉；用系统高亮反色画回，前导对号是字形节点、自己活得下来 */
+  [data-scope='tag-group'][data-part='list']
+    > [data-scope='tag'][data-part='root'][data-selected]:not([data-disabled]):not([data-variant='solid']) {
+    border-color: Highlight;
+    background: Highlight;
+    color: HighlightText;
+  }
+
+  /* 按下：常态靠底色深一档表出，这一档里底色被统一换成 Canvas；按住那一下用系统高亮反色画回来 */
+  [data-scope='tag-group'][data-part='list']
+    > [data-scope='tag'][data-part='root'][data-selectable]:not([data-disabled]):not([data-variant='solid']):is(:active, [data-pressed]) {
+    background: Highlight;
+    color: HighlightText;
+  }
 }
 
 /* styles/tags-input.css */

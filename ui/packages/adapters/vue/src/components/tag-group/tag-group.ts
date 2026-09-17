@@ -159,6 +159,16 @@ export const XhTagGroupCell = defineComponent({
   },
 })
 
+/** 选中标记：落在格子内、文字之前，选中时展示、未选中时收起；内容留空时由皮肤绘制对号。 */
+export const XhTagGroupItemIndicator = defineComponent({
+  name: 'XhTagGroupItemIndicator',
+  setup(_, { slots }) {
+    const ctx = useTagGroupContext()
+    const { item } = useTagGroupItemContext()
+    return () => h('span', ctx.api.value.getItemIndicatorProps(item.value) as Record<string, unknown>, slots.default?.())
+  },
+})
+
 /** 标签文字：渲染为 tag 的 label。 */
 export const XhTagGroupItemText = defineComponent({
   name: 'XhTagGroupItemText',
@@ -193,6 +203,7 @@ function renderDefaultTree(
     h(XhTagGroupList, null, () => collection.map(node =>
       h(XhTagGroupItem, { key: node.value, value: node.value }, () => [
         h(XhTagGroupCell, null, () => [
+          h(XhTagGroupItemIndicator),
           h(XhTagGroupItemText, null, () => itemSlot?.(node) ?? node.label),
           h(XhTagGroupItemDeleteTrigger),
         ]),

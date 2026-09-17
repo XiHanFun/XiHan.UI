@@ -50873,6 +50873,10 @@
               "name": "cell"
             },
             {
+              "description": "选中标记，落在格内、文字之前；选中时展示、未选中以 hidden 收起，对读屏隐藏；内容留空时由皮肤绘制对号",
+              "name": "item-indicator"
+            },
+            {
               "description": "标签文字（连打检索的取字来源），接线为 tag 的 label（data-scope=\"tag\"）",
               "name": "item-text"
             },
@@ -51468,10 +51472,31 @@
               "name": "--xh-tag-group-item-bg-hover"
             },
             {
+              "name": "--xh-tag-group-item-bg-pressed"
+            },
+            {
+              "name": "--xh-tag-group-item-bg-pressed-solid"
+            },
+            {
+              "name": "--xh-tag-group-item-bg-selected"
+            },
+            {
+              "name": "--xh-tag-group-item-bg-selected-hover"
+            },
+            {
+              "name": "--xh-tag-group-item-bg-selected-pressed"
+            },
+            {
               "name": "--xh-tag-group-item-border-selected"
             },
             {
               "name": "--xh-tag-group-item-fg-selected"
+            },
+            {
+              "name": "--xh-tag-group-item-indicator-fg"
+            },
+            {
+              "name": "--xh-tag-group-item-indicator-size"
             },
             {
               "name": "--xh-tag-group-label-fg"

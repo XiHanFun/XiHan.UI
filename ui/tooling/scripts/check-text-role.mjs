@@ -78,8 +78,12 @@ const SURFACE_TITLE = {
 }
 /** 页面级标题：heading-3（Dialog / Drawer / Tour 的面板标题与 PageHeader 的页面标题）。 */
 const PAGE_TITLE = new Set(['dialog', 'drawer', 'tour', 'page-header'])
-/** 纯行内文字组件：图标随文（--xh-glyph-size-text）。 */
-const INLINE_TEXT = new Set(['tag', 'kbd', 'breadcrumb', 'typography', 'highlight'])
+/**
+ * 纯行内文字组件：图标随文（--xh-glyph-size-text）。
+ * tag-group 的条目就是 tag 的 root，格子里的选中标记（item-indicator）与 tag 关闭钮的叉同一把随文尺，
+ * 按 sm / md / lg 取会比旁边的叉大一圈。
+ */
+const INLINE_TEXT = new Set(['tag', 'tag-group', 'kbd', 'breadcrumb', 'typography', 'highlight'])
 /** Feedback 指示符：scope → 声明 --xh-icon-size 的部件，统一 md。 */
 const FEEDBACK_INDICATOR = { alert: 'root', toast: 'root', notification: 'item' }
 /** 不是控件内图标的字形：空状态的主视觉图形按自己的尺度走。 */

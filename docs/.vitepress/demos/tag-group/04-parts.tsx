@@ -4,6 +4,7 @@ import {
   XhTagGroupCell,
   XhTagGroupItem,
   XhTagGroupItemDeleteTrigger,
+  XhTagGroupItemIndicator,
   XhTagGroupItemText,
   XhTagGroupLabel,
   XhTagGroupList,
@@ -52,6 +53,7 @@ export default function Demo(): ReactNode {
           {members.map(member => (
             <XhTagGroupItem key={member.value} value={member.value}>
               <XhTagGroupCell>
+                <XhTagGroupItemIndicator />
                 {/* 首字头像只是装饰，连打检索取的是 item-text 里那几个字 */}
                 <span aria-hidden="true" style={avatar}>{member.initial}</span>
                 <XhTagGroupItemText>{member.label}</XhTagGroupItemText>

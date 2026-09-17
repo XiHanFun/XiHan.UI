@@ -1022,6 +1022,7 @@ export {
   XhTagGroupCell,
   XhTagGroupItem,
   XhTagGroupItemDeleteTrigger,
+  XhTagGroupItemIndicator,
   XhTagGroupItemText,
   XhTagGroupLabel,
   XhTagGroupList,

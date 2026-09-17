@@ -16,7 +16,8 @@ const DELETE_TRIGGER = `${ITEM} > [data-scope="tag-group"][data-part="cell"] > [
 /**
  * 四枚标签：react 禁用（方向键与连打都跳过它，但它仍可聚焦、仍是导航起点）。
  * 文字用拉丁字母，连打检索按首字母匹配得上；四枚首字母互不相同。
- * item / item-text / item-delete-trigger 是作者侧的写法名，渲出来是 tag 的 root / label / close-trigger。
+ * item / item-text / item-delete-trigger 是作者侧的写法名，渲出来是 tag 的 root / label / close-trigger；
+ * item-indicator 是本组件的选中标记，领在文字前面。
  */
 function item(value: string, text: string, disabled = false): FixtureNode {
   const attrs: Record<string, string> = { value }
@@ -31,6 +32,7 @@ function item(value: string, text: string, disabled = false): FixtureNode {
         part: 'cell',
         tag: 'span',
         children: [
+          { part: 'item-indicator', tag: 'span' },
           { part: 'item-text', tag: 'span', text },
           { part: 'item-delete-trigger', tag: 'button' },
         ],
@@ -246,12 +248,24 @@ export const tagGroupSuite: ConformanceSuite = {
   fixture: FIXTURE,
   cases: [
     {
-      name: '初始：list 是 grid、标签是 tag 的 root 并担 row、格子是 gridcell、文字是 tag 的 label；不接选中即不出 aria-selected，摘除钮是 tag 的 close-trigger、收起且不占 Tab 位',
+      name: '初始：list 是 grid、标签是 tag 的 root 并担 row、格子是 gridcell、文字是 tag 的 label；不接选中即不出 aria-selected、选中标记全部收起，摘除钮是 tag 的 close-trigger、收起且不占 Tab 位',
       spec: { apg: `${APG}#roles_states_properties` },
       initial: {
-        // 标签、文字与摘除钮戴 tag 的 scope，不进本组件的解剖：本组件只剩容器、标题、列表与格子
-        order: ['root', 'label', 'list', 'cell[0]', 'cell[1]', 'cell[2]', 'cell[3]'],
-        counts: { root: 1, label: 1, list: 1, cell: 4 },
+        // 标签、文字与摘除钮戴 tag 的 scope，不进本组件的解剖：本组件只剩容器、标题、列表、格子与选中标记
+        order: [
+          'root',
+          'label',
+          'list',
+          'cell[0]',
+          'item-indicator[0]',
+          'cell[1]',
+          'item-indicator[1]',
+          'cell[2]',
+          'item-indicator[2]',
+          'cell[3]',
+          'item-indicator[3]',
+        ],
+        counts: { root: 1, label: 1, list: 1, cell: 4, 'item-indicator': 4 },
         parts: {
           'root': { 'data-orientation': 'horizontal', 'data-disabled': null, 'data-readonly': null },
           'label': { id: '@self' },
@@ -269,6 +283,9 @@ export const tagGroupSuite: ConformanceSuite = {
           // 摘除钮可聚焦，只有落在 gridcell 下面才是合法嵌套；格子与标签共用同一份状态标记
           'cell[0]': { 'role': 'gridcell', 'data-selected': null, 'data-highlighted': null, 'data-disabled': null },
           'cell[1]': { 'role': 'gridcell', 'data-disabled': '' },
+          // 选中标记与标签共用同一份状态标记；不接选中的一排永不出现，读屏也不见它
+          'item-indicator[0]': { 'aria-hidden': 'true', 'hidden': '', 'data-selected': null, 'data-disabled': null },
+          'item-indicator[1]': { 'aria-hidden': 'true', 'hidden': '', 'data-disabled': '' },
         },
       },
       steps: [
@@ -405,10 +422,21 @@ export const tagGroupSuite: ConformanceSuite = {
         tags({ items: { 0: { 'data-selectable': '' } } }),
         { kind: 'focus', part: 'list' },
         { kind: 'key', key: 'Space', expect: { events: [{ type: 'value-change', detail: { value: ['vue'] } }] } },
-        tags({ items: selectedMarks('vue') }, { parts: { 'cell[0]': { 'data-selected': '' }, 'cell[2]': { 'data-selected': null } } }),
+        // 选中的那一枚亮出前导标记，其余仍收起
+        tags({ items: selectedMarks('vue') }, { parts: {
+          'cell[0]': { 'data-selected': '' },
+          'cell[2]': { 'data-selected': null },
+          'item-indicator[0]': { 'hidden': null, 'data-selected': '' },
+          'item-indicator[2]': { 'hidden': '', 'data-selected': null },
+        } }),
         { kind: 'key', key: 'ArrowRight', expect: { events: [] } },
         { kind: 'key', key: 'Enter', expect: { events: [{ type: 'value-change', detail: { value: ['svelte'] } }] } },
-        tags({ items: selectedMarks('svelte') }, { parts: { 'cell[0]': { 'data-selected': null }, 'cell[2]': { 'data-selected': '' } } }),
+        tags({ items: selectedMarks('svelte') }, { parts: {
+          'cell[0]': { 'data-selected': null },
+          'cell[2]': { 'data-selected': '' },
+          'item-indicator[0]': { 'hidden': '', 'data-selected': null },
+          'item-indicator[2]': { 'hidden': null, 'data-selected': '' },
+        } }),
       ],
     },
     {

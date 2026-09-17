@@ -5,9 +5,9 @@ exports[`family-backlog 条目数 > 七段各一数，与快照一致 1`] = `
   "edge": 12,
   "ladder": 40,
   "motion": 1,
-  "press": 10,
+  "press": 9,
   "scroll": 12,
-  "selection": 3,
+  "selection": 2,
   "shape": 14,
   "text": 42,
 }
@@ -89,7 +89,6 @@ exports[`family-backlog 键集合 > press 1`] = `
   "floating-panel:trigger",
   "form:error-summary-item",
   "rating:item",
-  "tag-group:tag/root",
   "tour:next-trigger",
   "tour:prev-trigger",
   "tour:skip-trigger",
@@ -116,7 +115,6 @@ exports[`family-backlog 键集合 > scroll 1`] = `
 exports[`family-backlog 键集合 > selection 1`] = `
 [
   "anchor:link",
-  "tag-group:tag/root",
   "toggle:root",
 ]
 `;
