@@ -1169,6 +1169,9 @@
               "name": "--xh-anchor-link-bg-hover"
             },
             {
+              "name": "--xh-anchor-link-bg-pressed"
+            },
+            {
               "name": "--xh-anchor-link-fg-current"
             },
             {

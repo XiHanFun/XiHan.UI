@@ -3,11 +3,11 @@
 exports[`family-backlog 条目数 > 七段各一数，与快照一致 1`] = `
 {
   "edge": 12,
-  "ladder": 40,
+  "ladder": 39,
   "motion": 1,
   "press": 8,
   "scroll": 12,
-  "selection": 2,
+  "selection": 1,
   "shape": 12,
   "text": 39,
 }
@@ -32,7 +32,6 @@ exports[`family-backlog 键集合 > edge 1`] = `
 
 exports[`family-backlog 键集合 > ladder 1`] = `
 [
-  "anchor:link:hover",
   "breadcrumb:link:hover",
   "carousel:prev-trigger:hover",
   "carousel:prev-trigger:pressed",
@@ -113,7 +112,6 @@ exports[`family-backlog 键集合 > scroll 1`] = `
 
 exports[`family-backlog 键集合 > selection 1`] = `
 [
-  "anchor:link",
   "toggle:root",
 ]
 `;

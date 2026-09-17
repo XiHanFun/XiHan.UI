@@ -1140,6 +1140,25 @@
         "hover"
       ],
       "defaultToken": [
+        "--xh-bg-subtle"
+      ],
+      "visibility": "public",
+      "description": "anchor 的 link 部件 background 覆盖槽。"
+    },
+    {
+      "name": "--xh-anchor-link-bg-pressed",
+      "component": "anchor",
+      "part": [
+        "link"
+      ],
+      "property": [
+        "background"
+      ],
+      "state": [
+        "is(:active, [data-pressed])",
+        "pressed"
+      ],
+      "defaultToken": [
         "--xh-bg-subtle-hover"
       ],
       "visibility": "public",

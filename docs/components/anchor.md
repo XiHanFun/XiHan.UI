@@ -194,7 +194,8 @@
 | `--xh-anchor-indicator-radius` | `indicator` | `border-radius` | `default` | `--xh-shape-pill` | anchor 的 indicator 部件 border-radius 覆盖槽。 |
 | `--xh-anchor-indicator-thickness` | `indicator` | `block-size`<br>`inline-size`<br>`inset-block-end`<br>`inset-inline-start` | `default`<br>`orientation=horizontal` | `--xh-stroke-thick` | anchor 的 indicator 部件 block-size、inline-size、inset-block-end、inset-inline-start 覆盖槽。 |
 | `--xh-anchor-leading` | `root` | `line-height` | `default` | `--xh-leading-normal` | anchor 的 root 部件 line-height 覆盖槽。 |
-| `--xh-anchor-link-bg-hover` | `link` | `background` | `hover` | `--xh-bg-subtle-hover` | anchor 的 link 部件 background 覆盖槽。 |
+| `--xh-anchor-link-bg-hover` | `link` | `background` | `hover` | `--xh-bg-subtle` | anchor 的 link 部件 background 覆盖槽。 |
+| `--xh-anchor-link-bg-pressed` | `link` | `background` | `is(:active, [data-pressed])`<br>`pressed` | `--xh-bg-subtle-hover` | anchor 的 link 部件 background 覆盖槽。 |
 | `--xh-anchor-link-fg-current` | `link` | `color` | `current` | `--xh-_anchor-accent-text` | anchor 的 link 部件 color 覆盖槽。 |
 | `--xh-anchor-link-fg-hover` | `link` | `color` | `hover` | `--xh-fg-default` | anchor 的 link 部件 color 覆盖槽。 |
 | `--xh-anchor-link-font-weight-current` | `link` | `font-weight` | `current` | `--xh-font-weight-medium` | anchor 的 link 部件 font-weight 覆盖槽。 |

@@ -17,11 +17,12 @@
     /* 尺寸档只换这两个私有槽，链接从 root 继承它们，换档不必给每个部件各写一条选择器 */
     --xh-_anchor-font-size: var(--xh-control-font-md);
     --xh-_anchor-link-px: var(--xh-control-px-md);
-    /* 当前那一节的指示条与文字随语气走。没写 data-tone 时这两个槽都没被声明，退回原来的品牌色。
-       指示条是装饰性的色条，取柔和档；文字要压在普通背景上读，取语气的文字档。
+    /* 当前那一节的指示条与文字随语气走。没写 data-tone 时这两个槽都没被声明，退回品牌色。
+       指示条是装饰性的色条，取柔和档；文字要压在普通背景上读，取语气的文字档——
+       导航当前页（§7.3）缺省是 --xh-fg-brand-strong，比指示条深一档。
        聚焦环不在其列，它恒是 --xh-ring-focus */
     --xh-_anchor-accent: var(--xh-_tone-soft, var(--xh-fg-brand));
-    --xh-_anchor-accent-text: var(--xh-_tone-fg, var(--xh-fg-brand));
+    --xh-_anchor-accent-text: var(--xh-_tone-fg, var(--xh-fg-brand-strong));
 
     color: var(--xh-anchor-fg, var(--xh-fg-muted));
     font-size: var(--xh-anchor-font-size, var(--xh-_anchor-font-size));
@@ -109,14 +110,22 @@
     overflow: hidden;
   }
 
-  /* 悬停走列表族的轻档：中性灰底，与面包屑的链接同一副回执。
+  /* 悬停走白底承载的阶梯（§7.2）：hover 100，与面包屑的链接同一副回执。
      只把 muted 提到 default 的话，一行小字上那点色差在长目录里几乎读不出来 */
   [data-scope='anchor'][data-part='link']:hover {
-    background: var(--xh-anchor-link-bg-hover, var(--xh-bg-subtle-hover));
+    background: var(--xh-anchor-link-bg-hover, var(--xh-bg-subtle));
     color: var(--xh-anchor-link-fg-hover, var(--xh-fg-default));
   }
 
-  /* 当前那一节：颜色与字重都跟着变，不只靠指示条——
+  /* 按下：链接是铺开的一行（§9.2），只换面不缩放，pressed 200；
+     指针 :active 与 Headless 投影的 data-pressed 看见同一副按压面 */
+  [data-scope='anchor'][data-part='link']:is(:active, [data-pressed]) {
+    background: var(--xh-anchor-link-bg-pressed, var(--xh-bg-subtle-hover));
+    transition-duration: var(--xh-motion-duration-press);
+    transition-timing-function: var(--xh-motion-ease-press);
+  }
+
+  /* 当前那一节（§7.3 导航当前页）：brand-strong 字色与 medium 字重都跟着变，不只靠指示条——
      指示条是可选部件，作者不渲染它时"当前在哪"仍然要看得出来 */
   [data-scope='anchor'][data-part='link'][data-current] {
     color: var(--xh-anchor-link-fg-current, var(--xh-_anchor-accent-text));
@@ -160,6 +169,12 @@
        "读到哪一节"就只剩链接自己的字重。换成系统高亮色画回来 */
     [data-scope='anchor'][data-part='indicator'] {
       background: Highlight;
+    }
+
+    /* 按下：常态靠底色深一档表出，这一档里底色被统一换成 Canvas；按住那一下用系统高亮反色画回来 */
+    [data-scope='anchor'][data-part='link']:is(:active, [data-pressed]) {
+      background: Highlight;
+      color: HighlightText;
     }
   }
 }
